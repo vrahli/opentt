@@ -1,3 +1,5 @@
+{-# OPTIONS --allow-unsolved-metas #-}
+
 \begin{code}
 module theory where
 
@@ -232,7 +234,7 @@ inhL m (suc n) j c₁ c₂ w U with m≤n⇒m<n∨m≡n c₂
 inhN m n = (m , n , inhL m n)
 
 inhN1L : (n : ℕ) → Inh
-inhN1L n = inhN n n -- That gives us 1 levels
+inhN1L n = inhN n n -- That gives us 1 level
 
 inhN2L : (n : ℕ) → Inh
 inhN2L n = inhN n (suc n) -- That gives us 2 levels

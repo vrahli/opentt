@@ -1,3 +1,5 @@
+{-# OPTIONS --allow-unsolved-metas #-}
+
 \begin{code}
 module world where
 
@@ -93,6 +95,10 @@ data ⟨⟨_⟩⟩_⪰_ (I : InhW) : (w2 : world) (w1 : world) → Set where
     (w : world) (name : choiceSeqName) (res : restriction)
     → ¬ (name ∈ wdom w) -- 'name' is not in 'w' so that we don't shadow an entry
     → ⟨⟨ I ⟩⟩ (mkentry name [] res ∷ w) ⪰ w
+--
+-- The problem with this definition is that adding a new choice requires proving that it is inhabited
+-- w.r.t. the previous state while by then we only know that it is inhabited w.r.t. a later state
+--
 
 
 data ∈world : entry → world → Set where
@@ -155,8 +161,23 @@ record ≽world (I : InhW) (w2 : world) (w1 : world) : Set where
   constructor mkext
   field
     ext   : (e : entry) → ∈world e w1 → ∈worldExt e w2
-    wf    : wfWorld (I w1) w1 → wfWorld (I w2) w2
+    wf    : wfWorld (I w2) w1 → wfWorld (I w2) w2
     norep : norepeats (wdom w1) → norepeats (wdom w2)
+--
+-- in 'wf', if we use 'wfWorld (I w1) w1 → wfWorld (I w2) w2' then to prove ext:'⟨ I ⟩ (mkentry name [] res ∷ w) ⪰ w'
+-- we have to prove that 'wfWorld (I w) w → wfWorld (I (mkentry name [] res ∷ w)) w', which is essentially the
+-- monotonicity of 'I', which assumes ext, which we're trying to prove
+--
+-- if we use 'wfWorld (I w2) w1 → wfWorld (I w2) w2' then to prove the transitivity of [_]_⪰_ we have to "lower"
+-- 'I w3' to 'I w1' to make use of the 1st hypothesis --> doesn't make sense
+--
+-- if we use 'wfWorld (I w1) w1 → wfWorld (I w1) w2' then it doesn't quite make sense that the larger world should
+-- be true w.r.t. the smaller one
+--
+
+{--
+ A world could be a flat list of choices instead
+--}
 
 ⟨_⟩_⪰_ : (I : InhW) (w2 : world) (w1 : world) → Set
 ⟨ I ⟩ w2 ⪰ w1 = ≽world I w2 w1
@@ -171,28 +192,44 @@ record ≽world (I : InhW) (w2 : world) (w1 : world) : Set where
   let (e'' , i' , ext') = ∈worldExt-≽entry _ _ i in
   ≽entry-∈worldExt _ _ _ i' (≽entry-trans ext' ext)
 
-peTrans : {I : InhW} {w1 w2 w3 : world} (e1 : ⟨ I ⟩ w3 ⪰ w2) (e2 : ⟨ I ⟩ w2 ⪰ w1) → ⟨ I ⟩ w3 ⪰ w1
-peTrans {I} {w1} {w2} {w3} (mkext ext2 wf2 norep2) (mkext ext1 wf1 norep1) =
+inhW-mon : (I : InhW) → Set
+inhW-mon I = (w2 w1 : world) (t : Term) → ⟨ I ⟩ w2 ⪰ w1 → I w1 t → I w2 t
+
+inh-mon : (I : Inh) → Set
+inh-mon (m , n , f) = (j : ℕ) (c₁ : m ≤ j) (c₂ : j ≤ n) → inhW-mon (f j c₁ c₂)
+
+inhW-mon-wfChoices : (I : InhW) (mon : inhW-mon I) (w1 w2 : world) (l : List Term) (res : restriction)
+                     → ⟨ I ⟩ w2 ⪰ w1
+                     → wfChoices (I w1) l res
+                     → wfChoices (I w2) l res
+inhW-mon-wfChoices I mon w1 w2 [] res ext wf = tt
+inhW-mon-wfChoices I mon w1 w2 (x ∷ l) res ext (wf1 , wf2) =
+  (mon _ _ _ ext wf1 , inhW-mon-wfChoices I mon w1 w2 l (lift res) ext wf2)
+
+inhW-mon-wfEntry : (I : InhW) (mon : inhW-mon I) (w1 w2 : world) (e : entry) → ⟨ I ⟩ w2 ⪰ w1 → wfEntry (I w1) e → wfEntry (I w2) e
+inhW-mon-wfEntry I mon w1 w2 (mkentry name choices res) ext wf = inhW-mon-wfChoices I mon _ _ _ _ ext wf
+
+inhW-mon-wfWorld : (I : InhW) (mon : inhW-mon I) (w1 w2 w : world) → ⟨ I ⟩ w2 ⪰ w1 → wfWorld (I w1) w → wfWorld (I w2) w
+inhW-mon-wfWorld I mon w1 w2 [] ext wf = tt
+inhW-mon-wfWorld I mon w1 w2 (x ∷ w) ext (wf1 , wf2) =
+  (inhW-mon-wfEntry I mon _ _ x ext wf1 , inhW-mon-wfWorld I mon w1 w2 w ext wf2)
+
+peTrans : {I : InhW} {w1 w2 w3 : world} (mon : inhW-mon I) (e1 : ⟨ I ⟩ w3 ⪰ w2) (e2 : ⟨ I ⟩ w2 ⪰ w1) → ⟨ I ⟩ w3 ⪰ w1
+peTrans {I} {w1} {w2} {w3} mon (mkext ext2 wf2 norep2) (mkext ext1 wf1 norep1) =
   mkext
     (λ e i → let (e' , i' , ext') = ∈worldExt-≽entry _ _ (ext1 e i) in
               ≽entry-pres-∈worldExt ext' (ext2 e' i'))
-    (λ wf → wf2 (wf1 wf))
+    (λ wf → wf2 {!!})
     λ nr → norep2 (norep1 nr)
 
 eTrans : {I : Inh} {w1 w2 w3 : world} (e1 : [ I ] w3 ⪰ w2) (e2 : [ I ] w2 ⪰ w1) → [ I ] w3 ⪰ w1
-eTrans {I} {w1} {w2} {w3} e1 e2 j c₁ c₂ = peTrans (e1 j c₁ c₂) (e2 j c₁ c₂)
+eTrans {I} {w1} {w2} {w3} e1 e2 j c₁ c₂ = peTrans {!!} (e1 j c₁ c₂) (e2 j c₁ c₂)
 
 peRefl : (I : InhW) (w : world) → ⟨ I ⟩ w ⪰ w
 peRefl I w = mkext (λ e i → ∈world-∈worldExt i) (λ x → x) λ x → x
 
 eRefl : (I : Inh) (w : world) → [ I ] w ⪰ w
 eRefl I w j c₁ c₂ = peRefl _ _
-
-inhW-mon : (I : InhW) → Set
-inhW-mon I = (w2 w1 : world) (t : Term) → ⟨ I ⟩ w2 ⪰ w1 → I w1 t → I w2 t
-
-inh-mon : (I : Inh) → Set
-inh-mon (m , n , f) = (j : ℕ) (c₁ : m ≤ j) (c₂ : j ≤ n) → inhW-mon (f j c₁ c₂)
 
 peEntry : (I : InhW) (w : world) (name : choiceSeqName) (res : restriction)
           → ¬ (name ∈ wdom w)
