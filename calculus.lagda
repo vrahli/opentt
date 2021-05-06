@@ -13,7 +13,7 @@ open import Data.Product
 open import Data.Sum
 open import Data.Empty
 open import Data.Unit using (⊤ ; tt)
-open import Data.Nat using (ℕ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc)
+open import Data.Nat using (ℕ ; _≟_ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _⊔_)
 open import Data.Nat.Properties
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
@@ -25,9 +25,33 @@ open import Data.List.Membership.Propositional.Properties
 
 
 \begin{code}
-postulate
-  choiceSeqName : Set
-  freshName : (l : List choiceSeqName) → Σ choiceSeqName (λ name → ¬ (name ∈ l))
+csName : Set
+csName = ℕ
+
+¬∈[] : {A : Set} {a : A} → a ∈ [] → ⊥
+¬∈[] {A} {a} ()
+
+≤⊔l : (n m : ℕ) → n ≤ n ⊔ m
+≤⊔l n m with n ≤? m
+... | yes p = subst (λ x → n ≤ x) (sym (m≤n⇒m⊔n≡n p)) p
+... | no p = subst (λ x → n ≤ x) (sym (m≥n⇒m⊔n≡m (<⇒≤ (≰⇒> p)))) ≤-refl
+
+≤⊔r : (n m : ℕ) → m ≤ n ⊔ m
+≤⊔r n m with m ≤? n
+... | yes p =  subst (λ x → m ≤ x) (sym (m≥n⇒m⊔n≡m p)) p
+... | no p = subst (λ x → m ≤ x) (sym (m≤n⇒m⊔n≡n (<⇒≤ (≰⇒> p)))) ≤-refl
+
+freshNameAux : (l : List csName) → Σ csName (λ name → (x : csName) → x ∈ l → x < name)
+freshNameAux [] = (0 , λ x i → ⊥-elim (¬∈[] i))
+freshNameAux (n ∷ l) =
+  let (m , c) = freshNameAux l in
+  let z : suc (n ⊔ m) ≡ suc n ⊔ suc m
+      z = refl in
+  (suc (n ⊔ m) , λ { x (here p) → <-transˡ (subst (λ x → x < suc n) (sym p) (n<1+n n)) (≤⊔l (suc n) (suc m)) ;
+                     x (there p) → let c1 = c x p in <-trans c1 (<-transˡ (n<1+n _) (≤⊔r (suc n) (suc m)))} )
+
+freshName : (l : List csName) → Σ csName (λ name → ¬ (name ∈ l))
+freshName l = let (m , c) = freshNameAux l in (m , λ x → let z = c _ x in n≮n _ z)
 
 Var : Set
 Var = ℕ
@@ -61,7 +85,7 @@ data Term : Set where
   AX : Term
   -- Choice sequences
   FREE : Term
-  CS : choiceSeqName → Term
+  CS : csName → Term
   -- Time squashing
   TSQUASH : Term → Term
   -- Free from definitions

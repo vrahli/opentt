@@ -14,8 +14,9 @@ open import Relation.Binary.PropositionalEquality using (sym ; subst)
 open import Data.Product
 open import Data.Sum
 open import Data.Empty
+open import Data.Maybe
 open import Data.Unit using (⊤ ; tt)
-open import Data.Nat using (ℕ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_)
+open import Data.Nat using (ℕ ; _≟_ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_)
 open import Data.Nat.Properties
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
@@ -37,20 +38,40 @@ w.r.t. open bars.
 restriction : Set
 restriction = (n : ℕ) → Term → Term
 
-record entry : Set where
-  constructor mkentry
+record cs : Set where
+  constructor mkcs
   field
-    name    : choiceSeqName
+    name    : csName
     choices : List Term
     res     : restriction
 
---  Worlds
+data entry : Set where
+  start  : (name : csName) (res : restriction) → entry
+  choice : (name : csName) (t : Term) → entry
+
+-- Worlds - entries are added at the end of the list
 world : Set
 world = List entry
 
-wdom : world → List choiceSeqName
+getChoices : csName → world → List Term
+getChoices name [] = []
+getChoices name (start _ _ ∷ w) = getChoices name w
+getChoices name (choice n t ∷ w) with name ≟ n
+... | yes p = t ∷ getChoices name w
+... | no p = getChoices name w
+
+-- ⟨_⟩_≽_ guarantees that there is only one 'start' for each choice sequence
+getCs : csName → world → Maybe cs
+getCs name [] = nothing
+getCs name (start n r ∷ w) with name ≟ n
+... | yes p = just (mkcs name (getChoices name w) r)
+... | no p = getCs name w
+getCs name (choice n t ∷ w) = getCs name w
+
+wdom : world → List csName
 wdom [] = []
-wdom (mkentry name _ _ ∷ w) = name ∷ wdom w
+wdom (start name _ ∷ w) = name ∷ wdom w
+wdom (choice _ _ ∷ w) = wdom w
 
 InhT : Set₁
 InhT = (t : Term) → Set
@@ -71,7 +92,7 @@ lower (m , suc n , f) = (m , n , λ j c₁ c₂ → f j c₁ (≤-trans c₂ (n�
 lift : restriction → restriction
 lift res n t = res (suc n) t
 
-wfChoices : InhT → List Term → restriction → Set
+{--wfChoices : InhT → List Term → restriction → Set
 wfChoices I [] res = ⊤
 wfChoices I (t ∷ ts) res = I (res 0 t) × wfChoices I ts (lift res)
 
@@ -81,37 +102,49 @@ wfEntry I (mkentry name choices res) = wfChoices I choices res
 wfWorld : InhT → world → Set
 wfWorld I [] = ⊤
 wfWorld I (entry ∷ entries) = wfEntry I entry × wfWorld I entries
+--}
 
+∈world : cs → world → Set
+∈world e w = getCs (cs.name e) w ≡ just e
+
+newcs : world → csName → restriction → world
+newcs w name r = w ∷ʳ start name r
+
+extcs : world → csName → Term → world
+extcs w name t = w ∷ʳ choice name t
 
 -- w2 extends w1
-data ⟨⟨_⟩⟩_⪰_ (I : InhW) : (w2 : world) (w1 : world) → Set where
-  extRefl : (w : world) → ⟨⟨ I ⟩⟩ w ⪰ w
-  extTrans : {w1 w2 w3 : world} → ⟨⟨ I ⟩⟩ w3 ⪰ w2 → ⟨⟨ I ⟩⟩ w2 ⪰ w1 → ⟨⟨ I ⟩⟩ w3 ⪰ w1
-  extChoices :
-    (w : world) (name : choiceSeqName) (l : List Term) (t : Term) (res : restriction)
+data ⟨_⟩_⪰_ (I : InhW) : (w2 : world) (w1 : world) → Set where
+  extRefl : (w : world) → ⟨ I ⟩ w ⪰ w
+  extTrans : {w1 w2 w3 : world} → ⟨ I ⟩ w3 ⪰ w2 → ⟨ I ⟩ w2 ⪰ w1 → ⟨ I ⟩ w3 ⪰ w1
+  extChoice :
+    (w : world) (name : csName) (l : List Term) (t : Term) (res : restriction)
+    → ∈world (mkcs name l res) w
     → I w (res (length l) t)
-    → ⟨⟨ I ⟩⟩ (mkentry name (l ∷ʳ t) res ∷ w) ⪰ (mkentry name l res ∷ w)
+    → ⟨ I ⟩ (extcs w name t) ⪰ w
   extEntry :
-    (w : world) (name : choiceSeqName) (res : restriction)
+    (w : world) (name : csName) (res : restriction)
     → ¬ (name ∈ wdom w) -- 'name' is not in 'w' so that we don't shadow an entry
-    → ⟨⟨ I ⟩⟩ (mkentry name [] res ∷ w) ⪰ w
---
--- The problem with this definition is that adding a new choice requires proving that it is inhabited
--- w.r.t. the previous state while by then we only know that it is inhabited w.r.t. a later state
---
+    → ⟨ I ⟩ (newcs w name res) ⪰ w
 
 
-data ∈world : entry → world → Set where
-  inwHd : (e : entry) (w : world) → ∈world e (e ∷ w)
-  inwTl : (e e' : entry) (w : world) (d : ¬ entry.name e ≡ entry.name e') → ∈world e w → ∈world e (e' ∷ w)
+data norepeats {A : Set} : List A → Set where
+  norepsNil : norepeats []
+  norepsCons : (a : A) (l : List A) → ¬ a ∈ l → norepeats l → norepeats (a ∷ l)
 
+++[] : {A : Set} (l : List A) → l ++ [] ≡ l
+++[] {A} [] = refl
+++[] {A} (x ∷ l) rewrite ++[] l = refl
+
+
+{--
 -- Same as 'inWorld' but the entry might only contain an initial segment of what is in the world
 data ∈worldExt : entry → world → Set where
-  inweHd : (name : choiceSeqName) (cs₁ cs₂ : List Term) (res : restriction) (w : world) → ∈worldExt (mkentry name cs₁ res) (mkentry name (cs₁ ++ cs₂) res ∷ w)
+  inweHd : (name : csName) (cs₁ cs₂ : List Term) (res : restriction) (w : world) → ∈worldExt (mkentry name cs₁ res) (mkentry name (cs₁ ++ cs₂) res ∷ w)
   inweTl : (e e' : entry) (w : world) (d : ¬ entry.name e ≡ entry.name e') → ∈worldExt e w → ∈worldExt e (e' ∷ w)
 
 data ≽entry : entry → entry → Set where
-  ee : (name : choiceSeqName) (cs₁ cs₂ : List Term) (res : restriction)
+  ee : (name : csName) (cs₁ cs₂ : List Term) (res : restriction)
        → ≽entry (mkentry name (cs₁ ++ cs₂) res) (mkentry name cs₁ res)
 
 ≽entry-sameName : (e2 e1 : entry) → ≽entry e2 e1 → entry.name e2 ≡ entry.name e1
@@ -120,10 +153,6 @@ data ≽entry : entry → entry → Set where
 ≽entry-trans : {e3 e2 e1 : entry} → ≽entry e3 e2 → ≽entry e2 e1 → ≽entry e3 e1
 ≽entry-trans {.(mkentry name ((cs₁ ++ cs₂) ++ cs₃) res)} {.(mkentry name (cs₁ ++ cs₂) res)} {.(mkentry name cs₁ res)} (ee name .(cs₁ ++ cs₂) cs₃ res) (ee .name cs₁ cs₂ .res) rewrite ++-assoc cs₁ cs₂ cs₃ =
   ee name cs₁ (cs₂ ++ cs₃) res
-
-++-[] : {A : Set} (l : List A) → l ++ [] ≡ l
-++-[] {A} [] = refl
-++-[] {A} (x ∷ l) rewrite ++-[] l = refl
 
 ≽entry-refl : (e : entry) → ≽entry e e
 ≽entry-refl (mkentry name choices res) =
@@ -152,10 +181,6 @@ data ≽entry : entry → entry → Set where
 ∈world-∈wdom {e} {.(e ∷ w)} (inwHd .e w) = here refl
 ∈world-∈wdom {e} {.(e' ∷ w)} (inwTl .e e' w d i) = there (∈world-∈wdom i)
 
-data norepeats {A : Set} : List A → Set where
-  norepsNil : norepeats []
-  norepsCons : (a : A) (l : List A) → ¬ a ∈ l → norepeats l → norepeats (a ∷ l)
-
 
 record ≽world (I : InhW) (w2 : world) (w1 : world) : Set where
   constructor mkext
@@ -181,13 +206,13 @@ record ≽world (I : InhW) (w2 : world) (w1 : world) : Set where
 
 ⟨_⟩_⪰_ : (I : InhW) (w2 : world) (w1 : world) → Set
 ⟨ I ⟩ w2 ⪰ w1 = ≽world I w2 w1
-
+--}
 
 -- w2 extends w1
 [_]_⪰_ : (I : Inh) (w2 : world) (w1 : world) → Set
 [ (m , n , f) ] w2 ⪰ w1 = (j : ℕ) (c₁ : m ≤ j) (c₂ : j ≤ n) → ⟨ f j c₁ c₂ ⟩ w2 ⪰ w1
 
-≽entry-pres-∈worldExt : {e e' : entry} {w : world} → ≽entry e' e → ∈worldExt e' w → ∈worldExt e w
+{--≽entry-pres-∈worldExt : {e e' : entry} {w : world} → ≽entry e' e → ∈worldExt e' w → ∈worldExt e w
 ≽entry-pres-∈worldExt {e} {e'} {w} ext i =
   let (e'' , i' , ext') = ∈worldExt-≽entry _ _ i in
   ≽entry-∈worldExt _ _ _ i' (≽entry-trans ext' ext)
@@ -221,37 +246,65 @@ peTrans {I} {w1} {w2} {w3} mon (mkext ext2 wf2 norep2) (mkext ext1 wf1 norep1) =
               ≽entry-pres-∈worldExt ext' (ext2 e' i'))
     (λ wf → wf2 {!!})
     λ nr → norep2 (norep1 nr)
+--}
 
-eTrans : {I : Inh} {w1 w2 w3 : world} (e1 : [ I ] w3 ⪰ w2) (e2 : [ I ] w2 ⪰ w1) → [ I ] w3 ⪰ w1
-eTrans {I} {w1} {w2} {w3} e1 e2 j c₁ c₂ = peTrans {!!} (e1 j c₁ c₂) (e2 j c₁ c₂)
+[]≽-trans : {I : Inh} {w1 w2 w3 : world} (e1 : [ I ] w3 ⪰ w2) (e2 : [ I ] w2 ⪰ w1) → [ I ] w3 ⪰ w1
+[]≽-trans {I} {w1} {w2} {w3} e1 e2 j c₁ c₂ = extTrans (e1 j c₁ c₂) (e2 j c₁ c₂)
 
-peRefl : (I : InhW) (w : world) → ⟨ I ⟩ w ⪰ w
+{--peRefl : (I : InhW) (w : world) → ⟨ I ⟩ w ⪰ w
 peRefl I w = mkext (λ e i → ∈world-∈worldExt i) (λ x → x) λ x → x
+--}
 
-eRefl : (I : Inh) (w : world) → [ I ] w ⪰ w
-eRefl I w j c₁ c₂ = peRefl _ _
+[]≽-refl : (I : Inh) (w : world) → [ I ] w ⪰ w
+[]≽-refl I w j c₁ c₂ = extRefl _
 
-peEntry : (I : InhW) (w : world) (name : choiceSeqName) (res : restriction)
+{--peEntry : (I : InhW) (w : world) (name : csName) (res : restriction)
           → ¬ (name ∈ wdom w)
           → ⟨ I ⟩ (mkentry name [] res ∷ w) ⪰ w
 peEntry I w name res ni =
   mkext (λ e i → inweTl _ _ _ (λ x → ni (subst (λ z → z ∈ wdom w) x (∈world-∈wdom i))) (∈world-∈worldExt i))
         (λ wf → (tt , {!!}))
         λ norep → norepsCons _ _ ni norep
+--}
 
-eEntry : (I : Inh) (w : world) (name : choiceSeqName) (res : restriction)
+[]≽newcs : (I : Inh) (w : world) (name : csName) (res : restriction)
          → ¬ (name ∈ wdom w)
-         → [ I ] (mkentry name [] res ∷ w) ⪰ w
-eEntry I w name res ni j c₁ c₂ = peEntry _ _ _ _ ni
+         → [ I ] (newcs w name res) ⪰ w
+[]≽newcs I w name res ni j c₁ c₂ = extEntry _ _ _ ni
 
+wdom++ : (w₁ w₂ : world) → wdom (w₁ ++ w₂) ≡ wdom w₁ ++ wdom w₂
+wdom++ [] w₂ = refl
+wdom++ (start name res ∷ w₁) w₂ rewrite wdom++ w₁ w₂ = refl
+wdom++ (choice name t ∷ w₁) w₂ rewrite wdom++ w₁ w₂ = refl
 
+wdomAddChoice : (w : world) (name : csName) (t : Term) → wdom (w ∷ʳ choice name t) ≡ wdom w
+wdomAddChoice w name t rewrite wdom++ w [ choice name t ] rewrite ++[] (wdom w) = refl
+
+wdomAddStart : (w : world) (name : csName) (r : restriction) → wdom (w ∷ʳ start name r) ≡ wdom w ∷ʳ name
+wdomAddStart w name r rewrite wdom++ w [ start name r ] = refl
+
+∈[1] : {A : Set} {a b : A} → a ∈ [ b ] → a ≡ b
+∈[1] {A} {a} {b} (here px) = px
+
+∈∷-∈∷ʳ : {A : Set} {a b : A} {l : List A} → ¬ b ∈ l → b ∈ l ∷ʳ a → a ∈ b ∷ l
+∈∷-∈∷ʳ {A} {a} {b} {l} ni i with ∈-++⁻ l i
+... | inj₁ p = ⊥-elim (ni p)
+... | inj₂ (here p) = here (sym p)
+
+norepeats∷ʳ : {A : Set} (l : List A) (a : A) → norepeats l → ¬ a ∈ l → norepeats (l ∷ʳ a)
+norepeats∷ʳ {A} [] a norep ni = norepsCons a [] ni norep
+norepeats∷ʳ {A} (x ∷ l) a (norepsCons .x .l x₁ norep) ni =
+  norepsCons
+    x (l ∷ʳ a)
+    (λ x → ⊥-elim (ni (∈∷-∈∷ʳ x₁ x)))
+    (norepeats∷ʳ l a norep λ x → ni (there x))
 
 extwPreservesNorepeats : (I : InhW) (w1 w2 : world) → ⟨ I ⟩ w2 ⪰ w1 → norepeats (wdom w1) → norepeats (wdom w2)
-extwPreservesNorepeats I w1 w2 e norep = ≽world.norep e norep
--- extwPreservesNorepeats I w1 .w1 (extRefl .w1) norep = norep
--- extwPreservesNorepeats I w1 w2 (extTrans e e₁) norep = extwPreservesNorepeats _ _ _ e (extwPreservesNorepeats _ _ _ e₁ norep)
--- extwPreservesNorepeats I .(mkentry name l res ∷ w) .(mkentry name (l ++ t ∷ []) res ∷ w) (extChoices w name l t res x) norep = norep
--- extwPreservesNorepeats I w1 .(mkentry name [] res ∷ w1) (extEntry .w1 name res x) norep = norepsCons name (wdom w1) x norep
+extwPreservesNorepeats I w1 .w1 (extRefl .w1) norep = norep
+extwPreservesNorepeats I w1 w2 (extTrans e e₁) norep = extwPreservesNorepeats _ _ _ e (extwPreservesNorepeats _ _ _ e₁ norep)
+extwPreservesNorepeats I w1 .(w1 ++ choice name t ∷ []) (extChoice .w1 name l t res x x₁) norep rewrite wdomAddChoice w1 name t = norep
+extwPreservesNorepeats I w1 .(w1 ++ start name res ∷ []) (extEntry .w1 name res x) norep rewrite wdomAddStart w1 name res =
+  norepeats∷ʳ _ _ norep x
 
 wfInh : (I : Inh) → Set
 wfInh (m , n , f) = m ≤ n
@@ -283,7 +336,7 @@ exW I w f = Σ world (λ w' → Σ ([ I ] w' ⪰ w) (λ e → f w' e))
 inOpenBar : (I : Inh) (w : world) (f : wPred I w) → Set
 inOpenBar I w f =
   allW I w (λ w1 e1 → exW I w1 (λ w2 e2 → allW I w2 (λ w3 e3 →
-     f w3 (eTrans {I} e3 (eTrans {I} e2 e1)))))
+     f w3 ([]≽-trans {I} e3 ([]≽-trans {I} e2 e1)))))
 
 -- f holds in an open bar that depends on another open bar h
 inOpenBar' : (I : Inh) (w : world) {g : wPred I w} (h : inOpenBar I w g) (f : ∀ w' (e : [ I ] w' ⪰ w) (x : g w' e) → Set) → Set
@@ -294,8 +347,8 @@ inOpenBar' I w h f =
            let e1 = proj₁ (proj₂ p) in
            let q  = proj₂ (proj₂ p) in
            exW I w1 (λ w2 e2 → allW I w2 (λ w3 e3 →
-             let e' = eTrans {I} e3 e2 in
-             f w3 (eTrans {I} e' (eTrans {I} e1 e0)) (q w3 e'))))
+             let e' = []≽-trans {I} e3 e2 in
+             f w3 ([]≽-trans {I} e' ([]≽-trans {I} e1 e0)) (q w3 e'))))
 \end{code}
 
 
@@ -332,7 +385,7 @@ compAllRefl : (I : Inh) (T : Term) (w : world) → [ I ] T ⇛ T at w
 compAllRefl I T w =  λ w' e → compRefl T w'
 
 compAllVal : (I : Inh) {a b : Term} {w : world} → [ I ] a ⇛ b at w → isValue a → a ≡ b
-compAllVal I {a} {b} {w} c i = let c' = c _ (eRefl I w) in compVal _ _ _ c' i
+compAllVal I {a} {b} {w} c i = let c' = c _ ([]≽-refl I w) in compVal _ _ _ c' i
 
 -- t1 and t2 compute to the same number and stay the same number in all extensions
 strongMonEq : (I : Inh) (w : world) (t1 t2 : Term) → Set

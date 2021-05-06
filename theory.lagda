@@ -140,7 +140,7 @@ eqInType _ I w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 =
 eqInType _ I w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 =
   inOpenBar I w (λ w' _ → Σ ℕ (λ n → Σ ℕ (λ m → t1 ⇓ (NUM n) at w' × t2 ⇓ (NUM m) at w' × n < m)))
 eqInType _ I w (EQTFREE _ _) t1 t2 =
-  inOpenBar I w (λ w' _ → Σ choiceSeqName (λ n → [ I ] t1 ⇛ (CS n) at w' × [ I ] t2 ⇛ (CS n) at w'))
+  inOpenBar I w (λ w' _ → Σ csName (λ n → [ I ] t1 ⇛ (CS n) at w' × [ I ] t2 ⇛ (CS n) at w'))
 eqInType u I w (EQTPI _ _ _ _ _ _ eqta eqtb) f1 f2 =
   inOpenBar I w (λ w' e → ∀ (a1 a2 : Term) (eqa : eqInType u I w' (eqta w' e) a1 a2)
                       → eqInType u I w' (eqtb w' e a1 a2 eqa) (APPLY f1 a1) (APPLY f2 a2))
@@ -177,7 +177,7 @@ eqInType u I w (EQTBAR f) t1 t2 =
            let w1 = proj₁ p in
            let e1 = proj₁ (proj₂ p) in
            let q  = proj₂ (proj₂ p) in
-           exW I w1 (λ w2 e2 → allW I w2 (λ w3 e3 → eqInType u I w3 (q w3 (eTrans {I} e3 e2)) t1 t2)))
+           exW I w1 (λ w2 e2 → allW I w2 (λ w3 e3 → eqInType u I w3 (q w3 ([]≽-trans {I} e3 e2)) t1 t2)))
 eqInType u I w (EQTLOWER _ _ _ _ eqt) t1 t2 =
   inOpenBar I w (λ w' e → eqInType u (lower I) w' (eqt w' e) t1 t2)
 \end{code}

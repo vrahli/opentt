@@ -49,7 +49,7 @@ impliesEqInType : {w : world} {T a b : Term} → ((I : Inh) → eqintypeI I w T 
 impliesEqInType f = (1 , 0 , λ j c → impliesEqInTypeN f j j)
 
 univInBar : (n : ℕ) (I : Inh) (w : world) → eqUnivi n I w (UNIV n) (UNIV n)
-univInBar n I w =  λ w0 e0 → (w0 , (eRefl I w0 , λ w1 e1 → (compAllRefl I (UNIV n) w1 , compAllRefl I (UNIV n) w1)))
+univInBar n I w =  λ w0 e0 → (w0 , ([]≽-refl I w0 , λ w1 e1 → (compAllRefl I (UNIV n) w1 , compAllRefl I (UNIV n) w1)))
 
 lemma1 : (I : Inh) (w : world) → eqtypesI I w (UNIV 0) (UNIV 0)
 lemma1 I w = (0 , EQTUNIV ( univInBar 0 I w))
@@ -272,7 +272,7 @@ strongMonEqN0 : (I : Inh) (w : world) → strongMonEq I w N0 N0
 strongMonEqN0 I w =  (0 , (compAllRefl I N0 w , compAllRefl I N0 w))
 
 allInOpenBarStrongMonEqN0 : (I : Inh) (w : world) → allW I w (λ w' e → inOpenBar I w' (λ w'' _ → strongMonEq I w'' N0 N0))
-allInOpenBarStrongMonEqN0 I w w1 e1 w2 e2 = (w2 , (eRefl I _ , λ w3 e3 → strongMonEqN0 I w3))
+allInOpenBarStrongMonEqN0 I w w1 e1 w2 e2 = (w2 , ([]≽-refl I _ , λ w3 e3 → strongMonEqN0 I w3))
 
 eqTypesTRUE : (w : world) (I : Inh) (u : univs) → eqTypes u I w TRUE TRUE
 eqTypesTRUE w I u =
@@ -559,18 +559,18 @@ inOpenBarMP : (I : Inh) (w : world) (f g : wPred I w)
               → inOpenBar I w f → inOpenBar I w g
 inOpenBarMP I w f g i j w1 e1 =
   let (w2 , (e2 , h)) = j w1 e1 in
-  (w2 , (e2 , λ w3 e3 → let z = h w3 e3 in i w3 (eTrans {I} e3 (eTrans {I} e2 e1)) z))
+  (w2 , (e2 , λ w3 e3 → let z = h w3 e3 in i w3 ([]≽-trans {I} e3 ([]≽-trans {I} e2 e1)) z))
 
 raisewPred : {I : Inh} {w1 w2 : world} (e : [ I ] w2 ⪰ w1) (f : wPred I w1) → wPred I w2
-raisewPred {I} {w1} {w2} e f w' e' = f w' (eTrans {I} e' e)
+raisewPred {I} {w1} {w2} e f w' e' = f w' ([]≽-trans {I} e' e)
 
 inOpenBarIdem : (I : Inh) (w : world) (f : wPred I w) (c : wPredExtIrr {I} {w} f)
                 → inOpenBar I w (λ w1 e1 → inOpenBar I w1 (raisewPred {I} {w} {w1} e1 f))
                 → inOpenBar I w f
 inOpenBarIdem I w f c i w1 e1 =
   let (w2 , (e2 , i1)) = i w1 e1 in
-  let (w3 , (e3 , i2)) = i1 _ (eRefl I _) _ (eRefl I _) in
-  (w3 , (eTrans {I} e3 e2 , λ w4 e4 → let i3 = i2 w4 e4 in c w4 _ _ i3))
+  let (w3 , (e3 , i2)) = i1 _ ([]≽-refl I _) _ ([]≽-refl I _) in
+  (w3 , ([]≽-trans {I} e3 e2 , λ w4 e4 → let i3 = i2 w4 e4 in c w4 _ _ i3))
 
 {--
 -- This one should be a "Type System" property
@@ -641,8 +641,8 @@ equalInTypeLower u j w T a₁ a₂ (EQTBAR x , eqi) =
     λ w1 e1 →
      let (w2' , (e2' , eqi1)) = eqi w1 e1 in
      let (w2 , (e2 , x1)) = x w1 e1 in
-      (w2' , (eTrans e2' e2 , λ w3 e3 →
-        let x2 = x1 w3 (eTrans e3 e2') in
+      (w2' , ([]≽-trans e2' e2 , λ w3 e3 →
+        let x2 = x1 w3 ([]≽-trans e3 e2') in
         let eqi2 = eqi1 w3 e3 in
         equalInTypeLower u j w3 T a₁ a₂ (x2 , eqi2)))
 equalInTypeLower u j w T a₁ a₂ (EQTLOWER A1 A2 x x₁ eqt , eqi) =
@@ -650,14 +650,14 @@ equalInTypeLower u j w T a₁ a₂ (EQTLOWER A1 A2 x x₁ eqt , eqi) =
     let (w2' , (e2' , eqi1)) = eqi w1 e1 in
     (w2' , (e2' , λ w3 e3 →
       let eqi2 = eqi1 w3 e3 in
-      let eqt2 = eqt w3 (eTrans e3 (eTrans e2' e1)) in
+      let eqt2 = eqt w3 ([]≽-trans e3 ([]≽-trans e2' e1)) in
       let eq1 = compAllLOWER {inhN2L j} x in
       let eq2 = compAllLOWER {inhN2L j} x₁ in
       substEqTeq u (lower (inhN2L j)) (inhN1L j) w3 A1 T A2 T a₁ a₂ eqt2 eqi2 (sym (inhNeq j)) (sym eq1) (sym eq2)))
 
 
 allWimpliesinOpenBar : (I : Inh) (w : world) (f : wPred I w) → allW I w f → inOpenBar I w f
-allWimpliesinOpenBar I w f h w1 e1 = (w1 , (eRefl I _ , λ w2 e2 → h w2 (eTrans e2 _)))
+allWimpliesinOpenBar I w f h w1 e1 = (w1 , ([]≽-refl I _ , λ w2 e2 → h w2 ([]≽-trans e2 _)))
 
 
 impliesEqualInTypeLower : (u : univs) (j : ℕ) (w : world) (T a₁ a₂ : Term)
@@ -686,7 +686,7 @@ impliesEqualInTypeLowerBar u j w T a₁ a₂ e =
   equalInTypeBar
     u (inhN2L j) w (LOWER T) a₁ a₂
     (λ w1 e1 → let (w2 , (e2 , z)) = e w1 e1 in (w2 , (e2 , λ w3 e3 →
-      impliesEqualInTypeLower u j w3 T a₁ a₂ (λ w4 e4 → z w4 (eTrans e4 e3)))))
+      impliesEqualInTypeLower u j w3 T a₁ a₂ (λ w4 e4 → z w4 ([]≽-trans e4 e3)))))
 
 
 inhN2LeqinhN1L : (j i : ℕ) (c₁ : j ≤ i) (c₂ : i ≤ j)
@@ -704,18 +704,18 @@ ext2LimpliesExt1L j w1 w2 h i =
 -- equalInType (uni 0) (inhN1L j) w3 (acHypPi p) a₁ a₂
 -- → inOpenBar (inhN1L j) w3 (λ w8 e6 → strongMonEq (inhN1L j) w8 (APPLY (CS name) a) (APPLY (CS name) b)))
 
-equalInTypeCS : (j k : ℕ) (w w1 w2 : world) (p a b a₁ a₂ : Term) (name : choiceSeqName)
+equalInTypeCS : (j k : ℕ) (w w1 w2 : world) (p a b a₁ a₂ : Term) (name : csName)
                 → [ inhN2L j ] a ⇛ NUM k at w2
                 → [ inhN2L j ] b ⇛ NUM k at w2
-                → [ inhN2L j ] (mkentry name [] (λ n t → AND (MEM t NAT) (APPLY2 p (NUM n) t)) ∷ w1) ⪰ w
-                → [ inhN2L j ] w2 ⪰ (mkentry name [] (λ n t → AND (MEM t NAT) (APPLY2 p (NUM n) t)) ∷ w1)
+                → [ inhN2L j ] (newcs w1 name (λ n t → AND (MEM t NAT) (APPLY2 p (NUM n) t))) ⪰ w
+                → [ inhN2L j ] w2 ⪰ (newcs w1 name (λ n t → AND (MEM t NAT) (APPLY2 p (NUM n) t)))
                 → equalInType (uni 0) (inhN2L j) w (acHypP p) a₁ a₂
                 → equalInType (uni 0) (inhN2L j) w2 (LOWER NAT) (APPLY (CS name) a) (APPLY (CS name) b)
 equalInTypeCS j k w w1 w2 p a b a₁ a₂ name c₁ c₂ e₁ e₂ eqh =
   impliesEqualInTypeLowerBar
     (uni 0) j w2 NAT (APPLY (CS name) a) (APPLY (CS name) b)
     let eqh1 = equalInTypeLower (uni 0) j w (acHypPi p) a₁ a₂ eqh in
-    λ w1 e1 → let (w2 , (e2 , eqh2)) = eqh1 w1 (eTrans e1 (eTrans e₂ e₁)) in
+    λ w1 e1 → let (w2 , (e2 , eqh2)) = eqh1 w1 ([]≽-trans e1 ([]≽-trans e₂ e₁)) in
     (w2 , (e2 , λ w3 e3 →
     let eqh3 = eqh2 w3 e3 in
     equalInTypeNAT
@@ -750,14 +750,14 @@ ac00trueAux2 j w p₁ p₂ cp₁ cp₂ a₁ a₂ ca₁ ca₂ eqp eqa =
   equalInTypeSQUASH
     (uni 0) (inhN2L j) w (acConclSum p₁)
     λ w1 e1 →
-      let name : choiceSeqName
+      let name : csName
           name = proj₁ (freshName (wdom w1)) in
       let res : restriction
           res = λ n t → AND (MEM t NAT) (APPLY2 p₁ (NUM n) t) in
       let w2 : world
-          w2 = mkentry name [] res ∷ w1 in
+          w2 = newcs w1 name res in
       let e2 : [ inhN2L j ] w2 ⪰ w1
-          e2 = eEntry (inhN2L j) w1 name res (proj₂ (freshName (wdom w1))) in
+          e2 = []≽newcs (inhN2L j) w1 name res (proj₂ (freshName (wdom w1))) in
       (w2 , (e2 , λ w3 e3 → (PAIR (CS name) (LAMBDA AX) ,
         equalInTypeSUM
           (uni 0) (inhN2L j) w3 BAIRE (PI NAT (APPLY2 p₁ (VAR 0) (APPLY (VAR 1) (VAR 0))))
