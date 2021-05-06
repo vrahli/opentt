@@ -31,6 +31,11 @@ open import theory
 
 
 \begin{code}[hide]
+postulate
+  fext : Relation.Binary.PropositionalEquality.Extensionality 0ℓ (lsuc 0ℓ)
+--  fext : Axiom.Extensionality.Propositional.Extensionality 0ℓ (lsuc 0ℓ)
+
+
 impliesEqTypes : {w : world} {A B : Term} → ((I : Inh) → eqtypesI I w A B) → eqtypes w A B
 impliesEqTypes f = (0 , 1 , λ j c → f (inhN j (suc j)))
 
@@ -592,11 +597,6 @@ sucNotLe : (j : ℕ) → ¬ suc j ≤ j
 sucNotLe .(suc _) (_≤_.s≤s h) = sucNotLe _ h
 
 
-postulate
-  fext : Relation.Binary.PropositionalEquality.Extensionality 0ℓ (lsuc 0ℓ)
---  fext : Axiom.Extensionality.Propositional.Extensionality 0ℓ (lsuc 0ℓ)
-
-
 inhLeq1 : (n j : ℕ) (c₁ : n ≤ j) (c₂ : j ≤ n) (w : world) (t : Term)
           → inhL n n j c₁ c₂ w t ≡ snd (snd (inhN2L n)) j c₁ (≤-trans c₂ (n≤1+n _)) w t
 inhLeq1 n j c₁ c₂ w t with m≤n⇒m<n∨m≡n (≤-trans c₂ (n≤1+n _))
@@ -699,10 +699,6 @@ ext2LimpliesExt1L j w1 w2 h i =
   λ c₁ c₂ → let h1 = h i c₁ (≤-trans c₂ (n≤1+n _)) in
     subst (λ x → ⟨ x ⟩ w2 ⪰ w1) (sym (inhN2LeqinhN1L j i c₁ c₂)) h1
 
-
-data inWorld (name : choiceSeqName) : world → Set where
-  inwHd : (cs : List Term) (res : restriction) (w : world) → inWorld name (mkentry name cs res ∷ w)
-  inwTl : (e : entry) (w : world) (d : ¬ name ≡ entry.name e) → inWorld name w → inWorld name (e ∷ w)
 
 
 -- equalInType (uni 0) (inhN1L j) w3 (acHypPi p) a₁ a₂
