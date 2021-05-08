@@ -394,4 +394,12 @@ strongMonEq I w t1 t2 = Σ ℕ (λ n → [ I ] t1 ⇛ (NUM n) at w × [ I ] t2 �
 -- t1 and t2 compute to the same number but that number can change over time
 weakMonEq : (I : Inh) (w : world) (t1 t2 : Term) → Set
 weakMonEq I w t1 t2 = allW I w (λ w' _ → Σ ℕ (λ n → t1 ⇓ (NUM n) at w' × t2 ⇓ (NUM n) at w'))
+
+
+[]⇛-mon : (I : Inh) {a b : Term} {w2 w1 : world}
+           → [ I ] w2 ⪰ w1
+           → [ I ] a ⇛ b at w1
+           → [ I ] a ⇛ b at w2
+[]⇛-mon I {a} {b} {w2} {w1} ext c w' e' = c w' ([]≽-trans e' ext)
+
 \end{code}

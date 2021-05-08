@@ -513,4 +513,39 @@ shiftUpTrivial v (LOWER u) i
 
 subNotIn : (t u : Term) → # u → sub t u ≡ u
 subNotIn t u d rewrite subvNotIn 0 (shiftUp 0 t) u (d 0) = shiftDownTrivial 0 u (λ w c → d w)
+
+shiftDownUp : (t : Term) (n : ℕ) → shiftDown n (shiftUp n t) ≡ t
+shiftDownUp (VAR x) n with x <? n
+shiftDownUp (VAR 0) n | yes p = refl
+shiftDownUp (VAR (suc x)) n | yes p with suc x <? n
+...                                    | yes q = refl
+...                                    | no q = ⊥-elim (q p)
+shiftDownUp (VAR x) n | no p with suc x <? n
+...                             | yes q = ⊥-elim (p (≤-trans (n≤1+n _) q))
+...                             | no q = refl
+shiftDownUp NAT n = refl
+shiftDownUp QNAT n = refl
+shiftDownUp (LT t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
+shiftDownUp (QLT t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
+shiftDownUp (NUM x) n = refl
+shiftDownUp (PI t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ (suc n) = refl
+shiftDownUp (LAMBDA t) n rewrite shiftDownUp t (suc n) = refl
+shiftDownUp (APPLY t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
+shiftDownUp (SUM t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ (suc n) = refl
+shiftDownUp(PAIR t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
+shiftDownUp (SPREAD t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ (suc (suc n)) = refl
+shiftDownUp (SET t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ (suc n) = refl
+shiftDownUp (UNION t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
+shiftDownUp (INL t) n rewrite shiftDownUp t n = refl
+shiftDownUp (INR t) n rewrite shiftDownUp t n = refl
+shiftDownUp (DECIDE t t₁ t₂) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ (suc n) rewrite shiftDownUp t₂ (suc n) = refl
+shiftDownUp (EQ t t₁ t₂) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n rewrite shiftDownUp t₂ n = refl
+shiftDownUp AX n = refl
+shiftDownUp FREE n = refl
+shiftDownUp (CS x) n = refl
+shiftDownUp (TSQUASH t) n rewrite shiftDownUp t n = refl
+shiftDownUp (FFDEFS t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
+shiftDownUp (UNIV x) n = refl
+shiftDownUp (LOWER t) n rewrite shiftDownUp t n = refl
+
 \end{code}
