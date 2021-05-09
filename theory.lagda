@@ -248,4 +248,7 @@ eqtypes w T1 T2 = Σ ℕ (λ n → Σ ℕ (λ k → (j : ℕ) → j ≥ n → eq
 
 eqintype : EQT
 eqintype w T a b = Σ ℕ (λ n → Σ ℕ (λ k → (j : ℕ) → j ≥ n → eqintypeN j (k + j) w T a b))
+
+wfinhN1L : (j : ℕ) → wfInh (inhN1L j)
+wfinhN1L j = ≤-refl
 \end{code}

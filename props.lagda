@@ -12,6 +12,7 @@ open import Relation.Binary.PropositionalEquality using (sym ; subst)
 open import Data.Product
 open import Data.Sum
 open import Data.Empty
+open import Data.Maybe
 open import Data.Unit using (⊤ ; tt)
 open import Data.Nat using (ℕ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_)
 open import Data.Nat.Properties
@@ -845,46 +846,58 @@ ifequalInTypeacHypPi u I w p a₁ a₂ cp ca₁ ca₂ eqi n w1 e1 =
   let (t , eqi4) = eqi3 w2 ([]≽-refl I w2) in
   ifequalInTypeacHypPiAux1 u I w2 w1 p t t n cp e2 eqi4
 
+exW≤lengthAux3 : (u : univs) (j : ℕ) (w : world) (name : csName) (l : List Term) (M p t : Term) (m : ℕ)
+                 → equalInType u (inhN1L j) w (APPLY2 p (NUM (length l)) M) t t
+                 → [ inhN1L j ] M ⇛ (NUM m) at w
+                 → ∈world (mkcs name l (acres p)) w
+                 → [ inhN1L j ] (extcs w name M) ⪰ w
+exW≤lengthAux3 u j w name l M p t m e c iw k c₁ c₂ =
+  extChoice w name l M (acres p) iw {!!}
 
-suc≤len∷ʳ : {A : Set} (l : List A) (a : A) (k : ℕ) → k ≤ length l → suc k ≤ length (l ∷ʳ a)
-suc≤len∷ʳ {A} l a k h rewrite length-++ l {[ a ]} rewrite +-comm (length l) 1 = _≤_.s≤s h
-
-[]≽-pres-∈world : {I : Inh} {w1 w2 : world} {name : csName} {l : List Term} {r : restriction}
-                  → [ I ] w2 ⪰ w1
-                  → ∈world (mkcs name l r) w1
-                  → Σ (List Term) (λ l' → ∈world (mkcs name (l ++ l') r) w2)
-[]≽-pres-∈world {I} {w1} {w2} {name} {l} {r} e i = {!!}
-
-bar : (u : univs) (j : ℕ) (w : world) (name : csName) (l : List Term) (k : ℕ) (p a₁ a₂ : Term)
-      → # p → # a₁ → # a₂
-      → ∈world (mkcs name l (acres p)) w
-      → ((n : ℕ) → inOpenBar (inhN1L j) w (λ w1 e1 → Σ ℕ (λ m → Σ Term (λ M → Σ Term (λ t →
-                                                   [ inhN1L j ] M ⇛ (NUM m) at w1
-                                                   × equalInType u (inhN1L j) w1 (APPLY2 p (NUM n) M) t t)))))
-      → exW (inhN1L j) w (λ w' e' → Σ (List Term) (λ l' → ∈world (mkcs name l' (acres p)) w' × k ≤ length l'))
-bar u j w name l 0 p a₁ a₂ cp ca₁ ca₂ i e = (w , []≽-refl _ w , l , i , _≤_.z≤n)
-bar u j w name l (suc k) p a₁ a₂ cp ca₁ ca₂ i e =
-  let (w1 , e1 , l1 , i1 , len) = bar u j w name l k p a₁ a₂ cp ca₁ ca₂ i e in
-  let (w2 , e2 , h2) = e (length l1) w1 e1 in
-  let (m , M , t , c , eqi) = h2 w2 ([]≽-refl _ w2) in
-  let w3 = extcs w2 name M in
-  let e3 : [ inhN1L j ] w3 ⪰ w2
-      e3 = {!!} in
-  --l1 is the list in w1, we want the list in l2
-  -- use: []≽-pres-∈world
-  let len' : ∈world (mkcs name (l1 ∷ʳ M) (acres p)) w3
-      len' = {!!} in
+exW≤lengthAux2 : (u : univs) (j : ℕ) (w w' : world) (name : csName) (l1 l2 : List Term) (k m : ℕ) (M p t : Term)
+                 → k ≤ length l1
+                 → equalInType u (inhN1L j) w' (APPLY2 p (NUM (length l1)) M) t t
+                 → [ inhN1L j ] M ⇛ (NUM m) at w'
+                 → ∈world (mkcs name (l1 ++ l2) (acres p)) w'
+                 → [ inhN1L j ] w' ⪰ w
+                 → exW (inhN1L j) w (λ w' e' → Σ (List Term) (λ l' → ∈world (mkcs name l' (acres p)) w' × suc k ≤ length l'))
+exW≤lengthAux2 u j w w' name l1 [] k m M p t len e comp iw ext rewrite ++[] l1 =
+  let w1 = extcs w' name M in
+  let e1 : [ inhN1L j ] w1 ⪰ w'
+      e1 = {!!} in
+  let len' : ∈world (mkcs name (l1 ∷ʳ M) (acres p)) w1
+      len' = ∈world-extcs w' name l1 (acres p) M iw in
   let le' : suc k ≤ length (l1 ∷ʳ M)
       le' = suc≤len∷ʳ l1 M k len in
-  (w3 , []≽-trans e3 ([]≽-trans e2 e1) , l1 ∷ʳ M , len' , le')
+  (w1 , []≽-trans e1 ext , l1 ∷ʳ M , len' , le')
+exW≤lengthAux2 u j w w' name l1 (x ∷ l2) k m M p t len e comp iw ext =
+  (w' , ext , l1 ++ x ∷ l2 , iw ,
+    subst (λ x → suc k ≤ x) (sym (length-++ l1 {x ∷ l2}))
+      (subst (λ x → suc k ≤ x) (sym (+-suc (length l1) (length l2)))
+        (_≤_.s≤s (≤-stepsʳ (length l2) len))))
+
+exW≤lengthAux1 : (u : univs) (j : ℕ) (w : world) (name : csName) (l : List Term) (k : ℕ) (p a₁ a₂ : Term)
+                 → # p → # a₁ → # a₂
+                 → ∈world (mkcs name l (acres p)) w
+                 → ((n : ℕ) → inOpenBar (inhN1L j) w (λ w1 e1 → Σ ℕ (λ m → Σ Term (λ M → Σ Term (λ t →
+                                                   [ inhN1L j ] M ⇛ (NUM m) at w1
+                                                   × equalInType u (inhN1L j) w1 (APPLY2 p (NUM n) M) t t)))))
+                 → exW (inhN1L j) w (λ w' e' → Σ (List Term) (λ l' → ∈world (mkcs name l' (acres p)) w' × k ≤ length l'))
+exW≤lengthAux1 u j w name l 0 p a₁ a₂ cp ca₁ ca₂ i e = (w , []≽-refl _ w , l , i , _≤_.z≤n)
+exW≤lengthAux1 u j w name l (suc k) p a₁ a₂ cp ca₁ ca₂ i e =
+  let (w1 , e1 , l1 , i1 , len) = exW≤lengthAux1 u j w name l k p a₁ a₂ cp ca₁ ca₂ i e in
+  let (w2 , e2 , h2) = e (length l1) w1 e1 in
+  let (m , M , t , c , eqi) = h2 w2 ([]≽-refl _ w2) in
+  let (l2 , i2) = []≽-pres-∈world (wfinhN1L j) e2 i1 in
+  exW≤lengthAux2 u j w w2 name l1 l2 k m M p t len eqi c i2 ([]≽-trans e2 e1)
 
 
-foo : (u : univs) (j : ℕ) (w : world) (name : csName) (l : List Term) (k : ℕ) (p a₁ a₂ : Term)
-      → # p → # a₁ → # a₂
-      → ∈world (mkcs name l (acres p)) w
-      → equalInType u (inhN1L j) w (acHypPi p) a₁ a₂
-      → exW (inhN1L j) w (λ w' e' → Σ (List Term) (λ l' → ∈world (mkcs name l' (acres p)) w' × k ≤ Data.List.length l'))
-foo u j w name l k p a₁ a₂ cp ca₁ ca₂ i e =
+exW≤length : (u : univs) (j : ℕ) (w : world) (name : csName) (l : List Term) (k : ℕ) (p a₁ a₂ : Term)
+             → # p → # a₁ → # a₂
+             → ∈world (mkcs name l (acres p)) w
+             → equalInType u (inhN1L j) w (acHypPi p) a₁ a₂
+             → exW (inhN1L j) w (λ w' e' → Σ (List Term) (λ l' → ∈world (mkcs name l' (acres p)) w' × k ≤ length l'))
+exW≤length u j w name l k p a₁ a₂ cp ca₁ ca₂ i e =
   let h = ifequalInTypeacHypPi u (inhN1L j) w p a₁ a₂ cp ca₁ ca₂ e in
   {!!}
 

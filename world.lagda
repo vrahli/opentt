@@ -402,4 +402,88 @@ weakMonEq I w t1 t2 = allW I w (λ w' _ → Σ ℕ (λ n → t1 ⇓ (NUM n) at w
            → [ I ] a ⇛ b at w2
 []⇛-mon I {a} {b} {w2} {w1} ext c w' e' = c w' ([]≽-trans e' ext)
 
+getChoices++ : (name : csName) (w w' : world)
+               → getChoices name (w ++ w') ≡ getChoices name w ++ getChoices name w'
+getChoices++ name [] w' = refl
+getChoices++ name (start name₁ res ∷ w) w' = getChoices++ name w w'
+getChoices++ name (choice name₁ t ∷ w) w' with name ≟ name₁
+... | yes p rewrite getChoices++ name w w' = refl
+... | no p = getChoices++ name w w'
+
+just-inj : {A : Set} {a b : A} → just a ≡ just b → a ≡ b
+just-inj refl =  refl
+
+mkcs-inj1 : {n1 n2 : csName} {l1 l2 : List Term} {r1 r2 : restriction} → mkcs n1 l1 r1 ≡ mkcs n2 l2 r2 → n1 ≡ n2
+mkcs-inj1 refl =  refl
+
+mkcs-inj2 : {n1 n2 : csName} {l1 l2 : List Term} {r1 r2 : restriction} → mkcs n1 l1 r1 ≡ mkcs n2 l2 r2 → l1 ≡ l2
+mkcs-inj2 refl =  refl
+
+mkcs-inj3 : {n1 n2 : csName} {l1 l2 : List Term} {r1 r2 : restriction} → mkcs n1 l1 r1 ≡ mkcs n2 l2 r2 → r1 ≡ r2
+mkcs-inj3 refl =  refl
+
+getCs++ : (name : csName) (w w' : world) (l : List Term) (r : restriction)
+          → getCs name w ≡ just (mkcs name l r)
+          → getCs name (w ++ w') ≡ just (mkcs name (l ++ getChoices name w') r)
+getCs++ name (start name₁ res ∷ w) w' l r e with name ≟ name₁
+... | yes p rewrite getChoices++ name w w' rewrite mkcs-inj2 (just-inj e) rewrite mkcs-inj3 (just-inj e) = refl
+... | no p = getCs++ name w w' l r e
+getCs++ name (choice name₁ t ∷ w) w' l r e = getCs++ name w w' l r e
+
+getCs++-same-choice : (name : csName) (w : world) (l : List Term) (r : restriction) (t : Term)
+                      → getCs name w ≡ just (mkcs name l r)
+                      → getCs name (w ++ [ choice name t ]) ≡ just (mkcs name (l ++ [ t ]) r)
+getCs++-same-choice name w l r t e rewrite getCs++ name w [ choice name t ] l r e with name ≟ name
+... | yes p = refl
+... | no p = ⊥-elim (p refl)
+
+getCs++-diff-choice : (name name₁ : csName) (w : world) (l : List Term) (r : restriction) (t : Term)
+                      → ¬ name ≡ name₁
+                      → getCs name w ≡ just (mkcs name l r)
+                      → getCs name (w ++ [ choice name₁ t ]) ≡ just (mkcs name l r)
+getCs++-diff-choice name name₁ w l r t d e rewrite getCs++ name w [ choice name₁ t ] l r e with name ≟ name₁
+... | yes p = ⊥-elim (d p)
+... | no p rewrite ++[] l = refl
+
+⟨⟩≽-pres-∈world : {I : InhW} {w1 w2 : world} {name : csName} {l : List Term} {r : restriction}
+                  → ⟨ I ⟩ w2 ⪰ w1
+                  → ∈world (mkcs name l r) w1
+                  → Σ (List Term) (λ l' → ∈world (mkcs name (l ++ l') r) w2)
+⟨⟩≽-pres-∈world {I} {w1} {.w1} {name} {l} {r} (extRefl .w1) i =
+  ([] , subst (λ x → ∈world (mkcs name x r) w1) (sym (++[] l)) i)
+⟨⟩≽-pres-∈world {I} {w1} {w2} {name} {l} {r} (extTrans e e₁) i =
+  let (l1 , i1) = ⟨⟩≽-pres-∈world e₁ i in
+  let (l2 , i2) = ⟨⟩≽-pres-∈world e i1 in
+  (l1 ++ l2 , subst (λ x → ∈world (mkcs name x r) w2) (++-assoc l l1 l2) i2)
+⟨⟩≽-pres-∈world {I} {w1} {.(w1 ++ choice name₁ t ∷ [])} {name} {l} {r} (extChoice .w1 name₁ l₁ t res x x₁) i with name ≟ name₁
+... | yes p rewrite p = ([ t ] , getCs++-same-choice name₁ w1 l r t i)
+... | no p rewrite getCs++-diff-choice name name₁ w1 l r t p i =
+  ([] , subst (λ x → just (mkcs name l r) ≡ just (mkcs name x r)) (sym (++[] l)) refl)
+⟨⟩≽-pres-∈world {I} {w1} {.(w1 ++ start name₁ res ∷ [])} {name} {l} {r} (extEntry .w1 name₁ res x) i rewrite getCs++ name w1 [ start name₁ res ] l r i =
+  ([] , refl)
+
+[]≽-pres-∈world : {I : Inh} {w1 w2 : world} {name : csName} {l : List Term} {r : restriction}
+                  → wfInh I
+                  → [ I ] w2 ⪰ w1
+                  → ∈world (mkcs name l r) w1
+                  → Σ (List Term) (λ l' → ∈world (mkcs name (l ++ l') r) w2)
+[]≽-pres-∈world {m , n , f} {w1} {w2} {name} {l} {r} wf e i =
+  let z = e n wf ≤-refl in
+  ⟨⟩≽-pres-∈world z i
+
+suc≤len∷ʳ : {A : Set} (l : List A) (a : A) (k : ℕ) → k ≤ length l → suc k ≤ length (l ∷ʳ a)
+suc≤len∷ʳ {A} l a k h rewrite length-++ l {[ a ]} rewrite +-comm (length l) 1 = _≤_.s≤s h
+
+suc≤len++∷ʳ : {A : Set} (k : ℕ) (l1 l2 : List A) (a : A)
+              → k ≤ length l1
+              → suc k ≤ length ((l1 ++ l2) ∷ʳ a)
+suc≤len++∷ʳ {A} k l1 l2 a h = suc≤len∷ʳ (l1 ++ l2) a k (subst (λ x → k ≤ x) (sym (length-++ l1 {l2})) (≤-stepsʳ (length l2) h))
+
+∈world-extcs : (w : world) (name : csName) (l : List Term) (r : restriction) (t : Term)
+               → ∈world (mkcs name l r) w
+               → ∈world (mkcs name (l ∷ʳ t) r) (extcs w name t)
+∈world-extcs w name l r t i rewrite getCs++ name w [ choice name t ] l r i with name ≟ name
+... | yes p = refl
+... | no p = ⊥-elim (p refl)
+
 \end{code}
