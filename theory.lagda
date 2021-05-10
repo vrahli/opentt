@@ -251,4 +251,7 @@ eqintype w T a b = Σ ℕ (λ n → Σ ℕ (λ k → (j : ℕ) → j ≥ n → e
 
 wfinhN1L : (j : ℕ) → wfInh (inhN1L j)
 wfinhN1L j = ≤-refl
+
+wfinhN2L : (j : ℕ) → wfInh (inhN2L j)
+wfinhN2L j = (n≤1+n _)
 \end{code}

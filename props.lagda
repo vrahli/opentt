@@ -238,23 +238,29 @@ NATbinPred = FUN NAT (FUN NAT (UNIV 0))
 BAIRE : Term
 BAIRE = FUN NAT NAT
 
+LNAT : Term
+LNAT = LOWER NAT
+
+NATlbinPred : Term
+NATlbinPred = FUN NAT (FUN LNAT (UNIV 0))
+
+LBAIRE : Term
+LBAIRE = FUN NAT LNAT
+
 APPLY2 : Term → Term → Term → Term
 APPLY2 a b c = APPLY (APPLY a b) c
 
 acHypPi : (P : Term) → Term
-acHypPi P = PI{--2--} NAT (SQUASH{--1--} (SUM{--0--} NAT (APPLY2 P (VAR 2) (VAR 0))))
-
-acHypP : (P : Term) → Term
-acHypP P = LOWER (acHypPi P)
+acHypPi P = PI{--2--} NAT (SQUASH{--1--} (SUM{--0--} LNAT (APPLY2 P (VAR 2) (VAR 0))))
 
 acConclSum : (P : Term) → Term
-acConclSum P = SUM{--1--} BAIRE (PI{--0--} NAT (APPLY2 P (VAR 0) (APPLY (VAR 1) (VAR 0))))
+acConclSum P = SUM{--1--} LBAIRE (PI{--0--} NAT (APPLY2 P (VAR 0) (APPLY (VAR 1) (VAR 0))))
 
 acConclP : (P : Term) → Term
 acConclP P = SQUASH{--2--} (acConclSum P)
 
 acHyp : Term
-acHyp = acHypP (VAR 3)
+acHyp = acHypPi (VAR 3)
 
 acConcl : Term
 acConcl = acConclP (VAR 4)
@@ -264,7 +270,7 @@ acFun = FUN acHyp acConcl
 
 -- AC00
 ac : Term
-ac = PI NATbinPred acFun
+ac = PI NATlbinPred acFun
 
 MEM : Term → Term → Term
 MEM a A = EQ a a A
@@ -516,8 +522,14 @@ subAX t = subNotIn t AX closedAX
 closedNAT : # NAT
 closedNAT v ()
 
+closedLNAT : # LNAT
+closedLNAT v ()
+
 subNAT : (t : Term) → sub t NAT ≡ NAT
 subNAT t = subNotIn t NAT closedNAT
+
+subLNAT : (t : Term) → sub t LNAT ≡ LNAT
+subLNAT t = subNotIn t LNAT closedLNAT
 
 eqFun : {a b c d : Term} → a ≡ b → c ≡ d → FUN a c ≡ FUN b d
 eqFun {a} {b} {c} {d} e f rewrite e rewrite f = refl
@@ -525,7 +537,7 @@ eqFun {a} {b} {c} {d} e f rewrite e rewrite f = refl
 closedLe : {u : Term} → # u → (v : Var) → ((w : Var) → v ≤ w → w # u)
 closedLe {u} c v w j = c w
 
-subacFun : (t : Term) → # t → sub t acFun ≡ FUN (acHypP t) (acConclP t)
+subacFun : (t : Term) → # t → sub t acFun ≡ FUN (acHypPi t) (acConclP t)
 subacFun t c
   rewrite shiftUpTrivial 0 t (closedLe {t} c 0)
   rewrite shiftUpTrivial 0 t (closedLe {t} c 0)
@@ -688,41 +700,41 @@ substEqTeq : (u : univs) (I1 I2 : Inh) (w : world) (A1 A2 B1 B2 a₁ a₂ : Term
 substEqTeq u I1 I2 w A1 A2 B1 B2 a₁ a₂ eqt eqi e1 e2 e3 rewrite e1 rewrite e2 rewrite e3 = (eqt , eqi)
 
 
-equalInTypeLower : (u : univs) (j : ℕ) (w : world) (T a₁ a₂ : Term)
-                   → equalInType u (inhN2L j) w (LOWER T) a₁ a₂
-                   → inOpenBar (inhN2L j) w (λ w1 e1 → equalInType u (inhN1L j) w1 T a₁ a₂)
-equalInTypeLower u j w T a₁ a₂ (EQTNAT x x₁ , eqi) = ⊥-elim (LOWERneqNAT (compAllVal (inhN2L j) x₁ tt))
-equalInTypeLower u j w T a₁ a₂ (EQTQNAT x x₁ , eqi) = ⊥-elim (LOWERneqQNAT (compAllVal (inhN2L j) x₁ tt))
-equalInTypeLower u j w T a₁ a₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (LOWERneqLT (compAllVal (inhN2L j) x₁ tt))
-equalInTypeLower u j w T a₁ a₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (LOWERneqQLT (compAllVal (inhN2L j) x₁ tt))
-equalInTypeLower u j w T a₁ a₂ (EQTFREE x x₁ , eqi) = ⊥-elim (LOWERneqFREE (compAllVal (inhN2L j) x₁ tt))
-equalInTypeLower u j w T a₁ a₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb , eqi) = ⊥-elim (LOWERneqPI (compAllVal (inhN2L j) x₁ tt))
-equalInTypeLower u j w T a₁ a₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb , eqi) = ⊥-elim (LOWERneqSUM (compAllVal (inhN2L j) x₁ tt))
-equalInTypeLower u j w T a₁ a₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb , eqi) = ⊥-elim (LOWERneqSET (compAllVal (inhN2L j) x₁ tt))
-equalInTypeLower u j w T a₁ a₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA eqt1 eqt2 , eqi) = ⊥-elim (LOWERneqEQ (compAllVal (inhN2L j) x₁ tt))
-equalInTypeLower u j w T a₁ a₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB , eqi) = ⊥-elim (LOWERneqUNION (compAllVal (inhN2L j) x₁ tt))
-equalInTypeLower u j w T a₁ a₂ (EQTSQUASH A1 A2 x x₁ eqtA , eqi) = ⊥-elim (LOWERneqTSQUASH (compAllVal (inhN2L j) x₁ tt))
-equalInTypeLower u j w T a₁ a₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx , eqi) = ⊥-elim (LOWERneqFFDEFS (compAllVal (inhN2L j) x₁ tt))
-equalInTypeLower u j w T a₁ a₂ (EQTUNIV x , eqi) = {!!}
-equalInTypeLower u j w T a₁ a₂ (EQTBAR x , eqi) =
+equalInTypeLower : (u : univs) (I : Inh) (w : world) (T a₁ a₂ : Term)
+                   → equalInType u I w (LOWER T) a₁ a₂
+                   → inOpenBar I w (λ w1 e1 → equalInType u (lower I) w1 T a₁ a₂)
+equalInTypeLower u I w T a₁ a₂ (EQTNAT x x₁ , eqi) = ⊥-elim (LOWERneqNAT (compAllVal I x₁ tt))
+equalInTypeLower u I w T a₁ a₂ (EQTQNAT x x₁ , eqi) = ⊥-elim (LOWERneqQNAT (compAllVal I x₁ tt))
+equalInTypeLower u I w T a₁ a₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (LOWERneqLT (compAllVal I x₁ tt))
+equalInTypeLower u I w T a₁ a₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (LOWERneqQLT (compAllVal I x₁ tt))
+equalInTypeLower u I w T a₁ a₂ (EQTFREE x x₁ , eqi) = ⊥-elim (LOWERneqFREE (compAllVal I x₁ tt))
+equalInTypeLower u I w T a₁ a₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb , eqi) = ⊥-elim (LOWERneqPI (compAllVal I x₁ tt))
+equalInTypeLower u I w T a₁ a₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb , eqi) = ⊥-elim (LOWERneqSUM (compAllVal I x₁ tt))
+equalInTypeLower u I w T a₁ a₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb , eqi) = ⊥-elim (LOWERneqSET (compAllVal I x₁ tt))
+equalInTypeLower u I w T a₁ a₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA eqt1 eqt2 , eqi) = ⊥-elim (LOWERneqEQ (compAllVal I x₁ tt))
+equalInTypeLower u I w T a₁ a₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB , eqi) = ⊥-elim (LOWERneqUNION (compAllVal I x₁ tt))
+equalInTypeLower u I w T a₁ a₂ (EQTSQUASH A1 A2 x x₁ eqtA , eqi) = ⊥-elim (LOWERneqTSQUASH (compAllVal I x₁ tt))
+equalInTypeLower u I w T a₁ a₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx , eqi) = ⊥-elim (LOWERneqFFDEFS (compAllVal I x₁ tt))
+equalInTypeLower u I w T a₁ a₂ (EQTUNIV x , eqi) = {!!}
+equalInTypeLower u I w T a₁ a₂ (EQTBAR x , eqi) =
   inOpenBarIdem
-    (inhN2L j) w _ (wPredExtIrrFunEqualInType u (inhN2L j) (inhN1L j) w T a₁ a₂)
+    I w _ (wPredExtIrrFunEqualInType u I (lower I) w T a₁ a₂)
     λ w1 e1 →
      let (w2' , (e2' , eqi1)) = eqi w1 e1 in
      let (w2 , (e2 , x1)) = x w1 e1 in
       (w2' , ([]≽-trans e2' e2 , λ w3 e3 →
         let x2 = x1 w3 ([]≽-trans e3 e2') in
         let eqi2 = eqi1 w3 e3 in
-        equalInTypeLower u j w3 T a₁ a₂ (x2 , eqi2)))
-equalInTypeLower u j w T a₁ a₂ (EQTLOWER A1 A2 x x₁ eqt , eqi) =
+        equalInTypeLower u I w3 T a₁ a₂ (x2 , eqi2)))
+equalInTypeLower u I w T a₁ a₂ (EQTLOWER A1 A2 x x₁ eqt , eqi) =
   λ w1 e1 →
     let (w2' , (e2' , eqi1)) = eqi w1 e1 in
-    (w2' , (e2' , λ w3 e3 →
+    (w2' , e2' , λ w3 e3 →
       let eqi2 = eqi1 w3 e3 in
       let eqt2 = eqt w3 ([]≽-trans e3 ([]≽-trans e2' e1)) in
-      let eq1 = compAllLOWER {inhN2L j} x in
-      let eq2 = compAllLOWER {inhN2L j} x₁ in
-      substEqTeq u (lower (inhN2L j)) (inhN1L j) w3 A1 T A2 T a₁ a₂ eqt2 eqi2 (sym (inhNeq j)) (sym eq1) (sym eq2)))
+      let eq1 = compAllLOWER {I} x in
+      let eq2 = compAllLOWER {I} x₁ in
+      substEqTeq u (lower I) (lower I) w3 A1 T A2 T a₁ a₂ eqt2 eqi2 refl (sym eq1) (sym eq2))
 
 
 allWimpliesinOpenBar : (I : Inh) (w : world) (f : wPred I w) → allW I w f → inOpenBar I w f
@@ -775,8 +787,8 @@ eqAPPLY : {a b c d : Term} → a ≡ b → c ≡ d → APPLY a c ≡ APPLY b d
 eqAPPLY {a} {b} {c} {d} e₁ e₂ rewrite e₁ rewrite e₂ = refl
 
 sub-NUM-SQUASH-SUM : (n : ℕ) (p : Term) → # p →
-                     sub (NUM n) (SQUASH (SUM NAT (APPLY2 p (VAR 2) (VAR 0))))
-                     ≡ SQUASH (SUM NAT (APPLY2 p (NUM n) (VAR 0)))
+                     sub (NUM n) (SQUASH (SUM LNAT (APPLY2 p (VAR 2) (VAR 0))))
+                     ≡ SQUASH (SUM LNAT (APPLY2 p (NUM n) (VAR 0)))
 sub-NUM-SQUASH-SUM n p cp rewrite subvNotIn 2 (NUM n) p (cp _) rewrite shiftDownTrivial 2 p (λ w c → cp _) = eqSQUASH refl
 
 
@@ -791,86 +803,106 @@ equalInTypesubAPPLY2 : {u : univs} {I : Inh} {w : world} {p t a b : Term} {n : �
                        → equalInType u I w (APPLY2 p (NUM n) t) a b
 equalInTypesubAPPLY2 {u} {I} {w} {p} {t} {a} {b} {n} cp e rewrite sub-APPLY2-NUM-VAR t p n cp = e
 
+{--
 ifequalInTypeacHypPiAux2 : (u : univs) (I : Inh) (w2 w1 : world) (p x₁ x₂ y₁ y₂ : Term) (n : ℕ)
                            → # p
                            → [ I ] w2 ⪰ w1
-                           → equalInType u I w2 NAT x₁ x₂
+                           → equalInType u I w2 LNAT x₁ x₂
                            → equalInType u I w2 (APPLY2 p (NUM n) x₁) y₁ y₂
                            → exW I w1
                                  (λ w3 e3 →
                                    allW I w3
-                                     (λ w4 e4 → Σ ℕ (λ m → Σ Term (λ M → Σ Term (λ t →
-                                                 [ I ] M ⇛ (NUM m) at w4
-                                                 × equalInType u I w4 (APPLY2 p (NUM n) M) t t)))))
+                                     (λ w4 e4 → Σ Term (λ m → Σ Term (λ t →
+                                                 equalInType u I w4 LNAT m m
+                                                 × equalInType u I w4 (APPLY2 p (NUM n) m) t t))))
 ifequalInTypeacHypPiAux2 u I w2 w1 p x₁ x₂ y₁ y₂ n cp ext eqi1 eqi2 =
-  let (w3 , e3 , eqi3) = ifequalInTypeNAT u I w2 _ _ eqi1 w2 ([]≽-refl I w2) in
-  let (m , cx₁ , cx₂) = eqi3 w3 ([]≽-refl I w3) in
+  --let (w3 , e3 , eqi3) = ifequalInTypeNAT u I w2 _ _ eqi1 w2 ([]≽-refl I w2) in
+  --let (m , cx₁ , cx₂) = eqi3 w3 ([]≽-refl I w3) in
   (w3 , []≽-trans e3 ext ,
    λ w4 e4 → (m , x₁ , y₁ ,
                ([]⇛-mon I e4 cx₁ ,
                 equalInType-mon u (APPLY2 p (NUM n) x₁) y₁ y₁ I w2 (equalInType-refl eqi2) w4 ([]≽-trans e4 e3))))
+--}
 
 ifequalInTypeacHypPiAux1 : (u : univs) (I : Inh) (w2 w1 : world) (p t₁ t₂ : Term) (n : ℕ)
                            → # p
                            → [ I ] w2 ⪰ w1
-                           → equalInType u I w2 (SUM NAT (APPLY2 p (NUM n) (VAR 0))) t₁ t₂
+                           → equalInType u I w2 (SUM LNAT (APPLY2 p (NUM n) (VAR 0))) t₁ t₂
                            → exW I w1
                                  (λ w3 e3 →
                                    allW I w3
-                                     (λ w4 e4 → Σ ℕ (λ m → Σ Term (λ M → Σ Term (λ t →
-                                                 [ I ] M ⇛ (NUM m) at w4
-                                                 × equalInType u I w4 (APPLY2 p (NUM n) M) t t)))))
+                                     (λ w4 e4 → Σ Term (λ m → Σ Term (λ t →
+                                                 equalInType u I w4 LNAT m m
+                                                 × equalInType u I w4 (APPLY2 p (NUM n) m) t t))))
 ifequalInTypeacHypPiAux1 u I w2 w1 p t₁ t₂ n cp ext eqi =
   let (w3 , e3 , eqi1) = ifequalInTypeSUM u I w2 _ _ _ _ eqi w2 ([]≽-refl I w2) in
   let (x₁ , x₂ , y₁ , y₂ , c₁ , c₂ , eqi2 , eqi3) = eqi1 w3 ([]≽-refl I w3) in
   let eqi4 = equalInTypesubAPPLY2 {u} {I} {w3} {p} {x₁} cp eqi3 in
-  ifequalInTypeacHypPiAux2 u I w3 w1 p x₁ x₂ y₁ y₂ n cp ([]≽-trans e3 ext)  eqi2 eqi4
+  {!!} {--ifequalInTypeacHypPiAux2 u I w3 w1 p x₁ x₂ y₁ y₂ n cp ([]≽-trans e3 ext) eqi2 eqi4--}
 
 ifequalInTypeacHypPi : (u : univs) (I : Inh) (w : world) (p a₁ a₂ : Term) → # p → # a₁ → # a₂
                        → equalInType u I w (acHypPi p) a₁ a₂
                        → (n : ℕ)
-                       → inOpenBar I w (λ w1 e1 → Σ ℕ (λ m → Σ Term (λ M → Σ Term (λ t →
-                                                   [ I ] M ⇛ (NUM m) at w1
-                                                   × equalInType u I w1 (APPLY2 p (NUM n) M) t t))))
+                       → inOpenBar I w (λ w1 e1 → Σ Term (λ m → Σ Term (λ t →
+                                                   equalInType u I w1 LNAT m m
+                                                   × equalInType u I w1 (APPLY2 p (NUM n) m) t t)))
 ifequalInTypeacHypPi u I w p a₁ a₂ cp ca₁ ca₂ eqi n w1 e1 =
   let eqi1 = ifequalInTypePI
-               u I w NAT (SQUASH (SUM NAT (APPLY2 p (VAR 2) (VAR 0)))) a₁ a₂ eqi
+               u I w NAT (SQUASH (SUM LNAT (APPLY2 p (VAR 2) (VAR 0)))) a₁ a₂ eqi
                w1 e1 (NUM n) (NUM n) (closedNum n) (closedNum n)
                (numInNAT u I w1 n) in
   let eqi2 = subst (λ x → equalInType u I w1 x (APPLY a₁ (NUM n)) (APPLY a₂ (NUM n)))
                   (sub-NUM-SQUASH-SUM n p cp) eqi1 in
   let (w2 , (e2 , eqi3)) = ifequalInTypeSQUASH u I w1
-                             (SUM NAT (APPLY2 p (NUM n) (VAR 0)))
+                             (SUM LNAT (APPLY2 p (NUM n) (VAR 0)))
                              (APPLY a₁ (NUM n)) (APPLY a₂ (NUM n))
                              eqi2 w1 ([]≽-refl I w1) in
   let (t , eqi4) = eqi3 w2 ([]≽-refl I w2) in
   ifequalInTypeacHypPiAux1 u I w2 w1 p t t n cp e2 eqi4
 
-exW≤lengthAux3 : (u : univs) (j : ℕ) (w : world) (name : csName) (l : List Term) (M p t : Term) (m : ℕ)
-                 → equalInType u (inhN1L j) w (APPLY2 p (NUM (length l)) M) t t
-                 → [ inhN1L j ] M ⇛ (NUM m) at w
-                 → ∈world (mkcs name l (acres p)) w
-                 → [ inhN1L j ] (extcs w name M) ⪰ w
-exW≤lengthAux3 u j w name l M p t m e c iw k c₁ c₂ =
-  extChoice w name l M (acres p) iw {!!}
+ifequalInTypeacHypPi2 : (u : univs) (I : Inh) (w : world) (p a₁ a₂ : Term) → # p → # a₁ → # a₂
+                       → equalInType u I w (acHypPi p) a₁ a₂
+                       → (n : ℕ)
+                       → inOpenBar I w (λ w1 e1 → Σ Term (λ m → Σ Term (λ t →
+                                                   equalInType u (lower I) w1 NAT m m
+                                                   × equalInType u I w1 (APPLY2 p (NUM n) m) t t)))
+ifequalInTypeacHypPi2 u I w p a₁ a₂ cp ca₁ ca₂ eqi n w1 e1 =
+  let (w2 , e2 , h) = ifequalInTypeacHypPi u I w p a₁ a₂ cp ca₁ ca₂ eqi n w1 e1 in
+  let (m , t , eqn , eqa) = h w2 ([]≽-refl _ w2) in
+  let (w3 , e3 , eqn1) = equalInTypeLower u I w2 NAT m m eqn w2 ([]≽-refl _ w2) in
+  (w3 , []≽-trans e3 e2 , λ w4 e4 → m , t , eqn1 w4 e4 ,
+    equalInType-mon u (APPLY2 p (NUM n) m) t t I w2 eqa w4 ([]≽-trans e4 e3))
 
-exW≤lengthAux2 : (u : univs) (j : ℕ) (w w' : world) (name : csName) (l1 l2 : List Term) (k m : ℕ) (M p t : Term)
+foo : (u : univs) (j : ℕ) (w : world) (T : Term) (k : ℕ) (c₁ : j ≤ k) (c₂ : k ≤ suc j)
+      → ⊥
+      → snd (snd (inhN2L j)) k c₁ c₂ w T
+foo u j w T k c₁ c₂ h = {!!}
+
+exW≤lengthAux3 : (u : univs) (j : ℕ) (w : world) (name : csName) (l : List Term) (m p t : Term)
+                 → equalInType u (inhN1L j) w NAT m m
+                 → equalInType u (inhN2L j) w (APPLY2 p (NUM (length l)) m) t t
+                 → ∈world (mkcs name l (acres p)) w
+                 → [ inhN2L j ] (extcs w name m) ⪰ w
+exW≤lengthAux3 u j w name l m p t eqn eqa iw k c₁ c₂ =
+  extChoice w name l m (acres p) iw {!!}
+
+exW≤lengthAux2 : (u : univs) (j : ℕ) (w w' : world) (name : csName) (l1 l2 : List Term) (k : ℕ) (m p t : Term)
                  → k ≤ length l1
-                 → equalInType u (inhN1L j) w' (APPLY2 p (NUM (length l1)) M) t t
-                 → [ inhN1L j ] M ⇛ (NUM m) at w'
+                 → equalInType u (inhN1L j) w' NAT m m
+                 → equalInType u (inhN2L j) w' (APPLY2 p (NUM (length l1)) m) t t
                  → ∈world (mkcs name (l1 ++ l2) (acres p)) w'
-                 → [ inhN1L j ] w' ⪰ w
-                 → exW (inhN1L j) w (λ w' e' → Σ (List Term) (λ l' → ∈world (mkcs name l' (acres p)) w' × suc k ≤ length l'))
-exW≤lengthAux2 u j w w' name l1 [] k m M p t len e comp iw ext rewrite ++[] l1 =
-  let w1 = extcs w' name M in
-  let e1 : [ inhN1L j ] w1 ⪰ w'
+                 → [ inhN2L j ] w' ⪰ w
+                 → exW (inhN2L j) w (λ w' e' → Σ (List Term) (λ l' → ∈world (mkcs name l' (acres p)) w' × suc k ≤ length l'))
+exW≤lengthAux2 u j w w' name l1 [] k m p t len en ea iw ext rewrite ++[] l1 =
+  let w1 = extcs w' name m in
+  let e1 : [ inhN2L j ] w1 ⪰ w'
       e1 = {!!} in
-  let len' : ∈world (mkcs name (l1 ∷ʳ M) (acres p)) w1
-      len' = ∈world-extcs w' name l1 (acres p) M iw in
-  let le' : suc k ≤ length (l1 ∷ʳ M)
-      le' = suc≤len∷ʳ l1 M k len in
-  (w1 , []≽-trans e1 ext , l1 ∷ʳ M , len' , le')
-exW≤lengthAux2 u j w w' name l1 (x ∷ l2) k m M p t len e comp iw ext =
+  let len' : ∈world (mkcs name (l1 ∷ʳ m) (acres p)) w1
+      len' = ∈world-extcs w' name l1 (acres p) m iw in
+  let le' : suc k ≤ length (l1 ∷ʳ m)
+      le' = suc≤len∷ʳ l1 m k len in
+  (w1 , []≽-trans e1 ext , l1 ∷ʳ m , len' , le')
+exW≤lengthAux2 u j w w' name l1 (x ∷ l2) k m p t len en ea iw ext =
   (w' , ext , l1 ++ x ∷ l2 , iw ,
     subst (λ x → suc k ≤ x) (sym (length-++ l1 {x ∷ l2}))
       (subst (λ x → suc k ≤ x) (sym (+-suc (length l1) (length l2)))
@@ -879,26 +911,26 @@ exW≤lengthAux2 u j w w' name l1 (x ∷ l2) k m M p t len e comp iw ext =
 exW≤lengthAux1 : (u : univs) (j : ℕ) (w : world) (name : csName) (l : List Term) (k : ℕ) (p a₁ a₂ : Term)
                  → # p → # a₁ → # a₂
                  → ∈world (mkcs name l (acres p)) w
-                 → ((n : ℕ) → inOpenBar (inhN1L j) w (λ w1 e1 → Σ ℕ (λ m → Σ Term (λ M → Σ Term (λ t →
-                                                   [ inhN1L j ] M ⇛ (NUM m) at w1
-                                                   × equalInType u (inhN1L j) w1 (APPLY2 p (NUM n) M) t t)))))
-                 → exW (inhN1L j) w (λ w' e' → Σ (List Term) (λ l' → ∈world (mkcs name l' (acres p)) w' × k ≤ length l'))
+                 → ((n : ℕ) → inOpenBar (inhN2L j) w (λ w1 e1 → Σ Term (λ m → Σ Term (λ t →
+                                                   equalInType u (inhN1L j) w1 NAT m m
+                                                   × equalInType u (inhN2L j) w1 (APPLY2 p (NUM n) m) t t))))
+                 → exW (inhN2L j) w (λ w' e' → Σ (List Term) (λ l' → ∈world (mkcs name l' (acres p)) w' × k ≤ length l'))
 exW≤lengthAux1 u j w name l 0 p a₁ a₂ cp ca₁ ca₂ i e = (w , []≽-refl _ w , l , i , _≤_.z≤n)
 exW≤lengthAux1 u j w name l (suc k) p a₁ a₂ cp ca₁ ca₂ i e =
   let (w1 , e1 , l1 , i1 , len) = exW≤lengthAux1 u j w name l k p a₁ a₂ cp ca₁ ca₂ i e in
   let (w2 , e2 , h2) = e (length l1) w1 e1 in
-  let (m , M , t , c , eqi) = h2 w2 ([]≽-refl _ w2) in
-  let (l2 , i2) = []≽-pres-∈world (wfinhN1L j) e2 i1 in
-  exW≤lengthAux2 u j w w2 name l1 l2 k m M p t len eqi c i2 ([]≽-trans e2 e1)
+  let (m , t , eqn , eqa) = h2 w2 ([]≽-refl _ w2) in
+  let (l2 , i2) = []≽-pres-∈world (wfinhN2L j) e2 i1 in
+  exW≤lengthAux2 u j w w2 name l1 l2 k m p t len eqn eqa i2 ([]≽-trans e2 e1)
 
 
 exW≤length : (u : univs) (j : ℕ) (w : world) (name : csName) (l : List Term) (k : ℕ) (p a₁ a₂ : Term)
              → # p → # a₁ → # a₂
              → ∈world (mkcs name l (acres p)) w
-             → equalInType u (inhN1L j) w (acHypPi p) a₁ a₂
-             → exW (inhN1L j) w (λ w' e' → Σ (List Term) (λ l' → ∈world (mkcs name l' (acres p)) w' × k ≤ length l'))
+             → equalInType u (inhN2L j) w (acHypPi p) a₁ a₂
+             → exW (inhN2L j) w (λ w' e' → Σ (List Term) (λ l' → ∈world (mkcs name l' (acres p)) w' × k ≤ length l'))
 exW≤length u j w name l k p a₁ a₂ cp ca₁ ca₂ i e =
-  let h = ifequalInTypeacHypPi u (inhN1L j) w p a₁ a₂ cp ca₁ ca₂ e in
+  let h = ifequalInTypeacHypPi2 u (inhN2L j) w p a₁ a₂ cp ca₁ ca₂ e in
   {!!}
 
 
@@ -907,18 +939,18 @@ equalInTypeCS : (j k : ℕ) (w w1 w2 : world) (p a b a₁ a₂ : Term) (name : c
                 → [ inhN2L j ] b ⇛ NUM k at w2
                 → [ inhN2L j ] (newcs w1 name (acres p)) ⪰ w
                 → [ inhN2L j ] w2 ⪰ (newcs w1 name (acres p))
-                → equalInType (uni 0) (inhN2L j) w (acHypP p) a₁ a₂
+                → equalInType (uni 0) (inhN2L j) w (acHypPi p) a₁ a₂
                 → equalInType (uni 0) (inhN2L j) w2 (LOWER NAT) (APPLY (CS name) a) (APPLY (CS name) b)
 equalInTypeCS j k w w1 w2 p a b a₁ a₂ name c₁ c₂ e₁ e₂ eqh =
   impliesEqualInTypeLowerBar
     (uni 0) j w2 NAT (APPLY (CS name) a) (APPLY (CS name) b)
-    let eqh1 = equalInTypeLower (uni 0) j w (acHypPi p) a₁ a₂ eqh in
-    λ w1 e1 → let (w2 , (e2 , eqh2)) = eqh1 w1 ([]≽-trans e1 ([]≽-trans e₂ e₁)) in
-    (w2 , (e2 , λ w3 e3 →
+    {!!} {--let eqh1 = equalInTypeLower (uni 0) j w (acHypPi p) a₁ a₂ eqh in
+    λ w1 e1 → let (w2 , e2 , eqh2) = eqh1 w1 ([]≽-trans e1 ([]≽-trans e₂ e₁)) in
+    (w2 , e2 , λ w3 e3 →
     let eqh3 = eqh2 w3 e3 in
-    equalInTypeNAT
+    {!!} {--equalInTypeNAT
       (uni 0) (inhN1L j) w3 (APPLY (CS name) a) (APPLY (CS name) b)
-      {!!}))
+      {!!}--})--}
 -- We need to update 'ext' to include all inh not just the top one
 
 {--
@@ -942,7 +974,7 @@ equalInTypeCS j k w w1 w2 p a b a₁ a₂ name c₁ c₂ e₁ e₂ eqh =
 
 ac00trueAux2 : (j : ℕ) (w : world) (p₁ p₂ : Term) → # p₁ → # p₂ → (a₁ a₂ : Term) → # a₁ → # a₂
                → equalInType (uni 0) (inhN2L j) w NATbinPred p₁ p₂
-               → equalInType (uni 0) (inhN2L j) w (acHypP p₁) a₁ a₂
+               → equalInType (uni 0) (inhN2L j) w (acHypPi p₁) a₁ a₂
                → equalInType (uni 0) (inhN2L j) w (acConclP p₁) AX AX
 ac00trueAux2 j w p₁ p₂ cp₁ cp₂ a₁ a₂ ca₁ ca₂ eqp eqa =
   equalInTypeSQUASH
@@ -958,11 +990,11 @@ ac00trueAux2 j w p₁ p₂ cp₁ cp₂ a₁ a₂ ca₁ ca₂ eqp eqa =
           e2 = []≽newcs (inhN2L j) w1 name res (proj₂ (freshName (wdom w1))) in
       (w2 , (e2 , λ w3 e3 → (PAIR (CS name) (LAMBDA AX) ,
         equalInTypeSUM
-          (uni 0) (inhN2L j) w3 BAIRE (PI NAT (APPLY2 p₁ (VAR 0) (APPLY (VAR 1) (VAR 0))))
+          (uni 0) (inhN2L j) w3 LBAIRE (PI NAT (APPLY2 p₁ (VAR 0) (APPLY (VAR 1) (VAR 0))))
           _ _ _ _
           {!!}
           (equalInTypePI
-            (uni 0) (inhN2L j) w3 NAT NAT (CS name) (CS name)
+            (uni 0) (inhN2L j) w3 NAT LNAT (CS name) (CS name)
             (eqTypesNAT w3 (inhN2L j) (uni 0))
             (λ w4 e4 a₃ a₄ ca₃ ca₄ eqt → {!!})
             (λ w4 e4 a₃ a₄ ca₃ ca₄ eqt →
@@ -970,7 +1002,7 @@ ac00trueAux2 j w p₁ p₂ cp₁ cp₂ a₁ a₂ ca₁ ca₂ eqp eqa =
               subst (λ x → equalInType (uni 0) (inhN2L j) w4 x
                                         (APPLY (CS (proj₁ (freshName (wdom w1)))) a₃)
                                         (APPLY (CS (proj₁ (freshName (wdom w1)))) a₄))
-                    (sym (subNAT a₃))
+                    (sym (subLNAT a₃))
                     {!!} {--(equalInTypeBar
                        _ _ _ _ _ _
                        (inOpenBarMP
@@ -985,9 +1017,9 @@ ac00trueAux2 j w p₁ p₂ cp₁ cp₂ a₁ a₂ ca₁ ca₂ eqp eqa =
 
 ac00trueAux1 : (j : ℕ) (w : world) (p₁ p₂ : Term) → # p₁ → # p₂
                → equalInType (uni 0) (inhN2L j) w NATbinPred p₁ p₂
-               → equalInType (uni 0) (inhN2L j) w (FUN (acHypP p₁) (acConclP p₁)) lamAX lamAX
+               → equalInType (uni 0) (inhN2L j) w (FUN (acHypPi p₁) (acConclP p₁)) lamAX lamAX
 ac00trueAux1 j w p₁ p₂ c₁ c₂ eqt =
-  equalInTypePIlam (uni 0) (inhN2L j) w (acHypP p₁) (acConclP p₁) AX AX
+  equalInTypePIlam (uni 0) (inhN2L j) w (acHypPi p₁) (acConclP p₁) AX AX
   {!!} {!!}
   (λ w1 e1 a₁ a₂ ca₁ ca₂ eqh →
     subst
@@ -1006,7 +1038,7 @@ ac00true w =
   (1 , 1 ,
    λ j cj →
     (0 , equalInTypePIlam
-           (uni 0) (inhN2L j) w NATbinPred acFun lamAX lamAX
+           (uni 0) (inhN2L j) w NATlbinPred acFun lamAX lamAX
            {!!} {!!}
            (λ w1 e1 p₁ p₂ c₁ c₂ i →
               subst
