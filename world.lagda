@@ -208,6 +208,13 @@ record ≽world (I : InhW) (w2 : world) (w1 : world) : Set where
 ⟨ I ⟩ w2 ⪰ w1 = ≽world I w2 w1
 --}
 
+wfInh : (I : Inh) → Set
+wfInh (m , n , f) = m ≤ n
+
+topInh : (I : Inh) (wf : wfInh I) → InhW
+topInh (m , n , f) wf = f n wf ≤-refl
+
+
 -- w2 extends w1
 [_]_⪰_ : (I : Inh) (w2 : world) (w1 : world) → Set
 [ (m , n , f) ] w2 ⪰ w1 = (j : ℕ) (c₁ : m ≤ j) (c₂ : j ≤ n) → ⟨ f j c₁ c₂ ⟩ w2 ⪰ w1
@@ -305,9 +312,6 @@ extwPreservesNorepeats I w1 w2 (extTrans e e₁) norep = extwPreservesNorepeats 
 extwPreservesNorepeats I w1 .(w1 ++ choice name t ∷ []) (extChoice .w1 name l t res x x₁) norep rewrite wdomAddChoice w1 name t = norep
 extwPreservesNorepeats I w1 .(w1 ++ start name res ∷ []) (extEntry .w1 name res x) norep rewrite wdomAddStart w1 name res =
   norepeats∷ʳ _ _ norep x
-
-wfInh : (I : Inh) → Set
-wfInh (m , n , f) = m ≤ n
 
 extPreservesNorepeats : (I : Inh) (wf : wfInh I) (w1 w2 : world) → [ I ] w2 ⪰ w1 → norepeats (wdom w1) → norepeats (wdom w2)
 extPreservesNorepeats (m , n , f) wf w1 w2 e norep = extwPreservesNorepeats (f n wf ≤-refl) w1 w2 (e n wf ≤-refl) norep

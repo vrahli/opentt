@@ -873,9 +873,15 @@ ifequalInTypeacHypPi2 u I w p a₁ a₂ cp ca₁ ca₂ eqi n w1 e1 =
   (w3 , []≽-trans e3 e2 , λ w4 e4 → m , t , eqn1 w4 e4 ,
     equalInType-mon u (APPLY2 p (NUM n) m) t t I w2 eqa w4 ([]≽-trans e4 e3))
 
+inh2L-suc-eq : (j : ℕ) (c₁ : j ≤ suc j) (c₂ : suc j ≤ suc j) (w : world) (T : Term)
+      → snd (snd (inhN2L j)) (suc j) c₁ c₂ w T ≡ Σ Term (λ t → eqintypeN j j w T t t)
+inh2L-suc-eq j c₁ c₂ w T with m≤n⇒m<n∨m≡n c₂
+... | inj₁ p = ⊥-elim (1+n≰n p)
+... | inj₂ p = refl
+
 foo : (u : univs) (j : ℕ) (w : world) (T : Term) (k : ℕ) (c₁ : j ≤ k) (c₂ : k ≤ suc j)
       → ⊥
-      → snd (snd (inhN2L j)) k c₁ c₂ w T
+      → snd (snd (inhN2L j)) k c₁ c₂ w T -- we'll only be able to prove this for the top 'inh'
 foo u j w T k c₁ c₂ h = {!!}
 
 exW≤lengthAux3 : (u : univs) (j : ℕ) (w : world) (name : csName) (l : List Term) (m p t : Term)
