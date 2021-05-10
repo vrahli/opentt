@@ -206,52 +206,48 @@ EQT : Set₁
 EQT = (w : world) (T a b : Term) → Set
 
 -- Finally, the 'equal types' and 'equal in types' relations
-eqtypesI : (I : Inh) → TEQ
-eqtypesI I w T1 T2 = Σ ℕ (λ n → eqTypes (uni n) I w T1 T2)
+equalTypes : (u : ℕ) → (I : Inh) → TEQ
+equalTypes u = eqTypes (uni u)
 
-equalInType : (u : univs) (I : Inh) (w : world) (T : Term) → per
-equalInType u I w T a b = Σ (eqTypes u I w T T) (λ p → eqInType u I w p a b)
-
-eqintypeI : (I : Inh) → EQT
-eqintypeI I w T a b = Σ ℕ (λ n → equalInType (uni n) I w T a b)
+equalInType : (u : ℕ) (I : Inh) (w : world) (T : Term) → per
+equalInType u I w T a b = Σ (equalTypes u I w T T) (λ p → eqInType (uni u) I w p a b)
 \end{code}
 
 
 \begin{code}
-eqintypeN : (m n : ℕ) → EQT
-inhL : (m n : ℕ) → InhF m n
-inhN : (m n : ℕ) → Inh
+eqintypeN : (u n : ℕ) → EQT
+inhL : (u n : ℕ) → InhF n
+inhN : (u n : ℕ) → Inh
 
 
-eqintypeN m 0 w T a b = ⊤
-eqintypeN m n w T a b = eqintypeI (inhN m n) w T a b
+eqintypeN u n w T a b = equalInType u (inhN u n) w T a b
 
-inhL m 0 j c₁ c₂ w U = ⊤
-inhL m (suc n) j c₁ c₂ w U with m≤n⇒m<n∨m≡n c₂
-... | inj₁ p = inhL m n j c₁ (sucLeInj p) w U
-... | inj₂ p = Σ Term (λ t → eqintypeN m n w U t t)
+inhL u 0 j c w T = ⊤
+inhL u (suc n) j c w T with m≤n⇒m<n∨m≡n c
+... | inj₁ p = inhL u n j (sucLeInj p) w T
+... | inj₂ p = Σ Term (λ t → eqintypeN u n w T t t)
 
-inhN m n = (m , n , inhL m n)
+inhN u n = (n , inhL u n)
 
-inhN1L : (n : ℕ) → Inh
-inhN1L n = inhN n n -- That gives us 1 level
+inhN1L : (u n : ℕ) → Inh
+inhN1L u n = inhN u n -- That gives us 1 level
 
-inhN2L : (n : ℕ) → Inh
-inhN2L n = inhN n (suc n) -- That gives us 2 levels
+inhN2L : (u n : ℕ) → Inh
+inhN2L u n = inhN u (suc n) -- That gives us 2 levels
 
 
-eqtypesN : (m n : ℕ) → TEQ
-eqtypesN m n w T1 T2 = eqtypesI (inhN m n) w T1 T2
+eqtypesN : (u n : ℕ) → TEQ
+eqtypesN u n w T1 T2 = equalTypes u (inhN u n) w T1 T2
 
 eqtypes : TEQ
-eqtypes w T1 T2 = Σ ℕ (λ n → Σ ℕ (λ k → (j : ℕ) → j ≥ n → eqtypesN j (k + j) w T1 T2))
+eqtypes w T1 T2 = Σ ℕ (λ u → Σ ℕ (λ n → (j : ℕ) → j ≥ n → eqtypesN u j w T1 T2))
 
 eqintype : EQT
-eqintype w T a b = Σ ℕ (λ n → Σ ℕ (λ k → (j : ℕ) → j ≥ n → eqintypeN j (k + j) w T a b))
+eqintype w T a b = Σ ℕ (λ u → Σ ℕ (λ n → (j : ℕ) → j ≥ n → eqintypeN u j w T a b))
 
-wfinhN1L : (j : ℕ) → wfInh (inhN1L j)
+{--wfinhN1L : (j : ℕ) → wfInh (inhN1L j)
 wfinhN1L j = ≤-refl
 
 wfinhN2L : (j : ℕ) → wfInh (inhN2L j)
-wfinhN2L j = (n≤1+n _)
+wfinhN2L j = (n≤1+n _)--}
 \end{code}

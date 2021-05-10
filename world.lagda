@@ -79,15 +79,15 @@ InhT = (t : Term) → Set
 InhW : Set₁
 InhW = (w : world) → InhT
 
-InhF : ℕ → ℕ → Set₁
-InhF m n = (j : ℕ) → m ≤ j → j ≤ n → InhW
+InhF : ℕ → Set₁
+InhF n = (j : ℕ) → j ≤ n → InhW
 
 Inh : Set₁
-Inh = Σ ℕ λ m → Σ ℕ (λ n → InhF m n)
+Inh = Σ ℕ (λ n → InhF n)
 
 lower : Inh → Inh
-lower (m , 0 , f) = (m , 0 , f)
-lower (m , suc n , f) = (m , n , λ j c₁ c₂ → f j c₁ (≤-trans c₂ (n≤1+n _)))
+lower (0 , f) = (0 , f)
+lower (suc n , f) = (n , λ j c → f j (≤-trans c (n≤1+n _)))
 
 lift : restriction → restriction
 lift res n t = res (suc n) t
@@ -208,16 +208,13 @@ record ≽world (I : InhW) (w2 : world) (w1 : world) : Set where
 ⟨ I ⟩ w2 ⪰ w1 = ≽world I w2 w1
 --}
 
-wfInh : (I : Inh) → Set
-wfInh (m , n , f) = m ≤ n
-
-topInh : (I : Inh) (wf : wfInh I) → InhW
-topInh (m , n , f) wf = f n wf ≤-refl
+topInh : (I : Inh) → InhW
+topInh (n , f) = f n ≤-refl
 
 
 -- w2 extends w1
 [_]_⪰_ : (I : Inh) (w2 : world) (w1 : world) → Set
-[ (m , n , f) ] w2 ⪰ w1 = (j : ℕ) (c₁ : m ≤ j) (c₂ : j ≤ n) → ⟨ f j c₁ c₂ ⟩ w2 ⪰ w1
+[ I ] w2 ⪰ w1 =  ⟨ topInh I ⟩ w2 ⪰ w1
 
 {--≽entry-pres-∈worldExt : {e e' : entry} {w : world} → ≽entry e' e → ∈worldExt e' w → ∈worldExt e w
 ≽entry-pres-∈worldExt {e} {e'} {w} ext i =
@@ -256,14 +253,14 @@ peTrans {I} {w1} {w2} {w3} mon (mkext ext2 wf2 norep2) (mkext ext1 wf1 norep1) =
 --}
 
 []≽-trans : {I : Inh} {w1 w2 w3 : world} (e1 : [ I ] w3 ⪰ w2) (e2 : [ I ] w2 ⪰ w1) → [ I ] w3 ⪰ w1
-[]≽-trans {I} {w1} {w2} {w3} e1 e2 j c₁ c₂ = extTrans (e1 j c₁ c₂) (e2 j c₁ c₂)
+[]≽-trans {I} {w1} {w2} {w3} e1 e2 = extTrans e1 e2
 
 {--peRefl : (I : InhW) (w : world) → ⟨ I ⟩ w ⪰ w
 peRefl I w = mkext (λ e i → ∈world-∈worldExt i) (λ x → x) λ x → x
 --}
 
 []≽-refl : (I : Inh) (w : world) → [ I ] w ⪰ w
-[]≽-refl I w j c₁ c₂ = extRefl _
+[]≽-refl I w = extRefl _
 
 {--peEntry : (I : InhW) (w : world) (name : csName) (res : restriction)
           → ¬ (name ∈ wdom w)
@@ -277,7 +274,7 @@ peEntry I w name res ni =
 []≽newcs : (I : Inh) (w : world) (name : csName) (res : restriction)
          → ¬ (name ∈ wdom w)
          → [ I ] (newcs w name res) ⪰ w
-[]≽newcs I w name res ni j c₁ c₂ = extEntry _ _ _ ni
+[]≽newcs I w name res ni = extEntry _ _ _ ni
 
 wdom++ : (w₁ w₂ : world) → wdom (w₁ ++ w₂) ≡ wdom w₁ ++ wdom w₂
 wdom++ [] w₂ = refl
@@ -313,8 +310,8 @@ extwPreservesNorepeats I w1 .(w1 ++ choice name t ∷ []) (extChoice .w1 name l 
 extwPreservesNorepeats I w1 .(w1 ++ start name res ∷ []) (extEntry .w1 name res x) norep rewrite wdomAddStart w1 name res =
   norepeats∷ʳ _ _ norep x
 
-extPreservesNorepeats : (I : Inh) (wf : wfInh I) (w1 w2 : world) → [ I ] w2 ⪰ w1 → norepeats (wdom w1) → norepeats (wdom w2)
-extPreservesNorepeats (m , n , f) wf w1 w2 e norep = extwPreservesNorepeats (f n wf ≤-refl) w1 w2 (e n wf ≤-refl) norep
+extPreservesNorepeats : (I : Inh) (w1 w2 : world) → [ I ] w2 ⪰ w1 → norepeats (wdom w1) → norepeats (wdom w2)
+extPreservesNorepeats I w1 w2 e norep = extwPreservesNorepeats (topInh I) w1 w2 e norep
 
 {--worldw : Inh → Set
 worldw I = Σ world (wfWorld I)
@@ -404,7 +401,7 @@ weakMonEq I w t1 t2 = allW I w (λ w' _ → Σ ℕ (λ n → t1 ⇓ (NUM n) at w
            → [ I ] w2 ⪰ w1
            → [ I ] a ⇛ b at w1
            → [ I ] a ⇛ b at w2
-[]⇛-mon I {a} {b} {w2} {w1} ext c w' e' = c w' ([]≽-trans e' ext)
+[]⇛-mon I {a} {b} {w2} {w1} ext c w' e' = c w' ([]≽-trans {I} e' ext)
 
 getChoices++ : (name : csName) (w w' : world)
                → getChoices name (w ++ w') ≡ getChoices name w ++ getChoices name w'
@@ -467,13 +464,10 @@ getCs++-diff-choice name name₁ w l r t d e rewrite getCs++ name w [ choice nam
   ([] , refl)
 
 []≽-pres-∈world : {I : Inh} {w1 w2 : world} {name : csName} {l : List Term} {r : restriction}
-                  → wfInh I
                   → [ I ] w2 ⪰ w1
                   → ∈world (mkcs name l r) w1
                   → Σ (List Term) (λ l' → ∈world (mkcs name (l ++ l') r) w2)
-[]≽-pres-∈world {m , n , f} {w1} {w2} {name} {l} {r} wf e i =
-  let z = e n wf ≤-refl in
-  ⟨⟩≽-pres-∈world z i
+[]≽-pres-∈world {I} {w1} {w2} {name} {l} {r} e i = ⟨⟩≽-pres-∈world e i
 
 suc≤len∷ʳ : {A : Set} (l : List A) (a : A) (k : ℕ) → k ≤ length l → suc k ≤ length (l ∷ʳ a)
 suc≤len∷ʳ {A} l a k h rewrite length-++ l {[ a ]} rewrite +-comm (length l) 1 = _≤_.s≤s h
