@@ -326,6 +326,9 @@ eqTypesTRUE w I u =
 mon : (p : wper) → Set₁
 mon p = (a b : Term) (I : Inh) (w : world) → p I w a b → allW I w (λ w' e' → p I w' a b)
 
+strongMonEq-mon : mon strongMonEq
+strongMonEq-mon a b I w (n , c₁ , c₂) w1 e1 = (n , []⇛-mon I e1 c₁ , []⇛-mon I e1 c₂)
+
 eqTypes-mon : (u : univs) → mon (eqTypes u)
 eqTypes-mon u = {!!}
 
@@ -890,6 +893,20 @@ ifequalInTypeacHypPi2 u I w p a₁ a₂ cp ca₁ ca₂ eqi n w1 e1 =
   (w4 , []≽-trans {I} e4 ([]≽-trans {I} e3 e2) ,
     λ w5 e5 → m , t , cm , ct , eqn1 w5 ([]≽-trans {I} e5 e4) , eqa2 w5 e5)
 
+ifequalInTypeacHypPi3 : (u j : ℕ) (w : world) (p a₁ a₂ : Term) → # p → # a₁ → # a₂
+                       → equalInType u (inhN2L u j) w (acHypPi p) a₁ a₂
+                       → (n : ℕ)
+                       → inOpenBar (inhN2L u j) w (λ w1 e1 → Σ Term (λ m → Σ Term (λ t →
+                                                   # m × # t
+                                                   × equalInType u (inhN1L u j) w1 NAT m m
+                                                   × equalInType u (inhN1L u j) w1 (APPLY2 p (NUM n) m) t t)))
+ifequalInTypeacHypPi3 u j w p a₁ a₂ cp ca₁ ca₂ eqi n w1 e1 =
+  let (w2 , e2 , h) = ifequalInTypeacHypPi2 u (inhN2L u j) w p a₁ a₂ cp ca₁ ca₂ eqi n w1 e1 in
+  (w2 , e2 , λ w3 e3 → let (m , t , cm , ct , eqn , eqa) = h w3 e3 in
+                        (m , t , cm , ct ,
+                         subst (λ x → equalInType u x w3 NAT m m) (sym (inhNeq u j)) eqn ,
+                         subst (λ x → equalInType u x w3 (APPLY2 p (NUM n) m) t t) (sym (inhNeq u j)) eqa))
+
 inh2L-suc-eq : (u j : ℕ) (c : suc j ≤ suc j) (w : world) (T : Term)
       → snd (inhN2L u j) (suc j) c w T ≡ Σ Term (λ t → eqintypeN u j w T t t)
 inh2L-suc-eq u j c w T with m≤n⇒m<n∨m≡n c
@@ -900,6 +917,11 @@ equalInType-topInh-inhN2L : (u : ℕ) (j : ℕ) (w : world) (T t : Term)
                             → equalInType u (inhN1L u j) w T t t
                             → topInh (inhN2L u j) w T
 equalInType-topInh-inhN2L u j w T t h rewrite inh2L-suc-eq u j ≤-refl w T = (t , h)
+
+equalInType-inhN2L-topInh : (u : ℕ) (j : ℕ) (w : world) (T : Term)
+                            → topInh (inhN2L u j) w T
+                            → Σ Term (λ t → equalInType u (inhN1L u j) w T t t)
+equalInType-inhN2L-topInh u j w T h rewrite inh2L-suc-eq u j ≤-refl w T = h
 
 equalInTypeMEM : (i : ℕ) (I : Inh) (w : world) (A a : Term)
                  → equalInType i I w A a a
@@ -931,6 +953,7 @@ implies-equalInType-AND-MEM i I w A B a b cB ea eb =
 ... | inj₁ x = cp _ x
 ... | inj₂ x = cm _ x
 
+-- NOTE: we wouldn't be able to prove this if we had to prove [_]_⪰_ for all lower inhabitations too
 exW≤lengthAux3 : (i : ℕ) (j : ℕ) (w : world) (name : csName) (l : List Term) (m p t : Term) → # p → # m
                  → equalInType i (inhN1L i j) w NAT m m
                  → equalInType i (inhN1L i j) w (APPLY2 p (NUM (length l)) m) t t
@@ -942,6 +965,9 @@ exW≤lengthAux3 i j w name l m p t cp cm eqn eqa iw =
     (equalInType-topInh-inhN2L i j w (acres p (length l) m) (PAIR AX t)
       (implies-equalInType-AND-MEM i (inhN1L i j) w NAT (APPLY2 p (NUM (length l)) m) m t
         (#APPLY2-NUM p m (length l) cp cm) eqn eqa))
+
+exAllW : (I : Inh) (w : world) (f : wPred I w) → Set
+exAllW I w f = exW I w (λ w1 e1 → allW I w1 (λ w2 e2 → f w2 ([]≽-trans {I}e2 e1)))
 
 exW≤lengthAux2 : (u : ℕ) (j : ℕ) (w w' : world) (name : csName) (l1 l2 : List Term) (k : ℕ) (m p t : Term)
                  → # p → # m → k ≤ length l1
@@ -982,20 +1008,6 @@ exW≤lengthAux1 u j w name l (suc k) p a₁ a₂ cp ca₁ ca₂ i e =
   exW≤lengthAux2 u j w w2 name l1 l2 k m p t cp cm len eqn eqa i2 ([]≽-trans {inhN2L u j} e2 e1)
 
 
-ifequalInTypeacHypPi3 : (u j : ℕ) (w : world) (p a₁ a₂ : Term) → # p → # a₁ → # a₂
-                       → equalInType u (inhN2L u j) w (acHypPi p) a₁ a₂
-                       → (n : ℕ)
-                       → inOpenBar (inhN2L u j) w (λ w1 e1 → Σ Term (λ m → Σ Term (λ t →
-                                                   # m × # t
-                                                   × equalInType u (inhN1L u j) w1 NAT m m
-                                                   × equalInType u (inhN1L u j) w1 (APPLY2 p (NUM n) m) t t)))
-ifequalInTypeacHypPi3 u j w p a₁ a₂ cp ca₁ ca₂ eqi n w1 e1 =
-  let (w2 , e2 , h) = ifequalInTypeacHypPi2 u (inhN2L u j) w p a₁ a₂ cp ca₁ ca₂ eqi n w1 e1 in
-  (w2 , e2 , λ w3 e3 → let (m , t , cm , ct , eqn , eqa) = h w3 e3 in
-                        (m , t , cm , ct ,
-                         subst (λ x → equalInType u x w3 NAT m m) (sym (inhNeq u j)) eqn ,
-                         subst (λ x → equalInType u x w3 (APPLY2 p (NUM n) m) t t) (sym (inhNeq u j)) eqa))
-
 exW≤length : (u : ℕ) (j : ℕ) (w : world) (name : csName) (l : List Term) (k : ℕ) (p a₁ a₂ : Term)
              → # p → # a₁ → # a₂
              → ∈world (mkcs name l (acres p)) w
@@ -1005,20 +1017,56 @@ exW≤length u j w name l k p a₁ a₂ cp ca₁ ca₂ i e =
   let h = ifequalInTypeacHypPi3 u j w p a₁ a₂ cp ca₁ ca₂ e in
   exW≤lengthAux1 u j w name l k p a₁ a₂ cp ca₁ ca₂ i h
 
+exW≤length2 : (u : ℕ) (j : ℕ) (w : world) (name : csName) (l : List Term) (k : ℕ) (p a₁ a₂ : Term)
+             → # p → # a₁ → # a₂
+             → ∈world (mkcs name l (acres p)) w
+             → equalInType u (inhN2L u j) w (acHypPi p) a₁ a₂
+             → exAllW (inhN2L u j) w (λ w' e' → Σ (List Term) (λ l' → ∈world (mkcs name l' (acres p)) w' × k ≤ length l'))
+exW≤length2 u j w name l k p a₁ a₂ cp ca₁ ca₂ i e =
+  let (w1 , e1 , l1 , i1 , len1) = exW≤length u j w name l k p a₁ a₂ cp ca₁ ca₂ i e in
+  (w1 , e1 , λ w2 e2 →
+     let (l2 , i2) = []≽-pres-∈world {inhN2L u j} e2 i1 in
+     (l1 ++ l2 , i2 , subst (λ x → k ≤ x) (sym (length-++ l1 {l2})) (≤-stepsʳ (length l2) len1)))
+
+equalInTypeNAT2 : (u : ℕ) (I : Inh) (w : world) (t₁ t₂ : Term)
+                → strongMonEq I w t₁ t₂
+                → equalInType u I w NAT t₁ t₂
+equalInTypeNAT2 u I w t₁ t₂ e =
+  equalInTypeNAT u I w t₁ t₂
+    λ w1 e1 → (w1 , []≽-refl I w1 , λ w2 e2 → strongMonEq-mon t₁ t₂ I w e w2 ([]≽-trans {I} e2 e1))
+
+equalInTypeNAT-APPLY-CS : (u j k : ℕ) (w2 w1 : world) (name : csName) (l : List Term) (p a b : Term)
+                          → ¬ (name ∈ (wdom w1))
+                          → ∈world (mkcs name l (acres p)) w2
+                          → k < length l
+                          → [ inhN2L u j ] w2 ⪰ (newcs w1 name (acres p))
+                          → [ inhN1L u j ] b ⇛ NUM k at w2 -- the 'Inh' is off compared to what we have in 'equalInTypeCS'
+                          → [ inhN1L u j ] a ⇛ NUM k at w2 -- the 'Inh' is off compared to what we have in 'equalInTypeCS'
+                          → equalInType u (inhN1L u j) w2 NAT (APPLY (CS name) a) (APPLY (CS name) b)
+equalInTypeNAT-APPLY-CS u j k w2 w1 name l p a b niw i len ext c₁ c₂ =
+  let (t , w , l1 , gc , iw , kel , ext1 , ext2 , r) = []≽-ΣgetChoice (inhN2L u j) w1 w2 name l (acres p) k niw ext len i in
+  let (t1 , r1) = equalInType-inhN2L-topInh u j w (acres p k t) r in
+  {!!}
+
 equalInTypeCS : (u j k : ℕ) (w w1 w2 : world) (p a b a₁ a₂ : Term) (name : csName)
                 → # p → # a₁ → # a₂
+                → ¬ (name ∈ (wdom w1))
                 → [ inhN2L u j ] a ⇛ NUM k at w2
                 → [ inhN2L u j ] b ⇛ NUM k at w2
                 → [ inhN2L u j ] (newcs w1 name (acres p)) ⪰ w
                 → [ inhN2L u j ] w2 ⪰ (newcs w1 name (acres p))
                 → equalInType u (inhN2L u j) w (acHypPi p) a₁ a₂
                 → equalInType u (inhN2L u j) w2 (LOWER NAT) (APPLY (CS name) a) (APPLY (CS name) b)
-equalInTypeCS u j k w w1 w2 p a b a₁ a₂ name cp ca₁ ca₂ c₁ c₂ e₁ e₂ eqh =
+equalInTypeCS u j k w w1 w2 p a b a₁ a₂ name cp ca₁ ca₂ niw c₁ c₂ e₁ e₂ eqh =
   impliesEqualInTypeLowerBar
     u j w2 NAT (APPLY (CS name) a) (APPLY (CS name) b)
-    let h = exW≤length u j w2 name {!!} k p a₁ a₂ cp ca₁ ca₂ {!!} {!!} in
-    {!!}
--- TODO: the second allW in the conclusion is a problem!  Can we add a allW in 'exW≤length' under 'exW'?
+    let i1 = ∈world-newcs w1 name (acres p) niw in
+    λ w3 e3 →
+    let (l2 , i2) = []≽-pres-∈world {inhN2L u j} ([]≽-trans {inhN2L u j} e3 e₂) i1 in
+    let (w4 , e4 , h) = exW≤length2 u j w3 name l2 k p a₁ a₂ cp ca₁ ca₂ i2
+                          (equalInType-mon u (acHypPi p) a₁ a₂ (inhN2L u j) w eqh w3
+                            ([]≽-trans {inhN2L u j} e3 ([]≽-trans {inhN2L u j} e₂ e₁))) in
+    (w4 , e4 , λ w5 e5 → let (l , iw , len) = h w5 e5 in {!!})
 -- TODO: we need c₁ and c₂ to be true in this INH and the lower one too to make use of them in the lower one in the conclusion
 --   -> introduce a squashing operator for that?
 

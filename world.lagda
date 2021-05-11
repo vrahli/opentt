@@ -10,7 +10,8 @@ open import Agda.Builtin.Equality.Rewrite
 open import Agda.Builtin.Sigma
 open import Relation.Nullary
 open import Relation.Unary using (Pred; Decidable)
-open import Relation.Binary.PropositionalEquality using (sym ; subst)
+open import Relation.Binary.PropositionalEquality hiding ([_]) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
+open ≡-Reasoning
 open import Data.Product
 open import Data.Sum
 open import Data.Empty
@@ -357,18 +358,123 @@ We now define part of OpenTT's syntax and postulate its operational semantics.
 
 
 \begin{code}
+-- similar to lookup
+select : {A : Set} (n : ℕ) (l : List A) → Maybe A
+select {A} n [] = nothing
+select {A} 0 (x ∷ l) = just x
+select {A} (suc n) (x ∷ l) = select n l
+
+getChoice : (n : ℕ) (name : csName) (w : world) → Maybe Term
+getChoice n name w with getCs name w
+... | just (mkcs _ l _) = select n l
+... | nothing = nothing
+
+step : ∀ (T : Term) (w : world) → Maybe Term
+-- VAR
+step (VAR v) w = nothing
+-- NAT
+step NAT w = just NAT
+-- QNAT
+step QNAT w = just QNAT
+-- LT
+step (LT a b) w = just (LT a b)
+-- QLT
+step (QLT a b) w = just (QLT a b)
+-- NUM
+step (NUM n) w = just (NUM n)
+-- PI
+step (PI a b) w = just (PI a b)
+-- LAMBDA
+step (LAMBDA t) w = just (LAMBDA t)
+-- APPLY
+step (APPLY (CS name) (NUM n)) w = getChoice n name w
+step (APPLY (CS name) t) w with step t w
+... | just u = just (APPLY (CS name) u)
+... | nothing = nothing
+step (APPLY (LAMBDA t) u) w = just (sub u t)
+step (APPLY f a) w with step f w
+... | just g = just (APPLY g a)
+... | nothing = nothing
+-- SUM
+step (SUM a b) w = just (SUM a b)
+-- PAIR
+step (PAIR a b) w = just (PAIR a b)
+-- SPREAD
+step (SPREAD a b) w = nothing -- TODO
+-- SET
+step (SET a b) w = just (SET a b)
+-- UNION
+step (UNION a b) w = just (UNION a b)
+-- INL
+step (INL a) w = just (INL a)
+-- INR
+step (INR a) w = just (INR a)
+-- DECIDE
+step (DECIDE a b c) w = nothing -- TODO
+-- EQ
+step (EQ a b c) w = just (EQ a b c)
+-- AX
+step AX w = just AX
+-- FREE
+step FREE w = just FREE
+-- CS
+step (CS name) w = just (CS name)
+-- TSQUASH
+step (TSQUASH a) w = just (TSQUASH a)
+-- FFDEFS
+step (FFDEFS a b) w = just (FFDEFS a b)
+-- UNIV
+step (UNIV u) w = just (UNIV u)
+-- LOWER
+step (LOWER t) w = just (LOWER t)
+
+steps : (n : ℕ) (t : Term) (w : world) → Term
+steps 0 t w = t
+steps (suc n) t w with step t w
+... | just u = steps n u w
+... | nothing = t
+
+_⇓_at_ : ∀ (T T' : Term) (w : world) → Set
+T ⇓ T' at w = Σ ℕ (λ n → steps n T w ≡ T')
+infix 30 _⇓_at_
+
+⇓-refl : (T : Term) (w : world) → T ⇓ T at w
+⇓-refl T w = (0 , refl)
+
+-- values compute to themselves
+stepVal : (a : Term) (w : world) → isValue a → step a w ≡ just a
+stepVal NAT w v = refl
+stepVal QNAT w v = refl
+stepVal (NUM x) w v = refl
+stepVal (PI a a₁) w v = refl
+stepVal (LAMBDA a) w v = refl
+stepVal (SUM a a₁) w v = refl
+stepVal (PAIR a a₁) w v = refl
+stepVal (SET a a₁) w v = refl
+stepVal (UNION a a₁) w v = refl
+stepVal (INL a) w v = refl
+stepVal (INR a) w v = refl
+stepVal (EQ a a₁ a₂) w v = refl
+stepVal AX w v = refl
+stepVal FREE w v = refl
+stepVal (CS x) w v = refl
+stepVal (TSQUASH a) w v = refl
+stepVal (FFDEFS a a₁) w v = refl
+stepVal (UNIV x) w v = refl
+stepVal (LOWER a) w v = refl
+
+stepsVal : (a : Term) (w : world) (n : ℕ) → isValue a → steps n a w ≡ a
+stepsVal a w 0 v = refl
+stepsVal a w (suc n) v rewrite stepVal a w v = stepsVal a w n v
+
+compVal : (a b : Term) (w : world) → a ⇓ b at w → isValue a → a ≡ b
+compVal a b w (n , c) v rewrite stepsVal a w n v = c
+
 postulate
-  -- operational semantics of the language
-  _⇓_at_ : ∀ (T T' : Term) (w : world) → Set
-  -- 'computes to' is reflexive
-  compRefl : ∀ (T : Term) (w : world) → T ⇓ T at w
-  -- values compute to themselves
-  compVal : ∀ (a b : Term) (w : world) → a ⇓ b at w → isValue a → a ≡ b
   -- Howe's computational equivalence relation
   _∼_at_ : ∀ (T T' : Term) (w : world) → Set
   -- states that the argument does not contain any definition or choice sequence
   nodefs : Term → Set
-infix 30 _⇓_at_
 infix 30 _∼_at_
 
 
@@ -383,7 +489,7 @@ infix 30 [_]_⇛_at_
 infix 30 [_]_≈_at_
 
 compAllRefl : (I : Inh) (T : Term) (w : world) → [ I ] T ⇛ T at w
-compAllRefl I T w =  λ w' e → compRefl T w'
+compAllRefl I T w =  λ w' e → ⇓-refl T w'
 
 compAllVal : (I : Inh) {a b : Term} {w : world} → [ I ] a ⇛ b at w → isValue a → a ≡ b
 compAllVal I {a} {b} {w} c i = let c' = c _ ([]≽-refl I w) in compVal _ _ _ c' i
@@ -483,5 +589,109 @@ suc≤len++∷ʳ {A} k l1 l2 a h = suc≤len∷ʳ (l1 ++ l2) a k (subst (λ x �
 ∈world-extcs w name l r t i rewrite getCs++ name w [ choice name t ] l r i with name ≟ name
 ... | yes p = refl
 ... | no p = ⊥-elim (p refl)
+
+getCs++∉ : (name : csName) (w w' : world)
+          → getCs name w ≡ nothing
+          → getCs name (w ++ w') ≡ getCs name w'
+getCs++∉ name [] w' h = refl
+getCs++∉ name (start name₁ res ∷ w) w' h with name ≟ name₁
+getCs++∉ name (start name₁ res ∷ w) w' () | yes p
+... | no p = getCs++∉ name w w' h
+getCs++∉ name (choice name₁ t ∷ w) w' h = getCs++∉ name w w' h
+
+∉-getCs-nothing : (w : world) (name : csName) → ¬ (name ∈ (wdom w)) → getCs name w ≡ nothing
+∉-getCs-nothing [] name i = refl
+∉-getCs-nothing (start name₁ res ∷ w) name i with name ≟ name₁
+... | yes p rewrite p = ⊥-elim (i (here refl))
+... | no p = ∉-getCs-nothing w name λ j → i (there j)
+∉-getCs-nothing (choice name₁ t ∷ w) name i = ∉-getCs-nothing w name i
+
+∈world-newcs : (w : world) (name : csName) (r : restriction)
+               → ¬ (name ∈ (wdom w))
+               → ∈world (mkcs name [] r) (newcs w name r)
+∈world-newcs w name r ni rewrite getCs++∉ name w [ start name r ] (∉-getCs-nothing w name ni) with name ≟ name
+... | yes p = refl
+... | no p = ⊥-elim (p refl)
+
+suc-≢-0 : {n : ℕ} → ¬ suc n ≡ 0
+suc-≢-0 {n} ()
+
+select-last : {A : Set} (l : List A) (a : A)
+              → select (length l) (l ++ [ a ]) ≡ just a
+select-last {A} [] a = refl
+select-last {A} (x ∷ l) a = select-last l a
+
+getChoice-extcs-last : (w : world) (k : ℕ) (name : csName) (l : List Term) (r : restriction) (t : Term)
+                       → k ≡ length l
+                       → getCs name w ≡ just (mkcs name l r)
+                       → getChoice k name (extcs w name t) ≡ just t
+getChoice-extcs-last w k name l r t e h rewrite e | getCs++ name w [ choice name t ] l r h with name ≟ name
+... | yes p = select-last l t
+... | no p = ⊥-elim (p refl)
+
+≤-s≤s-≡ : (i k : ℕ) → i ≤ k → suc k ≤ suc i → k ≡ i
+≤-s≤s-≡ i k a (_≤_.s≤s b) = ≤∧≮⇒≡ b (≤⇒≯ a)
+
+⟨⟩≽-ΣgetChoice : (I : InhW) (w1 w2 : world) (name : csName) (l1 l2 : List Term) (r : restriction) (k : ℕ)
+                 → ∈world (mkcs name l1 r) w1
+                 → ∈world (mkcs name l2 r) w2
+                 → length l1 ≤ k
+                 → k < length l2
+                 → ⟨ I ⟩ w2 ⪰ w1
+                 → Σ Term (λ t → Σ world (λ w → Σ (List Term) (λ l →
+                       getChoice k name (extcs w name t) ≡ just t
+                     × ∈world (mkcs name l r) w
+                     × k ≡ length l
+                     × ⟨ I ⟩ w2 ⪰ (extcs w name t)
+                     × ⟨ I ⟩ w ⪰ w1
+                     × I w (r k t))))
+⟨⟩≽-ΣgetChoice I w1 .w1 name l1 l2 r k i1 i2 len1 len2 (extRefl .w1)
+  rewrite i1 | sym (mkcs-inj2 (just-inj i2)) = ⊥-elim (1+n≰n (≤-trans len2 len1))
+⟨⟩≽-ΣgetChoice I w1 w2 name l1 l2 r k i1 i2 len1 len2 (extTrans {w1} {w3} {w2} ext ext₁) with ⟨⟩≽-pres-∈world ext₁ i1
+... | (l , iw) with k <? length (l1 ++ l)
+...            | yes p =
+  let (t , w , l0 , h1 , h2 , h3 , h4 , h5 , h6) = ⟨⟩≽-ΣgetChoice I w1 w3 name l1 (l1 ++ l) r k i1 iw len1 p ext₁ in
+  (t , w , l0 , h1 , h2 , h3 , extTrans {I} ext h4 , h5 , h6)
+...            | no p =
+  let (t , w , l0 , h1 , h2 , h3 , h4 , h5 , h6) = ⟨⟩≽-ΣgetChoice I w3 w2 name (l1 ++ l) l2 r k iw i2 (≮⇒≥ p) len2 ext in
+  (t , w , l0 , h1 , h2 , h3 , h4 , extTrans {I} h5 ext₁ , h6)
+⟨⟩≽-ΣgetChoice I w1 .(w1 ++ choice name₁ t ∷ []) name l1 l2 r k i1 i2 len1 len2 (extChoice .w1 name₁ l t res x x₁) with name ≟ name₁
+... | yes p rewrite p | x | sym (mkcs-inj2 (just-inj i1))
+                    | sym (mkcs-inj3 (just-inj i1))
+                    | getCs++ name₁ w1 [ choice name₁ t ] l res x
+                    | sym (mkcs-inj2 (just-inj i2))
+            with name₁ ≟ name₁
+...         | yes q rewrite length-++ l {[ t ]} | +-comm (length l) 1 =
+              let len : k ≡ length l
+                  len = ≤-s≤s-≡ _ _ len1 len2 in
+                  (t , w1 , l , getChoice-extcs-last w1 k name₁ l res t len x ,
+                    x , len , extRefl (extcs w1 name₁ t) , extRefl w1 , subst (λ x → I w1 (res x t)) (sym len) x₁)
+...         | no q rewrite ++[] l = ⊥-elim (1+n≰n (≤-trans len2 len1))
+⟨⟩≽-ΣgetChoice I w1 .(w1 ++ choice name₁ t ∷ []) name l1 l2 r k i1 i2 len1 len2 (extChoice .w1 name₁ l t res x x₁)
+    | no p rewrite getCs++ name w1 [ choice name₁ t ] l1 r i1
+           with name ≟ name₁
+...        | yes q = ⊥-elim (p q)
+...        | no q rewrite ++[] l1 | sym (mkcs-inj2 (just-inj i2)) = ⊥-elim (1+n≰n (≤-trans len2 len1))
+⟨⟩≽-ΣgetChoice I w1 .(w1 ++ start name₁ res ∷ []) name l1 l2 r k i1 i2 len1 len2 (extEntry .w1 name₁ res x) with name ≟ name₁
+... | yes p rewrite p | getCs++ name₁ w1 [ start name₁ res ] l1 r i1 | ++[] l1 | sym (mkcs-inj2 (just-inj i2)) =
+  ⊥-elim (1+n≰n (≤-trans len2 len1))
+... | no p rewrite getCs++ name w1 [ start name₁ res ] l1 r i1 | ++[] l1 | sym (mkcs-inj2 (just-inj i2)) =
+  ⊥-elim (1+n≰n (≤-trans len2 len1))
+
+[]≽-ΣgetChoice : (I : Inh) (w1 w2 : world) (name : csName) (l : List Term) (r : restriction) (k : ℕ)
+                 → ¬ name ∈ wdom w1
+                 → [ I ] w2 ⪰ newcs w1 name r
+                 → k < length l
+                 → ∈world (mkcs name l r) w2
+                 → Σ Term (λ t → Σ world (λ w → Σ (List Term) (λ l →
+                       getChoice k name (extcs w name t) ≡ just t
+                     × ∈world (mkcs name l r) w
+                     × k ≡ length l
+                     × [ I ] w2 ⪰ extcs w name t
+                     × [ I ] w ⪰ newcs w1 name r
+                     × topInh I w (r k t))))
+[]≽-ΣgetChoice I w1 w2 name l r k niw ext len i =
+  let j = ∈world-newcs w1 name r niw in
+  ⟨⟩≽-ΣgetChoice (topInh I) (newcs w1 name r) w2 name [] l r k j i _≤_.z≤n len ext
 
 \end{code}
