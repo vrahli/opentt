@@ -3,7 +3,7 @@
 \begin{code}
 module theory where
 
-open import Level using (0ℓ) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -15,7 +15,7 @@ open import Data.Product
 open import Data.Sum
 open import Data.Empty
 open import Data.Unit using (⊤ ; tt)
-open import Data.Nat using (ℕ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_)
+open import Data.Nat using (ℕ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
 open import Data.Nat.Properties
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
@@ -34,6 +34,12 @@ OpenTT.
 
 
 \begin{code}
+
+postulate
+  fext : Relation.Binary.PropositionalEquality.Extensionality 0ℓ (lsuc 0ℓ)
+--  fext : Axiom.Extensionality.Propositional.Extensionality 0ℓ (lsuc 0ℓ)
+
+
 -- PERs and world dependent PERs
 per : Set₁
 per = Term → Term → Set
@@ -124,7 +130,12 @@ data eqTypes u I w T1 T2 where
   EQTLOWER : (A1 A2 : Term)
     → [ I ] T1 ⇛ (LOWER A1) at w
     → [ I ] T2 ⇛ (LOWER A2) at w
-    → (eqt : allW I w (λ w' _ → eqTypes u (lower I) w' A1 A2))
+    → (eqt : allW I w (λ w' _ → allI (lower I) (λ i → eqTypes u i w' A1 A2)))
+    → eqTypes u I w T1 T2
+  EQTSHRINK : (A1 A2 : Term)
+    → [ I ] T1 ⇛ (SHRINK A1) at w
+    → [ I ] T2 ⇛ (SHRINK A2) at w
+    → (eqt : allW I w (λ w' _ → eqTypes u (shrink I) w' A1 A2))
     → eqTypes u I w T1 T2
 \end{code}
 
@@ -179,7 +190,11 @@ eqInType u I w (EQTBAR f) t1 t2 =
            let q  = proj₂ (proj₂ p) in
            exW I w1 (λ w2 e2 → allW I w2 (λ w3 e3 → eqInType u I w3 (q w3 ([]≽-trans {I} e3 e2)) t1 t2)))
 eqInType u I w (EQTLOWER _ _ _ _ eqt) t1 t2 =
-  inOpenBar I w (λ w' e → eqInType u (lower I) w' (eqt w' e) t1 t2)
+  -- inOpenBar I w (λ w' e → allI≤ (lower I) (λ j c₁ c₂ i → eqInType u i w' (eqt w' e j c₁ c₂) t1 t2))
+  inOpenBar I w (λ w' e → (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n (lower I)) →
+                   eqInType u (mkinh (Inh.m I) j (λ i c → Inh.f (lower I) i (≤-trans c c₂))) w' (eqt w' e j c₁ c₂) t1 t2)
+eqInType u I w (EQTSHRINK _ _ _ _ eqt) t1 t2 =
+  inOpenBar I w (λ w' e → eqInType u (shrink I) w' (eqt w' e) t1 t2)
 \end{code}
 
 
@@ -215,39 +230,175 @@ equalInType u I w T a b = Σ (equalTypes u I w T T) (λ p → eqInType (uni u) I
 
 
 \begin{code}
-eqintypeN : (u n : ℕ) → EQT
-inhL : (u n : ℕ) → InhF n
-inhN : (u n : ℕ) → Inh
+eqintypeN : (u m n : ℕ) → EQT
+inhL : (u m n : ℕ) → InhF n
+inhN : (u m n : ℕ) → Inh
 
 
-eqintypeN u n w T a b = equalInType u (inhN u n) w T a b
+eqintypeN u m n w T a b = equalInType u (inhN u m n) w T a b
 
-inhL u 0 j c w T = ⊤
-inhL u (suc n) j c w T with m≤n⇒m<n∨m≡n c
-... | inj₁ p = inhL u n j (sucLeInj p) w T
-... | inj₂ p = Σ Term (λ t → eqintypeN u n w T t t)
+inhL u m 0 j c w T = ⊤
+inhL u m (suc n) j c w T with m≤n⇒m<n∨m≡n c
+... | inj₁ p = inhL u m n j (sucLeInj p) w T
+... | inj₂ p = Σ Term (λ t → eqintypeN u m n w T t t)
 
-inhN u n = (n , inhL u n)
+inhN u m n = mkinh m n (inhL u m n)
 
 inhN1L : (u n : ℕ) → Inh
-inhN1L u n = inhN u n -- That gives us 1 level
+inhN1L u n = inhN u n n -- That gives us 1 "low" level
+
+{--inhN1H : (u n : ℕ) → Inh
+inhN1H u n = inhN u (suc n) (suc n) -- That gives us 1 "high" level
+--}
 
 inhN2L : (u n : ℕ) → Inh
-inhN2L u n = inhN u (suc n) -- That gives us 2 levels
+inhN2L u n = inhN u n (suc n) -- That gives us 2 "low" levels
+
+{--inhN2H : (u n : ℕ) → Inh
+inhN2H u n = inhN u (suc n) (suc (suc n)) -- That gives us 2 "high" levels
+--}
 
 
-eqtypesN : (u n : ℕ) → TEQ
-eqtypesN u n w T1 T2 = equalTypes u (inhN u n) w T1 T2
+eqtypesN : (u m n : ℕ) → TEQ
+eqtypesN u m n w T1 T2 = equalTypes u (inhN u m n) w T1 T2
 
 eqtypes : TEQ
-eqtypes w T1 T2 = Σ ℕ (λ u → Σ ℕ (λ n → (j : ℕ) → j ≥ n → eqtypesN u j w T1 T2))
+eqtypes w T1 T2 = Σ ℕ (λ u → Σ ℕ (λ n → Σ ℕ (λ k → (j : ℕ) → j ≥ n → eqtypesN u j (k + j) w T1 T2)))
 
 eqintype : EQT
-eqintype w T a b = Σ ℕ (λ u → Σ ℕ (λ n → (j : ℕ) → j ≥ n → eqintypeN u j w T a b))
+eqintype w T a b = Σ ℕ (λ u → Σ ℕ (λ n → Σ ℕ (λ k → (j : ℕ) → j ≥ n → eqintypeN u j (k + j) w T a b)))
 
 {--wfinhN1L : (j : ℕ) → wfInh (inhN1L j)
 wfinhN1L j = ≤-refl
 
 wfinhN2L : (j : ℕ) → wfInh (inhN2L j)
 wfinhN2L j = (n≤1+n _)--}
+
+
+sucNotLe : (j : ℕ) → ¬ suc j ≤ j
+sucNotLe .(suc _) (_≤_.s≤s h) = sucNotLe _ h
+
+eq-pair : {a b : Level} {A : Set a} {B : Set b} {a₁ a₂ : A} {b₁ b₂ : B} → a₁ ≡ a₂ → b₁ ≡ b₂ → ( a₁ , b₁ ) ≡ ( a₂ , b₂ )
+eq-pair {a} {b} {A} {B} {a₁} {a₂} {b₁} {b₂} p q rewrite p | q = refl
+
+
+inhN1Leq1 : (u n j : ℕ) (c : j ≤ n) (w : world) (t : Term)
+          → inhL u n n j c w t ≡ inhL u n (suc n) j (≤-trans c (n≤1+n _)) w t
+inhN1Leq1 u n j c w t with m≤n⇒m<n∨m≡n (≤-trans c (n≤1+n _))
+... | inj₁ x = subst (λ z → inhL u n n j z w t ≡ inhL u n n j (sucLeInj x) w t) (≤-irrelevant _ c) refl
+... | inj₂ x rewrite x = ⊥-elim (sucNotLe _ c)
+
+
+inhN1Leq : (u n : ℕ) → inhL u n n ≡ λ j c → inhL u n (suc n) j (≤-trans c (n≤1+n _))
+inhN1Leq u n = fext (λ j → fext (λ c → fext (λ w → fext (λ t → inhN1Leq1 u n j c w t))))
+
+inhN1L≡lower-inhN2L : (u n : ℕ) → inhN1L u n ≡ lower (inhN2L u n) --(j , (λ m c → snd (inhNs j) m (≤-trans c (n≤1+n j))))
+inhN1L≡lower-inhN2L u n rewrite inhN1Leq u n = refl
+
+eq-mkinh : {m n : ℕ} {f g : InhF n} → f ≡ g → mkinh m n f ≡ mkinh m n g
+eq-mkinh {m} {n} {f} {g} e rewrite e = refl
+
+≤-trans-≤-refl : {i j : ℕ} (c : i ≤ j) → ≤-trans c ≤-refl ≡ c
+≤-trans-≤-refl {i} {j} c = ≤-irrelevant _ c
+
+inhN1Leq2 : (u j : ℕ) → inhN1L u j ≡ mkinh (Inh.m (inhN1L u j)) j (λ i c → Inh.f (inhN1L u j) i (≤-trans c ≤-refl))
+inhN1Leq2 u j =
+  eq-mkinh (fext (λ j0 → fext (λ c → fext (λ w → fext (λ t →
+    subst (λ x → inhL u j j j0 c w t ≡ Inh.f (inhN1L u j) j0 x w t) (sym (≤-trans-≤-refl c)) refl)))))
+
+allI-inhN1L : {u j : ℕ} {f : Inh → Set} → allI (inhN1L u j) f → f (inhN1L u j)
+allI-inhN1L {u} {j} {f} h rewrite inhN1Leq2 u j = h j ≤-refl ≤-refl
+
+allI-lower-inhN2L : {u j : ℕ} {f : Inh → Set} → allI (lower (inhN2L u j)) f → f (inhN1L u j)
+allI-lower-inhN2L {u} {j} {f} h =
+  allI-inhN1L {u} {j} {f} (subst (λ x → allI x f) (sym (inhN1L≡lower-inhN2L u j)) h )
+
+{--inhN2LeqinhN1L : (u j i : ℕ) (c₁ : j ≤ i) (c₂ : i ≤ j)
+                 → inhL u j j i c₁ c₂ ≡ inhL u j (suc j) i c₁ (≤-trans c₂ (n≤1+n j))
+inhN2LeqinhN1L u j i c₁ c₂ rewrite inhLeq u j = refl--}
+
+
+{--ext2LimpliesExt1L : (j : ℕ) (w1 w2 : world) → [ inhN2L j ] w2 ⪰ w1 → [ inhN1L j ] w2 ⪰ w1
+ext2LimpliesExt1L j w1 w2 h i =
+  λ c₁ c₂ → let h1 = h i c₁ (≤-trans c₂ (n≤1+n _)) in
+    subst (λ x → ⟨ x ⟩ w2 ⪰ w1) (sym (inhN2LeqinhN1L j i c₁ c₂)) h1--}
+
+{--lower-inhN2H-inhL2 : (u n : ℕ) (j : ℕ) (c : j ≤ suc n) (w : world) (T : Term)
+                     → inhL u n (suc n) j c w T ≡ inhL u (suc n) (suc (suc n)) j (≤-trans c (n≤1+n _)) w T
+lower-inhN2H-inhL2 u n j c w T with m≤n⇒m<n∨m≡n c
+... | inj₁ p with m≤n⇒m<n∨m≡n (≤-trans c (_≤_.s≤s (≤-step (≤-reflexive refl))))
+...             | inj₁ q with m≤n⇒m<n∨m≡n (sucLeInj q)
+...                         | inj₁ r rewrite ≤-irrelevant p r = refl
+...                         | inj₂ r rewrite r = ⊥-elim (sucNotLe _ p)
+lower-inhN2H-inhL2 u n j c w T | inj₁ p | inj₂ q rewrite q = ⊥-elim (sucNotLe _ c)
+lower-inhN2H-inhL2 u n j c w T | inj₂ p with m≤n⇒m<n∨m≡n (≤-trans c (_≤_.s≤s (≤-step (≤-reflexive refl))))
+... | inj₁ q with m≤n⇒m<n∨m≡n (sucLeInj q)
+...             | inj₁ r rewrite p = ⊥-elim (sucNotLe _ r)
+...             | inj₂ r = refl
+lower-inhN2H-inhL2 u n j c w T | inj₂ p | inj₂ q rewrite p = ⊥-elim (1+n≢n (sym q))--}
+
+{--lower-inhN2H-inhL : (u n : ℕ) → inhL u n (suc n) ≡ λ j c → inhL u (suc n) (suc (suc n)) j (≤-trans c (n≤1+n _))
+lower-inhN2H-inhL u n = fext (λ j → fext (λ c → fext (λ w → fext (λ t → lower-inhN2H-inhL2 u n j c w t))))
+--}
+
+{--lower-inhN2H : (u j : ℕ) → lower (inhN2H u j) ≡ inhN2L u j
+lower-inhN2H u j =
+  eq-pair refl (Inverse.f Σ-≡,≡↔≡ (refl , sym (lower-inhN2H-inhL u j)))
+--}
+
+
+-- ---------------------------------
+-- Type system
+intype : (w : world) (T t : Term) → Set
+intype w T t = eqintype w T t t
+
+{--inh : InhW
+inh w T = Σ Term (λ t → intype w T t)
+
+_⪰·_ : (w2 : world) (w1 : world) → Set
+w2 ⪰· w1 = ⟨ inh ⟩ w2 ⪰ w1--}
+
+TEQsym : TEQ → Set
+TEQsym τ = (w : world) (A B : Term) → τ w A B → τ w B A
+
+TEQtrans : TEQ → Set
+TEQtrans τ = (w : world) (A B C : Term) → τ w A B → τ w B C → τ w A C
+
+EQTsym : EQT → Set
+EQTsym σ = (w : world) (A a b : Term) → σ w A a b → σ w A b a
+
+EQTtrans : EQT → Set
+EQTtrans σ  = (w : world) (A a b c : Term) → σ w A a b → σ w A b c → σ w A a c
+
+TSext : TEQ → EQT → Set
+TSext τ σ = (w : world) (A B a b : Term) → τ w A B → σ w A a b → σ w B a b
+
+record TS (τ : TEQ) (σ : EQT) : Set where
+  constructor mkts
+  field
+    tySym   : TEQsym τ
+    tyTrans : TEQtrans τ
+    eqSym   : EQTsym σ
+    eqTrans : EQTtrans σ
+    tsExt   : TSext τ σ
+
+
+-- ---------------------------------
+-- Sequents
+
+record hypothesis : Set where
+  constructor mkhyp
+  field
+    name : Var
+    hyp  : Term
+
+hypotheses : Set
+hypotheses = List hypothesis
+
+record sequent : Set where
+  constructor mkseq
+  field
+    hyps  : hypotheses
+    concl : Term
+
 \end{code}

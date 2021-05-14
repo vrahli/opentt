@@ -17,7 +17,7 @@ open import Data.Sum
 open import Data.Empty
 open import Data.Maybe
 open import Data.Unit using (⊤ ; tt)
-open import Data.Nat using (ℕ ; _≟_ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_)
+open import Data.Nat using (ℕ ; _≟_ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
 open import Data.Nat.Properties
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
@@ -83,12 +83,31 @@ InhW = (w : world) → InhT
 InhF : ℕ → Set₁
 InhF n = (j : ℕ) → j ≤ n → InhW
 
-Inh : Set₁
-Inh = Σ ℕ (λ n → InhF n)
+record Inh : Set₁ where
+  constructor mkinh
+  field
+    m : ℕ
+    n : ℕ
+    f : InhF n
+--Inh = Σ ℕ (λ m → Σ ℕ (λ n → InhF n))
 
+wfInh≤ : (I : Inh) → Set
+wfInh≤ I = Inh.m I ≤ Inh.n I
+
+wfInh< : (I : Inh) → Set
+wfInh< I = Inh.m I < Inh.n I
+
+lowerInhF : {n : ℕ} → InhF n → InhF (pred n)
+lowerInhF {0} f = f
+lowerInhF {suc n} f = λ j c → f j (≤-trans c (n≤1+n _))
+
+-- goes from interval s(m)--s(n) to interval m--n
 lower : Inh → Inh
-lower (0 , f) = (0 , f)
-lower (suc n , f) = (n , λ j c → f j (≤-trans c (n≤1+n _)))
+lower (mkinh m n f) = mkinh m (pred n) (lowerInhF f)
+
+-- goes from interval m--s(n) to interval m--n
+shrink : Inh → Inh
+shrink (mkinh m n f) = mkinh m (pred n) (lowerInhF f)
 
 lift : restriction → restriction
 lift res n t = res (suc n) t
@@ -114,20 +133,48 @@ newcs w name r = w ∷ʳ start name r
 extcs : world → csName → Term → world
 extcs w name t = w ∷ʳ choice name t
 
+allIW : (I : Inh) (g : InhW → Set) → Set
+allIW I g = (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → g (Inh.f I j c₂)
+
+allI : (I : Inh) (g : Inh → Set) → Set
+allI I g = (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → g (mkinh (Inh.m I) j (λ i c → Inh.f I i (≤-trans c c₂)))
+
+allI≤ : (I : Inh) (g : (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → Inh → Set) → Set
+allI≤ I g = (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → g j c₁ c₂ (mkinh (Inh.m I) j (λ i c → Inh.f I i (≤-trans c c₂)))
+
 -- w2 extends w1
-data ⟨_⟩_⪰_ (I : InhW) : (w2 : world) (w1 : world) → Set where
+data ⟨_⟩_⪰_ (I : Inh) : (w2 : world) (w1 : world) → Set where
   extRefl : (w : world) → ⟨ I ⟩ w ⪰ w
   extTrans : {w1 w2 w3 : world} → ⟨ I ⟩ w3 ⪰ w2 → ⟨ I ⟩ w2 ⪰ w1 → ⟨ I ⟩ w3 ⪰ w1
   extChoice :
     (w : world) (name : csName) (l : List Term) (t : Term) (res : restriction)
     → ∈world (mkcs name l res) w
-    → I w (res (length l) t)
+    → allIW I (λ i → i w (res (length l) t))
     → ⟨ I ⟩ (extcs w name t) ⪰ w
   extEntry :
     (w : world) (name : csName) (res : restriction)
     → ¬ (name ∈ wdom w) -- 'name' is not in 'w' so that we don't shadow an entry
     → ⟨ I ⟩ (newcs w name res) ⪰ w
 
+
+{--topInh : (I : Inh) → InhW
+topInh (m , n , f) = f n ≤-refl--}
+
+
+-- w2 extends w1
+[_]_⪰_ : (I : Inh) (w2 : world) (w1 : world) → Set
+[ I ] w2 ⪰ w1 = ⟨ I ⟩ w2 ⪰ w1
+
+lower-pres-allIW : (I : Inh) (g : InhW → Set) → allIW I g → allIW (lower I) g
+lower-pres-allIW (mkinh m 0 f) g h i c₁ c₂ = h i c₁ c₂
+lower-pres-allIW (mkinh m (suc n) f) g h i c₁ c₂ = h i c₁ (≤-trans c₂ (n≤1+n _))
+
+lower-pres-⟨⟩≽ : (I : Inh) (w2 w1 : world) → ⟨ I ⟩ w2 ⪰ w1 → ⟨ lower I ⟩ w2 ⪰ w1
+lower-pres-⟨⟩≽ I w2 .w2 (extRefl .w2) = extRefl w2
+lower-pres-⟨⟩≽ I w2 w1 (extTrans h h₁) = extTrans (lower-pres-⟨⟩≽ I _ _ h) (lower-pres-⟨⟩≽ I _ _ h₁)
+lower-pres-⟨⟩≽ I .(w1 ++ choice name t ∷ []) w1 (extChoice .w1 name l t res x x₁) =
+  extChoice w1 name l t res x (lower-pres-allIW I (λ i → i w1 (res (length l) t)) x₁)
+lower-pres-⟨⟩≽ I .(w1 ++ start name res ∷ []) w1 (extEntry .w1 name res x) = extEntry w1 name res x
 
 data norepeats {A : Set} : List A → Set where
   norepsNil : norepeats []
@@ -208,14 +255,6 @@ record ≽world (I : InhW) (w2 : world) (w1 : world) : Set where
 ⟨_⟩_⪰_ : (I : InhW) (w2 : world) (w1 : world) → Set
 ⟨ I ⟩ w2 ⪰ w1 = ≽world I w2 w1
 --}
-
-topInh : (I : Inh) → InhW
-topInh (n , f) = f n ≤-refl
-
-
--- w2 extends w1
-[_]_⪰_ : (I : Inh) (w2 : world) (w1 : world) → Set
-[ I ] w2 ⪰ w1 =  ⟨ topInh I ⟩ w2 ⪰ w1
 
 {--≽entry-pres-∈worldExt : {e e' : entry} {w : world} → ≽entry e' e → ∈worldExt e' w → ∈worldExt e w
 ≽entry-pres-∈worldExt {e} {e'} {w} ext i =
@@ -304,15 +343,15 @@ norepeats∷ʳ {A} (x ∷ l) a (norepsCons .x .l x₁ norep) ni =
     (λ x → ⊥-elim (ni (∈∷-∈∷ʳ x₁ x)))
     (norepeats∷ʳ l a norep λ x → ni (there x))
 
-extwPreservesNorepeats : (I : InhW) (w1 w2 : world) → ⟨ I ⟩ w2 ⪰ w1 → norepeats (wdom w1) → norepeats (wdom w2)
+extwPreservesNorepeats : (I : Inh) (w1 w2 : world) → ⟨ I ⟩ w2 ⪰ w1 → norepeats (wdom w1) → norepeats (wdom w2)
 extwPreservesNorepeats I w1 .w1 (extRefl .w1) norep = norep
 extwPreservesNorepeats I w1 w2 (extTrans e e₁) norep = extwPreservesNorepeats _ _ _ e (extwPreservesNorepeats _ _ _ e₁ norep)
 extwPreservesNorepeats I w1 .(w1 ++ choice name t ∷ []) (extChoice .w1 name l t res x x₁) norep rewrite wdomAddChoice w1 name t = norep
 extwPreservesNorepeats I w1 .(w1 ++ start name res ∷ []) (extEntry .w1 name res x) norep rewrite wdomAddStart w1 name res =
   norepeats∷ʳ _ _ norep x
 
-extPreservesNorepeats : (I : Inh) (w1 w2 : world) → [ I ] w2 ⪰ w1 → norepeats (wdom w1) → norepeats (wdom w2)
-extPreservesNorepeats I w1 w2 e norep = extwPreservesNorepeats (topInh I) w1 w2 e norep
+{--extPreservesNorepeats : (I : Inh) (w1 w2 : world) → [ I ] w2 ⪰ w1 → norepeats (wdom w1) → norepeats (wdom w2)
+extPreservesNorepeats I w1 w2 e norep = extwPreservesNorepeats (topInh I) w1 w2 e norep--}
 
 {--worldw : Inh → Set
 worldw I = Σ world (wfWorld I)
@@ -333,6 +372,9 @@ allW I w f = ∀ (w' : world) (e : [ I ] w' ⪰ w) → f w' e
 -- f holds in one extensions
 exW : (I : Inh) (w : world) (f : wPred I w) → Set
 exW I w f = Σ world (λ w' → Σ ([ I ] w' ⪰ w) (λ e → f w' e))
+
+exAllW : (I : Inh) (w : world) (f : wPred I w) → Set
+exAllW I w f = exW I w (λ w1 e1 → allW I w1 (λ w2 e2 → f w2 ([]≽-trans {I}e2 e1)))
 
 -- f holds in an open bar
 inOpenBar : (I : Inh) (w : world) (f : wPred I w) → Set
@@ -427,6 +469,8 @@ step (FFDEFS a b) w = just (FFDEFS a b)
 step (UNIV u) w = just (UNIV u)
 -- LOWER
 step (LOWER t) w = just (LOWER t)
+-- LOWER
+step (SHRINK t) w = just (SHRINK t)
 
 steps : (n : ℕ) (t : Term) (w : world) → Term
 steps 0 t w = t
@@ -462,6 +506,7 @@ stepVal (TSQUASH a) w v = refl
 stepVal (FFDEFS a a₁) w v = refl
 stepVal (UNIV x) w v = refl
 stepVal (LOWER a) w v = refl
+stepVal (SHRINK a) w v = refl
 
 stepsVal : (a : Term) (w : world) (n : ℕ) → isValue a → steps n a w ≡ a
 stepsVal a w 0 v = refl
@@ -552,7 +597,7 @@ getCs++-diff-choice name name₁ w l r t d e rewrite getCs++ name w [ choice nam
 ... | yes p = ⊥-elim (d p)
 ... | no p rewrite ++[] l = refl
 
-⟨⟩≽-pres-∈world : {I : InhW} {w1 w2 : world} {name : csName} {l : List Term} {r : restriction}
+⟨⟩≽-pres-∈world : {I : Inh} {w1 w2 : world} {name : csName} {l : List Term} {r : restriction}
                   → ⟨ I ⟩ w2 ⪰ w1
                   → ∈world (mkcs name l r) w1
                   → Σ (List Term) (λ l' → ∈world (mkcs name (l ++ l') r) w2)
@@ -632,7 +677,7 @@ getChoice-extcs-last w k name l r t e h rewrite e | getCs++ name w [ choice name
 ≤-s≤s-≡ : (i k : ℕ) → i ≤ k → suc k ≤ suc i → k ≡ i
 ≤-s≤s-≡ i k a (_≤_.s≤s b) = ≤∧≮⇒≡ b (≤⇒≯ a)
 
-⟨⟩≽-ΣgetChoice : (I : InhW) (w1 w2 : world) (name : csName) (l1 l2 : List Term) (r : restriction) (k : ℕ)
+⟨⟩≽-ΣgetChoice : (I : Inh) (w1 w2 : world) (name : csName) (l1 l2 : List Term) (r : restriction) (k : ℕ)
                  → ∈world (mkcs name l1 r) w1
                  → ∈world (mkcs name l2 r) w2
                  → length l1 ≤ k
@@ -644,7 +689,7 @@ getChoice-extcs-last w k name l r t e h rewrite e | getCs++ name w [ choice name
                      × k ≡ length l
                      × ⟨ I ⟩ w2 ⪰ (extcs w name t)
                      × ⟨ I ⟩ w ⪰ w1
-                     × I w (r k t))))
+                     × allIW I (λ i → i w (r k t)))))
 ⟨⟩≽-ΣgetChoice I w1 .w1 name l1 l2 r k i1 i2 len1 len2 (extRefl .w1)
   rewrite i1 | sym (mkcs-inj2 (just-inj i2)) = ⊥-elim (1+n≰n (≤-trans len2 len1))
 ⟨⟩≽-ΣgetChoice I w1 w2 name l1 l2 r k i1 i2 len1 len2 (extTrans {w1} {w3} {w2} ext ext₁) with ⟨⟩≽-pres-∈world ext₁ i1
@@ -665,7 +710,7 @@ getChoice-extcs-last w k name l r t e h rewrite e | getCs++ name w [ choice name
               let len : k ≡ length l
                   len = ≤-s≤s-≡ _ _ len1 len2 in
                   (t , w1 , l , getChoice-extcs-last w1 k name₁ l res t len x ,
-                    x , len , extRefl (extcs w1 name₁ t) , extRefl w1 , subst (λ x → I w1 (res x t)) (sym len) x₁)
+                    x , len , extRefl (extcs w1 name₁ t) , extRefl w1 , subst (λ x → allIW I (λ i → i w1 (res x t))) (sym len) x₁)
 ...         | no q rewrite ++[] l = ⊥-elim (1+n≰n (≤-trans len2 len1))
 ⟨⟩≽-ΣgetChoice I w1 .(w1 ++ choice name₁ t ∷ []) name l1 l2 r k i1 i2 len1 len2 (extChoice .w1 name₁ l t res x x₁)
     | no p rewrite getCs++ name w1 [ choice name₁ t ] l1 r i1
@@ -678,6 +723,7 @@ getChoice-extcs-last w k name l r t e h rewrite e | getCs++ name w [ choice name
 ... | no p rewrite getCs++ name w1 [ start name₁ res ] l1 r i1 | ++[] l1 | sym (mkcs-inj2 (just-inj i2)) =
   ⊥-elim (1+n≰n (≤-trans len2 len1))
 
+
 []≽-ΣgetChoice : (I : Inh) (w1 w2 : world) (name : csName) (l : List Term) (r : restriction) (k : ℕ)
                  → ¬ name ∈ wdom w1
                  → [ I ] w2 ⪰ newcs w1 name r
@@ -689,9 +735,9 @@ getChoice-extcs-last w k name l r t e h rewrite e | getCs++ name w [ choice name
                      × k ≡ length l
                      × [ I ] w2 ⪰ extcs w name t
                      × [ I ] w ⪰ newcs w1 name r
-                     × topInh I w (r k t))))
+                     × allIW I (λ i → i w (r k t)))))
 []≽-ΣgetChoice I w1 w2 name l r k niw ext len i =
   let j = ∈world-newcs w1 name r niw in
-  ⟨⟩≽-ΣgetChoice (topInh I) (newcs w1 name r) w2 name [] l r k j i _≤_.z≤n len ext
+  ⟨⟩≽-ΣgetChoice I (newcs w1 name r) w2 name [] l r k j i _≤_.z≤n len ext
 
 \end{code}

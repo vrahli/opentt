@@ -94,6 +94,7 @@ data Term : Set where
   UNIV : ℕ → Term
   --
   LOWER : Term -> Term
+  SHRINK : Term -> Term
 
 isValue : Term → Set
 isValue (VAR _) = ⊥
@@ -121,6 +122,7 @@ isValue (TSQUASH _) = ⊤
 isValue (FFDEFS _ _) = ⊤
 isValue (UNIV _) = ⊤
 isValue (LOWER _) = ⊤
+isValue (SHRINK _) = ⊤
 
 {--
 -- all variables
@@ -193,6 +195,7 @@ fvars (TSQUASH t)      = fvars t
 fvars (FFDEFS t t₁)    = fvars t ++ fvars t₁
 fvars (UNIV x)         = []
 fvars (LOWER t)        = fvars t
+fvars (SHRINK t)        = fvars t
 
 
 _#_ : (v : Var) (t : Term) → Set
@@ -230,6 +233,7 @@ shiftUp c (TSQUASH t) = TSQUASH (shiftUp c t)
 shiftUp c (FFDEFS t t₁) = FFDEFS (shiftUp c t) (shiftUp c t₁)
 shiftUp c (UNIV x) = UNIV x
 shiftUp c (LOWER t) = LOWER (shiftUp c t)
+shiftUp c (SHRINK t) = SHRINK (shiftUp c t)
 
 shiftDown : ℕ → Term → Term
 shiftDown c (VAR 0) = VAR 0
@@ -260,6 +264,7 @@ shiftDown c (TSQUASH t) = TSQUASH (shiftDown c t)
 shiftDown c (FFDEFS t t₁) = FFDEFS (shiftDown c t) (shiftDown c t₁)
 shiftDown c (UNIV x) = UNIV x
 shiftDown c (LOWER t) = LOWER (shiftDown c t)
+shiftDown c (SHRINK t) = SHRINK (shiftDown c t)
 
 subv : Var → Term → Term → Term
 subv v t (VAR x) with x ≟ v
@@ -289,6 +294,7 @@ subv v t (TSQUASH u) = TSQUASH (subv v t u)
 subv v t (FFDEFS u u₁) = FFDEFS (subv v t u) (subv v t u₁)
 subv v t (UNIV x) = UNIV x
 subv v t (LOWER u) = LOWER (subv v t u)
+subv v t (SHRINK u) = SHRINK (subv v t u)
 
 -- substitute '0' for 't' in 'u'
 sub : Term → Term → Term
@@ -375,6 +381,8 @@ subvNotIn v t (FFDEFS u u₁) n
 subvNotIn v t (UNIV x) n = refl
 subvNotIn v t (LOWER u) n
   rewrite subvNotIn v t u n = refl
+subvNotIn v t (SHRINK u) n
+  rewrite subvNotIn v t u n = refl
 
 sucLeInj : {a b : ℕ} → suc a ≤ suc b → a ≤ b
 sucLeInj {a} {b} (_≤_.s≤s i) = i
@@ -449,6 +457,8 @@ shiftDownTrivial v (FFDEFS u u₁) i
 shiftDownTrivial v (UNIV x) i = refl
 shiftDownTrivial v (LOWER u) i
   rewrite shiftDownTrivial v u i = refl
+shiftDownTrivial v (SHRINK u) i
+  rewrite shiftDownTrivial v u i = refl
 
 shiftUpTrivial : (v : Var) (u : Term) → ((w : Var) → v ≤ w → w # u) → shiftUp v u ≡ u
 shiftUpTrivial v (VAR x) i with x <? v
@@ -458,47 +468,47 @@ shiftUpTrivial v NAT i = refl
 shiftUpTrivial v QNAT i = refl
 shiftUpTrivial v (LT u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+        | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftUpTrivial v (QLT u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+        | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftUpTrivial v (NUM x) i = refl
 shiftUpTrivial v (PI u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
+        | shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
 shiftUpTrivial v (LAMBDA u) i
   rewrite shiftUpTrivial (suc v) u (impLeNotLower _ _ i) = refl
 shiftUpTrivial v (APPLY u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+        | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftUpTrivial v (SUM u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
+        | shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
 shiftUpTrivial v (PAIR u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+        | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftUpTrivial v (SPREAD u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftUpTrivial (suc (suc v)) u₁ (impLeNotLower _ _ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i))) = refl
+        | shiftUpTrivial (suc (suc v)) u₁ (impLeNotLower _ _ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i))) = refl
 shiftUpTrivial v (SET u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
+        | shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
 shiftUpTrivial v (UNION u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+        | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftUpTrivial v (INL u) i
   rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (INR u) i
   rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (DECIDE u u₁ u₂) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite lowerVarsApp (fvars u₁) (fvars u₂)
-  rewrite shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp1 v (lowerVars (fvars u₁)) _ (impLeNotApp2 v (fvars u) _ i)))
-  rewrite shiftUpTrivial (suc v) u₂ (impLeNotLower _ _ (impLeNotApp2 v (lowerVars (fvars u₁)) _ (impLeNotApp2 v (fvars u) _ i))) = refl
+        | lowerVarsApp (fvars u₁) (fvars u₂)
+        | shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp1 v (lowerVars (fvars u₁)) _ (impLeNotApp2 v (fvars u) _ i)))
+        | shiftUpTrivial (suc v) u₂ (impLeNotLower _ _ (impLeNotApp2 v (lowerVars (fvars u₁)) _ (impLeNotApp2 v (fvars u) _ i))) = refl
 shiftUpTrivial v (EQ u u₁ u₂) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftUpTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
-  rewrite shiftUpTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl
+        | shiftUpTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
+        | shiftUpTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl
 shiftUpTrivial v AX i = refl
 shiftUpTrivial v FREE i = refl
 shiftUpTrivial v (CS x) i = refl
@@ -506,9 +516,11 @@ shiftUpTrivial v (TSQUASH u) i
   rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (FFDEFS u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+        | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftUpTrivial v (UNIV x) i = refl
 shiftUpTrivial v (LOWER u) i
+  rewrite shiftUpTrivial v u i = refl
+shiftUpTrivial v (SHRINK u) i
   rewrite shiftUpTrivial v u i = refl
 
 subNotIn : (t u : Term) → # u → sub t u ≡ u
@@ -525,21 +537,21 @@ shiftDownUp (VAR x) n | no p with suc x <? n
 ...                             | no q = refl
 shiftDownUp NAT n = refl
 shiftDownUp QNAT n = refl
-shiftDownUp (LT t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
-shiftDownUp (QLT t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
+shiftDownUp (LT t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
+shiftDownUp (QLT t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (NUM x) n = refl
-shiftDownUp (PI t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ (suc n) = refl
+shiftDownUp (PI t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
 shiftDownUp (LAMBDA t) n rewrite shiftDownUp t (suc n) = refl
-shiftDownUp (APPLY t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
-shiftDownUp (SUM t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ (suc n) = refl
-shiftDownUp(PAIR t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
-shiftDownUp (SPREAD t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ (suc (suc n)) = refl
-shiftDownUp (SET t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ (suc n) = refl
-shiftDownUp (UNION t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
+shiftDownUp (APPLY t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
+shiftDownUp (SUM t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
+shiftDownUp(PAIR t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
+shiftDownUp (SPREAD t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc (suc n)) = refl
+shiftDownUp (SET t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
+shiftDownUp (UNION t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (INL t) n rewrite shiftDownUp t n = refl
 shiftDownUp (INR t) n rewrite shiftDownUp t n = refl
-shiftDownUp (DECIDE t t₁ t₂) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ (suc n) rewrite shiftDownUp t₂ (suc n) = refl
-shiftDownUp (EQ t t₁ t₂) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n rewrite shiftDownUp t₂ n = refl
+shiftDownUp (DECIDE t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) | shiftDownUp t₂ (suc n) = refl
+shiftDownUp (EQ t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n = refl
 shiftDownUp AX n = refl
 shiftDownUp FREE n = refl
 shiftDownUp (CS x) n = refl
@@ -547,5 +559,6 @@ shiftDownUp (TSQUASH t) n rewrite shiftDownUp t n = refl
 shiftDownUp (FFDEFS t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
 shiftDownUp (UNIV x) n = refl
 shiftDownUp (LOWER t) n rewrite shiftDownUp t n = refl
+shiftDownUp (SHRINK t) n rewrite shiftDownUp t n = refl
 
 \end{code}
