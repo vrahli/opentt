@@ -83,12 +83,15 @@ InhW = (w : world) → InhT
 InhF : ℕ → Set₁
 InhF n = (j : ℕ) → j ≤ n → InhW
 
+InhFM : ℕ → Set₁
+InhFM n = ℕ → InhF n
+
 record Inh : Set₁ where
   constructor mkinh
   field
     m : ℕ
     n : ℕ
-    f : InhF n
+    f : InhFM n
 --Inh = Σ ℕ (λ m → Σ ℕ (λ n → InhF n))
 
 wfInh≤ : (I : Inh) → Set
@@ -97,20 +100,8 @@ wfInh≤ I = Inh.m I ≤ Inh.n I
 wfInh< : (I : Inh) → Set
 wfInh< I = Inh.m I < Inh.n I
 
-lowerInhF : {n : ℕ} → InhF n → InhF (pred n)
-lowerInhF {0} f = f
-lowerInhF {suc n} f = λ j c → f j (≤-trans c (n≤1+n _))
-
--- goes from interval s(m)--s(n) to interval m--n
-lower : Inh → Inh
-lower (mkinh m n f) = mkinh m (pred n) (lowerInhF f)
-
--- goes from interval m--s(n) to interval m--n
-shrink : Inh → Inh
-shrink (mkinh m n f) = mkinh m (pred n) (lowerInhF f)
-
-lift : restriction → restriction
-lift res n t = res (suc n) t
+{--lift : restriction → restriction
+lift res n t = res (suc n) t--}
 
 {--wfChoices : InhT → List Term → restriction → Set
 wfChoices I [] res = ⊤
@@ -133,14 +124,15 @@ newcs w name r = w ∷ʳ start name r
 extcs : world → csName → Term → world
 extcs w name t = w ∷ʳ choice name t
 
+-- as the upper bound will be reduced, we also reduce the lower bound
 allIW : (I : Inh) (g : InhW → Set) → Set
-allIW I g = (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → g (Inh.f I j c₂)
+allIW I g = (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → g (Inh.f I (pred (Inh.m I)) j c₂)
 
 allI : (I : Inh) (g : Inh → Set) → Set
-allI I g = (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → g (mkinh (Inh.m I) j (λ i c → Inh.f I i (≤-trans c c₂)))
+allI I g = (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → g (mkinh (Inh.m I) j (λ m i c → Inh.f I m i (≤-trans c c₂)))
 
 allI≤ : (I : Inh) (g : (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → Inh → Set) → Set
-allI≤ I g = (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → g j c₁ c₂ (mkinh (Inh.m I) j (λ i c → Inh.f I i (≤-trans c c₂)))
+allI≤ I g = (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → g j c₁ c₂ (mkinh (Inh.m I) j (λ m i c → Inh.f I m i (≤-trans c c₂)))
 
 -- w2 extends w1
 data ⟨_⟩_⪰_ (I : Inh) : (w2 : world) (w1 : world) → Set where
@@ -165,16 +157,28 @@ topInh (m , n , f) = f n ≤-refl--}
 [_]_⪰_ : (I : Inh) (w2 : world) (w1 : world) → Set
 [ I ] w2 ⪰ w1 = ⟨ I ⟩ w2 ⪰ w1
 
-lower-pres-allIW : (I : Inh) (g : InhW → Set) → allIW I g → allIW (lower I) g
-lower-pres-allIW (mkinh m 0 f) g h i c₁ c₂ = h i c₁ c₂
-lower-pres-allIW (mkinh m (suc n) f) g h i c₁ c₂ = h i c₁ (≤-trans c₂ (n≤1+n _))
+lowerInhFM : {n : ℕ} → InhFM n → InhFM (pred n)
+lowerInhFM {0} f = f
+lowerInhFM {suc n} f m j c = f m j (≤-trans c (n≤1+n _))
 
-lower-pres-⟨⟩≽ : (I : Inh) (w2 w1 : world) → ⟨ I ⟩ w2 ⪰ w1 → ⟨ lower I ⟩ w2 ⪰ w1
-lower-pres-⟨⟩≽ I w2 .w2 (extRefl .w2) = extRefl w2
-lower-pres-⟨⟩≽ I w2 w1 (extTrans h h₁) = extTrans (lower-pres-⟨⟩≽ I _ _ h) (lower-pres-⟨⟩≽ I _ _ h₁)
-lower-pres-⟨⟩≽ I .(w1 ++ choice name t ∷ []) w1 (extChoice .w1 name l t res x x₁) =
-  extChoice w1 name l t res x (lower-pres-allIW I (λ i → i w1 (res (length l) t)) x₁)
-lower-pres-⟨⟩≽ I .(w1 ++ start name res ∷ []) w1 (extEntry .w1 name res x) = extEntry w1 name res x
+-- goes from interval s(m)--s(n) to interval m--n
+lower : Inh → Inh
+lower (mkinh m n f) = mkinh (pred m) (pred n) (lowerInhFM f)
+
+-- goes from interval m--s(n) to interval m--n
+shrink : Inh → Inh
+shrink (mkinh m n f) = mkinh m (pred n) (lowerInhFM f)
+
+shrink-pres-allIW : (I : Inh) (g : InhW → Set) → allIW I g → allIW (shrink I) g
+shrink-pres-allIW (mkinh m 0 f) g h i c₁ c₂ = h i c₁ c₂
+shrink-pres-allIW (mkinh m (suc n) f) g h i c₁ c₂ = h i c₁ (≤-trans c₂ (n≤1+n _))
+
+shrink-pres-⟨⟩≽ : (I : Inh) (w2 w1 : world) → ⟨ I ⟩ w2 ⪰ w1 → ⟨ shrink I ⟩ w2 ⪰ w1
+shrink-pres-⟨⟩≽ I w2 .w2 (extRefl .w2) = extRefl w2
+shrink-pres-⟨⟩≽ I w2 w1 (extTrans h h₁) = extTrans (shrink-pres-⟨⟩≽ I _ _ h) (shrink-pres-⟨⟩≽ I _ _ h₁)
+shrink-pres-⟨⟩≽ I .(w1 ++ choice name t ∷ []) w1 (extChoice .w1 name l t res x x₁) =
+  extChoice w1 name l t res x (shrink-pres-allIW I (λ i → i w1 (res (length l) t)) x₁)
+shrink-pres-⟨⟩≽ I .(w1 ++ start name res ∷ []) w1 (extEntry .w1 name res x) = extEntry w1 name res x
 
 data norepeats {A : Set} : List A → Set where
   norepsNil : norepeats []

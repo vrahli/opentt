@@ -12,6 +12,7 @@ open import Relation.Nullary
 open import Relation.Unary using (Pred; Decidable)
 open import Relation.Binary.PropositionalEquality using (sym ; subst)
 open import Data.Product
+open import Data.Product.Properties
 open import Data.Sum
 open import Data.Empty
 open import Data.Unit using (⊤ ; tt)
@@ -23,6 +24,8 @@ open import Data.List
 open import Data.List.Relation.Unary.Any
 open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
+open import Function.Bundles
+open import Axiom.Extensionality.Propositional
 open import calculus
 open import world
 \end{code}
@@ -36,8 +39,7 @@ OpenTT.
 \begin{code}
 
 postulate
-  fext : Relation.Binary.PropositionalEquality.Extensionality 0ℓ (lsuc 0ℓ)
---  fext : Axiom.Extensionality.Propositional.Extensionality 0ℓ (lsuc 0ℓ)
+  fext : Extensionality 0ℓ (lsuc 0ℓ)
 
 
 -- PERs and world dependent PERs
@@ -191,8 +193,8 @@ eqInType u I w (EQTBAR f) t1 t2 =
            exW I w1 (λ w2 e2 → allW I w2 (λ w3 e3 → eqInType u I w3 (q w3 ([]≽-trans {I} e3 e2)) t1 t2)))
 eqInType u I w (EQTLOWER _ _ _ _ eqt) t1 t2 =
   -- inOpenBar I w (λ w' e → allI≤ (lower I) (λ j c₁ c₂ i → eqInType u i w' (eqt w' e j c₁ c₂) t1 t2))
-  inOpenBar I w (λ w' e → (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n (lower I)) →
-                   eqInType u (mkinh (Inh.m I) j (λ i c → Inh.f (lower I) i (≤-trans c c₂))) w' (eqt w' e j c₁ c₂) t1 t2)
+  inOpenBar I w (λ w' e → (j : ℕ) (c₁ : Inh.m (lower I) ≤ j) (c₂ : j ≤ Inh.n (lower I)) →
+                   eqInType u (mkinh (Inh.m (lower I)) j (λ m i c → Inh.f (lower I) m i (≤-trans c c₂))) w' (eqt w' e j c₁ c₂) t1 t2)
 eqInType u I w (EQTSHRINK _ _ _ _ eqt) t1 t2 =
   inOpenBar I w (λ w' e → eqInType u (shrink I) w' (eqt w' e) t1 t2)
 \end{code}
@@ -242,21 +244,19 @@ inhL u m (suc n) j c w T with m≤n⇒m<n∨m≡n c
 ... | inj₁ p = inhL u m n j (sucLeInj p) w T
 ... | inj₂ p = Σ Term (λ t → eqintypeN u m n w T t t)
 
-inhN u m n = mkinh m n (inhL u m n)
+inhN u m n = mkinh m n (λ m → inhL u m n)
 
 inhN1L : (u n : ℕ) → Inh
 inhN1L u n = inhN u n n -- That gives us 1 "low" level
 
-{--inhN1H : (u n : ℕ) → Inh
-inhN1H u n = inhN u (suc n) (suc n) -- That gives us 1 "high" level
---}
+inhN1Ls : (u n : ℕ) → Inh
+inhN1Ls u n = inhN u (suc n) (suc n) -- That gives us 1 "high" level
 
 inhN2L : (u n : ℕ) → Inh
 inhN2L u n = inhN u n (suc n) -- That gives us 2 "low" levels
 
-{--inhN2H : (u n : ℕ) → Inh
-inhN2H u n = inhN u (suc n) (suc (suc n)) -- That gives us 2 "high" levels
---}
+inhN2Ls : (u n : ℕ) → Inh
+inhN2Ls u n = inhN u (suc n) (suc (suc n)) -- That gives us 2 "high" levels
 
 
 eqtypesN : (u m n : ℕ) → TEQ
@@ -275,8 +275,11 @@ wfinhN2L : (j : ℕ) → wfInh (inhN2L j)
 wfinhN2L j = (n≤1+n _)--}
 
 
-sucNotLe : (j : ℕ) → ¬ suc j ≤ j
-sucNotLe .(suc _) (_≤_.s≤s h) = sucNotLe _ h
+¬s≤ : (j : ℕ) → ¬ suc j ≤ j
+¬s≤ .(suc _) (_≤_.s≤s h) = ¬s≤ _ h
+
+¬s≤0 : (j : ℕ) → ¬ suc j ≤ 0
+¬s≤0 j ()
 
 eq-pair : {a b : Level} {A : Set a} {B : Set b} {a₁ a₂ : A} {b₁ b₂ : B} → a₁ ≡ a₂ → b₁ ≡ b₂ → ( a₁ , b₁ ) ≡ ( a₂ , b₂ )
 eq-pair {a} {b} {A} {B} {a₁} {a₂} {b₁} {b₂} p q rewrite p | q = refl
@@ -286,32 +289,60 @@ inhN1Leq1 : (u n j : ℕ) (c : j ≤ n) (w : world) (t : Term)
           → inhL u n n j c w t ≡ inhL u n (suc n) j (≤-trans c (n≤1+n _)) w t
 inhN1Leq1 u n j c w t with m≤n⇒m<n∨m≡n (≤-trans c (n≤1+n _))
 ... | inj₁ x = subst (λ z → inhL u n n j z w t ≡ inhL u n n j (sucLeInj x) w t) (≤-irrelevant _ c) refl
-... | inj₂ x rewrite x = ⊥-elim (sucNotLe _ c)
+... | inj₂ x rewrite x = ⊥-elim (¬s≤ _ c)
 
 
 inhN1Leq : (u n : ℕ) → inhL u n n ≡ λ j c → inhL u n (suc n) j (≤-trans c (n≤1+n _))
 inhN1Leq u n = fext (λ j → fext (λ c → fext (λ w → fext (λ t → inhN1Leq1 u n j c w t))))
 
-inhN1L≡lower-inhN2L : (u n : ℕ) → inhN1L u n ≡ lower (inhN2L u n) --(j , (λ m c → snd (inhNs j) m (≤-trans c (n≤1+n j))))
-inhN1L≡lower-inhN2L u n rewrite inhN1Leq u n = refl
+{--inhN1L≡lower-inhN2Ls : (u n : ℕ) → inhN2L u n ≡ lower (inhN2Ls u n) --(j , (λ m c → snd (inhNs j) m (≤-trans c (n≤1+n j))))
+inhN1L≡lower-inhN2Ls u n rewrite inhN1Leq u n = refl--}
 
-eq-mkinh : {m n : ℕ} {f g : InhF n} → f ≡ g → mkinh m n f ≡ mkinh m n g
+eq-mkinh : {m n : ℕ} {f g : InhFM n} → f ≡ g → mkinh m n f ≡ mkinh m n g
 eq-mkinh {m} {n} {f} {g} e rewrite e = refl
 
 ≤-trans-≤-refl : {i j : ℕ} (c : i ≤ j) → ≤-trans c ≤-refl ≡ c
 ≤-trans-≤-refl {i} {j} c = ≤-irrelevant _ c
 
-inhN1Leq2 : (u j : ℕ) → inhN1L u j ≡ mkinh (Inh.m (inhN1L u j)) j (λ i c → Inh.f (inhN1L u j) i (≤-trans c ≤-refl))
-inhN1Leq2 u j =
-  eq-mkinh (fext (λ j0 → fext (λ c → fext (λ w → fext (λ t →
-    subst (λ x → inhL u j j j0 c w t ≡ Inh.f (inhN1L u j) j0 x w t) (sym (≤-trans-≤-refl c)) refl)))))
+inhN1Leq2 : (u j : ℕ) → inhN1L u j ≡ mkinh (Inh.m (inhN1L u j)) j (λ m i c → Inh.f (inhN1L u j) m i (≤-trans c ≤-refl))
+inhN1Leq2 u j = eq-mkinh eqf
+  where
+    eqf' : (u m j j0 : ℕ) (c : j0 ≤ j) (w : world) (t : Term)
+           → inhL u m j j0 c w t ≡ Inh.f (inhN1L u j) m j0 (≤-trans c ≤-refl) w t
+    eqf' u m j j0 c w t rewrite ≤-trans-≤-refl c = refl
+
+    eqf : (λ m → inhL u m j) ≡ (λ m i c → Inh.f (inhN1L u j) m i (≤-trans c ≤-refl))
+    eqf = fext (λ m → fext (λ j0 → fext (λ c → fext (λ w → fext (λ t → eqf' u m j j0 c w t)))))
 
 allI-inhN1L : {u j : ℕ} {f : Inh → Set} → allI (inhN1L u j) f → f (inhN1L u j)
 allI-inhN1L {u} {j} {f} h rewrite inhN1Leq2 u j = h j ≤-refl ≤-refl
 
-allI-lower-inhN2L : {u j : ℕ} {f : Inh → Set} → allI (lower (inhN2L u j)) f → f (inhN1L u j)
-allI-lower-inhN2L {u} {j} {f} h =
-  allI-inhN1L {u} {j} {f} (subst (λ x → allI x f) (sym (inhN1L≡lower-inhN2L u j)) h )
+lower-inhN2Ls-inhL2 : (u m n : ℕ) (j : ℕ) (c : j ≤ suc n) (w : world) (T : Term)
+                     → inhL u m (suc n) j c w T ≡ inhL u m (suc (suc n)) j (≤-trans c (n≤1+n _)) w T
+lower-inhN2Ls-inhL2 u m n j c w T with m≤n⇒m<n∨m≡n c
+... | inj₁ p with m≤n⇒m<n∨m≡n (≤-trans c (_≤_.s≤s (≤-step (≤-reflexive refl))))
+...             | inj₁ q with m≤n⇒m<n∨m≡n (sucLeInj q)
+...                         | inj₁ r rewrite ≤-irrelevant p r = refl
+...                         | inj₂ r rewrite r = ⊥-elim (¬s≤ _ p)
+lower-inhN2Ls-inhL2 u m n j c w T | inj₁ p | inj₂ q rewrite q = ⊥-elim (¬s≤ _ c)
+lower-inhN2Ls-inhL2 u m n j c w T | inj₂ p with m≤n⇒m<n∨m≡n (≤-trans c (_≤_.s≤s (≤-step (≤-reflexive refl))))
+... | inj₁ q with m≤n⇒m<n∨m≡n (sucLeInj q)
+...             | inj₁ r rewrite p = ⊥-elim (¬s≤ _ r)
+...             | inj₂ r = refl
+lower-inhN2Ls-inhL2 u m n j c w T | inj₂ p | inj₂ q rewrite p = ⊥-elim (1+n≢n (sym q))
+
+lower-inhN2Ls≡inhL : (u j : ℕ) → lowerInhFM (λ m → inhL u m (suc (suc j))) ≡ λ m → inhL u m (suc j)
+lower-inhN2Ls≡inhL u n =
+  fext (λ m → fext (λ j → fext (λ c → fext (λ w → fext (λ t → sym (lower-inhN2Ls-inhL2 u m n j c w t))))))
+
+lower-inhN2Ls : (u j : ℕ) → lower (inhN2Ls u j) ≡ inhN2L u j
+lower-inhN2Ls u j = eq-mkinh eqf
+  where
+    eqf : lowerInhFM (λ m → inhL u m (suc (suc j))) ≡ λ m → inhL u m (suc j)
+    eqf = lower-inhN2Ls≡inhL u j
+
+allI-lower-inhN2Ls : {u j : ℕ} {f : Inh → Set} → allI (lower (inhN2Ls u j)) f → allI (inhN2L u j) f
+allI-lower-inhN2Ls {u} {j} {f} h = subst (λ x → allI x f) (lower-inhN2Ls u j) h
 
 {--inhN2LeqinhN1L : (u j i : ℕ) (c₁ : j ≤ i) (c₂ : i ≤ j)
                  → inhL u j j i c₁ c₂ ≡ inhL u j (suc j) i c₁ (≤-trans c₂ (n≤1+n j))
@@ -322,29 +353,6 @@ inhN2LeqinhN1L u j i c₁ c₂ rewrite inhLeq u j = refl--}
 ext2LimpliesExt1L j w1 w2 h i =
   λ c₁ c₂ → let h1 = h i c₁ (≤-trans c₂ (n≤1+n _)) in
     subst (λ x → ⟨ x ⟩ w2 ⪰ w1) (sym (inhN2LeqinhN1L j i c₁ c₂)) h1--}
-
-{--lower-inhN2H-inhL2 : (u n : ℕ) (j : ℕ) (c : j ≤ suc n) (w : world) (T : Term)
-                     → inhL u n (suc n) j c w T ≡ inhL u (suc n) (suc (suc n)) j (≤-trans c (n≤1+n _)) w T
-lower-inhN2H-inhL2 u n j c w T with m≤n⇒m<n∨m≡n c
-... | inj₁ p with m≤n⇒m<n∨m≡n (≤-trans c (_≤_.s≤s (≤-step (≤-reflexive refl))))
-...             | inj₁ q with m≤n⇒m<n∨m≡n (sucLeInj q)
-...                         | inj₁ r rewrite ≤-irrelevant p r = refl
-...                         | inj₂ r rewrite r = ⊥-elim (sucNotLe _ p)
-lower-inhN2H-inhL2 u n j c w T | inj₁ p | inj₂ q rewrite q = ⊥-elim (sucNotLe _ c)
-lower-inhN2H-inhL2 u n j c w T | inj₂ p with m≤n⇒m<n∨m≡n (≤-trans c (_≤_.s≤s (≤-step (≤-reflexive refl))))
-... | inj₁ q with m≤n⇒m<n∨m≡n (sucLeInj q)
-...             | inj₁ r rewrite p = ⊥-elim (sucNotLe _ r)
-...             | inj₂ r = refl
-lower-inhN2H-inhL2 u n j c w T | inj₂ p | inj₂ q rewrite p = ⊥-elim (1+n≢n (sym q))--}
-
-{--lower-inhN2H-inhL : (u n : ℕ) → inhL u n (suc n) ≡ λ j c → inhL u (suc n) (suc (suc n)) j (≤-trans c (n≤1+n _))
-lower-inhN2H-inhL u n = fext (λ j → fext (λ c → fext (λ w → fext (λ t → lower-inhN2H-inhL2 u n j c w t))))
---}
-
-{--lower-inhN2H : (u j : ℕ) → lower (inhN2H u j) ≡ inhN2L u j
-lower-inhN2H u j =
-  eq-pair refl (Inverse.f Σ-≡,≡↔≡ (refl , sym (lower-inhN2H-inhL u j)))
---}
 
 
 -- ---------------------------------
