@@ -298,6 +298,11 @@ impliesEqualInTypeLowerBar u I w T a₁ a₂ e = {!!}
       {!!} {--impliesEqualInTypeLower u I w3 T a₁ a₂ (λ w4 e4 → z w4 ([]≽-trans {I} e4 e3))--} )))
 --}
 
+impliesEqualInTypeShrinkBar : (u : ℕ) (I : Inh) (w : world) (T a₁ a₂ : Term)
+                             → inOpenBar I w (λ w' _ → allI (shrink I) (λ i → equalInType u i w' T a₁ a₂))
+                             → equalInType u I w (SHRINK T) a₁ a₂
+impliesEqualInTypeShrinkBar u I w T a₁ a₂ e = {!!}
+
 
 ifequalInTypeacHypPiAux2 : (u : ℕ) (I : Inh) (w2 w1 : world) (p x₁ x₂ y₁ y₂ : Term) (n : ℕ)
                            → # p → # x₁ → # x₂ → # y₁ → # y₂
@@ -430,56 +435,6 @@ implies-equalInType-AND-MEM i I w A B a b cB ea eb = equalInTypeSUM i I w (MEM a
     eb1 : equalInType i I w (sub AX B) b b
     eb1 rewrite subNotIn AX B cB = eb
 
-inhm-inhN2Ls : (u j : ℕ) → Inh.m (inhN2Ls u j) ≡ suc j
-inhm-inhN2Ls u j = refl
-
-inh-f-inhN2Ls : (u j i : ℕ) (c₁ : suc j ≤ i) (c₂ : i ≤ suc (suc j)) (w : world) (T : Term)
-                → Σ Term (λ t → equalInType u (inhN u (suc j) (pred i)) w T t t)
-                → Inh.f (inhN2Ls u j) (Inh.m (inhN2Ls u j)) i c₂ w T
-inh-f-inhN2Ls u j i c₁ c₂ w T h with m≤n⇒m<n∨m≡n c₂
-... | inj₁ p with m≤n⇒m<n∨m≡n (sucLeInj p)
-...          | inj₁ q = ⊥-elim (¬s≤ _ (≤-trans q c₁))
-...          | inj₂ q rewrite q = h
-inh-f-inhN2Ls u j i c₁ c₂ w T h | inj₂ p rewrite p = h
-
-inh-f-inhN2Ls-pred : (u j i : ℕ) (c₁ : suc j ≤ i) (c₂ : i ≤ suc (suc j)) (w : world) (T : Term)
-                → Σ Term (λ t → equalInType u (inhN u j (pred i)) w T t t)
-                → Inh.f (inhN2Ls u j) (pred (Inh.m (inhN2Ls u j))) i c₂ w T
-inh-f-inhN2Ls-pred u j i c₁ c₂ w T h with m≤n⇒m<n∨m≡n c₂
-... | inj₁ p with m≤n⇒m<n∨m≡n (sucLeInj p)
-...          | inj₁ q = ⊥-elim (¬s≤ _ (≤-trans q c₁))
-...          | inj₂ q rewrite q = h
-inh-f-inhN2Ls-pred u j i c₁ c₂ w T h | inj₂ p rewrite p = h
-
-s≤-≤pred : {i j : ℕ} → suc j ≤ i → j ≤ pred i
-s≤-≤pred {suc i} {j} (_≤_.s≤s h) = h
-
-≤0-≡0 : {j : ℕ} → j ≤ 0 → j ≡ 0
-≤0-≡0 {.0} _≤_.z≤n = refl
-
-pred≤pred : {i j : ℕ} → j ≤ i → pred j ≤ pred i
-pred≤pred {i} {0} h = _≤_.z≤n
-pred≤pred {suc i} {suc j} (_≤_.s≤s h) = h
-
-between2 : {i j : ℕ} (c₁ : j ≤ i) (c₂ : i ≤ suc j) → i ≡ j ⊎ i ≡ (suc j)
-between2 {.0} {j} c₁ _≤_.z≤n = inj₁ (sym (≤0-≡0 c₁))
-between2 {suc k} {0} c₁ (_≤_.s≤s c₂) rewrite (≤0-≡0 c₂) = inj₂ refl
-between2 {suc k} {suc j} c₁ (_≤_.s≤s c₂) with between2 (sucLeInj c₁) c₂
-... | inj₁ p rewrite p = inj₁ refl
-... | inj₂ p rewrite p = inj₂ refl
-
-inhL-pred : (u i j m i0 : ℕ) (c : i0 ≤ pred i) (c₁ : suc j ≤ i) (c₂ : i ≤ suc (suc j)) (w : world) (T : Term)
-            → inhL u m (pred i) i0 c w T ≡ Inh.f (inhN2L u j) m i0 (≤-trans c (pred≤pred c₂)) w T
-inhL-pred u i j m i0 c c₁ c₂ w T with between2 c₁ c₂ | m≤n⇒m<n∨m≡n (≤-trans c (pred≤pred c₂))
-... | inj₁ p | inj₁ q rewrite p | ≤-irrelevant (sucLeInj q) c = refl
-... | inj₁ p | inj₂ q rewrite p | q = ⊥-elim (¬s≤ _ c)
-... | inj₂ p | inj₁ q rewrite p with m≤n⇒m<n∨m≡n c
-...                                | inj₁ r rewrite ≤-irrelevant (sucLeInj r) (sucLeInj q) = refl
-...                                | inj₂ r rewrite r = ⊥-elim (¬s≤ _ q)
-inhL-pred u i j m i0 c c₁ c₂ w T | inj₂ p | inj₂ q rewrite p | q with m≤n⇒m<n∨m≡n c
-... | inj₁ r = ⊥-elim (¬s≤ _ r)
-... | inj₂ r = refl
-
 
 -- NOTE: we wouldn't be able to prove this if we had to prove [_]_⪰_ for all lower inhabitations too
 exW≤lengthAux3 : (u : ℕ) (j : ℕ) (w : world) (name : csName) (l : List Term) (m p t : Term) → # p → # m
@@ -569,10 +524,45 @@ exW≤length2 u j w name l k p a₁ a₂ cp ca₁ ca₂ i e =
      let (l2 , i2) = []≽-pres-∈world {inhN2Ls u j} e2 i1 in
      (l1 ++ l2 , i2 , subst (λ x → k ≤ x) (sym (length-++ l1 {l2})) (≤-stepsʳ (length l2) len1)))
 
-foo : (u j i : ℕ) (w : world) (t : Term) (c₁ : j ≤ i) (c₂ : i ≤ suc j)
-      → allIW (inhN2Ls u j) (λ i → i w t)
-      → Σ Term (λ z → equalInType u (inhN u j i) w t z z)
-foo u j i w t c₁ c₂ h = let h' = h i in {!!}
+
+equalInacres : (u : ℕ) (I : Inh) (w : world) (k : ℕ) (p t e : Term)
+               → equalInType u I w (acres p k t) e e
+               → equalInType u I w NAT t t
+equalInacres u I w k p t e h = {!!}
+
+⇛-pres-equalInType-L : (u : ℕ) (I : Inh) (w : world) (T a b c : Term)
+                       → [ I ] a ⇛ c at w
+                       → equalInType u I w T c b
+                       → equalInType u I w T a b
+⇛-pres-equalInType-L u I w T a b c comp h = {!!}
+
+⇛-pres-equalInType-R : (u : ℕ) (I : Inh) (w : world) (T a b c : Term)
+                       → [ I ] b ⇛ c at w
+                       → equalInType u I w T a c
+                       → equalInType u I w T a b
+⇛-pres-equalInType-R u I w T a b c comp h = {!!}
+
+
+equalInType-APPLY-CS : (u : ℕ) (I : Inh) (w : world) (name : csName) (T a b t : Term) (k : ℕ)
+                       → [ I ] a ⇛ NUM k at w
+                       → [ I ] b ⇛ NUM k at w
+                       → getChoice k name w ≡ just t
+                       → equalInType u I w T t t
+                       → equalInType u I w T (APPLY (CS name) a) (APPLY (CS name) b)
+equalInType-APPLY-CS u I w name T a b t k c₁ c₂ gc e =
+  ⇛-pres-equalInType-L u I w T (APPLY (CS name) a) (APPLY (CS name) b) t comp1 e1
+  where
+    comp1 : [ I ] APPLY (CS name) a ⇛ t at w
+    comp1 = ⇛-APPLY-CS I w name a t k gc c₁
+
+    comp2 : [ I ] APPLY (CS name) b ⇛ t at w
+    comp2 = ⇛-APPLY-CS I w name b t k gc c₂
+
+    e1 : equalInType u I w T t (APPLY (CS name) b)
+    e1 = ⇛-pres-equalInType-R u I w T t (APPLY (CS name) b) t comp2 e
+
+
+------ XXXXXXXXXXXXX
 
 
 equalInTypeNAT-APPLY-CS : (u j k : ℕ) (w2 w1 : world) (name : csName) (l : List Term) (p a b : Term)
@@ -582,8 +572,9 @@ equalInTypeNAT-APPLY-CS : (u j k : ℕ) (w2 w1 : world) (name : csName) (l : Lis
                           → [ inhN2Ls u j ] w2 ⪰ (newcs w1 name (acres p))
                           → [ inhN2Ls u j ] b ⇛ NUM k at w2
                           → [ inhN2Ls u j ] a ⇛ NUM k at w2
-                          → allI (inhN2L u j) (λ i → equalInType u i w2 NAT (APPLY (CS name) a) (APPLY (CS name) b))
-equalInTypeNAT-APPLY-CS u j k w2 w1 name l p a b niw iw len ext c₁ c₂ i0 i0₁ i0₂ = {!!}
+                          → allI (inhN1Ls u j) (λ i → equalInType u i w2 NAT (APPLY (CS name) a) (APPLY (CS name) b))
+equalInTypeNAT-APPLY-CS u j k w2 w1 name l p a b niw iw len ext c₁ c₂ i0 i0₁ i0₂ =
+  subst (λ x → equalInType u x w2 NAT (APPLY (CS name) a) (APPLY (CS name) b)) (sym (mkinh1Ls≡inhN u j i0 i0₁ i0₂)) ea
   where
     h : Σ Term (λ t → Σ world (λ w → Σ (List Term) (λ l →
                        getChoice k name (extcs w name t) ≡ just t
@@ -621,6 +612,23 @@ equalInTypeNAT-APPLY-CS u j k w2 w1 name l p a b niw iw len ext c₁ c₂ i0 i0�
     r1 : allIW (inhN2Ls u j) (λ i → i w (acres p k t))
     r1 = proj₂ (proj₂ (proj₂ (proj₂ (proj₂ (proj₂ (proj₂ (proj₂ h)))))))
 
+    r2 : Σ Term (λ z → equalInType u (inhN u j i0) w (acres p k t) z z)
+    r2 = allI-inhN2Ls-ΣequalInType u j i0 w (acres p k t) {!!}{--i0₁--} i0₂ r1
+-- We need allIW to also increase the lower bound
+
+    e : Term
+    e = proj₁ r2
+
+    r3 : equalInType u (inhN u j i0) w (acres p k t) e e
+    r3 = proj₂ r2
+
+    r4 : equalInType u (inhN u j i0) w NAT t t
+    r4 = equalInacres u (inhN u j i0) w k p t e r3
+
+    ea : equalInType u (inhN u (suc j) i0) w2 NAT (APPLY (CS name) a) (APPLY (CS name) b)
+    ea = equalInType-APPLY-CS u (inhN u (suc j) i0) w2 name NAT a b t k {!!} {!!} {!!} {!!}
+-- for the last subgoal, we need to extend r4 so we need an interval, which is in 'inhN2Ls u j'
+
 --  let (t , w , l1 , gc , iw , kel , ext1 , ext2 , r) =  in
 --  let (t1 , r1) = equalInType-inhN2L-topInh u j w (acres p k t) r in
 --  {!!}
@@ -633,16 +641,16 @@ equalInTypeCS : (u j k : ℕ) (w w1 w2 : world) (p a b a₁ a₂ : Term) (name :
                 → [ inhN2Ls u j ] (newcs w1 name (acres p)) ⪰ w
                 → [ inhN2Ls u j ] w2 ⪰ (newcs w1 name (acres p))
                 → equalInType u (inhN2Ls u j) w (acHypPi p) a₁ a₂
-                → equalInType u (inhN2Ls u j) w2 (LOWER NAT) (APPLY (CS name) a) (APPLY (CS name) b)
+                → equalInType u (inhN2Ls u j) w2 (SHRINK NAT) (APPLY (CS name) a) (APPLY (CS name) b)
 equalInTypeCS u j k w w1 w2 p a b a₁ a₂ name cp ca₁ ca₂ niw c₁ c₂ e₁ e₂ eqh =
-  impliesEqualInTypeLowerBar
+  impliesEqualInTypeShrinkBar
     u (inhN2Ls u j) w2 NAT (APPLY (CS name) a) (APPLY (CS name) b) ea1
   where
     iw : ∈world (mkcs name [] (acres p)) (newcs w1 name (acres p))
     iw = ∈world-newcs w1 name (acres p) niw
 
     ea1 : inOpenBar (inhN2Ls u j) w2
-                    (λ w' _ → allI (lower (inhN2Ls u j)) (λ i → equalInType u i w' NAT (APPLY (CS name) a) (APPLY (CS name) b)))
+                    (λ w' _ → allI (shrink (inhN2Ls u j)) (λ i → equalInType u i w' NAT (APPLY (CS name) a) (APPLY (CS name) b)))
     ea1 w3 e3 = (w4 , e4 , ea2)
       where
         iw2 : Σ (List Term) (λ l' → ∈world (mkcs name l' (acres p)) w3)
@@ -669,7 +677,7 @@ equalInTypeCS u j k w w1 w2 p a b a₁ a₂ name cp ca₁ ca₂ niw c₁ c₂ e�
         h1 = proj₂ (proj₂ h)
 
         ea2 : allW (inhN2Ls u j) w4
-                   (λ w' _ → allI (lower (inhN2Ls u j)) (λ i → equalInType u i w' NAT (APPLY (CS name) a) (APPLY (CS name) b)))
+                   (λ w' _ → allI (shrink (inhN2Ls u j)) (λ i → equalInType u i w' NAT (APPLY (CS name) a) (APPLY (CS name) b)))
         ea2 w5 e5 = {!!} -- rewrite (lower-inhN2Ls u j) = {!!}
 
 {--

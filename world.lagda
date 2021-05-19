@@ -744,4 +744,225 @@ getChoice-extcs-last w k name l r t e h rewrite e | getCs++ name w [ choice name
   let j = ∈world-newcs w1 name r niw in
   ⟨⟩≽-ΣgetChoice I (newcs w1 name r) w2 name [] l r k j i _≤_.z≤n len ext
 
+maybeStep : (t : Term) (w : world) → Term
+maybeStep t w with step t w
+... | just u = u
+... | nothing = t
+
+stepsR : (n : ℕ) (t : Term) (w : world) → Term
+stepsR 0 t w = t
+stepsR (suc n) t w = maybeStep (stepsR n t w) w
+
+
+step⊎ : (t : Term) (w : world) → (Σ Term (λ u → step t w ≡ just u)) ⊎ step t w ≡ nothing
+step⊎ t w with step t w
+... | just u = inj₁ (u , refl)
+... | nothing = inj₂ refl
+
+steps≡ : (n : ℕ) (t : Term) (w : world) → steps (suc n) t w ≡ maybeStep (steps n t w) w
+steps≡ 0 t w with step t w
+... | just u = refl
+... | nothing = refl
+steps≡ (suc n) t w with step⊎ t w
+... | inj₁ (u , p) rewrite p | steps≡ n u w = refl
+... | inj₂ p rewrite p | p = refl
+
+steps≡stepsR : (n : ℕ) (t : Term) (w : world) → steps n t w ≡ stepsR n t w
+steps≡stepsR 0 t w = refl
+steps≡stepsR (suc n) t w rewrite sym (steps≡stepsR n t w) | steps≡ n t w = refl
+
+step-APPLY-CS : (t : Term) (w : world) (k : ℕ) (name : csName)
+                → getChoice k name w ≡ just t
+                → steps 1 (APPLY (CS name) (NUM k)) w ≡ t
+step-APPLY-CS t w k name gc rewrite gc = refl
+
+is-NUM : (t : Term) → (Σ ℕ (λ n → t ≡ NUM n)) ⊎ ((n : ℕ) → ¬ t ≡ NUM n)
+is-NUM (VAR x) = inj₂ (λ { n () })
+is-NUM NAT = inj₂ (λ { n () })
+is-NUM QNAT = inj₂ (λ { n () })
+is-NUM (LT t t₁) = inj₂ (λ { n () })
+is-NUM (QLT t t₁) = inj₂ (λ { n () })
+is-NUM (NUM x) = inj₁ ( x , refl)
+is-NUM (PI t t₁) = inj₂ (λ { n () })
+is-NUM (LAMBDA t) = inj₂ (λ { n () })
+is-NUM (APPLY t t₁) = inj₂ (λ { n () })
+is-NUM (SUM t t₁) = inj₂ (λ { n () })
+is-NUM (PAIR t t₁) = inj₂ (λ { n () })
+is-NUM (SPREAD t t₁) = inj₂ (λ { n () })
+is-NUM (SET t t₁) = inj₂ (λ { n () })
+is-NUM (UNION t t₁) = inj₂ (λ { n () })
+is-NUM (INL t) = inj₂ (λ { n () })
+is-NUM (INR t) = inj₂ (λ { n () })
+is-NUM (DECIDE t t₁ t₂) = inj₂ (λ { n () })
+is-NUM (EQ t t₁ t₂) = inj₂ (λ { n () })
+is-NUM AX = inj₂ (λ { n () })
+is-NUM FREE = inj₂ (λ { n () })
+is-NUM (CS x) = inj₂ (λ { n () })
+is-NUM (TSQUASH t) = inj₂ (λ { n () })
+is-NUM (FFDEFS t t₁) = inj₂ (λ { n () })
+is-NUM (UNIV x) = inj₂ (λ { n () })
+is-NUM (LOWER t) = inj₂ (λ { n () })
+is-NUM (SHRINK t) = inj₂ (λ { n () })
+
+step-APPLY-CS-¬NUM : (name : csName) (a b : Term) (w : world)
+                     → ((n : ℕ) → ¬ a ≡ NUM n)
+                     → step a w ≡ just b
+                     → step (APPLY (CS name) a) w ≡ just (APPLY (CS name) b)
+step-APPLY-CS-¬NUM name NAT b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name QNAT b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (LT a a₁) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (QLT a a₁) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (NUM x) b w c s rewrite sym (just-inj s) = ⊥-elim (c x refl)
+step-APPLY-CS-¬NUM name (PI a a₁) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (LAMBDA a) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (APPLY a a₁) b w c s rewrite s = refl
+step-APPLY-CS-¬NUM name (SUM a a₁) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (PAIR a a₁) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (SET a a₁) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (UNION a a₁) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (INL a) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (INR a) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (EQ a a₁ a₂) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name AX b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name FREE b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (CS x) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (TSQUASH a) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (FFDEFS a a₁) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (UNIV x) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (LOWER a) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (SHRINK a) b w c s rewrite sym (just-inj s) = refl
+
+Σ-steps-APPLY-CS≤ : (n : ℕ) (a b : Term) (w : world) (name : csName)
+                 → steps n a w ≡ b
+                 → Σ ℕ (λ m → m ≤ n × steps m (APPLY (CS name) a) w ≡ APPLY (CS name) b)
+Σ-steps-APPLY-CS≤ 0 a b w name h rewrite h = (0 , ≤-refl , refl)
+Σ-steps-APPLY-CS≤ (suc n) a b w name h with step⊎ a w
+... | inj₁ (u , p) rewrite p with is-NUM a
+...                          | inj₁ (k , q) rewrite q | sym (just-inj p) | stepsVal (NUM k) w n tt | sym h = (0 , _≤_.z≤n , refl)
+...                          | inj₂ q = (suc m , _≤_.s≤s l , g)
+  where
+    ms : Σ ℕ (λ m → m ≤ n × steps m (APPLY (CS name) u) w ≡ APPLY (CS name) b)
+    ms = Σ-steps-APPLY-CS≤ n u b w name h
+
+    m : ℕ
+    m = proj₁ ms
+
+    l : m ≤ n
+    l = proj₁ (proj₂ ms)
+
+    s : steps m (APPLY (CS name) u) w ≡ APPLY (CS name) b
+    s = proj₂ (proj₂ ms)
+
+    g : steps (suc m) (APPLY (CS name) a) w ≡ APPLY (CS name) b
+    g rewrite step-APPLY-CS-¬NUM name a u w q p = s
+Σ-steps-APPLY-CS≤ (suc n) a b w name h | inj₂ p rewrite p | h = (0 , _≤_.z≤n , refl)
+
+Σ-steps-APPLY-CS : (n : ℕ) (a t : Term) (w : world) (k : ℕ) (name : csName)
+                 → steps n a w ≡ NUM k
+                 → getChoice k name w ≡ just t
+                 → Σ ℕ (λ m → steps m (APPLY (CS name) a) w ≡ t)
+Σ-steps-APPLY-CS n a t w k name h gc = (suc m , g)
+  where
+    ms : Σ ℕ (λ m → m ≤ n × steps m (APPLY (CS name) a) w ≡ APPLY (CS name) (NUM k))
+    ms = Σ-steps-APPLY-CS≤ n a (NUM k) w name h
+
+    m : ℕ
+    m = proj₁ ms
+
+    l : m ≤ n
+    l = proj₁ (proj₂ ms)
+
+    s : steps m (APPLY (CS name) a) w ≡ APPLY (CS name) (NUM k)
+    s = proj₂ (proj₂ ms)
+
+    g : steps (suc m) (APPLY (CS name) a) w ≡ t
+    g rewrite steps≡ m (APPLY (CS name) a) w | s | gc = refl
+
+⟨⟩≽-pres-getCs : {I : Inh} {w1 w2 : world} {name : csName} {l : List Term} {r : restriction}
+                  → ⟨ I ⟩ w2 ⪰ w1
+                  → getCs name w1 ≡ just (mkcs name l r)
+                  → Σ (List Term) (λ l' → getCs name w2 ≡ just (mkcs name (l ++ l') r))
+⟨⟩≽-pres-getCs {I} {w1} {.w1} {name} {l} {r} (extRefl .w1) i =
+  ([] , subst (λ x → getCs name w1 ≡ just (mkcs name x r)) (sym (++[] l)) i)
+⟨⟩≽-pres-getCs {I} {w1} {w2} {name} {l} {r} (extTrans ext ext₁) i =
+  let (l1 , i1) = ⟨⟩≽-pres-getCs ext₁ i in
+  let (l2 , i2) = ⟨⟩≽-pres-getCs ext i1 in
+  (l1 ++ l2 , subst (λ x → getCs name w2 ≡ just (mkcs name x r)) (++-assoc l l1 l2) i2)
+⟨⟩≽-pres-getCs {I} {w1} {.(w1 ++ choice name₁ t ∷ [])} {name} {l} {r} (extChoice .w1 name₁ l₁ t res x x₁) i with name ≟ name₁
+... | yes p rewrite p = ([ t ] , getCs++-same-choice name₁ w1 l r t i)
+... | no p rewrite getCs++-diff-choice name name₁ w1 l r t p i =
+  ([] , subst (λ x → just (mkcs name l r) ≡ just (mkcs name x r)) (sym (++[] l)) refl)
+⟨⟩≽-pres-getCs {I} {w1} {.(w1 ++ start name₁ res ∷ [])} {name} {l} {r} (extEntry .w1 name₁ res x) i rewrite getCs++ name w1 [ start name₁ res ] l r i =
+  ([] , refl)
+
+getCs-same-name : (name : csName) (w : world) (e : cs)
+                  → getCs name w ≡ just e
+                  → cs.name e ≡ name
+getCs-same-name name (start name₁ res ∷ w) (mkcs n l r) h with name ≟ name₁
+... | yes p = sym (mkcs-inj1 (just-inj h))
+... | no p = getCs-same-name name w (mkcs n l r) h
+getCs-same-name name (choice name₁ t ∷ w) e h = getCs-same-name name w e h
+
+getCs⊎ : (name : csName) (w : world) → (Σ cs (λ e → getCs name w ≡ just e)) ⊎ getCs name w ≡ nothing
+getCs⊎ name w with getCs name w
+... | just u = inj₁ (u , refl)
+... | nothing = inj₂ refl
+
+¬just≡nothing : {A : Set} {a : A} → ¬ just a ≡ nothing
+¬just≡nothing {A} {a} ()
+
+getChoiceΣ : (k : ℕ) (name : csName) (w : world) (t : Term)
+             → getChoice k name w ≡ just t
+             → Σ (List Term) (λ l → Σ restriction (λ r → getCs name w ≡ just (mkcs name l r) × select k l ≡ just t))
+getChoiceΣ k name w t gc with getCs⊎ name w
+... | inj₁ (mkcs n l r , p) rewrite p | getCs-same-name name w (mkcs n l r) p = (l , r , refl , gc)
+getChoiceΣ k name w t gc | inj₂ p rewrite p = ⊥-elim (¬just≡nothing (sym gc))
+
+select++-just : {A : Set} {k : ℕ} {l l' : List A} {t : A}
+                → select k l ≡ just t
+                → select k (l ++ l') ≡ just t
+select++-just {A} {0} {x ∷ l} {l'} {t} sel = sel
+select++-just {A} {suc k} {x ∷ l} {l'} {t} sel = select++-just {A} {k} {l} {l'} sel
+
+[]≽-pres-getChoice : (I : Inh) (w2 w1 : world) (k : ℕ) (name : csName) (t : Term)
+                     → [ I ] w2 ⪰ w1
+                     → getChoice k name w1 ≡ just t
+                     → getChoice k name w2 ≡ just t
+[]≽-pres-getChoice I w2 w1 k name t ext gc = gc3
+  where
+    h : Σ (List Term) (λ l → Σ restriction (λ r → getCs name w1 ≡ just (mkcs name l r) × select k l ≡ just t))
+    h = getChoiceΣ k name w1 t gc
+
+    l : List Term
+    l = proj₁ h
+
+    r : restriction
+    r = proj₁ (proj₂ h)
+
+    gc1 : getCs name w1 ≡ just (mkcs name l r)
+    gc1 = proj₁ (proj₂ (proj₂ h))
+
+    sel : select k l ≡ just t
+    sel = proj₂ (proj₂ (proj₂ h))
+
+    q : Σ (List Term) (λ l' → getCs name w2 ≡ just (mkcs name (l ++ l') r))
+    q = ⟨⟩≽-pres-getCs {I} ext gc1
+
+    l' : List Term
+    l' = proj₁ q
+
+    gc2 : getCs name w2 ≡ just (mkcs name (l ++ l') r)
+    gc2 = proj₂ q
+
+    gc3 : getChoice k name w2 ≡ just t
+    gc3 rewrite gc2 = select++-just {Term} {k} {l} {l'} sel
+
+⇛-APPLY-CS : (I : Inh) (w : world) (name : csName) (a t : Term) (k : ℕ)
+              → getChoice k name w ≡ just t
+              → [ I ] a ⇛ NUM k at w
+              → [ I ] APPLY (CS name) a ⇛ t at w
+⇛-APPLY-CS I w name a t k gc c w1 e1 =
+  let (n , c1) = c w1 e1 in
+  Σ-steps-APPLY-CS n a t w1 k name c1 ([]≽-pres-getChoice I w1 w k name t e1 gc)
+
 \end{code}

@@ -293,6 +293,58 @@ LOWERinj refl =  refl
 compAllLOWER : {I : Inh} {w : world} {a b : Term} → [ I ] LOWER a ⇛ LOWER b at w → a ≡ b
 compAllLOWER {I} {w} {a} {b} e = LOWERinj (compAllVal I e tt)
 
+
+-- SHRINK
+SHRINKneqNAT : {a : Term} → ¬ (SHRINK a) ≡ NAT
+SHRINKneqNAT {a} ()
+
+SHRINKneqQNAT : {a : Term} → ¬ (SHRINK a) ≡ QNAT
+SHRINKneqQNAT {a} ()
+
+SHRINKneqLT : {a : Term} {c d : Term} → ¬ (SHRINK a) ≡ LT c d
+SHRINKneqLT {a} {c} {d} ()
+
+SHRINKneqQLT : {a : Term} {c d : Term} → ¬ (SHRINK a) ≡ QLT c d
+SHRINKneqQLT {a} {c} {d} ()
+
+SHRINKneqFREE : {a : Term} → ¬ (SHRINK a) ≡ FREE
+SHRINKneqFREE {a} ()
+
+SHRINKneqPI : {a : Term} {c : Term} {d : Term} → ¬ (SHRINK a) ≡ PI c d
+SHRINKneqPI {a} {c} {d} ()
+
+SHRINKneqSUM : {a : Term} {c : Term} {d : Term} → ¬ (SHRINK a) ≡ SUM c d
+SHRINKneqSUM {a} {c} {d} ()
+
+SHRINKneqSET : {a : Term} {c : Term} {d : Term} → ¬ (SHRINK a) ≡ SET c d
+SHRINKneqSET {a} {c} {d} ()
+
+SHRINKneqUNION : {a : Term} {c : Term} {d : Term} → ¬ (SHRINK a) ≡ UNION c d
+SHRINKneqUNION {a} {c} {d} ()
+
+SHRINKneqTSQUASH : {a : Term} {c : Term} → ¬ (SHRINK a) ≡ TSQUASH c
+SHRINKneqTSQUASH {a} {c} ()
+
+SHRINKneqEQ : {a : Term} {c d e : Term} → ¬ (SHRINK a) ≡ EQ c d e
+SHRINKneqEQ {a} {c} {d} {e} ()
+
+SHRINKneqFFDEFS : {a : Term} {c d : Term} → ¬ (SHRINK a) ≡ FFDEFS c d
+SHRINKneqFFDEFS {a} {c} {d} ()
+
+SHRINKneqUNIV : {a : Term} {n : ℕ} → ¬ (SHRINK a) ≡ UNIV n
+SHRINKneqUNIV {a} {n} ()
+
+SHRINKneqLOWER : {a b : Term} → ¬ SHRINK a ≡ LOWER b
+SHRINKneqLOWER {a} {b} ()
+
+SHRINKinj : {a b : Term} → SHRINK a ≡ SHRINK b → a ≡ b
+SHRINKinj refl =  refl
+
+compAllSHRINK : {I : Inh} {w : world} {a b : Term} → [ I ] SHRINK a ⇛ SHRINK b at w → a ≡ b
+compAllSHRINK {I} {w} {a} {b} e = SHRINKinj (compAllVal I e tt)
+
+
+
 closedlamAX : # lamAX
 closedlamAX v ()
 
@@ -468,6 +520,13 @@ equalInTypesubLAPPLY2 {u} {I} {w} {p} {t} {a} {b} {n} cp e rewrite sub-LAPPLY2-N
 ... | inj₂ x = cm _ x
 
 
+wPredExtIrrFun-allI-equalInType : (u : ℕ) (I1 I2 : Inh) (w : world) (T a b : Term)
+                                  → wPredExtIrr {I1} {w} (λ w1 e1 → allI I2 (λ i → equalInType u i w1 T a b))
+wPredExtIrrFun-allI-equalInType u I1 I2 w T a b w' e1 e2 h = h
+
+
+
+-- LOWER properties
 eqTypesLOWER : (u : ℕ) (I : Inh) (w : world) (T a₁ a₂ : Term) (wf : wfInh< I)
                → inOpenBar I w (λ w' _ → allI (lower I) (λ i → equalInType u i w' T a₁ a₂))
                → eqTypes (uni u) I w (LOWER T) (LOWER T)
@@ -480,6 +539,7 @@ eqTypesLOWER u I w T a₁ a₂ wf h = EQTBAR e
             λ w4 e4 → let a3 = a2 w4 ([]≽-trans {I} e4 e3) in
             λ j c₁ c₂ → let (eqt , eqi) = a3 j c₁ c₂ in eqt)
 
+
 impliesEqualInTypeLower : (u : ℕ) (I : Inh) (w : world) (T a₁ a₂ : Term)
                           → allW I w (λ w' _ → allI (lower I) (λ i → equalInType u i w' T a₁ a₂))
                           → equalInType u I w (LOWER T) a₁ a₂
@@ -488,10 +548,6 @@ impliesEqualInTypeLower u I w T a₁ a₂ e =
       e' = (λ w1 e1 i c₁ c₂ → let (eqt , eqi) = e w1 e1 i c₁ c₂ in eqt) in
    (EQTLOWER T T (compAllRefl I (LOWER T) w) (compAllRefl I (LOWER T) w) e' ,
     allWimpliesinOpenBar {I} {w} λ w1 e1 i c₁ c₂ → proj₂ (e w1 e1 i c₁ c₂))
-
-wPredExtIrrFun-allI-equalInType : (u : ℕ) (I1 I2 : Inh) (w : world) (T a b : Term)
-                                  → wPredExtIrr {I1} {w} (λ w1 e1 → allI I2 (λ i → equalInType u i w1 T a b))
-wPredExtIrrFun-allI-equalInType u I1 I2 w T a b w' e1 e2 h = h
 
 
 equalInTypeLower : (u : ℕ) (I : Inh) (w : world) (T a₁ a₂ : Term)
@@ -535,6 +591,72 @@ equalInTypeLower u I w T a₁ a₂ (EQTLOWER A1 A2 x x₁ eqt , eqi) =
       substEqTeq (uni u) _ _ w3 A1 T A2 T a₁ a₂ eqt2 eqi2 refl (sym eq1) (sym eq2))
 equalInTypeLower u I w T a₁ a₂ (EQTSHRINK A1 A2 x x₁ eqt , eqi) = ⊥-elim (LOWERneqSHRINK (compAllVal I x₁ tt))
 
+
+-- SHRINK properties
+eqTypesSHRINK : (u : ℕ) (I : Inh) (w : world) (T a₁ a₂ : Term) (wf : wfInh< I)
+               → inOpenBar I w (λ w' _ → allI (shrink I) (λ i → equalInType u i w' T a₁ a₂))
+               → eqTypes (uni u) I w (SHRINK T) (SHRINK T)
+eqTypesSHRINK u I w T a₁ a₂ wf h = EQTBAR e
+  where
+    e : inOpenBar I w (λ w' _ → eqTypes (uni u) I w' (SHRINK T) (SHRINK T))
+    e = λ w1 e1 → let (w2 , e2 , a2) = h w1 e1 in
+          (w2 , e2 , λ w3 e3 →
+          EQTSHRINK T T (compAllRefl I (SHRINK T) w3) (compAllRefl I (SHRINK T) w3)
+            λ w4 e4 → let a3 = a2 w4 ([]≽-trans {I} e4 e3) in
+            λ j c₁ c₂ → let (eqt , eqi) = a3 j c₁ c₂ in eqt)
+
+impliesEqualInTypeShrink : (u : ℕ) (I : Inh) (w : world) (T a₁ a₂ : Term)
+                          → allW I w (λ w' _ → allI (shrink I) (λ i → equalInType u i w' T a₁ a₂))
+                          → equalInType u I w (SHRINK T) a₁ a₂
+impliesEqualInTypeShrink u I w T a₁ a₂ e =
+  let e' : allW I w (λ w' _ → allI (shrink I) (λ i → eqTypes (uni u) i w' T T))
+      e' = (λ w1 e1 i c₁ c₂ → let (eqt , eqi) = e w1 e1 i c₁ c₂ in eqt) in
+   (EQTSHRINK T T (compAllRefl I (SHRINK T) w) (compAllRefl I (SHRINK T) w) e' ,
+    allWimpliesinOpenBar {I} {w} λ w1 e1 i c₁ c₂ → proj₂ (e w1 e1 i c₁ c₂))
+
+equalInTypeShrink : (u : ℕ) (I : Inh) (w : world) (T a₁ a₂ : Term)
+                   → equalInType u I w (SHRINK T) a₁ a₂
+                   → inOpenBar I w (λ w1 e1 → allI (shrink I) (λ i → equalInType u i w1 T a₁ a₂))
+equalInTypeShrink u I w T a₁ a₂ (EQTNAT x x₁ , eqi) = ⊥-elim (SHRINKneqNAT (compAllVal I x₁ tt))
+equalInTypeShrink u I w T a₁ a₂ (EQTQNAT x x₁ , eqi) = ⊥-elim (SHRINKneqQNAT (compAllVal I x₁ tt))
+equalInTypeShrink u I w T a₁ a₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (SHRINKneqLT (compAllVal I x₁ tt))
+equalInTypeShrink u I w T a₁ a₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (SHRINKneqQLT (compAllVal I x₁ tt))
+equalInTypeShrink u I w T a₁ a₂ (EQTFREE x x₁ , eqi) = ⊥-elim (SHRINKneqFREE (compAllVal I x₁ tt))
+equalInTypeShrink u I w T a₁ a₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb , eqi) = ⊥-elim (SHRINKneqPI (compAllVal I x₁ tt))
+equalInTypeShrink u I w T a₁ a₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb , eqi) = ⊥-elim (SHRINKneqSUM (compAllVal I x₁ tt))
+equalInTypeShrink u I w T a₁ a₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb , eqi) = ⊥-elim (SHRINKneqSET (compAllVal I x₁ tt))
+equalInTypeShrink u I w T a₁ a₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA eqt1 eqt2 , eqi) = ⊥-elim (SHRINKneqEQ (compAllVal I x₁ tt))
+equalInTypeShrink u I w T a₁ a₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB , eqi) = ⊥-elim (SHRINKneqUNION (compAllVal I x₁ tt))
+equalInTypeShrink u I w T a₁ a₂ (EQTSQUASH A1 A2 x x₁ eqtA , eqi) = ⊥-elim (SHRINKneqTSQUASH (compAllVal I x₁ tt))
+equalInTypeShrink u I w T a₁ a₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx , eqi) = ⊥-elim (SHRINKneqFFDEFS (compAllVal I x₁ tt))
+equalInTypeShrink u I w T a₁ a₂ (EQTUNIV x , eqi) =
+  let (w1 , e1 , e) = x w ([]≽-refl I w) in
+  let (c1 , c2) = e w1 ([]≽-refl I w1) in
+  let c = compAllVal I c1 tt in
+  ⊥-elim (SHRINKneqUNIV c)
+equalInTypeShrink u I w T a₁ a₂ (EQTBAR x , eqi) =
+  inOpenBarIdem
+    I w _ (wPredExtIrrFun-allI-equalInType u I (shrink I) w T a₁ a₂)
+    λ w1 e1 →
+     let (w2' , e2' , eqi1) = eqi w1 e1 in
+     let (w2 , e2 , x1) = x w1 e1 in
+      (w2' , ([]≽-trans {I} e2' e2 , λ w3 e3 →
+        let x2 = x1 w3 ([]≽-trans {I} e3 e2') in
+        let eqi2 = eqi1 w3 e3 in
+        equalInTypeShrink u I w3 T a₁ a₂ (x2 , eqi2) ))
+equalInTypeShrink u I w T a₁ a₂ (EQTLOWER A1 A2 x x₁ eqt , eqi) = ⊥-elim (SHRINKneqLOWER (compAllVal I x₁ tt))
+equalInTypeShrink u I w T a₁ a₂ (EQTSHRINK A1 A2 x x₁ eqt , eqi) =
+  λ w1 e1 →
+    let (w2' , e2' , eqi1) = eqi w1 e1 in
+    (w2' , e2' , λ w3 e3 i c₁ c₂ →
+      let eqi2 = eqi1 w3 e3 i c₁ c₂ in
+      let eqt2 = eqt w3 ([]≽-trans {I} e3 ([]≽-trans {I} e2' e1)) i c₁ c₂ in
+      let eq1 = compAllSHRINK {I} x in
+      let eq2 = compAllSHRINK {I} x₁ in
+      substEqTeq (uni u) _ _ w3 A1 T A2 T a₁ a₂ eqt2 eqi2 refl (sym eq1) (sym eq2))
+
+
+-- Inhabitation properties
 Inh-eta : (I : Inh) → mkinh (Inh.m I) (Inh.n I) (λ m i c → Inh.f I m i (≤-trans c ≤-refl)) ≡ I
 Inh-eta (mkinh m n f) = eq-mkinh (fext (λ m → fext (λ i → fext (λ c → eqf m i c))))
   where
@@ -546,5 +668,171 @@ allI-equalInType : (u : ℕ) (I : Inh) (wf : wfInh≤ I) (w : world) (T a b : Te
                    → allI I (λ i → equalInType u i w T a b)
                    → equalInType u I w T a b
 allI-equalInType u I wf w T a b h = subst (λ x → equalInType u x w T a b) (Inh-eta I) (h (Inh.n I) wf ≤-refl)
+
+
+s≤-≤pred : {i j : ℕ} → suc j ≤ i → j ≤ pred i
+s≤-≤pred {suc i} {j} (_≤_.s≤s h) = h
+
+
+≤0-≡0 : {j : ℕ} → j ≤ 0 → j ≡ 0
+≤0-≡0 {.0} _≤_.z≤n = refl
+
+
+pred≤pred : {i j : ℕ} → j ≤ i → pred j ≤ pred i
+pred≤pred {i} {0} h = _≤_.z≤n
+pred≤pred {suc i} {suc j} (_≤_.s≤s h) = h
+
+
+between2 : {i j : ℕ} (c₁ : j ≤ i) (c₂ : i ≤ suc j) → i ≡ j ⊎ i ≡ (suc j)
+between2 {.0} {j} c₁ _≤_.z≤n = inj₁ (sym (≤0-≡0 c₁))
+between2 {suc k} {0} c₁ (_≤_.s≤s c₂) rewrite (≤0-≡0 c₂) = inj₂ refl
+between2 {suc k} {suc j} c₁ (_≤_.s≤s c₂) with between2 (sucLeInj c₁) c₂
+... | inj₁ p rewrite p = inj₁ refl
+... | inj₂ p rewrite p = inj₂ refl
+
+
+between1 : {i j : ℕ} (c₁ : j ≤ i) (c₂ : i ≤ j) → i ≡ j
+between1 {0} {j} c₁ _≤_.z≤n rewrite (≤0-≡0 c₁) = refl
+between1 {suc k} {suc w} c₁ (_≤_.s≤s c₂) rewrite between1 (sucLeInj c₁) c₂ = refl
+
+
+inhL-pred : (u i j m i0 : ℕ) (c : i0 ≤ pred i) (c₁ : suc j ≤ i) (c₂ : i ≤ suc (suc j)) (w : world) (T : Term)
+            → inhL u m (pred i) i0 c w T ≡ Inh.f (inhN2L u j) m i0 (≤-trans c (pred≤pred c₂)) w T
+inhL-pred u i j m i0 c c₁ c₂ w T with between2 c₁ c₂ | m≤n⇒m<n∨m≡n (≤-trans c (pred≤pred c₂))
+... | inj₁ p | inj₁ q rewrite p | ≤-irrelevant (sucLeInj q) c = refl
+... | inj₁ p | inj₂ q rewrite p | q = ⊥-elim (¬s≤ _ c)
+... | inj₂ p | inj₁ q rewrite p with m≤n⇒m<n∨m≡n c
+...                                | inj₁ r rewrite ≤-irrelevant (sucLeInj r) (sucLeInj q) = refl
+...                                | inj₂ r rewrite r = ⊥-elim (¬s≤ _ q)
+inhL-pred u i j m i0 c c₁ c₂ w T | inj₂ p | inj₂ q rewrite p | q with m≤n⇒m<n∨m≡n c
+... | inj₁ r = ⊥-elim (¬s≤ _ r)
+... | inj₂ r = refl
+
+
+inhm-inhN2Ls : (u j : ℕ) → Inh.m (inhN2Ls u j) ≡ suc j
+inhm-inhN2Ls u j = refl
+
+
+inh-f-inhN2Ls : (u j i : ℕ) (c₁ : suc j ≤ i) (c₂ : i ≤ suc (suc j)) (w : world) (T : Term)
+                → Σ Term (λ t → equalInType u (inhN u (suc j) (pred i)) w T t t)
+                → Inh.f (inhN2Ls u j) (Inh.m (inhN2Ls u j)) i c₂ w T
+inh-f-inhN2Ls u j i c₁ c₂ w T h with m≤n⇒m<n∨m≡n c₂
+... | inj₁ p with m≤n⇒m<n∨m≡n (sucLeInj p)
+...          | inj₁ q = ⊥-elim (¬s≤ _ (≤-trans q c₁))
+...          | inj₂ q rewrite q = h
+inh-f-inhN2Ls u j i c₁ c₂ w T h | inj₂ p rewrite p = h
+
+
+inh-f-inhN2Ls-pred : (u j i : ℕ) (c₁ : suc j ≤ i) (c₂ : i ≤ suc (suc j)) (w : world) (T : Term)
+                   → Σ Term (λ t → equalInType u (inhN u j (pred i)) w T t t)
+                   → Inh.f (inhN2Ls u j) (pred (Inh.m (inhN2Ls u j))) i c₂ w T
+inh-f-inhN2Ls-pred u j i c₁ c₂ w T h with m≤n⇒m<n∨m≡n c₂
+... | inj₁ p with m≤n⇒m<n∨m≡n (sucLeInj p)
+...          | inj₁ q = ⊥-elim (¬s≤ _ (≤-trans q c₁))
+...          | inj₂ q rewrite q = h
+inh-f-inhN2Ls-pred u j i c₁ c₂ w T h | inj₂ p rewrite p = h
+
+
+if-inh-f-inhN2Ls-pred : (u j i : ℕ) (c₁ : suc j ≤ i) (c₂ : i ≤ suc (suc j)) (w : world) (T : Term)
+                        → Inh.f (inhN2Ls u j) (pred (Inh.m (inhN2Ls u j))) i c₂ w T
+                        → Σ Term (λ t → equalInType u (inhN u j (pred i)) w T t t)
+if-inh-f-inhN2Ls-pred u j i c₁ c₂ w T h with m≤n⇒m<n∨m≡n c₂
+... | inj₁ p with m≤n⇒m<n∨m≡n (sucLeInj p)
+...          | inj₁ q = ⊥-elim (¬s≤ _ (≤-trans q c₁))
+...          | inj₂ q rewrite q = h
+if-inh-f-inhN2Ls-pred u j i c₁ c₂ w T h | inj₂ p rewrite p = h
+
+
+allI-inhN2Ls-ΣequalInType : (u j i : ℕ) (w : world) (t : Term) (c₁ : j ≤ i) (c₂ : i ≤ suc j)
+                            → allIW (inhN2Ls u j) (λ i → i w t)
+                            → Σ Term (λ z → equalInType u (inhN u j i) w t z z)
+allI-inhN2Ls-ΣequalInType u j i w t c₁ c₂ h =
+  if-inh-f-inhN2Ls-pred
+    u j (suc i) (_≤_.s≤s c₁) (_≤_.s≤s c₂) w t
+    (h (suc i) (_≤_.s≤s c₁) (_≤_.s≤s c₂))
+
+
+mkinh2L≡inhNaux : (u j i : ℕ) (c₁ : j ≤ i) (c₂ : i ≤ suc j) (m z : ℕ) (c : z ≤ i) (w : world) (t : Term)
+                → Inh.f (inhN2L u j) m z (≤-trans c c₂) w t ≡ inhL u m i z c w t
+mkinh2L≡inhNaux u j i c₁ c₂ m z c w t with between2 c₁ c₂ | m≤n⇒m<n∨m≡n (≤-trans c c₂)
+... | inj₁ p | inj₁ q rewrite p | ≤-irrelevant (sucLeInj q) c = refl
+... | inj₁ p | inj₂ q rewrite p | q = ⊥-elim (¬s≤ _ c)
+... | inj₂ p | inj₁ q rewrite p with m≤n⇒m<n∨m≡n c
+...                                | inj₁ r rewrite ≤-irrelevant (sucLeInj r) (sucLeInj q) = refl
+...                                | inj₂ r rewrite r = ⊥-elim (¬s≤ _ q)
+mkinh2L≡inhNaux u j i c₁ c₂ m z c w t | inj₂ p | inj₂ q rewrite p | q with m≤n⇒m<n∨m≡n c
+... | inj₁ r = ⊥-elim (¬s≤ _ r)
+... | inj₂ r = refl
+
+
+mkinh2L≡inhN : (u j i : ℕ) (c₁ : j ≤ i) (c₂ : i ≤ suc j)
+               → mkinh (Inh.m (inhN2L u j)) i (λ m i c → Inh.f (inhN2L u j) m i (≤-trans c c₂)) ≡ inhN u j i
+mkinh2L≡inhN u j i c₁ c₂ = eq-mkinh (fext (λ m → fext (λ z → fext (λ c → fext (λ w → fext (λ t → h m z c w t))))))
+  where
+    h : (m z : ℕ) (c : z ≤ i) (w : world) (t : Term)
+        → Inh.f (inhN2L u j) m z (≤-trans c c₂) w t ≡ inhL u m i z c w t
+    h m z c w t = mkinh2L≡inhNaux u j i c₁ c₂ m z c w t
+
+
+mkinh1Ls≡inhNaux : (u j i : ℕ) (c₁ : suc j ≤ i) (c₂ : i ≤ suc j) (m z : ℕ) (c : z ≤ i) (w : world) (t : Term)
+                 → Inh.f (inhN1Ls u j) m z (≤-trans c c₂) w t ≡ inhL u m i z c w t
+mkinh1Ls≡inhNaux u j i c₁ c₂ m z c w t with between1 c₁ c₂
+... | p rewrite p with m≤n⇒m<n∨m≡n (≤-trans c c₂) | m≤n⇒m<n∨m≡n c
+...               | inj₁ x | inj₁ y rewrite ≤-irrelevant (sucLeInj x) (sucLeInj y) = refl
+...               | inj₁ x | inj₂ y rewrite y = ⊥-elim (¬s≤ _ x)
+...               | inj₂ x | inj₁ y rewrite x = ⊥-elim (¬s≤ _ y)
+...               | inj₂ x | inj₂ y rewrite x | y = refl
+
+
+mkinh1Ls≡inhN : (u j i : ℕ) (c₁ : suc j ≤ i) (c₂ : i ≤ suc j)
+              → mkinh (Inh.m (inhN1Ls u j)) i (λ m i c → Inh.f (inhN1Ls u j) m i (≤-trans c c₂)) ≡ inhN u (suc j) i
+mkinh1Ls≡inhN u j i c₁ c₂ = eq-mkinh (fext (λ m → fext (λ z → fext (λ c → fext (λ w → fext (λ t → h m z c w t))))))
+  where
+    h : (m z : ℕ) (c : z ≤ i) (w : world) (t : Term)
+        → Inh.f (inhN1Ls u j) m z (≤-trans c c₂) w t ≡ inhL u m i z c w t
+    h m z c w t = mkinh1Ls≡inhNaux u j i c₁ c₂ m z c w t
+
+
+{--
+if-inh-f-inhN2Ls : (u j : ℕ) (w : world) (T : Term)
+                   → Inh.f (inhN2Ls u j) (pred (Inh.m (inhN2Ls u j))) (suc (suc j)) ≤-refl w T
+                   → Σ Term (λ t → equalInType u (inhN u (suc j) (suc j)) w T t t)
+if-inh-f-inhN2Ls u j w T h with m≤n⇒m<n∨m≡n (≤-refl {suc (suc j)})
+... | inj₁ p = ⊥-elim (¬s≤ _ p)
+... | inj₂ p = {!h!}
+
+{-- with m≤n⇒m<n∨m≡n (sucLeInj p)
+...          | inj₁ q = ⊥-elim (¬s≤ _ q)
+...          | inj₂ q = {!h!}
+if-inh-f-inhN2Ls u j w T h | inj₂ p = {!!} --}
+
+{-- with m≤n⇒m<n∨m≡n c₂
+... | inj₁ p with m≤n⇒m<n∨m≡n (sucLeInj p)
+...          | inj₁ q = ⊥-elim (¬s≤ _ (≤-trans q c₁))
+...          | inj₂ q rewrite q = h
+if-inh-f-inhN2Ls u j i c₁ c₂ w T h | inj₂ p rewrite p = h --}
+
+
+allI-inhN2Ls-ΣequalInType1Ls : (u j i : ℕ) (w : world) (t : Term) (c₁ : suc j ≤ i) (c₂ : i ≤ suc j)
+                               → allIW (inhN2Ls u j) (λ i → i w t)
+                               → Σ Term (λ z → equalInType u (inhN u (suc j) i) w t z z)
+allI-inhN2Ls-ΣequalInType1Ls u j i w t c₁ c₂ h = se2
+  where
+    se0 : Inh.f (inhN2Ls u j) (pred (Inh.m (inhN2Ls u j))) (suc (suc j)) ≤-refl w t
+    se0 = h (suc (suc j)) (n≤1+n _) ≤-refl
+
+    se1 : Σ Term (λ z → equalInType u (inhN u (suc j) (suc j)) w t z z)
+    se1 = {!!}
+
+    se2 : Σ Term (λ z → equalInType u (inhN u (suc j) i) w t z z)
+    se2 rewrite between1 c₁ c₂ = se1
+--}
+
+
+--with between1 c₁ c₂
+--... | p rewrite p = {!!}
+{--  if-inh-f-inhN2Ls-pred
+    u j (suc i) (_≤_.s≤s c₁) (_≤_.s≤s c₂) w t
+    (h (suc i) (_≤_.s≤s c₁) (_≤_.s≤s c₂)) --}
 
 \end{code}
