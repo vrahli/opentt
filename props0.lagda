@@ -129,6 +129,7 @@ acConcl = acConclP (VAR 4)
 acFun : Term
 acFun = FUN acHyp acConcl
 
+
 -- AC00
 ac : Term
 ac = PI NATlbinPred acFun
@@ -186,13 +187,85 @@ eqTypesTRUE w I u =
         (allInOpenBarStrongMonEqN0 I w)
         (allInOpenBarStrongMonEqN0 I w)
 
+
+
+-- wPredExtIrr
+wPredExtIrr-equalInType : (u : ℕ) (I1 I2 : Inh) (w : world) (T a b : Term)
+                          → wPredExtIrr {I1} {w} (λ w1 e1 → equalInType u I2 w1 T a b)
+wPredExtIrr-equalInType u I1 I2 w T a b w' e1 e2 h = h
+
+
+wPredExtIrr-eqTypes : (u : univs) (I1 I2 : Inh) (w : world) (A B : Term)
+                      → wPredExtIrr {I1} {w} (λ w1 e1 → eqTypes u I2 w1 A B)
+wPredExtIrr-eqTypes u I1 I2 w A B w' e1 e2 h = h
+
+
+
+-- Monotonicity
 mon : (p : wper) → Set₁
-mon p = (a b : Term) (I : Inh) (w : world) → p I w a b → allW I w (λ w' e' → p I w' a b)
+mon p = {a b : Term} (I : Inh) {w : world} → p I w a b → allW I w (λ w' e' → p I w' a b)
+
 
 strongMonEq-mon : mon strongMonEq
-strongMonEq-mon a b I w (n , c₁ , c₂) w1 e1 = (n , []⇛-mon I e1 c₁ , []⇛-mon I e1 c₂)
+strongMonEq-mon {a} {b} I {w} (n , c₁ , c₂) w1 e1 = (n , []⇛-mon I e1 c₁ , []⇛-mon I e1 c₂)
 
 
+weakMonEq-mon : mon weakMonEq
+weakMonEq-mon {a} {b} I {w} h w' e' = allW-mon I e' h
+
+
+eqTypes-mon : (u : univs) → mon (proj₁ (proj₂ u)) → mon (eqTypes u)
+eqTypes-mon u m {A} {B} I {w1} (EQTNAT x x₁) w2 ext = EQTNAT ([]⇛-mon I ext x) ([]⇛-mon I ext x₁)
+eqTypes-mon u m {A} {B} I {w1} (EQTQNAT x x₁) w2 ext = EQTQNAT ([]⇛-mon I ext x) ([]⇛-mon I ext x₁)
+eqTypes-mon u m {A} {B} I {w1} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) w2 ext =
+  EQTLT a1 a2 b1 b2
+    ([]⇛-mon I ext x) ([]⇛-mon I ext x₁)
+    (strongMonEq-mon I x₂ w2 ext)
+    (strongMonEq-mon I x₃ w2 ext)
+eqTypes-mon u m {A} {B} I {w1} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) w2 ext =
+  EQTQLT a1 a2 b1 b2
+    ([]⇛-mon I ext x) ([]⇛-mon I ext x₁)
+    (weakMonEq-mon I x₂ w2 ext)
+    (weakMonEq-mon I x₃ w2 ext)
+eqTypes-mon u m {A} {B} I {w1} (EQTFREE x x₁) w2 ext =
+  EQTFREE ([]⇛-mon I ext x) ([]⇛-mon I ext x₁)
+eqTypes-mon u m {A} {B} I {w1} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb) w2 ext =
+  EQTPI A1 B1 A2 B2 ([]⇛-mon I ext x) ([]⇛-mon I ext x₁) (allW-mon I ext eqta) (allW-mon I ext eqtb)
+eqTypes-mon u m {A} {B} I {w1} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb) w2 ext =
+  EQTSUM A1 B1 A2 B2 ([]⇛-mon I ext x) ([]⇛-mon I ext x₁) (allW-mon I ext eqta) (allW-mon I ext eqtb)
+eqTypes-mon u m {A} {B} I {w1} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) w2 ext =
+  EQTSET A1 B1 A2 B2 ([]⇛-mon I ext x) ([]⇛-mon I ext x₁) (allW-mon I ext eqta) (allW-mon I ext eqtb)
+eqTypes-mon u m {A} {B} I {w1} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) w2 ext =
+  EQTEQ a1 b1 a2 b2 A₁ B₁ ([]⇛-mon I ext x) ([]⇛-mon I ext x₁)
+    (allW-mon I ext eqtA) (allW-mon I ext eqt1) (allW-mon I ext eqt2)
+eqTypes-mon u m {A} {B} I {w1} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) w2 ext =
+  EQTUNION A1 B1 A2 B2 ([]⇛-mon I ext x) ([]⇛-mon I ext x₁) (allW-mon I ext eqtA) (allW-mon I ext eqtB)
+eqTypes-mon u m {A} {B} I {w1} (EQTSQUASH A1 A2 x x₁ eqtA) w2 ext =
+  EQTSQUASH A1 A2 ([]⇛-mon I ext x) ([]⇛-mon I ext x₁) (allW-mon I ext eqtA)
+eqTypes-mon u m {A} {B} I {w1} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) w2 ext =
+  EQFFDEFS A1 A2 x1 x2 ([]⇛-mon I ext x) ([]⇛-mon I ext x₁) (allW-mon I ext eqtA) (allW-mon I ext eqx)
+eqTypes-mon u m {A} {B} I {w1} (EQTUNIV x) w2 ext = EQTUNIV (m I x w2 ext)
+eqTypes-mon u m {A} {B} I {w1} (EQTBAR x) w2 ext = EQTBAR (inOpenBar-mon I (wPredExtIrr-eqTypes u I I w1 A B) ext x)
+eqTypes-mon u m {A} {B} I {w1} (EQTLOWER A1 A2 x x₁ eqt) w2 ext =
+  EQTLOWER A1 A2 ([]⇛-mon I ext x) ([]⇛-mon I ext x₁) (allW-mon I ext eqt)
+eqTypes-mon u m {A} {B} I {w1} (EQTSHRINK A1 A2 x x₁ eqt) w2 ext =
+  EQTSHRINK A1 A2 ([]⇛-mon I ext x) ([]⇛-mon I ext x₁) (allW-mon I ext eqt)
+
+
+eqUnivi-mon : (i : ℕ) → mon (eqUnivi i)
+eqUnivi-mon i {a} {b} I {w} h w1 e1 =
+  inOpenBar-mon I {w1} {w} {λ w' _ → [ I ] a ⇛ (UNIV i) at w' × [ I ] b ⇛ (UNIV i) at w'} (λ w' e2 e3 h → h) e1 h
+
+
+eqInUnivi-mon : (i : ℕ) → mon (eqInUnivi i)
+eqInUnivi-mon (suc i) {a} {b} I {w} (inj₁ x) w1 e1 =
+  inj₁ (eqTypes-mon (i , eqUnivi i , eqInUnivi i) (eqUnivi-mon i) I x w1 e1)
+eqInUnivi-mon (suc i) {a} {b} I {w} (inj₂ y) w1 e1 =
+  inj₂ (eqInUnivi-mon i I y w1 e1)
+
+
+
+-- SET
 SETinj1 : {a b : Term} {c d : Term} → SET a c ≡ SET b d → a ≡ b
 SETinj1 refl =  refl
 
@@ -430,7 +503,7 @@ equalInTypeNAT2 : (u : ℕ) (I : Inh) (w : world) (t₁ t₂ : Term)
                 → equalInType u I w NAT t₁ t₂
 equalInTypeNAT2 u I w t₁ t₂ e =
   equalInTypeNAT u I w t₁ t₂
-    λ w1 e1 → (w1 , []≽-refl I w1 , λ w2 e2 → strongMonEq-mon t₁ t₂ I w e w2 ([]≽-trans {I} e2 e1))
+    λ w1 e1 → (w1 , []≽-refl I w1 , λ w2 e2 → strongMonEq-mon I e w2 ([]≽-trans {I} e2 e1))
 
 numInNAT : (u : ℕ) (I : Inh) (w : world) (n : ℕ)
            → equalInType u I w NAT (NUM n) (NUM n)
@@ -444,20 +517,14 @@ inOpenBarMP I w f g i j w1 e1 =
   let (w2 , (e2 , h)) = j w1 e1 in
   (w2 , (e2 , λ w3 e3 → let z = h w3 e3 in i w3 ([]≽-trans {I} e3 ([]≽-trans {I} e2 e1)) z))
 
-raisewPred : {I : Inh} {w1 w2 : world} (e : [ I ] w2 ⪰ w1) (f : wPred I w1) → wPred I w2
-raisewPred {I} {w1} {w2} e f w' e' = f w' ([]≽-trans {I} e' e)
-
 inOpenBarIdem : (I : Inh) (w : world) (f : wPred I w) (c : wPredExtIrr {I} {w} f)
-                → inOpenBar I w (λ w1 e1 → inOpenBar I w1 (raisewPred {I} {w} {w1} e1 f))
+                → inOpenBar I w (λ w1 e1 → inOpenBar I w1 (↑wPred I f e1))
                 → inOpenBar I w f
 inOpenBarIdem I w f c i w1 e1 =
   let (w2 , (e2 , i1)) = i w1 e1 in
   let (w3 , (e3 , i2)) = i1 _ ([]≽-refl I _) _ ([]≽-refl I _) in
   (w3 , ([]≽-trans {I} e3 e2 , λ w4 e4 → let i3 = i2 w4 e4 in c w4 _ _ i3))
 
-wPredExtIrrFunEqualInType : (u : ℕ) (I1 I2 : Inh) (w : world) (T a b : Term)
-                            → wPredExtIrr {I1} {w} (λ w1 e1 → equalInType u I2 w1 T a b)
-wPredExtIrrFunEqualInType u I1 I2 w T a b w' e1 e2 h = h
 
 substEqTeq : (u : univs) (I1 I2 : Inh) (w : world) (A1 A2 B1 B2 a₁ a₂ : Term)
              (eqt : eqTypes u I1 w A1 B1) (eqi : eqInType u I1 w eqt a₁ a₂)

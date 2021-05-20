@@ -127,16 +127,12 @@ eqInTypeExt : (u : univs) (I : Inh) (w : world) (A B a b : Term) (e1 e2 : eqType
 eqInTypeExt u I w A B a b e1 e2 i = {!!}
 
 
-eqTypes-mon : (u : univs) → mon (eqTypes u)
-eqTypes-mon u = {!!}
-
-
 equalTypes-mon : (u : ℕ) → mon (equalTypes u)
-equalTypes-mon u = eqTypes-mon (uni u)
+equalTypes-mon u = eqTypes-mon (uni u) (eqUnivi-mon u)
 
 
 equalInType-mon : (u : ℕ) (T : Term) → mon (λ I w → equalInType u I w T)
-equalInType-mon u T = {!!}
+equalInType-mon u T {a} {b} I {w1} (eqt , eqi) w2 e2  = (equalTypes-mon u I eqt w2 e2 , {!!})
 
 
 equalInType-refl : {u : ℕ} {I : Inh} {w : world} {T a b : Term} → equalInType u I w T a b → equalInType u I w T a a
@@ -170,7 +166,7 @@ eqTypesSQUASH w I u a b na nb eqt =
            let s2 = sym (subNotIn a2 b nb) in
            let eqt1 = subst (λ a → eqTypes u I w a b) s1 eqt in
            let eqt2 = subst (λ b → eqTypes u I w (sub a1 a) b) s2 eqt1 in
-           eqTypes-mon _ _ _ _ _ eqt2 _ e1)
+           eqTypes-mon _ {!!} _ eqt2 _ e1) -- FIX
 
 
 ifeqTypesSQUASH : (w : world) (I : Inh) (u : univs) (a b : Term)
@@ -184,14 +180,18 @@ ifeqTypesSQUASH w I u a b na nb (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) = ⊥-elim
 ifeqTypesSQUASH w I u a b na nb (EQTFREE x x₁) = ⊥-elim (SETneqFREE (compAllVal I x₁ tt))
 ifeqTypesSQUASH w I u a b na nb (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb) = ⊥-elim (SETneqPI (compAllVal I x₁ tt))
 ifeqTypesSQUASH w I u a b na nb (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb) = ⊥-elim (SETneqSUM (compAllVal I x₁ tt))
-ifeqTypesSQUASH w I u a b na nb (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) =
-  let e1 = compAllVal I x tt in
-  let e2 = compAllVal I x₁ tt in
-  let a1 = SETinj1 e1 in
-  let a2 = SETinj2 e1 in
-  let b1 = SETinj1 e2 in
-  let b2 = SETinj2 e2 in
-  {!!}
+ifeqTypesSQUASH w I u a b na nb (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb)
+  rewrite SETinj1 (compAllVal I x tt)
+        | SETinj1 (compAllVal I x₁ tt)
+        | SETinj2 (compAllVal I x tt)
+        | SETinj2 (compAllVal I x₁ tt) = ea2
+  where
+    ea1 : eqTypes u I w (shiftDown 0 (subv 0 (shiftUp 0 AX) B1)) (shiftDown 0 (subv 0 (shiftUp 0 AX) B2))
+    ea1 = eqtb w ([]≽-refl I w) AX AX {!!}
+
+    ea2 : eqTypes u I w B1 B2
+    ea2 with ea1
+    ... | p rewrite subNotIn AX B1 na |  subNotIn AX B2 nb = p
 ifeqTypesSQUASH w I u a b na nb (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA eqt1 eqt2) = ⊥-elim (SETneqEQ (compAllVal I x₁ tt))
 ifeqTypesSQUASH w I u a b na nb (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) = ⊥-elim (SETneqUNION (compAllVal I x₁ tt))
 ifeqTypesSQUASH w I u a b na nb (EQTSQUASH A1 A2 x x₁ eqtA) = ⊥-elim (SETneqTSQUASH (compAllVal I x₁ tt))
@@ -322,8 +322,8 @@ ifequalInTypeacHypPiAux2 : (u : ℕ) (I : Inh) (w2 w1 : world) (p x₁ x₂ y₁
 ifequalInTypeacHypPiAux2 u I w2 w1 p x₁ x₂ y₁ y₂ n cp cx₁ cx₂ cy₁ cy₂ ext eqi1 eqi2 =
   (w2 , ext ,
    λ w3 e3 → (x₁ , y₁ , cx₁ , cy₁ ,
-     equalInType-mon u LNAT x₁ x₁ I w2 (equalInType-refl eqi1) w3 e3 ,
-     equalInType-mon u (LAPPLY2 p (NUM n) x₁) y₁ y₁ I w2 (equalInType-refl eqi2) w3 e3))
+     equalInType-mon u LNAT I (equalInType-refl eqi1) w3 e3 ,
+     equalInType-mon u (LAPPLY2 p (NUM n) x₁) I (equalInType-refl eqi2) w3 e3))
 
 ifequalInTypeacHypPiAux1 : (u : ℕ) (I : Inh) (w2 w1 : world) (p t₁ t₂ : Term) (n : ℕ)
                            → # p
@@ -374,7 +374,7 @@ ifequalInTypeacHypPi2 u I w p a₁ a₂ cp ca₁ ca₂ eqi n w1 e1 =
   let (w2 , e2 , h) = ifequalInTypeacHypPi u I w p a₁ a₂ cp ca₁ ca₂ eqi n w1 e1 in
   let (m , t , cm , ct , eqn , eqa) = h w2 ([]≽-refl I w2) in
   let (w3 , e3 , eqn1) = equalInTypeLower u I w2 NAT m m eqn w2 ([]≽-refl I w2) in
-  let eqa1 = equalInType-mon u (LAPPLY2 p (NUM n) m) t t I w2 eqa w3 e3 in
+  let eqa1 = equalInType-mon u (LAPPLY2 p (NUM n) m) I eqa w3 e3 in
   let (w4 , e4 , eqa2) = equalInTypeLower u I w3 (APPLY2 p (NUM n ) m) t t eqa1 w3 ([]≽-refl I w3) in
   (w4 , []≽-trans {I} e4 ([]≽-trans {I} e3 e2) ,
     λ w5 e5 →
@@ -418,7 +418,7 @@ equalInTypeMEM : (i : ℕ) (I : Inh) (w : world) (A a : Term)
                  → equalInType i I w (MEM a A) AX AX
 equalInTypeMEM i I w A a (eqt , eqi) =
   EQTEQ a a a a A A (compAllRefl I (MEM a A) w) (compAllRefl I (MEM a A) w)
-    (eqTypes-mon (uni i) A A I w eqt)
+    (eqTypes-mon (uni i) {!!} I eqt) -- FIX
     {!!} {!!} ,
   {!!}
 
@@ -430,7 +430,7 @@ implies-equalInType-AND-MEM i I w A B a b cB ea eb = equalInTypeSUM i I w (MEM a
   where
     aw1 : allW I w (λ w' _ → (a₁ a₂ : Term) → # a₁ → # a₂ → equalInType i I w' (MEM a A) a₁ a₂ → equalTypes i I w' (sub a₁ B) (sub a₂ B))
     aw1 w' e' a₁ a₂ ca₁ ca₂ ea1 rewrite subNotIn a₁ B cB | subNotIn a₂ B cB =
-      equalTypes-mon i B B I w (proj₁ eb) w' e'
+      equalTypes-mon i I (proj₁ eb) w' e'
 
     ea1 : equalInType i I w (MEM a A) AX AX
     ea1 = equalInTypeMEM i I w A a ea
@@ -648,7 +648,7 @@ equalInTypeNAT-APPLY-CS u j k w2 w1 name l p a b niw iw len ext c₁ c₂ i0 i0�
            u (inhN u k0 i0) w2 name NAT a b t k
            {!!} {!!} -- TODO: for those we need [_]_⇛_ to be true for all sub-intervals too
            ([]≽-pres-getChoice (inhN2Ls u j) w2 (extcs w name t) k name t ext1 gc)
-           (equalInType-mon u NAT t t (inhN u k0 i0) w r4 w2 xt)
+           (equalInType-mon u NAT (inhN u k0 i0) r4 w2 xt)
 
 
 equalInTypeCS : (u j k : ℕ) (w w1 w2 : world) (p a b a₁ a₂ : Term) (name : csName)
@@ -683,7 +683,7 @@ equalInTypeCS u j k w w1 w2 p a b a₁ a₂ name cp ca₁ ca₂ niw c₁ c₂ e�
         h : exAllW (inhN2Ls u j) w3 (λ w' e' → Σ (List Term) (λ l' → ∈world (mkcs name l' (acres p)) w' × k ≤ length l'))
         h = exW≤length2
              u j w3 name l2 k p a₁ a₂ cp ca₁ ca₂ i2
-             (equalInType-mon u (acHypPi p) a₁ a₂ (inhN2Ls u j) w eqh w3 ([]≽-trans {inhN2Ls u j} e3 ([]≽-trans {inhN2Ls u j} e₂ e₁)))
+             (equalInType-mon u (acHypPi p) (inhN2Ls u j) eqh w3 ([]≽-trans {inhN2Ls u j} e3 ([]≽-trans {inhN2Ls u j} e₂ e₁)))
 
         w4 : world
         w4 = proj₁ h

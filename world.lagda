@@ -556,6 +556,24 @@ weakMonEq : (I : Inh) (w : world) (t1 t2 : Term) → Set
 weakMonEq I w t1 t2 = allW I w (λ w' _ → Σ ℕ (λ n → t1 ⇓ (NUM n) at w' × t2 ⇓ (NUM n) at w'))
 
 
+↑wPred : (I : Inh) {w1 : world} (f : wPred I w1) {w2 : world} (e : [ I ] w2 ⪰ w1) → wPred I w2
+↑wPred I {w1} f {w2} e w' e' = f w' (extTrans e' e)
+
+
+allW-mon : (I : Inh) {w2 w1 : world} {f :  wPred I w1} (e : [ I ] w2 ⪰ w1)
+           → allW I w1 f
+           → allW I w2 (↑wPred I f e)
+allW-mon I {w2} {w1} {f} e h w' e' = h w' (extTrans e' e)
+
+
+inOpenBar-mon : (I : Inh) {w2 w1 : world} {f :  wPred I w1} (i : wPredExtIrr f) (e : [ I ] w2 ⪰ w1)
+                → inOpenBar I w1 f
+                → inOpenBar I w2 (↑wPred I f e)
+inOpenBar-mon I {w2} {w1} {f} i e h w' e' =
+  let (w1 , e1 , h1) = h w' (extTrans e' e) in
+  (w1 , e1 , λ w2 e2 → i w2 _ _ (h1 w2 e2))
+
+
 []⇛-mon : (I : Inh) {a b : Term} {w2 w1 : world}
            → [ I ] w2 ⪰ w1
            → [ I ] a ⇛ b at w1
