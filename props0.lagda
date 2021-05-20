@@ -537,7 +537,7 @@ eqTypesLOWER u I w T a₁ a₂ wf h = EQTBAR e
           (w2 , e2 , λ w3 e3 →
           EQTLOWER T T (compAllRefl I (LOWER T) w3) (compAllRefl I (LOWER T) w3)
             λ w4 e4 → let a3 = a2 w4 ([]≽-trans {I} e4 e3) in
-            λ j c₁ c₂ → let (eqt , eqi) = a3 j c₁ c₂ in eqt)
+            λ j c₁ c₂ k c₃ c₄ → let (eqt , eqi) = a3 j c₁ c₂ k c₃ c₄ in eqt)
 
 
 impliesEqualInTypeLower : (u : ℕ) (I : Inh) (w : world) (T a₁ a₂ : Term)
@@ -545,9 +545,9 @@ impliesEqualInTypeLower : (u : ℕ) (I : Inh) (w : world) (T a₁ a₂ : Term)
                           → equalInType u I w (LOWER T) a₁ a₂
 impliesEqualInTypeLower u I w T a₁ a₂ e =
   let e' : allW I w (λ w' _ → allI (lower I) (λ i → eqTypes (uni u) i w' T T))
-      e' = (λ w1 e1 i c₁ c₂ → let (eqt , eqi) = e w1 e1 i c₁ c₂ in eqt) in
+      e' = (λ w1 e1 i c₁ c₂ k c₃ c₄ → let (eqt , eqi) = e w1 e1 i c₁ c₂ k c₃ c₄ in eqt) in
    (EQTLOWER T T (compAllRefl I (LOWER T) w) (compAllRefl I (LOWER T) w) e' ,
-    allWimpliesinOpenBar {I} {w} λ w1 e1 i c₁ c₂ → proj₂ (e w1 e1 i c₁ c₂))
+    allWimpliesinOpenBar {I} {w} λ w1 e1 i c₁ c₂ k c₃ c₄ → proj₂ (e w1 e1 i c₁ c₂ k c₃ c₄))
 
 
 equalInTypeLower : (u : ℕ) (I : Inh) (w : world) (T a₁ a₂ : Term)
@@ -583,9 +583,9 @@ equalInTypeLower u I w T a₁ a₂ (EQTBAR x , eqi) =
 equalInTypeLower u I w T a₁ a₂ (EQTLOWER A1 A2 x x₁ eqt , eqi) =
   λ w1 e1 →
     let (w2' , e2' , eqi1) = eqi w1 e1 in
-    (w2' , e2' , λ w3 e3 i c₁ c₂ →
-      let eqi2 = eqi1 w3 e3 i c₁ c₂ in
-      let eqt2 = eqt w3 ([]≽-trans {I} e3 ([]≽-trans {I} e2' e1)) i c₁ c₂ in
+    (w2' , e2' , λ w3 e3 i c₁ c₂ k c₃ c₄ →
+      let eqi2 = eqi1 w3 e3 i c₁ c₂ k c₃ c₄ in
+      let eqt2 = eqt w3 ([]≽-trans {I} e3 ([]≽-trans {I} e2' e1)) i c₁ c₂ k c₃ c₄ in
       let eq1 = compAllLOWER {I} x in
       let eq2 = compAllLOWER {I} x₁ in
       substEqTeq (uni u) _ _ w3 A1 T A2 T a₁ a₂ eqt2 eqi2 refl (sym eq1) (sym eq2))
@@ -603,16 +603,16 @@ eqTypesSHRINK u I w T a₁ a₂ wf h = EQTBAR e
           (w2 , e2 , λ w3 e3 →
           EQTSHRINK T T (compAllRefl I (SHRINK T) w3) (compAllRefl I (SHRINK T) w3)
             λ w4 e4 → let a3 = a2 w4 ([]≽-trans {I} e4 e3) in
-            λ j c₁ c₂ → let (eqt , eqi) = a3 j c₁ c₂ in eqt)
+            λ j c₁ c₂ k c₃ c₄ → let (eqt , eqi) = a3 j c₁ c₂ k c₃ c₄ in eqt)
 
 impliesEqualInTypeShrink : (u : ℕ) (I : Inh) (w : world) (T a₁ a₂ : Term)
                           → allW I w (λ w' _ → allI (shrink I) (λ i → equalInType u i w' T a₁ a₂))
                           → equalInType u I w (SHRINK T) a₁ a₂
 impliesEqualInTypeShrink u I w T a₁ a₂ e =
   let e' : allW I w (λ w' _ → allI (shrink I) (λ i → eqTypes (uni u) i w' T T))
-      e' = (λ w1 e1 i c₁ c₂ → let (eqt , eqi) = e w1 e1 i c₁ c₂ in eqt) in
+      e' = (λ w1 e1 i c₁ c₂ k c₃ c₄ → let (eqt , eqi) = e w1 e1 i c₁ c₂ k c₃ c₄ in eqt) in
    (EQTSHRINK T T (compAllRefl I (SHRINK T) w) (compAllRefl I (SHRINK T) w) e' ,
-    allWimpliesinOpenBar {I} {w} λ w1 e1 i c₁ c₂ → proj₂ (e w1 e1 i c₁ c₂))
+    allWimpliesinOpenBar {I} {w} λ w1 e1 i c₁ c₂ k c₃ c₄ → proj₂ (e w1 e1 i c₁ c₂ k c₃ c₄))
 
 equalInTypeShrink : (u : ℕ) (I : Inh) (w : world) (T a₁ a₂ : Term)
                    → equalInType u I w (SHRINK T) a₁ a₂
@@ -648,9 +648,9 @@ equalInTypeShrink u I w T a₁ a₂ (EQTLOWER A1 A2 x x₁ eqt , eqi) = ⊥-elim
 equalInTypeShrink u I w T a₁ a₂ (EQTSHRINK A1 A2 x x₁ eqt , eqi) =
   λ w1 e1 →
     let (w2' , e2' , eqi1) = eqi w1 e1 in
-    (w2' , e2' , λ w3 e3 i c₁ c₂ →
-      let eqi2 = eqi1 w3 e3 i c₁ c₂ in
-      let eqt2 = eqt w3 ([]≽-trans {I} e3 ([]≽-trans {I} e2' e1)) i c₁ c₂ in
+    (w2' , e2' , λ w3 e3 i c₁ c₂ k c₃ c₄ →
+      let eqi2 = eqi1 w3 e3 i c₁ c₂ k c₃ c₄ in
+      let eqt2 = eqt w3 ([]≽-trans {I} e3 ([]≽-trans {I} e2' e1)) i c₁ c₂ k c₃ c₄ in
       let eq1 = compAllSHRINK {I} x in
       let eq2 = compAllSHRINK {I} x₁ in
       substEqTeq (uni u) _ _ w3 A1 T A2 T a₁ a₂ eqt2 eqi2 refl (sym eq1) (sym eq2))
@@ -667,7 +667,11 @@ Inh-eta (mkinh m n f) = eq-mkinh (fext (λ m → fext (λ i → fext (λ c → e
 allI-equalInType : (u : ℕ) (I : Inh) (wf : wfInh≤ I) (w : world) (T a b : Term)
                    → allI I (λ i → equalInType u i w T a b)
                    → equalInType u I w T a b
-allI-equalInType u I wf w T a b h = subst (λ x → equalInType u x w T a b) (Inh-eta I) (h (Inh.n I) wf ≤-refl)
+allI-equalInType u I wf w T a b h =
+  subst
+    (λ x → equalInType u x w T a b)
+    (Inh-eta I)
+    (h (Inh.n I) wf ≤-refl (Inh.m I) ≤-refl wf)
 
 
 s≤-≤pred : {i j : ℕ} → suc j ≤ i → j ≤ pred i
@@ -723,14 +727,16 @@ inh-f-inhN2Ls u j i c₁ c₂ w T h with m≤n⇒m<n∨m≡n c₂
 inh-f-inhN2Ls u j i c₁ c₂ w T h | inj₂ p rewrite p = h
 
 
-inh-f-inhN2Ls-pred : (u j i : ℕ) (c₁ : suc j ≤ i) (c₂ : i ≤ suc (suc j)) (w : world) (T : Term)
-                   → Σ Term (λ t → equalInType u (inhN u j (pred i)) w T t t)
-                   → Inh.f (inhN2Ls u j) (pred (Inh.m (inhN2Ls u j))) i c₂ w T
-inh-f-inhN2Ls-pred u j i c₁ c₂ w T h with m≤n⇒m<n∨m≡n c₂
+inh-f-inhN2Ls-pred : (u j i : ℕ) (c₁ : suc j ≤ i) (c₂ : i ≤ suc (suc j))
+                     (k : ℕ) (c₃ : j ≤ k) (c₄ : k ≤ pred i)
+                     (w : world) (T : Term)
+                     → Σ Term (λ t → equalInType u (inhN u k (pred i)) w T t t)
+                     → Inh.f (inhN2Ls u j) k i c₂ w T
+inh-f-inhN2Ls-pred u j i c₁ c₂ k c₃ c₄ w T h with m≤n⇒m<n∨m≡n c₂
 ... | inj₁ p with m≤n⇒m<n∨m≡n (sucLeInj p)
 ...          | inj₁ q = ⊥-elim (¬s≤ _ (≤-trans q c₁))
 ...          | inj₂ q rewrite q = h
-inh-f-inhN2Ls-pred u j i c₁ c₂ w T h | inj₂ p rewrite p = h
+inh-f-inhN2Ls-pred u j i c₁ c₂ k c₃ c₄ w T h | inj₂ p rewrite p = h
 
 
 if-inh-f-inhN2Ls-pred : (u j i : ℕ) (c₁ : suc j ≤ i) (c₂ : i ≤ suc (suc j)) (w : world) (T : Term)
@@ -749,7 +755,29 @@ allI-inhN2Ls-ΣequalInType : (u j i : ℕ) (w : world) (t : Term) (c₁ : j ≤ 
 allI-inhN2Ls-ΣequalInType u j i w t c₁ c₂ h =
   if-inh-f-inhN2Ls-pred
     u j (suc i) (_≤_.s≤s c₁) (_≤_.s≤s c₂) w t
-    (h (suc i) (_≤_.s≤s c₁) (_≤_.s≤s c₂))
+    (h (suc i) (_≤_.s≤s c₁) (_≤_.s≤s c₂) j ≤-refl c₁)
+
+
+if-inh-f-inhN2Ls-pred2 : (u j i : ℕ) (c₁ : suc j ≤ i) (c₂ : i ≤ suc (suc j))
+                         (k : ℕ) (c₃ : suc j ≤ k) (c₄ : k ≤ i)
+                         (w : world) (T : Term)
+                         → Inh.f (inhN2Ls u j) k i c₂ w T
+                         → Σ Term (λ t → equalInType u (inhN u k (pred i)) w T t t)
+if-inh-f-inhN2Ls-pred2 u j i c₁ c₂ k c₃ c₄ w T h with m≤n⇒m<n∨m≡n c₂
+... | inj₁ p with m≤n⇒m<n∨m≡n (sucLeInj p)
+...          | inj₁ q = ⊥-elim (¬s≤ _ (≤-trans q c₁))
+...          | inj₂ q rewrite q = h
+if-inh-f-inhN2Ls-pred2 u j i c₁ c₂ k c₃ c₄ w T h | inj₂ p rewrite p = h
+
+
+allI-inhN2Ls-ΣequalInType2 : (u j i : ℕ) (w : world) (t : Term) (c₁ : j ≤ i) (c₂ : i ≤ suc j)
+                             (k : ℕ) (c₃ : suc j ≤ k) (c₄ : k ≤ i)
+                            → allIW (inhN2Ls u j) (λ i → i w t)
+                            → Σ Term (λ z → equalInType u (inhN u k i) w t z z)
+allI-inhN2Ls-ΣequalInType2 u j i w t c₁ c₂ k c₃ c₄ h =
+  if-inh-f-inhN2Ls-pred2
+    u j (suc i) (_≤_.s≤s c₁) (_≤_.s≤s c₂) k c₃ (≤-trans c₄ (n≤1+n _)) w t
+    (h (suc i) (_≤_.s≤s c₁) (_≤_.s≤s c₂) k (≤-trans (n≤1+n _) c₃) c₄)
 
 
 mkinh2L≡inhNaux : (u j i : ℕ) (c₁ : j ≤ i) (c₂ : i ≤ suc j) (m z : ℕ) (c : z ≤ i) (w : world) (t : Term)
@@ -784,9 +812,9 @@ mkinh1Ls≡inhNaux u j i c₁ c₂ m z c w t with between1 c₁ c₂
 ...               | inj₂ x | inj₂ y rewrite x | y = refl
 
 
-mkinh1Ls≡inhN : (u j i : ℕ) (c₁ : suc j ≤ i) (c₂ : i ≤ suc j)
-              → mkinh (Inh.m (inhN1Ls u j)) i (λ m i c → Inh.f (inhN1Ls u j) m i (≤-trans c c₂)) ≡ inhN u (suc j) i
-mkinh1Ls≡inhN u j i c₁ c₂ = eq-mkinh (fext (λ m → fext (λ z → fext (λ c → fext (λ w → fext (λ t → h m z c w t))))))
+mkinh1Ls≡inhN : (u j i : ℕ) (c₁ : suc j ≤ i) (c₂ : i ≤ suc j) (k : ℕ) (c₃ : suc j ≤ k) (c₄ : k ≤ i)
+              → mkinh k i (λ m i c → Inh.f (inhN1Ls u j) m i (≤-trans c c₂)) ≡ inhN u k i
+mkinh1Ls≡inhN u j i c₁ c₂ k c₃ c₄ = eq-mkinh (fext (λ m → fext (λ z → fext (λ c → fext (λ w → fext (λ t → h m z c w t))))))
   where
     h : (m z : ℕ) (c : z ≤ i) (w : world) (t : Term)
         → Inh.f (inhN1Ls u j) m z (≤-trans c c₂) w t ≡ inhL u m i z c w t
@@ -834,5 +862,50 @@ allI-inhN2Ls-ΣequalInType1Ls u j i w t c₁ c₂ h = se2
 {--  if-inh-f-inhN2Ls-pred
     u j (suc i) (_≤_.s≤s c₁) (_≤_.s≤s c₂) w t
     (h (suc i) (_≤_.s≤s c₁) (_≤_.s≤s c₂)) --}
+
+
+inhN≡inhN1Ls : {u j i k : ℕ} → suc j ≤ i → i ≤ suc j → suc j ≤ k → k ≤ i
+               → inhN u k i ≡ inhN1Ls u j
+inhN≡inhN1Ls {u} {j} {i} {k} a b c d rewrite between1 a b | between1 c d = refl
+
+
+allI-inhN2Ls-allI-inh1Ls : {u j : ℕ} {f : InhW → Set}
+                           → allIW (inhN2Ls u j) f
+                           → allIW (inhN1Ls u j) f
+allI-inhN2Ls-allI-inh1Ls {u} {j} {f} h i ci₁ ci₂ k ck₁ ck₂ =
+  let z = h i ci₁ (≤-trans ci₂ (n≤1+n _)) k ck₁ ck₂ in
+  subst f (sym e1) z
+  where
+    e2 : (w : world) (T : Term) → Inh.f (inhN1Ls u j) k i ci₂ w T ≡ Inh.f (inhN2Ls u j) k i (≤-trans ci₂ (n≤1+n (Inh.n (inhN1Ls u j)))) w T
+    e2 w T with between1 ci₁ ci₂
+    ... | p rewrite p with m≤n⇒m<n∨m≡n ci₂
+    ...               | inj₁ q = ⊥-elim (¬s≤ _ q)
+    ...               | inj₂ q with m≤n⇒m<n∨m≡n (≤-trans ci₂ (_≤_.s≤s (≤-step (≤-reflexive refl))))
+    ...                        | inj₂ r = ⊥-elim (¬≡s _ r)
+    ...                        | inj₁ r with m≤n⇒m<n∨m≡n (sucLeInj r)
+    ...                                 | inj₁ s = ⊥-elim (¬s≤ _ s)
+    ...                                 | inj₂ s = refl
+
+    e1 : Inh.f (inhN1Ls u j) k i ci₂ ≡ Inh.f (inhN2Ls u j) k i (≤-trans ci₂ (n≤1+n (Inh.n (inhN1Ls u j))))
+    e1 = fext (λ w → fext (λ T → e2 w T))
+
+
+[]≽-inhN2Ls-[]≽-inhN1Ls : {w2 w1 : world} {u j : ℕ}
+                     → [ inhN2Ls u j ] w2 ⪰ w1
+                     → [ inhN1Ls u j ] w2 ⪰ w1
+[]≽-inhN2Ls-[]≽-inhN1Ls {w2} {.w2} {u} {j} (extRefl .w2) = extRefl w2
+[]≽-inhN2Ls-[]≽-inhN1Ls {w2} {w1} {u} {j} (extTrans h h₁) = extTrans ([]≽-inhN2Ls-[]≽-inhN1Ls h) ([]≽-inhN2Ls-[]≽-inhN1Ls h₁)
+[]≽-inhN2Ls-[]≽-inhN1Ls {.(w1 ++ choice name t ∷ [])} {w1} {u} {j} (extChoice .w1 name l t res x x₁) =
+  extChoice w1 name l t res x (allI-inhN2Ls-allI-inh1Ls {u} {j} {λ i → i w1 (res (length l) t)} x₁)
+[]≽-inhN2Ls-[]≽-inhN1Ls {.(w1 ++ start name res ∷ [])} {w1} {u} {j} (extEntry .w1 name res x) =
+  extEntry w1 name res x
+
+
+[]≽-inhN2Ls-to-N1s : {w2 w1 : world} {u j i k : ℕ} → suc j ≤ i → i ≤ suc j → suc j ≤ k → k ≤ i
+                     → [ inhN2Ls u j ] w2 ⪰ w1
+                     → [ inhN u k i ] w2 ⪰ w1
+[]≽-inhN2Ls-to-N1s {w2} {w1} {u} {j} {i} {k} a b c d h rewrite inhN≡inhN1Ls {u} {j} {i} {k} a b c d =
+  []≽-inhN2Ls-[]≽-inhN1Ls h
+
 
 \end{code}

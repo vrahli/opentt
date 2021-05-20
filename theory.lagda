@@ -192,12 +192,14 @@ eqInType u I w (EQTBAR f) t1 t2 =
            let q  = proj₂ (proj₂ p) in
            exW I w1 (λ w2 e2 → allW I w2 (λ w3 e3 → eqInType u I w3 (q w3 ([]≽-trans {I} e3 e2)) t1 t2)))
 eqInType u I w (EQTLOWER _ _ _ _ eqt) t1 t2 =
-  inOpenBar I w (λ w' e → (j : ℕ) (c₁ : Inh.m (lower I) ≤ j) (c₂ : j ≤ Inh.n (lower I)) →
-                   eqInType u (mkinh (Inh.m (lower I)) j (λ m i c → Inh.f (lower I) m i (≤-trans c c₂))) w' (eqt w' e j c₁ c₂) t1 t2)
+  inOpenBar I w (λ w' e → (j : ℕ) (c₁ : Inh.m (lower I) ≤ j) (c₂ : j ≤ Inh.n (lower I))
+                        → (k : ℕ) (c₃ : Inh.m (lower I) ≤ k) (c₄ : k ≤ j)
+                        → eqInType u (mkinh k j (λ m i c → Inh.f (lower I) m i (≤-trans c c₂))) w' (eqt w' e j c₁ c₂ k c₃ c₄) t1 t2)
   -- inOpenBar I w (λ w' e → allI≤ (lower I) (λ j c₁ c₂ i → eqInType u i w' (eqt w' e j c₁ c₂) t1 t2))
 eqInType u I w (EQTSHRINK _ _ _ _ eqt) t1 t2 =
-  inOpenBar I w (λ w' e → (j : ℕ) (c₁ : Inh.m (shrink I) ≤ j) (c₂ : j ≤ Inh.n (shrink I)) →
-                   eqInType u (mkinh (Inh.m (shrink I)) j (λ m i c → Inh.f (shrink I) m i (≤-trans c c₂))) w' (eqt w' e j c₁ c₂) t1 t2)
+  inOpenBar I w (λ w' e → (j : ℕ) (c₁ : Inh.m (shrink I) ≤ j) (c₂ : j ≤ Inh.n (shrink I))
+                        → (k : ℕ) (c₃ : Inh.m (shrink I) ≤ k) (c₄ : k ≤ j)
+                        → eqInType u (mkinh k j (λ m i c → Inh.f (shrink I) m i (≤-trans c c₂))) w' (eqt w' e j c₁ c₂ k c₃ c₄) t1 t2)
 --  inOpenBar I w (λ w' e → eqInType u (shrink I) w' (eqt w' e) t1 t2)
 \end{code}
 
@@ -280,6 +282,10 @@ wfinhN2L j = (n≤1+n _)--}
 ¬s≤ : (j : ℕ) → ¬ suc j ≤ j
 ¬s≤ .(suc _) (_≤_.s≤s h) = ¬s≤ _ h
 
+¬≡s : (j : ℕ) → ¬ j ≡ suc j
+¬≡s 0 ()
+¬≡s (suc j) ()
+
 ¬s≤0 : (j : ℕ) → ¬ suc j ≤ 0
 ¬s≤0 j ()
 
@@ -317,7 +323,7 @@ inhN1Leq2 u j = eq-mkinh eqf
     eqf = fext (λ m → fext (λ j0 → fext (λ c → fext (λ w → fext (λ t → eqf' u m j j0 c w t)))))
 
 allI-inhN1L : {u j : ℕ} {f : Inh → Set} → allI (inhN1L u j) f → f (inhN1L u j)
-allI-inhN1L {u} {j} {f} h rewrite inhN1Leq2 u j = h j ≤-refl ≤-refl
+allI-inhN1L {u} {j} {f} h rewrite inhN1Leq2 u j = h j ≤-refl ≤-refl j ≤-refl ≤-refl
 
 
 lower-inhN2Ls-inhL2 : (u m n : ℕ) (j : ℕ) (c : j ≤ suc n) (w : world) (T : Term)
@@ -359,6 +365,7 @@ shrink-inhN2Ls u j = eq-mkinh eqf
 
 allI-shrink-inhN2Ls : {u j : ℕ} {f : Inh → Set} → allI (shrink (inhN2Ls u j)) f → allI (inhN1Ls u j) f
 allI-shrink-inhN2Ls {u} {j} {f} h = subst (λ x → allI x f) (shrink-inhN2Ls u j) h
+
 
 
 {--inhN2LeqinhN1L : (u j i : ℕ) (c₁ : j ≤ i) (c₂ : i ≤ j)

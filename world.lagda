@@ -126,13 +126,17 @@ extcs w name t = w ∷ʳ choice name t
 
 -- as the upper bound will be reduced, we also reduce the lower bound
 allIW : (I : Inh) (g : InhW → Set) → Set
-allIW I g = (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → g (Inh.f I (pred (Inh.m I)) j c₂)
+allIW I g = (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I)
+            (k : ℕ) (c₃ : pred (Inh.m I) ≤ k) (c₄ : k ≤ pred j)
+            → g (Inh.f I k j c₂)
 
 allI : (I : Inh) (g : Inh → Set) → Set
-allI I g = (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → g (mkinh (Inh.m I) j (λ m i c → Inh.f I m i (≤-trans c c₂)))
+allI I g = (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I)
+           (k : ℕ) (c₃ : Inh.m I ≤ k) (c₄ : k ≤ j)
+           → g (mkinh k j (λ m i c → Inh.f I m i (≤-trans c c₂)))
 
-allI≤ : (I : Inh) (g : (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → Inh → Set) → Set
-allI≤ I g = (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → g j c₁ c₂ (mkinh (Inh.m I) j (λ m i c → Inh.f I m i (≤-trans c c₂)))
+{--allI≤ : (I : Inh) (g : (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → Inh → Set) → Set
+allI≤ I g = (j : ℕ) (c₁ : Inh.m I ≤ j) (c₂ : j ≤ Inh.n I) → g j c₁ c₂ (mkinh (Inh.m I) j (λ m i c → Inh.f I m i (≤-trans c c₂)))--}
 
 -- w2 extends w1
 data ⟨_⟩_⪰_ (I : Inh) : (w2 : world) (w1 : world) → Set where
