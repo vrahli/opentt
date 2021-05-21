@@ -166,8 +166,8 @@ eqInType u I w (EQTSUM _ _ _ _ _ _ eqta eqtb) t1 t2 =
 eqInType u I w (EQTSET _ _ _ _ _ _ eqta eqtb) t1 t2 =
   inOpenBar I w (λ w' e → Σ Term (λ b → Σ (eqInType u I w' (eqta w' e) t1 t2) (λ ea →
                          eqInType u I w' (eqtb w' e t1 t2 ea) b b)))
-eqInType u I w (EQTEQ a1 b1 _ _ _ _ _ _ eqtA eqt1 eqt2) t1 t2 =
-  inOpenBar I w (λ w' e → [ I ] t1 ⇛ AX at w' × [ I ] t2 ⇛ AX at w' × eqInType u I w' (eqtA w' e) a1 b1)
+eqInType u I w (EQTEQ a1 _ a2 _ _ _ _ _ eqtA eqt1 eqt2) t1 t2 =
+  inOpenBar I w (λ w' e → [ I ] t1 ⇛ AX at w' × [ I ] t2 ⇛ AX at w' × eqInType u I w' (eqtA w' e) a1 a2)
 eqInType u I w (EQTUNION _ _ _ _ _ _ eqtA eqtB) t1 t2 =
   inOpenBar I w (λ w' e → Σ Term (λ a → Σ Term (λ b →
                  ([ I ] t1 ⇛ (INL a) at w' × [ I ] t2 ⇛ (INR b) at w' × eqInType u I w' (eqtA w' e) a b)

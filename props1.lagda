@@ -267,11 +267,6 @@ ifequalInTypeSUM : (u : ℕ) (I : Inh) (w : world) (A : Term) (B : Term) (t₁ t
                          × equalInType u I w' (sub a₁ B) b₁ b₂)))))
 ifequalInTypeSUM u I w A B t₁ t₂ (eqt , eqi) = {!!}
 
-ifequalInTypeNAT : (u : ℕ) (I : Inh) (w : world) (t₁ t₂ : Term)
-                → equalInType u I w NAT t₁ t₂
-                → inOpenBar I w (λ w1 e1 → strongMonEq I w1 t₁ t₂)
-ifequalInTypeNAT u I w t₁ t₂ e = {!!}
-
 {--
 -- This one should be a "Type System" property
 compPreservesEqualInTypeLeft : (u : univs) (I : Inh) (w : world) (A a b c : Term)
@@ -764,7 +759,7 @@ ac00trueAux2 u j w p₁ p₂ cp₁ cp₂ a₁ a₂ ca₁ ca₂ eqp eqa =
             (eqTypesNAT w3 (inhN2L u j) (uni u))
             (λ w4 e4 a₃ a₄ ca₃ ca₄ eqt → {!!})
             (λ w4 e4 a₃ a₄ ca₃ ca₄ eqt →
-              let z = ifequalInTypeNAT _ _ _ _ _ eqt in
+              let z = if-equalInType-NAT _ _ _ _ _ eqt in
               subst (λ x → equalInType u (inhN2L u j) w4 x
                                         (APPLY (CS (proj₁ (freshName (wdom w1)))) a₃)
                                         (APPLY (CS (proj₁ (freshName (wdom w1)))) a₄))
