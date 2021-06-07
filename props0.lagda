@@ -1187,7 +1187,13 @@ allI-inhN2Ls-allI-inh1Ls {u} {j} {f} h i ci₁ ci₂ k ck₁ ck₂ =
   []≽-inhN2Ls-[]≽-inhN1Ls h
 
 
---foo : (w : world) (a b : Term) → eqintype w NAT a b → eqintype w (LOWER NAT) a b
---foo w a b (u , n , k , e) = (u , suc n , k , λ j c → {!!})
+then-lower : (w : world) (a b : Term) → eqintype w NAT a b → eqintype w (LOWER NAT) a b
+then-lower w a b (u , n , k , e) =
+  (u , suc n , k , λ j c →
+   impliesEqualInTypeLower u (inhN u j (k + j)) w NAT a b λ w1 e1 → {!!})
+
+if-lower : (w : world) (a b : Term) → eqintype w (LOWER NAT) a b → eqintype w NAT a b
+if-lower w a b (u , n , k , e) = (u , n , k , λ j c → {!!})
+
 
 \end{code}
