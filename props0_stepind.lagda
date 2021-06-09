@@ -1,8 +1,5 @@
 \begin{code}
-
-open import bar
-
-module props0 (bar : Bar) where
+module props0_stepind where
 
 open import Level using (Level ; 0ℓ) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
@@ -29,8 +26,8 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import calculus
-open import world
-open import theory (bar)
+open import world_stepind
+open import theory_stepind
 \end{code}
 
 
@@ -38,32 +35,37 @@ open import theory (bar)
 
 
 \begin{code}[hide]
-impliesEqTypes : (u : ℕ) {w : world} {A B : Term} → equalTypes u w A B → eqtypes w A B
-impliesEqTypes u e = (u , e)
+impliesEqTypes : (u : ℕ) {w : world} {A B : Term} → ((I : Inh) → equalTypes u I w A B) → eqtypes w A B
+impliesEqTypes u f = (u , 1 , 0 , λ j c → f (inhN1L u j))
 
-impliesEqInType : (u : ℕ) {w : world} {T a b : Term} → equalInType u w T a b → eqintype w T a b
-impliesEqInType u f = (u , f)
+impliesEqInTypeN : (u : ℕ) {w : world} {T a b : Term}
+                   → ((I : Inh) → equalInType u I w T a b)
+                   → (m n : ℕ) → eqintypeN u m n w T a b
+impliesEqInTypeN u f m n = f (inhN u m n)
 
-univInBar : (n : ℕ) (w : world) → eqUnivi n w (UNIV n) (UNIV n)
-univInBar n w =  λ w0 e0 → (w0 , (extRefl w0 , λ w1 e1 → (compAllRefl (UNIV n) w1 , compAllRefl (UNIV n) w1)))
+impliesEqInType : (u : ℕ) {w : world} {T a b : Term} → ((I : Inh) → equalInType u I w T a b) → eqintype w T a b
+impliesEqInType u f = (u , 0 , 0 , λ j c → impliesEqInTypeN u f j j)
 
-lemma1 : (w : world) → equalTypes 0 w (UNIV 0) (UNIV 0)
-lemma1 w = EQTUNIV (univInBar 0 w)
+univInBar : (n : ℕ) (I : Inh) (w : world) → eqUnivi n I w (UNIV n) (UNIV n)
+univInBar n I w =  λ w0 e0 → (w0 , ([]≽-refl I w0 , λ w1 e1 → (compAllRefl I (UNIV n) w1 , compAllRefl I (UNIV n) w1)))
+
+lemma1 : (I : Inh) (w : world) → equalTypes 0 I w (UNIV 0) (UNIV 0)
+lemma1 I w = EQTUNIV (univInBar 0 I w)
 
 lemma2 : (w : world) → eqtypes w (UNIV 0) (UNIV 0)
-lemma2 w = impliesEqTypes 0 (lemma1 w)
+lemma2 w = impliesEqTypes 0 (λ I → lemma1 I w)
 
-lemma3 : (w : world) → equalTypes 1 w (UNIV 1) (UNIV 1)
-lemma3 w = EQTUNIV (univInBar 1 w)
+lemma3 : (I : Inh) (w : world) → equalTypes 1 I w (UNIV 1) (UNIV 1)
+lemma3 I w = EQTUNIV (univInBar 1 I w)
 
 lemma4 : (w : world) → eqtypes w (UNIV 1) (UNIV 1)
-lemma4 w = impliesEqTypes 1 (lemma3 w)
+lemma4 w = impliesEqTypes 1 (λ I → lemma3 I w)
 
-lemma5 : (w : world) → equalInType 1 w (UNIV 1) (UNIV 0) (UNIV 0)
-lemma5 w = (lemma3 w , inj₁ (EQTUNIV (univInBar 0 w)))
+lemma5 : (I : Inh) (w : world) → equalInType 1 I w (UNIV 1) (UNIV 0) (UNIV 0)
+lemma5 I w = (lemma3 I w , inj₁ (EQTUNIV (univInBar 0 I w)))
 
 lemma6 : (w : world) → eqintype w (UNIV 1) (UNIV 0) (UNIV 0)
-lemma6 w = impliesEqInType 1 (lemma5 w)
+lemma6 w = impliesEqInType 1 (λ I → lemma5 I w)
 
 
 -- SET
@@ -120,52 +122,39 @@ EQneqUNIV : {t a b : Term} {n : ℕ} → ¬ (EQ t a b) ≡ UNIV n
 EQneqUNIV {t} {a} {b} {n} ()
 
 
-wPredExtIrr-× : {w : world} {f g : wPred w} → wPredExtIrr f → wPredExtIrr g → wPredExtIrr (λ w' e' → f w' e' × g w' e')
-wPredExtIrr-× {w} {f} {g} wF wG w' e1 e2 (hf , hg) = wF w' e1 e2 hf , wG w' e1 e2 hg
-
-
-wPredExtIrr-⇛ : {w : world} {a b : Term} → wPredExtIrr {w} (λ w' e' → a ⇛ b at w')
-wPredExtIrr-⇛ {w} {a} {b} w' e1 e2 h = h
-
-
-≤-Σ+ : {n m : ℕ} → n ≤ m → Σ ℕ (λ k → m ≡ n + k)
-≤-Σ+ {0} {m} _≤_.z≤n = (m , refl)
-≤-Σ+ {suc n} {suc m} (_≤_.s≤s le) with ≤-Σ+ le
-... | (k , p) rewrite p = k , refl
-
-
-step≡nothing-steps : (w : world) (a : Term) (n : ℕ) → step a w ≡ nothing → steps n a w ≡ a
-step≡nothing-steps w a 0 h = refl
-step≡nothing-steps w a (suc n) h rewrite h = refl
-
-
-steps-+ : (n m : ℕ) (a : Term) (w : world) → steps (n + m) a w ≡ steps m (steps n a w) w
-steps-+ 0 m a w = refl
-steps-+ (suc n) m a w with step⊎ a w
-... | inj₁ (u , p) rewrite p = steps-+ n m u w
-... | inj₂ p rewrite p rewrite step≡nothing-steps w a m p = refl
-
-
-steps-val-det : (w : world) (a v₁ v₂ : Term) (n m : ℕ) → isValue v₁ → steps n a w ≡ v₁ → steps m a w ≡ v₂ → n ≤ m → v₁ ≡ v₂
-steps-val-det w a v₁ v₂ n m isv₁ c₁ c₂ p with ≤-Σ+ p
-... | (k , q) rewrite q | steps-+ n k a w | c₂ | c₁ | stepsVal v₁ w k isv₁ = c₂
-
-
-⇓-val-det : (w : world) (a v₁ v₂ : Term) → isValue v₁ → isValue v₂ → a ⇓ v₁ at w → a ⇓ v₂ at w → v₁ ≡ v₂
-⇓-val-det w a v₁ v₂ isv₁ isv₂ (n , c₁) (m , c₂) with n ≤? m
-... | yes p = steps-val-det w a v₁ v₂ n m isv₁ c₁ c₂ p
-... | no p = sym (steps-val-det w a v₂ v₁ m n isv₂ c₂ c₁ (≰⇒≥ p))
-
-
-⇛-val-det : {w : world} {a v₁ v₂ : Term} → isValue v₁ → isValue v₂ → a ⇛ v₁ at w → a ⇛ v₂ at w → v₁ ≡ v₂
-⇛-val-det {w} {a} {v₁} {v₂} isv₁ isv₂ c₁ c₂ =
-  ⇓-val-det w a v₁ v₂ isv₁ isv₂ h1 h2
-  where
-    h1 : a ⇓ v₁ at w
-    h1 = let c = c₁ w (extRefl w) in Level.lower c
-
-    h2 : a ⇓ v₂ at w
-    h2 = let c = c₂ w (extRefl w) in Level.lower c
+if-equalInType-EQ : (u : ℕ) (I : Inh) (w : world) (T a b t₁ t₂ : Term)
+                    → equalInType u I w (EQ a b T) t₁ t₂
+                    → inOpenBar I w (λ w' e' → [ I ] t₁ ⇛ AX at w' × [ I ] t₂ ⇛ AX at w' × equalInType u I w' T a b)
+if-equalInType-EQ u I w T a b t₁ t₂ (EQTNAT x x₁ , eqi) = ⊥-elim (EQneqNAT (compAllVal I x₁ tt))
+if-equalInType-EQ u I w T a b t₁ t₂ (EQTQNAT x x₁ , eqi) = ⊥-elim (EQneqQNAT (compAllVal I x₁ tt))
+if-equalInType-EQ u I w T a b t₁ t₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqLT (compAllVal I x₁ tt))
+if-equalInType-EQ u I w T a b t₁ t₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqQLT (compAllVal I x₁ tt))
+if-equalInType-EQ u I w T a b t₁ t₂ (EQTFREE x x₁ , eqi) = ⊥-elim (EQneqFREE (compAllVal I x₁ tt))
+if-equalInType-EQ u I w T a b t₁ t₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb , eqi) = ⊥-elim (EQneqPI (compAllVal I x₁ tt))
+if-equalInType-EQ u I w T a b t₁ t₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb , eqi) = ⊥-elim (EQneqSUM (compAllVal I x₁ tt))
+if-equalInType-EQ u I w T a b t₁ t₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb , eqi) = ⊥-elim (EQneqSET (compAllVal I x₁ tt))
+if-equalInType-EQ u I w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA eqt1 eqt2 , eqi) w1 e1
+  rewrite EQinj1 (compAllVal I x tt)  | EQinj2 (compAllVal I x tt)  | EQinj3 (compAllVal I x tt)
+        | EQinj1 (compAllVal I x₁ tt) | EQinj2 (compAllVal I x₁ tt) | EQinj3 (compAllVal I x₁ tt) =
+  let (w2 , e2 , h) = eqi w1 e1 in
+  (w2 , e2 , λ w3 e3 → let (c1 , c2 , e) = h w3 e3 in (c1 , c2 ,
+    (eqtA w3 (extTrans e3 (extTrans (proj₁ (snd (eqi w1 e1))) e1)) , e)))
+if-equalInType-EQ u I w T a b t₁ t₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB , eqi) = ⊥-elim (EQneqUNION (compAllVal I x₁ tt))
+if-equalInType-EQ u I w T a b t₁ t₂ (EQTSQUASH A1 A2 x x₁ eqtA , eqi) = ⊥-elim (EQneqTSQUASH (compAllVal I x₁ tt))
+if-equalInType-EQ u I w T a b t₁ t₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx , eqi) = ⊥-elim (EQneqFFDEFS (compAllVal I x₁ tt))
+if-equalInType-EQ u I w T a b t₁ t₂ (EQTUNIV x , eqi) =
+  let (w1 , e1 , h) = x w ([]≽-refl I w) in
+  let (c1 , c2) = h w1 ([]≽-refl I w1) in
+  ⊥-elim (EQneqUNIV (compAllVal I c1 tt))
+if-equalInType-EQ u I w T a b t₁ t₂ (EQTBAR x , eqi) w1 e1 =
+  let (w2 , e2 , eqi1) = eqi w1 e1 in
+  let (w3 , e3 , x1) = x w1 e1 in
+  let eqi2 = eqi1 w2 ([]≽-refl I w2) in
+  let x2 = x1 w2 (extTrans ([]≽-refl I w2) e2) in
+  let (w4 , e4 , z) = if-equalInType-EQ u I w2 T a b t₁ t₂ (x2 , eqi2) w2 ([]≽-refl I w2) in
+  (w4 , extTrans e4 (extTrans e2 e3) , z)
+if-equalInType-EQ u I w T a b t₁ t₂ (EQTLOWER A1 A2 x x₁ eqt , eqi) = ⊥-elim (EQneqLOWER (compAllVal I x₁ tt))
+if-equalInType-EQ u I w T a b t₁ t₂ (EQTSHRINK A1 A2 x x₁ eqt , eqi) = ⊥-elim (EQneqSHRINK (compAllVal I x₁ tt))
 
 
 -- NAT
@@ -212,95 +201,7 @@ NATneqUNIV : {n : ℕ} → ¬ NAT ≡ UNIV n
 NATneqUNIV {n} ()
 
 
-eqTypes-pres-eqInType : (u : univs) (w : world) (A B a b : Term) (eqt1 : eqTypes u w A B)
-                        → eqInType u w eqt1 a b
-                        → (eqt2 : eqTypes u w A B) → eqInType u w eqt2 a b
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTNAT x₂ x₃) = e
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTQNAT x₂ x₃) = ⊥-elim (NATneqQNAT (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTLT a1 a2 b1 b2 x₂ x₃ x₄ x₅) = ⊥-elim (NATneqLT (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTQLT a1 a2 b1 b2 x₂ x₃ x₄ x₅) = ⊥-elim (NATneqQLT (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTFREE x₂ x₃) = ⊥-elim (NATneqFREE (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTPI A1 B1 A2 B2 x₂ x₃ eqta eqtb) = ⊥-elim (NATneqPI (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTSUM A1 B1 A2 B2 x₂ x₃ eqta eqtb) = ⊥-elim (NATneqSUM (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTSET A1 B1 A2 B2 x₂ x₃ eqta eqtb) = ⊥-elim (NATneqSET (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTEQ a1 b1 a2 b2 A₁ B₁ x₂ x₃ eqtA eqt1 eqt2) = ⊥-elim (NATneqEQ (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTUNION A1 B1 A2 B2 x₂ x₃ eqtA eqtB) = ⊥-elim (NATneqUNION (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTSQUASH A1 A2 x₂ x₃ eqtA) = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQFFDEFS A1 A2 x1 x2 x₂ x₃ eqtA eqx) = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTUNIV x₂) = {!⊥-elim (NATneqUNIV (⇛-val-det tt tt x x₂))!}
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTBAR x₂) = {!!}
---
-eqTypes-pres-eqInType u w A B a b (EQTQNAT x x₁) e = {!!}
-eqTypes-pres-eqInType u w A B a b (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) e = {!!}
-eqTypes-pres-eqInType u w A B a b (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) e = {!!}
-eqTypes-pres-eqInType u w A B a b (EQTFREE x x₁) e = {!!}
-eqTypes-pres-eqInType u w A B a b (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb) e = {!!}
-eqTypes-pres-eqInType u w A B a b (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb) e = {!!}
-eqTypes-pres-eqInType u w A B a b (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) e = {!!}
-eqTypes-pres-eqInType u w A B a b (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) e = {!!}
-eqTypes-pres-eqInType u w A B a b (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) e = {!!}
-eqTypes-pres-eqInType u w A B a b (EQTSQUASH A1 A2 x x₁ eqtA) e = {!!}
-eqTypes-pres-eqInType u w A B a b (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) e = {!!}
-eqTypes-pres-eqInType u w A B a b (EQTUNIV x) e = {!!}
-eqTypes-pres-eqInType u w A B a b (EQTBAR x) e = {!!}
-
-
-wPredExtIrr-eqInType : {w : world} {u : univs} {A B a b : Term} (eqtA : allW w (λ w' _ → eqTypes u w' A B))
-                       → wPredExtIrr (λ w' e → eqInType u w' (eqtA w' e) a b)
-wPredExtIrr-eqInType {w} {u} {A} {B} {a} {b} eqtA w' e1 e2 h = {!!}
-
-
-wPredExtIrr-equalInType : {w : world} {u : ℕ} {A a b : Term}
-                          → wPredExtIrr {w} (λ w' e → equalInType u w' A a b)
-wPredExtIrr-equalInType {w} {u} {A} {a} {b} w' e1 e2 h = h
-
-
-
-if-equalInType-EQ : (u : ℕ) (w : world) (T a b t₁ t₂ : Term)
-                    → equalInType u w (EQ a b T) t₁ t₂
-                    → inbar w (λ w' e' → t₁ ⇛ AX at w' × t₂ ⇛ AX at w' × equalInType u w' T a b)
-if-equalInType-EQ u w T a b t₁ t₂ (EQTNAT x x₁ , eqi) = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
-if-equalInType-EQ u w T a b t₁ t₂ (EQTQNAT x x₁ , eqi) = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
-if-equalInType-EQ u w T a b t₁ t₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqLT (compAllVal x₁ tt))
-if-equalInType-EQ u w T a b t₁ t₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqQLT (compAllVal x₁ tt))
-if-equalInType-EQ u w T a b t₁ t₂ (EQTFREE x x₁ , eqi) = ⊥-elim (EQneqFREE (compAllVal x₁ tt))
-if-equalInType-EQ u w T a b t₁ t₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb , eqi) = ⊥-elim (EQneqPI (compAllVal x₁ tt))
-if-equalInType-EQ u w T a b t₁ t₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb , eqi) = ⊥-elim (EQneqSUM (compAllVal x₁ tt))
-if-equalInType-EQ u w T a b t₁ t₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb , eqi) = ⊥-elim (EQneqSET (compAllVal x₁ tt))
-if-equalInType-EQ u w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA eqt1 eqt2 , eqi) =
---  rewrite EQinj1 (compAllVal x tt)  | EQinj2 (compAllVal x tt)  | EQinj3 (compAllVal x tt)
---        | EQinj1 (compAllVal x₁ tt) | EQinj2 (compAllVal x₁ tt) | EQinj3 (compAllVal x₁ tt) =
---  {!!} λ w' e' → t₁ ⇛ AX at w' × t₂ ⇛ AX at w' × equalInType u w' T a b
-  Bar.inBarFunc
-    bar
-    w
-    (λ w' e → t₁ ⇛ AX at w' × t₂ ⇛ AX at w' × eqInType (uni u) w' (eqtA w' e) a1 a2)
-    (λ w' e' → t₁ ⇛ AX at w' × t₂ ⇛ AX at w' × equalInType u w' T a b)
-    (wPredExtIrr-× wPredExtIrr-⇛ (wPredExtIrr-× wPredExtIrr-⇛ (wPredExtIrr-eqInType eqtA)))
-    (wPredExtIrr-× wPredExtIrr-⇛ (wPredExtIrr-× wPredExtIrr-⇛ wPredExtIrr-equalInType))
-    {!!}
-    eqi
-{--  let (w2 , e2 , h) = eqi w1 e1 in
-  (w2 , e2 , λ w3 e3 → let (c1 , c2 , e) = h w3 e3 in (c1 , c2 ,
-    (eqtA w3 (extTrans e3 (extTrans (proj₁ (snd (eqi w1 e1))) e1)) , e)))--}
-if-equalInType-EQ u w T a b t₁ t₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB , eqi) = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
-if-equalInType-EQ u w T a b t₁ t₂ (EQTSQUASH A1 A2 x x₁ eqtA , eqi) = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
-if-equalInType-EQ u w T a b t₁ t₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx , eqi) = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
-if-equalInType-EQ u w T a b t₁ t₂ (EQTUNIV x , eqi) =
-  let (w1 , e1 , h) = x w (extRefl w) in
-  let (c1 , c2) = h w1 (extRefl w1) in
-  ⊥-elim (EQneqUNIV (compAllVal c1 tt))
-if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) = {!!}
-{--  let (w2 , e2 , eqi1) = eqi w1 e1 in
-  let (w3 , e3 , x1) = x w1 e1 in
-  let eqi2 = eqi1 w2 ([]≽-refl I w2) in
-  let x2 = x1 w2 (extTrans ([]≽-refl I w2) e2) in
-  let (w4 , e4 , z) = if-equalInType-EQ u I w2 T a b t₁ t₂ (x2 , eqi2) w2 ([]≽-refl I w2) in
-  (w4 , extTrans e4 (extTrans e2 e3) , z)--}
-
-
-
-{--if-equalInType-NAT : (u : ℕ) (I : Inh) (w : world) (t₁ t₂ : Term)
+if-equalInType-NAT : (u : ℕ) (I : Inh) (w : world) (t₁ t₂ : Term)
                      → equalInType u I w NAT t₁ t₂
                      → inOpenBar I w (λ w1 e1 → strongMonEq I w1 t₁ t₂)
 if-equalInType-NAT u I w t₁ t₂ (EQTNAT x x₁ , eqi) = eqi
@@ -1293,6 +1194,5 @@ then-lower w a b (u , n , k , e) =
 
 if-lower : (w : world) (a b : Term) → eqintype w (LOWER NAT) a b → eqintype w NAT a b
 if-lower w a b (u , n , k , e) = (u , n , k , λ j c → {!!})--}
---}
 
 \end{code}

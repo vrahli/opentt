@@ -1,5 +1,5 @@
 \begin{code}
-module props1 where
+module props1_stepind where
 
 open import Level using (Level ; 0ℓ) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
@@ -26,9 +26,9 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import calculus
-open import world
-open import theory
-open import props0
+open import world_stepind
+open import theory_stepind
+open import props0_stepind
 \end{code}
 
 
