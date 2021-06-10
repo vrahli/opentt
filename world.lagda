@@ -149,6 +149,9 @@ extwPreservesNorepeats w1 .(w1 ++ start name res ∷ []) (extEntry .w1 name res 
 wPred : (w : world) → Set₂
 wPred w = (w' : world) (e : w' ≽ w) → Set₁
 
+wPredDep : {w : world} (f : wPred w) → Set₂
+wPredDep {w} f = (w' : world) (e' : w' ≽ w) (x : f w' e') → Set₁
+
 wPredExtIrr : {w : world} (f : wPred w) → Set₁
 wPredExtIrr {w} f = (w' : world) (e1 e2 : w' ≽ w) → f w' e1 → f w' e2
 
@@ -170,7 +173,7 @@ inOpenBar w f =
      f w3 (extTrans (extTrans e3 e2) e1))))
 
 -- f holds in an open bar that depends on another open bar h
-inOpenBar' : (w : world) {g : wPred w} (h : inOpenBar w g) (f : ∀ w' (e : w' ≽ w) (x : g w' e) → Set₁) → Set₁
+inOpenBar' : (w : world) {g : wPred w} (h : inOpenBar w g) (f : wPredDep g) → Set₁
 inOpenBar' w h f =
   allW w (λ w0 e0 →
            let p  = h w0 e0 in

@@ -212,24 +212,62 @@ NATneqUNIV : {n : ℕ} → ¬ NAT ≡ UNIV n
 NATneqUNIV {n} ()
 
 
+{--
+ -- Further properties of inbar
+ --}
+inbar-inbar' : (w : world) (f : wPred w) (g : wPredDep f)
+               → inbar w (λ w' e' → (x : f w' e') → g w' e' x)
+               → (i : inbar w f) → inbar' w i g
+inbar-inbar' w f g h i = {!!}
+
+allW-inbar : (w : world) (f : wPred w) → allW w f → inbar w f
+allW-inbar w f h = {!!}
+
+
+inbar-mon : (w2 w1 : world) (e : w2 ≽ w1) (f : wPred w1) → inbar w1 f → inbar w2 (↑wPred f e)
+inbar-mon = {!!}
+
+
+
+eqTypes-pres-eqInType-NAT : (u : univs) (w : world) (A B a b : Term)
+                        → A ⇛ NAT at w
+                        → B ⇛ NAT at w
+                        → inbar w (λ w' _ → strongMonEq w' a b)
+                        → (eqt2 : eqTypes u w A B) → eqInType u w eqt2 a b
+eqTypes-pres-eqInType-NAT u w A B a b c₁ c₂ e (EQTNAT x x₁) = e
+eqTypes-pres-eqInType-NAT u w A B a b c₁ c₂ e (EQTQNAT x x₁) = ⊥-elim (NATneqQNAT (⇛-val-det tt tt c₁ x))
+eqTypes-pres-eqInType-NAT u w A B a b c₁ c₂ e (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = ⊥-elim (NATneqLT (⇛-val-det tt tt c₁ x))
+eqTypes-pres-eqInType-NAT u w A B a b c₁ c₂ e (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) = ⊥-elim (NATneqQLT (⇛-val-det tt tt c₁ x))
+eqTypes-pres-eqInType-NAT u w A B a b c₁ c₂ e (EQTFREE x x₁) = ⊥-elim (NATneqFREE (⇛-val-det tt tt c₁ x))
+eqTypes-pres-eqInType-NAT u w A B a b c₁ c₂ e (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb) = ⊥-elim (NATneqPI (⇛-val-det tt tt c₁ x))
+eqTypes-pres-eqInType-NAT u w A B a b c₁ c₂ e (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb) = ⊥-elim (NATneqSUM (⇛-val-det tt tt c₁ x))
+eqTypes-pres-eqInType-NAT u w A B a b c₁ c₂ e (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) = ⊥-elim (NATneqSET (⇛-val-det tt tt c₁ x))
+eqTypes-pres-eqInType-NAT u w A B a b c₁ c₂ e (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) = ⊥-elim (NATneqEQ (⇛-val-det tt tt c₁ x))
+eqTypes-pres-eqInType-NAT u w A B a b c₁ c₂ e (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) = ⊥-elim (NATneqUNION (⇛-val-det tt tt c₁ x))
+eqTypes-pres-eqInType-NAT u w A B a b c₁ c₂ e (EQTSQUASH A1 A2 x x₁ eqtA) = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt c₁ x))
+eqTypes-pres-eqInType-NAT u w A B a b c₁ c₂ e (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt c₁ x))
+eqTypes-pres-eqInType-NAT u w A B a b c₁ c₂ e (EQTUNIV x) = {!!}
+eqTypes-pres-eqInType-NAT u w A B a b c₁ c₂ e (EQTBAR x) = c
+  where
+    f : inbar w (λ w' _ → strongMonEq w' a b)
+    f = e
+
+    c2 : allW w (λ w' e' → (x : eqTypes u w' A B) → eqInType u w' x a b)
+    c2 w2 e2 e' = eqTypes-pres-eqInType-NAT u w2 A B {!!} {!!} {!!} {!!} {!!} e'
+
+    c1 : inbar w (λ w' e' → (x : eqTypes u w' A B) → eqInType u w' x a b)
+    c1 = allW-inbar w (λ w' e' → (x : eqTypes u w' A B) → eqInType u w' x a b) c2
+
+    c : inbar' w x (λ w' _ (x : eqTypes u w' A B) → eqInType u w' x a b)
+    c = inbar-inbar' w (λ w' _ → eqTypes u w' A B) (λ w' _ (x : eqTypes u w' A B) → eqInType u w' x a b) c1 x
+
+
+
+
 eqTypes-pres-eqInType : (u : univs) (w : world) (A B a b : Term) (eqt1 : eqTypes u w A B)
                         → eqInType u w eqt1 a b
                         → (eqt2 : eqTypes u w A B) → eqInType u w eqt2 a b
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTNAT x₂ x₃) = e
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTQNAT x₂ x₃) = ⊥-elim (NATneqQNAT (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTLT a1 a2 b1 b2 x₂ x₃ x₄ x₅) = ⊥-elim (NATneqLT (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTQLT a1 a2 b1 b2 x₂ x₃ x₄ x₅) = ⊥-elim (NATneqQLT (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTFREE x₂ x₃) = ⊥-elim (NATneqFREE (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTPI A1 B1 A2 B2 x₂ x₃ eqta eqtb) = ⊥-elim (NATneqPI (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTSUM A1 B1 A2 B2 x₂ x₃ eqta eqtb) = ⊥-elim (NATneqSUM (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTSET A1 B1 A2 B2 x₂ x₃ eqta eqtb) = ⊥-elim (NATneqSET (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTEQ a1 b1 a2 b2 A₁ B₁ x₂ x₃ eqtA eqt1 eqt2) = ⊥-elim (NATneqEQ (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTUNION A1 B1 A2 B2 x₂ x₃ eqtA eqtB) = ⊥-elim (NATneqUNION (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTSQUASH A1 A2 x₂ x₃ eqtA) = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQFFDEFS A1 A2 x1 x2 x₂ x₃ eqtA eqx) = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt x x₂))
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTUNIV x₂) = {!⊥-elim (NATneqUNIV (⇛-val-det tt tt x x₂))!}
-eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e (EQTBAR x₂) = {!!}
---
+eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e eqt2 = eqTypes-pres-eqInType-NAT u w A B a b x x₁ e eqt2
 eqTypes-pres-eqInType u w A B a b (EQTQNAT x x₁) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) e = {!!}

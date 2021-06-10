@@ -8,7 +8,7 @@ record Bar : Set₂ where
   constructor mkBar
   field
     inBar     : (w : world) (f : wPred w) → Set₁
-    inBar'    : (w : world) {g : wPred w} (h : inBar w g) (f : ∀ w' (e : w' ≽ w) (x : g w' e) → Set₁) → Set₁
+    inBar'    : (w : world) {g : wPred w} (h : inBar w g) (f : wPredDep g) → Set₁
     inBarFunc : (w : world) (f g : wPred w) → wPredExtIrr f → wPredExtIrr g → inBar w (λ w' e' → f w' e' → g w' e') → inBar w f → inBar w g
 
 inOpenBarFunc : (w : world) (f g : wPred w) → wPredExtIrr f → wPredExtIrr g → inOpenBar w (λ w' e' → f w' e' → g w' e') → inOpenBar w f → inOpenBar w g
