@@ -165,24 +165,6 @@ exW w f = Σ world (λ w' → Σ (w' ≽ w) (λ e → f w' e))
 
 exAllW : (w : world) (f : wPred w) → Set₁
 exAllW w f = exW w (λ w1 e1 → allW w1 (λ w2 e2 → f w2 (extTrans e2 e1)))
-
--- f holds in an open bar
-inOpenBar : (w : world) (f : wPred w) → Set₁
-inOpenBar w f =
-  allW w (λ w1 e1 → exW w1 (λ w2 e2 → allW w2 (λ w3 e3 →
-     f w3 (extTrans (extTrans e3 e2) e1))))
-
--- f holds in an open bar that depends on another open bar h
-inOpenBar' : (w : world) {g : wPred w} (h : inOpenBar w g) (f : wPredDep g) → Set₁
-inOpenBar' w h f =
-  allW w (λ w0 e0 →
-           let p  = h w0 e0 in
-           let w1 = proj₁ p in
-           let e1 = proj₁ (proj₂ p) in
-           let q  = proj₂ (proj₂ p) in
-           exW w1 (λ w2 e2 → allW w2 (λ w3 e3 →
-             let e' = extTrans e3 e2 in
-             f w3 (extTrans (extTrans e' e1) e0) (q w3 e'))))
 \end{code}
 
 
@@ -348,14 +330,6 @@ allW-mon : {w2 w1 : world} {f :  wPred w1} (e : w2 ≽ w1)
            → allW w1 f
            → allW w2 (↑wPred f e)
 allW-mon {w2} {w1} {f} e h w' e' = h w' (extTrans e' e)
-
-
-inOpenBar-mon : {w2 w1 : world} {f :  wPred w1} (i : wPredExtIrr f) (e : w2 ≽ w1)
-                → inOpenBar w1 f
-                → inOpenBar w2 (↑wPred f e)
-inOpenBar-mon {w2} {w1} {f} i e h w' e' =
-  let (w1 , e1 , h1) = h w' (extTrans e' e) in
-  (w1 , e1 , λ w2 e2 → i w2 _ _ (h1 w2 e2))
 
 
 ⇛-mon : {a b : Term} {w2 w1 : world}

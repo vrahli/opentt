@@ -37,10 +37,12 @@ OpenTT.
 
 \begin{code}
 inbar : (w : world) (f : wPred w) → Set₁
-inbar = Bar.inBar b
+--inbar = Bar.inBar b
+inbar = inOpenBar
 
-inbar' : (w : world) {g : wPred w} (h : inbar w g) (f : ∀ w' (e : w' ≽ w) (x : g w' e) → Set₁) → Set₁
-inbar' = Bar.inBar' b
+inbar' : (w : world) {g : wPred w} (h : inbar w g) (f : wPredDep g) → Set₁
+--inbar' = Bar.inBar' b
+inbar' = inOpenBar'
 
 
 -- PERs and world dependent PERs
@@ -59,9 +61,9 @@ univs = Σ ℕ (λ n → wper × wper)
 -- equality between types (an inductive definition)
 -- and equality in types (a recursive function)
 -- We don't check positivity here, this can be done for all instances of bar.Bar
-{-# NO_POSITIVITY_CHECK #-}
+--{-# NO_POSITIVITY_CHECK #-}
 data eqTypes (u : univs) (w : world) (T1 T2 : Term) : Set₁
-{-# TERMINATING #-}
+--{-# TERMINATING #-}
 eqInType : (u : univs) (w : world) {T1 T2 : Term} → (eqTypes u w T1 T2) → per
 \end{code}
 
@@ -129,7 +131,7 @@ data eqTypes u w T1 T2 where
     → T1 ⇛ (FFDEFS A1 x1) at w
     → T2 ⇛ (FFDEFS A2 x2) at w
     → (eqtA : allW w (λ w' _ → eqTypes u w' A1 A2))
-    → (eqx : allW w (λ w' e → eqInType u w' (eqtA w' e) x1 x1))
+    → (eqx : allW w (λ w' e → eqInType u w' (eqtA w' e) x1 x2))
     → eqTypes u w T1 T2
   EQTUNIV : proj₁ (proj₂ u) w T1 T2 → eqTypes u w T1 T2
   EQTBAR : inbar w (λ w' _ → eqTypes u w' T1 T2) → eqTypes u w T1 T2
@@ -140,12 +142,13 @@ Equality in types is defined as the following recursive function.
 
 
 \begin{code}
+{-# INLINE inOpenBar' #-}
 eqInType _ w (EQTNAT _ _) t1 t2 = inbar w (λ w' _ → strongMonEq w' t1 t2)
 eqInType _ w (EQTQNAT _ _) t1 t2 = inbar w (λ w' _ → weakMonEq w' t1 t2)
 eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 =
-  inbar w (λ w' _ → Lift {0ℓ} 1ℓ (Σ ℕ (λ n → Σ ℕ (λ m → t1 ⇓ (NUM n) at w' × t2 ⇓ (NUM m) at w' × n < m))))
+  inbar w (λ w' _ → Lift {0ℓ} 1ℓ (Σ ℕ (λ n → Σ ℕ (λ m → a1 ⇓ (NUM n) at w' × b1 ⇓ (NUM m) at w' × n < m))))
 eqInType _ w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 =
-  inbar w (λ w' _ → Lift {0ℓ} 1ℓ (Σ ℕ (λ n → Σ ℕ (λ m → t1 ⇓ (NUM n) at w' × t2 ⇓ (NUM m) at w' × n < m))))
+  inbar w (λ w' _ → Lift {0ℓ} 1ℓ (Σ ℕ (λ n → Σ ℕ (λ m → a1 ⇓ (NUM n) at w' × b1 ⇓ (NUM m) at w' × n < m))))
 eqInType _ w (EQTFREE _ _) t1 t2 =
   inbar w (λ w' _ → Σ csName (λ n → t1 ⇛ (CS n) at w' × t2 ⇛ (CS n) at w'))
 eqInType u w (EQTPI _ _ _ _ _ _ eqta eqtb) f1 f2 =
@@ -184,7 +187,7 @@ eqInType u w (EQTBAR f) t1 t2 =
            let w1 = proj₁ p in
            let e1 = proj₁ (proj₂ p) in
            let q  = proj₂ (proj₂ p) in
-           exW w1 (λ w2 e2 → allW w2 (λ w3 e3 → eqInType u w3 (q w3 (extTrans e3 e2)) t1 t2))) --}
+           exW w1 (λ w2 e2 → allW w2 (λ w3 e3 → (z : w3 ≽ w) → eqInType u w3 (q w3 (extTrans e3 e2) z) t1 t2)))--}
 \end{code}
 
 
