@@ -34,6 +34,7 @@ open import theory (bar)
 open import props0 (bar)
 open import type_sys_props_nat (bar)
 open import type_sys_props_qnat (bar)
+open import type_sys_props_free (bar)
 open import type_sys_props_pi (bar)
 \end{code}
 
@@ -46,7 +47,7 @@ typeSysConds u isu w A B (EQTNAT x x₁) = typeSysConds-NAT u isu w A B x x₁
 typeSysConds u isu w A B (EQTQNAT x x₁) = typeSysConds-QNAT u isu w A B x x₁
 typeSysConds u isu w A B (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = {!!}
 typeSysConds u isu w A B (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) = {!!}
-typeSysConds u isu w A B (EQTFREE x x₁) = {!!}
+typeSysConds u isu w A B (EQTFREE x x₁) = typeSysConds-FREE u isu w A B x x₁
 typeSysConds u isu w A B (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb) =
   typeSysConds-PI u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb
   where
