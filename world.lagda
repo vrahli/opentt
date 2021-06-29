@@ -322,6 +322,18 @@ weakMonEq : (w : world) (t1 t2 : Term) → Set₁
 weakMonEq w t1 t2 = allW w (λ w' _ → Lift {0ℓ} 1ℓ (Σ ℕ (λ n → t1 ⇓ (NUM n) at w' × t2 ⇓ (NUM n) at w')))
 
 
+⇛to-same-CS : (w : world) (t1 t2 : Term) → Set₁
+⇛to-same-CS w t1 t2 = Σ csName (λ n → t1 ⇛ (CS n) at w × t2 ⇛ (CS n) at w)
+
+
+<NUM-pair : (w : world) (t1 t2 : Term) → Set
+<NUM-pair w t1 t2 = Σ ℕ (λ n → Σ ℕ (λ m → t1 ⇓ (NUM n) at w × t2 ⇓ (NUM m) at w × n < m))
+
+
+lift-<NUM-pair : (w : world) (t1 t2 : Term) → Set₁
+lift-<NUM-pair w t1 t2 = Lift {0ℓ} 1ℓ (<NUM-pair w t1 t2)
+
+
 ↑wPred : {w1 : world} (f : wPred w1) {w2 : world} (e : w2 ≽ w1) → wPred w2
 ↑wPred {w1} f {w2} e w' e' = f w' (extTrans e' e)
 
@@ -337,6 +349,7 @@ allW-mon {w2} {w1} {f} e h w' e' = h w' (extTrans e' e)
            → a ⇛ b at w1
            → a ⇛ b at w2
 ⇛-mon {a} {b} {w2} {w1} ext c w' e' = c w' (extTrans e' ext)
+
 
 getChoices++ : (name : csName) (w w' : world)
                → getChoices name (w ++ w') ≡ getChoices name w ++ getChoices name w'

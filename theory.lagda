@@ -142,27 +142,33 @@ Equality in types is defined as the following recursive function.
 
 
 \begin{code}
+PIeq : (eqa : per) (eqb : (a b : Term) → eqa a b → per) → per
+PIeq eqa eqb f g = (a b : Term) → (e : eqa a b) → eqb a b e (APPLY f a) (APPLY g b)
+
+SUMeq : (eqa : per) (eqb : (a b : Term) → eqa a b → per) → wper
+SUMeq eqa eqb w f g =
+  Σ Term (λ a1 → Σ Term (λ a2 → Σ Term (λ b1 → Σ Term (λ b2 →
+    Σ (eqa a1 a2) (λ ea →
+    f ⇛ (PAIR a1 b1) at w
+    × g ⇛ (PAIR a2 b2) at w
+    × eqb a1 a2 ea b1 b2)))))
+
+SETeq : (eqa : per) (eqb : (a b : Term) → eqa a b → per) → per
+SETeq eqa eqb f g = Σ Term (λ b → Σ (eqa f g) (λ ea → eqb f g ea b b))
+
+
 {-# INLINE inOpenBar' #-}
 eqInType _ w (EQTNAT _ _) t1 t2 = inbar w (λ w' _ → strongMonEq w' t1 t2)
 eqInType _ w (EQTQNAT _ _) t1 t2 = inbar w (λ w' _ → weakMonEq w' t1 t2)
-eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 =
-  inbar w (λ w' _ → Lift {0ℓ} 1ℓ (Σ ℕ (λ n → Σ ℕ (λ m → a1 ⇓ (NUM n) at w' × b1 ⇓ (NUM m) at w' × n < m))))
-eqInType _ w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 =
-  inbar w (λ w' _ → Lift {0ℓ} 1ℓ (Σ ℕ (λ n → Σ ℕ (λ m → a1 ⇓ (NUM n) at w' × b1 ⇓ (NUM m) at w' × n < m))))
-eqInType _ w (EQTFREE _ _) t1 t2 =
-  inbar w (λ w' _ → Σ csName (λ n → t1 ⇛ (CS n) at w' × t2 ⇛ (CS n) at w'))
+eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 = inbar w (λ w' _ → lift-<NUM-pair w' a1 b1)
+eqInType _ w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 = inbar w (λ w' _ → lift-<NUM-pair w' a1 b1)
+eqInType _ w (EQTFREE _ _) t1 t2 = inbar w (λ w' _ → ⇛to-same-CS w' t1 t2)
 eqInType u w (EQTPI _ _ _ _ _ _ eqta eqtb) f1 f2 =
-  inbar w (λ w' e → ∀ (a1 a2 : Term) (eqa : eqInType u w' (eqta w' e) a1 a2)
-                      → eqInType u w' (eqtb w' e a1 a2 eqa) (APPLY f1 a1) (APPLY f2 a2))
+  inbar w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) f1 f2)
 eqInType u w (EQTSUM _ _ _ _ _ _ eqta eqtb) t1 t2 =
-  inbar w (λ w' e → Σ Term (λ a1 → Σ Term (λ a2 → Σ Term (λ b1 → Σ Term (λ b2 →
-                         Σ (eqInType u w' (eqta w' e) a1 a2) (λ ea →
-                         t1 ⇛ (PAIR a1 b1) at w'
-                         × t2 ⇛ (PAIR a2 b2) at w'
-                         × eqInType u w' (eqtb w' e a1 a2 ea) b1 b2))))))
+  inbar w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' t1 t2)
 eqInType u w (EQTSET _ _ _ _ _ _ eqta eqtb) t1 t2 =
-  inbar w (λ w' e → Σ Term (λ b → Σ (eqInType u w' (eqta w' e) t1 t2) (λ ea →
-                         eqInType u w' (eqtb w' e t1 t2 ea) b b)))
+  inbar w (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) t1 t2)
 eqInType u w (EQTEQ a1 _ a2 _ _ _ _ _ eqtA eqt1 eqt2) t1 t2 =
   inbar w (λ w' e → t1 ⇛ AX at w' × t2 ⇛ AX at w' × eqInType u w' (eqtA w' e) a1 a2)
 eqInType u w (EQTUNION _ _ _ _ _ _ eqtA eqtB) t1 t2 =
@@ -197,7 +203,7 @@ We finally close the construction as follows:
 \begin{code}
 -- Two level-m universes are equal if they compute to (UNIV m)
 eqUnivi : (m : ℕ) → wper
-eqUnivi m w T1 T2 = inOpenBar w (λ w' _ → T1 ⇛ (UNIV m) at w' × T2 ⇛ (UNIV m) at w')
+eqUnivi m w T1 T2 = inbar w (λ w' _ → T1 ⇛ (UNIV m) at w' × T2 ⇛ (UNIV m) at w')
 
 -- Two terms are equal in universe m if they are equal according to eqTypes
 eqInUnivi : (m : ℕ) → wper

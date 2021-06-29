@@ -37,49 +37,6 @@ open import props0 (bar)
 
 
 \begin{code}[hide]
-CSinj : {n m : csName} → CS n ≡ CS m → n ≡ m
-CSinj refl =  refl
-
-
-⇛to-same-CS : (w : world) (t1 t2 : Term) → Set₁
-⇛to-same-CS w t1 t2 = Σ csName (λ n → t1 ⇛ (CS n) at w × t2 ⇛ (CS n) at w)
-
-
-⇛to-same-CS-sym : {w : world} {a b : Term}
-                  → ⇛to-same-CS w a b
-                  → ⇛to-same-CS w b a
-⇛to-same-CS-sym {w} {a} {b} (n , c₁ , c₂) = n , c₂ , c₁
-
-
-inbar-⇛to-same-CS-sym : {w : world} {a b : Term}
-                        → inbar w (λ w' _ → ⇛to-same-CS w' a b)
-                        → inbar w (λ w' _ → ⇛to-same-CS w' b a)
-inbar-⇛to-same-CS-sym {w} {a} {b} h =
-  Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 → ⇛to-same-CS-sym) h
-
-
-⇛to-same-CS-trans : {w : world} {a b c : Term}
-                    → ⇛to-same-CS w a b
-                    → ⇛to-same-CS w b c
-                    → ⇛to-same-CS w a c
-⇛to-same-CS-trans {w} {a} {b} {c} (n , c₁ , c₂) (m , d₁ , d₂) rewrite CSinj (⇛-val-det tt tt d₁ c₂) = n , c₁ , d₂
-
-
-inbar-⇛to-same-CS-trans : {w : world} {a b c : Term}
-                          → inbar w (λ w' _ → ⇛to-same-CS w' a b)
-                          → inbar w (λ w' _ → ⇛to-same-CS w' b c)
-                          → inbar w (λ w' _ → ⇛to-same-CS w' a c)
-inbar-⇛to-same-CS-trans {w} {a} {b} {c} h₁ h₂ =
-  Bar.inBarFunc inOpenBar-Bar (Bar.inBarFunc inOpenBar-Bar h h₁) h₂
-  where
-    aw : allW w (λ w' e' → ⇛to-same-CS w' a b → ⇛to-same-CS w' b c → ⇛to-same-CS w' a c)
-    aw w1 e1 = ⇛to-same-CS-trans
-
-    h : inbar w (λ w' e' → ⇛to-same-CS w' a b → ⇛to-same-CS w' b c → ⇛to-same-CS w' a c)
-    h = Bar.allW-inBar inOpenBar-Bar aw
-
-
-
 FREEneqNAT : ¬ FREE ≡ NAT
 FREEneqNAT ()
 

@@ -448,6 +448,39 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
       eqi)
 
 
+strongMonEq-refl : {w : world} {a b : Term}
+                  → strongMonEq w a b
+                  → strongMonEq w a a
+strongMonEq-refl {w} {a} {b} (n , c₁ , c₂) = n , c₁ , c₁
+
+
+strongMonEq-refl-rev : {w : world} {a b : Term}
+                  → strongMonEq w a b
+                  → strongMonEq w b b
+strongMonEq-refl-rev {w} {a} {b} (n , c₁ , c₂) = n , c₂ , c₂
+
+
+
+
+weakMonEq-refl : {w : world} {a b : Term}
+                 → weakMonEq w a b
+                 → weakMonEq w a a
+weakMonEq-refl {w} {a} {b} wm w1 e1 = lift (fst z , fst (snd z) , fst (snd z))
+  where
+    z : Σ ℕ (λ n → a ⇓ NUM n at w1 × b ⇓ NUM n at w1)
+    z = lower (wm w1 e1)
+
+
+weakMonEq-refl-rev : {w : world} {a b : Term}
+                     → weakMonEq w a b
+                     → weakMonEq w b b
+weakMonEq-refl-rev {w} {a} {b} wm w1 e1 = lift (fst z , snd (snd z) , snd (snd z))
+  where
+    z : Σ ℕ (λ n → a ⇓ NUM n at w1 × b ⇓ NUM n at w1)
+    z = lower (wm w1 e1)
+
+
+
 strongMonEq-sym : {w : world} {a b : Term}
                   → strongMonEq w a b
                   → strongMonEq w b a
@@ -567,10 +600,100 @@ strongMonEq-pres-⇓ {w} {a1} {a2} {n} (m , c₁ , c₂) c = z₂
     z₂ rewrite NUMinj z₁ = lower (c₂ w (extRefl _))
 
 
+
+weakMonEq-pres-⇓ : {w : world} {a1 a2 : Term} {n : ℕ}
+                   → weakMonEq w a1 a2
+                   → a1 ⇓ NUM n at w
+                   → a2 ⇓ NUM n at w
+weakMonEq-pres-⇓ {w} {a1} {a2} {n} wm c = z₂
+  where
+    m : ℕ
+    m = fst (lower (wm w (extRefl _)))
+
+    z₁ : NUM n ≡ NUM m
+    z₁ = ⇓-val-det tt tt c (fst (snd (lower (wm w (extRefl _)))))
+
+    z₂ : a2 ⇓ NUM n at w
+    z₂ rewrite NUMinj z₁ = snd (snd (lower (wm w (extRefl _))))
+
+
+weakMonEq-preserves-inbar : {w : world} {a b c d : Term}
+                            → weakMonEq w c a
+                            → weakMonEq w d b
+                            → inbar w (λ w' _ → lift-<NUM-pair w' a b)
+                            → inbar w (λ w' _ → lift-<NUM-pair w' c d)
+weakMonEq-preserves-inbar {w} {a} {b} {c} {d} s₁ s₂ i =
+  Bar.allW-inBarFunc inOpenBar-Bar aw i
+  where
+    aw : allW w (λ w' e' → lift-<NUM-pair w' a b → lift-<NUM-pair w' c d)
+    aw w1 e1 (lift (n , m , c₁ , c₂ , c)) =
+      lift (n , m ,
+            weakMonEq-pres-⇓ (weakMonEq-sym (weakMonEq-mon s₁ w1 e1)) c₁ ,
+            weakMonEq-pres-⇓ (weakMonEq-sym (weakMonEq-mon s₂ w1 e1)) c₂ ,
+            c)
+
+
+
+strongMonEq-preserves-inbar : {w : world} {a b c d : Term}
+                              → strongMonEq w c a
+                              → strongMonEq w d b
+                              → inbar w (λ w' _ → lift-<NUM-pair w' a b)
+                              → inbar w (λ w' _ → lift-<NUM-pair w' c d)
+strongMonEq-preserves-inbar {w} {a} {b} {c} {d} s₁ s₂ i =
+  Bar.allW-inBarFunc inOpenBar-Bar aw i
+  where
+    aw : allW w (λ w' e' → lift-<NUM-pair w' a b → lift-<NUM-pair w' c d)
+    aw w1 e1 (lift (n , m , c₁ , c₂ , c)) =
+      lift (n , m ,
+            strongMonEq-pres-⇓ (strongMonEq-sym (strongMonEq-mon s₁ w1 e1)) c₁ ,
+            strongMonEq-pres-⇓ (strongMonEq-sym (strongMonEq-mon s₂ w1 e1)) c₂ ,
+            c)
+
+
 →inbar⇛ : {w : world} {A B : Term}
             → A ⇛ B at w
             → inbar w (λ w' _ → A ⇛ B at w')
 →inbar⇛ {w} {A} {B} comp = Bar.allW-inBar inOpenBar-Bar (λ w1 e1 → ⇛-mon e1 comp)
+
+
+
+⇛to-same-CS-sym : {w : world} {a b : Term}
+                  → ⇛to-same-CS w a b
+                  → ⇛to-same-CS w b a
+⇛to-same-CS-sym {w} {a} {b} (n , c₁ , c₂) = n , c₂ , c₁
+
+
+
+inbar-⇛to-same-CS-sym : {w : world} {a b : Term}
+                        → inbar w (λ w' _ → ⇛to-same-CS w' a b)
+                        → inbar w (λ w' _ → ⇛to-same-CS w' b a)
+inbar-⇛to-same-CS-sym {w} {a} {b} h =
+  Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 → ⇛to-same-CS-sym) h
+
+
+CSinj : {n m : csName} → CS n ≡ CS m → n ≡ m
+CSinj refl =  refl
+
+
+⇛to-same-CS-trans : {w : world} {a b c : Term}
+                    → ⇛to-same-CS w a b
+                    → ⇛to-same-CS w b c
+                    → ⇛to-same-CS w a c
+⇛to-same-CS-trans {w} {a} {b} {c} (n , c₁ , c₂) (m , d₁ , d₂) rewrite CSinj (⇛-val-det tt tt d₁ c₂) = n , c₁ , d₂
+
+inbar-⇛to-same-CS-trans : {w : world} {a b c : Term}
+                          → inbar w (λ w' _ → ⇛to-same-CS w' a b)
+                          → inbar w (λ w' _ → ⇛to-same-CS w' b c)
+                          → inbar w (λ w' _ → ⇛to-same-CS w' a c)
+inbar-⇛to-same-CS-trans {w} {a} {b} {c} h₁ h₂ =
+  Bar.inBarFunc inOpenBar-Bar (Bar.inBarFunc inOpenBar-Bar h h₁) h₂
+  where
+    aw : allW w (λ w' e' → ⇛to-same-CS w' a b → ⇛to-same-CS w' b c → ⇛to-same-CS w' a c)
+    aw w1 e1 = ⇛to-same-CS-trans
+
+    h : inbar w (λ w' e' → ⇛to-same-CS w' a b → ⇛to-same-CS w' b c → ⇛to-same-CS w' a c)
+    h = Bar.allW-inBar inOpenBar-Bar aw
+
 
 
 
@@ -725,6 +848,7 @@ TSP-refl {u} {w} {A1} {A2} {a1} {a2} {w1} {e1} {eqta} aw i =
   TSP.itrans (aw w1 e1) a1 a2 a1 i (TSP.isym (aw w1 e1) a1 a2 i)
 
 
+
 TSP-fam-rev-dom : {u : univs} {w : world} {A1 A2 B1 B2 a1 a2 f g : Term}
                   (eqta  : allW w (λ w1 e1 → eqTypes u w1 A1 A2))
                   (eqtb  : allW w (λ w1 e1 → (a1 a2 : Term) → eqInType u w1 (eqta w1 e1) a1 a2 → eqTypes u w1 (sub a1 B1) (sub a2 B2)))
@@ -743,4 +867,67 @@ TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} {a1} {a2} {f} {g} eqta eqtb inda ind
 
     ef1 : eqInType u w1 (eqtb w1 e1 a2 a2 ea22) f g
     ef1 = TSP.extrevr1 (indb w1 e1 a2 a2 ea22) (sub a1 B1) (eqtb w1 e1 a1 a2 ea1) f g h
+
+
+
+TSP-fam-rev-dom2 : {u : univs} {w : world} {A1 A2 B1 B2 a1 a2 a3 f g : Term}
+                   (eqta  : allW w (λ w1 e1 → eqTypes u w1 A1 A2))
+                   (eqtb  : allW w (λ w1 e1 → (a1 a2 : Term) → eqInType u w1 (eqta w1 e1) a1 a2 → eqTypes u w1 (sub a1 B1) (sub a2 B2)))
+                   (inda  : allW w (λ w1 e1 → TSP (eqta w1 e1)))
+                   (indb  : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2) → TSP (eqtb w1 e1 a1 a2 ea)))
+                   {w1 : world} {e1 : w1 ≽ w}
+                   {ea1 : eqInType u w1 (eqta w1 e1) a1 a2}
+                   {ea2 : eqInType u w1 (eqta w1 e1) a2 a3}
+                   → eqInType u w1 (eqtb w1 e1 a1 a2 ea1) f g
+                   → eqInType u w1 (eqtb w1 e1 a2 a3 ea2) f g
+TSP-fam-rev-dom2 {u} {w} {A1} {A2} {B1} {B2} {a1} {a2} {a3} {f} {g} eqta eqtb inda indb {w1} {e1} {ea1} {ea2} h =
+  TSP.extl1 (indb w1 e1 a2 a2 ea22) (sub a3 B2) (eqtb w1 e1 a2 a3 ea2) f g ef1
+  where
+    ea22 : eqInType u w1 (eqta w1 e1) a2 a2
+    ea22 = TSP.itrans (inda w1 e1) a2 a1 a2 (TSP.isym (inda w1 e1) a1 a2 ea1) ea1
+
+    ef1 : eqInType u w1 (eqtb w1 e1 a2 a2 ea22) f g
+    ef1 = TSP.extrevr1 (indb w1 e1 a2 a2 ea22) (sub a1 B1) (eqtb w1 e1 a1 a2 ea1) f g h
+
+
+
+TSP-fam-rev-dom3 : {u : univs} {w : world} {A1 A2 B1 B2 a1 a2 a3 f g : Term}
+                   (eqta  : allW w (λ w1 e1 → eqTypes u w1 A1 A2))
+                   (eqtb  : allW w (λ w1 e1 → (a1 a2 : Term) → eqInType u w1 (eqta w1 e1) a1 a2 → eqTypes u w1 (sub a1 B1) (sub a2 B2)))
+                   (inda  : allW w (λ w1 e1 → TSP (eqta w1 e1)))
+                   (indb  : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2) → TSP (eqtb w1 e1 a1 a2 ea)))
+                   {w1 : world} {e1 : w1 ≽ w}
+                   {ea1 : eqInType u w1 (eqta w1 e1) a1 a2}
+                   {ea2 : eqInType u w1 (eqta w1 e1) a3 a1}
+                   → eqInType u w1 (eqtb w1 e1 a1 a2 ea1) f g
+                   → eqInType u w1 (eqtb w1 e1 a3 a1 ea2) f g
+TSP-fam-rev-dom3 {u} {w} {A1} {A2} {B1} {B2} {a1} {a2} {a3} {f} {g} eqta eqtb inda indb {w1} {e1} {ea1} {ea2} h =
+  TSP.extr1 (indb w1 e1 a1 a1 ea3) (sub a3 B1) (eqtb w1 e1 a3 a1 ea2) f g ef1
+  where
+    ea3 : eqInType u w1 (eqta w1 e1) a1 a1
+    ea3 = TSP.itrans (inda w1 e1) a1 a2 a1 ea1 (TSP.isym (inda w1 e1) a1 a2 ea1)
+
+    ef1 : eqInType u w1 (eqtb w1 e1 a1 a1 ea3) f g
+    ef1 = TSP.extrevl1 (indb w1 e1 a1 a1 ea3) (sub a2 B2) (eqtb w1 e1 a1 a2 ea1) f g h
+
+
+
+TSP-fam-rev-dom4 : {u : univs} {w : world} {A1 A2 B1 B2 a1 a2 a3 f g : Term}
+                   (eqta  : allW w (λ w1 e1 → eqTypes u w1 A1 A2))
+                   (eqtb  : allW w (λ w1 e1 → (a1 a2 : Term) → eqInType u w1 (eqta w1 e1) a1 a2 → eqTypes u w1 (sub a1 B1) (sub a2 B2)))
+                   (inda  : allW w (λ w1 e1 → TSP (eqta w1 e1)))
+                   (indb  : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2) → TSP (eqtb w1 e1 a1 a2 ea)))
+                   {w1 : world} {e1 : w1 ≽ w}
+                   {ea1 : eqInType u w1 (eqta w1 e1) a1 a2}
+                   {ea2 : eqInType u w1 (eqta w1 e1) a1 a3}
+                   → eqInType u w1 (eqtb w1 e1 a1 a2 ea1) f g
+                   → eqInType u w1 (eqtb w1 e1 a1 a3 ea2) f g
+TSP-fam-rev-dom4 {u} {w} {A1} {A2} {B1} {B2} {a1} {a2} {a3} {f} {g} eqta eqtb inda indb {w1} {e1} {ea1} {ea2} h =
+  TSP.extl1 (indb w1 e1 a1 a1 ea3) (sub a3 B2) (eqtb w1 e1 a1 a3 ea2) f g ef1
+  where
+    ea3 : eqInType u w1 (eqta w1 e1) a1 a1
+    ea3 = TSP.itrans (inda w1 e1) a1 a2 a1 ea1 (TSP.isym (inda w1 e1) a1 a2 ea1)
+
+    ef1 : eqInType u w1 (eqtb w1 e1 a1 a1 ea3) f g
+    ef1 = TSP.extrevl1 (indb w1 e1 a1 a1 ea3) (sub a2 B2) (eqtb w1 e1 a1 a2 ea1) f g h
 \end{code}

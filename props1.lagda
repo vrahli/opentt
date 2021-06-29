@@ -34,8 +34,12 @@ open import theory (bar)
 open import props0 (bar)
 open import type_sys_props_nat (bar)
 open import type_sys_props_qnat (bar)
+open import type_sys_props_lt (bar)
+open import type_sys_props_qlt (bar)
 open import type_sys_props_free (bar)
 open import type_sys_props_pi (bar)
+open import type_sys_props_sum (bar)
+open import type_sys_props_set (bar)
 \end{code}
 
 
@@ -45,8 +49,8 @@ open import type_sys_props_pi (bar)
 typeSysConds : (u : univs) (isu : is-universe u) (w : world) (A B : Term) (eqt : eqTypes u w A B) → TSP eqt
 typeSysConds u isu w A B (EQTNAT x x₁) = typeSysConds-NAT u isu w A B x x₁
 typeSysConds u isu w A B (EQTQNAT x x₁) = typeSysConds-QNAT u isu w A B x x₁
-typeSysConds u isu w A B (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = {!!}
-typeSysConds u isu w A B (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) = {!!}
+typeSysConds u isu w A B (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = typeSysConds-LT u isu w A B a1 b1 a2 b2 x x₁ x₂ x₃
+typeSysConds u isu w A B (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) = typeSysConds-QLT u isu w A B a1 b1 a2 b2 x x₁ x₂ x₃
 typeSysConds u isu w A B (EQTFREE x x₁) = typeSysConds-FREE u isu w A B x x₁
 typeSysConds u isu w A B (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb) =
   typeSysConds-PI u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb
@@ -58,14 +62,55 @@ typeSysConds u isu w A B (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb) =
                      (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                      → TSP (eqtb w1 e1 a1 a2 ea))
     indb w1 e1 a1 a2 ea = typeSysConds u isu w1 (sub a1 B1) (sub a2 B2) (eqtb w1 e1 a1 a2 ea)
-typeSysConds u isu w A B (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb) = {!!}
-typeSysConds u isu w A B (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) = {!!}
+
+typeSysConds u isu w A B (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb) =
+  typeSysConds-SUM u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb
+  where
+    inda : allW w (λ w1 e1 → TSP (eqta w1 e1))
+    inda w1 e1 = typeSysConds u isu w1 A1 A2 (eqta w1 e1)
+
+    indb : allW w (λ w1 e1 →
+                     (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                     → TSP (eqtb w1 e1 a1 a2 ea))
+    indb w1 e1 a1 a2 ea = typeSysConds u isu w1 (sub a1 B1) (sub a2 B2) (eqtb w1 e1 a1 a2 ea)
+
+typeSysConds u isu w A B (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) =
+  typeSysConds-SET u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb
+  where
+    inda : allW w (λ w1 e1 → TSP (eqta w1 e1))
+    inda w1 e1 = typeSysConds u isu w1 A1 A2 (eqta w1 e1)
+
+    indb : allW w (λ w1 e1 →
+                     (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                     → TSP (eqtb w1 e1 a1 a2 ea))
+    indb w1 e1 a1 a2 ea = typeSysConds u isu w1 (sub a1 B1) (sub a2 B2) (eqtb w1 e1 a1 a2 ea)
+
 typeSysConds u isu w A B (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) = {!!}
+  where
+    inda : allW w (λ w1 e1 → TSP (eqtA w1 e1))
+    inda w1 e1 = typeSysConds u isu w1 A₁ B₁ (eqtA w1 e1)
+
 typeSysConds u isu w A B (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) = {!!}
 typeSysConds u isu w A B (EQTSQUASH A1 A2 x x₁ eqtA) = {!!}
 typeSysConds u isu w A B (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) = {!!}
 typeSysConds u isu w A B (EQTUNIV x) = {!!}
 typeSysConds u isu w A B (EQTBAR x) = {!!}
+
+
+is-universe-uni : (n : ℕ) → is-universe (uni n)
+is-universe-uni n w A B h = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z → z) h
+
+
+TEQsym-eqtypes : TEQsym eqtypes
+TEQsym-eqtypes w A B (n , h) = n , TSP.tsym (typeSysConds (uni n) (is-universe-uni n) w A B h)
+
+
+TEQtrans-eqtypes : TEQtrans eqtypes
+TEQtrans-eqtypes w A B C (n , h) (m , q) = {!!}
+
+
+typeSys : TS eqtypes eqintype
+typeSys = mkts TEQsym-eqtypes TEQtrans-eqtypes {!!} {!!} {!!}
 
 
 {--
