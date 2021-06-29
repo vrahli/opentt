@@ -105,6 +105,35 @@ TEQsym-eqtypes : TEQsym eqtypes
 TEQsym-eqtypes w A B (n , h) = n , TSP.tsym (typeSysConds (uni n) (is-universe-uni n) w A B h)
 
 
+eqTypes-uni-mon-suc : {n : ℕ} {w : world} {A B : Term}
+                      → eqTypes (uni n) w A B
+                      → eqTypes (uni (suc n)) w A B
+eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTNAT x x₁) = EQTNAT x x₁
+eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTQNAT x x₁) = EQTQNAT x x₁
+eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = EQTLT a1 a2 b1 b2 x x₁ x₂ x₃
+eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) = EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃
+eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTFREE x x₁) = EQTFREE x x₁
+eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb) =
+  EQTPI
+    A1 B1 A2 B2 x x₁
+    ?
+    {!!}
+eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb) = {!!}
+eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) = {!!}
+eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) = {!!}
+eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) = {!!}
+eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqtA) = {!!}
+eqTypes-uni-mon-suc {n} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) = {!!}
+eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTUNIV x) = {!!}
+eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTBAR x) = {!!}
+
+
+eqTypes-uni-mon : {n : ℕ} (k : ℕ) {w : world} {A B : Term}
+                  → eqTypes (uni n) w A B
+                  → eqTypes (uni (k + n)) w A B
+eqTypes-uni-mon {n} k {w} {A} {B} h = {!!}
+
+
 TEQtrans-eqtypes : TEQtrans eqtypes
 TEQtrans-eqtypes w A B C (n , h) (m , q) = {!!}
 
