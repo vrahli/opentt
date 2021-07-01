@@ -210,6 +210,7 @@ eqInUnivi : (m : ℕ) → wper
 eqInUnivi 0 = λ _ _ _ → Lift {0ℓ} 1ℓ ⊥
 eqInUnivi (suc m) w T1 T2 = eqTypes (m , (eqUnivi m , eqInUnivi m)) w T1 T2 ⊎ eqInUnivi m w T1 T2
 
+--- Add an explicit level-lifting constructor to the type system
 uni : ℕ → univs
 uni n = (n , (eqUnivi n , eqInUnivi n))
 

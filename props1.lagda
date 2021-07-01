@@ -90,7 +90,15 @@ typeSysConds u isu w A B (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) = {
     inda : allW w (λ w1 e1 → TSP (eqtA w1 e1))
     inda w1 e1 = typeSysConds u isu w1 A₁ B₁ (eqtA w1 e1)
 
-typeSysConds u isu w A B (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) = {!!}
+typeSysConds u isu w A B (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) =
+  {!!}
+  where
+    inda : allW w (λ w1 e1 → TSP (eqtA w1 e1))
+    inda w1 e1 = typeSysConds u isu w1 A1 A2 (eqtA w1 e1)
+
+    indb : allW w (λ w1 e1 → TSP (eqtB w1 e1))
+    indb w1 e1 = typeSysConds u isu w1 B1 B2 (eqtB w1 e1)
+
 typeSysConds u isu w A B (EQTSQUASH A1 A2 x x₁ eqtA) = {!!}
 typeSysConds u isu w A B (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) = {!!}
 typeSysConds u isu w A B (EQTUNIV x) = {!!}
@@ -105,6 +113,7 @@ TEQsym-eqtypes : TEQsym eqtypes
 TEQsym-eqtypes w A B (n , h) = n , TSP.tsym (typeSysConds (uni n) (is-universe-uni n) w A B h)
 
 
+{--
 eqTypes-uni-mon-suc : {n : ℕ} {w : world} {A B : Term}
                       → eqTypes (uni n) w A B
                       → eqTypes (uni (suc n)) w A B
@@ -116,7 +125,7 @@ eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTFREE x x₁) = EQTFREE x x₁
 eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb) =
   EQTPI
     A1 B1 A2 B2 x x₁
-    ?
+    {!!}
     {!!}
 eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb) = {!!}
 eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) = {!!}
@@ -126,20 +135,68 @@ eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqtA) = {!!}
 eqTypes-uni-mon-suc {n} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) = {!!}
 eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTUNIV x) = {!!}
 eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTBAR x) = {!!}
+--}
 
 
-eqTypes-uni-mon : {n : ℕ} (k : ℕ) {w : world} {A B : Term}
-                  → eqTypes (uni n) w A B
-                  → eqTypes (uni (k + n)) w A B
-eqTypes-uni-mon {n} k {w} {A} {B} h = {!!}
+TEQsym-equalTypes : (n : ℕ) → TEQsym (equalTypes n)
+TEQsym-equalTypes n w A B h = TSP.tsym (typeSysConds (uni n) (is-universe-uni n) w A B h)
 
 
-TEQtrans-eqtypes : TEQtrans eqtypes
-TEQtrans-eqtypes w A B C (n , h) (m , q) = {!!}
+TEQtrans-equalTypes : (n : ℕ) → TEQtrans (equalTypes n)
+TEQtrans-equalTypes n w A B C h q =
+  TSP.ttrans (typeSysConds (uni n) (is-universe-uni n) w A B h) C q
 
 
-typeSys : TS eqtypes eqintype
-typeSys = mkts TEQsym-eqtypes TEQtrans-eqtypes {!!} {!!} {!!}
+EQTsym-equalInType : (n : ℕ) → EQTsym (equalInType n)
+EQTsym-equalInType n w A a b (teq , eqi) =
+  teq , TSP.isym (typeSysConds (uni n) (is-universe-uni n) w A A teq) a b eqi
+
+
+EQTtrans-equalInType : (n : ℕ) → EQTtrans (equalInType n)
+EQTtrans-equalInType n w A a b c (teq₁ , eqi₁) (teq₂ , eqi₂) =
+  teq₁ , TSP.itrans
+           (typeSysConds (uni n) (is-universe-uni n) w A A teq₁)
+           a b c
+           eqi₁
+           (TSP.extl1 (typeSysConds (uni n) (is-universe-uni n) w A A teq₂) A teq₁ b c eqi₂)
+
+
+TEQrefl : TEQ → Set₁
+TEQrefl τ = (w : world) (A B : Term) → τ w A B → τ w A A
+
+
+TEQrefl-rev : TEQ → Set₁
+TEQrefl-rev τ = (w : world) (A B : Term) → τ w A B → τ w B B
+
+
+
+TEQrefl-equalTypes : (n : ℕ) → TEQrefl (equalTypes n)
+TEQrefl-equalTypes n w A B h =
+  TEQtrans-equalTypes n w A B A h (TEQsym-equalTypes n w A B h)
+
+
+TEQrefl-rev-equalTypes : (n : ℕ) → TEQrefl-rev (equalTypes n)
+TEQrefl-rev-equalTypes n w A B h =
+  TEQtrans-equalTypes n w B A B (TEQsym-equalTypes n w A B h) h
+
+
+TSext-equalTypes-equalInType : (n : ℕ) → TSext (equalTypes n) (equalInType n)
+TSext-equalTypes-equalInType n w A B a b h (teq , eqi) =
+  TEQrefl-rev-equalTypes n w A B h ,
+  TSP.extr1
+    (typeSysConds (uni n) (is-universe-uni n) w A B h)
+    B (TEQrefl-rev-equalTypes n w A B h) a b
+    (TSP.extl1 (typeSysConds (uni n) (is-universe-uni n) w A A teq) B h a b eqi)
+
+
+typeSys : (n : ℕ) → TS (equalTypes n) (equalInType n)
+typeSys n =
+  mkts
+    (TEQsym-equalTypes n)
+    (TEQtrans-equalTypes n)
+    (EQTsym-equalInType n)
+    (EQTtrans-equalInType n)
+    (TSext-equalTypes-equalInType n)
 
 
 {--
