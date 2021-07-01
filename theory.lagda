@@ -145,6 +145,7 @@ Equality in types is defined as the following recursive function.
 PIeq : (eqa : per) (eqb : (a b : Term) → eqa a b → per) → per
 PIeq eqa eqb f g = (a b : Term) → (e : eqa a b) → eqb a b e (APPLY f a) (APPLY g b)
 
+
 SUMeq : (eqa : per) (eqb : (a b : Term) → eqa a b → per) → wper
 SUMeq eqa eqb w f g =
   Σ Term (λ a1 → Σ Term (λ a2 → Σ Term (λ b1 → Σ Term (λ b2 →
@@ -153,8 +154,29 @@ SUMeq eqa eqb w f g =
     × g ⇛ (PAIR a2 b2) at w
     × eqb a1 a2 ea b1 b2)))))
 
+
 SETeq : (eqa : per) (eqb : (a b : Term) → eqa a b → per) → per
 SETeq eqa eqb f g = Σ Term (λ b → Σ (eqa f g) (λ ea → eqb f g ea b b))
+
+
+EQeq : (a1 a2 : Term) (eqa : per) → wper
+EQeq a1 a2 eqa w t1 t2 =
+  t1 ⇛ AX at w × t2 ⇛ AX at w × eqa a1 a2
+
+
+UNIONeq : (eqa eqb : per) → wper
+UNIONeq eqa eqb w t1 t2  =
+  Σ Term (λ a → Σ Term (λ b →
+    (t1 ⇛ (INL a) at w × t2 ⇛ (INL b) at w × eqa a b)
+    ⊎
+    (t1 ⇛ (INR a) at w × t2 ⇛ (INR b) at w × eqb a b)))
+
+
+TSQUASHeq : (eqa : per) → wper
+TSQUASHeq eqa w t1 t2  =
+  Σ Term (λ a1 → Σ Term (λ a2 →
+     (t1 ∼ a1 at w) × (t2 ∼ a2 at w) × (t1 ≈ t2 at w)
+     × eqa a1 a2))
 
 
 {-# INLINE inOpenBar' #-}
@@ -170,16 +192,11 @@ eqInType u w (EQTSUM _ _ _ _ _ _ eqta eqtb) t1 t2 =
 eqInType u w (EQTSET _ _ _ _ _ _ eqta eqtb) t1 t2 =
   inbar w (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) t1 t2)
 eqInType u w (EQTEQ a1 _ a2 _ _ _ _ _ eqtA eqt1 eqt2) t1 t2 =
-  inbar w (λ w' e → t1 ⇛ AX at w' × t2 ⇛ AX at w' × eqInType u w' (eqtA w' e) a1 a2)
+  inbar w (λ w' e → EQeq a1 a2 (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTUNION _ _ _ _ _ _ eqtA eqtB) t1 t2 =
-  inbar w (λ w' e → Σ Term (λ a → Σ Term (λ b →
-                 (t1 ⇛ (INL a) at w' × t2 ⇛ (INR b) at w' × eqInType u w' (eqtA w' e) a b)
-                 ⊎
-                 (t1 ⇛ (INR a) at w' × t2 ⇛ (INR b) at w' × eqInType u w' (eqtB w' e) a b))))
+  inbar w (λ w' e → UNIONeq (eqInType u w' (eqtA w' e)) (eqInType u w' (eqtB w' e)) w' t1 t2)
 eqInType u w (EQTSQUASH _ _ _ _ eqtA) t1 t2 =
-  inbar w (λ w' e → Σ Term (λ a1 → Σ Term (λ a2 →
-                 (t1 ∼ a1 at w') × (t2 ∼ a2 at w') × (t1 ≈ t2 at w')
-                 × eqInType u w' (eqtA w' e) a1 a2)))
+  inbar w (λ w' e → TSQUASHeq (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQFFDEFS _ _ x1 _ _ _ eqtA _) t1 t2 =
   inbar w (λ w' e → Σ Term (λ x →
                 (t1 ⇛ AX at w') × (t2 ⇛ AX at w')

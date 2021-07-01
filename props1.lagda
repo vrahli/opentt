@@ -40,6 +40,8 @@ open import type_sys_props_free (bar)
 open import type_sys_props_pi (bar)
 open import type_sys_props_sum (bar)
 open import type_sys_props_set (bar)
+open import type_sys_props_eq (bar)
+open import type_sys_props_union (bar)
 \end{code}
 
 
@@ -85,13 +87,14 @@ typeSysConds u isu w A B (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) =
                      → TSP (eqtb w1 e1 a1 a2 ea))
     indb w1 e1 a1 a2 ea = typeSysConds u isu w1 (sub a1 B1) (sub a2 B2) (eqtb w1 e1 a1 a2 ea)
 
-typeSysConds u isu w A B (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) = {!!}
+typeSysConds u isu w A B (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) =
+  typeSysConds-EQ u isu w A B A₁ B₁ a1 b1 a2 b2 x x₁ eqtA inda eqt1 eqt2
   where
     inda : allW w (λ w1 e1 → TSP (eqtA w1 e1))
     inda w1 e1 = typeSysConds u isu w1 A₁ B₁ (eqtA w1 e1)
 
 typeSysConds u isu w A B (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) =
-  {!!}
+  typeSysConds-UNION u isu w A B A1 B1 A2 B2 x x₁ eqtA eqtB inda indb
   where
     inda : allW w (λ w1 e1 → TSP (eqtA w1 e1))
     inda w1 e1 = typeSysConds u isu w1 A1 A2 (eqtA w1 e1)
