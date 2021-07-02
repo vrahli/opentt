@@ -178,6 +178,12 @@ TSQUASHeq eqa w t1 t2  =
      (t1 ∼ a1 at w) × (t2 ∼ a2 at w) × (t1 ≈ t2 at w)
      × eqa a1 a2))
 
+FFDEFSeq : Term → (eqa : per) → wper
+FFDEFSeq x1 eqa w t1 t2 =
+  Σ Term (λ x →
+   (t1 ⇛ AX at w) × (t2 ⇛ AX at w)
+   × eqa x1 x × nodefs x)
+
 
 {-# INLINE inOpenBar' #-}
 eqInType _ w (EQTNAT _ _) t1 t2 = inbar w (λ w' _ → strongMonEq w' t1 t2)
@@ -198,9 +204,7 @@ eqInType u w (EQTUNION _ _ _ _ _ _ eqtA eqtB) t1 t2 =
 eqInType u w (EQTSQUASH _ _ _ _ eqtA) t1 t2 =
   inbar w (λ w' e → TSQUASHeq (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQFFDEFS _ _ x1 _ _ _ eqtA _) t1 t2 =
-  inbar w (λ w' e → Σ Term (λ x →
-                (t1 ⇛ AX at w') × (t2 ⇛ AX at w')
-                × eqInType u w' (eqtA w' e) x1 x × nodefs x))
+  inbar w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTUNIV _) T1 T2 = proj₂ (proj₂ u) w T1 T2
 eqInType u w (EQTBAR f) t1 t2 =
   inbar' w f (λ w' _ (x : eqTypes u w' _ _) → eqInType u w' x t1 t2)
