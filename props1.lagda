@@ -43,6 +43,7 @@ open import type_sys_props_set (bar)
 open import type_sys_props_eq (bar)
 open import type_sys_props_union (bar)
 open import type_sys_props_tsquash (bar)
+open import type_sys_props_ffdefs (bar)
 \end{code}
 
 
@@ -109,7 +110,12 @@ typeSysConds u isu w A B (EQTSQUASH A1 A2 x x₁ eqtA) =
     inda : allW w (λ w1 e1 → TSP (eqtA w1 e1))
     inda w1 e1 = typeSysConds u isu w1 A1 A2 (eqtA w1 e1)
 
-typeSysConds u isu w A B (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) = {!!}
+typeSysConds u isu w A B (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) =
+  typeSysConds-FFDEFS u isu w A B A1 A2 x1 x2 x x₁ eqtA inda eqx
+  where
+    inda : allW w (λ w1 e1 → TSP (eqtA w1 e1))
+    inda w1 e1 = typeSysConds u isu w1 A1 A2 (eqtA w1 e1)
+
 typeSysConds u isu w A B (EQTUNIV x) = {!!}
 typeSysConds u isu w A B (EQTBAR x) = {!!}
 
