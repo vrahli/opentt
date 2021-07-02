@@ -291,7 +291,11 @@ compVal a b w (n , c) v rewrite stepsVal a w n v = c
 
 postulate
   -- Howe's computational equivalence relation
-  _∼_at_ : ∀ (T T' : Term) (w : world) → Set
+  _∼_at_ : (T T' : Term) (w : world) → Set
+  -- ∼ is an equivalence relation
+  ∼-refl : {a : Term} {w : world} → a ∼ a at w
+  ∼-sym : {a b : Term} {w : world} → a ∼ b at w → b ∼ a at w
+  ∼-trans : {a b c : Term} {w : world} → a ∼ b at w → b ∼ c at w → a ∼ c at w
   -- states that the argument does not contain any definition or choice sequence
   nodefs : Term → Set
 infix 30 _∼_at_
@@ -306,6 +310,19 @@ infix 30 _⇛_at_
 _≈_at_ : (T T' : Term) (w : world) → Set₁
 T ≈ T' at w = allW w (λ w' _ → Lift {0ℓ} 1ℓ (T ∼ T' at w'))
 infix 30 _≈_at_
+
+≈-refl : {a : Term} {w : world} → a ≈ a at w
+≈-refl {a} {w} w1 e1 = lift ∼-refl
+
+≈-sym : {a b : Term} {w : world} → a ≈ b at w → b ≈ a at w
+≈-sym {a} {b} {w} h w1 e1 = lift (∼-sym (lower (h w1 e1)))
+
+≈-trans : {a b c : Term} {w : world} → a ≈ b at w → b ≈ c at w → a ≈ c at w
+≈-trans {a} {b} {c} {w} h q w1 e1 = lift (∼-trans (lower (h w1 e1)) (lower (q w1 e1)))
+
+≈-∼ : {a b : Term} {w : world} → a ≈ b at w → a ∼ b at w
+≈-∼ {a} {b} {w} h = lower (h w (extRefl w))
+
 
 compAllRefl : (T : Term) (w : world) → T ⇛ T at w
 compAllRefl T w =  λ w' e → lift (⇓-refl T w')
