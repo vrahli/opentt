@@ -44,6 +44,9 @@ inbar' : (w : world) {g : wPred w} (h : inbar w g) (f : wPredDep g) → Set₁
 --inbar' = Bar.inBar' b
 inbar' = inOpenBar'
 
+wpreddepextirr : {w : world} {f : wPred w} (h : wPredDep f) (i : inbar w f) → Set₁
+wpreddepextirr = wPredDepExtIrr-inOpenBar
+
 
 -- PERs and world dependent PERs
 per : Set₂
