@@ -137,7 +137,7 @@ typeSysConds-BAR : (u : univs) (isu : is-universe u) (mu : mon-univs u) (w : wor
                    (ind : inbar' w x (λ w1 e1 z → TSP z))
                    → TSP (EQTBAR x)
 typeSysConds-BAR u isu mu w A B x ind =
-  mktsp tsym ttrans isym {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!}
+  mktsp tsym ttrans isym itrans {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!}
   where
     tsym : eqTypes u w B A
     tsym = EQTBAR (Bar.allW-inBar'-inBar inOpenBar-Bar aw x ind)
@@ -149,18 +149,13 @@ typeSysConds-BAR u isu mu w A B x ind =
     ttrans C eqt = typeSysConds-BAR-ttrans u mu w A B C x ind eqt
 
     isym : eqInTypeSym u (EQTBAR x)
-    isym a b eqi = {!!} --Bar.inBar'-idem inOpenBar-Bar x {!!} {!!}
- --Bar.inBar'-inBar' inOpenBar-Bar x irr1 irr2 i eqi
- -- This is not going to work because we need to prove 'wpreddepextirr', which comes from 'ind' itself
+    isym a b eqi = Bar.inBar'-comb inOpenBar-Bar x aw ind eqi
       where
-        irr1 : wpreddepextirr (λ w1 e1 z → eqInType u w1 z b a) x
-        irr1 = {!!}
+        aw : allW w (λ w' e' → (z zg zh : eqTypes u w' A B) → TSP zg → eqInType u w' zh a b → eqInType u w' z b a)
+        aw w1 e1 z zg zh tsp i = TSP.extl1 tsp B z b a (TSP.extrevl1 tsp B zg b a (TSP.isym tsp a b (TSP.extrevl1 tsp B zh a b i)))
 
-        irr2 : wpreddepextirr (λ w1 e1 z → eqInType u w1 z a b) x
-        irr2 = {!!}
-
-        i : inbar' w x (λ w' e' z → eqInType u w' z b a → eqInType u w' z a b)
-        i = {!!}
+    itrans : eqInTypeTrans u (EQTBAR x)
+    itrans a b c eqi₁ eqi₂ = {!!}
 
 
 

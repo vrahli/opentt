@@ -265,6 +265,34 @@ eqInTypeExt-PI2 {u} isu {w} {A} {B} {A1} {A2} {B1} {B2} {f} {g} c₁ c₂ {EQTBA
 
 
 
+{--
+eqInType-if-bar : (u : univs) (w : world) (A B : Term) (eqt : eqTypes u w A B) (a b : Term)
+                  → inbar w (λ w1 e1 → (z : eqTypes u w1 A B) → eqInType u w1 z a b)
+                  → eqInType u w eqt a b
+eqInType-if-bar u w A B (EQTNAT x x₁) a b i =
+  Bar.inBar-idem inOpenBar-Bar wPredExtIrr-const (Bar.allW-inBarFunc inOpenBar-Bar aw i)
+  where
+    aw : allW w (λ w' e' → ((z : eqTypes u w' A B) → eqInType u w' z a b) → inbar w' (↑wPred (λ w'' e → strongMonEq w'' a b) e'))
+    aw w1 e1 imp = imp (EQTNAT (⇛-mon e1 x) (⇛-mon e1 x₁))
+eqInType-if-bar u w A B (EQTQNAT x x₁) a b i = {!!}
+eqInType-if-bar u w A B (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) a b i = {!!}
+eqInType-if-bar u w A B (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) a b i = {!!}
+eqInType-if-bar u w A B (EQTFREE x x₁) a b i = {!!}
+eqInType-if-bar u w A B (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb) f g i =
+  Bar.inBar-idem inOpenBar-Bar {!!} (Bar.allW-inBarFunc inOpenBar-Bar {!!} i)
+  where
+    irr : wPredExtIrr (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) f g)
+    irr w' e1 e2 h a1 a2 ea = {!!}
+eqInType-if-bar u w A B (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb) a b i = {!!}
+eqInType-if-bar u w A B (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) a b i = {!!}
+eqInType-if-bar u w A B (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) a b i = {!!}
+eqInType-if-bar u w A B (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) a b i = {!!}
+eqInType-if-bar u w A B (EQTSQUASH A1 A2 x x₁ eqtA) a b i = {!!}
+eqInType-if-bar u w A B (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) a b i = {!!}
+eqInType-if-bar u w A B (EQTUNIV x) a b i = {!!}
+eqInType-if-bar u w A B (EQTBAR x) a b i = {!!}
+--}
+
 
 eqInTypeExt-BAR : {u : univs} (isu : is-universe u) {w : world} {A B : Term} {a b : Term}
                   (i : inbar w (λ w' _ → eqTypes u w' A B))
@@ -272,11 +300,16 @@ eqInTypeExt-BAR : {u : univs} (isu : is-universe u) {w : world} {A B : Term} {a 
                   {eqt : eqTypes u w A B}
                   → inbar' w i (λ w' _ (z : eqTypes u w' _ _) → eqInType u w' z a b)
                   → eqInType u w eqt a b
-eqInTypeExt-BAR {u} isu {w} {A} {B} {a} {b} i ind {eqt} eqi = {!!}
--- Can we prove that we can always add a bar on a eqInType?  And then what?
--- Can the prove inbar' w i u → inbar' w i v → inbar' w i (u × v)? and then massage u × v?
+eqInTypeExt-BAR {u} isu {w} {A} {B} {a} {b} i ind {EQTNAT x x₁} eqi =
+  Bar.inBar-idem inOpenBar-Bar wPredExtIrr-const (inBar'-inBar inOpenBar-Bar i (Bar.inBar'-comb inOpenBar-Bar i aw ind eqi))
+--  inBar'-inBar inOpenBar-Bar i (Bar.inBar'-comb inOpenBar-Bar i aw ind eqi)
+  where
+    aw : allW w (λ w' e' → (z zg zh : eqTypes u w' A B)
+                         → ((a1 b1 : Term) (eqt : eqTypes u w' A B) → eqInTypeIff u w' zg eqt a1 b1)
+                         → eqInType u w' zh a b → inbar w' (λ w'' _ → strongMonEq w'' a b))
+    aw w1 e1 z zg zh imp q = fst (imp a b (EQTNAT (⇛-mon e1 x) (⇛-mon e1 x₁)))
+                                 (snd (imp a b zh) q)
 
-{--eqInTypeExt-BAR {u} isu {w} {A} {B} {a} {b} i ind {EQTNAT x x₁} eqi = {!!}
 eqInTypeExt-BAR {u} isu {w} {A} {B} {a} {b} i ind {EQTQNAT x x₁} eqi = {!!}
 eqInTypeExt-BAR {u} isu {w} {A} {B} {a} {b} i ind {EQTLT a1 a2 b1 b2 x x₁ x₂ x₃} eqi = {!!}
 eqInTypeExt-BAR {u} isu {w} {A} {B} {a} {b} i ind {EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃} eqi = {!!}
@@ -289,8 +322,13 @@ eqInTypeExt-BAR {u} isu {w} {A} {B} {a} {b} i ind {EQTUNION A1 B1 A2 B2 x x₁ e
 eqInTypeExt-BAR {u} isu {w} {A} {B} {a} {b} i ind {EQTSQUASH A1 A2 x x₁ eqtA} eqi = {!!}
 eqInTypeExt-BAR {u} isu {w} {A} {B} {a} {b} i ind {EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx} eqi = {!!}
 eqInTypeExt-BAR {u} isu {w} {A} {B} {a} {b} i ind {EQTUNIV x} eqi = {!!}
-eqInTypeExt-BAR {u} isu {w} {A} {B} {a} {b} i ind {EQTBAR x} eqi = {!!}--}
+eqInTypeExt-BAR {u} isu {w} {A} {B} {a} {b} i ind {EQTBAR x} eqi = {!!}
 
+{--
+eqInTypeExt-BAR {u} isu {w} {A} {B} {a} {b} i ind {eqt} eqi = {!!}
+-- Can we prove that we can always add a bar on a eqInType (i.e., locality)?  And then what?
+-- Can we prove inbar' w i u → inbar' w i v → inbar' w i (u × v)? and then massage u × v?
+--}
 
 
 

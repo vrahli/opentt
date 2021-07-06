@@ -49,7 +49,18 @@ record Bar : Set₂ where
     allW-inBar'-inBar : {w : world} {f : wPred w} {g : wPredDep f} {h : wPred w}
                         → allW w (λ w' e' → (x : f w' e') → g w' e' x → h w' e')
                         → (i : inBar w f) → inBar' w i g → inBar w h
+    inBar'-comb       : {w : world} {f : wPred w} {g h k : wPredDep f} (i : inBar w f)
+                        → allW w (λ w' e' → (z : f w' e') (zg : f w' e') (zh : f w' e')
+                                           → g w' e' zg → h w' e' zh → k w' e' z)
+                        → inBar' w i g → inBar' w i h → inBar' w i k
     inBar-const       : {w : world} {t : Set₁} → inBar w (λ w e → t) → t
+
+
+-- This is a consequence of [allW-inBar'-inBar]
+inBar'-inBar : (b : Bar)
+               {w : world} {f : wPred w} {h : wPred w}
+               → (i : Bar.inBar b w f) → Bar.inBar' b w i (λ w1 e1 z → h w1 e1) → Bar.inBar b w h
+inBar'-inBar b {w} {f} {h} i q = Bar.allW-inBar'-inBar b (λ w1 e1 x z → z) i q
 
 
 -- f holds in an open bar
@@ -275,19 +286,20 @@ inOpenBar'-idem {w} {f} {g} i ext h w1 e1 =
                                 (snd (snd (↑inOpenBar i (extTrans e2 (extTrans e1' e1)) w2 (extRefl w2))) w' e' z))
     h4 = h3 w2 (extRefl w2)
 
---    h4 : exAllW w3 (λ w' e' → (z : w' ≽ w2) → g w' (extTrans z (extTrans e2 e1)) (snd (snd (i w2 (extTrans e2 e1))) w' e' (extTrans z (extTrans e2 e1))))
---    h4 = {!h3!} --h3 w2 (extRefl w2)
 
 
-
-{--
-inOpenBar'3 : {w : world} {f : wPred w} {g h k : wPredDep f} (i : inOpenBar w f)
-              → allW w (λ w' e' → (z : f w' e') → g w' e' z → h w' e' z → k w' e' z)
+inOpenBar'-comb : {w : world} {f : wPred w} {g h k : wPredDep f} (i : inOpenBar w f)
+              → allW w (λ w' e' → (z : f w' e') (zg : f w' e') (zh : f w' e')
+                                 → g w' e' zg → h w' e' zh → k w' e' z)
               → inOpenBar' w i g → inOpenBar' w i h → inOpenBar' w i k
-inOpenBar'3 {w} {f} {g} {h} {k} i aw ig ih w1 e1 =
+inOpenBar'-comb {w} {f} {g} {h} {k} i aw ig ih w1 e1 =
   w5 ,
   extTrans e5 (extTrans e4 e3) ,
-  λ w6 e6 z → aw w6 z {!!} {!h5!} {!h3!}
+  λ w6 e6 z → aw w6 z
+                 (snd (snd (i w1 e1)) w6 (extTrans e6 (extTrans e5 (extTrans e4 (proj₁ (snd (ih w1 e1)))))) z)
+                 (h4 w6 (extTrans e6 e5) z) (h2 w6 (extTrans (extTrans e6 (extTrans e5 e4)) e3) z)
+                 (h5 w6 e6 z)
+                 (h3 w6 (extTrans e6 (extTrans e5 e4)) z)
   where
     w2 : world
     w2 = fst (i w1 e1)
@@ -324,7 +336,7 @@ inOpenBar'3 {w} {f} {g} {h} {k} i aw ig ih w1 e1 =
 
     h5 : allW w5 (λ w6 e6 → (z : w6 ≽ w) → g w6 z (h4 w6 (extTrans e6 e5) z))
     h5 = snd (snd (ig w3 (extTrans e3 (extTrans e2 e1))))
---}
+
 
 
 
@@ -435,5 +447,6 @@ inOpenBar-Bar =
     inOpenBar-idem
     (λ {w} {f} {g} → inOpenBar'-idem {w} {f} {g})
     allW-inOpenBar'-inOpenBar
+    inOpenBar'-comb
     inOpenBar-const
 \end{code}
