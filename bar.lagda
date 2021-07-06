@@ -63,6 +63,20 @@ inBar'-inBar : (b : Bar)
 inBar'-inBar b {w} {f} {h} i q = Bar.allW-inBar'-inBar b (λ w1 e1 x z → z) i q
 
 
+-- This is a consequence of [inBar'-comb] for 3 dependent bars
+inBar'3 : (b : Bar) {w : world} {f : wPred w} {g h k j : wPredDep f} (i : Bar.inBar b w f)
+          → allW w (λ w' e' → (z : f w' e') (zg : f w' e') (zh : f w' e') (zk : f w' e')
+                             → g w' e' zg → h w' e' zh → k w' e' zk → j w' e' z)
+          → Bar.inBar' b w i g → Bar.inBar' b w i h → Bar.inBar' b w i k → Bar.inBar' b w i j
+inBar'3 b {w} {f} {g} {h} {k} {j} i imp ig ih ik = c
+  where
+    ip : Bar.inBar' b w i (λ w1 e1 z → Σ (f w1 e1) λ zg → Σ (f w1 e1) λ zh → g w1 e1 zg × h w1 e1 zh)
+    ip = Bar.inBar'-comb b i (λ w1 e1 z zg zh xg xh → zg , zh , xg , xh) ig ih
+
+    c : Bar.inBar' b w i j
+    c = Bar.inBar'-comb b i (λ w1 e1 zj zh zk (zg' , zh' , ig , ih) ik → imp w1 e1 zj zg' zh' zk ig ih ik) ip ik
+
+
 -- f holds in an open bar
 inOpenBar : (w : world) (f : wPred w) → Set₁
 inOpenBar w f =

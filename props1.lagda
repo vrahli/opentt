@@ -137,7 +137,7 @@ typeSysConds-BAR : (u : univs) (isu : is-universe u) (mu : mon-univs u) (w : wor
                    (ind : inbar' w x (λ w1 e1 z → TSP z))
                    → TSP (EQTBAR x)
 typeSysConds-BAR u isu mu w A B x ind =
-  mktsp tsym ttrans isym itrans {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!}
+  mktsp tsym ttrans isym itrans iextl1 {!!} {!!} {!!} {!!} {!!} {!!} {!!}
   where
     tsym : eqTypes u w B A
     tsym = EQTBAR (Bar.allW-inBar'-inBar inOpenBar-Bar aw x ind)
@@ -155,8 +155,19 @@ typeSysConds-BAR u isu mu w A B x ind =
         aw w1 e1 z zg zh tsp i = TSP.extl1 tsp B z b a (TSP.extrevl1 tsp B zg b a (TSP.isym tsp a b (TSP.extrevl1 tsp B zh a b i)))
 
     itrans : eqInTypeTrans u (EQTBAR x)
-    itrans a b c eqi₁ eqi₂ = {!!}
+    itrans a b c eqi₁ eqi₂ = inBar'3 inOpenBar-Bar x aw ind eqi₁ eqi₂
+      where
+        aw : allW w (λ w' e' → (z zg zh zk : eqTypes u w' A B) → TSP zg → eqInType u w' zh a b → eqInType u w' zk b c → eqInType u w' z a c)
+        aw w1 e1 z zg zh zk tsp i j = TSP.extl1 tsp B z a c (TSP.itrans tsp a b c i1 i2)
+          where
+            i1 : eqInType u w1 zg a b
+            i1 = TSP.extrevl1 tsp B zh a b i
 
+            i2 : eqInType u w1 zg b c
+            i2 = TSP.extrevl1 tsp B zk b c j
+
+    iextl1 : eqInTypeExtL1 (EQTBAR x)
+    iextl1 C eqt a b eqi = {!!}
 
 
 typeSysConds : (u : univs) (isu : is-universe u) (mu : mon-univs u) (ist : is-TSP-univs u)
