@@ -564,29 +564,27 @@ typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))
 
 typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTBAR y) f g eqi =
-  Bar.inBar-idem inOpenBar-Bar irr (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
+  Bar.inBar-idem inOpenBar-Bar (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
   where
-    irr : wPredExtIrr (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' f g)
-    irr w' e1 e2 (a1 , a2 , b1 , b2 , eqa , u1 , u2 , eqb) = a1 , a2 , b1 , b2 , eqa' , u1 , u2 , eb
-      where
-        eqa' : eqInType u w' (eqta w' e2) a1 a2
-        eqa' = TSP.extrevl1 (inda w' e2) A2 (eqta w' e1) a1 a2 eqa
-
-        eb : eqInType u w' (eqtb w' e2 a1 a2 eqa') b1 b2
-        eb = TSP.extl1 (indb w' e1 a1 a2 eqa) (sub a2 B2) (eqtb w' e2 a1 a2 eqa') b1 b2 eqb
-
-    aw : allW w
+    aw0 : allW w
       (λ w' e' →
          (z : eqTypes u w' A C) →
          eqInType u w' z f g →
          eqInType u w' (EQTSUM A1 B1 A2 B2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb)) f g)
-    aw w1 e1 z ez =
+    aw0 w1 e1 z ez =
       typeSysConds-SUM-extrevl1
         u isu w1 A B A1 B1 A2 B2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
         (allW-mon e1 eqta) (allW-mon e1 eqtb)
         (allW-mon e1 inda) (allW-mon e1 indb)
         C z f g ez
+
+    aw : allW w
+      (λ w' e' →
+         (z : eqTypes u w' A C) →
+         eqInType u w' z f g →
+         inbar w' (λ w'' e'' → (ext : w'' ≽ w) → SUMeq (eqInType u w'' (eqta w'' ext)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' ext a1 a2 eqa)) w'' f g))
+    aw w1 e1 z ez = Bar.allW-inBarFunc inOpenBar-Bar (irr-fam-sum u w A1 B1 A2 B2 eqta eqtb inda indb f g w1 e1) (aw0 w1 e1 z ez)
 
 
 
@@ -645,29 +643,28 @@ typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))
 
 typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTBAR y) f g eqi =
-  Bar.inBar-idem inOpenBar-Bar irr (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
+  Bar.inBar-idem inOpenBar-Bar (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
   where
-    irr : wPredExtIrr (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' f g)
-    irr w' e1 e2 (a1 , a2 , b1 , b2 , eqa , u1 , u2 , eqb) = a1 , a2 , b1 , b2 , eqa' , u1 , u2 , eb
-      where
-        eqa' : eqInType u w' (eqta w' e2) a1 a2
-        eqa' = TSP.extrevl1 (inda w' e2) A2 (eqta w' e1) a1 a2 eqa
-
-        eb : eqInType u w' (eqtb w' e2 a1 a2 eqa') b1 b2
-        eb = TSP.extl1 (indb w' e1 a1 a2 eqa) (sub a2 B2) (eqtb w' e2 a1 a2 eqa') b1 b2 eqb
-
-    aw : allW w
+    aw0 : allW w
       (λ w' e' →
          (z : eqTypes u w' C A) →
          eqInType u w' z f g →
          eqInType u w' (EQTSUM A1 B1 A2 B2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb)) f g)
-    aw w1 e1 z ez =
+    aw0 w1 e1 z ez =
       typeSysConds-SUM-extrevl2
         u isu w1 A B A1 B1 A2 B2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
         (allW-mon e1 eqta) (allW-mon e1 eqtb)
         (allW-mon e1 inda) (allW-mon e1 indb)
         C z f g ez
+
+    aw : allW w
+      (λ w' e' →
+         (z : eqTypes u w' C A) →
+         eqInType u w' z f g →
+         inbar w' (λ w'' e'' → (ext : w'' ≽ w) → SUMeq (eqInType u w'' (eqta w'' ext)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' ext a1 a2 eqa)) w'' f g))
+    aw w1 e1 z ez = Bar.allW-inBarFunc inOpenBar-Bar (irr-fam-sum u w A1 B1 A2 B2 eqta eqtb inda indb f g w1 e1) (aw0 w1 e1 z ez)
+
 
 
 
@@ -720,29 +717,27 @@ typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))
 
 typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTBAR y) f g eqi =
-  Bar.inBar-idem inOpenBar-Bar irr (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
+  Bar.inBar-idem inOpenBar-Bar (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
   where
-    irr : wPredExtIrr (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' f g)
-    irr w' e1 e2 (a1 , a2 , b1 , b2 , eqa , u1 , u2 , eqb) = a1 , a2 , b1 , b2 , eqa' , u1 , u2 , eb
-      where
-        eqa' : eqInType u w' (eqta w' e2) a1 a2
-        eqa' = TSP.extrevl1 (inda w' e2) A2 (eqta w' e1) a1 a2 eqa
-
-        eb : eqInType u w' (eqtb w' e2 a1 a2 eqa') b1 b2
-        eb = TSP.extl1 (indb w' e1 a1 a2 eqa) (sub a2 B2) (eqtb w' e2 a1 a2 eqa') b1 b2 eqb
-
-    aw : allW w
+    aw0 : allW w
       (λ w' e' →
          (z : eqTypes u w' C B) →
          eqInType u w' z f g →
          eqInType u w' (EQTSUM A1 B1 A2 B2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb)) f g)
-    aw w1 e1 z ez =
+    aw0 w1 e1 z ez =
       typeSysConds-SUM-extrevr1
         u isu w1 A B A1 B1 A2 B2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
         (allW-mon e1 eqta) (allW-mon e1 eqtb)
         (allW-mon e1 inda) (allW-mon e1 indb)
         C z f g ez
+
+    aw : allW w
+      (λ w' e' →
+         (z : eqTypes u w' C B) →
+         eqInType u w' z f g →
+         inbar w' (λ w'' e'' → (ext : w'' ≽ w) → SUMeq (eqInType u w'' (eqta w'' ext)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' ext a1 a2 eqa)) w'' f g))
+    aw w1 e1 z ez = Bar.allW-inBarFunc inOpenBar-Bar (irr-fam-sum u w A1 B1 A2 B2 eqta eqtb inda indb f g w1 e1) (aw0 w1 e1 z ez)
 
 
 
@@ -801,29 +796,27 @@ typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))
 
 typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTBAR y) f g eqi =
-  Bar.inBar-idem inOpenBar-Bar irr (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
+  Bar.inBar-idem inOpenBar-Bar (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
   where
-    irr : wPredExtIrr (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' f g)
-    irr w' e1 e2 (a1 , a2 , b1 , b2 , eqa , u1 , u2 , eqb) = a1 , a2 , b1 , b2 , eqa' , u1 , u2 , eb
-      where
-        eqa' : eqInType u w' (eqta w' e2) a1 a2
-        eqa' = TSP.extrevl1 (inda w' e2) A2 (eqta w' e1) a1 a2 eqa
-
-        eb : eqInType u w' (eqtb w' e2 a1 a2 eqa') b1 b2
-        eb = TSP.extl1 (indb w' e1 a1 a2 eqa) (sub a2 B2) (eqtb w' e2 a1 a2 eqa') b1 b2 eqb
-
-    aw : allW w
+    aw0 : allW w
       (λ w' e' →
          (z : eqTypes u w' B C) →
          eqInType u w' z f g →
          eqInType u w' (EQTSUM A1 B1 A2 B2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb)) f g)
-    aw w1 e1 z ez =
+    aw0 w1 e1 z ez =
       typeSysConds-SUM-extrevr2
         u isu w1 A B A1 B1 A2 B2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
         (allW-mon e1 eqta) (allW-mon e1 eqtb)
         (allW-mon e1 inda) (allW-mon e1 indb)
         C z f g ez
+
+    aw : allW w
+      (λ w' e' →
+         (z : eqTypes u w' B C) →
+         eqInType u w' z f g →
+         inbar w' (λ w'' e'' → (ext : w'' ≽ w) → SUMeq (eqInType u w'' (eqta w'' ext)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' ext a1 a2 eqa)) w'' f g))
+    aw w1 e1 z ez = Bar.allW-inBarFunc inOpenBar-Bar (irr-fam-sum u w A1 B1 A2 B2 eqta eqtb inda indb f g w1 e1) (aw0 w1 e1 z ez)
 
 
 

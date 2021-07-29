@@ -225,12 +225,15 @@ typeSysConds-NAT-extrevl1 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
 typeSysConds-NAT-extrevl1 u isu w A B x x₁ C (EQTBAR y) a b eqi =
   Bar.inBar-idem
     inOpenBar-Bar
-    wPredExtIrr-const
     (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
   where
+    aw0 : allW w (λ w' e' → (x : eqTypes u w' A C) → eqInType u w' x a b
+                          → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → strongMonEq w'' a b) e'))
+    aw0 w1 e1 z eqz = typeSysConds-NAT-extrevl1 u isu w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
+
     aw : allW w (λ w' e' → (x : eqTypes u w' A C) → eqInType u w' x a b
-                         → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → strongMonEq w'' a b) e'))
-    aw w1 e1 z eqz = typeSysConds-NAT-extrevl1 u isu w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
+                         → Bar.inBar inOpenBar-Bar w' (↑wPred' (λ w'' e → strongMonEq w'' a b) e'))
+    aw w1 e1 z eqz = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z x → z) (aw0 w1 e1 z eqz)
 
 
 
@@ -262,12 +265,15 @@ typeSysConds-NAT-extrevl2 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
 typeSysConds-NAT-extrevl2 u isu w A B x x₁ C (EQTBAR y) a b eqi =
   Bar.inBar-idem
     inOpenBar-Bar
-    wPredExtIrr-const
     (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
   where
-    aw : allW w (λ w' e' → (x : eqTypes u w' C A) → eqInType u w' x a b
+    aw0 : allW w (λ w' e' → (x : eqTypes u w' C A) → eqInType u w' x a b
                          → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → strongMonEq w'' a b) e'))
-    aw w1 e1 z eqz = typeSysConds-NAT-extrevl2 u isu w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
+    aw0 w1 e1 z eqz = typeSysConds-NAT-extrevl2 u isu w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
+
+    aw : allW w (λ w' e' → (x : eqTypes u w' C A) → eqInType u w' x a b
+                         → Bar.inBar inOpenBar-Bar w' (↑wPred' (λ w'' e → strongMonEq w'' a b) e'))
+    aw w1 e1 z eqz = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z x → z) (aw0 w1 e1 z eqz)
 
 
 
@@ -300,12 +306,15 @@ typeSysConds-NAT-extrevr1 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
 typeSysConds-NAT-extrevr1 u isu w A B x x₁ C (EQTBAR y) a b eqi =
   Bar.inBar-idem
     inOpenBar-Bar
-    wPredExtIrr-const
     (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
   where
+    aw0 : allW w (λ w' e' → (x : eqTypes u w' C B) → eqInType u w' x a b
+                          → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → strongMonEq w'' a b) e'))
+    aw0 w1 e1 z eqz = typeSysConds-NAT-extrevr1 u isu w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
+
     aw : allW w (λ w' e' → (x : eqTypes u w' C B) → eqInType u w' x a b
-                         → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → strongMonEq w'' a b) e'))
-    aw w1 e1 z eqz = typeSysConds-NAT-extrevr1 u isu w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
+                         → Bar.inBar inOpenBar-Bar w' (↑wPred' (λ w'' e → strongMonEq w'' a b) e'))
+    aw w1 e1 z eqz = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z x → z) (aw0 w1 e1 z eqz)
 
 
 
@@ -338,12 +347,15 @@ typeSysConds-NAT-extrevr2 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
 typeSysConds-NAT-extrevr2 u isu w A B x x₁ C (EQTBAR y) a b eqi =
   Bar.inBar-idem
     inOpenBar-Bar
-    wPredExtIrr-const
     (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
   where
+    aw0 : allW w (λ w' e' → (x : eqTypes u w' B C) → eqInType u w' x a b
+                          → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → strongMonEq w'' a b) e'))
+    aw0 w1 e1 z eqz = typeSysConds-NAT-extrevr2 u isu w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
+
     aw : allW w (λ w' e' → (x : eqTypes u w' B C) → eqInType u w' x a b
-                         → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → strongMonEq w'' a b) e'))
-    aw w1 e1 z eqz = typeSysConds-NAT-extrevr2 u isu w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
+                         → Bar.inBar inOpenBar-Bar w' (↑wPred' (λ w'' e → strongMonEq w'' a b) e'))
+    aw w1 e1 z eqz = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z x → z) (aw0 w1 e1 z eqz)
 
 
 

@@ -39,8 +39,7 @@ record Bar : Set₂ where
     inBar-mon         : {w2 w1 : world} {f : wPred w1} (e : w2 ≽ w1)
                         → inBar w1 f → inBar w2 (↑wPred f e)
     inBar-idem        : {w : world} {f : wPred w}
-                        → wPredExtIrr f
-                        → inBar w (λ w' e' → inBar w' (↑wPred f e'))
+                        → inBar w (λ w' e' → inBar w' (↑wPred' f e'))
                         → inBar w f
     inBar'-idem       : {w : world} {f : wPred w} {g : wPredDep f} (i : inBar w f)
                         → wPredDepExtIrr g i
@@ -390,13 +389,38 @@ allW-inOpenBar {w} {f} h w1 e1 =  w1 , extRefl w1 , λ w2 e2 z → h w2 z
 
 
 inOpenBar-idem : {w : world} {f : wPred w}
-                 → wPredExtIrr f
-                 → inOpenBar w (λ w' e' → inOpenBar w' (↑wPred f e'))
+                 → inOpenBar w (λ w1 e1 → inOpenBar w1 (↑wPred' f e1))
                  → inOpenBar w f
-inOpenBar-idem {w} {f} ei h w1 e1 =
+inOpenBar-idem {w} {f} h w1 e1 =
   fst h4 ,
   extTrans (fst (snd h4)) e2 ,
-  λ w3 e3 z → ei w3 (extTrans (extTrans e3 (fst (snd h4))) (extTrans e2 e1)) z (snd (snd h4) w3 e3 (extTrans e3 (fst (snd h4))))
+  λ w3 e3 z → snd (snd h4) w3 e3 (extTrans e3 (fst (snd h4))) z
+  where
+    w2 : world
+    w2 = fst (h w1 e1)
+
+    e2 : w2 ≽ w1
+    e2 = fst (snd (h w1 e1))
+
+    h2 : allW w2 (λ w' e' → (z : w' ≽ w) → inOpenBar w' (↑wPred' f z))
+    h2 = snd (snd (h w1 e1))
+
+    h3 : inOpenBar w2 (↑wPred' f (extTrans e2 e1))
+    h3 = h2 w2 (extRefl w2) (extTrans e2 e1)
+
+    h4 : exAllW w2 (λ w' e' → (z : w' ≽ w2) → (z' : w' ≽ w) → f w' z')
+    h4 = h3 w2 (extRefl w2)
+
+
+
+{--
+inOpenBar-idem2 : {w : world} {f : wPred w}
+                 → inOpenBar w (λ w1 e1 → inOpenBar w1 (↑wPred f e1))
+                 → inOpenBar w f
+inOpenBar-idem2 {w} {f} h w1 e1 =
+  fst h4 ,
+  extTrans (fst (snd h4)) e2 ,
+  {!!} --λ w3 e3 z → {!snd (snd h4) w3!} --snd (snd h4) w3 e3 ? -- (extTrans e3 (fst (snd h4)))
   where
     w2 : world
     w2 = fst (h w1 e1)
@@ -412,6 +436,11 @@ inOpenBar-idem {w} {f} ei h w1 e1 =
 
     h4 : exAllW w2 (λ w' e' → (z : w' ≽ w2) → f w' (extTrans z (extTrans e2 e1)))
     h4 = h3 w2 (extRefl w2)
+
+    h5 : allW (proj₁ h4) (λ w3 e3 → (z : w3 ≽ w) → f w3 z)
+    h5 w3 e3 z = {!snd (snd h4) w3 ? ?!}
+--}
+
 
 
 allW-inOpenBar'-inOpenBar : {w : world} {f : wPred w} {g : wPredDep f} {h : wPred w}

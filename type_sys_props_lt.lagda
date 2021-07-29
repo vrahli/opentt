@@ -356,17 +356,20 @@ typeSysConds-LT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a b
 typeSysConds-LT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
   Bar.inBar-idem
     inOpenBar-Bar
-    wPredExtIrr-const
     (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
   where
-    aw : allW w (λ w' e' → (x : eqTypes u w' A C) → eqInType u w' x a b
-                         → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
-    aw w1 e1 z eqz =
+    aw0 : allW w (λ w' e' → (x : eqTypes u w' A C) → eqInType u w' x a b
+                          → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
+    aw0 w1 e1 z eqz =
       typeSysConds-LT-extrevl1
         u isu w1 A B a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
         (strongMonEq-mon s w1 e1) (strongMonEq-mon s₁ w1 e1)
         C z a b eqz
+
+    aw : allW w (λ w' e' → (x : eqTypes u w' A C) → eqInType u w' x a b
+                         → Bar.inBar inOpenBar-Bar w' (↑wPred' (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
+    aw w1 e1 z eqz = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z x → z) (aw0 w1 e1 z eqz)
 
 
 
@@ -402,17 +405,20 @@ typeSysConds-LT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a b
 typeSysConds-LT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
   Bar.inBar-idem
     inOpenBar-Bar
-    wPredExtIrr-const
     (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
   where
-    aw : allW w (λ w' e' → (x : eqTypes u w' C A) → eqInType u w' x a b
-                         → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
-    aw w1 e1 z eqz =
+    aw0 : allW w (λ w' e' → (x : eqTypes u w' C A) → eqInType u w' x a b
+                          → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
+    aw0 w1 e1 z eqz =
       typeSysConds-LT-extrevl2
         u isu w1 A B a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
         (strongMonEq-mon s w1 e1) (strongMonEq-mon s₁ w1 e1)
         C z a b eqz
+
+    aw : allW w (λ w' e' → (x : eqTypes u w' C A) → eqInType u w' x a b
+                         → Bar.inBar inOpenBar-Bar w' (↑wPred' (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
+    aw w1 e1 z eqz = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z x → z) (aw0 w1 e1 z eqz)
 
 
 
@@ -449,17 +455,20 @@ typeSysConds-LT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a b
 typeSysConds-LT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
   Bar.inBar-idem
     inOpenBar-Bar
-    wPredExtIrr-const
     (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
   where
-    aw : allW w (λ w' e' → (x : eqTypes u w' C B) → eqInType u w' x a b
-                         → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
-    aw w1 e1 z eqz =
+    aw0 : allW w (λ w' e' → (x : eqTypes u w' C B) → eqInType u w' x a b
+                          → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
+    aw0 w1 e1 z eqz =
       typeSysConds-LT-extrevr1
         u isu w1 A B a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
         (strongMonEq-mon s w1 e1) (strongMonEq-mon s₁ w1 e1)
         C z a b eqz
+
+    aw : allW w (λ w' e' → (x : eqTypes u w' C B) → eqInType u w' x a b
+                         → Bar.inBar inOpenBar-Bar w' (↑wPred' (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
+    aw w1 e1 z eqz = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z x → z) (aw0 w1 e1 z eqz)
 
 
 
@@ -495,17 +504,20 @@ typeSysConds-LT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a b
 typeSysConds-LT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
   Bar.inBar-idem
     inOpenBar-Bar
-    wPredExtIrr-const
     (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
   where
-    aw : allW w (λ w' e' → (x : eqTypes u w' B C) → eqInType u w' x a b
-                         → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
-    aw w1 e1 z eqz =
+    aw0 : allW w (λ w' e' → (x : eqTypes u w' B C) → eqInType u w' x a b
+                          → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
+    aw0 w1 e1 z eqz =
       typeSysConds-LT-extrevr2
         u isu w1 A B a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
         (strongMonEq-mon s w1 e1) (strongMonEq-mon s₁ w1 e1)
         C z a b eqz
+
+    aw : allW w (λ w' e' → (x : eqTypes u w' B C) → eqInType u w' x a b
+                         → Bar.inBar inOpenBar-Bar w' (↑wPred' (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
+    aw w1 e1 z eqz = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z x → z) (aw0 w1 e1 z eqz)
 
 
 

@@ -466,17 +466,14 @@ typeSysConds-FFDEFS-extrevl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQT
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (FFDEFSneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))
 
 typeSysConds-FFDEFS-extrevl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTBAR y) f g eqi =
-  Bar.inBar-idem inOpenBar-Bar irr (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
+  Bar.inBar-idem inOpenBar-Bar (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
   where
-    irr : wPredExtIrr (λ w' e → FFDEFSeq x1 (eqInType u w' (eqta w' e)) w' f g)
-    irr w' e1 e2 (a , c₁ , c₂ , ea , n) = a , c₁ , c₂ , TSP.extrevl1 (inda w' e2) B1 (eqta w' e1) x1 a ea , n
-
-    aw : allW w
+    aw0 : allW w
       (λ w' e' →
          (z : eqTypes u w' A C) →
          eqInType u w' z f g →
          eqInType u w' (EQFFDEFS A1 B1 x1 x2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqx)) f g)
-    aw w1 e1 z ez =
+    aw0 w1 e1 z ez =
       typeSysConds-FFDEFS-extrevl1
         u isu w1 A B A1 B1 x1 x2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -484,6 +481,13 @@ typeSysConds-FFDEFS-extrevl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQT
         (allW-mon e1 inda)
         (allW-mon e1 eqx)
         C z f g ez
+
+    aw : allW w
+      (λ w' e' →
+         (z : eqTypes u w' A C) →
+         eqInType u w' z f g →
+         inbar w' (λ w'' e'' → (x : w'' ≽ w) → FFDEFSeq x1 (eqInType u w'' (eqta w'' x)) w'' f g))
+    aw w1 e1 z ez = Bar.allW-inBarFunc inOpenBar-Bar (irr-ffdefs u w x1 A1 B1 eqta inda f g w1 e1) (aw0 w1 e1 z ez)
 
 
 
@@ -535,17 +539,14 @@ typeSysConds-FFDEFS-extrevl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQT
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (FFDEFSneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))
 
 typeSysConds-FFDEFS-extrevl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTBAR y) f g eqi =
-  Bar.inBar-idem inOpenBar-Bar irr (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
+  Bar.inBar-idem inOpenBar-Bar (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
   where
-    irr : wPredExtIrr (λ w' e → FFDEFSeq x1 (eqInType u w' (eqta w' e)) w' f g)
-    irr w' e1 e2 (a , c₁ , c₂ , ea , n) = a , c₁ , c₂ , TSP.extrevl1 (inda w' e2) B1 (eqta w' e1) x1 a ea , n
-
-    aw : allW w
+    aw0 : allW w
       (λ w' e' →
          (z : eqTypes u w' C A) →
          eqInType u w' z f g →
          eqInType u w' (EQFFDEFS A1 B1 x1 x2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqx)) f g)
-    aw w1 e1 z ez =
+    aw0 w1 e1 z ez =
       typeSysConds-FFDEFS-extrevl2
         u isu w1 A B A1 B1 x1 x2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -553,6 +554,14 @@ typeSysConds-FFDEFS-extrevl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQT
         (allW-mon e1 inda)
         (allW-mon e1 eqx)
         C z f g ez
+
+    aw : allW w
+      (λ w' e' →
+         (z : eqTypes u w' C A) →
+         eqInType u w' z f g →
+         inbar w' (λ w'' e'' → (x : w'' ≽ w) → FFDEFSeq x1 (eqInType u w'' (eqta w'' x)) w'' f g))
+    aw w1 e1 z ez = Bar.allW-inBarFunc inOpenBar-Bar (irr-ffdefs u w x1 A1 B1 eqta inda f g w1 e1) (aw0 w1 e1 z ez)
+
 
 
 
@@ -604,17 +613,14 @@ typeSysConds-FFDEFS-extrevr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQT
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (FFDEFSneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))
 
 typeSysConds-FFDEFS-extrevr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTBAR y) f g eqi =
-  Bar.inBar-idem inOpenBar-Bar irr (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
+  Bar.inBar-idem inOpenBar-Bar (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
   where
-    irr : wPredExtIrr (λ w' e → FFDEFSeq x1 (eqInType u w' (eqta w' e)) w' f g)
-    irr w' e1 e2 (a , c₁ , c₂ , ea , n) = a , c₁ , c₂ , TSP.extrevl1 (inda w' e2) B1 (eqta w' e1) x1 a ea , n
-
-    aw : allW w
+    aw0 : allW w
       (λ w' e' →
          (z : eqTypes u w' C B) →
          eqInType u w' z f g →
          eqInType u w' (EQFFDEFS A1 B1 x1 x2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqx)) f g)
-    aw w1 e1 z ez =
+    aw0 w1 e1 z ez =
       typeSysConds-FFDEFS-extrevr1
         u isu w1 A B A1 B1 x1 x2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -622,6 +628,13 @@ typeSysConds-FFDEFS-extrevr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQT
         (allW-mon e1 inda)
         (allW-mon e1 eqx)
         C z f g ez
+
+    aw : allW w
+      (λ w' e' →
+         (z : eqTypes u w' C B) →
+         eqInType u w' z f g →
+         inbar w' (λ w'' e'' → (x : w'' ≽ w) → FFDEFSeq x1 (eqInType u w'' (eqta w'' x)) w'' f g))
+    aw w1 e1 z ez = Bar.allW-inBarFunc inOpenBar-Bar (irr-ffdefs u w x1 A1 B1 eqta inda f g w1 e1) (aw0 w1 e1 z ez)
 
 
 
@@ -670,17 +683,14 @@ typeSysConds-FFDEFS-extrevr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQT
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (FFDEFSneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))
 
 typeSysConds-FFDEFS-extrevr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTBAR y) f g eqi =
-  Bar.inBar-idem inOpenBar-Bar irr (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
+  Bar.inBar-idem inOpenBar-Bar (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
   where
-    irr : wPredExtIrr (λ w' e → FFDEFSeq x1 (eqInType u w' (eqta w' e)) w' f g)
-    irr w' e1 e2 (a , c₁ , c₂ , ea , n) = a , c₁ , c₂ , TSP.extrevl1 (inda w' e2) B1 (eqta w' e1) x1 a ea , n
-
-    aw : allW w
+    aw0 : allW w
       (λ w' e' →
          (z : eqTypes u w' B C) →
          eqInType u w' z f g →
          eqInType u w' (EQFFDEFS A1 B1 x1 x2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqx)) f g)
-    aw w1 e1 z ez =
+    aw0 w1 e1 z ez =
       typeSysConds-FFDEFS-extrevr2
         u isu w1 A B A1 B1 x1 x2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -688,6 +698,13 @@ typeSysConds-FFDEFS-extrevr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQT
         (allW-mon e1 inda)
         (allW-mon e1 eqx)
         C z f g ez
+
+    aw : allW w
+      (λ w' e' →
+         (z : eqTypes u w' B C) →
+         eqInType u w' z f g →
+         inbar w' (λ w'' e'' → (x : w'' ≽ w) → FFDEFSeq x1 (eqInType u w'' (eqta w'' x)) w'' f g))
+    aw w1 e1 z ez = Bar.allW-inBarFunc inOpenBar-Bar (irr-ffdefs u w x1 A1 B1 eqta inda f g w1 e1) (aw0 w1 e1 z ez)
 
 
 
