@@ -798,6 +798,11 @@ eqInTypeSym u {w} {A} {B} eqt = (a b : Term) → eqInType u w eqt a b → eqInTy
 eqInTypeTrans : (u : univs) {w : world} {A B : Term} (eqt : eqTypes u w A B) → Set₁
 eqInTypeTrans u {w} {A} {B} eqt = (a b c : Term) → eqInType u w eqt a b → eqInType u w eqt b c → eqInType u w eqt a c
 
+eqInTypeExt : {u : univs} {w : world} {A B : Term} (eqt : eqTypes u w A B) → Set₁
+eqInTypeExt {u} {w} {A} {B} eqt =
+  (eqt' : eqTypes u w A B) (a b : Term)
+  → (eqInType u w eqt a b → eqInType u w eqt' a b) × (eqInType u w eqt' a b → eqInType u w eqt a b)
+
 eqInTypeExtL1 : {u : univs} {w : world} {A B : Term} (eqt : eqTypes u w A B) → Set₁
 eqInTypeExtL1 {u} {w} {A} {B} eqt = (C : Term) (eqt' : eqTypes u w A C) (a b : Term) → eqInType u w eqt a b → eqInType u w eqt' a b
 
@@ -822,6 +827,14 @@ eqInTypeExtRevR1 {u} {w} {A} {B} eqt = (C : Term) (eqt' : eqTypes u w C B) (a b 
 eqInTypeExtRevR2 : {u : univs} {w : world} {A B : Term} (eqt : eqTypes u w A B) → Set₁
 eqInTypeExtRevR2 {u} {w} {A} {B} eqt = (C : Term) (eqt' : eqTypes u w B C) (a b : Term) → eqInType u w eqt' a b → eqInType u w eqt a b
 
+eqInTypeLocal : {u : univs} {w : world} {A B : Term} (eqt : eqTypes u w A B) → Set₁
+eqInTypeLocal {u} {w} {A} {B} eqt =
+  (a b : Term)
+  → (i : inbar w (λ w' e → eqTypes u w' A B))
+  → inbar' w i (λ w' e z → eqInType u w' z a b)
+  → eqInType u w eqt a b
+
+
 -- Type System Props
 record TSP {u : univs} {w : world} {A B : Term} (eqt : eqTypes u w A B) : Set₁ where
   constructor mktsp
@@ -838,6 +851,7 @@ record TSP {u : univs} {w : world} {A B : Term} (eqt : eqTypes u w A B) : Set₁
     extrevl2 : eqInTypeExtRevL2 eqt
     extrevr1 : eqInTypeExtRevR1 eqt
     extrevr2 : eqInTypeExtRevR2 eqt
+    local    : eqInTypeLocal eqt
 
 
 TSP-refl : {u : univs} {w : world} {A1 A2 a1 a2 : Term}
@@ -938,26 +952,26 @@ irr-fam-pi : (u : univs) (w : world) (A1 B1 A2 B2 : Term)
              (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
              (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
                                     → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-             (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
+             (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
              (indb : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
-                                     → TSP (eqtb w1 e1 a1 a2 ea)))
+                                     → eqInTypeExt (eqtb w1 e1 a1 a2 ea)))
              (f g : Term) (w1 : world) (e1 : w1 ≽ w)
              → allW w1 (λ w' e' → PIeq (eqInType u w' (eqta w' (extTrans e' e1))) (λ a1 a2 eqa → eqInType u w' (eqtb w' (extTrans e' e1) a1 a2 eqa)) f g
                                  → (z : w' ≽ w) → PIeq (eqInType u w' (eqta w' z)) (λ a1 a2 eqa → eqInType u w' (eqtb w' z a1 a2 eqa)) f g)
 irr-fam-pi u w A1 B1 A2 B2 eqta eqtb inda indb f g w1 e1 w' e' j z a1 a2 eqa =
-  TSP.extl1 (indb w' (extTrans e' e1) a1 a2 eqa') (sub a2 B2) (eqtb w' z a1 a2 eqa) (APPLY f a1) (APPLY g a2) (j a1 a2 eqa')
+  fst (indb w' (extTrans e' e1) a1 a2 eqa' (eqtb w' z a1 a2 eqa) (APPLY f a1) (APPLY g a2)) (j a1 a2 eqa')
     where
       eqa' : eqInType u w' (eqta w' (extTrans e' e1)) a1 a2
-      eqa' = TSP.extl1 (inda w' z) A2 (eqta w' (extTrans e' e1)) a1 a2 eqa
+      eqa' = fst (inda w' z (eqta w' (extTrans e' e1)) a1 a2) eqa
 
 
 irr-fam-sum : (u : univs) (w : world) (A1 B1 A2 B2 : Term)
               (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
               (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
                                      → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-              (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
+              (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
               (indb : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
-                                      → TSP (eqtb w1 e1 a1 a2 ea)))
+                                      → eqInTypeExt (eqtb w1 e1 a1 a2 ea)))
               (f g : Term) (w1 : world) (e1 : w1 ≽ w)
               → allW w1 (λ w' e' → SUMeq (eqInType u w' (eqta w' (extTrans e' e1))) (λ a1 a2 eqa → eqInType u w' (eqtb w' (extTrans e' e1) a1 a2 eqa)) w' f g
                                   → (z : w' ≽ w) → SUMeq (eqInType u w' (eqta w' z)) (λ a1 a2 eqa → eqInType u w' (eqtb w' z a1 a2 eqa)) w' f g)
@@ -965,19 +979,19 @@ irr-fam-sum u w A1 B1 A2 B2 eqta eqtb inda indb f g w1 e1 w' e' (a1 , a2 , b1 , 
   a1 , a2 , b1 , b2 , eqa' , c1 , c2 , eqb'
     where
       eqa' : eqInType u w' (eqta w' z) a1 a2
-      eqa' = TSP.extrevl1 (inda w' z) A2 (eqta w' (extTrans e' e1)) a1 a2 eqa
+      eqa' = snd (inda w' z (eqta w' (extTrans e' e1)) a1 a2) eqa
 
       eqb' : eqInType u w' (eqtb w' z a1 a2 eqa') b1 b2
-      eqb' = TSP.extrevl1 (indb w' z a1 a2 eqa') (sub a2 B2) (eqtb w' (extTrans e' e1) a1 a2 eqa) b1 b2 eqb
+      eqb' = snd (indb w' z a1 a2 eqa' (eqtb w' (extTrans e' e1) a1 a2 eqa) b1 b2) eqb
 
 
 irr-fam-set : (u : univs) (w : world) (A1 B1 A2 B2 : Term)
               (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
               (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
                                      → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-              (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
+              (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
               (indb : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
-                                      → TSP (eqtb w1 e1 a1 a2 ea)))
+                                      → eqInTypeExt (eqtb w1 e1 a1 a2 ea)))
               (f g : Term) (w1 : world) (e1 : w1 ≽ w)
               → allW w1 (λ w' e' → SETeq (eqInType u w' (eqta w' (extTrans e' e1))) (λ a1 a2 eqa → eqInType u w' (eqtb w' (extTrans e' e1) a1 a2 eqa)) f g
                                   → (z : w' ≽ w) → SETeq (eqInType u w' (eqta w' z)) (λ a1 a2 eqa → eqInType u w' (eqtb w' z a1 a2 eqa)) f g)
@@ -985,30 +999,30 @@ irr-fam-set u w A1 B1 A2 B2 eqta eqtb inda indb f g w1 e1 w' e' (b , eqa , eqb) 
   b , eqa' , eqb'
     where
       eqa' : eqInType u w' (eqta w' z) f g
-      eqa' = TSP.extrevl1 (inda w' z) A2 (eqta w' (extTrans e' e1)) f g eqa
+      eqa' = snd (inda w' z (eqta w' (extTrans e' e1)) f g) eqa
 
       eqb' : eqInType u w' (eqtb w' z f g eqa') b b
-      eqb' = TSP.extrevl1 (indb w' z f g eqa') (sub g B2) (eqtb w' (extTrans e' e1) f g eqa) b b eqb
+      eqb' = snd (indb w' z f g eqa' (eqtb w' (extTrans e' e1) f g eqa) b b) eqb
 
 
 
 irr-eq : (u : univs) (w : world) (a1 a2 A1 A2 : Term)
          (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
-         (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
+         (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
          (f g : Term) (w1 : world) (e1 : w1 ≽ w)
          → allW w1 (λ w' e' → EQeq a1 a2 (eqInType u w' (eqta w' (extTrans e' e1))) w' f g
                              → (z : w' ≽ w) → EQeq a1 a2 (eqInType u w' (eqta w' z)) w' f g)
 irr-eq u w a1 a2 A1 A2 eqta inda f g w1 e1 w' e' (c₁ , c₂ , eqa) z = c₁ , c₂ , eqa'
   where
     eqa' : eqInType u w' (eqta w' z) a1 a2
-    eqa' = TSP.extrevl1 (inda w' z) A2 (eqta w' (extTrans e' e1)) a1 a2 eqa
+    eqa' = snd (inda w' z (eqta w' (extTrans e' e1)) a1 a2) eqa
 
 
 irr-union : (u : univs) (w : world) (A1 A2 B1 B2 : Term)
             (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
-            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
+            (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
             (eqtb : allW w (λ w' _ → eqTypes u w' B1 B2))
-            (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
+            (indb : allW w (λ w1 e1 → eqInTypeExt (eqtb w1 e1)))
             (f g : Term) (w1 : world) (e1 : w1 ≽ w)
             → allW w1 (λ w' e' → UNIONeq (eqInType u w' (eqta w' (extTrans e' e1))) (eqInType u w' (eqtb w' (extTrans e' e1))) w' f g
                                 → (z : w' ≽ w) → UNIONeq (eqInType u w' (eqta w' z)) (eqInType u w' (eqtb w' z)) w' f g)
@@ -1016,17 +1030,17 @@ irr-union u w A1 A2 B1 B2 eqta inda eqtb indb f g w1 e1 w' e' (a , b , inj₁ (c
   a , b , inj₁ (c₁ , c₂ , eqa')
   where
     eqa' : eqInType u w' (eqta w' z) a b
-    eqa' = TSP.extrevl1 (inda w' z) A2 (eqta w' (extTrans e' e1)) a b eqa
+    eqa' = snd (inda w' z (eqta w' (extTrans e' e1)) a b) eqa
 irr-union u w A1 A2 B1 B2 eqta inda eqtb indb f g w1 e1 w' e' (a , b , inj₂ (c₁ , c₂ , eqb)) z =
   a , b , inj₂ (c₁ , c₂ , eqb')
   where
     eqb' : eqInType u w' (eqtb w' z) a b
-    eqb' = TSP.extrevl1 (indb w' z) B2 (eqtb w' (extTrans e' e1)) a b eqb
+    eqb' = snd (indb w' z (eqtb w' (extTrans e' e1)) a b) eqb
 
 
 irr-tsquash : (u : univs) (w : world) (A1 A2 : Term)
               (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
-              (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
+              (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
               (f g : Term) (w1 : world) (e1 : w1 ≽ w)
               → allW w1 (λ w' e' → TSQUASHeq (eqInType u w' (eqta w' (extTrans e' e1))) w' f g
                                  → (z : w' ≽ w) → TSQUASHeq (eqInType u w' (eqta w' z)) w' f g)
@@ -1034,12 +1048,12 @@ irr-tsquash u w A1 A2 eqta inda f g w1 e1 w' e' (a1 , a2 , c₁ , c₂ , c₃ , 
   a1 , a2 , c₁ , c₂ , c₃ , eqa'
   where
     eqa' : eqInType u w' (eqta w' z) a1 a2
-    eqa' = TSP.extrevl1 (inda w' z) A2 (eqta w' (extTrans e' e1)) a1 a2 eqa
+    eqa' = snd (inda w' z (eqta w' (extTrans e' e1)) a1 a2) eqa
 
 
 irr-ffdefs : (u : univs) (w : world) (x1 A1 A2 : Term)
               (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
-              (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
+              (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
               (f g : Term) (w1 : world) (e1 : w1 ≽ w)
               → allW w1 (λ w' e' → FFDEFSeq x1 (eqInType u w' (eqta w' (extTrans e' e1))) w' f g
                                  → (z : w' ≽ w) → FFDEFSeq x1 (eqInType u w' (eqta w' z)) w' f g)
@@ -1047,6 +1061,30 @@ irr-ffdefs u w x1 A1 A2 eqta inda f g w1 e1 w' e' (x2 , c₁ , c₂ , eqa , nd) 
   x2 , c₁ , c₂ , eqa' , nd
   where
     eqa' : eqInType u w' (eqta w' z) x1 x2
-    eqa' = TSP.extrevl1 (inda w' z) A2 (eqta w' (extTrans e' e1)) x1 x2 eqa
+    eqa' = snd (inda w' z (eqta w' (extTrans e' e1)) x1 x2) eqa
+
+
+
+tsp→ext : {u : univs} {w : world} {A B : Term} {eqt : eqTypes u w A B}
+           → TSP eqt → eqInTypeExt eqt
+tsp→ext {u} {w} {A} {B} {eqt} tsp eqt' a b = TSP.extl1 tsp B eqt' a b , TSP.extrevl1 tsp B eqt' a b
+
+
+
+allW-tsp→ext : {u : univs} {w : world} {A B : Term} {eqta : allW w (λ w' _ → eqTypes u w' A B)}
+                → allW w (λ w1 e1 → TSP (eqta w1 e1))
+                → allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
+allW-tsp→ext {u} {w} {A} {B} {eqta} aw w1 e1 = tsp→ext (aw w1 e1)
+
+
+
+allW-fam-tsp→ext : {u : univs} {w : world} {A1 B1 A2 B2 : Term}
+                    {eqta : allW w (λ w' _ → eqTypes u w' A1 A2)}
+                    {eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                           → eqTypes u w' (sub a1 B1) (sub a2 B2))}
+                    → allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2) → TSP (eqtb w1 e1 a1 a2 ea))
+                    → allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2) → eqInTypeExt (eqtb w1 e1 a1 a2 ea))
+allW-fam-tsp→ext {u} {w} {A1} {B1} {A2} {B2} {eqta} {eqtb} aw w1 e1 a1 a2 eqa = tsp→ext (aw w1 e1 a1 a2 eqa)
+
 
 \end{code}

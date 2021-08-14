@@ -1,5 +1,3 @@
-\-# OPTIONS --allow-unsolved-metas #-}
-
 \begin{code}
 module world where
 

@@ -413,14 +413,13 @@ inOpenBar-idem {w} {f} h w1 e1 =
 
 
 
-{--
-inOpenBar-idem2 : {w : world} {f : wPred w}
+{--inOpenBar-idem2 : {w : world} {f : wPred w}
                  → inOpenBar w (λ w1 e1 → inOpenBar w1 (↑wPred f e1))
                  → inOpenBar w f
 inOpenBar-idem2 {w} {f} h w1 e1 =
   fst h4 ,
   extTrans (fst (snd h4)) e2 ,
-  {!!} --λ w3 e3 z → {!snd (snd h4) w3!} --snd (snd h4) w3 e3 ? -- (extTrans e3 (fst (snd h4)))
+  h5 --λ w3 e3 z → {!snd (snd h4) w3!} --snd (snd h4) w3 e3 ? -- (extTrans e3 (fst (snd h4)))
   where
     w2 : world
     w2 = fst (h w1 e1)
@@ -438,8 +437,7 @@ inOpenBar-idem2 {w} {f} h w1 e1 =
     h4 = h3 w2 (extRefl w2)
 
     h5 : allW (proj₁ h4) (λ w3 e3 → (z : w3 ≽ w) → f w3 z)
-    h5 w3 e3 z = {!snd (snd h4) w3 ? ?!}
---}
+    h5 w3 e3 z = {!snd (snd h4) w3 ? ?!} --}
 
 
 
