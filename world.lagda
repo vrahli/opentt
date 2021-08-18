@@ -362,7 +362,7 @@ lift-<NUM-pair w t1 t2 = Lift {0ℓ} 1ℓ (<NUM-pair w t1 t2)
 
 
 ↑wPredDep' : {w1 : world} {f : wPred w1} (g : wPredDep f) {w2 : world} (e : w2 ≽ w1) → wPredDep (↑wPred' f e)
-↑wPredDep' {w1} {f} g {w2} e w' e' z = (x : w' ≽ w1) → g w' x (z x)
+↑wPredDep' {w1} {f} g {w2} e w' e' z = (x : w' ≽ w1) (y : f w' x) → g w' x y
 
 
 allW-mon : {w2 w1 : world} {f :  wPred w1} (e : w2 ≽ w1)

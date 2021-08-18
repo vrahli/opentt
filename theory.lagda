@@ -44,6 +44,14 @@ inbar' : (w : world) {g : wPred w} (h : inbar w g) (f : wPredDep g) → Set₁
 --inbar' = Bar.inBar' b
 inbar' = inOpenBar'
 
+atbar : {w : world} {f : wPred w} (i : inbar w f) (w' : world) (e' : w' ≽ w) (p : f w' e') → Set₁
+--atbar = Bar.atBar b
+atbar = atOpenBar
+
+↑'inbar : {w : world} {f : wPred w} (i : inbar w f) {w' : world} (e : w' ≽ w) → inbar w' (↑wPred' f e)
+--↑'inbar = Bar.↑'inBar b
+↑'inbar = ↑'inOpenBar
+
 wpreddepextirr : {w : world} {f : wPred w} (h : wPredDep f) (i : inbar w f) → Set₁
 wpreddepextirr = wPredDepExtIrr-inOpenBar
 
@@ -95,6 +103,7 @@ data eqTypes u w T1 T2 where
     → T1 ⇛ (PI A1 B1) at w
     → T2 ⇛ (PI A2 B2) at w
     → (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
+--    → (exta : (w' : world) (e1 e2 : w' ≽ w) (a b : Term) → eqInType u w' (eqta w' e1) a b → eqInType u w' (eqta w' e2) a b)
     → (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
                          → eqTypes u w' (sub a1 B1) (sub a2 B2)))
     → eqTypes u w T1 T2
@@ -194,7 +203,7 @@ eqInType _ w (EQTQNAT _ _) t1 t2 = inbar w (λ w' _ → weakMonEq w' t1 t2)
 eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 = inbar w (λ w' _ → lift-<NUM-pair w' a1 b1)
 eqInType _ w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 = inbar w (λ w' _ → lift-<NUM-pair w' a1 b1)
 eqInType _ w (EQTFREE _ _) t1 t2 = inbar w (λ w' _ → ⇛to-same-CS w' t1 t2)
-eqInType u w (EQTPI _ _ _ _ _ _ eqta eqtb) f1 f2 =
+eqInType u w (EQTPI _ _ _ _ _ _ eqta {--exta--} eqtb) f1 f2 =
   inbar w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) f1 f2)
 eqInType u w (EQTSUM _ _ _ _ _ _ eqta eqtb) t1 t2 =
   inbar w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' t1 t2)

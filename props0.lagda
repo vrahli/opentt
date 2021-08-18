@@ -1087,4 +1087,18 @@ allW-fam-tsp→ext : {u : univs} {w : world} {A1 B1 A2 B2 : Term}
 allW-fam-tsp→ext {u} {w} {A1} {B1} {A2} {B2} {eqta} {eqtb} aw w1 e1 a1 a2 eqa = tsp→ext (aw w1 e1 a1 a2 eqa)
 
 
+
+
+eqTypes-eqInTypeExt : {u : univs} {w : world} {A B : Term} (eqt1 eqt2 : eqTypes u w A B)
+                      → eqInTypeExt eqt1
+                      → eqInTypeExt eqt2
+eqTypes-eqInTypeExt {u} {w} {A} {B} eqt1 eqt2 ext eqt' a b =
+  (λ eqi → fst h1 (snd h2 eqi)) , λ eqi → fst h2 (snd h1 eqi)
+  where
+    h1 : (eqInType u w eqt1 a b → eqInType u w eqt' a b) × (eqInType u w eqt' a b → eqInType u w eqt1 a b)
+    h1 = ext eqt' a b
+
+    h2 : (eqInType u w eqt1 a b → eqInType u w eqt2 a b) × (eqInType u w eqt2 a b → eqInType u w eqt1 a b)
+    h2 = ext eqt2 a b
+
 \end{code}
