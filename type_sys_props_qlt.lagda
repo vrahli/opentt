@@ -99,8 +99,8 @@ typeSysConds-QLT-ttrans u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1
         | QLTinj2 (⇛-val-det tt tt y x₁)
   = EQTQLT a1 c2 b1 d2 x y₁ (weakMonEq-trans s x₄) (weakMonEq-trans s₁ x₅)
 typeSysConds-QLT-ttrans u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x₁ y))
-typeSysConds-QLT-ttrans u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb) = ⊥-elim (QLTneqPI (⇛-val-det tt tt x₁ y))
-typeSysConds-QLT-ttrans u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb) = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x₁ y))
+typeSysConds-QLT-ttrans u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (QLTneqPI (⇛-val-det tt tt x₁ y))
+typeSysConds-QLT-ttrans u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-ttrans u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) = ⊥-elim (QLTneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-ttrans u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 c2 d1 d2 A₁ B₁ y y₁ eqtA eqt1 eqt2) = ⊥-elim (QLTneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-ttrans u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) = ⊥-elim (QLTneqUNION (⇛-val-det tt tt x₁ y))
@@ -141,8 +141,8 @@ typeSysConds-QLT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 
   rewrite QLTinj1 (⇛-val-det tt tt y x)
         | QLTinj2 (⇛-val-det tt tt y x) = eqi
 typeSysConds-QLT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x y))
-typeSysConds-QLT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x y))
-typeSysConds-QLT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x y))
+typeSysConds-QLT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x y))
+typeSysConds-QLT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x y))
 typeSysConds-QLT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqSET (⇛-val-det tt tt x y))
 typeSysConds-QLT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2 A₁ B₁ y y₁ eqtA eqt1 eqt2) a b eqi = ⊥-elim (QLTneqEQ (⇛-val-det tt tt x y))
 typeSysConds-QLT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) a b eqi = ⊥-elim (QLTneqUNION (⇛-val-det tt tt x y))
@@ -158,10 +158,10 @@ typeSysConds-QLT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a b e
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (QLTneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))
 
 typeSysConds-QLT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
-  Bar.allW-inBar-inBar' inOpenBar-Bar aw y
+  Bar.allW-inBar-inBar' inOpenBar-Bar y aw
   where
-    aw : allW w (λ w' e' → (x : eqTypes u w' A C) → eqInType u w' x a b)
-    aw w1 e1 z =
+    aw : allW w (λ w' e' → (x : eqTypes u w' A C) (at : atbar y w' e' x) → eqInType u w' x a b)
+    aw w1 e1 z at =
       typeSysConds-QLT-extl1
         u isu w1 A B a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -212,8 +212,8 @@ typeSysConds-QLT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 
         | QLTinj2 (⇛-val-det tt tt y₁ x)
   = weakMonEq-preserves-inbar x₄ x₅ eqi
 typeSysConds-QLT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x y₁))
-typeSysConds-QLT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x y₁))
-typeSysConds-QLT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x y₁))
+typeSysConds-QLT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x y₁))
+typeSysConds-QLT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-QLT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-QLT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2 A₁ B₁ y y₁ eqtA eqt1 eqt2) a b eqi = ⊥-elim (QLTneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-QLT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) a b eqi = ⊥-elim (QLTneqUNION (⇛-val-det tt tt x y₁))
@@ -229,10 +229,10 @@ typeSysConds-QLT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a b e
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (QLTneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))
 
 typeSysConds-QLT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
-  Bar.allW-inBar-inBar' inOpenBar-Bar aw y
+  Bar.allW-inBar-inBar' inOpenBar-Bar y aw
   where
-    aw : allW w (λ w' e' → (x : eqTypes u w' C A) → eqInType u w' x a b)
-    aw w1 e1 z =
+    aw : allW w (λ w' e' → (x : eqTypes u w' C A) (at : atbar y w' e' x) → eqInType u w' x a b)
+    aw w1 e1 z at =
       typeSysConds-QLT-extl2
         u isu w1 A B a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -254,8 +254,8 @@ typeSysConds-QLT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 
         | QLTinj2 (⇛-val-det tt tt y₁ x₁)
   = weakMonEq-preserves-inbar (weakMonEq-trans x₄ (weakMonEq-sym s)) ((weakMonEq-trans x₅ (weakMonEq-sym s₁))) eqi
 typeSysConds-QLT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x₁ y₁))
-typeSysConds-QLT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x₁ y₁))
-typeSysConds-QLT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x₁ y₁))
+typeSysConds-QLT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x₁ y₁))
+typeSysConds-QLT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QLT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QLT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2 A₁ B₁ y y₁ eqtA eqt1 eqt2) a b eqi = ⊥-elim (QLTneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QLT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) a b eqi = ⊥-elim (QLTneqUNION (⇛-val-det tt tt x₁ y₁))
@@ -271,10 +271,10 @@ typeSysConds-QLT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a b e
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (QLTneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))
 
 typeSysConds-QLT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
-  Bar.allW-inBar-inBar' inOpenBar-Bar aw y
+  Bar.allW-inBar-inBar' inOpenBar-Bar y aw
   where
-    aw : allW w (λ w' e' → (x : eqTypes u w' C B) → eqInType u w' x a b)
-    aw w1 e1 z =
+    aw : allW w (λ w' e' → (x : eqTypes u w' C B) (at : atbar y w' e' x) → eqInType u w' x a b)
+    aw w1 e1 z at =
       typeSysConds-QLT-extr1
         u isu w1 A B a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -296,8 +296,8 @@ typeSysConds-QLT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 
         | QLTinj2 (⇛-val-det tt tt y x₁)
   = weakMonEq-preserves-inbar (weakMonEq-sym s) (weakMonEq-sym s₁) eqi
 typeSysConds-QLT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x₁ y))
-typeSysConds-QLT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x₁ y))
-typeSysConds-QLT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x₁ y))
+typeSysConds-QLT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x₁ y))
+typeSysConds-QLT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2 A₁ B₁ y y₁ eqtA eqt1 eqt2) a b eqi = ⊥-elim (QLTneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) a b eqi = ⊥-elim (QLTneqUNION (⇛-val-det tt tt x₁ y))
@@ -313,10 +313,10 @@ typeSysConds-QLT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a b e
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (QLTneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))
 
 typeSysConds-QLT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
-  Bar.allW-inBar-inBar' inOpenBar-Bar aw y
+  Bar.allW-inBar-inBar' inOpenBar-Bar y aw
   where
-    aw : allW w (λ w' e' → (x : eqTypes u w' B C) → eqInType u w' x a b)
-    aw w1 e1 z =
+    aw : allW w (λ w' e' → (x : eqTypes u w' B C) (at : atbar y w' e' x) → eqInType u w' x a b)
+    aw w1 e1 z at =
       typeSysConds-QLT-extr2
         u isu w1 A B a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -338,8 +338,8 @@ typeSysConds-QLT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 
         | QLTinj2 (⇛-val-det tt tt y x)
   = weakMonEq-preserves-inbar (weakMonEq-refl x₄) (weakMonEq-refl x₅) eqi
 typeSysConds-QLT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x y))
-typeSysConds-QLT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x y))
-typeSysConds-QLT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x y))
+typeSysConds-QLT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x y))
+typeSysConds-QLT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x y))
 typeSysConds-QLT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqSET (⇛-val-det tt tt x y))
 typeSysConds-QLT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2 A₁ B₁ y y₁ eqtA eqt1 eqt2) a b eqi = ⊥-elim (QLTneqEQ (⇛-val-det tt tt x y))
 typeSysConds-QLT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) a b eqi = ⊥-elim (QLTneqUNION (⇛-val-det tt tt x y))
@@ -357,20 +357,20 @@ typeSysConds-QLT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a 
 typeSysConds-QLT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
   Bar.inBar-idem
     inOpenBar-Bar
-    (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
+    (Bar.allW-inBar'-inBar inOpenBar-Bar y aw eqi)
   where
-    aw0 : allW w (λ w' e' → (x : eqTypes u w' A C) → eqInType u w' x a b
+    aw0 : allW w (λ w' e' → (x : eqTypes u w' A C) (at : atbar y w' e' x) → eqInType u w' x a b
                           → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
-    aw0 w1 e1 z eqz =
+    aw0 w1 e1 z at eqz =
       typeSysConds-QLT-extrevl1
         u isu w1 A B a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
         (weakMonEq-mon s w1 e1) (weakMonEq-mon s₁ w1 e1)
         C z a b eqz
 
-    aw : allW w (λ w' e' → (x : eqTypes u w' A C) → eqInType u w' x a b
+    aw : allW w (λ w' e' → (x : eqTypes u w' A C) (at : atbar y w' e' x) → eqInType u w' x a b
                          → Bar.inBar inOpenBar-Bar w' (↑wPred' (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
-    aw w1 e1 z eqz = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z x → z) (aw0 w1 e1 z eqz)
+    aw w1 e1 z at eqz = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z x → z) (aw0 w1 e1 z at eqz)
 
 
 
@@ -387,8 +387,8 @@ typeSysConds-QLT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 
         | QLTinj2 (⇛-val-det tt tt y₁ x)
   = weakMonEq-preserves-inbar (weakMonEq-sym x₄) (weakMonEq-sym x₅) eqi
 typeSysConds-QLT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x y₁))
-typeSysConds-QLT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x y₁))
-typeSysConds-QLT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x y₁))
+typeSysConds-QLT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x y₁))
+typeSysConds-QLT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-QLT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-QLT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2 A₁ B₁ y y₁ eqtA eqt1 eqt2) a b eqi = ⊥-elim (QLTneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-QLT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) a b eqi = ⊥-elim (QLTneqUNION (⇛-val-det tt tt x y₁))
@@ -406,20 +406,20 @@ typeSysConds-QLT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a 
 typeSysConds-QLT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
   Bar.inBar-idem
     inOpenBar-Bar
-    (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
+    (Bar.allW-inBar'-inBar inOpenBar-Bar y aw eqi)
   where
-    aw0 : allW w (λ w' e' → (x : eqTypes u w' C A) → eqInType u w' x a b
+    aw0 : allW w (λ w' e' → (x : eqTypes u w' C A) (at : atbar y w' e' x) → eqInType u w' x a b
                          → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
-    aw0 w1 e1 z eqz =
+    aw0 w1 e1 z at eqz =
       typeSysConds-QLT-extrevl2
         u isu w1 A B a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
         (weakMonEq-mon s w1 e1) (weakMonEq-mon s₁ w1 e1)
         C z a b eqz
 
-    aw : allW w (λ w' e' → (x : eqTypes u w' C A) → eqInType u w' x a b
+    aw : allW w (λ w' e' → (x : eqTypes u w' C A) (at : atbar y w' e' x) → eqInType u w' x a b
                          → Bar.inBar inOpenBar-Bar w' (↑wPred' (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
-    aw w1 e1 z eqz = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z x → z) (aw0 w1 e1 z eqz)
+    aw w1 e1 z at eqz = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z x → z) (aw0 w1 e1 z at eqz)
 
 
 
@@ -437,8 +437,8 @@ typeSysConds-QLT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 
         | QLTinj2 (⇛-val-det tt tt y₁ x₁)
   = weakMonEq-preserves-inbar (weakMonEq-trans s (weakMonEq-sym x₄)) (weakMonEq-trans s₁ (weakMonEq-sym x₅)) eqi
 typeSysConds-QLT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x₁ y₁))
-typeSysConds-QLT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x₁ y₁))
-typeSysConds-QLT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x₁ y₁))
+typeSysConds-QLT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x₁ y₁))
+typeSysConds-QLT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QLT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QLT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2 A₁ B₁ y y₁ eqtA eqt1 eqt2) a b eqi = ⊥-elim (QLTneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QLT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) a b eqi = ⊥-elim (QLTneqUNION (⇛-val-det tt tt x₁ y₁))
@@ -456,20 +456,20 @@ typeSysConds-QLT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a 
 typeSysConds-QLT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
   Bar.inBar-idem
     inOpenBar-Bar
-    (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
+    (Bar.allW-inBar'-inBar inOpenBar-Bar y aw eqi)
   where
-    aw0 : allW w (λ w' e' → (x : eqTypes u w' C B) → eqInType u w' x a b
+    aw0 : allW w (λ w' e' → (x : eqTypes u w' C B) (at : atbar y w' e' x) → eqInType u w' x a b
                           → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
-    aw0 w1 e1 z eqz =
+    aw0 w1 e1 z at eqz =
       typeSysConds-QLT-extrevr1
         u isu w1 A B a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
         (weakMonEq-mon s w1 e1) (weakMonEq-mon s₁ w1 e1)
         C z a b eqz
 
-    aw : allW w (λ w' e' → (x : eqTypes u w' C B) → eqInType u w' x a b
+    aw : allW w (λ w' e' → (x : eqTypes u w' C B) (at : atbar y w' e' x) → eqInType u w' x a b
                          → Bar.inBar inOpenBar-Bar w' (↑wPred' (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
-    aw w1 e1 z eqz = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z x → z) (aw0 w1 e1 z eqz)
+    aw w1 e1 z at eqz = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z x → z) (aw0 w1 e1 z at eqz)
 
 
 
@@ -486,8 +486,8 @@ typeSysConds-QLT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 
         | QLTinj2 (⇛-val-det tt tt y x₁)
   = weakMonEq-preserves-inbar s s₁ eqi
 typeSysConds-QLT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x₁ y))
-typeSysConds-QLT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x₁ y))
-typeSysConds-QLT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x₁ y))
+typeSysConds-QLT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x₁ y))
+typeSysConds-QLT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QLTneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2 A₁ B₁ y y₁ eqtA eqt1 eqt2) a b eqi = ⊥-elim (QLTneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) a b eqi = ⊥-elim (QLTneqUNION (⇛-val-det tt tt x₁ y))
@@ -505,20 +505,20 @@ typeSysConds-QLT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a 
 typeSysConds-QLT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
   Bar.inBar-idem
     inOpenBar-Bar
-    (Bar.allW-inBar'-inBar inOpenBar-Bar aw y eqi)
+    (Bar.allW-inBar'-inBar inOpenBar-Bar y aw eqi)
   where
-    aw0 : allW w (λ w' e' → (x : eqTypes u w' B C) → eqInType u w' x a b
+    aw0 : allW w (λ w' e' → (x : eqTypes u w' B C) (at : atbar y w' e' x) → eqInType u w' x a b
                           → Bar.inBar inOpenBar-Bar w' (↑wPred (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
-    aw0 w1 e1 z eqz =
+    aw0 w1 e1 z at eqz =
       typeSysConds-QLT-extrevr2
         u isu w1 A B a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
         (weakMonEq-mon s w1 e1) (weakMonEq-mon s₁ w1 e1)
         C z a b eqz
 
-    aw : allW w (λ w' e' → (x : eqTypes u w' B C) → eqInType u w' x a b
+    aw : allW w (λ w' e' → (x : eqTypes u w' B C) (at : atbar y w' e' x) → eqInType u w' x a b
                          → Bar.inBar inOpenBar-Bar w' (↑wPred' (λ w'' e → lift-<NUM-pair w'' a1 b1) e'))
-    aw w1 e1 z eqz = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z x → z) (aw0 w1 e1 z eqz)
+    aw w1 e1 z at eqz = Bar.allW-inBarFunc inOpenBar-Bar (λ w1 e1 z x → z) (aw0 w1 e1 z at eqz)
 
 
 
@@ -536,8 +536,8 @@ eqInType-⇛-QLT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTQLT c1 c2 d1 d2 x x�
   rewrite QLTinj1 (⇛-val-det tt tt x c₁)
         | QLTinj2 (⇛-val-det tt tt x c₁) = ei
 eqInType-⇛-QLT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (QLTneqFREE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-QLT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb) ei = ⊥-elim (QLTneqPI (⇛-val-det tt tt c₁ x))
-eqInType-⇛-QLT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb) ei = ⊥-elim (QLTneqSUM (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QLT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QLTneqPI (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QLT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QLTneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QLT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) ei = ⊥-elim (QLTneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QLT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTEQ c1 d1 c2 d2 A₁ B₁ x x₁ eqtA eqt1 eqt2) ei = ⊥-elim (QLTneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QLT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) ei = ⊥-elim (QLTneqUNION (⇛-val-det tt tt c₁ x))
@@ -553,13 +553,53 @@ eqInType-⇛-QLT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTUNIV x) ei =
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (QLTneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))
 
 eqInType-⇛-QLT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTBAR x) ei =
-  Bar.inBar-idem inOpenBar-Bar (Bar.allW-inBar'-inBar inOpenBar-Bar aw x ei)
+  Bar.inBar-idem inOpenBar-Bar (Bar.allW-inBar'-inBar inOpenBar-Bar x aw ei)
   where
-    aw0 : allW w (λ w' e' → (z : eqTypes u w' A B) →  eqInType u w' z a b → inbar w' (λ w'' _ → lift-<NUM-pair w'' a1 b1))
-    aw0 w1 e1 z eqi = eqInType-⇛-QLT u isu w1 A B a1 b1 a2 b2 a b (⇛-mon e1 c₁) (⇛-mon e1 c₂) z eqi
+    aw0 : allW w (λ w' e' → (z : eqTypes u w' A B) (at : atbar x w' e' z) →  eqInType u w' z a b → inbar w' (λ w'' _ → lift-<NUM-pair w'' a1 b1))
+    aw0 w1 e1 z at eqi = eqInType-⇛-QLT u isu w1 A B a1 b1 a2 b2 a b (⇛-mon e1 c₁) (⇛-mon e1 c₂) z eqi
 
-    aw : allW w (λ w' e' → (z : eqTypes u w' A B) →  eqInType u w' z a b → inbar w' (λ w'' _ → w'' ≽ w → lift-<NUM-pair w'' a1 b1))
-    aw w1 e1 z eqi = Bar.allW-inBarFunc inOpenBar-Bar (λ w' e' s x → s) (aw0 w1 e1 z eqi)
+    aw : allW w (λ w' e' → (z : eqTypes u w' A B) (at : atbar x w' e' z) →  eqInType u w' z a b → inbar w' (λ w'' _ → w'' ≽ w → lift-<NUM-pair w'' a1 b1))
+    aw w1 e1 z at eqi = Bar.allW-inBarFunc inOpenBar-Bar (λ w' e' s x → s) (aw0 w1 e1 z at eqi)
+
+
+
+
+eqInType-⇛-QLT-rev : (u : univs) (isu : is-universe u) (w : world) (A B a1 b1 a2 b2 a b : Term)
+                      → A ⇛ QLT a1 b1 at w
+                      → B ⇛ QLT a2 b2 at w
+                      → (eqt : eqTypes u w A B)
+                      → inbar w (λ w' e → lift-<NUM-pair w' a1 b1)
+                      → eqInType u w eqt a b
+{-# TERMINATING #-}
+eqInType-⇛-QLT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (QLTneqNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QLT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (QLTneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QLT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTLT c1 c2 d1 d2 x x₁ x₂ x₃) ei = ⊥-elim (QLTneqLT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QLT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTQLT c1 c2 d1 d2 x x₁ x₂ x₃) ei
+  rewrite QLTinj1 (⇛-val-det tt tt x c₁)
+        | QLTinj2 (⇛-val-det tt tt x c₁) = ei
+eqInType-⇛-QLT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (QLTneqFREE (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QLT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QLTneqPI (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QLT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QLTneqSUM (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QLT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) ei = ⊥-elim (QLTneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QLT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTEQ c1 d1 c2 d2 A₁ B₁ x x₁ eqtA eqt1 eqt2) ei = ⊥-elim (QLTneqEQ (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QLT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) ei = ⊥-elim (QLTneqUNION (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QLT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA) ei = ⊥-elim (QLTneqTSQUASH (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QLT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) ei = ⊥-elim (QLTneqFFDEFS (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QLT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTUNIV x) ei =
+  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z))) -- Lift {0ℓ} 1ℓ ⊥
+  where
+    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z = isu w A B x
+
+    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q w1 e1 (d₁ , d₂) = lift (⊥-elim (QLTneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))
+
+eqInType-⇛-QLT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTBAR x) ei =
+  Bar.allW-inBar-inBar' inOpenBar-Bar x aw
+  where
+    aw : allW w (λ w' e' → (z : eqTypes u w' A B) (at : atbar x w' e' z) → eqInType u w' z a b)
+    aw w' e' z at = eqInType-⇛-QLT-rev u isu w' A B a1 b1 a2 b2 a b (⇛-mon e' c₁) (⇛-mon e' c₂) z (Bar.inBar-mon inOpenBar-Bar e' ei)
+
 
 
 
@@ -568,10 +608,10 @@ typeSysConds-QLT-local : (u : univs) (isu : is-universe u) (w : world) (A B a1 b
                          (s : weakMonEq w a1 a2) (s₁ : weakMonEq w b1 b2)
                          → eqInTypeLocal {u} (EQTQLT a1 a2 b1 b2 x x₁ s s₁)
 typeSysConds-QLT-local u isu w A B a1 b1 a2 b2 x x₁ s s₁ a b i j =
-  Bar.inBar-idem inOpenBar-Bar (Bar.allW-inBar'-inBar inOpenBar-Bar aw i j)
+  Bar.inBar-idem inOpenBar-Bar (Bar.allW-inBar'-inBar inOpenBar-Bar i aw j)
   where
-    aw : allW w (λ w' e' → (z : eqTypes u w' A B) → eqInType u w' z a b → inbar w' (λ w'' e → w'' ≽ w → lift-<NUM-pair w'' a1 b1))
-    aw w1 e1 z ei = Bar.allW-inBarFunc inOpenBar-Bar (λ w' e' s x → s) aw'
+    aw : allW w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z) → eqInType u w' z a b → inbar w' (λ w'' e → w'' ≽ w → lift-<NUM-pair w'' a1 b1))
+    aw w1 e1 z at ei = Bar.allW-inBarFunc inOpenBar-Bar (λ w' e' s x → s) aw'
       where
         aw' : inbar w1 (λ w' e → lift-<NUM-pair w' a1 b1)
         aw' = eqInType-⇛-QLT u isu w1 A B a1 b1 a2 b2 a b (⇛-mon e1 x) (⇛-mon e1 x₁) z ei

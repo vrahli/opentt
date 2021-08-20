@@ -153,6 +153,9 @@ wPredDep {w} f = (w' : world) (e' : w' ≽ w) (x : f w' e') → Set₁
 wPredExtIrr : {w : world} (f : wPred w) → Set₁
 wPredExtIrr {w} f = (w' : world) (e1 e2 : w' ≽ w) → f w' e1 → f w' e2
 
+wPredDepExtIrr : {w : world} {g : wPred w} (f : wPredDep g) → Set₁
+wPredDepExtIrr {w} {g} f = (w' : world) (e1 e2 : w' ≽ w) (x1 : g w' e1) (x2 : g w' e2) → f w' e1 x1 → f w' e2 x2
+
 -- f holds in all extensions
 allW : (w : world) (f : wPred w) → Set₁
 allW w f = ∀ (w' : world) (e : w' ≽ w) → f w' e

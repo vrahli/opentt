@@ -103,9 +103,10 @@ data eqTypes u w T1 T2 where
     → T1 ⇛ (PI A1 B1) at w
     → T2 ⇛ (PI A2 B2) at w
     → (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
---    → (exta : (w' : world) (e1 e2 : w' ≽ w) (a b : Term) → eqInType u w' (eqta w' e1) a b → eqInType u w' (eqta w' e2) a b)
     → (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                         → eqTypes u w' (sub a1 B1) (sub a2 B2)))
+                              → eqTypes u w' (sub a1 B1) (sub a2 B2)))
+    → (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+    → (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
     → eqTypes u w T1 T2
   EQTSUM : (A1 B1 A2 B2 : Term)
     → T1 ⇛ (SUM A1 B1) at w
@@ -113,6 +114,8 @@ data eqTypes u w T1 T2 where
     → (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
     → (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
                          → eqTypes u w' (sub a1 B1) (sub a2 B2)))
+    → (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+    → (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
     → eqTypes u w T1 T2
   EQTSET : (A1 B1 A2 B2 : Term)
     → T1 ⇛ (SET A1 B1) at w
@@ -203,9 +206,9 @@ eqInType _ w (EQTQNAT _ _) t1 t2 = inbar w (λ w' _ → weakMonEq w' t1 t2)
 eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 = inbar w (λ w' _ → lift-<NUM-pair w' a1 b1)
 eqInType _ w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 = inbar w (λ w' _ → lift-<NUM-pair w' a1 b1)
 eqInType _ w (EQTFREE _ _) t1 t2 = inbar w (λ w' _ → ⇛to-same-CS w' t1 t2)
-eqInType u w (EQTPI _ _ _ _ _ _ eqta {--exta--} eqtb) f1 f2 =
+eqInType u w (EQTPI _ _ _ _ _ _ eqta eqtb exta extb) f1 f2 =
   inbar w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) f1 f2)
-eqInType u w (EQTSUM _ _ _ _ _ _ eqta eqtb) t1 t2 =
+eqInType u w (EQTSUM _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
   inbar w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' t1 t2)
 eqInType u w (EQTSET _ _ _ _ _ _ eqta eqtb) t1 t2 =
   inbar w (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) t1 t2)
@@ -241,7 +244,11 @@ eqUnivi m w T1 T2 = inbar w (λ w' _ → T1 ⇛ (UNIV m) at w' × T2 ⇛ (UNIV m
 -- Two terms are equal in universe m if they are equal according to eqTypes
 eqInUnivi : (m : ℕ) → wper
 eqInUnivi 0 = λ _ _ _ → Lift {0ℓ} 1ℓ ⊥
-eqInUnivi (suc m) w T1 T2 = eqTypes (m , (eqUnivi m , eqInUnivi m)) w T1 T2 ⊎ eqInUnivi m w T1 T2
+eqInUnivi (suc m) w T1 T2 =
+  inbar w (λ w' _ → eqTypes (m , (eqUnivi m , eqInUnivi m)) w' T1 T2 {-- ⊎ eqInUnivi m w' T1 T2--})
+-- To have this ⊎ we need a way to lift types in eqTypes, so that types equal at level 'n' can be equal
+-- as types in lower universes, and then lifted up to being equal as types in 'n' again
+-- The type system probably isn't transitive without that.
 
 --- Add an explicit level-lifting constructor to the type system
 uni : ℕ → univs
