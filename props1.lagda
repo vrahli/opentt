@@ -252,6 +252,22 @@ PIeq-ext {u} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} {w'} {e1} {e2} {a} {b} exta e
 
 
 
+
+SUMeq-ext : {u : univs} {w : world} {A1 A2 B1 B2 : Term}
+            {eqta : allW w (λ w' _ → eqTypes u w' A1 A2)}
+            {eqtb : allW w (λ w' e → (a1 a2 : Term) → eqInType u w' (eqta w' e) a1 a2
+                                   → eqTypes u w' (sub a1 B1) (sub a2 B2))}
+            {w' : world} {e1 e2 : w' ≽ w} {a b : Term}
+            (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+            (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+            → SUMeq (eqInType u w' (eqta w' e1)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e1 a₁ a₂ eqa)) w' a b
+            → SUMeq (eqInType u w' (eqta w' e2)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e2 a₁ a₂ eqa)) w' a b
+SUMeq-ext {u} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} {w'} {e1} {e2} {a} {b} exta extb (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) =
+  a₁ , a₂ , b₁ , b₂ , exta a₁ a₂ w' e1 e2 ea , c₁ , c₂ , extb a₁ a₂ b₁ b₂ w' e1 e2 ea (exta a₁ a₂ w' e1 e2 ea) eb
+
+
+
+
 {--atbar-≽ : {u : univs} (umon : mon (proj₁ (snd u)))
           {w w0 w1 : world} (e0 : w0 ≽ w) (e1 : w1 ≽ w0) {A B : Term}
           (eqt : eqTypes u w0 A B)
@@ -446,7 +462,28 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTPI A1 B1 A2 B2 x x₁ eqta 
                                  → ↑wPred' (λ w''' e → PIeq (eqInType u w''' (eqta w''' e)) (λ a1 a2 eqa → eqInType u w''' (eqtb w''' e a1 a2 eqa)) a b) e' w'' e'')
         aw1 w1 e1 h ext = PIeq-ext {u} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} exta extb h
 
-eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = {!!}
+eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
+  Bar.inBar-idem inOpenBar-Bar (Bar.allW-inBar'-inBar inOpenBar-Bar i aw j)
+  where
+    aw : allW w (λ w' e' → (z : eqTypes u w' A B) → atbar i w' e' z → eqInType u w' z a b → inbar w' (↑wPred' (λ w'' e → SUMeq (eqInType u w'' (eqta w'' e)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' e a1 a2 eqa)) w'' a b) e'))
+    aw w' e' z at eqi =
+      Bar.allW-inBarFunc inOpenBar-Bar
+        aw1
+        (eqInType-⇛-SUM2
+          u (is-uni→is-universe u isu) w' A B A1 A2 B1 B2 a b
+          (allW-mon e' eqta) (allW-mon e' eqtb)
+          (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')
+          (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
+
+      where
+        ind' : {w' : world} {A' B' : Term} (eqt' : eqTypes u w' A' B') → ≤Type u eqt' z → eqInTypeExt eqt'
+        ind' {w''} {A'} {B'} eqt' (≤Type0 .eqt') = ind eqt' (<Type1 _ _ (<TypeBAR w A B i w' e' z at))
+        ind' {w''} {A'} {B'} eqt' (≤TypeS .eqt' .z x) = ind eqt' (<TypeS _ _ _ x (<TypeBAR w A B i w' e' z at))
+
+        aw1 : allW w' (λ w'' e'' → SUMeq (eqInType u w'' (allW-mon e' eqta w'' e'')) (λ a₁ a₂ eqa → eqInType u w'' (allW-mon e' eqtb w'' e'' a₁ a₂ eqa)) w'' a b
+                                 → ↑wPred' (λ w''' e → SUMeq (eqInType u w''' (eqta w''' e)) (λ a1 a2 eqa → eqInType u w''' (eqtb w''' e a1 a2 eqa)) w'' a b) e' w'' e'')
+        aw1 w1 e1 h ext = SUMeq-ext {u} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} exta extb h
+
 eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) = {!!}
 eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) = {!!}
 eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) = {!!}
@@ -817,7 +854,24 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTPI A1 B1 A2 B2 x x₁ eqt
         ib : inbar w' (λ w'' e → PIeq (eqInType u w'' (allW-mon e' eqta w'' e)) (λ a₁ a₂ eqa → eqInType u w'' (allW-mon e' eqtb w'' e a₁ a₂ eqa)) a b)
         ib = Bar.allW-inBarFunc inOpenBar-Bar aw' (Bar.inBar-mon inOpenBar-Bar e' eqi)
 
-eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = {!!}
+eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi =
+  Bar.allW-inBar-inBar' inOpenBar-Bar i aw
+  where
+    aw : allW w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z) → eqInType u w' z a b)
+    aw w' e' z at =
+      eqInType-⇛-SUM-rev2
+        u (is-uni→is-universe u isu) w' A B A1 A2 B1 B2 a b
+        (allW-mon e' eqta) (allW-mon e' eqtb)
+        (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')
+        (⇛-mon e' x) (⇛-mon e' x₁) z (<Type-EQTBAR-eqInTypeExt at ind) ib
+      where
+        aw' : allW w' (λ w'' e'' → ↑wPred (λ w''' e → SUMeq (eqInType u w''' (eqta w''' e)) (λ a₁ a₂ eqa → eqInType u w''' (eqtb w''' e a₁ a₂ eqa)) w''' a b) e' w'' e''
+                                 → SUMeq (eqInType u w'' (allW-mon e' eqta w'' e'')) (λ a₁ a₂ eqa → eqInType u w'' (allW-mon e' eqtb w'' e'' a₁ a₂ eqa)) w'' a b)
+        aw' w1 e1 h = SUMeq-ext {u} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} exta extb h
+
+        ib : inbar w' (λ w'' e → SUMeq (eqInType u w'' (allW-mon e' eqta w'' e)) (λ a₁ a₂ eqa → eqInType u w'' (allW-mon e' eqtb w'' e a₁ a₂ eqa)) w'' a b)
+        ib = Bar.allW-inBarFunc inOpenBar-Bar aw' (Bar.inBar-mon inOpenBar-Bar e' eqi)
+
 eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) eqi = {!!}
 eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) eqi = {!!}
 eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) eqi = {!!}
@@ -885,7 +939,16 @@ eqInType-ext0 {u} isu {w} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     indb : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2) → eqInTypeExt (eqtb w1 e1 a1 a2 ea))
     indb w1 e1 a₁ a₂ eqa = ind (eqtb w1 e1 a₁ a₂ eqa) (<Type1 _ _ (<TypePIb w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb w1 e1 a₁ a₂ eqa))
 
-eqInType-ext0 {u} isu {w} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind = {!!}
+eqInType-ext0 {u} isu {w} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind =
+  λ eqt2 a b → eqInType-⇛-SUM-rev u (is-uni→is-universe u isu) w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2 ,
+                eqInType-⇛-SUM u (is-uni→is-universe u isu) w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2
+  where
+    inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
+    inda w1 e1 = ind (eqta w1 e1) (<Type1 _ _ (<TypeSUMa w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb w1 e1))
+
+    indb : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2) → eqInTypeExt (eqtb w1 e1 a1 a2 ea))
+    indb w1 e1 a₁ a₂ eqa = ind (eqtb w1 e1 a₁ a₂ eqa) (<Type1 _ _ (<TypeSUMb w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb w1 e1 a₁ a₂ eqa))
+
 eqInType-ext0 {u} isu {w} {A} {B} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) ind = {!!}
 eqInType-ext0 {u} isu {w} {A} {B} (EQTEQ a1 b1 a2 b2 A1 B1 x x₁ eqtA eqt1 eqt2) ind = {!!}
 eqInType-ext0 {u} isu {w} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) ind = {!!}
