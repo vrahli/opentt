@@ -9,19 +9,17 @@ open import world
 module bar where
 
 
--- TODO:
---   remove [allW-inBar'-inBar], keep only [allW-inBar'-inBar2]
---   try to remove [inBar-idem2] and [inBar'-idem2]
-
 record Bar : Set₂ where
   constructor mkBar
   field
     -- Operators
     inBar             : (w : world) (f : wPred w) → Set₁
     inBar'            : (w : world) {g : wPred w} (h : inBar w g) (f : wPredDep g) → Set₁
-    wPredDepExtIrrBar : {w : world} {f : wPred w} (h : wPredDep f) (i : inBar w f) → Set₁
+--    wPredDepExtIrrBar : {w : world} {f : wPred w} (h : wPredDep f) (i : inBar w f) → Set₁
     ↑inBar            : {w : world} {f : wPred w} (i : inBar w f) {w' : world} (e : w' ≽ w) → inBar w' (↑wPred f e)
     ↑'inBar           : {w : world} {f : wPred w} (i : inBar w f) {w' : world} (e : w' ≽ w) → inBar w' (↑wPred' f e)
+--    ↑inBar'          : {w : world} {f : wPred w} {g : wPredDep f} (i : inBar w f) {w' : world} (e : w' ≽ w)
+--                        → inBar' w i g → inBar' w' (↑inBar i e) (↑wPredDep g e)
 --    atBar             : {w : world} {f : wPred w} (i : inBar w f) (w' : world) → Set₁
     atBar             : {w : world} {f : wPred w} (i : inBar w f) (w' : world) (e' : w' ≽ w) (p : f w' e') → Set₁
     -- Axioms
@@ -43,22 +41,24 @@ record Bar : Set₂ where
                         → allW w (λ w' e' → (x : f w' e') (at : atBar i w' e' x) → g w' e' x)
                         → inBar' w i g
     allW-inBar        : {w : world} {f : wPred w} → allW w f → inBar w f
-    inBar-mon         : {w2 w1 : world} {f : wPred w1} (e : w2 ≽ w1)
+{--    inBar-mon         : {w2 w1 : world} {f : wPred w1} (e : w2 ≽ w1)
                         → inBar w1 f → inBar w2 (↑wPred f e)
+    inBar'-mon        : {w2 w1 : world} {f : wPred w1} {g : wPredDep f} (e : w2 ≽ w1) (i : inBar w1 f)
+                        → inBar' w1 i g → inBar' w2 (inBar-mon e i) (↑wPredDep' g e)--}
     inBar-idem        : {w : world} {f : wPred w}
                         → inBar w (λ w' e' → inBar w' (↑wPred' f e'))
                         → inBar w f
-    inBar-idem2       : {w : world} {f : wPred w}
+{--    inBar-idem2       : {w : world} {f : wPred w}
                         → wPredExtIrr f
                         → inBar w (λ w' e' → inBar w' (↑wPred f e'))
-                        → inBar w f
+                        → inBar w f--}
     inBar'-idem       : {w : world} {f : wPred w} {g : wPredDep f} (i : inBar w f)
                         → inBar w (λ w' e' → inBar' w' (↑'inBar i e') (↑wPredDep' g e'))
                         → inBar' w i g
-    inBar'-idem2      : {w : world} {f : wPred w} {g : wPredDep f} (i : inBar w f)
+{--    inBar'-idem2      : {w : world} {f : wPred w} {g : wPredDep f} (i : inBar w f)
                         → wPredDepExtIrrBar g i
                         → inBar w (λ w' e' → inBar' w' (↑inBar i e') (↑wPredDep g e'))
-                        → inBar' w i g
+                        → inBar' w i g--}
 {--    allW-inBar'-inBar : {w : world} {f : wPred w} {g : wPredDep f} {h : wPred w}
                         → allW w (λ w' e' → (x : f w' e') → g w' e' x → h w' e')
                         → (i : inBar w f) → inBar' w i g → inBar w h--}
@@ -76,8 +76,7 @@ record Bar : Set₂ where
 
 
 -- This is a consequence of [allW-inBar'-inBar]
-inBar'-inBar : (b : Bar)
-               {w : world} {f : wPred w} {h : wPred w}
+inBar'-inBar : (b : Bar) {w : world} {f : wPred w} {h : wPred w}
                → (i : Bar.inBar b w f) → Bar.inBar' b w i (λ w1 e1 z → h w1 e1) → Bar.inBar b w h
 inBar'-inBar b {w} {f} {h} i q = Bar.allW-inBar'-inBar b i (λ w1 e1 x at z → z) q
 
@@ -285,6 +284,22 @@ inOpenBar'-inOpenBar' {w} {f} {g} {h} i irrg irrh j o w1 e1 =
 
     h0 : allW w0 (λ w3 e3 → (z : w3 ≽ w2) → ↑wPred' f e w3 z)
     h0 w3 e3 z x = snd (snd (i w' (extTrans e' e))) w3 e3 x
+
+
+
+↑inOpenBar' : {w : world} {f : wPred w} {g : wPredDep f} (i : inOpenBar w f) {w' : world} (e : w' ≽ w)
+              → inOpenBar' w i g → inOpenBar' w' (↑inOpenBar i e) (↑wPredDep g e)
+↑inOpenBar' {w} {f} {g} i {w'} e j w1 e1 =
+  w2 , e2 , h
+  where
+    w2 : world
+    w2 = fst (j w1 (extTrans e1 e))
+
+    e2 : w2 ≽ (fst (↑'inOpenBar i e w1 e1))
+    e2 = fst (snd (j w1 (extTrans e1 e)))
+
+    h : allW w2 (λ w3 e3 → (z : w3 ≽ w') → ↑wPredDep g e w3 z (snd (snd (↑inOpenBar i e w1 e1)) w3 (extTrans e3 e2) z))
+    h w3 e3 z = snd (snd (j w1 (extTrans e1 e))) w3 e3 (extTrans z e)
 
 
 
@@ -497,8 +512,11 @@ inOpenBar-mon {w2} {w1} {f} e h w' e' = w'' , e'' , h''
     h'' w3 e3 z = snd (snd (h w' (extTrans e' e))) w3 e3 (extTrans z e)
 
 
+
+
 allW-inOpenBar : {w : world} {f : wPred w} → allW w f → inOpenBar w f
 allW-inOpenBar {w} {f} h w1 e1 =  w1 , extRefl w1 , λ w2 e2 z → h w2 z
+
 
 
 inOpenBar-idem : {w : world} {f : wPred w}
@@ -657,9 +675,10 @@ inOpenBar-Bar =
   mkBar
     inOpenBar
     inOpenBar'
-    wPredDepExtIrr-inOpenBar
+--    wPredDepExtIrr-inOpenBar
     ↑inOpenBar
     ↑'inOpenBar
+--    ↑inOpenBar'
 --    atOpenBar
     atOpenBar
     inOpenBarFunc
@@ -668,11 +687,11 @@ inOpenBar-Bar =
     --(λ {w} {f} {g} {h} → inOpenBar'-inOpenBar' {w} {f} {g} {h})
     allW-inOpenBar-inOpenBar'
     allW-inOpenBar
-    inOpenBar-mon
+--    inOpenBar-mon
     inOpenBar-idem
-    inOpenBar-idem2
+--    inOpenBar-idem2
     (λ {w} {f} {g} → inOpenBar'-idem {w} {f} {g})
-    (λ {w} {f} {g} → inOpenBar'-idem2 {w} {f} {g})
+--    (λ {w} {f} {g} → inOpenBar'-idem2 {w} {f} {g})
     {--allW-inOpenBar'-inOpenBar--}
     allW-inOpenBar'-inOpenBar
     inOpenBar'-comb

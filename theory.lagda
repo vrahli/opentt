@@ -123,6 +123,8 @@ data eqTypes u w T1 T2 where
     → (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
     → (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
                          → eqTypes u w' (sub a1 B1) (sub a2 B2)))
+    → (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+    → (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
     → eqTypes u w T1 T2
   EQTEQ : (a1 b1 a2 b2 A B : Term)
     → T1 ⇛ (EQ a1 a2 A) at w
@@ -210,7 +212,7 @@ eqInType u w (EQTPI _ _ _ _ _ _ eqta eqtb exta extb) f1 f2 =
   inbar w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) f1 f2)
 eqInType u w (EQTSUM _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
   inbar w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' t1 t2)
-eqInType u w (EQTSET _ _ _ _ _ _ eqta eqtb) t1 t2 =
+eqInType u w (EQTSET _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
   inbar w (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) t1 t2)
 eqInType u w (EQTEQ a1 _ a2 _ _ _ _ _ eqtA eqt1 eqt2) t1 t2 =
   inbar w (λ w' e → EQeq a1 a2 (eqInType u w' (eqtA w' e)) w' t1 t2)

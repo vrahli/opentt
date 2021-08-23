@@ -129,7 +129,7 @@ typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (
 typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTFREE y y₁) = ⊥-elim (UNIONneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTPI C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (UNIONneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSUM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (UNIONneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTUNION C1 D1 C2 D2 y y₁ eqta0 eqtb0)
   rewrite UNIONinj1 (⇛-val-det tt tt y x₁)
@@ -225,7 +225,7 @@ typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (E
 typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (UNIONneqFREE (⇛-val-det tt tt x y))
 typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (UNIONneqPI (⇛-val-det tt tt x y))
 typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (UNIONneqSUM (⇛-val-det tt tt x y))
-typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x y))
+typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x y))
 typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) f g eqi = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x y))
 typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0) f g eqi
   rewrite UNIONinj1 (⇛-val-det tt tt y x)
@@ -257,7 +257,7 @@ typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (E
       typeSysConds-UNION-extl1
         u isu w1 A B A1 B1 A2 B2
         (⇛-mon e1 x) (⇛-mon e1 x₁) (allW-mon e1 eqta) (allW-mon e1 eqtb)
-        (allW-mon e1 inda) (allW-mon e1 indb) C z f g (Bar.inBar-mon inOpenBar-Bar e1 eqi)
+        (allW-mon e1 inda) (allW-mon e1 indb) C z f g (Bar.↑inBar inOpenBar-Bar eqi e1)
 
 
 
@@ -276,7 +276,7 @@ typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (E
 typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (UNIONneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSUM (⇛-val-det tt tt x y₁))
-typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x y₁))
+typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) f g eqi = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi
   rewrite UNIONinj1 (⇛-val-det tt tt y₁ x)
@@ -309,7 +309,7 @@ typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (E
       typeSysConds-UNION-extl2
         u isu w1 A B A1 B1 A2 B2
         (⇛-mon e1 x) (⇛-mon e1 x₁) (allW-mon e1 eqta) (allW-mon e1 eqtb)
-        (allW-mon e1 inda) (allW-mon e1 indb) C z f g (Bar.inBar-mon inOpenBar-Bar e1 eqi)
+        (allW-mon e1 inda) (allW-mon e1 indb) C z f g (Bar.↑inBar inOpenBar-Bar eqi e1)
 
 
 
@@ -328,7 +328,7 @@ typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (E
 typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (UNIONneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x₁ y₁))
+typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) f g eqi = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi
   rewrite UNIONinj1 (⇛-val-det tt tt y₁ x₁)
@@ -361,7 +361,7 @@ typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (E
       typeSysConds-UNION-extr1
         u isu w1 A B A1 B1 A2 B2
         (⇛-mon e1 x) (⇛-mon e1 x₁) (allW-mon e1 eqta) (allW-mon e1 eqtb)
-        (allW-mon e1 inda) (allW-mon e1 indb) C z f g (Bar.inBar-mon inOpenBar-Bar e1 eqi)
+        (allW-mon e1 inda) (allW-mon e1 indb) C z f g (Bar.↑inBar inOpenBar-Bar eqi e1)
 
 
 
@@ -380,7 +380,7 @@ typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (E
 typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (UNIONneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) f g eqi = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi
   rewrite UNIONinj1 (⇛-val-det tt tt y x₁)
@@ -413,7 +413,7 @@ typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (E
       typeSysConds-UNION-extr2
         u isu w1 A B A1 B1 A2 B2
         (⇛-mon e1 x) (⇛-mon e1 x₁) (allW-mon e1 eqta) (allW-mon e1 eqtb)
-        (allW-mon e1 inda) (allW-mon e1 indb) C z f g (Bar.inBar-mon inOpenBar-Bar e1 eqi)
+        (allW-mon e1 inda) (allW-mon e1 indb) C z f g (Bar.↑inBar inOpenBar-Bar eqi e1)
 
 
 
@@ -433,7 +433,7 @@ typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C
 typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (UNIONneqFREE (⇛-val-det tt tt x y))
 typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqPI (⇛-val-det tt tt x y))
 typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSUM (⇛-val-det tt tt x y))
-typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x y))
+typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x y))
 typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) f g eqi = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x y))
 typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi
   rewrite UNIONinj1 (⇛-val-det tt tt y x)
@@ -502,7 +502,7 @@ typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C
 typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (UNIONneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSUM (⇛-val-det tt tt x y₁))
-typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x y₁))
+typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) f g eqi = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi
   rewrite UNIONinj1 (⇛-val-det tt tt y₁ x)
@@ -572,7 +572,7 @@ typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C
 typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (UNIONneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x₁ y₁))
+typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) f g eqi = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi
   rewrite UNIONinj1 (⇛-val-det tt tt y₁ x₁)
@@ -641,7 +641,7 @@ typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C
 typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (UNIONneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) f g eqi = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi
   rewrite UNIONinj1 (⇛-val-det tt tt y x₁)
@@ -713,7 +713,7 @@ eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb inda indb c₁ c₂ (EQ
 eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb inda indb c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (UNIONneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb inda indb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (UNIONneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb inda indb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (UNIONneqSUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁) ei = ⊥-elim (UNIONneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (UNIONneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb inda indb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) ei = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb inda indb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁) ei
   rewrite UNIONinj1 (⇛-val-det tt tt c₁ x)

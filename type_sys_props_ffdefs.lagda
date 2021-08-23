@@ -117,7 +117,7 @@ typeSysConds-FFDEFS-ttrans u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTQL
 typeSysConds-FFDEFS-ttrans u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTFREE y y₁) = ⊥-elim (FFDEFSneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-ttrans u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTPI C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (FFDEFSneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-ttrans u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSUM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (FFDEFSneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-FFDEFS-ttrans u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-FFDEFS-ttrans u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-ttrans u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA eqt₁ eqt₂) = ⊥-elim (FFDEFSneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-ttrans u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTUNION C1 D1 C2 D2 y y₁ eqta0 eqtb0) = ⊥-elim (FFDEFSneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-ttrans u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA) = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x₁ y))
@@ -209,7 +209,7 @@ typeSysConds-FFDEFS-extl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTQLT
 typeSysConds-FFDEFS-extl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTFREE y y₁) f g eqi = ⊥-elim (FFDEFSneqFREE (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTPI A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (FFDEFSneqPI (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSUM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (FFDEFSneqSUM (⇛-val-det tt tt x y))
-typeSysConds-FFDEFS-extl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x y))
+typeSysConds-FFDEFS-extl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA eqt₁ eqt₂) f g eqi = ⊥-elim (FFDEFSneqEQ (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0) f g eqi = ⊥-elim (FFDEFSneqUNION (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x y))
@@ -244,7 +244,7 @@ typeSysConds-FFDEFS-extl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTBAR
         (allW-mon e1 inda)
         (allW-mon e1 eqx)
         C z f g
-        (Bar.inBar-mon inOpenBar-Bar e1 eqi)
+        (Bar.↑inBar inOpenBar-Bar eqi e1)
 
 
 
@@ -262,7 +262,7 @@ typeSysConds-FFDEFS-extl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTQLT
 typeSysConds-FFDEFS-extl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTFREE y y₁) f g eqi = ⊥-elim (FFDEFSneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqSUM (⇛-val-det tt tt x y₁))
-typeSysConds-FFDEFS-extl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x y₁))
+typeSysConds-FFDEFS-extl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA eqt₁ eqt₂) f g eqi = ⊥-elim (FFDEFSneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (FFDEFSneqUNION (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x y₁))
@@ -304,7 +304,7 @@ typeSysConds-FFDEFS-extl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTBAR
         (allW-mon e1 inda)
         (allW-mon e1 eqx)
         C z f g
-        (Bar.inBar-mon inOpenBar-Bar e1 eqi)
+        (Bar.↑inBar inOpenBar-Bar eqi e1)
 
 
 
@@ -322,7 +322,7 @@ typeSysConds-FFDEFS-extr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTQLT
 typeSysConds-FFDEFS-extr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTFREE y y₁) f g eqi = ⊥-elim (FFDEFSneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqSUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-FFDEFS-extr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x₁ y₁))
+typeSysConds-FFDEFS-extr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA eqt₁ eqt₂) f g eqi = ⊥-elim (FFDEFSneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (FFDEFSneqUNION (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x₁ y₁))
@@ -365,7 +365,7 @@ typeSysConds-FFDEFS-extr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTBAR
         (allW-mon e1 inda)
         (allW-mon e1 eqx)
         C z f g
-        (Bar.inBar-mon inOpenBar-Bar e1 eqi)
+        (Bar.↑inBar inOpenBar-Bar eqi e1)
 
 
 
@@ -383,7 +383,7 @@ typeSysConds-FFDEFS-extr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTQLT
 typeSysConds-FFDEFS-extr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTFREE y y₁) f g eqi = ⊥-elim (FFDEFSneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-FFDEFS-extr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-FFDEFS-extr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA eqt₁ eqt₂) f g eqi = ⊥-elim (FFDEFSneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (FFDEFSneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x₁ y))
@@ -422,7 +422,7 @@ typeSysConds-FFDEFS-extr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTBAR
         (allW-mon e1 inda)
         (allW-mon e1 eqx)
         C z f g
-        (Bar.inBar-mon inOpenBar-Bar e1 eqi)
+        (Bar.↑inBar inOpenBar-Bar eqi e1)
 
 
 
@@ -441,7 +441,7 @@ typeSysConds-FFDEFS-extrevl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQT
 typeSysConds-FFDEFS-extrevl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTFREE y y₁) f g eqi = ⊥-elim (FFDEFSneqFREE (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extrevl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqPI (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extrevl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqSUM (⇛-val-det tt tt x y))
-typeSysConds-FFDEFS-extrevl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x y))
+typeSysConds-FFDEFS-extrevl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extrevl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA eqt₁ eqt₂) f g eqi = ⊥-elim (FFDEFSneqEQ (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extrevl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (FFDEFSneqUNION (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extrevl1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x y))
@@ -505,7 +505,7 @@ typeSysConds-FFDEFS-extrevl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQT
 typeSysConds-FFDEFS-extrevl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTFREE y y₁) f g eqi = ⊥-elim (FFDEFSneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extrevl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extrevl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqSUM (⇛-val-det tt tt x y₁))
-typeSysConds-FFDEFS-extrevl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x y₁))
+typeSysConds-FFDEFS-extrevl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extrevl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA eqt₁ eqt₂) f g eqi = ⊥-elim (FFDEFSneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extrevl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (FFDEFSneqUNION (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extrevl2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x y₁))
@@ -579,7 +579,7 @@ typeSysConds-FFDEFS-extrevr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQT
 typeSysConds-FFDEFS-extrevr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTFREE y y₁) f g eqi = ⊥-elim (FFDEFSneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extrevr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extrevr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqSUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-FFDEFS-extrevr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x₁ y₁))
+typeSysConds-FFDEFS-extrevr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extrevr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA eqt₁ eqt₂) f g eqi = ⊥-elim (FFDEFSneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extrevr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (FFDEFSneqUNION (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extrevr1 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x₁ y₁))
@@ -652,7 +652,7 @@ typeSysConds-FFDEFS-extrevr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQT
 typeSysConds-FFDEFS-extrevr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTFREE y y₁) f g eqi = ⊥-elim (FFDEFSneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extrevr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extrevr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-FFDEFS-extrevr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-FFDEFS-extrevr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extrevr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA eqt₁ eqt₂) f g eqi = ⊥-elim (FFDEFSneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extrevr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (FFDEFSneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extrevr2 u isu w A B A1 B1 x1 x2 x x₁ eqta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x₁ y))
@@ -725,7 +725,7 @@ eqInType-⇛-FFDEFS u isu w A B A1 B1 x1 x2 a b eqta inda c₁ c₂ (EQTQLT a1 a
 eqInType-⇛-FFDEFS u isu w A B A1 B1 x1 x2 a b eqta inda c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (FFDEFSneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS u isu w A B A1 B1 x1 x2 a b eqta inda c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (FFDEFSneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS u isu w A B A1 B1 x1 x2 a b eqta inda c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (FFDEFSneqSUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-FFDEFS u isu w A B A1 B1 x1 x2 a b eqta inda c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁) ei = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-FFDEFS u isu w A B A1 B1 x1 x2 a b eqta inda c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (FFDEFSneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS u isu w A B A1 B1 x1 x2 a b eqta inda c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) ei = ⊥-elim (FFDEFSneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS u isu w A B A1 B1 x1 x2 a b eqta inda c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁) ei = ⊥-elim (FFDEFSneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS u isu w A B A1 B1 x1 x2 a b eqta inda c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁) ei = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt c₁ x))

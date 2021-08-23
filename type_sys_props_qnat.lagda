@@ -93,7 +93,7 @@ typeSysConds-QNAT-ttrans u isu w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x�
 typeSysConds-QNAT-ttrans u isu w A B x x₁ C (EQTFREE y y₁) = ⊥-elim (QNATneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-QNAT-ttrans u isu w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (QNATneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-QNAT-ttrans u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (QNATneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-QNAT-ttrans u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) = ⊥-elim (QNATneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-QNAT-ttrans u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (QNATneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-QNAT-ttrans u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) = ⊥-elim (QNATneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-QNAT-ttrans u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) = ⊥-elim (QNATneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-QNAT-ttrans u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) = ⊥-elim (QNATneqTSQUASH (⇛-val-det tt tt x₁ y))
@@ -127,7 +127,7 @@ typeSysConds-QNAT-extl1 u isu w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x�
 typeSysConds-QNAT-extl1 u isu w A B x x₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QNATneqFREE (⇛-val-det tt tt x y))
 typeSysConds-QNAT-extl1 u isu w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqPI (⇛-val-det tt tt x y))
 typeSysConds-QNAT-extl1 u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqSUM (⇛-val-det tt tt x y))
-typeSysConds-QNAT-extl1 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QNATneqSET (⇛-val-det tt tt x y))
+typeSysConds-QNAT-extl1 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqSET (⇛-val-det tt tt x y))
 typeSysConds-QNAT-extl1 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) a b eqi = ⊥-elim (QNATneqEQ (⇛-val-det tt tt x y))
 typeSysConds-QNAT-extl1 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) a b eqi = ⊥-elim (QNATneqUNION (⇛-val-det tt tt x y))
 typeSysConds-QNAT-extl1 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (QNATneqTSQUASH (⇛-val-det tt tt x y))
@@ -145,7 +145,7 @@ typeSysConds-QNAT-extl1 u isu w A B x x₁ C (EQTBAR y) a b eqi =
   Bar.allW-inBar-inBar' inOpenBar-Bar y aw
   where
     aw : allW w (λ w' e' → (x : eqTypes u w' A C) (at : atbar y w' e' x) → eqInType u w' x a b)
-    aw w1 e1 z at = typeSysConds-QNAT-extl1 u isu w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Bar.inBar-mon inOpenBar-Bar e1 eqi)
+    aw w1 e1 z at = typeSysConds-QNAT-extl1 u isu w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Bar.↑inBar inOpenBar-Bar eqi e1)
 
 {-- c
       where
@@ -188,7 +188,7 @@ typeSysConds-QNAT-extl2 u isu w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x�
 typeSysConds-QNAT-extl2 u isu w A B x x₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QNATneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-QNAT-extl2 u isu w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-QNAT-extl2 u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqSUM (⇛-val-det tt tt x y₁))
-typeSysConds-QNAT-extl2 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QNATneqSET (⇛-val-det tt tt x y₁))
+typeSysConds-QNAT-extl2 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-QNAT-extl2 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) a b eqi = ⊥-elim (QNATneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-QNAT-extl2 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) a b eqi = ⊥-elim (QNATneqUNION (⇛-val-det tt tt x y₁))
 typeSysConds-QNAT-extl2 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (QNATneqTSQUASH (⇛-val-det tt tt x y₁))
@@ -206,7 +206,7 @@ typeSysConds-QNAT-extl2 u isu w A B x x₁ C (EQTBAR y) a b eqi =
   Bar.allW-inBar-inBar' inOpenBar-Bar y aw
   where
     aw : allW w (λ w' e' → (x : eqTypes u w' C A) (at : atbar y w' e' x) → eqInType u w' x a b)
-    aw w1 e1 z at = typeSysConds-QNAT-extl2 u isu w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Bar.inBar-mon inOpenBar-Bar e1 eqi)
+    aw w1 e1 z at = typeSysConds-QNAT-extl2 u isu w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Bar.↑inBar inOpenBar-Bar eqi e1)
 
 
 
@@ -221,7 +221,7 @@ typeSysConds-QNAT-extr1 u isu w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x�
 typeSysConds-QNAT-extr1 u isu w A B x x₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QNATneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QNAT-extr1 u isu w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QNAT-extr1 u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqSUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-QNAT-extr1 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QNATneqSET (⇛-val-det tt tt x₁ y₁))
+typeSysConds-QNAT-extr1 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QNAT-extr1 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) a b eqi = ⊥-elim (QNATneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QNAT-extr1 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) a b eqi = ⊥-elim (QNATneqUNION (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QNAT-extr1 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (QNATneqTSQUASH (⇛-val-det tt tt x₁ y₁))
@@ -239,7 +239,7 @@ typeSysConds-QNAT-extr1 u isu w A B x x₁ C (EQTBAR y) a b eqi =
   Bar.allW-inBar-inBar' inOpenBar-Bar y aw
   where
     aw : allW w (λ w' e' → (x : eqTypes u w' C B) (at : atbar y w' e' x) → eqInType u w' x a b)
-    aw w1 e1 z at = typeSysConds-QNAT-extr1 u isu w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Bar.inBar-mon inOpenBar-Bar e1 eqi)
+    aw w1 e1 z at = typeSysConds-QNAT-extr1 u isu w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Bar.↑inBar inOpenBar-Bar eqi e1)
 
 
 
@@ -254,7 +254,7 @@ typeSysConds-QNAT-extr2 u isu w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x�
 typeSysConds-QNAT-extr2 u isu w A B x x₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QNATneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-QNAT-extr2 u isu w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-QNAT-extr2 u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-QNAT-extr2 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QNATneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-QNAT-extr2 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-QNAT-extr2 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) a b eqi = ⊥-elim (QNATneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-QNAT-extr2 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) a b eqi = ⊥-elim (QNATneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-QNAT-extr2 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (QNATneqTSQUASH (⇛-val-det tt tt x₁ y))
@@ -272,7 +272,7 @@ typeSysConds-QNAT-extr2 u isu w A B x x₁ C (EQTBAR y) a b eqi =
   Bar.allW-inBar-inBar' inOpenBar-Bar y aw
   where
     aw : allW w (λ w' e' → (x : eqTypes u w' B C) (at : atbar y w' e' x) → eqInType u w' x a b)
-    aw w1 e1 z at = typeSysConds-QNAT-extr2 u isu w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Bar.inBar-mon inOpenBar-Bar e1 eqi)
+    aw w1 e1 z at = typeSysConds-QNAT-extr2 u isu w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Bar.↑inBar inOpenBar-Bar eqi e1)
 
 
 
@@ -287,7 +287,7 @@ typeSysConds-QNAT-extrevl1 u isu w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ 
 typeSysConds-QNAT-extrevl1 u isu w A B x x₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QNATneqFREE (⇛-val-det tt tt x y))
 typeSysConds-QNAT-extrevl1 u isu w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqPI (⇛-val-det tt tt x y))
 typeSysConds-QNAT-extrevl1 u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqSUM (⇛-val-det tt tt x y))
-typeSysConds-QNAT-extrevl1 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QNATneqSET (⇛-val-det tt tt x y))
+typeSysConds-QNAT-extrevl1 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqSET (⇛-val-det tt tt x y))
 typeSysConds-QNAT-extrevl1 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) a b eqi = ⊥-elim (QNATneqEQ (⇛-val-det tt tt x y))
 typeSysConds-QNAT-extrevl1 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) a b eqi = ⊥-elim (QNATneqUNION (⇛-val-det tt tt x y))
 typeSysConds-QNAT-extrevl1 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (QNATneqTSQUASH (⇛-val-det tt tt x y))
@@ -327,7 +327,7 @@ typeSysConds-QNAT-extrevl2 u isu w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ 
 typeSysConds-QNAT-extrevl2 u isu w A B x x₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QNATneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-QNAT-extrevl2 u isu w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-QNAT-extrevl2 u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqSUM (⇛-val-det tt tt x y₁))
-typeSysConds-QNAT-extrevl2 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QNATneqSET (⇛-val-det tt tt x y₁))
+typeSysConds-QNAT-extrevl2 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-QNAT-extrevl2 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) a b eqi = ⊥-elim (QNATneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-QNAT-extrevl2 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) a b eqi = ⊥-elim (QNATneqUNION (⇛-val-det tt tt x y₁))
 typeSysConds-QNAT-extrevl2 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (QNATneqTSQUASH (⇛-val-det tt tt x y₁))
@@ -368,7 +368,7 @@ typeSysConds-QNAT-extrevr1 u isu w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ 
 typeSysConds-QNAT-extrevr1 u isu w A B x x₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QNATneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QNAT-extrevr1 u isu w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QNAT-extrevr1 u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqSUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-QNAT-extrevr1 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QNATneqSET (⇛-val-det tt tt x₁ y₁))
+typeSysConds-QNAT-extrevr1 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QNAT-extrevr1 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) a b eqi = ⊥-elim (QNATneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QNAT-extrevr1 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) a b eqi = ⊥-elim (QNATneqUNION (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QNAT-extrevr1 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (QNATneqTSQUASH (⇛-val-det tt tt x₁ y₁))
@@ -408,7 +408,7 @@ typeSysConds-QNAT-extrevr2 u isu w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ 
 typeSysConds-QNAT-extrevr2 u isu w A B x x₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QNATneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-QNAT-extrevr2 u isu w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-QNAT-extrevr2 u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-QNAT-extrevr2 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb) a b eqi = ⊥-elim (QNATneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-QNAT-extrevr2 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QNATneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-QNAT-extrevr2 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) a b eqi = ⊥-elim (QNATneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-QNAT-extrevr2 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB) a b eqi = ⊥-elim (QNATneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-QNAT-extrevr2 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (QNATneqTSQUASH (⇛-val-det tt tt x₁ y))
@@ -451,7 +451,7 @@ eqInType-⇛-QNAT u isu w A B a b c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃
 eqInType-⇛-QNAT u isu w A B a b c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (QNATneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QNAT u isu w A B a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QNATneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QNAT u isu w A B a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QNATneqSUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-QNAT u isu w A B a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) ei = ⊥-elim (QNATneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QNAT u isu w A B a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QNATneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QNAT u isu w A B a b c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) ei = ⊥-elim (QNATneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QNAT u isu w A B a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) ei = ⊥-elim (QNATneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QNAT u isu w A B a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA) ei = ⊥-elim (QNATneqTSQUASH (⇛-val-det tt tt c₁ x))
@@ -491,7 +491,7 @@ eqInType-⇛-QNAT-rev u isu w A B a b c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ 
 eqInType-⇛-QNAT-rev u isu w A B a b c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (QNATneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QNAT-rev u isu w A B a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QNATneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QNAT-rev u isu w A B a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QNATneqSUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-QNAT-rev u isu w A B a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) ei = ⊥-elim (QNATneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QNAT-rev u isu w A B a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QNATneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QNAT-rev u isu w A B a b c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) ei = ⊥-elim (QNATneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QNAT-rev u isu w A B a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) ei = ⊥-elim (QNATneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QNAT-rev u isu w A B a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA) ei = ⊥-elim (QNATneqTSQUASH (⇛-val-det tt tt c₁ x))
@@ -509,7 +509,7 @@ eqInType-⇛-QNAT-rev u isu w A B a b c₁ c₂ (EQTBAR x) ei =
   Bar.allW-inBar-inBar' inOpenBar-Bar x aw
   where
     aw : allW w (λ w' e' → (z : eqTypes u w' A B) (at : atbar x w' e' z) → eqInType u w' z a b)
-    aw w' e' z at = eqInType-⇛-QNAT-rev u isu w' A B a b (⇛-mon e' c₁) (⇛-mon e' c₂) z (Bar.inBar-mon inOpenBar-Bar e' ei)
+    aw w' e' z at = eqInType-⇛-QNAT-rev u isu w' A B a b (⇛-mon e' c₁) (⇛-mon e' c₂) z (Bar.↑inBar inOpenBar-Bar ei e')
 
 
 

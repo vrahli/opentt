@@ -169,7 +169,7 @@ typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 
 
 typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) = ⊥-elim (PIneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB) = ⊥-elim (PIneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x₁ y))
@@ -320,7 +320,7 @@ typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         ef1 = imp a1 a2 ea1
 
 typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y))
+typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y))
 typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x y))
 typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB) f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x y))
 typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x y))
@@ -345,7 +345,7 @@ typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         (allW-mon e1 eqta) (allW-mon e1 eqtb)
         (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
         (allW-mon e1 inda) (allW-mon e1 indb)
-        C z f g (Bar.inBar-mon inOpenBar-Bar e1 eqi)
+        C z f g (Bar.↑inBar inOpenBar-Bar eqi e1)
 
 
 
@@ -393,7 +393,7 @@ typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         eb2 = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb eb1
 
 typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y₁))
+typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB) f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x y₁))
 typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x y₁))
@@ -418,7 +418,7 @@ typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         (allW-mon e1 eqta) (allW-mon e1 eqtb)
         (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
         (allW-mon e1 inda) (allW-mon e1 indb)
-        C z f g (Bar.inBar-mon inOpenBar-Bar e1 eqi)
+        C z f g (Bar.↑inBar inOpenBar-Bar eqi e1)
 
 
 
@@ -460,7 +460,7 @@ typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         eb1 = imp a1 a2 ea1
 
 typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y₁))
+typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB) f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x₁ y₁))
@@ -485,7 +485,7 @@ typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         (allW-mon e1 eqta) (allW-mon e1 eqtb)
         (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
         (allW-mon e1 inda) (allW-mon e1 indb)
-        C z f g (Bar.inBar-mon inOpenBar-Bar e1 eqi)
+        C z f g (Bar.↑inBar inOpenBar-Bar eqi e1)
 
 
 
@@ -536,7 +536,7 @@ typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         ef0 = TSP.extr2 (indb w1 e1 a2 a1 ea2) (sub a2 B4) (eqtb₁ w1 e1 a1 a2 eqa) (APPLY f a1) (APPLY g a2) ef2
 
 typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB) f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x₁ y))
@@ -561,7 +561,7 @@ typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         (allW-mon e1 eqta) (allW-mon e1 eqtb)
         (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
         (allW-mon e1 inda) (allW-mon e1 indb)
-        C z f g (Bar.inBar-mon inOpenBar-Bar e1 eqi)
+        C z f g (Bar.↑inBar inOpenBar-Bar eqi e1)
 
 
 
@@ -603,7 +603,7 @@ typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
         ef1 = imp a1 a2 ea1
 
 typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y))
+typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y))
 typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x y))
 typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB) f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x y))
 typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x y))
@@ -696,7 +696,7 @@ typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
         eb2 = TSP.extrevl2 (indb w1 e1 a2 a1 eas) (sub a1 B3) (eqtb₁ w1 e1 a1 a2 ea1) (APPLY f a1) (APPLY g a2) eb1
 
 typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y₁))
+typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB) f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x y₁))
 typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x y₁))
@@ -783,7 +783,7 @@ typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
         eb1 = imp a1 a2 ea1
 
 typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y₁))
+typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB) f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x₁ y₁))
@@ -876,7 +876,7 @@ typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
         eb2 = TSP.extrevr2 (indb w1 e1 a2 a1 ea2) (sub a2 B4) (eqtb₁ w1 e1 a1 a2 ea1) (APPLY f a1) (APPLY g a2) eb1
 
 typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA eqt1 eqt2) f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB) f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x₁ y))
@@ -963,7 +963,7 @@ eqInType-⇛-PI u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c
         eqb' = z a₁ a₂ eqa'
 
 eqInType-⇛-PI u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PIneqSUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁) ei = ⊥-elim (PIneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-PI u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PIneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) ei = ⊥-elim (PIneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB) ei = ⊥-elim (PIneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqtA) ei = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt c₁ x))
@@ -1058,7 +1058,7 @@ eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTP
         eqb' = z a₁ a₂ eqa'
 
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (PIneqSUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁) ei ext = ⊥-elim (PIneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (PIneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) ei ext = ⊥-elim (PIneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB) ei ext = ⊥-elim (PIneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqtA) ei ext = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt c₁ x))
@@ -1136,7 +1136,7 @@ eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c�
         eqb' = z a₁ a₂ eqa'
 
 eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PIneqSUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁) ei = ⊥-elim (PIneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PIneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) ei = ⊥-elim (PIneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB) ei = ⊥-elim (PIneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqtA) ei = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt c₁ x))
@@ -1163,7 +1163,7 @@ eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c�
         (⇛-mon e1 c₁) (⇛-mon e1 c₂) z j
       where
         j : inbar w1 (↑wPred (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b) e1)
-        j = Bar.inBar-mon inOpenBar-Bar e1 ei
+        j = Bar.↑inBar inOpenBar-Bar ei e1
 
 
 
@@ -1211,7 +1211,7 @@ eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (
         eqb' = z a₁ a₂ eqa'
 
 eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (PIneqSUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁) ext ei = ⊥-elim (PIneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (PIneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) ext ei = ⊥-elim (PIneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB) ext ei = ⊥-elim (PIneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqtA) ext ei = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt c₁ x))
@@ -1237,7 +1237,7 @@ eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (
         (⇛-mon e1 c₁) (⇛-mon e1 c₂) z (≤Type-EQTBAR-eqInTypeExt at ext) j
       where
         j : inbar w1 (↑wPred (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b) e1)
-        j = Bar.inBar-mon inOpenBar-Bar e1 ei
+        j = Bar.↑inBar inOpenBar-Bar ei e1
 
 
 
