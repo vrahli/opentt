@@ -18,10 +18,13 @@ record Bar : Set₂ where
 --    wPredDepExtIrrBar : {w : world} {f : wPred w} (h : wPredDep f) (i : inBar w f) → Set₁
     ↑inBar            : {w : world} {f : wPred w} (i : inBar w f) {w' : world} (e : w' ≽ w) → inBar w' (↑wPred f e)
     ↑'inBar           : {w : world} {f : wPred w} (i : inBar w f) {w' : world} (e : w' ≽ w) → inBar w' (↑wPred' f e)
---    ↑inBar'          : {w : world} {f : wPred w} {g : wPredDep f} (i : inBar w f) {w' : world} (e : w' ≽ w)
---                        → inBar' w i g → inBar' w' (↑inBar i e) (↑wPredDep g e)
+    ↑inBar'           : {w : world} {f : wPred w} {g : wPredDep f} (i : inBar w f) {w' : world} (e : w' ≽ w)
+                        → inBar' w i g → inBar' w' (↑inBar i e) (↑wPredDep g e)
 --    atBar             : {w : world} {f : wPred w} (i : inBar w f) (w' : world) → Set₁
     atBar             : {w : world} {f : wPred w} (i : inBar w f) (w' : world) (e' : w' ≽ w) (p : f w' e') → Set₁
+{--    ↑inBar'           : {w : world} {f : wPred w} {g : wPredDep f} (i : inBar w f) {w' : world} (e : w' ≽ w) {h : wPredDep (↑wPred f e)}
+                        → allW w' (λ w'' e'' → (x y : f w'' (extTrans e'' e)) (at : atBar i w'' (extTrans e'' e) x) → g w'' (extTrans e'' e) x → h w'' e'' y)
+                        → inBar' w i g → inBar' w' (↑inBar i e) h--}
     -- Axioms
     inBarFunc         : {w : world} {f g : wPred w}
                         → inBar w (λ w' e' → f w' e' → g w' e')
@@ -69,9 +72,14 @@ record Bar : Set₂ where
                         → allW w (λ w' e' → (z zg zh : f w' e')
                                            → g w' e' zg → h w' e' zh → k w' e' z)
                         → inBar' w i g → inBar' w i h → inBar' w i k
-    inBar'-change     : {w : world} {f : wPred w} {g : wPredDep f} (i j : inBar w f)
+{--    inBar'-change     : {w : world} {f : wPred w} {g : wPredDep f} (i j : inBar w f)
                         → allW w (λ w' e' → (x y : f w' e') → atBar i w' e' x → atBar j w' e' y → g w' e' x → g w' e' y)
-                        → inBar' w i g → inBar' w j g
+                        → inBar' w i g → inBar' w j g--}
+    -- a more general version
+    inBar'-change    : {w : world} {f k : wPred w} {g : wPredDep f} {h : wPredDep k} (i : inBar w f) (j : inBar w k)
+                        → allW w (λ w' e' → (x : f w' e') (y : k w' e') → atBar i w' e' x → atBar j w' e' y
+                                           → g w' e' x → h w' e' y)
+                        → inBar' w i g → inBar' w j h
     inBar-const       : {w : world} {t : Set₁} → inBar w (λ w e → t) → t
 
 
@@ -314,6 +322,26 @@ data atOpenBar {w} {f} i where
   ATOPENBAR : (w1 : world) (e1 : w1 ≽ w) (w2 : world) (e2 : w2 ≽ fst (i w1 e1)) (z : w2 ≽ w)
               → atOpenBar {w} {f} i w2 z (snd (snd (i w1 e1)) w2 e2 z)
 
+
+
+
+↑inOpenBar'' : {w : world} {f : wPred w} {g : wPredDep f} (i : inOpenBar w f) {w' : world} (e : w' ≽ w) {h : wPredDep (↑wPred f e)}
+               → allW w' (λ w'' e'' → (x y : f w'' (extTrans e'' e)) (at : atOpenBar i w'' (extTrans e'' e) x) → g w'' (extTrans e'' e) x → h w'' e'' y)
+               → inOpenBar' w i g → inOpenBar' w' (↑inOpenBar i e) h
+↑inOpenBar'' {w} {f} {g} i {w'} e {h} aw j w1 e1 =
+  w2 , e2 , q
+  where
+    w2 : world
+    w2 = fst (j w1 (extTrans e1 e))
+
+    e2 : w2 ≽ (fst (↑'inOpenBar i e w1 e1))
+    e2 = fst (snd (j w1 (extTrans e1 e)))
+
+    q : allW w2 (λ w3 e3 → (z : w3 ≽ w') → h w3 z (snd (snd (↑inOpenBar i e w1 e1)) w3 (extTrans e3 e2) z))
+    q w3 e3 z = aw w3 z ((snd (snd (i w1 (extTrans e1 e))) w3 (extTrans e3 e2) (extTrans z e)))
+                   (snd (snd (↑inOpenBar i e w1 e1)) w3 (extTrans e3 e2) z)
+                   (ATOPENBAR w1 (extTrans e1 e) w3 (extTrans e3 (proj₁ (snd (j w1 (extTrans e1 e))))) (extTrans z e))
+                   (snd (snd (j w1 (extTrans e1 e))) w3 e3 (extTrans z e))
 
 
 
@@ -631,10 +659,10 @@ inOpenBar-const {w} {t} h = snd (snd (h w (extRefl w))) (fst (h w (extRefl w))) 
 
 
 
-inOpenBar'-change : {w : world} {f : wPred w} {g : wPredDep f} (i j : inOpenBar w f)
+old-inOpenBar'-change : {w : world} {f : wPred w} {g : wPredDep f} (i j : inOpenBar w f)
                     → allW w (λ w' e' → (x y : f w' e') → atOpenBar i w' e' x → atOpenBar j w' e' y → g w' e' x → g w' e' y)
                     → inOpenBar' w i g → inOpenBar' w j g
-inOpenBar'-change {w} {f} {g} i j aw b w1 e1 =
+old-inOpenBar'-change {w} {f} {g} i j aw b w1 e1 =
   w4 , extTrans e4 e3 , h1
   where
     w2 : world
@@ -669,6 +697,46 @@ inOpenBar'-change {w} {f} {g} i j aw b w1 e1 =
 
 
 
+inOpenBar'-change : {w : world} {f : wPred w} {k : wPred w} {g : wPredDep f} {h : wPredDep k}
+                    (i : inOpenBar w f) (j : inOpenBar w k)
+                    → allW w (λ w' e' → (x : f w' e') (y : k w' e') → atOpenBar i w' e' x → atOpenBar j w' e' y
+                                      → g w' e' x → h w' e' y)
+                    → inOpenBar' w i g → inOpenBar' w j h
+inOpenBar'-change {w} {f} {k} {g} {h} i j aw b w1 e1 =
+  w4 , extTrans e4 e3 , h1
+  where
+    w2 : world
+    w2 = fst (j w1 e1)
+
+    e2 : w2 ≽ w1
+    e2 = fst (snd (j w1 e1))
+
+    w3 : world
+    w3 = fst (i w2 (extTrans e2 e1))
+
+    e3 : w3 ≽ w2
+    e3 = fst (snd (i w2 (extTrans e2 e1)))
+
+    w4 : world
+    w4 = fst (b w2 (extTrans e2 e1))
+
+    e4 : w4 ≽ w3
+    e4 = fst (snd (b w2 (extTrans e2 e1)))
+
+    h0 : allW w4 (λ w5 e5 → (z : w5 ≽ w) → g w5 z (snd (snd (i w2 (extTrans e2 e1))) w5 (extTrans e5 e4) z))
+    h0 = snd (snd (b w2 (extTrans e2 e1)))
+
+    h1 : allW w4 (λ w5 e5 → (z : w5 ≽ w) → h w5 z (snd (snd (j w1 e1)) w5 (extTrans e5 (extTrans e4 e3)) z))
+    h1 w5 e5 z =
+      aw w5 z
+         (snd (snd (i w2 (extTrans e2 e1))) w5 (extTrans e5 e4) z)
+         (snd (snd (j w1 e1)) w5 (extTrans e5 (extTrans e4 e3)) z)
+         (ATOPENBAR w2 (extTrans e2 e1) w5  (extTrans e5 e4) z)
+         (ATOPENBAR w1 e1 w5  (extTrans e5 (extTrans e4 e3)) z)
+         (h0 w5 e5 z)
+
+
+
 -- We can prove that open-bars satisfy the Bar properties
 inOpenBar-Bar : Bar
 inOpenBar-Bar =
@@ -678,7 +746,7 @@ inOpenBar-Bar =
 --    wPredDepExtIrr-inOpenBar
     ↑inOpenBar
     ↑'inOpenBar
---    ↑inOpenBar'
+    (λ {w} {f} {g} → ↑inOpenBar' {w} {f} {g})
 --    atOpenBar
     atOpenBar
     inOpenBarFunc
@@ -695,6 +763,7 @@ inOpenBar-Bar =
     {--allW-inOpenBar'-inOpenBar--}
     allW-inOpenBar'-inOpenBar
     inOpenBar'-comb
+--    old-inOpenBar'-change
     inOpenBar'-change
     inOpenBar-const
 \end{code}
