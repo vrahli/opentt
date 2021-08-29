@@ -48,9 +48,16 @@ atbar : {w : world} {f : wPred w} (i : inbar w f) (w' : world) (e' : w' ≽ w) (
 --atbar = Bar.atBar b
 atbar = atOpenBar
 
+↑inbar : {w : world} {f : wPred w} (i : inbar w f) {w' : world} (e : w' ≽ w) → inbar w' (↑wPred f e)
+↑inbar = ↑inOpenBar
+
 ↑'inbar : {w : world} {f : wPred w} (i : inbar w f) {w' : world} (e : w' ≽ w) → inbar w' (↑wPred' f e)
 --↑'inbar = Bar.↑'inBar b
 ↑'inbar = ↑'inOpenBar
+
+↑inbar' : {w : world} {f : wPred w} {g : wPredDep f} (i : inbar w f) {w' : world} (e : w' ≽ w)
+          → inbar' w i g → inbar' w' (↑inbar i e) (↑wPredDep g e)
+↑inbar' {w} {f} {g} = ↑inOpenBar' {w} {f} {g}
 
 wpreddepextirr : {w : world} {f : wPred w} (h : wPredDep f) (i : inbar w f) → Set₁
 wpreddepextirr = wPredDepExtIrr-inOpenBar
