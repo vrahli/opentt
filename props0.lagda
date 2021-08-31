@@ -289,7 +289,7 @@ eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTFREE x x₁) = ⊥-eli
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = ⊥-elim (NATneqPI (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = ⊥-elim (NATneqSUM (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = ⊥-elim (NATneqSET (⇛-val-det tt tt c₁ x))
-eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) = ⊥-elim (NATneqEQ (⇛-val-det tt tt c₁ x))
+eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) = ⊥-elim (NATneqEQ (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) = ⊥-elim (NATneqUNION (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTSQUASH A1 A2 x x₁ eqtA) = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt c₁ x))
@@ -342,7 +342,7 @@ eqTypes-pres-eqInType u w A B a b (EQTFREE x x₁) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) e = {!!}
-eqTypes-pres-eqInType u w A B a b (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) e = {!!}
+eqTypes-pres-eqInType u w A B a b (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQTSQUASH A1 A2 x x₁ eqtA) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) e = {!!}
@@ -420,11 +420,22 @@ eqTypes-mon u m {A} {B} {w1} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) w2 
     extb' : (a b a₀ b₀ : Term) → wPredDepExtIrr (λ w e x₂ → eqInType u w (allW-mon ext eqtb w e a b x₂) a₀ b₀)
     extb' a b a₀ b₀ w' e1 e2 x1 x2 ei = extb a b a₀ b₀ w' (extTrans e1 ext) (extTrans e2 ext) x1 x2 ei
 
-eqTypes-mon u m {A} {B} {w1} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) w2 ext =
+eqTypes-mon u m {A} {B} {w1} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) w2 ext =
   EQTEQ a1 b1 a2 b2 A₁ B₁ (⇛-mon ext x) (⇛-mon ext x₁)
-    (allW-mon ext eqtA) (allW-mon ext eqt1) (allW-mon ext eqt2)
-eqTypes-mon u m {A} {B} {w1} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) w2 ext =
-  EQTUNION A1 B1 A2 B2 (⇛-mon ext x) (⇛-mon ext x₁) (allW-mon ext eqtA) (allW-mon ext eqtB)
+    (allW-mon ext eqtA) exta' (allW-mon ext eqt1) (allW-mon ext eqt2)
+  where
+    exta' : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (allW-mon ext eqtA w e) a b)
+    exta' a b w' e1 e2 ei = exta a b w' (extTrans e1 ext) (extTrans e2 ext) ei
+
+eqTypes-mon u m {A} {B} {w1} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) w2 ext =
+  EQTUNION A1 B1 A2 B2 (⇛-mon ext x) (⇛-mon ext x₁) (allW-mon ext eqtA) (allW-mon ext eqtB) exta' extb'
+  where
+    exta' : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (allW-mon ext eqtA w e) a b)
+    exta' a b w' e1 e2 ei = exta a b w' (extTrans e1 ext) (extTrans e2 ext) ei
+
+    extb' : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (allW-mon ext eqtB w e) a b)
+    extb' a b w' e1 e2 ei = extb a b w' (extTrans e1 ext) (extTrans e2 ext) ei
+
 eqTypes-mon u m {A} {B} {w1} (EQTSQUASH A1 A2 x x₁ eqtA) w2 ext =
   EQTSQUASH A1 A2 (⇛-mon ext x) (⇛-mon ext x₁) (allW-mon ext eqtA)
 eqTypes-mon u m {A} {B} {w1} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) w2 ext =
@@ -447,14 +458,14 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTFREE x x₁ , eqi) = ⊥-elim (EQneqFR
 if-equalInType-EQ u w T a b t₁ t₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqPI (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSUM (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSET (compAllVal x₁ tt))
-if-equalInType-EQ u w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA eqt1 eqt2 , eqi)
+if-equalInType-EQ u w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2 , eqi)
   rewrite EQinj1 (compAllVal x tt)  | EQinj2 (compAllVal x tt)  | EQinj3 (compAllVal x tt)
         | EQinj1 (compAllVal x₁ tt) | EQinj2 (compAllVal x₁ tt) | EQinj3 (compAllVal x₁ tt) =
   Bar.allW-inBarFunc
     inOpenBar-Bar
     (λ w1 e1 (c₁ , c₂ , eqi1) → c₁ , c₂ , eqtA w1 e1 , eqi1)
     eqi
-if-equalInType-EQ u w T a b t₁ t₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB , eqi) = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
+if-equalInType-EQ u w T a b t₁ t₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTSQUASH A1 A2 x x₁ eqtA , eqi) = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx , eqi) = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTUNIV x , eqi) = Bar.allW-inBarFunc inOpenBar-Bar z2 x
@@ -741,8 +752,8 @@ eqTypes⇛NAT {u} {w} {A} {B} isu (EQTFREE x x₁) comp = ⊥-elim (NATneqFREE (
 eqTypes⇛NAT {u} {w} {A} {B} isu (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) comp = ⊥-elim (NATneqPI (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} isu (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) comp = ⊥-elim (NATneqSUM (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} isu (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) comp = ⊥-elim (NATneqSET (⇛-val-det tt tt comp x))
-eqTypes⇛NAT {u} {w} {A} {B} isu (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA eqt1 eqt2) comp = ⊥-elim (NATneqEQ (⇛-val-det tt tt comp x))
-eqTypes⇛NAT {u} {w} {A} {B} isu (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) comp = ⊥-elim (NATneqUNION (⇛-val-det tt tt comp x))
+eqTypes⇛NAT {u} {w} {A} {B} isu (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) comp = ⊥-elim (NATneqEQ (⇛-val-det tt tt comp x))
+eqTypes⇛NAT {u} {w} {A} {B} isu (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) comp = ⊥-elim (NATneqUNION (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} isu (EQTSQUASH A1 A2 x x₁ eqtA) comp = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} isu (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) comp = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} isu (EQTUNIV x) comp =
@@ -1033,34 +1044,34 @@ irr-fam-set u w A1 B1 A2 B2 eqta eqtb exta extb f g w1 e1 w' e' (b , eqa , eqb) 
 
 irr-eq : (u : univs) (w : world) (a1 a2 A1 A2 : Term)
          (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
-         (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
+         (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
          (f g : Term) (w1 : world) (e1 : w1 ≽ w)
          → allW w1 (λ w' e' → EQeq a1 a2 (eqInType u w' (eqta w' (extTrans e' e1))) w' f g
                              → (z : w' ≽ w) → EQeq a1 a2 (eqInType u w' (eqta w' z)) w' f g)
-irr-eq u w a1 a2 A1 A2 eqta inda f g w1 e1 w' e' (c₁ , c₂ , eqa) z = c₁ , c₂ , eqa'
+irr-eq u w a1 a2 A1 A2 eqta exta f g w1 e1 w' e' (c₁ , c₂ , eqa) z = c₁ , c₂ , eqa'
   where
     eqa' : eqInType u w' (eqta w' z) a1 a2
-    eqa' = snd (inda w' z (eqta w' (extTrans e' e1)) a1 a2) eqa
+    eqa' = exta a1 a2 w' (extTrans e' e1) z eqa
 
 
 irr-union : (u : univs) (w : world) (A1 A2 B1 B2 : Term)
             (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
-            (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
+            (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
             (eqtb : allW w (λ w' _ → eqTypes u w' B1 B2))
-            (indb : allW w (λ w1 e1 → eqInTypeExt (eqtb w1 e1)))
+            (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
             (f g : Term) (w1 : world) (e1 : w1 ≽ w)
             → allW w1 (λ w' e' → UNIONeq (eqInType u w' (eqta w' (extTrans e' e1))) (eqInType u w' (eqtb w' (extTrans e' e1))) w' f g
                                 → (z : w' ≽ w) → UNIONeq (eqInType u w' (eqta w' z)) (eqInType u w' (eqtb w' z)) w' f g)
-irr-union u w A1 A2 B1 B2 eqta inda eqtb indb f g w1 e1 w' e' (a , b , inj₁ (c₁ , c₂ , eqa)) z =
+irr-union u w A1 A2 B1 B2 eqta exta eqtb extb f g w1 e1 w' e' (a , b , inj₁ (c₁ , c₂ , eqa)) z =
   a , b , inj₁ (c₁ , c₂ , eqa')
   where
     eqa' : eqInType u w' (eqta w' z) a b
-    eqa' = snd (inda w' z (eqta w' (extTrans e' e1)) a b) eqa
-irr-union u w A1 A2 B1 B2 eqta inda eqtb indb f g w1 e1 w' e' (a , b , inj₂ (c₁ , c₂ , eqb)) z =
+    eqa' = exta a b w' (extTrans e' e1) z eqa
+irr-union u w A1 A2 B1 B2 eqta exta eqtb extb f g w1 e1 w' e' (a , b , inj₂ (c₁ , c₂ , eqb)) z =
   a , b , inj₂ (c₁ , c₂ , eqb')
   where
     eqb' : eqInType u w' (eqtb w' z) a b
-    eqb' = snd (indb w' z (eqtb w' (extTrans e' e1)) a b) eqb
+    eqb' = extb a b w' (extTrans e' e1) z eqb
 
 
 irr-tsquash : (u : univs) (w : world) (A1 A2 : Term)

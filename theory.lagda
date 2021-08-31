@@ -137,6 +137,7 @@ data eqTypes u w T1 T2 where
     → T1 ⇛ (EQ a1 a2 A) at w
     → T2 ⇛ (EQ b1 b2 B) at w
     → (eqtA : allW w (λ w' _ → eqTypes u w' A B))
+    → (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → (eqt1 : allW w (λ w' e → eqInType u w' (eqtA w' e) a1 b1))
     → (eqt2 : allW w (λ w' e → eqInType u w' (eqtA w' e) a2 b2))
     → eqTypes u w T1 T2
@@ -145,6 +146,8 @@ data eqTypes u w T1 T2 where
     → T2 ⇛ (UNION A2 B2) at w
     → (eqtA : allW w (λ w' _ → eqTypes u w' A1 A2))
     → (eqtB : allW w (λ w' _ → eqTypes u w' B1 B2))
+    → (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
+    → (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtB w e) a b))
     → eqTypes u w T1 T2
   EQTSQUASH : (A1 A2 : Term)
     → T1 ⇛ (TSQUASH A1) at w
@@ -221,9 +224,9 @@ eqInType u w (EQTSUM _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
   inbar w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' t1 t2)
 eqInType u w (EQTSET _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
   inbar w (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) t1 t2)
-eqInType u w (EQTEQ a1 _ a2 _ _ _ _ _ eqtA eqt1 eqt2) t1 t2 =
+eqInType u w (EQTEQ a1 _ a2 _ _ _ _ _ eqtA exta eqt1 eqt2) t1 t2 =
   inbar w (λ w' e → EQeq a1 a2 (eqInType u w' (eqtA w' e)) w' t1 t2)
-eqInType u w (EQTUNION _ _ _ _ _ _ eqtA eqtB) t1 t2 =
+eqInType u w (EQTUNION _ _ _ _ _ _ eqtA eqtB exta extb) t1 t2 =
   inbar w (λ w' e → UNIONeq (eqInType u w' (eqtA w' e)) (eqInType u w' (eqtB w' e)) w' t1 t2)
 eqInType u w (EQTSQUASH _ _ _ _ eqtA) t1 t2 =
   inbar w (λ w' e → TSQUASHeq (eqInType u w' (eqtA w' e)) w' t1 t2)
