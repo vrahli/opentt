@@ -51,7 +51,8 @@ typeSysConds-NAT-extl1 u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb
 typeSysConds-NAT-extl1 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (NATneqSET (⇛-val-det tt tt x y))
 typeSysConds-NAT-extl1 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) a b eqi = ⊥-elim (NATneqEQ (⇛-val-det tt tt x y))
 typeSysConds-NAT-extl1 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (NATneqUNION (⇛-val-det tt tt x y))
-typeSysConds-NAT-extl1 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x y))
+typeSysConds-NAT-extl1 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x y))
+--typeSysConds-NAT-extl1 u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqDUM (⇛-val-det tt tt x y))
 typeSysConds-NAT-extl1 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-NAT-extl1 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -112,7 +113,8 @@ typeSysConds-NAT-extl2 u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb
 typeSysConds-NAT-extl2 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (NATneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-NAT-extl2 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) a b eqi = ⊥-elim (NATneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-NAT-extl2 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (NATneqUNION (⇛-val-det tt tt x y₁))
-typeSysConds-NAT-extl2 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x y₁))
+typeSysConds-NAT-extl2 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x y₁))
+--typeSysConds-NAT-extl2 u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqDUM (⇛-val-det tt tt x y₁))
 typeSysConds-NAT-extl2 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-NAT-extl2 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -145,7 +147,8 @@ typeSysConds-NAT-extr1 u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb
 typeSysConds-NAT-extr1 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (NATneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-NAT-extr1 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) a b eqi = ⊥-elim (NATneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-NAT-extr1 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (NATneqUNION (⇛-val-det tt tt x₁ y₁))
-typeSysConds-NAT-extr1 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x₁ y₁))
+typeSysConds-NAT-extr1 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x₁ y₁))
+--typeSysConds-NAT-extr1 u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqDUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-NAT-extr1 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-NAT-extr1 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -178,7 +181,8 @@ typeSysConds-NAT-extr2 u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb
 typeSysConds-NAT-extr2 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (NATneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-NAT-extr2 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) a b eqi = ⊥-elim (NATneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-NAT-extr2 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (NATneqUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-NAT-extr2 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x₁ y))
+typeSysConds-NAT-extr2 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x₁ y))
+--typeSysConds-NAT-extr2 u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-NAT-extr2 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-NAT-extr2 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -211,7 +215,8 @@ typeSysConds-NAT-extrevl1 u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta e
 typeSysConds-NAT-extrevl1 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (NATneqSET (⇛-val-det tt tt x y))
 typeSysConds-NAT-extrevl1 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) a b eqi = ⊥-elim (NATneqEQ (⇛-val-det tt tt x y))
 typeSysConds-NAT-extrevl1 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (NATneqUNION (⇛-val-det tt tt x y))
-typeSysConds-NAT-extrevl1 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x y))
+typeSysConds-NAT-extrevl1 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x y))
+--typeSysConds-NAT-extrevl1 u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqDUM (⇛-val-det tt tt x y))
 typeSysConds-NAT-extrevl1 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-NAT-extrevl1 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -251,7 +256,8 @@ typeSysConds-NAT-extrevl2 u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta e
 typeSysConds-NAT-extrevl2 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (NATneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-NAT-extrevl2 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) a b eqi = ⊥-elim (NATneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-NAT-extrevl2 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (NATneqUNION (⇛-val-det tt tt x y₁))
-typeSysConds-NAT-extrevl2 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x y₁))
+typeSysConds-NAT-extrevl2 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x y₁))
+--typeSysConds-NAT-extrevl2 u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqDUM (⇛-val-det tt tt x y₁))
 typeSysConds-NAT-extrevl2 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-NAT-extrevl2 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -292,7 +298,8 @@ typeSysConds-NAT-extrevr1 u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta e
 typeSysConds-NAT-extrevr1 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (NATneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-NAT-extrevr1 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) a b eqi = ⊥-elim (NATneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-NAT-extrevr1 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (NATneqUNION (⇛-val-det tt tt x₁ y₁))
-typeSysConds-NAT-extrevr1 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x₁ y₁))
+typeSysConds-NAT-extrevr1 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x₁ y₁))
+--typeSysConds-NAT-extrevr1 u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqDUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-NAT-extrevr1 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-NAT-extrevr1 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -333,7 +340,8 @@ typeSysConds-NAT-extrevr2 u isu w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta e
 typeSysConds-NAT-extrevr2 u isu w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (NATneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-NAT-extrevr2 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) a b eqi = ⊥-elim (NATneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-NAT-extrevr2 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (NATneqUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-NAT-extrevr2 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x₁ y))
+typeSysConds-NAT-extrevr2 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt x₁ y))
+--typeSysConds-NAT-extrevr2 u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-NAT-extrevr2 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-NAT-extrevr2 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -377,7 +385,8 @@ eqInType-⇛-NAT u isu w A B a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb 
 eqInType-⇛-NAT u isu w A B a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (NATneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-NAT u isu w A B a b c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) ei = ⊥-elim (NATneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-NAT u isu w A B a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (NATneqUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-NAT u isu w A B a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA) ei = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt c₁ x))
+eqInType-⇛-NAT u isu w A B a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA extA) ei = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-NAT u isu w A B a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) ei = ⊥-elim (NATneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-NAT u isu w A B a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) ei = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-NAT u isu w A B a b c₁ c₂ (EQTUNIV x) ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z))) -- Lift {0ℓ} 1ℓ ⊥
@@ -416,7 +425,8 @@ eqInType-⇛-NAT-rev u isu w A B a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta e
 eqInType-⇛-NAT-rev u isu w A B a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (NATneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-NAT-rev u isu w A B a b c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) ei = ⊥-elim (NATneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-NAT-rev u isu w A B a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (NATneqUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-NAT-rev u isu w A B a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA) ei = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt c₁ x))
+eqInType-⇛-NAT-rev u isu w A B a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA extA) ei = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-NAT-rev u isu w A B a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) ei = ⊥-elim (NATneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-NAT-rev u isu w A B a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) ei = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-NAT-rev u isu w A B a b c₁ c₂ (EQTUNIV x) ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z))) -- Lift {0ℓ} 1ℓ ⊥

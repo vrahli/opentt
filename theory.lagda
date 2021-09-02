@@ -153,7 +153,14 @@ data eqTypes u w T1 T2 where
     → T1 ⇛ (TSQUASH A1) at w
     → T2 ⇛ (TSQUASH A2) at w
     → (eqtA : allW w (λ w' _ → eqTypes u w' A1 A2))
+    → (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → eqTypes u w T1 T2
+{--  EQTDUM : (A1 A2 : Term)
+    → T1 ⇛ (DUM A1) at w
+    → T2 ⇛ (DUM A2) at w
+    → (eqtA : allW w (λ w' _ → eqTypes u w' A1 A2))
+    → (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
+    → eqTypes u w T1 T2--}
   EQFFDEFS : (A1 A2 x1 x2 : Term)
     → T1 ⇛ (FFDEFS A1 x1) at w
     → T2 ⇛ (FFDEFS A2 x2) at w
@@ -228,8 +235,9 @@ eqInType u w (EQTEQ a1 _ a2 _ _ _ _ _ eqtA exta eqt1 eqt2) t1 t2 =
   inbar w (λ w' e → EQeq a1 a2 (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTUNION _ _ _ _ _ _ eqtA eqtB exta extb) t1 t2 =
   inbar w (λ w' e → UNIONeq (eqInType u w' (eqtA w' e)) (eqInType u w' (eqtB w' e)) w' t1 t2)
-eqInType u w (EQTSQUASH _ _ _ _ eqtA) t1 t2 =
+eqInType u w (EQTSQUASH _ _ _ _ eqtA exta) t1 t2 =
   inbar w (λ w' e → TSQUASHeq (eqInType u w' (eqtA w' e)) w' t1 t2)
+--eqInType u w (EQTDUM _ _ _ _ eqtA exta) t1 t2 = Lift {0ℓ} 1ℓ ⊤
 eqInType u w (EQFFDEFS _ _ x1 _ _ _ eqtA _) t1 t2 =
   inbar w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTUNIV _) T1 T2 = proj₂ (proj₂ u) w T1 T2

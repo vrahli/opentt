@@ -88,6 +88,8 @@ data Term : Set where
   CS : csName → Term
   -- Time squashing
   TSQUASH : Term → Term
+  -- Dummy
+  DUM : Term → Term
   -- Free from definitions
   FFDEFS : Term → Term → Term
   -- Universes
@@ -119,6 +121,7 @@ isValue AX = ⊤
 isValue FREE = ⊤
 isValue (CS _) = ⊤
 isValue (TSQUASH _) = ⊤
+isValue (DUM _) = ⊤
 isValue (FFDEFS _ _) = ⊤
 isValue (UNIV _) = ⊤
 isValue (LOWER _) = ⊤
@@ -192,6 +195,7 @@ fvars AX               = []
 fvars FREE             = []
 fvars (CS x)           = []
 fvars (TSQUASH t)      = fvars t
+fvars (DUM t)          = fvars t
 fvars (FFDEFS t t₁)    = fvars t ++ fvars t₁
 fvars (UNIV x)         = []
 fvars (LOWER t)        = fvars t
@@ -230,6 +234,7 @@ shiftUp c AX = AX
 shiftUp c FREE = FREE
 shiftUp c (CS x) = CS x
 shiftUp c (TSQUASH t) = TSQUASH (shiftUp c t)
+shiftUp c (DUM t) = DUM (shiftUp c t)
 shiftUp c (FFDEFS t t₁) = FFDEFS (shiftUp c t) (shiftUp c t₁)
 shiftUp c (UNIV x) = UNIV x
 shiftUp c (LOWER t) = LOWER (shiftUp c t)
@@ -261,6 +266,7 @@ shiftDown c AX = AX
 shiftDown c FREE = FREE
 shiftDown c (CS x) = CS x
 shiftDown c (TSQUASH t) = TSQUASH (shiftDown c t)
+shiftDown c (DUM t) = DUM (shiftDown c t)
 shiftDown c (FFDEFS t t₁) = FFDEFS (shiftDown c t) (shiftDown c t₁)
 shiftDown c (UNIV x) = UNIV x
 shiftDown c (LOWER t) = LOWER (shiftDown c t)
@@ -291,6 +297,7 @@ subv v t AX = AX
 subv v t FREE = FREE
 subv v t (CS x) = CS x
 subv v t (TSQUASH u) = TSQUASH (subv v t u)
+subv v t (DUM u) = DUM (subv v t u)
 subv v t (FFDEFS u u₁) = FFDEFS (subv v t u) (subv v t u₁)
 subv v t (UNIV x) = UNIV x
 subv v t (LOWER u) = LOWER (subv v t u)
@@ -375,6 +382,8 @@ subvNotIn v t FREE n = refl
 subvNotIn v t (CS x) n = refl
 subvNotIn v t (TSQUASH u) n
   rewrite subvNotIn v t u n = refl
+subvNotIn v t (DUM u) n
+  rewrite subvNotIn v t u n = refl
 subvNotIn v t (FFDEFS u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
   rewrite subvNotIn v t u₁ (notInAppVars2 n) = refl
@@ -451,6 +460,8 @@ shiftDownTrivial v FREE i = refl
 shiftDownTrivial v (CS x) i = refl
 shiftDownTrivial v (TSQUASH u) i
   rewrite shiftDownTrivial v u i = refl
+shiftDownTrivial v (DUM u) i
+  rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (FFDEFS u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
   rewrite shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
@@ -514,6 +525,8 @@ shiftUpTrivial v FREE i = refl
 shiftUpTrivial v (CS x) i = refl
 shiftUpTrivial v (TSQUASH u) i
   rewrite shiftUpTrivial v u i = refl
+shiftUpTrivial v (DUM u) i
+  rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (FFDEFS u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
@@ -556,6 +569,7 @@ shiftDownUp AX n = refl
 shiftDownUp FREE n = refl
 shiftDownUp (CS x) n = refl
 shiftDownUp (TSQUASH t) n rewrite shiftDownUp t n = refl
+shiftDownUp (DUM t) n rewrite shiftDownUp t n = refl
 shiftDownUp (FFDEFS t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
 shiftDownUp (UNIV x) n = refl
 shiftDownUp (LOWER t) n rewrite shiftDownUp t n = refl

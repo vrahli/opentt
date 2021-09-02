@@ -236,6 +236,8 @@ step FREE w = just FREE
 step (CS name) w = just (CS name)
 -- TSQUASH
 step (TSQUASH a) w = just (TSQUASH a)
+-- DUM
+step (DUM a) w = just (DUM a)
 -- FFDEFS
 step (FFDEFS a b) w = just (FFDEFS a b)
 -- UNIV
@@ -278,6 +280,7 @@ stepVal AX w v = refl
 stepVal FREE w v = refl
 stepVal (CS x) w v = refl
 stepVal (TSQUASH a) w v = refl
+stepVal (DUM a) w v = refl
 stepVal (FFDEFS a a₁) w v = refl
 stepVal (UNIV x) w v = refl
 stepVal (LOWER a) w v = refl
@@ -601,6 +604,7 @@ is-NUM AX = inj₂ (λ { n () })
 is-NUM FREE = inj₂ (λ { n () })
 is-NUM (CS x) = inj₂ (λ { n () })
 is-NUM (TSQUASH t) = inj₂ (λ { n () })
+is-NUM (DUM t) = inj₂ (λ { n () })
 is-NUM (FFDEFS t t₁) = inj₂ (λ { n () })
 is-NUM (UNIV x) = inj₂ (λ { n () })
 is-NUM (LOWER t) = inj₂ (λ { n () })
@@ -629,6 +633,7 @@ step-APPLY-CS-¬NUM name AX b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name FREE b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (CS x) b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (TSQUASH a) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (DUM a) b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (FFDEFS a a₁) b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (UNIV x) b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (LOWER a) b w c s rewrite sym (just-inj s) = refl

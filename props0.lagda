@@ -107,6 +107,9 @@ EQneqUNION {t} {a} {b} {c} {d} ()
 EQneqTSQUASH : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ TSQUASH c
 EQneqTSQUASH {t} {a} {b} {c} ()
 
+EQneqDUM : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ DUM c
+EQneqDUM {t} {a} {b} {c} ()
+
 EQneqFFDEFS : {t a b : Term} {c d : Term} → ¬ (EQ t a b) ≡ FFDEFS c d
 EQneqFFDEFS {t} {a} {b} {c} {d} ()
 
@@ -157,6 +160,9 @@ PIneqUNION {a} {b} {c} {d} ()
 
 PIneqTSQUASH : {a b : Term} {c : Term} → ¬ (PI a b) ≡ TSQUASH c
 PIneqTSQUASH {a} {b} {c} ()
+
+PIneqDUM : {a b : Term} {c : Term} → ¬ (PI a b) ≡ DUM c
+PIneqDUM {a} {b} {c} ()
 
 PIneqFFDEFS : {a b : Term} {c d : Term} → ¬ (PI a b) ≡ FFDEFS c d
 PIneqFFDEFS {a} {b} {c} {d} ()
@@ -249,6 +255,9 @@ NATneqEQ {c} {d} {e} ()
 
 NATneqTSQUASH : {c : Term} → ¬ NAT ≡ TSQUASH c
 NATneqTSQUASH {c} ()
+
+NATneqDUM : {c : Term} → ¬ NAT ≡ DUM c
+NATneqDUM {c} ()
 
 NATneqFFDEFS : {c d : Term} → ¬ NAT ≡ FFDEFS c d
 NATneqFFDEFS {c} {d} ()
@@ -436,8 +445,18 @@ eqTypes-mon u m {A} {B} {w1} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) w
     extb' : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (allW-mon ext eqtB w e) a b)
     extb' a b w' e1 e2 ei = extb a b w' (extTrans e1 ext) (extTrans e2 ext) ei
 
-eqTypes-mon u m {A} {B} {w1} (EQTSQUASH A1 A2 x x₁ eqtA) w2 ext =
-  EQTSQUASH A1 A2 (⇛-mon ext x) (⇛-mon ext x₁) (allW-mon ext eqtA)
+eqTypes-mon u m {A} {B} {w1} (EQTSQUASH A1 A2 x x₁ eqtA exta) w2 ext =
+  EQTSQUASH A1 A2 (⇛-mon ext x) (⇛-mon ext x₁) (allW-mon ext eqtA) exta'
+  where
+    exta' : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (allW-mon ext eqtA w e) a b)
+    exta' a b w' e1 e2 ei = exta a b w' (extTrans e1 ext) (extTrans e2 ext) ei
+
+{--eqTypes-mon u m {A} {B} {w1} (EQTDUM A1 A2 x x₁ eqtA exta) w2 ext =
+  EQTDUM A1 A2 (⇛-mon ext x) (⇛-mon ext x₁) (allW-mon ext eqtA) exta'
+  where
+    exta' : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (allW-mon ext eqtA w e) a b)
+    exta' a b w' e1 e2 ei = exta a b w' (extTrans e1 ext) (extTrans e2 ext) ei--}
+
 eqTypes-mon u m {A} {B} {w1} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) w2 ext =
   EQFFDEFS A1 A2 x1 x2 (⇛-mon ext x) (⇛-mon ext x₁) (allW-mon ext eqtA) (allW-mon ext eqx)
 eqTypes-mon u m {A} {B} {w1} (EQTUNIV x) w2 ext = EQTUNIV (m x w2 ext)
@@ -466,7 +485,8 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eq
     (λ w1 e1 (c₁ , c₂ , eqi1) → c₁ , c₂ , eqtA w1 e1 , eqi1)
     eqi
 if-equalInType-EQ u w T a b t₁ t₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
-if-equalInType-EQ u w T a b t₁ t₂ (EQTSQUASH A1 A2 x x₁ eqtA , eqi) = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
+if-equalInType-EQ u w T a b t₁ t₂ (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
+--if-equalInType-EQ u w T a b t₁ t₂ (EQTDUM A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqDUM (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx , eqi) = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTUNIV x , eqi) = Bar.allW-inBarFunc inOpenBar-Bar z2 x
   where
@@ -754,7 +774,8 @@ eqTypes⇛NAT {u} {w} {A} {B} isu (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb
 eqTypes⇛NAT {u} {w} {A} {B} isu (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) comp = ⊥-elim (NATneqSET (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} isu (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) comp = ⊥-elim (NATneqEQ (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} isu (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) comp = ⊥-elim (NATneqUNION (⇛-val-det tt tt comp x))
-eqTypes⇛NAT {u} {w} {A} {B} isu (EQTSQUASH A1 A2 x x₁ eqtA) comp = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt comp x))
+eqTypes⇛NAT {u} {w} {A} {B} isu (EQTSQUASH A1 A2 x x₁ eqtA exta) comp = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt comp x))
+--eqTypes⇛NAT {u} {w} {A} {B} isu (EQTDUM A1 A2 x x₁ eqtA exta) comp = ⊥-elim (NATneqDUM (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} isu (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) comp = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} isu (EQTUNIV x) comp =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -1076,15 +1097,15 @@ irr-union u w A1 A2 B1 B2 eqta exta eqtb extb f g w1 e1 w' e' (a , b , inj₂ (c
 
 irr-tsquash : (u : univs) (w : world) (A1 A2 : Term)
               (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
-              (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
+              (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
               (f g : Term) (w1 : world) (e1 : w1 ≽ w)
               → allW w1 (λ w' e' → TSQUASHeq (eqInType u w' (eqta w' (extTrans e' e1))) w' f g
                                  → (z : w' ≽ w) → TSQUASHeq (eqInType u w' (eqta w' z)) w' f g)
-irr-tsquash u w A1 A2 eqta inda f g w1 e1 w' e' (a1 , a2 , c₁ , c₂ , c₃ , eqa) z =
+irr-tsquash u w A1 A2 eqta exta f g w1 e1 w' e' (a1 , a2 , c₁ , c₂ , c₃ , eqa) z =
   a1 , a2 , c₁ , c₂ , c₃ , eqa'
   where
     eqa' : eqInType u w' (eqta w' z) a1 a2
-    eqa' = snd (inda w' z (eqta w' (extTrans e' e1)) a1 a2) eqa
+    eqa' = exta a1 a2 w' (extTrans e' e1) z eqa
 
 
 irr-ffdefs : (u : univs) (w : world) (x1 A1 A2 : Term)

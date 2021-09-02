@@ -82,6 +82,9 @@ SUMneqUNION {a} {b} {c} {d} ()
 SUMneqTSQUASH : {a b : Term} {c : Term} → ¬ (SUM a b) ≡ TSQUASH c
 SUMneqTSQUASH {a} {b} {c} ()
 
+SUMneqDUM : {a b : Term} {c : Term} → ¬ (SUM a b) ≡ DUM c
+SUMneqDUM {a} {b} {c} ()
+
 SUMneqFFDEFS : {a b : Term} {c d : Term} → ¬ (SUM a b) ≡ FFDEFS c d
 SUMneqFFDEFS {a} {b} {c} {d} ()
 
@@ -231,7 +234,8 @@ typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
 typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (SUMneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) = ⊥-elim (SUMneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) = ⊥-elim (SUMneqUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x₁ y))
+typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x₁ y))
+--typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (SUMneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) = ⊥-elim (SUMneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -375,7 +379,8 @@ typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqSET (⇛-val-det tt tt x y))
 typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (SUMneqEQ (⇛-val-det tt tt x y))
 typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (SUMneqUNION (⇛-val-det tt tt x y))
-typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x y))
+typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x y))
+--typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (SUMneqDUM (⇛-val-det tt tt x y))
 typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) f g eqi = ⊥-elim (SUMneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -446,7 +451,8 @@ typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (SUMneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (SUMneqUNION (⇛-val-det tt tt x y₁))
-typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x y₁))
+typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x y₁))
+--typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (SUMneqDUM (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) f g eqi = ⊥-elim (SUMneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -509,7 +515,8 @@ typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (SUMneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (SUMneqUNION (⇛-val-det tt tt x₁ y₁))
-typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x₁ y₁))
+typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x₁ y₁))
+--typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (SUMneqDUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) f g eqi = ⊥-elim (SUMneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -578,7 +585,8 @@ typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (SUMneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (SUMneqUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x₁ y))
+typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x₁ y))
+--typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (SUMneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) f g eqi = ⊥-elim (SUMneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -642,7 +650,8 @@ typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqSET (⇛-val-det tt tt x y))
 typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (SUMneqEQ (⇛-val-det tt tt x y))
 typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (SUMneqUNION (⇛-val-det tt tt x y))
-typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x y))
+typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x y))
+--typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (SUMneqDUM (⇛-val-det tt tt x y))
 typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) f g eqi = ⊥-elim (SUMneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -725,7 +734,8 @@ typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (SUMneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (SUMneqUNION (⇛-val-det tt tt x y₁))
-typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x y₁))
+typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x y₁))
+--typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (SUMneqDUM (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) f g eqi = ⊥-elim (SUMneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -802,7 +812,8 @@ typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (SUMneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (SUMneqUNION (⇛-val-det tt tt x₁ y₁))
-typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x₁ y₁))
+typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x₁ y₁))
+--typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (SUMneqDUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) f g eqi = ⊥-elim (SUMneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -884,7 +895,8 @@ typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (SUMneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (SUMneqUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x₁ y))
+typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt x₁ y))
+--typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (SUMneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) f g eqi = ⊥-elim (SUMneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -962,7 +974,8 @@ eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ 
 eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (SUMneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ei = ⊥-elim (SUMneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (SUMneqUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqtA) ei = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt c₁ x))
+eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqtA extA) ei = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei = ⊥-elim (SUMneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA eqx) ei = ⊥-elim (SUMneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNIV x) ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -1045,7 +1058,8 @@ eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQT
 eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (SUMneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ei ext = ⊥-elim (SUMneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei ext = ⊥-elim (SUMneqUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqtA) ei ext = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt c₁ x))
+eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqtA extA) ei ext = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei ext = ⊥-elim (SUMneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA eqx) ei ext = ⊥-elim (SUMneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNIV x) ei ext =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -1124,7 +1138,8 @@ eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c
 eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (SUMneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ei = ⊥-elim (SUMneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (SUMneqUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqtA) ei = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt c₁ x))
+eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqtA extA) ei = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei = ⊥-elim (SUMneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA eqx) ei = ⊥-elim (SUMneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNIV x) ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
@@ -1200,7 +1215,8 @@ eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ 
 eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (SUMneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ext ei = ⊥-elim (SUMneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ext ei = ⊥-elim (SUMneqUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqtA) ext ei = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt c₁ x))
+eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqtA extA) ext ei = ⊥-elim (SUMneqTSQUASH (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ext ei = ⊥-elim (SUMneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA eqx) ext ei = ⊥-elim (SUMneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNIV x) ext ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
