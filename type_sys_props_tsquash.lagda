@@ -816,6 +816,132 @@ eqInType-⇛-TSQUASH2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTBAR x) ei ex
 
 
 
+
+eqInType-⇛-TSQUASH-rev : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 a b : Term)
+                          (eqta : allW w (λ w' _ → eqTypes u w' A1 B1))
+                          (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                          (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
+                          → A ⇛ TSQUASH A1 at w
+                          → B ⇛ TSQUASH B1 at w
+                          → (eqt : eqTypes u w A B)
+                          → inbar w (λ w' e → TSQUASHeq (eqInType u w' (eqta w' e)) w' a b)
+                          → eqInType u w eqt a b
+{-# TERMINATING #-}
+eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (TSQUASHneqNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (TSQUASHneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (TSQUASHneqLT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (TSQUASHneqQLT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (TSQUASHneqFREE (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TSQUASHneqPI (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TSQUASHneqSUM (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TSQUASHneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ei = ⊥-elim (TSQUASHneqEQ (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TSQUASHneqUNION (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ei
+  rewrite TSQUASHinj (⇛-val-det tt tt c₁ x)
+        | TSQUASHinj (⇛-val-det tt tt c₂ x₁) =
+  Bar.allW-inBarFunc inOpenBar-Bar aw ei
+  where
+    aw : allW w (λ w' e' → TSQUASHeq (eqInType u w' (eqta w' e')) w' a b
+                         → TSQUASHeq (eqInType u w' (eqta₁ w' e')) w' a b)
+    aw w1 e1 (a1 , a2 , s1 , s2 , s3 , eqa) = a1 , a2 , s1 , s2 , s3 , eqa'
+      where
+        eqa' : eqInType u w1 (eqta₁ w1 e1) a1 a2
+        eqa' = fst (inda w1 e1 (eqta₁ w1 e1) a1 a2) eqa
+
+--eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA eqx) ei = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTUNIV x) ei =
+  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
+  where
+    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z = isu w A B x
+
+    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q w1 e1 (d₁ , d₂) = lift (⊥-elim (TSQUASHneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))
+
+eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTBAR x) ei =
+  Bar.allW-inBar-inBar' inOpenBar-Bar x aw
+  where
+    aw : allW w
+      (λ w' e' → (z : eqTypes u w' A B) (at : atbar x w' e' z) → eqInType u w' z a b)
+    aw w1 e1 z at =
+      eqInType-⇛-TSQUASH-rev
+        u isu w1 A B A1 B1 a b
+        (allW-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1)
+        (allW-mon e1 inda) (⇛-mon e1 c₁) (⇛-mon e1 c₂)
+        z j
+      where
+        j : inbar w1 (↑wPred (λ w' e → TSQUASHeq (eqInType u w' (eqta w' e)) w' a b) e1)
+        j = Bar.↑inBar inOpenBar-Bar ei e1
+
+
+
+
+eqInType-⇛-TSQUASH-rev2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 a b : Term)
+                           (eqta : allW w (λ w' _ → eqTypes u w' A1 B1))
+                           (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                           → A ⇛ TSQUASH A1 at w
+                           → B ⇛ TSQUASH B1 at w
+                           → (eqt : eqTypes u w A B)
+                           → (ext : {w' : world} {A' B' : Term} (eqt' : eqTypes u w' A' B') → ≤Type u eqt' eqt → eqInTypeExt eqt')
+                           → inbar w (λ w' e → TSQUASHeq (eqInType u w' (eqta w' e)) w' a b)
+                           → eqInType u w eqt a b
+{-# TERMINATING #-}
+eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTNAT x x₁) ext ei = ⊥-elim (TSQUASHneqNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTQNAT x x₁) ext ei = ⊥-elim (TSQUASHneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ext ei = ⊥-elim (TSQUASHneqLT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ext ei = ⊥-elim (TSQUASHneqQLT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTFREE x x₁) ext ei = ⊥-elim (TSQUASHneqFREE (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TSQUASHneqPI (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TSQUASHneqSUM (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TSQUASHneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ext ei = ⊥-elim (TSQUASHneqEQ (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TSQUASHneqUNION (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ext ei
+  rewrite TSQUASHinj (⇛-val-det tt tt c₁ x)
+        | TSQUASHinj (⇛-val-det tt tt c₂ x₁) =
+  Bar.allW-inBarFunc inOpenBar-Bar aw ei
+  where
+    awexta₁ : allW w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
+    awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeSQUASH w A B A3 A4 x x₁ eqta₁ exta₁ w1 e1)))
+
+    aw : allW w (λ w' e' → TSQUASHeq (eqInType u w' (eqta w' e')) w' a b
+                         → TSQUASHeq (eqInType u w' (eqta₁ w' e')) w' a b)
+    aw w1 e1 (a1 , a2 , s1 , s2 , s3 , eqa) = a1 , a2 , s1 , s2 , s3 , eqa'
+      where
+        eqa' : eqInType u w1 (eqta₁ w1 e1) a1 a2
+        eqa' = snd (awexta₁ w1 e1 (eqta w1 e1) a1 a2) eqa
+
+--eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ext ei = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA eqx) ext ei = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTUNIV x) ext ei =
+  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
+  where
+    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z = isu w A B x
+
+    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q w1 e1 (d₁ , d₂) = lift (⊥-elim (TSQUASHneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))
+
+eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTBAR x) ext ei =
+  Bar.allW-inBar-inBar' inOpenBar-Bar x aw
+  where
+    aw : allW w
+      (λ w' e' → (z : eqTypes u w' A B) (at : atbar x w' e' z) → eqInType u w' z a b)
+    aw w1 e1 z at =
+      eqInType-⇛-TSQUASH-rev2
+        u isu w1 A B A1 B1 a b
+        (allW-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1)
+        (⇛-mon e1 c₁) (⇛-mon e1 c₂)
+        z (≤Type-EQTBAR-eqInTypeExt at ext) j
+      where
+        j : inbar w1 (↑wPred (λ w' e → TSQUASHeq (eqInType u w' (eqta w' e)) w' a b) e1)
+        j = Bar.↑inBar inOpenBar-Bar ei e1
+
+
+
+
 typeSysConds-TSQUASH-local : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 : Term)
                              (x : A ⇛ TSQUASH A1 at w) (x₁ : B ⇛ TSQUASH B1 at w)
                              (eqta : allW w (λ w' _ → eqTypes u w' A1 B1))

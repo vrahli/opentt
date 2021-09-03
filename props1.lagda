@@ -1044,7 +1044,24 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTUNION A1 B1 A2 B2 x x₁ 
         ib : inbar w' (λ w'' e → UNIONeq (eqInType u w'' (allW-mon e' eqta w'' e)) (eqInType u w'' (allW-mon e' eqtb w'' e)) w'' a b)
         ib = Bar.allW-inBarFunc inOpenBar-Bar aw' (↑inbar eqi e')
 
-eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTSQUASH A1 A2 x x₁ eqta exta) eqi = {!!}
+eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTSQUASH A1 A2 x x₁ eqta exta) eqi =
+  Bar.allW-inBar-inBar' inOpenBar-Bar i aw
+  where
+    aw : allW w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z) → eqInType u w' z a b)
+    aw w' e' z at =
+      eqInType-⇛-TSQUASH-rev2
+        u (is-uni→is-universe isu) w' A B A1 A2 a b
+        (allW-mon e' eqta)
+        (wPredExtIrr-eqInType-mon eqta exta w' e')
+        (⇛-mon e' x) (⇛-mon e' x₁) z (<Type-EQTBAR-eqInTypeExt at ind) ib
+      where
+        aw' : allW w' (λ w'' e'' → ↑wPred (λ w''' e → TSQUASHeq (eqInType u w''' (eqta w''' e)) w''' a b) e' w'' e''
+                                 → TSQUASHeq (eqInType u w'' (allW-mon e' eqta w'' e'')) w'' a b)
+        aw' w1 e1 h = TSQUASHeq-ext {u} {w} {A1} {A2} {eqta} exta h
+
+        ib : inbar w' (λ w'' e → TSQUASHeq (eqInType u w'' (allW-mon e' eqta w'' e)) w'' a b)
+        ib = Bar.allW-inBarFunc inOpenBar-Bar aw' (↑inbar eqi e')
+
 --eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTDUM A1 A2 x x₁ eqtA) eqi = {!!}
 eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) eqi = {!!}
 eqInType-ext-bar-rev {u} (n , isu) {w} {A} {B} i ind a b (EQTUNIV x) eqi =
@@ -1147,7 +1164,8 @@ eqInType-ext0 {u} isu {w} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta ex
     indb w1 e1 = ind (eqtb w1 e1) (<Type1 _ _ (<TypeUNIONr w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb w1 e1))
 
 eqInType-ext0 {u} isu {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqta exta) ind =
-  {!!}
+  λ eqt2 a b → eqInType-⇛-TSQUASH-rev u (is-uni→is-universe isu) w A B A1 A2 a b eqta exta inda x x₁ eqt2 ,
+                eqInType-⇛-TSQUASH u (is-uni→is-universe isu) w A B A1 A2 a b eqta exta inda x x₁ eqt2
   where
     inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
     inda w1 e1 = ind (eqta w1 e1) (<Type1 _ _ (<TypeSQUASH w A B A1 A2 x x₁ eqta exta w1 e1))
@@ -1340,7 +1358,21 @@ local-eqInType2 u isu w A B a b (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb
                                  → (x₂ : w'' ≽ w) → UNIONeq (eqInType u w'' (eqta w'' x₂)) (eqInType u w'' (eqtb w'' x₂)) w'' a b)
         aw' w1 e1 h x₂ = UNIONeq-ext {u} {w} {A1} {B1} {A2} {B2} {eqta} {eqtb} exta extb h
 
-local-eqInType2 u isu w A B a b (EQTSQUASH A1 A2 x x₁ eqta exta) i j = {!!}
+local-eqInType2 u isu w A B a b (EQTSQUASH A1 A2 x x₁ eqta exta) i j =
+  Bar.inBar-idem inOpenBar-Bar (Bar.allW-inBar'-inBar inOpenBar-Bar i aw j)
+  where
+    aw : allW w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z)
+                         → eqInType u w' z a b
+                         → inbar w' (λ w1 e1 → (x : w1 ≽ w) → TSQUASHeq (eqInType u w1 (eqta w1 x)) w1 a b))
+    aw w' e' z at ei = Bar.allW-inBarFunc inOpenBar-Bar aw' h1
+      where
+        h1 : eqInType u w' (EQTSQUASH A1 A2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (wPredExtIrr-eqInType-mon eqta exta w' e')) a b
+        h1 = fst (eqInType-ext isu z (EQTSQUASH A1 A2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (wPredExtIrr-eqInType-mon eqta exta w' e')) a b) ei
+
+        aw' : allW w' (λ w'' e'' → TSQUASHeq (eqInType u w'' (allW-mon e' eqta w'' e'')) w'' a b
+                                 → (x₂ : w'' ≽ w) → TSQUASHeq (eqInType u w'' (eqta w'' x₂)) w'' a b)
+        aw' w1 e1 h x₂ = TSQUASHeq-ext {u} {w} {A1} {A2} {eqta} exta h
+
 --local-eqInType2 u isu w A B a b (EQTDUM A1 A2 x x₁ eqta) i j = lift tt
 local-eqInType2 u isu w A B a b (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) i j = {!!}
 local-eqInType2 u (0 , isu) w A B a b (EQTUNIV x) i j =
@@ -1576,7 +1608,20 @@ eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb 
     ib : inbar w' (λ w'' e → UNIONeq (eqInType u w'' (allW-mon e' eqta w'' e)) (eqInType u w'' (allW-mon e' eqtb w'' e)) w'' a b)
     ib = Bar.allW-inBarFunc inOpenBar-Bar aw (↑inbar eqi e')
 
-eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTSQUASH A1 A2 x x₁ eqta exta) eqt2 a b eqi = {!!}
+eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTSQUASH A1 A2 x x₁ eqta exta) eqt2 a b eqi =
+  eqInType-⇛-TSQUASH-rev2
+    u (is-uni→is-universe isu) w' A B A1 A2 a b
+    (allW-mon e' eqta)
+    (wPredExtIrr-eqInType-mon eqta exta w' e')
+    (⇛-mon e' x) (⇛-mon e' x₁) eqt2 (λ eqt' lety → eqInType-ext isu eqt') ib
+  where
+    aw : allW w' (λ w'' e'' → ↑wPred (λ w''' e → TSQUASHeq (eqInType u w''' (eqta w''' e)) w''' a b) e' w'' e''
+                            → TSQUASHeq (eqInType u w'' (allW-mon e' eqta w'' e'')) w'' a b)
+    aw w1 e1 h = TSQUASHeq-ext {u} {w} {A1} {A2} {eqta} exta h
+
+    ib : inbar w' (λ w'' e → TSQUASHeq (eqInType u w'' (allW-mon e' eqta w'' e)) w'' a b)
+    ib = Bar.allW-inBarFunc inOpenBar-Bar aw (↑inbar eqi e')
+
 --eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTDUM A1 A2 x x₁ eqta) eqt2 a b eqi = {!!}
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) eqt2 a b eqi = {!!}
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTUNIV x) eqt2 a b eqi =
