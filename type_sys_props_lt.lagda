@@ -109,7 +109,7 @@ typeSysConds-LT-ttrans u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 c2 d1 d
 typeSysConds-LT-ttrans u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) = ⊥-elim (LTneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-ttrans u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x₁ y))
 --typeSysConds-LT-ttrans u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) = ⊥-elim (LTneqDUM (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y))
+typeSysConds-LT-ttrans u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-ttrans u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -152,7 +152,7 @@ typeSysConds-LT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2
 typeSysConds-LT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x y))
 typeSysConds-LT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x y))
 --typeSysConds-LT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x y))
+typeSysConds-LT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-LT-extl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -223,7 +223,7 @@ typeSysConds-LT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2
 typeSysConds-LT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x y₁))
 --typeSysConds-LT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x y₁))
+typeSysConds-LT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -266,7 +266,7 @@ typeSysConds-LT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2
 typeSysConds-LT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x₁ y₁))
 --typeSysConds-LT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y₁))
+typeSysConds-LT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -309,7 +309,7 @@ typeSysConds-LT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2
 typeSysConds-LT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x₁ y))
 --typeSysConds-LT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y))
+typeSysConds-LT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -352,7 +352,7 @@ typeSysConds-LT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2
 typeSysConds-LT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x y))
 typeSysConds-LT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x y))
 --typeSysConds-LT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x y))
+typeSysConds-LT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-LT-extrevl1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -402,7 +402,7 @@ typeSysConds-LT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2
 typeSysConds-LT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x y₁))
 --typeSysConds-LT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x y₁))
+typeSysConds-LT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extrevl2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -453,7 +453,7 @@ typeSysConds-LT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2
 typeSysConds-LT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x₁ y₁))
 --typeSysConds-LT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y₁))
+typeSysConds-LT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extrevr1 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -503,7 +503,7 @@ typeSysConds-LT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2
 typeSysConds-LT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x₁ y))
 --typeSysConds-LT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y))
+typeSysConds-LT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extrevr2 u isu w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -554,7 +554,7 @@ eqInType-⇛-LT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTEQ c1 d1 c2 d2 A₁ B�
 eqInType-⇛-LT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (LTneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA extA) ei = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-LT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) ei = ⊥-elim (LTneqDUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) ei = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt c₁ x))
+eqInType-⇛-LT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTUNIV x) ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z))) -- Lift {0ℓ} 1ℓ ⊥
   where
@@ -597,7 +597,7 @@ eqInType-⇛-LT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTEQ c1 d1 c2 d2 A�
 eqInType-⇛-LT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (LTneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA extA) ei = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-LT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) ei = ⊥-elim (LTneqDUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) ei = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt c₁ x))
+eqInType-⇛-LT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT-rev u isu w A B a1 b1 a2 b2 a b c₁ c₂ (EQTUNIV x) ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where

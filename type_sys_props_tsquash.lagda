@@ -144,7 +144,7 @@ typeSysConds-TSQUASH-ttrans u isu w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH
         ei2 = exta a b w' e1 e2 ei1
 
 --typeSysConds-TSQUASH-ttrans u isu w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x₁ y))
-typeSysConds-TSQUASH-ttrans u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x₁ y))
+typeSysConds-TSQUASH-ttrans u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-TSQUASH-ttrans u isu w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV y) =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -230,7 +230,7 @@ typeSysConds-TSQUASH-extl1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH 
     aw w1 e1 (a , b , c₁ , c₂ , c₃ , ea) = a , b , c₁ , c₂ , c₃ , TSP.extl1 (inda w1 e1) A4 (eqtA w1 e1) a b ea
 
 --typeSysConds-TSQUASH-extl1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x y))
-typeSysConds-TSQUASH-extl1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x y))
+typeSysConds-TSQUASH-extl1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-TSQUASH-extl1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -284,7 +284,7 @@ typeSysConds-TSQUASH-extl2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH 
     aw w1 e1 (a , b , c₁ , c₂ , c₃ , ea) = a , b , c₁ , c₂ , c₃ , TSP.extl2 (inda w1 e1) A3 (eqtA w1 e1) a b ea
 
 --typeSysConds-TSQUASH-extl2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x y₁))
-typeSysConds-TSQUASH-extl2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x y₁))
+typeSysConds-TSQUASH-extl2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-TSQUASH-extl2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -338,7 +338,7 @@ typeSysConds-TSQUASH-extr1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH 
     aw w1 e1 (a , b , c₁ , c₂ , c₃ , ea) =  a , b , c₁ , c₂ , c₃ , TSP.extr1 (inda w1 e1) A3 (eqtA w1 e1) a b ea
 
 --typeSysConds-TSQUASH-extr1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-TSQUASH-extr1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TSQUASH-extr1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TSQUASH-extr1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -392,7 +392,7 @@ typeSysConds-TSQUASH-extr2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH 
     aw w1 e1 (a , b , c₁ , c₂ , c₃ , ea) = a , b , c₁ , c₂ , c₃ , TSP.extr2 (inda w1 e1) A4 (eqtA w1 e1) a b ea
 
 --typeSysConds-TSQUASH-extr2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x₁ y))
-typeSysConds-TSQUASH-extr2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x₁ y))
+typeSysConds-TSQUASH-extr2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-TSQUASH-extr2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -447,7 +447,7 @@ typeSysConds-TSQUASH-extrevl1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTSQUA
     aw w1 e1 (a , b , c₁ , c₂ , c₃ , ea) = a , b , c₁ , c₂ , c₃ , TSP.extrevl1 (inda w1 e1) A4 (eqtA w1 e1) a b ea
 
 --typeSysConds-TSQUASH-extrevl1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x y))
-typeSysConds-TSQUASH-extrevl1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x y))
+typeSysConds-TSQUASH-extrevl1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-TSQUASH-extrevl1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -511,7 +511,7 @@ typeSysConds-TSQUASH-extrevl2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTSQUA
     aw w1 e1 (a , b , c₁ , c₂ , c₃ , ea) = a , b , c₁ , c₂ , c₃ , TSP.extrevl2 (inda w1 e1) A3 (eqtA w1 e1) a b ea
 
 --typeSysConds-TSQUASH-extrevl2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x y₁))
-typeSysConds-TSQUASH-extrevl2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x y₁))
+typeSysConds-TSQUASH-extrevl2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-TSQUASH-extrevl2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -575,7 +575,7 @@ typeSysConds-TSQUASH-extrevr1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTSQUA
     aw w1 e1 (a , b , c₁ , c₂ , c₃ , ea) = a , b , c₁ , c₂ , c₃ , TSP.extrevr1 (inda w1 e1) A3 (eqtA w1 e1) a b ea
 
 --typeSysConds-TSQUASH-extrevr1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-TSQUASH-extrevr1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TSQUASH-extrevr1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TSQUASH-extrevr1 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -639,7 +639,7 @@ typeSysConds-TSQUASH-extrevr2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTSQUA
     aw w1 e1 (a , b , c₁ , c₂ , c₃ , ea) = a , b , c₁ , c₂ , c₃ , TSP.extrevr2 (inda w1 e1) A4 (eqtA w1 e1) a b ea
 
 --typeSysConds-TSQUASH-extrevr2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x₁ y))
-typeSysConds-TSQUASH-extrevr2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA eqx) f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x₁ y))
+typeSysConds-TSQUASH-extrevr2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-TSQUASH-extrevr2 u isu w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -709,7 +709,7 @@ eqInType-⇛-TSQUASH u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSQUASH A
         eqa' = snd (inda w1 e1 (eqta₁ w1 e1) a1 a2) eqa
 
 --eqInType-⇛-TSQUASH u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-TSQUASH u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA eqx) ei = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTUNIV x) ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -781,7 +781,7 @@ eqInType-⇛-TSQUASH2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTSQUASH A3 A4
         eqa' = proj₁ (awexta₁ w1 e1 (eqta w1 e1) a1 a2) eqa
 
 --eqInType-⇛-TSQUASH2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei ext = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-TSQUASH2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA eqx) ei ext = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ei ext = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTUNIV x) ei ext =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -850,7 +850,7 @@ eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSQUA
         eqa' = fst (inda w1 e1 (eqta₁ w1 e1) a1 a2) eqa
 
 --eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA eqx) ei = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH-rev u isu w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTUNIV x) ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -914,7 +914,7 @@ eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTSQUASH A
         eqa' = snd (awexta₁ w1 e1 (eqta w1 e1) a1 a2) eqa
 
 --eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ext ei = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA eqx) ext ei = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ext ei = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH-rev2 u isu w A B A1 B1 a b eqta exta c₁ c₂ (EQTUNIV x) ext ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where

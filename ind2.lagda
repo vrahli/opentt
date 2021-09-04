@@ -155,9 +155,10 @@ data <TypeStep u where
                 (c₁ : T1 ⇛ (FFDEFS A1 x1) at w)
                 (c₂ : T2 ⇛ (FFDEFS A2 x2) at w)
                 (eqtA : allW w (λ w' _ → eqTypes u w' A1 A2))
+                (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
                 (eqx : allW w (λ w' e → eqInType u w' (eqtA w' e) x1 x2))
                 (w' : world) (e' : w' ≽ w)
-                → <TypeStep u (eqtA w' e') (EQFFDEFS A1 A2 x1 x2 c₁ c₂ eqtA eqx)
+                → <TypeStep u (eqtA w' e') (EQFFDEFS A1 A2 x1 x2 c₁ c₂ eqtA exta eqx)
   <TypeBAR : (w : world) (T1 T2 : Term) (i : inbar w (λ w' _ → eqTypes u w' T1 T2))
              (w' : world) (e' : w' ≽ w) (p : eqTypes u w' T1 T2) (a : Bar.atBar inOpenBar-Bar i w' e' p)
              → <TypeStep u p (EQTBAR i)
@@ -339,6 +340,18 @@ TSQUASHeq-ext {u} {w} {A1} {A2} {eqta} {w'} {e1} {e2} {a} {b} exta (a₁ , a₂ 
 
 
 
+FFDEFSeq-ext : {u : univs} {w : world} {A1 A2 : Term} {x1 : Term}
+               {eqta : allW w (λ w' _ → eqTypes u w' A1 A2)}
+               {w' : world} {e1 e2 : w' ≽ w} {a b : Term}
+               (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+               → FFDEFSeq x1 (eqInType u w' (eqta w' e1)) w' a b
+               → FFDEFSeq x1 (eqInType u w' (eqta w' e2)) w' a b
+FFDEFSeq-ext {u} {w} {A1} {A2} {x1} {eqta} {w'} {e1} {e2} {a} {b} exta (x , c₁ , c₂ , h , nd) =
+  (x , c₁ , c₂ , exta x1 x w' e1 e2 h , nd)
+
+
+
+
 ind<Type : {u : univs} (umon : mon (proj₁ (proj₂ u))) (P : {w : world} {T1 T2 : Term} → eqTypes u w T1 T2 → Set₁)
            → ({w : world} {T1 T2 : Term} (eqt : eqTypes u w T1 T2)
                → ({w' : world} {T1' T2' : Term} (eqt' : eqTypes u w' T1' T2') → <Type u eqt' eqt → P eqt')
@@ -492,13 +505,13 @@ ind<Type {u} umon P ind {w0} {X1} {X2} eqt =
 
 --    indLtt {w} {T1} {T2} (EQTDUM A1 A2 x x₁ eqtA ext) {w'} {A1'} {A2'} eqtA' ltt = {!!}
 
-    indLtt {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) {w'} {.A1} {.A2} .(eqtA w' e') (<Type1 .(eqtA w' e') .(EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) (<TypeFFDEFS .w .T1 .T2 .A1 .A2 .x1 .x2 .x .x₁ .eqtA .eqx .w' e')) =
+    indLtt {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {w'} {.A1} {.A2} .(eqtA w' e') (<Type1 .(eqtA w' e') .(EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) (<TypeFFDEFS .w .T1 .T2 .A1 .A2 .x1 .x2 .x .x₁ .eqtA .exta .eqx .w' e')) =
       ind (eqtA w' e') (ind' w' e')
       where
         ind' : (w1 : world) (e1 : w1 ≽ w) {w' : world} {T1' T2' : Term} (eqt' : eqTypes u w' T1' T2') → <Type u eqt' (eqtA w1 e1) → P eqt'
         ind' w1 e1 {w'} {T1'} {T2'} eqt' ltt = indLtt (eqtA w1 e1) eqt' ltt
 
-    indLtt {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) {w'} {T1'} {T2'} eqt' (<TypeS .eqt' .(eqtA w2 e') .(EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) ltt (<TypeFFDEFS .w .T1 .T2 .A1 .A2 .x1 .x2 .x .x₁ .eqtA .eqx w2 e')) =
+    indLtt {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {w'} {T1'} {T2'} eqt' (<TypeS .eqt' .(eqtA w2 e') .(EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ltt (<TypeFFDEFS .w .T1 .T2 .A1 .A2 .x1 .x2 .x .x₁ .eqtA .exta .eqx w2 e')) =
       ind' w2 e' eqt' ltt
       where
         ind' : (w1 : world) (e1 : w1 ≽ w) {w' : world} {T1' T2' : Term} (eqt' : eqTypes u w' T1' T2') → <Type u eqt' (eqtA w1 e1) → P eqt'

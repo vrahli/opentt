@@ -100,7 +100,7 @@ typeSysConds-FREE-ttrans u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y�
 typeSysConds-FREE-ttrans u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) = ⊥-elim (FREEneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-ttrans u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) = ⊥-elim (FREEneqTSQUASH (⇛-val-det tt tt x₁ y))
 --typeSysConds-FREE-ttrans u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x₁ y))
-typeSysConds-FREE-ttrans u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x₁ y))
+typeSysConds-FREE-ttrans u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-ttrans u isu w A B x x₁ C (EQTUNIV y) =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -134,7 +134,7 @@ typeSysConds-FREE-extl1 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁
 typeSysConds-FREE-extl1 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (FREEneqUNION (⇛-val-det tt tt x y))
 typeSysConds-FREE-extl1 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (FREEneqTSQUASH (⇛-val-det tt tt x y))
 --typeSysConds-FREE-extl1 u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x y))
-typeSysConds-FREE-extl1 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x y))
+typeSysConds-FREE-extl1 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-FREE-extl1 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -196,7 +196,7 @@ typeSysConds-FREE-extl2 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁
 typeSysConds-FREE-extl2 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (FREEneqUNION (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extl2 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (FREEneqTSQUASH (⇛-val-det tt tt x y₁))
 --typeSysConds-FREE-extl2 u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x y₁))
-typeSysConds-FREE-extl2 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x y₁))
+typeSysConds-FREE-extl2 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extl2 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -230,7 +230,7 @@ typeSysConds-FREE-extr1 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁
 typeSysConds-FREE-extr1 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (FREEneqUNION (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extr1 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (FREEneqTSQUASH (⇛-val-det tt tt x₁ y₁))
 --typeSysConds-FREE-extr1 u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-FREE-extr1 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x₁ y₁))
+typeSysConds-FREE-extr1 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extr1 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -264,7 +264,7 @@ typeSysConds-FREE-extr2 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁
 typeSysConds-FREE-extr2 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (FREEneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extr2 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (FREEneqTSQUASH (⇛-val-det tt tt x₁ y))
 --typeSysConds-FREE-extr2 u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x₁ y))
-typeSysConds-FREE-extr2 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x₁ y))
+typeSysConds-FREE-extr2 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extr2 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -298,7 +298,7 @@ typeSysConds-FREE-extrevl1 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y
 typeSysConds-FREE-extrevl1 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (FREEneqUNION (⇛-val-det tt tt x y))
 typeSysConds-FREE-extrevl1 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (FREEneqTSQUASH (⇛-val-det tt tt x y))
 --typeSysConds-FREE-extrevl1 u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x y))
-typeSysConds-FREE-extrevl1 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x y))
+typeSysConds-FREE-extrevl1 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-FREE-extrevl1 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -339,7 +339,7 @@ typeSysConds-FREE-extrevl2 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y
 typeSysConds-FREE-extrevl2 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (FREEneqUNION (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extrevl2 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (FREEneqTSQUASH (⇛-val-det tt tt x y₁))
 --typeSysConds-FREE-extrevl2 u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x y₁))
-typeSysConds-FREE-extrevl2 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x y₁))
+typeSysConds-FREE-extrevl2 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extrevl2 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -381,7 +381,7 @@ typeSysConds-FREE-extrevr1 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y
 typeSysConds-FREE-extrevr1 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (FREEneqUNION (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extrevr1 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (FREEneqTSQUASH (⇛-val-det tt tt x₁ y₁))
 --typeSysConds-FREE-extrevr1 u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-FREE-extrevr1 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x₁ y₁))
+typeSysConds-FREE-extrevr1 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extrevr1 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -423,7 +423,7 @@ typeSysConds-FREE-extrevr2 u isu w A B x x₁ C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y
 typeSysConds-FREE-extrevr2 u isu w A B x x₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (FREEneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extrevr2 u isu w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (FREEneqTSQUASH (⇛-val-det tt tt x₁ y))
 --typeSysConds-FREE-extrevr2 u isu w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x₁ y))
-typeSysConds-FREE-extrevr2 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x₁ y))
+typeSysConds-FREE-extrevr2 u isu w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extrevr2 u isu w A B x x₁ C (EQTUNIV y) a b eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
@@ -468,7 +468,7 @@ eqInType-⇛-FREE u isu w A B a b c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ 
 eqInType-⇛-FREE u isu w A B a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (FREEneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE u isu w A B a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA extA) ei = ⊥-elim (FREEneqTSQUASH (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-FREE u isu w A B a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) ei = ⊥-elim (FREEneqDUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-FREE u isu w A B a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) ei = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt c₁ x))
+eqInType-⇛-FREE u isu w A B a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE u isu w A B a b c₁ c₂ (EQTUNIV x) ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z))) -- Lift {0ℓ} 1ℓ ⊥
   where
@@ -509,7 +509,7 @@ eqInType-⇛-FREE-rev u isu w A B a b c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x
 eqInType-⇛-FREE-rev u isu w A B a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (FREEneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE-rev u isu w A B a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA extA) ei = ⊥-elim (FREEneqTSQUASH (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-FREE-rev u isu w A B a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) ei = ⊥-elim (FREEneqDUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-FREE-rev u isu w A B a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) ei = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt c₁ x))
+eqInType-⇛-FREE-rev u isu w A B a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE-rev u isu w A B a b c₁ c₂ (EQTUNIV x) ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z))) -- Lift {0ℓ} 1ℓ ⊥
   where
