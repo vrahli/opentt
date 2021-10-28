@@ -1,4 +1,6 @@
 \begin{code}
+{-# OPTIONS --rewriting #-}
+
 open import Agda.Builtin.Sigma
 open import Data.Product
 open import Data.Sum

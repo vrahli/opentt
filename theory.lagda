@@ -1,4 +1,6 @@
 \begin{code}
+{-# OPTIONS --rewriting #-}
+
 open import bar
 
 module theory (b : bar.Bar) where
