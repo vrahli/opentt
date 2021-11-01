@@ -282,6 +282,9 @@ TEQ = (w : world) (T1 T2 : Term) → Set₁
 EQT : Set₂
 EQT = (w : world) (T a b : Term) → Set₁
 
+MEMT : Set₂
+MEMT = (w : world) (T a : Term) → Set₁
+
 -- Finally, the 'equal types' and 'equal in types' relations
 equalTypes : (u : ℕ) → TEQ
 equalTypes u = eqTypes (uni u)
@@ -297,6 +300,9 @@ eqtypes w T1 T2 = Σ ℕ (λ u → equalTypes u w T1 T2)
 
 eqintype : EQT
 eqintype w T a b = Σ ℕ (λ u → equalInType u w T a b)
+
+member : MEMT
+member w T a = eqintype w T a a
 
 {--wfinhN1L : (j : ℕ) → wfInh (inhN1L j)
 wfinhN1L j = ≤-refl

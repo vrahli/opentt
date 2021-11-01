@@ -18,11 +18,11 @@ record Bar : Set₂ where
 --    wPredDepExtIrrBar : {w : world} {f : wPred w} (h : wPredDep f) (i : inBar w f) → Set₁
     ↑inBar            : {w : world} {f : wPred w} (i : inBar w f) {w' : world} (e : w' ≽ w) → inBar w' (↑wPred f e)
     ↑'inBar           : {w : world} {f : wPred w} (i : inBar w f) {w' : world} (e : w' ≽ w) → inBar w' (↑wPred' f e)
-    ↑inBar'           : {w : world} {f : wPred w} {g : wPredDep f} (i : inBar w f) {w' : world} (e : w' ≽ w)
-                        → inBar' w i g → inBar' w' (↑inBar i e) (↑wPredDep g e)
+{--    ↑inBar'           : {w : world} {f : wPred w} {g : wPredDep f} (i : inBar w f) {w' : world} (e : w' ⊇ w)
+                        → inBar' w i g → inBar' w' (↑inBar i e) (↑wPredDep g e)--}
 --    atBar             : {w : world} {f : wPred w} (i : inBar w f) (w' : world) → Set₁
     atBar             : {w : world} {f : wPred w} (i : inBar w f) (w' : world) (e' : w' ≽ w) (p : f w' e') → Set₁
-{--    ↑inBar'           : {w : world} {f : wPred w} {g : wPredDep f} (i : inBar w f) {w' : world} (e : w' ≽ w) {h : wPredDep (↑wPred f e)}
+{--    ↑inBar'           : {w : world} {f : wPred w} {g : wPredDep f} (i : inBar w f) {w' : world} (e : w' ⊇ w) {h : wPredDep (↑wPred f e)}
                         → allW w' (λ w'' e'' → (x y : f w'' (extTrans e'' e)) (at : atBar i w'' (extTrans e'' e) x) → g w'' (extTrans e'' e) x → h w'' e'' y)
                         → inBar' w i g → inBar' w' (↑inBar i e) h--}
     -- Axioms
@@ -44,9 +44,9 @@ record Bar : Set₂ where
                         → allW w (λ w' e' → (x : f w' e') (at : atBar i w' e' x) → g w' e' x)
                         → inBar' w i g
     allW-inBar        : {w : world} {f : wPred w} → allW w f → inBar w f
-{--    inBar-mon         : {w2 w1 : world} {f : wPred w1} (e : w2 ≽ w1)
+{--    inBar-mon         : {w2 w1 : world} {f : wPred w1} (e : w2 ⊇ w1)
                         → inBar w1 f → inBar w2 (↑wPred f e)
-    inBar'-mon        : {w2 w1 : world} {f : wPred w1} {g : wPredDep f} (e : w2 ≽ w1) (i : inBar w1 f)
+    inBar'-mon        : {w2 w1 : world} {f : wPred w1} {g : wPredDep f} (e : w2 ⊇ w1) (i : inBar w1 f)
                         → inBar' w1 i g → inBar' w2 (inBar-mon e i) (↑wPredDep' g e)--}
     inBar-idem        : {w : world} {f : wPred w}
                         → inBar w (λ w' e' → inBar w' (↑wPred' f e'))
@@ -746,7 +746,7 @@ inOpenBar-Bar =
 --    wPredDepExtIrr-inOpenBar
     ↑inOpenBar
     ↑'inOpenBar
-    (λ {w} {f} {g} → ↑inOpenBar' {w} {f} {g})
+--    (λ {w} {f} {g} → ↑inOpenBar' {w} {f} {g})
 --    atOpenBar
     atOpenBar
     inOpenBarFunc

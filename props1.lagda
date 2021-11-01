@@ -1259,10 +1259,10 @@ is-uni-eqInType→ {u} (n , isu) {w} {A} {B} {a} {b} eqt eqi eqt' rewrite isu =
 
 
 
-wPredDepExtIrr-eqInType : {u : univs} (isu : is-uni u) {w : world} {A B a b : Term}
-                          (x : inbar w (λ w' _ → eqTypes u w' A B))
-                          → wpreddepextirr (λ w1 e1 z → eqInType u w1 z a b) x
-wPredDepExtIrr-eqInType {u} isu {w} {A} {B} {a} {b} x w0 w1 w2 e0 e1 e2 e0' e1' e2' q =
+wPredDepExtIrr-eqInType-if-inbar : {u : univs} (isu : is-uni u) {w : world} {A B a b : Term}
+                                   (x : inbar w (λ w' _ → eqTypes u w' A B))
+                                   → wpreddepextirr (λ w1 e1 z → eqInType u w1 z a b) x
+wPredDepExtIrr-eqInType-if-inbar {u} isu {w} {A} {B} {a} {b} x w0 w1 w2 e0 e1 e2 e0' e1' e2' q =
   fst (eqInType-ext {u} isu {w2} {A} {B} (snd (snd (x w0 e0)) w2 e0' e2') (snd (snd (x w1 e1)) w2 e1' e2) a b) q
 
 
@@ -2380,8 +2380,6 @@ typeSys n =
 
 
 
-
-
 {--
 -- Those need to be packaged as we did in Coq
 eqTypes-sym : (u : univs) → TEQsym (eqTypes u)
@@ -2690,6 +2688,7 @@ weak-consistency w (t , u , n , k , c) = ¬strongMonEq01 I w2 ea5
 
     ea5 : strongMonEq I w2 (NUM 0) (NUM 1)
     ea5 = proj₂ (proj₂ (ea4 w1 ([]≽-refl I w1))) w2 ([]≽-refl I w2)
+--}
 \end{code}
 
 
@@ -2770,8 +2769,8 @@ FST t = SPREAD t (VAR 1)
 SND : Term → Term
 SND t = SPREAD t (VAR 0)
 
-acres : (p : Term) → restriction
-acres p n t = AND (MEM t NAT) (APPLY2 p (NUM n) t)
+{--acres : (p : Term) → restriction
+acres p n t = AND (MEM t NAT) (APPLY2 p (NUM n) t)--}
 
 dumNotInac : # ac
 dumNotInac h ()
@@ -2786,7 +2785,7 @@ acext : Term
 acext = LAMBDA lamAX
 
 
-
+{--
 -- ---------------------------------
 -- Some simple lemmas
 allWimpliesinOpenBar : {I : Inh} {w : world} {f : wPred I w} → allW I w f → inOpenBar I w f
