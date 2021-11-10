@@ -6,6 +6,7 @@ open import Data.Product
 open import Data.Sum
 open import Relation.Binary.PropositionalEquality hiding ([_]) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
 open import world
+open import worldInstance
 
 
 module bar where
