@@ -38,6 +38,12 @@ w.r.t. open bars.
 1ℓ = lsuc 0ℓ
 
 
+{--record World : Set₁ where
+  constructor mkWorld
+  field
+    𝕎 : Set
+    _⊑_ : 𝕎 → 𝕎 → Set--}
+
 restriction : Set₁
 restriction = (n : ℕ) → Term → Set
 
