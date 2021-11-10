@@ -20,6 +20,7 @@ open import Agda.Builtin.String.Properties
 open import Data.List
 open import Data.List.Relation.Unary.Any
 open import Data.List.Membership.Propositional
+open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 \end{code}
 
@@ -207,7 +208,33 @@ v # t = ¬ (v ∈ fvars t)
 
 -- closed expression
 #_ : (t : Term) → Set
-# t = (v : Var) → v # t
+# t = fvars t ≡ []
+
+
+_⊆?_ : (l k : List Var) → Bool
+[] ⊆? k = true
+(v ∷ l) ⊆? k with (v ∈? k)
+... | yes _ = l ⊆? k
+... | no _ = false
+
+
+#[_]_ : (l : List Var) (t : Term) → Set
+#[ l ] t = (fvars t) ⊆? l ≡ true
+
+
+record CTerm : Set where
+  constructor ct
+  field
+    cTerm  : Term
+    closed : # cTerm
+
+
+record CTerm0 : Set where
+  constructor ct0
+  field
+    cTerm  : Term
+    closed : #[ [ 0 ] ] cTerm
+
 
 shiftUp : ℕ → Term → Term
 shiftUp c (VAR x) with x <? c
@@ -536,8 +563,14 @@ shiftUpTrivial v (LOWER u) i
 shiftUpTrivial v (SHRINK u) i
   rewrite shiftUpTrivial v u i = refl
 
+#→¬∈ : {t : Term} → # t → (v : Var) → v # t
+#→¬∈ {t} c v i rewrite c = x i
+  where
+    x : ¬ v ∈ []
+    x ()
+
 subNotIn : (t u : Term) → # u → sub t u ≡ u
-subNotIn t u d rewrite subvNotIn 0 (shiftUp 0 t) u (d 0) = shiftDownTrivial 0 u (λ w c → d w)
+subNotIn t u d rewrite subvNotIn 0 (shiftUp 0 t) u (#→¬∈ {u} d 0) = shiftDownTrivial 0 u (λ w c → #→¬∈ {u} d w)
 
 shiftDownUp : (t : Term) (n : ℕ) → shiftDown n (shiftUp n t) ≡ t
 shiftDownUp (VAR x) n with x <? n

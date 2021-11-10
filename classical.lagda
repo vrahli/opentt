@@ -118,10 +118,13 @@ eqTypesPI← {w} {i} {A} {B} {C} {D} eqta eqtb =
         eqa = TEQrefl-equalTypes i w1 A C (eqta w1 e1)
 
 
-eqTypesFUN← : {w : world} {i : ℕ} {A B C D : Term}
-               → allW w (λ w' _ → equalTypes i w' A C)
-               → allW w (λ w' _ → equalTypes i w' B D)
-               → equalTypes i w (FUN A B) (FUN C D)
+⌜_⌝ : CTerm → Term
+⌜ T ⌝ = CTerm.cTerm T
+
+eqTypesFUN← : {w : world} {i : ℕ} {A B C D : CTerm}
+               → allW w (λ w' _ → equalTypes i w' ⌜ A ⌝ ⌜ C ⌝)
+               → allW w (λ w' _ → equalTypes i w' ⌜ B ⌝ ⌜ D ⌝)
+               → equalTypes i w (FUN ⌜ A ⌝ ⌜ B ⌝) (FUN  ⌜ C ⌝ ⌜ D ⌝)
 eqTypesFUN← {w} {i} {A} {B} {C} {D} eqta eqtb =
   eqTypesPI← eqta eqb
   where
