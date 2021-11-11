@@ -1,4 +1,6 @@
 \begin{code}
+{-# OPTIONS --rewriting #-}
+
 module calculus where
 
 open import Level using (0ℓ) renaming (suc to lsuc)
