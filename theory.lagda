@@ -96,6 +96,12 @@ remove0 (0 ∷ l) = remove0 l
 remove0 (x ∷ l) = x ∷ remove0 l
 
 
+remove0-as-V : (l : List Var) → remove0 l ≡ removeV 0 l
+remove0-as-V [] = refl
+remove0-as-V (0 ∷ l) = remove0-as-V l
+remove0-as-V (suc x ∷ l) rewrite remove0-as-V l = refl
+
+
 ∈removeV→ : {x v : Var} {a : List Var} → x ∈ (removeV v a) → x ∈ a × ¬ (x ≡ v)
 ∈removeV→ {x} {v} {x₁ ∷ a} i with x₁ ≟ v
 ... | yes p rewrite p = there (fst (∈removeV→ i)) , snd (∈removeV→ {x} {v} {a} i)
@@ -153,11 +159,6 @@ remove0 (x ∷ l) = x ∷ remove0 l
 ¬S→ a b i j rewrite j = i refl
 
 
-sucIf≤ : (c x : ℕ) → ℕ
-sucIf≤ c x with x <? c
-... | yes _ = x
-... | no _ = suc x
-
 
 s≤s-inj : {a b : ℕ} → suc a ≤ suc b → a ≤ b
 s≤s-inj {a} {b} (_≤_.s≤s h) = h
@@ -176,6 +177,40 @@ lowerVars-map-sucIf≤-suc n (0 ∷ l) | no p = ⊥-elim (p (_≤_.s≤s _≤_.z
 lowerVars-map-sucIf≤-suc n (suc x ∷ l) | no p with x <? n
 ... | yes q = ⊥-elim (p (_≤_.s≤s q))
 ... | no q rewrite lowerVars-map-sucIf≤-suc n l = refl
+
+
+{--
+all> : (n : ℕ) (l : List ℕ) → Set
+all> n l = (v : ℕ) → v ∈ l → n < v
+
+
+all>∷ : {n x : ℕ} {l : List ℕ} → all> n (x ∷ l) → all> n l
+all>∷ {n} {x} {l} i v j = i v (there j)
+
+
+all>++L : {n : ℕ} {l k : List ℕ} → all> n (l ++ k) → all> n l
+all>++L {n} {l} {k} i v j = i v (∈-++⁺ˡ j)
+
+
+all>++R : {n : ℕ} {l k : List ℕ} → all> n (l ++ k) → all> n k
+all>++R {n} {l} {k} i v j = i v (∈-++⁺ʳ _ j)
+--}
+
+
+lowerVars-map-predIf≤-suc : (n : ℕ) (l : List Var)
+                            → lowerVars (Data.List.map (predIf≤ (suc n)) l)
+                               ≡ Data.List.map (predIf≤ n) (lowerVars l)
+lowerVars-map-predIf≤-suc n [] = refl
+lowerVars-map-predIf≤-suc n (0 ∷ l) = lowerVars-map-predIf≤-suc n l
+lowerVars-map-predIf≤-suc n (suc x ∷ l) with suc x ≤? suc n
+lowerVars-map-predIf≤-suc n (suc 0 ∷ l) | yes p rewrite lowerVars-map-predIf≤-suc n l = refl
+lowerVars-map-predIf≤-suc n (suc 0 ∷ l) | no p = ⊥-elim (p (_≤_.s≤s _≤_.z≤n))
+lowerVars-map-predIf≤-suc n (suc (suc x) ∷ l) | yes p with suc x ≤? n
+... | yes q rewrite lowerVars-map-predIf≤-suc n l = refl
+... | no q = ⊥-elim (q (s≤s-inj p))
+lowerVars-map-predIf≤-suc n (suc (suc x) ∷ l) | no p with suc x ≤? n
+... | yes q = ⊥-elim (p (_≤_.s≤s q))
+... | no q rewrite lowerVars-map-predIf≤-suc n l = refl
 
 
 fvars-shiftUp≡ : (n : ℕ) (t : Term)
@@ -258,6 +293,89 @@ fvars-shiftUp≡ n (FFDEFS t t₁)
 fvars-shiftUp≡ n (UNIV x) = refl
 fvars-shiftUp≡ n (LOWER t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (SHRINK t) = fvars-shiftUp≡ n t
+
+
+fvars-shiftDown≡ : (n : ℕ) (t : Term)
+                   → fvars (shiftDown n t) ≡ Data.List.map (predIf≤ n) (fvars t)
+fvars-shiftDown≡ n (VAR 0) = refl
+fvars-shiftDown≡ n (VAR (suc x)) with suc x <? n
+... | yes p = refl
+... | no p = refl
+fvars-shiftDown≡ n NAT = refl
+fvars-shiftDown≡ n QNAT = refl
+fvars-shiftDown≡ n (LT t t₁)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+  | fvars-shiftDown≡ n t
+  | fvars-shiftDown≡ n t₁ = refl
+fvars-shiftDown≡ n (QLT t t₁)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+  | fvars-shiftDown≡ n t
+  | fvars-shiftDown≡ n t₁ = refl
+fvars-shiftDown≡ n (NUM x) = refl
+fvars-shiftDown≡ n (PI t t₁)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
+  | fvars-shiftDown≡ n t
+  | fvars-shiftDown≡ (suc n) t₁
+  | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
+fvars-shiftDown≡ n (LAMBDA t)
+  rewrite fvars-shiftDown≡ (suc n) t
+  | lowerVars-map-predIf≤-suc n (fvars t) = refl
+fvars-shiftDown≡ n (APPLY t t₁)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+  | fvars-shiftDown≡ n t
+  | fvars-shiftDown≡ n t₁ = refl
+fvars-shiftDown≡ n (SUM t t₁)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
+  | fvars-shiftDown≡ n t
+  | fvars-shiftDown≡ (suc n) t₁
+  | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
+fvars-shiftDown≡ n (PAIR t t₁)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+  | fvars-shiftDown≡ n t
+  | fvars-shiftDown≡ n t₁ = refl
+fvars-shiftDown≡ n (SPREAD t t₁)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (lowerVars (fvars t₁)))
+  | fvars-shiftDown≡ n t
+  | fvars-shiftDown≡ (suc (suc n)) t₁
+  | lowerVars-map-predIf≤-suc (suc n) (fvars t₁)
+  | lowerVars-map-predIf≤-suc n (lowerVars (fvars t₁)) = refl
+fvars-shiftDown≡ n (SET t t₁)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
+  | fvars-shiftDown≡ n t
+  | fvars-shiftDown≡ (suc n) t₁
+  | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
+fvars-shiftDown≡ n (UNION t t₁)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+  | fvars-shiftDown≡ n t
+  | fvars-shiftDown≡ n t₁ = refl
+fvars-shiftDown≡ n (INL t) = fvars-shiftDown≡ n t
+fvars-shiftDown≡ n (INR t) = fvars-shiftDown≡ n t
+fvars-shiftDown≡ n (DECIDE t t₁ t₂)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁) ++ lowerVars (fvars t₂))
+  | map-++-commute (predIf≤ n) (lowerVars (fvars t₁)) (lowerVars (fvars t₂))
+  | fvars-shiftDown≡ n t
+  | fvars-shiftDown≡ (suc n) t₁
+  | fvars-shiftDown≡ (suc n) t₂
+  | lowerVars-map-predIf≤-suc n (fvars t₁)
+  | lowerVars-map-predIf≤-suc n (fvars t₂) = refl
+fvars-shiftDown≡ n (EQ t t₁ t₂)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
+  | map-++-commute (predIf≤ n) (fvars t₁) (fvars t₂)
+  | fvars-shiftDown≡ n t
+  | fvars-shiftDown≡ n t₁
+  | fvars-shiftDown≡ n t₂ = refl
+fvars-shiftDown≡ n AX = refl
+fvars-shiftDown≡ n FREE = refl
+fvars-shiftDown≡ n (CS x) = refl
+fvars-shiftDown≡ n (TSQUASH t) = fvars-shiftDown≡ n t
+fvars-shiftDown≡ n (DUM t) = fvars-shiftDown≡ n t
+fvars-shiftDown≡ n (FFDEFS t t₁)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+  | fvars-shiftDown≡ n t
+  | fvars-shiftDown≡ n t₁ = refl
+fvars-shiftDown≡ n (UNIV x) = refl
+fvars-shiftDown≡ n (LOWER t) = fvars-shiftDown≡ n t
+fvars-shiftDown≡ n (SHRINK t) = fvars-shiftDown≡ n t
 
 
 ∈removeV-lowerVars++→ : (x v : Var) (l : List Var) (a : Term)
@@ -344,9 +462,23 @@ fvars-subv v a (UNION b b₁) {x} i with ∈-++⁻ (fvars (subv v a b)) i
 fvars-subv v a (INL b) = fvars-subv v a b
 fvars-subv v a (INR b) = fvars-subv v a b
 fvars-subv v a (DECIDE b b₁ b₂) {x} i with ∈-++⁻ (fvars (subv v a b)) i
-... | inj₁ p = {!!}
-... | inj₂ p = {!!}
-fvars-subv v a (EQ b b₁ b₂) = {!!}
+... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {lowerVars (fvars b₁) ++ lowerVars (fvars b₂)} (fvars-subv v a b p)
+... | inj₂ p with ∈-++⁻ (lowerVars (fvars (subv (suc v) (shiftUp 0 a) b₁))) p
+... | inj₁ q = ∈removeV++R {_} {v} {fvars b} {lowerVars (fvars b₁) ++ lowerVars (fvars b₂)} {fvars a}
+                           (∈removeV++L {_} {v} {lowerVars (fvars b₁)} {lowerVars (fvars b₂)}
+                                        (→∈removeV-lowerVars++ x v (fvars b₁) a
+                                                               (fvars-subv (suc v) (shiftUp 0 a) b₁ (∈lowerVars→ _ _ q))))
+... | inj₂ q = ∈removeV++R {_} {v} {fvars b} {lowerVars (fvars b₁) ++ lowerVars (fvars b₂)} {fvars a}
+                           (∈removeV++R {_} {v} {lowerVars (fvars b₁)} {lowerVars (fvars b₂)}
+                                        (→∈removeV-lowerVars++ x v (fvars b₂) a
+                                                                (fvars-subv (suc v) (shiftUp 0 a) b₂ (∈lowerVars→ _ _ q))))
+fvars-subv v a (EQ b b₁ b₂) i with ∈-++⁻ (fvars (subv v a b)) i
+... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁ ++ fvars b₂} {fvars a} (fvars-subv v a b p)
+... | inj₂ p with ∈-++⁻ (fvars (subv v a b₁)) p
+... | inj₁ q = ∈removeV++R {_} {v} {fvars b} {fvars b₁ ++ fvars b₂} {fvars a}
+                           (∈removeV++L {_} {v} {fvars b₁} {fvars b₂} {fvars a} (fvars-subv v a b₁ q))
+... | inj₂ q = ∈removeV++R {_} {v} {fvars b} {fvars b₁ ++ fvars b₂} {fvars a}
+                           (∈removeV++R {_} {v} {fvars b₁} {fvars b₂} {fvars a} (fvars-subv v a b₂ q))
 fvars-subv v a AX i = ⊥-elim (¬∈[] i)
 fvars-subv v a FREE i = ⊥-elim (¬∈[] i)
 fvars-subv v a (CS x) i = ⊥-elim (¬∈[] i)
@@ -360,11 +492,60 @@ fvars-subv v a (LOWER b) = fvars-subv v a b
 fvars-subv v a (SHRINK b) = fvars-subv v a b
 
 
-fvars-sub : (a b : Term) → fvars (sub a b) ⊆ remove0 (fvars b) ++ fvars a
-fvars-sub a b i = {!!}
+injective : {A B : Set} (f : A → B) → Set
+injective {A} {B} f = {a b : A} → f a ≡ f b → a ≡ b
+
+
+∈-map→ : {A B : Set} {f : A → B} {a : A} {l : List A} → injective f → f a ∈ Data.List.map f l → a ∈ l
+∈-map→ {A} {B} {f} {a} {l} inj i = j'
+  where
+    y : A
+    y = fst (∈-map⁻ f i)
+
+    j : y ∈ l
+    j = fst (snd (∈-map⁻ f i))
+
+    e : a ≡ y
+    e = inj (snd (snd (∈-map⁻ f i)))
+
+    j' : a ∈ l
+    j' rewrite e = j
+
+
+∈removeV0-shiftUp→prefIf≤ : (y : Var) (l : List Var) (a : Term)
+                             → y ∈ removeV 0 l ++ fvars (shiftUp 0 a)
+                             → (predIf≤ 0 y) ∈ (lowerVars l ++ fvars a)
+∈removeV0-shiftUp→prefIf≤ y l a i with ∈-++⁻ (removeV 0 l) i
+∈removeV0-shiftUp→prefIf≤ 0 l a i | inj₁ p = ⊥-elim (snd (∈removeV→ {0} {0} {l} p) refl)
+∈removeV0-shiftUp→prefIf≤ (suc y) l a i | inj₁ p = ∈-++⁺ˡ (→∈lowerVars y l (fst (∈removeV→ p)))
+∈removeV0-shiftUp→prefIf≤ 0 l a i | inj₂ p rewrite fvars-shiftUp≡ 0 a = ⊥-elim (suc-≢-0 (sym (snd (snd (∈-map⁻ suc p)))))
+∈removeV0-shiftUp→prefIf≤ (suc y) l a i | inj₂ p rewrite fvars-shiftUp≡ 0 a = ∈-++⁺ʳ (lowerVars l) (∈-map→ suc-injective p)
+
+
+fvars-sub : (a b : Term) → fvars (sub a b) ⊆ lowerVars (fvars b) ++ fvars a
+fvars-sub a b {x} i rewrite fvars-shiftDown≡ 0 (subv 0 (shiftUp 0 a) b) = --remove0-as-V (fvars b) =
+  k2
+  where
+    y : Var
+    y = fst (∈-map⁻ (predIf≤ 0) i)
+    -- x = predIf≤ 0 y
+
+    j : y ∈ fvars (subv 0 (shiftUp 0 a) b)
+    j = fst (snd (∈-map⁻ (predIf≤ 0) i))
+
+    k : y ∈ removeV 0 (fvars b) ++ fvars (shiftUp 0 a)
+    k = fvars-subv 0 (shiftUp 0 a) b j
+
+    k1 : (predIf≤ 0 y) ∈ (lowerVars (fvars b) ++ fvars a)
+    k1 = ∈removeV0-shiftUp→prefIf≤ y (fvars b) a k
+
+    k2 : x ∈ (lowerVars (fvars b) ++ fvars a)
+    k2 rewrite snd (snd (∈-map⁻ (predIf≤ 0) i)) = k1
+
 
 fvars-cterm : (a : CTerm) → fvars ⌜ a ⌝ ≡ []
 fvars-cterm a = CTerm.closed a
+
 
 ⊆[]→≡[] : {A : Set} {l : List A} → l ⊆ [] → l ≡ []
 ⊆[]→≡[] {A} {[]} h = refl
@@ -400,11 +581,29 @@ fvars-cterm a = CTerm.closed a
 ⊆?→⊆ {v ∷ l} {k} h (there i) | yes p = ⊆?→⊆ h i
 ⊆?→⊆ {v ∷ l} {k} () i | no p
 
-#sub : (a : CTerm) (b : CTerm0) → # (sub ⌜ a ⌝ ⌜ b ⌝)
-#sub a b = ⊆[]→≡[] (⊆-trans (fvars-sub ⌜ a ⌝  ⌜ b ⌝) (≡[]→⊆[] (→++≡[] c1 c2)))
+
+lowerVars-fvars-CTerm0⊆[] : (a : CTerm0) → lowerVars (fvars (CTerm0.cTerm a)) ⊆ []
+lowerVars-fvars-CTerm0⊆[] a {x} i = ⊥-elim (suc-≢-0 e)
   where
-    c1 : remove0 (fvars (CTerm0.cTerm b)) ≡ []
-    c1 = →remove0≡[] {fvars (CTerm0.cTerm b)} (⊆?→⊆ (CTerm0.closed b))
+    j : suc x ∈ fvars (CTerm0.cTerm a)
+    j = ∈lowerVars→ x (fvars (CTerm0.cTerm a)) i
+
+    k : suc x ∈ [ 0 ]
+    k = ⊆?→⊆ (CTerm0.closed a) j
+
+    e : suc x ≡ 0
+    e = ∈[1] k
+
+
+lowerVars-fvars-CTerm0≡[] : (a : CTerm0) → lowerVars (fvars (CTerm0.cTerm a)) ≡ []
+lowerVars-fvars-CTerm0≡[] a = ⊆[]→≡[] (lowerVars-fvars-CTerm0⊆[] a)
+
+
+#sub : (a : CTerm) (b : CTerm0) → # (sub ⌜ a ⌝ ⌜ b ⌝)
+#sub a b = ⊆[]→≡[] (⊆-trans (fvars-sub ⌜ a ⌝ ⌜ b ⌝) (≡[]→⊆[] (→++≡[] c1 c2)))
+  where
+    c1 : lowerVars (fvars (CTerm0.cTerm b)) ≡ []
+    c1 = lowerVars-fvars-CTerm0≡[] b
 
     c2 : fvars (CTerm.cTerm a) ≡ []
     c2 = CTerm.closed a

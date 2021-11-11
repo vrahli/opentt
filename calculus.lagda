@@ -236,10 +236,21 @@ record CTerm0 : Set where
     closed : #[ [ 0 ] ] cTerm
 
 
+sucIf≤ : (c x : ℕ) → ℕ
+sucIf≤ c x with x <? c
+... | yes _ = x
+... | no _ = suc x
+
+
+predIf≤ : (c x : ℕ) → ℕ
+predIf≤ c 0 = 0
+predIf≤ c (suc x) with suc x ≤? c
+... | yes _ = suc x
+... | no _ = x
+
+
 shiftUp : ℕ → Term → Term
-shiftUp c (VAR x) with x <? c
-... | yes _ = VAR x
-... | no _ = VAR (suc x)
+shiftUp c (VAR x) = VAR (sucIf≤ c x)
 shiftUp c NAT = NAT
 shiftUp c QNAT = QNAT
 shiftUp c (LT t t₁) = LT (shiftUp c t) (shiftUp c t₁)
@@ -268,10 +279,7 @@ shiftUp c (LOWER t) = LOWER (shiftUp c t)
 shiftUp c (SHRINK t) = SHRINK (shiftUp c t)
 
 shiftDown : ℕ → Term → Term
-shiftDown c (VAR 0) = VAR 0
-shiftDown c (VAR (suc x)) with suc x <? c
-... | yes _ = VAR (suc x)
-... | no _ = VAR x
+shiftDown c (VAR x) = VAR (predIf≤ c x)
 shiftDown c NAT = NAT
 shiftDown c QNAT = QNAT
 shiftDown c (LT t t₁) = LT (shiftDown c t) (shiftDown c t₁)
@@ -434,9 +442,9 @@ impLeNotLower v l i (suc w) j h = i w (sucLeInj j) (inLowerVars _ _ h)
 
 shiftDownTrivial : (v : Var) (u : Term) → ((w : Var) → v ≤ w → w # u) → shiftDown v u ≡ u
 shiftDownTrivial v (VAR 0) i = refl
-shiftDownTrivial v (VAR (suc x)) i with suc x <? v
+shiftDownTrivial v (VAR (suc x)) i with suc x ≤? v
 ... | yes z = refl
-... | no z = ⊥-elim (i (suc x) (sucLeInj (≰⇒> z)) (here refl))
+... | no z = ⊥-elim (i (suc x) (<⇒≤ (≰⇒> z)) (here refl)) --(i (suc x) (sucLeInj (≰⇒> z)) (here refl))
 shiftDownTrivial v NAT i = refl
 shiftDownTrivial v QNAT i = refl
 shiftDownTrivial v (LT u u₁) i
@@ -575,11 +583,11 @@ subNotIn t u d rewrite subvNotIn 0 (shiftUp 0 t) u (#→¬∈ {u} d 0) = shiftDo
 shiftDownUp : (t : Term) (n : ℕ) → shiftDown n (shiftUp n t) ≡ t
 shiftDownUp (VAR x) n with x <? n
 shiftDownUp (VAR 0) n | yes p = refl
-shiftDownUp (VAR (suc x)) n | yes p with suc x <? n
+shiftDownUp (VAR (suc x)) n | yes p with suc x ≤? n
 ...                                    | yes q = refl
-...                                    | no q = ⊥-elim (q p)
-shiftDownUp (VAR x) n | no p with suc x <? n
-...                             | yes q = ⊥-elim (p (≤-trans (n≤1+n _) q))
+...                                    | no q = ⊥-elim (q (≤-trans (n≤1+n _) p))
+shiftDownUp (VAR x) n | no p with suc x ≤? n
+...                             | yes q = ⊥-elim (p q)
 ...                             | no q = refl
 shiftDownUp NAT n = refl
 shiftDownUp QNAT n = refl
