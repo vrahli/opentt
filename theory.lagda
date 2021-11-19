@@ -29,6 +29,7 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
+open import Axiom.UniquenessOfIdentityProofs
 open import calculus
 open import world
 \end{code}
@@ -617,6 +618,50 @@ sub0 a t =
 --→ Term ⌜_⌝ : CTerm → Term
 
 
+CAPPLY : CTerm → CTerm → CTerm
+CAPPLY a b = ct (APPLY ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # APPLY (CTerm.cTerm a) (CTerm.cTerm b)
+    c rewrite CTerm.closed a | CTerm.closed b = refl
+
+
+CEQ : CTerm → CTerm → CTerm → CTerm
+CEQ a b T = ct (EQ ⌜ a ⌝ ⌜ b ⌝ ⌜ T ⌝) c
+  where
+    c : # EQ (CTerm.cTerm a) (CTerm.cTerm b) (CTerm.cTerm T)
+    c rewrite CTerm.closed a | CTerm.closed b | CTerm.closed T = refl
+
+
+{--≡# : {a b : Term} → a ≡ b → (ca : # a) (cb : # b) → ca ≡ cb
+≡# {a} {b} e ca cb = {!!}--}
+
+
+#eq : {a : Term} → (p q : # a) → q ≡ p
+#eq {a} p q = Decidable⇒UIP.≡-irrelevant (Data.List.Properties.≡-dec Data.Nat.Properties._≟_) q p
+
+
+CTerm≡ : {a b : CTerm} → ⌜ a ⌝ ≡ ⌜ b ⌝ → a ≡ b
+CTerm≡ {ct a ca} {ct .a cb} refl rewrite #eq {a} ca cb = refl
+
+
+CEQinj1 : {a b c d e f : CTerm} → ⌜ CEQ a b c ⌝ ≡ EQ ⌜ d ⌝ ⌜ e ⌝ ⌜ f ⌝ → a ≡ d
+CEQinj1 refl = CTerm≡ refl
+
+
+CEQinj2 : {a b c d e f : CTerm} → ⌜ CEQ a b c ⌝ ≡ EQ ⌜ d ⌝ ⌜ e ⌝ ⌜ f ⌝ → b ≡ e
+CEQinj2 refl = CTerm≡ refl
+
+
+CEQinj3 : {a b c d e f : CTerm} → ⌜ CEQ a b c ⌝ ≡ EQ ⌜ d ⌝ ⌜ e ⌝ ⌜ f ⌝ → c ≡ f
+CEQinj3 refl = CTerm≡ refl
+
+
+CUNIV : ℕ → CTerm
+CUNIV n = ct (UNIV n) c
+  where
+    c : # UNIV n
+    c = refl
+
 
 -- PERs and world dependent PERs
 per : Set₂
@@ -689,8 +734,8 @@ data eqTypes u w T1 T2 where
     → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
     → eqTypes u w T1 T2
   EQTEQ : (a1 b1 a2 b2 A B : CTerm)
-    → ⌜ T1 ⌝ ⇛ (EQ ⌜ a1 ⌝ ⌜ a2 ⌝ ⌜ A ⌝) at w
-    → ⌜ T2 ⌝ ⇛ (EQ ⌜ b1 ⌝ ⌜ b2 ⌝ ⌜ B ⌝) at w
+    → ⌜ T1 ⌝ ⇛ ⌜ CEQ a1 a2 A ⌝ at w
+    → ⌜ T2 ⌝ ⇛ ⌜ CEQ b1 b2 B ⌝ at w
     → (eqtA : allW w (λ w' _ → eqTypes u w' A B))
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → (eqt1 : allW w (λ w' e → eqInType u w' (eqtA w' e) a1 b1))
@@ -732,12 +777,6 @@ Equality in types is defined as the following recursive function.
 
 
 \begin{code}
-CAPPLY : CTerm → CTerm → CTerm
-CAPPLY a b = ct (APPLY ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : # APPLY (CTerm.cTerm a) (CTerm.cTerm b)
-    c rewrite CTerm.closed a | CTerm.closed b = refl
-
 PIeq : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → per
 PIeq eqa eqb f g = (a b : CTerm) → (e : eqa a b) → eqb a b e (CAPPLY f a) (CAPPLY g b)
 

@@ -211,6 +211,7 @@ v # t = ¬ (v ∈ fvars t)
 -- closed expression
 #_ : (t : Term) → Set
 # t = fvars t ≡ []
+--# t = (fvars t) ⊆? [] ≡ true
 
 
 _⊆?_ : (l k : List Var) → Bool
