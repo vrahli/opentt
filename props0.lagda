@@ -401,13 +401,13 @@ eqTypes-mon u m {A} {B} {w1} (EQTQNAT x x₁) w2 ext = EQTQNAT (⇛-mon ext x) (
 eqTypes-mon u m {A} {B} {w1} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) w2 ext =
   EQTLT a1 a2 b1 b2
     (⇛-mon ext x) (⇛-mon ext x₁)
-    (strongMonEq-mon x₂ w2 ext)
-    (strongMonEq-mon x₃ w2 ext)
+    (strongMonEq-mon {a1} {a2} x₂ w2 ext)
+    (strongMonEq-mon {b1} {b2} x₃ w2 ext)
 eqTypes-mon u m {A} {B} {w1} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) w2 ext =
   EQTQLT a1 a2 b1 b2
     (⇛-mon ext x) (⇛-mon ext x₁)
-    (weakMonEq-mon x₂ w2 ext)
-    (weakMonEq-mon x₃ w2 ext)
+    (weakMonEq-mon {a1} {a2} x₂ w2 ext)
+    (weakMonEq-mon {b1} {b2} x₃ w2 ext)
 eqTypes-mon u m {A} {B} {w1} (EQTFREE x x₁) w2 ext =
   EQTFREE (⇛-mon ext x) (⇛-mon ext x₁)
 eqTypes-mon u m {A} {B} {w1} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) w2 ext =
@@ -489,12 +489,12 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta e
 if-equalInType-EQ u w T a b t₁ t₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSUM (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSET (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2 , eqi)
-  rewrite CEQinj1 (compAllVal x tt)  | CEQinj2 (compAllVal x tt)  | CEQinj3 (compAllVal x tt)
-        | CEQinj1 (compAllVal x₁ tt) | CEQinj2 (compAllVal x₁ tt) | CEQinj3 (compAllVal x₁ tt) =
-  ?{--Bar.allW-inBarFunc
+  rewrite CEQinj1 {a} {b} {T} {a1} {a2} {A} (compAllVal x tt)  | CEQinj2 {a} {b} {T} {a1} {a2} {A} (compAllVal x tt)  | CEQinj3 {a} {b} {T} {a1} {a2} {A} (compAllVal x tt)
+        | CEQinj1 {a1} {a2} {A} {b1} {b2} {B} (compAllVal x₁ tt) | CEQinj2 {a1} {a2} {A} {b1} {b2} {B} (compAllVal x₁ tt) | CEQinj3 {a1} {a2} {A} {b1} {b2} {B} (compAllVal x₁ tt) =
+  Bar.allW-inBarFunc
     inOpenBar-Bar
     (λ w1 e1 (c₁ , c₂ , eqi1) → c₁ , c₂ , eqtA w1 e1 , eqi1)
-    eqi--}
+    eqi
 if-equalInType-EQ u w T a b t₁ t₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
 --if-equalInType-EQ u w T a b t₁ t₂ (EQTDUM A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqDUM (compAllVal x₁ tt))
@@ -689,37 +689,37 @@ weakMonEq-pres-⇓ {w} {a1} {a2} {n} wm c = z₂
     z₂ rewrite NUMinj z₁ = snd (snd (lower (wm w (extRefl _))))
 
 
-weakMonEq-preserves-inbar : {w : world} {a b c d : Term}
-                            → weakMonEq w c a
-                            → weakMonEq w d b
-                            → inbar w (λ w' _ → lift-<NUM-pair w' a b)
-                            → inbar w (λ w' _ → lift-<NUM-pair w' c d)
+weakMonEq-preserves-inbar : {w : world} {a b c d : CTerm}
+                            → weakMonEq w ⌜ c ⌝ ⌜ a ⌝
+                            → weakMonEq w ⌜ d ⌝ ⌜ b ⌝
+                            → inbar w (λ w' _ → lift-<NUM-pair w' ⌜ a ⌝ ⌜ b ⌝)
+                            → inbar w (λ w' _ → lift-<NUM-pair w' ⌜ c ⌝ ⌜ d ⌝)
 weakMonEq-preserves-inbar {w} {a} {b} {c} {d} s₁ s₂ i =
   Bar.allW-inBarFunc inOpenBar-Bar aw i
   where
-    aw : allW w (λ w' e' → lift-<NUM-pair w' a b → lift-<NUM-pair w' c d)
-    aw w1 e1 (lift (n , m , c₁ , c₂ , c)) =
+    aw : allW w (λ w' e' → lift-<NUM-pair w' ⌜ a ⌝ ⌜ b ⌝ → lift-<NUM-pair w' ⌜ c ⌝ ⌜ d ⌝)
+    aw w1 e1 (lift (n , m , c₁ , c₂ , c')) =
       lift (n , m ,
-            weakMonEq-pres-⇓ (weakMonEq-sym (weakMonEq-mon s₁ w1 e1)) c₁ ,
-            weakMonEq-pres-⇓ (weakMonEq-sym (weakMonEq-mon s₂ w1 e1)) c₂ ,
-            c)
+            weakMonEq-pres-⇓ (weakMonEq-sym (weakMonEq-mon {c} {a} s₁ w1 e1)) c₁ ,
+            weakMonEq-pres-⇓ (weakMonEq-sym (weakMonEq-mon {d} {b} s₂ w1 e1)) c₂ ,
+            c')
 
 
 
-strongMonEq-preserves-inbar : {w : world} {a b c d : Term}
-                              → strongMonEq w c a
-                              → strongMonEq w d b
-                              → inbar w (λ w' _ → lift-<NUM-pair w' a b)
-                              → inbar w (λ w' _ → lift-<NUM-pair w' c d)
+strongMonEq-preserves-inbar : {w : world} {a b c d : CTerm}
+                              → strongMonEq w ⌜ c ⌝ ⌜ a ⌝
+                              → strongMonEq w ⌜ d ⌝ ⌜ b ⌝
+                              → inbar w (λ w' _ → lift-<NUM-pair w' ⌜ a ⌝ ⌜ b ⌝)
+                              → inbar w (λ w' _ → lift-<NUM-pair w' ⌜ c ⌝ ⌜ d ⌝)
 strongMonEq-preserves-inbar {w} {a} {b} {c} {d} s₁ s₂ i =
   Bar.allW-inBarFunc inOpenBar-Bar aw i
   where
-    aw : allW w (λ w' e' → lift-<NUM-pair w' a b → lift-<NUM-pair w' c d)
-    aw w1 e1 (lift (n , m , c₁ , c₂ , c)) =
+    aw : allW w (λ w' e' → lift-<NUM-pair w' ⌜ a ⌝ ⌜ b ⌝ → lift-<NUM-pair w' ⌜ c ⌝ ⌜ d ⌝)
+    aw w1 e1 (lift (n , m , c₁ , c₂ , c')) =
       lift (n , m ,
-            strongMonEq-pres-⇓ (strongMonEq-sym (strongMonEq-mon s₁ w1 e1)) c₁ ,
-            strongMonEq-pres-⇓ (strongMonEq-sym (strongMonEq-mon s₂ w1 e1)) c₂ ,
-            c)
+            strongMonEq-pres-⇓ (strongMonEq-sym (strongMonEq-mon {c} {a} s₁ w1 e1)) c₁ ,
+            strongMonEq-pres-⇓ (strongMonEq-sym (strongMonEq-mon {d} {b} s₂ w1 e1)) c₂ ,
+            c')
 
 
 →inbar⇛ : {w : world} {A B : Term}

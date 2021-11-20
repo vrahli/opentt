@@ -644,15 +644,15 @@ CTerm≡ : {a b : CTerm} → ⌜ a ⌝ ≡ ⌜ b ⌝ → a ≡ b
 CTerm≡ {ct a ca} {ct .a cb} refl rewrite #eq {a} ca cb = refl
 
 
-CEQinj1 : {a b c d e f : CTerm} → ⌜ CEQ a b c ⌝ ≡ EQ ⌜ d ⌝ ⌜ e ⌝ ⌜ f ⌝ → a ≡ d
+CEQinj1 : {a b c d e f : CTerm} → ⌜ CEQ a b c ⌝ ≡ ⌜ CEQ d e f ⌝ → a ≡ d
 CEQinj1 refl = CTerm≡ refl
 
 
-CEQinj2 : {a b c d e f : CTerm} → ⌜ CEQ a b c ⌝ ≡ EQ ⌜ d ⌝ ⌜ e ⌝ ⌜ f ⌝ → b ≡ e
+CEQinj2 : {a b c d e f : CTerm} → ⌜ CEQ a b c ⌝ ≡ ⌜ CEQ d e f ⌝ → b ≡ e
 CEQinj2 refl = CTerm≡ refl
 
 
-CEQinj3 : {a b c d e f : CTerm} → ⌜ CEQ a b c ⌝ ≡ EQ ⌜ d ⌝ ⌜ e ⌝ ⌜ f ⌝ → c ≡ f
+CEQinj3 : {a b c d e f : CTerm} → ⌜ CEQ a b c ⌝ ≡ ⌜ CEQ d e f ⌝ → c ≡ f
 CEQinj3 refl = CTerm≡ refl
 
 
