@@ -44,25 +44,25 @@ impliesEqTypes u e = (u , e)
 impliesEqInType : (u : ℕ) {w : world} {T a b : CTerm} → equalInType u w T a b → eqintype w T a b
 impliesEqInType u f = (u , f)
 
-univInBar : (n : ℕ) (w : world) → eqUnivi n w (CUNIV n) (CUNIV n)
+univInBar : (n : ℕ) (w : world) → eqUnivi n w (#UNIV n) (#UNIV n)
 univInBar n w =  Bar.allW-inBar inOpenBar-Bar λ w1 e1 → compAllRefl (UNIV n) w1 , compAllRefl (UNIV n) w1
 
-lemma1 : (w : world) → equalTypes 0 w (CUNIV 0) (CUNIV 0)
+lemma1 : (w : world) → equalTypes 0 w (#UNIV 0) (#UNIV 0)
 lemma1 w = EQTUNIV (univInBar 0 w)
 
-lemma2 : (w : world) → eqtypes w (CUNIV 0) (CUNIV 0)
+lemma2 : (w : world) → eqtypes w (#UNIV 0) (#UNIV 0)
 lemma2 w = impliesEqTypes 0 (lemma1 w)
 
-lemma3 : (w : world) → equalTypes 1 w (CUNIV 1) (CUNIV 1)
+lemma3 : (w : world) → equalTypes 1 w (#UNIV 1) (#UNIV 1)
 lemma3 w = EQTUNIV (univInBar 1 w)
 
-lemma4 : (w : world) → eqtypes w (CUNIV 1) (CUNIV 1)
+lemma4 : (w : world) → eqtypes w (#UNIV 1) (#UNIV 1)
 lemma4 w = impliesEqTypes 1 (lemma3 w)
 
-lemma5 : (w : world) → equalInType 1 w (CUNIV 1) (CUNIV 0) (CUNIV 0)
+lemma5 : (w : world) → equalInType 1 w (#UNIV 1) (#UNIV 0) (#UNIV 0)
 lemma5 w = (lemma3 w , {--inj₁--} Bar.allW-inBar inOpenBar-Bar λ w' e' → EQTUNIV (univInBar 0 w'))
 
-lemma6 : (w : world) → eqintype w (CUNIV 1) (CUNIV 0) (CUNIV 0)
+lemma6 : (w : world) → eqintype w (#UNIV 1) (#UNIV 0) (#UNIV 0)
 lemma6 w = impliesEqInType 1 (lemma5 w)
 
 
@@ -379,20 +379,12 @@ mon : (p : wper) → Set₁
 mon p = {a b : CTerm} {w : world} → p w a b → allW w (λ w' e' → p w' a b)
 
 
-cstrongMonEq : (w : world) (t1 t2 : CTerm) → Set₁
-cstrongMonEq w t1 t2 = strongMonEq w ⌜ t1 ⌝ ⌜ t2 ⌝
+#strongMonEq-mon : mon #strongMonEq
+#strongMonEq-mon {a} {b} {w} (n , c₁ , c₂) w1 e1 = (n , ⇛-mon e1 c₁ , ⇛-mon e1 c₂)
 
 
-strongMonEq-mon : mon cstrongMonEq
-strongMonEq-mon {a} {b} {w} (n , c₁ , c₂) w1 e1 = (n , ⇛-mon e1 c₁ , ⇛-mon e1 c₂)
-
-
-cweakMonEq : (w : world) (t1 t2 : CTerm) → Set₁
-cweakMonEq w t1 t2 = weakMonEq w ⌜ t1 ⌝ ⌜ t2 ⌝
-
-
-weakMonEq-mon : mon cweakMonEq
-weakMonEq-mon {a} {b} {w} h w' e' = allW-mon e' h
+#weakMonEq-mon : mon #weakMonEq
+#weakMonEq-mon {a} {b} {w} h w' e' = allW-mon e' h
 
 
 eqTypes-mon : (u : univs) → mon (proj₁ (proj₂ u)) → mon (eqTypes u)
@@ -401,13 +393,13 @@ eqTypes-mon u m {A} {B} {w1} (EQTQNAT x x₁) w2 ext = EQTQNAT (⇛-mon ext x) (
 eqTypes-mon u m {A} {B} {w1} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) w2 ext =
   EQTLT a1 a2 b1 b2
     (⇛-mon ext x) (⇛-mon ext x₁)
-    (strongMonEq-mon {a1} {a2} x₂ w2 ext)
-    (strongMonEq-mon {b1} {b2} x₃ w2 ext)
+    (#strongMonEq-mon {a1} {a2} x₂ w2 ext)
+    (#strongMonEq-mon {b1} {b2} x₃ w2 ext)
 eqTypes-mon u m {A} {B} {w1} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) w2 ext =
   EQTQLT a1 a2 b1 b2
     (⇛-mon ext x) (⇛-mon ext x₁)
-    (weakMonEq-mon {a1} {a2} x₂ w2 ext)
-    (weakMonEq-mon {b1} {b2} x₃ w2 ext)
+    (#weakMonEq-mon {a1} {a2} x₂ w2 ext)
+    (#weakMonEq-mon {b1} {b2} x₃ w2 ext)
 eqTypes-mon u m {A} {B} {w1} (EQTFREE x x₁) w2 ext =
   EQTFREE (⇛-mon ext x) (⇛-mon ext x₁)
 eqTypes-mon u m {A} {B} {w1} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) w2 ext =
@@ -476,7 +468,7 @@ eqTypes-mon u m {A} {B} {w1} (EQTBAR x) w2 ext = EQTBAR (Bar.↑inBar inOpenBar-
 
 
 if-equalInType-EQ : (u : ℕ) (w : world) (T a b t₁ t₂ : CTerm)
-                    → equalInType u w (CEQ a b T) t₁ t₂
+                    → equalInType u w (#EQ a b T) t₁ t₂
                     → inbar w (λ w' e' → ⌜ t₁ ⌝ ⇛ AX at w' × ⌜ t₂ ⌝ ⇛ AX at w' × equalInType u w' T a b)
 {-# INLINE allW-inOpenBar'-inOpenBar #-}
 {-# TERMINATING #-}
@@ -489,8 +481,8 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta e
 if-equalInType-EQ u w T a b t₁ t₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSUM (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSET (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2 , eqi)
-  rewrite CEQinj1 {a} {b} {T} {a1} {a2} {A} (compAllVal x tt)  | CEQinj2 {a} {b} {T} {a1} {a2} {A} (compAllVal x tt)  | CEQinj3 {a} {b} {T} {a1} {a2} {A} (compAllVal x tt)
-        | CEQinj1 {a1} {a2} {A} {b1} {b2} {B} (compAllVal x₁ tt) | CEQinj2 {a1} {a2} {A} {b1} {b2} {B} (compAllVal x₁ tt) | CEQinj3 {a1} {a2} {A} {b1} {b2} {B} (compAllVal x₁ tt) =
+  rewrite #EQinj1 {a} {b} {T} {a1} {a2} {A} (compAllVal x tt)  | #EQinj2 {a} {b} {T} {a1} {a2} {A} (compAllVal x tt)  | #EQinj3 {a} {b} {T} {a1} {a2} {A} (compAllVal x tt)
+        | #EQinj1 {a1} {a2} {A} {b1} {b2} {B} (compAllVal x₁ tt) | #EQinj2 {a1} {a2} {A} {b1} {b2} {B} (compAllVal x₁ tt) | #EQinj3 {a1} {a2} {A} {b1} {b2} {B} (compAllVal x₁ tt) =
   Bar.allW-inBarFunc
     inOpenBar-Bar
     (λ w1 e1 (c₁ , c₂ , eqi1) → c₁ , c₂ , eqtA w1 e1 , eqi1)
@@ -501,7 +493,7 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) =
 if-equalInType-EQ u w T a b t₁ t₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTUNIV x , eqi) = Bar.allW-inBarFunc inOpenBar-Bar z2 x
   where
-    z2 : allW w (λ w' e' → (⌜ CEQ a b T ⌝ ⇛ UNIV u at w' × ⌜ CEQ a b T ⌝ ⇛ UNIV u at w') → ⌜ t₁ ⌝ ⇛ AX at w' × ⌜ t₂ ⌝ ⇛ AX at w' × equalInType u w' T a b)
+    z2 : allW w (λ w' e' → (⌜ #EQ a b T ⌝ ⇛ UNIV u at w' × ⌜ #EQ a b T ⌝ ⇛ UNIV u at w') → ⌜ t₁ ⌝ ⇛ AX at w' × ⌜ t₂ ⌝ ⇛ AX at w' × equalInType u w' T a b)
     z2 w' e' (c₁ , c₂) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
   Bar.inBar-idem
@@ -510,7 +502,7 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
   where
     aw : allW w
               (λ w' e' →
-                (x₁ : eqTypes (uni u) w' (CEQ a b T) (CEQ a b T))
+                (x₁ : eqTypes (uni u) w' (#EQ a b T) (#EQ a b T))
                 (at : atbar x w' e' x₁)
                 → eqInType (uni u) w' x₁ t₁ t₂
                 → Bar.inBar inOpenBar-Bar w' (↑wPred' (λ w'' e → ⌜ t₁ ⌝ ⇛ AX at w'' × ⌜ t₂ ⌝ ⇛ AX at w'' × equalInType u w'' T a b) e'))
@@ -700,8 +692,8 @@ weakMonEq-preserves-inbar {w} {a} {b} {c} {d} s₁ s₂ i =
     aw : allW w (λ w' e' → lift-<NUM-pair w' ⌜ a ⌝ ⌜ b ⌝ → lift-<NUM-pair w' ⌜ c ⌝ ⌜ d ⌝)
     aw w1 e1 (lift (n , m , c₁ , c₂ , c')) =
       lift (n , m ,
-            weakMonEq-pres-⇓ (weakMonEq-sym (weakMonEq-mon {c} {a} s₁ w1 e1)) c₁ ,
-            weakMonEq-pres-⇓ (weakMonEq-sym (weakMonEq-mon {d} {b} s₂ w1 e1)) c₂ ,
+            weakMonEq-pres-⇓ (weakMonEq-sym (#weakMonEq-mon {c} {a} s₁ w1 e1)) c₁ ,
+            weakMonEq-pres-⇓ (weakMonEq-sym (#weakMonEq-mon {d} {b} s₂ w1 e1)) c₂ ,
             c')
 
 
@@ -717,8 +709,8 @@ strongMonEq-preserves-inbar {w} {a} {b} {c} {d} s₁ s₂ i =
     aw : allW w (λ w' e' → lift-<NUM-pair w' ⌜ a ⌝ ⌜ b ⌝ → lift-<NUM-pair w' ⌜ c ⌝ ⌜ d ⌝)
     aw w1 e1 (lift (n , m , c₁ , c₂ , c')) =
       lift (n , m ,
-            strongMonEq-pres-⇓ (strongMonEq-sym (strongMonEq-mon {c} {a} s₁ w1 e1)) c₁ ,
-            strongMonEq-pres-⇓ (strongMonEq-sym (strongMonEq-mon {d} {b} s₂ w1 e1)) c₂ ,
+            strongMonEq-pres-⇓ (strongMonEq-sym (#strongMonEq-mon {c} {a} s₁ w1 e1)) c₁ ,
+            strongMonEq-pres-⇓ (strongMonEq-sym (#strongMonEq-mon {d} {b} s₂ w1 e1)) c₂ ,
             c')
 
 
@@ -1029,7 +1021,7 @@ irr-fam-pi : (u : univs) (w : world) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2
              → allW w1 (λ w' e' → PIeq (eqInType u w' (eqta w' (extTrans e' e1))) (λ a1 a2 eqa → eqInType u w' (eqtb w' (extTrans e' e1) a1 a2 eqa)) f g
                                  → (z : w' ≽ w) → PIeq (eqInType u w' (eqta w' z)) (λ a1 a2 eqa → eqInType u w' (eqtb w' z a1 a2 eqa)) f g)
 irr-fam-pi u w A1 B1 A2 B2 eqta eqtb exta extb f g w1 e1 w' e' j z a1 a2 eqa =
-  extb a1 a2 (CAPPLY f a1) (CAPPLY g a2) w' (extTrans e' e1) z eqa' eqa (j a1 a2 eqa')
+  extb a1 a2 (#APPLY f a1) (#APPLY g a2) w' (extTrans e' e1) z eqa' eqa (j a1 a2 eqa')
     where
       eqa' : eqInType u w' (eqta w' (extTrans e' e1)) a1 a2
       eqa' = exta a1 a2 w' z (extTrans e' e1) eqa

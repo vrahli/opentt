@@ -19,11 +19,15 @@ open import Data.Nat using (ℕ ; _≟_ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; 
 open import Data.Nat.Properties
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
-open import Data.List
+open import Data.List using (List ; [] ; _∷_ ; [_] ; _++_)
+open import Data.List.Properties
 open import Data.List.Relation.Unary.Any
+open import Data.List.Membership.Propositional
+open import Data.List.Membership.Propositional.Properties
 open import Data.List.Membership.Propositional
 open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
+open import Axiom.UniquenessOfIdentityProofs
 \end{code}
 
 
@@ -208,10 +212,16 @@ fvars (SHRINK t)        = fvars t
 _#_ : (v : Var) (t : Term) → Set
 v # t = ¬ (v ∈ fvars t)
 
+
 -- closed expression
-#_ : (t : Term) → Set
+#_ : (t : Term) → Set₀
 # t = fvars t ≡ []
+--# t = ((fvars t) _≟_ []) ≡ true
 --# t = (fvars t) ⊆? [] ≡ true
+
+
+#eq : {a : Term} → (p q : # a) → q ≡ p
+#eq {a} p q = Decidable⇒UIP.≡-irrelevant (Data.List.Properties.≡-dec Data.Nat.Properties._≟_) q p
 
 
 _⊆?_ : (l k : List Var) → Bool
@@ -237,6 +247,27 @@ record CTerm0 : Set where
   field
     cTerm  : Term
     closed : #[ [ 0 ] ] cTerm
+
+
+
+record ToTerm (A : Set) : Set where
+  field
+    ⌜_⌝ : A -> Term
+
+open ToTerm {{...}} public
+
+
+instance
+  CTermToTerm : ToTerm CTerm
+  ⌜_⌝ {{CTermToTerm}} t = CTerm.cTerm t
+
+instance
+  CTerm0ToTerm : ToTerm CTerm0
+  ⌜_⌝ {{CTerm0ToTerm}} t = CTerm0.cTerm t
+
+
+CTerm≡ : {a b : CTerm} → ⌜ a ⌝ ≡ ⌜ b ⌝ → a ≡ b
+CTerm≡ {ct a ca} {ct .a cb} refl rewrite #eq {a} ca cb = refl
 
 
 sucIf≤ : (c x : ℕ) → ℕ

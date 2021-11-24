@@ -64,24 +64,9 @@ atbar = atOpenBar
           → inbar' w i g → inbar' w' (↑inbar i e) (↑wPredDep g e)
 ↑inbar' {w} {f} {g} = ↑inOpenBar' {w} {f} {g}
 
+
 wpreddepextirr : {w : world} {f : wPred w} (h : wPredDep f) (i : inbar w f) → Set₁
 wpreddepextirr = wPredDepExtIrr-inOpenBar
-
-
-record ToTerm (A : Set) : Set where
-  field
-    ⌜_⌝ : A -> Term
-
-open ToTerm {{...}} public
-
-
-instance
-  CTermToTerm : ToTerm CTerm
-  ⌜_⌝ {{CTermToTerm}} t = CTerm.cTerm t
-
-instance
-  CTerm0ToTerm : ToTerm CTerm0
-  ⌜_⌝ {{CTerm0ToTerm}} t = CTerm0.cTerm t
 
 
 removeV : (v : Var) (l : List Var) → List Var
@@ -618,49 +603,152 @@ sub0 a t =
 --→ Term ⌜_⌝ : CTerm → Term
 
 
-CAPPLY : CTerm → CTerm → CTerm
-CAPPLY a b = ct (APPLY ⌜ a ⌝ ⌜ b ⌝) c
+#NAT : CTerm
+#NAT = ct NAT refl
+
+
+#FREE : CTerm
+#FREE = ct FREE refl
+
+
+#QNAT : CTerm
+#QNAT = ct QNAT refl
+
+
+#AX : CTerm
+#AX = ct AX refl
+
+
+#UNIV : ℕ → CTerm
+#UNIV n = ct (UNIV n) refl
+
+
+#APPLY : CTerm → CTerm → CTerm
+#APPLY a b = ct (APPLY ⌜ a ⌝ ⌜ b ⌝) c
   where
     c : # APPLY (CTerm.cTerm a) (CTerm.cTerm b)
     c rewrite CTerm.closed a | CTerm.closed b = refl
 
 
-CEQ : CTerm → CTerm → CTerm → CTerm
-CEQ a b T = ct (EQ ⌜ a ⌝ ⌜ b ⌝ ⌜ T ⌝) c
+#PAIR : CTerm → CTerm → CTerm
+#PAIR a b = ct (PAIR ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # PAIR (CTerm.cTerm a) (CTerm.cTerm b)
+    c rewrite CTerm.closed a | CTerm.closed b = refl
+
+
+#UNION : CTerm → CTerm → CTerm
+#UNION a b = ct (UNION ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # UNION (CTerm.cTerm a) (CTerm.cTerm b)
+    c rewrite CTerm.closed a | CTerm.closed b = refl
+
+
+#FFDEFS : CTerm → CTerm → CTerm
+#FFDEFS a b = ct (FFDEFS ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # FFDEFS (CTerm.cTerm a) (CTerm.cTerm b)
+    c rewrite CTerm.closed a | CTerm.closed b = refl
+
+
+#TSQUASH : CTerm → CTerm
+#TSQUASH a = ct (TSQUASH ⌜ a ⌝) c
+  where
+    c : # TSQUASH (CTerm.cTerm a)
+    c rewrite CTerm.closed a = refl
+
+
+#INL : CTerm → CTerm
+#INL a = ct (INL ⌜ a ⌝) c
+  where
+    c : # INL (CTerm.cTerm a)
+    c rewrite CTerm.closed a = refl
+
+
+#INR : CTerm → CTerm
+#INR a = ct (INR ⌜ a ⌝) c
+  where
+    c : # INR (CTerm.cTerm a)
+    c rewrite CTerm.closed a = refl
+
+
+#LT : CTerm → CTerm → CTerm
+#LT a b = ct (LT ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # LT (CTerm.cTerm a) (CTerm.cTerm b)
+    c rewrite CTerm.closed a | CTerm.closed b = refl
+
+
+#QLT : CTerm → CTerm → CTerm
+#QLT a b = ct (QLT ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # QLT (CTerm.cTerm a) (CTerm.cTerm b)
+    c rewrite CTerm.closed a | CTerm.closed b = refl
+
+
+#EQ : CTerm → CTerm → CTerm → CTerm
+#EQ a b T = ct (EQ ⌜ a ⌝ ⌜ b ⌝ ⌜ T ⌝) c
   where
     c : # EQ (CTerm.cTerm a) (CTerm.cTerm b) (CTerm.cTerm T)
     c rewrite CTerm.closed a | CTerm.closed b | CTerm.closed T = refl
+
+
+#PI : CTerm → CTerm0 → CTerm
+#PI a b = ct (PI ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # PI (CTerm.cTerm a) (CTerm0.cTerm b)
+    c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
+
+
+#SUM : CTerm → CTerm0 → CTerm
+#SUM a b = ct (SUM ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # SUM (CTerm.cTerm a) (CTerm0.cTerm b)
+    c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
+
+
+#SET : CTerm → CTerm0 → CTerm
+#SET a b = ct (SET ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # SET (CTerm.cTerm a) (CTerm0.cTerm b)
+    c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
 
 
 {--≡# : {a b : Term} → a ≡ b → (ca : # a) (cb : # b) → ca ≡ cb
 ≡# {a} {b} e ca cb = {!!}--}
 
 
-#eq : {a : Term} → (p q : # a) → q ≡ p
-#eq {a} p q = Decidable⇒UIP.≡-irrelevant (Data.List.Properties.≡-dec Data.Nat.Properties._≟_) q p
+#EQinj1 : {a b c d e f : CTerm} → ⌜ #EQ a b c ⌝ ≡ ⌜ #EQ d e f ⌝ → a ≡ d
+#EQinj1 refl = CTerm≡ refl
 
 
-CTerm≡ : {a b : CTerm} → ⌜ a ⌝ ≡ ⌜ b ⌝ → a ≡ b
-CTerm≡ {ct a ca} {ct .a cb} refl rewrite #eq {a} ca cb = refl
+#EQinj2 : {a b c d e f : CTerm} → ⌜ #EQ a b c ⌝ ≡ ⌜ #EQ d e f ⌝ → b ≡ e
+#EQinj2 refl = CTerm≡ refl
 
 
-CEQinj1 : {a b c d e f : CTerm} → ⌜ CEQ a b c ⌝ ≡ ⌜ CEQ d e f ⌝ → a ≡ d
-CEQinj1 refl = CTerm≡ refl
+#EQinj3 : {a b c d e f : CTerm} → ⌜ #EQ a b c ⌝ ≡ ⌜ #EQ d e f ⌝ → c ≡ f
+#EQinj3 refl = CTerm≡ refl
 
 
-CEQinj2 : {a b c d e f : CTerm} → ⌜ CEQ a b c ⌝ ≡ ⌜ CEQ d e f ⌝ → b ≡ e
-CEQinj2 refl = CTerm≡ refl
+_#⇛_at_ : (T T' : CTerm) (w : world) → Set₁
+T #⇛ T' at w = ⌜ T ⌝ ⇛ ⌜ T' ⌝ at w
+infix 30 _#⇛_at_
 
 
-CEQinj3 : {a b c d e f : CTerm} → ⌜ CEQ a b c ⌝ ≡ ⌜ CEQ d e f ⌝ → c ≡ f
-CEQinj3 refl = CTerm≡ refl
+#strongMonEq : (w : world) (t1 t2 : CTerm) → Set₁
+#strongMonEq w t1 t2 = strongMonEq w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 
-CUNIV : ℕ → CTerm
-CUNIV n = ct (UNIV n) c
-  where
-    c : # UNIV n
-    c = refl
+#weakMonEq : (w : world) (t1 t2 : CTerm) → Set₁
+#weakMonEq w t1 t2 = weakMonEq w ⌜ t1 ⌝ ⌜ t2 ⌝
+
+
+#lift-<NUM-pair : (w : world) (t1 t2 : CTerm) → Set₁
+#lift-<NUM-pair w t1 t2 = lift-<NUM-pair w ⌜ t1 ⌝ ⌜ t2 ⌝
+
+
+#⇛to-same-CS : (w : world) (t1 t2 : CTerm) → Set₁
+#⇛to-same-CS w t1 t2 = ⇛to-same-CS w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 
 -- PERs and world dependent PERs
@@ -691,24 +779,24 @@ Equality between type is defined as the following inductive definition
 
 \begin{code}
 data eqTypes u w T1 T2 where
-  EQTNAT : ⌜ T1 ⌝ ⇛ NAT at w → ⌜ T2 ⌝ ⇛ NAT at w → eqTypes u w T1 T2
-  EQTQNAT : ⌜ T1 ⌝ ⇛ QNAT at w → ⌜ T2 ⌝ ⇛ QNAT at w → eqTypes u w T1 T2
+  EQTNAT : T1 #⇛ #NAT at w → T2 #⇛ #NAT at w → eqTypes u w T1 T2
+  EQTQNAT : T1 #⇛ #QNAT at w → T2 #⇛ #QNAT at w → eqTypes u w T1 T2
   EQTLT : (a1 a2 b1 b2 : CTerm)
-    → ⌜ T1 ⌝ ⇛ (LT ⌜ a1 ⌝ ⌜ b1 ⌝) at w
-    → ⌜ T2 ⌝ ⇛ (LT ⌜ a2 ⌝ ⌜ b2 ⌝) at w
-    → strongMonEq w ⌜ a1 ⌝ ⌜ a2 ⌝
-    → strongMonEq w ⌜ b1 ⌝ ⌜ b2 ⌝
+    → T1 #⇛ (#LT a1 b1) at w
+    → T2 #⇛ (#LT a2 b2) at w
+    → #strongMonEq w a1 a2
+    → #strongMonEq w b1 b2
     → eqTypes u w T1 T2
   EQTQLT : (a1 a2 b1 b2 : CTerm)
-    → ⌜ T1 ⌝ ⇛ (QLT ⌜ a1 ⌝ ⌜ b1 ⌝) at w
-    → ⌜ T2 ⌝ ⇛ (QLT ⌜ a2 ⌝ ⌜ b2 ⌝) at w
-    → weakMonEq w ⌜ a1 ⌝ ⌜ a2 ⌝
-    → weakMonEq w ⌜ b1 ⌝ ⌜ b2 ⌝
+    → T1 #⇛ (#QLT a1 b1) at w
+    → T2 #⇛ (#QLT a2 b2) at w
+    → #weakMonEq w a1 a2
+    → #weakMonEq w b1 b2
     → eqTypes u w T1 T2
-  EQTFREE : ⌜ T1 ⌝ ⇛ FREE at w → ⌜ T2 ⌝ ⇛ FREE at w → eqTypes u w T1 T2
+  EQTFREE : T1 #⇛ #FREE at w → T2 #⇛ #FREE at w → eqTypes u w T1 T2
   EQTPI : (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
-    → ⌜ T1 ⌝ ⇛ (PI ⌜ A1 ⌝  ⌜ B1 ⌝) at w
-    → ⌜ T2 ⌝ ⇛ (PI ⌜ A2 ⌝  ⌜ B2 ⌝) at w
+    → T1 #⇛ (#PI A1 B1) at w
+    → T2 #⇛ (#PI A2 B2) at w
     → (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
     → (eqtb : allW w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
                               → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
@@ -716,8 +804,8 @@ data eqTypes u w T1 T2 where
     → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
     → eqTypes u w T1 T2
   EQTSUM : (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
-    → ⌜ T1 ⌝ ⇛ (SUM ⌜ A1 ⌝ ⌜ B1 ⌝) at w
-    → ⌜ T2 ⌝ ⇛ (SUM ⌜ A2 ⌝ ⌜ B2 ⌝) at w
+    → T1 #⇛ (#SUM A1 B1) at w
+    → T2 #⇛ (#SUM A2 B2) at w
     → (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
     → (eqtb : allW w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
                          → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
@@ -725,8 +813,8 @@ data eqTypes u w T1 T2 where
     → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
     → eqTypes u w T1 T2
   EQTSET : (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
-    → ⌜ T1 ⌝ ⇛ (SET ⌜ A1 ⌝ ⌜ B1 ⌝) at w
-    → ⌜ T2 ⌝ ⇛ (SET ⌜ A2 ⌝ ⌜ B2 ⌝) at w
+    → T1 #⇛ (#SET A1 B1) at w
+    → T2 #⇛ (#SET A2 B2) at w
     → (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
     → (eqtb : allW w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
                          → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
@@ -734,24 +822,24 @@ data eqTypes u w T1 T2 where
     → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
     → eqTypes u w T1 T2
   EQTEQ : (a1 b1 a2 b2 A B : CTerm)
-    → ⌜ T1 ⌝ ⇛ ⌜ CEQ a1 a2 A ⌝ at w
-    → ⌜ T2 ⌝ ⇛ ⌜ CEQ b1 b2 B ⌝ at w
+    → T1 #⇛ #EQ a1 a2 A at w
+    → T2 #⇛ #EQ b1 b2 B at w
     → (eqtA : allW w (λ w' _ → eqTypes u w' A B))
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → (eqt1 : allW w (λ w' e → eqInType u w' (eqtA w' e) a1 b1))
     → (eqt2 : allW w (λ w' e → eqInType u w' (eqtA w' e) a2 b2))
     → eqTypes u w T1 T2
   EQTUNION : (A1 B1 A2 B2 : CTerm)
-    → ⌜ T1 ⌝ ⇛ (UNION ⌜ A1 ⌝ ⌜ B1 ⌝) at w
-    → ⌜ T2 ⌝ ⇛ (UNION ⌜ A2 ⌝ ⌜ B2 ⌝) at w
+    → T1 #⇛ (#UNION A1 B1) at w
+    → T2 #⇛ (#UNION A2 B2) at w
     → (eqtA : allW w (λ w' _ → eqTypes u w' A1 A2))
     → (eqtB : allW w (λ w' _ → eqTypes u w' B1 B2))
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtB w e) a b))
     → eqTypes u w T1 T2
   EQTSQUASH : (A1 A2 : CTerm)
-    → ⌜ T1 ⌝ ⇛ (TSQUASH ⌜ A1 ⌝) at w
-    → ⌜ T2 ⌝ ⇛ (TSQUASH ⌜ A2 ⌝) at w
+    → T1 #⇛ (#TSQUASH A1) at w
+    → T2 #⇛ (#TSQUASH A2) at w
     → (eqtA : allW w (λ w' _ → eqTypes u w' A1 A2))
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → eqTypes u w T1 T2
@@ -762,8 +850,8 @@ data eqTypes u w T1 T2 where
     → (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → eqTypes u w T1 T2--}
   EQFFDEFS : (A1 A2 x1 x2 : CTerm)
-    → ⌜ T1 ⌝ ⇛ (FFDEFS ⌜ A1 ⌝ ⌜ x1 ⌝) at w
-    → ⌜ T2 ⌝ ⇛ (FFDEFS ⌜ A2 ⌝ ⌜ x2 ⌝) at w
+    → T1 #⇛ (#FFDEFS A1 x1) at w
+    → T2 #⇛ (#FFDEFS A2 x2) at w
     → (eqtA : allW w (λ w' _ → eqTypes u w' A1 A2))
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → (eqx : allW w (λ w' e → eqInType u w' (eqtA w' e) x1 x2))
@@ -778,15 +866,15 @@ Equality in types is defined as the following recursive function.
 
 \begin{code}
 PIeq : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → per
-PIeq eqa eqb f g = (a b : CTerm) → (e : eqa a b) → eqb a b e (CAPPLY f a) (CAPPLY g b)
+PIeq eqa eqb f g = (a b : CTerm) → (e : eqa a b) → eqb a b e (#APPLY f a) (#APPLY g b)
 
 
 SUMeq : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → wper
 SUMeq eqa eqb w f g =
   Σ CTerm (λ a1 → Σ CTerm (λ a2 → Σ CTerm (λ b1 → Σ CTerm (λ b2 →
     Σ (eqa a1 a2) (λ ea →
-    ⌜ f ⌝ ⇛ (PAIR ⌜ a1 ⌝ ⌜ b1 ⌝) at w
-    × ⌜ g ⌝ ⇛ (PAIR ⌜ a2 ⌝ ⌜ b2 ⌝) at w
+    f #⇛ (#PAIR a1 b1) at w
+    × g #⇛ (#PAIR a2 b2) at w
     × eqb a1 a2 ea b1 b2)))))
 
 
@@ -796,15 +884,15 @@ SETeq eqa eqb f g = Σ CTerm (λ b → Σ (eqa f g) (λ ea → eqb f g ea b b))
 
 EQeq : (a1 a2 : CTerm) (eqa : per) → wper
 EQeq a1 a2 eqa w t1 t2 =
-  ⌜ t1 ⌝ ⇛ AX at w × ⌜ t2 ⌝ ⇛ AX at w × eqa a1 a2
+  t1 #⇛ #AX at w × t2 #⇛ #AX at w × eqa a1 a2
 
 
 UNIONeq : (eqa eqb : per) → wper
 UNIONeq eqa eqb w t1 t2  =
   Σ CTerm (λ a → Σ CTerm (λ b →
-    (⌜ t1 ⌝ ⇛ (INL ⌜ a ⌝) at w × ⌜ t2 ⌝ ⇛ (INL ⌜ b ⌝) at w × eqa a b)
+    (t1 #⇛ (#INL a) at w × t2 #⇛ (#INL b) at w × eqa a b)
     ⊎
-    (⌜ t1 ⌝ ⇛ (INR ⌜ a ⌝) at w × ⌜ t2 ⌝ ⇛ (INR ⌜ b ⌝) at w × eqb a b)))
+    (t1 #⇛ (#INR a) at w × t2 #⇛ (#INR b) at w × eqb a b)))
 
 
 TSQUASHeq : (eqa : per) → wper
@@ -813,20 +901,21 @@ TSQUASHeq eqa w t1 t2  =
      (⌜ t1 ⌝ ∼ ⌜ a1 ⌝ at w) × (⌜ t2 ⌝ ∼ ⌜ a2 ⌝ at w) × (⌜ t1 ⌝ ≈ ⌜ t2 ⌝ at w)
      × eqa a1 a2))
 
+
 FFDEFSeq : CTerm → (eqa : per) → wper
 FFDEFSeq x1 eqa w t1 t2 =
   Σ CTerm (λ x →
-   (⌜ t1 ⌝ ⇛ AX at w) × (⌜ t2 ⌝ ⇛ AX at w)
+   (t1 #⇛ #AX at w) × (t2 #⇛ #AX at w)
    × eqa x1 x × nodefs ⌜ x ⌝)
 
 
 {-# TERMINATING #-}
 --{-# INLINE inOpenBar' #-}
-eqInType _ w (EQTNAT _ _) t1 t2 = inbar w (λ w' _ → strongMonEq w' ⌜ t1 ⌝ ⌜ t2 ⌝)
-eqInType _ w (EQTQNAT _ _) t1 t2 = inbar w (λ w' _ → weakMonEq w' ⌜ t1 ⌝ ⌜ t2 ⌝)
-eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 = inbar w (λ w' _ → lift-<NUM-pair w' ⌜ a1 ⌝ ⌜ b1 ⌝)
-eqInType _ w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 = inbar w (λ w' _ → lift-<NUM-pair w' ⌜ a1 ⌝ ⌜ b1 ⌝)
-eqInType _ w (EQTFREE _ _) t1 t2 = inbar w (λ w' _ → ⇛to-same-CS w' ⌜ t1 ⌝ ⌜ t2 ⌝)
+eqInType _ w (EQTNAT _ _) t1 t2 = inbar w (λ w' _ → #strongMonEq w' t1 t2)
+eqInType _ w (EQTQNAT _ _) t1 t2 = inbar w (λ w' _ → #weakMonEq w' t1 t2)
+eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 = inbar w (λ w' _ → #lift-<NUM-pair w' a1 b1)
+eqInType _ w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 = inbar w (λ w' _ → #lift-<NUM-pair w' a1 b1)
+eqInType _ w (EQTFREE _ _) t1 t2 = inbar w (λ w' _ → #⇛to-same-CS w' t1 t2)
 eqInType u w (EQTPI _ _ _ _ _ _ eqta eqtb exta extb) f1 f2 =
   inbar w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) f1 f2)
 eqInType u w (EQTSUM _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
