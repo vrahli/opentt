@@ -22,6 +22,7 @@ TODO
 
 --}
 
+-- Should be a Kripke frame
 record PossibleWorlds : Set₂ where
   constructor mkPossibleWorlds
   field
