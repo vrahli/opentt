@@ -718,21 +718,38 @@ sub0 a t =
 ≡# {a} {b} e ca cb = {!!}--}
 
 
-#EQinj1 : {a b c d e f : CTerm} → ⌜ #EQ a b c ⌝ ≡ ⌜ #EQ d e f ⌝ → a ≡ d
-#EQinj1 refl = CTerm≡ refl
+
+EQinj1 : {a b c d e f : Term} → EQ a b c ≡ EQ d e f → a ≡ d
+EQinj1 refl =  refl
+
+EQinj2 : {a b c d e f : Term} → EQ a b c ≡ EQ d e f → b ≡ e
+EQinj2 refl =  refl
+
+EQinj3 : {a b c d e f : Term} → EQ a b c ≡ EQ d e f → c ≡ f
+EQinj3 refl =  refl
 
 
-#EQinj2 : {a b c d e f : CTerm} → ⌜ #EQ a b c ⌝ ≡ ⌜ #EQ d e f ⌝ → b ≡ e
-#EQinj2 refl = CTerm≡ refl
+#EQinj1 : {a b c d e f : CTerm} → #EQ a b c ≡ #EQ d e f → a ≡ d
+#EQinj1 c = CTerm≡ (EQinj1 (≡CTerm c))
 
+#EQinj2 : {a b c d e f : CTerm} → #EQ a b c ≡ #EQ d e f → b ≡ e
+#EQinj2 c = CTerm≡ (EQinj2 (≡CTerm c))
 
-#EQinj3 : {a b c d e f : CTerm} → ⌜ #EQ a b c ⌝ ≡ ⌜ #EQ d e f ⌝ → c ≡ f
-#EQinj3 refl = CTerm≡ refl
+#EQinj3 : {a b c d e f : CTerm} → #EQ a b c ≡ #EQ d e f → c ≡ f
+#EQinj3 c = CTerm≡ (EQinj3 (≡CTerm c))
 
 
 _#⇛_at_ : (T T' : CTerm) (w : world) → Set₁
 T #⇛ T' at w = ⌜ T ⌝ ⇛ ⌜ T' ⌝ at w
 infix 30 _#⇛_at_
+
+
+#isValue : CTerm -> Set
+#isValue t = isValue ⌜ t ⌝
+
+
+#compAllVal : {a b : CTerm} {w : world} → a #⇛ b at w → #isValue a → a ≡ b
+#compAllVal {ct a ca} {ct b cb} {w} c i = CTerm≡ (compAllVal c i)
 
 
 #strongMonEq : (w : world) (t1 t2 : CTerm) → Set₁

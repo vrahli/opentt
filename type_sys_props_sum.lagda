@@ -45,11 +45,25 @@ SUMinj2 : {a b c d : Term} → SUM a b ≡ SUM c d → b ≡ d
 SUMinj2 refl =  refl
 
 
+#SUMinj1 : {a : CTerm} {b : CTerm0} {c : CTerm} {d : CTerm0} → #SUM a b ≡ #SUM c d → a ≡ c
+#SUMinj1 c =  CTerm≡ (SUMinj1 (≡CTerm c))
+
+#SUMinj2 : {a : CTerm} {b : CTerm0} {c : CTerm} {d : CTerm0} → #SUM a b ≡ #SUM c d → b ≡ d
+#SUMinj2 c =  CTerm0≡ (SUMinj2 (≡CTerm c))
+
+
 PAIRinj1 : {a b c d : Term} → PAIR a b ≡ PAIR c d → a ≡ c
 PAIRinj1 refl =  refl
 
 PAIRinj2 : {a b c d : Term} → PAIR a b ≡ PAIR c d → b ≡ d
 PAIRinj2 refl =  refl
+
+
+#PAIRinj1 : {a b c d : CTerm} → #PAIR a b ≡ #PAIR c d → a ≡ c
+#PAIRinj1 c =  CTerm≡ (PAIRinj1 (≡CTerm c))
+
+#PAIRinj2 : {a b c d : CTerm} → #PAIR a b ≡ #PAIR c d → b ≡ d
+#PAIRinj2 c =  CTerm≡ (PAIRinj2 (≡CTerm c))
 
 
 SUMneqNAT : {a b : Term} → ¬ (SUM a b) ≡ NAT
@@ -99,16 +113,16 @@ SUMneqUNIV {a} {b} {n} ()
 
 
 
-typeSysConds-SUM-tsym : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                       (x : A ⇛ SUM A1 B1 at w) (x₁ : B ⇛ SUM A2 B2 at w)
+typeSysConds-SUM-tsym : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                       (x : A #⇛ #SUM A1 B1 at w) (x₁ : B #⇛ #SUM A2 B2 at w)
                        (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                        (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                              → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                       (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                       (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                              → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                       (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                       (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                        (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                        (indb : allW w (λ w1 e1 →
-                                         (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                         (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                          → TSP (eqtb w1 e1 a1 a2 ea)))
                        → eqTypes u w B A
 typeSysConds-SUM-tsym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb =
@@ -117,7 +131,7 @@ typeSysConds-SUM-tsym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
     syma : allW w (λ w' _ → eqTypes u w' A2 A1)
     syma w1 e1 = TSP.tsym (inda w1 e1)
 
-    symb : allW w (λ w' e → (a1 a2 : Term) → eqInType u w' (syma w' e) a1 a2 → eqTypes u w' (sub a1 B2) (sub a2 B1))
+    symb : allW w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (syma w' e) a1 a2 → eqTypes u w' (sub0 a1 B2) (sub0 a2 B1))
     symb w1 e1 a b eqi = TSP.tsym (indb w1 e1 b a eqi2)
       where
         eqi1 : eqInType u w1 (eqta w1 e1) a b
@@ -126,7 +140,7 @@ typeSysConds-SUM-tsym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         eqi2 : eqInType u w1 (eqta w1 e1) b a
         eqi2 = TSP.isym (inda w1 e1) a b eqi1
 
-    exta' : (a b : Term) → wPredExtIrr (λ w₁ e → eqInType u w₁ (TSP.tsym (inda w₁ e)) a b)
+    exta' : (a b : CTerm) → wPredExtIrr (λ w₁ e → eqInType u w₁ (TSP.tsym (inda w₁ e)) a b)
     exta' a b w' e1 e2 ei = TSP.extl2 (inda w' e2) A2 (TSP.tsym (inda w' e2)) a b ei2
       where
         ei1 : eqInType u w' (eqta w' e1) a b
@@ -135,8 +149,8 @@ typeSysConds-SUM-tsym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         ei2 : eqInType u w' (eqta w' e2) a b
         ei2 = exta a b w' e1 e2 ei1
 
-    extb' : (a b c d : Term) → wPredDepExtIrr (λ w₁ e x₂ → eqInType u w₁ (symb w₁ e a b x₂) c d)
-    extb' a b c d w' e1 e2 x₁ x₂ ei = TSP.extl2 (indb w' e2 b a x₂'') (sub a B2) (symb w' e2 a b x₂) c d eb4
+    extb' : (a b c d : CTerm) → wPredDepExtIrr (λ w₁ e x₂ → eqInType u w₁ (symb w₁ e a b x₂) c d)
+    extb' a b c d w' e1 e2 x₁ x₂ ei = TSP.extl2 (indb w' e2 b a x₂'') (sub0 a B2) (symb w' e2 a b x₂) c d eb4
       where
         x₁' : eqInType u w' (eqta w' e1) a b
         x₁' = TSP.extrevl2 (inda w' e1) A2 (syma w' e1) a b x₁
@@ -151,7 +165,7 @@ typeSysConds-SUM-tsym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         x₂'' = TSP.isym (inda w' e2) a b x₂'
 
         eb1 : eqInType u w' (eqtb w' e1 b a x₁'') c d
-        eb1 = TSP.extrevl2 (indb w' e1 b a x₁'') (sub a B2) (symb w' e1 a b x₁) c d ei
+        eb1 = TSP.extrevl2 (indb w' e1 b a x₁'') (sub0 a B2) (symb w' e1 a b x₁) c d ei
 
         eb2 : eqInType u w' (eqtb w' e1 a b x₁') c d
         eb2 = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb eb1
@@ -165,16 +179,16 @@ typeSysConds-SUM-tsym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 
 
 
-typeSysConds-SUM-ttrans : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                         (x : A ⇛ SUM A1 B1 at w) (x₁ : B ⇛ SUM A2 B2 at w)
+typeSysConds-SUM-ttrans : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                         (x : A #⇛ #SUM A1 B1 at w) (x₁ : B #⇛ #SUM A2 B2 at w)
                          (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                          (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                                → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                         (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                         (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                                → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                         (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                         (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                          (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                          (indb : allW w (λ w1 e1 →
-                                           (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                           (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                            → TSP (eqtb w1 e1 a1 a2 ea)))
                        → eqTypesTrans u w A B
 {-# TERMINATING #-}
@@ -185,15 +199,15 @@ typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
 typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (SUMneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0)
-  rewrite SUMinj1 (⇛-val-det tt tt y x₁)
-        | SUMinj2 (⇛-val-det tt tt y x₁) =
+  rewrite #SUMinj1 {C1} {D1} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
+        | #SUMinj2 {C1} {D1} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁) =
   EQTSUM A1 B1 C2 D2 x y₁ eqa eqb exta' extb'
   where
     eqa : allW w (λ w' _ → eqTypes u w' A1 C2)
     eqa w1 e1 = TSP.ttrans (inda w1 e1) C2 (eqta0 w1 e1)
 
-    eqb : allW w (λ w' e → (a1 a2 : Term) → eqInType u w' (eqa w' e) a1 a2 → eqTypes u w' (sub a1 B1) (sub a2 D2))
-    eqb w1 e1 a1 a2 ea = TSP.ttrans (indb w1 e1 a1 a2 eqa12) (sub a2 D2) eqb2
+    eqb : allW w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqa w' e) a1 a2 → eqTypes u w' (sub0 a1 B1) (sub0 a2 D2))
+    eqb w1 e1 a1 a2 ea = TSP.ttrans (indb w1 e1 a1 a2 eqa12) (sub0 a2 D2) eqb2
       where
         eqa12 : eqInType u w1 (eqta w1 e1) a1 a2
         eqa12 = TSP.extrevl1 (inda w1 e1) C2 (eqa w1 e1) a1 a2 ea
@@ -204,10 +218,10 @@ typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
         eqa22 : eqInType u w1 (eqta0 w1 e1) a2 a2
         eqa22 = TSP.extr2 (inda w1 e1) C2 (eqta0 w1 e1) a2 a2 eqa22'
 
-        eqb2 : eqTypes u w1 (sub a2 B2) (sub a2 D2)
+        eqb2 : eqTypes u w1 (sub0 a2 B2) (sub0 a2 D2)
         eqb2 = eqtb0 w1 e1 a2 a2 eqa22
 
-    exta' : (a b : Term) → wPredExtIrr (λ w₁ e → eqInType u w₁ (eqa w₁ e) a b)
+    exta' : (a b : CTerm) → wPredExtIrr (λ w₁ e → eqInType u w₁ (eqa w₁ e) a b)
     exta' a b w' e1 e2 ei = TSP.extl1 (inda w' e2) C2 (eqa w' e2) a b ei2
       where
         ei1 : eqInType u w' (eqta w' e1) a b
@@ -216,8 +230,8 @@ typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
         ei2 : eqInType u w' (eqta w' e2) a b
         ei2 = exta a b w' e1 e2 ei1
 
-    extb' : (a b c d : Term) → wPredDepExtIrr (λ w₁ e x₂ → eqInType u w₁ (eqb w₁ e a b x₂) c d)
-    extb' a b c d w' e1 e2 x₁ x₂ ei = TSP.extl1 (indb w' e2 a b x₂') (sub b D2) (eqb w' e2 a b x₂) c d ei2
+    extb' : (a b c d : CTerm) → wPredDepExtIrr (λ w₁ e x₂ → eqInType u w₁ (eqb w₁ e a b x₂) c d)
+    extb' a b c d w' e1 e2 x₁ x₂ ei = TSP.extl1 (indb w' e2 a b x₂') (sub0 b D2) (eqb w' e2 a b x₂) c d ei2
       where
         x₁' : eqInType u w' (eqta w' e1) a b
         x₁' = TSP.extrevl1 (inda w' e1) C2 (eqa w' e1) a b x₁
@@ -226,7 +240,7 @@ typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
         x₂' = TSP.extrevl1 (inda w' e2) C2 (eqa w' e2) a b x₂
 
         ei1 : eqInType u w' (eqtb w' e1 a b x₁') c d
-        ei1 = TSP.extrevl1 (indb w' e1 a b x₁') (sub b D2) (eqb w' e1 a b x₁) c d ei
+        ei1 = TSP.extrevl1 (indb w' e1 a b x₁') (sub0 b D2) (eqb w' e1 a b x₁) c d ei
 
         ei2 : eqInType u w' (eqtb w' e2 a b x₂') c d
         ei2 = extb a b c d w' e1 e2 x₁' x₂' ei1
@@ -240,10 +254,10 @@ typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
 typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → B ⇛ (UNIV (fst u)) at w' × C ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
 
-    q : allW w (λ w' e' → B ⇛ UNIV (proj₁ u) at w' × C ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))
 
 typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) =
@@ -262,18 +276,18 @@ typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
 
 
 
-typeSysConds-SUM-isym : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                        (x : A ⇛ SUM A1 B1 at w) (x₁ : B ⇛ SUM A2 B2 at w)
+typeSysConds-SUM-isym : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                        (x : A #⇛ #SUM A1 B1 at w) (x₁ : B #⇛ #SUM A2 B2 at w)
                         (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                         (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                               → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                        (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                        (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                               → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                        (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                        (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                         (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                         (indb : allW w (λ w1 e1 →
-                                          (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                          (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                           → TSP (eqtb w1 e1 a1 a2 ea)))
-                        → eqInTypeSym u (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                        → eqInTypeSym u {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 typeSysConds-SUM-isym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb f g eqa =
   Bar.allW-inBarFunc inOpenBar-Bar h eqa
   where
@@ -288,7 +302,7 @@ typeSysConds-SUM-isym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         ea3 : eqInType u w1 (eqta w1 e1) a1 a1
         ea3 = TSP.itrans (inda w1 e1) a1 a2 a1 ea ea2
 
-        eib1 : eqTypes u w1 (sub a1 B1) (sub a1 B2)
+        eib1 : eqTypes u w1 (sub0 a1 B1) (sub0 a1 B2)
         eib1 = eqtb w1 e1 a1 a1 ea3
 
         eb1 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) b1 b2
@@ -299,18 +313,18 @@ typeSysConds-SUM-isym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 
 
 
-typeSysConds-SUM-itrans : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                         (x : A ⇛ SUM A1 B1 at w) (x₁ : B ⇛ SUM A2 B2 at w)
+typeSysConds-SUM-itrans : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                         (x : A #⇛ #SUM A1 B1 at w) (x₁ : B #⇛ #SUM A2 B2 at w)
                          (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                          (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                                → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                         (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                         (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                                → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                         (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                         (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                          (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                          (indb : allW w (λ w1 e1 →
-                                           (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                           (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                            → TSP (eqtb w1 e1 a1 a2 ea)))
-                         → eqInTypeTrans u (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                         → eqInTypeTrans u {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 typeSysConds-SUM-itrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb f g h ea1 ea2 =
   Bar.inBarFunc inOpenBar-Bar (Bar.inBarFunc inOpenBar-Bar (Bar.allW-inBar inOpenBar-Bar aw) ea1) ea2
   where
@@ -320,8 +334,8 @@ typeSysConds-SUM-itrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
                 → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' g h
                 → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' f h)
     aw w1 e1 (a1 , a2 , b1 , b2 , eqa , u1 , u2 , eqb) (c1 , c2 , d1 , d2 , eqc , v1 , v2 , eqd)
-      rewrite PAIRinj1 (⇛-val-det tt tt v1 u2)
-            | PAIRinj2 (⇛-val-det tt tt v1 u2)
+      rewrite #PAIRinj1 {c1} {d1} {a2} {b2} (#⇛-val-det {_} {g} tt tt v1 u2)
+            | #PAIRinj2 {c1} {d1} {a2} {b2} (#⇛-val-det {_} {g} tt tt v1 u2)
       = a1 , c2 , b1 , d2 , eqa2 , u1 , v2 , eqb1
       where
         eqa1 : eqInType u w1 (eqta w1 e1) a1 a1
@@ -341,18 +355,18 @@ typeSysConds-SUM-itrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
 
 
 
-typeSysConds-SUM-extl1 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                        (x : A ⇛ SUM A1 B1 at w) (x₁ : B ⇛ SUM A2 B2 at w)
+typeSysConds-SUM-extl1 : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                        (x : A #⇛ #SUM A1 B1 at w) (x₁ : B #⇛ #SUM A2 B2 at w)
                         (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                         (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                               → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                        (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                        (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                               → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                        (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                        (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                         (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                         (indb : allW w (λ w1 e1 →
-                                          (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                          (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                           → TSP (eqtb w1 e1 a1 a2 ea)))
-                        → eqInTypeExtL1 (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                        → eqInTypeExtL1 {_} {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x y))
 typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x y))
@@ -361,8 +375,8 @@ typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x y))
 typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (SUMneqPI (⇛-val-det tt tt x y))
 typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi
-  rewrite SUMinj1 (⇛-val-det tt tt y x)
-        | SUMinj2 (⇛-val-det tt tt y x)
+  rewrite #SUMinj1 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x)
+        | #SUMinj2 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w (λ w' e' →
@@ -374,7 +388,7 @@ typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
         ea1 = TSP.extl1 (inda w1 e1) A4 (eqta0 w1 e1) a1 a2 eqa
 
         eb1 : eqInType u w1 (eqtb0 w1 e1 a1 a2 ea1) b1 b2
-        eb1 = TSP.extl1 (indb w1 e1 a1 a2 eqa) (sub a2 B4) (eqtb0 w1 e1 a1 a2 ea1) b1 b2 eqb
+        eb1 = TSP.extl1 (indb w1 e1 a1 a2 eqa) (sub0 a2 B4) (eqtb0 w1 e1 a1 a2 ea1) b1 b2 eqb
 
 typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqSET (⇛-val-det tt tt x y))
 typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (SUMneqEQ (⇛-val-det tt tt x y))
@@ -385,10 +399,10 @@ typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × C ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w A C y
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × C ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))
 
 typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -406,18 +420,18 @@ typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 
 
 
-typeSysConds-SUM-extl2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                        (x : A ⇛ SUM A1 B1 at w) (x₁ : B ⇛ SUM A2 B2 at w)
+typeSysConds-SUM-extl2 : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                        (x : A #⇛ #SUM A1 B1 at w) (x₁ : B #⇛ #SUM A2 B2 at w)
                         (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                         (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                               → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                        (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                        (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                               → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                        (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                        (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                         (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                         (indb : allW w (λ w1 e1 →
-                                          (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                          (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                           → TSP (eqtb w1 e1 a1 a2 ea)))
-                        → eqInTypeExtL2 (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                        → eqInTypeExtL2 {_} {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x y₁))
@@ -426,8 +440,8 @@ typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite SUMinj1 (⇛-val-det tt tt y₁ x)
-        | SUMinj2 (⇛-val-det tt tt y₁ x)
+  rewrite #SUMinj1 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
+        | #SUMinj2 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
@@ -446,7 +460,7 @@ typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
         eb0 = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb eqb
 
         eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) b1 b2
-        eb1 = TSP.extl2 (indb w1 e1 a2 a1 ea2) (sub a1 B3) (eqtb₁ w1 e1 a1 a2 ea1) b1 b2 eb0
+        eb1 = TSP.extl2 (indb w1 e1 a2 a1 ea2) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 ea1) b1 b2 eb0
 
 typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (SUMneqEQ (⇛-val-det tt tt x y₁))
@@ -457,10 +471,10 @@ typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → C ⇛ (UNIV (fst u)) at w' × A ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
     z = isu w C A y
 
-    q : allW w (λ w' e' → C ⇛ UNIV (proj₁ u) at w' × A ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))
 
 typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -476,18 +490,18 @@ typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 
 
 
-typeSysConds-SUM-extr1 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                        (x : A ⇛ SUM A1 B1 at w) (x₁ : B ⇛ SUM A2 B2 at w)
+typeSysConds-SUM-extr1 : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                        (x : A #⇛ #SUM A1 B1 at w) (x₁ : B #⇛ #SUM A2 B2 at w)
                         (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                         (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                               → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                        (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                        (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                               → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                        (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                        (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                         (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                         (indb : allW w (λ w1 e1 →
-                                          (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                          (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                           → TSP (eqtb w1 e1 a1 a2 ea)))
-                        → eqInTypeExtR1 (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                        → eqInTypeExtR1 {_} {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x₁ y₁))
@@ -496,8 +510,8 @@ typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite SUMinj1 (⇛-val-det tt tt y₁ x₁)
-        | SUMinj2 (⇛-val-det tt tt y₁ x₁)
+  rewrite #SUMinj1 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
+        | #SUMinj2 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
@@ -510,7 +524,7 @@ typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
         ea1 = TSP.extr1 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
 
         eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) b1 b2
-        eb1 = TSP.extr1 (indb w1 e1 a1 a2 eqa) (sub a1 B3) (eqtb₁ w1 e1 a1 a2 ea1) b1 b2 eqb
+        eb1 = TSP.extr1 (indb w1 e1 a1 a2 eqa) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 ea1) b1 b2 eqb
 
 typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (SUMneqEQ (⇛-val-det tt tt x₁ y₁))
@@ -521,10 +535,10 @@ typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → C ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w C B y
 
-    q : allW w (λ w' e' → C ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))
 
 typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -540,18 +554,18 @@ typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 
 
 
-typeSysConds-SUM-extr2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                        (x : A ⇛ SUM A1 B1 at w) (x₁ : B ⇛ SUM A2 B2 at w)
+typeSysConds-SUM-extr2 : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                        (x : A #⇛ #SUM A1 B1 at w) (x₁ : B #⇛ #SUM A2 B2 at w)
                         (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                         (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                               → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                        (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                        (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                               → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                        (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                        (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                         (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                         (indb : allW w (λ w1 e1 →
-                                          (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                          (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                           → TSP (eqtb w1 e1 a1 a2 ea)))
-                        → eqInTypeExtR2 (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                        → eqInTypeExtR2 {_} {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x₁ y))
@@ -560,8 +574,8 @@ typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite SUMinj1 (⇛-val-det tt tt y x₁)
-        | SUMinj2 (⇛-val-det tt tt y x₁)
+  rewrite #SUMinj1 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
+        | #SUMinj2 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
@@ -580,7 +594,7 @@ typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
         eb0 = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb eqb
 
         eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) b1 b2
-        eb1 = TSP.extr2 (indb w1 e1 a2 a1 ea2) (sub a2 B4) (eqtb₁ w1 e1 a1 a2 ea1) b1 b2 eb0
+        eb1 = TSP.extr2 (indb w1 e1 a2 a1 ea2) (sub0 a2 B4) (eqtb₁ w1 e1 a1 a2 ea1) b1 b2 eb0
 
 typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (SUMneqEQ (⇛-val-det tt tt x₁ y))
@@ -591,10 +605,10 @@ typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → B ⇛ (UNIV (fst u)) at w' × C ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
 
-    q : allW w (λ w' e' → B ⇛ UNIV (proj₁ u) at w' × C ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))
 
 typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -611,18 +625,18 @@ typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 
 
 
-typeSysConds-SUM-extrevl1 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                           (x : A ⇛ SUM A1 B1 at w) (x₁ : B ⇛ SUM A2 B2 at w)
+typeSysConds-SUM-extrevl1 : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                           (x : A #⇛ #SUM A1 B1 at w) (x₁ : B #⇛ #SUM A2 B2 at w)
                            (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                            (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                                  → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                           (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                           (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                                  → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                           (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                           (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 →
-                                                (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                                (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                                 → TSP (eqtb w1 e1 a1 a2 ea)))
-                           → eqInTypeExtRevL1 (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                           → eqInTypeExtRevL1 {_} {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x y))
 typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x y))
@@ -631,8 +645,8 @@ typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x y))
 typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqPI (⇛-val-det tt tt x y))
 typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite SUMinj1 (⇛-val-det tt tt y x)
-        | SUMinj2 (⇛-val-det tt tt y x)
+  rewrite #SUMinj1 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x)
+        | #SUMinj2 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
@@ -645,7 +659,7 @@ typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
         ea1 = TSP.extrevl1 (inda w1 e1) A4 (eqta₁ w1 e1) a1 a2 eqa
 
         ef1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) b1 b2
-        ef1 = TSP.extrevl1 (indb w1 e1 a1 a2 ea1) (sub a2 B4) (eqtb₁ w1 e1 a1 a2 eqa) b1 b2 eqb
+        ef1 = TSP.extrevl1 (indb w1 e1 a1 a2 ea1) (sub0 a2 B4) (eqtb₁ w1 e1 a1 a2 eqa) b1 b2 eqb
 
 typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqSET (⇛-val-det tt tt x y))
 typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (SUMneqEQ (⇛-val-det tt tt x y))
@@ -656,10 +670,10 @@ typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × C ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w A C y
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × C ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))
 
 typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -669,7 +683,7 @@ typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
       (λ w' e' →
          (z : eqTypes u w' A C) (at : atbar y w' e' z) →
          eqInType u w' z f g →
-         eqInType u w' (EQTSUM A1 B1 A2 B2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb) (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')) f g)
+         eqInType u w' {A} {B} (EQTSUM A1 B1 A2 B2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb) (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')) f g)
     aw0 w1 e1 z at ez =
       typeSysConds-SUM-extrevl1
         u isu w1 A B A1 B1 A2 B2
@@ -689,18 +703,18 @@ typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 
 
 
-typeSysConds-SUM-extrevl2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                           (x : A ⇛ SUM A1 B1 at w) (x₁ : B ⇛ SUM A2 B2 at w)
+typeSysConds-SUM-extrevl2 : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                           (x : A #⇛ #SUM A1 B1 at w) (x₁ : B #⇛ #SUM A2 B2 at w)
                            (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                            (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                                  → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                           (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                           (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                                  → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                           (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                           (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 →
-                                                (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                                (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                                 → TSP (eqtb w1 e1 a1 a2 ea)))
-                           → eqInTypeExtRevL2 (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                           → eqInTypeExtRevL2 {_} {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x y₁))
@@ -709,8 +723,8 @@ typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite SUMinj1 (⇛-val-det tt tt y₁ x)
-        | SUMinj2 (⇛-val-det tt tt y₁ x)
+  rewrite #SUMinj1 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
+        | #SUMinj2 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
@@ -726,7 +740,7 @@ typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
         ea2 = TSP.isym (inda w1 e1) a1 a2 ea1
 
         eb1 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) b1 b2
-        eb1 = TSP.extrevl2 (indb w1 e1 a2 a1 ea2) (sub a1 B3) (eqtb₁ w1 e1 a1 a2 eqa) b1 b2 eqb
+        eb1 = TSP.extrevl2 (indb w1 e1 a2 a1 ea2) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 eqa) b1 b2 eqb
 
         eb2 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) b1 b2
         eb2 = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb eb1
@@ -740,10 +754,10 @@ typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → C ⇛ (UNIV (fst u)) at w' × A ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
     z = isu w C A y
 
-    q : allW w (λ w' e' → C ⇛ UNIV (proj₁ u) at w' × A ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))
 
 typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -753,7 +767,7 @@ typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
       (λ w' e' →
          (z : eqTypes u w' C A) (at : atbar y w' e' z) →
          eqInType u w' z f g →
-         eqInType u w' (EQTSUM A1 B1 A2 B2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb) (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')) f g)
+         eqInType u w' {A} {B} (EQTSUM A1 B1 A2 B2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb) (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')) f g)
     aw0 w1 e1 z at ez =
       typeSysConds-SUM-extrevl2
         u isu w1 A B A1 B1 A2 B2
@@ -773,18 +787,18 @@ typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 
 
 
-typeSysConds-SUM-extrevr1 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                           (x : A ⇛ SUM A1 B1 at w) (x₁ : B ⇛ SUM A2 B2 at w)
+typeSysConds-SUM-extrevr1 : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                           (x : A #⇛ #SUM A1 B1 at w) (x₁ : B #⇛ #SUM A2 B2 at w)
                            (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                            (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                                  → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                           (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                           (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                                  → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                           (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                           (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 →
-                                                (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                                (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                                 → TSP (eqtb w1 e1 a1 a2 ea)))
-                           → eqInTypeExtRevR1 (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                           → eqInTypeExtRevR1 {_} {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x₁ y₁))
@@ -793,8 +807,8 @@ typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite SUMinj1 (⇛-val-det tt tt y₁ x₁)
-        | SUMinj2 (⇛-val-det tt tt y₁ x₁)
+  rewrite #SUMinj1 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
+        | #SUMinj2 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
@@ -807,7 +821,7 @@ typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
         ea1 = TSP.extrevr1 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
 
         eb1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) b1 b2
-        eb1 = TSP.extrevr1 (indb w1 e1 a1 a2 ea1) (sub a1 B3) (eqtb₁ w1 e1 a1 a2 eqa) b1 b2 eqb
+        eb1 = TSP.extrevr1 (indb w1 e1 a1 a2 ea1) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 eqa) b1 b2 eqb
 
 typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (SUMneqEQ (⇛-val-det tt tt x₁ y₁))
@@ -818,10 +832,10 @@ typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → C ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w C B y
 
-    q : allW w (λ w' e' → C ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))
 
 typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -831,7 +845,7 @@ typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
       (λ w' e' →
          (z : eqTypes u w' C B) (at : atbar y w' e' z) →
          eqInType u w' z f g →
-         eqInType u w' (EQTSUM A1 B1 A2 B2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb) (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')) f g)
+         eqInType u w' {A} {B} (EQTSUM A1 B1 A2 B2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb) (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')) f g)
     aw0 w1 e1 z at ez =
       typeSysConds-SUM-extrevr1
         u isu w1 A B A1 B1 A2 B2
@@ -850,18 +864,18 @@ typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 
 
 
-typeSysConds-SUM-extrevr2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                           (x : A ⇛ SUM A1 B1 at w) (x₁ : B ⇛ SUM A2 B2 at w)
+typeSysConds-SUM-extrevr2 : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                           (x : A #⇛ #SUM A1 B1 at w) (x₁ : B #⇛ #SUM A2 B2 at w)
                            (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                            (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                                  → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                           (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                           (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                                  → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                           (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                           (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 →
-                                                (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                                (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                                 → TSP (eqtb w1 e1 a1 a2 ea)))
-                           → eqInTypeExtRevR2 (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                           → eqInTypeExtRevR2 {_} {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x₁ y))
@@ -870,8 +884,8 @@ typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUMneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite SUMinj1 (⇛-val-det tt tt y x₁)
-        | SUMinj2 (⇛-val-det tt tt y x₁)
+  rewrite #SUMinj1 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
+        | #SUMinj2 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
@@ -887,7 +901,7 @@ typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
         ea2 = TSP.isym (inda w1 e1) a1 a2 ea1
 
         eb1 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) b1 b2
-        eb1 = TSP.extrevr2 (indb w1 e1 a2 a1 ea2) (sub a2 B4) (eqtb₁ w1 e1 a1 a2 eqa) b1 b2 eqb
+        eb1 = TSP.extrevr2 (indb w1 e1 a2 a1 ea2) (sub0 a2 B4) (eqtb₁ w1 e1 a1 a2 eqa) b1 b2 eqb
 
         eb2 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) b1 b2
         eb2 = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb eb1
@@ -901,10 +915,10 @@ typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → B ⇛ (UNIV (fst u)) at w' × C ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
 
-    q : allW w (λ w' e' → B ⇛ UNIV (proj₁ u) at w' × C ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))
 
 typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -914,7 +928,7 @@ typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
       (λ w' e' →
          (z : eqTypes u w' B C) (at : atbar y w' e' z) →
          eqInType u w' z f g →
-         eqInType u w' (EQTSUM A1 B1 A2 B2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb) (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')) f g)
+         eqInType u w' {A} {B} (EQTSUM A1 B1 A2 B2 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb) (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')) f g)
     aw0 w1 e1 z at ez =
       typeSysConds-SUM-extrevr2
         u isu w1 A B A1 B1 A2 B2
@@ -933,17 +947,17 @@ typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 
 
 
-eqInType-⇛-SUM : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : Term)
+eqInType-⇛-SUM : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 : CTerm) (B1 B2 : CTerm0) (a b : CTerm)
                   (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
-                  (eqtb : allW w (λ w' e → (a1 a2 : Term) → eqInType u w' (eqta w' e) a1 a2
-                                         → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                  (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                  (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                  (eqtb : allW w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
+                                         → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                  (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                  (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                   (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
-                  (indb : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                  (indb : allW w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                           → eqInTypeExt (eqtb w1 e1 a1 a2 ea)))
-                  → A ⇛ SUM A1 B1 at w
-                  → B ⇛ SUM A2 B2 at w
+                  → A #⇛ #SUM A1 B1 at w
+                  → B #⇛ #SUM A2 B2 at w
                   → (eqt : eqTypes u w A B)
                   → eqInType u w eqt a b
                   → inbar w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) w' a b)
@@ -955,10 +969,10 @@ eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ 
 eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (SUMneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (SUMneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei
-  rewrite SUMinj1 (⇛-val-det tt tt c₁ x)
-        | SUMinj2 (⇛-val-det tt tt c₁ x)
-        | SUMinj1 (⇛-val-det tt tt c₂ x₁)
-        | SUMinj2 (⇛-val-det tt tt c₂ x₁) =
+  rewrite #SUMinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #SUMinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #SUMinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
+        | #SUMinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
   Bar.allW-inBarFunc inOpenBar-Bar aw ei
   where
     aw : allW w (λ w' e' → SUMeq (eqInType u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb₁ w' e' a₁ a₂ eqa)) w' a b
@@ -980,10 +994,10 @@ eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ 
 eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNIV x) ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))
 
 eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTBAR x) ei =
@@ -1012,17 +1026,17 @@ eqInType-⇛-SUM u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ 
 
 
 
-eqInType-⇛-SUM2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : Term)
+eqInType-⇛-SUM2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 : CTerm) (B1 B2 : CTerm0) (a b : CTerm)
                    (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
-                   (eqtb : allW w (λ w' e → (a1 a2 : Term) → eqInType u w' (eqta w' e) a1 a2
-                                          → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                   (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                   (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
-                   → A ⇛ SUM A1 B1 at w
-                   → B ⇛ SUM A2 B2 at w
+                   (eqtb : allW w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
+                                          → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                   (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                   (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                   → A #⇛ #SUM A1 B1 at w
+                   → B #⇛ #SUM A2 B2 at w
                    → (eqt : eqTypes u w A B)
                    → (eqi : eqInType u w eqt a b)
-                   → (ext : {w' : world} {A' B' : Term} (eqt' : eqTypes u w' A' B') → ≤Type u eqt' eqt → eqInTypeExt eqt')
+                   → (ext : {w' : world} {A' B' : CTerm} (eqt' : eqTypes u w' A' B') → ≤Type u eqt' eqt → eqInTypeExt eqt')
                    → inbar w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) w' a b)
 {-# TERMINATING #-}
 eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNAT x x₁) ei ext = ⊥-elim (SUMneqNAT (⇛-val-det tt tt c₁ x))
@@ -1032,16 +1046,16 @@ eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQT
 eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTFREE x x₁) ei ext = ⊥-elim (SUMneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (SUMneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext
-  rewrite SUMinj1 (⇛-val-det tt tt c₁ x)
-        | SUMinj2 (⇛-val-det tt tt c₁ x)
-        | SUMinj1 (⇛-val-det tt tt c₂ x₁)
-        | SUMinj2 (⇛-val-det tt tt c₂ x₁) =
+  rewrite #SUMinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #SUMinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #SUMinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
+        | #SUMinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
   Bar.allW-inBarFunc inOpenBar-Bar aw ei
   where
     awexta₁ : allW w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
     awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeSUMa w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
 
-    awextb₁ : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta₁ w1 e1) a1 a2)
+    awextb₁ : allW w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta₁ w1 e1) a1 a2)
                               → eqInTypeExt (eqtb₁ w1 e1 a1 a2 ea))
     awextb₁ w1 e1 a1 a2 ea = ext (eqtb₁ w1 e1 a1 a2 ea) (≤TypeS _ _ (<Type1 _ _ (<TypeSUMb w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1 a1 a2 ea)))
 
@@ -1064,10 +1078,10 @@ eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQF
 eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNIV x) ei ext =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))
 
 eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTBAR x) ei ext =
@@ -1097,17 +1111,17 @@ eqInType-⇛-SUM2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQT
 
 
 
-eqInType-⇛-SUM-rev : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : Term)
+eqInType-⇛-SUM-rev : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 : CTerm) (B1 B2 : CTerm0) (a b : CTerm)
                       (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
-                      (eqtb : allW w (λ w' e → (a1 a2 : Term) → eqInType u w' (eqta w' e) a1 a2
-                                             → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                      (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                      (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                      (eqtb : allW w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
+                                             → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                      (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                      (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                       (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
-                      (indb : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                      (indb : allW w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                               → eqInTypeExt (eqtb w1 e1 a1 a2 ea)))
-                      → A ⇛ SUM A1 B1 at w
-                      → B ⇛ SUM A2 B2 at w
+                      → A #⇛ #SUM A1 B1 at w
+                      → B #⇛ #SUM A2 B2 at w
                       → (eqt : eqTypes u w A B)
                       → inbar w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) w' a b)
                       → eqInType u w eqt a b
@@ -1119,10 +1133,10 @@ eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c
 eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (SUMneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (SUMneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei
-  rewrite SUMinj1 (⇛-val-det tt tt c₁ x)
-        | SUMinj2 (⇛-val-det tt tt c₁ x)
-        | SUMinj1 (⇛-val-det tt tt c₂ x₁)
-        | SUMinj2 (⇛-val-det tt tt c₂ x₁) =
+  rewrite #SUMinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #SUMinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #SUMinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
+        | #SUMinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
   Bar.allW-inBarFunc inOpenBar-Bar aw ei
   where
     aw : allW w (λ w' e' → SUMeq (eqInType u w' (eqta w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e' a₁ a₂ eqa)) w' a b
@@ -1144,10 +1158,10 @@ eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c
 eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNIV x) ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))
 
 eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTBAR x) ei =
@@ -1169,16 +1183,16 @@ eqInType-⇛-SUM-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c
 
 
 
-eqInType-⇛-SUM-rev2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : Term)
+eqInType-⇛-SUM-rev2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 : CTerm) (B1 B2 : CTerm0) (a b : CTerm)
                        (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
-                       (eqtb : allW w (λ w' e → (a1 a2 : Term) → eqInType u w' (eqta w' e) a1 a2
-                                              → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                       (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                       (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
-                       → A ⇛ SUM A1 B1 at w
-                       → B ⇛ SUM A2 B2 at w
+                       (eqtb : allW w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
+                                              → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                       (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                       (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                       → A #⇛ #SUM A1 B1 at w
+                       → B #⇛ #SUM A2 B2 at w
                        → (eqt : eqTypes u w A B)
-                       → (ext : {w' : world} {A' B' : Term} (eqt' : eqTypes u w' A' B') → ≤Type u eqt' eqt → eqInTypeExt eqt')
+                       → (ext : {w' : world} {A' B' : CTerm} (eqt' : eqTypes u w' A' B') → ≤Type u eqt' eqt → eqInTypeExt eqt')
                        → inbar w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) w' a b)
                        → eqInType u w eqt a b
 {-# TERMINATING #-}
@@ -1189,16 +1203,16 @@ eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ 
 eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTFREE x x₁) ext ei = ⊥-elim (SUMneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (SUMneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei
-  rewrite SUMinj1 (⇛-val-det tt tt c₁ x)
-        | SUMinj2 (⇛-val-det tt tt c₁ x)
-        | SUMinj1 (⇛-val-det tt tt c₂ x₁)
-        | SUMinj2 (⇛-val-det tt tt c₂ x₁) =
+  rewrite #SUMinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #SUMinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #SUMinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
+        | #SUMinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
   Bar.allW-inBarFunc inOpenBar-Bar aw ei
   where
     awexta₁ : allW w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
     awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeSUMa w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
 
-    awextb₁ : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta₁ w1 e1) a1 a2)
+    awextb₁ : allW w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta₁ w1 e1) a1 a2)
                               → eqInTypeExt (eqtb₁ w1 e1 a1 a2 ea))
     awextb₁ w1 e1 a1 a2 ea = ext (eqtb₁ w1 e1 a1 a2 ea) (≤TypeS _ _ (<Type1 _ _ (<TypeSUMb w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1 a1 a2 ea)))
 
@@ -1221,10 +1235,10 @@ eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ 
 eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNIV x) ext ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (SUMneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))
 
 eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTBAR x) ext ei =
@@ -1244,16 +1258,16 @@ eqInType-⇛-SUM-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ 
 
 
 
-typeSysConds-SUM-local : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                         (x : A ⇛ SUM A1 B1 at w) (x₁ : B ⇛ SUM A2 B2 at w)
+typeSysConds-SUM-local : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                         (x : A #⇛ #SUM A1 B1 at w) (x₁ : B #⇛ #SUM A2 B2 at w)
                          (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                          (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                                → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                         (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                         (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                                → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                         (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                         (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                          (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                          (indb : allW w (λ w1 e1 →
-                                              (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                              (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                               → TSP (eqtb w1 e1 a1 a2 ea)))
                          → eqInTypeLocal (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 typeSysConds-SUM-local u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb a b i j =
@@ -1264,10 +1278,10 @@ typeSysConds-SUM-local u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
                          → inbar w' (λ w'' e → (x : w'' ≽ w) → SUMeq (eqInType u w'' (eqta w'' x)) (λ a₁ a₂ eqa → eqInType u w'' (eqtb w'' x a₁ a₂ eqa)) w'' a b))
     aw w1 e1 z at ei = Bar.allW-inBarFunc inOpenBar-Bar aw'' aw'
       where
-        exta' : (a₁ b₁ : Term) → wPredExtIrr (λ w₁ e → eqInType u w₁ (allW-mon e1 eqta w₁ e) a₁ b₁)
+        exta' : (a₁ b₁ : CTerm) → wPredExtIrr (λ w₁ e → eqInType u w₁ (allW-mon e1 eqta w₁ e) a₁ b₁)
         exta' a₁ b₁ w' e₁ e₂ eqi = exta a₁ b₁ w' (extTrans e₁ e1 ) (extTrans e₂ e1) eqi
 
-        extb' : (a₁ b₁ c d : Term) → wPredDepExtIrr (λ w₁ e x₂ → eqInType u w₁ (allW-mon e1 eqtb w₁ e a₁ b₁ x₂) c d)
+        extb' : (a₁ b₁ c d : CTerm) → wPredDepExtIrr (λ w₁ e x₂ → eqInType u w₁ (allW-mon e1 eqtb w₁ e a₁ b₁ x₂) c d)
         extb' a₁ b₁ c d w' e₁ e₂ x₁ x₂ eqi = extb a₁ b₁ c d w' (extTrans e₁ e1) (extTrans e₂ e1) x₁ x₂ eqi
 
         aw' : inbar w1 (λ w'' e → SUMeq (eqInType u w'' (eqta w'' (extTrans e e1))) (λ a₁ a₂ eqa → eqInType u w'' (eqtb w'' (extTrans e e1) a₁ a₂ eqa)) w'' a b)
@@ -1281,21 +1295,21 @@ typeSysConds-SUM-local u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
             eqa' = TSP.extrevl1 (inda w' x₂) A2 (eqta w' (extTrans e' e1)) a₁ a₂ eqa
 
             eqb' : eqInType u w' (eqtb w' x₂ a₁ a₂ eqa') b₁ b₂
-            eqb' = TSP.extrevl1 (indb w' x₂ a₁ a₂ eqa') (sub a₂ B2) (eqtb w' (extTrans e' e1) a₁ a₂ eqa) b₁ b₂ eqb
+            eqb' = TSP.extrevl1 (indb w' x₂ a₁ a₂ eqa') (sub0 a₂ B2) (eqtb w' (extTrans e' e1) a₁ a₂ eqa) b₁ b₂ eqb
 
 
 
 
-typeSysConds-SUM : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                   (x : A ⇛ SUM A1 B1 at w) (x₁ : B ⇛ SUM A2 B2 at w)
+typeSysConds-SUM : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                   (x : A #⇛ #SUM A1 B1 at w) (x₁ : B #⇛ #SUM A2 B2 at w)
                    (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                    (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                          → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                   (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                   (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                          → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                   (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                   (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                    (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                    (indb : allW w (λ w1 e1 →
-                                     (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                     (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                      → TSP (eqtb w1 e1 a1 a2 ea)))
                    → TSP {u} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 typeSysConds-SUM u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb =
@@ -1307,34 +1321,34 @@ typeSysConds-SUM u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb =
     ttrans : eqTypesTrans u w A B
     ttrans = typeSysConds-SUM-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    isym : eqInTypeSym u (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    isym : eqInTypeSym u {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     isym = typeSysConds-SUM-isym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    itrans : eqInTypeTrans u (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    itrans : eqInTypeTrans u {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     itrans = typeSysConds-SUM-itrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextl1 : eqInTypeExtL1 (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextl1 : eqInTypeExtL1 {_} {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextl1 = typeSysConds-SUM-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextl2 : eqInTypeExtL2 (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextl2 : eqInTypeExtL2 {_} {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextl2 = typeSysConds-SUM-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextr1 : eqInTypeExtR1 (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextr1 : eqInTypeExtR1 {_} {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextr1 = typeSysConds-SUM-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextr2 : eqInTypeExtR2 (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextr2 : eqInTypeExtR2 {_} {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextr2 = typeSysConds-SUM-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextrl1 : eqInTypeExtRevL1 (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextrl1 : eqInTypeExtRevL1 {_} {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextrl1 = typeSysConds-SUM-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextrl2 : eqInTypeExtRevL2 (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextrl2 : eqInTypeExtRevL2 {_} {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextrl2 = typeSysConds-SUM-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextrr1 : eqInTypeExtRevR1 (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextrr1 : eqInTypeExtRevR1 {_} {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextrr1 = typeSysConds-SUM-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextrr2 : eqInTypeExtRevR2 (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextrr2 : eqInTypeExtRevR2 {_} {_} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextrr2 = typeSysConds-SUM-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
     local : eqInTypeLocal (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb)

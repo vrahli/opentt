@@ -67,16 +67,6 @@ lemma6 w = impliesEqInType 1 (lemma5 w)
 
 
 -- EQ
-EQinj1 : {a b c d e f : Term} → EQ a b c ≡ EQ d e f → a ≡ d
-EQinj1 refl =  refl
-
-EQinj2 : {a b c d e f : Term} → EQ a b c ≡ EQ d e f → b ≡ e
-EQinj2 refl =  refl
-
-EQinj3 : {a b c d e f : Term} → EQ a b c ≡ EQ d e f → c ≡ f
-EQinj3 refl =  refl
-
-
 EQneqNAT : {t a b : Term} → ¬ (EQ t a b) ≡ NAT
 EQneqNAT {t} {a} {b} ()
 
@@ -130,6 +120,12 @@ PIinj1 refl =  refl
 
 PIinj2 : {a b c d : Term} → PI a b ≡ PI c d → b ≡ d
 PIinj2 refl =  refl
+
+#PIinj1 : {a : CTerm} {b : CTerm0} {c : CTerm} {d : CTerm0} → #PI a b ≡ #PI c d → a ≡ c
+#PIinj1 c =  CTerm≡ (PIinj1 (≡CTerm c))
+
+#PIinj2 : {a : CTerm} {b : CTerm0} {c : CTerm} {d : CTerm0} → #PI a b ≡ #PI c d → b ≡ d
+#PIinj2 c =  CTerm0≡ (PIinj2 (≡CTerm c))
 
 PIneqNAT : {a b : Term} → ¬ (PI a b) ≡ NAT
 PIneqNAT {a} {b} ()
@@ -223,6 +219,10 @@ steps-val-det w a v₁ v₂ n m isv₁ c₁ c₂ p with ≤-Σ+ p
 
     h2 : a ⇓ v₂ at w
     h2 = let c = c₂ w (extRefl w) in Level.lower c
+
+
+#⇛-val-det : {w : world} {a v₁ v₂ : CTerm} → #isValue v₁ → #isValue v₂ → a #⇛ v₁ at w → a #⇛ v₂ at w → v₁ ≡ v₂
+#⇛-val-det {w} {a} {v₁} {v₂} isv₁ isv₂ c₁ c₂ = CTerm≡ (⇛-val-det isv₁ isv₂ c₁ c₂)
 
 
 -- NAT
@@ -481,8 +481,8 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta e
 if-equalInType-EQ u w T a b t₁ t₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSUM (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSET (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2 , eqi)
-  rewrite #EQinj1 {a} {b} {T} {a1} {a2} {A} (compAllVal x tt)  | #EQinj2 {a} {b} {T} {a1} {a2} {A} (compAllVal x tt)  | #EQinj3 {a} {b} {T} {a1} {a2} {A} (compAllVal x tt)
-        | #EQinj1 {a1} {a2} {A} {b1} {b2} {B} (compAllVal x₁ tt) | #EQinj2 {a1} {a2} {A} {b1} {b2} {B} (compAllVal x₁ tt) | #EQinj3 {a1} {a2} {A} {b1} {b2} {B} (compAllVal x₁ tt) =
+  rewrite #EQinj1 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj2 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj3 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)
+        | #EQinj1 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj2 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj3 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) =
   Bar.allW-inBarFunc
     inOpenBar-Bar
     (λ w1 e1 (c₁ , c₂ , eqi1) → c₁ , c₂ , eqtA w1 e1 , eqi1)

@@ -44,6 +44,14 @@ UNIONinj1 refl =  refl
 UNIONinj2 : {a b c d : Term} → UNION a b ≡ UNION c d → b ≡ d
 UNIONinj2 refl =  refl
 
+
+#UNIONinj1 : {a b c d : CTerm} → #UNION a b ≡ #UNION c d → a ≡ c
+#UNIONinj1 c = CTerm≡ (UNIONinj1 (≡CTerm c))
+
+
+#UNIONinj2 : {a b c d : CTerm} → #UNION a b ≡ #UNION c d → b ≡ d
+#UNIONinj2 c = CTerm≡ (UNIONinj2 (≡CTerm c))
+
 INLinj : {a b : Term} → INL a ≡ INL b → a ≡ b
 INLinj refl =  refl
 
@@ -101,12 +109,12 @@ UNIONneqUNIV {a} {b} {n} ()
 
 
 
-typeSysConds-UNION-tsym : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                          (x : A ⇛ UNION A1 B1 at w) (x₁ : B ⇛ UNION A2 B2 at w)
+typeSysConds-UNION-tsym : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : CTerm)
+                          (x : A #⇛ #UNION A1 B1 at w) (x₁ : B #⇛ #UNION A2 B2 at w)
                           (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                           (eqtb : allW w (λ w' e → eqTypes u w' B1 B2))
-                          (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                          (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                          (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                          (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                           (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                           (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
                           → eqTypes u w B A
@@ -119,7 +127,7 @@ typeSysConds-UNION-tsym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
     symb : allW w (λ w' e → eqTypes u w' B2 B1)
     symb w1 e1 = TSP.tsym (indb w1 e1)
 
-    exta' : (a b : Term) → wPredExtIrr (λ w₁ e → eqInType u w₁ (TSP.tsym (inda w₁ e)) a b)
+    exta' : (a b : CTerm) → wPredExtIrr (λ w₁ e → eqInType u w₁ (TSP.tsym (inda w₁ e)) a b)
     exta' a b w' e1 e2 ei = TSP.extl2 (inda w' e2) A2 (TSP.tsym (inda w' e2)) a b ei2
       where
         ei1 : eqInType u w' (eqta w' e1) a b
@@ -128,7 +136,7 @@ typeSysConds-UNION-tsym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
         ei2 : eqInType u w' (eqta w' e2) a b
         ei2 = exta a b w' e1 e2 ei1
 
-    extb' : (a b : Term) → wPredExtIrr (λ w₁ e → eqInType u w₁ (TSP.tsym (indb w₁ e)) a b)
+    extb' : (a b : CTerm) → wPredExtIrr (λ w₁ e → eqInType u w₁ (TSP.tsym (indb w₁ e)) a b)
     extb' a b w' e1 e2 ei = TSP.extl2 (indb w' e2) B2 (TSP.tsym (indb w' e2)) a b ei2
       where
         ei1 : eqInType u w' (eqtb w' e1) a b
@@ -138,12 +146,12 @@ typeSysConds-UNION-tsym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
         ei2 = extb a b w' e1 e2 ei1
 
 
-typeSysConds-UNION-ttrans : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                            (x : A ⇛ UNION A1 B1 at w) (x₁ : B ⇛ UNION A2 B2 at w)
+typeSysConds-UNION-ttrans : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : CTerm)
+                            (x : A #⇛ #UNION A1 B1 at w) (x₁ : B #⇛ #UNION A2 B2 at w)
                             (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                             (eqtb : allW w (λ w' e → eqTypes u w' B1 B2))
-                            (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                            (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                            (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                            (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                             (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                             (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
                             → eqTypesTrans u w A B
@@ -158,8 +166,8 @@ typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0)
-  rewrite UNIONinj1 (⇛-val-det tt tt y x₁)
-        | UNIONinj2 (⇛-val-det tt tt y x₁) =
+  rewrite #UNIONinj1 {C1} {D1} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
+        | #UNIONinj2 {C1} {D1} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁) =
   EQTUNION A1 B1 C2 D2 x y₁ eqa eqb exta' extb'
   where
     eqa : allW w (λ w' _ → eqTypes u w' A1 C2)
@@ -168,7 +176,7 @@ typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
     eqb : allW w (λ w' _ → eqTypes u w' B1 D2)
     eqb w1 e1 = TSP.ttrans (indb w1 e1) D2 (eqtb0 w1 e1)
 
-    exta' : (a b : Term) → wPredExtIrr (λ w₁ e → eqInType u w₁ (eqa w₁ e) a b)
+    exta' : (a b : CTerm) → wPredExtIrr (λ w₁ e → eqInType u w₁ (eqa w₁ e) a b)
     exta' a b w' e1 e2 ei = TSP.extl1 (inda w' e2) C2 (eqa w' e2) a b ei2
       where
         ei1 : eqInType u w' (eqta w' e1) a b
@@ -177,7 +185,7 @@ typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
         ei2 : eqInType u w' (eqta w' e2) a b
         ei2 = exta a b w' e1 e2 ei1
 
-    extb' : (a b : Term) → wPredExtIrr (λ w₁ e → eqInType u w₁ (eqb w₁ e) a b)
+    extb' : (a b : CTerm) → wPredExtIrr (λ w₁ e → eqInType u w₁ (eqb w₁ e) a b)
     extb' a b w' e1 e2 ei = TSP.extl1 (indb w' e2) D2 (eqb w' e2) a b ei2
       where
         ei1 : eqInType u w' (eqtb w' e1) a b
@@ -192,10 +200,10 @@ typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → B ⇛ (UNIV (fst u)) at w' × C ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → ⌜ B ⌝ ⇛ (UNIV (fst u)) at w' × ⌜ C ⌝ ⇛ (UNIV (fst u)) at w')
     z = isu w B C y
 
-    q : allW w (λ w' e' → B ⇛ UNIV (proj₁ u) at w' × C ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → ⌜ B ⌝ ⇛ UNIV (proj₁ u) at w' × ⌜ C ⌝ ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (UNIONneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))
 
 typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) =
@@ -213,12 +221,14 @@ typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
         C eqt
 
 
-typeSysConds-UNION-isym : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                          (x : A ⇛ UNION A1 B1 at w) (x₁ : B ⇛ UNION A2 B2 at w)
+
+{--
+typeSysConds-UNION-isym : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : CTerm)
+                          (x : A #⇛ #UNION A1 B1 at w) (x₁ : B #⇛ #UNION A2 B2 at w)
                           (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                           (eqtb : allW w (λ w' e → eqTypes u w' B1 B2))
-                          (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                          (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                          (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                          (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                           (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                           (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
                           → eqInTypeSym u (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
@@ -233,12 +243,12 @@ typeSysConds-UNION-isym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
 
 
 
-typeSysConds-UNION-itrans : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                         (x : A ⇛ UNION A1 B1 at w) (x₁ : B ⇛ UNION A2 B2 at w)
+typeSysConds-UNION-itrans : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : CTerm)
+                         (x : A #⇛ #UNION A1 B1 at w) (x₁ : B #⇛ #UNION A2 B2 at w)
                          (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                          (eqtb : allW w (λ w' e → eqTypes u w' B1 B2))
-                         (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                         (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                         (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                         (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                          (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                          (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
                          → eqInTypeTrans u (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
@@ -261,12 +271,12 @@ typeSysConds-UNION-itrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 
 
 
-typeSysConds-UNION-extl1 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                           (x : A ⇛ UNION A1 B1 at w) (x₁ : B ⇛ UNION A2 B2 at w)
+typeSysConds-UNION-extl1 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : CTerm)
+                           (x : A #⇛ #UNION A1 B1 at w) (x₁ : B #⇛ #UNION A2 B2 at w)
                            (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                            (eqtb : allW w (λ w' e → eqTypes u w' B1 B2))
-                           (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                           (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                           (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                           (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
                            → eqInTypeExtL1 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
@@ -317,12 +327,12 @@ typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 
 
 
-typeSysConds-UNION-extl2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                           (x : A ⇛ UNION A1 B1 at w) (x₁ : B ⇛ UNION A2 B2 at w)
+typeSysConds-UNION-extl2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : CTerm)
+                           (x : A #⇛ #UNION A1 B1 at w) (x₁ : B #⇛ #UNION A2 B2 at w)
                            (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                            (eqtb : allW w (λ w' e → eqTypes u w' B1 B2))
-                           (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                           (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                           (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                           (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
                            → eqInTypeExtL2 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
@@ -374,12 +384,12 @@ typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 
 
 
-typeSysConds-UNION-extr1 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                           (x : A ⇛ UNION A1 B1 at w) (x₁ : B ⇛ UNION A2 B2 at w)
+typeSysConds-UNION-extr1 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : CTerm)
+                           (x : A #⇛ #UNION A1 B1 at w) (x₁ : B #⇛ #UNION A2 B2 at w)
                            (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                            (eqtb : allW w (λ w' e → eqTypes u w' B1 B2))
-                           (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                           (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                           (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                           (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
                            → eqInTypeExtR1 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
@@ -431,12 +441,12 @@ typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 
 
 
-typeSysConds-UNION-extr2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                           (x : A ⇛ UNION A1 B1 at w) (x₁ : B ⇛ UNION A2 B2 at w)
+typeSysConds-UNION-extr2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : CTerm)
+                           (x : A #⇛ #UNION A1 B1 at w) (x₁ : B #⇛ #UNION A2 B2 at w)
                            (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                            (eqtb : allW w (λ w' e → eqTypes u w' B1 B2))
-                           (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                           (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                           (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                           (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
                            → eqInTypeExtR2 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
@@ -489,12 +499,12 @@ typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 
 
 
-typeSysConds-UNION-extrevl1 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                              (x : A ⇛ UNION A1 B1 at w) (x₁ : B ⇛ UNION A2 B2 at w)
+typeSysConds-UNION-extrevl1 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : CTerm)
+                              (x : A #⇛ #UNION A1 B1 at w) (x₁ : B #⇛ #UNION A2 B2 at w)
                               (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                               (eqtb : allW w (λ w' e → eqTypes u w' B1 B2))
-                              (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                              (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                              (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                              (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                               (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                               (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
                               → eqInTypeExtRevL1 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
@@ -566,12 +576,12 @@ typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
 
 
 
-typeSysConds-UNION-extrevl2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                              (x : A ⇛ UNION A1 B1 at w) (x₁ : B ⇛ UNION A2 B2 at w)
+typeSysConds-UNION-extrevl2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : CTerm)
+                              (x : A #⇛ #UNION A1 B1 at w) (x₁ : B #⇛ #UNION A2 B2 at w)
                               (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                               (eqtb : allW w (λ w' e → eqTypes u w' B1 B2))
-                              (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                              (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                              (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                              (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                               (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                               (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
                               → eqInTypeExtRevL2 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
@@ -640,12 +650,12 @@ typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
 
 
 
-typeSysConds-UNION-extrevr1 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                              (x : A ⇛ UNION A1 B1 at w) (x₁ : B ⇛ UNION A2 B2 at w)
+typeSysConds-UNION-extrevr1 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : CTerm)
+                              (x : A #⇛ #UNION A1 B1 at w) (x₁ : B #⇛ #UNION A2 B2 at w)
                               (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                               (eqtb : allW w (λ w' e → eqTypes u w' B1 B2))
-                              (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                              (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                              (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                              (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                               (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                               (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
                               → eqInTypeExtRevR1 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
@@ -717,12 +727,12 @@ typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
 
 
 
-typeSysConds-UNION-extrevr2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                              (x : A ⇛ UNION A1 B1 at w) (x₁ : B ⇛ UNION A2 B2 at w)
+typeSysConds-UNION-extrevr2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : CTerm)
+                              (x : A #⇛ #UNION A1 B1 at w) (x₁ : B #⇛ #UNION A2 B2 at w)
                               (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                               (eqtb : allW w (λ w' e → eqTypes u w' B1 B2))
-                              (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                              (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                              (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                              (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                               (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                               (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
                               → eqInTypeExtRevR2 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
@@ -798,8 +808,8 @@ typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
 eqInType-⇛-UNION : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : Term)
                     (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                     (eqtb : allW w (λ w' _ → eqTypes u w' B1 B2))
-                    (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                    (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                    (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                    (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                     (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
                     (indb : allW w (λ w1 e1 → eqInTypeExt (eqtb w1 e1)))
                     → A ⇛ UNION A1 B1 at w
@@ -877,8 +887,8 @@ eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c�
 eqInType-⇛-UNION2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : Term)
                      (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                      (eqtb : allW w (λ w' _ → eqTypes u w' B1 B2))
-                     (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                     (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                     (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                     (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                      → A ⇛ UNION A1 B1 at w
                      → B ⇛ UNION A2 B2 at w
                      → (eqt : eqTypes u w A B)
@@ -962,8 +972,8 @@ eqInType-⇛-UNION2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (E
 eqInType-⇛-UNION-rev : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : Term)
                         (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                         (eqtb : allW w (λ w' _ → eqTypes u w' B1 B2))
-                        (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                        (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                        (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                        (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                         (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
                         (indb : allW w (λ w1 e1 → eqInTypeExt (eqtb w1 e1)))
                         → A ⇛ UNION A1 B1 at w
@@ -1036,8 +1046,8 @@ eqInType-⇛-UNION-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb
 eqInType-⇛-UNION-rev2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : Term)
                          (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                          (eqtb : allW w (λ w' _ → eqTypes u w' B1 B2))
-                         (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                         (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                         (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                         (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                          → A ⇛ UNION A1 B1 at w
                          → B ⇛ UNION A2 B2 at w
                          → (eqt : eqTypes u w A B)
@@ -1110,12 +1120,12 @@ eqInType-⇛-UNION-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c�
 
 
 
-typeSysConds-UNION-local : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                           (x : A ⇛ UNION A1 B1 at w) (x₁ : B ⇛ UNION A2 B2 at w)
+typeSysConds-UNION-local : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : CTerm)
+                           (x : A #⇛ #UNION A1 B1 at w) (x₁ : B #⇛ #UNION A2 B2 at w)
                            (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                            (eqtb : allW w (λ w' _ → eqTypes u w' B1 B2))
-                           (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                           (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                           (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                           (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                            (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 → eqInTypeExt (eqtb w1 e1)))
                            → eqInTypeLocal (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
@@ -1147,12 +1157,12 @@ typeSysConds-UNION-local u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 
 
 
-typeSysConds-UNION : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                     (x : A ⇛ UNION A1 B1 at w) (x₁ : B ⇛ UNION A2 B2 at w)
+typeSysConds-UNION : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : CTerm)
+                     (x : A #⇛ #UNION A1 B1 at w) (x₁ : B #⇛ #UNION A2 B2 at w)
                      (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                      (eqtb : allW w (λ w' e → eqTypes u w' B1 B2))
-                     (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                     (extb : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
+                     (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                     (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                      (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                      (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
                      → TSP {u} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
@@ -1197,4 +1207,5 @@ typeSysConds-UNION u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb 
 
     local : eqInTypeLocal (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     local = typeSysConds-UNION-local u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb (allW-tsp→ext inda) (allW-tsp→ext indb)
+--}
 \end{code}

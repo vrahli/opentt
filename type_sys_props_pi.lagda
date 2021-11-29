@@ -38,15 +38,15 @@ open import ind2 (bar)
 
 
 \begin{code}[hide]
-typeSysConds-PI-tsym : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                       (x : A ⇛ PI A1 B1 at w) (x₁ : B ⇛ PI A2 B2 at w)
+typeSysConds-PI-tsym : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                       (x : A #⇛ #PI A1 B1 at w) (x₁ : B #⇛ #PI A2 B2 at w)
                        (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                        (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                              → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                       (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                       (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                              → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                       (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                       (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                        (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
-                       (indb : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                       (indb : allW w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                                → TSP (eqtb w1 e1 a1 a2 ea)))
                        → eqTypes u w B A
 typeSysConds-PI-tsym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb =
@@ -55,7 +55,7 @@ typeSysConds-PI-tsym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda ind
     syma : allW w (λ w' _ → eqTypes u w' A2 A1)
     syma w1 e1 = TSP.tsym (inda w1 e1)
 
-    symb : allW w (λ w' e → (a1 a2 : Term) → eqInType u w' (syma w' e) a1 a2 → eqTypes u w' (sub a1 B2) (sub a2 B1))
+    symb : allW w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (syma w' e) a1 a2 → eqTypes u w' (sub0 a1 B2) (sub0 a2 B1))
     symb w1 e1 a b eqi = TSP.tsym (indb w1 e1 b a eqi2)
       where
         eqi1 : eqInType u w1 (eqta w1 e1) a b
@@ -64,7 +64,7 @@ typeSysConds-PI-tsym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda ind
         eqi2 : eqInType u w1 (eqta w1 e1) b a
         eqi2 = TSP.isym (inda w1 e1) a b eqi1
 
-    exta' : (a b : Term) → wPredExtIrr (λ w₁ e → eqInType u w₁ (TSP.tsym (inda w₁ e)) a b)
+    exta' : (a b : CTerm) → wPredExtIrr (λ w₁ e → eqInType u w₁ (TSP.tsym (inda w₁ e)) a b)
     exta' a b w' e1 e2 ei = TSP.extl2 (inda w' e2) A2 (TSP.tsym (inda w' e2)) a b ei2
       where
         ei1 : eqInType u w' (eqta w' e1) a b
@@ -73,8 +73,8 @@ typeSysConds-PI-tsym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda ind
         ei2 : eqInType u w' (eqta w' e2) a b
         ei2 = exta a b w' e1 e2 ei1
 
-    extb' : (a b c d : Term) → wPredDepExtIrr (λ w₁ e x₂ → eqInType u w₁ (symb w₁ e a b x₂) c d)
-    extb' a b c d w' e1 e2 x₁ x₂ ei = TSP.extl2 (indb w' e2 b a x₂'') (sub a B2) (symb w' e2 a b x₂) c d eb4
+    extb' : (a b c d : CTerm) → wPredDepExtIrr (λ w₁ e x₂ → eqInType u w₁ (symb w₁ e a b x₂) c d)
+    extb' a b c d w' e1 e2 x₁ x₂ ei = TSP.extl2 (indb w' e2 b a x₂'') (sub0 a B2) (symb w' e2 a b x₂) c d eb4
       where
         x₁' : eqInType u w' (eqta w' e1) a b
         x₁' = TSP.extrevl2 (inda w' e1) A2 (syma w' e1) a b x₁
@@ -89,7 +89,7 @@ typeSysConds-PI-tsym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda ind
         x₂'' = TSP.isym (inda w' e2) a b x₂'
 
         eb1 : eqInType u w' (eqtb w' e1 b a x₁'') c d
-        eb1 = TSP.extrevl2 (indb w' e1 b a x₁'') (sub a B2) (symb w' e1 a b x₁) c d ei
+        eb1 = TSP.extrevl2 (indb w' e1 b a x₁'') (sub0 a B2) (symb w' e1 a b x₁) c d ei
 
         eb2 : eqInType u w' (eqtb w' e1 a b x₁') c d
         eb2 = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb eb1
@@ -102,16 +102,16 @@ typeSysConds-PI-tsym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda ind
 
 
 
-typeSysConds-PI-ttrans : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                         (x : A ⇛ PI A1 B1 at w) (x₁ : B ⇛ PI A2 B2 at w)
+typeSysConds-PI-ttrans : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                         (x : A #⇛ #PI A1 B1 at w) (x₁ : B #⇛ #PI A2 B2 at w)
                          (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                          (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                                → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                         (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                         (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                                → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                         (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                         (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                          (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                          (indb : allW w (λ w1 e1 →
-                                           (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                           (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                            → TSP (eqtb w1 e1 a1 a2 ea)))
                        → eqTypesTrans u w A B
 {-# TERMINATING #-}
@@ -121,15 +121,15 @@ typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) = ⊥-elim (PIneqQLT (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) = ⊥-elim (PIneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0)
-  rewrite PIinj1 (⇛-val-det tt tt y x₁)
-        | PIinj2 (⇛-val-det tt tt y x₁) =
+  rewrite #PIinj1 {C1} {D1} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
+        | #PIinj2 {C1} {D1} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁) =
   EQTPI A1 B1 C2 D2 x y₁ eqa eqb exta' extb'
   where
     eqa : allW w (λ w' _ → eqTypes u w' A1 C2)
     eqa w1 e1 = TSP.ttrans (inda w1 e1) C2 (eqta0 w1 e1)
 
-    eqb : allW w (λ w' e → (a1 a2 : Term) → eqInType u w' (eqa w' e) a1 a2 → eqTypes u w' (sub a1 B1) (sub a2 D2))
-    eqb w1 e1 a1 a2 ea = TSP.ttrans (indb w1 e1 a1 a2 eqa12) (sub a2 D2) eqb2
+    eqb : allW w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqa w' e) a1 a2 → eqTypes u w' (sub0 a1 B1) (sub0 a2 D2))
+    eqb w1 e1 a1 a2 ea = TSP.ttrans (indb w1 e1 a1 a2 eqa12) (sub0 a2 D2) eqb2
       where
         eqa12 : eqInType u w1 (eqta w1 e1) a1 a2
         eqa12 = TSP.extrevl1 (inda w1 e1) C2 (eqa w1 e1) a1 a2 ea
@@ -140,10 +140,10 @@ typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
         eqa22 : eqInType u w1 (eqta0 w1 e1) a2 a2
         eqa22 = TSP.extr2 (inda w1 e1) C2 (eqta0 w1 e1) a2 a2 eqa22'
 
-        eqb2 : eqTypes u w1 (sub a2 B2) (sub a2 D2)
+        eqb2 : eqTypes u w1 (sub0 a2 B2) (sub0 a2 D2)
         eqb2 = eqtb0 w1 e1 a2 a2 eqa22
 
-    exta' : (a b : Term) → wPredExtIrr (λ w₁ e → eqInType u w₁ (eqa w₁ e) a b)
+    exta' : (a b : CTerm) → wPredExtIrr (λ w₁ e → eqInType u w₁ (eqa w₁ e) a b)
     exta' a b w' e1 e2 ei = TSP.extl1 (inda w' e2) C2 (eqa w' e2) a b ei2
       where
         ei1 : eqInType u w' (eqta w' e1) a b
@@ -152,8 +152,8 @@ typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
         ei2 : eqInType u w' (eqta w' e2) a b
         ei2 = exta a b w' e1 e2 ei1
 
-    extb' : (a b c d : Term) → wPredDepExtIrr (λ w₁ e x₂ → eqInType u w₁ (eqb w₁ e a b x₂) c d)
-    extb' a b c d w' e1 e2 x₁ x₂ ei = TSP.extl1 (indb w' e2 a b x₂') (sub b D2) (eqb w' e2 a b x₂) c d ei2
+    extb' : (a b c d : CTerm) → wPredDepExtIrr (λ w₁ e x₂ → eqInType u w₁ (eqb w₁ e a b x₂) c d)
+    extb' a b c d w' e1 e2 x₁ x₂ ei = TSP.extl1 (indb w' e2 a b x₂') (sub0 b D2) (eqb w' e2 a b x₂) c d ei2
       where
         x₁' : eqInType u w' (eqta w' e1) a b
         x₁' = TSP.extrevl1 (inda w' e1) C2 (eqa w' e1) a b x₁
@@ -162,7 +162,7 @@ typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
         x₂' = TSP.extrevl1 (inda w' e2) C2 (eqa w' e2) a b x₂
 
         ei1 : eqInType u w' (eqtb w' e1 a b x₁') c d
-        ei1 = TSP.extrevl1 (indb w' e1 a b x₁') (sub b D2) (eqb w' e1 a b x₁) c d ei
+        ei1 = TSP.extrevl1 (indb w' e1 a b x₁') (sub0 b D2) (eqb w' e1 a b x₁) c d ei
 
         ei2 : eqInType u w' (eqtb w' e2 a b x₂') c d
         ei2 = extb a b c d w' e1 e2 x₁' x₂' ei1
@@ -178,10 +178,10 @@ typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → B ⇛ (UNIV (fst u)) at w' × C ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
 
-    q : allW w (λ w' e' → B ⇛ UNIV (proj₁ u) at w' × C ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))
 
 typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) =
@@ -200,27 +200,27 @@ typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 
 
 
-typeSysConds-PI-isym : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                       (x : A ⇛ PI A1 B1 at w) (x₁ : B ⇛ PI A2 B2 at w)
+typeSysConds-PI-isym : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                       (x : A #⇛ #PI A1 B1 at w) (x₁ : B #⇛ #PI A2 B2 at w)
                        (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                        (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                              → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                       (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                       (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                              → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                       (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                       (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                        (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                        (indb : allW w (λ w1 e1 →
-                                         (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                         (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                          → TSP (eqtb w1 e1 a1 a2 ea)))
-                       → eqInTypeSym u (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                       → eqInTypeSym u {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 typeSysConds-PI-isym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb f g eqa =
   Bar.allW-inBarFunc inOpenBar-Bar h eqa
   where
     h : allW w (λ w' e' →
-                  ((a1 a2 : Term) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                    eqInType u w' (eqtb w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2))
-                  → (a1 a2 : Term) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                        eqInType u w' (eqtb w' e' a1 a2 eqa) (APPLY g a1) (APPLY f a2))
-    h w1 e1 imp a1 a2 ea = TSP.isym (indb w1 e1 a1 a2 ea) (APPLY f a2) (APPLY g a1) eb
+                  ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
+                    eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
+                  → (a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
+                        eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY g a1) (#APPLY f a2))
+    h w1 e1 imp a1 a2 ea = TSP.isym (indb w1 e1 a1 a2 ea) (#APPLY f a2) (#APPLY g a1) eb
       where
         ea2 : eqInType u w1 (eqta w1 e1) a2 a1
         ea2 = TSP.isym (inda w1 e1) a1 a2 ea
@@ -228,71 +228,72 @@ typeSysConds-PI-isym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda ind
         ea3 : eqInType u w1 (eqta w1 e1) a1 a1
         ea3 = TSP.itrans (inda w1 e1) a1 a2 a1 ea ea2
 
-        eib1 : eqTypes u w1 (sub a1 B1) (sub a1 B2)
+        eib1 : eqTypes u w1 (sub0 a1 B1) (sub0 a1 B2)
         eib1 = eqtb w1 e1 a1 a1 ea3
 
-        eb1 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (APPLY f a2) (APPLY g a1)
+        eb1 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (#APPLY f a2) (#APPLY g a1)
         eb1 = imp a2 a1 ea2
 
-        eb2 : eqInType u w1 eib1 (APPLY f a2) (APPLY g a1)
+        eb2 : eqInType u w1 eib1 (#APPLY f a2) (#APPLY g a1)
         eb2 = TSP.extrevr1 (indb w1 e1 a1 a1 ea3)
-                  (sub a2 B1) (eqtb w1 e1 a2 a1 ea2) (APPLY f a2) (APPLY g a1) eb1
+                  (sub0 a2 B1) (eqtb w1 e1 a2 a1 ea2) (#APPLY f a2) (#APPLY g a1) eb1
 
-        eb : eqInType u w1 (eqtb w1 e1 a1 a2 ea) (APPLY f a2) (APPLY g a1)
+        eb : eqInType u w1 (eqtb w1 e1 a1 a2 ea) (#APPLY f a2) (#APPLY g a1)
         eb = TSP.extrevl1 (indb w1 e1 a1 a2 ea)
-                 (sub a1 B2) eib1 (APPLY f a2) (APPLY g a1) eb2
+                 (sub0 a1 B2) eib1 (#APPLY f a2) (#APPLY g a1) eb2
 
 
-typeSysConds-PI-itrans : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                         (x : A ⇛ PI A1 B1 at w) (x₁ : B ⇛ PI A2 B2 at w)
+typeSysConds-PI-itrans : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                         (x : A #⇛ #PI A1 B1 at w) (x₁ : B #⇛ #PI A2 B2 at w)
                          (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                          (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                                → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                         (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                         (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                                → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                         (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                         (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                          (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                          (indb : allW w (λ w1 e1 →
-                                           (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                           (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                            → TSP (eqtb w1 e1 a1 a2 ea)))
-                         → eqInTypeTrans u (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                         → eqInTypeTrans u {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 typeSysConds-PI-itrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb f g h ea1 ea2 =
   Bar.inBarFunc inOpenBar-Bar (Bar.inBarFunc inOpenBar-Bar (Bar.allW-inBar inOpenBar-Bar aw) ea1) ea2
   where
     aw : allW w
               (λ w' e →
-                ((a1 a2 : Term) (eqa : eqInType u w' (eqta w' e) a1 a2) →
-                  eqInType u w' (eqtb w' e a1 a2 eqa) (APPLY f a1) (APPLY g a2))
-                → ((a1 a2 : Term) (eqa : eqInType u w' (eqta w' e) a1 a2) →
-                       eqInType u w' (eqtb w' e a1 a2 eqa) (APPLY g a1) (APPLY h a2))
-                → (a1 a2 : Term) (eqa : eqInType u w' (eqta w' e) a1 a2) →
-                      eqInType u w' (eqtb w' e a1 a2 eqa) (APPLY f a1) (APPLY h a2))
-    aw w1 e1 f1 f2 a1 a2 eqa = TSP.itrans (indb w1 e1 a1 a2 eqa) (APPLY f a1) (APPLY g a1) (APPLY h a2) ef1' ef2
+                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e) a1 a2) →
+                  eqInType u w' (eqtb w' e a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
+                → ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e) a1 a2) →
+                       eqInType u w' (eqtb w' e a1 a2 eqa) (#APPLY g a1) (#APPLY h a2))
+                → (a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e) a1 a2) →
+                      eqInType u w' (eqtb w' e a1 a2 eqa) (#APPLY f a1) (#APPLY h a2))
+    aw w1 e1 f1 f2 a1 a2 eqa = TSP.itrans (indb w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a1) (#APPLY h a2) ef1' ef2
       where
         eqa1 : eqInType u w1 (eqta w1 e1) a1 a1
         eqa1 = TSP-refl inda eqa
 
-        ef1 : eqInType u w1 (eqtb w1 e1 a1 a1 eqa1) (APPLY f a1) (APPLY g a1)
+        ef1 : eqInType u w1 (eqtb w1 e1 a1 a1 eqa1) (#APPLY f a1) (#APPLY g a1)
         ef1 = f1 a1 a1 eqa1
 
-        ef2 : eqInType u w1 (eqtb w1 e1 a1 a2 eqa) (APPLY g a1) (APPLY h a2)
+        ef2 : eqInType u w1 (eqtb w1 e1 a1 a2 eqa) (#APPLY g a1) (#APPLY h a2)
         ef2 = f2 a1 a2 eqa
 
-        ef1' : eqInType u w1 (eqtb w1 e1 a1 a2 eqa) (APPLY f a1) (APPLY g a1)
-        ef1' = TSP.extrevl1 (indb w1 e1 a1 a2 eqa) (sub a1 B2) (eqtb w1 e1 a1 a1 eqa1) (APPLY f a1) (APPLY g a1) ef1
+        ef1' : eqInType u w1 (eqtb w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a1)
+        ef1' = TSP.extrevl1 (indb w1 e1 a1 a2 eqa) (sub0 a1 B2) (eqtb w1 e1 a1 a1 eqa1) (#APPLY f a1) (#APPLY g a1) ef1
 
 
-typeSysConds-PI-extl1 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                        (x : A ⇛ PI A1 B1 at w) (x₁ : B ⇛ PI A2 B2 at w)
+
+typeSysConds-PI-extl1 : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                        (x : A #⇛ #PI A1 B1 at w) (x₁ : B #⇛ #PI A2 B2 at w)
                         (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                         (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                               → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                        (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                        (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                               → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                        (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                        (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                         (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                         (indb : allW w (λ w1 e1 →
-                                          (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                          (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                           → TSP (eqtb w1 e1 a1 a2 ea)))
-                        → eqInTypeExtL1 (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                        → eqInTypeExtL1 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x y))
 typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x y))
@@ -300,16 +301,16 @@ typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x y))
 typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x y))
 typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi
-  rewrite PIinj1 (⇛-val-det tt tt y x) -- C1≡A1
-        | PIinj2 (⇛-val-det tt tt y x) -- D1≡B1
+  rewrite #PIinj1 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x) -- C1≡A1
+        | #PIinj2 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x) -- D1≡B1
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w (λ w' e' →
-              ((a1 a2 : Term) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                eqInType u w' (eqtb w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2))
-              → (a1 a2 : Term) (eqa : eqInType u w' (eqta0 w' e') a1 a2)
-              → eqInType u w' (eqtb0 w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP.extl1 (indb w1 e1 a1 a2 ea1) (sub a2 B4) (eqtb0 w1 e1 a1 a2 eqa) (APPLY f a1) (APPLY g a2) ef1
+              ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
+                eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
+              → (a1 a2 : CTerm) (eqa : eqInType u w' (eqta0 w' e') a1 a2)
+              → eqInType u w' (eqtb0 w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
+    aw w1 e1 imp a1 a2 eqa = TSP.extl1 (indb w1 e1 a1 a2 ea1) (sub0 a2 B4) (eqtb0 w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) ef1
       where
         ea1 : eqInType u w1 (eqta w1 e1) a1 a2
         ea1 = TSP.extrevl1 (inda w1 e1) A4 (eqta0 w1 e1) a1 a2 eqa
@@ -317,7 +318,7 @@ typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         ea2 : eqInType u w1 (eqta w1 e1) a2 a1
         ea2 = TSP.isym (inda w1 e1) a1 a2 ea1
 
-        ef1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (APPLY f a1) (APPLY g a2)
+        ef1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
         ef1 = imp a1 a2 ea1
 
 typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x y))
@@ -330,10 +331,10 @@ typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × C ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w A C y
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × C ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))
 
 typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -351,18 +352,18 @@ typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 
 
 
-typeSysConds-PI-extl2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                        (x : A ⇛ PI A1 B1 at w) (x₁ : B ⇛ PI A2 B2 at w)
+typeSysConds-PI-extl2 : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                        (x : A #⇛ #PI A1 B1 at w) (x₁ : B #⇛ #PI A2 B2 at w)
                         (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                         (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                               → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                        (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                        (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                               → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                        (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                        (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                         (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                         (indb : allW w (λ w1 e1 →
-                                          (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                          (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                           → TSP (eqtb w1 e1 a1 a2 ea)))
-                        → eqInTypeExtL2 (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                        → eqInTypeExtL2 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x y₁))
 typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x y₁))
@@ -370,17 +371,17 @@ typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x y₁))
 typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite PIinj1 (⇛-val-det tt tt y₁ x)
-        | PIinj2 (⇛-val-det tt tt y₁ x)
+  rewrite #PIinj1 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
+        | #PIinj2 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
               (λ w' e' →
-                ((a1 a2 : Term) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2)) →
-                (a1 a2 : Term) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP.extl2 (indb w1 e1 a2 a1 ea2) (sub a1 B3) (eqtb₁ w1 e1 a1 a2 eqa) (APPLY f a1) (APPLY g a2) eb2
+                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
+                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
+                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
+                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
+    aw w1 e1 imp a1 a2 eqa = TSP.extl2 (indb w1 e1 a2 a1 ea2) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) eb2
       where
         ea1 : eqInType u w1 (eqta w1 e1) a1 a2
         ea1 = TSP.extrevl2 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
@@ -388,10 +389,10 @@ typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         ea2 : eqInType u w1 (eqta w1 e1) a2 a1
         ea2 = TSP.isym (inda w1 e1) a1 a2 ea1
 
-        eb1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (APPLY f a1) (APPLY g a2)
+        eb1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
         eb1 = imp a1 a2 ea1
 
-        eb2 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (APPLY f a1) (APPLY g a2)
+        eb2 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (#APPLY f a1) (#APPLY g a2)
         eb2 = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb eb1
 
 typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x y₁))
@@ -404,10 +405,10 @@ typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → C ⇛ (UNIV (fst u)) at w' × A ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
     z = isu w C A y
 
-    q : allW w (λ w' e' → C ⇛ UNIV (proj₁ u) at w' × A ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))
 
 typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -425,18 +426,18 @@ typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 
 
 
-typeSysConds-PI-extr1 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                        (x : A ⇛ PI A1 B1 at w) (x₁ : B ⇛ PI A2 B2 at w)
+typeSysConds-PI-extr1 : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                        (x : A #⇛ #PI A1 B1 at w) (x₁ : B #⇛ #PI A2 B2 at w)
                         (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                         (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                               → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                        (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                        (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                               → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                        (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                        (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                         (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                         (indb : allW w (λ w1 e1 →
-                                          (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                          (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                           → TSP (eqtb w1 e1 a1 a2 ea)))
-                        → eqInTypeExtR1 (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                        → eqInTypeExtR1 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x₁ y₁))
@@ -444,22 +445,22 @@ typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite PIinj1 (⇛-val-det tt tt y₁ x₁)
-        | PIinj2 (⇛-val-det tt tt y₁ x₁)
+  rewrite #PIinj1 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
+        | #PIinj2 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
               (λ w' e' →
-                ((a1 a2 : Term) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2)) →
-                (a1 a2 : Term) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP.extr1 (indb w1 e1 a1 a2 ea1) (sub a1 B3) (eqtb₁ w1 e1 a1 a2 eqa) (APPLY f a1) (APPLY g a2) eb1
+                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
+                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
+                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
+                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
+    aw w1 e1 imp a1 a2 eqa = TSP.extr1 (indb w1 e1 a1 a2 ea1) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) eb1
       where
         ea1 : eqInType u w1 (eqta w1 e1) a1 a2
         ea1 = TSP.extrevr1 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
 
-        eb1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (APPLY f a1) (APPLY g a2)
+        eb1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
         eb1 = imp a1 a2 ea1
 
 typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y₁))
@@ -472,10 +473,10 @@ typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → C ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w C B y
 
-    q : allW w (λ w' e' → C ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))
 
 typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -493,18 +494,18 @@ typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 
 
 
-typeSysConds-PI-extr2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                        (x : A ⇛ PI A1 B1 at w) (x₁ : B ⇛ PI A2 B2 at w)
+typeSysConds-PI-extr2 : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                        (x : A #⇛ #PI A1 B1 at w) (x₁ : B #⇛ #PI A2 B2 at w)
                         (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                         (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                               → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                        (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                        (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                               → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                        (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                        (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                         (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                         (indb : allW w (λ w1 e1 →
-                                          (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                          (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                           → TSP (eqtb w1 e1 a1 a2 ea)))
-                        → eqInTypeExtR2 (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                        → eqInTypeExtR2 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x₁ y))
@@ -512,16 +513,16 @@ typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite PIinj1 (⇛-val-det tt tt y x₁)
-        | PIinj2 (⇛-val-det tt tt y x₁) =
+  rewrite #PIinj1 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
+        | #PIinj2 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁) =
   Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
               (λ w' e' →
-                ((a1 a2 : Term) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2)) →
-                (a1 a2 : Term) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2))
+                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
+                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
+                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
+                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
     aw w1 e1 imp a1 a2 eqa = ef0
       where
         ea1 : eqInType u w1 (eqta w1 e1) a1 a2
@@ -530,14 +531,14 @@ typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         ea2 : eqInType u w1 (eqta w1 e1) a2 a1
         ea2 = TSP.isym (inda w1 e1) a1 a2 ea1
 
-        ef1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (APPLY f a1) (APPLY g a2)
+        ef1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
         ef1 = imp a1 a2 ea1
 
-        ef2 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (APPLY f a1) (APPLY g a2)
+        ef2 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (#APPLY f a1) (#APPLY g a2)
         ef2 = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb ef1
 
-        ef0 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 eqa) (APPLY f a1) (APPLY g a2)
-        ef0 = TSP.extr2 (indb w1 e1 a2 a1 ea2) (sub a2 B4) (eqtb₁ w1 e1 a1 a2 eqa) (APPLY f a1) (APPLY g a2) ef2
+        ef0 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)
+        ef0 = TSP.extr2 (indb w1 e1 a2 a1 ea2) (sub0 a2 B4) (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) ef2
 
 typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y))
@@ -549,10 +550,10 @@ typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → B ⇛ (UNIV (fst u)) at w' × C ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
 
-    q : allW w (λ w' e' → B ⇛ UNIV (proj₁ u) at w' × C ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))
 
 typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -570,18 +571,18 @@ typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 
 
 
-typeSysConds-PI-extrevl1 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                           (x : A ⇛ PI A1 B1 at w) (x₁ : B ⇛ PI A2 B2 at w)
+typeSysConds-PI-extrevl1 : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                           (x : A #⇛ #PI A1 B1 at w) (x₁ : B #⇛ #PI A2 B2 at w)
                            (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                            (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                                  → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                           (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                           (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                                  → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                           (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                           (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 →
-                                                (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                                (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                                 → TSP (eqtb w1 e1 a1 a2 ea)))
-                           → eqInTypeExtRevL1 (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                           → eqInTypeExtRevL1 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x y))
 typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x y))
@@ -589,22 +590,22 @@ typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x y))
 typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x y))
 typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite PIinj1 (⇛-val-det tt tt y x)
-        | PIinj2 (⇛-val-det tt tt y x) =
+  rewrite #PIinj1 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x)
+        | #PIinj2 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x) =
   Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
               (λ w' e' →
-                ((a1 a2 : Term) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2)) →
-                (a1 a2 : Term) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP.extrevl1 (indb w1 e1 a1 a2 eqa) (sub a2 B4) (eqtb₁ w1 e1 a1 a2 ea1) (APPLY f a1) (APPLY g a2) ef1
+                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
+                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
+                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
+                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
+    aw w1 e1 imp a1 a2 eqa = TSP.extrevl1 (indb w1 e1 a1 a2 eqa) (sub0 a2 B4) (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2) ef1
       where
         ea1 : eqInType u w1 (eqta₁ w1 e1) a1 a2
         ea1 = TSP.extl1 (inda w1 e1) A4 (eqta₁ w1 e1) a1 a2 eqa
 
-        ef1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (APPLY f a1) (APPLY g a2)
+        ef1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
         ef1 = imp a1 a2 ea1
 
 typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x y))
@@ -617,10 +618,10 @@ typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × C ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w A C y
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × C ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))
 
 typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -630,8 +631,8 @@ typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
       (λ w' e' →
          (z : eqTypes u w' A C) (at : atbar y w' e' z) →
          eqInType u w' z f g →
-         inbar w' (λ w'' e → (a1 a2 : Term) (eqa : eqInType u w'' (eqta w'' (extTrans e e')) a1 a2)
-                           → eqInType u w'' (eqtb w'' (extTrans e e') a1 a2 eqa) (APPLY f a1) (APPLY g a2)))
+         inbar w' (λ w'' e → (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' (extTrans e e')) a1 a2)
+                           → eqInType u w'' (eqtb w'' (extTrans e e') a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
     aw0 w1 e1 z at ez =
       typeSysConds-PI-extrevl1
         u isu w1 A B A1 B1 A2 B2
@@ -646,8 +647,8 @@ typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
       (λ w' e' →
          (z : eqTypes u w' A C) (at : atbar y w' e' z) →
          eqInType u w' z f g →
-         inbar w' (λ w'' e → (x : w'' ≽ w) (a1 a2 : Term) (eqa : eqInType u w'' (eqta w'' x) a1 a2)
-                           → eqInType u w'' (eqtb w'' x a1 a2 eqa) (APPLY f a1) (APPLY g a2)))
+         inbar w' (λ w'' e → (x : w'' ≽ w) (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' x) a1 a2)
+                           → eqInType u w'' (eqtb w'' x a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
     aw w1 e1 z at ez =
       Bar.allW-inBarFunc
         inOpenBar-Bar
@@ -658,18 +659,18 @@ typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 
 
 
-typeSysConds-PI-extrevl2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                           (x : A ⇛ PI A1 B1 at w) (x₁ : B ⇛ PI A2 B2 at w)
+typeSysConds-PI-extrevl2 : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                           (x : A #⇛ #PI A1 B1 at w) (x₁ : B #⇛ #PI A2 B2 at w)
                            (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                            (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                                  → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                           (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                           (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                                  → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                           (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                           (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 →
-                                                (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                                (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                                 → TSP (eqtb w1 e1 a1 a2 ea)))
-                           → eqInTypeExtRevL2 (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                           → eqInTypeExtRevL2 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x y₁))
 typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x y₁))
@@ -677,16 +678,16 @@ typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x y₁))
 typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite PIinj1 (⇛-val-det tt tt y₁ x)
-        | PIinj2 (⇛-val-det tt tt y₁ x) =
+  rewrite #PIinj1 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
+        | #PIinj2 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x) =
   Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
               (λ w' e' →
-                ((a1 a2 : Term) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2)) →
-                (a1 a2 : Term) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2))
+                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
+                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
+                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
+                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
     aw w1 e1 imp a1 a2 eqa = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb eb2
       where
         eas : eqInType u w1 (eqta w1 e1) a2 a1
@@ -695,11 +696,11 @@ typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
         ea1 : eqInType u w1 (eqta₁ w1 e1) a1 a2
         ea1 = TSP.extl2 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
 
-        eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (APPLY f a1) (APPLY g a2)
+        eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
         eb1 = imp a1 a2 ea1
 
-        eb2 : eqInType u w1 (eqtb w1 e1 a2 a1 eas) (APPLY f a1) (APPLY g a2)
-        eb2 = TSP.extrevl2 (indb w1 e1 a2 a1 eas) (sub a1 B3) (eqtb₁ w1 e1 a1 a2 ea1) (APPLY f a1) (APPLY g a2) eb1
+        eb2 : eqInType u w1 (eqtb w1 e1 a2 a1 eas) (#APPLY f a1) (#APPLY g a2)
+        eb2 = TSP.extrevl2 (indb w1 e1 a2 a1 eas) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2) eb1
 
 typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y₁))
@@ -711,10 +712,10 @@ typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → C ⇛ (UNIV (fst u)) at w' × A ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
     z = isu w C A y
 
-    q : allW w (λ w' e' → C ⇛ UNIV (proj₁ u) at w' × A ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))
 
 typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -724,8 +725,8 @@ typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
       (λ w' e' →
          (z : eqTypes u w' C A) (at : atbar y w' e' z) →
          eqInType u w' z f g →
-         inbar w' (λ w'' e → (a1 a2 : Term) (eqa : eqInType u w'' (eqta w'' (extTrans e e')) a1 a2)
-                           → eqInType u w'' (eqtb w'' (extTrans e e') a1 a2 eqa) (APPLY f a1) (APPLY g a2)))
+         inbar w' (λ w'' e → (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' (extTrans e e')) a1 a2)
+                           → eqInType u w'' (eqtb w'' (extTrans e e') a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
     aw0 w1 e1 z at ez =
       typeSysConds-PI-extrevl2
         u isu w1 A B A1 B1 A2 B2
@@ -739,8 +740,8 @@ typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
       (λ w' e' →
          (z : eqTypes u w' C A) (at : atbar y w' e' z) →
          eqInType u w' z f g →
-         inbar w' (λ w'' e → (x : w'' ≽ w) (a1 a2 : Term) (eqa : eqInType u w'' (eqta w'' x) a1 a2)
-                           → eqInType u w'' (eqtb w'' x a1 a2 eqa) (APPLY f a1) (APPLY g a2)))
+         inbar w' (λ w'' e → (x : w'' ≽ w) (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' x) a1 a2)
+                           → eqInType u w'' (eqtb w'' x a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
     aw w1 e1 z at ez =
       Bar.allW-inBarFunc
         inOpenBar-Bar
@@ -752,18 +753,18 @@ typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 
 
 
-typeSysConds-PI-extrevr1 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                           (x : A ⇛ PI A1 B1 at w) (x₁ : B ⇛ PI A2 B2 at w)
+typeSysConds-PI-extrevr1 : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                           (x : A #⇛ #PI A1 B1 at w) (x₁ : B #⇛ #PI A2 B2 at w)
                            (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                            (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                                  → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                           (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                           (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                                  → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                           (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                           (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 →
-                                                (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                                (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                                 → TSP (eqtb w1 e1 a1 a2 ea)))
-                           → eqInTypeExtRevR1 (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                           → eqInTypeExtRevR1 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x₁ y₁))
@@ -771,22 +772,22 @@ typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite PIinj1 (⇛-val-det tt tt y₁ x₁)
-        | PIinj2 (⇛-val-det tt tt y₁ x₁) =
+  rewrite #PIinj1 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
+        | #PIinj2 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁) =
   Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
               (λ w' e' →
-                ((a1 a2 : Term) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2)) →
-                (a1 a2 : Term) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP.extrevr1 (indb w1 e1 a1 a2 eqa) (sub a1 B3) (eqtb₁ w1 e1 a1 a2 ea1) (APPLY f a1) (APPLY g a2) eb1
+                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
+                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
+                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
+                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
+    aw w1 e1 imp a1 a2 eqa = TSP.extrevr1 (indb w1 e1 a1 a2 eqa) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2) eb1
       where
         ea1 : eqInType u w1 (eqta₁ w1 e1) a1 a2
         ea1 = TSP.extr1 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
 
-        eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (APPLY f a1) (APPLY g a2)
+        eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
         eb1 = imp a1 a2 ea1
 
 typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y₁))
@@ -799,10 +800,10 @@ typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → C ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w C B y
 
-    q : allW w (λ w' e' → C ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))
 
 typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -812,8 +813,8 @@ typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
       (λ w' e' →
          (z : eqTypes u w' C B) (at : atbar y w' e' z) →
          eqInType u w' z f g →
-         inbar w' (λ w'' e → (a1 a2 : Term) (eqa : eqInType u w'' (eqta w'' (extTrans e e')) a1 a2)
-                           → eqInType u w'' (eqtb w'' (extTrans e e') a1 a2 eqa) (APPLY f a1) (APPLY g a2)))
+         inbar w' (λ w'' e → (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' (extTrans e e')) a1 a2)
+                           → eqInType u w'' (eqtb w'' (extTrans e e') a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
     aw0 w1 e1 z at ez =
       typeSysConds-PI-extrevr1
         u isu w1 A B A1 B1 A2 B2
@@ -827,8 +828,8 @@ typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
       (λ w' e' →
          (z : eqTypes u w' C B) (at : atbar y w' e' z) →
          eqInType u w' z f g →
-         inbar w' (λ w'' e → (x : w'' ≽ w) (a1 a2 : Term) (eqa : eqInType u w'' (eqta w'' x) a1 a2)
-                           → eqInType u w'' (eqtb w'' x a1 a2 eqa) (APPLY f a1) (APPLY g a2)))
+         inbar w' (λ w'' e → (x : w'' ≽ w) (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' x) a1 a2)
+                           → eqInType u w'' (eqtb w'' x a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
     aw w1 e1 z at ez =
       Bar.allW-inBarFunc
         inOpenBar-Bar
@@ -840,18 +841,18 @@ typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 
 
 
-typeSysConds-PI-extrevr2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                           (x : A ⇛ PI A1 B1 at w) (x₁ : B ⇛ PI A2 B2 at w)
+typeSysConds-PI-extrevr2 : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                           (x : A #⇛ #PI A1 B1 at w) (x₁ : B #⇛ #PI A2 B2 at w)
                            (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                            (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                                  → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                           (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                           (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                                  → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                           (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                           (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 →
-                                                (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                                (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                                 → TSP (eqtb w1 e1 a1 a2 ea)))
-                           → eqInTypeExtRevR2 (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                           → eqInTypeExtRevR2 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x₁ y))
@@ -859,16 +860,16 @@ typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite PIinj1 (⇛-val-det tt tt y x₁)
-        | PIinj2 (⇛-val-det tt tt y x₁) =
+  rewrite #PIinj1 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
+        | #PIinj2 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁) =
   Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
               (λ w' e' →
-                ((a1 a2 : Term) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2)) →
-                (a1 a2 : Term) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (APPLY f a1) (APPLY g a2))
+                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
+                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
+                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
+                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
     aw w1 e1 imp a1 a2 eqa = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb eb2
       where
         ea1 : eqInType u w1 (eqta₁ w1 e1) a1 a2
@@ -877,11 +878,11 @@ typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
         ea2 : eqInType u w1 (eqta w1 e1) a2 a1
         ea2 = TSP.isym (inda w1 e1) a1 a2 eqa
 
-        eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (APPLY f a1) (APPLY g a2)
+        eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
         eb1 = imp a1 a2 ea1
 
-        eb2 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (APPLY f a1) (APPLY g a2)
-        eb2 = TSP.extrevr2 (indb w1 e1 a2 a1 ea2) (sub a2 B4) (eqtb₁ w1 e1 a1 a2 ea1) (APPLY f a1) (APPLY g a2) eb1
+        eb2 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (#APPLY f a1) (#APPLY g a2)
+        eb2 = TSP.extrevr2 (indb w1 e1 a2 a1 ea2) (sub0 a2 B4) (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2) eb1
 
 typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y))
@@ -893,10 +894,10 @@ typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → B ⇛ (UNIV (fst u)) at w' × C ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
 
-    q : allW w (λ w' e' → B ⇛ UNIV (proj₁ u) at w' × C ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))
 
 typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -906,8 +907,8 @@ typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
       (λ w' e' →
          (z : eqTypes u w' B C) (at : atbar y w' e' z) →
          eqInType u w' z f g →
-         inbar w' (λ w'' e → (a1 a2 : Term) (eqa : eqInType u w'' (eqta w'' (extTrans e e')) a1 a2)
-                           → eqInType u w'' (eqtb w'' (extTrans e e') a1 a2 eqa) (APPLY f a1) (APPLY g a2)))
+         inbar w' (λ w'' e → (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' (extTrans e e')) a1 a2)
+                           → eqInType u w'' (eqtb w'' (extTrans e e') a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
     aw0 w1 e1 z at ez =
       typeSysConds-PI-extrevr2
         u isu w1 A B A1 B1 A2 B2
@@ -921,8 +922,8 @@ typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
       (λ w' e' →
          (z : eqTypes u w' B C) (at : atbar y w' e' z) →
          eqInType u w' z f g →
-         inbar w' (λ w'' e → (x : w'' ≽ w) (a1 a2 : Term) (eqa : eqInType u w'' (eqta w'' x) a1 a2)
-                           → eqInType u w'' (eqtb w'' x a1 a2 eqa) (APPLY f a1) (APPLY g a2)))
+         inbar w' (λ w'' e → (x : w'' ≽ w) (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' x) a1 a2)
+                           → eqInType u w'' (eqtb w'' x a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
     aw w1 e1 z at ez =
       Bar.allW-inBarFunc
         inOpenBar-Bar
@@ -934,17 +935,17 @@ typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 
 
 
-eqInType-⇛-PI : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : Term)
+eqInType-⇛-PI : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 : CTerm) (B1 B2 : CTerm0) (a b : CTerm)
                  (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
-                 (eqtb : allW w (λ w' e → (a1 a2 : Term) → eqInType u w' (eqta w' e) a1 a2
-                                        → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                 (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                 (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                 (eqtb : allW w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
+                                        → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                 (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                 (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                  (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
-                 (indb : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                 (indb : allW w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                          → eqInTypeExt (eqtb w1 e1 a1 a2 ea)))
-                 → A ⇛ PI A1 B1 at w
-                 → B ⇛ PI A2 B2 at w
+                 → A #⇛ #PI A1 B1 at w
+                 → B #⇛ #PI A2 B2 at w
                  → (eqt : eqTypes u w A B)
                  → eqInType u w eqt a b
                  → inbar w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b)
@@ -955,20 +956,20 @@ eqInType-⇛-PI u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c
 eqInType-⇛-PI u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (PIneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (PIneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei
-  rewrite PIinj1 (⇛-val-det tt tt c₁ x)
-        | PIinj2 (⇛-val-det tt tt c₁ x)
-        | PIinj1 (⇛-val-det tt tt c₂ x₁)
-        | PIinj2 (⇛-val-det tt tt c₂ x₁) =
+  rewrite #PIinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #PIinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #PIinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
+        | #PIinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
   Bar.allW-inBarFunc inOpenBar-Bar aw ei
   where
     aw : allW w (λ w' e' → PIeq (eqInType u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb₁ w' e' a₁ a₂ eqa)) a b
                          → PIeq (eqInType u w' (eqta w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e' a₁ a₂ eqa)) a b)
-    aw w1 e1 z a₁ a₂ eqa = snd (indb w1 e1 a₁ a₂ eqa (eqtb₁ w1 e1 a₁ a₂ eqa') (APPLY a a₁) (APPLY b a₂)) eqb'
+    aw w1 e1 z a₁ a₂ eqa = snd (indb w1 e1 a₁ a₂ eqa (eqtb₁ w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)) eqb'
       where
         eqa' : eqInType u w1 (eqta₁ w1 e1) a₁ a₂
         eqa' = fst (inda w1 e1 (eqta₁ w1 e1) a₁ a₂) eqa
 
-        eqb' : eqInType u w1 (eqtb₁ w1 e1 a₁ a₂ eqa') (APPLY a a₁) (APPLY b a₂)
+        eqb' : eqInType u w1 (eqtb₁ w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)
         eqb' = z a₁ a₂ eqa'
 
 eqInType-⇛-PI u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PIneqSUM (⇛-val-det tt tt c₁ x))
@@ -981,10 +982,10 @@ eqInType-⇛-PI u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c
 eqInType-⇛-PI u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNIV x) ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))
 
 eqInType-⇛-PI u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTBAR x) ei =
@@ -1014,17 +1015,17 @@ eqInType-⇛-PI u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c
 
 
 
-eqInType-⇛-PI2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : Term)
+eqInType-⇛-PI2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 : CTerm) (B1 B2 : CTerm0) (a b : CTerm)
                   (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
-                  (eqtb : allW w (λ w' e → (a1 a2 : Term) → eqInType u w' (eqta w' e) a1 a2
-                                         → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                  (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                  (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
-                 → A ⇛ PI A1 B1 at w
-                 → B ⇛ PI A2 B2 at w
+                  (eqtb : allW w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
+                                         → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                  (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                  (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                 → A #⇛ #PI A1 B1 at w
+                 → B #⇛ #PI A2 B2 at w
                  → (eqt : eqTypes u w A B)
                  → (eqi : eqInType u w eqt a b)
-                 → (ext : {w' : world} {A' B' : Term} (eqt' : eqTypes u w' A' B') → ≤Type u eqt' eqt → eqInTypeExt eqt')
+                 → (ext : {w' : world} {A' B' : CTerm} (eqt' : eqTypes u w' A' B') → ≤Type u eqt' eqt → eqInTypeExt eqt')
                  → inbar w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b)
 {-# TERMINATING #-}
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNAT x x₁) ei ext = ⊥-elim (PIneqNAT (⇛-val-det tt tt c₁ x))
@@ -1033,10 +1034,10 @@ eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTL
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei ext = ⊥-elim (PIneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTFREE x x₁) ei ext = ⊥-elim (PIneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext
-  rewrite PIinj1 (⇛-val-det tt tt c₁ x)
-        | PIinj2 (⇛-val-det tt tt c₁ x)
-        | PIinj1 (⇛-val-det tt tt c₂ x₁)
-        | PIinj2 (⇛-val-det tt tt c₂ x₁) =
+  rewrite #PIinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #PIinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #PIinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
+        | #PIinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
   Bar.allW-inBarFunc inOpenBar-Bar aw ei
   where
     awexta₁ : allW w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
@@ -1045,11 +1046,11 @@ eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTP
     awexta : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
     awexta w1 e1 = eqTypes-eqInTypeExt (eqta₁ w1 e1) (eqta w1 e1) (awexta₁ w1 e1)
 
-    awextb₁ : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta₁ w1 e1) a1 a2)
+    awextb₁ : allW w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta₁ w1 e1) a1 a2)
                               → eqInTypeExt (eqtb₁ w1 e1 a1 a2 ea))
     awextb₁ w1 e1 a1 a2 ea = ext (eqtb₁ w1 e1 a1 a2 ea) (≤TypeS _ _ (<Type1 _ _ (<TypePIb w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1 a1 a2 ea)))
 
-    awextb : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+    awextb : allW w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                              → eqInTypeExt (eqtb w1 e1 a1 a2 ea))
     awextb w1 e1 a1 a2 ea =
       eqTypes-eqInTypeExt
@@ -1059,12 +1060,12 @@ eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTP
 
     aw : allW w (λ w' e' → PIeq (eqInType u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb₁ w' e' a₁ a₂ eqa)) a b
                          → PIeq (eqInType u w' (eqta w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e' a₁ a₂ eqa)) a b)
-    aw w1 e1 z a₁ a₂ eqa = snd (awextb w1 e1 a₁ a₂ eqa (eqtb₁ w1 e1 a₁ a₂ eqa') (APPLY a a₁) (APPLY b a₂)) eqb'
+    aw w1 e1 z a₁ a₂ eqa = snd (awextb w1 e1 a₁ a₂ eqa (eqtb₁ w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)) eqb'
       where
         eqa' : eqInType u w1 (eqta₁ w1 e1) a₁ a₂
         eqa' = fst (awexta w1 e1 (eqta₁ w1 e1) a₁ a₂) eqa
 
-        eqb' : eqInType u w1 (eqtb₁ w1 e1 a₁ a₂ eqa') (APPLY a a₁) (APPLY b a₂)
+        eqb' : eqInType u w1 (eqtb₁ w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)
         eqb' = z a₁ a₂ eqa'
 
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (PIneqSUM (⇛-val-det tt tt c₁ x))
@@ -1077,10 +1078,10 @@ eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQFF
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNIV x) ei ext =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))
 
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTBAR x) ei ext =
@@ -1109,17 +1110,17 @@ eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTB
 
 
 
-eqInType-⇛-PI-rev : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : Term)
+eqInType-⇛-PI-rev : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 : CTerm) (B1 B2 : CTerm0) (a b : CTerm)
                      (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
-                     (eqtb : allW w (λ w' e → (a1 a2 : Term) → eqInType u w' (eqta w' e) a1 a2
-                                            → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                     (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                     (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                     (eqtb : allW w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
+                                            → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                     (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                     (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                      (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
-                     (indb : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                     (indb : allW w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                              → eqInTypeExt (eqtb w1 e1 a1 a2 ea)))
-                     → A ⇛ PI A1 B1 at w
-                     → B ⇛ PI A2 B2 at w
+                     → A #⇛ #PI A1 B1 at w
+                     → B #⇛ #PI A2 B2 at w
                      → (eqt : eqTypes u w A B)
                      → inbar w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b)
                      → eqInType u w eqt a b
@@ -1130,20 +1131,20 @@ eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c�
 eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (PIneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (PIneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei
-  rewrite PIinj1 (⇛-val-det tt tt c₁ x)
-        | PIinj2 (⇛-val-det tt tt c₁ x)
-        | PIinj1 (⇛-val-det tt tt c₂ x₁)
-        | PIinj2 (⇛-val-det tt tt c₂ x₁) =
+  rewrite #PIinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #PIinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #PIinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
+        | #PIinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
   Bar.allW-inBarFunc inOpenBar-Bar aw ei
   where
     aw : allW w (λ w' e' → PIeq (eqInType u w' (eqta w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e' a₁ a₂ eqa)) a b
                          → PIeq (eqInType u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb₁ w' e' a₁ a₂ eqa)) a b)
-    aw w1 e1 z a₁ a₂ eqa = proj₁ (indb w1 e1 a₁ a₂ eqa' (eqtb₁ w1 e1 a₁ a₂ eqa) (APPLY a a₁) (APPLY b a₂)) eqb'
+    aw w1 e1 z a₁ a₂ eqa = proj₁ (indb w1 e1 a₁ a₂ eqa' (eqtb₁ w1 e1 a₁ a₂ eqa) (#APPLY a a₁) (#APPLY b a₂)) eqb'
       where
         eqa' : eqInType u w1 (eqta w1 e1) a₁ a₂
         eqa' = snd (inda w1 e1 (eqta₁ w1 e1) a₁ a₂) eqa
 
-        eqb' : eqInType u w1 (eqtb w1 e1 a₁ a₂ eqa') (APPLY a a₁) (APPLY b a₂)
+        eqb' : eqInType u w1 (eqtb w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)
         eqb' = z a₁ a₂ eqa'
 
 eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PIneqSUM (⇛-val-det tt tt c₁ x))
@@ -1156,10 +1157,10 @@ eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c�
 eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNIV x) ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))
 
 eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTBAR x) ei =
@@ -1180,16 +1181,16 @@ eqInType-⇛-PI-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c�
 
 
 
-eqInType-⇛-PI-rev2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : Term)
+eqInType-⇛-PI-rev2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 : CTerm) (B1 B2 : CTerm0) (a b : CTerm)
                       (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
-                      (eqtb : allW w (λ w' e → (a1 a2 : Term) → eqInType u w' (eqta w' e) a1 a2
-                                             → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                      (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                      (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
-                      → A ⇛ PI A1 B1 at w
-                      → B ⇛ PI A2 B2 at w
+                      (eqtb : allW w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
+                                             → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                      (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                      (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                      → A #⇛ #PI A1 B1 at w
+                      → B #⇛ #PI A2 B2 at w
                       → (eqt : eqTypes u w A B)
-                      → (ext : {w' : world} {A' B' : Term} (eqt' : eqTypes u w' A' B') → ≤Type u eqt' eqt → eqInTypeExt eqt')
+                      → (ext : {w' : world} {A' B' : CTerm} (eqt' : eqTypes u w' A' B') → ≤Type u eqt' eqt → eqInTypeExt eqt')
                       → inbar w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b)
                       → eqInType u w eqt a b
 {-# TERMINATING #-}
@@ -1199,27 +1200,27 @@ eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (
 eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ext ei = ⊥-elim (PIneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTFREE x x₁) ext ei = ⊥-elim (PIneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei
-  rewrite PIinj1 (⇛-val-det tt tt c₁ x)
-        | PIinj2 (⇛-val-det tt tt c₁ x)
-        | PIinj1 (⇛-val-det tt tt c₂ x₁)
-        | PIinj2 (⇛-val-det tt tt c₂ x₁) =
+  rewrite #PIinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #PIinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #PIinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
+        | #PIinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
   Bar.allW-inBarFunc inOpenBar-Bar aw ei
   where
     awexta₁ : allW w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
     awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypePIa w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
 
-    awextb₁ : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta₁ w1 e1) a1 a2)
+    awextb₁ : allW w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta₁ w1 e1) a1 a2)
                               → eqInTypeExt (eqtb₁ w1 e1 a1 a2 ea))
     awextb₁ w1 e1 a1 a2 ea = ext (eqtb₁ w1 e1 a1 a2 ea) (≤TypeS _ _ (<Type1 _ _ (<TypePIb w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1 a1 a2 ea)))
 
     aw : allW w (λ w' e' → PIeq (eqInType u w' (eqta w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e' a₁ a₂ eqa)) a b
                          → PIeq (eqInType u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb₁ w' e' a₁ a₂ eqa)) a b)
-    aw w1 e1 z a₁ a₂ eqa = snd (awextb₁ w1 e1 a₁ a₂ eqa (eqtb w1 e1 a₁ a₂ eqa') (APPLY a a₁) (APPLY b a₂)) eqb'
+    aw w1 e1 z a₁ a₂ eqa = snd (awextb₁ w1 e1 a₁ a₂ eqa (eqtb w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)) eqb'
       where
         eqa' : eqInType u w1 (eqta w1 e1) a₁ a₂
         eqa' = fst (awexta₁ w1 e1 (eqta w1 e1) a₁ a₂) eqa
 
-        eqb' : eqInType u w1 (eqtb w1 e1 a₁ a₂ eqa') (APPLY a a₁) (APPLY b a₂)
+        eqb' : eqInType u w1 (eqtb w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)
         eqb' = z a₁ a₂ eqa'
 
 eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (PIneqSUM (⇛-val-det tt tt c₁ x))
@@ -1232,10 +1233,10 @@ eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (
 eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNIV x) ext ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))
 
 eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTBAR x) ext ei =
@@ -1255,15 +1256,15 @@ eqInType-⇛-PI-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (
 
 
 
-typeSysConds-PI-local : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                        (x : A ⇛ PI A1 B1 at w) (x₁ : B ⇛ PI A2 B2 at w)
+typeSysConds-PI-local : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                        (x : A #⇛ #PI A1 B1 at w) (x₁ : B #⇛ #PI A2 B2 at w)
                         (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                         (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                               → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                        (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                        (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                               → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                        (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                        (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                         (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
-                        (indb : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                        (indb : allW w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                                 → eqInTypeExt (eqtb w1 e1 a1 a2 ea)))
                         → eqInTypeLocal (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 typeSysConds-PI-local u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb a b i j =
@@ -1274,10 +1275,10 @@ typeSysConds-PI-local u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
                          → inbar w' (λ w'' e → (x : w'' ≽ w) → PIeq (eqInType u w'' (eqta w'' x)) (λ a₁ a₂ eqa → eqInType u w'' (eqtb w'' x a₁ a₂ eqa)) a b))
     aw w1 e1 z at ei = Bar.allW-inBarFunc inOpenBar-Bar aw'' aw'
       where
-        exta' : (a₁ b₁ : Term) → wPredExtIrr (λ w₁ e → eqInType u w₁ (allW-mon e1 eqta w₁ e) a₁ b₁)
+        exta' : (a₁ b₁ : CTerm) → wPredExtIrr (λ w₁ e → eqInType u w₁ (allW-mon e1 eqta w₁ e) a₁ b₁)
         exta' a₁ b₁ w' e₁ e₂ eqi = exta a₁ b₁ w' (extTrans e₁ e1 ) (extTrans e₂ e1) eqi
 
-        extb' : (a₁ b₁ c d : Term) → wPredDepExtIrr (λ w₁ e x₂ → eqInType u w₁ (allW-mon e1 eqtb w₁ e a₁ b₁ x₂) c d)
+        extb' : (a₁ b₁ c d : CTerm) → wPredDepExtIrr (λ w₁ e x₂ → eqInType u w₁ (allW-mon e1 eqtb w₁ e a₁ b₁ x₂) c d)
         extb' a₁ b₁ c d w' e₁ e₂ x₁ x₂ eqi = extb a₁ b₁ c d w' (extTrans e₁ e1) (extTrans e₂ e1) x₁ x₂ eqi
 
         aw' : inbar w1 (λ w'' e → PIeq (eqInType u w'' (eqta w'' (extTrans e e1))) (λ a₁ a₂ eqa → eqInType u w'' (eqtb w'' (extTrans e e1) a₁ a₂ eqa)) a b)
@@ -1285,26 +1286,26 @@ typeSysConds-PI-local u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 
         aw'' : allW w1 (λ w' e' → PIeq (eqInType u w' (eqta w' (extTrans e' e1))) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' (extTrans e' e1) a₁ a₂ eqa)) a b
                                 → (x₂ : w' ≽ w) → PIeq (eqInType u w' (eqta w' x₂)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' x₂ a₁ a₂ eqa)) a b)
-        aw'' w' e' j x₂ a1 a2 eqa = fst (indb w' (extTrans e' e1) a1 a2 eqa' (eqtb w' x₂ a1 a2 eqa) (APPLY a a1) (APPLY b a2)) eqb'
+        aw'' w' e' j x₂ a1 a2 eqa = fst (indb w' (extTrans e' e1) a1 a2 eqa' (eqtb w' x₂ a1 a2 eqa) (#APPLY a a1) (#APPLY b a2)) eqb'
           where
             eqa' : eqInType u w' (eqta w' (extTrans e' e1)) a1 a2
             eqa' = fst (inda w' x₂ (eqta w' (extTrans e' e1)) a1 a2) eqa
 
-            eqb' : eqInType u w' (eqtb w' (extTrans e' e1) a1 a2 eqa') (APPLY a a1) (APPLY b a2)
+            eqb' : eqInType u w' (eqtb w' (extTrans e' e1) a1 a2 eqa') (#APPLY a a1) (#APPLY b a2)
             eqb' = j a1 a2 eqa'
 
 
 
 
-typeSysConds-PI : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : Term)
-                  (x : A ⇛ PI A1 B1 at w) (x₁ : B ⇛ PI A2 B2 at w)
+typeSysConds-PI : (u : univs) (isu : is-universe u) (w : world) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                  (x : A #⇛ #PI A1 B1 at w) (x₁ : B #⇛ #PI A2 B2 at w)
                   (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                   (eqtb : allW w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
-                                         → eqTypes u w' (sub a1 B1) (sub a2 B2)))
-                  (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                  (extb : (a b c d : Term) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                                         → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                  (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                  (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
                   (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
-                  (indb : allW w (λ w1 e1 → (a1 a2 : Term) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                  (indb : allW w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                           → TSP (eqtb w1 e1 a1 a2 ea)))
                   → TSP {u} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 typeSysConds-PI u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb =
@@ -1316,34 +1317,34 @@ typeSysConds-PI u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb =
     ttrans : eqTypesTrans u w A B
     ttrans = typeSysConds-PI-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    isym : eqInTypeSym u (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    isym : eqInTypeSym u {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     isym = typeSysConds-PI-isym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    itrans : eqInTypeTrans u (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    itrans : eqInTypeTrans u {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     itrans = typeSysConds-PI-itrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextl1 : eqInTypeExtL1 (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextl1 : eqInTypeExtL1 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextl1 = typeSysConds-PI-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextl2 : eqInTypeExtL2 (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextl2 : eqInTypeExtL2 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextl2 = typeSysConds-PI-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextr1 : eqInTypeExtR1 (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextr1 : eqInTypeExtR1 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextr1 = typeSysConds-PI-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextr2 : eqInTypeExtR2 (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextr2 : eqInTypeExtR2 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextr2 = typeSysConds-PI-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextrl1 : eqInTypeExtRevL1 (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextrl1 : eqInTypeExtRevL1 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextrl1 = typeSysConds-PI-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextrl2 : eqInTypeExtRevL2 (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextrl2 : eqInTypeExtRevL2 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextrl2 = typeSysConds-PI-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextrr1 : eqInTypeExtRevR1 (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextrr1 : eqInTypeExtRevR1 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextrr1 = typeSysConds-PI-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextrr2 : eqInTypeExtRevR2 (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextrr2 : eqInTypeExtRevR2 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextrr2 = typeSysConds-PI-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
     local : eqInTypeLocal (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)

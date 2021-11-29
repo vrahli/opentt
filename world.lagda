@@ -342,6 +342,7 @@ compAllRefl T w =  λ w' e → lift (⇓-refl T w')
 compAllVal : {a b : Term} {w : world} → a ⇛ b at w → isValue a → a ≡ b
 compAllVal {a} {b} {w} c i = let c' = c _ (extRefl w) in compVal _ _ _ (lower c') i
 
+
 -- t1 and t2 compute to the same number and stay the same number in all extensions
 strongMonEq : (w : world) (t1 t2 : Term) → Set₁
 strongMonEq w t1 t2 = Σ ℕ (λ n → t1 ⇛ (NUM n) at w × t2 ⇛ (NUM n) at w)

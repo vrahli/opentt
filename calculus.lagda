@@ -17,6 +17,7 @@ open import Data.Empty
 open import Data.Unit using (⊤ ; tt)
 open import Data.Nat using (ℕ ; _≟_ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _⊔_)
 open import Data.Nat.Properties
+open import Data.Bool.Properties using ()
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
 open import Data.List using (List ; [] ; _∷_ ; [_] ; _++_)
@@ -235,6 +236,10 @@ _⊆?_ : (l k : List Var) → Bool
 #[ l ] t = (fvars t) ⊆? l ≡ true
 
 
+#[]eq : {l : List Var} {a : Term} → (p q : #[ l ] a) → q ≡ p
+#[]eq {a} p q = Decidable⇒UIP.≡-irrelevant Data.Bool.Properties._≟_ q p
+
+
 record CTerm : Set where
   constructor ct
   field
@@ -268,6 +273,14 @@ instance
 
 CTerm≡ : {a b : CTerm} → ⌜ a ⌝ ≡ ⌜ b ⌝ → a ≡ b
 CTerm≡ {ct a ca} {ct .a cb} refl rewrite #eq {a} ca cb = refl
+
+
+CTerm0≡ : {a b : CTerm0} → ⌜ a ⌝ ≡ ⌜ b ⌝ → a ≡ b
+CTerm0≡ {ct0 a ca} {ct0 .a cb} refl rewrite #[]eq {[ 0 ]} {a} ca cb = refl
+
+
+≡CTerm : {a b : CTerm} → a ≡ b → ⌜ a ⌝ ≡ ⌜ b ⌝
+≡CTerm {ct a ca} {ct .a .ca} refl = refl
 
 
 sucIf≤ : (c x : ℕ) → ℕ
