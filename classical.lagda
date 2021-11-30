@@ -68,10 +68,43 @@ LEM : (i : ℕ) → Term
 LEM i = PI (UNIV i) (SQUASH (UNION (VAR 0) (NEG (VAR 0))))
 
 
-eqInType-extl1 : {i : ℕ} {w : world} {A : Term}
-                 (B C : Term)
+#N0 : CTerm
+#N0 = ct N0 refl
+
+#N1 : CTerm
+#N1 = ct N1 refl
+
+#FALSE : CTerm
+#FALSE = ct FALSE refl
+
+#NEG : CTerm → CTerm
+#NEG a = ct (NEG ⌜ a ⌝) c
+  where
+    c : # NEG ⌜ a ⌝
+    c rewrite CTerm.closed a = refl
+
+#LEM : (i : ℕ) → CTerm
+#LEM i = ct (LEM i) refl
+
+#FUN : CTerm → CTerm → CTerm
+#FUN a b = ct (FUN ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # FUN ⌜ a ⌝ ⌜ b ⌝
+    c rewrite CTerm.closed a | CTerm.closed b = refl
+
+#lamAX : CTerm
+#lamAX = ct (lamAX) refl
+
+
+
+#FUN≡#PI : (A B : CTerm) → #FUN A B ≡ #PI A ⌞ B ⌟
+#FUN≡#PI A B = CTerm≡ refl
+
+
+eqInType-extl1 : {i : ℕ} {w : world} {A : CTerm}
+                 (B C : CTerm)
                  (eqa1 : equalTypes i w A B) (eqa2 : equalTypes i w A C)
-                 {a₁ a₂ : Term}
+                 {a₁ a₂ : CTerm}
                  → eqInType (uni i) w eqa1 a₁ a₂
                  → eqInType (uni i) w eqa2 a₁ a₂
 eqInType-extl1 {i} {w} {A} B C eqa1 eqa2 {a₁} {a₂} ei =
@@ -79,84 +112,82 @@ eqInType-extl1 {i} {w} {A} B C eqa1 eqa2 {a₁} {a₂} ei =
             C eqa2 a₁ a₂ ei
 
 
-wPredExtIrr-eqInType : {i : ℕ} {w : world} {A B : Term}
+wPredExtIrr-eqInType : {i : ℕ} {w : world} {A B : CTerm}
                        (eqta : allW w (λ w' _ → equalTypes i w' A B))
-                       (a b : Term) → wPredExtIrr (λ w₁ e → eqInType (uni i) w₁ (eqta w₁ e) a b)
+                       (a b : CTerm) → wPredExtIrr (λ w₁ e → eqInType (uni i) w₁ (eqta w₁ e) a b)
 wPredExtIrr-eqInType {i} {w} {A} {B} eqta a b w' e1 e2 h =
   eqInType-extl1 B B (eqta w' e1) (eqta w' e2) h
 
 
-wPredDepExtIrr-eqInType : {i : ℕ} {w : world} {A B D : Term}
-                          (eqtb : allW w (λ w' _ → (a₁ a₂ : Term) → equalInType i w' A a₁ a₂ → equalTypes i w' (sub a₁ B) (sub a₂ D)))
-                          (a b c d : Term) → wPredDepExtIrr (λ w₁ e x → eqInType (uni i) w₁ (eqtb w₁ e a b x) c d)
+wPredDepExtIrr-eqInType : {i : ℕ} {w : world} {A : CTerm} {B D : CTerm0}
+                          (eqtb : allW w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' A a₁ a₂ → equalTypes i w' (sub0 a₁ B) (sub0 a₂ D)))
+                          (a b c d : CTerm) → wPredDepExtIrr (λ w₁ e x → eqInType (uni i) w₁ (eqtb w₁ e a b x) c d)
 wPredDepExtIrr-eqInType {i} {w} {A} {B} {D} eqtb a b c d w' e1 e2 x1 x2 h =
-  eqInType-extl1 (sub b D) (sub b D) (eqtb w' e1 a b x1) (eqtb w' e2 a b x2) h
+  eqInType-extl1 (sub0 b D) (sub0 b D) (eqtb w' e1 a b x1) (eqtb w' e2 a b x2) h
 
 
-wPredDepExtIrr-eqInType2 : {i : ℕ} {w : world} {A B C D : Term}
+wPredDepExtIrr-eqInType2 : {i : ℕ} {w : world} {A : CTerm} {B : CTerm0} {C : CTerm} {D : CTerm0}
                            (eqta : allW w (λ w' _ → equalTypes i w' A C))
-                           (eqtb : allW w (λ w' e → (a1 a2 : Term) → eqInType (uni i) w' (eqta w' e) a1 a2 → eqTypes (uni i) w' (sub a1 B) (sub a2 D)))
-                           (a b c d : Term) → wPredDepExtIrr (λ w₁ e x → eqInType (uni i) w₁ (eqtb w₁ e a b x) c d)
+                           (eqtb : allW w (λ w' e → (a1 a2 : CTerm) → eqInType (uni i) w' (eqta w' e) a1 a2 → eqTypes (uni i) w' (sub0 a1 B) (sub0 a2 D)))
+                           (a b c d : CTerm) → wPredDepExtIrr (λ w₁ e x → eqInType (uni i) w₁ (eqtb w₁ e a b x) c d)
 wPredDepExtIrr-eqInType2 {i} {w} {A} {B} {C} {D} eqta eqtb a b c d w' e1 e2 x1 x2 h =
-  eqInType-extl1 (sub b D) (sub b D) (eqtb w' e1 a b x1) (eqtb w' e2 a b x2) h
+  eqInType-extl1 (sub0 b D) (sub0 b D) (eqtb w' e1 a b x1) (eqtb w' e2 a b x2) h
 
 
-eqTypesPI← : {w : world} {i : ℕ} {A B C D : Term}
+eqTypesPI← : {w : world} {i : ℕ} {A : CTerm} {B : CTerm0} {C : CTerm} {D : CTerm0}
                → allW w (λ w' _ → equalTypes i w' A C)
-               → allW w (λ w' _ → (a₁ a₂ : Term) (ea : equalInType i w' A a₁ a₂) → equalTypes i w' (sub a₁ B) (sub a₂ D))
-               → equalTypes i w (PI A B) (PI C D)
+               → allW w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType i w' A a₁ a₂) → equalTypes i w' (sub0 a₁ B) (sub0 a₂ D))
+               → equalTypes i w (#PI A B) (#PI C D)
 eqTypesPI← {w} {i} {A} {B} {C} {D} eqta eqtb =
-  EQTPI A B C D (compAllRefl (PI A B) w) (compAllRefl (PI C D) w)
+  EQTPI A B C D (#compAllRefl (#PI A B) w) (#compAllRefl (#PI C D) w)
         eqta
         eqtb'
         (wPredExtIrr-eqInType eqta)
         (wPredDepExtIrr-eqInType2 {i} {w} {A} {B} {C} {D} eqta eqtb')
   where
-    eqtb' : allW w (λ w' e → (a1 a2 : Term) → eqInType (uni i) w' (eqta w' e) a1 a2 → eqTypes (uni i) w' (sub a1 B) (sub a2 D))
+    eqtb' : allW w (λ w' e → (a1 a2 : CTerm) → eqInType (uni i) w' (eqta w' e) a1 a2 → eqTypes (uni i) w' (sub0 a1 B) (sub0 a2 D))
     eqtb' w1 e1 a₁ a₂ ea = eqtb w1 e1 a₁ a₂ (eqa , eqInType-extl1 C A (eqta w1 e1) eqa ea)
       where
         eqa : equalTypes i w1 A A
         eqa = TEQrefl-equalTypes i w1 A C (eqta w1 e1)
 
 
-⌜_⌝ : CTerm → Term
-⌜ T ⌝ = CTerm.cTerm T
-
-eqTypesFUN← : {w : world} {i : ℕ} {A B C D : CTerm}
-               → allW w (λ w' _ → equalTypes i w' ⌜ A ⌝ ⌜ C ⌝)
-               → allW w (λ w' _ → equalTypes i w' ⌜ B ⌝ ⌜ D ⌝)
-               → equalTypes i w (FUN ⌜ A ⌝ ⌜ B ⌝) (FUN  ⌜ C ⌝ ⌜ D ⌝)
-eqTypesFUN← {w} {i} {A} {B} {C} {D} eqta eqtb =
-  eqTypesPI← eqta eqb
-  where
-    eqb : allW w (λ w' _ → (a₁ a₂ : Term) → equalInType i w' A a₁ a₂ → equalTypes i w' (sub a₁ B) (sub a₂ D))
-    eqb w1 e1 a₁ a₂ eqa = {!!}
+eqTypesFUN← : {w : world} {i : ℕ} {A : CTerm} {B : CTerm} {C : CTerm} {D : CTerm}
+               → allW w (λ w' _ → equalTypes i w' A C)
+               → allW w (λ w' _ → equalTypes i w' B D)
+               → equalTypes i w (#FUN A B) (#FUN C D)
+eqTypesFUN← {w} {i} {A} {B} {C} {D} eqta eqtb rewrite #FUN≡#PI A B | #FUN≡#PI C D =
+  eqTypesPI← eqta {!!}
+--  eqTypesPI← eqta eqb
+--  where
+--    eqb : allW w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' A a₁ a₂ → equalTypes i w' (sub0 a₁ B) (sub0 a₂ D))
+--    eqb w1 e1 a₁ a₂ eqa = {!!}
 
 
-eqTypesNEG→ : {w : world} {i : ℕ} {A B : Term}
-               → equalTypes i w (NEG A) (NEG B)
+eqTypesNEG→ : {w : world} {i : ℕ} {A B : CTerm}
+               → equalTypes i w (#NEG A) (#NEG B)
                → equalTypes i w A B
 eqTypesNEG→ {w} {i} {A} {B} eqt = {!!}
 
 
 eqTypesFALSE : {w : world} {i : ℕ}
-               → equalTypes i w FALSE FALSE
+               → equalTypes i w #FALSE #FALSE
 eqTypesFALSE {w} {i} = {!!}
 
 
-eqTypesNEG← : {w : world} {i : ℕ} {A B : Term}
+eqTypesNEG← : {w : world} {i : ℕ} {A B : CTerm}
                → equalTypes i w A B
-               → equalTypes i w (NEG A) (NEG B)
-eqTypesNEG← {w} {i} {A} {B} eqt =
-  eqTypesFUN←
+               → equalTypes i w (#NEG A) (#NEG B)
+eqTypesNEG← {w} {i} {A} {B} eqt = {!!}
+{--  eqTypesFUN←
     (eqTypes-mon (uni i) (mon-univs-uni i) eqt)
-    (λ w' e' → eqTypesFALSE)
+    (λ w' e' → eqTypesFALSE)--}
 
 
-eqTypesNegLem : (w : world) (i : ℕ) → equalTypes (suc i) w (NEG (LEM i)) (NEG (LEM i))
+eqTypesNegLem : (w : world) (i : ℕ) → equalTypes (suc i) w (#NEG (#LEM i)) (#NEG (#LEM i))
 eqTypesNegLem w i = eqTypesNEG← {!!}
 
 
-notClassical : (w : world) (i : ℕ) → member w (NEG (LEM i)) lamAX
+notClassical : (w : world) (i : ℕ) → member w (#NEG (#LEM i)) #lamAX
 notClassical w i = (suc i , eqTypesNegLem w i , {!!})
 \end{code}[hide]

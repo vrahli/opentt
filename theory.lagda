@@ -748,6 +748,10 @@ infix 30 _#⇛_at_
 #isValue t = isValue ⌜ t ⌝
 
 
+#compAllRefl : (T : CTerm) (w : world) → T #⇛ T at w
+#compAllRefl (ct T cT) w i = compAllRefl T w i
+
+
 #compAllVal : {a b : CTerm} {w : world} → a #⇛ b at w → #isValue a → a ≡ b
 #compAllVal {ct a ca} {ct b cb} {w} c i = CTerm≡ (compAllVal c i)
 

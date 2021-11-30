@@ -48,15 +48,23 @@ UNIONinj2 refl =  refl
 #UNIONinj1 : {a b c d : CTerm} → #UNION a b ≡ #UNION c d → a ≡ c
 #UNIONinj1 c = CTerm≡ (UNIONinj1 (≡CTerm c))
 
-
 #UNIONinj2 : {a b c d : CTerm} → #UNION a b ≡ #UNION c d → b ≡ d
 #UNIONinj2 c = CTerm≡ (UNIONinj2 (≡CTerm c))
+
 
 INLinj : {a b : Term} → INL a ≡ INL b → a ≡ b
 INLinj refl =  refl
 
 INRinj : {a b : Term} → INR a ≡ INR b → a ≡ b
 INRinj refl =  refl
+
+
+#INLinj : {a b : CTerm} → #INL a ≡ #INL b → a ≡ b
+#INLinj c = CTerm≡ (INLinj (≡CTerm c))
+
+#INRinj : {a b : CTerm} → #INR a ≡ #INR b → a ≡ b
+#INRinj c = CTerm≡ (INRinj (≡CTerm c))
+
 
 INLneqINR : {a b : Term} → ¬ INL a ≡ INR b
 INLneqINR {a} {b} ()
@@ -200,10 +208,10 @@ typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → ⌜ B ⌝ ⇛ (UNIV (fst u)) at w' × ⌜ C ⌝ ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
 
-    q : allW w (λ w' e' → ⌜ B ⌝ ⇛ UNIV (proj₁ u) at w' × ⌜ C ⌝ ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (UNIONneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))
 
 typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) =
@@ -222,7 +230,6 @@ typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 
 
 
-{--
 typeSysConds-UNION-isym : (u : univs) (isu : is-universe u) (w : world) (A B A1 B1 A2 B2 : CTerm)
                           (x : A #⇛ #UNION A1 B1 at w) (x₁ : B #⇛ #UNION A2 B2 at w)
                           (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
@@ -231,7 +238,7 @@ typeSysConds-UNION-isym : (u : univs) (isu : is-universe u) (w : world) (A B A1 
                           (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                           (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                           (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
-                          → eqInTypeSym u (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                          → eqInTypeSym u {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 typeSysConds-UNION-isym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb f g eqa =
   Bar.allW-inBarFunc inOpenBar-Bar h eqa
   where
@@ -251,7 +258,7 @@ typeSysConds-UNION-itrans : (u : univs) (isu : is-universe u) (w : world) (A B A
                          (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                          (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                          (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
-                         → eqInTypeTrans u (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                         → eqInTypeTrans u {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 typeSysConds-UNION-itrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb f g h ea1 ea2 =
   Bar.inBarFunc inOpenBar-Bar (Bar.inBarFunc inOpenBar-Bar (Bar.allW-inBar inOpenBar-Bar aw) ea1) ea2
   where
@@ -261,12 +268,12 @@ typeSysConds-UNION-itrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
                 → UNIONeq (eqInType u w' (eqta w' e)) (eqInType u w' (eqtb w' e)) w' g h
                 → UNIONeq (eqInType u w' (eqta w' e)) (eqInType u w' (eqtb w' e)) w' f h)
     aw w1 e1 (a , b , inj₁ (c₁ , c₂ , ea)) (c , d , inj₁ (d₁ , d₂ , eb))
-      rewrite INLinj (⇛-val-det tt tt c₂ d₁)
+      rewrite #INLinj {b} {c} (#⇛-val-det {_} {g} tt tt c₂ d₁)
       = a , d , inj₁ (c₁ , d₂ , TSP.itrans (inda w1 e1) a c d ea eb)
     aw w1 e1 (a , b , inj₁ (c₁ , c₂ , ea)) (c , d , inj₂ (d₁ , d₂ , eb)) = ⊥-elim (INLneqINR (⇛-val-det tt tt c₂ d₁))
     aw w1 e1 (a , b , inj₂ (c₁ , c₂ , ea)) (c , d , inj₁ (d₁ , d₂ , eb)) = ⊥-elim (INLneqINR (⇛-val-det tt tt d₁ c₂))
     aw w1 e1 (a , b , inj₂ (c₁ , c₂ , ea)) (c , d , inj₂ (d₁ , d₂ , eb))
-      rewrite INRinj (⇛-val-det tt tt c₂ d₁)
+      rewrite #INRinj {b} {c} (#⇛-val-det {_} {g} tt tt c₂ d₁)
       = a , d , inj₂ (c₁ , d₂ , TSP.itrans (indb w1 e1) a c d ea eb)
 
 
@@ -279,7 +286,7 @@ typeSysConds-UNION-extl1 : (u : univs) (isu : is-universe u) (w : world) (A B A1
                            (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
-                           → eqInTypeExtL1 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                           → eqInTypeExtL1 {_} {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (UNIONneqNAT (⇛-val-det tt tt x y))
 typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (UNIONneqQNAT (⇛-val-det tt tt x y))
@@ -291,8 +298,8 @@ typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x y))
 typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x y))
 typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi
-  rewrite UNIONinj1 (⇛-val-det tt tt y x)
-        | UNIONinj2 (⇛-val-det tt tt y x)
+  rewrite #UNIONinj1 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x)
+        | #UNIONinj2 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w (λ w' e' →
@@ -307,10 +314,10 @@ typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × C ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w A C y
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × C ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (UNIONneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))
 
 typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -335,7 +342,7 @@ typeSysConds-UNION-extl2 : (u : univs) (isu : is-universe u) (w : world) (A B A1
                            (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
-                           → eqInTypeExtL2 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                           → eqInTypeExtL2 {_} {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (UNIONneqNAT (⇛-val-det tt tt x y₁))
 typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (UNIONneqQNAT (⇛-val-det tt tt x y₁))
@@ -347,8 +354,8 @@ typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite UNIONinj1 (⇛-val-det tt tt y₁ x)
-        | UNIONinj2 (⇛-val-det tt tt y₁ x)
+  rewrite #UNIONinj1 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
+        | #UNIONinj2 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
@@ -364,10 +371,10 @@ typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → C ⇛ (UNIV (fst u)) at w' × A ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
     z = isu w C A y
 
-    q : allW w (λ w' e' → C ⇛ UNIV (proj₁ u) at w' × A ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (UNIONneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))
 
 typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -392,7 +399,7 @@ typeSysConds-UNION-extr1 : (u : univs) (isu : is-universe u) (w : world) (A B A1
                            (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
-                           → eqInTypeExtR1 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                           → eqInTypeExtR1 {_} {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (UNIONneqNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (UNIONneqQNAT (⇛-val-det tt tt x₁ y₁))
@@ -404,8 +411,8 @@ typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite UNIONinj1 (⇛-val-det tt tt y₁ x₁)
-        | UNIONinj2 (⇛-val-det tt tt y₁ x₁)
+  rewrite #UNIONinj1 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
+        | #UNIONinj2 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
@@ -421,10 +428,10 @@ typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → C ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w C B y
 
-    q : allW w (λ w' e' → C ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (UNIONneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))
 
 typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -449,7 +456,7 @@ typeSysConds-UNION-extr2 : (u : univs) (isu : is-universe u) (w : world) (A B A1
                            (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                            (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                            (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
-                           → eqInTypeExtR2 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                           → eqInTypeExtR2 {_} {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (UNIONneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (UNIONneqQNAT (⇛-val-det tt tt x₁ y))
@@ -461,8 +468,8 @@ typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite UNIONinj1 (⇛-val-det tt tt y x₁)
-        | UNIONinj2 (⇛-val-det tt tt y x₁)
+  rewrite #UNIONinj1 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
+        | #UNIONinj2 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
@@ -478,10 +485,10 @@ typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → B ⇛ (UNIV (fst u)) at w' × C ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
 
-    q : allW w (λ w' e' → B ⇛ UNIV (proj₁ u) at w' × C ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (UNIONneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))
 
 typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -507,7 +514,7 @@ typeSysConds-UNION-extrevl1 : (u : univs) (isu : is-universe u) (w : world) (A B
                               (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                               (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                               (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
-                              → eqInTypeExtRevL1 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                              → eqInTypeExtRevL1 {_} {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (UNIONneqNAT (⇛-val-det tt tt x y))
 typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (UNIONneqQNAT (⇛-val-det tt tt x y))
@@ -519,8 +526,8 @@ typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
 typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x y))
 typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x y))
 typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite UNIONinj1 (⇛-val-det tt tt y x)
-        | UNIONinj2 (⇛-val-det tt tt y x)
+  rewrite #UNIONinj1 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x)
+        | #UNIONinj2 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
@@ -536,10 +543,10 @@ typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
 typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × C ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w A C y
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × C ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (UNIONneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))
 
 typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -553,10 +560,10 @@ typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
       (λ w' e' →
          (z : eqTypes u w' A C) (at : atbar y w' e' z) →
          eqInType u w' z f g →
-         eqInType u w' (EQTUNION A1 B1 A2 B2
-                                 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb)
-                                 (wPredExtIrr-eqInType-mon eqta exta w' e')
-                                 (wPredExtIrr-eqInType-mon eqtb extb w' e')) f g)
+         eqInType u w' {A} {B} (EQTUNION A1 B1 A2 B2
+                                         (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb)
+                                         (wPredExtIrr-eqInType-mon eqta exta w' e')
+                                         (wPredExtIrr-eqInType-mon eqtb extb w' e')) f g)
     aw0 w1 e1 z at ez =
       typeSysConds-UNION-extrevl1
         u isu w1 A B A1 B1 A2 B2
@@ -584,7 +591,7 @@ typeSysConds-UNION-extrevl2 : (u : univs) (isu : is-universe u) (w : world) (A B
                               (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                               (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                               (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
-                              → eqInTypeExtRevL2 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                              → eqInTypeExtRevL2 {_} {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (UNIONneqNAT (⇛-val-det tt tt x y₁))
 typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (UNIONneqQNAT (⇛-val-det tt tt x y₁))
@@ -596,8 +603,8 @@ typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
 typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite UNIONinj1 (⇛-val-det tt tt y₁ x)
-        | UNIONinj2 (⇛-val-det tt tt y₁ x)
+  rewrite #UNIONinj1 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
+        | #UNIONinj2 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
@@ -613,10 +620,10 @@ typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
 typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → C ⇛ (UNIV (fst u)) at w' × A ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
     z = isu w C A y
 
-    q : allW w (λ w' e' → C ⇛ UNIV (proj₁ u) at w' × A ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (UNIONneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))
 
 typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -626,10 +633,10 @@ typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
       (λ w' e' →
          (z : eqTypes u w' C A) (at : atbar y w' e' z) →
          eqInType u w' z f g →
-         eqInType u w' (EQTUNION A1 B1 A2 B2
-                                 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb)
-                                 (wPredExtIrr-eqInType-mon eqta exta w' e')
-                                 (wPredExtIrr-eqInType-mon eqtb extb w' e')) f g)
+         eqInType u w' {A} {B} (EQTUNION A1 B1 A2 B2
+                                         (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb)
+                                         (wPredExtIrr-eqInType-mon eqta exta w' e')
+                                         (wPredExtIrr-eqInType-mon eqtb extb w' e')) f g)
     aw0 w1 e1 z at ez =
       typeSysConds-UNION-extrevl2
         u isu w1 A B A1 B1 A2 B2
@@ -658,7 +665,7 @@ typeSysConds-UNION-extrevr1 : (u : univs) (isu : is-universe u) (w : world) (A B
                               (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                               (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                               (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
-                              → eqInTypeExtRevR1 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                              → eqInTypeExtRevR1 {_} {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (UNIONneqNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (UNIONneqQNAT (⇛-val-det tt tt x₁ y₁))
@@ -670,8 +677,8 @@ typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
 typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite UNIONinj1 (⇛-val-det tt tt y₁ x₁)
-        | UNIONinj2 (⇛-val-det tt tt y₁ x₁)
+  rewrite #UNIONinj1 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
+        | #UNIONinj2 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
@@ -687,10 +694,10 @@ typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
 typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → C ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w C B y
 
-    q : allW w (λ w' e' → C ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (UNIONneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))
 
 typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -704,10 +711,10 @@ typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
       (λ w' e' →
          (z : eqTypes u w' C B) (at : atbar y w' e' z) →
          eqInType u w' z f g →
-         eqInType u w' (EQTUNION A1 B1 A2 B2
-                                 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb)
-                                 (wPredExtIrr-eqInType-mon eqta exta w' e')
-                                 (wPredExtIrr-eqInType-mon eqtb extb w' e')) f g)
+         eqInType u w' {A} {B} (EQTUNION A1 B1 A2 B2
+                                         (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb)
+                                         (wPredExtIrr-eqInType-mon eqta exta w' e')
+                                         (wPredExtIrr-eqInType-mon eqtb extb w' e')) f g)
     aw0 w1 e1 z at ez =
       typeSysConds-UNION-extrevr1
         u isu w1 A B A1 B1 A2 B2
@@ -735,7 +742,7 @@ typeSysConds-UNION-extrevr2 : (u : univs) (isu : is-universe u) (w : world) (A B
                               (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                               (inda : allW w (λ w1 e1 → TSP (eqta w1 e1)))
                               (indb : allW w (λ w1 e1 → TSP (eqtb w1 e1)))
-                              → eqInTypeExtRevR2 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+                              → eqInTypeExtRevR2 {_} {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 {-# TERMINATING #-}
 typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (UNIONneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (UNIONneqQNAT (⇛-val-det tt tt x₁ y))
@@ -747,8 +754,8 @@ typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
 typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (UNIONneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite UNIONinj1 (⇛-val-det tt tt y x₁)
-        | UNIONinj2 (⇛-val-det tt tt y x₁)
+  rewrite #UNIONinj1 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
+        | #UNIONinj2 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
   = Bar.allW-inBarFunc inOpenBar-Bar aw eqi
   where
     aw : allW w
@@ -764,10 +771,10 @@ typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
 typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV y) f g eqi =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → B ⇛ (UNIV (fst u)) at w' × C ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
 
-    q : allW w (λ w' e' → B ⇛ UNIV (proj₁ u) at w' × C ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (UNIONneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))
 
 typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
@@ -781,10 +788,10 @@ typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
       (λ w' e' →
          (z : eqTypes u w' B C) (at : atbar y w' e' z) →
          eqInType u w' z f g →
-         eqInType u w' (EQTUNION A1 B1 A2 B2
-                                 (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb)
-                                 (wPredExtIrr-eqInType-mon eqta exta w' e')
-                                 (wPredExtIrr-eqInType-mon eqtb extb w' e')) f g)
+         eqInType u w' {A} {B} (EQTUNION A1 B1 A2 B2
+                                         (⇛-mon e' x) (⇛-mon e' x₁) (allW-mon e' eqta) (allW-mon e' eqtb)
+                                         (wPredExtIrr-eqInType-mon eqta exta w' e')
+                                         (wPredExtIrr-eqInType-mon eqtb extb w' e')) f g)
     aw0 w1 e1 z at ez =
       typeSysConds-UNION-extrevr2
         u isu w1 A B A1 B1 A2 B2
@@ -805,15 +812,15 @@ typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb i
 
 
 
-eqInType-⇛-UNION : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : Term)
+eqInType-⇛-UNION : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : CTerm)
                     (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                     (eqtb : allW w (λ w' _ → eqTypes u w' B1 B2))
                     (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
                     (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                     (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
                     (indb : allW w (λ w1 e1 → eqInTypeExt (eqtb w1 e1)))
-                    → A ⇛ UNION A1 B1 at w
-                    → B ⇛ UNION A2 B2 at w
+                    → A #⇛ #UNION A1 B1 at w
+                    → B #⇛ #UNION A2 B2 at w
                     → (eqt : eqTypes u w A B)
                     → eqInType u w eqt a b
                     → inbar w (λ w' e → UNIONeq (eqInType u w' (eqta w' e)) (eqInType u w' (eqtb w' e)) w' a b)
@@ -828,10 +835,10 @@ eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c�
 eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (UNIONneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ei = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei
-  rewrite UNIONinj1 (⇛-val-det tt tt c₁ x)
-        | UNIONinj2 (⇛-val-det tt tt c₁ x)
-        | UNIONinj1 (⇛-val-det tt tt c₂ x₁)
-        | UNIONinj2 (⇛-val-det tt tt c₂ x₁) =
+  rewrite #UNIONinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #UNIONinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #UNIONinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
+        | #UNIONinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
   Bar.allW-inBarFunc inOpenBar-Bar aw ei
   where
     aw : allW w (λ w' e' → UNIONeq (eqInType u w' (eqta₁ w' e')) (eqInType u w' (eqtb₁ w' e')) w' a b
@@ -851,10 +858,10 @@ eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c�
 eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNIV x) ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (UNIONneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))
 
 eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTBAR x) ei =
@@ -884,16 +891,16 @@ eqInType-⇛-UNION u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c�
 
 
 
-eqInType-⇛-UNION2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : Term)
+eqInType-⇛-UNION2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : CTerm)
                      (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                      (eqtb : allW w (λ w' _ → eqTypes u w' B1 B2))
                      (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
                      (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
-                     → A ⇛ UNION A1 B1 at w
-                     → B ⇛ UNION A2 B2 at w
+                     → A #⇛ #UNION A1 B1 at w
+                     → B #⇛ #UNION A2 B2 at w
                      → (eqt : eqTypes u w A B)
                      → (eqi : eqInType u w eqt a b)
-                     → (ext : {w' : world} {A' B' : Term} (eqt' : eqTypes u w' A' B') → ≤Type u eqt' eqt → eqInTypeExt eqt')
+                     → (ext : {w' : world} {A' B' : CTerm} (eqt' : eqTypes u w' A' B') → ≤Type u eqt' eqt → eqInTypeExt eqt')
                      → inbar w (λ w' e → UNIONeq (eqInType u w' (eqta w' e)) (eqInType u w' (eqtb w' e)) w' a b)
 {-# TERMINATING #-}
 eqInType-⇛-UNION2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNAT x x₁) ei ext = ⊥-elim (UNIONneqNAT (⇛-val-det tt tt c₁ x))
@@ -906,10 +913,10 @@ eqInType-⇛-UNION2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (E
 eqInType-⇛-UNION2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (UNIONneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNION2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ei ext = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNION2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext
-  rewrite UNIONinj1 (⇛-val-det tt tt c₁ x)
-        | UNIONinj2 (⇛-val-det tt tt c₁ x)
-        | UNIONinj1 (⇛-val-det tt tt c₂ x₁)
-        | UNIONinj2 (⇛-val-det tt tt c₂ x₁) =
+  rewrite #UNIONinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #UNIONinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #UNIONinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
+        | #UNIONinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
   Bar.allW-inBarFunc inOpenBar-Bar aw ei
   where
     awexta₁ : allW w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
@@ -935,10 +942,10 @@ eqInType-⇛-UNION2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (E
 eqInType-⇛-UNION2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNIV x) ei ext =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (UNIONneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))
 
 eqInType-⇛-UNION2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTBAR x) ei ext =
@@ -969,15 +976,15 @@ eqInType-⇛-UNION2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (E
 
 
 
-eqInType-⇛-UNION-rev : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : Term)
+eqInType-⇛-UNION-rev : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : CTerm)
                         (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                         (eqtb : allW w (λ w' _ → eqTypes u w' B1 B2))
                         (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
                         (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
                         (inda : allW w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
                         (indb : allW w (λ w1 e1 → eqInTypeExt (eqtb w1 e1)))
-                        → A ⇛ UNION A1 B1 at w
-                        → B ⇛ UNION A2 B2 at w
+                        → A #⇛ #UNION A1 B1 at w
+                        → B #⇛ #UNION A2 B2 at w
                         → (eqt : eqTypes u w A B)
                         → inbar w (λ w' e → UNIONeq (eqInType u w' (eqta w' e)) (eqInType u w' (eqtb w' e)) w' a b)
                         → eqInType u w eqt a b
@@ -992,10 +999,10 @@ eqInType-⇛-UNION-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb
 eqInType-⇛-UNION-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (UNIONneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNION-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ei = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNION-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei
-  rewrite UNIONinj1 (⇛-val-det tt tt c₁ x)
-        | UNIONinj2 (⇛-val-det tt tt c₁ x)
-        | UNIONinj1 (⇛-val-det tt tt c₂ x₁)
-        | UNIONinj2 (⇛-val-det tt tt c₂ x₁)=
+  rewrite #UNIONinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #UNIONinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #UNIONinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
+        | #UNIONinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)=
   Bar.allW-inBarFunc inOpenBar-Bar aw ei
   where
     aw : allW w (λ w' e' → UNIONeq (eqInType u w' (eqta w' e')) (eqInType u w' (eqtb w' e')) w' a b
@@ -1015,10 +1022,10 @@ eqInType-⇛-UNION-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb
 eqInType-⇛-UNION-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNIV x) ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (UNIONneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))
 
 eqInType-⇛-UNION-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTBAR x) ei =
@@ -1043,15 +1050,15 @@ eqInType-⇛-UNION-rev u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb
 
 
 
-eqInType-⇛-UNION-rev2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : Term)
+eqInType-⇛-UNION-rev2 : (u : univs) (isu : is-universe u) (w : world) (A B A1 A2 B1 B2 a b : CTerm)
                          (eqta : allW w (λ w' _ → eqTypes u w' A1 A2))
                          (eqtb : allW w (λ w' _ → eqTypes u w' B1 B2))
                          (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
                          (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtb w e) a b))
-                         → A ⇛ UNION A1 B1 at w
-                         → B ⇛ UNION A2 B2 at w
+                         → A #⇛ #UNION A1 B1 at w
+                         → B #⇛ #UNION A2 B2 at w
                          → (eqt : eqTypes u w A B)
-                         → (ext : {w' : world} {A' B' : Term} (eqt' : eqTypes u w' A' B') → ≤Type u eqt' eqt → eqInTypeExt eqt')
+                         → (ext : {w' : world} {A' B' : CTerm} (eqt' : eqTypes u w' A' B') → ≤Type u eqt' eqt → eqInTypeExt eqt')
                          → inbar w (λ w' e → UNIONeq (eqInType u w' (eqta w' e)) (eqInType u w' (eqtb w' e)) w' a b)
                          → eqInType u w eqt a b
 {-# TERMINATING #-}
@@ -1065,10 +1072,10 @@ eqInType-⇛-UNION-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c�
 eqInType-⇛-UNION-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (UNIONneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNION-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ext ei = ⊥-elim (UNIONneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNION-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei
-  rewrite UNIONinj1 (⇛-val-det tt tt c₁ x)
-        | UNIONinj2 (⇛-val-det tt tt c₁ x)
-        | UNIONinj1 (⇛-val-det tt tt c₂ x₁)
-        | UNIONinj2 (⇛-val-det tt tt c₂ x₁)=
+  rewrite #UNIONinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #UNIONinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
+        | #UNIONinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
+        | #UNIONinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
   Bar.allW-inBarFunc inOpenBar-Bar aw ei
   where
     awexta₁ : allW w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
@@ -1094,10 +1101,10 @@ eqInType-⇛-UNION-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c�
 eqInType-⇛-UNION-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNIV x) ext ei =
   ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.allW-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → A ⇛ (UNIV (fst u)) at w' × B ⇛ (UNIV (fst u)) at w')
+    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
-    q : allW w (λ w' e' → A ⇛ UNIV (proj₁ u) at w' × B ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q : allW w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (UNIONneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))
 
 eqInType-⇛-UNION-rev2 u isu w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTBAR x) ext ei =
@@ -1175,37 +1182,36 @@ typeSysConds-UNION u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb 
     ttrans : eqTypesTrans u w A B
     ttrans = typeSysConds-UNION-ttrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    isym : eqInTypeSym u (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    isym : eqInTypeSym u {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     isym = typeSysConds-UNION-isym u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    itrans : eqInTypeTrans u (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    itrans : eqInTypeTrans u {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     itrans = typeSysConds-UNION-itrans u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextl1 : eqInTypeExtL1 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextl1 : eqInTypeExtL1 {_} {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextl1 = typeSysConds-UNION-extl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextl2 : eqInTypeExtL2 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextl2 : eqInTypeExtL2 {_} {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextl2 = typeSysConds-UNION-extl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextr1 : eqInTypeExtR1 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextr1 : eqInTypeExtR1 {_} {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextr1 = typeSysConds-UNION-extr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextr2 : eqInTypeExtR2 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextr2 : eqInTypeExtR2 {_} {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextr2 = typeSysConds-UNION-extr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextrl1 : eqInTypeExtRevL1 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextrl1 : eqInTypeExtRevL1 {_} {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextrl1 = typeSysConds-UNION-extrevl1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextrl2 : eqInTypeExtRevL2 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextrl2 : eqInTypeExtRevL2 {_} {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextrl2 = typeSysConds-UNION-extrevl2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextrr1 : eqInTypeExtRevR1 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextrr1 : eqInTypeExtRevR1 {_} {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextrr1 = typeSysConds-UNION-extrevr1 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
-    iextrr2 : eqInTypeExtRevR2 (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
+    iextrr2 : eqInTypeExtRevR2 {_} {_} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     iextrr2 = typeSysConds-UNION-extrevr2 u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
     local : eqInTypeLocal (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     local = typeSysConds-UNION-local u isu w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb (allW-tsp→ext inda) (allW-tsp→ext indb)
---}
 \end{code}
