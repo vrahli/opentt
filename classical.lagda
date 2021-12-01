@@ -236,31 +236,6 @@ eqTypesNEG← {w} {i} {A} {B} eqt rewrite #NEG≡#FUN A | #NEG≡#FUN B =
     (λ w' e' → eqTypesFALSE)
 
 
-#[0]UNION : CTerm0 → CTerm0 → CTerm0
-#[0]UNION a b = ct0 (UNION ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ [ 0 ] ] UNION ⌜ a ⌝ ⌜ b ⌝
-    c = {!!}
-
-
-#[0]NEG : CTerm0 → CTerm0
-#[0]NEG a = ct0 (NEG ⌜ a ⌝) c
-  where
-    c : #[ [ 0 ] ] NEG ⌜ a ⌝
-    c = {!CTerm0.closed a!}
-
-
-#[0]VAR : CTerm0
-#[0]VAR = ct0 (VAR 0) c
-  where
-    c : #[ [ 0 ] ] VAR 0
-    c = refl
-
-
-#LEM≡#PI : (i : ℕ) → #LEM i ≡ #PI (#UNIV i) (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR)))
-#LEM≡#PI i = CTerm≡ refl
-
-
 eqTypesLem : (w : world) (i : ℕ) → equalTypes (suc i) w (#LEM i) (#LEM i)
 eqTypesLem w i = {!!}
 

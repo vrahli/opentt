@@ -204,7 +204,41 @@ fvars-CTerm0 a = ⊆?→⊆ (CTerm0.closed a)
             w rewrite e = fvars-CTerm0 a j
 
 
---#LEM≡#PI : (i : ℕ) → #LEM i ≡ #PI (UNIV i) (
+
+⊆++ : {A : Set} {a b c : List A} → a ⊆ c → b ⊆ c → a ++ b ⊆ c
+⊆++ {A} {[]} {b} {c} i j = j
+⊆++ {A} {x ∷ a} {b} {c} i j {z} (here px) rewrite px = i (here refl)
+⊆++ {A} {x ∷ a} {b} {c} i j {z} (there k) = ⊆++ (λ {w} m → i (there m)) j k
+
+
+#[0]UNION : CTerm0 → CTerm0 → CTerm0
+#[0]UNION a b = ct0 (UNION ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ [ 0 ] ] UNION ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {[ 0 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {[ 0 ]} (CTerm0.closed b)))
+
+
+#[0]NEG : CTerm0 → CTerm0
+#[0]NEG a = ct0 (NEG ⌜ a ⌝) c
+  where
+    c : #[ [ 0 ] ] NEG ⌜ a ⌝
+    c = f
+      where
+        f : (fvars ⌜ a ⌝ ++ []) ⊆? [ 0 ] ≡ true
+        f rewrite ++[] (fvars ⌜ a ⌝) = CTerm0.closed a
+
+
+#[0]VAR : CTerm0
+#[0]VAR = ct0 (VAR 0) c
+  where
+    c : #[ [ 0 ] ] VAR 0
+    c = refl
+
+
+#LEM≡#PI : (i : ℕ) → #LEM i ≡ #PI (#UNIV i) (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR)))
+#LEM≡#PI i = CTerm≡ refl
 
 
 #FUN≡#PI : (A B : CTerm) → #FUN A B ≡ #PI A ⌞ B ⌟
