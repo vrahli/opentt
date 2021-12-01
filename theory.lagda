@@ -560,6 +560,7 @@ fvars-cterm a = CTerm.closed a
     j : suc x ≡ 0
     j = ∈[1] i
 
+
 ⊆?→⊆ : {l k : List Var} → l ⊆? k ≡ true → l ⊆ k
 ⊆?→⊆ {[]} {k} h i = ⊥-elim (¬∈[] i)
 ⊆?→⊆ {v ∷ l} {k} h i with (v ∈? k)
@@ -568,11 +569,18 @@ fvars-cterm a = CTerm.closed a
 ⊆?→⊆ {v ∷ l} {k} () i | no p
 
 
-lowerVars-fvars-CTerm0⊆[] : (a : CTerm0) → lowerVars (fvars (CTerm0.cTerm a)) ⊆ []
+⊆→⊆? : {l k : List Var} → l ⊆ k → l ⊆? k ≡ true
+⊆→⊆? {[]} {k} s = refl
+⊆→⊆? {x ∷ l} {k} s with x ∈? k
+... | yes p = ⊆→⊆? {l} {k} λ {z} i → s (there i)
+... | no p = ⊥-elim (p (s (here refl)))
+
+
+lowerVars-fvars-CTerm0⊆[] : (a : CTerm0) → lowerVars (fvars ⌜ a ⌝) ⊆ []
 lowerVars-fvars-CTerm0⊆[] a {x} i = ⊥-elim (suc-≢-0 e)
   where
-    j : suc x ∈ fvars (CTerm0.cTerm a)
-    j = ∈lowerVars→ x (fvars (CTerm0.cTerm a)) i
+    j : suc x ∈ fvars ⌜ a ⌝
+    j = ∈lowerVars→ x (fvars ⌜ a ⌝) i
 
     k : suc x ∈ [ 0 ]
     k = ⊆?→⊆ (CTerm0.closed a) j
@@ -581,17 +589,29 @@ lowerVars-fvars-CTerm0⊆[] a {x} i = ⊥-elim (suc-≢-0 e)
     e = ∈[1] k
 
 
-lowerVars-fvars-CTerm0≡[] : (a : CTerm0) → lowerVars (fvars (CTerm0.cTerm a)) ≡ []
+lowerVars-fvars-CTerm0≡[] : (a : CTerm0) → lowerVars (fvars ⌜ a ⌝) ≡ []
 lowerVars-fvars-CTerm0≡[] a = ⊆[]→≡[] (lowerVars-fvars-CTerm0⊆[] a)
+
+
+#shiftUp : (n : ℕ) (a : CTerm) → shiftUp n ⌜ a ⌝ ≡ ⌜ a ⌝
+#shiftUp n a = shiftUpTrivial n ⌜ a ⌝ (λ w z → #→¬∈ {⌜ a ⌝} (CTerm.closed a) w)
+
+
+lowerVars-fvars-CTerm⊆[] : (a : CTerm) → lowerVars (fvars ⌜ a ⌝) ⊆ []
+lowerVars-fvars-CTerm⊆[] a {x} i rewrite CTerm.closed a = i
+
+
+lowerVars-fvars-CTerm≡[] : (a : CTerm) → lowerVars (fvars ⌜ a ⌝) ≡ []
+lowerVars-fvars-CTerm≡[] a = ⊆[]→≡[] (lowerVars-fvars-CTerm⊆[] a)
 
 
 #sub : (a : CTerm) (b : CTerm0) → # (sub ⌜ a ⌝ ⌜ b ⌝)
 #sub a b = ⊆[]→≡[] (⊆-trans (fvars-sub ⌜ a ⌝ ⌜ b ⌝) (≡[]→⊆[] (→++≡[] c1 c2)))
   where
-    c1 : lowerVars (fvars (CTerm0.cTerm b)) ≡ []
+    c1 : lowerVars (fvars ⌜ b ⌝) ≡ []
     c1 = lowerVars-fvars-CTerm0≡[] b
 
-    c2 : fvars (CTerm.cTerm a) ≡ []
+    c2 : fvars ⌜ a ⌝ ≡ []
     c2 = CTerm.closed a
 
 

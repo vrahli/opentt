@@ -33,25 +33,12 @@ open import world
 open import theory (bar)
 open import props0 (bar)
 open import ind2 (bar)
+open import terms (bar)
 \end{code}
 
 
 
 \begin{code}[hide]
-SETinj1 : {a b c d : Term} → SET a b ≡ SET c d → a ≡ c
-SETinj1 refl =  refl
-
-SETinj2 : {a b c d : Term} → SET a b ≡ SET c d → b ≡ d
-SETinj2 refl =  refl
-
-
-#SETinj1 : {a : CTerm} {b : CTerm0} {c : CTerm} {d : CTerm0} → #SET a b ≡ #SET c d → a ≡ c
-#SETinj1 c =  CTerm≡ (SETinj1 (≡CTerm c))
-
-#SETinj2 : {a : CTerm} {b : CTerm0} {c : CTerm} {d : CTerm0} → #SET a b ≡ #SET c d → b ≡ d
-#SETinj2 c =  CTerm0≡ (SETinj2 (≡CTerm c))
-
-
 SETneqNAT : {a b : Term} → ¬ (SET a b) ≡ NAT
 SETneqNAT {a} {b} ()
 

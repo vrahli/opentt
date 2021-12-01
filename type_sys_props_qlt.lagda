@@ -32,17 +32,12 @@ open import calculus
 open import world
 open import theory (bar)
 open import props0 (bar)
+open import terms (bar)
 \end{code}
 
 
 
 \begin{code}[hide]
-QLTinj1 : {a b c d : Term} → QLT a b ≡ QLT c d → a ≡ c
-QLTinj1 refl =  refl
-
-QLTinj2 : {a b c d : Term} → QLT a b ≡ QLT c d → b ≡ d
-QLTinj2 refl =  refl
-
 QLTneqNAT : {u v : Term} → ¬ QLT u v ≡ NAT
 QLTneqNAT {u} {v} ()
 

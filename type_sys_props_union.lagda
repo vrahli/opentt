@@ -33,39 +33,12 @@ open import world
 open import theory (bar)
 open import props0 (bar)
 open import ind2 (bar)
+open import terms (bar)
 \end{code}
 
 
 
 \begin{code}[hide]
-UNIONinj1 : {a b c d : Term} → UNION a b ≡ UNION c d → a ≡ c
-UNIONinj1 refl =  refl
-
-UNIONinj2 : {a b c d : Term} → UNION a b ≡ UNION c d → b ≡ d
-UNIONinj2 refl =  refl
-
-
-#UNIONinj1 : {a b c d : CTerm} → #UNION a b ≡ #UNION c d → a ≡ c
-#UNIONinj1 c = CTerm≡ (UNIONinj1 (≡CTerm c))
-
-#UNIONinj2 : {a b c d : CTerm} → #UNION a b ≡ #UNION c d → b ≡ d
-#UNIONinj2 c = CTerm≡ (UNIONinj2 (≡CTerm c))
-
-
-INLinj : {a b : Term} → INL a ≡ INL b → a ≡ b
-INLinj refl =  refl
-
-INRinj : {a b : Term} → INR a ≡ INR b → a ≡ b
-INRinj refl =  refl
-
-
-#INLinj : {a b : CTerm} → #INL a ≡ #INL b → a ≡ b
-#INLinj c = CTerm≡ (INLinj (≡CTerm c))
-
-#INRinj : {a b : CTerm} → #INR a ≡ #INR b → a ≡ b
-#INRinj c = CTerm≡ (INRinj (≡CTerm c))
-
-
 INLneqINR : {a b : Term} → ¬ INL a ≡ INR b
 INLneqINR {a} {b} ()
 

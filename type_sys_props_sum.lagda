@@ -33,39 +33,12 @@ open import world
 open import theory (bar)
 open import props0 (bar)
 open import ind2 (bar)
+open import terms (bar)
 \end{code}
 
 
 
 \begin{code}[hide]
-SUMinj1 : {a b c d : Term} → SUM a b ≡ SUM c d → a ≡ c
-SUMinj1 refl =  refl
-
-SUMinj2 : {a b c d : Term} → SUM a b ≡ SUM c d → b ≡ d
-SUMinj2 refl =  refl
-
-
-#SUMinj1 : {a : CTerm} {b : CTerm0} {c : CTerm} {d : CTerm0} → #SUM a b ≡ #SUM c d → a ≡ c
-#SUMinj1 c =  CTerm≡ (SUMinj1 (≡CTerm c))
-
-#SUMinj2 : {a : CTerm} {b : CTerm0} {c : CTerm} {d : CTerm0} → #SUM a b ≡ #SUM c d → b ≡ d
-#SUMinj2 c =  CTerm0≡ (SUMinj2 (≡CTerm c))
-
-
-PAIRinj1 : {a b c d : Term} → PAIR a b ≡ PAIR c d → a ≡ c
-PAIRinj1 refl =  refl
-
-PAIRinj2 : {a b c d : Term} → PAIR a b ≡ PAIR c d → b ≡ d
-PAIRinj2 refl =  refl
-
-
-#PAIRinj1 : {a b c d : CTerm} → #PAIR a b ≡ #PAIR c d → a ≡ c
-#PAIRinj1 c =  CTerm≡ (PAIRinj1 (≡CTerm c))
-
-#PAIRinj2 : {a b c d : CTerm} → #PAIR a b ≡ #PAIR c d → b ≡ d
-#PAIRinj2 c =  CTerm≡ (PAIRinj2 (≡CTerm c))
-
-
 SUMneqNAT : {a b : Term} → ¬ (SUM a b) ≡ NAT
 SUMneqNAT {a} {b} ()
 

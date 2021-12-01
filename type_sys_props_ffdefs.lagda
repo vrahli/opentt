@@ -33,25 +33,12 @@ open import world
 open import theory (bar)
 open import props0 (bar)
 open import ind2 (bar)
+open import terms (bar)
 \end{code}
 
 
 
 \begin{code}[hide]
-FFDEFSinj1 : {a b c d : Term} → FFDEFS a b ≡ FFDEFS c d → a ≡ c
-FFDEFSinj1 refl =  refl
-
-FFDEFSinj2 : {a b c d : Term} → FFDEFS a b ≡ FFDEFS c d → b ≡ d
-FFDEFSinj2 refl =  refl
-
-
-#FFDEFSinj1 : {a b c d : CTerm} → #FFDEFS a b ≡ #FFDEFS c d → a ≡ c
-#FFDEFSinj1 c = CTerm≡ (FFDEFSinj1 (≡CTerm c))
-
-#FFDEFSinj2 : {a b c d : CTerm} → #FFDEFS a b ≡ #FFDEFS c d → b ≡ d
-#FFDEFSinj2 c = CTerm≡ (FFDEFSinj2 (≡CTerm c))
-
-
 FFDEFSneqNAT : {a b : Term} → ¬ FFDEFS a b ≡ NAT
 FFDEFSneqNAT {a} {b} ()
 

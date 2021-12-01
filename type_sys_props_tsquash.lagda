@@ -33,18 +33,12 @@ open import world
 open import theory (bar)
 open import props0 (bar)
 open import ind2 (bar)
+open import terms (bar)
 \end{code}
 
 
 
 \begin{code}[hide]
-TSQUASHinj : {a b : Term} → TSQUASH a ≡ TSQUASH b → a ≡ b
-TSQUASHinj refl =  refl
-
-#TSQUASHinj : {a b : CTerm} → #TSQUASH a ≡ #TSQUASH b → a ≡ b
-#TSQUASHinj c = CTerm≡ (TSQUASHinj (≡CTerm c))
-
-
 TSQUASHneqNAT : {a : Term} → ¬ (TSQUASH a) ≡ NAT
 TSQUASHneqNAT {a} ()
 
