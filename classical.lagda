@@ -236,14 +236,85 @@ eqTypesNEG← {w} {i} {A} {B} eqt rewrite #NEG≡#FUN A | #NEG≡#FUN B =
     (λ w' e' → eqTypesFALSE)
 
 
-eqTypesLem : (w : world) (i : ℕ) → equalTypes (suc i) w (#LEM i) (#LEM i)
-eqTypesLem w i = {!!}
+eqTypesUniv : (w : world) (i : ℕ) → equalTypes i w (#UNIV i) (#UNIV i)
+eqTypesUniv w i = EQTUNIV (Bar.allW-inBar inOpenBar-Bar λ w1 e1 → compAllRefl (UNIV i) w1 , compAllRefl (UNIV i) w1)
 
 
-eqTypesNegLem : (w : world) (i : ℕ) → equalTypes (suc i) w (#NEG (#LEM i)) (#NEG (#LEM i))
+#SQUASH : CTerm → CTerm
+#SQUASH t = ct (SQUASH ⌜ t ⌝) c
+  where
+    c : # SQUASH ⌜ t ⌝
+    c = z
+      where
+        z : lowerVars (fvars (shiftUp 0  ⌜ t ⌝)) ≡ []
+        z rewrite fvars-shiftUp≡ 0  ⌜ t ⌝ | fvars-cterm t = refl
+
+
+≡SQUASH : {a b : Term} → a ≡ b → SQUASH a ≡ SQUASH b
+≡SQUASH {a} {b} e rewrite e = refl
+
+≡SET : {a b c d : Term} → a ≡ b → c ≡ d → SET a c ≡ SET b d
+≡SET {a} {b} {c} {d} e f rewrite e | f = refl
+
+
+#shiftDown : (n : ℕ) (a : CTerm) → shiftDown n ⌜ a ⌝ ≡ ⌜ a ⌝
+#shiftDown n a = shiftDownTrivial n ⌜ a ⌝ λ w z → #→¬∈ {⌜ a ⌝} (CTerm.closed a) w
+
+
+sub0-#[0]SQUASH : (a : CTerm)
+                  → sub0 a (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR))) ≡ #SQUASH (#UNION a (#NEG a))
+sub0-#[0]SQUASH a = CTerm≡ (≡SET refl e)
+  where
+    e : UNION (shiftDown 1 (shiftUp 0 (shiftUp 0 (CTerm.cTerm a))))
+              (PI (shiftDown 1 (shiftUp 0 (shiftUp 0 (CTerm.cTerm a))))
+                  (EQ (NUM 0) (NUM 1) NAT))
+        ≡ UNION (shiftUp 0 (CTerm.cTerm a))
+                (PI (shiftUp 0 (CTerm.cTerm a)) (EQ (NUM 0) (NUM 1) NAT))
+    e rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftDown 1 a = refl
+
+
+
+eqTypesSQUASH← : {w : world} {i : ℕ} {A B : CTerm}
+                  → equalTypes i w A B
+                  → equalTypes i w (#SQUASH A) (#SQUASH B)
+eqTypesSQUASH← {w} {i} {A} {B} eqt = {!!}
+
+
+eqTypesUNION← : {w : world} {i : ℕ} {A B C D : CTerm}
+                  → equalTypes i w A B
+                  → equalTypes i w C D
+                  → equalTypes i w (#UNION A C) (#UNION B D)
+eqTypesUNION← {w} {i} {A} {B} {C} {D} eqt1 eqt2 = {!!}
+
+
+eqTypesLemPi : (w : world) (i : ℕ)
+               → equalTypes i w (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR))))
+                                 (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR))))
+eqTypesLemPi w i =
+  eqTypesPI←
+    {w} {i}
+    {#UNIV i} {#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR))}
+    {#UNIV i} {#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR))}
+    (λ w1 e1 → eqTypesUniv w1 i)
+    aw
+  where
+    aw : allW w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType i w' (#UNIV i) a₁ a₂)
+                       → equalTypes i w' (sub0 a₁ (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR))))
+                                          (sub0 a₂ (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR)))))
+    aw w1 e1 a₁ a₂ ea rewrite sub0-#[0]SQUASH a₁ | sub0-#[0]SQUASH a₂ = aw'
+      where
+        aw' : equalTypes i w1 (#SQUASH (#UNION a₁ (#NEG a₁))) (#SQUASH (#UNION a₂ (#NEG a₂)))
+        aw' = eqTypesSQUASH← (eqTypesUNION← {!!} (eqTypesNEG← {!!}))
+
+
+eqTypesLem : (w : world) (i : ℕ) → equalTypes i w (#LEM i) (#LEM i)
+eqTypesLem w i rewrite #LEM≡#PI i = eqTypesLemPi w i
+
+
+eqTypesNegLem : (w : world) (i : ℕ) → equalTypes i w (#NEG (#LEM i)) (#NEG (#LEM i))
 eqTypesNegLem w i = eqTypesNEG← (eqTypesLem w i)
 
 
 notClassical : (w : world) (i : ℕ) → member w (#NEG (#LEM i)) #lamAX
-notClassical w i = (suc i , eqTypesNegLem w i , {!!})
+notClassical w i = (i , eqTypesNegLem w i , {!!})
 \end{code}[hide]
