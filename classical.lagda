@@ -287,6 +287,17 @@ eqTypesUNION← : {w : world} {i : ℕ} {A B C D : CTerm}
 eqTypesUNION← {w} {i} {A} {B} {C} {D} eqt1 eqt2 = {!!}
 
 
+equalInType→equalTypes : (i : ℕ) (w : world) (a b : CTerm)
+                          → equalInType i w (#UNIV i) a b
+                          → equalTypes i w a b
+equalInType→equalTypes i w a b (eqt , eqi) = {!!}
+  where
+    z : eqInUnivi i w a b
+    z = eqInType-u-rev {!!} eqt a b eqi
+
+
+-- We need cumulativity or lifting here because (#UNIV i) needs to be in level i,
+-- but a₁ needs to be equal to a₂ at that level and also in (#UNIV i)
 eqTypesLemPi : (w : world) (i : ℕ)
                → equalTypes i w (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR))))
                                  (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR))))
