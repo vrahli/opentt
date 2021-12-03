@@ -17,12 +17,18 @@ open import Data.Empty
 open import Data.Unit using (⊤ ; tt)
 open import Data.Nat using (ℕ ; _≟_ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _⊔_)
 open import Data.Nat.Properties
+open import Data.Bool.Properties using ()
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
-open import Data.List
+open import Data.List using (List ; [] ; _∷_ ; [_] ; _++_)
+open import Data.List.Properties
 open import Data.List.Relation.Unary.Any
 open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
+open import Data.List.Membership.Propositional
+open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
+open import Data.List.Membership.Propositional.Properties
+open import Axiom.UniquenessOfIdentityProofs
 \end{code}
 
 
@@ -207,14 +213,110 @@ fvars (SHRINK t)        = fvars t
 _#_ : (v : Var) (t : Term) → Set
 v # t = ¬ (v ∈ fvars t)
 
+
 -- closed expression
-#_ : (t : Term) → Set
-# t = (v : Var) → v # t
+#_ : (t : Term) → Set₀
+# t = fvars t ≡ []
+--# t = ((fvars t) _≟_ []) ≡ true
+--# t = (fvars t) ⊆? [] ≡ true
+
+
+#eq : {a : Term} → (p q : # a) → q ≡ p
+#eq {a} p q = Decidable⇒UIP.≡-irrelevant (Data.List.Properties.≡-dec Data.Nat.Properties._≟_) q p
+
+
+_⊆?_ : (l k : List Var) → Bool
+[] ⊆? k = true
+(v ∷ l) ⊆? k with (v ∈? k)
+... | yes _ = l ⊆? k
+... | no _ = false
+
+
+#[_]_ : (l : List Var) (t : Term) → Set
+#[ l ] t = (fvars t) ⊆? l ≡ true
+
+
+#[]eq : {l : List Var} {a : Term} → (p q : #[ l ] a) → q ≡ p
+#[]eq {a} p q = Decidable⇒UIP.≡-irrelevant Data.Bool.Properties._≟_ q p
+
+
+record CTerm : Set where
+  constructor ct
+  field
+    cTerm  : Term
+    closed : # cTerm
+
+
+record CTerm0 : Set where
+  constructor ct0
+  field
+    cTerm  : Term
+    closed : #[ [ 0 ] ] cTerm
+
+
+
+record ToTerm (A : Set) : Set where
+  field
+    ⌜_⌝ : A -> Term
+
+open ToTerm {{...}} public
+
+
+instance
+  CTermToTerm : ToTerm CTerm
+  ⌜_⌝ {{CTermToTerm}} t = CTerm.cTerm t
+
+instance
+  CTerm0ToTerm : ToTerm CTerm0
+  ⌜_⌝ {{CTerm0ToTerm}} t = CTerm0.cTerm t
+
+
+Cterm→CTerm0 : CTerm → CTerm0
+Cterm→CTerm0 (ct t c) = ct0 t c'
+  where
+    c' : #[ [ 0 ] ] t
+    c' rewrite c = refl
+
+
+record fromCTerm (A : Set) : Set where
+  field
+    ⌞_⌟ : CTerm → A
+
+open fromCTerm {{...}} public
+
+
+instance
+  CtermToCTerm0 : fromCTerm CTerm0
+  ⌞_⌟ {{CtermToCTerm0}} t = Cterm→CTerm0 t
+
+
+CTerm≡ : {a b : CTerm} → ⌜ a ⌝ ≡ ⌜ b ⌝ → a ≡ b
+CTerm≡ {ct a ca} {ct .a cb} refl rewrite #eq {a} ca cb = refl
+
+
+CTerm0≡ : {a b : CTerm0} → ⌜ a ⌝ ≡ ⌜ b ⌝ → a ≡ b
+CTerm0≡ {ct0 a ca} {ct0 .a cb} refl rewrite #[]eq {[ 0 ]} {a} ca cb = refl
+
+
+≡CTerm : {a b : CTerm} → a ≡ b → ⌜ a ⌝ ≡ ⌜ b ⌝
+≡CTerm {ct a ca} {ct .a .ca} refl = refl
+
+
+sucIf≤ : (c x : ℕ) → ℕ
+sucIf≤ c x with x <? c
+... | yes _ = x
+... | no _ = suc x
+
+
+predIf≤ : (c x : ℕ) → ℕ
+predIf≤ c 0 = 0
+predIf≤ c (suc x) with suc x ≤? c
+... | yes _ = suc x
+... | no _ = x
+
 
 shiftUp : ℕ → Term → Term
-shiftUp c (VAR x) with x <? c
-... | yes _ = VAR x
-... | no _ = VAR (suc x)
+shiftUp c (VAR x) = VAR (sucIf≤ c x)
 shiftUp c NAT = NAT
 shiftUp c QNAT = QNAT
 shiftUp c (LT t t₁) = LT (shiftUp c t) (shiftUp c t₁)
@@ -243,10 +345,7 @@ shiftUp c (LOWER t) = LOWER (shiftUp c t)
 shiftUp c (SHRINK t) = SHRINK (shiftUp c t)
 
 shiftDown : ℕ → Term → Term
-shiftDown c (VAR 0) = VAR 0
-shiftDown c (VAR (suc x)) with suc x <? c
-... | yes _ = VAR (suc x)
-... | no _ = VAR x
+shiftDown c (VAR x) = VAR (predIf≤ c x)
 shiftDown c NAT = NAT
 shiftDown c QNAT = QNAT
 shiftDown c (LT t t₁) = LT (shiftDown c t) (shiftDown c t₁)
@@ -409,9 +508,9 @@ impLeNotLower v l i (suc w) j h = i w (sucLeInj j) (inLowerVars _ _ h)
 
 shiftDownTrivial : (v : Var) (u : Term) → ((w : Var) → v ≤ w → w # u) → shiftDown v u ≡ u
 shiftDownTrivial v (VAR 0) i = refl
-shiftDownTrivial v (VAR (suc x)) i with suc x <? v
+shiftDownTrivial v (VAR (suc x)) i with suc x ≤? v
 ... | yes z = refl
-... | no z = ⊥-elim (i (suc x) (sucLeInj (≰⇒> z)) (here refl))
+... | no z = ⊥-elim (i (suc x) (<⇒≤ (≰⇒> z)) (here refl)) --(i (suc x) (sucLeInj (≰⇒> z)) (here refl))
 shiftDownTrivial v NAT i = refl
 shiftDownTrivial v QNAT i = refl
 shiftDownTrivial v (LT u u₁) i
@@ -538,17 +637,23 @@ shiftUpTrivial v (LOWER u) i
 shiftUpTrivial v (SHRINK u) i
   rewrite shiftUpTrivial v u i = refl
 
+#→¬∈ : {t : Term} → # t → (v : Var) → v # t
+#→¬∈ {t} c v i rewrite c = x i
+  where
+    x : ¬ v ∈ []
+    x ()
+
 subNotIn : (t u : Term) → # u → sub t u ≡ u
-subNotIn t u d rewrite subvNotIn 0 (shiftUp 0 t) u (d 0) = shiftDownTrivial 0 u (λ w c → d w)
+subNotIn t u d rewrite subvNotIn 0 (shiftUp 0 t) u (#→¬∈ {u} d 0) = shiftDownTrivial 0 u (λ w c → #→¬∈ {u} d w)
 
 shiftDownUp : (t : Term) (n : ℕ) → shiftDown n (shiftUp n t) ≡ t
 shiftDownUp (VAR x) n with x <? n
 shiftDownUp (VAR 0) n | yes p = refl
-shiftDownUp (VAR (suc x)) n | yes p with suc x <? n
+shiftDownUp (VAR (suc x)) n | yes p with suc x ≤? n
 ...                                    | yes q = refl
-...                                    | no q = ⊥-elim (q p)
-shiftDownUp (VAR x) n | no p with suc x <? n
-...                             | yes q = ⊥-elim (p (≤-trans (n≤1+n _) q))
+...                                    | no q = ⊥-elim (q (≤-trans (n≤1+n _) p))
+shiftDownUp (VAR x) n | no p with suc x ≤? n
+...                             | yes q = ⊥-elim (p q)
 ...                             | no q = refl
 shiftDownUp NAT n = refl
 shiftDownUp QNAT n = refl
