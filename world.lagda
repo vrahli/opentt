@@ -9,12 +9,10 @@ open import Data.Nat
 open import Data.Unit renaming (tt to ⋆)
 open import Data.Product
 open import Relation.Binary.PropositionalEquality
+open import Relation.Unary using (Pred; Decidable)
 \end{code}
 
 \begin{code}
-1ℓ : Level
-1ℓ = lsuc 0ℓ
-
 {--
 
 TODO
@@ -27,8 +25,9 @@ TODO
 record PossibleWorlds : Set₂ where
   constructor mkPossibleWorlds
   field
-    𝕎       : Set₁
-    _⊑_      : 𝕎 → 𝕎 → Set₁
-    ⊑-refl   : (a : 𝕎) → a ⊑ a
-    ⊑-trans  : {a b c : 𝕎} → a ⊑ b → b ⊑ c → a ⊑ c
+    𝕎        : Set₁
+    _⊑_       : 𝕎 → 𝕎 → Set₁
+    ⊑-refl    : (a : 𝕎) → a ⊑ a
+    ⊑-trans   : {a b c : 𝕎} → a ⊑ b → b ⊑ c → a ⊑ c
+--    ⊑-is-refl : (a : 𝕎) (p : a ⊑ a) → Decidable (p ≡ ⊑-refl a)
 \end{code}

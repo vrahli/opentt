@@ -15,7 +15,7 @@ open import Data.Sum
 open import Data.Empty
 open import Data.Maybe
 open import Data.Unit using (⊤ ; tt)
-open import Data.Nat using (ℕ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
+open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
 open import Data.Nat.Properties
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
@@ -26,11 +26,13 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 
+open import util
 open import calculus
 open import world
 open import choice
+--open import bar
 
-module props0 (W : PossibleWorlds) (C : Choice W) where --(bar : Bar) where
+module props0 (W : PossibleWorlds) (C : Choice W) where --(bar : Bar W) where
 open import worldDef(W)
 open import choiceDef(W)(C)
 open import computation(W)(C)
@@ -282,10 +284,6 @@ is-universe u =
   (w : 𝕎·) (T1 T2 : CTerm)
   → fst (snd u) w T1 T2
   → inbar w (λ w' _ → ⌜ T1 ⌝ ⇛ (UNIV (fst u)) at w' × ⌜ T2 ⌝ ⇛ (UNIV (fst u)) at w')
-
-
-lift⊥ : Lift {0ℓ} 1ℓ ⊥ → ⊥
-lift⊥ ()
 
 
 {--

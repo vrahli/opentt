@@ -29,6 +29,14 @@ open import Data.List.Properties
 module util where
 
 
+1ℓ : Level
+1ℓ = lsuc 0ℓ
+
+
+lift⊥ : Lift {0ℓ} 1ℓ ⊥ → ⊥
+lift⊥ ()
+
+
 select : {A : Set} (n : ℕ) (l : List A) → Maybe A
 select {A} n [] = nothing
 select {A} 0 (x ∷ l) = just x
