@@ -378,7 +378,7 @@ ind<Type {u} umon P ind {w0} {X1} {X2} eqt =
 
 --    j : atbar i w0 (⊑-refl· w0) (aw w0 (⊑-refl· w0))
     j : atbar i w0 (⊑-refl· w0) eqt
-    j = {!ATOPENBAR w0!} --ATOPENBAR w0 (⊑-refl· w0) w0 (⊑-refl· w0) (⊑-refl· w0)
+    j = ATOPENBAR-R eqt --ATOPENBAR w0 (⊑-refl· w0) w0 (⊑-refl· w0) (⊑-refl· w0)
 
     indLtt : {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
              {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : eqTypes u w' T1' T2')

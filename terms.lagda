@@ -3,7 +3,6 @@
 
 open import bar
 
-module terms (bar : Bar) where
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
@@ -33,10 +32,20 @@ open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Axiom.UniquenessOfIdentityProofs
 
+
+open import util
 open import calculus
 open import world
-open import theory (bar)
-open import props0 (bar)
+open import choice
+
+
+--module terms (bar : Bar) where
+module terms (W : PossibleWorlds) (C : Choice W) where
+
+--open import theory (bar)
+--open import props0 (bar)
+open import theory(W)(C)
+open import props0(W)(C)
 \end{code}
 
 Some terms
