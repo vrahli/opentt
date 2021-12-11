@@ -55,23 +55,26 @@ impliesEqInType u f = (u , f)
 univInBar : (n : ℕ) (w : 𝕎·) → eqUnivi n w (#UNIV n) (#UNIV n)
 univInBar n w =  Bar.∀𝕎-inBar inOpenBar-Bar λ w1 e1 → compAllRefl (UNIV n) w1 , compAllRefl (UNIV n) w1
 
-lemma1 : (w : 𝕎·) → equalTypes 0 w (#UNIV 0) (#UNIV 0)
-lemma1 w = EQTUNIV (univInBar 0 w)
+lemma1 : (w : 𝕎·) → equalTypes 1 w (#UNIV 0) (#UNIV 0)
+lemma1 w = EQTUNIV 0 ≤-refl (compAllRefl (UNIV 0) w) (compAllRefl (UNIV 0) w)
 
 lemma2 : (w : 𝕎·) → eqtypes w (#UNIV 0) (#UNIV 0)
-lemma2 w = impliesEqTypes 0 (lemma1 w)
+lemma2 w = impliesEqTypes 1 (lemma1 w)
 
-lemma3 : (w : 𝕎·) → equalTypes 1 w (#UNIV 1) (#UNIV 1)
-lemma3 w = EQTUNIV (univInBar 1 w)
+lemma3 : (w : 𝕎·) → equalTypes 2 w (#UNIV 1) (#UNIV 1)
+lemma3 w = EQTUNIV 1 ≤-refl (compAllRefl (UNIV 1) w) (compAllRefl (UNIV 1) w)
 
 lemma4 : (w : 𝕎·) → eqtypes w (#UNIV 1) (#UNIV 1)
-lemma4 w = impliesEqTypes 1 (lemma3 w)
+lemma4 w = impliesEqTypes 2 (lemma3 w)
 
-lemma5 : (w : 𝕎·) → equalInType 1 w (#UNIV 1) (#UNIV 0) (#UNIV 0)
-lemma5 w = (lemma3 w , {--inj₁--} Bar.∀𝕎-inBar inOpenBar-Bar λ w' e' → EQTUNIV (univInBar 0 w'))
+lemma5 : (w : 𝕎·) → equalInType 2 w (#UNIV 1) (#UNIV 0) (#UNIV 0)
+lemma5 w = (lemma3 w , Bar.∀𝕎-inBar inOpenBar-Bar (λ w' e → lemma1 w'))
 
 lemma6 : (w : 𝕎·) → eqintype w (#UNIV 1) (#UNIV 0) (#UNIV 0)
-lemma6 w = impliesEqInType 1 (lemma5 w)
+lemma6 w = impliesEqInType 2 (lemma5 w)
+
+lemma7 : (w : 𝕎·) → equalTypes 2 w (#UNIV 0) (#UNIV 0)
+lemma7 w = EQTUNIV 0 0<1+n (compAllRefl (UNIV 0) w) (compAllRefl (UNIV 0) w)
 
 
 -- EQ
@@ -279,11 +282,14 @@ NATneqSHRINK {c} ()
 NATneqUNIV : {n : ℕ} → ¬ NAT ≡ UNIV n
 NATneqUNIV {n} ()
 
+
+-- Do we still need is-universe now?
 is-universe : (u : univs) → Set₁
-is-universe u =
-  (w : 𝕎·) (T1 T2 : CTerm)
+is-universe u = Lift {0ℓ} 1ℓ ⊤
+{--  (w : 𝕎·) (T1 T2 : CTerm)
   → fst (snd u) w T1 T2
   → inbar w (λ w' _ → ⌜ T1 ⌝ ⇛ (UNIV (fst u)) at w' × ⌜ T2 ⌝ ⇛ (UNIV (fst u)) at w')
+--}
 
 
 {--
@@ -391,7 +397,7 @@ mon p = {a b : CTerm} {w : 𝕎·} → p w a b → ∀𝕎 w (λ w' e' → p w' 
 #weakMonEq-mon {a} {b} {w} h w' e' = ∀𝕎-mon e' h
 
 
-eqTypes-mon : (u : univs) → mon (proj₁ (proj₂ u)) → mon (eqTypes u)
+eqTypes-mon : (u : univs) → ⊤ {--mon (proj₁ (proj₂ u))--} → mon (eqTypes u)
 eqTypes-mon u m {A} {B} {w1} (EQTNAT x x₁) w2 ext = EQTNAT (⇛-mon ext x) (⇛-mon ext x₁)
 eqTypes-mon u m {A} {B} {w1} (EQTQNAT x x₁) w2 ext = EQTQNAT (⇛-mon ext x) (⇛-mon ext x₁)
 eqTypes-mon u m {A} {B} {w1} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) w2 ext =
@@ -467,7 +473,7 @@ eqTypes-mon u m {A} {B} {w1} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) w2 ext 
     exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (∀𝕎-mon ext eqtA w e) a b)
     exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
 
-eqTypes-mon u m {A} {B} {w1} (EQTUNIV x) w2 ext = EQTUNIV (m x w2 ext)
+eqTypes-mon u m {A} {B} {w1} (EQTUNIV i p c₁ c₂) w2 ext = EQTUNIV i p (⇛-mon ext c₁) (⇛-mon ext c₂) --(m x w2 ext)
 eqTypes-mon u m {A} {B} {w1} (EQTBAR x) w2 ext = EQTBAR (Bar.↑inBar inOpenBar-Bar x ext)
 
 
@@ -495,10 +501,10 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB ext
 if-equalInType-EQ u w T a b t₁ t₂ (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
 --if-equalInType-EQ u w T a b t₁ t₂ (EQTDUM A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqDUM (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
-if-equalInType-EQ u w T a b t₁ t₂ (EQTUNIV x , eqi) = Bar.∀𝕎-inBarFunc inOpenBar-Bar z2 x
-  where
-    z2 : ∀𝕎 w (λ w' e' → (⌜ #EQ a b T ⌝ ⇛ UNIV u at w' × ⌜ #EQ a b T ⌝ ⇛ UNIV u at w') → ⌜ t₁ ⌝ ⇛ AX at w' × ⌜ t₂ ⌝ ⇛ AX at w' × equalInType u w' T a b)
-    z2 w' e' (c₁ , c₂) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt))
+if-equalInType-EQ u w T a b t₁ t₂ (EQTUNIV i p c₁ c₂ , eqi) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt)) --Bar.∀𝕎-inBarFunc inOpenBar-Bar z2 x
+{--  where
+    z2 : ∀𝕎 w (λ w' e' → (#EQ a b T #⇛ #UNIV u at w' × #EQ a b T #⇛ #UNIV u at w') → t₁ #⇛ #AX at w' × t₂ #⇛ #AX at w' × equalInType u w' T a b)
+    z2 w' e' (c₁ , c₂) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt))--}
 if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
   Bar.inBar-idem
     inOpenBar-Bar
@@ -769,7 +775,7 @@ inbar-⇛to-same-CS-trans {w} {a} {b} {c} h₁ h₂ =
 eqTypes⇛NAT : {u : univs} {w : 𝕎·} {A B : CTerm}
                → is-universe u
                → (eqt : eqTypes u w A B)
-               → ⌜ A ⌝ ⇛ NAT at w
+               → A #⇛ #NAT at w
                → inbar w (λ w' _ → ⌜ B ⌝ ⇛ NAT at w')
 eqTypes⇛NAT {u} {w} {A} {B} isu (EQTNAT x x₁) comp = →inbar⇛ x₁
 eqTypes⇛NAT {u} {w} {A} {B} isu (EQTQNAT x x₁) comp = ⊥-elim (NATneqQNAT (⇛-val-det tt tt comp x))
@@ -784,14 +790,14 @@ eqTypes⇛NAT {u} {w} {A} {B} isu (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta ex
 eqTypes⇛NAT {u} {w} {A} {B} isu (EQTSQUASH A1 A2 x x₁ eqtA exta) comp = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt comp x))
 --eqTypes⇛NAT {u} {w} {A} {B} isu (EQTDUM A1 A2 x x₁ eqtA exta) comp = ⊥-elim (NATneqDUM (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} isu (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) comp = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt comp x))
-eqTypes⇛NAT {u} {w} {A} {B} isu (EQTUNIV x) comp =
-  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
+eqTypes⇛NAT {u} {w} {A} {B} isu (EQTUNIV i p c₁ c₂) comp = ⊥-elim (NATneqUNIV (⇛-val-det tt tt comp c₁))
+{--  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
   where
-    z : inbar w (λ w' _ → ⌜ A ⌝ ⇛ (UNIV (fst u)) at w' × ⌜ B ⌝ ⇛ (UNIV (fst u)) at w')
-    z = isu w A B x
+    z : inbar w (λ w' _ → A #⇛ #UNIV (fst u) at w' × B #⇛ #UNIV (fst u) at w')
+    z = {!!} --isu w A B x
 
-    q : ∀𝕎 w (λ w' e' → ⌜ A ⌝ ⇛ UNIV (proj₁ u) at w' × ⌜ B ⌝ ⇛ UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (NATneqUNIV (⇛-val-det tt tt (⇛-mon e1 comp) d₁)))
+    q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
+    q w1 e1 (d₁ , d₂) = lift (⊥-elim (NATneqUNIV (⇛-val-det tt tt (⇛-mon e1 comp) d₁)))--}
 eqTypes⇛NAT {u} {w} {A} {B} isu (EQTBAR x) comp = i
   where
     a : ∀𝕎 w (λ w' e' → eqTypes u w' A B → inbar w' (λ w'' _ → ⌜ B ⌝ ⇛ NAT at w''))
@@ -1188,5 +1194,4 @@ wPredDepExtIrr-eqInType-mon : {u : univs} {w : 𝕎·} {A1 A2 : CTerm} {B1 B2 : 
                               → (a b c d : CTerm) → wPredDepExtIrr (λ w' e' z → eqInType u w' (∀𝕎-mon e1 eqtb w' e' a b z) c d)
 wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1 a b c d w' ea eb xa xb ei =
   extb a b c d w' (⊑-trans· e1 ea) (⊑-trans· e1 eb) xa xb ei
-
 \end{code}

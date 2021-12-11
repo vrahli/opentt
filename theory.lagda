@@ -810,8 +810,11 @@ wper = (w : 𝕎·) → per
 -- eqTypes and eqInType provide meaning to types w.r.t. already interpreted universes,
 -- given by univs (1st conjunct defines the equality between such universes, while the
 -- second conjunct defines the equality in such universes)
+univsUpTo : ℕ → Set₂
+univsUpTo n = (m : ℕ) (p : m < n) → wper
+
 univs : Set₂
-univs = Σ ℕ (λ n → wper × wper)
+univs = Σ ℕ univsUpTo
 
 -- equality between types (an inductive definition)
 -- and equality in types (a recursive function)
@@ -905,7 +908,10 @@ data eqTypes u w T1 T2 where
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → (eqx : ∀𝕎 w (λ w' e → eqInType u w' (eqtA w' e) x1 x2))
     → eqTypes u w T1 T2
-  EQTUNIV : proj₁ (proj₂ u) w T1 T2 → eqTypes u w T1 T2
+  EQTUNIV : (i : ℕ) (p : i < fst u)
+    → T1 #⇛ #UNIV i at w
+    → T2 #⇛ #UNIV i at w
+    → eqTypes u w T1 T2
   EQTBAR : inbar w (λ w' _ → eqTypes u w' T1 T2) → eqTypes u w T1 T2
 \end{code}
 
@@ -980,7 +986,7 @@ eqInType u w (EQTSQUASH _ _ _ _ eqtA exta) t1 t2 =
 --eqInType u w (EQTDUM _ _ _ _ eqtA exta) t1 t2 = Lift {0ℓ} 1ℓ ⊤
 eqInType u w (EQFFDEFS _ _ x1 _ _ _ eqtA exta _) t1 t2 =
   inbar w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqtA w' e)) w' t1 t2)
-eqInType u w (EQTUNIV _) T1 T2 = proj₂ (proj₂ u) w T1 T2
+eqInType u w (EQTUNIV i p c₁ c₂) T1 T2 = snd u i p w T1 T2
 eqInType u w (EQTBAR f) t1 t2 =
   inbar' w f (λ w' _ (x : eqTypes u w' _ _) → eqInType u w' x t1 t2)
   {-- This is an unfolding of the above, as agda doesn't like the above --}
@@ -1001,18 +1007,43 @@ We finally close the construction as follows:
 eqUnivi : (m : ℕ) → wper
 eqUnivi m w T1 T2 = inbar w (λ w' _ → ⌜ T1 ⌝ ⇛ (UNIV m) at w' × ⌜ T2 ⌝ ⇛ (UNIV m) at w')
 
+
+uni0 : univsUpTo 0
+uni0 i ()
+
+
+inbarEqTypes : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) → Set₁
+inbarEqTypes u w T1 T2 = inbar w (λ w' _ → eqTypes u w' T1 T2)
+
+
+uniUpTo : (n : ℕ) → univsUpTo n
+uniUpTo 0 = uni0
+uniUpTo (suc n) m p with m <? n
+... | yes q = uniUpTo n m q
+... | no q = inbarEqTypes (n , uniUpTo n) -- i.e., m ≡ n
+
+
+{--
 -- Two terms are equal in universe m if they are equal according to eqTypes
 eqInUnivi : (m : ℕ) → wper
 eqInUnivi 0 = λ _ _ _ → Lift {0ℓ} 1ℓ ⊥
-eqInUnivi (suc m) w T1 T2 =
-  inbar w (λ w' _ → eqTypes (m , (eqUnivi m , eqInUnivi m)) w' T1 T2 {-- ⊎ eqInUnivi m w' T1 T2--})
+eqInUnivi (suc m) w T1 T2 = {!!}
+--  inbar w (λ w' _ → eqTypes (m , (eqUnivi m , eqInUnivi m)) w' T1 T2 {-- ⊎ eqInUnivi m w' T1 T2--})
 -- To have this ⊎ we need a way to lift types in eqTypes, so that types equal at level 'n' can be equal
 -- as types in lower universes, and then lifted up to being equal as types in 'n' again
 -- The type system probably isn't transitive without that.
+--}
+
+
+{--eqInUnivi≤ : (m : ℕ) (i : ℕ) (p : i ≤ m) → wper
+eqInUnivi≤ 0 i p = λ _ _ _ → Lift {0ℓ} 1ℓ ⊥
+eqInUnivi≤ (suc m) i p w T1 T2 with suc m ≤? c =
+  inbar w (λ w' _ → eqTypes (m , (eqUnivi m , eqInUnivi m)) w' T1 T2 {-- ⊎ eqInUnivi m w' T1 T2--})--}
+
 
 --- Add an explicit level-lifting constructor to the type system
 uni : ℕ → univs
-uni n = (n , (eqUnivi n , eqInUnivi n))
+uni n = (n , uniUpTo n) --(eqUnivi n , eqInUnivi n))
 
 TEQ : Set₂
 TEQ = (w : 𝕎·) (T1 T2 : CTerm) → Set₁

@@ -323,7 +323,7 @@ eqTypesUNION← {w} {i} {A} {B} {C} {D} eqt1 eqt2 = {!!}
 equalInType→equalTypes : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                           → equalInType i w (#UNIV i) a b
                           → equalTypes i w a b
-equalInType→equalTypes i w a b (eqt , eqi) = {!!}
+equalInType→equalTypes i w a b (eqt , eqi) = {!!} -- !!
   where
     z : eqInUnivi i w a b
     z = eqInType-u-rev {!!} eqt a b eqi
@@ -348,7 +348,8 @@ eqTypesLemPi w i =
     aw w1 e1 a₁ a₂ ea rewrite sub0-#[0]SQUASH a₁ | sub0-#[0]SQUASH a₂ = aw'
       where
         aw' : equalTypes i w1 (#SQUASH (#UNION a₁ (#NEG a₁))) (#SQUASH (#UNION a₂ (#NEG a₂)))
-        aw' = eqTypesSQUASH← (eqTypesUNION← {!!} (eqTypesNEG← {!!}))
+        aw' = eqTypesSQUASH← (eqTypesUNION← (equalInType→equalTypes i w1 a₁ a₂ ea)
+                                             (eqTypesNEG← (equalInType→equalTypes i w1 a₁ a₂ ea)))
 
 
 eqTypesLem : (w : 𝕎·) (i : ℕ) → equalTypes i w (#LEM i) (#LEM i)
