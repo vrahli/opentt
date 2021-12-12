@@ -123,22 +123,22 @@ UNIVneqSHRINK {a} {c} ()
 
 
 is-TSP-univs : (u : univs) → Set₁
-is-TSP-univs u = (w : 𝕎·) (A B : CTerm) (x : fst (snd u) w A B) → TSP {u} {w} {A} {B} (EQTUNIV x)
+is-TSP-univs u = {!!} --(w : 𝕎·) (A B : CTerm) (x : fst (snd u) w A B) → TSP {u} {w} {A} {B} (EQTUNIV x)
 
 
-mon-univs : (u : univs) → Set₁
-mon-univs u = mon (fst (snd u))
+{--mon-univs : (u : univs) → Set₁
+mon-univs u = {!!} --mon (fst (snd u))--}
 
 
-typeSysConds-BAR-ttrans : (u : univs) (mu : mon-univs u) (w : 𝕎·) (A B C : CTerm)
+typeSysConds-BAR-ttrans : (u : univs) (w : 𝕎·) (A B C : CTerm)
                           (x : inbar w (λ w' _ → eqTypes u w' A B))
                           → inbar' w x (λ w1 e1 → TSP)
                           → eqTypes u w B C
                           → eqTypes u w A C
-typeSysConds-BAR-ttrans u mu w A B C x i eqt = EQTBAR (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar x aw i)
+typeSysConds-BAR-ttrans u w A B C x i eqt = EQTBAR (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar x aw i)
   where
     aw : ∀𝕎 w (λ w' e' → (x₁ : eqTypes u w' A B) (at : atbar x w' e' x₁) → TSP x₁ → eqTypes u w' A C)
-    aw w1 e1 eqta at tsp = TSP.ttrans tsp C (eqTypes-mon u mu eqt w1 e1)
+    aw w1 e1 eqta at tsp = TSP.ttrans tsp C (eqTypes-mon u eqt w1 e1)
 
 
 
@@ -338,18 +338,18 @@ is-uni-uni n = n , refl
 
 
 
-is-universe-uni : (n : ℕ) → is-universe (uni n)
-is-universe-uni n w A B h = Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w1 e1 z → z) h
+{--is-universe-uni : (n : ℕ) → is-universe (uni n)
+is-universe-uni n w A B h = Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w1 e1 z → z) h--}
 
 
 
-is-uni→is-universe : {u : univs} → is-uni u → is-universe u
-is-uni→is-universe {u} (n , e) rewrite e = is-universe-uni (ul n)
+{--is-uni→is-universe : {u : univs} → is-uni u → is-universe u
+is-uni→is-universe {u} (n , e) rewrite e = is-universe-uni (ul n)--}
 
 
 
-is-uni→mon : {u : univs} → is-uni u → mon (fst (snd u))
-is-uni→mon {u} (n , isu) {a} {b} {w} h w' e' rewrite isu = ↑inbar h e'
+{--is-uni→mon : {u : univs} → is-uni u → mon (fst (snd u))
+is-uni→mon {u} (n , isu) {a} {b} {w} h w' e' rewrite isu = ↑inbar h e'--}
 
 
 
@@ -373,7 +373,7 @@ eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqt
 eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA extA) eqi = ⊥-elim (UNIVneqTSQUASH (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) eqi = ⊥-elim (UNIVneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) eqi = ⊥-elim (UNIVneqFFDEFS (⇛-val-det tt tt c₁ x))
-eqInType-⇛-UNIV->0 (suc n) w A B a b c₁ c₂ (EQTUNIV x) eqi = _≤_.s≤s _≤_.z≤n
+eqInType-⇛-UNIV->0 (suc n) w A B a b c₁ c₂ (EQTUNIV m p d₁ d₂) eqi = _≤_.s≤s _≤_.z≤n
 eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTBAR x) eqi =
   lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar x aw eqi))
   where
@@ -384,70 +384,105 @@ eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTBAR x) eqi =
 
 
 
-eqInType-⇛-UNIV : (n : ℕ) (w : 𝕎·) (A B a b : CTerm)
-                   → A #⇛ #UNIV n at w
-                   → B #⇛ #UNIV n at w
+→eqInType-EQTUNIV : (n : ℕ) {w : 𝕎·} {a b : CTerm} {A B : CTerm}
+                     (i : ℕ) (p : i < n)
+                     (c₁ : A #⇛ #UNIV i at w)
+                     (c₂ : B #⇛ #UNIV i at w)
+                     → inbarEqTypes (uni i) w a b
+                     → eqInType (uni n) w {A} {B} (EQTUNIV i p c₁ c₂) a b
+→eqInType-EQTUNIV (suc n) {w} {a} {b} {A} {B} i p c₁ c₂ eqi with i <? n
+... | yes q = →eqInType-EQTUNIV n {w} {a} {b} {A} {B} i q c₁ c₂ eqi
+... | no q = d
+  where
+    e : n ≡ i
+    e = ≤-s≤s-≡ i n (s≤s-inj p) (≮⇒≥ λ z → q (s≤s-inj z))
+
+    d : inbarEqTypes (uni n) w a b
+    d rewrite e = eqi
+
+
+
+eqInType-EQTUNIV→ : (n : ℕ) {w : 𝕎·} {a b : CTerm} {A B : CTerm}
+                     (i : ℕ) (p : i < n)
+                     (c₁ : A #⇛ #UNIV i at w)
+                     (c₂ : B #⇛ #UNIV i at w)
+                     → eqInType (uni n) w {A} {B} (EQTUNIV i p c₁ c₂) a b
+                     → inbarEqTypes (uni i) w a b
+eqInType-EQTUNIV→ (suc n) {w} {a} {b} {A} {B} i p c₁ c₂ eqi with i <? n
+... | yes q = eqInType-EQTUNIV→ n {w} {a} {b} {A} {B} i q c₁ c₂ eqi
+... | no q = d
+  where
+    e : n ≡ i
+    e = ≤-s≤s-≡ i n (s≤s-inj p) (≮⇒≥ λ z → q (s≤s-inj z))
+
+    d : inbarEqTypes (uni i) w a b
+    d rewrite sym e = eqi
+
+
+
+eqInType-⇛-UNIV : (i n : ℕ) (p : i < n) (w : 𝕎·) (A B a b : CTerm)
+                   → A #⇛ #UNIV i at w
+                   → B #⇛ #UNIV i at w
                    → (eqt : eqTypes (uni n) w A B)
                    → (eqi : eqInType (uni n) w eqt a b)
-                   → inbar w (λ w' e → eqTypes (uni (pred n)) w' a b)
+                   → inbarEqTypes (uni i) w a b
 {-# TERMINATING #-}
-eqInType-⇛-UNIV n w A B a b c₁ c₂ (EQTNAT x x₁) eqi = ⊥-elim (UNIVneqNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-UNIV n w A B a b c₁ c₂ (EQTQNAT x x₁) eqi = ⊥-elim (UNIVneqQNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-UNIV n w A B a b c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi = ⊥-elim (UNIVneqLT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-UNIV n w A B a b c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi = ⊥-elim (UNIVneqQLT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-UNIV n w A B a b c₁ c₂ (EQTFREE x x₁) eqi = ⊥-elim (UNIVneqFREE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-UNIV n w A B a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (UNIVneqPI (⇛-val-det tt tt c₁ x))
-eqInType-⇛-UNIV n w A B a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (UNIVneqSUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-UNIV n w A B a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (UNIVneqSET (⇛-val-det tt tt c₁ x))
-eqInType-⇛-UNIV n w A B a b c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) eqi = ⊥-elim (UNIVneqEQ (⇛-val-det tt tt c₁ x))
-eqInType-⇛-UNIV n w A B a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) eqi = ⊥-elim (UNIVneqUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-UNIV n w A B a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA extA) eqi = ⊥-elim (UNIVneqTSQUASH (⇛-val-det tt tt c₁ x))
---eqInType-⇛-UNIV n w A B a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) eqi = ⊥-elim (UNIVneqDUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-UNIV n w A B a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) eqi = ⊥-elim (UNIVneqFFDEFS (⇛-val-det tt tt c₁ x))
-eqInType-⇛-UNIV (suc n) w A B a b c₁ c₂ (EQTUNIV x) eqi = eqi
-eqInType-⇛-UNIV n w A B a b c₁ c₂ (EQTBAR x) eqi =
+eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTNAT x x₁) eqi = ⊥-elim (UNIVneqNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTQNAT x x₁) eqi = ⊥-elim (UNIVneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi = ⊥-elim (UNIVneqLT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi = ⊥-elim (UNIVneqQLT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTFREE x x₁) eqi = ⊥-elim (UNIVneqFREE (⇛-val-det tt tt c₁ x))
+eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (UNIVneqPI (⇛-val-det tt tt c₁ x))
+eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (UNIVneqSUM (⇛-val-det tt tt c₁ x))
+eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (UNIVneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) eqi = ⊥-elim (UNIVneqEQ (⇛-val-det tt tt c₁ x))
+eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) eqi = ⊥-elim (UNIVneqUNION (⇛-val-det tt tt c₁ x))
+eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA extA) eqi = ⊥-elim (UNIVneqTSQUASH (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) eqi = ⊥-elim (UNIVneqDUM (⇛-val-det tt tt c₁ x))
+eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) eqi = ⊥-elim (UNIVneqFFDEFS (⇛-val-det tt tt c₁ x))
+eqInType-⇛-UNIV i (suc n) p w A B a b c₁ c₂ (EQTUNIV m q d₁ d₂) eqi = c'
+  where
+    c : inbarEqTypes (uni m) w a b
+    c = eqInType-EQTUNIV→ (suc n) {w} {a} {b} {A} {B} m q d₁ d₂ eqi
+
+    c' : inbarEqTypes (uni i) w a b
+    c' rewrite UNIVinj (⇛-val-det tt tt c₁ d₁) = c
+
+eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTBAR x) eqi =
   Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar x aw eqi)
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni n) w' A B) → atbar x w' e' z
                          → eqInType (uni n) w' z a b
-                         → inbar w' (↑wPred' (λ w'' e → eqTypes (uni (pred n)) w'' a b) e'))
+                         → inbar w' (↑wPred' (λ w'' e → eqTypes (uni i) w'' a b) e'))
     aw w' e' z at eqi' = Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' z xt → z) j
       where
-        j : inbar w' (λ w'' e → eqTypes (uni (pred n)) w'' a b)
-        j = eqInType-⇛-UNIV n w' A B a b (⇛-mon e' c₁) (⇛-mon e' c₂) z eqi'
+        j : inbar w' (λ w'' e → eqTypes (uni i) w'' a b)
+        j = eqInType-⇛-UNIV i n p w' A B a b (⇛-mon e' c₁) (⇛-mon e' c₂) z eqi'
 
 
 
 
-inbar-eqTypes-pred→eqInUnivi : {n : ℕ} {w : 𝕎·} {a b : CTerm}
+{--inbar-eqTypes-pred→eqInUnivi : {n : ℕ} {w : 𝕎·} {a b : CTerm}
                                 (p : 0 < n)
                                 (i : inbar w (λ w' _ → eqTypes (uni (pred n)) w' a b))
                                 → eqInUnivi n w a b
-inbar-eqTypes-pred→eqInUnivi {suc n} {w} {a} {b} p i = i
+inbar-eqTypes-pred→eqInUnivi {suc n} {w} {a} {b} p i = i--}
 
 
 
 
-is-uni→eqInType-EQTUNIV : {u : univs} (isu : is-uni u) {w : 𝕎·} {a b : CTerm} {A B : CTerm}
-                           (x : fst (snd u) w A B)
-                           → eqInUnivi (fst isu) w a b
-                           → eqInType u w (EQTUNIV x) a b
-is-uni→eqInType-EQTUNIV {u} (n , isu) {w} {a} {b} {A} {B} x eqi rewrite isu = eqi
-
-
-
-is-uni-eqInType-EQTUNIV→ : {u : univs} (isu : is-uni u) {w : 𝕎·} {a b : CTerm} {A B : CTerm}
+{--is-uni-eqInType-EQTUNIV→ : {u : univs} (isu : is-uni u) {w : 𝕎·} {a b : CTerm} {A B : CTerm}
                             (x : fst (snd u) w A B)
                             → eqInType u w (EQTUNIV x) a b
                             → eqInUnivi (fst isu) w a b
-is-uni-eqInType-EQTUNIV→ {u} (n , isu) {w} {a} {b} {A} {B} x eqi rewrite isu = eqi
+is-uni-eqInType-EQTUNIV→ {u} (n , isu) {w} {a} {b} {A} {B} x eqi rewrite isu = eqi--}
 
 
 
-is-uni→eqUnivi : {u : univs} (isu : is-uni u) {w : 𝕎·} {A B : CTerm}
+{--is-uni→eqUnivi : {u : univs} (isu : is-uni u) {w : 𝕎·} {A B : CTerm}
                   (x : fst (snd u) w A B)
                   → eqUnivi (fst isu) w A B
-is-uni→eqUnivi {u} (n , isu) {w} {A} {B} x rewrite isu = x
+is-uni→eqUnivi {u} (n , isu) {w} {A} {B} x rewrite isu = x--}
 
 
 
@@ -466,7 +501,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTNAT x x₁) =
       Bar.∀𝕎-inBarFunc
         inOpenBar-Bar
         (λ w1 e1 s ext → s)
-        (eqInType-⇛-NAT u (is-uni→is-universe isu) w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
+        (eqInType-⇛-NAT u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
 
 eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTQNAT x x₁) =
   Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar i aw j)
@@ -476,7 +511,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTQNAT x x₁) =
       Bar.∀𝕎-inBarFunc
         inOpenBar-Bar
         (λ w1 e1 s ext → s)
-        (eqInType-⇛-QNAT u (is-uni→is-universe isu) w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
+        (eqInType-⇛-QNAT u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
 
 eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) =
   Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar i aw j)
@@ -486,7 +521,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTLT a1 a2 b1 b2 x x₁ x₂ 
       Bar.∀𝕎-inBarFunc
         inOpenBar-Bar
         (λ w1 e1 s ext → s)
-        (eqInType-⇛-LT u (is-uni→is-universe isu) w' A B a1 b1 a2 b2 a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
+        (eqInType-⇛-LT u w' A B a1 b1 a2 b2 a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
 
 eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) =
   Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar i aw j)
@@ -496,7 +531,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTQLT a1 a2 b1 b2 x x₁ x₂
       Bar.∀𝕎-inBarFunc
         inOpenBar-Bar
         (λ w1 e1 s ext → s)
-        (eqInType-⇛-QLT u (is-uni→is-universe isu) w' A B a1 b1 a2 b2 a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
+        (eqInType-⇛-QLT u w' A B a1 b1 a2 b2 a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
 
 eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTFREE x x₁) =
   Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar i aw j)
@@ -506,7 +541,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTFREE x x₁) =
       Bar.∀𝕎-inBarFunc
         inOpenBar-Bar
         (λ w1 e1 s ext → s)
-        (eqInType-⇛-FREE u (is-uni→is-universe isu) w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
+        (eqInType-⇛-FREE u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
 
 eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
   Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar i aw j)
@@ -516,7 +551,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTPI A1 B1 A2 B2 x x₁ eqta 
       Bar.∀𝕎-inBarFunc inOpenBar-Bar
         aw1
         (eqInType-⇛-PI2
-          u (is-uni→is-universe isu) w' A B A1 A2 B1 B2 a b
+          u w' A B A1 A2 B1 B2 a b
           (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb)
           (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')
           (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
@@ -538,7 +573,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTSUM A1 B1 A2 B2 x x₁ eqta
       Bar.∀𝕎-inBarFunc inOpenBar-Bar
         aw1
         (eqInType-⇛-SUM2
-          u (is-uni→is-universe isu) w' A B A1 A2 B1 B2 a b
+          u w' A B A1 A2 B1 B2 a b
           (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb)
           (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')
           (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
@@ -560,7 +595,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTSET A1 B1 A2 B2 x x₁ eqta
       Bar.∀𝕎-inBarFunc inOpenBar-Bar
         aw1
         (eqInType-⇛-SET2
-          u (is-uni→is-universe isu) w' A B A1 A2 B1 B2 a b
+          u w' A B A1 A2 B1 B2 a b
           (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb)
           (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')
           (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
@@ -583,7 +618,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTEQ a1 b1 a2 b2 A₁ B₁ x 
       Bar.∀𝕎-inBarFunc inOpenBar-Bar
         aw1
         (eqInType-⇛-EQ2
-          u (is-uni→is-universe isu) w' A B A₁ B₁ a1 b1 a2 b2 a b
+          u w' A B A₁ B₁ a1 b1 a2 b2 a b
           (∀𝕎-mon e' eqta)
           (wPredExtIrr-eqInType-mon eqta exta w' e')
           (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
@@ -606,7 +641,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTUNION A1 B1 A2 B2 x x₁ eq
       Bar.∀𝕎-inBarFunc inOpenBar-Bar
         aw1
         (eqInType-⇛-UNION2
-          u (is-uni→is-universe isu) w' A B A1 A2 B1 B2 a b
+          u w' A B A1 A2 B1 B2 a b
           (∀𝕎-mon e' eqta)
           (∀𝕎-mon e' eqtb)
           (wPredExtIrr-eqInType-mon eqta exta w' e')
@@ -631,7 +666,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTSQUASH A1 A2 x x₁ eqta ex
       Bar.∀𝕎-inBarFunc inOpenBar-Bar
         aw1
         (eqInType-⇛-TSQUASH2
-          u (is-uni→is-universe isu) w' A B A1 A2 a b
+          u w' A B A1 A2 a b
           (∀𝕎-mon e' eqta)
           (wPredExtIrr-eqInType-mon eqta exta w' e')
           (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
@@ -656,7 +691,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQFFDEFS A1 A2 x1 x2 x x₁ eq
       Bar.∀𝕎-inBarFunc inOpenBar-Bar
         aw1
         (eqInType-⇛-FFDEFS2
-          u (is-uni→is-universe isu) w' A B A1 A2 x1 x2 a b
+          u w' A B A1 A2 x1 x2 a b
           (∀𝕎-mon e' eqta)
           (wPredExtIrr-eqInType-mon eqta exta w' e')
           (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
@@ -670,35 +705,22 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQFFDEFS A1 A2 x1 x2 x x₁ eq
                                  → ↑wPred' (λ w''' e → FFDEFSeq x1 (eqInType u w''' (eqta w''' e)) w''' a b) e' w'' e'')
         aw1 w1 e1 h ext = FFDEFSeq-ext {u} {w} {A1} {A2} {x1} {eqta} {_} {_} {_} {a} {b} exta h
 
-eqInType-ext-bar {u} (n , isu) {w} {A} {B} i ind a b j (EQTUNIV x) = d
+eqInType-ext-bar {u} (n , isu) {w} {A} {B} i ind a b j (EQTUNIV m p d₁ d₂) rewrite isu =
+  →eqInType-EQTUNIV n {w} {a} {b} {A} {B} m p d₁ d₂ c
   where
-    y : inbar w (λ w' _ → A #⇛ (#UNIV n) at w' × B #⇛ (#UNIV n) at w')
-    y = is-uni→eqUnivi (n , isu) x
+    j' : inbar' w i (λ w' e' z → eqInType (uni n) w' z a b)
+    j' = j
 
-    c : inbar w (λ w' _ → eqTypes (uni (pred n)) w' a b)
-    c = Bar.inBar-idem inOpenBar-Bar (Bar.inBarFunc inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar i aw j) y)
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni n) w' A B) → atbar i w' e' z
+                             → eqInType (uni n) w' z a b
+                             → inbar w' (↑wPred' (λ w'' _ → eqTypes (uni m) w'' a b) e'))
+    aw w' e' z at eqt = Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' z x → z) ib
       where
-        aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) → atbar i w' e' z
-                             → eqInType u w' z a b
-                             → A #⇛ #UNIV n at w' × B #⇛ #UNIV n at w'
-                             → inbar w' (↑wPred' (λ w'' _ → eqTypes (uni (pred n)) w'' a b) e'))
-        aw w' e' z at eqt (c₁ , c₂) = Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' z x → z) ib
-          where
-            ib : inbar w' (λ w'' _ → eqTypes (uni (pred n)) w'' a b)
-            ib rewrite isu = eqInType-⇛-UNIV n w' A B a b c₁ c₂ z eqt
+        ib : inbar w' (λ w'' _ → eqTypes (uni m) w'' a b)
+        ib = eqInType-⇛-UNIV m n p w' A B a b (⇛-mon e' d₁) (⇛-mon e' d₂) z eqt
 
-    p : 0 < n
-    p = lower (Bar.inBar-const inOpenBar-Bar (Bar.inBarFunc inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar i aw j) y))
-      where
-        aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) → atbar i w' e' z
-                             → eqInType u w' z a b
-                             → A #⇛ #UNIV n at w' × B #⇛ #UNIV n at w'
-                             → Lift (lsuc Level.zero) (0 < n))
-        aw w' e' z at eqi' (c₁ , c₂) rewrite isu = lift (eqInType-⇛-UNIV->0 n w' A B a b c₁ c₂ z eqi')
-
-
-    d : eqInType u w (EQTUNIV x) a b
-    d = is-uni→eqInType-EQTUNIV (n , isu) x (inbar-eqTypes-pred→eqInUnivi p c)
+    c : inbarEqTypes (uni m) w a b
+    c = Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar i aw j)
 
 eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTBAR x) =
   Bar.inBar'-change inOpenBar-Bar i x aw j
@@ -813,97 +835,125 @@ collapseBars-eqInType {u} isu {w} {A} {B} i ext {a} {b} j = {!!}
 
 
 
-eqInUnivi-mon : (n : ℕ) → mon (eqInUnivi n)
+{--eqInUnivi-mon : (n : ℕ) → mon (eqInUnivi n)
 eqInUnivi-mon (suc n) {a} {b} {w} eqi w' e' =
-  Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' z → z) (↑inbar eqi e')
+  Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' z → z) (↑inbar eqi e')--}
+
+
+
+uniUpTo-mon : {n i : ℕ} {p : i < n} → mon (uniUpTo n i p)
+uniUpTo-mon {suc n} {i} {p} {w} eqt w' e with i <? n
+... | yes q = uniUpTo-mon {n} {i} {q} {w} eqt w' e
+... | no q = Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' z → z) (↑inbar eqt e)
+
+
+uniUpTo→inbarEqTypes : {i n : ℕ} {p : i < n} {w : 𝕎·} {a b : CTerm}
+                        → uniUpTo n i p w a b
+                        → inbarEqTypes (uni i) w a b
+uniUpTo→inbarEqTypes {i} {suc n} {p} {w} {a} {b} eqi with i <? n
+... | yes q = uniUpTo→inbarEqTypes {i} {n} {q} {w} {a} {b} eqi
+... | no q = d
+  where
+    e : n ≡ i
+    e = ≤-s≤s-≡ i n (s≤s-inj p) (≮⇒≥ λ z → q (s≤s-inj z))
+
+    d : inbarEqTypes (uni i) w a b
+    d rewrite sym e = eqi
+
+
+
+inbarEqTypes→uniUpTo : {i n : ℕ} {p : i < n} {w : 𝕎·} {a b : CTerm}
+                        → inbarEqTypes (uni i) w a b
+                        → uniUpTo n i p w a b
+inbarEqTypes→uniUpTo {i} {suc n} {p} {w} {a} {b} eqi with i <? n
+... | yes q = inbarEqTypes→uniUpTo {i} {n} {q} {w} {a} {b} eqi
+... | no q = d
+  where
+    e : n ≡ i
+    e = ≤-s≤s-≡ i n (s≤s-inj p) (≮⇒≥ λ z → q (s≤s-inj z))
+
+    d : inbarEqTypes (uni n) w a b
+    d rewrite e = eqi
+
+
+
+uniUpTo-<irr : {i n : ℕ} {p q : i < n} {w : 𝕎·} {a b : CTerm}
+               → uniUpTo n i p w a b
+               → uniUpTo n i q w a b
+uniUpTo-<irr {i} {n} {p} {q} {w} {a} {b} e = inbarEqTypes→uniUpTo {i} {n} {q} (uniUpTo→inbarEqTypes {i} {n} {p} e)
 
 
 
 
-eqInType-u : {n : ℕ} {w : 𝕎·} {A B : CTerm}
-             (i : inbar w (λ w' _ → A #⇛ (#UNIV n) at w' × B #⇛ (#UNIV n) at w'))
+eqInType-u : {i n : ℕ} (p : i < n) {w : 𝕎·} {A B : CTerm}
+             (c₁ : A #⇛ (#UNIV i) at w)
+             (c₂ : B #⇛ (#UNIV i) at w)
              (eqt : eqTypes (uni n) w A B)
              (a b : CTerm)
-             (eqi : eqInUnivi n w a b)
+             (eqi : uniUpTo n i p w a b)
              → eqInType (uni n) w eqt a b
 {-# TERMINATING #-}
-eqInType-u {n} {w} {A} {B} i (EQTNAT x x₁) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqNAT (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u {n} {w} {A} {B} i (EQTQNAT x x₁) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqQNAT (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u {n} {w} {A} {B} i (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqLT (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u {n} {w} {A} {B} i (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqQLT (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u {n} {w} {A} {B} i (EQTFREE x x₁) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqFREE (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u {n} {w} {A} {B} i (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqPI (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u {n} {w} {A} {B} i (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqSUM (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u {n} {w} {A} {B} i (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqSET (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u {n} {w} {A} {B} i (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqEQ (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u {n} {w} {A} {B} i (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqUNION (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u {n} {w} {A} {B} i (EQTSQUASH A1 A2 x x₁ eqta exta) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqTSQUASH (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
---eqInType-u {n} {w} {A} {B} i (EQTDUM A1 A2 x x₁ eqtA) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqDUM (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u {n} {w} {A} {B} i (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqFFDEFS (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u {n} {w} {A} {B} i (EQTUNIV x) a b eqi = eqi
-eqInType-u {n} {w} {A} {B} i (EQTBAR x) a b eqi = c
+eqInType-u {i} {n} p {w} {A} {B} c₁ c₂ (EQTNAT x x₁) a b eqi = ⊥-elim (UNIVneqNAT (⇛-val-det tt tt c₁ x))
+eqInType-u {i} {n} p {w} {A} {B} c₁ c₂ (EQTQNAT x x₁) a b eqi = ⊥-elim (UNIVneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-u {i} {n} p {w} {A} {B} c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) a b eqi = ⊥-elim (UNIVneqLT (⇛-val-det tt tt c₁ x))
+eqInType-u {i} {n} p {w} {A} {B} c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) a b eqi = ⊥-elim (UNIVneqQLT (⇛-val-det tt tt c₁ x))
+eqInType-u {i} {n} p {w} {A} {B} c₁ c₂ (EQTFREE x x₁) a b eqi = ⊥-elim (UNIVneqFREE (⇛-val-det tt tt c₁ x))
+eqInType-u {i} {n} p {w} {A} {B} c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (UNIVneqPI (⇛-val-det tt tt c₁ x))
+eqInType-u {i} {n} p {w} {A} {B} c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (UNIVneqSUM (⇛-val-det tt tt c₁ x))
+eqInType-u {i} {n} p {w} {A} {B} c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (UNIVneqSET (⇛-val-det tt tt c₁ x))
+eqInType-u {i} {n} p {w} {A} {B} c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) a b eqi = ⊥-elim (UNIVneqEQ (⇛-val-det tt tt c₁ x))
+eqInType-u {i} {n} p {w} {A} {B} c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (UNIVneqUNION (⇛-val-det tt tt c₁ x))
+eqInType-u {i} {n} p {w} {A} {B} c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqta exta) a b eqi = ⊥-elim (UNIVneqTSQUASH (⇛-val-det tt tt c₁ x))
+--eqInType-u {i} {n} p {w} {A} {B} c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqDUM (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
+eqInType-u {i} {n} p {w} {A} {B} c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) a b eqi = ⊥-elim (UNIVneqFFDEFS (⇛-val-det tt tt c₁ x))
+eqInType-u {i} {n} p {w} {A} {B} c₁ c₂ (EQTUNIV m q d₁ d₂) a b eqi rewrite UNIVinj (⇛-val-det tt tt c₁ d₁) = uniUpTo-<irr {m} {n} {p} {q} eqi
+eqInType-u {i} {n} p {w} {A} {B} c₁ c₂ (EQTBAR x) a b eqi = c
   where
     c : inbar' w x (λ w' _ (z : eqTypes (uni n) w' A B) → eqInType (uni n) w' z a b)
     c = Bar.∀𝕎-inBar-inBar' inOpenBar-Bar x aw
       where
         aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni n) w' A B) (at : atbar x w' e' z) → eqInType (uni n) w' z a b)
-        aw w' e' equ at = eqInType-u i' equ a b (eqInUnivi-mon n eqi w' e')
-          where
-            i' : inbar w' (λ w' _ → A #⇛ (#UNIV n) at w' × B #⇛ (#UNIV n) at w')
-            i' = ↑inbar i e'
+        aw w' e' equ at = eqInType-u p (⇛-mon e' c₁) (⇛-mon e' c₂) equ a b (uniUpTo-mon {n} {i} {p} eqi w' e')
 
 
 
 
-eqInType-u-rev : {n : ℕ} {w : 𝕎·} {A B : CTerm}
-                 (i : inbar w (λ w' _ → A #⇛ (#UNIV n) at w' × B #⇛ (#UNIV n) at w'))
+eqInType-u-rev : {i n : ℕ} (p : i < n) {w : 𝕎·} {A B : CTerm}
+                 (c₁ : A #⇛ (#UNIV i) at w)
+                 (c₂ : B #⇛ (#UNIV i) at w)
                  (eqt : eqTypes (uni n) w A B)
                  (a b : CTerm)
                  (eqi : eqInType (uni n) w eqt a b)
-                 → eqInUnivi n w a b
+                 → uniUpTo n i p w a b
 {-# TERMINATING #-}
-eqInType-u-rev {n} {w} {A} {B} i (EQTNAT x x₁) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqNAT (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u-rev {n} {w} {A} {B} i (EQTQNAT x x₁) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqQNAT (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u-rev {n} {w} {A} {B} i (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqLT (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u-rev {n} {w} {A} {B} i (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqQLT (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u-rev {n} {w} {A} {B} i (EQTFREE x x₁) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqFREE (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u-rev {n} {w} {A} {B} i (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqPI (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u-rev {n} {w} {A} {B} i (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqSUM (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u-rev {n} {w} {A} {B} i (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqSET (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u-rev {n} {w} {A} {B} i (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqEQ (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u-rev {n} {w} {A} {B} i (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqUNION (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u-rev {n} {w} {A} {B} i (EQTSQUASH A1 A2 x x₁ eqta exta) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqTSQUASH (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
---eqInType-u-rev {n} {w} {A} {B} i (EQTDUM A1 A2 x x₁ eqtA) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqDUM (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u-rev {n} {w} {A} {B} i (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqFFDEFS (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
-eqInType-u-rev {n} {w} {A} {B} i (EQTUNIV x) a b eqi = eqi
-eqInType-u-rev {0} {w} {A} {B} i (EQTBAR x) a b eqi =
-  Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar x aw eqi)
+eqInType-u-rev {i} {n} p {w} {A} {B} c₁ c₂ (EQTNAT x x₁) a b eqi = ⊥-elim (UNIVneqNAT (⇛-val-det tt tt c₁ x))
+eqInType-u-rev {i} {n} p {w} {A} {B} c₁ c₂ (EQTQNAT x x₁) a b eqi = ⊥-elim (UNIVneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-u-rev {i} {n} p {w} {A} {B} c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) a b eqi = ⊥-elim (UNIVneqLT (⇛-val-det tt tt c₁ x))
+eqInType-u-rev {i} {n} p {w} {A} {B} c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) a b eqi = ⊥-elim (UNIVneqQLT (⇛-val-det tt tt c₁ x))
+eqInType-u-rev {i} {n} p {w} {A} {B} c₁ c₂ (EQTFREE x x₁) a b eqi = ⊥-elim (UNIVneqFREE (⇛-val-det tt tt c₁ x))
+eqInType-u-rev {i} {n} p {w} {A} {B} c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (UNIVneqPI (⇛-val-det tt tt c₁ x))
+eqInType-u-rev {i} {n} p {w} {A} {B} c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (UNIVneqSUM (⇛-val-det tt tt c₁ x))
+eqInType-u-rev {i} {n} p {w} {A} {B} c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (UNIVneqSET (⇛-val-det tt tt c₁ x))
+eqInType-u-rev {i} {n} p {w} {A} {B} c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) a b eqi = ⊥-elim (UNIVneqEQ (⇛-val-det tt tt c₁ x))
+eqInType-u-rev {i} {n} p {w} {A} {B} c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (UNIVneqUNION (⇛-val-det tt tt c₁ x))
+eqInType-u-rev {i} {n} p {w} {A} {B} c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqta exta) a b eqi = ⊥-elim (UNIVneqTSQUASH (⇛-val-det tt tt c₁ x))
+--eqInType-u-rev {i} {n} p {w} {A} {B} c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) a b eqi = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (c₁ , c₂) → lift (UNIVneqDUM (⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
+eqInType-u-rev {i} {n} p {w} {A} {B} c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) a b eqi = ⊥-elim (UNIVneqFFDEFS (⇛-val-det tt tt c₁ x))
+eqInType-u-rev {i} {n} p {w} {A} {B} c₁ c₂ (EQTUNIV m q d₁ d₂) a b eqi rewrite UNIVinj (⇛-val-det tt tt c₁ d₁) = uniUpTo-<irr {m} {n} {q} {p} eqi
+eqInType-u-rev {i} {n} p {w} {A} {B} c₁ c₂ (EQTBAR x) a b eqi = inbarEqTypes→uniUpTo {i} {n} {p} {w} {a} {b} c
   where
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni 0) w' A B) (at : atbar x w' e' z)
-                         → eqInType (uni 0) w' z a b
-                         → Lift (lsuc Level.zero) ⊥)
-    aw w' e' z at eqi' = eqInType-u-rev i' z a b eqi'
-      where
-        i' : inbar w' (λ w' _ → A #⇛ (#UNIV 0) at w' × B #⇛ (#UNIV 0) at w')
-        i' = ↑inbar i e'
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni n) w' A B) (at : atbar x w' e' z)
+                         → eqInType (uni n) w' z a b
+                         → inbar w' (↑wPred' (λ w'' e → eqTypes (uni i) w'' a b) e'))
+    aw w' e' z at eqi' = Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w1 e1 eqt' z → eqt')
+                                          (uniUpTo→inbarEqTypes {i} {n} {p} {w'} {a} {b} (eqInType-u-rev p (⇛-mon e' c₁) (⇛-mon e' c₂) z a b eqi'))
 
-eqInType-u-rev {suc n} {w} {A} {B} i (EQTBAR x) a b eqi =
-  Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar x aw eqi)
-  where
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni (suc n)) w' A B) (at : atbar x w' e' z)
-                         → eqInType (uni (suc n)) w' z a b
-                         → inbar w' (↑wPred' (λ w'' e → eqTypes (uni n) w'' a b) e'))
-    aw w' e' z at eqi' = Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w1 e1 eqt' z → eqt') c
-      where
-        i' : inbar w' (λ w' _ → A #⇛ (#UNIV (suc n )) at w' × B #⇛ (#UNIV (suc n)) at w')
-        i' = ↑inbar i e'
-
-        c : eqInUnivi (suc n) w' a b
-        c = eqInType-u-rev i' z a b eqi'
+    c : inbarEqTypes (uni i) w a b
+    c = Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar x aw eqi)
 
 
 
-eqInType-u-rev2 : {u : univs} {w : 𝕎·} {A B : CTerm}
+{--eqInType-u-rev2 : {u : univs} {w : 𝕎·} {A B : CTerm}
                   (isu : is-uni u)
                   (i : fst (snd u) w A B)
                   (eqt : eqTypes u w A B)
@@ -911,14 +961,18 @@ eqInType-u-rev2 : {u : univs} {w : 𝕎·} {A B : CTerm}
                   (eqi : eqInType u w eqt a b)
                   → eqInType u w (EQTUNIV i) a b
 eqInType-u-rev2 {u} {w} {A} {B} (n , isu) i eqt a b eqi rewrite isu = eqInType-u-rev i eqt a b eqi
+--}
 
 
 
 
-eqInTypeExt-EQTUNIV : {n : ℕ} {w : 𝕎·} {A B : CTerm} (x : eqUnivi n w A B)
-                      → eqInTypeExt {uni n} {w} {A} {B} (EQTUNIV x)
-eqInTypeExt-EQTUNIV {n} {w} {A} {B} x eqt' a b =
-  (eqInType-u x eqt' a b) , (eqInType-u-rev x eqt' a b)
+eqInTypeExt-EQTUNIV : {n : ℕ} {w : 𝕎·} {A B : CTerm}
+                      (i : ℕ) (p : i < n)
+                      (c₁ : A #⇛ #UNIV i at w)
+                      (c₂ : B #⇛ #UNIV i at w)
+                      → eqInTypeExt {uni n} {w} {A} {B} (EQTUNIV i p c₁ c₂)
+eqInTypeExt-EQTUNIV {n} {w} {A} {B} i p c₁ c₂ eqt' a b =
+  eqInType-u p c₁ c₂ eqt' a b , eqInType-u-rev p c₁ c₂ eqt' a b
 
 
 
@@ -953,7 +1007,7 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTNAT x x₁) eqi =
   Bar.∀𝕎-inBar-inBar' inOpenBar-Bar i aw
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z) → eqInType u w' z a b)
-    aw w' e' z at = eqInType-⇛-NAT-rev u (is-uni→is-universe isu) w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
+    aw w' e' z at = eqInType-⇛-NAT-rev u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
       where
         ei : inbar w' (λ w'' e → #strongMonEq w'' a b)
         ei = ↑inbar eqi e'
@@ -962,7 +1016,7 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTQNAT x x₁) eqi =
   Bar.∀𝕎-inBar-inBar' inOpenBar-Bar i aw
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z) → eqInType u w' z a b)
-    aw w' e' z at = eqInType-⇛-QNAT-rev u (is-uni→is-universe isu) w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
+    aw w' e' z at = eqInType-⇛-QNAT-rev u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
       where
         ei : inbar w' (λ w'' e → #weakMonEq w'' a b)
         ei = ↑inbar eqi e'
@@ -971,7 +1025,7 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTLT a1 a2 b1 b2 x x₁ x�
   Bar.∀𝕎-inBar-inBar' inOpenBar-Bar i aw
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z) → eqInType u w' z a b)
-    aw w' e' z at = eqInType-⇛-LT-rev u (is-uni→is-universe isu) w' A B a1 b1 a2 b2 a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
+    aw w' e' z at = eqInType-⇛-LT-rev u w' A B a1 b1 a2 b2 a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
       where
         ei : inbar w' (λ w'' e → #lift-<NUM-pair w'' a1 b1)
         ei = ↑inbar eqi e'
@@ -980,7 +1034,7 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTQLT a1 a2 b1 b2 x x₁ x�
   Bar.∀𝕎-inBar-inBar' inOpenBar-Bar i aw
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z) → eqInType u w' z a b)
-    aw w' e' z at = eqInType-⇛-QLT-rev u (is-uni→is-universe isu) w' A B a1 b1 a2 b2 a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
+    aw w' e' z at = eqInType-⇛-QLT-rev u w' A B a1 b1 a2 b2 a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
       where
         ei : inbar w' (λ w'' e → #lift-<NUM-pair w'' a1 b1)
         ei = ↑inbar eqi e'
@@ -989,7 +1043,7 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTFREE x x₁) eqi =
   Bar.∀𝕎-inBar-inBar' inOpenBar-Bar i aw
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z) → eqInType u w' z a b)
-    aw w' e' z at = eqInType-⇛-FREE-rev u (is-uni→is-universe isu) w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
+    aw w' e' z at = eqInType-⇛-FREE-rev u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
       where
         ei : inbar w' (λ w'' e → #⇛to-same-CS w'' a b)
         ei = ↑inbar eqi e'
@@ -1000,7 +1054,7 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTPI A1 B1 A2 B2 x x₁ eqt
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z) → eqInType u w' z a b)
     aw w' e' z at =
       eqInType-⇛-PI-rev2
-        u (is-uni→is-universe isu) w' A B A1 A2 B1 B2 a b
+        u w' A B A1 A2 B1 B2 a b
         (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb)
         (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')
         (⇛-mon e' x) (⇛-mon e' x₁) z (<Type-EQTBAR-eqInTypeExt at ind) ib
@@ -1018,7 +1072,7 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTSUM A1 B1 A2 B2 x x₁ eq
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z) → eqInType u w' z a b)
     aw w' e' z at =
       eqInType-⇛-SUM-rev2
-        u (is-uni→is-universe isu) w' A B A1 A2 B1 B2 a b
+        u w' A B A1 A2 B1 B2 a b
         (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb)
         (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')
         (⇛-mon e' x) (⇛-mon e' x₁) z (<Type-EQTBAR-eqInTypeExt at ind) ib
@@ -1036,7 +1090,7 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTSET A1 B1 A2 B2 x x₁ eq
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z) → eqInType u w' z a b)
     aw w' e' z at =
       eqInType-⇛-SET-rev2
-        u (is-uni→is-universe isu) w' A B A1 A2 B1 B2 a b
+        u w' A B A1 A2 B1 B2 a b
         (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb)
         (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')
         (⇛-mon e' x) (⇛-mon e' x₁) z (<Type-EQTBAR-eqInTypeExt at ind) ib
@@ -1054,7 +1108,7 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTEQ a1 b1 a2 b2 A₁ B₁ 
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z) → eqInType u w' z a b)
     aw w' e' z at =
       eqInType-⇛-EQ-rev2
-        u (is-uni→is-universe isu) w' A B A₁ B₁ a1 b1 a2 b2 a b
+        u w' A B A₁ B₁ a1 b1 a2 b2 a b
         (∀𝕎-mon e' eqta)
         (wPredExtIrr-eqInType-mon eqta exta w' e')
         (⇛-mon e' x) (⇛-mon e' x₁) z (<Type-EQTBAR-eqInTypeExt at ind) ib
@@ -1072,7 +1126,7 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTUNION A1 B1 A2 B2 x x₁ 
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z) → eqInType u w' z a b)
     aw w' e' z at =
       eqInType-⇛-UNION-rev2
-        u (is-uni→is-universe isu) w' A B A1 A2 B1 B2 a b
+        u w' A B A1 A2 B1 B2 a b
         (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb)
         (wPredExtIrr-eqInType-mon eqta exta w' e')
         (wPredExtIrr-eqInType-mon eqtb extb w' e')
@@ -1091,7 +1145,7 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTSQUASH A1 A2 x x₁ eqta 
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z) → eqInType u w' z a b)
     aw w' e' z at =
       eqInType-⇛-TSQUASH-rev2
-        u (is-uni→is-universe isu) w' A B A1 A2 a b
+        u w' A B A1 A2 a b
         (∀𝕎-mon e' eqta)
         (wPredExtIrr-eqInType-mon eqta exta w' e')
         (⇛-mon e' x) (⇛-mon e' x₁) z (<Type-EQTBAR-eqInTypeExt at ind) ib
@@ -1110,7 +1164,7 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQFFDEFS A1 A2 x1 x2 x x₁ 
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z) → eqInType u w' z a b)
     aw w' e' z at =
       eqInType-⇛-FFDEFS-rev2
-        u (is-uni→is-universe isu) w' A B A1 A2 x1 x2 a b
+        u w' A B A1 A2 x1 x2 a b
         (∀𝕎-mon e' eqta)
         (wPredExtIrr-eqInType-mon eqta exta w' e')
         (⇛-mon e' x) (⇛-mon e' x₁) z (<Type-EQTBAR-eqInTypeExt at ind) ib
@@ -1122,8 +1176,8 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQFFDEFS A1 A2 x1 x2 x x₁ 
         ib : inbar w' (λ w'' e → FFDEFSeq x1 (eqInType u w'' (∀𝕎-mon e' eqta w'' e)) w'' a b)
         ib = Bar.∀𝕎-inBarFunc inOpenBar-Bar aw' (↑inbar eqi e')
 
-eqInType-ext-bar-rev {u} (n , isu) {w} {A} {B} i ind a b (EQTUNIV x) eqi =
-  Bar.∀𝕎-inBar-inBar' inOpenBar-Bar i aw
+eqInType-ext-bar-rev {u} (n , isu) {w} {A} {B} i ind a b (EQTUNIV m p c₁ c₂) eqi = {!!}
+{--  Bar.∀𝕎-inBar-inBar' inOpenBar-Bar i aw
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z) → eqInType u w' z a b)
     aw w' e' z at = c z
@@ -1138,7 +1192,7 @@ eqInType-ext-bar-rev {u} (n , isu) {w} {A} {B} i ind a b (EQTUNIV x) eqi =
             eqi'' rewrite isu = eqInUnivi-mon n eqi w' e'
 
         c : (z : eqTypes u w' A B) → eqInType u w' z a b
-        c z rewrite isu = eqi' z
+        c z rewrite isu = eqi' z--}
 
 eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTBAR x) eqi =
   Bar.inBar'-change inOpenBar-Bar x i aw eqi
@@ -1155,28 +1209,28 @@ eqInType-ext0 : {u : univs} (isu : is-uni u) {w : 𝕎·} {A B : CTerm} (eqt : e
                 → ({w' : 𝕎·} {A' B' : CTerm} (eqt' : eqTypes u w' A' B') → <Type u eqt' eqt → eqInTypeExt eqt')
                 → eqInTypeExt eqt
 eqInType-ext0 {u} isu {w} {A} {B} (EQTNAT x x₁) ind =
-  λ eqt2 a b → eqInType-⇛-NAT-rev u (is-uni→is-universe isu) w A B a b x x₁ eqt2 ,
-                eqInType-⇛-NAT u (is-uni→is-universe isu) w A B a b x x₁ eqt2
+  λ eqt2 a b → eqInType-⇛-NAT-rev u w A B a b x x₁ eqt2 ,
+                eqInType-⇛-NAT u w A B a b x x₁ eqt2
 
 eqInType-ext0 {u} isu {w} {A} {B} (EQTQNAT x x₁) ind =
-  λ eqt2 a b → eqInType-⇛-QNAT-rev u (is-uni→is-universe isu) w A B a b x x₁ eqt2 ,
-                eqInType-⇛-QNAT u (is-uni→is-universe isu) w A B a b x x₁ eqt2
+  λ eqt2 a b → eqInType-⇛-QNAT-rev u w A B a b x x₁ eqt2 ,
+                eqInType-⇛-QNAT u w A B a b x x₁ eqt2
 
 eqInType-ext0 {u} isu {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind =
-  λ eqt2 a b → eqInType-⇛-LT-rev u (is-uni→is-universe isu) w A B a1 b1 a2 b2 a b x x₁ eqt2 ,
-                eqInType-⇛-LT u (is-uni→is-universe isu) w A B a1 b1 a2 b2 a b x x₁ eqt2
+  λ eqt2 a b → eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b x x₁ eqt2 ,
+                eqInType-⇛-LT u w A B a1 b1 a2 b2 a b x x₁ eqt2
 
 eqInType-ext0 {u} isu {w} {A} {B} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind =
-  λ eqt2 a b → eqInType-⇛-QLT-rev u (is-uni→is-universe isu) w A B a1 b1 a2 b2 a b x x₁ eqt2 ,
-                eqInType-⇛-QLT u (is-uni→is-universe isu) w A B a1 b1 a2 b2 a b x x₁ eqt2
+  λ eqt2 a b → eqInType-⇛-QLT-rev u w A B a1 b1 a2 b2 a b x x₁ eqt2 ,
+                eqInType-⇛-QLT u w A B a1 b1 a2 b2 a b x x₁ eqt2
 
 eqInType-ext0 {u} isu {w} {A} {B} (EQTFREE x x₁) ind =
-  λ eqt2 a b → eqInType-⇛-FREE-rev u (is-uni→is-universe isu) w A B a b x x₁ eqt2 ,
-                eqInType-⇛-FREE u (is-uni→is-universe isu) w A B a b x x₁ eqt2
+  λ eqt2 a b → eqInType-⇛-FREE-rev u w A B a b x x₁ eqt2 ,
+                eqInType-⇛-FREE u w A B a b x x₁ eqt2
 
 eqInType-ext0 {u} isu {w} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind =
-  λ eqt2 a b → eqInType-⇛-PI-rev u (is-uni→is-universe isu) w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2 ,
-                eqInType-⇛-PI u (is-uni→is-universe isu) w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2
+  λ eqt2 a b → eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2 ,
+                eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2
   where
     inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
     inda w1 e1 = ind (eqta w1 e1) (<Type1 _ _ (<TypePIa w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb w1 e1))
@@ -1185,8 +1239,8 @@ eqInType-ext0 {u} isu {w} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
     indb w1 e1 a₁ a₂ eqa = ind (eqtb w1 e1 a₁ a₂ eqa) (<Type1 _ _ (<TypePIb w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb w1 e1 a₁ a₂ eqa))
 
 eqInType-ext0 {u} isu {w} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind =
-  λ eqt2 a b → eqInType-⇛-SUM-rev u (is-uni→is-universe isu) w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2 ,
-                eqInType-⇛-SUM u (is-uni→is-universe isu) w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2
+  λ eqt2 a b → eqInType-⇛-SUM-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2 ,
+                eqInType-⇛-SUM u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2
   where
     inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
     inda w1 e1 = ind (eqta w1 e1) (<Type1 _ _ (<TypeSUMa w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb w1 e1))
@@ -1195,8 +1249,8 @@ eqInType-ext0 {u} isu {w} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb
     indb w1 e1 a₁ a₂ eqa = ind (eqtb w1 e1 a₁ a₂ eqa) (<Type1 _ _ (<TypeSUMb w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb w1 e1 a₁ a₂ eqa))
 
 eqInType-ext0 {u} isu {w} {A} {B} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind =
-  λ eqt2 a b → eqInType-⇛-SET-rev u (is-uni→is-universe isu) w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2 ,
-                eqInType-⇛-SET u (is-uni→is-universe isu) w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2
+  λ eqt2 a b → eqInType-⇛-SET-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2 ,
+                eqInType-⇛-SET u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2
   where
     inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
     inda w1 e1 = ind (eqta w1 e1) (<Type1 _ _ (<TypeSETa w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb w1 e1))
@@ -1205,15 +1259,15 @@ eqInType-ext0 {u} isu {w} {A} {B} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb
     indb w1 e1 a₁ a₂ eqa = ind (eqtb w1 e1 a₁ a₂ eqa) (<Type1 _ _ (<TypeSETb w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb w1 e1 a₁ a₂ eqa))
 
 eqInType-ext0 {u} isu {w} {A} {B} (EQTEQ a1 b1 a2 b2 A1 B1 x x₁ eqta exta eqt1 eqt2) ind =
-  λ eqt2 a b → eqInType-⇛-EQ-rev u (is-uni→is-universe isu) w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda x x₁ eqt2 ,
-                eqInType-⇛-EQ u (is-uni→is-universe isu) w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda x x₁ eqt2
+  λ eqt2 a b → eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda x x₁ eqt2 ,
+                eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda x x₁ eqt2
   where
     inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
     inda w1 e1 = ind (eqta w1 e1) (<Type1 _ _ (<TypeEQ w A B a1 b1 a2 b2 A1 B1 x x₁ eqta exta eqt1 eqt2 w1 e1))
 
 eqInType-ext0 {u} isu {w} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind =
-  λ eqt2 a b → eqInType-⇛-UNION-rev u (is-uni→is-universe isu) w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2 ,
-                eqInType-⇛-UNION u (is-uni→is-universe isu) w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2
+  λ eqt2 a b → eqInType-⇛-UNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2 ,
+                eqInType-⇛-UNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2
   where
     inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
     inda w1 e1 = ind (eqta w1 e1) (<Type1 _ _ (<TypeUNIONl w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb w1 e1))
@@ -1222,21 +1276,21 @@ eqInType-ext0 {u} isu {w} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta ex
     indb w1 e1 = ind (eqtb w1 e1) (<Type1 _ _ (<TypeUNIONr w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb w1 e1))
 
 eqInType-ext0 {u} isu {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqta exta) ind =
-  λ eqt2 a b → eqInType-⇛-TSQUASH-rev u (is-uni→is-universe isu) w A B A1 A2 a b eqta exta inda x x₁ eqt2 ,
-                eqInType-⇛-TSQUASH u (is-uni→is-universe isu) w A B A1 A2 a b eqta exta inda x x₁ eqt2
+  λ eqt2 a b → eqInType-⇛-TSQUASH-rev u w A B A1 A2 a b eqta exta inda x x₁ eqt2 ,
+                eqInType-⇛-TSQUASH u w A B A1 A2 a b eqta exta inda x x₁ eqt2
   where
     inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
     inda w1 e1 = ind (eqta w1 e1) (<Type1 _ _ (<TypeSQUASH w A B A1 A2 x x₁ eqta exta w1 e1))
 
 --eqInType-ext0 {u} isu {w} {A} {B} (EQTDUM A1 A2 x x₁ eqta) ind = {!!}
 eqInType-ext0 {u} isu {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) ind =
-  λ eqt2 a b → eqInType-⇛-FFDEFS-rev u (is-uni→is-universe isu) w A B A1 A2 x1 x2 a b eqta exta inda x x₁ eqt2 ,
-                eqInType-⇛-FFDEFS u (is-uni→is-universe isu) w A B A1 A2 x1 x2 a b eqta exta inda x x₁ eqt2
+  λ eqt2 a b → eqInType-⇛-FFDEFS-rev u w A B A1 A2 x1 x2 a b eqta exta inda x x₁ eqt2 ,
+                eqInType-⇛-FFDEFS u w A B A1 A2 x1 x2 a b eqta exta inda x x₁ eqt2
   where
     inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
     inda w1 e1 = ind (eqta w1 e1) (<Type1 _ _ (<TypeFFDEFS w A B A1 A2 x1 x2 x x₁ eqta exta eqx w1 e1))
 
-eqInType-ext0 {u} (n , isu) {w} {A} {B} (EQTUNIV x) ind rewrite isu = eqInTypeExt-EQTUNIV x
+eqInType-ext0 {u} (n , isu) {w} {A} {B} (EQTUNIV m p c₁ c₂) ind rewrite isu = {!!} --eqInTypeExt-EQTUNIV x
 eqInType-ext0 {u} isu {w} {A} {B} (EQTBAR x) ind =
   λ eqt' a b → (λ ei → eqInType-ext-bar {u} isu x ind a b ei eqt') ,
                 (λ ei → eqInType-ext-bar-rev {u} isu x ind a b eqt' ei)
@@ -1244,7 +1298,7 @@ eqInType-ext0 {u} isu {w} {A} {B} (EQTBAR x) ind =
 
 
 eqInType-ext : {u : univs} (isu : is-uni u) {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → eqInTypeExt eqt
-eqInType-ext {u} isu {w} {A} {B} eqt = ind<Type (is-uni→mon isu) eqInTypeExt (eqInType-ext0 isu) eqt
+eqInType-ext {u} isu {w} {A} {B} eqt = ind<Type eqInTypeExt (eqInType-ext0 isu) eqt
 
 
 
@@ -1453,7 +1507,7 @@ local-eqInType2 u isu w A B a b (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) i j 
                                  → (x₂ : w ⊑· w'') → FFDEFSeq x1 (eqInType u w'' (eqta w'' x₂)) w'' a b)
         aw' w1 e1 h x₂ = FFDEFSeq-ext {u} {w} {A1} {A2} {x1} {eqta} {_} {_} {_} {a} {b} exta h
 
-local-eqInType2 u (0 , isu) w A B a b (EQTUNIV x) i j =
+local-eqInType2 u (0 , isu) w A B a b (EQTUNIV m p d₁ d₂) i j = {!!} {--
   ⊥-elim (n≮n 0 p)
   where
     y : inbar w (λ w' _ → A #⇛ (#UNIV 0) at w' × B #⇛ (#UNIV 0) at w')
@@ -1466,10 +1520,10 @@ local-eqInType2 u (0 , isu) w A B a b (EQTUNIV x) i j =
                              → eqInType u w' z a b
                              → A #⇛ #UNIV 0 at w' × B #⇛ #UNIV 0 at w'
                              → Lift (lsuc Level.zero) (0 < 0))
-        aw w' e' z at eqi' (c₁ , c₂) rewrite isu = lift (eqInType-⇛-UNIV->0 0 w' A B a b c₁ c₂ z eqi')
+        aw w' e' z at eqi' (c₁ , c₂) rewrite isu = lift (eqInType-⇛-UNIV->0 0 w' A B a b c₁ c₂ z eqi')--}
 
-local-eqInType2 u (suc n , isu) w A B a b (EQTUNIV x) i j =
-  is-uni→eqInType-EQTUNIV (suc n , isu) x eqi
+local-eqInType2 u (suc n , isu) w A B a b (EQTUNIV m p c₁ c₂) i j = {!!}
+{--  is-uni→eqInType-EQTUNIV (suc n , isu) x eqi
   where
     equ : eqUnivi (suc n) w A B
     equ = is-uni→eqUnivi (suc n , isu) x
@@ -1483,7 +1537,7 @@ local-eqInType2 u (suc n , isu) w A B a b (EQTUNIV x) i j =
         aw w' e' z at eqi = Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w1 e1 et z → et) equi
           where
             equi : eqInUnivi (suc n) w' a b
-            equi = eqInType-u-rev (↑inbar equ e') (fst (is-uni→eqInType (suc n , isu) z eqi)) a b (snd (is-uni→eqInType (suc n , isu) z eqi))
+            equi = eqInType-u-rev (↑inbar equ e') (fst (is-uni→eqInType (suc n , isu) z eqi)) a b (snd (is-uni→eqInType (suc n , isu) z eqi))--}
 
 local-eqInType2 u isu w A B a b (EQTBAR x) i j =
   Bar.inBar'-change inOpenBar-Bar i x aw j
@@ -1586,38 +1640,38 @@ eqInType-mon : {u : univs} (isu : is-uni u) {w : 𝕎·} {A B : CTerm}
                → eqInType u w' eqt2 a b
 {-# TERMINATING #-}
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTNAT x x₁) eqt2 a b eqi =
-  eqInType-⇛-NAT-rev u (is-uni→is-universe isu) w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
+  eqInType-⇛-NAT-rev u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
   where
     ei : inbar w' (λ w'' e → #strongMonEq w'' a b)
     ei = ↑inbar eqi e'
 
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTQNAT x x₁) eqt2 a b eqi =
-  eqInType-⇛-QNAT-rev u (is-uni→is-universe isu) w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
+  eqInType-⇛-QNAT-rev u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
   where
     ei : inbar w' (λ w'' e → #weakMonEq w'' a b)
     ei = ↑inbar eqi e'
 
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) eqt2 a b eqi =
-  eqInType-⇛-LT-rev u (is-uni→is-universe isu) w' A B a1 b1 a2 b2 a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
+  eqInType-⇛-LT-rev u w' A B a1 b1 a2 b2 a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
   where
     ei : inbar w' (λ w'' e → #lift-<NUM-pair w'' a1 b1)
     ei = ↑inbar eqi e'
 
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) eqt2 a b eqi =
-  eqInType-⇛-QLT-rev u (is-uni→is-universe isu) w' A B a1 b1 a2 b2 a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
+  eqInType-⇛-QLT-rev u w' A B a1 b1 a2 b2 a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
   where
     ei : inbar w' (λ w'' e → #lift-<NUM-pair w'' a1 b1)
     ei = ↑inbar eqi e'
 
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTFREE x x₁) eqt2 a b eqi =
-  eqInType-⇛-FREE-rev u (is-uni→is-universe isu) w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
+  eqInType-⇛-FREE-rev u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
   where
     ei : inbar w' (λ w'' e → #⇛to-same-CS w'' a b)
     ei = ↑inbar eqi e'
 
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqt2 a b eqi =
   eqInType-⇛-PI-rev2
-    u (is-uni→is-universe isu) w' A B A1 A2 B1 B2 a b
+    u w' A B A1 A2 B1 B2 a b
     (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb)
     (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')
     (⇛-mon e' x) (⇛-mon e' x₁) eqt2 (λ eqt' lety → eqInType-ext isu eqt') ib
@@ -1631,7 +1685,7 @@ eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb ext
 
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqt2 a b eqi =
   eqInType-⇛-SUM-rev2
-    u (is-uni→is-universe isu) w' A B A1 A2 B1 B2 a b
+    u w' A B A1 A2 B1 B2 a b
     (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb)
     (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')
     (⇛-mon e' x) (⇛-mon e' x₁) eqt2 (λ eqt' lety → eqInType-ext isu eqt') ib
@@ -1645,7 +1699,7 @@ eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb ex
 
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqt2 a b eqi =
   eqInType-⇛-SET-rev2
-    u (is-uni→is-universe isu) w' A B A1 A2 B1 B2 a b
+    u w' A B A1 A2 B1 B2 a b
     (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb)
     (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')
     (⇛-mon e' x) (⇛-mon e' x₁) eqt2 (λ eqt' lety → eqInType-ext isu eqt') ib
@@ -1659,7 +1713,7 @@ eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb ex
 
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqta exta eqt1 eqt3) eqt2 a b eqi =
   eqInType-⇛-EQ-rev2
-    u (is-uni→is-universe isu) w' A B A₁ B₁ a1 b1 a2 b2 a b
+    u w' A B A₁ B₁ a1 b1 a2 b2 a b
     (∀𝕎-mon e' eqta)
     (wPredExtIrr-eqInType-mon eqta exta w' e')
     (⇛-mon e' x) (⇛-mon e' x₁) eqt2 (λ eqt' lety → eqInType-ext isu eqt') ib
@@ -1673,7 +1727,7 @@ eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqt
 
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqt2 a b eqi =
   eqInType-⇛-UNION-rev2
-    u (is-uni→is-universe isu) w' A B A1 A2 B1 B2 a b
+    u w' A B A1 A2 B1 B2 a b
     (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb)
     (wPredExtIrr-eqInType-mon eqta exta w' e')
     (wPredExtIrr-eqInType-mon eqtb extb w' e')
@@ -1688,7 +1742,7 @@ eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb 
 
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTSQUASH A1 A2 x x₁ eqta exta) eqt2 a b eqi =
   eqInType-⇛-TSQUASH-rev2
-    u (is-uni→is-universe isu) w' A B A1 A2 a b
+    u w' A B A1 A2 a b
     (∀𝕎-mon e' eqta)
     (wPredExtIrr-eqInType-mon eqta exta w' e')
     (⇛-mon e' x) (⇛-mon e' x₁) eqt2 (λ eqt' lety → eqInType-ext isu eqt') ib
@@ -1703,7 +1757,7 @@ eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTSQUASH A1 A2 x x₁ eqta exta) eqt2
 --eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTDUM A1 A2 x x₁ eqta) eqt2 a b eqi = {!!}
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) eqt2 a b eqi =
   eqInType-⇛-FFDEFS-rev2
-    u (is-uni→is-universe isu) w' A B A1 A2 x1 x2 a b
+    u w' A B A1 A2 x1 x2 a b
     (∀𝕎-mon e' eqta)
     (wPredExtIrr-eqInType-mon eqta exta w' e')
     (⇛-mon e' x) (⇛-mon e' x₁) eqt2 (λ eqt' lety → eqInType-ext isu eqt') ib
@@ -1715,8 +1769,8 @@ eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta 
     ib : inbar w' (λ w'' e → FFDEFSeq x1 (eqInType u w'' (∀𝕎-mon e' eqta w'' e)) w'' a b)
     ib = Bar.∀𝕎-inBarFunc inOpenBar-Bar aw (↑inbar eqi e')
 
-eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTUNIV x) eqt2 a b eqi =
-  is-uni-eqInType→ isu eqt2' eqi1'' eqt2
+eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTUNIV m p c₁ c₂) eqt2 a b eqi = {!!}
+{--  is-uni-eqInType→ isu eqt2' eqi1'' eqt2
   where
     eqt1 : eqUnivi (fst isu) w A B
     eqt1 = is-uni→eqUnivi isu x
@@ -1731,7 +1785,7 @@ eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTUNIV x) eqt2 a b eqi =
     eqt2' = is-uni→eqTypes isu eqt2
 
     eqi1'' : eqInType (uni (fst isu)) w' eqt2' a b
-    eqi1'' = eqInType-u (↑inbar eqt1 e') eqt2' a b eqi1'
+    eqi1'' = eqInType-u (↑inbar eqt1 e') eqt2' a b eqi1'--}
 
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTBAR x) eqt2 a b eqi =
   local-eqInType2 u isu w' A B a b eqt2 ib ib'
@@ -1778,7 +1832,7 @@ typeSysConds-BAR u isu w A B x ind =
         aw w1 e1 eqt at tsp = TSP.tsym tsp
 
     ttrans : eqTypesTrans u w A B
-    ttrans C eqt = typeSysConds-BAR-ttrans u (is-uni→mon isu) w A B C x ind eqt
+    ttrans C eqt = typeSysConds-BAR-ttrans u w A B C x ind eqt
 
     isym : eqInTypeSym u (EQTBAR x)
     isym a b eqi = Bar.inBar'-comb inOpenBar-Bar x aw ind eqi
@@ -1802,7 +1856,7 @@ typeSysConds-BAR u isu w A B x ind =
     iextl1 C eqt a b eqi = local-eqInType2 u isu w A C a b eqt j ei'
       where
         j : inbar w (λ w' e → eqTypes u w' A C)
-        j = Bar.∀𝕎-inBar inOpenBar-Bar (eqTypes-mon u (is-uni→mon isu) eqt)
+        j = Bar.∀𝕎-inBar inOpenBar-Bar (eqTypes-mon u eqt)
 
         aw : ∀𝕎 w (λ w' e' → (x₁ : eqTypes u w' A B) (x₂ : eqTypes u w' A C) (at₁ : atbar x w' e' x₁) (at₂ : atbar j w' e' x₂)
                              → TSP x₁ × eqInType u w' x₁ a b
@@ -1820,7 +1874,7 @@ typeSysConds-BAR u isu w A B x ind =
     iextl2 C eqt a b eqi = local-eqInType2 u isu w C A a b eqt j ei'
       where
         j : inbar w (λ w' e → eqTypes u w' C A)
-        j = Bar.∀𝕎-inBar inOpenBar-Bar (eqTypes-mon u (is-uni→mon isu) eqt)
+        j = Bar.∀𝕎-inBar inOpenBar-Bar (eqTypes-mon u eqt)
 
         aw : ∀𝕎 w (λ w' e' → (x₁ : eqTypes u w' A B) (x₂ : eqTypes u w' C A) (at₁ : atbar x w' e' x₁) (at₂ : atbar j w' e' x₂)
                              → TSP x₁ × eqInType u w' x₁ a b
@@ -1838,7 +1892,7 @@ typeSysConds-BAR u isu w A B x ind =
     iextr1 C eqt a b eqi = local-eqInType2 u isu w C B a b eqt j ei'
       where
         j : inbar w (λ w' e → eqTypes u w' C B)
-        j = Bar.∀𝕎-inBar inOpenBar-Bar (eqTypes-mon u (is-uni→mon isu) eqt)
+        j = Bar.∀𝕎-inBar inOpenBar-Bar (eqTypes-mon u eqt)
 
         aw : ∀𝕎 w (λ w' e' → (x₁ : eqTypes u w' A B) (x₂ : eqTypes u w' C B) (at₁ : atbar x w' e' x₁) (at₂ : atbar j w' e' x₂)
                              → TSP x₁ × eqInType u w' x₁ a b
@@ -1856,7 +1910,7 @@ typeSysConds-BAR u isu w A B x ind =
     iextr2 C eqt a b eqi = local-eqInType2 u isu w B C a b eqt j ei'
       where
         j : inbar w (λ w' e → eqTypes u w' B C)
-        j = Bar.∀𝕎-inBar inOpenBar-Bar (eqTypes-mon u (is-uni→mon isu) eqt)
+        j = Bar.∀𝕎-inBar inOpenBar-Bar (eqTypes-mon u eqt)
 
         aw : ∀𝕎 w (λ w' e' → (x₁ : eqTypes u w' A B) (x₂ : eqTypes u w' B C) (at₁ : atbar x w' e' x₁) (at₂ : atbar j w' e' x₂)
                              → TSP x₁ × eqInType u w' x₁ a b
@@ -1880,9 +1934,9 @@ typeSysConds-BAR u isu w A B x ind =
             tsp B z a b
             (TSP.extrevl1
               tsp C
-              (eqTypes-mon u (is-uni→mon isu) eqt w' e')
+              (eqTypes-mon u eqt w' e')
               a b
-              (eqInType-mon isu e' eqt (eqTypes-mon u (is-uni→mon isu) eqt w' e') a b eqi))
+              (eqInType-mon isu e' eqt (eqTypes-mon u eqt w' e') a b eqi))
 
     iextrevl2 : eqInTypeExtRevL2 (EQTBAR x)
     iextrevl2 C eqt a b eqi = Bar.inBar'-comb inOpenBar-Bar x aw ind ind
@@ -1892,8 +1946,8 @@ typeSysConds-BAR u isu w A B x ind =
         aw w' e' z zg zh tsp _ =
           TSP.extl1 tsp B z a b
             (TSP.extrevl2
-                tsp C (eqTypes-mon u (is-uni→mon isu) eqt w' e') a b
-                (eqInType-mon isu e' eqt (eqTypes-mon u (is-uni→mon isu) eqt w' e') a b eqi))
+                tsp C (eqTypes-mon u eqt w' e') a b
+                (eqInType-mon isu e' eqt (eqTypes-mon u eqt w' e') a b eqi))
 
     iextrevr1 : eqInTypeExtRevR1 (EQTBAR x)
     iextrevr1 C eqt a b eqi = Bar.inBar'-comb inOpenBar-Bar x aw ind ind
@@ -1903,8 +1957,8 @@ typeSysConds-BAR u isu w A B x ind =
         aw w' e' z zg zh tsp _ =
           TSP.extl1 tsp B z a b
             (TSP.extrevr1
-                tsp C (eqTypes-mon u (is-uni→mon isu) eqt w' e') a b
-                (eqInType-mon isu e' eqt (eqTypes-mon u (is-uni→mon isu) eqt w' e') a b eqi))
+                tsp C (eqTypes-mon u eqt w' e') a b
+                (eqInType-mon isu e' eqt (eqTypes-mon u eqt w' e') a b eqi))
 
     iextrevr2 : eqInTypeExtRevR2 (EQTBAR x)
     iextrevr2 C eqt a b eqi = Bar.inBar'-comb inOpenBar-Bar x aw ind ind
@@ -1914,8 +1968,8 @@ typeSysConds-BAR u isu w A B x ind =
         aw w' e' z zg zh tsp _ =
           TSP.extl1 tsp B z a b
             (TSP.extrevr2
-                tsp C (eqTypes-mon u (is-uni→mon isu) eqt w' e') a b
-                (eqInType-mon isu e' eqt (eqTypes-mon u (is-uni→mon isu) eqt w' e') a b eqi))
+                tsp C (eqTypes-mon u eqt w' e') a b
+                (eqInType-mon isu e' eqt (eqTypes-mon u eqt w' e') a b eqi))
 
     local : eqInTypeLocal (EQTBAR x)
     local a b i j = Bar.inBar'-comb inOpenBar-Bar x aw ind ind
@@ -1935,13 +1989,13 @@ typeSysConds-BAR u isu w A B x ind =
 typeSysConds : (u : univs) (isu : is-uni u) (ist : is-TSP-univs u)
                (w : 𝕎·) (A B : CTerm) (eqt : eqTypes u w A B) → TSP eqt
 {-# TERMINATING #-}
-typeSysConds u isu ist w A B (EQTNAT x x₁) = typeSysConds-NAT u (is-uni→is-universe isu) w A B x x₁
-typeSysConds u isu ist w A B (EQTQNAT x x₁) = typeSysConds-QNAT u (is-uni→is-universe isu) w A B x x₁
-typeSysConds u isu ist w A B (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = typeSysConds-LT u (is-uni→is-universe isu) w A B a1 b1 a2 b2 x x₁ x₂ x₃
-typeSysConds u isu ist w A B (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) = typeSysConds-QLT u (is-uni→is-universe isu) w A B a1 b1 a2 b2 x x₁ x₂ x₃
-typeSysConds u isu ist w A B (EQTFREE x x₁) = typeSysConds-FREE u (is-uni→is-universe isu) w A B x x₁
+typeSysConds u isu ist w A B (EQTNAT x x₁) = typeSysConds-NAT u w A B x x₁
+typeSysConds u isu ist w A B (EQTQNAT x x₁) = typeSysConds-QNAT u w A B x x₁
+typeSysConds u isu ist w A B (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = typeSysConds-LT u w A B a1 b1 a2 b2 x x₁ x₂ x₃
+typeSysConds u isu ist w A B (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) = typeSysConds-QLT u w A B a1 b1 a2 b2 x x₁ x₂ x₃
+typeSysConds u isu ist w A B (EQTFREE x x₁) = typeSysConds-FREE u w A B x x₁
 typeSysConds u isu ist w A B (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
-  typeSysConds-PI u (is-uni→is-universe isu) w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
+  typeSysConds-PI u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
   where
     inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1))
     inda w1 e1 = typeSysConds u isu ist w1 A1 A2 (eqta w1 e1)
@@ -1952,7 +2006,7 @@ typeSysConds u isu ist w A B (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
     indb w1 e1 a1 a2 ea = typeSysConds u isu ist w1 (sub0 a1 B1) (sub0 a2 B2) (eqtb w1 e1 a1 a2 ea)
 
 typeSysConds u isu ist w A B (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
-  typeSysConds-SUM u (is-uni→is-universe isu) w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
+  typeSysConds-SUM u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
   where
     inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1))
     inda w1 e1 = typeSysConds u isu ist w1 A1 A2 (eqta w1 e1)
@@ -1963,7 +2017,7 @@ typeSysConds u isu ist w A B (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
     indb w1 e1 a1 a2 ea = typeSysConds u isu ist w1 (sub0 a1 B1) (sub0 a2 B2) (eqtb w1 e1 a1 a2 ea)
 
 typeSysConds u isu ist w A B (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
-  typeSysConds-SET u (is-uni→is-universe isu) w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
+  typeSysConds-SET u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
   where
     inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1))
     inda w1 e1 = typeSysConds u isu ist w1 A1 A2 (eqta w1 e1)
@@ -1974,13 +2028,13 @@ typeSysConds u isu ist w A B (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
     indb w1 e1 a1 a2 ea = typeSysConds u isu ist w1 (sub0 a1 B1) (sub0 a2 B2) (eqtb w1 e1 a1 a2 ea)
 
 typeSysConds u isu ist w A B (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) =
-  typeSysConds-EQ u (is-uni→is-universe isu) w A B A₁ B₁ a1 b1 a2 b2 x x₁ eqtA extA inda eqt1 eqt2
+  typeSysConds-EQ u w A B A₁ B₁ a1 b1 a2 b2 x x₁ eqtA extA inda eqt1 eqt2
   where
     inda : ∀𝕎 w (λ w1 e1 → TSP (eqtA w1 e1))
     inda w1 e1 = typeSysConds u isu ist w1 A₁ B₁ (eqtA w1 e1)
 
 typeSysConds u isu ist w A B (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) =
-  typeSysConds-UNION u (is-uni→is-universe isu) w A B A1 B1 A2 B2 x x₁ eqtA eqtB extA extB inda indb
+  typeSysConds-UNION u w A B A1 B1 A2 B2 x x₁ eqtA eqtB extA extB inda indb
   where
     inda : ∀𝕎 w (λ w1 e1 → TSP (eqtA w1 e1))
     inda w1 e1 = typeSysConds u isu ist w1 A1 A2 (eqtA w1 e1)
@@ -1989,7 +2043,7 @@ typeSysConds u isu ist w A B (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) =
     indb w1 e1 = typeSysConds u isu ist w1 B1 B2 (eqtB w1 e1)
 
 typeSysConds u isu ist w A B (EQTSQUASH A1 A2 x x₁ eqtA exta) =
-  typeSysConds-TSQUASH u (is-uni→is-universe isu) w A B A1 A2 x x₁ eqtA exta inda
+  typeSysConds-TSQUASH u w A B A1 A2 x x₁ eqtA exta inda
   where
     inda : ∀𝕎 w (λ w1 e1 → TSP (eqtA w1 e1))
     inda w1 e1 = typeSysConds u isu ist w1 A1 A2 (eqtA w1 e1)
@@ -1997,12 +2051,12 @@ typeSysConds u isu ist w A B (EQTSQUASH A1 A2 x x₁ eqtA exta) =
 --typeSysConds u isu ist w A B (EQTDUM A1 A2 x x₁ eqta) = {!!}
 
 typeSysConds u isu ist w A B (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) =
-  typeSysConds-FFDEFS u (is-uni→is-universe isu) w A B A1 A2 x1 x2 x x₁ eqta exta inda eqx
+  typeSysConds-FFDEFS u w A B A1 A2 x1 x2 x x₁ eqta exta inda eqx
   where
     inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1))
     inda w1 e1 = typeSysConds u isu ist w1 A1 A2 (eqta w1 e1)
 
-typeSysConds u isu ist w A B (EQTUNIV x) = ist w A B x
+typeSysConds u isu ist w A B (EQTUNIV m p c₁ c₂) = {!!} --ist w A B x
 typeSysConds u isu ist w A B (EQTBAR x) =
   typeSysConds-BAR u isu w A B x ind
   where
@@ -2038,11 +2092,11 @@ eqUnivi-trans {n} {w} {A} {B} {C} c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eq
 eqUnivi-trans {n} {w} {A} {B} {C} c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqta exta) = ⊥-elim (UNIVneqTSQUASH (⇛-val-det tt tt c₂ x))
 --eqUnivi-trans {n} {w} {A} {B} {C} c₁ c₂ (EQTDUM A1 A2 x x₁ eqta) = ⊥-elim (UNIVneqDUM (⇛-val-det tt tt c₂ x))
 eqUnivi-trans {n} {w} {A} {B} {C} c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) = ⊥-elim (UNIVneqFFDEFS (⇛-val-det tt tt c₂ x))
-eqUnivi-trans {n} {w} {A} {B} {C} c₁ c₂ (EQTUNIV x) =
-  EQTUNIV (Bar.∀𝕎-inBarFunc inOpenBar-Bar aw x)
+eqUnivi-trans {n} {w} {A} {B} {C} c₁ c₂ (EQTUNIV m p d₁ d₂) = {!!}
+{--  EQTUNIV (Bar.∀𝕎-inBarFunc inOpenBar-Bar aw x)
   where
     aw : ∀𝕎 w (λ w' e' → B #⇛ #UNIV n at w' × C #⇛ #UNIV n at w' → A #⇛ #UNIV n at w' × C #⇛ #UNIV n at w')
-    aw w1 e1 (d₁ , d₂) = ⇛-mon e1 c₁ , d₂
+    aw w1 e1 (d₁ , d₂) = ⇛-mon e1 c₁ , d₂--}
 eqUnivi-trans {n} {w} {A} {B} {C} c₁ c₂ (EQTBAR x) =
   EQTBAR (Bar.∀𝕎-inBarFunc inOpenBar-Bar aw x)
   where
@@ -2053,23 +2107,22 @@ eqUnivi-trans {n} {w} {A} {B} {C} c₁ c₂ (EQTBAR x) =
 
 
 eqTypes-inbar : {u : univs} {w : 𝕎·} {a b c d : CTerm} {F : wPred w}
-                → mon-univs u
                 → ∀𝕎 w (λ w1 e1 → F w1 e1 → eqTypes u w1 a b → eqTypes u w1 c d)
                 → inbar w F
                 → eqTypes u w a b
                 → eqTypes u w c d
-eqTypes-inbar {u} {w} {a} {b} {c} {d} {F} mon aw i e =
+eqTypes-inbar {u} {w} {a} {b} {c} {d} {F} aw i e =
   EQTBAR (Bar.∀𝕎-inBarFunc inOpenBar-Bar q i)
   where
     q : ∀𝕎 w (λ w' e' → F w' e' → eqTypes u w' c d)
-    q w1 e1 f = aw w1 e1 f (eqTypes-mon u mon e w1 e1)
+    q w1 e1 f = aw w1 e1 f (eqTypes-mon u e w1 e1)
 
 
 eqUnivi-mon : (n : ℕ) → mon (eqUnivi n)
 eqUnivi-mon n e w1 e1 = Bar.↑inBar inOpenBar-Bar e e1
 
 
-eqInUnivi-sym : {n : ℕ} {w : 𝕎·} {A B : CTerm}
+{--eqInUnivi-sym : {n : ℕ} {w : 𝕎·} {A B : CTerm}
                 (ind : (m : ℕ) → m < n → is-TSP-univs (uni m))
                 → eqInUnivi n w A B → eqInUnivi n w B A
 eqInUnivi-sym {suc n} {w} {A} {B} ind ({--inj₁--} x) =
@@ -2085,6 +2138,8 @@ eqInUnivi-sym {suc n} {w} {A} {B} ind ({--inj₁--} x) =
   where
     ind' : (m : ℕ) → m < n → is-TSP-univs (uni m)
     ind' m z = ind m (<-trans z (n<1+n n))--}
+--}
+
 
 
 {--
@@ -2098,16 +2153,17 @@ eqInUnivi→ {suc n} {w} {A} {B} ({--inj₁--} x) = n , n<1+n n , x
 
 
 
-mon-univs-uni : (n : ℕ) → mon-univs (uni n)
+{--mon-univs-uni : (n : ℕ) → mon-univs (uni n)
 mon-univs-uni n {a} {b} {w} h w1 e1 =
   Bar.∀𝕎-inBarFunc inOpenBar-Bar aw (Bar.↑inBar inOpenBar-Bar h e1)
   where
     aw : ∀𝕎 w1 (λ w' e' → ↑wPred (λ w'' e → a #⇛ #UNIV n at w'' × b #⇛ #UNIV n at w'') e1 w' e'
                           → a #⇛ #UNIV n at w' × b #⇛ #UNIV n at w')
-    aw w' e' x = x
+    aw w' e' x = x--}
 
 
 
+{--
 eqInUnivi-trans : {n : ℕ} {w : 𝕎·} {A B C : CTerm}
                   (ind : (m : ℕ) → m < n → is-TSP-univs (uni m))
                   → eqInUnivi n w A B
@@ -2128,6 +2184,7 @@ eqInUnivi-trans {suc n} {w} {A} {B} {C} ind eqi eqj =
         tsp = typeSysConds (uni n) (is-uni-uni n) tspu w' A B eqt1
  --typeSysConds
 -- Allow lifting or remove the 'or' in eqInUnivi (I removed the 'or' for now)
+--}
 
 
 
@@ -2149,8 +2206,8 @@ eqTypes-preserves-in-bar-⇛-UNIV {n} {w} {A} {B} (EQTEQ a1 b1 a2 b2 A₁ B₁ x
 eqTypes-preserves-in-bar-⇛-UNIV {n} {w} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) i = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' c → lift (UNIVneqUNION (⇛-val-det tt tt c (⇛-mon e' x)))) i)))
 eqTypes-preserves-in-bar-⇛-UNIV {n} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqtA exta) i = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' c → lift (UNIVneqTSQUASH (⇛-val-det tt tt c (⇛-mon e' x)))) i)))
 eqTypes-preserves-in-bar-⇛-UNIV {n} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) i = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' c → lift (UNIVneqFFDEFS (⇛-val-det tt tt c (⇛-mon e' x)))) i)))
-eqTypes-preserves-in-bar-⇛-UNIV {n} {w} {A} {B} (EQTUNIV x) i =
-  Bar.inBarFunc inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (a , b) c → b) x) i
+eqTypes-preserves-in-bar-⇛-UNIV {n} {w} {A} {B} (EQTUNIV m p c₁ c₂) i = {!!}
+--  Bar.inBarFunc inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (a , b) c → b) x) i
 eqTypes-preserves-in-bar-⇛-UNIV {n} {w} {A} {B} (EQTBAR x) i =
   Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar aw x)
   where
@@ -2180,8 +2237,8 @@ eqTypes-preserves-in-bar-⇛-UNIV-rev {n} {w} {A} {B} (EQTEQ a1 b1 a2 b2 A₁ B�
 eqTypes-preserves-in-bar-⇛-UNIV-rev {n} {w} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) i = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' c → lift (UNIVneqUNION (⇛-val-det tt tt c (⇛-mon e' x₁)))) i)))
 eqTypes-preserves-in-bar-⇛-UNIV-rev {n} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqtA exta) i = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' c → lift (UNIVneqTSQUASH (⇛-val-det tt tt c (⇛-mon e' x₁)))) i)))
 eqTypes-preserves-in-bar-⇛-UNIV-rev {n} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) i = ⊥-elim (lower (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' c → lift (UNIVneqFFDEFS (⇛-val-det tt tt c (⇛-mon e' x₁)))) i)))
-eqTypes-preserves-in-bar-⇛-UNIV-rev {n} {w} {A} {B} (EQTUNIV x) i =
-  Bar.inBarFunc inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (a , b) c → a) x) i
+eqTypes-preserves-in-bar-⇛-UNIV-rev {n} {w} {A} {B} (EQTUNIV m p c₁ c₂) i = {!!}
+--  Bar.inBarFunc inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' (a , b) c → a) x) i
 eqTypes-preserves-in-bar-⇛-UNIV-rev {n} {w} {A} {B} (EQTBAR x) i =
   Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar aw x)
   where
@@ -2217,73 +2274,76 @@ inbar×→₂ {w} {f} {g} i = Bar.∀𝕎-inBarFunc inOpenBar-Bar (λ w' e' → 
 
 is-TSP-univs-eqUnivi : (n : ℕ)
                        (ind : (m : ℕ) → m < n → is-TSP-univs (uni m))
-                       (w : 𝕎·) (A B : CTerm) (x : eqUnivi n w A B)
-                       → TSP {uni n} {w} {A} {B} (EQTUNIV x)
-is-TSP-univs-eqUnivi n ind w A B x =
+                       (w : 𝕎·) (A B : CTerm)
+                       (i : ℕ) (p : i < n)
+                       (c₁ : A #⇛ #UNIV i at w)
+                       (c₂ : B #⇛ #UNIV i at w)
+                       → TSP {uni n} {w} {A} {B} (EQTUNIV i p c₁ c₂)
+is-TSP-univs-eqUnivi n ind w A B i p c₁ c₂ =
   mktsp tsym ttrans isym itrans iextl1 iextl2 iextr1 iextr2 iextrevl1 iextrevl2 iextrevr1 iextrevr2 local
   where
     tsym : eqTypes (uni n) w B A
-    tsym = EQTUNIV (eqUnivi-sym {_} {_} {A} {B} x)
+    tsym = {!!} --EQTUNIV (eqUnivi-sym {_} {_} {A} {B} x)
 
     ttrans : eqTypesTrans (uni n) w A B
-    ttrans C h = eqTypes-inbar (λ {a : CTerm} {b : CTerm} → eqUnivi-mon n {a} {b}) (λ w1 e1 (c₁ , c₂) e → eqUnivi-trans c₁ c₂ e) x h
+    ttrans C h = {!!} --eqTypes-inbar (λ {a : CTerm} {b : CTerm} → eqUnivi-mon n {a} {b}) (λ w1 e1 (c₁ , c₂) e → eqUnivi-trans c₁ c₂ e) x h
 
-    isym : eqInTypeSym (uni n) {_} {A} {B} (EQTUNIV x)
-    isym a b eqi = eqInUnivi-sym {n} {w} {a} {b} ind eqi
+    isym : eqInTypeSym (uni n) {_} {A} {B} (EQTUNIV i p c₁ c₂)
+    isym a b eqi = {!!} --eqInUnivi-sym {n} {w} {a} {b} ind eqi
 
-    itrans : eqInTypeTrans (uni n) {_} {A} {B} (EQTUNIV x)
-    itrans a b c eqi₁ eqi₂ = eqInUnivi-trans {n} {w} {a} {b} {c} ind eqi₁ eqi₂
+    itrans : eqInTypeTrans (uni n) {_} {A} {B} (EQTUNIV i p c₁ c₂)
+    itrans a b c eqi₁ eqi₂ = {!!} --eqInUnivi-trans {n} {w} {a} {b} {c} ind eqi₁ eqi₂
 
-    iextl1 : eqInTypeExtL1 {_} {_} {A} {B} (EQTUNIV x)
-    iextl1 C eqt' a b eqi = eqInType-u i eqt' a b eqi
+    iextl1 : eqInTypeExtL1 {_} {_} {A} {B} (EQTUNIV i p c₁ c₂)
+    iextl1 C eqt' a b eqi = {!!} {--eqInType-u i eqt' a b eqi
       where
          i : inbar w (λ w' _ → A #⇛ #UNIV n at w' × C #⇛ #UNIV n at w')
-         i = →inbar× (inbar×→₁ x) (eqTypes-preserves-in-bar-⇛-UNIV eqt' (inbar×→₁ x))
+         i = →inbar× (inbar×→₁ x) (eqTypes-preserves-in-bar-⇛-UNIV eqt' (inbar×→₁ x))--}
 
-    iextl2 : eqInTypeExtL2 {_} {_} {A} {B} (EQTUNIV x)
-    iextl2 C eqt' a b eqi = eqInType-u i eqt' a b eqi
+    iextl2 : eqInTypeExtL2 {_} {_} {A} {B} (EQTUNIV i p c₁ c₂)
+    iextl2 C eqt' a b eqi = {!!} {--eqInType-u i eqt' a b eqi
       where
          i : inbar w (λ w' _ → C #⇛ #UNIV n at w' × A #⇛ #UNIV n at w')
-         i = →inbar× (eqTypes-preserves-in-bar-⇛-UNIV-rev eqt' (inbar×→₁ x)) (inbar×→₁ x)
+         i = →inbar× (eqTypes-preserves-in-bar-⇛-UNIV-rev eqt' (inbar×→₁ x)) (inbar×→₁ x)--}
 
-    iextr1 : eqInTypeExtR1 {_} {_} {A} {B} (EQTUNIV x)
-    iextr1 C eqt' a b eqi = eqInType-u i eqt' a b eqi
+    iextr1 : eqInTypeExtR1 {_} {_} {A} {B} (EQTUNIV i p c₁ c₂)
+    iextr1 C eqt' a b eqi = {!!} {--eqInType-u i eqt' a b eqi
       where
          i : inbar w (λ w' _ → C #⇛ #UNIV n at w' × B #⇛ #UNIV n at w')
-         i = →inbar× (eqTypes-preserves-in-bar-⇛-UNIV-rev eqt' (inbar×→₂ x)) (inbar×→₂ x)
+         i = →inbar× (eqTypes-preserves-in-bar-⇛-UNIV-rev eqt' (inbar×→₂ x)) (inbar×→₂ x)--}
 
-    iextr2 : eqInTypeExtR2 {_} {_} {A} {B} (EQTUNIV x)
-    iextr2 C eqt' a b eqi = eqInType-u i eqt' a b eqi
+    iextr2 : eqInTypeExtR2 {_} {_} {A} {B} (EQTUNIV i p c₁ c₂)
+    iextr2 C eqt' a b eqi = {!!} {--eqInType-u i eqt' a b eqi
       where
          i : inbar w (λ w' _ → B #⇛ #UNIV n at w' × C #⇛ #UNIV n at w')
-         i = →inbar× (inbar×→₂ x) (eqTypes-preserves-in-bar-⇛-UNIV eqt' (inbar×→₂ x))
+         i = →inbar× (inbar×→₂ x) (eqTypes-preserves-in-bar-⇛-UNIV eqt' (inbar×→₂ x))--}
 
-    iextrevl1 : eqInTypeExtRevL1 {_} {_} {A} {B} (EQTUNIV x)
-    iextrevl1 C eqt' a b eqi = eqInType-u-rev i eqt' a b eqi
+    iextrevl1 : eqInTypeExtRevL1 {_} {_} {A} {B} (EQTUNIV i p c₁ c₂)
+    iextrevl1 C eqt' a b eqi = {!!} {--eqInType-u-rev i eqt' a b eqi
       where
          i : inbar w (λ w' _ → A #⇛ #UNIV n at w' × C #⇛ #UNIV n at w')
-         i = →inbar× (inbar×→₁ x) (eqTypes-preserves-in-bar-⇛-UNIV eqt' (inbar×→₁ x))
+         i = →inbar× (inbar×→₁ x) (eqTypes-preserves-in-bar-⇛-UNIV eqt' (inbar×→₁ x))--}
 
-    iextrevl2 : eqInTypeExtRevL2 {_} {_} {A} {B} (EQTUNIV x)
-    iextrevl2 C eqt' a b eqi = eqInType-u-rev i eqt' a b eqi
+    iextrevl2 : eqInTypeExtRevL2 {_} {_} {A} {B} (EQTUNIV i p c₁ c₂)
+    iextrevl2 C eqt' a b eqi = {!!} {--eqInType-u-rev i eqt' a b eqi
       where
          i : inbar w (λ w' _ → C #⇛ #UNIV n at w' × A #⇛ #UNIV n at w')
-         i = →inbar× (eqTypes-preserves-in-bar-⇛-UNIV-rev eqt' (inbar×→₁ x)) (inbar×→₁ x)
+         i = →inbar× (eqTypes-preserves-in-bar-⇛-UNIV-rev eqt' (inbar×→₁ x)) (inbar×→₁ x)--}
 
-    iextrevr1 : eqInTypeExtRevR1 {_} {_} {A} {B} (EQTUNIV x)
-    iextrevr1 C eqt' a b eqi = eqInType-u-rev i eqt' a b eqi
+    iextrevr1 : eqInTypeExtRevR1 {_} {_} {A} {B} (EQTUNIV i p c₁ c₂)
+    iextrevr1 C eqt' a b eqi = {!!} {--eqInType-u-rev i eqt' a b eqi
       where
          i : inbar w (λ w' _ → C #⇛ #UNIV n at w' × B #⇛ #UNIV n at w')
-         i = →inbar× (eqTypes-preserves-in-bar-⇛-UNIV-rev eqt' (inbar×→₂ x)) (inbar×→₂ x)
+         i = →inbar× (eqTypes-preserves-in-bar-⇛-UNIV-rev eqt' (inbar×→₂ x)) (inbar×→₂ x)--}
 
-    iextrevr2 : eqInTypeExtRevR2 {_} {_} {A} {B} (EQTUNIV x)
-    iextrevr2 C eqt' a b eqi = eqInType-u-rev i eqt' a b eqi
+    iextrevr2 : eqInTypeExtRevR2 {_} {_} {A} {B} (EQTUNIV i p c₁ c₂)
+    iextrevr2 C eqt' a b eqi = {!!} {--eqInType-u-rev i eqt' a b eqi
       where
          i : inbar w (λ w' _ → B #⇛ #UNIV n at w' × C #⇛ #UNIV n at w')
-         i = →inbar× (inbar×→₂ x) (eqTypes-preserves-in-bar-⇛-UNIV eqt' (inbar×→₂ x))
+         i = →inbar× (inbar×→₂ x) (eqTypes-preserves-in-bar-⇛-UNIV eqt' (inbar×→₂ x))--}
 
-    local : eqInTypeLocal (EQTUNIV x)
-    local a b i j = eqInType-u-rev x (EQTBAR i) a b (local-eqInType2 (uni n) (is-uni-uni n) w A B a b (EQTBAR i) i j)
+    local : eqInTypeLocal (EQTUNIV i p c₁ c₂)
+    local a b i j = {!!} --eqInType-u-rev x (EQTBAR i) a b (local-eqInType2 (uni n) (is-uni-uni n) w A B a b (EQTBAR i) i j)
 
 
 comp-ind-ℕ-aux : (P : ℕ → Set₁)

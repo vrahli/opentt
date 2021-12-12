@@ -139,25 +139,6 @@ remove0-as-V (suc x ∷ l) rewrite remove0-as-V l = refl
 →∈lowerVars v (suc x ∷ l) (there i) = there (→∈lowerVars v l i)
 
 
-∈++LR : {A : Set} {v : A} {a b c d : List A} → v ∈ a ++ b → a ⊆ c → b ⊆ d → v ∈ c ++ d
-∈++LR {A} {v} {a} {b} {c} {d} i j k with ∈-++⁻ a i
-... | inj₁ p = ∈-++⁺ˡ (j p)
-... | inj₂ p = ∈-++⁺ʳ c (k p)
-
-
-→¬S : (a b : ℕ) → ¬ a ≡ b → ¬ suc a ≡ suc b
-→¬S a b i j = i (suc-injective j)
-
-
-¬S→ : (a b : ℕ) → ¬ suc a ≡ suc b → ¬ a ≡ b
-¬S→ a b i j rewrite j = i refl
-
-
-
-s≤s-inj : {a b : ℕ} → suc a ≤ suc b → a ≤ b
-s≤s-inj {a} {b} (_≤_.s≤s h) = h
-
-
 lowerVars-map-sucIf≤-suc : (n : ℕ) (l : List Var)
                            → lowerVars (Data.List.map (sucIf≤ (suc n)) l)
                               ≡ Data.List.map (sucIf≤ n) (lowerVars l)
@@ -1008,8 +989,8 @@ eqUnivi : (m : ℕ) → wper
 eqUnivi m w T1 T2 = inbar w (λ w' _ → ⌜ T1 ⌝ ⇛ (UNIV m) at w' × ⌜ T2 ⌝ ⇛ (UNIV m) at w')
 
 
-uni0 : univsUpTo 0
-uni0 i ()
+{--uni0 : univsUpTo 0
+uni0 i ()--}
 
 
 inbarEqTypes : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) → Set₁
@@ -1017,7 +998,7 @@ inbarEqTypes u w T1 T2 = inbar w (λ w' _ → eqTypes u w' T1 T2)
 
 
 uniUpTo : (n : ℕ) → univsUpTo n
-uniUpTo 0 = uni0
+uniUpTo 0 i ()
 uniUpTo (suc n) m p with m <? n
 ... | yes q = uniUpTo n m q
 ... | no q = inbarEqTypes (n , uniUpTo n) -- i.e., m ≡ n

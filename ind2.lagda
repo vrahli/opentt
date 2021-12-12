@@ -235,24 +235,16 @@ data ≤Type u where
 
 
 <Type-UNIV : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} {eqt : eqTypes u w T1 T2}
-             {w' : 𝕎·} {U1 U2 : CTerm} {x : proj₁ (proj₂ u) w' U1 U2}
-             → <Type u eqt (EQTUNIV x) → ⊥
-<Type-UNIV {u} {w} {T1} {T2} {eqt} {w'} {U1} {U2} {x} (<Type1 .eqt .(EQTUNIV x) ())
-<Type-UNIV {u} {w} {T1} {T2} {eqt} {w'} {U1} {U2} {x} (<TypeS .eqt eqt2 .(EQTUNIV x) ltt ())
+             {w' : 𝕎·} {U1 U2 : CTerm} {i : ℕ} {p : i < fst u} {c₁ : U1 #⇛ #UNIV i at w'} {c₂ : U2 #⇛ #UNIV i at w'}
+--{x : proj₁ (proj₂ u) w' U1 U2}
+             → <Type u {w} {T1} {T2} eqt {w'} {U1} {U2} (EQTUNIV i p c₁ c₂) → ⊥
+<Type-UNIV {u} {w} {T1} {T2} {eqt} {w'} {U1} {U2} {i} {p} {c₁} {c₂} (<Type1 .eqt .(EQTUNIV i p c₁ c₂) ())
+<Type-UNIV {u} {w} {T1} {T2} {eqt} {w'} {U1} {U2} {i} {p} {c₁} {c₂} (<TypeS .eqt eqt2 .(EQTUNIV i p c₁ c₂) ltt ())
 
 
 
 #⇛-refl : (w : 𝕎·) (T : CTerm) → T #⇛ T at w
 #⇛-refl w T w' e' = lift (⇓-refl ⌜ T ⌝ w')
-
-
-
-eqTypes-mon2 : (u : univs) → mon (proj₁ (proj₂ u)) → {w : 𝕎·} {T1 T2 : CTerm} → eqTypes u w T1 T2
-               → ∀𝕎 w (λ w' e' → eqTypes u w' T1 T2)
---eqTypes-mon2 u m {.w'} {T1} {T2} eqt w' (⊑-refl· .w') = eqt
-eqTypes-mon2 u m {w} {T1} {T2} eqt w' e' = eqTypes-mon u m eqt w' e'
-
-
 
 
 
@@ -356,13 +348,13 @@ FFDEFSeq-ext {u} {w} {A1} {A2} {x1} {eqta} {w'} {e1} {e2} {a} {b} exta (x , c₁
 
 
 
-ind<Type : {u : univs} (umon : mon (proj₁ (proj₂ u))) (P : {w : 𝕎·} {T1 T2 : CTerm} → eqTypes u w T1 T2 → Set₁)
+ind<Type : {u : univs} (P : {w : 𝕎·} {T1 T2 : CTerm} → eqTypes u w T1 T2 → Set₁)
            → ({w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
                → ({w' : 𝕎·} {T1' T2' : CTerm} (eqt' : eqTypes u w' T1' T2') → <Type u eqt' eqt → P eqt')
                → P eqt)
            → {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2) → P eqt
 {-# TERMINATING #-}
-ind<Type {u} umon P ind {w0} {X1} {X2} eqt =
+ind<Type {u} P ind {w0} {X1} {X2} eqt =
   -- just pick something larger
   indLtt
     (EQTBAR i)
@@ -371,7 +363,7 @@ ind<Type {u} umon P ind {w0} {X1} {X2} eqt =
     (<Type1 eqt (EQTBAR i) (<TypeBAR w0 X1 X2 i w0 (⊑-refl· w0) eqt j))
   where
     aw : ∀𝕎 w0 (λ w' _ → eqTypes u w' X1 X2)
-    aw = eqTypes-mon2 u umon eqt
+    aw = eqTypes-mon u eqt
 
     i : inbar w0 (λ w' _ → eqTypes u w' X1 X2)
     i = Bar.∀𝕎-inBar inOpenBar-Bar aw
@@ -524,7 +516,7 @@ ind<Type {u} umon P ind {w0} {X1} {X2} eqt =
         ind' : (w1 : 𝕎·) (e1 : w ⊑· w1) {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : eqTypes u w' T1' T2') → <Type u eqt' (eqtA w1 e1) → P eqt'
         ind' w1 e1 {w'} {T1'} {T2'} eqt' ltt = indLtt (eqtA w1 e1) eqt' ltt
 
-    indLtt {w} {T1} {T2} (EQTUNIV x) {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-UNIV ltt)
+    indLtt {w} {T1} {T2} (EQTUNIV i p c₁ c₂) {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-UNIV ltt)
 
     indLtt {w} {T1} {T2} (EQTBAR i) {w'} {.T1} {.T2} eqt' (<Type1 .eqt' .(EQTBAR i) (<TypeBAR .w .T1 .T2 .i .w' e' .eqt' a)) =
       ind eqt' (ind' w' e' eqt' a)
