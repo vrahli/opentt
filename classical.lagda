@@ -96,7 +96,7 @@ eqInType-extl1 : {i : ℕ} {w : 𝕎·} {A : CTerm}
                  → eqInType (uni i) w eqa1 a₁ a₂
                  → eqInType (uni i) w eqa2 a₁ a₂
 eqInType-extl1 {i} {w} {A} B C eqa1 eqa2 {a₁} {a₂} ei =
-  TSP.extl1 (typeSysConds (uni i) (is-uni-uni i) (is-TSP-univs-uni i) w A B eqa1)
+  TSP.extl1 (typeSysConds i w A B eqa1)
             C eqa2 a₁ a₂ ei
 
 
@@ -155,10 +155,9 @@ eqTypesFUN← {w} {i} {A} {B} {C} {D} eqta eqtb rewrite #FUN≡#PI A B | #FUN≡
       eqb w1 e1 a₁ a₂ eqa rewrite sub0⌞⌟ a₁ B | sub0⌞⌟ a₂ D = eqtb w1 e1
 
 
-eqInTypeExtL1-true : {u : univs} (isu : is-uni u) (ist : is-TSP-univs u)
-                     {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B)
+eqInTypeExtL1-true : {i : ℕ} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes (uni i) w A B)
                      → eqInTypeExtL1 eqt
-eqInTypeExtL1-true {u} isu ist {w} {A} {B} eqt = TSP.extl1 (typeSysConds u isu ist w A B eqt)
+eqInTypeExtL1-true {i} {w} {A} {B} eqt = TSP.extl1 (typeSysConds i w A B eqt)
 
 
 equalInType→eqInType : {i : ℕ} {w : 𝕎·} {A B a b : CTerm}
@@ -166,7 +165,7 @@ equalInType→eqInType : {i : ℕ} {w : 𝕎·} {A B a b : CTerm}
                         → ∀𝕎 w (λ w' e → equalInType i w' A a b)
                         → ∀𝕎 w (λ w' e → eqInType (uni i) w' (eqta w' e) a b)
 equalInType→eqInType {i} {w} {A} {B} {a} {b} eqta eqi w1 e1 =
-  eqInTypeExtL1-true (is-uni-uni i) (is-TSP-univs-uni i) eqt B (eqta w1 e1) a b eqi'
+  eqInTypeExtL1-true {i} eqt B (eqta w1 e1) a b eqi'
   where
     eqt : equalTypes i w1 A A
     eqt = fst (eqi w1 e1)
@@ -209,14 +208,15 @@ eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqt
 eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) = ⊥-elim (PIneqUNION (compAllVal x₁ tt))
 eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTSQUASH A1 A2 x x₁ eqtA exta) = ⊥-elim (PIneqTSQUASH (compAllVal x₁ tt))
 eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) = ⊥-elim (PIneqFFDEFS (compAllVal x₁ tt))
-eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTUNIV x) =
-  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
+eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTUNIV m p c₁ c₂) = ?
+
+{--  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
   where
     z : inbar w (λ w' _ → (#FUN A B) #⇛ (#UNIV (fst (uni i))) at w' × (#FUN C D) #⇛ (#UNIV (fst (uni i))) at w')
     z = is-universe-uni i w (#FUN A B) (#FUN C D) x
 
     q : ∀𝕎 w (λ w' e' → (#FUN A B) #⇛ #UNIV (fst (uni i)) at w' × (#FUN C D) #⇛ #UNIV (fst (uni i)) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (compAllVal d₁ tt)))
+    q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (compAllVal d₁ tt)))--}
 
 eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTBAR x) w' e' =
   EQTBAR (Bar.∀𝕎-inBarFunc inOpenBar-Bar aw (Bar.↑inBar inOpenBar-Bar x e'))
@@ -265,12 +265,12 @@ eqTypesNEG← : {w : 𝕎·} {i : ℕ} {A B : CTerm}
                → equalTypes i w (#NEG A) (#NEG B)
 eqTypesNEG← {w} {i} {A} {B} eqt rewrite #NEG≡#FUN A | #NEG≡#FUN B =
   eqTypesFUN←
-    (eqTypes-mon (uni i) (λ {a : CTerm} {b : CTerm} → mon-univs-uni i {a} {b}) eqt)
+    (eqTypes-mon (uni i) eqt)
     (λ w' e' → eqTypesFALSE)
 
 
 eqTypesUniv : (w : 𝕎·) (i : ℕ) → equalTypes i w (#UNIV i) (#UNIV i)
-eqTypesUniv w i = EQTUNIV (Bar.∀𝕎-inBar inOpenBar-Bar λ w1 e1 → compAllRefl (UNIV i) w1 , compAllRefl (UNIV i) w1)
+eqTypesUniv w i = ? --EQTUNIV (Bar.∀𝕎-inBar inOpenBar-Bar λ w1 e1 → compAllRefl (UNIV i) w1 , compAllRefl (UNIV i) w1)
 
 
 #SQUASH : CTerm → CTerm
@@ -324,9 +324,9 @@ equalInType→equalTypes : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                           → equalInType i w (#UNIV i) a b
                           → equalTypes i w a b
 equalInType→equalTypes i w a b (eqt , eqi) = {!!} -- !!
-  where
+{--  where
     z : eqInUnivi i w a b
-    z = eqInType-u-rev {!!} eqt a b eqi
+    z = eqInType-u-rev {!!} eqt a b eqi--}
 
 
 -- We need cumulativity or lifting here because (#UNIV i) needs to be in level i,
