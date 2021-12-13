@@ -81,7 +81,7 @@ typeSysConds-NAT-extl1 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-el
 
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (NATneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))--}
-
+typeSysConds-NAT-extl1 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqLIFT (⇛-val-det tt tt x y))
 typeSysConds-NAT-extl1 u w A B x x₁ C (EQTBAR y) a b eqi =
   Bar.∀𝕎-inBar-inBar' inOpenBar-Bar y aw
   where
@@ -144,6 +144,7 @@ typeSysConds-NAT-extl2 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-el
     q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (NATneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))--}
 
+typeSysConds-NAT-extl2 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqLIFT (⇛-val-det tt tt x y₁))
 typeSysConds-NAT-extl2 u w A B x x₁ C (EQTBAR y) a b eqi =
   Bar.∀𝕎-inBar-inBar' inOpenBar-Bar y aw
   where
@@ -178,6 +179,7 @@ typeSysConds-NAT-extr1 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-el
     q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (NATneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))--}
 
+typeSysConds-NAT-extr1 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqLIFT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-NAT-extr1 u w A B x x₁ C (EQTBAR y) a b eqi =
   Bar.∀𝕎-inBar-inBar' inOpenBar-Bar y aw
   where
@@ -212,6 +214,7 @@ typeSysConds-NAT-extr2 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-el
     q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (NATneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))--}
 
+typeSysConds-NAT-extr2 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqLIFT (⇛-val-det tt tt x₁ y))
 typeSysConds-NAT-extr2 u w A B x x₁ C (EQTBAR y) a b eqi =
   Bar.∀𝕎-inBar-inBar' inOpenBar-Bar y aw
   where
@@ -246,6 +249,7 @@ typeSysConds-NAT-extrevl1 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (NATneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))--}
 
+typeSysConds-NAT-extrevl1 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqLIFT (⇛-val-det tt tt x y))
 typeSysConds-NAT-extrevl1 u w A B x x₁ C (EQTBAR y) a b eqi =
   Bar.inBar-idem
     inOpenBar-Bar
@@ -287,6 +291,7 @@ typeSysConds-NAT-extrevl2 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥
     q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (NATneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))--}
 
+typeSysConds-NAT-extrevl2 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqLIFT (⇛-val-det tt tt x y₁))
 typeSysConds-NAT-extrevl2 u w A B x x₁ C (EQTBAR y) a b eqi =
   Bar.inBar-idem
     inOpenBar-Bar
@@ -329,6 +334,7 @@ typeSysConds-NAT-extrevr1 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥
     q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (NATneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))--}
 
+typeSysConds-NAT-extrevr1 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqLIFT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-NAT-extrevr1 u w A B x x₁ C (EQTBAR y) a b eqi =
   Bar.inBar-idem
     inOpenBar-Bar
@@ -371,6 +377,7 @@ typeSysConds-NAT-extrevr2 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥
     q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (NATneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))--}
 
+typeSysConds-NAT-extrevr2 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (NATneqLIFT (⇛-val-det tt tt x₁ y))
 typeSysConds-NAT-extrevr2 u w A B x x₁ C (EQTBAR y) a b eqi =
   Bar.inBar-idem
     inOpenBar-Bar
@@ -416,6 +423,7 @@ eqInType-⇛-NAT u w A B a b c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (NA
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (NATneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))--}
 
+eqInType-⇛-NAT u w A B a b c₁ c₂ (EQTLIFT A1 A2 x x₁ eqtA) ei = ⊥-elim (NATneqLIFT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-NAT u w A B a b c₁ c₂ (EQTBAR x) ei =
   Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar x aw ei)
   where
@@ -456,6 +464,7 @@ eqInType-⇛-NAT-rev u w A B a b c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (NATneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))--}
 
+eqInType-⇛-NAT-rev u w A B a b c₁ c₂ (EQTLIFT A1 A2 x x₁ eqtA) ei = ⊥-elim (NATneqLIFT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-NAT-rev u w A B a b c₁ c₂ (EQTBAR x) ei =
   Bar.∀𝕎-inBar-inBar' inOpenBar-Bar x aw
   where

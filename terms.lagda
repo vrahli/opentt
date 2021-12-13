@@ -430,6 +430,10 @@ LOWERinj : {a b : Term} → LOWER a ≡ LOWER b → a ≡ b
 LOWERinj refl =  refl
 
 
+LIFTinj : {a b : Term} → LIFT a ≡ LIFT b → a ≡ b
+LIFTinj refl =  refl
+
+
 shiftUp-inj : {n : ℕ} {a b : Term} → shiftUp n a ≡ shiftUp n b → a ≡ b
 shiftUp-inj {n} {VAR x} {VAR x₁} e = ≡VAR (sucIf≤-inj (VARinj e))
 shiftUp-inj {n} {NAT} {NAT} e = refl
@@ -456,6 +460,7 @@ shiftUp-inj {n} {TSQUASH a} {TSQUASH b} e rewrite shiftUp-inj (TSQUASHinj e) = r
 shiftUp-inj {n} {DUM a} {DUM b} e rewrite shiftUp-inj (DUMinj e) = refl
 shiftUp-inj {n} {FFDEFS a a₁} {FFDEFS b b₁} e rewrite shiftUp-inj (FFDEFSinj1 e) | shiftUp-inj (FFDEFSinj2 e) = refl
 shiftUp-inj {n} {UNIV x} {UNIV .x} refl = refl
+shiftUp-inj {n} {LIFT a} {LIFT b} e rewrite shiftUp-inj (LIFTinj e) = refl
 shiftUp-inj {n} {LOWER a} {LOWER b} e rewrite shiftUp-inj (LOWERinj e) = refl
 shiftUp-inj {n} {SHRINK a} {SHRINK b} e rewrite shiftUp-inj (SHRINKinj e) = refl
 

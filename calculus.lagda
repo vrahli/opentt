@@ -102,6 +102,7 @@ data Term : Set where
   FFDEFS : Term → Term → Term
   -- Universes
   UNIV : ℕ → Term
+  LIFT : Term -> Term
   --
   LOWER : Term -> Term
   SHRINK : Term -> Term
@@ -132,6 +133,7 @@ isValue (TSQUASH _) = ⊤
 isValue (DUM _) = ⊤
 isValue (FFDEFS _ _) = ⊤
 isValue (UNIV _) = ⊤
+isValue (LIFT _) = ⊤
 isValue (LOWER _) = ⊤
 isValue (SHRINK _) = ⊤
 
@@ -206,6 +208,7 @@ fvars (TSQUASH t)      = fvars t
 fvars (DUM t)          = fvars t
 fvars (FFDEFS t t₁)    = fvars t ++ fvars t₁
 fvars (UNIV x)         = []
+fvars (LIFT t)         = fvars t
 fvars (LOWER t)        = fvars t
 fvars (SHRINK t)        = fvars t
 
@@ -341,6 +344,7 @@ shiftUp c (TSQUASH t) = TSQUASH (shiftUp c t)
 shiftUp c (DUM t) = DUM (shiftUp c t)
 shiftUp c (FFDEFS t t₁) = FFDEFS (shiftUp c t) (shiftUp c t₁)
 shiftUp c (UNIV x) = UNIV x
+shiftUp c (LIFT t) = LIFT (shiftUp c t)
 shiftUp c (LOWER t) = LOWER (shiftUp c t)
 shiftUp c (SHRINK t) = SHRINK (shiftUp c t)
 
@@ -370,6 +374,7 @@ shiftDown c (TSQUASH t) = TSQUASH (shiftDown c t)
 shiftDown c (DUM t) = DUM (shiftDown c t)
 shiftDown c (FFDEFS t t₁) = FFDEFS (shiftDown c t) (shiftDown c t₁)
 shiftDown c (UNIV x) = UNIV x
+shiftDown c (LIFT t) = LIFT (shiftDown c t)
 shiftDown c (LOWER t) = LOWER (shiftDown c t)
 shiftDown c (SHRINK t) = SHRINK (shiftDown c t)
 
@@ -401,6 +406,7 @@ subv v t (TSQUASH u) = TSQUASH (subv v t u)
 subv v t (DUM u) = DUM (subv v t u)
 subv v t (FFDEFS u u₁) = FFDEFS (subv v t u) (subv v t u₁)
 subv v t (UNIV x) = UNIV x
+subv v t (LIFT u) = LIFT (subv v t u)
 subv v t (LOWER u) = LOWER (subv v t u)
 subv v t (SHRINK u) = SHRINK (subv v t u)
 
@@ -489,10 +495,9 @@ subvNotIn v t (FFDEFS u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
   rewrite subvNotIn v t u₁ (notInAppVars2 n) = refl
 subvNotIn v t (UNIV x) n = refl
-subvNotIn v t (LOWER u) n
-  rewrite subvNotIn v t u n = refl
-subvNotIn v t (SHRINK u) n
-  rewrite subvNotIn v t u n = refl
+subvNotIn v t (LIFT u) n rewrite subvNotIn v t u n = refl
+subvNotIn v t (LOWER u) n rewrite subvNotIn v t u n = refl
+subvNotIn v t (SHRINK u) n rewrite subvNotIn v t u n = refl
 
 sucLeInj : {a b : ℕ} → suc a ≤ suc b → a ≤ b
 sucLeInj {a} {b} (_≤_.s≤s i) = i
@@ -567,10 +572,9 @@ shiftDownTrivial v (FFDEFS u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
   rewrite shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftDownTrivial v (UNIV x) i = refl
-shiftDownTrivial v (LOWER u) i
-  rewrite shiftDownTrivial v u i = refl
-shiftDownTrivial v (SHRINK u) i
-  rewrite shiftDownTrivial v u i = refl
+shiftDownTrivial v (LIFT u) i rewrite shiftDownTrivial v u i = refl
+shiftDownTrivial v (LOWER u) i rewrite shiftDownTrivial v u i = refl
+shiftDownTrivial v (SHRINK u) i rewrite shiftDownTrivial v u i = refl
 
 shiftUpTrivial : (v : Var) (u : Term) → ((w : Var) → v ≤ w → w # u) → shiftUp v u ≡ u
 shiftUpTrivial v (VAR x) i with x <? v
@@ -632,10 +636,9 @@ shiftUpTrivial v (FFDEFS u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftUpTrivial v (UNIV x) i = refl
-shiftUpTrivial v (LOWER u) i
-  rewrite shiftUpTrivial v u i = refl
-shiftUpTrivial v (SHRINK u) i
-  rewrite shiftUpTrivial v u i = refl
+shiftUpTrivial v (LIFT u) i rewrite shiftUpTrivial v u i = refl
+shiftUpTrivial v (LOWER u) i rewrite shiftUpTrivial v u i = refl
+shiftUpTrivial v (SHRINK u) i rewrite shiftUpTrivial v u i = refl
 
 #→¬∈ : {t : Term} → # t → (v : Var) → v # t
 #→¬∈ {t} c v i rewrite c = x i
@@ -679,6 +682,7 @@ shiftDownUp (TSQUASH t) n rewrite shiftDownUp t n = refl
 shiftDownUp (DUM t) n rewrite shiftDownUp t n = refl
 shiftDownUp (FFDEFS t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
 shiftDownUp (UNIV x) n = refl
+shiftDownUp (LIFT t) n rewrite shiftDownUp t n = refl
 shiftDownUp (LOWER t) n rewrite shiftDownUp t n = refl
 shiftDownUp (SHRINK t) n rewrite shiftDownUp t n = refl
 

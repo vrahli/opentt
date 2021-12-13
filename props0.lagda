@@ -108,6 +108,9 @@ EQneqUNION {t} {a} {b} {c} {d} ()
 EQneqTSQUASH : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ TSQUASH c
 EQneqTSQUASH {t} {a} {b} {c} ()
 
+EQneqLIFT : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ LIFT c
+EQneqLIFT {t} {a} {b} {c} ()
+
 EQneqDUM : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ DUM c
 EQneqDUM {t} {a} {b} {c} ()
 
@@ -167,6 +170,9 @@ PIneqUNION {a} {b} {c} {d} ()
 
 PIneqTSQUASH : {a b : Term} {c : Term} → ¬ (PI a b) ≡ TSQUASH c
 PIneqTSQUASH {a} {b} {c} ()
+
+PIneqLIFT : {a b : Term} {c : Term} → ¬ (PI a b) ≡ LIFT c
+PIneqLIFT {a} {b} {c} ()
 
 PIneqDUM : {a b : Term} {c : Term} → ¬ (PI a b) ≡ DUM c
 PIneqDUM {a} {b} {c} ()
@@ -266,6 +272,9 @@ NATneqEQ {c} {d} {e} ()
 
 NATneqTSQUASH : {c : Term} → ¬ NAT ≡ TSQUASH c
 NATneqTSQUASH {c} ()
+
+NATneqLIFT : {c : Term} → ¬ NAT ≡ LIFT c
+NATneqLIFT {c} ()
 
 NATneqDUM : {c : Term} → ¬ NAT ≡ DUM c
 NATneqDUM {c} ()
@@ -474,7 +483,12 @@ eqTypes-mon u {A} {B} {w1} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) w2 ext =
     exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
 
 eqTypes-mon u {A} {B} {w1} (EQTUNIV i p c₁ c₂) w2 ext = EQTUNIV i p (⇛-mon ext c₁) (⇛-mon ext c₂) --(m x w2 ext)
+
+eqTypes-mon u {A} {B} {w1} (EQTLIFT A1 A2 c₁ c₂ eqtA) w2 ext =
+  EQTLIFT A1 A2 (⇛-mon ext c₁) (⇛-mon ext c₂) (eqTypes-mon (↓𝕌 u) eqtA w2 ext)
+
 eqTypes-mon u {A} {B} {w1} (EQTBAR x) w2 ext = EQTBAR (Bar.↑inBar inOpenBar-Bar x ext)
+
 
 
 if-equalInType-EQ : (u : ℕ) (w : 𝕎·) (T a b t₁ t₂ : CTerm)
@@ -505,6 +519,7 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTUNIV i p c₁ c₂ , eqi) = ⊥-elim (
 {--  where
     z2 : ∀𝕎 w (λ w' e' → (#EQ a b T #⇛ #UNIV u at w' × #EQ a b T #⇛ #UNIV u at w') → t₁ #⇛ #AX at w' × t₂ #⇛ #AX at w' × equalInType u w' T a b)
     z2 w' e' (c₁ , c₂) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt))--}
+if-equalInType-EQ u w T a b t₁ t₂ (EQTLIFT A1 A2 c1 c2 eqtA , eqi) = ⊥-elim (EQneqLIFT (compAllVal c2 tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
   Bar.inBar-idem
     inOpenBar-Bar
@@ -797,6 +812,7 @@ eqTypes⇛NAT {u} {w} {A} {B} (EQTUNIV i p c₁ c₂) comp = ⊥-elim (NATneqUNI
 
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (NATneqUNIV (⇛-val-det tt tt (⇛-mon e1 comp) d₁)))--}
+eqTypes⇛NAT {u} {w} {A} {B} (EQTLIFT A1 A2 c1 c2 eqtA) comp = ⊥-elim (NATneqLIFT (⇛-val-det tt tt comp c1))
 eqTypes⇛NAT {u} {w} {A} {B} (EQTBAR x) comp = i
   where
     a : ∀𝕎 w (λ w' e' → eqTypes u w' A B → inbar w' (λ w'' _ → ⌜ B ⌝ ⇛ NAT at w''))

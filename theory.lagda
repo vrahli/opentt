@@ -266,6 +266,7 @@ fvars-shiftUp≡ n (FFDEFS t t₁)
   | fvars-shiftUp≡ n t
   | fvars-shiftUp≡ n t₁ = refl
 fvars-shiftUp≡ n (UNIV x) = refl
+fvars-shiftUp≡ n (LIFT t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (LOWER t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (SHRINK t) = fvars-shiftUp≡ n t
 
@@ -349,6 +350,7 @@ fvars-shiftDown≡ n (FFDEFS t t₁)
   | fvars-shiftDown≡ n t
   | fvars-shiftDown≡ n t₁ = refl
 fvars-shiftDown≡ n (UNIV x) = refl
+fvars-shiftDown≡ n (LIFT t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (LOWER t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (SHRINK t) = fvars-shiftDown≡ n t
 
@@ -463,6 +465,7 @@ fvars-subv v a (FFDEFS b b₁) i with ∈-++⁻ (fvars (subv v a b)) i
 ... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b p)
 ... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b₁ p)
 fvars-subv v a (UNIV x) i = ⊥-elim (¬∈[] i)
+fvars-subv v a (LIFT b) = fvars-subv v a b
 fvars-subv v a (LOWER b) = fvars-subv v a b
 fvars-subv v a (SHRINK b) = fvars-subv v a b
 
@@ -632,6 +635,13 @@ sub0 a t =
 #UNIV n = ct (UNIV n) refl
 
 
+#LIFT : CTerm → CTerm
+#LIFT a = ct (LIFT ⌜ a ⌝) c
+  where
+    c : # LIFT (CTerm.cTerm a)
+    c rewrite CTerm.closed a = refl
+
+
 #APPLY : CTerm → CTerm → CTerm
 #APPLY a b = ct (APPLY ⌜ a ⌝ ⌜ b ⌝) c
   where
@@ -797,6 +807,12 @@ univsUpTo n = (m : ℕ) (p : m < n) → wper
 univs : Set₂
 univs = Σ ℕ univsUpTo
 
+
+↓𝕌 : univs → univs
+↓𝕌 (0 , f) = (0 , f)
+↓𝕌 (suc n , f) = (n , λ m p w a b → f m (<-trans p (n<1+n n)) w a b)
+
+
 -- equality between types (an inductive definition)
 -- and equality in types (a recursive function)
 -- We don't check positivity here, this can be done for all instances of bar.Bar
@@ -893,6 +909,12 @@ data eqTypes u w T1 T2 where
     → T1 #⇛ #UNIV i at w
     → T2 #⇛ #UNIV i at w
     → eqTypes u w T1 T2
+  EQTLIFT : (A1 A2 : CTerm)
+    → T1 #⇛ #LIFT A1 at w
+    → T2 #⇛ #LIFT A2 at w
+--    → (eqtA : ∀𝕎 w (λ w' _ → eqTypes (↓𝕌 u) w' A1 A2))
+    → (eqtA : eqTypes (↓𝕌 u) w A1 A2)
+    → eqTypes u w T1 T2
   EQTBAR : inbar w (λ w' _ → eqTypes u w' T1 T2) → eqTypes u w T1 T2
 \end{code}
 
@@ -968,6 +990,8 @@ eqInType u w (EQTSQUASH _ _ _ _ eqtA exta) t1 t2 =
 eqInType u w (EQFFDEFS _ _ x1 _ _ _ eqtA exta _) t1 t2 =
   inbar w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTUNIV i p c₁ c₂) T1 T2 = snd u i p w T1 T2
+eqInType u w (EQTLIFT A1 A2 c₁ c₂ eqtA) T1 T2 = eqInType (↓𝕌 u) w eqtA T1 T2
+--  inbar w (λ w' e → eqInType (↓𝕌 u) w' (eqtA w' e) T1 T2)
 eqInType u w (EQTBAR f) t1 t2 =
   inbar' w f (λ w' _ (x : eqTypes u w' _ _) → eqInType u w' x t1 t2)
   {-- This is an unfolding of the above, as agda doesn't like the above --}
@@ -1025,6 +1049,31 @@ eqInUnivi≤ (suc m) i p w T1 T2 with suc m ≤? c =
 --- Add an explicit level-lifting constructor to the type system
 uni : ℕ → univs
 uni n = (n , uniUpTo n) --(eqUnivi n , eqInUnivi n))
+
+
+{--ul : ℕ → ℕ
+ul n = {--suc--} n--}
+
+
+is-uni : (u : univs) → Set₂
+is-uni u = Σ ℕ (λ n → u ≡ uni n)
+
+
+is-uni-uni : (n : ℕ) → is-uni (uni n)
+is-uni-uni n = n , refl
+
+
+𝕌 : Set₂
+𝕌 = Σ univs is-uni
+
+
+-- Would need functional extensionality
+{--is-uni-↓𝕌 : (u : univs) → is-uni u → is-uni (↓𝕌 u)
+is-uni-↓𝕌 u (0 , isu) rewrite isu = 0 , refl
+is-uni-↓𝕌 u (suc n , isu) rewrite isu = n , {!!}
+--}
+
+
 
 TEQ : Set₂
 TEQ = (w : 𝕎·) (T1 T2 : CTerm) → Set₁
