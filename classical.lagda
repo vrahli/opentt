@@ -319,6 +319,32 @@ equalInType→equalTypes-aux n i p w a b (eqt , eqi) =
 
 
 
+{--
+equalTypes<s : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+              → equalTypes i w a b
+              → equalTypes (suc i) w a b
+equalTypes<s i w a b (EQTNAT x x₁) = {!!}
+equalTypes<s i w a b (EQTQNAT x x₁) = {!!}
+equalTypes<s i w a b (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = {!!}
+equalTypes<s i w a b (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) = {!!}
+equalTypes<s i w a b (EQTFREE x x₁) = {!!}
+equalTypes<s i w a b (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
+  EQTPI A1 B1 A2 B2 x x₁
+        (λ w' e' → equalTypes<s i w' A1 A2 (eqta w' e'))
+        (λ w' e' a₁ a₂ ea → {!!})
+        {!!} {!!}
+equalTypes<s i w a b (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = {!!}
+equalTypes<s i w a b (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = {!!}
+equalTypes<s i w a b (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2) = {!!}
+equalTypes<s i w a b (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) = {!!}
+equalTypes<s i w a b (EQTSQUASH A1 A2 x x₁ eqtA exta) = {!!}
+equalTypes<s i w a b (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) = {!!}
+equalTypes<s i w a b (EQTUNIV i₁ p x x₁) = {!!}
+equalTypes<s i w a b (EQTBAR x) = {!!}
+--}
+
+
+
 equalTypes< : (n i : ℕ) (p : i < n) (w : 𝕎·) (a b : CTerm)
               → equalTypes i w a b
               → equalTypes n w a b
