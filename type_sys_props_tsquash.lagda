@@ -27,6 +27,7 @@ open import Data.List.Relation.Unary.Any
 open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
+open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -36,16 +37,16 @@ open import choice
 
 
 --module type_sys_props_tsquash (bar : Bar) where
-module type_sys_props_tsquash (W : PossibleWorlds) (C : Choice W) where
+module type_sys_props_tsquash (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) where
 
 
 open import worldDef(W)
 open import computation(W)(C)
 open import bar(W)
-open import theory(W)(C)
-open import props0(W)(C)
-open import ind2(W)(C)
-open import terms(W)(C)
+open import theory(W)(C)(E)
+open import props0(W)(C)(E)
+open import ind2(W)(C)(E)
+open import terms(W)(C)(E)
 
 -- open import calculus
 -- open import world
@@ -774,15 +775,15 @@ eqInType-⇛-TSQUASH u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTBAR x) ei =
 
 
 
-eqInType-⇛-TSQUASH2 : (u : univs) (w : 𝕎·) (A B A1 B1 a b : CTerm)
-                       (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 B1))
-                       (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+eqInType-⇛-TSQUASH2 : (u : 𝕌) (w : 𝕎·) (A B A1 B1 a b : CTerm)
+                       (eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 B1))
+                       (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqta w e) a b))
                        → A #⇛ #TSQUASH A1 at w
                        → B #⇛ #TSQUASH B1 at w
-                       → (eqt : eqTypes u w A B)
-                       → (eqi : eqInType u w eqt a b)
-                       → (ext : {u' : univs} {w' : 𝕎·} {A' B' : CTerm} (eqt' : eqTypes u' w' A' B') → ≤Type {u'} eqt' eqt → eqInTypeExt eqt')
-                       → inbar w (λ w' e → TSQUASHeq (eqInType u w' (eqta w' e)) w' a b)
+                       → (eqt : ≡Types u w A B)
+                       → (eqi : ≡∈Type u w eqt a b)
+                       → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} eqt → eqInTypeExt eqt')
+                       → inbar w (λ w' e → TSQUASHeq (≡∈Type u w' (eqta w' e)) w' a b)
 {-# TERMINATING #-}
 eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTNAT x x₁) ei ext = ⊥-elim (TSQUASHneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTQNAT x x₁) ei ext = ⊥-elim (TSQUASHneqQNAT (⇛-val-det tt tt c₁ x))
@@ -802,11 +803,11 @@ eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSQUASH A3 A4 x x
     awexta₁ : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
     awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeSQUASH u w A B A3 A4 x x₁ eqta₁ exta₁ w1 e1)))
 
-    aw : ∀𝕎 w (λ w' e' → TSQUASHeq (eqInType u w' (eqta₁ w' e')) w' a b
-                         → TSQUASHeq (eqInType u w' (eqta w' e')) w' a b)
+    aw : ∀𝕎 w (λ w' e' → TSQUASHeq (≡∈Type u w' (eqta₁ w' e')) w' a b
+                         → TSQUASHeq (≡∈Type u w' (eqta w' e')) w' a b)
     aw w1 e1 (a1 , a2 , s1 , s2 , s3 , eqa) = a1 , a2 , s1 , s2 , s3 , eqa'
       where
-        eqa' : eqInType u w1 (eqta w1 e1) a1 a2
+        eqa' : ≡∈Type u w1 (eqta w1 e1) a1 a2
         eqa' = proj₁ (awexta₁ w1 e1 (eqta w1 e1) a1 a2) eqa
 
 --eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei ext = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt c₁ x))
@@ -826,9 +827,9 @@ eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTBAR x) ei ext =
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' A B) (at : atbar x w' e' z) →
-         eqInType u w' z a b →
-         inbar w' (λ w'' e → TSQUASHeq (eqInType u w'' (eqta w'' (⊑-trans· e' e))) w'' a b))
+         (z : ≡Types u w' A B) (at : atbar x w' e' z) →
+         ≡∈Type u w' z a b →
+         inbar w' (λ w'' e → TSQUASHeq (≡∈Type u w'' (eqta w'' (⊑-trans· e' e))) w'' a b))
     aw0 w1 e1 z at ez =
       eqInType-⇛-TSQUASH2
         u w1 A B A1 B1 a b
@@ -839,10 +840,10 @@ eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTBAR x) ei ext =
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' A B) (at : atbar x w' e' z) →
-         eqInType u w' z a b →
-         inbar w' (λ w'' e → (x : w ⊑· w'') → TSQUASHeq (eqInType u w'' (eqta w'' x)) w'' a b))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc inOpenBar-Bar (irr-tsquash u w A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z at ez)
+         (z : ≡Types u w' A B) (at : atbar x w' e' z) →
+         ≡∈Type u w' z a b →
+         inbar w' (λ w'' e → (x : w ⊑· w'') → TSQUASHeq (≡∈Type u w'' (eqta w'' x)) w'' a b))
+    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc inOpenBar-Bar (irr-tsquash (u ·ᵤ) w A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z at ez)
 
 
 
@@ -909,15 +910,15 @@ eqInType-⇛-TSQUASH-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTBAR x) e
 
 
 
-eqInType-⇛-TSQUASH-rev2 : (u : univs) (w : 𝕎·) (A B A1 B1 a b : CTerm)
-                           (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 B1))
-                           (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+eqInType-⇛-TSQUASH-rev2 : (u : 𝕌) (w : 𝕎·) (A B A1 B1 a b : CTerm)
+                           (eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 B1))
+                           (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqta w e) a b))
                            → A #⇛ #TSQUASH A1 at w
                            → B #⇛ #TSQUASH B1 at w
-                           → (eqt : eqTypes u w A B)
-                           → (ext : {u' : univs} {w' : 𝕎·} {A' B' : CTerm} (eqt' : eqTypes u' w' A' B') → ≤Type {u'} eqt' eqt → eqInTypeExt eqt')
-                           → inbar w (λ w' e → TSQUASHeq (eqInType u w' (eqta w' e)) w' a b)
-                           → eqInType u w eqt a b
+                           → (eqt : ≡Types u w A B)
+                           → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} eqt → eqInTypeExt eqt')
+                           → inbar w (λ w' e → TSQUASHeq (≡∈Type u w' (eqta w' e)) w' a b)
+                           → ≡∈Type u w eqt a b
 {-# TERMINATING #-}
 eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTNAT x x₁) ext ei = ⊥-elim (TSQUASHneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTQNAT x x₁) ext ei = ⊥-elim (TSQUASHneqQNAT (⇛-val-det tt tt c₁ x))
@@ -937,11 +938,11 @@ eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSQUASH A3 A4
     awexta₁ : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
     awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeSQUASH u w A B A3 A4 x x₁ eqta₁ exta₁ w1 e1)))
 
-    aw : ∀𝕎 w (λ w' e' → TSQUASHeq (eqInType u w' (eqta w' e')) w' a b
-                         → TSQUASHeq (eqInType u w' (eqta₁ w' e')) w' a b)
+    aw : ∀𝕎 w (λ w' e' → TSQUASHeq (≡∈Type u w' (eqta w' e')) w' a b
+                         → TSQUASHeq (≡∈Type u w' (eqta₁ w' e')) w' a b)
     aw w1 e1 (a1 , a2 , s1 , s2 , s3 , eqa) = a1 , a2 , s1 , s2 , s3 , eqa'
       where
-        eqa' : eqInType u w1 (eqta₁ w1 e1) a1 a2
+        eqa' : ≡∈Type u w1 (eqta₁ w1 e1) a1 a2
         eqa' = snd (awexta₁ w1 e1 (eqta w1 e1) a1 a2) eqa
 
 --eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ext ei = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt c₁ x))
@@ -960,7 +961,7 @@ eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTBAR x) ext e
   Bar.∀𝕎-inBar-inBar' inOpenBar-Bar x aw
   where
     aw : ∀𝕎 w
-      (λ w' e' → (z : eqTypes u w' A B) (at : atbar x w' e' z) → eqInType u w' z a b)
+      (λ w' e' → (z : ≡Types u w' A B) (at : atbar x w' e' z) → ≡∈Type u w' z a b)
     aw w1 e1 z at =
       eqInType-⇛-TSQUASH-rev2
         u w1 A B A1 B1 a b
@@ -968,7 +969,7 @@ eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTBAR x) ext e
         (⇛-mon e1 c₁) (⇛-mon e1 c₂)
         z (≤Type-EQTBAR-eqInTypeExt at ext) j
       where
-        j : inbar w1 (↑wPred (λ w' e → TSQUASHeq (eqInType u w' (eqta w' e)) w' a b) e1)
+        j : inbar w1 (↑wPred (λ w' e → TSQUASHeq (≡∈Type u w' (eqta w' e)) w' a b) e1)
         j = Bar.↑inBar inOpenBar-Bar ei e1
 
 

@@ -25,6 +25,7 @@ open import Data.List.Relation.Unary.Any
 open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
+open import Axiom.Extensionality.Propositional
 
 open import util
 open import calculus
@@ -32,13 +33,13 @@ open import world
 open import choice
 --open import bar
 
-module props0 (W : PossibleWorlds) (C : Choice W) where --(bar : Bar W) where
+module props0 (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) where --(bar : Bar W) where
 open import worldDef(W)
 open import choiceDef(W)(C)
 open import computation(W)(C)
 --open import theory (bar)
 open import bar(W)
-open import theory(W)(C)
+open import theory(W)(C)(E)
 \end{code}
 
 
@@ -485,7 +486,7 @@ eqTypes-mon u {A} {B} {w1} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) w2 ext =
 eqTypes-mon u {A} {B} {w1} (EQTUNIV i p c₁ c₂) w2 ext = EQTUNIV i p (⇛-mon ext c₁) (⇛-mon ext c₂) --(m x w2 ext)
 
 eqTypes-mon u {A} {B} {w1} (EQTLIFT A1 A2 c₁ c₂ eqtA) w2 ext =
-  EQTLIFT A1 A2 (⇛-mon ext c₁) (⇛-mon ext c₂) (eqTypes-mon (↓𝕌 u) eqtA w2 ext)
+  EQTLIFT A1 A2 (⇛-mon ext c₁) (⇛-mon ext c₂) (eqTypes-mon (↓U u) eqtA w2 ext)
 
 eqTypes-mon u {A} {B} {w1} (EQTBAR x) w2 ext = EQTBAR (Bar.↑inBar inOpenBar-Bar x ext)
 

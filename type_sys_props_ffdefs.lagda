@@ -27,6 +27,7 @@ open import Data.List.Relation.Unary.Any
 open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
+open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -36,16 +37,16 @@ open import choice
 
 
 --module type_sys_props_ffdefs (bar : Bar) where
-module type_sys_props_ffdefs (W : PossibleWorlds) (C : Choice W) where
+module type_sys_props_ffdefs (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) where
 
 
 open import worldDef(W)
 open import computation(W)(C)
 open import bar(W)
-open import theory(W)(C)
-open import props0(W)(C)
-open import ind2(W)(C)
-open import terms(W)(C)
+open import theory(W)(C)(E)
+open import props0(W)(C)(E)
+open import ind2(W)(C)(E)
+open import terms(W)(C)(E)
 
 -- open import calculus
 -- open import world
@@ -858,15 +859,15 @@ eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTBAR x) 
 
 
 
-eqInType-⇛-FFDEFS2 : (u : univs) (w : 𝕎·) (A B A1 B1 x1 x2 a b : CTerm)
-                     (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 B1))
-                     (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                     → A #⇛ #FFDEFS A1 x1 at w
-                     → B #⇛ #FFDEFS B1 x2 at w
-                     → (eqt : eqTypes u w A B)
-                     → (eqi : eqInType u w eqt a b)
-                     → (ext : {u' : univs} {w' : 𝕎·} {A' B' : CTerm} (eqt' : eqTypes u' w' A' B') → ≤Type {u'} eqt' eqt → eqInTypeExt eqt')
-                     → inbar w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqta w' e)) w' a b)
+eqInType-⇛-FFDEFS2 : (u : 𝕌) (w : 𝕎·) (A B A1 B1 x1 x2 a b : CTerm)
+                      (eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 B1))
+                      (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqta w e) a b))
+                      → A #⇛ #FFDEFS A1 x1 at w
+                      → B #⇛ #FFDEFS B1 x2 at w
+                      → (eqt : ≡Types u w A B)
+                      → (eqi : ≡∈Type u w eqt a b)
+                      → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} eqt → eqInTypeExt eqt')
+                      → inbar w (λ w' e → FFDEFSeq x1 (≡∈Type u w' (eqta w' e)) w' a b)
 {-# TERMINATING #-}
 eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTNAT x x₁) ei ext = ⊥-elim (FFDEFSneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTQNAT x x₁) ei ext = ⊥-elim (FFDEFSneqQNAT (⇛-val-det tt tt c₁ x))
@@ -890,11 +891,11 @@ eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQFFDEFS A3 A4
     awexta₁ : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
     awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeFFDEFS u w A B A3 A4 z1 z2 x x₁ eqta₁ exta₁ eqx w1 e1)))
 
-    aw : ∀𝕎 w (λ w' e' → FFDEFSeq z1 (eqInType u w' (eqta₁ w' e')) w' a b
-                         → FFDEFSeq z1 (eqInType u w' (eqta w' e')) w' a b)
+    aw : ∀𝕎 w (λ w' e' → FFDEFSeq z1 (≡∈Type u w' (eqta₁ w' e')) w' a b
+                         → FFDEFSeq z1 (≡∈Type u w' (eqta w' e')) w' a b)
     aw w1 e1 (v , c1 , c2 , eqa , nd) = v , c1 , c2 , eqa' , nd
       where
-        eqa' : eqInType u w1 (eqta w1 e1) z1 v
+        eqa' : ≡∈Type u w1 (eqta w1 e1) z1 v
         eqa' = proj₁ (awexta₁ w1 e1 (eqta w1 e1) z1 v) eqa
 
 eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTUNIV i p d₁ d₂) ei ext = ⊥-elim (FFDEFSneqUNIV (⇛-val-det tt tt c₁ d₁))
@@ -912,9 +913,9 @@ eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTBAR x) ei e
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' A B) (at : atbar x w' e' z) →
-         eqInType u w' z a b →
-         inbar w' (λ w'' e → FFDEFSeq x1 (eqInType u w'' (eqta w'' (⊑-trans· e' e))) w'' a b))
+         (z : ≡Types u w' A B) (at : atbar x w' e' z) →
+         ≡∈Type u w' z a b →
+         inbar w' (λ w'' e → FFDEFSeq x1 (≡∈Type u w'' (eqta w'' (⊑-trans· e' e))) w'' a b))
     aw0 w1 e1 z at ez =
       eqInType-⇛-FFDEFS2
         u w1 A B A1 B1 x1 x2 a b
@@ -925,10 +926,10 @@ eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTBAR x) ei e
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' A B) (at : atbar x w' e' z) →
-         eqInType u w' z a b →
-         inbar w' (λ w'' e → (x : w ⊑· w'') → FFDEFSeq x1 (eqInType u w'' (eqta w'' x)) w'' a b))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc inOpenBar-Bar (irr-ffdefs u w x1 A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z at ez)
+         (z : ≡Types u w' A B) (at : atbar x w' e' z) →
+         ≡∈Type u w' z a b →
+         inbar w' (λ w'' e → (x : w ⊑· w'') → FFDEFSeq x1 (≡∈Type u w'' (eqta w'' x)) w'' a b))
+    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc inOpenBar-Bar (irr-ffdefs (u ·ᵤ) w x1 A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z at ez)
 
 
 
@@ -997,15 +998,15 @@ eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTBAR
 
 
 
-eqInType-⇛-FFDEFS-rev2 : (u : univs) (w : 𝕎·) (A B A1 B1 x1 x2 a b : CTerm)
-                          (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 B1))
-                          (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+eqInType-⇛-FFDEFS-rev2 : (u : 𝕌) (w : 𝕎·) (A B A1 B1 x1 x2 a b : CTerm)
+                          (eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 B1))
+                          (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqta w e) a b))
                           → A #⇛ #FFDEFS A1 x1 at w
                           → B #⇛ #FFDEFS B1 x2 at w
-                          → (eqt : eqTypes u w A B)
-                          → (ext : {u' : univs} {w' : 𝕎·} {A' B' : CTerm} (eqt' : eqTypes u' w' A' B') → ≤Type {u'} eqt' eqt → eqInTypeExt eqt')
-                          → inbar w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqta w' e)) w' a b)
-                          → eqInType u w eqt a b
+                          → (eqt : ≡Types u w A B)
+                          → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} eqt → eqInTypeExt eqt')
+                          → inbar w (λ w' e → FFDEFSeq x1 (≡∈Type u w' (eqta w' e)) w' a b)
+                          → ≡∈Type u w eqt a b
 {-# TERMINATING #-}
 eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTNAT x x₁) ext ei = ⊥-elim (FFDEFSneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTQNAT x x₁) ext ei = ⊥-elim (FFDEFSneqQNAT (⇛-val-det tt tt c₁ x))
@@ -1029,11 +1030,11 @@ eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQFFDEFS A
     awexta₁ : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
     awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeFFDEFS u w A B A3 A4 z1 z2 x x₁ eqta₁ exta₁ eqx w1 e1)))
 
-    aw : ∀𝕎 w (λ w' e' → FFDEFSeq z1 (eqInType u w' (eqta w' e')) w' a b
-                         → FFDEFSeq z1 (eqInType u w' (eqta₁ w' e')) w' a b)
+    aw : ∀𝕎 w (λ w' e' → FFDEFSeq z1 (≡∈Type u w' (eqta w' e')) w' a b
+                         → FFDEFSeq z1 (≡∈Type u w' (eqta₁ w' e')) w' a b)
     aw w1 e1 (v , c1 , c2 , eqa , nd) = v , c1 , c2 , eqa' , nd
       where
-        eqa' : eqInType u w1 (eqta₁ w1 e1) z1 v
+        eqa' : ≡∈Type u w1 (eqta₁ w1 e1) z1 v
         eqa' = snd (awexta₁ w1 e1 (eqta w1 e1) z1 v) eqa
 
 eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTUNIV i p d₁ d₂) ext ei = ⊥-elim (FFDEFSneqUNIV (⇛-val-det tt tt c₁ d₁))
@@ -1050,7 +1051,7 @@ eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTBAR x) 
   Bar.∀𝕎-inBar-inBar' inOpenBar-Bar x aw
   where
     aw : ∀𝕎 w
-      (λ w' e' → (z : eqTypes u w' A B) (at : atbar x w' e' z) → eqInType u w' z a b)
+      (λ w' e' → (z : ≡Types u w' A B) (at : atbar x w' e' z) → ≡∈Type u w' z a b)
     aw w1 e1 z at =
       eqInType-⇛-FFDEFS-rev2
         u w1 A B A1 B1 x1 x2 a b
@@ -1058,7 +1059,7 @@ eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTBAR x) 
         (⇛-mon e1 c₁) (⇛-mon e1 c₂)
         z (≤Type-EQTBAR-eqInTypeExt at ext) j
       where
-        j : inbar w1 (↑wPred (λ w' e → FFDEFSeq x1 (eqInType u w' (eqta w' e)) w' a b) e1)
+        j : inbar w1 (↑wPred (λ w' e → FFDEFSeq x1 (≡∈Type u w' (eqta w' e)) w' a b) e1)
         j = Bar.↑inBar inOpenBar-Bar ei e1
 
 

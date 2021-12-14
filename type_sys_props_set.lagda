@@ -27,6 +27,7 @@ open import Data.List.Relation.Unary.Any
 open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
+open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -36,16 +37,16 @@ open import choice
 
 
 --module type_sys_props_set (bar : Bar) where
-module type_sys_props_set (W : PossibleWorlds) (C : Choice W) where
+module type_sys_props_set (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) where
 
 
 open import worldDef(W)
 open import computation(W)(C)
 open import bar(W)
-open import theory(W)(C)
-open import props0(W)(C)
-open import ind2(W)(C)
-open import terms(W)(C)
+open import theory(W)(C)(E)
+open import props0(W)(C)(E)
+open import ind2(W)(C)(E)
+open import terms(W)(C)(E)
 
 -- open import calculus
 -- open import world
@@ -1011,18 +1012,18 @@ eqInType-⇛-SET u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂
 
 
 
-eqInType-⇛-SET2 : (u : univs) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTerm0) (a b : CTerm)
-                   (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
-                   (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
-                                          → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
-                   (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                   (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+eqInType-⇛-SET2 : (u : 𝕌) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTerm0) (a b : CTerm)
+                   (eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 A2))
+                   (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → ≡∈Type u w' (eqta w' e) a1 a2
+                                          → ≡Types u w' (sub0 a1 B1) (sub0 a2 B2)))
+                   (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqta w e) a b))
+                   (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → ≡∈Type u w (eqtb w e a b x) c d))
                    → A #⇛ #SET A1 B1 at w
                    → B #⇛ #SET A2 B2 at w
-                   → (eqt : eqTypes u w A B)
-                   → (eqi : eqInType u w eqt a b)
-                   → (ext : {u' : univs} {w' : 𝕎·} {A' B' : CTerm} (eqt' : eqTypes u' w' A' B') → ≤Type {u'} eqt' eqt → eqInTypeExt eqt')
-                   → inbar w (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b)
+                   → (eqt : ≡Types u w A B)
+                   → (eqi : ≡∈Type u w eqt a b)
+                   → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} eqt → eqInTypeExt eqt')
+                   → inbar w (λ w' e → SETeq (≡∈Type u w' (eqta w' e)) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e a₁ a₂ eqa)) a b)
 {-# TERMINATING #-}
 eqInType-⇛-SET2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNAT x x₁) ei ext = ⊥-elim (SETneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SET2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQNAT x x₁) ei ext = ⊥-elim (SETneqQNAT (⇛-val-det tt tt c₁ x))
@@ -1041,18 +1042,18 @@ eqInType-⇛-SET2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET 
     awexta₁ : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
     awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeSETa u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
 
-    awextb₁ : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta₁ w1 e1) a1 a2)
+    awextb₁ : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : ≡∈Type u w1 (eqta₁ w1 e1) a1 a2)
                               → eqInTypeExt (eqtb₁ w1 e1 a1 a2 ea))
     awextb₁ w1 e1 a1 a2 ea = ext (eqtb₁ w1 e1 a1 a2 ea) (≤TypeS _ _ (<Type1 _ _ (<TypeSETb u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1 a1 a2 ea)))
 
-    aw : ∀𝕎 w (λ w' e' → SETeq (eqInType u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb₁ w' e' a₁ a₂ eqa)) a b
-                         → SETeq (eqInType u w' (eqta w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e' a₁ a₂ eqa)) a b)
+    aw : ∀𝕎 w (λ w' e' → SETeq (≡∈Type u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb₁ w' e' a₁ a₂ eqa)) a b
+                         → SETeq (≡∈Type u w' (eqta w' e')) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e' a₁ a₂ eqa)) a b)
     aw w1 e1 (t , eqa , eqb) = t , eqa' , eqb'
       where
-        eqa' : eqInType u w1 (eqta w1 e1) a b
+        eqa' : ≡∈Type u w1 (eqta w1 e1) a b
         eqa' = fst (awexta₁ w1 e1 (eqta w1 e1) a b) eqa
 
-        eqb' : eqInType u w1 (eqtb w1 e1 a b eqa') t t
+        eqb' : ≡∈Type u w1 (eqtb w1 e1 a b eqa') t t
         eqb' = fst (awextb₁ w1 e1 a b eqa (eqtb w1 e1 a b eqa') t t) eqb
 
 eqInType-⇛-SET2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ei ext = ⊥-elim (SETneqEQ (⇛-val-det tt tt c₁ x))
@@ -1075,22 +1076,22 @@ eqInType-⇛-SET2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTBAR 
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' A B) (at : atbar x w' e' z) →
-         eqInType u w' z a b →
-         inbar w' (λ w'' e → SETeq (eqInType u w'' (eqta w'' (⊑-trans· e' e))) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa)) a b))
+         (z : ≡Types u w' A B) (at : atbar x w' e' z) →
+         ≡∈Type u w' z a b →
+         inbar w' (λ w'' e → SETeq (≡∈Type u w'' (eqta w'' (⊑-trans· e' e))) (λ a1 a2 eqa → ≡∈Type u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa)) a b))
     aw0 w1 e1 z at ez =
       eqInType-⇛-SET2
         u w1 A B A1 A2 B1 B2 a b
         (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
-        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
+        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u ·ᵤ} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
         (⇛-mon e1 c₁) (⇛-mon e1 c₂) z ez (≤Type-EQTBAR-eqInTypeExt at ext)
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' A B) (at : atbar x w' e' z) →
-         eqInType u w' z a b →
-         inbar w' (λ w'' e → (x : w ⊑· w'') → SETeq (eqInType u w'' (eqta w'' x)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x a1 a2 eqa)) a b))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc inOpenBar-Bar (irr-fam-set u w A1 B1 A2 B2 eqta eqtb exta extb a b w1 e1) (aw0 w1 e1 z at ez)
+         (z : ≡Types u w' A B) (at : atbar x w' e' z) →
+         ≡∈Type u w' z a b →
+         inbar w' (λ w'' e → (x : w ⊑· w'') → SETeq (≡∈Type u w'' (eqta w'' x)) (λ a1 a2 eqa → ≡∈Type u w'' (eqtb w'' x a1 a2 eqa)) a b))
+    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc inOpenBar-Bar (irr-fam-set (u ·ᵤ) w A1 B1 A2 B2 eqta eqtb exta extb a b w1 e1) (aw0 w1 e1 z at ez)
 
 
 
@@ -1169,18 +1170,18 @@ eqInType-⇛-SET-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ 
 
 
 
-eqInType-⇛-SET-rev2 : (u : univs) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTerm0) (a b : CTerm)
-                       (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
-                       (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
-                                              → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
-                       (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-                       (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+eqInType-⇛-SET-rev2 : (u : 𝕌) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTerm0) (a b : CTerm)
+                       (eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 A2))
+                       (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → ≡∈Type u w' (eqta w' e) a1 a2
+                                              → ≡Types u w' (sub0 a1 B1) (sub0 a2 B2)))
+                       (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqta w e) a b))
+                       (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → ≡∈Type u w (eqtb w e a b x) c d))
                        → A #⇛ #SET A1 B1 at w
                        → B #⇛ #SET A2 B2 at w
-                       → (eqt : eqTypes u w A B)
-                       → (ext : {u' : univs} {w' : 𝕎·} {A' B' : CTerm} (eqt' : eqTypes u' w' A' B') → ≤Type {u'} eqt' eqt → eqInTypeExt eqt')
-                       → inbar w (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b)
-                       → eqInType u w eqt a b
+                       → (eqt : ≡Types u w A B)
+                       → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} eqt → eqInTypeExt eqt')
+                       → inbar w (λ w' e → SETeq (≡∈Type u w' (eqta w' e)) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e a₁ a₂ eqa)) a b)
+                       → ≡∈Type u w eqt a b
 {-# TERMINATING #-}
 eqInType-⇛-SET-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNAT x x₁) ext ei = ⊥-elim (SETneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SET-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQNAT x x₁) ext ei = ⊥-elim (SETneqQNAT (⇛-val-det tt tt c₁ x))
@@ -1199,18 +1200,18 @@ eqInType-⇛-SET-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQT
     awexta₁ : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
     awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeSETa u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
 
-    awextb₁ : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta₁ w1 e1) a1 a2)
+    awextb₁ : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : ≡∈Type u w1 (eqta₁ w1 e1) a1 a2)
                               → eqInTypeExt (eqtb₁ w1 e1 a1 a2 ea))
     awextb₁ w1 e1 a1 a2 ea = ext (eqtb₁ w1 e1 a1 a2 ea) (≤TypeS _ _ (<Type1 _ _ (<TypeSETb u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1 a1 a2 ea)))
 
-    aw : ∀𝕎 w (λ w' e' → SETeq (eqInType u w' (eqta w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e' a₁ a₂ eqa)) a b
-                         → SETeq (eqInType u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb₁ w' e' a₁ a₂ eqa)) a b)
+    aw : ∀𝕎 w (λ w' e' → SETeq (≡∈Type u w' (eqta w' e')) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e' a₁ a₂ eqa)) a b
+                         → SETeq (≡∈Type u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb₁ w' e' a₁ a₂ eqa)) a b)
     aw w1 e1 (t , eqa , eqb) = t , eqa' , eqb'
       where
-        eqa' : eqInType u w1 (eqta₁ w1 e1) a b
+        eqa' : ≡∈Type u w1 (eqta₁ w1 e1) a b
         eqa' = snd (awexta₁ w1 e1 (eqta w1 e1) a b) eqa
 
-        eqb' : eqInType u w1 (eqtb₁ w1 e1 a b eqa') t t
+        eqb' : ≡∈Type u w1 (eqtb₁ w1 e1 a b eqa') t t
         eqb' = snd (awextb₁ w1 e1 a b eqa' (eqtb w1 e1 a b eqa) t t) eqb
 
 eqInType-⇛-SET-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ext ei = ⊥-elim (SETneqEQ (⇛-val-det tt tt c₁ x))
@@ -1231,15 +1232,15 @@ eqInType-⇛-SET-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQT
 eqInType-⇛-SET-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTBAR x) ext ei =
   Bar.∀𝕎-inBar-inBar' inOpenBar-Bar x aw
   where
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar x w' e' z) → eqInType u w' z a b)
+    aw : ∀𝕎 w (λ w' e' → (z : ≡Types u w' A B) (at : atbar x w' e' z) → ≡∈Type u w' z a b)
     aw w1 e1 z at =
       eqInType-⇛-SET-rev2
         u w1 A B A1 A2 B1 B2 a b
         (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
-        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
+        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u ·ᵤ} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
         (⇛-mon e1 c₁) (⇛-mon e1 c₂) z (≤Type-EQTBAR-eqInTypeExt at ext) j
       where
-        j : inbar w1 (↑wPred (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b) e1)
+        j : inbar w1 (↑wPred (λ w' e → SETeq (≡∈Type u w' (eqta w' e)) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e a₁ a₂ eqa)) a b) e1)
         j = Bar.↑inBar inOpenBar-Bar ei e1
 
 

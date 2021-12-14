@@ -28,6 +28,7 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
+open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -37,29 +38,29 @@ open import choice
 
 
 --module props1 (bar : Bar) where
-module props1 (W : PossibleWorlds) (C : Choice W) where
+module props1 (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) where
 
 
 open import worldDef(W)
 open import computation(W)(C)
 open import bar(W)
-open import theory(W)(C)
-open import props0(W)(C)
-open import ind2(W)(C)
-open import terms(W)(C)
+open import theory(W)(C)(E)
+open import props0(W)(C)(E)
+open import ind2(W)(C)(E)
+open import terms(W)(C)(E)
 
-open import type_sys_props_nat(W)(C)
-open import type_sys_props_qnat(W)(C)
-open import type_sys_props_lt(W)(C)
-open import type_sys_props_qlt(W)(C)
-open import type_sys_props_free(W)(C)
-open import type_sys_props_pi(W)(C)
-open import type_sys_props_sum(W)(C)
-open import type_sys_props_set(W)(C)
-open import type_sys_props_eq(W)(C)
-open import type_sys_props_union(W)(C)
-open import type_sys_props_tsquash(W)(C)
-open import type_sys_props_ffdefs(W)(C)
+open import type_sys_props_nat(W)(C)(E)
+open import type_sys_props_qnat(W)(C)(E)
+open import type_sys_props_lt(W)(C)(E)
+open import type_sys_props_qlt(W)(C)(E)
+open import type_sys_props_free(W)(C)(E)
+open import type_sys_props_pi(W)(C)(E)
+open import type_sys_props_sum(W)(C)(E)
+open import type_sys_props_set(W)(C)(E)
+open import type_sys_props_eq(W)(C)(E)
+open import type_sys_props_union(W)(C)(E)
+open import type_sys_props_tsquash(W)(C)(E)
+open import type_sys_props_ffdefs(W)(C)(E)
 
 -- open import calculus
 -- open import world
@@ -483,7 +484,7 @@ is-uni→eqUnivi {u} (n , isu) {w} {A} {B} x rewrite isu = x--}
 
 eqInType-ext-bar : {u : univs} (isu : is-uni u) {w : 𝕎·} {A B : CTerm}
                    (i : inbar w (λ w' _ → eqTypes u w' A B))
-                   → (ind : {u' : univs} {w' : 𝕎·} {A' B' : CTerm} (eqt' : eqTypes u' w' A' B') → <Type {u'} eqt' (EQTBAR i) → eqInTypeExt eqt')
+                   → (ind : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → <Type {u'} eqt' {(u , isu)} (EQTBAR i) → eqInTypeExt eqt')
                    → (a b : CTerm)
                    → inbar' w i (λ w' e' z → eqInType u w' z a b)
                    → (eqt : eqTypes u w A B) → eqInType u w eqt a b
@@ -551,9 +552,9 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTPI A1 B1 A2 B2 x x₁ eqta 
           (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
 
       where
-        ind' : {u' : univs} {w' : 𝕎·} {A' B' : CTerm} (eqt' : eqTypes u' w' A' B') → ≤Type {u'} eqt' z → eqInTypeExt eqt'
-        ind' {u'} {w''} {A'} {B'} eqt' (≤Type0 .eqt') = ind eqt' (<Type1 _ _ (<TypeBAR u w A B i w' e' z at))
-        ind' {u'} {w''} {A'} {B'} eqt' (≤TypeS .eqt' .z x) = ind eqt' (<TypeS _ _ _ x (<TypeBAR u w A B i w' e' z at))
+        ind' : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u , isu} z → eqInTypeExt eqt'
+        ind' {u'} {w''} {A'} {B'} eqt' (≤Type0 .eqt') = ind eqt' (<Type1 _ _ (<TypeBAR (u , isu) w A B i w' e' z at))
+        ind' {u'} {w''} {A'} {B'} eqt' (≤TypeS .eqt' .z x) = ind eqt' (<TypeS _ _ _ x (<TypeBAR (u , isu) w A B i w' e' z at))
 
         aw1 : ∀𝕎 w' (λ w'' e'' → PIeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e'')) (λ a₁ a₂ eqa → eqInType u w'' (∀𝕎-mon e' eqtb w'' e'' a₁ a₂ eqa)) a b
                                  → ↑wPred' (λ w''' e → PIeq (eqInType u w''' (eqta w''' e)) (λ a1 a2 eqa → eqInType u w''' (eqtb w''' e a1 a2 eqa)) a b) e' w'' e'')
@@ -573,7 +574,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTSUM A1 B1 A2 B2 x x₁ eqta
           (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
 
       where
-        ind' : {u' : univs} {w' : 𝕎·} {A' B' : CTerm} (eqt' : eqTypes u' w' A' B') → ≤Type {u'} eqt' z → eqInTypeExt eqt'
+        ind' : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u , isu} z → eqInTypeExt eqt'
         ind' {u'} {w''} {A'} {B'} eqt' (≤Type0 .eqt') = ind eqt' (<Type1 _ _ (<TypeBAR u w A B i w' e' z at))
         ind' {u'} {w''} {A'} {B'} eqt' (≤TypeS .eqt' .z x) = ind eqt' (<TypeS _ _ _ x (<TypeBAR u w A B i w' e' z at))
 
@@ -595,7 +596,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTSET A1 B1 A2 B2 x x₁ eqta
           (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
 
       where
-        ind' : {u' : univs} {w' : 𝕎·} {A' B' : CTerm} (eqt' : eqTypes u' w' A' B') → ≤Type {u'} eqt' z → eqInTypeExt eqt'
+        ind' : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u , isu} z → eqInTypeExt eqt'
         ind' {u'} {w''} {A'} {B'} eqt' (≤Type0 .eqt') = ind eqt' (<Type1 _ _ (<TypeBAR u w A B i w' e' z at))
         ind' {u'} {w''} {A'} {B'} eqt' (≤TypeS .eqt' .z x) = ind eqt' (<TypeS _ _ _ x (<TypeBAR u w A B i w' e' z at))
 
@@ -618,7 +619,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTEQ a1 b1 a2 b2 A₁ B₁ x 
           (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
 
       where
-        ind' : {u' : univs} {w' : 𝕎·} {A' B' : CTerm} (eqt' : eqTypes u' w' A' B') → ≤Type {u'} eqt' z → eqInTypeExt eqt'
+        ind' : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u , isu} z → eqInTypeExt eqt'
         ind' {u'} {w''} {A'} {B'} eqt' (≤Type0 .eqt') = ind eqt' (<Type1 _ _ (<TypeBAR u w A B i w' e' z at))
         ind' {u'} {w''} {A'} {B'} eqt' (≤TypeS .eqt' .z x) = ind eqt' (<TypeS _ _ _ x (<TypeBAR u w A B i w' e' z at))
 
@@ -643,7 +644,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTUNION A1 B1 A2 B2 x x₁ eq
           (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
 
       where
-        ind' : {u' : univs} {w' : 𝕎·} {A' B' : CTerm} (eqt' : eqTypes u' w' A' B') → ≤Type {u'} eqt' z → eqInTypeExt eqt'
+        ind' : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u , isu} z → eqInTypeExt eqt'
         ind' {u'} {w''} {A'} {B'} eqt' (≤Type0 .eqt') = ind eqt' (<Type1 _ _ (<TypeBAR u w A B i w' e' z at))
         ind' {u'} {w''} {A'} {B'} eqt' (≤TypeS .eqt' .z x) = ind eqt' (<TypeS _ _ _ x (<TypeBAR u w A B i w' e' z at))
 
@@ -666,7 +667,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTSQUASH A1 A2 x x₁ eqta ex
           (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
 
       where
-        ind' : {u' : univs} {w' : 𝕎·} {A' B' : CTerm} (eqt' : eqTypes u' w' A' B') → ≤Type {u'} eqt' z → eqInTypeExt eqt'
+        ind' : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u , isu} z → eqInTypeExt eqt'
         ind' {u'} {w''} {A'} {B'} eqt' (≤Type0 .eqt') = ind eqt' (<Type1 _ _ (<TypeBAR u w A B i w' e' z at))
         ind' {u'} {w''} {A'} {B'} eqt' (≤TypeS .eqt' .z x) = ind eqt' (<TypeS _ _ _ x (<TypeBAR u w A B i w' e' z at))
 
@@ -691,7 +692,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQFFDEFS A1 A2 x1 x2 x x₁ eq
           (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
 
       where
-        ind' : {u' : univs} {w' : 𝕎·} {A' B' : CTerm} (eqt' : eqTypes u' w' A' B') → ≤Type {u'} eqt' z → eqInTypeExt eqt'
+        ind' : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u , isu} z → eqInTypeExt eqt'
         ind' {u'} {w''} {A'} {B'} eqt' (≤Type0 .eqt') = ind eqt' (<Type1 _ _ (<TypeBAR u w A B i w' e' z at))
         ind' {u'} {w''} {A'} {B'} eqt' (≤TypeS .eqt' .z x) = ind eqt' (<TypeS _ _ _ x (<TypeBAR u w A B i w' e' z at))
 

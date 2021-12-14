@@ -27,6 +27,7 @@ open import Data.List.Relation.Unary.Any
 open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
+open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -36,16 +37,16 @@ open import choice
 
 
 --module type_sys_props_nat (bar : Bar) where
-module type_sys_props_nat (W : PossibleWorlds) (C : Choice W) where
+module type_sys_props_nat (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) where
 
 
 open import worldDef(W)
 open import computation(W)(C)
 open import bar(W)
-open import theory(W)(C)
-open import props0(W)(C)
-open import ind2(W)(C)
-open import terms(W)(C)
+open import theory(W)(C)(E)
+open import props0(W)(C)(E)
+open import ind2(W)(C)(E)
+open import terms(W)(C)(E)
 
 -- open import calculus
 -- open import world

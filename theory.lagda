@@ -28,13 +28,14 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Axiom.UniquenessOfIdentityProofs
+open import Axiom.Extensionality.Propositional
 
 open import util
 open import calculus
 open import world
 open import choice
 
-module theory (W : PossibleWorlds) (C : Choice W) where
+module theory (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) where
 open import bar (W)
 open import worldDef(W)
 open import choiceDef(W)(C)
@@ -798,19 +799,32 @@ per = CTerm → CTerm → Set₁
 wper : Set₂
 wper = (w : 𝕎·) → per
 
+
+𝕃 : Set
+𝕃 = ℕ
+
 -- eqTypes and eqInType provide meaning to types w.r.t. already interpreted universes,
 -- given by univs (1st conjunct defines the equality between such universes, while the
 -- second conjunct defines the equality in such universes)
-univsUpTo : ℕ → Set₂
-univsUpTo n = (m : ℕ) (p : m < n) → wper
+univsUpTo : 𝕃 → Set₂
+univsUpTo n = (m : 𝕃) (p : m < n) → wper
 
 univs : Set₂
 univs = Σ ℕ univsUpTo
 
 
-↓𝕌 : univs → univs
-↓𝕌 (0 , f) = (0 , f)
-↓𝕌 (suc n , f) = (n , λ m p w a b → f m (<-trans p (n<1+n n)) w a b)
+↓𝕃 : 𝕃 → 𝕃
+↓𝕃 0 = 0
+↓𝕃 (suc n) = n
+
+
+↓univsUpTo : {n : 𝕃} → univsUpTo (suc n) → univsUpTo n
+↓univsUpTo {n} f m p = f m (<-trans p (n<1+n n))
+
+
+↓U : univs → univs
+↓U (0 , f) = (0 , f)
+↓U (suc n , f) = (n , ↓univsUpTo f)
 
 
 -- equality between types (an inductive definition)
@@ -912,8 +926,8 @@ data eqTypes u w T1 T2 where
   EQTLIFT : (A1 A2 : CTerm)
     → T1 #⇛ #LIFT A1 at w
     → T2 #⇛ #LIFT A2 at w
---    → (eqtA : ∀𝕎 w (λ w' _ → eqTypes (↓𝕌 u) w' A1 A2))
-    → (eqtA : eqTypes (↓𝕌 u) w A1 A2)
+--    → (eqtA : ∀𝕎 w (λ w' _ → eqTypes (↓U u) w' A1 A2))
+    → (eqtA : eqTypes (↓U u) w A1 A2)
     → eqTypes u w T1 T2
   EQTBAR : inbar w (λ w' _ → eqTypes u w' T1 T2) → eqTypes u w T1 T2
 \end{code}
@@ -990,8 +1004,8 @@ eqInType u w (EQTSQUASH _ _ _ _ eqtA exta) t1 t2 =
 eqInType u w (EQFFDEFS _ _ x1 _ _ _ eqtA exta _) t1 t2 =
   inbar w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTUNIV i p c₁ c₂) T1 T2 = snd u i p w T1 T2
-eqInType u w (EQTLIFT A1 A2 c₁ c₂ eqtA) T1 T2 = eqInType (↓𝕌 u) w eqtA T1 T2
---  inbar w (λ w' e → eqInType (↓𝕌 u) w' (eqtA w' e) T1 T2)
+eqInType u w (EQTLIFT A1 A2 c₁ c₂ eqtA) T1 T2 = eqInType (↓U u) w eqtA T1 T2
+--  inbar w (λ w' e → eqInType (↓U u) w' (eqtA w' e) T1 T2)
 eqInType u w (EQTBAR f) t1 t2 =
   inbar' w f (λ w' _ (x : eqTypes u w' _ _) → eqInType u w' x t1 t2)
   {-- This is an unfolding of the above, as agda doesn't like the above --}
@@ -1047,8 +1061,11 @@ eqInUnivi≤ (suc m) i p w T1 T2 with suc m ≤? c =
 
 
 --- Add an explicit level-lifting constructor to the type system
+mkU : (n : ℕ) (u : univsUpTo n) → univs
+mkU n u = (n , u)
+
 uni : ℕ → univs
-uni n = (n , uniUpTo n) --(eqUnivi n , eqInUnivi n))
+uni n = mkU n (uniUpTo n) --(eqUnivi n , eqInUnivi n))
 
 
 {--ul : ℕ → ℕ
@@ -1056,27 +1073,71 @@ ul n = {--suc--} n--}
 
 
 is-uni : (u : univs) → Set₂
-is-uni u = Σ ℕ (λ n → u ≡ uni n)
+is-uni u = Σ 𝕃 (λ n → u ≡ uni n)
 
 
-is-uni-uni : (n : ℕ) → is-uni (uni n)
+is-uni-uni : (n : 𝕃) → is-uni (uni n)
 is-uni-uni n = n , refl
+
+
+≡univs : {n : 𝕃} {u1 u2 : univsUpTo n} → u1 ≡ u2 → mkU n u1 ≡ mkU n u2
+≡univs {n} {u1} {u2} e rewrite e = refl
+
+
+≡uniUpTo : (n i : 𝕃) (p q : i < n) → uniUpTo n i p ≡ uniUpTo n i q
+≡uniUpTo (suc n) i p q with i <? n
+... | yes w = refl
+... | no w = refl
+
+
+↓U-uni : (n : 𝕃) → ↓U (uni n) ≡ uni (↓𝕃 n)
+↓U-uni 0 = refl
+↓U-uni (suc n) = ≡univs (E e)
+  where
+    e : (x : 𝕃) → ↓univsUpTo (uniUpTo (suc n)) x ≡ uniUpTo n x
+    e x with x <? n
+    ... | yes p = E f
+      where
+        f : (x₁ : suc x ≤ n) → uniUpTo n x p ≡ uniUpTo n x x₁
+        f q = ≡uniUpTo n x p q
+    ... | no p = E f
+      where
+        f : (x₁ : suc x ≤ n) → inbarEqTypes (n , uniUpTo n) ≡ uniUpTo n x x₁
+        f q = ⊥-elim (p q)
 
 
 𝕌 : Set₂
 𝕌 = Σ univs is-uni
 
 
--- Would need functional extensionality
-{--is-uni-↓𝕌 : (u : univs) → is-uni u → is-uni (↓𝕌 u)
-is-uni-↓𝕌 u (0 , isu) rewrite isu = 0 , refl
-is-uni-↓𝕌 u (suc n , isu) rewrite isu = n , {!!}
---}
+is-uni-↓U : {u : univs} → is-uni u → is-uni (↓U u)
+is-uni-↓U {u} (0 , isu) rewrite isu = 0 , refl
+is-uni-↓U {u} (suc n , isu) rewrite isu = n , ↓U-uni (suc n)
+
+
+↓𝕌 : 𝕌 → 𝕌
+↓𝕌 (u , isu) = ↓U u , is-uni-↓U isu
+
+
+_·ᵤ : 𝕌 → univs
+_·ᵤ u = fst u
+
+
+_·ₙ : 𝕌 → ℕ
+_·ₙ u = fst (u ·ᵤ)
+
+
+≡Types : (u : 𝕌) → wper
+≡Types u = eqTypes (u ·ᵤ)
+
+
+≡∈Type : (u : 𝕌) (w : 𝕎·) {T1 T2 : CTerm} → (eqTypes (u ·ᵤ) w T1 T2) → per
+≡∈Type u w eqt = eqInType (u ·ᵤ) w eqt
 
 
 
 TEQ : Set₂
-TEQ = (w : 𝕎·) (T1 T2 : CTerm) → Set₁
+TEQ = wper
 
 EQT : Set₂
 EQT = (w : 𝕎·) (T a b : CTerm) → Set₁
@@ -1088,8 +1149,11 @@ MEMT = (w : 𝕎·) (T a : CTerm) → Set₁
 equalTypes : (u : ℕ) → TEQ
 equalTypes u = eqTypes (uni u)
 
+equalTerms : (n : ℕ) (w : 𝕎·) {T1 T2 : CTerm} → (equalTypes n w T1 T2) → per
+equalTerms n w eqt = eqInType (uni n) w eqt
+
 equalInType : (u : ℕ) (w : 𝕎·) (T : CTerm) → per
-equalInType u w T a b = Σ (equalTypes u w T T) (λ p → eqInType (uni u) w p a b)
+equalInType u w T a b = Σ (equalTypes u w T T) (λ p → equalTerms u w p a b)
 \end{code}
 
 
