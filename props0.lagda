@@ -485,8 +485,11 @@ eqTypes-mon u {A} {B} {w1} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) w2 ext =
 
 eqTypes-mon u {A} {B} {w1} (EQTUNIV i p c₁ c₂) w2 ext = EQTUNIV i p (⇛-mon ext c₁) (⇛-mon ext c₂) --(m x w2 ext)
 
-eqTypes-mon u {A} {B} {w1} (EQTLIFT A1 A2 c₁ c₂ eqtA) w2 ext =
-  EQTLIFT A1 A2 (⇛-mon ext c₁) (⇛-mon ext c₂) (eqTypes-mon (↓U u) eqtA w2 ext)
+eqTypes-mon u {A} {B} {w1} (EQTLIFT A1 A2 c₁ c₂ eqtA exta) w2 ext =
+  EQTLIFT A1 A2 (⇛-mon ext c₁) (⇛-mon ext c₂) (∀𝕎-mon ext eqtA) exta'
+  where
+    exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType (↓U u) w (∀𝕎-mon ext eqtA w e) a b)
+    exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
 
 eqTypes-mon u {A} {B} {w1} (EQTBAR x) w2 ext = EQTBAR (Bar.↑inBar inOpenBar-Bar x ext)
 
@@ -520,7 +523,7 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTUNIV i p c₁ c₂ , eqi) = ⊥-elim (
 {--  where
     z2 : ∀𝕎 w (λ w' e' → (#EQ a b T #⇛ #UNIV u at w' × #EQ a b T #⇛ #UNIV u at w') → t₁ #⇛ #AX at w' × t₂ #⇛ #AX at w' × equalInType u w' T a b)
     z2 w' e' (c₁ , c₂) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt))--}
-if-equalInType-EQ u w T a b t₁ t₂ (EQTLIFT A1 A2 c1 c2 eqtA , eqi) = ⊥-elim (EQneqLIFT (compAllVal c2 tt))
+if-equalInType-EQ u w T a b t₁ t₂ (EQTLIFT A1 A2 c1 c2 eqtA exta , eqi) = ⊥-elim (EQneqLIFT (compAllVal c2 tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
   Bar.inBar-idem
     inOpenBar-Bar
@@ -813,7 +816,7 @@ eqTypes⇛NAT {u} {w} {A} {B} (EQTUNIV i p c₁ c₂) comp = ⊥-elim (NATneqUNI
 
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (NATneqUNIV (⇛-val-det tt tt (⇛-mon e1 comp) d₁)))--}
-eqTypes⇛NAT {u} {w} {A} {B} (EQTLIFT A1 A2 c1 c2 eqtA) comp = ⊥-elim (NATneqLIFT (⇛-val-det tt tt comp c1))
+eqTypes⇛NAT {u} {w} {A} {B} (EQTLIFT A1 A2 c1 c2 eqtA exta) comp = ⊥-elim (NATneqLIFT (⇛-val-det tt tt comp c1))
 eqTypes⇛NAT {u} {w} {A} {B} (EQTBAR x) comp = i
   where
     a : ∀𝕎 w (λ w' e' → eqTypes u w' A B → inbar w' (λ w'' _ → ⌜ B ⌝ ⇛ NAT at w''))
@@ -1137,6 +1140,15 @@ irr-tsquash u w A1 A2 eqta exta f g w1 e1 w' e' (a1 , a2 , c₁ , c₂ , c₃ , 
     eqa' = exta a1 a2 w' (⊑-trans· e1 e') z eqa
 
 
+irr-lift : (u : univs) (w : 𝕎·) (A1 A2 : CTerm)
+           (eqta : ∀𝕎 w (λ w' _ → eqTypes (↓U u) w' A1 A2))
+           (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType (↓U u) w (eqta w e) a b))
+           (f g : CTerm) (w1 : 𝕎·) (e1 : w ⊑· w1)
+           → ∀𝕎 w1 (λ w' e' → eqInType (↓U u) w' (eqta w' (⊑-trans· e1 e')) f g
+                              → (z : w ⊑· w') → eqInType (↓U u) w' (eqta w' z) f g)
+irr-lift u w A1 A2 eqta exta f g w1 e1 w' e' eqi z = exta f g w' (⊑-trans· e1 e') z eqi
+
+
 irr-ffdefs : (u : univs) (w : 𝕎·) (x1 A1 A2 : CTerm)
               (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
               (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
@@ -1210,4 +1222,20 @@ wPredDepExtIrr-eqInType-mon : {u : univs} {w : 𝕎·} {A1 A2 : CTerm} {B1 B2 : 
                               → (a b c d : CTerm) → wPredDepExtIrr (λ w' e' z → eqInType u w' (∀𝕎-mon e1 eqtb w' e' a b z) c d)
 wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1 a b c d w' ea eb xa xb ei =
   extb a b c d w' (⊑-trans· e1 ea) (⊑-trans· e1 eb) xa xb ei
+
+
+
+is-uni→eqTypes : {u : univs} (isu : is-uni u) {w : 𝕎·} {A B : CTerm}
+                  (eqt : eqTypes u w A B)
+                  → eqTypes (uni (fst u)) w A B
+is-uni→eqTypes {u} isu {w} {A} {B} eqt rewrite isu = eqt
+
+
+
+
+is-uni→eqInType : {u : univs} (isu : is-uni u) {w : 𝕎·} {A B : CTerm} {a b : CTerm}
+                   (eqt : eqTypes u w A B)
+                   (eqi : eqInType u w eqt a b)
+                   → Σ (eqTypes (uni (fst u)) w A B) (λ z → eqInType (uni (fst u)) w z a b)
+is-uni→eqInType {u} isu {w} {A} {B} {a} {b} eqt eqi rewrite isu = eqt , eqi
 \end{code}

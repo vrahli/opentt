@@ -405,6 +405,13 @@ TSQUASHinj refl =  refl
 #TSQUASHinj c = CTerm≡ (TSQUASHinj (≡CTerm c))
 
 
+LIFTinj : {a b : Term} → LIFT a ≡ LIFT b → a ≡ b
+LIFTinj refl =  refl
+
+#LIFTinj : {a b : CTerm} → #LIFT a ≡ #LIFT b → a ≡ b
+#LIFTinj c = CTerm≡ (LIFTinj (≡CTerm c))
+
+
 FFDEFSinj1 : {a b c d : Term} → FFDEFS a b ≡ FFDEFS c d → a ≡ c
 FFDEFSinj1 refl =  refl
 
@@ -429,10 +436,6 @@ SHRINKinj refl =  refl
 
 LOWERinj : {a b : Term} → LOWER a ≡ LOWER b → a ≡ b
 LOWERinj refl =  refl
-
-
-LIFTinj : {a b : Term} → LIFT a ≡ LIFT b → a ≡ b
-LIFTinj refl =  refl
 
 
 shiftUp-inj : {n : ℕ} {a b : Term} → shiftUp n a ≡ shiftUp n b → a ≡ b

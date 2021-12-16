@@ -818,13 +818,13 @@ univs = Σ ℕ univsUpTo
 ↓𝕃 (suc n) = n
 
 
-↓univsUpTo : {n : 𝕃} → univsUpTo (suc n) → univsUpTo n
-↓univsUpTo {n} f m p = f m (<-trans p (n<1+n n))
+↓univsUpTo : {n : 𝕃} → univsUpTo n → univsUpTo (↓𝕃 n)
+↓univsUpTo {0} f m p = f m p
+↓univsUpTo {suc n} f m p = f m (<-trans p (n<1+n n))
 
 
 ↓U : univs → univs
-↓U (0 , f) = (0 , f)
-↓U (suc n , f) = (n , ↓univsUpTo f)
+↓U (n , f) = (↓𝕃 n , ↓univsUpTo f)
 
 
 -- equality between types (an inductive definition)
@@ -926,8 +926,8 @@ data eqTypes u w T1 T2 where
   EQTLIFT : (A1 A2 : CTerm)
     → T1 #⇛ #LIFT A1 at w
     → T2 #⇛ #LIFT A2 at w
---    → (eqtA : ∀𝕎 w (λ w' _ → eqTypes (↓U u) w' A1 A2))
-    → (eqtA : eqTypes (↓U u) w A1 A2)
+    → (eqtA : ∀𝕎 w (λ w' _ → eqTypes (↓U u) w' A1 A2))
+    → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType (↓U u) w (eqtA w e) a b))
     → eqTypes u w T1 T2
   EQTBAR : inbar w (λ w' _ → eqTypes u w' T1 T2) → eqTypes u w T1 T2
 \end{code}
@@ -1004,7 +1004,8 @@ eqInType u w (EQTSQUASH _ _ _ _ eqtA exta) t1 t2 =
 eqInType u w (EQFFDEFS _ _ x1 _ _ _ eqtA exta _) t1 t2 =
   inbar w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTUNIV i p c₁ c₂) T1 T2 = snd u i p w T1 T2
-eqInType u w (EQTLIFT A1 A2 c₁ c₂ eqtA) T1 T2 = eqInType (↓U u) w eqtA T1 T2
+eqInType u w (EQTLIFT A1 A2 c₁ c₂ eqtA exta) t1 t2 =
+  inbar w (λ w' e → eqInType (↓U u) w' (eqtA w' e) t1 t2)
 --  inbar w (λ w' e → eqInType (↓U u) w' (eqtA w' e) T1 T2)
 eqInType u w (EQTBAR f) t1 t2 =
   inbar' w f (λ w' _ (x : eqTypes u w' _ _) → eqInType u w' x t1 t2)
@@ -1073,11 +1074,15 @@ ul n = {--suc--} n--}
 
 
 is-uni : (u : univs) → Set₂
-is-uni u = Σ 𝕃 (λ n → u ≡ uni n)
+is-uni u = u ≡ uni (fst u)
+
+
+is-uni→ : {n : ℕ} (u : univsUpTo n) → is-uni (n , u) → u ≡ uniUpTo n
+is-uni→ {n} .(uniUpTo n) refl = refl
 
 
 is-uni-uni : (n : 𝕃) → is-uni (uni n)
-is-uni-uni n = n , refl
+is-uni-uni n = refl
 
 
 ≡univs : {n : 𝕃} {u1 u2 : univsUpTo n} → u1 ≡ u2 → mkU n u1 ≡ mkU n u2
@@ -1109,10 +1114,16 @@ is-uni-uni n = n , refl
 𝕌 : Set₂
 𝕌 = Σ univs is-uni
 
+mk𝕌 : {u : univs} (isu : is-uni u) → 𝕌
+mk𝕌 {u} isu = (u , isu)
+
+
+ℕ→𝕌 : ℕ → 𝕌
+ℕ→𝕌 n = mk𝕌 {uni n} (is-uni-uni n)
+
 
 is-uni-↓U : {u : univs} → is-uni u → is-uni (↓U u)
-is-uni-↓U {u} (0 , isu) rewrite isu = 0 , refl
-is-uni-↓U {u} (suc n , isu) rewrite isu = n , ↓U-uni (suc n)
+is-uni-↓U {u} isu rewrite isu = ↓U-uni (fst u)
 
 
 ↓𝕌 : 𝕌 → 𝕌
@@ -1121,6 +1132,10 @@ is-uni-↓U {u} (suc n , isu) rewrite isu = n , ↓U-uni (suc n)
 
 _·ᵤ : 𝕌 → univs
 _·ᵤ u = fst u
+
+
+_·ᵢ : (u : 𝕌) → is-uni (u ·ᵤ)
+_·ᵢ u = snd u
 
 
 _·ₙ : 𝕌 → ℕ
