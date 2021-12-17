@@ -124,6 +124,25 @@ wPredDepExtIrr-eqInType2 {i} {w} {A} {B} {C} {D} eqta eqtb a b c d w' e1 e2 x1 x
   eqInType-extl1 (sub0 b D) (sub0 b D) (eqtb w' e1 a b x1) (eqtb w' e2 a b x2) h
 
 
+eqTypesSET← : {w : 𝕎·} {i : ℕ} {A : CTerm} {B : CTerm0} {C : CTerm} {D : CTerm0}
+               → ∀𝕎 w (λ w' _ → equalTypes i w' A C)
+               → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType i w' A a₁ a₂) → equalTypes i w' (sub0 a₁ B) (sub0 a₂ D))
+               → equalTypes i w (#SET A B) (#SET C D)
+eqTypesSET← {w} {i} {A} {B} {C} {D} eqta eqtb =
+  EQTSET A B C D (#compAllRefl (#SET A B) w) (#compAllRefl (#SET C D) w)
+        eqta
+        eqtb'
+        (wPredExtIrr-eqInType eqta)
+        (wPredDepExtIrr-eqInType2 {i} {w} {A} {B} {C} {D} eqta eqtb')
+  where
+    eqtb' : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → eqInType (uni i) w' (eqta w' e) a1 a2 → eqTypes (uni i) w' (sub0 a1 B) (sub0 a2 D))
+    eqtb' w1 e1 a₁ a₂ ea = eqtb w1 e1 a₁ a₂ (eqa , eqInType-extl1 C A (eqta w1 e1) eqa ea)
+      where
+        eqa : equalTypes i w1 A A
+        eqa = TEQrefl-equalTypes i w1 A C (eqta w1 e1)
+
+
+
 eqTypesPI← : {w : 𝕎·} {i : ℕ} {A : CTerm} {B : CTerm0} {C : CTerm} {D : CTerm0}
                → ∀𝕎 w (λ w' _ → equalTypes i w' A C)
                → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType i w' A a₁ a₂) → equalTypes i w' (sub0 a₁ B) (sub0 a₂ D))
@@ -142,6 +161,8 @@ eqTypesPI← {w} {i} {A} {B} {C} {D} eqta eqtb =
         eqa = TEQrefl-equalTypes i w1 A C (eqta w1 e1)
 
 
+
+-- MOVE
 sub0⌞⌟ : (a b : CTerm) → sub0 a ⌞ b ⌟ ≡ b
 sub0⌞⌟ a b = CTerm≡ (subNotIn ⌜ a ⌝ ⌜ b ⌝ (CTerm.closed b))
 
@@ -267,124 +288,56 @@ eqTypesUniv : (w : 𝕎·) (n i : ℕ) (p : i < n) → equalTypes n w (#UNIV i) 
 eqTypesUniv w n i p = EQTUNIV i p (compAllRefl (UNIV i) w) (compAllRefl (UNIV i) w)
 
 
-#SQUASH : CTerm → CTerm
-#SQUASH t = ct (SQUASH ⌜ t ⌝) c
+
+#TRUE : CTerm
+#TRUE = ct TRUE refl
+
+
+
+∀𝕎-inbar-#strongMonEq-#N0 : (w : 𝕎·) → ∀𝕎 w (λ w' e → inbar w' (λ w'' _ → #strongMonEq w'' #N0 #N0))
+∀𝕎-inbar-#strongMonEq-#N0 w w1 e1 = Bar.∀𝕎-inBar inOpenBar-Bar (λ w2 e2 → #strongMonEq-#N0 w2)
+
+
+eqTypesTRUE : {w : 𝕎·} {i : ℕ} → equalTypes i w #TRUE #TRUE
+eqTypesTRUE {w} {i} =
+  EQTEQ #N0 #N0 #N0 #N0 #NAT #NAT
+        (#compAllRefl #TRUE w) (#compAllRefl #TRUE w)
+        (eqTypes-mon (uni i) eqTypesNAT)
+        (wPredExtIrr-eqInType (eqTypes-mon (uni i) eqTypesNAT))
+        (∀𝕎-inbar-#strongMonEq-#N0 w)
+        (∀𝕎-inbar-#strongMonEq-#N0 w)
+
+
+
+#SQUASH≡#SET : (t : CTerm) → #SQUASH t ≡ #SET #TRUE ⌞ t ⌟
+#SQUASH≡#SET t = CTerm≡ e
   where
-    c : # SQUASH ⌜ t ⌝
-    c = z
-      where
-        z : lowerVars (fvars (shiftUp 0  ⌜ t ⌝)) ≡ []
-        z rewrite fvars-shiftUp≡ 0  ⌜ t ⌝ | fvars-cterm t = refl
-
-
-≡SQUASH : {a b : Term} → a ≡ b → SQUASH a ≡ SQUASH b
-≡SQUASH {a} {b} e rewrite e = refl
-
-≡SET : {a b c d : Term} → a ≡ b → c ≡ d → SET a c ≡ SET b d
-≡SET {a} {b} {c} {d} e f rewrite e | f = refl
-
-
-#shiftDown : (n : ℕ) (a : CTerm) → shiftDown n ⌜ a ⌝ ≡ ⌜ a ⌝
-#shiftDown n a = shiftDownTrivial n ⌜ a ⌝ λ w z → #→¬∈ {⌜ a ⌝} (CTerm.closed a) w
-
-
-
-nLIFT : {i n : ℕ} (p : i < n) (t : Term) → Term
-nLIFT {i} {suc n} p t with i <? n
-... | yes q = LIFT (nLIFT q t)
-... | no q = LIFT t -- i ≡ n
-
-
-
-#-nLIFT : {i n : ℕ} (p : i < n) {a : Term} → # a → # nLIFT p a
-#-nLIFT {i} {suc n} p {a} ca with i <? n
-... | yes q = #-nLIFT q ca
-... | no q = ca
-
-
-#nLIFT : {i n : ℕ} (p : i < n) → CTerm → CTerm
-#nLIFT {i} {n} p a = ct (nLIFT p ⌜ a ⌝) c
-  where
-    c : # nLIFT p ⌜ a ⌝
-    c = #-nLIFT p (CTerm.closed a)
-
-
-
-#[0]-nLIFT : {i n : ℕ} (p : i < n) {a : Term} {l : List Var} → #[ l ] a → #[ l ] nLIFT p a
-#[0]-nLIFT {i} {suc n} p {a} {l} ca with i <? n
-... | yes q = #[0]-nLIFT q ca
-... | no q = ca
-
-
-#[0]nLIFT : {i n : ℕ} (p : i < n) → CTerm0 → CTerm0
-#[0]nLIFT {i} {n} p a = ct0 (nLIFT p ⌜ a ⌝) c
-  where
-    c : #[ [ 0 ] ] nLIFT p ⌜ a ⌝
-    c = #[0]-nLIFT p (CTerm0.closed a)
-
-
-shiftUp-nLIFT : {i n : ℕ} (p : i < n) (k : Var) (a : Term) → shiftUp k (nLIFT p a) ≡ nLIFT p (shiftUp k a)
-shiftUp-nLIFT {i} {suc n} p k a with i <? n
-... | yes q rewrite shiftUp-nLIFT q k a = refl
-... | no q = refl
-
-
-shiftDown-nLIFT : {i n : ℕ} (p : i < n) (k : Var) (a : Term) → shiftDown k (nLIFT p a) ≡ nLIFT p (shiftDown k a)
-shiftDown-nLIFT {i} {suc n} p k a with i <? n
-... | yes q rewrite shiftDown-nLIFT q k a = refl
-... | no q = refl
-
-
-subv-nLIFT : {i n : ℕ} (p : i < n) (v : Var) (a : Term) → subv v a (nLIFT p (VAR v)) ≡ nLIFT p a
-subv-nLIFT {i} {suc n} p v a with i <? n
-... | yes q rewrite subv-nLIFT q v a = refl
-... | no q with v ≟ v
-... | yes z = refl
-... | no z = ⊥-elim (z refl)
-
-
-
-
-
-sub0-#[0]SQUASH : {i n : ℕ} (p : i < n) (a : CTerm)
-                  → sub0 a (#[0]SQUASH (#[0]UNION (#[0]nLIFT p #[0]VAR) (#[0]NEG (#[0]nLIFT p #[0]VAR))))
-                     ≡ #SQUASH (#UNION (#nLIFT p a) (#NEG (#nLIFT p a)))
-sub0-#[0]SQUASH {i} {n} p a = CTerm≡ (≡SET refl e)
-  where
-    e : UNION (shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝))
-                                   (shiftUp 0 ⌜ #[0]nLIFT p #[0]VAR ⌝)))
-              (PI (shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝))
-                                       (shiftUp 0 ⌜ #[0]nLIFT p #[0]VAR ⌝)))
-                  (EQ (NUM 0) (NUM 1) NAT))
-        ≡ UNION (shiftUp 0 ⌜ #nLIFT p a ⌝)
-                (PI (shiftUp 0 ⌜ #nLIFT p a ⌝)
-                    (EQ (NUM 0) (NUM 1) NAT))
-    e rewrite #shiftUp 0 a | #shiftUp 0 a
-            | shiftUp-nLIFT p 0 (VAR 0) | shiftUp-nLIFT p 0 ⌜ a ⌝
-            | subv-nLIFT p 1 ⌜ a ⌝
-            | shiftDown-nLIFT p 1 ⌜ a ⌝
-            | #shiftUp 0 a | #shiftDown 1 a = refl
-
-{--    e : UNION (shiftDown 1 (shiftUp 0 (shiftUp 0 (⌜ a ⌝))))
-              (PI (shiftDown 1 (shiftUp 0 (shiftUp 0 (⌜ a ⌝))))
-                  (EQ (NUM 0) (NUM 1) NAT))
-        ≡ UNION (shiftUp 0 (⌜ a ⌝))
-                (PI (shiftUp 0 (⌜ a ⌝)) (EQ (NUM 0) (NUM 1) NAT))
-    e rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftDown 1 a = refl --}
+    e : SQUASH ⌜ t ⌝ ≡ SET TRUE ⌜ t ⌝
+    e rewrite #shiftUp 0 t = refl
 
 
 
 eqTypesSQUASH← : {w : 𝕎·} {i : ℕ} {A B : CTerm}
                   → equalTypes i w A B
                   → equalTypes i w (#SQUASH A) (#SQUASH B)
-eqTypesSQUASH← {w} {i} {A} {B} eqt = {!!}
+eqTypesSQUASH← {w} {i} {A} {B} eqt rewrite #SQUASH≡#SET A | #SQUASH≡#SET B = eqt1
+  where
+    eqb : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #TRUE a₁ a₂ → equalTypes i w' (sub0 a₁ ⌞ A ⌟) (sub0 a₂ ⌞ B ⌟))
+    eqb w1 e1 a₁ a₂ eqa rewrite sub0⌞⌟ a₁ A | sub0⌞⌟ a₂ B = eqTypes-mon (uni i) eqt w1 e1
+
+    eqt1 : equalTypes i w (#SET #TRUE ⌞ A ⌟) (#SET #TRUE ⌞ B ⌟)
+    eqt1 = eqTypesSET← (eqTypes-mon (uni i) eqTypesTRUE) eqb
 
 
 eqTypesUNION← : {w : 𝕎·} {i : ℕ} {A B C D : CTerm}
                   → equalTypes i w A B
                   → equalTypes i w C D
                   → equalTypes i w (#UNION A C) (#UNION B D)
-eqTypesUNION← {w} {i} {A} {B} {C} {D} eqt1 eqt2 = {!!}
+eqTypesUNION← {w} {i} {A} {B} {C} {D} eqt1 eqt2 =
+  EQTUNION A C B D (#compAllRefl (#UNION A C) w) (#compAllRefl (#UNION B D) w)
+           (eqTypes-mon (uni i) eqt1) (eqTypes-mon (uni i) eqt2)
+           (wPredExtIrr-eqInType (eqTypes-mon (uni i) eqt1))
+           (wPredExtIrr-eqInType (eqTypes-mon (uni i) eqt2))
 
 
 equalInType→equalTypes-aux : (n i : ℕ) (p : i < n) (w : 𝕎·) (a b : CTerm)
@@ -421,12 +374,14 @@ equalTypes<s i w a b (EQTBAR x) = {!!}
 
 
 
-equalTypes-LIFT : (n : ℕ) (w : 𝕎·) (a b : CTerm)
-              → equalTypes n w a b
-              → equalTypes (suc n) w (#LIFT a) (#LIFT b)
-equalTypes-LIFT n w a b eqt =
+equalTypes-LIFT : (n : ℕ) (w : 𝕎·) (u v a b : CTerm)
+                  → u #⇛ #LIFT a at w
+                  → v #⇛ #LIFT b at w
+                  → equalTypes n w a b
+                  → equalTypes (suc n) w u v
+equalTypes-LIFT n w u v a b c₁ c₂ eqt =
   EQTLIFT a b
-          (#compAllRefl (#LIFT a) w) (#compAllRefl (#LIFT b) w)
+          c₁ c₂
           eqta
           exta
   where
@@ -441,57 +396,96 @@ equalTypes-LIFT n w a b eqt =
 
 
 
+equalTypes-LIFT2 : (n : ℕ) (w : 𝕎·) (a b : CTerm)
+                   → equalTypes n w a b
+                   → equalTypes (suc n) w (#LIFT a) (#LIFT b)
+equalTypes-LIFT2 n w a b eqt =
+  equalTypes-LIFT n w (#LIFT a) (#LIFT b) a b
+                  (#compAllRefl (#LIFT a) w) (#compAllRefl (#LIFT b) w)
+                  eqt
 
-equalTypes< : (n i : ℕ) (p : i < n) (w : 𝕎·) (a b : CTerm)
+
+
+uniUpTo→suc : {n m : ℕ} (q : m < n) → uniUpTo n m q ≡ uniUpTo (suc n) m (<-trans q (n<1+n n))
+uniUpTo→suc {n} {m} q with m <? n
+... | yes z = ≡uniUpTo n m q z
+... | no z = ⊥-elim (z q)
+
+
+
+
+≡→#compAllRefl : {a b : CTerm} (w : 𝕎·) → a ≡ b → a #⇛ b at w
+≡→#compAllRefl {a} {b} w e rewrite e = #compAllRefl b w
+
+
+
+-- MOVE
+→s≡s : {a b : ℕ} → a ≡ b → suc a ≡ suc b
+→s≡s {a} {b} e rewrite e = refl
+
+
+
+-- MOVE
+<s→¬<→≡ : {i n : ℕ} → i < suc n → ¬ i < n → i ≡ n
+<s→¬<→≡ {0} {0} p q = refl
+<s→¬<→≡ {suc i} {0} (_≤_.s≤s ()) q
+<s→¬<→≡ {0} {suc n} p q = ⊥-elim (q 0<1+n)
+<s→¬<→≡ {suc i} {suc n} p q = →s≡s (<s→¬<→≡ (s≤s-inj p) λ z → q (_≤_.s≤s z))
+
+
+
+equalTypes< : {n i : ℕ} (p : i < n) (w : 𝕎·) (a b : CTerm)
               → equalTypes i w a b
-              → equalTypes n w (#nLIFT p a) (#nLIFT p b)
-equalTypes< (suc n) i p w a b eqt with i <? n
-... | yes q = {!equalTypes-LIFT n ? ? ?!}
-... | no q = {!equalTypes-LIFT!}
+              → equalTypes n w (#↑T p a) (#↑T p b)
+equalTypes< {suc n} {i} p w a b eqt = equalTypes-LIFT n w (#↑T p a) (#↑T p b) (#↑Ts p a) (#↑Ts p b) (≡→#compAllRefl w (#↑T≡#↑Ts p a)) (≡→#compAllRefl w (#↑T≡#↑Ts p b)) eqt'
+  where
+    eqt' : equalTypes n w (#↑Ts p a) (#↑Ts p b)
+    eqt' with i <? n
+    ... | yes q = equalTypes< {n} {i} q w a b eqt
+    ... | no q rewrite <s→¬<→≡ p q = eqt
 
 
 
-equalInType→equalTypes : (n i : ℕ) (p : i < n) (w : 𝕎·) (a b : CTerm)
+equalInType→equalTypes : {n i : ℕ} (p : i < n) (w : 𝕎·) (a b : CTerm)
                           → equalInType n w (#UNIV i) a b
-                          → equalTypes n w (#nLIFT p a) (#nLIFT p b)
-equalInType→equalTypes n i p w a b eqi = equalTypes< n i p w a b (equalInType→equalTypes-aux n i p w a b eqi)
+                          → equalTypes n w (#↑T p a) (#↑T p b)
+equalInType→equalTypes {n} {i} p w a b eqi = equalTypes< {n} {i} p w a b (equalInType→equalTypes-aux n i p w a b eqi)
 
 
 
 -- We need cumulativity or lifting here because (#UNIV i) needs to be in level i,
 -- but a₁ needs to be equal to a₂ at that level and also in (#UNIV i)
-eqTypesLemPi : (w : 𝕎·) (n i : ℕ) (p : i < n)
+eqTypesLemPi : (w : 𝕎·) {n i : ℕ} (p : i < n)
                → equalTypes n w
-                             (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]nLIFT p #[0]VAR) (#[0]NEG (#[0]nLIFT p #[0]VAR)))))
-                             (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]nLIFT p #[0]VAR) (#[0]NEG (#[0]nLIFT p #[0]VAR)))))
-eqTypesLemPi w n i p =
+                             (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
+                             (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
+eqTypesLemPi w {n} {i} p =
   eqTypesPI←
     {w} {n}
-    {#UNIV i} {#[0]SQUASH (#[0]UNION (#[0]nLIFT p #[0]VAR) (#[0]NEG (#[0]nLIFT p #[0]VAR)))}
-    {#UNIV i} {#[0]SQUASH (#[0]UNION (#[0]nLIFT p #[0]VAR) (#[0]NEG (#[0]nLIFT p #[0]VAR)))}
+    {#UNIV i} {#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))}
+    {#UNIV i} {#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))}
     (λ w1 e1 → eqTypesUniv w1 n i p)
     aw
   where
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' (#UNIV i) a₁ a₂)
                        → equalTypes n w'
-                                     (sub0 a₁ (#[0]SQUASH (#[0]UNION (#[0]nLIFT p #[0]VAR) (#[0]NEG (#[0]nLIFT p #[0]VAR)))))
-                                     (sub0 a₂ (#[0]SQUASH (#[0]UNION (#[0]nLIFT p #[0]VAR) (#[0]NEG (#[0]nLIFT p #[0]VAR))))))
+                                     (sub0 a₁ (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
+                                     (sub0 a₂ (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))))
     aw w1 e1 a₁ a₂ ea rewrite sub0-#[0]SQUASH p a₁ | sub0-#[0]SQUASH p a₂ = aw'
       where
-        aw' : equalTypes n w1 (#SQUASH (#UNION (#nLIFT p a₁) (#NEG (#nLIFT p a₁)))) (#SQUASH (#UNION (#nLIFT p a₂) (#NEG (#nLIFT p a₂))))
-        aw' = eqTypesSQUASH← (eqTypesUNION← (equalInType→equalTypes n i p w1 a₁ a₂ ea)
-                                             (eqTypesNEG← (equalInType→equalTypes n i p w1 a₁ a₂ ea)))
+        aw' : equalTypes n w1 (#SQUASH (#UNION (#↑T p a₁) (#NEG (#↑T p a₁)))) (#SQUASH (#UNION (#↑T p a₂) (#NEG (#↑T p a₂))))
+        aw' = eqTypesSQUASH← (eqTypesUNION← (equalInType→equalTypes {n} {i} p w1 a₁ a₂ ea)
+                                             (eqTypesNEG← (equalInType→equalTypes {n} {i} p w1 a₁ a₂ ea)))
 
 
-eqTypesLem : (w : 𝕎·) (n i : ℕ) (p : i < n) → equalTypes n w (#LEM i) (#LEM i)
-eqTypesLem w n i p rewrite #LEM≡#PI i = {!!} --eqTypesLemPi w n i p
--- I need to change the definition of LEM to use lifting
+eqTypesLem : (w : 𝕎·) {n i : ℕ} (p : i < n) → equalTypes n w (#LEM p) (#LEM p)
+eqTypesLem w {n} {i} p rewrite #LEM≡#PI p = eqTypesLemPi w {n} {i} p
 
 
-eqTypesNegLem : (w : 𝕎·) (n i : ℕ) (p : i < n) → equalTypes n w (#NEG (#LEM i)) (#NEG (#LEM i))
-eqTypesNegLem w n i p = eqTypesNEG← (eqTypesLem w n i p)
+eqTypesNegLem : (w : 𝕎·) {n i : ℕ} (p : i < n) → equalTypes n w (#NEG (#LEM p)) (#NEG (#LEM p))
+eqTypesNegLem w {n} {i} p = eqTypesNEG← (eqTypesLem w {n} {i} p)
 
 
-notClassical : (w : 𝕎·) (n i : ℕ) (p : i < n) → member w (#NEG (#LEM i)) #lamAX
-notClassical w n i p = (n , eqTypesNegLem w n i p , {!!})
+notClassical : (w : 𝕎·) {n i : ℕ} (p : i < n) → member w (#NEG (#LEM p)) #lamAX
+notClassical w {n} {i} p = (n , eqTypesNegLem w {n} {i} p , {!!})
 \end{code}[hide]

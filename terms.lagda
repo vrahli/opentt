@@ -141,6 +141,66 @@ acext : Term
 acext = LAMBDA lamAX
 
 
+
+-- LIFT
+↑T : {i n : ℕ} (p : i < n) (t : Term) → Term
+↑T {i} {suc n} p t with i <? n
+... | yes q = LIFT (↑T q t)
+... | no q = LIFT t -- i ≡ n
+
+
+fvars-↑T : {i n : ℕ} (p : i < n) (a : Term) → fvars (↑T p a) ≡ fvars a
+fvars-↑T {i} {suc n} p a with i <? n
+... | yes q rewrite fvars-↑T q a = refl
+... | no q = refl
+
+
+shiftUp-↑T : {i n : ℕ} (p : i < n) (k : Var) (a : Term) → shiftUp k (↑T p a) ≡ ↑T p (shiftUp k a)
+shiftUp-↑T {i} {suc n} p k a with i <? n
+... | yes q rewrite shiftUp-↑T q k a = refl
+... | no q = refl
+
+
+shiftDown-↑T : {i n : ℕ} (p : i < n) (k : Var) (a : Term) → shiftDown k (↑T p a) ≡ ↑T p (shiftDown k a)
+shiftDown-↑T {i} {suc n} p k a with i <? n
+... | yes q rewrite shiftDown-↑T q k a = refl
+... | no q = refl
+
+
+subv-↑T : {i n : ℕ} (p : i < n) (v : Var) (a : Term) → subv v a (↑T p (VAR v)) ≡ ↑T p a
+subv-↑T {i} {suc n} p v a with i <? n
+... | yes q rewrite subv-↑T q v a = refl
+... | no q with v ≟ v
+... | yes z = refl
+... | no z = ⊥-elim (z refl)
+
+#-↑T : {i n : ℕ} (p : i < n) {a : Term} → # a → # ↑T p a
+#-↑T {i} {suc n} p {a} ca with i <? n
+... | yes q = #-↑T q ca
+... | no q = ca
+
+
+#↑T : {i n : ℕ} (p : i < n) → CTerm → CTerm
+#↑T {i} {n} p a = ct (↑T p ⌜ a ⌝) c
+  where
+    c : # ↑T p ⌜ a ⌝
+    c = #-↑T p (CTerm.closed a)
+
+
+
+#[0]-↑T : {i n : ℕ} (p : i < n) {a : Term} {l : List Var} → #[ l ] a → #[ l ] ↑T p a
+#[0]-↑T {i} {suc n} p {a} {l} ca with i <? n
+... | yes q = #[0]-↑T q ca
+... | no q = ca
+
+
+#[0]↑T : {i n : ℕ} (p : i < n) → CTerm0 → CTerm0
+#[0]↑T {i} {n} p a = ct0 (↑T p ⌜ a ⌝) c
+  where
+    c : #[ [ 0 ] ] ↑T p ⌜ a ⌝
+    c = #[0]-↑T p (CTerm0.closed a)
+
+
 -- LEM
 N1 : Term
 N1 = NUM 1
@@ -151,8 +211,9 @@ FALSE = EQ N0 N1 NAT
 NEG : Term → Term
 NEG a = FUN a FALSE
 
-LEM : (i : ℕ) → Term
-LEM i = PI (UNIV i) (SQUASH (UNION (VAR 0) (NEG (VAR 0))))
+
+LEM : {i n : ℕ} (p : i < n) → Term
+LEM {i} {n} p = PI (UNIV i) (SQUASH (UNION (↑T p (VAR 0)) (NEG (↑T p (VAR 0)))))
 
 
 #N0 : CTerm
@@ -170,8 +231,14 @@ LEM i = PI (UNIV i) (SQUASH (UNION (VAR 0) (NEG (VAR 0))))
     c : # NEG ⌜ a ⌝
     c rewrite CTerm.closed a = refl
 
-#LEM : (i : ℕ) → CTerm
-#LEM i = ct (LEM i) refl
+
+#LEM : {i n : ℕ} (p : i < n) → CTerm
+#LEM {i} {n} p = ct (LEM p) c
+  where
+    c : # LEM p
+    c rewrite fvars-↑T p (VAR 0)
+            | shiftUp-↑T p 0 (VAR 0)
+            | fvars-↑T p (VAR 1) = refl
 
 
 
@@ -247,8 +314,70 @@ fvars-CTerm0 a = ⊆?→⊆ (CTerm0.closed a)
     c = refl
 
 
-#LEM≡#PI : (i : ℕ) → #LEM i ≡ #PI (#UNIV i) (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR)))
-#LEM≡#PI i = CTerm≡ refl
+
+#SQUASH : CTerm → CTerm
+#SQUASH t = ct (SQUASH ⌜ t ⌝) c
+  where
+    c : # SQUASH ⌜ t ⌝
+    c = z
+      where
+        z : lowerVars (fvars (shiftUp 0  ⌜ t ⌝)) ≡ []
+        z rewrite fvars-shiftUp≡ 0  ⌜ t ⌝ | fvars-cterm t = refl
+
+
+≡SQUASH : {a b : Term} → a ≡ b → SQUASH a ≡ SQUASH b
+≡SQUASH {a} {b} e rewrite e = refl
+
+≡SET : {a b c d : Term} → a ≡ b → c ≡ d → SET a c ≡ SET b d
+≡SET {a} {b} {c} {d} e f rewrite e | f = refl
+
+
+#shiftDown : (n : ℕ) (a : CTerm) → shiftDown n ⌜ a ⌝ ≡ ⌜ a ⌝
+#shiftDown n a = shiftDownTrivial n ⌜ a ⌝ λ w z → #→¬∈ {⌜ a ⌝} (CTerm.closed a) w
+
+
+
+sub0-#[0]SQUASH : {i n : ℕ} (p : i < n) (a : CTerm)
+                  → sub0 a (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))
+                     ≡ #SQUASH (#UNION (#↑T p a) (#NEG (#↑T p a)))
+sub0-#[0]SQUASH {i} {n} p a = CTerm≡ (≡SET refl e)
+  where
+    e : UNION (shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝))
+                                   (shiftUp 0 ⌜ #[0]↑T p #[0]VAR ⌝)))
+              (PI (shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝))
+                                       (shiftUp 0 ⌜ #[0]↑T p #[0]VAR ⌝)))
+                  (EQ (NUM 0) (NUM 1) NAT))
+        ≡ UNION (shiftUp 0 ⌜ #↑T p a ⌝)
+                (PI (shiftUp 0 ⌜ #↑T p a ⌝)
+                    (EQ (NUM 0) (NUM 1) NAT))
+    e rewrite #shiftUp 0 a | #shiftUp 0 a
+            | shiftUp-↑T p 0 (VAR 0) | shiftUp-↑T p 0 ⌜ a ⌝
+            | subv-↑T p 1 ⌜ a ⌝
+            | shiftDown-↑T p 1 ⌜ a ⌝
+            | #shiftUp 0 a | #shiftDown 1 a = refl
+
+{--    e : UNION (shiftDown 1 (shiftUp 0 (shiftUp 0 (⌜ a ⌝))))
+              (PI (shiftDown 1 (shiftUp 0 (shiftUp 0 (⌜ a ⌝))))
+                  (EQ (NUM 0) (NUM 1) NAT))
+        ≡ UNION (shiftUp 0 (⌜ a ⌝))
+                (PI (shiftUp 0 (⌜ a ⌝)) (EQ (NUM 0) (NUM 1) NAT))
+    e rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftDown 1 a = refl --}
+
+
+#↑Ts : {i n : ℕ} (p : i < suc n) → CTerm → CTerm
+#↑Ts {i} {n} p t with i <? n
+... | yes q = #↑T q t
+... | no q = t
+
+
+#↑T≡#↑Ts : {i n : ℕ} (p : i < suc n) (t : CTerm) → #↑T p t ≡ #LIFT (#↑Ts p t)
+#↑T≡#↑Ts {i} {n} p t with i <? n
+... | yes q = CTerm≡ refl
+... | no q = CTerm≡ refl
+
+
+#LEM≡#PI : {i n : ℕ} (p : i < n) → #LEM p ≡ #PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))
+#LEM≡#PI {i} {n} p = CTerm≡ refl
 
 
 #FUN≡#PI : (A B : CTerm) → #FUN A B ≡ #PI A ⌞ B ⌟
