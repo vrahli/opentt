@@ -2347,6 +2347,116 @@ is-TSP-univs-eqUnivi-aux (u , isu) ind w A B i p c₁ c₂ rewrite isu =
     ind' m q = ind (ℕ→𝕌 m) q
 
 
+
+typeSysConds-aux-u : (u : 𝕌) (ind : (u' : 𝕌) → u' ·ₙ < u ·ₙ → is-TSP-univs (u' ·ᵤ))
+                   (w : 𝕎·) (A B : CTerm) (eqt : eqTypes (u ·ᵤ) w A B) → TSP eqt
+{-# TERMINATING #-}
+typeSysConds-aux-u u ind w A B (EQTNAT x x₁) = typeSysConds-NAT (u ·ᵤ) w A B x x₁
+typeSysConds-aux-u u ind w A B (EQTQNAT x x₁) = typeSysConds-QNAT (u ·ᵤ) w A B x x₁
+typeSysConds-aux-u u ind w A B (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = typeSysConds-LT (u ·ᵤ) w A B a1 b1 a2 b2 x x₁ x₂ x₃
+typeSysConds-aux-u u ind w A B (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) = typeSysConds-QLT (u ·ᵤ) w A B a1 b1 a2 b2 x x₁ x₂ x₃
+typeSysConds-aux-u u ind w A B (EQTFREE x x₁) = typeSysConds-FREE (u ·ᵤ) w A B x x₁
+typeSysConds-aux-u u ind w A B (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
+  typeSysConds-PI (u ·ᵤ) w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
+  where
+    inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1))
+    inda w1 e1 = typeSysConds-aux-u u ind w1 A1 A2 (eqta w1 e1)
+
+    indb : ∀𝕎 w (λ w1 e1 →
+                     (a1 a2 : CTerm) (ea : eqInType (u ·ᵤ) w1 (eqta w1 e1) a1 a2)
+                     → TSP (eqtb w1 e1 a1 a2 ea))
+    indb w1 e1 a1 a2 ea = typeSysConds-aux-u u ind w1 (sub0 a1 B1) (sub0 a2 B2) (eqtb w1 e1 a1 a2 ea)
+
+typeSysConds-aux-u u ind w A B (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
+  typeSysConds-SUM (u ·ᵤ) w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
+  where
+    inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1))
+    inda w1 e1 = typeSysConds-aux-u u ind w1 A1 A2 (eqta w1 e1)
+
+    indb : ∀𝕎 w (λ w1 e1 →
+                     (a1 a2 : CTerm) (ea : eqInType (u ·ᵤ) w1 (eqta w1 e1) a1 a2)
+                     → TSP (eqtb w1 e1 a1 a2 ea))
+    indb w1 e1 a1 a2 ea = typeSysConds-aux-u u ind w1 (sub0 a1 B1) (sub0 a2 B2) (eqtb w1 e1 a1 a2 ea)
+
+typeSysConds-aux-u u ind w A B (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
+  typeSysConds-SET (u ·ᵤ) w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
+  where
+    inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1))
+    inda w1 e1 = typeSysConds-aux-u u ind w1 A1 A2 (eqta w1 e1)
+
+    indb : ∀𝕎 w (λ w1 e1 →
+                     (a1 a2 : CTerm) (ea : eqInType (u ·ᵤ) w1 (eqta w1 e1) a1 a2)
+                     → TSP (eqtb w1 e1 a1 a2 ea))
+    indb w1 e1 a1 a2 ea = typeSysConds-aux-u u ind w1 (sub0 a1 B1) (sub0 a2 B2) (eqtb w1 e1 a1 a2 ea)
+
+typeSysConds-aux-u u ind w A B (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) =
+  typeSysConds-EQ (u ·ᵤ) w A B A₁ B₁ a1 b1 a2 b2 x x₁ eqtA extA inda eqt1 eqt2
+  where
+    inda : ∀𝕎 w (λ w1 e1 → TSP (eqtA w1 e1))
+    inda w1 e1 = typeSysConds-aux-u u ind w1 A₁ B₁ (eqtA w1 e1)
+
+typeSysConds-aux-u u ind w A B (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) =
+  typeSysConds-UNION (u ·ᵤ) w A B A1 B1 A2 B2 x x₁ eqtA eqtB extA extB inda indb
+  where
+    inda : ∀𝕎 w (λ w1 e1 → TSP (eqtA w1 e1))
+    inda w1 e1 = typeSysConds-aux-u u ind w1 A1 A2 (eqtA w1 e1)
+
+    indb : ∀𝕎 w (λ w1 e1 → TSP (eqtB w1 e1))
+    indb w1 e1 = typeSysConds-aux-u u ind w1 B1 B2 (eqtB w1 e1)
+
+typeSysConds-aux-u u ind w A B (EQTSQUASH A1 A2 x x₁ eqtA exta) =
+  typeSysConds-TSQUASH (u ·ᵤ) w A B A1 A2 x x₁ eqtA exta inda
+  where
+    inda : ∀𝕎 w (λ w1 e1 → TSP (eqtA w1 e1))
+    inda w1 e1 = typeSysConds-aux-u u ind w1 A1 A2 (eqtA w1 e1)
+
+--typeSysConds-aux-u u ind w A B (EQTDUM A1 A2 x x₁ eqta) = {!!}
+
+typeSysConds-aux-u u ind w A B (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) =
+  typeSysConds-FFDEFS (u ·ᵤ) w A B A1 A2 x1 x2 x x₁ eqta exta inda eqx
+  where
+    inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1))
+    inda w1 e1 = typeSysConds-aux-u u ind w1 A1 A2 (eqta w1 e1)
+
+typeSysConds-aux-u u ind w A B (EQTUNIV m p c₁ c₂) =
+  is-TSP-univs-eqUnivi-aux u ind w A B m p c₁ c₂
+
+typeSysConds-aux-u u ind w A B (EQTLIFT A1 A2 x x₁ eqtA exta) =
+  typeSysConds-LIFT (u ·ᵤ) w A B A1 A2 x x₁ eqtA exta inda
+  where
+    inda : ∀𝕎 w (λ w1 e1 → TSP (eqtA w1 e1))
+    inda w1 e1 = typeSysConds-aux-u (↓𝕌 u) ind' w1 A1 A2 (eqtA w1 e1)
+      where
+        ind' : (u' : 𝕌) → (u' ·ₙ) < (↓𝕌 u ·ₙ) → is-TSP-univs (u' ·ᵤ)
+        ind' u' p =  ind u' (<-transˡ p (↓𝕃≤ (u ·ₙ)))
+ --typeSysConds-aux-u (↓𝕃 n) ? {--ind--} w1 A1 A2 eqa'
+-- TODO: Would it help to change this lemma so that it uses 𝕌 instead of ℕ?
+--      where
+--        tsp' : subst (TSP (eqtA w1 e1))
+{--        eqa' : eqTypes (uni (↓𝕃 n)) w1 A1 A2
+        eqa' rewrite ↓U-uni n = eqtA w1 e1--}
+
+typeSysConds-aux-u u ind w A B (EQTBAR x) =
+  typeSysConds-BAR (u ·ᵤ) (u ·ᵢ) w A B x ind'
+  where
+    ind' : inbar' w x (λ w1 e1 z → TSP z)
+    ind' = Bar.∀𝕎-inBar-inBar' inOpenBar-Bar x aw
+      where
+        aw : ∀𝕎 w (λ w' e' → (z : eqTypes (u ·ᵤ) w' A B) (at : atbar x w' e' z) → TSP z)
+        aw w1 e1 z at = typeSysConds-aux-u u ind w1 A B z
+
+
+
+
+typeSysConds-aux : (n : ℕ) (ind : (m : ℕ) → m < n → is-TSP-univs (uni m))
+                   (w : 𝕎·) (A B : CTerm) (eqt : eqTypes (uni n) w A B) → TSP eqt
+typeSysConds-aux n ind w A B eqt = typeSysConds-aux-u (ℕ→𝕌 n) ind' w A B eqt
+  where
+    ind' : (u' : 𝕌) → (u' ·ₙ) < (ℕ→𝕌 n ·ₙ) → is-TSP-univs (u' ·ᵤ)
+    ind' (u' , isu) p rewrite isu = ind (fst u') p
+
+
+{--
 typeSysConds-aux : (n : ℕ) (ind : (m : ℕ) → m < n → is-TSP-univs (uni m))
                    (w : 𝕎·) (A B : CTerm) (eqt : eqTypes (uni n) w A B) → TSP eqt
 {-# TERMINATING #-}
@@ -2425,6 +2535,7 @@ typeSysConds-aux n ind w A B (EQTLIFT A1 A2 x x₁ eqtA exta) =
   where
     inda : ∀𝕎 w (λ w1 e1 → TSP (eqtA w1 e1))
     inda w1 e1 = {!!} --typeSysConds-aux (↓𝕃 n) ? {--ind--} w1 A1 A2 eqa'
+-- TODO: Would it help to change this lemma so that it uses 𝕌 instead of ℕ?
       where
 --        tsp' : subst (TSP (eqtA w1 e1))
         eqa' : eqTypes (uni (↓𝕃 n)) w1 A1 A2
@@ -2438,7 +2549,7 @@ typeSysConds-aux n ind w A B (EQTBAR x) =
       where
         aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni n) w' A B) (at : atbar x w' e' z) → TSP z)
         aw w1 e1 z at = typeSysConds-aux n ind w1 A B z
-
+--}
 
 
 
@@ -2524,6 +2635,7 @@ is-TSP-univs-uni n = comp-ind-ℕ (λ n → is-TSP-univs (uni n)) h n
     h : (i : ℕ) → ((m : ℕ) → m < i → is-TSP-univs (uni m)) → is-TSP-univs (uni i)
     h i ind w A B x = {!!} --is-TSP-univs-eqUnivi i ind w A B x
 --}
+
 
 
 

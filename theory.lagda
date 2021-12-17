@@ -809,6 +809,7 @@ wper = (w : 𝕎·) → per
 univsUpTo : 𝕃 → Set₂
 univsUpTo n = (m : 𝕃) (p : m < n) → wper
 
+
 univs : Set₂
 univs = Σ ℕ univsUpTo
 
@@ -816,6 +817,11 @@ univs = Σ ℕ univsUpTo
 ↓𝕃 : 𝕃 → 𝕃
 ↓𝕃 0 = 0
 ↓𝕃 (suc n) = n
+
+
+↓𝕃≤ : (n : ℕ) → ↓𝕃 n ≤ n
+↓𝕃≤ 0 = ≤-refl
+↓𝕃≤ (suc n) = n≤1+n n
 
 
 ↓univsUpTo : {n : 𝕃} → univsUpTo n → univsUpTo (↓𝕃 n)
