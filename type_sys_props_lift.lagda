@@ -151,7 +151,7 @@ typeSysConds-LIFT-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 
 --typeSysConds-LIFT-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (LIFTneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) = ⊥-elim (LIFTneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c₁ c₂) = ⊥-elim (LIFTneqUNIV (⇛-val-det tt tt x₁ c₁))
-{--  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
+{--  ⊥-elim (lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI q z)))
   where
     z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
@@ -175,7 +175,7 @@ typeSysConds-LIFT-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 y 
         ei2 = exta a b w' e1 e2 ei1
 
 typeSysConds-LIFT-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) =
-  EQTBAR (Bar.∀𝕎-inBarFunc inOpenBar-Bar aw y)
+  EQTBAR (Bar.∀𝕎-inBarFunc barI aw y)
   where
     aw : ∀𝕎 w (λ w' e' → eqTypes u w' B C → eqTypes u w' A C)
     aw w1 e1 eqt =
@@ -195,7 +195,7 @@ typeSysConds-LIFT-isym : (u : univs) (w : 𝕎·) (A B A1 B1 : CTerm)
                             (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
                             → eqInTypeSym u {_} {A} {B} (EQTLIFT A1 B1 x x₁ eqta exta)
 typeSysConds-LIFT-isym u w A B A1 B1 x x₁ eqta exta inda f g eqa =
-  Bar.∀𝕎-inBarFunc inOpenBar-Bar h eqa
+  Bar.∀𝕎-inBarFunc barI h eqa
   where
     h : ∀𝕎 w (λ w' e' →
                   eqInType (↓U u) w' (eqta w' e') f g
@@ -211,7 +211,7 @@ typeSysConds-LIFT-itrans : (u : univs) (w : 𝕎·) (A B A1 B1 : CTerm)
                               (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
                               → eqInTypeTrans u {_} {A} {B} (EQTLIFT A1 B1 x x₁ eqta exta)
 typeSysConds-LIFT-itrans u w A B A1 B1 x x₁ eqta exta inda f g h ea1 ea2 =
-  Bar.inBarFunc inOpenBar-Bar (Bar.inBarFunc inOpenBar-Bar (Bar.∀𝕎-inBar inOpenBar-Bar aw) ea1) ea2
+  Bar.inBarFunc barI (Bar.inBarFunc barI (Bar.∀𝕎-inBar barI aw) ea1) ea2
   where
     aw : ∀𝕎 w
               (λ w' e →
@@ -243,7 +243,7 @@ typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y
 --typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (LIFTneqDUM (⇛-val-det tt tt x y))
 typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (LIFTneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (LIFTneqUNIV (⇛-val-det tt tt x c₁))
-{--  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
+{--  ⊥-elim (lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI q z)))
   where
     z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w A C y
@@ -253,7 +253,7 @@ typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c₁ 
 
 typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #LIFTinj {A3} {A1} (#⇛-val-det {_} {A} tt tt y x) =
-  Bar.∀𝕎-inBarFunc inOpenBar-Bar aw eqi
+  Bar.∀𝕎-inBarFunc barI aw eqi
   where
     aw : ∀𝕎 w (λ w' e' →
               eqInType (↓U u) w' (eqta w' e') f g
@@ -261,7 +261,7 @@ typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 y y
     aw w1 e1 eqi = TSP.extl1 (inda w1 e1) A4 (eqtA w1 e1) f g eqi
 
 typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g eqi =
-  Bar.∀𝕎-inBar-inBar' inOpenBar-Bar y ib
+  Bar.∀𝕎-inBar-inBar' barI y ib
   where
     ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A C) (at : atbar y w' e' z) → eqInType u w' z f g)
     ib w1 e1 z at =
@@ -272,7 +272,7 @@ typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g eqi
         (wPredExtIrr-eqInType-mon eqta exta w1 e1)
         (∀𝕎-mon e1 inda)
         C z f g
-        (Bar.↑inBar inOpenBar-Bar eqi e1)
+        (Bar.↑inBar barI eqi e1)
 
 
 
@@ -297,7 +297,7 @@ typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y
 --typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (LIFTneqDUM (⇛-val-det tt tt x y₁))
 typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (LIFTneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (LIFTneqUNIV (⇛-val-det tt tt x c₂))
-{--  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
+{--  ⊥-elim (lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI q z)))
   where
     z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
     z = isu w C A y
@@ -307,7 +307,7 @@ typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c₁ 
 
 typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #LIFTinj {A4} {A1} (#⇛-val-det {_} {A} tt tt y₁ x)
-  = Bar.∀𝕎-inBarFunc inOpenBar-Bar aw eqi
+  = Bar.∀𝕎-inBarFunc barI aw eqi
   where
     aw : ∀𝕎 w
               (λ w' e' →
@@ -316,7 +316,7 @@ typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 y y
     aw w1 e1 eqi = TSP.extl2 (inda w1 e1) A3 (eqtA w1 e1) f g eqi
 
 typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g eqi =
-  Bar.∀𝕎-inBar-inBar' inOpenBar-Bar y ib
+  Bar.∀𝕎-inBar-inBar' barI y ib
   where
     ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' C A) (at : atbar y w' e' z) → eqInType u w' z f g)
     ib w1 e1 z at =
@@ -327,7 +327,7 @@ typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g eqi
         (wPredExtIrr-eqInType-mon eqta exta w1 e1)
         (∀𝕎-mon e1 inda)
         C z f g
-        (Bar.↑inBar inOpenBar-Bar eqi e1)
+        (Bar.↑inBar barI eqi e1)
 
 
 
@@ -352,7 +352,7 @@ typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y
 --typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (LIFTneqDUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (LIFTneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (LIFTneqUNIV (⇛-val-det tt tt x₁ c₂))
-{--  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
+{--  ⊥-elim (lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI q z)))
   where
     z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w C B y
@@ -362,7 +362,7 @@ typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c₁ 
 
 typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #LIFTinj {A4} {B1} (#⇛-val-det {_} {B} tt tt y₁ x₁)
-  = Bar.∀𝕎-inBarFunc inOpenBar-Bar aw eqi
+  = Bar.∀𝕎-inBarFunc barI aw eqi
   where
     aw : ∀𝕎 w
               (λ w' e' →
@@ -371,7 +371,7 @@ typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 y y
     aw w1 e1 ea =  TSP.extr1 (inda w1 e1) A3 (eqtA w1 e1) f g ea
 
 typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g eqi =
-  Bar.∀𝕎-inBar-inBar' inOpenBar-Bar y ib
+  Bar.∀𝕎-inBar-inBar' barI y ib
   where
     ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' C B) (at : atbar y w' e' z) → eqInType u w' z f g)
     ib w1 e1 z at =
@@ -382,7 +382,7 @@ typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g eqi
         (wPredExtIrr-eqInType-mon eqta exta w1 e1)
         (∀𝕎-mon e1 inda)
         C z f g
-        (Bar.↑inBar inOpenBar-Bar eqi e1)
+        (Bar.↑inBar barI eqi e1)
 
 
 
@@ -407,7 +407,7 @@ typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y
 --typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (LIFTneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (LIFTneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (LIFTneqUNIV (⇛-val-det tt tt x₁ c₁))
-{--  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
+{--  ⊥-elim (lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI q z)))
   where
     z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
@@ -417,7 +417,7 @@ typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c₁ 
 
 typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #LIFTinj {A3} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
-  = Bar.∀𝕎-inBarFunc inOpenBar-Bar aw eqi
+  = Bar.∀𝕎-inBarFunc barI aw eqi
   where
     aw : ∀𝕎 w
               (λ w' e' →
@@ -426,7 +426,7 @@ typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 y y
     aw w1 e1 ea = TSP.extr2 (inda w1 e1) A4 (eqtA w1 e1) f g ea
 
 typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g eqi =
-  Bar.∀𝕎-inBar-inBar' inOpenBar-Bar y ib
+  Bar.∀𝕎-inBar-inBar' barI y ib
   where
     ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' B C) (at : atbar y w' e' z) → eqInType u w' z f g)
     ib w1 e1 z at =
@@ -437,7 +437,7 @@ typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g eqi
         (wPredExtIrr-eqInType-mon eqta exta w1 e1)
         (∀𝕎-mon e1 inda)
         C z f g
-        (Bar.↑inBar inOpenBar-Bar eqi e1)
+        (Bar.↑inBar barI eqi e1)
 
 
 
@@ -463,7 +463,7 @@ typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A
 --typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (LIFTneqDUM (⇛-val-det tt tt x y))
 typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (LIFTneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (LIFTneqUNIV (⇛-val-det tt tt x c₁))
-{--  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
+{--  ⊥-elim (lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI q z)))
   where
     z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w A C y
@@ -473,7 +473,7 @@ typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c�
 
 typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #LIFTinj {A3} {A1} (#⇛-val-det {_} {A} tt tt y x)
-  = Bar.∀𝕎-inBarFunc inOpenBar-Bar aw eqi
+  = Bar.∀𝕎-inBarFunc barI aw eqi
   where
     aw : ∀𝕎 w
               (λ w' e' →
@@ -482,7 +482,7 @@ typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 
     aw w1 e1 ea = TSP.extrevl1 (inda w1 e1) A4 (eqtA w1 e1) f g ea
 
 typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g eqi =
-  Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar y aw eqi)
+  Bar.inBar-idem barI (Bar.∀𝕎-inBar'-inBar barI y aw eqi)
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
@@ -503,7 +503,7 @@ typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g 
          (z : eqTypes u w' A C) (at : atbar y w' e' z) →
          eqInType u w' z f g →
          inbar w' (λ w'' e'' → (x : w ⊑· w'') → eqInType (↓U u) w'' (eqta w'' x) f g))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc inOpenBar-Bar (irr-lift u w A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-lift u w A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z at ez)
 
 
 
@@ -528,7 +528,7 @@ typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A
 --typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (LIFTneqDUM (⇛-val-det tt tt x y₁))
 typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (LIFTneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (LIFTneqUNIV (⇛-val-det tt tt x c₂))
-{--  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
+{--  ⊥-elim (lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI q z)))
   where
     z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
     z = isu w C A y
@@ -538,7 +538,7 @@ typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c�
 
 typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #LIFTinj {A4} {A1} (#⇛-val-det {_} {A} tt tt y₁ x)
-  = Bar.∀𝕎-inBarFunc inOpenBar-Bar aw eqi
+  = Bar.∀𝕎-inBarFunc barI aw eqi
   where
     aw : ∀𝕎 w
               (λ w' e' →
@@ -547,7 +547,7 @@ typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 
     aw w1 e1 ea = TSP.extrevl2 (inda w1 e1) A3 (eqtA w1 e1) f g ea
 
 typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g eqi =
-  Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar y aw eqi)
+  Bar.inBar-idem barI (Bar.∀𝕎-inBar'-inBar barI y aw eqi)
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
@@ -568,7 +568,7 @@ typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g 
          (z : eqTypes u w' C A) (at : atbar y w' e' z) →
          eqInType u w' z f g →
          inbar w' (λ w'' e'' → (x : w ⊑· w'') → eqInType (↓U u) w'' (eqta w'' x) f g))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc inOpenBar-Bar (irr-lift u w A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-lift u w A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z at ez)
 
 
 
@@ -593,7 +593,7 @@ typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A
 --typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (LIFTneqDUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (LIFTneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (LIFTneqUNIV (⇛-val-det tt tt x₁ c₂))
-{--  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
+{--  ⊥-elim (lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI q z)))
   where
     z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w C B y
@@ -603,7 +603,7 @@ typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c�
 
 typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #LIFTinj {A4} {B1} (#⇛-val-det {_} {B} tt tt y₁ x₁)
-  = Bar.∀𝕎-inBarFunc inOpenBar-Bar aw eqi
+  = Bar.∀𝕎-inBarFunc barI aw eqi
   where
     aw : ∀𝕎 w
               (λ w' e' →
@@ -612,7 +612,7 @@ typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 
     aw w1 e1 ea = TSP.extrevr1 (inda w1 e1) A3 (eqtA w1 e1) f g ea
 
 typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g eqi =
-  Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar y aw eqi)
+  Bar.inBar-idem barI (Bar.∀𝕎-inBar'-inBar barI y aw eqi)
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
@@ -633,7 +633,7 @@ typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g 
          (z : eqTypes u w' C B) (at : atbar y w' e' z) →
          eqInType u w' z f g →
          inbar w' (λ w'' e'' → (x : w ⊑· w'') → eqInType (↓U u) w'' (eqta w'' x) f g))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc inOpenBar-Bar (irr-lift u w A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-lift u w A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z at ez)
 
 
 
@@ -658,7 +658,7 @@ typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A
 --typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (LIFTneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (LIFTneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (LIFTneqUNIV (⇛-val-det tt tt x₁ c₁))
-{--  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
+{--  ⊥-elim (lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI q z)))
   where
     z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
@@ -668,7 +668,7 @@ typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNIV i p c�
 
 typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #LIFTinj {A3} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
-  = Bar.∀𝕎-inBarFunc inOpenBar-Bar aw eqi
+  = Bar.∀𝕎-inBarFunc barI aw eqi
   where
     aw : ∀𝕎 w
               (λ w' e' →
@@ -677,7 +677,7 @@ typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 
     aw w1 e1 ea = TSP.extrevr2 (inda w1 e1) A4 (eqtA w1 e1) f g ea
 
 typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g eqi =
-  Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar y aw eqi)
+  Bar.inBar-idem barI (Bar.∀𝕎-inBar'-inBar barI y aw eqi)
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
@@ -698,7 +698,7 @@ typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g 
          (z : eqTypes u w' B C) (at : atbar y w' e' z) →
          eqInType u w' z f g →
          inbar w' (λ w'' e'' → (x : w ⊑· w'') → eqInType (↓U u) w'' (eqta w'' x) f g))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc inOpenBar-Bar (irr-lift u w A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-lift u w A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z at ez)
 
 
 
@@ -727,7 +727,7 @@ eqInType-⇛-LIFT u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSQUASH A3 A4 x 
 --eqInType-⇛-LIFT u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei = ⊥-elim (LIFTneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (LIFTneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (LIFTneqUNIV (⇛-val-det tt tt c₁ d₁))
-{--  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
+{--  ⊥-elim (lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI q z)))
   where
     z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
@@ -738,14 +738,14 @@ eqInType-⇛-LIFT u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTUNIV i p d₁ d
 eqInType-⇛-LIFT u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTLIFT A3 A4 x x₁ eqta₁ exta₁) ei
   rewrite #LIFTinj {A1} {A3} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #LIFTinj {B1} {A4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
-  Bar.∀𝕎-inBarFunc inOpenBar-Bar aw ei
+  Bar.∀𝕎-inBarFunc barI aw ei
   where
     aw : ∀𝕎 w (λ w' e' → eqInType (↓U u) w' (eqta₁ w' e') a b
                         → eqInType (↓U u) w' (eqta w' e') a b)
     aw w1 e1 eqa = snd (inda w1 e1 (eqta₁ w1 e1) a b) eqa
 
 eqInType-⇛-LIFT u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTBAR x) ei =
-  Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar x aw ei)
+  Bar.inBar-idem barI (Bar.∀𝕎-inBar'-inBar barI x aw ei)
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
@@ -765,7 +765,7 @@ eqInType-⇛-LIFT u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTBAR x) ei =
          (z : eqTypes u w' A B) (at : atbar x w' e' z) →
          eqInType u w' z a b →
          inbar w' (λ w'' e → (x : w ⊑· w'') → eqInType (↓U u) w'' (eqta w'' x) a b))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc inOpenBar-Bar (irr-lift u w A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-lift u w A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z at ez)
 
 
 
@@ -794,7 +794,7 @@ eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSQUASH A3 A4 x x₁
 --eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei ext = ⊥-elim (LIFTneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ei ext = ⊥-elim (LIFTneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTUNIV i p d₁ d₂) ei ext = ⊥-elim (LIFTneqUNIV (⇛-val-det tt tt c₁ d₁))
-{--  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
+{--  ⊥-elim (lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI q z)))
   where
     z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
@@ -805,7 +805,7 @@ eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTUNIV i p d₁ d₂)
 eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTLIFT A3 A4 x x₁ eqta₁ exta₁) ei ext
   rewrite #LIFTinj {A1} {A3} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #LIFTinj {B1} {A4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
-  Bar.∀𝕎-inBarFunc inOpenBar-Bar aw ei
+  Bar.∀𝕎-inBarFunc barI aw ei
   where
     awexta₁ : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
     awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeLIFT u w A B A3 A4 x x₁ eqta₁ exta₁ w1 e1)))
@@ -815,7 +815,7 @@ eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTLIFT A3 A4 x x₁ e
     aw w1 e1 eqa = fst (awexta₁ w1 e1 (eqta w1 e1) a b) eqa
 
 eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTBAR x) ei ext =
-  Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar x aw ei)
+  Bar.inBar-idem barI (Bar.∀𝕎-inBar'-inBar barI x aw ei)
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
@@ -835,7 +835,7 @@ eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTBAR x) ei ext =
          (z : ≡Types u w' A B) (at : atbar x w' e' z) →
          ≡∈Type u w' z a b →
          inbar w' (λ w'' e → (x : w ⊑· w'') → ≡∈Type (↓𝕌 u) w'' (eqta w'' x) a b))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc inOpenBar-Bar (irr-lift (u ·ᵤ) w A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-lift (u ·ᵤ) w A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z at ez)
 
 
 
@@ -864,7 +864,7 @@ eqInType-⇛-LIFT-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSQUASH A3 A
 --eqInType-⇛-LIFT-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei = ⊥-elim (LIFTneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (LIFTneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (LIFTneqUNIV (⇛-val-det tt tt c₁ d₁))
-{--  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
+{--  ⊥-elim (lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI q z)))
   where
     z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
@@ -875,14 +875,14 @@ eqInType-⇛-LIFT-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTUNIV i p d�
 eqInType-⇛-LIFT-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTLIFT A3 A4 x x₁ eqta₁ exta₁) ei
   rewrite #LIFTinj {A1} {A3} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #LIFTinj {B1} {A4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
-  Bar.∀𝕎-inBarFunc inOpenBar-Bar aw ei
+  Bar.∀𝕎-inBarFunc barI aw ei
   where
     aw : ∀𝕎 w (λ w' e' → eqInType (↓U u) w' (eqta w' e') a b
                         → eqInType (↓U u) w' (eqta₁ w' e') a b)
     aw w1 e1 eqa = fst (inda w1 e1 (eqta₁ w1 e1) a b) eqa
 
 eqInType-⇛-LIFT-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTBAR x) ei =
-  Bar.∀𝕎-inBar-inBar' inOpenBar-Bar x aw
+  Bar.∀𝕎-inBar-inBar' barI x aw
   where
     aw : ∀𝕎 w
       (λ w' e' → (z : eqTypes u w' A B) (at : atbar x w' e' z) → eqInType u w' z a b)
@@ -894,7 +894,7 @@ eqInType-⇛-LIFT-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTBAR x) ei =
         z j
       where
         j : inbar w1 (↑wPred (λ w' e → eqInType (↓U u) w' (eqta w' e) a b) e1)
-        j = Bar.↑inBar inOpenBar-Bar ei e1
+        j = Bar.↑inBar barI ei e1
 
 
 
@@ -923,7 +923,7 @@ eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSQUASH A3 A4 x 
 --eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ext ei = ⊥-elim (LIFTneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ext ei = ⊥-elim (LIFTneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTUNIV i p d₁ d₂) ext ei = ⊥-elim (LIFTneqUNIV (⇛-val-det tt tt c₁ d₁))
-{--  ⊥-elim (lift⊥ (Bar.inBar-const inOpenBar-Bar (Bar.∀𝕎-inBarFunc inOpenBar-Bar q z)))
+{--  ⊥-elim (lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI q z)))
   where
     z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
@@ -934,7 +934,7 @@ eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTUNIV i p d₁ d
 eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTLIFT A3 A4 x x₁ eqta₁ exta₁) ext ei
   rewrite #LIFTinj {A1} {A3} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #LIFTinj {B1} {A4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
-  Bar.∀𝕎-inBarFunc inOpenBar-Bar aw ei
+  Bar.∀𝕎-inBarFunc barI aw ei
   where
     awexta₁ : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
     awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeLIFT u w A B A3 A4 x x₁ eqta₁ exta₁ w1 e1)))
@@ -944,7 +944,7 @@ eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTLIFT A3 A4 x x�
     aw w1 e1 eqa = snd (awexta₁ w1 e1 (eqta w1 e1) a b) eqa
 
 eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTBAR x) ext ei =
-  Bar.∀𝕎-inBar-inBar' inOpenBar-Bar x aw
+  Bar.∀𝕎-inBar-inBar' barI x aw
   where
     aw : ∀𝕎 w
       (λ w' e' → (z : ≡Types u w' A B) (at : atbar x w' e' z) → ≡∈Type u w' z a b)
@@ -956,7 +956,7 @@ eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTBAR x) ext ei =
         z (≤Type-EQTBAR-eqInTypeExt at ext) j
       where
         j : inbar w1 (↑wPred (λ w' e → ≡∈Type (↓𝕌 u) w' (eqta w' e) a b) e1)
-        j = Bar.↑inBar inOpenBar-Bar ei e1
+        j = Bar.↑inBar barI ei e1
 
 
 
@@ -968,12 +968,12 @@ typeSysConds-LIFT-local : (u : univs) (w : 𝕎·) (A B A1 B1 : CTerm)
                              (inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
                              → eqInTypeLocal (EQTLIFT A1 B1 x x₁ eqta exta)
 typeSysConds-LIFT-local u w A B A1 B1 x x₁ eqta exta inda a b i j =
-  Bar.inBar-idem inOpenBar-Bar (Bar.∀𝕎-inBar'-inBar inOpenBar-Bar i aw j)
+  Bar.inBar-idem barI (Bar.∀𝕎-inBar'-inBar barI i aw j)
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z)
                          → eqInType u w' z a b
                          → inbar w' (λ w'' e → (x : w ⊑· w'') → eqInType (↓U u) w'' (eqta w'' x) a b))
-    aw w1 e1 z at ei = Bar.∀𝕎-inBarFunc inOpenBar-Bar aw'' aw'
+    aw w1 e1 z at ei = Bar.∀𝕎-inBarFunc barI aw'' aw'
       where
         aw' : inbar w1 (λ w'' e → eqInType (↓U u) w'' (eqta w'' (⊑-trans· e1 e)) a b)
         aw' = eqInType-⇛-LIFT u w1 A B A1 B1 a b (∀𝕎-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1) (∀𝕎-mon e1 inda) (⇛-mon e1 x) (⇛-mon e1 x₁) z ei

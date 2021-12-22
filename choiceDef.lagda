@@ -34,12 +34,14 @@ module choiceDef (W : PossibleWorlds) (C : Choice W) where
 open import worldDef W
 open Choice
 
+
 getChoice· : (n : ℕ) (cs : csName) (w : 𝕎·) → Maybe Term
 getChoice· = getChoice C
 
-getChoice⊑· : (w1 w2 : 𝕎·) (k : ℕ) (name : csName) (t : Term)
+
+{--getChoice⊑· : (w1 w2 : 𝕎·) (k : ℕ) (name : csName) (t : Term)
               → w1 ⊑· w2
               → getChoice· k name w1 ≡ just t
               → getChoice· k name w2 ≡ just t
-getChoice⊑· = getChoice⊑ C
+getChoice⊑· = getChoice⊑ C--}
 \end{code}

@@ -59,6 +59,7 @@ step (PI a b) w = just (PI a b)
 -- LAMBDA
 step (LAMBDA t) w = just (LAMBDA t)
 -- APPLY
+-- access the n^th choice in the history of choices made for "name"
 step (APPLY (CS name) (NUM n)) w = getChoice· n name w
 step (APPLY (CS name) t) w with step t w
 ... | just u = just (APPLY (CS name) u)
@@ -366,11 +367,12 @@ step-APPLY-CS-¬NUM name (SHRINK a) b w c s rewrite sym (just-inj s) = refl
     g rewrite steps≡ m (APPLY (CS name) a) w | s | gc = refl
 
 
-⇛-APPLY-CS : (w : 𝕎·) (name : csName) (a t : Term) (k : ℕ)
+{--⇛-APPLY-CS : (w : 𝕎·) (name : csName) (a t : Term) (k : ℕ)
               → getChoice· k name w ≡ just t
               → a ⇛ NUM k at w
               → APPLY (CS name) a ⇛ t at w
 ⇛-APPLY-CS w name a t k gc c w1 e1 =
   let (n , c1) = lower (c w1 e1) in
   lift (Σ-steps-APPLY-CS n a t w1 k name c1 (getChoice⊑· w w1 k name t e1 gc))
+--}
 \end{code}

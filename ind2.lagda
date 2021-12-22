@@ -388,7 +388,7 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
     aw = eqTypes-mon (u ·ᵤ) eqt
 
     i : inbar w0 (λ w' _ → ≡Types u w' X1 X2)
-    i = Bar.∀𝕎-inBar inOpenBar-Bar aw
+    i = Bar.∀𝕎-inBar barI aw
 
 --    j : atbar i w0 (⊑-refl· w0) (aw w0 (⊑-refl· w0))
     j : atbar i w0 (⊑-refl· w0) eqt
@@ -554,7 +554,7 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
     indLtt {u} {w} {T1} {T2} (EQTBAR i) {u'} {w'} {.T1} {.T2} eqt' (<Type1 .eqt' .(EQTBAR i) (<TypeBAR .u .w .T1 .T2 .i .w' e' .eqt' a)) =
       ind eqt' (ind' w' e' eqt' a)
       where
-        ind' : (w1 : 𝕎·) (e1 : w ⊑· w1) (p : ≡Types u w1 T1 T2) (a : Bar.atBar inOpenBar-Bar i w1 e1 p)
+        ind' : (w1 : 𝕎·) (e1 : w ⊑· w1) (p : ≡Types u w1 T1 T2) (a : Bar.atBar barI i w1 e1 p)
                {u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2')
                → <Type {u'} eqt' p → P eqt'
         ind' w1 e1 p a {u'} {w'} {T1'} {T2'} eqt' ltt = indLtt p eqt' ltt
@@ -562,7 +562,7 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
     indLtt {u} {w} {T1} {T2} (EQTBAR i) {u'} {w'} {T1'} {T2'} eqt' (<TypeS .eqt' eqt2 .(EQTBAR i) ltt (<TypeBAR .u .w .T1 .T2 .i w2 e' .eqt2 a)) =
       ind' w2 e' eqt2 a eqt' ltt
       where
-        ind' : (w1 : 𝕎·) (e1 : w ⊑· w1) (p : ≡Types u w1 T1 T2) (a : Bar.atBar inOpenBar-Bar i w1 e1 p)
+        ind' : (w1 : 𝕎·) (e1 : w ⊑· w1) (p : ≡Types u w1 T1 T2) (a : Bar.atBar barI i w1 e1 p)
                {u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2')
                → <Type {u'} eqt' p → P eqt'
         ind' w1 e1 p a {u'} {w'} {T1'} {T2'} eqt' ltt = indLtt p eqt' ltt

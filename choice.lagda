@@ -40,9 +40,17 @@ record Choice : Set₁ where
   field
     -- returns the n's choice in w for the choice sequence cs
     getChoice : (n : ℕ) (cs : csName) (w : 𝕎·) → Maybe Term
+    --getChoice : (cs : csName) (w : 𝕎·) → Maybe ℕ
+
+-- To capture the fact that we can make different choices over time, should we
+-- (1) add a setter function (would require the 'step' function to return a 𝕎)
+-- (2) or capture that through an axiom?
+
     -- getChoice is preserved by ⊑
-    getChoice⊑ : (w1 w2 : 𝕎·) (k : ℕ) (name : csName) (t : Term)
+    -- This is only used by ⇛-APPLY-CS in computation, which is not used now
+    -- This is something we want because it wouldn't hold for references
+    {--getChoice⊑ : (w1 w2 : 𝕎·) (k : ℕ) (name : csName) (t : Term)
                   → w1 ⊑· w2
                   → getChoice k name w1 ≡ just t
-                  → getChoice k name w2 ≡ just t
+                  → getChoice k name w2 ≡ just t--}
 \end{code}

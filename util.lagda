@@ -160,4 +160,16 @@ select++-just {A} {suc k} {x ∷ l} {l'} {t} sel = select++-just {A} {k} {l} {l'
 
 s≤s-inj : {a b : ℕ} → suc a ≤ suc b → a ≤ b
 s≤s-inj {a} {b} (_≤_.s≤s h) = h
+
+
+→s≡s : {a b : ℕ} → a ≡ b → suc a ≡ suc b
+→s≡s {a} {b} e rewrite e = refl
+
+
+
+<s→¬<→≡ : {i n : ℕ} → i < suc n → ¬ i < n → i ≡ n
+<s→¬<→≡ {0} {0} p q = refl
+<s→¬<→≡ {suc i} {0} (_≤_.s≤s ()) q
+<s→¬<→≡ {0} {suc n} p q = ⊥-elim (q 0<1+n)
+<s→¬<→≡ {suc i} {suc n} p q = →s≡s (<s→¬<→≡ (s≤s-inj p) λ z → q (_≤_.s≤s z))
 \end{code}

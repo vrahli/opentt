@@ -50,6 +50,11 @@ OpenTT.
 
 
 \begin{code}
+-- instance of a bar, which should be replaced by a parameter
+barI : Bar
+barI = inOpenBar-Bar
+
+
 inbar : (w : 𝕎·) (f : wPred w) → Set₁
 --inbar = Bar.inBar b
 inbar = inOpenBar
@@ -612,8 +617,11 @@ sub0 : (a : CTerm) (t : CTerm0) → CTerm
 sub0 a t =
   ct (sub ⌜ a ⌝ ⌜ t ⌝) (#sub a t)
 
---CTerm.cTerm T
---→ Term ⌜_⌝ : CTerm → Term
+
+
+sub0⌞⌟ : (a b : CTerm) → sub0 a ⌞ b ⌟ ≡ b
+sub0⌞⌟ a b = CTerm≡ (subNotIn ⌜ a ⌝ ⌜ b ⌝ (CTerm.closed b))
+
 
 
 #NAT : CTerm
@@ -639,98 +647,98 @@ sub0 a t =
 #LIFT : CTerm → CTerm
 #LIFT a = ct (LIFT ⌜ a ⌝) c
   where
-    c : # LIFT (CTerm.cTerm a)
+    c : # LIFT ⌜ a ⌝
     c rewrite CTerm.closed a = refl
 
 
 #APPLY : CTerm → CTerm → CTerm
 #APPLY a b = ct (APPLY ⌜ a ⌝ ⌜ b ⌝) c
   where
-    c : # APPLY (CTerm.cTerm a) (CTerm.cTerm b)
+    c : # APPLY ⌜ a ⌝ ⌜ b ⌝
     c rewrite CTerm.closed a | CTerm.closed b = refl
 
 
 #PAIR : CTerm → CTerm → CTerm
 #PAIR a b = ct (PAIR ⌜ a ⌝ ⌜ b ⌝) c
   where
-    c : # PAIR (CTerm.cTerm a) (CTerm.cTerm b)
+    c : # PAIR ⌜ a ⌝ ⌜ b ⌝
     c rewrite CTerm.closed a | CTerm.closed b = refl
 
 
 #UNION : CTerm → CTerm → CTerm
 #UNION a b = ct (UNION ⌜ a ⌝ ⌜ b ⌝) c
   where
-    c : # UNION (CTerm.cTerm a) (CTerm.cTerm b)
+    c : # UNION ⌜ a ⌝ ⌜ b ⌝
     c rewrite CTerm.closed a | CTerm.closed b = refl
 
 
 #FFDEFS : CTerm → CTerm → CTerm
 #FFDEFS a b = ct (FFDEFS ⌜ a ⌝ ⌜ b ⌝) c
   where
-    c : # FFDEFS (CTerm.cTerm a) (CTerm.cTerm b)
+    c : # FFDEFS ⌜ a ⌝ ⌜ b ⌝
     c rewrite CTerm.closed a | CTerm.closed b = refl
 
 
 #TSQUASH : CTerm → CTerm
 #TSQUASH a = ct (TSQUASH ⌜ a ⌝) c
   where
-    c : # TSQUASH (CTerm.cTerm a)
+    c : # TSQUASH ⌜ a ⌝
     c rewrite CTerm.closed a = refl
 
 
 #INL : CTerm → CTerm
 #INL a = ct (INL ⌜ a ⌝) c
   where
-    c : # INL (CTerm.cTerm a)
+    c : # INL ⌜ a ⌝
     c rewrite CTerm.closed a = refl
 
 
 #INR : CTerm → CTerm
 #INR a = ct (INR ⌜ a ⌝) c
   where
-    c : # INR (CTerm.cTerm a)
+    c : # INR ⌜ a ⌝
     c rewrite CTerm.closed a = refl
 
 
 #LT : CTerm → CTerm → CTerm
 #LT a b = ct (LT ⌜ a ⌝ ⌜ b ⌝) c
   where
-    c : # LT (CTerm.cTerm a) (CTerm.cTerm b)
+    c : # LT ⌜ a ⌝ ⌜ b ⌝
     c rewrite CTerm.closed a | CTerm.closed b = refl
 
 
 #QLT : CTerm → CTerm → CTerm
 #QLT a b = ct (QLT ⌜ a ⌝ ⌜ b ⌝) c
   where
-    c : # QLT (CTerm.cTerm a) (CTerm.cTerm b)
+    c : # QLT ⌜ a ⌝ ⌜ b ⌝
     c rewrite CTerm.closed a | CTerm.closed b = refl
 
 
 #EQ : CTerm → CTerm → CTerm → CTerm
 #EQ a b T = ct (EQ ⌜ a ⌝ ⌜ b ⌝ ⌜ T ⌝) c
   where
-    c : # EQ (CTerm.cTerm a) (CTerm.cTerm b) (CTerm.cTerm T)
+    c : # EQ ⌜ a ⌝ ⌜ b ⌝ (CTerm.cTerm T)
     c rewrite CTerm.closed a | CTerm.closed b | CTerm.closed T = refl
 
 
 #PI : CTerm → CTerm0 → CTerm
 #PI a b = ct (PI ⌜ a ⌝ ⌜ b ⌝) c
   where
-    c : # PI (CTerm.cTerm a) (CTerm0.cTerm b)
+    c : # PI ⌜ a ⌝ (CTerm0.cTerm b)
     c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
 
 
 #SUM : CTerm → CTerm0 → CTerm
 #SUM a b = ct (SUM ⌜ a ⌝ ⌜ b ⌝) c
   where
-    c : # SUM (CTerm.cTerm a) (CTerm0.cTerm b)
+    c : # SUM ⌜ a ⌝ (CTerm0.cTerm b)
     c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
 
 
 #SET : CTerm → CTerm0 → CTerm
 #SET a b = ct (SET ⌜ a ⌝ ⌜ b ⌝) c
   where
-    c : # SET (CTerm.cTerm a) (CTerm0.cTerm b)
+    c : # SET ⌜ a ⌝ (CTerm0.cTerm b)
     c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
 
 
@@ -798,6 +806,12 @@ per = CTerm → CTerm → Set₁
 
 wper : Set₂
 wper = (w : 𝕎·) → per
+
+ist : Set₂
+ist = CTerm → Set₁
+
+wist : Set₂
+wist = (w : 𝕎·) → ist
 
 
 𝕃 : Set
@@ -1160,6 +1174,9 @@ _·ₙ u = fst (u ·ᵤ)
 TEQ : Set₂
 TEQ = wper
 
+IST : Set₂
+IST = wist
+
 EQT : Set₂
 EQT = (w : 𝕎·) (T a b : CTerm) → Set₁
 
@@ -1170,11 +1187,14 @@ MEMT = (w : 𝕎·) (T a : CTerm) → Set₁
 equalTypes : (u : ℕ) → TEQ
 equalTypes u = eqTypes (uni u)
 
+isType : (u : ℕ) → IST
+isType u w T = equalTypes u w T T
+
 equalTerms : (n : ℕ) (w : 𝕎·) {T1 T2 : CTerm} → (equalTypes n w T1 T2) → per
 equalTerms n w eqt = eqInType (uni n) w eqt
 
 equalInType : (u : ℕ) (w : 𝕎·) (T : CTerm) → per
-equalInType u w T a b = Σ (equalTypes u w T T) (λ p → equalTerms u w p a b)
+equalInType u w T a b = Σ (isType u w T) (λ p → equalTerms u w p a b)
 \end{code}
 
 
