@@ -450,6 +450,9 @@ equalInType→equalTypes {n} {i} p w a b eqi = equalTypes< {n} {i} p w a b (equa
 
 
 
+
+
+
 -- We need cumulativity or lifting here because (#UNIV i) needs to be in level i,
 -- but a₁ needs to be equal to a₂ at that level and also in (#UNIV i)
 eqTypesLemPi : (w : 𝕎·) {n i : ℕ} (p : i < n)
@@ -587,6 +590,73 @@ equalInType-local {u} {w} {T} {a} {b} i =
 
     eqi : equalTerms u w (EQTBAR (Bar.∀𝕎-inBarFunc barI aw i)) a b
     eqi = Bar.∀𝕎-inBar-inBar' barI i aw'
+
+
+
+equalInType-LIFT→ : (n : ℕ) (w : 𝕎·) (T a b : CTerm)
+                     → equalInType (suc n) w (#LIFT T) a b
+                     → equalInType n w T a b
+{-# TERMINATING #-}
+equalInType-LIFT→ n w T a b (EQTNAT x x₁ , eqi) = ⊥-elim (LIFTneqNAT (compAllVal x₁ tt))
+equalInType-LIFT→ n w T a b (EQTQNAT x x₁ , eqi) = ⊥-elim (LIFTneqQNAT (compAllVal x₁ tt))
+equalInType-LIFT→ n w T a b (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (LIFTneqLT (compAllVal x₁ tt))
+equalInType-LIFT→ n w T a b (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (LIFTneqQLT (compAllVal x₁ tt))
+equalInType-LIFT→ n w T a b (EQTFREE x x₁ , eqi) = ⊥-elim (LIFTneqFREE (compAllVal x₁ tt))
+equalInType-LIFT→ n w T a b (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (LIFTneqPI (compAllVal x₁ tt))
+equalInType-LIFT→ n w T a b (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (LIFTneqSUM (compAllVal x₁ tt))
+equalInType-LIFT→ n w T a b (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (LIFTneqSET (compAllVal x₁ tt))
+equalInType-LIFT→ n w T a b (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2 , eqi) = ⊥-elim (LIFTneqEQ (compAllVal x₁ tt))
+equalInType-LIFT→ n w T a b (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (LIFTneqUNION (compAllVal x₁ tt))
+equalInType-LIFT→ n w T a b (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LIFTneqTSQUASH (compAllVal x₁ tt))
+equalInType-LIFT→ n w T a b (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (LIFTneqFFDEFS (compAllVal x₁ tt))
+equalInType-LIFT→ n w T a b (EQTUNIV i p x x₁ , eqi) = ⊥-elim (LIFTneqUNIV (compAllVal x₁ tt))
+equalInType-LIFT→ n w T a b (EQTLIFT A1 A2 x x₁ eqtA exta , eqi)
+  rewrite #LIFTinj {A1} {T} (sym (#compAllVal x tt))
+        | #LIFTinj {A2} {T} (sym (#compAllVal x₁ tt))
+        | ↓U-uni (suc n) =
+  equalInType-local (Bar.∀𝕎-inBarFunc barI (λ w' e' z → eqInType→equalInType refl (eqtA w' e') z) eqi)
+equalInType-LIFT→ n w T a b (EQTBAR x , eqi) =
+  equalInType-local (Bar.∀𝕎-inBar'-inBar barI x aw eqi)
+    where
+      aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni (suc n)) w' (#LIFT T) (#LIFT T))
+                          → (at : atbar x w' e' z)
+                          → equalTerms (suc n) w' z a b
+                          → equalInType n w' T a b)
+      aw w' e' z at j = equalInType-LIFT→ n w' T a b (z , j)
+
+
+
+↑T# : {i n : ℕ} (p : i < n) (t : CTerm) → CTerm
+↑T# {i} {suc n} p t with i <? n
+... | yes q = #LIFT (↑T# q t)
+... | no q = #LIFT t -- i ≡ n
+
+
+↑T≡↑T# : {i n : ℕ} (p : i < n) (t : CTerm) → ↑T p ⌜ t ⌝ ≡ ⌜ ↑T# p t ⌝
+↑T≡↑T# {i} {suc n} p t with i <? n
+... | yes q rewrite ↑T≡↑T# q t = refl
+... | no q = refl
+
+
+
+#↑T≡↑T# : {i n : ℕ} (p : i < n) (t : CTerm) → #↑T p t ≡ ↑T# p t
+#↑T≡↑T# {i} {n} p t = CTerm≡ (↑T≡↑T# p t)
+
+
+
+equalInType-↑T#→ : {n i : ℕ} (p : i < n) (w : 𝕎·) (T a b : CTerm)
+                    → equalInType n w (↑T# p T) a b
+                    → equalInType i w T a b
+equalInType-↑T#→ {suc n} {i} p w T a b eqi with i <? n
+... | yes q = equalInType-↑T#→ q w T a b (equalInType-LIFT→ n w (↑T# q T) a b eqi)
+... | no q rewrite <s→¬<→≡ p q = equalInType-LIFT→ n w T a b eqi
+
+
+
+equalInType-#↑T→ : {n i : ℕ} (p : i < n) (w : 𝕎·) (T a b : CTerm)
+                    → equalInType n w (#↑T p T) a b
+                    → equalInType i w T a b
+equalInType-#↑T→ {suc n} {i} p w T a b eqi rewrite #↑T≡↑T# p T = equalInType-↑T#→ p w T a b eqi
 
 
 
@@ -816,6 +886,80 @@ equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTBAR x , eqi) =
         j = equalInType-UNION→ (z , i)
 
 
+Σchoice : (n : csName) (k : ℕ) → Term
+Σchoice n k = SUM NAT (EQ (APPLY (CS n) (VAR 0)) (NUM k) NAT)
+
+
+
+#Σchoice : (n : csName) (k : ℕ) → CTerm
+#Σchoice n k = ct (Σchoice n k) refl
+
+
+
+#[0]APPLY : CTerm0 → CTerm0 → CTerm0
+#[0]APPLY a b = ct0 (APPLY ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ [ 0 ] ] APPLY ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {[ 0 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {[ 0 ]} (CTerm0.closed b)))
+
+
+
+#[0]EQ : CTerm0 → CTerm0 → CTerm0 → CTerm0
+#[0]EQ a b c = ct0 (EQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝) cl
+  where
+    cl : #[ [ 0 ] ] EQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝
+    cl = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝} {[ 0 ]}
+               (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+                    (⊆++ (⊆?→⊆ {fvars ⌜ b ⌝} {[ 0 ]} (CTerm0.closed b))
+                         (⊆?→⊆ {fvars ⌜ c ⌝} {[ 0 ]} (CTerm0.closed c))))
+
+
+
+#[0]CS : csName → CTerm0
+#[0]CS n = ct0 (CS n) refl
+
+
+#[0]NUM : ℕ → CTerm0
+#[0]NUM n = ct0 (NUM n) refl
+
+
+#[0]NAT : CTerm0
+#[0]NAT = ct0 NAT refl
+
+
+#Σchoice≡ : (n : csName) (k : ℕ) → #Σchoice n k ≡ #SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS n) #[0]VAR) (#[0]NUM k) #[0]NAT)
+#Σchoice≡ n k = refl
+
+
+
+equalInType-FUN→ : {u : ℕ} {w : 𝕎·} {A B : CTerm} {f g : CTerm}
+                    → equalInType u w (#FUN A B) f g
+                    → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType u w' A a₁ a₂ → equalInType u w' B (#APPLY f a₁) (#APPLY g a₂))
+equalInType-FUN→ {u} {w} {A} {B} {f} {g} eqi rewrite #FUN≡#PI A B = z2
+  where
+    z1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType u w' A a₁ a₂ → equalInType u w' (sub0 a₁ ⌞ B ⌟) (#APPLY f a₁) (#APPLY g a₂))
+    z1 = snd (snd (equalInType-PI→ eqi))
+
+    z2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType u w' A a₁ a₂ → equalInType u w' B (#APPLY f a₁) (#APPLY g a₂))
+    z2 w' e' a₁ a₂ ea = ≡CTerm→equalInType (sub0⌞⌟ a₁ B ) (z1 w' e' a₁ a₂ ea)
+
+
+
+¬equalInType-FALSE : {w : 𝕎·} {i : ℕ} {a b : CTerm} → ¬ equalInType i w #FALSE a b
+¬equalInType-FALSE {w} {i} {a} {b} eqi = {!!}
+
+
+equalInType-NEG→ : {u : ℕ} {w : 𝕎·} {A : CTerm} {f g : CTerm}
+                    → equalInType u w (#NEG A) f g
+                    → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType u w' A a₁ a₂)
+equalInType-NEG→ {u} {w} {A} {f} {g} eqi w' e' a₁ a₂ ea rewrite #NEG≡#FUN A = ¬equalInType-FALSE z
+  where
+    z : equalInType u w' #FALSE (#APPLY f a₁) (#APPLY g a₂)
+    z = equalInType-FUN→ eqi w' e' a₁ a₂ ea
+
+
 
 -- use equalInType-FUN instead
 notClassical : (w : 𝕎·) {n i : ℕ} (p : i < n) → member w (#NEG (#LEM p)) #lamAX
@@ -849,6 +993,25 @@ notClassical w {n} {i} p =
                                                      ⊎
                                                      (t #⇛ (#INR x) at w' × t #⇛ (#INR y) at w' × equalInType n w' (#NEG (#↑T p u₁)) x y))))))
             aw' w'' e'' (t , eqi) = t , equalInType-UNION→ eqi
+
+        aw5 : ∀𝕎 w1 (λ w' _ → (u₁ u₂ : CTerm) → equalInType n w' (#UNIV i) u₁ u₂
+                             → inbar w' (λ w'' _ → Σ CTerm (λ t → inbar w'' (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
+                                                  → (t #⇛ (#INL x) at w' × t #⇛ (#INL y) at w' × equalInType i w' u₁ x y)
+                                                     ⊎
+                                                     (t #⇛ (#INR x) at w' × t #⇛ (#INR y) at w' × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' u₁ a₁ a₂))))))))
+        aw5 w' e' u₁ u₂ j = Bar.∀𝕎-inBarFunc barI aw' (aw4 w' e' u₁ u₂ j)
+          where
+            aw' : ∀𝕎 w' (λ w'' _ → Σ CTerm (λ t → inbar w'' (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
+                                                  → (t #⇛ (#INL x) at w' × t #⇛ (#INL y) at w' × equalInType n w' (#↑T p u₁) x y)
+                                                     ⊎
+                                                     (t #⇛ (#INR x) at w' × t #⇛ (#INR y) at w' × equalInType n w' (#NEG (#↑T p u₁)) x y)))))
+                                  → Σ CTerm (λ t → inbar w'' (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
+                                                  → (t #⇛ (#INL x) at w' × t #⇛ (#INL y) at w' × equalInType i w' u₁ x y)
+                                                     ⊎
+                                                     (t #⇛ (#INR x) at w' × t #⇛ (#INR y) at w' × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' u₁ a₁ a₂)))))))
+            aw' w'' e'' (t , eqt) = t , Bar.∀𝕎-inBarFunc barI (λ { w3 e3 (x , y , inj₁ (c₁ , c₂ , z)) → x , y , inj₁ (c₁ , c₂ , equalInType-#↑T→ p w3 u₁ x y z) ;
+                                                                    w3 e3 (x , y , inj₂ (c₁ , c₂ , z)) → x , y , inj₂ (c₁ , c₂ , {!!}) })
+                                                               eqt
 
 --eqTypesNegLem w {n} {i} p , equalTerms-NegLem w p
 
