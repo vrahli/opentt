@@ -39,8 +39,16 @@ record Choice : Set₁ where
   constructor mkChoice
   field
     -- returns the n's choice in w for the choice sequence cs
-    getChoice : (n : ℕ) (cs : csName) (w : 𝕎·) → Maybe Term
-    --getChoice : (cs : csName) (w : 𝕎·) → Maybe ℕ
+    getChoice : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe Term
+    --getChoice : (cs : Name) (w : 𝕎·) → Maybe ℕ
+
+    -- returns a Name which does not occur in w
+    newChoice : (w : 𝕎·) → Name
+    -- 'records' cs in w
+    startChoice : (cs : Name) (w : 𝕎·) → 𝕎·
+
+    -- a property of newChoice is:
+    startNewChoice : (n : ℕ) (w : 𝕎·) → getChoice n (newChoice w) (startChoice (newChoice w) w) ≡ nothing
 
 -- To capture the fact that we can make different choices over time, should we
 -- (1) add a setter function (would require the 'step' function to return a 𝕎)
@@ -49,7 +57,7 @@ record Choice : Set₁ where
     -- getChoice is preserved by ⊑
     -- This is only used by ⇛-APPLY-CS in computation, which is not used now
     -- This is something we want because it wouldn't hold for references
-    {--getChoice⊑ : (w1 w2 : 𝕎·) (k : ℕ) (name : csName) (t : Term)
+    {--getChoice⊑ : (w1 w2 : 𝕎·) (k : ℕ) (name : Name) (t : Term)
                   → w1 ⊑· w2
                   → getChoice k name w1 ≡ just t
                   → getChoice k name w2 ≡ just t--}

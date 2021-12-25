@@ -46,19 +46,19 @@ restriction = (n : ℕ) → Term → Set
 record cs : Set₁ where
   constructor mkcs
   field
-    name    : csName
+    name    : Name
     choices : List Term
     res     : restriction
 
 data entry : Set₁ where
-  start  : (name : csName) (res : restriction) → entry
-  choice : (name : csName) (t : Term) → entry
+  start  : (name : Name) (res : restriction) → entry
+  choice : (name : Name) (t : Term) → entry
 
 -- Worlds - entries are added at the end of the list
 world : Set₁
 world = List entry
 
-getChoices : csName → world → List Term
+getChoices : Name → world → List Term
 getChoices name [] = []
 getChoices name (start _ _ ∷ w) = getChoices name w
 getChoices name (choice n t ∷ w) with name ≟ n
@@ -66,7 +66,7 @@ getChoices name (choice n t ∷ w) with name ≟ n
 ... | no p = getChoices name w
 
 
-getChoices++ : (name : csName) (w w' : world)
+getChoices++ : (name : Name) (w w' : world)
                → getChoices name (w ++ w') ≡ getChoices name w ++ getChoices name w'
 getChoices++ name [] w' = refl
 getChoices++ name (start name₁ res ∷ w) w' = getChoices++ name w w'
@@ -76,14 +76,14 @@ getChoices++ name (choice name₁ t ∷ w) w' with name ≟ name₁
 
 
 -- ⟨_⟩_≽_ guarantees that there is only one 'start' for each choice sequence
-getCs : csName → world → Maybe cs
+getCs : Name → world → Maybe cs
 getCs name [] = nothing
 getCs name (start n r ∷ w) with name ≟ n
 ... | yes p = just (mkcs name (getChoices name w) r)
 ... | no p = getCs name w
 getCs name (choice n t ∷ w) = getCs name w
 
-wdom : world → List csName
+wdom : world → List Name
 wdom [] = []
 wdom (start name _ ∷ w) = name ∷ wdom w
 wdom (choice _ _ ∷ w) = wdom w
@@ -91,10 +91,10 @@ wdom (choice _ _ ∷ w) = wdom w
 ∈world : cs → world → Set₁
 ∈world e w = getCs (cs.name e) w ≡ just e
 
-newcs : world → csName → restriction → world
+newcs : world → Name → restriction → world
 newcs w name r = w ∷ʳ start name r
 
-extcs : world → csName → Term → world
+extcs : world → Name → Term → world
 extcs w name t = w ∷ʳ choice name t
 
 
@@ -103,12 +103,12 @@ data _≽_ : (w2 : world) (w1 : world) → Set₁ where
   extRefl : (w : world) → w ≽ w
   extTrans : {w1 w2 w3 : world} → w3 ≽ w2 → w2 ≽ w1 → w3 ≽ w1
   extChoice :
-    (w : world) (name : csName) (l : List Term) (t : Term) (res : restriction)
+    (w : world) (name : Name) (l : List Term) (t : Term) (res : restriction)
     → ∈world (mkcs name l res) w
     → res (length l) t
     → (extcs w name t) ≽ w
   extEntry :
-    (w : world) (name : csName) (res : restriction)
+    (w : world) (name : Name) (res : restriction)
     → ¬ (name ∈ wdom w) -- 'name' is not in 'w' so that we don't shadow an entry
     → (newcs w name res) ≽ w
 
@@ -125,31 +125,31 @@ open import choice(PossibleWorldsCS)
 
 -- We now define an instance of CsChoice
 -- similar to lookup
-getCsChoice : (n : ℕ) (name : csName) (w : world) → Maybe Term
+getCsChoice : (n : ℕ) (name : Name) (w : world) → Maybe Term
 getCsChoice n name w with getCs name w
 ... | just (mkcs _ l _) = select n l
 ... | nothing = nothing
 
 
-getCs⊎ : (name : csName) (w : world) → (Σ cs (λ e → getCs name w ≡ just e)) ⊎ getCs name w ≡ nothing
+getCs⊎ : (name : Name) (w : world) → (Σ cs (λ e → getCs name w ≡ just e)) ⊎ getCs name w ≡ nothing
 getCs⊎ name w with getCs name w
 ... | just u = inj₁ (u , refl)
 ... | nothing = inj₂ refl
 
 
-mkcs-inj1 : {n1 n2 : csName} {l1 l2 : List Term} {r1 r2 : restriction} → mkcs n1 l1 r1 ≡ mkcs n2 l2 r2 → n1 ≡ n2
+mkcs-inj1 : {n1 n2 : Name} {l1 l2 : List Term} {r1 r2 : restriction} → mkcs n1 l1 r1 ≡ mkcs n2 l2 r2 → n1 ≡ n2
 mkcs-inj1 refl =  refl
 
 
-mkcs-inj2 : {n1 n2 : csName} {l1 l2 : List Term} {r1 r2 : restriction} → mkcs n1 l1 r1 ≡ mkcs n2 l2 r2 → l1 ≡ l2
+mkcs-inj2 : {n1 n2 : Name} {l1 l2 : List Term} {r1 r2 : restriction} → mkcs n1 l1 r1 ≡ mkcs n2 l2 r2 → l1 ≡ l2
 mkcs-inj2 refl =  refl
 
 
-mkcs-inj3 : {n1 n2 : csName} {l1 l2 : List Term} {r1 r2 : restriction} → mkcs n1 l1 r1 ≡ mkcs n2 l2 r2 → r1 ≡ r2
+mkcs-inj3 : {n1 n2 : Name} {l1 l2 : List Term} {r1 r2 : restriction} → mkcs n1 l1 r1 ≡ mkcs n2 l2 r2 → r1 ≡ r2
 mkcs-inj3 refl =  refl
 
 
-getCs-same-name : (name : csName) (w : world) (e : cs)
+getCs-same-name : (name : Name) (w : world) (e : cs)
                   → getCs name w ≡ just e
                   → cs.name e ≡ name
 getCs-same-name name (start name₁ res ∷ w) (mkcs n l r) h with name ≟ name₁
@@ -158,7 +158,7 @@ getCs-same-name name (start name₁ res ∷ w) (mkcs n l r) h with name ≟ name
 getCs-same-name name (choice name₁ t ∷ w) e h = getCs-same-name name w e h
 
 
-getChoiceΣ : (k : ℕ) (name : csName) (w : world) (t : Term)
+getChoiceΣ : (k : ℕ) (name : Name) (w : world) (t : Term)
              → getCsChoice k name w ≡ just t
              → Σ (List Term) (λ l → Σ restriction (λ r → getCs name w ≡ just (mkcs name l r) × select k l ≡ just t))
 getChoiceΣ k name w t gc with getCs⊎ name w
@@ -167,7 +167,7 @@ getChoiceΣ k name w t gc | inj₂ p rewrite p = ⊥-elim (¬just≡nothing (sym
 
 
 
-getCs++ : (name : csName) (w w' : world) (l : List Term) (r : restriction)
+getCs++ : (name : Name) (w w' : world) (l : List Term) (r : restriction)
           → getCs name w ≡ just (mkcs name l r)
           → getCs name (w ++ w') ≡ just (mkcs name (l ++ getChoices name w') r)
 getCs++ name (start name₁ res ∷ w) w' l r e with name ≟ name₁
@@ -176,7 +176,7 @@ getCs++ name (start name₁ res ∷ w) w' l r e with name ≟ name₁
 getCs++ name (choice name₁ t ∷ w) w' l r e = getCs++ name w w' l r e
 
 
-getCs++-same-choice : (name : csName) (w : world) (l : List Term) (r : restriction) (t : Term)
+getCs++-same-choice : (name : Name) (w : world) (l : List Term) (r : restriction) (t : Term)
                       → getCs name w ≡ just (mkcs name l r)
                       → getCs name (w ++ [ choice name t ]) ≡ just (mkcs name (l ++ [ t ]) r)
 getCs++-same-choice name w l r t e rewrite getCs++ name w [ choice name t ] l r e with name ≟ name
@@ -184,7 +184,7 @@ getCs++-same-choice name w l r t e rewrite getCs++ name w [ choice name t ] l r 
 ... | no p = ⊥-elim (p refl)
 
 
-getCs++-diff-choice : (name name₁ : csName) (w : world) (l : List Term) (r : restriction) (t : Term)
+getCs++-diff-choice : (name name₁ : Name) (w : world) (l : List Term) (r : restriction) (t : Term)
                       → ¬ name ≡ name₁
                       → getCs name w ≡ just (mkcs name l r)
                       → getCs name (w ++ [ choice name₁ t ]) ≡ just (mkcs name l r)
@@ -193,7 +193,7 @@ getCs++-diff-choice name name₁ w l r t d e rewrite getCs++ name w [ choice nam
 ... | no p rewrite ++[] l = refl
 
 
-≽-pres-getCs : {w1 w2 : world} {name : csName} {l : List Term} {r : restriction}
+≽-pres-getCs : {w1 w2 : world} {name : Name} {l : List Term} {r : restriction}
                  → w2 ≽ w1
                  → getCs name w1 ≡ just (mkcs name l r)
                  → Σ (List Term) (λ l' → getCs name w2 ≡ just (mkcs name (l ++ l') r))
@@ -211,7 +211,7 @@ getCs++-diff-choice name name₁ w l r t d e rewrite getCs++ name w [ choice nam
   ([] , refl)
 
 
-≽-pres-getChoice : (w1 w2 : world) (k : ℕ) (name : csName) (t : Term)
+≽-pres-getChoice : (w1 w2 : world) (k : ℕ) (name : Name) (t : Term)
                    → w2 ≽ w1
                    → getCsChoice k name w1 ≡ just t
                    → getCsChoice k name w2 ≡ just t
@@ -259,11 +259,11 @@ wdom++ (start name res ∷ w₁) w₂ rewrite wdom++ w₁ w₂ = refl
 wdom++ (choice name t ∷ w₁) w₂ rewrite wdom++ w₁ w₂ = refl
 
 
-wdomAddChoice : (w : 𝕎·) (name : csName) (t : Term) → wdom (w ∷ʳ choice name t) ≡ wdom w
+wdomAddChoice : (w : 𝕎·) (name : Name) (t : Term) → wdom (w ∷ʳ choice name t) ≡ wdom w
 wdomAddChoice w name t rewrite wdom++ w [ choice name t ] rewrite ++[] (wdom w) = refl
 
 
-wdomAddStart : (w : 𝕎·) (name : csName) (r : restriction) → wdom (w ∷ʳ start name r) ≡ wdom w ∷ʳ name
+wdomAddStart : (w : 𝕎·) (name : Name) (r : restriction) → wdom (w ∷ʳ start name r) ≡ wdom w ∷ʳ name
 wdomAddStart w name r rewrite wdom++ w [ start name r ] = refl
 
 
@@ -275,7 +275,7 @@ extwPreservesNorepeats w1 .(w1 ++ start name res ∷ []) (extEntry .w1 name res 
   norepeats∷ʳ _ _ norep x
 
 
-≽-pres-∈world : {w1 w2 : 𝕎·} {name : csName} {l : List Term} {r : restriction}
+≽-pres-∈world : {w1 w2 : 𝕎·} {name : Name} {l : List Term} {r : restriction}
                   → w2 ≽ w1
                   → ∈world (mkcs name l r) w1
                   → Σ (List Term) (λ l' → ∈world (mkcs name (l ++ l') r) w2)
@@ -293,7 +293,7 @@ extwPreservesNorepeats w1 .(w1 ++ start name res ∷ []) (extEntry .w1 name res 
   ([] , refl)
 
 
-∈world-extcs : (w : 𝕎·) (name : csName) (l : List Term) (r : restriction) (t : Term)
+∈world-extcs : (w : 𝕎·) (name : Name) (l : List Term) (r : restriction) (t : Term)
                → ∈world (mkcs name l r) w
                → ∈world (mkcs name (l ∷ʳ t) r) (extcs w name t)
 ∈world-extcs w name l r t i rewrite getCs++ name w [ choice name t ] l r i with name ≟ name
@@ -301,7 +301,7 @@ extwPreservesNorepeats w1 .(w1 ++ start name res ∷ []) (extEntry .w1 name res 
 ... | no p = ⊥-elim (p refl)
 
 
-getCs++∉ : (name : csName) (w w' : 𝕎·)
+getCs++∉ : (name : Name) (w w' : 𝕎·)
           → getCs name w ≡ nothing
           → getCs name (w ++ w') ≡ getCs name w'
 getCs++∉ name [] w' h = refl
@@ -311,7 +311,7 @@ getCs++∉ name (start name₁ res ∷ w) w' () | yes p
 getCs++∉ name (choice name₁ t ∷ w) w' h = getCs++∉ name w w' h
 
 
-∉-getCs-nothing : (w : 𝕎·) (name : csName) → ¬ (name ∈ (wdom w)) → getCs name w ≡ nothing
+∉-getCs-nothing : (w : 𝕎·) (name : Name) → ¬ (name ∈ (wdom w)) → getCs name w ≡ nothing
 ∉-getCs-nothing [] name i = refl
 ∉-getCs-nothing (start name₁ res ∷ w) name i with name ≟ name₁
 ... | yes p rewrite p = ⊥-elim (i (here refl))
@@ -319,7 +319,7 @@ getCs++∉ name (choice name₁ t ∷ w) w' h = getCs++∉ name w w' h
 ∉-getCs-nothing (choice name₁ t ∷ w) name i = ∉-getCs-nothing w name i
 
 
-∈world-newcs : (w : 𝕎·) (name : csName) (r : restriction)
+∈world-newcs : (w : 𝕎·) (name : Name) (r : restriction)
                → ¬ (name ∈ (wdom w))
                → ∈world (mkcs name [] r) (newcs w name r)
 ∈world-newcs w name r ni rewrite getCs++∉ name w [ start name r ] (∉-getCs-nothing w name ni) with name ≟ name
@@ -327,7 +327,7 @@ getCs++∉ name (choice name₁ t ∷ w) w' h = getCs++∉ name w w' h
 ... | no p = ⊥-elim (p refl)
 
 
-getChoice-extcs-last : (w : 𝕎·) (k : ℕ) (name : csName) (l : List Term) (r : restriction) (t : Term)
+getChoice-extcs-last : (w : 𝕎·) (k : ℕ) (name : Name) (l : List Term) (r : restriction) (t : Term)
                        → k ≡ length l
                        → getCs name w ≡ just (mkcs name l r)
                        → getChoice· k name (extcs w name t) ≡ just t
@@ -336,7 +336,7 @@ getChoice-extcs-last w k name l r t e h rewrite e | getCs++ name w [ choice name
 ... | no p = ⊥-elim (p refl)
 
 
-≽-ΣgetChoice : (w1 w2 : 𝕎·) (name : csName) (l1 l2 : List Term) (r : restriction) (k : ℕ)
+≽-ΣgetChoice : (w1 w2 : 𝕎·) (name : Name) (l1 l2 : List Term) (r : restriction) (k : ℕ)
                → ∈world (mkcs name l1 r) w1
                → ∈world (mkcs name l2 r) w2
                → length l1 ≤ k

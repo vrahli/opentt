@@ -24,22 +24,36 @@ open import Data.List.Relation.Unary.Any
 open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Data.List.Properties
+
+
 open import calculus
--- get rid of worldInstance here and only use world
--- make it a parameter of computation
 open import world
 open import choice
 
 module choiceDef (W : PossibleWorlds) (C : Choice W) where
+
 open import worldDef W
+
 open Choice
 
 
-getChoice· : (n : ℕ) (cs : csName) (w : 𝕎·) → Maybe Term
+getChoice· : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe Term
 getChoice· = getChoice C
 
 
-{--getChoice⊑· : (w1 w2 : 𝕎·) (k : ℕ) (name : csName) (t : Term)
+newChoice· : (w : 𝕎·) → Name
+newChoice· = newChoice C
+
+
+startChoice· : (cs : Name) (w : 𝕎·) → 𝕎·
+startChoice· = startChoice C
+
+
+startNewChoice· : (n : ℕ) (w : 𝕎·) → getChoice· n (newChoice· w) (startChoice· (newChoice· w) w) ≡ nothing
+startNewChoice· = startNewChoice C
+
+
+{--getChoice⊑· : (w1 w2 : 𝕎·) (k : ℕ) (name : Name) (t : Term)
               → w1 ⊑· w2
               → getChoice· k name w1 ≡ just t
               → getChoice· k name w2 ≡ just t

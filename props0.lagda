@@ -764,7 +764,7 @@ inbar-⇛to-same-CS-sym {w} {a} {b} h =
   Bar.∀𝕎-inBarFunc barI (λ w1 e1 → ⇛to-same-CS-sym) h
 
 
-CSinj : {n m : csName} → CS n ≡ CS m → n ≡ m
+CSinj : {n m : Name} → CS n ≡ CS m → n ≡ m
 CSinj refl =  refl
 
 

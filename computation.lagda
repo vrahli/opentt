@@ -208,7 +208,7 @@ weakMonEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} 1ℓ (Σ ℕ (λ n → t1
 
 
 ⇛to-same-CS : (w : 𝕎·) (t1 t2 : Term) → Set₁
-⇛to-same-CS w t1 t2 = Σ csName (λ n → t1 ⇛ (CS n) at w × t2 ⇛ (CS n) at w)
+⇛to-same-CS w t1 t2 = Σ Name (λ n → t1 ⇛ (CS n) at w × t2 ⇛ (CS n) at w)
 
 
 <NUM-pair : (w : 𝕎·) (t1 t2 : Term) → Set
@@ -254,7 +254,7 @@ steps≡stepsR : (n : ℕ) (t : Term) (w : 𝕎·) → steps n t w ≡ stepsR n 
 steps≡stepsR 0 t w = refl
 steps≡stepsR (suc n) t w rewrite sym (steps≡stepsR n t w) | steps≡ n t w = refl
 
-step-APPLY-CS : (t : Term) (w : 𝕎·) (k : ℕ) (name : csName)
+step-APPLY-CS : (t : Term) (w : 𝕎·) (k : ℕ) (name : Name)
                 → getChoice· k name w ≡ just t
                 → steps 1 (APPLY (CS name) (NUM k)) w ≡ t
 step-APPLY-CS t w k name gc rewrite gc = refl
@@ -289,7 +289,7 @@ is-NUM (LIFT t) = inj₂ (λ { n () })
 is-NUM (LOWER t) = inj₂ (λ { n () })
 is-NUM (SHRINK t) = inj₂ (λ { n () })
 
-step-APPLY-CS-¬NUM : (name : csName) (a b : Term) (w : 𝕎·)
+step-APPLY-CS-¬NUM : (name : Name) (a b : Term) (w : 𝕎·)
                      → ((n : ℕ) → ¬ a ≡ NUM n)
                      → step a w ≡ just b
                      → step (APPLY (CS name) a) w ≡ just (APPLY (CS name) b)
@@ -319,7 +319,7 @@ step-APPLY-CS-¬NUM name (LIFT a) b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (LOWER a) b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (SHRINK a) b w c s rewrite sym (just-inj s) = refl
 
-Σ-steps-APPLY-CS≤ : (n : ℕ) (a b : Term) (w : 𝕎·) (name : csName)
+Σ-steps-APPLY-CS≤ : (n : ℕ) (a b : Term) (w : 𝕎·) (name : Name)
                  → steps n a w ≡ b
                  → Σ ℕ (λ m → m ≤ n × steps m (APPLY (CS name) a) w ≡ APPLY (CS name) b)
 Σ-steps-APPLY-CS≤ 0 a b w name h rewrite h = (0 , ≤-refl , refl)
@@ -345,7 +345,7 @@ step-APPLY-CS-¬NUM name (SHRINK a) b w c s rewrite sym (just-inj s) = refl
 Σ-steps-APPLY-CS≤ (suc n) a b w name h | inj₂ p rewrite p | h = (0 , _≤_.z≤n , refl)
 
 
-Σ-steps-APPLY-CS : (n : ℕ) (a t : Term) (w : 𝕎·) (k : ℕ) (name : csName)
+Σ-steps-APPLY-CS : (n : ℕ) (a t : Term) (w : 𝕎·) (k : ℕ) (name : Name)
                  → steps n a w ≡ NUM k
                  → getChoice· k name w ≡ just t
                  → Σ ℕ (λ m → steps m (APPLY (CS name) a) w ≡ t)
@@ -367,7 +367,7 @@ step-APPLY-CS-¬NUM name (SHRINK a) b w c s rewrite sym (just-inj s) = refl
     g rewrite steps≡ m (APPLY (CS name) a) w | s | gc = refl
 
 
-{--⇛-APPLY-CS : (w : 𝕎·) (name : csName) (a t : Term) (k : ℕ)
+{--⇛-APPLY-CS : (w : 𝕎·) (name : Name) (a t : Term) (k : ℕ)
               → getChoice· k name w ≡ just t
               → a ⇛ NUM k at w
               → APPLY (CS name) a ⇛ t at w

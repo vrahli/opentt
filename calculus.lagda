@@ -33,8 +33,9 @@ open import Axiom.UniquenessOfIdentityProofs
 
 
 \begin{code}
-csName : Set
-csName = ℕ
+-- the Name of a choice operator is taken as being a ℕ here
+Name : Set
+Name = ℕ
 
 ¬∈[] : {A : Set} {a : A} → a ∈ [] → ⊥
 ¬∈[] {A} {a} ()
@@ -49,7 +50,7 @@ csName = ℕ
 ... | yes p =  subst (λ x → m ≤ x) (sym (m≥n⇒m⊔n≡m p)) p
 ... | no p = subst (λ x → m ≤ x) (sym (m≤n⇒m⊔n≡n (<⇒≤ (≰⇒> p)))) ≤-refl
 
-freshNameAux : (l : List csName) → Σ csName (λ name → (x : csName) → x ∈ l → x < name)
+freshNameAux : (l : List Name) → Σ Name (λ n → (x : Name) → x ∈ l → x < n)
 freshNameAux [] = (0 , λ x i → ⊥-elim (¬∈[] i))
 freshNameAux (n ∷ l) =
   let (m , c) = freshNameAux l in
@@ -58,7 +59,7 @@ freshNameAux (n ∷ l) =
   (suc (n ⊔ m) , λ { x (here p) → <-transˡ (subst (λ x → x < suc n) (sym p) (n<1+n n)) (≤⊔l (suc n) (suc m)) ;
                      x (there p) → let c1 = c x p in <-trans c1 (<-transˡ (n<1+n _) (≤⊔r (suc n) (suc m)))} )
 
-freshName : (l : List csName) → Σ csName (λ name → ¬ (name ∈ l))
+freshName : (l : List Name) → Σ Name (λ Name → ¬ (Name ∈ l))
 freshName l = let (m , c) = freshNameAux l in (m , λ x → let z = c _ x in n≮n _ z)
 
 Var : Set
@@ -93,7 +94,7 @@ data Term : Set where
   AX : Term
   -- Choice sequences
   FREE : Term
-  CS : csName → Term
+  CS : Name → Term
   -- Time squashing
   TSQUASH : Term → Term
   -- Dummy
