@@ -18,7 +18,7 @@ open import Data.Sum
 open import Data.Empty
 open import Data.Maybe
 open import Data.Unit using (⊤ ; tt)
-open import Data.Nat using (ℕ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
+open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
 open import Data.Nat.Properties
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
@@ -385,6 +385,13 @@ equalTypes<s i w a b (EQTBAR x) = {!!}
 
 
 
+≡univ→eqTypes : {u : univs} {n : ℕ} → u ≡ uni n → {w : 𝕎·} {A B : CTerm}
+                 → eqTypes (uni n) w A B
+                 → eqTypes u w A B
+≡univ→eqTypes {u} {n} e {w} {A} {B} eqt rewrite e = eqt
+
+
+
 equalTypes-LIFT : (n : ℕ) (w : 𝕎·) (u v a b : CTerm)
                   → u #⇛ #LIFT a at w
                   → v #⇛ #LIFT b at w
@@ -400,7 +407,7 @@ equalTypes-LIFT n w u v a b c₁ c₂ eqt =
     eqta0 w' e' = eqTypes-mon (uni n) {a} {b} eqt w' e'
 
     eqta : ∀𝕎 w (λ w' _ → eqTypes (↓U (uni (suc n))) w' a b)
-    eqta rewrite ↓U-uni (suc n) = eqta0
+    eqta w' e' = ≡univ→eqTypes (↓U-uni (suc n)) (eqta0 w' e')
 
     exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType (↓U (uni (suc n))) w (eqta w e) a b)
     exta rewrite ↓U-uni (suc n) = wPredExtIrr-eqInType eqta0
@@ -947,8 +954,79 @@ equalInType-FUN→ {u} {w} {A} {B} {f} {g} eqi rewrite #FUN≡#PI A B = z2
 
 
 
+#FALSE/EQinj1 : {a b c : CTerm} → #FALSE ≡ #EQ a b c → a ≡ #N0
+#FALSE/EQinj1 {a} {b} {c} e = CTerm≡ (sym (EQinj1 (≡CTerm e)))
+
+#FALSE/EQinj2 : {a b c : CTerm} → #FALSE ≡ #EQ a b c → b ≡ #N1
+#FALSE/EQinj2 {a} {b} {c} e = CTerm≡ (sym (EQinj2 (≡CTerm e)))
+
+#FALSE/EQinj3 : {a b c : CTerm} → #FALSE ≡ #EQ a b c → c ≡ #NAT
+#FALSE/EQinj3 {a} {b} {c} e = CTerm≡ (sym (EQinj3 (≡CTerm e)))
+
+
+
+#NUM : ℕ → CTerm
+#NUM n = ct (NUM n) refl
+
+
+#NUMinj : {n m : ℕ} → #NUM n ≡ #NUM m → n ≡ m
+#NUMinj {n} {m} e = NUMinj (≡CTerm e)
+
+
+
+¬##strongMonEq-N0-N1 : (w : 𝕎·) → ¬ #strongMonEq w #N0 #N1
+¬##strongMonEq-N0-N1 w (n , c₁ , c₂)
+  rewrite #NUMinj {n} {1} (sym (#compAllVal c₂ tt))
+  = suc-≢-0 e
+  where
+    e : 1 ≡ 0
+    e = #NUMinj {1} {0} (sym (#compAllVal c₁ tt))
+
+
+
+
 ¬equalInType-FALSE : {w : 𝕎·} {i : ℕ} {a b : CTerm} → ¬ equalInType i w #FALSE a b
-¬equalInType-FALSE {w} {i} {a} {b} eqi = {!!}
+{-# TERMINATING #-}
+¬equalInType-FALSE {w} {i} {a} {b} (EQTNAT x x₁ , eqi) = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
+¬equalInType-FALSE {w} {i} {a} {b} (EQTQNAT x x₁ , eqi) = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
+¬equalInType-FALSE {w} {i} {a} {b} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqLT (compAllVal x₁ tt))
+¬equalInType-FALSE {w} {i} {a} {b} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqQLT (compAllVal x₁ tt))
+¬equalInType-FALSE {w} {i} {a} {b} (EQTFREE x x₁ , eqi) = ⊥-elim (EQneqFREE (compAllVal x₁ tt))
+¬equalInType-FALSE {w} {i} {a} {b} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqPI (compAllVal x₁ tt))
+¬equalInType-FALSE {w} {i} {a} {b} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSUM (compAllVal x₁ tt))
+¬equalInType-FALSE {w} {i} {a} {b} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSET (compAllVal x₁ tt))
+¬equalInType-FALSE {w} {i} {a} {b} (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2 , eqi)
+  rewrite #FALSE/EQinj1 {a1} {a2} {A} (#compAllVal x tt)
+        | #FALSE/EQinj2 {a1} {a2} {A} (#compAllVal x tt)
+        | #FALSE/EQinj3 {a1} {a2} {A} (#compAllVal x tt)
+        | #FALSE/EQinj1 {b1} {b2} {B} (#compAllVal x₁ tt)
+        | #FALSE/EQinj2 {b1} {b2} {B} (#compAllVal x₁ tt)
+        | #FALSE/EQinj3 {b1} {b2} {B} (#compAllVal x₁ tt)
+  =
+  lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw e))
+  where
+    e : inbar w (λ w' e → EQeq #N0 #N1 (equalTerms i w' (eqtA w' e)) w' a b)
+    e = eqi
+
+    aw : ∀𝕎 w (λ w' e' → EQeq #N0 #N1 (equalTerms i w' (eqtA w' e')) w' a b → Lift 1ℓ ⊥)
+    aw w' e' (c₁ , c₂ , ea) = Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw' z)
+      where
+        z : inbar w' (λ w'' e → #strongMonEq w'' #N0 #N1)
+        z = eqInType-⇛-NAT (uni i) w' #NAT #NAT #N0 #N1 (#compAllRefl #NAT w') (#compAllRefl #NAT w') (eqtA w' e') ea
+
+        aw' : ∀𝕎 w' (λ w'' e'' → #strongMonEq w'' #N0 #N1 → Lift 1ℓ ⊥)
+        aw' w'' e'' s = lift (¬##strongMonEq-N0-N1 w'' s)
+¬equalInType-FALSE {w} {i} {a} {b} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
+¬equalInType-FALSE {w} {i} {a} {b} (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
+¬equalInType-FALSE {w} {i} {a} {b} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
+¬equalInType-FALSE {w} {i} {a} {b} (EQTUNIV i₁ p x x₁ , eqi) = ⊥-elim (EQneqUNIV (compAllVal x₁ tt))
+¬equalInType-FALSE {w} {i} {a} {b} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqLIFT (compAllVal x₁ tt))
+¬equalInType-FALSE {w} {i} {a} {b} (EQTBAR x , eqi) =
+  lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBar'-inBar barI x aw eqi))
+  where
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni i) w' #FALSE #FALSE) → atbar x w' e' z → equalTerms i w' z a b → Lift 1ℓ ⊥)
+    aw w' e' z at j = lift (¬equalInType-FALSE (z , j))
+
 
 
 equalInType-NEG→ : {u : ℕ} {w : 𝕎·} {A : CTerm} {f g : CTerm}
@@ -958,6 +1036,64 @@ equalInType-NEG→ {u} {w} {A} {f} {g} eqi w' e' a₁ a₂ ea rewrite #NEG≡#FU
   where
     z : equalInType u w' #FALSE (#APPLY f a₁) (#APPLY g a₂)
     z = equalInType-FUN→ eqi w' e' a₁ a₂ ea
+
+
+
+≡univ→eqInType : {u : univs} {n : ℕ} → u ≡ uni n → {w : 𝕎·} {A B a b : CTerm}
+                  → (eqt₁ : eqTypes (uni n) w A B)
+                  → eqInType (uni n) w eqt₁ a b
+                  → (eqt₂ : eqTypes u w A B)
+                  → eqInType u w eqt₂ a b
+≡univ→eqInType {u} {n} e {w} {A} {B} {a} {b} eqt₁ eqi eqt₂ rewrite e =
+  eqInType-extl1 B B eqt₁ eqt₂ eqi
+
+
+
+equalInType-LIFT← : (n : ℕ) (w : 𝕎·) (T a b : CTerm)
+                     → equalInType n w T a b
+                     → equalInType (suc n) w (#LIFT T) a b
+equalInType-LIFT← n w T a b eqi =
+  equalTypes-LIFT n w (#LIFT T) (#LIFT T) T T (#compAllRefl (#LIFT T) w) (#compAllRefl (#LIFT T) w) (fst eqi) ,
+  j
+  where
+    eqta0 : ∀𝕎 w (λ w' _ → equalTypes n w' T T)
+    eqta0 w' e' = eqTypes-mon (uni n) {T} {T} (fst eqi) w' e'
+
+    eqta : ∀𝕎 w (λ w' _ → eqTypes (↓U (uni (suc n))) w' T T)
+    eqta w' e' = ≡univ→eqTypes (↓U-uni (suc n)) (eqta0 w' e')
+
+    j : inbar w (λ w' e → eqInType (↓U (uni (suc n))) w' (eqta w' e) a b)
+    j = Bar.∀𝕎-inBar barI aw
+      where
+        aw : ∀𝕎 w (λ w' e → eqInType (↓U (uni (suc n))) w' (eqta w' e) a b)
+        aw w' e' = ≡univ→eqInType (↓U-uni (suc n)) (eqta0 w' e') (equalInType→eqInType refl (eqta0 w' e') (equalInType-mon eqi w' e')) (eqta w' e')
+
+
+
+equalInType-↑T#← : {n i : ℕ} (p : i < n) (w : 𝕎·) (T a b : CTerm)
+                    → equalInType i w T a b
+                    → equalInType n w (↑T# p T) a b
+equalInType-↑T#← {suc n} {i} p w T a b eqi with i <? n
+... | yes q = equalInType-LIFT← n w (↑T# q T) a b (equalInType-↑T#← q w T a b eqi)
+... | no q rewrite <s→¬<→≡ p q = equalInType-LIFT← n w T a b eqi
+
+
+
+equalInType-#↑T← : {n i : ℕ} (p : i < n) (w : 𝕎·) (T a b : CTerm)
+                    → equalInType i w T a b
+                    → equalInType n w (#↑T p T) a b
+equalInType-#↑T← {suc n} {i} p w T a b eqi rewrite #↑T≡↑T# p T = equalInType-↑T#← p w T a b eqi
+
+
+
+equalInType-NEG-↑T→ : {n i : ℕ} (p : i < n) {w : 𝕎·} {A : CTerm} {f g : CTerm}
+                       → equalInType n w (#NEG (#↑T p A)) f g
+                       → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w' A a₁ a₂)
+equalInType-NEG-↑T→ {n} {i} p {w} {A} {f} {g} eqi w' e' a₁ a₂ ea =
+  z (equalInType-#↑T← p w' A a₁ a₂ ea)
+  where
+    z : ¬ equalInType n w' (#↑T p A) a₁ a₂
+    z = equalInType-NEG→ eqi w' e' a₁ a₂
 
 
 
@@ -998,7 +1134,8 @@ notClassical w {n} {i} p =
                              → inbar w' (λ w'' _ → Σ CTerm (λ t → inbar w'' (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
                                                   → (t #⇛ (#INL x) at w' × t #⇛ (#INL y) at w' × equalInType i w' u₁ x y)
                                                      ⊎
-                                                     (t #⇛ (#INR x) at w' × t #⇛ (#INR y) at w' × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' u₁ a₁ a₂))))))))
+                                                     (t #⇛ (#INR x) at w' × t #⇛ (#INR y) at w'
+                                                      × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' u₁ a₁ a₂))))))))
         aw5 w' e' u₁ u₂ j = Bar.∀𝕎-inBarFunc barI aw' (aw4 w' e' u₁ u₂ j)
           where
             aw' : ∀𝕎 w' (λ w'' _ → Σ CTerm (λ t → inbar w'' (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
@@ -1010,7 +1147,7 @@ notClassical w {n} {i} p =
                                                      ⊎
                                                      (t #⇛ (#INR x) at w' × t #⇛ (#INR y) at w' × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' u₁ a₁ a₂)))))))
             aw' w'' e'' (t , eqt) = t , Bar.∀𝕎-inBarFunc barI (λ { w3 e3 (x , y , inj₁ (c₁ , c₂ , z)) → x , y , inj₁ (c₁ , c₂ , equalInType-#↑T→ p w3 u₁ x y z) ;
-                                                                    w3 e3 (x , y , inj₂ (c₁ , c₂ , z)) → x , y , inj₂ (c₁ , c₂ , {!!}) })
+                                                                    w3 e3 (x , y , inj₂ (c₁ , c₂ , z)) → x , y , inj₂ (c₁ , c₂ , equalInType-NEG-↑T→ p z) })
                                                                eqt
 
 --eqTypesNegLem w {n} {i} p , equalTerms-NegLem w p
