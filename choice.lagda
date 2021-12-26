@@ -45,10 +45,10 @@ record Choice : Set₁ where
     -- returns a Name which does not occur in w
     newChoice : (w : 𝕎·) → Name
     -- 'records' cs in w
-    startChoice : (cs : Name) (w : 𝕎·) → 𝕎·
+    startChoice : (cs : Name) (w : 𝕎·) → Σ 𝕎· (λ w' → w ⊑· w')
 
     -- a property of newChoice is:
-    startNewChoice : (n : ℕ) (w : 𝕎·) → getChoice n (newChoice w) (startChoice (newChoice w) w) ≡ nothing
+    startNewChoice : (n : ℕ) (w : 𝕎·) → getChoice n (newChoice w) (fst (startChoice (newChoice w) w)) ≡ nothing
 
 -- To capture the fact that we can make different choices over time, should we
 -- (1) add a setter function (would require the 'step' function to return a 𝕎)

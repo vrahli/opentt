@@ -36,16 +36,18 @@ open import util
 open import calculus
 open import world
 open import choice
+open import choiceBar
 
 
 --module classical (bar : Bar) where
-module classical (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) where
+module classical (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) (CB : ChoiceBar W C) where
 
 
 open import worldDef(W)
 open import choiceDef(W)(C)
 open import computation(W)(C)
 open import bar(W)
+open import barI(W)
 open import theory(W)(C)(E)
 open import props0(W)(C)(E)
 open import ind2(W)(C)(E)
@@ -223,16 +225,26 @@ equalInType→eqInType {u} {w} {A} {A1} {A2} {a₁} {a₂} e {eqt} eqi rewrite e
   equalInType→eqInType refl {eqta w1 e1} (eqi w1 e1)
 
 
+
+equalInType-mon : {u : ℕ} {w : 𝕎·} {T a b : CTerm}
+                  → equalInType u w T a b
+                  → ∀𝕎 w (λ w' _ → equalInType u w' T a b)
+equalInType-mon {u} {w} {T} {a} {b} (eqt , eqi) w' e =
+  eqTypes-mon (uni u) eqt w' e ,
+  eqInType-mon (is-uni-uni u) e eqt (eqTypes-mon (uni u) eqt w' e) a b eqi
+
+
+
 eqTypesEQ← : {w : 𝕎·} {i : ℕ} {a1 a2 b1 b2 A B : CTerm}
-               → ∀𝕎 w (λ w' _ → equalTypes i w' A B)
-               → ∀𝕎 w (λ w' _ → equalInType i w' A a1 b1)
-               → ∀𝕎 w (λ w' _ → equalInType i w' A a2 b2)
+               → equalTypes i w A B
+               → equalInType i w A a1 b1
+               → equalInType i w A a2 b2
                → equalTypes i w (#EQ a1 a2 A) (#EQ b1 b2 B)
 eqTypesEQ← {w} {i} {a1} {a2} {b1} {b2} {A} {B} eqtA eqt1 eqt2 =
   EQTEQ a1 b1 a2 b2 A B (#compAllRefl (#EQ a1 a2 A) w) (#compAllRefl (#EQ b1 b2 B) w)
-        eqtA (wPredExtIrr-eqInType eqtA)
-        (∀𝕎-equalInType→eqInType eqtA eqt1)
-        (∀𝕎-equalInType→eqInType eqtA eqt2)
+        (eqTypes-mon (uni i) eqtA) (wPredExtIrr-eqInType (eqTypes-mon (uni i) eqtA))
+        (∀𝕎-equalInType→eqInType (eqTypes-mon (uni i) eqtA) (equalInType-mon eqt1))
+        (∀𝕎-equalInType→eqInType (eqTypes-mon (uni i) eqtA) (equalInType-mon eqt2))
 
 
 eqTypesFUN→₁ : {w : 𝕎·} {i : ℕ} {A : CTerm} {B : CTerm} {C : CTerm} {D : CTerm}
@@ -276,12 +288,20 @@ eqTypesNAT : {w : 𝕎·} {i : ℕ} → equalTypes i w #NAT #NAT
 eqTypesNAT {w} {i} = EQTNAT (#compAllRefl #NAT w) (#compAllRefl #NAT w)
 
 
+eqTypesQNAT : {w : 𝕎·} {i : ℕ} → equalTypes i w #QNAT #QNAT
+eqTypesQNAT {w} {i} = EQTQNAT (#compAllRefl #QNAT w) (#compAllRefl #QNAT w)
+
+
 #NUM : ℕ → CTerm
 #NUM n = ct (NUM n) refl
 
 
 #NUMinj : {n m : ℕ} → #NUM n ≡ #NUM m → n ≡ m
 #NUMinj {n} {m} e = NUMinj (≡CTerm e)
+
+
+#weakMonEq-#NUM : (w : 𝕎·) (k : ℕ) → #weakMonEq w (#NUM k) (#NUM k)
+#weakMonEq-#NUM w k w' e' = lift (k , ⇓-refl (NUM k) w' , ⇓-refl (NUM k) w')
 
 
 #strongMonEq-#NUM : (w : 𝕎·) (k : ℕ) → #strongMonEq w (#NUM k) (#NUM k)
@@ -296,8 +316,31 @@ eqTypesNAT {w} {i} = EQTNAT (#compAllRefl #NAT w) (#compAllRefl #NAT w)
 #strongMonEq-#N1 w = #strongMonEq-#NUM w 1
 
 
+→equalInType-NAT : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                    → inbar w (λ w' _ → #strongMonEq w' a b)
+                    → equalInType i w #NAT a b
+→equalInType-NAT i w a b j = eqTypesNAT , j
+
+
+equalInType-NAT→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                    → equalInType i w #NAT a b
+                    → inbar w (λ w' _ → #strongMonEq w' a b)
+equalInType-NAT→ i w a b (eqt , eqi) =
+  eqInType-⇛-NAT (uni i) w #NAT #NAT a b (#compAllRefl #NAT w) (#compAllRefl #NAT w) eqt eqi
+
+
+→equalInType-QNAT : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                    → inbar w (λ w' _ → #weakMonEq w' a b)
+                    → equalInType i w #QNAT a b
+→equalInType-QNAT i w a b j = eqTypesQNAT , j
+
+
 NUM-equalInType-NAT : (i : ℕ) (w : 𝕎·) (k : ℕ) → equalInType i w #NAT (#NUM k) (#NUM k)
 NUM-equalInType-NAT i w k = eqTypesNAT , Bar.∀𝕎-inBar barI (λ w' e' → #strongMonEq-#NUM w' k)
+
+
+NUM-equalInType-QNAT : (i : ℕ) (w : 𝕎·) (k : ℕ) → equalInType i w #QNAT (#NUM k) (#NUM k)
+NUM-equalInType-QNAT i w k = eqTypesQNAT , Bar.∀𝕎-inBar barI (λ w' e' → #weakMonEq-#NUM w' k)
 
 
 equalInTypeN0 : (i : ℕ) (w : 𝕎·) → equalInType i w #NAT #N0 #N0
@@ -312,9 +355,9 @@ eqTypesFALSE : {w : 𝕎·} {i : ℕ}
                → equalTypes i w #FALSE #FALSE
 eqTypesFALSE {w} {i} rewrite #FALSE≡#EQ =
   eqTypesEQ←
-    (λ w1 e1 → eqTypesNAT)
-    (λ w1 e1 → equalInTypeN0 i w1)
-    λ w1 e1 → equalInTypeN1 i w1
+    eqTypesNAT
+    (equalInTypeN0 i w)
+    (equalInTypeN1 i w)
 
 
 eqTypesNEG← : {w : 𝕎·} {i : ℕ} {A B : CTerm}
@@ -698,15 +741,6 @@ equalInType-#↑T→ {suc n} {i} p w T a b eqi rewrite #↑T≡↑T# p T = equal
 
 
 
-equalInType-mon : {u : ℕ} {w : 𝕎·} {T a b : CTerm}
-                  → equalInType u w T a b
-                  → ∀𝕎 w (λ w' _ → equalInType u w' T a b)
-equalInType-mon {u} {w} {T} {a} {b} (eqt , eqi) w' e =
-  eqTypes-mon (uni u) eqt w' e ,
-  eqInType-mon (is-uni-uni u) e eqt (eqTypes-mon (uni u) eqt w' e) a b eqi
-
-
-
 isFam : (u : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (F G : CTerm → CTerm) → Set₁
 isFam u w A B F G =
     isType u w A
@@ -925,7 +959,7 @@ equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTBAR x , eqi) =
 
 
 Σchoice : (n : Name) (k : ℕ) → Term
-Σchoice n k = SUM NAT (EQ (APPLY (CS n) (VAR 0)) (NUM k) NAT)
+Σchoice n k = SUM NAT (EQ (APPLY (CS n) (VAR 0)) (NUM k) QNAT)
 
 
 
@@ -971,7 +1005,11 @@ equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTBAR x , eqi) =
 #[0]NAT = ct0 NAT refl
 
 
-#Σchoice≡ : (n : Name) (k : ℕ) → #Σchoice n k ≡ #SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS n) #[0]VAR) (#[0]NUM k) #[0]NAT)
+#[0]QNAT : CTerm0
+#[0]QNAT = ct0 QNAT refl
+
+
+#Σchoice≡ : (n : Name) (k : ℕ) → #Σchoice n k ≡ #SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS n) #[0]VAR) (#[0]NUM k) #[0]QNAT)
 #Σchoice≡ n k = refl
 
 
@@ -1162,35 +1200,89 @@ equalInType-SUM {u} {w} {A} {B} {f} {g} ha hb eqi =
 
 
 sub0-#Σchoice-body≡ : (a : CTerm) (c : Name) (k : ℕ)
-                      → sub0 a (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k) #[0]NAT)
-                         ≡ #EQ (#APPLY (#CS c) a) (#NUM k) #NAT
+                      → sub0 a (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k) #[0]QNAT)
+                         ≡ #EQ (#APPLY (#CS c) a) (#NUM k) #QNAT
 sub0-#Σchoice-body≡ a c k = CTerm≡ (→≡EQ (→≡APPLY refl (shiftDownUp ⌜ a ⌝ 0)) refl refl)
 
 
+inbar-wPred'-#weakMonEq : (w w' : 𝕎·) (e' : w ⊑· w') (a₁ a₂ : CTerm)
+                                   → inbar w' (λ w'' _ → #weakMonEq w'' a₁ a₂)
+                                   → inbar w' (↑wPred' (λ w'' e → #weakMonEq w'' a₁ a₂) e')
+inbar-wPred'-#weakMonEq w w' e' a₁ a₂ i = Bar.∀𝕎-inBarFunc barI aw i
+  where
+    aw : ∀𝕎 w' (λ w'' e'' → #weakMonEq w'' a₁ a₂ → ↑wPred' (λ w''' e → #weakMonEq w''' a₁ a₂) e' w'' e'')
+    aw w1 e1 z j = z
 
-equalInType-#Σchoice : (n i : ℕ) (p : i < n) (w : 𝕎·) (c : Name) (k : ℕ)
+
+
+→inbar-#weakMonEq-APPLY-CS : (w : 𝕎·) (a₁ a₂ : CTerm) (m : ℕ) (c : Name)
+                              → a₁ #⇛ #NUM m at w
+                              → a₂ #⇛ #NUM m at w
+                              → inbar w (λ w' _ → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) (#APPLY (#CS c) (#NUM m)))
+                              → inbar w (λ w' _ → #weakMonEq w' (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂))
+→inbar-#weakMonEq-APPLY-CS w a₁ a₂ m c c₁ c₂ i = Bar.∀𝕎-inBarFunc barI aw i
+  where
+    aw : ∀𝕎 w (λ w' e' → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) (#APPLY (#CS c) (#NUM m))
+                        → #weakMonEq w' (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂))
+    aw w' e' h w'' e'' = lift (fst z ,
+                               ⇓-trans (⇓-APPLY-CS w'' ⌜ a₁ ⌝ (NUM m) c d₁) (fst (snd z)) ,
+                               ⇓-trans (⇓-APPLY-CS w'' ⌜ a₂ ⌝ (NUM m) c d₂) (fst (snd z)))
+      where
+        z : Σ ℕ (λ n → (APPLY (CS c) (NUM m)) ⇓ (NUM n) at w'' × (APPLY (CS c) (NUM m)) ⇓ (NUM n) at w'')
+        z = lower (h w'' e'')
+
+        d₁ : ⌜ a₁ ⌝ ⇓ NUM m at w''
+        d₁ = lower (c₁ w'' (⊑-trans· e' e''))
+
+        d₂ : ⌜ a₂ ⌝ ⇓ NUM m at w''
+        d₂ = lower (c₂ w'' (⊑-trans· e' e''))
+
+
+
+inbar-#weakMonEq-APPLY-CS : (w : 𝕎·) (c : Name) (m : ℕ)
+                            → inbar w (λ w' _ → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) (#APPLY (#CS c) (#NUM m)))
+inbar-#weakMonEq-APPLY-CS w c m = Bar.∀𝕎-inBarFunc barI aw (ChoiceBar.choice-weakℕ CB w c m)
+  where
+    aw : ∀𝕎 w (λ w' e' → weakℕ w' (APPLY (CS c) (NUM m))
+                        → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) (#APPLY (#CS c) (#NUM m)))
+    aw w' e' h w'' e'' = lift (fst (lower (h w'' e'')) ,
+                               snd (lower (h w'' e'')) ,
+                               snd (lower (h w'' e'')))
+
+
+
+equalInType-#Σchoice : {n i : ℕ} (p : i < n) (w : 𝕎·) (c : Name) (k : ℕ)
                        → equalInType n w (#UNIV i) (#Σchoice c k) (#Σchoice c k)
-equalInType-#Σchoice n i p w c k =
+equalInType-#Σchoice {n} {i} p w c k =
   equalTypes→equalInType-UNIV p (eqTypesSUM← {w} {i}
-                                               {#NAT} {#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k) #[0]NAT}
-                                               {#NAT} {#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k) #[0]NAT}
+                                               {#NAT} {#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k) #[0]QNAT}
+                                               {#NAT} {#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k) #[0]QNAT}
                                                (λ w' e' → eqTypesNAT) eb1)
   where
     eb2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
-                       → equalTypes i w' (#EQ (#APPLY (#CS c) a₁) (#NUM k) #NAT)
-                                          (#EQ (#APPLY (#CS c) a₂) (#NUM k) #NAT))
+                       → equalTypes i w' (#EQ (#APPLY (#CS c) a₁) (#NUM k) #QNAT)
+                                          (#EQ (#APPLY (#CS c) a₂) (#NUM k) #QNAT))
     eb2 w' e' a₁ a₂ ea =
-      eqTypesEQ← (λ w' e' → eqTypesNAT) aw1 aw2
+      eqTypesEQ← eqTypesQNAT aw1 aw2
       where
-        aw1 : ∀𝕎 w' (λ w'' _ → equalInType i w'' #NAT (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂))
-        aw1 w'' e'' = {!!} -- we'll need some axioms for that
+        j : inbar w' (λ w' _ → #strongMonEq w' a₁ a₂)
+        j = equalInType-NAT→ i w' a₁ a₂ ea
 
-        aw2 : ∀𝕎 w' (λ w'' _ → equalInType i w'' #NAT (#NUM k) (#NUM k))
-        aw2 w'' e'' = NUM-equalInType-NAT i w'' k
+        aw1 : equalInType i w' #QNAT (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
+        aw1 = →equalInType-QNAT i w' (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂) (Bar.inBar-idem barI (Bar.∀𝕎-inBarFunc barI aw11 j))
+          where
+            aw11 : ∀𝕎 w' (λ w'' e'' → #strongMonEq w'' a₁ a₂
+                                    → inbar w'' (↑wPred' (λ w''' e → #weakMonEq w''' (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)) e''))
+            aw11 w'' e'' (m , c₁ , c₂) =
+              inbar-wPred'-#weakMonEq w' w'' e'' (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
+                                      (→inbar-#weakMonEq-APPLY-CS w'' a₁ a₂ m c c₁ c₂ (inbar-#weakMonEq-APPLY-CS w'' c m))
+
+        aw2 : equalInType i w' #QNAT (#NUM k) (#NUM k)
+        aw2 = NUM-equalInType-QNAT i w' k
 
     eb1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
-                       → equalTypes i w' (sub0 a₁ (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k) #[0]NAT))
-                                          (sub0 a₂ (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k) #[0]NAT)))
+                       → equalTypes i w' (sub0 a₁ (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k) #[0]QNAT))
+                                          (sub0 a₂ (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k) #[0]QNAT)))
     eb1 w' e' a₁ a₂ ea rewrite sub0-#Σchoice-body≡ a₁ c k | sub0-#Σchoice-body≡ a₂ c k = eb2 w' e' a₁ a₂ ea
 
 
@@ -1252,7 +1344,17 @@ notClassical w {n} {i} p =
         name = newChoice· w1
 
         w2 : 𝕎·
-        w2 = startChoice· name w1
+        w2 = fst (startChoice· name w1)
+
+        e2 : w1 ⊑· w2
+        e2 = snd (startChoice· name w1)
+
+        h1 : inbar w' (λ w'' _ → Σ CTerm (λ t → inbar w'' (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
+                               → (t #⇛ (#INL x) at w' × t #⇛ (#INL y) at w' × equalInType i w' u₁ x y)
+                                  ⊎
+                                  (t #⇛ (#INR x) at w' × t #⇛ (#INR y) at w'
+                                   × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' u₁ a₁ a₂)))))))
+        h1 = aw5 w2 e2 (#Σchoice name 0) (#Σchoice name 0) (equalInType-#Σchoice p w name 0)
 
         -- instantiate aw5 with w2 (we also need a proof that (w1 ⊑ w2)) and (#Σchoice name 0)
 

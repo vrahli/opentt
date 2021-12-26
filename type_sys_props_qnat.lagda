@@ -42,6 +42,7 @@ module type_sys_props_qnat (W : PossibleWorlds) (C : Choice W) (E : Extensionali
 open import worldDef(W)
 open import computation(W)(C)
 open import bar(W)
+open import barI(W)
 open import theory(W)(C)(E)
 open import props0(W)(C)(E)
 open import ind2(W)(C)(E)

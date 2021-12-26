@@ -207,6 +207,10 @@ weakMonEq : (w : 𝕎·) (t1 t2 : Term) → Set₁
 weakMonEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} 1ℓ (Σ ℕ (λ n → t1 ⇓ (NUM n) at w' × t2 ⇓ (NUM n) at w')))
 
 
+weakℕ : (w : 𝕎·) (t : Term) → Set₁
+weakℕ w t = ∀𝕎 w (λ w' _ → Lift {0ℓ} 1ℓ (Σ ℕ (λ n → t ⇓ NUM n at w')))
+
+
 ⇛to-same-CS : (w : 𝕎·) (t1 t2 : Term) → Set₁
 ⇛to-same-CS w t1 t2 = Σ Name (λ n → t1 ⇛ (CS n) at w × t2 ⇛ (CS n) at w)
 
@@ -365,6 +369,38 @@ step-APPLY-CS-¬NUM name (SHRINK a) b w c s rewrite sym (just-inj s) = refl
 
     g : steps (suc m) (APPLY (CS name) a) w ≡ t
     g rewrite steps≡ m (APPLY (CS name) a) w | s | gc = refl
+
+
+step-steps-trans : {w : 𝕎·} {a b c : Term} {n : ℕ} → step a w ≡ just b → steps n b w ≡ c → steps (suc n) a w ≡ c
+step-steps-trans {w} {a} {b} {c} {n} c₁ c₂ rewrite c₁ = c₂
+
+
+
+step-⇓-trans : {w : 𝕎·} {a b c : Term} → step a w ≡ just b → b ⇓ c at w → a ⇓ c at w
+step-⇓-trans {w} {a} {b} {c} c₁ (n , c₂) = suc n , step-steps-trans {w} {a} {b} {c} {n} c₁ c₂
+
+
+
+steps-⇓-trans : {w : 𝕎·} {a b c : Term} (n : ℕ) → steps n a w ≡ b → b ⇓ c at w → a ⇓ c at w
+steps-⇓-trans {w} {a} {b} {c} 0 c₁ c₂ rewrite c₁ = c₂
+steps-⇓-trans {w} {a} {b} {c} (suc n) c₁ c₂ with step⊎ a w
+... | inj₁ (u , p) rewrite p = step-⇓-trans p (steps-⇓-trans n c₁ c₂)
+... | inj₂ p rewrite p | c₁ = c₂
+
+
+⇓-trans : {w : 𝕎·} {a b c : Term} → a ⇓ b at w → b ⇓ c at w → a ⇓ c at w
+⇓-trans {w} {a} {b} {c} (n , c₁) c₂ = steps-⇓-trans n c₁ c₂
+
+
+
+⇓-APPLY-CS : (w : 𝕎·) (a b : Term) (name : Name)
+             → a ⇓ b at w
+             → (APPLY (CS name) a) ⇓ (APPLY (CS name) b) at w
+⇓-APPLY-CS w a b name (n , c) = fst c' , snd (snd c')
+  where
+    c' : Σ ℕ (λ m → m ≤ n × steps m (APPLY (CS name) a) w ≡ APPLY (CS name) b)
+    c' = Σ-steps-APPLY-CS≤ n a b w name c
+
 
 
 {--⇛-APPLY-CS : (w : 𝕎·) (name : Name) (a t : Term) (k : ℕ)

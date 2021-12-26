@@ -39,6 +39,7 @@ open import choiceDef(W)(C)
 open import computation(W)(C)
 --open import theory (bar)
 open import bar(W)
+open import barI(W)
 open import theory(W)(C)(E)
 \end{code}
 

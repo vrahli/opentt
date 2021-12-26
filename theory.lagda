@@ -36,7 +36,8 @@ open import world
 open import choice
 
 module theory (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) where
-open import bar (W)
+open import bar(W)
+open import barI(W)
 open import worldDef(W)
 open import choiceDef(W)(C)
 open import computation(W)(C)
@@ -50,33 +51,6 @@ OpenTT.
 
 
 \begin{code}
--- instance of a bar, which should be replaced by a parameter
-barI : Bar
-barI = inOpenBar-Bar
-
-
-inbar : (w : 𝕎·) (f : wPred w) → Set₁
---inbar = Bar.inBar b
-inbar = inOpenBar
-
-inbar' : (w : 𝕎·) {g : wPred w} (h : inbar w g) (f : wPredDep g) → Set₁
---inbar' = Bar.inBar' b
-inbar' = inOpenBar'
-
-atbar : {w : 𝕎·} {f : wPred w} (i : inbar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set₁
---atbar = Bar.atBar b
-atbar = atOpenBar
-
-↑inbar : {w : 𝕎·} {f : wPred w} (i : inbar w f) {w' : 𝕎·} (e : w ⊑· w') → inbar w' (↑wPred f e)
-↑inbar = ↑inOpenBar
-
-↑'inbar : {w : 𝕎·} {f : wPred w} (i : inbar w f) {w' : 𝕎·} (e : w ⊑· w') → inbar w' (↑wPred' f e)
---↑'inbar = Bar.↑'inBar b
-↑'inbar = ↑'inOpenBar
-
-↑inbar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inbar w f) {w' : 𝕎·} (e : w ⊑· w')
-          → inbar' w i g → inbar' w' (↑inbar i e) (↑wPredDep g e)
-↑inbar' {w} {f} {g} = ↑inOpenBar' {w} {f} {g}
 
 
 wpreddepextirr : {w : 𝕎·} {f : wPred w} (h : wPredDep f) (i : inbar w f) → Set₁

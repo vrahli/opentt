@@ -43,6 +43,7 @@ module type_sys_props_tsquash (W : PossibleWorlds) (C : Choice W) (E : Extension
 open import worldDef(W)
 open import computation(W)(C)
 open import bar(W)
+open import barI(W)
 open import theory(W)(C)(E)
 open import props0(W)(C)(E)
 open import ind2(W)(C)(E)

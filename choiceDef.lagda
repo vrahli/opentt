@@ -45,11 +45,11 @@ newChoice· : (w : 𝕎·) → Name
 newChoice· = newChoice C
 
 
-startChoice· : (cs : Name) (w : 𝕎·) → 𝕎·
+startChoice· : (cs : Name) (w : 𝕎·) → Σ 𝕎· (λ w' → w ⊑· w')
 startChoice· = startChoice C
 
 
-startNewChoice· : (n : ℕ) (w : 𝕎·) → getChoice· n (newChoice· w) (startChoice· (newChoice· w) w) ≡ nothing
+startNewChoice· : (n : ℕ) (w : 𝕎·) → getChoice· n (newChoice· w) (fst (startChoice· (newChoice· w) w)) ≡ nothing
 startNewChoice· = startNewChoice C
 
 
