@@ -114,6 +114,13 @@ inBar'3 b {w} {f} {g} {h} {k} {j} i imp ig ih ik = c
     c = Bar.inBar'-comb b i (λ w1 e1 zj zh zk (zg' , zh' , ig , ih) ik → imp w1 e1 zj zg' zh' zk ig ih ik) ip ik
 
 
+{-----------------------------------------
+ --
+ -- Open Bar instance
+ --
+ --}
+
+
 -- f holds in an open bar
 inOpenBar : (w : 𝕎·) (f : wPred w) → Set₁
 inOpenBar w f =
@@ -756,27 +763,94 @@ inOpenBar-Bar =
   mkBar
     inOpenBar
     inOpenBar'
---    wPredDepExtIrr-inOpenBar
     ↑inOpenBar
     ↑'inOpenBar
---    (λ {w} {f} {g} → ↑inOpenBar' {w} {f} {g})
---    atOpenBar
     atOpenBar
     inOpenBarFunc
     ∀𝕎-inOpenBarFunc
     inOpenBar-inOpenBar'
-    --(λ {w} {f} {g} {h} → inOpenBar'-inOpenBar' {w} {f} {g} {h})
     ∀𝕎-inOpenBar-inOpenBar'
     ∀𝕎-inOpenBar
---    inOpenBar-mon
     inOpenBar-idem
---    inOpenBar-idem2
     (λ {w} {f} {g} → inOpenBar'-idem {w} {f} {g})
---    (λ {w} {f} {g} → inOpenBar'-idem2 {w} {f} {g})
-    {--∀𝕎-inOpenBar'-inOpenBar--}
     ∀𝕎-inOpenBar'-inOpenBar
     inOpenBar'-comb
---    old-inOpenBar'-change
     inOpenBar'-change
     inOpenBar-const
+
+--    wPredDepExtIrr-inOpenBar
+--    (λ {w} {f} {g} → ↑inOpenBar' {w} {f} {g})
+--    atOpenBar
+    --(λ {w} {f} {g} {h} → inOpenBar'-inOpenBar' {w} {f} {g} {h})
+--    inOpenBar-mon
+--    inOpenBar-idem2
+--    (λ {w} {f} {g} → inOpenBar'-idem2 {w} {f} {g})
+    {--∀𝕎-inOpenBar'-inOpenBar--}
+--    old-inOpenBar'-change
+
+
+{-----------------------------------------
+ --
+ -- Beth Bar instance -- defined inductively
+ --
+ --}
+
+data I𝔹 : 𝕎· → Set₁ where
+  indBar-base : (w : 𝕎·) → I𝔹 w
+  indBar-ind : (w : 𝕎·) (ind : {w' : 𝕎·} (e : w ⊑· w') → I𝔹 w') → I𝔹 w
+
+
+inI𝔹 : {w : 𝕎·} (b : I𝔹 w) (f : wPred w) → Set₁
+inI𝔹 {w} (indBar-base .w) f = ∀𝕎 w f
+inI𝔹 {w} (indBar-ind .w ind) f = {w' : 𝕎·} (e' : w ⊑· w') → inI𝔹 {w'} (ind e') (↑wPred' f e')
+
+
+inBethBar : (w : 𝕎·) (f : wPred w) → Set₁
+inBethBar w f = Σ (I𝔹 w) (λ b → inI𝔹 b f)
+
+
+inBethBar' : (w : 𝕎·) {g : wPred w} (h : inBethBar w g) (f : wPredDep g) → Set₁
+inBethBar' w {g} (indBar-base .w , h) f = ∀𝕎 w (λ w' e' → f w' e' (h w' e'))
+inBethBar' w {g} (indBar-ind .w ind , h) f = {w' : 𝕎·} (e' : w ⊑· w') → inBethBar' w' (ind e' , h e') (↑wPredDep' f e')
+
+
+→inI𝔹 : {w w' : 𝕎·} (e' : w ⊑· w') (f g : wPred w') (b : I𝔹 w') → ∀𝕎 w' (λ w'' e → f w'' e → g w'' e) → inI𝔹 b f → inI𝔹 b g
+→inI𝔹 {w} {w'} e' f g (indBar-base .w') aw i w1 e1 = aw w1 e1 (i w1 e1)
+→inI𝔹 {w} {w'} e' f g (indBar-ind .w' ind) aw i {w1} e1 =
+  →inI𝔹 e1 (↑wPred' f e1) (↑wPred' g e1) (ind e1) aw' (i e1)
+  where
+    aw' : ∀𝕎 w1 (λ w'' e → ↑wPred' f e1 w'' e → ↑wPred' g e1 w'' e)
+    aw' w2 e2 z x = aw w2 x (z x)
+
+
+→inI𝔹-↑wPred : {w w' : 𝕎·} (e' : w ⊑· w') (f : wPred w) (b : I𝔹 w') → inI𝔹 b (↑wPred' f e') → inI𝔹 b (↑wPred f e')
+→inI𝔹-↑wPred {w} {w'} e' f b i = →inI𝔹 e' (↑wPred' f e') (↑wPred f e') b aw i
+  where
+    aw : ∀𝕎 w' (λ w'' e → ↑wPred' f e' w'' e → ↑wPred f e' w'' e)
+    aw w1 e1 z = z (⊑-trans· e' e1)
+
+
+↑inBethBar : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) {w' : 𝕎·} (e : w ⊑· w') → inBethBar w' (↑wPred f e)
+↑inBethBar {w} {f} (indBar-base .w , i) {w'} e = indBar-base w' , ∀𝕎-mon e i
+↑inBethBar {w} {f} (indBar-ind .w ind , i) {w'} e = ind e , →inI𝔹-↑wPred e f (ind e) (i e)
+
+
+↑'inBethBar : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) {w' : 𝕎·} (e : w ⊑· w') → inBethBar w' (↑wPred' f e)
+↑'inBethBar {w} {f} (indBar-base .w , i) {w'} e = indBar-base w' , ∀𝕎-mon' e i
+↑'inBethBar {w} {f} (indBar-ind .w ind , i) {w'} e = ind e , i e
+
+
+{--
+-- inductive type?
+-- TODO: get rid of "ATOPENBAR-R" in ind2
+atBethBar : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set₁
+atBethBar {w} {f} (b , i) w' e' p = {!!}
+
+
+inBethBarFunc : {w : 𝕎·} {f g : wPred w}
+                → inBethBar w (λ w' e' → f w' e' → g w' e')
+                → inBethBar w f → inBethBar w g
+inBethBarFunc {w} {f} {g} (b1 , i1) (b2 , i2) = {!!}
+-- we need to intersect the 2 bars
+--}
 \end{code}

@@ -1340,6 +1340,7 @@ notClassical w {n} {i} p =
                                                                     w3 e3 (x , y , inj₂ (c₁ , c₂ , z)) → x , y , inj₂ (c₁ , c₂ , equalInType-NEG-↑T→ p z) })
                                                                eqt
 
+        -- instantiate using #Σchoice
         name : Name
         name = newChoice· w1
 
@@ -1349,17 +1350,22 @@ notClassical w {n} {i} p =
         e2 : w1 ⊑· w2
         e2 = snd (startChoice· name w1)
 
-        h1 : inbar w' (λ w'' _ → Σ CTerm (λ t → inbar w'' (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
-                               → (t #⇛ (#INL x) at w' × t #⇛ (#INL y) at w' × equalInType i w' u₁ x y)
+        h1 : inbar w2 (λ w'' _ → Σ CTerm (λ t → inbar w'' (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
+                               → (t #⇛ (#INL x) at w' × t #⇛ (#INL y) at w' × equalInType i w' (#Σchoice name 0) x y)
                                   ⊎
                                   (t #⇛ (#INR x) at w' × t #⇛ (#INR y) at w'
-                                   × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' u₁ a₁ a₂)))))))
-        h1 = aw5 w2 e2 (#Σchoice name 0) (#Σchoice name 0) (equalInType-#Σchoice p w name 0)
+                                   × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name 0) a₁ a₂)))))))
+        h1 = aw5 w2 e2 (#Σchoice name 0) (#Σchoice name 0) (equalInType-#Σchoice p w2 name 0)
 
         -- instantiate aw5 with w2 (we also need a proof that (w1 ⊑ w2)) and (#Σchoice name 0)
 
+{--
+-- We need an axiom like this to allow selecting a branch of a bar that follows a given choice 'u'
+(u : Term) (c : Name) (w : 𝕎·) (f : wPred w)
+→ inbar w f
+→ ((n : ℕ) (t : Term) → getChoice· n c w ≡ just t → t ≡ u)
+→ Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → Σ (f w1 e1) (λ g → atbar i w1 e1 g)))
+--}
 
--- instantiate using #Σchoice
---eqTypesNegLem w {n} {i} p , equalTerms-NegLem w p
 
 \end{code}[hide]
