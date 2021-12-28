@@ -26,6 +26,7 @@ record Bar : Set₂ where
     ↑'inBar           : {w : 𝕎·} {f : wPred w} (i : inBar w f) {w' : 𝕎·} (e : w ⊑· w') → inBar w' (↑wPred' f e)
     atBar             : {w : 𝕎·} {f : wPred w} (i : inBar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set₁
     -- Axioms
+    atBar-refl        : {w : 𝕎·} {f : wPred w} (i : inBar w f) (p : f w (⊑-refl· w)) → atBar {w} {f} i w (⊑-refl· w) p
     inBarFunc         : {w : 𝕎·} {f g : wPred w}
                         → inBar w (λ w' e' → f w' e' → g w' e')
                         → inBar w f → inBar w g
@@ -766,6 +767,7 @@ inOpenBar-Bar =
     ↑inOpenBar
     ↑'inOpenBar
     atOpenBar
+    (λ i → ATOPENBAR-R)
     inOpenBarFunc
     ∀𝕎-inOpenBarFunc
     inOpenBar-inOpenBar'
@@ -814,17 +816,20 @@ inBethBar' w {g} (indBar-base .w , h) f = ∀𝕎 w (λ w' e' → f w' e' (h w' 
 inBethBar' w {g} (indBar-ind .w ind , h) f = {w' : 𝕎·} (e' : w ⊑· w') → inBethBar' w' (ind e' , h e') (↑wPredDep' f e')
 
 
-→inI𝔹 : {w w' : 𝕎·} (e' : w ⊑· w') (f g : wPred w') (b : I𝔹 w') → ∀𝕎 w' (λ w'' e → f w'' e → g w'' e) → inI𝔹 b f → inI𝔹 b g
-→inI𝔹 {w} {w'} e' f g (indBar-base .w') aw i w1 e1 = aw w1 e1 (i w1 e1)
-→inI𝔹 {w} {w'} e' f g (indBar-ind .w' ind) aw i {w1} e1 =
-  →inI𝔹 e1 (↑wPred' f e1) (↑wPred' g e1) (ind e1) aw' (i e1)
+→inI𝔹 : {w : 𝕎·} {f g : wPred w} {b : I𝔹 w}
+          → ∀𝕎 w (λ w' e → f w' e → g w' e)
+          → inI𝔹 b f
+          → inI𝔹 b g
+→inI𝔹 {w} {f} {g} {indBar-base .w} aw i w1 e1 = aw w1 e1 (i w1 e1)
+→inI𝔹 {w} {f} {g} {indBar-ind .w ind} aw i {w1} e1 =
+  →inI𝔹 {w1} {↑wPred' f e1} {↑wPred' g e1} {ind e1} aw' (i e1)
   where
     aw' : ∀𝕎 w1 (λ w'' e → ↑wPred' f e1 w'' e → ↑wPred' g e1 w'' e)
     aw' w2 e2 z x = aw w2 x (z x)
 
 
 →inI𝔹-↑wPred : {w w' : 𝕎·} (e' : w ⊑· w') (f : wPred w) (b : I𝔹 w') → inI𝔹 b (↑wPred' f e') → inI𝔹 b (↑wPred f e')
-→inI𝔹-↑wPred {w} {w'} e' f b i = →inI𝔹 e' (↑wPred' f e') (↑wPred f e') b aw i
+→inI𝔹-↑wPred {w} {w'} e' f b i = →inI𝔹 aw i
   where
     aw : ∀𝕎 w' (λ w'' e → ↑wPred' f e' w'' e → ↑wPred f e' w'' e)
     aw w1 e1 z = z (⊑-trans· e' e1)
@@ -840,17 +845,83 @@ inBethBar' w {g} (indBar-ind .w ind , h) f = {w' : 𝕎·} (e' : w ⊑· w') →
 ↑'inBethBar {w} {f} (indBar-ind .w ind , i) {w'} e = ind e , i e
 
 
-{--
--- inductive type?
--- TODO: get rid of "ATOPENBAR-R" in ind2
-atBethBar : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set₁
-atBethBar {w} {f} (b , i) w' e' p = {!!}
+
+↑I𝔹 : {w : 𝕎·} → I𝔹 w → ∀𝕎 w (λ w' _ → I𝔹 w')
+↑I𝔹 {w} (indBar-base .w) w' e = indBar-base w'
+↑I𝔹 {w} (indBar-ind .w ind) w' e = indBar-ind w' λ {w''} e' → ↑I𝔹 (ind e) w'' e'
+
+
+→inI𝔹-↑I𝔹 : {w : 𝕎·} {b : I𝔹 w} {f : wPred w}
+              → inI𝔹 b f
+              → ∀𝕎 w (λ w' e → inI𝔹 (↑I𝔹 b w' e) (↑wPred' f e))
+→inI𝔹-↑I𝔹 {w} {indBar-base .w} {f} i w' e' = λ w1 e1 z → i w1 z
+→inI𝔹-↑I𝔹 {w} {indBar-ind .w ind} {f} i w' e' {w1} e1 = →inI𝔹-↑I𝔹 (i e') w1 e1
+
+
+-- it's a composition, not an intersection
+∩I𝔹 : {w : 𝕎·} → I𝔹 w → I𝔹 w → I𝔹 w
+∩I𝔹 {w} (indBar-base .w) b = b
+∩I𝔹 {w} (indBar-ind .w ind) b = indBar-ind w (λ {w'} e → ∩I𝔹 (ind e) (↑I𝔹 b w' e))
+
+
+∀𝕎-inI𝔹 : {w : 𝕎·} {f g : wPred w} {b : I𝔹 w}
+            → ∀𝕎 w (λ w' e' → f w' e' → g w' e')
+            → inI𝔹 b f
+            → inI𝔹 b g
+∀𝕎-inI𝔹 {w} {f} {g} {indBar-base .w} aw i w' e' = aw w' e' (i w' e')
+∀𝕎-inI𝔹 {w} {f} {g} {indBar-ind .w ind} aw i {w'} e' =
+  ∀𝕎-inI𝔹 {w'} {↑wPred' f e'} {↑wPred' g e'} {ind e'} aw' (i e')
+  where
+    aw' : ∀𝕎 w' (λ w'' e'' → ↑wPred' f e' w'' e'' → ↑wPred' g e' w'' e'')
+    aw' w1 e1 z x = aw w1 x (z x)
+
+
+
+inBethBarFunc-aux : {w : 𝕎·} {f g : wPred w} {b1 b2 : I𝔹 w}
+                    → inI𝔹 b1 (λ w' e' → f w' e' → g w' e')
+                    → inI𝔹 b2 f
+                    → inI𝔹 (∩I𝔹 b1 b2) g
+inBethBarFunc-aux {w} {f} {g} {indBar-base .w} {b2} i j = ∀𝕎-inI𝔹 i j
+inBethBarFunc-aux {w} {f} {g} {indBar-ind .w ind} {b2} i j {w'} e =
+  inBethBarFunc-aux {w'} {↑wPred' f e} {↑wPred' g e} {ind e} {↑I𝔹 b2 w' e} i' j'
+  where
+    i' : inI𝔹 (ind e) (λ w'' e' → ↑wPred' f e w'' e' → ↑wPred' g e w'' e')
+    i' = →inI𝔹 (λ w1 e1 z x u → z u (x u))
+                (i e)
+
+    j' : inI𝔹 (↑I𝔹 b2 w' e) (↑wPred' f e)
+    j' = →inI𝔹-↑I𝔹 j w' e
+
 
 
 inBethBarFunc : {w : 𝕎·} {f g : wPred w}
                 → inBethBar w (λ w' e' → f w' e' → g w' e')
                 → inBethBar w f → inBethBar w g
-inBethBarFunc {w} {f} {g} (b1 , i1) (b2 , i2) = {!!}
--- we need to intersect the 2 bars
+inBethBarFunc {w} {f} {g} (b1 , i1) (b2 , i2) =
+  ∩I𝔹 b1 b2 , inBethBarFunc-aux i1 i2
+
+
+
+∀𝕎-inBethBarFunc : {w : 𝕎·} {f g : wPred w}
+                    → ∀𝕎 w (λ w' e' → f w' e' → g w' e')
+                    → inBethBar w f → inBethBar w g
+∀𝕎-inBethBarFunc {w} {f} {g} aw (b , i) = (b , →inI𝔹 aw i)
+
+
+
+{--
+-- inductive type?
+atBethBar : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set₁
+atBethBar {w} {f} (b , i) w' e' p = {!!}
+
+
+atBethBar-refl : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) (p : f w (⊑-refl· w)) → atBethBar {w} {f} i w (⊑-refl· w) p
+atBethBar-refl {w} {f} i p = {!!}
+
+
+inBethBar-inBethBar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f}
+                       → inBethBar w (λ w' e' → (x : f w' e') → g w' e' x)
+                       → (i : inBethBar w f) → inBethBar' w i g
+inBethBar-inBethBar' {w} {f} {g} (b1 , i1) (b2 , i2) = {!!}
 --}
 \end{code}

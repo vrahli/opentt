@@ -393,7 +393,7 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
 
 --    j : atbar i w0 (⊑-refl· w0) (aw w0 (⊑-refl· w0))
     j : atbar i w0 (⊑-refl· w0) eqt
-    j = ATOPENBAR-R eqt --ATOPENBAR w0 (⊑-refl· w0) w0 (⊑-refl· w0) (⊑-refl· w0)
+    j = Bar.atBar-refl barI i eqt --ATOPENBAR w0 (⊑-refl· w0) w0 (⊑-refl· w0) (⊑-refl· w0)
 
     indLtt : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} (eqt : ≡Types u w T1 T2)
              {u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2')
