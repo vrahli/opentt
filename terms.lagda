@@ -41,7 +41,7 @@ open import choice
 
 
 --module terms (bar : Bar) where
-module terms (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) where
+module terms {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (E : Extensionality 0ℓ (lsuc(lsuc(L)))) where
 
 --open import theory (bar)
 --open import props0 (bar)

@@ -40,7 +40,7 @@ open import choiceBar
 
 
 --module classical (bar : Bar) where
-module classical (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) (CB : ChoiceBar W C) where
+module classical {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (E : Extensionality 0ℓ (lsuc(lsuc(L)))) (CB : ChoiceBar W C) where
 
 
 open import worldDef(W)
@@ -741,7 +741,7 @@ equalInType-#↑T→ {suc n} {i} p w T a b eqi rewrite #↑T≡↑T# p T = equal
 
 
 
-isFam : (u : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (F G : CTerm → CTerm) → Set₁
+isFam : (u : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (F G : CTerm → CTerm) → Set(lsuc(L))
 isFam u w A B F G =
     isType u w A
   × ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType u w' A a₁ a₂ → equalTypes u w' (sub0 a₁ B) (sub0 a₂ B))
@@ -1068,18 +1068,18 @@ equalInType-FUN→ {u} {w} {A} {B} {f} {g} eqi rewrite #FUN≡#PI A B = z2
         | #FALSE/EQinj2 {b1} {b2} {B} (#compAllVal x₁ tt)
         | #FALSE/EQinj3 {b1} {b2} {B} (#compAllVal x₁ tt)
   =
-  lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw e))
+  lower {0ℓ} {lsuc(L)} (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw e))
   where
     e : inbar w (λ w' e → EQeq #N0 #N1 (equalTerms i w' (eqtA w' e)) w' a b)
     e = eqi
 
-    aw : ∀𝕎 w (λ w' e' → EQeq #N0 #N1 (equalTerms i w' (eqtA w' e')) w' a b → Lift 1ℓ ⊥)
+    aw : ∀𝕎 w (λ w' e' → EQeq #N0 #N1 (equalTerms i w' (eqtA w' e')) w' a b → Lift (lsuc(L)) ⊥)
     aw w' e' (c₁ , c₂ , ea) = Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw' z)
       where
         z : inbar w' (λ w'' e → #strongMonEq w'' #N0 #N1)
         z = eqInType-⇛-NAT (uni i) w' #NAT #NAT #N0 #N1 (#compAllRefl #NAT w') (#compAllRefl #NAT w') (eqtA w' e') ea
 
-        aw' : ∀𝕎 w' (λ w'' e'' → #strongMonEq w'' #N0 #N1 → Lift 1ℓ ⊥)
+        aw' : ∀𝕎 w' (λ w'' e'' → #strongMonEq w'' #N0 #N1 → Lift (lsuc(L)) ⊥)
         aw' w'' e'' s = lift (¬##strongMonEq-N0-N1 w'' s)
 ¬equalInType-FALSE {w} {i} {a} {b} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
 ¬equalInType-FALSE {w} {i} {a} {b} (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
@@ -1087,9 +1087,9 @@ equalInType-FUN→ {u} {w} {A} {B} {f} {g} eqi rewrite #FUN≡#PI A B = z2
 ¬equalInType-FALSE {w} {i} {a} {b} (EQTUNIV i₁ p x x₁ , eqi) = ⊥-elim (EQneqUNIV (compAllVal x₁ tt))
 ¬equalInType-FALSE {w} {i} {a} {b} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqLIFT (compAllVal x₁ tt))
 ¬equalInType-FALSE {w} {i} {a} {b} (EQTBAR x , eqi) =
-  lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBar'-inBar barI x aw eqi))
+  lower {0ℓ} {lsuc(L)} (Bar.inBar-const barI (Bar.∀𝕎-inBar'-inBar barI x aw eqi))
   where
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni i) w' #FALSE #FALSE) → atbar x w' e' z → equalTerms i w' z a b → Lift 1ℓ ⊥)
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni i) w' #FALSE #FALSE) → atbar x w' e' z → equalTerms i w' z a b → Lift (lsuc(L)) ⊥)
     aw w' e' z at j = lift (¬equalInType-FALSE (z , j))
 
 

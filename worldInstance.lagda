@@ -247,7 +247,7 @@ getCs++-diff-choice name name₁ w l r t d e rewrite getCs++ name w [ choice nam
 
 
 csChoice : Choice
-csChoice = mkChoice getCsChoice ≽-pres-getChoice
+csChoice = mkChoice getCsChoice {!!} {!!} {!!} -- ≽-pres-getChoice
 
 open import choiceDef(PossibleWorldsCS)(csChoice)
 

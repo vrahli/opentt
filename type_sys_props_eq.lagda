@@ -37,7 +37,7 @@ open import choice
 
 
 --module type_sys_props_eq (bar : Bar) where
-module type_sys_props_eq (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) where
+module type_sys_props_eq {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (E : Extensionality 0ℓ (lsuc(lsuc(L)))) where
 
 
 open import worldDef(W)

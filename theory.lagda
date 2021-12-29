@@ -35,7 +35,7 @@ open import calculus
 open import world
 open import choice
 
-module theory (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) where
+module theory {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (E : Extensionality 0ℓ (lsuc(lsuc(L)))) where
 open import bar(W)
 open import barI(W)
 open import worldDef(W)
@@ -53,7 +53,7 @@ OpenTT.
 \begin{code}
 
 
-wpreddepextirr : {w : 𝕎·} {f : wPred w} (h : wPredDep f) (i : inbar w f) → Set₁
+wpreddepextirr : {w : 𝕎·} {f : wPred w} (h : wPredDep f) (i : inbar w f) → Set(lsuc(L))
 wpreddepextirr = wPredDepExtIrr-inOpenBar
 
 
@@ -741,7 +741,7 @@ EQinj3 refl =  refl
 #EQinj3 c = CTerm≡ (EQinj3 (≡CTerm c))
 
 
-_#⇛_at_ : (T T' : CTerm) (w : 𝕎·) → Set₁
+_#⇛_at_ : (T T' : CTerm) (w : 𝕎·) → Set(lsuc(L))
 T #⇛ T' at w = ⌜ T ⌝ ⇛ ⌜ T' ⌝ at w
 infix 30 _#⇛_at_
 
@@ -758,33 +758,33 @@ infix 30 _#⇛_at_
 #compAllVal {ct a ca} {ct b cb} {w} c i = CTerm≡ (compAllVal c i)
 
 
-#strongMonEq : (w : 𝕎·) (t1 t2 : CTerm) → Set₁
+#strongMonEq : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
 #strongMonEq w t1 t2 = strongMonEq w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 
-#weakMonEq : (w : 𝕎·) (t1 t2 : CTerm) → Set₁
+#weakMonEq : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
 #weakMonEq w t1 t2 = weakMonEq w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 
-#lift-<NUM-pair : (w : 𝕎·) (t1 t2 : CTerm) → Set₁
+#lift-<NUM-pair : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
 #lift-<NUM-pair w t1 t2 = lift-<NUM-pair w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 
-#⇛to-same-CS : (w : 𝕎·) (t1 t2 : CTerm) → Set₁
+#⇛to-same-CS : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
 #⇛to-same-CS w t1 t2 = ⇛to-same-CS w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 
 -- PERs and world dependent PERs
-per : Set₂
-per = CTerm → CTerm → Set₁
+per : Set(lsuc(lsuc(L)))
+per = CTerm → CTerm → Set(lsuc(L))
 
-wper : Set₂
+wper : Set(lsuc(lsuc(L)))
 wper = (w : 𝕎·) → per
 
-ist : Set₂
-ist = CTerm → Set₁
+ist : Set(lsuc(lsuc(L)))
+ist = CTerm → Set(lsuc(L))
 
-wist : Set₂
+wist : Set(lsuc(lsuc(L)))
 wist = (w : 𝕎·) → ist
 
 
@@ -794,11 +794,11 @@ wist = (w : 𝕎·) → ist
 -- eqTypes and eqInType provide meaning to types w.r.t. already interpreted universes,
 -- given by univs (1st conjunct defines the equality between such universes, while the
 -- second conjunct defines the equality in such universes)
-univsUpTo : 𝕃 → Set₂
+univsUpTo : 𝕃 → Set(lsuc(lsuc(L)))
 univsUpTo n = (m : 𝕃) (p : m < n) → wper
 
 
-univs : Set₂
+univs : Set(lsuc(lsuc(L)))
 univs = Σ ℕ univsUpTo
 
 
@@ -825,7 +825,7 @@ univs = Σ ℕ univsUpTo
 -- and equality in types (a recursive function)
 -- We don't check positivity here, this can be done for all instances of bar.Bar
 --{-# NO_POSITIVITY_CHECK #-}
-data eqTypes (u : univs) (w : 𝕎·) (T1 T2 : CTerm) : Set₁
+data eqTypes (u : univs) (w : 𝕎·) (T1 T2 : CTerm) : Set(lsuc(L))
 --{-# TERMINATING #-}
 eqInType : (u : univs) (w : 𝕎·) {T1 T2 : CTerm} → (eqTypes u w T1 T2) → per
 \end{code}
@@ -1026,7 +1026,7 @@ eqUnivi m w T1 T2 = inbar w (λ w' _ → ⌜ T1 ⌝ ⇛ (UNIV m) at w' × ⌜ T2
 uni0 i ()--}
 
 
-inbarEqTypes : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) → Set₁
+inbarEqTypes : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) → Set(lsuc(L))
 inbarEqTypes u w T1 T2 = inbar w (λ w' _ → eqTypes u w' T1 T2)
 
 
@@ -1067,7 +1067,7 @@ uni n = mkU n (uniUpTo n) --(eqUnivi n , eqInUnivi n))
 ul n = {--suc--} n--}
 
 
-is-uni : (u : univs) → Set₂
+is-uni : (u : univs) → Set(lsuc(lsuc(L)))
 is-uni u = u ≡ uni (fst u)
 
 
@@ -1105,7 +1105,7 @@ is-uni-uni n = refl
         f q = ⊥-elim (p q)
 
 
-𝕌 : Set₂
+𝕌 : Set(lsuc(lsuc(L)))
 𝕌 = Σ univs is-uni
 
 mk𝕌 : {u : univs} (isu : is-uni u) → 𝕌
@@ -1145,17 +1145,17 @@ _·ₙ u = fst (u ·ᵤ)
 
 
 
-TEQ : Set₂
+TEQ : Set(lsuc(lsuc(L)))
 TEQ = wper
 
-IST : Set₂
+IST : Set(lsuc(lsuc(L)))
 IST = wist
 
-EQT : Set₂
-EQT = (w : 𝕎·) (T a b : CTerm) → Set₁
+EQT : Set(lsuc(lsuc(L)))
+EQT = (w : 𝕎·) (T a b : CTerm) → Set(lsuc(L))
 
-MEMT : Set₂
-MEMT = (w : 𝕎·) (T a : CTerm) → Set₁
+MEMT : Set(lsuc(lsuc(L)))
+MEMT = (w : 𝕎·) (T a : CTerm) → Set(lsuc(L))
 
 -- Finally, the 'equal types' and 'equal in types' relations
 equalTypes : (u : ℕ) → TEQ
@@ -1209,25 +1209,25 @@ eq-pair {a} {b} {A} {B} {a₁} {a₂} {b₁} {b₂} p q rewrite p | q = refl
 
 -- ---------------------------------
 -- Type system
-intype : (w : 𝕎·) (T t : CTerm) → Set₁
+intype : (w : 𝕎·) (T t : CTerm) → Set(lsuc(L))
 intype w T t = eqintype w T t t
 
-TEQsym : TEQ → Set₁
+TEQsym : TEQ → Set(lsuc(L))
 TEQsym τ = (w : 𝕎·) (A B : CTerm) → τ w A B → τ w B A
 
-TEQtrans : TEQ → Set₁
+TEQtrans : TEQ → Set(lsuc(L))
 TEQtrans τ = (w : 𝕎·) (A B C : CTerm) → τ w A B → τ w B C → τ w A C
 
-EQTsym : EQT → Set₁
+EQTsym : EQT → Set(lsuc(L))
 EQTsym σ = (w : 𝕎·) (A a b : CTerm) → σ w A a b → σ w A b a
 
-EQTtrans : EQT → Set₁
+EQTtrans : EQT → Set(lsuc(L))
 EQTtrans σ  = (w : 𝕎·) (A a b c : CTerm) → σ w A a b → σ w A b c → σ w A a c
 
-TSext : TEQ → EQT → Set₁
+TSext : TEQ → EQT → Set(lsuc(L))
 TSext τ σ = (w : 𝕎·) (A B a b : CTerm) → τ w A B → σ w A a b → σ w B a b
 
-record TS (τ : TEQ) (σ : EQT) : Set₁ where
+record TS (τ : TEQ) (σ : EQT) : Set(lsuc(L)) where
   constructor mkts
   field
     tySym   : TEQsym τ

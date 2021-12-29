@@ -33,14 +33,14 @@ open import world
 open import choice
 
 
-module choiceBar (W : PossibleWorlds) (C : Choice W) where
+module choiceBar {L : Level} (W : PossibleWorlds {L}) (C : Choice W) where
 open import bar(W)
 open import barI(W)
 open import worldDef(W)
 open import computation(W)(C)
 
 
-record ChoiceBar : Set₂ where
+record ChoiceBar : Set(lsuc(lsuc(L))) where
   constructor mkBar
   field
     choice-weakℕ : (w : 𝕎·) (c : Name) (m : ℕ) → inbar w (λ w' _ → weakℕ w' (APPLY (CS c) (NUM m)))

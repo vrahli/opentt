@@ -29,13 +29,13 @@ open import calculus
 -- make it a parameter of computation
 open import world
 
-module choice (W : PossibleWorlds) where
+module choice {L : Level} (W : PossibleWorlds {L}) where
 open import worldDef W
 \end{code}
 
 
 \begin{code}
-record Choice : Set₁ where
+record Choice : Set(L) where
   constructor mkChoice
   field
     -- returns the n's choice in w for the choice sequence cs

@@ -35,7 +35,7 @@ open import calculus
 open import world
 open import choice
 
-module barI (W : PossibleWorlds) where
+module barI {L : Level} (W : PossibleWorlds {L}) where
 open import bar(W)
 open import worldDef(W)
 
@@ -45,15 +45,15 @@ barI : Bar
 barI = inOpenBar-Bar
 
 
-inbar : (w : 𝕎·) (f : wPred w) → Set₁
+inbar : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
 --inbar = Bar.inBar b
 inbar = inOpenBar
 
-inbar' : (w : 𝕎·) {g : wPred w} (h : inbar w g) (f : wPredDep g) → Set₁
+inbar' : (w : 𝕎·) {g : wPred w} (h : inbar w g) (f : wPredDep g) → Set(lsuc(L))
 --inbar' = Bar.inBar' b
 inbar' = inOpenBar'
 
-atbar : {w : 𝕎·} {f : wPred w} (i : inbar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set₁
+atbar : {w : 𝕎·} {f : wPred w} (i : inbar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
 --atbar = Bar.atBar b
 atbar = atOpenBar
 

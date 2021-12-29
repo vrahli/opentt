@@ -38,7 +38,7 @@ open import choice
 
 
 --module props1 (bar : Bar) where
-module props1 (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) where
+module props1 {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (E : Extensionality 0ℓ (lsuc(lsuc(L)))) where
 
 
 open import worldDef(W)
@@ -128,11 +128,11 @@ UNIVneqSHRINK : {a : ℕ} {c : Term} → ¬ UNIV a ≡ SHRINK c
 UNIVneqSHRINK {a} {c} ()
 
 
-is-TSP-univs : (u : univs) → Set₁
+is-TSP-univs : (u : univs) → Set(lsuc(L))
 is-TSP-univs u = (w : 𝕎·) (A B : CTerm) (p : eqTypes u w A B) → TSP {u} {w} {A} {B} p
 
 
-{--mon-univs : (u : univs) → Set₁
+{--mon-univs : (u : univs) → Set(lsuc(L))
 mon-univs u = {!!} --mon (fst (snd u))--}
 
 
@@ -371,11 +371,11 @@ eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA ext
 eqInType-⇛-UNIV->0 (suc n) w A B a b c₁ c₂ (EQTUNIV m p d₁ d₂) eqi = _≤_.s≤s _≤_.z≤n
 eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTLIFT A1 A2 x x₁ eqtA exta) eqi = ⊥-elim (UNIVneqLIFT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTBAR x) eqi =
-  lower (Bar.inBar-const barI (Bar.∀𝕎-inBar'-inBar barI x aw eqi))
+  lower {0ℓ} {lsuc(L)} (Bar.inBar-const barI (Bar.∀𝕎-inBar'-inBar barI x aw eqi))
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni n) w' A B) → atbar x w' e' z
                          → eqInType (uni n) w' z a b
-                         → Lift (lsuc Level.zero) (0 < n))
+                         → Lift (lsuc(L)) (0 < n))
     aw w' e' z at eqi' = lift (eqInType-⇛-UNIV->0 n w' A B a b (⇛-mon e' c₁) (⇛-mon e' c₂) z eqi')
 
 
@@ -931,12 +931,12 @@ uniUpTo-<irr {i} {n} {p} {q} {w} {a} {b} e = inbarEqTypes→uniUpTo {i} {n} {q} 
 
 
 
-_B#⇛_at_ : (T T' : CTerm) (w : 𝕎·) → Set₁
+_B#⇛_at_ : (T T' : CTerm) (w : 𝕎·) → Set(lsuc(L))
 T B#⇛ T' at w = inbar w (λ w' _ → T #⇛ T' at w')
 infix 30 _B#⇛_at_
 
 
-_B⇛_at_ : (T T' : Term) (w : 𝕎·) → Set₁
+_B⇛_at_ : (T T' : Term) (w : 𝕎·) → Set(lsuc(L))
 T B⇛ T' at w = inbar w (λ w' _ → T ⇛ T' at w')
 infix 30 _B⇛_at_
 
@@ -955,18 +955,18 @@ B#⇛-mon {a} {b} {w2} {w1} e c = Bar.∀𝕎-inBarFunc barI (λ w' e' z → z) 
 
 Bₗ#⇛-val-det : {w : 𝕎·} {a v₁ v₂ : CTerm} → #isValue v₁ → #isValue v₂ → a B#⇛ v₁ at w → a #⇛ v₂ at w → ⌜ v₁ ⌝ ≡ ⌜ v₂ ⌝
 Bₗ#⇛-val-det {w} {a} {v₁} {v₂} isv₁ isv₂ c₁ c₂ =
-  lower (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw c₁))
+  lower {0ℓ} {lsuc(L)} (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw c₁))
   where
-    aw : ∀𝕎 w (λ w' e' → a #⇛ v₁ at w' → Lift 1ℓ (⌜ v₁ ⌝ ≡ ⌜ v₂ ⌝))
+    aw : ∀𝕎 w (λ w' e' → a #⇛ v₁ at w' → Lift (lsuc(L)) (⌜ v₁ ⌝ ≡ ⌜ v₂ ⌝))
     aw w' e' c = lift (≡CTerm {v₁} {v₂} (#⇛-val-det {w'} {a} {v₁} {v₂} isv₁ isv₂ c (⇛-mon e' c₂)))
 
 
 
 Bₗ⇛-val-det : {w : 𝕎·} {a v₁ v₂ : Term} → isValue v₁ → isValue v₂ → a B⇛ v₁ at w → a ⇛ v₂ at w → v₁ ≡ v₂
 Bₗ⇛-val-det {w} {a} {v₁} {v₂} isv₁ isv₂ c₁ c₂ =
-  lower (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw c₁))
+  lower {0ℓ} {lsuc(L)} (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw c₁))
   where
-    aw : ∀𝕎 w (λ w' e' → a ⇛ v₁ at w' → Lift 1ℓ (v₁ ≡ v₂))
+    aw : ∀𝕎 w (λ w' e' → a ⇛ v₁ at w' → Lift (lsuc(L)) (v₁ ≡ v₂))
     aw w' e' c = lift (⇛-val-det isv₁ isv₂ c (⇛-mon e' c₂))
 
 
@@ -2615,7 +2615,7 @@ inbar×→₂ {w} {f} {g} i = Bar.∀𝕎-inBarFunc barI (λ w' e' → snd) i
 
 
 
-comp-ind-ℕ-aux : (P : ℕ → Set₁)
+comp-ind-ℕ-aux : (P : ℕ → Set(lsuc(L)))
                  → ((n : ℕ) → ((m : ℕ) → m < n → P m) → P n)
                  → (n m : ℕ) → m < n → P m
 comp-ind-ℕ-aux P ind (suc n) m (_≤_.s≤s z) with m≤n⇒m<n∨m≡n z
@@ -2623,7 +2623,7 @@ comp-ind-ℕ-aux P ind (suc n) m (_≤_.s≤s z) with m≤n⇒m<n∨m≡n z
 ... | inj₂ q rewrite q = ind n (comp-ind-ℕ-aux P ind n)
 
 
-comp-ind-ℕ : (P : ℕ → Set₁)
+comp-ind-ℕ : (P : ℕ → Set(lsuc(L)))
               → ((n : ℕ) → ((m : ℕ) → m < n → P m) → P n)
               → (n : ℕ) → P n
 comp-ind-ℕ P ind n = comp-ind-ℕ-aux P ind (suc n) n (_≤_.s≤s ≤-refl)
@@ -2698,11 +2698,11 @@ EQTtrans-equalInType n w A a b c (teq₁ , eqi₁) (teq₂ , eqi₂) =
            (TSP.extl1 (typeSysConds n w A A teq₂) A teq₁ b c eqi₂)
 
 
-TEQrefl : TEQ → Set₁
+TEQrefl : TEQ → Set(lsuc(L))
 TEQrefl τ = (w : 𝕎·) (A B : CTerm) → τ w A B → τ w A A
 
 
-TEQrefl-rev : TEQ → Set₁
+TEQrefl-rev : TEQ → Set(lsuc(L))
 TEQrefl-rev τ = (w : 𝕎·) (A B : CTerm) → τ w A B → τ w B B
 
 

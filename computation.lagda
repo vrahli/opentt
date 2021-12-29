@@ -31,7 +31,7 @@ open import world
 open import choice
 
 
-module computation (W : PossibleWorlds) (C : Choice W) where
+module computation {L : Level} (W : PossibleWorlds {L}) (C : Choice W) where
 open import worldDef(W)
 open import choiceDef(W)(C)
 \end{code}
@@ -119,8 +119,8 @@ infix 30 _⇓_at_
 
 
 -- T computes to T' in all extensions of w
-_⇛_at_ : (T T' : Term) (w : 𝕎·) → Set₁
-T ⇛ T' at w = ∀𝕎 w (λ w' _ → Lift {0ℓ} 1ℓ (T ⇓ T' at w'))
+_⇛_at_ : (T T' : Term) (w : 𝕎·) → Set(lsuc(L))
+T ⇛ T' at w = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (T ⇓ T' at w'))
 infix 30 _⇛_at_
 
 
@@ -175,8 +175,8 @@ postulate
 infix 30 _∼_at_
 
 -- T computationally equivalent to T' in all extensions of w
-_≈_at_ : (T T' : Term) (w : 𝕎·) → Set₁
-T ≈ T' at w = ∀𝕎 w (λ w' _ → Lift {0ℓ} 1ℓ (T ∼ T' at w'))
+_≈_at_ : (T T' : Term) (w : 𝕎·) → Set(lsuc(L))
+T ≈ T' at w = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (T ∼ T' at w'))
 infix 30 _≈_at_
 
 ≈-refl : {a : Term} {w : 𝕎·} → a ≈ a at w
@@ -199,19 +199,19 @@ compAllVal : {a b : Term} {w : 𝕎·} → a ⇛ b at w → isValue a → a ≡ 
 compAllVal {a} {b} {w} c i = let c' = c _ (⊑-refl· w) in compVal _ _ _ (lower c') i
 
 -- t1 and t2 compute to the same number and stay the same number in all extensions
-strongMonEq : (w : 𝕎·) (t1 t2 : Term) → Set₁
+strongMonEq : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
 strongMonEq w t1 t2 = Σ ℕ (λ n → t1 ⇛ (NUM n) at w × t2 ⇛ (NUM n) at w)
 
 -- t1 and t2 compute to the same number but that number can change over time
-weakMonEq : (w : 𝕎·) (t1 t2 : Term) → Set₁
-weakMonEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} 1ℓ (Σ ℕ (λ n → t1 ⇓ (NUM n) at w' × t2 ⇓ (NUM n) at w')))
+weakMonEq : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
+weakMonEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ n → t1 ⇓ (NUM n) at w' × t2 ⇓ (NUM n) at w')))
 
 
-weakℕ : (w : 𝕎·) (t : Term) → Set₁
-weakℕ w t = ∀𝕎 w (λ w' _ → Lift {0ℓ} 1ℓ (Σ ℕ (λ n → t ⇓ NUM n at w')))
+weakℕ : (w : 𝕎·) (t : Term) → Set(lsuc(L))
+weakℕ w t = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ n → t ⇓ NUM n at w')))
 
 
-⇛to-same-CS : (w : 𝕎·) (t1 t2 : Term) → Set₁
+⇛to-same-CS : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
 ⇛to-same-CS w t1 t2 = Σ Name (λ n → t1 ⇛ (CS n) at w × t2 ⇛ (CS n) at w)
 
 
@@ -219,8 +219,8 @@ weakℕ w t = ∀𝕎 w (λ w' _ → Lift {0ℓ} 1ℓ (Σ ℕ (λ n → t ⇓ NU
 <NUM-pair w t1 t2 = Σ ℕ (λ n → Σ ℕ (λ m → t1 ⇓ (NUM n) at w × t2 ⇓ (NUM m) at w × n < m))
 
 
-lift-<NUM-pair : (w : 𝕎·) (t1 t2 : Term) → Set₁
-lift-<NUM-pair w t1 t2 = Lift {0ℓ} 1ℓ (<NUM-pair w t1 t2)
+lift-<NUM-pair : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
+lift-<NUM-pair w t1 t2 = Lift {0ℓ} (lsuc(L)) (<NUM-pair w t1 t2)
 
 
 ⇛-mon : {a b : Term} {w2 w1 : 𝕎·}

@@ -37,7 +37,7 @@ open import calculus
 open import world
 open import choice
 
-module ind2 (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) where -- (bar : Bar) where
+module ind2 {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (E : Extensionality 0ℓ (lsuc(lsuc(L)))) where -- (bar : Bar) where
 open import worldDef(W)
 open import choiceDef(W)(C)
 open import computation(W)(C)
@@ -55,7 +55,7 @@ open import props0(W)(C)(E)
 
 -- add the missing cases & make it transitive
 data <TypeStep : {u1 : 𝕌} {w1 : 𝕎·} {T1 U1 : CTerm} (eqt1 : ≡Types u1 w1 T1 U1)
-                 {u2 : 𝕌} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : ≡Types u2 w2 T2 U2) → Set₁
+                 {u2 : 𝕌} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : ≡Types u2 w2 T2 U2) → Set(lsuc(L))
 data <TypeStep where
   <TypePIa : (u : 𝕌) (w : 𝕎·) (T1 T2 : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
              (c₁ : T1 #⇛ (#PI A1 B1) at w)
@@ -180,7 +180,7 @@ data <TypeStep where
 
 
 data <Type : {u1 : 𝕌} {w1 : 𝕎·} {T1 U1 : CTerm} (eqt1 : ≡Types u1 w1 T1 U1)
-             {u2 : 𝕌} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : ≡Types u2 w2 T2 U2) → Set₂
+             {u2 : 𝕌} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : ≡Types u2 w2 T2 U2) → Set(lsuc(lsuc(L)))
 data <Type where
   <Type1 : {u1 : 𝕌} {w1 : 𝕎·} {T1 U1 : CTerm} (eqt1 : ≡Types u1 w1 T1 U1)
            {u2 : 𝕌} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : ≡Types u2 w2 T2 U2)
@@ -193,7 +193,7 @@ data <Type where
 
 
 data ≤Type : {u1 : 𝕌} {w1 : 𝕎·} {T1 U1 : CTerm} (eqt1 : ≡Types u1 w1 T1 U1)
-             {u2 : 𝕌} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : ≡Types u2 w2 T2 U2) → Set₂
+             {u2 : 𝕌} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : ≡Types u2 w2 T2 U2) → Set(lsuc(lsuc(L)))
 data ≤Type where
   ≤Type0 : {u : 𝕌} {w : 𝕎·} {T U : CTerm} (eqt : ≡Types u w T U) → ≤Type {u} eqt {u} eqt
   ≤TypeS : {u1 : 𝕌} {w1 : 𝕎·} {T1 U1 : CTerm} (eqt1 : ≡Types u1 w1 T1 U1)
@@ -371,7 +371,7 @@ FFDEFSeq-ext {u} {w} {A1} {A2} {x1} {eqta} {w'} {e1} {e2} {a} {b} exta (x , c₁
 
 
 
-ind<Type : (P : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} → ≡Types u w T1 T2 → Set₁)
+ind<Type : (P : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} → ≡Types u w T1 T2 → Set(lsuc(L)))
            → ({u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} (eqt : ≡Types u w T1 T2)
                → ({u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2') → <Type {u'} eqt' {u} eqt → P {u'} eqt')
                → P {u} eqt)

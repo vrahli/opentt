@@ -22,11 +22,11 @@ TODO
 --}
 
 -- Should be a Kripke frame
-record PossibleWorlds : Set₂ where
+record PossibleWorlds {L : Level} : Set(lsuc L) where
   constructor mkPossibleWorlds
   field
-    𝕎        : Set₁
-    _⊑_       : 𝕎 → 𝕎 → Set₁
+    𝕎        : Set(L)
+    _⊑_       : 𝕎 → 𝕎 → Set(L)
     ⊑-refl    : (a : 𝕎) → a ⊑ a
     ⊑-trans   : {a b c : 𝕎} → a ⊑ b → b ⊑ c → a ⊑ c
 --    ⊑-is-refl : (a : 𝕎) (p : a ⊑ a) → Decidable (p ≡ ⊑-refl a)

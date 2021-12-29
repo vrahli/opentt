@@ -30,7 +30,7 @@ open import calculus
 open import world
 open import choice
 
-module choiceDef (W : PossibleWorlds) (C : Choice W) where
+module choiceDef {L : Level} (W : PossibleWorlds {L}) (C : Choice {L} W) where
 
 open import worldDef W
 

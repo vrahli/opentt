@@ -33,7 +33,7 @@ open import world
 open import choice
 --open import bar
 
-module props0 (W : PossibleWorlds) (C : Choice W) (E : Extensionality 0ℓ 2ℓ) where --(bar : Bar W) where
+module props0 {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (E : Extensionality 0ℓ (lsuc(lsuc(L)))) where --(bar : Bar W) where
 open import worldDef(W)
 open import choiceDef(W)(C)
 open import computation(W)(C)
@@ -295,8 +295,8 @@ NATneqUNIV {n} ()
 
 
 -- Do we still need is-universe now?
-is-universe : (u : univs) → Set₁
-is-universe u = Lift {0ℓ} 1ℓ ⊤
+is-universe : (u : univs) → Set(lsuc(L))
+is-universe u = Lift {0ℓ} (lsuc(L)) ⊤
 {--  (w : 𝕎·) (T1 T2 : CTerm)
   → fst (snd u) w T1 T2
   → inbar w (λ w' _ → ⌜ T1 ⌝ ⇛ (UNIV (fst u)) at w' × ⌜ T2 ⌝ ⇛ (UNIV (fst u)) at w')
@@ -390,13 +390,13 @@ wPredExtIrr-equalInType : {w : 𝕎·} {u : ℕ} {A a b : CTerm}
 wPredExtIrr-equalInType {w} {u} {A} {a} {b} w' e1 e2 h = h
 
 
-wPredExtIrr-const : {w : 𝕎·} {F : 𝕎· → Set₁}
+wPredExtIrr-const : {w : 𝕎·} {F : 𝕎· → Set(lsuc(L))}
                     → wPredExtIrr {w} (λ w' e → F w')
 wPredExtIrr-const {w} {F} w' e1 e2 h = h
 
 
 -- Monotonicity
-mon : (p : wper) → Set₁
+mon : (p : wper) → Set(lsuc(L))
 mon p = {a b : CTerm} {w : 𝕎·} → p w a b → ∀𝕎 w (λ w' e' → p w' a b)
 
 
@@ -618,7 +618,7 @@ weakMonEq-sym : {w : 𝕎·} {a b : Term}
                 → weakMonEq w b a
 weakMonEq-sym {w} {a} {b} h w1 e1 = lift (fst z₂ , snd (snd z₂) , fst (snd z₂))
   where
-    z₁ : Lift 1ℓ (Σ ℕ (λ n → a ⇓ NUM n at w1 × b ⇓ NUM n at w1))
+    z₁ : Lift (lsuc(L)) (Σ ℕ (λ n → a ⇓ NUM n at w1 × b ⇓ NUM n at w1))
     z₁ = h w1 e1
 
     z₂ : Σ ℕ (λ n → a ⇓ NUM n at w1 × b ⇓ NUM n at w1)
@@ -882,45 +882,45 @@ eqTypes⇛NAT {u} {w} {A} {B} (EQTBAR x) comp = i
     i = loc-inOpenBar-idem wPredExtIrr-⇛
 
 
-eqTypesTrans : (u : univs) (w : 𝕎·) (A B : CTerm) → Set₁
+eqTypesTrans : (u : univs) (w : 𝕎·) (A B : CTerm) → Set(lsuc(L))
 eqTypesTrans u w A B = (C : CTerm) → eqTypes u w B C → eqTypes u w A C
 
-eqInTypeSym : (u : univs) {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set₁
+eqInTypeSym : (u : univs) {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set(lsuc(L))
 eqInTypeSym u {w} {A} {B} eqt = (a b : CTerm) → eqInType u w eqt a b → eqInType u w eqt b a
 
-eqInTypeTrans : (u : univs) {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set₁
+eqInTypeTrans : (u : univs) {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set(lsuc(L))
 eqInTypeTrans u {w} {A} {B} eqt = (a b c : CTerm) → eqInType u w eqt a b → eqInType u w eqt b c → eqInType u w eqt a c
 
-eqInTypeExt : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set₁
+eqInTypeExt : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set(lsuc(L))
 eqInTypeExt {u} {w} {A} {B} eqt =
   (eqt' : eqTypes u w A B) (a b : CTerm)
   → (eqInType u w eqt a b → eqInType u w eqt' a b) × (eqInType u w eqt' a b → eqInType u w eqt a b)
 
-eqInTypeExtL1 : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set₁
+eqInTypeExtL1 : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set(lsuc(L))
 eqInTypeExtL1 {u} {w} {A} {B} eqt = (C : CTerm) (eqt' : eqTypes u w A C) (a b : CTerm) → eqInType u w eqt a b → eqInType u w eqt' a b
 
-eqInTypeExtL2 : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set₁
+eqInTypeExtL2 : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set(lsuc(L))
 eqInTypeExtL2 {u} {w} {A} {B} eqt = (C : CTerm) (eqt' : eqTypes u w C A) (a b : CTerm) → eqInType u w eqt a b → eqInType u w eqt' a b
 
-eqInTypeExtR1 : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set₁
+eqInTypeExtR1 : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set(lsuc(L))
 eqInTypeExtR1 {u} {w} {A} {B} eqt = (C : CTerm) (eqt' : eqTypes u w C B) (a b : CTerm) → eqInType u w eqt a b → eqInType u w eqt' a b
 
-eqInTypeExtR2 : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set₁
+eqInTypeExtR2 : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set(lsuc(L))
 eqInTypeExtR2 {u} {w} {A} {B} eqt = (C : CTerm) (eqt' : eqTypes u w B C) (a b : CTerm) → eqInType u w eqt a b → eqInType u w eqt' a b
 
-eqInTypeExtRevL1 : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set₁
+eqInTypeExtRevL1 : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set(lsuc(L))
 eqInTypeExtRevL1 {u} {w} {A} {B} eqt = (C : CTerm) (eqt' : eqTypes u w A C) (a b : CTerm) → eqInType u w eqt' a b → eqInType u w eqt a b
 
-eqInTypeExtRevL2 : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set₁
+eqInTypeExtRevL2 : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set(lsuc(L))
 eqInTypeExtRevL2 {u} {w} {A} {B} eqt = (C : CTerm) (eqt' : eqTypes u w C A) (a b : CTerm) → eqInType u w eqt' a b → eqInType u w eqt a b
 
-eqInTypeExtRevR1 : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set₁
+eqInTypeExtRevR1 : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set(lsuc(L))
 eqInTypeExtRevR1 {u} {w} {A} {B} eqt = (C : CTerm) (eqt' : eqTypes u w C B) (a b : CTerm) → eqInType u w eqt' a b → eqInType u w eqt a b
 
-eqInTypeExtRevR2 : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set₁
+eqInTypeExtRevR2 : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set(lsuc(L))
 eqInTypeExtRevR2 {u} {w} {A} {B} eqt = (C : CTerm) (eqt' : eqTypes u w B C) (a b : CTerm) → eqInType u w eqt' a b → eqInType u w eqt a b
 
-eqInTypeLocal : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set₁
+eqInTypeLocal : {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) → Set(lsuc(L))
 eqInTypeLocal {u} {w} {A} {B} eqt =
   (a b : CTerm)
   → (i : inbar w (λ w' e → eqTypes u w' A B))
@@ -929,7 +929,7 @@ eqInTypeLocal {u} {w} {A} {B} eqt =
 
 
 -- Type System Props
-record TSP {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) : Set₁ where
+record TSP {u : univs} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B) : Set(lsuc(L)) where
   constructor mktsp
   field
     tsym     : eqTypes u w B A

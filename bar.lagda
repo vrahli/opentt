@@ -1,10 +1,14 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
 open import Agda.Builtin.Sigma
 open import Data.Product
 open import Data.Sum
+open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
 open import Relation.Binary.PropositionalEquality hiding ([_]) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
+open import Relation.Nullary
+
 
 open import world
 -- get rid of worldInstance here and only use world
@@ -12,19 +16,19 @@ open import world
 --open import worldInstance
 
 
-module bar (W : PossibleWorlds) where
+module bar {L : Level} (W : PossibleWorlds {L}) where
 open import worldDef(W)
 
 
-record Bar : Set₂ where
+record Bar : Set(lsuc(lsuc(L))) where
   constructor mkBar
   field
     -- Operators
-    inBar             : (w : 𝕎·) (f : wPred w) → Set₁
-    inBar'            : (w : 𝕎·) {g : wPred w} (h : inBar w g) (f : wPredDep g) → Set₁
+    inBar             : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
+    inBar'            : (w : 𝕎·) {g : wPred w} (h : inBar w g) (f : wPredDep g) → Set(lsuc(L))
     ↑inBar            : {w : 𝕎·} {f : wPred w} (i : inBar w f) {w' : 𝕎·} (e : w ⊑· w') → inBar w' (↑wPred f e)
     ↑'inBar           : {w : 𝕎·} {f : wPred w} (i : inBar w f) {w' : 𝕎·} (e : w ⊑· w') → inBar w' (↑wPred' f e)
-    atBar             : {w : 𝕎·} {f : wPred w} (i : inBar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set₁
+    atBar             : {w : 𝕎·} {f : wPred w} (i : inBar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
     -- Axioms
     atBar-refl        : {w : 𝕎·} {f : wPred w} (i : inBar w f) (p : f w (⊑-refl· w)) → atBar {w} {f} i w (⊑-refl· w) p
     inBarFunc         : {w : 𝕎·} {f g : wPred w}
@@ -57,12 +61,12 @@ record Bar : Set₂ where
                         → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e') → atBar i w' e' x → atBar j w' e' y
                                            → g w' e' x → h w' e' y)
                         → inBar' w i g → inBar' w j h
-    inBar-const       : {w : 𝕎·} {t : Set₁} → inBar w (λ w e → t) → t
+    inBar-const       : {w : 𝕎·} {t : Set(lsuc(L))} → inBar w (λ w e → t) → t
 
---    wPredDepExtIrrBar : {w : 𝕎·} {f : wPred w} (h : wPredDep f) (i : inBar w f) → Set₁
+--    wPredDepExtIrrBar : {w : 𝕎·} {f : wPred w} (h : wPredDep f) (i : inBar w f) → Set(lsuc(L))
 {--    ↑inBar'           : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inBar w f) {w' : 𝕎·} (e : w' ⊇ w)
                         → inBar' w i g → inBar' w' (↑inBar i e) (↑wPredDep g e)--}
---    atBar             : {w : 𝕎·} {f : wPred w} (i : inBar w f) (w' : 𝕎·) → Set₁
+--    atBar             : {w : 𝕎·} {f : wPred w} (i : inBar w f) (w' : 𝕎·) → Set(lsuc(L))
 {--    ↑inBar'           : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inBar w f) {w' : 𝕎·} (e : w' ⊇ w) {h : wPredDep (↑wPred f e)}
                         → ∀𝕎 w' (λ w'' e'' → (x y : f w'' (⊑-trans· e e'')) (at : atBar i w'' (⊑-trans· e e'') x) → g w'' (⊑-trans· e e'') x → h w'' e'' y)
                         → inBar' w i g → inBar' w' (↑inBar i e) h--}
@@ -123,14 +127,14 @@ inBar'3 b {w} {f} {g} {h} {k} {j} i imp ig ih ik = c
 
 
 -- f holds in an open bar
-inOpenBar : (w : 𝕎·) (f : wPred w) → Set₁
+inOpenBar : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
 inOpenBar w f =
   ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → ∀𝕎 w2 (λ w3 e3 →
      (z : w ⊑· w3) → f w3 z)))
 
 
 -- f holds in an open bar that depends on another open bar h
-inOpenBar' : (w : 𝕎·) {g : wPred w} (h : inOpenBar w g) (f : wPredDep g) → Set₁
+inOpenBar' : (w : 𝕎·) {g : wPred w} (h : inOpenBar w g) (f : wPredDep g) → Set(lsuc(L))
 inOpenBar' w h f =
   ∀𝕎 w (λ w0 e0 →
            let p  = h w0 e0 in
@@ -140,7 +144,7 @@ inOpenBar' w h f =
            ∃∀𝕎 w1 (λ w2 e2 → (z : w ⊑· w2) → f w2 z (q w2 e2 z)))
 
 
-wPredDepExtIrr-inOpenBar : {w : 𝕎·} {f : wPred w} (h : wPredDep f) (i : inOpenBar w f) → Set₁
+wPredDepExtIrr-inOpenBar : {w : 𝕎·} {f : wPred w} (h : wPredDep f) (i : inOpenBar w f) → Set(lsuc(L))
 wPredDepExtIrr-inOpenBar {w} {f} h i =
   (w0 w1 w2 : 𝕎·) (e0 : w ⊑· w0) (e1 : w ⊑· w1) (e2 : w ⊑· w2)
   (e0' : fst (i w0 e0) ⊑· w2) (e1' : fst (i w1 e1) ⊑· w2) (e2' : w ⊑· w2)
@@ -331,12 +335,12 @@ inOpenBar'-inOpenBar' {w} {f} {g} {h} i irrg irrh j o w1 e1 =
 
 
 
---atOpenBar : {w : 𝕎·} {f : wPred w} (i : inOpenBar w f) (w' : 𝕎·) → Set₁
+--atOpenBar : {w : 𝕎·} {f : wPred w} (i : inOpenBar w f) (w' : 𝕎·) → Set(lsuc(L))
 --atOpenBar {w} {f} i w' = Σ world (λ w1 → Σ (w ⊑· w1) (λ e1 → w' ≽ fst (i w1 e1)))
 -- --  Σ (w' ≽ fst (i w1 e1)) (λ e2 → snd (snd (i w1 e1)) w' e2 e)))
 
 
-data atOpenBar {w : 𝕎·} {f : wPred w} (i : inOpenBar w f) : (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set₁
+data atOpenBar {w : 𝕎·} {f : wPred w} (i : inOpenBar w f) : (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
 data atOpenBar {w} {f} i where
   ATOPENBAR-R : (q : f w (⊑-refl· w))
                 → atOpenBar {w} {f} i w (⊑-refl· w) q
@@ -674,7 +678,7 @@ inOpenBar-idem2 {w} {f} ext h w1 e1 =
 
 
 
-inOpenBar-const : {w : 𝕎·} {t : Set₁} → inOpenBar w (λ w e → t) → t
+inOpenBar-const : {w : 𝕎·} {t : Set(lsuc(L))} → inOpenBar w (λ w e → t) → t
 inOpenBar-const {w} {t} h = snd (snd (h w (⊑-refl· w))) (fst (h w (⊑-refl· w))) (⊑-refl· _) (fst (snd (h w (⊑-refl· w))))
 
 
@@ -795,25 +799,28 @@ inOpenBar-Bar =
  --
  -- Beth Bar instance -- defined inductively
  --
+ -- How will I ever build such a bar??
  --}
 
-data I𝔹 : 𝕎· → Set₁ where
+-- TODO: would have to disallow equal worlds in indBar-ind
+data I𝔹 : 𝕎· → Set(lsuc(L)) where
   indBar-base : (w : 𝕎·) → I𝔹 w
   indBar-ind : (w : 𝕎·) (ind : {w' : 𝕎·} (e : w ⊑· w') → I𝔹 w') → I𝔹 w
 
 
-inI𝔹 : {w : 𝕎·} (b : I𝔹 w) (f : wPred w) → Set₁
+inI𝔹 : {w : 𝕎·} (b : I𝔹 w) (f : wPred w) → Set(lsuc(L))
 inI𝔹 {w} (indBar-base .w) f = ∀𝕎 w f
 inI𝔹 {w} (indBar-ind .w ind) f = {w' : 𝕎·} (e' : w ⊑· w') → inI𝔹 {w'} (ind e') (↑wPred' f e')
 
 
-inBethBar : (w : 𝕎·) (f : wPred w) → Set₁
-inBethBar w f = Σ (I𝔹 w) (λ b → inI𝔹 b f)
+inIBethBar : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
+inIBethBar w f = Σ (I𝔹 w) (λ b → inI𝔹 b f)
 
 
-inBethBar' : (w : 𝕎·) {g : wPred w} (h : inBethBar w g) (f : wPredDep g) → Set₁
-inBethBar' w {g} (indBar-base .w , h) f = ∀𝕎 w (λ w' e' → f w' e' (h w' e'))
-inBethBar' w {g} (indBar-ind .w ind , h) f = {w' : 𝕎·} (e' : w ⊑· w') → inBethBar' w' (ind e' , h e') (↑wPredDep' f e')
+-- TODO: the base case should allow a further bar
+inIBethBar' : (w : 𝕎·) {g : wPred w} (h : inIBethBar w g) (f : wPredDep g) → Set(lsuc(L))
+inIBethBar' w {g} (indBar-base .w , h) f = ∀𝕎 w (λ w' e' → f w' e' (h w' e'))
+inIBethBar' w {g} (indBar-ind .w ind , h) f = {w' : 𝕎·} (e' : w ⊑· w') → inIBethBar' w' (ind e' , h e') (↑wPredDep' f e')
 
 
 →inI𝔹 : {w : 𝕎·} {f g : wPred w} {b : I𝔹 w}
@@ -835,14 +842,14 @@ inBethBar' w {g} (indBar-ind .w ind , h) f = {w' : 𝕎·} (e' : w ⊑· w') →
     aw w1 e1 z = z (⊑-trans· e' e1)
 
 
-↑inBethBar : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) {w' : 𝕎·} (e : w ⊑· w') → inBethBar w' (↑wPred f e)
-↑inBethBar {w} {f} (indBar-base .w , i) {w'} e = indBar-base w' , ∀𝕎-mon e i
-↑inBethBar {w} {f} (indBar-ind .w ind , i) {w'} e = ind e , →inI𝔹-↑wPred e f (ind e) (i e)
+↑inIBethBar : {w : 𝕎·} {f : wPred w} (i : inIBethBar w f) {w' : 𝕎·} (e : w ⊑· w') → inIBethBar w' (↑wPred f e)
+↑inIBethBar {w} {f} (indBar-base .w , i) {w'} e = indBar-base w' , ∀𝕎-mon e i
+↑inIBethBar {w} {f} (indBar-ind .w ind , i) {w'} e = ind e , →inI𝔹-↑wPred e f (ind e) (i e)
 
 
-↑'inBethBar : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) {w' : 𝕎·} (e : w ⊑· w') → inBethBar w' (↑wPred' f e)
-↑'inBethBar {w} {f} (indBar-base .w , i) {w'} e = indBar-base w' , ∀𝕎-mon' e i
-↑'inBethBar {w} {f} (indBar-ind .w ind , i) {w'} e = ind e , i e
+↑'inIBethBar : {w : 𝕎·} {f : wPred w} (i : inIBethBar w f) {w' : 𝕎·} (e : w ⊑· w') → inIBethBar w' (↑wPred' f e)
+↑'inIBethBar {w} {f} (indBar-base .w , i) {w'} e = indBar-base w' , ∀𝕎-mon' e i
+↑'inIBethBar {w} {f} (indBar-ind .w ind , i) {w'} e = ind e , i e
 
 
 
@@ -877,13 +884,13 @@ inBethBar' w {g} (indBar-ind .w ind , h) f = {w' : 𝕎·} (e' : w ⊑· w') →
 
 
 
-inBethBarFunc-aux : {w : 𝕎·} {f g : wPred w} {b1 b2 : I𝔹 w}
+inIBethBarFunc-aux : {w : 𝕎·} {f g : wPred w} {b1 b2 : I𝔹 w}
                     → inI𝔹 b1 (λ w' e' → f w' e' → g w' e')
                     → inI𝔹 b2 f
                     → inI𝔹 (∩I𝔹 b1 b2) g
-inBethBarFunc-aux {w} {f} {g} {indBar-base .w} {b2} i j = ∀𝕎-inI𝔹 i j
-inBethBarFunc-aux {w} {f} {g} {indBar-ind .w ind} {b2} i j {w'} e =
-  inBethBarFunc-aux {w'} {↑wPred' f e} {↑wPred' g e} {ind e} {↑I𝔹 b2 w' e} i' j'
+inIBethBarFunc-aux {w} {f} {g} {indBar-base .w} {b2} i j = ∀𝕎-inI𝔹 i j
+inIBethBarFunc-aux {w} {f} {g} {indBar-ind .w ind} {b2} i j {w'} e =
+  inIBethBarFunc-aux {w'} {↑wPred' f e} {↑wPred' g e} {ind e} {↑I𝔹 b2 w' e} i' j'
   where
     i' : inI𝔹 (ind e) (λ w'' e' → ↑wPred' f e w'' e' → ↑wPred' g e w'' e')
     i' = →inI𝔹 (λ w1 e1 z x u → z u (x u))
@@ -894,34 +901,179 @@ inBethBarFunc-aux {w} {f} {g} {indBar-ind .w ind} {b2} i j {w'} e =
 
 
 
+inIBethBarFunc : {w : 𝕎·} {f g : wPred w}
+                → inIBethBar w (λ w' e' → f w' e' → g w' e')
+                → inIBethBar w f → inIBethBar w g
+inIBethBarFunc {w} {f} {g} (b1 , i1) (b2 , i2) =
+  ∩I𝔹 b1 b2 , inIBethBarFunc-aux i1 i2
+
+
+
+∀𝕎-inIBethBarFunc : {w : 𝕎·} {f g : wPred w}
+                    → ∀𝕎 w (λ w' e' → f w' e' → g w' e')
+                    → inIBethBar w f → inIBethBar w g
+∀𝕎-inIBethBarFunc {w} {f} {g} aw (b , i) = (b , →inI𝔹 aw i)
+
+
+
+-- inductive type?
+data atIBethBar {w : 𝕎·} {f : wPred w} : (i : inIBethBar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
+data atIBethBar {w} {f} where
+  ATIBETHBAR-R : (i : inIBethBar w f) (p : f w (⊑-refl· w))
+                 → atIBethBar {w} {f} i w (⊑-refl· w) p
+  ATIBETHBAR-B : (j : inI𝔹 (indBar-base w) f) (w1 : 𝕎·) (e1 : w ⊑· w1) (p : f w1 e1)
+                 → atIBethBar {w} {f} (indBar-base w , j) w1 e1 p
+  ATIBETHBAR-I : (ind : {w' : 𝕎·} (e : w ⊑· w') → I𝔹 w')
+                 (j : inI𝔹 (indBar-ind w ind) f)
+                 (w1 : 𝕎·) (e1 : w ⊑· w1)
+                 (w2 : 𝕎·) (e2 : w1 ⊑· w2)
+                 (z : w ⊑· w2) (p : ↑wPred' f e1 w2 e2)
+                 → atIBethBar {w1} {↑wPred' f e1} (ind e1 , j e1) w2 e2 p
+                 → atIBethBar {w} {f} (indBar-ind w ind , j) w2 z (p z)
+
+
+atIBethBar-refl : {w : 𝕎·} {f : wPred w} (i : inIBethBar w f) (p : f w (⊑-refl· w)) → atIBethBar {w} {f} i w (⊑-refl· w) p
+atIBethBar-refl {w} {f} i p = ATIBETHBAR-R i p
+
+
+{--
+inIBethBar-inIBethBar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f}
+                       → inIBethBar w (λ w' e' → (x : f w' e') → g w' e' x)
+                       → (i : inIBethBar w f) → inIBethBar' w i g
+inIBethBar-inIBethBar' {w} {f} {g} (b1 , i1) (indBar-base .w , i2) w1 e1 = {!!}
+inIBethBar-inIBethBar' {w} {f} {g} (b1 , i1) (indBar-ind .w ind , i2) = {!!}
+--}
+
+
+
+{-----------------------------------------
+ --
+ -- Beth Bar instance -- defined from infinite sequences
+ --
+ --}
+
+
+_⊏_ : 𝕎· → 𝕎· → Set(L)
+w1 ⊏ w2 = w1 ⊑· w2 × ¬ w1 ≡ w2
+
+
+-- infinite sequence of worlds
+record chain (w : 𝕎·) : Set(lsuc(L)) where
+  constructor mkChain
+  field
+    seq  : ℕ → 𝕎·
+    init : w ⊑· seq 0
+    prop : (n : ℕ) → seq n ⊏ seq (suc n)
+
+
+chain⊑n : {w : 𝕎·} (n : ℕ) (c : chain w) → w ⊑· chain.seq c n
+chain⊑n {w} 0 c = chain.init c
+chain⊑n {w} (suc n) c = ⊑-trans· (chain⊑n n c) (fst (chain.prop c n))
+
+
+record IS𝔹 (w : 𝕎·) : Set(lsuc(L)) where
+  constructor mkIS𝔹
+  field
+    bar  : 𝕎· → Set(L)
+    bars : (c : chain w) → Σ 𝕎· (λ w' → bar w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
+    ext  : {w' : 𝕎·} → bar w' → w ⊑· w'
+
+
+inIS𝔹 : {w : 𝕎·} (b : IS𝔹 w) (f : wPred w) → Set(lsuc(L))
+inIS𝔹 {w} b f = {w' : 𝕎·} (e : w ⊑· w') → IS𝔹.bar b w' → ∀𝕎 w' (↑wPred' f e)
+
+
+inBethBar : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
+inBethBar w f = Σ (IS𝔹 w) (λ b → inIS𝔹 b f)
+
+
+{--
+inBethBar' : (w : 𝕎·) {g : wPred w} (h : inBethBar w g) (f : wPredDep g) → Set(lsuc(L))
+inBethBar' w {g}
+--}
+
+
+chain⊑ : {w w' : 𝕎·} (e : w ⊑· w') → chain w' → chain w
+chain⊑ {w} {w'} e (mkChain seq init prop) = mkChain seq (⊑-trans· e init) prop
+
+
+IS𝔹⊑ : {w w' : 𝕎·} (e : w ⊑· w') → IS𝔹 w → IS𝔹 w'
+IS𝔹⊑ {w} {w'} e (mkIS𝔹 bar bars ext) = mkIS𝔹 bar' bars' ext'
+  where
+    bar' : 𝕎· → Set(L)
+    bar' w0 = Σ 𝕎· (λ w1 → bar w1 × w1 ⊑· w0 × w' ⊑· w0)
+
+    bars' : (c : chain w') → Σ 𝕎· (λ w'' → bar' w'' × Σ ℕ (λ n → w'' ⊑· chain.seq c n))
+    bars' c = chain.seq (chain⊑ e c) (fst (snd (snd z))) ,
+              (fst z , fst (snd z) , snd (snd (snd z)) , chain⊑n (fst (snd (snd z))) c) ,
+              fst (snd (snd z)) , ⊑-refl· _
+      where
+        z : Σ 𝕎· (λ w'' → bar w'' × Σ ℕ (λ n → w'' ⊑· chain.seq (chain⊑ e c) n))
+        z = bars (chain⊑ e c)
+
+    ext' : {w'' : 𝕎·} → bar' w'' → w' ⊑· w''
+    ext' {w''} (w1 , b , e₁ , e₂) = e₂
+
+
+↑inBethBar : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) {w' : 𝕎·} (e : w ⊑· w') → inBethBar w' (↑wPred f e)
+↑inBethBar {w} {f} (b , i) {w'} e = IS𝔹⊑ e b , j
+  where
+    j : inIS𝔹 (IS𝔹⊑ e b) (↑wPred f e)
+    j {w1} e1 (w0 , b0 , e₁ , e₂) w2 e2 z = i (IS𝔹.ext b {w0} b0) b0 w2 (⊑-trans· e₁ e2) (⊑-trans· e z)
+
+
+↑'inBethBar : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) {w' : 𝕎·} (e : w ⊑· w') → inBethBar w' (↑wPred' f e)
+↑'inBethBar {w} {f} (b , i) {w'} e = IS𝔹⊑ e b , j
+  where
+    j : inIS𝔹 (IS𝔹⊑ e b) (↑wPred' f e)
+    j {w1} e1 (w0 , b0 , e₁ , e₂) w2 e2 z x = i (IS𝔹.ext b {w0} b0) b0 w2 (⊑-trans· e₁ e2) x
+
+
+{--
+∩IS𝔹 : {w : 𝕎·} → IS𝔹 w → IS𝔹 w → IS𝔹 w
+∩IS𝔹 {w} (mkIS𝔹 b1 bars1 ext1) (mkIS𝔹 b2 bars2 ext2) =
+  mkIS𝔹 bar
+         bars
+         ext
+  where
+    bar : 𝕎· → Set(L)
+    bar w0 = Σ 𝕎· (λ w1 → Σ 𝕎· (λ w2 → b1 w1 × b2 w2 × w1 ⊑· w0 × w2 ⊑· w0))
+
+    bars : (c : chain w) → Σ 𝕎· (λ w' → bar w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
+    bars c = {!!}
+
+    ext : {w' : 𝕎·} → bar w' → w ⊑· w'
+    ext {w'} (w1 , w2 , b₁ , b₂ , e₁ , e₂) = ⊑-trans· (IS𝔹.ext (mkIS𝔹 b1 bars1 ext1) {w1} b₁) e₁
+
+
+
 inBethBarFunc : {w : 𝕎·} {f g : wPred w}
                 → inBethBar w (λ w' e' → f w' e' → g w' e')
                 → inBethBar w f → inBethBar w g
 inBethBarFunc {w} {f} {g} (b1 , i1) (b2 , i2) =
-  ∩I𝔹 b1 b2 , inBethBarFunc-aux i1 i2
+  ∩IS𝔹 b1 b2 , {!!}
 
 
 
-∀𝕎-inBethBarFunc : {w : 𝕎·} {f g : wPred w}
-                    → ∀𝕎 w (λ w' e' → f w' e' → g w' e')
-                    → inBethBar w f → inBethBar w g
-∀𝕎-inBethBarFunc {w} {f} {g} aw (b , i) = (b , →inI𝔹 aw i)
-
-
-
-{--
--- inductive type?
-atBethBar : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set₁
-atBethBar {w} {f} (b , i) w' e' p = {!!}
-
-
-atBethBar-refl : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) (p : f w (⊑-refl· w)) → atBethBar {w} {f} i w (⊑-refl· w) p
-atBethBar-refl {w} {f} i p = {!!}
-
-
-inBethBar-inBethBar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f}
-                       → inBethBar w (λ w' e' → (x : f w' e') → g w' e' x)
-                       → (i : inBethBar w f) → inBethBar' w i g
-inBethBar-inBethBar' {w} {f} {g} (b1 , i1) (b2 , i2) = {!!}
+inBethBar-Bar : Bar
+inBethBar-Bar =
+  mkBar
+    inBethBar
+    {!!}
+    ↑inBethBar
+    ↑'inBethBar
+    {!!}
+    {!!}
+    inBethBarFunc
+    {!!}
+    {!!}
+    {!!}
+    {!!}
+    {!!}
+    {!!}
+    {!!}
+    {!!}
+    {!!}
+    {!!}
 --}
 \end{code}
