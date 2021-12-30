@@ -95,4 +95,9 @@ wPredDepExtIrr {w} {g} f = (w' : 𝕎·) (e1 e2 : w ⊑· w') (x1 : g w' e1) (x2
            → ∀𝕎 w1 f
            → ∀𝕎 w2 (↑wPred' f e)
 ∀𝕎-mon' {w2} {w1} {f} e h w' e' z = h w' z
+
+
+_⊏_ : 𝕎· → 𝕎· → Set(L)
+w1 ⊏ w2 = w1 ⊑· w2 × ¬ w1 ≡ w2
+
 \end{code}

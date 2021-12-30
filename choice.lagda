@@ -45,10 +45,13 @@ record Choice : Set(L) where
     -- returns a Name which does not occur in w
     newChoice : (w : 𝕎·) → Name
     -- 'records' cs in w
-    startChoice : (cs : Name) (w : 𝕎·) → Σ 𝕎· (λ w' → w ⊑· w')
+    startChoice : (cs : Name) (w : 𝕎·) → 𝕎·
 
-    -- a property of newChoice is:
-    startNewChoice : (n : ℕ) (w : 𝕎·) → getChoice n (newChoice w) (fst (startChoice (newChoice w) w)) ≡ nothing
+    -- if we start a new choice then it is 'empty' according to getChoice
+    getChoice-startNewChoice : (n : ℕ) (w : 𝕎·) → getChoice n (newChoice w) (startChoice (newChoice w) w) ≡ nothing
+
+    -- starting a new choice gives us a non-trivial extension
+    startNewChoice⊏ : (w : 𝕎·) → w ⊏ startChoice (newChoice w) w
 
 -- To capture the fact that we can make different choices over time, should we
 -- (1) add a setter function (would require the 'step' function to return a 𝕎)
