@@ -46,8 +46,8 @@ module classical {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (E : Extens
 open import worldDef(W)
 open import choiceDef(W)(C)
 open import computation(W)(C)
-open import bar(W)
-open import barI(W)
+open import bar(W)(C)
+open import barI(W)(C)
 open import theory(W)(C)(E)
 open import props0(W)(C)(E)
 open import ind2(W)(C)(E)
@@ -1345,10 +1345,10 @@ notClassical w {n} {i} p =
         name = newChoice· w1
 
         w2 : 𝕎·
-        w2 = fst (startChoice· name w1)
+        w2 = startChoice· name w1
 
         e2 : w1 ⊑· w2
-        e2 = snd (startChoice· name w1)
+        e2 = fst (startNewChoice⊏· w1)
 
         h1 : inbar w2 (λ w'' _ → Σ CTerm (λ t → inbar w'' (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
                                → (t #⇛ (#INL x) at w' × t #⇛ (#INL y) at w' × equalInType i w' (#Σchoice name 0) x y)

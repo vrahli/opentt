@@ -42,8 +42,8 @@ module type_sys_props_tsquash {L : Level} (W : PossibleWorlds {L}) (C : Choice W
 
 open import worldDef(W)
 open import computation(W)(C)
-open import bar(W)
-open import barI(W)
+open import bar(W)(C)
+open import barI(W)(C)
 open import theory(W)(C)(E)
 open import props0(W)(C)(E)
 open import ind2(W)(C)(E)

@@ -35,8 +35,8 @@ open import calculus
 open import world
 open import choice
 
-module barI {L : Level} (W : PossibleWorlds {L}) where
-open import bar(W)
+module barI {L : Level} (W : PossibleWorlds {L}) (C : Choice W) where
+open import bar(W)(C)
 open import worldDef(W)
 
 

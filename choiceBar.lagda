@@ -34,8 +34,8 @@ open import choice
 
 
 module choiceBar {L : Level} (W : PossibleWorlds {L}) (C : Choice W) where
-open import bar(W)
-open import barI(W)
+open import bar(W)(C)
+open import barI(W)(C)
 open import worldDef(W)
 open import computation(W)(C)
 

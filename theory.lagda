@@ -36,8 +36,8 @@ open import world
 open import choice
 
 module theory {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (E : Extensionality 0ℓ (lsuc(lsuc(L)))) where
-open import bar(W)
-open import barI(W)
+open import bar(W)(C)
+open import barI(W)(C)
 open import worldDef(W)
 open import choiceDef(W)(C)
 open import computation(W)(C)
