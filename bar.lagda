@@ -1420,12 +1420,41 @@ inBethBar'-idem {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
           y x' y'
 
 
-{--
-inBethBar'-change : {w : 𝕎·} {f k : wPred w} {g : wPredDep f} {h : wPredDep k} (i : inBethBar w f) (j : inBethBar w k)
+
+inBethBar'-change : {w : 𝕎·} {f k : wPred w} {g : wPredDep f} {h : wPredDep k}
+                    (i : inBethBar w f) (j : inBethBar w k)
                     → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e') → atBethBar i w' e' x → atBethBar j w' e' y
                                      → g w' e' x → h w' e' y)
                     → inBethBar' w i g → inBethBar' w j h
-inBethBar'-change {w} {f} {k} {g} {h} i j aw z {w'} e ib = {!!}
+inBethBar'-change {w} {f} {k} {g} {h} (b₁ , i) (b₂ , j) aw z {w'} e ib =
+  IS𝔹-fam2 (IS𝔹⊑ e b₁) (λ {w0} e0 b' → inIS𝔹Dep b' (↑wPredDep' g (⊑-trans· e e0))) z' , jd
+  where
+    z' : {w0 : 𝕎·} (e0 : w' ⊑· w0) (ib0 : IS𝔹.bar (IS𝔹⊑ e b₁) w0)
+          → Σ (IS𝔹 w0) (λ b' → inIS𝔹Dep b' (↑wPredDep' g (⊑-trans· e e0)))
+    z' {w0} e0 (wa , ba , ea₁ , ea₂) = z (⊑-trans· e ea₂) (IS𝔹.mon b₁ ea₁ ba)
+
+    jd : inIS𝔹Dep (IS𝔹-fam2 (IS𝔹⊑ e b₁) (λ {w0} e0 b' → inIS𝔹Dep b' (↑wPredDep' g (PossibleWorlds.⊑-trans W e e0))) z')
+                   (↑wPredDep' h e)
+    jd {w0} e0 (mkIS𝔹In w2 e2 (w3 , br , e3 , e4) , b0) w1 e1 x y x' y' =
+      aw w1 x'
+         (i (IS𝔹.ext b₁ br) br
+            w1
+            (⊑-trans· e3 (⊑-trans· (IS𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0) e1))
+            x')
+         y'
+         (ATBETHBAR-B w3 (IS𝔹.ext b₁ br) br w1
+                      (⊑-trans· e3 (⊑-trans· (IS𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0) e1))
+                      x' (i (IS𝔹.ext b₁ br) br w1
+                      (⊑-trans· e3 (⊑-trans· (IS𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0) e1))
+                      x'))
+         (ATBETHBAR-B w' e ib w1 x x' y')
+         (snd (z' e2 (w3 , br , e3 , e4))
+              (IS𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0)
+              b0 w1 e1
+              (⊑-trans· (IS𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0) e1)
+              (i (IS𝔹.ext b₁ br) br w1 (⊑-trans· e3 (⊑-trans· (IS𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0) e1)))
+              x'
+              (i (IS𝔹.ext b₁ br) br w1 (⊑-trans· e3 (⊑-trans· (IS𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0) e1)) x'))
 
 
 
@@ -1449,5 +1478,5 @@ inBethBar-Bar =
     inBethBar'-comb
     inBethBar'-change
     inBethBar-const
---}
+
 \end{code}
