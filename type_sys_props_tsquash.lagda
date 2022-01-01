@@ -266,8 +266,8 @@ typeSysConds-TSQUASH-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 
 typeSysConds-TSQUASH-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g eqi =
   Bar.∀𝕎-inBar-inBar' barI y ib
   where
-    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A C) (at : atbar y w' e' z) → eqInType u w' z f g)
-    ib w1 e1 z at =
+    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A C) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
+    ib w1 e1 z {--at--} =
       typeSysConds-TSQUASH-extl1
         u w1 A B A1 B1
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -321,8 +321,8 @@ typeSysConds-TSQUASH-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 
 typeSysConds-TSQUASH-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g eqi =
   Bar.∀𝕎-inBar-inBar' barI y ib
   where
-    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' C A) (at : atbar y w' e' z) → eqInType u w' z f g)
-    ib w1 e1 z at =
+    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' C A) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
+    ib w1 e1 z {--at--} =
       typeSysConds-TSQUASH-extl2
         u w1 A B A1 B1
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -376,8 +376,8 @@ typeSysConds-TSQUASH-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 
 typeSysConds-TSQUASH-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g eqi =
   Bar.∀𝕎-inBar-inBar' barI y ib
   where
-    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' C B) (at : atbar y w' e' z) → eqInType u w' z f g)
-    ib w1 e1 z at =
+    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' C B) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
+    ib w1 e1 z {--at--} =
       typeSysConds-TSQUASH-extr1
         u w1 A B A1 B1
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -431,8 +431,8 @@ typeSysConds-TSQUASH-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTLIFT A3 A4 
 typeSysConds-TSQUASH-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f g eqi =
   Bar.∀𝕎-inBar-inBar' barI y ib
   where
-    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' B C) (at : atbar y w' e' z) → eqInType u w' z f g)
-    ib w1 e1 z at =
+    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' B C) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
+    ib w1 e1 z {--at--} =
       typeSysConds-TSQUASH-extr2
         u w1 A B A1 B1
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -489,10 +489,10 @@ typeSysConds-TSQUASH-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' A C) (at : atbar y w' e' z) →
+         (z : eqTypes u w' A C) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
          eqInType u w' {A} {B} (EQTSQUASH A1 B1 (⇛-mon e' x) (⇛-mon e' x₁) (∀𝕎-mon e' eqta) (wPredExtIrr-eqInType-mon eqta exta w' e')) f g)
-    aw0 w1 e1 z at ez =
+    aw0 w1 e1 z {--at--} ez =
       typeSysConds-TSQUASH-extrevl1
         u w1 A B A1 B1
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -503,10 +503,10 @@ typeSysConds-TSQUASH-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' A C) (at : atbar y w' e' z) →
+         (z : eqTypes u w' A C) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
          inbar w' (λ w'' e'' → (x : w ⊑· w'') → TSQUASHeq (eqInType u w'' (eqta w'' x)) w'' f g))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-tsquash u w A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z {--at--} ez = Bar.∀𝕎-inBarFunc barI (irr-tsquash u w A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
 
@@ -554,10 +554,10 @@ typeSysConds-TSQUASH-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' C A) (at : atbar y w' e' z) →
+         (z : eqTypes u w' C A) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
          eqInType u w' {A} {B} (EQTSQUASH A1 B1 (⇛-mon e' x) (⇛-mon e' x₁) (∀𝕎-mon e' eqta) (wPredExtIrr-eqInType-mon eqta exta w' e')) f g)
-    aw0 w1 e1 z at ez =
+    aw0 w1 e1 z {--at--} ez =
       typeSysConds-TSQUASH-extrevl2
         u w1 A B A1 B1
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -568,10 +568,10 @@ typeSysConds-TSQUASH-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' C A) (at : atbar y w' e' z) →
+         (z : eqTypes u w' C A) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
          inbar w' (λ w'' e'' → (x : w ⊑· w'') → TSQUASHeq (eqInType u w'' (eqta w'' x)) w'' f g))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-tsquash u w A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z {--at--} ez = Bar.∀𝕎-inBarFunc barI (irr-tsquash u w A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
 
@@ -619,10 +619,10 @@ typeSysConds-TSQUASH-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' C B) (at : atbar y w' e' z) →
+         (z : eqTypes u w' C B) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
          eqInType u w' {A} {B} (EQTSQUASH A1 B1 (⇛-mon e' x) (⇛-mon e' x₁) (∀𝕎-mon e' eqta) (wPredExtIrr-eqInType-mon eqta exta w' e')) f g)
-    aw0 w1 e1 z at ez =
+    aw0 w1 e1 z {--at--} ez =
       typeSysConds-TSQUASH-extrevr1
         u w1 A B A1 B1
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -633,10 +633,10 @@ typeSysConds-TSQUASH-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' C B) (at : atbar y w' e' z) →
+         (z : eqTypes u w' C B) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
          inbar w' (λ w'' e'' → (x : w ⊑· w'') → TSQUASHeq (eqInType u w'' (eqta w'' x)) w'' f g))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-tsquash u w A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z {--at--} ez = Bar.∀𝕎-inBarFunc barI (irr-tsquash u w A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
 
@@ -684,10 +684,10 @@ typeSysConds-TSQUASH-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' B C) (at : atbar y w' e' z) →
+         (z : eqTypes u w' B C) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
          eqInType u w' {A} {B} (EQTSQUASH A1 B1 (⇛-mon e' x) (⇛-mon e' x₁) (∀𝕎-mon e' eqta) (wPredExtIrr-eqInType-mon eqta exta w' e')) f g)
-    aw0 w1 e1 z at ez =
+    aw0 w1 e1 z {--at--} ez =
       typeSysConds-TSQUASH-extrevr2
         u w1 A B A1 B1
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -698,10 +698,10 @@ typeSysConds-TSQUASH-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTBAR y) f
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' B C) (at : atbar y w' e' z) →
+         (z : eqTypes u w' B C) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
          inbar w' (λ w'' e'' → (x : w ⊑· w'') → TSQUASHeq (eqInType u w'' (eqta w'' x)) w'' f g))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-tsquash u w A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z {--at--} ez = Bar.∀𝕎-inBarFunc barI (irr-tsquash u w A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
 
@@ -755,10 +755,10 @@ eqInType-⇛-TSQUASH u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTBAR x) ei =
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' A B) (at : atbar x w' e' z) →
+         (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →
          eqInType u w' z a b →
          inbar w' (λ w'' e → TSQUASHeq (eqInType u w'' (eqta w'' (⊑-trans· e' e))) w'' a b))
-    aw0 w1 e1 z at ez =
+    aw0 w1 e1 z {--at--} ez =
       eqInType-⇛-TSQUASH
         u w1 A B A1 B1 a b
         (∀𝕎-mon e1 eqta)
@@ -768,10 +768,10 @@ eqInType-⇛-TSQUASH u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTBAR x) ei =
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' A B) (at : atbar x w' e' z) →
+         (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →
          eqInType u w' z a b →
          inbar w' (λ w'' e → (x : w ⊑· w'') → TSQUASHeq (eqInType u w'' (eqta w'' x)) w'' a b))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-tsquash u w A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z {--at--} ez = Bar.∀𝕎-inBarFunc barI (irr-tsquash u w A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
 
@@ -828,23 +828,23 @@ eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTBAR x) ei ext =
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : ≡Types u w' A B) (at : atbar x w' e' z) →
+         (z : ≡Types u w' A B) {--(at : atbar x w' e' z)--} →
          ≡∈Type u w' z a b →
          inbar w' (λ w'' e → TSQUASHeq (≡∈Type u w'' (eqta w'' (⊑-trans· e' e))) w'' a b))
-    aw0 w1 e1 z at ez =
+    aw0 w1 e1 z {--at--} ez =
       eqInType-⇛-TSQUASH2
         u w1 A B A1 B1 a b
         (∀𝕎-mon e1 eqta)
         (wPredExtIrr-eqInType-mon eqta exta w1 e1)
         (⇛-mon e1 c₁) (⇛-mon e1 c₂) z ez
-        (≤Type-EQTBAR-eqInTypeExt at ext)
+        (≤Type-EQTBAR-eqInTypeExt e1 {--at--} ext)
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : ≡Types u w' A B) (at : atbar x w' e' z) →
+         (z : ≡Types u w' A B) {--(at : atbar x w' e' z)--} →
          ≡∈Type u w' z a b →
          inbar w' (λ w'' e → (x : w ⊑· w'') → TSQUASHeq (≡∈Type u w'' (eqta w'' x)) w'' a b))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-tsquash (u ·ᵤ) w A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z {--at--} ez = Bar.∀𝕎-inBarFunc barI (irr-tsquash (u ·ᵤ) w A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
 
@@ -897,8 +897,8 @@ eqInType-⇛-TSQUASH-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTBAR x) e
   Bar.∀𝕎-inBar-inBar' barI x aw
   where
     aw : ∀𝕎 w
-      (λ w' e' → (z : eqTypes u w' A B) (at : atbar x w' e' z) → eqInType u w' z a b)
-    aw w1 e1 z at =
+      (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} → eqInType u w' z a b)
+    aw w1 e1 z {--at--} =
       eqInType-⇛-TSQUASH-rev
         u w1 A B A1 B1 a b
         (∀𝕎-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1)
@@ -962,13 +962,13 @@ eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTBAR x) ext e
   Bar.∀𝕎-inBar-inBar' barI x aw
   where
     aw : ∀𝕎 w
-      (λ w' e' → (z : ≡Types u w' A B) (at : atbar x w' e' z) → ≡∈Type u w' z a b)
-    aw w1 e1 z at =
+      (λ w' e' → (z : ≡Types u w' A B) {--(at : atbar x w' e' z)--} → ≡∈Type u w' z a b)
+    aw w1 e1 z {--at--} =
       eqInType-⇛-TSQUASH-rev2
         u w1 A B A1 B1 a b
         (∀𝕎-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1)
         (⇛-mon e1 c₁) (⇛-mon e1 c₂)
-        z (≤Type-EQTBAR-eqInTypeExt at ext) j
+        z (≤Type-EQTBAR-eqInTypeExt e1 {--at--} ext) j
       where
         j : inbar w1 (↑wPred (λ w' e → TSQUASHeq (≡∈Type u w' (eqta w' e)) w' a b) e1)
         j = Bar.↑inBar barI ei e1
@@ -985,10 +985,10 @@ typeSysConds-TSQUASH-local : (u : univs) (w : 𝕎·) (A B A1 B1 : CTerm)
 typeSysConds-TSQUASH-local u w A B A1 B1 x x₁ eqta exta inda a b i j =
   Bar.inBar-idem barI (Bar.∀𝕎-inBar'-inBar barI i aw j)
   where
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z)
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                          → eqInType u w' z a b
                          → inbar w' (λ w'' e → (x : w ⊑· w'') → TSQUASHeq (eqInType u w'' (eqta w'' x)) w'' a b))
-    aw w1 e1 z at ei = Bar.∀𝕎-inBarFunc barI aw'' aw'
+    aw w1 e1 z {--at--} ei = Bar.∀𝕎-inBarFunc barI aw'' aw'
       where
         aw' : inbar w1 (λ w'' e → TSQUASHeq (eqInType u w'' (eqta w'' (⊑-trans· e1 e))) w'' a b)
         aw' = eqInType-⇛-TSQUASH u w1 A B A1 B1 a b (∀𝕎-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1) (∀𝕎-mon e1 inda) (⇛-mon e1 x) (⇛-mon e1 x₁) z ei

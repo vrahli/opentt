@@ -533,10 +533,10 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
     aw : ∀𝕎 w
               (λ w' e' →
                 (x₁ : eqTypes (uni u) w' (#EQ a b T) (#EQ a b T))
-                (at : atbar x w' e' x₁)
+                {--(at : atbar x w' e' x₁)--}
                 → eqInType (uni u) w' x₁ t₁ t₂
                 → Bar.inBar barI w' (↑wPred' (λ w'' e → ⌜ t₁ ⌝ ⇛ AX at w'' × ⌜ t₂ ⌝ ⇛ AX at w'' × equalInType u w'' T a b) e'))
-    aw w1 e1 eqt1 at eqi1 = Bar.∀𝕎-inBarFunc barI (λ w' e' x z → x) ind
+    aw w1 e1 eqt1 {--at--} eqi1 = Bar.∀𝕎-inBarFunc barI (λ w' e' x z → x) ind
       where
         ind : inbar w1 (λ w' e' → ⌜ t₁ ⌝ ⇛ AX at w' × ⌜ t₂ ⌝ ⇛ AX at w' × equalInType u w' T a b)
         ind = if-equalInType-EQ u w1 T a b t₁ t₂ (eqt1 , eqi1)

@@ -666,8 +666,8 @@ equalInType-local {u} {w} {T} {a} {b} i =
     aw : ∀𝕎 w (λ w' e' → equalInType u w' T a b → eqTypes (uni u) w' T T)
     aw w1 e1 eqi = fst eqi
 
-    aw' : ∀𝕎 w (λ w' e' → (x : equalInType u w' T a b) → atbar i w' e' x → equalTerms u w' (fst x) a b)
-    aw' w1 e1 x at = equalInType→eqInType refl {fst x} x
+    aw' : ∀𝕎 w (λ w' e' → (x : equalInType u w' T a b) {--→ atbar i w' e' x--} → equalTerms u w' (fst x) a b)
+    aw' w1 e1 x {--at--} = equalInType→eqInType refl {fst x} x
 
     eqi : equalTerms u w (EQTBAR (Bar.∀𝕎-inBarFunc barI aw i)) a b
     eqi = Bar.∀𝕎-inBar-inBar' barI i aw'
@@ -700,10 +700,10 @@ equalInType-LIFT→ n w T a b (EQTBAR x , eqi) =
   equalInType-local (Bar.∀𝕎-inBar'-inBar barI x aw eqi)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni (suc n)) w' (#LIFT T) (#LIFT T))
-                          → (at : atbar x w' e' z)
+                          {--→ (at : atbar x w' e' z)--}
                           → equalTerms (suc n) w' z a b
                           → equalInType n w' T a b)
-      aw w' e' z at j = equalInType-LIFT→ n w' T a b (z , j)
+      aw w' e' z {--at--} j = equalInType-LIFT→ n w' T a b (z , j)
 
 
 
@@ -831,10 +831,10 @@ equalInType-PI→ {u} {w} {A} {B} {f} {g} (EQTBAR x , eqi) =
   isFam-local {u} {w} {A} {B} {#APPLY f} {#APPLY g} (Bar.∀𝕎-inBar'-inBar barI x aw eqi)
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni u) w' (#PI A B) (#PI A B))
-                        → atbar x w' e' z
+                        {--→ atbar x w' e' z--}
                         → equalTerms u w' z f g
                         → isFam u w' A B (#APPLY f) (#APPLY g))
-    aw w' e' z at j = equalInType-PI→ (z , j)
+    aw w' e' z {--at--} j = equalInType-PI→ (z , j)
 
 {-- (Bar.∀𝕎-inBarFunc barI aw x)
   where
@@ -891,10 +891,10 @@ equalInType-SQUASH-aux→ {n} {w} {A} {a} {b} (EQTBAR x) eqi =
   Bar.inBar-idem barI (Bar.∀𝕎-inBar'-inBar barI x aw eqi)
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni n) w' (#SET #TRUE ⌞ A ⌟) (#SET #TRUE ⌞ A ⌟))
-                       → atbar x w' e' z
+                       {--→ atbar x w' e' z--}
                        → equalTerms n w' z a b
                        → inbar w' (↑wPred' (λ w'' e → Σ CTerm (λ t → equalInType n w'' A t t)) e'))
-    aw w' e' z at j = Bar.∀𝕎-inBarFunc barI (λ w'' e'' h k → h) i
+    aw w' e' z {--at--} j = Bar.∀𝕎-inBarFunc barI (λ w'' e'' h k → h) i
       where
         i : inbar w' (λ w'' _ → Σ CTerm (λ t → equalInType n w'' A t t))
         i = equalInType-SQUASH-aux→ z j
@@ -942,14 +942,14 @@ equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTBAR x , eqi) =
   Bar.inBar-idem barI (Bar.∀𝕎-inBar'-inBar barI x aw eqi)
   where
     aw : ∀𝕎 w (λ w' e' → (z : equalTypes n w' (#UNION A B) (#UNION A B))
-                        → atbar x w' e' z
+                        {--→ atbar x w' e' z--}
                         → equalTerms n w' z a b
                         → inbar w' (↑wPred' (λ w'' e → Σ CTerm (λ y₁ → Σ CTerm (λ y₂
                                                      → (a #⇛ #INL y₁ at w'' × b #⇛ #INL y₂ at w'' × equalInType n w'' A y₁ y₂)
                                                         ⊎
                                                         (a #⇛ #INR y₁ at w'' × b #⇛ #INR y₂ at w'' × equalInType n w'' B y₁ y₂))))
                                              e'))
-    aw w' e' z at i = Bar.∀𝕎-inBarFunc barI (λ w'' e'' h k → h) j
+    aw w' e' z {--at--} i = Bar.∀𝕎-inBarFunc barI (λ w'' e'' h k → h) j
       where
         j : inbar w' (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
                              → (a #⇛ (#INL x) at w' × b #⇛ (#INL y) at w' × equalInType n w' A x y)
@@ -1089,8 +1089,8 @@ equalInType-FUN→ {u} {w} {A} {B} {f} {g} eqi rewrite #FUN≡#PI A B = z2
 ¬equalInType-FALSE {w} {i} {a} {b} (EQTBAR x , eqi) =
   lower {0ℓ} {lsuc(L)} (Bar.inBar-const barI (Bar.∀𝕎-inBar'-inBar barI x aw eqi))
   where
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni i) w' #FALSE #FALSE) → atbar x w' e' z → equalTerms i w' z a b → Lift (lsuc(L)) ⊥)
-    aw w' e' z at j = lift (¬equalInType-FALSE (z , j))
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni i) w' #FALSE #FALSE) {--→ atbar x w' e' z--} → equalTerms i w' z a b → Lift (lsuc(L)) ⊥)
+    aw w' e' z {--at--} j = lift (¬equalInType-FALSE (z , j))
 
 
 

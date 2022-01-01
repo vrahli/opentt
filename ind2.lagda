@@ -174,7 +174,7 @@ data <TypeStep where
               (w' : 𝕎·) (e' : w ⊑· w')
               → <TypeStep {↓𝕌 u} (eqtA w' e') {u} {w} {T1} {T2} (EQTLIFT A1 A2 c₁ c₂ eqtA exta)
   <TypeBAR : (u : 𝕌) (w : 𝕎·) (T1 T2 : CTerm) (i : inbar w (λ w' _ → ≡Types u w' T1 T2))
-             (w' : 𝕎·) (e' : w ⊑· w') (p : ≡Types u w' T1 T2) (a : atbar i w' e' p)
+             (w' : 𝕎·) (e' : w ⊑· w') (p : ≡Types u w' T1 T2) {--(a : atbar i w' e' p)--}
              → <TypeStep {u} p {u} (EQTBAR i)
 
 
@@ -383,7 +383,7 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
     {u} (EQTBAR i)
     {u} eqt
 --    (<Type1 eqt (EQTBAR i) (<TypeBAR w0 X1 X2 i w0 (⊑-refl· w0) (aw w0 (⊑-refl· w0)) j))
-    (<Type1 {u} eqt {u} (EQTBAR i) (<TypeBAR u w0 X1 X2 i w0 (⊑-refl· w0) eqt j))
+    (<Type1 {u} eqt {u} (EQTBAR i) (<TypeBAR u w0 X1 X2 i w0 (⊑-refl· w0) eqt {--j--}))
   where
     aw : ∀𝕎 w0 (λ w' _ → ≡Types u w' X1 X2)
     aw = eqTypes-mon (u ·ᵤ) eqt
@@ -391,9 +391,11 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
     i : inbar w0 (λ w' _ → ≡Types u w' X1 X2)
     i = Bar.∀𝕎-inBar barI aw
 
+{--
 --    j : atbar i w0 (⊑-refl· w0) (aw w0 (⊑-refl· w0))
     j : atbar i w0 (⊑-refl· w0) eqt
     j = Bar.atBar-refl barI i eqt --ATOPENBAR w0 (⊑-refl· w0) w0 (⊑-refl· w0) (⊑-refl· w0)
+--}
 
     indLtt : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} (eqt : ≡Types u w T1 T2)
              {u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2')
@@ -552,47 +554,47 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
         ind' : (w1 : 𝕎·) (e1 : w ⊑· w1) {u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2') → <Type {u'} eqt' (eqtA w1 e1) → P eqt'
         ind' w1 e1 {u'} {w'} {T1'} {T2'} eqt' ltt = indLtt (eqtA w1 e1) eqt' ltt
 
-    indLtt {u} {w} {T1} {T2} (EQTBAR i) {u'} {w'} {.T1} {.T2} eqt' (<Type1 .eqt' .(EQTBAR i) (<TypeBAR .u .w .T1 .T2 .i .w' e' .eqt' a)) =
-      ind eqt' (ind' w' e' eqt' a)
+    indLtt {u} {w} {T1} {T2} (EQTBAR i) {u'} {w'} {.T1} {.T2} eqt' (<Type1 .eqt' .(EQTBAR i) (<TypeBAR .u .w .T1 .T2 .i .w' e' .eqt' {--a--})) =
+      ind eqt' (ind' w' e' eqt' {--a--})
       where
-        ind' : (w1 : 𝕎·) (e1 : w ⊑· w1) (p : ≡Types u w1 T1 T2) (a : Bar.atBar barI i w1 e1 p)
+        ind' : (w1 : 𝕎·) (e1 : w ⊑· w1) (p : ≡Types u w1 T1 T2) {--(a : Bar.atBar barI i w1 e1 p)--}
                {u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2')
                → <Type {u'} eqt' p → P eqt'
-        ind' w1 e1 p a {u'} {w'} {T1'} {T2'} eqt' ltt = indLtt p eqt' ltt
+        ind' w1 e1 p {--a--} {u'} {w'} {T1'} {T2'} eqt' ltt = indLtt p eqt' ltt
 
-    indLtt {u} {w} {T1} {T2} (EQTBAR i) {u'} {w'} {T1'} {T2'} eqt' (<TypeS .eqt' eqt2 .(EQTBAR i) ltt (<TypeBAR .u .w .T1 .T2 .i w2 e' .eqt2 a)) =
-      ind' w2 e' eqt2 a eqt' ltt
+    indLtt {u} {w} {T1} {T2} (EQTBAR i) {u'} {w'} {T1'} {T2'} eqt' (<TypeS .eqt' eqt2 .(EQTBAR i) ltt (<TypeBAR .u .w .T1 .T2 .i w2 e' .eqt2 {--a--})) =
+      ind' w2 e' eqt2 {--a--} eqt' ltt
       where
-        ind' : (w1 : 𝕎·) (e1 : w ⊑· w1) (p : ≡Types u w1 T1 T2) (a : Bar.atBar barI i w1 e1 p)
+        ind' : (w1 : 𝕎·) (e1 : w ⊑· w1) (p : ≡Types u w1 T1 T2) {--(a : Bar.atBar barI i w1 e1 p)--}
                {u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2')
                → <Type {u'} eqt' p → P eqt'
-        ind' w1 e1 p a {u'} {w'} {T1'} {T2'} eqt' ltt = indLtt p eqt' ltt
+        ind' w1 e1 p {--a--} {u'} {w'} {T1'} {T2'} eqt' ltt = indLtt p eqt' ltt
 
 
 
 
 ≤Type-EQTBAR-eqInTypeExt : {u : 𝕌} {w : 𝕎·} {A B : CTerm}
                            {i : inbar w (λ w' _ → ≡Types u w' A B)}
-                           {w1 : 𝕎·} {e1 : w ⊑· w1} {z : ≡Types u w1 A B}
-                           (a : atbar i w1 e1 z)
+                           {w1 : 𝕎·} (e1 : w ⊑· w1) {z : ≡Types u w1 A B}
+                           {--(a : atbar i w1 e1 z)--}
                            (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} (EQTBAR i) → eqInTypeExt eqt')
                            → ({u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} z → eqInTypeExt eqt')
-≤Type-EQTBAR-eqInTypeExt {u} {w} {A} {B} {i} {w1} {e1} {.eqt'} a ext {.u} {.w1} {.A} {.B} eqt' (≤Type0 {.u} .eqt') =
-  ext eqt' (≤TypeS _ _ (<Type1 _ _ (<TypeBAR _ _ _ _ i w1 e1 eqt' a)))
-≤Type-EQTBAR-eqInTypeExt {u} {w} {A} {B} {i} {w1} {e1} {z} a ext {u'} {w'} {A'} {B'} eqt' (≤TypeS .eqt' .z x) =
-  ext eqt' (≤TypeS _ _ (<TypeS _ _ _ x (<TypeBAR _ _ _ _ i w1 e1 z a)))
+≤Type-EQTBAR-eqInTypeExt {u} {w} {A} {B} {i} {w1} e1 {.eqt'} {--a--} ext {.u} {.w1} {.A} {.B} eqt' (≤Type0 {.u} .eqt') =
+  ext eqt' (≤TypeS _ _ (<Type1 _ _ (<TypeBAR _ _ _ _ i w1 e1 eqt' {--a--})))
+≤Type-EQTBAR-eqInTypeExt {u} {w} {A} {B} {i} {w1} e1 {z} {--a--} ext {u'} {w'} {A'} {B'} eqt' (≤TypeS .eqt' .z x) =
+  ext eqt' (≤TypeS _ _ (<TypeS _ _ _ x (<TypeBAR _ _ _ _ i w1 e1 z {--a--})))
 
 
 
 <Type-EQTBAR-eqInTypeExt : {u : 𝕌} {w : 𝕎·} {A B : CTerm}
                            {i : inbar w (λ w' _ → ≡Types u w' A B)}
-                           {w1 : 𝕎·} {e1 : w ⊑· w1} {z : ≡Types u w1 A B}
-                           (a : atbar i w1 e1 z)
+                           {w1 : 𝕎·} (e1 : w ⊑· w1) {z : ≡Types u w1 A B}
+                           {--(a : atbar i w1 e1 z)--}
                            (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → <Type {u'} eqt' {u} (EQTBAR i) → eqInTypeExt eqt')
                            → ({u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} z → eqInTypeExt eqt')
-<Type-EQTBAR-eqInTypeExt {u} {w} {A} {B} {i} {w1} {e1} {.eqt'} a ext {.u} {.w1} {.A} {.B} eqt' (≤Type0 .eqt') =
-  ext eqt' (<Type1 _ _ (<TypeBAR _ _ _ _ i w1 e1 eqt' a))
-<Type-EQTBAR-eqInTypeExt {u} {w} {A} {B} {i} {w1} {e1} {z} a ext {u'} {w'} {A'} {B'} eqt' (≤TypeS .eqt' .z x) =
-  ext eqt' (<TypeS _ _ _ x (<TypeBAR _ _ _ _ i w1 e1 z a))
+<Type-EQTBAR-eqInTypeExt {u} {w} {A} {B} {i} {w1} e1 {.eqt'} {--a--} ext {.u} {.w1} {.A} {.B} eqt' (≤Type0 .eqt') =
+  ext eqt' (<Type1 _ _ (<TypeBAR _ _ _ _ i w1 e1 eqt' {--a--}))
+<Type-EQTBAR-eqInTypeExt {u} {w} {A} {B} {i} {w1} e1 {z} {--a--} ext {u'} {w'} {A'} {B'} eqt' (≤TypeS .eqt' .z x) =
+  ext eqt' (<TypeS _ _ _ x (<TypeBAR _ _ _ _ i w1 e1 z {--a--}))
 
 \end{code}

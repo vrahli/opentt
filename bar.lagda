@@ -34,9 +34,7 @@ record Bar : Set(lsuc(lsuc(L))) where
     inBar'            : (w : 𝕎·) {g : wPred w} (h : inBar w g) (f : wPredDep g) → Set(lsuc(L))
     ↑inBar            : {w : 𝕎·} {f : wPred w} (i : inBar w f) {w' : 𝕎·} (e : w ⊑· w') → inBar w' (↑wPred f e)
     ↑'inBar           : {w : 𝕎·} {f : wPred w} (i : inBar w f) {w' : 𝕎·} (e : w ⊑· w') → inBar w' (↑wPred' f e)
-    atBar             : {w : 𝕎·} {f : wPred w} (i : inBar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
     -- Axioms
-    atBar-refl        : {w : 𝕎·} {f : wPred w} (i : inBar w f) (p : f w (⊑-refl· w)) → atBar {w} {f} i w (⊑-refl· w) p
     inBarFunc         : {w : 𝕎·} {f g : wPred w}
                         → inBar w (λ w' e' → f w' e' → g w' e')
                         → inBar w f → inBar w g
@@ -47,7 +45,7 @@ record Bar : Set(lsuc(lsuc(L))) where
                         → inBar w (λ w' e' → (x : f w' e') → g w' e' x)
                         → (i : inBar w f) → inBar' w i g
     ∀𝕎-inBar-inBar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inBar w f)
-                        → ∀𝕎 w (λ w' e' → (x : f w' e') (at : atBar i w' e' x) → g w' e' x)
+                        → ∀𝕎 w (λ w' e' → (x : f w' e') {--(at : atBar i w' e' x)--} → g w' e' x)
                         → inBar' w i g
     ∀𝕎-inBar        : {w : 𝕎·} {f : wPred w} → ∀𝕎 w f → inBar w f
     inBar-idem        : {w : 𝕎·} {f : wPred w}
@@ -57,17 +55,20 @@ record Bar : Set(lsuc(lsuc(L))) where
                         → inBar w (λ w' e' → inBar' w' (↑'inBar i e') (↑wPredDep' g e'))
                         → inBar' w i g
     ∀𝕎-inBar'-inBar : {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w} (i : inBar w f)
-                        → ∀𝕎 w (λ w' e' → (x : f w' e') → atBar i w' e' x → g w' e' x → h w' e')
+                        → ∀𝕎 w (λ w' e' → (x : f w' e') {--→ atBar i w' e' x--} → g w' e' x → h w' e')
                         → inBar' w i g → inBar w h
     inBar'-comb       : {w : 𝕎·} {f : wPred w} {g h k : wPredDep f} (i : inBar w f)
                         → ∀𝕎 w (λ w' e' → (z zg zh : f w' e')
                                            → g w' e' zg → h w' e' zh → k w' e' z)
                         → inBar' w i g → inBar' w i h → inBar' w i k
     inBar'-change    : {w : 𝕎·} {f k : wPred w} {g : wPredDep f} {h : wPredDep k} (i : inBar w f) (j : inBar w k)
-                        → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e') → atBar i w' e' x → atBar j w' e' y
+                        → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e') {--→ atBar i w' e' x → atBar j w' e' y--}
                                            → g w' e' x → h w' e' y)
                         → inBar' w i g → inBar' w j h
     inBar-const       : {w : 𝕎·} {t : Set(lsuc(L))} → inBar w (λ w e → t) → t
+
+--    atBar             : {w : 𝕎·} {f : wPred w} (i : inBar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
+--    atBar-refl        : {w : 𝕎·} {f : wPred w} (i : inBar w f) (p : f w (⊑-refl· w)) → atBar {w} {f} i w (⊑-refl· w) p
 
 --    wPredDepExtIrrBar : {w : 𝕎·} {f : wPred w} (h : wPredDep f) (i : inBar w f) → Set(lsuc(L))
 {--    ↑inBar'           : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inBar w f) {w' : 𝕎·} (e : w' ⊇ w)
@@ -108,7 +109,7 @@ record Bar : Set(lsuc(lsuc(L))) where
 -- This is a consequence of [∀𝕎-inBar'-inBar]
 inBar'-inBar : (b : Bar) {w : 𝕎·} {f : wPred w} {h : wPred w}
                → (i : Bar.inBar b w f) → Bar.inBar' b w i (λ w1 e1 z → h w1 e1) → Bar.inBar b w h
-inBar'-inBar b {w} {f} {h} i q = Bar.∀𝕎-inBar'-inBar b i (λ w1 e1 x at z → z) q
+inBar'-inBar b {w} {f} {h} i q = Bar.∀𝕎-inBar'-inBar b i (λ w1 e1 x {--at--} z → z) q
 
 
 -- This is a consequence of [inBar'-comb] for 3 dependent bars
@@ -538,12 +539,12 @@ inOpenBar'-comb {w} {f} {g} {h} {k} i aw ig ih w1 e1 =
 
 
 ∀𝕎-inOpenBar-inOpenBar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inOpenBar w f)
-                            → ∀𝕎 w (λ w' e' → (x : f w' e') (at : atOpenBar i w' e' x) → g w' e' x)
+                            → ∀𝕎 w (λ w' e' → (x : f w' e') {--(at : atOpenBar i w' e' x)--} → g w' e' x)
                             → inOpenBar' w i g
 ∀𝕎-inOpenBar-inOpenBar' {w} {f} {g} i h w1 e1 =
   w2 ,
   ⊑-refl· w2 ,
-  λ w3 e3 z → h w3 z (h0 w3 (⊑-trans· (⊑-refl· w2) e3) z) (ATOPENBAR-O w1 e1 w3 (⊑-trans· (⊑-refl· (fst (i w1 e1))) e3) z)
+  λ w3 e3 z → h w3 z (h0 w3 (⊑-trans· (⊑-refl· w2) e3) z) {--(ATOPENBAR-O w1 e1 w3 (⊑-trans· (⊑-refl· (fst (i w1 e1))) e3) z)--}
   where
     w2 : 𝕎·
     w2 = fst (i w1 e1)
@@ -659,10 +660,10 @@ inOpenBar-idem2 {w} {f} ext h w1 e1 =
 
 
 ∀𝕎-inOpenBar'-inOpenBar : {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w} (i : inOpenBar w f)
-                            → ∀𝕎 w (λ w' e' → (x : f w' e') → atOpenBar i w' e' x → g w' e' x → h w' e')
+                            → ∀𝕎 w (λ w' e' → (x : f w' e') {--→ atOpenBar i w' e' x--} → g w' e' x → h w' e')
                             → inOpenBar' w i g → inOpenBar w h
 ∀𝕎-inOpenBar'-inOpenBar {w} {f} {g} {h} i a q w1 e1 =
-  w3 , ⊑-trans· e2 e3 , λ w4 e4 z → a w4 z (h0 w4 (⊑-trans· e3 e4) z) (ATOPENBAR-O w1 e1 w4 (⊑-trans· e3 e4) z) (h3 w4 e4 z)
+  w3 , ⊑-trans· e2 e3 , λ w4 e4 z → a w4 z (h0 w4 (⊑-trans· e3 e4) z) {--(ATOPENBAR-O w1 e1 w4 (⊑-trans· e3 e4) z)--} (h3 w4 e4 z)
   where
     w2 : 𝕎·
     w2 = fst (i w1 e1)
@@ -691,7 +692,7 @@ inOpenBar-const {w} {t} h = snd (snd (h w (⊑-refl· w))) (fst (h w (⊑-refl·
 
 
 old-inOpenBar'-change : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i j : inOpenBar w f)
-                    → ∀𝕎 w (λ w' e' → (x y : f w' e') → atOpenBar i w' e' x → atOpenBar j w' e' y → g w' e' x → g w' e' y)
+                    → ∀𝕎 w (λ w' e' → (x y : f w' e') {--→ atOpenBar i w' e' x → atOpenBar j w' e' y--} → g w' e' x → g w' e' y)
                     → inOpenBar' w i g → inOpenBar' w j g
 old-inOpenBar'-change {w} {f} {g} i j aw b w1 e1 =
   w4 , ⊑-trans· e3 e4 , h1
@@ -722,15 +723,15 @@ old-inOpenBar'-change {w} {f} {g} i j aw b w1 e1 =
       aw w5 z
          (snd (snd (i w2 (⊑-trans· e1 e2))) w5 (⊑-trans· e4 e5) z)
          (snd (snd (j w1 e1)) w5 (⊑-trans· (⊑-trans· e3 e4) e5) z)
-         (ATOPENBAR-O w2 (⊑-trans· e1 e2) w5  (⊑-trans· e4 e5) z)
-         (ATOPENBAR-O w1 e1 w5  (⊑-trans· (⊑-trans· e3 e4) e5) z)
+         {--(ATOPENBAR-O w2 (⊑-trans· e1 e2) w5  (⊑-trans· e4 e5) z)
+         (ATOPENBAR-O w1 e1 w5  (⊑-trans· (⊑-trans· e3 e4) e5) z)--}
          (h0 w5 e5 z)
 
 
 
 inOpenBar'-change : {w : 𝕎·} {f : wPred w} {k : wPred w} {g : wPredDep f} {h : wPredDep k}
                     (i : inOpenBar w f) (j : inOpenBar w k)
-                    → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e') → atOpenBar i w' e' x → atOpenBar j w' e' y
+                    → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e') {--→ atOpenBar i w' e' x → atOpenBar j w' e' y--}
                                       → g w' e' x → h w' e' y)
                     → inOpenBar' w i g → inOpenBar' w j h
 inOpenBar'-change {w} {f} {k} {g} {h} i j aw b w1 e1 =
@@ -762,8 +763,8 @@ inOpenBar'-change {w} {f} {k} {g} {h} i j aw b w1 e1 =
       aw w5 z
          (snd (snd (i w2 (⊑-trans· e1 e2))) w5 (⊑-trans· e4 e5) z)
          (snd (snd (j w1 e1)) w5 (⊑-trans· (⊑-trans· e3 e4) e5) z)
-         (ATOPENBAR-O w2 (⊑-trans· e1 e2) w5 (⊑-trans· e4 e5) z)
-         (ATOPENBAR-O w1 e1 w5 (⊑-trans· (⊑-trans· e3 e4) e5) z)
+         {--(ATOPENBAR-O w2 (⊑-trans· e1 e2) w5 (⊑-trans· e4 e5) z)
+         (ATOPENBAR-O w1 e1 w5 (⊑-trans· (⊑-trans· e3 e4) e5) z)--}
          (h0 w5 e5 z)
 
 
@@ -776,8 +777,6 @@ inOpenBar-Bar =
     inOpenBar'
     ↑inOpenBar
     ↑'inOpenBar
-    atOpenBar
-    (λ i → ATOPENBAR-R)
     inOpenBarFunc
     ∀𝕎-inOpenBarFunc
     inOpenBar-inOpenBar'
@@ -790,6 +789,8 @@ inOpenBar-Bar =
     inOpenBar'-change
     inOpenBar-const
 
+    --atOpenBar
+    --(λ i → ATOPENBAR-R)
 --    wPredDepExtIrr-inOpenBar
 --    (λ {w} {f} {g} → ↑inOpenBar' {w} {f} {g})
 --    atOpenBar
@@ -1188,16 +1189,16 @@ atBethBar-refl {w} {f} i p = ATBETHBAR-R p
 
 
 ∀𝕎-inBethBar-inBethBar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inBethBar w f)
-                           → ∀𝕎 w (λ w' e' → (x : f w' e') (at : atBethBar i w' e' x) → g w' e' x)
+                           → ∀𝕎 w (λ w' e' → (x : f w' e') {--(at : atBethBar i w' e' x)--} → g w' e' x)
                            → inBethBar' w i g
 ∀𝕎-inBethBar-inBethBar' {w} {f} {g} (b , i) aw {w'} e ib =
   trivialIS𝔹 w' , j
   where
     j : inIS𝔹Dep (trivialIS𝔹 w') (↑wPredDep' g e)
-    j {w0} e0 ib' w1 e1 x y x' y' = aw w1 x' y' at
+    j {w0} e0 ib' w1 e1 x y x' y' = aw w1 x' y' {--at
       where
         at : atBethBar (b , i) w1 x' y'
-        at = ATBETHBAR-B w' e ib w1 x x' y'
+        at = ATBETHBAR-B w' e ib w1 x x' y'--}
 
 
 record IS𝔹Fam {w : 𝕎·} (b : IS𝔹 w) : Set(L) where
@@ -1347,7 +1348,7 @@ IS𝔹-fam2 {w} b G i = mkIS𝔹 bar bars ext mon
 
 
 ∀𝕎-inBethBar'-inBethBar : {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w} (i : inBethBar w f)
-                           → ∀𝕎 w (λ w' e' → (x : f w' e') → atBethBar i w' e' x → g w' e' x → h w' e')
+                           → ∀𝕎 w (λ w' e' → (x : f w' e') {--→ atBethBar i w' e' x--} → g w' e' x → h w' e')
                            → inBethBar' w i g → inBethBar w h
 ∀𝕎-inBethBar'-inBethBar {w} {f} {g} {h} (b , i) aw j =
   IS𝔹-fam2 {w} b (λ {w'} e b' → inIS𝔹Dep b' (↑wPredDep' g e)) j , i'
@@ -1356,8 +1357,8 @@ IS𝔹-fam2 {w} b G i = mkIS𝔹 bar bars ext mon
     i' {w'} e (mkIS𝔹In w2 e2 br , F) w1 e1 z =
       aw w1 z
          (i e2 br w1 (⊑-trans· (IS𝔹.ext (proj₁ (j e2 br)) F) e1) z)
-         (ATBETHBAR-B w2 e2 br w1 (⊑-trans· (IS𝔹.ext (proj₁ (j e2 br)) F) e1) z
-                      (i e2 br w1 (⊑-trans· (IS𝔹.ext (proj₁ (j e2 br)) F) e1) z))
+         {--(ATBETHBAR-B w2 e2 br w1 (⊑-trans· (IS𝔹.ext (proj₁ (j e2 br)) F) e1) z
+                      (i e2 br w1 (⊑-trans· (IS𝔹.ext (proj₁ (j e2 br)) F) e1) z))--}
          (snd (j e2 br)
               (IS𝔹.ext (proj₁ (j e2 br)) F)
               F w1 e1
@@ -1423,7 +1424,7 @@ inBethBar'-idem {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
 
 inBethBar'-change : {w : 𝕎·} {f k : wPred w} {g : wPredDep f} {h : wPredDep k}
                     (i : inBethBar w f) (j : inBethBar w k)
-                    → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e') → atBethBar i w' e' x → atBethBar j w' e' y
+                    → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e') {--→ atBethBar i w' e' x → atBethBar j w' e' y--}
                                      → g w' e' x → h w' e' y)
                     → inBethBar' w i g → inBethBar' w j h
 inBethBar'-change {w} {f} {k} {g} {h} (b₁ , i) (b₂ , j) aw z {w'} e ib =
@@ -1442,12 +1443,12 @@ inBethBar'-change {w} {f} {k} {g} {h} (b₁ , i) (b₂ , j) aw z {w'} e ib =
             (⊑-trans· e3 (⊑-trans· (IS𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0) e1))
             x')
          y'
-         (ATBETHBAR-B w3 (IS𝔹.ext b₁ br) br w1
+{--         (ATBETHBAR-B w3 (IS𝔹.ext b₁ br) br w1
                       (⊑-trans· e3 (⊑-trans· (IS𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0) e1))
                       x' (i (IS𝔹.ext b₁ br) br w1
                       (⊑-trans· e3 (⊑-trans· (IS𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0) e1))
                       x'))
-         (ATBETHBAR-B w' e ib w1 x x' y')
+         (ATBETHBAR-B w' e ib w1 x x' y')--}
          (snd (z' e2 (w3 , br , e3 , e4))
               (IS𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0)
               b0 w1 e1
@@ -1465,8 +1466,6 @@ inBethBar-Bar =
     inBethBar'
     ↑inBethBar
     ↑'inBethBar
-    atBethBar
-    atBethBar-refl
     inBethBarFunc
     ∀𝕎-inBethBarFunc
     inBethBar-inBethBar'
@@ -1478,5 +1477,8 @@ inBethBar-Bar =
     inBethBar'-comb
     inBethBar'-change
     inBethBar-const
+
+--    atBethBar
+--    atBethBar-refl
 
 \end{code}

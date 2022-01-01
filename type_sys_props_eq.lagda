@@ -255,8 +255,8 @@ typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
 typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTBAR y) f g eqi =
   Bar.∀𝕎-inBar-inBar' barI y ib
   where
-    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A C) (at : atbar y w' e' z) → eqInType u w' z f g)
-    ib w1 e1 z at =
+    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A C) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
+    ib w1 e1 z {--at--} =
       typeSysConds-EQ-extl1
         u w1 A B A1 B1 a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -325,8 +325,8 @@ typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
 typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTBAR y) f g eqi =
   Bar.∀𝕎-inBar-inBar' barI y ib
   where
-    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' C A) (at : atbar y w' e' z) → eqInType u w' z f g)
-    ib w1 e1 z at =
+    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' C A) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
+    ib w1 e1 z {--at--} =
       typeSysConds-EQ-extl2
         u w1 A B A1 B1 a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -398,8 +398,8 @@ typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
 typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTBAR y) f g eqi =
   Bar.∀𝕎-inBar-inBar' barI y ib
   where
-    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' C B) (at : atbar y w' e' z) → eqInType u w' z f g)
-    ib w1 e1 z at =
+    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' C B) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
+    ib w1 e1 z {--at--} =
       typeSysConds-EQ-extr1
         u w1 A B A1 B1 a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁) (∀𝕎-mon e1 eqta)
@@ -461,8 +461,8 @@ typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
 typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTBAR y) f g eqi =
   Bar.∀𝕎-inBar-inBar' barI y ib
   where
-    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' B C) (at : atbar y w' e' z) → eqInType u w' z f g)
-    ib w1 e1 z at =
+    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' B C) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
+    ib w1 e1 z {--at--} =
       typeSysConds-EQ-extr2
         u w1 A B A1 B1 a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -525,14 +525,14 @@ typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' A C) (at : atbar y w' e' z) →
+         (z : eqTypes u w' A C) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
          eqInType u w' {A} {B} (EQTEQ a1 b1 a2 b2 A1 B1
                                (⇛-mon e' x) (⇛-mon e' x₁)
                                (∀𝕎-mon e' eqta)
                                (wPredExtIrr-eqInType-mon eqta exta w' e')
                                (∀𝕎-mon e' eqt1) (∀𝕎-mon e' eqt2)) f g)
-    aw0 w1 e1 z at ez =
+    aw0 w1 e1 z {--at--} ez =
       typeSysConds-EQ-extrevl1
         u w1 A B A1 B1 a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -545,10 +545,10 @@ typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' A C) (at : atbar y w' e' z) →
+         (z : eqTypes u w' A C) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
          inbar w' (λ w'' e'' → (x : w ⊑· w'') → EQeq a1 a2 (eqInType u w'' (eqta w'' x)) w'' f g))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-eq u w a1 a2 A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z {--at--} ez = Bar.∀𝕎-inBarFunc barI (irr-eq u w a1 a2 A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
 
@@ -612,14 +612,14 @@ typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
 
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' C A) (at : atbar y w' e' z) →
+         (z : eqTypes u w' C A) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
          eqInType u w' {A} {B} (EQTEQ a1 b1 a2 b2 A1 B1
                                (⇛-mon e' x) (⇛-mon e' x₁)
                                (∀𝕎-mon e' eqta)
                                (wPredExtIrr-eqInType-mon eqta exta w' e')
                                (∀𝕎-mon e' eqt1) (∀𝕎-mon e' eqt2)) f g)
-    aw0 w1 e1 z at ez =
+    aw0 w1 e1 z {--at--} ez =
       typeSysConds-EQ-extrevl2
         u w1 A B A1 B1 a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -632,10 +632,10 @@ typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' C A) (at : atbar y w' e' z) →
+         (z : eqTypes u w' C A) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
          inbar w' (λ w'' e'' → (x : w ⊑· w'') → EQeq a1 a2 (eqInType u w'' (eqta w'' x)) w'' f g))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-eq u w a1 a2 A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z {--at--} ez = Bar.∀𝕎-inBarFunc barI (irr-eq u w a1 a2 A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
 
@@ -706,14 +706,14 @@ typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
 
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' C B) (at : atbar y w' e' z) →
+         (z : eqTypes u w' C B) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
          eqInType u w' {A} {B} (EQTEQ a1 b1 a2 b2 A1 B1
                                (⇛-mon e' x) (⇛-mon e' x₁)
                                (∀𝕎-mon e' eqta)
                                (wPredExtIrr-eqInType-mon eqta exta w' e')
                                (∀𝕎-mon e' eqt1) (∀𝕎-mon e' eqt2)) f g)
-    aw0 w1 e1 z at ez =
+    aw0 w1 e1 z {--at--} ez =
       typeSysConds-EQ-extrevr1
         u w1 A B A1 B1 a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -726,10 +726,10 @@ typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' C B) (at : atbar y w' e' z) →
+         (z : eqTypes u w' C B) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
          inbar w' (λ w'' e'' → (x : w ⊑· w'') → EQeq a1 a2 (eqInType u w'' (eqta w'' x)) w'' f g))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-eq u w a1 a2 A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z {--at--} ez = Bar.∀𝕎-inBarFunc barI (irr-eq u w a1 a2 A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
 
@@ -790,14 +790,14 @@ typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
 
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' B C) (at : atbar y w' e' z) →
+         (z : eqTypes u w' B C) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
          eqInType u w' {A} {B} (EQTEQ a1 b1 a2 b2 A1 B1
                                (⇛-mon e' x) (⇛-mon e' x₁)
                                (∀𝕎-mon e' eqta)
                                (wPredExtIrr-eqInType-mon eqta exta w' e')
                                (∀𝕎-mon e' eqt1) (∀𝕎-mon e' eqt2)) f g)
-    aw0 w1 e1 z at ez =
+    aw0 w1 e1 z {--at--} ez =
       typeSysConds-EQ-extrevr2
         u w1 A B A1 B1 a1 b1 a2 b2
         (⇛-mon e1 x) (⇛-mon e1 x₁)
@@ -810,10 +810,10 @@ typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' B C) (at : atbar y w' e' z) →
+         (z : eqTypes u w' B C) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
          inbar w' (λ w'' e'' → (x : w ⊑· w'') → EQeq a1 a2 (eqInType u w'' (eqta w'' x)) w'' f g))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-eq u w a1 a2 A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z {--at--} ez = Bar.∀𝕎-inBarFunc barI (irr-eq u w a1 a2 A1 B1 eqta exta f g w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
 
@@ -871,17 +871,17 @@ eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTBAR x
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' A B) (at : atbar x w' e' z) →
+         (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →
          eqInType u w' z a b →
          inbar w' (λ w'' e → EQeq a1 a2 (eqInType u w'' (eqta w'' (⊑-trans· e' e))) w'' a b))
-    aw0 w1 e1 z at ez = eqInType-⇛-EQ u w1 A B A1 B1 a1 b1 a2 b2 a b (∀𝕎-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1) (∀𝕎-mon e1 inda)(⇛-mon e1 c₁) (⇛-mon e1 c₂) z ez
+    aw0 w1 e1 z {--at--} ez = eqInType-⇛-EQ u w1 A B A1 B1 a1 b1 a2 b2 a b (∀𝕎-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1) (∀𝕎-mon e1 inda)(⇛-mon e1 c₁) (⇛-mon e1 c₂) z ez
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : eqTypes u w' A B) (at : atbar x w' e' z) →
+         (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →
          eqInType u w' z a b →
          inbar w' (λ w'' e → (x : w ⊑· w'') → EQeq a1 a2 (eqInType u w'' (eqta w'' x)) w'' a b))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-eq u w a1 a2 A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z {--at--} ez = Bar.∀𝕎-inBarFunc barI (irr-eq u w a1 a2 A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
 
@@ -943,23 +943,23 @@ eqInType-⇛-EQ2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTBAR x) ei
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : ≡Types u w' A B) (at : atbar x w' e' z) →
+         (z : ≡Types u w' A B) {--(at : atbar x w' e' z)--} →
          ≡∈Type u w' z a b →
          inbar w' (λ w'' e → EQeq a1 a2 (≡∈Type u w'' (eqta w'' (⊑-trans· e' e))) w'' a b))
-    aw0 w1 e1 z at ez =
+    aw0 w1 e1 z {--at--} ez =
       eqInType-⇛-EQ2
         u w1 A B A1 B1 a1 b1 a2 b2 a b
         (∀𝕎-mon e1 eqta)
         (wPredExtIrr-eqInType-mon eqta exta w1 e1)
         (⇛-mon e1 c₁) (⇛-mon e1 c₂) z ez
-        (≤Type-EQTBAR-eqInTypeExt at ext)
+        (≤Type-EQTBAR-eqInTypeExt e1 {--at--} ext)
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : ≡Types u w' A B) (at : atbar x w' e' z) →
+         (z : ≡Types u w' A B) {--(at : atbar x w' e' z)--} →
          ≡∈Type u w' z a b →
          inbar w' (λ w'' e → (x : w ⊑· w'') → EQeq a1 a2 (≡∈Type u w'' (eqta w'' x)) w'' a b))
-    aw w1 e1 z at ez = Bar.∀𝕎-inBarFunc barI (irr-eq (u ·ᵤ) w a1 a2 A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z at ez)
+    aw w1 e1 z {--at--} ez = Bar.∀𝕎-inBarFunc barI (irr-eq (u ·ᵤ) w a1 a2 A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
 
@@ -1016,8 +1016,8 @@ eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTB
   Bar.∀𝕎-inBar-inBar' barI x aw
   where
     aw : ∀𝕎 w
-      (λ w' e' → (z : eqTypes u w' A B) (at : atbar x w' e' z) → eqInType u w' z a b)
-    aw w1 e1 z at =
+      (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} → eqInType u w' z a b)
+    aw w1 e1 z {--at--} =
       eqInType-⇛-EQ-rev
         u w1 A B A1 B1 a1 b1 a2 b2 a b
         (∀𝕎-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1)
@@ -1085,13 +1085,13 @@ eqInType-⇛-EQ-rev2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTBAR x
   Bar.∀𝕎-inBar-inBar' barI x aw
   where
     aw : ∀𝕎 w
-      (λ w' e' → (z : ≡Types u w' A B) (at : atbar x w' e' z) → ≡∈Type u w' z a b)
-    aw w1 e1 z at =
+      (λ w' e' → (z : ≡Types u w' A B) {--(at : atbar x w' e' z)--} → ≡∈Type u w' z a b)
+    aw w1 e1 z {--at--} =
       eqInType-⇛-EQ-rev2
         u w1 A B A1 B1 a1 b1 a2 b2 a b
         (∀𝕎-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1)
         (⇛-mon e1 c₁) (⇛-mon e1 c₂)
-        z (≤Type-EQTBAR-eqInTypeExt at ext) j
+        z (≤Type-EQTBAR-eqInTypeExt e1 {--at--} ext) j
       where
         j : inbar w1 (↑wPred (λ w' e → EQeq a1 a2 (≡∈Type u w' (eqta w' e)) w' a b) e1)
         j = Bar.↑inBar barI ei e1
@@ -1110,10 +1110,10 @@ typeSysConds-EQ-local : (u : univs) (w : 𝕎·) (A B A1 B1 a1 b1 a2 b2 : CTerm)
 typeSysConds-EQ-local u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 a b i j =
   Bar.inBar-idem barI (Bar.∀𝕎-inBar'-inBar barI i aw j)
   where
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : atbar i w' e' z)
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                          → eqInType u w' z a b
                          → inbar w' (λ w'' e → (x : w ⊑· w'') → EQeq a1 a2 (eqInType u w'' (eqta w'' x)) w'' a b))
-    aw w1 e1 z at ei = Bar.∀𝕎-inBarFunc barI aw'' aw'
+    aw w1 e1 z {--at--} ei = Bar.∀𝕎-inBarFunc barI aw'' aw'
       where
         aw' : inbar w1 (λ w'' e → EQeq a1 a2 (eqInType u w'' (eqta w'' (⊑-trans· e1 e))) w'' a b)
         aw' = eqInType-⇛-EQ u w1 A B A1 B1 a1 b1 a2 b2 a b
