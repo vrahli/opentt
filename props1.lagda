@@ -1470,12 +1470,12 @@ is-uni-eqInType→ {u} isu {w} {A} {B} {a} {b} eqt eqi eqt' rewrite isu =
 
 
 
-wPredDepExtIrr-eqInType-if-inbar : {u : univs} (isu : is-uni u) {w : 𝕎·} {A B a b : CTerm}
+{--wPredDepExtIrr-eqInType-if-inbar : {u : univs} (isu : is-uni u) {w : 𝕎·} {A B a b : CTerm}
                                    (x : inbar w (λ w' _ → eqTypes u w' A B))
                                    → wpreddepextirr (λ w1 e1 z → eqInType u w1 z a b) x
 wPredDepExtIrr-eqInType-if-inbar {u} isu {w} {A} {B} {a} {b} x w0 w1 w2 e0 e1 e2 e0' e1' e2' q =
   fst (eqInType-ext {u} isu {w2} {A} {B} (snd (snd (x w0 e0)) w2 e0' e2') (snd (snd (x w1 e1)) w2 e1' e2) a b) q
-
+--}
 
 
 

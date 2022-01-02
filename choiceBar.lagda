@@ -27,6 +27,8 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
+open import Data.Maybe
+
 
 open import calculus
 open import world
@@ -37,12 +39,31 @@ module choiceBar {L : Level} (W : PossibleWorlds {L}) (C : Choice W) where
 open import bar(W)(C)
 open import barI(W)(C)
 open import worldDef(W)
+open import choiceDef(W)(C)
 open import computation(W)(C)
+
+
+-- TODO: Move this to choiceDef
+-- TODO: shouldn't Term be CTerm?
+isOnlyChoice∈𝕎 : (u : Term) (c : Name) (w : 𝕎·) → Set
+isOnlyChoice∈𝕎 u c w = (n : ℕ) (t : Term) → getChoice· n c w ≡ just t → t ≡ u
 
 
 record ChoiceBar : Set(lsuc(lsuc(L))) where
   constructor mkBar
   field
+    -- This says that all choices are "weak" ℕ (i.e., that can change over time)
     choice-weakℕ : (w : 𝕎·) (c : Name) (m : ℕ) → inbar w (λ w' _ → weakℕ w' (APPLY (CS c) (NUM m)))
+
+    -- This allows selecting a branch of a bar that follows a given choice 'u'
+    followChoice : (u : Term) (c : Name) {w : 𝕎·} {f : wPred w}
+                   → inbar w f
+                   → isOnlyChoice∈𝕎 u c w
+                   → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → isOnlyChoice∈𝕎 u c w1 × f w1 e1))
+
+    -- TODO: Move to choice
+    addChoice : (cs : Name) (w : 𝕎·) (t : Term) → 𝕎·
+    addChoice⊏ : (cs : Name) (w : 𝕎·) (t : Term) → w ⊏ addChoice cs w t
+    getAddChoice : (cs : Name) (w : 𝕎·) (t : Term) → Σ ℕ (λ n → getChoice· n cs (addChoice cs w t) ≡ just t)
 
 \end{code}

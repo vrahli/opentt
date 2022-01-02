@@ -52,9 +52,8 @@ OpenTT.
 
 \begin{code}
 
-
-wpreddepextirr : {w : 𝕎·} {f : wPred w} (h : wPredDep f) (i : inbar w f) → Set(lsuc(L))
-wpreddepextirr = wPredDepExtIrr-inOpenBar
+{--wpreddepextirr : {w : 𝕎·} {f : wPred w} (h : wPredDep f) (i : inbar w f) → Set(lsuc(L))
+wpreddepextirr = wPredDepExtIrr-inOpenBar--}
 
 
 removeV : (v : Var) (l : List Var) → List Var

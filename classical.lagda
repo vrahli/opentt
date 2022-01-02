@@ -251,6 +251,8 @@ eqTypesFUN→₁ : {w : 𝕎·} {i : ℕ} {A : CTerm} {B : CTerm} {C : CTerm} {D
                → equalTypes i w (#FUN A B) (#FUN C D)
                → ∀𝕎 w (λ w' _ → equalTypes i w' A C)
 {-# TERMINATING #-}
+--{-# INLINE ∀𝕎-inOpenBarFunc #-}
+--{-# INLINE ↑inOpenBar #-}
 eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTNAT x x₁) = ⊥-elim (PIneqNAT (compAllVal x₁ tt))
 eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTQNAT x x₁) = ⊥-elim (PIneqQNAT (compAllVal x₁ tt))
 eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = ⊥-elim (PIneqLT (compAllVal x₁ tt))
@@ -273,9 +275,16 @@ eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTUNIV m p c₁ c₂) = ⊥-elim (PIn
 eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTLIFT A1 A2 x x₁ eqtA exta) = ⊥-elim (PIneqLIFT (compAllVal x₁ tt))
 eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTBAR x) w' e' =
   EQTBAR (Bar.∀𝕎-inBarFunc barI aw (Bar.↑inBar barI x e'))
+-- (a) This does not work
+-- EQTBAR (∀𝕎-inOpenBarFunc aw (↑inOpenBar x e'))
+-- (b) Unfolding and reducing works though:
+-- EQTBAR (λ w1 e1 → fst (x w1 (⊑-trans· e' e1)) ,
+--                     fst (snd (x w1 (⊑-trans· e' e1))) ,
+--                     λ w3 e3 z → aw w3 z (snd (snd (x w1 (⊑-trans· e' e1))) w3 e3 (⊑-trans· e' z)))
   where
     aw : ∀𝕎 w' (λ w1 e1 → eqTypes (uni i) w1 (#FUN A B) (#FUN C D) → equalTypes i w1 A C)
     aw w1 e1 eqt = eqTypesFUN→₁ eqt w1 (⊑-refl· w1)
+
 
 
 eqTypesNEG→ : {w : 𝕎·} {i : ℕ} {A B : CTerm}
@@ -1287,6 +1296,46 @@ equalInType-#Σchoice {n} {i} p w c k =
 
 
 
+equalInType-SUM→ : {u : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} {f g : CTerm}
+                  → equalInType u w (#SUM A B) f g
+                  → inbar w (λ w' _ → SUMeq (equalInType u w' A) (λ a b ea → equalInType u w' (sub0 a B)) w' f g)
+equalInType-SUM→ {u} {w} {A} {B} {f} {g} (eqt , eqi) = {!!}
+
+
+
+getChoice→equalInType-#Σchoice-aux : {n : ℕ} {name : Name} {w : 𝕎·} (i : ℕ)
+                                     → getChoice· n name w ≡ just (NUM 0)
+                                     → equalInType
+                                          i w
+                                          (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (#[0]NUM 0) #[0]QNAT))
+                                          (#PAIR (#NUM n) #AX) (#PAIR (#NUM n) #AX)
+getChoice→equalInType-#Σchoice-aux {n} {name} {w} i g =
+  equalInType-SUM
+    (eqTypes-mon (uni i) eqTypesNAT)
+    {!!}
+    j
+  where
+    j : inbar w (λ w' _ → SUMeq (equalInType i w' #NAT)
+                                 (λ a b ea → equalInType i w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (#[0]NUM 0) #[0]QNAT)))
+                                 w'
+                                 (#PAIR (#NUM n) #AX)
+                                 (#PAIR (#NUM n) #AX))
+    j = Bar.∀𝕎-inBar barI (λ w1 e1 → #NUM n , #NUM n , #AX , #AX ,
+                                       NUM-equalInType-NAT i w1 n ,
+                                       #compAllRefl (#PAIR (#NUM n) #AX) w1 ,
+                                       #compAllRefl (#PAIR (#NUM n) #AX) w1 , {!!})
+-- TODO: This last one is not true with references, but could be made true if we had a way to "freeze" a reference permanently,
+-- and here 0 was "frozen"
+
+
+
+getChoice→equalInType-#Σchoice : {n : ℕ} {name : Name} {w : 𝕎·} (i : ℕ)
+                                 → getChoice· n name w ≡ just (NUM 0)
+                                 → equalInType i w (#Σchoice name 0) (#PAIR (#NUM n) #AX) (#PAIR (#NUM n) #AX)
+getChoice→equalInType-#Σchoice {n} {name} {w} i g rewrite #Σchoice≡ name 0 = getChoice→equalInType-#Σchoice-aux i g
+
+
+
 -- use equalInType-FUN instead
 notClassical : (w : 𝕎·) {n i : ℕ} (p : i < n) → member w (#NEG (#LEM p)) #lamAX
 notClassical w {n} {i} p =
@@ -1350,6 +1399,7 @@ notClassical w {n} {i} p =
         e2 : w1 ⊑· w2
         e2 = fst (startNewChoice⊏· w1)
 
+        -- instantiate aw5 with w2 (we also need a proof that (w1 ⊑ w2)) and (#Σchoice name 0)
         h1 : inbar w2 (λ w'' _ → Σ CTerm (λ t → inbar w'' (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
                                → (t #⇛ (#INL x) at w' × t #⇛ (#INL y) at w' × equalInType i w' (#Σchoice name 0) x y)
                                   ⊎
@@ -1357,15 +1407,81 @@ notClassical w {n} {i} p =
                                    × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name 0) a₁ a₂)))))))
         h1 = aw5 w2 e2 (#Σchoice name 0) (#Σchoice name 0) (equalInType-#Σchoice p w2 name 0)
 
-        -- instantiate aw5 with w2 (we also need a proof that (w1 ⊑ w2)) and (#Σchoice name 0)
+        oc1 : isOnlyChoice∈𝕎 W C (NUM 1) name w2
+        oc1 n t e rewrite getChoice-startNewChoice· n w1 = ⊥-elim (¬just≡nothing {Term} {t} (sym e))
 
-{--
--- We need an axiom like this to allow selecting a branch of a bar that follows a given choice 'u'
-(u : Term) (c : Name) (w : 𝕎·) (f : wPred w)
-→ inbar w f
-→ ((n : ℕ) (t : Term) → getChoice· n c w ≡ just t → t ≡ u)
-→ Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → Σ (f w1 e1) (λ g → atbar i w1 e1 g)))
---}
+        h2 : Σ 𝕎· (λ w3 → Σ (w2 ⊑· w3) (λ e3 → isOnlyChoice∈𝕎 W C (NUM 1) name w3 ×
+             Σ CTerm (λ t → inbar w3 (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
+                                              → (t #⇛ (#INL x) at w' × t #⇛ (#INL y) at w' × equalInType i w' (#Σchoice name 0) x y)
+                                                 ⊎
+                                                 (t #⇛ (#INR x) at w' × t #⇛ (#INR y) at w'
+                                                  × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name 0) a₁ a₂))))))))
+        h2 = ChoiceBar.followChoice CB (NUM 1) name h1 oc1
 
+        w3 : 𝕎·
+        w3 = fst h2
+
+        e3 : w2 ⊑· w3
+        e3 = fst (snd h2)
+
+        oc2 : isOnlyChoice∈𝕎 W C (NUM 1) name w3
+        oc2 = fst (snd (snd h2))
+
+        t : CTerm
+        t = fst (snd (snd (snd h2)))
+
+        h3 : inbar w3 (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
+                              → (t #⇛ (#INL x) at w' × t #⇛ (#INL y) at w' × equalInType i w' (#Σchoice name 0) x y)
+                                 ⊎
+                                 (t #⇛ (#INR x) at w' × t #⇛ (#INR y) at w'
+                                  × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name 0) a₁ a₂)))))
+        h3 = snd (snd (snd (snd h2)))
+
+        h4 : Σ 𝕎· (λ w4 → Σ (w3 ⊑· w4) (λ e4 → isOnlyChoice∈𝕎 W C (NUM 1) name w4 ×
+                         Σ CTerm (λ x → Σ CTerm (λ y
+                         → (t #⇛ (#INL x) at w4 × t #⇛ (#INL y) at w4 × equalInType i w4 (#Σchoice name 0) x y)
+                            ⊎
+                            (t #⇛ (#INR x) at w4 × t #⇛ (#INR y) at w4
+                             × ∀𝕎 w4 (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name 0) a₁ a₂))))))
+        h4 = ChoiceBar.followChoice CB (NUM 1) name h3 oc2
+
+        w4 : 𝕎·
+        w4 = fst h4
+
+        e4 : w3 ⊑· w4
+        e4 = fst (snd h4)
+
+        oc3 : isOnlyChoice∈𝕎 W C (NUM 1) name w4
+        oc3 = fst (snd (snd h4))
+
+        x : CTerm
+        x = fst (snd (snd (snd h4)))
+
+        y : CTerm
+        y = fst (snd (snd (snd (snd h4))))
+
+        h5 : (t #⇛ (#INL x) at w4 × t #⇛ (#INL y) at w4 × equalInType i w4 (#Σchoice name 0) x y)
+             ⊎
+             (t #⇛ (#INR x) at w4 × t #⇛ (#INR y) at w4
+              × ∀𝕎 w4 (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name 0) a₁ a₂))
+        h5 = snd (snd (snd (snd (snd h4))))
+
+        -- 1st injection:
+
+        -- 2nd injection:
+        w5 : 𝕎·
+        w5 = ChoiceBar.addChoice CB name w4 (NUM 0)
+
+        e5 : w4 ⊑· w5
+        e5 = fst (ChoiceBar.addChoice⊏ CB name w4 (NUM 0))
+
+        n1 : ℕ
+        n1 = fst (ChoiceBar.getAddChoice CB name w4 (NUM 0))
+
+        g1 : getChoice· n1 name w5 ≡ just (NUM 0)
+        g1 = snd (ChoiceBar.getAddChoice CB name w4 (NUM 0))
+
+        h6 : equalInType i w5 (#Σchoice name 0) (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX)
+        h6 = {!!}
 
 \end{code}[hide]
