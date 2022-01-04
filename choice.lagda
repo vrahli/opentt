@@ -35,7 +35,7 @@ open import worldDef W
 
 
 \begin{code}
-record Choice : Set(L) where
+record Choice : Set(lsuc(L)) where
   constructor mkChoice
   field
     -- returns the n's choice in w for the choice sequence cs
@@ -52,6 +52,11 @@ record Choice : Set(L) where
 
     -- starting a new choice gives us a non-trivial extension
     startNewChoice⊏ : (w : 𝕎·) → w ⊏ startChoice (newChoice w) w
+
+    -- This adds a new choice, which is frozen forever (can for example be recorded with a 𝔹 in worlds)
+    freeze : (cs : Name) (w : 𝕎·) (t : Term) → 𝕎·
+    freeze⊏ : (cs : Name) (w : 𝕎·) (t : Term) → w ⊏ freeze cs w t
+    getFreeze : (cs : Name) (w : 𝕎·) (t : Term) → Σ ℕ (λ n → ∀𝕎 (freeze cs w t) (λ w' _ → Lift (lsuc(L)) (getChoice n cs w' ≡ just t)))
 
 -- To capture the fact that we can make different choices over time, should we
 -- (1) add a setter function (would require the 'step' function to return a 𝕎)

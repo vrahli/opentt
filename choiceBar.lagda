@@ -43,15 +43,6 @@ open import choiceDef(W)(C)
 open import computation(W)(C)
 
 
--- TODO: Move this to choiceDef
--- TODO: shouldn't Term be CTerm?
-isOnlyChoice∈𝕎 : (u : Term) (c : Name) (w : 𝕎·) → Set
-isOnlyChoice∈𝕎 u c w = (n : ℕ) (t : Term) → getChoice· n c w ≡ just t → t ≡ u
-
-
-weakℕM : (w : 𝕎·) (f : 𝕎· → Maybe Term) → Set(lsuc(L))
-weakℕM w f = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ Term (λ t → f w' ≡ just t × Σ ℕ (λ n → t ⇓ NUM n at w'))))
-
 
 record ChoiceBar : Set(lsuc(lsuc(L))) where
   constructor mkBar
@@ -72,11 +63,5 @@ record ChoiceBar : Set(lsuc(lsuc(L))) where
     addChoice⊏ : (cs : Name) (w : 𝕎·) (t : Term) → w ⊏ addChoice cs w t
     getAddChoice : (cs : Name) (w : 𝕎·) (t : Term) → Σ ℕ (λ n → getChoice· n cs (addChoice cs w t) ≡ just t)
 --}
-
-    -- TODO: Move to choice
-    -- This adds a new choice, which is frozen forever (can for example be recorded with a 𝔹 in worlds)
-    freeze : (cs : Name) (w : 𝕎·) (t : Term) → 𝕎·
-    freeze⊏ : (cs : Name) (w : 𝕎·) (t : Term) → w ⊏ freeze cs w t
-    getFreeze : (cs : Name) (w : 𝕎·) (t : Term) → Σ ℕ (λ n → ∀𝕎 (freeze cs w t) (λ w' _ → Lift (lsuc(L)) (getChoice· n cs w' ≡ just t)))
 
 \end{code}

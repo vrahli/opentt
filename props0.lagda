@@ -200,50 +200,6 @@ wPredExtIrr-⇛ : {w : 𝕎·} {a b : Term} → wPredExtIrr {w} (λ w' e' → a 
 wPredExtIrr-⇛ {w} {a} {b} w' e1 e2 h = h
 
 
-≤-Σ+ : {n m : ℕ} → n ≤ m → Σ ℕ (λ k → m ≡ n + k)
-≤-Σ+ {0} {m} _≤_.z≤n = (m , refl)
-≤-Σ+ {suc n} {suc m} (_≤_.s≤s le) with ≤-Σ+ le
-... | (k , p) rewrite p = k , refl
-
-
-step≡nothing-steps : (w : 𝕎·) (a : Term) (n : ℕ) → step a w ≡ nothing → steps n a w ≡ a
-step≡nothing-steps w a 0 h = refl
-step≡nothing-steps w a (suc n) h rewrite h = refl
-
-
-steps-+ : (n m : ℕ) (a : Term) (w : 𝕎·) → steps (n + m) a w ≡ steps m (steps n a w) w
-steps-+ 0 m a w = refl
-steps-+ (suc n) m a w with step⊎ a w
-... | inj₁ (u , p) rewrite p = steps-+ n m u w
-... | inj₂ p rewrite p rewrite step≡nothing-steps w a m p = refl
-
-
-steps-val-det : (w : 𝕎·) (a v₁ v₂ : Term) (n m : ℕ) → isValue v₁ → steps n a w ≡ v₁ → steps m a w ≡ v₂ → n ≤ m → v₁ ≡ v₂
-steps-val-det w a v₁ v₂ n m isv₁ c₁ c₂ p with ≤-Σ+ p
-... | (k , q) rewrite q | steps-+ n k a w | c₂ | c₁ | stepsVal v₁ w k isv₁ = c₂
-
-
-⇓-val-det : {w : 𝕎·} {a v₁ v₂ : Term} → isValue v₁ → isValue v₂ → a ⇓ v₁ at w → a ⇓ v₂ at w → v₁ ≡ v₂
-⇓-val-det {w} {a} {v₁} {v₂} isv₁ isv₂ (n , c₁) (m , c₂) with n ≤? m
-... | yes p = steps-val-det w a v₁ v₂ n m isv₁ c₁ c₂ p
-... | no p = sym (steps-val-det w a v₂ v₁ m n isv₂ c₂ c₁ (≰⇒≥ p))
-
-
-⇛-val-det : {w : 𝕎·} {a v₁ v₂ : Term} → isValue v₁ → isValue v₂ → a ⇛ v₁ at w → a ⇛ v₂ at w → v₁ ≡ v₂
-⇛-val-det {w} {a} {v₁} {v₂} isv₁ isv₂ c₁ c₂ =
-  ⇓-val-det isv₁ isv₂ h1 h2
-  where
-    h1 : a ⇓ v₁ at w
-    h1 = let c = c₁ w (⊑-refl· w) in Level.lower c
-
-    h2 : a ⇓ v₂ at w
-    h2 = let c = c₂ w (⊑-refl· w) in Level.lower c
-
-
-#⇛-val-det : {w : 𝕎·} {a v₁ v₂ : CTerm} → #isValue v₁ → #isValue v₂ → a #⇛ v₁ at w → a #⇛ v₂ at w → v₁ ≡ v₂
-#⇛-val-det {w} {a} {v₁} {v₂} isv₁ isv₂ c₁ c₂ = CTerm≡ (⇛-val-det isv₁ isv₂ c₁ c₂)
-
-
 -- NAT
 NATneqQNAT : ¬ NAT ≡ QNAT
 NATneqQNAT ()
@@ -542,43 +498,7 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
         ind = if-equalInType-EQ u w1 T a b t₁ t₂ (eqt1 , eqi1)
 
 
-strongMonEq-refl : {w : 𝕎·} {a b : Term}
-                  → strongMonEq w a b
-                  → strongMonEq w a a
-strongMonEq-refl {w} {a} {b} (n , c₁ , c₂) = n , c₁ , c₁
 
-
-strongMonEq-refl-rev : {w : 𝕎·} {a b : Term}
-                  → strongMonEq w a b
-                  → strongMonEq w b b
-strongMonEq-refl-rev {w} {a} {b} (n , c₁ , c₂) = n , c₂ , c₂
-
-
-
-
-weakMonEq-refl : {w : 𝕎·} {a b : Term}
-                 → weakMonEq w a b
-                 → weakMonEq w a a
-weakMonEq-refl {w} {a} {b} wm w1 e1 = lift (fst z , fst (snd z) , fst (snd z))
-  where
-    z : Σ ℕ (λ n → a ⇓ NUM n at w1 × b ⇓ NUM n at w1)
-    z = lower (wm w1 e1)
-
-
-weakMonEq-refl-rev : {w : 𝕎·} {a b : Term}
-                     → weakMonEq w a b
-                     → weakMonEq w b b
-weakMonEq-refl-rev {w} {a} {b} wm w1 e1 = lift (fst z , snd (snd z) , snd (snd z))
-  where
-    z : Σ ℕ (λ n → a ⇓ NUM n at w1 × b ⇓ NUM n at w1)
-    z = lower (wm w1 e1)
-
-
-
-strongMonEq-sym : {w : 𝕎·} {a b : Term}
-                  → strongMonEq w a b
-                  → strongMonEq w b a
-strongMonEq-sym {w} {a} {b} (n , c₁ , c₂) = n , c₂ , c₁
 
 
 inbar-strongMonEq-sym : {w : 𝕎·} {a b : Term}
@@ -588,15 +508,6 @@ inbar-strongMonEq-sym {w} {a} {b} h =
   Bar.∀𝕎-inBarFunc barI (λ w1 e1 → strongMonEq-sym) h
 
 
-NUMinj : {n m : ℕ} → NUM n ≡ NUM m → n ≡ m
-NUMinj refl =  refl
-
-
-strongMonEq-trans : {w : 𝕎·} {a b c : Term}
-                    → strongMonEq w a b
-                    → strongMonEq w b c
-                    → strongMonEq w a c
-strongMonEq-trans {w} {a} {b} {c} (n , c₁ , c₂) (m , d₁ , d₂) rewrite NUMinj (⇛-val-det tt tt d₁ c₂) = n , c₁ , d₂
 
 
 inbar-strongMonEq-trans : {w : 𝕎·} {a b c : Term}
@@ -613,17 +524,6 @@ inbar-strongMonEq-trans {w} {a} {b} {c} h₁ h₂ =
     h = Bar.∀𝕎-inBar barI aw
 
 
-weakMonEq-sym : {w : 𝕎·} {a b : Term}
-                → weakMonEq w a b
-                → weakMonEq w b a
-weakMonEq-sym {w} {a} {b} h w1 e1 = lift (fst z₂ , snd (snd z₂) , fst (snd z₂))
-  where
-    z₁ : Lift (lsuc(L)) (Σ ℕ (λ n → a ⇓ NUM n at w1 × b ⇓ NUM n at w1))
-    z₁ = h w1 e1
-
-    z₂ : Σ ℕ (λ n → a ⇓ NUM n at w1 × b ⇓ NUM n at w1)
-    z₂ = lower z₁
-
 
 inbar-weakMonEq-sym : {w : 𝕎·} {a b : Term}
                         → inbar w (λ w' _ → weakMonEq w' a b)
@@ -632,39 +532,6 @@ inbar-weakMonEq-sym {w} {a} {b} h =
   Bar.∀𝕎-inBarFunc barI (λ w1 e1 → weakMonEq-sym) h
 
 
-
-weakMonEq-trans : {w : 𝕎·} {a b c : Term}
-                  → weakMonEq w a b
-                  → weakMonEq w b c
-                  → weakMonEq w a c
-weakMonEq-trans {w} {a} {b} {c} weak1 weak2 w1 e1 = lift (n , c₁ , d)
-  where
-    wk1 : Σ ℕ (λ n → a ⇓ (NUM n) at w1 × b ⇓ (NUM n) at w1)
-    wk1 = lower (weak1 w1 e1)
-
-    n : ℕ
-    n = fst wk1
-
-    c₁ : a ⇓ (NUM n) at w1
-    c₁ = fst (snd wk1)
-
-    c₂ : b ⇓ (NUM n) at w1
-    c₂ = snd (snd wk1)
-
-    wk2 : Σ ℕ (λ n → b ⇓ (NUM n) at w1 × c ⇓ (NUM n) at w1)
-    wk2 = lower (weak2 w1 e1)
-
-    m : ℕ
-    m = fst wk2
-
-    d₁ : b ⇓ (NUM m) at w1
-    d₁ = fst (snd wk2)
-
-    d₂ : c ⇓ (NUM m) at w1
-    d₂ = snd (snd wk2)
-
-    d : c ⇓ (NUM n) at w1
-    d rewrite NUMinj (⇓-val-det tt tt c₂ d₁) = d₂
 
 
 inbar-weakMonEq-trans : {w : 𝕎·} {a b c : Term}

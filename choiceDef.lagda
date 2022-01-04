@@ -61,6 +61,23 @@ startNewChoice⊏· : (w : 𝕎·) → w ⊏ startNewChoice w
 startNewChoice⊏· = startNewChoice⊏ C
 
 
+freeze· : (cs : Name) (w : 𝕎·) (t : Term) → 𝕎·
+freeze· = freeze C
+
+
+freeze⊏· : (cs : Name) (w : 𝕎·) (t : Term) → w ⊏ freeze· cs w t
+freeze⊏· = freeze⊏ C
+
+
+getFreeze· : (cs : Name) (w : 𝕎·) (t : Term) → Σ ℕ (λ n → ∀𝕎 (freeze· cs w t) (λ w' _ → Lift (lsuc(L)) (getChoice· n cs w' ≡ just t)))
+getFreeze· = getFreeze C
+
+
+-- TODO: shouldn't Term be CTerm?
+isOnlyChoice∈𝕎 : (u : Term) (c : Name) (w : 𝕎·) → Set
+isOnlyChoice∈𝕎 u c w = (n : ℕ) (t : Term) → getChoice· n c w ≡ just t → t ≡ u
+
+
 {--getChoice⊑· : (w1 w2 : 𝕎·) (k : ℕ) (name : Name) (t : Term)
               → w1 ⊑· w2
               → getChoice· k name w1 ≡ just t

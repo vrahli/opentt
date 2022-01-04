@@ -14,7 +14,7 @@ open import Data.Product.Properties
 open import Data.Sum
 open import Data.Empty
 open import Data.Unit using (⊤ ; tt)
-open import Data.Nat using (ℕ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
+open import Data.Nat using (ℕ ; _≟_ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _⊔_)
 open import Data.Nat.Properties
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
@@ -172,4 +172,64 @@ s≤s-inj {a} {b} (_≤_.s≤s h) = h
 <s→¬<→≡ {suc i} {0} (_≤_.s≤s ()) q
 <s→¬<→≡ {0} {suc n} p q = ⊥-elim (q 0<1+n)
 <s→¬<→≡ {suc i} {suc n} p q = →s≡s (<s→¬<→≡ (s≤s-inj p) λ z → q (_≤_.s≤s z))
+
+
+
+
+injective : {A B : Set} (f : A → B) → Set
+injective {A} {B} f = {a b : A} → f a ≡ f b → a ≡ b
+
+
+∈-map→ : {A B : Set} {f : A → B} {a : A} {l : List A} → injective f → f a ∈ Data.List.map f l → a ∈ l
+∈-map→ {A} {B} {f} {a} {l} inj i = j'
+  where
+    y : A
+    y = fst (∈-map⁻ f i)
+
+    j : y ∈ l
+    j = fst (snd (∈-map⁻ f i))
+
+    e : a ≡ y
+    e = inj (snd (snd (∈-map⁻ f i)))
+
+    j' : a ∈ l
+    j' rewrite e = j
+
+
+
+¬∈[] : {A : Set} {a : A} → a ∈ [] → ⊥
+¬∈[] {A} {a} ()
+
+
+
+≤⊔l : (n m : ℕ) → n ≤ n ⊔ m
+≤⊔l n m with n ≤? m
+... | yes p = subst (λ x → n ≤ x) (sym (m≤n⇒m⊔n≡n p)) p
+... | no p = subst (λ x → n ≤ x) (sym (m≥n⇒m⊔n≡m (<⇒≤ (≰⇒> p)))) ≤-refl
+
+
+
+≤⊔r : (n m : ℕ) → m ≤ n ⊔ m
+≤⊔r n m with m ≤? n
+... | yes p =  subst (λ x → m ≤ x) (sym (m≥n⇒m⊔n≡m p)) p
+... | no p = subst (λ x → m ≤ x) (sym (m≤n⇒m⊔n≡n (<⇒≤ (≰⇒> p)))) ≤-refl
+
+
+
+⊆[]→≡[] : {A : Set} {l : List A} → l ⊆ [] → l ≡ []
+⊆[]→≡[] {A} {[]} h = refl
+⊆[]→≡[] {A} {x ∷ l} h = ⊥-elim (¬∈[] i)
+  where
+    i : x ∈ []
+    i = h (here refl)
+
+
+≡[]→⊆[] : {A : Set} {l : List A} → l ≡ [] → l ⊆ []
+≡[]→⊆[] {A} h rewrite h = ⊆-refl
+
+
+
+→++≡[] : {A : Set} {l k : List A} → l ≡ [] → k ≡ [] → l ++ k ≡ []
+→++≡[] {A} {l} {k} h q rewrite h | q = refl
+
 \end{code}

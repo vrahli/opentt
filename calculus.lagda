@@ -29,6 +29,8 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Axiom.UniquenessOfIdentityProofs
+
+open import util
 \end{code}
 
 
@@ -37,18 +39,6 @@ open import Axiom.UniquenessOfIdentityProofs
 Name : Set
 Name = ℕ
 
-¬∈[] : {A : Set} {a : A} → a ∈ [] → ⊥
-¬∈[] {A} {a} ()
-
-≤⊔l : (n m : ℕ) → n ≤ n ⊔ m
-≤⊔l n m with n ≤? m
-... | yes p = subst (λ x → n ≤ x) (sym (m≤n⇒m⊔n≡n p)) p
-... | no p = subst (λ x → n ≤ x) (sym (m≥n⇒m⊔n≡m (<⇒≤ (≰⇒> p)))) ≤-refl
-
-≤⊔r : (n m : ℕ) → m ≤ n ⊔ m
-≤⊔r n m with m ≤? n
-... | yes p =  subst (λ x → m ≤ x) (sym (m≥n⇒m⊔n≡m p)) p
-... | no p = subst (λ x → m ≤ x) (sym (m≤n⇒m⊔n≡n (<⇒≤ (≰⇒> p)))) ≤-refl
 
 freshNameAux : (l : List Name) → Σ Name (λ n → (x : Name) → x ∈ l → x < n)
 freshNameAux [] = (0 , λ x i → ⊥-elim (¬∈[] i))
@@ -59,11 +49,14 @@ freshNameAux (n ∷ l) =
   (suc (n ⊔ m) , λ { x (here p) → <-transˡ (subst (λ x → x < suc n) (sym p) (n<1+n n)) (≤⊔l (suc n) (suc m)) ;
                      x (there p) → let c1 = c x p in <-trans c1 (<-transˡ (n<1+n _) (≤⊔r (suc n) (suc m)))} )
 
+
 freshName : (l : List Name) → Σ Name (λ Name → ¬ (Name ∈ l))
 freshName l = let (m , c) = freshNameAux l in (m , λ x → let z = c _ x in n≮n _ z)
 
+
 Var : Set
 Var = ℕ
+
 
 data Term : Set where
   -- Variables

@@ -45,6 +45,7 @@ module terms {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (E : Extensiona
 
 --open import theory (bar)
 --open import props0 (bar)
+open import computation(W)(C)
 open import theory(W)(C)(E)
 open import props0(W)(C)(E)
 \end{code}
@@ -615,4 +616,83 @@ FUNinj2 {a} {b} {c} {d} x = shiftUp-inj (PIinj2 x)
 
 #FUN/PIinj2 : {a b c : CTerm} {d : CTerm0} → #FUN a b ≡ #PI c d → d ≡ ⌞ b ⌟
 #FUN/PIinj2 {a} {b} {c} {d} x rewrite #FUN≡#PI a b = CTerm0≡ (sym (PIinj2 (≡CTerm x)))
+
+
+#TRUE : CTerm
+#TRUE = ct TRUE refl
+
+
+
+#SQUASH≡#SET : (t : CTerm) → #SQUASH t ≡ #SET #TRUE ⌞ t ⌟
+#SQUASH≡#SET t = CTerm≡ e
+  where
+    e : SQUASH ⌜ t ⌝ ≡ SET TRUE ⌜ t ⌝
+    e rewrite #shiftUp 0 t = refl
+
+
+
+#[0]APPLY : CTerm0 → CTerm0 → CTerm0
+#[0]APPLY a b = ct0 (APPLY ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ [ 0 ] ] APPLY ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {[ 0 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {[ 0 ]} (CTerm0.closed b)))
+
+
+
+#[0]EQ : CTerm0 → CTerm0 → CTerm0 → CTerm0
+#[0]EQ a b c = ct0 (EQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝) cl
+  where
+    cl : #[ [ 0 ] ] EQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝
+    cl = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝} {[ 0 ]}
+               (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+                    (⊆++ (⊆?→⊆ {fvars ⌜ b ⌝} {[ 0 ]} (CTerm0.closed b))
+                         (⊆?→⊆ {fvars ⌜ c ⌝} {[ 0 ]} (CTerm0.closed c))))
+
+
+
+#[0]CS : Name → CTerm0
+#[0]CS n = ct0 (CS n) refl
+
+
+#CS : Name → CTerm
+#CS n = ct (CS n) refl
+
+
+#[0]NUM : ℕ → CTerm0
+#[0]NUM n = ct0 (NUM n) refl
+
+
+#[0]NAT : CTerm0
+#[0]NAT = ct0 NAT refl
+
+
+#[0]QNAT : CTerm0
+#[0]QNAT = ct0 QNAT refl
+
+
+
+
+
+#FALSE/EQinj1 : {a b c : CTerm} → #FALSE ≡ #EQ a b c → a ≡ #N0
+#FALSE/EQinj1 {a} {b} {c} e = CTerm≡ (sym (EQinj1 (≡CTerm e)))
+
+#FALSE/EQinj2 : {a b c : CTerm} → #FALSE ≡ #EQ a b c → b ≡ #N1
+#FALSE/EQinj2 {a} {b} {c} e = CTerm≡ (sym (EQinj2 (≡CTerm e)))
+
+#FALSE/EQinj3 : {a b c : CTerm} → #FALSE ≡ #EQ a b c → c ≡ #NAT
+#FALSE/EQinj3 {a} {b} {c} e = CTerm≡ (sym (EQinj3 (≡CTerm e)))
+
+
+
+
+
+→≡EQ : {a b c d e f : Term} → a ≡ d → b ≡ e → c ≡ f → EQ a b c ≡ EQ d e f
+→≡EQ refl refl refl = refl
+
+
+→≡APPLY : {a b c d : Term} → a ≡ c → b ≡ d → APPLY a b ≡ APPLY c d
+→≡APPLY refl refl = refl
+
 \end{code}
