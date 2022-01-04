@@ -359,6 +359,15 @@ equalInType-NAT→ i w a b (eqt , eqi) =
 →equalInType-QNAT i w a b j = eqTypesQNAT , j
 
 
+
+equalInType-QNAT→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                     → equalInType i w #QNAT a b
+                     → inbar w (λ w' _ → #weakMonEq w' a b)
+equalInType-QNAT→ i w a b (eqt , eqi) =
+  eqInType-⇛-QNAT (uni i) w #QNAT #QNAT a b (#compAllRefl #QNAT w) (#compAllRefl #QNAT w) eqt eqi
+
+
+
 NUM-equalInType-NAT : (i : ℕ) (w : 𝕎·) (k : ℕ) → equalInType i w #NAT (#NUM k) (#NUM k)
 NUM-equalInType-NAT i w k = eqTypesNAT , Bar.∀𝕎-inBar barI (λ w' e' → #strongMonEq-#NUM w' k)
 
@@ -1250,6 +1259,44 @@ inbar-wPred'-#strongMonEq w w' e' a₁ a₂ i = Bar.∀𝕎-inBarFunc barI aw i
 
 
 
+→inbar-#weakMonEq-APPLY-CS-left : (w : 𝕎·) (a t : CTerm) (m : ℕ) (c : Name)
+                                   → a #⇛ #NUM m at w
+                                   → inbar w (λ w' _ → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) t)
+                                   → inbar w (λ w' _ → #weakMonEq w' (#APPLY (#CS c) a) t)
+→inbar-#weakMonEq-APPLY-CS-left w a t m c c₁ i = Bar.∀𝕎-inBarFunc barI aw i
+  where
+    aw : ∀𝕎 w (λ w' e' → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) t
+                        → #weakMonEq w' (#APPLY (#CS c) a) t)
+    aw w' e' h w'' e'' = lift (fst z ,
+                               ⇓-trans (⇓-APPLY-CS w'' ⌜ a ⌝ (NUM m) c d₁) (fst (snd z)) ,
+                               snd (snd z))
+      where
+        z : Σ ℕ (λ n → (APPLY (CS c) (NUM m)) ⇓ (NUM n) at w'' × ⌜ t ⌝ ⇓ (NUM n) at w'')
+        z = lower (h w'' e'')
+
+        d₁ : ⌜ a ⌝ ⇓ NUM m at w''
+        d₁ = lower (c₁ w'' (⊑-trans· e' e''))
+
+
+
+
+{--
+→inbar-#weakMonEq-APPLY-CS-left-rev : (w : 𝕎·) (a t : CTerm) (m : ℕ) (c : Name)
+                                       → a #⇛ #NUM m at w
+                                       → inbar w (λ w' _ → #weakMonEq w' (#APPLY (#CS c) a) t)
+                                       → inbar w (λ w' _ → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) t)
+→inbar-#weakMonEq-APPLY-CS-left-rev w a t m c c₁ i = Bar.∀𝕎-inBarFunc barI aw i
+  where
+    aw : ∀𝕎 w (λ w' e' → #weakMonEq w' (#APPLY (#CS c) a) t
+                        → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) t)
+    aw w' e' h w'' e'' = lift (fst z , {!!} , snd (snd z))
+      where
+        z : Σ ℕ (λ n → (APPLY (CS c) ⌜ a ⌝) ⇓ (NUM n) at w'' × ⌜ t ⌝ ⇓ (NUM n) at w'')
+        z = lower (h w'' e'')
+--}
+
+
+-- TODO: use →inbar-#weakMonEq-APPLY-CS-left instead
 →inbar-#weakMonEq-APPLY-CS : (w : 𝕎·) (a₁ a₂ : CTerm) (m : ℕ) (c : Name)
                               → a₁ #⇛ #NUM m at w
                               → a₂ #⇛ #NUM m at w
@@ -1396,6 +1443,7 @@ getChoice→equalInType-#Σchoice-aux : {n : ℕ} {name : Name} {w : 𝕎·} (i 
                                            (#PAIR (#NUM n) #AX) (#PAIR (#NUM n) #AX)
 getChoice→equalInType-#Σchoice-aux {n} {name} {w} i g =
   equalInType-SUM
+    {i} {w} {#NAT} {#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (#[0]NUM 0) #[0]QNAT}
     (eqTypes-mon (uni i) eqTypesNAT)
     (equalTypes-#Σchoice-body-sub0 i w name 0)
     j
@@ -1423,8 +1471,8 @@ getChoice→equalInType-#Σchoice {n} {name} {w} i g rewrite #Σchoice≡ name 0
 
 
 equalInType-SUM→ : {u : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} {f g : CTerm}
-                  → equalInType u w (#SUM A B) f g
-                  → inbar w (λ w' _ → SUMeq (equalInType u w' A) (λ a b ea → equalInType u w' (sub0 a B)) w' f g)
+                    → equalInType u w (#SUM A B) f g
+                    → inbar w (λ w' _ → SUMeq (equalInType u w' A) (λ a b ea → equalInType u w' (sub0 a B)) w' f g)
 {-# TERMINATING #-}
 equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQTNAT x x₁ , eqi) = ⊥-elim (SUMneqNAT (compAllVal x₁ tt))
 equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQTQNAT x x₁ , eqi) = ⊥-elim (SUMneqQNAT (compAllVal x₁ tt))
@@ -1462,18 +1510,140 @@ equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQTBAR x , eqi) =
 
 
 
+equalInType-EQ→ : {u : ℕ} {w : 𝕎·} {a b A : CTerm} {f g : CTerm}
+                  → equalInType u w (#EQ a b A) f g
+                  → inbar w (λ w' _ → EQeq a b (equalInType u w' A) w' f g)
+{-# TERMINATING #-}
+equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTNAT x x₁ , eqi) = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
+equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTQNAT x x₁ , eqi) = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
+equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqLT (compAllVal x₁ tt))
+equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqQLT (compAllVal x₁ tt))
+equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTFREE x x₁ , eqi) = ⊥-elim (EQneqFREE (compAllVal x₁ tt))
+equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqPI (compAllVal x₁ tt))
+equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSUM (compAllVal x₁ tt))
+equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSET (compAllVal x₁ tt))
+equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTEQ a1 b1 a2 b2 A₁ B x x₁ eqtA exta eqt1 eqt2 , eqi)
+  rewrite sym (#EQinj1 {a} {b} {A} {a1} {a2} {A₁} (#compAllVal x tt))
+        | sym (#EQinj2 {a} {b} {A} {a1} {a2} {A₁} (#compAllVal x tt))
+        | sym (#EQinj3 {a} {b} {A} {a1} {a2} {A₁} (#compAllVal x tt))
+  = Bar.∀𝕎-inBarFunc barI aw eqi
+  where
+    aw : ∀𝕎 w (λ w' e' → EQeq a b (equalTerms u w' (eqtA w' e')) w' f g
+                        → EQeq a b (equalInType u w' A) w' f g)
+    aw w' e' (c₁ , c₂ , ea) = c₁ , c₂ , ea'
+      where
+        ea' : equalInType u w' A a b
+        ea' = eqInType→equalInType {u} {w'} {A} {A} {B} refl (eqtA w' e') ea
+
+equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
+equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
+equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
+equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (EQneqUNIV (compAllVal x₁ tt))
+equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqLIFT (compAllVal x₁ tt))
+equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTBAR x , eqi) =
+  Bar.inBar-idem barI (Bar.∀𝕎-inBar'-inBar barI x aw eqi)
+  where
+    aw : ∀𝕎 w (λ w' e' → (z : equalTypes u w' (#EQ a b A) (#EQ a b A))
+                       → equalTerms u w' z f g
+                       → inbar w' (↑wPred' (λ w'' e → EQeq a b (equalInType u w'' A) w'' f g) e'))
+    aw w' e' z ei = Bar.∀𝕎-inBarFunc barI (λ w1 e1 h z → h) (equalInType-EQ→ (z , ei))
+
+
+
+equalInType-EQ-QNAT→ : {u : ℕ} {w : 𝕎·} {a b : CTerm} {f g : CTerm}
+                        → equalInType u w (#EQ a b #QNAT) f g
+                        → inbar w (λ w' _ → #weakMonEq w' a b)
+equalInType-EQ-QNAT→ {u} {w} {a} {b} {f} {g} eqi =
+  Bar.inBar-idem barI (Bar.∀𝕎-inBarFunc barI aw (equalInType-EQ→ eqi))
+  where
+    aw : ∀𝕎 w (λ w' e' → EQeq a b (equalInType u w' #QNAT) w' f g → inbar w' (↑wPred' (λ w'' e → #weakMonEq w'' a b) e'))
+    aw w' e (c₁ , c₂ , ea) = Bar.∀𝕎-inBarFunc barI (λ w1 e1 z _ → z) (equalInType-QNAT→ u w' a b ea)
+
+
+
+-- MOVE
+_#⇓_at_ : (T T' : CTerm) (w : 𝕎·) → Set
+T #⇓ T' at w = ⌜ T ⌝ ⇓ ⌜ T' ⌝ at w
+infix 30 _#⇓_at_
+
+
+
+#weakMonEq→ : {w : 𝕎·} {a b : CTerm}
+               → #weakMonEq w a b
+               → Σ ℕ (λ n → a #⇓ #NUM n at w × b #⇓ #NUM n at w)
+#weakMonEq→ {w} {a} {B} h = lower (h w (⊑-refl· w))
+
+
+
+¬isValue-APPLY : (a b : Term) → ¬ isValue (APPLY a b)
+¬isValue-APPLY a b ()
+
+
+steps-APPLY-cs-forward : (w : 𝕎·) (n m : ℕ) (a b v : Term) (c : Name)
+                         → isValue v
+                         → steps n a w ≡ b
+                         → steps m (APPLY (CS c) a) w ≡ v
+                         → Σ ℕ (λ k → steps k (APPLY (CS c) b) w ≡ v)
+steps-APPLY-cs-forward w 0 m a b v c isv c₁ c₂ rewrite c₁ = m , c₂
+steps-APPLY-cs-forward w (suc n) 0 a b v c isv c₁ c₂ rewrite (sym c₂) = ⊥-elim isv
+steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ with step⊎ a w
+... | inj₁ (u , p) rewrite p with is-NUM a
+...                          | inj₁ (k , q) rewrite q | sym (just-inj p) | stepsVal (NUM k) w n tt | sym c₁ = suc m , c₂
+...                          | inj₂ q rewrite step-APPLY-CS-¬NUM c a u w q p = steps-APPLY-cs-forward w n m u b v c isv c₁ c₂
+steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrite p | c₁ = suc m , c₂
+
+
+
+getChoice⊎ : (n : ℕ) (name : Name) (w : 𝕎·)
+             → Σ Term (λ u → getChoice· n name w ≡ just u) ⊎ getChoice· n name w ≡ nothing
+getChoice⊎ n name w with getChoice· n name w
+... | just u = inj₁ (u , refl)
+... | nothing = inj₂ refl
+
+
+isOnlyChoice∈𝕎→≡-aux : {w : 𝕎·} {c : Name} {v : Term} {k i m : ℕ}
+                         → isOnlyChoice∈𝕎 W C (NUM i) c w
+                         → steps k (APPLY (CS c) (NUM m)) w ≡ v
+                         → isValue v
+                         → v ≡ NUM i
+isOnlyChoice∈𝕎→≡-aux {w} {c} {v} {0} {i} {m} oc c₁ isv rewrite sym c₁ = ⊥-elim isv
+isOnlyChoice∈𝕎→≡-aux {w} {c} {v} {suc k} {i} {m} oc c₁ isv with getChoice⊎ m c w
+... | inj₁ (u , p) rewrite p | oc m u p | stepsVal (NUM i) w k tt = sym c₁
+... | inj₂ p rewrite p | sym c₁ = ⊥-elim isv
+
+
+
+isOnlyChoice∈𝕎→≡ : {w : 𝕎·} {c : Name} {a v : Term} {i m : ℕ}
+                     → isOnlyChoice∈𝕎 W C (NUM i) c w
+                     → a ⇓ NUM m at w
+                     → APPLY (CS c) a ⇓ v at w
+                     → isValue v
+                     → v ≡ NUM i
+isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {i} {m} oc c₁ c₂ isv =
+  isOnlyChoice∈𝕎→≡-aux {w} {c} {v} {k} {i} {m} oc c₄ isv
+  where
+    c₃ : APPLY (CS c) (NUM m) ⇓ v at w
+    c₃ = steps-APPLY-cs-forward w (fst c₁) (fst c₂) a (NUM m) v c isv (snd c₁) (snd c₂)
+
+    k : ℕ
+    k = fst c₃
+
+    c₄ : steps k (APPLY (CS c) (NUM m)) w ≡ v
+    c₄ = snd c₃
+
+
 -- TODO: generalize to n(=0) <> m(=1)
 ¬equalInType-#Σchoice : (i : ℕ) (w : 𝕎·) (c : Name) (x y : CTerm)
                         → isOnlyChoice∈𝕎 W C (NUM 1) c w
                         → equalInType i w (#Σchoice c 0) x y
                         → ⊥
-¬equalInType-#Σchoice i w c x y oc eqi = {!!}
+¬equalInType-#Σchoice i w c x y oc eqi = ¬≡s 0 neq3
   where
     h0 : equalInType i w (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM 0) #[0]QNAT)) x y
     h0 rewrite #Σchoice≡ c 0 = eqi
 
     h1 : inbar w (λ w' _ → SUMeq (equalInType i w' #NAT) (λ a b ea → equalInType i w' (#EQ (#APPLY (#CS c) a) (#NUM 0) #QNAT)) w' x y)
-    h1 = Bar.∀𝕎-inBarFunc barI aw (equalInType-SUM→ h0)
+    h1 = Bar.∀𝕎-inBarFunc barI aw (equalInType-SUM→ {i} {w} {#NAT} {#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM 0) #[0]QNAT} h0)
       where
         aw : ∀𝕎 w (λ w' e' → SUMeq (equalInType i w' #NAT)
                                      (λ a b ea → equalInType i w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM 0) #[0]QNAT)))
@@ -1483,7 +1653,98 @@ equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQTBAR x , eqi) =
                                     w' x y)
         aw w' e' (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) rewrite sub0-#Σchoice-body≡ a₁ c 0 = a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb
 
--- TODO: now we should use followChoice on h1 to get an instance for a world filled with 1s
+    -- 1st jump to bar
+    w1 : 𝕎·
+    w1 = fst (ChoiceBar.followChoice CB (NUM 1) c h1 oc)
+
+    e1 : w ⊑· w1
+    e1 = fst (snd (ChoiceBar.followChoice CB (NUM 1) c h1 oc))
+
+    oc1 : isOnlyChoice∈𝕎 W C (NUM 1) c w1
+    oc1 = fst (snd (snd (ChoiceBar.followChoice CB (NUM 1) c h1 oc)))
+
+    h2 : SUMeq (equalInType i w1 #NAT) (λ a b ea → equalInType i w1 (#EQ (#APPLY (#CS c) a) (#NUM 0) #QNAT)) w1 x y
+    h2 = snd (snd (snd (ChoiceBar.followChoice CB (NUM 1) c h1 oc)))
+
+    a₁ : CTerm
+    a₁ = fst h2
+
+    a₂ : CTerm
+    a₂ = fst (snd h2)
+
+    b₁ : CTerm
+    b₁ = fst (snd (snd h2))
+
+    b₂ : CTerm
+    b₂ = fst (snd (snd (snd h2)))
+
+    ea1 : equalInType i w1 #NAT a₁ a₂
+    ea1 = fst (snd (snd (snd (snd h2))))
+
+    eb1 : equalInType i w1 (#EQ (#APPLY (#CS c) a₁) (#NUM 0) #QNAT) b₁ b₂
+    eb1 = snd (snd (snd (snd (snd (snd (snd h2))))))
+
+    -- 2nd jump to bar
+    ea2 : inbar w1 (λ w' _ → #strongMonEq w' a₁ a₂)
+    ea2 = equalInType-NAT→ i w1 a₁ a₂ ea1
+
+    w2 : 𝕎·
+    w2 = fst (ChoiceBar.followChoice CB (NUM 1) c ea2 oc1)
+
+    e2 : w1 ⊑· w2
+    e2 = fst (snd (ChoiceBar.followChoice CB (NUM 1) c ea2 oc1))
+
+    oc2 : isOnlyChoice∈𝕎 W C (NUM 1) c w2
+    oc2 = fst (snd (snd (ChoiceBar.followChoice CB (NUM 1) c ea2 oc1)))
+
+    ea3 : #strongMonEq w2 a₁ a₂
+    ea3 = snd (snd (snd (ChoiceBar.followChoice CB (NUM 1) c ea2 oc1)))
+
+    m : ℕ
+    m = fst ea3
+
+    ca₁ : a₁ #⇛ #NUM m at w2
+    ca₁ = fst (snd ea3)
+
+    eb2 : equalInType i w2 (#EQ (#APPLY (#CS c) a₁) (#NUM 0) #QNAT) b₁ b₂
+    eb2 = equalInType-mon eb1 w2 e2
+
+    -- 3rd jump to bar
+    eb3 : inbar w2 (λ w' _ → #weakMonEq w' (#APPLY (#CS c) a₁) (#NUM 0))
+    eb3 = equalInType-EQ-QNAT→ {i} {w2} {#APPLY (#CS c) a₁} {#NUM 0} eb2
+
+    w3 : 𝕎·
+    w3 = fst (ChoiceBar.followChoice CB (NUM 1) c eb3 oc2)
+
+    e3 : w2 ⊑· w3
+    e3 = fst (snd (ChoiceBar.followChoice CB (NUM 1) c eb3 oc2))
+
+    oc3 : isOnlyChoice∈𝕎 W C (NUM 1) c w3
+    oc3 = fst (snd (snd (ChoiceBar.followChoice CB (NUM 1) c eb3 oc2)))
+
+    eb4 : #weakMonEq w3 (#APPLY (#CS c) a₁) (#NUM 0)
+    eb4 = snd (snd (snd (ChoiceBar.followChoice CB (NUM 1) c eb3 oc2)))
+
+    -- and now we conclude
+    k : ℕ
+    k = fst (#weakMonEq→ {w3} {#APPLY (#CS c) a₁} {#NUM 0} eb4)
+
+    cn₁ : #APPLY (#CS c) a₁ #⇓ #NUM k at w3
+    cn₁ = fst (snd (#weakMonEq→ {w3} {#APPLY (#CS c) a₁} {#NUM 0} eb4))
+
+    cn₂ : #NUM 0 #⇓ #NUM k at w3
+    cn₂ = snd (snd (#weakMonEq→ {w3} {#APPLY (#CS c) a₁} {#NUM 0} eb4))
+
+    neq1 : NUM k ≡ NUM 1
+    neq1 = isOnlyChoice∈𝕎→≡ oc3 (lower (ca₁ w3 e3)) cn₁ tt
+
+    neq2 : NUM 0 ≡ NUM k
+    neq2 = compVal (NUM 0) (NUM k) w3 cn₂ tt
+
+    neq3 : 0 ≡ 1
+    neq3 = NUMinj (trans neq2 neq1)
+
+
 
 
 
@@ -1617,7 +1878,7 @@ notClassical w {n} {i} p =
               × ∀𝕎 w4 (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name 0) a₁ a₂))
         h5 = snd (snd (snd (snd (snd h4))))
 
-        -- 1st injection:
+        -- 1st injection: proved by ¬equalInType-#Σchoice
 
         -- 2nd injection:
         w5 : 𝕎·
