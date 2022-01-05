@@ -12,6 +12,7 @@ open import Relation.Nullary
 
 
 open import util
+open import calculus
 open import world
 open import choice
 -- get rid of worldInstance here and only use world
@@ -1152,15 +1153,15 @@ trivialIS𝔹 w =
 
 seqChoice : 𝕎· → ℕ → 𝕎·
 seqChoice w 0 = w
-seqChoice w (suc n) = startNewChoice (seqChoice w n)
+seqChoice w (suc n) = startNewChoice Resℕ (seqChoice w n)
 
 
 -- creates a chain by starting new choices at each step
 chainChoice : (w : 𝕎·) → chain w
 chainChoice w = mkChain (seqChoice w) (⊑-refl· _) p
   where
-    p : (n : ℕ) → seqChoice w n ⊏ startNewChoice (seqChoice w n)
-    p n = startNewChoice⊏· (seqChoice w n)
+    p : (n : ℕ) → seqChoice w n ⊏ startNewChoice Resℕ (seqChoice w n)
+    p n = startNewChoice⊏· Resℕ (seqChoice w n)
 
 
 inBethBar-const : {w : 𝕎·} {t : Set(lsuc(L))} → inBethBar w (λ w e → t) → t

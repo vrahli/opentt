@@ -131,7 +131,7 @@ select-last {A} (x ∷ l) a = select-last l a
 ≤-s≤s-≡ i k a (_≤_.s≤s b) = ≤∧≮⇒≡ b (≤⇒≯ a)
 
 
-¬just≡nothing : {A : Set} {a : A} → ¬ just a ≡ nothing
+¬just≡nothing : {L : Level} {A : Set(L)} {a : A} → ¬ just a ≡ nothing
 ¬just≡nothing {A} {a} ()
 
 

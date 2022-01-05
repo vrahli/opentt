@@ -1,8 +1,6 @@
 \begin{code}[hide]
 {-# OPTIONS --rewriting #-}
 
-module world where
-
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
 open import Data.List
 open import Data.Nat
@@ -10,6 +8,8 @@ open import Data.Unit renaming (tt to ⋆)
 open import Data.Product
 open import Relation.Binary.PropositionalEquality
 open import Relation.Unary using (Pred; Decidable)
+
+module world where
 \end{code}
 
 \begin{code}

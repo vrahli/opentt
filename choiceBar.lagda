@@ -43,7 +43,8 @@ open import choiceDef(W)(C)
 open import computation(W)(C)
 
 
-
+-- TODO : add compatiblity constraint to choice-weakℕ: compatible· c w Resℕ
+-- We also need to assume that compatible is preserved by extensions
 record ChoiceBar : Set(lsuc(lsuc(L))) where
   constructor mkBar
   field
@@ -51,10 +52,11 @@ record ChoiceBar : Set(lsuc(lsuc(L))) where
     choice-weakℕ : (w : 𝕎·) (c : Name) (m : ℕ) → inbar w (λ w' _ → weakℕM w' (getChoice· m c))
 
     -- This allows selecting a branch of a bar that follows a given choice 'u'
-    followChoice : (u : Term) (c : Name) {w : 𝕎·} {f : wPred w}
+    followChoice : (u : Term) (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                    → inbar w f
                    → isOnlyChoice∈𝕎 u c w
-                   → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → isOnlyChoice∈𝕎 u c w1 × f w1 e1))
+                   → compatible· c w r
+                   → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → isOnlyChoice∈𝕎 u c w1 × compatible· c w1 r × f w1 e1))
 
 {--
     -- TODO: Move to choice

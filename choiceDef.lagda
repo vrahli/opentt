@@ -45,31 +45,39 @@ newChoice· : (w : 𝕎·) → Name
 newChoice· = newChoice C
 
 
-startChoice· : (cs : Name) (w : 𝕎·) → 𝕎·
+startChoice· : (cs : Name) (r : Res) (w : 𝕎·) → 𝕎·
 startChoice· = startChoice C
 
 
-startNewChoice : 𝕎· → 𝕎·
-startNewChoice w = startChoice· (newChoice· w) w
+startNewChoice : Res → 𝕎· → 𝕎·
+startNewChoice r w = startChoice· (newChoice· w) r w
 
 
-getChoice-startNewChoice· : (n : ℕ) (w : 𝕎·) → getChoice· n (newChoice· w) (startNewChoice w) ≡ nothing
+getChoice-startNewChoice· : (n : ℕ) (r : Res) (w : 𝕎·) → getChoice· n (newChoice· w) (startNewChoice r w) ≡ nothing
 getChoice-startNewChoice· = getChoice-startNewChoice C
 
 
-startNewChoice⊏· : (w : 𝕎·) → w ⊏ startNewChoice w
+startNewChoice⊏· : (r : Res) (w : 𝕎·) → w ⊏ startNewChoice r w
 startNewChoice⊏· = startNewChoice⊏ C
 
 
-freeze· : (cs : Name) (w : 𝕎·) (t : Term) → 𝕎·
+compatible· : (c : Name) (w : 𝕎·) (r : Res) → Set(L)
+compatible· = compatible C
+
+
+startChoiceCompatible· : (r : Res) (w : 𝕎·) → compatible· (newChoice· w) (startNewChoice r w) r
+startChoiceCompatible· = startChoiceCompatible C
+
+
+freeze· : (c : Name) (w : 𝕎·) (t : Term) → 𝕎·
 freeze· = freeze C
 
 
-freeze⊏· : (cs : Name) (w : 𝕎·) (t : Term) → w ⊏ freeze· cs w t
+freeze⊏· : (c : Name) (w : 𝕎·) (t : Term) {r : Res} → compatible· c w r → ((n : ℕ) → r n t) → w ⊏ freeze· c w t
 freeze⊏· = freeze⊏ C
 
 
-getFreeze· : (cs : Name) (w : 𝕎·) (t : Term) → Σ ℕ (λ n → ∀𝕎 (freeze· cs w t) (λ w' _ → Lift (lsuc(L)) (getChoice· n cs w' ≡ just t)))
+getFreeze· : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}} → compatible· c w r → Σ ℕ (λ n → ∀𝕎 (freeze· c w t) (λ w' _ → Lift (lsuc(L)) (getChoice· n c w' ≡ just t)))
 getFreeze· = getFreeze C
 
 

@@ -3,7 +3,7 @@
 
 module calculus where
 
-open import Level using (0ℓ) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -50,7 +50,7 @@ freshNameAux (n ∷ l) =
                      x (there p) → let c1 = c x p in <-trans c1 (<-transˡ (n<1+n _) (≤⊔r (suc n) (suc m)))} )
 
 
-freshName : (l : List Name) → Σ Name (λ Name → ¬ (Name ∈ l))
+freshName : (l : List Name) → Σ Name (λ n → ¬ (n ∈ l))
 freshName l = let (m , c) = freshNameAux l in (m , λ x → let z = c _ x in n≮n _ z)
 
 
@@ -680,4 +680,43 @@ shiftDownUp (LIFT t) n rewrite shiftDownUp t n = refl
 shiftDownUp (LOWER t) n rewrite shiftDownUp t n = refl
 shiftDownUp (SHRINK t) n rewrite shiftDownUp t n = refl
 
+
+is-NUM : (t : Term) → (Σ ℕ (λ n → t ≡ NUM n)) ⊎ ((n : ℕ) → ¬ t ≡ NUM n)
+is-NUM (VAR x) = inj₂ (λ { n () })
+is-NUM NAT = inj₂ (λ { n () })
+is-NUM QNAT = inj₂ (λ { n () })
+is-NUM (LT t t₁) = inj₂ (λ { n () })
+is-NUM (QLT t t₁) = inj₂ (λ { n () })
+is-NUM (NUM x) = inj₁ ( x , refl)
+is-NUM (PI t t₁) = inj₂ (λ { n () })
+is-NUM (LAMBDA t) = inj₂ (λ { n () })
+is-NUM (APPLY t t₁) = inj₂ (λ { n () })
+is-NUM (SUM t t₁) = inj₂ (λ { n () })
+is-NUM (PAIR t t₁) = inj₂ (λ { n () })
+is-NUM (SPREAD t t₁) = inj₂ (λ { n () })
+is-NUM (SET t t₁) = inj₂ (λ { n () })
+is-NUM (UNION t t₁) = inj₂ (λ { n () })
+is-NUM (INL t) = inj₂ (λ { n () })
+is-NUM (INR t) = inj₂ (λ { n () })
+is-NUM (DECIDE t t₁ t₂) = inj₂ (λ { n () })
+is-NUM (EQ t t₁ t₂) = inj₂ (λ { n () })
+is-NUM AX = inj₂ (λ { n () })
+is-NUM FREE = inj₂ (λ { n () })
+is-NUM (CS x) = inj₂ (λ { n () })
+is-NUM (TSQUASH t) = inj₂ (λ { n () })
+is-NUM (DUM t) = inj₂ (λ { n () })
+is-NUM (FFDEFS t t₁) = inj₂ (λ { n () })
+is-NUM (UNIV x) = inj₂ (λ { n () })
+is-NUM (LIFT t) = inj₂ (λ { n () })
+is-NUM (LOWER t) = inj₂ (λ { n () })
+is-NUM (SHRINK t) = inj₂ (λ { n () })
+
+
+-- restriction
+Res : {L : Level} → Set(lsuc(L))
+Res {L} = (n : ℕ) → Term → Set(L)
+
+
+Resℕ : Res
+Resℕ n t = Σ ℕ (λ m → t ≡ NUM m)
 \end{code}
