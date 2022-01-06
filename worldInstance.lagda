@@ -344,6 +344,16 @@ getRes name (start n r ∷ w) with name ≟ n
 getRes name (choice _ _ ∷ w) = getRes name w
 
 
+data ≺cs : cs → cs → Set₁ where
+  ≺CS : (c : Name) (l l' : List Term) (r : Res)
+        → 0 < length l'
+        → ≺cs (mkcs c l r) (mkcs c (l ++ l') r)
+
+
+progressCs : (c : Name) (w1 w2 : 𝕎·) → Set₁
+progressCs c w1 w2 = Σ cs (λ e1 → Σ cs (λ e2 → ∈world e1 w1 × ∈world e2 w2 × ≺cs e1 e2))
+
+
 compatibleRes : (r1 r2 : Res{0ℓ}) → Set
 compatibleRes r1 r2 =
   (n : ℕ) (t : Term) → (r1 n t → r2 n t) × (r2 n t → r1 n t)
@@ -403,11 +413,10 @@ getCs→∈world : {c : Name} {r : Res} {w : 𝕎·} {l : List Term} → getCs c
 getCs→∈world {c} {r} {w} {l} h rewrite h = refl
 
 
-freezeCs⊏ : (c : Name) (w : 𝕎·) (t : Term) {r : Res} → compatibleCs c w r → ((n : ℕ) → r n t) → w ⊏ freezeCs c w t
-freezeCs⊏ c w t {r} (l , comp) rt with getCs⊎ c w
+freezeCs⊑ : (c : Name) (w : 𝕎·) (t : Term) {r : Res} → compatibleCs c w r → ((n : ℕ) → r n t) → w ⊑· freezeCs c w t
+freezeCs⊑ c w t {r} (l , comp) rt with getCs⊎ c w
 ... | inj₁ (u , p) rewrite p | just-inj comp =
-  extChoice w c l t r (getCs→∈world {c} {r} {w} p) (rt (length l)) ,
-  ¬≡freezeCs c w t
+  extChoice w c l t r (getCs→∈world {c} {r} {w} p) (rt (length l)) --, ¬≡freezeCs c w t
 ... | inj₂ p rewrite p = ⊥-elim (¬just≡nothing (sym comp))
 
 
@@ -481,9 +490,10 @@ csChoice =
     getCsChoice-startNewCsChoice
     startNewCsChoice⊏
     compatibleCs
+    progressCs
     startCsChoiceCompatible
     freezeCs
-    freezeCs⊏
+    freezeCs⊑
     getFreezeCs
 -- ≽-pres-getChoice
 

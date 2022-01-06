@@ -61,12 +61,15 @@ record Choice : Set(lsuc(L)) where
     -- states that the choices for c in w are constrained by the restiction
     compatible : (c : Name) (w : 𝕎·) (r : Res{0ℓ}) → Set(L)
 
+    -- expresses what it means to make some progress w.r.t. the name c between the 2 worlds
+    progress : (c : Name) (w1 w2 : 𝕎·) → Set(L)
+
     --
     startChoiceCompatible : (r : Res{0ℓ}) (w : 𝕎·) → compatible (newChoice w) (startChoice (newChoice w) r w) r
 
     -- This adds a new choice, which is frozen forever (can for example be recorded with a 𝔹 in worlds)
     freeze : (c : Name) (w : 𝕎·) (t : Term) → 𝕎·
-    freeze⊏ : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}} → compatible c w r → ((n : ℕ) → r n t) → w ⊏ freeze c w t
+    freeze⊑ : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}} → compatible c w r → ((n : ℕ) → r n t) → w ⊑· freeze c w t
     getFreeze : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}} → compatible c w r → Σ ℕ (λ n → ∀𝕎 (freeze c w t) (λ w' _ → Lift (lsuc(L)) (getChoice n c w' ≡ just t)))
 
 -- To capture the fact that we can make different choices over time, should we

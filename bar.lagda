@@ -24,6 +24,7 @@ open import choice
 -- Choice is only needed for Beth bars to build an infinite sequence of worlds
 module bar {L : Level} (W : PossibleWorlds {L}) (C : Choice W) where
 open import worldDef{L}(W)
+-- Those are only needed by the Beth instance
 open import choiceDef{L}(W)(C)
 
 

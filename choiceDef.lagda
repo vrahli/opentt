@@ -61,6 +61,10 @@ startNewChoice⊏· : (r : Res) (w : 𝕎·) → w ⊏ startNewChoice r w
 startNewChoice⊏· = startNewChoice⊏ C
 
 
+progress· : (c : Name) (w1 w2 : 𝕎·) → Set(L)
+progress· = progress C
+
+
 compatible· : (c : Name) (w : 𝕎·) (r : Res) → Set(L)
 compatible· = compatible C
 
@@ -73,8 +77,8 @@ freeze· : (c : Name) (w : 𝕎·) (t : Term) → 𝕎·
 freeze· = freeze C
 
 
-freeze⊏· : (c : Name) (w : 𝕎·) (t : Term) {r : Res} → compatible· c w r → ((n : ℕ) → r n t) → w ⊏ freeze· c w t
-freeze⊏· = freeze⊏ C
+freeze⊑· : (c : Name) (w : 𝕎·) (t : Term) {r : Res} → compatible· c w r → ((n : ℕ) → r n t) → w ⊑· freeze· c w t
+freeze⊑· = freeze⊑ C
 
 
 getFreeze· : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}} → compatible· c w r → Σ ℕ (λ n → ∀𝕎 (freeze· c w t) (λ w' _ → Lift (lsuc(L)) (getChoice· n c w' ≡ just t)))

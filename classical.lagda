@@ -670,7 +670,7 @@ notClassical w {n} {i} p =
         rNUM k = 0 , refl
 
         e5 : w4 ⊑· w5
-        e5 = fst (freeze⊏· name w4 (NUM 0) comp3 rNUM)
+        e5 = freeze⊑· name w4 (NUM 0) comp3 rNUM
 
         n1 : ℕ
         n1 = fst (getFreeze· name w4 (NUM 0) comp3)
