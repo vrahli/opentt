@@ -5,10 +5,12 @@ open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to ls
 open import Agda.Builtin.Sigma
 open import Data.Product
 open import Data.Sum
-open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred ; _⊔_)
+open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; _∸_ ; pred ; _⊔_)
 open import Data.Nat.Properties
+open import Data.Nat.Induction
 open import Relation.Binary.PropositionalEquality hiding ([_]) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
 open import Relation.Nullary
+open import Data.Empty
 
 
 open import util
@@ -962,25 +964,17 @@ inIBethBar-inIBethBar' {w} {f} {g} (b1 , i1) (indBar-ind .w ind , i2) = {!!}
  --}
 
 
+{--
 -- infinite sequence of worlds
 record chain (w : 𝕎·) : Set(lsuc(L)) where
   constructor mkChain
   field
     seq  : ℕ → 𝕎·
     init : w ⊑· seq 0
-    prop : (n : ℕ) → seq n ⊏ seq (suc n)
+    prop : (n : ℕ) → seq n ⊑· seq (suc n) -- ⊏
+    prog : (c : Name) (n : ℕ) {r : Res{0ℓ}} → compatible· c (seq n) r → Σ ℕ (λ m → n < m × progress· c (seq n) (seq m))
+--}
 
-
-chain⊑n : {w : 𝕎·} (n : ℕ) (c : chain w) → w ⊑· chain.seq c n
-chain⊑n {w} 0 c = chain.init c
-chain⊑n {w} (suc n) c = ⊑-trans· (chain⊑n n c) (fst (chain.prop c n))
-
-
-≤→chain⊑ : {w : 𝕎·} {n m : ℕ} (c : chain w) → n ≤ m → chain.seq c n ⊑· chain.seq c m
-≤→chain⊑ {w} {.0} {0} c _≤_.z≤n = ⊑-refl· _
-≤→chain⊑ {w} {n} {suc m} c h with m≤n⇒m<n∨m≡n h
-... | inj₁ p = ⊑-trans· (≤→chain⊑ c (s≤s-inj p)) (fst (chain.prop c m))
-... | inj₂ p rewrite p = ⊑-refl· _
 
 
 record BarsProp (bar : 𝕎· → Set(L)) {w : 𝕎·} (c : chain w) : Set(L) where
@@ -996,7 +990,7 @@ record IS𝔹 (w : 𝕎·) : Set(lsuc(L)) where
   constructor mkIS𝔹
   field
     bar  : 𝕎· → Set(L)
-    bars : (c : chain w) → BarsProp bar c
+    bars : (c : pchain w) → BarsProp bar (pchain.c c)
     ext  : {w' : 𝕎·} → bar w' → w ⊑· w'
     mon  : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
 
@@ -1014,21 +1008,25 @@ chain⊑ : {w w' : 𝕎·} (e : w ⊑· w') → chain w' → chain w
 chain⊑ {w} {w'} e (mkChain seq init prop) = mkChain seq (⊑-trans· e init) prop
 
 
+pchain⊑ : {w w' : 𝕎·} (e : w ⊑· w') → pchain w' → pchain w
+pchain⊑ {w} {w'} e (mkPChain c p) = mkPChain (chain⊑ e c) p
+
+
 IS𝔹⊑ : {w w' : 𝕎·} (e : w ⊑· w') → IS𝔹 w → IS𝔹 w'
 IS𝔹⊑ {w} {w'} e (mkIS𝔹 bar bars ext mon) = mkIS𝔹 bar' bars' ext' mon'
   where
     bar' : 𝕎· → Set(L)
     bar' w0 = Σ 𝕎· (λ w1 → bar w1 × w1 ⊑· w0 × w' ⊑· w0)
 
-    bars' : (c : chain w') → BarsProp bar' c --Σ 𝕎· (λ w'' → bar' w'' × Σ ℕ (λ n → w'' ⊑· chain.seq c n))
+    bars' : (c : pchain w') → BarsProp bar' (pchain.c c) --Σ 𝕎· (λ w'' → bar' w'' × Σ ℕ (λ n → w'' ⊑· chain.seq c n))
     bars' c = mkBarsProp
-                (chain.seq (chain⊑ e c) (BarsProp.n z))
-                (BarsProp.w' z , BarsProp.b z , BarsProp.ext z , chain⊑n (BarsProp.n z) c)
+                (chain.seq (chain⊑ e (pchain.c c)) (BarsProp.n z))
+                (BarsProp.w' z , BarsProp.b z , BarsProp.ext z , chain⊑n (BarsProp.n z) (pchain.c c))
                 (BarsProp.n z)
                 (⊑-refl· _)
       where
-        z : BarsProp bar (chain⊑ e c) --Σ 𝕎· (λ w'' → bar w'' × Σ ℕ (λ n → w'' ⊑· chain.seq (chain⊑ e c) n))
-        z = bars (chain⊑ e c)
+        z : BarsProp bar (chain⊑ e (pchain.c c)) --Σ 𝕎· (λ w'' → bar w'' × Σ ℕ (λ n → w'' ⊑· chain.seq (chain⊑ e c) n))
+        z = bars (pchain⊑ e c)
 
     ext' : {w'' : 𝕎·} → bar' w'' → w' ⊑· w''
     ext' {w''} (w1 , b , e₁ , e₂) = e₂
@@ -1058,23 +1056,23 @@ IS𝔹⊑ {w} {w'} e (mkIS𝔹 bar bars ext mon) = mkIS𝔹 bar' bars' ext' mon'
     bar : 𝕎· → Set(L)
     bar w0 = Σ 𝕎· (λ w1 → Σ 𝕎· (λ w2 → b1 w1 × b2 w2 × w1 ⊑· w0 × w2 ⊑· w0))
 
-    bars : (c : chain w) → BarsProp bar c --Σ 𝕎· (λ w' → bar w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
-    bars c = mkBarsProp (chain.seq c ((BarsProp.n z1) ⊔ (BarsProp.n z2)))
+    bars : (c : pchain w) → BarsProp bar (pchain.c c) --Σ 𝕎· (λ w' → bar w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
+    bars c = mkBarsProp (chain.seq (pchain.c c) ((BarsProp.n z1) ⊔ (BarsProp.n z2)))
                         (BarsProp.w' z1 , BarsProp.w' z2 , BarsProp.b z1 , BarsProp.b z2 , e1 , e2)
                         ((BarsProp.n z1) ⊔ (BarsProp.n z2))
                         (⊑-refl· _)
       where
-        z1 : BarsProp b1 c --Σ 𝕎· (λ w' → b1 w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
+        z1 : BarsProp b1 (pchain.c c) --Σ 𝕎· (λ w' → b1 w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
         z1 = bars1 c
 
-        z2 : BarsProp b2 c --Σ 𝕎· (λ w' → b2 w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
+        z2 : BarsProp b2 (pchain.c c) --Σ 𝕎· (λ w' → b2 w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
         z2 = bars2 c
 
-        e1 : BarsProp.w' z1 ⊑· chain.seq c (BarsProp.n z1 ⊔ BarsProp.n z2)
-        e1 = ⊑-trans· (BarsProp.ext z1) (≤→chain⊑ c (m≤m⊔n (BarsProp.n z1) (BarsProp.n z2)))
+        e1 : BarsProp.w' z1 ⊑· chain.seq (pchain.c c) (BarsProp.n z1 ⊔ BarsProp.n z2)
+        e1 = ⊑-trans· (BarsProp.ext z1) (≤→chain⊑ (pchain.c c) (m≤m⊔n (BarsProp.n z1) (BarsProp.n z2)))
 
-        e2 : BarsProp.w' z2 ⊑· chain.seq c (BarsProp.n z1 ⊔ BarsProp.n z2)
-        e2 = ⊑-trans· (BarsProp.ext z2) (≤→chain⊑ c (m≤n⊔m (BarsProp.n z1) (BarsProp.n z2)))
+        e2 : BarsProp.w' z2 ⊑· chain.seq (pchain.c c) (BarsProp.n z1 ⊔ BarsProp.n z2)
+        e2 = ⊑-trans· (BarsProp.ext z2) (≤→chain⊑ (pchain.c c) (m≤n⊔m (BarsProp.n z1) (BarsProp.n z2)))
 
     ext : {w' : 𝕎·} → bar w' → w ⊑· w'
     ext {w'} (w1 , w2 , b₁ , b₂ , e₁ , e₂) = ⊑-trans· (IS𝔹.ext (mkIS𝔹 b1 bars1 ext1 mon1) {w1} b₁) e₁
@@ -1135,8 +1133,8 @@ trivialIS𝔹 w =
     bar : 𝕎· → Set(L)
     bar w' = w ⊑· w'
 
-    bars : (c : chain w) → BarsProp bar c
-    bars c = mkBarsProp w (⊑-refl· _) 0 (chain.init c)
+    bars : (c : pchain w) → BarsProp bar (pchain.c c)
+    bars c = mkBarsProp w (⊑-refl· _) 0 (chain.init (pchain.c c))
 
     ext : {w' : 𝕎·} → bar w' → w ⊑· w'
     ext {w'} b = b
@@ -1152,24 +1150,59 @@ trivialIS𝔹 w =
     i {w'} e b w1 e1 z = h w1 z
 
 
-seqChoice : 𝕎· → ℕ → 𝕎·
-seqChoice w 0 = w
-seqChoice w (suc n) = startNewChoice Resℕ (seqChoice w n)
+-- Each step we start a new choice to guarantee the world progresses, and we freeze c to guarantee that c progresses
+seqChoice : Name → 𝕎· → ℕ → 𝕎·
+seqChoice c w 0 = w
+seqChoice c w (suc n) = freeze· c (startNewChoice Resℕ (seqChoice c w n)) (NUM 0)
 
 
+chainChoice-prop-aux : (n : ℕ) (s : ℕ → 𝕎·) (ind : (m : ℕ) → m < n →  s m ⊑· s (suc m)) → s 0 ⊑· s n
+chainChoice-prop-aux ℕ.zero s ind = ⊑-refl· (s 0)
+chainChoice-prop-aux (suc n) s ind = ⊑-trans· (chainChoice-prop-aux n s λ m x → ind m (<-trans x (n<1+n n))) (ind n (n<1+n n))
+
+
+{--
 -- creates a chain by starting new choices at each step
 chainChoice : (w : 𝕎·) → chain w
-chainChoice w = mkChain (seqChoice w) (⊑-refl· _) p
+chainChoice w = mkChain s i p q
   where
-    p : (n : ℕ) → seqChoice w n ⊏ startNewChoice Resℕ (seqChoice w n)
-    p n = startNewChoice⊏· Resℕ (seqChoice w n)
+    c : Name
+    c = newChoice· w
+
+    s : ℕ → 𝕎·
+    s = seqChoice c (startChoice· c Resℕ w)
+
+    i : w ⊑· s 0
+    i = fst (startNewChoice⊏· Resℕ w)
+
+    p' : (n : ℕ) → ((m : ℕ) → m < n →  s m ⊑· s (suc m)) → s n ⊑· s (suc n)
+    p' n ind = ⊑-trans· (fst (startNewChoice⊏· Resℕ (s n)))
+                        (freeze⊑· c (startNewChoice Resℕ (s n)) (NUM 0) comp λ n → 0 , refl)
+       where
+         comp : compatible· (newChoice· w) (startNewChoice Resℕ (s n)) Resℕ
+         comp = ⊑-compatible· (⊑-trans· (chainChoice-prop-aux n s ind) (fst (startNewChoice⊏· Resℕ (s n))))
+                              (startChoiceCompatible· Resℕ w)
+
+    p : (n : ℕ) → s n ⊑· s (suc n)
+    p n = <ℕind (λ n → s n ⊑· s (suc n)) p' n
+
+    prog : (c : Name) (n : ℕ) → progress· c (s n) (s (suc n))
+    prog c n = {!freezeProgress· c ? ?!}
+
+    q : (c : Name) (n : ℕ) {r : Res{0ℓ}} → compatible· c (s n) r → Σ ℕ (λ m → n < m × progress· c (s n) (s m))
+    q c n {r} comp = suc n , (n<1+n n) , prog c n
+--}
+
 
 
 inBethBar-const : {w : 𝕎·} {t : Set(lsuc(L))} → inBethBar w (λ w e → t) → t
 inBethBar-const {w} {t} (b , i) = z _ (⊑-refl· _) (IS𝔹.ext b (BarsProp.b bp))
   where
-    bp : BarsProp (IS𝔹.bar b) (chainChoice w)
-    bp = IS𝔹.bars b (chainChoice w)
+    c : pchain w
+    c = 𝕎→pchain w
+
+    bp : BarsProp (IS𝔹.bar b) (pchain.c c)
+    bp = IS𝔹.bars b c
 
     z : ∀𝕎 (BarsProp.w' bp) (↑wPred' (λ _ _ → t) (IS𝔹.ext b (BarsProp.b bp)))
     z = i (IS𝔹.ext b (BarsProp.b bp)) (BarsProp.b bp)
@@ -1214,12 +1247,49 @@ record IS𝔹Fam {w : 𝕎·} (b : IS𝔹 w) : Set(L) where
     z  : w ⊑· w2
 
 
+
+≤+∸ : (m : ℕ) (n : ℕ) → m ≤ (m + n) ∸ n
+≤+∸ m n rewrite +-∸-assoc m {n} {n} ≤-refl | m≤n⇒m∸n≡0 {n} {n} ≤-refl | +-identityʳ m = ≤-refl
+
+
+
+<→∸ : {n m k : ℕ} → k ≤ n → n < m → n ∸ k < m ∸ k
+<→∸ {n} {m} {0} a b = b
+<→∸ {suc n} {suc m} {suc k} a b = <→∸ (s≤s-inj a) (s≤s-inj b)
+
+
+
 truncateChain : {w : 𝕎·} {c : chain w} {n : ℕ} {w' : 𝕎·} (e : w' ⊑· chain.seq c n) → chain w'
-truncateChain {w} {c} {n} {w'} e = mkChain (λ x → chain.seq c (x + n)) e p
+truncateChain {w} {c} {n} {w'} e = mkChain s e p --q
   where
-    p : (x : ℕ) → chain.seq c (x + n) ⊏ chain.seq c (suc (x + n))
+    s : ℕ → 𝕎·
+    s x = chain.seq c (x + n)
+
+    p : (x : ℕ) → s x ⊑· s (suc x)
     p x = chain.prop c (x + n)
 
+
+truncatePChain : {w : 𝕎·} {c : pchain w} {n : ℕ} {w' : 𝕎·} (e : w' ⊑· chain.seq (pchain.c c) n) → pchain w'
+truncatePChain {w} {mkPChain c p} {n} {w'} e = mkPChain c' p'
+  where
+    c' : chain w'
+    c' = truncateChain {w} {c} {n} {w'} e
+
+    p' : progressing (truncateChain {w} {c} {n} {w'} e)
+    p' name k {r} comp =
+      fst (p name (k + n) comp) ∸ n ,
+      <-transʳ (≤+∸ k n) (<→∸ (≤-stepsˡ k ≤-refl) (fst (snd (p name (k + n) comp)))) ,
+      q'
+      where
+         z : n ≤ fst (p name (k + n) comp)
+         z = ≤-trans (≤-stepsˡ k ≤-refl) (<⇒≤ (fst (snd (p name (k + n) comp))))
+
+         q' : progress· name ((chain.seq c') k) (chain.seq c' (fst (p name (k + n) comp) ∸ n))
+         q' rewrite m∸n+n≡m {fst (p name (k + n) comp)} {n} z = snd (snd (p name (k + n) comp))
+
+
+
+--
 
 
 {--
@@ -1263,23 +1333,23 @@ IS𝔹-fam {w} b G i = mkIS𝔹 bar bars ext mon
     bar : 𝕎· → Set(L)
     bar w' = Σ (IS𝔹Fam b) (λ F → IS𝔹.bar (fst (i (IS𝔹Fam.e1 F) (IS𝔹Fam.br F) (IS𝔹Fam.w2 F) (IS𝔹Fam.e2 F) (IS𝔹Fam.z F))) w')
 
-    bars : (c : chain w) → BarsProp bar c
+    bars : (c : pchain w) → BarsProp bar (pchain.c c)
     bars c = mkBarsProp (BarsProp.w' bp') br (BarsProp.n bp' + BarsProp.n bp) e
       where
-        bp : BarsProp (IS𝔹.bar b) c
+        bp : BarsProp (IS𝔹.bar b) (pchain.c c)
         bp = IS𝔹.bars b c
 
         b' : IS𝔹 (BarsProp.w' bp)
         b' = fst (i (IS𝔹.ext b (BarsProp.b bp)) (BarsProp.b bp) (BarsProp.w' bp) (⊑-refl· _) (IS𝔹.ext b (BarsProp.b bp)))
 
-        bp' : BarsProp (IS𝔹.bar b') (truncateChain {w} {c} {BarsProp.n bp} {BarsProp.w' bp} (BarsProp.ext bp))
-        bp' = IS𝔹.bars b' (truncateChain {w} {c} {BarsProp.n bp} {BarsProp.w' bp} (BarsProp.ext bp))
+        bp' : BarsProp (IS𝔹.bar b') (truncateChain {w} {pchain.c c} {BarsProp.n bp} {BarsProp.w' bp} (BarsProp.ext bp))
+        bp' = IS𝔹.bars b' (truncatePChain {w} {c} {BarsProp.n bp} {BarsProp.w' bp} (BarsProp.ext bp))
 
         br : bar (BarsProp.w' bp')
         br = mkIS𝔹Fam (BarsProp.w' bp) (IS𝔹.ext b (BarsProp.b bp)) (BarsProp.b bp) (BarsProp.w' bp) (⊑-refl· _) (IS𝔹.ext b (BarsProp.b bp)) ,
              BarsProp.b bp'
 
-        e : BarsProp.w' bp' ⊑· chain.seq c (BarsProp.n bp' + BarsProp.n (IS𝔹.bars b c))
+        e : BarsProp.w' bp' ⊑· chain.seq (pchain.c c) (BarsProp.n bp' + BarsProp.n (IS𝔹.bars b c))
         e = BarsProp.ext bp'
 
     ext  : {w' : 𝕎·} → bar w' → w ⊑· w'
@@ -1322,23 +1392,23 @@ IS𝔹-fam2 {w} b G i = mkIS𝔹 bar bars ext mon
     bar : 𝕎· → Set(L)
     bar w' = Σ (IS𝔹In b) (λ F → IS𝔹.bar (fst (i (IS𝔹In.e1 F) (IS𝔹In.br F))) w')
 
-    bars : (c : chain w) → BarsProp bar c
+    bars : (c : pchain w) → BarsProp bar (pchain.c c)
     bars c = mkBarsProp (BarsProp.w' bp') br (BarsProp.n bp' + BarsProp.n bp) e
       where
-        bp : BarsProp (IS𝔹.bar b) c
+        bp : BarsProp (IS𝔹.bar b) (pchain.c c)
         bp = IS𝔹.bars b c
 
         b' : IS𝔹 (BarsProp.w' bp)
         b' = fst (i (IS𝔹.ext b (BarsProp.b bp)) (BarsProp.b bp))
 
-        bp' : BarsProp (IS𝔹.bar b') (truncateChain {w} {c} {BarsProp.n bp} {BarsProp.w' bp} (BarsProp.ext bp))
-        bp' = IS𝔹.bars b' (truncateChain {w} {c} {BarsProp.n bp} {BarsProp.w' bp} (BarsProp.ext bp))
+        bp' : BarsProp (IS𝔹.bar b') (truncateChain {w} {pchain.c c} {BarsProp.n bp} {BarsProp.w' bp} (BarsProp.ext bp))
+        bp' = IS𝔹.bars b' (truncatePChain {w} {c} {BarsProp.n bp} {BarsProp.w' bp} (BarsProp.ext bp))
 
         br : bar (BarsProp.w' bp')
         br = mkIS𝔹In (BarsProp.w' bp) (IS𝔹.ext b (BarsProp.b bp)) (BarsProp.b bp) ,
              BarsProp.b bp'
 
-        e : BarsProp.w' bp' ⊑· chain.seq c (BarsProp.n bp' + BarsProp.n (IS𝔹.bars b c))
+        e : BarsProp.w' bp' ⊑· chain.seq (pchain.c c) (BarsProp.n bp' + BarsProp.n (IS𝔹.bars b c))
         e = BarsProp.ext bp'
 
     ext  : {w' : 𝕎·} → bar w' → w ⊑· w'

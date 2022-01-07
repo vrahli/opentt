@@ -713,10 +713,41 @@ is-NUM (SHRINK t) = inj₂ (λ { n () })
 
 
 -- restriction
-Res : {L : Level} → Set(lsuc(L))
-Res {L} = (n : ℕ) → Term → Set(L)
+record Res {L : Level} : Set(lsuc(L)) where
+  constructor mkRes
+  field
+    res : (n : ℕ) → Term → Set(L)
+    def : Term                      -- default element that satisfies the restriction
+    sat : (n : ℕ) → res n def     -- proof that the default element is satisfied at all stages
+
+
+·ᵣ : {L : Level} → Res{L} → ℕ → Term → Set(L)
+·ᵣ {L} r n t = Res.res r n t
+
+
+⋆ᵣ : {L : Level} → Res{L} → Term → Set(L)
+⋆ᵣ {L} r t = (n : ℕ) → ·ᵣ r n t
 
 
 Resℕ : Res
-Resℕ n t = Σ ℕ (λ m → t ≡ NUM m)
+Resℕ = mkRes (λ n t → Σ ℕ (λ m → t ≡ NUM m)) (NUM 0) (λ n → 0 , refl)
+
+
+Res⊤ : Res
+Res⊤ = mkRes (λ n t → ⊤) AX (λ n → tt)
+
+
+compatibleRes : {L : Level} (r1 r2 : Res{L}) → Set(L)
+compatibleRes {L} r1 r2 =
+  (n : ℕ) (t : Term) → (·ᵣ r1 n t → ·ᵣ r2 n t) × (·ᵣ r2 n t → ·ᵣ r1 n t)
+
+
+
+-- named restriction
+record NRes {L : Level} : Set(lsuc(L)) where
+  constructor mkNRes
+  field
+    name : Name
+    res  : Res{L}
+
 \end{code}

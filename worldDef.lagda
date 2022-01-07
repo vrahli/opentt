@@ -24,6 +24,9 @@ open import Data.List.Relation.Unary.Any
 open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Data.List.Properties
+
+
+open import util
 open import calculus
 -- get rid of worldInstance here and only use world
 -- make it a parameter of computation
@@ -99,4 +102,27 @@ wPredDepExtIrr {w} {g} f = (w' : 𝕎·) (e1 e2 : w ⊑· w') (x1 : g w' e1) (x2
 
 _⊏_ : 𝕎· → 𝕎· → Set(L)
 w1 ⊏ w2 = w1 ⊑· w2 × ¬ w1 ≡ w2
+
+
+
+-- A chain of 𝕎·
+record chain (w : 𝕎·) : Set(L) where
+  constructor mkChain
+  field
+    seq  : ℕ → 𝕎·
+    init : w ⊑· seq 0
+    prop : (n : ℕ) → seq n ⊑· seq (suc n) -- ⊏
+
+
+chain⊑n : {w : 𝕎·} (n : ℕ) (c : chain w) → w ⊑· chain.seq c n
+chain⊑n {w} 0 c = chain.init c
+chain⊑n {w} (suc n) c = ⊑-trans· (chain⊑n n c) (chain.prop c n)
+
+
+≤→chain⊑ : {w : 𝕎·} {n m : ℕ} (c : chain w) → n ≤ m → chain.seq c n ⊑· chain.seq c m
+≤→chain⊑ {w} {.0} {0} c _≤_.z≤n = ⊑-refl· _
+≤→chain⊑ {w} {n} {suc m} c h with m≤n⇒m<n∨m≡n h
+... | inj₁ p = ⊑-trans· (≤→chain⊑ c (s≤s-inj p)) (chain.prop c m)
+... | inj₂ p rewrite p = ⊑-refl· _
+
 \end{code}

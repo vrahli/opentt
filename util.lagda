@@ -70,10 +70,10 @@ lift⊥ : Lift {0ℓ} 1ℓ ⊥ → ⊥
 lift⊥ ()
 
 
-select : {A : Set} (n : ℕ) (l : List A) → Maybe A
-select {A} n [] = nothing
-select {A} 0 (x ∷ l) = just x
-select {A} (suc n) (x ∷ l) = select n l
+select : {L : Level} {A : Set(L)} (n : ℕ) (l : List A) → Maybe A
+select {L} {A} n [] = nothing
+select {L} {A} 0 (x ∷ l) = just x
+select {L} {A} (suc n) (x ∷ l) = select n l
 
 
 data norepeats {A : Set} : List A → Set where
@@ -107,24 +107,24 @@ just-inj : {l : Level} {A : Set l} {a b : A} → just a ≡ just b → a ≡ b
 just-inj refl =  refl
 
 
-suc≤len∷ʳ : {A : Set} (l : List A) (a : A) (k : ℕ) → k ≤ length l → suc k ≤ length (l ∷ʳ a)
-suc≤len∷ʳ {A} l a k h rewrite length-++ l {[ a ]} rewrite +-comm (length l) 1 = _≤_.s≤s h
+suc≤len∷ʳ : {L : Level} {A : Set(L)} (l : List A) (a : A) (k : ℕ) → k ≤ length l → suc k ≤ length (l ∷ʳ a)
+suc≤len∷ʳ {L} {A} l a k h rewrite length-++ l {[ a ]} rewrite +-comm (length l) 1 = _≤_.s≤s h
 
 
-suc≤len++∷ʳ : {A : Set} (k : ℕ) (l1 l2 : List A) (a : A)
+suc≤len++∷ʳ : {L : Level} {A : Set(L)} (k : ℕ) (l1 l2 : List A) (a : A)
               → k ≤ length l1
               → suc k ≤ length ((l1 ++ l2) ∷ʳ a)
-suc≤len++∷ʳ {A} k l1 l2 a h = suc≤len∷ʳ (l1 ++ l2) a k (subst (λ x → k ≤ x) (sym (length-++ l1 {l2})) (≤-stepsʳ (length l2) h))
+suc≤len++∷ʳ {L} {A} k l1 l2 a h = suc≤len∷ʳ (l1 ++ l2) a k (subst (λ x → k ≤ x) (sym (length-++ l1 {l2})) (≤-stepsʳ (length l2) h))
 
 
 suc-≢-0 : {n : ℕ} → ¬ suc n ≡ 0
 suc-≢-0 {n} ()
 
 
-select-last : {A : Set} (l : List A) (a : A)
+select-last : {L : Level} {A : Set(L)} (l : List A) (a : A)
               → select (length l) (l ++ [ a ]) ≡ just a
-select-last {A} [] a = refl
-select-last {A} (x ∷ l) a = select-last l a
+select-last {L} {A} [] a = refl
+select-last {L} {A} (x ∷ l) a = select-last l a
 
 
 ≤-s≤s-≡ : (i k : ℕ) → i ≤ k → suc k ≤ suc i → k ≡ i
@@ -135,11 +135,11 @@ select-last {A} (x ∷ l) a = select-last l a
 ¬just≡nothing {A} {a} ()
 
 
-select++-just : {A : Set} {k : ℕ} {l l' : List A} {t : A}
+select++-just : {L : Level} {A : Set(L)} {k : ℕ} {l l' : List A} {t : A}
                 → select k l ≡ just t
                 → select k (l ++ l') ≡ just t
-select++-just {A} {0} {x ∷ l} {l'} {t} sel = sel
-select++-just {A} {suc k} {x ∷ l} {l'} {t} sel = select++-just {A} {k} {l} {l'} sel
+select++-just {L} {A} {0} {x ∷ l} {l'} {t} sel = sel
+select++-just {L} {A} {suc k} {x ∷ l} {l'} {t} sel = select++-just {L} {A} {k} {l} {l'} sel
 
 
 
@@ -231,5 +231,22 @@ injective {A} {B} f = {a b : A} → f a ≡ f b → a ≡ b
 
 →++≡[] : {A : Set} {l k : List A} → l ≡ [] → k ≡ [] → l ++ k ≡ []
 →++≡[] {A} {l} {k} h q rewrite h | q = refl
+
+
+
+
+
+comp-ind-ℕ-aux : {L : Level} (P : ℕ → Set(L))
+                 → ((n : ℕ) → ((m : ℕ) → m < n → P m) → P n)
+                 → (n m : ℕ) → m < n → P m
+comp-ind-ℕ-aux {L} P ind (suc n) m (_≤_.s≤s z) with m≤n⇒m<n∨m≡n z
+... | inj₁ q = comp-ind-ℕ-aux P ind n m q
+... | inj₂ q rewrite q = ind n (comp-ind-ℕ-aux P ind n)
+
+
+<ℕind : {L : Level} (P : ℕ → Set(L))
+              → ((n : ℕ) → ((m : ℕ) → m < n → P m) → P n)
+              → (n : ℕ) → P n
+<ℕind {L} P ind n = comp-ind-ℕ-aux P ind (suc n) n (_≤_.s≤s ≤-refl)
 
 \end{code}

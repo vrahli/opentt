@@ -49,7 +49,7 @@ record ChoiceBar : Set(lsuc(lsuc(L))) where
   constructor mkBar
   field
     -- This says that all choices are "weak" ℕ (i.e., that can change over time)
-    choice-weakℕ : (w : 𝕎·) (c : Name) (m : ℕ) → inbar w (λ w' _ → weakℕM w' (getChoice· m c))
+    choice-weakℕ : {w : 𝕎·} {c : Name} (m : ℕ) → compatible· c w Resℕ → inbar w (λ w' _ → weakℕM w' (getChoice· m c))
 
     -- This allows selecting a branch of a bar that follows a given choice 'u'
     followChoice : (u : Term) (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}

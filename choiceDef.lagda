@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; _⊔_ ; Lift ; lift ; lower) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -26,13 +26,13 @@ open import Data.List.Membership.Propositional.Properties
 open import Data.List.Properties
 
 
+open import util
 open import calculus
 open import world
 open import choice
 
 module choiceDef {L : Level} (W : PossibleWorlds {L}) (C : Choice {L} W) where
-
-open import worldDef W
+open import worldDef(W)
 
 open Choice
 
@@ -61,12 +61,13 @@ startNewChoice⊏· : (r : Res) (w : 𝕎·) → w ⊏ startNewChoice r w
 startNewChoice⊏· = startNewChoice⊏ C
 
 
-progress· : (c : Name) (w1 w2 : 𝕎·) → Set(L)
-progress· = progress C
 
-
-compatible· : (c : Name) (w : 𝕎·) (r : Res) → Set(L)
+compatible· : (c : Name) (w : 𝕎·) (r : Res{0ℓ}) → Set(L)
 compatible· = compatible C
+
+
+⊑-compatible· : {c : Name} {w1 w2 : 𝕎·} {r : Res{0ℓ}} → w1 ⊑· w2 → compatible· c w1 r → compatible· c w2 r
+⊑-compatible· = ⊑-compatible C
 
 
 startChoiceCompatible· : (r : Res) (w : 𝕎·) → compatible· (newChoice· w) (startNewChoice r w) r
@@ -77,12 +78,50 @@ freeze· : (c : Name) (w : 𝕎·) (t : Term) → 𝕎·
 freeze· = freeze C
 
 
-freeze⊑· : (c : Name) (w : 𝕎·) (t : Term) {r : Res} → compatible· c w r → ((n : ℕ) → r n t) → w ⊑· freeze· c w t
+freeze⊑· : (c : Name) (w : 𝕎·) (t : Term) {r : Res} → compatible· c w r → ⋆ᵣ r t → w ⊑· freeze· c w t
 freeze⊑· = freeze⊑ C
 
 
 getFreeze· : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}} → compatible· c w r → Σ ℕ (λ n → ∀𝕎 (freeze· c w t) (λ w' _ → Lift (lsuc(L)) (getChoice· n c w' ≡ just t)))
 getFreeze· = getFreeze C
+
+
+progress· : (c : Name) (w1 w2 : 𝕎·) → Set(L)
+progress· = progress C
+
+
+freezeProgress· : (c : Name) {w1 w2 : 𝕎·} (t : Term) → w1 ⊑· w2 → progress· c w1 (freeze· c w2 t)
+freezeProgress· = freezeProgress C
+
+
+𝕎→chain· : (w : 𝕎·) → chain w
+𝕎→chain· = 𝕎→chain C
+
+
+progressing : {w : 𝕎·} (c : chain w) → Set(1ℓ ⊔ L)
+progressing {w} c =
+  (x : Name) (n : ℕ) {r : Res{0ℓ}}
+  → compatible· x (chain.seq c n) r
+  → Σ ℕ (λ m → n < m × progress· x (chain.seq c n) (chain.seq c m))
+
+
+chainProgress· : (w : 𝕎·) → progressing (𝕎→chain· w)
+chainProgress· = chainProgress C
+
+
+
+-- Progressing chain
+record pchain (w : 𝕎·) : Set(lsuc(L)) where
+  constructor mkPChain
+  field
+    c : chain w
+    p : progressing c
+
+
+
+𝕎→pchain : (w : 𝕎·) → pchain w
+𝕎→pchain w = mkPChain (𝕎→chain· w) (chainProgress· w)
+
 
 
 -- TODO: shouldn't Term be CTerm?

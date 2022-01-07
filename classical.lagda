@@ -224,8 +224,9 @@ sub0-#Σchoice-body≡ a c k = CTerm≡ (→≡EQ (→≡APPLY refl (shiftDownUp
 
 
 inbar-#weakMonEq-APPLY-CS : (w : 𝕎·) (c : Name) (m : ℕ)
+                            → compatible· c w Resℕ
                             → inbar w (λ w' _ → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) (#APPLY (#CS c) (#NUM m)))
-inbar-#weakMonEq-APPLY-CS w c m = Bar.∀𝕎-inBarFunc barI aw (ChoiceBar.choice-weakℕ CB w c m)
+inbar-#weakMonEq-APPLY-CS w c m comp = Bar.∀𝕎-inBarFunc barI aw (ChoiceBar.choice-weakℕ CB m comp)
   where
     aw : ∀𝕎 w (λ w' e' → weakℕM w' (getChoice· m c)
                         → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) (#APPLY (#CS c) (#NUM m)))
@@ -235,11 +236,12 @@ inbar-#weakMonEq-APPLY-CS w c m = Bar.∀𝕎-inBarFunc barI aw (ChoiceBar.choic
 
 
 equalTypes-#Σchoice-body : (i : ℕ) (w : 𝕎·) (c : Name) (k : ℕ)
+                           → compatible· c w Resℕ
                            → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm)
                                            → equalInType i w' #NAT a₁ a₂
                                            → equalTypes i w' (#EQ (#APPLY (#CS c) a₁) (#NUM k) #QNAT)
                                                               (#EQ (#APPLY (#CS c) a₂) (#NUM k) #QNAT))
-equalTypes-#Σchoice-body i w c k w' e' a₁ a₂ ea =
+equalTypes-#Σchoice-body i w c k comp w' e' a₁ a₂ ea =
   eqTypesEQ← eqTypesQNAT aw1 aw2
   where
     j : inbar w' (λ w' _ → #strongMonEq w' a₁ a₂)
@@ -252,7 +254,7 @@ equalTypes-#Σchoice-body i w c k w' e' a₁ a₂ ea =
                                  → inbar w'' (↑wPred' (λ w''' e → #weakMonEq w''' (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)) e''))
         aw11 w'' e'' (m , c₁ , c₂) =
           inbar-wPred'-#weakMonEq w' w'' e'' (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
-                                  (→inbar-#weakMonEq-APPLY-CS w'' a₁ a₂ m c c₁ c₂ (inbar-#weakMonEq-APPLY-CS w'' c m))
+                                  (→inbar-#weakMonEq-APPLY-CS w'' a₁ a₂ m c c₁ c₂ (inbar-#weakMonEq-APPLY-CS w'' c m (⊑-compatible· (⊑-trans· e' e'') comp)))
 
     aw2 : equalInType i w' #QNAT (#NUM k) (#NUM k)
     aw2 = NUM-equalInType-QNAT i w' k
@@ -260,22 +262,24 @@ equalTypes-#Σchoice-body i w c k w' e' a₁ a₂ ea =
 
 
 equalTypes-#Σchoice-body-sub0 : (i : ℕ) (w : 𝕎·) (c : Name) (k : ℕ)
+                                → compatible· c w Resℕ
                                 → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm)
                                                 → equalInType i w' #NAT a₁ a₂
                                                 → equalTypes i w' (sub0 a₁ (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k) #[0]QNAT))
                                                                    (sub0 a₂ (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k) #[0]QNAT)))
-equalTypes-#Σchoice-body-sub0 i w c k w' e' a₁ a₂ ea rewrite sub0-#Σchoice-body≡ a₁ c k | sub0-#Σchoice-body≡ a₂ c k =
-  equalTypes-#Σchoice-body i w c k w' e' a₁ a₂ ea
+equalTypes-#Σchoice-body-sub0 i w c k comp w' e' a₁ a₂ ea rewrite sub0-#Σchoice-body≡ a₁ c k | sub0-#Σchoice-body≡ a₂ c k =
+  equalTypes-#Σchoice-body i w c k comp w' e' a₁ a₂ ea
 
 
 
 equalInType-#Σchoice : {n i : ℕ} (p : i < n) (w : 𝕎·) (c : Name) (k : ℕ)
+                       → compatible· c w Resℕ
                        → equalInType n w (#UNIV i) (#Σchoice c k) (#Σchoice c k)
-equalInType-#Σchoice {n} {i} p w c k =
+equalInType-#Σchoice {n} {i} p w c k comp =
   equalTypes→equalInType-UNIV p (eqTypesSUM← {w} {i}
                                                {#NAT} {#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k) #[0]QNAT}
                                                {#NAT} {#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k) #[0]QNAT}
-                                               (λ w' e' → eqTypesNAT) (equalTypes-#Σchoice-body-sub0 i w c k))
+                                               (λ w' e' → eqTypesNAT) (equalTypes-#Σchoice-body-sub0 i w c k comp))
 
 
 getChoice→equalInType-#Σchoice-aux2 : {n : ℕ} {name : Name} {w : 𝕎·} (i : ℕ)
@@ -309,16 +313,17 @@ getChoice→equalInType-#Σchoice-aux1 {n} {name} {w} i g rewrite sub0-#Σchoice
 
 
 getChoice→equalInType-#Σchoice-aux : {n : ℕ} {name : Name} {w : 𝕎·} (i : ℕ)
+                                      → compatible· name w Resℕ
                                       → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getChoice· n name w' ≡ just (NUM 0)))
                                       → equalInType
                                            i w
                                            (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (#[0]NUM 0) #[0]QNAT))
                                            (#PAIR (#NUM n) #AX) (#PAIR (#NUM n) #AX)
-getChoice→equalInType-#Σchoice-aux {n} {name} {w} i g =
+getChoice→equalInType-#Σchoice-aux {n} {name} {w} i comp g =
   equalInType-SUM
     {i} {w} {#NAT} {#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (#[0]NUM 0) #[0]QNAT}
     (eqTypes-mon (uni i) eqTypesNAT)
-    (equalTypes-#Σchoice-body-sub0 i w name 0)
+    (equalTypes-#Σchoice-body-sub0 i w name 0 comp)
     j
   where
     j : inbar w (λ w' _ → SUMeq (equalInType i w' #NAT)
@@ -337,9 +342,10 @@ getChoice→equalInType-#Σchoice-aux {n} {name} {w} i g =
 
 
 getChoice→equalInType-#Σchoice : {n : ℕ} {name : Name} {w : 𝕎·} (i : ℕ)
-                                 → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getChoice· n name w' ≡ just (NUM 0)))
-                                 → equalInType i w (#Σchoice name 0) (#PAIR (#NUM n) #AX) (#PAIR (#NUM n) #AX)
-getChoice→equalInType-#Σchoice {n} {name} {w} i g rewrite #Σchoice≡ name 0 = getChoice→equalInType-#Σchoice-aux i g
+                                  → compatible· name w Resℕ
+                                  → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getChoice· n name w' ≡ just (NUM 0)))
+                                  → equalInType i w (#Σchoice name 0) (#PAIR (#NUM n) #AX) (#PAIR (#NUM n) #AX)
+getChoice→equalInType-#Σchoice {n} {name} {w} i comp g rewrite #Σchoice≡ name 0 = getChoice→equalInType-#Σchoice-aux i comp g
 
 
 steps-APPLY-cs-forward : (w : 𝕎·) (n m : ℕ) (a b v : Term) (c : Name)
@@ -590,7 +596,7 @@ notClassical w {n} {i} p =
                                   ⊎
                                   (t #⇛ (#INR x) at w' × t #⇛ (#INR y) at w'
                                    × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name 0) a₁ a₂)))))))
-        h1 = aw5 w2 e2 (#Σchoice name 0) (#Σchoice name 0) (equalInType-#Σchoice p w2 name 0)
+        h1 = aw5 w2 e2 (#Σchoice name 0) (#Σchoice name 0) (equalInType-#Σchoice p w2 name 0 (startChoiceCompatible· Resℕ w1))
 
         oc1 : isOnlyChoice∈𝕎 (NUM 1) name w2
         oc1 n t e rewrite getChoice-startNewChoice· n Resℕ w1 = ⊥-elim (¬just≡nothing (sym e))
@@ -666,7 +672,7 @@ notClassical w {n} {i} p =
         w5 : 𝕎·
         w5 = freeze· name w4 (NUM 0)
 
-        rNUM : (k : ℕ) → Resℕ k (NUM 0)
+        rNUM : (k : ℕ) → ·ᵣ Resℕ k (NUM 0)
         rNUM k = 0 , refl
 
         e5 : w4 ⊑· w5
@@ -679,7 +685,7 @@ notClassical w {n} {i} p =
         g1 = snd (getFreeze· name w4 (NUM 0) comp3)
 
         h6 : equalInType i w5 (#Σchoice name 0) (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX)
-        h6 = getChoice→equalInType-#Σchoice i g1
+        h6 = getChoice→equalInType-#Σchoice i (⊑-compatible· e5 comp3) g1
 
         -- conclusion
         concl : ((t #⇛ (#INL x) at w4 × t #⇛ (#INL y) at w4 × equalInType i w4 (#Σchoice name 0) x y)

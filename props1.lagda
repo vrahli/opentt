@@ -2614,24 +2614,9 @@ inbar×→₂ : {w : 𝕎·} {f g : wPred w}
 inbar×→₂ {w} {f} {g} i = Bar.∀𝕎-inBarFunc barI (λ w' e' → snd) i
 
 
-
-comp-ind-ℕ-aux : (P : ℕ → Set(lsuc(L)))
-                 → ((n : ℕ) → ((m : ℕ) → m < n → P m) → P n)
-                 → (n m : ℕ) → m < n → P m
-comp-ind-ℕ-aux P ind (suc n) m (_≤_.s≤s z) with m≤n⇒m<n∨m≡n z
-... | inj₁ q = comp-ind-ℕ-aux P ind n m q
-... | inj₂ q rewrite q = ind n (comp-ind-ℕ-aux P ind n)
-
-
-comp-ind-ℕ : (P : ℕ → Set(lsuc(L)))
-              → ((n : ℕ) → ((m : ℕ) → m < n → P m) → P n)
-              → (n : ℕ) → P n
-comp-ind-ℕ P ind n = comp-ind-ℕ-aux P ind (suc n) n (_≤_.s≤s ≤-refl)
-
-
 {--
 is-TSP-univs-uni : (n : ℕ) → is-TSP-univs (uni n)
-is-TSP-univs-uni n = comp-ind-ℕ (λ n → is-TSP-univs (uni n)) h n
+is-TSP-univs-uni n = <ℕind (λ n → is-TSP-univs (uni n)) h n
   where
     h : (i : ℕ) → ((m : ℕ) → m < i → is-TSP-univs (uni m)) → is-TSP-univs (uni i)
     h i ind w A B x = {!!} --is-TSP-univs-eqUnivi i ind w A B x
@@ -2641,7 +2626,7 @@ is-TSP-univs-uni n = comp-ind-ℕ (λ n → is-TSP-univs (uni n)) h n
 
 
 typeSysConds : (n : ℕ) → is-TSP-univs (uni n)
-typeSysConds n = comp-ind-ℕ (λ n → is-TSP-univs (uni n)) typeSysConds-aux n
+typeSysConds n = <ℕind (λ n → is-TSP-univs (uni n)) typeSysConds-aux n
 
 
 
