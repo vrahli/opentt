@@ -54,14 +54,14 @@ progressing→ΣgetCs≤ {w} {c} n 0 comp prog = k , (fst i2 ++ fst i3) , fst (s
     ltk : 0 < k
     ltk = fst (snd z)
 
-    i1 : Σ (List Term) (λ l → ∈world (mkcs n l Resℕ) w)
+    i1 : Σ (List Term) (λ l → ∈world (mkcs n l Resℕ) w × resSatCs 0 l Resℕ)
     i1 = comp
 
-    i2 : Σ (List Term) (λ l → ∈world (mkcs n l Resℕ) (chain.seq c 0))
+    i2 : Σ (List Term) (λ l → ∈world (mkcs n l Resℕ) (chain.seq c 0) × resSatCs 0 l Resℕ)
     i2 = ⊑-compatible· (chain.init c) comp
 
     i3 : Σ (List Term) (λ l → ∈world (mkcs n (fst i2 ++ l) Resℕ) (chain.seq c k) × 0 < length l)
-    i3 = snd (snd z) (fst i2) Resℕ (snd i2)
+    i3 = snd (snd z) (fst i2) Resℕ (fst (snd i2))
 
     len : 0 < length (proj₁ i2 ++ proj₁ i3)
     len rewrite length-++ (fst i2) {fst i3} = <-transˡ (snd (snd i3)) (m≤n+m _ _)
@@ -119,7 +119,7 @@ IS𝔹-ℕ w n m comp =
     ext {w'} (e , l , g , len) = e
 
     mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
-    mon {w1} {w2} e (e' , l , g , len) = ⊑-trans· e' e , l ++ fst (≽-pres-∈world e g) , snd (≽-pres-∈world e g) , ln
+    mon {w1} {w2} e (e' , l , g , len) = ⊑-trans· e' e , l ++ fst (≽-pres-∈world e g) , fst (snd (≽-pres-∈world e g)) , ln
       where
         ln : m < length (l ++ fst (≽-pres-∈world e g))
         ln rewrite length-++ l {fst (≽-pres-∈world e g)} = ≤-stepsʳ (length (fst (≽-pres-∈world e g))) len
@@ -132,22 +132,74 @@ IS𝔹-ℕ w n m comp =
 Σselect {L} {A} {suc k} {x ∷ l} len = Σselect {L} {A} {k} {l} (s≤s-inj len)
 
 
+
+⊑-∈world→≤length : {w1 w2 : 𝕎·} {name : Name} {l1 l2 : List Term} {r : Res}
+                    → w1 ⊑· w2
+                    → ∈world (mkcs name l1 r) w1
+                    → ∈world (mkcs name l2 r) w2
+                    → length l1 ≤ length l2
+⊑-∈world→≤length {w1} {w2} {name} {l1} {l2} {r} e i1 i2
+  rewrite fst (snd (≽-pres-∈world e i1))
+        | sym (mkcs-inj2 (just-inj i2))
+        | length-++ l1 {fst (≽-pres-∈world e i1)}
+  = m≤m+n (length l1) (length (fst (≽-pres-∈world e i1)))
+
+
+
+⊑-∈world→Σ++ : {w1 w2 : 𝕎·} {name : Name} {l1 l2 : List Term} {r : Res}
+                    → w1 ⊑· w2
+                    → ∈world (mkcs name l1 r) w1
+                    → ∈world (mkcs name l2 r) w2
+                    → Σ (List Term) (λ l → l2 ≡ l1 ++ l)
+⊑-∈world→Σ++ {w1} {w2} {name} {l1} {l2} {r} e i1 i2
+  rewrite fst (snd (≽-pres-∈world e i1))
+        | sym (mkcs-inj2 (just-inj i2))
+  = fst (≽-pres-∈world e i1) , refl
+
+
+resSatCs-select→ : {n m : ℕ} {l : List Term} {r : Res} {t : Term}
+                    → resSatCs n l r
+                    → select m l ≡ just t
+                    → ·ᵣ r (m + n) t
+resSatCs-select→ {n} {0} {x ∷ l} {r} {t} (c , s) e rewrite just-inj e = c
+resSatCs-select→ {n} {suc m} {x ∷ l} {r} {t} (c , s) e rewrite sym (+-suc m n) = resSatCs-select→ s e
+
+
+
 choice-weakℕ-beth : (w : 𝕎·) (c : Name) (m : ℕ)
                      → compatible· c w Resℕ
                      → inBethBar w (λ w' _ → weakℕM w' (getChoice· m c))
 choice-weakℕ-beth w c m comp = IS𝔹-ℕ w c m comp , i
   where
     i : inIS𝔹 (IS𝔹-ℕ w c m comp) (λ w' _ → weakℕM w' (getChoice· m c))
-    i {w'} e (e0 , l , g , len) w1 e1 z w2 e2 = lift (fst t , g2 , {!!})
+    i {w'} e (e0 , l , g , len) w1 e1 z w2 e2 = lift (fst sel , g1 , num)
       where
-        g1 : Σ (List Term) (λ l' → getCs c w2 ≡ just (mkcs c (l ++ l') Resℕ))
-        g1 = ≽-pres-getCs (⊑-trans· e1 e2) g
+        comp1 : compatible· c w2 Resℕ
+        comp1 = ⊑-compatible· (⊑-trans· z e2) comp
 
-        t : Σ Term (λ t → select m l ≡ just t)
-        t = Σselect {0ℓ} {Term} {m} {l} len
+        sel : Σ Term (λ t → select m l ≡ just t)
+        sel = Σselect {0ℓ} {Term} {m} {l} len
 
-        g2 : getChoice· m c w2 ≡ just (fst (Σselect {0ℓ} {Term} {m} {l} len))
-        g2 rewrite snd g1 | select++-just {0ℓ} {Term} {m} {l} {fst g1} (snd t) = refl
+        l' : List Term
+        l' = fst (⊑-∈world→Σ++ (⊑-trans· e1 e2) g (fst (snd comp1)))
+
+        comp2 : ∈world (mkcs c (l ++ l') Resℕ) w2 × resSatCs 0 (l ++ l') Resℕ
+        comp2 rewrite sym (snd (⊑-∈world→Σ++ (⊑-trans· e1 e2) g (fst (snd comp1)))) = snd comp1
+
+        sel2 : select m (l ++ l') ≡ just (fst sel)
+        sel2 rewrite select++-just {0ℓ} {Term} {m} {l} {l'} (snd sel) = refl
+
+        g1 : getChoice· m c w2 ≡ just (fst sel)
+        g1 rewrite (fst comp2) | select++-just {0ℓ} {Term} {m} {l} {l'} (snd sel) = refl
+
+        sat : ·ᵣ Resℕ (m + 0) (fst sel)
+        sat = resSatCs-select→ (snd comp2) sel2
+
+        num : Σ ℕ (λ n → fst sel ⇓ NUM n at w2)
+        num = fst sat , cn
+          where
+            cn : fst sel ⇓ NUM (fst sat) at w2
+            cn rewrite sym (snd sat) = ⇓-refl _ _
 
 
 followChoice-beth : (u : Term) (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
@@ -156,4 +208,5 @@ followChoice-beth : (u : Term) (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0�
                     → compatible· c w r
                     → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → isOnlyChoice∈𝕎 u c w1 × compatible· c w1 r × f w1 e1))
 followChoice-beth u c {w} {f} {r} i oc comp = {!!}
+
 \end{code}
