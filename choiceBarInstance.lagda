@@ -202,11 +202,14 @@ choice-weakℕ-beth w c m comp = IS𝔹-ℕ w c m comp , i
             cn rewrite sym (snd sat) = ⇓-refl _ _
 
 
+
+-- TODO: this would work if we had a contraint that u is the default value of r
+-- I also need to swap 0/1 in classical.lagda
 followChoice-beth : (u : Term) (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                     → inBethBar w f
                     → isOnlyChoice∈𝕎 u c w
                     → compatible· c w r
                     → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → isOnlyChoice∈𝕎 u c w1 × compatible· c w1 r × f w1 e1))
-followChoice-beth u c {w} {f} {r} i oc comp = {!!}
+followChoice-beth u c {w} {f} {r} (bar , i) oc comp = {!!}
 
 \end{code}

@@ -52,6 +52,7 @@ record ChoiceBar : Set(lsuc(lsuc(L))) where
     choice-weakℕ : {w : 𝕎·} {c : Name} (m : ℕ) → compatible· c w Resℕ → inbar w (λ w' _ → weakℕM w' (getChoice· m c))
 
     -- This allows selecting a branch of a bar that follows a given choice 'u'
+    -- TODO: replace u with (Res.def r)
     followChoice : (u : Term) (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                    → inbar w f
                    → isOnlyChoice∈𝕎 u c w
