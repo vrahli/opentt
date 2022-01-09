@@ -371,26 +371,28 @@ getChoice⊎ n name w with getChoice· n name w
 
 
 -- TODO: generalize this so that (NUM i) is value
-isOnlyChoice∈𝕎→≡-aux : {w : 𝕎·} {c : Name} {v : Term} {k i m : ℕ}
-                         → isOnlyChoice∈𝕎 (NUM i) c w
+isOnlyChoice∈𝕎→≡-aux : {w : 𝕎·} {c : Name} {v u : Term} {k m : ℕ}
+                         → isOnlyChoice∈𝕎 u c w
                          → steps k (APPLY (CS c) (NUM m)) w ≡ v
                          → isValue v
-                         → v ≡ NUM i
-isOnlyChoice∈𝕎→≡-aux {w} {c} {v} {0} {i} {m} oc c₁ isv rewrite sym c₁ = ⊥-elim isv
-isOnlyChoice∈𝕎→≡-aux {w} {c} {v} {suc k} {i} {m} oc c₁ isv with getChoice⊎ m c w
-... | inj₁ (u , p) rewrite p | oc m u p | stepsVal (NUM i) w k tt = sym c₁
+                         → isValue u
+                         → v ≡ u
+isOnlyChoice∈𝕎→≡-aux {w} {c} {v} {u} {0} {m} oc c₁ isv isu rewrite sym c₁ = ⊥-elim isv
+isOnlyChoice∈𝕎→≡-aux {w} {c} {v} {u} {suc k} {m} oc c₁ isv isu  with getChoice⊎ m c w
+... | inj₁ (z , p) rewrite p | oc m z p | stepsVal u w k isu = sym c₁
 ... | inj₂ p rewrite p | sym c₁ = ⊥-elim isv
 
 
 
-isOnlyChoice∈𝕎→≡ : {w : 𝕎·} {c : Name} {a v : Term} {i m : ℕ}
-                     → isOnlyChoice∈𝕎 (NUM i) c w
+isOnlyChoice∈𝕎→≡ : {w : 𝕎·} {c : Name} {a v u : Term} {m : ℕ}
+                     → isOnlyChoice∈𝕎 u c w
                      → a ⇓ NUM m at w
                      → APPLY (CS c) a ⇓ v at w
                      → isValue v
-                     → v ≡ NUM i
-isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {i} {m} oc c₁ c₂ isv =
-  isOnlyChoice∈𝕎→≡-aux {w} {c} {v} {k} {i} {m} oc c₄ isv
+                     → isValue u
+                     → v ≡ u
+isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {u} {m} oc c₁ c₂ isv isu =
+  isOnlyChoice∈𝕎→≡-aux {w} {c} {v} {u} {k} {m} oc c₄ isv isu
   where
     c₃ : APPLY (CS c) (NUM m) ⇓ v at w
     c₃ = steps-APPLY-cs-forward w (fst c₁) (fst c₂) a (NUM m) v c isv (snd c₁) (snd c₂)
@@ -402,14 +404,14 @@ isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {i} {m} oc c₁ c₂ isv =
     c₄ = snd c₃
 
 
--- TODO: generalize to n(=0) <> m(=1)
-¬equalInType-#Σchoice : (i : ℕ) (w : 𝕎·) (r : Res) (c : Name) (x y : CTerm) {k1 k2 : ℕ}
-                        → ¬ k1 ≡ k2
-                        → isOnlyChoice∈𝕎 (NUM k2) c w
+¬equalInType-#Σchoice : (i : ℕ) (w : 𝕎·) (r : Res) (c : Name) (x y : CTerm) {k1 : ℕ}
+                        → isValue (Res.def r)
+                        → ¬ NUM k1 ≡ Res.def r
+                        → isOnlyChoice∈𝕎 (Res.def r) c w
                         → compatible· c w r
                         → equalInType i w (#Σchoice c k1) x y
                         → ⊥
-¬equalInType-#Σchoice i w r c x y {k1} {k2} diff oc comp eqi = diff neq3 -- ¬≡s k1 neq3
+¬equalInType-#Σchoice i w r c x y {k1} isvd diff oc comp eqi = diff neq3 -- ¬≡s k1 neq3
   where
     h0 : equalInType i w (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k1) #[0]QNAT)) x y
     h0 rewrite #Σchoice≡ c k1 = eqi
@@ -427,19 +429,19 @@ isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {i} {m} oc c₁ c₂ isv =
 
     -- 1st jump to bar
     w1 : 𝕎·
-    w1 = fst (ChoiceBar.followChoice CB (NUM k2) c h1 oc comp)
+    w1 = fst (ChoiceBar.followChoice CB c h1 oc comp)
 
     e1 : w ⊑· w1
-    e1 = fst (snd (ChoiceBar.followChoice CB (NUM k2) c h1 oc comp))
+    e1 = fst (snd (ChoiceBar.followChoice CB c h1 oc comp))
 
-    oc1 : isOnlyChoice∈𝕎 (NUM k2) c w1
-    oc1 = fst (snd (snd (ChoiceBar.followChoice CB (NUM k2) c h1 oc comp)))
+    oc1 : isOnlyChoice∈𝕎 (Res.def r) c w1
+    oc1 = fst (snd (snd (ChoiceBar.followChoice CB c h1 oc comp)))
 
     comp1 : compatible· c w1 r
-    comp1 = fst (snd (snd (snd (ChoiceBar.followChoice CB (NUM k2) c h1 oc comp))))
+    comp1 = fst (snd (snd (snd (ChoiceBar.followChoice CB c h1 oc comp))))
 
     h2 : SUMeq (equalInType i w1 #NAT) (λ a b ea → equalInType i w1 (#EQ (#APPLY (#CS c) a) (#NUM k1) #QNAT)) w1 x y
-    h2 = snd (snd (snd (snd (ChoiceBar.followChoice CB (NUM k2) c h1 oc comp))))
+    h2 = snd (snd (snd (snd (ChoiceBar.followChoice CB c h1 oc comp))))
 
     a₁ : CTerm
     a₁ = fst h2
@@ -464,19 +466,19 @@ isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {i} {m} oc c₁ c₂ isv =
     ea2 = equalInType-NAT→ i w1 a₁ a₂ ea1
 
     w2 : 𝕎·
-    w2 = fst (ChoiceBar.followChoice CB (NUM k2) c ea2 oc1 comp1)
+    w2 = fst (ChoiceBar.followChoice CB c ea2 oc1 comp1)
 
     e2 : w1 ⊑· w2
-    e2 = fst (snd (ChoiceBar.followChoice CB (NUM k2) c ea2 oc1 comp1))
+    e2 = fst (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1))
 
-    oc2 : isOnlyChoice∈𝕎 (NUM k2) c w2
-    oc2 = fst (snd (snd (ChoiceBar.followChoice CB (NUM k2) c ea2 oc1 comp1)))
+    oc2 : isOnlyChoice∈𝕎 (Res.def r) c w2
+    oc2 = fst (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1)))
 
     comp2 : compatible· c w2 r
-    comp2 = fst (snd (snd (snd (ChoiceBar.followChoice CB (NUM k2) c ea2 oc1 comp1))))
+    comp2 = fst (snd (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1))))
 
     ea3 : #strongMonEq w2 a₁ a₂
-    ea3 = snd (snd (snd (snd (ChoiceBar.followChoice CB (NUM k2) c ea2 oc1 comp1))))
+    ea3 = snd (snd (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1))))
 
     m : ℕ
     m = fst ea3
@@ -492,19 +494,19 @@ isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {i} {m} oc c₁ c₂ isv =
     eb3 = equalInType-EQ-QNAT→ {i} {w2} {#APPLY (#CS c) a₁} {#NUM k1} eb2
 
     w3 : 𝕎·
-    w3 = fst (ChoiceBar.followChoice CB (NUM k2) c eb3 oc2 comp2)
+    w3 = fst (ChoiceBar.followChoice CB c eb3 oc2 comp2)
 
     e3 : w2 ⊑· w3
-    e3 = fst (snd (ChoiceBar.followChoice CB (NUM k2) c eb3 oc2 comp2))
+    e3 = fst (snd (ChoiceBar.followChoice CB c eb3 oc2 comp2))
 
-    oc3 : isOnlyChoice∈𝕎 (NUM k2) c w3
-    oc3 = fst (snd (snd (ChoiceBar.followChoice CB (NUM k2) c eb3 oc2 comp2)))
+    oc3 : isOnlyChoice∈𝕎 (Res.def r) c w3
+    oc3 = fst (snd (snd (ChoiceBar.followChoice CB c eb3 oc2 comp2)))
 
     comp3 : compatible· c w3 r
-    comp3 = fst (snd (snd (snd (ChoiceBar.followChoice CB (NUM k2) c eb3 oc2 comp2))))
+    comp3 = fst (snd (snd (snd (ChoiceBar.followChoice CB c eb3 oc2 comp2))))
 
     eb4 : #weakMonEq w3 (#APPLY (#CS c) a₁) (#NUM k1)
-    eb4 = snd (snd (snd (snd (ChoiceBar.followChoice CB (NUM k2) c eb3 oc2 comp2))))
+    eb4 = snd (snd (snd (snd (ChoiceBar.followChoice CB c eb3 oc2 comp2))))
 
     -- and now we conclude
     k : ℕ
@@ -516,14 +518,14 @@ isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {i} {m} oc c₁ c₂ isv =
     cn₂ : #NUM k1 #⇓ #NUM k at w3
     cn₂ = snd (snd (#weakMonEq→ {w3} {#APPLY (#CS c) a₁} {#NUM k1} eb4))
 
-    neq1 : NUM k ≡ NUM k2
-    neq1 = isOnlyChoice∈𝕎→≡ oc3 (lower (ca₁ w3 e3)) cn₁ tt
+    neq1 : NUM k ≡ Res.def r
+    neq1 = isOnlyChoice∈𝕎→≡ oc3 (lower (ca₁ w3 e3)) cn₁ tt isvd
 
     neq2 : NUM k1 ≡ NUM k
     neq2 = compVal (NUM k1) (NUM k) w3 cn₂ tt
 
-    neq3 : k1 ≡ k2
-    neq3 = NUMinj (trans neq2 neq1)
+    neq3 : NUM k1 ≡ Res.def r
+    neq3 = trans neq2 neq1
 
 
 
@@ -586,20 +588,20 @@ notClassical w {n} {i} p =
         name : Name
         name = newChoice· w1
 
+        r : Res
+        r = Resℕ
+
         w2 : 𝕎·
-        w2 = startChoice· name Resℕ w1
+        w2 = startChoice· name r w1
 
         e2 : w1 ⊑· w2
-        e2 = fst (startNewChoice⊏· Resℕ w1)
-
-        k0 : ℕ
-        k0 = 0
+        e2 = fst (startNewChoice⊏· r w1)
 
         k1 : ℕ
-        k1 = 1
+        k1 = 1 -- This has to be different from r's default value
 
-        dks : ¬ k1 ≡ k0
-        dks e = ¬≡s 0 (sym e)
+        dks : ¬ NUM k1 ≡ Res.def r
+        dks e = ¬≡s 0 (sym (NUMinj e))
 
         -- instantiate aw5 with w2 (we also need a proof that (w1 ⊑ w2)) and (#Σchoice name k1)
         h1 : inbar w2 (λ w'' _ → Σ CTerm (λ t → inbar w'' (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
@@ -607,21 +609,21 @@ notClassical w {n} {i} p =
                                   ⊎
                                   (t #⇛ (#INR x) at w' × t #⇛ (#INR y) at w'
                                    × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂)))))))
-        h1 = aw5 w2 e2 (#Σchoice name k1) (#Σchoice name k1) (equalInType-#Σchoice p w2 name k1 (startChoiceCompatible· Resℕ w1))
+        h1 = aw5 w2 e2 (#Σchoice name k1) (#Σchoice name k1) (equalInType-#Σchoice p w2 name k1 (startChoiceCompatible· r w1))
 
-        oc1 : isOnlyChoice∈𝕎 (NUM k0) name w2
-        oc1 n t e rewrite getChoice-startNewChoice· n Resℕ w1 = ⊥-elim (¬just≡nothing (sym e))
+        oc1 : isOnlyChoice∈𝕎 (Res.def r) name w2
+        oc1 n t e rewrite getChoice-startNewChoice· n r w1 = ⊥-elim (¬just≡nothing (sym e))
 
-        comp1 : compatible· name w2 Resℕ
-        comp1 = startChoiceCompatible· Resℕ w1
+        comp1 : compatible· name w2 r
+        comp1 = startChoiceCompatible· r w1
 
-        h2 : Σ 𝕎· (λ w3 → Σ (w2 ⊑· w3) (λ e3 → isOnlyChoice∈𝕎 (NUM k0) name w3 × compatible· name w3 Resℕ ×
+        h2 : Σ 𝕎· (λ w3 → Σ (w2 ⊑· w3) (λ e3 → isOnlyChoice∈𝕎 (Res.def r) name w3 × compatible· name w3 Resℕ ×
              Σ CTerm (λ t → inbar w3 (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
                                               → (t #⇛ (#INL x) at w' × t #⇛ (#INL y) at w' × equalInType i w' (#Σchoice name k1) x y)
                                                  ⊎
                                                  (t #⇛ (#INR x) at w' × t #⇛ (#INR y) at w'
                                                   × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂))))))))
-        h2 = ChoiceBar.followChoice CB (NUM k0) name h1 oc1 comp1
+        h2 = ChoiceBar.followChoice CB name h1 oc1 comp1
 
         w3 : 𝕎·
         w3 = fst h2
@@ -629,10 +631,10 @@ notClassical w {n} {i} p =
         e3 : w2 ⊑· w3
         e3 = fst (snd h2)
 
-        oc2 : isOnlyChoice∈𝕎 (NUM k0) name w3
+        oc2 : isOnlyChoice∈𝕎 (Res.def r) name w3
         oc2 = fst (snd (snd h2))
 
-        comp2 : compatible· name w3 Resℕ
+        comp2 : compatible· name w3 r
         comp2 = fst (snd (snd (snd h2)))
 
         t : CTerm
@@ -645,13 +647,13 @@ notClassical w {n} {i} p =
                                   × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂)))))
         h3 = snd (snd (snd (snd (snd h2))))
 
-        h4 : Σ 𝕎· (λ w4 → Σ (w3 ⊑· w4) (λ e4 → isOnlyChoice∈𝕎 (NUM k0) name w4 × compatible· name w4 Resℕ ×
+        h4 : Σ 𝕎· (λ w4 → Σ (w3 ⊑· w4) (λ e4 → isOnlyChoice∈𝕎 (Res.def r) name w4 × compatible· name w4 r ×
                          Σ CTerm (λ x → Σ CTerm (λ y
                          → (t #⇛ (#INL x) at w4 × t #⇛ (#INL y) at w4 × equalInType i w4 (#Σchoice name k1) x y)
                             ⊎
                             (t #⇛ (#INR x) at w4 × t #⇛ (#INR y) at w4
                              × ∀𝕎 w4 (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂))))))
-        h4 = ChoiceBar.followChoice CB (NUM k0) name h3 oc2 comp2
+        h4 = ChoiceBar.followChoice CB name h3 oc2 comp2
 
         w4 : 𝕎·
         w4 = fst h4
@@ -659,10 +661,10 @@ notClassical w {n} {i} p =
         e4 : w3 ⊑· w4
         e4 = fst (snd h4)
 
-        oc3 : isOnlyChoice∈𝕎 (NUM k0) name w4
+        oc3 : isOnlyChoice∈𝕎 (Res.def r) name w4
         oc3 = fst (snd (snd h4))
 
-        comp3 : compatible· name w4 Resℕ
+        comp3 : compatible· name w4 r
         comp3 = fst (snd (snd (snd h4)))
 
         x : CTerm
@@ -683,7 +685,7 @@ notClassical w {n} {i} p =
         w5 : 𝕎·
         w5 = freeze· name w4 (NUM k1)
 
-        rNUM : (k : ℕ) → ·ᵣ Resℕ k (NUM k1)
+        rNUM : (k : ℕ) → ·ᵣ r k (NUM k1)
         rNUM k = k1 , refl
 
         e5 : w4 ⊑· w5
@@ -703,7 +705,7 @@ notClassical w {n} {i} p =
                  ⊎
                  (t #⇛ (#INR x) at w4 × t #⇛ (#INR y) at w4
                   × ∀𝕎 w4 (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂))) → ⊥
-        concl (inj₁ (c₁ , c₂ , eqi)) = ¬equalInType-#Σchoice i w4 Resℕ name x y dks oc3 comp3 eqi
+        concl (inj₁ (c₁ , c₂ , eqi)) = ¬equalInType-#Σchoice i w4 Resℕ name x y tt dks oc3 comp3 eqi
         concl (inj₂ (c₁ , c₂ , aw)) = aw w5 e5 (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX) h6
 
 \end{code}[hide]

@@ -5,6 +5,7 @@ open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to ls
 open import Agda.Builtin.Sigma
 open import Data.Product
 open import Data.Sum
+open import Data.Empty
 open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred ; _⊔_)
 open import Data.Nat.Properties
 open import Relation.Binary.PropositionalEquality hiding ([_]) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
@@ -203,13 +204,164 @@ choice-weakℕ-beth w c m comp = IS𝔹-ℕ w c m comp , i
 
 
 
--- TODO: this would work if we had a contraint that u is the default value of r
--- I also need to swap 0/1 in classical.lagda
-followChoice-beth : (u : Term) (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
+∷replicate≡replicate∷ʳ : {L : Level} {A : Set(L)} (n : ℕ) (x : A) → x ∷ replicate n x ≡ replicate n x ∷ʳ x
+∷replicate≡replicate∷ʳ {L} {A} 0 x = refl
+∷replicate≡replicate∷ʳ {L} {A} (suc n) x rewrite ∷replicate≡replicate∷ʳ n x = refl
+
+
+
+Resη : {L : Level} (r : Res{L}) → mkRes (Res.res r) (Res.def r) (Res.sat r) ≡ r
+Resη {L} (mkRes r d s) = refl
+
+
+→getCsFreezeSeq-replicate : {c : Name} {w : 𝕎·} {l : List Term} {r : Res} {rs : List NRes} (n : ℕ)
+                             → mkNRes c r ∈ rs
+                             → NRes-nodup rs
+                             → getCs c w ≡ just (mkcs c l r)
+                             → Σ ℕ (λ k → getCs c (freezeSeq rs w n) ≡ just (mkcs c (l ++ replicate k (Res.def r)) r))
+→getCsFreezeSeq-replicate {c} {w} {l} {r} {rs} 0 i nodp h = 0 , h'
+  where
+    h' : getCs c w ≡ just (mkcs c (l ++ []) r)
+    h' rewrite ++[] l = h
+→getCsFreezeSeq-replicate {c} {w} {l} {r} {rs} (suc n) i nodp h = suc (fst ind) , cc
+  where
+    ind : Σ ℕ (λ k → getCs c (freezeSeq rs w n) ≡ just (mkcs c (l ++ replicate k (Res.def r)) r))
+    ind = →getCsFreezeSeq-replicate n i nodp h
+
+    j : mkNRes c (mkRes (Res.res r) (Res.def r) (Res.sat r)) ∈ rs
+    j rewrite Resη r = i
+
+    cc : getCs c (freezeList rs (freezeSeq rs w n)) ≡ just (mkcs c (l ++ Res.def r ∷ replicate (fst ind) (Res.def r)) r)
+    cc rewrite ∷replicate≡replicate∷ʳ (fst ind) (Res.def r) | sym (++-assoc l (replicate (fst ind) (Res.def r)) [ Res.def r ]) =
+      getCs-freezeList≡ nodp j (snd ind)
+
+
+
+select→∈ : {L : Level} {A : Set(L)} {k : ℕ} {l : List A} {t : A}
+            → select k l ≡ just t
+            → t ∈ l
+select→∈ {L} {A} {0} {x ∷ l} {t} sel rewrite just-inj sel = here refl
+select→∈ {L} {A} {suc k} {x ∷ l} {t} sel = there (select→∈ sel)
+
+
+select++→⊎∈ : {L : Level} {A : Set(L)} {k : ℕ} {l l' : List A} {t : A}
+               → select k (l ++ l') ≡ just t
+               → select k l ≡ just t ⊎ t ∈ l'
+select++→⊎∈ {L} {A} {k} {[]} {l'} {t} sel = inj₂ (select→∈ sel)
+select++→⊎∈ {L} {A} {0} {x ∷ l} {l'} {t} sel = inj₁ sel
+select++→⊎∈ {L} {A} {suc k} {x ∷ l} {l'} {t} sel = select++→⊎∈ {L} {A} {k} {l} {l'} sel
+
+
+∈replicate→ : {L : Level} {A : Set(L)} {x y : A} {n : ℕ} → y ∈ (replicate n x) → y ≡ x
+∈replicate→ {L} {A} {x} {y} {suc n} (here px) = px
+∈replicate→ {L} {A} {x} {y} {suc n} (there i) = ∈replicate→ i
+
+
+getCsChoice-freezeSeq→⊎ : {k : ℕ} {c : Name} {r : Res} {l : List NRes} {w : 𝕎·} {t : Term} {n : ℕ}
+                           → mkNRes c r ∈ l
+                           → NRes-nodup l
+                           → compatible· c w r
+                           → getCsChoice k c (freezeSeq l w n) ≡ just t
+                           → t ≡ Res.def r ⊎ getCsChoice k c w ≡ just t
+getCsChoice-freezeSeq→⊎ {k} {c} {r} {l} {w} {t} {n} i nodp comp gc with getCs⊎ c (freezeSeq l w n)
+... | inj₁ (mkcs n1 l1 r1 , p) rewrite p | fst (snd comp) = z4 z3
+  where
+    ts : List Term
+    ts = fst comp
+
+    z1 : Σ ℕ (λ k → getCs c (freezeSeq l w n) ≡ just (mkcs c (ts ++ replicate k (Res.def r)) r))
+    z1 = →getCsFreezeSeq-replicate n i nodp (fst (snd comp))
+
+    z2 : select k (ts ++ replicate (fst z1) (Res.def r)) ≡ just t
+    z2 rewrite snd z1 | sym (mkcs-inj2 (just-inj p)) = gc
+
+    z3 : select k ts ≡ just t ⊎ t ∈ (replicate (fst z1) (Res.def r))
+    z3 = select++→⊎∈ {0ℓ} {Term} {k} {ts} z2
+
+    z4 : (select k ts ≡ just t ⊎ t ∈ (replicate (fst z1) (Res.def r))) → (t ≡ Res.def r ⊎ select k (proj₁ comp) ≡ just t)
+    z4 (inj₁ x) = inj₂ x
+    z4 (inj₂ y) = inj₁ (∈replicate→ y)
+
+... | inj₂ p rewrite p = ⊥-elim (¬just≡nothing (sym gc))
+
+
+→isOnlyChoice∈𝕎-𝕎→pchain : {c : Name} {w : 𝕎·} {r : Res{0ℓ}} (n : ℕ)
+                              → compatible· c w r
+                              → isOnlyChoice∈𝕎 (Res.def r) c w
+                              → isOnlyChoice∈𝕎 (Res.def r) c (𝕎→seq w n)
+→isOnlyChoice∈𝕎-𝕎→pchain {c} {w} {r} n comp iso k t e = concl u
+  where
+    i : mkNRes c r ∈ wrdom w
+    i = getCs→mkNRes∈wrdom {c} {w} (fst (snd comp))
+
+    u : t ≡ Res.def r ⊎ getCsChoice k c w ≡ just t
+    u = getCsChoice-freezeSeq→⊎ {k} {c} {r} {wrdom w} {w} {t} {n} i (NRes-nodup-wdom w) comp e
+
+    concl : (t ≡ Res.def r ⊎ getCsChoice k c w ≡ just t) → t ≡ Res.def r
+    concl (inj₁ x) = x
+    concl (inj₂ y) = iso k t y
+
+
+getCs→≡Name : {w : 𝕎·} {n1 n2 : Name} {l : List Term} {r : Res{0ℓ}}
+               → getCs n1 w ≡ just (mkcs n2 l r)
+               → n2 ≡ n1
+getCs→≡Name {start name res ∷ w} {n1} {n2} {l} {r} e with n1 ≟ name
+... | yes p = sym (mkcs-inj1 (just-inj e))
+... | no p = getCs→≡Name {w} e
+getCs→≡Name {choice name t ∷ w} {n1} {n2} {l} {r} e = getCs→≡Name {w} e
+
+
+getCs→≡Name-getCs : {w : 𝕎·} {n1 n2 : Name} {l : List Term} {r : Res{0ℓ}}
+                     → getCs n1 w ≡ just (mkcs n2 l r)
+                     → getCs n1 w ≡ just (mkcs n1 l r)
+getCs→≡Name-getCs {start name res ∷ w} {n1} {n2} {l} {r} e with n1 ≟ name
+... | yes p rewrite mkcs-inj2 (just-inj e) | mkcs-inj3 (just-inj e) = refl
+... | no p = getCs→≡Name-getCs {w} e
+getCs→≡Name-getCs {choice name t ∷ w} {n1} {n2} {l} {r} e = getCs→≡Name-getCs {w} e
+
+
+
+⊑-isOnlyChoice∈𝕎 : {c : Name} {w1 w2 : 𝕎·} {r : Res{0ℓ}} {u : Term}
+                    → w1 ⊑· w2
+                    → isOnlyChoice∈𝕎 u c w2
+                    → isOnlyChoice∈𝕎 u c w1
+⊑-isOnlyChoice∈𝕎 {c} {w1} {w2} {r} {u} e iso k t z with getCs⊎ c w1
+... | inj₁ (mkcs m l r' , p) rewrite p | fst (snd (≽-pres-getCs e (getCs→≡Name-getCs {w1} p))) =
+  iso k t (select++-just {0ℓ} {Term} {k} {l} {fst (≽-pres-getCs e (getCs→≡Name-getCs {w1} p))} z)
+... | inj₂ p rewrite p = ⊥-elim (¬just≡nothing (sym z))
+
+
+
+followChoice-beth : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                     → inBethBar w f
-                    → isOnlyChoice∈𝕎 u c w
+                    → isOnlyChoice∈𝕎 (Res.def r) c w
                     → compatible· c w r
-                    → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → isOnlyChoice∈𝕎 u c w1 × compatible· c w1 r × f w1 e1))
-followChoice-beth u c {w} {f} {r} (bar , i) oc comp = {!!}
+                    → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → isOnlyChoice∈𝕎 (Res.def r) c w1 × compatible· c w1 r × f w1 e1))
+followChoice-beth c {w} {f} {r} (bar , i) oc comp =
+  w' , e , iso , comp' , z
+  where
+    pc : pchain w
+    pc = 𝕎→pchain w
+
+    bp : BarsProp (IS𝔹.bar bar) (pchain.c pc)
+    bp = IS𝔹.bars bar pc
+
+    w' : 𝕎·
+    w' = BarsProp.w' bp
+
+    e : w ⊑· w'
+    e = IS𝔹.ext bar (BarsProp.b bp)
+
+    iso : isOnlyChoice∈𝕎 (Res.def r) c w'
+    iso = ⊑-isOnlyChoice∈𝕎 {c} {w'} {chain.seq (pchain.c pc) (BarsProp.n bp)} {r}
+                            (BarsProp.ext bp)
+                            (→isOnlyChoice∈𝕎-𝕎→pchain {c} {w} {r} (BarsProp.n bp) comp oc)
+
+    comp' : compatible· c w' r
+    comp' = ⊑-compatible· e comp
+
+    z : f w' e
+    z = i e (BarsProp.b bp) w' (⊑-refl· w') e
+
 
 \end{code}
