@@ -53,11 +53,13 @@ startNewChoice : Res → 𝕎· → 𝕎·
 startNewChoice r w = startChoice· (newChoice· w) r w
 
 
-getChoice-startNewChoice· : (n : ℕ) (r : Res) (w : 𝕎·) → getChoice· n (newChoice· w) (startNewChoice r w) ≡ nothing
+getChoice-startNewChoice· : (n : ℕ) (r : Res) (w : 𝕎·) (t : Term)
+                            → getChoice· n (newChoice· w) (startNewChoice r w) ≡ just t → t ≡ Res.def r
+--                            → getChoice· n (newChoice· w) (startNewChoice r w) ≡ nothing
 getChoice-startNewChoice· = getChoice-startNewChoice C
 
 
-startNewChoice⊏· : (r : Res) (w : 𝕎·) → w ⊏ startNewChoice r w
+startNewChoice⊏· : (r : Res) (w : 𝕎·) → w ⊑· startNewChoice r w
 startNewChoice⊏· = startNewChoice⊏ C
 
 

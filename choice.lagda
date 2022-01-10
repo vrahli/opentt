@@ -40,6 +40,7 @@ open import worldDef W
 \begin{code}
 
 -- TODO: fix the level so that restriction can have higher levels
+-- TODO: allow choices to be something else than terms: add a "choice" type
 record Choice : Set(lsuc(L)) where
   constructor mkChoice
   field
@@ -52,10 +53,13 @@ record Choice : Set(lsuc(L)) where
     -- 'records' cs in w
     startChoice : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) → 𝕎·
     -- if we start a new choice then it is 'empty' according to getChoice
-    getChoice-startNewChoice : (n : ℕ) (r : Res{0ℓ}) (w : 𝕎·) → getChoice n (newChoice w) (startChoice (newChoice w) r w) ≡ nothing
+--    getChoice-startNewChoice : (n : ℕ) (r : Res{0ℓ}) (w : 𝕎·) → getChoice n (newChoice w) (startChoice (newChoice w) r w) ≡ nothing
+    getChoice-startNewChoice : (n : ℕ) (r : Res{0ℓ}) (w : 𝕎·) (t : Term)
+                               → getChoice n (newChoice w) (startChoice (newChoice w) r w) ≡ just t → t ≡ Res.def r
+--                               → getChoice n (newChoice w) (startChoice (newChoice w) r w) ≡ nothing
     -- starting a new choice gives us a non-trivial extension
     -- TODO: do we really need ⊏, or is ⊑ enough?
-    startNewChoice⊏ : (r : Res{0ℓ}) (w : 𝕎·) → w ⊏ startChoice (newChoice w) r w
+    startNewChoice⊏ : (r : Res{0ℓ}) (w : 𝕎·) → w ⊑· startChoice (newChoice w) r w
 
     -- states that the choices for c in w are constrained by the restiction
     -- *** This is a necesary assumption for freeze⊑ below, otherwise we might not be able to extend w with t

@@ -358,19 +358,21 @@ getCsChoice-startNewCsChoice-aux : (n : ℕ) (r : Res) (w : 𝕎·) (name : Name
 getCsChoice-startNewCsChoice-aux n r w name ni rewrite getCs-newcs w name r ni = refl
 
 
-getCsChoice-startNewCsChoice : (n : ℕ) (r : Res) (w : 𝕎·)
-                               → getCsChoice n (newCsChoice w) (startNewCsChoice r w) ≡ nothing
-getCsChoice-startNewCsChoice n r w = getCsChoice-startNewCsChoice-aux n r w (newCsChoice w) (snd (freshName (wdom w)))
+getCsChoice-startNewCsChoice : (n : ℕ) (r : Res) (w : 𝕎·) (t : Term)
+                               → getCsChoice n (newCsChoice w) (startNewCsChoice r w) ≡ just t → t ≡ Res.def r
+--                               → getCsChoice n (newCsChoice w) (startNewCsChoice r w) ≡ nothing
+getCsChoice-startNewCsChoice n r w t e
+  rewrite getCsChoice-startNewCsChoice-aux n r w (newCsChoice w) (snd (freshName (wdom w)))
+  = ⊥-elim (¬just≡nothing (sym e))
 
 
 ¬≡startNewCsChoice : (name : Name) (r : Res) (w : world) → ¬ w ≡ startCsChoice name r w
 ¬≡startNewCsChoice name r (x ∷ w) e = ¬≡startNewCsChoice name r w (snd (∷-injective e))
 
 
-startNewCsChoice⊏ : (r : Res) (w : 𝕎·) → w ⊏ startNewCsChoice r w
+startNewCsChoice⊏ : (r : Res) (w : 𝕎·) → w ⊑· startNewCsChoice r w
 startNewCsChoice⊏ r w =
-  (extEntry w (newCsChoice w) r (snd (freshName (wdom w)))) ,
-  ¬≡startNewCsChoice (newCsChoice w) r w
+  (extEntry w (newCsChoice w) r (snd (freshName (wdom w)))) --, ¬≡startNewCsChoice (newCsChoice w) r w
 
 
 

@@ -595,7 +595,7 @@ notClassical w {n} {i} p =
         w2 = startChoice· name r w1
 
         e2 : w1 ⊑· w2
-        e2 = fst (startNewChoice⊏· r w1)
+        e2 = startNewChoice⊏· r w1
 
         k1 : ℕ
         k1 = 1 -- This has to be different from r's default value
@@ -612,7 +612,7 @@ notClassical w {n} {i} p =
         h1 = aw5 w2 e2 (#Σchoice name k1) (#Σchoice name k1) (equalInType-#Σchoice p w2 name k1 (startChoiceCompatible· r w1))
 
         oc1 : isOnlyChoice∈𝕎 (Res.def r) name w2
-        oc1 n t e rewrite getChoice-startNewChoice· n r w1 = ⊥-elim (¬just≡nothing (sym e))
+        oc1 n t e = getChoice-startNewChoice· n r w1 t e --rewrite getChoice-startNewChoice· n r w1 = ⊥-elim (¬just≡nothing (sym e))
 
         comp1 : compatible· name w2 r
         comp1 = startChoiceCompatible· r w1
