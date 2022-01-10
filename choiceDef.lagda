@@ -80,12 +80,23 @@ freeze· : (c : Name) (w : 𝕎·) (t : Term) → 𝕎·
 freeze· = freeze C
 
 
+freezable· : (c : Name) (w : 𝕎·) → Set
+freezable· = freezable C
+
+
 freeze⊑· : (c : Name) (w : 𝕎·) (t : Term) {r : Res} → compatible· c w r → ⋆ᵣ r t → w ⊑· freeze· c w t
 freeze⊑· = freeze⊑ C
 
 
-getFreeze· : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}} → compatible· c w r → Σ ℕ (λ n → ∀𝕎 (freeze· c w t) (λ w' _ → Lift (lsuc(L)) (getChoice· n c w' ≡ just t)))
+getFreeze· : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}}
+             → compatible· c w r
+             → freezable· c w
+             → Σ ℕ (λ n → ∀𝕎 (freeze· c w t) (λ w' _ → Lift (lsuc(L)) (getChoice· n c w' ≡ just t)))
 getFreeze· = getFreeze C
+
+
+freezableStart· : (r : Res{0ℓ}) (w : 𝕎·) → freezable· (newChoice· w) (startNewChoice r w)
+freezableStart· = freezableStart C
 
 
 progress· : (c : Name) (w1 w2 : 𝕎·) → Set(L)

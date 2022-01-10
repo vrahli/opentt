@@ -457,6 +457,15 @@ freezeCs c w t = extcs w c t
 ¬≡freezeCs c (x ∷ w) t e = ¬≡freezeCs c w t (snd (∷-injective e))
 
 
+
+freezableCs : (c : Name) (w : 𝕎·) → Set
+freezableCs c w = ⊤
+
+
+freezableStartCs : (r : Res{0ℓ}) (w : 𝕎·) → freezableCs (newCsChoice w) (startNewCsChoice r w)
+freezableStartCs r w = tt
+
+
 getCs→∈world : {c : Name} {r : Res} {w : 𝕎·} {l : List Term} → getCs c w ≡ just (mkcs c l r) → ∈world (mkcs c l r) w
 getCs→∈world {c} {r} {w} {l} h rewrite h = refl
 
@@ -519,8 +528,9 @@ getChoiceΣ k name w t gc | inj₂ p rewrite p = ⊥-elim (¬just≡nothing (sym
 
 getFreezeCs : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}}
               → compatibleCs c w r
+              → freezableCs c w
               → Σ ℕ (λ n → ∀𝕎 (freezeCs c w t) (λ w' _ → Lift 2ℓ (getCsChoice n c w' ≡ just t)))
-getFreezeCs c w t {r} (l , comp , sat) =
+getFreezeCs c w t {r} (l , comp , sat) fb =
   length l , aw
   where
     aw : ∀𝕎 (freezeCs c w t) (λ w' _ → Lift 2ℓ (getCsChoice (length l) c w' ≡ just t))
@@ -849,8 +859,10 @@ csChoice =
     ⊑-compatibleCs
     startCsChoiceCompatible
     freezeCs
+    freezableCs
     freezeCs⊑
     getFreezeCs
+    freezableStartCs
     progressCs
     freezeCsProgress
     𝕎→csChain

@@ -6,6 +6,7 @@ open import Agda.Builtin.Sigma
 open import Data.Product
 open import Data.Sum
 open import Data.Empty
+open import Data.Unit using (⊤ ; tt)
 open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred ; _⊔_)
 open import Data.Nat.Properties
 open import Relation.Binary.PropositionalEquality hiding ([_]) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
@@ -336,9 +337,10 @@ followChoice-beth : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                     → inBethBar w f
                     → isOnlyChoice∈𝕎 (Res.def r) c w
                     → compatible· c w r
-                    → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → isOnlyChoice∈𝕎 (Res.def r) c w1 × compatible· c w1 r × f w1 e1))
-followChoice-beth c {w} {f} {r} (bar , i) oc comp =
-  w' , e , iso , comp' , z
+                    → freezable· c w
+                    → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → isOnlyChoice∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
+followChoice-beth c {w} {f} {r} (bar , i) oc comp fb =
+  w' , e , iso , comp' , fb' , z
   where
     pc : pchain w
     pc = 𝕎→pchain w
@@ -359,6 +361,9 @@ followChoice-beth c {w} {f} {r} (bar , i) oc comp =
 
     comp' : compatible· c w' r
     comp' = ⊑-compatible· e comp
+
+    fb' : freezable· c w'
+    fb' = tt
 
     z : f w' e
     z = i e (BarsProp.b bp) w' (⊑-refl· w') e

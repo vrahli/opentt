@@ -53,12 +53,9 @@ record Choice : Set(lsuc(L)) where
     -- 'records' cs in w
     startChoice : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) → 𝕎·
     -- if we start a new choice then it is 'empty' according to getChoice
---    getChoice-startNewChoice : (n : ℕ) (r : Res{0ℓ}) (w : 𝕎·) → getChoice n (newChoice w) (startChoice (newChoice w) r w) ≡ nothing
     getChoice-startNewChoice : (n : ℕ) (r : Res{0ℓ}) (w : 𝕎·) (t : Term)
                                → getChoice n (newChoice w) (startChoice (newChoice w) r w) ≡ just t → t ≡ Res.def r
---                               → getChoice n (newChoice w) (startChoice (newChoice w) r w) ≡ nothing
     -- starting a new choice gives us a non-trivial extension
-    -- TODO: do we really need ⊏, or is ⊑ enough?
     startNewChoice⊏ : (r : Res{0ℓ}) (w : 𝕎·) → w ⊑· startChoice (newChoice w) r w
 
     -- states that the choices for c in w are constrained by the restiction
@@ -71,8 +68,15 @@ record Choice : Set(lsuc(L)) where
 
     -- This adds a new choice, which is frozen forever (can for example be recorded with a 𝔹 in worlds)
     freeze : (c : Name) (w : 𝕎·) (t : Term) → 𝕎·
+    freezable : (c : Name) (w : 𝕎·) → Set
     freeze⊑ : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}} → compatible c w r → ⋆ᵣ r t → w ⊑· freeze c w t
-    getFreeze : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}} → compatible c w r → Σ ℕ (λ n → ∀𝕎 (freeze c w t) (λ w' _ → Lift (lsuc(L)) (getChoice n c w' ≡ just t)))
+    getFreeze : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}}
+                → compatible c w r
+                → freezable c w
+                → Σ ℕ (λ n → ∀𝕎 (freeze c w t) (λ w' _ → Lift (lsuc(L)) (getChoice n c w' ≡ just t)))
+    freezableStart : (r : Res{0ℓ}) (w : 𝕎·) → freezable (newChoice w) (startChoice (newChoice w) r w)
+
+-- TODO: Also add that starting a seq is freezable and following a choice too
 
     -- ** Those are only needed for Beth bars ***
     -- expresses what it means to make some progress w.r.t. the name c between the 2 worlds

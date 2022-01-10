@@ -409,9 +409,10 @@ isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {u} {m} oc c₁ c₂ isv isu =
                         → ¬ NUM k1 ≡ Res.def r
                         → isOnlyChoice∈𝕎 (Res.def r) c w
                         → compatible· c w r
+                        → freezable· c w
                         → equalInType i w (#Σchoice c k1) x y
                         → ⊥
-¬equalInType-#Σchoice i w r c x y {k1} isvd diff oc comp eqi = diff neq3 -- ¬≡s k1 neq3
+¬equalInType-#Σchoice i w r c x y {k1} isvd diff oc comp fb eqi = diff neq3 -- ¬≡s k1 neq3
   where
     h0 : equalInType i w (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k1) #[0]QNAT)) x y
     h0 rewrite #Σchoice≡ c k1 = eqi
@@ -429,19 +430,22 @@ isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {u} {m} oc c₁ c₂ isv isu =
 
     -- 1st jump to bar
     w1 : 𝕎·
-    w1 = fst (ChoiceBar.followChoice CB c h1 oc comp)
+    w1 = fst (ChoiceBar.followChoice CB c h1 oc comp fb)
 
     e1 : w ⊑· w1
-    e1 = fst (snd (ChoiceBar.followChoice CB c h1 oc comp))
+    e1 = fst (snd (ChoiceBar.followChoice CB c h1 oc comp fb))
 
     oc1 : isOnlyChoice∈𝕎 (Res.def r) c w1
-    oc1 = fst (snd (snd (ChoiceBar.followChoice CB c h1 oc comp)))
+    oc1 = fst (snd (snd (ChoiceBar.followChoice CB c h1 oc comp fb)))
 
     comp1 : compatible· c w1 r
-    comp1 = fst (snd (snd (snd (ChoiceBar.followChoice CB c h1 oc comp))))
+    comp1 = fst (snd (snd (snd (ChoiceBar.followChoice CB c h1 oc comp fb))))
+
+    fb1 : freezable· c w1
+    fb1 = fst (snd (snd (snd (snd (ChoiceBar.followChoice CB c h1 oc comp fb)))))
 
     h2 : SUMeq (equalInType i w1 #NAT) (λ a b ea → equalInType i w1 (#EQ (#APPLY (#CS c) a) (#NUM k1) #QNAT)) w1 x y
-    h2 = snd (snd (snd (snd (ChoiceBar.followChoice CB c h1 oc comp))))
+    h2 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB c h1 oc comp fb)))))
 
     a₁ : CTerm
     a₁ = fst h2
@@ -466,19 +470,22 @@ isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {u} {m} oc c₁ c₂ isv isu =
     ea2 = equalInType-NAT→ i w1 a₁ a₂ ea1
 
     w2 : 𝕎·
-    w2 = fst (ChoiceBar.followChoice CB c ea2 oc1 comp1)
+    w2 = fst (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1)
 
     e2 : w1 ⊑· w2
-    e2 = fst (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1))
+    e2 = fst (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1))
 
     oc2 : isOnlyChoice∈𝕎 (Res.def r) c w2
-    oc2 = fst (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1)))
+    oc2 = fst (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1)))
 
     comp2 : compatible· c w2 r
-    comp2 = fst (snd (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1))))
+    comp2 = fst (snd (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1))))
+
+    fb2 : freezable· c w2
+    fb2 = fst (snd (snd (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1)))))
 
     ea3 : #strongMonEq w2 a₁ a₂
-    ea3 = snd (snd (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1))))
+    ea3 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1)))))
 
     m : ℕ
     m = fst ea3
@@ -494,19 +501,22 @@ isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {u} {m} oc c₁ c₂ isv isu =
     eb3 = equalInType-EQ-QNAT→ {i} {w2} {#APPLY (#CS c) a₁} {#NUM k1} eb2
 
     w3 : 𝕎·
-    w3 = fst (ChoiceBar.followChoice CB c eb3 oc2 comp2)
+    w3 = fst (ChoiceBar.followChoice CB c eb3 oc2 comp2 fb2)
 
     e3 : w2 ⊑· w3
-    e3 = fst (snd (ChoiceBar.followChoice CB c eb3 oc2 comp2))
+    e3 = fst (snd (ChoiceBar.followChoice CB c eb3 oc2 comp2 fb2))
 
     oc3 : isOnlyChoice∈𝕎 (Res.def r) c w3
-    oc3 = fst (snd (snd (ChoiceBar.followChoice CB c eb3 oc2 comp2)))
+    oc3 = fst (snd (snd (ChoiceBar.followChoice CB c eb3 oc2 comp2 fb2)))
 
     comp3 : compatible· c w3 r
-    comp3 = fst (snd (snd (snd (ChoiceBar.followChoice CB c eb3 oc2 comp2))))
+    comp3 = fst (snd (snd (snd (ChoiceBar.followChoice CB c eb3 oc2 comp2 fb2))))
+
+    fb3 : freezable· c w3
+    fb3 = fst (snd (snd (snd (snd (ChoiceBar.followChoice CB c eb3 oc2 comp2 fb2)))))
 
     eb4 : #weakMonEq w3 (#APPLY (#CS c) a₁) (#NUM k1)
-    eb4 = snd (snd (snd (snd (ChoiceBar.followChoice CB c eb3 oc2 comp2))))
+    eb4 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB c eb3 oc2 comp2 fb2)))))
 
     -- and now we conclude
     k : ℕ
@@ -617,13 +627,16 @@ notClassical w {n} {i} p =
         comp1 : compatible· name w2 r
         comp1 = startChoiceCompatible· r w1
 
-        h2 : Σ 𝕎· (λ w3 → Σ (w2 ⊑· w3) (λ e3 → isOnlyChoice∈𝕎 (Res.def r) name w3 × compatible· name w3 Resℕ ×
+        fb1 : freezable· name w2
+        fb1 = freezableStart· r w1
+
+        h2 : Σ 𝕎· (λ w3 → Σ (w2 ⊑· w3) (λ e3 → isOnlyChoice∈𝕎 (Res.def r) name w3 × compatible· name w3 Resℕ × freezable· name w3 ×
              Σ CTerm (λ t → inbar w3 (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
                                               → (t #⇛ (#INL x) at w' × t #⇛ (#INL y) at w' × equalInType i w' (#Σchoice name k1) x y)
                                                  ⊎
                                                  (t #⇛ (#INR x) at w' × t #⇛ (#INR y) at w'
                                                   × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂))))))))
-        h2 = ChoiceBar.followChoice CB name h1 oc1 comp1
+        h2 = ChoiceBar.followChoice CB name h1 oc1 comp1 fb1
 
         w3 : 𝕎·
         w3 = fst h2
@@ -637,23 +650,26 @@ notClassical w {n} {i} p =
         comp2 : compatible· name w3 r
         comp2 = fst (snd (snd (snd h2)))
 
+        fb2 : freezable· name w3
+        fb2 = fst (snd (snd (snd (snd h2))))
+
         t : CTerm
-        t = fst (snd (snd (snd (snd h2))))
+        t = fst (snd (snd (snd (snd (snd h2)))))
 
         h3 : inbar w3 (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
                               → (t #⇛ (#INL x) at w' × t #⇛ (#INL y) at w' × equalInType i w' (#Σchoice name k1) x y)
                                  ⊎
                                  (t #⇛ (#INR x) at w' × t #⇛ (#INR y) at w'
                                   × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂)))))
-        h3 = snd (snd (snd (snd (snd h2))))
+        h3 = snd (snd (snd (snd (snd (snd h2)))))
 
-        h4 : Σ 𝕎· (λ w4 → Σ (w3 ⊑· w4) (λ e4 → isOnlyChoice∈𝕎 (Res.def r) name w4 × compatible· name w4 r ×
+        h4 : Σ 𝕎· (λ w4 → Σ (w3 ⊑· w4) (λ e4 → isOnlyChoice∈𝕎 (Res.def r) name w4 × compatible· name w4 r × freezable· name w4 ×
                          Σ CTerm (λ x → Σ CTerm (λ y
                          → (t #⇛ (#INL x) at w4 × t #⇛ (#INL y) at w4 × equalInType i w4 (#Σchoice name k1) x y)
                             ⊎
                             (t #⇛ (#INR x) at w4 × t #⇛ (#INR y) at w4
                              × ∀𝕎 w4 (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂))))))
-        h4 = ChoiceBar.followChoice CB name h3 oc2 comp2
+        h4 = ChoiceBar.followChoice CB name h3 oc2 comp2 fb2
 
         w4 : 𝕎·
         w4 = fst h4
@@ -667,17 +683,20 @@ notClassical w {n} {i} p =
         comp3 : compatible· name w4 r
         comp3 = fst (snd (snd (snd h4)))
 
+        fb3 : freezable· name w4
+        fb3 = fst (snd (snd (snd (snd h4))))
+
         x : CTerm
-        x = fst (snd (snd (snd (snd h4))))
+        x = fst (snd (snd (snd (snd (snd h4)))))
 
         y : CTerm
-        y = fst (snd (snd (snd (snd (snd h4)))))
+        y = fst (snd (snd (snd (snd (snd (snd h4))))))
 
         h5 : (t #⇛ (#INL x) at w4 × t #⇛ (#INL y) at w4 × equalInType i w4 (#Σchoice name k1) x y)
              ⊎
              (t #⇛ (#INR x) at w4 × t #⇛ (#INR y) at w4
               × ∀𝕎 w4 (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂))
-        h5 = snd (snd (snd (snd (snd (snd h4)))))
+        h5 = snd (snd (snd (snd (snd (snd (snd h4))))))
 
         -- 1st injection: proved by ¬equalInType-#Σchoice
 
@@ -692,10 +711,10 @@ notClassical w {n} {i} p =
         e5 = freeze⊑· name w4 (NUM k1) comp3 rNUM
 
         n1 : ℕ
-        n1 = fst (getFreeze· name w4 (NUM k1) comp3)
+        n1 = fst (getFreeze· name w4 (NUM k1) comp3 fb3)
 
         g1 : ∀𝕎 w5 (λ w' _ → Lift (lsuc(L)) (getChoice· n1 name w' ≡ just (NUM k1)))
-        g1 = snd (getFreeze· name w4 (NUM k1) comp3)
+        g1 = snd (getFreeze· name w4 (NUM k1) comp3 fb3)
 
         h6 : equalInType i w5 (#Σchoice name k1) (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX)
         h6 = getChoice→equalInType-#Σchoice i (⊑-compatible· e5 comp3) g1
@@ -705,7 +724,7 @@ notClassical w {n} {i} p =
                  ⊎
                  (t #⇛ (#INR x) at w4 × t #⇛ (#INR y) at w4
                   × ∀𝕎 w4 (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂))) → ⊥
-        concl (inj₁ (c₁ , c₂ , eqi)) = ¬equalInType-#Σchoice i w4 Resℕ name x y tt dks oc3 comp3 eqi
+        concl (inj₁ (c₁ , c₂ , eqi)) = ¬equalInType-#Σchoice i w4 Resℕ name x y tt dks oc3 comp3 fb3 eqi
         concl (inj₂ (c₁ , c₂ , aw)) = aw w5 e5 (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX) h6
 
 \end{code}[hide]

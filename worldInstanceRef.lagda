@@ -43,13 +43,18 @@ This provides an instance of world and choice for choice sequences
 
 \begin{code}
 -- The Bool says whether the cell is "frozen"
-data entry : Set₁ where
-  cell : (name : Name) (r : Res{0ℓ}) (v : Term) (f : Bool) → entry
+record Cell : Set₁ where
+  constructor cell
+  field
+    name : Name
+    r : Res{0ℓ}
+    v : Term
+    f : Bool
 
 
 -- Worlds - entries are added at the end of the list
 world : Set₁
-world = List entry
+world = List Cell
 
 
 wdom : world → List Name
@@ -68,7 +73,7 @@ newCell : (n : Name) (r : Res{0ℓ}) (w : world) → world
 newCell n r w = cell n r (Res.def r) false ∷ w
 
 
-getRef : Name → world → Maybe entry
+getRef : Name → world → Maybe Cell
 getRef name [] = nothing
 getRef name (cell n r v f ∷ w) with name ≟ n
 ... | yes p = just (cell n r v f)
@@ -285,6 +290,143 @@ startRefChoiceCompatible r w =
 
 
 
+freezeRef : (n : Name) (w : 𝕎·) (v : Term) → world
+freezeRef _ [] v = []
+freezeRef n (cell name r x b ∷ w) v with n ≟ name
+... | yes p = (if b then cell name r x b else cell name r v true) ∷ w
+... | no p = cell name r x b ∷ freezeRef n w v
+
+
+hasRes∷ : (name : Name) (r : Res) (v : Term) (f : Bool) (w : 𝕎·)
+          → hasRes name (cell name r v f ∷ w) r
+hasRes∷ name r v f w with name ≟ name
+... | yes p = v , f , refl
+... | no p = ⊥-elim (p refl)
+
+
+freezableRef : (c : Name) (w : 𝕎·) → Set
+freezableRef c w with getRef c w
+... | just (cell n r v false) = ⊤
+... | _ = ⊥
+
+
+⊑-freeze∷ : (name : Name) (r : Res) (v₁ v₂ : Term) (w : 𝕎·)
+         → ⋆ᵣ r v₂
+         → (cell name r v₁ false ∷ w) ⊑· (cell name r v₂ true ∷ w)
+⊑-freeze∷ name r v₁ v₂ w sat =
+  ⊑-trans· (upd (cell name r v₁ false ∷ w) name r v₂ true (hasRes∷ name r v₁ false w) sat) z
+  where
+    z : (update name v₂ true (cell name r v₁ false ∷ w)) ⊑· (cell name r v₂ true ∷ w)
+    z with name ≟ name
+    ... | yes p = ⊑-refl· _
+    ... | no p = ⊥-elim (p refl)
+
+
+wdom++ : (w1 w2 : 𝕎·) → wdom (w1 ++ w2) ≡ wdom w1 ++ wdom w2
+wdom++ [] w2 = refl
+wdom++ (x ∷ w1) w2 rewrite wdom++ w1 w2 = refl
+
+
+getRef++-¬∈ : {name : Name} (w1 w2 : 𝕎·)
+              → ¬ name ∈ wdom w1
+              → getRef name (w1 ++ w2) ≡ getRef name w2
+getRef++-¬∈ {name} [] w2 ni = refl
+getRef++-¬∈ {name} (cell name₁ r v f ∷ w1) w2 ni with name ≟ name₁
+... | yes p rewrite p = ⊥-elim (ni (here refl))
+... | no p = getRef++-¬∈ w1 w2 (λ x → ni (there x))
+
+
+hasRes++-¬∈ : {name : Name} (w1 w2 : 𝕎·) (r : Res)
+              → ¬ name ∈ wdom w1
+              → hasRes name w2 r
+              → hasRes name (w1 ++ w2) r
+hasRes++-¬∈ {name} w1 w2 r ni hr rewrite getRef++-¬∈ w1 w2 ni = hr
+
+
+update++-¬∈ : {name : Name} {w1 : 𝕎·} (w2 : 𝕎·) (t : Term) (f : Bool)
+              → ¬ name ∈ wdom w1
+              → update name t f (w1 ++ w2) ≡ w1 ++ update name t f w2
+update++-¬∈ {name} {[]} w2 t f ni = refl
+update++-¬∈ {name} {cell name₁ r v f₁ ∷ w1} w2 t f ni with name ≟ name₁
+... | yes p rewrite p = ⊥-elim (ni (here refl))
+... | no p rewrite update++-¬∈ {name} {w1} w2 t f (λ x → ni (there x)) = refl
+
+
+preFreezeRef⊑ : (c : Name) (w w' : 𝕎·) (t : Term) {r : Res}
+                → compatibleRef c w r
+                → ⋆ᵣ r t
+                → ¬ (c ∈ wdom w')
+                → (w' ++ w) ⊑· (w' ++ freezeRef c w t)
+preFreezeRef⊑ c (cell name r₁ v₁ f₁ ∷ w) w' t {r} (v , f , comp , sat) rt ni with c ≟ name
+preFreezeRef⊑ c (cell name r₁ v₁ true ∷ w) w' t {r} (v , f , comp , sat) rt ni | yes p rewrite p = ≼-refl _
+preFreezeRef⊑ c (cell name r₁ v₁ false ∷ w) w' t {r} (v , f , comp , sat) rt ni | yes p
+  rewrite p | sym (cell-inj2 (just-inj comp)) =
+  ⊑-trans·
+    (upd (w' ++ cell name r₁ v₁ false ∷ w) name r₁ t true hr' rt)
+    e' --⊑-freeze∷ name r₁ v₁ t w rt
+  where
+    hr' : hasRes name (w' ++ cell name r₁ v₁ false ∷ w) r₁
+    hr' = hasRes++-¬∈ w' (cell name r₁ v₁ false ∷ w) r₁ ni (hasRes∷ _ _ _ _ _)
+
+    e' : update name t true (w' ++ cell name r₁ v₁ false ∷ w) ⊑· (w' ++ cell name r₁ t true ∷ w)
+    e' rewrite update++-¬∈ {name} {w'} (cell name r₁ v₁ false ∷ w) t true ni with name ≟ name
+    ... | yes q = ⊑-refl· _
+    ... | no q = ⊥-elim (q refl)
+preFreezeRef⊑ c (cell name r₁ v₁ f₁ ∷ w) w' t {r} (v , f , comp , sat) rt ni | no p
+  rewrite sym (++-assoc w' [ cell name r₁ v₁ f₁ ] w)
+        | sym (++-assoc w' [ cell name r₁ v₁ f₁ ] (freezeRef c w t)) =
+  preFreezeRef⊑ c w (w' ++ [ cell name r₁ v₁ f₁ ]) t (v , f , comp , sat) rt ni'
+  where
+    ni' : ¬ c ∈ wdom (w' ++ [ cell name r₁ v₁ f₁ ])
+    ni' i rewrite wdom++ w' [ cell name r₁ v₁ f₁ ] with ∈-++⁻ (wdom w') i
+    ... | inj₁ q = ⊥-elim (ni q)
+    ... | inj₂ (here q) = ⊥-elim (p q)
+
+
+freezeRef⊑ : (c : Name) (w : 𝕎·) (t : Term) {r : Res} → compatibleRef c w r → ⋆ᵣ r t → w ⊑· freezeRef c w t
+freezeRef⊑ c w t {r} comp sat = preFreezeRef⊑ c w [] t comp sat λ ()
+
+
+getFreezeRef : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}}
+               → compatibleRef c w r
+               → freezableRef c w
+               → Σ ℕ (λ n → ∀𝕎 (freezeRef c w t) (λ w' _ → Lift 2ℓ (getRefChoice n c w' ≡ just t)))
+getFreezeRef c w t {r} (v , f , comp , sat) fb = 0 , aw
+  where
+    aw : ∀𝕎 (freezeRef c w t) (λ w' _ → Lift 2ℓ (getRefChoice 0 c w' ≡ just t))
+    aw w1 e1 = lift {!!}
+ {--
+  length l , aw
+  where
+    aw : ∀𝕎 (freezeCs c w t) (λ w' _ → Lift 2ℓ (getCsChoice (length l) c w' ≡ just t))
+    aw w1 e1 = lift (≽-pres-getChoice e1 g)
+      where
+        g : getCsChoice (length l) c (freezeCs c w t) ≡ just t
+        g rewrite getCs++-same-choice c w l r t comp | select-last l t = refl
+--}
+
+
+getRef⊎ : (name : Name) (w : world)
+           → Σ Cell (λ c → getRef name w ≡ just c)
+              ⊎ getRef name w ≡ nothing
+getRef⊎ name w with getRef name w
+... | just c = inj₁ (c , refl)
+... | nothing = inj₂ refl
+
+
+freezableStartRef : (r : Res{0ℓ}) (w : 𝕎·) → freezableRef (newRefChoice w) (startNewRefChoice r w)
+freezableStartRef r w with newRefChoice w ≟ newRefChoice w
+... | yes p = tt
+... | no p = ⊥-elim (p refl)
+
+
+progressRef : (c : Name) (w1 w2 : 𝕎·) → Set₁
+progressRef c w1 w2 =
+  (r : Res) (v : Term) (f : Bool)
+  → ∈world c r v f w1
+  → Σ Term (λ v' → Σ Bool (λ f' → ∈world c r v' f' w2 × (f ≡ true → (f' ≡ true × v' ≡ v))))
+
+
 refChoice : Choice
 refChoice =
   mkChoice
@@ -296,10 +438,12 @@ refChoice =
     compatibleRef
     ⊑-compatibleRef
     startRefChoiceCompatible
-    {!!}
-    {!!}
-    {!!}
-    {!!}
+    freezeRef
+    freezableRef
+    freezeRef⊑
+    getFreezeRef
+    freezableStartRef
+    progressRef
     {!!}
     {!!}
     {!!}
