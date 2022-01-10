@@ -248,6 +248,10 @@ getRef-update-¬≡ {cell name₁ r₁ v₁ f₁ ∷ w} {name} {r} {v} {f} name'
 ... | no p = ¬∈wdom→getRef-nothing {n} {w} (λ x → ni (there x))
 
 
+satFrozen : (v v' : Term) (f f' : Bool) → Set
+satFrozen v v' true f' = f' ≡ true × v ≡ v'
+satFrozen v v' false f' = ⊤
+
 
 ⊑-pres-getRef : {w1 w2 : world} {name : Name} {r : Res} {v : Term} {f : Bool}
                  → w1 ⊑· w2
@@ -291,10 +295,7 @@ startRefChoiceCompatible r w =
 
 
 freezeRef : (n : Name) (w : 𝕎·) (v : Term) → world
-freezeRef _ [] v = []
-freezeRef n (cell name r x b ∷ w) v with n ≟ name
-... | yes p = (if b then cell name r x b else cell name r v true) ∷ w
-... | no p = cell name r x b ∷ freezeRef n w v
+freezeRef n w v = update n v true w
 
 
 hasRes∷ : (name : Name) (r : Res) (v : Term) (f : Bool) (w : 𝕎·)
@@ -424,7 +425,11 @@ progressRef : (c : Name) (w1 w2 : 𝕎·) → Set₁
 progressRef c w1 w2 =
   (r : Res) (v : Term) (f : Bool)
   → ∈world c r v f w1
-  → Σ Term (λ v' → Σ Bool (λ f' → ∈world c r v' f' w2 × (f ≡ true → (f' ≡ true × v' ≡ v))))
+  → Σ Term (λ v' → Σ Bool (λ f' → ∈world c r v' f' w2 × satFrozen v v' f f'))
+
+
+freezeRefProgress : (c : Name) {w1 w2 : 𝕎·} (t : Term) → w1 ⊑· w2 → progressRef c w1 (freezeRef c w2 t)
+freezeRefProgress c {w1} {w2} t e r v f i = {!!}
 
 
 refChoice : Choice
@@ -444,7 +449,7 @@ refChoice =
     getFreezeRef
     freezableStartRef
     progressRef
-    {!!}
+    freezeRefProgress
     {!!}
     {!!}
 
