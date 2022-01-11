@@ -32,9 +32,9 @@ open import choice
 open import getChoice
 
 
-module newChoice {L : Level} (W : PossibleWorlds {L}) (C : Choice {L} W) (G : GetChoice {L} W C) where
+module newChoice {L : Level} (W : PossibleWorlds {L}) (C : Choice) (G : GetChoice {L} W C) where
 open import worldDef(W)
-open import choiceDef(W)(C)
+open import choiceDef{L}(C)
 open import getChoiceDef(W)(C)(G)
 \end{code}
 
@@ -50,6 +50,7 @@ record NewChoice : Set(lsuc(L)) where
     -- if we start a new choice then it is 'empty' according to getChoice
     getChoice-startNewChoice : (n : ℕ) (r : Res{0ℓ}) (w : 𝕎·) (t : ℂ·)
                                → getChoice· n (newChoice w) (startChoice (newChoice w) r w) ≡ just t → t ≡ Res.def r
+    -- The above is essentially onlyℂ∈𝕎
     -- starting a new choice gives us a non-trivial extension
     startNewChoice⊏ : (r : Res{0ℓ}) (w : 𝕎·) → w ⊑· startChoice (newChoice w) r w
 

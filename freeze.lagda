@@ -33,9 +33,9 @@ open import getChoice
 open import newChoice
 
 
-module freeze {L : Level} (W : PossibleWorlds {L}) (C : Choice {L} W) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) where
+module freeze {L : Level} (W : PossibleWorlds {L}) (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) where
 open import worldDef(W)
-open import choiceDef(W)(C)
+open import choiceDef{L}(C)
 open import getChoiceDef(W)(C)(G)
 open import newChoiceDef(W)(C)(G)(N)
 \end{code}

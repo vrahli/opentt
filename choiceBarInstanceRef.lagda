@@ -22,19 +22,21 @@ open import Data.List.Properties
 
 open import util
 open import calculus
-open import world
-open import choice
 
 
 module choiceBarInstanceRef where
 
 
 open import worldInstanceRef
+open import choiceDef{1ℓ}(choiceRef)
 open import worldDef(PossibleWorldsRef)
-open import choice(PossibleWorldsRef)
-open import choiceDef(PossibleWorldsRef)(refChoice)
-open import bar(PossibleWorldsRef)(refChoice)
-open import computation(PossibleWorldsRef)(refChoice)
+open import getChoiceDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)
+open import newChoiceDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)
+open import freezeDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)(freezeREF)
+open import progressDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)(freezeREF)(progressREF)
+
+open import bar(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)(freezeREF)(progressREF)
+open import computation(PossibleWorldsRef)(choiceRef)(getChoiceRef)
 
 
 

@@ -34,9 +34,9 @@ open import newChoice
 open import freeze
 
 
-module progress {L : Level} (W : PossibleWorlds {L}) (C : Choice {L} W) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) where
+module progress {L : Level} (W : PossibleWorlds {L}) (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) where
 open import worldDef(W)
-open import choiceDef(W)(C)
+open import choiceDef{L}(C)
 open import getChoiceDef(W)(C)(G)
 open import newChoiceDef(W)(C)(G)(N)
 open import freezeDef(W)(C)(G)(N)(F)

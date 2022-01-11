@@ -28,11 +28,9 @@ open import Data.List.Properties
 
 open import util
 open import calculus
-open import world
 open import choice
 
-module choiceDef {L : Level} (W : PossibleWorlds {L}) (C : Choice {L} W) where
-open import worldDef(W)
+module choiceDef {L : Level} (C : Choice) where
 
 open Choice
 
@@ -40,8 +38,17 @@ open Choice
 ℂ· : Set
 ℂ· = ℂ C
 
+
 ℕ→ℂ· : ℕ → ℂ·
 ℕ→ℂ· = ℕ→ℂ C
+
+
+ℂ→T· : ℂ· → Term
+ℂ→T· = ℂ→T C
+
+
+ℕ→ℂ→T· : (n : ℕ) → ℂ→T· (ℕ→ℂ· n) ≡ NUM n
+ℕ→ℂ→T· = ℕ→ℂ→T C
 
 
 -- restriction

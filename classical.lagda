@@ -34,41 +34,52 @@ open import Axiom.Extensionality.Propositional
 
 open import util
 open import calculus
+open import terms
 open import world
 open import choice
+open import getChoice
+open import newChoice
+open import freeze
+open import progress
 open import choiceBar
 
 
 --module classical (bar : Bar) where
-module classical {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (E : Extensionality 0ℓ (lsuc(lsuc(L)))) (CB : ChoiceBar W C) where
+module classical {L : Level} (W : PossibleWorlds {L})
+                 (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+                 (CB : ChoiceBar W C G N F P)
+                 (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+       where
 
 
 open import worldDef(W)
-open import choiceDef(W)(C)
-open import computation(W)(C)
-open import bar(W)(C)
-open import barI(W)(C)
-open import theory(W)(C)(E)
-open import props0(W)(C)(E)
-open import ind2(W)(C)(E)
-open import terms(W)(C)(E)
+open import choiceDef{L}(C)
+open import getChoiceDef(W)(C)(G)
+open import newChoiceDef(W)(C)(G)(N)
+open import freezeDef(W)(C)(G)(N)(F)
+open import computation(W)(C)(G)
+open import bar(W)(C)(G)(N)(F)(P)
+open import barI(W)(C)(G)(N)(F)(P)
+open import theory(W)(C)(G)(N)(F)(P)(E)
+open import props0(W)(C)(G)(N)(F)(P)(E)
+open import ind2(W)(C)(G)(N)(F)(P)(E)
 
-open import type_sys_props_nat(W)(C)(E)
-open import type_sys_props_qnat(W)(C)(E)
-open import type_sys_props_lt(W)(C)(E)
-open import type_sys_props_qlt(W)(C)(E)
-open import type_sys_props_free(W)(C)(E)
-open import type_sys_props_pi(W)(C)(E)
-open import type_sys_props_sum(W)(C)(E)
-open import type_sys_props_set(W)(C)(E)
-open import type_sys_props_eq(W)(C)(E)
-open import type_sys_props_union(W)(C)(E)
-open import type_sys_props_tsquash(W)(C)(E)
-open import type_sys_props_ffdefs(W)(C)(E)
-open import type_sys_props_lift(W)(C)(E)
+open import type_sys_props_nat(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_qnat(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_lt(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_qlt(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_free(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_pi(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_sum(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_set(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_eq(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_union(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_tsquash(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_ffdefs(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_lift(W)(C)(G)(N)(F)(P)(E)
 
-open import props1(W)(C)(E)
-open import props2(W)(C)(E)
+open import props1(W)(C)(G)(N)(F)(P)(E)
+open import props2(W)(C)(G)(N)(F)(P)(E)
 
 -- open import calculus
 -- open import world
@@ -98,7 +109,21 @@ open import props2(W)(C)(E)
 
 
 
--- ######### LEM stuff
+LEM : {i n : ℕ} (p : i < n) → Term
+LEM {i} {n} p = PI (UNIV i) (SQUASH (UNION (↑T p (VAR 0)) (NEG (↑T p (VAR 0)))))
+
+
+#LEM : {i n : ℕ} (p : i < n) → CTerm
+#LEM {i} {n} p = ct (LEM p) c
+  where
+    c : # LEM p
+    c rewrite fvars-↑T p (VAR 0)
+            | shiftUp-↑T p 0 (VAR 0)
+            | fvars-↑T p (VAR 1) = refl
+
+
+#LEM≡#PI : {i n : ℕ} (p : i < n) → #LEM p ≡ #PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))
+#LEM≡#PI {i} {n} p = CTerm≡ refl
 
 
 {--equalTerms-NegLem : (w : 𝕎·) {i n : ℕ} (p : i < n) → equalTerms n w (eqTypesNegLem w p) #lamAX #lamAX
@@ -228,7 +253,7 @@ inbar-#weakMonEq-APPLY-CS : (w : 𝕎·) (c : Name) (m : ℕ)
                             → inbar w (λ w' _ → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) (#APPLY (#CS c) (#NUM m)))
 inbar-#weakMonEq-APPLY-CS w c m comp = Bar.∀𝕎-inBarFunc barI aw (ChoiceBar.choice-weakℕ CB m comp)
   where
-    aw : ∀𝕎 w (λ w' e' → weakℕM w' (getChoice· m c)
+    aw : ∀𝕎 w (λ w' e' → weakℕM w' (getC m c)
                         → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) (#APPLY (#CS c) (#NUM m)))
     aw w' e' h w'' e'' = lift (fst (snd (snd (lower (h w'' e'')))) ,
                                step-⇓-trans (fst (snd (lower (h w'' e'')))) (snd (snd (snd (lower (h w'' e''))))) ,
@@ -283,7 +308,7 @@ equalInType-#Σchoice {n} {i} p w c k comp =
 
 
 getChoice→equalInType-#Σchoice-aux2 : {n : ℕ} {name : Name} {w : 𝕎·} {k : ℕ} (i : ℕ)
-                                       → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getChoice· n name w' ≡ just (NUM k)))
+                                       → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getC n name w' ≡ just (NUM k)))
                                        → equalInType
                                            i w
                                            (#EQ (#APPLY (#CS name) (#NUM n)) (#NUM k) #QNAT)
@@ -302,7 +327,7 @@ getChoice→equalInType-#Σchoice-aux2 {n} {name} {w} {k} i g =
 
 
 getChoice→equalInType-#Σchoice-aux1 : {n : ℕ} {name : Name} {w : 𝕎·} {k : ℕ} (i : ℕ)
-                                       → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getChoice· n name w' ≡ just (NUM k)))
+                                       → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getC n name w' ≡ just (NUM k)))
                                        → equalInType
                                            i w
                                            (sub0 (#NUM n) (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (#[0]NUM k) #[0]QNAT))
@@ -314,7 +339,7 @@ getChoice→equalInType-#Σchoice-aux1 {n} {name} {w} {k} i g rewrite sub0-#Σch
 
 getChoice→equalInType-#Σchoice-aux : {n : ℕ} {name : Name} {w : 𝕎·} {k : ℕ} (i : ℕ)
                                       → compatible· name w Resℕ
-                                      → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getChoice· n name w' ≡ just (NUM k)))
+                                      → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getC n name w' ≡ just (NUM k)))
                                       → equalInType
                                            i w
                                            (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (#[0]NUM k) #[0]QNAT))
@@ -343,7 +368,7 @@ getChoice→equalInType-#Σchoice-aux {n} {name} {w} {k} i comp g =
 
 getChoice→equalInType-#Σchoice : {n : ℕ} {name : Name} {w : 𝕎·} {k : ℕ} (i : ℕ)
                                   → compatible· name w Resℕ
-                                  → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getChoice· n name w' ≡ just (NUM k)))
+                                  → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getC n name w' ≡ just (NUM k)))
                                   → equalInType i w (#Σchoice name k) (#PAIR (#NUM n) #AX) (#PAIR (#NUM n) #AX)
 getChoice→equalInType-#Σchoice {n} {name} {w} {k} i comp g rewrite #Σchoice≡ name k = getChoice→equalInType-#Σchoice-aux i comp g
 
@@ -363,36 +388,31 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
 
 
 
-getChoice⊎ : (n : ℕ) (name : Name) (w : 𝕎·)
-             → Σ Term (λ u → getChoice· n name w ≡ just u) ⊎ getChoice· n name w ≡ nothing
-getChoice⊎ n name w with getChoice· n name w
-... | just u = inj₁ (u , refl)
-... | nothing = inj₂ refl
-
 
 -- TODO: generalize this so that (NUM i) is value
-isOnlyChoice∈𝕎→≡-aux : {w : 𝕎·} {c : Name} {v u : Term} {k m : ℕ}
-                         → isOnlyChoice∈𝕎 u c w
-                         → steps k (APPLY (CS c) (NUM m)) w ≡ v
-                         → isValue v
-                         → isValue u
-                         → v ≡ u
-isOnlyChoice∈𝕎→≡-aux {w} {c} {v} {u} {0} {m} oc c₁ isv isu rewrite sym c₁ = ⊥-elim isv
-isOnlyChoice∈𝕎→≡-aux {w} {c} {v} {u} {suc k} {m} oc c₁ isv isu  with getChoice⊎ m c w
-... | inj₁ (z , p) rewrite p | oc m z p | stepsVal u w k isu = sym c₁
+onlyℂ∈𝕎→≡-aux : {w : 𝕎·} {c : Name} {v : Term} {u : ℂ·} {k m : ℕ}
+                  → onlyℂ∈𝕎 u c w
+                  → steps k (APPLY (CS c) (NUM m)) w ≡ v
+                  → isValue v
+--                         → isValue u
+                  → ℂ→T· u ⇓ v at w
+onlyℂ∈𝕎→≡-aux {w} {c} {v} {u} {0} {m} oc c₁ isv {--isu--} rewrite sym c₁ = ⊥-elim isv
+onlyℂ∈𝕎→≡-aux {w} {c} {v} {u} {suc k} {m} oc c₁ isv {--isu--}  with getChoice⊎ m c w
+... | inj₁ (z , p) rewrite p | oc m z p {--| stepsVal u w k isu--} = k , c₁ -- sym c₁
 ... | inj₂ p rewrite p | sym c₁ = ⊥-elim isv
 
 
 
-isOnlyChoice∈𝕎→≡ : {w : 𝕎·} {c : Name} {a v u : Term} {m : ℕ}
-                     → isOnlyChoice∈𝕎 u c w
-                     → a ⇓ NUM m at w
-                     → APPLY (CS c) a ⇓ v at w
-                     → isValue v
-                     → isValue u
-                     → v ≡ u
-isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {u} {m} oc c₁ c₂ isv isu =
-  isOnlyChoice∈𝕎→≡-aux {w} {c} {v} {u} {k} {m} oc c₄ isv isu
+onlyℂ∈𝕎→≡ : {w : 𝕎·} {c : Name} {a v : Term} {u : ℂ·} {m : ℕ}
+              → onlyℂ∈𝕎 u c w
+              → a ⇓ NUM m at w
+              → APPLY (CS c) a ⇓ v at w
+              → isValue v
+--                     → isValue u
+--                     → v ≡ u
+              → ℂ→T· u ⇓ v at w
+onlyℂ∈𝕎→≡ {w} {c} {a} {v} {u} {m} oc c₁ c₂ isv {--isu--} =
+  onlyℂ∈𝕎→≡-aux {w} {c} {v} {u} {k} {m} oc c₄ isv {--isu--}
   where
     c₃ : APPLY (CS c) (NUM m) ⇓ v at w
     c₃ = steps-APPLY-cs-forward w (fst c₁) (fst c₂) a (NUM m) v c isv (snd c₁) (snd c₂)
@@ -404,15 +424,29 @@ isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {u} {m} oc c₁ c₂ isv isu =
     c₄ = snd c₃
 
 
+-- Without that it runs forever...
+≡→⇓→⇓ : {w : 𝕎·} {a b c : Term}
+         → b ≡ c
+         → a ⇓ b at w
+         → a ⇓ c at w
+≡→⇓→⇓ {w} {a} {b} {c} h q rewrite h = q
+
+
+≡NUM : {a b : ℕ} → a ≡ b → NUM a ≡ NUM b
+≡NUM {a} {b} e rewrite e = refl
+
+
+
 ¬equalInType-#Σchoice : (i : ℕ) (w : 𝕎·) (r : Res) (c : Name) (x y : CTerm) {k1 : ℕ}
-                        → isValue (Res.def r)
-                        → ¬ NUM k1 ≡ Res.def r
-                        → isOnlyChoice∈𝕎 (Res.def r) c w
+--                        → isValue (Res.def r)
+                        → ∀𝕎 w (λ w' _ → Lift  (lsuc(L)) (¬ ℂ→T· (Res.def r) ⇓ NUM k1 at w'))
+--                        → NUM k1 ≡ Res.def r
+                        → onlyℂ∈𝕎 (Res.def r) c w
                         → compatible· c w r
                         → freezable· c w
                         → equalInType i w (#Σchoice c k1) x y
                         → ⊥
-¬equalInType-#Σchoice i w r c x y {k1} isvd diff oc comp fb eqi = diff neq3 -- ¬≡s k1 neq3
+¬equalInType-#Σchoice i w r c x y {k1} {--isvd--} diff oc comp fb eqi = lower (diff w3 (⊑-trans· e1 (⊑-trans· e2 e3))) neq3
   where
     h0 : equalInType i w (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (#[0]NUM k1) #[0]QNAT)) x y
     h0 rewrite #Σchoice≡ c k1 = eqi
@@ -435,7 +469,7 @@ isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {u} {m} oc c₁ c₂ isv isu =
     e1 : w ⊑· w1
     e1 = fst (snd (ChoiceBar.followChoice CB c h1 oc comp fb))
 
-    oc1 : isOnlyChoice∈𝕎 (Res.def r) c w1
+    oc1 : onlyℂ∈𝕎 (Res.def r) c w1
     oc1 = fst (snd (snd (ChoiceBar.followChoice CB c h1 oc comp fb)))
 
     comp1 : compatible· c w1 r
@@ -475,7 +509,7 @@ isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {u} {m} oc c₁ c₂ isv isu =
     e2 : w1 ⊑· w2
     e2 = fst (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1))
 
-    oc2 : isOnlyChoice∈𝕎 (Res.def r) c w2
+    oc2 : onlyℂ∈𝕎 (Res.def r) c w2
     oc2 = fst (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1)))
 
     comp2 : compatible· c w2 r
@@ -506,7 +540,7 @@ isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {u} {m} oc c₁ c₂ isv isu =
     e3 : w2 ⊑· w3
     e3 = fst (snd (ChoiceBar.followChoice CB c eb3 oc2 comp2 fb2))
 
-    oc3 : isOnlyChoice∈𝕎 (Res.def r) c w3
+    oc3 : onlyℂ∈𝕎 (Res.def r) c w3
     oc3 = fst (snd (snd (ChoiceBar.followChoice CB c eb3 oc2 comp2 fb2)))
 
     comp3 : compatible· c w3 r
@@ -528,16 +562,27 @@ isOnlyChoice∈𝕎→≡ {w} {c} {a} {v} {u} {m} oc c₁ c₂ isv isu =
     cn₂ : #NUM k1 #⇓ #NUM k at w3
     cn₂ = snd (snd (#weakMonEq→ {w3} {#APPLY (#CS c) a₁} {#NUM k1} eb4))
 
-    neq1 : NUM k ≡ Res.def r
-    neq1 = isOnlyChoice∈𝕎→≡ oc3 (lower (ca₁ w3 e3)) cn₁ tt isvd
+    neq1 : ℂ→T· (Res.def r) ⇓ NUM k at w3
+    neq1 = onlyℂ∈𝕎→≡ oc3 (lower (ca₁ w3 e3)) cn₁ tt {--isvd--}
 
-    neq2 : NUM k1 ≡ NUM k
-    neq2 = compVal (NUM k1) (NUM k) w3 cn₂ tt
+    neq2 : k1 ≡ k
+    neq2 = NUMinj (compVal (NUM k1) (NUM k) w3 cn₂ tt)
 
-    neq3 : NUM k1 ≡ Res.def r
-    neq3 = trans neq2 neq1
+    neq3 : ℂ→T· (Res.def r) ⇓ NUM k1 at w3
+    neq3 = ≡→⇓→⇓ (≡NUM (sym neq2)) neq1 -- rewrite sym neq2 = neq1
 
 
+
+¬-ℕ→ℂ→T-⇓-NUM-1 : (w : 𝕎·) → ¬ ℂ→T· (ℕ→ℂ· 0) ⇓ NUM 1 at w
+¬-ℕ→ℂ→T-⇓-NUM-1 w h rewrite ℕ→ℂ→T· 0 = ¬≡s 0 (NUMinj (compVal (NUM 0) (NUM 1) w h tt))
+
+
+
+-- If we don't use this Agda gets stuck compiling...
+∀𝕎-getChoice→getC : {w : 𝕎·} {n : ℕ} {name : Name} {k : ℕ}
+                      → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getChoice· n name w' ≡ just (ℕ→ℂ· k)))
+                      → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getC n name w' ≡ just (NUM k)))
+∀𝕎-getChoice→getC {w} {n} {name} {k} aw w' e' rewrite lower (aw w' e') | ℕ→ℂ→T· k = lift refl
 
 
 
@@ -610,8 +655,8 @@ notClassical w {n} {i} p =
         k1 : ℕ
         k1 = 1 -- This has to be different from r's default value
 
-        dks : ¬ NUM k1 ≡ Res.def r
-        dks e = ¬≡s 0 (sym (NUMinj e))
+        dks : ∀𝕎 w (λ w' _ → Lift  (lsuc(L)) (¬ ℂ→T· (Res.def r) ⇓ NUM k1 at w'))
+        dks w' e = lift (λ x → ¬-ℕ→ℂ→T-⇓-NUM-1 w' x) --¬≡s 0 (sym (NUMinj e))
 
         -- instantiate aw5 with w2 (we also need a proof that (w1 ⊑ w2)) and (#Σchoice name k1)
         h1 : inbar w2 (λ w'' _ → Σ CTerm (λ t → inbar w'' (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
@@ -621,7 +666,7 @@ notClassical w {n} {i} p =
                                    × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂)))))))
         h1 = aw5 w2 e2 (#Σchoice name k1) (#Σchoice name k1) (equalInType-#Σchoice p w2 name k1 (startChoiceCompatible· r w1))
 
-        oc1 : isOnlyChoice∈𝕎 (Res.def r) name w2
+        oc1 : onlyℂ∈𝕎 (Res.def r) name w2
         oc1 n t e = getChoice-startNewChoice· n r w1 t e --rewrite getChoice-startNewChoice· n r w1 = ⊥-elim (¬just≡nothing (sym e))
 
         comp1 : compatible· name w2 r
@@ -630,7 +675,7 @@ notClassical w {n} {i} p =
         fb1 : freezable· name w2
         fb1 = freezableStart· r w1
 
-        h2 : Σ 𝕎· (λ w3 → Σ (w2 ⊑· w3) (λ e3 → isOnlyChoice∈𝕎 (Res.def r) name w3 × compatible· name w3 Resℕ × freezable· name w3 ×
+        h2 : Σ 𝕎· (λ w3 → Σ (w2 ⊑· w3) (λ e3 → onlyℂ∈𝕎 (Res.def r) name w3 × compatible· name w3 Resℕ × freezable· name w3 ×
              Σ CTerm (λ t → inbar w3 (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
                                               → (t #⇛ (#INL x) at w' × t #⇛ (#INL y) at w' × equalInType i w' (#Σchoice name k1) x y)
                                                  ⊎
@@ -644,7 +689,7 @@ notClassical w {n} {i} p =
         e3 : w2 ⊑· w3
         e3 = fst (snd h2)
 
-        oc2 : isOnlyChoice∈𝕎 (Res.def r) name w3
+        oc2 : onlyℂ∈𝕎 (Res.def r) name w3
         oc2 = fst (snd (snd h2))
 
         comp2 : compatible· name w3 r
@@ -663,7 +708,7 @@ notClassical w {n} {i} p =
                                   × ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂)))))
         h3 = snd (snd (snd (snd (snd (snd h2)))))
 
-        h4 : Σ 𝕎· (λ w4 → Σ (w3 ⊑· w4) (λ e4 → isOnlyChoice∈𝕎 (Res.def r) name w4 × compatible· name w4 r × freezable· name w4 ×
+        h4 : Σ 𝕎· (λ w4 → Σ (w3 ⊑· w4) (λ e4 → onlyℂ∈𝕎 (Res.def r) name w4 × compatible· name w4 r × freezable· name w4 ×
                          Σ CTerm (λ x → Σ CTerm (λ y
                          → (t #⇛ (#INL x) at w4 × t #⇛ (#INL y) at w4 × equalInType i w4 (#Σchoice name k1) x y)
                             ⊎
@@ -677,7 +722,7 @@ notClassical w {n} {i} p =
         e4 : w3 ⊑· w4
         e4 = fst (snd h4)
 
-        oc3 : isOnlyChoice∈𝕎 (Res.def r) name w4
+        oc3 : onlyℂ∈𝕎 (Res.def r) name w4
         oc3 = fst (snd (snd h4))
 
         comp3 : compatible· name w4 r
@@ -702,29 +747,35 @@ notClassical w {n} {i} p =
 
         -- 2nd injection:
         w5 : 𝕎·
-        w5 = freeze· name w4 (NUM k1)
+        w5 = freeze· name w4 (ℕ→ℂ· k1)
 
-        rNUM : (k : ℕ) → ·ᵣ r k (NUM k1)
+        rNUM : (k : ℕ) → ·ᵣ r k (ℕ→ℂ· k1)
         rNUM k = k1 , refl
 
         e5 : w4 ⊑· w5
-        e5 = freeze⊑· name w4 (NUM k1) comp3 rNUM
+        e5 = freeze⊑· name w4 (ℕ→ℂ· k1) comp3 rNUM
 
         n1 : ℕ
-        n1 = fst (getFreeze· name w4 (NUM k1) comp3 fb3)
+        n1 = fst (getFreeze· name w4 (ℕ→ℂ· k1) comp3 fb3)
 
-        g1 : ∀𝕎 w5 (λ w' _ → Lift (lsuc(L)) (getChoice· n1 name w' ≡ just (NUM k1)))
-        g1 = snd (getFreeze· name w4 (NUM k1) comp3 fb3)
+        g0 : ∀𝕎 w5 (λ w' _ → Lift (lsuc(L)) (getChoice· n1 name w' ≡ just (ℕ→ℂ· k1)))
+        g0 = snd (getFreeze· name w4 (ℕ→ℂ· k1) comp3 fb3)
+
+        g1 : ∀𝕎 w5 (λ w' _ → Lift (lsuc(L)) (getC n1 name w' ≡ just (NUM k1)))
+        g1 = ∀𝕎-getChoice→getC g0
 
         h6 : equalInType i w5 (#Σchoice name k1) (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX)
         h6 = getChoice→equalInType-#Σchoice i (⊑-compatible· e5 comp3) g1
+
+        e' : w ⊑· w4
+        e' = ⊑-trans· (⊑-trans· (⊑-trans· e1 e2) e3) e4
 
         -- conclusion
         concl : ((t #⇛ (#INL x) at w4 × t #⇛ (#INL y) at w4 × equalInType i w4 (#Σchoice name k1) x y)
                  ⊎
                  (t #⇛ (#INR x) at w4 × t #⇛ (#INR y) at w4
                   × ∀𝕎 w4 (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂))) → ⊥
-        concl (inj₁ (c₁ , c₂ , eqi)) = ¬equalInType-#Σchoice i w4 Resℕ name x y tt dks oc3 comp3 fb3 eqi
+        concl (inj₁ (c₁ , c₂ , eqi)) = ¬equalInType-#Σchoice i w4 Resℕ name x y (∀𝕎-mon e' dks) oc3 comp3 fb3 eqi
         concl (inj₂ (c₁ , c₂ , aw)) = aw w5 e5 (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX) h6
 
 \end{code}[hide]

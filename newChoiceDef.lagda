@@ -33,9 +33,9 @@ open import choice
 open import getChoice
 open import newChoice
 
-module newChoiceDef {L : Level} (W : PossibleWorlds {L}) (C : Choice {L} W) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) where
+module newChoiceDef {L : Level} (W : PossibleWorlds {L}) (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) where
 open import worldDef(W)
-open import choiceDef(W)(C)
+open import choiceDef{L}(C)
 open import getChoiceDef(W)(C)(G)
 
 open NewChoice

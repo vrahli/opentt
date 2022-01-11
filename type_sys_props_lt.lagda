@@ -32,22 +32,29 @@ open import Axiom.Extensionality.Propositional
 
 open import util
 open import calculus
+open import terms
 open import world
 open import choice
+open import getChoice
+open import newChoice
+open import freeze
+open import progress
 
 
 --module type_sys_props_lt (bar : Bar) where
-module type_sys_props_lt {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (E : Extensionality 0ℓ (lsuc(lsuc(L)))) where
+module type_sys_props_lt {L : Level} (W : PossibleWorlds {L})
+                         (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+                         (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+       where
 
 
 open import worldDef(W)
-open import computation(W)(C)
-open import bar(W)(C)
-open import barI(W)(C)
-open import theory(W)(C)(E)
-open import props0(W)(C)(E)
-open import ind2(W)(C)(E)
-open import terms(W)(C)(E)
+open import computation(W)(C)(G)
+open import bar(W)(C)(G)(N)(F)(P)
+open import barI(W)(C)(G)(N)(F)(P)
+open import theory(W)(C)(G)(N)(F)(P)(E)
+open import props0(W)(C)(G)(N)(F)(P)(E)
+open import ind2(W)(C)(G)(N)(F)(P)(E)
 
 -- open import calculus
 -- open import world

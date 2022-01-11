@@ -25,10 +25,13 @@ open import progress
 
 -- TODO: move the instances to separate files.
 -- Choice is only needed for Beth bars to build an infinite sequence of worlds
-module bar {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F) where
+module bar {L : Level} (W : PossibleWorlds {L})
+           (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+       where
 open import worldDef{L}(W)
+
 -- Those are only needed by the Beth instance
-open import choiceDef{L}(W)(C)
+open import choiceDef{L}(C)
 open import getChoiceDef(W)(C)(G)
 open import newChoiceDef(W)(C)(G)(N)
 open import freezeDef(W)(C)(G)(N)(F)

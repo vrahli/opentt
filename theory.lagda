@@ -32,15 +32,23 @@ open import Axiom.Extensionality.Propositional
 
 open import util
 open import calculus
+open import terms
 open import world
 open import choice
+open import getChoice
+open import newChoice
+open import freeze
+open import progress
 
-module theory {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (E : Extensionality 0ℓ (lsuc(lsuc(L)))) where
-open import bar(W)(C)
-open import barI(W)(C)
+module theory {L : Level} (W : PossibleWorlds {L})
+              (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+              (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+       where
 open import worldDef(W)
-open import choiceDef(W)(C)
-open import computation(W)(C)
+open import choiceDef{L}(C)
+open import computation(W)(C)(G)
+open import bar(W)(C)(G)(N)(F)(P)
+open import barI(W)(C)(G)(N)(F)(P)
 
 \end{code}
 
@@ -56,148 +64,8 @@ OpenTT.
 wpreddepextirr = wPredDepExtIrr-inOpenBar--}
 
 
-
-#NAT : CTerm
-#NAT = ct NAT refl
-
-
-#FREE : CTerm
-#FREE = ct FREE refl
-
-
-#QNAT : CTerm
-#QNAT = ct QNAT refl
-
-
-#AX : CTerm
-#AX = ct AX refl
-
-
-#UNIV : ℕ → CTerm
-#UNIV n = ct (UNIV n) refl
-
-
-#LIFT : CTerm → CTerm
-#LIFT a = ct (LIFT ⌜ a ⌝) c
-  where
-    c : # LIFT ⌜ a ⌝
-    c rewrite CTerm.closed a = refl
-
-
-#APPLY : CTerm → CTerm → CTerm
-#APPLY a b = ct (APPLY ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : # APPLY ⌜ a ⌝ ⌜ b ⌝
-    c rewrite CTerm.closed a | CTerm.closed b = refl
-
-
-#PAIR : CTerm → CTerm → CTerm
-#PAIR a b = ct (PAIR ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : # PAIR ⌜ a ⌝ ⌜ b ⌝
-    c rewrite CTerm.closed a | CTerm.closed b = refl
-
-
-#UNION : CTerm → CTerm → CTerm
-#UNION a b = ct (UNION ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : # UNION ⌜ a ⌝ ⌜ b ⌝
-    c rewrite CTerm.closed a | CTerm.closed b = refl
-
-
-#FFDEFS : CTerm → CTerm → CTerm
-#FFDEFS a b = ct (FFDEFS ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : # FFDEFS ⌜ a ⌝ ⌜ b ⌝
-    c rewrite CTerm.closed a | CTerm.closed b = refl
-
-
-#TSQUASH : CTerm → CTerm
-#TSQUASH a = ct (TSQUASH ⌜ a ⌝) c
-  where
-    c : # TSQUASH ⌜ a ⌝
-    c rewrite CTerm.closed a = refl
-
-
-#INL : CTerm → CTerm
-#INL a = ct (INL ⌜ a ⌝) c
-  where
-    c : # INL ⌜ a ⌝
-    c rewrite CTerm.closed a = refl
-
-
-#INR : CTerm → CTerm
-#INR a = ct (INR ⌜ a ⌝) c
-  where
-    c : # INR ⌜ a ⌝
-    c rewrite CTerm.closed a = refl
-
-
-#LT : CTerm → CTerm → CTerm
-#LT a b = ct (LT ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : # LT ⌜ a ⌝ ⌜ b ⌝
-    c rewrite CTerm.closed a | CTerm.closed b = refl
-
-
-#QLT : CTerm → CTerm → CTerm
-#QLT a b = ct (QLT ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : # QLT ⌜ a ⌝ ⌜ b ⌝
-    c rewrite CTerm.closed a | CTerm.closed b = refl
-
-
-#EQ : CTerm → CTerm → CTerm → CTerm
-#EQ a b T = ct (EQ ⌜ a ⌝ ⌜ b ⌝ ⌜ T ⌝) c
-  where
-    c : # EQ ⌜ a ⌝ ⌜ b ⌝ (CTerm.cTerm T)
-    c rewrite CTerm.closed a | CTerm.closed b | CTerm.closed T = refl
-
-
-#PI : CTerm → CTerm0 → CTerm
-#PI a b = ct (PI ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : # PI ⌜ a ⌝ (CTerm0.cTerm b)
-    c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
-
-
-#SUM : CTerm → CTerm0 → CTerm
-#SUM a b = ct (SUM ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : # SUM ⌜ a ⌝ (CTerm0.cTerm b)
-    c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
-
-
-#SET : CTerm → CTerm0 → CTerm
-#SET a b = ct (SET ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : # SET ⌜ a ⌝ (CTerm0.cTerm b)
-    c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
-
-
 {--≡# : {a b : Term} → a ≡ b → (ca : # a) (cb : # b) → ca ≡ cb
 ≡# {a} {b} e ca cb = {!!}--}
-
-
-EQinj1 : {a b c d e f : Term} → EQ a b c ≡ EQ d e f → a ≡ d
-EQinj1 refl =  refl
-
-EQinj2 : {a b c d e f : Term} → EQ a b c ≡ EQ d e f → b ≡ e
-EQinj2 refl =  refl
-
-EQinj3 : {a b c d e f : Term} → EQ a b c ≡ EQ d e f → c ≡ f
-EQinj3 refl =  refl
-
-
-#EQinj1 : {a b c d e f : CTerm} → #EQ a b c ≡ #EQ d e f → a ≡ d
-#EQinj1 c = CTerm≡ (EQinj1 (≡CTerm c))
-
-#EQinj2 : {a b c d e f : CTerm} → #EQ a b c ≡ #EQ d e f → b ≡ e
-#EQinj2 c = CTerm≡ (EQinj2 (≡CTerm c))
-
-#EQinj3 : {a b c d e f : CTerm} → #EQ a b c ≡ #EQ d e f → c ≡ f
-#EQinj3 c = CTerm≡ (EQinj3 (≡CTerm c))
-
 
 
 -- PERs and world dependent PERs

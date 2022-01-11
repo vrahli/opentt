@@ -29,7 +29,6 @@ open import Function.Inverse using (Inverse)
 
 open import util
 open import calculus
-open import world
 
 
 module worldInstanceCS where
@@ -41,11 +40,14 @@ This provides an instance of world and choice for choice sequences
 
 
 \begin{code}
+
+open import choice
+
 choiceCS : Choice
-choiceCS = mkChoice Term NUM
+choiceCS = mkChoice Term NUM (λ x → x) (λ _ → refl)
 
+open import choiceDef{1ℓ}(choiceCS)
 
-open import choiceDef(choiceCS)
 
 
 record cs : Set₁ where
@@ -131,10 +133,11 @@ data _≽_ : (w2 : world) (w1 : world) → Set₁ where
 
 
 
+open import world
+
 -- An instance of PossibleWorlds
 PossibleWorldsCS : PossibleWorlds
 PossibleWorldsCS = mkPossibleWorlds world (λ w1 w2 → w2 ≽ w1) extRefl (λ {w1 w2 w3} e1 e2 → extTrans e2 e1)
-
 
 open import worldDef(PossibleWorldsCS)
 
@@ -335,6 +338,16 @@ getCsChoice n name w with getCs name w
 ... | nothing = nothing
 
 
+
+open import getChoice(PossibleWorldsCS)(choiceCS)
+
+getChoiceCS : GetChoice
+getChoiceCS = mkGetChoice getCsChoice
+
+open import getChoiceDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)
+
+
+
 newCsChoice : (w : 𝕎·) → Name
 newCsChoice w = fst (freshName (wdom w))
 
@@ -381,6 +394,18 @@ startNewCsChoice⊏ : (r : Res) (w : 𝕎·) → w ⊑· startNewCsChoice r w
 startNewCsChoice⊏ r w =
   (extEntry w (newCsChoice w) r (snd (freshName (wdom w)))) --, ¬≡startNewCsChoice (newCsChoice w) r w
 
+
+open import newChoice(PossibleWorldsCS)(choiceCS)(getChoiceCS)
+
+newChoiceCS : NewChoice
+newChoiceCS =
+  mkNewChoice
+    newCsChoice
+    startCsChoice
+    getCsChoice-startNewCsChoice
+    startNewCsChoice⊏
+
+open import newChoiceDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)
 
 
 getRes : Name → world → Res
@@ -473,6 +498,7 @@ freezableStartCs : (r : Res{0ℓ}) (w : 𝕎·) → freezableCs (newCsChoice w) 
 freezableStartCs r w = tt
 
 
+
 getCs→∈world : {c : Name} {r : Res} {w : 𝕎·} {l : List Term} → getCs c w ≡ just (mkcs c l r) → ∈world (mkcs c l r) w
 getCs→∈world {c} {r} {w} {l} h rewrite h = refl
 
@@ -545,6 +571,25 @@ getFreezeCs c w t {r} (l , comp , sat) fb =
       where
         g : getCsChoice (length l) c (freezeCs c w t) ≡ just t
         g rewrite getCs++-same-choice c w l r t comp | select-last l t = refl
+
+
+
+open import freeze(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)
+
+freezeCS : Freeze
+freezeCS =
+  mkFreeze
+    compatibleCs
+    ⊑-compatibleCs
+    startCsChoiceCompatible
+    freezeCs
+    freezableCs
+    freezeCs⊑
+    getFreezeCs
+    freezableStartCs
+
+open import freezeDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)(freezeCS)
+
 
 
 progressCs : (c : Name) (w1 w2 : 𝕎·) → Set₁
@@ -852,31 +897,17 @@ csChainProgress w x n {r} (l , comp , sat) = suc n , n<1+n n , p
 
 
 
-open import choice(PossibleWorldsCS)
+open import progress(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)(freezeCS)
 
-csChoice : Choice
-csChoice =
-  mkChoice
-    getCsChoice
-    newCsChoice
-    startCsChoice
-    getCsChoice-startNewCsChoice
-    startNewCsChoice⊏
-    compatibleCs
-    ⊑-compatibleCs
-    startCsChoiceCompatible
-    freezeCs
-    freezableCs
-    freezeCs⊑
-    getFreezeCs
-    freezableStartCs
+progressCS : Progress
+progressCS =
+  mkProgress
     progressCs
     freezeCsProgress
     𝕎→csChain
     csChainProgress
--- ≽-pres-getChoice
 
-open import choiceDef(PossibleWorldsCS)(csChoice)
+open import progressDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)(freezeCS)(progressCS)
 
 
 getChoice-extcs-last : (w : 𝕎·) (k : ℕ) (name : Name) (l : List Term) (r : Res) (t : Term)

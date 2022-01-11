@@ -21,19 +21,21 @@ open import Data.List.Properties
 
 open import util
 open import calculus
-open import world
-open import choice
 
 
 module choiceBarInstanceCS where
 
 
 open import worldInstanceCS
+open import choiceDef{1ℓ}(choiceCS)
 open import worldDef(PossibleWorldsCS)
-open import choice(PossibleWorldsCS)
-open import choiceDef(PossibleWorldsCS)(csChoice)
-open import bar(PossibleWorldsCS)(csChoice)
-open import computation(PossibleWorldsCS)(csChoice)
+open import getChoiceDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)
+open import newChoiceDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)
+open import freezeDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)(freezeCS)
+open import progressDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)(freezeCS)(progressCS)
+
+open import bar(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)(freezeCS)(progressCS)
+open import computation(PossibleWorldsCS)(choiceCS)(getChoiceCS)
 
 
 

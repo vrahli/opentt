@@ -34,10 +34,17 @@ open import util
 open import calculus
 open import world
 open import choice
+open import getChoice
+open import newChoice
+open import freeze
+open import progress
 
-module barI {L : Level} (W : PossibleWorlds {L}) (C : Choice W) where
-open import bar(W)(C)
+module barI {L : Level} (W : PossibleWorlds {L})
+            (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+       where
+
 open import worldDef(W)
+open import bar(W)(C)(G)(N)(F)(P)
 
 
 -- instance of a bar, which should be replaced by a parameter

@@ -31,9 +31,9 @@ open import world
 open import choice
 
 
-module getChoice {L : Level} (W : PossibleWorlds {L}) (C : Choice {L} W) where
+module getChoice {L : Level} (W : PossibleWorlds {L}) (C : Choice) where
 open import worldDef(W)
-open import choiceDef(W)(C)
+open import choiceDef{L}(C)
 \end{code}
 
 

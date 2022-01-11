@@ -14,6 +14,7 @@ open import Data.Product
 open import Data.Sum
 open import Data.Empty
 open import Data.Maybe
+open import Data.Maybe.Properties
 open import Data.Unit using (⊤ ; tt)
 open import Data.Nat using (ℕ ; _≟_ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
 open import Data.Nat.Properties
@@ -32,12 +33,32 @@ open import world
 open import choice
 open import getChoice
 
-module getChoiceDef {L : Level} (W : PossibleWorlds {L}) (C : Choice {L} W) (G : GetChoice {L} W C) where
+module getChoiceDef {L : Level} (W : PossibleWorlds {L}) (C : Choice) (G : GetChoice {L} W C) where
 open import worldDef(W)
-open import choiceDef(W)(C)
+open import choiceDef{L}(C)
 
 
 open GetChoice
 
 getChoice· : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe ℂ·
 getChoice· = getChoice G
+
+
+getC : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe Term
+getC n cs w = Data.Maybe.map ℂ→T· (getChoice· n cs w)
+
+
+
+onlyℂ∈𝕎 : (u : ℂ·) (c : Name) (w : 𝕎·) → Set
+onlyℂ∈𝕎 u c w = (n : ℕ) (t : ℂ·) → getChoice· n c w ≡ just t → t ≡ u
+
+
+getChoice⊎ : (n : ℕ) (name : Name) (w : 𝕎·)
+              → Σ ℂ· (λ u → getChoice· n name w ≡ just u) ⊎ getChoice· n name w ≡ nothing
+getChoice⊎ n name w with getChoice· n name w
+... | just u = inj₁ (u , refl)
+... | nothing = inj₂ refl
+
+
+isOnlyChoice∈𝕎 : (u : Term) (c : Name) (w : 𝕎·) → Set
+isOnlyChoice∈𝕎 u c w = (n : ℕ) (t : ℂ·) → getChoice· n c w ≡ just t → ℂ→T· t ≡ u

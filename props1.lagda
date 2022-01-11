@@ -33,36 +33,43 @@ open import Axiom.Extensionality.Propositional
 
 open import util
 open import calculus
+open import terms
 open import world
 open import choice
+open import getChoice
+open import newChoice
+open import freeze
+open import progress
 
 
 --module props1 (bar : Bar) where
-module props1 {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (E : Extensionality 0ℓ (lsuc(lsuc(L)))) where
+module props1 {L : Level} (W : PossibleWorlds {L})
+                          (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+                          (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+       where
 
 
 open import worldDef(W)
-open import computation(W)(C)
-open import bar(W)(C)
-open import barI(W)(C)
-open import theory(W)(C)(E)
-open import props0(W)(C)(E)
-open import ind2(W)(C)(E)
-open import terms(W)(C)(E)
+open import computation(W)(C)(G)
+open import bar(W)(C)(G)(N)(F)(P)
+open import barI(W)(C)(G)(N)(F)(P)
+open import theory(W)(C)(G)(N)(F)(P)(E)
+open import props0(W)(C)(G)(N)(F)(P)(E)
+open import ind2(W)(C)(G)(N)(F)(P)(E)
 
-open import type_sys_props_nat(W)(C)(E)
-open import type_sys_props_qnat(W)(C)(E)
-open import type_sys_props_lt(W)(C)(E)
-open import type_sys_props_qlt(W)(C)(E)
-open import type_sys_props_free(W)(C)(E)
-open import type_sys_props_pi(W)(C)(E)
-open import type_sys_props_sum(W)(C)(E)
-open import type_sys_props_set(W)(C)(E)
-open import type_sys_props_eq(W)(C)(E)
-open import type_sys_props_union(W)(C)(E)
-open import type_sys_props_tsquash(W)(C)(E)
-open import type_sys_props_ffdefs(W)(C)(E)
-open import type_sys_props_lift(W)(C)(E)
+open import type_sys_props_nat(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_qnat(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_lt(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_qlt(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_free(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_pi(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_sum(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_set(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_eq(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_union(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_tsquash(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_ffdefs(W)(C)(G)(N)(F)(P)(E)
+open import type_sys_props_lift(W)(C)(G)(N)(F)(P)(E)
 
 -- open import calculus
 -- open import world

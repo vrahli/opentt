@@ -35,9 +35,9 @@ open import newChoice
 open import freeze
 open import progress
 
-module progressDef {L : Level} (W : PossibleWorlds {L}) (C : Choice {L} W) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F) where
+module progressDef {L : Level} (W : PossibleWorlds {L}) (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F) where
 open import worldDef(W)
-open import choiceDef(W)(C)
+open import choiceDef{L}(C)
 open import getChoiceDef(W)(C)(G)
 open import newChoiceDef(W)(C)(G)(N)
 open import freezeDef(W)(C)(G)(N)(F)
@@ -80,10 +80,5 @@ record pchain (w : 𝕎·) : Set(lsuc(L)) where
 
 𝕎→pchain : (w : 𝕎·) → pchain w
 𝕎→pchain w = mkPChain (𝕎→chain· w) (chainProgress· w)
-
-
-
-isOnlyChoice∈𝕎 : (u : ℂ·) (c : Name) (w : 𝕎·) → Set
-isOnlyChoice∈𝕎 u c w = (n : ℕ) (t : ℂ·) → getChoice· n c w ≡ just t → t ≡ u
 
 

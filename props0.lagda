@@ -29,18 +29,27 @@ open import Axiom.Extensionality.Propositional
 
 open import util
 open import calculus
+open import terms
 open import world
 open import choice
+open import getChoice
+open import newChoice
+open import freeze
+open import progress
+
 --open import bar
 
-module props0 {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (E : Extensionality 0ℓ (lsuc(lsuc(L)))) where --(bar : Bar W) where
+module props0 {L : Level} (W : PossibleWorlds {L})
+              (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+              (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+       where
+       --(bar : Bar W) where
 open import worldDef(W)
-open import choiceDef(W)(C)
-open import computation(W)(C)
---open import theory (bar)
-open import bar(W)(C)
-open import barI(W)(C)
-open import theory(W)(C)(E)
+open import choiceDef{L}(C)
+open import computation(W)(C)(G)
+open import bar(W)(C)(G)(N)(F)(P)
+open import barI(W)(C)(G)(N)(F)(P)
+open import theory(W)(C)(G)(N)(F)(P)(E)
 \end{code}
 
 
@@ -79,175 +88,12 @@ lemma7 : (w : 𝕎·) → equalTypes 2 w (#UNIV 0) (#UNIV 0)
 lemma7 w = EQTUNIV 0 0<1+n (compAllRefl (UNIV 0) w) (compAllRefl (UNIV 0) w)
 
 
--- EQ
-EQneqNAT : {t a b : Term} → ¬ (EQ t a b) ≡ NAT
-EQneqNAT {t} {a} {b} ()
-
-EQneqQNAT : {t a b : Term} → ¬ (EQ t a b) ≡ QNAT
-EQneqQNAT {t} {a} {b} ()
-
-EQneqLT : {t a b : Term} {c d : Term} → ¬ (EQ t a b) ≡ LT c d
-EQneqLT {t} {a} {b} {c} {d} ()
-
-EQneqQLT : {t a b : Term} {c d : Term} → ¬ (EQ t a b) ≡ QLT c d
-EQneqQLT {t} {a} {b} {c} {d} ()
-
-EQneqFREE : {t a b : Term} → ¬ (EQ t a b) ≡ FREE
-EQneqFREE {t} {a} {b} ()
-
-EQneqPI : {t a b : Term} {c : Term} {d : Term} → ¬ (EQ t a b) ≡ PI c d
-EQneqPI {t} {a} {b} {c} {d} ()
-
-EQneqSUM : {t a b : Term} {c : Term} {d : Term} → ¬ (EQ t a b) ≡ SUM c d
-EQneqSUM {t} {a} {b} {c} {d} ()
-
-EQneqSET : {t a b : Term} {c : Term} {d : Term} → ¬ (EQ t a b) ≡ SET c d
-EQneqSET {t} {a} {b} {c} {d} ()
-
-EQneqUNION : {t a b : Term} {c : Term} {d : Term} → ¬ (EQ t a b) ≡ UNION c d
-EQneqUNION {t} {a} {b} {c} {d} ()
-
-EQneqTSQUASH : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ TSQUASH c
-EQneqTSQUASH {t} {a} {b} {c} ()
-
-EQneqLIFT : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ LIFT c
-EQneqLIFT {t} {a} {b} {c} ()
-
-EQneqDUM : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ DUM c
-EQneqDUM {t} {a} {b} {c} ()
-
-EQneqFFDEFS : {t a b : Term} {c d : Term} → ¬ (EQ t a b) ≡ FFDEFS c d
-EQneqFFDEFS {t} {a} {b} {c} {d} ()
-
-EQneqLOWER : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ LOWER c
-EQneqLOWER {t} {a} {b} {c} ()
-
-EQneqSHRINK : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ SHRINK c
-EQneqSHRINK {t} {a} {b} {c} ()
-
-EQneqUNIV : {t a b : Term} {n : ℕ} → ¬ (EQ t a b) ≡ UNIV n
-EQneqUNIV {t} {a} {b} {n} ()
-
-
-
--- PI
-PIinj1 : {a b c d : Term} → PI a b ≡ PI c d → a ≡ c
-PIinj1 refl =  refl
-
-PIinj2 : {a b c d : Term} → PI a b ≡ PI c d → b ≡ d
-PIinj2 refl =  refl
-
-#PIinj1 : {a : CTerm} {b : CTerm0} {c : CTerm} {d : CTerm0} → #PI a b ≡ #PI c d → a ≡ c
-#PIinj1 c =  CTerm≡ (PIinj1 (≡CTerm c))
-
-#PIinj2 : {a : CTerm} {b : CTerm0} {c : CTerm} {d : CTerm0} → #PI a b ≡ #PI c d → b ≡ d
-#PIinj2 c =  CTerm0≡ (PIinj2 (≡CTerm c))
-
-PIneqNAT : {a b : Term} → ¬ (PI a b) ≡ NAT
-PIneqNAT {a} {b} ()
-
-PIneqQNAT : {a b : Term} → ¬ (PI a b) ≡ QNAT
-PIneqQNAT {a} {b} ()
-
-PIneqLT : {a b : Term} {c d : Term} → ¬ (PI a b) ≡ LT c d
-PIneqLT {a} {b} {c} {d} ()
-
-PIneqQLT : {a b : Term} {c d : Term} → ¬ (PI a b) ≡ QLT c d
-PIneqQLT {a} {b} {c} {d} ()
-
-PIneqFREE : {a b : Term} → ¬ (PI a b) ≡ FREE
-PIneqFREE {a} {b} ()
-
-PIneqEQ : {a b : Term} {c : Term} {d : Term} {e : Term} → ¬ (PI a b) ≡ EQ c d e
-PIneqEQ {a} {b} {c} {d} {e} ()
-
-PIneqSUM : {a b : Term} {c : Term} {d : Term} → ¬ (PI a b) ≡ SUM c d
-PIneqSUM {a} {b} {c} {d} ()
-
-PIneqSET : {a b : Term} {c : Term} {d : Term} → ¬ (PI a b) ≡ SET c d
-PIneqSET {a} {b} {c} {d} ()
-
-PIneqUNION : {a b : Term} {c : Term} {d : Term} → ¬ (PI a b) ≡ UNION c d
-PIneqUNION {a} {b} {c} {d} ()
-
-PIneqTSQUASH : {a b : Term} {c : Term} → ¬ (PI a b) ≡ TSQUASH c
-PIneqTSQUASH {a} {b} {c} ()
-
-PIneqLIFT : {a b : Term} {c : Term} → ¬ (PI a b) ≡ LIFT c
-PIneqLIFT {a} {b} {c} ()
-
-PIneqDUM : {a b : Term} {c : Term} → ¬ (PI a b) ≡ DUM c
-PIneqDUM {a} {b} {c} ()
-
-PIneqFFDEFS : {a b : Term} {c d : Term} → ¬ (PI a b) ≡ FFDEFS c d
-PIneqFFDEFS {a} {b} {c} {d} ()
-
-PIneqLOWER : {a b : Term} {c : Term} → ¬ (PI a b) ≡ LOWER c
-PIneqLOWER {a} {b} {c} ()
-
-PIneqSHRINK : {a b : Term} {c : Term} → ¬ (PI a b) ≡ SHRINK c
-PIneqSHRINK {a} {b} {c} ()
-
-PIneqUNIV : {a b : Term} {n : ℕ} → ¬ (PI a b) ≡ UNIV n
-PIneqUNIV {a} {b} {n} ()
-
-
 wPredExtIrr-× : {w : 𝕎·} {f g : wPred w} → wPredExtIrr f → wPredExtIrr g → wPredExtIrr (λ w' e' → f w' e' × g w' e')
 wPredExtIrr-× {w} {f} {g} wF wG w' e1 e2 (hf , hg) = wF w' e1 e2 hf , wG w' e1 e2 hg
 
 
 wPredExtIrr-⇛ : {w : 𝕎·} {a b : Term} → wPredExtIrr {w} (λ w' e' → a ⇛ b at w')
 wPredExtIrr-⇛ {w} {a} {b} w' e1 e2 h = h
-
-
--- NAT
-NATneqQNAT : ¬ NAT ≡ QNAT
-NATneqQNAT ()
-
-NATneqLT : {c d : Term} → ¬ NAT ≡ LT c d
-NATneqLT {c} {d} ()
-
-NATneqQLT : {c d : Term} → ¬ NAT ≡ QLT c d
-NATneqQLT {c} {d} ()
-
-NATneqFREE : ¬ NAT ≡ FREE
-NATneqFREE ()
-
-NATneqPI : {c : Term} {d : Term} → ¬ NAT ≡ PI c d
-NATneqPI {c} {d} ()
-
-NATneqSUM : {c : Term} {d : Term} → ¬ NAT ≡ SUM c d
-NATneqSUM {c} {d} ()
-
-NATneqSET : {c : Term} {d : Term} → ¬ NAT ≡ SET c d
-NATneqSET {c} {d} ()
-
-NATneqUNION : {c : Term} {d : Term} → ¬ NAT ≡ UNION c d
-NATneqUNION {c} {d} ()
-
-NATneqEQ : {c d e : Term} → ¬ NAT ≡ EQ c d e
-NATneqEQ {c} {d} {e} ()
-
-NATneqTSQUASH : {c : Term} → ¬ NAT ≡ TSQUASH c
-NATneqTSQUASH {c} ()
-
-NATneqLIFT : {c : Term} → ¬ NAT ≡ LIFT c
-NATneqLIFT {c} ()
-
-NATneqDUM : {c : Term} → ¬ NAT ≡ DUM c
-NATneqDUM {c} ()
-
-NATneqFFDEFS : {c d : Term} → ¬ NAT ≡ FFDEFS c d
-NATneqFFDEFS {c} {d} ()
-
-NATneqLOWER : {c : Term} → ¬ NAT ≡ LOWER c
-NATneqLOWER {c} ()
-
-NATneqSHRINK : {c : Term} → ¬ NAT ≡ SHRINK c
-NATneqSHRINK {c} ()
-
-NATneqUNIV : {n : ℕ} → ¬ NAT ≡ UNIV n
-NATneqUNIV {n} ()
 
 
 -- Do we still need is-universe now?

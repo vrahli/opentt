@@ -33,14 +33,24 @@ open import Data.Maybe
 open import calculus
 open import world
 open import choice
+open import getChoice
+open import newChoice
+open import freeze
+open import progress
 
 
-module choiceBar {L : Level} (W : PossibleWorlds {L}) (C : Choice W) where
-open import bar(W)(C)
-open import barI(W)(C)
+module choiceBar {L : Level} (W : PossibleWorlds {L})
+                 (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+       where
+
 open import worldDef(W)
-open import choiceDef(W)(C)
-open import computation(W)(C)
+open import choiceDef{L}(C)
+open import getChoiceDef(W)(C)(G)
+open import newChoiceDef(W)(C)(G)(N)
+open import freezeDef(W)(C)(G)(N)(F)
+open import computation(W)(C)(G)
+open import bar(W)(C)(G)(N)(F)(P)
+open import barI(W)(C)(G)(N)(F)(P)
 
 
 -- TODO : add compatiblity constraint to choice-weakℕ: compatible· c w Resℕ
@@ -49,15 +59,15 @@ record ChoiceBar : Set(lsuc(lsuc(L))) where
   constructor mkBar
   field
     -- This says that all choices are "weak" ℕ (i.e., that can change over time)
-    choice-weakℕ : {w : 𝕎·} {c : Name} (m : ℕ) → compatible· c w Resℕ → inbar w (λ w' _ → weakℕM w' (getChoice· m c))
+    choice-weakℕ : {w : 𝕎·} {c : Name} (m : ℕ) → compatible· c w Resℕ → inbar w (λ w' _ → weakℕM w' (getC m c))
 
     -- This allows selecting a branch of a bar that follows a given choice 'u'
     followChoice : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                    → inbar w f
-                   → isOnlyChoice∈𝕎 (Res.def r) c w
+                   → onlyℂ∈𝕎 (Res.def r) c w
                    → compatible· c w r
                    → freezable· c w
-                   → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → isOnlyChoice∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
+                   → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
 
 {--
     -- TODO: Move to choice
