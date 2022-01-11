@@ -742,6 +742,10 @@ compatibleRes {L} r1 r2 =
   (n : ℕ) (t : Term) → (·ᵣ r1 n t → ·ᵣ r2 n t) × (·ᵣ r2 n t → ·ᵣ r1 n t)
 
 
+Resη : {L : Level} (r : Res{L}) → mkRes (Res.res r) (Res.def r) (Res.sat r) ≡ r
+Resη {L} (mkRes r d s) = refl
+
+
 
 -- named restriction
 record NRes {L : Level} : Set(lsuc(L)) where

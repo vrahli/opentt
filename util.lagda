@@ -14,7 +14,7 @@ open import Data.Product.Properties
 open import Data.Sum
 open import Data.Empty
 open import Data.Unit using (⊤ ; tt)
-open import Data.Nat using (ℕ ; _≟_ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _⊔_)
+open import Data.Nat using (ℕ ; _≟_ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _⊔_ ; _+_)
 open import Data.Nat.Properties
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
@@ -234,8 +234,6 @@ injective {A} {B} f = {a b : A} → f a ≡ f b → a ≡ b
 
 
 
-
-
 comp-ind-ℕ-aux : {L : Level} (P : ℕ → Set(L))
                  → ((n : ℕ) → ((m : ℕ) → m < n → P m) → P n)
                  → (n m : ℕ) → m < n → P m
@@ -248,5 +246,42 @@ comp-ind-ℕ-aux {L} P ind (suc n) m (_≤_.s≤s z) with m≤n⇒m<n∨m≡n z
               → ((n : ℕ) → ((m : ℕ) → m < n → P m) → P n)
               → (n : ℕ) → P n
 <ℕind {L} P ind n = comp-ind-ℕ-aux P ind (suc n) n (_≤_.s≤s ≤-refl)
+
+
+
+Σselect : {L : Level} {A : Set(L)} {k : ℕ} {l : List A}
+          → k < length l
+          → Σ A (λ t → select k l ≡ just t)
+Σselect {L} {A} {0} {x ∷ l} len = x , refl
+Σselect {L} {A} {suc k} {x ∷ l} len = Σselect {L} {A} {k} {l} (s≤s-inj len)
+
+
+∷replicate≡replicate∷ʳ : {L : Level} {A : Set(L)} (n : ℕ) (x : A) → x ∷ replicate n x ≡ replicate n x ∷ʳ x
+∷replicate≡replicate∷ʳ {L} {A} 0 x = refl
+∷replicate≡replicate∷ʳ {L} {A} (suc n) x rewrite ∷replicate≡replicate∷ʳ n x = refl
+
+
+suc-+1 : (n : ℕ) → suc n ≡ n + 1
+suc-+1 n rewrite +-suc n 0 | +-identityʳ n = refl
+
+
+select→∈ : {L : Level} {A : Set(L)} {k : ℕ} {l : List A} {t : A}
+            → select k l ≡ just t
+            → t ∈ l
+select→∈ {L} {A} {0} {x ∷ l} {t} sel rewrite just-inj sel = here refl
+select→∈ {L} {A} {suc k} {x ∷ l} {t} sel = there (select→∈ sel)
+
+
+select++→⊎∈ : {L : Level} {A : Set(L)} {k : ℕ} {l l' : List A} {t : A}
+               → select k (l ++ l') ≡ just t
+               → select k l ≡ just t ⊎ t ∈ l'
+select++→⊎∈ {L} {A} {k} {[]} {l'} {t} sel = inj₂ (select→∈ sel)
+select++→⊎∈ {L} {A} {0} {x ∷ l} {l'} {t} sel = inj₁ sel
+select++→⊎∈ {L} {A} {suc k} {x ∷ l} {l'} {t} sel = select++→⊎∈ {L} {A} {k} {l} {l'} sel
+
+
+∈replicate→ : {L : Level} {A : Set(L)} {x y : A} {n : ℕ} → y ∈ (replicate n x) → y ≡ x
+∈replicate→ {L} {A} {x} {y} {suc n} (here px) = px
+∈replicate→ {L} {A} {x} {y} {suc n} (there i) = ∈replicate→ i
 
 \end{code}

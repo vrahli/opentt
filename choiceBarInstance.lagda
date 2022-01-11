@@ -37,10 +37,6 @@ open import computation(PossibleWorldsCS)(csChoice)
 
 
 
-suc-+1 : (n : ℕ) → suc n ≡ n + 1
-suc-+1 n rewrite +-suc n 0 | +-identityʳ n = refl
-
-
 progressing→ΣgetCs≤ : {w : 𝕎·} {c : chain w} (n : Name) (m : ℕ)
                        → compatible· n w Resℕ
                        → progressing {w} c
@@ -127,12 +123,6 @@ IS𝔹-ℕ w n m comp =
         ln rewrite length-++ l {fst (≽-pres-∈world e g)} = ≤-stepsʳ (length (fst (≽-pres-∈world e g))) len
 
 
-Σselect : {L : Level} {A : Set(L)} {k : ℕ} {l : List A}
-          → k < length l
-          → Σ A (λ t → select k l ≡ just t)
-Σselect {L} {A} {0} {x ∷ l} len = x , refl
-Σselect {L} {A} {suc k} {x ∷ l} len = Σselect {L} {A} {k} {l} (s≤s-inj len)
-
 
 
 ⊑-∈world→≤length : {w1 w2 : 𝕎·} {name : Name} {l1 l2 : List Term} {r : Res}
@@ -205,15 +195,6 @@ choice-weakℕ-beth w c m comp = IS𝔹-ℕ w c m comp , i
 
 
 
-∷replicate≡replicate∷ʳ : {L : Level} {A : Set(L)} (n : ℕ) (x : A) → x ∷ replicate n x ≡ replicate n x ∷ʳ x
-∷replicate≡replicate∷ʳ {L} {A} 0 x = refl
-∷replicate≡replicate∷ʳ {L} {A} (suc n) x rewrite ∷replicate≡replicate∷ʳ n x = refl
-
-
-
-Resη : {L : Level} (r : Res{L}) → mkRes (Res.res r) (Res.def r) (Res.sat r) ≡ r
-Resη {L} (mkRes r d s) = refl
-
 
 →getCsFreezeSeq-replicate : {c : Name} {w : 𝕎·} {l : List Term} {r : Res} {rs : List NRes} (n : ℕ)
                              → mkNRes c r ∈ rs
@@ -236,26 +217,6 @@ Resη {L} (mkRes r d s) = refl
     cc rewrite ∷replicate≡replicate∷ʳ (fst ind) (Res.def r) | sym (++-assoc l (replicate (fst ind) (Res.def r)) [ Res.def r ]) =
       getCs-freezeList≡ nodp j (snd ind)
 
-
-
-select→∈ : {L : Level} {A : Set(L)} {k : ℕ} {l : List A} {t : A}
-            → select k l ≡ just t
-            → t ∈ l
-select→∈ {L} {A} {0} {x ∷ l} {t} sel rewrite just-inj sel = here refl
-select→∈ {L} {A} {suc k} {x ∷ l} {t} sel = there (select→∈ sel)
-
-
-select++→⊎∈ : {L : Level} {A : Set(L)} {k : ℕ} {l l' : List A} {t : A}
-               → select k (l ++ l') ≡ just t
-               → select k l ≡ just t ⊎ t ∈ l'
-select++→⊎∈ {L} {A} {k} {[]} {l'} {t} sel = inj₂ (select→∈ sel)
-select++→⊎∈ {L} {A} {0} {x ∷ l} {l'} {t} sel = inj₁ sel
-select++→⊎∈ {L} {A} {suc k} {x ∷ l} {l'} {t} sel = select++→⊎∈ {L} {A} {k} {l} {l'} sel
-
-
-∈replicate→ : {L : Level} {A : Set(L)} {x y : A} {n : ℕ} → y ∈ (replicate n x) → y ≡ x
-∈replicate→ {L} {A} {x} {y} {suc n} (here px) = px
-∈replicate→ {L} {A} {x} {y} {suc n} (there i) = ∈replicate→ i
 
 
 getCsChoice-freezeSeq→⊎ : {k : ℕ} {c : Name} {r : Res} {l : List NRes} {w : 𝕎·} {t : Term} {n : ℕ}
