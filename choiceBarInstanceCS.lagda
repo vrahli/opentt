@@ -25,10 +25,10 @@ open import world
 open import choice
 
 
-module choiceBarInstance where
+module choiceBarInstanceCS where
 
 
-open import worldInstance
+open import worldInstanceCS
 open import worldDef(PossibleWorldsCS)
 open import choice(PossibleWorldsCS)
 open import choiceDef(PossibleWorldsCS)(csChoice)

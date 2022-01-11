@@ -32,7 +32,7 @@ open import calculus
 open import world
 
 
-module worldInstance where
+module worldInstanceCS where
 \end{code}
 
 
