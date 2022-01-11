@@ -158,10 +158,10 @@ resSatCs-select→ {n} {suc m} {x ∷ l} {r} {t} (c , s) e rewrite sym (+-suc m 
 
 
 
-choice-weakℕ-beth : (w : 𝕎·) (c : Name) (m : ℕ)
-                     → compatible· c w Resℕ
-                     → inBethBar w (λ w' _ → weakℕM w' (getChoice· m c))
-choice-weakℕ-beth w c m comp = IS𝔹-ℕ w c m comp , i
+choice-weakℕ-beth-cs : (w : 𝕎·) (c : Name) (m : ℕ)
+                        → compatible· c w Resℕ
+                        → inBethBar w (λ w' _ → weakℕM w' (getChoice· m c))
+choice-weakℕ-beth-cs w c m comp = IS𝔹-ℕ w c m comp , i
   where
     i : inIS𝔹 (IS𝔹-ℕ w c m comp) (λ w' _ → weakℕM w' (getChoice· m c))
     i {w'} e (e0 , l , g , len) w1 e1 z w2 e2 = lift (fst sel , g1 , num)
@@ -294,13 +294,13 @@ getCs→≡Name-getCs {choice name t ∷ w} {n1} {n2} {l} {r} e = getCs→≡Nam
 
 
 
-followChoice-beth : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
-                    → inBethBar w f
-                    → isOnlyChoice∈𝕎 (Res.def r) c w
-                    → compatible· c w r
-                    → freezable· c w
-                    → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → isOnlyChoice∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
-followChoice-beth c {w} {f} {r} (bar , i) oc comp fb =
+followChoice-beth-cs : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
+                       → inBethBar w f
+                       → isOnlyChoice∈𝕎 (Res.def r) c w
+                       → compatible· c w r
+                       → freezable· c w
+                       → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → isOnlyChoice∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
+followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
   w' , e , iso , comp' , fb' , z
   where
     pc : pchain w

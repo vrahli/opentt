@@ -58,11 +58,38 @@ choice-weakℕ-beth-ref {w} {c} m (v , f , i , sat) = trivialIS𝔹 w , j
         compn rewrite snd isn = fst isn , ⇓-refl (NUM (fst isn)) w3
 
 
+{--
+⊑-isOnlyChoice∈𝕎 : {c : Name} {w1 w2 : 𝕎·} {r : Res{0ℓ}} {u : Term}
+                    → w1 ⊑· w2
+                    → isOnlyChoice∈𝕎 u c w2
+                    → isOnlyChoice∈𝕎 u c w1
+⊑-isOnlyChoice∈𝕎 {c} {w1} {w2} {r} {u} e iso k t z with getRef⊎ c w1
+... | inj₁ (cell n' r' v' f' , p) rewrite p  = {!!}
+{-- | fst (snd (≽-pres-getCs e (getCs→≡Name-getCs {w1} p))) =
+  iso k t (select++-just {0ℓ} {Term} {k} {l} {fst (≽-pres-getCs e (getCs→≡Name-getCs {w1} p))} z)--}
+... | inj₂ p rewrite p = ⊥-elim (¬just≡nothing (sym z))
+--}
+
 followChoice-beth-ref : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                         → inBethBar w f
                         → isOnlyChoice∈𝕎 (Res.def r) c w
                         → compatible· c w r
                         → freezable· c w
                         → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → isOnlyChoice∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
-followChoice-beth-ref c {w} {f} {r} i ioc comp fb = {!!}
+followChoice-beth-ref c {w} {f} {r} (bar , i) ioc comp fb =
+  w , ⊑-refl· _ , ioc , comp , fb ,
+  i e (BarsProp.b bp) (chain.seq (pchain.c pc) (BarsProp.n bp)) (BarsProp.ext bp) (⊑-refl· _)
+  where
+    pc : pchain w
+    pc = 𝕎→pchain w
+
+    bp : BarsProp (IS𝔹.bar bar) (pchain.c pc)
+    bp = IS𝔹.bars bar pc
+
+    w' : 𝕎·
+    w' = BarsProp.w' bp
+
+    e : w ⊑· w'
+    e = IS𝔹.ext bar (BarsProp.b bp)
+
 \end{code}
