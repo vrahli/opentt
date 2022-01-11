@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; _⊔_ ; Lift ; lift ; lower) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -26,24 +26,21 @@ open import Data.List.Membership.Propositional.Properties
 open import Data.List.Properties
 
 
+open import util
 open import calculus
--- get rid of worldInstance here and only use world
--- make it a parameter of computation
 open import world
+open import choice
+
+module choiceDef {L : Level} (W : PossibleWorlds {L}) (C : Choice {L} W) where
+open import worldDef(W)
+
+open Choice
 
 
-module choice {L : Level} (W : PossibleWorlds {L}) where
-open import worldDef W
-\end{code}
 
-
-\begin{code}
-
-record Choice : Set(lsuc(L)) where
-  constructor mkChoice
-  field
-    ℂ : Set
-    -- should contain ℕ
-    ℕ→ℂ : ℕ → ℂ
-
+{--getChoice⊑· : (w1 w2 : 𝕎·) (k : ℕ) (name : Name) (t : Term)
+              → w1 ⊑· w2
+              → getChoice· k name w1 ≡ just t
+              → getChoice· k name w2 ≡ just t
+getChoice⊑· = getChoice⊑ C--}
 \end{code}

@@ -27,23 +27,30 @@ open import Data.List.Properties
 
 
 open import calculus
--- get rid of worldInstance here and only use world
--- make it a parameter of computation
 open import world
+open import choice
+open import getChoice
 
 
-module choice {L : Level} (W : PossibleWorlds {L}) where
-open import worldDef W
+module newChoice {L : Level} (W : PossibleWorlds {L}) (C : Choice {L} W) (G : GetChoice {L} W C) where
+open import worldDef(W)
+open import choiceDef(W)(C)
+open import getChoiceDef(W)(C)(G)
 \end{code}
 
 
 \begin{code}
-
-record Choice : Set(lsuc(L)) where
-  constructor mkChoice
+record NewChoice : Set(lsuc(L)) where
+  constructor mkNewChoice
   field
-    ℂ : Set
-    -- should contain ℕ
-    ℕ→ℂ : ℕ → ℂ
+    -- returns a Name which does not occur in w
+    newChoice : (w : 𝕎·) → Name
+    -- 'records' cs in w
+    startChoice : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) → 𝕎·
+    -- if we start a new choice then it is 'empty' according to getChoice
+    getChoice-startNewChoice : (n : ℕ) (r : Res{0ℓ}) (w : 𝕎·) (t : ℂ·)
+                               → getChoice· n (newChoice w) (startChoice (newChoice w) r w) ≡ just t → t ≡ Res.def r
+    -- starting a new choice gives us a non-trivial extension
+    startNewChoice⊏ : (r : Res{0ℓ}) (w : 𝕎·) → w ⊑· startChoice (newChoice w) r w
 
 \end{code}

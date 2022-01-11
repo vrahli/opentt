@@ -41,6 +41,13 @@ This provides an instance of world and choice for choice sequences
 
 
 \begin{code}
+choiceCS : Choice
+choiceCS = mkChoice Term NUM
+
+
+open import choiceDef(choiceCS)
+
+
 record cs : Set₁ where
   constructor mkcs
   field

@@ -17,17 +17,22 @@ open import util
 open import calculus
 open import world
 open import choice
--- get rid of worldInstance here and only use world
--- make it a parameter of bar
---open import worldInstance
+open import getChoice
+open import newChoice
+open import freeze
+open import progress
 
 
 -- TODO: move the instances to separate files.
 -- Choice is only needed for Beth bars to build an infinite sequence of worlds
-module bar {L : Level} (W : PossibleWorlds {L}) (C : Choice W) where
+module bar {L : Level} (W : PossibleWorlds {L}) (C : Choice W) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F) where
 open import worldDef{L}(W)
 -- Those are only needed by the Beth instance
 open import choiceDef{L}(W)(C)
+open import getChoiceDef(W)(C)(G)
+open import newChoiceDef(W)(C)(G)(N)
+open import freezeDef(W)(C)(G)(N)(F)
+open import progressDef(W)(C)(G)(N)(F)(P)
 
 
 record Bar : Set(lsuc(lsuc(L))) where
@@ -1153,7 +1158,7 @@ trivialIS𝔹 w =
 -- Each step we start a new choice to guarantee the world progresses, and we freeze c to guarantee that c progresses
 seqChoice : Name → 𝕎· → ℕ → 𝕎·
 seqChoice c w 0 = w
-seqChoice c w (suc n) = freeze· c (startNewChoice Resℕ (seqChoice c w n)) (NUM 0)
+seqChoice c w (suc n) = freeze· c (startNewChoice Resℕ (seqChoice c w n)) (ℕ→ℂ· 0)
 
 
 chainChoice-prop-aux : (n : ℕ) (s : ℕ → 𝕎·) (ind : (m : ℕ) → m < n →  s m ⊑· s (suc m)) → s 0 ⊑· s n

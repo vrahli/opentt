@@ -27,23 +27,22 @@ open import Data.List.Properties
 
 
 open import calculus
--- get rid of worldInstance here and only use world
--- make it a parameter of computation
 open import world
+open import choice
 
 
-module choice {L : Level} (W : PossibleWorlds {L}) where
-open import worldDef W
+module getChoice {L : Level} (W : PossibleWorlds {L}) (C : Choice {L} W) where
+open import worldDef(W)
+open import choiceDef(W)(C)
 \end{code}
 
 
 \begin{code}
-
-record Choice : Set(lsuc(L)) where
-  constructor mkChoice
+record GetChoice : Set(lsuc(L)) where
+  constructor mkGetChoice
   field
-    ℂ : Set
-    -- should contain ℕ
-    ℕ→ℂ : ℕ → ℂ
+    -- returns the n's choice in w for the choice sequence cs
+    getChoice : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe ℂ·
+    --getChoice : (cs : Name) (w : 𝕎·) → Maybe ℕ
 
 \end{code}

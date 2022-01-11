@@ -39,11 +39,26 @@ open import worldDef W
 
 \begin{code}
 
-record Choice : Set(lsuc(L)) where
-  constructor mkChoice
+{--
+-- TODO: fix the level so that restriction can have higher levels
+-- TODO: allow choices to be something else than terms: add a "choice" type
+record Choice0 : Set(lsuc(L)) where
+  constructor mkChoice0
   field
-    ℂ : Set
-    -- should contain ℕ
-    ℕ→ℂ : ℕ → ℂ
+
+-- TODO: Also add that starting a seq is freezable and following a choice too
+
+-- To capture the fact that we can make different choices over time, should we
+-- (1) add a setter function (would require the 'step' function to return a 𝕎)
+-- (2) or capture that through an axiom?
+
+    -- getChoice is preserved by ⊑
+    -- This is only used by ⇛-APPLY-CS in computation, which is not used now
+    -- This is something we want because it wouldn't hold for references
+    {--getChoice⊑ : (w1 w2 : 𝕎·) (k : ℕ) (name : Name) (t : Term)
+                  → w1 ⊑· w2
+                  → getChoice k name w1 ≡ just t
+                  → getChoice k name w2 ≡ just t--}
+--}
 
 \end{code}
