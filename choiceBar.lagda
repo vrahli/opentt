@@ -67,7 +67,7 @@ record ChoiceBar : Set(lsuc(lsuc(L))) where
                    → onlyℂ∈𝕎 (Res.def r) c w
                    → compatible· c w r
                    → freezable· c w
-                   → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
+                   → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
 
 {--
     -- TODO: Move to choice

@@ -301,7 +301,7 @@ followChoice-beth-cs : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                        → isOnlyChoice∈𝕎 (Res.def r) c w
                        → compatible· c w r
                        → freezable· c w
-                       → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → isOnlyChoice∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
+                       → ∃𝕎 w (λ w1 e1 → isOnlyChoice∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
 followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
   w' , e , iso , comp' , fb' , z
   where

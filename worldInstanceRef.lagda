@@ -514,15 +514,37 @@ progressRef c w1 w2 =
 
 
 
-getFreezeRef : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}}
-               → compatibleRef c w r
-               → freezableRef c w
-               → Σ ℕ (λ n → ∀𝕎 (freezeRef c w t) (λ w' _ → Lift 2ℓ (getRefChoice n c w' ≡ just t)))
-getFreezeRef c w t {r} (v , true , comp , sat) fb rewrite comp = ⊥-elim fb
-getFreezeRef c w t {r} (v , false , comp , sat) fb rewrite comp = 0 , aw
+freeze→¬freezable : {c : Name} {w : 𝕎·} {r : Res{0ℓ}} (t : Term)
+                    → compatibleRef c w r
+                    → ∀𝕎 (freezeRef c w t) (λ w' _ → Lift 2ℓ (¬ freezableRef c w'))
+freeze→¬freezable {c} {w} {r} t (v , f , comp , sat) w1 e1 = lift z4
   where
-    aw : ∀𝕎 (freezeRef c w t) (λ w' _ → Lift 2ℓ (getRefChoice 0 c w' ≡ just t))
-    aw w1 e1 = lift z3
+    z1 : Σ Term (λ v' → ∈world c r v' true (freezeRef c w t) × satFrozen v v' f true)
+    z1 = progressRef-freeze c w t r v f comp
+
+    z2 : Σ Term (λ v' → Σ Bool (λ f' → ∈world c r v' f' w1 × satFrozen (fst z1) v' true f'))
+    z2 = ⊑→progressRef c e1 r (fst z1) true (fst (snd z1))
+
+    z3 : ∈world c r (fst z1) true w1
+    z3 rewrite fst (snd (snd z2)) | fst (snd (snd (snd z2))) | sym (snd (snd (snd (snd z2)))) = refl
+
+    z4 : ¬ freezableRef c w1
+    z4 h rewrite z3 = h
+
+
+--freeze→¬freezable c w t {r} (v , false , comp , sat) rewrite comp = {!!}
+
+
+
+getFreezeRef-aux : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}}
+                   → compatibleRef c w r
+                   → freezableRef c w
+                   → Σ ℕ (λ n → ∀𝕎 (freezeRef c w t) (λ w' _ → Lift 2ℓ (getRefChoice n c w' ≡ just t × ¬ freezableRef c w')))
+getFreezeRef-aux c w t {r} (v , true , comp , sat) fb rewrite comp = ⊥-elim fb
+getFreezeRef-aux c w t {r} (v , false , comp , sat) fb rewrite comp = 0 , aw
+  where
+    aw : ∀𝕎 (freezeRef c w t) (λ w' _ → Lift 2ℓ (getRefChoice 0 c w' ≡ just t × ¬ freezableRef c w'))
+    aw w1 e1 = lift (z4 , z5)
       where
         z1 : Σ Term (λ v' → ∈world c r v' true (freezeRef c w t) × satFrozen v v' false true)
         z1 = progressRef-freeze c w t r v false comp
@@ -530,12 +552,27 @@ getFreezeRef c w t {r} (v , false , comp , sat) fb rewrite comp = 0 , aw
         z2 : Σ Term (λ v' → Σ Bool (λ f' → ∈world c r v' f' w1 × satFrozen (fst z1) v' true f'))
         z2 = ⊑→progressRef c e1 r (fst z1) true (fst (snd z1))
 
+        z3 : ∈world c r (fst z1) true w1
+        z3 rewrite fst (snd (snd z2)) | fst (snd (snd (snd z2))) | sym (snd (snd (snd (snd z2)))) = refl
+
         x : ∈world c r (fst z1) true (freezeRef c w t) → fst z1 ≡ t
         x i rewrite ∈world-false-freezeRef-true c r v w t comp = sym (cell-inj3 (just-inj i))
 
-        z3 : getRefChoice 0 c w1 ≡ just t
-        z3 rewrite fst (snd (snd z2)) | sym (snd (snd (snd (snd z2)))) | x (fst (snd z1)) = refl
+        z4 : getRefChoice 0 c w1 ≡ just t
+        z4 rewrite z3 | x (fst (snd z1)) = refl
 
+        z5 : ¬ freezableRef c w1
+        z5 h rewrite z3 = h
+
+
+
+getFreezeRef : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}}
+               → compatibleRef c w r
+               → freezableRef c w
+               → Σ ℕ (λ n → ∀𝕎 (freezeRef c w t) (λ w' _ → Lift 2ℓ (getRefChoice n c w' ≡ just t)))
+getFreezeRef c w t {r} comp fb =
+  fst (getFreezeRef-aux c w t comp fb) ,
+  λ w1 e1 → lift (fst (lower (snd (getFreezeRef-aux c w t comp fb) w1 e1)))
 
 
 open import freeze(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)

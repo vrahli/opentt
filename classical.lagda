@@ -166,17 +166,36 @@ eqTypesNegLem : (w : 𝕎·) {n i : ℕ} (p : i < n) → equalTypes n w (#NEG (#
 eqTypesNegLem w {n} {i} p = eqTypesNEG← (eqTypesLem w {n} {i} p)
 
 
+-- TODO: it would be great to replace [NUM k] with [ℂ→T k] for some [k : ℂ·],
+-- but then what would we replace QNAT with?
 Σchoice : (n : Name) (k : ℕ) → Term
 Σchoice n k = SUM NAT (EQ (APPLY (CS n) (VAR 0)) (NUM k) QNAT)
 
 
+{--
+-- TODO: add as an axiom to choice?
+#-ℂ→T : (c : ℂ·) → # (ℂ→T· c)
+#-ℂ→T = {!!}
+
+
+#ℂ→T : (c : ℂ·) → CTerm
+#ℂ→T c = ct (ℂ→T· c) (#-ℂ→T c)
+
+
+#[0]ℂ→T : (c : ℂ·) → CTerm0
+#[0]ℂ→T c = ⌞ #ℂ→T c ⌟
+--}
+
 
 #Σchoice : (n : Name) (k : ℕ) → CTerm
 #Σchoice n k = ct (Σchoice n k) refl
+--  where
+--    c : # (Σchoice n k)
+--    c rewrite #-ℂ→T k = refl
 
 
 #Σchoice≡ : (n : Name) (k : ℕ) → #Σchoice n k ≡ #SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS n) #[0]VAR) (#[0]NUM k) #[0]QNAT)
-#Σchoice≡ n k = refl
+#Σchoice≡ n k = CTerm≡ refl
 
 
 sub0-#Σchoice-body≡ : (a : CTerm) (c : Name) (k : ℕ)
@@ -667,7 +686,7 @@ notClassical w {n} {i} p =
         h1 = aw5 w2 e2 (#Σchoice name k1) (#Σchoice name k1) (equalInType-#Σchoice p w2 name k1 (startChoiceCompatible· r w1))
 
         oc1 : onlyℂ∈𝕎 (Res.def r) name w2
-        oc1 n t e = getChoice-startNewChoice· n r w1 t e --rewrite getChoice-startNewChoice· n r w1 = ⊥-elim (¬just≡nothing (sym e))
+        oc1 n = getChoice-startNewChoice· n r w1 --rewrite getChoice-startNewChoice· n r w1 = ⊥-elim (¬just≡nothing (sym e))
 
         comp1 : compatible· name w2 r
         comp1 = startChoiceCompatible· r w1
@@ -744,12 +763,14 @@ notClassical w {n} {i} p =
         h5 = snd (snd (snd (snd (snd (snd (snd h4))))))
 
         -- 1st injection: proved by ¬equalInType-#Σchoice
+        -- For this it is enough to be able to make a choice different from k1 forever, for example choosing 0 forever
 
         -- 2nd injection:
+        -- This is where we should be able to make another choice than the default choice
         w5 : 𝕎·
         w5 = freeze· name w4 (ℕ→ℂ· k1)
 
-        rNUM : (k : ℕ) → ·ᵣ r k (ℕ→ℂ· k1)
+        rNUM : ⋆ᵣ r (ℕ→ℂ· k1)
         rNUM k = k1 , refl
 
         e5 : w4 ⊑· w5
@@ -774,7 +795,8 @@ notClassical w {n} {i} p =
         concl : ((t #⇛ (#INL x) at w4 × t #⇛ (#INL y) at w4 × equalInType i w4 (#Σchoice name k1) x y)
                  ⊎
                  (t #⇛ (#INR x) at w4 × t #⇛ (#INR y) at w4
-                  × ∀𝕎 w4 (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂))) → ⊥
+                  × ∀𝕎 w4 (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂)))
+                → ⊥
         concl (inj₁ (c₁ , c₂ , eqi)) = ¬equalInType-#Σchoice i w4 Resℕ name x y (∀𝕎-mon e' dks) oc3 comp3 fb3 eqi
         concl (inj₂ (c₁ , c₂ , aw)) = aw w5 e5 (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX) h6
 

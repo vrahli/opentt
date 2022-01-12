@@ -60,24 +60,13 @@ choice-weakℕ-beth-ref {w} {c} m (v , f , i , sat) = trivialIS𝔹 w , j
         compn rewrite snd isn = fst isn , ⇓-refl (NUM (fst isn)) w3
 
 
-{--
-⊑-isOnlyChoice∈𝕎 : {c : Name} {w1 w2 : 𝕎·} {r : Res{0ℓ}} {u : Term}
-                    → w1 ⊑· w2
-                    → isOnlyChoice∈𝕎 u c w2
-                    → isOnlyChoice∈𝕎 u c w1
-⊑-isOnlyChoice∈𝕎 {c} {w1} {w2} {r} {u} e iso k t z with getRef⊎ c w1
-... | inj₁ (cell n' r' v' f' , p) rewrite p  = {!!}
-{-- | fst (snd (≽-pres-getCs e (getCs→≡Name-getCs {w1} p))) =
-  iso k t (select++-just {0ℓ} {Term} {k} {l} {fst (≽-pres-getCs e (getCs→≡Name-getCs {w1} p))} z)--}
-... | inj₂ p rewrite p = ⊥-elim (¬just≡nothing (sym z))
---}
 
 followChoice-beth-ref : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                         → inBethBar w f
-                        → isOnlyChoice∈𝕎 (Res.def r) c w
+                        → onlyℂ∈𝕎 (Res.def r) c w
                         → compatible· c w r
                         → freezable· c w
-                        → Σ 𝕎· (λ w1 → Σ (w ⊑· w1) (λ e1 → isOnlyChoice∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
+                        → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
 followChoice-beth-ref c {w} {f} {r} (bar , i) ioc comp fb =
   w , ⊑-refl· _ , ioc , comp , fb ,
   i e (BarsProp.b bp) (chain.seq (pchain.c pc) (BarsProp.n bp)) (BarsProp.ext bp) (⊑-refl· _)
@@ -93,5 +82,67 @@ followChoice-beth-ref c {w} {f} {r} (bar , i) ioc comp fb =
 
     e : w ⊑· w'
     e = IS𝔹.ext bar (BarsProp.b bp)
+
+
+-- TODO: if we didn't want to rely on the choice instance at all,
+-- we could add to getFreeze that we have ¬ freezable c w' in the extensions
+¬followChoice-open-ref-aux : (w : 𝕎·)
+                             → ¬((c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
+                                    → inOpenBar w f
+                                    → onlyℂ∈𝕎 (Res.def r) c w
+                                    → compatible· c w r
+                                    → freezable· c w
+                                    → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
+¬followChoice-open-ref-aux w0 h =
+  lower (snd (snd (snd (snd (snd q))))) (fst (snd (snd (snd (snd q)))))
+  where
+    r : Res{0ℓ}
+    r = Resℕ
+
+    c : Name
+    c = newChoice· w0
+
+    w : 𝕎·
+    w = startNewChoice r w0
+
+    f : wPred w
+    f w' e = Lift 2ℓ (¬ freezable· c w')
+
+    comp : compatible· c w r
+    comp = startChoiceCompatible· r w0
+
+    i : inOpenBar w f
+    i w1 e1 = w2 , e2 , aw
+      where
+        w2 : 𝕎·
+        w2 = freeze· c w1 (ℕ→ℂ· 1)
+
+        e2 : w1 ⊑· w2
+        e2 = freeze⊑· c w1 (ℕ→ℂ· 1) (⊑-compatible· e1 comp) λ n → 1 , refl
+
+        -- This we where we could modify getFreeze or add an axiom like freeze→¬freezable
+        aw : ∀𝕎 w2 (λ w3 e3 → (z : w ⊑· w3) → f w3 z)
+        aw w3 e3 z = freeze→¬freezable {c} {w1} (ℕ→ℂ· 1) (⊑-compatible· e1 comp) w3 e3
+
+    oc : onlyℂ∈𝕎 (Res.def r) c w
+    oc n = getChoice-startNewChoice· n r w0
+
+    fb : freezable· c w
+    fb = freezableStart· r w0
+
+    q :  ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
+    q = h c {w} {f} {r} i oc comp fb
+
+
+{--
+-- We need 𝕎 to be non-empty
+¬followChoice-open-ref : ¬((c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
+                           → inOpenBar w f
+                           → isOnlyChoice∈𝕎 (Res.def r) c w
+                           → compatible· c w r
+                           → freezable· c w
+                           → ∃𝕎 w (λ w1 e1 → isOnlyChoice∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
+¬followChoice-open-ref h = {!!}
+--}
 
 \end{code}

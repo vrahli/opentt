@@ -19,7 +19,7 @@ record Choice : Set₁ where
   constructor mkChoice
   field
     ℂ : Set
-    -- should contain ℕ
+    -- should contain ℕ -- otherwise it is not clear how we can talk about equality in a type in the theory
     ℕ→ℂ : ℕ → ℂ
     ℂ→T : ℂ → Term
     ℕ→ℂ→T : (n : ℕ) → ℂ→T (ℕ→ℂ n) ≡ NUM n
