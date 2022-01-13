@@ -15,7 +15,7 @@ open import Data.Sum
 open import Data.Empty
 open import Data.Maybe
 open import Data.Unit using (⊤ ; tt)
-open import Data.Nat using (ℕ ; _≟_ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
+open import Data.Nat using (ℕ ; _≟_ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; _∸_ ; pred)
 open import Data.Nat.Properties
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
@@ -82,3 +82,44 @@ record pchain (w : 𝕎·) : Set(lsuc(L)) where
 𝕎→pchain w = mkPChain (𝕎→chain· w) (chainProgress· w)
 
 
+
+
+
+≤+∸ : (m : ℕ) (n : ℕ) → m ≤ (m + n) ∸ n
+≤+∸ m n rewrite +-∸-assoc m {n} {n} ≤-refl | m≤n⇒m∸n≡0 {n} {n} ≤-refl | +-identityʳ m = ≤-refl
+
+
+
+<→∸ : {n m k : ℕ} → k ≤ n → n < m → n ∸ k < m ∸ k
+<→∸ {n} {m} {0} a b = b
+<→∸ {suc n} {suc m} {suc k} a b = <→∸ (s≤s-inj a) (s≤s-inj b)
+
+
+
+truncateChain : {w : 𝕎·} {c : chain w} {n : ℕ} {w' : 𝕎·} (e : w' ⊑· chain.seq c n) → chain w'
+truncateChain {w} {c} {n} {w'} e = mkChain s e p --q
+  where
+    s : ℕ → 𝕎·
+    s x = chain.seq c (x + n)
+
+    p : (x : ℕ) → s x ⊑· s (suc x)
+    p x = chain.prop c (x + n)
+
+
+truncatePChain : {w : 𝕎·} {c : pchain w} {n : ℕ} {w' : 𝕎·} (e : w' ⊑· chain.seq (pchain.c c) n) → pchain w'
+truncatePChain {w} {mkPChain c p} {n} {w'} e = mkPChain c' p'
+  where
+    c' : chain w'
+    c' = truncateChain {w} {c} {n} {w'} e
+
+    p' : progressing (truncateChain {w} {c} {n} {w'} e)
+    p' name k {r} comp =
+      fst (p name (k + n) comp) ∸ n ,
+      <-transʳ (≤+∸ k n) (<→∸ (≤-stepsˡ k ≤-refl) (fst (snd (p name (k + n) comp)))) ,
+      q'
+      where
+         z : n ≤ fst (p name (k + n) comp)
+         z = ≤-trans (≤-stepsˡ k ≤-refl) (<⇒≤ (fst (snd (p name (k + n) comp))))
+
+         q' : progress· name ((chain.seq c') k) (chain.seq c' (fst (p name (k + n) comp) ∸ n))
+         q' rewrite m∸n+n≡m {fst (p name (k + n) comp)} {n} z = snd (snd (p name (k + n) comp))

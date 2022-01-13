@@ -620,15 +620,22 @@ equalInType-local : {u : ℕ} {w : 𝕎·} {T a b : CTerm}
 equalInType-local {u} {w} {T} {a} {b} i =
   EQTBAR (Bar.∀𝕎-inBarFunc barI aw i) , eqi
   where
-    aw : ∀𝕎 w (λ w' e' → equalInType u w' T a b → eqTypes (uni u) w' T T)
-    aw w1 e1 eqi = fst eqi
+    aw : ∀𝕎 w (λ w' e' → equalInType u w' T a b → isType u w' T)
+    aw w1 e1 ei = fst ei
 
     aw' : ∀𝕎 w (λ w' e' → (x : equalInType u w' T a b) {--→ atbar i w' e' x--} → equalTerms u w' (fst x) a b)
     aw' w1 e1 x {--at--} = equalInType→eqInType refl {fst x} x
 
-    eqi : equalTerms u w (EQTBAR (Bar.∀𝕎-inBarFunc barI aw i)) a b
-    eqi = Bar.∀𝕎-inBar-inBar' barI i aw'
 
+    aw'' : ∀𝕎 w (λ w' e' → (x : equalInType u w' T a b) (y : isType u w' T)
+                          → equalTerms u w' (fst x) a b
+                          → equalTerms u w' y a b)
+    aw'' w1 e1 x y ei = eqInType-extl1 T T (fst x) y ei
+
+    eqi : equalTerms u w (EQTBAR (Bar.∀𝕎-inBarFunc barI aw i)) a b
+    eqi = Bar.inBar'-change barI i (Bar.∀𝕎-inBarFunc barI aw i) aw'' (Bar.∀𝕎-inBar-inBar' barI i aw')
+
+-- Used to go through with just??? Bar.∀𝕎-inBar-inBar' barI i aw'
 
 
 equalInType-LIFT→ : (n : ℕ) (w : 𝕎·) (T a b : CTerm)

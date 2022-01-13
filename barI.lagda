@@ -49,29 +49,43 @@ open import bar(W)(C)(G)(N)(F)(P)
 
 -- instance of a bar, which should be replaced by a parameter
 barI : Bar
-barI = inOpenBar-Bar
+--barI = inOpenBar-Bar
+barI = inBethBar-Bar
 
 
 inbar : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
---inbar = Bar.inBar b
-inbar = inOpenBar
+inbar = Bar.inBar barI
+--inbar = inOpenBar
+--inbar = inBethBar
 
 inbar' : (w : 𝕎·) {g : wPred w} (h : inbar w g) (f : wPredDep g) → Set(lsuc(L))
---inbar' = Bar.inBar' b
-inbar' = inOpenBar'
-
-atbar : {w : 𝕎·} {f : wPred w} (i : inbar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
---atbar = Bar.atBar b
-atbar = atOpenBar
+--inbar' = Bar.inBar' barI
+--inbar' = inOpenBar'
+inbar' = inBethBar'
 
 ↑inbar : {w : 𝕎·} {f : wPred w} (i : inbar w f) {w' : 𝕎·} (e : w ⊑· w') → inbar w' (↑wPred f e)
-↑inbar = ↑inOpenBar
+↑inbar = Bar.↑inBar barI
+--↑inbar = ↑inOpenBar
+--↑inbar = ↑inBethBar
 
 ↑'inbar : {w : 𝕎·} {f : wPred w} (i : inbar w f) {w' : 𝕎·} (e : w ⊑· w') → inbar w' (↑wPred' f e)
---↑'inbar = Bar.↑'inBar b
-↑'inbar = ↑'inOpenBar
+↑'inbar = Bar.↑'inBar barI
+--↑'inbar = ↑'inOpenBar
+--↑'inbar = ↑'inBethBar
+
 
 ↑inbar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inbar w f) {w' : 𝕎·} (e : w ⊑· w')
           → inbar' w i g → inbar' w' (↑inbar i e) (↑wPredDep g e)
-↑inbar' {w} {f} {g} = ↑inOpenBar' {w} {f} {g}
+↑inbar' {w} {f} {g} = Bar.↑inBar' barI {w} {f} {g}
+--↑inbar' {w} {f} {g} = ↑inOpenBar' {w} {f} {g}
+--↑inbar' {w} {f} {g} = ↑inBethBar' {w} {f} {g}
+
+
+
+{--
+atbar : {w : 𝕎·} {f : wPred w} (i : inbar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
+--atbar = Bar.atBar b
+atbar = atOpenBar
+--atbar = atBethBar
+--}
 \end{code}

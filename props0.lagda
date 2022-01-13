@@ -503,7 +503,7 @@ inbar-⇛to-same-CS-trans {w} {a} {b} {c} h₁ h₂ =
 
 
 
-
+{--
 -- we can't characerize eqt like that as it might be a tower of EQTBAR
 eqTypes⇛NAT : {u : univs} {w : 𝕎·} {A B : CTerm}
                → (eqt : eqTypes u w A B)
@@ -593,6 +593,7 @@ eqTypes⇛NAT {u} {w} {A} {B} (EQTBAR x) comp = i
     i : inbar w (λ w' _ → ⌜ B ⌝ ⇛ NAT at w')
     --i = Bar.inBar-idem barI wPredExtIrr-⇛ j
     i = loc-inOpenBar-idem wPredExtIrr-⇛
+--}
 
 
 eqTypesTrans : (u : univs) (w : 𝕎·) (A B : CTerm) → Set(lsuc(L))

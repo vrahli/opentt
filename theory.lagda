@@ -40,6 +40,7 @@ open import newChoice
 open import freeze
 open import progress
 
+
 module theory {L : Level} (W : PossibleWorlds {L})
               (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
@@ -271,6 +272,7 @@ FFDEFSeq x1 eqa w t1 t2 =
 
 {-# TERMINATING #-}
 --{-# INLINE inOpenBar' #-}
+--{-# INLINE inBethBar' #-}
 eqInType _ w (EQTNAT _ _) t1 t2 = inbar w (λ w' _ → #strongMonEq w' t1 t2)
 eqInType _ w (EQTQNAT _ _) t1 t2 = inbar w (λ w' _ → #weakMonEq w' t1 t2)
 eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 = inbar w (λ w' _ → #lift-<NUM-pair w' a1 b1)

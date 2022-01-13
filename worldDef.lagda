@@ -88,6 +88,10 @@ wPredDepExtIrr {w} {g} f = (w' : 𝕎·) (e1 e2 : w ⊑· w') (x1 : g w' e1) (x2
 ↑wPredDep' {w1} {f} g {w2} e w' e' z = (x : w1 ⊑· w') (y : f w' x) → g w' x y
 
 
+↑wPredDep'' : {w1 : 𝕎·} {f : wPred w1} (g : wPredDep f) {w2 : 𝕎·} (e : w1 ⊑· w2) → wPredDep (↑wPred' f e)
+↑wPredDep'' {w1} {f} g {w2} e w' e' z = (x : w1 ⊑· w') → g w' x (z x)
+
+
 ∀𝕎-mon : {w2 w1 : 𝕎·} {f :  wPred w1} (e : w1 ⊑· w2)
            → ∀𝕎 w1 f
            → ∀𝕎 w2 (↑wPred f e)
