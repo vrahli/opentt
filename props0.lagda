@@ -301,7 +301,15 @@ eqTypes-mon u {A} {B} {w1} (EQTBAR x) w2 ext = EQTBAR (Bar.↑inBar barI x ext)
 if-equalInType-EQ : (u : ℕ) (w : 𝕎·) (T a b t₁ t₂ : CTerm)
                     → equalInType u w (#EQ a b T) t₁ t₂
                     → inbar w (λ w' e' → ⌜ t₁ ⌝ ⇛ AX at w' × ⌜ t₂ ⌝ ⇛ AX at w' × equalInType u w' T a b)
+{-# INLINE inbar #-}
+{-# INLINE inOpenBar #-}
+{-# INLINE inOpenBar-idem #-}
 {-# INLINE ∀𝕎-inOpenBar'-inOpenBar #-}
+{-# INLINE inBethBar #-}
+{-# INLINE inBethBar-idem #-}
+{-# INLINE ∀𝕎-inBethBar'-inBethBar #-}
+{-# INLINE ∀𝕎-inBethBarFunc #-}
+{-# INLINE IS𝔹-fam #-}
 {-# TERMINATING #-}
 if-equalInType-EQ u w T a b t₁ t₂ (EQTNAT x x₁ , eqi) = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTQNAT x x₁ , eqi) = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
@@ -328,8 +336,7 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTUNIV i p c₁ c₂ , eqi) = ⊥-elim (
     z2 w' e' (c₁ , c₂) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt))--}
 if-equalInType-EQ u w T a b t₁ t₂ (EQTLIFT A1 A2 c1 c2 eqtA exta , eqi) = ⊥-elim (EQneqLIFT (compAllVal c2 tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
-  Bar.inBar-idem
-    barI
+  Bar.inBar-idem barI
     (Bar.∀𝕎-inBar'-inBar barI x aw eqi)
   where
     aw : ∀𝕎 w
@@ -337,13 +344,41 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
                 (x₁ : eqTypes (uni u) w' (#EQ a b T) (#EQ a b T))
                 {--(at : atbar x w' e' x₁)--}
                 → eqInType (uni u) w' x₁ t₁ t₂
-                → Bar.inBar barI w' (↑wPred' (λ w'' e → ⌜ t₁ ⌝ ⇛ AX at w'' × ⌜ t₂ ⌝ ⇛ AX at w'' × equalInType u w'' T a b) e'))
+                → inbar w' (↑wPred' (λ w'' e → ⌜ t₁ ⌝ ⇛ AX at w'' × ⌜ t₂ ⌝ ⇛ AX at w'' × equalInType u w'' T a b) e'))
     aw w1 e1 eqt1 {--at--} eqi1 = Bar.∀𝕎-inBarFunc barI (λ w' e' x z → x) ind
       where
         ind : inbar w1 (λ w' e' → ⌜ t₁ ⌝ ⇛ AX at w' × ⌜ t₂ ⌝ ⇛ AX at w' × equalInType u w' T a b)
         ind = if-equalInType-EQ u w1 T a b t₁ t₂ (eqt1 , eqi1)
 
 
+{--
+TODO: keep unfolding by hand
+  IS𝔹-fam {w} (IS𝔹-fam2 {w} (fst x) (λ {w'} e ib b' → inIS𝔹Dep b' (snd x e ib) (↑wPredDep'' {!!} e)) eqi)
+               (λ w1 e1 z b' → inIS𝔹 b' (↑wPred' {!!} z)) i' ,
+  {!!}
+  where
+--    g : wPredDep
+    aw : ∀𝕎 w
+              (λ w' e' →
+                (x₁ : eqTypes (uni u) w' (#EQ a b T) (#EQ a b T))
+                {--(at : atbar x w' e' x₁)--}
+                → eqInType (uni u) w' x₁ t₁ t₂
+                → inbar w' (↑wPred' (λ w'' e → ⌜ t₁ ⌝ ⇛ AX at w'' × ⌜ t₂ ⌝ ⇛ AX at w'' × equalInType u w'' T a b) e'))
+    aw w1 e1 eqt1 {--at--} eqi1 = ∀𝕎-inBethBarFunc (λ w' e' x z → x) ind
+      where
+        ind : inbar w1 (λ w' e' → ⌜ t₁ ⌝ ⇛ AX at w' × ⌜ t₂ ⌝ ⇛ AX at w' × equalInType u w' T a b)
+        ind = if-equalInType-EQ u w1 T a b t₁ t₂ (eqt1 , eqi1)
+
+    i' : inIS𝔹 (IS𝔹-fam2 {w} (fst x) (λ {w'} e ib b' → inIS𝔹Dep b' (snd x e ib) (↑wPredDep'' {!!} e)) eqi) {!!}
+    i' {w'} e (mkIS𝔹In w2 e2 br , F) w1 e1 z =
+      aw w1 z
+         (snd x e2 br w1 (⊑-trans· (IS𝔹.ext (fst (eqi e2 br)) F) e1) z)
+         (snd (eqi e2 br)
+              (IS𝔹.ext (fst (eqi e2 br)) F)
+              F w1 e1
+              (⊑-trans· (IS𝔹.ext (fst (eqi e2 br)) F) e1)
+              z)
+--}
 
 
 

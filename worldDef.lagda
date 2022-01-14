@@ -71,6 +71,9 @@ wPredDepExtIrr {w} {g} f = (w' : 𝕎·) (e1 e2 : w ⊑· w') (x1 : g w' e1) (x2
 ∃∀𝕎 : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
 ∃∀𝕎 w f = ∃𝕎 w (λ w1 e1 → ∀𝕎 w1 (λ w2 e2 → f w2 (⊑-trans· e1 e2)))
 
+∀∃∀𝕎 : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
+∀∃∀𝕎 w f = ∀𝕎 w (λ w1 e1 → ∃∀𝕎 w1 (λ w2 e2 → f w2 (⊑-trans· e1 e2)))
+
 
 ↑wPred : {w1 : 𝕎·} (f : wPred w1) {w2 : 𝕎·} (e : w1 ⊑· w2) → wPred w2
 ↑wPred {w1} f {w2} e w' e' = f w' (⊑-trans· e e')

@@ -123,3 +123,11 @@ truncatePChain {w} {mkPChain c p} {n} {w'} e = mkPChain c' p'
 
          q' : progress· name ((chain.seq c') k) (chain.seq c' (fst (p name (k + n) comp) ∸ n))
          q' rewrite m∸n+n≡m {fst (p name (k + n) comp)} {n} z = snd (snd (p name (k + n) comp))
+
+
+chain⊑ : {w w' : 𝕎·} (e : w ⊑· w') → chain w' → chain w
+chain⊑ {w} {w'} e (mkChain seq init prop) = mkChain seq (⊑-trans· e init) prop
+
+
+pchain⊑ : {w w' : 𝕎·} (e : w ⊑· w') → pchain w' → pchain w
+pchain⊑ {w} {w'} e (mkPChain c p) = mkPChain (chain⊑ e c) p
