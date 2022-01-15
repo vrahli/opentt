@@ -167,14 +167,18 @@ inBar'3 b {w} {f} {g} {h} {k} {j} i imp ig ih ik = c
  --}
 
 
+Br : Set(lsuc(L))
+Br = 𝕎· → Set(L)
+
+
 Bars : Set(lsuc(lsuc(L)))
-Bars = 𝕎· → (𝕎· → Set(L)) → Set(lsuc(L))
+Bars = 𝕎· → Br → Set(lsuc(L))
 
 
 record 𝔹 (B : Bars) (w : 𝕎·) : Set(lsuc(L)) where
   constructor mk𝔹
   field
-    bar  : 𝕎· → Set(L)
+    bar  : Br
     bars : B w bar
     ext  : {w' : 𝕎·} → bar w' → w ⊑· w'
     mon  : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
@@ -198,6 +202,34 @@ record 𝔹 (B : Bars) (w : 𝕎·) : Set(lsuc(L)) where
 Σ∈𝔹' {B} w {g} (b , i) f =
   {w1 : 𝕎·} (e1 : w ⊑· w1) (ib : 𝔹.bar b w1)
   → Σ (𝔹 B w1) (λ b' → ∈𝔹Dep b' (i e1 ib) (↑wPredDep'' f e1))
+
+
+bar-mon : 𝕎· → Br → Br
+bar-mon w' bar w0 = Σ 𝕎· (λ w1 → bar w1 × w1 ⊑· w0 × w' ⊑· w0)
+
+
+-- TODO: prove this about our bars below
+Bars-mon : (B : Bars) → Set(lsuc(L))
+Bars-mon B =
+  {w1 w2 : 𝕎·} (e : w1 ⊑· w2) (bar : 𝕎· → Set(L))
+  → B w1 bar
+  → B w2 (bar-mon w2 bar)
+
+
+𝔹⊑ : {B : Bars} (mon : Bars-mon B) {w w' : 𝕎·} (e : w ⊑· w') → 𝔹 B w → 𝔹 B w'
+𝔹⊑ {B} MB {w} {w'} e (mk𝔹 bar bars ext mon) = mk𝔹 bar' bars' ext' mon'
+  where
+    bar' : Br
+    bar' = bar-mon w' bar
+
+    bars' : B w' bar'
+    bars' = MB e bar bars
+
+    ext' : {w'' : 𝕎·} → bar' w'' → w' ⊑· w''
+    ext' {w''} (w1 , b , e₁ , e₂) = e₂
+
+    mon' : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar' w1 → bar' w2
+    mon' {w1} {w2} e (w0 , b0 , e₁ , e₂) = w0 , b0 , ⊑-trans· e₁ e , ⊑-trans· e₂ e
 
 
 
@@ -265,16 +297,16 @@ inOpenBar' w h f =
            let w1 = fst p in
            let e1 = fst (snd p) in
            let q  = snd (snd p) in
-           ∃∀𝕎 w1 (λ w2 e2 → (z : w ⊑· w2) → f w2 z (q w2 e2 z)))
+           --∃∀𝕎 w1 (λ w2 e2 → (z : w ⊑· w2) → f w2 z (q w2 e2 z)))
+           ∀∃∀𝕎 w1 (λ w2 e2 → (z : w ⊑· w2) → f w2 z (q w2 e2 z)))
+           -- The additional ∀ is necessary to prove: inOpenBar'→Σ∈𝔹'
 
 ------
 Σ∈𝔹'→inOpenBar' : (w : 𝕎·) {g : wPred w} (h : Σ∈𝔹 {O𝔹bars} w g) (f : wPredDep g)
                     → Σ∈𝔹' {O𝔹bars} w {g} h f
                     → inOpenBar' w (Σ∈𝔹→inOpenBar w g h) f
-Σ∈𝔹'→inOpenBar' w {g} (b , h) f k w1 e1 =
-  fst (𝔹.bars b' w3 e3) ,
-  fst (snd (𝔹.bars b' w3 e3)) ,
-  j
+Σ∈𝔹'→inOpenBar' w {g} (b , h) f k w1 e1 w1' e1' =
+  fst (𝔹.bars b' w3 e3) , fst (snd (𝔹.bars b' w3 e3)) , j
   where
     w2 : 𝕎·
     w2 = fst (𝔹.bars b w1 e1)
@@ -289,23 +321,18 @@ inOpenBar' w h f =
     b' = fst (k (⊑-trans· e1 e2) b0)
 
     w3 : 𝕎·
-    w3 = w2
+    w3 = w1'
 
     e3 : w2 ⊑· w3
-    e3 = ⊑-refl· _
+    e3 = e1' --⊑-refl· _
 
-    j : ∀𝕎 (fst (𝔹.bars b' (fst (𝔹.bars b w1 e1)) e3))
-            (λ w4 e4 → (z : w ⊑· w4)
-                     → f w4 z
-                         (snd (snd (Σ∈𝔹→inOpenBar w g (b , h) w1 e1)) w4
-                         (PossibleWorlds.⊑-trans W
-                         (fst (snd (𝔹.bars b' w3 e3))) e4) z))
+    j : ∀𝕎 (proj₁ (𝔹.bars b' w3 e3))
+            (λ w4 e4 → (z : w ⊑· w4) → f w4 z (snd (snd (Σ∈𝔹→inOpenBar w g (b , h) w1 e1)) w4
+                                                (⊑-trans· e1' (⊑-trans· (proj₁ (snd (𝔹.bars b' w3 e3))) e4)) z))
     j w4 e4 z = snd (k (⊑-trans· e1 e2) b0)
-                    (fst (snd (𝔹.bars b' (fst (𝔹.bars b w1 e1)) e3)))
-                    (lower (snd (snd (𝔹.bars b' (fst (𝔹.bars b w1 e1)) e3))))
-                    w4 e4
-                    (⊑-trans· (fst (snd (𝔹.bars b' (fst (𝔹.bars b w1 e1)) e3))) e4)
-                    z
+                    (⊑-trans· e3 (fst (snd (𝔹.bars b' w3 e3))))
+                    (lower (snd (snd (𝔹.bars b' w3 e3))))
+                    w4 e4 (⊑-trans· e3 (⊑-trans· (fst (snd (𝔹.bars b' w3 e3))) e4)) z
 
 
 {--
@@ -313,18 +340,31 @@ inOpenBar'→Σ∈𝔹' : (w : 𝕎·) {g : wPred w} (h : inOpenBar w g) (f : wP
                     → inOpenBar' w h f
                     → Σ∈𝔹' {O𝔹bars} w {g} (inOpenBar→Σ∈𝔹 w g h) f
 inOpenBar'→Σ∈𝔹' w {g} i f j {w1} e1 (w0 , e0 , ex) =
-  B , {!!}
+  B , k
   where
     bar : 𝕎· → Set L
-    bar wx = fst (j w1 e1) ⊑· wx × w1 ⊑· wx
-    -- How can we prove this?  fst (j w1 e1) and w1 are 2 different extensions of fst (i w0 e0).
-    -- Should we add a ∀𝕎 before the ∃∀𝕎 in inOpenBar'
+    bar wx = w1 ⊑· wx
 
     bars : O𝔹bars w1 bar
-    bars w2 e2 = {!!}
+    bars w2 e2 =
+      fst (j w0 e0 w2 (⊑-trans· ex e2)) ,
+      fst (snd (j w0 e0 w2 (⊑-trans· ex e2))) ,
+      lift (⊑-trans· e2 (fst (snd (j w0 e0 w2 (⊑-trans· ex e2)))))
+
+    ext : {w' : 𝕎·} → bar w' → w1 ⊑· w'
+    ext {w'} e' = e'
+
+    mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
+    mon {wa} {wb} ea eb = ⊑-trans· eb ea
 
     B : 𝔹 O𝔹bars w1
-    B = mk𝔹 bar bars {!!} {!!}
+    B = mk𝔹 bar bars ext mon
+
+    k : ∈𝔹Dep B (snd (inOpenBar→Σ∈𝔹 w g i) e1 (w0 , e0 , ex)) (↑wPredDep'' f e1)
+    k {w'} e b w2 e2 x y = c
+      where
+        c : f w2 y (snd (snd (i w0 e0)) w2 (⊑-trans· ex x) y)
+        c = {!snd (snd (j w0 e0 ? ?))!} -- TODO: not going to work because Σ∈𝔹' allows changing the proof of ⊑·
 --}
 -----
 
@@ -386,7 +426,7 @@ inOpenBarFunc {w} {f} {g} F h w1 e1 =
 inOpenBar-inOpenBar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f}
                        → inOpenBar w (λ w' e' → (x : f w' e') → g w' e' x)
                        → (i : inOpenBar w f) → inOpenBar' w i g
-inOpenBar-inOpenBar' {w} {f} {g} h i w1 e1 = w3 , e3 , h3
+inOpenBar-inOpenBar' {w} {f} {g} h i w1 e1 w1' e1' = w3 , fst (snd h1) , h3
   where
     w2 : 𝕎·
     w2 = fst (i w1 e1)
@@ -397,23 +437,24 @@ inOpenBar-inOpenBar' {w} {f} {g} h i w1 e1 = w3 , e3 , h3
     h0 : ∀𝕎 w2 (λ w3 e3 → (z : w ⊑· w3) → f w3 z)
     h0 = snd (snd (i w1 e1))
 
-    h1 : ∃∀𝕎 w2 (λ w' e' → (z : w ⊑· w') (x : f w' z) → g w' z x)
-    h1 = h w2 (⊑-trans· e1 e2)
+    h1 : ∃∀𝕎 w1' (λ w' e' → (z : w ⊑· w') (x : f w' z) → g w' z x)
+    h1 = h w1' (⊑-trans· (⊑-trans· e1 e2) e1')
 
     w3 : 𝕎·
     w3 = fst h1
 
-    e3 : w2 ⊑· w3
+    e3 : w1' ⊑· w3
     e3 = fst (snd h1)
 
     h2 : ∀𝕎 w3 (λ w' e' → (z : w ⊑· w') (x : f w' z) → g w' z x)
     h2 = snd (snd h1)
 
-    h3 : ∀𝕎 w3 (λ w4 e4 → (z : w ⊑· w4) → g w4 z (h0 w4 (⊑-trans· e3 e4) z))
-    h3 w4 e4 z = h2 w4 e4 z (h0 w4 (⊑-trans· e3 e4) z)
+    h3 : ∀𝕎 w3 (λ w4 e4 → (z : w ⊑· w4) → g w4 z (h0 w4 (⊑-trans· e1' (⊑-trans· e3 e4)) z))
+    h3 w4 e4 z = h2 w4 e4 z (h0 w4 (⊑-trans· e1' (⊑-trans· e3 e4)) z)
 
 
 
+{--
 inOpenBar'-inOpenBar' : {w : 𝕎·} {f : wPred w} {g h : wPredDep f} (i : inOpenBar w f)
                         → wPredDepExtIrr-inOpenBar g i
                         → wPredDepExtIrr-inOpenBar h i
@@ -472,6 +513,7 @@ inOpenBar'-inOpenBar' {w} {f} {g} {h} i irrg irrh j o w1 e1 =
 
     h5 : ∀𝕎 w5 (λ w6 e6 → (z : w ⊑· w6) → g w6 z (h4 w6 (⊑-trans· e5 e6) z) → h w6 z (h4 w6 (⊑-trans· e5 e6) z))
     h5 = snd (snd (j w3 (⊑-trans· (⊑-trans· e1 e2) e3)))
+--}
 
 
 
@@ -502,236 +544,6 @@ inOpenBar'-inOpenBar' {w} {f} {g} {h} i irrg irrh j o w1 e1 =
     h0 w3 e3 z x = snd (snd (i w' (⊑-trans· e e'))) w3 e3 x
 
 
-
-↑inOpenBar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inOpenBar w f) {w' : 𝕎·} (e : w ⊑· w')
-              → inOpenBar' w i g → inOpenBar' w' (↑inOpenBar i e) (↑wPredDep g e)
-↑inOpenBar' {w} {f} {g} i {w'} e j w1 e1 =
-  w2 , e2 , h
-  where
-    w2 : 𝕎·
-    w2 = fst (j w1 (⊑-trans· e e1))
-
-    e2 : (fst (↑'inOpenBar i e w1 e1)) ⊑· w2
-    e2 = fst (snd (j w1 (⊑-trans· e e1)))
-
-    h : ∀𝕎 w2 (λ w3 e3 → (z : w' ⊑· w3) → ↑wPredDep g e w3 z (snd (snd (↑inOpenBar i e w1 e1)) w3 (⊑-trans· e2 e3) z))
-    h w3 e3 z = snd (snd (j w1 (⊑-trans· e e1))) w3 e3 (⊑-trans· e z)
-
-
-
-
---atOpenBar : {w : 𝕎·} {f : wPred w} (i : inOpenBar w f) (w' : 𝕎·) → Set(lsuc(L))
---atOpenBar {w} {f} i w' = Σ world (λ w1 → Σ (w ⊑· w1) (λ e1 → w' ≽ fst (i w1 e1)))
--- --  Σ (w' ≽ fst (i w1 e1)) (λ e2 → snd (snd (i w1 e1)) w' e2 e)))
-
-
-data atOpenBar {w : 𝕎·} {f : wPred w} (i : inOpenBar w f) : (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
-data atOpenBar {w} {f} i where
-  ATOPENBAR-R : (q : f w (⊑-refl· w))
-                → atOpenBar {w} {f} i w (⊑-refl· w) q
-  ATOPENBAR-O : (w1 : 𝕎·) (e1 : w ⊑· w1) (w2 : 𝕎·) (e2 : fst (i w1 e1) ⊑· w2) (z : w ⊑· w2)
-                → atOpenBar {w} {f} i w2 z (snd (snd (i w1 e1)) w2 e2 z)
-
-
-
-
-↑inOpenBar'' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inOpenBar w f) {w' : 𝕎·} (e : w ⊑· w') {h : wPredDep (↑wPred f e)}
-               → ∀𝕎 w' (λ w'' e'' → (x y : f w'' (⊑-trans· e e'')) (at : atOpenBar i w'' (⊑-trans· e e'') x) → g w'' (⊑-trans· e e'') x → h w'' e'' y)
-               → inOpenBar' w i g → inOpenBar' w' (↑inOpenBar i e) h
-↑inOpenBar'' {w} {f} {g} i {w'} e {h} aw j w1 e1 =
-  w2 , e2 , q
-  where
-    w2 : 𝕎·
-    w2 = fst (j w1 (⊑-trans· e e1))
-
-    e2 : (fst (↑'inOpenBar i e w1 e1)) ⊑· w2
-    e2 = fst (snd (j w1 (⊑-trans· e e1)))
-
-    q : ∀𝕎 w2 (λ w3 e3 → (z : w' ⊑· w3) → h w3 z (snd (snd (↑inOpenBar i e w1 e1)) w3 (⊑-trans· e2 e3) z))
-    q w3 e3 z = aw w3 z ((snd (snd (i w1 (⊑-trans· e e1))) w3 (⊑-trans· e2 e3) (⊑-trans· e z)))
-                   (snd (snd (↑inOpenBar i e w1 e1)) w3 (⊑-trans· e2 e3) z)
-                   (ATOPENBAR-O w1 (⊑-trans· e e1) w3 (⊑-trans· (proj₁ (snd (j w1 (⊑-trans· e e1)))) e3) (⊑-trans· e z))
-                   (snd (snd (j w1 (⊑-trans· e e1))) w3 e3 (⊑-trans· e z))
-
-
-
-
-inOpenBar'-idem : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inOpenBar w f)
-                  → inOpenBar w (λ w' e' → inOpenBar' w' (↑'inOpenBar i e') (↑wPredDep' g e'))
-                  → inOpenBar' w i g
-inOpenBar'-idem {w} {f} {g} i h w1 e1 =
-  w4 , e4 ,  h5
-  where
-    w1' : 𝕎·
-    w1' = fst (i w1 e1)
-
-    e1' : w1 ⊑· w1'
-    e1' = fst (snd (i w1 e1))
-
-    w2 : 𝕎·
-    w2 = fst (h w1' (⊑-trans· e1 e1'))
-
-    e2 : w1' ⊑· w2
-    e2 = fst (snd (h w1' (⊑-trans· e1 e1')))
-
-    h2 : ∀𝕎 w2 (λ w' e' → (z : w ⊑· w') → inOpenBar' w' (↑'inOpenBar i z)  (↑wPredDep' g z))
-    h2 = snd (snd (h w1' (⊑-trans· e1 e1')))
-
-    h3 : inOpenBar' w2 (↑'inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2)) (↑wPredDep' g (⊑-trans· (⊑-trans· e1 e1') e2))
-    h3 = h2 w2 (⊑-refl· w2) (⊑-trans· (⊑-trans· e1 e1') e2)
-
-    w3 : 𝕎·
-    w3 = fst (↑'inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2) w2 (⊑-refl· w2))
-
-    e3 : w2 ⊑· w3
-    e3 = fst (snd (↑'inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2) w2 (⊑-refl· w2)))
-
-    h4 : ∃∀𝕎 w3 (λ w' e' → (z : w2 ⊑· w')
-                            → ↑wPredDep'
-                                g
-                                (⊑-trans· (⊑-trans· e1 e1') e2)
-                                w' z
-                                (snd (snd (↑'inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2) w2 (⊑-refl· w2))) w' e' z))
-    h4 = h3 w2 (⊑-refl· w2)
-
-    w4 : 𝕎·
-    w4 = fst h4
-
-    e4 : w1' ⊑· w4
-    e4 = ⊑-trans· (⊑-trans· e2 e3) (fst (snd h4))
-
-    h5 : ∀𝕎 w4 (λ w' e' → (z : w ⊑· w') → g w' z (snd (snd (i w1 e1)) w' (⊑-trans· e4 e') z))
-    h5 w5 e5 z = a2
-      where
-        a1 : ↑wPredDep' g
-                        (⊑-trans· (⊑-trans· e1 e1') e2)
-                        w5 (⊑-trans· (⊑-trans· e3 (fst (snd h4))) e5)
-                        (snd (snd (↑'inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2) w2 (⊑-refl· w2))) w5 (⊑-trans· (fst (snd h4)) e5) (⊑-trans· (⊑-trans· e3 (fst (snd h4))) e5))
-        a1 = snd (snd h4) w5 e5 (⊑-trans· (⊑-trans· e3 (fst (snd h4))) e5)
-
-        a2 : g w5 z (snd (snd (i w1 e1)) w5 (⊑-trans· e4 e5) z)
-        a2 = a1 z (snd (snd (i w1 e1)) w5 (⊑-trans· e4 e5) z)
-
-
-
-
-inOpenBar'-idem2 : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inOpenBar w f)
-                   → wPredDepExtIrr-inOpenBar g i
-                   → inOpenBar w (λ w' e' → inOpenBar' w' (↑inOpenBar i e') (↑wPredDep g e'))
-                   → inOpenBar' w i g
-inOpenBar'-idem2 {w} {f} {g} i ext h w1 e1 =
-  fst h4 ,
-  ⊑-trans· (⊑-trans· e2 e3) (fst (snd h4)),
-  λ w5 e5 z → ext w2 w1 w5
-                  (⊑-trans· (⊑-trans· (⊑-trans· e1 e1') e2) (⊑-refl· w2)) e1 z
-                  (⊑-trans· (fst (snd h4)) e5)
-                  (⊑-trans· (⊑-trans· (⊑-trans· e2 e3) (fst (snd h4))) e5)
-                  (⊑-trans· (⊑-trans· (⊑-trans· e1 e1') e2) (⊑-trans· (⊑-trans· e3 (fst (snd h4))) e5))
-                  (snd (snd h4) w5 e5 (⊑-trans· (⊑-trans· e3 (fst (snd h4))) e5))
-  where
-    w1' : 𝕎·
-    w1' = fst (i w1 e1)
-
-    e1' : w1 ⊑· w1'
-    e1' = fst (snd (i w1 e1))
-
-    w2 : 𝕎·
-    w2 = fst (h w1' (⊑-trans· e1 e1'))
-
-    e2 : w1' ⊑· w2
-    e2 = fst (snd (h w1' (⊑-trans· e1 e1')))
-
-    h2 : ∀𝕎 w2 (λ w' e' → (z : w ⊑· w') → inOpenBar' w' (↑inOpenBar i z)  (↑wPredDep g z))
-    h2 = snd (snd (h w1' (⊑-trans· e1 e1')))
-
-    h3 : inOpenBar' w2 (↑inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2)) (↑wPredDep g (⊑-trans· (⊑-trans· e1 e1') e2))
-    h3 = h2 w2 (⊑-refl· w2) (⊑-trans· (⊑-trans· e1 e1') e2)
-
-    w3 : 𝕎·
-    w3 = fst (↑inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2) w2 (⊑-refl· w2))
-
-    e3 : w2 ⊑· w3
-    e3 = fst (snd (↑inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2) w2 (⊑-refl· w2)))
-
-    h4 : ∃∀𝕎 w3 (λ w' e' → (z : w2 ⊑· w')
-                            → ↑wPredDep
-                                g
-                                (⊑-trans· (⊑-trans· e1 e1') e2)
-                                w' z
-                                (snd (snd (↑inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2) w2 (⊑-refl· w2))) w' e' z))
-    h4 = h3 w2 (⊑-refl· w2)
-
-
-
-
-inOpenBar'-comb : {w : 𝕎·} {f : wPred w} {g h k : wPredDep f} (i : inOpenBar w f)
-              → ∀𝕎 w (λ w' e' → (z : f w' e') (zg : f w' e') (zh : f w' e')
-                                 → g w' e' zg → h w' e' zh → k w' e' z)
-              → inOpenBar' w i g → inOpenBar' w i h → inOpenBar' w i k
-inOpenBar'-comb {w} {f} {g} {h} {k} i aw ig ih w1 e1 =
-  w5 ,
-  ⊑-trans· (⊑-trans· e3 e4) e5 ,
-  λ w6 e6 z → aw w6 z
-                 (snd (snd (i w1 e1)) w6 (⊑-trans· (⊑-trans· (⊑-trans· (proj₁ (snd (ih w1 e1))) e4) e5) e6) z)
-                 (h4 w6 (⊑-trans· e5 e6) z) (h2 w6 (⊑-trans· e3 (⊑-trans· (⊑-trans· e4 e5) e6)) z)
-                 (h5 w6 e6 z)
-                 (h3 w6 (⊑-trans· (⊑-trans· e4 e5) e6) z)
-  where
-    w2 : 𝕎·
-    w2 = fst (i w1 e1)
-
-    e2 : w1 ⊑· w2
-    e2 = fst (snd (i w1 e1))
-
-    h2 : ∀𝕎 w2 (λ w3 e3 → (z : w ⊑· w3) → f w3 z)
-    h2 = snd (snd (i w1 e1))
-
-    w3 : 𝕎·
-    w3 = fst (ih w1 e1)
-
-    e3 : w2 ⊑· w3
-    e3 = fst (snd (ih w1 e1))
-
-    h3 : ∀𝕎 w3 (λ w4 e4 → (z : w ⊑· w4) → h w4 z (h2 w4 (⊑-trans· e3 e4) z))
-    h3 = snd (snd (ih w1 e1))
-
-    w4 : 𝕎·
-    w4 = fst (i w3 (⊑-trans· (⊑-trans· e1 e2) e3))
-
-    e4 : w3 ⊑· w4
-    e4 = fst (snd (i w3 (⊑-trans· (⊑-trans· e1 e2) e3)))
-
-    h4 : ∀𝕎 w4 (λ w3 e3 → (z : w ⊑· w3) → f w3 z)
-    h4 = snd (snd (i w3 (⊑-trans· (⊑-trans· e1 e2) e3)))
-
-    w5 : 𝕎·
-    w5 = fst (ig w3 (⊑-trans· (⊑-trans· e1 e2) e3))
-
-    e5 : w4 ⊑· w5
-    e5 = fst (snd (ig w3 (⊑-trans· (⊑-trans· e1 e2) e3)))
-
-    h5 : ∀𝕎 w5 (λ w6 e6 → (z : w ⊑· w6) → g w6 z (h4 w6 (⊑-trans· e5 e6) z))
-    h5 = snd (snd (ig w3 (⊑-trans· (⊑-trans· e1 e2) e3)))
-
-
-
-
-∀𝕎-inOpenBar-inOpenBar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inOpenBar w f)
-                            → ∀𝕎 w (λ w' e' → (x : f w' e') {--(at : atOpenBar i w' e' x)--} → g w' e' x)
-                            → inOpenBar' w i g
-∀𝕎-inOpenBar-inOpenBar' {w} {f} {g} i h w1 e1 =
-  w2 ,
-  ⊑-refl· w2 ,
-  λ w3 e3 z → h w3 z (h0 w3 (⊑-trans· (⊑-refl· w2) e3) z) {--(ATOPENBAR-O w1 e1 w3 (⊑-trans· (⊑-refl· (fst (i w1 e1))) e3) z)--}
-  where
-    w2 : 𝕎·
-    w2 = fst (i w1 e1)
-
-    e2 : w1 ⊑· w2
-    e2 = fst (snd (i w1 e1))
-
-    h0 : ∀𝕎 w2 (λ w3 e3 → (z : w ⊑· w3) → f w3 z)
-    h0 = snd (snd (i w1 e1))
 
 
 
@@ -811,6 +623,247 @@ inOpenBar-idem2 {w} {f} ext h w1 e1 =
 
 
 
+↑inOpenBar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inOpenBar w f) {w' : 𝕎·} (e : w ⊑· w')
+              → inOpenBar' w i g → inOpenBar' w' (↑inOpenBar i e) (↑wPredDep g e)
+↑inOpenBar' {w} {f} {g} i {w'} e j w1 e1 w1' e1' =
+  w2 , e2 , h
+  where
+    w2 : 𝕎·
+    w2 = fst (j w1 (⊑-trans· e e1) w1' e1')
+
+    e2 : w1' ⊑· w2
+    e2 = fst (snd (j w1 (⊑-trans· e e1) w1' e1'))
+
+    h : ∀𝕎 w2 (λ w3 e3 → (z : w' ⊑· w3) → ↑wPredDep g e w3 z (snd (snd (↑inOpenBar i e w1 e1)) w3 (⊑-trans· e1' (⊑-trans· e2 e3)) z))
+    h w3 e3 z = snd (snd (j w1 (⊑-trans· e e1) w1' e1')) w3 e3 (⊑-trans· e z)
+
+
+
+inOpenBar-const : {w : 𝕎·} {t : Set(lsuc(L))} → inOpenBar w (λ w e → t) → t
+inOpenBar-const {w} {t} h = snd (snd (h w (⊑-refl· w))) (fst (h w (⊑-refl· w))) (⊑-refl· _) (fst (snd (h w (⊑-refl· w))))
+
+
+
+
+{--
+--atOpenBar : {w : 𝕎·} {f : wPred w} (i : inOpenBar w f) (w' : 𝕎·) → Set(lsuc(L))
+--atOpenBar {w} {f} i w' = Σ world (λ w1 → Σ (w ⊑· w1) (λ e1 → w' ≽ fst (i w1 e1)))
+-- --  Σ (w' ≽ fst (i w1 e1)) (λ e2 → snd (snd (i w1 e1)) w' e2 e)))
+
+
+data atOpenBar {w : 𝕎·} {f : wPred w} (i : inOpenBar w f) : (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
+data atOpenBar {w} {f} i where
+  ATOPENBAR-R : (q : f w (⊑-refl· w))
+                → atOpenBar {w} {f} i w (⊑-refl· w) q
+  ATOPENBAR-O : (w1 : 𝕎·) (e1 : w ⊑· w1) (w2 : 𝕎·) (e2 : fst (i w1 e1) ⊑· w2) (z : w ⊑· w2)
+                → atOpenBar {w} {f} i w2 z (snd (snd (i w1 e1)) w2 e2 z)
+
+
+
+
+↑inOpenBar'' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inOpenBar w f) {w' : 𝕎·} (e : w ⊑· w') {h : wPredDep (↑wPred f e)}
+               → ∀𝕎 w' (λ w'' e'' → (x y : f w'' (⊑-trans· e e'')) (at : atOpenBar i w'' (⊑-trans· e e'') x) → g w'' (⊑-trans· e e'') x → h w'' e'' y)
+               → inOpenBar' w i g → inOpenBar' w' (↑inOpenBar i e) h
+↑inOpenBar'' {w} {f} {g} i {w'} e {h} aw j w1 e1 =
+  w2 , e2 , q
+  where
+    w2 : 𝕎·
+    w2 = fst (j w1 (⊑-trans· e e1))
+
+    e2 : (fst (↑'inOpenBar i e w1 e1)) ⊑· w2
+    e2 = fst (snd (j w1 (⊑-trans· e e1)))
+
+    q : ∀𝕎 w2 (λ w3 e3 → (z : w' ⊑· w3) → h w3 z (snd (snd (↑inOpenBar i e w1 e1)) w3 (⊑-trans· e2 e3) z))
+    q w3 e3 z = aw w3 z ((snd (snd (i w1 (⊑-trans· e e1))) w3 (⊑-trans· e2 e3) (⊑-trans· e z)))
+                   (snd (snd (↑inOpenBar i e w1 e1)) w3 (⊑-trans· e2 e3) z)
+                   (ATOPENBAR-O w1 (⊑-trans· e e1) w3 (⊑-trans· (proj₁ (snd (j w1 (⊑-trans· e e1)))) e3) (⊑-trans· e z))
+                   (snd (snd (j w1 (⊑-trans· e e1))) w3 e3 (⊑-trans· e z))
+--}
+
+
+
+inOpenBar'-idem : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inOpenBar w f)
+                  → inOpenBar w (λ w' e' → inOpenBar' w' (↑'inOpenBar i e') (↑wPredDep' g e'))
+                  → inOpenBar' w i g
+inOpenBar'-idem {w} {f} {g} i h w1 e1 w0 e0 =
+  w4 , e4 ,  h5
+  where
+    w1' : 𝕎·
+    w1' = w0 --fst (i w1 e1)
+
+    e1' : w1 ⊑· w1'
+    e1' = ⊑-trans· (fst (snd (i w1 e1))) e0 --fst (snd (i w1 e1))
+
+    w2 : 𝕎·
+    w2 = fst (h w1' (⊑-trans· e1 e1'))
+
+    e2 : w1' ⊑· w2
+    e2 = fst (snd (h w1' (⊑-trans· e1 e1')))
+
+    h2 : ∀𝕎 w2 (λ w' e' → (z : w ⊑· w') → inOpenBar' w' (↑'inOpenBar i z)  (↑wPredDep' g z))
+    h2 = snd (snd (h w1' (⊑-trans· e1 e1')))
+
+    h3 : inOpenBar' w2 (↑'inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2)) (↑wPredDep' g (⊑-trans· (⊑-trans· e1 e1') e2))
+    h3 = h2 w2 (⊑-refl· w2) (⊑-trans· (⊑-trans· e1 e1') e2)
+
+    w3 : 𝕎·
+    w3 = fst (↑'inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2) w2 (⊑-refl· w2))
+
+    e3 : w2 ⊑· w3
+    e3 = fst (snd (↑'inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2) w2 (⊑-refl· w2)))
+
+    h4 : ∃∀𝕎 w3 (λ w' e' → (z : w2 ⊑· w')
+                            → ↑wPredDep'
+                                g
+                                (⊑-trans· (⊑-trans· e1 e1') e2)
+                                w' z
+                                (snd (snd (↑'inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2) w2 (⊑-refl· w2))) w' e' z))
+    h4 = h3 w2 (⊑-refl· w2) w3 (⊑-refl· w3)
+
+    w4 : 𝕎·
+    w4 = fst h4
+
+    e4 : w1' ⊑· w4
+    e4 = ⊑-trans· (⊑-trans· e2 e3) (fst (snd h4))
+
+    h5 : ∀𝕎 w4 (λ w' e' → (z : w ⊑· w') → g w' z (snd (snd (i w1 e1)) w' (⊑-trans· e0 (⊑-trans· e4 e')) z))
+    h5 w5 e5 z = a2
+      where
+        a1 : ↑wPredDep' g
+                        (⊑-trans· (⊑-trans· e1 e1') e2)
+                        w5 (⊑-trans· (⊑-trans· e3 (fst (snd h4))) e5)
+                        (snd (snd (↑'inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2) w2 (⊑-refl· w2))) w5 (⊑-trans· (fst (snd h4)) e5) (⊑-trans· (⊑-trans· e3 (fst (snd h4))) e5))
+        a1 = snd (snd h4) w5 e5 (⊑-trans· (⊑-trans· e3 (fst (snd h4))) e5)
+
+        a2 : g w5 z (snd (snd (i w1 e1)) w5 (⊑-trans· e0 (⊑-trans· e4 e5)) z)
+        a2 = a1 z (snd (snd (i w1 e1)) w5 (⊑-trans· e0 (⊑-trans· e4 e5)) z)
+
+
+
+{--
+inOpenBar'-idem2 : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inOpenBar w f)
+                   → wPredDepExtIrr-inOpenBar g i
+                   → inOpenBar w (λ w' e' → inOpenBar' w' (↑inOpenBar i e') (↑wPredDep g e'))
+                   → inOpenBar' w i g
+inOpenBar'-idem2 {w} {f} {g} i ext h w1 e1 =
+  fst h4 ,
+  ⊑-trans· (⊑-trans· e2 e3) (fst (snd h4)),
+  λ w5 e5 z → ext w2 w1 w5
+                  (⊑-trans· (⊑-trans· (⊑-trans· e1 e1') e2) (⊑-refl· w2)) e1 z
+                  (⊑-trans· (fst (snd h4)) e5)
+                  (⊑-trans· (⊑-trans· (⊑-trans· e2 e3) (fst (snd h4))) e5)
+                  (⊑-trans· (⊑-trans· (⊑-trans· e1 e1') e2) (⊑-trans· (⊑-trans· e3 (fst (snd h4))) e5))
+                  (snd (snd h4) w5 e5 (⊑-trans· (⊑-trans· e3 (fst (snd h4))) e5))
+  where
+    w1' : 𝕎·
+    w1' = fst (i w1 e1)
+
+    e1' : w1 ⊑· w1'
+    e1' = fst (snd (i w1 e1))
+
+    w2 : 𝕎·
+    w2 = fst (h w1' (⊑-trans· e1 e1'))
+
+    e2 : w1' ⊑· w2
+    e2 = fst (snd (h w1' (⊑-trans· e1 e1')))
+
+    h2 : ∀𝕎 w2 (λ w' e' → (z : w ⊑· w') → inOpenBar' w' (↑inOpenBar i z)  (↑wPredDep g z))
+    h2 = snd (snd (h w1' (⊑-trans· e1 e1')))
+
+    h3 : inOpenBar' w2 (↑inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2)) (↑wPredDep g (⊑-trans· (⊑-trans· e1 e1') e2))
+    h3 = h2 w2 (⊑-refl· w2) (⊑-trans· (⊑-trans· e1 e1') e2)
+
+    w3 : 𝕎·
+    w3 = fst (↑inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2) w2 (⊑-refl· w2))
+
+    e3 : w2 ⊑· w3
+    e3 = fst (snd (↑inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2) w2 (⊑-refl· w2)))
+
+    h4 : ∃∀𝕎 w3 (λ w' e' → (z : w2 ⊑· w')
+                            → ↑wPredDep
+                                g
+                                (⊑-trans· (⊑-trans· e1 e1') e2)
+                                w' z
+                                (snd (snd (↑inOpenBar i (⊑-trans· (⊑-trans· e1 e1') e2) w2 (⊑-refl· w2))) w' e' z))
+    h4 = h3 w2 (⊑-refl· w2)
+--}
+
+
+
+
+
+
+∀𝕎-inOpenBar-inOpenBar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inOpenBar w f)
+                            → ∀𝕎 w (λ w' e' → (x : f w' e') {--(at : atOpenBar i w' e' x)--} → g w' e' x)
+                            → inOpenBar' w i g
+∀𝕎-inOpenBar-inOpenBar' {w} {f} {g} i h w1 e1 w0 e0 =
+  w2 ,
+  ⊑-refl· w2 ,
+  λ w3 e3 z → h w3 z (h0 w3 (⊑-trans· (⊑-refl· w2) e3) z) {--(ATOPENBAR-O w1 e1 w3 (⊑-trans· (⊑-refl· (fst (i w1 e1))) e3) z)--}
+  where
+    w2 : 𝕎·
+    w2 = w0 --fst (i w1 e1)
+
+    e2 : w1 ⊑· w2
+    e2 = ⊑-trans· (fst (snd (i w1 e1))) e0
+
+    h0 : ∀𝕎 w2 (λ w3 e3 → (z : w ⊑· w3) → f w3 z)
+    h0 = ∀𝕎-mon e0 (snd (snd (i w1 e1)))
+
+
+
+inOpenBar'-comb : {w : 𝕎·} {f : wPred w} {g h k : wPredDep f} (i : inOpenBar w f)
+              → ∀𝕎 w (λ w' e' → (z : f w' e') (zg : f w' e') (zh : f w' e')
+                                 → g w' e' zg → h w' e' zh → k w' e' z)
+              → inOpenBar' w i g → inOpenBar' w i h → inOpenBar' w i k
+inOpenBar'-comb {w} {f} {g} {h} {k} i aw ig ih w1 e1 w0 e0 =
+  w5 ,
+  ⊑-trans· (⊑-trans· e3 e4) e5 ,
+  λ w6 e6 z → aw w6 z
+                 (snd (snd (i w1 e1)) w6 (⊑-trans· e0 (⊑-trans· (⊑-trans· (⊑-trans· (fst (snd (ih w1 e1 w0 e0))) e4) e5) e6)) z)
+                 (h4 w6 (⊑-trans· (⊑-refl· _) (⊑-trans· e5 e6)) z) (h2 w6 (⊑-trans· e3 (⊑-trans· (⊑-trans· e4 e5) e6)) z)
+                 (h5 w6 e6 z)
+                 (h3 w6 (⊑-trans· (⊑-trans· e4 e5) e6) z)
+  where
+    w2 : 𝕎·
+    w2 = w0 --fst (i w1 e1)
+
+    e2 : w1 ⊑· w2
+    e2 = ⊑-trans· (fst (snd (i w1 e1))) e0
+
+    h2 : ∀𝕎 w2 (λ w3 e3 → (z : w ⊑· w3) → f w3 z)
+    h2 = ∀𝕎-mon e0 (snd (snd (i w1 e1)))
+
+    w3 : 𝕎·
+    w3 = fst (ih w1 e1 w0 e0)
+
+    e3 : w2 ⊑· w3
+    e3 = fst (snd (ih w1 e1 w0 e0))
+
+    h3 : ∀𝕎 w3 (λ w4 e4 → (z : w ⊑· w4) → h w4 z (h2 w4 (⊑-trans· e3 e4) z))
+    h3 = snd (snd (ih w1 e1 w0 e0))
+
+    w4 : 𝕎·
+    w4 = fst (i w3 (⊑-trans· (⊑-trans· e1 e2) e3))
+
+    e4 : w3 ⊑· w4
+    e4 = fst (snd (i w3 (⊑-trans· (⊑-trans· e1 e2) e3)))
+
+    h4 : ∀𝕎 w4 (λ w3 e3 → (z : w ⊑· w3) → f w3 z)
+    h4 = snd (snd (i w3 (⊑-trans· (⊑-trans· e1 e2) e3)))
+
+    w5 : 𝕎·
+    w5 = fst (ig w3 (⊑-trans· (⊑-trans· e1 e2) e3) w4 (⊑-refl· _))
+
+    e5 : w4 ⊑· w5
+    e5 = fst (snd (ig w3 (⊑-trans· (⊑-trans· e1 e2) e3) w4 (⊑-refl· _)))
+
+    h5 : ∀𝕎 w5 (λ w6 e6 → (z : w ⊑· w6) → g w6 z (h4 w6 (⊑-trans· (⊑-refl· _) (⊑-trans· e5 e6)) z))
+    h5 = snd (snd (ig w3 (⊑-trans· (⊑-trans· e1 e2) e3) w4 (⊑-refl· _)))
+
+
+
+{--
 ∀𝕎-inOpenBar'-inOpenBar-old : {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w}
                                 → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → h w' e')
                                 → (i : inOpenBar w f) → inOpenBar' w i g → inOpenBar w h
@@ -834,6 +887,7 @@ inOpenBar-idem2 {w} {f} ext h w1 e1 =
 
     h3 : ∀𝕎 w3 (λ w4 e4 → (z : w ⊑· w4) → g w4 z (h0 w4 (⊑-trans· e3 e4) z))
     h3 = snd (snd (q w1 e1))
+--}
 
 
 
@@ -841,7 +895,9 @@ inOpenBar-idem2 {w} {f} ext h w1 e1 =
                             → ∀𝕎 w (λ w' e' → (x : f w' e') {--→ atOpenBar i w' e' x--} → g w' e' x → h w' e')
                             → inOpenBar' w i g → inOpenBar w h
 ∀𝕎-inOpenBar'-inOpenBar {w} {f} {g} {h} i a q w1 e1 =
-  w3 , ⊑-trans· e2 e3 , λ w4 e4 z → a w4 z (h0 w4 (⊑-trans· e3 e4) z) {--(ATOPENBAR-O w1 e1 w4 (⊑-trans· e3 e4) z)--} (h3 w4 e4 z)
+  w3 ,
+  ⊑-trans· e2 e3 ,
+  λ w4 e4 z → a w4 z (h0 w4 (⊑-trans· (⊑-refl· _) (⊑-trans· e3 e4)) z) {--(ATOPENBAR-O w1 e1 w4 (⊑-trans· e3 e4) z)--} (h3 w4 e4 z)
   where
     w2 : 𝕎·
     w2 = fst (i w1 e1)
@@ -853,22 +909,17 @@ inOpenBar-idem2 {w} {f} ext h w1 e1 =
     h0 = snd (snd (i w1 e1))
 
     w3 : 𝕎·
-    w3 = fst (q w1 e1)
+    w3 = fst (q w1 e1 w2 (⊑-refl· _))
 
     e3 : w2 ⊑· w3
-    e3 = fst (snd (q w1 e1))
+    e3 = fst (snd (q w1 e1 w2 (⊑-refl· _)))
 
-    h3 : ∀𝕎 w3 (λ w4 e4 → (z : w ⊑· w4) → g w4 z (h0 w4 (⊑-trans· e3 e4) z))
-    h3 = snd (snd (q w1 e1))
-
-
-
-inOpenBar-const : {w : 𝕎·} {t : Set(lsuc(L))} → inOpenBar w (λ w e → t) → t
-inOpenBar-const {w} {t} h = snd (snd (h w (⊑-refl· w))) (fst (h w (⊑-refl· w))) (⊑-refl· _) (fst (snd (h w (⊑-refl· w))))
+    h3 : ∀𝕎 w3 (λ w4 e4 → (z : w ⊑· w4) → g w4 z (h0 w4 (⊑-trans· (⊑-refl· _) (⊑-trans· e3 e4)) z))
+    h3 = snd (snd (q w1 e1 w2 (⊑-refl· _)))
 
 
 
-
+{--
 old-inOpenBar'-change : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i j : inOpenBar w f)
                     → ∀𝕎 w (λ w' e' → (x y : f w' e') {--→ atOpenBar i w' e' x → atOpenBar j w' e' y--} → g w' e' x → g w' e' y)
                     → inOpenBar' w i g → inOpenBar' w j g
@@ -904,6 +955,7 @@ old-inOpenBar'-change {w} {f} {g} i j aw b w1 e1 =
          {--(ATOPENBAR-O w2 (⊑-trans· e1 e2) w5  (⊑-trans· e4 e5) z)
          (ATOPENBAR-O w1 e1 w5  (⊑-trans· (⊑-trans· e3 e4) e5) z)--}
          (h0 w5 e5 z)
+--}
 
 
 
@@ -912,14 +964,14 @@ inOpenBar'-change : {w : 𝕎·} {f : wPred w} {k : wPred w} {g : wPredDep f} {h
                     → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e') {--→ atOpenBar i w' e' x → atOpenBar j w' e' y--}
                                       → g w' e' x → h w' e' y)
                     → inOpenBar' w i g → inOpenBar' w j h
-inOpenBar'-change {w} {f} {k} {g} {h} i j aw b w1 e1 =
+inOpenBar'-change {w} {f} {k} {g} {h} i j aw b w1 e1 w0 e0 =
   w4 , ⊑-trans· e3 e4 , h1
   where
     w2 : 𝕎·
-    w2 = fst (j w1 e1)
+    w2 = w0 --fst (j w1 e1)
 
     e2 : w1 ⊑· w2
-    e2 = fst (snd (j w1 e1))
+    e2 = ⊑-trans· (fst (snd (j w1 e1))) e0
 
     w3 : 𝕎·
     w3 = fst (i w2 (⊑-trans· e1 e2))
@@ -928,23 +980,22 @@ inOpenBar'-change {w} {f} {k} {g} {h} i j aw b w1 e1 =
     e3 = fst (snd (i w2 (⊑-trans· e1 e2)))
 
     w4 : 𝕎·
-    w4 = fst (b w2 (⊑-trans· e1 e2))
+    w4 = fst (b w2 (⊑-trans· e1 e2) w3 (⊑-refl· _))
 
     e4 : w3 ⊑· w4
-    e4 = fst (snd (b w2 (⊑-trans· e1 e2)))
+    e4 = fst (snd (b w2 (⊑-trans· e1 e2) w3 (⊑-refl· _)))
 
-    h0 : ∀𝕎 w4 (λ w5 e5 → (z : w ⊑· w5) → g w5 z (snd (snd (i w2 (⊑-trans· e1 e2))) w5 (⊑-trans· e4 e5) z))
-    h0 = snd (snd (b w2 (⊑-trans· e1 e2)))
+    h0 : ∀𝕎 w4 (λ w5 e5 → (z : w ⊑· w5) → g w5 z (snd (snd (i w2 (⊑-trans· e1 e2))) w5 (⊑-trans· (⊑-refl· _) (⊑-trans· e4 e5)) z))
+    h0 = snd (snd (b w2 (⊑-trans· e1 e2) w3 (⊑-refl· _)))
 
-    h1 : ∀𝕎 w4 (λ w5 e5 → (z : w ⊑· w5) → h w5 z (snd (snd (j w1 e1)) w5 (⊑-trans· (⊑-trans· e3 e4) e5) z))
+    h1 : ∀𝕎 w4 (λ w5 e5 → (z : w ⊑· w5) → h w5 z (snd (snd (j w1 e1)) w5 (⊑-trans· e0 (⊑-trans· (⊑-trans· e3 e4) e5)) z))
     h1 w5 e5 z =
       aw w5 z
-         (snd (snd (i w2 (⊑-trans· e1 e2))) w5 (⊑-trans· e4 e5) z)
-         (snd (snd (j w1 e1)) w5 (⊑-trans· (⊑-trans· e3 e4) e5) z)
+         (snd (snd (i w2 (⊑-trans· e1 e2))) w5 (⊑-trans· (⊑-refl· _) (⊑-trans· e4 e5)) z)
+         (snd (snd (j w1 e1)) w5 (⊑-trans· e0 (⊑-trans· (⊑-trans· e3 e4) e5)) z)
          {--(ATOPENBAR-O w2 (⊑-trans· e1 e2) w5 (⊑-trans· e4 e5) z)
          (ATOPENBAR-O w1 e1 w5 (⊑-trans· (⊑-trans· e3 e4) e5) z)--}
-         (h0 w5 e5 z)
-
+         (h0 w5 e5 z) --(h0 w5 e5 z)
 
 
 -- We can prove that open-bars satisfy the Bar properties
@@ -968,6 +1019,7 @@ inOpenBar-Bar =
     inOpenBar'-change
     inOpenBar-const
 
+
     --atOpenBar
     --(λ i → ATOPENBAR-R)
 --    wPredDepExtIrr-inOpenBar
@@ -979,6 +1031,8 @@ inOpenBar-Bar =
 --    (λ {w} {f} {g} → inOpenBar'-idem2 {w} {f} {g})
     {--∀𝕎-inOpenBar'-inOpenBar--}
 --    old-inOpenBar'-change
+
+
 
 
 {-----------------------------------------
