@@ -74,14 +74,14 @@ followChoice-beth-ref c {w} {f} {r} (bar , i) ioc comp fb =
     pc : pchain w
     pc = 𝕎→pchain w
 
-    bp : BarsProp (IS𝔹.bar bar) (pchain.c pc)
-    bp = IS𝔹.bars bar pc
+    bp : BarsProp (𝔹.bar bar) (pchain.c pc)
+    bp = 𝔹.bars bar pc
 
     w' : 𝕎·
     w' = BarsProp.w' bp
 
     e : w ⊑· w'
-    e = IS𝔹.ext bar (BarsProp.b bp)
+    e = 𝔹.ext bar (BarsProp.b bp)
 
 
 -- TODO: if we didn't want to rely on the choice instance at all,

@@ -101,7 +101,7 @@ progressing→ΣgetCs≤ {w} {c} n (suc m) comp prog = k' , l ++ fst i1 , (fst (
 
 IS𝔹-ℕ : (w : 𝕎·) (n : Name) (m : ℕ) (comp : compatible· n w Resℕ) → IS𝔹 w
 IS𝔹-ℕ w n m comp =
-  mkIS𝔹 bar bars ext mon
+  mk𝔹 bar bars ext mon
   where
     bar : 𝕎· → Set₁
     bar w' = w ⊑· w' × Σ (List Term) (λ l → getCs n w' ≡ just (mkcs n l Resℕ) × m < length l)
@@ -308,14 +308,14 @@ followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
     pc : pchain w
     pc = 𝕎→pchain w
 
-    bp : BarsProp (IS𝔹.bar bar) (pchain.c pc)
-    bp = IS𝔹.bars bar pc
+    bp : BarsProp (𝔹.bar bar) (pchain.c pc)
+    bp = 𝔹.bars bar pc
 
     w' : 𝕎·
     w' = BarsProp.w' bp
 
     e : w ⊑· w'
-    e = IS𝔹.ext bar (BarsProp.b bp)
+    e = 𝔹.ext bar (BarsProp.b bp)
 
     iso : isOnlyChoice∈𝕎 (Res.def r) c w'
     iso = ⊑-isOnlyChoice∈𝕎 {c} {w'} {chain.seq (pchain.c pc) (BarsProp.n bp)} {r}

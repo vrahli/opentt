@@ -49,8 +49,8 @@ open import bar(W)(C)(G)(N)(F)(P)
 
 -- instance of a bar, which should be replaced by a parameter
 barI : Bar
---barI = inOpenBar-Bar
-barI = inBethBar-Bar
+barI = inOpenBar-Bar
+--barI = inBethBar-Bar
 
 
 inbar : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
@@ -60,8 +60,8 @@ inbar = Bar.inBar barI
 
 inbar' : (w : 𝕎·) {g : wPred w} (h : inbar w g) (f : wPredDep g) → Set(lsuc(L))
 --inbar' = Bar.inBar' barI
---inbar' = inOpenBar'
-inbar' = inBethBar'
+inbar' = inOpenBar'
+--inbar' = inBethBar'
 
 ↑inbar : {w : 𝕎·} {f : wPred w} (i : inbar w f) {w' : 𝕎·} (e : w ⊑· w') → inbar w' (↑wPred f e)
 ↑inbar = Bar.↑inBar barI
