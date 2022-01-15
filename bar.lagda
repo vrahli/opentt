@@ -208,7 +208,7 @@ bar-mon : 𝕎· → Br → Br
 bar-mon w' bar w0 = Σ 𝕎· (λ w1 → bar w1 × w1 ⊑· w0 × w' ⊑· w0)
 
 
--- TODO: prove this about our bars below
+-- TODO: add to a record
 Bars-mon : (B : Bars) → Set(lsuc(L))
 Bars-mon B =
   {w1 w2 : 𝕎·} (e : w1 ⊑· w2) (bar : 𝕎· → Set(L))
@@ -232,6 +232,74 @@ Bars-mon B =
     mon' {w1} {w2} e (w0 , b0 , e₁ , e₂) = w0 , b0 , ⊑-trans· e₁ e , ⊑-trans· e₂ e
 
 
+bar∩ : 𝕎· → Br → Br → Br
+bar∩ w b1 b2 w0 = Σ 𝕎· (λ w1 → Σ 𝕎· (λ w2 → b1 w1 × b2 w2 × w1 ⊑· w0 × w2 ⊑· w0))
+
+
+-- TODO: add to a record
+Bars∩ : (B : Bars) → Set(lsuc(L))
+Bars∩ B =
+  {w : 𝕎·} (b1 b2 : 𝕎· → Set(L))
+  → B w b1
+  → B w b2
+  → B w (bar∩ w b1 b2)
+
+
+∩𝔹 : {B : Bars} (isect : Bars∩ B) {w : 𝕎·} → 𝔹 B w → 𝔹 B w → 𝔹 B w
+∩𝔹 {B} isect {w} (mk𝔹 b1 bars1 ext1 mon1) (mk𝔹 b2 bars2 ext2 mon2) =
+  mk𝔹 bar bars ext mon
+  where
+    bar : Br
+    bar = bar∩ w b1 b2
+
+    bars : B w bar
+    bars = isect b1 b2 bars1 bars2
+
+    ext : {w' : 𝕎·} → bar w' → w ⊑· w'
+    ext {w'} (w1 , w2 , b₁ , b₂ , e₁ , e₂) = ⊑-trans· (𝔹.ext {B} {w} (mk𝔹 b1 bars1 ext1 mon1) {w1} b₁) e₁
+
+    mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
+    mon {w1} {w2} e (wa , wb , ba , bb , ea , eb) = wa , wb , ba , bb , ⊑-trans· ea e , ⊑-trans· eb e
+
+
+
+↑Σ∈𝔹 : {B : Bars} (mon : Bars-mon B) {w : 𝕎·} {f : wPred w} (i : Σ∈𝔹 {B} w f) {w' : 𝕎·} (e : w ⊑· w') → Σ∈𝔹 {B} w' (↑wPred f e)
+↑Σ∈𝔹 {B} mon {w} {f} (b , i) {w'} e = 𝔹⊑ mon e b , j
+  where
+    j : ∈𝔹 (𝔹⊑ mon e b) (↑wPred f e)
+    j {w1} e1 (w0 , b0 , e₁ , e₂) w2 e2 z = i (𝔹.ext b {w0} b0) b0 w2 (⊑-trans· e₁ e2) (⊑-trans· e z)
+
+
+↑'Σ∈𝔹 : {B : Bars} (mon : Bars-mon B) {w : 𝕎·} {f : wPred w} (i : Σ∈𝔹 {B} w f) {w' : 𝕎·} (e : w ⊑· w') → Σ∈𝔹 {B} w' (↑wPred' f e)
+↑'Σ∈𝔹 {B} mon {w} {f} (b , i) {w'} e = 𝔹⊑ mon e b , j
+  where
+    j : ∈𝔹 (𝔹⊑ mon e b) (↑wPred' f e)
+    j {w1} e1 (w0 , b0 , e₁ , e₂) w2 e2 z x = i (𝔹.ext b {w0} b0) b0 w2 (⊑-trans· e₁ e2) x
+
+
+Σ∈𝔹Func : {B : Bars} (isect : Bars∩ B) {w : 𝕎·} {f g : wPred w}
+          → Σ∈𝔹 {B} w (λ w' e' → f w' e' → g w' e')
+          → Σ∈𝔹 {B} w f → Σ∈𝔹 {B} w g
+Σ∈𝔹Func {B} isect {w} {f} {g} (b1 , i1) (b2 , i2) =
+  ∩𝔹 isect b1 b2 , i
+  where
+    i : ∈𝔹 (∩𝔹 isect b1 b2) g
+    i e (w₁ , w₂ , b₁ , b₂ , e₁ , e₂) w' e' z =
+      i1 (𝔹.ext b1 b₁) b₁ w' (⊑-trans· e₁ e') z
+         (i2 (𝔹.ext b2 b₂) b₂ w' (⊑-trans· e₂ e') z)
+
+
+
+∀𝕎-Σ∈𝔹Func : {B : Bars} {w : 𝕎·} {f g : wPred w}
+              → ∀𝕎 w (λ w' e' → f w' e' → g w' e')
+              → Σ∈𝔹 {B} w f → Σ∈𝔹 {B} w g
+∀𝕎-Σ∈𝔹Func {B} {w} {f} {g} aw (b , i) = b , j
+  where
+    j : ∈𝔹 b g
+    j e b' w' e' z = aw w' z (i (𝔹.ext b b') b' w' e' z)
+
+
+
 
 {-----------------------------------------
  --
@@ -250,7 +318,30 @@ inOpenBar w f =
 ------
 -- An open bar
 O𝔹bars : Bars
-O𝔹bars w bar = ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → Lift (lsuc(L)) (bar w2)))
+O𝔹bars w bar = ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 _ → Lift (lsuc(L)) (bar w2)))
+
+
+O𝔹bars-mon : Bars-mon O𝔹bars
+O𝔹bars-mon {w1} {w2} e bar h w3 e3 =
+  fst (h w3 (⊑-trans· e e3)) ,
+  fst (snd (h w3 (⊑-trans· e e3))) ,
+  lift (fst (h w3 (⊑-trans· e e3)) ,
+        lower (snd (snd (h w3 (⊑-trans· e e3)))) ,
+        ⊑-refl· _ ,
+        ⊑-trans· e3 (fst (snd (h w3 (⊑-trans· e e3)))))
+
+
+O𝔹bars∩ : Bars∩ O𝔹bars
+O𝔹bars∩ {w} b1 b2 bars1 bars2 w1 e1 =
+  fst h2 ,
+  ⊑-trans· (fst (snd h1)) (fst (snd h2)) ,
+  lift (fst h1 , fst h2 , lower (snd (snd h1)) , lower (snd (snd h2)) , fst (snd h2) , ⊑-refl· _)
+  where
+    h1 : ∃𝕎 w1 (λ w2 e2 → Lift (lsuc L) (b1 w2))
+    h1 = bars1 w1 e1
+
+    h2 : ∃𝕎 (fst h1) (λ w2 e2 → Lift (lsuc L) (b2 w2))
+    h2 = bars2 (fst h1) (⊑-trans· e1 (fst (snd h1)))
 
 
 O𝔹 : 𝕎· → Set(lsuc(L))
@@ -365,6 +456,9 @@ inOpenBar'→Σ∈𝔹' w {g} i f j {w1} e1 (w0 , e0 , ex) =
       where
         c : f w2 y (snd (snd (i w0 e0)) w2 (⊑-trans· ex x) y)
         c = {!snd (snd (j w0 e0 ? ?))!} -- TODO: not going to work because Σ∈𝔹' allows changing the proof of ⊑·
+
+        c' : f w2 y (snd (snd (i w0 e0)) w2 (⊑-trans· ex (⊑-trans· (fst (snd (j w0 e0 w1 ex))) {!!})) y)
+        c' = snd (snd (j w0 e0 w1 ex)) w2 {!⊑-trans· (fst (snd (j w0 e0 w1 ex))) ?!} y
 --}
 -----
 
@@ -1191,21 +1285,6 @@ inIBethBar-inIBethBar' {w} {f} {g} (b1 , i1) (indBar-ind .w ind , i2) = {!!}
  -- Beth Bar instance -- defined from infinite sequences
  --
  --}
-
-
-{--
--- infinite sequence of worlds
-record chain (w : 𝕎·) : Set(lsuc(L)) where
-  constructor mkChain
-  field
-    seq  : ℕ → 𝕎·
-    init : w ⊑· seq 0
-    prop : (n : ℕ) → seq n ⊑· seq (suc n) -- ⊏
-    prog : (c : Name) (n : ℕ) {r : Res{0ℓ}} → compatible· c (seq n) r → Σ ℕ (λ m → n < m × progress· c (seq n) (seq m))
---}
-
-
-
 record BarsProp (bar : 𝕎· → Set(L)) {w : 𝕎·} (c : chain w) : Set(L) where
   constructor mkBarsProp
   field
@@ -1219,19 +1298,42 @@ IS𝔹bars : Bars
 IS𝔹bars w bar = (c : pchain w) → BarsProp bar (pchain.c c)
 
 
+-- We prove that Beth bars are monotonic
+IS𝔹bars-mon : Bars-mon IS𝔹bars
+IS𝔹bars-mon {w1} {w2} e bar h c =
+  mkBarsProp
+    (chain.seq (chain⊑ e (pchain.c c)) (BarsProp.n z))
+    (BarsProp.w' z , BarsProp.b z , BarsProp.ext z , chain⊑n (BarsProp.n z) (pchain.c c))
+    (BarsProp.n z)
+    (⊑-refl· _)
+    where
+      z : BarsProp bar (chain⊑ e (pchain.c c))
+      z = h (pchain⊑ e c)
+
+
+IS𝔹bars∩ : Bars∩ IS𝔹bars
+IS𝔹bars∩ {w} b1 b2 bars1 bars2 c =
+  mkBarsProp (chain.seq (pchain.c c) ((BarsProp.n z1) ⊔ (BarsProp.n z2)))
+             (BarsProp.w' z1 , BarsProp.w' z2 , BarsProp.b z1 , BarsProp.b z2 , e1 , e2)
+             ((BarsProp.n z1) ⊔ (BarsProp.n z2))
+             (⊑-refl· _)
+  where
+    z1 : BarsProp b1 (pchain.c c) --Σ 𝕎· (λ w' → b1 w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
+    z1 = bars1 c
+
+    z2 : BarsProp b2 (pchain.c c) --Σ 𝕎· (λ w' → b2 w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
+    z2 = bars2 c
+
+    e1 : BarsProp.w' z1 ⊑· chain.seq (pchain.c c) (BarsProp.n z1 ⊔ BarsProp.n z2)
+    e1 = ⊑-trans· (BarsProp.ext z1) (≤→chain⊑ (pchain.c c) (m≤m⊔n (BarsProp.n z1) (BarsProp.n z2)))
+
+    e2 : BarsProp.w' z2 ⊑· chain.seq (pchain.c c) (BarsProp.n z1 ⊔ BarsProp.n z2)
+    e2 = ⊑-trans· (BarsProp.ext z2) (≤→chain⊑ (pchain.c c) (m≤n⊔m (BarsProp.n z1) (BarsProp.n z2)))
+
+
 -- a Beth bar where all infinite sequences are barred
 IS𝔹 : 𝕎· → Set(lsuc(L))
 IS𝔹 w = 𝔹 IS𝔹bars w
-
-
-{--record IS𝔹 (w : 𝕎·) : Set(lsuc(L)) where
-  constructor mkIS𝔹
-  field
-    bar  : 𝕎· → Set(L)
-    bars : (c : pchain w) → BarsProp bar (pchain.c c)
-    ext  : {w' : 𝕎·} → bar w' → w ⊑· w'
-    mon  : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
---}
 
 
 inIS𝔹 : {w : 𝕎·} (b : IS𝔹 w) (f : wPred w) → Set(lsuc(L))
@@ -1242,96 +1344,32 @@ inBethBar : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
 inBethBar = Σ∈𝔹 {IS𝔹bars}
 
 
-
 IS𝔹⊑ : {w w' : 𝕎·} (e : w ⊑· w') → IS𝔹 w → IS𝔹 w'
-IS𝔹⊑ {w} {w'} e (mk𝔹 bar bars ext mon) = mk𝔹 bar' bars' ext' mon'
-  where
-    bar' : 𝕎· → Set(L)
-    bar' w0 = Σ 𝕎· (λ w1 → bar w1 × w1 ⊑· w0 × w' ⊑· w0)
-
-    bars' : (c : pchain w') → BarsProp bar' (pchain.c c) --Σ 𝕎· (λ w'' → bar' w'' × Σ ℕ (λ n → w'' ⊑· chain.seq c n))
-    bars' c = mkBarsProp
-                (chain.seq (chain⊑ e (pchain.c c)) (BarsProp.n z))
-                (BarsProp.w' z , BarsProp.b z , BarsProp.ext z , chain⊑n (BarsProp.n z) (pchain.c c))
-                (BarsProp.n z)
-                (⊑-refl· _)
-      where
-        z : BarsProp bar (chain⊑ e (pchain.c c)) --Σ 𝕎· (λ w'' → bar w'' × Σ ℕ (λ n → w'' ⊑· chain.seq (chain⊑ e c) n))
-        z = bars (pchain⊑ e c)
-
-    ext' : {w'' : 𝕎·} → bar' w'' → w' ⊑· w''
-    ext' {w''} (w1 , b , e₁ , e₂) = e₂
-
-    mon' : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar' w1 → bar' w2
-    mon' {w1} {w2} e (w0 , b0 , e₁ , e₂) = w0 , b0 , ⊑-trans· e₁ e , ⊑-trans· e₂ e
+IS𝔹⊑ = 𝔹⊑ {IS𝔹bars} IS𝔹bars-mon
 
 
 ↑inBethBar : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) {w' : 𝕎·} (e : w ⊑· w') → inBethBar w' (↑wPred f e)
-↑inBethBar {w} {f} (b , i) {w'} e = IS𝔹⊑ e b , j
-  where
-    j : inIS𝔹 (IS𝔹⊑ e b) (↑wPred f e)
-    j {w1} e1 (w0 , b0 , e₁ , e₂) w2 e2 z = i (𝔹.ext b {w0} b0) b0 w2 (⊑-trans· e₁ e2) (⊑-trans· e z)
+↑inBethBar = ↑Σ∈𝔹 {IS𝔹bars} IS𝔹bars-mon
 
 
 ↑'inBethBar : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) {w' : 𝕎·} (e : w ⊑· w') → inBethBar w' (↑wPred' f e)
-↑'inBethBar {w} {f} (b , i) {w'} e = IS𝔹⊑ e b , j
-  where
-    j : inIS𝔹 (IS𝔹⊑ e b) (↑wPred' f e)
-    j {w1} e1 (w0 , b0 , e₁ , e₂) w2 e2 z x = i (𝔹.ext b {w0} b0) b0 w2 (⊑-trans· e₁ e2) x
+↑'inBethBar = ↑'Σ∈𝔹 {IS𝔹bars} IS𝔹bars-mon
 
 
 ∩IS𝔹 : {w : 𝕎·} → IS𝔹 w → IS𝔹 w → IS𝔹 w
-∩IS𝔹 {w} (mk𝔹 b1 bars1 ext1 mon1) (mk𝔹 b2 bars2 ext2 mon2) =
-  mk𝔹 bar bars ext mon
-  where
-    bar : 𝕎· → Set(L)
-    bar w0 = Σ 𝕎· (λ w1 → Σ 𝕎· (λ w2 → b1 w1 × b2 w2 × w1 ⊑· w0 × w2 ⊑· w0))
-
-    bars : (c : pchain w) → BarsProp bar (pchain.c c) --Σ 𝕎· (λ w' → bar w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
-    bars c = mkBarsProp (chain.seq (pchain.c c) ((BarsProp.n z1) ⊔ (BarsProp.n z2)))
-                        (BarsProp.w' z1 , BarsProp.w' z2 , BarsProp.b z1 , BarsProp.b z2 , e1 , e2)
-                        ((BarsProp.n z1) ⊔ (BarsProp.n z2))
-                        (⊑-refl· _)
-      where
-        z1 : BarsProp b1 (pchain.c c) --Σ 𝕎· (λ w' → b1 w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
-        z1 = bars1 c
-
-        z2 : BarsProp b2 (pchain.c c) --Σ 𝕎· (λ w' → b2 w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
-        z2 = bars2 c
-
-        e1 : BarsProp.w' z1 ⊑· chain.seq (pchain.c c) (BarsProp.n z1 ⊔ BarsProp.n z2)
-        e1 = ⊑-trans· (BarsProp.ext z1) (≤→chain⊑ (pchain.c c) (m≤m⊔n (BarsProp.n z1) (BarsProp.n z2)))
-
-        e2 : BarsProp.w' z2 ⊑· chain.seq (pchain.c c) (BarsProp.n z1 ⊔ BarsProp.n z2)
-        e2 = ⊑-trans· (BarsProp.ext z2) (≤→chain⊑ (pchain.c c) (m≤n⊔m (BarsProp.n z1) (BarsProp.n z2)))
-
-    ext : {w' : 𝕎·} → bar w' → w ⊑· w'
-    ext {w'} (w1 , w2 , b₁ , b₂ , e₁ , e₂) = ⊑-trans· (𝔹.ext {IS𝔹bars} {w} (mk𝔹 b1 bars1 ext1 mon1) {w1} b₁) e₁
-
-    mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
-    mon {w1} {w2} e (wa , wb , ba , bb , ea , eb) = wa , wb , ba , bb , ⊑-trans· ea e , ⊑-trans· eb e
-
+∩IS𝔹 = ∩𝔹 {IS𝔹bars} IS𝔹bars∩
 
 
 inBethBarFunc : {w : 𝕎·} {f g : wPred w}
                 → inBethBar w (λ w' e' → f w' e' → g w' e')
                 → inBethBar w f → inBethBar w g
-inBethBarFunc {w} {f} {g} (b1 , i1) (b2 , i2) =
-  ∩IS𝔹 b1 b2 , i
-  where
-    i : inIS𝔹 (∩IS𝔹 b1 b2) g
-    i e (w₁ , w₂ , b₁ , b₂ , e₁ , e₂) w' e' z =
-      i1 (𝔹.ext b1 b₁) b₁ w' (⊑-trans· e₁ e') z
-         (i2 (𝔹.ext b2 b₂) b₂ w' (⊑-trans· e₂ e') z)
+inBethBarFunc = Σ∈𝔹Func {IS𝔹bars} IS𝔹bars∩
 
 
 ∀𝕎-inBethBarFunc : {w : 𝕎·} {f g : wPred w}
                     → ∀𝕎 w (λ w' e' → f w' e' → g w' e')
                     → inBethBar w f → inBethBar w g
-∀𝕎-inBethBarFunc {w} {f} {g} aw (b , i) = b , j
-  where
-    j : inIS𝔹 b g
-    j e b' w' e' z = aw w' z (i (𝔹.ext b b') b' w' e' z)
+∀𝕎-inBethBarFunc = ∀𝕎-Σ∈𝔹Func {IS𝔹bars}
 
 
 
@@ -1359,15 +1397,19 @@ trivialIS𝔹 w =
     i {w'} e b w1 e1 z = h w1 z
 
 
+{--
 -- Each step we start a new choice to guarantee the world progresses, and we freeze c to guarantee that c progresses
 seqChoice : Name → 𝕎· → ℕ → 𝕎·
 seqChoice c w 0 = w
 seqChoice c w (suc n) = freeze· c (startNewChoice Resℕ (seqChoice c w n)) (ℕ→ℂ· 0)
+--}
 
 
+{--
 chainChoice-prop-aux : (n : ℕ) (s : ℕ → 𝕎·) (ind : (m : ℕ) → m < n →  s m ⊑· s (suc m)) → s 0 ⊑· s n
 chainChoice-prop-aux ℕ.zero s ind = ⊑-refl· (s 0)
 chainChoice-prop-aux (suc n) s ind = ⊑-trans· (chainChoice-prop-aux n s λ m x → ind m (<-trans x (n<1+n n))) (ind n (n<1+n n))
+--}
 
 
 {--
