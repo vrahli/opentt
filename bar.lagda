@@ -204,23 +204,23 @@ record 𝔹 (B : Bars) (w : 𝕎·) : Set(lsuc(L)) where
   → Σ (𝔹 B w1) (λ b' → ∈𝔹Dep b' (i e1 ib) (↑wPredDep'' f e1))
 
 
-bar-mon : 𝕎· → Br → Br
-bar-mon w' bar w0 = Σ 𝕎· (λ w1 → bar w1 × w1 ⊑· w0 × w' ⊑· w0)
+bar⊑ : 𝕎· → Br → Br
+bar⊑ w' bar w0 = Σ 𝕎· (λ w1 → bar w1 × w1 ⊑· w0 × w' ⊑· w0)
 
 
 -- TODO: add to a record
-Bars-mon : (B : Bars) → Set(lsuc(L))
-Bars-mon B =
+Bars⊑ : (B : Bars) → Set(lsuc(L))
+Bars⊑ B =
   {w1 w2 : 𝕎·} (e : w1 ⊑· w2) (bar : 𝕎· → Set(L))
   → B w1 bar
-  → B w2 (bar-mon w2 bar)
+  → B w2 (bar⊑ w2 bar)
 
 
-𝔹⊑ : {B : Bars} (mon : Bars-mon B) {w w' : 𝕎·} (e : w ⊑· w') → 𝔹 B w → 𝔹 B w'
+𝔹⊑ : {B : Bars} (mon : Bars⊑ B) {w w' : 𝕎·} (e : w ⊑· w') → 𝔹 B w → 𝔹 B w'
 𝔹⊑ {B} MB {w} {w'} e (mk𝔹 bar bars ext mon) = mk𝔹 bar' bars' ext' mon'
   where
     bar' : Br
-    bar' = bar-mon w' bar
+    bar' = bar⊑ w' bar
 
     bars' : B w' bar'
     bars' = MB e bar bars
@@ -239,7 +239,7 @@ bar∩ w b1 b2 w0 = Σ 𝕎· (λ w1 → Σ 𝕎· (λ w2 → b1 w1 × b2 w2 × 
 -- TODO: add to a record
 Bars∩ : (B : Bars) → Set(lsuc(L))
 Bars∩ B =
-  {w : 𝕎·} (b1 b2 : 𝕎· → Set(L))
+  {w : 𝕎·} (b1 b2 : Br)
   → B w b1
   → B w b2
   → B w (bar∩ w b1 b2)
@@ -263,14 +263,41 @@ Bars∩ B =
 
 
 
-↑Σ∈𝔹 : {B : Bars} (mon : Bars-mon B) {w : 𝕎·} {f : wPred w} (i : Σ∈𝔹 {B} w f) {w' : 𝕎·} (e : w ⊑· w') → Σ∈𝔹 {B} w' (↑wPred f e)
+bar∀ : 𝕎· → Br
+bar∀ w w' = w ⊑· w'
+
+
+-- TODO: add to a record
+Bars∀ : (B : Bars) → Set(lsuc(L))
+Bars∀ B = (w : 𝕎·) → B w (bar∀ w)
+
+
+𝔹∀ : {B : Bars} (all : Bars∀ B) (w : 𝕎·) → 𝔹 B w
+𝔹∀ {B} all w =
+  mk𝔹 bar bars ext mon
+  where
+    bar : Br
+    bar = bar∀ w
+
+    bars : B w bar
+    bars = all w
+
+    ext : {w' : 𝕎·} → bar w' → w ⊑· w'
+    ext {w'} b = b
+
+    mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
+    mon {w1} {w2} e b = ⊑-trans· b e
+
+
+
+↑Σ∈𝔹 : {B : Bars} (mon : Bars⊑ B) {w : 𝕎·} {f : wPred w} (i : Σ∈𝔹 {B} w f) {w' : 𝕎·} (e : w ⊑· w') → Σ∈𝔹 {B} w' (↑wPred f e)
 ↑Σ∈𝔹 {B} mon {w} {f} (b , i) {w'} e = 𝔹⊑ mon e b , j
   where
     j : ∈𝔹 (𝔹⊑ mon e b) (↑wPred f e)
     j {w1} e1 (w0 , b0 , e₁ , e₂) w2 e2 z = i (𝔹.ext b {w0} b0) b0 w2 (⊑-trans· e₁ e2) (⊑-trans· e z)
 
 
-↑'Σ∈𝔹 : {B : Bars} (mon : Bars-mon B) {w : 𝕎·} {f : wPred w} (i : Σ∈𝔹 {B} w f) {w' : 𝕎·} (e : w ⊑· w') → Σ∈𝔹 {B} w' (↑wPred' f e)
+↑'Σ∈𝔹 : {B : Bars} (mon : Bars⊑ B) {w : 𝕎·} {f : wPred w} (i : Σ∈𝔹 {B} w f) {w' : 𝕎·} (e : w ⊑· w') → Σ∈𝔹 {B} w' (↑wPred' f e)
 ↑'Σ∈𝔹 {B} mon {w} {f} (b , i) {w'} e = 𝔹⊑ mon e b , j
   where
     j : ∈𝔹 (𝔹⊑ mon e b) (↑wPred' f e)
@@ -289,7 +316,6 @@ Bars∩ B =
          (i2 (𝔹.ext b2 b₂) b₂ w' (⊑-trans· e₂ e') z)
 
 
-
 ∀𝕎-Σ∈𝔹Func : {B : Bars} {w : 𝕎·} {f g : wPred w}
               → ∀𝕎 w (λ w' e' → f w' e' → g w' e')
               → Σ∈𝔹 {B} w f → Σ∈𝔹 {B} w g
@@ -297,6 +323,35 @@ Bars∩ B =
   where
     j : ∈𝔹 b g
     j e b' w' e' z = aw w' z (i (𝔹.ext b b') b' w' e' z)
+
+
+∀𝕎-Σ∈𝔹 : {B : Bars} (all : Bars∀ B) {w : 𝕎·} {f : wPred w} → ∀𝕎 w f → Σ∈𝔹 {B} w f
+∀𝕎-Σ∈𝔹 {B} all {w} {f} h = 𝔹∀ all w , i
+  where
+    i : ∈𝔹 {B} (𝔹∀ all w) f
+    i {w'} e b w1 e1 z = h w1 z
+
+
+Σ∈𝔹-Σ∈𝔹' : {B : Bars} (mon : Bars⊑ B) {w : 𝕎·} {f : wPred w} {g : wPredDep f}
+             → Σ∈𝔹 {B} w (λ w' e' → (x : f w' e') → g w' e' x)
+             → (i : Σ∈𝔹 {B} w f) → Σ∈𝔹' {B} w i g
+Σ∈𝔹-Σ∈𝔹' {B} mon {w} {f} {g} (b1 , i1) (b2 , i2) {w'} e ib =
+  𝔹⊑ mon e b1 , j
+  where
+    j : ∈𝔹Dep (𝔹⊑ mon e b1) (i2 e ib) (↑wPredDep'' g e)
+    j {w0} e0 (w0' , b0 , e0' , e0'') w1 e1 x x' = i1 (𝔹.ext b1 b0) b0 w1 (⊑-trans· e0' e1) x' (i2 e ib w1 x x')
+
+
+∀𝕎-Σ∈𝔹-Σ∈𝔹' : {B : Bars} (all : Bars∀ B) {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : Σ∈𝔹 {B} w f)
+                → ∀𝕎 w (λ w' e' → (x : f w' e') {--(at : atBethBar i w' e' x)--} → g w' e' x)
+                → Σ∈𝔹' {B} w i g
+∀𝕎-Σ∈𝔹-Σ∈𝔹' {B} all {w} {f} {g} (b , i) aw {w'} e ib =
+  𝔹∀ all w' , j
+  where
+    j : ∈𝔹Dep {B} (𝔹∀ all w') (i e ib) (↑wPredDep'' g e)
+    j {w0} e0 ib' w1 e1 x y = aw w1 y (i e ib w1 x y)
+
+
 
 
 
@@ -321,7 +376,7 @@ O𝔹bars : Bars
 O𝔹bars w bar = ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 _ → Lift (lsuc(L)) (bar w2)))
 
 
-O𝔹bars-mon : Bars-mon O𝔹bars
+O𝔹bars-mon : Bars⊑ O𝔹bars
 O𝔹bars-mon {w1} {w2} e bar h w3 e3 =
   fst (h w3 (⊑-trans· e e3)) ,
   fst (snd (h w3 (⊑-trans· e e3))) ,
@@ -1300,7 +1355,7 @@ IS𝔹bars w bar = (c : pchain w) → BarsProp bar (pchain.c c)
 
 
 -- We prove that Beth bars are monotonic
-IS𝔹bars-mon : Bars-mon IS𝔹bars
+IS𝔹bars-mon : Bars⊑ IS𝔹bars
 IS𝔹bars-mon {w1} {w2} e bar h c =
   mkBarsProp
     (chain.seq (chain⊑ e (pchain.c c)) (BarsProp.n z))
@@ -1330,6 +1385,10 @@ IS𝔹bars∩ {w} b1 b2 bars1 bars2 c =
 
     e2 : BarsProp.w' z2 ⊑· chain.seq (pchain.c c) (BarsProp.n z1 ⊔ BarsProp.n z2)
     e2 = ⊑-trans· (BarsProp.ext z2) (≤→chain⊑ (pchain.c c) (m≤n⊔m (BarsProp.n z1) (BarsProp.n z2)))
+
+
+IS𝔹bars∀ : Bars∀ IS𝔹bars
+IS𝔹bars∀ w c = mkBarsProp w (⊑-refl· _) 0 (chain.init (pchain.c c))
 
 
 -- a Beth bar where all infinite sequences are barred
@@ -1369,29 +1428,33 @@ inBethBarFunc = Σ∈𝔹Func {IS𝔹bars} IS𝔹bars∩
 ∀𝕎-inBethBarFunc = ∀𝕎-Σ∈𝔹Func {IS𝔹bars}
 
 
--- TODO: generalize as above:
 trivialIS𝔹 : (w : 𝕎·) → IS𝔹 w
-trivialIS𝔹 w =
-  mk𝔹 bar bars ext mon
-  where
-    bar : 𝕎· → Set(L)
-    bar w' = w ⊑· w'
-
-    bars : (c : pchain w) → BarsProp bar (pchain.c c)
-    bars c = mkBarsProp w (⊑-refl· _) 0 (chain.init (pchain.c c))
-
-    ext : {w' : 𝕎·} → bar w' → w ⊑· w'
-    ext {w'} b = b
-
-    mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
-    mon {w1} {w2} e b = ⊑-trans· b e
+trivialIS𝔹 = 𝔹∀ {IS𝔹bars} IS𝔹bars∀
 
 
 ∀𝕎-inBethBar : {w : 𝕎·} {f : wPred w} → ∀𝕎 w f → inBethBar w f
-∀𝕎-inBethBar {w} {f} h = trivialIS𝔹 w , i
-  where
-    i : inIS𝔹 (trivialIS𝔹 w) f
-    i {w'} e b w1 e1 z = h w1 z
+∀𝕎-inBethBar = ∀𝕎-Σ∈𝔹 {IS𝔹bars} IS𝔹bars∀
+
+
+inIS𝔹Dep : {w : 𝕎·} (b : IS𝔹 w) {g : wPred w} (i : ∀𝕎 w g) (f : wPredDep g) → Set(lsuc(L))
+inIS𝔹Dep = ∈𝔹Dep {IS𝔹bars}
+
+
+inBethBar' : (w : 𝕎·) {g : wPred w} (h : inBethBar w g) (f : wPredDep g) → Set(lsuc(L))
+inBethBar' = Σ∈𝔹' {IS𝔹bars}
+
+
+inBethBar-inBethBar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f}
+                       → inBethBar w (λ w' e' → (x : f w' e') → g w' e' x)
+                       → (i : inBethBar w f) → inBethBar' w i g
+inBethBar-inBethBar' = Σ∈𝔹-Σ∈𝔹' {IS𝔹bars} IS𝔹bars-mon
+
+
+
+∀𝕎-inBethBar-inBethBar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inBethBar w f)
+                           → ∀𝕎 w (λ w' e' → (x : f w' e') {--(at : atBethBar i w' e' x)--} → g w' e' x)
+                           → inBethBar' w i g
+∀𝕎-inBethBar-inBethBar' = ∀𝕎-Σ∈𝔹-Σ∈𝔹' {IS𝔹bars} IS𝔹bars∀
 
 
 {--
@@ -1647,42 +1710,6 @@ IS𝔹-fam2 {w} b G i = mk𝔹 bar bars ext mon
 
 
 
-inIS𝔹Dep : {w : 𝕎·} (b : IS𝔹 w) {g : wPred w} (i : ∀𝕎 w g) (f : wPredDep g) → Set(lsuc(L))
-inIS𝔹Dep = ∈𝔹Dep {IS𝔹bars}
-
-
-inBethBar' : (w : 𝕎·) {g : wPred w} (h : inBethBar w g) (f : wPredDep g) → Set(lsuc(L))
-inBethBar' = Σ∈𝔹' {IS𝔹bars}
-
-
-
-inBethBar-inBethBar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f}
-                       → inBethBar w (λ w' e' → (x : f w' e') → g w' e' x)
-                       → (i : inBethBar w f) → inBethBar' w i g
-inBethBar-inBethBar' {w} {f} {g} (b1 , i1) (b2 , i2) {w'} e ib =
-  IS𝔹⊑ e b1 , j
-  where
-    j : inIS𝔹Dep (IS𝔹⊑ e b1) (i2 e ib) (↑wPredDep'' g e)
-    j {w0} e0 (w0' , b0 , e0' , e0'') w1 e1 x x' = i1 (𝔹.ext b1 b0) b0 w1 (⊑-trans· e0' e1) x' (i2 e ib w1 x x')
-
-
-
-∀𝕎-inBethBar-inBethBar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inBethBar w f)
-                           → ∀𝕎 w (λ w' e' → (x : f w' e') {--(at : atBethBar i w' e' x)--} → g w' e' x)
-                           → inBethBar' w i g
-∀𝕎-inBethBar-inBethBar' {w} {f} {g} (b , i) aw {w'} e ib =
-  trivialIS𝔹 w' , j
-  where
-    j : inIS𝔹Dep (trivialIS𝔹 w') (i e ib) (↑wPredDep'' g e)
-    j {w0} e0 ib' w1 e1 x y = aw w1 y (i e ib w1 x y)
-
- {--at
-      where
-        at : atBethBar (b , i) w1 x' y'
-        at = ATBETHBAR-B w' e ib w1 x x' y'--}
-
-
-
 ∀𝕎-inBethBar'-inBethBar : {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w} (i : inBethBar w f)
                            → ∀𝕎 w (λ w' e' → (x : f w' e') {--→ atBethBar i w' e' x--} → g w' e' x → h w' e')
                            → inBethBar' w i g → inBethBar w h
@@ -1702,7 +1729,7 @@ inBethBar-inBethBar' {w} {f} {g} (b1 , i1) (b2 , i2) {w'} e ib =
               z)
 
 
-
+-- TODO: generalize
 inBethBar'-comb : {w : 𝕎·} {f : wPred w} {g h k : wPredDep f} (i : inBethBar w f)
                   → ∀𝕎 w (λ w' e' → (z zg zh : f w' e')
                                    → g w' e' zg → h w' e' zh → k w' e' z)
