@@ -298,6 +298,74 @@ eqTypes-mon u {A} {B} {w1} (EQTBAR x) w2 ext = EQTBAR (Bar.↑inBar barI x ext)
 
 
 
+
+{--
+  NOTE:
+  This is the same as if-equalInType-EQ below, but where we've unfolded all abstractions to convince Agda
+  that the function terminates (and splitting (eqt,eqi) into 2 separate arguments.
+ --}
+{--
+if-equalInType-EQ-test : (u : ℕ) (w : 𝕎·) (T a b t₁ t₂ : CTerm)
+                         (eqt : isType u w (#EQ a b T))
+                         (eqi : equalTerms u w eqt t₁ t₂)
+                         → inbar w (λ w' e' → ⌜ t₁ ⌝ ⇛ AX at w' × ⌜ t₂ ⌝ ⇛ AX at w' × equalInType u w' T a b)
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTNAT x x₁) eqi = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTQNAT x x₁) eqi = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi = ⊥-elim (EQneqLT (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi = ⊥-elim (EQneqQLT (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTFREE x x₁) eqi = ⊥-elim (EQneqFREE (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (EQneqPI (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (EQneqSUM (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (EQneqSET (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2) eqi
+  rewrite #EQinj1 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj2 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj3 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)
+        | #EQinj1 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj2 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj3 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) =
+  Bar.∀𝕎-inBarFunc
+    barI
+    (λ w1 e1 (c₁ , c₂ , eqi1) → c₁ , c₂ , eqtA w1 e1 , eqi1)
+    eqi
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) eqi = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTSQUASH A1 A2 x x₁ eqtA exta) eqi = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
+--if-equalInType-EQ-test u w T a b t₁ t₂ (EQTDUM A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqDUM (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) eqi = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTUNIV i p c₁ c₂) eqi = ⊥-elim (EQneqUNIV (compAllVal c₁ tt)) --Bar.∀𝕎-inBarFunc barI z2 x
+{--  where
+    z2 : ∀𝕎 w (λ w' e' → (#EQ a b T #⇛ #UNIV u at w' × #EQ a b T #⇛ #UNIV u at w') → t₁ #⇛ #AX at w' × t₂ #⇛ #AX at w' × equalInType u w' T a b)
+    z2 w' e' (c₁ , c₂) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt))--}
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTLIFT A1 A2 c1 c2 eqtA exta) eqi = ⊥-elim (EQneqLIFT (compAllVal c2 tt))
+--if-equalInType-EQ-test u w T a b t₁ t₂ (EQTBAR x , eqi) =
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTBAR x) eqi w1 e1 =
+  fst h1 ,
+  ⊑-trans· (⊑-trans· xxe2 xxe3) (fst (snd h1)) ,
+  λ w3 e3 z → snd (snd h1) w3 e3 (⊑-trans· (fst (snd h1)) e3)
+  where
+    xxw2 : 𝕎·
+    xxw2 = fst (x w1 e1)
+
+    xxe2 : w1 ⊑· xxw2
+    xxe2 = fst (snd (x w1 e1))
+
+    xxw3 : 𝕎·
+    xxw3 = fst (eqi w1 e1 xxw2 (⊑-refl· _))
+
+    xxe3 : xxw2 ⊑· xxw3
+    xxe3 = fst (snd (eqi w1 e1 xxw2 (⊑-refl· _)))
+
+    h1 : ∃∀𝕎 xxw3 λ w2 e2 → (z : xxw3 ⊑· w2) → ⌜ t₁ ⌝ ⇛ AX at w2 × ⌜ t₂ ⌝ ⇛ AX at w2 × equalInType u w2 T a b
+    h1 = if-equalInType-EQ-test
+           u xxw3 T a b t₁ t₂
+           (snd (snd (x w1 e1)) xxw3 (⊑-trans· (⊑-refl· _) (⊑-trans· xxe3 (⊑-refl· xxw3))) (⊑-trans· e1 (⊑-trans· xxe2 xxe3)))
+           (snd (snd (eqi w1 e1 xxw2 (⊑-refl· _))) xxw3 (⊑-refl· xxw3) (⊑-trans· (⊑-refl· _) (⊑-trans· xxe3 (⊑-refl· xxw3))) (⊑-trans· e1 (⊑-trans· xxe2 xxe3)))
+           xxw3 (⊑-refl· xxw3)
+--}
+
+
+{--
+  NOTE:
+  if-equalInType-EQ-test above shows that we don't need 'TERMINATING' when we unfold all abstractions.
+  If we don't Agda can't figure out it's terminating.
+  Also, we need to split the pair (eqt,eqi) into 2 arguments, otherwise again Agda can't figure out that it's terminating.
+ --}
 if-equalInType-EQ : (u : ℕ) (w : 𝕎·) (T a b t₁ t₂ : CTerm)
                     → equalInType u w (#EQ a b T) t₁ t₂
                     → inbar w (λ w' e' → ⌜ t₁ ⌝ ⇛ AX at w' × ⌜ t₂ ⌝ ⇛ AX at w' × equalInType u w' T a b)
@@ -336,8 +404,7 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTUNIV i p c₁ c₂ , eqi) = ⊥-elim (
     z2 w' e' (c₁ , c₂) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt))--}
 if-equalInType-EQ u w T a b t₁ t₂ (EQTLIFT A1 A2 c1 c2 eqtA exta , eqi) = ⊥-elim (EQneqLIFT (compAllVal c2 tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
-  Bar.inBar-idem barI
-    (Bar.∀𝕎-inBar'-inBar barI x aw eqi)
+  Bar.inBar-idem barI (Bar.∀𝕎-inBar'-inBar barI x aw eqi)
   where
     aw : ∀𝕎 w
               (λ w' e' →
@@ -349,6 +416,7 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
       where
         ind : inbar w1 (λ w' e' → ⌜ t₁ ⌝ ⇛ AX at w' × ⌜ t₂ ⌝ ⇛ AX at w' × equalInType u w' T a b)
         ind = if-equalInType-EQ u w1 T a b t₁ t₂ (eqt1 , eqi1)
+
 
 
 {--

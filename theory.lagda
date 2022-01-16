@@ -271,8 +271,9 @@ FFDEFSeq x1 eqa w t1 t2 =
 
 
 {-# TERMINATING #-}
---{-# INLINE inOpenBar' #-}
+--{-# INLINE inbar' #-}
 --{-# INLINE inBethBar' #-}
+--{-# INLINE inOpenBar' #-}
 eqInType _ w (EQTNAT _ _) t1 t2 = inbar w (λ w' _ → #strongMonEq w' t1 t2)
 eqInType _ w (EQTQNAT _ _) t1 t2 = inbar w (λ w' _ → #weakMonEq w' t1 t2)
 eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 = inbar w (λ w' _ → #lift-<NUM-pair w' a1 b1)
@@ -299,13 +300,16 @@ eqInType u w (EQTLIFT A1 A2 c₁ c₂ eqtA exta) t1 t2 =
 --  inbar w (λ w' e → eqInType (↓U u) w' (eqtA w' e) T1 T2)
 eqInType u w (EQTBAR f) t1 t2 =
   inbar' w f (λ w' _ (x : eqTypes u w' _ _) → eqInType u w' x t1 t2)
-  {-- This is an unfolding of the above, as agda doesn't like the above --}
+  {-- This is an unfolding of the above, as agda doesn't like the above.
+      Why doesn't it work with the INLINE? --}
 {--  ∀𝕎 w (λ w0 e0 →
            let p  = f w0 e0 in
            let w1 = proj₁ p in
            let e1 = proj₁ (proj₂ p) in
            let q  = proj₂ (proj₂ p) in
-           exW w1 (λ w2 e2 → ∀𝕎 w2 (λ w3 e3 → (z : w3 ≽ w) → eqInType u w3 (q w3 (extTrans e3 e2) z) t1 t2)))--}
+           ∀∃∀𝕎 w1 (λ w2 e2 → (y : w1 ⊑· w2) (z : w ⊑· w2) → eqInType u w2 (q w2 y z) t1 t2))
+--           ∃𝕎 w1 (λ w2 e2 → ∀𝕎 w2 (λ w3 e3 → (z : w ⊑· w3) → eqInType u w3 (q w3 (⊑-trans· e2 e3) z) t1 t2)))
+--}
 \end{code}
 
 
