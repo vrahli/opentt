@@ -106,8 +106,8 @@ IS𝔹-ℕ w n m comp =
     bar : 𝕎· → Set₁
     bar w' = w ⊑· w' × Σ (List Term) (λ l → getCs n w' ≡ just (mkcs n l Resℕ) × m < length l)
 
-    bars : (c : pchain w) → BarsProp bar (pchain.c c)
-    bars (mkPChain c p) = mkBarsProp (chain.seq c (fst z)) b (fst z) (⊑-refl· _)
+    bars : (c : pchain w) → BarredChain bar (pchain.c c)
+    bars (mkPChain c p) = mkBarredChain (chain.seq c (fst z)) b (fst z) (⊑-refl· _)
       where
         z : Σ ℕ (λ k → Σ (List Term) (λ l → getCs n (chain.seq c k) ≡ just (mkcs n l Resℕ) × m < length l))
         z = progressing→ΣgetCs≤ {w} {c} n m comp p
@@ -308,19 +308,19 @@ followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
     pc : pchain w
     pc = 𝕎→pchain w
 
-    bp : BarsProp (𝔹.bar bar) (pchain.c pc)
+    bp : BarredChain (𝔹.bar bar) (pchain.c pc)
     bp = 𝔹.bars bar pc
 
     w' : 𝕎·
-    w' = BarsProp.w' bp
+    w' = BarredChain.w' bp
 
     e : w ⊑· w'
-    e = 𝔹.ext bar (BarsProp.b bp)
+    e = 𝔹.ext bar (BarredChain.b bp)
 
     iso : isOnlyChoice∈𝕎 (Res.def r) c w'
-    iso = ⊑-isOnlyChoice∈𝕎 {c} {w'} {chain.seq (pchain.c pc) (BarsProp.n bp)} {r}
-                            (BarsProp.ext bp)
-                            (→isOnlyChoice∈𝕎-𝕎→pchain {c} {w} {r} (BarsProp.n bp) comp oc)
+    iso = ⊑-isOnlyChoice∈𝕎 {c} {w'} {chain.seq (pchain.c pc) (BarredChain.n bp)} {r}
+                            (BarredChain.ext bp)
+                            (→isOnlyChoice∈𝕎-𝕎→pchain {c} {w} {r} (BarredChain.n bp) comp oc)
 
     comp' : compatible· c w' r
     comp' = ⊑-compatible· e comp
@@ -329,7 +329,7 @@ followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
     fb' = tt
 
     z : f w' e
-    z = i e (BarsProp.b bp) w' (⊑-refl· w') e
+    z = i e (BarredChain.b bp) w' (⊑-refl· w') e
 
 
 \end{code}

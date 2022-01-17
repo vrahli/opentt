@@ -38,6 +38,471 @@ open import freezeDef(W)(C)(G)(N)(F)
 open import progressDef(W)(C)(G)(N)(F)(P)
 
 
+
+
+{-----------------------------------------
+ --
+ -- Generic bar type
+ --
+ --}
+
+
+Br : Set(lsuc(L))
+Br = 𝕎· → Set(L)
+
+
+Bars : Set(lsuc(lsuc(L)))
+Bars = 𝕎· → Br → Set(lsuc(L))
+
+
+record 𝔹 (B : Bars) (w : 𝕎·) : Set(lsuc(L)) where
+  constructor mk𝔹
+  field
+    bar  : Br
+    bars : B w bar
+    ext  : {w' : 𝕎·} → bar w' → w ⊑· w'
+    mon  : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
+
+
+{-- Bars and dependent bars --}
+∈𝔹 : {B : Bars} {w : 𝕎·}  (b : 𝔹 B w) (f : wPred w) → Set(lsuc(L))
+∈𝔹 {B} {w} b f = {w' : 𝕎·} (e : w ⊑· w') → 𝔹.bar b w' → ∀𝕎 w' (↑wPred' f e)
+
+
+Σ∈𝔹 : {B : Bars} (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
+Σ∈𝔹 {B} w f = Σ (𝔹 B w) (λ b → ∈𝔹 b f)
+
+
+∈𝔹Dep : {B : Bars} {w : 𝕎·} (b : 𝔹 B w) {g : wPred w} (i : ∀𝕎 w g) (f : wPredDep g) → Set(lsuc(L))
+∈𝔹Dep {B} {w} b {g} i f =
+  {w' : 𝕎·} (e : w ⊑· w') → 𝔹.bar b w'
+  → ∀𝕎 w' (λ w'' e' → (x : w ⊑· w'') → f w'' x (i w'' x))
+
+
+Σ∈𝔹' : {B : Bars} (w : 𝕎·) {g : wPred w} (h : Σ∈𝔹 {B} w g) (f : wPredDep g) → Set(lsuc(L))
+Σ∈𝔹' {B} w {g} (b , i) f =
+  {w1 : 𝕎·} (e1 : w ⊑· w1) (ib : 𝔹.bar b w1)
+  → Σ (𝔹 B w1) (λ b' → ∈𝔹Dep b' (i e1 ib) (↑wPredDep'' f e1))
+
+
+{-- Monotonicity --}
+bar⊑ : 𝕎· → Br → Br
+bar⊑ w' bar w0 = Σ 𝕎· (λ w1 → bar w1 × w1 ⊑· w0 × w' ⊑· w0)
+
+
+Bars⊑ : (B : Bars) → Set(lsuc(L))
+Bars⊑ B =
+  {w1 w2 : 𝕎·} (e : w1 ⊑· w2) (bar : Br)
+  → B w1 bar
+  → B w2 (bar⊑ w2 bar)
+
+
+𝔹⊑ : {B : Bars} (mon : Bars⊑ B) {w w' : 𝕎·} (e : w ⊑· w') → 𝔹 B w → 𝔹 B w'
+𝔹⊑ {B} MB {w} {w'} e (mk𝔹 bar bars ext mon) = mk𝔹 bar' bars' ext' mon'
+  where
+    bar' : Br
+    bar' = bar⊑ w' bar
+
+    bars' : B w' bar'
+    bars' = MB e bar bars
+
+    ext' : {w'' : 𝕎·} → bar' w'' → w' ⊑· w''
+    ext' {w''} (w1 , b , e₁ , e₂) = e₂
+
+    mon' : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar' w1 → bar' w2
+    mon' {w1} {w2} e (w0 , b0 , e₁ , e₂) = w0 , b0 , ⊑-trans· e₁ e , ⊑-trans· e₂ e
+
+
+{-- Intersection --}
+bar∩ : 𝕎· → Br → Br → Br
+bar∩ w b1 b2 w0 = Σ 𝕎· (λ w1 → Σ 𝕎· (λ w2 → b1 w1 × b2 w2 × w1 ⊑· w0 × w2 ⊑· w0))
+
+
+Bars∩ : (B : Bars) → Set(lsuc(L))
+Bars∩ B =
+  {w : 𝕎·} (b1 b2 : Br)
+  → B w b1
+  → B w b2
+  → B w (bar∩ w b1 b2)
+
+
+∩𝔹 : {B : Bars} (isect : Bars∩ B) {w : 𝕎·} → 𝔹 B w → 𝔹 B w → 𝔹 B w
+∩𝔹 {B} isect {w} (mk𝔹 b1 bars1 ext1 mon1) (mk𝔹 b2 bars2 ext2 mon2) =
+  mk𝔹 bar bars ext mon
+  where
+    bar : Br
+    bar = bar∩ w b1 b2
+
+    bars : B w bar
+    bars = isect b1 b2 bars1 bars2
+
+    ext : {w' : 𝕎·} → bar w' → w ⊑· w'
+    ext {w'} (w1 , w2 , b₁ , b₂ , e₁ , e₂) = ⊑-trans· (𝔹.ext {B} {w} (mk𝔹 b1 bars1 ext1 mon1) {w1} b₁) e₁
+
+    mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
+    mon {w1} {w2} e (wa , wb , ba , bb , ea , eb) = wa , wb , ba , bb , ⊑-trans· ea e , ⊑-trans· eb e
+
+
+
+{-- Triviality? --}
+bar∀ : 𝕎· → Br
+bar∀ w w' = w ⊑· w'
+
+
+Bars∀ : (B : Bars) → Set(lsuc(L))
+Bars∀ B = (w : 𝕎·) → B w (bar∀ w)
+
+
+𝔹∀ : {B : Bars} (all : Bars∀ B) (w : 𝕎·) → 𝔹 B w
+𝔹∀ {B} all w =
+  mk𝔹 bar bars ext mon
+  where
+    bar : Br
+    bar = bar∀ w
+
+    bars : B w bar
+    bars = all w
+
+    ext : {w' : 𝕎·} → bar w' → w ⊑· w'
+    ext {w'} b = b
+
+    mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
+    mon {w1} {w2} e b = ⊑-trans· b e
+
+
+{-- Families(1) --}
+record 𝔹Fam {B : Bars} {w : 𝕎·} (b : 𝔹 B w) : Set(L) where
+  constructor mk𝔹Fam
+  field
+    w1 : 𝕎·
+    e1 : w ⊑· w1
+    br : 𝔹.bar b w1
+    w2 : 𝕎·
+    e2 : w1 ⊑· w2
+    z  : w ⊑· w2
+
+
+barFam : {B : Bars} {w : 𝕎·} (b : 𝔹 B w)
+         (G : {w0 : 𝕎·} (e0 : w ⊑· w0) {w1 : 𝕎·} (e1 : w0 ⊑· w1) (z : w ⊑· w1) → 𝔹 B w1 → Set(lsuc(L)))
+         (i : {w0 : 𝕎·} (e0 : w ⊑· w0) (ib0 : 𝔹.bar b w0) (w1 : 𝕎·) (e1 : w0 ⊑· w1) (z : w ⊑· w1)
+               → Σ (𝔹 B w1) (λ b' → G e0 e1 z b'))
+         → Br
+barFam {B} {w} b G i w' = Σ (𝔹Fam b) (λ F → 𝔹.bar (fst (i (𝔹Fam.e1 F) (𝔹Fam.br F) (𝔹Fam.w2 F) (𝔹Fam.e2 F) (𝔹Fam.z F))) w')
+
+
+BarsFam1 : (B : Bars) → Set(lsuc(lsuc(L)))
+BarsFam1 B =
+  {w : 𝕎·} (b : 𝔹 B w)
+  (G : {w0 : 𝕎·} (e0 : w ⊑· w0) {w1 : 𝕎·} (e1 : w0 ⊑· w1) (z : w ⊑· w1) → 𝔹 B w1 → Set(lsuc(L)))
+  (i : {w0 : 𝕎·} (e0 : w ⊑· w0) (ib0 : 𝔹.bar b w0) (w1 : 𝕎·) (e1 : w0 ⊑· w1) (z : w ⊑· w1)
+       → Σ (𝔹 B w1) (λ b' → G e0 e1 z b'))
+  → B w (barFam b G i)
+
+
+𝔹fam : {B : Bars} (fam : BarsFam1 B) {w : 𝕎·} (b : 𝔹 B w)
+        (G : {w0 : 𝕎·} (e0 : w ⊑· w0) {w1 : 𝕎·} (e1 : w0 ⊑· w1) (z : w ⊑· w1) → 𝔹 B w1 → Set(lsuc(L)))
+        (i : {w0 : 𝕎·} (e0 : w ⊑· w0) (ib0 : 𝔹.bar b w0) (w1 : 𝕎·) (e1 : w0 ⊑· w1) (z : w ⊑· w1)
+              → Σ (𝔹 B w1) (λ b' → G e0 e1 z b'))
+         → 𝔹 B w
+𝔹fam {B} fam {w} b G i = mk𝔹 bar bars ext mon
+  where
+    bar : Br
+    bar = barFam b G i
+
+    bars : B w bar
+    bars = fam b G i
+
+    ext  : {w' : 𝕎·} → bar w' → w ⊑· w'
+    ext {w'} (F , b') = ⊑-trans· (𝔹Fam.z F) (𝔹.ext (fst (i (𝔹Fam.e1 F) (𝔹Fam.br F) (𝔹Fam.w2 F) (𝔹Fam.e2 F) (𝔹Fam.z F))) b')
+
+    mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
+    mon {w1} {w2} e (F , b) = F , 𝔹.mon (fst (i (𝔹Fam.e1 F) (𝔹Fam.br F) (𝔹Fam.w2 F) (𝔹Fam.e2 F) (𝔹Fam.z F))) e b
+
+
+{-- Families(2) --}
+record 𝔹In {B : Bars} {w : 𝕎·} (b : 𝔹 B w) : Set(L) where
+  constructor mk𝔹In
+  field
+    w1 : 𝕎·
+    e1 : w ⊑· w1
+    br : 𝔹.bar b w1
+
+
+barFam2 : {B : Bars} {w : 𝕎·} (b : 𝔹 B w)
+          (G : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → 𝔹 B w' → Set(lsuc(L)))
+          (i : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → Σ (𝔹 B w') (λ b' → G e ib b'))
+          → Br
+barFam2 {B} {w} b G i w' = Σ (𝔹In b) (λ F → 𝔹.bar (fst (i (𝔹In.e1 F) (𝔹In.br F))) w')
+
+
+BarsFam2 : (B : Bars) → Set(lsuc(lsuc(L)))
+BarsFam2 B =
+  {w : 𝕎·} (b : 𝔹 B w)
+  (G : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → 𝔹 B w' → Set(lsuc(L)))
+  (i : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → Σ (𝔹 B w') (λ b' → G e ib b'))
+  → B w (barFam2 b G i)
+
+
+𝔹fam2 : {B : Bars} (fam : BarsFam2 B) {w : 𝕎·} (b : 𝔹 B w)
+         (G : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → 𝔹 B w' → Set(lsuc(L)))
+         (i : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → Σ (𝔹 B w') (λ b' → G e ib b'))
+         → 𝔹 B w
+𝔹fam2 {B} fam {w} b G i = mk𝔹 bar bars ext mon
+  where
+    bar : Br
+    bar = barFam2 b G i
+
+    bars : B w bar
+    bars = fam b G i
+
+    ext  : {w' : 𝕎·} → bar w' → w ⊑· w'
+    ext {w'} (F , b') = ⊑-trans· (𝔹In.e1 F) (𝔹.ext (fst (i (𝔹In.e1 F) (𝔹In.br F))) b')
+
+    mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
+    mon {w1} {w2} e (F , b) = F , 𝔹.mon (fst (i (𝔹In.e1 F) (𝔹In.br F))) e b
+
+
+
+{-- Inhabitation --}
+Bars∃ : (B : Bars) → Set(lsuc(L))
+Bars∃ B =
+  {w : 𝕎·} {bar : Br} (bars : B w bar) (ext : {w' : 𝕎·} → bar w' → w ⊑· w')
+  → Σ 𝕎· λ w' → Σ (w ⊑· w') λ e → bar w'
+
+
+
+---- Consequences of the above
+
+↑Σ∈𝔹 : {B : Bars} (mon : Bars⊑ B) {w : 𝕎·} {f : wPred w} (i : Σ∈𝔹 {B} w f) {w' : 𝕎·} (e : w ⊑· w') → Σ∈𝔹 {B} w' (↑wPred f e)
+↑Σ∈𝔹 {B} mon {w} {f} (b , i) {w'} e = 𝔹⊑ mon e b , j
+  where
+    j : ∈𝔹 (𝔹⊑ mon e b) (↑wPred f e)
+    j {w1} e1 (w0 , b0 , e₁ , e₂) w2 e2 z = i (𝔹.ext b {w0} b0) b0 w2 (⊑-trans· e₁ e2) (⊑-trans· e z)
+
+
+↑'Σ∈𝔹 : {B : Bars} (mon : Bars⊑ B) {w : 𝕎·} {f : wPred w} (i : Σ∈𝔹 {B} w f) {w' : 𝕎·} (e : w ⊑· w') → Σ∈𝔹 {B} w' (↑wPred' f e)
+↑'Σ∈𝔹 {B} mon {w} {f} (b , i) {w'} e = 𝔹⊑ mon e b , j
+  where
+    j : ∈𝔹 (𝔹⊑ mon e b) (↑wPred' f e)
+    j {w1} e1 (w0 , b0 , e₁ , e₂) w2 e2 z x = i (𝔹.ext b {w0} b0) b0 w2 (⊑-trans· e₁ e2) x
+
+
+
+
+↑Σ∈𝔹' : {B : Bars}  (mon : Bars⊑ B) {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : Σ∈𝔹 {B} w f) {w' : 𝕎·} (e : w ⊑· w')
+         → Σ∈𝔹' {B} w i g → Σ∈𝔹' {B} w' (↑Σ∈𝔹 mon i e) (↑wPredDep g e)
+↑Σ∈𝔹' {B} mon {w} {f} {g} i {w'} e j {w1} e1 (w2 , b , ea , eb) =
+  𝔹⊑ mon ea (fst (j (𝔹.ext (fst i) b) b)) , k
+  where
+    k : ∈𝔹Dep {B} (𝔹⊑ mon ea (fst (j (𝔹.ext (proj₁ i) b) b)))
+                  (snd (↑Σ∈𝔹 mon i e) e1 (w2 , b , ea , eb))
+                  (↑wPredDep'' (↑wPredDep g e) e1)
+    k {w3} e3 (w3' , b1 , ec , ed) w4 e4 x y =
+      snd (j (𝔹.ext (proj₁ i) b) b)
+          (𝔹.ext (fst (j (𝔹.ext (proj₁ i) b) b)) b1)
+          b1 w4
+          (⊑-trans· ec e4) (⊑-trans· ea x) (⊑-trans· e y)
+
+
+Σ∈𝔹Func : {B : Bars} (isect : Bars∩ B) {w : 𝕎·} {f g : wPred w}
+          → Σ∈𝔹 {B} w (λ w' e' → f w' e' → g w' e')
+          → Σ∈𝔹 {B} w f → Σ∈𝔹 {B} w g
+Σ∈𝔹Func {B} isect {w} {f} {g} (b1 , i1) (b2 , i2) =
+  ∩𝔹 isect b1 b2 , i
+  where
+    i : ∈𝔹 (∩𝔹 isect b1 b2) g
+    i e (w₁ , w₂ , b₁ , b₂ , e₁ , e₂) w' e' z =
+      i1 (𝔹.ext b1 b₁) b₁ w' (⊑-trans· e₁ e') z
+         (i2 (𝔹.ext b2 b₂) b₂ w' (⊑-trans· e₂ e') z)
+
+
+∀𝕎-Σ∈𝔹Func : {B : Bars} {w : 𝕎·} {f g : wPred w}
+              → ∀𝕎 w (λ w' e' → f w' e' → g w' e')
+              → Σ∈𝔹 {B} w f → Σ∈𝔹 {B} w g
+∀𝕎-Σ∈𝔹Func {B} {w} {f} {g} aw (b , i) = b , j
+  where
+    j : ∈𝔹 b g
+    j e b' w' e' z = aw w' z (i (𝔹.ext b b') b' w' e' z)
+
+
+∀𝕎-Σ∈𝔹 : {B : Bars} (all : Bars∀ B) {w : 𝕎·} {f : wPred w} → ∀𝕎 w f → Σ∈𝔹 {B} w f
+∀𝕎-Σ∈𝔹 {B} all {w} {f} h = 𝔹∀ all w , i
+  where
+    i : ∈𝔹 {B} (𝔹∀ all w) f
+    i {w'} e b w1 e1 z = h w1 z
+
+
+Σ∈𝔹-Σ∈𝔹' : {B : Bars} (mon : Bars⊑ B) {w : 𝕎·} {f : wPred w} {g : wPredDep f}
+             → Σ∈𝔹 {B} w (λ w' e' → (x : f w' e') → g w' e' x)
+             → (i : Σ∈𝔹 {B} w f) → Σ∈𝔹' {B} w i g
+Σ∈𝔹-Σ∈𝔹' {B} mon {w} {f} {g} (b1 , i1) (b2 , i2) {w'} e ib =
+  𝔹⊑ mon e b1 , j
+  where
+    j : ∈𝔹Dep (𝔹⊑ mon e b1) (i2 e ib) (↑wPredDep'' g e)
+    j {w0} e0 (w0' , b0 , e0' , e0'') w1 e1 x x' = i1 (𝔹.ext b1 b0) b0 w1 (⊑-trans· e0' e1) x' (i2 e ib w1 x x')
+
+
+∀𝕎-Σ∈𝔹-Σ∈𝔹' : {B : Bars} (all : Bars∀ B) {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : Σ∈𝔹 {B} w f)
+                → ∀𝕎 w (λ w' e' → (x : f w' e') {--(at : atBethBar i w' e' x)--} → g w' e' x)
+                → Σ∈𝔹' {B} w i g
+∀𝕎-Σ∈𝔹-Σ∈𝔹' {B} all {w} {f} {g} (b , i) aw {w'} e ib =
+  𝔹∀ all w' , j
+  where
+    j : ∈𝔹Dep {B} (𝔹∀ all w') (i e ib) (↑wPredDep'' g e)
+    j {w0} e0 ib' w1 e1 x y = aw w1 y (i e ib w1 x y)
+
+
+
+Σ∈𝔹'-comb : {B : Bars} (isect : Bars∩ B) {w : 𝕎·} {f : wPred w} {g h k : wPredDep f} (i : Σ∈𝔹 {B} w f)
+             → ∀𝕎 w (λ w' e' → (z zg zh : f w' e')
+                              → g w' e' zg → h w' e' zh → k w' e' z)
+             → Σ∈𝔹' {B} w i g → Σ∈𝔹' {B} w i h → Σ∈𝔹' {B} w i k
+Σ∈𝔹'-comb {B} isect {w} {f} {g} {h} {k} (b , i) aw j₁ j₂ {w'} e ib =
+  ∩𝔹 isect b1 b2 , j
+  where
+    b1 : 𝔹 B w'
+    b1 = fst (j₁ e ib)
+
+    i1 : ∈𝔹Dep {B} b1 (i e ib) (↑wPredDep'' g e)
+    i1 = snd (j₁ e ib)
+
+    b2 : 𝔹 B w'
+    b2 = fst (j₂ e ib)
+
+    i2 : ∈𝔹Dep {B} b2 (i e ib) (↑wPredDep'' h e)
+    i2 = snd (j₂ e ib)
+
+    j : ∈𝔹Dep {B} (∩𝔹 isect b1 b2) (i e ib) (↑wPredDep'' k e)
+    j {w0} e0 (wa , wb , ba , bb , ea , eb) w1 e1 x y =
+      aw w1 y (i e ib w1 x y) (i e ib w1 x y) (i e ib w1 x y)
+         (i1 (𝔹.ext b1 ba) ba w1 (⊑-trans· ea e1) x y)
+         (i2 (𝔹.ext b2 bb) bb w1 (⊑-trans· eb e1) x y)
+
+
+
+Σ∈𝔹-idem : {B : Bars} (fam : BarsFam1 B) {w : 𝕎·} {f : wPred w}
+            → Σ∈𝔹 {B} w (λ w' e' → Σ∈𝔹 {B} w' (↑wPred' f e'))
+            → Σ∈𝔹 {B} w f
+Σ∈𝔹-idem {B} fam {w} {f} (b , i) =
+  𝔹fam fam {w} b (λ w1 e1 z b' → ∈𝔹 {B} b' (↑wPred' f z)) i , j
+  where
+    j : ∈𝔹 {B} (𝔹fam fam {w} b (λ w1 e1 z b' → ∈𝔹 {B} b' (↑wPred' f z)) i) f
+    j {w'} e (mk𝔹Fam w2 e2 br₁ w3 e3 z₁ , br) w1 e1 z =
+      snd (i e2 br₁ w3 e3 z₁)
+          (𝔹.ext (proj₁ (i e2 br₁ w3 e3 z₁)) br)
+          br w1 e1 (⊑-trans· (𝔹.ext (proj₁ (i e2 br₁ w3 e3 z₁)) br) e1) z
+
+
+
+Σ∈𝔹'-idem : {B : Bars} (mon : Bars⊑ B) (fam : BarsFam1 B)
+             {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : Σ∈𝔹 {B} w f)
+             → Σ∈𝔹 {B} w (λ w' e' → Σ∈𝔹' {B} w' (↑'Σ∈𝔹 mon i e') (↑wPredDep' g e'))
+             → Σ∈𝔹' {B} w i g
+Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
+  𝔹fam fam {w'} (𝔹⊑ mon e b₂) (λ {w0} e0 {w1} e1 z b' → ∈𝔹Dep {B} b'
+                                                                  (λ w2 e2 z' y' → i e ib _ (⊑-trans· z e2) y')
+                                                                  (↑wPredDep'' (↑wPredDep' g (⊑-trans· e e0)) e1)) j' ,
+  jd
+  where
+    j' : {w0 : 𝕎·} (e0 : w' ⊑· w0) (ib0 : 𝔹.bar (𝔹⊑ mon e b₂) w0) (w1 : 𝕎·) (e1 : w0 ⊑· w1) (z : w' ⊑· w1)
+         → Σ (𝔹 B w1) (λ b' → ∈𝔹Dep {B} b' (λ w2 e2 z' y' → i e ib _ (⊑-trans· z e2) y') (↑wPredDep'' (↑wPredDep' g (⊑-trans· e e0)) e1))
+    j' {w0} e0 (wa , ba , ea₁ , ea₂) w1 e1 z =
+      j (𝔹.ext b₂ ba) ba w0 ea₁ (⊑-trans· e e0) e1 (w' , ib , ⊑-trans· e0 e1 , e1)
+
+    jd : ∈𝔹Dep {B} (𝔹fam fam (𝔹⊑ mon e b₂) (λ {w0} e0 {w1} e1 z b' → ∈𝔹Dep {B} b' (λ w2 e2 z' y' → i e ib _ (⊑-trans· z e2) y') (↑wPredDep'' (↑wPredDep' g (⊑-trans· e e0)) e1)) j')
+                    (i e ib)
+                    (↑wPredDep'' g e)
+    jd {w0} e0 (mk𝔹Fam w2 e2 br w3 e3 z , b0) w1 e1 x y =
+      snd (j' e2 br w3 e3 z)
+          (𝔹.ext (proj₁ (j' e2 br w3 e3 z)) b0)
+          b0 w1 e1
+          (⊑-trans· (𝔹.ext (proj₁ (j' e2 br w3 e3 z)) b0) e1)
+          (⊑-trans· e3 (⊑-trans· (𝔹.ext (proj₁ (j' e2 br w3 e3 z)) b0) e1))
+          y
+          (i e ib w1 x y)
+
+
+bar-𝔹⊑→ : {B : Bars} (mon : Bars⊑ B) {w w' : 𝕎·} (e : w ⊑· w') {b : 𝔹 B w} {w0 : 𝕎·}
+            → 𝔹.bar (𝔹⊑ mon e b) w0
+            → 𝔹.bar b w0
+bar-𝔹⊑→ {B} mon {w} {w'} e {b} {w0} h = 𝔹.mon b (fst (snd (snd h))) (fst (snd h))
+
+
+
+∀𝕎-Σ∈𝔹'-Σ∈𝔹 : {B : Bars} (fam : BarsFam2 B)
+                 {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w} (i : Σ∈𝔹 {B} w f)
+                 → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → h w' e')
+                 → Σ∈𝔹' {B} w i g → Σ∈𝔹 {B} w h
+∀𝕎-Σ∈𝔹'-Σ∈𝔹 {B} fam {w} {f} {g} {h} (b , i) aw j =
+  𝔹fam2 fam {w} b (λ {w'} e ib b' → ∈𝔹Dep {B} b' (i e ib) (↑wPredDep'' g e)) j , i'
+  where
+    i' : ∈𝔹 {B} (𝔹fam2 fam {w} b (λ {w'} e ib b' → ∈𝔹Dep {B} b' (i e ib) (↑wPredDep'' g e)) j) h
+    i' {w'} e (mk𝔹In w2 e2 br , F) w1 e1 z =
+      aw w1 z
+         (i e2 br w1 (⊑-trans· (𝔹.ext (proj₁ (j e2 br)) F) e1) z)
+         (snd (j e2 br)
+              (𝔹.ext (proj₁ (j e2 br)) F)
+              F w1 e1
+              (⊑-trans· (𝔹.ext (proj₁ (j e2 br)) F) e1)
+              z)
+
+
+
+Σ∈𝔹'-change : {B : Bars} (mon : Bars⊑ B) (fam : BarsFam2 B)
+               {w : 𝕎·} {f k : wPred w} {g : wPredDep f} {h : wPredDep k}
+               (i : Σ∈𝔹 {B} w f) (j : Σ∈𝔹 {B} w k)
+               → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e')
+                                → g w' e' x → h w' e' y)
+               → Σ∈𝔹' {B} w i g → Σ∈𝔹' {B} w j h
+Σ∈𝔹'-change {B} mon fam {w} {f} {k} {g} {h} (b₁ , i) (b₂ , j) aw z {w'} e ib =
+  𝔹fam2 fam (𝔹⊑ mon e b₁)
+             (λ {w0} e0 ib0 b' → ∈𝔹Dep {B} b' (i (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₁} ib0))
+                                               (↑wPredDep'' g (⊑-trans· e e0)))
+             z' {--z'--} ,
+  jd
+  where
+    z' : {w0 : 𝕎·} (e0 : w' ⊑· w0) (ib0 : 𝔹.bar (𝔹⊑ mon e b₁) w0)
+          → Σ (𝔹 B w0) (λ b' → ∈𝔹Dep {B} b' (i (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₁} ib0)) (↑wPredDep'' g (⊑-trans· e e0)))
+    z' {w0} e0 (wa , ba , ea₁ , ea₂) = z (⊑-trans· e e0) (𝔹.mon b₁ ea₁ ba)
+
+    jd : ∈𝔹Dep {B} (𝔹fam2 fam (𝔹⊑ mon e b₁) (λ {w0} e0 ib0 b' → ∈𝔹Dep {B} b' (i (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₁} ib0)) (↑wPredDep'' g (⊑-trans· e e0))) z')
+                    (j e ib)
+                    (↑wPredDep'' h e)
+    jd {w0} e0 (mk𝔹In w2 e2 (w3 , br , e3 , e4) , b0) w1 e1 x y =
+      aw w1 y
+         (i (⊑-trans· e e2) (𝔹.mon b₁ e3 br) w1 (⊑-trans· (𝔹.ext (fst (z' e2 (w3 , br , e3 , e4))) b0) e1) y)
+         (j e ib w1 x y)
+         (snd (z' e2 (w3 , br , e3 , e4))
+              (𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0)
+              b0 w1 e1
+              (⊑-trans· (𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0) e1)
+              y)
+
+
+Σ∈𝔹-const : {B : Bars} (ex : Bars∃ B) {w : 𝕎·} {t : Set(lsuc(L))} → Σ∈𝔹 {B} w (λ w e → t) → t
+Σ∈𝔹-const {B} ex {w} {t} (b , i) =
+  i (fst (snd (ex (𝔹.bars b) (𝔹.ext b))))
+    (snd (snd (ex (𝔹.bars b) (𝔹.ext b))))
+    (fst (ex (𝔹.bars b) (𝔹.ext b)))
+    (⊑-refl· _)
+    (fst (snd (ex (𝔹.bars b) (𝔹.ext b))))
+
+
+-- Those are all the properties we need about Bars to derive the above properties,
+-- which in turn are the properties of Bar below
+record BarsProps : Set(lsuc(lsuc(L))) where
+  constructor mkBarsProps
+  field
+    bars  : Bars
+    mon   : Bars⊑ bars
+    isect : Bars∩ bars
+    all   : Bars∀ bars
+    fam1  : BarsFam1 bars
+    fam2  : BarsFam2 bars
+    ex    : Bars∃ bars
+
+
+
 record Bar : Set(lsuc(lsuc(L))) where
   constructor mkBar
   field
@@ -160,436 +625,25 @@ inBar'3 b {w} {f} {g} {h} {k} {j} i imp ig ih ik = c
 
 
 
-{-----------------------------------------
- --
- -- Generic bar type
- --
- --}
-
-
-Br : Set(lsuc(L))
-Br = 𝕎· → Set(L)
-
-
-Bars : Set(lsuc(lsuc(L)))
-Bars = 𝕎· → Br → Set(lsuc(L))
-
-
-record 𝔹 (B : Bars) (w : 𝕎·) : Set(lsuc(L)) where
-  constructor mk𝔹
-  field
-    bar  : Br
-    bars : B w bar
-    ext  : {w' : 𝕎·} → bar w' → w ⊑· w'
-    mon  : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
-
-
-∈𝔹 : {B : Bars} {w : 𝕎·}  (b : 𝔹 B w) (f : wPred w) → Set(lsuc(L))
-∈𝔹 {B} {w} b f = {w' : 𝕎·} (e : w ⊑· w') → 𝔹.bar b w' → ∀𝕎 w' (↑wPred' f e)
-
-
-Σ∈𝔹 : {B : Bars} (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
-Σ∈𝔹 {B} w f = Σ (𝔹 B w) (λ b → ∈𝔹 b f)
-
-
-∈𝔹Dep : {B : Bars} {w : 𝕎·} (b : 𝔹 B w) {g : wPred w} (i : ∀𝕎 w g) (f : wPredDep g) → Set(lsuc(L))
-∈𝔹Dep {B} {w} b {g} i f =
-  {w' : 𝕎·} (e : w ⊑· w') → 𝔹.bar b w'
-  → ∀𝕎 w' (λ w'' e' → (x : w ⊑· w'') → f w'' x (i w'' x))
-
-
-Σ∈𝔹' : {B : Bars} (w : 𝕎·) {g : wPred w} (h : Σ∈𝔹 {B} w g) (f : wPredDep g) → Set(lsuc(L))
-Σ∈𝔹' {B} w {g} (b , i) f =
-  {w1 : 𝕎·} (e1 : w ⊑· w1) (ib : 𝔹.bar b w1)
-  → Σ (𝔹 B w1) (λ b' → ∈𝔹Dep b' (i e1 ib) (↑wPredDep'' f e1))
-
-
-bar⊑ : 𝕎· → Br → Br
-bar⊑ w' bar w0 = Σ 𝕎· (λ w1 → bar w1 × w1 ⊑· w0 × w' ⊑· w0)
-
-
--- TODO: add to a record
-Bars⊑ : (B : Bars) → Set(lsuc(L))
-Bars⊑ B =
-  {w1 w2 : 𝕎·} (e : w1 ⊑· w2) (bar : Br)
-  → B w1 bar
-  → B w2 (bar⊑ w2 bar)
-
-
-𝔹⊑ : {B : Bars} (mon : Bars⊑ B) {w w' : 𝕎·} (e : w ⊑· w') → 𝔹 B w → 𝔹 B w'
-𝔹⊑ {B} MB {w} {w'} e (mk𝔹 bar bars ext mon) = mk𝔹 bar' bars' ext' mon'
-  where
-    bar' : Br
-    bar' = bar⊑ w' bar
-
-    bars' : B w' bar'
-    bars' = MB e bar bars
-
-    ext' : {w'' : 𝕎·} → bar' w'' → w' ⊑· w''
-    ext' {w''} (w1 , b , e₁ , e₂) = e₂
-
-    mon' : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar' w1 → bar' w2
-    mon' {w1} {w2} e (w0 , b0 , e₁ , e₂) = w0 , b0 , ⊑-trans· e₁ e , ⊑-trans· e₂ e
-
-
-bar∩ : 𝕎· → Br → Br → Br
-bar∩ w b1 b2 w0 = Σ 𝕎· (λ w1 → Σ 𝕎· (λ w2 → b1 w1 × b2 w2 × w1 ⊑· w0 × w2 ⊑· w0))
-
-
--- TODO: add to a record
-Bars∩ : (B : Bars) → Set(lsuc(L))
-Bars∩ B =
-  {w : 𝕎·} (b1 b2 : Br)
-  → B w b1
-  → B w b2
-  → B w (bar∩ w b1 b2)
-
-
-∩𝔹 : {B : Bars} (isect : Bars∩ B) {w : 𝕎·} → 𝔹 B w → 𝔹 B w → 𝔹 B w
-∩𝔹 {B} isect {w} (mk𝔹 b1 bars1 ext1 mon1) (mk𝔹 b2 bars2 ext2 mon2) =
-  mk𝔹 bar bars ext mon
-  where
-    bar : Br
-    bar = bar∩ w b1 b2
-
-    bars : B w bar
-    bars = isect b1 b2 bars1 bars2
-
-    ext : {w' : 𝕎·} → bar w' → w ⊑· w'
-    ext {w'} (w1 , w2 , b₁ , b₂ , e₁ , e₂) = ⊑-trans· (𝔹.ext {B} {w} (mk𝔹 b1 bars1 ext1 mon1) {w1} b₁) e₁
-
-    mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
-    mon {w1} {w2} e (wa , wb , ba , bb , ea , eb) = wa , wb , ba , bb , ⊑-trans· ea e , ⊑-trans· eb e
-
-
-
-bar∀ : 𝕎· → Br
-bar∀ w w' = w ⊑· w'
-
-
--- TODO: add to a record
-Bars∀ : (B : Bars) → Set(lsuc(L))
-Bars∀ B = (w : 𝕎·) → B w (bar∀ w)
-
-
-𝔹∀ : {B : Bars} (all : Bars∀ B) (w : 𝕎·) → 𝔹 B w
-𝔹∀ {B} all w =
-  mk𝔹 bar bars ext mon
-  where
-    bar : Br
-    bar = bar∀ w
-
-    bars : B w bar
-    bars = all w
-
-    ext : {w' : 𝕎·} → bar w' → w ⊑· w'
-    ext {w'} b = b
-
-    mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
-    mon {w1} {w2} e b = ⊑-trans· b e
-
-
-record 𝔹Fam {B : Bars} {w : 𝕎·} (b : 𝔹 B w) : Set(L) where
-  constructor mk𝔹Fam
-  field
-    w1 : 𝕎·
-    e1 : w ⊑· w1
-    br : 𝔹.bar b w1
-    w2 : 𝕎·
-    e2 : w1 ⊑· w2
-    z  : w ⊑· w2
-
-
-barFam : {B : Bars} {w : 𝕎·} (b : 𝔹 B w)
-         (G : {w0 : 𝕎·} (e0 : w ⊑· w0) {w1 : 𝕎·} (e1 : w0 ⊑· w1) (z : w ⊑· w1) → 𝔹 B w1 → Set(lsuc(L)))
-         (i : {w0 : 𝕎·} (e0 : w ⊑· w0) (ib0 : 𝔹.bar b w0) (w1 : 𝕎·) (e1 : w0 ⊑· w1) (z : w ⊑· w1)
-               → Σ (𝔹 B w1) (λ b' → G e0 e1 z b'))
-         → Br
-barFam {B} {w} b G i w' = Σ (𝔹Fam b) (λ F → 𝔹.bar (fst (i (𝔹Fam.e1 F) (𝔹Fam.br F) (𝔹Fam.w2 F) (𝔹Fam.e2 F) (𝔹Fam.z F))) w')
-
-
--- TODO: add to a record
-BarsFam : (B : Bars) → Set(lsuc(lsuc(L)))
-BarsFam B =
-  {w : 𝕎·} (b : 𝔹 B w)
-  (G : {w0 : 𝕎·} (e0 : w ⊑· w0) {w1 : 𝕎·} (e1 : w0 ⊑· w1) (z : w ⊑· w1) → 𝔹 B w1 → Set(lsuc(L)))
-  (i : {w0 : 𝕎·} (e0 : w ⊑· w0) (ib0 : 𝔹.bar b w0) (w1 : 𝕎·) (e1 : w0 ⊑· w1) (z : w ⊑· w1)
-       → Σ (𝔹 B w1) (λ b' → G e0 e1 z b'))
-  → B w (barFam b G i)
-
-
-𝔹fam : {B : Bars} (fam : BarsFam B) {w : 𝕎·} (b : 𝔹 B w)
-        (G : {w0 : 𝕎·} (e0 : w ⊑· w0) {w1 : 𝕎·} (e1 : w0 ⊑· w1) (z : w ⊑· w1) → 𝔹 B w1 → Set(lsuc(L)))
-        (i : {w0 : 𝕎·} (e0 : w ⊑· w0) (ib0 : 𝔹.bar b w0) (w1 : 𝕎·) (e1 : w0 ⊑· w1) (z : w ⊑· w1)
-              → Σ (𝔹 B w1) (λ b' → G e0 e1 z b'))
-         → 𝔹 B w
-𝔹fam {B} fam {w} b G i = mk𝔹 bar bars ext mon
-  where
-    bar : Br
-    bar = barFam b G i
-
-    bars : B w bar
-    bars = fam b G i
-
-    ext  : {w' : 𝕎·} → bar w' → w ⊑· w'
-    ext {w'} (F , b') = ⊑-trans· (𝔹Fam.z F) (𝔹.ext (fst (i (𝔹Fam.e1 F) (𝔹Fam.br F) (𝔹Fam.w2 F) (𝔹Fam.e2 F) (𝔹Fam.z F))) b')
-
-    mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
-    mon {w1} {w2} e (F , b) = F , 𝔹.mon (fst (i (𝔹Fam.e1 F) (𝔹Fam.br F) (𝔹Fam.w2 F) (𝔹Fam.e2 F) (𝔹Fam.z F))) e b
-
-
-record 𝔹In {B : Bars} {w : 𝕎·} (b : 𝔹 B w) : Set(L) where
-  constructor mk𝔹In
-  field
-    w1 : 𝕎·
-    e1 : w ⊑· w1
-    br : 𝔹.bar b w1
-
-
-barFam2 : {B : Bars} {w : 𝕎·} (b : 𝔹 B w)
-          (G : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → 𝔹 B w' → Set(lsuc(L)))
-          (i : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → Σ (𝔹 B w') (λ b' → G e ib b'))
-          → Br
-barFam2 {B} {w} b G i w' = Σ (𝔹In b) (λ F → 𝔹.bar (fst (i (𝔹In.e1 F) (𝔹In.br F))) w')
-
-
--- TODO: add to a record
-BarsFam2 : (B : Bars) → Set(lsuc(lsuc(L)))
-BarsFam2 B =
-  {w : 𝕎·} (b : 𝔹 B w)
-  (G : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → 𝔹 B w' → Set(lsuc(L)))
-  (i : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → Σ (𝔹 B w') (λ b' → G e ib b'))
-  → B w (barFam2 b G i)
-
-
-𝔹fam2 : {B : Bars} (fam : BarsFam2 B) {w : 𝕎·} (b : 𝔹 B w)
-         (G : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → 𝔹 B w' → Set(lsuc(L)))
-         (i : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → Σ (𝔹 B w') (λ b' → G e ib b'))
-         → 𝔹 B w
-𝔹fam2 {B} fam {w} b G i = mk𝔹 bar bars ext mon
-  where
-    bar : Br
-    bar = barFam2 b G i
-
-    bars : B w bar
-    bars = fam b G i
-
-    ext  : {w' : 𝕎·} → bar w' → w ⊑· w'
-    ext {w'} (F , b') = ⊑-trans· (𝔹In.e1 F) (𝔹.ext (fst (i (𝔹In.e1 F) (𝔹In.br F))) b')
-
-    mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
-    mon {w1} {w2} e (F , b) = F , 𝔹.mon (fst (i (𝔹In.e1 F) (𝔹In.br F))) e b
-
-
-
----- Consequences of the above
-
-↑Σ∈𝔹 : {B : Bars} (mon : Bars⊑ B) {w : 𝕎·} {f : wPred w} (i : Σ∈𝔹 {B} w f) {w' : 𝕎·} (e : w ⊑· w') → Σ∈𝔹 {B} w' (↑wPred f e)
-↑Σ∈𝔹 {B} mon {w} {f} (b , i) {w'} e = 𝔹⊑ mon e b , j
-  where
-    j : ∈𝔹 (𝔹⊑ mon e b) (↑wPred f e)
-    j {w1} e1 (w0 , b0 , e₁ , e₂) w2 e2 z = i (𝔹.ext b {w0} b0) b0 w2 (⊑-trans· e₁ e2) (⊑-trans· e z)
-
-
-↑'Σ∈𝔹 : {B : Bars} (mon : Bars⊑ B) {w : 𝕎·} {f : wPred w} (i : Σ∈𝔹 {B} w f) {w' : 𝕎·} (e : w ⊑· w') → Σ∈𝔹 {B} w' (↑wPred' f e)
-↑'Σ∈𝔹 {B} mon {w} {f} (b , i) {w'} e = 𝔹⊑ mon e b , j
-  where
-    j : ∈𝔹 (𝔹⊑ mon e b) (↑wPred' f e)
-    j {w1} e1 (w0 , b0 , e₁ , e₂) w2 e2 z x = i (𝔹.ext b {w0} b0) b0 w2 (⊑-trans· e₁ e2) x
-
-
-
-
-↑Σ∈𝔹' : {B : Bars}  (mon : Bars⊑ B) {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : Σ∈𝔹 {B} w f) {w' : 𝕎·} (e : w ⊑· w')
-         → Σ∈𝔹' {B} w i g → Σ∈𝔹' {B} w' (↑Σ∈𝔹 mon i e) (↑wPredDep g e)
-↑Σ∈𝔹' {B} mon {w} {f} {g} i {w'} e j {w1} e1 (w2 , b , ea , eb) =
-  𝔹⊑ mon ea (fst (j (𝔹.ext (fst i) b) b)) , k
-  where
-    k : ∈𝔹Dep {B} (𝔹⊑ mon ea (fst (j (𝔹.ext (proj₁ i) b) b)))
-                  (snd (↑Σ∈𝔹 mon i e) e1 (w2 , b , ea , eb))
-                  (↑wPredDep'' (↑wPredDep g e) e1)
-    k {w3} e3 (w3' , b1 , ec , ed) w4 e4 x y =
-      snd (j (𝔹.ext (proj₁ i) b) b)
-          (𝔹.ext (fst (j (𝔹.ext (proj₁ i) b) b)) b1)
-          b1 w4
-          (⊑-trans· ec e4) (⊑-trans· ea x) (⊑-trans· e y)
-
-
-Σ∈𝔹Func : {B : Bars} (isect : Bars∩ B) {w : 𝕎·} {f g : wPred w}
-          → Σ∈𝔹 {B} w (λ w' e' → f w' e' → g w' e')
-          → Σ∈𝔹 {B} w f → Σ∈𝔹 {B} w g
-Σ∈𝔹Func {B} isect {w} {f} {g} (b1 , i1) (b2 , i2) =
-  ∩𝔹 isect b1 b2 , i
-  where
-    i : ∈𝔹 (∩𝔹 isect b1 b2) g
-    i e (w₁ , w₂ , b₁ , b₂ , e₁ , e₂) w' e' z =
-      i1 (𝔹.ext b1 b₁) b₁ w' (⊑-trans· e₁ e') z
-         (i2 (𝔹.ext b2 b₂) b₂ w' (⊑-trans· e₂ e') z)
-
-
-∀𝕎-Σ∈𝔹Func : {B : Bars} {w : 𝕎·} {f g : wPred w}
-              → ∀𝕎 w (λ w' e' → f w' e' → g w' e')
-              → Σ∈𝔹 {B} w f → Σ∈𝔹 {B} w g
-∀𝕎-Σ∈𝔹Func {B} {w} {f} {g} aw (b , i) = b , j
-  where
-    j : ∈𝔹 b g
-    j e b' w' e' z = aw w' z (i (𝔹.ext b b') b' w' e' z)
-
-
-∀𝕎-Σ∈𝔹 : {B : Bars} (all : Bars∀ B) {w : 𝕎·} {f : wPred w} → ∀𝕎 w f → Σ∈𝔹 {B} w f
-∀𝕎-Σ∈𝔹 {B} all {w} {f} h = 𝔹∀ all w , i
-  where
-    i : ∈𝔹 {B} (𝔹∀ all w) f
-    i {w'} e b w1 e1 z = h w1 z
-
-
-Σ∈𝔹-Σ∈𝔹' : {B : Bars} (mon : Bars⊑ B) {w : 𝕎·} {f : wPred w} {g : wPredDep f}
-             → Σ∈𝔹 {B} w (λ w' e' → (x : f w' e') → g w' e' x)
-             → (i : Σ∈𝔹 {B} w f) → Σ∈𝔹' {B} w i g
-Σ∈𝔹-Σ∈𝔹' {B} mon {w} {f} {g} (b1 , i1) (b2 , i2) {w'} e ib =
-  𝔹⊑ mon e b1 , j
-  where
-    j : ∈𝔹Dep (𝔹⊑ mon e b1) (i2 e ib) (↑wPredDep'' g e)
-    j {w0} e0 (w0' , b0 , e0' , e0'') w1 e1 x x' = i1 (𝔹.ext b1 b0) b0 w1 (⊑-trans· e0' e1) x' (i2 e ib w1 x x')
-
-
-∀𝕎-Σ∈𝔹-Σ∈𝔹' : {B : Bars} (all : Bars∀ B) {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : Σ∈𝔹 {B} w f)
-                → ∀𝕎 w (λ w' e' → (x : f w' e') {--(at : atBethBar i w' e' x)--} → g w' e' x)
-                → Σ∈𝔹' {B} w i g
-∀𝕎-Σ∈𝔹-Σ∈𝔹' {B} all {w} {f} {g} (b , i) aw {w'} e ib =
-  𝔹∀ all w' , j
-  where
-    j : ∈𝔹Dep {B} (𝔹∀ all w') (i e ib) (↑wPredDep'' g e)
-    j {w0} e0 ib' w1 e1 x y = aw w1 y (i e ib w1 x y)
-
-
-
-Σ∈𝔹'-comb : {B : Bars} (isect : Bars∩ B) {w : 𝕎·} {f : wPred w} {g h k : wPredDep f} (i : Σ∈𝔹 {B} w f)
-             → ∀𝕎 w (λ w' e' → (z zg zh : f w' e')
-                              → g w' e' zg → h w' e' zh → k w' e' z)
-             → Σ∈𝔹' {B} w i g → Σ∈𝔹' {B} w i h → Σ∈𝔹' {B} w i k
-Σ∈𝔹'-comb {B} isect {w} {f} {g} {h} {k} (b , i) aw j₁ j₂ {w'} e ib =
-  ∩𝔹 isect b1 b2 , j
-  where
-    b1 : 𝔹 B w'
-    b1 = fst (j₁ e ib)
-
-    i1 : ∈𝔹Dep {B} b1 (i e ib) (↑wPredDep'' g e)
-    i1 = snd (j₁ e ib)
-
-    b2 : 𝔹 B w'
-    b2 = fst (j₂ e ib)
-
-    i2 : ∈𝔹Dep {B} b2 (i e ib) (↑wPredDep'' h e)
-    i2 = snd (j₂ e ib)
-
-    j : ∈𝔹Dep {B} (∩𝔹 isect b1 b2) (i e ib) (↑wPredDep'' k e)
-    j {w0} e0 (wa , wb , ba , bb , ea , eb) w1 e1 x y =
-      aw w1 y (i e ib w1 x y) (i e ib w1 x y) (i e ib w1 x y)
-         (i1 (𝔹.ext b1 ba) ba w1 (⊑-trans· ea e1) x y)
-         (i2 (𝔹.ext b2 bb) bb w1 (⊑-trans· eb e1) x y)
-
-
-
-Σ∈𝔹-idem : {B : Bars} (fam : BarsFam B) {w : 𝕎·} {f : wPred w}
-            → Σ∈𝔹 {B} w (λ w' e' → Σ∈𝔹 {B} w' (↑wPred' f e'))
-            → Σ∈𝔹 {B} w f
-Σ∈𝔹-idem {B} fam {w} {f} (b , i) =
-  𝔹fam fam {w} b (λ w1 e1 z b' → ∈𝔹 {B} b' (↑wPred' f z)) i , j
-  where
-    j : ∈𝔹 {B} (𝔹fam fam {w} b (λ w1 e1 z b' → ∈𝔹 {B} b' (↑wPred' f z)) i) f
-    j {w'} e (mk𝔹Fam w2 e2 br₁ w3 e3 z₁ , br) w1 e1 z =
-      snd (i e2 br₁ w3 e3 z₁)
-          (𝔹.ext (proj₁ (i e2 br₁ w3 e3 z₁)) br)
-          br w1 e1 (⊑-trans· (𝔹.ext (proj₁ (i e2 br₁ w3 e3 z₁)) br) e1) z
-
-
-
-Σ∈𝔹'-idem : {B : Bars} (mon : Bars⊑ B) (fam : BarsFam B)
-             {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : Σ∈𝔹 {B} w f)
-             → Σ∈𝔹 {B} w (λ w' e' → Σ∈𝔹' {B} w' (↑'Σ∈𝔹 mon i e') (↑wPredDep' g e'))
-             → Σ∈𝔹' {B} w i g
-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
-  𝔹fam fam {w'} (𝔹⊑ mon e b₂) (λ {w0} e0 {w1} e1 z b' → ∈𝔹Dep {B} b'
-                                                                  (λ w2 e2 z' y' → i e ib _ (⊑-trans· z e2) y')
-                                                                  (↑wPredDep'' (↑wPredDep' g (⊑-trans· e e0)) e1)) j' ,
-  jd
-  where
-    j' : {w0 : 𝕎·} (e0 : w' ⊑· w0) (ib0 : 𝔹.bar (𝔹⊑ mon e b₂) w0) (w1 : 𝕎·) (e1 : w0 ⊑· w1) (z : w' ⊑· w1)
-         → Σ (𝔹 B w1) (λ b' → ∈𝔹Dep {B} b' (λ w2 e2 z' y' → i e ib _ (⊑-trans· z e2) y') (↑wPredDep'' (↑wPredDep' g (⊑-trans· e e0)) e1))
-    j' {w0} e0 (wa , ba , ea₁ , ea₂) w1 e1 z =
-      j (𝔹.ext b₂ ba) ba w0 ea₁ (⊑-trans· e e0) e1 (w' , ib , ⊑-trans· e0 e1 , e1)
-
-    jd : ∈𝔹Dep {B} (𝔹fam fam (𝔹⊑ mon e b₂) (λ {w0} e0 {w1} e1 z b' → ∈𝔹Dep {B} b' (λ w2 e2 z' y' → i e ib _ (⊑-trans· z e2) y') (↑wPredDep'' (↑wPredDep' g (⊑-trans· e e0)) e1)) j')
-                    (i e ib)
-                    (↑wPredDep'' g e)
-    jd {w0} e0 (mk𝔹Fam w2 e2 br w3 e3 z , b0) w1 e1 x y =
-      snd (j' e2 br w3 e3 z)
-          (𝔹.ext (proj₁ (j' e2 br w3 e3 z)) b0)
-          b0 w1 e1
-          (⊑-trans· (𝔹.ext (proj₁ (j' e2 br w3 e3 z)) b0) e1)
-          (⊑-trans· e3 (⊑-trans· (𝔹.ext (proj₁ (j' e2 br w3 e3 z)) b0) e1))
-          y
-          (i e ib w1 x y)
-
-
-bar-𝔹⊑→ : {B : Bars} (mon : Bars⊑ B) {w w' : 𝕎·} (e : w ⊑· w') {b : 𝔹 B w} {w0 : 𝕎·}
-            → 𝔹.bar (𝔹⊑ mon e b) w0
-            → 𝔹.bar b w0
-bar-𝔹⊑→ {B} mon {w} {w'} e {b} {w0} h = 𝔹.mon b (fst (snd (snd h))) (fst (snd h))
-
-
-
-∀𝕎-Σ∈𝔹'-Σ∈𝔹 : {B : Bars} (fam : BarsFam2 B)
-                 {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w} (i : Σ∈𝔹 {B} w f)
-                 → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → h w' e')
-                 → Σ∈𝔹' {B} w i g → Σ∈𝔹 {B} w h
-∀𝕎-Σ∈𝔹'-Σ∈𝔹 {B} fam {w} {f} {g} {h} (b , i) aw j =
-  𝔹fam2 fam {w} b (λ {w'} e ib b' → ∈𝔹Dep {B} b' (i e ib) (↑wPredDep'' g e)) j , i'
-  where
-    i' : ∈𝔹 {B} (𝔹fam2 fam {w} b (λ {w'} e ib b' → ∈𝔹Dep {B} b' (i e ib) (↑wPredDep'' g e)) j) h
-    i' {w'} e (mk𝔹In w2 e2 br , F) w1 e1 z =
-      aw w1 z
-         (i e2 br w1 (⊑-trans· (𝔹.ext (proj₁ (j e2 br)) F) e1) z)
-         (snd (j e2 br)
-              (𝔹.ext (proj₁ (j e2 br)) F)
-              F w1 e1
-              (⊑-trans· (𝔹.ext (proj₁ (j e2 br)) F) e1)
-              z)
-
-
-
-Σ∈𝔹'-change : {B : Bars} (mon : Bars⊑ B) (fam : BarsFam2 B)
-               {w : 𝕎·} {f k : wPred w} {g : wPredDep f} {h : wPredDep k}
-               (i : Σ∈𝔹 {B} w f) (j : Σ∈𝔹 {B} w k)
-               → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e')
-                                → g w' e' x → h w' e' y)
-               → Σ∈𝔹' {B} w i g → Σ∈𝔹' {B} w j h
-Σ∈𝔹'-change {B} mon fam {w} {f} {k} {g} {h} (b₁ , i) (b₂ , j) aw z {w'} e ib =
-  𝔹fam2 fam (𝔹⊑ mon e b₁)
-             (λ {w0} e0 ib0 b' → ∈𝔹Dep {B} b' (i (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₁} ib0))
-                                               (↑wPredDep'' g (⊑-trans· e e0)))
-             z' {--z'--} ,
-  jd
-  where
-    z' : {w0 : 𝕎·} (e0 : w' ⊑· w0) (ib0 : 𝔹.bar (𝔹⊑ mon e b₁) w0)
-          → Σ (𝔹 B w0) (λ b' → ∈𝔹Dep {B} b' (i (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₁} ib0)) (↑wPredDep'' g (⊑-trans· e e0)))
-    z' {w0} e0 (wa , ba , ea₁ , ea₂) = z (⊑-trans· e e0) (𝔹.mon b₁ ea₁ ba)
-
-    jd : ∈𝔹Dep {B} (𝔹fam2 fam (𝔹⊑ mon e b₁) (λ {w0} e0 ib0 b' → ∈𝔹Dep {B} b' (i (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₁} ib0)) (↑wPredDep'' g (⊑-trans· e e0))) z')
-                    (j e ib)
-                    (↑wPredDep'' h e)
-    jd {w0} e0 (mk𝔹In w2 e2 (w3 , br , e3 , e4) , b0) w1 e1 x y =
-      aw w1 y
-         (i (⊑-trans· e e2) (𝔹.mon b₁ e3 br) w1 (⊑-trans· (𝔹.ext (fst (z' e2 (w3 , br , e3 , e4))) b0) e1) y)
-         (j e ib w1 x y)
-         (snd (z' e2 (w3 , br , e3 , e4))
-              (𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0)
-              b0 w1 e1
-              (⊑-trans· (𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0) e1)
-              y)
-
-
+BarsProps→Bar : BarsProps → Bar
+BarsProps→Bar b =
+  mkBar
+    (Σ∈𝔹 {BarsProps.bars b})
+    (Σ∈𝔹' {BarsProps.bars b})
+    (↑Σ∈𝔹 (BarsProps.mon b))
+    (↑'Σ∈𝔹 (BarsProps.mon b))
+    (λ {w} {f} {g} → ↑Σ∈𝔹' (BarsProps.mon b) {w} {f} {g})
+    (Σ∈𝔹Func (BarsProps.isect b))
+    (∀𝕎-Σ∈𝔹Func {BarsProps.bars b})
+    (Σ∈𝔹-Σ∈𝔹' (BarsProps.mon b))
+    (∀𝕎-Σ∈𝔹-Σ∈𝔹' (BarsProps.all b))
+    (∀𝕎-Σ∈𝔹 (BarsProps.all b))
+    (Σ∈𝔹-idem (BarsProps.fam1 b))
+    (Σ∈𝔹'-idem (BarsProps.mon b) (BarsProps.fam1 b))
+    (∀𝕎-Σ∈𝔹'-Σ∈𝔹 (BarsProps.fam2 b))
+    (Σ∈𝔹'-comb (BarsProps.isect b))
+    (Σ∈𝔹'-change (BarsProps.mon b) (BarsProps.fam2 b))
+    (Σ∈𝔹-const (BarsProps.ex b))
 
 
 
@@ -613,8 +667,8 @@ O𝔹bars : Bars
 O𝔹bars w bar = ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 _ → Lift (lsuc(L)) (bar w2)))
 
 
-O𝔹bars-mon : Bars⊑ O𝔹bars
-O𝔹bars-mon {w1} {w2} e bar h w3 e3 =
+O𝔹bars⊑ : Bars⊑ O𝔹bars
+O𝔹bars⊑ {w1} {w2} e bar h w3 e3 =
   fst (h w3 (⊑-trans· e e3)) ,
   fst (snd (h w3 (⊑-trans· e e3))) ,
   lift (fst (h w3 (⊑-trans· e e3)) ,
@@ -635,6 +689,8 @@ O𝔹bars∩ {w} b1 b2 bars1 bars2 w1 e1 =
     h2 : ∃𝕎 (fst h1) (λ w2 e2 → Lift (lsuc L) (b2 w2))
     h2 = bars2 (fst h1) (⊑-trans· e1 (fst (snd h1)))
 
+
+-- TODO: prove the other properties of BarsProps
 
 O𝔹 : 𝕎· → Set(lsuc(L))
 O𝔹 w = 𝔹 O𝔹bars w
@@ -1578,8 +1634,8 @@ inIBethBar-inIBethBar' {w} {f} {g} (b1 , i1) (indBar-ind .w ind , i2) = {!!}
  -- Beth Bar instance -- defined from infinite sequences
  --
  --}
-record BarsProp (bar : Br) {w : 𝕎·} (c : chain w) : Set(L) where
-  constructor mkBarsProp
+record BarredChain (bar : Br) {w : 𝕎·} (c : chain w) : Set(L) where
+  constructor mkBarredChain
   field
     w'  : 𝕎·
     b   : bar w'
@@ -1588,7 +1644,7 @@ record BarsProp (bar : Br) {w : 𝕎·} (c : chain w) : Set(L) where
 
 
 IS𝔹bars : Bars
-IS𝔹bars w bar = (c : pchain w) → BarsProp bar (pchain.c c)
+IS𝔹bars w bar = (c : pchain w) → BarredChain bar (pchain.c c)
 
 
 -- a Beth bar where all infinite sequences are barred
@@ -1599,86 +1655,109 @@ IS𝔹 w = 𝔹 IS𝔹bars w
 -- We prove that Beth bars are monotonic
 IS𝔹bars⊑ : Bars⊑ IS𝔹bars
 IS𝔹bars⊑ {w1} {w2} e bar h c =
-  mkBarsProp
-    (chain.seq (chain⊑ e (pchain.c c)) (BarsProp.n z))
-    (BarsProp.w' z , BarsProp.b z , BarsProp.ext z , chain⊑n (BarsProp.n z) (pchain.c c))
-    (BarsProp.n z)
+  mkBarredChain
+    (chain.seq (chain⊑ e (pchain.c c)) (BarredChain.n z))
+    (BarredChain.w' z , BarredChain.b z , BarredChain.ext z , chain⊑n (BarredChain.n z) (pchain.c c))
+    (BarredChain.n z)
     (⊑-refl· _)
     where
-      z : BarsProp bar (chain⊑ e (pchain.c c))
+      z : BarredChain bar (chain⊑ e (pchain.c c))
       z = h (pchain⊑ e c)
 
 
 IS𝔹bars∩ : Bars∩ IS𝔹bars
 IS𝔹bars∩ {w} b1 b2 bars1 bars2 c =
-  mkBarsProp (chain.seq (pchain.c c) ((BarsProp.n z1) ⊔ (BarsProp.n z2)))
-             (BarsProp.w' z1 , BarsProp.w' z2 , BarsProp.b z1 , BarsProp.b z2 , e1 , e2)
-             ((BarsProp.n z1) ⊔ (BarsProp.n z2))
+  mkBarredChain (chain.seq (pchain.c c) ((BarredChain.n z1) ⊔ (BarredChain.n z2)))
+             (BarredChain.w' z1 , BarredChain.w' z2 , BarredChain.b z1 , BarredChain.b z2 , e1 , e2)
+             ((BarredChain.n z1) ⊔ (BarredChain.n z2))
              (⊑-refl· _)
   where
-    z1 : BarsProp b1 (pchain.c c) --Σ 𝕎· (λ w' → b1 w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
+    z1 : BarredChain b1 (pchain.c c) --Σ 𝕎· (λ w' → b1 w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
     z1 = bars1 c
 
-    z2 : BarsProp b2 (pchain.c c) --Σ 𝕎· (λ w' → b2 w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
+    z2 : BarredChain b2 (pchain.c c) --Σ 𝕎· (λ w' → b2 w' × Σ ℕ (λ n → w' ⊑· chain.seq c n))
     z2 = bars2 c
 
-    e1 : BarsProp.w' z1 ⊑· chain.seq (pchain.c c) (BarsProp.n z1 ⊔ BarsProp.n z2)
-    e1 = ⊑-trans· (BarsProp.ext z1) (≤→chain⊑ (pchain.c c) (m≤m⊔n (BarsProp.n z1) (BarsProp.n z2)))
+    e1 : BarredChain.w' z1 ⊑· chain.seq (pchain.c c) (BarredChain.n z1 ⊔ BarredChain.n z2)
+    e1 = ⊑-trans· (BarredChain.ext z1) (≤→chain⊑ (pchain.c c) (m≤m⊔n (BarredChain.n z1) (BarredChain.n z2)))
 
-    e2 : BarsProp.w' z2 ⊑· chain.seq (pchain.c c) (BarsProp.n z1 ⊔ BarsProp.n z2)
-    e2 = ⊑-trans· (BarsProp.ext z2) (≤→chain⊑ (pchain.c c) (m≤n⊔m (BarsProp.n z1) (BarsProp.n z2)))
+    e2 : BarredChain.w' z2 ⊑· chain.seq (pchain.c c) (BarredChain.n z1 ⊔ BarredChain.n z2)
+    e2 = ⊑-trans· (BarredChain.ext z2) (≤→chain⊑ (pchain.c c) (m≤n⊔m (BarredChain.n z1) (BarredChain.n z2)))
 
 
 IS𝔹bars∀ : Bars∀ IS𝔹bars
-IS𝔹bars∀ w c = mkBarsProp w (⊑-refl· _) 0 (chain.init (pchain.c c))
+IS𝔹bars∀ w c = mkBarredChain w (⊑-refl· _) 0 (chain.init (pchain.c c))
 
 
 --IS𝔹Fam : {w : 𝕎·} (b : IS𝔹 w) → Set(L)
 --IS𝔹Fam = 𝔹Fam {IS𝔹bars}
 
 
-IS𝔹barsFam : BarsFam IS𝔹bars
-IS𝔹barsFam {w} b G i c =
-  mkBarsProp (BarsProp.w' bp') br (BarsProp.n bp' + BarsProp.n bp) e
+IS𝔹barsFam1 : BarsFam1 IS𝔹bars
+IS𝔹barsFam1 {w} b G i c =
+  mkBarredChain (BarredChain.w' bp') br (BarredChain.n bp' + BarredChain.n bp) e
   where
-    bp : BarsProp (𝔹.bar b) (pchain.c c)
+    bp : BarredChain (𝔹.bar b) (pchain.c c)
     bp = 𝔹.bars b c
 
-    b' : IS𝔹 (BarsProp.w' bp)
-    b' = fst (i (𝔹.ext b (BarsProp.b bp)) (BarsProp.b bp) (BarsProp.w' bp) (⊑-refl· _) (𝔹.ext b (BarsProp.b bp)))
+    b' : IS𝔹 (BarredChain.w' bp)
+    b' = fst (i (𝔹.ext b (BarredChain.b bp)) (BarredChain.b bp) (BarredChain.w' bp) (⊑-refl· _) (𝔹.ext b (BarredChain.b bp)))
 
-    bp' : BarsProp (𝔹.bar b') (truncateChain {w} {pchain.c c} {BarsProp.n bp} {BarsProp.w' bp} (BarsProp.ext bp))
-    bp' = 𝔹.bars b' (truncatePChain {w} {c} {BarsProp.n bp} {BarsProp.w' bp} (BarsProp.ext bp))
+    bp' : BarredChain (𝔹.bar b') (truncateChain {w} {pchain.c c} {BarredChain.n bp} {BarredChain.w' bp} (BarredChain.ext bp))
+    bp' = 𝔹.bars b' (truncatePChain {w} {c} {BarredChain.n bp} {BarredChain.w' bp} (BarredChain.ext bp))
 
-    br : barFam b G i (BarsProp.w' bp')
-    br = mk𝔹Fam (BarsProp.w' bp) (𝔹.ext b (BarsProp.b bp)) (BarsProp.b bp) (BarsProp.w' bp) (⊑-refl· _) (𝔹.ext b (BarsProp.b bp)) ,
-         BarsProp.b bp'
+    br : barFam b G i (BarredChain.w' bp')
+    br = mk𝔹Fam (BarredChain.w' bp) (𝔹.ext b (BarredChain.b bp)) (BarredChain.b bp) (BarredChain.w' bp) (⊑-refl· _) (𝔹.ext b (BarredChain.b bp)) ,
+         BarredChain.b bp'
 
-    e : BarsProp.w' bp' ⊑· chain.seq (pchain.c c) (BarsProp.n bp' + BarsProp.n (𝔹.bars b c))
-    e = BarsProp.ext bp'
+    e : BarredChain.w' bp' ⊑· chain.seq (pchain.c c) (BarredChain.n bp' + BarredChain.n (𝔹.bars b c))
+    e = BarredChain.ext bp'
 
 
 
 IS𝔹barsFam2 : BarsFam2 IS𝔹bars
 IS𝔹barsFam2 {w} b G i c =
-  mkBarsProp (BarsProp.w' bp') br (BarsProp.n bp' + BarsProp.n bp) e
+  mkBarredChain (BarredChain.w' bp') br (BarredChain.n bp' + BarredChain.n bp) e
   where
-    bp : BarsProp (𝔹.bar b) (pchain.c c)
+    bp : BarredChain (𝔹.bar b) (pchain.c c)
     bp = 𝔹.bars b c
 
-    b' : IS𝔹 (BarsProp.w' bp)
-    b' = fst (i (𝔹.ext b (BarsProp.b bp)) (BarsProp.b bp))
+    b' : IS𝔹 (BarredChain.w' bp)
+    b' = fst (i (𝔹.ext b (BarredChain.b bp)) (BarredChain.b bp))
 
-    bp' : BarsProp (𝔹.bar b') (truncateChain {w} {pchain.c c} {BarsProp.n bp} {BarsProp.w' bp} (BarsProp.ext bp))
-    bp' = 𝔹.bars b' (truncatePChain {w} {c} {BarsProp.n bp} {BarsProp.w' bp} (BarsProp.ext bp))
+    bp' : BarredChain (𝔹.bar b') (truncateChain {w} {pchain.c c} {BarredChain.n bp} {BarredChain.w' bp} (BarredChain.ext bp))
+    bp' = 𝔹.bars b' (truncatePChain {w} {c} {BarredChain.n bp} {BarredChain.w' bp} (BarredChain.ext bp))
 
-    br : barFam2 b G i (BarsProp.w' bp')
-    br = mk𝔹In (BarsProp.w' bp) (𝔹.ext b (BarsProp.b bp)) (BarsProp.b bp) ,
-         BarsProp.b bp'
+    br : barFam2 b G i (BarredChain.w' bp')
+    br = mk𝔹In (BarredChain.w' bp) (𝔹.ext b (BarredChain.b bp)) (BarredChain.b bp) ,
+         BarredChain.b bp'
 
-    e : BarsProp.w' bp' ⊑· chain.seq (pchain.c c) (BarsProp.n bp' + BarsProp.n (𝔹.bars b c))
-    e = BarsProp.ext bp'
+    e : BarredChain.w' bp' ⊑· chain.seq (pchain.c c) (BarredChain.n bp' + BarredChain.n (𝔹.bars b c))
+    e = BarredChain.ext bp'
 
+
+
+IS𝔹bars∃ : Bars∃ IS𝔹bars
+IS𝔹bars∃ {w} {b} bars ext =
+  BarredChain.w' bp , ext (BarredChain.b bp) , BarredChain.b bp
+  where
+    c : pchain w
+    c = 𝕎→pchain w
+
+    bp : BarredChain b (pchain.c c)
+    bp = bars c
+
+
+IS𝔹BarsProps : BarsProps
+IS𝔹BarsProps =
+  mkBarsProps
+    IS𝔹bars
+    IS𝔹bars⊑
+    IS𝔹bars∩
+    IS𝔹bars∀
+    IS𝔹barsFam1
+    IS𝔹barsFam2
+    IS𝔹bars∃
 
 
 inIS𝔹 : {w : 𝕎·} (b : IS𝔹 w) (f : wPred w) → Set(lsuc(L))
@@ -1689,20 +1768,12 @@ inBethBar : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
 inBethBar = Σ∈𝔹 {IS𝔹bars}
 
 
-IS𝔹⊑ : {w w' : 𝕎·} (e : w ⊑· w') → IS𝔹 w → IS𝔹 w'
-IS𝔹⊑ = 𝔹⊑ {IS𝔹bars} IS𝔹bars⊑
-
-
 ↑inBethBar : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) {w' : 𝕎·} (e : w ⊑· w') → inBethBar w' (↑wPred f e)
 ↑inBethBar = ↑Σ∈𝔹 {IS𝔹bars} IS𝔹bars⊑
 
 
 ↑'inBethBar : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) {w' : 𝕎·} (e : w ⊑· w') → inBethBar w' (↑wPred' f e)
 ↑'inBethBar = ↑'Σ∈𝔹 {IS𝔹bars} IS𝔹bars⊑
-
-
-∩IS𝔹 : {w : 𝕎·} → IS𝔹 w → IS𝔹 w → IS𝔹 w
-∩IS𝔹 = ∩𝔹 {IS𝔹bars} IS𝔹bars∩
 
 
 inBethBarFunc : {w : 𝕎·} {f g : wPred w} → inBethBar w (λ w' e' → f w' e' → g w' e') → inBethBar w f → inBethBar w g
@@ -1719,10 +1790,6 @@ trivialIS𝔹 = 𝔹∀ {IS𝔹bars} IS𝔹bars∀
 
 ∀𝕎-inBethBar : {w : 𝕎·} {f : wPred w} → ∀𝕎 w f → inBethBar w f
 ∀𝕎-inBethBar = ∀𝕎-Σ∈𝔹 {IS𝔹bars} IS𝔹bars∀
-
-
-inIS𝔹Dep : {w : 𝕎·} (b : IS𝔹 w) {g : wPred w} (i : ∀𝕎 w g) (f : wPredDep g) → Set(lsuc(L))
-inIS𝔹Dep = ∈𝔹Dep {IS𝔹bars}
 
 
 inBethBar' : (w : 𝕎·) {g : wPred w} (h : inBethBar w g) (f : wPredDep g) → Set(lsuc(L))
@@ -1755,31 +1822,16 @@ inBethBar'-comb = Σ∈𝔹'-comb {IS𝔹bars} IS𝔹bars∩
 ↑inBethBar' {w} {F} {g} = ↑Σ∈𝔹' {IS𝔹bars} IS𝔹bars⊑ {w} {F} {g}
 
 
-{--IS𝔹-fam : {w : 𝕎·} (b : IS𝔹 w)
-           (G : {w0 : 𝕎·} (e0 : w ⊑· w0) {w1 : 𝕎·} (e1 : w0 ⊑· w1) (z : w ⊑· w1) → IS𝔹 w1 → Set(lsuc(L)))
-           (i : {w0 : 𝕎·} (e0 : w ⊑· w0) (ib0 : 𝔹.bar b w0) (w1 : 𝕎·) (e1 : w0 ⊑· w1) (z : w ⊑· w1)
-                → Σ (IS𝔹 w1) (λ b' → G e0 e1 z b'))
-           → IS𝔹 w
-IS𝔹-fam = 𝔹fam {IS𝔹bars} IS𝔹barsFam
---}
-
-
 inBethBar-idem : {w : 𝕎·} {f : wPred w}
                  → inBethBar w (λ w' e' → inBethBar w' (↑wPred' f e'))
                  → inBethBar w f
-inBethBar-idem = Σ∈𝔹-idem {IS𝔹bars} IS𝔹barsFam
+inBethBar-idem = Σ∈𝔹-idem {IS𝔹bars} IS𝔹barsFam1
 
 
 inBethBar'-idem : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inBethBar  w f)
                   → inBethBar w (λ w' e' → inBethBar' w' (↑'inBethBar i e') (↑wPredDep' g e'))
                   → inBethBar' w i g
-inBethBar'-idem = Σ∈𝔹'-idem {IS𝔹bars} IS𝔹bars⊑ IS𝔹barsFam
-
-
-bar-IS𝔹⊑→ : {w w' : 𝕎·} (e : w ⊑· w') {b : IS𝔹 w} {w0 : 𝕎·}
-              → 𝔹.bar (IS𝔹⊑ e b) w0
-              → 𝔹.bar b w0
-bar-IS𝔹⊑→ = bar-𝔹⊑→ {IS𝔹bars} IS𝔹bars⊑
+inBethBar'-idem = Σ∈𝔹'-idem {IS𝔹bars} IS𝔹bars⊑ IS𝔹barsFam1
 
 
 ∀𝕎-inBethBar'-inBethBar : {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w} (i : inBethBar w f)
@@ -1796,21 +1848,14 @@ inBethBar'-change : {w : 𝕎·} {f k : wPred w} {g : wPredDep f} {h : wPredDep 
 inBethBar'-change = Σ∈𝔹'-change {IS𝔹bars} IS𝔹bars⊑ IS𝔹barsFam2
 
 
--- TODO: generalize
+
+
 inBethBar-const : {w : 𝕎·} {t : Set(lsuc(L))} → inBethBar w (λ w e → t) → t
-inBethBar-const {w} {t} (b , i) = z _ (⊑-refl· _) (𝔹.ext b (BarsProp.b bp))
-  where
-    c : pchain w
-    c = 𝕎→pchain w
-
-    bp : BarsProp (𝔹.bar b) (pchain.c c)
-    bp = 𝔹.bars b c
-
-    z : ∀𝕎 (BarsProp.w' bp) (↑wPred' (λ _ _ → t) (𝔹.ext b (BarsProp.b bp)))
-    z = i (𝔹.ext b (BarsProp.b bp)) (BarsProp.b bp)
+inBethBar-const = Σ∈𝔹-const {IS𝔹bars} IS𝔹bars∃
 
 
 
+-- TODO: generate this bar from (BarsProps→Bar IS𝔹BarsProps)
 inBethBar-Bar : Bar
 inBethBar-Bar =
   mkBar
@@ -1832,6 +1877,31 @@ inBethBar-Bar =
     inBethBar-const
 
 
+
+
+
+
+{--IS𝔹⊑ : {w w' : 𝕎·} (e : w ⊑· w') → IS𝔹 w → IS𝔹 w'
+IS𝔹⊑ = 𝔹⊑ {IS𝔹bars} IS𝔹bars⊑--}
+
+{--∩IS𝔹 : {w : 𝕎·} → IS𝔹 w → IS𝔹 w → IS𝔹 w
+∩IS𝔹 = ∩𝔹 {IS𝔹bars} IS𝔹bars∩--}
+
+{--inIS𝔹Dep : {w : 𝕎·} (b : IS𝔹 w) {g : wPred w} (i : ∀𝕎 w g) (f : wPredDep g) → Set(lsuc(L))
+inIS𝔹Dep = ∈𝔹Dep {IS𝔹bars}--}
+
+{--IS𝔹-fam : {w : 𝕎·} (b : IS𝔹 w)
+           (G : {w0 : 𝕎·} (e0 : w ⊑· w0) {w1 : 𝕎·} (e1 : w0 ⊑· w1) (z : w ⊑· w1) → IS𝔹 w1 → Set(lsuc(L)))
+           (i : {w0 : 𝕎·} (e0 : w ⊑· w0) (ib0 : 𝔹.bar b w0) (w1 : 𝕎·) (e1 : w0 ⊑· w1) (z : w ⊑· w1)
+                → Σ (IS𝔹 w1) (λ b' → G e0 e1 z b'))
+           → IS𝔹 w
+IS𝔹-fam = 𝔹fam {IS𝔹bars} IS𝔹barsFam
+--}
+
+{--bar-IS𝔹⊑→ : {w w' : 𝕎·} (e : w ⊑· w') {b : IS𝔹 w} {w0 : 𝕎·}
+              → 𝔹.bar (IS𝔹⊑ e b) w0
+              → 𝔹.bar b w0
+bar-IS𝔹⊑→ = bar-𝔹⊑→ {IS𝔹bars} IS𝔹bars⊑--}
 
 
 {--
@@ -1907,24 +1977,24 @@ IS𝔹-fam {w} {f} b i = mk𝔹 bar bars ext
     bar : Br
     bar w' = Σ (IS𝔹Fam b) (λ F → 𝔹.bar (fst (i (IS𝔹Fam.e1 F) (IS𝔹Fam.br F) (IS𝔹Fam.w2 F) (IS𝔹Fam.e2 F) (IS𝔹Fam.z F))) w')
 
-    bars : (c : chain w) → BarsProp bar c
-    bars c = mkBarsProp (BarsProp.w' bp') br (BarsProp.n bp' + BarsProp.n bp) e
+    bars : (c : chain w) → BarredChain bar c
+    bars c = mkBarredChain (BarredChain.w' bp') br (BarredChain.n bp' + BarredChain.n bp) e
       where
-        bp : BarsProp (𝔹.bar b) c
+        bp : BarredChain (𝔹.bar b) c
         bp = 𝔹.bars b c
 
-        b' : IS𝔹 (BarsProp.w' bp)
-        b' = fst (i (𝔹.ext b (BarsProp.b bp)) (BarsProp.b bp) (BarsProp.w' bp) (⊑-refl· _) (𝔹.ext b (BarsProp.b bp)))
+        b' : IS𝔹 (BarredChain.w' bp)
+        b' = fst (i (𝔹.ext b (BarredChain.b bp)) (BarredChain.b bp) (BarredChain.w' bp) (⊑-refl· _) (𝔹.ext b (BarredChain.b bp)))
 
-        bp' : BarsProp (𝔹.bar b') (truncateChain {w} {c} {BarsProp.n bp} {BarsProp.w' bp} (BarsProp.ext bp))
-        bp' = 𝔹.bars b' (truncateChain {w} {c} {BarsProp.n bp} {BarsProp.w' bp} (BarsProp.ext bp))
+        bp' : BarredChain (𝔹.bar b') (truncateChain {w} {c} {BarredChain.n bp} {BarredChain.w' bp} (BarredChain.ext bp))
+        bp' = 𝔹.bars b' (truncateChain {w} {c} {BarredChain.n bp} {BarredChain.w' bp} (BarredChain.ext bp))
 
-        br : bar (BarsProp.w' bp')
-        br = mk𝔹Fam (BarsProp.w' bp) (𝔹.ext b (BarsProp.b bp)) (BarsProp.b bp) (BarsProp.w' bp) (⊑-refl· _) (𝔹.ext b (BarsProp.b bp)) ,
-             BarsProp.b bp'
+        br : bar (BarredChain.w' bp')
+        br = mk𝔹Fam (BarredChain.w' bp) (𝔹.ext b (BarredChain.b bp)) (BarredChain.b bp) (BarredChain.w' bp) (⊑-refl· _) (𝔹.ext b (BarredChain.b bp)) ,
+             BarredChain.b bp'
 
-        e : BarsProp.w' bp' ⊑· chain.seq c (BarsProp.n bp' + BarsProp.n (𝔹.bars b c))
-        e = BarsProp.ext bp'
+        e : BarredChain.w' bp' ⊑· chain.seq c (BarredChain.n bp' + BarredChain.n (𝔹.bars b c))
+        e = BarredChain.ext bp'
 
     ext  : {w' : 𝕎·} → bar w' → w ⊑· w'
     ext {w'} (F , b') = ⊑-trans· (IS𝔹Fam.z F) (𝔹.ext (fst (i (IS𝔹Fam.e1 F) (IS𝔹Fam.br F) (IS𝔹Fam.w2 F) (IS𝔹Fam.e2 F) (IS𝔹Fam.z F))) b')
@@ -1961,24 +2031,24 @@ IS𝔹-fam2 {w} b G i = mk𝔹 bar bars ext mon
     bar : Br
     bar w' = Σ (𝔹In b) (λ F → 𝔹.bar (fst (i (𝔹In.e1 F) (𝔹In.br F))) w')
 
-    bars : (c : pchain w) → BarsProp bar (pchain.c c)
-    bars c = mkBarsProp (BarsProp.w' bp') br (BarsProp.n bp' + BarsProp.n bp) e
+    bars : (c : pchain w) → BarredChain bar (pchain.c c)
+    bars c = mkBarredChain (BarredChain.w' bp') br (BarredChain.n bp' + BarredChain.n bp) e
       where
-        bp : BarsProp (𝔹.bar b) (pchain.c c)
+        bp : BarredChain (𝔹.bar b) (pchain.c c)
         bp = 𝔹.bars b c
 
-        b' : IS𝔹 (BarsProp.w' bp)
-        b' = fst (i (𝔹.ext b (BarsProp.b bp)) (BarsProp.b bp))
+        b' : IS𝔹 (BarredChain.w' bp)
+        b' = fst (i (𝔹.ext b (BarredChain.b bp)) (BarredChain.b bp))
 
-        bp' : BarsProp (𝔹.bar b') (truncateChain {w} {pchain.c c} {BarsProp.n bp} {BarsProp.w' bp} (BarsProp.ext bp))
-        bp' = 𝔹.bars b' (truncatePChain {w} {c} {BarsProp.n bp} {BarsProp.w' bp} (BarsProp.ext bp))
+        bp' : BarredChain (𝔹.bar b') (truncateChain {w} {pchain.c c} {BarredChain.n bp} {BarredChain.w' bp} (BarredChain.ext bp))
+        bp' = 𝔹.bars b' (truncatePChain {w} {c} {BarredChain.n bp} {BarredChain.w' bp} (BarredChain.ext bp))
 
-        br : bar (BarsProp.w' bp')
-        br = mk𝔹In (BarsProp.w' bp) (𝔹.ext b (BarsProp.b bp)) (BarsProp.b bp) ,
-             BarsProp.b bp'
+        br : bar (BarredChain.w' bp')
+        br = mk𝔹In (BarredChain.w' bp) (𝔹.ext b (BarredChain.b bp)) (BarredChain.b bp) ,
+             BarredChain.b bp'
 
-        e : BarsProp.w' bp' ⊑· chain.seq (pchain.c c) (BarsProp.n bp' + BarsProp.n (𝔹.bars b c))
-        e = BarsProp.ext bp'
+        e : BarredChain.w' bp' ⊑· chain.seq (pchain.c c) (BarredChain.n bp' + BarredChain.n (𝔹.bars b c))
+        e = BarredChain.ext bp'
 
     ext  : {w' : 𝕎·} → bar w' → w ⊑· w'
     ext {w'} (F , b') = ⊑-trans· (𝔹In.e1 F) (𝔹.ext (fst (i (𝔹In.e1 F) (𝔹In.br F))) b')

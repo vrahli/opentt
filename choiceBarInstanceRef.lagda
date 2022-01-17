@@ -69,19 +69,19 @@ followChoice-beth-ref : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                         → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
 followChoice-beth-ref c {w} {f} {r} (bar , i) ioc comp fb =
   w , ⊑-refl· _ , ioc , comp , fb ,
-  i e (BarsProp.b bp) (chain.seq (pchain.c pc) (BarsProp.n bp)) (BarsProp.ext bp) (⊑-refl· _)
+  i e (BarredChain.b bp) (chain.seq (pchain.c pc) (BarredChain.n bp)) (BarredChain.ext bp) (⊑-refl· _)
   where
     pc : pchain w
     pc = 𝕎→pchain w
 
-    bp : BarsProp (𝔹.bar bar) (pchain.c pc)
+    bp : BarredChain (𝔹.bar bar) (pchain.c pc)
     bp = 𝔹.bars bar pc
 
     w' : 𝕎·
-    w' = BarsProp.w' bp
+    w' = BarredChain.w' bp
 
     e : w ⊑· w'
-    e = 𝔹.ext bar (BarsProp.b bp)
+    e = 𝔹.ext bar (BarredChain.b bp)
 
 
 -- TODO: if we didn't want to rely on the choice instance at all,
