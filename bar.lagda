@@ -488,8 +488,12 @@ bar-𝔹⊑→ {B} mon {w} {w'} e {b} {w0} h = 𝔹.mon b (fst (snd (snd h))) (f
     (fst (snd (ex (𝔹.bars b) (𝔹.ext b))))
 
 
--- Those are all the properties we need about Bars to derive the above properties,
--- which in turn are the properties of Bar below
+{-- Those are all the properties we need about Bars to derive the above properties,
+    which in turn are the properties of Bar below.
+    We show 2 intances below:
+    (1) O𝔹BarsProps for open bars
+    (2) IS𝔹BarsProps for Beth Bars
+ --}
 record BarsProps : Set(lsuc(lsuc(L))) where
   constructor mkBarsProps
   field
@@ -690,7 +694,59 @@ O𝔹bars∩ {w} b1 b2 bars1 bars2 w1 e1 =
     h2 = bars2 (fst h1) (⊑-trans· e1 (fst (snd h1)))
 
 
--- TODO: prove the other properties of BarsProps
+O𝔹bars∀ : Bars∀ O𝔹bars
+O𝔹bars∀ w w1 e1 = w1 , ⊑-refl· _ , lift e1
+
+
+O𝔹barsFam1 : BarsFam1 O𝔹bars
+O𝔹barsFam1 {w} b G i w1 e1 =
+  fst (𝔹.bars b' (𝔹Fam.w2 bf) (⊑-refl· _)) ,
+  ⊑-trans· (fst (snd (𝔹.bars b w1 e1))) (𝔹.ext b' (lower (snd (snd (𝔹.bars b' (𝔹Fam.w2 bf) (⊑-refl· _)))))) ,
+  lift (bf , lower (snd (snd (𝔹.bars b' (𝔹Fam.w2 bf) (⊑-refl· _)))))
+  where
+    bf : 𝔹Fam b
+    bf = mk𝔹Fam (fst (𝔹.bars b w1 e1))
+                 (⊑-trans· e1 (fst (snd (𝔹.bars b w1 e1))))
+                 (lower (snd (snd (𝔹.bars b w1 e1))))
+                 (fst (𝔹.bars b w1 e1))
+                 (⊑-refl· _)
+                 (⊑-trans· e1 (fst (snd (𝔹.bars b w1 e1))))
+
+    b' : 𝔹 O𝔹bars (fst (𝔹.bars b w1 e1))
+    b' = fst (i (𝔹Fam.e1 bf) (𝔹Fam.br bf) (𝔹Fam.w2 bf) (𝔹Fam.e2 bf) (𝔹Fam.z bf))
+
+
+O𝔹barsFam2 : BarsFam2 O𝔹bars
+O𝔹barsFam2 {w} b G i w1 e1 =
+  fst (𝔹.bars b' (𝔹In.w1 bi) (⊑-refl· _)) ,
+  ⊑-trans· (fst (snd (𝔹.bars b w1 e1))) (fst (snd (𝔹.bars b' (𝔹In.w1 bi) (⊑-refl· _)))) ,
+  lift (bi , lower (snd (snd (𝔹.bars b' (𝔹In.w1 bi) (⊑-refl· _)))))
+  where
+    bi : 𝔹In b
+    bi = mk𝔹In (fst (𝔹.bars b w1 e1))
+                (⊑-trans· e1 (fst (snd (𝔹.bars b w1 e1))))
+                (lower (snd (snd (𝔹.bars b w1 e1))))
+
+    b' : 𝔹 O𝔹bars (fst (𝔹.bars b w1 e1))
+    b' = fst (i (𝔹In.e1 bi) (𝔹In.br bi))
+
+
+O𝔹bars∃ : Bars∃ O𝔹bars
+O𝔹bars∃ {w} {bar} bars ext =
+  fst (bars w (⊑-refl· _)) , fst (snd (bars w (⊑-refl· _))) , lower (snd (snd (bars w (⊑-refl· _))))
+
+
+O𝔹BarsProps : BarsProps
+O𝔹BarsProps =
+  mkBarsProps
+    O𝔹bars
+    O𝔹bars⊑
+    O𝔹bars∩
+    O𝔹bars∀
+    O𝔹barsFam1
+    O𝔹barsFam2
+    O𝔹bars∃
+
 
 O𝔹 : 𝕎· → Set(lsuc(L))
 O𝔹 w = 𝔹 O𝔹bars w

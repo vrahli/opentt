@@ -377,7 +377,7 @@ if-equalInType-EQ : (u : ℕ) (w : 𝕎·) (T a b t₁ t₂ : CTerm)
 {-# INLINE inBethBar-idem #-}
 {-# INLINE ∀𝕎-inBethBar'-inBethBar #-}
 {-# INLINE ∀𝕎-inBethBarFunc #-}
-{-# INLINE IS𝔹-fam #-}
+{-# INLINE 𝔹fam #-}
 {-# TERMINATING #-}
 if-equalInType-EQ u w T a b t₁ t₂ (EQTNAT x x₁ , eqi) = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTQNAT x x₁ , eqi) = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
