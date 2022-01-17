@@ -657,14 +657,6 @@ BarsProps→Bar b =
  --
  --}
 
-
--- f holds in an open bar
-inOpenBar : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
-inOpenBar w f =
-  ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → ∀𝕎 w2 (λ w3 e3 →
-     (z : w ⊑· w3) → f w3 z)))
-
-
 ------
 -- An open bar
 O𝔹bars : Bars
@@ -748,8 +740,23 @@ O𝔹BarsProps =
     O𝔹bars∃
 
 
+{-- We could define open bars as follows, or we can define them directly using inOpenBar as done below
+ --}
 O𝔹 : 𝕎· → Set(lsuc(L))
 O𝔹 w = 𝔹 O𝔹bars w
+
+
+inOpenBar-Bar-v1 : Bar
+inOpenBar-Bar-v1 = BarsProps→Bar O𝔹BarsProps
+----
+
+
+
+-- f holds in an open bar
+inOpenBar : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
+inOpenBar w f =
+  ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → ∀𝕎 w2 (λ w3 e3 →
+     (z : w ⊑· w3) → f w3 z)))
 
 
 Σ∈𝔹→inOpenBar : (w : 𝕎·) (f : wPred w) → Σ∈𝔹 {O𝔹bars} w f → inOpenBar w f
@@ -1533,6 +1540,8 @@ inOpenBar-Bar =
 
 
 
+{--
+
 
 {-----------------------------------------
  --
@@ -1684,6 +1693,9 @@ inIBethBar-inIBethBar' {w} {f} {g} (b1 , i1) (indBar-ind .w ind , i2) = {!!}
 --}
 
 
+--}
+
+
 
 {-----------------------------------------
  --
@@ -1702,10 +1714,16 @@ record BarredChain (bar : Br) {w : 𝕎·} (c : chain w) : Set(L) where
 IS𝔹bars : Bars
 IS𝔹bars w bar = (c : pchain w) → BarredChain bar (pchain.c c)
 
-
 -- a Beth bar where all infinite sequences are barred
 IS𝔹 : 𝕎· → Set(lsuc(L))
 IS𝔹 w = 𝔹 IS𝔹bars w
+
+inBethBar : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
+inBethBar = Σ∈𝔹 {IS𝔹bars}
+
+inBethBar' : (w : 𝕎·) {g : wPred w} (h : inBethBar w g) (f : wPredDep g) → Set(lsuc(L))
+inBethBar' = Σ∈𝔹' {IS𝔹bars}
+
 
 
 -- We prove that Beth bars are monotonic
@@ -1816,14 +1834,9 @@ IS𝔹BarsProps =
     IS𝔹bars∃
 
 
-inIS𝔹 : {w : 𝕎·} (b : IS𝔹 w) (f : wPred w) → Set(lsuc(L))
-inIS𝔹 = ∈𝔹 {IS𝔹bars}
 
 
-inBethBar : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
-inBethBar = Σ∈𝔹 {IS𝔹bars}
-
-
+{--
 ↑inBethBar : {w : 𝕎·} {f : wPred w} (i : inBethBar w f) {w' : 𝕎·} (e : w ⊑· w') → inBethBar w' (↑wPred f e)
 ↑inBethBar = ↑Σ∈𝔹 {IS𝔹bars} IS𝔹bars⊑
 
@@ -1846,10 +1859,6 @@ trivialIS𝔹 = 𝔹∀ {IS𝔹bars} IS𝔹bars∀
 
 ∀𝕎-inBethBar : {w : 𝕎·} {f : wPred w} → ∀𝕎 w f → inBethBar w f
 ∀𝕎-inBethBar = ∀𝕎-Σ∈𝔹 {IS𝔹bars} IS𝔹bars∀
-
-
-inBethBar' : (w : 𝕎·) {g : wPred w} (h : inBethBar w g) (f : wPredDep g) → Set(lsuc(L))
-inBethBar' = Σ∈𝔹' {IS𝔹bars}
 
 
 inBethBar-inBethBar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f}
@@ -1904,17 +1913,15 @@ inBethBar'-change : {w : 𝕎·} {f k : wPred w} {g : wPredDep f} {h : wPredDep 
 inBethBar'-change = Σ∈𝔹'-change {IS𝔹bars} IS𝔹bars⊑ IS𝔹barsFam2
 
 
-
-
 inBethBar-const : {w : 𝕎·} {t : Set(lsuc(L))} → inBethBar w (λ w e → t) → t
 inBethBar-const = Σ∈𝔹-const {IS𝔹bars} IS𝔹bars∃
-
+--}
 
 
 -- TODO: generate this bar from (BarsProps→Bar IS𝔹BarsProps)
 inBethBar-Bar : Bar
-inBethBar-Bar =
-  mkBar
+inBethBar-Bar = BarsProps→Bar IS𝔹BarsProps
+{--  mkBar
     inBethBar
     inBethBar'
     ↑inBethBar
@@ -1931,11 +1938,14 @@ inBethBar-Bar =
     inBethBar'-comb
     inBethBar'-change
     inBethBar-const
+--}
 
 
 
 
 
+{--inIS𝔹 : {w : 𝕎·} (b : IS𝔹 w) (f : wPred w) → Set(lsuc(L))
+inIS𝔹 = ∈𝔹 {IS𝔹bars}--}
 
 {--IS𝔹⊑ : {w w' : 𝕎·} (e : w ⊑· w') → IS𝔹 w → IS𝔹 w'
 IS𝔹⊑ = 𝔹⊑ {IS𝔹bars} IS𝔹bars⊑--}
