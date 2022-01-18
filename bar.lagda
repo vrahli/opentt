@@ -1941,11 +1941,16 @@ inBethBar-Bar = BarsProps→Bar IS𝔹BarsProps
 --}
 
 
+trivialIS𝔹 : (w : 𝕎·) → IS𝔹 w
+trivialIS𝔹 = 𝔹∀ {IS𝔹bars} IS𝔹bars∀
+
+inIS𝔹 : {w : 𝕎·} (b : IS𝔹 w) (f : wPred w) → Set(lsuc(L))
+inIS𝔹 = ∈𝔹 {IS𝔹bars}
 
 
 
-{--inIS𝔹 : {w : 𝕎·} (b : IS𝔹 w) (f : wPred w) → Set(lsuc(L))
-inIS𝔹 = ∈𝔹 {IS𝔹bars}--}
+
+
 
 {--IS𝔹⊑ : {w w' : 𝕎·} (e : w ⊑· w') → IS𝔹 w → IS𝔹 w'
 IS𝔹⊑ = 𝔹⊑ {IS𝔹bars} IS𝔹bars⊑--}
