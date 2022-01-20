@@ -30,6 +30,7 @@ open import Function.Inverse using (Inverse)
 
 open import util
 open import calculus
+open import terms
 
 
 module worldInstanceRef where
@@ -45,7 +46,7 @@ This provides an instance of world and choice for choice sequences
 open import choice
 
 choiceRef : Choice
-choiceRef = mkChoice Term NUM (λ x → x) (λ _ → refl)
+choiceRef = mkChoice CTerm (λ x → x) (#NUM 0) (#NUM 1)
 
 open import choiceDef{1ℓ}(choiceRef)
 
@@ -57,7 +58,7 @@ record Cell : Set₁ where
   field
     name : Name
     r : Res{0ℓ}
-    v : Term
+    v : ℂ·
     f : Bool
 
 
@@ -71,7 +72,7 @@ wdom [] = []
 wdom (cell name _ _ _ ∷ w) = name ∷ wdom w
 
 
-update : (n : Name) (v : Term) (f : Bool) (w : world) → world
+update : (n : Name) (v : ℂ·) (f : Bool) (w : world) → world
 update _ _ _ [] = []
 update n v f (cell name r x b ∷ w) with n ≟ name
 ... | yes p = (if b then cell name r x b else cell name r v f) ∷ w
@@ -89,19 +90,19 @@ getRef name (cell n r v f ∷ w) with name ≟ n
 ... | no p = getRef name w
 
 
-∈world : (n : Name) (r : Res{0ℓ}) (v : Term) (f : Bool) (w : world) → Set₁
+∈world : (n : Name) (r : Res{0ℓ}) (v : ℂ·) (f : Bool) (w : world) → Set₁
 ∈world n r v f w = getRef n w ≡ just (cell n r v f)
 
 
 hasRes : (c : Name) (w : world) (r : Res{0ℓ}) → Set₁
-hasRes c w r = Σ Term (λ v → Σ Bool (λ f → ∈world c r v f w))
+hasRes c w r = Σ ℂ· (λ v → Σ Bool (λ f → ∈world c r v f w))
 
 
 data _≼_ : (w2 : world) (w1 : world) → Set₁ where
   ≼-refl : (w : world) → w ≼ w
   ≼-trans : {w1 w2 w3 : world} → w1 ≼ w2 → w2 ≼ w3 → w1 ≼ w3
   upd :
-    (w : world) (n : Name) (r : Res{0ℓ}) (v : Term) (f : Bool)
+    (w : world) (n : Name) (r : Res{0ℓ}) (v : ℂ·) (f : Bool)
     → hasRes n w r
     → ⋆ᵣ r v
     → w ≼ update n v f w
@@ -121,7 +122,7 @@ open import worldDef(PossibleWorldsRef)
 
 
 
-getRefChoice : (n : ℕ) (name : Name) (w : world) → Maybe Term
+getRefChoice : (n : ℕ) (name : Name) (w : world) → Maybe ℂ·
 getRefChoice _ name w with getRef name w
 ... | just (cell _ _ v _) = just v
 ... | nothing = nothing
@@ -157,7 +158,7 @@ getRef-newCell w name r with name ≟ name
 ... | no p = ⊥-elim (p refl)
 
 
-getRefChoice-startNewRefChoice : (n : ℕ) (r : Res) (w : 𝕎·) (t : Term)
+getRefChoice-startNewRefChoice : (n : ℕ) (r : Res) (w : 𝕎·) (t : ℂ·)
                                  → getRefChoice n (newRefChoice w) (startNewRefChoice r w) ≡ just t → t ≡ Res.def r
 --                                 → getRefChoice n (newRefChoice w) (startNewRefChoice r w) ≡ nothing
 getRefChoice-startNewRefChoice n r w t e
@@ -184,48 +185,48 @@ open import newChoiceDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRe
 
 
 
-resSatRef : (v : Term) (r : Res{0ℓ}) → Set
+resSatRef : (v : ℂ·) (r : Res{0ℓ}) → Set
 resSatRef v r = ⋆ᵣ r v
 
 
 -- This is the same as 'hasRef' & enforces satisfiability too
 compatibleRef : (c : Name) (w : 𝕎·) (r : Res{0ℓ}) → Set₁
-compatibleRef c w r = Σ Term (λ v → Σ Bool (λ f → ∈world c r v f w × resSatRef v r))
+compatibleRef c w r = Σ ℂ· (λ v → Σ Bool (λ f → ∈world c r v f w × resSatRef v r))
 
 
 
-pres-resSatRef : (v v' : Term) (r : Res{0ℓ}) → Set
+pres-resSatRef : (v v' : ℂ·) (r : Res{0ℓ}) → Set
 pres-resSatRef v v' r = resSatRef v r → resSatRef v' r
 
 
-pres-resSatRef-refl : (v : Term) (r : Res{0ℓ}) → pres-resSatRef v v r
+pres-resSatRef-refl : (v : ℂ·) (r : Res{0ℓ}) → pres-resSatRef v v r
 pres-resSatRef-refl v r d = d
 
 
-pres-resSatRef-trans : {v1 v2 v3 : Term} {r : Res{0ℓ}}
+pres-resSatRef-trans : {v1 v2 v3 : ℂ·} {r : Res{0ℓ}}
                        → pres-resSatRef v1 v2 r
                        → pres-resSatRef v2 v3 r
                        → pres-resSatRef v1 v3 r
 pres-resSatRef-trans {v1} {v2} {v3} {r} p1 p2 s = p2 (p1 s)
 
 
-cell-inj1 : {n1 n2 : Name} {r1 r2 : Res} {v1 v2 : Term} {f1 f2 : Bool} → cell n1 r1 v1 f1 ≡ cell n2 r2 v2 f2 → n1 ≡ n2
+cell-inj1 : {n1 n2 : Name} {r1 r2 : Res} {v1 v2 : ℂ·} {f1 f2 : Bool} → cell n1 r1 v1 f1 ≡ cell n2 r2 v2 f2 → n1 ≡ n2
 cell-inj1 refl =  refl
 
 
-cell-inj2 : {n1 n2 : Name} {r1 r2 : Res} {v1 v2 : Term} {f1 f2 : Bool} → cell n1 r1 v1 f1 ≡ cell n2 r2 v2 f2 → r1 ≡ r2
+cell-inj2 : {n1 n2 : Name} {r1 r2 : Res} {v1 v2 : ℂ·} {f1 f2 : Bool} → cell n1 r1 v1 f1 ≡ cell n2 r2 v2 f2 → r1 ≡ r2
 cell-inj2 refl =  refl
 
 
-cell-inj3 : {n1 n2 : Name} {r1 r2 : Res} {v1 v2 : Term} {f1 f2 : Bool} → cell n1 r1 v1 f1 ≡ cell n2 r2 v2 f2 → v1 ≡ v2
+cell-inj3 : {n1 n2 : Name} {r1 r2 : Res} {v1 v2 : ℂ·} {f1 f2 : Bool} → cell n1 r1 v1 f1 ≡ cell n2 r2 v2 f2 → v1 ≡ v2
 cell-inj3 refl =  refl
 
 
-cell-inj4 : {n1 n2 : Name} {r1 r2 : Res} {v1 v2 : Term} {f1 f2 : Bool} → cell n1 r1 v1 f1 ≡ cell n2 r2 v2 f2 → f1 ≡ f2
+cell-inj4 : {n1 n2 : Name} {r1 r2 : Res} {v1 v2 : ℂ·} {f1 f2 : Bool} → cell n1 r1 v1 f1 ≡ cell n2 r2 v2 f2 → f1 ≡ f2
 cell-inj4 refl =  refl
 
 
-getRef-update-true-≡ : {w : 𝕎·} {name : Name} {r : Res{0ℓ}} {v : Term} (v' : Term) (f : Bool)
+getRef-update-true-≡ : {w : 𝕎·} {name : Name} {r : Res{0ℓ}} {v : ℂ·} (v' : ℂ·) (f : Bool)
                      → getRef name w ≡ just (cell name r v true)
                      → getRef name (update name v' f w) ≡ just (cell name r v true)
 getRef-update-true-≡ {cell name₁ r₁ v₁ f₁ ∷ w} {name} {r} {v} v' f e with name ≟ name₁
@@ -238,7 +239,7 @@ getRef-update-true-≡ {cell name₁ r₁ v₁ f₁ ∷ w} {name} {r} {v} v' f e
 
 
 
-getRef-update-false-≡ : {w : 𝕎·} {name : Name} {r : Res{0ℓ}} {v : Term} (v' : Term) (f : Bool)
+getRef-update-false-≡ : {w : 𝕎·} {name : Name} {r : Res{0ℓ}} {v : ℂ·} (v' : ℂ·) (f : Bool)
                      → getRef name w ≡ just (cell name r v false)
                      → getRef name (update name v' f w) ≡ just (cell name r v' f)
 getRef-update-false-≡ {cell name₁ r₁ v₁ f₁ ∷ w} {name} {r} {v} v' f e with name ≟ name₁
@@ -251,7 +252,7 @@ getRef-update-false-≡ {cell name₁ r₁ v₁ f₁ ∷ w} {name} {r} {v} v' f 
 
 
 
-getRef-update-¬≡ : {w : 𝕎·} {name : Name} {r : Res{0ℓ}} {v : Term} {f : Bool} (name' : Name) (v' : Term) (f' : Bool)
+getRef-update-¬≡ : {w : 𝕎·} {name : Name} {r : Res{0ℓ}} {v : ℂ·} {f : Bool} (name' : Name) (v' : ℂ·) (f' : Bool)
                      → ¬ name' ≡ name
                      → getRef name w ≡ just (cell name r v f)
                      → getRef name (update name' v' f' w) ≡ just (cell name r v f)
@@ -282,17 +283,17 @@ getRef-update-¬≡ {cell name₁ r₁ v₁ f₁ ∷ w} {name} {r} {v} {f} name'
 ... | no p = ¬∈wdom→getRef-nothing {n} {w} (λ x → ni (there x))
 
 
-satFrozen : (v v' : Term) (f f' : Bool) → Set
+satFrozen : (v v' : ℂ·) (f f' : Bool) → Set
 satFrozen v v' true f' = f' ≡ true × v ≡ v'
 satFrozen v v' false f' = ⊤
 
 
-satFrozen-refl : (v : Term) (f : Bool) → satFrozen v v f f
+satFrozen-refl : (v : ℂ·) (f : Bool) → satFrozen v v f f
 satFrozen-refl v true = refl , refl
 satFrozen-refl v false = tt
 
 
-satFrozen-trans : {v1 v2 v3 : Term} {f1 f2 f3 : Bool}
+satFrozen-trans : {v1 v2 v3 : ℂ·} {f1 f2 f3 : Bool}
                   → satFrozen v1 v2 f1 f2
                   → satFrozen v2 v3 f2 f3
                   → satFrozen v1 v3 f1 f3
@@ -300,20 +301,20 @@ satFrozen-trans {v1} {v2} {v3} {false} {f2} {f3} s1 s2 = tt
 satFrozen-trans {v1} {v2} {v3} {true} {f2} {f3} (e1 , e2) s2 rewrite e1 | e2 = s2
 
 
-⊑-pres-getRef : {w1 w2 : world} {name : Name} {r : Res} {v : Term} {f : Bool}
+⊑-pres-getRef : {w1 w2 : world} {name : Name} {r : Res} {v : ℂ·} {f : Bool}
                  → w1 ⊑· w2
                  → getRef name w1 ≡ just (cell name r v f)
-                 → Σ Term (λ v' → Σ Bool (λ f' → getRef name w2 ≡ just (cell name r v' f') × pres-resSatRef v v' r × satFrozen v v' f f'))
+                 → Σ ℂ· (λ v' → Σ Bool (λ f' → getRef name w2 ≡ just (cell name r v' f') × pres-resSatRef v v' r × satFrozen v v' f f'))
 ⊑-pres-getRef {w1} {.w1} {name} {r} {v} {f} (≼-refl .w1) i = v , f , i , pres-resSatRef-refl v r , satFrozen-refl v f
 ⊑-pres-getRef {w1} {w3} {name} {r} {v} {f} (≼-trans {.w1} {w2} {.w3} e₁ e₂) i =
   fst ind2 , fst (snd ind2) , fst (snd (snd ind2)) ,
   pres-resSatRef-trans {v} {fst ind1} {fst ind2} {r} (fst (snd (snd (snd ind1)))) (fst (snd (snd (snd ind2)))) ,
   satFrozen-trans (snd (snd (snd (snd ind1)))) (snd (snd (snd (snd ind2))))
   where
-    ind1 : Σ Term (λ v' → Σ Bool (λ f' → getRef name w2 ≡ just (cell name r v' f') × pres-resSatRef v v' r × satFrozen v v' f f'))
+    ind1 : Σ ℂ· (λ v' → Σ Bool (λ f' → getRef name w2 ≡ just (cell name r v' f') × pres-resSatRef v v' r × satFrozen v v' f f'))
     ind1 = ⊑-pres-getRef e₁ i
 
-    ind2 : Σ Term (λ v' → Σ Bool (λ f' → getRef name w3 ≡ just (cell name r v' f') × pres-resSatRef (fst ind1) v' r × satFrozen (fst ind1) v' (fst (snd ind1)) f'))
+    ind2 : Σ ℂ· (λ v' → Σ Bool (λ f' → getRef name w3 ≡ just (cell name r v' f') × pres-resSatRef (fst ind1) v' r × satFrozen (fst ind1) v' (fst (snd ind1)) f'))
     ind2 = ⊑-pres-getRef e₂ (fst (snd (snd ind1)))
 ⊑-pres-getRef {w1} {.(update n v₁ f₁ w1)} {name} {r} {v} {true} (upd .w1 n r₁ v₁ f₁ hr x) i with n ≟ name
 ... | yes p rewrite p = v , true , (getRef-update-true-≡ {w1} v₁ f₁ i) , (λ x → x) , refl , refl
@@ -331,7 +332,7 @@ satFrozen-trans {v1} {v2} {v3} {true} {f2} {f3} (e1 , e2) s2 rewrite e1 | e2 = s
 ⊑-compatibleRef {c} {w1} {w2} {r} e (v , f , comp , sat) =
   fst x , fst (snd x) , fst (snd (snd x)) , fst (snd (snd (snd x))) sat
   where
-    x : Σ Term (λ v' → Σ Bool (λ f' → getRef c w2 ≡ just (cell c r v' f') × pres-resSatRef v v' r × satFrozen v v' f f'))
+    x : Σ ℂ· (λ v' → Σ Bool (λ f' → getRef c w2 ≡ just (cell c r v' f') × pres-resSatRef v v' r × satFrozen v v' f f'))
     x = ⊑-pres-getRef e comp
 
 
@@ -342,11 +343,11 @@ startRefChoiceCompatible r w =
 
 
 
-freezeRef : (n : Name) (w : 𝕎·) (v : Term) → world
+freezeRef : (n : Name) (w : 𝕎·) (v : ℂ·) → world
 freezeRef n w v = update n v true w
 
 
-hasRes∷ : (name : Name) (r : Res) (v : Term) (f : Bool) (w : 𝕎·)
+hasRes∷ : (name : Name) (r : Res) (v : ℂ·) (f : Bool) (w : 𝕎·)
           → hasRes name (cell name r v f ∷ w) r
 hasRes∷ name r v f w with name ≟ name
 ... | yes p = v , f , refl
@@ -359,7 +360,7 @@ freezableRef c w with getRef c w
 ... | _ = ⊥
 
 
-⊑-freeze∷ : (name : Name) (r : Res) (v₁ v₂ : Term) (w : 𝕎·)
+⊑-freeze∷ : (name : Name) (r : Res) (v₁ v₂ : ℂ·) (w : 𝕎·)
          → ⋆ᵣ r v₂
          → (cell name r v₁ false ∷ w) ⊑· (cell name r v₂ true ∷ w)
 ⊑-freeze∷ name r v₁ v₂ w sat =
@@ -392,7 +393,7 @@ hasRes++-¬∈ : {name : Name} (w1 w2 : 𝕎·) (r : Res)
 hasRes++-¬∈ {name} w1 w2 r ni hr rewrite getRef++-¬∈ w1 w2 ni = hr
 
 
-update++-¬∈ : {name : Name} {w1 : 𝕎·} (w2 : 𝕎·) (t : Term) (f : Bool)
+update++-¬∈ : {name : Name} {w1 : 𝕎·} (w2 : 𝕎·) (t : ℂ·) (f : Bool)
               → ¬ name ∈ wdom w1
               → update name t f (w1 ++ w2) ≡ w1 ++ update name t f w2
 update++-¬∈ {name} {[]} w2 t f ni = refl
@@ -401,7 +402,7 @@ update++-¬∈ {name} {cell name₁ r v f₁ ∷ w1} w2 t f ni with name ≟ nam
 ... | no p rewrite update++-¬∈ {name} {w1} w2 t f (λ x → ni (there x)) = refl
 
 
-preFreezeRef⊑ : (c : Name) (w w' : 𝕎·) (t : Term) {r : Res}
+preFreezeRef⊑ : (c : Name) (w w' : 𝕎·) (t : ℂ·) {r : Res}
                 → compatibleRef c w r
                 → ⋆ᵣ r t
                 → ¬ (c ∈ wdom w')
@@ -432,7 +433,7 @@ preFreezeRef⊑ c (cell name r₁ v₁ f₁ ∷ w) w' t {r} (v , f , comp , sat)
     ... | inj₂ (here q) = ⊥-elim (p q)
 
 
-freezeRef⊑ : (c : Name) (w : 𝕎·) (t : Term) {r : Res} → compatibleRef c w r → ⋆ᵣ r t → w ⊑· freezeRef c w t
+freezeRef⊑ : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res} → compatibleRef c w r → ⋆ᵣ r t → w ⊑· freezeRef c w t
 freezeRef⊑ c w t {r} comp sat = preFreezeRef⊑ c w [] t comp sat λ ()
 
 
@@ -453,13 +454,13 @@ freezableStartRef r w with newRefChoice w ≟ newRefChoice w
 
 progressFreeze : (c : Name) (w1 w2 : 𝕎·) → Set₁
 progressFreeze c w1 w2 =
-  (r : Res) (v : Term) (f : Bool)
+  (r : Res) (v : ℂ·) (f : Bool)
   → ∈world c r v f w1
-  → Σ Term (λ v' → ∈world c r v' true w2 × satFrozen v v' f true)
+  → Σ ℂ· (λ v' → ∈world c r v' true w2 × satFrozen v v' f true)
 
 
 
-progressRef-freeze : (c : Name) (w : 𝕎·) (t : Term) → progressFreeze c w (freezeRef c w t)
+progressRef-freeze : (c : Name) (w : 𝕎·) (t : ℂ·) → progressFreeze c w (freezeRef c w t)
 progressRef-freeze c (cell name r₁ v₁ f₁ ∷ w) t r v f i with c ≟ name
 progressRef-freeze c (cell name r₁ v₁ true ∷ w) t r v f i | yes p rewrite p with name ≟ name
 ... |   yes q rewrite q | sym (cell-inj2 (just-inj i)) | sym (cell-inj3 (just-inj i)) | sym (cell-inj4 (just-inj i)) =
@@ -477,9 +478,9 @@ progressRef-freeze c (cell name r₁ v₁ f₁ ∷ w) t r v f i | no p with c �
 
 progressRef : (c : Name) (w1 w2 : 𝕎·) → Set₁
 progressRef c w1 w2 =
-  (r : Res) (v : Term) (f : Bool)
+  (r : Res) (v : ℂ·) (f : Bool)
   → ∈world c r v f w1
-  → Σ Term (λ v' → Σ Bool (λ f' → ∈world c r v' f' w2 × satFrozen v v' f f'))
+  → Σ ℂ· (λ v' → Σ Bool (λ f' → ∈world c r v' f' w2 × satFrozen v v' f f'))
 
 
 
@@ -492,7 +493,7 @@ progressRef c w1 w2 =
 
 
 
-∈world-false-freezeRef-true : (c : Name) (r : Res) (v : Term) (w : 𝕎·) (t : Term)
+∈world-false-freezeRef-true : (c : Name) (r : Res) (v : ℂ·) (w : 𝕎·) (t : ℂ·)
                               → ∈world c r v false w
                               → ∈world c r t true (freezeRef c w t)
 ∈world-false-freezeRef-true c r v (cell name r₁ v₁ f ∷ w) t i with c ≟ name
@@ -514,15 +515,15 @@ progressRef c w1 w2 =
 
 
 
-freeze→¬freezable : {c : Name} {w : 𝕎·} {r : Res{0ℓ}} (t : Term)
+freeze→¬freezable : {c : Name} {w : 𝕎·} {r : Res{0ℓ}} (t : ℂ·)
                     → compatibleRef c w r
                     → ∀𝕎 (freezeRef c w t) (λ w' _ → Lift 2ℓ (¬ freezableRef c w'))
 freeze→¬freezable {c} {w} {r} t (v , f , comp , sat) w1 e1 = lift z4
   where
-    z1 : Σ Term (λ v' → ∈world c r v' true (freezeRef c w t) × satFrozen v v' f true)
+    z1 : Σ ℂ· (λ v' → ∈world c r v' true (freezeRef c w t) × satFrozen v v' f true)
     z1 = progressRef-freeze c w t r v f comp
 
-    z2 : Σ Term (λ v' → Σ Bool (λ f' → ∈world c r v' f' w1 × satFrozen (fst z1) v' true f'))
+    z2 : Σ ℂ· (λ v' → Σ Bool (λ f' → ∈world c r v' f' w1 × satFrozen (fst z1) v' true f'))
     z2 = ⊑→progressRef c e1 r (fst z1) true (fst (snd z1))
 
     z3 : ∈world c r (fst z1) true w1
@@ -536,7 +537,7 @@ freeze→¬freezable {c} {w} {r} t (v , f , comp , sat) w1 e1 = lift z4
 
 
 
-getFreezeRef-aux : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}}
+getFreezeRef-aux : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res{0ℓ}}
                    → compatibleRef c w r
                    → freezableRef c w
                    → Σ ℕ (λ n → ∀𝕎 (freezeRef c w t) (λ w' _ → Lift 2ℓ (getRefChoice n c w' ≡ just t × ¬ freezableRef c w')))
@@ -546,10 +547,10 @@ getFreezeRef-aux c w t {r} (v , false , comp , sat) fb rewrite comp = 0 , aw
     aw : ∀𝕎 (freezeRef c w t) (λ w' _ → Lift 2ℓ (getRefChoice 0 c w' ≡ just t × ¬ freezableRef c w'))
     aw w1 e1 = lift (z4 , z5)
       where
-        z1 : Σ Term (λ v' → ∈world c r v' true (freezeRef c w t) × satFrozen v v' false true)
+        z1 : Σ ℂ· (λ v' → ∈world c r v' true (freezeRef c w t) × satFrozen v v' false true)
         z1 = progressRef-freeze c w t r v false comp
 
-        z2 : Σ Term (λ v' → Σ Bool (λ f' → ∈world c r v' f' w1 × satFrozen (fst z1) v' true f'))
+        z2 : Σ ℂ· (λ v' → Σ Bool (λ f' → ∈world c r v' f' w1 × satFrozen (fst z1) v' true f'))
         z2 = ⊑→progressRef c e1 r (fst z1) true (fst (snd z1))
 
         z3 : ∈world c r (fst z1) true w1
@@ -566,13 +567,19 @@ getFreezeRef-aux c w t {r} (v , false , comp , sat) fb rewrite comp = 0 , aw
 
 
 
-getFreezeRef : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}}
+getFreezeRef : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res{0ℓ}}
                → compatibleRef c w r
                → freezableRef c w
                → Σ ℕ (λ n → ∀𝕎 (freezeRef c w t) (λ w' _ → Lift 2ℓ (getRefChoice n c w' ≡ just t)))
 getFreezeRef c w t {r} comp fb =
   fst (getFreezeRef-aux c w t comp fb) ,
   λ w1 e1 → lift (fst (lower (snd (getFreezeRef-aux c w t comp fb) w1 e1)))
+
+
+getRefChoiceCompatible : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·)
+                        → compatibleRef c w r → getRefChoice n c w ≡ just t → ·ᵣ r n t
+getRefChoiceCompatible c r w n t (k , b , i , sat) g rewrite i | just-inj g = sat n
+
 
 
 open import freeze(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)
@@ -583,6 +590,7 @@ freezeREF =
     compatibleRef
     ⊑-compatibleRef
     startRefChoiceCompatible
+    getRefChoiceCompatible
     freezeRef
     freezableRef
     freezeRef⊑
@@ -604,10 +612,10 @@ progressRef-trans : {c : Name} {w1 w2 w3 : 𝕎·}
 progressRef-trans {c} {w1} {w2} {w3} p1 p2 r v f i =
   fst z2 , fst (snd z2) , fst (snd (snd z2)) , satFrozen-trans (snd (snd (snd z1))) (snd (snd (snd z2)))
   where
-    z1 : Σ Term (λ v' → Σ Bool (λ f' → ∈world c r v' f' w2 × satFrozen v v' f f'))
+    z1 : Σ ℂ· (λ v' → Σ Bool (λ f' → ∈world c r v' f' w2 × satFrozen v v' f f'))
     z1 = p1 r v f i
 
-    z2 : Σ Term (λ v' → Σ Bool (λ f' → ∈world c r v' f' w3 × satFrozen (fst z1) v' (fst (snd (z1))) f'))
+    z2 : Σ ℂ· (λ v' → Σ Bool (λ f' → ∈world c r v' f' w3 × satFrozen (fst z1) v' (fst (snd (z1))) f'))
     z2 = p2 r (fst z1) (fst (snd z1)) (fst (snd (snd z1)))
 
 
@@ -619,7 +627,7 @@ progressFreeze→progressRef {c} {w1} {w2} p r v f i =
 
 
 
-freezeRefProgress : (c : Name) {w1 w2 : 𝕎·} (t : Term) → w1 ⊑· w2 → progressRef c w1 (freezeRef c w2 t)
+freezeRefProgress : (c : Name) {w1 w2 : 𝕎·} (t : ℂ·) → w1 ⊑· w2 → progressRef c w1 (freezeRef c w2 t)
 freezeRefProgress c {w1} {w2} t e =
   progressRef-trans {c} {w1} {w2} {freezeRef c w2 t}
                     (⊑→progressRef c e)

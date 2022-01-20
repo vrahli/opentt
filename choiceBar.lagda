@@ -28,9 +28,11 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Data.Maybe
+open import Axiom.Extensionality.Propositional
 
 
 open import calculus
+open import terms
 open import world
 open import choice
 open import getChoice
@@ -41,6 +43,7 @@ open import progress
 
 module choiceBar {L : Level} (W : PossibleWorlds {L})
                  (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+                 (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
 
 open import worldDef(W)
@@ -51,15 +54,32 @@ open import freezeDef(W)(C)(G)(N)(F)
 open import computation(W)(C)(G)
 open import bar(W)(C)(G)(N)(F)(P)
 open import barI(W)(C)(G)(N)(F)(P)
+open import theory(W)(C)(G)(N)(F)(P)(E)
 
 
--- TODO : add compatiblity constraint to choice-weakℕ: compatible· c w Resℕ
--- We also need to assume that compatible is preserved by extensions
+-- TODO: call this choiceType instead
 record ChoiceBar : Set(lsuc(lsuc(L))) where
   constructor mkBar
   field
+    Typeℂ₀₁ : CTerm
+
+    Typeℂ₀₁-isType : (u : ℕ) (w : 𝕎·) → isType u w Typeℂ₀₁
+    ℂ₀∈Typeℂ₀₁ : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁ Cℂ₀
+    ℂ₁∈Typeℂ₀₁ : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁ Cℂ₁
+    isValueℂ₀ : isValue Tℂ₀
+    isValueℂ₁ : isValue Tℂ₁
+    ℂ₀≠ℂ₁ : ¬ Cℂ₀ ≡ Cℂ₁
+    -- Typeℂ₀₁'s members are weakly syntactically equal
+    ∈Typeℂ₀₁→ : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁ a b → inbar w (λ w' _ → #weakℂEq w' a b)
+    -- Typeℂ₀₁ contains all terms that weakly compute to ℂ₀ or ℂ₁
+    →∈Typeℂ₀₁ : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name} → inbar w (λ w' _ → weakℂ₀₁M w' (getT n c)) → ∈Type i w Typeℂ₀₁ (#APPLY (#CS c) (#NUM n))
+
+    -- TODO: for any restriction not just Resℂ₀₁
+    inbar-choice : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res) → compatible· c w r → inbar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t))))
+    --choice-Typeℂ₀₁ : {w : 𝕎·} {c : Name} (m : ℕ) → compatible· c w Resℂ₀₁ → inbar w (λ w' _ → weakℂ₀₁M w' (getT m c))
+
     -- This says that all choices are "weak" ℕ (i.e., that can change over time)
-    choice-weakℕ : {w : 𝕎·} {c : Name} (m : ℕ) → compatible· c w Resℕ → inbar w (λ w' _ → weakℕM w' (getC m c))
+    --choice-weakℕ : {w : 𝕎·} {c : Name} (m : ℕ) → compatible· c w Resℕ → inbar w (λ w' _ → weakℕM w' (getC m c))
 
     -- This allows selecting a branch of a bar that follows a given choice 'u'
     followChoice : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}

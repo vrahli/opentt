@@ -66,7 +66,7 @@ step (PI a b) w = just (PI a b)
 step (LAMBDA t) w = just (LAMBDA t)
 -- APPLY
 -- access the n^th choice in the history of choices made for "name"
-step (APPLY (CS name) (NUM n)) w = getC n name w
+step (APPLY (CS name) (NUM n)) w = getT n name w
 step (APPLY (CS name) t) w with step t w
 ... | just u = just (APPLY (CS name) u)
 ... | nothing = nothing
@@ -176,6 +176,8 @@ postulate
   ∼-refl : {a : Term} {w : 𝕎·} → a ∼ a at w
   ∼-sym : {a b : Term} {w : 𝕎·} → a ∼ b at w → b ∼ a at w
   ∼-trans : {a b c : Term} {w : 𝕎·} → a ∼ b at w → b ∼ c at w → a ∼ c at w
+  -- includes ⇓
+  ⇓→∼ : {a b : Term} {w : 𝕎·} → a ⇓ b at w → a ∼ b at w
   -- states that the argument does not contain any definition or choice sequence
   nodefs : Term → Set
 infix 30 _∼_at_
@@ -220,6 +222,15 @@ weakℕ w t = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ n → t �
 
 weakℕM : (w : 𝕎·) (f : 𝕎· → Maybe Term) → Set(lsuc(L))
 weakℕM w f = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ Term (λ t → f w' ≡ just t × Σ ℕ (λ n → t ⇓ NUM n at w'))))
+
+
+-- t1 and t2 compute to the same choice but that choice can change over time
+weakℂEq : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
+weakℂEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ c → t1 ⇓ ℂ→T c at w' × t2 ⇓ ℂ→T c at w')))
+
+
+weakℂ₀₁M : (w : 𝕎·) (f : 𝕎· → Maybe Term) → Set(lsuc(L))
+weakℂ₀₁M w f = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ Term (λ t → f w' ≡ just t × (t ⇓ Tℂ₀ at w' ⊎ t ⇓ Tℂ₁ at w'))))
 
 
 ⇛to-same-CS : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
@@ -272,7 +283,7 @@ steps≡stepsR (suc n) t w rewrite sym (steps≡stepsR n t w) | steps≡ n t w =
 
 
 step-APPLY-CS : (t : Term) (w : 𝕎·) (k : ℕ) (name : Name)
-                → getC k name w ≡ just t
+                → getT k name w ≡ just t
                 → steps 1 (APPLY (CS name) (NUM k)) w ≡ t
 step-APPLY-CS t w k name gc rewrite gc = refl
 
@@ -336,7 +347,7 @@ step-APPLY-CS-¬NUM name (SHRINK a) b w c s rewrite sym (just-inj s) = refl
 
 Σ-steps-APPLY-CS : (n : ℕ) (a t : Term) (w : 𝕎·) (k : ℕ) (name : Name)
                  → steps n a w ≡ NUM k
-                 → getC k name w ≡ just t
+                 → getT k name w ≡ just t
                  → Σ ℕ (λ m → steps m (APPLY (CS name) a) w ≡ t)
 Σ-steps-APPLY-CS n a t w k name h gc = (suc m , g)
   where
@@ -430,24 +441,15 @@ infix 30 _#⇛_at_
 #weakMonEq w t1 t2 = weakMonEq w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 
-#NUM : ℕ → CTerm
-#NUM n = ct (NUM n) refl
+#weakℂEq : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
+#weakℂEq w t1 t2 = weakℂEq w ⌜ t1 ⌝ ⌜ t2 ⌝
+
 
 
 #weakMonEq→ : {w : 𝕎·} {a b : CTerm}
                → #weakMonEq w a b
                → Σ ℕ (λ n → a #⇓ #NUM n at w × b #⇓ #NUM n at w)
 #weakMonEq→ {w} {a} {B} h = lower (h w (⊑-refl· w))
-
-
-
-NUMinj : {n m : ℕ} → NUM n ≡ NUM m → n ≡ m
-NUMinj refl =  refl
-
-
-
-#NUMinj : {n m : ℕ} → #NUM n ≡ #NUM m → n ≡ m
-#NUMinj {n} {m} e = NUMinj (≡CTerm e)
 
 
 #weakMonEq-#NUM : (w : 𝕎·) (k : ℕ) → #weakMonEq w (#NUM k) (#NUM k)

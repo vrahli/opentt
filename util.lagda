@@ -66,6 +66,10 @@ module util where
 2ℓ = lsuc 1ℓ
 
 
+3ℓ : Level
+3ℓ = lsuc 2ℓ
+
+
 lift⊥ : Lift {0ℓ} 1ℓ ⊥ → ⊥
 lift⊥ ()
 

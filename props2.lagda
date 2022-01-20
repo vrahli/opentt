@@ -110,6 +110,17 @@ eqInType-extl1 {i} {w} {A} B C eqa1 eqa2 {a₁} {a₂} ei =
             C eqa2 a₁ a₂ ei
 
 
+eqInType-extr1 : {i : ℕ} {w : 𝕎·} {A : CTerm}
+                 (B C : CTerm)
+                 (eqa1 : equalTypes i w A B) (eqa2 : equalTypes i w C B)
+                 {a₁ a₂ : CTerm}
+                 → eqInType (uni i) w eqa1 a₁ a₂
+                 → eqInType (uni i) w eqa2 a₁ a₂
+eqInType-extr1 {i} {w} {A} B C eqa1 eqa2 {a₁} {a₂} ei =
+  TSP.extr1 (typeSysConds i w A B eqa1)
+            C eqa2 a₁ a₂ ei
+
+
 wPredExtIrr-eqInType : {i : ℕ} {w : 𝕎·} {A B : CTerm}
                        (eqta : ∀𝕎 w (λ w' _ → equalTypes i w' A B))
                        (a b : CTerm) → wPredExtIrr (λ w₁ e → eqInType (uni i) w₁ (eqta w₁ e) a b)

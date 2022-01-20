@@ -29,6 +29,7 @@ open import Function.Inverse using (Inverse)
 
 open import util
 open import calculus
+open import terms
 
 
 module worldInstanceCS where
@@ -44,7 +45,7 @@ This provides an instance of world and choice for choice sequences
 open import choice
 
 choiceCS : Choice
-choiceCS = mkChoice Term NUM (λ x → x) (λ _ → refl)
+choiceCS = mkChoice CTerm (λ x → x) (#NUM 0) (#NUM 1)
 
 open import choiceDef{1ℓ}(choiceCS)
 
@@ -54,13 +55,13 @@ record cs : Set₁ where
   constructor mkcs
   field
     name    : Name
-    choices : List Term
+    choices : List ℂ·
     res     : Res{0ℓ}
 
 
 data entry : Set₁ where
   start  : (name : Name) (res : Res) → entry
-  choice : (name : Name) (t : Term) → entry
+  choice : (name : Name) (t : ℂ·) → entry
 
 
 -- Worlds - entries are added at the end of the list
@@ -68,7 +69,7 @@ world : Set₁
 world = List entry
 
 
-getChoices : Name → world → List Term
+getChoices : Name → world → List ℂ·
 getChoices name [] = []
 getChoices name (start _ _ ∷ w) = getChoices name w
 getChoices name (choice n t ∷ w) with name ≟ n
@@ -113,7 +114,7 @@ newcs : world → Name → Res → world
 newcs w name r = w ∷ʳ start name r
 
 
-extcs : world → Name → Term → world
+extcs : world → Name → ℂ· → world
 extcs w name t = w ∷ʳ choice name t
 
 
@@ -122,7 +123,7 @@ data _≽_ : (w2 : world) (w1 : world) → Set₁ where
   extRefl : (w : world) → w ≽ w
   extTrans : {w1 w2 w3 : world} → w3 ≽ w2 → w2 ≽ w1 → w3 ≽ w1
   extChoice :
-    (w : world) (name : Name) (l : List Term) (t : Term) (res : Res)
+    (w : world) (name : Name) (l : List ℂ·) (t : ℂ·) (res : Res)
     → ∈world (mkcs name l res) w
     → ·ᵣ res (length l) t
     → (extcs w name t) ≽ w
@@ -158,15 +159,15 @@ getCs⊎ name w with getCs name w
 ... | nothing = inj₂ refl
 
 
-mkcs-inj1 : {n1 n2 : Name} {l1 l2 : List Term} {r1 r2 : Res} → mkcs n1 l1 r1 ≡ mkcs n2 l2 r2 → n1 ≡ n2
+mkcs-inj1 : {n1 n2 : Name} {l1 l2 : List ℂ·} {r1 r2 : Res} → mkcs n1 l1 r1 ≡ mkcs n2 l2 r2 → n1 ≡ n2
 mkcs-inj1 refl =  refl
 
 
-mkcs-inj2 : {n1 n2 : Name} {l1 l2 : List Term} {r1 r2 : Res} → mkcs n1 l1 r1 ≡ mkcs n2 l2 r2 → l1 ≡ l2
+mkcs-inj2 : {n1 n2 : Name} {l1 l2 : List ℂ·} {r1 r2 : Res} → mkcs n1 l1 r1 ≡ mkcs n2 l2 r2 → l1 ≡ l2
 mkcs-inj2 refl =  refl
 
 
-mkcs-inj3 : {n1 n2 : Name} {l1 l2 : List Term} {r1 r2 : Res} → mkcs n1 l1 r1 ≡ mkcs n2 l2 r2 → r1 ≡ r2
+mkcs-inj3 : {n1 n2 : Name} {l1 l2 : List ℂ·} {r1 r2 : Res} → mkcs n1 l1 r1 ≡ mkcs n2 l2 r2 → r1 ≡ r2
 mkcs-inj3 refl =  refl
 
 
@@ -181,7 +182,7 @@ getCs-same-name name (choice name₁ t ∷ w) e h = getCs-same-name name w e h
 
 
 
-getCs++ : (name : Name) (w w' : world) (l : List Term) (r : Res)
+getCs++ : (name : Name) (w w' : world) (l : List ℂ·) (r : Res)
           → getCs name w ≡ just (mkcs name l r)
           → getCs name (w ++ w') ≡ just (mkcs name (l ++ getChoices name w') r)
 getCs++ name (start name₁ res ∷ w) w' l r e with name ≟ name₁
@@ -190,7 +191,7 @@ getCs++ name (start name₁ res ∷ w) w' l r e with name ≟ name₁
 getCs++ name (choice name₁ t ∷ w) w' l r e = getCs++ name w w' l r e
 
 
-getCs++-same-choice : (name : Name) (w : world) (l : List Term) (r : Res) (t : Term)
+getCs++-same-choice : (name : Name) (w : world) (l : List ℂ·) (r : Res) (t : ℂ·)
                       → getCs name w ≡ just (mkcs name l r)
                       → getCs name (w ++ [ choice name t ]) ≡ just (mkcs name (l ++ [ t ]) r)
 getCs++-same-choice name w l r t e rewrite getCs++ name w [ choice name t ] l r e with name ≟ name
@@ -198,7 +199,7 @@ getCs++-same-choice name w l r t e rewrite getCs++ name w [ choice name t ] l r 
 ... | no p = ⊥-elim (p refl)
 
 
-getCs++-diff-choice : (name name₁ : Name) (w : world) (l : List Term) (r : Res) (t : Term)
+getCs++-diff-choice : (name name₁ : Name) (w : world) (l : List ℂ·) (r : Res) (t : ℂ·)
                       → ¬ name ≡ name₁
                       → getCs name w ≡ just (mkcs name l r)
                       → getCs name (w ++ [ choice name₁ t ]) ≡ just (mkcs name l r)
@@ -208,20 +209,20 @@ getCs++-diff-choice name name₁ w l r t d e rewrite getCs++ name w [ choice nam
 
 
 
-resSatCs : (n : ℕ) (l : List Term) (r : Res{0ℓ}) → Set
+resSatCs : (n : ℕ) (l : List ℂ·) (r : Res{0ℓ}) → Set
 resSatCs n [] r = ⊤
 resSatCs n (t ∷ l) r = ·ᵣ r n t × resSatCs (suc n) l r
 
 
-pres-resSatCs : (l l' : List Term) (r : Res{0ℓ}) → Set
+pres-resSatCs : (l l' : List ℂ·) (r : Res{0ℓ}) → Set
 pres-resSatCs l l' r = resSatCs 0 l r → resSatCs 0 (l ++ l') r
 
 
-pres-resSatCs-[] : (l : List Term) (r : Res{0ℓ}) → pres-resSatCs l [] r
+pres-resSatCs-[] : (l : List ℂ·) (r : Res{0ℓ}) → pres-resSatCs l [] r
 pres-resSatCs-[] l r x rewrite ++[] l = x
 
 
-→resSatCs++ : (n : ℕ) (l1 l2 : List Term) (r : Res{0ℓ})
+→resSatCs++ : (n : ℕ) (l1 l2 : List ℂ·) (r : Res{0ℓ})
                → resSatCs n l1 r
                → resSatCs (n + length l1) l2 r
                → resSatCs n (l1 ++ l2) r
@@ -230,12 +231,12 @@ pres-resSatCs-[] l r x rewrite ++[] l = x
   cond , →resSatCs++ (suc n) l1 l2 r sat1 sat2
 
 
-pres-resSatCs-∷ʳ : (l : List Term) (t : Term) (r : Res{0ℓ}) → ·ᵣ r (length l) t → pres-resSatCs l [ t ] r
+pres-resSatCs-∷ʳ : (l : List ℂ·) (t : ℂ·) (r : Res{0ℓ}) → ·ᵣ r (length l) t → pres-resSatCs l [ t ] r
 pres-resSatCs-∷ʳ l t r c x = →resSatCs++ 0 l [ t ] r x (c , tt)
 
 
 
-→pres-resSatCs++ : {l l1 l2 : List Term} {r : Res{0ℓ}}
+→pres-resSatCs++ : {l l1 l2 : List ℂ·} {r : Res{0ℓ}}
                     → pres-resSatCs l l1 r
                     → pres-resSatCs (l ++ l1) l2 r
                     → pres-resSatCs l (l1 ++ l2) r
@@ -243,10 +244,10 @@ pres-resSatCs-∷ʳ l t r c x = →resSatCs++ 0 l [ t ] r x (c , tt)
 
 
 
-≽-pres-getCs : {w1 w2 : world} {name : Name} {l : List Term} {r : Res}
+≽-pres-getCs : {w1 w2 : world} {name : Name} {l : List ℂ·} {r : Res}
                  → w2 ≽ w1
                  → getCs name w1 ≡ just (mkcs name l r)
-                 → Σ (List Term) (λ l' → getCs name w2 ≡ just (mkcs name (l ++ l') r) × pres-resSatCs l l' r)
+                 → Σ (List ℂ·) (λ l' → getCs name w2 ≡ just (mkcs name (l ++ l') r) × pres-resSatCs l l' r)
 ≽-pres-getCs {w1} {.w1} {name} {l} {r} (extRefl .w1) i =
   [] , subst (λ x → getCs name w1 ≡ just (mkcs name x r)) (sym (++[] l)) i , pres-resSatCs-[] l r
 ≽-pres-getCs {w1} {w2} {name} {l} {r} (extTrans ext ext₁) i =
@@ -268,7 +269,7 @@ wdom++ (start name res ∷ w₁) w₂ rewrite wdom++ w₁ w₂ = refl
 wdom++ (choice name t ∷ w₁) w₂ rewrite wdom++ w₁ w₂ = refl
 
 
-wdomAddChoice : (w : 𝕎·) (name : Name) (t : Term) → wdom (w ∷ʳ choice name t) ≡ wdom w
+wdomAddChoice : (w : 𝕎·) (name : Name) (t : ℂ·) → wdom (w ∷ʳ choice name t) ≡ wdom w
 wdomAddChoice w name t rewrite wdom++ w [ choice name t ] rewrite ++[] (wdom w) = refl
 
 
@@ -285,14 +286,14 @@ extwPreservesNorepeats w1 .(w1 ++ start name res ∷ []) (extEntry .w1 name res 
 
 
 
-≽-pres-∈world : {w1 w2 : 𝕎·} {name : Name} {l : List Term} {r : Res}
+≽-pres-∈world : {w1 w2 : 𝕎·} {name : Name} {l : List ℂ·} {r : Res}
                   → w2 ≽ w1
                   → ∈world (mkcs name l r) w1
-                  → Σ (List Term) (λ l' → ∈world (mkcs name (l ++ l') r) w2 × pres-resSatCs l l' r)
+                  → Σ (List ℂ·) (λ l' → ∈world (mkcs name (l ++ l') r) w2 × pres-resSatCs l l' r)
 ≽-pres-∈world {w1} {w2} {name} {l} {r} e i = ≽-pres-getCs e i
 
 
-∈world-extcs : (w : 𝕎·) (name : Name) (l : List Term) (r : Res) (t : Term)
+∈world-extcs : (w : 𝕎·) (name : Name) (l : List ℂ·) (r : Res) (t : ℂ·)
                → ∈world (mkcs name l r) w
                → ∈world (mkcs name (l ∷ʳ t) r) (extcs w name t)
 ∈world-extcs w name l r t i rewrite getCs++ name w [ choice name t ] l r i with name ≟ name
@@ -332,7 +333,7 @@ getCs++∉ name (choice name₁ t ∷ w) w' h = getCs++∉ name w w' h
 
 -- We now define an instance of CsChoice
 -- similar to lookup
-getCsChoice : (n : ℕ) (name : Name) (w : world) → Maybe Term
+getCsChoice : (n : ℕ) (name : Name) (w : world) → Maybe ℂ·
 getCsChoice n name w with getCs name w
 ... | just (mkcs _ l _) = select n l
 ... | nothing = nothing
@@ -378,7 +379,7 @@ getCsChoice-startNewCsChoice-aux : (n : ℕ) (r : Res) (w : 𝕎·) (name : Name
 getCsChoice-startNewCsChoice-aux n r w name ni rewrite getCs-newcs w name r ni = refl
 
 
-getCsChoice-startNewCsChoice : (n : ℕ) (r : Res) (w : 𝕎·) (t : Term)
+getCsChoice-startNewCsChoice : (n : ℕ) (r : Res) (w : 𝕎·) (t : ℂ·)
                                → getCsChoice n (newCsChoice w) (startNewCsChoice r w) ≡ just t → t ≡ Res.def r
 --                               → getCsChoice n (newCsChoice w) (startNewCsChoice r w) ≡ nothing
 getCsChoice-startNewCsChoice n r w t e
@@ -418,7 +419,7 @@ getRes name (choice _ _ ∷ w) = getRes name w
 
 {--
 data ≺cs (c : Name) : cs → cs → Set₁ where
-  ≺CS : (l l' : List Term) (r : Res)
+  ≺CS : (l l' : List ℂ·) (r : Res)
         → 0 < length l'
         → ≺cs c (mkcs c l r) (mkcs c (l ++ l') r)
 --}
@@ -427,12 +428,12 @@ data ≺cs (c : Name) : cs → cs → Set₁ where
 
 
 preCompatibleCs : (c : Name) (w : 𝕎·) (r : Res{0ℓ}) → Set₁
-preCompatibleCs c w r = Σ (List Term) (λ l → ∈world (mkcs c l r) w)
+preCompatibleCs c w r = Σ (List ℂ·) (λ l → ∈world (mkcs c l r) w)
 
 
 -- This is the same as 'preCompatibleCs' & enforces satisfiability too
 compatibleCs : (c : Name) (w : 𝕎·) (r : Res{0ℓ}) → Set₁
-compatibleCs c w r = Σ (List Term) (λ l → ∈world (mkcs c l r) w × resSatCs 0 l r)
+compatibleCs c w r = Σ (List ℂ·) (λ l → ∈world (mkcs c l r) w × resSatCs 0 l r)
 
 
 
@@ -479,12 +480,12 @@ startCsChoiceCompatible r w rewrite getCs-newcs w (newCsChoice w) r (snd (freshN
   [] , refl , tt
 
 
-freezeCs : (c : Name) (w : 𝕎·) (t : Term) → 𝕎·
+freezeCs : (c : Name) (w : 𝕎·) (t : ℂ·) → 𝕎·
 freezeCs c w t = extcs w c t
 
 
 
-¬≡freezeCs : (c : Name) (w : world) (t : Term) → ¬ w ≡ freezeCs c w t
+¬≡freezeCs : (c : Name) (w : world) (t : ℂ·) → ¬ w ≡ freezeCs c w t
 ¬≡freezeCs c [] t ()
 ¬≡freezeCs c (x ∷ w) t e = ¬≡freezeCs c w t (snd (∷-injective e))
 
@@ -499,41 +500,41 @@ freezableStartCs r w = tt
 
 
 
-getCs→∈world : {c : Name} {r : Res} {w : 𝕎·} {l : List Term} → getCs c w ≡ just (mkcs c l r) → ∈world (mkcs c l r) w
+getCs→∈world : {c : Name} {r : Res} {w : 𝕎·} {l : List ℂ·} → getCs c w ≡ just (mkcs c l r) → ∈world (mkcs c l r) w
 getCs→∈world {c} {r} {w} {l} h rewrite h = refl
 
 
-preFreezeCs⊑ : (c : Name) (w : 𝕎·) (t : Term) {r : Res} → preCompatibleCs c w r → ⋆ᵣ r t → w ⊑· freezeCs c w t
+preFreezeCs⊑ : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res} → preCompatibleCs c w r → ⋆ᵣ r t → w ⊑· freezeCs c w t
 preFreezeCs⊑ c w t {r} (l , comp) rt with getCs⊎ c w
 ... | inj₁ (u , p) rewrite p | just-inj comp =
   extChoice w c l t r (getCs→∈world {c} {r} {w} p) (rt (length l)) --, ¬≡freezeCs c w t
 ... | inj₂ p rewrite p = ⊥-elim (¬just≡nothing (sym comp))
 
 
-freezeCs⊑ : (c : Name) (w : 𝕎·) (t : Term) {r : Res} → compatibleCs c w r → ⋆ᵣ r t → w ⊑· freezeCs c w t
+freezeCs⊑ : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res} → compatibleCs c w r → ⋆ᵣ r t → w ⊑· freezeCs c w t
 freezeCs⊑ c w t {r} (l , comp , sat) rt = preFreezeCs⊑ c w t (l , comp) rt
 
 
 
-getChoiceΣ : (k : ℕ) (name : Name) (w : world) (t : Term)
+getChoiceΣ : (k : ℕ) (name : Name) (w : world) (t : ℂ·)
              → getCsChoice k name w ≡ just t
-             → Σ (List Term) (λ l → Σ Res (λ r → getCs name w ≡ just (mkcs name l r) × select k l ≡ just t))
+             → Σ (List ℂ·) (λ l → Σ Res (λ r → getCs name w ≡ just (mkcs name l r) × select k l ≡ just t))
 getChoiceΣ k name w t gc with getCs⊎ name w
 ... | inj₁ (mkcs n l r , p) rewrite p | getCs-same-name name w (mkcs n l r) p = (l , r , refl , gc)
 getChoiceΣ k name w t gc | inj₂ p rewrite p = ⊥-elim (¬just≡nothing (sym gc))
 
 
 
-≽-pres-getChoice : {w1 w2 : world} {k : ℕ} {name : Name} {t : Term}
+≽-pres-getChoice : {w1 w2 : world} {k : ℕ} {name : Name} {t : ℂ·}
                    → w2 ≽ w1
                    → getCsChoice k name w1 ≡ just t
                    → getCsChoice k name w2 ≡ just t
 ≽-pres-getChoice {w1} {w2} {k} {name} {t} ext gc = gc3
   where
-    h : Σ (List Term) (λ l → Σ Res (λ r → getCs name w1 ≡ just (mkcs name l r) × select k l ≡ just t))
+    h : Σ (List ℂ·) (λ l → Σ Res (λ r → getCs name w1 ≡ just (mkcs name l r) × select k l ≡ just t))
     h = getChoiceΣ k name w1 t gc
 
-    l : List Term
+    l : List ℂ·
     l = proj₁ h
 
     r : Res
@@ -545,21 +546,21 @@ getChoiceΣ k name w t gc | inj₂ p rewrite p = ⊥-elim (¬just≡nothing (sym
     sel : select k l ≡ just t
     sel = proj₂ (proj₂ (proj₂ h))
 
-    q : Σ (List Term) (λ l' → getCs name w2 ≡ just (mkcs name (l ++ l') r) × pres-resSatCs l l' r)
+    q : Σ (List ℂ·) (λ l' → getCs name w2 ≡ just (mkcs name (l ++ l') r) × pres-resSatCs l l' r)
     q = ≽-pres-getCs ext gc1
 
-    l' : List Term
+    l' : List ℂ·
     l' = fst q
 
     gc2 : getCs name w2 ≡ just (mkcs name (l ++ l') r)
     gc2 = fst (snd q)
 
     gc3 : getCsChoice k name w2 ≡ just t
-    gc3 rewrite gc2 = select++-just {0ℓ} {Term} {k} {l} {l'} sel
+    gc3 rewrite gc2 = select++-just {0ℓ} {ℂ·} {k} {l} {l'} sel
 
 
 
-getFreezeCs : (c : Name) (w : 𝕎·) (t : Term) {r : Res{0ℓ}}
+getFreezeCs : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res{0ℓ}}
               → compatibleCs c w r
               → freezableCs c w
               → Σ ℕ (λ n → ∀𝕎 (freezeCs c w t) (λ w' _ → Lift 2ℓ (getCsChoice n c w' ≡ just t)))
@@ -573,6 +574,19 @@ getFreezeCs c w t {r} (l , comp , sat) fb =
         g rewrite getCs++-same-choice c w l r t comp | select-last l t = refl
 
 
+resSatCs-select→·ᵣ : (i : ℕ) {n : ℕ} {r : Res} (l : List ℂ·) {t : ℂ·}
+                     → resSatCs i l r
+                     → select n l ≡ just t
+                     → ·ᵣ r (i + n) t
+resSatCs-select→·ᵣ i {0} {r} (x ∷ l) {t} (sat₁ , sat₂) sel rewrite +-comm i 0 | just-inj sel = sat₁
+resSatCs-select→·ᵣ i {suc n} {r} (x ∷ l) {t} (sat₁ , sat₂) sel rewrite +-suc i n = resSatCs-select→·ᵣ (suc i) l sat₂ sel
+
+
+getCsChoiceCompatible : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·)
+                        → compatibleCs c w r → getCsChoice n c w ≡ just t → ·ᵣ r n t
+getCsChoiceCompatible c r w n t (l , comp , sat) g rewrite comp = resSatCs-select→·ᵣ 0 l sat g
+
+
 
 open import freeze(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)
 
@@ -582,6 +596,7 @@ freezeCS =
     compatibleCs
     ⊑-compatibleCs
     startCsChoiceCompatible
+    getCsChoiceCompatible
     freezeCs
     freezableCs
     freezeCs⊑
@@ -594,12 +609,12 @@ open import freezeDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)(free
 
 progressCs : (c : Name) (w1 w2 : 𝕎·) → Set₁
 progressCs c w1 w2 =
-  (l : List Term) (r : Res)
+  (l : List ℂ·) (r : Res)
   → ∈world (mkcs c l r) w1
-  → Σ (List Term) (λ l' → ∈world (mkcs c (l ++ l') r) w2 × 0 < length l')
+  → Σ (List ℂ·) (λ l' → ∈world (mkcs c (l ++ l') r) w2 × 0 < length l')
 
 
-freezeCsProgress : (c : Name) {w1 w2 : 𝕎·} (t : Term) → w1 ⊑· w2 → progressCs c w1 (freezeCs c w2 t)
+freezeCsProgress : (c : Name) {w1 w2 : 𝕎·} (t : ℂ·) → w1 ⊑· w2 → progressCs c w1 (freezeCs c w2 t)
 freezeCsProgress c {w1} {w2} t e l r i =
   fst (≽-pres-∈world e i) ∷ʳ t ,
   j ,
@@ -701,7 +716,7 @@ compatibleListNRes l w = (r : NRes) → r ∈ l → compatibleNRes r w
 ∈remNRes→ {L} name {r} {x ∷ l} (there i) | no p = there (∈remNRes→ name i)
 
 
-∈wdom→∈world : {r : NRes} {w : 𝕎·} → r ∈ wrdom w → Σ (List Term) (λ l → ∈world (mkcs (NRes.name r) l (NRes.res r)) w)
+∈wdom→∈world : {r : NRes} {w : 𝕎·} → r ∈ wrdom w → Σ (List ℂ·) (λ l → ∈world (mkcs (NRes.name r) l (NRes.res r)) w)
 ∈wdom→∈world {r} {start name res ∷ w} i with NRes.name r ≟ name
 ... | yes p rewrite (sym p) = getChoices (NRes.name r) w , j
   where
@@ -785,7 +800,7 @@ NRes-nodup-wdom (start name res ∷ w) = ¬∈map-remNRes name (wrdom w) , →NR
 NRes-nodup-wdom (choice name t ∷ w) = NRes-nodup-wdom w
 
 
-¬≡→≡getCs-extcs : (c name : Name) (w : 𝕎·) (t : Term)
+¬≡→≡getCs-extcs : (c name : Name) (w : 𝕎·) (t : ℂ·)
                    → ¬ c ≡ name
                    → getCs c (extcs w name t) ≡ getCs c w
 ¬≡→≡getCs-extcs c name [] t d = refl
@@ -815,7 +830,7 @@ getCs-freezeList≡-aux {L} {c} {name} {x ∷ k} {r} e (here px) rewrite e | sym
 getCs-freezeList≡-aux {L} {c} {name} {x ∷ k} {r} e (there i) = there (getCs-freezeList≡-aux e i)
 
 
-getCs-freezeList≡ : {c : Name} {r : Res} {k : List NRes} {w : 𝕎·} {l : List Term}
+getCs-freezeList≡ : {c : Name} {r : Res} {k : List NRes} {w : 𝕎·} {l : List ℂ·}
                     → NRes-nodup k
                     → mkNRes c r ∈ k
                     → getCs c w ≡ just (mkcs c l r)
@@ -846,7 +861,7 @@ getCs-freezeList≡ {c} {r} {x ∷ k} {w} {l} (d , nd) (there i) e
 
 
 
-getCs→mkNRes∈wrdom : {c : Name} {w : 𝕎·} {l : List Term} {r : Res}
+getCs→mkNRes∈wrdom : {c : Name} {w : 𝕎·} {l : List ℂ·} {r : Res}
                       → getCs c w ≡ just (mkcs c l r)
                       → mkNRes c r ∈ wrdom w
 getCs→mkNRes∈wrdom {c} {start name res ∷ w} {l} {r} e with c ≟ name
@@ -910,7 +925,7 @@ progressCS =
 open import progressDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)(freezeCS)(progressCS)
 
 
-getChoice-extcs-last : (w : 𝕎·) (k : ℕ) (name : Name) (l : List Term) (r : Res) (t : Term)
+getChoice-extcs-last : (w : 𝕎·) (k : ℕ) (name : Name) (l : List ℂ·) (r : Res) (t : ℂ·)
                        → k ≡ length l
                        → getCs name w ≡ just (mkcs name l r)
                        → getChoice· k name (extcs w name t) ≡ just t
@@ -919,13 +934,13 @@ getChoice-extcs-last w k name l r t e h rewrite e | getCs++ name w [ choice name
 ... | no p = ⊥-elim (p refl)
 
 
-≽-ΣgetChoice : (w1 w2 : 𝕎·) (name : Name) (l1 l2 : List Term) (r : Res) (k : ℕ)
+≽-ΣgetChoice : (w1 w2 : 𝕎·) (name : Name) (l1 l2 : List ℂ·) (r : Res) (k : ℕ)
                → ∈world (mkcs name l1 r) w1
                → ∈world (mkcs name l2 r) w2
                → length l1 ≤ k
                → k < length l2
                → w2 ≽ w1
-               → Σ Term (λ t → Σ world (λ w → Σ (List Term) (λ l →
+               → Σ ℂ· (λ t → Σ world (λ w → Σ (List ℂ·) (λ l →
                      getChoice· k name (extcs w name t) ≡ just t
                    × ∈world (mkcs name l r) w
                    × k ≡ length l

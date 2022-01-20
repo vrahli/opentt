@@ -44,8 +44,12 @@ getChoice· : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe ℂ·
 getChoice· = getChoice G
 
 
-getC : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe Term
-getC n cs w = Data.Maybe.map ℂ→T· (getChoice· n cs w)
+getC : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe CTerm
+getC n cs w = Data.Maybe.map ℂ→C· (getChoice· n cs w)
+
+
+getT : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe Term
+getT n cs w = Data.Maybe.map (λ x → ⌜ x ⌝) (getC n cs w)
 
 
 
@@ -60,5 +64,5 @@ getChoice⊎ n name w with getChoice· n name w
 ... | nothing = inj₂ refl
 
 
-isOnlyChoice∈𝕎 : (u : Term) (c : Name) (w : 𝕎·) → Set
-isOnlyChoice∈𝕎 u c w = (n : ℕ) (t : ℂ·) → getChoice· n c w ≡ just t → ℂ→T· t ≡ u
+isOnlyChoice∈𝕎 : (u : CTerm) (c : Name) (w : 𝕎·) → Set
+isOnlyChoice∈𝕎 u c w = (n : ℕ) (t : ℂ·) → getChoice· n c w ≡ just t → ℂ→C· t ≡ u

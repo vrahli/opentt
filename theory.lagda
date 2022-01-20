@@ -467,8 +467,11 @@ isType u w T = equalTypes u w T T
 equalTerms : (n : ℕ) (w : 𝕎·) {T1 T2 : CTerm} → (equalTypes n w T1 T2) → per
 equalTerms n w eqt = eqInType (uni n) w eqt
 
-equalInType : (u : ℕ) (w : 𝕎·) (T : CTerm) → per
+equalInType : (u : ℕ) → EQT
 equalInType u w T a b = Σ (isType u w T) (λ p → equalTerms u w p a b)
+
+∈Type : (u : ℕ) → MEMT
+∈Type u w T a = equalInType u w T a a
 \end{code}
 
 

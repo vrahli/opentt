@@ -268,8 +268,8 @@ instance
   ⌜_⌝ {{CTerm0ToTerm}} t = CTerm0.cTerm t
 
 
-Cterm→CTerm0 : CTerm → CTerm0
-Cterm→CTerm0 (ct t c) = ct0 t c'
+CTerm→CTerm0 : CTerm → CTerm0
+CTerm→CTerm0 (ct t c) = ct0 t c'
   where
     c' : #[ [ 0 ] ] t
     c' rewrite c = refl
@@ -283,8 +283,8 @@ open fromCTerm {{...}} public
 
 
 instance
-  CtermToCTerm0 : fromCTerm CTerm0
-  ⌞_⌟ {{CtermToCTerm0}} t = Cterm→CTerm0 t
+  CTermToCTerm0 : fromCTerm CTerm0
+  ⌞_⌟ {{CTermToCTerm0}} t = CTerm→CTerm0 t
 
 
 CTerm≡ : {a b : CTerm} → ⌜ a ⌝ ≡ ⌜ b ⌝ → a ≡ b

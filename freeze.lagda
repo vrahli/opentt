@@ -52,6 +52,7 @@ record Freeze : Set(lsuc(L)) where
     ⊑-compatible : {c : Name} {w1 w2 : 𝕎·} {r : Res{0ℓ}} → w1 ⊑· w2 → compatible c w1 r → compatible c w2 r
     -- starting a new choice trivially satisfies compatibility
     startChoiceCompatible : (r : Res{0ℓ}) (w : 𝕎·) → compatible (newChoice· w) (startNewChoice r w) r
+    getChoiceCompatible : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·) → compatible c w r → getChoice· n c w ≡ just t → ·ᵣ r n t
 
     -- This adds a new choice, which is frozen forever (can for example be recorded with a 𝔹 in worlds)
     freeze : (c : Name) (w : 𝕎·) (t : ℂ·) → 𝕎·

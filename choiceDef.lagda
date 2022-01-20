@@ -39,16 +39,45 @@ open Choice
 ℂ· = ℂ C
 
 
-ℕ→ℂ· : ℕ → ℂ·
-ℕ→ℂ· = ℕ→ℂ C
+ℂ→C· : ℂ· → CTerm
+ℂ→C· = ℂ→C C
 
 
-ℂ→T· : ℂ· → Term
-ℂ→T· = ℂ→T C
+ℂ→T : ℂ· → Term
+ℂ→T c = ⌜ ℂ→C· c ⌝
 
 
-ℕ→ℂ→T· : (n : ℕ) → ℂ→T· (ℕ→ℂ· n) ≡ NUM n
-ℕ→ℂ→T· = ℕ→ℂ→T C
+ℂ→C0 : ℂ· → CTerm0
+ℂ→C0 c = ⌞ ℂ→C· c ⌟
+
+
+ℂ₀· : ℂ·
+ℂ₀· = ℂ₀ C
+
+
+ℂ₁· : ℂ·
+ℂ₁· = ℂ₁ C
+
+
+Cℂ₀ : CTerm
+Cℂ₀ = ℂ→C· ℂ₀·
+
+
+Cℂ₁ : CTerm
+Cℂ₁ = ℂ→C· ℂ₁·
+
+
+Tℂ₀ : Term
+Tℂ₀ = ℂ→T ℂ₀·
+
+
+Tℂ₁ : Term
+Tℂ₁ = ℂ→T ℂ₁·
+
+
+#-ℂ→T : (c : ℂ·) → # (ℂ→T c)
+#-ℂ→T c = CTerm.closed (ℂ→C· c)
+
 
 
 -- restriction
@@ -60,6 +89,14 @@ record Res {L : Level} : Set(lsuc(L)) where
     sat : (n : ℕ) → res n def     -- proof that the default element is satisfied at all stages
 
 
+Resℂ₀₁ : Res
+Resℂ₀₁ = mkRes (λ n t → t ≡ ℂ₀· ⊎ t ≡ ℂ₁·) ℂ₀· (λ n → inj₁ refl)
+
+
+Res⊤ : Res
+Res⊤ = mkRes (λ n t → ⊤) ℂ₀· (λ n → tt)
+
+
 ·ᵣ : {L : Level} → Res{L} → ℕ → ℂ· → Set(L)
 ·ᵣ {L} r n t = Res.res r n t
 
@@ -68,12 +105,11 @@ record Res {L : Level} : Set(lsuc(L)) where
 ⋆ᵣ {L} r t = (n : ℕ) → ·ᵣ r n t
 
 
-Resℕ : Res
-Resℕ = mkRes (λ n t → Σ ℕ (λ m → t ≡ ℕ→ℂ· m)) (ℕ→ℂ· 0) (λ n → 0 , refl)
 
+{--Resℕ : Res
+Resℕ = mkRes (λ n t → Σ ℕ (λ m → ℂ→T· t ≡ NUM m)) (ℕ→ℂ· 0) (λ n → 0 , refl)
+--}
 
-Res⊤ : Res
-Res⊤ = mkRes (λ n t → ⊤) (ℕ→ℂ· 0) (λ n → tt)
 
 
 compatibleRes : {L : Level} (r1 r2 : Res{L}) → Set(L)

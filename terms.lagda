@@ -1,8 +1,6 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import bar
-
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
@@ -38,7 +36,6 @@ open import util
 open import calculus
 
 
---module terms (bar : Bar) where
 module terms where
 
 \end{code}
@@ -1481,5 +1478,16 @@ FUNinj2 {a} {b} {c} {d} x = shiftUp-inj (PIinj2 x)
 
 →≡APPLY : {a b c d : Term} → a ≡ c → b ≡ d → APPLY a b ≡ APPLY c d
 →≡APPLY refl refl = refl
+
+
+#NUM : ℕ → CTerm
+#NUM n = ct (NUM n) refl
+
+NUMinj : {n m : ℕ} → NUM n ≡ NUM m → n ≡ m
+NUMinj refl =  refl
+
+
+#NUMinj : {n m : ℕ} → #NUM n ≡ #NUM m → n ≡ m
+#NUMinj {n} {m} e = NUMinj (≡CTerm e)
 
 \end{code}

@@ -18,11 +18,11 @@ open import choiceBar
 
 module all {L : Level} (W : PossibleWorlds {L})
            (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
-           (CB : ChoiceBar W C G N F P)
            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+           (CB : ChoiceBar W C G N F P E)
        where
 
-open import classical{L}(W)(C)(G)(N)(F)(P)(CB)(E)
+open import classical{L}(W)(C)(G)(N)(F)(P)(E)(CB)
 
 open import choiceBarInstanceCS
 open import choiceBarInstanceRef
