@@ -22,7 +22,7 @@ module all {L : Level} (W : PossibleWorlds {L})
            (CB : ChoiceBar W C G N F P E)
        where
 
-open import classical{L}(W)(C)(G)(N)(F)(P)(E)(CB)
+open import not_lem{L}(W)(C)(G)(N)(F)(P)(E)(CB)
 
 open import choiceBarInstanceCS
 open import choiceBarInstanceRef

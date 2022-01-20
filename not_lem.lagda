@@ -2,7 +2,7 @@
 {-# OPTIONS --rewriting #-}
 
 --open import bar
---module classical (bar : Bar) where
+--module not_lem (bar : Bar) where
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
@@ -44,8 +44,8 @@ open import progress
 open import choiceBar
 
 
---module classical (bar : Bar) where
-module classical {L : Level} (W : PossibleWorlds {L})
+--module not_lem (bar : Bar) where
+module not_lem {L : Level} (W : PossibleWorlds {L})
                  (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
                  (E : Extensionality 0ℓ (lsuc(lsuc(L))))
                  (CB : ChoiceBar W C G N F P E)
