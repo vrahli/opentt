@@ -86,6 +86,32 @@ open import lem_props(W)(C)(G)(N)(F)(P)(E)
 
 \begin{code}[hide]
 classical : (w : 𝕎·) {n i : ℕ} (p : i < n) → member w (#LEM p) #lamAX
-classical w {n} {i} p = ?
+classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
+  where
+    -- p1 and p2 prove that LEM is a type
+    p1 : ∀𝕎 w (λ w' _ → isType n w' (#UNIV i))
+    p1 w1 _ = eqTypesUniv w1 n i p
+
+    p2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' (#UNIV i) a₁ a₂)
+                       → equalTypes n w' (sub0 a₁ (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
+                                          (sub0 a₂ (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))))
+    p2 w1 e1 a₁ a₂ ea =
+      ≡CTerm→eqTypes (sym (sub0-#[0]SQUASH p a₁))
+                      (sym (sub0-#[0]SQUASH p a₂))
+                      (eqTypesSQUASH← (eqTypesUNION← (equalInType→equalTypes p w1 a₁ a₂ ea)
+                                                       (eqTypesNEG← (equalInType→equalTypes p w1 a₁ a₂ ea))))
+
+    -- now we prove that it is inhabited
+    p3 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#UNIV i) a₁ a₂
+                       → equalInType n w' (sub0 a₁ (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
+                                           (#APPLY #lamAX a₁) (#APPLY #lamAX a₂))
+    p3 w1 e1 a₁ a₂ ea =
+      ≡CTerm→equalInType
+        (sym (sub0-#[0]SQUASH p a₁))
+        (→equalInType-SQUASH (inbar-APPLY-lamAX a₁) (inbar-APPLY-lamAX a₂) p4)
+      where
+        p4 : inbar w1 (λ w' _ → Σ CTerm (λ t → ∈Type n w' (#UNION (#↑T p a₁) (#NEG (#↑T p a₁))) t))
+        p4 = {!!}
+
 
 \end{code}[hide]

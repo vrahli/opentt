@@ -538,4 +538,74 @@ equalInType-#⇛-LR-rev : {i : ℕ} {w : 𝕎·} {T a b c d : CTerm}
 equalInType-#⇛-LR-rev {i} {w} {T} {a} {b} {c} {d} comp1 comp2 eqi =
   equalInType-#⇛-left-rev comp1 (equalInType-sym (equalInType-#⇛-left-rev comp2 (equalInType-sym eqi)))
 
+
+equalInType-SET : {u : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} {f g : CTerm}
+                  → ∀𝕎 w (λ w' _ → isType u w' A)
+                  → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType u w' A a₁ a₂) → equalTypes u w' (sub0 a₁ B) (sub0 a₂ B))
+                  → ∀𝕎 w (λ w' _ → equalInType u w' A f g)
+                  → inbar w (λ w' _ → Σ CTerm (λ t → ∈Type u w' (sub0 f B) t))
+                  → equalInType u w (#SET A B) f g
+equalInType-SET {u} {w} {A} {B} {f} {g} ha hb eqi eqj =
+  eqTypesSET← ha hb , (Bar.∀𝕎-inBarFunc barI aw eqj)
+  where
+    aw : ∀𝕎 w (λ w' e' → Σ CTerm (∈Type u w' (sub0 f B))
+                       → SETeq (eqInType (uni u) w' (ha w' e'))
+                                (λ a1 a2 eqa → eqInType (uni u) w' (equalInTypeFam→eqTypesFam {u} {w} {A} {B} {A} {B} ha hb w' e' a1 a2 eqa)) f g)
+    aw w1 e1 (t , h) =
+      t ,
+      equalInType→eqInType refl {ha w1 e1} (eqi w1 e1) ,
+      equalInType→eqInType {u} {w1} {sub0 f B} {sub0 f B} {sub0 g B}
+                            refl
+                            {equalInTypeFam→eqTypesFam {u} {w} {A} {B} {A} {B} ha hb w1 e1 f g (equalInType→eqInType {u} {w1} {A} {A} {A} refl {ha w1 e1} (eqi w1 e1))}
+                            h
+
+
+inbar-inhabited→isType : {u : ℕ} {w : 𝕎·} {A : CTerm}
+                          → inbar w (λ w' _ → Σ CTerm (λ t → equalInType u w' A t t))
+                          → isType u w A
+inbar-inhabited→isType {u} {w} {A} i =
+  eqTypes-local (Bar.∀𝕎-inBarFunc barI aw i)
+  where
+    aw : ∀𝕎 w (λ w' e' → Σ CTerm (λ t → equalInType u w' A t t) → eqTypes (uni u) w' A A)
+    aw w1 e1 (t , eqi) = fst eqi
+
+
+→equalInType-TRUE : (n : ℕ) {w : 𝕎·} {a b : CTerm}
+                     → inbar w (λ w' _ → a #⇛ #AX at w')
+                     → inbar w (λ w' _ → b #⇛ #AX at w')
+                     → equalInType n w #TRUE a b
+→equalInType-TRUE n {w} {a} {b} c₁ c₂ = equalInType-EQ eqTypesNAT (Bar.inBarFunc barI (Bar.∀𝕎-inBarFunc barI aw c₁) c₂)
+  where
+    aw : ∀𝕎 w (λ w' e' → a #⇛ #AX at w' → b #⇛ #AX at w' → EQeq (#NUM 0) (#NUM 0) (equalInType n w' #NAT) w' a b)
+    aw w1 e1 d₁ d₂ = d₁ , d₂ , (NUM-equalInType-NAT n w1 0)
+
+
+→equalInType-SQUASH : {n : ℕ} {w : 𝕎·} {A a b : CTerm}
+                       → inbar w (λ w' _ → a #⇛ #AX at w')
+                       → inbar w (λ w' _ → b #⇛ #AX at w')
+                       → inbar w (λ w' _ → Σ CTerm (λ t → equalInType n w' A t t))
+                       → equalInType n w (#SQUASH A) a b
+→equalInType-SQUASH {n} {w} {A} {a} {b} c₁ c₂ eqi rewrite #SQUASH≡#SET A =
+  equalInType-SET (λ w1 _ → eqTypesTRUE) p1 p2 p3
+  where
+    p1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #TRUE a₁ a₂
+                       → equalTypes n w' (sub0 a₁ ⌞ A ⌟) (sub0 a₂ ⌞ A ⌟))
+    p1 w1 e1 a₁ a₂ ea = ≡CTerm→eqTypes (sym (sub0⌞⌟ a₁ A)) (sym (sub0⌞⌟ a₂ A)) (eqTypes-mon (uni n) (inbar-inhabited→isType eqi) w1 e1)
+
+    p2 : ∀𝕎 w (λ w' _ → equalInType n w' #TRUE a b)
+    p2 w1 e1 = →equalInType-TRUE n (Bar.↑inBar barI c₁ e1) (Bar.↑inBar barI c₂ e1)
+
+    p3 : inbar w (λ w' _ → Σ CTerm (∈Type n w' (sub0 a ⌞ A ⌟)))
+    p3 = Bar.∀𝕎-inBarFunc barI aw eqi
+      where
+        aw : ∀𝕎 w (λ w' e' → Σ CTerm (λ t → equalInType n w' A t t) → Σ CTerm (∈Type n w' (sub0 a ⌞ A ⌟)))
+        aw w1 e1 (t , eqj) = t , ≡CTerm→equalInType (sym (sub0⌞⌟ a A)) eqj
+
+
+APPLY-lamAX-⇛ : (w : 𝕎·) (a : CTerm) → #APPLY #lamAX a #⇛ #AX at w
+APPLY-lamAX-⇛ w a w1 e1 = lift (1 , refl)
+
+
+inbar-APPLY-lamAX : {w : 𝕎·} (a : CTerm) → inbar w (λ w' _ → #APPLY #lamAX a #⇛ #AX at w')
+inbar-APPLY-lamAX {w} a = Bar.∀𝕎-inBar barI (λ w1 _ → APPLY-lamAX-⇛ w1 a)
 \end{code}
