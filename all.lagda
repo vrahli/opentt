@@ -14,15 +14,18 @@ open import newChoice
 open import freeze
 open import progress
 open import choiceBar
+open import exBar
 
 
 module all {L : Level} (W : PossibleWorlds {L})
            (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
            (CB : ChoiceBar W C G N F P E)
+           (EB : ChoiceBar W C G N F P E)
        where
 
 open import not_lem{L}(W)(C)(G)(N)(F)(P)(E)(CB)
+open import lem{L}(W)(C)(G)(N)(F)(P)(E)(EB)
 
 open import choiceBarInstanceCS
 open import choiceBarInstanceRef

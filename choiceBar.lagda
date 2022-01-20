@@ -59,7 +59,7 @@ open import theory(W)(C)(G)(N)(F)(P)(E)
 
 -- TODO: call this choiceType instead
 record ChoiceBar : Set(lsuc(lsuc(L))) where
-  constructor mkBar
+  constructor mkChoiceBar
   field
     Typeℂ₀₁ : CTerm
 

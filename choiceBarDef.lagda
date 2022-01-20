@@ -58,46 +58,46 @@ open import bar(W)(C)(G)(N)(F)(P)
 open import barI(W)(C)(G)(N)(F)(P)
 open import theory(W)(C)(G)(N)(F)(P)(E)
 
-open choiceBar
+open ChoiceBar
 
 
 Typeℂ₀₁· : CTerm
-Typeℂ₀₁· = ChoiceBar.Typeℂ₀₁ CB
+Typeℂ₀₁· = Typeℂ₀₁ CB
 
 Typeℂ₀₁-isType· : (u : ℕ) (w : 𝕎·) → isType u w Typeℂ₀₁·
-Typeℂ₀₁-isType· = ChoiceBar.Typeℂ₀₁-isType CB
+Typeℂ₀₁-isType· = Typeℂ₀₁-isType CB
 
 ℂ₀∈Typeℂ₀₁· : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁· Cℂ₀
-ℂ₀∈Typeℂ₀₁· = ChoiceBar.ℂ₀∈Typeℂ₀₁ CB
+ℂ₀∈Typeℂ₀₁· = ℂ₀∈Typeℂ₀₁ CB
 
 ℂ₁∈Typeℂ₀₁· : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁· Cℂ₁
-ℂ₁∈Typeℂ₀₁· = ChoiceBar.ℂ₁∈Typeℂ₀₁ CB
+ℂ₁∈Typeℂ₀₁· = ℂ₁∈Typeℂ₀₁ CB
 
 isValueℂ₀· : isValue Tℂ₀
-isValueℂ₀· = ChoiceBar.isValueℂ₀ CB
+isValueℂ₀· = isValueℂ₀ CB
 
 isValueℂ₁· : isValue Tℂ₁
-isValueℂ₁· = ChoiceBar.isValueℂ₁ CB
+isValueℂ₁· = isValueℂ₁ CB
 
 ℂ₀≠ℂ₁· : ¬ Cℂ₀ ≡ Cℂ₁
-ℂ₀≠ℂ₁· = ChoiceBar.ℂ₀≠ℂ₁ CB
+ℂ₀≠ℂ₁· = ℂ₀≠ℂ₁ CB
 
 --ℂ₀≠ℂ₁· : (i : ℕ) (w : 𝕎·) → ¬ equalInType i w Typeℂ₀₁· Cℂ₀ Cℂ₁
---ℂ₀≠ℂ₁· = ChoiceBar.ℂ₀≠ℂ₁ CB
+--ℂ₀≠ℂ₁· = ℂ₀≠ℂ₁ CB
 
 
 --choice-Typeℂ₀₁· : {w : 𝕎·} {c : Name} (m : ℕ) → compatible· c w Resℂ₀₁ → inbar w (λ w' _ → weakℂ₀₁M w' (getT m c))
---choice-Typeℂ₀₁· = ChoiceBar.choice-Typeℂ₀₁ CB
+--choice-Typeℂ₀₁· = choice-Typeℂ₀₁ CB
 
 
 ∈Typeℂ₀₁→· : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁· a b → inbar w (λ w' _ → #weakℂEq w' a b)
-∈Typeℂ₀₁→· = ChoiceBar.∈Typeℂ₀₁→ CB
+∈Typeℂ₀₁→· = ∈Typeℂ₀₁→ CB
 
 →∈Typeℂ₀₁· : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name} → inbar w (λ w' _ → weakℂ₀₁M w' (getT n c)) → ∈Type i w Typeℂ₀₁· (#APPLY (#CS c) (#NUM n))
-→∈Typeℂ₀₁· = ChoiceBar.→∈Typeℂ₀₁ CB
+→∈Typeℂ₀₁· = →∈Typeℂ₀₁ CB
 
 inbar-choice· : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res) → compatible· c w r → inbar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t))))
-inbar-choice· = ChoiceBar.inbar-choice CB
+inbar-choice· = inbar-choice CB
 
 
 typeℂ₀₁ : Term
