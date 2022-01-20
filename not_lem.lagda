@@ -46,9 +46,9 @@ open import choiceBar
 
 --module not_lem (bar : Bar) where
 module not_lem {L : Level} (W : PossibleWorlds {L})
-                 (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
-                 (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-                 (CB : ChoiceBar W C G N F P E)
+               (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+               (CB : ChoiceBar W C G N F P E)
        where
 
 
@@ -82,6 +82,7 @@ open import type_sys_props_lift(W)(C)(G)(N)(F)(P)(E)
 open import props1(W)(C)(G)(N)(F)(P)(E)
 open import props2(W)(C)(G)(N)(F)(P)(E)
 open import props3(W)(C)(G)(N)(F)(P)(E)
+open import lem_props(W)(C)(G)(N)(F)(P)(E)
 
 -- open import calculus
 -- open import world
@@ -108,85 +109,11 @@ open import props3(W)(C)(G)(N)(F)(P)(E)
 
 
 \begin{code}[hide]
-
-
-
-LEM : {i n : ℕ} (p : i < n) → Term
-LEM {i} {n} p = PI (UNIV i) (SQUASH (UNION (↑T p (VAR 0)) (NEG (↑T p (VAR 0)))))
-
-
-#LEM : {i n : ℕ} (p : i < n) → CTerm
-#LEM {i} {n} p = ct (LEM p) c
-  where
-    c : # LEM p
-    c rewrite fvars-↑T p (VAR 0)
-            | shiftUp-↑T p 0 (VAR 0)
-            | fvars-↑T p (VAR 1) = refl
-
-
-#LEM≡#PI : {i n : ℕ} (p : i < n) → #LEM p ≡ #PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))
-#LEM≡#PI {i} {n} p = CTerm≡ refl
-
-
-{--equalTerms-NegLem : (w : 𝕎·) {i n : ℕ} (p : i < n) → equalTerms n w (eqTypesNegLem w p) #lamAX #lamAX
-equalTerms-NegLem w {i} {n} p =
-  {!!}
---}
-
-
-
--- We need cumulativity or lifting here because (#UNIV i) needs to be in level i,
--- but a₁ needs to be equal to a₂ at that level and also in (#UNIV i)
-eqTypesLemPi : (w : 𝕎·) {n i : ℕ} (p : i < n)
-               → equalTypes n w
-                             (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
-                             (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
-eqTypesLemPi w {n} {i} p =
-  eqTypesPI←
-    {w} {n}
-    {#UNIV i} {#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))}
-    {#UNIV i} {#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))}
-    (λ w1 e1 → eqTypesUniv w1 n i p)
-    aw
-  where
-    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' (#UNIV i) a₁ a₂)
-                       → equalTypes n w'
-                                     (sub0 a₁ (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
-                                     (sub0 a₂ (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))))
-    aw w1 e1 a₁ a₂ ea rewrite sub0-#[0]SQUASH p a₁ | sub0-#[0]SQUASH p a₂ = aw'
-      where
-        aw' : equalTypes n w1 (#SQUASH (#UNION (#↑T p a₁) (#NEG (#↑T p a₁)))) (#SQUASH (#UNION (#↑T p a₂) (#NEG (#↑T p a₂))))
-        aw' = eqTypesSQUASH← (eqTypesUNION← (equalInType→equalTypes {n} {i} p w1 a₁ a₂ ea)
-                                             (eqTypesNEG← (equalInType→equalTypes {n} {i} p w1 a₁ a₂ ea)))
-
-
-eqTypesLem : (w : 𝕎·) {n i : ℕ} (p : i < n) → equalTypes n w (#LEM p) (#LEM p)
-eqTypesLem w {n} {i} p rewrite #LEM≡#PI p = eqTypesLemPi w {n} {i} p
-
-
-eqTypesNegLem : (w : 𝕎·) {n i : ℕ} (p : i < n) → equalTypes n w (#NEG (#LEM p)) (#NEG (#LEM p))
-eqTypesNegLem w {n} {i} p = eqTypesNEG← (eqTypesLem w {n} {i} p)
-
-
 -- TODO: it would be great to replace [NUM k] with [ℂ→T k] for some [k : ℂ·],
 -- but then what would we replace QNAT with?
 Σchoice : (n : Name) (k : ℂ·) → Term
 Σchoice n k = SUM NAT (EQ (APPLY (CS n) (VAR 0)) (ℂ→T k) typeℂ₀₁)
 
-
--- A short name
-Resℂ : Res
-Resℂ = Resℂ₀₁
-
-
-{--
-#ℂ→T : (c : ℂ·) → CTerm
-#ℂ→T c = ct (ℂ→T· c) (#-ℂ→T c)
-
-
-#[0]ℂ→T : (c : ℂ·) → CTerm0
-#[0]ℂ→T c = ⌞ #ℂ→T c ⌟
---}
 
 
 #Σchoice : (n : Name) (k : ℂ·) → CTerm
@@ -208,107 +135,12 @@ sub0-#Σchoice-body≡ a c k = CTerm≡ (→≡EQ (→≡APPLY refl (shiftDownUp
                                           (subNotIn ⌜ a ⌝ _ (CTerm.closed Typeℂ₀₁·)))
 
 
-{--
-→inbar-#weakMonEq-APPLY-CS-left : (w : 𝕎·) (a t : CTerm) (m : ℕ) (c : Name)
-                                   → a #⇛ #NUM m at w
-                                   → inbar w (λ w' _ → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) t)
-                                   → inbar w (λ w' _ → #weakMonEq w' (#APPLY (#CS c) a) t)
-→inbar-#weakMonEq-APPLY-CS-left w a t m c c₁ i = Bar.∀𝕎-inBarFunc barI aw i
-  where
-    aw : ∀𝕎 w (λ w' e' → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) t
-                        → #weakMonEq w' (#APPLY (#CS c) a) t)
-    aw w' e' h w'' e'' = lift (fst z ,
-                               ⇓-trans (⇓-APPLY-CS w'' ⌜ a ⌝ (NUM m) c d₁) (fst (snd z)) ,
-                               snd (snd z))
-      where
-        z : Σ ℕ (λ n → (APPLY (CS c) (NUM m)) ⇓ (NUM n) at w'' × ⌜ t ⌝ ⇓ (NUM n) at w'')
-        z = lower (h w'' e'')
-
-        d₁ : ⌜ a ⌝ ⇓ NUM m at w''
-        d₁ = lower (c₁ w'' (⊑-trans· e' e''))
---}
-
-
-
-{--
-→inbar-#weakMonEq-APPLY-CS-left-rev : (w : 𝕎·) (a t : CTerm) (m : ℕ) (c : Name)
-                                       → a #⇛ #NUM m at w
-                                       → inbar w (λ w' _ → #weakMonEq w' (#APPLY (#CS c) a) t)
-                                       → inbar w (λ w' _ → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) t)
-→inbar-#weakMonEq-APPLY-CS-left-rev w a t m c c₁ i = Bar.∀𝕎-inBarFunc barI aw i
-  where
-    aw : ∀𝕎 w (λ w' e' → #weakMonEq w' (#APPLY (#CS c) a) t
-                        → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) t)
-    aw w' e' h w'' e'' = lift (fst z , {!!} , snd (snd z))
-      where
-        z : Σ ℕ (λ n → (APPLY (CS c) ⌜ a ⌝) ⇓ (NUM n) at w'' × ⌜ t ⌝ ⇓ (NUM n) at w'')
-        z = lower (h w'' e'')
---}
-
-
-{--
--- TODO: use →inbar-#weakMonEq-APPLY-CS-left instead
-→inbar-#weakMonEq-APPLY-CS : (w : 𝕎·) (a₁ a₂ : CTerm) (m : ℕ) (c : Name)
-                              → a₁ #⇛ #NUM m at w
-                              → a₂ #⇛ #NUM m at w
-                              → inbar w (λ w' _ → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) (#APPLY (#CS c) (#NUM m)))
-                              → inbar w (λ w' _ → #weakMonEq w' (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂))
-→inbar-#weakMonEq-APPLY-CS w a₁ a₂ m c c₁ c₂ i = Bar.∀𝕎-inBarFunc barI aw i
-  where
-    aw : ∀𝕎 w (λ w' e' → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) (#APPLY (#CS c) (#NUM m))
-                        → #weakMonEq w' (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂))
-    aw w' e' h w'' e'' = lift (fst z ,
-                               ⇓-trans (⇓-APPLY-CS w'' ⌜ a₁ ⌝ (NUM m) c d₁) (fst (snd z)) ,
-                               ⇓-trans (⇓-APPLY-CS w'' ⌜ a₂ ⌝ (NUM m) c d₂) (fst (snd z)))
-      where
-        z : Σ ℕ (λ n → (APPLY (CS c) (NUM m)) ⇓ (NUM n) at w'' × (APPLY (CS c) (NUM m)) ⇓ (NUM n) at w'')
-        z = lower (h w'' e'')
-
-        d₁ : ⌜ a₁ ⌝ ⇓ NUM m at w''
-        d₁ = lower (c₁ w'' (⊑-trans· e' e''))
-
-        d₂ : ⌜ a₂ ⌝ ⇓ NUM m at w''
-        d₂ = lower (c₂ w'' (⊑-trans· e' e''))
---}
-
-
-{--
-inbar-#weakMonEq-APPLY-CS : (u : ℕ) (w : 𝕎·) (c : Name) (m : ℂ·)
-                            → compatible· c w Resℂ
-                            → ∈Type u w Typeℂ₀₁· (#APPLY (#CS c) (ℂ→C· m))
-inbar-#weakMonEq-APPLY-CS u w c m comp =
-  {!!}
-{-- Bar.∀𝕎-inBarFunc barI aw (ChoiceBar.choice-weakℕ CB m comp)
-  where
-    aw : ∀𝕎 w (λ w' e' → weakℕM w' (getC m c)
-                        → #weakMonEq w' (#APPLY (#CS c) (#NUM m)) (#APPLY (#CS c) (#NUM m)))
-    aw w' e' h w'' e'' = lift (fst (snd (snd (lower (h w'' e'')))) ,
-                               step-⇓-trans (fst (snd (lower (h w'' e'')))) (snd (snd (snd (lower (h w'' e''))))) ,
-                               step-⇓-trans (fst (snd (lower (h w'' e'')))) (snd (snd (snd (lower (h w'' e''))))))
---}
---}
-
 sat→equalInType-Typeℂ₀₁· : (i : ℕ) (w : 𝕎·) (k : ℂ·)
                             → Σ ℕ (λ n → ·ᵣ Resℂ n k)
                             → equalInType i w Typeℂ₀₁· (ℂ→C· k) (ℂ→C· k)
 sat→equalInType-Typeℂ₀₁· i w k (n , inj₁ x) rewrite x = ℂ₀∈Typeℂ₀₁· i w
 sat→equalInType-Typeℂ₀₁· i w k (n , inj₂ y) rewrite y = ℂ₁∈Typeℂ₀₁· i w
 
-
-
-
--- MOVE to computation
-⇛-APPLY-CS : (w : 𝕎·) (a b : Term) (name : Name)
-             → a ⇛ b at w
-             → (APPLY (CS name) a) ⇛ (APPLY (CS name) b) at w
-⇛-APPLY-CS w a b name comp w1 e1 = lift (⇓-APPLY-CS w1 a b name (lower (comp w1 e1)))
-
-
--- MOVE to computation
-#⇛-APPLY-CS : {w : 𝕎·} {a b : CTerm} (name : Name)
-             → a #⇛ b at w
-             → (#APPLY (#CS name) a) #⇛ (#APPLY (#CS name) b) at w
-#⇛-APPLY-CS {w} {a} {b} name comp w1 e1 = ⇛-APPLY-CS w ⌜ a ⌝ ⌜ b ⌝ name comp w1 e1
 
 
 comp-Resℂ→inbar-weakℂ₀₁ : {c : Name} {w : 𝕎·} (n : ℕ)
@@ -333,7 +165,6 @@ comp-Resℂ→inbar-weakℂ₀₁ {c} {w} n comp = Bar.∀𝕎-inBarFunc barI aw
                 ⊎ ℂ→T (fst (lower (h w3 e3))) ⇓ Tℂ₁ at w3)
         z (inj₁ x) rewrite x = inj₁ (0 , refl)
         z (inj₂ x) rewrite x = inj₂ (0 , refl)
-
 
 
 
@@ -374,6 +205,7 @@ equalTypes-#Σchoice-body i w c k comp sat w' e' a₁ a₂ ea =
 
     aw2 : equalInType i w' Typeℂ₀₁· (ℂ→C· k) (ℂ→C· k)
     aw2 = sat→equalInType-Typeℂ₀₁· i w' k sat
+
 
 
 equalTypes-#Σchoice-body-sub0 : (i : ℕ) (w : 𝕎·) (c : Name) (k : ℂ·)
@@ -482,59 +314,6 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ with step⊎ a w
 ...                          | inj₂ q rewrite step-APPLY-CS-¬NUM c a u w q p = steps-APPLY-cs-forward w n m u b v c isv c₁ c₂
 steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrite p | c₁ = suc m , c₂
 --}
-
-
-
-onlyℂ∈𝕎→≡-aux : {w : 𝕎·} {c : Name} {v : Term} {u : ℂ·} {k m : ℕ}
-                  → onlyℂ∈𝕎 u c w
-                  → steps k (APPLY (CS c) (NUM m)) w ≡ v
-                  → Σ ℂ· (λ t → getChoice· m c w ≡ just t)
-                  → isValue (ℂ→T u)
---                         → isValue u
-                  → v ⇓ ℂ→T u at w
-onlyℂ∈𝕎→≡-aux {w} {c} {v} {u} {0} {m} oc c₁ (t , gc) isv {--isu--} rewrite sym c₁ = 1 , z
-  where
-    z : steps 1 (APPLY (CS c) (NUM m)) w ≡ ℂ→T u
-    z rewrite gc | oc m t gc = refl
-onlyℂ∈𝕎→≡-aux {w} {c} {v} {u} {suc k} {m} oc c₁ gc isv {--isu--}  with getChoice⊎ m c w
-... | inj₁ (z , p) rewrite p | oc m z p | stepsVal (ℂ→T u) w k isv | c₁ = 0 , refl
-... | inj₂ p rewrite p | sym c₁ = ⊥-elim (¬just≡nothing (sym (snd gc)))
-
-
-
-onlyℂ∈𝕎→≡ : {w : 𝕎·} {c : Name} {v : Term} {u : ℂ·} {m : ℕ}
-              → onlyℂ∈𝕎 u c w
-              → APPLY (CS c) (NUM m) ⇓ v at w
-              → Σ ℂ· (λ t → getChoice· m c w ≡ just t)
-              → isValue (ℂ→T u)
-              → v ⇓ ℂ→T u at w
-onlyℂ∈𝕎→≡ {w} {c} {v} {u} {m} oc c₁ gc isv {--isu--} =
-  onlyℂ∈𝕎→≡-aux {w} {c} {v} {u} {k} {m} oc c₂ gc isv {--isu--}
-  where
-    k : ℕ
-    k = fst c₁
-
-    c₂ : steps k (APPLY (CS c) (NUM m)) w ≡ v
-    c₂ = snd c₁
-
-
--- Without that it runs forever...
-≡→⇓→⇓ : {w : 𝕎·} {a b c : Term}
-         → b ≡ c
-         → a ⇓ b at w
-         → a ⇓ c at w
-≡→⇓→⇓ {w} {a} {b} {c} h q rewrite h = q
-
-
-≡NUM : {a b : ℕ} → a ≡ b → NUM a ≡ NUM b
-≡NUM {a} {b} e rewrite e = refl
-
-
-
-#weakℂEq→ : {w : 𝕎·} {a b : CTerm}
-             → #weakℂEq w a b
-             → Σ ℂ· (λ c → a #⇓ ℂ→C· c at w × b #⇓ ℂ→C· c at w)
-#weakℂEq→ {w} {a} {B} h = lower (h w (⊑-refl· w))
 
 
 
@@ -731,25 +510,6 @@ onlyℂ∈𝕎→≡ {w} {c} {v} {u} {m} oc c₁ gc isv {--isu--} =
                       → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getC n name w' ≡ just (NUM k)))
 ∀𝕎-getChoice→getC {w} {n} {name} {k} aw w' e' rewrite lower (aw w' e') | ℕ→ℂ→T· k = lift refl
 --}
-
-
-
--- MOVE to choiceDef
-Σsat-ℂ₁ : Σ ℕ (λ n → ·ᵣ Resℂ n ℂ₁·)
-Σsat-ℂ₁ = 0 , inj₂ refl
-
--- MOVE to choiceDef
-sat-ℂ₁ : ⋆ᵣ Resℂ ℂ₁·
-sat-ℂ₁ n = inj₂ refl
-
-
-→#APPLY-#CS#⇛ℂ→C· : {w : 𝕎·} {name : Name} {n : ℕ} {k : ℂ·}
-                       → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getChoice· n name w' ≡ just k))
-                       → #APPLY (#CS name) (#NUM n) #⇛ ℂ→C· k at w
-→#APPLY-#CS#⇛ℂ→C· {w} {name} {n} {k} aw w1 e1 = lift (1 , (step-APPLY-CS (ℂ→T k) w1 n name h))
-  where
-    h : getT n name w1 ≡ just (ℂ→T k)
-    h rewrite lower (aw w1 e1) = refl
 
 
 -- use equalInType-FUN instead
