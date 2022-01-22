@@ -472,6 +472,14 @@ equalInType u w T a b = Σ (isType u w T) (λ p → equalTerms u w p a b)
 
 ∈Type : (u : ℕ) → MEMT
 ∈Type u w T a = equalInType u w T a a
+
+
+INHT : Set(lsuc(lsuc(L)))
+INHT = (w : 𝕎·) (T : CTerm) → Set(lsuc(L))
+
+
+inhType : (u : ℕ) → INHT
+inhType u w T = Σ CTerm (λ t → ∈Type u w T t)
 \end{code}
 
 

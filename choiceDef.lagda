@@ -105,6 +105,14 @@ Res⊤ = mkRes (λ n t → ⊤) ℂ₀· (λ n → tt)
 ⋆ᵣ {L} r t = (n : ℕ) → ·ᵣ r n t
 
 
+Σsat-ℂ₁ : Σ ℕ (λ n → ·ᵣ Resℂ₀₁ n ℂ₁·)
+Σsat-ℂ₁ = 0 , inj₂ refl
+
+
+sat-ℂ₁ : ⋆ᵣ Resℂ₀₁ ℂ₁·
+sat-ℂ₁ n = inj₂ refl
+
+
 
 {--Resℕ : Res
 Resℕ = mkRes (λ n t → Σ ℕ (λ m → ℂ→T· t ≡ NUM m)) (ℕ→ℂ· 0) (λ n → 0 , refl)
@@ -128,5 +136,7 @@ record NRes {L : Level} : Set(lsuc(L)) where
   field
     name : Name
     res  : Res{L}
+
+
 
 \end{code}

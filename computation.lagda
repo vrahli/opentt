@@ -638,4 +638,147 @@ all>++R {n} {l} {k} i v j = i v (∈-++⁺ʳ _ j)
 #⇛to-same-CS : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
 #⇛to-same-CS w t1 t2 = ⇛to-same-CS w ⌜ t1 ⌝ ⌜ t2 ⌝
 
+
+⇛-APPLY-CS : (w : 𝕎·) (a b : Term) (name : Name)
+             → a ⇛ b at w
+             → (APPLY (CS name) a) ⇛ (APPLY (CS name) b) at w
+⇛-APPLY-CS w a b name comp w1 e1 = lift (⇓-APPLY-CS w1 a b name (lower (comp w1 e1)))
+
+
+#⇛-APPLY-CS : {w : 𝕎·} {a b : CTerm} (name : Name)
+             → a #⇛ b at w
+             → (#APPLY (#CS name) a) #⇛ (#APPLY (#CS name) b) at w
+#⇛-APPLY-CS {w} {a} {b} name comp w1 e1 = ⇛-APPLY-CS w ⌜ a ⌝ ⌜ b ⌝ name comp w1 e1
+
+
+
+⇛-trans : {w : 𝕎·} {a b c : Term} → a ⇛ b at w → b ⇛ c at w → a ⇛ c at w
+⇛-trans {w} {a} {b} {c} c₁ c₂ w1 e1 = lift (⇓-trans (lower (c₁ w1 e1)) (lower (c₂ w1 e1)))
+
+
+#strongMonEq-#⇛-left-rev : {w : 𝕎·} {a b c : CTerm}
+                            → a #⇛ b at w
+                            → #strongMonEq w b c
+                            → #strongMonEq w a c
+#strongMonEq-#⇛-left-rev {w} {a} {b} {c} comp (n , c₁ , c₂) = n , ⇛-trans comp c₁ , c₂
+
+
+#weakMonEq-#⇛-left-rev : {w : 𝕎·} {a b c : CTerm}
+                          → a #⇛ b at w
+                          → #weakMonEq w b c
+                          → #weakMonEq w a c
+#weakMonEq-#⇛-left-rev {w} {a} {b} {c} comp h w1 e1 =
+  lift (fst (lower (h w1 e1)) , ⇓-trans (lower (comp w1 e1)) (fst (snd (lower (h w1 e1)))) , snd (snd (lower (h w1 e1))))
+
+
+#⇛to-same-CS-#⇛-left-rev : {w : 𝕎·} {a b c : CTerm}
+                             → a #⇛ b at w
+                             → #⇛to-same-CS w b c
+                             → #⇛to-same-CS w a c
+#⇛to-same-CS-#⇛-left-rev {w} {a} {b} {c} comp (name , c₁ , c₂) = name , ⇛-trans comp c₁ , c₂
+
+
+→-step-APPLY : {w : 𝕎·} {a b : Term} (c : Term)
+                → step a w ≡ just b
+                → APPLY a c ⇓ APPLY b c at w
+→-step-APPLY {w} {NAT} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {QNAT} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {LT a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {QLT a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {NUM x} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {PI a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {LAMBDA a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {APPLY a a₁} {b} c comp = 1 , z
+  where
+    z : steps 1 (APPLY (APPLY a a₁) c) w ≡ APPLY b c
+    z rewrite comp = refl
+→-step-APPLY {w} {SUM a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {PAIR a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {SET a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {UNION a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {INL a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {INR a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {EQ a a₁ a₂} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {AX} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {FREE} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {CS x} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {TSQUASH a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {DUM a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {FFDEFS a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {UNIV x} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {LIFT a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {LOWER a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {SHRINK a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+
+
+→-steps-APPLY : {w : 𝕎·} {a b : Term} (n : ℕ) (c : Term)
+                → steps n a w ≡ b
+                → APPLY a c ⇓ APPLY b c at w
+→-steps-APPLY {w} {a} {b} 0 c comp rewrite comp = ⇓-refl _ _
+→-steps-APPLY {w} {a} {b} (suc n) c comp with step⊎ a w
+... | inj₁ (u , p) rewrite p = ⇓-trans (→-step-APPLY c p) (→-steps-APPLY n c comp)
+... | inj₂ p rewrite p | comp = 0 , refl
+
+
+→-#⇛-#APPLY : {w : 𝕎·} {a b : CTerm} (c : CTerm)
+                → a #⇛ b at w
+                → #APPLY a c #⇛ #APPLY b c at w
+→-#⇛-#APPLY {w} {a} {b} c comp w1 e1 = lift (→-steps-APPLY (fst (lower (comp w1 e1))) ⌜ c ⌝ (snd (lower (comp w1 e1))))
+
+
+⇛→≈ : {w : 𝕎·} {a b : Term}
+        → a ⇛ b at w
+        → a ≈ b at w
+⇛→≈ {w} {a} {b} comp w1 e1 = lift (⇓→∼ (lower (comp w1 e1)))
+
+
+
+val-⇓→ : {w : 𝕎·} {a b v : Term}
+            → isValue v
+            → a ⇓ b at w
+            → a ⇓ v at w
+            → b ⇓ v at w
+val-⇓→ {w} {a} {b} {v} isv (m , comp1) (n , comp2) with n ≤? m
+... | yes p rewrite sym (steps-val-det w a v b n m isv comp2 comp1 p) = 0 , refl
+... | no p with ≤-Σ+ (≰⇒≥ p)
+... |   (k , q) rewrite q | steps-+ m k a w | comp1 = k , comp2
+
+
+val-⇛→ : {w : 𝕎·} {a b v : Term}
+            → isValue v
+            → a ⇛ b at w
+            → a ⇛ v at w
+            → b ⇛ v at w
+val-⇛→ {w} {a} {b} {v} isv comp1 comp2 w1 e1 = lift (val-⇓→ isv (lower (comp1 w1 e1)) (lower (comp2 w1 e1)))
+
+
+val-#⇛→ : {w : 𝕎·} {a b v : CTerm}
+            → #isValue v
+            → a #⇛ b at w
+            → a #⇛ v at w
+            → b #⇛ v at w
+val-#⇛→ {w} {a} {b} {v} isv comp1 comp2 = val-⇛→ isv comp1 comp2
+
+
+
+#strongMonEq-#⇛-left : {w : 𝕎·} {a b c : CTerm}
+                        → a #⇛ b at w
+                        → #strongMonEq w a c
+                        → #strongMonEq w b c
+#strongMonEq-#⇛-left {w} {a} {b} {c} comp (n , c₁ , c₂) = n , val-#⇛→ {w} {a} {b} {#NUM n} tt comp c₁ , c₂
+
+
+#weakMonEq-#⇛-left : {w : 𝕎·} {a b c : CTerm}
+                      → a #⇛ b at w
+                      → #weakMonEq w a c
+                      → #weakMonEq w b c
+#weakMonEq-#⇛-left {w} {a} {b} {c} comp h w1 e1 =
+  lift (fst (lower (h w1 e1)) , val-⇓→ tt (lower (comp w1 e1)) (fst (snd (lower (h w1 e1)))) , snd (snd (lower (h w1 e1))))
+
+
+#⇛to-same-CS-#⇛-left : {w : 𝕎·} {a b c : CTerm}
+                         → a #⇛ b at w
+                         → #⇛to-same-CS w a c
+                         → #⇛to-same-CS w b c
+#⇛to-same-CS-#⇛-left {w} {a} {b} {c} comp (name , c₁ , c₂) = name , val-#⇛→ {w} {a} {b} {#CS name} tt comp c₁ , c₂
 \end{code}

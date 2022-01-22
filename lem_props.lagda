@@ -257,21 +257,6 @@ inbar-#weakMonEq-APPLY-CS u w c m comp =
 
 
 
--- MOVE to computation
-⇛-APPLY-CS : (w : 𝕎·) (a b : Term) (name : Name)
-             → a ⇛ b at w
-             → (APPLY (CS name) a) ⇛ (APPLY (CS name) b) at w
-⇛-APPLY-CS w a b name comp w1 e1 = lift (⇓-APPLY-CS w1 a b name (lower (comp w1 e1)))
-
-
--- MOVE to computation
-#⇛-APPLY-CS : {w : 𝕎·} {a b : CTerm} (name : Name)
-             → a #⇛ b at w
-             → (#APPLY (#CS name) a) #⇛ (#APPLY (#CS name) b) at w
-#⇛-APPLY-CS {w} {a} {b} name comp w1 e1 = ⇛-APPLY-CS w ⌜ a ⌝ ⌜ b ⌝ name comp w1 e1
-
-
-
 
 onlyℂ∈𝕎→≡-aux : {w : 𝕎·} {c : Name} {v : Term} {u : ℂ·} {k m : ℕ}
                   → onlyℂ∈𝕎 u c w
@@ -325,15 +310,6 @@ onlyℂ∈𝕎→≡ {w} {c} {v} {u} {m} oc c₁ gc isv {--isu--} =
 #weakℂEq→ {w} {a} {B} h = lower (h w (⊑-refl· w))
 
 
-
-
--- MOVE to choiceDef
-Σsat-ℂ₁ : Σ ℕ (λ n → ·ᵣ Resℂ n ℂ₁·)
-Σsat-ℂ₁ = 0 , inj₂ refl
-
--- MOVE to choiceDef
-sat-ℂ₁ : ⋆ᵣ Resℂ ℂ₁·
-sat-ℂ₁ n = inj₂ refl
 
 
 →#APPLY-#CS#⇛ℂ→C· : {w : 𝕎·} {name : Name} {n : ℕ} {k : ℂ·}

@@ -87,52 +87,6 @@ open import lem_props(W)(C)(G)(N)(F)(P)(E)
 
 
 \begin{code}[hide]
--- MOVE to props3
-→equalInType-UNION : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
-                       → isType n w A
-                       → isType n w B
-                       → inbar w (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
-                                          → (a #⇛ (#INL x) at w' × b #⇛ (#INL y) at w' × equalInType n w' A x y)
-                                             ⊎
-                                             (a #⇛ (#INR x) at w' × b #⇛ (#INR y) at w' × equalInType n w' B x y))))
-                       → equalInType n w (#UNION A B) a b
-→equalInType-UNION {n} {w} {A} {B} {a} {b} isa isb i = eqTypesUNION← isa isb , Bar.∀𝕎-inBarFunc barI aw i
-  where
-    aw : ∀𝕎 w (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
-                            a #⇛ #INL x at w' × b #⇛ #INL y at w' × equalInType n w' A x y
-                            ⊎ a #⇛ #INR x at w' × b #⇛ #INR y at w' × equalInType n w' B x y))
-                       → UNIONeq (eqInType (uni n) w' (eqTypes-mon (uni n) isa w' e')) (eqInType (uni n) w' (eqTypes-mon (uni n) isb w' e')) w' a b)
-    aw w1 e1 (x , y , inj₁ (c₁ , c₂ , ea)) = x , y , inj₁ (c₁ , c₂ , equalInType→eqInType refl {eqTypes-mon (uni n) isa w1 e1} ea)
-    aw w1 e1 (x , y , inj₂ (c₁ , c₂ , ea)) = x , y , inj₂ (c₁ , c₂ , equalInType→eqInType refl {eqTypes-mon (uni n) isb w1 e1} ea)
-
-
--- MOVE to theory
-INHT : Set(lsuc(lsuc(L)))
-INHT = (w : 𝕎·) (T : CTerm) → Set(lsuc(L))
-
-
--- MOVE to theory
-inhType : (u : ℕ) → INHT
-inhType u w T = Σ CTerm (λ t → ∈Type u w T t)
-
-
-equalInType-NEG-inh : {u : ℕ} {w : 𝕎·} {A : CTerm}
-                      → ∀𝕎 w (λ w' _ → isType u w' A)
-                      → ∀𝕎 w (λ w' _ → ¬ inhType u w' A)
-                      → inhType u w (#NEG A)
-equalInType-NEG-inh {u} {w} {A} h q = #lamAX , equalInType-NEG h aw
-  where
-    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType u w' A a₁ a₂)
-    aw w1 e1 a₁ a₂ ea = q w1 e1 (a₁ , equalInType-refl ea)
-
-
-inhType-mon : {w1 w2 : 𝕎·} (e : w1 ⊑· w2) {u : ℕ} {A : CTerm}
-              → inhType u w1 A
-              → inhType u w2 A
-inhType-mon {w1} {w2} e {u} {A} (t , i) = t , equalInType-mon i w2 e
-
-
-
 classical : (w : 𝕎·) {n i : ℕ} (p : i < n) → member w (#LEM p) #lamAX
 classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
   where

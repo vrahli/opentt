@@ -110,93 +110,6 @@ equalInType-EQ→₁ {u} {w} {a} {b} {A} {f} {g} (EQTBAR x , eqi) =
     aw w' e' z h = equalInType-EQ→₁ (z , h)
 
 
--- MOVE to computation
-⇛-trans : {w : 𝕎·} {a b c : Term} → a ⇛ b at w → b ⇛ c at w → a ⇛ c at w
-⇛-trans {w} {a} {b} {c} c₁ c₂ w1 e1 = lift (⇓-trans (lower (c₁ w1 e1)) (lower (c₂ w1 e1)))
-
-
--- MOVE to computation
-#strongMonEq-#⇛-left-rev : {w : 𝕎·} {a b c : CTerm}
-                            → a #⇛ b at w
-                            → #strongMonEq w b c
-                            → #strongMonEq w a c
-#strongMonEq-#⇛-left-rev {w} {a} {b} {c} comp (n , c₁ , c₂) = n , ⇛-trans comp c₁ , c₂
-
-
--- MOVE to computation
-#weakMonEq-#⇛-left-rev : {w : 𝕎·} {a b c : CTerm}
-                          → a #⇛ b at w
-                          → #weakMonEq w b c
-                          → #weakMonEq w a c
-#weakMonEq-#⇛-left-rev {w} {a} {b} {c} comp h w1 e1 =
-  lift (fst (lower (h w1 e1)) , ⇓-trans (lower (comp w1 e1)) (fst (snd (lower (h w1 e1)))) , snd (snd (lower (h w1 e1))))
-
-
--- MOVE to computation
-#⇛to-same-CS-#⇛-left-rev : {w : 𝕎·} {a b c : CTerm}
-                             → a #⇛ b at w
-                             → #⇛to-same-CS w b c
-                             → #⇛to-same-CS w a c
-#⇛to-same-CS-#⇛-left-rev {w} {a} {b} {c} comp (name , c₁ , c₂) = name , ⇛-trans comp c₁ , c₂
-
-
--- MOVE to computation
-→-step-APPLY : {w : 𝕎·} {a b : Term} (c : Term)
-                → step a w ≡ just b
-                → APPLY a c ⇓ APPLY b c at w
-→-step-APPLY {w} {NAT} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {QNAT} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {LT a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {QLT a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {NUM x} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {PI a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {LAMBDA a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {APPLY a a₁} {b} c comp = 1 , z
-  where
-    z : steps 1 (APPLY (APPLY a a₁) c) w ≡ APPLY b c
-    z rewrite comp = refl
-→-step-APPLY {w} {SUM a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {PAIR a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {SET a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {UNION a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {INL a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {INR a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {EQ a a₁ a₂} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {AX} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {FREE} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {CS x} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {TSQUASH a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {DUM a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {FFDEFS a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {UNIV x} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {LIFT a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {LOWER a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {SHRINK a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-
-
--- MOVE to computation
-→-steps-APPLY : {w : 𝕎·} {a b : Term} (n : ℕ) (c : Term)
-                → steps n a w ≡ b
-                → APPLY a c ⇓ APPLY b c at w
-→-steps-APPLY {w} {a} {b} 0 c comp rewrite comp = ⇓-refl _ _
-→-steps-APPLY {w} {a} {b} (suc n) c comp with step⊎ a w
-... | inj₁ (u , p) rewrite p = ⇓-trans (→-step-APPLY c p) (→-steps-APPLY n c comp)
-... | inj₂ p rewrite p | comp = 0 , refl
-
-
--- MOVE to computation
-→-#⇛-#APPLY : {w : 𝕎·} {a b : CTerm} (c : CTerm)
-                → a #⇛ b at w
-                → #APPLY a c #⇛ #APPLY b c at w
-→-#⇛-#APPLY {w} {a} {b} c comp w1 e1 = lift (→-steps-APPLY (fst (lower (comp w1 e1))) ⌜ c ⌝ (snd (lower (comp w1 e1))))
-
-
--- MOVE to computation
-⇛→≈ : {w : 𝕎·} {a b : Term}
-        → a ⇛ b at w
-        → a ≈ b at w
-⇛→≈ {w} {a} {b} comp w1 e1 = lift (⇓→∼ (lower (comp w1 e1)))
-
 
 equalTypes-#⇛-left-rev : {i : ℕ} {w : 𝕎·} {a b c : CTerm}
                           → a #⇛ b at w
@@ -229,35 +142,6 @@ equalTypes-#⇛-left-rev {i} {w} {a} {b} {c} comp (EQTLIFT A1 A2 x x₁ eqtA ext
 equalTypes-#⇛-left-rev {i} {w} {a} {b} {c} comp (EQTBAR x) =
   EQTBAR (Bar.∀𝕎-inBarFunc barI (λ w' e → equalTypes-#⇛-left-rev (∀𝕎-mon e comp)) x)
 
-
--- MOVE to computation
-val-⇓→ : {w : 𝕎·} {a b v : Term}
-            → isValue v
-            → a ⇓ b at w
-            → a ⇓ v at w
-            → b ⇓ v at w
-val-⇓→ {w} {a} {b} {v} isv (m , comp1) (n , comp2) with n ≤? m
-... | yes p rewrite sym (steps-val-det w a v b n m isv comp2 comp1 p) = 0 , refl
-... | no p with ≤-Σ+ (≰⇒≥ p)
-... |   (k , q) rewrite q | steps-+ m k a w | comp1 = k , comp2
-
-
--- MOVE to computation
-val-⇛→ : {w : 𝕎·} {a b v : Term}
-            → isValue v
-            → a ⇛ b at w
-            → a ⇛ v at w
-            → b ⇛ v at w
-val-⇛→ {w} {a} {b} {v} isv comp1 comp2 w1 e1 = lift (val-⇓→ isv (lower (comp1 w1 e1)) (lower (comp2 w1 e1)))
-
-
--- MOVE to computation
-val-#⇛→ : {w : 𝕎·} {a b v : CTerm}
-            → #isValue v
-            → a #⇛ b at w
-            → a #⇛ v at w
-            → b #⇛ v at w
-val-#⇛→ {w} {a} {b} {v} isv comp1 comp2 = val-⇛→ isv comp1 comp2
 
 
 equalTypes-#⇛-left : {i : ℕ} {w : 𝕎·} {a b c : CTerm}
@@ -399,30 +283,6 @@ equalTerms-#⇛-left-at i =
   → equalTerms i w eqt a c
   → equalTerms i w eqt b c
 
-
--- MOVE to computation
-#strongMonEq-#⇛-left : {w : 𝕎·} {a b c : CTerm}
-                        → a #⇛ b at w
-                        → #strongMonEq w a c
-                        → #strongMonEq w b c
-#strongMonEq-#⇛-left {w} {a} {b} {c} comp (n , c₁ , c₂) = n , val-#⇛→ {w} {a} {b} {#NUM n} tt comp c₁ , c₂
-
-
--- MOVE to computation
-#weakMonEq-#⇛-left : {w : 𝕎·} {a b c : CTerm}
-                      → a #⇛ b at w
-                      → #weakMonEq w a c
-                      → #weakMonEq w b c
-#weakMonEq-#⇛-left {w} {a} {b} {c} comp h w1 e1 =
-  lift (fst (lower (h w1 e1)) , val-⇓→ tt (lower (comp w1 e1)) (fst (snd (lower (h w1 e1)))) , snd (snd (lower (h w1 e1))))
-
-
--- MOVE to computation
-#⇛to-same-CS-#⇛-left : {w : 𝕎·} {a b c : CTerm}
-                         → a #⇛ b at w
-                         → #⇛to-same-CS w a c
-                         → #⇛to-same-CS w b c
-#⇛to-same-CS-#⇛-left {w} {a} {b} {c} comp (name , c₁ , c₂) = name , val-#⇛→ {w} {a} {b} {#CS name} tt comp c₁ , c₂
 
 
 
@@ -608,4 +468,39 @@ APPLY-lamAX-⇛ w a w1 e1 = lift (1 , refl)
 
 inbar-APPLY-lamAX : {w : 𝕎·} (a : CTerm) → inbar w (λ w' _ → #APPLY #lamAX a #⇛ #AX at w')
 inbar-APPLY-lamAX {w} a = Bar.∀𝕎-inBar barI (λ w1 _ → APPLY-lamAX-⇛ w1 a)
+
+
+→equalInType-UNION : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
+                       → isType n w A
+                       → isType n w B
+                       → inbar w (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
+                                          → (a #⇛ (#INL x) at w' × b #⇛ (#INL y) at w' × equalInType n w' A x y)
+                                             ⊎
+                                             (a #⇛ (#INR x) at w' × b #⇛ (#INR y) at w' × equalInType n w' B x y))))
+                       → equalInType n w (#UNION A B) a b
+→equalInType-UNION {n} {w} {A} {B} {a} {b} isa isb i = eqTypesUNION← isa isb , Bar.∀𝕎-inBarFunc barI aw i
+  where
+    aw : ∀𝕎 w (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
+                            a #⇛ #INL x at w' × b #⇛ #INL y at w' × equalInType n w' A x y
+                            ⊎ a #⇛ #INR x at w' × b #⇛ #INR y at w' × equalInType n w' B x y))
+                       → UNIONeq (eqInType (uni n) w' (eqTypes-mon (uni n) isa w' e')) (eqInType (uni n) w' (eqTypes-mon (uni n) isb w' e')) w' a b)
+    aw w1 e1 (x , y , inj₁ (c₁ , c₂ , ea)) = x , y , inj₁ (c₁ , c₂ , equalInType→eqInType refl {eqTypes-mon (uni n) isa w1 e1} ea)
+    aw w1 e1 (x , y , inj₂ (c₁ , c₂ , ea)) = x , y , inj₂ (c₁ , c₂ , equalInType→eqInType refl {eqTypes-mon (uni n) isb w1 e1} ea)
+
+
+
+equalInType-NEG-inh : {u : ℕ} {w : 𝕎·} {A : CTerm}
+                      → ∀𝕎 w (λ w' _ → isType u w' A)
+                      → ∀𝕎 w (λ w' _ → ¬ inhType u w' A)
+                      → inhType u w (#NEG A)
+equalInType-NEG-inh {u} {w} {A} h q = #lamAX , equalInType-NEG h aw
+  where
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType u w' A a₁ a₂)
+    aw w1 e1 a₁ a₂ ea = q w1 e1 (a₁ , equalInType-refl ea)
+
+
+inhType-mon : {w1 w2 : 𝕎·} (e : w1 ⊑· w2) {u : ℕ} {A : CTerm}
+              → inhType u w1 A
+              → inhType u w2 A
+inhType-mon {w1} {w2} e {u} {A} (t , i) = t , equalInType-mon i w2 e
 \end{code}
