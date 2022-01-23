@@ -545,16 +545,17 @@ bar-𝔹⊑→ {B} mon {w} {w'} e {b} {w0} h = 𝔹.mon b (fst (snd (snd h))) (f
     (1) O𝔹BarsProps for open bars
     (2) IS𝔹BarsProps for Beth Bars
  --}
+-- bars are the open sets of a topological space equipped with the set of 𝕎
 record BarsProps : Set(lsuc(lsuc(L))) where
   constructor mkBarsProps
   field
     bars  : Bars
     mon   : Bars⊑ bars
     isect : Bars∩ bars
-    all   : Bars∀ bars
+    all   : Bars∀ bars    -- top element
+    fam2  : BarsFam2 bars -- arbitrary unions
+    ex    : Bars∃ bars    -- bars are non-empty
 --    fam1  : BarsFam1 bars
-    fam2  : BarsFam2 bars
-    ex    : Bars∃ bars
 
 
 
