@@ -89,7 +89,11 @@ step (INL a) w = just (INL a)
 -- INR
 step (INR a) w = just (INR a)
 -- DECIDE
-step (DECIDE a b c) w = nothing -- TODO
+step (DECIDE (INL a) b c) w = just b
+step (DECIDE (INR a) b c) w = just c
+step (DECIDE a b c) w with step a w
+... | just t = just (DECIDE t b c)
+... | nothing = nothing
 -- EQ
 step (EQ a b c) w = just (EQ a b c)
 -- AX
@@ -318,6 +322,7 @@ step-APPLY-CS-¬NUM name (UNIV x) b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (LIFT a) b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (LOWER a) b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (SHRINK a) b w c s rewrite sym (just-inj s) = refl
+step-APPLY-CS-¬NUM name (DECIDE a x y) b w c s rewrite s = refl
 
 Σ-steps-APPLY-CS≤ : (n : ℕ) (a b : Term) (w : 𝕎·) (name : Name)
                  → steps n a w ≡ b
@@ -709,6 +714,10 @@ all>++R {n} {l} {k} i v j = i v (∈-++⁺ʳ _ j)
 →-step-APPLY {w} {LIFT a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
 →-step-APPLY {w} {LOWER a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
 →-step-APPLY {w} {SHRINK a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
+→-step-APPLY {w} {DECIDE a x y} {b} c comp = 1 , z
+  where
+    z : steps 1 (APPLY (DECIDE a x y) c) w ≡ APPLY b c
+    z rewrite comp = refl
 
 
 →-steps-APPLY : {w : 𝕎·} {a b : Term} (n : ℕ) (c : Term)

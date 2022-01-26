@@ -98,8 +98,8 @@ classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
                        → equalTypes n w' (sub0 a₁ (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
                                           (sub0 a₂ (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))))
     p2 w1 e1 a₁ a₂ ea =
-      ≡CTerm→eqTypes (sym (sub0-#[0]SQUASH p a₁))
-                      (sym (sub0-#[0]SQUASH p a₂))
+      ≡CTerm→eqTypes (sym (sub0-#[0]SQUASH-LEM p a₁))
+                      (sym (sub0-#[0]SQUASH-LEM p a₂))
                       (eqTypesSQUASH← (eqTypesUNION← (equalInType→equalTypes p w1 a₁ a₂ ea)
                                                        (eqTypesNEG← (equalInType→equalTypes p w1 a₁ a₂ ea))))
 
@@ -109,7 +109,7 @@ classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
                                            (#APPLY #lamAX a₁) (#APPLY #lamAX a₂))
     p3 w1 e1 a₁ a₂ ea =
       ≡CTerm→equalInType
-        (sym (sub0-#[0]SQUASH p a₁))
+        (sym (sub0-#[0]SQUASH-LEM p a₁))
         (→equalInType-SQUASH (inbar-APPLY-lamAX a₁) (inbar-APPLY-lamAX a₂) p4)
       where
         p6 : inbar w1 (λ w' _ → inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁)))

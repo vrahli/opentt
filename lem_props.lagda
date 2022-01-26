@@ -125,13 +125,24 @@ equalTerms-NegLem w {i} {n} p =
 
 
 
+sub0-#[0]SQUASH-LEM : {i n : ℕ} (p : i < n) (a : CTerm)
+                      → sub0 a (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))
+                        ≡ #SQUASH (#UNION (#↑T p a) (#NEG (#↑T p a)))
+sub0-#[0]SQUASH-LEM {i} {n} p a rewrite sub0-#[0]SQUASH a (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))) =
+  CTerm≡ (≡SET refl e)
+  where
+    e : UNION (shiftUp 0 (shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) (↑T p (VAR 0)))))
+              (PI (shiftUp 0 (shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) (↑T p (VAR 0)))))
+                  (EQ (NUM 0) (NUM 1) NAT))
+        ≡ UNION (shiftUp 0 (↑T p ⌜ a ⌝)) (PI (shiftUp 0 (↑T p ⌜ a ⌝)) (EQ (NUM 0) (NUM 1) NAT))
+    e rewrite #shiftUp 0 a | subv-↑T p 0 ⌜ a ⌝ | shiftDown-↑T p 0 ⌜ a ⌝ | #shiftDown 0 a | shiftUp-↑T p 0 ⌜ a ⌝ = refl
+
+
 -- We need cumulativity or lifting here because (#UNIV i) needs to be in level i,
 -- but a₁ needs to be equal to a₂ at that level and also in (#UNIV i)
-eqTypesLemPi : (w : 𝕎·) {n i : ℕ} (p : i < n)
-               → equalTypes n w
-                             (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
-                             (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
-eqTypesLemPi w {n} {i} p =
+isTypeLemPi : (w : 𝕎·) {n i : ℕ} (p : i < n)
+               → isType n w (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
+isTypeLemPi w {n} {i} p =
   eqTypesPI←
     {w} {n}
     {#UNIV i} {#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))}
@@ -143,18 +154,18 @@ eqTypesLemPi w {n} {i} p =
                        → equalTypes n w'
                                      (sub0 a₁ (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
                                      (sub0 a₂ (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))))
-    aw w1 e1 a₁ a₂ ea rewrite sub0-#[0]SQUASH p a₁ | sub0-#[0]SQUASH p a₂ = aw'
+    aw w1 e1 a₁ a₂ ea rewrite sub0-#[0]SQUASH-LEM p a₁ | sub0-#[0]SQUASH-LEM p a₂ = aw'
       where
         aw' : equalTypes n w1 (#SQUASH (#UNION (#↑T p a₁) (#NEG (#↑T p a₁)))) (#SQUASH (#UNION (#↑T p a₂) (#NEG (#↑T p a₂))))
         aw' = eqTypesSQUASH← (eqTypesUNION← (equalInType→equalTypes {n} {i} p w1 a₁ a₂ ea)
                                              (eqTypesNEG← (equalInType→equalTypes {n} {i} p w1 a₁ a₂ ea)))
 
 
-eqTypesLem : (w : 𝕎·) {n i : ℕ} (p : i < n) → equalTypes n w (#LEM p) (#LEM p)
-eqTypesLem w {n} {i} p rewrite #LEM≡#PI p = eqTypesLemPi w {n} {i} p
+eqTypesLem : (w : 𝕎·) {n i : ℕ} (p : i < n) → isType n w (#LEM p)
+eqTypesLem w {n} {i} p rewrite #LEM≡#PI p = isTypeLemPi w {n} {i} p
 
 
-eqTypesNegLem : (w : 𝕎·) {n i : ℕ} (p : i < n) → equalTypes n w (#NEG (#LEM p)) (#NEG (#LEM p))
+eqTypesNegLem : (w : 𝕎·) {n i : ℕ} (p : i < n) → isType n w (#NEG (#LEM p))
 eqTypesNegLem w {n} {i} p = eqTypesNEG← (eqTypesLem w {n} {i} p)
 
 

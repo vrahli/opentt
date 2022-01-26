@@ -557,14 +557,15 @@ fvars-shiftUp≡ n (SHRINK t) = fvars-shiftUp≡ n t
                   (⊆?→⊆ {fvars ⌜ b ⌝} {[ 0 ]} (CTerm0.closed b)))
 
 
+fvars-NEG : (t : Term) → fvars (NEG t) ≡ fvars t
+fvars-NEG t rewrite ++[] (fvars t) = refl
+
+
 #[0]NEG : CTerm0 → CTerm0
 #[0]NEG a = ct0 (NEG ⌜ a ⌝) c
   where
     c : #[ [ 0 ] ] NEG ⌜ a ⌝
-    c = f
-      where
-        f : (fvars ⌜ a ⌝ ++ []) ⊆? [ 0 ] ≡ true
-        f rewrite ++[] (fvars ⌜ a ⌝) = CTerm0.closed a
+    c rewrite fvars-NEG ⌜ a ⌝ = CTerm0.closed a
 
 
 #[0]VAR : CTerm0
@@ -938,32 +939,120 @@ sub0⌞⌟ a b = CTerm≡ (subNotIn ⌜ a ⌝ ⌜ b ⌝ (CTerm.closed b))
 →≡sub0 {a} {t} {u} e rewrite e = refl
 
 
-
-sub0-#[0]SQUASH : {i n : ℕ} (p : i < n) (a : CTerm)
-                  → sub0 a (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))
-                     ≡ #SQUASH (#UNION (#↑T p a) (#NEG (#↑T p a)))
-sub0-#[0]SQUASH {i} {n} p a = CTerm≡ (≡SET refl e)
+#subv-CTerm : (a : CTerm) (b : CTerm0) → # subv 0 ⌜ a ⌝ ⌜ b ⌝
+#subv-CTerm a b = ⊆[]→≡[] (⊆-trans (fvars-subv 0 ⌜ a ⌝ ⌜ b ⌝) s)
   where
-    e : UNION (shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝))
-                                   (shiftUp 0 ⌜ #[0]↑T p #[0]VAR ⌝)))
-              (PI (shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝))
-                                       (shiftUp 0 ⌜ #[0]↑T p #[0]VAR ⌝)))
-                  (EQ (NUM 0) (NUM 1) NAT))
-        ≡ UNION (shiftUp 0 ⌜ #↑T p a ⌝)
-                (PI (shiftUp 0 ⌜ #↑T p a ⌝)
-                    (EQ (NUM 0) (NUM 1) NAT))
-    e rewrite #shiftUp 0 a | #shiftUp 0 a
-            | shiftUp-↑T p 0 (VAR 0) | shiftUp-↑T p 0 ⌜ a ⌝
-            | subv-↑T p 1 ⌜ a ⌝
-            | shiftDown-↑T p 1 ⌜ a ⌝
-            | #shiftUp 0 a | #shiftDown 1 a = refl
+    s : removeV 0 (fvars ⌜ b ⌝) ++ fvars ⌜ a ⌝ ⊆ []
+    s z rewrite CTerm.closed a | ++[] (removeV 0 (fvars ⌜ b ⌝)) =
+      ⊥-elim (snd (∈removeV→ {_} {_} {fvars ⌜ b ⌝} z) (∈[1] ((fvars-CTerm0 b (fst (∈removeV→ z))))))
 
-{--    e : UNION (shiftDown 1 (shiftUp 0 (shiftUp 0 (⌜ a ⌝))))
-              (PI (shiftDown 1 (shiftUp 0 (shiftUp 0 (⌜ a ⌝))))
-                  (EQ (NUM 0) (NUM 1) NAT))
-        ≡ UNION (shiftUp 0 (⌜ a ⌝))
-                (PI (shiftUp 0 (⌜ a ⌝)) (EQ (NUM 0) (NUM 1) NAT))
-    e rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftDown 1 a = refl --}
+
+1+n+m≰m : ∀ m {n} → ¬ (suc n + m ≤ m)
+1+n+m≰m m {n} le rewrite +-comm (suc n) m = m+1+n≰m m le
+
+
+shiftDown1-subv1-shiftUp0 : (n : ℕ) (a b : Term) → # a
+                            → shiftDown (suc n) (subv (suc n) a (shiftUp n b)) ≡ subv n a b
+shiftDown1-subv1-shiftUp0 n a (VAR x) ca with x ≟ n
+... | yes p rewrite p with n <? n
+... |   yes q = ⊥-elim (1+n≰n q)
+... |   no q with suc n ≟ suc n
+... |     yes r rewrite #shiftDown (suc n) (ct a ca) = refl
+... |     no r = ⊥-elim (r refl)
+shiftDown1-subv1-shiftUp0 n a (VAR x) ca | no p with x <? n
+shiftDown1-subv1-shiftUp0 n a (VAR x) ca | no p | yes q with x ≟ suc n
+shiftDown1-subv1-shiftUp0 n a (VAR x) ca | no p | yes q | yes r rewrite r = ⊥-elim (1+n+m≰m n q)
+shiftDown1-subv1-shiftUp0 n a (VAR 0) ca | no p | yes q | no r = refl
+shiftDown1-subv1-shiftUp0 n a (VAR (suc x)) ca | no p | yes q | no r with suc x ≤? suc n
+... |       yes s = refl
+... |       no s = ⊥-elim (s (≤-trans (≤-step (≤-step ≤-refl)) (_≤_.s≤s q)))
+shiftDown1-subv1-shiftUp0 n a (VAR x) ca | no p | no q with suc x ≟ suc n
+shiftDown1-subv1-shiftUp0 n a (VAR x) ca | no p | no q | yes r = ⊥-elim (p (suc-injective r))
+shiftDown1-subv1-shiftUp0 n a (VAR x) ca | no p | no q | no r with suc x ≤? suc n
+shiftDown1-subv1-shiftUp0 n a (VAR x) ca | no p | no q | no r | yes s with m≤n⇒m<n∨m≡n s
+... |         inj₁ t = ⊥-elim (q (s≤s-inj t))
+... |         inj₂ t = ⊥-elim (r t)
+shiftDown1-subv1-shiftUp0 n a (VAR x) ca | no p | no q | no r | no s = refl
+shiftDown1-subv1-shiftUp0 n a NAT ca = refl
+shiftDown1-subv1-shiftUp0 n a QNAT ca = refl
+shiftDown1-subv1-shiftUp0 n a (LT b b₁) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca
+        | shiftDown1-subv1-shiftUp0 n a b₁ ca = refl
+shiftDown1-subv1-shiftUp0 n a (QLT b b₁) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca
+        | shiftDown1-subv1-shiftUp0 n a b₁ ca = refl
+shiftDown1-subv1-shiftUp0 n a (NUM x) ca = refl
+shiftDown1-subv1-shiftUp0 n a (PI b b₁) ca
+  rewrite #shiftUp 0 (ct a ca)
+        | shiftDown1-subv1-shiftUp0 (suc n) a b₁ ca
+        | shiftDown1-subv1-shiftUp0 n a b ca = refl
+shiftDown1-subv1-shiftUp0 n a (LAMBDA b) ca
+  rewrite #shiftUp 0 (ct a ca)
+        | shiftDown1-subv1-shiftUp0 (suc n) a b ca = refl
+shiftDown1-subv1-shiftUp0 n a (APPLY b b₁) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca
+        | shiftDown1-subv1-shiftUp0 n a b₁ ca = refl
+shiftDown1-subv1-shiftUp0 n a (SUM b b₁) ca
+  rewrite #shiftUp 0 (ct a ca)
+        | shiftDown1-subv1-shiftUp0 (suc n) a b₁ ca
+        | shiftDown1-subv1-shiftUp0 n a b ca = refl
+shiftDown1-subv1-shiftUp0 n a (PAIR b b₁) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca
+        | shiftDown1-subv1-shiftUp0 n a b₁ ca = refl
+shiftDown1-subv1-shiftUp0 n a (SPREAD b b₁) ca
+  rewrite #shiftUp 0 (ct a ca) | #shiftUp 0 (ct a ca)
+        | shiftDown1-subv1-shiftUp0 n a b ca
+        | shiftDown1-subv1-shiftUp0 (suc (suc n)) a b₁ ca = refl
+shiftDown1-subv1-shiftUp0 n a (SET b b₁) ca
+  rewrite #shiftUp 0 (ct a ca)
+        | shiftDown1-subv1-shiftUp0 (suc n) a b₁ ca
+        | shiftDown1-subv1-shiftUp0 n a b ca = refl
+shiftDown1-subv1-shiftUp0 n a (UNION b b₁) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca
+        | shiftDown1-subv1-shiftUp0 n a b₁ ca = refl
+shiftDown1-subv1-shiftUp0 n a (INL b) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
+shiftDown1-subv1-shiftUp0 n a (INR b) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
+shiftDown1-subv1-shiftUp0 n a (DECIDE b b₁ b₂) ca
+  rewrite #shiftUp 0 (ct a ca)
+        | shiftDown1-subv1-shiftUp0 n a b ca
+        | shiftDown1-subv1-shiftUp0 (suc n) a b₁ ca
+        | shiftDown1-subv1-shiftUp0 (suc n) a b₂ ca = refl
+shiftDown1-subv1-shiftUp0 n a (EQ b b₁ b₂) ca
+  rewrite #shiftUp 0 (ct a ca)
+        | shiftDown1-subv1-shiftUp0 n a b ca
+        | shiftDown1-subv1-shiftUp0 n a b₁ ca
+        | shiftDown1-subv1-shiftUp0 n a b₂ ca = refl
+shiftDown1-subv1-shiftUp0 n a AX ca = refl
+shiftDown1-subv1-shiftUp0 n a FREE ca = refl
+shiftDown1-subv1-shiftUp0 n a (CS x) ca = refl
+shiftDown1-subv1-shiftUp0 n a (TSQUASH b) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
+shiftDown1-subv1-shiftUp0 n a (DUM b) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
+shiftDown1-subv1-shiftUp0 n a (FFDEFS b b₁) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca
+        | shiftDown1-subv1-shiftUp0 n a b₁ ca = refl
+shiftDown1-subv1-shiftUp0 n a (UNIV x) ca = refl
+shiftDown1-subv1-shiftUp0 n a (LIFT b) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
+shiftDown1-subv1-shiftUp0 n a (LOWER b) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
+shiftDown1-subv1-shiftUp0 n a (SHRINK b) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
+
+
+sub0-#[0]SQUASH : (a : CTerm) (t : CTerm0)
+                  → sub0 a (#[0]SQUASH t) ≡ #SQUASH (sub0 a t)
+sub0-#[0]SQUASH a t = CTerm≡ (≡SET refl e)
+  where
+    e : shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) (shiftUp 0 ⌜ t ⌝)) ≡ shiftUp 0 ⌜ sub0 a t ⌝
+    e rewrite #shiftUp 0 a
+            | #shiftDown 0 (ct (subv 0 ⌜ a ⌝ ⌜ t ⌝) (#subv-CTerm a t))
+            | #shiftUp 0 (ct (subv 0 ⌜ a ⌝ ⌜ t ⌝) (#subv-CTerm a t))
+            | #shiftUp 0 a
+            | shiftDown1-subv1-shiftUp0 0 ⌜ a ⌝ ⌜ t ⌝ (CTerm.closed a) = refl
 
 
 #↑Ts : {i n : ℕ} (p : i < suc n) → CTerm → CTerm

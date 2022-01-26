@@ -196,14 +196,14 @@ eqTypesPI← {w} {i} {A} {B} {C} {D} eqta eqtb =
 
 
 eqTypesFUN← : {w : 𝕎·} {i : ℕ} {A : CTerm} {B : CTerm} {C : CTerm} {D : CTerm}
-               → ∀𝕎 w (λ w' _ → equalTypes i w' A C)
-               → ∀𝕎 w (λ w' _ → equalTypes i w' B D)
+               → equalTypes i w A C
+               → equalTypes i w B D
                → equalTypes i w (#FUN A B) (#FUN C D)
 eqTypesFUN← {w} {i} {A} {B} {C} {D} eqta eqtb rewrite #FUN≡#PI A B | #FUN≡#PI C D =
-  eqTypesPI← eqta eqb
+  eqTypesPI← (eqTypes-mon (uni i) eqta) eqb
     where
       eqb : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' A a₁ a₂ → equalTypes i w' (sub0 a₁ ⌞ B ⌟) (sub0 a₂ ⌞ D ⌟))
-      eqb w1 e1 a₁ a₂ eqa rewrite sub0⌞⌟ a₁ B | sub0⌞⌟ a₂ D = eqtb w1 e1
+      eqb w1 e1 a₁ a₂ eqa rewrite sub0⌞⌟ a₁ B | sub0⌞⌟ a₂ D = eqTypes-mon (uni i) eqtb w1 e1
 
 
 eqInTypeExtL1-true : {i : ℕ} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes (uni i) w A B)
@@ -399,9 +399,7 @@ eqTypesNEG← : {w : 𝕎·} {i : ℕ} {A B : CTerm}
                → equalTypes i w A B
                → equalTypes i w (#NEG A) (#NEG B)
 eqTypesNEG← {w} {i} {A} {B} eqt rewrite #NEG≡#FUN A | #NEG≡#FUN B =
-  eqTypesFUN←
-    (eqTypes-mon (uni i) eqt)
-    (λ w' e' → eqTypesFALSE)
+  eqTypesFUN← eqt eqTypesFALSE
 
 
 eqTypesUniv : (w : 𝕎·) (n i : ℕ) (p : i < n) → equalTypes n w (#UNIV i) (#UNIV i)
