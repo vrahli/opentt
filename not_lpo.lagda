@@ -102,33 +102,11 @@ open import not_lem(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 
 
 \begin{code}[hide]
-BOOL : Term
-BOOL = UNION TRUE TRUE
-
-
-#BOOL : CTerm
-#BOOL = ct BOOL refl
-
-
-#BOOL≡ : #BOOL ≡ #UNION #TRUE #TRUE
-#BOOL≡ = CTerm≡ refl
 
 
 -- If we only want to consider Boolean choices
 Boolℂ : ChoiceBar W C M P G X N F E → Set
 Boolℂ cb = ChoiceBar.Typeℂ₀₁ cb ≡ #BOOL
-
-
-NAT→BOOL : Term
-NAT→BOOL = FUN NAT BOOL
-
-
-#NAT→BOOL : CTerm
-#NAT→BOOL = ct NAT→BOOL refl
-
-
-#NAT→BOOL≡ : #NAT→BOOL ≡ #FUN #NAT #BOOL
-#NAT→BOOL≡ = CTerm≡ refl
 
 
 ASSERT : Term → Term
@@ -288,14 +266,6 @@ lowerVars-fvars-[0,1] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1] (λ z
 
 #LPO≡#PI : #LPO ≡ #LPO-PI
 #LPO≡#PI = CTerm≡ refl
-
-
-isTypeBOOL : (w : 𝕎·) (n : ℕ) → isType n w #BOOL
-isTypeBOOL w n rewrite #BOOL≡ = eqTypesUNION← eqTypesTRUE eqTypesTRUE
-
-
-isType-#NAT→BOOL : (w : 𝕎·) (n : ℕ) → isType n w #NAT→BOOL
-isType-#NAT→BOOL w n rewrite #NAT→BOOL≡ = eqTypesFUN← eqTypesNAT (isTypeBOOL w n)
 
 
 sub0-#[0]UNION : (a : CTerm) (t u : CTerm0)
@@ -529,70 +499,6 @@ isTypeLPO w n rewrite #LPO≡#PI = isTypeLPO-PI w n
 
 isTypeNegLPO : (w : 𝕎·) (n : ℕ) → isType n w (#NEG #LPO)
 isTypeNegLPO w n = eqTypesNEG← (isTypeLPO w n)
-
-
-
--- TODO: generalize
-→equalInType-CS-NAT→BOOL : {n : ℕ} {w : 𝕎·} {a b : Name}
-                             → ∀𝕎 w (λ w' _ → (m : ℕ) → equalInType n w' #BOOL (#APPLY (#CS a) (#NUM m)) (#APPLY (#CS b) (#NUM m)))
-                             → equalInType n w #NAT→BOOL (#CS a) (#CS b)
-→equalInType-CS-NAT→BOOL {n} {w} {a} {b} i rewrite #NAT→BOOL≡ =
-  equalInType-FUN (λ w' _ → eqTypesNAT) (λ w' _ → isTypeBOOL w' n) aw
-  where
-    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT a₁ a₂
-                      → equalInType n w' #BOOL (#APPLY (#CS a) a₁) (#APPLY (#CS b) a₂))
-    aw w1 e1 a₁ a₂ ea = equalInType-local (Bar.∀𝕎-inBarFunc barI aw1 ea1)
-      where
-        ea1 : inbar w1 (λ w' _ → #strongMonEq w' a₁ a₂)
-        ea1 = equalInType-NAT→ n w1 a₁ a₂ ea
-
-        aw1 : ∀𝕎 w1 (λ w' e' → #strongMonEq w' a₁ a₂ → equalInType n w' #BOOL (#APPLY (#CS a) a₁) (#APPLY (#CS b) a₂))
-        aw1 w2 e2 (m , c₁ , c₂) = equalInType-#⇛-LR-rev (#⇛-APPLY-CS {w2} {a₁} {#NUM m} a c₁)
-                                                         (#⇛-APPLY-CS {w2} {a₂} {#NUM m} b c₂)
-                                                         (i w2 (⊑-trans· e1 e2) m)
-
-
-
--- MOVE to props3
-fun-equalInType-SQUASH-UNION : {n : ℕ} {w : 𝕎·} {a b c d u v : CTerm}
-                               → isType n w c
-                               → isType n w d
-                               → ∀𝕎 w (λ w' _ → inhType n w' a → inhType n w' c)
-                               → ∀𝕎 w (λ w' _ → inhType n w' b → inhType n w' d)
-                               → equalInType n w (#SQUASH (#UNION a b)) u v
-                               → equalInType n w (#SQUASH (#UNION c d)) #AX #AX
-fun-equalInType-SQUASH-UNION {n} {w} {a} {b} {c} {d} {u} {v} istc istd imp1 imp2 eqi =
-  →equalInType-SQUASH (Bar.∀𝕎-inBar barI (λ w' _ → #compAllRefl #AX w'))
-                       (Bar.∀𝕎-inBar barI (λ w' _ → #compAllRefl #AX w'))
-                       (Bar.inBar-idem barI (Bar.∀𝕎-inBarFunc barI aw1 (equalInType-SQUASH→ eqi)))
-  where
-    aw1 : ∀𝕎 w (λ w' e' → inhType n w' (#UNION a b) → inbar w' (λ w'' e'' → (z : w ⊑· w'') → inhType n w'' (#UNION c d)))
-    aw1 w1 e1 (t , eqj) = Bar.∀𝕎-inBarFunc barI aw2 (equalInType-UNION→ eqj)
-      where
-        aw2 : ∀𝕎 w1 (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
-                                      (t #⇛ #INL x at w' × t #⇛ #INL y at w' × equalInType n w' a x y)
-                                      ⊎ (t #⇛ #INR x at w' × t #⇛ #INR y at w' × equalInType n w' b x y)))
-                            → (z : w ⊑· w') → inhType n w' (#UNION c d))
-        aw2 w2 e2 (x , y , inj₁ (c₁ , c₂ , eqk)) z = #INL (fst (imp1 w2 z (x , equalInType-refl eqk))) , eql
-          where
-            eql : ∈Type n w2 (#UNION c d) (#INL (fst (imp1 w2 z (x , equalInType-refl eqk))))
-            eql = →equalInType-UNION (eqTypes-mon (uni n) istc w2 z)
-                                      (eqTypes-mon (uni n) istd w2 z)
-                                      (Bar.∀𝕎-inBar barI λ w3 e3 → fst (imp1 w2 z (x , equalInType-refl eqk)) ,
-                                                                     fst (imp1 w2 z (x , equalInType-refl eqk)) ,
-                                                                     inj₁ (#compAllRefl (#INL (fst (imp1 w2 z (x , equalInType-refl eqk)))) _ ,
-                                                                           #compAllRefl (#INL (fst (imp1 w2 z (x , equalInType-refl eqk)))) _ ,
-                                                                           equalInType-mon (snd (imp1 w2 z (x , equalInType-refl eqk))) w3 e3))
-        aw2 w2 e2 (x , y , inj₂ (c₁ , c₂ , eqk)) z = #INR (fst (imp2 w2 z (x , equalInType-refl eqk))) , eqr
-          where
-            eqr : ∈Type n w2 (#UNION c d) (#INR (fst (imp2 w2 z (x , equalInType-refl eqk))))
-            eqr = →equalInType-UNION (eqTypes-mon (uni n) istc w2 z)
-                                      (eqTypes-mon (uni n) istd w2 z)
-                                      (Bar.∀𝕎-inBar barI λ w3 e3 → fst (imp2 w2 z (x , equalInType-refl eqk)) ,
-                                                                     fst (imp2 w2 z (x , equalInType-refl eqk)) ,
-                                                                     inj₂ (#compAllRefl (#INR (fst (imp2 w2 z (x , equalInType-refl eqk)))) _ ,
-                                                                           #compAllRefl (#INR (fst (imp2 w2 z (x , equalInType-refl eqk)))) _ ,
-                                                                           equalInType-mon (snd (imp2 w2 z (x , equalInType-refl eqk))) w3 e3))
 
 
 
