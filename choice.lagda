@@ -26,4 +26,7 @@ record Choice : Set₁ where
     ℂ₀ : ℂ
     ℂ₁ : ℂ
 
+    ∼ℂ : ℂ → ℂ → Set
+    ¬∼ℂ₀₁ : ¬ ∼ℂ ℂ₀ ℂ₁
+
 \end{code}

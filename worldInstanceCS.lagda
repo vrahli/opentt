@@ -41,11 +41,10 @@ This provides an instance of world and choice for choice sequences
 
 
 \begin{code}
-
 open import choice
 
 choiceCS : Choice
-choiceCS = mkChoice CTerm (λ x → x) (#NUM 0) (#NUM 1)
+choiceCS = mkChoice CTerm (λ x → x) (#NUM 0) (#NUM 1) #∼vals NUM0≠NUM1
 
 open import choiceDef{1ℓ}(choiceCS)
 

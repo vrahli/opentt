@@ -68,11 +68,15 @@ record ChoiceBar : Set(lsuc(lsuc(L))) where
     ℂ₁∈Typeℂ₀₁ : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁ Cℂ₁
     isValueℂ₀ : isValue Tℂ₀
     isValueℂ₁ : isValue Tℂ₁
-    ℂ₀≠ℂ₁ : ¬ Cℂ₀ ≡ Cℂ₁
-    -- Typeℂ₀₁'s members are weakly syntactically equal
+    -- MOVE to choice
+    ℂ→C-inj : {a b : ℂ·} → ℂ→C· a ≡ ℂ→C· b → a ≡ b
+    ℂ→C→∼ℂ : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼ℂ· c1 c → ∼ℂ· c2 c
+
+    -- Typeℂ₀₁'s members are similar according to ∼ℂ
     ∈Typeℂ₀₁→ : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁ a b → inbar w (λ w' _ → #weakℂEq w' a b)
     -- Typeℂ₀₁ contains all terms that weakly compute to ℂ₀ or ℂ₁
     →∈Typeℂ₀₁ : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name} → inbar w (λ w' _ → weakℂ₀₁M w' (getT n c)) → ∈Type i w Typeℂ₀₁ (#APPLY (#CS c) (#NUM n))
+
 
     -- TODO: for any restriction not just Resℂ₀₁
     inbar-choice : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res) → compatible· c w r → inbar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t))))

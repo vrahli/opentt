@@ -79,8 +79,16 @@ isValueℂ₀· = isValueℂ₀ CB
 isValueℂ₁· : isValue Tℂ₁
 isValueℂ₁· = isValueℂ₁ CB
 
-ℂ₀≠ℂ₁· : ¬ Cℂ₀ ≡ Cℂ₁
-ℂ₀≠ℂ₁· = ℂ₀≠ℂ₁ CB
+ℂ→C-inj· : {a b : ℂ·} → ℂ→C· a ≡ ℂ→C· b → a ≡ b
+ℂ→C-inj· = ℂ→C-inj CB
+
+ℂ→C→∼ℂ· : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼ℂ· c1 c → ∼ℂ· c2 c
+ℂ→C→∼ℂ· = ℂ→C→∼ℂ CB
+
+
+
+--ℂ₀≠ℂ₁· : ¬ Cℂ₀ ≡ Cℂ₁
+--ℂ₀≠ℂ₁· = ℂ₀≠ℂ₁ CB
 
 --ℂ₀≠ℂ₁· : (i : ℕ) (w : 𝕎·) → ¬ equalInType i w Typeℂ₀₁· Cℂ₀ Cℂ₁
 --ℂ₀≠ℂ₁· = ℂ₀≠ℂ₁ CB

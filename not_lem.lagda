@@ -314,17 +314,21 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
 --}
 
 
+∼ℂ≡-r : {c c1 c2 : ℂ·} → c1 ≡ c2 → ∼ℂ· c c1 → ∼ℂ· c c2
+∼ℂ≡-r {c} {c1} {c2} e h rewrite e = h
+
+
 
 ¬equalInType-#Σchoice : (i : ℕ) (w : 𝕎·) (r : Res) (c : Name) (x y : CTerm) {k1 : ℂ·}
                         → isValue (ℂ→T (Res.def r))
                         → isValue (ℂ→T k1)
-                        → ¬ ℂ→C· k1 ≡ ℂ→C· (Res.def r)
+                        → ¬ ∼ℂ· (Res.def r) k1
                         → onlyℂ∈𝕎 (Res.def r) c w
                         → compatible· c w r
                         → freezable· c w
                         → equalInType i w (#Σchoice c k1) x y
                         → ⊥
-¬equalInType-#Σchoice i w r c x y {k1} isv₁ isv₂ diff oc comp fb eqi = diff cn₅
+¬equalInType-#Σchoice i w r c x y {k1} isv₁ isv₂ diff oc comp fb eqi = diff sim3
   where
     h0 : equalInType i w (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁)) x y
     h0 rewrite #Σchoice≡ c k1 = eqi
@@ -465,11 +469,17 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     k : ℂ·
     k = fst (#weakℂEq→ {w4} {#APPLY (#CS c) (#NUM m)} {ℂ→C· k1} eb7)
 
-    cn₁ : #APPLY (#CS c) (#NUM m) #⇓ ℂ→C· k at w4
-    cn₁ = fst (snd (#weakℂEq→ {w4} {#APPLY (#CS c) (#NUM m)} {ℂ→C· k1} eb7))
+    k' : ℂ·
+    k' = fst (snd (#weakℂEq→ {w4} {#APPLY (#CS c) (#NUM m)} {ℂ→C· k1} eb7))
 
-    cn₂ : ℂ→C· k1 #⇓ ℂ→C· k at w4
-    cn₂ = snd (snd (#weakℂEq→ {w4} {#APPLY (#CS c) (#NUM m)} {ℂ→C· k1} eb7))
+    cn₁ : #APPLY (#CS c) (#NUM m) #⇓ ℂ→C· k at w4
+    cn₁ = fst (snd (snd (#weakℂEq→ {w4} {#APPLY (#CS c) (#NUM m)} {ℂ→C· k1} eb7)))
+
+    cn₂ : ℂ→C· k1 #⇓ ℂ→C· k' at w4
+    cn₂ = fst (snd (snd (snd (#weakℂEq→ {w4} {#APPLY (#CS c) (#NUM m)} {ℂ→C· k1} eb7))))
+
+    sim1 : ∼ℂ· k k'
+    sim1 = snd (snd (snd (snd (#weakℂEq→ {w4} {#APPLY (#CS c) (#NUM m)} {ℂ→C· k1} eb7))))
 
     gc2 : Σ ℂ· (λ t → getChoice· m c w4 ≡ just t)
     gc2 = lower (gc1 w4 (⊑-refl· _))
@@ -477,11 +487,25 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     cn₃ : ℂ→C· k #⇓ ℂ→C· (Res.def r) at w4
     cn₃ = onlyℂ∈𝕎→≡ oc4 cn₁ gc2 isv₁
 
+    eq1 : ℂ→C· k1 ≡ ℂ→C· k'
+    eq1 = CTerm≡ (compVal (ℂ→T k1) (ℂ→T k') w4 cn₂ isv₂)
+
+    sim2 : ∼ℂ· k k1
+    sim2 = ∼ℂ≡-r (sym (ℂ→C-inj· eq1)) sim1
+
+    sim3 : ∼ℂ· (Res.def r) k1
+    sim3 = ℂ→C→∼ℂ· cn₃ sim2
+
+{--
+-------
     cn₄ : ℂ→C· k1 #⇓ ℂ→C· (Res.def r) at w4
     cn₄ = ⇓-trans cn₂ cn₃
 
     cn₅ : ℂ→C· k1 ≡ ℂ→C· (Res.def r)
     cn₅ = CTerm≡ (compVal (ℂ→T k1) (ℂ→T (Res.def r)) w4 cn₄ isv₂)
+--}
+
+
 
 {--
     neq1 : ℂ→T (Res.def r) ⇓ NUM k at w3
@@ -616,8 +640,8 @@ equalInType-SQUASH-UNION→ {i} {w} {a} {b} {u} {v} eqi =
         k1 : ℂ·
         k1 = ℂ₁· -- This has to be different from r's default value
 
-        dks : ¬ ℂ→C· k1 ≡ ℂ→C· (Res.def r)
-        dks = λ x → ℂ₀≠ℂ₁· (sym x)
+        dks : ¬ ∼ℂ· (Res.def r) k1
+        dks = ¬∼ℂ₀₁·
 
         h1 : equalInType i w2 (#SQUASH (#UNION (#Σchoice name k1) (#NEG (#Σchoice name k1)))) #AX #AX
         h1 = equalInType-SQUASH-UNION-LIFT→ p (aw2 w2 e2 (#Σchoice name k1) (#Σchoice name k1) (equalInType-#Σchoice p w2 name k1 (startChoiceCompatible· r w1) Σsat-ℂ₁))

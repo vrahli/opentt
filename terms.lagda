@@ -1572,6 +1572,11 @@ FUNinj2 {a} {b} {c} {d} x = shiftUp-inj (PIinj2 x)
 #NUM : ℕ → CTerm
 #NUM n = ct (NUM n) refl
 
+
+NUM0≠NUM1 : ¬ #∼vals (#NUM 0) (#NUM 1)
+NUM0≠NUM1 ()
+
+
 NUMinj : {n m : ℕ} → NUM n ≡ NUM m → n ≡ m
 NUMinj refl =  refl
 

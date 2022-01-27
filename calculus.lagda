@@ -711,4 +711,36 @@ is-NUM (LIFT t) = inj₂ (λ { n () })
 is-NUM (LOWER t) = inj₂ (λ { n () })
 is-NUM (SHRINK t) = inj₂ (λ { n () })
 
+
+
+∼vals : Term → Term → Set
+∼vals NAT NAT = ⊤
+∼vals QNAT QNAT = ⊤
+∼vals (LT _ _) (LT _ _) = ⊤
+∼vals (QLT _ _) (QLT _ _) = ⊤
+∼vals (NUM n) (NUM m) = n ≡ m
+∼vals (PI _ _) (PI _ _) = ⊤
+∼vals (LAMBDA _) (LAMBDA _) = ⊤
+∼vals (SUM _ _) (SUM _ _) = ⊤
+∼vals (PAIR _ _) (PAIR _ _) = ⊤
+∼vals (SET _ _) (SET _ _) = ⊤
+∼vals (UNION _ _) (UNION _ _) = ⊤
+∼vals (INL _) (INL _) = ⊤
+∼vals (INR _) (INR _) = ⊤
+∼vals (EQ _ _ _) (EQ _ _ _) = ⊤
+∼vals AX AX = ⊤
+∼vals FREE FREE = ⊤
+∼vals (CS n) (CS m) = n ≡ m
+∼vals (TSQUASH _) (TSQUASH _) = ⊤
+∼vals (DUM _) (DUM _) = ⊤
+∼vals (FFDEFS _ _) (FFDEFS _ _) = ⊤
+∼vals (UNIV n) (UNIV m) = n ≡ m
+∼vals (LIFT _) (LIFT _) = ⊤
+∼vals (LOWER _) (LOWER _) = ⊤
+∼vals (SHRINK _) (SHRINK _) = ⊤
+∼vals _ _ = ⊥
+
+
+#∼vals : CTerm → CTerm → Set
+#∼vals a b = ∼vals ⌜ a ⌝ ⌜ b ⌝
 \end{code}

@@ -89,7 +89,11 @@ isValueℂ₁-beth-ref = tt
 ∈Typeℂ₀₁→-beth-ref i w a b eqi = Bar.∀𝕎-inBarFunc barI aw (equalInType-QNAT→ i w a b eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #weakMonEq w' a b → #weakℂEq w' a b)
-    aw w1 e1 h w2 e2 = lift (#NUM (fst (lower (h w2 e2))) , fst (snd (lower (h w2 e2))) , snd (snd (lower (h w2 e2))))
+    aw w1 e1 h w2 e2 = lift (#NUM (fst (lower (h w2 e2))) ,
+                             #NUM (fst (lower (h w2 e2))) ,
+                             fst (snd (lower (h w2 e2))) ,
+                             snd (snd (lower (h w2 e2))) ,
+                             refl)
 
 
 →∈Typeℂ₀₁-beth-ref : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name}

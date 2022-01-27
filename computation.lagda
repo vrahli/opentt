@@ -228,9 +228,10 @@ weakℕM : (w : 𝕎·) (f : 𝕎· → Maybe Term) → Set(lsuc(L))
 weakℕM w f = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ Term (λ t → f w' ≡ just t × Σ ℕ (λ n → t ⇓ NUM n at w'))))
 
 
+
 -- t1 and t2 compute to the same choice but that choice can change over time
 weakℂEq : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
-weakℂEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ c → t1 ⇓ ℂ→T c at w' × t2 ⇓ ℂ→T c at w')))
+weakℂEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ c₁ → Σ ℂ· (λ c₂ → t1 ⇓ ℂ→T c₁ at w' × t2 ⇓ ℂ→T c₂ at w' × ∼ℂ· c₁ c₂))))
 
 
 weakℂ₀₁M : (w : 𝕎·) (f : 𝕎· → Maybe Term) → Set(lsuc(L))
