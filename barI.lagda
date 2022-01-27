@@ -40,11 +40,14 @@ open import freeze
 open import progress
 
 module barI {L : Level} (W : PossibleWorlds {L})
-            (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+            (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G)
+            (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
        where
 
 open import worldDef(W)
-open import bar(W)(C)(G)(N)(F)(P)
+open import bar(W)
+open import barOpen(W)
+open import barBeth(W)(C)(G)(N)(F)(P)
 
 
 -- instance of a bar, which should be replaced by a parameter
