@@ -35,6 +35,7 @@ open import calculus
 open import terms
 open import world
 open import choice
+open import choiceExt
 open import getChoice
 open import newChoice
 open import freeze
@@ -43,14 +44,16 @@ open import choiceBar
 
 
 module choiceBarDef {L : Level} (W : PossibleWorlds {L})
-                    (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+                    (C : Choice) (G : GetChoice {L} W C) (X : ChoiceExt C) (N : NewChoice {L} W C G)
+                    (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
                     (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-                    (CB : ChoiceBar W C G N F P E)
+                    (CB : ChoiceBar W C G X N F P E)
        where
 
 open import worldDef(W)
 open import choiceDef{L}(C)
 open import getChoiceDef(W)(C)(G)
+open import choiceExtDef(W)(C)(G)(X)
 open import newChoiceDef(W)(C)(G)(N)
 open import freezeDef(W)(C)(G)(N)(F)
 open import computation(W)(C)(G)
@@ -72,15 +75,6 @@ Typeℂ₀₁-isType· = Typeℂ₀₁-isType CB
 
 ℂ₁∈Typeℂ₀₁· : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁· Cℂ₁
 ℂ₁∈Typeℂ₀₁· = ℂ₁∈Typeℂ₀₁ CB
-
-isValueℂ₀· : isValue Tℂ₀
-isValueℂ₀· = isValueℂ₀ CB
-
-isValueℂ₁· : isValue Tℂ₁
-isValueℂ₁· = isValueℂ₁ CB
-
-ℂ→C-inj· : {a b : ℂ·} → ℂ→C· a ≡ ℂ→C· b → a ≡ b
-ℂ→C-inj· = ℂ→C-inj CB
 
 ℂ→C→∼ℂ· : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼ℂ· c1 c → ∼ℂ· c2 c
 ℂ→C→∼ℂ· = ℂ→C→∼ℂ CB

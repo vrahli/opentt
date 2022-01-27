@@ -46,7 +46,7 @@ This provides an instance of world and choice for choice sequences
 open import choice
 
 choiceRef : Choice
-choiceRef = mkChoice CTerm (λ x → x) (#NUM 0) (#NUM 1) #∼vals NUM0≠NUM1
+choiceRef = mkChoice CTerm (λ x → x) (λ {a} {b} x → x)
 
 open import choiceDef{1ℓ}(choiceRef)
 
@@ -135,6 +135,16 @@ getChoiceRef : GetChoice
 getChoiceRef = mkGetChoice getRefChoice
 
 open import getChoiceDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)
+
+
+
+
+open import choiceExt{1ℓ}(choiceRef)
+
+choiceExtRef : ChoiceExt
+choiceExtRef = mkChoiceExt (#NUM 0) (#NUM 1) #∼vals NUM0≠NUM1 tt tt
+
+open import choiceExtDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)(choiceExtRef)
 
 
 

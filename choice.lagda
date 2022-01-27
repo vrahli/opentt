@@ -21,12 +21,6 @@ record Choice : Set₁ where
   field
     ℂ : Set
     ℂ→C : ℂ → CTerm
-
-    -- ℂ containns at least 2 choices
-    ℂ₀ : ℂ
-    ℂ₁ : ℂ
-
-    ∼ℂ : ℂ → ℂ → Set
-    ¬∼ℂ₀₁ : ¬ ∼ℂ ℂ₀ ℂ₁
+    ℂ→C-inj : {a b : ℂ} → ℂ→C a ≡ ℂ→C b → a ≡ b
 
 \end{code}

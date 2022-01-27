@@ -44,7 +44,7 @@ This provides an instance of world and choice for choice sequences
 open import choice
 
 choiceCS : Choice
-choiceCS = mkChoice CTerm (λ x → x) (#NUM 0) (#NUM 1) #∼vals NUM0≠NUM1
+choiceCS = mkChoice CTerm (λ x → x) (λ {a} {b} x → x)
 
 open import choiceDef{1ℓ}(choiceCS)
 
@@ -345,6 +345,15 @@ getChoiceCS : GetChoice
 getChoiceCS = mkGetChoice getCsChoice
 
 open import getChoiceDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)
+
+
+
+open import choiceExt{1ℓ}(choiceCS)
+
+choiceExtCS : ChoiceExt
+choiceExtCS = mkChoiceExt (#NUM 0) (#NUM 1) #∼vals NUM0≠NUM1 tt tt
+
+open import choiceExtDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)(choiceExtCS)
 
 
 

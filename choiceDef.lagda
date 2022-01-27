@@ -51,40 +51,12 @@ open Choice
 ℂ→C0 c = ⌞ ℂ→C· c ⌟
 
 
-ℂ₀· : ℂ·
-ℂ₀· = ℂ₀ C
-
-
-ℂ₁· : ℂ·
-ℂ₁· = ℂ₁ C
-
-
-∼ℂ· : ℂ· → ℂ· → Set
-∼ℂ· = ∼ℂ C
-
-
-¬∼ℂ₀₁· : ¬ ∼ℂ· ℂ₀· ℂ₁·
-¬∼ℂ₀₁· = ¬∼ℂ₀₁ C
-
-
-Cℂ₀ : CTerm
-Cℂ₀ = ℂ→C· ℂ₀·
-
-
-Cℂ₁ : CTerm
-Cℂ₁ = ℂ→C· ℂ₁·
-
-
-Tℂ₀ : Term
-Tℂ₀ = ℂ→T ℂ₀·
-
-
-Tℂ₁ : Term
-Tℂ₁ = ℂ→T ℂ₁·
-
-
 #-ℂ→T : (c : ℂ·) → # (ℂ→T c)
 #-ℂ→T c = CTerm.closed (ℂ→C· c)
+
+
+ℂ→C-inj· : {a b : ℂ·} → ℂ→C· a ≡ ℂ→C· b → a ≡ b
+ℂ→C-inj· = ℂ→C-inj C
 
 
 
@@ -97,28 +69,12 @@ record Res {L : Level} : Set(lsuc(L)) where
     sat : (n : ℕ) → res n def     -- proof that the default element is satisfied at all stages
 
 
-Resℂ₀₁ : Res
-Resℂ₀₁ = mkRes (λ n t → t ≡ ℂ₀· ⊎ t ≡ ℂ₁·) ℂ₀· (λ n → inj₁ refl)
-
-
-Res⊤ : Res
-Res⊤ = mkRes (λ n t → ⊤) ℂ₀· (λ n → tt)
-
-
 ·ᵣ : {L : Level} → Res{L} → ℕ → ℂ· → Set(L)
 ·ᵣ {L} r n t = Res.res r n t
 
 
 ⋆ᵣ : {L : Level} → Res{L} → ℂ· → Set(L)
 ⋆ᵣ {L} r t = (n : ℕ) → ·ᵣ r n t
-
-
-Σsat-ℂ₁ : Σ ℕ (λ n → ·ᵣ Resℂ₀₁ n ℂ₁·)
-Σsat-ℂ₁ = 0 , inj₂ refl
-
-
-sat-ℂ₁ : ⋆ᵣ Resℂ₀₁ ℂ₁·
-sat-ℂ₁ n = inj₂ refl
 
 
 
@@ -144,7 +100,4 @@ record NRes {L : Level} : Set(lsuc(L)) where
   field
     name : Name
     res  : Res{L}
-
-
-
 \end{code}

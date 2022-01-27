@@ -37,6 +37,7 @@ open import calculus
 open import terms
 open import world
 open import choice
+open import choiceExt
 open import getChoice
 open import newChoice
 open import freeze
@@ -46,18 +47,20 @@ open import choiceBar
 
 --module not_lem (bar : Bar) where
 module not_lem {L : Level} (W : PossibleWorlds {L})
-               (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+               (C : Choice) (G : GetChoice {L} W C) (X : ChoiceExt C) (N : NewChoice {L} W C G)
+               (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
                (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-               (CB : ChoiceBar W C G N F P E)
+               (CB : ChoiceBar W C G X N F P E)
        where
 
 
 open import worldDef(W)
 open import choiceDef{L}(C)
 open import getChoiceDef(W)(C)(G)
+open import choiceExtDef(W)(C)(G)(X)
 open import newChoiceDef(W)(C)(G)(N)
 open import freezeDef(W)(C)(G)(N)(F)
-open import choiceBarDef(W)(C)(G)(N)(F)(P)(E)(CB)
+open import choiceBarDef(W)(C)(G)(X)(N)(F)(P)(E)(CB)
 open import computation(W)(C)(G)
 open import bar(W)(C)(G)(N)(F)(P)
 open import barI(W)(C)(G)(N)(F)(P)
@@ -82,7 +85,7 @@ open import type_sys_props_lift(W)(C)(G)(N)(F)(P)(E)
 open import props1(W)(C)(G)(N)(F)(P)(E)
 open import props2(W)(C)(G)(N)(F)(P)(E)
 open import props3(W)(C)(G)(N)(F)(P)(E)
-open import lem_props(W)(C)(G)(N)(F)(P)(E)
+open import lem_props(W)(C)(G)(X)(N)(F)(P)(E)
 
 -- open import calculus
 -- open import world

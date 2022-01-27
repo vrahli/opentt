@@ -42,6 +42,7 @@ open import worldInstanceCS
 open import choiceDef{1ℓ}(choiceCS)
 open import worldDef(PossibleWorldsCS)
 open import getChoiceDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)
+open import choiceExtDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)(choiceExtCS)
 open import newChoiceDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)
 open import freezeDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)(freezeCS)
 open import progressDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)(freezeCS)(progressCS)
@@ -297,6 +298,13 @@ Typeℂ₀₁-isType-beth-bar u w = eqTypesQNAT
 ℂ₁∈Typeℂ₀₁-beth-cs u w = NUM-equalInType-QNAT u w 1
 
 
+ℂ→C→∼ℂ-beth-cs : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼ℂ· c1 c → ∼ℂ· c2 c
+ℂ→C→∼ℂ-beth-cs {w} {c} {c1} {c2} comp sim
+  rewrite sym (ℂ→C-inj· {c1} {c2} (#compVal comp (∼vals→isValue₁ sim)))
+  = sim
+
+
+{--
 isValueℂ₀-beth-cs : isValue Tℂ₀
 isValueℂ₀-beth-cs = tt
 
@@ -307,6 +315,7 @@ isValueℂ₁-beth-cs = tt
 
 ℂ₀≠ℂ₁-beth-cs : ¬ Cℂ₀ ≡ Cℂ₁
 ℂ₀≠ℂ₁-beth-cs ()
+--}
 
 
 ∈Typeℂ₀₁→-beth-cs : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-cs a b → inbar w (λ w' _ → #weakℂEq w' a b)
@@ -317,7 +326,7 @@ isValueℂ₁-beth-cs = tt
                              #NUM (fst (lower (h w2 e2))) ,
                              fst (snd (lower (h w2 e2))) ,
                              snd (snd (lower (h w2 e2))) ,
-                             refl)
+                             ∼vals-NUM)
 
 
 →∈Typeℂ₀₁-beth-cs : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name}

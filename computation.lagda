@@ -228,16 +228,6 @@ weakℕM : (w : 𝕎·) (f : 𝕎· → Maybe Term) → Set(lsuc(L))
 weakℕM w f = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ Term (λ t → f w' ≡ just t × Σ ℕ (λ n → t ⇓ NUM n at w'))))
 
 
-
--- t1 and t2 compute to the same choice but that choice can change over time
-weakℂEq : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
-weakℂEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ c₁ → Σ ℂ· (λ c₂ → t1 ⇓ ℂ→T c₁ at w' × t2 ⇓ ℂ→T c₂ at w' × ∼ℂ· c₁ c₂))))
-
-
-weakℂ₀₁M : (w : 𝕎·) (f : 𝕎· → Maybe Term) → Set(lsuc(L))
-weakℂ₀₁M w f = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ Term (λ t → f w' ≡ just t × (t ⇓ Tℂ₀ at w' ⊎ t ⇓ Tℂ₁ at w'))))
-
-
 ⇛to-same-CS : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
 ⇛to-same-CS w t1 t2 = Σ Name (λ n → t1 ⇛ (CS n) at w × t2 ⇛ (CS n) at w)
 
@@ -427,10 +417,6 @@ infix 30 _#⇛_at_
 
 
 
-#isValue : CTerm -> Set
-#isValue t = isValue ⌜ t ⌝
-
-
 #compAllRefl : (T : CTerm) (w : 𝕎·) → T #⇛ T at w
 #compAllRefl (ct T cT) w i = compAllRefl T w i
 
@@ -445,11 +431,6 @@ infix 30 _#⇛_at_
 
 #weakMonEq : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
 #weakMonEq w t1 t2 = weakMonEq w ⌜ t1 ⌝ ⌜ t2 ⌝
-
-
-#weakℂEq : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
-#weakℂEq w t1 t2 = weakℂEq w ⌜ t1 ⌝ ⌜ t2 ⌝
-
 
 
 #weakMonEq→ : {w : 𝕎·} {a b : CTerm}
@@ -791,4 +772,8 @@ val-#⇛→ {w} {a} {b} {v} isv comp1 comp2 = val-⇛→ isv comp1 comp2
                          → #⇛to-same-CS w a c
                          → #⇛to-same-CS w b c
 #⇛to-same-CS-#⇛-left {w} {a} {b} {c} comp (name , c₁ , c₂) = name , val-#⇛→ {w} {a} {b} {#CS name} tt comp c₁ , c₂
+
+
+#compVal : {a b : CTerm} {w : 𝕎·} → a #⇓ b at w → #isValue a → a ≡ b
+#compVal {a} {b} {w} c v = CTerm≡ (compVal ⌜ a ⌝ ⌜ b ⌝ w c v)
 \end{code}

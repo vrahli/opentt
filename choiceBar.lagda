@@ -35,6 +35,7 @@ open import calculus
 open import terms
 open import world
 open import choice
+open import choiceExt
 open import getChoice
 open import newChoice
 open import freeze
@@ -42,13 +43,15 @@ open import progress
 
 
 module choiceBar {L : Level} (W : PossibleWorlds {L})
-                 (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+                 (C : Choice) (G : GetChoice {L} W C) (X : ChoiceExt C) (N : NewChoice {L} W C G)
+                 (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
                  (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
 
 open import worldDef(W)
 open import choiceDef{L}(C)
 open import getChoiceDef(W)(C)(G)
+open import choiceExtDef(W)(C)(G)(X)
 open import newChoiceDef(W)(C)(G)(N)
 open import freezeDef(W)(C)(G)(N)(F)
 open import computation(W)(C)(G)
@@ -66,10 +69,8 @@ record ChoiceBar : Set(lsuc(lsuc(L))) where
     Typeℂ₀₁-isType : (u : ℕ) (w : 𝕎·) → isType u w Typeℂ₀₁
     ℂ₀∈Typeℂ₀₁ : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁ Cℂ₀
     ℂ₁∈Typeℂ₀₁ : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁ Cℂ₁
-    isValueℂ₀ : isValue Tℂ₀
-    isValueℂ₁ : isValue Tℂ₁
-    -- MOVE to choice
-    ℂ→C-inj : {a b : ℂ·} → ℂ→C· a ≡ ℂ→C· b → a ≡ b
+
+    -- ∼ℂ· preserves computation
     ℂ→C→∼ℂ : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼ℂ· c1 c → ∼ℂ· c2 c
 
     -- Typeℂ₀₁'s members are similar according to ∼ℂ

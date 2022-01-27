@@ -713,34 +713,122 @@ is-NUM (SHRINK t) = inj₂ (λ { n () })
 
 
 
-∼vals : Term → Term → Set
-∼vals NAT NAT = ⊤
-∼vals QNAT QNAT = ⊤
-∼vals (LT _ _) (LT _ _) = ⊤
-∼vals (QLT _ _) (QLT _ _) = ⊤
-∼vals (NUM n) (NUM m) = n ≡ m
-∼vals (PI _ _) (PI _ _) = ⊤
-∼vals (LAMBDA _) (LAMBDA _) = ⊤
-∼vals (SUM _ _) (SUM _ _) = ⊤
-∼vals (PAIR _ _) (PAIR _ _) = ⊤
-∼vals (SET _ _) (SET _ _) = ⊤
-∼vals (UNION _ _) (UNION _ _) = ⊤
-∼vals (INL _) (INL _) = ⊤
-∼vals (INR _) (INR _) = ⊤
-∼vals (EQ _ _ _) (EQ _ _ _) = ⊤
-∼vals AX AX = ⊤
-∼vals FREE FREE = ⊤
-∼vals (CS n) (CS m) = n ≡ m
-∼vals (TSQUASH _) (TSQUASH _) = ⊤
-∼vals (DUM _) (DUM _) = ⊤
-∼vals (FFDEFS _ _) (FFDEFS _ _) = ⊤
-∼vals (UNIV n) (UNIV m) = n ≡ m
-∼vals (LIFT _) (LIFT _) = ⊤
-∼vals (LOWER _) (LOWER _) = ⊤
-∼vals (SHRINK _) (SHRINK _) = ⊤
-∼vals _ _ = ⊥
+data ∼vals : Term → Term → Set where
+  ∼vals-NAT     : ∼vals NAT NAT
+  ∼vals-QNAT    : ∼vals QNAT QNAT
+  ∼vals-LT      : {a b c d : Term} → ∼vals (LT a b) (LT c d)
+  ∼vals-QLT     : {a b c d : Term} → ∼vals (QLT a b) (QLT c d)
+  ∼vals-NUM     : {n : ℕ} → ∼vals (NUM n) (NUM n)
+  ∼vals-PI      : {a b c d : Term} → ∼vals (PI a b) (PI c d)
+  ∼vals-LAMBDA  : {a b : Term} → ∼vals (LAMBDA a) (LAMBDA b)
+  ∼vals-SUM     : {a b c d : Term} → ∼vals (SUM a b) (SUM c d)
+  ∼vals-PAIR    : {a b c d : Term} → ∼vals (PAIR a b) (PAIR c d)
+  ∼vals-SET     : {a b c d : Term} → ∼vals (SET a b) (SET c d)
+  ∼vals-UNION   : {a b c d : Term} → ∼vals (UNION a b) (UNION c d)
+  ∼vals-INL     : {a b : Term} → ∼vals (INL a) (INL b)
+  ∼vals-INR     : {a b : Term} → ∼vals (INR a) (INR b)
+  ∼vals-EQ      : {a b c d e f : Term} → ∼vals (EQ a b c) (EQ d e f)
+  ∼vals-AX      : ∼vals AX AX
+  ∼vals-FREE    : ∼vals FREE FREE
+  ∼vals-CS      : {n : Name} → ∼vals (CS n) (CS n)
+  ∼vals-TSQUASH : {a b : Term} → ∼vals (TSQUASH a) (TSQUASH b)
+  ∼vals-DUM     : {a b : Term} → ∼vals (DUM a) (DUM b)
+  ∼vals-FFDEFS  : {a b c d : Term} → ∼vals (FFDEFS a b) (FFDEFS c d)
+  ∼vals-UNIV    : {n : ℕ} → ∼vals (UNIV n) (UNIV n)
+  ∼vals-LIFT    : {a b : Term} → ∼vals (LIFT a) (LIFT b)
+  ∼vals-LOWER   : {a b : Term} → ∼vals (LOWER a) (LOWER b)
+  ∼vals-SHRINK  : {a b : Term} → ∼vals (SHRINK a) (SHRINK b)
+
+
+∼vals-sym : {a b : Term} → ∼vals a b → ∼vals b a
+∼vals-sym {.NAT} {.NAT} ∼vals-NAT = ∼vals-NAT
+∼vals-sym {.QNAT} {.QNAT} ∼vals-QNAT = ∼vals-QNAT
+∼vals-sym {.(LT _ _)} {.(LT _ _)} ∼vals-LT = ∼vals-LT
+∼vals-sym {.(QLT _ _)} {.(QLT _ _)} ∼vals-QLT = ∼vals-QLT
+∼vals-sym {.(NUM _)} {.(NUM _)} ∼vals-NUM = ∼vals-NUM
+∼vals-sym {.(PI _ _)} {.(PI _ _)} ∼vals-PI = ∼vals-PI
+∼vals-sym {.(LAMBDA _)} {.(LAMBDA _)} ∼vals-LAMBDA = ∼vals-LAMBDA
+∼vals-sym {.(SUM _ _)} {.(SUM _ _)} ∼vals-SUM = ∼vals-SUM
+∼vals-sym {.(PAIR _ _)} {.(PAIR _ _)} ∼vals-PAIR = ∼vals-PAIR
+∼vals-sym {.(SET _ _)} {.(SET _ _)} ∼vals-SET = ∼vals-SET
+∼vals-sym {.(UNION _ _)} {.(UNION _ _)} ∼vals-UNION = ∼vals-UNION
+∼vals-sym {.(INL _)} {.(INL _)} ∼vals-INL = ∼vals-INL
+∼vals-sym {.(INR _)} {.(INR _)} ∼vals-INR = ∼vals-INR
+∼vals-sym {.(EQ _ _ _)} {.(EQ _ _ _)} ∼vals-EQ = ∼vals-EQ
+∼vals-sym {.AX} {.AX} ∼vals-AX = ∼vals-AX
+∼vals-sym {.FREE} {.FREE} ∼vals-FREE = ∼vals-FREE
+∼vals-sym {.(CS _)} {.(CS _)} ∼vals-CS = ∼vals-CS
+∼vals-sym {.(TSQUASH _)} {.(TSQUASH _)} ∼vals-TSQUASH = ∼vals-TSQUASH
+∼vals-sym {.(DUM _)} {.(DUM _)} ∼vals-DUM = ∼vals-DUM
+∼vals-sym {.(FFDEFS _ _)} {.(FFDEFS _ _)} ∼vals-FFDEFS = ∼vals-FFDEFS
+∼vals-sym {.(UNIV _)} {.(UNIV _)} ∼vals-UNIV = ∼vals-UNIV
+∼vals-sym {.(LIFT _)} {.(LIFT _)} ∼vals-LIFT = ∼vals-LIFT
+∼vals-sym {.(LOWER _)} {.(LOWER _)} ∼vals-LOWER = ∼vals-LOWER
+∼vals-sym {.(SHRINK _)} {.(SHRINK _)} ∼vals-SHRINK = ∼vals-SHRINK
+
+
+∼vals→isValue₁ : {a b : Term} → ∼vals a b → isValue a
+∼vals→isValue₁ {NAT} {b} isv = tt
+∼vals→isValue₁ {QNAT} {b} isv = tt
+∼vals→isValue₁ {LT a a₁} {b} isv = tt
+∼vals→isValue₁ {QLT a a₁} {b} isv = tt
+∼vals→isValue₁ {NUM x} {b} isv = tt
+∼vals→isValue₁ {PI a a₁} {b} isv = tt
+∼vals→isValue₁ {LAMBDA a} {b} isv = tt
+∼vals→isValue₁ {SUM a a₁} {b} isv = tt
+∼vals→isValue₁ {PAIR a a₁} {b} isv = tt
+∼vals→isValue₁ {SET a a₁} {b} isv = tt
+∼vals→isValue₁ {UNION a a₁} {b} isv = tt
+∼vals→isValue₁ {INL a} {b} isv = tt
+∼vals→isValue₁ {INR a} {b} isv = tt
+∼vals→isValue₁ {EQ a a₁ a₂} {b} isv = tt
+∼vals→isValue₁ {AX} {b} isv = tt
+∼vals→isValue₁ {FREE} {b} isv = tt
+∼vals→isValue₁ {CS x} {b} isv = tt
+∼vals→isValue₁ {TSQUASH a} {b} isv = tt
+∼vals→isValue₁ {DUM a} {b} isv = tt
+∼vals→isValue₁ {FFDEFS a a₁} {b} isv = tt
+∼vals→isValue₁ {UNIV x} {b} isv = tt
+∼vals→isValue₁ {LIFT a} {b} isv = tt
+∼vals→isValue₁ {LOWER a} {b} isv = tt
+∼vals→isValue₁ {SHRINK a} {b} isv = tt
+
+
+∼vals→isValue₂ : {a b : Term} → ∼vals a b → isValue b
+∼vals→isValue₂ {a} {VAR x} ()
+∼vals→isValue₂ {a} {NAT} isv = tt
+∼vals→isValue₂ {a} {QNAT} isv = tt
+∼vals→isValue₂ {a} {LT b b₁} isv = tt
+∼vals→isValue₂ {a} {QLT b b₁} isv = tt
+∼vals→isValue₂ {a} {NUM x} isv = tt
+∼vals→isValue₂ {a} {PI b b₁} isv = tt
+∼vals→isValue₂ {a} {LAMBDA b} isv = tt
+∼vals→isValue₂ {a} {APPLY b b₁} ()
+∼vals→isValue₂ {a} {SUM b b₁} isv = tt
+∼vals→isValue₂ {a} {PAIR b b₁} isv = tt
+∼vals→isValue₂ {a} {SPREAD b b₁} ()
+∼vals→isValue₂ {a} {SET b b₁} isv = tt
+∼vals→isValue₂ {a} {UNION b b₁} isv = tt
+∼vals→isValue₂ {a} {INL b} isv = tt
+∼vals→isValue₂ {a} {INR b} isv = tt
+∼vals→isValue₂ {a} {DECIDE b b₁ b₂} ()
+∼vals→isValue₂ {a} {EQ b b₁ b₂} isv = tt
+∼vals→isValue₂ {a} {AX} isv = tt
+∼vals→isValue₂ {a} {FREE} isv = tt
+∼vals→isValue₂ {a} {CS x} isv = tt
+∼vals→isValue₂ {a} {TSQUASH b} isv = tt
+∼vals→isValue₂ {a} {DUM b} isv = tt
+∼vals→isValue₂ {a} {FFDEFS b b₁} isv = tt
+∼vals→isValue₂ {a} {UNIV x} isv = tt
+∼vals→isValue₂ {a} {LIFT b} isv = tt
+∼vals→isValue₂ {a} {LOWER b} isv = tt
+∼vals→isValue₂ {a} {SHRINK b} isv = tt
 
 
 #∼vals : CTerm → CTerm → Set
 #∼vals a b = ∼vals ⌜ a ⌝ ⌜ b ⌝
+
+
+#isValue : CTerm -> Set
+#isValue t = isValue ⌜ t ⌝
 \end{code}

@@ -42,6 +42,7 @@ open import worldInstanceRef
 open import choiceDef{1ℓ}(choiceRef)
 open import worldDef(PossibleWorldsRef)
 open import getChoiceDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)
+open import choiceExtDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)(choiceExtRef)
 open import newChoiceDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)
 open import freezeDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)(freezeREF)
 open import progressDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)(freezeREF)(progressREF)
@@ -73,6 +74,14 @@ Typeℂ₀₁-isType-beth-bar u w = eqTypesQNAT
 ℂ₁∈Typeℂ₀₁-beth-ref u w = NUM-equalInType-QNAT u w 1
 
 
+
+ℂ→C→∼ℂ-beth-ref : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼ℂ· c1 c → ∼ℂ· c2 c
+ℂ→C→∼ℂ-beth-ref {w} {c} {c1} {c2} comp sim
+  rewrite sym (ℂ→C-inj· {c1} {c2} (#compVal comp (∼vals→isValue₁ sim)))
+  = sim
+
+
+{--
 isValueℂ₀-beth-ref : isValue Tℂ₀
 isValueℂ₀-beth-ref = tt
 
@@ -83,7 +92,7 @@ isValueℂ₁-beth-ref = tt
 
 ℂ₀≠ℂ₁-beth-ref : ¬ Cℂ₀ ≡ Cℂ₁
 ℂ₀≠ℂ₁-beth-ref ()
-
+--}
 
 ∈Typeℂ₀₁→-beth-ref : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-ref a b → inbar w (λ w' _ → #weakℂEq w' a b)
 ∈Typeℂ₀₁→-beth-ref i w a b eqi = Bar.∀𝕎-inBarFunc barI aw (equalInType-QNAT→ i w a b eqi)
@@ -93,7 +102,7 @@ isValueℂ₁-beth-ref = tt
                              #NUM (fst (lower (h w2 e2))) ,
                              fst (snd (lower (h w2 e2))) ,
                              snd (snd (lower (h w2 e2))) ,
-                             refl)
+                             ∼vals-NUM)
 
 
 →∈Typeℂ₀₁-beth-ref : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name}
