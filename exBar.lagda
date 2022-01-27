@@ -47,7 +47,7 @@ module exBar {L : Level} (W : PossibleWorlds {L})
        where
 
 open import worldDef(W)
-open import bar(W)(C)(G)(N)(F)(P)
+open import bar(W)
 open import barI(W)(C)(G)(N)(F)(P)
 
 

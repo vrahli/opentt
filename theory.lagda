@@ -42,13 +42,14 @@ open import progress
 
 
 module theory {L : Level} (W : PossibleWorlds {L})
-              (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+              (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G)
+              (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
 open import worldDef(W)
 open import choiceDef{L}(C)
 open import computation(W)(C)(G)
-open import bar(W)(C)(G)(N)(F)(P)
+open import bar(W)
 open import barI(W)(C)(G)(N)(F)(P)
 
 \end{code}

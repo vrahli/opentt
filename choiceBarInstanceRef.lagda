@@ -47,7 +47,9 @@ open import newChoiceDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRe
 open import freezeDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)(freezeREF)
 open import progressDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)(freezeREF)(progressREF)
 
-open import bar(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)(freezeREF)(progressREF)
+open import bar(PossibleWorldsRef)
+open import barOpen(PossibleWorldsRef)
+open import barBeth(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)(freezeREF)(progressREF)
 open import barI(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)(freezeREF)(progressREF)
 open import computation(PossibleWorldsRef)(choiceRef)(getChoiceRef)
 

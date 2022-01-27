@@ -57,7 +57,7 @@ open import choiceExtDef(W)(C)(G)(X)
 open import newChoiceDef(W)(C)(G)(N)
 open import freezeDef(W)(C)(G)(N)(F)
 open import computation(W)(C)(G)
-open import bar(W)(C)(G)(N)(F)(P)
+open import bar(W)
 open import barI(W)(C)(G)(N)(F)(P)
 open import theory(W)(C)(G)(N)(F)(P)(E)
 

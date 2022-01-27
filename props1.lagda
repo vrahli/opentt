@@ -51,7 +51,7 @@ module props1 {L : Level} (W : PossibleWorlds {L})
 
 open import worldDef(W)
 open import computation(W)(C)(G)
-open import bar(W)(C)(G)(N)(F)(P)
+open import bar(W)
 open import barI(W)(C)(G)(N)(F)(P)
 open import theory(W)(C)(G)(N)(F)(P)(E)
 open import props0(W)(C)(G)(N)(F)(P)(E)

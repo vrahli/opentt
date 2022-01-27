@@ -47,7 +47,8 @@ open import newChoiceDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)
 open import freezeDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)(freezeCS)
 open import progressDef(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)(freezeCS)(progressCS)
 
-open import bar(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)(freezeCS)(progressCS)
+open import bar(PossibleWorldsCS)
+open import barBeth(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)(freezeCS)(progressCS)
 open import barI(PossibleWorldsCS)(choiceCS)(getChoiceCS)(newChoiceCS)(freezeCS)(progressCS)
 open import computation(PossibleWorldsCS)(choiceCS)(getChoiceCS)
 

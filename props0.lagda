@@ -47,7 +47,7 @@ module props0 {L : Level} (W : PossibleWorlds {L})
 open import worldDef(W)
 open import choiceDef{L}(C)
 open import computation(W)(C)(G)
-open import bar(W)(C)(G)(N)(F)(P)
+open import bar(W)
 open import barI(W)(C)(G)(N)(F)(P)
 open import theory(W)(C)(G)(N)(F)(P)(E)
 \end{code}
@@ -370,8 +370,6 @@ if-equalInType-EQ : (u : ℕ) (w : 𝕎·) (T a b t₁ t₂ : CTerm)
                     → equalInType u w (#EQ a b T) t₁ t₂
                     → inbar w (λ w' e' → ⌜ t₁ ⌝ ⇛ AX at w' × ⌜ t₂ ⌝ ⇛ AX at w' × equalInType u w' T a b)
 {-# INLINE inbar #-}
-{-# INLINE inOpenBar #-}
-{-# INLINE inBethBar #-}
 {-# TERMINATING #-}
 if-equalInType-EQ u w T a b t₁ t₂ (EQTNAT x x₁ , eqi) = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTQNAT x x₁ , eqi) = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
