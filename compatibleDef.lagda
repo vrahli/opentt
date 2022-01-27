@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; _⊔_ ; Lift ; lift ; lower) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -26,27 +26,23 @@ open import Data.List.Membership.Propositional.Properties
 open import Data.List.Properties
 
 
+open import util
 open import calculus
 open import world
 open import choice
 open import compatible
 
 
-module getChoice {L : Level} (W : PossibleWorlds {L}) (C : Choice) (M : Compatible W C) where
+module compatibleDef {L : Level} (W : PossibleWorlds {L}) (C : Choice) (M : Compatible {L} W C) where
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import compatibleDef{L}(W)(C)(M)
-\end{code}
+
+open Compatible
 
 
-\begin{code}
-record GetChoice : Set(lsuc(L)) where
-  constructor mkGetChoice
-  field
-    -- returns the n's choice in w for the choice sequence cs
-    getChoice : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe ℂ·
-    --getChoice : (cs : Name) (w : 𝕎·) → Maybe ℕ
+compatible· : (c : Name) (w : 𝕎·) (r : Res{0ℓ}) → Set(L)
+compatible· = compatible M
 
-    getChoiceCompatible : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·) → compatible· c w r → getChoice n c w ≡ just t → ·ᵣ r n t
 
-\end{code}
+⊑-compatible· : {c : Name} {w1 w2 : 𝕎·} {r : Res{0ℓ}} → w1 ⊑· w2 → compatible· c w1 r → compatible· c w2 r
+⊑-compatible· = ⊑-compatible M

@@ -122,79 +122,6 @@ open import worldDef(PossibleWorldsRef)
 
 
 
-getRefChoice : (n : ℕ) (name : Name) (w : world) → Maybe ℂ·
-getRefChoice _ name w with getRef name w
-... | just (cell _ _ v _) = just v
-... | nothing = nothing
-
-
-
-open import getChoice(PossibleWorldsRef)(choiceRef)
-
-getChoiceRef : GetChoice
-getChoiceRef = mkGetChoice getRefChoice
-
-open import getChoiceDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)
-
-
-
-
-open import choiceExt{1ℓ}(choiceRef)
-
-choiceExtRef : ChoiceExt
-choiceExtRef = mkChoiceExt (#NUM 0) (#NUM 1) #∼vals NUM0≠NUM1 tt tt
-
-open import choiceExtDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)(choiceExtRef)
-
-
-
-newRefChoice : (w : 𝕎·) → Name
-newRefChoice w = fst (freshName (wdom w))
-
-
-startRefChoice : (n : Name) (r : Res{0ℓ}) (w : 𝕎·) → 𝕎·
-startRefChoice n r w = newCell n r w
-
-
-startNewRefChoice : (r : Res{0ℓ}) (w : 𝕎·) → 𝕎·
-startNewRefChoice r w = startRefChoice (newRefChoice w) r w
-
-
-
-getRef-newCell : (w : 𝕎·) (name : Name) (r : Res)
-                 → getRef name (newCell name r w) ≡ just (cell name r (Res.def r) false)
-getRef-newCell w name r with name ≟ name
-... | yes p = refl
-... | no p = ⊥-elim (p refl)
-
-
-getRefChoice-startNewRefChoice : (n : ℕ) (r : Res) (w : 𝕎·) (t : ℂ·)
-                                 → getRefChoice n (newRefChoice w) (startNewRefChoice r w) ≡ just t → t ≡ Res.def r
---                                 → getRefChoice n (newRefChoice w) (startNewRefChoice r w) ≡ nothing
-getRefChoice-startNewRefChoice n r w t e
-  rewrite getRef-newCell w (newRefChoice w) r
-        | just-inj e = refl
-
-
-startNewRefChoice⊏ : (r : Res) (w : 𝕎·) → w ⊑· startNewRefChoice r w
-startNewRefChoice⊏ r w = new w (newRefChoice w) r (snd (freshName (wdom w)))
-
-
-
-open import newChoice(PossibleWorldsRef)(choiceRef)(getChoiceRef)
-
-newChoiceRef : NewChoice
-newChoiceRef =
-  mkNewChoice
-    newRefChoice
-    startRefChoice
-    getRefChoice-startNewRefChoice
-    startNewRefChoice⊏
-
-open import newChoiceDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)
-
-
-
 resSatRef : (v : ℂ·) (r : Res{0ℓ}) → Set
 resSatRef v r = ⋆ᵣ r v
 
@@ -202,6 +129,8 @@ resSatRef v r = ⋆ᵣ r v
 -- This is the same as 'hasRef' & enforces satisfiability too
 compatibleRef : (c : Name) (w : 𝕎·) (r : Res{0ℓ}) → Set₁
 compatibleRef c w r = Σ ℂ· (λ v → Σ Bool (λ f → ∈world c r v f w × resSatRef v r))
+
+
 
 
 
@@ -218,6 +147,26 @@ pres-resSatRef-trans : {v1 v2 v3 : ℂ·} {r : Res{0ℓ}}
                        → pres-resSatRef v2 v3 r
                        → pres-resSatRef v1 v3 r
 pres-resSatRef-trans {v1} {v2} {v3} {r} p1 p2 s = p2 (p1 s)
+
+
+
+satFrozen : (v v' : ℂ·) (f f' : Bool) → Set
+satFrozen v v' true f' = f' ≡ true × v ≡ v'
+satFrozen v v' false f' = ⊤
+
+
+satFrozen-refl : (v : ℂ·) (f : Bool) → satFrozen v v f f
+satFrozen-refl v true = refl , refl
+satFrozen-refl v false = tt
+
+
+satFrozen-trans : {v1 v2 v3 : ℂ·} {f1 f2 f3 : Bool}
+                  → satFrozen v1 v2 f1 f2
+                  → satFrozen v2 v3 f2 f3
+                  → satFrozen v1 v3 f1 f3
+satFrozen-trans {v1} {v2} {v3} {false} {f2} {f3} s1 s2 = tt
+satFrozen-trans {v1} {v2} {v3} {true} {f2} {f3} (e1 , e2) s2 rewrite e1 | e2 = s2
+
 
 
 cell-inj1 : {n1 n2 : Name} {r1 r2 : Res} {v1 v2 : ℂ·} {f1 f2 : Bool} → cell n1 r1 v1 f1 ≡ cell n2 r2 v2 f2 → n1 ≡ n2
@@ -284,6 +233,7 @@ getRef-update-¬≡ {cell name₁ r₁ v₁ f₁ ∷ w} {name} {r} {v} {f} name'
 ... |       no z = getRef-update-¬≡ {w} name' v' f' d e
 
 
+
 ¬∈wdom→getRef-nothing : {n : Name} {w : 𝕎·}
                          → ¬ n ∈ wdom w
                          → getRef n w ≡ nothing
@@ -292,23 +242,6 @@ getRef-update-¬≡ {cell name₁ r₁ v₁ f₁ ∷ w} {name} {r} {v} {f} name'
 ... | yes p rewrite p = ⊥-elim (ni (here refl))
 ... | no p = ¬∈wdom→getRef-nothing {n} {w} (λ x → ni (there x))
 
-
-satFrozen : (v v' : ℂ·) (f f' : Bool) → Set
-satFrozen v v' true f' = f' ≡ true × v ≡ v'
-satFrozen v v' false f' = ⊤
-
-
-satFrozen-refl : (v : ℂ·) (f : Bool) → satFrozen v v f f
-satFrozen-refl v true = refl , refl
-satFrozen-refl v false = tt
-
-
-satFrozen-trans : {v1 v2 v3 : ℂ·} {f1 f2 f3 : Bool}
-                  → satFrozen v1 v2 f1 f2
-                  → satFrozen v2 v3 f2 f3
-                  → satFrozen v1 v3 f1 f3
-satFrozen-trans {v1} {v2} {v3} {false} {f2} {f3} s1 s2 = tt
-satFrozen-trans {v1} {v2} {v3} {true} {f2} {f3} (e1 , e2) s2 rewrite e1 | e2 = s2
 
 
 ⊑-pres-getRef : {w1 w2 : world} {name : Name} {r : Res} {v : ℂ·} {f : Bool}
@@ -347,9 +280,149 @@ satFrozen-trans {v1} {v2} {v3} {true} {f2} {f3} (e1 , e2) s2 rewrite e1 | e2 = s
 
 
 
+open import compatible(PossibleWorldsRef)(choiceRef)
+
+compatibleREF : Compatible
+compatibleREF = mkCompatible compatibleRef ⊑-compatibleRef
+
+open import compatibleDef(PossibleWorldsRef)(choiceRef)(compatibleREF)
+
+
+
+getRefChoice : (n : ℕ) (name : Name) (w : world) → Maybe ℂ·
+getRefChoice _ name w with getRef name w
+... | just (cell _ _ v _) = just v
+... | nothing = nothing
+
+
+
+getRefChoiceCompatible : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·)
+                        → compatibleRef c w r → getRefChoice n c w ≡ just t → ·ᵣ r n t
+getRefChoiceCompatible c r w n t (k , b , i , sat) g rewrite i | just-inj g = sat n
+
+
+
+open import getChoice(PossibleWorldsRef)(choiceRef)(compatibleREF)
+
+getChoiceRef : GetChoice
+getChoiceRef = mkGetChoice getRefChoice getRefChoiceCompatible
+
+open import getChoiceDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)
+
+
+
+
+progressRef : (c : Name) (w1 w2 : 𝕎·) → Set₁
+progressRef c w1 w2 =
+  (r : Res) (v : ℂ·) (f : Bool)
+  → ∈world c r v f w1
+  → Σ ℂ· (λ v' → Σ Bool (λ f' → ∈world c r v' f' w2 × satFrozen v v' f f'))
+
+
+progressRef-refl : (c : Name) (w : 𝕎·) → progressRef c w w
+progressRef-refl c w r v f i = v , f , i , satFrozen-refl v f
+
+
+progressRef-trans : {c : Name} {w1 w2 w3 : 𝕎·}
+                    → progressRef c w1 w2
+                    → progressRef c w2 w3
+                    → progressRef c w1 w3
+progressRef-trans {c} {w1} {w2} {w3} p1 p2 r v f i =
+  fst z2 , fst (snd z2) , fst (snd (snd z2)) , satFrozen-trans (snd (snd (snd z1))) (snd (snd (snd z2)))
+  where
+    z1 : Σ ℂ· (λ v' → Σ Bool (λ f' → ∈world c r v' f' w2 × satFrozen v v' f f'))
+    z1 = p1 r v f i
+
+    z2 : Σ ℂ· (λ v' → Σ Bool (λ f' → ∈world c r v' f' w3 × satFrozen (fst z1) v' (fst (snd (z1))) f'))
+    z2 = p2 r (fst z1) (fst (snd z1)) (fst (snd (snd z1)))
+
+
+𝕎→refChain : (w : 𝕎·) → chain w
+𝕎→refChain w = mkChain (λ _ → w) (⊑-refl· _) λ _ → ⊑-refl· _
+
+
+refChainProgress : (w : 𝕎·) (x : Name) (n : ℕ) {r : Res{0ℓ}}
+                   → compatibleRef x (chain.seq (𝕎→refChain w) n) r
+                   → Σ ℕ (λ m → n < m × progressRef x (chain.seq (𝕎→refChain w) n) (chain.seq (𝕎→refChain w) m))
+refChainProgress w x n {r} (v , f , i , sat) = suc n , ≤-refl , progressRef-refl x w
+
+
+
+
+open import progress(PossibleWorldsRef)(choiceRef)(compatibleREF)
+
+progressREF : Progress
+progressREF =
+  mkProgress
+    progressRef
+    𝕎→refChain
+    refChainProgress
+
+open import progressDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)
+
+
+
+
+open import choiceExt{1ℓ}(choiceRef)
+
+choiceExtRef : ChoiceExt
+choiceExtRef = mkChoiceExt (#NUM 0) (#NUM 1) #∼vals NUM0≠NUM1 tt tt
+
+open import choiceExtDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)
+
+
+
+newRefChoice : (w : 𝕎·) → Name
+newRefChoice w = fst (freshName (wdom w))
+
+
+startRefChoice : (n : Name) (r : Res{0ℓ}) (w : 𝕎·) → 𝕎·
+startRefChoice n r w = newCell n r w
+
+
+startNewRefChoice : (r : Res{0ℓ}) (w : 𝕎·) → 𝕎·
+startNewRefChoice r w = startRefChoice (newRefChoice w) r w
+
+
+
+getRef-newCell : (w : 𝕎·) (name : Name) (r : Res)
+                 → getRef name (newCell name r w) ≡ just (cell name r (Res.def r) false)
+getRef-newCell w name r with name ≟ name
+... | yes p = refl
+... | no p = ⊥-elim (p refl)
+
+
+getRefChoice-startNewRefChoice : (n : ℕ) (r : Res) (w : 𝕎·) (t : ℂ·)
+                                 → getRefChoice n (newRefChoice w) (startNewRefChoice r w) ≡ just t → t ≡ Res.def r
+--                                 → getRefChoice n (newRefChoice w) (startNewRefChoice r w) ≡ nothing
+getRefChoice-startNewRefChoice n r w t e
+  rewrite getRef-newCell w (newRefChoice w) r
+        | just-inj e = refl
+
+
+startNewRefChoice⊏ : (r : Res) (w : 𝕎·) → w ⊑· startNewRefChoice r w
+startNewRefChoice⊏ r w = new w (newRefChoice w) r (snd (freshName (wdom w)))
+
+
+
 startRefChoiceCompatible : (r : Res{0ℓ}) (w : 𝕎·) → compatibleRef (newRefChoice w) (startNewRefChoice r w) r
 startRefChoiceCompatible r w =
   Res.def r , false , getRef-newCell w (newRefChoice w) r , Res.sat r
+
+
+
+open import newChoice(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)
+
+newChoiceRef : NewChoice
+newChoiceRef =
+  mkNewChoice
+    newRefChoice
+    startRefChoice
+    getRefChoice-startNewRefChoice
+    startNewRefChoice⊏
+    startRefChoiceCompatible
+
+open import newChoiceDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(newChoiceRef)
 
 
 
@@ -486,12 +559,6 @@ progressRef-freeze c (cell name r₁ v₁ f₁ ∷ w) t r v f i | no p with c �
 
 
 
-progressRef : (c : Name) (w1 w2 : 𝕎·) → Set₁
-progressRef c w1 w2 =
-  (r : Res) (v : ℂ·) (f : Bool)
-  → ∈world c r v f w1
-  → Σ ℂ· (λ v' → Σ Bool (λ f' → ∈world c r v' f' w2 × satFrozen v v' f f'))
-
 
 
 ⊑→progressRef : (c : Name) {w1 w2 : 𝕎·} → w1 ⊑· w2 → progressRef c w1 w2
@@ -586,48 +653,6 @@ getFreezeRef c w t {r} comp fb =
   λ w1 e1 → lift (fst (lower (snd (getFreezeRef-aux c w t comp fb) w1 e1)))
 
 
-getRefChoiceCompatible : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·)
-                        → compatibleRef c w r → getRefChoice n c w ≡ just t → ·ᵣ r n t
-getRefChoiceCompatible c r w n t (k , b , i , sat) g rewrite i | just-inj g = sat n
-
-
-
-open import freeze(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)
-
-freezeREF : Freeze
-freezeREF =
-  mkFreeze
-    compatibleRef
-    ⊑-compatibleRef
-    startRefChoiceCompatible
-    getRefChoiceCompatible
-    freezeRef
-    freezableRef
-    freezeRef⊑
-    getFreezeRef
-    freezableStartRef
-
-open import freezeDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)(freezeREF)
-
-
-
-progressRef-refl : (c : Name) (w : 𝕎·) → progressRef c w w
-progressRef-refl c w r v f i = v , f , i , satFrozen-refl v f
-
-
-progressRef-trans : {c : Name} {w1 w2 w3 : 𝕎·}
-                    → progressRef c w1 w2
-                    → progressRef c w2 w3
-                    → progressRef c w1 w3
-progressRef-trans {c} {w1} {w2} {w3} p1 p2 r v f i =
-  fst z2 , fst (snd z2) , fst (snd (snd z2)) , satFrozen-trans (snd (snd (snd z1))) (snd (snd (snd z2)))
-  where
-    z1 : Σ ℂ· (λ v' → Σ Bool (λ f' → ∈world c r v' f' w2 × satFrozen v v' f f'))
-    z1 = p1 r v f i
-
-    z2 : Σ ℂ· (λ v' → Σ Bool (λ f' → ∈world c r v' f' w3 × satFrozen (fst z1) v' (fst (snd (z1))) f'))
-    z2 = p2 r (fst z1) (fst (snd z1)) (fst (snd (snd z1)))
-
 
 progressFreeze→progressRef : {c : Name} {w1 w2 : 𝕎·}
                               → progressFreeze c w1 w2
@@ -645,26 +670,18 @@ freezeRefProgress c {w1} {w2} t e =
 
 
 
-𝕎→refChain : (w : 𝕎·) → chain w
-𝕎→refChain w = mkChain (λ _ → w) (⊑-refl· _) λ _ → ⊑-refl· _
+open import freeze(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(newChoiceRef)
 
-
-refChainProgress : (w : 𝕎·) (x : Name) (n : ℕ) {r : Res{0ℓ}}
-                   → compatibleRef x (chain.seq (𝕎→refChain w) n) r
-                   → Σ ℕ (λ m → n < m × progressRef x (chain.seq (𝕎→refChain w) n) (chain.seq (𝕎→refChain w) m))
-refChainProgress w x n {r} (v , f , i , sat) = suc n , ≤-refl , progressRef-refl x w
-
-
-open import progress(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)(freezeREF)
-
-progressREF : Progress
-progressREF =
-  mkProgress
-    progressRef
+freezeREF : Freeze
+freezeREF =
+  mkFreeze
+    freezeRef
+    freezableRef
+    freezeRef⊑
+    getFreezeRef
+    freezableStartRef
     freezeRefProgress
-    𝕎→refChain
-    refChainProgress
 
-open import progressDef(PossibleWorldsRef)(choiceRef)(getChoiceRef)(newChoiceRef)(freezeREF)(progressREF)
+open import freezeDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(newChoiceRef)(freezeREF)
 
 \end{code}

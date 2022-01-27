@@ -32,16 +32,24 @@ open import calculus
 open import world
 open import choice
 open import getChoice
+open import compatible
 
-module getChoiceDef {L : Level} (W : PossibleWorlds {L}) (C : Choice) (G : GetChoice {L} W C) where
+
+module getChoiceDef {L : Level} (W : PossibleWorlds {L})
+                    (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M)
+       where
 open import worldDef(W)
 open import choiceDef{L}(C)
+open import compatibleDef{L}(W)(C)(M)
 
 
 open GetChoice
 
 getChoice· : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe ℂ·
 getChoice· = getChoice G
+
+getChoiceCompatible· : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·) → compatible· c w r → getChoice· n c w ≡ just t → ·ᵣ r n t
+getChoiceCompatible· = getChoiceCompatible G
 
 
 getC : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe CTerm

@@ -33,13 +33,16 @@ open import calculus
 open import terms
 open import world
 open import choice
+open import compatible
 open import getChoice
 
 
-module computation {L : Level} (W : PossibleWorlds {L}) (C : Choice) (G : GetChoice {L} W C) where
+module computation {L : Level} (W : PossibleWorlds {L})
+                   (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M)
+       where
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import getChoiceDef(W)(C)(G)
+open import getChoiceDef(W)(C)(M)(G)
 \end{code}
 
 

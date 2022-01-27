@@ -35,56 +35,37 @@ open import calculus
 open import terms
 open import world
 open import choice
+open import compatible
 open import choiceExt
 open import getChoice
-open import newChoice
-open import freeze
 open import progress
 open import exBar
 
 
 module lem {L : Level} (W : PossibleWorlds {L})
-           (C : Choice) (G : GetChoice {L} W C) (X : ChoiceExt C) (N : NewChoice {L} W C G)
-           (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+           (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M) (G : GetChoice {L} W C M)
+           (X : ChoiceExt C)
            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
            (EM : ExcludedMiddle (lsuc(L)))
-           (EB : ExBar W C G N F P E)
+           (EB : ExBar W C M P)
        where
 
 
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import getChoiceDef(W)(C)(G)
-open import choiceExtDef(W)(C)(G)(X)
-open import newChoiceDef(W)(C)(G)(N)
-open import freezeDef(W)(C)(G)(N)(F)
-open import exBarDef(W)(C)(G)(N)(F)(P)(E)(EB)
-open import computation(W)(C)(G)
+open import exBarDef(W)(C)(M)(P)(EB)
+open import computation(W)(C)(M)(G)
 open import bar(W)
 open import barOpen(W)
-open import barI(W)(C)(G)(N)(F)(P)
-open import theory(W)(C)(G)(N)(F)(P)(E)
-open import props0(W)(C)(G)(N)(F)(P)(E)
-open import ind2(W)(C)(G)(N)(F)(P)(E)
+open import barI(W)(C)(M)(P)
+open import theory(W)(C)(M)(P)(G)(E)
+open import props0(W)(C)(M)(P)(G)(E)
+open import ind2(W)(C)(M)(P)(G)(E)
 
-open import type_sys_props_nat(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_qnat(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_lt(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_qlt(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_free(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_pi(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_sum(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_set(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_eq(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_union(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_tsquash(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_ffdefs(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_lift(W)(C)(G)(N)(F)(P)(E)
-
-open import props1(W)(C)(G)(N)(F)(P)(E)
-open import props2(W)(C)(G)(N)(F)(P)(E)
-open import props3(W)(C)(G)(N)(F)(P)(E)
-open import lem_props(W)(C)(G)(X)(N)(F)(P)(E)
+open import props1(W)(C)(M)(P)(G)(E)
+open import props2(W)(C)(M)(P)(G)(E)
+open import props3(W)(C)(M)(P)(G)(E)
+open import lem_props(W)(C)(M)(P)(G)(X)(E)
 \end{code}
 
 

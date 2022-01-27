@@ -35,21 +35,20 @@ open import calculus
 open import terms
 open import world
 open import choice
-open import getChoice
-open import newChoice
-open import freeze
+open import compatible
 open import progress
 
 
-module exBar {L : Level} (W : PossibleWorlds {L})
-             (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
-             (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+module exBar {L : Level} (W : PossibleWorlds {L}) --(B : Bar W)
+             (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M)
        where
 
 open import worldDef(W)
 open import bar(W)
-open import barI(W)(C)(G)(N)(F)(P)
+open import barI(W)(C)(M)(P)
 
+
+--open Bar B
 
 record ExBar : Set(lsuc(lsuc(L))) where
   constructor mkExBar

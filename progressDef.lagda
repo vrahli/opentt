@@ -30,29 +30,22 @@ open import util
 open import calculus
 open import world
 open import choice
-open import getChoice
-open import newChoice
-open import freeze
+open import compatible
 open import progress
 
 module progressDef {L : Level} (W : PossibleWorlds {L})
-                   (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+                   (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M)
        where
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import getChoiceDef(W)(C)(G)
-open import newChoiceDef(W)(C)(G)(N)
-open import freezeDef(W)(C)(G)(N)(F)
+open import compatibleDef{L}(W)(C)(M)
+
 
 open Progress
 
 
 progress· : (c : Name) (w1 w2 : 𝕎·) → Set(L)
 progress· = progress P
-
-
-freezeProgress· : (c : Name) {w1 w2 : 𝕎·} (t : ℂ·) → w1 ⊑· w2 → progress· c w1 (freeze· c w2 t)
-freezeProgress· = freezeProgress P
 
 
 𝕎→chain· : (w : 𝕎·) → chain w

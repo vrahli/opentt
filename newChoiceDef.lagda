@@ -32,11 +32,15 @@ open import world
 open import choice
 open import getChoice
 open import newChoice
+open import compatible
 
-module newChoiceDef {L : Level} (W : PossibleWorlds {L}) (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) where
+module newChoiceDef {L : Level} (W : PossibleWorlds {L})
+                    (C : Choice) (M : Compatible {L} W C) (G : GetChoice {L} W C M) (N : NewChoice {L} W C M G)
+       where
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import getChoiceDef(W)(C)(G)
+open import compatibleDef{L}(W)(C)(M)
+open import getChoiceDef(W)(C)(M)(G)
 
 open NewChoice
 
@@ -61,5 +65,9 @@ getChoice-startNewChoice· = getChoice-startNewChoice N
 
 startNewChoice⊏· : (r : Res) (w : 𝕎·) → w ⊑· startNewChoice r w
 startNewChoice⊏· = startNewChoice⊏ N
+
+
+startChoiceCompatible· : (r : Res) (w : 𝕎·) → compatible· (newChoice· w) (startNewChoice r w) r
+startChoiceCompatible· = startChoiceCompatible N
 
 \end{code}

@@ -30,34 +30,26 @@ open import util
 open import calculus
 open import world
 open import choice
+open import compatible
+open import progress
 open import getChoice
 open import newChoice
 open import freeze
 
 
-module freezeDef {L : Level} (W : PossibleWorlds {L}) (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) where
+module freezeDef {L : Level} (W : PossibleWorlds {L})
+                 (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M)
+                 (G : GetChoice {L} W C M) (N : NewChoice {L} W C M G)
+                 (F : Freeze {L} W C M P G N)
+       where
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import getChoiceDef(W)(C)(G)
-open import newChoiceDef(W)(C)(G)(N)
+open import compatibleDef{L}(W)(C)(M)
+open import progressDef{L}(W)(C)(M)(P)
+open import getChoiceDef(W)(C)(M)(G)
+open import newChoiceDef(W)(C)(M)(G)(N)
 
 open Freeze
-
-
-compatible· : (c : Name) (w : 𝕎·) (r : Res{0ℓ}) → Set(L)
-compatible· = compatible F
-
-
-⊑-compatible· : {c : Name} {w1 w2 : 𝕎·} {r : Res{0ℓ}} → w1 ⊑· w2 → compatible· c w1 r → compatible· c w2 r
-⊑-compatible· = ⊑-compatible F
-
-
-startChoiceCompatible· : (r : Res) (w : 𝕎·) → compatible· (newChoice· w) (startNewChoice r w) r
-startChoiceCompatible· = startChoiceCompatible F
-
-
-getChoiceCompatible· : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·) → compatible· c w r → getChoice· n c w ≡ just t → ·ᵣ r n t
-getChoiceCompatible· = getChoiceCompatible F
 
 
 freeze· : (c : Name) (w : 𝕎·) (t : ℂ·) → 𝕎·
@@ -81,4 +73,8 @@ getFreeze· = getFreeze F
 
 freezableStart· : (r : Res{0ℓ}) (w : 𝕎·) → freezable· (newChoice· w) (startNewChoice r w)
 freezableStart· = freezableStart F
+
+
+freezeProgress· : (c : Name) {w1 w2 : 𝕎·} (t : ℂ·) → w1 ⊑· w2 → progress· c w1 (freeze· c w2 t)
+freezeProgress· = freezeProgress F
 

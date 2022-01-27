@@ -34,27 +34,31 @@ open import Axiom.Extensionality.Propositional
 open import calculus
 open import terms
 open import world
+open import bar
 open import choice
-open import getChoice
-open import newChoice
-open import freeze
+open import compatible
 open import progress
 open import exBar
 
 
-module exBarDef {L : Level} (W : PossibleWorlds {L})
-                (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
-                (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-                (EB : ExBar W C G N F P E)
+module exBarDef {L : Level} (W : PossibleWorlds {L}) --(B : Bar W)
+                (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M)
+--                (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+--                (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+--                (EB : ExBar W C G N F P E)
+                (EB : ExBar W C M P)
        where
 
 open import worldDef(W)
 open import bar(W)
-open import barI(W)(C)(G)(N)(F)(P)
+open import barI(W)(C)(M)(P)
 
+--open Bar B
 open ExBar
 
-∀∃𝔹· : {w : 𝕎·} {f : wPred w} → wPredExtIrr f → ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → inbar w2 (↑wPred f (⊑-trans· e1 e2)))) → inbar w f
+∀∃𝔹· : {w : 𝕎·} {f : wPred w} → wPredExtIrr f
+       → ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → inbar w2 (↑wPred f (⊑-trans· e1 e2))))
+       → inbar w f
 ∀∃𝔹· = ∀∃𝔹 EB
 
 \end{code}

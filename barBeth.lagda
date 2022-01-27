@@ -17,26 +17,21 @@ open import util
 open import calculus
 open import world
 open import choice
-open import getChoice
-open import newChoice
-open import freeze
+open import compatible
 open import progress
 
 
 -- Choice is only needed for Beth bars to build an infinite sequence of worlds
 module barBeth {L : Level} (W : PossibleWorlds {L})
-               (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G)
-               (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+               (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M)
        where
 open import worldDef{L}(W)
 open import bar{L}(W)
 
 -- Those are only needed by the Beth instance
 open import choiceDef{L}(C)
-open import getChoiceDef(W)(C)(G)
-open import newChoiceDef(W)(C)(G)(N)
-open import freezeDef(W)(C)(G)(N)(F)
-open import progressDef(W)(C)(G)(N)(F)(P)
+open import compatibleDef(W)(C)(M)
+open import progressDef(W)(C)(M)(P)
 
 
 {--

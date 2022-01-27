@@ -10,6 +10,7 @@ open import util
 open import calculus
 open import world
 open import choice
+open import compatible
 open import choiceExt
 open import getChoice
 open import newChoice
@@ -20,16 +21,17 @@ open import exBar
 
 
 module all {L : Level} (W : PossibleWorlds {L})
-           (C : Choice) (G : GetChoice {L} W C) (X : ChoiceExt C) (N : NewChoice {L} W C G)
-           (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+           (C : Choice) (M : Compatible W C) (P : Progress {L} W C M)
+           (G : GetChoice {L} W C M) (X : ChoiceExt {L} C) (N : NewChoice {L} W C M G)
+           (F : Freeze {L} W C M P G N)
            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
            (EM : ExcludedMiddle (lsuc(L))) -- for ExBar, used in turn in lem
-           (CB : ChoiceBar W C G X N F P E)
-           (EB : ExBar W C G N F P E)
+           (CB : ChoiceBar W C M P G X N F E)
+           (EB : ExBar W C M P)
        where
 
-open import not_lem{L}(W)(C)(G)(X)(N)(F)(P)(E)(CB)
-open import lem{L}(W)(C)(G)(X)(N)(F)(P)(E)(EM)(EB)
+open import not_lem{L}(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
+open import lem{L}(W)(C)(M)(P)(G)(X)(E)(EM)(EB)
 
 open import choiceBarInstanceCS
 open import choiceBarInstanceRef

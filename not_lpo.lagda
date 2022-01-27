@@ -37,6 +37,8 @@ open import calculus
 open import terms
 open import world
 open import choice
+open import compatible
+open import progress
 open import choiceExt
 open import getChoice
 open import newChoice
@@ -46,45 +48,32 @@ open import choiceBar
 
 
 module not_lpo {L : Level} (W : PossibleWorlds {L})
-               (C : Choice) (G : GetChoice {L} W C) (X : ChoiceExt C) (N : NewChoice {L} W C G)
-               (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+               (C : Choice) (M : Compatible W C) (P : Progress {L} W C M)
+               (G : GetChoice {L} W C M) (X : ChoiceExt {L} C) (N : NewChoice {L} W C M G)
+               (F : Freeze {L} W C M P G N)
                (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-               (CB : ChoiceBar W C G X N F P E)
+               (CB : ChoiceBar W C M P G X N F E)
        where
 
 
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import getChoiceDef(W)(C)(G)
-open import choiceExtDef(W)(C)(G)(X)
-open import newChoiceDef(W)(C)(G)(N)
-open import freezeDef(W)(C)(G)(N)(F)
-open import choiceBarDef(W)(C)(G)(X)(N)(F)(P)(E)(CB)
-open import computation(W)(C)(G)
+open import compatibleDef{L}(W)(C)(M)
+open import getChoiceDef(W)(C)(M)(G)
+open import newChoiceDef(W)(C)(M)(G)(N)
+open import choiceExtDef(W)(C)(M)(G)(X)
+open import freezeDef(W)(C)(M)(P)(G)(N)(F)
+open import computation(W)(C)(M)(G)
 open import bar(W)
-open import barI(W)(C)(G)(N)(F)(P)
-open import theory(W)(C)(G)(N)(F)(P)(E)
-open import props0(W)(C)(G)(N)(F)(P)(E)
-open import ind2(W)(C)(G)(N)(F)(P)(E)
+open import barI(W)(C)(M)(P)
+open import theory(W)(C)(M)(P)(G)(E)
+open import props0(W)(C)(M)(P)(G)(E)
+open import ind2(W)(C)(M)(P)(G)(E)
 
-open import type_sys_props_nat(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_qnat(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_lt(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_qlt(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_free(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_pi(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_sum(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_set(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_eq(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_union(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_tsquash(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_ffdefs(W)(C)(G)(N)(F)(P)(E)
-open import type_sys_props_lift(W)(C)(G)(N)(F)(P)(E)
-
-open import props1(W)(C)(G)(N)(F)(P)(E)
-open import props2(W)(C)(G)(N)(F)(P)(E)
-open import props3(W)(C)(G)(N)(F)(P)(E)
-open import lem_props(W)(C)(G)(X)(N)(F)(P)(E)
+open import props1(W)(C)(M)(P)(G)(E)
+open import props2(W)(C)(M)(P)(G)(E)
+open import props3(W)(C)(M)(P)(G)(E)
+open import lem_props(W)(C)(M)(P)(G)(X)(E)
 
 -- open import calculus
 -- open import world
@@ -124,7 +113,7 @@ BOOL = UNION TRUE TRUE
 
 
 -- If we only want to consider Boolean choices
-Boolℂ : ChoiceBar W C G X N F P E → Set
+Boolℂ : ChoiceBar W C M P G X N F E → Set
 Boolℂ cb = ChoiceBar.Typeℂ₀₁ cb ≡ #BOOL
 
 

@@ -29,15 +29,22 @@ open import Data.List.Properties
 open import calculus
 open import world
 open import choice
+open import compatible
+open import progress
 open import getChoice
 open import newChoice
 
 
-module freeze {L : Level} (W : PossibleWorlds {L}) (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) where
+module freeze {L : Level} (W : PossibleWorlds {L})
+              (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M)
+              (G : GetChoice {L} W C M) (N : NewChoice {L} W C M G)
+       where
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import getChoiceDef(W)(C)(G)
-open import newChoiceDef(W)(C)(G)(N)
+open import compatibleDef{L}(W)(C)(M)
+open import progressDef{L}(W)(C)(M)(P)
+open import getChoiceDef(W)(C)(M)(G)
+open import newChoiceDef(W)(C)(M)(G)(N)
 \end{code}
 
 
@@ -45,23 +52,16 @@ open import newChoiceDef(W)(C)(G)(N)
 record Freeze : Set(lsuc(L)) where
   constructor mkFreeze
   field
-    -- states that the choices for c in w are constrained by the restiction
-    -- *** This is a necesary assumption for freeze⊑ below, otherwise we might not be able to extend w with t
-    compatible : (c : Name) (w : 𝕎·) (r : Res{0ℓ}) → Set(L)
-    -- ⊑· preserves compatibility
-    ⊑-compatible : {c : Name} {w1 w2 : 𝕎·} {r : Res{0ℓ}} → w1 ⊑· w2 → compatible c w1 r → compatible c w2 r
-    -- starting a new choice trivially satisfies compatibility
-    startChoiceCompatible : (r : Res{0ℓ}) (w : 𝕎·) → compatible (newChoice· w) (startNewChoice r w) r
-    getChoiceCompatible : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·) → compatible c w r → getChoice· n c w ≡ just t → ·ᵣ r n t
-
     -- This adds a new choice, which is frozen forever (can for example be recorded with a 𝔹 in worlds)
     freeze : (c : Name) (w : 𝕎·) (t : ℂ·) → 𝕎·
     freezable : (c : Name) (w : 𝕎·) → Set
-    freeze⊑ : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res{0ℓ}} → compatible c w r → ⋆ᵣ r t → w ⊑· freeze c w t
+    freeze⊑ : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res{0ℓ}} → compatible· c w r → ⋆ᵣ r t → w ⊑· freeze c w t
     getFreeze : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res{0ℓ}}
-                → compatible c w r
+                → compatible· c w r
                 → freezable c w
                 → Σ ℕ (λ n → ∀𝕎 (freeze c w t) (λ w' _ → Lift (lsuc(L)) (getChoice· n c w' ≡ just t)))
     freezableStart : (r : Res{0ℓ}) (w : 𝕎·) → freezable (newChoice· w) (startNewChoice r w)
+    -- freezing a choice progresses
+    freezeProgress : (c : Name) {w1 w2 : 𝕎·} (t : ℂ·) → w1 ⊑· w2 → progress· c w1 (freeze c w2 t)
 
 \end{code}

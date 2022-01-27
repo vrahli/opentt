@@ -34,20 +34,17 @@ open import util
 open import calculus
 open import world
 open import choice
-open import getChoice
-open import newChoice
-open import freeze
+open import compatible
 open import progress
 
 module barI {L : Level} (W : PossibleWorlds {L})
-            (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G)
-            (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+            (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M)
        where
 
 open import worldDef(W)
 open import bar(W)
 open import barOpen(W)
-open import barBeth(W)(C)(G)(N)(F)(P)
+open import barBeth(W)(C)(M)(P)
 
 
 -- instance of a bar, which should be replaced by a parameter

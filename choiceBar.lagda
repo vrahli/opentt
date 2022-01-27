@@ -35,6 +35,7 @@ open import calculus
 open import terms
 open import world
 open import choice
+open import compatible
 open import choiceExt
 open import getChoice
 open import newChoice
@@ -43,21 +44,22 @@ open import progress
 
 
 module choiceBar {L : Level} (W : PossibleWorlds {L})
-                 (C : Choice) (G : GetChoice {L} W C) (X : ChoiceExt C) (N : NewChoice {L} W C G)
-                 (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+                 (C : Choice) (M : Compatible W C) (P : Progress {L} W C M)
+                 (G : GetChoice {L} W C M) (X : ChoiceExt {L} C) (N : NewChoice {L} W C M G)
+                 (F : Freeze {L} W C M P G N)
                  (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
 
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import getChoiceDef(W)(C)(G)
-open import choiceExtDef(W)(C)(G)(X)
-open import newChoiceDef(W)(C)(G)(N)
-open import freezeDef(W)(C)(G)(N)(F)
-open import computation(W)(C)(G)
+open import compatibleDef{L}(W)(C)(M)
+open import getChoiceDef(W)(C)(M)(G)
+open import choiceExtDef(W)(C)(M)(G)(X)
+open import freezeDef(W)(C)(M)(P)(G)(N)(F)
+open import computation(W)(C)(M)(G)
 open import bar(W)
-open import barI(W)(C)(G)(N)(F)(P)
-open import theory(W)(C)(G)(N)(F)(P)(E)
+open import barI(W)(C)(M)(P)
+open import theory(W)(C)(M)(P)(G)(E)
 
 
 -- TODO: call this choiceType instead

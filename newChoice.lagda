@@ -29,13 +29,16 @@ open import Data.List.Properties
 open import calculus
 open import world
 open import choice
+open import compatible
 open import getChoice
 
 
-module newChoice {L : Level} (W : PossibleWorlds {L}) (C : Choice) (G : GetChoice {L} W C) where
+module newChoice {L : Level} (W : PossibleWorlds {L})
+                 (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M) where
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import getChoiceDef(W)(C)(G)
+open import compatibleDef{L}(W)(C)(M)
+open import getChoiceDef(W)(C)(M)(G)
 \end{code}
 
 
@@ -53,5 +56,8 @@ record NewChoice : Set(lsuc(L)) where
     -- The above is essentially onlyℂ∈𝕎
     -- starting a new choice gives us a non-trivial extension
     startNewChoice⊏ : (r : Res{0ℓ}) (w : 𝕎·) → w ⊑· startChoice (newChoice w) r w
+
+    -- starting a new choice trivially satisfies compatibility
+    startChoiceCompatible : (r : Res{0ℓ}) (w : 𝕎·) → compatible· (newChoice w) (startChoice (newChoice w) r w) r
 
 \end{code}

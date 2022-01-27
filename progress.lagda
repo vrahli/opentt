@@ -29,17 +29,15 @@ open import Data.List.Properties
 open import calculus
 open import world
 open import choice
-open import getChoice
-open import newChoice
-open import freeze
+open import compatible
 
 
-module progress {L : Level} (W : PossibleWorlds {L}) (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) where
+module progress {L : Level} (W : PossibleWorlds {L})
+                (C : Choice) (M : Compatible {L} W C)
+       where
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import getChoiceDef(W)(C)(G)
-open import newChoiceDef(W)(C)(G)(N)
-open import freezeDef(W)(C)(G)(N)(F)
+open import compatibleDef{L}(W)(C)(M)
 \end{code}
 
 
@@ -51,8 +49,6 @@ record Progress : Set(lsuc(L)) where
     -- expresses what it means to make some progress w.r.t. the name c between the 2 worlds
     -- progress is used to define infinite sequences for Beth models.  It is required to prove that all choices of numbers are barred
     progress : (c : Name) (w1 w2 : 𝕎·) → Set(L)
-    -- freezing a choice progresses
-    freezeProgress : (c : Name) {w1 w2 : 𝕎·} (t : ℂ·) → w1 ⊑· w2 → progress c w1 (freeze· c w2 t)
     -- We can build a progressing chain from any given world
     𝕎→chain : (w : 𝕎·) → chain w
     chainProgress : (w : 𝕎·) (c : Name) (n : ℕ) {r : Res{0ℓ}}

@@ -29,24 +29,19 @@ open import Data.List.Properties
 open import calculus
 open import world
 open import choice
-open import compatible
 
 
-module getChoice {L : Level} (W : PossibleWorlds {L}) (C : Choice) (M : Compatible W C) where
+module compatible {L : Level} (W : PossibleWorlds {L}) (C : Choice) where
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import compatibleDef{L}(W)(C)(M)
-\end{code}
 
 
-\begin{code}
-record GetChoice : Set(lsuc(L)) where
-  constructor mkGetChoice
+record Compatible : Set(lsuc(L)) where
+  constructor mkCompatible
   field
-    -- returns the n's choice in w for the choice sequence cs
-    getChoice : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe ℂ·
-    --getChoice : (cs : Name) (w : 𝕎·) → Maybe ℕ
-
-    getChoiceCompatible : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·) → compatible· c w r → getChoice n c w ≡ just t → ·ᵣ r n t
-
+    -- states that the choices for c in w are constrained by the restiction
+    -- *** This is a necesary assumption for freeze⊑ otherwise we might not be able to extend w with t
+    compatible : (c : Name) (w : 𝕎·) (r : Res{0ℓ}) → Set(L)
+    -- ⊑· preserves compatibility
+    ⊑-compatible : {c : Name} {w1 w2 : 𝕎·} {r : Res{0ℓ}} → w1 ⊑· w2 → compatible c w1 r → compatible c w2 r
 \end{code}

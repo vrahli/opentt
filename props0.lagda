@@ -32,24 +32,22 @@ open import calculus
 open import terms
 open import world
 open import choice
-open import getChoice
-open import newChoice
-open import freeze
+open import compatible
 open import progress
+open import getChoice
 
 --open import bar
 
 module props0 {L : Level} (W : PossibleWorlds {L})
-              (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
+              (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M) (G : GetChoice {L} W C M)
               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
        --(bar : Bar W) where
 open import worldDef(W)
-open import choiceDef{L}(C)
-open import computation(W)(C)(G)
+open import computation(W)(C)(M)(G)
 open import bar(W)
-open import barI(W)(C)(G)(N)(F)(P)
-open import theory(W)(C)(G)(N)(F)(P)(E)
+open import barI(W)(C)(M)(P)
+open import theory(W)(C)(M)(P)(G)(E)
 \end{code}
 
 
