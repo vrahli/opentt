@@ -165,6 +165,24 @@ comp-Resℂ→inbar-weakℂ₀₁ {c} {w} n comp = Bar.∀𝕎-inBarFunc barI aw
 
 
 
+→equalInType-APPLY-CS-Typeℂ₀₁· : {i : ℕ} {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
+                                  → compatible· c w Resℂ
+                                  → equalInType i w #NAT a₁ a₂
+                                  → equalInType i w Typeℂ₀₁· (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
+→equalInType-APPLY-CS-Typeℂ₀₁· {i} {w} {c} {a₁} {a₂} comp eqi =
+  equalInType-local (Bar.∀𝕎-inBarFunc barI aw1' (equalInType-NAT→ i w a₁ a₂ eqi))
+  where
+    aw1' : ∀𝕎 w (λ w'' e'' → #strongMonEq w'' a₁ a₂ → equalInType i w'' Typeℂ₀₁· (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂))
+    aw1' w1 e1 (n , c₁ , c₂) = equalInType-#⇛-LR-rev (#⇛-APPLY-CS {w1} {a₁} {#NUM n} c c₁) (#⇛-APPLY-CS {w1} {a₂} {#NUM n} c c₂) eqj
+      where
+        j2 : inbar w1 (λ w' _ → weakℂ₀₁M w' (getT n c))
+        j2 = comp-Resℂ→inbar-weakℂ₀₁ n (⊑-compatible· e1 comp)
+
+        eqj : ∈Type i w1 Typeℂ₀₁· (#APPLY (#CS c) (#NUM n))
+        eqj = →∈Typeℂ₀₁· i j2
+
+
+
 equalTypes-#Σchoice-body : (i : ℕ) (w : 𝕎·) (c : Name) (k : ℂ·)
                            → compatible· c w Resℂ
                            → Σ ℕ (λ n → ·ᵣ Resℂ n k)
@@ -174,31 +192,9 @@ equalTypes-#Σchoice-body : (i : ℕ) (w : 𝕎·) (c : Name) (k : ℂ·)
                                                               (#EQ (#APPLY (#CS c) a₂) (ℂ→C· k) Typeℂ₀₁·))
 equalTypes-#Σchoice-body i w c k comp sat w' e' a₁ a₂ ea =
   eqTypesEQ← (Typeℂ₀₁-isType· i w') aw1 aw2
-{--  eqTypesEQ← eqTypesQNAT aw1 aw2 --}
   where
---    j : inbar w' (λ w' _ → #strongMonEq w' a₁ a₂)
---    j = equalInType-NAT→ i w' a₁ a₂ ea
-
     aw1 : equalInType i w' Typeℂ₀₁· (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
-    aw1 = equalInType-local (Bar.∀𝕎-inBarFunc barI aw1' (equalInType-NAT→ i w' a₁ a₂ ea))
-      where
-        aw1' : ∀𝕎 w' (λ w'' e'' → #strongMonEq w'' a₁ a₂ → equalInType i w'' Typeℂ₀₁· (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂))
-        aw1' w1 e1 (n , c₁ , c₂) = equalInType-#⇛-LR-rev (#⇛-APPLY-CS {w1} {a₁} {#NUM n} c c₁) (#⇛-APPLY-CS {w1} {a₂} {#NUM n} c c₂) eqi
-          where
-            j2 : inbar w1 (λ w' _ → weakℂ₀₁M w' (getT n c))
-            j2 = comp-Resℂ→inbar-weakℂ₀₁ n (⊑-compatible· (⊑-trans· e' e1) comp)
-
-            eqi : ∈Type i w1 Typeℂ₀₁· (#APPLY (#CS c) (#NUM n))
-            eqi = →∈Typeℂ₀₁· i j2
-            -- use choice-Typeℂ₀₁
-
- {--→equalInType-QNAT i w' (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂) (Bar.inBar-idem barI (Bar.∀𝕎-inBarFunc barI aw11 j))
-      where
-        aw11 : ∀𝕎 w' (λ w'' e'' → #strongMonEq w'' a₁ a₂
-                                 → inbar w'' (↑wPred' (λ w''' e → #weakMonEq w''' (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)) e''))
-        aw11 w'' e'' (m , c₁ , c₂) =
-          inbar-wPred'-#weakMonEq w' w'' e'' (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
-                                  (→inbar-#weakMonEq-APPLY-CS w'' a₁ a₂ m c c₁ c₂ (inbar-#weakMonEq-APPLY-CS i w'' c m (⊑-compatible· (⊑-trans· e' e'') comp)))--}
+    aw1 = →equalInType-APPLY-CS-Typeℂ₀₁· (⊑-compatible· e' comp) ea
 
     aw2 : equalInType i w' Typeℂ₀₁· (ℂ→C· k) (ℂ→C· k)
     aw2 = sat→equalInType-Typeℂ₀₁· i w' k sat
@@ -217,14 +213,20 @@ equalTypes-#Σchoice-body-sub0 i w c k comp sat w' e' a₁ a₂ ea rewrite sub0-
 
 
 
-equalInType-#Σchoice : {n i : ℕ} (p : i < n) (w : 𝕎·) (c : Name) (k : ℂ·)
+equalInType-#Σchoice : {i : ℕ} (w : 𝕎·) (c : Name) (k : ℂ·)
                        → compatible· c w Resℂ
                        → Σ ℕ (λ n → ·ᵣ Resℂ n k)
-                       → equalInType n w (#UNIV i) (#Σchoice c k) (#Σchoice c k)
-equalInType-#Σchoice {n} {i} p w c k comp sat rewrite #Σchoice≡ c k =
-  equalTypes→equalInType-UNIV
-    p
-    (eqTypesSUM← (λ w' e' → eqTypesNAT) (equalTypes-#Σchoice-body-sub0 i w c k comp sat))
+                       → isType i w (#Σchoice c k)
+equalInType-#Σchoice {i} w c k comp sat rewrite #Σchoice≡ c k =
+  eqTypesSUM← (λ w' e' → eqTypesNAT) (equalTypes-#Σchoice-body-sub0 i w c k comp sat)
+
+
+equalInType-#Σchoice-UNIV : {n i : ℕ} (p : i < n) (w : 𝕎·) (c : Name) (k : ℂ·)
+                            → compatible· c w Resℂ
+                            → Σ ℕ (λ n → ·ᵣ Resℂ n k)
+                            → equalInType n w (#UNIV i) (#Σchoice c k) (#Σchoice c k)
+equalInType-#Σchoice-UNIV {n} {i} p w c k comp sat =
+  equalTypes→equalInType-UNIV p (equalInType-#Σchoice {i} w c k comp sat)
 
 
 
@@ -696,6 +698,6 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
         k1 = ℂ₁· -- This has to be different from r's default value
 
         h1 : equalInType i w2 (#SQUASH (#UNION (#Σchoice name k1) (#NEG (#Σchoice name k1)))) #AX #AX
-        h1 = equalInType-SQUASH-UNION-LIFT→ p (aw2 w2 e2 (#Σchoice name k1) (#Σchoice name k1) (equalInType-#Σchoice p w2 name k1 (startChoiceCompatible· r w1) Σsat-ℂ₁))
+        h1 = equalInType-SQUASH-UNION-LIFT→ p (aw2 w2 e2 (#Σchoice name k1) (#Σchoice name k1) (equalInType-#Σchoice-UNIV p w2 name k1 (startChoiceCompatible· r w1) Σsat-ℂ₁))
 
 \end{code}[hide]

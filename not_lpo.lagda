@@ -75,6 +75,8 @@ open import props2(W)(C)(M)(P)(G)(E)
 open import props3(W)(C)(M)(P)(G)(E)
 open import lem_props(W)(C)(M)(P)(G)(X)(E)
 
+open import not_lem(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
+
 -- open import calculus
 -- open import world
 -- open import theory (bar)
@@ -530,16 +532,127 @@ isTypeNegLPO w n = eqTypesNEG← (isTypeLPO w n)
 
 
 
+-- TODO: generalize
+→equalInType-CS-NAT→BOOL : {n : ℕ} {w : 𝕎·} {a b : Name}
+                             → ∀𝕎 w (λ w' _ → (m : ℕ) → equalInType n w' #BOOL (#APPLY (#CS a) (#NUM m)) (#APPLY (#CS b) (#NUM m)))
+                             → equalInType n w #NAT→BOOL (#CS a) (#CS b)
+→equalInType-CS-NAT→BOOL {n} {w} {a} {b} i rewrite #NAT→BOOL≡ =
+  equalInType-FUN (λ w' _ → eqTypesNAT) (λ w' _ → isTypeBOOL w' n) aw
+  where
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT a₁ a₂
+                      → equalInType n w' #BOOL (#APPLY (#CS a) a₁) (#APPLY (#CS b) a₂))
+    aw w1 e1 a₁ a₂ ea = equalInType-local (Bar.∀𝕎-inBarFunc barI aw1 ea1)
+      where
+        ea1 : inbar w1 (λ w' _ → #strongMonEq w' a₁ a₂)
+        ea1 = equalInType-NAT→ n w1 a₁ a₂ ea
 
--- use equalInType-FUN instead
-¬LPO : (w : 𝕎·) → member w (#NEG #LPO) #lamAX
-¬LPO w = n , equalInType-NEG (λ w1 e1 → isTypeLPO w1 n) aw1
+        aw1 : ∀𝕎 w1 (λ w' e' → #strongMonEq w' a₁ a₂ → equalInType n w' #BOOL (#APPLY (#CS a) a₁) (#APPLY (#CS b) a₂))
+        aw1 w2 e2 (m , c₁ , c₂) = equalInType-#⇛-LR-rev (#⇛-APPLY-CS {w2} {a₁} {#NUM m} a c₁)
+                                                         (#⇛-APPLY-CS {w2} {a₂} {#NUM m} b c₂)
+                                                         (i w2 (⊑-trans· e1 e2) m)
+
+
+
+-- MOVE to props3
+fun-equalInType-SQUASH-UNION : {n : ℕ} {w : 𝕎·} {a b c d u v : CTerm}
+                               → isType n w c
+                               → isType n w d
+                               → ∀𝕎 w (λ w' _ → inhType n w' a → inhType n w' c)
+                               → ∀𝕎 w (λ w' _ → inhType n w' b → inhType n w' d)
+                               → equalInType n w (#SQUASH (#UNION a b)) u v
+                               → equalInType n w (#SQUASH (#UNION c d)) #AX #AX
+fun-equalInType-SQUASH-UNION {n} {w} {a} {b} {c} {d} {u} {v} istc istd imp1 imp2 eqi =
+  →equalInType-SQUASH (Bar.∀𝕎-inBar barI (λ w' _ → #compAllRefl #AX w'))
+                       (Bar.∀𝕎-inBar barI (λ w' _ → #compAllRefl #AX w'))
+                       (Bar.inBar-idem barI (Bar.∀𝕎-inBarFunc barI aw1 (equalInType-SQUASH→ eqi)))
+  where
+    aw1 : ∀𝕎 w (λ w' e' → inhType n w' (#UNION a b) → inbar w' (λ w'' e'' → (z : w ⊑· w'') → inhType n w'' (#UNION c d)))
+    aw1 w1 e1 (t , eqj) = Bar.∀𝕎-inBarFunc barI aw2 (equalInType-UNION→ eqj)
+      where
+        aw2 : ∀𝕎 w1 (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
+                                      (t #⇛ #INL x at w' × t #⇛ #INL y at w' × equalInType n w' a x y)
+                                      ⊎ (t #⇛ #INR x at w' × t #⇛ #INR y at w' × equalInType n w' b x y)))
+                            → (z : w ⊑· w') → inhType n w' (#UNION c d))
+        aw2 w2 e2 (x , y , inj₁ (c₁ , c₂ , eqk)) z = #INL (fst (imp1 w2 z (x , equalInType-refl eqk))) , eql
+          where
+            eql : ∈Type n w2 (#UNION c d) (#INL (fst (imp1 w2 z (x , equalInType-refl eqk))))
+            eql = →equalInType-UNION (eqTypes-mon (uni n) istc w2 z)
+                                      (eqTypes-mon (uni n) istd w2 z)
+                                      (Bar.∀𝕎-inBar barI λ w3 e3 → fst (imp1 w2 z (x , equalInType-refl eqk)) ,
+                                                                     fst (imp1 w2 z (x , equalInType-refl eqk)) ,
+                                                                     inj₁ (#compAllRefl (#INL (fst (imp1 w2 z (x , equalInType-refl eqk)))) _ ,
+                                                                           #compAllRefl (#INL (fst (imp1 w2 z (x , equalInType-refl eqk)))) _ ,
+                                                                           equalInType-mon (snd (imp1 w2 z (x , equalInType-refl eqk))) w3 e3))
+        aw2 w2 e2 (x , y , inj₂ (c₁ , c₂ , eqk)) z = #INR (fst (imp2 w2 z (x , equalInType-refl eqk))) , eqr
+          where
+            eqr : ∈Type n w2 (#UNION c d) (#INR (fst (imp2 w2 z (x , equalInType-refl eqk))))
+            eqr = →equalInType-UNION (eqTypes-mon (uni n) istc w2 z)
+                                      (eqTypes-mon (uni n) istd w2 z)
+                                      (Bar.∀𝕎-inBar barI λ w3 e3 → fst (imp2 w2 z (x , equalInType-refl eqk)) ,
+                                                                     fst (imp2 w2 z (x , equalInType-refl eqk)) ,
+                                                                     inj₂ (#compAllRefl (#INR (fst (imp2 w2 z (x , equalInType-refl eqk)))) _ ,
+                                                                           #compAllRefl (#INR (fst (imp2 w2 z (x , equalInType-refl eqk)))) _ ,
+                                                                           equalInType-mon (snd (imp2 w2 z (x , equalInType-refl eqk))) w3 e3))
+
+
+
+-- Assuming that our choices are Bools
+¬LPO : Boolℂ CB → (w : 𝕎·) → member w (#NEG #LPO) #lamAX
+¬LPO bcb w = n , equalInType-NEG (λ w1 e1 → isTypeLPO w1 n) aw1
   where
     n : ℕ
     n = 1
 
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' #LPO a₁ a₂)
-    aw1 w1 e1 a₁ a₂ ea = {!!} --concl h5
+    aw1 w1 e1 F G ea =
+      h (fun-equalInType-SQUASH-UNION (equalInType-#Σchoice w2 name ℂ₁· comp1 (0 , sat-ℂ₁ 0))
+                                      (eqTypesNEG← (equalInType-#Σchoice w2 name ℂ₁· comp1 (0 , sat-ℂ₁ 0)))
+                                      imp1
+                                      imp2
+                                      h2)
       where
+        aw2 : ∀𝕎 w1 (λ w' _ → (f g : CTerm) → equalInType n w' #NAT→BOOL f g
+                             → equalInType n w' (sub0 f (#[0]SQUASH (#[0]UNION #[0]LPO-left #[0]LPO-right))) (#APPLY F f) (#APPLY G g))
+        aw2 = snd (snd (equalInType-PI→ {n} {w1} {#NAT→BOOL} {#[0]SQUASH (#[0]UNION #[0]LPO-left #[0]LPO-right)} ea))
+
+        aw3 : ∀𝕎 w1 (λ w' _ → (f g : CTerm) → equalInType n w' #NAT→BOOL f g
+                             → equalInType n w' (#SQUASH (#UNION (#LPO-left f) (#LPO-right f))) (#APPLY F f) (#APPLY G g))
+        aw3 w' e f g ex = ≡CTerm→equalInType (sub0-squash-union-LPO f) (aw2 w' e f g ex)
+
+        name : Name
+        name = newChoice· w1
+
+        w2 : 𝕎·
+        w2 = startNewChoice Resℂ w1
+
+        e2 : w1 ⊑· w2
+        e2 = startNewChoice⊏· Resℂ w1
+
+        comp1 : compatible· name w2 Resℂ
+        comp1 = startChoiceCompatible· Resℂ w1
+
+        h : ¬ equalInType n w2 (sq-dec (#Σchoice name ℂ₁·)) #AX #AX
+        h = ¬-dec-Σchoice w1 n
+
+        f : CTerm
+        f = #CS name
+
+        eqf2 : ∀𝕎 w2 (λ w' _ → (m : ℕ) →  equalInType n w' #BOOL (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
+        eqf2 w' e m = ≡CTerm→equalInType bcb (→equalInType-APPLY-CS-Typeℂ₀₁· (⊑-compatible· e comp1) (NUM-equalInType-NAT n w' m))
+
+        eqf1 : ∈Type n w2 #NAT→BOOL f
+        eqf1 = →equalInType-CS-NAT→BOOL eqf2
+
+        h1 : equalInType n w2 (sub0 f (#[0]SQUASH (#[0]UNION #[0]LPO-left #[0]LPO-right))) (#APPLY F f) (#APPLY G f)
+        h1 = aw2 w2 e2 f f eqf1
+
+        h2 : equalInType n w2 (#SQUASH (#UNION (#LPO-left f) (#LPO-right f))) (#APPLY F f) (#APPLY G f)
+        h2 = ≡CTerm→equalInType (sub0-squash-union-LPO f) h1
+
+        imp1 : ∀𝕎 w2 (λ w' _ → inhType n w' (#LPO-left f) → inhType n w' (#Σchoice name ℂ₁·))
+        imp1 w3 e3 inh = {!!}
+
+        imp2 : ∀𝕎 w2 (λ w' _ → inhType n w' (#LPO-right f) → inhType n w' (#NEG (#Σchoice name ℂ₁·)))
+        imp2 w3 e3 inh = {!!}
 
 \end{code}[hide]
