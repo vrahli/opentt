@@ -75,33 +75,8 @@ open import props2(W)(C)(M)(P)(G)(E)
 open import props3(W)(C)(M)(P)(G)(E)
 open import lem_props(W)(C)(M)(P)(G)(X)(E)
 
+open import choiceBarDef(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 open import not_lem(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
-
--- open import calculus
--- open import world
--- open import theory (bar)
--- open import props0 (bar)
--- open import ind2 (bar) -- this is the one where a function is not recognized as terminating, but does not break the bar abstraction
--- open import type_sys_props_nat (bar)
--- open import type_sys_props_qnat (bar)
--- open import type_sys_props_lt (bar)
--- open import type_sys_props_qlt (bar)
--- open import type_sys_props_free (bar)
--- open import type_sys_props_pi (bar)
--- open import type_sys_props_sum (bar)
--- open import type_sys_props_set (bar)
--- open import type_sys_props_eq (bar)
--- open import type_sys_props_union (bar)
--- open import type_sys_props_tsquash (bar)
--- open import type_sys_props_ffdefs (bar)
--- open import props1 (bar)
--- open import terms (bar)
-\end{code}
-
-
-
-
-\begin{code}[hide]
 
 
 -- If we only want to consider Boolean choices
@@ -502,6 +477,54 @@ isTypeNegLPO w n = eqTypesNEG← (isTypeLPO w n)
 
 
 
+fun-equalInType-SUM-NAT : {n : ℕ} {w : 𝕎·} {a b : CTerm0} {u v : CTerm}
+                          → ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #NAT m
+                                          → equalInType n w' (sub0 m a) t₁ t₂
+                                          → equalInType n w' (sub0 m b) t₁ t₂)
+                          → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' #NAT a₁ a₂) → equalTypes n w' (sub0 a₁ b) (sub0 a₂ b))
+                          → equalInType n w (#SUM #NAT a) u v
+                          → equalInType n w (#SUM #NAT b) u v
+fun-equalInType-SUM-NAT {n} {w} {a} {b} {u} {v} imp eqb eqi =
+  equalInType-SUM
+    (λ w' _ → eqTypesNAT)
+    eqb
+    (Bar.∀𝕎-inBarFunc barI aw (equalInType-SUM→ eqi))
+  where
+    aw : ∀𝕎 w (λ w' e' → SUMeq (equalInType n w' #NAT) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ a)) w' u v
+                        → SUMeq (equalInType n w' #NAT) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ b)) w' u v)
+    aw w1 e1 (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) = a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , imp w1 e1 a₁ b₁ b₂ (equalInType-refl ea) eb
+
+
+-- + compatibility
+#LPO-left→#Σchoice : {n : ℕ} {w : 𝕎·} {name : Name}
+                      → compatible· name w Resℂ
+                      → Σ ℕ (λ n → ·ᵣ Resℂ n ℂ₁·)
+                      → inhType n w (#LPO-left (#CS name))
+                      → inhType n w (#Σchoice name ℂ₁·)
+#LPO-left→#Σchoice {n} {w} {name} comp sat (t , inh) =
+  t , ≡CTerm→equalInType
+        (sym (#Σchoice≡ name ℂ₁·))
+        (fun-equalInType-SUM-NAT {n} {w} {#[0]ASSERT (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
+  where
+    aw1 : ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #NAT m
+                        → equalInType n w' (sub0 m (#[0]ASSERT (#[0]APPLY (#[0]CS name) #[0]VAR))) t₁ t₂
+                        → equalInType n w' (sub0 m (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁)) t₁ t₂)
+    aw1 w1 e1 m t₁ t₂ j eqi = ≡CTerm→equalInType (sym (sub0-#Σchoice-body≡ m name ℂ₁·)) eqi2
+      where
+        eqi1 : equalInType n w1 (#ASSERT (#APPLY (#CS name) m)) t₁ t₂
+        eqi1 = ≡CTerm→equalInType (sub0-ASSERT-APPLY-LPO m (#CS name)) eqi
+
+        eqi2 : equalInType n w1 (#EQ (#APPLY (#CS name) m) Cℂ₁ Typeℂ₀₁·) t₁ t₂
+        eqi2 = {!!}
+
+    aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' #NAT a₁ a₂)
+                        → equalTypes n w' (sub0 a₁ (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁))
+                                           (sub0 a₂ (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁)))
+    aw2 = equalTypes-#Σchoice-body-sub0 n w name ℂ₁· comp sat
+
+
+
+
 -- Assuming that our choices are Bools
 ¬LPO : Boolℂ CB → (w : 𝕎·) → member w (#NEG #LPO) #lamAX
 ¬LPO bcb w = n , equalInType-NEG (λ w1 e1 → isTypeLPO w1 n) aw1
@@ -556,7 +579,7 @@ isTypeNegLPO w n = eqTypesNEG← (isTypeLPO w n)
         h2 = ≡CTerm→equalInType (sub0-squash-union-LPO f) h1
 
         imp1 : ∀𝕎 w2 (λ w' _ → inhType n w' (#LPO-left f) → inhType n w' (#Σchoice name ℂ₁·))
-        imp1 w3 e3 inh = {!!}
+        imp1 w3 e3 inh = #LPO-left→#Σchoice (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh
 
         imp2 : ∀𝕎 w2 (λ w' _ → inhType n w' (#LPO-right f) → inhType n w' (#NEG (#Σchoice name ℂ₁·)))
         imp2 w3 e3 inh = {!!}
