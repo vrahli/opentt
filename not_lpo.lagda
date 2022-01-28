@@ -84,17 +84,43 @@ Boolℂ : ChoiceBar W C M P G X N F E → Set
 Boolℂ cb = ChoiceBar.Typeℂ₀₁ cb ≡ #BOOL
 
 
-ASSERT : Term → Term
-ASSERT t = DECIDE t TRUE FALSE
+ASSERT₁ : Term → Term
+ASSERT₁ t = DECIDE t TRUE FALSE
+
+
+BTRUE : Term
+BTRUE = INL AX
+
+
+#BTRUE : CTerm
+#BTRUE = ct BTRUE c
+  where
+    c : # BTRUE
+    c = refl
+
+
+BFALSE : Term
+BFALSE = INR AX
+
+
+#BFALSE : CTerm
+#BFALSE = ct BFALSE c
+  where
+    c : # BFALSE
+    c = refl
+
+
+ASSERT₂ : Term → Term
+ASSERT₂ t = EQ t BTRUE BOOL
 
 
 LPO : Term
-LPO = PI NAT→BOOL (SQUASH (UNION (SUM NAT (ASSERT (APPLY (VAR 1) (VAR 0))))
-                                  (PI NAT (NEG (ASSERT (APPLY (VAR 1) (VAR 0)))))))
+LPO = PI NAT→BOOL (SQUASH (UNION (SUM NAT (ASSERT₂ (APPLY (VAR 1) (VAR 0))))
+                                  (PI NAT (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0)))))))
 
 
 #LPO : CTerm
-#LPO =  ct LPO c
+#LPO = ct LPO c
   where
     c : # LPO
     c = refl
@@ -133,29 +159,58 @@ instance
                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
 
 
-fvars-ASSERT : (t : Term) → fvars (ASSERT t) ≡ fvars t
-fvars-ASSERT t rewrite ++[] (fvars t) = refl
+fvars-ASSERT₁ : (t : Term) → fvars (ASSERT₁ t) ≡ fvars t
+fvars-ASSERT₁ t rewrite ++[] (fvars t) = refl
 
 
-#ASSERT : CTerm → CTerm
-#ASSERT a = ct (ASSERT ⌜ a ⌝) c
+fvars-ASSERT₂ : (t : Term) → fvars (ASSERT₂ t) ≡ fvars t
+fvars-ASSERT₂ t rewrite ++[] (fvars t) = refl
+
+
+#ASSERT₁ : CTerm → CTerm
+#ASSERT₁ a = ct (ASSERT₁ ⌜ a ⌝) c
   where
-    c : # ASSERT ⌜ a ⌝
-    c rewrite fvars-ASSERT ⌜ a ⌝ = CTerm.closed a
+    c : # ASSERT₁ ⌜ a ⌝
+    c rewrite fvars-ASSERT₁ ⌜ a ⌝ = CTerm.closed a
 
 
-#[0]ASSERT : CTerm0 → CTerm0
-#[0]ASSERT a = ct0 (ASSERT ⌜ a ⌝) c
+#ASSERT₂ : CTerm → CTerm
+#ASSERT₂ a = ct (ASSERT₂ ⌜ a ⌝) c
   where
-    c : #[ [ 0 ] ] ASSERT ⌜ a ⌝
-    c rewrite fvars-ASSERT ⌜ a ⌝ = CTerm0.closed a
+    c : # ASSERT₂ ⌜ a ⌝
+    c rewrite fvars-ASSERT₂ ⌜ a ⌝ = CTerm.closed a
 
 
-#[1]ASSERT : CTerm1 → CTerm1
-#[1]ASSERT a = ct1 (ASSERT ⌜ a ⌝) c
+#ASSERT₂≡ : (t : CTerm) → #ASSERT₂ t ≡ #EQ t #BTRUE #BOOL
+#ASSERT₂≡ t = CTerm≡ refl
+
+
+#[0]ASSERT₁ : CTerm0 → CTerm0
+#[0]ASSERT₁ a = ct0 (ASSERT₁ ⌜ a ⌝) c
   where
-    c : #[ 0 ∷ [ 1 ] ] ASSERT ⌜ a ⌝
-    c rewrite fvars-ASSERT ⌜ a ⌝ = CTerm1.closed a
+    c : #[ [ 0 ] ] ASSERT₁ ⌜ a ⌝
+    c rewrite fvars-ASSERT₁ ⌜ a ⌝ = CTerm0.closed a
+
+
+#[0]ASSERT₂ : CTerm0 → CTerm0
+#[0]ASSERT₂ a = ct0 (ASSERT₂ ⌜ a ⌝) c
+  where
+    c : #[ [ 0 ] ] ASSERT₂ ⌜ a ⌝
+    c rewrite fvars-ASSERT₂ ⌜ a ⌝ = CTerm0.closed a
+
+
+#[1]ASSERT₁ : CTerm1 → CTerm1
+#[1]ASSERT₁ a = ct1 (ASSERT₁ ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] ASSERT₁ ⌜ a ⌝
+    c rewrite fvars-ASSERT₁ ⌜ a ⌝ = CTerm1.closed a
+
+
+#[1]ASSERT₂ : CTerm1 → CTerm1
+#[1]ASSERT₂ a = ct1 (ASSERT₂ ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] ASSERT₂ ⌜ a ⌝
+    c rewrite fvars-ASSERT₂ ⌜ a ⌝ = CTerm1.closed a
 
 
 #[1]NEG : CTerm1 → CTerm1
@@ -220,19 +275,19 @@ lowerVars-fvars-[0,1] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1] (λ z
 
 
 #[0]LPO-left : CTerm0
-#[0]LPO-left = #[0]SUM #[0]NAT (#[1]ASSERT (#[1]APPLY #[1]VAR1 #[1]VAR0))
+#[0]LPO-left = #[0]SUM #[0]NAT (#[1]ASSERT₂ (#[1]APPLY #[1]VAR1 #[1]VAR0))
 
 
 #[0]LPO-right : CTerm0
-#[0]LPO-right = #[0]PI #[0]NAT (#[1]NEG (#[1]ASSERT (#[1]APPLY #[1]VAR1 #[1]VAR0)))
+#[0]LPO-right = #[0]PI #[0]NAT (#[1]NEG (#[1]ASSERT₂ (#[1]APPLY #[1]VAR1 #[1]VAR0)))
 
 
 #LPO-left : CTerm → CTerm
-#LPO-left f = #SUM #NAT (#[0]ASSERT (#[0]APPLY ⌞ f ⌟ #[0]VAR))
+#LPO-left f = #SUM #NAT (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
 
 
 #LPO-right : CTerm → CTerm
-#LPO-right f = #PI #NAT (#[0]NEG (#[0]ASSERT (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
+#LPO-right f = #PI #NAT (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
 
 
 #LPO-PI : CTerm
@@ -256,8 +311,8 @@ sub0-#[0]UNION a t u = CTerm≡ refl
 ≡SUM {a} {b} {c} {d} e f rewrite e | f = refl
 
 
-≡ASSERT : {a b : Term} → a ≡ b → ASSERT a ≡ ASSERT b
-≡ASSERT {a} {b} e rewrite e = refl
+≡ASSERT₂ : {a b : Term} → a ≡ b → ASSERT₂ a ≡ ASSERT₂ b
+≡ASSERT₂ {a} {b} e rewrite e = refl
 
 
 ≡NEG : {a b : Term} → a ≡ b → NEG a ≡ NEG b
@@ -278,14 +333,14 @@ sub0-squash-union-LPO : (a : CTerm) → sub0 a (#[0]SQUASH (#[0]UNION #[0]LPO-le
                                        ≡ #SQUASH (#UNION (#LPO-left a) (#LPO-right a))
 sub0-squash-union-LPO a =
   ≡sub0-#[0]SQUASH a (#[0]UNION #[0]LPO-left #[0]LPO-right) (#UNION (#LPO-left a) (#LPO-right a))
-                   (CTerm≡ (≡UNION (≡SUM refl (≡ASSERT (→≡APPLY e refl))) (≡PI refl (≡NEG (≡ASSERT (→≡APPLY e refl))))))
+                   (CTerm≡ (≡UNION (≡SUM refl (≡ASSERT₂ (→≡APPLY e refl))) (≡PI refl (≡NEG (≡ASSERT₂ (→≡APPLY e refl))))))
   where
     e : shiftDown 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) ≡ ⌜ a ⌝
     e rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftDown 1 a = refl
 
 
-sub0-ASSERT-APPLY-LPO : (a b : CTerm) → sub0 a (#[0]ASSERT (#[0]APPLY ⌞ b ⌟ #[0]VAR)) ≡ #ASSERT (#APPLY b a)
-sub0-ASSERT-APPLY-LPO a b = CTerm≡ (≡ASSERT (→≡APPLY x y))
+sub0-ASSERT-APPLY-LPO : (a b : CTerm) → sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ b ⌟ #[0]VAR)) ≡ #ASSERT₂ (#APPLY b a)
+sub0-ASSERT-APPLY-LPO a b = CTerm≡ (≡ASSERT₂ (→≡APPLY x y))
   where
     x : shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) ⌜ b ⌝) ≡ ⌜ b ⌝
     x rewrite subNotIn ⌜ a ⌝ ⌜ b ⌝ (CTerm.closed b) = refl
@@ -298,10 +353,10 @@ sub0-#[0]NEG : (a : CTerm) (t : CTerm0) → sub0 a (#[0]NEG t) ≡ #NEG (sub0 a 
 sub0-#[0]NEG a t = CTerm≡ refl
 
 
-sub0-NEG-ASSERT-APPLY-LPO : (a b : CTerm) → sub0 a (#[0]NEG (#[0]ASSERT (#[0]APPLY ⌞ b ⌟ #[0]VAR))) ≡ #NEG (#ASSERT (#APPLY b a))
+sub0-NEG-ASSERT-APPLY-LPO : (a b : CTerm) → sub0 a (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ b ⌟ #[0]VAR))) ≡ #NEG (#ASSERT₂ (#APPLY b a))
 sub0-NEG-ASSERT-APPLY-LPO a b
-  rewrite sub0-#[0]NEG a (#[0]ASSERT (#[0]APPLY ⌞ b ⌟ #[0]VAR)) | sub0-ASSERT-APPLY-LPO a b
-  = CTerm≡ (≡NEG (≡ASSERT (→≡APPLY x y)))
+  rewrite sub0-#[0]NEG a (#[0]ASSERT₂ (#[0]APPLY ⌞ b ⌟ #[0]VAR)) | sub0-ASSERT-APPLY-LPO a b
+  = CTerm≡ (≡NEG (≡ASSERT₂ (→≡APPLY x y)))
   where
     x : shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) ⌜ b ⌝) ≡ ⌜ b ⌝
     x rewrite subNotIn ⌜ a ⌝ ⌜ b ⌝ (CTerm.closed b) = refl
@@ -311,81 +366,81 @@ sub0-NEG-ASSERT-APPLY-LPO a b
 
 
 
-step-⇓-ASSERT : {w : 𝕎·} {a b : Term}
+step-⇓-ASSERT₁ : {w : 𝕎·} {a b : Term}
                  → step a w ≡ just b
-                 → ASSERT a ⇓ ASSERT b at w
-step-⇓-ASSERT {w} {NAT} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {QNAT} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {LT a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {QLT a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {NUM x} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {PI a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {LAMBDA a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {APPLY a a₁} {b} comp = 1 , z
+                 → ASSERT₁ a ⇓ ASSERT₁ b at w
+step-⇓-ASSERT₁ {w} {NAT} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {QNAT} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {LT a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {QLT a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {NUM x} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {PI a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {LAMBDA a} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {APPLY a a₁} {b} comp = 1 , z
   where
-    z : steps 1 (ASSERT (APPLY a a₁)) w ≡ ASSERT b
+    z : steps 1 (ASSERT₁ (APPLY a a₁)) w ≡ ASSERT₁ b
     z rewrite comp = refl
-step-⇓-ASSERT {w} {SUM a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {PAIR a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {SET a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {UNION a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {INL a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {INR a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {DECIDE a a₁ a₂} {b} comp = 1 , z
+step-⇓-ASSERT₁ {w} {SUM a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {PAIR a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {SET a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {UNION a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {INL a} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {INR a} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {DECIDE a a₁ a₂} {b} comp = 1 , z
   where
-    z : steps 1 (ASSERT (DECIDE a a₁ a₂)) w ≡ ASSERT b
+    z : steps 1 (ASSERT₁ (DECIDE a a₁ a₂)) w ≡ ASSERT₁ b
     z rewrite comp = refl
-step-⇓-ASSERT {w} {EQ a a₁ a₂} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {AX} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {FREE} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {CS x} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {TSQUASH a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {DUM a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {FFDEFS a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {UNIV x} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {LIFT a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {LOWER a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT {w} {SHRINK a} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {EQ a a₁ a₂} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {AX} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {FREE} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {CS x} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {TSQUASH a} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {DUM a} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {FFDEFS a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {UNIV x} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {LIFT a} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {LOWER a} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {SHRINK a} {b} comp rewrite sym (just-inj comp) = 0 , refl
 
 
 
-steps-⇓-ASSERT : {w : 𝕎·} (n : ℕ) {a b : Term}
-                 → steps n a w ≡ b
-                 → ASSERT a ⇓ ASSERT b at w
-steps-⇓-ASSERT {w} 0 {a} {b} comp rewrite comp = 0 , refl
-steps-⇓-ASSERT {w} (suc n) {a} {b} comp with step⊎ a w
-... | inj₁ (u , p) rewrite p = ⇓-trans (step-⇓-ASSERT p) (steps-⇓-ASSERT n comp)
+steps-⇓-ASSERT₁ : {w : 𝕎·} (n : ℕ) {a b : Term}
+                  → steps n a w ≡ b
+                  → ASSERT₁ a ⇓ ASSERT₁ b at w
+steps-⇓-ASSERT₁ {w} 0 {a} {b} comp rewrite comp = 0 , refl
+steps-⇓-ASSERT₁ {w} (suc n) {a} {b} comp with step⊎ a w
+... | inj₁ (u , p) rewrite p = ⇓-trans (step-⇓-ASSERT₁ p) (steps-⇓-ASSERT₁ n comp)
 ... | inj₂ p rewrite p | comp = 0 , refl
 
 
-⇓-ASSERT-INL : {w : 𝕎·} {a x : Term}
-           → a ⇓ INL x at w
-           → ASSERT a ⇓ TRUE at w
-⇓-ASSERT-INL {w} {a} {x} comp = ⇓-trans (steps-⇓-ASSERT (fst comp) (snd comp)) (1 , refl)
+⇓-ASSERT₁-INL : {w : 𝕎·} {a x : Term}
+                → a ⇓ INL x at w
+                → ASSERT₁ a ⇓ TRUE at w
+⇓-ASSERT₁-INL {w} {a} {x} comp = ⇓-trans (steps-⇓-ASSERT₁ (fst comp) (snd comp)) (1 , refl)
 
 
-#⇛-ASSERT-INL : {w : 𝕎·} {a x : CTerm}
-             → a #⇛ #INL x at w
-             → #ASSERT a #⇛ #TRUE at w
-#⇛-ASSERT-INL {w} {a} {x} comp w' e = lift (⇓-ASSERT-INL (lower (comp w' e)))
+#⇛-ASSERT₁-INL : {w : 𝕎·} {a x : CTerm}
+                  → a #⇛ #INL x at w
+                  → #ASSERT₁ a #⇛ #TRUE at w
+#⇛-ASSERT₁-INL {w} {a} {x} comp w' e = lift (⇓-ASSERT₁-INL (lower (comp w' e)))
 
 
-⇓-ASSERT-INR : {w : 𝕎·} {a x : Term}
-           → a ⇓ INR x at w
-           → ASSERT a ⇓ FALSE at w
-⇓-ASSERT-INR {w} {a} {x} comp = ⇓-trans (steps-⇓-ASSERT (fst comp) (snd comp)) (1 , refl)
+⇓-ASSERT₁-INR : {w : 𝕎·} {a x : Term}
+                → a ⇓ INR x at w
+                → ASSERT₁ a ⇓ FALSE at w
+⇓-ASSERT₁-INR {w} {a} {x} comp = ⇓-trans (steps-⇓-ASSERT₁ (fst comp) (snd comp)) (1 , refl)
 
 
-#⇛-ASSERT-INR : {w : 𝕎·} {a x : CTerm}
-             → a #⇛ #INR x at w
-             → #ASSERT a #⇛ #FALSE at w
-#⇛-ASSERT-INR {w} {a} {x} comp w' e = lift (⇓-ASSERT-INR (lower (comp w' e)))
+#⇛-ASSERT₁-INR : {w : 𝕎·} {a x : CTerm}
+                → a #⇛ #INR x at w
+                → #ASSERT₁ a #⇛ #FALSE at w
+#⇛-ASSERT₁-INR {w} {a} {x} comp w' e = lift (⇓-ASSERT₁-INR (lower (comp w' e)))
 
 
-equalInType-BOOL→equalTypes-ASSERT : {n : ℕ} {w : 𝕎·} {a b : CTerm}
+equalInType-BOOL→equalTypes-ASSERT₁ : {n : ℕ} {w : 𝕎·} {a b : CTerm}
                                       → equalInType n w #BOOL a b
-                                      → equalTypes n w (#ASSERT a) (#ASSERT b)
-equalInType-BOOL→equalTypes-ASSERT {n} {w} {a} {b} eqb =
+                                      → equalTypes n w (#ASSERT₁ a) (#ASSERT₁ b)
+equalInType-BOOL→equalTypes-ASSERT₁ {n} {w} {a} {b} eqb =
   EQTBAR (Bar.∀𝕎-inBarFunc barI j i)
   where
     i : inbar w (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
@@ -398,9 +453,49 @@ equalInType-BOOL→equalTypes-ASSERT {n} {w} {a} {b} eqb =
                       → (a #⇛ #INL x at w' × b #⇛ #INL y at w' × equalInType n w' #TRUE x y)
                          ⊎
                          (a #⇛ #INR x at w' × b #⇛ #INR y at w' × equalInType n w' #TRUE x y)))
-                      → equalTypes n w' (#ASSERT a) (#ASSERT b))
-    j w' e (x , y , inj₁ (c₁ , c₂ , eqi)) = equalTypes-#⇛-left-right-rev (#⇛-ASSERT-INL {w'} {a} {x} c₁) (#⇛-ASSERT-INL {w'} {b} {y} c₂) eqTypesTRUE
-    j w' e (x , y , inj₂ (c₁ , c₂ , eqi)) = equalTypes-#⇛-left-right-rev (#⇛-ASSERT-INR {w'} {a} {x} c₁) (#⇛-ASSERT-INR {w'} {b} {y} c₂) eqTypesFALSE
+                      → equalTypes n w' (#ASSERT₁ a) (#ASSERT₁ b))
+    j w' e (x , y , inj₁ (c₁ , c₂ , eqi)) = equalTypes-#⇛-left-right-rev (#⇛-ASSERT₁-INL {w'} {a} {x} c₁) (#⇛-ASSERT₁-INL {w'} {b} {y} c₂) eqTypesTRUE
+    j w' e (x , y , inj₂ (c₁ , c₂ , eqi)) = equalTypes-#⇛-left-right-rev (#⇛-ASSERT₁-INR {w'} {a} {x} c₁) (#⇛-ASSERT₁-INR {w'} {b} {y} c₂) eqTypesFALSE
+
+
+
+AX∈TRUE : (n : ℕ) (w : 𝕎·) → equalInType n w #TRUE #AX #AX
+AX∈TRUE n w = →equalInType-TRUE n (Bar.∀𝕎-inBar barI (λ w _ → compAllRefl AX w)) (Bar.∀𝕎-inBar barI (λ w _ → compAllRefl AX w))
+
+
+BTRUE∈BOOL : (n : ℕ) (w : 𝕎·) → ∈Type n w #BOOL #BTRUE
+BTRUE∈BOOL n w =
+  ≡CTerm→equalInType
+    (sym #BOOL≡)
+    (→equalInType-UNION eqTypesTRUE eqTypesTRUE (Bar.∀𝕎-inBar barI aw))
+  where
+    aw : ∀𝕎 w (λ w' e → Σ CTerm (λ x → Σ CTerm (λ y →
+                          (#BTRUE #⇛ #INL x at w' × #BTRUE #⇛ #INL y at w' × equalInType n w' #TRUE x y)
+                          ⊎ (#BTRUE #⇛ #INR x at w' × #BTRUE #⇛ #INR y at w' × equalInType n w' #TRUE x y))))
+    aw w' e = #AX , #AX , inj₁ (compAllRefl (INL AX) w' , compAllRefl (INL AX) w' , AX∈TRUE n w')
+
+
+
+BFALSE∈BOOL : (n : ℕ) (w : 𝕎·) → ∈Type n w #BOOL #BFALSE
+BFALSE∈BOOL n w =
+  ≡CTerm→equalInType
+    (sym #BOOL≡)
+    (→equalInType-UNION eqTypesTRUE eqTypesTRUE (Bar.∀𝕎-inBar barI aw))
+  where
+    aw : ∀𝕎 w (λ w' e → Σ CTerm (λ x → Σ CTerm (λ y →
+                          (#BFALSE #⇛ #INL x at w' × #BFALSE #⇛ #INL y at w' × equalInType n w' #TRUE x y)
+                          ⊎ (#BFALSE #⇛ #INR x at w' × #BFALSE #⇛ #INR y at w' × equalInType n w' #TRUE x y))))
+    aw w' e = #AX , #AX , inj₂ (compAllRefl (INR AX) w' , compAllRefl (INR AX) w' , AX∈TRUE n w')
+
+
+equalInType-BOOL→equalTypes-ASSERT₂ : {n : ℕ} {w : 𝕎·} {a b : CTerm}
+                                      → equalInType n w #BOOL a b
+                                      → equalTypes n w (#ASSERT₂ a) (#ASSERT₂ b)
+equalInType-BOOL→equalTypes-ASSERT₂ {n} {w} {a} {b} eqb =
+  ≡CTerm→eqTypes
+    (sym (#ASSERT₂≡ a))
+    (sym (#ASSERT₂≡ b))
+    (eqTypesEQ← (isTypeBOOL w n) eqb (BTRUE∈BOOL n w))
 
 
 →equalTypes-#LPO-left : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
@@ -412,14 +507,14 @@ equalInType-BOOL→equalTypes-ASSERT {n} {w} {a} {b} eqb =
     aw0 = equalInType-FUN→ eqt
 
     aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT a b)
-                       → equalTypes n w' (sub0 a (#[0]ASSERT (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))) (sub0 b (#[0]ASSERT (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR))))
+                       → equalTypes n w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))) (sub0 b (#[0]ASSERT₂ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR))))
     aw1 w' e a b ea rewrite sub0-ASSERT-APPLY-LPO a a₁ | sub0-ASSERT-APPLY-LPO b a₂ = aw2
       where
         eqb : equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b)
         eqb = aw0 w' e a b ea
 
-        aw2 : equalTypes n w' (#ASSERT (#APPLY a₁ a)) (#ASSERT (#APPLY a₂ b))
-        aw2 = equalInType-BOOL→equalTypes-ASSERT eqb
+        aw2 : equalTypes n w' (#ASSERT₂ (#APPLY a₁ a)) (#ASSERT₂ (#APPLY a₂ b))
+        aw2 = equalInType-BOOL→equalTypes-ASSERT₂ eqb
 
 
 →equalTypes-#LPO-right : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
@@ -432,15 +527,15 @@ equalInType-BOOL→equalTypes-ASSERT {n} {w} {a} {b} eqb =
     aw0 = equalInType-FUN→ eqt
 
     aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT a b)
-                       → equalTypes n w' (sub0 a (#[0]NEG (#[0]ASSERT (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))))
-                                          (sub0 b (#[0]NEG (#[0]ASSERT (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR)))))
+                       → equalTypes n w' (sub0 a (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))))
+                                          (sub0 b (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR)))))
     aw1 w' e a b ea rewrite sub0-NEG-ASSERT-APPLY-LPO a a₁ | sub0-NEG-ASSERT-APPLY-LPO b a₂ = aw2
       where
         eqb : equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b)
         eqb = aw0 w' e a b ea
 
-        aw2 : equalTypes n w' (#NEG (#ASSERT (#APPLY a₁ a))) (#NEG (#ASSERT (#APPLY a₂ b)))
-        aw2 = eqTypesNEG← (equalInType-BOOL→equalTypes-ASSERT eqb)
+        aw2 : equalTypes n w' (#NEG (#ASSERT₂ (#APPLY a₁ a))) (#NEG (#ASSERT₂ (#APPLY a₂ b)))
+        aw2 = eqTypesNEG← (equalInType-BOOL→equalTypes-ASSERT₂ eqb)
 
 
 
@@ -504,18 +599,18 @@ fun-equalInType-SUM-NAT {n} {w} {a} {b} {u} {v} imp eqb eqi =
 #LPO-left→#Σchoice {n} {w} {name} comp sat (t , inh) =
   t , ≡CTerm→equalInType
         (sym (#Σchoice≡ name ℂ₁·))
-        (fun-equalInType-SUM-NAT {n} {w} {#[0]ASSERT (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
+        (fun-equalInType-SUM-NAT {n} {w} {#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
   where
     aw1 : ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #NAT m
-                        → equalInType n w' (sub0 m (#[0]ASSERT (#[0]APPLY (#[0]CS name) #[0]VAR))) t₁ t₂
+                        → equalInType n w' (sub0 m (#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR))) t₁ t₂
                         → equalInType n w' (sub0 m (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁)) t₁ t₂)
     aw1 w1 e1 m t₁ t₂ j eqi = ≡CTerm→equalInType (sym (sub0-#Σchoice-body≡ m name ℂ₁·)) eqi2
       where
-        eqi1 : equalInType n w1 (#ASSERT (#APPLY (#CS name) m)) t₁ t₂
+        eqi1 : equalInType n w1 (#ASSERT₂ (#APPLY (#CS name) m)) t₁ t₂
         eqi1 = ≡CTerm→equalInType (sub0-ASSERT-APPLY-LPO m (#CS name)) eqi
 
         eqi2 : equalInType n w1 (#EQ (#APPLY (#CS name) m) Cℂ₁ Typeℂ₀₁·) t₁ t₂
-        eqi2 = {!!}
+        eqi2 = {!!} -- TODO: we have to show that Cℂ₁ being in #BOOL is equal to #BTRUE
 
     aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' #NAT a₁ a₂)
                         → equalTypes n w' (sub0 a₁ (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁))
