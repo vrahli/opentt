@@ -79,39 +79,14 @@ open import choiceBarDef(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 open import not_lem(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 
 
--- If we only want to consider Boolean choices
+
+-- If we only want to consider Boolean choices, where ℂ₀ stands for false, and ℂ₁ stands for true
 Boolℂ : ChoiceBar W C M P G X N F E → Set
-Boolℂ cb = ChoiceBar.Typeℂ₀₁ cb ≡ #BOOL
+Boolℂ cb =
+  ChoiceBar.Typeℂ₀₁ cb ≡ #BOOL
+  × Cℂ₀ ≡ #BFALSE
+  × Cℂ₁ ≡ #BTRUE
 
-
-ASSERT₁ : Term → Term
-ASSERT₁ t = DECIDE t TRUE FALSE
-
-
-BTRUE : Term
-BTRUE = INL AX
-
-
-#BTRUE : CTerm
-#BTRUE = ct BTRUE c
-  where
-    c : # BTRUE
-    c = refl
-
-
-BFALSE : Term
-BFALSE = INR AX
-
-
-#BFALSE : CTerm
-#BFALSE = ct BFALSE c
-  where
-    c : # BFALSE
-    c = refl
-
-
-ASSERT₂ : Term → Term
-ASSERT₂ t = EQ t BTRUE BOOL
 
 
 LPO : Term
@@ -125,153 +100,6 @@ LPO = PI NAT→BOOL (SQUASH (UNION (SUM NAT (ASSERT₂ (APPLY (VAR 1) (VAR 0))))
     c : # LPO
     c = refl
 
-
-record CTerm1 : Set where
-  constructor ct1
-  field
-    cTerm  : Term
-    closed : #[ (0 ∷ [ 1 ]) ] cTerm
-
-
-instance
-  CTerm1ToTerm : ToTerm CTerm1
-  ⌜_⌝ {{CTerm1ToTerm}} t = CTerm1.cTerm t
-
-
-CTerm→CTerm1 : CTerm → CTerm1
-CTerm→CTerm1 (ct t c) = ct1 t c'
-  where
-    c' : #[ 0 ∷ [ 1 ] ] t
-    c' rewrite c = refl
-
-
-instance
-  CTermToCTerm1 : fromCTerm CTerm1
-  ⌞_⌟ {{CTermToCTerm1}} t = CTerm→CTerm1 t
-
-
-#[1]APPLY : CTerm1 → CTerm1 → CTerm1
-#[1]APPLY a b = ct1 (APPLY ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] APPLY ⌜ a ⌝ ⌜ b ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ [ 1 ]}
-             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
-                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
-
-
-fvars-ASSERT₁ : (t : Term) → fvars (ASSERT₁ t) ≡ fvars t
-fvars-ASSERT₁ t rewrite ++[] (fvars t) = refl
-
-
-fvars-ASSERT₂ : (t : Term) → fvars (ASSERT₂ t) ≡ fvars t
-fvars-ASSERT₂ t rewrite ++[] (fvars t) = refl
-
-
-#ASSERT₁ : CTerm → CTerm
-#ASSERT₁ a = ct (ASSERT₁ ⌜ a ⌝) c
-  where
-    c : # ASSERT₁ ⌜ a ⌝
-    c rewrite fvars-ASSERT₁ ⌜ a ⌝ = CTerm.closed a
-
-
-#ASSERT₂ : CTerm → CTerm
-#ASSERT₂ a = ct (ASSERT₂ ⌜ a ⌝) c
-  where
-    c : # ASSERT₂ ⌜ a ⌝
-    c rewrite fvars-ASSERT₂ ⌜ a ⌝ = CTerm.closed a
-
-
-#ASSERT₂≡ : (t : CTerm) → #ASSERT₂ t ≡ #EQ t #BTRUE #BOOL
-#ASSERT₂≡ t = CTerm≡ refl
-
-
-#[0]ASSERT₁ : CTerm0 → CTerm0
-#[0]ASSERT₁ a = ct0 (ASSERT₁ ⌜ a ⌝) c
-  where
-    c : #[ [ 0 ] ] ASSERT₁ ⌜ a ⌝
-    c rewrite fvars-ASSERT₁ ⌜ a ⌝ = CTerm0.closed a
-
-
-#[0]ASSERT₂ : CTerm0 → CTerm0
-#[0]ASSERT₂ a = ct0 (ASSERT₂ ⌜ a ⌝) c
-  where
-    c : #[ [ 0 ] ] ASSERT₂ ⌜ a ⌝
-    c rewrite fvars-ASSERT₂ ⌜ a ⌝ = CTerm0.closed a
-
-
-#[1]ASSERT₁ : CTerm1 → CTerm1
-#[1]ASSERT₁ a = ct1 (ASSERT₁ ⌜ a ⌝) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] ASSERT₁ ⌜ a ⌝
-    c rewrite fvars-ASSERT₁ ⌜ a ⌝ = CTerm1.closed a
-
-
-#[1]ASSERT₂ : CTerm1 → CTerm1
-#[1]ASSERT₂ a = ct1 (ASSERT₂ ⌜ a ⌝) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] ASSERT₂ ⌜ a ⌝
-    c rewrite fvars-ASSERT₂ ⌜ a ⌝ = CTerm1.closed a
-
-
-#[1]NEG : CTerm1 → CTerm1
-#[1]NEG a = ct1 (NEG ⌜ a ⌝) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] NEG ⌜ a ⌝
-    c rewrite fvars-NEG ⌜ a ⌝ = CTerm1.closed a
-
-
-[0]⊆[0,1] : [ 0 ] ⊆ (0 ∷ [ 1 ])
-[0]⊆[0,1] (here px) rewrite px = here refl
-
-
-[1]⊆[0,1] : [ 1 ] ⊆ (0 ∷ [ 1 ])
-[1]⊆[0,1] (here px) rewrite px = there (here refl)
-
-
-#[1]VAR0 : CTerm1
-#[1]VAR0 = ct1 (VAR 0) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] VAR 0
-    c = ⊆→⊆? [0]⊆[0,1]
-
-
-#[1]VAR1 : CTerm1
-#[1]VAR1 = ct1 (VAR 1) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] VAR 1
-    c = ⊆→⊆? [1]⊆[0,1]
-
-
-lowerVars-fvars-[0,1] : {l : List Var}
-                        → l ⊆ (0 ∷ [ 1 ])
-                        → lowerVars l ⊆ [ 0 ]
-lowerVars-fvars-[0,1] {0 ∷ l} h x = lowerVars-fvars-[0,1] (λ z → h (there z)) x
-lowerVars-fvars-[0,1] {suc x₁ ∷ l} h (here px) rewrite px = i z
-  where
-    z : suc x₁ ∈ (0 ∷ 1 ∷ [])
-    z = h (here refl)
-
-    i : suc x₁ ∈ (0 ∷ 1 ∷ []) →  x₁ ∈ [ 0 ]
-    i (there (here px)) = here (suc-injective px)
-lowerVars-fvars-[0,1] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1] (λ z → h (there z)) x
-
-
-#[0]SUM : CTerm0 → CTerm1 → CTerm0
-#[0]SUM a b = ct0 (SUM ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ [ 0 ] ] SUM ⌜ a ⌝ ⌜ b ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {[ 0 ]}
-              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
-                   (lowerVars-fvars-[0,1] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm1.closed b))))
-
-
-#[0]PI : CTerm0 → CTerm1 → CTerm0
-#[0]PI a b = ct0 (PI ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ [ 0 ] ] PI ⌜ a ⌝ ⌜ b ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {[ 0 ]}
-              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
-                   (lowerVars-fvars-[0,1] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm1.closed b))))
 
 
 #[0]LPO-left : CTerm0
@@ -298,36 +126,6 @@ lowerVars-fvars-[0,1] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1] (λ z
 #LPO≡#PI = CTerm≡ refl
 
 
-sub0-#[0]UNION : (a : CTerm) (t u : CTerm0)
-                 → sub0 a (#[0]UNION t u) ≡ #UNION (sub0 a t) (sub0 a u)
-sub0-#[0]UNION a t u = CTerm≡ refl
-
-
-≡UNION : {a b c d : Term} → a ≡ b → c ≡ d → UNION a c ≡ UNION b d
-≡UNION {a} {b} {c} {d} e₁ e₂ rewrite e₁ | e₂ = refl
-
-
-≡SUM : {a b c d : Term} → a ≡ b → c ≡ d → SUM a c ≡ SUM b d
-≡SUM {a} {b} {c} {d} e f rewrite e | f = refl
-
-
-≡ASSERT₂ : {a b : Term} → a ≡ b → ASSERT₂ a ≡ ASSERT₂ b
-≡ASSERT₂ {a} {b} e rewrite e = refl
-
-
-≡NEG : {a b : Term} → a ≡ b → NEG a ≡ NEG b
-≡NEG {a} {b} e rewrite e = refl
-
-
-≡PI : {a b c d : Term} → a ≡ b → c ≡ d → PI a c ≡ PI b d
-≡PI {a} {b} {c} {d} e f rewrite e | f = refl
-
-
-≡sub0-#[0]SQUASH : (a : CTerm) (t : CTerm0) (u : CTerm)
-                   → sub0 a t ≡ u
-                   → sub0 a (#[0]SQUASH t) ≡ #SQUASH u
-≡sub0-#[0]SQUASH a t u e rewrite sym e = sub0-#[0]SQUASH a t
-
 
 sub0-squash-union-LPO : (a : CTerm) → sub0 a (#[0]SQUASH (#[0]UNION #[0]LPO-left #[0]LPO-right))
                                        ≡ #SQUASH (#UNION (#LPO-left a) (#LPO-right a))
@@ -349,9 +147,6 @@ sub0-ASSERT-APPLY-LPO a b = CTerm≡ (≡ASSERT₂ (→≡APPLY x y))
     y rewrite #shiftUp 0 a | #shiftDown 0 a = refl
 
 
-sub0-#[0]NEG : (a : CTerm) (t : CTerm0) → sub0 a (#[0]NEG t) ≡ #NEG (sub0 a t)
-sub0-#[0]NEG a t = CTerm≡ refl
-
 
 sub0-NEG-ASSERT-APPLY-LPO : (a b : CTerm) → sub0 a (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ b ⌟ #[0]VAR))) ≡ #NEG (#ASSERT₂ (#APPLY b a))
 sub0-NEG-ASSERT-APPLY-LPO a b
@@ -366,136 +161,6 @@ sub0-NEG-ASSERT-APPLY-LPO a b
 
 
 
-step-⇓-ASSERT₁ : {w : 𝕎·} {a b : Term}
-                 → step a w ≡ just b
-                 → ASSERT₁ a ⇓ ASSERT₁ b at w
-step-⇓-ASSERT₁ {w} {NAT} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {QNAT} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {LT a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {QLT a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {NUM x} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {PI a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {LAMBDA a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {APPLY a a₁} {b} comp = 1 , z
-  where
-    z : steps 1 (ASSERT₁ (APPLY a a₁)) w ≡ ASSERT₁ b
-    z rewrite comp = refl
-step-⇓-ASSERT₁ {w} {SUM a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {PAIR a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {SET a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {UNION a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {INL a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {INR a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {DECIDE a a₁ a₂} {b} comp = 1 , z
-  where
-    z : steps 1 (ASSERT₁ (DECIDE a a₁ a₂)) w ≡ ASSERT₁ b
-    z rewrite comp = refl
-step-⇓-ASSERT₁ {w} {EQ a a₁ a₂} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {AX} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {FREE} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {CS x} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {TSQUASH a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {DUM a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {FFDEFS a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {UNIV x} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {LIFT a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {LOWER a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {SHRINK a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-
-
-
-steps-⇓-ASSERT₁ : {w : 𝕎·} (n : ℕ) {a b : Term}
-                  → steps n a w ≡ b
-                  → ASSERT₁ a ⇓ ASSERT₁ b at w
-steps-⇓-ASSERT₁ {w} 0 {a} {b} comp rewrite comp = 0 , refl
-steps-⇓-ASSERT₁ {w} (suc n) {a} {b} comp with step⊎ a w
-... | inj₁ (u , p) rewrite p = ⇓-trans (step-⇓-ASSERT₁ p) (steps-⇓-ASSERT₁ n comp)
-... | inj₂ p rewrite p | comp = 0 , refl
-
-
-⇓-ASSERT₁-INL : {w : 𝕎·} {a x : Term}
-                → a ⇓ INL x at w
-                → ASSERT₁ a ⇓ TRUE at w
-⇓-ASSERT₁-INL {w} {a} {x} comp = ⇓-trans (steps-⇓-ASSERT₁ (fst comp) (snd comp)) (1 , refl)
-
-
-#⇛-ASSERT₁-INL : {w : 𝕎·} {a x : CTerm}
-                  → a #⇛ #INL x at w
-                  → #ASSERT₁ a #⇛ #TRUE at w
-#⇛-ASSERT₁-INL {w} {a} {x} comp w' e = lift (⇓-ASSERT₁-INL (lower (comp w' e)))
-
-
-⇓-ASSERT₁-INR : {w : 𝕎·} {a x : Term}
-                → a ⇓ INR x at w
-                → ASSERT₁ a ⇓ FALSE at w
-⇓-ASSERT₁-INR {w} {a} {x} comp = ⇓-trans (steps-⇓-ASSERT₁ (fst comp) (snd comp)) (1 , refl)
-
-
-#⇛-ASSERT₁-INR : {w : 𝕎·} {a x : CTerm}
-                → a #⇛ #INR x at w
-                → #ASSERT₁ a #⇛ #FALSE at w
-#⇛-ASSERT₁-INR {w} {a} {x} comp w' e = lift (⇓-ASSERT₁-INR (lower (comp w' e)))
-
-
-equalInType-BOOL→equalTypes-ASSERT₁ : {n : ℕ} {w : 𝕎·} {a b : CTerm}
-                                      → equalInType n w #BOOL a b
-                                      → equalTypes n w (#ASSERT₁ a) (#ASSERT₁ b)
-equalInType-BOOL→equalTypes-ASSERT₁ {n} {w} {a} {b} eqb =
-  EQTBAR (Bar.∀𝕎-inBarFunc barI j i)
-  where
-    i : inbar w (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
-                        → (a #⇛ (#INL x) at w' × b #⇛ (#INL y) at w' × equalInType n w' #TRUE x y)
-                           ⊎
-                           (a #⇛ (#INR x) at w' × b #⇛ (#INR y) at w' × equalInType n w' #TRUE x y))))
-    i = equalInType-UNION→ eqb
-
-    j : ∀𝕎 w (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y
-                      → (a #⇛ #INL x at w' × b #⇛ #INL y at w' × equalInType n w' #TRUE x y)
-                         ⊎
-                         (a #⇛ #INR x at w' × b #⇛ #INR y at w' × equalInType n w' #TRUE x y)))
-                      → equalTypes n w' (#ASSERT₁ a) (#ASSERT₁ b))
-    j w' e (x , y , inj₁ (c₁ , c₂ , eqi)) = equalTypes-#⇛-left-right-rev (#⇛-ASSERT₁-INL {w'} {a} {x} c₁) (#⇛-ASSERT₁-INL {w'} {b} {y} c₂) eqTypesTRUE
-    j w' e (x , y , inj₂ (c₁ , c₂ , eqi)) = equalTypes-#⇛-left-right-rev (#⇛-ASSERT₁-INR {w'} {a} {x} c₁) (#⇛-ASSERT₁-INR {w'} {b} {y} c₂) eqTypesFALSE
-
-
-
-AX∈TRUE : (n : ℕ) (w : 𝕎·) → equalInType n w #TRUE #AX #AX
-AX∈TRUE n w = →equalInType-TRUE n (Bar.∀𝕎-inBar barI (λ w _ → compAllRefl AX w)) (Bar.∀𝕎-inBar barI (λ w _ → compAllRefl AX w))
-
-
-BTRUE∈BOOL : (n : ℕ) (w : 𝕎·) → ∈Type n w #BOOL #BTRUE
-BTRUE∈BOOL n w =
-  ≡CTerm→equalInType
-    (sym #BOOL≡)
-    (→equalInType-UNION eqTypesTRUE eqTypesTRUE (Bar.∀𝕎-inBar barI aw))
-  where
-    aw : ∀𝕎 w (λ w' e → Σ CTerm (λ x → Σ CTerm (λ y →
-                          (#BTRUE #⇛ #INL x at w' × #BTRUE #⇛ #INL y at w' × equalInType n w' #TRUE x y)
-                          ⊎ (#BTRUE #⇛ #INR x at w' × #BTRUE #⇛ #INR y at w' × equalInType n w' #TRUE x y))))
-    aw w' e = #AX , #AX , inj₁ (compAllRefl (INL AX) w' , compAllRefl (INL AX) w' , AX∈TRUE n w')
-
-
-
-BFALSE∈BOOL : (n : ℕ) (w : 𝕎·) → ∈Type n w #BOOL #BFALSE
-BFALSE∈BOOL n w =
-  ≡CTerm→equalInType
-    (sym #BOOL≡)
-    (→equalInType-UNION eqTypesTRUE eqTypesTRUE (Bar.∀𝕎-inBar barI aw))
-  where
-    aw : ∀𝕎 w (λ w' e → Σ CTerm (λ x → Σ CTerm (λ y →
-                          (#BFALSE #⇛ #INL x at w' × #BFALSE #⇛ #INL y at w' × equalInType n w' #TRUE x y)
-                          ⊎ (#BFALSE #⇛ #INR x at w' × #BFALSE #⇛ #INR y at w' × equalInType n w' #TRUE x y))))
-    aw w' e = #AX , #AX , inj₂ (compAllRefl (INR AX) w' , compAllRefl (INR AX) w' , AX∈TRUE n w')
-
-
-equalInType-BOOL→equalTypes-ASSERT₂ : {n : ℕ} {w : 𝕎·} {a b : CTerm}
-                                      → equalInType n w #BOOL a b
-                                      → equalTypes n w (#ASSERT₂ a) (#ASSERT₂ b)
-equalInType-BOOL→equalTypes-ASSERT₂ {n} {w} {a} {b} eqb =
-  ≡CTerm→eqTypes
-    (sym (#ASSERT₂≡ a))
-    (sym (#ASSERT₂≡ b))
-    (eqTypesEQ← (isTypeBOOL w n) eqb (BTRUE∈BOOL n w))
 
 
 →equalTypes-#LPO-left : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
@@ -572,31 +237,33 @@ isTypeNegLPO w n = eqTypesNEG← (isTypeLPO w n)
 
 
 
-fun-equalInType-SUM-NAT : {n : ℕ} {w : 𝕎·} {a b : CTerm0} {u v : CTerm}
-                          → ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #NAT m
-                                          → equalInType n w' (sub0 m a) t₁ t₂
-                                          → equalInType n w' (sub0 m b) t₁ t₂)
-                          → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' #NAT a₁ a₂) → equalTypes n w' (sub0 a₁ b) (sub0 a₂ b))
-                          → equalInType n w (#SUM #NAT a) u v
-                          → equalInType n w (#SUM #NAT b) u v
-fun-equalInType-SUM-NAT {n} {w} {a} {b} {u} {v} imp eqb eqi =
-  equalInType-SUM
-    (λ w' _ → eqTypesNAT)
-    eqb
-    (Bar.∀𝕎-inBarFunc barI aw (equalInType-SUM→ eqi))
-  where
-    aw : ∀𝕎 w (λ w' e' → SUMeq (equalInType n w' #NAT) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ a)) w' u v
-                        → SUMeq (equalInType n w' #NAT) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ b)) w' u v)
-    aw w1 e1 (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) = a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , imp w1 e1 a₁ b₁ b₂ (equalInType-refl ea) eb
+equalTypes-BOOL-Typeℂ₀₁ : (n : ℕ) (w : 𝕎·)
+                          → Boolℂ CB
+                          → equalTypes n w #BOOL Typeℂ₀₁·
+equalTypes-BOOL-Typeℂ₀₁ n w bcb rewrite fst bcb = isTypeBOOL w n
 
 
--- + compatibility
-#LPO-left→#Σchoice : {n : ℕ} {w : 𝕎·} {name : Name}
+
+→equalInType-APPLY-CS-BOOL : Boolℂ CB → {i : ℕ} {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
+                              → compatible· c w Resℂ
+                              → equalInType i w #NAT a₁ a₂
+                              → equalInType i w #BOOL (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
+→equalInType-APPLY-CS-BOOL bcb {i} {w} {c} {a₁} {a₂} comp eqi =
+  ≡CTerm→equalInType (fst bcb) (→equalInType-APPLY-CS-Typeℂ₀₁· comp eqi)
+
+
+
+equalInType-BTRUE-ℂ₁ : Boolℂ CB → (n : ℕ) (w : 𝕎·) → equalInType n w #BOOL #BTRUE Cℂ₁
+equalInType-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈BOOL n w
+
+
+
+#LPO-left→#Σchoice : Boolℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}
                       → compatible· name w Resℂ
                       → Σ ℕ (λ n → ·ᵣ Resℂ n ℂ₁·)
                       → inhType n w (#LPO-left (#CS name))
                       → inhType n w (#Σchoice name ℂ₁·)
-#LPO-left→#Σchoice {n} {w} {name} comp sat (t , inh) =
+#LPO-left→#Σchoice bcb {n} {w} {name} comp sat (t , inh) =
   t , ≡CTerm→equalInType
         (sym (#Σchoice≡ name ℂ₁·))
         (fun-equalInType-SUM-NAT {n} {w} {#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
@@ -609,13 +276,66 @@ fun-equalInType-SUM-NAT {n} {w} {a} {b} {u} {v} imp eqb eqi =
         eqi1 : equalInType n w1 (#ASSERT₂ (#APPLY (#CS name) m)) t₁ t₂
         eqi1 = ≡CTerm→equalInType (sub0-ASSERT-APPLY-LPO m (#CS name)) eqi
 
+        eqt : equalTypes n w1 (#EQ (#APPLY (#CS name) m) #BTRUE #BOOL) (#EQ (#APPLY (#CS name) m) Cℂ₁ Typeℂ₀₁·)
+        eqt = eqTypesEQ← (equalTypes-BOOL-Typeℂ₀₁ n w1 bcb)
+                          (→equalInType-APPLY-CS-BOOL bcb (⊑-compatible· e1 comp) j)
+                          (equalInType-BTRUE-ℂ₁ bcb n w1)
+
         eqi2 : equalInType n w1 (#EQ (#APPLY (#CS name) m) Cℂ₁ Typeℂ₀₁·) t₁ t₂
-        eqi2 = {!!} -- TODO: we have to show that Cℂ₁ being in #BOOL is equal to #BTRUE
+        eqi2 = equalTypes→equalInType
+                 (≡CTerm→eqTypes (sym (#ASSERT₂≡ (#APPLY (#CS name) m))) refl eqt)
+                 eqi1
 
     aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' #NAT a₁ a₂)
                         → equalTypes n w' (sub0 a₁ (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁))
                                            (sub0 a₂ (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁)))
     aw2 = equalTypes-#Σchoice-body-sub0 n w name ℂ₁· comp sat
+
+
+
+#LPO-right→#Σchoice : Boolℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}
+                      → compatible· name w Resℂ
+                      → Σ ℕ (λ n → ·ᵣ Resℂ n ℂ₁·)
+                      → inhType n w (#LPO-right (#CS name))
+                      → inhType n w (#NEG (#Σchoice name ℂ₁·))
+#LPO-right→#Σchoice bcb {n} {w} {name} comp sat (f , inh) =
+  #lamAX , equalInType-NEG aw1 aw2
+  where
+    aw0 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT a₁ a₂
+                       → equalInType n w' (sub0 a₁ (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR)))) (#APPLY f a₁) (#APPLY f a₂))
+    aw0 = snd (snd (equalInType-PI→ {n} {w} {#NAT} {#[0]NEG (#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR))} inh))
+
+    aw1 : ∀𝕎 w λ w1 e1 → isType n w1 (#Σchoice name ℂ₁·)
+    aw1 w1 e1 = equalInType-#Σchoice w1 name ℂ₁· (⊑-compatible· e1 comp) sat
+
+    aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' (#Σchoice name ℂ₁·) a₁ a₂)
+    aw2 w1 e1 p₁ p₂ eqi = lower (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw3 h1))
+      where
+        aw3 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType n w' #NAT)
+                                      (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)))
+                                      w' p₁ p₂
+                             → Lift (lsuc L) ⊥)
+        aw3 w2 e2 (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) = lift (eqi3 eqi4)
+          where
+            eqi1 : equalInType n w2 (#EQ (#APPLY (#CS name) a₁) Cℂ₁ Typeℂ₀₁·) b₁ b₂
+            eqi1 = ≡CTerm→equalInType (sub0-#Σchoice-body≡ a₁ name ℂ₁·) eb
+
+            eqi2 : equalInType n w2 (#NEG (#ASSERT₂ (#APPLY (#CS name) a₁))) (#APPLY f a₁) (#APPLY f a₂)
+            eqi2 = ≡CTerm→equalInType (sub0-NEG-ASSERT-APPLY-LPO a₁ (#CS name)) (aw0 w2 (⊑-trans· e1 e2) a₁ a₂ ea)
+
+            eqi3 : ¬ equalInType n w2 (#ASSERT₂ (#APPLY (#CS name) a₁)) b₁ b₂
+            eqi3 = equalInType-NEG→ eqi2 w2 (⊑-refl· _) b₁ b₂
+
+            eqi4 : equalInType n w2 (#ASSERT₂ (#APPLY (#CS name) a₁)) b₁ b₂
+            eqi4 = ≡CTerm→equalInType (trans (≡#EQ {#APPLY (#CS name) a₁} refl (snd (snd bcb)) (fst bcb))
+                                              (sym (#ASSERT₂≡ (#APPLY (#CS name) a₁))))
+                                       eqi1
+
+        h0 : equalInType n w1 (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) p₁ p₂
+        h0 = ≡CTerm→equalInType (#Σchoice≡ name ℂ₁·) eqi
+
+        h1 : inbar w1 (λ w' _ → SUMeq (equalInType n w' #NAT) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' p₁ p₂)
+        h1 = equalInType-SUM→ h0
 
 
 
@@ -662,7 +382,7 @@ fun-equalInType-SUM-NAT {n} {w} {a} {b} {u} {v} imp eqb eqi =
         f = #CS name
 
         eqf2 : ∀𝕎 w2 (λ w' _ → (m : ℕ) →  equalInType n w' #BOOL (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
-        eqf2 w' e m = ≡CTerm→equalInType bcb (→equalInType-APPLY-CS-Typeℂ₀₁· (⊑-compatible· e comp1) (NUM-equalInType-NAT n w' m))
+        eqf2 w' e m = ≡CTerm→equalInType (fst bcb) (→equalInType-APPLY-CS-Typeℂ₀₁· (⊑-compatible· e comp1) (NUM-equalInType-NAT n w' m))
 
         eqf1 : ∈Type n w2 #NAT→BOOL f
         eqf1 = →equalInType-CS-NAT→BOOL eqf2
@@ -674,9 +394,11 @@ fun-equalInType-SUM-NAT {n} {w} {a} {b} {u} {v} imp eqb eqi =
         h2 = ≡CTerm→equalInType (sub0-squash-union-LPO f) h1
 
         imp1 : ∀𝕎 w2 (λ w' _ → inhType n w' (#LPO-left f) → inhType n w' (#Σchoice name ℂ₁·))
-        imp1 w3 e3 inh = #LPO-left→#Σchoice (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh
+        imp1 w3 e3 inh = #LPO-left→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh
 
         imp2 : ∀𝕎 w2 (λ w' _ → inhType n w' (#LPO-right f) → inhType n w' (#NEG (#Σchoice name ℂ₁·)))
-        imp2 w3 e3 inh = {!!}
+        imp2 w3 e3 inh = #LPO-right→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh
+
+
 
 \end{code}[hide]

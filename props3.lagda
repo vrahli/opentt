@@ -613,31 +613,6 @@ equalTypes-#↑T→ : {n i : ℕ} (p : i < n) (w : 𝕎·) (a b : CTerm)
 equalTypes-#↑T→ {n} {i} p w a b eqt rewrite #↑T≡↑T# p a | #↑T≡↑T# p b = equalTypes-↑T#→ p w a b eqt
 
 
--- TODO: Move all these to terms
-BOOL : Term
-BOOL = UNION TRUE TRUE
-
-
-#BOOL : CTerm
-#BOOL = ct BOOL refl
-
-
-#BOOL≡ : #BOOL ≡ #UNION #TRUE #TRUE
-#BOOL≡ = CTerm≡ refl
-
-
-NAT→BOOL : Term
-NAT→BOOL = FUN NAT BOOL
-
-
-#NAT→BOOL : CTerm
-#NAT→BOOL = ct NAT→BOOL refl
-
-
-#NAT→BOOL≡ : #NAT→BOOL ≡ #FUN #NAT #BOOL
-#NAT→BOOL≡ = CTerm≡ refl
-
-
 
 isTypeBOOL : (w : 𝕎·) (n : ℕ) → isType n w #BOOL
 isTypeBOOL w n rewrite #BOOL≡ = eqTypesUNION← eqTypesTRUE eqTypesTRUE
@@ -708,5 +683,112 @@ fun-equalInType-SQUASH-UNION {n} {w} {a} {b} {c} {d} {u} {v} istc istd imp1 imp2
                                                                      inj₂ (#compAllRefl (#INR (fst (imp2 w2 z (x , equalInType-refl eqk)))) _ ,
                                                                            #compAllRefl (#INR (fst (imp2 w2 z (x , equalInType-refl eqk)))) _ ,
                                                                            equalInType-mon (snd (imp2 w2 z (x , equalInType-refl eqk))) w3 e3))
+
+
+
+equalInType-BOOL→equalTypes-ASSERT₁ : {n : ℕ} {w : 𝕎·} {a b : CTerm}
+                                      → equalInType n w #BOOL a b
+                                      → equalTypes n w (#ASSERT₁ a) (#ASSERT₁ b)
+equalInType-BOOL→equalTypes-ASSERT₁ {n} {w} {a} {b} eqb =
+  EQTBAR (Bar.∀𝕎-inBarFunc barI j i)
+  where
+    i : inbar w (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
+                        → (a #⇛ (#INL x) at w' × b #⇛ (#INL y) at w' × equalInType n w' #TRUE x y)
+                           ⊎
+                           (a #⇛ (#INR x) at w' × b #⇛ (#INR y) at w' × equalInType n w' #TRUE x y))))
+    i = equalInType-UNION→ eqb
+
+    j : ∀𝕎 w (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y
+                      → (a #⇛ #INL x at w' × b #⇛ #INL y at w' × equalInType n w' #TRUE x y)
+                         ⊎
+                         (a #⇛ #INR x at w' × b #⇛ #INR y at w' × equalInType n w' #TRUE x y)))
+                      → equalTypes n w' (#ASSERT₁ a) (#ASSERT₁ b))
+    j w' e (x , y , inj₁ (c₁ , c₂ , eqi)) = equalTypes-#⇛-left-right-rev (#⇛-ASSERT₁-INL {w'} {a} {x} c₁) (#⇛-ASSERT₁-INL {w'} {b} {y} c₂) eqTypesTRUE
+    j w' e (x , y , inj₂ (c₁ , c₂ , eqi)) = equalTypes-#⇛-left-right-rev (#⇛-ASSERT₁-INR {w'} {a} {x} c₁) (#⇛-ASSERT₁-INR {w'} {b} {y} c₂) eqTypesFALSE
+
+
+
+AX∈TRUE : (n : ℕ) (w : 𝕎·) → equalInType n w #TRUE #AX #AX
+AX∈TRUE n w = →equalInType-TRUE n (Bar.∀𝕎-inBar barI (λ w _ → compAllRefl AX w)) (Bar.∀𝕎-inBar barI (λ w _ → compAllRefl AX w))
+
+
+BTRUE∈BOOL : (n : ℕ) (w : 𝕎·) → ∈Type n w #BOOL #BTRUE
+BTRUE∈BOOL n w =
+  ≡CTerm→equalInType
+    (sym #BOOL≡)
+    (→equalInType-UNION eqTypesTRUE eqTypesTRUE (Bar.∀𝕎-inBar barI aw))
+  where
+    aw : ∀𝕎 w (λ w' e → Σ CTerm (λ x → Σ CTerm (λ y →
+                          (#BTRUE #⇛ #INL x at w' × #BTRUE #⇛ #INL y at w' × equalInType n w' #TRUE x y)
+                          ⊎ (#BTRUE #⇛ #INR x at w' × #BTRUE #⇛ #INR y at w' × equalInType n w' #TRUE x y))))
+    aw w' e = #AX , #AX , inj₁ (compAllRefl (INL AX) w' , compAllRefl (INL AX) w' , AX∈TRUE n w')
+
+
+
+BFALSE∈BOOL : (n : ℕ) (w : 𝕎·) → ∈Type n w #BOOL #BFALSE
+BFALSE∈BOOL n w =
+  ≡CTerm→equalInType
+    (sym #BOOL≡)
+    (→equalInType-UNION eqTypesTRUE eqTypesTRUE (Bar.∀𝕎-inBar barI aw))
+  where
+    aw : ∀𝕎 w (λ w' e → Σ CTerm (λ x → Σ CTerm (λ y →
+                          (#BFALSE #⇛ #INL x at w' × #BFALSE #⇛ #INL y at w' × equalInType n w' #TRUE x y)
+                          ⊎ (#BFALSE #⇛ #INR x at w' × #BFALSE #⇛ #INR y at w' × equalInType n w' #TRUE x y))))
+    aw w' e = #AX , #AX , inj₂ (compAllRefl (INR AX) w' , compAllRefl (INR AX) w' , AX∈TRUE n w')
+
+
+equalInType-BOOL→equalTypes-ASSERT₂ : {n : ℕ} {w : 𝕎·} {a b : CTerm}
+                                      → equalInType n w #BOOL a b
+                                      → equalTypes n w (#ASSERT₂ a) (#ASSERT₂ b)
+equalInType-BOOL→equalTypes-ASSERT₂ {n} {w} {a} {b} eqb =
+  ≡CTerm→eqTypes
+    (sym (#ASSERT₂≡ a))
+    (sym (#ASSERT₂≡ b))
+    (eqTypesEQ← (isTypeBOOL w n) eqb (BTRUE∈BOOL n w))
+
+
+
+fun-equalInType-SUM-NAT : {n : ℕ} {w : 𝕎·} {a b : CTerm0} {u v : CTerm}
+                          → ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #NAT m
+                                          → equalInType n w' (sub0 m a) t₁ t₂
+                                          → equalInType n w' (sub0 m b) t₁ t₂)
+                          → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' #NAT a₁ a₂) → equalTypes n w' (sub0 a₁ b) (sub0 a₂ b))
+                          → equalInType n w (#SUM #NAT a) u v
+                          → equalInType n w (#SUM #NAT b) u v
+fun-equalInType-SUM-NAT {n} {w} {a} {b} {u} {v} imp eqb eqi =
+  equalInType-SUM
+    (λ w' _ → eqTypesNAT)
+    eqb
+    (Bar.∀𝕎-inBarFunc barI aw (equalInType-SUM→ eqi))
+  where
+    aw : ∀𝕎 w (λ w' e' → SUMeq (equalInType n w' #NAT) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ a)) w' u v
+                        → SUMeq (equalInType n w' #NAT) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ b)) w' u v)
+    aw w1 e1 (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) = a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , imp w1 e1 a₁ b₁ b₂ (equalInType-refl ea) eb
+
+
+
+
+eqInTypeExtR1-true : {i : ℕ} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes (uni i) w A B)
+                     → eqInTypeExtR1 eqt
+eqInTypeExtR1-true {i} {w} {A} {B} eqt = TSP.extr1 (typeSysConds i w A B eqt)
+
+
+equalInType→eqInType-rev : {u : ℕ} {w : 𝕎·} {A A1 A2 a₁ a₂ : CTerm}
+                           → A ≡ A2
+                           → {eqt : equalTypes u w A1 A2}
+                           → equalInType u w A a₁ a₂
+                           → equalTerms u w eqt a₁ a₂
+equalInType→eqInType-rev {u} {w} {A} {A1} {A2} {a₁} {a₂} e {eqt} eqi rewrite e =
+  eqInTypeExtR1-true {u} (fst eqi) A1 eqt a₁ a₂ (snd eqi)
+
+
+
+equalTypes→equalInType : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
+                          → equalTypes n w A B
+                          → equalInType n w A a b
+                          → equalInType n w B a b
+equalTypes→equalInType {n} {w} {A} {B} {a} {b} eqt (eqt' , eqi) =
+  TEQrefl-equalTypes n w B A (TEQsym-equalTypes n w A B eqt) ,
+  eqInType-extr1 B B eqt (TEQrefl-equalTypes n w B A (TEQsym-equalTypes n w A B eqt)) (eqInType-extl1 A B eqt' eqt eqi)
 
 \end{code}

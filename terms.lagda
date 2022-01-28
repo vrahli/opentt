@@ -1584,4 +1584,247 @@ NUMinj refl =  refl
 #NUMinj : {n m : ℕ} → #NUM n ≡ #NUM m → n ≡ m
 #NUMinj {n} {m} e = NUMinj (≡CTerm e)
 
+
+
+BOOL : Term
+BOOL = UNION TRUE TRUE
+
+
+#BOOL : CTerm
+#BOOL = ct BOOL refl
+
+
+#BOOL≡ : #BOOL ≡ #UNION #TRUE #TRUE
+#BOOL≡ = CTerm≡ refl
+
+
+NAT→BOOL : Term
+NAT→BOOL = FUN NAT BOOL
+
+
+#NAT→BOOL : CTerm
+#NAT→BOOL = ct NAT→BOOL refl
+
+
+#NAT→BOOL≡ : #NAT→BOOL ≡ #FUN #NAT #BOOL
+#NAT→BOOL≡ = CTerm≡ refl
+
+
+BTRUE : Term
+BTRUE = INL AX
+
+
+#BTRUE : CTerm
+#BTRUE = ct BTRUE c
+  where
+    c : # BTRUE
+    c = refl
+
+
+BFALSE : Term
+BFALSE = INR AX
+
+
+#BFALSE : CTerm
+#BFALSE = ct BFALSE c
+  where
+    c : # BFALSE
+    c = refl
+
+
+ASSERT₁ : Term → Term
+ASSERT₁ t = DECIDE t TRUE FALSE
+
+
+ASSERT₂ : Term → Term
+ASSERT₂ t = EQ t BTRUE BOOL
+
+
+record CTerm1 : Set where
+  constructor ct1
+  field
+    cTerm  : Term
+    closed : #[ (0 ∷ [ 1 ]) ] cTerm
+
+
+instance
+  CTerm1ToTerm : ToTerm CTerm1
+  ⌜_⌝ {{CTerm1ToTerm}} t = CTerm1.cTerm t
+
+
+CTerm→CTerm1 : CTerm → CTerm1
+CTerm→CTerm1 (ct t c) = ct1 t c'
+  where
+    c' : #[ 0 ∷ [ 1 ] ] t
+    c' rewrite c = refl
+
+
+instance
+  CTermToCTerm1 : fromCTerm CTerm1
+  ⌞_⌟ {{CTermToCTerm1}} t = CTerm→CTerm1 t
+
+
+#[1]APPLY : CTerm1 → CTerm1 → CTerm1
+#[1]APPLY a b = ct1 (APPLY ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] APPLY ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ [ 1 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
+
+
+fvars-ASSERT₁ : (t : Term) → fvars (ASSERT₁ t) ≡ fvars t
+fvars-ASSERT₁ t rewrite ++[] (fvars t) = refl
+
+
+fvars-ASSERT₂ : (t : Term) → fvars (ASSERT₂ t) ≡ fvars t
+fvars-ASSERT₂ t rewrite ++[] (fvars t) = refl
+
+
+#ASSERT₁ : CTerm → CTerm
+#ASSERT₁ a = ct (ASSERT₁ ⌜ a ⌝) c
+  where
+    c : # ASSERT₁ ⌜ a ⌝
+    c rewrite fvars-ASSERT₁ ⌜ a ⌝ = CTerm.closed a
+
+
+#ASSERT₂ : CTerm → CTerm
+#ASSERT₂ a = ct (ASSERT₂ ⌜ a ⌝) c
+  where
+    c : # ASSERT₂ ⌜ a ⌝
+    c rewrite fvars-ASSERT₂ ⌜ a ⌝ = CTerm.closed a
+
+
+#ASSERT₂≡ : (t : CTerm) → #ASSERT₂ t ≡ #EQ t #BTRUE #BOOL
+#ASSERT₂≡ t = CTerm≡ refl
+
+
+#[0]ASSERT₁ : CTerm0 → CTerm0
+#[0]ASSERT₁ a = ct0 (ASSERT₁ ⌜ a ⌝) c
+  where
+    c : #[ [ 0 ] ] ASSERT₁ ⌜ a ⌝
+    c rewrite fvars-ASSERT₁ ⌜ a ⌝ = CTerm0.closed a
+
+
+#[0]ASSERT₂ : CTerm0 → CTerm0
+#[0]ASSERT₂ a = ct0 (ASSERT₂ ⌜ a ⌝) c
+  where
+    c : #[ [ 0 ] ] ASSERT₂ ⌜ a ⌝
+    c rewrite fvars-ASSERT₂ ⌜ a ⌝ = CTerm0.closed a
+
+
+#[1]ASSERT₁ : CTerm1 → CTerm1
+#[1]ASSERT₁ a = ct1 (ASSERT₁ ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] ASSERT₁ ⌜ a ⌝
+    c rewrite fvars-ASSERT₁ ⌜ a ⌝ = CTerm1.closed a
+
+
+#[1]ASSERT₂ : CTerm1 → CTerm1
+#[1]ASSERT₂ a = ct1 (ASSERT₂ ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] ASSERT₂ ⌜ a ⌝
+    c rewrite fvars-ASSERT₂ ⌜ a ⌝ = CTerm1.closed a
+
+
+#[1]NEG : CTerm1 → CTerm1
+#[1]NEG a = ct1 (NEG ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] NEG ⌜ a ⌝
+    c rewrite fvars-NEG ⌜ a ⌝ = CTerm1.closed a
+
+
+[0]⊆[0,1] : [ 0 ] ⊆ (0 ∷ [ 1 ])
+[0]⊆[0,1] (here px) rewrite px = here refl
+
+
+[1]⊆[0,1] : [ 1 ] ⊆ (0 ∷ [ 1 ])
+[1]⊆[0,1] (here px) rewrite px = there (here refl)
+
+
+#[1]VAR0 : CTerm1
+#[1]VAR0 = ct1 (VAR 0) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] VAR 0
+    c = ⊆→⊆? [0]⊆[0,1]
+
+
+#[1]VAR1 : CTerm1
+#[1]VAR1 = ct1 (VAR 1) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] VAR 1
+    c = ⊆→⊆? [1]⊆[0,1]
+
+
+lowerVars-fvars-[0,1] : {l : List Var}
+                        → l ⊆ (0 ∷ [ 1 ])
+                        → lowerVars l ⊆ [ 0 ]
+lowerVars-fvars-[0,1] {0 ∷ l} h x = lowerVars-fvars-[0,1] (λ z → h (there z)) x
+lowerVars-fvars-[0,1] {suc x₁ ∷ l} h (here px) rewrite px = i z
+  where
+    z : suc x₁ ∈ (0 ∷ 1 ∷ [])
+    z = h (here refl)
+
+    i : suc x₁ ∈ (0 ∷ 1 ∷ []) →  x₁ ∈ [ 0 ]
+    i (there (here px)) = here (suc-injective px)
+lowerVars-fvars-[0,1] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1] (λ z → h (there z)) x
+
+
+#[0]SUM : CTerm0 → CTerm1 → CTerm0
+#[0]SUM a b = ct0 (SUM ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ [ 0 ] ] SUM ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {[ 0 ]}
+              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+                   (lowerVars-fvars-[0,1] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm1.closed b))))
+
+
+#[0]PI : CTerm0 → CTerm1 → CTerm0
+#[0]PI a b = ct0 (PI ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ [ 0 ] ] PI ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {[ 0 ]}
+              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+                   (lowerVars-fvars-[0,1] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm1.closed b))))
+
+
+
+sub0-#[0]UNION : (a : CTerm) (t u : CTerm0)
+                 → sub0 a (#[0]UNION t u) ≡ #UNION (sub0 a t) (sub0 a u)
+sub0-#[0]UNION a t u = CTerm≡ refl
+
+
+≡UNION : {a b c d : Term} → a ≡ b → c ≡ d → UNION a c ≡ UNION b d
+≡UNION {a} {b} {c} {d} e₁ e₂ rewrite e₁ | e₂ = refl
+
+
+≡SUM : {a b c d : Term} → a ≡ b → c ≡ d → SUM a c ≡ SUM b d
+≡SUM {a} {b} {c} {d} e f rewrite e | f = refl
+
+
+≡ASSERT₂ : {a b : Term} → a ≡ b → ASSERT₂ a ≡ ASSERT₂ b
+≡ASSERT₂ {a} {b} e rewrite e = refl
+
+
+≡NEG : {a b : Term} → a ≡ b → NEG a ≡ NEG b
+≡NEG {a} {b} e rewrite e = refl
+
+
+≡#EQ : {a₁ a₂ b₁ b₂ c₁ c₂ : CTerm} → a₁ ≡ a₂ → b₁ ≡ b₂ → c₁ ≡ c₂ → #EQ a₁ b₁ c₁ ≡ #EQ a₂ b₂ c₂
+≡#EQ {a₁} {a₂} {b₁} {b₂} {c₁} {c₂} e₁ e₂ e₃ rewrite e₁ | e₂ | e₃ = CTerm≡ refl
+
+
+≡PI : {a b c d : Term} → a ≡ b → c ≡ d → PI a c ≡ PI b d
+≡PI {a} {b} {c} {d} e f rewrite e | f = refl
+
+
+≡sub0-#[0]SQUASH : (a : CTerm) (t : CTerm0) (u : CTerm)
+                   → sub0 a t ≡ u
+                   → sub0 a (#[0]SQUASH t) ≡ #SQUASH u
+≡sub0-#[0]SQUASH a t u e rewrite sym e = sub0-#[0]SQUASH a t
+
+
+
+sub0-#[0]NEG : (a : CTerm) (t : CTerm0) → sub0 a (#[0]NEG t) ≡ #NEG (sub0 a t)
+sub0-#[0]NEG a t = CTerm≡ refl
 \end{code}

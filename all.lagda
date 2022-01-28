@@ -32,6 +32,7 @@ module all {L : Level} (W : PossibleWorlds {L})
 
 open import not_lem{L}(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 open import lem{L}(W)(C)(M)(P)(G)(X)(E)(EM)(EB)
+open import not_lpo{L}(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 
 open import choiceBarInstanceCS
 open import choiceBarInstanceRef

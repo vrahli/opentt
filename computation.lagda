@@ -779,4 +779,76 @@ val-#⇛→ {w} {a} {b} {v} isv comp1 comp2 = val-⇛→ isv comp1 comp2
 
 #compVal : {a b : CTerm} {w : 𝕎·} → a #⇓ b at w → #isValue a → a ≡ b
 #compVal {a} {b} {w} c v = CTerm≡ (compVal ⌜ a ⌝ ⌜ b ⌝ w c v)
+
+
+step-⇓-ASSERT₁ : {w : 𝕎·} {a b : Term}
+                 → step a w ≡ just b
+                 → ASSERT₁ a ⇓ ASSERT₁ b at w
+step-⇓-ASSERT₁ {w} {NAT} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {QNAT} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {LT a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {QLT a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {NUM x} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {PI a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {LAMBDA a} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {APPLY a a₁} {b} comp = 1 , z
+  where
+    z : steps 1 (ASSERT₁ (APPLY a a₁)) w ≡ ASSERT₁ b
+    z rewrite comp = refl
+step-⇓-ASSERT₁ {w} {SUM a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {PAIR a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {SET a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {UNION a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {INL a} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {INR a} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {DECIDE a a₁ a₂} {b} comp = 1 , z
+  where
+    z : steps 1 (ASSERT₁ (DECIDE a a₁ a₂)) w ≡ ASSERT₁ b
+    z rewrite comp = refl
+step-⇓-ASSERT₁ {w} {EQ a a₁ a₂} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {AX} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {FREE} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {CS x} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {TSQUASH a} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {DUM a} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {FFDEFS a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {UNIV x} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {LIFT a} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {LOWER a} {b} comp rewrite sym (just-inj comp) = 0 , refl
+step-⇓-ASSERT₁ {w} {SHRINK a} {b} comp rewrite sym (just-inj comp) = 0 , refl
+
+
+
+steps-⇓-ASSERT₁ : {w : 𝕎·} (n : ℕ) {a b : Term}
+                  → steps n a w ≡ b
+                  → ASSERT₁ a ⇓ ASSERT₁ b at w
+steps-⇓-ASSERT₁ {w} 0 {a} {b} comp rewrite comp = 0 , refl
+steps-⇓-ASSERT₁ {w} (suc n) {a} {b} comp with step⊎ a w
+... | inj₁ (u , p) rewrite p = ⇓-trans (step-⇓-ASSERT₁ p) (steps-⇓-ASSERT₁ n comp)
+... | inj₂ p rewrite p | comp = 0 , refl
+
+
+⇓-ASSERT₁-INL : {w : 𝕎·} {a x : Term}
+                → a ⇓ INL x at w
+                → ASSERT₁ a ⇓ TRUE at w
+⇓-ASSERT₁-INL {w} {a} {x} comp = ⇓-trans (steps-⇓-ASSERT₁ (fst comp) (snd comp)) (1 , refl)
+
+
+#⇛-ASSERT₁-INL : {w : 𝕎·} {a x : CTerm}
+                  → a #⇛ #INL x at w
+                  → #ASSERT₁ a #⇛ #TRUE at w
+#⇛-ASSERT₁-INL {w} {a} {x} comp w' e = lift (⇓-ASSERT₁-INL (lower (comp w' e)))
+
+
+⇓-ASSERT₁-INR : {w : 𝕎·} {a x : Term}
+                → a ⇓ INR x at w
+                → ASSERT₁ a ⇓ FALSE at w
+⇓-ASSERT₁-INR {w} {a} {x} comp = ⇓-trans (steps-⇓-ASSERT₁ (fst comp) (snd comp)) (1 , refl)
+
+
+#⇛-ASSERT₁-INR : {w : 𝕎·} {a x : CTerm}
+                → a #⇛ #INR x at w
+                → #ASSERT₁ a #⇛ #FALSE at w
+#⇛-ASSERT₁-INR {w} {a} {x} comp w' e = lift (⇓-ASSERT₁-INR (lower (comp w' e)))
+
 \end{code}
