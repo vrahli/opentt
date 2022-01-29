@@ -75,6 +75,6 @@ freezableStart· : (r : Res{0ℓ}) (w : 𝕎·) → freezable· (newChoice· w) 
 freezableStart· = freezableStart F
 
 
-freezeProgress· : (c : Name) {w1 w2 : 𝕎·} (t : ℂ·) → w1 ⊑· w2 → progress· c w1 (freeze· c w2 t)
-freezeProgress· = freezeProgress F
+--freezeProgress· : (c : Name) {w1 w2 : 𝕎·} (t : ℂ·) → w1 ⊑· w2 → progress· c w1 (freeze· c w2 t)
+--freezeProgress· = freezeProgress F
 

@@ -62,6 +62,6 @@ record Freeze : Set(lsuc(L)) where
                 → Σ ℕ (λ n → ∀𝕎 (freeze c w t) (λ w' _ → Lift (lsuc(L)) (getChoice· n c w' ≡ just t)))
     freezableStart : (r : Res{0ℓ}) (w : 𝕎·) → freezable (newChoice· w) (startNewChoice r w)
     -- freezing a choice progresses
-    freezeProgress : (c : Name) {w1 w2 : 𝕎·} (t : ℂ·) → w1 ⊑· w2 → progress· c w1 (freeze c w2 t)
+    --freezeProgress : (c : Name) {w1 w2 : 𝕎·} (t : ℂ·) → w1 ⊑· w2 → progress· c w1 (freeze c w2 t)
 
 \end{code}

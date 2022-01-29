@@ -944,7 +944,7 @@ freezeCS =
     freezeCs⊑
     getFreezeCs
     freezableStartCs
-    freezeCsProgress
+    --freezeCsProgress
 
 open import freezeDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(newChoiceCS)(freezeCS)
 

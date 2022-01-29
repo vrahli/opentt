@@ -680,7 +680,7 @@ freezeREF =
     freezeRef⊑
     getFreezeRef
     freezableStartRef
-    freezeRefProgress
+    --freezeRefProgress
 
 open import freezeDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(newChoiceRef)(freezeREF)
 
