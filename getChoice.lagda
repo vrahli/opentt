@@ -47,6 +47,6 @@ record GetChoice : Set(lsuc(L)) where
     getChoice : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe ℂ·
     --getChoice : (cs : Name) (w : 𝕎·) → Maybe ℕ
 
-    getChoiceCompatible : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·) → compatible· c w r → getChoice n c w ≡ just t → ·ᵣ r n t
+    --getChoiceCompatible : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·) → compatible· c w r → getChoice n c w ≡ just t → ·ᵣ r n t
 
 \end{code}

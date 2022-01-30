@@ -305,7 +305,8 @@ getRefChoiceCompatible c r w n t (k , b , i , sat) g rewrite i | just-inj g = sa
 open import getChoice(PossibleWorldsRef)(choiceRef)(compatibleREF)
 
 getChoiceRef : GetChoice
-getChoiceRef = mkGetChoice getRefChoice getRefChoiceCompatible
+getChoiceRef = mkGetChoice getRefChoice
+-- getRefChoiceCompatible
 
 open import getChoiceDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)
 

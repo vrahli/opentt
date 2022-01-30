@@ -100,7 +100,9 @@ Typeℂ₀₁-isType· = Typeℂ₀₁-isType CB
 →∈Typeℂ₀₁· : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name} → inbar w (λ w' _ → weakℂ₀₁M w' (getT n c)) → ∈Type i w Typeℂ₀₁· (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁· = →∈Typeℂ₀₁ CB
 
-inbar-choice· : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res) → compatible· c w r → inbar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t))))
+inbar-choice· : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
+                → compatible· c w r
+                → inbar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
 inbar-choice· = inbar-choice CB
 
 

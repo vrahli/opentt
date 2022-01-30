@@ -731,7 +731,8 @@ getCsChoiceCompatible c r w n t (l , comp , sat) g rewrite comp = resSatCs-selec
 open import getChoice(PossibleWorldsCS)(choiceCS)(compatibleCS)
 
 getChoiceCS : GetChoice
-getChoiceCS = mkGetChoice getCsChoice getCsChoiceCompatible
+getChoiceCS = mkGetChoice getCsChoice
+-- getCsChoiceCompatible
 
 open import getChoiceDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
 

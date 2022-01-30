@@ -82,7 +82,9 @@ record ChoiceBar : Set(lsuc(lsuc(L))) where
 
 
     -- TODO: for any restriction not just Resℂ₀₁
-    inbar-choice : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res) → compatible· c w r → inbar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t))))
+    inbar-choice : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
+                   → compatible· c w r
+                   → inbar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
     --choice-Typeℂ₀₁ : {w : 𝕎·} {c : Name} (m : ℕ) → compatible· c w Resℂ₀₁ → inbar w (λ w' _ → weakℂ₀₁M w' (getT m c))
 
     -- This says that all choices are "weak" ℕ (i.e., that can change over time)

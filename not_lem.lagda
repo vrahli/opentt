@@ -145,21 +145,20 @@ comp-Resℂ→inbar-weakℂ₀₁ : {c : Name} {w : 𝕎·} (n : ℕ)
                            → inbar w (λ w' _ → weakℂ₀₁M w' (getT n c))
 comp-Resℂ→inbar-weakℂ₀₁ {c} {w} n comp = Bar.∀𝕎-inBarFunc barI aw j1
   where
-    j1 : inbar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· n c w'' ≡ just t))))
+    j1 : inbar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· n c w'' ≡ just t × ·ᵣ Resℂ n t))))
     j1 = inbar-choice· w c n Resℂ comp
 
-    aw : ∀𝕎 w (λ w2 e2 → ∀𝕎 w2 (λ w3 _ → Lift (lsuc L) (Σ ℂ· (λ t → getChoice· n c w3 ≡ just t))) → weakℂ₀₁M w2 (getT n c))
-    aw w2 e2 h w3 e3 rewrite snd (lower (h w3 e3)) = lift (ℂ→T t , refl , z st)
+    aw : ∀𝕎 w (λ w2 e2 → ∀𝕎 w2 (λ w3 _ → Lift (lsuc L) (Σ ℂ· (λ t → getChoice· n c w3 ≡ just t × ·ᵣ Resℂ n t))) → weakℂ₀₁M w2 (getT n c))
+    aw w2 e2 h w3 e3 rewrite fst (snd (lower (h w3 e3))) = lift (ℂ→T t , refl , z st)
       where
         t : ℂ·
         t = fst (lower (h w3 e3))
 
         st : ·ᵣ Resℂ n t
-        st = getChoiceCompatible· c Resℂ w3 n t (⊑-compatible· (⊑-trans· e2 e3) comp) (snd (lower (h w3 e3)))
+        st = snd (snd (lower (h w3 e3)))
+--getChoiceCompatible· c Resℂ w3 n t (⊑-compatible· (⊑-trans· e2 e3) comp) (snd (lower (h w3 e3)))
 
-        z : (t ≡ ℂ₀· ⊎ t ≡ ℂ₁·)
-            → (ℂ→T (fst (lower (h w3 e3))) ⇓ Tℂ₀ at w3
-                ⊎ ℂ→T (fst (lower (h w3 e3))) ⇓ Tℂ₁ at w3)
+        z : (t ≡ ℂ₀· ⊎ t ≡ ℂ₁·) → (ℂ→T t ⇓ Tℂ₀ at w3 ⊎ ℂ→T t ⇓ Tℂ₁ at w3)
         z (inj₁ x) rewrite x = inj₁ (0 , refl)
         z (inj₂ x) rewrite x = inj₂ (0 , refl)
 
@@ -441,7 +440,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     eb6 : #weakℂEq w3 (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1)
     eb6 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB c eb5 oc2 comp2 fb2)))))
 
-    gc : inbar w3 (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t))))
+    gc : inbar w3 (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
     gc = inbar-choice· w3 c m r comp3
 
     -- 4th jump to bar
@@ -460,7 +459,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     fb4 : freezable· c w4
     fb4 = fst (snd (snd (snd (snd (ChoiceBar.followChoice CB c gc oc3 comp3 fb3)))))
 
-    gc1 : ∀𝕎 w4 (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w' ≡ just t)))
+    gc1 : ∀𝕎 w4 (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w' ≡ just t × ·ᵣ r m t)))
     gc1 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB c gc oc3 comp3 fb3)))))
 
     eb7 : #weakℂEq w4 (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1)
@@ -482,11 +481,14 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     sim1 : ∼ℂ· k k'
     sim1 = snd (snd (snd (snd (#weakℂEq→ {w4} {#APPLY (#CS c) (#NUM m)} {ℂ→C· k1} eb7))))
 
-    gc2 : Σ ℂ· (λ t → getChoice· m c w4 ≡ just t)
+    gc2 : Σ ℂ· (λ t → getChoice· m c w4 ≡ just t × ·ᵣ r m t)
     gc2 = lower (gc1 w4 (⊑-refl· _))
 
+    gc3 : Σ ℂ· (λ t → getChoice· m c w4 ≡ just t)
+    gc3 = fst gc2 , fst (snd gc2)
+
     cn₃ : ℂ→C· k #⇓ ℂ→C· (Res.def r) at w4
-    cn₃ = onlyℂ∈𝕎→≡ oc4 cn₁ gc2 isv₁
+    cn₃ = onlyℂ∈𝕎→≡ oc4 cn₁ gc3 isv₁
 
     eq1 : ℂ→C· k1 ≡ ℂ→C· k'
     eq1 = CTerm≡ (compVal (ℂ→T k1) (ℂ→T k') w4 cn₂ isv₂)

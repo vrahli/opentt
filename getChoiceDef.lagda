@@ -48,8 +48,9 @@ open GetChoice
 getChoice· : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe ℂ·
 getChoice· = getChoice G
 
-getChoiceCompatible· : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·) → compatible· c w r → getChoice· n c w ≡ just t → ·ᵣ r n t
-getChoiceCompatible· = getChoiceCompatible G
+
+--getChoiceCompatible· : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·) → compatible· c w r → getChoice· n c w ≡ just t → ·ᵣ r n t
+--getChoiceCompatible· = getChoiceCompatible G
 
 
 getC : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe CTerm
