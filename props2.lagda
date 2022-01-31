@@ -641,7 +641,7 @@ equalInType-local {u} {w} {T} {a} {b} i =
     aw'' w1 e1 x y ei = eqInType-extl1 T T (fst x) y ei
 
     eqi : equalTerms u w (EQTBAR (Bar.∀𝕎-inBarFunc barI aw i)) a b
-    eqi = Bar.inBar'-change barI i (Bar.∀𝕎-inBarFunc barI aw i) aw'' (Bar.∀𝕎-inBar-inBar' barI i aw')
+    eqi = inBar'-change barI i (Bar.∀𝕎-inBarFunc barI aw i) aw'' (Bar.∀𝕎-inBar-inBar' barI i aw')
 
 -- Used to go through with just??? Bar.∀𝕎-inBar-inBar' barI i aw'
 

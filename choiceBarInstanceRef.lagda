@@ -130,12 +130,23 @@ isValueℂ₁-beth-ref = tt
         x (inj₂ y) = 1 , ⇓-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 n c refl g) y , ⇓-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 n c refl g) y
 
 
-inbar-choice-beth-ref : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res) → compatible· c w r → inBethBar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t))))
+inbar-choice-beth-ref : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
+                        → compatible· c w r
+                        → inBethBar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
 inbar-choice-beth-ref w c m r (v , f , i , sat) = trivialIS𝔹 w , j
   where
-    j : inIS𝔹 (trivialIS𝔹 w) (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t))))
+    j : inIS𝔹 (trivialIS𝔹 w) (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
     j {w1} e1 b w2 e2 z w3 e3 rewrite fst (snd (snd (⊑-pres-getRef (⊑-trans· z e3) i))) =
-      lift (fst (⊑-pres-getRef (⊑-trans· z e3) i) , refl)
+      lift (fst (⊑-pres-getRef (⊑-trans· z e3) i) ,
+            refl ,
+            getRefChoiceCompatible
+              c r w3 m
+              (fst (⊑-pres-getRef (⊑-trans· z e3) i))
+              (⊑-compatibleRef (⊑-trans· z e3) (v , f , i , sat))
+              gc)
+      where
+        gc : getRefChoice m c w3 ≡ just (fst (⊑-pres-getRef (⊑-trans· z e3) i))
+        gc rewrite fst (snd (snd (⊑-pres-getRef (⊑-trans· z e3) i))) = refl
 
 
 

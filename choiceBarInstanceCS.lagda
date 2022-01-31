@@ -355,11 +355,13 @@ isValueℂ₁-beth-cs = tt
 
 -- We so far didn't rely on a specific bar.
 -- Here we do
-inbar-choice-beth-cs : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res) → compatible· c w r → inBethBar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t))))
+inbar-choice-beth-cs : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
+                       → compatible· c w r
+                       → inBethBar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
 inbar-choice-beth-cs w c m r comp = IS𝔹-ℕ w r c m comp , j
   where
-    j : inIS𝔹 (IS𝔹-ℕ w r c m comp) (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t))))
-    j {w'} e (e0 , l , g , len) w1 e1 z w2 e2 = lift (fst sel , g1)
+    j : inIS𝔹 (IS𝔹-ℕ w r c m comp) (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
+    j {w'} e (e0 , l , g , len) w1 e1 z w2 e2 = lift (fst sel , g1 , sat)
       where
         sel : Σ ℂ· (λ t → select m l ≡ just t)
         sel = Σselect {0ℓ} {ℂ·} {m} {l} len
@@ -375,6 +377,9 @@ inbar-choice-beth-cs w c m r comp = IS𝔹-ℕ w r c m comp , j
 
         g1 : getChoice· m c w2 ≡ just (fst sel)
         g1 rewrite comp2 | select++-just {0ℓ} {ℂ·} {m} {l} {l'} (snd sel) = refl
+
+        sat : ·ᵣ r m (fst sel)
+        sat = getCsChoiceCompatible c r w2 m (fst sel) comp1 g1
 
 
 followChoice-beth-cs : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}

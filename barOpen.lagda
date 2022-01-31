@@ -879,6 +879,64 @@ inOpenBar'-change {w} {f} {k} {g} {h} i j aw b w1 e1 w0 e0 =
          (h0 w5 e5 (⊑-trans· (⊑-refl· _) (⊑-trans· e4 e5)) z)
 
 
+inOpenBar'-comb-change : {w : 𝕎·} {f₁ f₂ f₃ : wPred w}
+                         {g₁ : wPredDep f₁} {g₂ : wPredDep f₂} {g₃ : wPredDep f₃}
+                         (i₁ : inOpenBar w f₁) (i₂ : inOpenBar w f₂) (i₃ : inOpenBar w f₃)
+                         → ∀𝕎 w (λ w' e' → (x₁ : f₁ w' e') (x₂ : f₂ w' e') (x₃ : f₃ w' e')
+                                          → g₁ w' e' x₁ → g₂ w' e' x₂ → g₃ w' e' x₃)
+                         → inOpenBar' w i₁ g₁ → inOpenBar' w i₂ g₂ → inOpenBar' w i₃ g₃
+inOpenBar'-comb-change {w} {f₁} {f₂} {f₃} {g₁} {g₂} {g₃} i₁ i₂ i₃ aw b₁ b₂ w1 e1 w0 e0 =
+  w6 , ⊑-trans· e3 (⊑-trans· e4 (⊑-trans· e5 e6)) , h2
+  where
+    w2 : 𝕎·
+    w2 = w0
+
+    e2 : w1 ⊑· w2
+    e2 = ⊑-trans· (fst (snd (i₃ w1 e1))) e0
+
+    -- 1st bar
+    w3 : 𝕎·
+    w3 = fst (i₁ w2 (⊑-trans· e1 e2))
+
+    e3 : w2 ⊑· w3
+    e3 = fst (snd (i₁ w2 (⊑-trans· e1 e2)))
+
+    w4 : 𝕎·
+    w4 = fst (b₁ w2 (⊑-trans· e1 e2) w3 (⊑-refl· _))
+
+    e4 : w3 ⊑· w4
+    e4 = fst (snd (b₁ w2 (⊑-trans· e1 e2) w3 (⊑-refl· _)))
+
+    h0 : ∀𝕎 w4 (λ w5 e5 → (y : w3 ⊑· w5) (z : w ⊑· w5) → g₁ w5 z (snd (snd (i₁ w2 (⊑-trans· e1 e2))) w5 y z))
+    h0 = snd (snd (b₁ w2 (⊑-trans· e1 e2) w3 (⊑-refl· _)))
+
+    -- 2nd bar
+    w5 : 𝕎·
+    w5 = fst (i₂ w4 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4))))
+
+    e5 : w4 ⊑· w5
+    e5 = fst (snd (i₂ w4 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4)))))
+
+    w6 : 𝕎·
+    w6 = fst (b₂ w4 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4))) w5 (⊑-refl· _))
+
+    e6 : w5 ⊑· w6
+    e6 = fst (snd (b₂ w4 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4))) w5 (⊑-refl· _)))
+
+    h1 : ∀𝕎 w6 (λ w7 e7 → (y : w5 ⊑· w7) (z : w ⊑· w7) → g₂ w7 z (snd (snd (i₂ w4 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4))))) w7 y z))
+    h1 = snd (snd (b₂ w4 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4))) w5 (⊑-refl· _)))
+
+    h2 : ∀𝕎 w6 (λ w7 e7 → (y : fst (i₃ w1 e1) ⊑· w7) (z : w ⊑· w7) → g₃ w7 z (snd (snd (i₃ w1 e1)) w7 y z))
+    h2 w7 e7 y z =
+      aw w7 z
+         (snd (snd (i₁ w2 (⊑-trans· e1 e2))) w7 (⊑-trans· (⊑-refl· _) (⊑-trans· e4 (⊑-trans· e5 (⊑-trans· e6 e7)))) z)
+         (snd (snd (i₂ w4 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4))))) w7 (⊑-trans· (⊑-refl· _) (⊑-trans· e6 e7)) z)
+         (snd (snd (i₃ w1 e1)) w7 y z)
+         (h0 w7 (⊑-trans· e5 (⊑-trans· e6 e7)) (⊑-trans· (⊑-refl· _) (⊑-trans· e4 (⊑-trans· e5 (⊑-trans· e6 e7)))) z)
+         (h1 w7 e7 (⊑-trans· (⊑-refl· _) (⊑-trans· e6 e7)) z)
+
+
+
 -- We can prove that open-bars satisfy the Bar properties
 inOpenBar-Bar : Bar
 inOpenBar-Bar =
@@ -896,8 +954,9 @@ inOpenBar-Bar =
     inOpenBar-idem
     (λ {w} {f} {g} → inOpenBar'-idem {w} {f} {g})
     ∀𝕎-inOpenBar'-inOpenBar
-    inOpenBar'-comb
-    inOpenBar'-change
+--    inOpenBar'-comb
+--    inOpenBar'-change
+    inOpenBar'-comb-change
     inOpenBar-const
 
 

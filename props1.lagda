@@ -774,7 +774,7 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTLIFT A1 A2 x x₁ eqta exta
         aw1 w1 e1 h ext = LIFTeq-ext {↓𝕌 (mk𝕌 isu)} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
 
 eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTBAR x) =
-  Bar.inBar'-change barI i x aw j
+  inBar'-change barI i x aw j
   where
     aw : ∀𝕎 w (λ w' e' → (x₁ x₂ : eqTypes u w' A B)
                          {--→ atbar i w' e' x₁
@@ -1342,7 +1342,7 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTLIFT A1 A2 x x₁ eqta ex
         ib = Bar.∀𝕎-inBarFunc barI aw' (↑inbar eqi e')
 
 eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTBAR x) eqi =
-  Bar.inBar'-change barI x i aw eqi
+  inBar'-change barI x i aw eqi
   where
     aw : ∀𝕎 w (λ w' e' → (x₁ y : eqTypes u w' A B) {--(at1 : atbar x w' e' x₁) (at2 : atbar i w' e' y)--}
                          → eqInType u w' x₁ a b
@@ -1679,7 +1679,7 @@ local-eqInType2 u isu w A B a b (EQTLIFT A1 A2 x x₁ eqta exta) i j =
         aw' w1 e1 h x₂ = LIFTeq-ext {↓𝕌 (mk𝕌 isu)} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
 
 local-eqInType2 u isu w A B a b (EQTBAR x) i j =
-  Bar.inBar'-change barI i x aw j
+  inBar'-change barI i x aw j
   where
     aw : ∀𝕎 w (λ w' e' → (x₁ y : eqTypes u w' A B) {--→ atbar i w' e' x₁ → atbar x w' e' y--}
                          → eqInType u w' x₁ a b
@@ -1937,7 +1937,7 @@ eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTBAR x) eqt2 a b eqi =
     aw w'' e'' x₁ y {--at₁ at₂--} eqi' w''' e''' eqt2' = eqInType-mon isu e''' x₁ eqt2' a b eqi'
 
     ind : inbar' w x (λ w1 e1 z → (w' : 𝕎·) (e' : w1 ⊑· w') (eqt2 : eqTypes u w' A B) → eqInType u w' eqt2 a b)
-    ind = Bar.inBar'-change barI x x aw eqi
+    ind = inBar'-change barI x x aw eqi
 
     aw' : ∀𝕎 w (λ w'' e'' → (x₁ y : eqTypes u w'' A B) {--(at₁ : atbar x w'' e'' x₁) (at₂ : atbar x w'' e'' y)--}
                             → ((w' : 𝕎·) (e' : w'' ⊑· w') (eqt2 : eqTypes u w' A B) → eqInType u w' eqt2 a b)
@@ -1945,7 +1945,7 @@ eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTBAR x) eqt2 a b eqi =
     aw' w'' e'' x₁ y {--at₁ at₂--} imp = imp w'' (⊑-refl· w'') y
 
     ib0 : inbar' w x (λ w'' e z → eqInType u w'' z a b)
-    ib0 = Bar.inBar'-change barI x x aw' ind
+    ib0 = inBar'-change barI x x aw' ind
 
     ib1 : inbar' w' ib (↑wPredDep (λ w'' e (z : eqTypes u w'' A B) → eqInType u w'' z a b) e')
     ib1 = ↑inbar' {w} {λ w e → eqTypes u w A B} {λ w e z → eqInType u w z a b} x e' ib0
@@ -1973,7 +1973,7 @@ typeSysConds-BAR u isu w A B x ind =
     ttrans C eqt = typeSysConds-BAR-ttrans u w A B C x ind eqt
 
     isym : eqInTypeSym u (EQTBAR x)
-    isym a b eqi = Bar.inBar'-comb barI x aw ind eqi
+    isym a b eqi = inBar'-comb barI x aw ind eqi
       where
         aw : ∀𝕎 w (λ w' e' → (z zg zh : eqTypes u w' A B) → TSP zg → eqInType u w' zh a b → eqInType u w' z b a)
         aw w1 e1 z zg zh tsp i = TSP.extl1 tsp B z b a (TSP.extrevl1 tsp B zg b a (TSP.isym tsp a b (TSP.extrevl1 tsp B zh a b i)))
@@ -2006,7 +2006,7 @@ typeSysConds-BAR u isu w A B x ind =
         aw' w' e' z zg zh tsp eqi = TSP-change isu zg z tsp , fst (eqInType-ext isu zh z a b) eqi
 
         ei' : inbar' w j (λ w' e z → eqInType u w' z a b)
-        ei' = Bar.inBar'-change barI x j aw (Bar.inBar'-comb barI x aw' ind eqi)
+        ei' = inBar'-change barI x j aw (inBar'-comb barI x aw' ind eqi)
 
     iextl2 : eqInTypeExtL2 (EQTBAR x)
     iextl2 C eqt a b eqi = local-eqInType2 u isu w C A a b eqt j ei'
@@ -2024,7 +2024,7 @@ typeSysConds-BAR u isu w A B x ind =
         aw' w' e' z zg zh tsp eqi = TSP-change isu zg z tsp , fst (eqInType-ext isu zh z a b) eqi
 
         ei' : inbar' w j (λ w' e z → eqInType u w' z a b)
-        ei' = Bar.inBar'-change barI x j aw (Bar.inBar'-comb barI x aw' ind eqi)
+        ei' = inBar'-change barI x j aw (inBar'-comb barI x aw' ind eqi)
 
     iextr1 : eqInTypeExtR1 (EQTBAR x)
     iextr1 C eqt a b eqi = local-eqInType2 u isu w C B a b eqt j ei'
@@ -2042,7 +2042,7 @@ typeSysConds-BAR u isu w A B x ind =
         aw' w' e' z zg zh tsp eqi = TSP-change isu zg z tsp , fst (eqInType-ext isu zh z a b) eqi
 
         ei' : inbar' w j (λ w' e z → eqInType u w' z a b)
-        ei' = Bar.inBar'-change barI x j aw (Bar.inBar'-comb barI x aw' ind eqi)
+        ei' = inBar'-change barI x j aw (inBar'-comb barI x aw' ind eqi)
 
     iextr2 : eqInTypeExtR2 (EQTBAR x)
     iextr2 C eqt a b eqi = local-eqInType2 u isu w B C a b eqt j ei'
@@ -2060,10 +2060,10 @@ typeSysConds-BAR u isu w A B x ind =
         aw' w' e' z zg zh tsp eqi = TSP-change isu zg z tsp , fst (eqInType-ext isu zh z a b) eqi
 
         ei' : inbar' w j (λ w' e z → eqInType u w' z a b)
-        ei' = Bar.inBar'-change barI x j aw (Bar.inBar'-comb barI x aw' ind eqi)
+        ei' = inBar'-change barI x j aw (inBar'-comb barI x aw' ind eqi)
 
     iextrevl1 : eqInTypeExtRevL1 (EQTBAR x)
-    iextrevl1 C eqt a b eqi = Bar.inBar'-comb barI x aw ind ind
+    iextrevl1 C eqt a b eqi = inBar'-comb barI x aw ind ind
       where
         aw : ∀𝕎 w (λ w' e' → (z zg zh : eqTypes u w' A B)
                              → TSP zg → TSP zh → eqInType u w' z a b)
@@ -2077,7 +2077,7 @@ typeSysConds-BAR u isu w A B x ind =
               (eqInType-mon isu e' eqt (eqTypes-mon u eqt w' e') a b eqi))
 
     iextrevl2 : eqInTypeExtRevL2 (EQTBAR x)
-    iextrevl2 C eqt a b eqi = Bar.inBar'-comb barI x aw ind ind
+    iextrevl2 C eqt a b eqi = inBar'-comb barI x aw ind ind
       where
         aw : ∀𝕎 w (λ w' e' → (z zg zh : eqTypes u w' A B)
                              → TSP zg → TSP zh → eqInType u w' z a b)
@@ -2088,7 +2088,7 @@ typeSysConds-BAR u isu w A B x ind =
                 (eqInType-mon isu e' eqt (eqTypes-mon u eqt w' e') a b eqi))
 
     iextrevr1 : eqInTypeExtRevR1 (EQTBAR x)
-    iextrevr1 C eqt a b eqi = Bar.inBar'-comb barI x aw ind ind
+    iextrevr1 C eqt a b eqi = inBar'-comb barI x aw ind ind
       where
         aw : ∀𝕎 w (λ w' e' → (z zg zh : eqTypes u w' A B)
                              → TSP zg → TSP zh → eqInType u w' z a b)
@@ -2099,7 +2099,7 @@ typeSysConds-BAR u isu w A B x ind =
                 (eqInType-mon isu e' eqt (eqTypes-mon u eqt w' e') a b eqi))
 
     iextrevr2 : eqInTypeExtRevR2 (EQTBAR x)
-    iextrevr2 C eqt a b eqi = Bar.inBar'-comb barI x aw ind ind
+    iextrevr2 C eqt a b eqi = inBar'-comb barI x aw ind ind
       where
         aw : ∀𝕎 w (λ w' e' → (z zg zh : eqTypes u w' A B)
                              → TSP zg → TSP zh → eqInType u w' z a b)
@@ -2110,7 +2110,7 @@ typeSysConds-BAR u isu w A B x ind =
                 (eqInType-mon isu e' eqt (eqTypes-mon u eqt w' e') a b eqi))
 
     local : eqInTypeLocal (EQTBAR x)
-    local a b i j = Bar.inBar'-comb barI x aw ind ind
+    local a b i j = inBar'-comb barI x aw ind ind
       where
         aw : ∀𝕎 w (λ w' e' → (z zg zh : eqTypes u w' A B)
                              → TSP zg → TSP zh → eqInType u w' z a b)
