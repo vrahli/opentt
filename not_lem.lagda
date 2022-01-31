@@ -541,7 +541,7 @@ equalInType-SQUASH-UNION-LIFT→ {n} {i} p {w} {a} {b} {u} {v} eqi =
 
 equalInType-SQUASH-UNION→ : {i : ℕ} {w : 𝕎·} {a b u v : CTerm}
                              → equalInType i w (#SQUASH (#UNION a (#NEG b))) u v
-                             → inbar w (λ w' _ → inhType i w' a ⊎ ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' b a₁ a₂))
+                             → inbar w (λ w' _ → inhType i w' a ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' b))
 equalInType-SQUASH-UNION→ {i} {w} {a} {b} {u} {v} eqi =
   Bar.inBar-idem barI (Bar.∀𝕎-inBarFunc barI aw1 h3)
   where
@@ -565,15 +565,15 @@ equalInType-SQUASH-UNION→ {i} {w} {a} {b} {u} {v} eqi =
     aw1 : ∀𝕎 w (λ w' e' → Σ CTerm (λ t → inbar w' (λ w'' _ → Σ CTerm (λ x →  Σ CTerm (λ y →
                             (t #⇛ #INL x at w'' × t #⇛ #INL y at w'' × equalInType i w'' a x y)
                             ⊎ (t #⇛ #INR x at w'' × t #⇛ #INR y at w'' × ∀𝕎 w'' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂))))))
-                        → inbar w' (↑wPred' (λ w'' e →  inhType i w'' a ⊎ ∀𝕎 w'' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂)) e'))
+                        → inbar w' (↑wPred' (λ w'' e →  inhType i w'' a ⊎ ∀𝕎 w'' (λ w''' _ → ¬ inhType i w''' b)) e'))
     aw1 w1 e1 (t , j) = Bar.inBar-idem barI (Bar.∀𝕎-inBarFunc barI aw2 j)
       where
         aw2 : ∀𝕎 w1 (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
                                  (t #⇛ #INL x at w' × t #⇛ #INL y at w' × equalInType i w' a x y)
                                  ⊎ (t #⇛ #INR x at w' × t #⇛ #INR y at w' × ∀𝕎 w' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂))))
-                             → inbar w' (↑wPred' (λ w'' e → ↑wPred' (λ w''' e₁ → inhType i w''' a ⊎ ∀𝕎 w''' (λ w'''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'''' b a₁ a₂)) e1 w'' e) e'))
+                             → inbar w' (↑wPred' (λ w'' e → ↑wPred' (λ w''' e₁ → inhType i w''' a ⊎ ∀𝕎 w''' (λ w'''' _ → ¬ inhType i w'''' b)) e1 w'' e) e'))
         aw2 w2 e2 (x , y , inj₁ (c₁ , c₂ , z)) = Bar.∀𝕎-inBar barI (λ w3 e3 x₁ x₂ → inj₁ (x , equalInType-mon (equalInType-refl z) w3 e3))
-        aw2 w2 e2 (x , y , inj₂ (c₁ , c₂ , z)) = Bar.∀𝕎-inBar barI (λ w3 e3 x₁ x₂ → inj₂ (∀𝕎-mon e3 z))
+        aw2 w2 e2 (x , y , inj₂ (c₁ , c₂ , z)) = Bar.∀𝕎-inBar barI λ w3 e3 x₁ x₂ → inj₂ (λ w4 e4 (t , h) → z w4 (⊑-trans· e3 e4) t t h)
 
 
 sq-dec : CTerm → CTerm
@@ -605,7 +605,7 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     h1 : equalInType i w2 (#SQUASH (#UNION (#Σchoice name k1) (#NEG (#Σchoice name k1)))) #AX #AX
     h1 = eqi
 
-    h2 : inbar w2 (λ w' _ → inhType i w' (#Σchoice name k1) ⊎ ∀𝕎 w' (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂))
+    h2 : inbar w2 (λ w' _ → inhType i w' (#Σchoice name k1) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' (#Σchoice name k1)))
     h2 = equalInType-SQUASH-UNION→ h1
 
     oc1 : onlyℂ∈𝕎 (Res.def r) name w2
@@ -633,7 +633,7 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     fb2 : freezable· name w3
     fb2 = fst (snd (snd (snd (snd (ChoiceBar.followChoice CB name h2 oc1 comp1 fb1)))))
 
-    h3 : inhType i w3 (#Σchoice name k1) ⊎ ∀𝕎 w3 (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂)
+    h3 : inhType i w3 (#Σchoice name k1) ⊎ ∀𝕎 w3 (λ w'' _ → ¬ inhType i w'' (#Σchoice name k1))
     h3 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB name h2 oc1 comp1 fb1)))))
 
     -- 1st injection: proved by ¬equalInType-#Σchoice
@@ -663,10 +663,10 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     h4 = getChoice→equalInType-#Σchoice i (⊑-compatible· e4 comp2) (sat-ℂ₁ 0) g1
 
     -- conclusion
-    concl : (inhType i w3 (#Σchoice name k1) ⊎ ∀𝕎 w3 (λ w'' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w'' (#Σchoice name k1) a₁ a₂))
+    concl : (inhType i w3 (#Σchoice name k1) ⊎ ∀𝕎 w3 (λ w'' _ → ¬ inhType i w'' (#Σchoice name k1)))
             → ⊥
     concl (inj₁ (t , eqi)) = ¬equalInType-#Σchoice i w3 Resℂ name t t isValueℂ₀· isValueℂ₁· dks oc2 comp2 fb2 eqi
-    concl (inj₂ aw) = aw w4 e4 (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX) h4
+    concl (inj₂ aw) = aw w4 e4 (#PAIR (#NUM n1) #AX , h4)
 
 
 ¬LEM : (w : 𝕎·) {n i : ℕ} (p : i < n) → member w (#NEG (#LEM p)) #lamAX
