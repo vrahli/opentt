@@ -421,6 +421,13 @@ inbar-#strongMonEq-#NUM k w = Bar.∀𝕎-inBar barI (λ w2 e2 → #strongMonEq-
         c₃ = #weakMonEq→≈C {w1} {a} {b} h
 
 
+
+NUM-equalInType-QTNAT : (i : ℕ) (w : 𝕎·) (k : ℕ) → equalInType i w #QTNAT (#NUM k) (#NUM k)
+NUM-equalInType-QTNAT i w k =
+  →equalInType-QTNAT i w (#NUM k) (#NUM k) (Bar.∀𝕎-inBar barI (λ w' e' → #weakMonEq-#NUM w' k))
+
+
+
 equalInTypeTSQUASH→ : {w : 𝕎·} {i : ℕ} {a b A : CTerm}
                        → equalInType i w (#TSQUASH A) a b
                        → inbar w (λ w' _ → TSQUASHeq (equalInType i w' A) w' a b)

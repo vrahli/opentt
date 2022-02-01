@@ -62,19 +62,19 @@ open import props3(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(get
 
 
 Typeℂ₀₁-beth-ref : CTerm
-Typeℂ₀₁-beth-ref = #QNAT
+Typeℂ₀₁-beth-ref = #QTNAT
 
 
 Typeℂ₀₁-isType-beth-bar : (u : ℕ) (w : 𝕎·) → isType u w Typeℂ₀₁-beth-ref
-Typeℂ₀₁-isType-beth-bar u w = eqTypesQNAT
+Typeℂ₀₁-isType-beth-bar u w = eqTypesQTNAT
 
 
 ℂ₀∈Typeℂ₀₁-beth-ref : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁-beth-ref Cℂ₀
-ℂ₀∈Typeℂ₀₁-beth-ref u w = NUM-equalInType-QNAT u w 0
+ℂ₀∈Typeℂ₀₁-beth-ref u w = NUM-equalInType-QTNAT u w 0
 
 
 ℂ₁∈Typeℂ₀₁-beth-ref : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁-beth-ref Cℂ₁
-ℂ₁∈Typeℂ₀₁-beth-ref u w = NUM-equalInType-QNAT u w 1
+ℂ₁∈Typeℂ₀₁-beth-ref u w = NUM-equalInType-QTNAT u w 1
 
 
 
@@ -98,7 +98,7 @@ isValueℂ₁-beth-ref = tt
 --}
 
 ∈Typeℂ₀₁→-beth-ref : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-ref a b → inbar w (λ w' _ → #weakℂEq w' a b)
-∈Typeℂ₀₁→-beth-ref i w a b eqi = Bar.∀𝕎-inBarFunc barI aw (equalInType-QNAT→ i w a b eqi)
+∈Typeℂ₀₁→-beth-ref i w a b eqi = Bar.∀𝕎-inBarFunc barI aw (equalInType-QTNAT→ i w a b eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #weakMonEq w' a b → #weakℂEq w' a b)
     aw w1 e1 h w2 e2 = lift (#NUM (fst (lower (h w2 e2))) ,
@@ -112,7 +112,7 @@ isValueℂ₁-beth-ref = tt
                       → inbar w (λ w' _ → weakℂ₀₁M w' (getT n c))
                       → ∈Type i w Typeℂ₀₁-beth-ref (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁-beth-ref i {w} {n} {c} h =
-  →equalInType-QNAT i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
+  →equalInType-QTNAT i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
                      (Bar.∀𝕎-inBarFunc barI aw h)
   where
     aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakMonEq w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))

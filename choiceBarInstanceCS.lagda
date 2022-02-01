@@ -285,19 +285,19 @@ getCs→≡Name-getCs {choice name t ∷ w} {n1} {n2} {l} {r} e = getCs→≡Nam
 
 
 Typeℂ₀₁-beth-cs : CTerm
-Typeℂ₀₁-beth-cs = #QNAT
+Typeℂ₀₁-beth-cs = #QTNAT
 
 
 Typeℂ₀₁-isType-beth-bar : (u : ℕ) (w : 𝕎·) → isType u w Typeℂ₀₁-beth-cs
-Typeℂ₀₁-isType-beth-bar u w = eqTypesQNAT
+Typeℂ₀₁-isType-beth-bar u w = eqTypesQTNAT
 
 
 ℂ₀∈Typeℂ₀₁-beth-cs : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁-beth-cs Cℂ₀
-ℂ₀∈Typeℂ₀₁-beth-cs u w = NUM-equalInType-QNAT u w 0
+ℂ₀∈Typeℂ₀₁-beth-cs u w = NUM-equalInType-QTNAT u w 0
 
 
 ℂ₁∈Typeℂ₀₁-beth-cs : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁-beth-cs Cℂ₁
-ℂ₁∈Typeℂ₀₁-beth-cs u w = NUM-equalInType-QNAT u w 1
+ℂ₁∈Typeℂ₀₁-beth-cs u w = NUM-equalInType-QTNAT u w 1
 
 
 ℂ→C→∼ℂ-beth-cs : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼ℂ· c1 c → ∼ℂ· c2 c
@@ -321,7 +321,7 @@ isValueℂ₁-beth-cs = tt
 
 
 ∈Typeℂ₀₁→-beth-cs : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-cs a b → inbar w (λ w' _ → #weakℂEq w' a b)
-∈Typeℂ₀₁→-beth-cs i w a b eqi = Bar.∀𝕎-inBarFunc barI aw (equalInType-QNAT→ i w a b eqi)
+∈Typeℂ₀₁→-beth-cs i w a b eqi = Bar.∀𝕎-inBarFunc barI aw (equalInType-QTNAT→ i w a b eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #weakMonEq w' a b → #weakℂEq w' a b)
     aw w1 e1 h w2 e2 = lift (#NUM (fst (lower (h w2 e2))) ,
@@ -335,7 +335,7 @@ isValueℂ₁-beth-cs = tt
                       → inbar w (λ w' _ → weakℂ₀₁M w' (getT n c))
                       → ∈Type i w Typeℂ₀₁-beth-cs (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁-beth-cs i {w} {n} {c} h =
-  →equalInType-QNAT i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
+  →equalInType-QTNAT i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
                      (Bar.∀𝕎-inBarFunc barI aw h)
   where
     aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakMonEq w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
