@@ -592,6 +592,17 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
     (fst (snd (ex (𝔹.bars b) (𝔹.ext b))))
 
 
+Σ∈𝔹→∃ : {B : Bars} (ex : Bars∃ B) {w : 𝕎·} {f : wPred w} → Σ∈𝔹 B {w} f → ∃𝕎 w λ w' e → f w' e
+Σ∈𝔹→∃ {B} ex {w} {f} (b , i) =
+  fst (ex (𝔹.bars b) (𝔹.ext b)) ,
+  fst (snd (ex (𝔹.bars b) (𝔹.ext b))) ,
+  i (𝔹.ext b (snd (snd (ex (𝔹.bars b) (𝔹.ext b)))))
+    (snd (snd (ex (𝔹.bars b) (𝔹.ext b))))
+    (fst (ex (𝔹.bars b) (𝔹.ext b)))
+    (⊑-refl· _)
+    (fst (snd (ex (𝔹.bars b) (𝔹.ext b))))
+
+
 
 -- TODO: is this derivable from the others?
 →Σ∈𝔹∀𝕎 : {B : Bars} {w : 𝕎·} {f : wPred w}

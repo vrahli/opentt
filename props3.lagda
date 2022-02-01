@@ -247,12 +247,14 @@ equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTSQUASH A1 
   where
     aw : ∀𝕎 w (λ w' e' → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' b c
                        → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' a c)
-    aw w' e (a₁ , a₂ , c₁ , c₂ , c₃ , ea) =
+    aw w' e (c₃ , a₁ , a₂ , isv₁ , isv₂ , c₁ , c₂ , ea) =
+      ≈C-trans {w'} {a} {b} {c} (#⇛→≈C {w'} {a} {b} (∀𝕎-mon e comp)) c₃ ,
       a₁ ,
       a₂ ,
+      isv₁ ,
+      isv₂ ,
       ∼C-trans {w'} {a} {b} {a₁} (#⇓→∼C {w'} {a} {b} (lower (comp w' e))) c₁ ,
       c₂ ,
-      ≈C-trans {w'} {a} {b} {c} (#⇛→≈C {w'} {a} {b} (∀𝕎-mon e comp)) c₃ ,
       ea
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) eqi =
   Bar.∀𝕎-inBarFunc barI aw eqi
@@ -351,12 +353,13 @@ equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTSQUASH A1 A2 x
   where
     aw : ∀𝕎 w (λ w' e' → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' a c
                        → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' b c)
-    aw w' e (a₁ , a₂ , c₁ , c₂ , c₃ , ea) =
-      a₁ ,
-      a₂ ,
+    aw w' e (c₃ , a₁ , a₂ , isv₁ , isv₂ , c₁ , c₂ , ea) =
+      ≈C-trans {w'} {b} {a} {c} (≈C-sym {w'} {a} {b} (#⇛→≈C {w'} {a} {b} (∀𝕎-mon e comp))) c₃ ,
+      a₁ , a₂ ,
+      isv₁ , isv₂ ,
       ∼C-trans {w'} {b} {a} {a₁} (∼C-sym {w'} {a} {b} (#⇓→∼C {w'} {a} {b} (lower (comp w' e)))) c₁ ,
       c₂ ,
-      ≈C-trans {w'} {b} {a} {c} (≈C-sym {w'} {a} {b} (#⇛→≈C {w'} {a} {b} (∀𝕎-mon e comp))) c₃ , ea
+      ea
 -- ∼-trans (⇓→∼ (lower (comp w' e))) c₁
 -- ≈-trans (⇛→≈ (∀𝕎-mon e comp)) c₃
 equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) eqi =

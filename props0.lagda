@@ -941,8 +941,8 @@ irr-tsquash : (u : univs) (w : 𝕎·) (A1 A2 : CTerm)
               (f g : CTerm) (w1 : 𝕎·) (e1 : w ⊑· w1)
               → ∀𝕎 w1 (λ w' e' → TSQUASHeq (eqInType u w' (eqta w' (⊑-trans· e1 e'))) w' f g
                                  → (z : w ⊑· w') → TSQUASHeq (eqInType u w' (eqta w' z)) w' f g)
-irr-tsquash u w A1 A2 eqta exta f g w1 e1 w' e' (a1 , a2 , c₁ , c₂ , c₃ , eqa) z =
-  a1 , a2 , c₁ , c₂ , c₃ , eqa'
+irr-tsquash u w A1 A2 eqta exta f g w1 e1 w' e' (ca , a1 , a2 , isv₁ , isv₂ , c₁ , c₂ , eqa) z =
+  ca , a1 , a2 , isv₁ , isv₂ , c₁ , c₂ , eqa'
   where
     eqa' : eqInType u w' (eqta w' z) a1 a2
     eqa' = exta a1 a2 w' (⊑-trans· e1 e') z eqa
