@@ -936,6 +936,13 @@ inOpenBar'-comb-change {w} {f₁} {f₂} {f₃} {g₁} {g₂} {g₃} i₁ i₂ i
          (h1 w7 e7 (⊑-trans· (⊑-refl· _) (⊑-trans· e6 e7)) z)
 
 
+→inOpenBar∀𝕎 : {w : 𝕎·} {f : wPred w} → inOpenBar w f → inOpenBar w (λ w' e → ∀𝕎 w' (↑wPred f e))
+→inOpenBar∀𝕎 {w} {f} h w1 e1 =
+  fst (h w1 e1) ,
+  fst (snd (h w1 e1)) ,
+  λ w2 e2 z w3 e3 → snd (snd (h w1 e1)) w3 (⊑-trans· e2 e3) (⊑-trans· z e3)
+
+
 
 -- We can prove that open-bars satisfy the Bar properties
 inOpenBar-Bar : Bar
@@ -958,6 +965,7 @@ inOpenBar-Bar =
 --    inOpenBar'-change
     inOpenBar'-comb-change
     inOpenBar-const
+    →inOpenBar∀𝕎
 
 
     --atOpenBar

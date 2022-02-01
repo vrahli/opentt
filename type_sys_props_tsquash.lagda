@@ -207,7 +207,7 @@ typeSysConds-TSQUASH-isym u w A B A1 B1 x x₁ eqta exta inda f g eqa =
     h : ∀𝕎 w (λ w' e' →
                   TSQUASHeq (eqInType u w' (eqta w' e')) w' f g
                   → TSQUASHeq (eqInType u w' (eqta w' e')) w' g f)
-    h w1 e1 (a , b , c₁ , c₂ , c₃ , z) = b , a , c₂ , c₁ , ≈-sym c₃ , TSP.isym (inda w1 e1) a b z
+    h w1 e1 (a , b , c₁ , c₂ , c₃ , z) = b , a , c₂ , c₁ , ≈C-sym {w1} {f} {g} c₃ , TSP.isym (inda w1 e1) a b z
 
 
 
@@ -226,7 +226,7 @@ typeSysConds-TSQUASH-itrans u w A B A1 B1 x x₁ eqta exta inda f g h ea1 ea2 =
                 → TSQUASHeq (eqInType u w' (eqta w' e)) w' g h
                 → TSQUASHeq (eqInType u w' (eqta w' e)) w' f h)
     aw w1 e1 (a₁ , a₂ , c₁ , c₂ , c₃ , ea) (b₁ , b₂ , d₁ , d₂ , d₃ , eb) =
-      a₁ , a₂ , c₁ , ∼-trans (∼-sym (≈-∼ d₃)) c₂ , ≈-trans c₃ d₃ , ea
+      a₁ , a₂ , c₁ , ∼C-trans {w1} {h} {g} {a₂} (∼C-sym {w1} {g} {h} (≈C-∼C {w1} {g} {h} d₃)) c₂ , ≈C-trans {w1} {f} {g} {h} c₃ d₃ , ea
 
 
 

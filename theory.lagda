@@ -254,10 +254,13 @@ UNIONeq eqa eqb w t1 t2  =
     (t1 #⇛ (#INR a) at w × t2 #⇛ (#INR b) at w × eqb a b)))
 
 
+
+-- TODO: use ∼C and ≈C instead for simplicity
 TSQUASHeq : (eqa : per) → wper
 TSQUASHeq eqa w t1 t2  =
   Σ CTerm (λ a1 → Σ CTerm (λ a2 →
-     (⌜ t1 ⌝ ∼ ⌜ a1 ⌝ at w) × (⌜ t2 ⌝ ∼ ⌜ a2 ⌝ at w) × (⌜ t1 ⌝ ≈ ⌜ t2 ⌝ at w)
+     (∼C w t1 a1) × (∼C w t2 a2) × (≈C w t1 t2)
+--     (⌜ t1 ⌝ ∼ ⌜ a1 ⌝ at w) × (⌜ t2 ⌝ ∼ ⌜ a2 ⌝ at w) × (⌜ t1 ⌝ ≈ ⌜ t2 ⌝ at w)
      × eqa a1 a2))
 
 

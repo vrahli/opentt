@@ -1827,4 +1827,16 @@ sub0-#[0]UNION a t u = CTerm≡ refl
 
 sub0-#[0]NEG : (a : CTerm) (t : CTerm0) → sub0 a (#[0]NEG t) ≡ #NEG (sub0 a t)
 sub0-#[0]NEG a t = CTerm≡ refl
+
+
+QTNAT : Term
+QTNAT = TSQUASH NAT
+
+
+#QTNAT : CTerm
+#QTNAT = ct QTNAT refl
+
+
+#[0]QTNAT : CTerm0
+#[0]QTNAT = ct0 QTNAT refl
 \end{code}

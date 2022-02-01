@@ -851,4 +851,70 @@ steps-⇓-ASSERT₁ {w} (suc n) {a} {b} comp with step⊎ a w
                 → #ASSERT₁ a #⇛ #FALSE at w
 #⇛-ASSERT₁-INR {w} {a} {x} comp w' e = lift (⇓-ASSERT₁-INR (lower (comp w' e)))
 
+
+
+-- A simpler definition than Howe's computation equivalence relation for now
+data ∼T : 𝕎· → Term → Term → Set where
+  ∼T→ : {w : 𝕎·} {a b : Term} → a ⇓ b at w → ∼T w a b
+  ∼T← : {w : 𝕎·} {a b : Term} → b ⇓ a at w → ∼T w a b
+  ∼T-trans : {w : 𝕎·} {a b c : Term} → ∼T w a b → ∼T w b c → ∼T w a c
+
+
+∼C : 𝕎· → CTerm → CTerm → Set
+∼C w a b = ∼T w ⌜ a ⌝ ⌜ b ⌝
+
+
+≈C : 𝕎· → CTerm → CTerm → Set(lsuc(L))
+≈C w a b = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (∼C w' a b))
+
+
+∼T-sym : {w : 𝕎·} {a b : Term} → ∼T w a b → ∼T w b a
+∼T-sym {w} {a} {b} (∼T→ x) = ∼T← x
+∼T-sym {w} {a} {b} (∼T← x) = ∼T→ x
+∼T-sym {w} {a} {b} (∼T-trans h h₁) = ∼T-trans (∼T-sym h₁) (∼T-sym h)
+
+
+∼C-sym : {w : 𝕎·} {a b : CTerm} → ∼C w a b → ∼C w b a
+∼C-sym {w} {a} {b} h = ∼T-sym h
+
+
+≈C-sym : {w : 𝕎·} {a b : CTerm} → ≈C w a b → ≈C w b a
+≈C-sym {w} {a} {b} h w1 e1 = lift (∼C-sym {w1} {a} {b} (lower (h w1 e1)))
+
+
+∼T-refl : {w : 𝕎·} {a : Term} → ∼T w a a
+∼T-refl {w} {a} = ∼T→ (⇓-refl a w)
+
+
+∼C-refl : {w : 𝕎·} {a : CTerm} → ∼C w a a
+∼C-refl {w} {a} = ∼T-refl {w} {⌜ a ⌝}
+
+
+≈C-refl : {w : 𝕎·} {a : CTerm} → ≈C w a a
+≈C-refl {w} {a} w1 e1 = lift (∼C-refl {w1} {a})
+
+
+∼C-trans : {w : 𝕎·} {a b c : CTerm} → ∼C w a b → ∼C w b c → ∼C w a c
+∼C-trans {w} {a} {b} {c} h1 h2 = ∼T-trans h1 h2
+
+
+≈C-trans : {w : 𝕎·} {a b c : CTerm} → ≈C w a b → ≈C w b c → ≈C w a c
+≈C-trans {w} {a} {b} {c} h1 h2 w1 e1 = lift (∼C-trans {w1} {a} {b} {c} (lower (h1 w1 e1)) (lower (h2 w1 e1)))
+
+
+⇓→∼T : {w : 𝕎·} {a b : Term} → a ⇓ b at w → ∼T w a b
+⇓→∼T {w} {a} {b} c = ∼T→ c
+
+
+#⇓→∼C : {w : 𝕎·} {a b : CTerm} → a #⇓ b at w → ∼C w a b
+#⇓→∼C {w} {a} {b} c = ∼T→ c
+
+
+#⇛→≈C : {w : 𝕎·} {a b : CTerm} → a #⇛ b at w → ≈C w a b
+#⇛→≈C {w} {a} {b} c w1 e1 = lift (#⇓→∼C {w1} {a} {b} (lower (c w1 e1)))
+
+
+≈C-∼C : {w : 𝕎·} {a b : CTerm} → ≈C w a b → ∼C w a b
+≈C-∼C {w} {a} {b} h = lower (h w (⊑-refl· w))
+
 \end{code}

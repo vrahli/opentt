@@ -592,6 +592,19 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
     (fst (snd (ex (𝔹.bars b) (𝔹.ext b))))
 
 
+
+-- TODO: is this derivable from the others?
+→Σ∈𝔹∀𝕎 : {B : Bars} {w : 𝕎·} {f : wPred w}
+            → Σ∈𝔹 B f
+            → Σ∈𝔹 B (λ w' e → ∀𝕎 w' (↑wPred f e))
+→Σ∈𝔹∀𝕎 {B} {w} {f} (b , i) = b , j
+  where
+    j : ∈𝔹 b (λ w' e → ∀𝕎 w' (↑wPred f e))
+    j {w'} e b w1 e1 z w2 e2 = i e b w2 (⊑-trans· e1 e2) (⊑-trans· z e2)
+
+
+
+
 {-- Those are all the properties we need about Bars to derive the above properties,
     which in turn are the properties of Bar below.
     We show 2 intances below:
@@ -670,6 +683,10 @@ record Bar : Set(lsuc(lsuc(L))) where
 
     -- □A→A some version of T?
     inBar-const       : {w : 𝕎·} {t : Set(lsuc(L))} → inBar w (λ w e → t) → t
+
+    -- TODO: derivable from the others?
+    -- □A→□∀A some version of T?
+    →inBar∀𝕎 : {w : 𝕎·} {f : wPred w} → inBar w f → inBar w (λ w' e → ∀𝕎 w' (↑wPred f e))
 
 
 --    atBar             : {w : 𝕎·} {f : wPred w} (i : inBar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
@@ -767,4 +784,5 @@ BarsProps→Bar b =
 --    (Σ∈𝔹'-change (BarsProps.mon b) (BarsProps.isect b) (BarsProps.fam2 b))
     (Σ∈𝔹'-comb-change (BarsProps.mon b) (BarsProps.isect b) (BarsProps.fam2 b))
     (Σ∈𝔹-const (BarsProps.ex b))
+    →Σ∈𝔹∀𝕎
 \end{code}
