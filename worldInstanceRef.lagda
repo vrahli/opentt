@@ -42,11 +42,32 @@ This provides an instance of world and choice for choice sequences
 
 
 \begin{code}
+B→C : Bool → CTerm
+B→C true = #NUM 0
+B→C false = #NUM 1
 
+
+B→C-inj : {a b : Bool} → B→C a ≡ B→C b → a ≡ b
+B→C-inj {false} {false} x = refl
+B→C-inj {true} {true} x = refl
+
+
+ℕ→C : ℕ → CTerm
+ℕ→C n = #NUM n
+
+
+ℕ→C-inj : {a b : ℕ} → ℕ→C a ≡ ℕ→C b → a ≡ b
+ℕ→C-inj {a} {b} h = NUMinj (≡CTerm h)
+
+
+
+-- We could use Bools instead but then in choiceBarInstance.lagda, we have to pick a better type that contains only choices.
+-- Could instead ∈Typeℂ₀₁→ in choiceBar have an assumption about a and b being choices?
 open import choice
 
 choiceRef : Choice
-choiceRef = mkChoice CTerm (λ x → x) (λ {a} {b} x → x)
+--choiceRef = mkChoice Bool B→C B→C-inj
+choiceRef = mkChoice ℕ ℕ→C ℕ→C-inj
 
 open import choiceDef{1ℓ}(choiceRef)
 
@@ -363,11 +384,26 @@ open import progressDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF
 
 
 
+C0 : ℂ·
+C0 = 0 --true
+
+
+C1 : ℂ·
+C1 = 1 --false
+
+
+∼c : ℂ· → ℂ· → Set
+∼c a b = a ≡ b
+
+
+¬∼c01 : ¬ ∼c C0 C1
+¬∼c01 ()
+
 
 open import choiceExt{1ℓ}(choiceRef)
 
 choiceExtRef : ChoiceExt
-choiceExtRef = mkChoiceExt (#NUM 0) (#NUM 1) #∼vals NUM0≠NUM1 tt tt
+choiceExtRef = mkChoiceExt C0 C1 ∼c ¬∼c01 tt tt
 
 open import choiceExtDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)
 

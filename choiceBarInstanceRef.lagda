@@ -77,10 +77,13 @@ Typeℂ₀₁-isType-beth-bar u w = eqTypesQTNAT
 ℂ₁∈Typeℂ₀₁-beth-ref u w = NUM-equalInType-QTNAT u w 1
 
 
+isvalue-choice : (c : ℂ·) → #isValue (ℂ→C· c)
+isvalue-choice c = tt
+
 
 ℂ→C→∼ℂ-beth-ref : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼ℂ· c1 c → ∼ℂ· c2 c
 ℂ→C→∼ℂ-beth-ref {w} {c} {c1} {c2} comp sim
-  rewrite sym (ℂ→C-inj· {c1} {c2} (#compVal comp (∼vals→isValue₁ sim)))
+  rewrite sym (ℂ→C-inj· {c1} {c2} (#compVal comp (isvalue-choice c1))) -- (∼vals→isValue₁ sim)
   = sim
 
 
@@ -97,15 +100,21 @@ isValueℂ₁-beth-ref = tt
 ℂ₀≠ℂ₁-beth-ref ()
 --}
 
+
+ℕ→B : ℕ → Bool
+ℕ→B 0 = true
+ℕ→B (suc _) = false
+
+
 ∈Typeℂ₀₁→-beth-ref : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-ref a b → inbar w (λ w' _ → #weakℂEq w' a b)
 ∈Typeℂ₀₁→-beth-ref i w a b eqi = Bar.∀𝕎-inBarFunc barI aw (equalInType-QTNAT→ i w a b eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #weakMonEq w' a b → #weakℂEq w' a b)
-    aw w1 e1 h w2 e2 = lift (#NUM (fst (lower (h w2 e2))) ,
-                             #NUM (fst (lower (h w2 e2))) ,
+    aw w1 e1 h w2 e2 = lift (fst (lower (h w2 e2)) ,
+                             fst (lower (h w2 e2)) ,
                              fst (snd (lower (h w2 e2))) ,
                              snd (snd (lower (h w2 e2))) ,
-                             ∼vals-NUM)
+                             refl) --∼vals-NUM)
 
 
 →∈Typeℂ₀₁-beth-ref : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name}
