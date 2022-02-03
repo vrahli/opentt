@@ -77,12 +77,20 @@ step (APPLY (LAMBDA t) u) w = just (sub u t)
 step (APPLY f a) w with step f w
 ... | just g = just (APPLY g a)
 ... | nothing = nothing
+-- FIX
+step (FIX (LAMBDA t)) w = just (sub (FIX (LAMBDA t)) t)
+step (FIX f) w with step f w
+... | just g = just (FIX g)
+... | nothing = nothing
 -- SUM
 step (SUM a b) w = just (SUM a b)
 -- PAIR
 step (PAIR a b) w = just (PAIR a b)
 -- SPREAD
-step (SPREAD a b) w = nothing -- TODO
+step (SPREAD (PAIR a b) c) w = just (sub b (sub a c))
+step (SPREAD a b) w with step a w
+... | just t = just (SPREAD t b)
+... | nothing = nothing
 -- SET
 step (SET a b) w = just (SET a b)
 -- UNION
@@ -92,8 +100,8 @@ step (INL a) w = just (INL a)
 -- INR
 step (INR a) w = just (INR a)
 -- DECIDE
-step (DECIDE (INL a) b c) w = just b
-step (DECIDE (INR a) b c) w = just c
+step (DECIDE (INL a) b c) w = just (sub a b)
+step (DECIDE (INR a) b c) w = just (sub a c)
 step (DECIDE a b c) w with step a w
 ... | just t = just (DECIDE t b c)
 ... | nothing = nothing
@@ -299,6 +307,7 @@ step-APPLY-CS-¬NUM name (NUM x) b w c s rewrite sym (just-inj s) = ⊥-elim (c 
 step-APPLY-CS-¬NUM name (PI a a₁) b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (LAMBDA a) b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (APPLY a a₁) b w c s rewrite s = refl
+step-APPLY-CS-¬NUM name (FIX a) b w c s rewrite s = refl
 step-APPLY-CS-¬NUM name (SUM a a₁) b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (PAIR a a₁) b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (SET a a₁) b w c s rewrite sym (just-inj s) = refl
@@ -317,6 +326,7 @@ step-APPLY-CS-¬NUM name (LIFT a) b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (LOWER a) b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (SHRINK a) b w c s rewrite sym (just-inj s) = refl
 step-APPLY-CS-¬NUM name (DECIDE a x y) b w c s rewrite s = refl
+step-APPLY-CS-¬NUM name (SPREAD a x) b w c s rewrite s = refl
 
 Σ-steps-APPLY-CS≤ : (n : ℕ) (a b : Term) (w : 𝕎·) (name : Name)
                  → steps n a w ≡ b
@@ -682,6 +692,10 @@ all>++R {n} {l} {k} i v j = i v (∈-++⁺ʳ _ j)
   where
     z : steps 1 (APPLY (APPLY a a₁) c) w ≡ APPLY b c
     z rewrite comp = refl
+→-step-APPLY {w} {FIX a} {b} c comp = 1 , z
+  where
+    z : steps 1 (APPLY (FIX a) c) w ≡ APPLY b c
+    z rewrite comp = refl
 →-step-APPLY {w} {SUM a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
 →-step-APPLY {w} {PAIR a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
 →-step-APPLY {w} {SET a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
@@ -702,6 +716,10 @@ all>++R {n} {l} {k} i v j = i v (∈-++⁺ʳ _ j)
 →-step-APPLY {w} {DECIDE a x y} {b} c comp = 1 , z
   where
     z : steps 1 (APPLY (DECIDE a x y) c) w ≡ APPLY b c
+    z rewrite comp = refl
+→-step-APPLY {w} {SPREAD a x} {b} c comp = 1 , z
+  where
+    z : steps 1 (APPLY (SPREAD a x) c) w ≡ APPLY b c
     z rewrite comp = refl
 
 
@@ -795,6 +813,10 @@ step-⇓-ASSERT₁ {w} {APPLY a a₁} {b} comp = 1 , z
   where
     z : steps 1 (ASSERT₁ (APPLY a a₁)) w ≡ ASSERT₁ b
     z rewrite comp = refl
+step-⇓-ASSERT₁ {w} {FIX a} {b} comp = 1 , z
+  where
+    z : steps 1 (ASSERT₁ (FIX a)) w ≡ ASSERT₁ b
+    z rewrite comp = refl
 step-⇓-ASSERT₁ {w} {SUM a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
 step-⇓-ASSERT₁ {w} {PAIR a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
 step-⇓-ASSERT₁ {w} {SET a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
@@ -804,6 +826,10 @@ step-⇓-ASSERT₁ {w} {INR a} {b} comp rewrite sym (just-inj comp) = 0 , refl
 step-⇓-ASSERT₁ {w} {DECIDE a a₁ a₂} {b} comp = 1 , z
   where
     z : steps 1 (ASSERT₁ (DECIDE a a₁ a₂)) w ≡ ASSERT₁ b
+    z rewrite comp = refl
+step-⇓-ASSERT₁ {w} {SPREAD a a₁} {b} comp = 1 , z
+  where
+    z : steps 1 (ASSERT₁ (SPREAD a a₁)) w ≡ ASSERT₁ b
     z rewrite comp = refl
 step-⇓-ASSERT₁ {w} {EQ a a₁ a₂} {b} comp rewrite sym (just-inj comp) = 0 , refl
 step-⇓-ASSERT₁ {w} {AX} {b} comp rewrite sym (just-inj comp) = 0 , refl

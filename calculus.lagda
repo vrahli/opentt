@@ -71,6 +71,7 @@ data Term : Set where
   PI :  Term → Term → Term
   LAMBDA : Term → Term
   APPLY : Term → Term → Term
+  FIX : Term → Term
   -- Sums
   SUM : Term → Term → Term
   PAIR : Term → Term → Term
@@ -111,6 +112,7 @@ isValue (NUM _) = ⊤
 isValue (PI _ _) = ⊤
 isValue (LAMBDA _) = ⊤
 isValue (APPLY _ _) = ⊥ -- Not a value
+isValue (FIX _) = ⊥ -- Not a value
 isValue (SUM _ _) = ⊤
 isValue (PAIR _ _) = ⊤
 isValue (SPREAD _ _) = ⊥ -- Not a value
@@ -186,6 +188,7 @@ fvars (NUM x)          = []
 fvars (PI t t₁)        = fvars t ++ lowerVars (fvars t₁)
 fvars (LAMBDA t)       = lowerVars (fvars t)
 fvars (APPLY t t₁)     = fvars t ++ fvars t₁
+fvars (FIX t)          = fvars t
 fvars (SUM t t₁)       = fvars t ++ lowerVars (fvars t₁)
 fvars (PAIR t t₁)      = fvars t ++ fvars t₁
 fvars (SPREAD t t₁)    = fvars t ++ lowerVars (lowerVars (fvars t₁))
@@ -322,6 +325,7 @@ shiftUp c (NUM x) = NUM x
 shiftUp c (PI t t₁) = PI (shiftUp c t) (shiftUp (suc c) t₁)
 shiftUp c (LAMBDA t) = LAMBDA (shiftUp (suc c) t)
 shiftUp c (APPLY t t₁) = APPLY (shiftUp c t) (shiftUp c t₁)
+shiftUp c (FIX t) = FIX (shiftUp c t)
 shiftUp c (SUM t t₁) = SUM (shiftUp c t) (shiftUp (suc c) t₁)
 shiftUp c (PAIR t t₁) = PAIR (shiftUp c t) (shiftUp c t₁)
 shiftUp c (SPREAD t t₁) = SPREAD (shiftUp c t) (shiftUp (suc (suc c)) t₁)
@@ -352,6 +356,7 @@ shiftDown c (NUM x) = NUM x
 shiftDown c (PI t t₁) = PI (shiftDown c t) (shiftDown (suc c) t₁)
 shiftDown c (LAMBDA t) = LAMBDA (shiftDown (suc c) t)
 shiftDown c (APPLY t t₁) = APPLY (shiftDown c t) (shiftDown c t₁)
+shiftDown c (FIX t) = FIX (shiftDown c t)
 shiftDown c (SUM t t₁) = SUM (shiftDown c t) (shiftDown (suc c) t₁)
 shiftDown c (PAIR t t₁) = PAIR (shiftDown c t) (shiftDown c t₁)
 shiftDown c (SPREAD t t₁) = SPREAD (shiftDown c t) (shiftDown (suc (suc c)) t₁)
@@ -384,6 +389,7 @@ subv v t (NUM x) = NUM x
 subv v t (PI u u₁) =  PI (subv v t u) (subv (suc v) (shiftUp 0 t) u₁)
 subv v t (LAMBDA u) =  LAMBDA (subv (suc v) (shiftUp 0 t) u)
 subv v t (APPLY u u₁) = APPLY (subv v t u) (subv v t u₁)
+subv v t (FIX u) = FIX (subv v t u)
 subv v t (SUM u u₁) = SUM (subv v t u) (subv (suc v) (shiftUp 0 t) u₁)
 subv v t (PAIR u u₁) = PAIR (subv v t u) (subv v t u₁)
 subv v t (SPREAD u u₁) = SPREAD (subv v t u) (subv (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁)
@@ -445,6 +451,8 @@ subvNotIn v t (LAMBDA u) n
 subvNotIn v t (APPLY u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
   rewrite subvNotIn v t u₁ (notInAppVars2 n) = refl
+subvNotIn v t (FIX u) n
+  rewrite subvNotIn v t u n = refl
 subvNotIn v t (SUM u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
   rewrite subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
@@ -527,6 +535,8 @@ shiftDownTrivial v (LAMBDA u) i
 shiftDownTrivial v (APPLY u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
   rewrite shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+shiftDownTrivial v (FIX u) i
+  rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (SUM u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
   rewrite shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
@@ -591,6 +601,8 @@ shiftUpTrivial v (LAMBDA u) i
 shiftUpTrivial v (APPLY u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+shiftUpTrivial v (FIX u) i
+  rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (SUM u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
@@ -660,6 +672,7 @@ shiftDownUp (NUM x) n = refl
 shiftDownUp (PI t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
 shiftDownUp (LAMBDA t) n rewrite shiftDownUp t (suc n) = refl
 shiftDownUp (APPLY t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
+shiftDownUp (FIX t) n rewrite shiftDownUp t n = refl
 shiftDownUp (SUM t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
 shiftDownUp(PAIR t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (SPREAD t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc (suc n)) = refl
@@ -691,6 +704,7 @@ is-NUM (NUM x) = inj₁ ( x , refl)
 is-NUM (PI t t₁) = inj₂ (λ { n () })
 is-NUM (LAMBDA t) = inj₂ (λ { n () })
 is-NUM (APPLY t t₁) = inj₂ (λ { n () })
+is-NUM (FIX t) = inj₂ (λ { n () })
 is-NUM (SUM t t₁) = inj₂ (λ { n () })
 is-NUM (PAIR t t₁) = inj₂ (λ { n () })
 is-NUM (SPREAD t t₁) = inj₂ (λ { n () })
@@ -804,6 +818,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {PI b b₁} isv = tt
 ∼vals→isValue₂ {a} {LAMBDA b} isv = tt
 ∼vals→isValue₂ {a} {APPLY b b₁} ()
+∼vals→isValue₂ {a} {FIX b} ()
 ∼vals→isValue₂ {a} {SUM b b₁} isv = tt
 ∼vals→isValue₂ {a} {PAIR b b₁} isv = tt
 ∼vals→isValue₂ {a} {SPREAD b b₁} ()

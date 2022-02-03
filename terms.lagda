@@ -460,6 +460,7 @@ fvars-shiftUp≡ n (APPLY t t₁)
   rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
   | fvars-shiftUp≡ n t
   | fvars-shiftUp≡ n t₁ = refl
+fvars-shiftUp≡ n (FIX t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (SUM t t₁)
   rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (fvars t₁))
   | fvars-shiftUp≡ n t
@@ -699,6 +700,7 @@ fvars-shiftDown≡ n (APPLY t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
   | fvars-shiftDown≡ n t
   | fvars-shiftDown≡ n t₁ = refl
+fvars-shiftDown≡ n (FIX t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (SUM t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
   | fvars-shiftDown≡ n t
@@ -812,6 +814,7 @@ fvars-subv v a (LAMBDA b) {x} i = →∈removeV-lowerVars++ x v (fvars b) a j
 fvars-subv v a (APPLY b b₁) i with ∈-++⁻ (fvars (subv v a b)) i
 ... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b p)
 ... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b₁ p)
+fvars-subv v a (FIX b) = fvars-subv v a b
 fvars-subv v a (SUM b b₁) {x} i with ∈-++⁻ (fvars (subv v a b)) i
 ... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {lowerVars (fvars b₁)} {fvars a} (fvars-subv v a b p)
 ... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {lowerVars (fvars b₁)} {fvars a} (→∈removeV-lowerVars++ x v (fvars b₁) a j)
@@ -992,6 +995,8 @@ shiftDown1-subv1-shiftUp0 n a (LAMBDA b) ca
 shiftDown1-subv1-shiftUp0 n a (APPLY b b₁) ca
   rewrite shiftDown1-subv1-shiftUp0 n a b ca
         | shiftDown1-subv1-shiftUp0 n a b₁ ca = refl
+shiftDown1-subv1-shiftUp0 n a (FIX b) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
 shiftDown1-subv1-shiftUp0 n a (SUM b b₁) ca
   rewrite #shiftUp 0 (ct a ca)
         | shiftDown1-subv1-shiftUp0 (suc n) a b₁ ca
@@ -1143,6 +1148,10 @@ INRinj refl =  refl
 
 #INRinj : {a b : CTerm} → #INR a ≡ #INR b → a ≡ b
 #INRinj c = CTerm≡ (INRinj (≡CTerm c))
+
+
+FIXinj : {a b : Term} → FIX a ≡ FIX b → a ≡ b
+FIXinj refl =  refl
 
 
 SUMinj1 : {a b c d : Term} → SUM a b ≡ SUM c d → a ≡ c
@@ -1451,6 +1460,7 @@ shiftUp-inj {n} {NUM x} {NUM .x} refl = refl
 shiftUp-inj {n} {PI a a₁} {PI b b₁} e rewrite shiftUp-inj (PIinj1 e) | shiftUp-inj (PIinj2 e) = refl
 shiftUp-inj {n} {LAMBDA a} {LAMBDA b} e rewrite shiftUp-inj (LAMinj e) = refl
 shiftUp-inj {n} {APPLY a a₁} {APPLY b b₁} e rewrite shiftUp-inj (APPLYinj1 e) | shiftUp-inj (APPLYinj2 e) = refl
+shiftUp-inj {n} {FIX a} {FIX b} e rewrite shiftUp-inj (FIXinj e) = refl
 shiftUp-inj {n} {SUM a a₁} {SUM b b₁} e rewrite shiftUp-inj (SUMinj1 e) | shiftUp-inj (SUMinj2 e) = refl
 shiftUp-inj {n} {PAIR a a₁} {PAIR b b₁} e rewrite shiftUp-inj (PAIRinj1 e) | shiftUp-inj (PAIRinj2 e) = refl
 shiftUp-inj {n} {SPREAD a a₁} {SPREAD b b₁} e rewrite shiftUp-inj (SPREADinj1 e) | shiftUp-inj (SPREADinj2 e) = refl
