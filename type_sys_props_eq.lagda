@@ -191,7 +191,7 @@ typeSysConds-EQ-isym u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 f
     h : ∀𝕎 w (λ w' e' →
                   EQeq a1 a2 (eqInType u w' (eqta w' e')) w' f g
                   → EQeq a1 a2 (eqInType u w' (eqta w' e')) w' g f)
-    h w1 e1 (c₁ , c₂ , z) = c₂ , c₁ , z
+    h w1 e1 z = z
 
 
 
@@ -211,7 +211,7 @@ typeSysConds-EQ-itrans u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2
                 EQeq a1 a2 (eqInType u w' (eqta w' e)) w' f g
                 → EQeq a1 a2 (eqInType u w' (eqta w' e)) w' g h
                 → EQeq a1 a2 (eqInType u w' (eqta w' e)) w' f h)
-    aw w1 e1 (c₁ , c₂ , ea) (d₁ , d₂ , eb) = c₁ , d₂ , ea
+    aw w1 e1 ea eb = ea
 
 
 
@@ -241,7 +241,7 @@ typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
     aw : ∀𝕎 w (λ w' e' →
               EQeq a1 a2 (eqInType u w' (eqta w' e')) w' f g
               → EQeq a1 a2 (eqInType u w' (eqtA w' e')) w' f g)
-    aw w1 e1 (c₁ , c₂ , ea) = c₁ , c₂ , TSP.extl1 (inda w1 e1) B₁ (eqtA w1 e1) a1 a2 ea
+    aw w1 e1 ea = TSP.extl1 (inda w1 e1) B₁ (eqtA w1 e1) a1 a2 ea
 
 typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (EQneqUNION (⇛-val-det tt tt x y))
 typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (EQneqTSQUASH (⇛-val-det tt tt x y))
@@ -302,7 +302,7 @@ typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
               (λ w' e' →
                 EQeq a1 a2 (eqInType u w' (eqta w' e')) w' f g
                 → EQeq a₁ a₂ (eqInType u w' (eqtA w' e')) w' f g)
-    aw w1 e1 (c₁ , c₂ , ea) = (c₁ , c₂ , TSP.extl2 (inda w1 e1) A₁ (eqtA w1 e1) a₁ a₂ eb)
+    aw w1 e1 ea = TSP.extl2 (inda w1 e1) A₁ (eqtA w1 e1) a₁ a₂ eb
       where
         eqta₂ : eqInType u w1 (eqta w1 e1) a₂ a2
         eqta₂ = TSP.extrevl2 (inda w1 e1) A₁ (eqtA w1 e1) a₂ a2 (eqt₂ w1 e1)
@@ -372,7 +372,7 @@ typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
               (λ w' e' →
                 EQeq a1 a2 (eqInType u w' (eqta w' e')) w' f g
                 → EQeq a₁ a₂ (eqInType u w' (eqtA w' e')) w' f g)
-    aw w1 e1 (c₁ , c₂ , ea) = (c₁ , c₂ , TSP.extr1 (inda w1 e1) A₁ (eqtA w1 e1) a₁ a₂ eb)
+    aw w1 e1 ea = TSP.extr1 (inda w1 e1) A₁ (eqtA w1 e1) a₁ a₂ eb
       where
         eqta₁ : eqInType u w1 (eqta w1 e1) a₁ b1
         eqta₁ = TSP.extrevr1 (inda w1 e1) A₁ (eqtA w1 e1) a₁ b1 (eqt₁ w1 e1)
@@ -444,7 +444,7 @@ typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
               (λ w' e' →
                 EQeq a1 a2 (eqInType u w' (eqta w' e')) w' f g
                 → EQeq b1 b2 (eqInType u w' (eqtA w' e')) w' f g)
-    aw w1 e1 (c₁ , c₂ , ea) = c₁ , c₂  , TSP.extr2 (inda w1 e1) B₁ (eqtA w1 e1) b1 b2 eb
+    aw w1 e1 ea = TSP.extr2 (inda w1 e1) B₁ (eqtA w1 e1) b1 b2 eb
       where
         eb : eqInType u w1 (eqta w1 e1) b1 b2
         eb = TSP.itrans (inda w1 e1) b1 a1 b2 (TSP.isym (inda w1 e1) a1 b1 (eqt1 w1 e1)) (TSP.itrans (inda w1 e1) a1 a2 b2 ea (eqt2 w1 e1))
@@ -509,7 +509,7 @@ typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
               (λ w' e' →
                 EQeq a1 a2 (eqInType u w' (eqtA w' e')) w' f g
                 → EQeq a1 a2 (eqInType u w' (eqta w' e')) w' f g)
-    aw w1 e1 (c₁ , c₂ , ea) = c₁ , c₂ , TSP.extrevl1 (inda w1 e1) B₁ (eqtA w1 e1) a1 a2 ea
+    aw w1 e1 ea = TSP.extrevl1 (inda w1 e1) B₁ (eqtA w1 e1) a1 a2 ea
 
 typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqUNION (⇛-val-det tt tt x y))
 typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (EQneqTSQUASH (⇛-val-det tt tt x y))
@@ -584,7 +584,7 @@ typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
               (λ w' e' →
                 EQeq a₁ a₂ (eqInType u w' (eqtA w' e')) w' f g
                 → EQeq a1 a2 (eqInType u w' (eqta w' e')) w' f g)
-    aw w1 e1 (c₁ , c₂ , ea) = c₁ , c₂ , TSP.itrans (inda w1 e1) a1 a₁ a2 (TSP.isym (inda w1 e1) a₁ a1 eqta₁) (TSP.itrans (inda w1 e1) a₁ a₂ a2 eqia eqta₂)
+    aw w1 e1 ea = TSP.itrans (inda w1 e1) a1 a₁ a2 (TSP.isym (inda w1 e1) a₁ a1 eqta₁) (TSP.itrans (inda w1 e1) a₁ a₂ a2 eqia eqta₂)
       where
         eqia : eqInType u w1 (eqta w1 e1) a₁ a₂
         eqia = TSP.extrevl2 (inda w1 e1) A₁ (eqtA w1 e1) a₁ a₂ ea
@@ -672,7 +672,7 @@ typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
               (λ w' e' →
                 EQeq a₁ a₂ (eqInType u w' (eqtA w' e')) w' f g
                 → EQeq a1 a2 (eqInType u w' (eqta w' e')) w' f g)
-    aw w1 e1 (c₁ , c₂ , ea) = c₁ , c₂ , ed
+    aw w1 e1 ea = ed
       where
         eb : eqInType u w1 (eqta w1 e1) a₁ a₂
         eb = TSP.extrevr1 (inda w1 e1) A₁ (eqtA w1 e1) a₁ a₂ ea
@@ -765,7 +765,7 @@ typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
               (λ w' e' →
                 EQeq b1 b2 (eqInType u w' (eqtA w' e')) w' f g
                 → EQeq a1 a2 (eqInType u w' (eqta w' e')) w' f g)
-    aw w1 e1 (c₁ , c₂ , ea) = c₁ , c₂ , ec
+    aw w1 e1 ea = ec
       where
         eb : eqInType u w1 (eqta w1 e1) b1 b2
         eb = TSP.extrevr2 (inda w1 e1) B₁ (eqtA w1 e1) b1 b2 ea
@@ -852,7 +852,7 @@ eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTEQ c1
   where
     aw : ∀𝕎 w (λ w' e' → EQeq c1 c2 (eqInType u w' (eqta₁ w' e')) w' a b
                          → EQeq c1 c2 (eqInType u w' (eqta w' e')) w' a b)
-    aw w1 e1 (ax1 , ax2 , eqa) = ax1 , ax2 , eqa'
+    aw w1 e1 eqa = eqa'
       where
         eqa' : eqInType u w1 (eqta w1 e1) c1 c2
         eqa' = snd (inda w1 e1 (eqta₁ w1 e1) c1 c2) eqa
@@ -924,7 +924,7 @@ eqInType-⇛-EQ2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTEQ c1 d1 
 
     aw : ∀𝕎 w (λ w' e' → EQeq c1 c2 (≡∈Type u w' (eqta₁ w' e')) w' a b
                          → EQeq c1 c2 (≡∈Type u w' (eqta w' e')) w' a b)
-    aw w1 e1 (ax1 , ax2 , eqa) = ax1 , ax2 , eqa'
+    aw w1 e1 eqa = eqa'
       where
         eqa' : ≡∈Type u w1 (eqta w1 e1) c1 c2
         eqa' = proj₁ (awexta₁ w1 e1 (eqta w1 e1) c1 c2) eqa
@@ -998,7 +998,7 @@ eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTE
   where
     aw : ∀𝕎 w (λ w' e' → EQeq c1 c2 (eqInType u w' (eqta w' e')) w' a b
                          → EQeq c1 c2 (eqInType u w' (eqta₁ w' e')) w' a b)
-    aw w1 e1 (x1 , x2 , eqa) = x1 , x2 , eqa'
+    aw w1 e1 eqa = eqa'
       where
         eqa' : eqInType u w1 (eqta₁ w1 e1) c1 c2
         eqa' = fst (inda w1 e1 (eqta₁ w1 e1) c1 c2) eqa
@@ -1067,7 +1067,7 @@ eqInType-⇛-EQ-rev2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTEQ c1
 
     aw : ∀𝕎 w (λ w' e' → EQeq c1 c2 (≡∈Type u w' (eqta w' e')) w' a b
                          → EQeq c1 c2 (≡∈Type u w' (eqta₁ w' e')) w' a b)
-    aw w1 e1 (x1 , x2 , eqa) = x1 , x2 , eqa'
+    aw w1 e1 eqa = eqa'
       where
         eqa' : ≡∈Type u w1 (eqta₁ w1 e1) c1 c2
         eqa' = snd (awexta₁ w1 e1 (eqta w1 e1) c1 c2) eqa
@@ -1127,7 +1127,7 @@ typeSysConds-EQ-local u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
 
         aw'' : ∀𝕎 w1 (λ w' e' → EQeq a1 a2 (eqInType u w' (eqta w' (⊑-trans· e1 e'))) w' a b
                                 → (x₂ : w ⊑· w') → EQeq a1 a2 (eqInType u w' (eqta w' x₂)) w' a b)
-        aw'' w' e' (ax1 , ax2 , eqa) x₂ = ax1 , ax2 , eqa'
+        aw'' w' e' eqa x₂ = eqa'
           where
             eqa' : eqInType u w' (eqta w' x₂) a1 a2
             eqa' = exta a1 a2 w' (⊑-trans· e1 e') x₂ eqa

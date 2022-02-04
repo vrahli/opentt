@@ -240,9 +240,7 @@ getChoice→equalInType-#Σchoice-aux2 {n} {name} {w} {k} i sat g =
   equalInType-EQ (Typeℂ₀₁-isType· i w) (Bar.∀𝕎-inBar barI aw)
   where
     aw : ∀𝕎 w (λ w' e → EQeq (#APPLY (#CS name) (#NUM n)) (ℂ→C· k) (equalInType i w' Typeℂ₀₁·) w' #AX #AX)
-    aw w' e = #compAllRefl #AX w' ,
-              #compAllRefl #AX w' ,
-              equalInType-#⇛-left-rev (∀𝕎-mon e g) (sat→equalInType-Typeℂ₀₁· i w' k (0 , sat)) --→equalInType-QNAT i w' (#APPLY (#CS name) (#NUM n)) (ℂ→C· k) (Bar.∀𝕎-inBar barI aw')
+    aw w' e = equalInType-#⇛-left-rev (∀𝕎-mon e g) (sat→equalInType-Typeℂ₀₁· i w' k (0 , sat)) --→equalInType-QNAT i w' (#APPLY (#CS name) (#NUM n)) (ℂ→C· k) (Bar.∀𝕎-inBar barI aw')
       where
 --         aw' : ∀𝕎 w' (λ w'' _ → #weakMonEq w'' (#APPLY (#CS name) (#NUM n)) (ℂ→C· k))
 --         aw' w2 e2 w3 e3 = lift (k , step-⇓-trans (lower (g w3 (⊑-trans· e (⊑-trans· e2 e3)))) (⇓-refl (NUM k) w3) , ⇓-refl (NUM k) w3)
@@ -505,10 +503,7 @@ equalInType-SQUASH-UNION-LIFT→ :  {n i : ℕ} (p : i < n) {w : 𝕎·} {a b u 
                                   → equalInType n w (#SQUASH (#UNION (#↑T p a) (#NEG (#↑T p b)))) u v
                                   → equalInType i w (#SQUASH (#UNION a (#NEG b))) #AX #AX
 equalInType-SQUASH-UNION-LIFT→ {n} {i} p {w} {a} {b} {u} {v} eqi =
-  →equalInType-SQUASH
-    (Bar.∀𝕎-inBar barI (λ w' _ → #⇛-refl w' #AX))
-    (Bar.∀𝕎-inBar barI (λ w' _ → #⇛-refl w' #AX))
-    j1
+  →equalInType-SQUASH j1
   where
     aw : ∀𝕎 w (λ w' e' → Σ CTerm (λ t → equalInType n w' (#UNION (#↑T p a) (#NEG (#↑T p b))) t t)
                         → Σ CTerm (λ t → equalInType i w' (#UNION a (#NEG b)) t t))

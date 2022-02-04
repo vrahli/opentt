@@ -320,7 +320,7 @@ EQeq-ext : {u : 𝕌} {w : 𝕎·} {A B a1 a2 : CTerm}
            (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqta w e) a b))
            → EQeq a1 a2 (≡∈Type u w' (eqta w' e1)) w' a b
            → EQeq a1 a2 (≡∈Type u w' (eqta w' e2)) w' a b
-EQeq-ext {u} {w} {A} {B} {a1} {a2} {eqta} {w'} {e1} {e2} {a} {b} exta (c₁ , c₂ , h) = (c₁ , c₂ , exta a1 a2 w' e1 e2 h)
+EQeq-ext {u} {w} {A} {B} {a1} {a2} {eqta} {w'} {e1} {e2} {a} {b} exta h = exta a1 a2 w' e1 e2 h
 
 
 
@@ -371,8 +371,8 @@ FFDEFSeq-ext : {u : 𝕌} {w : 𝕎·} {A1 A2 : CTerm} {x1 : CTerm}
                (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqta w e) a b))
                → FFDEFSeq x1 (≡∈Type u w' (eqta w' e1)) w' a b
                → FFDEFSeq x1 (≡∈Type u w' (eqta w' e2)) w' a b
-FFDEFSeq-ext {u} {w} {A1} {A2} {x1} {eqta} {w'} {e1} {e2} {a} {b} exta (x , c₁ , c₂ , h , nd) =
-  (x , c₁ , c₂ , exta x1 x w' e1 e2 h , nd)
+FFDEFSeq-ext {u} {w} {A1} {A2} {x1} {eqta} {w'} {e1} {e2} {a} {b} exta (x , h , nd) =
+  (x , exta x1 x w' e1 e2 h , nd)
 
 
 

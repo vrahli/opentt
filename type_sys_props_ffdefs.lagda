@@ -224,7 +224,7 @@ typeSysConds-FFDEFS-isym u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx f g eqa =
     h : ∀𝕎 w (λ w' e' →
                   FFDEFSeq x1 (eqInType u w' (eqta w' e')) w' f g
                   → FFDEFSeq x1 (eqInType u w' (eqta w' e')) w' g f)
-    h w1 e1 (z , c₁ , c₂ , ea) = z , c₂ , c₁ , ea
+    h w1 e1 z = z
 
 
 
@@ -243,7 +243,7 @@ typeSysConds-FFDEFS-itrans u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx f g h e
                 FFDEFSeq x1 (eqInType u w' (eqta w' e)) w' f g
                 → FFDEFSeq x1 (eqInType u w' (eqta w' e)) w' g h
                 → FFDEFSeq x1 (eqInType u w' (eqta w' e)) w' f h)
-    aw w1 e1 (u , c₁ , c₂ , ea , n) (v , d₁ , d₂ , eb , m) = u , c₁ , d₂ , ea , n
+    aw w1 e1 (u , ea , n) (v , eb , m) = u , ea , n
 
 
 
@@ -275,7 +275,7 @@ typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDE
     aw : ∀𝕎 w (λ w' e' →
               FFDEFSeq x1 (eqInType u w' (eqta w' e')) w' f g
               → FFDEFSeq x1 (eqInType u w' (eqtA w' e')) w' f g)
-    aw w1 e1 (a , c₁ , c₂ , ea , n) = a , c₁ , c₂ , TSP.extl1 (inda w1 e1) A4 (eqtA w1 e1) x1 a ea , n
+    aw w1 e1 (a , ea , n) = a , TSP.extl1 (inda w1 e1) A4 (eqtA w1 e1) x1 a ea , n
 
 typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (FFDEFSneqUNIV (⇛-val-det tt tt x c₁))
 {--  ⊥-elim (lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI q z)))
@@ -333,7 +333,7 @@ typeSysConds-FFDEFS-extl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDE
               (λ w' e' →
                 FFDEFSeq x1 (eqInType u w' (eqta w' e')) w' f g
                 → FFDEFSeq u1 (eqInType u w' (eqtA w' e')) w' f g)
-    aw w1 e1 (a , c₁ , c₂ , ea , n) = a , c₁ , c₂ , TSP.extl2 (inda w1 e1) A3 (eqtA w1 e1) u1 a eq2 , n
+    aw w1 e1 (a , ea , n) = a , TSP.extl2 (inda w1 e1) A3 (eqtA w1 e1) u1 a eq2 , n
       where
         eq1 : eqInType u w1 (eqta w1 e1) u1 x1
         eq1 = TSP.extrevl2 (inda w1 e1) A3 (eqtA w1 e1) u1 x1 (eqx₁ w1 e1)
@@ -397,7 +397,7 @@ typeSysConds-FFDEFS-extr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDE
               (λ w' e' →
                 FFDEFSeq x1 (eqInType u w' (eqta w' e')) w' f g
                 → FFDEFSeq u1 (eqInType u w' (eqtA w' e')) w' f g)
-    aw w1 e1 (a , c₁ , c₂ , ea , n) = a , c₁ , c₂ , TSP.extr1 (inda w1 e1) A3 (eqtA w1 e1) u1 a eq1 , n
+    aw w1 e1 (a , ea , n) = a , TSP.extr1 (inda w1 e1) A3 (eqtA w1 e1) u1 a eq1 , n
  -- a , b , c₁ , c₂ , c₃ , TSP.extr1 (inda w1 e1) A3 (eqtA w1 e1) a b ea--}
       where
         eq2 : eqInType u w1 (eqta w1 e1) u1 x2
@@ -462,7 +462,7 @@ typeSysConds-FFDEFS-extr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDE
               (λ w' e' →
                 FFDEFSeq x1 (eqInType u w' (eqta w' e')) w' f g
                 → FFDEFSeq x2 (eqInType u w' (eqtA w' e')) w' f g)
-    aw w1 e1 (a , c₁ , c₂ , ea , n) = a , c₁ , c₂ , TSP.extr2 (inda w1 e1) A4 (eqtA w1 e1) x2 a eq1 , n
+    aw w1 e1 (a , ea , n) = a , TSP.extr2 (inda w1 e1) A4 (eqtA w1 e1) x2 a eq1 , n
       where
         eq1 : eqInType u w1 (eqta w1 e1) x2 a
         eq1 = TSP.itrans (inda w1 e1) x2 x1 a (TSP.isym (inda w1 e1) x1 x2 (eqx w1 e1)) ea
@@ -524,7 +524,7 @@ typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQF
               (λ w' e' →
                 FFDEFSeq x1 (eqInType u w' (eqtA w' e')) w' f g
                 → FFDEFSeq x1 (eqInType u w' (eqta w' e')) w' f g)
-    aw w1 e1 (a , c₁ , c₂ , ea , n) = a , c₁ , c₂ , TSP.extrevl1 (inda w1 e1) A4 (eqtA w1 e1) x1 a ea , n
+    aw w1 e1 (a , ea , n) = a , TSP.extrevl1 (inda w1 e1) A4 (eqtA w1 e1) x1 a ea , n
 
 typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (FFDEFSneqUNIV (⇛-val-det tt tt x c₁))
 {--  ⊥-elim (lift⊥ (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI q z)))
@@ -592,7 +592,7 @@ typeSysConds-FFDEFS-extrevl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQF
               (λ w' e' →
                 FFDEFSeq u1 (eqInType u w' (eqtA w' e')) w' f g
                 → FFDEFSeq x1 (eqInType u w' (eqta w' e')) w' f g)
-    aw w1 e1 (a , c₁ , c₂ , ea , n) = a , c₁ , c₂ , eq3 , n -- TSP.extrevl2 (inda w1 e1) A3 (eqtA w1 e1) a b ea--}
+    aw w1 e1 (a , ea , n) = a , eq3 , n -- TSP.extrevl2 (inda w1 e1) A3 (eqtA w1 e1) a b ea--}
       where
         eq1 : eqInType u w1 (eqta w1 e1) u1 a
         eq1 = TSP.extrevl2 (inda w1 e1) A3 (eqtA w1 e1) u1 a ea
@@ -670,7 +670,7 @@ typeSysConds-FFDEFS-extrevr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQF
               (λ w' e' →
                 FFDEFSeq u1 (eqInType u w' (eqtA w' e')) w' f g
                 → FFDEFSeq x1 (eqInType u w' (eqta w' e')) w' f g)
-    aw w1 e1 (a , c₁ , c₂ , ea , n) = a , c₁ , c₂ , eq3 , n -- TSP.extrevr1 (inda w1 e1) A3 (eqtA w1 e1) a b ea
+    aw w1 e1 (a , ea , n) = a , eq3 , n -- TSP.extrevr1 (inda w1 e1) A3 (eqtA w1 e1) a b ea
       where
         eq1 : eqInType u w1 (eqta w1 e1) u1 a
         eq1 = TSP.extrevr1 (inda w1 e1) A3 (eqtA w1 e1) u1 a ea
@@ -747,7 +747,7 @@ typeSysConds-FFDEFS-extrevr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQ
               (λ w' e' →
                 FFDEFSeq x2 (eqInType u w' (eqtA w' e')) w' f g
                 → FFDEFSeq x1 (eqInType u w' (eqta w' e')) w' f g)
-    aw w1 e1 (a , c₁ , c₂ , ea , n) = a , c₁ , c₂ , eq2 , n
+    aw w1 e1 (a , ea , n) = a , eq2 , n
       where
         eq1 : eqInType u w1 (eqta w1 e1) x2 a
         eq1 = TSP.extrevr2 (inda w1 e1) A4 (eqtA w1 e1) x2 a ea
@@ -824,7 +824,7 @@ eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQFFDEFS A
   where
     aw : ∀𝕎 w (λ w' e' → FFDEFSeq z1 (eqInType u w' (eqta₁ w' e')) w' a b
                          → FFDEFSeq z1 (eqInType u w' (eqta w' e')) w' a b)
-    aw w1 e1 (v , c1 , c2 , eqa , nd) = v , c1 , c2 , eqa' , nd
+    aw w1 e1 (v , eqa , nd) = v , eqa' , nd
       where
         eqa' : eqInType u w1 (eqta w1 e1) z1 v
         eqa' = snd (inda w1 e1 (eqta₁ w1 e1) z1 v) eqa
@@ -899,7 +899,7 @@ eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQFFDEFS A3 A4
 
     aw : ∀𝕎 w (λ w' e' → FFDEFSeq z1 (≡∈Type u w' (eqta₁ w' e')) w' a b
                          → FFDEFSeq z1 (≡∈Type u w' (eqta w' e')) w' a b)
-    aw w1 e1 (v , c1 , c2 , eqa , nd) = v , c1 , c2 , eqa' , nd
+    aw w1 e1 (v , eqa , nd) = v , eqa' , nd
       where
         eqa' : ≡∈Type u w1 (eqta w1 e1) z1 v
         eqa' = proj₁ (awexta₁ w1 e1 (eqta w1 e1) z1 v) eqa
@@ -971,7 +971,7 @@ eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQFFDE
   where
     aw : ∀𝕎 w (λ w' e' → FFDEFSeq z1 (eqInType u w' (eqta w' e')) w' a b
                          → FFDEFSeq z1 (eqInType u w' (eqta₁ w' e')) w' a b)
-    aw w1 e1 (v , c1 , c2 , eqa , nd) = v , c1 , c2 , eqa' , nd
+    aw w1 e1 (v , eqa , nd) = v , eqa' , nd
       where
         eqa' : eqInType u w1 (eqta₁ w1 e1) z1 v
         eqa' = fst (inda w1 e1 (eqta₁ w1 e1) z1 v) eqa
@@ -1038,7 +1038,7 @@ eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQFFDEFS A
 
     aw : ∀𝕎 w (λ w' e' → FFDEFSeq z1 (≡∈Type u w' (eqta w' e')) w' a b
                          → FFDEFSeq z1 (≡∈Type u w' (eqta₁ w' e')) w' a b)
-    aw w1 e1 (v , c1 , c2 , eqa , nd) = v , c1 , c2 , eqa' , nd
+    aw w1 e1 (v , eqa , nd) = v , eqa' , nd
       where
         eqa' : ≡∈Type u w1 (eqta₁ w1 e1) z1 v
         eqa' = snd (awexta₁ w1 e1 (eqta w1 e1) z1 v) eqa
@@ -1090,7 +1090,7 @@ typeSysConds-FFDEFS-local u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx a b i j 
 
         aw'' : ∀𝕎 w1 (λ w' e' → FFDEFSeq x1 (eqInType u w' (eqta w' (⊑-trans· e1 e'))) w' a b
                                 → (x₂ : w ⊑· w') → FFDEFSeq x1 (eqInType u w' (eqta w' x₂)) w' a b)
-        aw'' w' e' (v , c1 , c2 , eqa , nd) x₂ = v , c1 , c2 , eqa' , nd
+        aw'' w' e' (v , eqa , nd) x₂ = v , eqa' , nd
           where
             eqa' : eqInType u w' (eqta w' x₂) x1 v
             eqa' = exta x1 v w' (⊑-trans· e1 e') x₂ eqa

@@ -243,7 +243,8 @@ SETeq eqa eqb f g = Σ CTerm (λ b → Σ (eqa f g) (λ ea → eqb f g ea b b))
 
 EQeq : (a1 a2 : CTerm) (eqa : per) → wper
 EQeq a1 a2 eqa w t1 t2 =
-  t1 #⇛ #AX at w × t2 #⇛ #AX at w × eqa a1 a2
+  --t1 #⇛ #AX at w × t2 #⇛ #AX at w ×
+  eqa a1 a2
 
 
 UNIONeq : (eqa eqb : per) → wper
@@ -266,8 +267,8 @@ TSQUASHeq eqa w t1 t2  =
 FFDEFSeq : CTerm → (eqa : per) → wper
 FFDEFSeq x1 eqa w t1 t2 =
   Σ CTerm (λ x →
-   (t1 #⇛ #AX at w) × (t2 #⇛ #AX at w)
-   × eqa x1 x × nodefs ⌜ x ⌝)
+   --(t1 #⇛ #AX at w) × (t2 #⇛ #AX at w) ×
+   eqa x1 x × nodefs ⌜ x ⌝)
 
 
 {-# TERMINATING #-}

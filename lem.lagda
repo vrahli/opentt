@@ -95,7 +95,7 @@ classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
     p3 w1 e1 a₁ a₂ ea =
       ≡CTerm→equalInType
         (sym (sub0-#[0]SQUASH-LEM p a₁))
-        (→equalInType-SQUASH (inbar-APPLY-lamAX a₁) (inbar-APPLY-lamAX a₂) p4)
+        (→equalInType-SQUASH p4)
       where
         p6 : inbar w1 (λ w' _ → inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁)))
         p6 = ∀∃𝔹· (λ w' e1 e2 h → h) aw

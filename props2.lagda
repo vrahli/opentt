@@ -1179,7 +1179,7 @@ equalInType-FUN→ {u} {w} {A} {B} {f} {g} eqi rewrite #FUN≡#PI A B = z2
     e = eqi
 
     aw : ∀𝕎 w (λ w' e' → EQeq #N0 #N1 (equalTerms i w' (eqtA w' e')) w' a b → Lift (lsuc(L)) ⊥)
-    aw w' e' (c₁ , c₂ , ea) = Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw' z)
+    aw w' e' ea = Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw' z)
       where
         z : inbar w' (λ w'' e → #strongMonEq w'' #N0 #N1)
         z = eqInType-⇛-NAT (uni i) w' #NAT #NAT #N0 #N1 (#compAllRefl #NAT w') (#compAllRefl #NAT w') (eqtA w' e') ea
@@ -1329,20 +1329,20 @@ equalInType-EQ {u} {w} {a} {b} {A} {f} {g} ha eqi =
     ma = equalInType-local (Bar.∀𝕎-inBarFunc barI aw eqi)
       where
         aw : ∀𝕎 w (λ w' e' → EQeq a b (equalInType u w' A) w' f g → equalInType u w' A a a)
-        aw w' e (c₁ , c₂ , h) = equalInType-refl h
+        aw w' e h = equalInType-refl h
 
     mb : equalInType u w A b b
     mb = equalInType-local (Bar.∀𝕎-inBarFunc barI aw eqi)
       where
         aw : ∀𝕎 w (λ w' e' → EQeq a b (equalInType u w' A) w' f g → equalInType u w' A b b)
-        aw w' e (c₁ , c₂ , h) = equalInType-refl (equalInType-sym h)
+        aw w' e h = equalInType-refl (equalInType-sym h)
 
     j : equalTerms u w (eqTypesEQ← ha ma mb) f g
     j = Bar.∀𝕎-inBarFunc barI aw eqi
       where
         aw : ∀𝕎 w (λ w' e' → EQeq a b (equalInType u w' A) w' f g
                             → EQeq a b (eqInType (uni u) w' (eqTypes-mon (uni u) ha w' e')) w' f g)
-        aw w' e (c₁ , c₂ , h) = c₁ , c₂ , equalInType→eqInType {u} {w'} {A} {A} {A} refl {eqTypes-mon (uni u) ha w' e} h
+        aw w' e h = equalInType→eqInType {u} {w'} {A} {A} {A} refl {eqTypes-mon (uni u) ha w' e} h
 
 
 
@@ -1438,7 +1438,7 @@ equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTEQ a1 b1 a2 b2 A₁ B x x₁ e
   where
     aw : ∀𝕎 w (λ w' e' → EQeq a b (equalTerms u w' (eqtA w' e')) w' f g
                         → EQeq a b (equalInType u w' A) w' f g)
-    aw w' e' (c₁ , c₂ , ea) = c₁ , c₂ , ea'
+    aw w' e' ea = ea'
       where
         ea' : equalInType u w' A a b
         ea' = eqInType→equalInType {u} {w'} {A} {A} {B} refl (eqtA w' e') ea
@@ -1465,6 +1465,6 @@ equalInType-EQ-QNAT→ {u} {w} {a} {b} {f} {g} eqi =
   Bar.inBar-idem barI (Bar.∀𝕎-inBarFunc barI aw (equalInType-EQ→ eqi))
   where
     aw : ∀𝕎 w (λ w' e' → EQeq a b (equalInType u w' #QNAT) w' f g → inbar w' (↑wPred' (λ w'' e → #weakMonEq w'' a b) e'))
-    aw w' e (c₁ , c₂ , ea) = Bar.∀𝕎-inBarFunc barI (λ w1 e1 z _ → z) (equalInType-QNAT→ u w' a b ea)
+    aw w' e ea = Bar.∀𝕎-inBarFunc barI (λ w1 e1 z _ → z) (equalInType-QNAT→ u w' a b ea)
 
 \end{code}[hide]

@@ -366,7 +366,7 @@ if-equalInType-EQ-test u w T a b t₁ t₂ (EQTBAR x) eqi w1 e1 =
  --}
 if-equalInType-EQ : (u : ℕ) (w : 𝕎·) (T a b t₁ t₂ : CTerm)
                     → equalInType u w (#EQ a b T) t₁ t₂
-                    → inbar w (λ w' e' → ⌜ t₁ ⌝ ⇛ AX at w' × ⌜ t₂ ⌝ ⇛ AX at w' × equalInType u w' T a b)
+                    → inbar w (λ w' e' → equalInType u w' T a b)
 {-# INLINE inbar #-}
 {-# TERMINATING #-}
 if-equalInType-EQ u w T a b t₁ t₂ (EQTNAT x x₁ , eqi) = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
@@ -382,7 +382,7 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eq
         | #EQinj1 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj2 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj3 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) =
   Bar.∀𝕎-inBarFunc
     barI
-    (λ w1 e1 (c₁ , c₂ , eqi1) → c₁ , c₂ , eqtA w1 e1 , eqi1)
+    (λ w1 e1 eqi1 → eqtA w1 e1 , eqi1)
     eqi
 if-equalInType-EQ u w T a b t₁ t₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
@@ -401,10 +401,10 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
                 (x₁ : eqTypes (uni u) w' (#EQ a b T) (#EQ a b T))
                 {--(at : atbar x w' e' x₁)--}
                 → eqInType (uni u) w' x₁ t₁ t₂
-                → inbar w' (↑wPred' (λ w'' e → ⌜ t₁ ⌝ ⇛ AX at w'' × ⌜ t₂ ⌝ ⇛ AX at w'' × equalInType u w'' T a b) e'))
+                → inbar w' (↑wPred' (λ w'' e → equalInType u w'' T a b) e'))
     aw w1 e1 eqt1 {--at--} eqi1 = Bar.∀𝕎-inBarFunc barI (λ w' e' x z → x) ind
       where
-        ind : inbar w1 (λ w' e' → ⌜ t₁ ⌝ ⇛ AX at w' × ⌜ t₂ ⌝ ⇛ AX at w' × equalInType u w' T a b)
+        ind : inbar w1 (λ w' e' → equalInType u w' T a b)
         ind = if-equalInType-EQ u w1 T a b t₁ t₂ (eqt1 , eqi1)
 
 
@@ -909,7 +909,7 @@ irr-eq : (u : univs) (w : 𝕎·) (a1 a2 A1 A2 : CTerm)
          (f g : CTerm) (w1 : 𝕎·) (e1 : w ⊑· w1)
          → ∀𝕎 w1 (λ w' e' → EQeq a1 a2 (eqInType u w' (eqta w' (⊑-trans· e1 e'))) w' f g
                              → (z : w ⊑· w') → EQeq a1 a2 (eqInType u w' (eqta w' z)) w' f g)
-irr-eq u w a1 a2 A1 A2 eqta exta f g w1 e1 w' e' (c₁ , c₂ , eqa) z = c₁ , c₂ , eqa'
+irr-eq u w a1 a2 A1 A2 eqta exta f g w1 e1 w' e' eqa z = eqa'
   where
     eqa' : eqInType u w' (eqta w' z) a1 a2
     eqa' = exta a1 a2 w' (⊑-trans· e1 e') z eqa
@@ -963,8 +963,8 @@ irr-ffdefs : (u : univs) (w : 𝕎·) (x1 A1 A2 : CTerm)
               (f g : CTerm) (w1 : 𝕎·) (e1 : w ⊑· w1)
               → ∀𝕎 w1 (λ w' e' → FFDEFSeq x1 (eqInType u w' (eqta w' (⊑-trans· e1 e'))) w' f g
                                  → (z : w ⊑· w') → FFDEFSeq x1 (eqInType u w' (eqta w' z)) w' f g)
-irr-ffdefs u w x1 A1 A2 eqta exta f g w1 e1 w' e' (x2 , c₁ , c₂ , eqa , nd) z =
-  x2 , c₁ , c₂ , eqa' , nd
+irr-ffdefs u w x1 A1 A2 eqta exta f g w1 e1 w' e' (x2 , eqa , nd) z =
+  x2 , eqa' , nd
   where
     eqa' : eqInType u w' (eqta w' z) x1 x2
     eqa' = exta x1 x2 w' (⊑-trans· e1 e') z eqa
