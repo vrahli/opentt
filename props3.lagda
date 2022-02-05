@@ -800,4 +800,28 @@ equalTypes→equalInType {n} {w} {A} {B} {a} {b} eqt (eqt' , eqi) =
   TEQrefl-equalTypes n w B A (TEQsym-equalTypes n w A B eqt) ,
   eqInType-extr1 B B eqt (TEQrefl-equalTypes n w B A (TEQsym-equalTypes n w A B eqt)) (eqInType-extl1 A B eqt' eqt eqi)
 
+
+
+sub0-ASSERT-APPLY : (a b : CTerm) → sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ b ⌟ #[0]VAR)) ≡ #ASSERT₂ (#APPLY b a)
+sub0-ASSERT-APPLY a b = CTerm≡ (≡ASSERT₂ (→≡APPLY x y))
+  where
+    x : shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) ⌜ b ⌝) ≡ ⌜ b ⌝
+    x rewrite subNotIn ⌜ a ⌝ ⌜ b ⌝ (CTerm.closed b) = refl
+
+    y : shiftDown 0 (shiftUp 0 ⌜ a ⌝) ≡ ⌜ a ⌝
+    y rewrite #shiftUp 0 a | #shiftDown 0 a = refl
+
+
+
+sub0-NEG-ASSERT-APPLY : (a b : CTerm) → sub0 a (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ b ⌟ #[0]VAR))) ≡ #NEG (#ASSERT₂ (#APPLY b a))
+sub0-NEG-ASSERT-APPLY a b
+  rewrite sub0-#[0]NEG a (#[0]ASSERT₂ (#[0]APPLY ⌞ b ⌟ #[0]VAR)) | sub0-ASSERT-APPLY a b
+  = CTerm≡ (≡NEG (≡ASSERT₂ (→≡APPLY x y)))
+  where
+    x : shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) ⌜ b ⌝) ≡ ⌜ b ⌝
+    x rewrite subNotIn ⌜ a ⌝ ⌜ b ⌝ (CTerm.closed b) = refl
+
+    y : shiftDown 0 (shiftUp 0 ⌜ a ⌝) ≡ ⌜ a ⌝
+    y rewrite #shiftUp 0 a | #shiftDown 0 a = refl
+
 \end{code}
