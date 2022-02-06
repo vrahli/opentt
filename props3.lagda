@@ -184,6 +184,16 @@ equalTypes-#⇛-left-right-rev {i} {w} {a} {b} {c} {d} c₁ c₂ eqt =
 
 
 
+equalTypes-#⇛-left-right : {i : ℕ} {w : 𝕎·} {a b c d : CTerm}
+                                → a #⇛ b at w
+                                → d #⇛ c at w
+                                → equalTypes i w a d
+                                → equalTypes i w b c
+equalTypes-#⇛-left-right {i} {w} {a} {b} {c} {d} c₁ c₂ eqt =
+  equalTypes-#⇛-left c₁ (TEQsym-equalTypes i w _ _ (equalTypes-#⇛-left c₂ (TEQsym-equalTypes i w _ _ eqt)))
+
+
+
 equalTerms-#⇛-left-rev-at : ℕ → Set(lsuc(L))
 equalTerms-#⇛-left-rev-at i =
   {w : 𝕎·} {A B a b c : CTerm}
@@ -823,5 +833,23 @@ sub0-NEG-ASSERT-APPLY a b
 
     y : shiftDown 0 (shiftUp 0 ⌜ a ⌝) ≡ ⌜ a ⌝
     y rewrite #shiftUp 0 a | #shiftDown 0 a = refl
+
+
+
+typeSys : (n : ℕ) → TS (equalTypes n) (equalInType n)
+typeSys n =
+  mkts
+    (TEQsym-equalTypes n)
+    (TEQtrans-equalTypes n)
+    (λ w A B comp e → equalTypes-#⇛-left-right (#compAllRefl A w) comp e)
+    (λ {w1} {w2} A B e eqt → eqTypes-mon (uni n) eqt w2 e)
+    (λ {w} A B h → eqTypes-local h)
+    (EQTsym-equalInType n)
+    (EQTtrans-equalInType n)
+    (λ w A a b comp eqi → equalInType-#⇛-LR (#compAllRefl a w) comp eqi)
+    (λ {w1} {w2} A a b e eqi → equalInType-mon eqi w2 e)
+    (λ {w} A a b h → equalInType-local h)
+    (λ w t → ¬equalInType-FALSE)
+    (TSext-equalTypes-equalInType n)
 
 \end{code}

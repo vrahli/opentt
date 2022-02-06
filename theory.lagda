@@ -539,13 +539,44 @@ EQTtrans σ  = (w : 𝕎·) (A a b c : CTerm) → σ w A a b → σ w A b c → 
 TSext : TEQ → EQT → Set(lsuc(L))
 TSext τ σ = (w : 𝕎·) (A B a b : CTerm) → τ w A B → σ w A a b → σ w B a b
 
+TEQcomp : TEQ → Set(lsuc(L))
+TEQcomp τ = (w : 𝕎·) (A B : CTerm) → A #⇛ B at w → τ w A A → τ w A B
+
+EQTcomp : EQT → Set(lsuc(L))
+EQTcomp σ = (w : 𝕎·) (A a b : CTerm) → a #⇛ b at w → σ w A a a → σ w A a b
+
+TEQmon : TEQ → Set(lsuc(L))
+TEQmon τ = {w1 w2 : 𝕎·} (A B : CTerm) → w1 ⊑· w2 → τ w1 A B → τ w2 A B
+
+EQTmon : EQT → Set(lsuc(L))
+EQTmon σ = {w1 w2 : 𝕎·} (A a b : CTerm) → w1 ⊑· w2 → σ w1 A a b → σ w2 A a b
+
+TEQloc : TEQ → Set(lsuc(L))
+TEQloc τ = {w : 𝕎·} (A B : CTerm) → inbar w (λ w' _ → τ w' A B) → τ w A B
+
+EQTloc : EQT → Set(lsuc(L))
+EQTloc σ = {w : 𝕎·} (A a b : CTerm) → inbar w (λ w' _ → σ w' A a b) → σ w A a b
+
+EQTcons : EQT → Set(lsuc(L))
+EQTcons σ = (w : 𝕎·) (a : CTerm) → ¬ σ w #FALSE a a
+
 record TS (τ : TEQ) (σ : EQT) : Set(lsuc(L)) where
   constructor mkts
   field
+    -- τ's properties
     tySym   : TEQsym τ
     tyTrans : TEQtrans τ
+    tyComp  : TEQcomp τ
+    tyMon   : TEQmon τ
+    tyLoc   : TEQloc τ
+    -- σ's properties
     eqSym   : EQTsym σ
     eqTrans : EQTtrans σ
+    eqComp  : EQTcomp σ
+    eqMon   : EQTmon σ
+    eqLoc   : EQTloc σ
+    eqCons  : EQTcons σ
+    -- τ/σ properties
     tsExt   : TSext τ σ
 
 

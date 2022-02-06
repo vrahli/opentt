@@ -82,53 +82,6 @@ open import boolC(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 
 
 
-loweVars-suc : (l : List Var) → lowerVars (Data.List.map (λ x → suc x) l) ≡ l
-loweVars-suc [] = refl
-loweVars-suc (x ∷ l) rewrite loweVars-suc l = refl
-
-
-fvars-FUN0 : (a b : Term) → fvars (FUN a b) ≡ fvars a ++ fvars b
-fvars-FUN0 a b rewrite fvars-shiftUp≡ 0 b | lowerVars-map-sucIf≤-suc 0 (fvars b) | loweVars-suc (fvars b) = refl
-
-
-
--- MOVE to terms.lagda
-#[0]FUN : CTerm0 → CTerm0 → CTerm0
-#[0]FUN a b = ct0 (FUN ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ [ 0 ] ] FUN ⌜ a ⌝ ⌜ b ⌝
-    c rewrite fvars-FUN0 ⌜ a ⌝ ⌜ b ⌝ = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝} {[ 0 ]}
-                                           (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm0.closed a)) (⊆?→⊆ (CTerm0.closed b)))
-
-
-
-sub0-#[0]FUN : (a : CTerm) (t u : CTerm0)
-               → sub0 a (#[0]FUN t u) ≡ #FUN (sub0 a t) (sub0 a u)
-sub0-#[0]FUN a t u = CTerm≡ (≡PI refl e)
-  where
-    e : shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) (shiftUp 0 ⌜ u ⌝)) ≡ shiftUp 0 ⌜ sub0 a u ⌝
-    e rewrite #shiftUp 0 a
-            | #shiftDown 0 (ct (subv 0 ⌜ a ⌝ ⌜ u ⌝) (#subv-CTerm a u))
-            | #shiftUp 0 (ct (subv 0 ⌜ a ⌝ ⌜ u ⌝) (#subv-CTerm a u))
-            | #shiftUp 0 a
-            | shiftDown1-subv1-shiftUp0 0 ⌜ a ⌝ ⌜ u ⌝ (CTerm.closed a) = refl
-
-
-
-≡sub0-#[0]FUN : (a : CTerm) (b c : CTerm0) (u v : CTerm)
-                 → sub0 a b ≡ u
-                 → sub0 a c ≡ v
-                 → sub0 a (#[0]FUN b c) ≡ #FUN u v
-≡sub0-#[0]FUN a b c u v e f rewrite sym e | sym f = sub0-#[0]FUN a b c
-
-
-≡FUN : {a b c d : Term} → a ≡ b → c ≡ d → FUN a c ≡ FUN b d
-≡FUN {a} {b} {c} {d} e f rewrite e | f = refl
-
------
-
-
-
 MP : Term
 MP = PI NAT→BOOL (FUN (NEG (PI NAT (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))
                        (SQUASH (SUM NAT (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))

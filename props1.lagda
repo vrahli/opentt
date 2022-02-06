@@ -2716,16 +2716,6 @@ TSext-equalTypes-equalInType n w A B a b h (teq , eqi) =
     (TSP.extl1 (typeSysConds n w A A teq) B h a b eqi)
 
 
-typeSys : (n : ℕ) → TS (equalTypes n) (equalInType n)
-typeSys n =
-  mkts
-    (TEQsym-equalTypes n)
-    (TEQtrans-equalTypes n)
-    (EQTsym-equalInType n)
-    (EQTtrans-equalInType n)
-    (TSext-equalTypes-equalInType n)
-
-
 
 {--
 -- Those need to be packaged as we did in Coq

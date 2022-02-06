@@ -283,7 +283,7 @@ typeSysConds-PI-itrans : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1
                                            → TSP (eqtb w1 e1 a1 a2 ea)))
                          → eqInTypeTrans u {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 typeSysConds-PI-itrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb f g h ea1 ea2 =
-  Bar.inBarFunc barI (Bar.inBarFunc barI (Bar.∀𝕎-inBar barI aw) ea1) ea2
+  Bar.inBarFunc barI (Bar.∀𝕎-inBarFunc barI aw ea1) ea2
   where
     aw : ∀𝕎 w
               (λ w' e →

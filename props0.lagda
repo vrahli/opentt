@@ -454,13 +454,10 @@ inbar-strongMonEq-trans : {w : 𝕎·} {a b c : Term}
                           → inbar w (λ w' _ → strongMonEq w' b c)
                           → inbar w (λ w' _ → strongMonEq w' a c)
 inbar-strongMonEq-trans {w} {a} {b} {c} h₁ h₂ =
-  Bar.inBarFunc barI (Bar.inBarFunc barI h h₁) h₂
+  Bar.inBarFunc barI (Bar.∀𝕎-inBarFunc barI aw h₁) h₂
   where
     aw : ∀𝕎 w (λ w' e' → strongMonEq w' a b → strongMonEq w' b c → strongMonEq w' a c)
     aw w1 e1 = strongMonEq-trans
-
-    h : inbar w (λ w' e' → strongMonEq w' a b → strongMonEq w' b c → strongMonEq w' a c)
-    h = Bar.∀𝕎-inBar barI aw
 
 
 
@@ -478,13 +475,10 @@ inbar-weakMonEq-trans : {w : 𝕎·} {a b c : Term}
                         → inbar w (λ w' _ → weakMonEq w' b c)
                         → inbar w (λ w' _ → weakMonEq w' a c)
 inbar-weakMonEq-trans {w} {a} {b} {c} h₁ h₂ =
-  Bar.inBarFunc barI (Bar.inBarFunc barI h h₁) h₂
+  Bar.inBarFunc barI (Bar.∀𝕎-inBarFunc barI aw h₁) h₂
   where
     aw : ∀𝕎 w (λ w' e' → weakMonEq w' a b → weakMonEq w' b c → weakMonEq w' a c)
     aw w1 e1 = weakMonEq-trans
-
-    h : inbar w (λ w' e' → weakMonEq w' a b → weakMonEq w' b c → weakMonEq w' a c)
-    h = Bar.∀𝕎-inBar barI aw
 
 
 strongMonEq-pres-⇓ : {w : 𝕎·} {a1 a2 : Term} {n : ℕ}
@@ -586,13 +580,10 @@ inbar-⇛to-same-CS-trans : {w : 𝕎·} {a b c : Term}
                           → inbar w (λ w' _ → ⇛to-same-CS w' b c)
                           → inbar w (λ w' _ → ⇛to-same-CS w' a c)
 inbar-⇛to-same-CS-trans {w} {a} {b} {c} h₁ h₂ =
-  Bar.inBarFunc barI (Bar.inBarFunc barI h h₁) h₂
+  Bar.inBarFunc barI (Bar.∀𝕎-inBarFunc barI aw h₁) h₂
   where
     aw : ∀𝕎 w (λ w' e' → ⇛to-same-CS w' a b → ⇛to-same-CS w' b c → ⇛to-same-CS w' a c)
     aw w1 e1 = ⇛to-same-CS-trans
-
-    h : inbar w (λ w' e' → ⇛to-same-CS w' a b → ⇛to-same-CS w' b c → ⇛to-same-CS w' a c)
-    h = Bar.∀𝕎-inBar barI aw
 
 
 
