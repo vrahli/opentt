@@ -262,29 +262,28 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
 
 
 
-¬equalInType-#Σchoice : (i : ℕ) (w : 𝕎·) (r : Res) (c : Name) (x y : CTerm) {k1 : ℂ·}
+¬equalInType-#Σchoice : (i : ℕ) (w : 𝕎·) (r : Res) (c : Name) {k1 : ℂ·}
                         → isValue (ℂ→T (Res.def r))
                         → isValue (ℂ→T k1)
                         → ¬ ∼ℂ· (Res.def r) k1
                         → onlyℂ∈𝕎 (Res.def r) c w
                         → compatible· c w r
                         → freezable· c w
-                        → equalInType i w (#Σchoice c k1) x y
-                        → ⊥
-¬equalInType-#Σchoice i w r c x y {k1} isv₁ isv₂ diff oc comp fb eqi = diff sim3
+                        → ¬ inhType i w (#Σchoice c k1)
+¬equalInType-#Σchoice i w r c {k1} isv₁ isv₂ diff oc comp fb (x , eqi) = diff sim3
   where
-    h0 : equalInType i w (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁)) x y
+    h0 : equalInType i w (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁)) x x
     h0 rewrite #Σchoice≡ c k1 = eqi
 
-    h1 : inbar w (λ w' _ → SUMeq (equalInType i w' #NAT) (λ a b ea → equalInType i w' (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·)) w' x y)
+    h1 : inbar w (λ w' _ → SUMeq (equalInType i w' #NAT) (λ a b ea → equalInType i w' (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·)) w' x x)
     h1 = Bar.∀𝕎-inBarFunc barI aw (equalInType-SUM→ {i} {w} {#NAT} {#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁} h0)
       where
         aw : ∀𝕎 w (λ w' e' → SUMeq (equalInType i w' #NAT)
                                      (λ a b ea → equalInType i w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁)))
-                                     w' x y
+                                     w' x x
                            → SUMeq (equalInType i w' #NAT)
                                     (λ a b ea → equalInType i w' (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·))
-                                    w' x y)
+                                    w' x x)
         aw w' e' (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) rewrite sub0-#Σchoice-body≡ a₁ c k1 = a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb
 
     -- 1st jump to bar
@@ -303,7 +302,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     fb1 : freezable· c w1
     fb1 = fst (snd (snd (snd (snd (ChoiceBar.followChoice CB c h1 oc comp fb)))))
 
-    h2 : SUMeq (equalInType i w1 #NAT) (λ a b ea → equalInType i w1 (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·)) w1 x y
+    h2 : SUMeq (equalInType i w1 #NAT) (λ a b ea → equalInType i w1 (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·)) w1 x x
     h2 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB c h1 oc comp fb)))))
 
     a₁ : CTerm
@@ -469,7 +468,7 @@ equalInType-SQUASH-UNION-LIFT→ {n} {i} p {w} {a} {b} {u} {v} eqi =
                                   (t #⇛ #INL x at w'' × t #⇛ #INL y at w'' × equalInType i w'' a x y)
                                   ⊎ (t #⇛ #INR x at w'' × t #⇛ #INR y at w'' × equalInType i w'' (#NEG b) x y))))
         aw1 w'' e' (x , y , inj₁ (c₁ , c₂ , eqk)) = x , y , inj₁ (c₁ , c₂ , equalInType-#↑T→ p w'' a x y eqk)
-        aw1 w'' e' (x , y , inj₂ (c₁ , c₂ , eqk)) = x , y , inj₂ (c₁ , c₂ , equalInType-NEG (λ w0 e0 → equalTypes-#↑T→ p w0 b b (eqTypes-mon (uni n) (eqTypesNEG→ (fst eqk)) w0 e0)) (equalInType-NEG-↑T→ p eqk))
+        aw1 w'' e' (x , y , inj₂ (c₁ , c₂ , eqk)) = x , y , inj₂ (c₁ , c₂ , equalInType-NEG (equalTypes-#↑T→ p w'' b b (eqTypesNEG→ (fst eqk))) (equalInType-NEG-↑T→ p eqk))
 
     j0 : inbar w (λ w' _ → Σ CTerm (λ t → equalInType n w' (#UNION (#↑T p a) (#NEG (#↑T p b))) t t))
     j0 = equalInType-SQUASH→ eqi
@@ -518,6 +517,33 @@ equalInType-SQUASH-UNION→ {i} {w} {a} {b} {u} {v} eqi =
 
 sq-dec : CTerm → CTerm
 sq-dec t = #SQUASH (#UNION t (#NEG t))
+
+
+¬∀𝕎¬equalInType-#Σchoice : (i : ℕ) (w : 𝕎·) (name : Name) (k : ℂ·)
+                            → ⋆ᵣ Resℂ k
+                            → compatible· name w Resℂ
+                            → freezable· name w
+                            → ¬ ∀𝕎 w (λ w' _ → ¬ inhType i w' (#Σchoice name k))
+¬∀𝕎¬equalInType-#Σchoice i w name k rk comp fb aw = aw w1 e1 (#PAIR (#NUM n1) #AX , h1)
+  where
+    w1 : 𝕎·
+    w1 = freeze· name w k
+
+    e1 : w ⊑· w1
+    e1 = freeze⊑· name w k comp rk
+
+    n1 : ℕ
+    n1 = fst (getFreeze· name w k comp fb)
+
+    g0 : ∀𝕎 w1 (λ w' _ → Lift (lsuc(L)) (getChoice· n1 name w' ≡ just k))
+    g0 = snd (getFreeze· name w k comp fb)
+
+    g1 : #APPLY (#CS name) (#NUM n1) #⇛ ℂ→C· k at w1
+    g1 = →#APPLY-#CS#⇛ℂ→C· g0
+
+    h1 : equalInType i w1 (#Σchoice name k) (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX)
+    h1 = getChoice→equalInType-#Σchoice i (⊑-compatible· e1 comp) (rk 0) g1
+
 
 
 ¬-dec-Σchoice : (w : 𝕎·) (i : ℕ)
@@ -579,39 +605,20 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     -- 1st injection: proved by ¬equalInType-#Σchoice
     -- For this it is enough to be able to make a choice different from k1 forever, for example choosing 0 forever
 
-    -- 2nd injection:
-    -- This is where we should be able to make another choice than the default choice
-    w4 : 𝕎·
-    w4 = freeze· name w3 k1
-
-    rNUM : ⋆ᵣ r k1
-    rNUM = sat-ℂ₁
-
-    e4 : w3 ⊑· w4
-    e4 = freeze⊑· name w3 k1 comp2 rNUM
-
-    n1 : ℕ
-    n1 = fst (getFreeze· name w3 k1 comp2 fb2)
-
-    g0 : ∀𝕎 w4 (λ w' _ → Lift (lsuc(L)) (getChoice· n1 name w' ≡ just k1))
-    g0 = snd (getFreeze· name w3 k1 comp2 fb2)
-
-    g1 : #APPLY (#CS name) (#NUM n1) #⇛ ℂ→C· k1 at w4
-    g1 = →#APPLY-#CS#⇛ℂ→C· g0
-
-    h4 : equalInType i w4 (#Σchoice name k1) (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX)
-    h4 = getChoice→equalInType-#Σchoice i (⊑-compatible· e4 comp2) (sat-ℂ₁ 0) g1
+    -- 2nd injection: proved by ¬∀𝕎¬equalInType-#Σchoice
+    -- This is where we make another choice than the default choice
 
     -- conclusion
     concl : (inhType i w3 (#Σchoice name k1) ⊎ ∀𝕎 w3 (λ w'' _ → ¬ inhType i w'' (#Σchoice name k1)))
             → ⊥
-    concl (inj₁ (t , eqi)) = ¬equalInType-#Σchoice i w3 Resℂ name t t isValueℂ₀· isValueℂ₁· dks oc2 comp2 fb2 eqi
-    concl (inj₂ aw) = aw w4 e4 (#PAIR (#NUM n1) #AX , h4)
+    concl (inj₁ eqi) = ¬equalInType-#Σchoice i w3 Resℂ name isValueℂ₀· isValueℂ₁· dks oc2 comp2 fb2 eqi
+    concl (inj₂ aw) = ¬∀𝕎¬equalInType-#Σchoice i w3 name k1 sat-ℂ₁ comp2 fb2 aw
+
 
 
 ¬LEM : (w : 𝕎·) {n i : ℕ} (p : i < n) → member w (#NEG (#LEM p)) #lamAX
 ¬LEM w {n} {i} p =
-  (n , equalInType-NEG (λ w1 e1 → eqTypesLem w1 p) aw1)
+  (n , equalInType-NEG (eqTypesLem w p) aw1)
   where
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' (#LEM p) a₁ a₂)
     aw1 w1 e1 a₁ a₂ ea = ¬-dec-Σchoice w1 i h1

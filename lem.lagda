@@ -114,7 +114,7 @@ classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
             aw : ∀𝕎 w1 (λ w' e' → (inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁)))
                                  → (inhType n w' (#↑T p a₁) ⊎ inhType n w' (#NEG (#↑T p a₁))))
             aw w2 e2 (inj₁ i) = inj₁ i
-            aw w2 e2 (inj₂ i) = inj₂ (equalInType-NEG-inh (λ w3 e3 → equalInType→equalTypes p w3 a₁ a₁ (equalInType-refl (equalInType-mon ea w3 (⊑-trans· e2 e3)))) i)
+            aw w2 e2 (inj₂ i) = inj₂ (equalInType-NEG-inh (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2))) i)
 
         p4 : inbar w1 (λ w' _ → Σ CTerm (λ t → ∈Type n w' (#UNION (#↑T p a₁) (#NEG (#↑T p a₁))) t))
         p4 = Bar.∀𝕎-inBarFunc barI aw p5

@@ -801,11 +801,11 @@ equalInType-FUN {u} {w} {A} {B} {f} {g} ha hb i rewrite #FUN≡#PI A B =
 
 
 equalInType-NEG : {u : ℕ} {w : 𝕎·} {A f g : CTerm}
-                  → ∀𝕎 w (λ w' _ → isType u w' A)
+                  → isType u w A
                   → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType u w' A a₁ a₂)
                   → equalInType u w (#NEG A) f g
 equalInType-NEG {u} {w} {A} {f} {g} ha i rewrite #NEG≡#FUN A =
-  equalInType-FUN ha (λ w1 e1 → eqTypesFALSE) eqi
+  equalInType-FUN (eqTypes-mon (uni u) ha) (λ w1 e1 → eqTypesFALSE) eqi
   where
     eqi : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType u w' A a₁ a₂ → equalInType u w' #FALSE (#APPLY f a₁) (#APPLY g a₂))
     eqi w1 e1 a₁ a₂ ea = ⊥-elim (i w1 e1 a₁ a₂ ea)
@@ -1072,7 +1072,7 @@ equalInType-SQUASH-aux→ {n} {w} {A} {a} {b} (EQTBAR x) eqi =
 
 equalInType-SQUASH→ : {n : ℕ} {w : 𝕎·} {A a b : CTerm}
                        → equalInType n w (#SQUASH A) a b
-                       → inbar w (λ w' _ → Σ CTerm (λ t → equalInType n w' A t t))
+                       → inbar w (λ w' _ → inhType n w' A)
 equalInType-SQUASH→ {n} {w} {A} {a} {b} (eqt , eqi) rewrite #SQUASH≡#SET A = equalInType-SQUASH-aux→ eqt eqi
 
 

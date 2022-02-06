@@ -76,6 +76,7 @@ open import props3(W)(C)(M)(P)(G)(E)
 
 open import choiceBarDef(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 open import typeC(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
+open import not_lem(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 
 
 
@@ -106,5 +107,137 @@ equalTypes-BOOL-Typeℂ₀₁ n w bcb rewrite fst bcb = isTypeBOOL w n
 
 equalInType-BTRUE-ℂ₁ : Boolℂ CB → (n : ℕ) (w : 𝕎·) → equalInType n w #BOOL #BTRUE Cℂ₁
 equalInType-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈BOOL n w
+
+
+
+#SUM-ASSERT : CTerm → CTerm
+#SUM-ASSERT f = #SUM #NAT (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
+
+
+#PI-NEG-ASSERT : CTerm → CTerm
+#PI-NEG-ASSERT f = #PI #NAT (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
+
+
+
+→equalTypes-#SUM-ASSERT : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
+                           → equalInType n w #NAT→BOOL a₁ a₂
+                           → equalTypes n w (#SUM-ASSERT a₁) (#SUM-ASSERT a₂)
+→equalTypes-#SUM-ASSERT {n} {w} {a₁} {a₂} eqt = eqTypesSUM← (λ w' _ → eqTypesNAT) aw1
+  where
+    aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT a b → equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b))
+    aw0 = equalInType-FUN→ eqt
+
+    aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT a b)
+                       → equalTypes n w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))) (sub0 b (#[0]ASSERT₂ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR))))
+    aw1 w' e a b ea rewrite sub0-ASSERT-APPLY a a₁ | sub0-ASSERT-APPLY b a₂ = aw2
+      where
+        eqb : equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b)
+        eqb = aw0 w' e a b ea
+
+        aw2 : equalTypes n w' (#ASSERT₂ (#APPLY a₁ a)) (#ASSERT₂ (#APPLY a₂ b))
+        aw2 = equalInType-BOOL→equalTypes-ASSERT₂ eqb
+
+
+
+→equalTypes-#PI-NEG-ASSERT : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
+                              → equalInType n w #NAT→BOOL a₁ a₂
+                              → equalTypes n w (#PI-NEG-ASSERT a₁) (#PI-NEG-ASSERT a₂)
+→equalTypes-#PI-NEG-ASSERT {n} {w} {a₁} {a₂} eqt =
+  eqTypesPI← (λ w' _ → eqTypesNAT) aw1
+  where
+    aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT a b → equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b))
+    aw0 = equalInType-FUN→ eqt
+
+    aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT a b)
+                       → equalTypes n w' (sub0 a (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))))
+                                          (sub0 b (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR)))))
+    aw1 w' e a b ea rewrite sub0-NEG-ASSERT-APPLY a a₁ | sub0-NEG-ASSERT-APPLY b a₂ = aw2
+      where
+        eqb : equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b)
+        eqb = aw0 w' e a b ea
+
+        aw2 : equalTypes n w' (#NEG (#ASSERT₂ (#APPLY a₁ a))) (#NEG (#ASSERT₂ (#APPLY a₂ b)))
+        aw2 = eqTypesNEG← (equalInType-BOOL→equalTypes-ASSERT₂ eqb)
+
+
+
+#SUM-ASSERT→#Σchoice : Boolℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}
+                       → compatible· name w Resℂ
+                       → Σ ℕ (λ n → ·ᵣ Resℂ n ℂ₁·)
+                       → inhType n w (#SUM-ASSERT (#CS name))
+                       → inhType n w (#Σchoice name ℂ₁·)
+#SUM-ASSERT→#Σchoice bcb {n} {w} {name} comp sat (t , inh) =
+  t , ≡CTerm→equalInType
+        (sym (#Σchoice≡ name ℂ₁·))
+        (fun-equalInType-SUM-NAT {n} {w} {#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
+  where
+    aw1 : ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #NAT m
+                        → equalInType n w' (sub0 m (#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR))) t₁ t₂
+                        → equalInType n w' (sub0 m (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁)) t₁ t₂)
+    aw1 w1 e1 m t₁ t₂ j eqi = ≡CTerm→equalInType (sym (sub0-#Σchoice-body≡ m name ℂ₁·)) eqi2
+      where
+        eqi1 : equalInType n w1 (#ASSERT₂ (#APPLY (#CS name) m)) t₁ t₂
+        eqi1 = ≡CTerm→equalInType (sub0-ASSERT-APPLY m (#CS name)) eqi
+
+        eqt : equalTypes n w1 (#EQ (#APPLY (#CS name) m) #BTRUE #BOOL) (#EQ (#APPLY (#CS name) m) Cℂ₁ Typeℂ₀₁·)
+        eqt = eqTypesEQ← (equalTypes-BOOL-Typeℂ₀₁ n w1 bcb)
+                          (→equalInType-APPLY-CS-BOOL bcb (⊑-compatible· e1 comp) j)
+                          (equalInType-BTRUE-ℂ₁ bcb n w1)
+
+        eqi2 : equalInType n w1 (#EQ (#APPLY (#CS name) m) Cℂ₁ Typeℂ₀₁·) t₁ t₂
+        eqi2 = equalTypes→equalInType
+                 (≡CTerm→eqTypes (sym (#ASSERT₂≡ (#APPLY (#CS name) m))) refl eqt)
+                 eqi1
+
+    aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' #NAT a₁ a₂)
+                        → equalTypes n w' (sub0 a₁ (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁))
+                                           (sub0 a₂ (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁)))
+    aw2 = equalTypes-#Σchoice-body-sub0 n w name ℂ₁· comp sat
+
+
+
+#PI-NEG-ASSERT→#Σchoice : Boolℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}
+                          → compatible· name w Resℂ
+                          → Σ ℕ (λ n → ·ᵣ Resℂ n ℂ₁·)
+                          → inhType n w (#PI-NEG-ASSERT (#CS name))
+                          → inhType n w (#NEG (#Σchoice name ℂ₁·))
+#PI-NEG-ASSERT→#Σchoice bcb {n} {w} {name} comp sat (f , inh) =
+  #lamAX , equalInType-NEG aw1 aw2
+  where
+    aw0 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT a₁ a₂
+                       → equalInType n w' (sub0 a₁ (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR)))) (#APPLY f a₁) (#APPLY f a₂))
+    aw0 = snd (snd (equalInType-PI→ {n} {w} {#NAT} {#[0]NEG (#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR))} inh))
+
+    aw1 : isType n w (#Σchoice name ℂ₁·)
+    aw1 = equalInType-#Σchoice w name ℂ₁· comp sat
+
+    aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' (#Σchoice name ℂ₁·) a₁ a₂)
+    aw2 w1 e1 p₁ p₂ eqi = lower (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw3 h1))
+      where
+        aw3 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType n w' #NAT)
+                                      (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)))
+                                      w' p₁ p₂
+                             → Lift (lsuc L) ⊥)
+        aw3 w2 e2 (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) = lift (eqi3 eqi4)
+          where
+            eqi1 : equalInType n w2 (#EQ (#APPLY (#CS name) a₁) Cℂ₁ Typeℂ₀₁·) b₁ b₂
+            eqi1 = ≡CTerm→equalInType (sub0-#Σchoice-body≡ a₁ name ℂ₁·) eb
+
+            eqi2 : equalInType n w2 (#NEG (#ASSERT₂ (#APPLY (#CS name) a₁))) (#APPLY f a₁) (#APPLY f a₂)
+            eqi2 = ≡CTerm→equalInType (sub0-NEG-ASSERT-APPLY a₁ (#CS name)) (aw0 w2 (⊑-trans· e1 e2) a₁ a₂ ea)
+
+            eqi3 : ¬ equalInType n w2 (#ASSERT₂ (#APPLY (#CS name) a₁)) b₁ b₂
+            eqi3 = equalInType-NEG→ eqi2 w2 (⊑-refl· _) b₁ b₂
+
+            eqi4 : equalInType n w2 (#ASSERT₂ (#APPLY (#CS name) a₁)) b₁ b₂
+            eqi4 = ≡CTerm→equalInType (trans (≡#EQ {#APPLY (#CS name) a₁} refl (snd (snd bcb)) (fst bcb))
+                                              (sym (#ASSERT₂≡ (#APPLY (#CS name) a₁))))
+                                       eqi1
+
+        h0 : equalInType n w1 (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) p₁ p₂
+        h0 = ≡CTerm→equalInType (#Σchoice≡ name ℂ₁·) eqi
+
+        h1 : inbar w1 (λ w' _ → SUMeq (equalInType n w' #NAT) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' p₁ p₂)
+        h1 = equalInType-SUM→ h0
 
 \end{code}

@@ -104,11 +104,11 @@ MP = PI NAT→BOOL (FUN (NEG (PI NAT (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))
 
 
 #MP-left : CTerm → CTerm
-#MP-left f = #NEG (#PI #NAT (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR))))
+#MP-left f = #NEG (#PI-NEG-ASSERT f)
 
 
 #MP-right : CTerm → CTerm
-#MP-right f = #SQUASH (#SUM #NAT (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
+#MP-right f = #SQUASH (#SUM-ASSERT f)
 
 
 #MP-PI : CTerm
@@ -136,25 +136,12 @@ sub0-fun-mp a =
 
 
 
+
 →equalTypes-#MP-left : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
                         → equalInType n w #NAT→BOOL a₁ a₂
                         → equalTypes n w (#MP-left a₁) (#MP-left a₂)
 →equalTypes-#MP-left {n} {w} {a₁} {a₂} eqt =
-  eqTypesNEG← (eqTypesPI← (λ w' _ → eqTypesNAT) aw1)
-  where
-    aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT a b → equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b))
-    aw0 = equalInType-FUN→ eqt
-
-    aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT a b)
-                       → equalTypes n w' (sub0 a (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))))
-                                          (sub0 b (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR)))))
-    aw1 w' e a b ea rewrite sub0-NEG-ASSERT-APPLY a a₁ | sub0-NEG-ASSERT-APPLY b a₂ = aw2
-      where
-        eqb : equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b)
-        eqb = aw0 w' e a b ea
-
-        aw2 : equalTypes n w' (#NEG (#ASSERT₂ (#APPLY a₁ a))) (#NEG (#ASSERT₂ (#APPLY a₂ b)))
-        aw2 = eqTypesNEG← (equalInType-BOOL→equalTypes-ASSERT₂ eqb)
+  eqTypesNEG← (→equalTypes-#PI-NEG-ASSERT eqt)
 
 
 →equalTypes-#MP-right : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
@@ -207,13 +194,13 @@ isTypeNegMP w n = eqTypesNEG← (isTypeMP w n)
 --
 -- Assuming that our choices are Bools
 ¬MP : Boolℂ CB → (w : 𝕎·) → member w (#NEG #MP) #lamAX
-¬MP bcb w = n , equalInType-NEG (λ w1 e1 → isTypeMP w1 n) aw1
+¬MP bcb w = n , equalInType-NEG (isTypeMP w n) aw1
   where
     n : ℕ
     n = 1
 
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' #MP a₁ a₂)
-    aw1 w1 e1 F G ea = {!!}
+    aw1 w1 e1 F G ea = h8 h7
       where
         aw2 : ∀𝕎 w1 (λ w' _ → (f g : CTerm) → equalInType n w' #NAT→BOOL f g
                              → equalInType n w' (sub0 f (#[0]FUN #[0]MP-left #[0]MP-right)) (#APPLY F f) (#APPLY G g))
@@ -232,8 +219,14 @@ isTypeNegMP w n = eqTypesNEG← (isTypeMP w n)
         e2 : w1 ⊑· w2
         e2 = startNewChoice⊏· Resℂ w1
 
+        oc1 : onlyℂ∈𝕎 (Res.def Resℂ) name w2
+        oc1 n = getChoice-startNewChoice· n Resℂ w1
+
         comp1 : compatible· name w2 Resℂ
         comp1 = startChoiceCompatible· Resℂ w1
+
+        fb1 : freezable· name w2
+        fb1 = freezableStart· Resℂ w1
 
         f : CTerm
         f = #CS name
@@ -246,4 +239,47 @@ isTypeNegMP w n = eqTypesNEG← (isTypeMP w n)
 
         h1 : equalInType n w2 (#FUN (#MP-left f) (#MP-right f)) (#APPLY F f) (#APPLY G f)
         h1 = aw3 w2 e2 f f eqf1
+
+        h2 : ∀𝕎 w2 (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#MP-left f) a₁ a₂
+                            → equalInType n w' (#MP-right f) (#APPLY (#APPLY F f) a₁) (#APPLY (#APPLY G f) a₂))
+        h2 = equalInType-FUN→ h1
+
+        h4 : ∀𝕎 w2 (λ w3 e3 → ¬ inhType n w3 (#PI-NEG-ASSERT f))
+        -- freezable might not be true here, but this is something that FCS will satisfy because freezable is always true...
+        h4 w3 e3 inh = ¬∀𝕎¬equalInType-#Σchoice n w3 name ℂ₁· sat-ℂ₁ (⊑-compatible· e3 comp1) {!!} z
+          where
+            z : ∀𝕎 w3 (λ w4 e4 → ¬ inhType n w4 (#Σchoice name ℂ₁·))
+            z = equalInType-NEG→¬inh (snd (#PI-NEG-ASSERT→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh))
+
+        h3 : inhType n w2 (#MP-left f)
+        h3 = equalInType-NEG-inh {n} {w2} (→equalTypes-#PI-NEG-ASSERT eqf1) h4
+
+        h5 : inbar w2 (λ w' _ → inhType n w' (#SUM-ASSERT f))
+        h5 = equalInType-SQUASH→ (h2 w2 (⊑-refl· _) (fst h3) (fst h3) (snd h3))
+
+        -- We follow the choice
+        w3 : 𝕎·
+        w3 = fst (ChoiceBar.followChoice CB name h5 oc1 comp1 fb1)
+
+        e3 : w2 ⊑· w3
+        e3 = fst (snd (ChoiceBar.followChoice CB name h5 oc1 comp1 fb1))
+
+        oc2 : onlyℂ∈𝕎 (Res.def Resℂ) name w3
+        oc2 = fst (snd (snd (ChoiceBar.followChoice CB name h5 oc1 comp1 fb1)))
+
+        comp2 : compatible· name w3 Resℂ
+        comp2 = fst (snd (snd (snd (ChoiceBar.followChoice CB name h5 oc1 comp1 fb1))))
+
+        fb2 : freezable· name w3
+        fb2 = fst (snd (snd (snd (snd (ChoiceBar.followChoice CB name h5 oc1 comp1 fb1)))))
+
+        h6 : inhType n w3 (#SUM-ASSERT f)
+        h6 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB name h5 oc1 comp1 fb1)))))
+
+        h7 : inhType n w3 (#Σchoice name ℂ₁·)
+        h7 = #SUM-ASSERT→#Σchoice bcb comp2 (0 , sat-ℂ₁ 0) h6
+
+        h8 : ¬ inhType n w3 (#Σchoice name ℂ₁·)
+        h8 = ¬equalInType-#Σchoice n w3 Resℂ name isValueℂ₀· isValueℂ₁· ¬∼ℂ₀₁· oc2 comp2 fb2
+
 \end{code}[hide]

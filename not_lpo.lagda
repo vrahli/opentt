@@ -104,11 +104,11 @@ LPO = PI NAT→BOOL (SQUASH (UNION (SUM NAT (ASSERT₂ (APPLY (VAR 1) (VAR 0))))
 
 
 #LPO-left : CTerm → CTerm
-#LPO-left f = #SUM #NAT (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
+#LPO-left = #SUM-ASSERT
 
 
 #LPO-right : CTerm → CTerm
-#LPO-right f = #PI #NAT (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
+#LPO-right = #PI-NEG-ASSERT
 
 
 #LPO-PI : CTerm
@@ -131,48 +131,6 @@ sub0-squash-union-LPO a =
 
 
 
-
-→equalTypes-#LPO-left : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
-                         → equalInType n w #NAT→BOOL a₁ a₂
-                         → equalTypes n w (#LPO-left a₁) (#LPO-left a₂)
-→equalTypes-#LPO-left {n} {w} {a₁} {a₂} eqt = eqTypesSUM← (λ w' _ → eqTypesNAT) aw1
-  where
-    aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT a b → equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b))
-    aw0 = equalInType-FUN→ eqt
-
-    aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT a b)
-                       → equalTypes n w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))) (sub0 b (#[0]ASSERT₂ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR))))
-    aw1 w' e a b ea rewrite sub0-ASSERT-APPLY a a₁ | sub0-ASSERT-APPLY b a₂ = aw2
-      where
-        eqb : equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b)
-        eqb = aw0 w' e a b ea
-
-        aw2 : equalTypes n w' (#ASSERT₂ (#APPLY a₁ a)) (#ASSERT₂ (#APPLY a₂ b))
-        aw2 = equalInType-BOOL→equalTypes-ASSERT₂ eqb
-
-
-→equalTypes-#LPO-right : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
-                          → equalInType n w #NAT→BOOL a₁ a₂
-                          → equalTypes n w (#LPO-right a₁) (#LPO-right a₂)
-→equalTypes-#LPO-right {n} {w} {a₁} {a₂} eqt =
-  eqTypesPI← (λ w' _ → eqTypesNAT) aw1
-  where
-    aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT a b → equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b))
-    aw0 = equalInType-FUN→ eqt
-
-    aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT a b)
-                       → equalTypes n w' (sub0 a (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))))
-                                          (sub0 b (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR)))))
-    aw1 w' e a b ea rewrite sub0-NEG-ASSERT-APPLY a a₁ | sub0-NEG-ASSERT-APPLY b a₂ = aw2
-      where
-        eqb : equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b)
-        eqb = aw0 w' e a b ea
-
-        aw2 : equalTypes n w' (#NEG (#ASSERT₂ (#APPLY a₁ a))) (#NEG (#ASSERT₂ (#APPLY a₂ b)))
-        aw2 = eqTypesNEG← (equalInType-BOOL→equalTypes-ASSERT₂ eqb)
-
-
-
 isTypeLPO-PI : (w : 𝕎·) (n : ℕ) → isType n w #LPO-PI
 isTypeLPO-PI w n =
   eqTypesPI← {w} {n}
@@ -187,10 +145,10 @@ isTypeLPO-PI w n =
     aw w' e a₁ a₂ eqb rewrite sub0-squash-union-LPO a₁ | sub0-squash-union-LPO a₂ = eqt
       where
         eqt1 : equalTypes n w' (#LPO-left a₁) (#LPO-left a₂)
-        eqt1 = →equalTypes-#LPO-left eqb
+        eqt1 = →equalTypes-#SUM-ASSERT eqb
 
         eqt2 : equalTypes n w' (#LPO-right a₁) (#LPO-right a₂)
-        eqt2 = →equalTypes-#LPO-right eqb
+        eqt2 = →equalTypes-#PI-NEG-ASSERT eqb
 
         eqt : equalTypes n w' (#SQUASH (#UNION (#LPO-left a₁) (#LPO-right a₁))) (#SQUASH (#UNION (#LPO-left a₂) (#LPO-right a₂)))
         eqt = eqTypesSQUASH← (eqTypesUNION← eqt1 eqt2)
@@ -206,91 +164,9 @@ isTypeNegLPO w n = eqTypesNEG← (isTypeLPO w n)
 
 
 
-#LPO-left→#Σchoice : Boolℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}
-                      → compatible· name w Resℂ
-                      → Σ ℕ (λ n → ·ᵣ Resℂ n ℂ₁·)
-                      → inhType n w (#LPO-left (#CS name))
-                      → inhType n w (#Σchoice name ℂ₁·)
-#LPO-left→#Σchoice bcb {n} {w} {name} comp sat (t , inh) =
-  t , ≡CTerm→equalInType
-        (sym (#Σchoice≡ name ℂ₁·))
-        (fun-equalInType-SUM-NAT {n} {w} {#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
-  where
-    aw1 : ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #NAT m
-                        → equalInType n w' (sub0 m (#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR))) t₁ t₂
-                        → equalInType n w' (sub0 m (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁)) t₁ t₂)
-    aw1 w1 e1 m t₁ t₂ j eqi = ≡CTerm→equalInType (sym (sub0-#Σchoice-body≡ m name ℂ₁·)) eqi2
-      where
-        eqi1 : equalInType n w1 (#ASSERT₂ (#APPLY (#CS name) m)) t₁ t₂
-        eqi1 = ≡CTerm→equalInType (sub0-ASSERT-APPLY m (#CS name)) eqi
-
-        eqt : equalTypes n w1 (#EQ (#APPLY (#CS name) m) #BTRUE #BOOL) (#EQ (#APPLY (#CS name) m) Cℂ₁ Typeℂ₀₁·)
-        eqt = eqTypesEQ← (equalTypes-BOOL-Typeℂ₀₁ n w1 bcb)
-                          (→equalInType-APPLY-CS-BOOL bcb (⊑-compatible· e1 comp) j)
-                          (equalInType-BTRUE-ℂ₁ bcb n w1)
-
-        eqi2 : equalInType n w1 (#EQ (#APPLY (#CS name) m) Cℂ₁ Typeℂ₀₁·) t₁ t₂
-        eqi2 = equalTypes→equalInType
-                 (≡CTerm→eqTypes (sym (#ASSERT₂≡ (#APPLY (#CS name) m))) refl eqt)
-                 eqi1
-
-    aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' #NAT a₁ a₂)
-                        → equalTypes n w' (sub0 a₁ (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁))
-                                           (sub0 a₂ (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁)))
-    aw2 = equalTypes-#Σchoice-body-sub0 n w name ℂ₁· comp sat
-
-
-
-#LPO-right→#Σchoice : Boolℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}
-                      → compatible· name w Resℂ
-                      → Σ ℕ (λ n → ·ᵣ Resℂ n ℂ₁·)
-                      → inhType n w (#LPO-right (#CS name))
-                      → inhType n w (#NEG (#Σchoice name ℂ₁·))
-#LPO-right→#Σchoice bcb {n} {w} {name} comp sat (f , inh) =
-  #lamAX , equalInType-NEG aw1 aw2
-  where
-    aw0 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT a₁ a₂
-                       → equalInType n w' (sub0 a₁ (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR)))) (#APPLY f a₁) (#APPLY f a₂))
-    aw0 = snd (snd (equalInType-PI→ {n} {w} {#NAT} {#[0]NEG (#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR))} inh))
-
-    aw1 : ∀𝕎 w λ w1 e1 → isType n w1 (#Σchoice name ℂ₁·)
-    aw1 w1 e1 = equalInType-#Σchoice w1 name ℂ₁· (⊑-compatible· e1 comp) sat
-
-    aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' (#Σchoice name ℂ₁·) a₁ a₂)
-    aw2 w1 e1 p₁ p₂ eqi = lower (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw3 h1))
-      where
-        aw3 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType n w' #NAT)
-                                      (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)))
-                                      w' p₁ p₂
-                             → Lift (lsuc L) ⊥)
-        aw3 w2 e2 (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) = lift (eqi3 eqi4)
-          where
-            eqi1 : equalInType n w2 (#EQ (#APPLY (#CS name) a₁) Cℂ₁ Typeℂ₀₁·) b₁ b₂
-            eqi1 = ≡CTerm→equalInType (sub0-#Σchoice-body≡ a₁ name ℂ₁·) eb
-
-            eqi2 : equalInType n w2 (#NEG (#ASSERT₂ (#APPLY (#CS name) a₁))) (#APPLY f a₁) (#APPLY f a₂)
-            eqi2 = ≡CTerm→equalInType (sub0-NEG-ASSERT-APPLY a₁ (#CS name)) (aw0 w2 (⊑-trans· e1 e2) a₁ a₂ ea)
-
-            eqi3 : ¬ equalInType n w2 (#ASSERT₂ (#APPLY (#CS name) a₁)) b₁ b₂
-            eqi3 = equalInType-NEG→ eqi2 w2 (⊑-refl· _) b₁ b₂
-
-            eqi4 : equalInType n w2 (#ASSERT₂ (#APPLY (#CS name) a₁)) b₁ b₂
-            eqi4 = ≡CTerm→equalInType (trans (≡#EQ {#APPLY (#CS name) a₁} refl (snd (snd bcb)) (fst bcb))
-                                              (sym (#ASSERT₂≡ (#APPLY (#CS name) a₁))))
-                                       eqi1
-
-        h0 : equalInType n w1 (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) p₁ p₂
-        h0 = ≡CTerm→equalInType (#Σchoice≡ name ℂ₁·) eqi
-
-        h1 : inbar w1 (λ w' _ → SUMeq (equalInType n w' #NAT) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' p₁ p₂)
-        h1 = equalInType-SUM→ h0
-
-
-
-
 -- Assuming that our choices are Bools
 ¬LPO : Boolℂ CB → (w : 𝕎·) → member w (#NEG #LPO) #lamAX
-¬LPO bcb w = n , equalInType-NEG (λ w1 e1 → isTypeLPO w1 n) aw1
+¬LPO bcb w = n , equalInType-NEG (isTypeLPO w n) aw1
   where
     n : ℕ
     n = 1
@@ -339,9 +215,9 @@ isTypeNegLPO w n = eqTypesNEG← (isTypeLPO w n)
         h1 = aw3 w2 e2 f f eqf1
 
         imp1 : ∀𝕎 w2 (λ w' _ → inhType n w' (#LPO-left f) → inhType n w' (#Σchoice name ℂ₁·))
-        imp1 w3 e3 inh = #LPO-left→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh
+        imp1 w3 e3 inh = #SUM-ASSERT→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh
 
         imp2 : ∀𝕎 w2 (λ w' _ → inhType n w' (#LPO-right f) → inhType n w' (#NEG (#Σchoice name ℂ₁·)))
-        imp2 w3 e3 inh = #LPO-right→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh
+        imp2 w3 e3 inh = #PI-NEG-ASSERT→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh
 
 \end{code}[hide]

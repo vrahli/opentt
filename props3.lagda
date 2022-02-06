@@ -577,13 +577,21 @@ equalInType-UNION→₂ {n} {w} {A} {B} {a} {b} (EQTBAR x , eqi) =
 
 
 equalInType-NEG-inh : {u : ℕ} {w : 𝕎·} {A : CTerm}
-                      → ∀𝕎 w (λ w' _ → isType u w' A)
+                      → isType u w A
                       → ∀𝕎 w (λ w' _ → ¬ inhType u w' A)
                       → inhType u w (#NEG A)
 equalInType-NEG-inh {u} {w} {A} h q = #lamAX , equalInType-NEG h aw
   where
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType u w' A a₁ a₂)
     aw w1 e1 a₁ a₂ ea = q w1 e1 (a₁ , equalInType-refl ea)
+
+
+
+equalInType-NEG→¬inh : {u : ℕ} {w : 𝕎·} {A : CTerm} {f g : CTerm}
+                        → equalInType u w (#NEG A) f g
+                        → ∀𝕎 w (λ w' _ → ¬ inhType u w' A)
+equalInType-NEG→¬inh {u} {w} {A} {f} {g} eqn w1 e1 (t , eqi) = equalInType-NEG→ eqn w1 e1 t t eqi
+
 
 
 inhType-mon : {w1 w2 : 𝕎·} (e : w1 ⊑· w2) {u : ℕ} {A : CTerm}
