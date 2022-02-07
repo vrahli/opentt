@@ -860,4 +860,97 @@ typeSys n =
     (λ w t → ¬equalInType-FALSE)
     (TSext-equalTypes-equalInType n)
 
+
+
+eqTypesQTBOOL : {w : 𝕎·} {i : ℕ} → equalTypes i w #QTBOOL #QTBOOL
+eqTypesQTBOOL {w} {i} = eqTypesTSQUASH← (isTypeBOOL w i)
+
+
+
+-- MOVE to computation
+⇓same-bool : 𝕎· → Term → Term → Set
+⇓same-bool w t1 t2 =
+  Σ Term (λ x → Σ Term (λ y →
+  (t1 ⇓ INL x at w × t2 ⇓ INL y at w)
+  ⊎
+  (t1 ⇓ INR x at w × t2 ⇓ INR y at w)))
+
+
+-- MOVE to computation
+weakBool : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
+weakBool w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (⇓same-bool w' t1 t2))
+
+
+-- MOVE to computation
+#weakBool : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
+#weakBool w t1 t2 = weakBool w ⌜ t1 ⌝ ⌜ t2 ⌝
+
+
+-- MOVE to computation
+strongBool : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
+strongBool w t1 t2 =
+  Σ Term (λ x → Σ Term (λ y →
+  (t1 ⇛ INL x at w × t2 ⇛ INL y at w)
+  ⊎
+  (t1 ⇛ INR x at w × t2 ⇛ INR y at w)))
+
+
+
+-- MOVE to computation
+#strongBool : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
+#strongBool w t1 t2 = strongBool w ⌜ t1 ⌝ ⌜ t2 ⌝
+
+
+
+-- MOVE to terms
+#QTBOOL≡ : #QTBOOL ≡ #TSQUASH #BOOL
+#QTBOOL≡ = CTerm≡ refl
+
+
+
+{--
+-- MOVE to computation
+#weakBool→≈C : {w : 𝕎·} {a b : CTerm} → #weakBool w a b → ≈C w a b
+#weakBool→≈C {w} {a} {b} h w1 e1 = lift (f (snd (snd (lower (h w1 e1)))))
+{--  lift (∼C-trans {w1} {a} {#NUM n} {b}
+                 (#⇓→∼C {w1} {a} {#NUM n} (fst (snd (lower (h w1 e1)))))
+                 (∼C-sym {w1} {b} {#NUM n} (#⇓→∼C {w1} {b} {#NUM n} (snd (snd (lower (h w1 e1)))))))--}
+  where
+    x : Term
+    x = fst (lower (h w1 e1))
+
+    y : Term
+    y = fst (snd (lower (h w1 e1)))
+
+    f : ((⌜ a ⌝ ⇓ INL x at w1 × ⌜ b ⌝ ⇓ INL y at w1) ⊎ (⌜ a ⌝ ⇓ INR x at w1 × ⌜ b ⌝ ⇓ INR y at w1)) → ∼T w1 ⌜ a ⌝ ⌜ b ⌝
+    f (inj₁ (c₁ , c₂)) = {!!}
+    f (inj₂ (c₁ , c₂)) = {!!}
+--}
+
+
+equalInType-BOOL→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                    → equalInType i w #BOOL a b
+                    → inbar w (λ w' _ → #strongBool w' a b)
+equalInType-BOOL→ i w a b eqi =
+  Bar.∀𝕎-inBarFunc barI aw (equalInType-UNION→ eqi)
+  where
+    aw : ∀𝕎 w (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
+                            (a #⇛ #INL x at w' × b #⇛ #INL y at w' × equalInType i w' (ct (EQ N0 N0 NAT) refl) x y)
+                            ⊎
+                            (a #⇛ #INR x at w' × b #⇛ #INR y at w' × equalInType i w' (ct (EQ N0 N0 NAT) refl) x y)))
+                       → #strongBool w' a b)
+    aw w' e' (x , y , inj₁ (c₁ , c₂ , j)) = ⌜ x ⌝ , ⌜ y ⌝ , inj₁ (c₁ , c₂)
+    aw w' e' (x , y , inj₂ (c₁ , c₂ , j)) = ⌜ x ⌝ , ⌜ y ⌝ , inj₂ (c₁ , c₂)
+
+
+{--
+→equalInType-QTBOOL : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                       → inbar w (λ w' _ → #weakBool w' a b)
+                       → equalInType i w #QTBOOL a b
+→equalInType-QTBOOL i w a b j =
+  ≡CTerm→equalInType (sym #QTBOOL≡) (equalInTypeTSQUASH← (Bar.∀𝕎-inBarFunc barI aw j))
+  where
+    aw : ∀𝕎 w (λ w' e' → #weakBool w' a b → TSQUASHeq (equalInType i w' #BOOL) w' a b)
+    aw w' e  h = {!!}
+--}
 \end{code}

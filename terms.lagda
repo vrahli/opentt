@@ -1851,6 +1851,18 @@ QTNAT = TSQUASH NAT
 #[0]QTNAT = ct0 QTNAT refl
 
 
+QTBOOL : Term
+QTBOOL = TSQUASH BOOL
+
+
+#QTBOOL : CTerm
+#QTBOOL = ct QTBOOL refl
+
+
+#[0]QTBOOL : CTerm0
+#[0]QTBOOL = ct0 QTBOOL refl
+
+
 loweVars-suc : (l : List Var) → lowerVars (Data.List.map (λ x → suc x) l) ≡ l
 loweVars-suc [] = refl
 loweVars-suc (x ∷ l) rewrite loweVars-suc l = refl
