@@ -189,12 +189,14 @@ isTypeNegMP : (w : 𝕎·) (n : ℕ) → isType n w (#NEG #MP)
 isTypeNegMP w n = eqTypesNEG← (isTypeMP w n)
 
 
+alwaysFreezable : Freeze W C M P G N → Set(L)
+alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
 
--- TODO: We need to extract the 2 branches of ¬-dec-Σchoice in not_lem to use them here
---
+
 -- Assuming that our choices are Bools
-¬MP : Boolℂ CB → (w : 𝕎·) → member w (#NEG #MP) #lamAX
-¬MP bcb w = n , equalInType-NEG (isTypeMP w n) aw1
+-- and that choices are always freezable (see where it is used below)
+¬MP : Boolℂ CB → alwaysFreezable F → (w : 𝕎·) → member w (#NEG #MP) #lamAX
+¬MP bcb afb w = n , equalInType-NEG (isTypeMP w n) aw1
   where
     n : ℕ
     n = 1
@@ -246,7 +248,7 @@ isTypeNegMP w n = eqTypesNEG← (isTypeMP w n)
 
         h4 : ∀𝕎 w2 (λ w3 e3 → ¬ inhType n w3 (#PI-NEG-ASSERT f))
         -- freezable might not be true here, but this is something that FCS will satisfy because freezable is always true...
-        h4 w3 e3 inh = ¬∀𝕎¬equalInType-#Σchoice n w3 name ℂ₁· sat-ℂ₁ (⊑-compatible· e3 comp1) {!!} z
+        h4 w3 e3 inh = ¬∀𝕎¬equalInType-#Σchoice n w3 name ℂ₁· sat-ℂ₁ (⊑-compatible· e3 comp1) (afb name w3) z
           where
             z : ∀𝕎 w3 (λ w4 e4 → ¬ inhType n w4 (#Σchoice name ℂ₁·))
             z = equalInType-NEG→¬inh (snd (#PI-NEG-ASSERT→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh))
