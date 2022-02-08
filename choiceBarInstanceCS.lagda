@@ -53,7 +53,7 @@ open import barBeth(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)
 open import barI(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)
 open import computation(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
 
-open import theory(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)
+open import forcing(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)
 open import props1(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)
 open import props2(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)
 open import props3(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)

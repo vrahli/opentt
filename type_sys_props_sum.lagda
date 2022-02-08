@@ -50,7 +50,7 @@ open import worldDef(W)
 open import computation(W)(C)(M)(G)
 open import bar(W)
 open import barI(W)(C)(M)(P)
-open import theory(W)(C)(M)(P)(G)(E)
+open import forcing(W)(C)(M)(P)(G)(E)
 open import props0(W)(C)(M)(P)(G)(E)
 open import ind2(W)(C)(M)(P)(G)(E)
 

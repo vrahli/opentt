@@ -1084,4 +1084,36 @@ strongBool w t1 t2 =
   (t1 #⇛ #INR x at w × t2 #⇛ #INR y at w)))
 -- strongBool w ⌜ t1 ⌝ ⌜ t2 ⌝
 
+
+
+#⇓same-bool-trans : {w : 𝕎·} {a b c : CTerm}
+                    → #⇓same-bool w a b
+                    → #⇓same-bool w b c
+                    → #⇓same-bool w a c
+#⇓same-bool-trans {w} {a} {b} {c} (x , y , inj₁ (h1 , h2)) (u , v , inj₁ (q1 , q2)) = x , v ,  inj₁ (h1 , q2) -- , h1 , q
+#⇓same-bool-trans {w} {a} {b} {c} (x , y , inj₁ (h1 , h2)) (u , v , inj₂ (q1 , q2)) = ⊥-elim (h (⇓-val-det tt tt h2 q1))
+  where
+    h : ¬ INL ⌜ y ⌝ ≡ INR ⌜ u ⌝
+    h ()
+#⇓same-bool-trans {w} {a} {b} {c} (x , y , inj₂ (h1 , h2)) (u , v , inj₁ (q1 , q2)) = ⊥-elim (h (⇓-val-det tt tt h2 q1))
+  where
+    h : ¬ INR ⌜ y ⌝ ≡ INL ⌜ u ⌝
+    h ()
+#⇓same-bool-trans {w} {a} {b} {c} (x , y , inj₂ (h1 , h2)) (u , v , inj₂ (q1 , q2)) = x , v ,  inj₂ (h1 , q2) -- , h1 , q
+
+
+lift-#⇓same-bool-trans : {w : 𝕎·} {a b c : CTerm}
+                        → Lift (lsuc L) (#⇓same-bool w a b)
+                        → Lift (lsuc L) (#⇓same-bool w b c)
+                        → Lift (lsuc L) (#⇓same-bool w a c)
+lift-#⇓same-bool-trans {w} {a} {b} {c} (lift h) (lift q) = lift (#⇓same-bool-trans {w} {a} {b} {c} h q)
+
+
+#weakBool-#INL : (w : 𝕎·) (x y : CTerm) → #weakBool w (#INL x) (#INL y)
+#weakBool-#INL w x y w' e' = lift (x , y , inj₁ (⇓-refl (INL ⌜ x ⌝) w' , ⇓-refl (INL ⌜ y ⌝) w'))
+
+
+#weakBool-#INR : (w : 𝕎·) (x y : CTerm) → #weakBool w (#INR x) (#INR y)
+#weakBool-#INR w x y w' e' = lift (x , y , inj₂ (⇓-refl (INR ⌜ x ⌝) w' , ⇓-refl (INR ⌜ y ⌝) w'))
+
 \end{code}

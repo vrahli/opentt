@@ -49,7 +49,7 @@ open import worldDef(W)
 open import computation(W)(C)(M)(G)
 open import bar(W)
 open import barI(W)(C)(M)(P)
-open import theory(W)(C)(M)(P)(G)(E)
+open import forcing(W)(C)(M)(P)(G)(E)
 open import props0(W)(C)(M)(P)(G)(E)
 open import ind2(W)(C)(M)(P)(G)(E)
 
@@ -905,26 +905,6 @@ eqTypesQTBOOL {w} {i} = eqTypesTSQUASH← (isTypeBOOL w i)
 
 
 
-{--
--- MOVE to computation
-#weakBool→≈C : {w : 𝕎·} {a b : CTerm} → #weakBool w a b → ≈C w a b
-#weakBool→≈C {w} {a} {b} h w1 e1 = lift (f (snd (snd (lower (h w1 e1)))))
-{--  lift (∼C-trans {w1} {a} {#NUM n} {b}
-                 (#⇓→∼C {w1} {a} {#NUM n} (fst (snd (lower (h w1 e1)))))
-                 (∼C-sym {w1} {b} {#NUM n} (#⇓→∼C {w1} {b} {#NUM n} (snd (snd (lower (h w1 e1)))))))--}
-  where
-    x : Term
-    x = fst (lower (h w1 e1))
-
-    y : Term
-    y = fst (snd (lower (h w1 e1)))
-
-    f : ((⌜ a ⌝ ⇓ INL x at w1 × ⌜ b ⌝ ⇓ INL y at w1) ⊎ (⌜ a ⌝ ⇓ INR x at w1 × ⌜ b ⌝ ⇓ INR y at w1)) → ∼T w1 ⌜ a ⌝ ⌜ b ⌝
-    f (inj₁ (c₁ , c₂)) = {!!}
-    f (inj₂ (c₁ , c₂)) = {!!}
---}
-
-
 equalInType-BOOL→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                     → equalInType i w #BOOL a b
                     → inbar w (λ w' _ → #strongBool w' a b)
@@ -1001,31 +981,6 @@ equalInType-BOOL→ i w a b eqi =
     aw w' e  h = #weakBool→TSQUASHeq-#BOOL h
 
 
--- MOVE to computation
-#⇓same-bool-trans : {w : 𝕎·} {a b c : CTerm}
-                    → #⇓same-bool w a b
-                    → #⇓same-bool w b c
-                    → #⇓same-bool w a c
-#⇓same-bool-trans {w} {a} {b} {c} (x , y , inj₁ (h1 , h2)) (u , v , inj₁ (q1 , q2)) = x , v ,  inj₁ (h1 , q2) -- , h1 , q
-#⇓same-bool-trans {w} {a} {b} {c} (x , y , inj₁ (h1 , h2)) (u , v , inj₂ (q1 , q2)) = ⊥-elim (h (⇓-val-det tt tt h2 q1))
-  where
-    h : ¬ INL ⌜ y ⌝ ≡ INR ⌜ u ⌝
-    h ()
-#⇓same-bool-trans {w} {a} {b} {c} (x , y , inj₂ (h1 , h2)) (u , v , inj₁ (q1 , q2)) = ⊥-elim (h (⇓-val-det tt tt h2 q1))
-  where
-    h : ¬ INR ⌜ y ⌝ ≡ INL ⌜ u ⌝
-    h ()
-#⇓same-bool-trans {w} {a} {b} {c} (x , y , inj₂ (h1 , h2)) (u , v , inj₂ (q1 , q2)) = x , v ,  inj₂ (h1 , q2) -- , h1 , q
-
-
--- MOVE to computation
-lift-#⇓same-bool-trans : {w : 𝕎·} {a b c : CTerm}
-                        → Lift (lsuc L) (#⇓same-bool w a b)
-                        → Lift (lsuc L) (#⇓same-bool w b c)
-                        → Lift (lsuc L) (#⇓same-bool w a c)
-lift-#⇓same-bool-trans {w} {a} {b} {c} (lift h) (lift q) = lift (#⇓same-bool-trans {w} {a} {b} {c} h q)
-
-
 
 TSQUASH-eq-BOOL→weakMonEq : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                              → TSQUASH-eq (equalInType i w #BOOL) w a b
@@ -1068,16 +1023,6 @@ equalInType-QTBOOL→ i w a b eqi =
                         → #weakBool w' a b)
     aw w1 e1 h w2 e2 = TSQUASH-eq-BOOL→weakMonEq i w2 a b (→TSQUASH-eq (h w2 e2))
 
-
-
--- MOVE to computation
-#weakBool-#INL : (w : 𝕎·) (x y : CTerm) → #weakBool w (#INL x) (#INL y)
-#weakBool-#INL w x y w' e' = lift (x , y , inj₁ (⇓-refl (INL ⌜ x ⌝) w' , ⇓-refl (INL ⌜ y ⌝) w'))
-
-
--- MOVE to computation
-#weakBool-#INR : (w : 𝕎·) (x y : CTerm) → #weakBool w (#INR x) (#INR y)
-#weakBool-#INR w x y w' e' = lift (x , y , inj₂ (⇓-refl (INR ⌜ x ⌝) w' , ⇓-refl (INR ⌜ y ⌝) w'))
 
 
 INL-equalInType-QTBOOL : (i : ℕ) (w : 𝕎·) (x y : CTerm) → equalInType i w #QTBOOL (#INL x) (#INL y)

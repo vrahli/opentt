@@ -54,7 +54,7 @@ open import barBeth(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)
 open import barI(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)
 open import computation(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)
 
-open import theory(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)
+open import forcing(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)
 open import props1(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)
 open import props2(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)
 open import props3(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)

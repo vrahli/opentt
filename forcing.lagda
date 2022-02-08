@@ -40,9 +40,9 @@ open import progress
 open import getChoice
 
 
-module theory {L : Level} (W : PossibleWorlds {L})
-              (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M) (G : GetChoice {L} W C M)
-              (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+module forcing {L : Level} (W : PossibleWorlds {L})
+               (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M) (G : GetChoice {L} W C M)
+               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
 open import worldDef(W)
 open import computation(W)(C)(M)(G)
