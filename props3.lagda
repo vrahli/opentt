@@ -1069,4 +1069,24 @@ equalInType-QTBOOL→ i w a b eqi =
     aw w1 e1 h w2 e2 = TSQUASH-eq-BOOL→weakMonEq i w2 a b (→TSQUASH-eq (h w2 e2))
 
 
+
+-- MOVE to computation
+#weakBool-#INL : (w : 𝕎·) (x y : CTerm) → #weakBool w (#INL x) (#INL y)
+#weakBool-#INL w x y w' e' = lift (x , y , inj₁ (⇓-refl (INL ⌜ x ⌝) w' , ⇓-refl (INL ⌜ y ⌝) w'))
+
+
+-- MOVE to computation
+#weakBool-#INR : (w : 𝕎·) (x y : CTerm) → #weakBool w (#INR x) (#INR y)
+#weakBool-#INR w x y w' e' = lift (x , y , inj₂ (⇓-refl (INR ⌜ x ⌝) w' , ⇓-refl (INR ⌜ y ⌝) w'))
+
+
+INL-equalInType-QTBOOL : (i : ℕ) (w : 𝕎·) (x y : CTerm) → equalInType i w #QTBOOL (#INL x) (#INL y)
+INL-equalInType-QTBOOL i w x y =
+  →equalInType-QTBOOL i w (#INL x) (#INL y) (Bar.∀𝕎-inBar barI (λ w' e' → #weakBool-#INL w' x y))
+
+
+INR-equalInType-QTBOOL : (i : ℕ) (w : 𝕎·) (x y : CTerm) → equalInType i w #QTBOOL (#INR x) (#INR y)
+INR-equalInType-QTBOOL i w x y =
+  →equalInType-QTBOOL i w (#INR x) (#INR y) (Bar.∀𝕎-inBar barI (λ w' e' → #weakBool-#INR w' x y))
+
 \end{code}
