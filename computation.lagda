@@ -225,9 +225,14 @@ compAllVal {a} {b} {w} c i = let c' = c _ (⊑-refl· w) in compVal _ _ _ (lower
 strongMonEq : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
 strongMonEq w t1 t2 = Σ ℕ (λ n → t1 ⇛ (NUM n) at w × t2 ⇛ (NUM n) at w)
 
+
+⇓sameℕ : (w : 𝕎·) (t1 t2 : Term) → Set
+⇓sameℕ w t1 t2 = Σ ℕ (λ n → t1 ⇓ (NUM n) at w × t2 ⇓ (NUM n) at w)
+
+
 -- t1 and t2 compute to the same number but that number can change over time
 weakMonEq : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
-weakMonEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ n → t1 ⇓ (NUM n) at w' × t2 ⇓ (NUM n) at w')))
+weakMonEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (⇓sameℕ w' t1 t2))
 
 
 weakℕ : (w : 𝕎·) (t : Term) → Set(lsuc(L))
@@ -942,5 +947,141 @@ data ∼T : 𝕎· → Term → Term → Set where
 
 ≈C-∼C : {w : 𝕎·} {a b : CTerm} → ≈C w a b → ∼C w a b
 ≈C-∼C {w} {a} {b} h = lower (h w (⊑-refl· w))
+
+
+
+∼T→⇓ : {w : 𝕎·} {a b c : Term} → isValue c → ∼T w a b → b ⇓ c at w → a ⇓ c at w
+∼T→⇓ {w} {a} {b} {c} isv (∼T→ x) comp = ⇓-trans x comp
+∼T→⇓ {w} {a} {b} {c} isv (∼T← x) comp = val-⇓→ isv x comp
+∼T→⇓ {w} {a} {b} {c} isv (∼T-trans {.w} {.a} {x} {.b} h h₁) comp = ∼T→⇓ isv h (∼T→⇓ isv h₁ comp)
+
+
+∼C→#⇓ : {w : 𝕎·} {a b : CTerm} → #isValue b → ∼C w a b → a #⇓ b at w
+∼C→#⇓ {w} {a} {b} isv h = ∼T→⇓ isv h (⇓-refl ⌜ b ⌝ w)
+
+
+≡R→#⇓ : {w : 𝕎·} {a b c : CTerm} → b ≡ c → a #⇓ b at w → a #⇓ c at w
+≡R→#⇓ {w} {a} {b} {c} e comp rewrite e = comp
+
+
+≡R→∼C : {w : 𝕎·} {a b c : CTerm} → b ≡ c → ∼C w a b → ∼C w a c
+≡R→∼C {w} {a} {b} {c} e comp rewrite e = comp
+
+
+≡R→∼T : {w : 𝕎·} {a b c : Term} → b ≡ c → ∼T w a b → ∼T w a c
+≡R→∼T {w} {a} {b} {c} e comp rewrite e = comp
+
+
+#weakMonEq→≈C : {w : 𝕎·} {a b : CTerm} → #weakMonEq w a b → ≈C w a b
+#weakMonEq→≈C {w} {a} {b} h w1 e1 =
+  lift (∼C-trans {w1} {a} {#NUM n} {b}
+                 (#⇓→∼C {w1} {a} {#NUM n} (fst (snd (lower (h w1 e1)))))
+                 (∼C-sym {w1} {b} {#NUM n} (#⇓→∼C {w1} {b} {#NUM n} (snd (snd (lower (h w1 e1)))))))
+  where
+    n : ℕ
+    n = fst (lower (h w1 e1))
+
+
+{--
+-- TODO: finish
+step-preserves-fvars-APPLY : (w : 𝕎·) (f a b : Term) → step (APPLY f a) w ≡ just b → fvars b ⊆ fvars f ++ fvars a
+step-preserves-fvars-APPLY w f a b e {x} i = ?
+
+
+step-preserves-fvars : (w : 𝕎·) (a b : Term) → step a w ≡ just b → fvars b ⊆ fvars a
+step-preserves-fvars w NAT b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w QNAT b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (LT a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (QLT a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (NUM x₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (PI a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (LAMBDA a) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (APPLY a a₁) b e {x} i = {!!} -- rewrite sym (just-inj e) = {!!}
+step-preserves-fvars w (FIX a) b e {x} i = {!!} -- rewrite sym (just-inj e) = {!!}
+step-preserves-fvars w (SUM a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (PAIR a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (SPREAD a a₁) b e {x} i = {!!} --rewrite sym (just-inj e) = {!!}
+step-preserves-fvars w (SET a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (UNION a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (INL a) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (INR a) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (DECIDE a a₁ a₂) b e {x} i = {!!} -- rewrite sym (just-inj e) = {!!}
+step-preserves-fvars w (EQ a a₁ a₂) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w AX b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w FREE b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (CS x₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (TSQUASH a) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (DUM a) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (FFDEFS a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (UNIV x₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (LIFT a) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (LOWER a) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (SHRINK a) b e {x} i rewrite sym (just-inj e) = i
+--}
+
+
+⇓same-bool : 𝕎· → Term → Term → Set
+⇓same-bool w t1 t2 =
+  Σ Term (λ x → Σ Term (λ y →
+  (t1 ⇓ INL x at w × t2 ⇓ INL y at w)
+  ⊎
+  (t1 ⇓ INR x at w × t2 ⇓ INR y at w)))
+
+
+
+#⇓same-bool : 𝕎· → CTerm → CTerm → Set
+#⇓same-bool w t1 t2 =
+  Σ CTerm (λ x → Σ CTerm (λ y →
+  (t1 #⇓ #INL x at w × t2 #⇓ #INL y at w)
+  ⊎
+  (t1 #⇓ #INR x at w × t2 #⇓ #INR y at w)))
+
+
+
+weakBool : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
+weakBool w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (⇓same-bool w' t1 t2))
+
+
+#weakBool : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
+#weakBool w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (#⇓same-bool w' t1 t2))
+--weakBool w ⌜ t1 ⌝ ⌜ t2 ⌝
+
+
+{--
+#weakBool→ : {w : 𝕎·} {t1 t2 : CTerm} → #weakBool w t1 t2 → ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (#⇓same-bool w' t1 t2))
+#weakBool→ {w} {t1} {t2} h w' e = lift (c (snd (snd (lower (h w' e)))))
+  where
+    x : Term
+    x = fst (lower (h w' e))
+
+    y : Term
+    y = fst (snd (lower (h w' e)))
+
+--    h' : ⇓same-bool w' ⌜ t1 ⌝ ⌜ t2 ⌝
+--    h' = lower (h w' e)
+
+    c : ((⌜ t1 ⌝ ⇓ INL x at w' × ⌜ t2 ⌝ ⇓ INL y at w') ⊎ (⌜ t1 ⌝ ⇓ INR x at w' × ⌜ t2 ⌝ ⇓ INR y at w')) → #⇓same-bool w' t1 t2
+    c (inj₁ (c₁ , c₂)) = {!!}
+    c (inj₂ (c₁ , c₂)) = {!!}
+--}
+
+
+
+strongBool : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
+strongBool w t1 t2 =
+  Σ Term (λ x → Σ Term (λ y →
+  (t1 ⇛ INL x at w × t2 ⇛ INL y at w)
+  ⊎
+  (t1 ⇛ INR x at w × t2 ⇛ INR y at w)))
+
+
+
+#strongBool : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
+#strongBool w t1 t2 =
+  Σ CTerm (λ x → Σ CTerm (λ y →
+  (t1 #⇛ #INL x at w × t2 #⇛ #INL y at w)
+  ⊎
+  (t1 #⇛ #INR x at w × t2 #⇛ #INR y at w)))
+-- strongBool w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 \end{code}

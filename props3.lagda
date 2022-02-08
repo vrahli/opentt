@@ -203,6 +203,60 @@ equalTerms-#⇛-left-rev-at i =
   → equalTerms i w eqt a c
 
 
+TSQUASH-eq-#⇛ : {eqa : per} {w : 𝕎·} {a b c d : CTerm}
+                 → a #⇛ b at w
+                 → c #⇛ d at w
+                 → TSQUASH-eq eqa w a c
+                 → TSQUASH-eq eqa w b d
+TSQUASH-eq-#⇛ {eqa} {w} {a} {b} {c} {d} c₁ c₂ (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) =
+  TSQUASH-eq-base
+    a1 a2 i1 i2
+    (∼C-trans {w} {b} {a} {a1} (∼C-sym {w} {a} {b} (#⇓→∼C {w} {a} {b} (lower (c₁ w (⊑-refl· _))))) c1)
+    (∼C-trans {w} {d} {c} {a2} (∼C-sym {w} {c} {d} (#⇓→∼C {w} {c} {d} (lower (c₂ w (⊑-refl· _))))) c2)
+    ea
+TSQUASH-eq-#⇛ {eqa} {w} {a} {b} {c} {d} c₁ c₂ (TSQUASH-eq-trans t h1 h2) =
+  TSQUASH-eq-trans
+    t
+    (TSQUASH-eq-#⇛ c₁ (#compAllRefl t w) h1)
+    (TSQUASH-eq-#⇛ (#compAllRefl t w) c₂ h2)
+
+
+
+TSQUASH-eq-#⇛-rev : {eqa : per} {w : 𝕎·} {a b c d : CTerm}
+                     → a #⇛ b at w
+                     → c #⇛ d at w
+                     → TSQUASH-eq eqa w b d
+                     → TSQUASH-eq eqa w a c
+TSQUASH-eq-#⇛-rev {eqa} {w} {a} {b} {c} {d} c₁ c₂ (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) =
+  TSQUASH-eq-base
+    a1 a2 i1 i2
+    (∼C-trans {w} {a} {b} {a1} (#⇓→∼C {w} {a} {b} (lower (c₁ w (⊑-refl· _)))) c1)
+    (∼C-trans {w} {c} {d} {a2} (#⇓→∼C {w} {c} {d} (lower (c₂ w (⊑-refl· _)))) c2)
+    ea
+TSQUASH-eq-#⇛-rev {eqa} {w} {a} {b} {c} {d} c₁ c₂ (TSQUASH-eq-trans t h1 h2) =
+  TSQUASH-eq-trans
+    t
+    (TSQUASH-eq-#⇛-rev c₁ (#compAllRefl t w) h1)
+    (TSQUASH-eq-#⇛-rev (#compAllRefl t w) c₂ h2)
+
+
+
+TSQUASHeq-#⇛ : {eqa : per} {w : 𝕎·} {a b c d : CTerm}
+                     → a #⇛ b at w
+                     → c #⇛ d at w
+                     → TSQUASHeq eqa w a c
+                     → TSQUASHeq eqa w b d
+TSQUASHeq-#⇛ {eqa} {w} {a} {b} {c} {d} c₁ c₂ h = TSQUASH-eq→ (TSQUASH-eq-#⇛ c₁ c₂ (→TSQUASH-eq h))
+
+
+TSQUASHeq-#⇛-rev : {eqa : per} {w : 𝕎·} {a b c d : CTerm}
+                     → a #⇛ b at w
+                     → c #⇛ d at w
+                     → TSQUASHeq eqa w b d
+                     → TSQUASHeq eqa w a c
+TSQUASHeq-#⇛-rev {eqa} {w} {a} {b} {c} {d} c₁ c₂ h = TSQUASH-eq→ (TSQUASH-eq-#⇛-rev c₁ c₂ (→TSQUASH-eq h))
+
+
 
 equalTerms-#⇛-left-rev-aux : {i : ℕ}
                               → (ind : (j : ℕ) → j < i → equalTerms-#⇛-left-rev-at j)
@@ -257,15 +311,7 @@ equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTSQUASH A1 
   where
     aw : ∀𝕎 w (λ w' e' → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' b c
                        → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' a c)
-    aw w' e (c₃ , a₁ , a₂ , isv₁ , isv₂ , c₁ , c₂ , ea) =
-      ≈C-trans {w'} {a} {b} {c} (#⇛→≈C {w'} {a} {b} (∀𝕎-mon e comp)) c₃ ,
-      a₁ ,
-      a₂ ,
-      isv₁ ,
-      isv₂ ,
-      ∼C-trans {w'} {a} {b} {a₁} (#⇓→∼C {w'} {a} {b} (lower (comp w' e))) c₁ ,
-      c₂ ,
-      ea
+    aw w' e h = TSQUASHeq-#⇛-rev (∀𝕎-mon e comp) (#compAllRefl c w') h
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) eqi =
   Bar.∀𝕎-inBarFunc barI aw eqi
   where
@@ -363,15 +409,7 @@ equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTSQUASH A1 A2 x
   where
     aw : ∀𝕎 w (λ w' e' → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' a c
                        → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' b c)
-    aw w' e (c₃ , a₁ , a₂ , isv₁ , isv₂ , c₁ , c₂ , ea) =
-      ≈C-trans {w'} {b} {a} {c} (≈C-sym {w'} {a} {b} (#⇛→≈C {w'} {a} {b} (∀𝕎-mon e comp))) c₃ ,
-      a₁ , a₂ ,
-      isv₁ , isv₂ ,
-      ∼C-trans {w'} {b} {a} {a₁} (∼C-sym {w'} {a} {b} (#⇓→∼C {w'} {a} {b} (lower (comp w' e)))) c₁ ,
-      c₂ ,
-      ea
--- ∼-trans (⇓→∼ (lower (comp w' e))) c₁
--- ≈-trans (⇛→≈ (∀𝕎-mon e comp)) c₃
+    aw w' e h = TSQUASHeq-#⇛ (∀𝕎-mon e comp) (#compAllRefl c w') h
 equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) eqi =
   Bar.∀𝕎-inBarFunc barI aw eqi
   where
@@ -867,47 +905,6 @@ eqTypesQTBOOL {w} {i} = eqTypesTSQUASH← (isTypeBOOL w i)
 
 
 
--- MOVE to computation
-⇓same-bool : 𝕎· → Term → Term → Set
-⇓same-bool w t1 t2 =
-  Σ Term (λ x → Σ Term (λ y →
-  (t1 ⇓ INL x at w × t2 ⇓ INL y at w)
-  ⊎
-  (t1 ⇓ INR x at w × t2 ⇓ INR y at w)))
-
-
--- MOVE to computation
-weakBool : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
-weakBool w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (⇓same-bool w' t1 t2))
-
-
--- MOVE to computation
-#weakBool : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
-#weakBool w t1 t2 = weakBool w ⌜ t1 ⌝ ⌜ t2 ⌝
-
-
--- MOVE to computation
-strongBool : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
-strongBool w t1 t2 =
-  Σ Term (λ x → Σ Term (λ y →
-  (t1 ⇛ INL x at w × t2 ⇛ INL y at w)
-  ⊎
-  (t1 ⇛ INR x at w × t2 ⇛ INR y at w)))
-
-
-
--- MOVE to computation
-#strongBool : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
-#strongBool w t1 t2 = strongBool w ⌜ t1 ⌝ ⌜ t2 ⌝
-
-
-
--- MOVE to terms
-#QTBOOL≡ : #QTBOOL ≡ #TSQUASH #BOOL
-#QTBOOL≡ = CTerm≡ refl
-
-
-
 {--
 -- MOVE to computation
 #weakBool→≈C : {w : 𝕎·} {a b : CTerm} → #weakBool w a b → ≈C w a b
@@ -935,15 +932,65 @@ equalInType-BOOL→ i w a b eqi =
   Bar.∀𝕎-inBarFunc barI aw (equalInType-UNION→ eqi)
   where
     aw : ∀𝕎 w (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
-                            (a #⇛ #INL x at w' × b #⇛ #INL y at w' × equalInType i w' (ct (EQ N0 N0 NAT) refl) x y)
+                            (a #⇛ #INL x at w' × b #⇛ #INL y at w' × equalInType i w' #TRUE x y)
                             ⊎
-                            (a #⇛ #INR x at w' × b #⇛ #INR y at w' × equalInType i w' (ct (EQ N0 N0 NAT) refl) x y)))
+                            (a #⇛ #INR x at w' × b #⇛ #INR y at w' × equalInType i w' #TRUE x y)))
                        → #strongBool w' a b)
-    aw w' e' (x , y , inj₁ (c₁ , c₂ , j)) = ⌜ x ⌝ , ⌜ y ⌝ , inj₁ (c₁ , c₂)
-    aw w' e' (x , y , inj₂ (c₁ , c₂ , j)) = ⌜ x ⌝ , ⌜ y ⌝ , inj₂ (c₁ , c₂)
+    aw w' e' (x , y , inj₁ (c₁ , c₂ , j)) = x , y , inj₁ (c₁ , c₂)
+    aw w' e' (x , y , inj₂ (c₁ , c₂ , j)) = x , y , inj₂ (c₁ , c₂)
 
 
-{--
+→equalInType-BOOL : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                    → inbar w (λ w' _ → #strongBool w' a b)
+                    → equalInType i w #BOOL a b
+→equalInType-BOOL i w a b h =
+  ≡CTerm→equalInType (sym #BOOL≡) (→equalInType-UNION eqTypesTRUE eqTypesTRUE (Bar.∀𝕎-inBarFunc barI aw h))
+  where
+    aw : ∀𝕎 w (λ w' e' → #strongBool w' a b
+                        → Σ CTerm (λ x → Σ CTerm (λ y →
+                           (a #⇛ #INL x at w' × b #⇛ #INL y at w' × equalInType i w' #TRUE x y)
+                           ⊎
+                           (a #⇛ #INR x at w' × b #⇛ #INR y at w' × equalInType i w' #TRUE x y))))
+    aw w' e (x , y , inj₁ (c₁ , c₂)) = x , y , inj₁ (c₁ , c₂ , →equalInType-TRUE i)
+    aw w' e (x , y , inj₂ (c₁ , c₂)) = x , y , inj₂ (c₁ , c₂ , →equalInType-TRUE i)
+
+
+#strongBool-INL : (w : 𝕎·) (x y : CTerm) → #strongBool w (#INL x) (#INL y)
+#strongBool-INL w x y = x , y , inj₁ (#compAllRefl (#INL x) w , #compAllRefl (#INL y) w)
+
+
+#strongBool-INR : (w : 𝕎·) (x y : CTerm) → #strongBool w (#INR x) (#INR y)
+#strongBool-INR w x y = x , y , inj₂ (#compAllRefl (#INR x) w , #compAllRefl (#INR y) w)
+
+
+→equalInType-BOOL-INL : (i : ℕ) (w : 𝕎·) (x y : CTerm)
+                         → equalInType i w #BOOL (#INL x) (#INL y)
+→equalInType-BOOL-INL i w x y = →equalInType-BOOL i w (#INL x) (#INL y) (Bar.∀𝕎-inBar barI λ w' e → #strongBool-INL w' x y)
+
+
+→equalInType-BOOL-INR : (i : ℕ) (w : 𝕎·) (x y : CTerm)
+                         → equalInType i w #BOOL (#INR x) (#INR y)
+→equalInType-BOOL-INR i w x y = →equalInType-BOOL i w (#INR x) (#INR y) (Bar.∀𝕎-inBar barI λ w' e → #strongBool-INR w' x y)
+
+
+#weakBool→TSQUASHeq-#BOOL : {i : ℕ} {w : 𝕎·} {a b : CTerm}
+                             → #weakBool w a b
+                             → TSQUASHeq (equalInType i w #BOOL) w a b
+#weakBool→TSQUASHeq-#BOOL {i} {w} {a} {b} h =
+  TSQUASH-eq→ (c (snd (snd (lower (h w (⊑-refl· _))))) ) --(TSQUASH-eq-base (#NUM n) (#NUM n) tt tt c₁ c₂ (NUM-equalInType-NAT i w n))
+  where
+    x : CTerm
+    x = fst (lower (h w (⊑-refl· _)))
+
+    y : CTerm
+    y = fst (snd (lower (h w (⊑-refl· _))))
+
+    c : ((a #⇓ #INL x at w × b #⇓ #INL y at w) ⊎ (a #⇓ #INR x at w × b #⇓ #INR y at w)) → TSQUASH-eq (equalInType i w #BOOL) w a b
+    c (inj₁ (c₁ , c₂)) = TSQUASH-eq-base (#INL x) (#INL y) tt tt (#⇓→∼C {w} {a} {#INL x} c₁) (#⇓→∼C {w} {b} {#INL y} c₂) (→equalInType-BOOL-INL i w x y)
+    c (inj₂ (c₁ , c₂)) = TSQUASH-eq-base (#INR x) (#INR y) tt tt (#⇓→∼C {w} {a} {#INR x} c₁) (#⇓→∼C {w} {b} {#INR y} c₂) (→equalInType-BOOL-INR i w x y)
+
+
+
 →equalInType-QTBOOL : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                        → inbar w (λ w' _ → #weakBool w' a b)
                        → equalInType i w #QTBOOL a b
@@ -951,6 +998,75 @@ equalInType-BOOL→ i w a b eqi =
   ≡CTerm→equalInType (sym #QTBOOL≡) (equalInTypeTSQUASH← (Bar.∀𝕎-inBarFunc barI aw j))
   where
     aw : ∀𝕎 w (λ w' e' → #weakBool w' a b → TSQUASHeq (equalInType i w' #BOOL) w' a b)
-    aw w' e  h = {!!}
---}
+    aw w' e  h = #weakBool→TSQUASHeq-#BOOL h
+
+
+-- MOVE to computation
+#⇓same-bool-trans : {w : 𝕎·} {a b c : CTerm}
+                    → #⇓same-bool w a b
+                    → #⇓same-bool w b c
+                    → #⇓same-bool w a c
+#⇓same-bool-trans {w} {a} {b} {c} (x , y , inj₁ (h1 , h2)) (u , v , inj₁ (q1 , q2)) = x , v ,  inj₁ (h1 , q2) -- , h1 , q
+#⇓same-bool-trans {w} {a} {b} {c} (x , y , inj₁ (h1 , h2)) (u , v , inj₂ (q1 , q2)) = ⊥-elim (h (⇓-val-det tt tt h2 q1))
+  where
+    h : ¬ INL ⌜ y ⌝ ≡ INR ⌜ u ⌝
+    h ()
+#⇓same-bool-trans {w} {a} {b} {c} (x , y , inj₂ (h1 , h2)) (u , v , inj₁ (q1 , q2)) = ⊥-elim (h (⇓-val-det tt tt h2 q1))
+  where
+    h : ¬ INR ⌜ y ⌝ ≡ INL ⌜ u ⌝
+    h ()
+#⇓same-bool-trans {w} {a} {b} {c} (x , y , inj₂ (h1 , h2)) (u , v , inj₂ (q1 , q2)) = x , v ,  inj₂ (h1 , q2) -- , h1 , q
+
+
+-- MOVE to computation
+lift-#⇓same-bool-trans : {w : 𝕎·} {a b c : CTerm}
+                        → Lift (lsuc L) (#⇓same-bool w a b)
+                        → Lift (lsuc L) (#⇓same-bool w b c)
+                        → Lift (lsuc L) (#⇓same-bool w a c)
+lift-#⇓same-bool-trans {w} {a} {b} {c} (lift h) (lift q) = lift (#⇓same-bool-trans {w} {a} {b} {c} h q)
+
+
+
+TSQUASH-eq-BOOL→weakMonEq : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                             → TSQUASH-eq (equalInType i w #BOOL) w a b
+                             → Lift (lsuc L) (#⇓same-bool w a b)
+TSQUASH-eq-BOOL→weakMonEq i w a b (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) =
+  Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw j)
+  where
+    j : inbar w (λ w' _ → #strongBool w' a1 a2)
+    j = equalInType-BOOL→ i w a1 a2 ea
+
+    aw : ∀𝕎 w (λ w1 e1 → #strongBool w1 a1 a2 → Lift (lsuc L) (#⇓same-bool w a b))
+    aw w1 e1 (x , y , inj₁ (c₁' , c₂')) = lift (x , y , inj₁ (∼C→#⇓ {w} {a} {#INL x} tt c₁'' , ∼C→#⇓ {w} {b} {#INL y} tt c₂''))
+      where
+        c₁'' : ∼C w a (#INL x)
+        c₁'' = ≡R→∼C {w} {a} {a1} {#INL x} (#compAllVal c₁' i1) c1
+
+        c₂'' : ∼C w b (#INL y)
+        c₂'' = ≡R→∼C {w} {b} {a2} {#INL y} (#compAllVal c₂' i2) c2
+    aw w1 e1 (x , y , inj₂ (c₁' , c₂')) = lift (x , y , inj₂ (∼C→#⇓ {w} {a} {#INR x} tt c₁'' , ∼C→#⇓ {w} {b} {#INR y} tt c₂''))
+      where
+        c₁'' : ∼C w a (#INR x)
+        c₁'' = ≡R→∼C {w} {a} {a1} {#INR x} (#compAllVal c₁' i1) c1
+
+        c₂'' : ∼C w b (#INR y)
+        c₂'' = ≡R→∼C {w} {b} {a2} {#INR y} (#compAllVal c₂' i2) c2
+TSQUASH-eq-BOOL→weakMonEq i w a b (TSQUASH-eq-trans t h1 h2) =
+  lift-#⇓same-bool-trans {w} {a} {t} {b} (TSQUASH-eq-BOOL→weakMonEq i w a t h1) (TSQUASH-eq-BOOL→weakMonEq i w t b h2)
+
+
+equalInType-QTBOOL→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                      → equalInType i w #QTBOOL a b
+                      → inbar w (λ w' _ → #weakBool w' a b)
+equalInType-QTBOOL→ i w a b eqi =
+  Bar.∀𝕎-inBarFunc barI aw (Bar.→inBar∀𝕎 barI eqj)
+  where
+    eqj : inbar w (λ w' _ → TSQUASHeq (equalInType i w' #BOOL) w' a b)
+    eqj = equalInTypeTSQUASH→ {w} {i} {a} {b} {#BOOL} eqi
+
+    aw : ∀𝕎 w (λ w' e' → ∀𝕎 w' (↑wPred (λ w'' e → TSQUASHeq (equalInType i w'' #BOOL) w'' a b) e')
+                        → #weakBool w' a b)
+    aw w1 e1 h w2 e2 = TSQUASH-eq-BOOL→weakMonEq i w2 a b (→TSQUASH-eq (h w2 e2))
+
+
 \end{code}

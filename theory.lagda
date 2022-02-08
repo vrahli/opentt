@@ -256,12 +256,28 @@ UNIONeq eqa eqb w t1 t2  =
 
 
 
--- TODO: use ∼C and ≈C instead for simplicity
+{--
+-- Positivity issues with this one...
+data TSQUASHeq (eqa : per) (w : 𝕎·) (t1 t2 : CTerm) : Set(lsuc(L))
+data TSQUASHeq eqa w t1 t2 where
+  TSQUASHeq-base : (a1 a2 : CTerm) → #isValue a1 → #isValue a2 → eqa a1 a2 → ∼C w t1 a1 → ∼C w t2 a2 → TSQUASHeq eqa w t1 t2
+  TSQUASHeq-trans : (t : CTerm) → TSQUASHeq eqa w t1 t → TSQUASHeq eqa w t t2 → TSQUASHeq eqa w t1 t2
+--}
+
+
+{-- We equivalently define the above definition as follows... --}
+TSQUASHeqBase : (eqa : per) → wper
+TSQUASHeqBase eqa w t1 t2 =
+  Σ CTerm (λ a1 → Σ CTerm (λ a2 → #isValue a1 × #isValue a2 × ∼C w t1 a1 × ∼C w t2 a2 × eqa a1 a2))
+
+
+TSQUASHeqℕ : ℕ → (eqa : per) → wper
+TSQUASHeqℕ 0 eqa w t1 t2 = TSQUASHeqBase eqa w t1 t2
+TSQUASHeqℕ (suc n) eqa w t1 t2 = Σ CTerm (λ t → TSQUASHeqBase eqa w t1 t × TSQUASHeqℕ n eqa w t t2)
+
+
 TSQUASHeq : (eqa : per) → wper
-TSQUASHeq eqa w t1 t2  =
-  (≈C w t1 t2)
-  × Σ CTerm (λ a1 → Σ CTerm (λ a2 → #isValue a1 × #isValue a2 × ∼C w t1 a1 × ∼C w t2 a2 × eqa a1 a2))
---     (⌜ t1 ⌝ ∼ ⌜ a1 ⌝ at w) × (⌜ t2 ⌝ ∼ ⌜ a2 ⌝ at w) × (⌜ t1 ⌝ ≈ ⌜ t2 ⌝ at w)
+TSQUASHeq eqa w t1 t2 = Σ ℕ (λ n → TSQUASHeqℕ n eqa w t1 t2)
 
 
 FFDEFSeq : CTerm → (eqa : per) → wper

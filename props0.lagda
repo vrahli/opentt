@@ -926,17 +926,114 @@ irr-union u w A1 A2 B1 B2 eqta exta eqtb extb f g w1 e1 w' e' (a , b , inj₂ (c
     eqb' = extb a b w' (⊑-trans· e1 e') z eqb
 
 
+
+data TSQUASH-eq (eqa : per) (w : 𝕎·) (t1 t2 : CTerm) : Set(lsuc(L))
+data TSQUASH-eq eqa w t1 t2 where
+  TSQUASH-eq-base : (a1 a2 : CTerm) → #isValue a1 → #isValue a2 → ∼C w t1 a1 → ∼C w t2 a2 → eqa a1 a2 → TSQUASH-eq eqa w t1 t2
+  TSQUASH-eq-trans : (t : CTerm) → TSQUASH-eq eqa w t1 t → TSQUASH-eq eqa w t t2 → TSQUASH-eq eqa w t1 t2
+
+
+→TSQUASH-eq : {eqa : per} {w : 𝕎·} {t1 t2 : CTerm}
+               → TSQUASHeq eqa w t1 t2
+               → TSQUASH-eq eqa w t1 t2
+→TSQUASH-eq {eqa} {w} {t1} {t2} (0 , a1 , a2 , i1 , i2 , c1 , c2 , ea) = TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea
+→TSQUASH-eq {eqa} {w} {t1} {t2} (suc n , t , (a1 , a2 , i1 , i2 , c1 , c2 , ea) , q) =
+  TSQUASH-eq-trans t (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) (→TSQUASH-eq (n , q))
+
+
+
+
+TSQUASHeqℕ-trans : {n m : ℕ} {eqa : per} {w : 𝕎·} {t1 t2 t3 : CTerm}
+                 → TSQUASHeqℕ n eqa w t1 t2
+                 → TSQUASHeqℕ m eqa w t2 t3
+                 → TSQUASHeqℕ (n + suc m) eqa w t1 t3
+TSQUASHeqℕ-trans {0} {m} {eqa} {w} {t1} {t2} {t3} h q = t2 , h , q
+TSQUASHeqℕ-trans {suc n} {m} {eqa} {w} {t1} {t2} {t3} (t , h0 , h1) q = t , h0 , TSQUASHeqℕ-trans h1 q
+
+
+TSQUASHeq-trans : {eqa : per} {w : 𝕎·} {t1 t2 t3 : CTerm}
+                 → TSQUASHeq eqa w t1 t2
+                 → TSQUASHeq eqa w t2 t3
+                 → TSQUASHeq eqa w t1 t3
+TSQUASHeq-trans {eqa} {w} {t1} {t2} {t3} (n , h) (m , q) = n + suc m , TSQUASHeqℕ-trans h q
+
+
+
+TSQUASH-eq→ : {eqa : per} {w : 𝕎·} {t1 t2 : CTerm}
+               → TSQUASH-eq eqa w t1 t2
+               → TSQUASHeq eqa w t1 t2
+TSQUASH-eq→ {eqa} {w} {t1} {t2} (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 a) = 0 , a1 , a2 , i1 , i2 , c1 , c2 , a
+TSQUASH-eq→ {eqa} {w} {t1} {t2} (TSQUASH-eq-trans t h1 h2) = TSQUASHeq-trans (TSQUASH-eq→ h1) (TSQUASH-eq→ h2)
+
+
+TSQUASH-eq-sym : {eqa : per} {w : 𝕎·} {t1 t2 : CTerm}
+                 → ((a b : CTerm) → eqa a b → eqa b a)
+                 → TSQUASH-eq eqa w t1 t2
+                 → TSQUASH-eq eqa w t2 t1
+TSQUASH-eq-sym {eqa} {w} {t1} {t2} sym (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) = TSQUASH-eq-base a2 a1 i2 i1 c2 c1 (sym a1 a2 ea)
+TSQUASH-eq-sym {eqa} {w} {t1} {t2} sym (TSQUASH-eq-trans t h1 h2) =
+  TSQUASH-eq-trans t (TSQUASH-eq-sym sym h2) (TSQUASH-eq-sym sym h1)
+
+
+
+TSQUASHeq-sym : {eqa : per} {w : 𝕎·} {t1 t2 : CTerm}
+                 → ((a b : CTerm) → eqa a b → eqa b a)
+                 → TSQUASHeq eqa w t1 t2
+                 → TSQUASHeq eqa w t2 t1
+TSQUASHeq-sym {eqa} {w} {t1} {t2} sym h = TSQUASH-eq→ (TSQUASH-eq-sym sym (→TSQUASH-eq h))
+
+
+
+→TSQUASHeqℕ-suc : {n : ℕ} {eqa : per} {w : 𝕎·} {t1 t2 : CTerm} (t : CTerm)
+                    → TSQUASHeqℕ n eqa w t1 t
+                    → TSQUASHeqBase eqa w t t2
+                    → TSQUASHeqℕ (suc n) eqa w t1 t2
+→TSQUASHeqℕ-suc {0} {eqa} {w} {t1} {t2} t h q = t , h , q
+→TSQUASHeqℕ-suc {suc n} {eqa} {w} {t1} {t2} t (t0 , h0 , h1) q = t0 , h0 , →TSQUASHeqℕ-suc {n} t h1 q
+
+
+
+TSQUASH-eq-ext-eq : {eqa1 eqa2 : per} {w : 𝕎·} {t1 t2 : CTerm}
+                 → ((a b : CTerm) → eqa1 a b → eqa2 a b)
+                 → TSQUASH-eq eqa1 w t1 t2
+                 → TSQUASH-eq eqa2 w t1 t2
+TSQUASH-eq-ext-eq {eqa} {w} {t1} {t2} ext (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) =
+  TSQUASH-eq-base a1 a2 i1 i2 c1 c2 (ext a1 a2 ea)
+TSQUASH-eq-ext-eq {eqa} {w} {t1} {t2} ext (TSQUASH-eq-trans t h1 h2) =
+  TSQUASH-eq-trans t (TSQUASH-eq-ext-eq ext h1) (TSQUASH-eq-ext-eq ext h2)
+
+
+
+TSQUASHeq-ext-eq : {eqa1 eqa2 : per} {w : 𝕎·} {t1 t2 : CTerm}
+                 → ((a b : CTerm) → eqa1 a b → eqa2 a b)
+                 → TSQUASHeq eqa1 w t1 t2
+                 → TSQUASHeq eqa2 w t1 t2
+TSQUASHeq-ext-eq {eqa} {w} {t1} {t2} ext h = TSQUASH-eq→ (TSQUASH-eq-ext-eq ext (→TSQUASH-eq h))
+
+
+
+irr-TSQUASHeq : {u : univs} {w w' : 𝕎·} {A1 A2 : CTerm}
+                (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+                (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                {f g : CTerm}
+                (e1 e2 : w ⊑· w')
+                → TSQUASHeq (eqInType u w' (eqta w' e1)) w' f g
+                → TSQUASHeq (eqInType u w' (eqta w' e2)) w' f g
+irr-TSQUASHeq {u} {w} {w'} {A1} {A2} eqta exta {f} {g} e1 e2 h =
+  TSQUASHeq-ext-eq (λ a b q → exta a b w' e1 e2 q) h
+
+
 irr-tsquash : (u : univs) (w : 𝕎·) (A1 A2 : CTerm)
               (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
               (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
               (f g : CTerm) (w1 : 𝕎·) (e1 : w ⊑· w1)
               → ∀𝕎 w1 (λ w' e' → TSQUASHeq (eqInType u w' (eqta w' (⊑-trans· e1 e'))) w' f g
                                  → (z : w ⊑· w') → TSQUASHeq (eqInType u w' (eqta w' z)) w' f g)
-irr-tsquash u w A1 A2 eqta exta f g w1 e1 w' e' (ca , a1 , a2 , isv₁ , isv₂ , c₁ , c₂ , eqa) z =
-  ca , a1 , a2 , isv₁ , isv₂ , c₁ , c₂ , eqa'
+irr-tsquash u w A1 A2 eqta exta f g w1 e1 w' e' h z = irr-TSQUASHeq eqta exta (⊑-trans· e1 e') z h
+{--  ca , a1 , a2 , isv₁ , isv₂ , c₁ , c₂ , eqa'
   where
     eqa' : eqInType u w' (eqta w' z) a1 a2
-    eqa' = exta a1 a2 w' (⊑-trans· e1 e') z eqa
+    eqa' = exta a1 a2 w' (⊑-trans· e1 e') z eqa--}
 
 
 irr-lift : (u : univs) (w : 𝕎·) (A1 A2 : CTerm)

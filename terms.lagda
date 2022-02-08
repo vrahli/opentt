@@ -1905,4 +1905,12 @@ sub0-#[0]FUN a t u = CTerm≡ (≡PI refl e)
 ≡FUN : {a b c d : Term} → a ≡ b → c ≡ d → FUN a c ≡ FUN b d
 ≡FUN {a} {b} {c} {d} e f rewrite e | f = refl
 
+
+#QTNAT≡ : #QTNAT ≡ #TSQUASH #NAT
+#QTNAT≡ = CTerm≡ refl
+
+
+#QTBOOL≡ : #QTBOOL ≡ #TSQUASH #BOOL
+#QTBOOL≡ = CTerm≡ refl
+
 \end{code}

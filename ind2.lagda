@@ -347,8 +347,10 @@ TSQUASHeq-ext : {u : 𝕌} {w : 𝕎·} {A1 A2 : CTerm}
                 (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqta w e) a b))
                 → TSQUASHeq (≡∈Type u w' (eqta w' e1)) w' a b
                 → TSQUASHeq (≡∈Type u w' (eqta w' e2)) w' a b
-TSQUASHeq-ext {u} {w} {A1} {A2} {eqta} {w'} {e1} {e2} {a} {b} exta (c₃ , a₁ , a₂ , isv₁ , isv₂ , c₁ , c₂ , h) =
-  (c₃ , a₁ , a₂ , isv₁ , isv₂ , c₁ , c₂ , exta a₁ a₂ w' e1 e2 h)
+TSQUASHeq-ext {u} {w} {A1} {A2} {eqta} {w'} {e1} {e2} {a} {b} exta h =
+  irr-TSQUASHeq eqta exta e1 e2 h
+{--(c₃ , a₁ , a₂ , isv₁ , isv₂ , c₁ , c₂ , h) =
+  (c₃ , a₁ , a₂ , isv₁ , isv₂ , c₁ , c₂ , exta a₁ a₂ w' e1 e2 h)--}
 
 
 
