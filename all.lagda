@@ -35,7 +35,11 @@ open import lem{L}(W)(C)(M)(P)(G)(X)(E)(EM)(EB)
 open import not_lpo{L}(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 open import not_mp{L}(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 
+-- This instance uses terms as choices:
 open import choiceBarInstanceCS
+-- This instance uses nats as choices:
 open import choiceBarInstanceRef
+-- This instance uses bools as choices:
+open import choiceBarInstanceRef2
 
 \end{code}
