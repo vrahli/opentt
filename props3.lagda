@@ -858,8 +858,8 @@ equalTypes→equalInType {n} {w} {A} {B} {a} {b} eqt (eqt' , eqi) =
 
 
 
-sub0-ASSERT-APPLY : (a b : CTerm) → sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ b ⌟ #[0]VAR)) ≡ #ASSERT₂ (#APPLY b a)
-sub0-ASSERT-APPLY a b = CTerm≡ (≡ASSERT₂ (→≡APPLY x y))
+sub0-ASSERT₂-APPLY : (a b : CTerm) → sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ b ⌟ #[0]VAR)) ≡ #ASSERT₂ (#APPLY b a)
+sub0-ASSERT₂-APPLY a b = CTerm≡ (≡ASSERT₂ (→≡APPLY x y))
   where
     x : shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) ⌜ b ⌝) ≡ ⌜ b ⌝
     x rewrite subNotIn ⌜ a ⌝ ⌜ b ⌝ (CTerm.closed b) = refl
@@ -869,9 +869,20 @@ sub0-ASSERT-APPLY a b = CTerm≡ (≡ASSERT₂ (→≡APPLY x y))
 
 
 
-sub0-NEG-ASSERT-APPLY : (a b : CTerm) → sub0 a (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ b ⌟ #[0]VAR))) ≡ #NEG (#ASSERT₂ (#APPLY b a))
-sub0-NEG-ASSERT-APPLY a b
-  rewrite sub0-#[0]NEG a (#[0]ASSERT₂ (#[0]APPLY ⌞ b ⌟ #[0]VAR)) | sub0-ASSERT-APPLY a b
+sub0-ASSERT₃-APPLY : (a b : CTerm) → sub0 a (#[0]ASSERT₃ (#[0]APPLY ⌞ b ⌟ #[0]VAR)) ≡ #ASSERT₃ (#APPLY b a)
+sub0-ASSERT₃-APPLY a b = CTerm≡ (≡ASSERT₃ (→≡APPLY x y))
+  where
+    x : shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) ⌜ b ⌝) ≡ ⌜ b ⌝
+    x rewrite subNotIn ⌜ a ⌝ ⌜ b ⌝ (CTerm.closed b) = refl
+
+    y : shiftDown 0 (shiftUp 0 ⌜ a ⌝) ≡ ⌜ a ⌝
+    y rewrite #shiftUp 0 a | #shiftDown 0 a = refl
+
+
+
+sub0-NEG-ASSERT₂-APPLY : (a b : CTerm) → sub0 a (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ b ⌟ #[0]VAR))) ≡ #NEG (#ASSERT₂ (#APPLY b a))
+sub0-NEG-ASSERT₂-APPLY a b
+  rewrite sub0-#[0]NEG a (#[0]ASSERT₂ (#[0]APPLY ⌞ b ⌟ #[0]VAR)) | sub0-ASSERT₂-APPLY a b
   = CTerm≡ (≡NEG (≡ASSERT₂ (→≡APPLY x y)))
   where
     x : shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) ⌜ b ⌝) ≡ ⌜ b ⌝
@@ -1041,5 +1052,16 @@ BTRUE∈QTBOOL i w = INL-equalInType-QTBOOL i w #AX #AX
 
 BFALSE∈QTBOOL : (i : ℕ) (w : 𝕎·) → ∈Type i w #QTBOOL #BFALSE
 BFALSE∈QTBOOL i w = INR-equalInType-QTBOOL i w #AX #AX
+
+
+
+equalInType-QTBOOL→equalTypes-ASSERT₃ : {n : ℕ} {w : 𝕎·} {a b : CTerm}
+                                      → equalInType n w #QTBOOL a b
+                                      → equalTypes n w (#ASSERT₃ a) (#ASSERT₃ b)
+equalInType-QTBOOL→equalTypes-ASSERT₃ {n} {w} {a} {b} eqb =
+  ≡CTerm→eqTypes
+    (sym (#ASSERT₃≡ a))
+    (sym (#ASSERT₃≡ b))
+    (eqTypesEQ← (eqTypesQTBOOL {w} {n}) eqb (BTRUE∈QTBOOL n w))
 
 \end{code}
