@@ -45,7 +45,7 @@ open import progress
 
 module choiceBar {L : Level} (W : PossibleWorlds {L})
                  (C : Choice) (M : Compatible W C) (P : Progress {L} W C M)
-                 (G : GetChoice {L} W C M) (X : ChoiceExt {L} C) (N : NewChoice {L} W C M G)
+                 (G : GetChoice {L} W C M) (X : ChoiceExt {L} W C) (N : NewChoice {L} W C M G)
                  (F : Freeze {L} W C M P G N)
                  (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
@@ -73,7 +73,7 @@ record ChoiceBar : Set(lsuc(lsuc(L))) where
     ℂ₁∈Typeℂ₀₁ : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁ Cℂ₁
 
     -- ∼ℂ· preserves computation
-    ℂ→C→∼ℂ : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼ℂ· c1 c → ∼ℂ· c2 c
+    ℂ→C→∼ℂ : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼ℂ· w c1 c → ∼ℂ· w c2 c
 
     -- Typeℂ₀₁'s members are similar according to ∼ℂ
     ∈Typeℂ₀₁→ : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁ a b → inbar w (λ w' _ → #weakℂEq w' a b)

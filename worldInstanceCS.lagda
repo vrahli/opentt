@@ -735,13 +735,19 @@ getChoiceCS = mkGetChoice getCsChoice
 -- getCsChoiceCompatible
 
 open import getChoiceDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
+open import computation(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
 
 
+#≠01 : (w : 𝕎·) → ¬ ∼C w (#NUM 0) (#NUM 1)
+#≠01 w h = x (#compVal (∼C→#⇓ {w} {#NUM 0} {#NUM 1} tt h) tt)
+  where
+    x : #NUM 0 ≡ #NUM 1 → ⊥
+    x ()
 
-open import choiceExt{1ℓ}(choiceCS)
+open import choiceExt{1ℓ}(PossibleWorldsCS)(choiceCS)
 
 choiceExtCS : ChoiceExt
-choiceExtCS = mkChoiceExt (#NUM 0) (#NUM 1) #∼vals NUM0≠NUM1 tt tt
+choiceExtCS = mkChoiceExt (#NUM 0) (#NUM 1) ∼C #≠01 tt tt
 
 open import choiceExtDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)
 

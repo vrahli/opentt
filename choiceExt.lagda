@@ -8,11 +8,13 @@ open import Relation.Nullary
 
 
 open import calculus
+open import world
 open import choice
 
 
-module choiceExt {L : Level} (C : Choice) where
+module choiceExt {L : Level} (W : PossibleWorlds {L}) (C : Choice) where
 
+open import worldDef(W)
 open import choiceDef{L}(C)
 
 \end{code}
@@ -20,7 +22,7 @@ open import choiceDef{L}(C)
 
 \begin{code}
 
-record ChoiceExt : Set₁ where
+record ChoiceExt : Set(lsuc(L)) where
   constructor mkChoiceExt
   field
     -- ℂ contains at least 2 choices
@@ -28,8 +30,8 @@ record ChoiceExt : Set₁ where
     ℂ₁ : ℂ·
 
     -- Meant to capture the choices that are "equivalent" values (not all choices have to be values)
-    ∼ℂ : ℂ· → ℂ· → Set
-    ¬∼ℂ₀₁ : ¬ ∼ℂ ℂ₀ ℂ₁
+    ∼ℂ : 𝕎· → ℂ· → ℂ· → Set
+    ¬∼ℂ₀₁ : (w : 𝕎·) → ¬ ∼ℂ w ℂ₀ ℂ₁
 
     isValueℂ₀ : #isValue (ℂ→C· ℂ₀)
     isValueℂ₁ : #isValue (ℂ→C· ℂ₁)

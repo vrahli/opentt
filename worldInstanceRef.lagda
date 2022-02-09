@@ -381,6 +381,7 @@ progressREF =
     refChainProgress
 
 open import progressDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)
+open import computation(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)
 
 
 
@@ -392,15 +393,15 @@ C1 : ℂ·
 C1 = 1 --false
 
 
-∼c : ℂ· → ℂ· → Set
-∼c a b = a ≡ b
+∼c : 𝕎· → ℂ· → ℂ· → Set
+∼c w a b = a ≡ b
 
 
-¬∼c01 : ¬ ∼c C0 C1
-¬∼c01 ()
+¬∼c01 : (w : 𝕎·) → ¬ ∼c w C0 C1
+¬∼c01 w ()
 
 
-open import choiceExt{1ℓ}(choiceRef)
+open import choiceExt{1ℓ}(PossibleWorldsRef)(choiceRef)
 
 choiceExtRef : ChoiceExt
 choiceExtRef = mkChoiceExt C0 C1 ∼c ¬∼c01 tt tt

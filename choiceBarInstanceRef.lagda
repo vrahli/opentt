@@ -81,7 +81,7 @@ isvalue-choice : (c : ℂ·) → #isValue (ℂ→C· c)
 isvalue-choice c = tt
 
 
-ℂ→C→∼ℂ-beth-ref : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼ℂ· c1 c → ∼ℂ· c2 c
+ℂ→C→∼ℂ-beth-ref : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼ℂ· w c1 c → ∼ℂ· w c2 c
 ℂ→C→∼ℂ-beth-ref {w} {c} {c1} {c2} comp sim
   rewrite sym (ℂ→C-inj· {c1} {c2} (#compVal comp (isvalue-choice c1))) -- (∼vals→isValue₁ sim)
   = sim
@@ -110,11 +110,22 @@ isValueℂ₁-beth-ref = tt
 ∈Typeℂ₀₁→-beth-ref i w a b eqi = Bar.∀𝕎-inBarFunc barI aw (equalInType-QTNAT→ i w a b eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #weakMonEq w' a b → #weakℂEq w' a b)
-    aw w1 e1 h w2 e2 = lift (fst (lower (h w2 e2)) ,
-                             fst (lower (h w2 e2)) ,
-                             fst (snd (lower (h w2 e2))) ,
-                             snd (snd (lower (h w2 e2))) ,
-                             refl) --∼vals-NUM)
+    aw w1 e1 h w2 e2 = lift j
+      where
+        j : (c₁ c₂ : ℂ·) → ⌜ a ⌝ ⇓ ℂ→T c₁ at w2 → ⌜ b ⌝ ⇓ ℂ→T c₂ at w2 → ∼ℂ· w2 c₁ c₂
+        j c₁ c₂ comp₁ comp₂ = c
+          where
+            n : ℕ
+            n = fst (lower (h w2 e2))
+
+            h1 : ℂ→T c₁ ≡ NUM n
+            h1 = ⇓-val-det tt tt comp₁ (fst (snd (lower (h w2 e2))))
+
+            h2 : ℂ→T c₂ ≡ NUM n
+            h2 = ⇓-val-det tt tt comp₂ (snd (snd (lower (h w2 e2))))
+
+            c : ∼ℂ· w2 c₁ c₂
+            c rewrite NUMinj h1 | NUMinj h2 = refl
 
 
 →∈Typeℂ₀₁-beth-ref : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name}

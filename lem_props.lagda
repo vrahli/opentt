@@ -42,7 +42,7 @@ open import progress
 
 module lem_props {L : Level} (W : PossibleWorlds {L})
                  (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M) (G : GetChoice {L} W C M)
-                 (X : ChoiceExt C)
+                 (X : ChoiceExt W C)
                  (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
 
@@ -299,6 +299,17 @@ onlyℂ∈𝕎→≡ {w} {c} {v} {u} {m} oc c₁ gc isv {--isu--} =
     c₂ = snd c₁
 
 
+onlyℂ∈𝕎→⇓ : {w : 𝕎·} {c : Name} {u : ℂ·} {m : ℕ}
+              → onlyℂ∈𝕎 u c w
+              → Σ ℂ· (λ t → getChoice· m c w ≡ just t)
+              → APPLY (CS c) (NUM m) ⇓ ℂ→T u at w
+onlyℂ∈𝕎→⇓ {w} {c} {u} {m} oc (t , gc) = 1 , comp
+  where
+    comp : steps 1 (APPLY (CS c) (NUM m)) w ≡ ℂ→T u
+    comp rewrite gc | oc m t gc = refl
+
+
+
 -- Without that it runs forever...
 ≡→⇓→⇓ : {w : 𝕎·} {a b c : Term}
          → b ≡ c
@@ -314,7 +325,7 @@ onlyℂ∈𝕎→≡ {w} {c} {v} {u} {m} oc c₁ gc isv {--isu--} =
 
 #weakℂEq→ : {w : 𝕎·} {a b : CTerm}
              → #weakℂEq w a b
-             → Σ ℂ· (λ c₁ → Σ ℂ· (λ c₂ → a #⇓ ℂ→C· c₁ at w × b #⇓ ℂ→C· c₂ at w × ∼ℂ· c₁ c₂))
+             → (c₁ c₂ : ℂ·) → a #⇓ ℂ→C· c₁ at w → b #⇓ ℂ→C· c₂ at w → ∼ℂ· w c₁ c₂
 #weakℂEq→ {w} {a} {B} h = lower (h w (⊑-refl· w))
 
 
