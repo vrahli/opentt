@@ -690,24 +690,51 @@ isType-#NAT→BOOL w n rewrite #NAT→BOOL≡ = eqTypesFUN← eqTypesNAT (isType
 
 
 
--- TODO: generalize
-→equalInType-CS-NAT→BOOL : {n : ℕ} {w : 𝕎·} {a b : Name}
-                             → ∀𝕎 w (λ w' _ → (m : ℕ) → equalInType n w' #BOOL (#APPLY (#CS a) (#NUM m)) (#APPLY (#CS b) (#NUM m)))
-                             → equalInType n w #NAT→BOOL (#CS a) (#CS b)
-→equalInType-CS-NAT→BOOL {n} {w} {a} {b} i rewrite #NAT→BOOL≡ =
-  equalInType-FUN (λ w' _ → eqTypesNAT) (λ w' _ → isTypeBOOL w' n) aw
+-- MOVE to terms
+#NAT→T : CTerm → CTerm
+#NAT→T T = #FUN #NAT T
+
+
+
+→equalInType-CS-NAT→T : {n : ℕ} {w : 𝕎·} {a b : Name} {T : CTerm}
+                          → isType n w T
+                          → ∀𝕎 w (λ w' _ → (m : ℕ) → equalInType n w' T (#APPLY (#CS a) (#NUM m)) (#APPLY (#CS b) (#NUM m)))
+                          → equalInType n w (#NAT→T T) (#CS a) (#CS b)
+→equalInType-CS-NAT→T {n} {w} {a} {b} {T} ist i =
+  equalInType-FUN (λ w' _ → eqTypesNAT) (λ w' e → eqTypes-mon (uni n) ist w' e) aw
   where
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT a₁ a₂
-                      → equalInType n w' #BOOL (#APPLY (#CS a) a₁) (#APPLY (#CS b) a₂))
+                      → equalInType n w' T (#APPLY (#CS a) a₁) (#APPLY (#CS b) a₂))
     aw w1 e1 a₁ a₂ ea = equalInType-local (Bar.∀𝕎-inBarFunc barI aw1 ea1)
       where
         ea1 : inbar w1 (λ w' _ → #strongMonEq w' a₁ a₂)
         ea1 = equalInType-NAT→ n w1 a₁ a₂ ea
 
-        aw1 : ∀𝕎 w1 (λ w' e' → #strongMonEq w' a₁ a₂ → equalInType n w' #BOOL (#APPLY (#CS a) a₁) (#APPLY (#CS b) a₂))
+        aw1 : ∀𝕎 w1 (λ w' e' → #strongMonEq w' a₁ a₂ → equalInType n w' T (#APPLY (#CS a) a₁) (#APPLY (#CS b) a₂))
         aw1 w2 e2 (m , c₁ , c₂) = equalInType-#⇛-LR-rev (#⇛-APPLY-CS {w2} {a₁} {#NUM m} a c₁)
                                                          (#⇛-APPLY-CS {w2} {a₂} {#NUM m} b c₂)
                                                          (i w2 (⊑-trans· e1 e2) m)
+
+
+
+→equalInType-CS-NAT→BOOL : {n : ℕ} {w : 𝕎·} {a b : Name}
+                             → ∀𝕎 w (λ w' _ → (m : ℕ) → equalInType n w' #BOOL (#APPLY (#CS a) (#NUM m)) (#APPLY (#CS b) (#NUM m)))
+                             → equalInType n w #NAT→BOOL (#CS a) (#CS b)
+→equalInType-CS-NAT→BOOL {n} {w} {a} {b} i rewrite #NAT→BOOL≡ = →equalInType-CS-NAT→T (isTypeBOOL w n) i
+
+
+
+
+eqTypesQTBOOL : {w : 𝕎·} {i : ℕ} → equalTypes i w #QTBOOL #QTBOOL
+eqTypesQTBOOL {w} {i} = eqTypesTSQUASH← (isTypeBOOL w i)
+
+
+
+→equalInType-CS-NAT→QTBOOL : {n : ℕ} {w : 𝕎·} {a b : Name}
+                             → ∀𝕎 w (λ w' _ → (m : ℕ) → equalInType n w' #QTBOOL (#APPLY (#CS a) (#NUM m)) (#APPLY (#CS b) (#NUM m)))
+                             → equalInType n w #NAT→QTBOOL (#CS a) (#CS b)
+→equalInType-CS-NAT→QTBOOL {n} {w} {a} {b} i rewrite #NAT→QTBOOL≡ = →equalInType-CS-NAT→T (eqTypesQTBOOL {w} {n}) i
+
 
 
 
@@ -893,6 +920,19 @@ sub0-NEG-ASSERT₂-APPLY a b
 
 
 
+sub0-NEG-ASSERT₃-APPLY : (a b : CTerm) → sub0 a (#[0]NEG (#[0]ASSERT₃ (#[0]APPLY ⌞ b ⌟ #[0]VAR))) ≡ #NEG (#ASSERT₃ (#APPLY b a))
+sub0-NEG-ASSERT₃-APPLY a b
+  rewrite sub0-#[0]NEG a (#[0]ASSERT₃ (#[0]APPLY ⌞ b ⌟ #[0]VAR)) | sub0-ASSERT₃-APPLY a b
+  = CTerm≡ (≡NEG (≡ASSERT₃ (→≡APPLY x y)))
+  where
+    x : shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) ⌜ b ⌝) ≡ ⌜ b ⌝
+    x rewrite subNotIn ⌜ a ⌝ ⌜ b ⌝ (CTerm.closed b) = refl
+
+    y : shiftDown 0 (shiftUp 0 ⌜ a ⌝) ≡ ⌜ a ⌝
+    y rewrite #shiftUp 0 a | #shiftDown 0 a = refl
+
+
+
 typeSys : (n : ℕ) → TS (equalTypes n) (equalInType n)
 typeSys n =
   mkts
@@ -908,11 +948,6 @@ typeSys n =
     (λ {w} A a b h → equalInType-local h)
     (λ w t → ¬equalInType-FALSE)
     (TSext-equalTypes-equalInType n)
-
-
-
-eqTypesQTBOOL : {w : 𝕎·} {i : ℕ} → equalTypes i w #QTBOOL #QTBOOL
-eqTypesQTBOOL {w} {i} = eqTypesTSQUASH← (isTypeBOOL w i)
 
 
 
@@ -1063,5 +1098,10 @@ equalInType-QTBOOL→equalTypes-ASSERT₃ {n} {w} {a} {b} eqb =
     (sym (#ASSERT₃≡ a))
     (sym (#ASSERT₃≡ b))
     (eqTypesEQ← (eqTypesQTBOOL {w} {n}) eqb (BTRUE∈QTBOOL n w))
+
+
+
+isType-#NAT→QTBOOL : (w : 𝕎·) (n : ℕ) → isType n w #NAT→QTBOOL
+isType-#NAT→QTBOOL w n rewrite #NAT→BOOL≡ = eqTypesFUN← eqTypesNAT (eqTypesQTBOOL {w} {n})
 
 \end{code}

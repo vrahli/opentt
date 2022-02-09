@@ -32,7 +32,11 @@ module all {L : Level} (W : PossibleWorlds {L})
 
 open import not_lem{L}(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 open import lem{L}(W)(C)(M)(P)(G)(X)(E)(EM)(EB)
+-- This version requires choices to be Booleans:
 open import not_lpo{L}(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
+-- As opposed to the above version, this one relies on QTBool instead of Bool:
+open import not_lpo_qtbool{L}(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
+-- This version requires choices to be Booleans, but also freezable to always be true:
 open import not_mp{L}(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 
 -- This instance uses terms as choices:
