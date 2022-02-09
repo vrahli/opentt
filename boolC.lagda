@@ -88,11 +88,23 @@ Boolℂ cb =
   × Cℂ₁ ≡ #BTRUE
 
 
+QTBoolℂ : ChoiceBar W C M P G X N F E → Set
+QTBoolℂ cb =
+  ChoiceBar.Typeℂ₀₁ cb ≡ #QTBOOL
+  × Cℂ₀ ≡ #BFALSE
+  × Cℂ₁ ≡ #BTRUE
 
-equalTypes-BOOL-Typeℂ₀₁ : (n : ℕ) (w : 𝕎·)
-                          → Boolℂ CB
+
+
+equalTypes-BOOL-Typeℂ₀₁ : Boolℂ CB → (n : ℕ) (w : 𝕎·)
                           → equalTypes n w #BOOL Typeℂ₀₁·
-equalTypes-BOOL-Typeℂ₀₁ n w bcb rewrite fst bcb = isTypeBOOL w n
+equalTypes-BOOL-Typeℂ₀₁ bcb n w rewrite fst bcb = isTypeBOOL w n
+
+
+
+equalTypes-QTBOOL-Typeℂ₀₁ : QTBoolℂ CB → (n : ℕ) (w : 𝕎·)
+                          → equalTypes n w #QTBOOL Typeℂ₀₁·
+equalTypes-QTBOOL-Typeℂ₀₁ bcb n w rewrite fst bcb = eqTypesQTBOOL {w} {n}
 
 
 
@@ -105,24 +117,38 @@ equalTypes-BOOL-Typeℂ₀₁ n w bcb rewrite fst bcb = isTypeBOOL w n
 
 
 
+→equalInType-APPLY-CS-QTBOOL : QTBoolℂ CB → {i : ℕ} {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
+                               → compatible· c w Resℂ
+                               → equalInType i w #NAT a₁ a₂
+                               → equalInType i w #QTBOOL (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
+→equalInType-APPLY-CS-QTBOOL bcb {i} {w} {c} {a₁} {a₂} comp eqi =
+  ≡CTerm→equalInType (fst bcb) (→equalInType-APPLY-CS-Typeℂ₀₁· comp eqi)
+
+
+
 equalInType-BTRUE-ℂ₁ : Boolℂ CB → (n : ℕ) (w : 𝕎·) → equalInType n w #BOOL #BTRUE Cℂ₁
 equalInType-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈BOOL n w
 
 
 
-#SUM-ASSERT : CTerm → CTerm
-#SUM-ASSERT f = #SUM #NAT (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
-
-
-#PI-NEG-ASSERT : CTerm → CTerm
-#PI-NEG-ASSERT f = #PI #NAT (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
+equalInType-QT-BTRUE-ℂ₁ : QTBoolℂ CB → (n : ℕ) (w : 𝕎·) → equalInType n w #QTBOOL #BTRUE Cℂ₁
+equalInType-QT-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈QTBOOL n w
 
 
 
-→equalTypes-#SUM-ASSERT : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
+#SUM-ASSERT₂ : CTerm → CTerm
+#SUM-ASSERT₂ f = #SUM #NAT (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
+
+
+#PI-NEG-ASSERT₂ : CTerm → CTerm
+#PI-NEG-ASSERT₂ f = #PI #NAT (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
+
+
+
+→equalTypes-#SUM-ASSERT₂ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
                            → equalInType n w #NAT→BOOL a₁ a₂
-                           → equalTypes n w (#SUM-ASSERT a₁) (#SUM-ASSERT a₂)
-→equalTypes-#SUM-ASSERT {n} {w} {a₁} {a₂} eqt = eqTypesSUM← (λ w' _ → eqTypesNAT) aw1
+                           → equalTypes n w (#SUM-ASSERT₂ a₁) (#SUM-ASSERT₂ a₂)
+→equalTypes-#SUM-ASSERT₂ {n} {w} {a₁} {a₂} eqt = eqTypesSUM← (λ w' _ → eqTypesNAT) aw1
   where
     aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT a b → equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b))
     aw0 = equalInType-FUN→ eqt
@@ -139,10 +165,10 @@ equalInType-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈BOOL n w
 
 
 
-→equalTypes-#PI-NEG-ASSERT : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
+→equalTypes-#PI-NEG-ASSERT₂ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
                               → equalInType n w #NAT→BOOL a₁ a₂
-                              → equalTypes n w (#PI-NEG-ASSERT a₁) (#PI-NEG-ASSERT a₂)
-→equalTypes-#PI-NEG-ASSERT {n} {w} {a₁} {a₂} eqt =
+                              → equalTypes n w (#PI-NEG-ASSERT₂ a₁) (#PI-NEG-ASSERT₂ a₂)
+→equalTypes-#PI-NEG-ASSERT₂ {n} {w} {a₁} {a₂} eqt =
   eqTypesPI← (λ w' _ → eqTypesNAT) aw1
   where
     aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT a b → equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b))
@@ -161,12 +187,12 @@ equalInType-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈BOOL n w
 
 
 
-#SUM-ASSERT→#Σchoice : Boolℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}
+#SUM-ASSERT₂→#Σchoice : Boolℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}
                        → compatible· name w Resℂ
                        → Σ ℕ (λ n → ·ᵣ Resℂ n ℂ₁·)
-                       → inhType n w (#SUM-ASSERT (#CS name))
+                       → inhType n w (#SUM-ASSERT₂ (#CS name))
                        → inhType n w (#Σchoice name ℂ₁·)
-#SUM-ASSERT→#Σchoice bcb {n} {w} {name} comp sat (t , inh) =
+#SUM-ASSERT₂→#Σchoice bcb {n} {w} {name} comp sat (t , inh) =
   t , ≡CTerm→equalInType
         (sym (#Σchoice≡ name ℂ₁·))
         (fun-equalInType-SUM-NAT {n} {w} {#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
@@ -180,7 +206,7 @@ equalInType-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈BOOL n w
         eqi1 = ≡CTerm→equalInType (sub0-ASSERT-APPLY m (#CS name)) eqi
 
         eqt : equalTypes n w1 (#EQ (#APPLY (#CS name) m) #BTRUE #BOOL) (#EQ (#APPLY (#CS name) m) Cℂ₁ Typeℂ₀₁·)
-        eqt = eqTypesEQ← (equalTypes-BOOL-Typeℂ₀₁ n w1 bcb)
+        eqt = eqTypesEQ← (equalTypes-BOOL-Typeℂ₀₁ bcb n w1)
                           (→equalInType-APPLY-CS-BOOL bcb (⊑-compatible· e1 comp) j)
                           (equalInType-BTRUE-ℂ₁ bcb n w1)
 
@@ -196,12 +222,12 @@ equalInType-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈BOOL n w
 
 
 
-#PI-NEG-ASSERT→#Σchoice : Boolℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}
+#PI-NEG-ASSERT₂→#Σchoice : Boolℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}
                           → compatible· name w Resℂ
                           → Σ ℕ (λ n → ·ᵣ Resℂ n ℂ₁·)
-                          → inhType n w (#PI-NEG-ASSERT (#CS name))
+                          → inhType n w (#PI-NEG-ASSERT₂ (#CS name))
                           → inhType n w (#NEG (#Σchoice name ℂ₁·))
-#PI-NEG-ASSERT→#Σchoice bcb {n} {w} {name} comp sat (f , inh) =
+#PI-NEG-ASSERT₂→#Σchoice bcb {n} {w} {name} comp sat (f , inh) =
   #lamAX , equalInType-NEG aw1 aw2
   where
     aw0 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT a₁ a₂

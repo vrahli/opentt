@@ -1620,6 +1620,7 @@ NAT→BOOL = FUN NAT BOOL
 #NAT→BOOL≡ = CTerm≡ refl
 
 
+
 BTRUE : Term
 BTRUE = INL AX
 
@@ -1912,5 +1913,56 @@ sub0-#[0]FUN a t u = CTerm≡ (≡PI refl e)
 
 #QTBOOL≡ : #QTBOOL ≡ #TSQUASH #BOOL
 #QTBOOL≡ = CTerm≡ refl
+
+
+NAT→QTBOOL : Term
+NAT→QTBOOL = FUN NAT QTBOOL
+
+
+#NAT→QTBOOL : CTerm
+#NAT→QTBOOL = ct NAT→QTBOOL refl
+
+
+#NAT→QTBOOL≡ : #NAT→QTBOOL ≡ #FUN #NAT #QTBOOL
+#NAT→QTBOOL≡ = CTerm≡ refl
+
+
+
+ASSERT₃ : Term → Term
+ASSERT₃ t = EQ t BTRUE QTBOOL
+
+
+fvars-ASSERT₃ : (t : Term) → fvars (ASSERT₃ t) ≡ fvars t
+fvars-ASSERT₃ t rewrite ++[] (fvars t) = refl
+
+
+
+#ASSERT₃ : CTerm → CTerm
+#ASSERT₃ a = ct (ASSERT₃ ⌜ a ⌝) c
+  where
+    c : # ASSERT₃ ⌜ a ⌝
+    c rewrite fvars-ASSERT₃ ⌜ a ⌝ = CTerm.closed a
+
+
+#ASSERT₃≡ : (t : CTerm) → #ASSERT₃ t ≡ #EQ t #BTRUE #QTBOOL
+#ASSERT₃≡ t = CTerm≡ refl
+
+
+#[0]ASSERT₃ : CTerm0 → CTerm0
+#[0]ASSERT₃ a = ct0 (ASSERT₃ ⌜ a ⌝) c
+  where
+    c : #[ [ 0 ] ] ASSERT₃ ⌜ a ⌝
+    c rewrite fvars-ASSERT₃ ⌜ a ⌝ = CTerm0.closed a
+
+
+#[1]ASSERT₃ : CTerm1 → CTerm1
+#[1]ASSERT₃ a = ct1 (ASSERT₃ ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] ASSERT₃ ⌜ a ⌝
+    c rewrite fvars-ASSERT₃ ⌜ a ⌝ = CTerm1.closed a
+
+
+≡ASSERT₃ : {a b : Term} → a ≡ b → ASSERT₃ a ≡ ASSERT₃ b
+≡ASSERT₃ {a} {b} e rewrite e = refl
 
 \end{code}

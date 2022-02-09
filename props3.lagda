@@ -1034,4 +1034,12 @@ INR-equalInType-QTBOOL : (i : ℕ) (w : 𝕎·) (x y : CTerm) → equalInType i 
 INR-equalInType-QTBOOL i w x y =
   →equalInType-QTBOOL i w (#INR x) (#INR y) (Bar.∀𝕎-inBar barI (λ w' e' → #weakBool-#INR w' x y))
 
+
+BTRUE∈QTBOOL : (i : ℕ) (w : 𝕎·) → ∈Type i w #QTBOOL #BTRUE
+BTRUE∈QTBOOL i w = INL-equalInType-QTBOOL i w #AX #AX
+
+
+BFALSE∈QTBOOL : (i : ℕ) (w : 𝕎·) → ∈Type i w #QTBOOL #BFALSE
+BFALSE∈QTBOOL i w = INR-equalInType-QTBOOL i w #AX #AX
+
 \end{code}

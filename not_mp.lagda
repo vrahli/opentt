@@ -104,11 +104,11 @@ MP = PI NAT→BOOL (FUN (NEG (PI NAT (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))
 
 
 #MP-left : CTerm → CTerm
-#MP-left f = #NEG (#PI-NEG-ASSERT f)
+#MP-left f = #NEG (#PI-NEG-ASSERT₂ f)
 
 
 #MP-right : CTerm → CTerm
-#MP-right f = #SQUASH (#SUM-ASSERT f)
+#MP-right f = #SQUASH (#SUM-ASSERT₂ f)
 
 
 #MP-PI : CTerm
@@ -141,7 +141,7 @@ sub0-fun-mp a =
                         → equalInType n w #NAT→BOOL a₁ a₂
                         → equalTypes n w (#MP-left a₁) (#MP-left a₂)
 →equalTypes-#MP-left {n} {w} {a₁} {a₂} eqt =
-  eqTypesNEG← (→equalTypes-#PI-NEG-ASSERT eqt)
+  eqTypesNEG← (→equalTypes-#PI-NEG-ASSERT₂ eqt)
 
 
 →equalTypes-#MP-right : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
@@ -246,17 +246,17 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
                             → equalInType n w' (#MP-right f) (#APPLY (#APPLY F f) a₁) (#APPLY (#APPLY G f) a₂))
         h2 = equalInType-FUN→ h1
 
-        h4 : ∀𝕎 w2 (λ w3 e3 → ¬ inhType n w3 (#PI-NEG-ASSERT f))
+        h4 : ∀𝕎 w2 (λ w3 e3 → ¬ inhType n w3 (#PI-NEG-ASSERT₂ f))
         -- freezable might not be true here, but this is something that FCS will satisfy because freezable is always true...
         h4 w3 e3 inh = ¬∀𝕎¬equalInType-#Σchoice n w3 name ℂ₁· sat-ℂ₁ (⊑-compatible· e3 comp1) (afb name w3) z
           where
             z : ∀𝕎 w3 (λ w4 e4 → ¬ inhType n w4 (#Σchoice name ℂ₁·))
-            z = equalInType-NEG→¬inh (snd (#PI-NEG-ASSERT→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh))
+            z = equalInType-NEG→¬inh (snd (#PI-NEG-ASSERT₂→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh))
 
         h3 : inhType n w2 (#MP-left f)
-        h3 = equalInType-NEG-inh {n} {w2} (→equalTypes-#PI-NEG-ASSERT eqf1) h4
+        h3 = equalInType-NEG-inh {n} {w2} (→equalTypes-#PI-NEG-ASSERT₂ eqf1) h4
 
-        h5 : inbar w2 (λ w' _ → inhType n w' (#SUM-ASSERT f))
+        h5 : inbar w2 (λ w' _ → inhType n w' (#SUM-ASSERT₂ f))
         h5 = equalInType-SQUASH→ (h2 w2 (⊑-refl· _) (fst h3) (fst h3) (snd h3))
 
         -- We follow the choice
@@ -275,11 +275,11 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         fb2 : freezable· name w3
         fb2 = fst (snd (snd (snd (snd (ChoiceBar.followChoice CB name h5 oc1 comp1 fb1)))))
 
-        h6 : inhType n w3 (#SUM-ASSERT f)
+        h6 : inhType n w3 (#SUM-ASSERT₂ f)
         h6 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB name h5 oc1 comp1 fb1)))))
 
         h7 : inhType n w3 (#Σchoice name ℂ₁·)
-        h7 = #SUM-ASSERT→#Σchoice bcb comp2 (0 , sat-ℂ₁ 0) h6
+        h7 = #SUM-ASSERT₂→#Σchoice bcb comp2 (0 , sat-ℂ₁ 0) h6
 
         h8 : ¬ inhType n w3 (#Σchoice name ℂ₁·)
         h8 = ¬equalInType-#Σchoice n w3 Resℂ name isValueℂ₀· isValueℂ₁· ¬∼ℂ₀₁· oc2 comp2 fb2

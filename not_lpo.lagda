@@ -81,6 +81,9 @@ open import typeC(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 open import boolC(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 
 
+{-- This version relies on ASSERT₂, which is defined in terms of BOOL,
+ -- but a similar result could be obained using QTBOOL instead.
+ --}
 
 LPO : Term
 LPO = PI NAT→BOOL (SQUASH (UNION (SUM NAT (ASSERT₂ (APPLY (VAR 1) (VAR 0))))
@@ -104,11 +107,11 @@ LPO = PI NAT→BOOL (SQUASH (UNION (SUM NAT (ASSERT₂ (APPLY (VAR 1) (VAR 0))))
 
 
 #LPO-left : CTerm → CTerm
-#LPO-left = #SUM-ASSERT
+#LPO-left = #SUM-ASSERT₂
 
 
 #LPO-right : CTerm → CTerm
-#LPO-right = #PI-NEG-ASSERT
+#LPO-right = #PI-NEG-ASSERT₂
 
 
 #LPO-PI : CTerm
@@ -145,10 +148,10 @@ isTypeLPO-PI w n =
     aw w' e a₁ a₂ eqb rewrite sub0-squash-union-LPO a₁ | sub0-squash-union-LPO a₂ = eqt
       where
         eqt1 : equalTypes n w' (#LPO-left a₁) (#LPO-left a₂)
-        eqt1 = →equalTypes-#SUM-ASSERT eqb
+        eqt1 = →equalTypes-#SUM-ASSERT₂ eqb
 
         eqt2 : equalTypes n w' (#LPO-right a₁) (#LPO-right a₂)
-        eqt2 = →equalTypes-#PI-NEG-ASSERT eqb
+        eqt2 = →equalTypes-#PI-NEG-ASSERT₂ eqb
 
         eqt : equalTypes n w' (#SQUASH (#UNION (#LPO-left a₁) (#LPO-right a₁))) (#SQUASH (#UNION (#LPO-left a₂) (#LPO-right a₂)))
         eqt = eqTypesSQUASH← (eqTypesUNION← eqt1 eqt2)
@@ -215,9 +218,9 @@ isTypeNegLPO w n = eqTypesNEG← (isTypeLPO w n)
         h1 = aw3 w2 e2 f f eqf1
 
         imp1 : ∀𝕎 w2 (λ w' _ → inhType n w' (#LPO-left f) → inhType n w' (#Σchoice name ℂ₁·))
-        imp1 w3 e3 inh = #SUM-ASSERT→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh
+        imp1 w3 e3 inh = #SUM-ASSERT₂→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh
 
         imp2 : ∀𝕎 w2 (λ w' _ → inhType n w' (#LPO-right f) → inhType n w' (#NEG (#Σchoice name ℂ₁·)))
-        imp2 w3 e3 inh = #PI-NEG-ASSERT→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh
+        imp2 w3 e3 inh = #PI-NEG-ASSERT₂→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh
 
 \end{code}[hide]
