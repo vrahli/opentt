@@ -300,8 +300,8 @@ Typeℂ₀₁-isType-beth-bar u w = eqTypesQTNAT
 ℂ₁∈Typeℂ₀₁-beth-cs u w = NUM-equalInType-QTNAT u w 1
 
 
-ℂ→C→∼ℂ-beth-cs : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼ℂ· w c1 c → ∼ℂ· w c2 c
-ℂ→C→∼ℂ-beth-cs {w} {c} {c1} {c2} comp sim = ∼T-trans (∼T← comp) sim
+--ℂ→C→∼ℂ-beth-cs : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼C w c1 c → ∼ℂ· w c2 c
+--ℂ→C→∼ℂ-beth-cs {w} {c} {c1} {c2} comp sim = ∼T-trans (∼T← comp) sim
 
 
 {--
@@ -324,20 +324,8 @@ isValueℂ₁-beth-cs = tt
     aw : ∀𝕎 w (λ w' e' → #weakMonEq w' a b → #weakℂEq w' a b)
     aw w1 e1 h w2 e2 = lift j
       where
-        j : (c₁ c₂ : ℂ·) → ⌜ a ⌝ ⇓ ℂ→T c₁ at w2 → ⌜ b ⌝ ⇓ ℂ→T c₂ at w2 → ∼ℂ· w2 c₁ c₂
-        j c₁ c₂ comp₁ comp₂ = c
-          where
-            n : ℕ
-            n = fst (lower (h w2 e2))
-
-            h1 : ℂ→T c₁ ⇓ NUM n at w2
-            h1 = val-⇓→ tt comp₁ (fst (snd (lower (h w2 e2))))
-
-            h2 : ℂ→T c₂ ⇓ NUM n at w2
-            h2 = val-⇓→ tt comp₂ (snd (snd (lower (h w2 e2))))
-
-            c : ∼ℂ· w2 c₁ c₂
-            c = ∼T-trans (∼T→ h1) (∼T← h2)
+        j : (c₁ c₂ : ℂ·) → ⌜ a ⌝ ⇓ ℂ→T c₁ at w2 → ⌜ b ⌝ ⇓ ℂ→T c₂ at w2 → ∼C w2 (ℂ→C· c₁) (ℂ→C· c₂)
+        j c₁ c₂ comp₁ comp₂ = ∼T-trans (∼T← comp₁) (∼T-trans (∼T-trans (∼T→ (fst (snd (lower (h w2 e2))))) (∼T← (snd (snd (lower (h w2 e2)))))) (∼T→ comp₂))
 
 
 →∈Typeℂ₀₁-beth-cs : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name}

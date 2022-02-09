@@ -49,7 +49,7 @@ open import choiceBar
 
 module not_lpo {L : Level} (W : PossibleWorlds {L})
                (C : Choice) (M : Compatible W C) (P : Progress {L} W C M)
-               (G : GetChoice {L} W C M) (X : ChoiceExt {L} W C) (N : NewChoice {L} W C M G)
+               (G : GetChoice {L} W C M) (X : ChoiceExt {L} W C M G) (N : NewChoice {L} W C M G)
                (F : Freeze {L} W C M P G N)
                (E : Extensionality 0ℓ (lsuc(lsuc(L))))
                (CB : ChoiceBar W C M P G X N F E)

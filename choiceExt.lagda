@@ -10,12 +10,15 @@ open import Relation.Nullary
 open import calculus
 open import world
 open import choice
+open import compatible
+open import getChoice
 
 
-module choiceExt {L : Level} (W : PossibleWorlds {L}) (C : Choice) where
+module choiceExt {L : Level} (W : PossibleWorlds {L}) (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M) where
 
 open import worldDef(W)
 open import choiceDef{L}(C)
+open import computation(W)(C)(M)(G)
 
 \end{code}
 
@@ -30,8 +33,8 @@ record ChoiceExt : Set(lsuc(L)) where
     ℂ₁ : ℂ·
 
     -- Meant to capture the choices that are "equivalent" values (not all choices have to be values)
-    ∼ℂ : 𝕎· → ℂ· → ℂ· → Set
-    ¬∼ℂ₀₁ : (w : 𝕎·) → ¬ ∼ℂ w ℂ₀ ℂ₁
+    --∼ℂ : 𝕎· → ℂ· → ℂ· → Set
+    ¬∼ℂ₀₁ : (w : 𝕎·) → ¬ ∼C w (ℂ→C· ℂ₀) (ℂ→C· ℂ₁)
 
     isValueℂ₀ : #isValue (ℂ→C· ℂ₀)
     isValueℂ₁ : #isValue (ℂ→C· ℂ₁)

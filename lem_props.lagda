@@ -42,7 +42,7 @@ open import progress
 
 module lem_props {L : Level} (W : PossibleWorlds {L})
                  (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M) (G : GetChoice {L} W C M)
-                 (X : ChoiceExt W C)
+                 (X : ChoiceExt W C M G)
                  (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
 
@@ -325,7 +325,7 @@ onlyℂ∈𝕎→⇓ {w} {c} {u} {m} oc (t , gc) = 1 , comp
 
 #weakℂEq→ : {w : 𝕎·} {a b : CTerm}
              → #weakℂEq w a b
-             → (c₁ c₂ : ℂ·) → a #⇓ ℂ→C· c₁ at w → b #⇓ ℂ→C· c₂ at w → ∼ℂ· w c₁ c₂
+             → (c₁ c₂ : ℂ·) → a #⇓ ℂ→C· c₁ at w → b #⇓ ℂ→C· c₂ at w → ∼C w (ℂ→C· c₁) (ℂ→C· c₂)
 #weakℂEq→ {w} {a} {B} h = lower (h w (⊑-refl· w))
 
 

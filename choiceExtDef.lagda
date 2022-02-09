@@ -36,7 +36,7 @@ open import choiceExt
 
 
 module choiceExtDef {L : Level} (W : PossibleWorlds {L})
-                    (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M) (E : ChoiceExt {L} W C)
+                    (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M) (E : ChoiceExt {L} W C M G)
        where
 open import worldDef(W)
 open import choiceDef{L}(C)
@@ -54,11 +54,11 @@ open ChoiceExt
 ℂ₁· = ℂ₁ E
 
 
-∼ℂ· : 𝕎· → ℂ· → ℂ· → Set
-∼ℂ· = ∼ℂ E
+--∼ℂ· : 𝕎· → ℂ· → ℂ· → Set
+--∼ℂ· = ∼ℂ E
 
 
-¬∼ℂ₀₁· : (w : 𝕎·) → ¬ ∼ℂ· w ℂ₀· ℂ₁·
+¬∼ℂ₀₁· : (w : 𝕎·) → ¬ ∼C w (ℂ→C· ℂ₀·) (ℂ→C· ℂ₁·)
 ¬∼ℂ₀₁· = ¬∼ℂ₀₁ E
 
 
@@ -104,7 +104,7 @@ sat-ℂ₁ n = inj₂ refl
 
 -- t1 and t2 compute to the same choice but that choice can change over time
 weakℂEq : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
-weakℂEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) ((c₁ c₂ : ℂ·) → t1 ⇓ ℂ→T c₁ at w' → t2 ⇓ ℂ→T c₂ at w' → ∼ℂ· w' c₁ c₂))
+weakℂEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) ((c₁ c₂ : ℂ·) → t1 ⇓ ℂ→T c₁ at w' → t2 ⇓ ℂ→T c₂ at w' → ∼C w' (ℂ→C· c₁) (ℂ→C· c₂)))
 
 
 weakℂ₀₁M : (w : 𝕎·) (f : 𝕎· → Maybe Term) → Set(lsuc(L))

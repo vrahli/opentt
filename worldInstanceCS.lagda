@@ -744,10 +744,10 @@ open import computation(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
     x : #NUM 0 ≡ #NUM 1 → ⊥
     x ()
 
-open import choiceExt{1ℓ}(PossibleWorldsCS)(choiceCS)
+open import choiceExt{1ℓ}(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
 
 choiceExtCS : ChoiceExt
-choiceExtCS = mkChoiceExt (#NUM 0) (#NUM 1) ∼C #≠01 tt tt
+choiceExtCS = mkChoiceExt (#NUM 0) (#NUM 1) {--∼C--} #≠01 tt tt
 
 open import choiceExtDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)
 

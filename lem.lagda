@@ -44,7 +44,7 @@ open import exBar
 
 module lem {L : Level} (W : PossibleWorlds {L})
            (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M) (G : GetChoice {L} W C M)
-           (X : ChoiceExt W C)
+           (X : ChoiceExt W C M G)
            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
            (EM : ExcludedMiddle (lsuc(L)))
            (EB : ExBar W C M P)

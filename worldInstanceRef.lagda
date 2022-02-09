@@ -393,18 +393,17 @@ C1 : ℂ·
 C1 = 1 --false
 
 
-∼c : 𝕎· → ℂ· → ℂ· → Set
-∼c w a b = a ≡ b
+¬∼c01 : (w : 𝕎·) → ¬ ∼C w (ℂ→C· C0) (ℂ→C· C1)
+¬∼c01 w h = x (#compVal (∼C→#⇓ {w} {ℂ→C· C0} {ℂ→C· C1} tt h) tt)
+  where
+    x : ℂ→C· C0 ≡ ℂ→C· C1 → ⊥
+    x ()
 
 
-¬∼c01 : (w : 𝕎·) → ¬ ∼c w C0 C1
-¬∼c01 w ()
-
-
-open import choiceExt{1ℓ}(PossibleWorldsRef)(choiceRef)
+open import choiceExt{1ℓ}(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)
 
 choiceExtRef : ChoiceExt
-choiceExtRef = mkChoiceExt C0 C1 ∼c ¬∼c01 tt tt
+choiceExtRef = mkChoiceExt C0 C1 {--∼c--} ¬∼c01 tt tt
 
 open import choiceExtDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)
 

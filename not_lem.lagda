@@ -48,7 +48,7 @@ open import choiceBar
 
 module not_lem {L : Level} (W : PossibleWorlds {L})
                (C : Choice) (M : Compatible W C) (P : Progress {L} W C M)
-               (G : GetChoice {L} W C M) (X : ChoiceExt {L} W C) (N : NewChoice {L} W C M G)
+               (G : GetChoice {L} W C M) (X : ChoiceExt {L} W C M G) (N : NewChoice {L} W C M G)
                (F : Freeze {L} W C M P G N)
                (E : Extensionality 0ℓ (lsuc(lsuc(L))))
                (CB : ChoiceBar W C M P G X N F E)
@@ -265,7 +265,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
 ¬equalInType-#Σchoice : (i : ℕ) (w : 𝕎·) (r : Res) (c : Name) {k1 : ℂ·}
                         → isValue (ℂ→T (Res.def r))
                         → isValue (ℂ→T k1)
-                        → ((w : 𝕎·) → ¬ ∼ℂ· w (Res.def r) k1)
+                        → ((w : 𝕎·) → ¬ ∼C w (ℂ→C· (Res.def r)) (ℂ→C· k1))
                         → onlyℂ∈𝕎 (Res.def r) c w
                         → compatible· c w r
                         → freezable· c w
@@ -417,7 +417,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     eb7 : #weakℂEq w4 (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1)
     eb7 = ∀𝕎-mon e4 eb6
 
-    sim3 : ∼ℂ· w4 (Res.def r) k1
+    sim3 : ∼C w4 (ℂ→C· (Res.def r)) (ℂ→C· k1)
     sim3 = #weakℂEq→ {w4} {#APPLY (#CS c) (#NUM m)} {ℂ→C· k1} eb7 (Res.def r) k1 cn₀ (⇓-refl (ℂ→T k1) w4)
 
 
@@ -544,7 +544,7 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     k1 : ℂ·
     k1 = ℂ₁· -- This has to be different from r's default value
 
-    dks : (w : 𝕎·) → ¬ ∼ℂ· w (Res.def r) k1
+    dks : (w : 𝕎·) → ¬ ∼C w (ℂ→C· (Res.def r)) (ℂ→C· k1)
     dks = ¬∼ℂ₀₁·
 
     h1 : equalInType i w2 (#SQUASH (#UNION (#Σchoice name k1) (#NEG (#Σchoice name k1)))) #AX #AX
