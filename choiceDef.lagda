@@ -55,8 +55,8 @@ open Choice
 #-ℂ→T c = CTerm.closed (ℂ→C· c)
 
 
-ℂ→C-inj· : {a b : ℂ·} → ℂ→C· a ≡ ℂ→C· b → a ≡ b
-ℂ→C-inj· = ℂ→C-inj C
+--ℂ→C-inj· : {a b : ℂ·} → ℂ→C· a ≡ ℂ→C· b → a ≡ b
+--ℂ→C-inj· = ℂ→C-inj C
 
 
 

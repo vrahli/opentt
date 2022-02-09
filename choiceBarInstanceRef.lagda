@@ -83,7 +83,7 @@ isvalue-choice c = tt
 
 ℂ→C→∼ℂ-beth-ref : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼ℂ· w c1 c → ∼ℂ· w c2 c
 ℂ→C→∼ℂ-beth-ref {w} {c} {c1} {c2} comp sim
-  rewrite sym (ℂ→C-inj· {c1} {c2} (#compVal comp (isvalue-choice c1))) -- (∼vals→isValue₁ sim)
+  rewrite sym (#NUMinj (#compVal comp (isvalue-choice c1))) -- (∼vals→isValue₁ sim)
   = sim
 
 

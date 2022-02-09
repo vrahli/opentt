@@ -21,6 +21,6 @@ record Choice : Set₁ where
   field
     ℂ : Set
     ℂ→C : ℂ → CTerm
-    ℂ→C-inj : {a b : ℂ} → ℂ→C a ≡ ℂ→C b → a ≡ b
+--    ℂ→C-inj : {a b : ℂ} → ℂ→C a ≡ ℂ→C b → a ≡ b
 
 \end{code}
