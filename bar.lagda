@@ -70,34 +70,6 @@ record 𝔹 (B : Bars) (w : 𝕎·) : Set(lsuc(L)) where
   → Σ (𝔹 B w1) (λ b' → ∈𝔹Dep b' (i e1 ib) (↑wPredDep'' f e1))
 
 
-{-- Monotonicity --}
-bar⊑ : 𝕎· → Br → Br
-bar⊑ w' bar w0 = Σ 𝕎· (λ w1 → bar w1 × w1 ⊑· w0 × w' ⊑· w0)
-
-
-Bars⊑ : (B : Bars) → Set(lsuc(L))
-Bars⊑ B =
-  {w1 w2 : 𝕎·} (e : w1 ⊑· w2) (bar : Br)
-  → B w1 bar
-  → B w2 (bar⊑ w2 bar)
-
-
-𝔹⊑ : {B : Bars} (mon : Bars⊑ B) {w w' : 𝕎·} (e : w ⊑· w') → 𝔹 B w → 𝔹 B w'
-𝔹⊑ {B} MB {w} {w'} e (mk𝔹 bar bars ext mon) = mk𝔹 bar' bars' ext' mon'
-  where
-    bar' : Br
-    bar' = bar⊑ w' bar
-
-    bars' : B w' bar'
-    bars' = MB e bar bars
-
-    ext' : {w'' : 𝕎·} → bar' w'' → w' ⊑· w''
-    ext' {w''} (w1 , b , e₁ , e₂) = e₂
-
-    mon' : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar' w1 → bar' w2
-    mon' {w1} {w2} e (w0 , b0 , e₁ , e₂) = w0 , b0 , ⊑-trans· e₁ e , ⊑-trans· e₂ e
-
-
 {-- Intersection --}
 bar∩ : Br → Br → Br
 bar∩ b1 b2 w0 = Σ 𝕎· (λ w1 → Σ 𝕎· (λ w2 → b1 w1 × b2 w2 × w1 ⊑· w0 × w2 ⊑· w0))
@@ -129,7 +101,36 @@ Bars∩ B =
 
 
 
-{-- Triviality? --}
+{-- Monotonicity --}
+bar⊑ : 𝕎· → Br → Br
+bar⊑ w' bar w0 = Σ 𝕎· (λ w1 → bar w1 × w1 ⊑· w0 × w' ⊑· w0)
+
+
+Bars⊑ : (B : Bars) → Set(lsuc(L))
+Bars⊑ B =
+  {w1 w2 : 𝕎·} (e : w1 ⊑· w2) (bar : Br)
+  → B w1 bar
+  → B w2 (bar⊑ w2 bar)
+
+
+𝔹⊑ : {B : Bars} (mon : Bars⊑ B) {w w' : 𝕎·} (e : w ⊑· w') → 𝔹 B w → 𝔹 B w'
+𝔹⊑ {B} MB {w} {w'} e (mk𝔹 bar bars ext mon) = mk𝔹 bar' bars' ext' mon'
+  where
+    bar' : Br
+    bar' = bar⊑ w' bar
+
+    bars' : B w' bar'
+    bars' = MB e bar bars
+
+    ext' : {w'' : 𝕎·} → bar' w'' → w' ⊑· w''
+    ext' {w''} (w1 , b , e₁ , e₂) = e₂
+
+    mon' : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar' w1 → bar' w2
+    mon' {w1} {w2} e (w0 , b0 , e₁ , e₂) = w0 , b0 , ⊑-trans· e₁ e , ⊑-trans· e₂ e
+
+
+
+{-- Top --}
 bar∀ : 𝕎· → Br
 bar∀ w w' = w ⊑· w'
 
@@ -209,7 +210,7 @@ BarsFam1 B =
 --}
 
 
-{-- Families(2) --}
+{-- Union --}
 record 𝔹In {B : Bars} {w : 𝕎·} (b : 𝔹 B w) : Set(L) where
   constructor mk𝔹In
   field
