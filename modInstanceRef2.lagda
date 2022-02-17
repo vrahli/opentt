@@ -34,11 +34,11 @@ open import calculus
 open import terms
 
 
-module choiceBarInstanceRef (E : Extensionality 0ℓ 3ℓ)
+module modInstanceRef2 (E : Extensionality 0ℓ 3ℓ)
        where
 
 
-open import worldInstanceRef
+open import worldInstanceRef2
 open import choiceDef{1ℓ}(choiceRef)
 open import worldDef(PossibleWorldsRef)
 open import compatibleDef(PossibleWorldsRef)(choiceRef)(compatibleREF)
@@ -62,23 +62,24 @@ open import props3(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(get
 
 
 Typeℂ₀₁-beth-ref : CTerm
-Typeℂ₀₁-beth-ref = #QTNAT
+Typeℂ₀₁-beth-ref = #QTBOOL
 
 
 Typeℂ₀₁-isType-beth-bar : (u : ℕ) (w : 𝕎·) → isType u w Typeℂ₀₁-beth-ref
-Typeℂ₀₁-isType-beth-bar u w = eqTypesQTNAT
+Typeℂ₀₁-isType-beth-bar u w = eqTypesQTBOOL
 
 
 ℂ₀∈Typeℂ₀₁-beth-ref : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁-beth-ref Cℂ₀
-ℂ₀∈Typeℂ₀₁-beth-ref u w = NUM-equalInType-QTNAT u w 0
+ℂ₀∈Typeℂ₀₁-beth-ref u w = INL-equalInType-QTBOOL u w #AX #AX
 
 
 ℂ₁∈Typeℂ₀₁-beth-ref : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁-beth-ref Cℂ₁
-ℂ₁∈Typeℂ₀₁-beth-ref u w = NUM-equalInType-QTNAT u w 1
+ℂ₁∈Typeℂ₀₁-beth-ref u w = INR-equalInType-QTBOOL u w #AX #AX
 
 
 isvalue-choice : (c : ℂ·) → #isValue (ℂ→C· c)
-isvalue-choice c = tt
+isvalue-choice true = tt
+isvalue-choice false = tt
 
 
 {--ℂ→C→∼ℂ-beth-ref : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼C w c1 c → ∼C w c2 c
@@ -106,24 +107,60 @@ isValueℂ₁-beth-ref = tt
 ℕ→B (suc _) = false
 
 
-∈Typeℂ₀₁→-beth-ref : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-ref a b → inbar w (λ w' _ → #weakℂEq w' a b)
-∈Typeℂ₀₁→-beth-ref i w a b eqi = Bar.∀𝕎-inBarFunc barI aw (equalInType-QTNAT→ i w a b eqi)
+
+#⇓-true : (w : 𝕎·) (a x : CTerm) (c : ℂ·)
+          → a #⇓ ℂ→C· c at w
+          → a #⇓ #INL x at w
+          → c ≡ true
+#⇓-true w a x true c₁ c₂ = refl
+#⇓-true w a x false c₁ c₂ = ⊥-elim (z (CTerm≡ (⇓-val-det tt tt c₂ c₁)))
   where
-    aw : ∀𝕎 w (λ w' e' → #weakMonEq w' a b → #weakℂEq w' a b)
+    z : ¬ #INL x ≡ #BFALSE
+    z ()
+
+
+
+#⇓-false : (w : 𝕎·) (a x : CTerm) (c : ℂ·)
+          → a #⇓ ℂ→C· c at w
+          → a #⇓ #INR x at w
+          → c ≡ false
+#⇓-false w a x false c₁ c₂ = refl
+#⇓-false w a x true c₁ c₂ = ⊥-elim (z (CTerm≡ (⇓-val-det tt tt c₂ c₁)))
+  where
+    z : ¬ #INR x ≡ #BTRUE
+    z ()
+
+
+
+∈Typeℂ₀₁→-beth-ref : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-ref a b → inbar w (λ w' _ → #weakℂEq w' a b)
+∈Typeℂ₀₁→-beth-ref i w a b eqi = Bar.∀𝕎-inBarFunc barI aw (equalInType-QTBOOL→ i w a b eqi)
+  where
+    aw : ∀𝕎 w (λ w' e' → #weakBool w' a b → #weakℂEq w' a b)
     aw w1 e1 h w2 e2 = lift j
       where
         j : (c₁ c₂ : ℂ·) → ⌜ a ⌝ ⇓ ℂ→T c₁ at w2 → ⌜ b ⌝ ⇓ ℂ→T c₂ at w2 → ∼C w2 (ℂ→C· c₁) (ℂ→C· c₂)
-        j c₁ c₂ comp₁ comp₂ = ∼T-trans (∼T← comp₁) (∼T-trans (∼T-trans (∼T→ (fst (snd (lower (h w2 e2))))) (∼T← (snd (snd (lower (h w2 e2)))))) (∼T→ comp₂))
+        j c₁ c₂ comp₁ comp₂ = c (snd (snd (lower (h w2 e2)))) --∼T-trans (∼T← comp₁) (∼T-trans (∼T-trans (∼T→ (fst (snd (lower (h w2 e2))))) (∼T← (snd (snd (lower (h w2 e2)))))) (∼T→ comp₂))
+          where
+            x : CTerm
+            x = fst (lower (h w2 e2))
+
+            y : CTerm
+            y = fst (snd (lower (h w2 e2)))
+
+            c : ((a #⇓ #INL x at w2 × b #⇓ #INL y at w2) ⊎ (a #⇓ #INR x at w2 × b #⇓ #INR y at w2)) → ∼C w2 (ℂ→C· c₁) (ℂ→C· c₂)
+            c (inj₁ (c1 , c2)) rewrite #⇓-true w2 a x c₁ comp₁ c1 | #⇓-true w2 b y c₂ comp₂ c2 = ∼C-refl {w2} {#BTRUE}
+            c (inj₂ (c1 , c2)) rewrite #⇓-false w2 a x c₁ comp₁ c1 | #⇓-false w2 b y c₂ comp₂ c2 = ∼C-refl {w2} {#BFALSE}
+
 
 
 →∈Typeℂ₀₁-beth-ref : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name}
                       → inbar w (λ w' _ → weakℂ₀₁M w' (getT n c))
                       → ∈Type i w Typeℂ₀₁-beth-ref (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁-beth-ref i {w} {n} {c} h =
-  →equalInType-QTNAT i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
+  →equalInType-QTBOOL i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
                      (Bar.∀𝕎-inBarFunc barI aw h)
   where
-    aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakMonEq w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
+    aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakBool w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
     aw w1 e1 z w2 e2 = lift (x (snd (snd (lower (z w2 e2)))))
       where
         t : Term
@@ -133,9 +170,10 @@ isValueℂ₁-beth-ref = tt
         g = fst (snd (lower (z w2 e2)))
 
         x : (t ⇓ Tℂ₀ at w2 ⊎ t ⇓ Tℂ₁ at w2)
-            → Σ ℕ (λ n₁ → APPLY (CS c) (NUM n) ⇓ NUM n₁ at w2 × APPLY (CS c) (NUM n) ⇓ NUM n₁ at w2)
-        x (inj₁ y) = 0 , ⇓-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 n c refl g) y , ⇓-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 n c refl g) y
-        x (inj₂ y) = 1 , ⇓-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 n c refl g) y , ⇓-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 n c refl g) y
+            → #⇓same-bool w2 (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
+        x (inj₁ y) = #AX , #AX , inj₁ (⇓-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 n c refl g) y , ⇓-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 n c refl g) y)
+        x (inj₂ y) = #AX , #AX , inj₂ (⇓-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 n c refl g) y , ⇓-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 n c refl g) y)
+
 
 
 inbar-choice-beth-ref : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)

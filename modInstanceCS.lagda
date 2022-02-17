@@ -34,7 +34,7 @@ open import calculus
 open import terms
 
 
-module choiceBarInstanceCS (E : Extensionality 0ℓ 3ℓ)
+module modInstanceCS (E : Extensionality 0ℓ 3ℓ)
        where
 
 

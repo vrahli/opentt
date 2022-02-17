@@ -40,10 +40,10 @@ open import not_lpo_qtbool{L}(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 open import not_mp{L}(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
 
 -- This instance uses terms as choices:
-open import choiceBarInstanceCS
+open import modInstanceCS
 -- This instance uses nats as choices:
-open import choiceBarInstanceRef
+open import modInstanceRef
 -- This instance uses bools as choices:
-open import choiceBarInstanceRef2
+open import modInstanceRef2
 
 \end{code}
