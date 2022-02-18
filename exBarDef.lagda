@@ -57,8 +57,8 @@ open import barI(W)(C)(M)(P)
 open ExBar
 
 ∀∃𝔹· : {w : 𝕎·} {f : wPred w} → wPredExtIrr f
-       → ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → inbar w2 (↑wPred f (⊑-trans· e1 e2))))
-       → inbar w f
+       → ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → □· w2 (↑wPred f (⊑-trans· e1 e2))))
+       → □· w f
 ∀∃𝔹· = ∀∃𝔹 EB
 
 \end{code}

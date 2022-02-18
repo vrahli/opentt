@@ -59,7 +59,7 @@ OpenTT.
 
 \begin{code}
 
-{--wpreddepextirr : {w : 𝕎·} {f : wPred w} (h : wPredDep f) (i : inbar w f) → Set(lsuc(L))
+{--wpreddepextirr : {w : 𝕎·} {f : wPred w} (h : wPredDep f) (i : □· w f) → Set(lsuc(L))
 wpreddepextirr = wPredDepExtIrr-inOpenBar--}
 
 
@@ -216,7 +216,7 @@ data eqTypes u w T1 T2 where
     → (eqtA : ∀𝕎 w (λ w' _ → eqTypes (↓U u) w' A1 A2))
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType (↓U u) w (eqtA w e) a b))
     → eqTypes u w T1 T2
-  EQTBAR : inbar w (λ w' _ → eqTypes u w' T1 T2) → eqTypes u w T1 T2
+  EQTBAR : □· w (λ w' _ → eqTypes u w' T1 T2) → eqTypes u w T1 T2
 \end{code}
 
 
@@ -288,35 +288,35 @@ FFDEFSeq x1 eqa w t1 t2 =
 
 
 {-# TERMINATING #-}
---{-# INLINE inbar' #-}
+--{-# INLINE □·' #-}
 --{-# INLINE inBethBar' #-}
 --{-# INLINE inOpenBar' #-}
-eqInType _ w (EQTNAT _ _) t1 t2 = inbar w (λ w' _ → #strongMonEq w' t1 t2)
-eqInType _ w (EQTQNAT _ _) t1 t2 = inbar w (λ w' _ → #weakMonEq w' t1 t2)
-eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 = inbar w (λ w' _ → #lift-<NUM-pair w' a1 b1)
-eqInType _ w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 = inbar w (λ w' _ → #lift-<NUM-pair w' a1 b1)
-eqInType _ w (EQTFREE _ _) t1 t2 = inbar w (λ w' _ → #⇛to-same-CS w' t1 t2)
+eqInType _ w (EQTNAT _ _) t1 t2 = □· w (λ w' _ → #strongMonEq w' t1 t2)
+eqInType _ w (EQTQNAT _ _) t1 t2 = □· w (λ w' _ → #weakMonEq w' t1 t2)
+eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 = □· w (λ w' _ → #lift-<NUM-pair w' a1 b1)
+eqInType _ w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 = □· w (λ w' _ → #lift-<NUM-pair w' a1 b1)
+eqInType _ w (EQTFREE _ _) t1 t2 = □· w (λ w' _ → #⇛to-same-CS w' t1 t2)
 eqInType u w (EQTPI _ _ _ _ _ _ eqta eqtb exta extb) f1 f2 =
-  inbar w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) f1 f2)
+  □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) f1 f2)
 eqInType u w (EQTSUM _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
-  inbar w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' t1 t2)
+  □· w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' t1 t2)
 eqInType u w (EQTSET _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
-  inbar w (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) t1 t2)
+  □· w (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) t1 t2)
 eqInType u w (EQTEQ a1 _ a2 _ _ _ _ _ eqtA exta eqt1 eqt2) t1 t2 =
-  inbar w (λ w' e → EQeq a1 a2 (eqInType u w' (eqtA w' e)) w' t1 t2)
+  □· w (λ w' e → EQeq a1 a2 (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTUNION _ _ _ _ _ _ eqtA eqtB exta extb) t1 t2 =
-  inbar w (λ w' e → UNIONeq (eqInType u w' (eqtA w' e)) (eqInType u w' (eqtB w' e)) w' t1 t2)
+  □· w (λ w' e → UNIONeq (eqInType u w' (eqtA w' e)) (eqInType u w' (eqtB w' e)) w' t1 t2)
 eqInType u w (EQTSQUASH _ _ _ _ eqtA exta) t1 t2 =
-  inbar w (λ w' e → TSQUASHeq (eqInType u w' (eqtA w' e)) w' t1 t2)
+  □· w (λ w' e → TSQUASHeq (eqInType u w' (eqtA w' e)) w' t1 t2)
 --eqInType u w (EQTDUM _ _ _ _ eqtA exta) t1 t2 = Lift {0ℓ} 1ℓ ⊤
 eqInType u w (EQFFDEFS _ _ x1 _ _ _ eqtA exta _) t1 t2 =
-  inbar w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqtA w' e)) w' t1 t2)
+  □· w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTUNIV i p c₁ c₂) T1 T2 = snd u i p w T1 T2
 eqInType u w (EQTLIFT A1 A2 c₁ c₂ eqtA exta) t1 t2 =
-  inbar w (λ w' e → eqInType (↓U u) w' (eqtA w' e) t1 t2)
---  inbar w (λ w' e → eqInType (↓U u) w' (eqtA w' e) T1 T2)
+  □· w (λ w' e → eqInType (↓U u) w' (eqtA w' e) t1 t2)
+--  □· w (λ w' e → eqInType (↓U u) w' (eqtA w' e) T1 T2)
 eqInType u w (EQTBAR f) t1 t2 =
-  inbar' w f (λ w' _ (x : eqTypes u w' _ _) → eqInType u w' x t1 t2)
+  □·' w f (λ w' _ (x : eqTypes u w' _ _) → eqInType u w' x t1 t2)
   {-- This is an unfolding of the above, as agda doesn't like the above.
       Why doesn't it work with the INLINE? --}
 {--  ∀𝕎 w (λ w0 e0 →
@@ -336,22 +336,22 @@ We finally close the construction as follows:
 \begin{code}
 -- Two level-m universes are equal if they compute to (UNIV m)
 eqUnivi : (m : ℕ) → wper
-eqUnivi m w T1 T2 = inbar w (λ w' _ → ⌜ T1 ⌝ ⇛ (UNIV m) at w' × ⌜ T2 ⌝ ⇛ (UNIV m) at w')
+eqUnivi m w T1 T2 = □· w (λ w' _ → ⌜ T1 ⌝ ⇛ (UNIV m) at w' × ⌜ T2 ⌝ ⇛ (UNIV m) at w')
 
 
 {--uni0 : univsUpTo 0
 uni0 i ()--}
 
 
-inbarEqTypes : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) → Set(lsuc(L))
-inbarEqTypes u w T1 T2 = inbar w (λ w' _ → eqTypes u w' T1 T2)
+□·EqTypes : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) → Set(lsuc(L))
+□·EqTypes u w T1 T2 = □· w (λ w' _ → eqTypes u w' T1 T2)
 
 
 uniUpTo : (n : ℕ) → univsUpTo n
 uniUpTo 0 i ()
 uniUpTo (suc n) m p with m <? n
 ... | yes q = uniUpTo n m q
-... | no q = inbarEqTypes (n , uniUpTo n) -- i.e., m ≡ n
+... | no q = □·EqTypes (n , uniUpTo n) -- i.e., m ≡ n
 
 
 {--
@@ -359,7 +359,7 @@ uniUpTo (suc n) m p with m <? n
 eqInUnivi : (m : ℕ) → wper
 eqInUnivi 0 = λ _ _ _ → Lift {0ℓ} 1ℓ ⊥
 eqInUnivi (suc m) w T1 T2 = {!!}
---  inbar w (λ w' _ → eqTypes (m , (eqUnivi m , eqInUnivi m)) w' T1 T2 {-- ⊎ eqInUnivi m w' T1 T2--})
+--  □· w (λ w' _ → eqTypes (m , (eqUnivi m , eqInUnivi m)) w' T1 T2 {-- ⊎ eqInUnivi m w' T1 T2--})
 -- To have this ⊎ we need a way to lift types in eqTypes, so that types equal at level 'n' can be equal
 -- as types in lower universes, and then lifted up to being equal as types in 'n' again
 -- The type system probably isn't transitive without that.
@@ -369,7 +369,7 @@ eqInUnivi (suc m) w T1 T2 = {!!}
 {--eqInUnivi≤ : (m : ℕ) (i : ℕ) (p : i ≤ m) → wper
 eqInUnivi≤ 0 i p = λ _ _ _ → Lift {0ℓ} 1ℓ ⊥
 eqInUnivi≤ (suc m) i p w T1 T2 with suc m ≤? c =
-  inbar w (λ w' _ → eqTypes (m , (eqUnivi m , eqInUnivi m)) w' T1 T2 {-- ⊎ eqInUnivi m w' T1 T2--})--}
+  □· w (λ w' _ → eqTypes (m , (eqUnivi m , eqInUnivi m)) w' T1 T2 {-- ⊎ eqInUnivi m w' T1 T2--})--}
 
 
 --- Add an explicit level-lifting constructor to the type system
@@ -418,7 +418,7 @@ is-uni-uni n = refl
         f q = ≡uniUpTo n x p q
     ... | no p = E f
       where
-        f : (x₁ : suc x ≤ n) → inbarEqTypes (n , uniUpTo n) ≡ uniUpTo n x x₁
+        f : (x₁ : suc x ≤ n) → □·EqTypes (n , uniUpTo n) ≡ uniUpTo n x x₁
         f q = ⊥-elim (p q)
 
 
@@ -568,10 +568,10 @@ EQTmon : EQT → Set(lsuc(L))
 EQTmon σ = {w1 w2 : 𝕎·} (A a b : CTerm) → w1 ⊑· w2 → σ w1 A a b → σ w2 A a b
 
 TEQloc : TEQ → Set(lsuc(L))
-TEQloc τ = {w : 𝕎·} (A B : CTerm) → inbar w (λ w' _ → τ w' A B) → τ w A B
+TEQloc τ = {w : 𝕎·} (A B : CTerm) → □· w (λ w' _ → τ w' A B) → τ w A B
 
 EQTloc : EQT → Set(lsuc(L))
-EQTloc σ = {w : 𝕎·} (A a b : CTerm) → inbar w (λ w' _ → σ w' A a b) → σ w A a b
+EQTloc σ = {w : 𝕎·} (A a b : CTerm) → □· w (λ w' _ → σ w' A a b) → σ w A a b
 
 EQTcons : EQT → Set(lsuc(L))
 EQTcons σ = (w : 𝕎·) (a : CTerm) → ¬ σ w #FALSE a a

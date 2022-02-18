@@ -254,7 +254,7 @@ typeSysConds-SET-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 typeSysConds-SET-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) = ⊥-elim (SETneqUNIV (⇛-val-det tt tt x₁ d₁))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
 
     q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -383,7 +383,7 @@ typeSysConds-SET-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb 
 typeSysConds-SET-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (SETneqUNIV (⇛-val-det tt tt x d₁))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w A C y
 
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -454,7 +454,7 @@ typeSysConds-SET-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb 
 typeSysConds-SET-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (SETneqUNIV (⇛-val-det tt tt x d₂))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
     z = isu w C A y
 
     q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -519,7 +519,7 @@ typeSysConds-SET-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb 
 typeSysConds-SET-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (SETneqUNIV (⇛-val-det tt tt x₁ d₂))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w C B y
 
     q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -590,7 +590,7 @@ typeSysConds-SET-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb 
 typeSysConds-SET-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (SETneqUNIV (⇛-val-det tt tt x₁ d₁))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
 
     q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -656,7 +656,7 @@ typeSysConds-SET-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-SET-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (SETneqUNIV (⇛-val-det tt tt x d₁))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w A C y
 
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -684,7 +684,7 @@ typeSysConds-SET-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
       (λ w' e' →
          (z : eqTypes u w' A C) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
-         inbar w' (λ w'' e'' → (ext : w ⊑· w'') → SETeq (eqInType u w'' (eqta w'' ext)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' ext a1 a2 eqa)) f g))
+         □· w' (λ w'' e'' → (ext : w ⊑· w'') → SETeq (eqInType u w'' (eqta w'' ext)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' ext a1 a2 eqa)) f g))
     aw w1 e1 z {--at--} ez = Bar.∀𝕎-□Func barI (irr-fam-set u w A1 B1 A2 B2 eqta eqtb exta extb f g w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
@@ -740,7 +740,7 @@ typeSysConds-SET-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-SET-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (SETneqUNIV (⇛-val-det tt tt x d₂))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
     z = isu w C A y
 
     q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -768,7 +768,7 @@ typeSysConds-SET-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
       (λ w' e' →
          (z : eqTypes u w' C A) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
-         inbar w' (λ w'' e'' → (ext : w ⊑· w'') → SETeq (eqInType u w'' (eqta w'' ext)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' ext a1 a2 eqa)) f g))
+         □· w' (λ w'' e'' → (ext : w ⊑· w'') → SETeq (eqInType u w'' (eqta w'' ext)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' ext a1 a2 eqa)) f g))
     aw w1 e1 z {--at--} ez = Bar.∀𝕎-□Func barI (irr-fam-set u w A1 B1 A2 B2 eqta eqtb exta extb f g w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
@@ -820,7 +820,7 @@ typeSysConds-SET-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-SET-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (SETneqUNIV (⇛-val-det tt tt x₁ d₂))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w C B y
 
     q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -848,7 +848,7 @@ typeSysConds-SET-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
       (λ w' e' →
          (z : eqTypes u w' C B) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
-         inbar w' (λ w'' e'' → (ext : w ⊑· w'') → SETeq (eqInType u w'' (eqta w'' ext)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' ext a1 a2 eqa)) f g))
+         □· w' (λ w'' e'' → (ext : w ⊑· w'') → SETeq (eqInType u w'' (eqta w'' ext)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' ext a1 a2 eqa)) f g))
     aw w1 e1 z {--at--} ez = Bar.∀𝕎-□Func barI (irr-fam-set u w A1 B1 A2 B2 eqta eqtb exta extb f g w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
@@ -905,7 +905,7 @@ typeSysConds-SET-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-SET-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (SETneqUNIV (⇛-val-det tt tt x₁ d₁))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
 
     q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -933,7 +933,7 @@ typeSysConds-SET-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
       (λ w' e' →
          (z : eqTypes u w' B C) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
-         inbar w' (λ w'' e'' → (ext : w ⊑· w'') → SETeq (eqInType u w'' (eqta w'' ext)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' ext a1 a2 eqa)) f g))
+         □· w' (λ w'' e'' → (ext : w ⊑· w'') → SETeq (eqInType u w'' (eqta w'' ext)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' ext a1 a2 eqa)) f g))
     aw w1 e1 z {--at--} ez = Bar.∀𝕎-□Func barI (irr-fam-set u w A1 B1 A2 B2 eqta eqtb exta extb f g w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
@@ -951,7 +951,7 @@ eqInType-⇛-SET : (u : univs) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTerm0)
                   → B #⇛ #SET A2 B2 at w
                   → (eqt : eqTypes u w A B)
                   → eqInType u w eqt a b
-                  → inbar w (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b)
+                  → □· w (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b)
 {-# TERMINATING #-}
 eqInType-⇛-SET u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (SETneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SET u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (SETneqQNAT (⇛-val-det tt tt c₁ x))
@@ -985,7 +985,7 @@ eqInType-⇛-SET u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂
 eqInType-⇛-SET u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (SETneqUNIV (⇛-val-det tt tt c₁ d₁))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -999,7 +999,7 @@ eqInType-⇛-SET u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂
       (λ w' e' →
          (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →
          eqInType u w' z a b →
-         inbar w' (λ w'' e → SETeq (eqInType u w'' (eqta w'' (⊑-trans· e' e))) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa)) a b))
+         □· w' (λ w'' e → SETeq (eqInType u w'' (eqta w'' (⊑-trans· e' e))) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa)) a b))
     aw0 w1 e1 z {--at--} ez =
       eqInType-⇛-SET
         u w1 A B A1 A2 B1 B2 a b
@@ -1012,7 +1012,7 @@ eqInType-⇛-SET u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂
       (λ w' e' →
          (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →
          eqInType u w' z a b →
-         inbar w' (λ w'' e → (x : w ⊑· w'') → SETeq (eqInType u w'' (eqta w'' x)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x a1 a2 eqa)) a b))
+         □· w' (λ w'' e → (x : w ⊑· w'') → SETeq (eqInType u w'' (eqta w'' x)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x a1 a2 eqa)) a b))
     aw w1 e1 z {--at--} ez = Bar.∀𝕎-□Func barI (irr-fam-set u w A1 B1 A2 B2 eqta eqtb exta extb a b w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
@@ -1029,7 +1029,7 @@ eqInType-⇛-SET2 : (u : 𝕌) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTerm0)
                    → (eqt : ≡Types u w A B)
                    → (eqi : ≡∈Type u w eqt a b)
                    → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} eqt → eqInTypeExt eqt')
-                   → inbar w (λ w' e → SETeq (≡∈Type u w' (eqta w' e)) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e a₁ a₂ eqa)) a b)
+                   → □· w (λ w' e → SETeq (≡∈Type u w' (eqta w' e)) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e a₁ a₂ eqa)) a b)
 {-# TERMINATING #-}
 eqInType-⇛-SET2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNAT x x₁) ei ext = ⊥-elim (SETneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SET2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQNAT x x₁) ei ext = ⊥-elim (SETneqQNAT (⇛-val-det tt tt c₁ x))
@@ -1070,7 +1070,7 @@ eqInType-⇛-SET2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQFFDEF
 eqInType-⇛-SET2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNIV i p d₁ d₂) ei ext = ⊥-elim (SETneqUNIV (⇛-val-det tt tt c₁ d₁))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -1084,7 +1084,7 @@ eqInType-⇛-SET2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTBAR 
       (λ w' e' →
          (z : ≡Types u w' A B) {--(at : atbar x w' e' z)--} →
          ≡∈Type u w' z a b →
-         inbar w' (λ w'' e → SETeq (≡∈Type u w'' (eqta w'' (⊑-trans· e' e))) (λ a1 a2 eqa → ≡∈Type u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa)) a b))
+         □· w' (λ w'' e → SETeq (≡∈Type u w'' (eqta w'' (⊑-trans· e' e))) (λ a1 a2 eqa → ≡∈Type u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa)) a b))
     aw0 w1 e1 z {--at--} ez =
       eqInType-⇛-SET2
         u w1 A B A1 A2 B1 B2 a b
@@ -1096,7 +1096,7 @@ eqInType-⇛-SET2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTBAR 
       (λ w' e' →
          (z : ≡Types u w' A B) {--(at : atbar x w' e' z)--} →
          ≡∈Type u w' z a b →
-         inbar w' (λ w'' e → (x : w ⊑· w'') → SETeq (≡∈Type u w'' (eqta w'' x)) (λ a1 a2 eqa → ≡∈Type u w'' (eqtb w'' x a1 a2 eqa)) a b))
+         □· w' (λ w'' e → (x : w ⊑· w'') → SETeq (≡∈Type u w'' (eqta w'' x)) (λ a1 a2 eqa → ≡∈Type u w'' (eqtb w'' x a1 a2 eqa)) a b))
     aw w1 e1 z {--at--} ez = Bar.∀𝕎-□Func barI (irr-fam-set (u ·ᵤ) w A1 B1 A2 B2 eqta eqtb exta extb a b w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
@@ -1115,7 +1115,7 @@ eqInType-⇛-SET-rev : (u : univs) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTe
                       → A #⇛ #SET A1 B1 at w
                       → B #⇛ #SET A2 B2 at w
                       → (eqt : eqTypes u w A B)
-                      → inbar w (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b)
+                      → □· w (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b)
                       → eqInType u w eqt a b
 {-# TERMINATING #-}
 eqInType-⇛-SET-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (SETneqNAT (⇛-val-det tt tt c₁ x))
@@ -1150,7 +1150,7 @@ eqInType-⇛-SET-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ 
 eqInType-⇛-SET-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (SETneqUNIV (⇛-val-det tt tt c₁ d₁))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -1169,7 +1169,7 @@ eqInType-⇛-SET-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ 
         (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
         (⇛-mon e1 c₁) (⇛-mon e1 c₂) z j
       where
-        j : inbar w1 (↑wPred (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b) e1)
+        j : □· w1 (↑wPred (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b) e1)
         j = Bar.↑□ barI ei e1
 
 
@@ -1186,7 +1186,7 @@ eqInType-⇛-SET-rev2 : (u : 𝕌) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTe
                        → B #⇛ #SET A2 B2 at w
                        → (eqt : ≡Types u w A B)
                        → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} eqt → eqInTypeExt eqt')
-                       → inbar w (λ w' e → SETeq (≡∈Type u w' (eqta w' e)) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e a₁ a₂ eqa)) a b)
+                       → □· w (λ w' e → SETeq (≡∈Type u w' (eqta w' e)) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e a₁ a₂ eqa)) a b)
                        → ≡∈Type u w eqt a b
 {-# TERMINATING #-}
 eqInType-⇛-SET-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNAT x x₁) ext ei = ⊥-elim (SETneqNAT (⇛-val-det tt tt c₁ x))
@@ -1228,7 +1228,7 @@ eqInType-⇛-SET-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQF
 eqInType-⇛-SET-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNIV i p d₁ d₂) ext ei = ⊥-elim (SETneqUNIV (⇛-val-det tt tt c₁ d₁))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -1246,7 +1246,7 @@ eqInType-⇛-SET-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQT
         (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u ·ᵤ} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
         (⇛-mon e1 c₁) (⇛-mon e1 c₂) z (≤Type-EQTBAR-eqInTypeExt e1 {--at--} ext) j
       where
-        j : inbar w1 (↑wPred (λ w' e → SETeq (≡∈Type u w' (eqta w' e)) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e a₁ a₂ eqa)) a b) e1)
+        j : □· w1 (↑wPred (λ w' e → SETeq (≡∈Type u w' (eqta w' e)) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e a₁ a₂ eqa)) a b) e1)
         j = Bar.↑□ barI ei e1
 
 
@@ -1269,10 +1269,10 @@ typeSysConds-SET-local u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb 
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                          → eqInType u w' z a b
-                         → inbar w' (λ w'' e → (x : w ⊑· w'') → SETeq (eqInType u w'' (eqta w'' x)) (λ a₁ a₂ eqa → eqInType u w'' (eqtb w'' x a₁ a₂ eqa)) a b))
+                         → □· w' (λ w'' e → (x : w ⊑· w'') → SETeq (eqInType u w'' (eqta w'' x)) (λ a₁ a₂ eqa → eqInType u w'' (eqtb w'' x a₁ a₂ eqa)) a b))
     aw w1 e1 z {--at--} ei = Bar.∀𝕎-□Func barI aw'' aw'
       where
-        aw' : inbar w1 (λ w'' e → SETeq (eqInType u w'' (eqta w'' (⊑-trans· e1 e))) (λ a₁ a₂ eqa → eqInType u w'' (eqtb w'' (⊑-trans· e1 e) a₁ a₂ eqa)) a b)
+        aw' : □· w1 (λ w'' e → SETeq (eqInType u w'' (eqta w'' (⊑-trans· e1 e))) (λ a₁ a₂ eqa → eqInType u w'' (eqtb w'' (⊑-trans· e1 e) a₁ a₂ eqa)) a b)
         aw' = eqInType-⇛-SET u w1 A B A1 A2 B1 B2 a b (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)(wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1) (∀𝕎-mon e1 (∀𝕎-tsp→ext inda)) (∀𝕎-mon e1 (∀𝕎-fam-tsp→ext {u} {w} {A1} {B1} {A2} {B2} {eqta} {eqtb} indb)) (⇛-mon e1 x) (⇛-mon e1 x₁) z ei
 
         aw'' : ∀𝕎 w1 (λ w' e' → SETeq (eqInType u w' (eqta w' (⊑-trans· e1 e'))) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' (⊑-trans· e1 e') a₁ a₂ eqa)) a b

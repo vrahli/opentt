@@ -97,18 +97,18 @@ classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
         (sym (sub0-#[0]SQUASH-LEM p a₁))
         (→equalInType-SQUASH p4)
       where
-        p6 : inbar w1 (λ w' _ → inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁)))
+        p6 : □· w1 (λ w' _ → inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁)))
         p6 = ∀∃𝔹· (λ w' e1 e2 h → h) aw
           where
-            aw : ∀𝕎 w1 (λ w2 e2 → ∃𝕎 w2 (λ w3 e3 → inbar w3 (λ w' e → inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁)))))
+            aw : ∀𝕎 w1 (λ w2 e2 → ∃𝕎 w2 (λ w3 e3 → □· w3 (λ w' e → inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁)))))
             aw w2 e2 = cc (EM {∃𝕎 w2 (λ w3 e3 → inhType n w3 (#↑T p a₁))})
               where
                 cc : Dec (∃𝕎 w2 (λ w3 e3 → inhType n w3 (#↑T p a₁)))
-                     → ∃𝕎 w2 (λ w3 e3 → inbar w3 (λ w' e → inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁))))
+                     → ∃𝕎 w2 (λ w3 e3 → □· w3 (λ w' e → inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁))))
                 cc (no ¬p) = w2 , ⊑-refl· _ , Bar.∀𝕎-□ barI (λ w4 e4 → inj₂ (λ w5 e5 z → ¬p (w5 , ⊑-trans· e4 e5 , z)))
                 cc (yes (w3 , e3 , p)) = w3 , e3 , Bar.∀𝕎-□ barI (λ w4 e4 → inj₁ (inhType-mon e4 p))
 
-        p5 : inbar w1 (λ w' _ → inhType n w' (#↑T p a₁) ⊎ inhType n w' (#NEG (#↑T p a₁)))
+        p5 : □· w1 (λ w' _ → inhType n w' (#↑T p a₁) ⊎ inhType n w' (#NEG (#↑T p a₁)))
         p5 = Bar.∀𝕎-□Func barI aw p6
           where
             aw : ∀𝕎 w1 (λ w' e' → (inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁)))
@@ -116,7 +116,7 @@ classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
             aw w2 e2 (inj₁ i) = inj₁ i
             aw w2 e2 (inj₂ i) = inj₂ (equalInType-NEG-inh (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2))) i)
 
-        p4 : inbar w1 (λ w' _ → Σ CTerm (λ t → ∈Type n w' (#UNION (#↑T p a₁) (#NEG (#↑T p a₁))) t))
+        p4 : □· w1 (λ w' _ → Σ CTerm (λ t → ∈Type n w' (#UNION (#↑T p a₁) (#NEG (#↑T p a₁))) t))
         p4 = Bar.∀𝕎-□Func barI aw p5
           where
             aw : ∀𝕎 w1 (λ w' e' → inhType n w' (#↑T p a₁) ⊎ inhType n w' (#NEG (#↑T p a₁))

@@ -53,37 +53,37 @@ barI = inOpenBar-Bar
 --barI = inBethBar-Bar
 
 
-inbar : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
-inbar = Bar.□ barI
---inbar = inOpenBar
---inbar = inBethBar
+□· : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
+□· = Bar.□ barI
+--□· = inOpenBar
+--□· = inBethBar
 
-inbar' : (w : 𝕎·) {g : wPred w} (h : inbar w g) (f : wPredDep g) → Set(lsuc(L))
---inbar' = Bar.□' barI
-inbar' = inOpenBar'
---inbar' = inBethBar'
+□·' : (w : 𝕎·) {g : wPred w} (h : □· w g) (f : wPredDep g) → Set(lsuc(L))
+--□·' = Bar.□' barI
+□·' = inOpenBar'
+--□·' = inBethBar'
 
-↑inbar : {w : 𝕎·} {f : wPred w} (i : inbar w f) {w' : 𝕎·} (e : w ⊑· w') → inbar w' (↑wPred f e)
-↑inbar = Bar.↑□ barI
---↑inbar = ↑inOpenBar
---↑inbar = ↑inBethBar
+↑□· : {w : 𝕎·} {f : wPred w} (i : □· w f) {w' : 𝕎·} (e : w ⊑· w') → □· w' (↑wPred f e)
+↑□· = Bar.↑□ barI
+--↑□· = ↑inOpenBar
+--↑□· = ↑inBethBar
 
-↑'inbar : {w : 𝕎·} {f : wPred w} (i : inbar w f) {w' : 𝕎·} (e : w ⊑· w') → inbar w' (↑wPred' f e)
-↑'inbar = Bar.↑'□ barI
---↑'inbar = ↑'inOpenBar
---↑'inbar = ↑'inBethBar
+↑'□· : {w : 𝕎·} {f : wPred w} (i : □· w f) {w' : 𝕎·} (e : w ⊑· w') → □· w' (↑wPred' f e)
+↑'□· = Bar.↑'□ barI
+--↑'□· = ↑'inOpenBar
+--↑'□· = ↑'inBethBar
 
 
-↑inbar' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : inbar w f) {w' : 𝕎·} (e : w ⊑· w')
-          → inbar' w i g → inbar' w' (↑inbar i e) (↑wPredDep g e)
-↑inbar' {w} {f} {g} = Bar.↑□' barI {w} {f} {g}
---↑inbar' {w} {f} {g} = ↑inOpenBar' {w} {f} {g}
---↑inbar' {w} {f} {g} = ↑inBethBar' {w} {f} {g}
+↑□·' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : □· w f) {w' : 𝕎·} (e : w ⊑· w')
+          → □·' w i g → □·' w' (↑□· i e) (↑wPredDep g e)
+↑□·' {w} {f} {g} = Bar.↑□' barI {w} {f} {g}
+--↑□·' {w} {f} {g} = ↑inOpenBar' {w} {f} {g}
+--↑□·' {w} {f} {g} = ↑inBethBar' {w} {f} {g}
 
 
 
 {--
-atbar : {w : 𝕎·} {f : wPred w} (i : inbar w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
+atbar : {w : 𝕎·} {f : wPred w} (i : □· w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
 --atbar = Bar.atBar b
 atbar = atOpenBar
 --atbar = atBethBar

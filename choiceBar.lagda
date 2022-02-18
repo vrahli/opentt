@@ -76,23 +76,23 @@ record ChoiceBar : Set(lsuc(lsuc(L))) where
     --ℂ→C→∼ℂ : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼ℂ· w c1 c → ∼ℂ· w c2 c
 
     -- Typeℂ₀₁'s members are similar according to ∼ℂ
-    ∈Typeℂ₀₁→ : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁ a b → inbar w (λ w' _ → #weakℂEq w' a b)
+    ∈Typeℂ₀₁→ : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁ a b → □· w (λ w' _ → #weakℂEq w' a b)
     -- Typeℂ₀₁ contains all terms that weakly compute to ℂ₀ or ℂ₁
-    →∈Typeℂ₀₁ : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name} → inbar w (λ w' _ → weakℂ₀₁M w' (getT n c)) → ∈Type i w Typeℂ₀₁ (#APPLY (#CS c) (#NUM n))
+    →∈Typeℂ₀₁ : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name} → □· w (λ w' _ → weakℂ₀₁M w' (getT n c)) → ∈Type i w Typeℂ₀₁ (#APPLY (#CS c) (#NUM n))
 
 
     -- TODO: for any restriction not just Resℂ₀₁
-    inbar-choice : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
+    □·-choice : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
                    → compatible· c w r
-                   → inbar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
-    --choice-Typeℂ₀₁ : {w : 𝕎·} {c : Name} (m : ℕ) → compatible· c w Resℂ₀₁ → inbar w (λ w' _ → weakℂ₀₁M w' (getT m c))
+                   → □· w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
+    --choice-Typeℂ₀₁ : {w : 𝕎·} {c : Name} (m : ℕ) → compatible· c w Resℂ₀₁ → □· w (λ w' _ → weakℂ₀₁M w' (getT m c))
 
     -- This says that all choices are "weak" ℕ (i.e., that can change over time)
-    --choice-weakℕ : {w : 𝕎·} {c : Name} (m : ℕ) → compatible· c w Resℕ → inbar w (λ w' _ → weakℕM w' (getC m c))
+    --choice-weakℕ : {w : 𝕎·} {c : Name} (m : ℕ) → compatible· c w Resℕ → □· w (λ w' _ → weakℕM w' (getC m c))
 
     -- This allows selecting a branch of a bar that follows a given choice 'u'
     followChoice : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
-                   → inbar w f
+                   → □· w f
                    → onlyℂ∈𝕎 (Res.def r) c w
                    → compatible· c w r
                    → freezable· c w

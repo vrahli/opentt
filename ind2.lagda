@@ -1,6 +1,6 @@
 \begin{code}
 
--- This is similar to ind.lagda, but instead of breaking the inbar abstraction, here we use a bar operator.
+-- This is similar to ind.lagda, but instead of breaking the □· abstraction, here we use a bar operator.
 -- However, one problem is that Agda does not recognize now that the function terminates, and I'm therefore
 -- using the {-# TERMINATING #-} pragma.
 
@@ -179,7 +179,7 @@ data <TypeStep where
               (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type (↓𝕌 u) w (eqtA w e) a b))
               (w' : 𝕎·) (e' : w ⊑· w')
               → <TypeStep {↓𝕌 u} (eqtA w' e') {u} {w} {T1} {T2} (EQTLIFT A1 A2 c₁ c₂ eqtA exta)
-  <TypeBAR : (u : 𝕌) (w : 𝕎·) (T1 T2 : CTerm) (i : inbar w (λ w' _ → ≡Types u w' T1 T2))
+  <TypeBAR : (u : 𝕌) (w : 𝕎·) (T1 T2 : CTerm) (i : □· w (λ w' _ → ≡Types u w' T1 T2))
              (w' : 𝕎·) (e' : w ⊑· w') (p : ≡Types u w' T1 T2) {--(a : atbar i w' e' p)--}
              → <TypeStep {u} p {u} (EQTBAR i)
 
@@ -396,7 +396,7 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
     aw : ∀𝕎 w0 (λ w' _ → ≡Types u w' X1 X2)
     aw = eqTypes-mon (u ·ᵤ) eqt
 
-    i : inbar w0 (λ w' _ → ≡Types u w' X1 X2)
+    i : □· w0 (λ w' _ → ≡Types u w' X1 X2)
     i = Bar.∀𝕎-□ barI aw
 
 {--
@@ -582,7 +582,7 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
 
 
 ≤Type-EQTBAR-eqInTypeExt : {u : 𝕌} {w : 𝕎·} {A B : CTerm}
-                           {i : inbar w (λ w' _ → ≡Types u w' A B)}
+                           {i : □· w (λ w' _ → ≡Types u w' A B)}
                            {w1 : 𝕎·} (e1 : w ⊑· w1) {z : ≡Types u w1 A B}
                            {--(a : atbar i w1 e1 z)--}
                            (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} (EQTBAR i) → eqInTypeExt eqt')
@@ -595,7 +595,7 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
 
 
 <Type-EQTBAR-eqInTypeExt : {u : 𝕌} {w : 𝕎·} {A B : CTerm}
-                           {i : inbar w (λ w' _ → ≡Types u w' A B)}
+                           {i : □· w (λ w' _ → ≡Types u w' A B)}
                            {w1 : 𝕎·} (e1 : w ⊑· w1) {z : ≡Types u w1 A B}
                            {--(a : atbar i w1 e1 z)--}
                            (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → <Type {u'} eqt' {u} (EQTBAR i) → eqInTypeExt eqt')

@@ -217,7 +217,7 @@ getChoice→equalInType-#Σchoice-aux {n} {name} {w} {k} i comp sat g =
     (equalTypes-#Σchoice-body-sub0 i w name k comp (0 , sat))
     j
   where
-    j : inbar w (λ w' _ → SUMeq (equalInType i w' #NAT)
+    j : □· w (λ w' _ → SUMeq (equalInType i w' #NAT)
                                  (λ a b ea → equalInType i w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁)))
                                  w'
                                  (#PAIR (#NUM n) #AX)
@@ -275,7 +275,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     h0 : equalInType i w (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁)) x x
     h0 rewrite #Σchoice≡ c k1 = eqi
 
-    h1 : inbar w (λ w' _ → SUMeq (equalInType i w' #NAT) (λ a b ea → equalInType i w' (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·)) w' x x)
+    h1 : □· w (λ w' _ → SUMeq (equalInType i w' #NAT) (λ a b ea → equalInType i w' (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·)) w' x x)
     h1 = Bar.∀𝕎-□Func barI aw (equalInType-SUM→ {i} {w} {#NAT} {#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁} h0)
       where
         aw : ∀𝕎 w (λ w' e' → SUMeq (equalInType i w' #NAT)
@@ -324,7 +324,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     eb1 = snd (snd (snd (snd (snd (snd (snd h2))))))
 
     -- 2nd jump to bar
-    ea2 : inbar w1 (λ w' _ → #strongMonEq w' a₁ a₂)
+    ea2 : □· w1 (λ w' _ → #strongMonEq w' a₁ a₂)
     ea2 = equalInType-NAT→ i w1 a₁ a₂ ea1
 
     w2 : 𝕎·
@@ -360,7 +360,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     eb4 : equalInType i w2 Typeℂ₀₁· (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1)
     eb4 = equalInType-#⇛-left (#⇛-APPLY-CS {w2} {a₁} {#NUM m} c ca₁) eb3
 
-    eb5 : inbar w2 (λ w' _ → #weakℂEq w' (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1))
+    eb5 : □· w2 (λ w' _ → #weakℂEq w' (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1))
     eb5 = ∈Typeℂ₀₁→· i w2 (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1) eb4
 
     -- 3rd jump to bar
@@ -382,8 +382,8 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     eb6 : #weakℂEq w3 (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1)
     eb6 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB c eb5 oc2 comp2 fb2)))))
 
-    gc : inbar w3 (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
-    gc = inbar-choice· w3 c m r comp3
+    gc : □· w3 (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
+    gc = □·-choice· w3 c m r comp3
 
     -- 4th jump to bar
     w4 : 𝕎·
@@ -434,7 +434,7 @@ equalInType-SQUASH-UNION-LIFT→ {n} {i} p {w} {a} {b} {u} {v} eqi =
                                                (eqTypesNEG← (equalTypes-#↑T→ p w' b b (eqTypesNEG→ (equalInType-UNION→₂ {n} {w'} {#↑T p a} {#NEG (#↑T p b)} {t} {t} eqj))))
                                                (Bar.∀𝕎-□Func barI aw1 equ)
       where
-        equ : inbar w' (λ w'' _ → Σ CTerm (λ x → Σ CTerm (λ y
+        equ : □· w' (λ w'' _ → Σ CTerm (λ x → Σ CTerm (λ y
                                           → (t #⇛ (#INL x) at w'' × t #⇛ (#INL y) at w'' × equalInType n w'' (#↑T p a) x y)
                                              ⊎
                                              (t #⇛ (#INR x) at w'' × t #⇛ (#INR y) at w'' × equalInType n w'' (#NEG (#↑T p b)) x y))))
@@ -449,30 +449,30 @@ equalInType-SQUASH-UNION-LIFT→ {n} {i} p {w} {a} {b} {u} {v} eqi =
         aw1 w'' e' (x , y , inj₁ (c₁ , c₂ , eqk)) = x , y , inj₁ (c₁ , c₂ , equalInType-#↑T→ p w'' a x y eqk)
         aw1 w'' e' (x , y , inj₂ (c₁ , c₂ , eqk)) = x , y , inj₂ (c₁ , c₂ , equalInType-NEG (equalTypes-#↑T→ p w'' b b (eqTypesNEG→ (fst eqk))) (equalInType-NEG-↑T→ p eqk))
 
-    j0 : inbar w (λ w' _ → Σ CTerm (λ t → equalInType n w' (#UNION (#↑T p a) (#NEG (#↑T p b))) t t))
+    j0 : □· w (λ w' _ → Σ CTerm (λ t → equalInType n w' (#UNION (#↑T p a) (#NEG (#↑T p b))) t t))
     j0 = equalInType-SQUASH→ eqi
 
-    j1 : inbar w (λ w' _ → Σ CTerm (λ t → equalInType i w' (#UNION a (#NEG b)) t t))
+    j1 : □· w (λ w' _ → Σ CTerm (λ t → equalInType i w' (#UNION a (#NEG b)) t t))
     j1 = Bar.∀𝕎-□Func barI aw j0
 
 
 
 equalInType-SQUASH-UNION→ : {i : ℕ} {w : 𝕎·} {a b u v : CTerm}
                              → equalInType i w (#SQUASH (#UNION a (#NEG b))) u v
-                             → inbar w (λ w' _ → inhType i w' a ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' b))
+                             → □· w (λ w' _ → inhType i w' a ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' b))
 equalInType-SQUASH-UNION→ {i} {w} {a} {b} {u} {v} eqi =
   Bar.□-idem barI (Bar.∀𝕎-□Func barI aw1 h3)
   where
-    h1 : inbar w (λ w' _ → Σ CTerm (λ t → equalInType i w' (#UNION a (#NEG b)) t t))
+    h1 : □· w (λ w' _ → Σ CTerm (λ t → equalInType i w' (#UNION a (#NEG b)) t t))
     h1 = equalInType-SQUASH→ eqi
 
-    h2 : inbar w (λ w' _ → Σ CTerm (λ t → inbar w' (λ w'' _ → Σ CTerm (λ x → Σ CTerm (λ y
+    h2 : □· w (λ w' _ → Σ CTerm (λ t → □· w' (λ w'' _ → Σ CTerm (λ x → Σ CTerm (λ y
                                          → (t #⇛ (#INL x) at w'' × t #⇛ (#INL y) at w'' × equalInType i w'' a x y)
                                             ⊎
                                             (t #⇛ (#INR x) at w'' × t #⇛ (#INR y) at w'' × equalInType i w'' (#NEG b) x y))))))
     h2 = Bar.∀𝕎-□Func barI (λ w' e (t , eqj) → t , equalInType-UNION→ eqj) h1
 
-    h3 : inbar w (λ w' _ → Σ CTerm (λ t → inbar w' (λ w'' _ → Σ CTerm (λ x → Σ CTerm (λ y
+    h3 : □· w (λ w' _ → Σ CTerm (λ t → □· w' (λ w'' _ → Σ CTerm (λ x → Σ CTerm (λ y
                                          → (t #⇛ (#INL x) at w'' × t #⇛ (#INL y) at w'' × equalInType i w'' a x y)
                                             ⊎
                                             (t #⇛ (#INR x) at w'' × t #⇛ (#INR y) at w''
@@ -480,16 +480,16 @@ equalInType-SQUASH-UNION→ {i} {w} {a} {b} {u} {v} eqi =
     h3 = Bar.∀𝕎-□Func barI (λ w1 e1 (t , eqt) → t , Bar.∀𝕎-□Func barI (λ { w3 e3 (x , y , inj₁ (c₁ , c₂ , z)) → x , y , inj₁ (c₁ , c₂ , z) ;
                                                                                      w3 e3 (x , y , inj₂ (c₁ , c₂ , z)) → x , y , inj₂ (c₁ , c₂ , equalInType-NEG→ z) }) eqt) h2
 
-    aw1 : ∀𝕎 w (λ w' e' → Σ CTerm (λ t → inbar w' (λ w'' _ → Σ CTerm (λ x →  Σ CTerm (λ y →
+    aw1 : ∀𝕎 w (λ w' e' → Σ CTerm (λ t → □· w' (λ w'' _ → Σ CTerm (λ x →  Σ CTerm (λ y →
                             (t #⇛ #INL x at w'' × t #⇛ #INL y at w'' × equalInType i w'' a x y)
                             ⊎ (t #⇛ #INR x at w'' × t #⇛ #INR y at w'' × ∀𝕎 w'' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂))))))
-                        → inbar w' (↑wPred' (λ w'' e →  inhType i w'' a ⊎ ∀𝕎 w'' (λ w''' _ → ¬ inhType i w''' b)) e'))
+                        → □· w' (↑wPred' (λ w'' e →  inhType i w'' a ⊎ ∀𝕎 w'' (λ w''' _ → ¬ inhType i w''' b)) e'))
     aw1 w1 e1 (t , j) = Bar.□-idem barI (Bar.∀𝕎-□Func barI aw2 j)
       where
         aw2 : ∀𝕎 w1 (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
                                  (t #⇛ #INL x at w' × t #⇛ #INL y at w' × equalInType i w' a x y)
                                  ⊎ (t #⇛ #INR x at w' × t #⇛ #INR y at w' × ∀𝕎 w' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂))))
-                             → inbar w' (↑wPred' (λ w'' e → ↑wPred' (λ w''' e₁ → inhType i w''' a ⊎ ∀𝕎 w''' (λ w'''' _ → ¬ inhType i w'''' b)) e1 w'' e) e'))
+                             → □· w' (↑wPred' (λ w'' e → ↑wPred' (λ w''' e₁ → inhType i w''' a ⊎ ∀𝕎 w''' (λ w'''' _ → ¬ inhType i w'''' b)) e1 w'' e) e'))
         aw2 w2 e2 (x , y , inj₁ (c₁ , c₂ , z)) = Bar.∀𝕎-□ barI (λ w3 e3 x₁ x₂ → inj₁ (x , equalInType-mon (equalInType-refl z) w3 e3))
         aw2 w2 e2 (x , y , inj₂ (c₁ , c₂ , z)) = Bar.∀𝕎-□ barI λ w3 e3 x₁ x₂ → inj₂ (λ w4 e4 (t , h) → z w4 (⊑-trans· e3 e4) t t h)
 
@@ -550,7 +550,7 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     h1 : equalInType i w2 (#SQUASH (#UNION (#Σchoice name k1) (#NEG (#Σchoice name k1)))) #AX #AX
     h1 = eqi
 
-    h2 : inbar w2 (λ w' _ → inhType i w' (#Σchoice name k1) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' (#Σchoice name k1)))
+    h2 : □· w2 (λ w' _ → inhType i w' (#Σchoice name k1) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' (#Σchoice name k1)))
     h2 = equalInType-SQUASH-UNION→ h1
 
     oc1 : onlyℂ∈𝕎 (Res.def r) name w2

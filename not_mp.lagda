@@ -256,7 +256,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         h3 : inhType n w2 (#MP-left f)
         h3 = equalInType-NEG-inh {n} {w2} (→equalTypes-#PI-NEG-ASSERT₂ eqf1) h4
 
-        h5 : inbar w2 (λ w' _ → inhType n w' (#SUM-ASSERT₂ f))
+        h5 : □· w2 (λ w' _ → inhType n w' (#SUM-ASSERT₂ f))
         h5 = equalInType-SQUASH→ (h2 w2 (⊑-refl· _) (fst h3) (fst h3) (snd h3))
 
         -- We follow the choice

@@ -132,7 +132,7 @@ isValueℂ₁-beth-ref = tt
 
 
 
-∈Typeℂ₀₁→-beth-ref : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-ref a b → inbar w (λ w' _ → #weakℂEq w' a b)
+∈Typeℂ₀₁→-beth-ref : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-ref a b → □· w (λ w' _ → #weakℂEq w' a b)
 ∈Typeℂ₀₁→-beth-ref i w a b eqi = Bar.∀𝕎-□Func barI aw (equalInType-QTBOOL→ i w a b eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #weakBool w' a b → #weakℂEq w' a b)
@@ -154,7 +154,7 @@ isValueℂ₁-beth-ref = tt
 
 
 →∈Typeℂ₀₁-beth-ref : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name}
-                      → inbar w (λ w' _ → weakℂ₀₁M w' (getT n c))
+                      → □· w (λ w' _ → weakℂ₀₁M w' (getT n c))
                       → ∈Type i w Typeℂ₀₁-beth-ref (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁-beth-ref i {w} {n} {c} h =
   →equalInType-QTBOOL i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
@@ -176,10 +176,10 @@ isValueℂ₁-beth-ref = tt
 
 
 
-inbar-choice-beth-ref : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
+□·-choice-beth-ref : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
                         → compatible· c w r
                         → inBethBar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
-inbar-choice-beth-ref w c m r (v , f , i , sat) = trivialIS𝔹 w , j
+□·-choice-beth-ref w c m r (v , f , i , sat) = trivialIS𝔹 w , j
   where
     j : inIS𝔹 (trivialIS𝔹 w) (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
     j {w1} e1 b w2 e2 z w3 e3 rewrite fst (snd (snd (⊑-pres-getRef (⊑-trans· z e3) i))) =

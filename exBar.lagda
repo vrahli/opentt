@@ -55,8 +55,8 @@ record ExBar : Set(lsuc(lsuc(L))) where
   field
     ∀∃𝔹 : {w : 𝕎·} {f : wPred w}
           → wPredExtIrr f
-          → ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → inbar w2 (↑wPred f (⊑-trans· e1 e2))))
-          → inbar w f
+          → ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → □· w2 (↑wPred f (⊑-trans· e1 e2))))
+          → □· w f
 
 --- (∀𝕎 ∃𝕎 □ f) → (□ f)
 --- ¬followChoice (classically): □f ∧ C(w) → ∀ w' → w ⊑· w' → C(w') → ¬f

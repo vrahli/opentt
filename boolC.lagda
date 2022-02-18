@@ -349,7 +349,7 @@ equalInType-QT-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈QTBOOL n w
         h0 : equalInType n w1 (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) p₁ p₂
         h0 = ≡CTerm→equalInType (#Σchoice≡ name ℂ₁·) eqi
 
-        h1 : inbar w1 (λ w' _ → SUMeq (equalInType n w' #NAT) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' p₁ p₂)
+        h1 : □· w1 (λ w' _ → SUMeq (equalInType n w' #NAT) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' p₁ p₂)
         h1 = equalInType-SUM→ h0
 
 
@@ -395,7 +395,7 @@ equalInType-QT-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈QTBOOL n w
         h0 : equalInType n w1 (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) p₁ p₂
         h0 = ≡CTerm→equalInType (#Σchoice≡ name ℂ₁·) eqi
 
-        h1 : inbar w1 (λ w' _ → SUMeq (equalInType n w' #NAT) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' p₁ p₂)
+        h1 : □· w1 (λ w' _ → SUMeq (equalInType n w' #NAT) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' p₁ p₂)
         h1 = equalInType-SUM→ h0
 
 \end{code}

@@ -93,13 +93,13 @@ sat→equalInType-Typeℂ₀₁· i w k (n , inj₂ y) rewrite y = ℂ₁∈Type
 
 
 
-comp-Resℂ→inbar-weakℂ₀₁ : {c : Name} {w : 𝕎·} (n : ℕ)
+comp-Resℂ→□·-weakℂ₀₁ : {c : Name} {w : 𝕎·} (n : ℕ)
                            → compatible· c w Resℂ
-                           → inbar w (λ w' _ → weakℂ₀₁M w' (getT n c))
-comp-Resℂ→inbar-weakℂ₀₁ {c} {w} n comp = Bar.∀𝕎-□Func barI aw j1
+                           → □· w (λ w' _ → weakℂ₀₁M w' (getT n c))
+comp-Resℂ→□·-weakℂ₀₁ {c} {w} n comp = Bar.∀𝕎-□Func barI aw j1
   where
-    j1 : inbar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· n c w'' ≡ just t × ·ᵣ Resℂ n t))))
-    j1 = inbar-choice· w c n Resℂ comp
+    j1 : □· w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· n c w'' ≡ just t × ·ᵣ Resℂ n t))))
+    j1 = □·-choice· w c n Resℂ comp
 
     aw : ∀𝕎 w (λ w2 e2 → ∀𝕎 w2 (λ w3 _ → Lift (lsuc L) (Σ ℂ· (λ t → getChoice· n c w3 ≡ just t × ·ᵣ Resℂ n t))) → weakℂ₀₁M w2 (getT n c))
     aw w2 e2 h w3 e3 rewrite fst (snd (lower (h w3 e3))) = lift (ℂ→T t , refl , z st)
@@ -127,8 +127,8 @@ comp-Resℂ→inbar-weakℂ₀₁ {c} {w} n comp = Bar.∀𝕎-□Func barI aw j
     aw1' : ∀𝕎 w (λ w'' e'' → #strongMonEq w'' a₁ a₂ → equalInType i w'' Typeℂ₀₁· (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂))
     aw1' w1 e1 (n , c₁ , c₂) = equalInType-#⇛-LR-rev (#⇛-APPLY-CS {w1} {a₁} {#NUM n} c c₁) (#⇛-APPLY-CS {w1} {a₂} {#NUM n} c c₂) eqj
       where
-        j2 : inbar w1 (λ w' _ → weakℂ₀₁M w' (getT n c))
-        j2 = comp-Resℂ→inbar-weakℂ₀₁ n (⊑-compatible· e1 comp)
+        j2 : □· w1 (λ w' _ → weakℂ₀₁M w' (getT n c))
+        j2 = comp-Resℂ→□·-weakℂ₀₁ n (⊑-compatible· e1 comp)
 
         eqj : ∈Type i w1 Typeℂ₀₁· (#APPLY (#CS c) (#NUM n))
         eqj = →∈Typeℂ₀₁· i j2

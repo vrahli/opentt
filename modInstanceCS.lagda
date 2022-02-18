@@ -318,7 +318,7 @@ isValueℂ₁-beth-cs = tt
 --}
 
 
-∈Typeℂ₀₁→-beth-cs : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-cs a b → inbar w (λ w' _ → #weakℂEq w' a b)
+∈Typeℂ₀₁→-beth-cs : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-cs a b → □· w (λ w' _ → #weakℂEq w' a b)
 ∈Typeℂ₀₁→-beth-cs i w a b eqi = Bar.∀𝕎-□Func barI aw (equalInType-QTNAT→ i w a b eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #weakMonEq w' a b → #weakℂEq w' a b)
@@ -329,7 +329,7 @@ isValueℂ₁-beth-cs = tt
 
 
 →∈Typeℂ₀₁-beth-cs : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name}
-                      → inbar w (λ w' _ → weakℂ₀₁M w' (getT n c))
+                      → □· w (λ w' _ → weakℂ₀₁M w' (getT n c))
                       → ∈Type i w Typeℂ₀₁-beth-cs (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁-beth-cs i {w} {n} {c} h =
   →equalInType-QTNAT i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
@@ -352,10 +352,10 @@ isValueℂ₁-beth-cs = tt
 
 -- We so far didn't rely on a specific bar.
 -- Here we do
-inbar-choice-beth-cs : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
+□·-choice-beth-cs : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
                        → compatible· c w r
                        → inBethBar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
-inbar-choice-beth-cs w c m r comp = IS𝔹-ℕ w r c m comp , j
+□·-choice-beth-cs w c m r comp = IS𝔹-ℕ w r c m comp , j
   where
     j : inIS𝔹 (IS𝔹-ℕ w r c m comp) (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
     j {w'} e (e0 , l , g , len) w1 e1 z w2 e2 = lift (fst sel , g1 , sat)

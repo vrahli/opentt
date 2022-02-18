@@ -134,7 +134,7 @@ typeSysConds-QNAT-ttrans u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA
 typeSysConds-QNAT-ttrans u w A B x x₁ C (EQTUNIV i p c₁ c₂) = ⊥-elim (QNATneqUNIV (⇛-val-det tt tt x₁ c₁))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
 
     q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -170,7 +170,7 @@ typeSysConds-QNAT-extl1 u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA 
 typeSysConds-QNAT-extl1 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (QNATneqUNIV (⇛-val-det tt tt x c₁))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w A C y
 
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -206,7 +206,7 @@ typeSysConds-QNAT-extl1 u w A B x x₁ C (EQTBAR y) a b eqi =
             h0 : ∀𝕎 w2 (λ w3 e3 → (z : w3 ≽ w) → f w3 z)
             h0 = snd (snd (i w1 e1))
 
-        c : inbar' w y (λ w' e' z → eqInType u w' z a b)
+        c : □·' w y (λ w' e' z → eqInType u w' z a b)
         c = loc-∀𝕎-inOpenBar-inOpenBar' y
         --c = Bar.∀𝕎-□-□' barI aw y
 --}
@@ -233,7 +233,7 @@ typeSysConds-QNAT-extl2 u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA 
 typeSysConds-QNAT-extl2 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (QNATneqUNIV (⇛-val-det tt tt x c₂))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
     z = isu w C A y
 
     q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -268,7 +268,7 @@ typeSysConds-QNAT-extr1 u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA 
 typeSysConds-QNAT-extr1 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (QNATneqUNIV (⇛-val-det tt tt x₁ c₂))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w C B y
 
     q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -303,7 +303,7 @@ typeSysConds-QNAT-extr2 u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA 
 typeSysConds-QNAT-extr2 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (QNATneqUNIV (⇛-val-det tt tt x₁ c₁))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
 
     q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -338,7 +338,7 @@ typeSysConds-QNAT-extrevl1 u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA ex
 typeSysConds-QNAT-extrevl1 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (QNATneqUNIV (⇛-val-det tt tt x c₁))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w A C y
 
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -380,7 +380,7 @@ typeSysConds-QNAT-extrevl2 u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA ex
 typeSysConds-QNAT-extrevl2 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (QNATneqUNIV (⇛-val-det tt tt x c₂))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
     z = isu w C A y
 
     q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -423,7 +423,7 @@ typeSysConds-QNAT-extrevr1 u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA ex
 typeSysConds-QNAT-extrevr1 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (QNATneqUNIV (⇛-val-det tt tt x₁ c₂))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w C B y
 
     q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -465,7 +465,7 @@ typeSysConds-QNAT-extrevr2 u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA ex
 typeSysConds-QNAT-extrevr2 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (QNATneqUNIV (⇛-val-det tt tt x₁ c₁))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
   where
-    z : inbar w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
 
     q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -492,7 +492,7 @@ eqInType-⇛-QNAT : (u : univs) (w : 𝕎·) (A B a b : CTerm)
                   → B #⇛ #QNAT at w
                   → (eqt : eqTypes u w A B)
                   → eqInType u w eqt a b
-                  → inbar w (λ w' e → #weakMonEq w' a b)
+                  → □· w (λ w' e → #weakMonEq w' a b)
 {-# TERMINATING #-}
 eqInType-⇛-QNAT u w A B a b c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (QNATneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QNAT u w A B a b c₁ c₂ (EQTQNAT x x₁) ei = ei
@@ -510,7 +510,7 @@ eqInType-⇛-QNAT u w A B a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA e
 eqInType-⇛-QNAT u w A B a b c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (QNATneqUNIV (⇛-val-det tt tt c₁ d₁))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z))) -- Lift {0ℓ} 1ℓ ⊥
   where
-    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -520,10 +520,10 @@ eqInType-⇛-QNAT u w A B a b c₁ c₂ (EQTLIFT A1 A2 x x₁ eqtA extA) ei = �
 eqInType-⇛-QNAT u w A B a b c₁ c₂ (EQTBAR x) ei =
   Bar.□-idem barI (Bar.∀𝕎-□'-□ barI x aw ei)
   where
-    aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →  eqInType u w' z a b → inbar w' (λ w'' _ → #weakMonEq w'' a b))
+    aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →  eqInType u w' z a b → □· w' (λ w'' _ → #weakMonEq w'' a b))
     aw0 w1 e1 z {--at--} eqi = eqInType-⇛-QNAT u w1 A B a b (⇛-mon e1 c₁) (⇛-mon e1 c₂) z eqi
 
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →  eqInType u w' z a b → inbar w' (λ w'' _ → w ⊑· w'' → #weakMonEq w'' a b))
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →  eqInType u w' z a b → □· w' (λ w'' _ → w ⊑· w'' → #weakMonEq w'' a b))
     aw w1 e1 z {--at--} eqi = Bar.∀𝕎-□Func barI (λ w' e' s x → s) (aw0 w1 e1 z {--at--} eqi)
 
 
@@ -533,7 +533,7 @@ eqInType-⇛-QNAT-rev : (u : univs) (w : 𝕎·) (A B a b : CTerm)
                        → A #⇛ #QNAT at w
                        → B #⇛ #QNAT at w
                        → (eqt : eqTypes u w A B)
-                       → inbar w (λ w' _ → #weakMonEq w' a b)
+                       → □· w (λ w' _ → #weakMonEq w' a b)
                        → eqInType u w eqt a b
 {-# TERMINATING #-}
 eqInType-⇛-QNAT-rev u w A B a b c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (QNATneqNAT (⇛-val-det tt tt c₁ x))
@@ -552,7 +552,7 @@ eqInType-⇛-QNAT-rev u w A B a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA ex
 eqInType-⇛-QNAT-rev u w A B a b c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (QNATneqUNIV (⇛-val-det tt tt c₁ d₁))
 {--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z))) -- Lift {0ℓ} 1ℓ ⊥
   where
-    z : inbar w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
+    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
 
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
@@ -574,10 +574,10 @@ typeSysConds-QNAT-local : (u : univs) (w : 𝕎·) (A B : CTerm)
 typeSysConds-QNAT-local u w A B x x₁ a b i j =
   Bar.□-idem barI (Bar.∀𝕎-□'-□ barI i aw j)
   where
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → inbar w' (λ w'' e → w ⊑· w'' → #weakMonEq w'' a b))
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w'' e → w ⊑· w'' → #weakMonEq w'' a b))
     aw w1 e1 z {--at--} ei = Bar.∀𝕎-□Func barI (λ w' e' s x → s) aw'
       where
-        aw' : inbar w1 (λ w' e → #weakMonEq w' a b)
+        aw' : □· w1 (λ w' e → #weakMonEq w' a b)
         aw' = eqInType-⇛-QNAT u w1 A B a b (⇛-mon e1 x) (⇛-mon e1 x₁) z ei
 
 
@@ -595,10 +595,10 @@ typeSysConds-QNAT u w A B x x₁ =
     ttrans = typeSysConds-QNAT-ttrans u w A B x x₁
 
     isym : eqInTypeSym u {_} {A} {B} (EQTQNAT x x₁)
-    isym a b eqi = inbar-weakMonEq-sym eqi
+    isym a b eqi = □·-weakMonEq-sym eqi
 
     itrans : eqInTypeTrans u {_} {A} {B} (EQTQNAT x x₁)
-    itrans a b c eqi₁ eqi₂ = inbar-weakMonEq-trans eqi₁ eqi₂
+    itrans a b c eqi₁ eqi₂ = □·-weakMonEq-trans eqi₁ eqi₂
 
     iextl1 : eqInTypeExtL1 {_} {_} {A} {B} (EQTQNAT x x₁)
     iextl1 = typeSysConds-QNAT-extl1 u w A B x x₁
