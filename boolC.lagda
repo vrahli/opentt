@@ -324,7 +324,7 @@ equalInType-QT-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈QTBOOL n w
     aw1 = equalInType-#Σchoice w name ℂ₁· comp sat
 
     aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' (#Σchoice name ℂ₁·) a₁ a₂)
-    aw2 w1 e1 p₁ p₂ eqi = lower (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw3 h1))
+    aw2 w1 e1 p₁ p₂ eqi = lower (Bar.□-const barI (Bar.∀𝕎-□Func barI aw3 h1))
       where
         aw3 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType n w' #NAT)
                                       (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)))
@@ -370,7 +370,7 @@ equalInType-QT-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈QTBOOL n w
     aw1 = equalInType-#Σchoice w name ℂ₁· comp sat
 
     aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' (#Σchoice name ℂ₁·) a₁ a₂)
-    aw2 w1 e1 p₁ p₂ eqi = lower (Bar.inBar-const barI (Bar.∀𝕎-inBarFunc barI aw3 h1))
+    aw2 w1 e1 p₁ p₂ eqi = lower (Bar.□-const barI (Bar.∀𝕎-□Func barI aw3 h1))
       where
         aw3 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType n w' #NAT)
                                       (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)))

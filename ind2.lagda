@@ -397,7 +397,7 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
     aw = eqTypes-mon (u ·ᵤ) eqt
 
     i : inbar w0 (λ w' _ → ≡Types u w' X1 X2)
-    i = Bar.∀𝕎-inBar barI aw
+    i = Bar.∀𝕎-□ barI aw
 
 {--
 --    j : atbar i w0 (⊑-refl· w0) (aw w0 (⊑-refl· w0))
