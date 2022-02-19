@@ -28,6 +28,6 @@ The formalization currently helps Agda using TERMINATION pragmas
 because Agda cannot figure out on its own that functions are
 terminating when they involve the modalities. We however checked that
 they do and provide such an example in `props0.lagda`: see
-`if-equalInType-EQ-test` (comment it out), which unfolds enough the
+`if-equalInType-EQ-test` (uncomment it), which unfolds enough the
 abstractions used in the `EQTBAR` case in `if-equalInType-EQ` for Agda
 to figure out that it terminates.

@@ -43,8 +43,11 @@ module barI {L : Level} (W : PossibleWorlds {L})
 
 open import worldDef(W)
 open import bar(W)
+-- Example: open bars
 open import barOpen(W)
+-- Example: Kripke bars i.e., all extensions
 open import barKripke(W)
+-- Example: Beth bars
 open import barBeth(W)(C)(M)(P)
 
 
