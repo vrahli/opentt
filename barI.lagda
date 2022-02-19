@@ -44,6 +44,7 @@ module barI {L : Level} (W : PossibleWorlds {L})
 open import worldDef(W)
 open import bar(W)
 open import barOpen(W)
+open import barKripke(W)
 open import barBeth(W)(C)(M)(P)
 
 
