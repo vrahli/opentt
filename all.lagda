@@ -47,4 +47,9 @@ open import modInstanceRef
 -- This instance uses bools as choices:
 open import modInstanceRef2
 
+-- `barKripke` provides an example of a bar containing all worlds.
+-- In `krikeChoice` we show that the resulting modality does not satisfy `□·-choice` (from `choiceBar`),
+-- which we require to prove ¬LEM for example.  This is true when using FCS as choices but not REF.
+open import krikeChoice
+
 \end{code}

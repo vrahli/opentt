@@ -32,6 +32,15 @@ open import Axiom.Extensionality.Propositional
 open import util
 open import calculus
 open import terms
+open import world
+open import choice
+open import compatible
+open import progress
+open import getChoice
+open import newChoice
+open import freeze
+open import mod
+open import choiceExt
 
 
 -- An instance with beth bars (inBethBar-Bar) and references
@@ -39,28 +48,57 @@ open import terms
 module modInstanceRef (E : Extensionality 0ℓ 3ℓ)
        where
 
-
 open import worldInstanceRef
-open import choiceDef{1ℓ}(choiceRef)
-open import worldDef(PossibleWorldsRef)
-open import compatibleDef(PossibleWorldsRef)(choiceRef)(compatibleREF)
-open import progressDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)
-open import getChoiceDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)
-open import choiceExtDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)
-open import newChoiceDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(newChoiceRef)
-open import freezeDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(newChoiceRef)(freezeREF)
 
-open import bar(PossibleWorldsRef)
-open import mod(PossibleWorldsRef)
-open import barOpen(PossibleWorldsRef)
-open import barBeth(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)
-open import barI(PossibleWorldsRef)(inBethBar-Bar)(choiceRef)(compatibleREF)(progressREF)
-open import computation(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)
+W : PossibleWorlds
+W = PossibleWorldsRef
 
-open import forcing(PossibleWorldsRef)(inBethBar-Bar)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)
-open import props1(PossibleWorldsRef)(inBethBar-Bar)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)
-open import props2(PossibleWorldsRef)(inBethBar-Bar)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)
-open import props3(PossibleWorldsRef)(inBethBar-Bar)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)
+C : Choice
+C = choiceRef
+
+K : Compatible W C
+K = compatibleREF
+
+P : Progress W C K
+P = progressREF
+
+open import barBeth(W)(C)(K)(P)
+
+M : Mod W
+M = inBethBar-Bar
+
+G : GetChoice W C K
+G = getChoiceRef
+
+N : NewChoice W C K G
+N = newChoiceRef
+
+F : Freeze W C K P G N
+F = freezeREF
+
+X : ChoiceExt W C K G
+X = choiceExtRef
+
+open import worldDef(W)
+open import bar(W)
+open import mod(W)
+open import barOpen(W)
+open import choiceDef{1ℓ}(C)
+open import compatibleDef(W)(C)(K)
+open import progressDef(W)(C)(K)(P)
+open import getChoiceDef(W)(C)(K)(G)
+open import choiceExtDef(W)(C)(K)(G)(X)
+open import newChoiceDef(W)(C)(K)(G)(N)
+open import freezeDef(W)(C)(K)(P)(G)(N)(F)
+
+--open import barBeth(W)(C)(K)(P)
+open import barI(W)(M)(C)(K)(P)
+open import computation(W)(C)(K)(G)
+
+open import forcing(W)(M)(C)(K)(P)(G)(E)
+open import props1(W)(M)(C)(K)(P)(G)(E)
+open import props2(W)(M)(C)(K)(P)(G)(E)
+open import props3(W)(M)(C)(K)(P)(G)(E)
 
 
 
@@ -110,7 +148,7 @@ isValueℂ₁-beth-ref = tt
 
 
 ∈Typeℂ₀₁→-beth-ref : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-ref a b → □· w (λ w' _ → #weakℂEq w' a b)
-∈Typeℂ₀₁→-beth-ref i w a b eqi = Mod.∀𝕎-□Func inBethBar-Bar aw (equalInType-QTNAT→ i w a b eqi)
+∈Typeℂ₀₁→-beth-ref i w a b eqi = Mod.∀𝕎-□Func M aw (equalInType-QTNAT→ i w a b eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #weakMonEq w' a b → #weakℂEq w' a b)
     aw w1 e1 h w2 e2 = lift j
@@ -124,7 +162,7 @@ isValueℂ₁-beth-ref = tt
                       → ∈Type i w Typeℂ₀₁-beth-ref (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁-beth-ref i {w} {n} {c} h =
   →equalInType-QTNAT i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
-                     (Mod.∀𝕎-□Func inBethBar-Bar aw h)
+                     (Mod.∀𝕎-□Func M aw h)
   where
     aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakMonEq w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
     aw w1 e1 z w2 e2 = lift (x (snd (snd (lower (z w2 e2)))))
