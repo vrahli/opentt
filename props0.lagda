@@ -35,19 +35,18 @@ open import choice
 open import compatible
 open import progress
 open import getChoice
+open import mod
 
---open import bar
-
-module props0 {L : Level} (W : PossibleWorlds {L})
-              (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M) (G : GetChoice {L} W C M)
+module props0 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+              (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
        --(bar : Bar W) where
 open import worldDef(W)
-open import computation(W)(C)(M)(G)
+open import computation(W)(C)(K)(G)
 open import bar(W)
-open import barI(W)(C)(M)(P)
-open import forcing(W)(C)(M)(P)(G)(E)
+open import barI(W)(M)(C)(K)(P)
+open import forcing(W)(M)(C)(K)(P)(G)(E)
 \end{code}
 
 
@@ -62,7 +61,7 @@ impliesEqInType : (u : ℕ) {w : 𝕎·} {T a b : CTerm} → equalInType u w T a
 impliesEqInType u f = (u , f)
 
 univ□· : (n : ℕ) (w : 𝕎·) → eqUnivi n w (#UNIV n) (#UNIV n)
-univ□· n w =  Bar.∀𝕎-□ barI λ w1 e1 → compAllRefl (UNIV n) w1 , compAllRefl (UNIV n) w1
+univ□· n w =  Mod.∀𝕎-□ M λ w1 e1 → compAllRefl (UNIV n) w1 , compAllRefl (UNIV n) w1
 
 lemma1 : (w : 𝕎·) → equalTypes 1 w (#UNIV 0) (#UNIV 0)
 lemma1 w = EQTUNIV 0 ≤-refl (compAllRefl (UNIV 0) w) (compAllRefl (UNIV 0) w)
@@ -77,7 +76,7 @@ lemma4 : (w : 𝕎·) → eqtypes w (#UNIV 1) (#UNIV 1)
 lemma4 w = impliesEqTypes 2 (lemma3 w)
 
 lemma5 : (w : 𝕎·) → equalInType 2 w (#UNIV 1) (#UNIV 0) (#UNIV 0)
-lemma5 w = (lemma3 w , Bar.∀𝕎-□ barI (λ w' e → lemma1 w'))
+lemma5 w = (lemma3 w , Mod.∀𝕎-□ M (λ w' e → lemma1 w'))
 
 lemma6 : (w : 𝕎·) → eqintype w (#UNIV 1) (#UNIV 0) (#UNIV 0)
 lemma6 w = impliesEqInType 2 (lemma5 w)
@@ -292,7 +291,7 @@ eqTypes-mon u {A} {B} {w1} (EQTLIFT A1 A2 c₁ c₂ eqtA exta) w2 ext =
     exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType (↓U u) w (∀𝕎-mon ext eqtA w e) a b)
     exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
 
-eqTypes-mon u {A} {B} {w1} (EQTBAR x) w2 ext = EQTBAR (Bar.↑□ barI x ext)
+eqTypes-mon u {A} {B} {w1} (EQTBAR x) w2 ext = EQTBAR (Mod.↑□ M x ext)
 
 
 
@@ -378,8 +377,7 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta 
 if-equalInType-EQ u w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2 , eqi)
   rewrite #EQinj1 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj2 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj3 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)
         | #EQinj1 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj2 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj3 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) =
-  Bar.∀𝕎-□Func
-    barI
+  Mod.∀𝕎-□Func M
     (λ w1 e1 eqi1 → eqtA w1 e1 , eqi1)
     eqi
 if-equalInType-EQ u w T a b t₁ t₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
@@ -392,7 +390,7 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTUNIV i p c₁ c₂ , eqi) = ⊥-elim (
     z2 w' e' (c₁ , c₂) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt))--}
 if-equalInType-EQ u w T a b t₁ t₂ (EQTLIFT A1 A2 c1 c2 eqtA exta , eqi) = ⊥-elim (EQneqLIFT (compAllVal c2 tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
-  Bar.□-idem barI (Bar.∀𝕎-□'-□ barI x aw eqi)
+  Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
   where
     aw : ∀𝕎 w
               (λ w' e' →
@@ -400,7 +398,7 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
                 {--(at : atbar x w' e' x₁)--}
                 → eqInType (uni u) w' x₁ t₁ t₂
                 → □· w' (↑wPred' (λ w'' e → equalInType u w'' T a b) e'))
-    aw w1 e1 eqt1 {--at--} eqi1 = Bar.∀𝕎-□Func barI (λ w' e' x z → x) ind
+    aw w1 e1 eqt1 {--at--} eqi1 = Mod.∀𝕎-□Func M (λ w' e' x z → x) ind
       where
         ind : □· w1 (λ w' e' → equalInType u w' T a b)
         ind = if-equalInType-EQ u w1 T a b t₁ t₂ (eqt1 , eqi1)
@@ -442,7 +440,7 @@ TODO: keep unfolding by hand
                         → □· w (λ w' _ → strongMonEq w' a b)
                         → □· w (λ w' _ → strongMonEq w' b a)
 □·-strongMonEq-sym {w} {a} {b} h =
-  Bar.∀𝕎-□Func barI (λ w1 e1 → strongMonEq-sym) h
+  Mod.∀𝕎-□Func M (λ w1 e1 → strongMonEq-sym) h
 
 
 
@@ -452,7 +450,7 @@ TODO: keep unfolding by hand
                           → □· w (λ w' _ → strongMonEq w' b c)
                           → □· w (λ w' _ → strongMonEq w' a c)
 □·-strongMonEq-trans {w} {a} {b} {c} h₁ h₂ =
-  Bar.□Func barI (Bar.∀𝕎-□Func barI aw h₁) h₂
+  Mod.□Func M (Mod.∀𝕎-□Func M aw h₁) h₂
   where
     aw : ∀𝕎 w (λ w' e' → strongMonEq w' a b → strongMonEq w' b c → strongMonEq w' a c)
     aw w1 e1 = strongMonEq-trans
@@ -463,7 +461,7 @@ TODO: keep unfolding by hand
                         → □· w (λ w' _ → weakMonEq w' a b)
                         → □· w (λ w' _ → weakMonEq w' b a)
 □·-weakMonEq-sym {w} {a} {b} h =
-  Bar.∀𝕎-□Func barI (λ w1 e1 → weakMonEq-sym) h
+  Mod.∀𝕎-□Func M (λ w1 e1 → weakMonEq-sym) h
 
 
 
@@ -473,7 +471,7 @@ TODO: keep unfolding by hand
                         → □· w (λ w' _ → weakMonEq w' b c)
                         → □· w (λ w' _ → weakMonEq w' a c)
 □·-weakMonEq-trans {w} {a} {b} {c} h₁ h₂ =
-  Bar.□Func barI (Bar.∀𝕎-□Func barI aw h₁) h₂
+  Mod.□Func M (Mod.∀𝕎-□Func M aw h₁) h₂
   where
     aw : ∀𝕎 w (λ w' e' → weakMonEq w' a b → weakMonEq w' b c → weakMonEq w' a c)
     aw w1 e1 = weakMonEq-trans
@@ -515,7 +513,7 @@ weakMonEq-preserves-□· : {w : 𝕎·} {a b c d : CTerm}
                             → □· w (λ w' _ → lift-<NUM-pair w' ⌜ a ⌝ ⌜ b ⌝)
                             → □· w (λ w' _ → lift-<NUM-pair w' ⌜ c ⌝ ⌜ d ⌝)
 weakMonEq-preserves-□· {w} {a} {b} {c} {d} s₁ s₂ i =
-  Bar.∀𝕎-□Func barI aw i
+  Mod.∀𝕎-□Func M aw i
   where
     aw : ∀𝕎 w (λ w' e' → lift-<NUM-pair w' ⌜ a ⌝ ⌜ b ⌝ → lift-<NUM-pair w' ⌜ c ⌝ ⌜ d ⌝)
     aw w1 e1 (lift (n , m , c₁ , c₂ , c')) =
@@ -532,7 +530,7 @@ strongMonEq-preserves-□· : {w : 𝕎·} {a b c d : CTerm}
                               → □· w (λ w' _ → lift-<NUM-pair w' ⌜ a ⌝ ⌜ b ⌝)
                               → □· w (λ w' _ → lift-<NUM-pair w' ⌜ c ⌝ ⌜ d ⌝)
 strongMonEq-preserves-□· {w} {a} {b} {c} {d} s₁ s₂ i =
-  Bar.∀𝕎-□Func barI aw i
+  Mod.∀𝕎-□Func M aw i
   where
     aw : ∀𝕎 w (λ w' e' → lift-<NUM-pair w' ⌜ a ⌝ ⌜ b ⌝ → lift-<NUM-pair w' ⌜ c ⌝ ⌜ d ⌝)
     aw w1 e1 (lift (n , m , c₁ , c₂ , c')) =
@@ -545,7 +543,7 @@ strongMonEq-preserves-□· {w} {a} {b} {c} {d} s₁ s₂ i =
 →□·⇛ : {w : 𝕎·} {A B : Term}
             → A ⇛ B at w
             → □· w (λ w' _ → A ⇛ B at w')
-→□·⇛ {w} {A} {B} comp = Bar.∀𝕎-□ barI (λ w1 e1 → ⇛-mon e1 comp)
+→□·⇛ {w} {A} {B} comp = Mod.∀𝕎-□ M (λ w1 e1 → ⇛-mon e1 comp)
 
 
 
@@ -560,7 +558,7 @@ strongMonEq-preserves-□· {w} {a} {b} {c} {d} s₁ s₂ i =
                         → □· w (λ w' _ → ⇛to-same-CS w' a b)
                         → □· w (λ w' _ → ⇛to-same-CS w' b a)
 □·-⇛to-same-CS-sym {w} {a} {b} h =
-  Bar.∀𝕎-□Func barI (λ w1 e1 → ⇛to-same-CS-sym) h
+  Mod.∀𝕎-□Func M (λ w1 e1 → ⇛to-same-CS-sym) h
 
 
 CSinj : {n m : Name} → CS n ≡ CS m → n ≡ m
@@ -578,7 +576,7 @@ CSinj refl =  refl
                           → □· w (λ w' _ → ⇛to-same-CS w' b c)
                           → □· w (λ w' _ → ⇛to-same-CS w' a c)
 □·-⇛to-same-CS-trans {w} {a} {b} {c} h₁ h₂ =
-  Bar.□Func barI (Bar.∀𝕎-□Func barI aw h₁) h₂
+  Mod.□Func M (Mod.∀𝕎-□Func M aw h₁) h₂
   where
     aw : ∀𝕎 w (λ w' e' → ⇛to-same-CS w' a b → ⇛to-same-CS w' b c → ⇛to-same-CS w' a c)
     aw w1 e1 = ⇛to-same-CS-trans
@@ -605,7 +603,7 @@ eqTypes⇛NAT {u} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqtA exta) comp = ⊥-elim
 --eqTypes⇛NAT {u} {w} {A} {B} (EQTDUM A1 A2 x x₁ eqtA exta) comp = ⊥-elim (NATneqDUM (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) comp = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} (EQTUNIV i p c₁ c₂) comp = ⊥-elim (NATneqUNIV (⇛-val-det tt tt comp c₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
+{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
   where
     z : □· w (λ w' _ → A #⇛ #UNIV (fst u) at w' × B #⇛ #UNIV (fst u) at w')
     z = {!!} --isu w A B x
@@ -645,7 +643,7 @@ eqTypes⇛NAT {u} {w} {A} {B} (EQTBAR x) comp = i
 
     j : □· w (λ w' _ → □· w' (λ w'' _ → ⌜ B ⌝ ⇛ NAT at w''))
     j = loc-∀𝕎-inOpenBarFunc x
-    --j = Bar.∀𝕎-□Func barI a x
+    --j = Mod.∀𝕎-□Func M a x
 
     f : wPred w
     f = λ w' _ → ⌜ B ⌝ ⇛ NAT at w'
@@ -673,7 +671,7 @@ eqTypes⇛NAT {u} {w} {A} {B} (EQTBAR x) comp = i
         h4 = h3 w2 (⊑-refl· w2)
 
     i : □· w (λ w' _ → ⌜ B ⌝ ⇛ NAT at w')
-    --i = Bar.□-idem barI wPredExtIrr-⇛ j
+    --i = Mod.□-idem M wPredExtIrr-⇛ j
     i = loc-inOpenBar-idem wPredExtIrr-⇛
 --}
 

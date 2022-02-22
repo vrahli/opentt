@@ -44,38 +44,39 @@ open import newChoice
 open import freeze
 open import progress
 open import choiceBar
+open import mod
 
 
-module not_lem {L : Level} (W : PossibleWorlds {L})
-               (C : Choice) (M : Compatible W C) (P : Progress {L} W C M)
-               (G : GetChoice {L} W C M) (X : ChoiceExt {L} W C M G) (N : NewChoice {L} W C M G)
-               (F : Freeze {L} W C M P G N)
+module not_lem {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+               (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
+               (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C K G) (N : NewChoice {L} W C K G)
+               (F : Freeze {L} W C K P G N)
                (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-               (CB : ChoiceBar W C M P G X N F E)
+               (CB : ChoiceBar W M C K P G X N F E)
        where
 
 
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import compatibleDef{L}(W)(C)(M)
-open import getChoiceDef(W)(C)(M)(G)
-open import newChoiceDef(W)(C)(M)(G)(N)
-open import choiceExtDef(W)(C)(M)(G)(X)
-open import freezeDef(W)(C)(M)(P)(G)(N)(F)
-open import computation(W)(C)(M)(G)
+open import compatibleDef{L}(W)(C)(K)
+open import getChoiceDef(W)(C)(K)(G)
+open import newChoiceDef(W)(C)(K)(G)(N)
+open import choiceExtDef(W)(C)(K)(G)(X)
+open import freezeDef(W)(C)(K)(P)(G)(N)(F)
+open import computation(W)(C)(K)(G)
 open import bar(W)
-open import barI(W)(C)(M)(P)
-open import forcing(W)(C)(M)(P)(G)(E)
-open import props0(W)(C)(M)(P)(G)(E)
-open import ind2(W)(C)(M)(P)(G)(E)
+open import barI(W)(M)(C)(K)(P)
+open import forcing(W)(M)(C)(K)(P)(G)(E)
+open import props0(W)(M)(C)(K)(P)(G)(E)
+open import ind2(W)(M)(C)(K)(P)(G)(E)
 
-open import props1(W)(C)(M)(P)(G)(E)
-open import props2(W)(C)(M)(P)(G)(E)
-open import props3(W)(C)(M)(P)(G)(E)
-open import lem_props(W)(C)(M)(P)(G)(X)(E)
+open import props1(W)(M)(C)(K)(P)(G)(E)
+open import props2(W)(M)(C)(K)(P)(G)(E)
+open import props3(W)(M)(C)(K)(P)(G)(E)
+open import lem_props(W)(M)(C)(K)(P)(G)(X)(E)
 
-open import choiceBarDef(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
-open import typeC(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
+open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)(CB)
+open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)(CB)
 
 -- open import calculus
 -- open import world
@@ -182,10 +183,10 @@ getChoice→equalInType-#Σchoice-aux2 : {n : ℕ} {name : Name} {w : 𝕎·} {k
                                            (#EQ (#APPLY (#CS name) (#NUM n)) (ℂ→C· k) Typeℂ₀₁·)
                                            #AX #AX
 getChoice→equalInType-#Σchoice-aux2 {n} {name} {w} {k} i sat g =
-  equalInType-EQ (Typeℂ₀₁-isType· i w) (Bar.∀𝕎-□ barI aw)
+  equalInType-EQ (Typeℂ₀₁-isType· i w) (Mod.∀𝕎-□ M aw)
   where
     aw : ∀𝕎 w (λ w' e → EQeq (#APPLY (#CS name) (#NUM n)) (ℂ→C· k) (equalInType i w' Typeℂ₀₁·) w' #AX #AX)
-    aw w' e = equalInType-#⇛-left-rev (∀𝕎-mon e g) (sat→equalInType-Typeℂ₀₁· i w' k (0 , sat)) --→equalInType-QNAT i w' (#APPLY (#CS name) (#NUM n)) (ℂ→C· k) (Bar.∀𝕎-□ barI aw')
+    aw w' e = equalInType-#⇛-left-rev (∀𝕎-mon e g) (sat→equalInType-Typeℂ₀₁· i w' k (0 , sat)) --→equalInType-QNAT i w' (#APPLY (#CS name) (#NUM n)) (ℂ→C· k) (Mod.∀𝕎-□ M aw')
       where
 --         aw' : ∀𝕎 w' (λ w'' _ → #weakMonEq w'' (#APPLY (#CS name) (#NUM n)) (ℂ→C· k))
 --         aw' w2 e2 w3 e3 = lift (k , step-⇓-trans (lower (g w3 (⊑-trans· e (⊑-trans· e2 e3)))) (⇓-refl (NUM k) w3) , ⇓-refl (NUM k) w3)
@@ -222,7 +223,7 @@ getChoice→equalInType-#Σchoice-aux {n} {name} {w} {k} i comp sat g =
                                  w'
                                  (#PAIR (#NUM n) #AX)
                                  (#PAIR (#NUM n) #AX))
-    j = Bar.∀𝕎-□ barI (λ w1 e1 → #NUM n , #NUM n , #AX , #AX ,
+    j = Mod.∀𝕎-□ M (λ w1 e1 → #NUM n , #NUM n , #AX , #AX ,
                                        NUM-equalInType-NAT i w1 n ,
                                        #compAllRefl (#PAIR (#NUM n) #AX) w1 ,
                                        #compAllRefl (#PAIR (#NUM n) #AX) w1 ,
@@ -276,7 +277,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     h0 rewrite #Σchoice≡ c k1 = eqi
 
     h1 : □· w (λ w' _ → SUMeq (equalInType i w' #NAT) (λ a b ea → equalInType i w' (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·)) w' x x)
-    h1 = Bar.∀𝕎-□Func barI aw (equalInType-SUM→ {i} {w} {#NAT} {#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁} h0)
+    h1 = Mod.∀𝕎-□Func M aw (equalInType-SUM→ {i} {w} {#NAT} {#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁} h0)
       where
         aw : ∀𝕎 w (λ w' e' → SUMeq (equalInType i w' #NAT)
                                      (λ a b ea → equalInType i w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁)))
@@ -432,7 +433,7 @@ equalInType-SQUASH-UNION-LIFT→ {n} {i} p {w} {a} {b} {u} {v} eqi =
                         → Σ CTerm (λ t → equalInType i w' (#UNION a (#NEG b)) t t))
     aw w' e (t , eqj) = t , →equalInType-UNION (equalTypes-#↑T→ p w' a a (equalInType-UNION→₁ eqj))
                                                (eqTypesNEG← (equalTypes-#↑T→ p w' b b (eqTypesNEG→ (equalInType-UNION→₂ {n} {w'} {#↑T p a} {#NEG (#↑T p b)} {t} {t} eqj))))
-                                               (Bar.∀𝕎-□Func barI aw1 equ)
+                                               (Mod.∀𝕎-□Func M aw1 equ)
       where
         equ : □· w' (λ w'' _ → Σ CTerm (λ x → Σ CTerm (λ y
                                           → (t #⇛ (#INL x) at w'' × t #⇛ (#INL y) at w'' × equalInType n w'' (#↑T p a) x y)
@@ -453,7 +454,7 @@ equalInType-SQUASH-UNION-LIFT→ {n} {i} p {w} {a} {b} {u} {v} eqi =
     j0 = equalInType-SQUASH→ eqi
 
     j1 : □· w (λ w' _ → Σ CTerm (λ t → equalInType i w' (#UNION a (#NEG b)) t t))
-    j1 = Bar.∀𝕎-□Func barI aw j0
+    j1 = Mod.∀𝕎-□Func M aw j0
 
 
 
@@ -461,7 +462,7 @@ equalInType-SQUASH-UNION→ : {i : ℕ} {w : 𝕎·} {a b u v : CTerm}
                              → equalInType i w (#SQUASH (#UNION a (#NEG b))) u v
                              → □· w (λ w' _ → inhType i w' a ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' b))
 equalInType-SQUASH-UNION→ {i} {w} {a} {b} {u} {v} eqi =
-  Bar.□-idem barI (Bar.∀𝕎-□Func barI aw1 h3)
+  Mod.□-idem M (Mod.∀𝕎-□Func M aw1 h3)
   where
     h1 : □· w (λ w' _ → Σ CTerm (λ t → equalInType i w' (#UNION a (#NEG b)) t t))
     h1 = equalInType-SQUASH→ eqi
@@ -470,28 +471,28 @@ equalInType-SQUASH-UNION→ {i} {w} {a} {b} {u} {v} eqi =
                                          → (t #⇛ (#INL x) at w'' × t #⇛ (#INL y) at w'' × equalInType i w'' a x y)
                                             ⊎
                                             (t #⇛ (#INR x) at w'' × t #⇛ (#INR y) at w'' × equalInType i w'' (#NEG b) x y))))))
-    h2 = Bar.∀𝕎-□Func barI (λ w' e (t , eqj) → t , equalInType-UNION→ eqj) h1
+    h2 = Mod.∀𝕎-□Func M (λ w' e (t , eqj) → t , equalInType-UNION→ eqj) h1
 
     h3 : □· w (λ w' _ → Σ CTerm (λ t → □· w' (λ w'' _ → Σ CTerm (λ x → Σ CTerm (λ y
                                          → (t #⇛ (#INL x) at w'' × t #⇛ (#INL y) at w'' × equalInType i w'' a x y)
                                             ⊎
                                             (t #⇛ (#INR x) at w'' × t #⇛ (#INR y) at w''
                                               × ∀𝕎 w'' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂)))))))
-    h3 = Bar.∀𝕎-□Func barI (λ w1 e1 (t , eqt) → t , Bar.∀𝕎-□Func barI (λ { w3 e3 (x , y , inj₁ (c₁ , c₂ , z)) → x , y , inj₁ (c₁ , c₂ , z) ;
+    h3 = Mod.∀𝕎-□Func M (λ w1 e1 (t , eqt) → t , Mod.∀𝕎-□Func M (λ { w3 e3 (x , y , inj₁ (c₁ , c₂ , z)) → x , y , inj₁ (c₁ , c₂ , z) ;
                                                                                      w3 e3 (x , y , inj₂ (c₁ , c₂ , z)) → x , y , inj₂ (c₁ , c₂ , equalInType-NEG→ z) }) eqt) h2
 
     aw1 : ∀𝕎 w (λ w' e' → Σ CTerm (λ t → □· w' (λ w'' _ → Σ CTerm (λ x →  Σ CTerm (λ y →
                             (t #⇛ #INL x at w'' × t #⇛ #INL y at w'' × equalInType i w'' a x y)
                             ⊎ (t #⇛ #INR x at w'' × t #⇛ #INR y at w'' × ∀𝕎 w'' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂))))))
                         → □· w' (↑wPred' (λ w'' e →  inhType i w'' a ⊎ ∀𝕎 w'' (λ w''' _ → ¬ inhType i w''' b)) e'))
-    aw1 w1 e1 (t , j) = Bar.□-idem barI (Bar.∀𝕎-□Func barI aw2 j)
+    aw1 w1 e1 (t , j) = Mod.□-idem M (Mod.∀𝕎-□Func M aw2 j)
       where
         aw2 : ∀𝕎 w1 (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
                                  (t #⇛ #INL x at w' × t #⇛ #INL y at w' × equalInType i w' a x y)
                                  ⊎ (t #⇛ #INR x at w' × t #⇛ #INR y at w' × ∀𝕎 w' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂))))
                              → □· w' (↑wPred' (λ w'' e → ↑wPred' (λ w''' e₁ → inhType i w''' a ⊎ ∀𝕎 w''' (λ w'''' _ → ¬ inhType i w'''' b)) e1 w'' e) e'))
-        aw2 w2 e2 (x , y , inj₁ (c₁ , c₂ , z)) = Bar.∀𝕎-□ barI (λ w3 e3 x₁ x₂ → inj₁ (x , equalInType-mon (equalInType-refl z) w3 e3))
-        aw2 w2 e2 (x , y , inj₂ (c₁ , c₂ , z)) = Bar.∀𝕎-□ barI λ w3 e3 x₁ x₂ → inj₂ (λ w4 e4 (t , h) → z w4 (⊑-trans· e3 e4) t t h)
+        aw2 w2 e2 (x , y , inj₁ (c₁ , c₂ , z)) = Mod.∀𝕎-□ M (λ w3 e3 x₁ x₂ → inj₁ (x , equalInType-mon (equalInType-refl z) w3 e3))
+        aw2 w2 e2 (x , y , inj₂ (c₁ , c₂ , z)) = Mod.∀𝕎-□ M λ w3 e3 x₁ x₂ → inj₂ (λ w4 e4 (t , h) → z w4 (⊑-trans· e3 e4) t t h)
 
 
 sq-dec : CTerm → CTerm

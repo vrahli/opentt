@@ -41,14 +41,14 @@ open import getChoice
 open import mod --bar --mod
 
 
-module forcing {L : Level} (W : PossibleWorlds {L}) (barI : Mod W) --(B : BarsProps W) --
-               (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M) (G : GetChoice {L} W C M)
+module forcing {L : Level} (W : PossibleWorlds {L}) (M : Mod W) --(B : BarsProps W) --
+               (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
                (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
 open import worldDef(W)
-open import computation(W)(C)(M)(G)
+open import computation(W)(C)(K)(G)
 --open import mod(W) --bar(W)
-open import barI(W)(barI){--(barI)--}(C)(M)(P)
+open import barI(W)(M){--(barI)--}(C)(K)(P)
 
 \end{code}
 

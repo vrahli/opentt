@@ -38,21 +38,22 @@ open import choice
 open import compatible
 open import getChoice
 open import progress
+open import mod
 
 
-module type_sys_props_free {L : Level} (W : PossibleWorlds {L})
-                           (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M) (G : GetChoice {L} W C M)
+module type_sys_props_free {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+                           (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
                            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
 
 
 open import worldDef(W)
-open import computation(W)(C)(M)(G)
+open import computation(W)(C)(K)(G)
 open import bar(W)
-open import barI(W)(C)(M)(P)
-open import forcing(W)(C)(M)(P)(G)(E)
-open import props0(W)(C)(M)(P)(G)(E)
-open import ind2(W)(C)(M)(P)(G)(E)
+open import barI(W)(M)(C)(K)(P)
+open import forcing(W)(M)(C)(K)(P)(G)(E)
+open import props0(W)(M)(C)(K)(P)(G)(E)
+open import ind2(W)(M)(C)(K)(P)(G)(E)
 
 -- open import calculus
 -- open import world
@@ -141,7 +142,7 @@ typeSysConds-FREE-ttrans u w A B x x₁ C (EQTUNIV i p c₁ c₂) = ⊥-elim (FR
 
 typeSysConds-FREE-ttrans u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) = ⊥-elim (FREEneqLIFT (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-ttrans u w A B x x₁ C (EQTBAR y) =
-  EQTBAR (Bar.∀𝕎-□Func barI aw y)
+  EQTBAR (Mod.∀𝕎-□Func M aw y)
   where
     aw : ∀𝕎 w (λ w' e' → eqTypes u w' B C → eqTypes u w' A C)
     aw w1 e1 z = typeSysConds-FREE-ttrans u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z
@@ -166,7 +167,7 @@ typeSysConds-FREE-extl1 u w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b 
 --typeSysConds-FREE-extl1 u w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x y))
 typeSysConds-FREE-extl1 u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-FREE-extl1 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (FREEneqUNIV (⇛-val-det tt tt x c₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
+{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
   where
     z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w A C y
@@ -176,10 +177,10 @@ typeSysConds-FREE-extl1 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-e
 
 typeSysConds-FREE-extl1 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (FREEneqLIFT (⇛-val-det tt tt x y))
 typeSysConds-FREE-extl1 u w A B x x₁ C (EQTBAR y) a b eqi =
-  Bar.∀𝕎-□-□' barI y aw
+  Mod.∀𝕎-□-□' M y aw
   where
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' A C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b)
-    aw w1 e1 z {--at--} = typeSysConds-FREE-extl1 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Bar.↑□ barI eqi e1)
+    aw w1 e1 z {--at--} = typeSysConds-FREE-extl1 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Mod.↑□ M eqi e1)
 
 {-- c
       where
@@ -206,7 +207,7 @@ typeSysConds-FREE-extl1 u w A B x x₁ C (EQTBAR y) a b eqi =
 
         c : □·' w y (λ w' e' z → eqInType u w' z a b)
         c = loc-∀𝕎-inOpenBar-inOpenBar' y
-        --c = Bar.∀𝕎-□-□' barI aw y
+        --c = Mod.∀𝕎-□-□' M aw y
 --}
 
 
@@ -229,7 +230,7 @@ typeSysConds-FREE-extl2 u w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b 
 --typeSysConds-FREE-extl2 u w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extl2 u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extl2 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (FREEneqUNIV (⇛-val-det tt tt x c₂))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
+{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
   where
     z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
     z = isu w C A y
@@ -239,10 +240,10 @@ typeSysConds-FREE-extl2 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-e
 
 typeSysConds-FREE-extl2 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (FREEneqLIFT (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extl2 u w A B x x₁ C (EQTBAR y) a b eqi =
-  Bar.∀𝕎-□-□' barI y aw
+  Mod.∀𝕎-□-□' M y aw
   where
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C A) {--(at : atbar y w' e' x)--} → eqInType u w' x a b)
-    aw w1 e1 z {--at--} = typeSysConds-FREE-extl2 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Bar.↑□ barI eqi e1)
+    aw w1 e1 z {--at--} = typeSysConds-FREE-extl2 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Mod.↑□ M eqi e1)
 
 
 
@@ -264,7 +265,7 @@ typeSysConds-FREE-extr1 u w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b 
 --typeSysConds-FREE-extr1 u w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extr1 u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extr1 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (FREEneqUNIV (⇛-val-det tt tt x₁ c₂))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
+{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
   where
     z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w C B y
@@ -274,10 +275,10 @@ typeSysConds-FREE-extr1 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-e
 
 typeSysConds-FREE-extr1 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (FREEneqLIFT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extr1 u w A B x x₁ C (EQTBAR y) a b eqi =
-  Bar.∀𝕎-□-□' barI y aw
+  Mod.∀𝕎-□-□' M y aw
   where
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C B) {--(at : atbar y w' e' x)--} → eqInType u w' x a b)
-    aw w1 e1 z {--at--} = typeSysConds-FREE-extr1 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Bar.↑□ barI eqi e1)
+    aw w1 e1 z {--at--} = typeSysConds-FREE-extr1 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Mod.↑□ M eqi e1)
 
 
 
@@ -299,7 +300,7 @@ typeSysConds-FREE-extr2 u w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b 
 --typeSysConds-FREE-extr2 u w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extr2 u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extr2 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (FREEneqUNIV (⇛-val-det tt tt x₁ c₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
+{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
   where
     z : □· w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
@@ -309,10 +310,10 @@ typeSysConds-FREE-extr2 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-e
 
 typeSysConds-FREE-extr2 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (FREEneqLIFT (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extr2 u w A B x x₁ C (EQTBAR y) a b eqi =
-  Bar.∀𝕎-□-□' barI y aw
+  Mod.∀𝕎-□-□' M y aw
   where
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' B C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b)
-    aw w1 e1 z {--at--} = typeSysConds-FREE-extr2 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Bar.↑□ barI eqi e1)
+    aw w1 e1 z {--at--} = typeSysConds-FREE-extr2 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Mod.↑□ M eqi e1)
 
 
 
@@ -334,7 +335,7 @@ typeSysConds-FREE-extrevl1 u w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a
 --typeSysConds-FREE-extrevl1 u w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x y))
 typeSysConds-FREE-extrevl1 u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-FREE-extrevl1 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (FREEneqUNIV (⇛-val-det tt tt x c₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
+{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
   where
     z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w A C y
@@ -344,17 +345,16 @@ typeSysConds-FREE-extrevl1 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = �
 
 typeSysConds-FREE-extrevl1 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (FREEneqLIFT (⇛-val-det tt tt x y))
 typeSysConds-FREE-extrevl1 u w A B x x₁ C (EQTBAR y) a b eqi =
-  Bar.□-idem
-    barI
-    (Bar.∀𝕎-□'-□ barI y aw eqi)
+  Mod.□-idem M
+    (Mod.∀𝕎-□'-□ M y aw eqi)
   where
     aw0 : ∀𝕎 w (λ w' e' → (x : eqTypes u w' A C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                          → Bar.□ barI w' (↑wPred (λ w'' e → #⇛to-same-CS w'' a b) e'))
+                          → Mod.□ M w' (↑wPred (λ w'' e → #⇛to-same-CS w'' a b) e'))
     aw0 w1 e1 z {--at--} eqz = typeSysConds-FREE-extrevl1 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
 
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' A C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                         → Bar.□ barI w' (↑wPred' (λ w'' e → #⇛to-same-CS w'' a b) e'))
-    aw w1 e1 z {--at--} eqz = Bar.∀𝕎-□Func barI (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
+                         → Mod.□ M w' (↑wPred' (λ w'' e → #⇛to-same-CS w'' a b) e'))
+    aw w1 e1 z {--at--} eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
 
 
 
@@ -376,7 +376,7 @@ typeSysConds-FREE-extrevl2 u w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a
 --typeSysConds-FREE-extrevl2 u w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extrevl2 u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extrevl2 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (FREEneqUNIV (⇛-val-det tt tt x c₂))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
+{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
   where
     z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
     z = isu w C A y
@@ -386,17 +386,16 @@ typeSysConds-FREE-extrevl2 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = �
 
 typeSysConds-FREE-extrevl2 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (FREEneqLIFT (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extrevl2 u w A B x x₁ C (EQTBAR y) a b eqi =
-  Bar.□-idem
-    barI
-    (Bar.∀𝕎-□'-□ barI y aw eqi)
+  Mod.□-idem M
+    (Mod.∀𝕎-□'-□ M y aw eqi)
   where
     aw0 : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C A) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                          → Bar.□ barI w' (↑wPred (λ w'' e → #⇛to-same-CS w'' a b) e'))
+                          → Mod.□ M w' (↑wPred (λ w'' e → #⇛to-same-CS w'' a b) e'))
     aw0 w1 e1 z {--at--} eqz = typeSysConds-FREE-extrevl2 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
 
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C A) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                         → Bar.□ barI w' (↑wPred' (λ w'' e → #⇛to-same-CS w'' a b) e'))
-    aw w1 e1 z {--at--} eqz = Bar.∀𝕎-□Func barI (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
+                         → Mod.□ M w' (↑wPred' (λ w'' e → #⇛to-same-CS w'' a b) e'))
+    aw w1 e1 z {--at--} eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
 
 
 
@@ -419,7 +418,7 @@ typeSysConds-FREE-extrevr1 u w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a
 --typeSysConds-FREE-extrevr1 u w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extrevr1 u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extrevr1 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (FREEneqUNIV (⇛-val-det tt tt x₁ c₂))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
+{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
   where
     z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w C B y
@@ -429,17 +428,16 @@ typeSysConds-FREE-extrevr1 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = �
 
 typeSysConds-FREE-extrevr1 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (FREEneqLIFT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extrevr1 u w A B x x₁ C (EQTBAR y) a b eqi =
-  Bar.□-idem
-    barI
-    (Bar.∀𝕎-□'-□ barI y aw eqi)
+  Mod.□-idem M
+    (Mod.∀𝕎-□'-□ M y aw eqi)
   where
     aw0 : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C B) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                          → Bar.□ barI w' (↑wPred (λ w'' e → #⇛to-same-CS w'' a b) e'))
+                          → Mod.□ M w' (↑wPred (λ w'' e → #⇛to-same-CS w'' a b) e'))
     aw0 w1 e1 z {--at--} eqz = typeSysConds-FREE-extrevr1 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
 
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C B) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                         → Bar.□ barI w' (↑wPred' (λ w'' e → #⇛to-same-CS w'' a b) e'))
-    aw w1 e1 z {--at--} eqz = Bar.∀𝕎-□Func barI (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
+                         → Mod.□ M w' (↑wPred' (λ w'' e → #⇛to-same-CS w'' a b) e'))
+    aw w1 e1 z {--at--} eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
 
 
 
@@ -462,7 +460,7 @@ typeSysConds-FREE-extrevr2 u w A B x x₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a
 --typeSysConds-FREE-extrevr2 u w A B x x₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (FREEneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extrevr2 u w A B x x₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extrevr2 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (FREEneqUNIV (⇛-val-det tt tt x₁ c₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
+{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
   where
     z : □· w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
     z = isu w B C y
@@ -472,17 +470,16 @@ typeSysConds-FREE-extrevr2 u w A B x x₁ C (EQTUNIV i p c₁ c₂) a b eqi = �
 
 typeSysConds-FREE-extrevr2 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (FREEneqLIFT (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extrevr2 u w A B x x₁ C (EQTBAR y) a b eqi =
-  Bar.□-idem
-    barI
-    (Bar.∀𝕎-□'-□ barI y aw eqi)
+  Mod.□-idem M
+    (Mod.∀𝕎-□'-□ M y aw eqi)
   where
     aw0 : ∀𝕎 w (λ w' e' → (x : eqTypes u w' B C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                          → Bar.□ barI w' (↑wPred (λ w'' e → #⇛to-same-CS w'' a b) e'))
+                          → Mod.□ M w' (↑wPred (λ w'' e → #⇛to-same-CS w'' a b) e'))
     aw0 w1 e1 z {--at--} eqz = typeSysConds-FREE-extrevr2 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
 
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' B C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                         → Bar.□ barI w' (↑wPred' (λ w'' e → #⇛to-same-CS w'' a b) e'))
-    aw w1 e1 z {--at--} eqz = Bar.∀𝕎-□Func barI (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
+                         → Mod.□ M w' (↑wPred' (λ w'' e → #⇛to-same-CS w'' a b) e'))
+    aw w1 e1 z {--at--} eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
 
 
 
@@ -508,7 +505,7 @@ eqInType-⇛-FREE u w A B a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA extA) ei = 
 --eqInType-⇛-FREE u w A B a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) ei = ⊥-elim (FREEneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE u w A B a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE u w A B a b c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (FREEneqUNIV (⇛-val-det tt tt c₁ d₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z))) -- Lift {0ℓ} 1ℓ ⊥
+{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z))) -- Lift {0ℓ} 1ℓ ⊥
   where
     z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
@@ -518,13 +515,13 @@ eqInType-⇛-FREE u w A B a b c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (F
 
 eqInType-⇛-FREE u w A B a b c₁ c₂ (EQTLIFT A1 A2 x x₁ eqtA extA) ei = ⊥-elim (FREEneqLIFT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE u w A B a b c₁ c₂ (EQTBAR x) ei =
-  Bar.□-idem barI (Bar.∀𝕎-□'-□ barI x aw ei)
+  Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw ei)
   where
     aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →  eqInType u w' z a b → □· w' (λ w'' _ → #⇛to-same-CS w'' a b))
     aw0 w1 e1 z {--at--} eqi = eqInType-⇛-FREE u w1 A B a b (⇛-mon e1 c₁) (⇛-mon e1 c₂) z eqi
 
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →  eqInType u w' z a b → □· w' (λ w'' _ → w ⊑· w'' → #⇛to-same-CS w'' a b))
-    aw w1 e1 z {--at--} eqi = Bar.∀𝕎-□Func barI (λ w' e' s x → s) (aw0 w1 e1 z {--at--} eqi)
+    aw w1 e1 z {--at--} eqi = Mod.∀𝕎-□Func M (λ w' e' s x → s) (aw0 w1 e1 z {--at--} eqi)
 
 
 
@@ -550,7 +547,7 @@ eqInType-⇛-FREE-rev u w A B a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA extA) e
 --eqInType-⇛-FREE-rev u w A B a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) ei = ⊥-elim (FREEneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE-rev u w A B a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (FREEneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE-rev u w A B a b c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (FREEneqUNIV (⇛-val-det tt tt c₁ d₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z))) -- Lift {0ℓ} 1ℓ ⊥
+{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z))) -- Lift {0ℓ} 1ℓ ⊥
   where
     z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
     z = isu w A B x
@@ -560,10 +557,10 @@ eqInType-⇛-FREE-rev u w A B a b c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-eli
 
 eqInType-⇛-FREE-rev u w A B a b c₁ c₂ (EQTLIFT A1 A2 x x₁ eqtA extA) ei = ⊥-elim (FREEneqLIFT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE-rev u w A B a b c₁ c₂ (EQTBAR x) ei =
-  Bar.∀𝕎-□-□' barI x aw
+  Mod.∀𝕎-□-□' M x aw
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} → eqInType u w' z a b)
-    aw w' e' z {--at--} = eqInType-⇛-FREE-rev u w' A B a b (⇛-mon e' c₁) (⇛-mon e' c₂) z (Bar.↑□ barI ei e')
+    aw w' e' z {--at--} = eqInType-⇛-FREE-rev u w' A B a b (⇛-mon e' c₁) (⇛-mon e' c₂) z (Mod.↑□ M ei e')
 
 
 
@@ -572,10 +569,10 @@ typeSysConds-FREE-local : (u : univs) (w : 𝕎·) (A B : CTerm)
                          (x : A #⇛ #FREE at w) (x₁ : B #⇛ #FREE at w)
                          → eqInTypeLocal {u} (EQTFREE x x₁)
 typeSysConds-FREE-local u w A B x x₁ a b i j =
-  Bar.□-idem barI (Bar.∀𝕎-□'-□ barI i aw j)
+  Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w'' e → w ⊑· w'' → #⇛to-same-CS w'' a b))
-    aw w1 e1 z {--at--} ei = Bar.∀𝕎-□Func barI (λ w' e' s x → s) aw'
+    aw w1 e1 z {--at--} ei = Mod.∀𝕎-□Func M (λ w' e' s x → s) aw'
       where
         aw' : □· w1 (λ w' e → #⇛to-same-CS w' a b)
         aw' = eqInType-⇛-FREE u w1 A B a b (⇛-mon e1 x) (⇛-mon e1 x₁) z ei

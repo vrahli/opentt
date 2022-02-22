@@ -40,18 +40,19 @@ open import choice
 open import compatible
 open import progress
 open import getChoice
+open import mod
 
-module ind2 {L : Level} (W : PossibleWorlds {L})
-            (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M) (G : GetChoice {L} W C M)
+module ind2 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+            (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
             (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
 
 open import worldDef(W)
-open import computation(W)(C)(M)(G)
+open import computation(W)(C)(K)(G)
 open import bar(W)
-open import barI(W)(C)(M)(P)
-open import forcing(W)(C)(M)(P)(G)(E)
-open import props0(W)(C)(M)(P)(G)(E)
+open import barI(W)(M)(C)(K)(P)
+open import forcing(W)(M)(C)(K)(P)(G)(E)
+open import props0(W)(M)(C)(K)(P)(G)(E)
 \end{code}
 
 
@@ -397,7 +398,7 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
     aw = eqTypes-mon (u ·ᵤ) eqt
 
     i : □· w0 (λ w' _ → ≡Types u w' X1 X2)
-    i = Bar.∀𝕎-□ barI aw
+    i = Mod.∀𝕎-□ M aw
 
 {--
 --    j : atbar i w0 (⊑-refl· w0) (aw w0 (⊑-refl· w0))

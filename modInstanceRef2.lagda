@@ -34,6 +34,9 @@ open import calculus
 open import terms
 
 
+-- An instance with beth bars (inBethBar-Bar) and references
+-- As oppposed to modInstanceRef, which relies on choices in Bool, this one relies on QTBOOL
+
 module modInstanceRef2 (E : Extensionality 0ℓ 3ℓ)
        where
 
@@ -49,15 +52,16 @@ open import newChoiceDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceR
 open import freezeDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(newChoiceRef)(freezeREF)
 
 open import bar(PossibleWorldsRef)
+open import mod(PossibleWorldsRef)
 open import barOpen(PossibleWorldsRef)
 open import barBeth(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)
-open import barI(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)
+open import barI(PossibleWorldsRef)(inBethBar-Bar)(choiceRef)(compatibleREF)(progressREF)
 open import computation(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)
 
-open import forcing(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)
-open import props1(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)
-open import props2(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)
-open import props3(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)
+open import forcing(PossibleWorldsRef)(inBethBar-Bar)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)
+open import props1(PossibleWorldsRef)(inBethBar-Bar)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)
+open import props2(PossibleWorldsRef)(inBethBar-Bar)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)
+open import props3(PossibleWorldsRef)(inBethBar-Bar)(choiceRef)(compatibleREF)(progressREF)(getChoiceRef)(E)
 
 
 
@@ -133,7 +137,7 @@ isValueℂ₁-beth-ref = tt
 
 
 ∈Typeℂ₀₁→-beth-ref : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-ref a b → □· w (λ w' _ → #weakℂEq w' a b)
-∈Typeℂ₀₁→-beth-ref i w a b eqi = Bar.∀𝕎-□Func barI aw (equalInType-QTBOOL→ i w a b eqi)
+∈Typeℂ₀₁→-beth-ref i w a b eqi = Mod.∀𝕎-□Func (inBethBar-Bar) aw (equalInType-QTBOOL→ i w a b eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #weakBool w' a b → #weakℂEq w' a b)
     aw w1 e1 h w2 e2 = lift j
@@ -158,7 +162,7 @@ isValueℂ₁-beth-ref = tt
                       → ∈Type i w Typeℂ₀₁-beth-ref (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁-beth-ref i {w} {n} {c} h =
   →equalInType-QTBOOL i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
-                     (Bar.∀𝕎-□Func barI aw h)
+                     (Mod.∀𝕎-□Func (inBethBar-Bar) aw h)
   where
     aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakBool w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
     aw w1 e1 z w2 e2 = lift (x (snd (snd (lower (z w2 e2)))))

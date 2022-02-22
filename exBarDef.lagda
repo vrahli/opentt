@@ -39,19 +39,20 @@ open import choice
 open import compatible
 open import progress
 open import exBar
+open import mod
 
 
-module exBarDef {L : Level} (W : PossibleWorlds {L}) --(B : Bar W)
-                (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M)
+module exBarDef {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+                (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K)
 --                (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
 --                (E : Extensionality 0ℓ (lsuc(lsuc(L))))
 --                (EB : ExBar W C G N F P E)
-                (EB : ExBar W C M P)
+                (EB : ExBar W M C K P)
        where
 
 open import worldDef(W)
 open import bar(W)
-open import barI(W)(C)(M)(P)
+open import barI(W)(M)(C)(K)(P)
 
 --open Bar B
 open ExBar

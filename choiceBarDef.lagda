@@ -42,26 +42,27 @@ open import newChoice
 open import freeze
 open import progress
 open import choiceBar
+open import mod
 
 
-module choiceBarDef {L : Level} (W : PossibleWorlds {L})
-                    (C : Choice) (M : Compatible W C) (P : Progress {L} W C M)
-                    (G : GetChoice {L} W C M) (X : ChoiceExt {L} W C M G) (N : NewChoice {L} W C M G)
-                    (F : Freeze {L} W C M P G N)
+module choiceBarDef {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+                    (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
+                    (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C K G) (N : NewChoice {L} W C K G)
+                    (F : Freeze {L} W C K P G N)
                     (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-                    (CB : ChoiceBar W C M P G X N F E)
+                    (CB : ChoiceBar W M C K P G X N F E)
        where
 
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import compatibleDef{L}(W)(C)(M)
-open import getChoiceDef(W)(C)(M)(G)
-open import choiceExtDef(W)(C)(M)(G)(X)
-open import freezeDef(W)(C)(M)(P)(G)(N)(F)
-open import computation(W)(C)(M)(G)
+open import compatibleDef{L}(W)(C)(K)
+open import getChoiceDef(W)(C)(K)(G)
+open import choiceExtDef(W)(C)(K)(G)(X)
+open import freezeDef(W)(C)(K)(P)(G)(N)(F)
+open import computation(W)(C)(K)(G)
 open import bar(W)
-open import barI(W)(C)(M)(P)
-open import forcing(W)(C)(M)(P)(G)(E)
+open import barI(W)(M)(C)(K)(P)
+open import forcing(W)(M)(C)(K)(P)(G)(E)
 
 open ChoiceBar
 

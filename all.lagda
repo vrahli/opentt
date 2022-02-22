@@ -18,26 +18,27 @@ open import freeze
 open import progress
 open import choiceBar
 open import exBar
+open import mod
 
 
-module all {L : Level} (W : PossibleWorlds {L})
-           (C : Choice) (M : Compatible W C) (P : Progress {L} W C M)
-           (G : GetChoice {L} W C M) (X : ChoiceExt {L} W C M G) (N : NewChoice {L} W C M G)
-           (F : Freeze {L} W C M P G N)
+module all {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+           (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
+           (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C K G) (N : NewChoice {L} W C K G)
+           (F : Freeze {L} W C K P G N)
            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
            (EM : ExcludedMiddle (lsuc(L))) -- for ExBar, used in turn in lem
-           (CB : ChoiceBar W C M P G X N F E)
-           (EB : ExBar W C M P)
+           (CB : ChoiceBar W M C K P G X N F E)
+           (EB : ExBar W M C K P)
        where
 
-open import not_lem{L}(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
-open import lem{L}(W)(C)(M)(P)(G)(X)(E)(EM)(EB)
+open import not_lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)(CB)
+open import lem{L}(W)(M)(C)(K)(P)(G)(X)(E)(EM)(EB)
 -- This version requires choices to be Booleans:
-open import not_lpo{L}(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
+open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)(CB)
 -- As opposed to the above version, this one relies on QTBool instead of Bool:
-open import not_lpo_qtbool{L}(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
+open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)(CB)
 -- This version requires choices to be Booleans, but also freezable to always be true:
-open import not_mp{L}(W)(C)(M)(P)(G)(X)(N)(F)(E)(CB)
+open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)(CB)
 
 -- This instance uses terms as choices:
 open import modInstanceCS

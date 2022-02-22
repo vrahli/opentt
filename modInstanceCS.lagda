@@ -34,6 +34,8 @@ open import calculus
 open import terms
 
 
+-- An instance with beth bars (inBethBar-Bar) and choice sequences
+
 module modInstanceCS (E : Extensionality 0ℓ 3ℓ)
        where
 
@@ -49,14 +51,15 @@ open import newChoiceDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(
 open import freezeDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(newChoiceCS)(freezeCS)
 
 open import bar(PossibleWorldsCS)
+open import mod(PossibleWorldsCS)
 open import barBeth(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)
-open import barI(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)
+open import barI(PossibleWorldsCS)(inBethBar-Bar)(choiceCS)(compatibleCS)(progressCS)
 open import computation(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
 
-open import forcing(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)
-open import props1(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)
-open import props2(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)
-open import props3(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)
+open import forcing(PossibleWorldsCS)(inBethBar-Bar)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)
+open import props1(PossibleWorldsCS)(inBethBar-Bar)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)
+open import props2(PossibleWorldsCS)(inBethBar-Bar)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)
+open import props3(PossibleWorldsCS)(inBethBar-Bar)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)
 
 
 
@@ -319,7 +322,7 @@ isValueℂ₁-beth-cs = tt
 
 
 ∈Typeℂ₀₁→-beth-cs : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-cs a b → □· w (λ w' _ → #weakℂEq w' a b)
-∈Typeℂ₀₁→-beth-cs i w a b eqi = Bar.∀𝕎-□Func barI aw (equalInType-QTNAT→ i w a b eqi)
+∈Typeℂ₀₁→-beth-cs i w a b eqi = Mod.∀𝕎-□Func inBethBar-Bar aw (equalInType-QTNAT→ i w a b eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #weakMonEq w' a b → #weakℂEq w' a b)
     aw w1 e1 h w2 e2 = lift j
@@ -333,7 +336,7 @@ isValueℂ₁-beth-cs = tt
                       → ∈Type i w Typeℂ₀₁-beth-cs (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁-beth-cs i {w} {n} {c} h =
   →equalInType-QTNAT i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
-                     (Bar.∀𝕎-□Func barI aw h)
+                     (Mod.∀𝕎-□Func inBethBar-Bar aw h)
   where
     aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakMonEq w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
     aw w1 e1 z w2 e2 = lift (x (snd (snd (lower (z w2 e2)))))
