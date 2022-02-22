@@ -156,4 +156,8 @@ classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
     h3 : ∀𝕎 w3 (λ w4 e4 → (z : w2 ⊑· w4) → f w4 (⊑-trans· (⊑-trans· e1 e2) z))
     h3 = snd (snd (h2 w2 (⊑-refl· _)))
 
+
+exBar-open : ExBar W inOpenBar-Mod C K P
+exBar-open = mkExBar ∀∃𝔹-open
+
 \end{code}[hide]

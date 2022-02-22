@@ -415,8 +415,8 @@ inBethBar-const = Σ∈𝔹-const {IS𝔹bars} IS𝔹bars∃
 
 
 -- TODO: generate this bar from (BarsProps→Bar IS𝔹BarsProps)
-inBethBar-Bar : Mod
-inBethBar-Bar = BarsProps→Mod IS𝔹BarsProps
+inBethBar-Mod : Mod
+inBethBar-Mod = BarsProps→Mod IS𝔹BarsProps
 {--  mkBar
     inBethBar
     inBethBar'

@@ -23,8 +23,10 @@ open import progress
 
 module barKripke {L : Level} (W : PossibleWorlds {L})
        where
+
 open import worldDef{L}(W)
 open import bar{L}(W)
+open import mod{L}(W)
 
 
 -- all the worlds above w are in the bar
@@ -70,6 +72,7 @@ K𝔹bars∃ : Bars∃ K𝔹bars
 K𝔹bars∃ {w} {b} bars ext = w , ⊑-refl· w , lower (bars w (⊑-refl· _))
 
 
+
 K𝔹BarsProps : BarsProps
 K𝔹BarsProps =
   mkBarsProps
@@ -79,4 +82,18 @@ K𝔹BarsProps =
     K𝔹bars∀
     K𝔹barsFam2
     K𝔹bars∃
+
+
+inKripkeBar-Mod : Mod
+inKripkeBar-Mod = BarsProps→Mod K𝔹BarsProps
+
+
+-- A few consequences
+trivialK𝔹 : (w : 𝕎·) → K𝔹 w
+trivialK𝔹 = 𝔹∀ {K𝔹bars} K𝔹bars∀
+
+
+K𝔹all : {w : 𝕎·} (b : 𝔹 K𝔹bars w) → 𝔹.bar b w
+K𝔹all {w} b = lower (𝔹.bars b w (⊑-refl· _))
+
 \end{code}

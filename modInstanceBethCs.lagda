@@ -32,35 +32,73 @@ open import Axiom.Extensionality.Propositional
 open import util
 open import calculus
 open import terms
+open import world
+open import choice
+open import compatible
+open import progress
+open import getChoice
+open import newChoice
+open import freeze
+open import mod
+open import choiceExt
 
 
 -- An instance with beth bars (inBethBar-Bar) and choice sequences
 
-module modInstanceCS (E : Extensionality 0ℓ 3ℓ)
+module modInstanceBethCs (E : Extensionality 0ℓ 3ℓ)
        where
 
-
 open import worldInstanceCS
-open import choiceDef{1ℓ}(choiceCS)
-open import worldDef(PossibleWorldsCS)
-open import compatibleDef(PossibleWorldsCS)(choiceCS)(compatibleCS)
-open import progressDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)
-open import getChoiceDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
-open import choiceExtDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)
-open import newChoiceDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(newChoiceCS)
-open import freezeDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(newChoiceCS)(freezeCS)
 
-open import bar(PossibleWorldsCS)
-open import mod(PossibleWorldsCS)
-open import barBeth(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)
-open import barI(PossibleWorldsCS)(inBethBar-Bar)(choiceCS)(compatibleCS)(progressCS)
-open import computation(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
+W : PossibleWorlds
+W = PossibleWorldsCS
 
-open import forcing(PossibleWorldsCS)(inBethBar-Bar)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)
-open import props1(PossibleWorldsCS)(inBethBar-Bar)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)
-open import props2(PossibleWorldsCS)(inBethBar-Bar)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)
-open import props3(PossibleWorldsCS)(inBethBar-Bar)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(E)
+C : Choice
+C = choiceCS
 
+K : Compatible W C
+K = compatibleCS
+
+P : Progress W C K
+P = progressCS
+
+open import barBeth(W)(C)(K)(P)
+
+M : Mod W
+M = inBethBar-Mod
+
+G : GetChoice W C K
+G = getChoiceCS
+
+N : NewChoice W C K G
+N = newChoiceCS
+
+F : Freeze W C K P G N
+F = freezeCS
+
+X : ChoiceExt W C K G
+X = choiceExtCS
+
+open import worldDef(W)
+open import bar(W)
+open import mod(W)
+--open import barOpen(W)
+open import choiceDef{1ℓ}(C)
+open import compatibleDef(W)(C)(K)
+open import progressDef(W)(C)(K)(P)
+open import getChoiceDef(W)(C)(K)(G)
+open import choiceExtDef(W)(C)(K)(G)(X)
+open import newChoiceDef(W)(C)(K)(G)(N)
+open import freezeDef(W)(C)(K)(P)(G)(N)(F)
+
+--open import barBeth(W)(C)(K)(P)
+open import barI(W)(M)(C)(K)(P)
+open import computation(W)(C)(K)(G)
+
+open import forcing(W)(M)(C)(K)(P)(G)(E)
+open import props1(W)(M)(C)(K)(P)(G)(E)
+open import props2(W)(M)(C)(K)(P)(G)(E)
+open import props3(W)(M)(C)(K)(P)(G)(E)
 
 
 progressing→ΣgetCs≤ : {w : 𝕎·} {c : chain w} {r : Res} (n : Name) (m : ℕ)
@@ -322,7 +360,7 @@ isValueℂ₁-beth-cs = tt
 
 
 ∈Typeℂ₀₁→-beth-cs : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-cs a b → □· w (λ w' _ → #weakℂEq w' a b)
-∈Typeℂ₀₁→-beth-cs i w a b eqi = Mod.∀𝕎-□Func inBethBar-Bar aw (equalInType-QTNAT→ i w a b eqi)
+∈Typeℂ₀₁→-beth-cs i w a b eqi = Mod.∀𝕎-□Func M aw (equalInType-QTNAT→ i w a b eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #weakMonEq w' a b → #weakℂEq w' a b)
     aw w1 e1 h w2 e2 = lift j
@@ -336,7 +374,7 @@ isValueℂ₁-beth-cs = tt
                       → ∈Type i w Typeℂ₀₁-beth-cs (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁-beth-cs i {w} {n} {c} h =
   →equalInType-QTNAT i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
-                     (Mod.∀𝕎-□Func inBethBar-Bar aw h)
+                     (Mod.∀𝕎-□Func M aw h)
   where
     aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakMonEq w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
     aw w1 e1 z w2 e2 = lift (x (snd (snd (lower (z w2 e2)))))
@@ -417,5 +455,19 @@ followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
     z : f w' e
     z = i e (BarredChain.b bp) w' (⊑-refl· w') e
 
+
+open import choiceBar(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)
+
+bethCs-choiceBar : ChoiceBar
+bethCs-choiceBar =
+  mkChoiceBar
+    Typeℂ₀₁-beth-cs
+    Typeℂ₀₁-isType-beth-bar
+    ℂ₀∈Typeℂ₀₁-beth-cs
+    ℂ₁∈Typeℂ₀₁-beth-cs
+    ∈Typeℂ₀₁→-beth-cs
+    →∈Typeℂ₀₁-beth-cs
+    □·-choice-beth-cs
+    followChoice-beth-cs
 
 \end{code}

@@ -20,6 +20,7 @@ open import world
 
 module barOpen {L : Level} (W : PossibleWorlds {L})
        where
+
 open import worldDef{L}(W)
 open import bar(W)
 open import mod(W)
@@ -122,8 +123,8 @@ O𝔹 : 𝕎· → Set(lsuc(L))
 O𝔹 w = 𝔹 O𝔹bars w
 
 
-inOpenBar-Bar-v1 : Mod
-inOpenBar-Bar-v1 = BarsProps→Mod O𝔹BarsProps
+inOpenBar-Mod-v1 : Mod
+inOpenBar-Mod-v1 = BarsProps→Mod O𝔹BarsProps
 ----
 
 
@@ -946,8 +947,8 @@ inOpenBar'-comb-change {w} {f₁} {f₂} {f₃} {g₁} {g₂} {g₃} i₁ i₂ i
 
 
 -- We can prove that open-bars satisfy the Bar properties
-inOpenBar-Bar : Mod
-inOpenBar-Bar =
+inOpenBar-Mod : Mod
+inOpenBar-Mod =
   mkMod
     inOpenBar
     inOpenBar'

@@ -40,16 +40,24 @@ open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)(CB)
 -- This version requires choices to be Booleans, but also freezable to always be true:
 open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)(CB)
 
--- This instance uses terms as choices:
-open import modInstanceCS
--- This instance uses nats as choices:
-open import modInstanceRef
--- This instance uses bools as choices:
-open import modInstanceRef2
+-- This instance of 'choiceBar' uses Beth bars and terms as choices:
+open import modInstanceBethCs
+-- This instance of 'choiceBar' uses Beth bars and nats as choices:
+open import modInstanceBethRef
+-- This instance of 'choiceBar' uses Beth bars and bools as choices:
+open import modInstanceBethRef2
+-- This instance of 'choiceBar' uses Kripke bars and bools as choices:
+open import modInstanceKripkeRefBool
+
+-- `openBar` provides an example of a bar.
+-- We show here that the resulting modality does not satisfy `followChoice` (from `choiceBar`),
+-- which we require to prove ¬LEM for example.
+-- This is proved for REF, but should be true for FCS too
+open import openNotFollowChoice
 
 -- `barKripke` provides an example of a bar containing all worlds.
--- In `krikeChoice` we show that the resulting modality does not satisfy `□·-choice` (from `choiceBar`),
+-- We show here that the resulting modality does not satisfy `□·-choice` (from `choiceBar`),
 -- which we require to prove ¬LEM for example.  This is true when using FCS as choices but not REF.
-open import krikeChoice
+open import kripkeCsNotRetrieving
 
 \end{code}

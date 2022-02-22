@@ -44,9 +44,9 @@ open import choiceExt
 
 
 -- An instance with beth bars (inBethBar-Bar) and references
--- As oppposed to modInstanceRef, which relies on choices in Bool, this one relies on QTBOOL
+-- As oppposed to modInstanceBethRef, which relies on choices of nats, this one relies on bools
 
-module modInstanceRef2 (E : Extensionality 0ℓ 3ℓ)
+module modInstanceBethRef2 (E : Extensionality 0ℓ 3ℓ)
        where
 
 
@@ -67,7 +67,7 @@ P = progressREF
 open import barBeth(W)(C)(K)(P)
 
 M : Mod W
-M = inBethBar-Bar
+M = inBethBar-Mod
 
 G : GetChoice W C K
 G = getChoiceRef
@@ -84,7 +84,7 @@ X = choiceExtRef
 open import worldDef(W)
 open import bar(W)
 open import mod(W)
-open import barOpen(W)
+--open import barOpen(W)
 open import choiceDef{1ℓ}(C)
 open import compatibleDef(W)(C)(K)
 open import progressDef(W)(C)(K)(P)
@@ -176,7 +176,7 @@ isValueℂ₁-beth-ref = tt
 
 
 ∈Typeℂ₀₁→-beth-ref : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-ref a b → □· w (λ w' _ → #weakℂEq w' a b)
-∈Typeℂ₀₁→-beth-ref i w a b eqi = Mod.∀𝕎-□Func (inBethBar-Bar) aw (equalInType-QTBOOL→ i w a b eqi)
+∈Typeℂ₀₁→-beth-ref i w a b eqi = Mod.∀𝕎-□Func M aw (equalInType-QTBOOL→ i w a b eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #weakBool w' a b → #weakℂEq w' a b)
     aw w1 e1 h w2 e2 = lift j
@@ -201,7 +201,7 @@ isValueℂ₁-beth-ref = tt
                       → ∈Type i w Typeℂ₀₁-beth-ref (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁-beth-ref i {w} {n} {c} h =
   →equalInType-QTBOOL i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
-                     (Mod.∀𝕎-□Func (inBethBar-Bar) aw h)
+                     (Mod.∀𝕎-□Func M aw h)
   where
     aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakBool w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
     aw w1 e1 z w2 e2 = lift (x (snd (snd (lower (z w2 e2)))))
@@ -221,7 +221,7 @@ isValueℂ₁-beth-ref = tt
 
 □·-choice-beth-ref : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
                         → compatible· c w r
-                        → inBethBar w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
+                        → □· w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
 □·-choice-beth-ref w c m r (v , f , i , sat) = trivialIS𝔹 w , j
   where
     j : inIS𝔹 (trivialIS𝔹 w) (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
@@ -240,7 +240,7 @@ isValueℂ₁-beth-ref = tt
 
 
 followChoice-beth-ref : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
-                        → inBethBar w f
+                        → □· w f
                         → onlyℂ∈𝕎 (Res.def r) c w
                         → compatible· c w r
                         → freezable· c w
@@ -262,68 +262,19 @@ followChoice-beth-ref c {w} {f} {r} (bar , i) ioc comp fb =
     e = 𝔹.ext bar (BarredChain.b bp)
 
 
--- TODO: if we didn't want to rely on the choice instance at all,
--- we could add to getFreeze that we have ¬ freezable c w' in the extensions
-¬followChoice-open-ref-aux : (w : 𝕎·)
-                             → ¬((c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
-                                    → inOpenBar w f
-                                    → onlyℂ∈𝕎 (Res.def r) c w
-                                    → compatible· c w r
-                                    → freezable· c w
-                                    → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
-¬followChoice-open-ref-aux w0 h =
-  lower (snd (snd (snd (snd (snd q))))) (fst (snd (snd (snd (snd q)))))
-  where
-    r : Res{0ℓ}
-    r = Resℂ₀₁
 
-    c : Name
-    c = newChoice· w0
+open import choiceBar(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)
 
-    w : 𝕎·
-    w = startNewChoice r w0
-
-    f : wPred w
-    f w' e = Lift 2ℓ (¬ freezable· c w')
-
-    comp : compatible· c w r
-    comp = startChoiceCompatible· r w0
-
-    k : ℂ·
-    k = ℂ₁·
-
-    i : inOpenBar w f
-    i w1 e1 = w2 , e2 , aw
-      where
-        w2 : 𝕎·
-        w2 = freeze· c w1 k
-
-        e2 : w1 ⊑· w2
-        e2 = freeze⊑· c w1 k (⊑-compatible· e1 comp) λ n → inj₂ refl
-
-        -- This we where we could modify getFreeze or add an axiom like freeze→¬freezable
-        aw : ∀𝕎 w2 (λ w3 e3 → (z : w ⊑· w3) → f w3 z)
-        aw w3 e3 z = freeze→¬freezable {c} {w1} k (⊑-compatible· e1 comp) w3 e3
-
-    oc : onlyℂ∈𝕎 (Res.def r) c w
-    oc n = getChoice-startNewChoice· n r w0
-
-    fb : freezable· c w
-    fb = freezableStart· r w0
-
-    q :  ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
-    q = h c {w} {f} {r} i oc comp fb
-
-
-{--
--- We need 𝕎 to be non-empty
-¬followChoice-open-ref : ¬((c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
-                           → inOpenBar w f
-                           → isOnlyChoice∈𝕎 (Res.def r) c w
-                           → compatible· c w r
-                           → freezable· c w
-                           → ∃𝕎 w (λ w1 e1 → isOnlyChoice∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
-¬followChoice-open-ref h = {!!}
---}
+bethRef-choiceBar : ChoiceBar
+bethRef-choiceBar =
+  mkChoiceBar
+    Typeℂ₀₁-beth-ref
+    Typeℂ₀₁-isType-beth-bar
+    ℂ₀∈Typeℂ₀₁-beth-ref
+    ℂ₁∈Typeℂ₀₁-beth-ref
+    ∈Typeℂ₀₁→-beth-ref
+    →∈Typeℂ₀₁-beth-ref
+    □·-choice-beth-ref
+    followChoice-beth-ref
 
 \end{code}

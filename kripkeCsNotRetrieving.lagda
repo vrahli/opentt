@@ -45,8 +45,8 @@ open import progress
 open import mod
 
 
-module kripkeChoice {L : Level}
-                    (E : Extensionality 0ℓ 3ℓ)
+module kripkeCsNotRetrieving {L : Level}
+                             (E : Extensionality 0ℓ 3ℓ)
        where
 
 open import worldInstanceCS
@@ -95,9 +95,6 @@ open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import barI(W)(M)(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(E)
 
-
-K𝔹all : {w : 𝕎·} (b : 𝔹 K𝔹bars w) → 𝔹.bar b w
-K𝔹all {w} b = lower (𝔹.bars b w (⊑-refl· _))
 
 
 -- This works for references but not for choice sequences
