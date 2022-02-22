@@ -36,13 +36,16 @@ open import world
 open import choice
 open import compatible
 open import progress
+--open import bar
+open import mod
 
-module barI {L : Level} (W : PossibleWorlds {L})
+module barI {L : Level} (W : PossibleWorlds {L}) (barI : Mod W) --(B : BarsProps W) --
             (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M)
        where
 
 open import worldDef(W)
-open import bar(W)
+--open import bar(W)
+--open import mod(W)
 -- Example: open bars
 open import barOpen(W)
 -- Example: Kripke bars i.e., all extensions
@@ -52,35 +55,36 @@ open import barBeth(W)(C)(M)(P)
 
 
 -- instance of a bar, which should be replaced by a parameter
-barI : Bar
-barI = inOpenBar-Bar
+--barI : Mod
+--barI = BarsProps→Mod B
+--barI = inOpenBar-Bar
 --barI = inBethBar-Bar
 
 
 □· : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
-□· = Bar.□ barI
+□· = Mod.□ barI
 --□· = inOpenBar
 --□· = inBethBar
 
 □·' : (w : 𝕎·) {g : wPred w} (h : □· w g) (f : wPredDep g) → Set(lsuc(L))
---□·' = Bar.□' barI
-□·' = inOpenBar'
+□·' = Mod.□' barI
+--□·' = inOpenBar'
 --□·' = inBethBar'
 
 ↑□· : {w : 𝕎·} {f : wPred w} (i : □· w f) {w' : 𝕎·} (e : w ⊑· w') → □· w' (↑wPred f e)
-↑□· = Bar.↑□ barI
+↑□· = Mod.↑□ barI
 --↑□· = ↑inOpenBar
 --↑□· = ↑inBethBar
 
 ↑'□· : {w : 𝕎·} {f : wPred w} (i : □· w f) {w' : 𝕎·} (e : w ⊑· w') → □· w' (↑wPred' f e)
-↑'□· = Bar.↑'□ barI
+↑'□· = Mod.↑'□ barI
 --↑'□· = ↑'inOpenBar
 --↑'□· = ↑'inBethBar
 
 
 ↑□·' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : □· w f) {w' : 𝕎·} (e : w ⊑· w')
           → □·' w i g → □·' w' (↑□· i e) (↑wPredDep g e)
-↑□·' {w} {f} {g} = Bar.↑□' barI {w} {f} {g}
+↑□·' {w} {f} {g} = Mod.↑□' barI {w} {f} {g}
 --↑□·' {w} {f} {g} = ↑inOpenBar' {w} {f} {g}
 --↑□·' {w} {f} {g} = ↑inBethBar' {w} {f} {g}
 

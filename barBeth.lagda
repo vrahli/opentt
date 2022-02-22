@@ -27,6 +27,7 @@ module barBeth {L : Level} (W : PossibleWorlds {L})
        where
 open import worldDef{L}(W)
 open import bar{L}(W)
+open import mod{L}(W)
 
 -- Those are only needed by the Beth instance
 open import choiceDef{L}(C)
@@ -414,8 +415,8 @@ inBethBar-const = Σ∈𝔹-const {IS𝔹bars} IS𝔹bars∃
 
 
 -- TODO: generate this bar from (BarsProps→Bar IS𝔹BarsProps)
-inBethBar-Bar : Bar
-inBethBar-Bar = BarsProps→Bar IS𝔹BarsProps
+inBethBar-Bar : Mod
+inBethBar-Bar = BarsProps→Mod IS𝔹BarsProps
 {--  mkBar
     inBethBar
     inBethBar'
