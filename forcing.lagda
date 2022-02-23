@@ -596,23 +596,4 @@ record TS (τ : TEQ) (σ : EQT) : Set(lsuc(L)) where
     -- τ/σ properties
     tsExt   : TSext τ σ
 
-
--- ---------------------------------
--- Sequents
-
-record hypothesis : Set where
-  constructor mkhyp
-  field
-    name : Var
-    hyp  : Term
-
-hypotheses : Set
-hypotheses = List hypothesis
-
-record sequent : Set where
-  constructor mkseq
-  field
-    hyps  : hypotheses
-    concl : Term
-
 \end{code}
