@@ -504,6 +504,10 @@ fvars-shiftUp≡ n (EQ t t₁ t₂)
 fvars-shiftUp≡ n AX = refl
 fvars-shiftUp≡ n FREE = refl
 fvars-shiftUp≡ n (CS x) = refl
+fvars-shiftUp≡ n (CHOOSE t t₁)
+  rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
+  | fvars-shiftUp≡ n t
+  | fvars-shiftUp≡ n t₁ = refl
 fvars-shiftUp≡ n (TSQUASH t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (DUM t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (FFDEFS t t₁)
@@ -744,6 +748,10 @@ fvars-shiftDown≡ n (EQ t t₁ t₂)
 fvars-shiftDown≡ n AX = refl
 fvars-shiftDown≡ n FREE = refl
 fvars-shiftDown≡ n (CS x) = refl
+fvars-shiftDown≡ n (CHOOSE t t₁)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+  | fvars-shiftDown≡ n t
+  | fvars-shiftDown≡ n t₁ = refl
 fvars-shiftDown≡ n (TSQUASH t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (DUM t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (FFDEFS t t₁)
@@ -862,6 +870,9 @@ fvars-subv v a (EQ b b₁ b₂) i with ∈-++⁻ (fvars (subv v a b)) i
 fvars-subv v a AX i = ⊥-elim (¬∈[] i)
 fvars-subv v a FREE i = ⊥-elim (¬∈[] i)
 fvars-subv v a (CS x) i = ⊥-elim (¬∈[] i)
+fvars-subv v a (CHOOSE b b₁) {x} i with ∈-++⁻ (fvars (subv v a b)) i
+... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b p)
+... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b₁ p)
 fvars-subv v a (TSQUASH b) = fvars-subv v a b
 fvars-subv v a (DUM b) = fvars-subv v a b
 fvars-subv v a (FFDEFS b b₁) i with ∈-++⁻ (fvars (subv v a b)) i
@@ -1032,6 +1043,9 @@ shiftDown1-subv1-shiftUp0 n a (EQ b b₁ b₂) ca
 shiftDown1-subv1-shiftUp0 n a AX ca = refl
 shiftDown1-subv1-shiftUp0 n a FREE ca = refl
 shiftDown1-subv1-shiftUp0 n a (CS x) ca = refl
+shiftDown1-subv1-shiftUp0 n a (CHOOSE b b₁) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca
+        | shiftDown1-subv1-shiftUp0 n a b₁ ca = refl
 shiftDown1-subv1-shiftUp0 n a (TSQUASH b) ca
   rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
 shiftDown1-subv1-shiftUp0 n a (DUM b) ca
@@ -1198,6 +1212,13 @@ APPLYinj1 refl =  refl
 
 APPLYinj2 : {a b c d : Term} → APPLY a b ≡ APPLY c d → b ≡ d
 APPLYinj2 refl =  refl
+
+
+CHOOSEinj1 : {a b c d : Term} → CHOOSE a b ≡ CHOOSE c d → a ≡ c
+CHOOSEinj1 refl =  refl
+
+CHOOSEinj2 : {a b c d : Term} → CHOOSE a b ≡ CHOOSE c d → b ≡ d
+CHOOSEinj2 refl =  refl
 
 
 SETinj1 : {a b c d : Term} → SET a b ≡ SET c d → a ≡ c
@@ -1473,6 +1494,7 @@ shiftUp-inj {n} {EQ a a₁ a₂} {EQ b b₁ b₂} e rewrite shiftUp-inj (EQinj1 
 shiftUp-inj {n} {AX} {AX} e = refl
 shiftUp-inj {n} {FREE} {FREE} e = refl
 shiftUp-inj {n} {CS x} {CS .x} refl = refl
+shiftUp-inj {n} {CHOOSE a a₁} {CHOOSE b b₁} e rewrite shiftUp-inj (CHOOSEinj1 e) | shiftUp-inj (CHOOSEinj2 e) = refl
 shiftUp-inj {n} {TSQUASH a} {TSQUASH b} e rewrite shiftUp-inj (TSQUASHinj e) = refl
 shiftUp-inj {n} {DUM a} {DUM b} e rewrite shiftUp-inj (DUMinj e) = refl
 shiftUp-inj {n} {FFDEFS a a₁} {FFDEFS b b₁} e rewrite shiftUp-inj (FFDEFSinj1 e) | shiftUp-inj (FFDEFSinj2 e) = refl

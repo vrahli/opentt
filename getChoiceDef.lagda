@@ -75,3 +75,19 @@ getChoice⊎ n name w with getChoice· n name w
 
 isOnlyChoice∈𝕎 : (u : CTerm) (c : Name) (w : 𝕎·) → Set
 isOnlyChoice∈𝕎 u c w = (n : ℕ) (t : ℂ·) → getChoice· n c w ≡ just t → ℂ→C· t ≡ u
+
+
+T→ℂ· : Term → ℂ·
+T→ℂ· = T→ℂ G
+
+
+choose· : (cs : Name) (w : 𝕎·) (c : ℂ·) → 𝕎·
+choose· = choose G
+
+
+chooseT : (cs : Name) (w : 𝕎·) (c : Term) → 𝕎·
+chooseT n w t = choose· n w (T→ℂ· t)
+
+
+choose⊑· : (cs : Name) (w : 𝕎·) (c : ℂ·) → w ⊑· choose· cs w c
+choose⊑· = choose⊑ G

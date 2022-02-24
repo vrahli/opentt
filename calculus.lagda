@@ -86,9 +86,10 @@ data Term : Set where
   -- Equality
   EQ : Term → Term → Term → Term
   AX : Term
-  -- Choice sequences
+  -- Choices
   FREE : Term
   CS : Name → Term
+  CHOOSE : Term → Term → Term
   -- Time squashing
   TSQUASH : Term → Term
   -- Dummy
@@ -125,6 +126,7 @@ isValue (EQ _ _ _) = ⊤
 isValue AX = ⊤
 isValue FREE = ⊤
 isValue (CS _) = ⊤
+isValue (CHOOSE _ _) = ⊥ -- Not a value
 isValue (TSQUASH _) = ⊤
 isValue (DUM _) = ⊤
 isValue (FFDEFS _ _) = ⊤
@@ -201,6 +203,7 @@ fvars (EQ t t₁ t₂)     = fvars t ++ fvars t₁ ++ fvars t₂
 fvars AX               = []
 fvars FREE             = []
 fvars (CS x)           = []
+fvars (CHOOSE a b)     = fvars a ++ fvars b
 fvars (TSQUASH t)      = fvars t
 fvars (DUM t)          = fvars t
 fvars (FFDEFS t t₁)    = fvars t ++ fvars t₁
@@ -338,6 +341,7 @@ shiftUp c (EQ t t₁ t₂) = EQ (shiftUp c t) (shiftUp c t₁) (shiftUp c t₂)
 shiftUp c AX = AX
 shiftUp c FREE = FREE
 shiftUp c (CS x) = CS x
+shiftUp c (CHOOSE a b) = CHOOSE (shiftUp c a) (shiftUp c b)
 shiftUp c (TSQUASH t) = TSQUASH (shiftUp c t)
 shiftUp c (DUM t) = DUM (shiftUp c t)
 shiftUp c (FFDEFS t t₁) = FFDEFS (shiftUp c t) (shiftUp c t₁)
@@ -369,6 +373,7 @@ shiftDown c (EQ t t₁ t₂) = EQ (shiftDown c t) (shiftDown c t₁) (shiftDown 
 shiftDown c AX = AX
 shiftDown c FREE = FREE
 shiftDown c (CS x) = CS x
+shiftDown c (CHOOSE a b) = CHOOSE (shiftDown c a) (shiftDown c b)
 shiftDown c (TSQUASH t) = TSQUASH (shiftDown c t)
 shiftDown c (DUM t) = DUM (shiftDown c t)
 shiftDown c (FFDEFS t t₁) = FFDEFS (shiftDown c t) (shiftDown c t₁)
@@ -402,6 +407,7 @@ subv v t (EQ u u₁ u₂) = EQ (subv v t u) (subv v t u₁) (subv v t u₂)
 subv v t AX = AX
 subv v t FREE = FREE
 subv v t (CS x) = CS x
+subv v t (CHOOSE a b) = CHOOSE (subv v t a) (subv v t b)
 subv v t (TSQUASH u) = TSQUASH (subv v t u)
 subv v t (DUM u) = DUM (subv v t u)
 subv v t (FFDEFS u u₁) = FFDEFS (subv v t u) (subv v t u₁)
@@ -489,6 +495,9 @@ subvNotIn v t (EQ u u₁ u₂) n
 subvNotIn v t AX n = refl
 subvNotIn v t FREE n = refl
 subvNotIn v t (CS x) n = refl
+subvNotIn v t (CHOOSE u u₁) n
+  rewrite subvNotIn v t u (notInAppVars1 n)
+  rewrite subvNotIn v t u₁ (notInAppVars2 n) = refl
 subvNotIn v t (TSQUASH u) n
   rewrite subvNotIn v t u n = refl
 subvNotIn v t (DUM u) n
@@ -568,6 +577,9 @@ shiftDownTrivial v (EQ u u₁ u₂) i
 shiftDownTrivial v AX i = refl
 shiftDownTrivial v FREE i = refl
 shiftDownTrivial v (CS x) i = refl
+shiftDownTrivial v (CHOOSE u u₁) i
+  rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
+  rewrite shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftDownTrivial v (TSQUASH u) i
   rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (DUM u) i
@@ -634,6 +646,9 @@ shiftUpTrivial v (EQ u u₁ u₂) i
 shiftUpTrivial v AX i = refl
 shiftUpTrivial v FREE i = refl
 shiftUpTrivial v (CS x) i = refl
+shiftUpTrivial v (CHOOSE u u₁) i
+  rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
+        | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftUpTrivial v (TSQUASH u) i
   rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (DUM u) i
@@ -674,7 +689,7 @@ shiftDownUp (LAMBDA t) n rewrite shiftDownUp t (suc n) = refl
 shiftDownUp (APPLY t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (FIX t) n rewrite shiftDownUp t n = refl
 shiftDownUp (SUM t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
-shiftDownUp(PAIR t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
+shiftDownUp (PAIR t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (SPREAD t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc (suc n)) = refl
 shiftDownUp (SET t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
 shiftDownUp (UNION t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
@@ -685,6 +700,7 @@ shiftDownUp (EQ t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ n | sh
 shiftDownUp AX n = refl
 shiftDownUp FREE n = refl
 shiftDownUp (CS x) n = refl
+shiftDownUp (CHOOSE t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (TSQUASH t) n rewrite shiftDownUp t n = refl
 shiftDownUp (DUM t) n rewrite shiftDownUp t n = refl
 shiftDownUp (FFDEFS t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
@@ -717,6 +733,7 @@ is-NUM (EQ t t₁ t₂) = inj₂ (λ { n () })
 is-NUM AX = inj₂ (λ { n () })
 is-NUM FREE = inj₂ (λ { n () })
 is-NUM (CS x) = inj₂ (λ { n () })
+is-NUM (CHOOSE t t₁) = inj₂ (λ { n () })
 is-NUM (TSQUASH t) = inj₂ (λ { n () })
 is-NUM (DUM t) = inj₂ (λ { n () })
 is-NUM (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -724,6 +741,172 @@ is-NUM (UNIV x) = inj₂ (λ { n () })
 is-NUM (LIFT t) = inj₂ (λ { n () })
 is-NUM (LOWER t) = inj₂ (λ { n () })
 is-NUM (SHRINK t) = inj₂ (λ { n () })
+
+
+is-LAM : (t : Term) → (Σ Term (λ u → t ≡ LAMBDA u)) ⊎ ((u : Term) → ¬ t ≡ LAMBDA u)
+is-LAM (VAR x) = inj₂ (λ { n () })
+is-LAM NAT = inj₂ (λ { n () })
+is-LAM QNAT = inj₂ (λ { n () })
+is-LAM (LT t t₁) = inj₂ (λ { n () })
+is-LAM (QLT t t₁) = inj₂ (λ { n () })
+is-LAM (NUM x) = inj₂ (λ { n () })
+is-LAM (PI t t₁) = inj₂ (λ { n () })
+is-LAM (LAMBDA t) = inj₁ (t , refl)
+is-LAM (APPLY t t₁) = inj₂ (λ { n () })
+is-LAM (FIX t) = inj₂ (λ { n () })
+is-LAM (SUM t t₁) = inj₂ (λ { n () })
+is-LAM (PAIR t t₁) = inj₂ (λ { n () })
+is-LAM (SPREAD t t₁) = inj₂ (λ { n () })
+is-LAM (SET t t₁) = inj₂ (λ { n () })
+is-LAM (UNION t t₁) = inj₂ (λ { n () })
+is-LAM (INL t) = inj₂ (λ { n () })
+is-LAM (INR t) = inj₂ (λ { n () })
+is-LAM (DECIDE t t₁ t₂) = inj₂ (λ { n () })
+is-LAM (EQ t t₁ t₂) = inj₂ (λ { n () })
+is-LAM AX = inj₂ (λ { n () })
+is-LAM FREE = inj₂ (λ { n () })
+is-LAM (CS x) = inj₂ (λ { n () })
+is-LAM (CHOOSE t t₁) = inj₂ (λ { n () })
+is-LAM (TSQUASH t) = inj₂ (λ { n () })
+is-LAM (DUM t) = inj₂ (λ { n () })
+is-LAM (FFDEFS t t₁) = inj₂ (λ { n () })
+is-LAM (UNIV x) = inj₂ (λ { n () })
+is-LAM (LIFT t) = inj₂ (λ { n () })
+is-LAM (LOWER t) = inj₂ (λ { n () })
+is-LAM (SHRINK t) = inj₂ (λ { n () })
+
+
+is-CS : (t : Term) → (Σ Name (λ n → t ≡ CS n)) ⊎ ((n : Name) → ¬ t ≡ CS n)
+is-CS (VAR x) = inj₂ (λ { n () })
+is-CS NAT = inj₂ (λ { n () })
+is-CS QNAT = inj₂ (λ { n () })
+is-CS (LT t t₁) = inj₂ (λ { n () })
+is-CS (QLT t t₁) = inj₂ (λ { n () })
+is-CS (NUM x) = inj₂ (λ { n () })
+is-CS (PI t t₁) = inj₂ (λ { n () })
+is-CS (LAMBDA t) = inj₂ (λ { n () })
+is-CS (APPLY t t₁) = inj₂ (λ { n () })
+is-CS (FIX t) = inj₂ (λ { n () })
+is-CS (SUM t t₁) = inj₂ (λ { n () })
+is-CS (PAIR t t₁) = inj₂ (λ { n () })
+is-CS (SPREAD t t₁) = inj₂ (λ { n () })
+is-CS (SET t t₁) = inj₂ (λ { n () })
+is-CS (UNION t t₁) = inj₂ (λ { n () })
+is-CS (INL t) = inj₂ (λ { n () })
+is-CS (INR t) = inj₂ (λ { n () })
+is-CS (DECIDE t t₁ t₂) = inj₂ (λ { n () })
+is-CS (EQ t t₁ t₂) = inj₂ (λ { n () })
+is-CS AX = inj₂ (λ { n () })
+is-CS FREE = inj₂ (λ { n () })
+is-CS (CS x) = inj₁ (x , refl)
+is-CS (CHOOSE t t₁) = inj₂ (λ { n () })
+is-CS (TSQUASH t) = inj₂ (λ { n () })
+is-CS (DUM t) = inj₂ (λ { n () })
+is-CS (FFDEFS t t₁) = inj₂ (λ { n () })
+is-CS (UNIV x) = inj₂ (λ { n () })
+is-CS (LIFT t) = inj₂ (λ { n () })
+is-CS (LOWER t) = inj₂ (λ { n () })
+is-CS (SHRINK t) = inj₂ (λ { n () })
+
+
+is-PAIR : (t : Term) → (Σ Term (λ a → Σ Term (λ b → t ≡ PAIR a b))) ⊎ ((a b : Term) → ¬ t ≡ PAIR a b)
+is-PAIR (VAR x) = inj₂ (λ { n m () })
+is-PAIR NAT = inj₂ (λ { n m () })
+is-PAIR QNAT = inj₂ (λ { n m () })
+is-PAIR (LT t t₁) = inj₂ (λ { n m () })
+is-PAIR (QLT t t₁) = inj₂ (λ { n m () })
+is-PAIR (NUM x) = inj₂ (λ { n m () })
+is-PAIR (PI t t₁) = inj₂ (λ { n m () })
+is-PAIR (LAMBDA t) = inj₂ (λ { n m () })
+is-PAIR (APPLY t t₁) = inj₂ (λ { n m () })
+is-PAIR (FIX t) = inj₂ (λ { n m () })
+is-PAIR (SUM t t₁) = inj₂ (λ { n m () })
+is-PAIR (PAIR t t₁) = inj₁ (t , t₁ , refl)
+is-PAIR (SPREAD t t₁) = inj₂ (λ { n m () })
+is-PAIR (SET t t₁) = inj₂ (λ { n m () })
+is-PAIR (UNION t t₁) = inj₂ (λ { n m () })
+is-PAIR (INL t) = inj₂ (λ { n m () })
+is-PAIR (INR t) = inj₂ (λ { n m () })
+is-PAIR (DECIDE t t₁ t₂) = inj₂ (λ { n m () })
+is-PAIR (EQ t t₁ t₂) = inj₂ (λ { n m () })
+is-PAIR AX = inj₂ (λ { n m () })
+is-PAIR FREE = inj₂ (λ { n m () })
+is-PAIR (CS x) = inj₂ (λ { n m () })
+is-PAIR (CHOOSE t t₁) = inj₂ (λ { n m () })
+is-PAIR (TSQUASH t) = inj₂ (λ { n m () })
+is-PAIR (DUM t) = inj₂ (λ { n m () })
+is-PAIR (FFDEFS t t₁) = inj₂ (λ { n m () })
+is-PAIR (UNIV x) = inj₂ (λ { n m () })
+is-PAIR (LIFT t) = inj₂ (λ { n m () })
+is-PAIR (LOWER t) = inj₂ (λ { n m () })
+is-PAIR (SHRINK t) = inj₂ (λ { n m () })
+
+
+is-INL : (t : Term) → (Σ Term (λ u → t ≡ INL u)) ⊎ ((u : Term) → ¬ t ≡ INL u)
+is-INL (VAR x) = inj₂ (λ { n () })
+is-INL NAT = inj₂ (λ { n () })
+is-INL QNAT = inj₂ (λ { n () })
+is-INL (LT t t₁) = inj₂ (λ { n () })
+is-INL (QLT t t₁) = inj₂ (λ { n () })
+is-INL (NUM x) = inj₂ (λ { n () })
+is-INL (PI t t₁) = inj₂ (λ { n () })
+is-INL (LAMBDA t) = inj₂ (λ { n () })
+is-INL (APPLY t t₁) = inj₂ (λ { n () })
+is-INL (FIX t) = inj₂ (λ { n () })
+is-INL (SUM t t₁) = inj₂ (λ { n () })
+is-INL (PAIR t t₁) = inj₂ (λ { n () })
+is-INL (SPREAD t t₁) = inj₂ (λ { n () })
+is-INL (SET t t₁) = inj₂ (λ { n () })
+is-INL (UNION t t₁) = inj₂ (λ { n () })
+is-INL (INL t) = inj₁ (t , refl)
+is-INL (INR t) = inj₂ (λ { n () })
+is-INL (DECIDE t t₁ t₂) = inj₂ (λ { n () })
+is-INL (EQ t t₁ t₂) = inj₂ (λ { n () })
+is-INL AX = inj₂ (λ { n () })
+is-INL FREE = inj₂ (λ { n () })
+is-INL (CS x) = inj₂ (λ { n () })
+is-INL (CHOOSE t t₁) = inj₂ (λ { n () })
+is-INL (TSQUASH t) = inj₂ (λ { n () })
+is-INL (DUM t) = inj₂ (λ { n () })
+is-INL (FFDEFS t t₁) = inj₂ (λ { n () })
+is-INL (UNIV x) = inj₂ (λ { n () })
+is-INL (LIFT t) = inj₂ (λ { n () })
+is-INL (LOWER t) = inj₂ (λ { n () })
+is-INL (SHRINK t) = inj₂ (λ { n () })
+
+
+is-INR : (t : Term) → (Σ Term (λ u → t ≡ INR u)) ⊎ ((u : Term) → ¬ t ≡ INR u)
+is-INR (VAR x) = inj₂ (λ { n () })
+is-INR NAT = inj₂ (λ { n () })
+is-INR QNAT = inj₂ (λ { n () })
+is-INR (LT t t₁) = inj₂ (λ { n () })
+is-INR (QLT t t₁) = inj₂ (λ { n () })
+is-INR (NUM x) = inj₂ (λ { n () })
+is-INR (PI t t₁) = inj₂ (λ { n () })
+is-INR (LAMBDA t) = inj₂ (λ { n () })
+is-INR (APPLY t t₁) = inj₂ (λ { n () })
+is-INR (FIX t) = inj₂ (λ { n () })
+is-INR (SUM t t₁) = inj₂ (λ { n () })
+is-INR (PAIR t t₁) = inj₂ (λ { n () })
+is-INR (SPREAD t t₁) = inj₂ (λ { n () })
+is-INR (SET t t₁) = inj₂ (λ { n () })
+is-INR (UNION t t₁) = inj₂ (λ { n () })
+is-INR (INL t) = inj₂ (λ { n () })
+is-INR (INR t) = inj₁ (t , refl)
+is-INR (DECIDE t t₁ t₂) = inj₂ (λ { n () })
+is-INR (EQ t t₁ t₂) = inj₂ (λ { n () })
+is-INR AX = inj₂ (λ { n () })
+is-INR FREE = inj₂ (λ { n () })
+is-INR (CS x) = inj₂ (λ { n () })
+is-INR (CHOOSE t t₁) = inj₂ (λ { n () })
+is-INR (TSQUASH t) = inj₂ (λ { n () })
+is-INR (DUM t) = inj₂ (λ { n () })
+is-INR (FFDEFS t t₁) = inj₂ (λ { n () })
+is-INR (UNIV x) = inj₂ (λ { n () })
+is-INR (LIFT t) = inj₂ (λ { n () })
+is-INR (LOWER t) = inj₂ (λ { n () })
+is-INR (SHRINK t) = inj₂ (λ { n () })
+
 
 
 

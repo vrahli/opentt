@@ -111,6 +111,18 @@ just-inj : {l : Level} {A : Set l} {a b : A} → just a ≡ just b → a ≡ b
 just-inj refl =  refl
 
 
+pair-inj₁ : {l k : Level} {A : Set l} {B : Set k} {a₁ a₂ : A} {b₁ b₂ : B} → (a₁ , b₁) ≡ (a₂ , b₂) → a₁ ≡ a₂
+pair-inj₁ refl =  refl
+
+
+pair-inj₂ : {l k : Level} {A : Set l} {B : Set k} {a₁ a₂ : A} {b₁ b₂ : B} → (a₁ , b₁) ≡ (a₂ , b₂) → b₁ ≡ b₂
+pair-inj₂ refl =  refl
+
+
+pair-eta : {l k : Level} {A : Set l} {B : Set k} (a : A × B) → a ≡ (fst a , snd a)
+pair-eta (a , b) =  refl
+
+
 suc≤len∷ʳ : {L : Level} {A : Set(L)} (l : List A) (a : A) (k : ℕ) → k ≤ length l → suc k ≤ length (l ∷ʳ a)
 suc≤len∷ʳ {L} {A} l a k h rewrite length-++ l {[ a ]} rewrite +-comm (length l) 1 = _≤_.s≤s h
 
@@ -287,5 +299,12 @@ select++→⊎∈ {L} {A} {suc k} {x ∷ l} {l'} {t} sel = select++→⊎∈ {L}
 ∈replicate→ : {L : Level} {A : Set(L)} {x y : A} {n : ℕ} → y ∈ (replicate n x) → y ≡ x
 ∈replicate→ {L} {A} {x} {y} {suc n} (here px) = px
 ∈replicate→ {L} {A} {x} {y} {suc n} (there i) = ∈replicate→ i
+
+
+
+≤-Σ+ : {n m : ℕ} → n ≤ m → Σ ℕ (λ k → m ≡ n + k)
+≤-Σ+ {0} {m} _≤_.z≤n = (m , refl)
+≤-Σ+ {suc n} {suc m} (_≤_.s≤s le) with ≤-Σ+ le
+... | (k , p) rewrite p = k , refl
 
 \end{code}

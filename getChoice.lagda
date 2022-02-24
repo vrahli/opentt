@@ -45,8 +45,15 @@ record GetChoice : Set(lsuc(L)) where
   field
     -- returns the n's choice in w for the choice sequence cs
     getChoice : (n : ℕ) (cs : Name) (w : 𝕎·) → Maybe ℂ·
-    --getChoice : (cs : Name) (w : 𝕎·) → Maybe ℕ
 
+    -- TODO: move to a separate record
+    -- This is used to make a choice.  We require a function from Term to ℂ·
+    -- so that choices can be computed from the underlying programming langauge
+    T→ℂ : Term → ℂ·
+    choose : (cs : Name) (w : 𝕎·) (c : ℂ·) → 𝕎·
+    choose⊑ : (cs : Name) (w : 𝕎·) (c : ℂ·) → w ⊑· choose cs w c
+
+    --getChoice : (cs : Name) (w : 𝕎·) → Maybe ℕ
     --getChoiceCompatible : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·) → compatible· c w r → getChoice n c w ≡ just t → ·ᵣ r n t
 
 \end{code}

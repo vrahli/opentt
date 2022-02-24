@@ -40,18 +40,18 @@ open import progress
 open import mod
 
 module barI {L : Level} (W : PossibleWorlds {L}) (M : Mod W) --(B : BarsProps W) --
-            (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K)
+--            (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K)
        where
 
 open import worldDef(W)
 --open import bar(W)
 --open import mod(W)
 -- Example: open bars
-open import barOpen(W)
+--open import barOpen(W)
 -- Example: Kripke bars i.e., all extensions
-open import barKripke(W)
+--open import barKripke(W)
 -- Example: Beth bars
-open import barBeth(W)(C)(K)(P)
+--open import barBeth(W)(C)(K)(P)
 
 
 -- instance of a bar, which should be replaced by a parameter

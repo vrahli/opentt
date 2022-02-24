@@ -50,93 +50,146 @@ We now define part of OpenTT's syntax and operational semantics.
 
 
 \begin{code}
-step : ∀ (T : Term) (w : 𝕎·) → Maybe Term
+ret : (t : Term) (w : 𝕎·) → Maybe (Term × 𝕎·)
+ret t w = just (t , w)
+
+
+step : ∀ (T : Term) (w : 𝕎·) → Maybe (Term × 𝕎·)
 -- VAR
 step (VAR v) w = nothing
 -- NAT
-step NAT w = just NAT
+step NAT = ret NAT
 -- QNAT
-step QNAT w = just QNAT
+step QNAT = ret QNAT
 -- LT
-step (LT a b) w = just (LT a b)
+step (LT a b) = ret (LT a b)
 -- QLT
-step (QLT a b) w = just (QLT a b)
+step (QLT a b) = ret (QLT a b)
 -- NUM
-step (NUM n) w = just (NUM n)
+step (NUM n) = ret (NUM n)
 -- PI
-step (PI a b) w = just (PI a b)
+step (PI a b) = ret (PI a b)
 -- LAMBDA
-step (LAMBDA t) w = just (LAMBDA t)
+step (LAMBDA t) = ret (LAMBDA t)
 -- APPLY
 -- access the n^th choice in the history of choices made for "name"
-step (APPLY (CS name) (NUM n)) w = getT n name w
+step (APPLY f a) w with is-LAM f
+... | inj₁ (t , p) = ret (sub a t) w
+... | inj₂ x with is-CS f
+... |    inj₁ (name , p) with is-NUM a
+... |       inj₁ (n , q) = Data.Maybe.map (λ t → t , w) (getT n name w)
+... |       inj₂ y with step a w
+... |          just (u , w') = ret (APPLY (CS name) u) w'
+... |          nothing = nothing
+step (APPLY f a) w | inj₂ x | inj₂ name with step f w
+... | just (g , w') = ret (APPLY g a) w'
+... | nothing = nothing
+{--step (APPLY (CS name) (NUM n)) w = Data.Maybe.map (λ t → t , w) (getT n name w)
 step (APPLY (CS name) t) w with step t w
-... | just u = just (APPLY (CS name) u)
+... | just (u , w') = ret (APPLY (CS name) u) w'
 ... | nothing = nothing
-step (APPLY (LAMBDA t) u) w = just (sub u t)
+step (APPLY (LAMBDA t) u) w = ret (sub u t) w
 step (APPLY f a) w with step f w
-... | just g = just (APPLY g a)
-... | nothing = nothing
+... | just (g , w') = ret (APPLY g a) w'
+... | nothing = nothing--}
+-- CHOOSE
+step (CHOOSE n t) w with is-CS n
+... | inj₁ (name , p) = ret AX (chooseT name w t)
+... | inj₂ x with step n w
+... |    just (m , w') = ret (CHOOSE m t) w'
+... |    nothing = nothing
+{--step (CHOOSE (CS name) t) w = ret AX w -- TODO: return a 𝕎· too
+step (CHOOSE n t) w with step n w
+... | just (m , w') = ret (CHOOSE m t) w'
+... | nothing = nothing--}
 -- FIX
-step (FIX (LAMBDA t)) w = just (sub (FIX (LAMBDA t)) t)
+step (FIX f) w with is-LAM f
+... | inj₁ (t , p) = ret (sub (FIX (LAMBDA t)) t) w
+... | inj₂ x with step f w
+... |    just (g , w') = ret (FIX g) w'
+... |    nothing = nothing
+{--step (FIX (LAMBDA t)) w = ret (sub (FIX (LAMBDA t)) t) w
 step (FIX f) w with step f w
-... | just g = just (FIX g)
-... | nothing = nothing
+... | just (g , w') = ret (FIX g) w'
+... | nothing = nothing--}
 -- SUM
-step (SUM a b) w = just (SUM a b)
+step (SUM a b) = ret (SUM a b)
 -- PAIR
-step (PAIR a b) w = just (PAIR a b)
+step (PAIR a b) = ret (PAIR a b)
 -- SPREAD
-step (SPREAD (PAIR a b) c) w = just (sub b (sub a c))
+step (SPREAD a b) w with is-PAIR a
+... | inj₁ (u , v , p) = ret (sub v (sub u b)) w
+... | inj₂ x with step a w
+... |    just (t , w') = ret (SPREAD t b) w'
+... |    nothing = nothing
+{--step (SPREAD (PAIR a b) c) w = ret (sub b (sub a c)) w
 step (SPREAD a b) w with step a w
-... | just t = just (SPREAD t b)
-... | nothing = nothing
+... | just (t , w') = ret (SPREAD t b) w'
+... | nothing = nothing--}
 -- SET
-step (SET a b) w = just (SET a b)
+step (SET a b) = ret (SET a b)
 -- UNION
-step (UNION a b) w = just (UNION a b)
+step (UNION a b) = ret (UNION a b)
 -- INL
-step (INL a) w = just (INL a)
+step (INL a) = ret (INL a)
 -- INR
-step (INR a) w = just (INR a)
+step (INR a) = ret (INR a)
 -- DECIDE
-step (DECIDE (INL a) b c) w = just (sub a b)
-step (DECIDE (INR a) b c) w = just (sub a c)
+step (DECIDE a b c) w with is-INL a
+... | inj₁ (t , p) = ret (sub t b) w
+... | inj₂ x with is-INR a
+... |    inj₁ (t , p) = ret (sub t c) w
+... |    inj₂ y with step a w
+... |       just (t , w') = ret (DECIDE t b c) w'
+... |       nothing = nothing
+{--step (DECIDE (INL a) b c) w = ret (sub a b) w
+step (DECIDE (INR a) b c) w = ret (sub a c) w
 step (DECIDE a b c) w with step a w
-... | just t = just (DECIDE t b c)
-... | nothing = nothing
+... | just (t , w') = ret (DECIDE t b c) w'
+... | nothing = nothing--}
 -- EQ
-step (EQ a b c) w = just (EQ a b c)
+step (EQ a b c) = ret (EQ a b c)
 -- AX
-step AX w = just AX
+step AX = ret AX
 -- FREE
-step FREE w = just FREE
+step FREE = ret FREE
 -- CS
-step (CS name) w = just (CS name)
+step (CS name) = ret (CS name)
 -- TSQUASH
-step (TSQUASH a) w = just (TSQUASH a)
+step (TSQUASH a) = ret (TSQUASH a)
 -- DUM
-step (DUM a) w = just (DUM a)
+step (DUM a) = ret (DUM a)
 -- FFDEFS
-step (FFDEFS a b) w = just (FFDEFS a b)
+step (FFDEFS a b) = ret (FFDEFS a b)
 -- UNIV
-step (UNIV u) w = just (UNIV u)
+step (UNIV u) = ret (UNIV u)
 -- LIFT
-step (LIFT t) w = just (LIFT t)
+step (LIFT t) = ret (LIFT t)
 -- LOWER
-step (LOWER t) w = just (LOWER t)
+step (LOWER t) = ret (LOWER t)
 -- LOWER
-step (SHRINK t) w = just (SHRINK t)
+step (SHRINK t) = ret (SHRINK t)
 
-steps : (n : ℕ) (t : Term) (w : 𝕎·) → Term
-steps 0 t w = t
-steps (suc n) t w with step t w
-... | just u = steps n u w
-... | nothing = t
+
+steps : (n : ℕ) (tw : Term × 𝕎·) → Term × 𝕎·
+steps 0 (t , w) = (t , w)
+steps (suc n) (t , w) with step t w
+... | just (u , w') = steps n (u , w')
+... | nothing = (t ,  w)
+
+
+stepsT : (n : ℕ) (t : Term) (w : 𝕎·) → Term
+stepsT n t w = fst (steps n (t , w))
+
 
 _⇓_at_ : ∀ (T T' : Term) (w : 𝕎·) → Set
-T ⇓ T' at w = Σ ℕ (λ n → steps n T w ≡ T')
+T ⇓ T' at w = Σ ℕ (λ n → stepsT n T w ≡ T')
 infix 30 _⇓_at_
+
+
+_⇓_from_to_ : ∀ (T T' : Term) (w w' : 𝕎·) → Set(L)
+T ⇓ T' from w to w' = Σ ℕ (λ n → steps n (T , w) ≡ (T' , w'))
+infix 30 _⇓_from_to_
 
 
 -- T computes to T' in all extensions of w
@@ -145,11 +198,17 @@ T ⇛ T' at w = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (T ⇓ T' at w'))
 infix 30 _⇛_at_
 
 
+-- as opposed to the one above, this one does not allow the computation to change the world
+_⇛_AT_ : (T T' : Term) (w : 𝕎·) → Set(lsuc(L))
+T ⇛ T' AT w = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (T ⇓ T' from w' to w'))
+infix 30 _⇛_AT_
+
+
 ⇓-refl : (T : Term) (w : 𝕎·) → T ⇓ T at w
 ⇓-refl T w = (0 , refl)
 
 -- values compute to themselves
-stepVal : (a : Term) (w : 𝕎·) → isValue a → step a w ≡ just a
+stepVal : (a : Term) (w : 𝕎·) → isValue a → step a w ≡ ret a w
 stepVal NAT w v = refl
 stepVal QNAT w v = refl
 stepVal (LT a b) w v = refl
@@ -175,7 +234,7 @@ stepVal (LIFT x) w v = refl
 stepVal (LOWER a) w v = refl
 stepVal (SHRINK a) w v = refl
 
-stepsVal : (a : Term) (w : 𝕎·) (n : ℕ) → isValue a → steps n a w ≡ a
+stepsVal : (a : Term) (w : 𝕎·) (n : ℕ) → isValue a → steps n (a , w) ≡ (a ,  w)
 stepsVal a w 0 v = refl
 stepsVal a w (suc n) v rewrite stepVal a w v = stepsVal a w n v
 
@@ -264,86 +323,88 @@ lift-<NUM-pair w t1 t2 = Lift {0ℓ} (lsuc(L)) (<NUM-pair w t1 t2)
 
 
 
-maybeStep : (t : Term) (w : 𝕎·) → Term
-maybeStep t w with step t w
-... | just u = u
-... | nothing = t
+maybeStep : (tw : Term × 𝕎·) → Term × 𝕎·
+maybeStep (t , w) with step t w
+... | just x = x
+... | nothing = t , w
 
-stepsR : (n : ℕ) (t : Term) (w : 𝕎·) → Term
-stepsR 0 t w = t
-stepsR (suc n) t w = maybeStep (stepsR n t w) w
+stepsR : (n : ℕ) (tw : Term × 𝕎·) → Term × 𝕎·
+stepsR 0 (t , w) = t , w
+stepsR (suc n) (t , w) = maybeStep (stepsR n (t , w))
 
 
-step⊎ : (t : Term) (w : 𝕎·) → (Σ Term (λ u → step t w ≡ just u)) ⊎ step t w ≡ nothing
+step⊎ : (t : Term) (w : 𝕎·) → (Σ Term (λ u → Σ 𝕎· (λ w' → step t w ≡ just (u , w')))) ⊎ step t w ≡ nothing
 step⊎ t w with step t w
-... | just u = inj₁ (u , refl)
+... | just (u , w') = inj₁ (u , w' , refl)
 ... | nothing = inj₂ refl
 
-steps≡ : (n : ℕ) (t : Term) (w : 𝕎·) → steps (suc n) t w ≡ maybeStep (steps n t w) w
-steps≡ 0 t w with step t w
+steps≡ : (n : ℕ) (t : Term × 𝕎·) → steps (suc n) t ≡ maybeStep (steps n t)
+steps≡ 0 (t , w) with step t w
 ... | just u = refl
 ... | nothing = refl
-steps≡ (suc n) t w with step⊎ t w
-... | inj₁ (u , p) rewrite p | steps≡ n u w = refl
+steps≡ (suc n) (t , w) with step⊎ t w
+... | inj₁ (u , w' , p) rewrite p | steps≡ n (u , w') = refl
 ... | inj₂ p rewrite p | p = refl
 
 
-steps≡stepsR : (n : ℕ) (t : Term) (w : 𝕎·) → steps n t w ≡ stepsR n t w
-steps≡stepsR 0 t w = refl
-steps≡stepsR (suc n) t w rewrite sym (steps≡stepsR n t w) | steps≡ n t w = refl
+steps≡stepsR : (n : ℕ) (t : Term × 𝕎·) → steps n t ≡ stepsR n t
+steps≡stepsR 0 t = refl
+steps≡stepsR (suc n) t rewrite sym (steps≡stepsR n t) | steps≡ n t = refl
 
 
 step-APPLY-CS : (t : Term) (w : 𝕎·) (k : ℕ) (name : Name)
                 → getT k name w ≡ just t
-                → steps 1 (APPLY (CS name) (NUM k)) w ≡ t
+                → steps 1 (APPLY (CS name) (NUM k) , w) ≡ (t , w)
 step-APPLY-CS t w k name gc rewrite gc = refl
 
 
 
-step-APPLY-CS-¬NUM : (name : Name) (a b : Term) (w : 𝕎·)
+step-APPLY-CS-¬NUM : (name : Name) (a b : Term) (w w' : 𝕎·)
                      → ((n : ℕ) → ¬ a ≡ NUM n)
-                     → step a w ≡ just b
-                     → step (APPLY (CS name) a) w ≡ just (APPLY (CS name) b)
-step-APPLY-CS-¬NUM name NAT b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name QNAT b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (LT a a₁) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (QLT a a₁) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (NUM x) b w c s rewrite sym (just-inj s) = ⊥-elim (c x refl)
-step-APPLY-CS-¬NUM name (PI a a₁) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (LAMBDA a) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (APPLY a a₁) b w c s rewrite s = refl
-step-APPLY-CS-¬NUM name (FIX a) b w c s rewrite s = refl
-step-APPLY-CS-¬NUM name (SUM a a₁) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (PAIR a a₁) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (SET a a₁) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (UNION a a₁) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (INL a) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (INR a) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (EQ a a₁ a₂) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name AX b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name FREE b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (CS x) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (TSQUASH a) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (DUM a) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (FFDEFS a a₁) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (UNIV x) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (LIFT a) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (LOWER a) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (SHRINK a) b w c s rewrite sym (just-inj s) = refl
-step-APPLY-CS-¬NUM name (DECIDE a x y) b w c s rewrite s = refl
-step-APPLY-CS-¬NUM name (SPREAD a x) b w c s rewrite s = refl
+                     → step a w ≡ just (b , w')
+                     → step (APPLY (CS name) a) w ≡ ret (APPLY (CS name) b) w'
+step-APPLY-CS-¬NUM name NAT b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name QNAT b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (LT a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (QLT a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (NUM x) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = ⊥-elim (c x refl)
+step-APPLY-CS-¬NUM name (PI a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (LAMBDA a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (APPLY a a₁) b w w' c s rewrite s = refl
+step-APPLY-CS-¬NUM name (FIX a) b w w' c s rewrite s = refl
+step-APPLY-CS-¬NUM name (SUM a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (PAIR a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (SET a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (UNION a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (INL a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (INR a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (EQ a a₁ a₂) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name AX b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name FREE b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (CS x) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (TSQUASH a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (DUM a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (FFDEFS a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (UNIV x) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (LIFT a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (LOWER a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (SHRINK a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (DECIDE a x y) b w w' c s rewrite s = refl
+step-APPLY-CS-¬NUM name (SPREAD a x) b w w' c s rewrite s = refl
+step-APPLY-CS-¬NUM name (CHOOSE a a₁) b w w' c s rewrite s = refl
 
-Σ-steps-APPLY-CS≤ : (n : ℕ) (a b : Term) (w : 𝕎·) (name : Name)
-                 → steps n a w ≡ b
-                 → Σ ℕ (λ m → m ≤ n × steps m (APPLY (CS name) a) w ≡ APPLY (CS name) b)
-Σ-steps-APPLY-CS≤ 0 a b w name h rewrite h = (0 , ≤-refl , refl)
-Σ-steps-APPLY-CS≤ (suc n) a b w name h with step⊎ a w
-... | inj₁ (u , p) rewrite p with is-NUM a
-...                          | inj₁ (k , q) rewrite q | sym (just-inj p) | stepsVal (NUM k) w n tt | sym h = (0 , _≤_.z≤n , refl)
-...                          | inj₂ q = (suc m , _≤_.s≤s l , g)
+
+Σ-steps-APPLY-CS≤ : (n : ℕ) (a b : Term) (w w' : 𝕎·) (name : Name)
+                 → steps n (a , w) ≡ (b , w')
+                 → Σ ℕ (λ m → m ≤ n × steps m (APPLY (CS name) a , w) ≡ (APPLY (CS name) b , w'))
+Σ-steps-APPLY-CS≤ 0 a b w w' name h rewrite pair-inj₁ h | pair-inj₂ h = (0 , ≤-refl , refl)
+Σ-steps-APPLY-CS≤ (suc n) a b w w' name h with step⊎ a w
+... | inj₁ (u , w'' , p) rewrite p with is-NUM a
+...                                  | inj₁ (k , q) rewrite q | sym (pair-inj₁ (just-inj p)) | sym (pair-inj₂ (just-inj p)) | stepsVal (NUM k) w n tt | sym (pair-inj₁ h) | sym (pair-inj₂ h) = (0 , _≤_.z≤n , refl)
+...                                  | inj₂ q = (suc m , _≤_.s≤s l , g)
   where
-    ms : Σ ℕ (λ m → m ≤ n × steps m (APPLY (CS name) u) w ≡ APPLY (CS name) b)
-    ms = Σ-steps-APPLY-CS≤ n u b w name h
+    ms : Σ ℕ (λ m → m ≤ n × steps m (APPLY (CS name) u , w'') ≡ (APPLY (CS name) b , w'))
+    ms = Σ-steps-APPLY-CS≤ n u b w'' w' name h
 
     m : ℕ
     m = proj₁ ms
@@ -351,76 +412,58 @@ step-APPLY-CS-¬NUM name (SPREAD a x) b w c s rewrite s = refl
     l : m ≤ n
     l = proj₁ (proj₂ ms)
 
-    s : steps m (APPLY (CS name) u) w ≡ APPLY (CS name) b
+    s : steps m (APPLY (CS name) u , w'') ≡ (APPLY (CS name) b , w')
     s = proj₂ (proj₂ ms)
 
-    g : steps (suc m) (APPLY (CS name) a) w ≡ APPLY (CS name) b
-    g rewrite step-APPLY-CS-¬NUM name a u w q p = s
-Σ-steps-APPLY-CS≤ (suc n) a b w name h | inj₂ p rewrite p | h = (0 , _≤_.z≤n , refl)
+    g : steps (suc m) (APPLY (CS name) a , w) ≡ (APPLY (CS name) b , w')
+    g rewrite step-APPLY-CS-¬NUM name a u w w'' q p = s
+Σ-steps-APPLY-CS≤ (suc n) a b w w' name h | inj₂ p rewrite p | pair-inj₁ h | pair-inj₂ h = (0 , _≤_.z≤n , refl)
 
 
-Σ-steps-APPLY-CS : (n : ℕ) (a t : Term) (w : 𝕎·) (k : ℕ) (name : Name)
-                 → steps n a w ≡ NUM k
-                 → getT k name w ≡ just t
-                 → Σ ℕ (λ m → steps m (APPLY (CS name) a) w ≡ t)
-Σ-steps-APPLY-CS n a t w k name h gc = (suc m , g)
-  where
-    ms : Σ ℕ (λ m → m ≤ n × steps m (APPLY (CS name) a) w ≡ APPLY (CS name) (NUM k))
-    ms = Σ-steps-APPLY-CS≤ n a (NUM k) w name h
-
-    m : ℕ
-    m = proj₁ ms
-
-    l : m ≤ n
-    l = proj₁ (proj₂ ms)
-
-    s : steps m (APPLY (CS name) a) w ≡ APPLY (CS name) (NUM k)
-    s = proj₂ (proj₂ ms)
-
-    g : steps (suc m) (APPLY (CS name) a) w ≡ t
-    g rewrite steps≡ m (APPLY (CS name) a) w | s | gc = refl
+stepsT→steps : {n : ℕ} {t u : Term} {w : 𝕎·}
+                → stepsT n t w ≡ u
+                → steps n (t , w) ≡ (u , snd (steps n (t , w)))
+stepsT→steps {n} {t} {u} {w} h rewrite sym h | sym (pair-eta (steps n (t , w))) = refl
 
 
-step-steps-trans : {w : 𝕎·} {a b c : Term} {n : ℕ} → step a w ≡ just b → steps n b w ≡ c → steps (suc n) a w ≡ c
-step-steps-trans {w} {a} {b} {c} {n} c₁ c₂ rewrite c₁ = c₂
+steps→stepsT : {n : ℕ} {t u : Term} {w : 𝕎·}
+                → steps n (t , w) ≡ (u , snd (steps n (t , w)))
+                → stepsT n t w ≡ u
+steps→stepsT {n} {t} {u} {w} h rewrite h = refl
 
 
-
-step-⇓-trans : {w : 𝕎·} {a b c : Term} → step a w ≡ just b → b ⇓ c at w → a ⇓ c at w
-step-⇓-trans {w} {a} {b} {c} c₁ (n , c₂) = suc n , step-steps-trans {w} {a} {b} {c} {n} c₁ c₂
-
-
-
-steps-⇓-trans : {w : 𝕎·} {a b c : Term} (n : ℕ) → steps n a w ≡ b → b ⇓ c at w → a ⇓ c at w
-steps-⇓-trans {w} {a} {b} {c} 0 c₁ c₂ rewrite c₁ = c₂
-steps-⇓-trans {w} {a} {b} {c} (suc n) c₁ c₂ with step⊎ a w
-... | inj₁ (u , p) rewrite p = step-⇓-trans p (steps-⇓-trans n c₁ c₂)
-... | inj₂ p rewrite p | c₁ = c₂
+steps→stepsT' : {n : ℕ} {t u : Term} {w w' : 𝕎·}
+                → steps n (t , w) ≡ (u , w')
+                → stepsT n t w ≡ u
+steps→stepsT' {n} {t} {u} {w} {w'} h rewrite h = refl
 
 
-⇓-trans : {w : 𝕎·} {a b c : Term} → a ⇓ b at w → b ⇓ c at w → a ⇓ c at w
-⇓-trans {w} {a} {b} {c} (n , c₁) c₂ = steps-⇓-trans n c₁ c₂
+step-steps-trans : {w w' w'' : 𝕎·} {a b c : Term} {n : ℕ}
+                   → step a w ≡ just (b , w')
+                   → steps n (b , w') ≡ (c , w'')
+                   → steps (suc n) (a , w) ≡ (c , w'')
+step-steps-trans {w} {w'} {w''} {a} {b} {c} {n} c₁ c₂ rewrite c₁ = c₂
 
 
-
-⇓-APPLY-CS : (w : 𝕎·) (a b : Term) (name : Name)
-             → a ⇓ b at w
-             → (APPLY (CS name) a) ⇓ (APPLY (CS name) b) at w
-⇓-APPLY-CS w a b name (n , c) = fst c' , snd (snd c')
-  where
-    c' : Σ ℕ (λ m → m ≤ n × steps m (APPLY (CS name) a) w ≡ APPLY (CS name) b)
-    c' = Σ-steps-APPLY-CS≤ n a b w name c
+step-stepsT-trans : {w w' : 𝕎·} {a b c : Term} {n : ℕ}
+                   → step a w ≡ just (b , w')
+                   → stepsT n b w' ≡ c
+                   → stepsT (suc n) a w ≡ c
+step-stepsT-trans {w} {w'} {a} {b} {c} {n} c₁ c₂ rewrite c₁ = c₂
 
 
+step-⇓-trans : {w w' : 𝕎·} {a b c : Term} → step a w ≡ just (b , w') → b ⇓ c at w' → a ⇓ c at w
+step-⇓-trans {w} {w'} {a} {b} {c} c₁ (n , c₂) =
+  suc n ,
+  step-stepsT-trans {w} {w'} {a} {b} {c} {n} c₁ c₂
 
-{--⇛-APPLY-CS : (w : 𝕎·) (name : Name) (a t : Term) (k : ℕ)
-              → getChoice· k name w ≡ just t
-              → a ⇛ NUM k at w
-              → APPLY (CS name) a ⇛ t at w
-⇛-APPLY-CS w name a t k gc c w1 e1 =
-  let (n , c1) = lower (c w1 e1) in
-  lift (Σ-steps-APPLY-CS n a t w1 k name c1 (getChoice⊑· w w1 k name t e1 gc))
---}
+
+steps-⇓-trans : {w w' : 𝕎·} {a b c : Term} (n : ℕ) → steps n (a , w) ≡ (b , w') → b ⇓ c at w' → a ⇓ c at w
+steps-⇓-trans {w} {w'} {a} {b} {c} 0 c₁ c₂ rewrite pair-inj₁ c₁ | pair-inj₂ c₁ = c₂
+steps-⇓-trans {w} {w'} {a} {b} {c} (suc n) c₁ c₂ with step⊎ a w
+... | inj₁ (u , w'' , p) rewrite p = step-⇓-trans p (steps-⇓-trans n c₁ c₂)
+... | inj₂ p rewrite p | pair-inj₁ c₁ | pair-inj₂ c₁ = c₂
+
 
 
 _#⇓_at_ : (T T' : CTerm) (w : 𝕎·) → Set
@@ -432,6 +475,12 @@ infix 30 _#⇓_at_
 _#⇛_at_ : (T T' : CTerm) (w : 𝕎·) → Set(lsuc(L))
 T #⇛ T' at w = ⌜ T ⌝ ⇛ ⌜ T' ⌝ at w
 infix 30 _#⇛_at_
+
+
+
+_#⇛_AT_ : (T T' : CTerm) (w : 𝕎·) → Set(lsuc(L))
+T #⇛ T' AT w = ⌜ T ⌝ ⇛ ⌜ T' ⌝ AT w
+infix 30 _#⇛_AT_
 
 
 
@@ -455,6 +504,7 @@ infix 30 _#⇛_at_
                → #weakMonEq w a b
                → Σ ℕ (λ n → a #⇓ #NUM n at w × b #⇓ #NUM n at w)
 #weakMonEq→ {w} {a} {B} h = lower (h w (⊑-refl· w))
+
 
 
 #weakMonEq-#NUM : (w : 𝕎·) (k : ℕ) → #weakMonEq w (#NUM k) (#NUM k)
@@ -506,35 +556,184 @@ strongMonEq-sym {w} {a} {b} (n , c₁ , c₂) = n , c₂ , c₁
 
 
 
-step≡nothing-steps : (w : 𝕎·) (a : Term) (n : ℕ) → step a w ≡ nothing → steps n a w ≡ a
+⇓-APPLY-CS : (w : 𝕎·) (a b : Term) (name : Name)
+             → a ⇓ b at w
+             → (APPLY (CS name) a) ⇓ (APPLY (CS name) b) at w
+⇓-APPLY-CS w a b name (n , c) = fst c' , steps→stepsT' {fst c'} (snd (snd c'))
+  where
+    c' : Σ ℕ (λ m → m ≤ n × steps m (APPLY (CS name) a , w) ≡ (APPLY (CS name) b , snd (steps n (a , w))))
+    c' = Σ-steps-APPLY-CS≤ n a b w (snd (steps n (a , w))) name (stepsT→steps {n} {a} {b} {w} c)
+
+
+map-pair-𝕎⊑ : (w w' : 𝕎·) (m : Maybe Term) (a : Term)
+            → Data.Maybe.map (λ t → t , w) m ≡ just (a , w')
+            → w ⊑· w'
+map-pair-𝕎⊑ w w' (just x) a h rewrite sym (pair-inj₁ (just-inj h)) | sym (pair-inj₂ (just-inj h)) = ⊑-refl· _
+
+
+step⊑ : {w w' : 𝕎·} {a b : Term} → step a w ≡ just (b , w') → w ⊑· w'
+step⊑ {w} {w'} {NAT} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {QNAT} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {LT a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {QLT a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {NUM x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {PI a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {LAMBDA a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {APPLY a a₁} {b} comp with is-LAM a
+... | inj₁ (t , p) rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+... | inj₂ x with is-CS a
+... |    inj₁ (name , p) with is-NUM a₁
+... |       inj₁ (n , q) = map-pair-𝕎⊑ w w' (getT n name w) b comp
+... |       inj₂ y with step⊎ a₁ w
+... |          inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a₁} z
+... |          inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step⊑ {w} {w'} {APPLY a a₁} {b} comp | inj₂ x | inj₂ y with step⊎ a w
+... | inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
+... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step⊑ {w} {w'} {FIX a} {b} comp with is-LAM a
+... | inj₁ (t , p) rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+... | inj₂ p with step⊎ a w
+... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step⊑ {w} {w'} {SUM a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {PAIR a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {SPREAD a a₁} {b} comp with is-PAIR a
+... | inj₁ (u , v , p) rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+... | inj₂ p with step⊎ a w
+... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step⊑ {w} {w'} {SET a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {UNION a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {INL a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {INR a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {DECIDE a a₁ a₂} {b} comp with is-INL a
+... | inj₁ (t , p) rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+... | inj₂ x with is-INR a
+... |    inj₁ (t , p) rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+... |    inj₂ y with step⊎ a w
+... |       inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
+... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step⊑ {w} {w'} {EQ a a₁ a₂} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {AX} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {FREE} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {CS x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {CHOOSE a a₁} {b} comp with is-CS a
+... | inj₁ (name , p) rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = choose⊑· name w (T→ℂ· a₁)
+... | inj₂ x with step⊎ a w
+... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step⊑ {w} {w'} {TSQUASH a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {DUM a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {FFDEFS a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {UNIV x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {LIFT a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {LOWER a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {SHRINK a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+
+
+→𝕎 : {a b : Term} {w : 𝕎·} (c : a ⇓ b at w) → 𝕎·
+→𝕎 {a} {b} {w} (n , c) = snd (steps n (a , w))
+
+
+steps⊑ : (w : 𝕎·) (n : ℕ) (t : Term) → w ⊑· snd (steps n (t , w))
+steps⊑ w 0 t = ⊑-refl· _
+steps⊑ w (suc n) t with step⊎ t w
+... | inj₁ (u , w' , z) rewrite z = ⊑-trans· (step⊑ {_} {_} {t} z) (steps⊑ w' n u)
+... | inj₂ z rewrite z = ⊑-refl· _
+
+
+
+
+
+⇓-trans₀ : {w : 𝕎·} {a b c : Term} (comp : a ⇓ b at w) → b ⇓ c at (→𝕎 comp) → a ⇓ c at w
+⇓-trans₀ {w} {a} {b} {c} (n , c₁) c₂ = steps-⇓-trans n (stepsT→steps {n} c₁) c₂
+
+
+
+⇓-trans₁ : {w w' : 𝕎·} {a b c : Term} → a ⇓ b from w to w' → b ⇓ c at w' → a ⇓ c at w
+⇓-trans₁ {w} {w'} {a} {b} {c} (n , c₁) c₂ = steps-⇓-trans n c₁ c₂
+
+
+
+⇓-trans : {w : 𝕎·} {a b c : Term} → a ⇓ b at w → b ⇛ c at w → a ⇓ c at w
+⇓-trans {w} {a} {b} {c} (n , c₁) c₂ = steps-⇓-trans n (stepsT→steps {n} c₁) (lower (c₂ (snd (steps n (a , w))) (steps⊑ w n a)))
+
+
+{--
+Σ-steps-APPLY-CS : (n : ℕ) (a t : Term) (w w' : 𝕎·) (k : ℕ) (name : Name)
+                 → steps n a w ≡ (NUM k , w') -- TODO: should be for all extensions
+                 → getT k name w ≡ just t
+                 → Σ ℕ (λ m → steps m (APPLY (CS name) a) w ≡ (t , w'))
+Σ-steps-APPLY-CS n a t w w' k name h gc = (suc m , g)
+  where
+    ms : Σ ℕ (λ m → m ≤ n × steps m (APPLY (CS name) a) w ≡ (APPLY (CS name) (NUM k) , w'))
+    ms = Σ-steps-APPLY-CS≤ n a (NUM k) w w' name h
+
+    m : ℕ
+    m = proj₁ ms
+
+    l : m ≤ n
+    l = proj₁ (proj₂ ms)
+
+    s : steps m (APPLY (CS name) a) w ≡ (APPLY (CS name) (NUM k) , w')
+    s = proj₂ (proj₂ ms)
+
+    g : steps (suc m) (APPLY (CS name) a) w ≡ (t , w')
+    g rewrite steps≡ m (APPLY (CS name) a) w | s = {!!} -- | s | gc = {!!} --refl
+--}
+
+
+{--⇛-APPLY-CS : (w : 𝕎·) (name : Name) (a t : Term) (k : ℕ)
+              → getChoice· k name w ≡ just t
+              → a ⇛ NUM k at w
+              → APPLY (CS name) a ⇛ t at w
+⇛-APPLY-CS w name a t k gc c w1 e1 =
+  let (n , c1) = lower (c w1 e1) in
+  lift (Σ-steps-APPLY-CS n a t w1 k name c1 (getChoice⊑· w w1 k name t e1 gc))
+--}
+
+
+
+step≡nothing-steps : (w : 𝕎·) (a : Term) (n : ℕ) → step a w ≡ nothing → steps n (a , w) ≡ (a , w)
 step≡nothing-steps w a 0 h = refl
 step≡nothing-steps w a (suc n) h rewrite h = refl
 
 
-steps-+ : (n m : ℕ) (a : Term) (w : 𝕎·) → steps (n + m) a w ≡ steps m (steps n a w) w
+steps-+ : (n m : ℕ) (a : Term) (w : 𝕎·) → steps (n + m) (a , w) ≡ steps m (steps n (a , w))
 steps-+ 0 m a w = refl
 steps-+ (suc n) m a w with step⊎ a w
-... | inj₁ (u , p) rewrite p = steps-+ n m u w
+... | inj₁ (u , w' , p) rewrite p = steps-+ n m u w'
 ... | inj₂ p rewrite p rewrite step≡nothing-steps w a m p = refl
 
 
 
-≤-Σ+ : {n m : ℕ} → n ≤ m → Σ ℕ (λ k → m ≡ n + k)
-≤-Σ+ {0} {m} _≤_.z≤n = (m , refl)
-≤-Σ+ {suc n} {suc m} (_≤_.s≤s le) with ≤-Σ+ le
-... | (k , p) rewrite p = k , refl
+steps-val-det : (w w₁ w₂ : 𝕎·) (a v₁ v₂ : Term) (n m : ℕ)
+                → isValue v₁
+                → steps n (a , w) ≡ (v₁ , w₁)
+                → steps m (a , w) ≡ (v₂ , w₂)
+                → n ≤ m
+                → v₁ ≡ v₂
+steps-val-det w w₁ w₂ a v₁ v₂ n m isv₁ c₁ c₂ p with ≤-Σ+ p
+... | (k , q) rewrite q | steps-+ n k a w | c₂ | c₁ | stepsVal v₁ w₁ k isv₁ | pair-inj₁ c₂ = refl
 
 
+stepsT-val-det : (w : 𝕎·) (a v₁ v₂ : Term) (n m : ℕ)
+                 → isValue v₁
+                 → stepsT n a w ≡ v₁
+                 → stepsT m a w ≡ v₂
+                 → n ≤ m
+                 → v₁ ≡ v₂
+stepsT-val-det w a v₁ v₂ n m isv c₁ c₂ p =
+  steps-val-det
+    w (snd (steps n (a , w))) (snd (steps m (a , w)))
+    a v₁ v₂ n m isv (stepsT→steps {n} c₁) (stepsT→steps {m} c₂) p
 
-steps-val-det : (w : 𝕎·) (a v₁ v₂ : Term) (n m : ℕ) → isValue v₁ → steps n a w ≡ v₁ → steps m a w ≡ v₂ → n ≤ m → v₁ ≡ v₂
-steps-val-det w a v₁ v₂ n m isv₁ c₁ c₂ p with ≤-Σ+ p
-... | (k , q) rewrite q | steps-+ n k a w | c₂ | c₁ | stepsVal v₁ w k isv₁ = c₂
 
 
 ⇓-val-det : {w : 𝕎·} {a v₁ v₂ : Term} → isValue v₁ → isValue v₂ → a ⇓ v₁ at w → a ⇓ v₂ at w → v₁ ≡ v₂
 ⇓-val-det {w} {a} {v₁} {v₂} isv₁ isv₂ (n , c₁) (m , c₂) with n ≤? m
-... | yes p = steps-val-det w a v₁ v₂ n m isv₁ c₁ c₂ p
-... | no p = sym (steps-val-det w a v₂ v₁ m n isv₂ c₂ c₁ (≰⇒≥ p))
+... | yes p = stepsT-val-det w a v₁ v₂ n m isv₁ c₁ c₂ p
+... | no p = sym (stepsT-val-det w a v₂ v₁ m n isv₂ c₂ c₁ (≰⇒≥ p))
 
 
 ⇛-val-det : {w : 𝕎·} {a v₁ v₂ : Term} → isValue v₁ → isValue v₂ → a ⇛ v₁ at w → a ⇛ v₂ at w → v₁ ≡ v₂
@@ -658,229 +857,10 @@ all>++R {n} {l} {k} i v j = i v (∈-++⁺ʳ _ j)
 
 
 ⇛-trans : {w : 𝕎·} {a b c : Term} → a ⇛ b at w → b ⇛ c at w → a ⇛ c at w
-⇛-trans {w} {a} {b} {c} c₁ c₂ w1 e1 = lift (⇓-trans (lower (c₁ w1 e1)) (lower (c₂ w1 e1)))
-
-
-#strongMonEq-#⇛-left-rev : {w : 𝕎·} {a b c : CTerm}
-                            → a #⇛ b at w
-                            → #strongMonEq w b c
-                            → #strongMonEq w a c
-#strongMonEq-#⇛-left-rev {w} {a} {b} {c} comp (n , c₁ , c₂) = n , ⇛-trans comp c₁ , c₂
-
-
-#weakMonEq-#⇛-left-rev : {w : 𝕎·} {a b c : CTerm}
-                          → a #⇛ b at w
-                          → #weakMonEq w b c
-                          → #weakMonEq w a c
-#weakMonEq-#⇛-left-rev {w} {a} {b} {c} comp h w1 e1 =
-  lift (fst (lower (h w1 e1)) , ⇓-trans (lower (comp w1 e1)) (fst (snd (lower (h w1 e1)))) , snd (snd (lower (h w1 e1))))
-
-
-#⇛to-same-CS-#⇛-left-rev : {w : 𝕎·} {a b c : CTerm}
-                             → a #⇛ b at w
-                             → #⇛to-same-CS w b c
-                             → #⇛to-same-CS w a c
-#⇛to-same-CS-#⇛-left-rev {w} {a} {b} {c} comp (name , c₁ , c₂) = name , ⇛-trans comp c₁ , c₂
-
-
-→-step-APPLY : {w : 𝕎·} {a b : Term} (c : Term)
-                → step a w ≡ just b
-                → APPLY a c ⇓ APPLY b c at w
-→-step-APPLY {w} {NAT} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {QNAT} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {LT a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {QLT a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {NUM x} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {PI a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {LAMBDA a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {APPLY a a₁} {b} c comp = 1 , z
-  where
-    z : steps 1 (APPLY (APPLY a a₁) c) w ≡ APPLY b c
-    z rewrite comp = refl
-→-step-APPLY {w} {FIX a} {b} c comp = 1 , z
-  where
-    z : steps 1 (APPLY (FIX a) c) w ≡ APPLY b c
-    z rewrite comp = refl
-→-step-APPLY {w} {SUM a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {PAIR a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {SET a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {UNION a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {INL a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {INR a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {EQ a a₁ a₂} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {AX} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {FREE} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {CS x} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {TSQUASH a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {DUM a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {FFDEFS a a₁} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {UNIV x} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {LIFT a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {LOWER a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {SHRINK a} {b} c comp rewrite sym (just-inj comp) = 0 , refl
-→-step-APPLY {w} {DECIDE a x y} {b} c comp = 1 , z
-  where
-    z : steps 1 (APPLY (DECIDE a x y) c) w ≡ APPLY b c
-    z rewrite comp = refl
-→-step-APPLY {w} {SPREAD a x} {b} c comp = 1 , z
-  where
-    z : steps 1 (APPLY (SPREAD a x) c) w ≡ APPLY b c
-    z rewrite comp = refl
-
-
-→-steps-APPLY : {w : 𝕎·} {a b : Term} (n : ℕ) (c : Term)
-                → steps n a w ≡ b
-                → APPLY a c ⇓ APPLY b c at w
-→-steps-APPLY {w} {a} {b} 0 c comp rewrite comp = ⇓-refl _ _
-→-steps-APPLY {w} {a} {b} (suc n) c comp with step⊎ a w
-... | inj₁ (u , p) rewrite p = ⇓-trans (→-step-APPLY c p) (→-steps-APPLY n c comp)
-... | inj₂ p rewrite p | comp = 0 , refl
-
-
-→-#⇛-#APPLY : {w : 𝕎·} {a b : CTerm} (c : CTerm)
-                → a #⇛ b at w
-                → #APPLY a c #⇛ #APPLY b c at w
-→-#⇛-#APPLY {w} {a} {b} c comp w1 e1 = lift (→-steps-APPLY (fst (lower (comp w1 e1))) ⌜ c ⌝ (snd (lower (comp w1 e1))))
-
-
-⇛→≈ : {w : 𝕎·} {a b : Term}
-        → a ⇛ b at w
-        → a ≈ b at w
-⇛→≈ {w} {a} {b} comp w1 e1 = lift (⇓→∼ (lower (comp w1 e1)))
+⇛-trans {w} {a} {b} {c} c₁ c₂ w1 e1 = lift (⇓-trans (lower (c₁ w1 e1)) (∀𝕎-mon e1 c₂)) --(lower (c₂ w1 e1))
 
 
 
-val-⇓→ : {w : 𝕎·} {a b v : Term}
-            → isValue v
-            → a ⇓ b at w
-            → a ⇓ v at w
-            → b ⇓ v at w
-val-⇓→ {w} {a} {b} {v} isv (m , comp1) (n , comp2) with n ≤? m
-... | yes p rewrite sym (steps-val-det w a v b n m isv comp2 comp1 p) = 0 , refl
-... | no p with ≤-Σ+ (≰⇒≥ p)
-... |   (k , q) rewrite q | steps-+ m k a w | comp1 = k , comp2
-
-
-val-⇛→ : {w : 𝕎·} {a b v : Term}
-            → isValue v
-            → a ⇛ b at w
-            → a ⇛ v at w
-            → b ⇛ v at w
-val-⇛→ {w} {a} {b} {v} isv comp1 comp2 w1 e1 = lift (val-⇓→ isv (lower (comp1 w1 e1)) (lower (comp2 w1 e1)))
-
-
-val-#⇛→ : {w : 𝕎·} {a b v : CTerm}
-            → #isValue v
-            → a #⇛ b at w
-            → a #⇛ v at w
-            → b #⇛ v at w
-val-#⇛→ {w} {a} {b} {v} isv comp1 comp2 = val-⇛→ isv comp1 comp2
-
-
-
-#strongMonEq-#⇛-left : {w : 𝕎·} {a b c : CTerm}
-                        → a #⇛ b at w
-                        → #strongMonEq w a c
-                        → #strongMonEq w b c
-#strongMonEq-#⇛-left {w} {a} {b} {c} comp (n , c₁ , c₂) = n , val-#⇛→ {w} {a} {b} {#NUM n} tt comp c₁ , c₂
-
-
-#weakMonEq-#⇛-left : {w : 𝕎·} {a b c : CTerm}
-                      → a #⇛ b at w
-                      → #weakMonEq w a c
-                      → #weakMonEq w b c
-#weakMonEq-#⇛-left {w} {a} {b} {c} comp h w1 e1 =
-  lift (fst (lower (h w1 e1)) , val-⇓→ tt (lower (comp w1 e1)) (fst (snd (lower (h w1 e1)))) , snd (snd (lower (h w1 e1))))
-
-
-#⇛to-same-CS-#⇛-left : {w : 𝕎·} {a b c : CTerm}
-                         → a #⇛ b at w
-                         → #⇛to-same-CS w a c
-                         → #⇛to-same-CS w b c
-#⇛to-same-CS-#⇛-left {w} {a} {b} {c} comp (name , c₁ , c₂) = name , val-#⇛→ {w} {a} {b} {#CS name} tt comp c₁ , c₂
-
-
-#compVal : {a b : CTerm} {w : 𝕎·} → a #⇓ b at w → #isValue a → a ≡ b
-#compVal {a} {b} {w} c v = CTerm≡ (compVal ⌜ a ⌝ ⌜ b ⌝ w c v)
-
-
-step-⇓-ASSERT₁ : {w : 𝕎·} {a b : Term}
-                 → step a w ≡ just b
-                 → ASSERT₁ a ⇓ ASSERT₁ b at w
-step-⇓-ASSERT₁ {w} {NAT} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {QNAT} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {LT a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {QLT a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {NUM x} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {PI a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {LAMBDA a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {APPLY a a₁} {b} comp = 1 , z
-  where
-    z : steps 1 (ASSERT₁ (APPLY a a₁)) w ≡ ASSERT₁ b
-    z rewrite comp = refl
-step-⇓-ASSERT₁ {w} {FIX a} {b} comp = 1 , z
-  where
-    z : steps 1 (ASSERT₁ (FIX a)) w ≡ ASSERT₁ b
-    z rewrite comp = refl
-step-⇓-ASSERT₁ {w} {SUM a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {PAIR a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {SET a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {UNION a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {INL a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {INR a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {DECIDE a a₁ a₂} {b} comp = 1 , z
-  where
-    z : steps 1 (ASSERT₁ (DECIDE a a₁ a₂)) w ≡ ASSERT₁ b
-    z rewrite comp = refl
-step-⇓-ASSERT₁ {w} {SPREAD a a₁} {b} comp = 1 , z
-  where
-    z : steps 1 (ASSERT₁ (SPREAD a a₁)) w ≡ ASSERT₁ b
-    z rewrite comp = refl
-step-⇓-ASSERT₁ {w} {EQ a a₁ a₂} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {AX} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {FREE} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {CS x} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {TSQUASH a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {DUM a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {FFDEFS a a₁} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {UNIV x} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {LIFT a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {LOWER a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-step-⇓-ASSERT₁ {w} {SHRINK a} {b} comp rewrite sym (just-inj comp) = 0 , refl
-
-
-
-steps-⇓-ASSERT₁ : {w : 𝕎·} (n : ℕ) {a b : Term}
-                  → steps n a w ≡ b
-                  → ASSERT₁ a ⇓ ASSERT₁ b at w
-steps-⇓-ASSERT₁ {w} 0 {a} {b} comp rewrite comp = 0 , refl
-steps-⇓-ASSERT₁ {w} (suc n) {a} {b} comp with step⊎ a w
-... | inj₁ (u , p) rewrite p = ⇓-trans (step-⇓-ASSERT₁ p) (steps-⇓-ASSERT₁ n comp)
-... | inj₂ p rewrite p | comp = 0 , refl
-
-
-⇓-ASSERT₁-INL : {w : 𝕎·} {a x : Term}
-                → a ⇓ INL x at w
-                → ASSERT₁ a ⇓ TRUE at w
-⇓-ASSERT₁-INL {w} {a} {x} comp = ⇓-trans (steps-⇓-ASSERT₁ (fst comp) (snd comp)) (1 , refl)
-
-
-#⇛-ASSERT₁-INL : {w : 𝕎·} {a x : CTerm}
-                  → a #⇛ #INL x at w
-                  → #ASSERT₁ a #⇛ #TRUE at w
-#⇛-ASSERT₁-INL {w} {a} {x} comp w' e = lift (⇓-ASSERT₁-INL (lower (comp w' e)))
-
-
-⇓-ASSERT₁-INR : {w : 𝕎·} {a x : Term}
-                → a ⇓ INR x at w
-                → ASSERT₁ a ⇓ FALSE at w
-⇓-ASSERT₁-INR {w} {a} {x} comp = ⇓-trans (steps-⇓-ASSERT₁ (fst comp) (snd comp)) (1 , refl)
-
-
-#⇛-ASSERT₁-INR : {w : 𝕎·} {a x : CTerm}
-                → a #⇛ #INR x at w
-                → #ASSERT₁ a #⇛ #FALSE at w
-#⇛-ASSERT₁-INR {w} {a} {x} comp w' e = lift (⇓-ASSERT₁-INR (lower (comp w' e)))
 
 
 
@@ -950,14 +930,14 @@ data ∼T : 𝕎· → Term → Term → Set where
 
 
 
-∼T→⇓ : {w : 𝕎·} {a b c : Term} → isValue c → ∼T w a b → b ⇓ c at w → a ⇓ c at w
-∼T→⇓ {w} {a} {b} {c} isv (∼T→ x) comp = ⇓-trans x comp
-∼T→⇓ {w} {a} {b} {c} isv (∼T← x) comp = val-⇓→ isv x comp
-∼T→⇓ {w} {a} {b} {c} isv (∼T-trans {.w} {.a} {x} {.b} h h₁) comp = ∼T→⇓ isv h (∼T→⇓ isv h₁ comp)
 
 
-∼C→#⇓ : {w : 𝕎·} {a b : CTerm} → #isValue b → ∼C w a b → a #⇓ b at w
-∼C→#⇓ {w} {a} {b} isv h = ∼T→⇓ isv h (⇓-refl ⌜ b ⌝ w)
+⇛→≈ : {w : 𝕎·} {a b : Term}
+        → a ⇛ b at w
+        → a ≈ b at w
+⇛→≈ {w} {a} {b} comp w1 e1 = lift (⇓→∼ (lower (comp w1 e1)))
+
+
 
 
 ≡R→#⇓ : {w : 𝕎·} {a b c : CTerm} → b ≡ c → a #⇓ b at w → a #⇓ c at w
@@ -972,6 +952,176 @@ data ∼T : 𝕎· → Term → Term → Set where
 ≡R→∼T {w} {a} {b} {c} e comp rewrite e = comp
 
 
+
+#strongMonEq-#⇛-left-rev : {w : 𝕎·} {a b c : CTerm}
+                            → a #⇛ b at w
+                            → #strongMonEq w b c
+                            → #strongMonEq w a c
+#strongMonEq-#⇛-left-rev {w} {a} {b} {c} comp (n , c₁ , c₂) = n , ⇛-trans comp c₁ , c₂
+
+
+
+#⇛to-same-CS-#⇛-left-rev : {w : 𝕎·} {a b c : CTerm}
+                             → a #⇛ b at w
+                             → #⇛to-same-CS w b c
+                             → #⇛to-same-CS w a c
+#⇛to-same-CS-#⇛-left-rev {w} {a} {b} {c} comp (name , c₁ , c₂) = name , ⇛-trans comp c₁ , c₂
+
+
+
+→-step-APPLY : {w w' : 𝕎·} {a b : Term} (c : Term)
+                → step a w ≡ just (b , w')
+                → APPLY a c ⇓ APPLY b c from w to w'
+→-step-APPLY {w} {w'} {NAT} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {QNAT} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {LT a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {QLT a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {NUM x} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {PI a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {LAMBDA a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {APPLY a a₁} {b} c comp = 1 , z
+  where
+    z : steps 1 (APPLY (APPLY a a₁) c , w) ≡ (APPLY b c , w')
+    z rewrite comp = refl
+→-step-APPLY {w} {w'} {FIX a} {b} c comp = 1 , z
+  where
+    z : steps 1 (APPLY (FIX a) c , w) ≡ (APPLY b c , w')
+    z rewrite comp = refl
+→-step-APPLY {w} {w'} {SUM a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {PAIR a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {SET a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {UNION a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {INL a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {INR a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {EQ a a₁ a₂} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {AX} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {FREE} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {CS x} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {TSQUASH a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {DUM a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {FFDEFS a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {UNIV x} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {LIFT a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {LOWER a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {SHRINK a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {DECIDE a x y} {b} c comp = 1 , z
+  where
+    z : steps 1 (APPLY (DECIDE a x y) c , w) ≡ (APPLY b c , w')
+    z rewrite comp = refl
+→-step-APPLY {w} {w'} {SPREAD a x} {b} c comp = 1 , z
+  where
+    z : steps 1 (APPLY (SPREAD a x) c , w) ≡ (APPLY b c , w')
+    z rewrite comp = refl
+→-step-APPLY {w} {w'} {CHOOSE a x} {b} c comp = 1 , z
+  where
+    z : steps 1 (APPLY (CHOOSE a x) c , w) ≡ (APPLY b c , w')
+    z rewrite comp = refl
+
+
+
+→-steps-APPLY : {w : 𝕎·} {a b : Term} (c : Term) (n : ℕ)
+                → stepsT n a w ≡ b
+                → APPLY a c ⇓ APPLY b c at w
+→-steps-APPLY {w} {a} {b} c 0 comp rewrite comp = ⇓-refl _ _
+→-steps-APPLY {w} {a} {b} c (suc n) comp with step⊎ a w
+... | inj₁ (u , w' , p) rewrite p = ⇓-trans₁ (→-step-APPLY c p) (→-steps-APPLY c n comp)
+... | inj₂ p rewrite p | comp = 0 , refl
+
+
+→-#⇛-#APPLY : {w : 𝕎·} {a b : CTerm} (c : CTerm)
+                → a #⇛ b at w
+                → #APPLY a c #⇛ #APPLY b c at w
+→-#⇛-#APPLY {w} {a} {b} c comp w1 e1 =
+  lift (→-steps-APPLY ⌜ c ⌝ (fst (lower (comp w1 e1))) (snd (lower (comp w1 e1))))
+
+
+#compVal : {a b : CTerm} {w : 𝕎·} → a #⇓ b at w → #isValue a → a ≡ b
+#compVal {a} {b} {w} c v = CTerm≡ (compVal ⌜ a ⌝ ⌜ b ⌝ w c v)
+
+
+step-⇓-ASSERT₁ : {w w' : 𝕎·} {a b : Term}
+                 → step a w ≡ just (b , w')
+                 → ASSERT₁ a ⇓ ASSERT₁ b from w to w'
+step-⇓-ASSERT₁ {w} {w'} {NAT} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {QNAT} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {LT a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {QLT a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {NUM x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {PI a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {LAMBDA a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {APPLY a a₁} {b} comp = 1 , z
+  where
+    z : steps 1 (ASSERT₁ (APPLY a a₁) , w) ≡ (ASSERT₁ b , w')
+    z rewrite comp = refl
+step-⇓-ASSERT₁ {w} {w'} {FIX a} {b} comp = 1 , z
+  where
+    z : steps 1 (ASSERT₁ (FIX a) , w) ≡ (ASSERT₁ b , w')
+    z rewrite comp = refl
+step-⇓-ASSERT₁ {w} {w'} {SUM a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {PAIR a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {SET a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {UNION a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {INL a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {INR a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {DECIDE a a₁ a₂} {b} comp = 1 , z
+  where
+    z : steps 1 (ASSERT₁ (DECIDE a a₁ a₂) , w) ≡ (ASSERT₁ b , w')
+    z rewrite comp = refl
+step-⇓-ASSERT₁ {w} {w'} {SPREAD a a₁} {b} comp = 1 , z
+  where
+    z : steps 1 (ASSERT₁ (SPREAD a a₁) , w) ≡ (ASSERT₁ b , w')
+    z rewrite comp = refl
+step-⇓-ASSERT₁ {w} {w'} {CHOOSE a a₁} {b} comp = 1 , z
+  where
+    z : steps 1 (ASSERT₁ (CHOOSE a a₁) , w) ≡ (ASSERT₁ b , w')
+    z rewrite comp = refl
+step-⇓-ASSERT₁ {w} {w'} {EQ a a₁ a₂} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {AX} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {FREE} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {CS x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {TSQUASH a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {DUM a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {FFDEFS a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {UNIV x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {LIFT a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {LOWER a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {SHRINK a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+
+
+
+steps-⇓-ASSERT₁ : {w : 𝕎·} (n : ℕ) {a b : Term}
+                  → stepsT n a w ≡ b
+                  → ASSERT₁ a ⇓ ASSERT₁ b at w
+steps-⇓-ASSERT₁ {w} 0 {a} {b} comp rewrite comp = 0 , refl
+steps-⇓-ASSERT₁ {w} (suc n) {a} {b} comp with step⊎ a w
+... | inj₁ (u , w' , p) rewrite p = ⇓-trans₁ (step-⇓-ASSERT₁ p) (steps-⇓-ASSERT₁ n comp)
+... | inj₂ p rewrite p | comp = 0 , refl
+
+
+⇓-ASSERT₁-INL : {w : 𝕎·} {a x : Term}
+                → a ⇓ INL x at w
+                → ASSERT₁ a ⇓ TRUE at w
+⇓-ASSERT₁-INL {w} {a} {x} comp = ⇓-trans (steps-⇓-ASSERT₁ (fst comp) (snd comp)) (λ w1 e1 → lift (1 , refl))
+
+
+#⇛-ASSERT₁-INL : {w : 𝕎·} {a x : CTerm}
+                  → a #⇛ #INL x at w
+                  → #ASSERT₁ a #⇛ #TRUE at w
+#⇛-ASSERT₁-INL {w} {a} {x} comp w' e = lift (⇓-ASSERT₁-INL (lower (comp w' e)))
+
+
+⇓-ASSERT₁-INR : {w : 𝕎·} {a x : Term}
+                → a ⇓ INR x at w
+                → ASSERT₁ a ⇓ FALSE at w
+⇓-ASSERT₁-INR {w} {a} {x} comp = ⇓-trans (steps-⇓-ASSERT₁ (fst comp) (snd comp)) (λ w1 e1 → lift (1 , refl))
+
+
+#⇛-ASSERT₁-INR : {w : 𝕎·} {a x : CTerm}
+                → a #⇛ #INR x at w
+                → #ASSERT₁ a #⇛ #FALSE at w
+#⇛-ASSERT₁-INR {w} {a} {x} comp w' e = lift (⇓-ASSERT₁-INR (lower (comp w' e)))
+
+
 #weakMonEq→≈C : {w : 𝕎·} {a b : CTerm} → #weakMonEq w a b → ≈C w a b
 #weakMonEq→≈C {w} {a} {b} h w1 e1 =
   lift (∼C-trans {w1} {a} {#NUM n} {b}
@@ -980,44 +1130,6 @@ data ∼T : 𝕎· → Term → Term → Set where
   where
     n : ℕ
     n = fst (lower (h w1 e1))
-
-
-{--
--- TODO: finish
-step-preserves-fvars-APPLY : (w : 𝕎·) (f a b : Term) → step (APPLY f a) w ≡ just b → fvars b ⊆ fvars f ++ fvars a
-step-preserves-fvars-APPLY w f a b e {x} i = ?
-
-
-step-preserves-fvars : (w : 𝕎·) (a b : Term) → step a w ≡ just b → fvars b ⊆ fvars a
-step-preserves-fvars w NAT b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w QNAT b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (LT a a₁) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (QLT a a₁) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (NUM x₁) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (PI a a₁) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (LAMBDA a) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (APPLY a a₁) b e {x} i = {!!} -- rewrite sym (just-inj e) = {!!}
-step-preserves-fvars w (FIX a) b e {x} i = {!!} -- rewrite sym (just-inj e) = {!!}
-step-preserves-fvars w (SUM a a₁) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (PAIR a a₁) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (SPREAD a a₁) b e {x} i = {!!} --rewrite sym (just-inj e) = {!!}
-step-preserves-fvars w (SET a a₁) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (UNION a a₁) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (INL a) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (INR a) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (DECIDE a a₁ a₂) b e {x} i = {!!} -- rewrite sym (just-inj e) = {!!}
-step-preserves-fvars w (EQ a a₁ a₂) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w AX b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w FREE b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (CS x₁) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (TSQUASH a) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (DUM a) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (FFDEFS a a₁) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (UNIV x₁) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (LIFT a) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (LOWER a) b e {x} i rewrite sym (just-inj e) = i
-step-preserves-fvars w (SHRINK a) b e {x} i rewrite sym (just-inj e) = i
---}
 
 
 ⇓same-bool : 𝕎· → Term → Term → Set
@@ -1085,6 +1197,52 @@ strongBool w t1 t2 =
 -- strongBool w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 
+{--
+-- TODO: finish
+step-preserves-fvars-APPLY : (w : 𝕎·) (f a b : Term) → step (APPLY f a) w ≡ just b → fvars b ⊆ fvars f ++ fvars a
+step-preserves-fvars-APPLY w f a b e {x} i = ?
+
+
+step-preserves-fvars : (w : 𝕎·) (a b : Term) → step a w ≡ just b → fvars b ⊆ fvars a
+step-preserves-fvars w NAT b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w QNAT b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (LT a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (QLT a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (NUM x₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (PI a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (LAMBDA a) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (APPLY a a₁) b e {x} i = {!!} -- rewrite sym (just-inj e) = {!!}
+step-preserves-fvars w (FIX a) b e {x} i = {!!} -- rewrite sym (just-inj e) = {!!}
+step-preserves-fvars w (SUM a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (PAIR a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (SPREAD a a₁) b e {x} i = {!!} --rewrite sym (just-inj e) = {!!}
+step-preserves-fvars w (SET a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (UNION a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (INL a) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (INR a) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (DECIDE a a₁ a₂) b e {x} i = {!!} -- rewrite sym (just-inj e) = {!!}
+step-preserves-fvars w (EQ a a₁ a₂) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w AX b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w FREE b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (CS x₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (TSQUASH a) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (DUM a) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (FFDEFS a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (UNIV x₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (LIFT a) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (LOWER a) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (SHRINK a) b e {x} i rewrite sym (just-inj e) = i
+--}
+
+
+#weakBool-#INL : (w : 𝕎·) (x y : CTerm) → #weakBool w (#INL x) (#INL y)
+#weakBool-#INL w x y w' e' = lift (x , y , inj₁ (⇓-refl (INL ⌜ x ⌝) w' , ⇓-refl (INL ⌜ y ⌝) w'))
+
+
+#weakBool-#INR : (w : 𝕎·) (x y : CTerm) → #weakBool w (#INR x) (#INR y)
+#weakBool-#INR w x y w' e' = lift (x , y , inj₂ (⇓-refl (INR ⌜ x ⌝) w' , ⇓-refl (INR ⌜ y ⌝) w'))
+
+
 
 #⇓same-bool-trans : {w : 𝕎·} {a b c : CTerm}
                     → #⇓same-bool w a b
@@ -1109,11 +1267,100 @@ lift-#⇓same-bool-trans : {w : 𝕎·} {a b c : CTerm}
 lift-#⇓same-bool-trans {w} {a} {b} {c} (lift h) (lift q) = lift (#⇓same-bool-trans {w} {a} {b} {c} h q)
 
 
-#weakBool-#INL : (w : 𝕎·) (x y : CTerm) → #weakBool w (#INL x) (#INL y)
-#weakBool-#INL w x y w' e' = lift (x , y , inj₁ (⇓-refl (INL ⌜ x ⌝) w' , ⇓-refl (INL ⌜ y ⌝) w'))
+
+val-⇓→ : {w w' : 𝕎·} {a b v : Term}
+            → isValue v
+            → a ⇓ b from w to w'
+            → a ⇓ v at w
+            → b ⇓ v at w'
+val-⇓→ {w} {w'} {a} {b} {v} isv (m , comp1) (n , comp2) with n ≤? m
+... | yes p rewrite sym (stepsT-val-det w a v b n m isv comp2 (steps→stepsT' {m} comp1) p) = 0 , refl
+... | no p with ≤-Σ+ (≰⇒≥ p)
+... |   (k , q) rewrite q | steps-+ m k a w | comp1 = k , comp2
 
 
-#weakBool-#INR : (w : 𝕎·) (x y : CTerm) → #weakBool w (#INR x) (#INR y)
-#weakBool-#INR w x y w' e' = lift (x , y , inj₂ (⇓-refl (INR ⌜ x ⌝) w' , ⇓-refl (INR ⌜ y ⌝) w'))
+val-⇛→ : {w : 𝕎·} {a b v : Term}
+            → isValue v
+            → a ⇛ b AT w
+            → a ⇛ v at w
+            → b ⇛ v at w
+val-⇛→ {w} {a} {b} {v} isv comp1 comp2 w1 e1 = lift (val-⇓→ isv (lower (comp1 w1 e1)) (lower (comp2 w1 e1)))
+
+
+-- the 'AT' is necessary otherise the world in the conclusion might be different
+val-#⇛→ : {w : 𝕎·} {a b v : CTerm}
+            → #isValue v
+            → a #⇛ b AT w
+            → a #⇛ v at w
+            → b #⇛ v at w
+val-#⇛→ {w} {a} {b} {v} isv comp1 comp2 = val-⇛→ isv comp1 comp2
+
+
+-- This is an "invariant" version of ∼T, which requires worlds not to change
+data ∼T! : 𝕎· → Term → Term → Set(L) where
+  ∼T!→ : {w : 𝕎·} {a b : Term} → a ⇓ b from w to w → ∼T! w a b
+  ∼T!← : {w : 𝕎·} {a b : Term} → b ⇓ a from w to w → ∼T! w a b
+  ∼T!-trans : {w : 𝕎·} {a b c : Term} → ∼T! w a b → ∼T! w b c → ∼T! w a c
+
+
+∼C! : 𝕎· → CTerm → CTerm → Set(L)
+∼C! w a b = ∼T! w ⌜ a ⌝ ⌜ b ⌝
+
+
+⇓-from→at : {w : 𝕎·} {a b : Term} → a ⇓ b from w to w → a ⇓ b at w
+⇓-from→at {w} {a} {b} (n , comp) = n , steps→stepsT' {n} comp
+
+
+⇛→⇓ : {w : 𝕎·} {a b : Term} → a ⇛ b at w → a ⇓ b at w
+⇛→⇓ {w} {a} {b} comp = lower (comp w (⊑-refl· _))
+
+
+
+-- ∼T! is necessary (instead of just ∼T) because of the 2nd case where 'b' computes to both 'a' and 'c'
+-- (otherwise the world in the conclusion might be different)
+∼T!→⇓ : {w : 𝕎·} {a b c : Term} → isValue c → ∼T! w a b → b ⇓ c at w → a ⇓ c at w
+∼T!→⇓ {w} {a} {b} {c} isv (∼T!→ x) comp = ⇓-trans₁ x comp
+∼T!→⇓ {w} {a} {b} {c} isv (∼T!← x) comp = val-⇓→ isv x comp
+∼T!→⇓ {w} {a} {b} {c} isv (∼T!-trans {.w} {.a} {x} {.b} h h₁) comp = ∼T!→⇓ isv h (∼T!→⇓ isv h₁ comp)
+
+
+∼C!→#⇓ : {w : 𝕎·} {a b : CTerm} → #isValue b → ∼C! w a b → a #⇓ b at w
+∼C!→#⇓ {w} {a} {b} isv h = ∼T!→⇓ isv h (⇓-refl ⌜ b ⌝ w)
+
+
+
+#strongMonEq-#⇛-left : {w : 𝕎·} {a b c : CTerm}
+                        → a #⇛ b AT w
+                        → #strongMonEq w a c
+                        → #strongMonEq w b c
+#strongMonEq-#⇛-left {w} {a} {b} {c} comp (n , c₁ , c₂) = n , val-#⇛→ {w} {a} {b} {#NUM n} tt comp c₁ , c₂
+
+
+#weakMonEq-#⇛-left : {w : 𝕎·} {a b c : CTerm}
+                      → a #⇛ b AT w
+                      → #weakMonEq w a c
+                      → #weakMonEq w b c
+#weakMonEq-#⇛-left {w} {a} {b} {c} comp h w1 e1 =
+  lift (fst (lower (h w1 e1)) , val-⇓→ tt (lower (comp w1 e1)) (fst (snd (lower (h w1 e1)))) , snd (snd (lower (h w1 e1))))
+
+
+
+
+#⇛to-same-CS-#⇛-left : {w : 𝕎·} {a b c : CTerm}
+                         → a #⇛ b AT w
+                         → #⇛to-same-CS w a c
+                         → #⇛to-same-CS w b c
+#⇛to-same-CS-#⇛-left {w} {a} {b} {c} comp (name , c₁ , c₂) = name , val-#⇛→ {w} {a} {b} {#CS name} tt comp c₁ , c₂
+
+
+
+#weakMonEq-#⇛-left-rev : {w : 𝕎·} {a b c : CTerm}
+                          → a #⇛ b AT w
+                          → #weakMonEq w b c
+                          → #weakMonEq w a c
+#weakMonEq-#⇛-left-rev {w} {a} {b} {c} comp h w1 e1 =
+  lift (fst (lower (h w1 e1)) ,
+        ⇓-trans₁ (lower (comp w1 e1)) (fst (snd (lower (h w1 e1)))) ,
+        snd (snd (lower (h w1 e1))))
 
 \end{code}
