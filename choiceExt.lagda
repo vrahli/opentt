@@ -5,6 +5,7 @@ open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to ls
 open import Data.Nat using (ℕ ; _≟_ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
 open import Agda.Builtin.Equality
 open import Relation.Nullary
+open import Data.Sum
 
 
 open import calculus
@@ -34,8 +35,11 @@ record ChoiceExt : Set(lsuc(L)) where
 
     -- Meant to capture the choices that are "equivalent" values (not all choices have to be values)
     --∼ℂ : 𝕎· → ℂ· → ℂ· → Set
-    ¬∼ℂ₀₁ : (w : 𝕎·) → ¬ ∼C w (ℂ→C· ℂ₀) (ℂ→C· ℂ₁)
+    ¬∼ℂ₀₁ : (w : 𝕎·) → ¬ ∼C! w (ℂ→C· ℂ₀) (ℂ→C· ℂ₁)
 
     isValueℂ₀ : #isValue (ℂ→C· ℂ₀)
     isValueℂ₁ : #isValue (ℂ→C· ℂ₁)
+
+    decℂ₀ : (c : ℂ·) → c ≡ ℂ₀ ⊎ ¬ c ≡ ℂ₀
+    decℂ₁ : (c : ℂ·) → c ≡ ℂ₁ ⊎ ¬ c ≡ ℂ₁
 \end{code}

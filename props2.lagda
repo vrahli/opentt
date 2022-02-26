@@ -53,7 +53,7 @@ module props2 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
 open import worldDef(W)
 open import computation(W)(C)(K)(G)
 open import bar(W)
-open import barI(W)(M)(C)(K)(P)
+open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(E)
 open import props0(W)(M)(C)(K)(P)(G)(E)
 open import ind2(W)(M)(C)(K)(P)(G)(E)
@@ -422,58 +422,7 @@ eqTypesQTNAT {w} {i} = eqTypesTSQUASH← eqTypesNAT
 
 
 NUM-equalInType-NAT : (i : ℕ) (w : 𝕎·) (k : ℕ) → equalInType i w #NAT (#NUM k) (#NUM k)
-NUM-equalInType-NAT i w k = eqTypesNAT , Mod.∀𝕎-□ M (λ w' e' → #strongMonEq-#NUM w' k)
-
-
-#weakMonEq→TSQUASHeq-#NAT : {i : ℕ} {w : 𝕎·} {a b : CTerm}
-                             → #weakMonEq w a b
-                             → TSQUASHeq (equalInType i w #NAT) w a b
-#weakMonEq→TSQUASHeq-#NAT {i} {w} {a} {b} h =
-  TSQUASH-eq→ (TSQUASH-eq-base (#NUM n) (#NUM n) tt tt c₁ c₂ (NUM-equalInType-NAT i w n))
-  where
-    n : ℕ
-    n = fst (lower (h w (⊑-refl· _)))
-
-    c₁ : ∼C w a (#NUM n)
-    c₁ = #⇓→∼C {w} {a} {#NUM n} (fst (snd (lower (h w (⊑-refl· _)))))
-
-    c₂ : ∼C w b (#NUM n)
-    c₂ = #⇓→∼C {w} {b} {#NUM n} (snd (snd (lower (h w (⊑-refl· _)))))
-
-
-→equalInType-QTNAT : (i : ℕ) (w : 𝕎·) (a b : CTerm)
-                      → □· w (λ w' _ → #weakMonEq w' a b)
-                      → equalInType i w #QTNAT a b
-→equalInType-QTNAT i w a b j =
-  ≡CTerm→equalInType (sym #QTNAT≡) (equalInTypeTSQUASH← (Mod.∀𝕎-□Func M aw j))
-  where
-    aw : ∀𝕎 w (λ w' e' → #weakMonEq w' a b → TSQUASHeq (equalInType i w' #NAT) w' a b)
-    aw w' e h = #weakMonEq→TSQUASHeq-#NAT h
-{--  eqTypesQTNAT , Mod.∀𝕎-□Func M aw j
-  where
-    aw : ∀𝕎 w (λ w' e' → #weakMonEq w' a b
-                        → TSQUASHeq (λ t1 t2 → □· w' (λ w'' _ → #strongMonEq w'' t1 t2)) w' a b)
-    aw w1 e1 h = {!!} --}
-{--c₃ , #NUM n , #NUM n , tt , tt , c₁ , c₂ , □·-#strongMonEq-#NUM n w1
-      where
-        n : ℕ
-        n = fst (lower (h w1 (⊑-refl· _)))
-
-        c₁ : ∼C w1 a (#NUM n)
-        c₁ = #⇓→∼C {w1} {a} {#NUM n} (fst (snd (lower (h w1 (⊑-refl· _)))))
-
-        c₂ : ∼C w1 b (#NUM n)
-        c₂ = #⇓→∼C {w1} {b} {#NUM n} (snd (snd (lower (h w1 (⊑-refl· _)))))
-
-        c₃ : ≈C w1 a b
-        c₃ = #weakMonEq→≈C {w1} {a} {b} h
---}
-
-
-NUM-equalInType-QTNAT : (i : ℕ) (w : 𝕎·) (k : ℕ) → equalInType i w #QTNAT (#NUM k) (#NUM k)
-NUM-equalInType-QTNAT i w k =
-  →equalInType-QTNAT i w (#NUM k) (#NUM k) (Mod.∀𝕎-□ M (λ w' e' → #weakMonEq-#NUM w' k))
-
+NUM-equalInType-NAT i w k = eqTypesNAT , Mod.∀𝕎-□ M (λ w' e' → #⇛!sameℕ-NUM w' k)
 
 
 equalInTypeTSQUASH→ : {w : 𝕎·} {i : ℕ} {a b A : CTerm}
@@ -512,29 +461,11 @@ equalInTypeTSQUASH→ {w} {i} {a} {b} {A} (EQTBAR x , eqi) =
 
 equalInType-NAT→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                     → equalInType i w #NAT a b
-                    → □· w (λ w' _ → #strongMonEq w' a b)
+                    → □· w (λ w' _ → #⇛!sameℕ {--#strongMonEq--} w' a b)
 equalInType-NAT→ i w a b (eqt , eqi) =
   eqInType-⇛-NAT (uni i) w #NAT #NAT a b (#compAllRefl #NAT w) (#compAllRefl #NAT w) eqt eqi
 
 
-
--- MOVE to computation
-⇓sameℕ-trans : {w : 𝕎·} {a b c : Term}
-                → ⇓sameℕ w a b
-                → ⇓sameℕ w b c
-                → ⇓sameℕ w a c
-⇓sameℕ-trans {w} {a} {b} {c} (n , h1 , h2) (m , q1 , q2) = n , h1 , q
-  where
-  q : c ⇓ NUM n at w
-  q rewrite NUMinj (⇓-val-det tt tt h2 q1) = q2
-
-
--- MOVE to computation
-lift-⇓sameℕ-trans : {w : 𝕎·} {a b c : Term}
-                     → Lift (lsuc L) (⇓sameℕ w a b)
-                     → Lift (lsuc L) (⇓sameℕ w b c)
-                     → Lift (lsuc L) (⇓sameℕ w a c)
-lift-⇓sameℕ-trans {w} {a} {b} {c} (lift h) (lift q) = lift (⇓sameℕ-trans h q)
 
 
 
@@ -544,17 +475,17 @@ TSQUASH-eq-NAT→weakMonEq : (i : ℕ) (w : 𝕎·) (a b : CTerm)
 TSQUASH-eq-NAT→weakMonEq i w a b (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) =
   Mod.□-const M (Mod.∀𝕎-□Func M aw j)
   where
-    j : □· w (λ w' _ → #strongMonEq w' a1 a2)
+    j : □· w (λ w' _ → #⇛!sameℕ {--#strongMonEq--} w' a1 a2)
     j = equalInType-NAT→ i w a1 a2 ea
 
-    aw : ∀𝕎 w (λ w1 e1 → #strongMonEq w1 a1 a2 → Lift (lsuc L) (⇓sameℕ w ⌜ a ⌝ ⌜ b ⌝))
-    aw w1 e1 (n , c₁' , c₂') = lift (n , ∼C→#⇓ {w} {a} {#NUM n} tt c₁'' , ∼C→#⇓ {w} {b} {#NUM n} tt c₂'')
+    aw : ∀𝕎 w (λ w1 e1 → #⇛!sameℕ {--#strongMonEq--} w1 a1 a2 → Lift (lsuc L) (⇓sameℕ w ⌜ a ⌝ ⌜ b ⌝))
+    aw w1 e1 (n , c₁' , c₂') = lift (n , ∼C!→#⇓ {w} {a} {#NUM n} tt c₁'' ,  ∼C!→#⇓ {w} {b} {#NUM n} tt c₂'')
       where
-        c₁'' : ∼C w a (#NUM n)
-        c₁'' = ≡R→∼C {w} {a} {a1} {#NUM n} (#compAllVal c₁' i1) c1
+        c₁'' : ∼C! w a (#NUM n)
+        c₁'' = ≡R→∼C! {w} {a} {a1} {#NUM n} (#⇛!→≡ c₁' i1) c1
 
-        c₂'' : ∼C w b (#NUM n)
-        c₂'' = ≡R→∼C {w} {b} {a2} {#NUM n} (#compAllVal c₂' i2) c2
+        c₂'' : ∼C! w b (#NUM n)
+        c₂'' = ≡R→∼C! {w} {b} {a2} {#NUM n} (#⇛!→≡ c₂' i2) c2
 TSQUASH-eq-NAT→weakMonEq i w a b (TSQUASH-eq-trans t h1 h2) =
   lift-⇓sameℕ-trans (TSQUASH-eq-NAT→weakMonEq i w a t h1) (TSQUASH-eq-NAT→weakMonEq i w t b h2)
 
@@ -583,7 +514,7 @@ equalInType-QTNAT→ i w a b eqi =
 
 
 →equalInType-NAT : (i : ℕ) (w : 𝕎·) (a b : CTerm)
-                    → □· w (λ w' _ → #strongMonEq w' a b)
+                    → □· w (λ w' _ → #⇛!sameℕ {--#strongMonEq--} w' a b)
                     → equalInType i w #NAT a b
 →equalInType-NAT i w a b j = eqTypesNAT , j
 
@@ -642,14 +573,18 @@ eqTypesUniv w n i p = EQTUNIV i p (compAllRefl (UNIV i) w) (compAllRefl (UNIV i)
 ∀𝕎-□·-#strongMonEq-#N0 w w1 e1 = Mod.∀𝕎-□ M (λ w2 e2 → #strongMonEq-#N0 w2)
 
 
+∀𝕎-□·-#⇛!sameℕ-#N0 : (w : 𝕎·) → ∀𝕎 w (λ w' e → □· w' (λ w'' _ → #⇛!sameℕ w'' #N0 #N0))
+∀𝕎-□·-#⇛!sameℕ-#N0 w w1 e1 = Mod.∀𝕎-□ M (λ w2 e2 → #⇛!sameℕ-#N0 w2)
+
+
 eqTypesTRUE : {w : 𝕎·} {i : ℕ} → equalTypes i w #TRUE #TRUE
 eqTypesTRUE {w} {i} =
   EQTEQ #N0 #N0 #N0 #N0 #NAT #NAT
         (#compAllRefl #TRUE w) (#compAllRefl #TRUE w)
         (eqTypes-mon (uni i) eqTypesNAT)
         (wPredExtIrr-eqInType (eqTypes-mon (uni i) eqTypesNAT))
-        (∀𝕎-□·-#strongMonEq-#N0 w)
-        (∀𝕎-□·-#strongMonEq-#N0 w)
+        (∀𝕎-□·-#⇛!sameℕ-#N0 w) --(∀𝕎-□·-#strongMonEq-#N0 w)
+        (∀𝕎-□·-#⇛!sameℕ-#N0 w) --(∀𝕎-□·-#strongMonEq-#N0 w)
 
 
 
@@ -1092,9 +1027,9 @@ equalInType-SQUASH→ {n} {w} {A} {a} {b} (eqt , eqi) rewrite #SQUASH≡#SET A =
 equalInType-UNION→ : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
                        → equalInType n w (#UNION A B) a b
                        → □· w (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
-                                          → (a #⇛ (#INL x) at w' × b #⇛ (#INL y) at w' × equalInType n w' A x y)
+                                          → (a #⇛! (#INL x) at w' × b #⇛! (#INL y) at w' × equalInType n w' A x y)
                                              ⊎
-                                             (a #⇛ (#INR x) at w' × b #⇛ (#INR y) at w' × equalInType n w' B x y))))
+                                             (a #⇛! (#INR x) at w' × b #⇛! (#INR y) at w' × equalInType n w' B x y))))
 {-# TERMINATING #-}
 equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTNAT x x₁ , eqi) = ⊥-elim (UNIONneqNAT (compAllVal x₁ tt))
 equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTQNAT x x₁ , eqi) = ⊥-elim (UNIONneqQNAT (compAllVal x₁ tt))
@@ -1110,9 +1045,9 @@ equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTUNION A1 B1 A2 B2 x x₁ eqtA e
   where
     aw : ∀𝕎 w (λ w' e' → UNIONeq (eqInType (uni n) w' (eqtA w' e')) (eqInType (uni n) w' (eqtB w' e')) w' a b
                        → Σ CTerm (λ y → Σ CTerm (λ z
-                       → (a #⇛ #INL y at w' × b #⇛ #INL z at w' × equalInType n w' A y z)
+                       → (a #⇛! #INL y at w' × b #⇛! #INL z at w' × equalInType n w' A y z)
                           ⊎
-                          (a #⇛ #INR y at w' × b #⇛ #INR z at w' × equalInType n w' B y z))))
+                          (a #⇛! #INR y at w' × b #⇛! #INR z at w' × equalInType n w' B y z))))
     aw w' e' (y , z , inj₁ (c₁ , c₂ , u)) = y , z , inj₁ (c₁ , c₂ , eqInType→equalInType (#UNIONinj1 {A} {B} {A1} {B1} (#compAllVal x tt)) (eqtA w' e') u)
     aw w' e' (y , z , inj₂ (c₁ , c₂ , u)) = y , z , inj₂ (c₁ , c₂ , eqInType→equalInType (#UNIONinj2 {A} {B} {A1} {B1} (#compAllVal x tt)) (eqtB w' e') u)
 equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (UNIONneqTSQUASH (compAllVal x₁ tt))
@@ -1126,16 +1061,16 @@ equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTBAR x , eqi) =
                         {--→ atbar x w' e' z--}
                         → equalTerms n w' z a b
                         → □· w' (↑wPred' (λ w'' e → Σ CTerm (λ y₁ → Σ CTerm (λ y₂
-                                                     → (a #⇛ #INL y₁ at w'' × b #⇛ #INL y₂ at w'' × equalInType n w'' A y₁ y₂)
+                                                     → (a #⇛! #INL y₁ at w'' × b #⇛! #INL y₂ at w'' × equalInType n w'' A y₁ y₂)
                                                         ⊎
-                                                        (a #⇛ #INR y₁ at w'' × b #⇛ #INR y₂ at w'' × equalInType n w'' B y₁ y₂))))
+                                                        (a #⇛! #INR y₁ at w'' × b #⇛! #INR y₂ at w'' × equalInType n w'' B y₁ y₂))))
                                              e'))
     aw w' e' z {--at--} i = Mod.∀𝕎-□Func M (λ w'' e'' h k → h) j
       where
         j : □· w' (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
-                             → (a #⇛ (#INL x) at w' × b #⇛ (#INL y) at w' × equalInType n w' A x y)
+                             → (a #⇛! (#INL x) at w' × b #⇛! (#INL y) at w' × equalInType n w' A x y)
                                 ⊎
-                                (a #⇛ (#INR x) at w' × b #⇛ (#INR y) at w' × equalInType n w' B x y))))
+                                (a #⇛! (#INR x) at w' × b #⇛! (#INR y) at w' × equalInType n w' B x y))))
         j = equalInType-UNION→ (z , i)
 
 
@@ -1152,19 +1087,6 @@ equalInType-FUN→ {u} {w} {A} {B} {f} {g} eqi rewrite #FUN≡#PI A B = z2
 
     z2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType u w' A a₁ a₂ → equalInType u w' B (#APPLY f a₁) (#APPLY g a₂))
     z2 w' e' a₁ a₂ ea = ≡CTerm→equalInType (sub0⌞⌟ a₁ B ) (z1 w' e' a₁ a₂ ea)
-
-
-
-
-¬##strongMonEq-N0-N1 : (w : 𝕎·) → ¬ #strongMonEq w #N0 #N1
-¬##strongMonEq-N0-N1 w (n , c₁ , c₂)
-  rewrite #NUMinj {n} {1} (sym (#compAllVal c₂ tt))
-  = suc-≢-0 e
-  where
-    e : 1 ≡ 0
-    e = #NUMinj {1} {0} (sym (#compAllVal c₁ tt))
-
-
 
 
 ¬equalInType-FALSE : {w : 𝕎·} {i : ℕ} {a b : CTerm} → ¬ equalInType i w #FALSE a b
@@ -1193,11 +1115,11 @@ equalInType-FUN→ {u} {w} {A} {B} {f} {g} eqi rewrite #FUN≡#PI A B = z2
     aw : ∀𝕎 w (λ w' e' → EQeq #N0 #N1 (equalTerms i w' (eqtA w' e')) w' a b → Lift (lsuc(L)) ⊥)
     aw w' e' ea = Mod.□-const M (Mod.∀𝕎-□Func M aw' z)
       where
-        z : □· w' (λ w'' e → #strongMonEq w'' #N0 #N1)
+        z : □· w' (λ w'' e → #⇛!sameℕ {--#strongMonEq--} w'' #N0 #N1)
         z = eqInType-⇛-NAT (uni i) w' #NAT #NAT #N0 #N1 (#compAllRefl #NAT w') (#compAllRefl #NAT w') (eqtA w' e') ea
 
-        aw' : ∀𝕎 w' (λ w'' e'' → #strongMonEq w'' #N0 #N1 → Lift (lsuc(L)) ⊥)
-        aw' w'' e'' s = lift (¬##strongMonEq-N0-N1 w'' s)
+        aw' : ∀𝕎 w' (λ w'' e'' → #⇛!sameℕ {--#strongMonEq--} w'' #N0 #N1 → Lift (lsuc(L)) ⊥)
+        aw' w'' e'' s = lift (¬#⇛!sameℕ-N0-N1 w'' s) --(¬#strongMonEq-N0-N1 w'' s)
 ¬equalInType-FALSE {w} {i} {a} {b} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
 ¬equalInType-FALSE {w} {i} {a} {b} (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
 ¬equalInType-FALSE {w} {i} {a} {b} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
@@ -1477,5 +1399,56 @@ equalInType-EQ-QNAT→ {u} {w} {a} {b} {f} {g} eqi =
   where
     aw : ∀𝕎 w (λ w' e' → EQeq a b (equalInType u w' #QNAT) w' f g → □· w' (↑wPred' (λ w'' e → #weakMonEq w'' a b) e'))
     aw w' e ea = Mod.∀𝕎-□Func M (λ w1 e1 z _ → z) (equalInType-QNAT→ u w' a b ea)
+
+
+
+#weakMonEq→TSQUASHeq-#NAT : {i : ℕ} {w : 𝕎·} {a b : CTerm}
+                             → #weakMonEq! w a b
+                             → TSQUASHeq (equalInType i w #NAT) w a b
+#weakMonEq→TSQUASHeq-#NAT {i} {w} {a} {b} h =
+  TSQUASH-eq→ (TSQUASH-eq-base (#NUM n) (#NUM n) tt tt c₁ c₂ (NUM-equalInType-NAT i w n))
+  where
+    n : ℕ
+    n = fst (lower (h w (⊑-refl· _)))
+
+    c₁ : ∼C! w a (#NUM n)
+    c₁ = #⇓!→∼C! {w} {a} {#NUM n} (fst (snd (lower (h w (⊑-refl· _)))))
+
+    c₂ : ∼C! w b (#NUM n)
+    c₂ = #⇓!→∼C! {w} {b} {#NUM n} (snd (snd (lower (h w (⊑-refl· _)))))
+
+
+→equalInType-QTNAT : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                      → □· w (λ w' _ → #weakMonEq! w' a b)
+                      → equalInType i w #QTNAT a b
+→equalInType-QTNAT i w a b j =
+  ≡CTerm→equalInType (sym #QTNAT≡) (equalInTypeTSQUASH← (Mod.∀𝕎-□Func M aw j))
+  where
+    aw : ∀𝕎 w (λ w' e' → #weakMonEq! w' a b → TSQUASHeq (equalInType i w' #NAT) w' a b)
+    aw w' e h = #weakMonEq→TSQUASHeq-#NAT h
+{--  eqTypesQTNAT , Mod.∀𝕎-□Func M aw j
+  where
+    aw : ∀𝕎 w (λ w' e' → #weakMonEq w' a b
+                        → TSQUASHeq (λ t1 t2 → □· w' (λ w'' _ → #strongMonEq w'' t1 t2)) w' a b)
+    aw w1 e1 h = {!!} --}
+{--c₃ , #NUM n , #NUM n , tt , tt , c₁ , c₂ , □·-#strongMonEq-#NUM n w1
+      where
+        n : ℕ
+        n = fst (lower (h w1 (⊑-refl· _)))
+
+        c₁ : ∼C w1 a (#NUM n)
+        c₁ = #⇓→∼C {w1} {a} {#NUM n} (fst (snd (lower (h w1 (⊑-refl· _)))))
+
+        c₂ : ∼C w1 b (#NUM n)
+        c₂ = #⇓→∼C {w1} {b} {#NUM n} (snd (snd (lower (h w1 (⊑-refl· _)))))
+
+        c₃ : ≈C w1 a b
+        c₃ = #weakMonEq→≈C {w1} {a} {b} h
+--}
+
+
+NUM-equalInType-QTNAT : (i : ℕ) (w : 𝕎·) (k : ℕ) → equalInType i w #QTNAT (#NUM k) (#NUM k)
+NUM-equalInType-QTNAT i w k =
+  →equalInType-QTNAT i w (#NUM k) (#NUM k) (Mod.∀𝕎-□ M (λ w' e' → #weakMonEq!-#NUM w' k))
 
 \end{code}[hide]

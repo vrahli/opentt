@@ -437,6 +437,13 @@ getCs→∈world : {c : Name} {r : Res} {w : 𝕎·} {l : List ℂ·} → getCs 
 getCs→∈world {c} {r} {w} {l} h rewrite h = refl
 
 
+getCs→∈world' : {c c' : Name} {r : Res} {w : 𝕎·} {l : List ℂ·} → getCs c w ≡ just (mkcs c' l r) → ∈world (mkcs c l r) w
+getCs→∈world' {c} {c'} {r} {start name res ∷ w} {l} h with c ≟ name
+... | yes p rewrite h | mkcs-inj1 (just-inj h) = refl
+... | no p = getCs→∈world' {c} {c'} {r} {w} h
+getCs→∈world' {c} {c'} {r} {choice name t ∷ w} {l} h = getCs→∈world' {c} {c'} {r} {w} h
+
+
 
 preFreezeCs⊑ : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res} → preCompatibleCs c w r → ⋆ᵣ r t → w ⊑· freezeCs c w t
 preFreezeCs⊑ c w t {r} (l , comp) rt with getCs⊎ c w
@@ -728,26 +735,75 @@ getCsChoiceCompatible c r w n t (l , comp , sat) g rewrite comp = resSatCs-selec
 
 
 
+-- We're really only generating numbers as choices here
+T→ℂcs : Term → ℂ·
+T→ℂcs (NUM n) = #NUM n
+T→ℂcs _ = #NUM 0
+
+
+-- only extend if cs's restriction was decidable
+chooseCS : (cs : Name) (w : 𝕎·) (c : ℂ·) → 𝕎·
+chooseCS n w c with getCs⊎ n w
+... | inj₁ (mkcs name l r , e) with Res.dec r
+... |    (true , D) with D (length l) c
+... |       inj₁ y = extcs w n c
+... |       inj₂ y = w
+chooseCS n w c | inj₁ (mkcs name l r , e) | (false , _) = w
+chooseCS n w c | inj₂ _ = w
+
+
+chooseCS⊑ : (cs : Name) (w : 𝕎·) (c : ℂ·) → w ⊑· chooseCS cs w c
+chooseCS⊑ n w c with getCs⊎ n w
+... | inj₁ (mkcs name l r , e) with Res.dec r
+... |    (true , D) with D (length l) c
+... |       inj₁ y = extChoice w n l c r (getCs→∈world' {n} {name} {r} {w} e) y
+... |       inj₂ y = ⊑-refl· _
+chooseCS⊑ n w c | inj₁ (mkcs name l r , e) | (false , _) = ⊑-refl· _
+chooseCS⊑ n w c | inj₂ _ = ⊑-refl· _
+
+
 open import getChoice(PossibleWorldsCS)(choiceCS)(compatibleCS)
 
 getChoiceCS : GetChoice
-getChoiceCS = mkGetChoice getCsChoice
+getChoiceCS = mkGetChoice getCsChoice T→ℂcs chooseCS chooseCS⊑
 -- getCsChoiceCompatible
 
 open import getChoiceDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
 open import computation(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
 
 
-#≠01 : (w : 𝕎·) → ¬ ∼C w (#NUM 0) (#NUM 1)
-#≠01 w h = x (#compVal (∼C→#⇓ {w} {#NUM 0} {#NUM 1} tt h) tt)
+#≠01 : (w : 𝕎·) → ¬ ∼C! w (#NUM 0) (#NUM 1)
+#≠01 w h = x (#compVal (∼C!→#⇓ {w} {#NUM 0} {#NUM 1} tt h) tt)
   where
     x : #NUM 0 ≡ #NUM 1 → ⊥
     x ()
 
+decℂ₀cs : (c : ℂ·) → c ≡ #NUM 0 ⊎ ¬ c ≡ #NUM 0
+decℂ₀cs c with is-NUM ⌜ c ⌝
+... | inj₁ (n , z) with n ≟ 0
+... |   yes x rewrite x = inj₁ (CTerm≡ z)
+... |   no x = inj₂ (λ y → x (NUMinj (trans (sym z) (≡CTerm y))))
+decℂ₀cs c | inj₂ z = inj₂ x
+  where
+    x : ¬ c ≡ #NUM 0
+    x e rewrite e = z 0 (≡CTerm e)
+
+
+decℂ₁cs : (c : ℂ·) → c ≡ #NUM 1 ⊎ ¬ c ≡ #NUM 1
+decℂ₁cs c with is-NUM ⌜ c ⌝
+... | inj₁ (n , z) with n ≟ 1
+... |   yes x rewrite x = inj₁ (CTerm≡ z)
+... |   no x = inj₂ (λ y → x (NUMinj (trans (sym z) (≡CTerm y))))
+decℂ₁cs c | inj₂ z = inj₂ x
+  where
+    x : ¬ c ≡ #NUM 1
+    x e rewrite e = z 1 (≡CTerm e)
+
+
 open import choiceExt{1ℓ}(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
 
 choiceExtCS : ChoiceExt
-choiceExtCS = mkChoiceExt (#NUM 0) (#NUM 1) {--∼C--} #≠01 tt tt
+choiceExtCS = mkChoiceExt (#NUM 0) (#NUM 1) {--∼C--} #≠01 tt tt decℂ₀cs decℂ₁cs
 
 open import choiceExtDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)
 

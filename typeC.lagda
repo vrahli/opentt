@@ -66,7 +66,7 @@ open import choiceExtDef(W)(C)(K)(G)(X)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import computation(W)(C)(K)(G)
 open import bar(W)
-open import barI(W)(M)(C)(K)(P)
+open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(E)
 open import props0(W)(M)(C)(K)(P)(G)(E)
 open import ind2(W)(M)(C)(K)(P)(G)(E)
@@ -125,8 +125,8 @@ comp-Resℂ→□·-weakℂ₀₁ {c} {w} n comp = Mod.∀𝕎-□Func M aw j1
 →equalInType-APPLY-CS-Typeℂ₀₁· {i} {w} {c} {a₁} {a₂} comp eqi =
   equalInType-local (Mod.∀𝕎-□Func M aw1' (equalInType-NAT→ i w a₁ a₂ eqi))
   where
-    aw1' : ∀𝕎 w (λ w'' e'' → #strongMonEq w'' a₁ a₂ → equalInType i w'' Typeℂ₀₁· (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂))
-    aw1' w1 e1 (n , c₁ , c₂) = equalInType-#⇛-LR-rev (#⇛-APPLY-CS {w1} {a₁} {#NUM n} c c₁) (#⇛-APPLY-CS {w1} {a₂} {#NUM n} c c₂) eqj
+    aw1' : ∀𝕎 w (λ w'' e'' → #⇛!sameℕ {--#strongMonEq--} w'' a₁ a₂ → equalInType i w'' Typeℂ₀₁· (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂))
+    aw1' w1 e1 (n , c₁ , c₂) = equalInType-#⇛-LR-rev (#⇛!-APPLY-CS {w1} {a₁} {#NUM n} c c₁) (#⇛!-APPLY-CS {w1} {a₂} {#NUM n} c c₂) eqj
       where
         j2 : □· w1 (λ w' _ → weakℂ₀₁M w' (getT n c))
         j2 = comp-Resℂ→□·-weakℂ₀₁ n (⊑-compatible· e1 comp)

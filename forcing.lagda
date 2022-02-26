@@ -249,12 +249,13 @@ EQeq a1 a2 eqa w t1 t2 =
   eqa a1 a2
 
 
+-- NOTE: we constrain computations to prove 'TSQUASH-eq-BOOL→weakMonEq' in props3
 UNIONeq : (eqa eqb : per) → wper
 UNIONeq eqa eqb w t1 t2  =
   Σ CTerm (λ a → Σ CTerm (λ b →
-    (t1 #⇛ (#INL a) at w × t2 #⇛ (#INL b) at w × eqa a b)
+    (t1 #⇛! (#INL a) at w × t2 #⇛! (#INL b) at w × eqa a b)
     ⊎
-    (t1 #⇛ (#INR a) at w × t2 #⇛ (#INR b) at w × eqb a b)))
+    (t1 #⇛! (#INR a) at w × t2 #⇛! (#INR b) at w × eqb a b)))
 
 
 
@@ -270,7 +271,7 @@ data TSQUASHeq eqa w t1 t2 where
 {-- We equivalently define the above definition as follows... --}
 TSQUASHeqBase : (eqa : per) → wper
 TSQUASHeqBase eqa w t1 t2 =
-  Σ CTerm (λ a1 → Σ CTerm (λ a2 → #isValue a1 × #isValue a2 × ∼C w t1 a1 × ∼C w t2 a2 × eqa a1 a2))
+  Σ CTerm (λ a1 → Σ CTerm (λ a2 → #isValue a1 × #isValue a2 × ∼C! w t1 a1 × ∼C! w t2 a2 × eqa a1 a2))
 
 
 TSQUASHeqℕ : ℕ → (eqa : per) → wper
@@ -293,7 +294,10 @@ FFDEFSeq x1 eqa w t1 t2 =
 --{-# INLINE □·' #-}
 --{-# INLINE inBethBar' #-}
 --{-# INLINE inOpenBar' #-}
-eqInType _ w (EQTNAT _ _) t1 t2 = □· w (λ w' _ → #strongMonEq w' t1 t2)
+-- NOTE: EQTNAT's equality was defined in terms of #strongMonEq, and is now defined in terms of #⇛!sameℕ.
+-- We could have another nat type that's interpreted by #strongMonEq.
+-- We want #⇛!sameℕ here to get some functions in Nat->QT(Bool)
+eqInType _ w (EQTNAT _ _) t1 t2 = □· w (λ w' _ → #⇛!sameℕ w' t1 t2)
 eqInType _ w (EQTQNAT _ _) t1 t2 = □· w (λ w' _ → #weakMonEq w' t1 t2)
 eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 = □· w (λ w' _ → #lift-<NUM-pair w' a1 b1)
 eqInType _ w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 = □· w (λ w' _ → #lift-<NUM-pair w' a1 b1)
@@ -557,11 +561,13 @@ EQTtrans σ  = (w : 𝕎·) (A a b c : CTerm) → σ w A a b → σ w A b c → 
 TSext : TEQ → EQT → Set(lsuc(L))
 TSext τ σ = (w : 𝕎·) (A B a b : CTerm) → τ w A B → σ w A a b → σ w B a b
 
+-- NOTE: Can we do be better than #⇛!?
 TEQcomp : TEQ → Set(lsuc(L))
-TEQcomp τ = (w : 𝕎·) (A B : CTerm) → A #⇛ B at w → τ w A A → τ w A B
+TEQcomp τ = (w : 𝕎·) (A B : CTerm) → A #⇛! B at w → τ w A A → τ w A B
 
+-- NOTE: Can we do be better than #⇛!?
 EQTcomp : EQT → Set(lsuc(L))
-EQTcomp σ = (w : 𝕎·) (A a b : CTerm) → a #⇛ b at w → σ w A a a → σ w A a b
+EQTcomp σ = (w : 𝕎·) (A a b : CTerm) → a #⇛! b at w → σ w A a a → σ w A a b
 
 TEQmon : TEQ → Set(lsuc(L))
 TEQmon τ = {w1 w2 : 𝕎·} (A B : CTerm) → w1 ⊑· w2 → τ w1 A B → τ w2 A B

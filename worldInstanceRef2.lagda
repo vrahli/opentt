@@ -110,7 +110,7 @@ data _≼_ : (w2 : world) (w1 : world) → Set₁ where
   upd :
     (w : world) (n : Name) (r : Res{0ℓ}) (v : ℂ·) (f : Bool)
     → hasRes n w r
-    → ⋆ᵣ r v
+    → ·ᵣ r 0 v
     → w ≼ update n v f w
   new :
     (w : world) (n : Name) (r : Res{0ℓ})
@@ -129,14 +129,12 @@ open import worldDef(PossibleWorldsRef)
 
 
 resSatRef : (v : ℂ·) (r : Res{0ℓ}) → Set
-resSatRef v r = ⋆ᵣ r v
+resSatRef v r = ·ᵣ r 0 v
 
 
 -- This is the same as 'hasRef' & enforces satisfiability too
 compatibleRef : (c : Name) (w : 𝕎·) (r : Res{0ℓ}) → Set₁
 compatibleRef c w r = Σ ℂ· (λ v → Σ Bool (λ f → ∈world c r v f w × resSatRef v r))
-
-
 
 
 
@@ -302,16 +300,59 @@ getRefChoice _ name w with getRef name w
 
 
 
-getRefChoiceCompatible : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·)
+{--getRefChoiceCompatible : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·)
                         → compatibleRef c w r → getRefChoice n c w ≡ just t → ·ᵣ r n t
-getRefChoiceCompatible c r w n t (k , b , i , sat) g rewrite i | just-inj g = sat n
+getRefChoiceCompatible c r w n t (k , b , i , sat) g rewrite i | just-inj g = sat n--}
+
+
+-- We're really only generating numbers as choices here
+T→ℂref : Term → ℂ·
+T→ℂref (INL AX) = true
+T→ℂref (INR AX) = false
+T→ℂref _ = true
+
+
+getRef⊎ : (name : Name) (w : world)
+           → Σ Cell (λ c → getRef name w ≡ just c)
+              ⊎ getRef name w ≡ nothing
+getRef⊎ name w with getRef name w
+... | just c = inj₁ (c , refl)
+... | nothing = inj₂ refl
+
+
+chooseREF : (cs : Name) (w : 𝕎·) (c : ℂ·) → 𝕎·
+chooseREF n w c with getRef⊎ n w
+... | inj₁ (cell name r v f , e) with Res.dec r
+... |    (true , D) with D 0 c
+... |       inj₁ y = update n c f w
+... |       inj₂ y = w
+chooseREF n w c | inj₁ (cell name r v f , e) | (false , _) = w
+chooseREF n w c | inj₂ _ = w
+
+
+getRef→∈world : {n name : Name} {w : 𝕎·} {r : Res} {v : ℂ·} {f : Bool}
+                 → getRef n w ≡ just (cell name r v f)
+                 → ∈world n r v f w
+getRef→∈world {n} {name} {cell name₁ r₁ v₁ f₁ ∷ w} {r} {v} {f} h with n ≟ name₁
+... | yes p rewrite p | h | cell-inj1 (just-inj h) = refl
+... | no p = getRef→∈world {n} {name} {w} h
+
+
+chooseREF⊑ : (cs : Name) (w : 𝕎·) (c : ℂ·) → w ⊑· chooseREF cs w c
+chooseREF⊑ n w c with getRef⊎ n w
+... | inj₁ (cell name r v f , e) with Res.dec r
+... |    (true , D) with D 0 c
+... |       inj₁ y = upd w n r c f (v , f , getRef→∈world {n} {name} {w} e) y
+... |       inj₂ y = ⊑-refl· _
+chooseREF⊑ n w c | inj₁ (cell name r v f , e) | (false , _) = ⊑-refl· _
+chooseREF⊑ n w c | inj₂ _ = ⊑-refl· _
 
 
 
 open import getChoice(PossibleWorldsRef)(choiceRef)(compatibleREF)
 
 getChoiceRef : GetChoice
-getChoiceRef = mkGetChoice getRefChoice
+getChoiceRef = mkGetChoice getRefChoice T→ℂref chooseREF chooseREF⊑
 -- getRefChoiceCompatible
 
 open import getChoiceDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)
@@ -378,17 +419,27 @@ C1 : ℂ·
 C1 = false --1
 
 
-¬∼c01 : (w : 𝕎·) → ¬ ∼C w (ℂ→C· C0) (ℂ→C· C1)
-¬∼c01 w h = x (#compVal (∼C→#⇓ {w} {ℂ→C· C0} {ℂ→C· C1} tt h) tt)
+¬∼c01 : (w : 𝕎·) → ¬ ∼C! w (ℂ→C· C0) (ℂ→C· C1)
+¬∼c01 w h = x (#compVal (∼C!→#⇓ {w} {ℂ→C· C0} {ℂ→C· C1} tt h) tt)
   where
     x : ℂ→C· C0 ≡ ℂ→C· C1 → ⊥
     x ()
 
 
+decℂ₀ref : (c : ℂ·) → c ≡ C0 ⊎ ¬ c ≡ C0
+decℂ₀ref false = inj₂ (λ ())
+decℂ₀ref true = inj₁ refl
+
+
+decℂ₁ref : (c : ℂ·) → c ≡ C1 ⊎ ¬ c ≡ C1
+decℂ₁ref false = inj₁ refl
+decℂ₁ref true = inj₂ (λ ())
+
+
 open import choiceExt{1ℓ}(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)
 
 choiceExtRef : ChoiceExt
-choiceExtRef = mkChoiceExt C0 C1 {--∼c--} ¬∼c01 tt tt
+choiceExtRef = mkChoiceExt C0 C1 {--∼c--} ¬∼c01 tt tt decℂ₀ref decℂ₁ref
 
 open import choiceExtDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)
 
@@ -429,7 +480,7 @@ startNewRefChoice⊏ r w = new w (newRefChoice w) r (snd (freshName (wdom w)))
 
 startRefChoiceCompatible : (r : Res{0ℓ}) (w : 𝕎·) → compatibleRef (newRefChoice w) (startNewRefChoice r w) r
 startRefChoiceCompatible r w =
-  Res.def r , false , getRef-newCell w (newRefChoice w) r , Res.sat r
+  Res.def r , false , getRef-newCell w (newRefChoice w) r , Res.sat r 0
 
 
 
@@ -466,7 +517,8 @@ freezableRef c w with getRef c w
 
 
 ⊑-freeze∷ : (name : Name) (r : Res) (v₁ v₂ : ℂ·) (w : 𝕎·)
-         → ⋆ᵣ r v₂
+--         → ⋆ᵣ r v₂
+         → ·ᵣ r 0 v₂
          → (cell name r v₁ false ∷ w) ⊑· (cell name r v₂ true ∷ w)
 ⊑-freeze∷ name r v₁ v₂ w sat =
   ⊑-trans· (upd (cell name r v₁ false ∷ w) name r v₂ true (hasRes∷ name r v₁ false w) sat) z
@@ -509,7 +561,8 @@ update++-¬∈ {name} {cell name₁ r v f₁ ∷ w1} w2 t f ni with name ≟ nam
 
 preFreezeRef⊑ : (c : Name) (w w' : 𝕎·) (t : ℂ·) {r : Res}
                 → compatibleRef c w r
-                → ⋆ᵣ r t
+--                → ⋆ᵣ r t
+                → ·ᵣ r 0 t
                 → ¬ (c ∈ wdom w')
                 → (w' ++ w) ⊑· (w' ++ freezeRef c w t)
 preFreezeRef⊑ c (cell name r₁ v₁ f₁ ∷ w) w' t {r} (v , f , comp , sat) rt ni with c ≟ name
@@ -539,15 +592,8 @@ preFreezeRef⊑ c (cell name r₁ v₁ f₁ ∷ w) w' t {r} (v , f , comp , sat)
 
 
 freezeRef⊑ : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res} → compatibleRef c w r → ⋆ᵣ r t → w ⊑· freezeRef c w t
-freezeRef⊑ c w t {r} comp sat = preFreezeRef⊑ c w [] t comp sat λ ()
+freezeRef⊑ c w t {r} comp sat = preFreezeRef⊑ c w [] t comp (sat 0) λ ()
 
-
-getRef⊎ : (name : Name) (w : world)
-           → Σ Cell (λ c → getRef name w ≡ just c)
-              ⊎ getRef name w ≡ nothing
-getRef⊎ name w with getRef name w
-... | just c = inj₁ (c , refl)
-... | nothing = inj₂ refl
 
 
 freezableStartRef : (r : Res{0ℓ}) (w : 𝕎·) → freezableRef (newRefChoice w) (startNewRefChoice r w)

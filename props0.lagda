@@ -45,7 +45,7 @@ module props0 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
 open import worldDef(W)
 open import computation(W)(C)(K)(G)
 open import bar(W)
-open import barI(W)(M)(C)(K)(P)
+open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(E)
 \end{code}
 
@@ -454,6 +454,27 @@ TODO: keep unfolding by hand
   where
     aw : ∀𝕎 w (λ w' e' → strongMonEq w' a b → strongMonEq w' b c → strongMonEq w' a c)
     aw w1 e1 = strongMonEq-trans
+
+
+
+□·-⇛!sameℕ-sym : {w : 𝕎·} {a b : Term}
+                        → □· w (λ w' _ → ⇛!sameℕ w' a b)
+                        → □· w (λ w' _ → ⇛!sameℕ w' b a)
+□·-⇛!sameℕ-sym {w} {a} {b} h =
+  Mod.∀𝕎-□Func M (λ w1 e1 → ⇛!sameℕ-sym) h
+
+
+
+
+□·-⇛!sameℕ-trans : {w : 𝕎·} {a b c : Term}
+                          → □· w (λ w' _ → ⇛!sameℕ w' a b)
+                          → □· w (λ w' _ → ⇛!sameℕ w' b c)
+                          → □· w (λ w' _ → ⇛!sameℕ w' a c)
+□·-⇛!sameℕ-trans {w} {a} {b} {c} h₁ h₂ =
+  Mod.□Func M (Mod.∀𝕎-□Func M aw h₁) h₂
+  where
+    aw : ∀𝕎 w (λ w' e' → ⇛!sameℕ w' a b → ⇛!sameℕ w' b c → ⇛!sameℕ w' a c)
+    aw w1 e1 = ⇛!sameℕ-trans
 
 
 
@@ -925,7 +946,7 @@ irr-union u w A1 A2 B1 B2 eqta exta eqtb extb f g w1 e1 w' e' (a , b , inj₂ (c
 
 data TSQUASH-eq (eqa : per) (w : 𝕎·) (t1 t2 : CTerm) : Set(lsuc(L))
 data TSQUASH-eq eqa w t1 t2 where
-  TSQUASH-eq-base : (a1 a2 : CTerm) → #isValue a1 → #isValue a2 → ∼C w t1 a1 → ∼C w t2 a2 → eqa a1 a2 → TSQUASH-eq eqa w t1 t2
+  TSQUASH-eq-base : (a1 a2 : CTerm) → #isValue a1 → #isValue a2 → ∼C! w t1 a1 → ∼C! w t2 a2 → eqa a1 a2 → TSQUASH-eq eqa w t1 t2
   TSQUASH-eq-trans : (t : CTerm) → TSQUASH-eq eqa w t1 t → TSQUASH-eq eqa w t t2 → TSQUASH-eq eqa w t1 t2
 
 

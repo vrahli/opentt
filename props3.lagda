@@ -49,7 +49,7 @@ module props3 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
 open import worldDef(W)
 open import computation(W)(C)(K)(G)
 open import bar(W)
-open import barI(W)(M)(C)(K)(P)
+open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(E)
 open import props0(W)(M)(C)(K)(P)(G)(E)
 open import ind2(W)(M)(C)(K)(P)(G)(E)
@@ -141,7 +141,7 @@ equalTypes-#⇛-left-rev {i} {w} {a} {b} {c} comp (EQTBAR x) =
 
 
 equalTypes-#⇛-left : {i : ℕ} {w : 𝕎·} {a b c : CTerm}
-                       → a #⇛ b at w
+                       → a #⇛! b at w
                        → equalTypes i w a c
                        → equalTypes i w b c
 {-# TERMINATING #-}
@@ -186,8 +186,8 @@ equalTypes-#⇛-left-right-rev {i} {w} {a} {b} {c} {d} c₁ c₂ eqt =
 
 
 equalTypes-#⇛-left-right : {i : ℕ} {w : 𝕎·} {a b c d : CTerm}
-                                → a #⇛ b at w
-                                → d #⇛ c at w
+                                → a #⇛! b at w
+                                → d #⇛! c at w
                                 → equalTypes i w a d
                                 → equalTypes i w b c
 equalTypes-#⇛-left-right {i} {w} {a} {b} {c} {d} c₁ c₂ eqt =
@@ -195,67 +195,67 @@ equalTypes-#⇛-left-right {i} {w} {a} {b} {c} {d} c₁ c₂ eqt =
 
 
 
-equalTerms-#⇛-left-rev-at : ℕ → Set(lsuc(L))
-equalTerms-#⇛-left-rev-at i =
-  {w : 𝕎·} {A B a b c : CTerm}
-  → a #⇛ b at w
-  → (eqt : equalTypes i w A B)
-  → equalTerms i w eqt b c
-  → equalTerms i w eqt a c
-
-
 TSQUASH-eq-#⇛ : {eqa : per} {w : 𝕎·} {a b c d : CTerm}
-                 → a #⇛ b at w
-                 → c #⇛ d at w
+                 → a #⇛! b at w
+                 → c #⇛! d at w
                  → TSQUASH-eq eqa w a c
                  → TSQUASH-eq eqa w b d
 TSQUASH-eq-#⇛ {eqa} {w} {a} {b} {c} {d} c₁ c₂ (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) =
   TSQUASH-eq-base
     a1 a2 i1 i2
-    (∼C-trans {w} {b} {a} {a1} (∼C-sym {w} {a} {b} (#⇓→∼C {w} {a} {b} (lower (c₁ w (⊑-refl· _))))) c1)
-    (∼C-trans {w} {d} {c} {a2} (∼C-sym {w} {c} {d} (#⇓→∼C {w} {c} {d} (lower (c₂ w (⊑-refl· _))))) c2)
+    (#⇛!-pres-∼C! {w} {a} {b} {a1} c₁ c1)
+    (#⇛!-pres-∼C! {w} {c} {d} {a2} c₂ c2)
     ea
 TSQUASH-eq-#⇛ {eqa} {w} {a} {b} {c} {d} c₁ c₂ (TSQUASH-eq-trans t h1 h2) =
   TSQUASH-eq-trans
     t
-    (TSQUASH-eq-#⇛ c₁ (#compAllRefl t w) h1)
-    (TSQUASH-eq-#⇛ (#compAllRefl t w) c₂ h2)
+    (TSQUASH-eq-#⇛ c₁ (#⇛!-refl {w} {t}) h1)
+    (TSQUASH-eq-#⇛ (#⇛!-refl {w} {t}) c₂ h2)
 
 
 
 TSQUASH-eq-#⇛-rev : {eqa : per} {w : 𝕎·} {a b c d : CTerm}
-                     → a #⇛ b at w
-                     → c #⇛ d at w
+                     → a #⇛! b at w
+                     → c #⇛! d at w
                      → TSQUASH-eq eqa w b d
                      → TSQUASH-eq eqa w a c
 TSQUASH-eq-#⇛-rev {eqa} {w} {a} {b} {c} {d} c₁ c₂ (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) =
   TSQUASH-eq-base
     a1 a2 i1 i2
-    (∼C-trans {w} {a} {b} {a1} (#⇓→∼C {w} {a} {b} (lower (c₁ w (⊑-refl· _)))) c1)
-    (∼C-trans {w} {c} {d} {a2} (#⇓→∼C {w} {c} {d} (lower (c₂ w (⊑-refl· _)))) c2)
+    (#⇛!-pres-∼C!-rev {w} {a} {b} {a1} c₁ c1)
+    (#⇛!-pres-∼C!-rev {w} {c} {d} {a2} c₂ c2)
     ea
 TSQUASH-eq-#⇛-rev {eqa} {w} {a} {b} {c} {d} c₁ c₂ (TSQUASH-eq-trans t h1 h2) =
   TSQUASH-eq-trans
     t
-    (TSQUASH-eq-#⇛-rev c₁ (#compAllRefl t w) h1)
-    (TSQUASH-eq-#⇛-rev (#compAllRefl t w) c₂ h2)
-
+    (TSQUASH-eq-#⇛-rev c₁ (#⇛!-refl {w} {t}) h1)
+    (TSQUASH-eq-#⇛-rev (#⇛!-refl {w} {t}) c₂ h2)
 
 
 TSQUASHeq-#⇛ : {eqa : per} {w : 𝕎·} {a b c d : CTerm}
-                     → a #⇛ b at w
-                     → c #⇛ d at w
+                     → a #⇛! b at w
+                     → c #⇛! d at w
                      → TSQUASHeq eqa w a c
                      → TSQUASHeq eqa w b d
 TSQUASHeq-#⇛ {eqa} {w} {a} {b} {c} {d} c₁ c₂ h = TSQUASH-eq→ (TSQUASH-eq-#⇛ c₁ c₂ (→TSQUASH-eq h))
 
 
 TSQUASHeq-#⇛-rev : {eqa : per} {w : 𝕎·} {a b c d : CTerm}
-                     → a #⇛ b at w
-                     → c #⇛ d at w
+                     → a #⇛! b at w
+                     → c #⇛! d at w
                      → TSQUASHeq eqa w b d
                      → TSQUASHeq eqa w a c
 TSQUASHeq-#⇛-rev {eqa} {w} {a} {b} {c} {d} c₁ c₂ h = TSQUASH-eq→ (TSQUASH-eq-#⇛-rev c₁ c₂ (→TSQUASH-eq h))
+
+
+
+equalTerms-#⇛-left-rev-at : ℕ → Set(lsuc(L))
+equalTerms-#⇛-left-rev-at i =
+  {w : 𝕎·} {A B a b c : CTerm}
+  → a #⇛! b at w
+  → (eqt : equalTypes i w A B)
+  → equalTerms i w eqt b c
+  → equalTerms i w eqt a c
 
 
 
@@ -264,7 +264,7 @@ equalTerms-#⇛-left-rev-aux : {i : ℕ}
                               → equalTerms-#⇛-left-rev-at i
 {-# TERMINATING #-}
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTNAT x x₁) eqi =
-  Mod.∀𝕎-□Func M (λ w1 e1 h → #strongMonEq-#⇛-left-rev {w1} {a} {b} {c} (∀𝕎-mon e1 comp) h) eqi
+  Mod.∀𝕎-□Func M (λ w1 e1 h → #⇛!sameℕ-#⇛-left-rev {w1} {a} {b} {c} ({--#⇛!-#⇛ {w1} {a} {b}--} (∀𝕎-mon e1 comp)) h) eqi
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTQNAT x x₁) eqi =
   Mod.∀𝕎-□Func M (λ w1 e1 h → #weakMonEq-#⇛-left-rev {w1} {a} {b} {c} (∀𝕎-mon e1 comp) h) eqi
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi =
@@ -272,19 +272,19 @@ equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTLT a1 a2 b
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi =
   Mod.∀𝕎-□Func M (λ w1 e1 h → h) eqi
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTFREE x x₁) eqi =
-  Mod.∀𝕎-□Func M (λ w1 e1 h → #⇛to-same-CS-#⇛-left-rev {w1} {a} {b} {c} (∀𝕎-mon e1 comp) h) eqi
+  Mod.∀𝕎-□Func M (λ w1 e1 h → #⇛to-same-CS-#⇛-left-rev {w1} {a} {b} {c} (#⇛!-#⇛ {w1} {a} {b} (∀𝕎-mon e1 comp)) h) eqi
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
     aw : ∀𝕎 w (λ w' e' → PIeq (equalTerms i w' (eqta w' e')) (λ a1 a2 eqa → equalTerms i w' (eqtb w' e' a1 a2 eqa)) b c
                         → PIeq (equalTerms i w' (eqta w' e')) (λ a1 a2 eqa → equalTerms i w' (eqtb w' e' a1 a2 eqa)) a c)
-    aw w' e h a₁ a₂ ea = equalTerms-#⇛-left-rev-aux ind (→-#⇛-#APPLY {w'} {a} {b} a₁ (∀𝕎-mon e comp)) (eqtb w' e a₁ a₂ ea) (h a₁ a₂ ea)
+    aw w' e h a₁ a₂ ea = equalTerms-#⇛-left-rev-aux ind (→-#⇛!-#APPLY {w'} {a} {b} a₁ (∀𝕎-mon e comp)) (eqtb w' e a₁ a₂ ea) (h a₁ a₂ ea)
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
     aw : ∀𝕎 w (λ w' e' → SUMeq (equalTerms i w' (eqta w' e')) (λ a1 a2 eqa → equalTerms i w' (eqtb w' e' a1 a2 eqa)) w' b c
                         → SUMeq (equalTerms i w' (eqta w' e')) (λ a1 a2 eqa → equalTerms i w' (eqtb w' e' a1 a2 eqa)) w' a c)
-    aw w' e (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) = a₁ , a₂ , b₁ , b₂ , ea , ⇛-trans (∀𝕎-mon e comp) c₁ , c₂ , eb
+    aw w' e (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) = a₁ , a₂ , b₁ , b₂ , ea , ⇛-trans (#⇛!-#⇛ {w'} {a} {b} (∀𝕎-mon e comp)) c₁ , c₂ , eb
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
@@ -305,14 +305,14 @@ equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTUNION A1 B
   where
     aw : ∀𝕎 w (λ w' e' → UNIONeq (equalTerms i w' (eqtA w' e')) (equalTerms i w' (eqtB w' e')) w' b c
                        → UNIONeq (equalTerms i w' (eqtA w' e')) (equalTerms i w' (eqtB w' e')) w' a c)
-    aw w' e (a₁ , a₂ , inj₁ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₁ (⇛-trans (∀𝕎-mon e comp) c₁ , c₂ , ea)
-    aw w' e (a₁ , a₂ , inj₂ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₂ (⇛-trans (∀𝕎-mon e comp) c₁ , c₂ , ea)
+    aw w' e (a₁ , a₂ , inj₁ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₁ (#⇛!-trans {w'} {a} {b} {#INL a₁} (∀𝕎-mon e comp) c₁ {--⇛-trans ({--#⇛!-#⇛ {w'} {a} {b}--} (∀𝕎-mon e comp)) c₁--} , c₂ , ea)
+    aw w' e (a₁ , a₂ , inj₂ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₂ (#⇛!-trans {w'} {a} {b} {#INR a₁} (∀𝕎-mon e comp) c₁ {--⇛-trans ({--#⇛!-#⇛ {w'} {a} {b}--} (∀𝕎-mon e comp)) c₁--} , c₂ , ea)
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTSQUASH A1 A2 x x₁ eqtA exta) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
     aw : ∀𝕎 w (λ w' e' → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' b c
                        → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' a c)
-    aw w' e h = TSQUASHeq-#⇛-rev (∀𝕎-mon e comp) (#compAllRefl c w') h
+    aw w' e h = TSQUASHeq-#⇛-rev (∀𝕎-mon e comp) (#⇛!-refl {w'} {c}) h
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
@@ -323,7 +323,7 @@ equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTUNIV i₁ 
   □·EqTypes→uniUpTo {i₁} {i} {p} (Mod.∀𝕎-□Func M aw (uniUpTo→□·EqTypes {i₁} {i} {p} eqi))
   where
     aw : ∀𝕎 w (λ w' e' → equalTypes i₁ w' b c → equalTypes i₁ w' a c)
-    aw w' e h = equalTypes-#⇛-left-rev (∀𝕎-mon e comp) h
+    aw w' e h = equalTypes-#⇛-left-rev (#⇛!-#⇛ {w'} {a} {b} (∀𝕎-mon e comp)) h
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTLIFT A1 A2 x x₁ eqtA exta) eqi rewrite ↓U-uni i =
   Mod.∀𝕎-□Func M (λ w' e h → equalTerms-#⇛-left-rev-aux (λ j k → ind j (≤-trans k (↓𝕃≤ i))) (∀𝕎-mon e comp) (eqtA w' e) h) eqi
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTBAR x) eqi =
@@ -337,23 +337,20 @@ equalTerms-#⇛-left-rev : (i : ℕ) → equalTerms-#⇛-left-rev-at i
 equalTerms-#⇛-left-rev i = <ℕind equalTerms-#⇛-left-rev-at (λ n ind → equalTerms-#⇛-left-rev-aux ind) i
 
 
-
 equalInType-#⇛-left-rev : {i : ℕ} {w : 𝕎·} {T a b c : CTerm}
-                           → a #⇛ b at w
+                           → a #⇛! b at w
                            → equalInType i w T b c
                            → equalInType i w T a c
 equalInType-#⇛-left-rev {i} {w} {T} {a} {b} {c} comp (eqt , eqi) = eqt , equalTerms-#⇛-left-rev i comp eqt eqi
 
 
-
 equalTerms-#⇛-left-at : ℕ → Set(lsuc(L))
 equalTerms-#⇛-left-at i =
   {w : 𝕎·} {A B a b c : CTerm}
-  → a #⇛ b at w
+  → a #⇛! b at w
   → (eqt : equalTypes i w A B)
   → equalTerms i w eqt a c
   → equalTerms i w eqt b c
-
 
 
 
@@ -362,7 +359,7 @@ equalTerms-#⇛-left-aux : {i : ℕ}
                           → equalTerms-#⇛-left-at i
 {-# TERMINATING #-}
 equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTNAT x x₁) eqi =
-  Mod.∀𝕎-□Func M (λ w1 e1 h → #strongMonEq-#⇛-left {w1} {a} {b} {c} (∀𝕎-mon e1 comp) h) eqi
+  Mod.∀𝕎-□Func M (λ w1 e1 h → #⇛!sameℕ-#⇛-left {w1} {b} {a} {c} (∀𝕎-mon e1 comp) h) eqi
 equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTQNAT x x₁) eqi =
   Mod.∀𝕎-□Func M (λ w1 e1 h → #weakMonEq-#⇛-left {w1} {a} {b} {c} (∀𝕎-mon e1 comp) h) eqi
 equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi =
@@ -376,7 +373,7 @@ equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTPI A1 B1 A2 B2
   where
     aw : ∀𝕎 w (λ w' e' → PIeq (equalTerms i w' (eqta w' e')) (λ a1 a2 eqa → equalTerms i w' (eqtb w' e' a1 a2 eqa)) a c
                         → PIeq (equalTerms i w' (eqta w' e')) (λ a1 a2 eqa → equalTerms i w' (eqtb w' e' a1 a2 eqa)) b c)
-    aw w' e h a₁ a₂ ea = equalTerms-#⇛-left-aux ind (→-#⇛-#APPLY {w'} {a} {b} a₁ (∀𝕎-mon e comp)) (eqtb w' e a₁ a₂ ea) (h a₁ a₂ ea)
+    aw w' e h a₁ a₂ ea = equalTerms-#⇛-left-aux ind (→-#⇛!-#APPLY {w'} {a} {b} a₁ (∀𝕎-mon e comp)) (eqtb w' e a₁ a₂ ea) (h a₁ a₂ ea)
 equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
@@ -403,14 +400,14 @@ equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTUNION A1 B1 A2
   where
     aw : ∀𝕎 w (λ w' e' → UNIONeq (equalTerms i w' (eqtA w' e')) (equalTerms i w' (eqtB w' e')) w' a c
                        → UNIONeq (equalTerms i w' (eqtA w' e')) (equalTerms i w' (eqtB w' e')) w' b c)
-    aw w' e (a₁ , a₂ , inj₁ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₁ (val-#⇛→ {w'} {a} {b} {#INL a₁} tt (∀𝕎-mon e comp) c₁ , c₂ , ea)
-    aw w' e (a₁ , a₂ , inj₂ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₂ (val-#⇛→ {w'} {a} {b} {#INR a₁} tt (∀𝕎-mon e comp) c₁ , c₂ , ea)
+    aw w' e (a₁ , a₂ , inj₁ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₁ (val-#⇛!→ {w'} {a} {b} {#INL a₁} tt (∀𝕎-mon e comp) c₁ , c₂ , ea)
+    aw w' e (a₁ , a₂ , inj₂ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₂ (val-#⇛!→ {w'} {a} {b} {#INR a₁} tt (∀𝕎-mon e comp) c₁ , c₂ , ea)
 equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTSQUASH A1 A2 x x₁ eqtA exta) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
     aw : ∀𝕎 w (λ w' e' → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' a c
                        → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' b c)
-    aw w' e h = TSQUASHeq-#⇛ (∀𝕎-mon e comp) (#compAllRefl c w') h
+    aw w' e h = TSQUASHeq-#⇛ (∀𝕎-mon e comp) (#⇛!-refl {w'} {c}) h
 equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
@@ -437,7 +434,7 @@ equalTerms-#⇛-left i = <ℕind equalTerms-#⇛-left-at (λ n ind → equalTerm
 
 
 equalInType-#⇛-left : {i : ℕ} {w : 𝕎·} {T a b c : CTerm}
-                       → a #⇛ b at w
+                       → a #⇛! b at w
                        → equalInType i w T a c
                        → equalInType i w T b c
 equalInType-#⇛-left {i} {w} {T} {a} {b} {c} comp (eqt , eqi) = eqt , equalTerms-#⇛-left i comp eqt eqi
@@ -451,8 +448,8 @@ equalInType-trans {u} {w} {T} {a} {b} {c} eqi eqj = EQTtrans-equalInType u w T a
 
 
 equalInType-#⇛-LR : {i : ℕ} {w : 𝕎·} {T a b c d : CTerm}
-                       → a #⇛ b at w
-                       → c #⇛ d at w
+                       → a #⇛! b at w
+                       → c #⇛! d at w
                        → equalInType i w T a c
                        → equalInType i w T b d
 equalInType-#⇛-LR {i} {w} {T} {a} {b} {c} {d} comp1 comp2 eqi =
@@ -460,12 +457,13 @@ equalInType-#⇛-LR {i} {w} {T} {a} {b} {c} {d} comp1 comp2 eqi =
 
 
 equalInType-#⇛-LR-rev : {i : ℕ} {w : 𝕎·} {T a b c d : CTerm}
-                         → a #⇛ b at w
-                         → c #⇛ d at w
+                         → a #⇛! b at w
+                         → c #⇛! d at w
                          → equalInType i w T b d
                          → equalInType i w T a c
 equalInType-#⇛-LR-rev {i} {w} {T} {a} {b} {c} {d} comp1 comp2 eqi =
   equalInType-#⇛-left-rev comp1 (equalInType-sym (equalInType-#⇛-left-rev comp2 (equalInType-sym eqi)))
+
 
 
 equalInType-SET : {u : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} {f g : CTerm}
@@ -540,15 +538,15 @@ APPLY-lamAX-⇛ w a w1 e1 = lift (1 , refl)
                        → isType n w A
                        → isType n w B
                        → □· w (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
-                                          → (a #⇛ (#INL x) at w' × b #⇛ (#INL y) at w' × equalInType n w' A x y)
+                                          → (a #⇛! (#INL x) at w' × b #⇛! (#INL y) at w' × equalInType n w' A x y)
                                              ⊎
-                                             (a #⇛ (#INR x) at w' × b #⇛ (#INR y) at w' × equalInType n w' B x y))))
+                                             (a #⇛! (#INR x) at w' × b #⇛! (#INR y) at w' × equalInType n w' B x y))))
                        → equalInType n w (#UNION A B) a b
 →equalInType-UNION {n} {w} {A} {B} {a} {b} isa isb i = eqTypesUNION← isa isb , Mod.∀𝕎-□Func M aw i
   where
     aw : ∀𝕎 w (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
-                            a #⇛ #INL x at w' × b #⇛ #INL y at w' × equalInType n w' A x y
-                            ⊎ a #⇛ #INR x at w' × b #⇛ #INR y at w' × equalInType n w' B x y))
+                            a #⇛! #INL x at w' × b #⇛! #INL y at w' × equalInType n w' A x y
+                            ⊎ a #⇛! #INR x at w' × b #⇛! #INR y at w' × equalInType n w' B x y))
                        → UNIONeq (eqInType (uni n) w' (eqTypes-mon (uni n) isa w' e')) (eqInType (uni n) w' (eqTypes-mon (uni n) isb w' e')) w' a b)
     aw w1 e1 (x , y , inj₁ (c₁ , c₂ , ea)) = x , y , inj₁ (c₁ , c₂ , equalInType→eqInType refl {eqTypes-mon (uni n) isa w1 e1} ea)
     aw w1 e1 (x , y , inj₂ (c₁ , c₂ , ea)) = x , y , inj₂ (c₁ , c₂ , equalInType→eqInType refl {eqTypes-mon (uni n) isb w1 e1} ea)
@@ -691,12 +689,6 @@ isType-#NAT→BOOL w n rewrite #NAT→BOOL≡ = eqTypesFUN← eqTypesNAT (isType
 
 
 
--- MOVE to terms
-#NAT→T : CTerm → CTerm
-#NAT→T T = #FUN #NAT T
-
-
-
 →equalInType-CS-NAT→T : {n : ℕ} {w : 𝕎·} {a b : Name} {T : CTerm}
                           → isType n w T
                           → ∀𝕎 w (λ w' _ → (m : ℕ) → equalInType n w' T (#APPLY (#CS a) (#NUM m)) (#APPLY (#CS b) (#NUM m)))
@@ -708,12 +700,12 @@ isType-#NAT→BOOL w n rewrite #NAT→BOOL≡ = eqTypesFUN← eqTypesNAT (isType
                       → equalInType n w' T (#APPLY (#CS a) a₁) (#APPLY (#CS b) a₂))
     aw w1 e1 a₁ a₂ ea = equalInType-local (Mod.∀𝕎-□Func M aw1 ea1)
       where
-        ea1 : □· w1 (λ w' _ → #strongMonEq w' a₁ a₂)
+        ea1 : □· w1 (λ w' _ → #⇛!sameℕ {--#strongMonEq--} w' a₁ a₂)
         ea1 = equalInType-NAT→ n w1 a₁ a₂ ea
 
-        aw1 : ∀𝕎 w1 (λ w' e' → #strongMonEq w' a₁ a₂ → equalInType n w' T (#APPLY (#CS a) a₁) (#APPLY (#CS b) a₂))
-        aw1 w2 e2 (m , c₁ , c₂) = equalInType-#⇛-LR-rev (#⇛-APPLY-CS {w2} {a₁} {#NUM m} a c₁)
-                                                         (#⇛-APPLY-CS {w2} {a₂} {#NUM m} b c₂)
+        aw1 : ∀𝕎 w1 (λ w' e' → #⇛!sameℕ {--#strongMonEq--} w' a₁ a₂ → equalInType n w' T (#APPLY (#CS a) a₁) (#APPLY (#CS b) a₂))
+        aw1 w2 e2 (m , c₁ , c₂) = equalInType-#⇛-LR-rev (#⇛!-APPLY-CS {w2} {a₁} {#NUM m} a c₁)
+                                                         (#⇛!-APPLY-CS {w2} {a₂} {#NUM m} b c₂)
                                                          (i w2 (⊑-trans· e1 e2) m)
 
 
@@ -753,8 +745,8 @@ fun-equalInType-SQUASH-UNION {n} {w} {a} {b} {c} {d} {u} {v} istc istd imp1 imp2
     aw1 w1 e1 (t , eqj) = Mod.∀𝕎-□Func M aw2 (equalInType-UNION→ eqj)
       where
         aw2 : ∀𝕎 w1 (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
-                                      (t #⇛ #INL x at w' × t #⇛ #INL y at w' × equalInType n w' a x y)
-                                      ⊎ (t #⇛ #INR x at w' × t #⇛ #INR y at w' × equalInType n w' b x y)))
+                                      (t #⇛! #INL x at w' × t #⇛! #INL y at w' × equalInType n w' a x y)
+                                      ⊎ (t #⇛! #INR x at w' × t #⇛! #INR y at w' × equalInType n w' b x y)))
                             → (z : w ⊑· w') → inhType n w' (#UNION c d))
         aw2 w2 e2 (x , y , inj₁ (c₁ , c₂ , eqk)) z = #INL (fst (imp1 w2 z (x , equalInType-refl eqk))) , eql
           where
@@ -763,8 +755,8 @@ fun-equalInType-SQUASH-UNION {n} {w} {a} {b} {c} {d} {u} {v} istc istd imp1 imp2
                                       (eqTypes-mon (uni n) istd w2 z)
                                       (Mod.∀𝕎-□ M λ w3 e3 → fst (imp1 w2 z (x , equalInType-refl eqk)) ,
                                                                      fst (imp1 w2 z (x , equalInType-refl eqk)) ,
-                                                                     inj₁ (#compAllRefl (#INL (fst (imp1 w2 z (x , equalInType-refl eqk)))) _ ,
-                                                                           #compAllRefl (#INL (fst (imp1 w2 z (x , equalInType-refl eqk)))) _ ,
+                                                                     inj₁ (#⇛!-refl {w3} {#INL (fst (imp1 w2 z (x , equalInType-refl eqk)))} {--#compAllRefl (#INL (fst (imp1 w2 z (x , equalInType-refl eqk)))) _--} ,
+                                                                           #⇛!-refl {w3} {#INL (fst (imp1 w2 z (x , equalInType-refl eqk)))} {--#compAllRefl (#INL (fst (imp1 w2 z (x , equalInType-refl eqk)))) _--} ,
                                                                            equalInType-mon (snd (imp1 w2 z (x , equalInType-refl eqk))) w3 e3))
         aw2 w2 e2 (x , y , inj₂ (c₁ , c₂ , eqk)) z = #INR (fst (imp2 w2 z (x , equalInType-refl eqk))) , eqr
           where
@@ -773,9 +765,10 @@ fun-equalInType-SQUASH-UNION {n} {w} {a} {b} {c} {d} {u} {v} istc istd imp1 imp2
                                       (eqTypes-mon (uni n) istd w2 z)
                                       (Mod.∀𝕎-□ M λ w3 e3 → fst (imp2 w2 z (x , equalInType-refl eqk)) ,
                                                                      fst (imp2 w2 z (x , equalInType-refl eqk)) ,
-                                                                     inj₂ (#compAllRefl (#INR (fst (imp2 w2 z (x , equalInType-refl eqk)))) _ ,
-                                                                           #compAllRefl (#INR (fst (imp2 w2 z (x , equalInType-refl eqk)))) _ ,
+                                                                     inj₂ (#⇛!-refl {w3} {#INR (fst (imp2 w2 z (x , equalInType-refl eqk)))} {--#compAllRefl (#INR (fst (imp2 w2 z (x , equalInType-refl eqk)))) _--} ,
+                                                                           #⇛!-refl {w3} {#INR (fst (imp2 w2 z (x , equalInType-refl eqk)))} {--#compAllRefl (#INR (fst (imp2 w2 z (x , equalInType-refl eqk)))) _--} ,
                                                                            equalInType-mon (snd (imp2 w2 z (x , equalInType-refl eqk))) w3 e3))
+
 
 
 
@@ -786,18 +779,18 @@ equalInType-BOOL→equalTypes-ASSERT₁ {n} {w} {a} {b} eqb =
   EQTBAR (Mod.∀𝕎-□Func M j i)
   where
     i : □· w (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
-                        → (a #⇛ (#INL x) at w' × b #⇛ (#INL y) at w' × equalInType n w' #TRUE x y)
+                        → (a #⇛! (#INL x) at w' × b #⇛! (#INL y) at w' × equalInType n w' #TRUE x y)
                            ⊎
-                           (a #⇛ (#INR x) at w' × b #⇛ (#INR y) at w' × equalInType n w' #TRUE x y))))
+                           (a #⇛! (#INR x) at w' × b #⇛! (#INR y) at w' × equalInType n w' #TRUE x y))))
     i = equalInType-UNION→ eqb
 
     j : ∀𝕎 w (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y
-                      → (a #⇛ #INL x at w' × b #⇛ #INL y at w' × equalInType n w' #TRUE x y)
+                      → (a #⇛! #INL x at w' × b #⇛! #INL y at w' × equalInType n w' #TRUE x y)
                          ⊎
-                         (a #⇛ #INR x at w' × b #⇛ #INR y at w' × equalInType n w' #TRUE x y)))
+                         (a #⇛! #INR x at w' × b #⇛! #INR y at w' × equalInType n w' #TRUE x y)))
                       → equalTypes n w' (#ASSERT₁ a) (#ASSERT₁ b))
-    j w' e (x , y , inj₁ (c₁ , c₂ , eqi)) = equalTypes-#⇛-left-right-rev (#⇛-ASSERT₁-INL {w'} {a} {x} c₁) (#⇛-ASSERT₁-INL {w'} {b} {y} c₂) eqTypesTRUE
-    j w' e (x , y , inj₂ (c₁ , c₂ , eqi)) = equalTypes-#⇛-left-right-rev (#⇛-ASSERT₁-INR {w'} {a} {x} c₁) (#⇛-ASSERT₁-INR {w'} {b} {y} c₂) eqTypesFALSE
+    j w' e (x , y , inj₁ (c₁ , c₂ , eqi)) = equalTypes-#⇛-left-right-rev (#⇛-ASSERT₁-INL {w'} {a} {x} (#⇛!→#⇛ {w'} {a} {#INL x} c₁)) (#⇛-ASSERT₁-INL {w'} {b} {y} (#⇛!→#⇛ {w'} {b} {#INL y} c₂)) eqTypesTRUE --equalTypes-#⇛-left-right-rev (#⇛-ASSERT₁-INL {w'} {a} {x} c₁) (#⇛-ASSERT₁-INL {w'} {b} {y} c₂) eqTypesTRUE
+    j w' e (x , y , inj₂ (c₁ , c₂ , eqi)) = equalTypes-#⇛-left-right-rev (#⇛-ASSERT₁-INR {w'} {a} {x} (#⇛!→#⇛ {w'} {a} {#INR x} c₁)) (#⇛-ASSERT₁-INR {w'} {b} {y} (#⇛!→#⇛ {w'} {b} {#INR y} c₂)) eqTypesFALSE --equalTypes-#⇛-left-right-rev (#⇛-ASSERT₁-INR {w'} {a} {x} c₁) (#⇛-ASSERT₁-INR {w'} {b} {y} c₂) eqTypesFALSE
 
 
 
@@ -812,9 +805,9 @@ BTRUE∈BOOL n w =
     (→equalInType-UNION eqTypesTRUE eqTypesTRUE (Mod.∀𝕎-□ M aw))
   where
     aw : ∀𝕎 w (λ w' e → Σ CTerm (λ x → Σ CTerm (λ y →
-                          (#BTRUE #⇛ #INL x at w' × #BTRUE #⇛ #INL y at w' × equalInType n w' #TRUE x y)
-                          ⊎ (#BTRUE #⇛ #INR x at w' × #BTRUE #⇛ #INR y at w' × equalInType n w' #TRUE x y))))
-    aw w' e = #AX , #AX , inj₁ (compAllRefl (INL AX) w' , compAllRefl (INL AX) w' , AX∈TRUE n w')
+                          (#BTRUE #⇛! #INL x at w' × #BTRUE #⇛! #INL y at w' × equalInType n w' #TRUE x y)
+                          ⊎ (#BTRUE #⇛! #INR x at w' × #BTRUE #⇛! #INR y at w' × equalInType n w' #TRUE x y))))
+    aw w' e = #AX , #AX , inj₁ (#⇛!-refl {w'} {#BTRUE} {--compAllRefl (INL AX) w'--} , #⇛!-refl {w'} {#BTRUE} {--compAllRefl (INL AX) w'--} , AX∈TRUE n w')
 
 
 
@@ -825,9 +818,9 @@ BFALSE∈BOOL n w =
     (→equalInType-UNION eqTypesTRUE eqTypesTRUE (Mod.∀𝕎-□ M aw))
   where
     aw : ∀𝕎 w (λ w' e → Σ CTerm (λ x → Σ CTerm (λ y →
-                          (#BFALSE #⇛ #INL x at w' × #BFALSE #⇛ #INL y at w' × equalInType n w' #TRUE x y)
-                          ⊎ (#BFALSE #⇛ #INR x at w' × #BFALSE #⇛ #INR y at w' × equalInType n w' #TRUE x y))))
-    aw w' e = #AX , #AX , inj₂ (compAllRefl (INR AX) w' , compAllRefl (INR AX) w' , AX∈TRUE n w')
+                          (#BFALSE #⇛! #INL x at w' × #BFALSE #⇛! #INL y at w' × equalInType n w' #TRUE x y)
+                          ⊎ (#BFALSE #⇛! #INR x at w' × #BFALSE #⇛! #INR y at w' × equalInType n w' #TRUE x y))))
+    aw w' e = #AX , #AX , inj₂ (#⇛!-refl {w'} {#BFALSE} {--compAllRefl (INR AX) w'--} , #⇛!-refl {w'} {#BFALSE} {--compAllRefl (INR AX) w'--} , AX∈TRUE n w')
 
 
 equalInType-BOOL→equalTypes-ASSERT₂ : {n : ℕ} {w : 𝕎·} {a b : CTerm}
@@ -939,12 +932,12 @@ typeSys n =
   mkts
     (TEQsym-equalTypes n)
     (TEQtrans-equalTypes n)
-    (λ w A B comp e → equalTypes-#⇛-left-right (#compAllRefl A w) comp e)
+    (λ w A B comp e → equalTypes-#⇛-left-right (#⇛!-refl {w} {A}) comp {--comp--} e)
     (λ {w1} {w2} A B e eqt → eqTypes-mon (uni n) eqt w2 e)
     (λ {w} A B h → eqTypes-local h)
     (EQTsym-equalInType n)
     (EQTtrans-equalInType n)
-    (λ w A a b comp eqi → equalInType-#⇛-LR (#compAllRefl a w) comp eqi)
+    (λ w A a b comp eqi → equalInType-#⇛-LR (#⇛!-refl {w} {a}) comp {--comp--} eqi)
     (λ {w1} {w2} A a b e eqi → equalInType-mon eqi w2 e)
     (λ {w} A a b h → equalInType-local h)
     (λ w t → ¬equalInType-FALSE)
@@ -954,40 +947,40 @@ typeSys n =
 
 equalInType-BOOL→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                     → equalInType i w #BOOL a b
-                    → □· w (λ w' _ → #strongBool w' a b)
+                    → □· w (λ w' _ → #strongBool! w' a b)
 equalInType-BOOL→ i w a b eqi =
   Mod.∀𝕎-□Func M aw (equalInType-UNION→ eqi)
   where
     aw : ∀𝕎 w (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
-                            (a #⇛ #INL x at w' × b #⇛ #INL y at w' × equalInType i w' #TRUE x y)
+                            (a #⇛! #INL x at w' × b #⇛! #INL y at w' × equalInType i w' #TRUE x y)
                             ⊎
-                            (a #⇛ #INR x at w' × b #⇛ #INR y at w' × equalInType i w' #TRUE x y)))
-                       → #strongBool w' a b)
-    aw w' e' (x , y , inj₁ (c₁ , c₂ , j)) = x , y , inj₁ (c₁ , c₂)
-    aw w' e' (x , y , inj₂ (c₁ , c₂ , j)) = x , y , inj₂ (c₁ , c₂)
+                            (a #⇛! #INR x at w' × b #⇛! #INR y at w' × equalInType i w' #TRUE x y)))
+                       → #strongBool! w' a b)
+    aw w' e' (x , y , inj₁ (c₁ , c₂ , j)) = x , y , inj₁ ({--#⇛!→#⇛ {w'} {a} {#INL x}--} c₁ , {--#⇛!→#⇛ {w'} {b} {#INL y}--} c₂) --inj₁ (c₁ , c₂)
+    aw w' e' (x , y , inj₂ (c₁ , c₂ , j)) = x , y , inj₂ ({--#⇛!→#⇛ {w'} {a} {#INR x}--} c₁ , {--#⇛!→#⇛ {w'} {b} {#INR y}--} c₂) --inj₂ (c₁ , c₂)
 
 
 →equalInType-BOOL : (i : ℕ) (w : 𝕎·) (a b : CTerm)
-                    → □· w (λ w' _ → #strongBool w' a b)
+                    → □· w (λ w' _ → #strongBool! w' a b)
                     → equalInType i w #BOOL a b
 →equalInType-BOOL i w a b h =
   ≡CTerm→equalInType (sym #BOOL≡) (→equalInType-UNION eqTypesTRUE eqTypesTRUE (Mod.∀𝕎-□Func M aw h))
   where
-    aw : ∀𝕎 w (λ w' e' → #strongBool w' a b
+    aw : ∀𝕎 w (λ w' e' → #strongBool! w' a b
                         → Σ CTerm (λ x → Σ CTerm (λ y →
-                           (a #⇛ #INL x at w' × b #⇛ #INL y at w' × equalInType i w' #TRUE x y)
+                           (a #⇛! #INL x at w' × b #⇛! #INL y at w' × equalInType i w' #TRUE x y)
                            ⊎
-                           (a #⇛ #INR x at w' × b #⇛ #INR y at w' × equalInType i w' #TRUE x y))))
-    aw w' e (x , y , inj₁ (c₁ , c₂)) = x , y , inj₁ (c₁ , c₂ , →equalInType-TRUE i)
-    aw w' e (x , y , inj₂ (c₁ , c₂)) = x , y , inj₂ (c₁ , c₂ , →equalInType-TRUE i)
+                           (a #⇛! #INR x at w' × b #⇛! #INR y at w' × equalInType i w' #TRUE x y))))
+    aw w' e (x , y , inj₁ (c₁ , c₂)) = x , y , inj₁ (c₁ {--c₁--} , c₂ {--c₂--} , →equalInType-TRUE i)
+    aw w' e (x , y , inj₂ (c₁ , c₂)) = x , y , inj₂ (c₁ {--c₁--} , c₂ {--c₂--} , →equalInType-TRUE i)
 
 
-#strongBool-INL : (w : 𝕎·) (x y : CTerm) → #strongBool w (#INL x) (#INL y)
-#strongBool-INL w x y = x , y , inj₁ (#compAllRefl (#INL x) w , #compAllRefl (#INL y) w)
+#strongBool-INL : (w : 𝕎·) (x y : CTerm) → #strongBool! w (#INL x) (#INL y)
+#strongBool-INL w x y = x , y , inj₁ (#⇛!-refl {w} {#INL x} , #⇛!-refl {w} {#INL y}) -- (#compAllRefl (#INL x) w , #compAllRefl (#INL y) w)
 
 
-#strongBool-INR : (w : 𝕎·) (x y : CTerm) → #strongBool w (#INR x) (#INR y)
-#strongBool-INR w x y = x , y , inj₂ (#compAllRefl (#INR x) w , #compAllRefl (#INR y) w)
+#strongBool-INR : (w : 𝕎·) (x y : CTerm) → #strongBool! w (#INR x) (#INR y)
+#strongBool-INR w x y = x , y , inj₂ (#⇛!-refl {w} {#INR x} , #⇛!-refl {w} {#INR y}) -- (#compAllRefl (#INR x) w , #compAllRefl (#INR y) w)
 
 
 →equalInType-BOOL-INL : (i : ℕ) (w : 𝕎·) (x y : CTerm)
@@ -1001,7 +994,7 @@ equalInType-BOOL→ i w a b eqi =
 
 
 #weakBool→TSQUASHeq-#BOOL : {i : ℕ} {w : 𝕎·} {a b : CTerm}
-                             → #weakBool w a b
+                             → #weakBool! w a b
                              → TSQUASHeq (equalInType i w #BOOL) w a b
 #weakBool→TSQUASHeq-#BOOL {i} {w} {a} {b} h =
   TSQUASH-eq→ (c (snd (snd (lower (h w (⊑-refl· _))))) ) --(TSQUASH-eq-base (#NUM n) (#NUM n) tt tt c₁ c₂ (NUM-equalInType-NAT i w n))
@@ -1012,54 +1005,54 @@ equalInType-BOOL→ i w a b eqi =
     y : CTerm
     y = fst (snd (lower (h w (⊑-refl· _))))
 
-    c : ((a #⇓ #INL x at w × b #⇓ #INL y at w) ⊎ (a #⇓ #INR x at w × b #⇓ #INR y at w)) → TSQUASH-eq (equalInType i w #BOOL) w a b
-    c (inj₁ (c₁ , c₂)) = TSQUASH-eq-base (#INL x) (#INL y) tt tt (#⇓→∼C {w} {a} {#INL x} c₁) (#⇓→∼C {w} {b} {#INL y} c₂) (→equalInType-BOOL-INL i w x y)
-    c (inj₂ (c₁ , c₂)) = TSQUASH-eq-base (#INR x) (#INR y) tt tt (#⇓→∼C {w} {a} {#INR x} c₁) (#⇓→∼C {w} {b} {#INR y} c₂) (→equalInType-BOOL-INR i w x y)
+    c : ((a #⇓! #INL x at w × b #⇓! #INL y at w) ⊎ (a #⇓! #INR x at w × b #⇓! #INR y at w)) → TSQUASH-eq (equalInType i w #BOOL) w a b
+    c (inj₁ (c₁ , c₂)) = TSQUASH-eq-base (#INL x) (#INL y) tt tt (#⇓!→∼C! {w} {a} {#INL x} c₁) (#⇓!→∼C! {w} {b} {#INL y} c₂) (→equalInType-BOOL-INL i w x y)
+    c (inj₂ (c₁ , c₂)) = TSQUASH-eq-base (#INR x) (#INR y) tt tt (#⇓!→∼C! {w} {a} {#INR x} c₁) (#⇓!→∼C! {w} {b} {#INR y} c₂) (→equalInType-BOOL-INR i w x y)
 
 
 
 →equalInType-QTBOOL : (i : ℕ) (w : 𝕎·) (a b : CTerm)
-                       → □· w (λ w' _ → #weakBool w' a b)
+                       → □· w (λ w' _ → #weakBool! w' a b)
                        → equalInType i w #QTBOOL a b
 →equalInType-QTBOOL i w a b j =
   ≡CTerm→equalInType (sym #QTBOOL≡) (equalInTypeTSQUASH← (Mod.∀𝕎-□Func M aw j))
   where
-    aw : ∀𝕎 w (λ w' e' → #weakBool w' a b → TSQUASHeq (equalInType i w' #BOOL) w' a b)
+    aw : ∀𝕎 w (λ w' e' → #weakBool! w' a b → TSQUASHeq (equalInType i w' #BOOL) w' a b)
     aw w' e  h = #weakBool→TSQUASHeq-#BOOL h
 
 
 
 TSQUASH-eq-BOOL→weakMonEq : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                              → TSQUASH-eq (equalInType i w #BOOL) w a b
-                             → Lift (lsuc L) (#⇓same-bool w a b)
+                             → Lift (lsuc L) (#⇓!same-bool w a b)
 TSQUASH-eq-BOOL→weakMonEq i w a b (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) =
   Mod.□-const M (Mod.∀𝕎-□Func M aw j)
   where
-    j : □· w (λ w' _ → #strongBool w' a1 a2)
+    j : □· w (λ w' _ → #strongBool! w' a1 a2)
     j = equalInType-BOOL→ i w a1 a2 ea
 
-    aw : ∀𝕎 w (λ w1 e1 → #strongBool w1 a1 a2 → Lift (lsuc L) (#⇓same-bool w a b))
-    aw w1 e1 (x , y , inj₁ (c₁' , c₂')) = lift (x , y , inj₁ (∼C→#⇓ {w} {a} {#INL x} tt c₁'' , ∼C→#⇓ {w} {b} {#INL y} tt c₂''))
+    aw : ∀𝕎 w (λ w1 e1 → #strongBool! w1 a1 a2 → Lift (lsuc L) (#⇓!same-bool w a b))
+    aw w1 e1 (x , y , inj₁ (c₁' , c₂')) = lift (x , y , inj₁ (∼C!→#⇓! {w} {a} {#INL x} tt c₁'' , ∼C!→#⇓! {w} {b} {#INL y} tt c₂'')) --∼C!→#⇓ {w} {a} {#INL x} tt c₁'' , ∼C!→#⇓ {w} {b} {#INL y} tt c₂''))
       where
-        c₁'' : ∼C w a (#INL x)
-        c₁'' = ≡R→∼C {w} {a} {a1} {#INL x} (#compAllVal c₁' i1) c1
+        c₁'' : ∼C! w a (#INL x)
+        c₁'' = ≡R→∼C! {w} {a} {a1} {#INL x} (#⇛!→≡ {a1} {#INL x} {w1} c₁' i1) {--(#compAllVal c₁' i1)--} c1
 
-        c₂'' : ∼C w b (#INL y)
-        c₂'' = ≡R→∼C {w} {b} {a2} {#INL y} (#compAllVal c₂' i2) c2
-    aw w1 e1 (x , y , inj₂ (c₁' , c₂')) = lift (x , y , inj₂ (∼C→#⇓ {w} {a} {#INR x} tt c₁'' , ∼C→#⇓ {w} {b} {#INR y} tt c₂''))
+        c₂'' : ∼C! w b (#INL y)
+        c₂'' = ≡R→∼C! {w} {b} {a2} {#INL y} (#⇛!→≡ {a2} {#INL y} {w1} c₂' i2) {--(#compAllVal c₂' i2)--} c2
+    aw w1 e1 (x , y , inj₂ (c₁' , c₂')) = lift (x , y , inj₂ (∼C!→#⇓! {w} {a} {#INR x} tt c₁'' , ∼C!→#⇓! {w} {b} {#INR y} tt c₂'')) --∼C!→#⇓ {w} {a} {#INR x} tt c₁'' , ∼C!→#⇓ {w} {b} {#INR y} tt c₂''))
       where
-        c₁'' : ∼C w a (#INR x)
-        c₁'' = ≡R→∼C {w} {a} {a1} {#INR x} (#compAllVal c₁' i1) c1
+        c₁'' : ∼C! w a (#INR x)
+        c₁'' = ≡R→∼C! {w} {a} {a1} {#INR x} (#⇛!→≡ {a1} {#INR x} {w1} c₁' i1) {--(#compAllVal c₁' i1)--} c1
 
-        c₂'' : ∼C w b (#INR y)
-        c₂'' = ≡R→∼C {w} {b} {a2} {#INR y} (#compAllVal c₂' i2) c2
+        c₂'' : ∼C! w b (#INR y)
+        c₂'' = ≡R→∼C! {w} {b} {a2} {#INR y} (#⇛!→≡ {a2} {#INR y} {w1} c₂' i2) {--(#compAllVal c₂' i2)--} c2
 TSQUASH-eq-BOOL→weakMonEq i w a b (TSQUASH-eq-trans t h1 h2) =
-  lift-#⇓same-bool-trans {w} {a} {t} {b} (TSQUASH-eq-BOOL→weakMonEq i w a t h1) (TSQUASH-eq-BOOL→weakMonEq i w t b h2)
+  lift-#⇓!same-bool-trans {w} {a} {t} {b} (TSQUASH-eq-BOOL→weakMonEq i w a t h1) (TSQUASH-eq-BOOL→weakMonEq i w t b h2)
 
 
 equalInType-QTBOOL→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                       → equalInType i w #QTBOOL a b
-                      → □· w (λ w' _ → #weakBool w' a b)
+                      → □· w (λ w' _ → #weakBool! w' a b)
 equalInType-QTBOOL→ i w a b eqi =
   Mod.∀𝕎-□Func M aw (Mod.→□∀𝕎 M eqj)
   where
@@ -1067,19 +1060,19 @@ equalInType-QTBOOL→ i w a b eqi =
     eqj = equalInTypeTSQUASH→ {w} {i} {a} {b} {#BOOL} eqi
 
     aw : ∀𝕎 w (λ w' e' → ∀𝕎 w' (↑wPred (λ w'' e → TSQUASHeq (equalInType i w'' #BOOL) w'' a b) e')
-                        → #weakBool w' a b)
+                        → #weakBool! w' a b)
     aw w1 e1 h w2 e2 = TSQUASH-eq-BOOL→weakMonEq i w2 a b (→TSQUASH-eq (h w2 e2))
 
 
 
 INL-equalInType-QTBOOL : (i : ℕ) (w : 𝕎·) (x y : CTerm) → equalInType i w #QTBOOL (#INL x) (#INL y)
 INL-equalInType-QTBOOL i w x y =
-  →equalInType-QTBOOL i w (#INL x) (#INL y) (Mod.∀𝕎-□ M (λ w' e' → #weakBool-#INL w' x y))
+  →equalInType-QTBOOL i w (#INL x) (#INL y) (Mod.∀𝕎-□ M (λ w' e' → #weakBool!-#INL w' x y))
 
 
 INR-equalInType-QTBOOL : (i : ℕ) (w : 𝕎·) (x y : CTerm) → equalInType i w #QTBOOL (#INR x) (#INR y)
 INR-equalInType-QTBOOL i w x y =
-  →equalInType-QTBOOL i w (#INR x) (#INR y) (Mod.∀𝕎-□ M (λ w' e' → #weakBool-#INR w' x y))
+  →equalInType-QTBOOL i w (#INR x) (#INR y) (Mod.∀𝕎-□ M (λ w' e' → #weakBool!-#INR w' x y))
 
 
 BTRUE∈QTBOOL : (i : ℕ) (w : 𝕎·) → ∈Type i w #QTBOOL #BTRUE

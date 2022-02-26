@@ -50,7 +50,7 @@ module type_sys_props_nat {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
 open import worldDef(W)
 open import computation(W)(C)(K)(G)
 open import bar(W)
-open import barI(W)(M)(C)(K)(P)
+open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(E)
 open import props0(W)(M)(C)(K)(P)(G)(E)
 open import ind2(W)(M)(C)(K)(P)(G)(E)
@@ -263,11 +263,11 @@ typeSysConds-NAT-extrevl1 u w A B x x₁ C (EQTBAR y) a b eqi =
     (Mod.∀𝕎-□'-□ M y aw eqi)
   where
     aw0 : ∀𝕎 w (λ w' e' → (x : eqTypes u w' A C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                          → Mod.□ M w' (↑wPred (λ w'' e → #strongMonEq w'' a b) e'))
+                          → Mod.□ M w' (↑wPred (λ w'' e → #⇛!sameℕ {--#strongMonEq--} w'' a b) e'))
     aw0 w1 e1 z {--at--} eqz = typeSysConds-NAT-extrevl1 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
 
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' A C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                         → Mod.□ M w' (↑wPred' (λ w'' e → #strongMonEq w'' a b) e'))
+                         → Mod.□ M w' (↑wPred' (λ w'' e → #⇛!sameℕ {--#strongMonEq--} w'' a b) e'))
     aw w1 e1 z {--at--} eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
 
 
@@ -303,11 +303,11 @@ typeSysConds-NAT-extrevl2 u w A B x x₁ C (EQTBAR y) a b eqi =
   Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
   where
     aw0 : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C A) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                         → Mod.□ M w' (↑wPred (λ w'' e → #strongMonEq w'' a b) e'))
+                         → Mod.□ M w' (↑wPred (λ w'' e → #⇛!sameℕ {--#strongMonEq--} w'' a b) e'))
     aw0 w1 e1 z {--at--} eqz = typeSysConds-NAT-extrevl2 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
 
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C A) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                         → Mod.□ M w' (↑wPred' (λ w'' e → #strongMonEq w'' a b) e'))
+                         → Mod.□ M w' (↑wPred' (λ w'' e → #⇛!sameℕ {--#strongMonEq--} w'' a b) e'))
     aw w1 e1 z {--at--} eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
 
 
@@ -344,11 +344,11 @@ typeSysConds-NAT-extrevr1 u w A B x x₁ C (EQTBAR y) a b eqi =
   Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
   where
     aw0 : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C B) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                          → Mod.□ M w' (↑wPred (λ w'' e → #strongMonEq w'' a b) e'))
+                          → Mod.□ M w' (↑wPred (λ w'' e → #⇛!sameℕ {--#strongMonEq--} w'' a b) e'))
     aw0 w1 e1 z {--at--} eqz = typeSysConds-NAT-extrevr1 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
 
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C B) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                         → Mod.□ M w' (↑wPred' (λ w'' e → #strongMonEq w'' a b) e'))
+                         → Mod.□ M w' (↑wPred' (λ w'' e → #⇛!sameℕ {--#strongMonEq--} w'' a b) e'))
     aw w1 e1 z {--at--} eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
 
 
@@ -386,11 +386,11 @@ typeSysConds-NAT-extrevr2 u w A B x x₁ C (EQTBAR y) a b eqi =
     (Mod.∀𝕎-□'-□ M y aw eqi)
   where
     aw0 : ∀𝕎 w (λ w' e' → (x : eqTypes u w' B C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                          → Mod.□ M w' (↑wPred (λ w'' e → #strongMonEq w'' a b) e'))
+                          → Mod.□ M w' (↑wPred (λ w'' e → #⇛!sameℕ {--#strongMonEq--} w'' a b) e'))
     aw0 w1 e1 z {--at--} eqz = typeSysConds-NAT-extrevr2 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
 
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' B C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                         → Mod.□ M w' (↑wPred' (λ w'' e → #strongMonEq w'' a b) e'))
+                         → Mod.□ M w' (↑wPred' (λ w'' e → #⇛!sameℕ {--#strongMonEq--} w'' a b) e'))
     aw w1 e1 z {--at--} eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
 
 
@@ -401,7 +401,7 @@ eqInType-⇛-NAT : (u : univs) (w : 𝕎·) (A B a b : CTerm)
                   → B #⇛ #NAT at w
                   → (eqt : eqTypes u w A B)
                   → eqInType u w eqt a b
-                  → □· w (λ w' e → #strongMonEq w' a b)
+                  → □· w (λ w' e → #⇛!sameℕ {--#strongMonEq--} w' a b)
 {-# TERMINATING #-}
 eqInType-⇛-NAT u w A B a b c₁ c₂ (EQTNAT x x₁) ei = ei
 eqInType-⇛-NAT u w A B a b c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (NATneqQNAT (⇛-val-det tt tt c₁ x))
@@ -429,10 +429,10 @@ eqInType-⇛-NAT u w A B a b c₁ c₂ (EQTLIFT A1 A2 x x₁ eqtA extA) ei = ⊥
 eqInType-⇛-NAT u w A B a b c₁ c₂ (EQTBAR x) ei =
   Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw ei)
   where
-    aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} → eqInType u w' z a b → □· w' (λ w'' _ → #strongMonEq w'' a b))
+    aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} → eqInType u w' z a b → □· w' (λ w'' _ → #⇛!sameℕ {--#strongMonEq--} w'' a b))
     aw0 w1 e1 z {--at--} eqi = eqInType-⇛-NAT u w1 A B a b (⇛-mon e1 c₁) (⇛-mon e1 c₂) z eqi
 
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →  eqInType u w' z a b → □· w' (λ w'' _ → w ⊑· w'' → #strongMonEq w'' a b))
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →  eqInType u w' z a b → □· w' (λ w'' _ → w ⊑· w'' → #⇛!sameℕ {--#strongMonEq--} w'' a b))
     aw w1 e1 z {--at--} eqi = Mod.∀𝕎-□Func M (λ w' e' s x → s) (aw0 w1 e1 z {--at--} eqi)
 
 
@@ -441,7 +441,7 @@ eqInType-⇛-NAT-rev : (u : univs) (w : 𝕎·) (A B a b : CTerm)
                       → A #⇛ #NAT at w
                       → B #⇛ #NAT at w
                       → (eqt : eqTypes u w A B)
-                      → □· w (λ w' e → #strongMonEq w' a b)
+                      → □· w (λ w' e → #⇛!sameℕ {--#strongMonEq--} w' a b)
                       → eqInType u w eqt a b
 {-# TERMINATING #-}
 eqInType-⇛-NAT-rev u w A B a b c₁ c₂ (EQTNAT x x₁) ei = ei
@@ -481,10 +481,10 @@ typeSysConds-NAT-local : (u : univs) (w : 𝕎·) (A B : CTerm)
 typeSysConds-NAT-local u w A B x x₁ a b i j =
   Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
   where
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w'' e → w ⊑· w'' → #strongMonEq w'' a b))
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w'' e → w ⊑· w'' → #⇛!sameℕ {--#strongMonEq--} w'' a b))
     aw w1 e1 z {--at--} ei = Mod.∀𝕎-□Func M (λ w' e' s x → s) aw'
       where
-        aw' : □· w1 (λ w' e → #strongMonEq w' a b)
+        aw' : □· w1 (λ w' e → #⇛!sameℕ {--#strongMonEq--} w' a b)
         aw' = eqInType-⇛-NAT u w1 A B a b (⇛-mon e1 x) (⇛-mon e1 x₁) z ei
 
 
@@ -545,10 +545,10 @@ typeSysConds-NAT u w A B x x₁ =
         d w1 e1 comp = EQTNAT (⇛-mon e1 x) comp--}
 
     isym : eqInTypeSym u {_} {A} {B} (EQTNAT x x₁)
-    isym a b eqi = □·-strongMonEq-sym eqi
+    isym a b eqi = □·-⇛!sameℕ-sym eqi
 
     itrans : eqInTypeTrans u {_} {A} {B} (EQTNAT x x₁)
-    itrans a b c eqi₁ eqi₂ = □·-strongMonEq-trans eqi₁ eqi₂
+    itrans a b c eqi₁ eqi₂ = □·-⇛!sameℕ-trans eqi₁ eqi₂
 
     iextl1 : eqInTypeExtL1 {_} {_} {A} {B} (EQTNAT x x₁)
     iextl1 = typeSysConds-NAT-extl1 u w A B x x₁

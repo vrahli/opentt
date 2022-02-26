@@ -51,7 +51,7 @@ module lem_props {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
 open import worldDef(W)
 open import computation(W)(C)(K)(G)
 open import bar(W)
-open import barI(W)(M)(C)(K)(P)
+open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(E)
 open import props0(W)(M)(C)(K)(P)(G)(E)
 open import ind2(W)(M)(C)(K)(P)(G)(E)
@@ -269,14 +269,14 @@ inbar-#weakMonEq-APPLY-CS u w c m comp =
 
 onlyℂ∈𝕎→≡-aux : {w : 𝕎·} {c : Name} {v : Term} {u : ℂ·} {k m : ℕ}
                   → onlyℂ∈𝕎 u c w
-                  → steps k (APPLY (CS c) (NUM m)) w ≡ v
+                  → steps k (APPLY (CS c) (NUM m) , w) ≡ (v , w)
                   → Σ ℂ· (λ t → getChoice· m c w ≡ just t)
                   → isValue (ℂ→T u)
 --                         → isValue u
-                  → v ⇓ ℂ→T u at w
-onlyℂ∈𝕎→≡-aux {w} {c} {v} {u} {0} {m} oc c₁ (t , gc) isv {--isu--} rewrite sym c₁ = 1 , z
+                  → v ⇓! ℂ→T u at w
+onlyℂ∈𝕎→≡-aux {w} {c} {v} {u} {0} {m} oc c₁ (t , gc) isv {--isu--} rewrite sym (pair-inj₁ c₁) | sym (pair-inj₂ c₁) = 1 , z
   where
-    z : steps 1 (APPLY (CS c) (NUM m)) w ≡ ℂ→T u
+    z : steps 1 (APPLY (CS c) (NUM m) , w) ≡ (ℂ→T u , w)
     z rewrite gc | oc m t gc = refl
 onlyℂ∈𝕎→≡-aux {w} {c} {v} {u} {suc k} {m} oc c₁ gc isv {--isu--}  with getChoice⊎ m c w
 ... | inj₁ (z , p) rewrite p | oc m z p | stepsVal (ℂ→T u) w k isv | c₁ = 0 , refl
@@ -286,27 +286,27 @@ onlyℂ∈𝕎→≡-aux {w} {c} {v} {u} {suc k} {m} oc c₁ gc isv {--isu--}  w
 
 onlyℂ∈𝕎→≡ : {w : 𝕎·} {c : Name} {v : Term} {u : ℂ·} {m : ℕ}
               → onlyℂ∈𝕎 u c w
-              → APPLY (CS c) (NUM m) ⇓ v at w
+              → APPLY (CS c) (NUM m) ⇓! v at w
               → Σ ℂ· (λ t → getChoice· m c w ≡ just t)
               → isValue (ℂ→T u)
-              → v ⇓ ℂ→T u at w
+              → v ⇓! ℂ→T u at w
 onlyℂ∈𝕎→≡ {w} {c} {v} {u} {m} oc c₁ gc isv {--isu--} =
   onlyℂ∈𝕎→≡-aux {w} {c} {v} {u} {k} {m} oc c₂ gc isv {--isu--}
   where
     k : ℕ
     k = fst c₁
 
-    c₂ : steps k (APPLY (CS c) (NUM m)) w ≡ v
+    c₂ : steps k (APPLY (CS c) (NUM m) , w) ≡ (v , w)
     c₂ = snd c₁
 
 
 onlyℂ∈𝕎→⇓ : {w : 𝕎·} {c : Name} {u : ℂ·} {m : ℕ}
               → onlyℂ∈𝕎 u c w
               → Σ ℂ· (λ t → getChoice· m c w ≡ just t)
-              → APPLY (CS c) (NUM m) ⇓ ℂ→T u at w
+              → APPLY (CS c) (NUM m) ⇓! ℂ→T u at w
 onlyℂ∈𝕎→⇓ {w} {c} {u} {m} oc (t , gc) = 1 , comp
   where
-    comp : steps 1 (APPLY (CS c) (NUM m)) w ≡ ℂ→T u
+    comp : steps 1 (APPLY (CS c) (NUM m) , w) ≡ (ℂ→T u , w)
     comp rewrite gc | oc m t gc = refl
 
 
@@ -334,8 +334,8 @@ onlyℂ∈𝕎→⇓ {w} {c} {u} {m} oc (t , gc) = 1 , comp
 
 →#APPLY-#CS#⇛ℂ→C· : {w : 𝕎·} {name : Name} {n : ℕ} {k : ℂ·}
                        → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getChoice· n name w' ≡ just k))
-                       → #APPLY (#CS name) (#NUM n) #⇛ ℂ→C· k at w
-→#APPLY-#CS#⇛ℂ→C· {w} {name} {n} {k} aw w1 e1 = lift (1 , (step-APPLY-CS (ℂ→T k) w1 n name h))
+                       → #APPLY (#CS name) (#NUM n) #⇛! ℂ→C· k at w
+→#APPLY-#CS#⇛ℂ→C· {w} {name} {n} {k} aw w1 e1 = lift (1 , step-APPLY-CS (ℂ→T k) w1 n name h)
   where
     h : getT n name w1 ≡ just (ℂ→T k)
     h rewrite lower (aw w1 e1) = refl

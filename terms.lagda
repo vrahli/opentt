@@ -1987,4 +1987,8 @@ fvars-ASSERT₃ t rewrite ++[] (fvars t) = refl
 ≡ASSERT₃ : {a b : Term} → a ≡ b → ASSERT₃ a ≡ ASSERT₃ b
 ≡ASSERT₃ {a} {b} e rewrite e = refl
 
+
+#NAT→T : CTerm → CTerm
+#NAT→T T = #FUN #NAT T
+
 \end{code}
