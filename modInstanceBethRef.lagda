@@ -92,7 +92,7 @@ open import newChoiceDef(W)(C)(K)(G)(N)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 
 --open import barBeth(W)(C)(K)(P)
-open import barI(W)(M)(C)(K)(P)
+open import barI(W)(M)--(C)(K)(P)
 open import computation(W)(C)(K)(G)
 
 open import forcing(W)(M)(C)(K)(P)(G)(E)
@@ -150,11 +150,11 @@ isValueℂ₁-beth-ref = tt
 ∈Typeℂ₀₁→-beth-ref : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-ref a b → □· w (λ w' _ → #weakℂEq w' a b)
 ∈Typeℂ₀₁→-beth-ref i w a b eqi = Mod.∀𝕎-□Func M aw (equalInType-QTNAT→ i w a b eqi)
   where
-    aw : ∀𝕎 w (λ w' e' → #weakMonEq w' a b → #weakℂEq w' a b)
+    aw : ∀𝕎 w (λ w' e' → #weakMonEq! w' a b → #weakℂEq w' a b)
     aw w1 e1 h w2 e2 = lift j
       where
-        j : (c₁ c₂ : ℂ·) → ⌜ a ⌝ ⇓ ℂ→T c₁ at w2 → ⌜ b ⌝ ⇓ ℂ→T c₂ at w2 → ∼C w2 (ℂ→C· c₁) (ℂ→C· c₂)
-        j c₁ c₂ comp₁ comp₂ = ∼T-trans (∼T← comp₁) (∼T-trans (∼T-trans (∼T→ (fst (snd (lower (h w2 e2))))) (∼T← (snd (snd (lower (h w2 e2)))))) (∼T→ comp₂))
+        j : (c₁ c₂ : ℂ·) → ⌜ a ⌝ ⇓! ℂ→T c₁ at w2 → ⌜ b ⌝ ⇓! ℂ→T c₂ at w2 → ∼C! w2 (ℂ→C· c₁) (ℂ→C· c₂)
+        j c₁ c₂ comp₁ comp₂ = ∼T!-trans (∼T!← comp₁) (∼T!-trans (∼T!-trans (∼T!→ (fst (snd (lower (h w2 e2))))) (∼T!← (snd (snd (lower (h w2 e2)))))) (∼T!→ comp₂))
 
 
 →∈Typeℂ₀₁-beth-ref : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name}
@@ -164,7 +164,7 @@ isValueℂ₁-beth-ref = tt
   →equalInType-QTNAT i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
                      (Mod.∀𝕎-□Func M aw h)
   where
-    aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakMonEq w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
+    aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakMonEq! w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
     aw w1 e1 z w2 e2 = lift (x (snd (snd (lower (z w2 e2)))))
       where
         t : Term
@@ -173,10 +173,10 @@ isValueℂ₁-beth-ref = tt
         g : getT n c w2 ≡ just t
         g = fst (snd (lower (z w2 e2)))
 
-        x : (t ⇓ Tℂ₀ at w2 ⊎ t ⇓ Tℂ₁ at w2)
-            → Σ ℕ (λ n₁ → APPLY (CS c) (NUM n) ⇓ NUM n₁ at w2 × APPLY (CS c) (NUM n) ⇓ NUM n₁ at w2)
-        x (inj₁ y) = 0 , ⇓-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 n c refl g) y , ⇓-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 n c refl g) y
-        x (inj₂ y) = 1 , ⇓-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 n c refl g) y , ⇓-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 n c refl g) y
+        x : (t ⇓! Tℂ₀ at w2 ⊎ t ⇓! Tℂ₁ at w2)
+            → Σ ℕ (λ n₁ → APPLY (CS c) (NUM n) ⇓! NUM n₁ at w2 × APPLY (CS c) (NUM n) ⇓! NUM n₁ at w2)
+        x (inj₁ y) = 0 , ⇓!-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 w2 n c refl g) y , ⇓!-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 w2 n c refl g) y
+        x (inj₂ y) = 1 , ⇓!-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 w2 n c refl g) y , ⇓!-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 w2 n c refl g) y
 
 
 □·-choice-beth-ref : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)

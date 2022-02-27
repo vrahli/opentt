@@ -177,7 +177,7 @@ equalInType-#Σchoice-UNIV {n} {i} p w c k comp sat =
 
 getChoice→equalInType-#Σchoice-aux2 : {n : ℕ} {name : Name} {w : 𝕎·} {k : ℂ·} (i : ℕ)
                                       → ·ᵣ Resℂ n k
-                                       → #APPLY (#CS name) (#NUM n) #⇛ ℂ→C· k at w
+                                       → #APPLY (#CS name) (#NUM n) #⇛! ℂ→C· k at w
                                        → equalInType
                                            i w
                                            (#EQ (#APPLY (#CS name) (#NUM n)) (ℂ→C· k) Typeℂ₀₁·)
@@ -194,7 +194,7 @@ getChoice→equalInType-#Σchoice-aux2 {n} {name} {w} {k} i sat g =
 
 getChoice→equalInType-#Σchoice-aux1 : {n : ℕ} {name : Name} {w : 𝕎·} {k : ℂ·} (i : ℕ)
                                        → ·ᵣ Resℂ n k
-                                       → #APPLY (#CS name) (#NUM n) #⇛ ℂ→C· k at w
+                                       → #APPLY (#CS name) (#NUM n) #⇛! ℂ→C· k at w
                                        → equalInType
                                            i w
                                            (sub0 (#NUM n) (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁))
@@ -206,7 +206,7 @@ getChoice→equalInType-#Σchoice-aux1 {n} {name} {w} {k} i sat g rewrite sub0-#
 getChoice→equalInType-#Σchoice-aux : {n : ℕ} {name : Name} {w : 𝕎·} {k : ℂ·} (i : ℕ)
                                       → compatible· name w Resℂ
                                       → ·ᵣ Resℂ n k
-                                      → #APPLY (#CS name) (#NUM n) #⇛ ℂ→C· k at w
+                                      → #APPLY (#CS name) (#NUM n) #⇛! ℂ→C· k at w
                                       → equalInType
                                            i w
                                            (#SUM #NAT (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁))
@@ -235,7 +235,7 @@ getChoice→equalInType-#Σchoice-aux {n} {name} {w} {k} i comp sat g =
 getChoice→equalInType-#Σchoice : {n : ℕ} {name : Name} {w : 𝕎·} {k : ℂ·} (i : ℕ)
                                   → compatible· name w Resℂ
                                   → ·ᵣ Resℂ n k
-                                  → #APPLY (#CS name) (#NUM n) #⇛ ℂ→C· k at w
+                                  → #APPLY (#CS name) (#NUM n) #⇛! ℂ→C· k at w
                                   → equalInType i w (#Σchoice name k) (#PAIR (#NUM n) #AX) (#PAIR (#NUM n) #AX)
 getChoice→equalInType-#Σchoice {n} {name} {w} {k} i comp sat g rewrite #Σchoice≡ name k =
   getChoice→equalInType-#Σchoice-aux i comp sat g
@@ -266,7 +266,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
 ¬equalInType-#Σchoice : (i : ℕ) (w : 𝕎·) (r : Res) (c : Name) {k1 : ℂ·}
                         → isValue (ℂ→T (Res.def r))
                         → isValue (ℂ→T k1)
-                        → ((w : 𝕎·) → ¬ ∼C w (ℂ→C· (Res.def r)) (ℂ→C· k1))
+                        → ((w : 𝕎·) → ¬ ∼C! w (ℂ→C· (Res.def r)) (ℂ→C· k1))
                         → onlyℂ∈𝕎 (Res.def r) c w
                         → compatible· c w r
                         → freezable· c w
@@ -325,7 +325,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     eb1 = snd (snd (snd (snd (snd (snd (snd h2))))))
 
     -- 2nd jump to bar
-    ea2 : □· w1 (λ w' _ → #strongMonEq w' a₁ a₂)
+    ea2 : □· w1 (λ w' _ → #⇛!sameℕ {--#strongMonEq--} w' a₁ a₂)
     ea2 = equalInType-NAT→ i w1 a₁ a₂ ea1
 
     w2 : 𝕎·
@@ -343,13 +343,13 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     fb2 : freezable· c w2
     fb2 = fst (snd (snd (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1)))))
 
-    ea3 : #strongMonEq w2 a₁ a₂
+    ea3 : #⇛!sameℕ {--#strongMonEq--} w2 a₁ a₂
     ea3 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1)))))
 
     m : ℕ
     m = fst ea3
 
-    ca₁ : a₁ #⇛ #NUM m at w2
+    ca₁ : a₁ #⇛! #NUM m at w2
     ca₁ = fst (snd ea3)
 
     eb2 : equalInType i w2 (#EQ (#APPLY (#CS c) a₁) (ℂ→C· k1) Typeℂ₀₁·) b₁ b₂
@@ -359,7 +359,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     eb3 = equalInType-EQ→₁ eb2
 
     eb4 : equalInType i w2 Typeℂ₀₁· (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1)
-    eb4 = equalInType-#⇛-left (#⇛-APPLY-CS {w2} {a₁} {#NUM m} c ca₁) eb3
+    eb4 = equalInType-#⇛-left (#⇛!-APPLY-CS {w2} {a₁} {#NUM m} c ca₁) eb3
 
     eb5 : □· w2 (λ w' _ → #weakℂEq w' (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1))
     eb5 = ∈Typeℂ₀₁→· i w2 (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1) eb4
@@ -412,14 +412,14 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     gc3 : Σ ℂ· (λ t → getChoice· m c w4 ≡ just t)
     gc3 = fst gc2 , fst (snd gc2)
 
-    cn₀ : #APPLY (#CS c) (#NUM m) #⇓ ℂ→C· (Res.def r) at w4
+    cn₀ : #APPLY (#CS c) (#NUM m) #⇓! ℂ→C· (Res.def r) at w4
     cn₀ = onlyℂ∈𝕎→⇓ oc4 gc3
 
     eb7 : #weakℂEq w4 (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1)
     eb7 = ∀𝕎-mon e4 eb6
 
-    sim3 : ∼C w4 (ℂ→C· (Res.def r)) (ℂ→C· k1)
-    sim3 = #weakℂEq→ {w4} {#APPLY (#CS c) (#NUM m)} {ℂ→C· k1} eb7 (Res.def r) k1 cn₀ (⇓-refl (ℂ→T k1) w4)
+    sim3 : ∼C! w4 (ℂ→C· (Res.def r)) (ℂ→C· k1)
+    sim3 = #weakℂEq→ {w4} {#APPLY (#CS c) (#NUM m)} {ℂ→C· k1} eb7 (Res.def r) k1 cn₀ (⇓!-refl (ℂ→T k1) w4)
 
 
 
@@ -436,17 +436,17 @@ equalInType-SQUASH-UNION-LIFT→ {n} {i} p {w} {a} {b} {u} {v} eqi =
                                                (Mod.∀𝕎-□Func M aw1 equ)
       where
         equ : □· w' (λ w'' _ → Σ CTerm (λ x → Σ CTerm (λ y
-                                          → (t #⇛ (#INL x) at w'' × t #⇛ (#INL y) at w'' × equalInType n w'' (#↑T p a) x y)
+                                          → (t #⇛! (#INL x) at w'' × t #⇛! (#INL y) at w'' × equalInType n w'' (#↑T p a) x y)
                                              ⊎
-                                             (t #⇛ (#INR x) at w'' × t #⇛ (#INR y) at w'' × equalInType n w'' (#NEG (#↑T p b)) x y))))
+                                             (t #⇛! (#INR x) at w'' × t #⇛! (#INR y) at w'' × equalInType n w'' (#NEG (#↑T p b)) x y))))
         equ = equalInType-UNION→ eqj
 
         aw1 : ∀𝕎 w' (λ w'' e' → Σ CTerm (λ x → Σ CTerm (λ y →
-                                   (t #⇛ #INL x at w'' × t #⇛ #INL y at w'' × equalInType n w'' (#↑T p a) x y)
-                                   ⊎ (t #⇛ #INR x at w'' × t #⇛ #INR y at w'' × equalInType n w'' (#NEG (#↑T p b)) x y)))
+                                   (t #⇛! #INL x at w'' × t #⇛! #INL y at w'' × equalInType n w'' (#↑T p a) x y)
+                                   ⊎ (t #⇛! #INR x at w'' × t #⇛! #INR y at w'' × equalInType n w'' (#NEG (#↑T p b)) x y)))
                               → Σ CTerm (λ x → Σ CTerm (λ y →
-                                  (t #⇛ #INL x at w'' × t #⇛ #INL y at w'' × equalInType i w'' a x y)
-                                  ⊎ (t #⇛ #INR x at w'' × t #⇛ #INR y at w'' × equalInType i w'' (#NEG b) x y))))
+                                  (t #⇛! #INL x at w'' × t #⇛! #INL y at w'' × equalInType i w'' a x y)
+                                  ⊎ (t #⇛! #INR x at w'' × t #⇛! #INR y at w'' × equalInType i w'' (#NEG b) x y))))
         aw1 w'' e' (x , y , inj₁ (c₁ , c₂ , eqk)) = x , y , inj₁ (c₁ , c₂ , equalInType-#↑T→ p w'' a x y eqk)
         aw1 w'' e' (x , y , inj₂ (c₁ , c₂ , eqk)) = x , y , inj₂ (c₁ , c₂ , equalInType-NEG (equalTypes-#↑T→ p w'' b b (eqTypesNEG→ (fst eqk))) (equalInType-NEG-↑T→ p eqk))
 
@@ -468,28 +468,28 @@ equalInType-SQUASH-UNION→ {i} {w} {a} {b} {u} {v} eqi =
     h1 = equalInType-SQUASH→ eqi
 
     h2 : □· w (λ w' _ → Σ CTerm (λ t → □· w' (λ w'' _ → Σ CTerm (λ x → Σ CTerm (λ y
-                                         → (t #⇛ (#INL x) at w'' × t #⇛ (#INL y) at w'' × equalInType i w'' a x y)
+                                         → (t #⇛! (#INL x) at w'' × t #⇛! (#INL y) at w'' × equalInType i w'' a x y)
                                             ⊎
-                                            (t #⇛ (#INR x) at w'' × t #⇛ (#INR y) at w'' × equalInType i w'' (#NEG b) x y))))))
+                                            (t #⇛! (#INR x) at w'' × t #⇛! (#INR y) at w'' × equalInType i w'' (#NEG b) x y))))))
     h2 = Mod.∀𝕎-□Func M (λ w' e (t , eqj) → t , equalInType-UNION→ eqj) h1
 
     h3 : □· w (λ w' _ → Σ CTerm (λ t → □· w' (λ w'' _ → Σ CTerm (λ x → Σ CTerm (λ y
-                                         → (t #⇛ (#INL x) at w'' × t #⇛ (#INL y) at w'' × equalInType i w'' a x y)
+                                         → (t #⇛! (#INL x) at w'' × t #⇛! (#INL y) at w'' × equalInType i w'' a x y)
                                             ⊎
-                                            (t #⇛ (#INR x) at w'' × t #⇛ (#INR y) at w''
+                                            (t #⇛! (#INR x) at w'' × t #⇛! (#INR y) at w''
                                               × ∀𝕎 w'' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂)))))))
     h3 = Mod.∀𝕎-□Func M (λ w1 e1 (t , eqt) → t , Mod.∀𝕎-□Func M (λ { w3 e3 (x , y , inj₁ (c₁ , c₂ , z)) → x , y , inj₁ (c₁ , c₂ , z) ;
                                                                                      w3 e3 (x , y , inj₂ (c₁ , c₂ , z)) → x , y , inj₂ (c₁ , c₂ , equalInType-NEG→ z) }) eqt) h2
 
     aw1 : ∀𝕎 w (λ w' e' → Σ CTerm (λ t → □· w' (λ w'' _ → Σ CTerm (λ x →  Σ CTerm (λ y →
-                            (t #⇛ #INL x at w'' × t #⇛ #INL y at w'' × equalInType i w'' a x y)
-                            ⊎ (t #⇛ #INR x at w'' × t #⇛ #INR y at w'' × ∀𝕎 w'' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂))))))
+                            (t #⇛! #INL x at w'' × t #⇛! #INL y at w'' × equalInType i w'' a x y)
+                            ⊎ (t #⇛! #INR x at w'' × t #⇛! #INR y at w'' × ∀𝕎 w'' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂))))))
                         → □· w' (↑wPred' (λ w'' e →  inhType i w'' a ⊎ ∀𝕎 w'' (λ w''' _ → ¬ inhType i w''' b)) e'))
     aw1 w1 e1 (t , j) = Mod.□-idem M (Mod.∀𝕎-□Func M aw2 j)
       where
         aw2 : ∀𝕎 w1 (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
-                                 (t #⇛ #INL x at w' × t #⇛ #INL y at w' × equalInType i w' a x y)
-                                 ⊎ (t #⇛ #INR x at w' × t #⇛ #INR y at w' × ∀𝕎 w' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂))))
+                                 (t #⇛! #INL x at w' × t #⇛! #INL y at w' × equalInType i w' a x y)
+                                 ⊎ (t #⇛! #INR x at w' × t #⇛! #INR y at w' × ∀𝕎 w' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂))))
                              → □· w' (↑wPred' (λ w'' e → ↑wPred' (λ w''' e₁ → inhType i w''' a ⊎ ∀𝕎 w''' (λ w'''' _ → ¬ inhType i w'''' b)) e1 w'' e) e'))
         aw2 w2 e2 (x , y , inj₁ (c₁ , c₂ , z)) = Mod.∀𝕎-□ M (λ w3 e3 x₁ x₂ → inj₁ (x , equalInType-mon (equalInType-refl z) w3 e3))
         aw2 w2 e2 (x , y , inj₂ (c₁ , c₂ , z)) = Mod.∀𝕎-□ M λ w3 e3 x₁ x₂ → inj₂ (λ w4 e4 (t , h) → z w4 (⊑-trans· e3 e4) t t h)
@@ -518,7 +518,7 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     g0 : ∀𝕎 w1 (λ w' _ → Lift (lsuc(L)) (getChoice· n1 name w' ≡ just k))
     g0 = snd (getFreeze· name w k comp fb)
 
-    g1 : #APPLY (#CS name) (#NUM n1) #⇛ ℂ→C· k at w1
+    g1 : #APPLY (#CS name) (#NUM n1) #⇛! ℂ→C· k at w1
     g1 = →#APPLY-#CS#⇛ℂ→C· g0
 
     h1 : equalInType i w1 (#Σchoice name k) (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX)
@@ -545,7 +545,7 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     k1 : ℂ·
     k1 = ℂ₁· -- This has to be different from r's default value
 
-    dks : (w : 𝕎·) → ¬ ∼C w (ℂ→C· (Res.def r)) (ℂ→C· k1)
+    dks : (w : 𝕎·) → ¬ ∼C! w (ℂ→C· (Res.def r)) (ℂ→C· k1)
     dks = ¬∼ℂ₀₁·
 
     h1 : equalInType i w2 (#SQUASH (#UNION (#Σchoice name k1) (#NEG (#Σchoice name k1)))) #AX #AX

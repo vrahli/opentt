@@ -41,12 +41,12 @@ open import mod
 
 
 module exBar {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-             (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K)
+--             (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K)
        where
 
 open import worldDef(W)
 open import bar(W)
-open import barI(W)(M)(C)(K)(P)
+open import barI(W)(M)--(C)(K)(P)
 
 
 --open Bar B

@@ -677,14 +677,13 @@ steps⊑ w (suc n) t with step⊎ t w
 ⇓-trans {w} {a} {b} {c} (n , c₁) c₂ = steps-⇓-trans n (stepsT→steps {n} c₁) (lower (c₂ (snd (steps n (a , w))) (steps⊑ w n a)))
 
 
-{--
 Σ-steps-APPLY-CS : (n : ℕ) (a t : Term) (w w' : 𝕎·) (k : ℕ) (name : Name)
-                 → steps n a w ≡ (NUM k , w') -- TODO: should be for all extensions
-                 → getT k name w ≡ just t
-                 → Σ ℕ (λ m → steps m (APPLY (CS name) a) w ≡ (t , w'))
+                 → steps n (a , w) ≡ (NUM k , w')
+                 → getT k name w' ≡ just t
+                 → Σ ℕ (λ m → steps m (APPLY (CS name) a , w) ≡ (t , w'))
 Σ-steps-APPLY-CS n a t w w' k name h gc = (suc m , g)
   where
-    ms : Σ ℕ (λ m → m ≤ n × steps m (APPLY (CS name) a) w ≡ (APPLY (CS name) (NUM k) , w'))
+    ms : Σ ℕ (λ m → m ≤ n × steps m (APPLY (CS name) a , w) ≡ (APPLY (CS name) (NUM k) , w'))
     ms = Σ-steps-APPLY-CS≤ n a (NUM k) w w' name h
 
     m : ℕ
@@ -693,12 +692,11 @@ steps⊑ w (suc n) t with step⊎ t w
     l : m ≤ n
     l = proj₁ (proj₂ ms)
 
-    s : steps m (APPLY (CS name) a) w ≡ (APPLY (CS name) (NUM k) , w')
+    s : steps m (APPLY (CS name) a , w) ≡ (APPLY (CS name) (NUM k) , w')
     s = proj₂ (proj₂ ms)
 
-    g : steps (suc m) (APPLY (CS name) a) w ≡ (t , w')
-    g rewrite steps≡ m (APPLY (CS name) a) w | s = {!!} -- | s | gc = {!!} --refl
---}
+    g : steps (suc m) (APPLY (CS name) a , w) ≡ (t , w')
+    g rewrite steps≡ m (APPLY (CS name) a , w) | s | gc = refl
 
 
 {--⇛-APPLY-CS : (w : 𝕎·) (name : Name) (a t : Term) (k : ℕ)
@@ -1754,5 +1752,9 @@ weakMonEq! w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (⇓!sameℕ w' t
 
 #weakMonEq!-#NUM : (w : 𝕎·) (k : ℕ) → #weakMonEq! w (#NUM k) (#NUM k)
 #weakMonEq!-#NUM w k w' e' = lift (k , ⇓!-refl (NUM k) w' , ⇓!-refl (NUM k) w')
+
+
+#⇓!→#⇓ : {w : 𝕎·} {a b : CTerm} → a #⇓! b at w → a #⇓ b at w
+#⇓!→#⇓ {w} {a} {b} comp = ⇓!→⇓ comp
 
 \end{code}

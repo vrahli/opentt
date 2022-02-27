@@ -69,6 +69,8 @@ record Res {L : Level} : Set(lsuc(L)) where
     sat : (n : ℕ) → res n def     -- proof that the default element is satisfied at all stages
     dec : Σ Bool (λ { true → (n : ℕ) (c : ℂ·) → res n c ⊎ ¬ res n c ; -- a restriction is decidable or not
                       false → Lift {0ℓ} L ⊤ })
+    inv : Σ Bool (λ { true → (n m : ℕ) (c : ℂ·) → res n c → res m c ;
+                      false → Lift {0ℓ} L ⊤ })
 
 
 ·ᵣ : {L : Level} → Res{L} → ℕ → ℂ· → Set(L)
@@ -77,6 +79,15 @@ record Res {L : Level} : Set(lsuc(L)) where
 
 ⋆ᵣ : {L : Level} → Res{L} → ℂ· → Set(L)
 ⋆ᵣ {L} r t = (n : ℕ) → ·ᵣ r n t
+
+
+
+inv→·ᵣ→⋆ᵣ : {r : Res{0ℓ}} {c : ℂ·}
+            → ((n m : ℕ) (c : ℂ·) → ·ᵣ r n c → ·ᵣ r m c)
+            → ·ᵣ r 0 c
+            → ⋆ᵣ r c
+inv→·ᵣ→⋆ᵣ {r} {c} inv s 0 = s
+inv→·ᵣ→⋆ᵣ {r} {c} inv s (suc n) = inv n (suc n) c (inv→·ᵣ→⋆ᵣ {r} {c} inv s n)
 
 
 
@@ -91,8 +102,8 @@ compatibleRes {L} r1 r2 =
   (n : ℕ) (t : ℂ·) → (·ᵣ r1 n t → ·ᵣ r2 n t) × (·ᵣ r2 n t → ·ᵣ r1 n t)
 
 
-Resη : {L : Level} (r : Res{L}) → mkRes (Res.res r) (Res.def r) (Res.sat r) (Res.dec r) ≡ r
-Resη {L} (mkRes r d s k) = refl
+Resη : {L : Level} (r : Res{L}) → mkRes (Res.res r) (Res.def r) (Res.sat r) (Res.dec r) (Res.inv r) ≡ r
+Resη {L} (mkRes r d s k i) = refl
 
 
 

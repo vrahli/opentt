@@ -90,7 +90,7 @@ open import newChoiceDef(W)(C)(K)(G)(N)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 
 --open import barBeth(W)(C)(K)(P)
-open import barI(W)(M)(C)(K)(P)
+open import barI(W)(M)--(C)(K)(P)
 open import computation(W)(C)(K)(G)
 
 open import forcing(W)(M)(C)(K)(P)(G)(E)

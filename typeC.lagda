@@ -112,7 +112,7 @@ comp-Resℂ→□·-weakℂ₀₁ {c} {w} n comp = Mod.∀𝕎-□Func M aw j1
         st = snd (snd (lower (h w3 e3)))
 --getChoiceCompatible· c Resℂ w3 n t (⊑-compatible· (⊑-trans· e2 e3) comp) (snd (lower (h w3 e3)))
 
-        z : (t ≡ ℂ₀· ⊎ t ≡ ℂ₁·) → (ℂ→T t ⇓ Tℂ₀ at w3 ⊎ ℂ→T t ⇓ Tℂ₁ at w3)
+        z : (t ≡ ℂ₀· ⊎ t ≡ ℂ₁·) → (ℂ→T t ⇓! Tℂ₀ at w3 ⊎ ℂ→T t ⇓! Tℂ₁ at w3)
         z (inj₁ x) rewrite x = inj₁ (0 , refl)
         z (inj₂ x) rewrite x = inj₂ (0 , refl)
 

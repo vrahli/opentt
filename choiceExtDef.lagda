@@ -107,12 +107,16 @@ decℂ₀₁ n c with decℂ₀· c | decℂ₁· c
     z (inj₂ e) = y e
 
 
+invℂ₀₁ : (n m : ℕ) (c : ℂ·) → (c ≡ ℂ₀ E ⊎ c ≡ ℂ₁ E) → (c ≡ ℂ₀ E ⊎ c ≡ ℂ₁ E)
+invℂ₀₁ n m c i = i
+
+
 Resℂ₀₁ : Res
-Resℂ₀₁ = mkRes (λ n t → t ≡ ℂ₀· ⊎ t ≡ ℂ₁·) ℂ₀· (λ n → inj₁ refl) (true , decℂ₀₁)
+Resℂ₀₁ = mkRes (λ n t → t ≡ ℂ₀· ⊎ t ≡ ℂ₁·) ℂ₀· (λ n → inj₁ refl) (true , decℂ₀₁) (true , invℂ₀₁)
 
 
 Res⊤ : Res
-Res⊤ = mkRes (λ n t → ⊤) ℂ₀· (λ n → tt) (true , λ n c → inj₁ tt)
+Res⊤ = mkRes (λ n t → ⊤) ℂ₀· (λ n → tt) (true , λ n c → inj₁ tt) (true , λ n m c i → i)
 
 
 Σsat-ℂ₁ : Σ ℕ (λ n → ·ᵣ Resℂ₀₁ n ℂ₁·)
@@ -125,11 +129,11 @@ sat-ℂ₁ n = inj₂ refl
 
 -- t1 and t2 compute to the same choice but that choice can change over time
 weakℂEq : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
-weakℂEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) ((c₁ c₂ : ℂ·) → t1 ⇓ ℂ→T c₁ at w' → t2 ⇓ ℂ→T c₂ at w' → ∼C w' (ℂ→C· c₁) (ℂ→C· c₂)))
+weakℂEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) ((c₁ c₂ : ℂ·) → t1 ⇓! ℂ→T c₁ at w' → t2 ⇓! ℂ→T c₂ at w' → ∼C! w' (ℂ→C· c₁) (ℂ→C· c₂)))
 
 
 weakℂ₀₁M : (w : 𝕎·) (f : 𝕎· → Maybe Term) → Set(lsuc(L))
-weakℂ₀₁M w f = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ Term (λ t → f w' ≡ just t × (t ⇓ Tℂ₀ at w' ⊎ t ⇓ Tℂ₁ at w'))))
+weakℂ₀₁M w f = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (Σ Term (λ t → f w' ≡ just t × (t ⇓! Tℂ₀ at w' ⊎ t ⇓! Tℂ₁ at w'))))
 
 
 #weakℂEq : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))

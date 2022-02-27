@@ -94,7 +94,7 @@ open import newChoiceDef(W)(C)(K)(G)(N)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 
 --open import barBeth(W)(C)(K)(P)
-open import barI(W)(M)(C)(K)(P)
+open import barI(W)(M)--(C)(K)(P)
 open import computation(W)(C)(K)(G)
 
 open import forcing(W)(M)(C)(K)(P)(G)(E)
@@ -175,13 +175,37 @@ isValueℂ₁-beth-ref = tt
 
 
 
+#⇓!-true : (w : 𝕎·) (a x : CTerm) (c : ℂ·)
+          → a #⇓! ℂ→C· c at w
+          → a #⇓! #INL x at w
+          → c ≡ true
+#⇓!-true w a x true c₁ c₂ = refl
+#⇓!-true w a x false c₁ c₂ = ⊥-elim (z (CTerm≡ (⇓!-val-det tt tt c₂ c₁)))
+  where
+    z : ¬ #INL x ≡ #BFALSE
+    z ()
+
+
+
+#⇓!-false : (w : 𝕎·) (a x : CTerm) (c : ℂ·)
+          → a #⇓! ℂ→C· c at w
+          → a #⇓! #INR x at w
+          → c ≡ false
+#⇓!-false w a x false c₁ c₂ = refl
+#⇓!-false w a x true c₁ c₂ = ⊥-elim (z (CTerm≡ (⇓!-val-det tt tt c₂ c₁)))
+  where
+    z : ¬ #INR x ≡ #BTRUE
+    z ()
+
+
+
 ∈Typeℂ₀₁→-beth-ref : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-ref a b → □· w (λ w' _ → #weakℂEq w' a b)
 ∈Typeℂ₀₁→-beth-ref i w a b eqi = Mod.∀𝕎-□Func M aw (equalInType-QTBOOL→ i w a b eqi)
   where
-    aw : ∀𝕎 w (λ w' e' → #weakBool w' a b → #weakℂEq w' a b)
+    aw : ∀𝕎 w (λ w' e' → #weakBool! w' a b → #weakℂEq w' a b)
     aw w1 e1 h w2 e2 = lift j
       where
-        j : (c₁ c₂ : ℂ·) → ⌜ a ⌝ ⇓ ℂ→T c₁ at w2 → ⌜ b ⌝ ⇓ ℂ→T c₂ at w2 → ∼C w2 (ℂ→C· c₁) (ℂ→C· c₂)
+        j : (c₁ c₂ : ℂ·) → ⌜ a ⌝ ⇓! ℂ→T c₁ at w2 → ⌜ b ⌝ ⇓! ℂ→T c₂ at w2 → ∼C! w2 (ℂ→C· c₁) (ℂ→C· c₂)
         j c₁ c₂ comp₁ comp₂ = c (snd (snd (lower (h w2 e2)))) --∼T-trans (∼T← comp₁) (∼T-trans (∼T-trans (∼T→ (fst (snd (lower (h w2 e2))))) (∼T← (snd (snd (lower (h w2 e2)))))) (∼T→ comp₂))
           where
             x : CTerm
@@ -190,9 +214,9 @@ isValueℂ₁-beth-ref = tt
             y : CTerm
             y = fst (snd (lower (h w2 e2)))
 
-            c : ((a #⇓ #INL x at w2 × b #⇓ #INL y at w2) ⊎ (a #⇓ #INR x at w2 × b #⇓ #INR y at w2)) → ∼C w2 (ℂ→C· c₁) (ℂ→C· c₂)
-            c (inj₁ (c1 , c2)) rewrite #⇓-true w2 a x c₁ comp₁ c1 | #⇓-true w2 b y c₂ comp₂ c2 = ∼C-refl {w2} {#BTRUE}
-            c (inj₂ (c1 , c2)) rewrite #⇓-false w2 a x c₁ comp₁ c1 | #⇓-false w2 b y c₂ comp₂ c2 = ∼C-refl {w2} {#BFALSE}
+            c : ((a #⇓! #INL x at w2 × b #⇓! #INL y at w2) ⊎ (a #⇓! #INR x at w2 × b #⇓! #INR y at w2)) → ∼C! w2 (ℂ→C· c₁) (ℂ→C· c₂)
+            c (inj₁ (c1 , c2)) rewrite #⇓!-true w2 a x c₁ comp₁ c1 | #⇓!-true w2 b y c₂ comp₂ c2 = ∼C!-refl {w2} {#BTRUE}
+            c (inj₂ (c1 , c2)) rewrite #⇓!-false w2 a x c₁ comp₁ c1 | #⇓!-false w2 b y c₂ comp₂ c2 = ∼C!-refl {w2} {#BFALSE}
 
 
 
@@ -203,7 +227,7 @@ isValueℂ₁-beth-ref = tt
   →equalInType-QTBOOL i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
                      (Mod.∀𝕎-□Func M aw h)
   where
-    aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakBool w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
+    aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakBool! w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
     aw w1 e1 z w2 e2 = lift (x (snd (snd (lower (z w2 e2)))))
       where
         t : Term
@@ -212,10 +236,10 @@ isValueℂ₁-beth-ref = tt
         g : getT n c w2 ≡ just t
         g = fst (snd (lower (z w2 e2)))
 
-        x : (t ⇓ Tℂ₀ at w2 ⊎ t ⇓ Tℂ₁ at w2)
-            → #⇓same-bool w2 (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
-        x (inj₁ y) = #AX , #AX , inj₁ (⇓-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 n c refl g) y , ⇓-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 n c refl g) y)
-        x (inj₂ y) = #AX , #AX , inj₂ (⇓-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 n c refl g) y , ⇓-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 n c refl g) y)
+        x : (t ⇓! Tℂ₀ at w2 ⊎ t ⇓! Tℂ₁ at w2)
+            → #⇓!same-bool w2 (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
+        x (inj₁ y) = #AX , #AX , inj₁ (⇓!-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 w2 n c refl g) y , ⇓!-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 w2 n c refl g) y)
+        x (inj₂ y) = #AX , #AX , inj₂ (⇓!-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 w2 n c refl g) y , ⇓!-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 w2 n c refl g) y)
 
 
 

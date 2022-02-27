@@ -28,7 +28,7 @@ module all {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
            (EM : ExcludedMiddle (lsuc(L))) -- for ExBar, used in turn in lem
            (CB : ChoiceBar W M C K P G X N F E)
-           (EB : ExBar W M C K P)
+           (EB : ExBar W M)
        where
 
 open import not_lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)(CB)

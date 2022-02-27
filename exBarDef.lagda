@@ -43,16 +43,16 @@ open import mod
 
 
 module exBarDef {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-                (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K)
+--                (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K)
 --                (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
 --                (E : Extensionality 0ℓ (lsuc(lsuc(L))))
 --                (EB : ExBar W C G N F P E)
-                (EB : ExBar W M C K P)
+                (EB : ExBar W M)
        where
 
 open import worldDef(W)
 open import bar(W)
-open import barI(W)(M)(C)(K)(P)
+open import barI(W)(M)--(C)(K)(P)
 
 --open Bar B
 open ExBar

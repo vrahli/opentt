@@ -48,17 +48,17 @@ module lem {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
            (X : ChoiceExt W C K G)
            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
            (EM : ExcludedMiddle (lsuc(L)))
-           (EB : ExBar W M C K P)
+           (EB : ExBar W M)
        where
 
 
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import exBarDef(W)(M)(C)(K)(P)(EB)
+open import exBarDef(W)(M)(EB)
 open import computation(W)(C)(K)(G)
 open import bar(W)
 open import barOpen(W)
-open import barI(W)(M)(C)(K)(P)
+open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(E)
 open import props0(W)(M)(C)(K)(P)(G)(E)
 open import ind2(W)(M)(C)(K)(P)(G)(E)
@@ -124,10 +124,10 @@ classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
                                 →  Σ CTerm (λ t → ∈Type n w' (#UNION (#↑T p a₁) (#NEG (#↑T p a₁))) t))
             aw w2 e2 (inj₁ (t , h)) = #INL t , →equalInType-UNION (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2)))
                                                                    (eqTypesNEG← (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2))))
-                                                                   (Mod.∀𝕎-□ M (λ w3 e3 → t , t , inj₁ (#compAllRefl (#INL t) w3 , #compAllRefl (#INL t) w3 , (equalInType-mon h w3 e3))))
+                                                                   (Mod.∀𝕎-□ M (λ w3 e3 → t , t , inj₁ (#⇛!-refl {w3} {#INL t} , #⇛!-refl {w3} {#INL t} , (equalInType-mon h w3 e3))))
             aw w2 e2 (inj₂ (t , h)) = #INR t , →equalInType-UNION (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2)))
                                                                    (eqTypesNEG← (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2))))
-                                                                   (Mod.∀𝕎-□ M (λ w3 e3 → t , t , inj₂ (#compAllRefl (#INR t) w3 , #compAllRefl (#INR t) w3 , (equalInType-mon h w3 e3))))
+                                                                   (Mod.∀𝕎-□ M (λ w3 e3 → t , t , inj₂ (#⇛!-refl {w3} {#INR t}  , #⇛!-refl {w3} {#INR t} , (equalInType-mon h w3 e3))))
 
 
 
@@ -157,7 +157,7 @@ classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
     h3 = snd (snd (h2 w2 (⊑-refl· _)))
 
 
-exBar-open : ExBar W inOpenBar-Mod C K P
+exBar-open : ExBar W inOpenBar-Mod
 exBar-open = mkExBar ∀∃𝔹-open
 
 \end{code}[hide]
