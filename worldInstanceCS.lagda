@@ -762,10 +762,15 @@ chooseCS⊑ n w c | inj₁ (mkcs name l r , e) | (false , _) = ⊑-refl· _
 chooseCS⊑ n w c | inj₂ _ = ⊑-refl· _
 
 
+isℂ₀cs : ℂ· → Bool
+isℂ₀cs (ct (NUM 0) _) = true
+isℂ₀cs _ = false
+
+
 open import getChoice(PossibleWorldsCS)(choiceCS)(compatibleCS)
 
 getChoiceCS : GetChoice
-getChoiceCS = mkGetChoice getCsChoice T→ℂcs chooseCS chooseCS⊑
+getChoiceCS = mkGetChoice getCsChoice T→ℂcs chooseCS chooseCS⊑ isℂ₀cs
 -- getCsChoiceCompatible
 
 open import getChoiceDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)

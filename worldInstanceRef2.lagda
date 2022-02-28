@@ -352,11 +352,14 @@ chooseREF⊑ n w c | inj₁ (cell name r v f , e) | (false , _) = ⊑-refl· _
 chooseREF⊑ n w c | inj₂ _ = ⊑-refl· _
 
 
+isℂ₀ref : ℂ· → Bool
+isℂ₀ref b = b
+
 
 open import getChoice(PossibleWorldsRef)(choiceRef)(compatibleREF)
 
 getChoiceRef : GetChoice
-getChoiceRef = mkGetChoice getRefChoice T→ℂref chooseREF chooseREF⊑
+getChoiceRef = mkGetChoice getRefChoice T→ℂref chooseREF chooseREF⊑ isℂ₀ref
 -- getRefChoiceCompatible
 
 open import getChoiceDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)

@@ -502,23 +502,29 @@ fvars-shiftUp≡ n (DECIDE t t₁ t₂)
   | lowerVars-map-sucIf≤-suc n (fvars t₂) = refl
 fvars-shiftUp≡ n (EQ t t₁ t₂)
   rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
-  | map-++-commute (sucIf≤ n) (fvars t₁) (fvars t₂)
-  | fvars-shiftUp≡ n t
-  | fvars-shiftUp≡ n t₁
-  | fvars-shiftUp≡ n t₂ = refl
+        | map-++-commute (sucIf≤ n) (fvars t₁) (fvars t₂)
+        | fvars-shiftUp≡ n t
+        | fvars-shiftUp≡ n t₁
+        | fvars-shiftUp≡ n t₂ = refl
 fvars-shiftUp≡ n AX = refl
 fvars-shiftUp≡ n FREE = refl
 fvars-shiftUp≡ n (CS x) = refl
 fvars-shiftUp≡ n (CHOOSE t t₁)
   rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
-  | fvars-shiftUp≡ n t
-  | fvars-shiftUp≡ n t₁ = refl
+        | fvars-shiftUp≡ n t
+        | fvars-shiftUp≡ n t₁ = refl
+fvars-shiftUp≡ n (IFC0 t t₁ t₂)
+  rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
+        | map-++-commute (sucIf≤ n) (fvars t₁) (fvars t₂)
+        | fvars-shiftUp≡ n t
+        | fvars-shiftUp≡ n t₁
+        | fvars-shiftUp≡ n t₂ = refl
 fvars-shiftUp≡ n (TSQUASH t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (DUM t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (FFDEFS t t₁)
   rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
-  | fvars-shiftUp≡ n t
-  | fvars-shiftUp≡ n t₁ = refl
+        | fvars-shiftUp≡ n t
+        | fvars-shiftUp≡ n t₁ = refl
 fvars-shiftUp≡ n (UNIV x) = refl
 fvars-shiftUp≡ n (LIFT t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (LOWER t) = fvars-shiftUp≡ n t
@@ -760,14 +766,20 @@ fvars-shiftDown≡ n FREE = refl
 fvars-shiftDown≡ n (CS x) = refl
 fvars-shiftDown≡ n (CHOOSE t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
-  | fvars-shiftDown≡ n t
-  | fvars-shiftDown≡ n t₁ = refl
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ n t₁ = refl
+fvars-shiftDown≡ n (IFC0 t t₁ t₂)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
+        | map-++-commute (predIf≤ n) (fvars t₁) (fvars t₂)
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ n t₁
+        | fvars-shiftDown≡ n t₂ = refl
 fvars-shiftDown≡ n (TSQUASH t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (DUM t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (FFDEFS t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
-  | fvars-shiftDown≡ n t
-  | fvars-shiftDown≡ n t₁ = refl
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ n t₁ = refl
 fvars-shiftDown≡ n (UNIV x) = refl
 fvars-shiftDown≡ n (LIFT t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (LOWER t) = fvars-shiftDown≡ n t
@@ -889,6 +901,13 @@ fvars-subv v a (CS x) i = ⊥-elim (¬∈[] i)
 fvars-subv v a (CHOOSE b b₁) {x} i with ∈-++⁻ (fvars (subv v a b)) i
 ... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b p)
 ... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b₁ p)
+fvars-subv v a (IFC0 b b₁ b₂) i with ∈-++⁻ (fvars (subv v a b)) i
+... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁ ++ fvars b₂} {fvars a} (fvars-subv v a b p)
+... | inj₂ p with ∈-++⁻ (fvars (subv v a b₁)) p
+... | inj₁ q = ∈removeV++R {_} {v} {fvars b} {fvars b₁ ++ fvars b₂} {fvars a}
+                           (∈removeV++L {_} {v} {fvars b₁} {fvars b₂} {fvars a} (fvars-subv v a b₁ q))
+... | inj₂ q = ∈removeV++R {_} {v} {fvars b} {fvars b₁ ++ fvars b₂} {fvars a}
+                           (∈removeV++R {_} {v} {fvars b₁} {fvars b₂} {fvars a} (fvars-subv v a b₂ q))
 fvars-subv v a (TSQUASH b) = fvars-subv v a b
 fvars-subv v a (DUM b) = fvars-subv v a b
 fvars-subv v a (FFDEFS b b₁) i with ∈-++⁻ (fvars (subv v a b)) i
@@ -1066,6 +1085,11 @@ shiftDown1-subv1-shiftUp0 n a (CS x) ca = refl
 shiftDown1-subv1-shiftUp0 n a (CHOOSE b b₁) ca
   rewrite shiftDown1-subv1-shiftUp0 n a b ca
         | shiftDown1-subv1-shiftUp0 n a b₁ ca = refl
+shiftDown1-subv1-shiftUp0 n a (IFC0 b b₁ b₂) ca
+  rewrite #shiftUp 0 (ct a ca)
+        | shiftDown1-subv1-shiftUp0 n a b ca
+        | shiftDown1-subv1-shiftUp0 n a b₁ ca
+        | shiftDown1-subv1-shiftUp0 n a b₂ ca = refl
 shiftDown1-subv1-shiftUp0 n a (TSQUASH b) ca
   rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
 shiftDown1-subv1-shiftUp0 n a (DUM b) ca
@@ -1244,8 +1268,21 @@ APPLYinj2 refl =  refl
 CHOOSEinj1 : {a b c d : Term} → CHOOSE a b ≡ CHOOSE c d → a ≡ c
 CHOOSEinj1 refl =  refl
 
+
 CHOOSEinj2 : {a b c d : Term} → CHOOSE a b ≡ CHOOSE c d → b ≡ d
 CHOOSEinj2 refl =  refl
+
+
+IFC0inj1 : {a b c d e f : Term} → IFC0 a b c ≡ IFC0 d e f → a ≡ d
+IFC0inj1 refl =  refl
+
+
+IFC0inj2 : {a b c d e f : Term} → IFC0 a b c ≡ IFC0 d e f → b ≡ e
+IFC0inj2 refl =  refl
+
+
+IFC0inj3 : {a b c d e f : Term} → IFC0 a b c ≡ IFC0 d e f → c ≡ f
+IFC0inj3 refl =  refl
 
 
 SETinj1 : {a b c d : Term} → SET a b ≡ SET c d → a ≡ c
@@ -1523,6 +1560,7 @@ shiftUp-inj {n} {AX} {AX} e = refl
 shiftUp-inj {n} {FREE} {FREE} e = refl
 shiftUp-inj {n} {CS x} {CS .x} refl = refl
 shiftUp-inj {n} {CHOOSE a a₁} {CHOOSE b b₁} e rewrite shiftUp-inj (CHOOSEinj1 e) | shiftUp-inj (CHOOSEinj2 e) = refl
+shiftUp-inj {n} {IFC0 a a₁ a₂} {IFC0 b b₁ b₂} e rewrite shiftUp-inj (IFC0inj1 e) | shiftUp-inj (IFC0inj2 e) | shiftUp-inj (IFC0inj3 e) = refl
 shiftUp-inj {n} {TSQUASH a} {TSQUASH b} e rewrite shiftUp-inj (TSQUASHinj e) = refl
 shiftUp-inj {n} {DUM a} {DUM b} e rewrite shiftUp-inj (DUMinj e) = refl
 shiftUp-inj {n} {FFDEFS a a₁} {FFDEFS b b₁} e rewrite shiftUp-inj (FFDEFSinj1 e) | shiftUp-inj (FFDEFSinj2 e) = refl

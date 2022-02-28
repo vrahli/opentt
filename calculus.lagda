@@ -91,6 +91,7 @@ data Term : Set where
   FREE : Term
   CS : Name → Term
   CHOOSE : Term → Term → Term
+  IFC0 : Term → Term → Term → Term
   -- Time squashing
   TSQUASH : Term → Term
   -- Dummy
@@ -130,6 +131,7 @@ value? AX = true
 value? FREE = true
 value? (CS _) = true
 value? (CHOOSE _ _) = false -- Not a value
+value? (IFC0 _ _ _) = false -- Not a value
 value? (TSQUASH _) = true
 value? (DUM _) = true
 value? (FFDEFS _ _) = true
@@ -218,6 +220,7 @@ fvars AX               = []
 fvars FREE             = []
 fvars (CS x)           = []
 fvars (CHOOSE a b)     = fvars a ++ fvars b
+fvars (IFC0 a b c)     = fvars a ++ fvars b ++ fvars c
 fvars (TSQUASH t)      = fvars t
 fvars (DUM t)          = fvars t
 fvars (FFDEFS t t₁)    = fvars t ++ fvars t₁
@@ -357,6 +360,7 @@ shiftUp c AX = AX
 shiftUp c FREE = FREE
 shiftUp c (CS x) = CS x
 shiftUp c (CHOOSE a b) = CHOOSE (shiftUp c a) (shiftUp c b)
+shiftUp c (IFC0 a t₁ t₂) = IFC0 (shiftUp c a) (shiftUp c t₁) (shiftUp c t₂)
 shiftUp c (TSQUASH t) = TSQUASH (shiftUp c t)
 shiftUp c (DUM t) = DUM (shiftUp c t)
 shiftUp c (FFDEFS t t₁) = FFDEFS (shiftUp c t) (shiftUp c t₁)
@@ -390,6 +394,7 @@ shiftDown c AX = AX
 shiftDown c FREE = FREE
 shiftDown c (CS x) = CS x
 shiftDown c (CHOOSE a b) = CHOOSE (shiftDown c a) (shiftDown c b)
+shiftDown c (IFC0 a t₁ t₂) = IFC0 (shiftDown c a) (shiftDown c t₁) (shiftDown c t₂)
 shiftDown c (TSQUASH t) = TSQUASH (shiftDown c t)
 shiftDown c (DUM t) = DUM (shiftDown c t)
 shiftDown c (FFDEFS t t₁) = FFDEFS (shiftDown c t) (shiftDown c t₁)
@@ -425,6 +430,7 @@ subv v t AX = AX
 subv v t FREE = FREE
 subv v t (CS x) = CS x
 subv v t (CHOOSE a b) = CHOOSE (subv v t a) (subv v t b)
+subv v t (IFC0 a t₁ t₂) = IFC0 (subv v t a) (subv v t t₁) (subv v t t₂)
 subv v t (TSQUASH u) = TSQUASH (subv v t u)
 subv v t (DUM u) = DUM (subv v t u)
 subv v t (FFDEFS u u₁) = FFDEFS (subv v t u) (subv v t u₁)
@@ -461,63 +467,67 @@ subvNotIn v t NAT n = refl
 subvNotIn v t QNAT n = refl
 subvNotIn v t (LT u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
-  rewrite subvNotIn v t u₁ (notInAppVars2 n) = refl
+        | subvNotIn v t u₁ (notInAppVars2 n) = refl
 subvNotIn v t (QLT u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
-  rewrite subvNotIn v t u₁ (notInAppVars2 n) = refl
+        | subvNotIn v t u₁ (notInAppVars2 n) = refl
 subvNotIn v t (NUM x) n = refl
 subvNotIn v t (PI u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
-  rewrite subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
+        | subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
 subvNotIn v t (LAMBDA u) n
   rewrite subvNotIn (suc v) (shiftUp 0 t) u (λ j → ⊥-elim (n (inLowerVars _ _ j))) = refl
 subvNotIn v t (APPLY u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
-  rewrite subvNotIn v t u₁ (notInAppVars2 n) = refl
+        | subvNotIn v t u₁ (notInAppVars2 n) = refl
 subvNotIn v t (FIX u) n
   rewrite subvNotIn v t u n = refl
 subvNotIn v t (LET u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
-  rewrite subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
+        | subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
 subvNotIn v t (SUM u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
-  rewrite subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
+        | subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
 subvNotIn v t (PAIR u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
-  rewrite subvNotIn v t u₁ (notInAppVars2 n) = refl
+        | subvNotIn v t u₁ (notInAppVars2 n) = refl
 subvNotIn v t (SPREAD u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
-  rewrite subvNotIn (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ (inLowerVars _ _ j)))) = refl
+        | subvNotIn (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ (inLowerVars _ _ j)))) = refl
 subvNotIn v t (SET u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
-  rewrite subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
+        | subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
 subvNotIn v t (UNION u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
-  rewrite subvNotIn v t u₁ (notInAppVars2 n) = refl
+        | subvNotIn v t u₁ (notInAppVars2 n) = refl
 subvNotIn v t (INL u) n
   rewrite subvNotIn v t u n = refl
 subvNotIn v t (INR u) n
   rewrite subvNotIn v t u n = refl
 subvNotIn v t (DECIDE u u₁ u₂) n
   rewrite subvNotIn v t u (notInAppVars1 n)
-  rewrite subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim
+        | subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim
             (notInAppVars1 {v} {lowerVars (fvars u₁)} {_}
                (notInAppVars2 {v} {fvars u} {_} n)
                (inLowerVars _ _ j)))
-  rewrite subvNotIn (suc v) (shiftUp 0 t) u₂ (λ j → ⊥-elim
+        | subvNotIn (suc v) (shiftUp 0 t) u₂ (λ j → ⊥-elim
             (notInAppVars2 {v} {lowerVars (fvars u₁)} {_}
                (notInAppVars2 {v} {fvars u} {_} n)
                (inLowerVars _ _ j))) = refl
 subvNotIn v t (EQ u u₁ u₂) n
   rewrite subvNotIn v t u (notInAppVars1 n)
-  rewrite subvNotIn v t u₁ (notInAppVars1 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))
-  rewrite subvNotIn v t u₂ (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n)) = refl
+        | subvNotIn v t u₁ (notInAppVars1 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))
+        | subvNotIn v t u₂ (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n)) = refl
 subvNotIn v t AX n = refl
 subvNotIn v t FREE n = refl
 subvNotIn v t (CS x) n = refl
 subvNotIn v t (CHOOSE u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
   rewrite subvNotIn v t u₁ (notInAppVars2 n) = refl
+subvNotIn v t (IFC0 u u₁ u₂) n
+  rewrite subvNotIn v t u (notInAppVars1 n)
+        | subvNotIn v t u₁ (notInAppVars1 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))
+        | subvNotIn v t u₂ (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n)) = refl
 subvNotIn v t (TSQUASH u) n
   rewrite subvNotIn v t u n = refl
 subvNotIn v t (DUM u) n
@@ -595,21 +605,25 @@ shiftDownTrivial v (DECIDE u u₁ u₂) i
   rewrite shiftDownTrivial (suc v) u₂ (impLeNotLower _ _ (impLeNotApp2 v (lowerVars (fvars u₁)) _ (impLeNotApp2 v (fvars u) _ i))) = refl
 shiftDownTrivial v (EQ u u₁ u₂) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
-  rewrite shiftDownTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl
+        | shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
+        | shiftDownTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl
 shiftDownTrivial v AX i = refl
 shiftDownTrivial v FREE i = refl
 shiftDownTrivial v (CS x) i = refl
 shiftDownTrivial v (CHOOSE u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+        | shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+shiftDownTrivial v (IFC0 u u₁ u₂) i
+  rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
+        | shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
+        | shiftDownTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl
 shiftDownTrivial v (TSQUASH u) i
   rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (DUM u) i
   rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (FFDEFS u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+        | shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftDownTrivial v (UNIV x) i = refl
 shiftDownTrivial v (LIFT u) i rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (LOWER u) i rewrite shiftDownTrivial v u i = refl
@@ -675,6 +689,10 @@ shiftUpTrivial v (CS x) i = refl
 shiftUpTrivial v (CHOOSE u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+shiftUpTrivial v (IFC0 u u₁ u₂) i
+  rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
+        | shiftUpTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
+        | shiftUpTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl
 shiftUpTrivial v (TSQUASH u) i
   rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (DUM u) i
@@ -728,6 +746,7 @@ shiftDownUp AX n = refl
 shiftDownUp FREE n = refl
 shiftDownUp (CS x) n = refl
 shiftDownUp (CHOOSE t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
+shiftDownUp (IFC0 t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n = refl
 shiftDownUp (TSQUASH t) n rewrite shiftDownUp t n = refl
 shiftDownUp (DUM t) n rewrite shiftDownUp t n = refl
 shiftDownUp (FFDEFS t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
@@ -762,6 +781,7 @@ is-NUM AX = inj₂ (λ { n () })
 is-NUM FREE = inj₂ (λ { n () })
 is-NUM (CS x) = inj₂ (λ { n () })
 is-NUM (CHOOSE t t₁) = inj₂ (λ { n () })
+is-NUM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-NUM (TSQUASH t) = inj₂ (λ { n () })
 is-NUM (DUM t) = inj₂ (λ { n () })
 is-NUM (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -796,6 +816,7 @@ is-LAM AX = inj₂ (λ { n () })
 is-LAM FREE = inj₂ (λ { n () })
 is-LAM (CS x) = inj₂ (λ { n () })
 is-LAM (CHOOSE t t₁) = inj₂ (λ { n () })
+is-LAM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-LAM (TSQUASH t) = inj₂ (λ { n () })
 is-LAM (DUM t) = inj₂ (λ { n () })
 is-LAM (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -830,6 +851,7 @@ is-CS AX = inj₂ (λ { n () })
 is-CS FREE = inj₂ (λ { n () })
 is-CS (CS x) = inj₁ (x , refl)
 is-CS (CHOOSE t t₁) = inj₂ (λ { n () })
+is-CS (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-CS (TSQUASH t) = inj₂ (λ { n () })
 is-CS (DUM t) = inj₂ (λ { n () })
 is-CS (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -864,6 +886,7 @@ is-PAIR AX = inj₂ (λ { n m () })
 is-PAIR FREE = inj₂ (λ { n m () })
 is-PAIR (CS x) = inj₂ (λ { n m () })
 is-PAIR (CHOOSE t t₁) = inj₂ (λ { n m () })
+is-PAIR (IFC0 t t₁ t₂) = inj₂ (λ { n m () })
 is-PAIR (TSQUASH t) = inj₂ (λ { n m () })
 is-PAIR (DUM t) = inj₂ (λ { n m () })
 is-PAIR (FFDEFS t t₁) = inj₂ (λ { n m () })
@@ -898,6 +921,7 @@ is-INL AX = inj₂ (λ { n () })
 is-INL FREE = inj₂ (λ { n () })
 is-INL (CS x) = inj₂ (λ { n () })
 is-INL (CHOOSE t t₁) = inj₂ (λ { n () })
+is-INL (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-INL (TSQUASH t) = inj₂ (λ { n () })
 is-INL (DUM t) = inj₂ (λ { n () })
 is-INL (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -932,6 +956,7 @@ is-INR AX = inj₂ (λ { n () })
 is-INR FREE = inj₂ (λ { n () })
 is-INR (CS x) = inj₂ (λ { n () })
 is-INR (CHOOSE t t₁) = inj₂ (λ { n () })
+is-INR (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-INR (TSQUASH t) = inj₂ (λ { n () })
 is-INR (DUM t) = inj₂ (λ { n () })
 is-INR (FFDEFS t t₁) = inj₂ (λ { n () })

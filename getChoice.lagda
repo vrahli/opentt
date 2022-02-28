@@ -53,6 +53,8 @@ record GetChoice : Set(lsuc(L)) where
     choose : (cs : Name) (w : 𝕎·) (c : ℂ·) → 𝕎·
     choose⊑ : (cs : Name) (w : 𝕎·) (c : ℂ·) → w ⊑· choose cs w c
 
+    isℂ₀ : ℂ· → Bool
+
     --getChoice : (cs : Name) (w : 𝕎·) → Maybe ℕ
     --getChoiceCompatible : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) (n : ℕ) (t : ℂ·) → compatible· c w r → getChoice n c w ≡ just t → ·ᵣ r n t
 

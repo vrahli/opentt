@@ -102,6 +102,14 @@ step (CHOOSE n t) w with is-CS n
 step (CHOOSE n t) w with step n w
 ... | just (m , w') = ret (CHOOSE m t) w'
 ... | nothing = nothing--}
+-- IFC₀
+step (IFC0 a b c) w with value? a
+... | true with isT₀ a
+... |    true = ret b w
+... |    false = ret c w
+step (IFC0 a b c) w | false with step a w
+... |    just (a' , w') = ret (IFC0 a' b c) w'
+... |    nothing = nothing
 -- FIX
 step (FIX f) w with is-LAM f
 ... | inj₁ (t , p) = ret (sub (FIX (LAMBDA t)) t) w
@@ -412,6 +420,7 @@ step-APPLY-CS-¬NUM name (SHRINK a) b w w' c s rewrite sym (pair-inj₁ (just-in
 step-APPLY-CS-¬NUM name (DECIDE a x y) b w w' c s rewrite s = refl
 step-APPLY-CS-¬NUM name (SPREAD a x) b w w' c s rewrite s = refl
 step-APPLY-CS-¬NUM name (CHOOSE a a₁) b w w' c s rewrite s = refl
+step-APPLY-CS-¬NUM name (IFC0 a a₁ a₂) b w w' c s rewrite s = refl
 
 
 Σ-steps-APPLY-CS≤ : (n : ℕ) (a b : Term) (w w' : 𝕎·) (name : Name)
@@ -650,6 +659,13 @@ step⊑ {w} {w'} {CS x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym
 step⊑ {w} {w'} {CHOOSE a a₁} {b} comp with is-CS a
 ... | inj₁ (name , p) rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = choose⊑· name w (T→ℂ· a₁)
 ... | inj₂ x with step⊎ a w
+... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step⊑ {w} {w'} {IFC0 a a₁ a₂} {b} comp with value? a
+... | true with isT₀ a
+... |    true rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+... |    false rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {IFC0 a a₁ a₂} {b} comp | false with step⊎ a w
 ... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step⊑ {w} {w'} {TSQUASH a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
@@ -1044,6 +1060,10 @@ data ∼T : 𝕎· → Term → Term → Set where
   where
     z : steps 1 (APPLY (CHOOSE a x) c , w) ≡ (APPLY b c , w')
     z rewrite comp = refl
+→-step-APPLY {w} {w'} {IFC0 a x y} {b} c comp = 1 , z
+  where
+    z : steps 1 (APPLY (IFC0 a x y) c , w) ≡ (APPLY b c , w')
+    z rewrite comp = refl
 →-step-APPLY {w} {w'} {LET a x} {b} c comp = 1 , z
   where
     z : steps 1 (APPLY (LET a x) c , w) ≡ (APPLY b c , w')
@@ -1106,6 +1126,10 @@ step-⇓-ASSERT₁ {w} {w'} {SPREAD a a₁} {b} comp = 1 , z
 step-⇓-ASSERT₁ {w} {w'} {CHOOSE a a₁} {b} comp = 1 , z
   where
     z : steps 1 (ASSERT₁ (CHOOSE a a₁) , w) ≡ (ASSERT₁ b , w')
+    z rewrite comp = refl
+step-⇓-ASSERT₁ {w} {w'} {IFC0 a a₁ a₂} {b} comp = 1 , z
+  where
+    z : steps 1 (ASSERT₁ (IFC0 a a₁ a₂) , w) ≡ (ASSERT₁ b , w')
     z rewrite comp = refl
 step-⇓-ASSERT₁ {w} {w'} {LET a a₁} {b} comp = 1 , z
   where

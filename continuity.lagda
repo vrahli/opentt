@@ -29,7 +29,6 @@ open import Induction.WellFounded
 open import Axiom.Extensionality.Propositional
 
 
-
 open import util
 open import calculus
 open import terms
@@ -40,6 +39,7 @@ open import compatible
 open import getChoice
 open import progress
 open import mod
+
 
 module continuity {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
                   (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
@@ -82,14 +82,14 @@ open import props3(W)(M)(C)(K)(P)(G)(E)
 -- turns 'f' into λy.(if n < y then name:=ℂ₁);f(y)
 -- ℂ₀ is treated as true here, and ℂ₁ as false
 bound : (name : Name) (n : Term) (f : Term) → Term
-bound name n f = LAM (SEQ (IF-THEN (LE n (VAR 0)) (CHOOSE name ℂ₁)) (APPLY f (VAR 0)))
+bound name n f = LAMBDA (SEQ (IF-THEN (LE n (VAR 0)) (CHOOSE (CS name) (ℂ→T ℂ₁·))) (APPLY f (VAR 0)))
 
 
 -- We assume that initially name contains ℂ₀
 test : (name : Name) (F : Term) (n : Term) (f : Term) → Term
 test name F n f = LET (APPLY F (bound name n f))
-                      (LET (ITE (APPLY (CS name) (NUM 0)) (VAR 0) AX) -- We further need to check whether name contains ℂ₀
-                           (SEQ (CHOOSE name ℂ₀) -- resets the reference to ℂ₀
+                      (LET (IFC0 (APPLY (CS name) (NUM 0)) (VAR 0) AX) -- We check whether 'name' contains ℂ₀
+                           (SEQ (CHOOSE (CS name) (ℂ→T ℂ₀·)) -- resets the reference to ℂ₀
                                 (VAR 0)))
 
 
