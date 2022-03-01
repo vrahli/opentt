@@ -85,6 +85,9 @@ bound : (name : Name) (n : Term) (f : Term) → Term
 bound name n f = LAMBDA (SEQ (IF-THEN (LE n (VAR 0)) (CHOOSE (CS name) (ℂ→T ℂ₁·))) (APPLY f (VAR 0)))
 
 
+-- TODO: the name should be a fresh name, that does not occur in F
+-- TODO: need union types?
+
 -- We assume that initially name contains ℂ₀
 test : (name : Name) (F : Term) (n : Term) (f : Term) → Term
 test name F n f = LET (APPLY F (bound name n f))
@@ -138,6 +141,14 @@ fvars-SEQ0 a b rewrite fvars-shiftUp≡ 0 b | lowerVars-map-sucIf≤-suc 0 (fvar
 
 
 -- MOVE to terms
+#SEQ : CTerm → CTerm → CTerm
+#SEQ a b = ct (SEQ ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # SEQ ⌜ a ⌝ ⌜ b ⌝
+    c rewrite fvars-SEQ0 ⌜ a ⌝ ⌜ b ⌝ | CTerm.closed a | CTerm.closed b = refl
+
+
+-- MOVE to terms
 #[0]SEQ : CTerm0 → CTerm0 → CTerm0
 #[0]SEQ a b = ct0 (SEQ ⌜ a ⌝ ⌜ b ⌝) c
   where
@@ -173,6 +184,14 @@ fvars-IF-THEN a b rewrite fvars-ITE a b AX | ++[] (fvars b) = refl
 
 
 -- MOVE to terms
+#IF-THEN : CTerm → CTerm → CTerm
+#IF-THEN a b = ct (IF-THEN ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # IF-THEN ⌜ a ⌝ ⌜ b ⌝
+    c rewrite fvars-IF-THEN ⌜ a ⌝ ⌜ b ⌝ | CTerm.closed a | CTerm.closed b = refl
+
+
+-- MOVE to terms
 #[0]LE : CTerm0 → CTerm0 → CTerm0
 #[0]LE a b = ct0 (LE ⌜ a ⌝ ⌜ b ⌝) c
   where
@@ -183,6 +202,14 @@ fvars-IF-THEN a b rewrite fvars-ITE a b AX | ++[] (fvars b) = refl
 
 
 -- MOVE to terms
+#LE : CTerm → CTerm → CTerm
+#LE a b = ct (LE ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # LE ⌜ a ⌝ ⌜ b ⌝
+    c rewrite fvars-NEG (LT ⌜ b ⌝ ⌜ a ⌝) | CTerm.closed a | CTerm.closed b = refl
+
+
+-- MOVE to terms
 #[0]CHOOSE : CTerm0 → CTerm0 → CTerm0
 #[0]CHOOSE a b = ct0 (CHOOSE ⌜ a ⌝ ⌜ b ⌝) c
   where
@@ -190,6 +217,14 @@ fvars-IF-THEN a b rewrite fvars-ITE a b AX | ++[] (fvars b) = refl
     c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {[ 0 ]}
              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
                   (⊆?→⊆ {fvars ⌜ b ⌝} {[ 0 ]} (CTerm0.closed b)))
+
+
+-- MOVE to terms
+#CHOOSE : CTerm → CTerm → CTerm
+#CHOOSE a b = ct (CHOOSE ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # CHOOSE ⌜ a ⌝ ⌜ b ⌝
+    c rewrite CTerm.closed a | CTerm.closed b = refl
 
 
 
@@ -210,9 +245,105 @@ fvars-IF-THEN a b rewrite fvars-ITE a b AX | ++[] (fvars b) = refl
   #LAMBDA (#[0]SEQ (#[0]IF-THEN (#[0]LE ⌞ n ⌟ #[0]VAR) (#[0]CHOOSE (#[0]CS name) ⌞ ℂ→C· ℂ₁· ⌟))
                    (#[0]APPLY ⌞ f ⌟ #[0]VAR))
 
+
 #bound≡ : (name : Name) (n : CTerm) (f : CTerm) → #bound name n f ≡ #BOUND name n f
 #bound≡ name n f = CTerm≡ refl
 
+
+→≡pair : {l k : Level} {A : Set l} {B : Set k} {a₁ a₂ : A} {b₁ b₂ : B} → a₁ ≡ a₂ → b₁ ≡ b₂ → (a₁ , b₁) ≡ (a₂ , b₂)
+→≡pair e f rewrite e | f = refl
+
+
+→≡LET : {a₁ a₂ b₁ b₂ : Term} → a₁ ≡ a₂ → b₁ ≡ b₂ → LET a₁ b₁ ≡ LET a₂ b₂
+→≡LET e f rewrite e | f = refl
+
+
+sub-SEQ : (a b c : Term) → # a → #[ [ 0 ] ] c → sub a (SEQ b c) ≡ SEQ (sub a b) (sub a c)
+sub-SEQ a b c ca cc
+  rewrite #shiftUp 0 (ct a ca)
+        | shiftDown1-subv1-shiftUp0 0 a c ca
+        | #shiftUp 0 (ct a ca)
+        | shiftDown1-subv1-shiftUp0 0 a c ca
+        | #shiftDown 0 (ct (subv 0 a c) (#subv-CTerm (ct a ca) (ct0 c cc)))
+        | #shiftUp 0 (ct (subv 0 a c) (#subv-CTerm (ct a ca) (ct0 c cc)))
+  = →≡LET refl refl
+
+
+→sub-SEQ : {a b c b' c' : Term} → # a → #[ [ 0 ] ] c
+            → sub a b ≡ b'
+            → sub a c ≡ c'
+            → sub a (SEQ b c) ≡ SEQ b' c'
+→sub-SEQ {a} {b} {c} {b'} {c'} ca cc eb ec rewrite sym eb | sym ec = sub-SEQ a b c ca cc
+
+
+sub-ITE : (a b c d : Term) → # a → #[ [ 0 ] ] c → #[ [ 0 ] ] d
+          → sub a (ITE b c d) ≡ ITE (sub a b) (sub a c) (sub a d)
+sub-ITE a b c d ca cc cd
+  rewrite #shiftUp 0 (ct a ca) | #shiftUp 0 (ct a ca)
+        | shiftDown1-subv1-shiftUp0 0 a c ca
+        | shiftDown1-subv1-shiftUp0 0 a d ca
+        | #shiftDown 0 (ct (subv 0 a c) (#subv-CTerm (ct a ca) (ct0 c cc)))
+        | #shiftUp 0 (ct (subv 0 a c) (#subv-CTerm (ct a ca) (ct0 c cc)))
+        | #shiftDown 0 (ct (subv 0 a d) (#subv-CTerm (ct a ca) (ct0 d cd)))
+        | #shiftUp 0 (ct (subv 0 a d) (#subv-CTerm (ct a ca) (ct0 d cd)))
+  = refl
+
+
+sub-IF-THEN : (a b c : Term) → # a → #[ [ 0 ] ] c
+              → sub a (IF-THEN b c) ≡ IF-THEN (sub a b) (sub a c)
+sub-IF-THEN a b c ca cc = sub-ITE a b c AX ca cc refl
+
+
+→sub-IF-THEN : {a b c b' c' : Term} → # a → #[ [ 0 ] ] c
+                → sub a b ≡ b'
+                → sub a c ≡ c'
+                → sub a (IF-THEN b c) ≡ IF-THEN b' c'
+→sub-IF-THEN {a} {b} {c} {b'} {c'} ca cc eb ec rewrite sym eb | sym ec = sub-IF-THEN a b c ca cc
+
+
+sub-LE : (a b c : Term) → sub a (LE b c) ≡ LE (sub a b) (sub a c)
+sub-LE a b c = refl
+
+
+→sub-LE : {a b c b' c' : Term}
+           → sub a b ≡ b'
+           → sub a c ≡ c'
+           → sub a (LE b c) ≡ LE b' c'
+→sub-LE {a} {b} {c} {b'} {c'} eb ec rewrite sym eb | sym ec = sub-LE a b c
+
+
+sub-APPLY : (a b c : Term) → sub a (APPLY b c) ≡ APPLY (sub a b) (sub a c)
+sub-APPLY a b c = refl
+
+
+→sub-APPLY : {a b c b' c' : Term}
+           → sub a b ≡ b'
+           → sub a c ≡ c'
+           → sub a (APPLY b c) ≡ APPLY b' c'
+→sub-APPLY {a} {b} {c} {b'} {c'} eb ec rewrite sym eb | sym ec = sub-APPLY a b c
+
+
+sub-VAR0 : (a : Term) → sub a (VAR 0) ≡ a
+sub-VAR0 a rewrite shiftDownUp a 0 = refl
+
+
+#⇛!-#APPLY-#BOUND : (w : 𝕎·) (name : Name) (n : CTerm) (f : CTerm) (a : CTerm)
+                     → #APPLY (#BOUND name n f) a #⇛! #SEQ (#IF-THEN (#LE n a) (#CHOOSE (#CS name) (ℂ→C· ℂ₁·))) (#APPLY f a) at w
+#⇛!-#APPLY-#BOUND w name n f a w1 e1
+  = lift (1 , →≡pair (→sub-SEQ {⌜ a ⌝}
+                                 {⌜ #[0]IF-THEN (#[0]LE ⌞ n ⌟ #[0]VAR) (#[0]CHOOSE (#[0]CS name) ⌞ ℂ→C· ℂ₁· ⌟) ⌝}
+                                 {⌜ #[0]APPLY ⌞ f ⌟ #[0]VAR ⌝}
+                                 {⌜ #IF-THEN (#LE n a) (#CHOOSE (#CS name) (ℂ→C· ℂ₁·)) ⌝}
+                                 {⌜ #APPLY f a ⌝}
+                                 (CTerm.closed a) (CTerm0.closed (#[0]APPLY ⌞ f ⌟ #[0]VAR))
+                                 (→sub-IF-THEN {⌜ a ⌝} {⌜ #[0]LE ⌞ n ⌟ #[0]VAR ⌝}
+                                                {⌜ #[0]CHOOSE (#[0]CS name) ⌞ ℂ→C· ℂ₁· ⌟ ⌝} {⌜ #LE n a ⌝}
+                                                {⌜ #CHOOSE (#CS name) (ℂ→C· ℂ₁·) ⌝}
+                                                (CTerm.closed a)
+                                                (CTerm0.closed (#[0]CHOOSE (#[0]CS name) ⌞ ℂ→C· ℂ₁· ⌟))
+                                                (→sub-LE {⌜ a ⌝} {⌜ n ⌝} {⌜ #[0]VAR ⌝} {⌜ n ⌝} {⌜ a ⌝} (subNotIn ⌜ a ⌝ ⌜ n ⌝ (CTerm.closed n)) (sub-VAR0 ⌜ a ⌝))
+                                                (subNotIn ⌜ a ⌝ ⌜ #CHOOSE (#CS name) (ℂ→C· ℂ₁·) ⌝ (CTerm.closed (#CHOOSE (#CS name) (ℂ→C· ℂ₁·)))))
+                                 (→sub-APPLY {⌜ a ⌝} {⌜ f ⌝} {⌜ #[0]VAR ⌝} (subNotIn ⌜ a ⌝ ⌜ f ⌝ (CTerm.closed f)) (sub-VAR0 ⌜ a ⌝))) refl)
 
 
 -- MOVE to props2/3
@@ -242,10 +373,22 @@ bound∈ : (i : ℕ) (w : 𝕎·) (name : Name) (n : CTerm) (f : CTerm)
          → ∈Type i w #BAIRE f
          → equalInType i w #BAIRE (#bound name n f) (#bound name n f)
 bound∈ i w name n f ∈n ∈f =
-  ≡CTerm→equalInTypeₗ (sym (#bound≡ name n f)) (≡CTerm→equalInTypeᵣ (sym (#bound≡ name n f)) (≡CTerm→equalInType (sym #BAIRE≡) {!eqi!}))
+  ≡CTerm→equalInTypeₗ (sym (#bound≡ name n f)) (≡CTerm→equalInTypeᵣ (sym (#bound≡ name n f)) (≡CTerm→equalInType (sym #BAIRE≡) eqi))
   where
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
+                       → equalInType i w' #NAT (#APPLY (#BOUND name n f) a₁) (#APPLY (#BOUND name n f) a₂))
+    aw w1 e1 a₁ a₂ ea = equalInType-#⇛-LR-rev (#⇛!-#APPLY-#BOUND w1 name n f a₁) (#⇛!-#APPLY-#BOUND w1 name n f a₂) eqi1
+      where
+        eqi1 : equalInType i w1 #NAT (#SEQ (#IF-THEN (#LE n a₁) (#CHOOSE (#CS name) (ℂ→C· ℂ₁·))) (#APPLY f a₁))
+                                     (#SEQ (#IF-THEN (#LE n a₂) (#CHOOSE (#CS name) (ℂ→C· ℂ₁·))) (#APPLY f a₂))
+        eqi1 = {!!} -- This does not work with our current nats because the world changes
+
+--∈Type i w #NAT n
+--∈Type i w #NAT a
+
     eqi : equalInType i w (#FUN #NAT #NAT) (#BOUND name n f) (#BOUND name n f)
-    eqi = {!!}
+    eqi = equalInType-FUN (λ w1 e1 → eqTypesNAT) (λ w1 e1 → eqTypesNAT) aw
+
 
 
 APPLY-bound∈ : (i : ℕ) (w : 𝕎·) (F : CTerm) (name : Name) (n : CTerm) (f : CTerm)
