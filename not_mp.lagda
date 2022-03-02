@@ -84,8 +84,8 @@ open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)(CB)
 
 
 MP : Term
-MP = PI NAT→BOOL (FUN (NEG (PI NAT (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))
-                       (SQUASH (SUM NAT (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))
+MP = PI NAT!→BOOL (FUN (NEG (PI NAT! (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))
+                        (SQUASH (SUM NAT! (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))
 
 
 #MP : CTerm
@@ -97,11 +97,11 @@ MP = PI NAT→BOOL (FUN (NEG (PI NAT (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))
 
 
 #[0]MP-left : CTerm0
-#[0]MP-left = #[0]NEG (#[0]PI #[0]NAT (#[1]NEG (#[1]ASSERT₂ (#[1]APPLY #[1]VAR1 #[1]VAR0))))
+#[0]MP-left = #[0]NEG (#[0]PI #[0]NAT! (#[1]NEG (#[1]ASSERT₂ (#[1]APPLY #[1]VAR1 #[1]VAR0))))
 
 
 #[0]MP-right : CTerm0
-#[0]MP-right = #[0]SQUASH (#[0]SUM #[0]NAT (#[1]ASSERT₂ (#[1]APPLY #[1]VAR1 #[1]VAR0)))
+#[0]MP-right = #[0]SQUASH (#[0]SUM #[0]NAT! (#[1]ASSERT₂ (#[1]APPLY #[1]VAR1 #[1]VAR0)))
 
 
 #MP-left : CTerm → CTerm
@@ -113,7 +113,7 @@ MP = PI NAT→BOOL (FUN (NEG (PI NAT (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))
 
 
 #MP-PI : CTerm
-#MP-PI = #PI #NAT→BOOL (#[0]FUN #[0]MP-left #[0]MP-right)
+#MP-PI = #PI #NAT!→BOOL (#[0]FUN #[0]MP-left #[0]MP-right)
 
 
 #MP≡#PI : #MP ≡ #MP-PI
@@ -128,7 +128,7 @@ sub0-fun-mp a =
     a #[0]MP-left #[0]MP-right (#MP-left a) (#MP-right a)
     (CTerm≡ (≡NEG (≡PI refl (≡NEG (≡ASSERT₂ (→≡APPLY e refl))))))
     (≡sub0-#[0]SQUASH
-      a (#[0]SUM #[0]NAT (#[1]ASSERT₂ (#[1]APPLY #[1]VAR1 #[1]VAR0))) (#SUM #NAT (#[0]ASSERT₂ (#[0]APPLY ⌞ a ⌟ #[0]VAR)))
+      a (#[0]SUM #[0]NAT! (#[1]ASSERT₂ (#[1]APPLY #[1]VAR1 #[1]VAR0))) (#SUM #NAT! (#[0]ASSERT₂ (#[0]APPLY ⌞ a ⌟ #[0]VAR)))
       (CTerm≡ (≡SUM refl (≡ASSERT₂ (→≡APPLY e refl)))))
   where
     e : shiftDown 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) ≡ ⌜ a ⌝
@@ -139,21 +139,21 @@ sub0-fun-mp a =
 
 
 →equalTypes-#MP-left : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
-                        → equalInType n w #NAT→BOOL a₁ a₂
+                        → equalInType n w #NAT!→BOOL a₁ a₂
                         → equalTypes n w (#MP-left a₁) (#MP-left a₂)
 →equalTypes-#MP-left {n} {w} {a₁} {a₂} eqt =
   eqTypesNEG← (→equalTypes-#PI-NEG-ASSERT₂ eqt)
 
 
 →equalTypes-#MP-right : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
-                          → equalInType n w #NAT→BOOL a₁ a₂
+                          → equalInType n w #NAT!→BOOL a₁ a₂
                           → equalTypes n w (#MP-right a₁) (#MP-right a₂)
-→equalTypes-#MP-right {n} {w} {a₁} {a₂} eqt = eqTypesSQUASH← (eqTypesSUM← (λ w' _ → eqTypesNAT) aw1)
+→equalTypes-#MP-right {n} {w} {a₁} {a₂} eqt = eqTypesSQUASH← (eqTypesSUM← (λ w' _ → isTypeNAT!) aw1)
   where
-    aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT a b → equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b))
+    aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT! a b → equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b))
     aw0 = equalInType-FUN→ eqt
 
-    aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT a b)
+    aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
                        → equalTypes n w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))) (sub0 b (#[0]ASSERT₂ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR))))
     aw1 w' e a b ea rewrite sub0-ASSERT₂-APPLY a a₁ | sub0-ASSERT₂-APPLY b a₂ = aw2
       where
@@ -169,12 +169,12 @@ isTypeMP-PI : (w : 𝕎·) (n : ℕ) → isType n w #MP-PI
 isTypeMP-PI w n =
   eqTypesPI←
     {w} {n}
-    {#NAT→BOOL} {#[0]FUN #[0]MP-left #[0]MP-right}
-    {#NAT→BOOL} {#[0]FUN #[0]MP-left #[0]MP-right}
-    (λ w' e → isType-#NAT→BOOL w' n)
+    {#NAT!→BOOL} {#[0]FUN #[0]MP-left #[0]MP-right}
+    {#NAT!→BOOL} {#[0]FUN #[0]MP-left #[0]MP-right}
+    (λ w' e → isType-#NAT!→BOOL w' n)
     aw
   where
-    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT→BOOL a₁ a₂
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT!→BOOL a₁ a₂
                       → equalTypes n w' (sub0 a₁ (#[0]FUN #[0]MP-left #[0]MP-right))
                                          (sub0 a₂ (#[0]FUN #[0]MP-left #[0]MP-right)))
     aw w' e a₁ a₂ eqb rewrite sub0-fun-mp a₁ | sub0-fun-mp a₂ =
@@ -205,11 +205,11 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' #MP a₁ a₂)
     aw1 w1 e1 F G ea = h8 h7
       where
-        aw2 : ∀𝕎 w1 (λ w' _ → (f g : CTerm) → equalInType n w' #NAT→BOOL f g
+        aw2 : ∀𝕎 w1 (λ w' _ → (f g : CTerm) → equalInType n w' #NAT!→BOOL f g
                              → equalInType n w' (sub0 f (#[0]FUN #[0]MP-left #[0]MP-right)) (#APPLY F f) (#APPLY G g))
-        aw2 = snd (snd (equalInType-PI→ {n} {w1} {#NAT→BOOL} {#[0]FUN #[0]MP-left #[0]MP-right} ea))
+        aw2 = snd (snd (equalInType-PI→ {n} {w1} {#NAT!→BOOL} {#[0]FUN #[0]MP-left #[0]MP-right} ea))
 
-        aw3 : ∀𝕎 w1 (λ w' _ → (f g : CTerm) → equalInType n w' #NAT→BOOL f g
+        aw3 : ∀𝕎 w1 (λ w' _ → (f g : CTerm) → equalInType n w' #NAT!→BOOL f g
                              → equalInType n w' (#FUN (#MP-left f) (#MP-right f)) (#APPLY F f) (#APPLY G g))
         aw3 w' e f g ex = ≡CTerm→equalInType (sub0-fun-mp f) (aw2 w' e f g ex)
 
@@ -235,10 +235,10 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         f = #CS name
 
         eqf2 : ∀𝕎 w2 (λ w' _ → (m : ℕ) →  equalInType n w' #BOOL (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
-        eqf2 w' e m = ≡CTerm→equalInType (fst bcb) (→equalInType-APPLY-CS-Typeℂ₀₁· (⊑-compatible· e comp1) (NUM-equalInType-NAT n w' m))
+        eqf2 w' e m = ≡CTerm→equalInType (fst bcb) (→equalInType-APPLY-CS-Typeℂ₀₁· (⊑-compatible· e comp1) (NUM-equalInType-NAT! n w' m))
 
-        eqf1 : ∈Type n w2 #NAT→BOOL f
-        eqf1 = →equalInType-CS-NAT→BOOL eqf2
+        eqf1 : ∈Type n w2 #NAT!→BOOL f
+        eqf1 = →equalInType-CS-NAT!→BOOL eqf2
 
         h1 : equalInType n w2 (#FUN (#MP-left f) (#MP-right f)) (#APPLY F f) (#APPLY G f)
         h1 = aw3 w2 e2 f f eqf1

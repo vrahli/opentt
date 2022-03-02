@@ -1981,6 +1981,18 @@ NAT! = TCONST NAT
 #[0]NAT! = ct0 NAT! refl
 
 
+QTNAT! : Term
+QTNAT! = TSQUASH NAT!
+
+
+#QTNAT! : CTerm
+#QTNAT! = ct QTNAT! refl
+
+
+#[0]QTNAT! : CTerm0
+#[0]QTNAT! = ct0 QTNAT! refl
+
+
 QTBOOL : Term
 QTBOOL = TSQUASH BOOL
 
@@ -2060,6 +2072,30 @@ NAT→QTBOOL = FUN NAT QTBOOL
 #NAT→QTBOOL≡ = CTerm≡ refl
 
 
+NAT!→QTBOOL : Term
+NAT!→QTBOOL = FUN NAT! QTBOOL
+
+
+#NAT!→QTBOOL : CTerm
+#NAT!→QTBOOL = ct NAT!→QTBOOL refl
+
+
+#NAT!→QTBOOL≡ : #NAT!→QTBOOL ≡ #FUN #NAT! #QTBOOL
+#NAT!→QTBOOL≡ = CTerm≡ refl
+
+
+NAT!→BOOL : Term
+NAT!→BOOL = FUN NAT! BOOL
+
+
+#NAT!→BOOL : CTerm
+#NAT!→BOOL = ct NAT!→BOOL refl
+
+
+#NAT!→BOOL≡ : #NAT!→BOOL ≡ #FUN #NAT! #BOOL
+#NAT!→BOOL≡ = CTerm≡ refl
+
+
 
 ASSERT₃ : Term → Term
 ASSERT₃ t = EQ t BTRUE QTBOOL
@@ -2101,6 +2137,10 @@ fvars-ASSERT₃ t rewrite ++[] (fvars t) = refl
 
 #NAT→T : CTerm → CTerm
 #NAT→T T = #FUN #NAT T
+
+
+#NAT!→T : CTerm → CTerm
+#NAT!→T T = #FUN #NAT! T
 
 
 LE : Term → Term → Term

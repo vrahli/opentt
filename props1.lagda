@@ -529,7 +529,7 @@ eqInType-ext-bar : {u : univs} (isu : is-uni u) {w : 𝕎·} {A B : CTerm}
 eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTNAT x x₁) =
   Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
   where
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → #⇛!sameℕ {--#strongMonEq--} w'' a b) e'))
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → NATeq w'' a b) e'))
     aw w' e' z {--at--} eqt' =
       Mod.∀𝕎-□Func M
         (λ w1 e1 s ext → s)
@@ -1181,7 +1181,7 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTNAT x x₁) eqi =
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b)
     aw w' e' z {--at--} = eqInType-⇛-NAT-rev u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
       where
-        ei : □· w' (λ w'' e → #⇛!sameℕ {--#strongMonEq--} w'' a b)
+        ei : □· w' (λ w'' e → NATeq w'' a b)
         ei = ↑□· eqi e'
 
 eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTQNAT x x₁) eqi =
@@ -1554,7 +1554,7 @@ local-eqInType2 : (u : univs) (isu : is-uni u) (w : 𝕎·) (A B a b : CTerm)
 local-eqInType2 u isu w A B a b (EQTNAT x x₁) i j =
   Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
   where
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → #⇛!sameℕ {--#strongMonEq--} w1 a b))
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → NATeq w1 a b))
     aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M (λ w1 e1 s x → s) h1
       where
         h1 : eqInType u w' {A} {B} (EQTNAT (⇛-mon e' x) (⇛-mon e' x₁)) a b
@@ -1848,7 +1848,7 @@ eqInType-mon : {u : univs} (isu : is-uni u) {w : 𝕎·} {A B : CTerm}
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTNAT x x₁) eqt2 a b eqi =
   eqInType-⇛-NAT-rev u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
   where
-    ei : □· w' (λ w'' e → #⇛!sameℕ {--#strongMonEq--} w'' a b)
+    ei : □· w' (λ w'' e → NATeq w'' a b)
     ei = ↑□· eqi e'
 
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTQNAT x x₁) eqt2 a b eqi =

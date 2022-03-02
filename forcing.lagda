@@ -305,8 +305,8 @@ FFDEFSeq x1 eqa w t1 t2 =
 
 NATeq : wper
 NATeq w t1 t2 =
---  #strongMonEq w t1 t2
-  #⇛!sameℕ w t1 t2
+  #strongMonEq w t1 t2
+--  #⇛!sameℕ w t1 t2
 
 
 {-# TERMINATING #-}

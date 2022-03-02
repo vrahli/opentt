@@ -507,6 +507,26 @@ TODO: keep unfolding by hand
     aw w1 e1 = weakMonEq-trans
 
 
+□NATeq-sym : {w : 𝕎·} {a b : CTerm}
+                        → □· w (λ w' _ → NATeq w' a b)
+                        → □· w (λ w' _ → NATeq w' b a)
+□NATeq-sym {w} {a} {b} h =
+  Mod.∀𝕎-□Func M (λ w1 e1 → strongMonEq-sym) h
+
+
+
+□NATeq-trans : {w : 𝕎·} {a b c : CTerm}
+                → □· w (λ w' _ → NATeq w' a b)
+                → □· w (λ w' _ → NATeq w' b c)
+                → □· w (λ w' _ → NATeq w' a c)
+□NATeq-trans {w} {a} {b} {c} h₁ h₂ =
+  Mod.□Func M (Mod.∀𝕎-□Func M aw h₁) h₂
+  where
+    aw : ∀𝕎 w (λ w' e' → NATeq w' a b → NATeq w' b c → NATeq w' a c)
+    aw w1 e1 = strongMonEq-trans
+
+
+
 strongMonEq-pres-⇓ : {w : 𝕎·} {a1 a2 : Term} {n : ℕ}
                      → strongMonEq w a1 a2
                      → a1 ⇓ NUM n at w

@@ -120,10 +120,10 @@ comp-Resℂ→□·-weakℂ₀₁ {c} {w} n comp = Mod.∀𝕎-□Func M aw j1
 
 →equalInType-APPLY-CS-Typeℂ₀₁· : {i : ℕ} {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
                                   → compatible· c w Resℂ
-                                  → equalInType i w #NAT a₁ a₂
+                                  → equalInType i w #NAT! a₁ a₂
                                   → equalInType i w Typeℂ₀₁· (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
 →equalInType-APPLY-CS-Typeℂ₀₁· {i} {w} {c} {a₁} {a₂} comp eqi =
-  equalInType-local (Mod.∀𝕎-□Func M aw1' (equalInType-NAT→ i w a₁ a₂ eqi))
+  equalInType-local (Mod.∀𝕎-□Func M aw1' (equalInType-NAT!→ i w a₁ a₂ eqi))
   where
     aw1' : ∀𝕎 w (λ w'' e'' → #⇛!sameℕ {--#strongMonEq--} w'' a₁ a₂ → equalInType i w'' Typeℂ₀₁· (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂))
     aw1' w1 e1 (n , c₁ , c₂) = equalInType-#⇛-LR-rev (#⇛!-APPLY-CS {w1} {a₁} {#NUM n} c c₁) (#⇛!-APPLY-CS {w1} {a₂} {#NUM n} c c₂) eqj

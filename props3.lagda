@@ -272,6 +272,15 @@ TCONSTeq-#⇛-rev {eqa} {w} {a} {b} {c} {d} c₁ c₂ h = {!!}
 
 
 
+{--#strongMonEq-#⇛-left-rev : {w : 𝕎·} {a b c : CTerm}
+                            → a #⇛! b at w
+                            → #strongMonEq w b c
+                            → #strongMonEq w a c
+#strongMonEq-#⇛-left-rev {w} {a} {b} {c} comp (n , c₁ , c₂) =
+  n , ? , ? --#⇛!-trans {w} {a} {b} {#NUM n} comp c₁ , c₂ --⇛-trans comp c₁ , c₂
+--}
+
+
 equalTerms-#⇛-left-rev-at : ℕ → Set(lsuc(L))
 equalTerms-#⇛-left-rev-at i =
   {w : 𝕎·} {A B a b c : CTerm}
@@ -287,7 +296,7 @@ equalTerms-#⇛-left-rev-aux : {i : ℕ}
                               → equalTerms-#⇛-left-rev-at i
 {-# TERMINATING #-}
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTNAT x x₁) eqi =
-  Mod.∀𝕎-□Func M (λ w1 e1 h → #⇛!sameℕ-#⇛-left-rev {w1} {a} {b} {c} ({--#⇛!-#⇛ {w1} {a} {b}--} (∀𝕎-mon e1 comp)) h) eqi
+  Mod.∀𝕎-□Func M (λ w1 e1 h → #strongMonEq-#⇛-left-rev {w1} {a} {b} {c} (#⇛!-#⇛ {w1} {a} {b} (∀𝕎-mon e1 comp)) h) eqi
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTQNAT x x₁) eqi =
   Mod.∀𝕎-□Func M (λ w1 e1 h → #weakMonEq-#⇛-left-rev {w1} {a} {b} {c} (∀𝕎-mon e1 comp) h) eqi
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi =
@@ -391,7 +400,7 @@ equalTerms-#⇛-left-aux : {i : ℕ}
                           → equalTerms-#⇛-left-at i
 {-# TERMINATING #-}
 equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTNAT x x₁) eqi =
-  Mod.∀𝕎-□Func M (λ w1 e1 h → #⇛!sameℕ-#⇛-left {w1} {b} {a} {c} (∀𝕎-mon e1 comp) h) eqi
+  Mod.∀𝕎-□Func M (λ w1 e1 h → #strongMonEq-#⇛-left {--#⇛!sameℕ-#⇛-left--} {w1} {a} {b} {c} (∀𝕎-mon e1 comp) h) eqi
 equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTQNAT x x₁) eqi =
   Mod.∀𝕎-□Func M (λ w1 e1 h → #weakMonEq-#⇛-left {w1} {a} {b} {c} (∀𝕎-mon e1 comp) h) eqi
 equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi =
@@ -732,32 +741,36 @@ isType-#NAT→BOOL : (w : 𝕎·) (n : ℕ) → isType n w #NAT→BOOL
 isType-#NAT→BOOL w n rewrite #NAT→BOOL≡ = eqTypesFUN← eqTypesNAT (isTypeBOOL w n)
 
 
+isType-#NAT!→BOOL : (w : 𝕎·) (n : ℕ) → isType n w #NAT!→BOOL
+isType-#NAT!→BOOL w n rewrite #NAT!→BOOL≡ = eqTypesFUN← isTypeNAT! (isTypeBOOL w n)
 
-→equalInType-CS-NAT→T : {n : ℕ} {w : 𝕎·} {a b : Name} {T : CTerm}
+
+
+→equalInType-CS-NAT!→T : {n : ℕ} {w : 𝕎·} {a b : Name} {T : CTerm}
                           → isType n w T
                           → ∀𝕎 w (λ w' _ → (m : ℕ) → equalInType n w' T (#APPLY (#CS a) (#NUM m)) (#APPLY (#CS b) (#NUM m)))
-                          → equalInType n w (#NAT→T T) (#CS a) (#CS b)
-→equalInType-CS-NAT→T {n} {w} {a} {b} {T} ist i =
-  equalInType-FUN (λ w' _ → eqTypesNAT) (λ w' e → eqTypes-mon (uni n) ist w' e) aw
+                          → equalInType n w (#NAT!→T T) (#CS a) (#CS b)
+→equalInType-CS-NAT!→T {n} {w} {a} {b} {T} ist i =
+  equalInType-FUN (λ w' _ → isTypeNAT!) (λ w' e → eqTypes-mon (uni n) ist w' e) aw
   where
-    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT a₁ a₂
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT! a₁ a₂
                       → equalInType n w' T (#APPLY (#CS a) a₁) (#APPLY (#CS b) a₂))
     aw w1 e1 a₁ a₂ ea = equalInType-local (Mod.∀𝕎-□Func M aw1 ea1)
       where
-        ea1 : □· w1 (λ w' _ → #⇛!sameℕ {--#strongMonEq--} w' a₁ a₂)
-        ea1 = equalInType-NAT→ n w1 a₁ a₂ ea
+        ea1 : □· w1 (λ w' _ → #⇛!sameℕ {--NATeq--} w' a₁ a₂)
+        ea1 = equalInType-NAT!→ n w1 a₁ a₂ ea
 
-        aw1 : ∀𝕎 w1 (λ w' e' → #⇛!sameℕ {--#strongMonEq--} w' a₁ a₂ → equalInType n w' T (#APPLY (#CS a) a₁) (#APPLY (#CS b) a₂))
+        aw1 : ∀𝕎 w1 (λ w' e' → #⇛!sameℕ {--NATeq--} w' a₁ a₂ → equalInType n w' T (#APPLY (#CS a) a₁) (#APPLY (#CS b) a₂))
         aw1 w2 e2 (m , c₁ , c₂) = equalInType-#⇛-LR-rev (#⇛!-APPLY-CS {w2} {a₁} {#NUM m} a c₁)
                                                          (#⇛!-APPLY-CS {w2} {a₂} {#NUM m} b c₂)
                                                          (i w2 (⊑-trans· e1 e2) m)
 
 
 
-→equalInType-CS-NAT→BOOL : {n : ℕ} {w : 𝕎·} {a b : Name}
+→equalInType-CS-NAT!→BOOL : {n : ℕ} {w : 𝕎·} {a b : Name}
                              → ∀𝕎 w (λ w' _ → (m : ℕ) → equalInType n w' #BOOL (#APPLY (#CS a) (#NUM m)) (#APPLY (#CS b) (#NUM m)))
-                             → equalInType n w #NAT→BOOL (#CS a) (#CS b)
-→equalInType-CS-NAT→BOOL {n} {w} {a} {b} i rewrite #NAT→BOOL≡ = →equalInType-CS-NAT→T (isTypeBOOL w n) i
+                             → equalInType n w #NAT!→BOOL (#CS a) (#CS b)
+→equalInType-CS-NAT!→BOOL {n} {w} {a} {b} i rewrite #NAT!→BOOL≡ = →equalInType-CS-NAT!→T (isTypeBOOL w n) i
 
 
 
@@ -767,10 +780,10 @@ eqTypesQTBOOL {w} {i} = eqTypesTSQUASH← (isTypeBOOL w i)
 
 
 
-→equalInType-CS-NAT→QTBOOL : {n : ℕ} {w : 𝕎·} {a b : Name}
+→equalInType-CS-NAT!→QTBOOL : {n : ℕ} {w : 𝕎·} {a b : Name}
                              → ∀𝕎 w (λ w' _ → (m : ℕ) → equalInType n w' #QTBOOL (#APPLY (#CS a) (#NUM m)) (#APPLY (#CS b) (#NUM m)))
-                             → equalInType n w #NAT→QTBOOL (#CS a) (#CS b)
-→equalInType-CS-NAT→QTBOOL {n} {w} {a} {b} i rewrite #NAT→QTBOOL≡ = →equalInType-CS-NAT→T (eqTypesQTBOOL {w} {n}) i
+                             → equalInType n w #NAT!→QTBOOL (#CS a) (#CS b)
+→equalInType-CS-NAT!→QTBOOL {n} {w} {a} {b} i rewrite #NAT!→QTBOOL≡ = →equalInType-CS-NAT!→T (eqTypesQTBOOL {w} {n}) i
 
 
 
@@ -893,6 +906,24 @@ fun-equalInType-SUM-NAT {n} {w} {a} {b} {u} {v} imp eqb eqi =
   where
     aw : ∀𝕎 w (λ w' e' → SUMeq (equalInType n w' #NAT) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ a)) w' u v
                         → SUMeq (equalInType n w' #NAT) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ b)) w' u v)
+    aw w1 e1 (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) = a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , imp w1 e1 a₁ b₁ b₂ (equalInType-refl ea) eb
+
+
+fun-equalInType-SUM-NAT! : {n : ℕ} {w : 𝕎·} {a b : CTerm0} {u v : CTerm}
+                          → ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #NAT! m
+                                          → equalInType n w' (sub0 m a) t₁ t₂
+                                          → equalInType n w' (sub0 m b) t₁ t₂)
+                          → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' #NAT! a₁ a₂) → equalTypes n w' (sub0 a₁ b) (sub0 a₂ b))
+                          → equalInType n w (#SUM #NAT! a) u v
+                          → equalInType n w (#SUM #NAT! b) u v
+fun-equalInType-SUM-NAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
+  equalInType-SUM
+    (λ w' _ → isTypeNAT!)
+    eqb
+    (Mod.∀𝕎-□Func M aw (equalInType-SUM→ eqi))
+  where
+    aw : ∀𝕎 w (λ w' e' → SUMeq (equalInType n w' #NAT!) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ a)) w' u v
+                        → SUMeq (equalInType n w' #NAT!) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ b)) w' u v)
     aw w1 e1 (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) = a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , imp w1 e1 a₁ b₁ b₂ (equalInType-refl ea) eb
 
 
@@ -1141,5 +1172,13 @@ equalInType-QTBOOL→equalTypes-ASSERT₃ {n} {w} {a} {b} eqb =
 
 isType-#NAT→QTBOOL : (w : 𝕎·) (n : ℕ) → isType n w #NAT→QTBOOL
 isType-#NAT→QTBOOL w n rewrite #NAT→BOOL≡ = eqTypesFUN← eqTypesNAT (eqTypesQTBOOL {w} {n})
+
+
+isType-#NAT!→QTBOOL : (w : 𝕎·) (n : ℕ) → isType n w #NAT!→QTBOOL
+isType-#NAT!→QTBOOL w n rewrite #NAT!→BOOL≡ = eqTypesFUN← isTypeNAT! (eqTypesQTBOOL {w} {n})
+
+
+eqTypesQTNAT! : {w : 𝕎·} {i : ℕ} → equalTypes i w #QTNAT! #QTNAT!
+eqTypesQTNAT! {w} {i} = eqTypesTSQUASH← isTypeNAT!
 
 \end{code}
