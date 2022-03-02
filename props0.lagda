@@ -1194,4 +1194,20 @@ is-uni→eqInType : {u : univs} (isu : is-uni u) {w : 𝕎·} {A B : CTerm} {a b
                    (eqi : eqInType u w eqt a b)
                    → Σ (eqTypes (uni (fst u)) w A B) (λ z → eqInType (uni (fst u)) w z a b)
 is-uni→eqInType {u} isu {w} {A} {B} {a} {b} eqt eqi rewrite isu = eqt , eqi
+
+
+
+TCONSTeq-sym : {eqa : per} {w : 𝕎·} {t1 t2 : CTerm}
+                 → ((a b : CTerm) → eqa a b → eqa b a)
+                 → TCONSTeq eqa w t1 t2
+                 → TCONSTeq eqa w t2 t1
+TCONSTeq-sym {eqa} {w} {t1} {t2} sym (h , c₁ , c₂) = sym t1 t2 h , c₂ , c₁
+
+
+TCONSTeq-trans : {eqa : per} {w : 𝕎·} {t1 t2 t3 : CTerm}
+                 → ((a b c : CTerm) → eqa a b → eqa b c → eqa a c)
+                 → TCONSTeq eqa w t1 t2
+                 → TCONSTeq eqa w t2 t3
+                 → TCONSTeq eqa w t1 t3
+TCONSTeq-trans {eqa} {w} {t1} {t2} {t3} trans (h , c₁ , c₂) (q , c₃ , c₄) = trans t1 t2 t3 h q , c₁ , c₄
 \end{code}

@@ -483,25 +483,6 @@ equalInType-NAT→ i w a b (eqt , eqi) =
 
 
 
--- MOVE to computation
-⇓!sameℕ-trans : {w : 𝕎·} {a b c : Term}
-                → ⇓!sameℕ w a b
-                → ⇓!sameℕ w b c
-                → ⇓!sameℕ w a c
-⇓!sameℕ-trans {w} {a} {b} {c} (n , h1 , h2) (m , q1 , q2) = n , h1 , q
-  where
-  q : c ⇓! NUM n at w
-  q rewrite NUMinj (⇓!-val-det tt tt h2 q1) = q2
-
-
--- MOVE to computation
-lift-⇓!sameℕ-trans : {w : 𝕎·} {a b c : Term}
-                     → Lift (lsuc L) (⇓!sameℕ w a b)
-                     → Lift (lsuc L) (⇓!sameℕ w b c)
-                     → Lift (lsuc L) (⇓!sameℕ w a c)
-lift-⇓!sameℕ-trans {w} {a} {b} {c} (lift h) (lift q) = lift (⇓!sameℕ-trans h q)
-
-
 
 TSQUASH-eq-NAT→weakMonEq : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                             → TSQUASH-eq (equalInType i w #NAT) w a b

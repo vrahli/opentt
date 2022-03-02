@@ -271,41 +271,6 @@ TCONSTeq-#⇛-rev {eqa} {w} {a} {b} {c} {d} c₁ c₂ h = {!!}
 --}
 
 
--- MOVE to computation
-#⇓!-trans : {w : 𝕎·} {a b c : CTerm} → a #⇓! b at w → b #⇓! c at w → a #⇓! c at w
-#⇓!-trans {w} {a} {b} {c} c₁ c₂ = ⇓!-trans c₁ c₂
-
-
-
--- MOVE to computation
-#⇛!-pres-#⇓→#⇓! : {w : 𝕎·} {a b : CTerm}
-                    → a #⇛! b at w
-                    → #⇓→#⇓! w a
-                    → #⇓→#⇓! w b
-#⇛!-pres-#⇓→#⇓! {w} {a} {b} comp h w1 e1 =
-  lift comp'
-  where
-    comp' : (v : CTerm) (w2 : PossibleWorlds.𝕎 W) → #isValue v → b #⇓ v from w1 to w2 → b #⇓! v at w1
-    comp' v w2 isv c = val-⇓-from-to→ isv (⇛!→⇓! (∀𝕎-mon e1 comp)) z
-      where
-        z : a #⇓! v at w1
-        z = lower (h w1 e1) v w2 isv (⇓-trans₂ (⇛!→⇓! (∀𝕎-mon e1 comp)) c)
-
-
--- MOVE to computation
-#⇛!-pres-#⇓→#⇓!-rev : {w : 𝕎·} {a b : CTerm}
-                    → b #⇛! a at w
-                    → #⇓→#⇓! w a
-                    → #⇓→#⇓! w b
-#⇛!-pres-#⇓→#⇓!-rev {w} {a} {b} comp h w1 e1 =
-  lift comp'
-  where
-    comp' : (v : CTerm) (w2 : PossibleWorlds.𝕎 W) → #isValue v → b #⇓ v from w1 to w2 → b #⇓! v at w1
-    comp' v w2 isv c = #⇓!-trans {w1} {b} {a} {v} (⇛!→⇓! (∀𝕎-mon e1 comp)) z --val-⇓-from-to→ isv (⇛!→⇓! (∀𝕎-mon e1 comp)) z
-      where
-        z : a #⇓! v at w1
-        z = lower (h w1 e1) v w2 isv (val-⇓-from-to→ isv (⇛!→⇓! (∀𝕎-mon e1 comp)) c) --lower (h w1 e1) v w2 isv (⇓-trans₂ (⇛!→⇓! (∀𝕎-mon e1 comp)) c)
-
 
 equalTerms-#⇛-left-rev-at : ℕ → Set(lsuc(L))
 equalTerms-#⇛-left-rev-at i =

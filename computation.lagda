@@ -1833,4 +1833,55 @@ weakMonEq! w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (⇓!sameℕ w' t
 #⇛→#⇛! {w} {a} {b} h isv comp w1 e1 =
   lift (lower (h w1 e1) b (fst (#⇓→from-to {w1} {a} {b} (lower (comp w1 e1)))) isv (snd (#⇓→from-to {w1} {a} {b} (lower (comp w1 e1)))))
 
+
+
+#⇓!-trans : {w : 𝕎·} {a b c : CTerm} → a #⇓! b at w → b #⇓! c at w → a #⇓! c at w
+#⇓!-trans {w} {a} {b} {c} c₁ c₂ = ⇓!-trans c₁ c₂
+
+
+
+#⇛!-pres-#⇓→#⇓! : {w : 𝕎·} {a b : CTerm}
+                    → a #⇛! b at w
+                    → #⇓→#⇓! w a
+                    → #⇓→#⇓! w b
+#⇛!-pres-#⇓→#⇓! {w} {a} {b} comp h w1 e1 =
+  lift comp'
+  where
+    comp' : (v : CTerm) (w2 : PossibleWorlds.𝕎 W) → #isValue v → b #⇓ v from w1 to w2 → b #⇓! v at w1
+    comp' v w2 isv c = val-⇓-from-to→ isv (⇛!→⇓! (∀𝕎-mon e1 comp)) z
+      where
+        z : a #⇓! v at w1
+        z = lower (h w1 e1) v w2 isv (⇓-trans₂ (⇛!→⇓! (∀𝕎-mon e1 comp)) c)
+
+
+#⇛!-pres-#⇓→#⇓!-rev : {w : 𝕎·} {a b : CTerm}
+                    → b #⇛! a at w
+                    → #⇓→#⇓! w a
+                    → #⇓→#⇓! w b
+#⇛!-pres-#⇓→#⇓!-rev {w} {a} {b} comp h w1 e1 =
+  lift comp'
+  where
+    comp' : (v : CTerm) (w2 : PossibleWorlds.𝕎 W) → #isValue v → b #⇓ v from w1 to w2 → b #⇓! v at w1
+    comp' v w2 isv c = #⇓!-trans {w1} {b} {a} {v} (⇛!→⇓! (∀𝕎-mon e1 comp)) z --val-⇓-from-to→ isv (⇛!→⇓! (∀𝕎-mon e1 comp)) z
+      where
+        z : a #⇓! v at w1
+        z = lower (h w1 e1) v w2 isv (val-⇓-from-to→ isv (⇛!→⇓! (∀𝕎-mon e1 comp)) c) --lower (h w1 e1) v w2 isv (⇓-trans₂ (⇛!→⇓! (∀𝕎-mon e1 comp)) c)
+
+
+⇓!sameℕ-trans : {w : 𝕎·} {a b c : Term}
+                → ⇓!sameℕ w a b
+                → ⇓!sameℕ w b c
+                → ⇓!sameℕ w a c
+⇓!sameℕ-trans {w} {a} {b} {c} (n , h1 , h2) (m , q1 , q2) = n , h1 , q
+  where
+  q : c ⇓! NUM n at w
+  q rewrite NUMinj (⇓!-val-det tt tt h2 q1) = q2
+
+
+lift-⇓!sameℕ-trans : {w : 𝕎·} {a b c : Term}
+                     → Lift (lsuc L) (⇓!sameℕ w a b)
+                     → Lift (lsuc L) (⇓!sameℕ w b c)
+                     → Lift (lsuc L) (⇓!sameℕ w a c)
+lift-⇓!sameℕ-trans {w} {a} {b} {c} (lift h) (lift q) = lift (⇓!sameℕ-trans h q)
+
 \end{code}
