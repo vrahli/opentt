@@ -94,6 +94,7 @@ data Term : Set where
   IFC0 : Term → Term → Term → Term
   -- Time squashing
   TSQUASH : Term → Term
+  TCONST : Term → Term
   -- Dummy
   DUM : Term → Term
   -- Free from definitions
@@ -133,6 +134,7 @@ value? (CS _) = true
 value? (CHOOSE _ _) = false -- Not a value
 value? (IFC0 _ _ _) = false -- Not a value
 value? (TSQUASH _) = true
+value? (TCONST _) = true
 value? (DUM _) = true
 value? (FFDEFS _ _) = true
 value? (UNIV _) = true
@@ -175,6 +177,7 @@ vars AX = []
 vars FREE = []
 vars (CS x) = []
 vars (TSQUASH t) = vars t
+vars (TCONST t) = vars t
 vars (FFDEFS t t₁) = vars t ++ vars t₁
 vars (UNIV x) = []
 vars (LOWER t) = vars t
@@ -222,6 +225,7 @@ fvars (CS x)           = []
 fvars (CHOOSE a b)     = fvars a ++ fvars b
 fvars (IFC0 a b c)     = fvars a ++ fvars b ++ fvars c
 fvars (TSQUASH t)      = fvars t
+fvars (TCONST t)       = fvars t
 fvars (DUM t)          = fvars t
 fvars (FFDEFS t t₁)    = fvars t ++ fvars t₁
 fvars (UNIV x)         = []
@@ -362,12 +366,14 @@ shiftUp c (CS x) = CS x
 shiftUp c (CHOOSE a b) = CHOOSE (shiftUp c a) (shiftUp c b)
 shiftUp c (IFC0 a t₁ t₂) = IFC0 (shiftUp c a) (shiftUp c t₁) (shiftUp c t₂)
 shiftUp c (TSQUASH t) = TSQUASH (shiftUp c t)
+shiftUp c (TCONST t) = TCONST (shiftUp c t)
 shiftUp c (DUM t) = DUM (shiftUp c t)
 shiftUp c (FFDEFS t t₁) = FFDEFS (shiftUp c t) (shiftUp c t₁)
 shiftUp c (UNIV x) = UNIV x
 shiftUp c (LIFT t) = LIFT (shiftUp c t)
 shiftUp c (LOWER t) = LOWER (shiftUp c t)
 shiftUp c (SHRINK t) = SHRINK (shiftUp c t)
+
 
 shiftDown : ℕ → Term → Term
 shiftDown c (VAR x) = VAR (predIf≤ c x)
@@ -396,12 +402,14 @@ shiftDown c (CS x) = CS x
 shiftDown c (CHOOSE a b) = CHOOSE (shiftDown c a) (shiftDown c b)
 shiftDown c (IFC0 a t₁ t₂) = IFC0 (shiftDown c a) (shiftDown c t₁) (shiftDown c t₂)
 shiftDown c (TSQUASH t) = TSQUASH (shiftDown c t)
+shiftDown c (TCONST t) = TCONST (shiftDown c t)
 shiftDown c (DUM t) = DUM (shiftDown c t)
 shiftDown c (FFDEFS t t₁) = FFDEFS (shiftDown c t) (shiftDown c t₁)
 shiftDown c (UNIV x) = UNIV x
 shiftDown c (LIFT t) = LIFT (shiftDown c t)
 shiftDown c (LOWER t) = LOWER (shiftDown c t)
 shiftDown c (SHRINK t) = SHRINK (shiftDown c t)
+
 
 subv : Var → Term → Term → Term
 subv v t (VAR x) with x ≟ v
@@ -432,6 +440,7 @@ subv v t (CS x) = CS x
 subv v t (CHOOSE a b) = CHOOSE (subv v t a) (subv v t b)
 subv v t (IFC0 a t₁ t₂) = IFC0 (subv v t a) (subv v t t₁) (subv v t t₂)
 subv v t (TSQUASH u) = TSQUASH (subv v t u)
+subv v t (TCONST u) = TCONST (subv v t u)
 subv v t (DUM u) = DUM (subv v t u)
 subv v t (FFDEFS u u₁) = FFDEFS (subv v t u) (subv v t u₁)
 subv v t (UNIV x) = UNIV x
@@ -439,25 +448,31 @@ subv v t (LIFT u) = LIFT (subv v t u)
 subv v t (LOWER u) = LOWER (subv v t u)
 subv v t (SHRINK u) = SHRINK (subv v t u)
 
+
 -- substitute '0' for 't' in 'u'
 sub : Term → Term → Term
 sub t u = shiftDown 0 (subv 0 (shiftUp 0 t) u)
 
+
 notInAppVars1 : {v : Var} {l k : List Var} → ¬ v ∈ l ++ k → ¬ v ∈ l
 notInAppVars1 {v} {l} {k} n i =  ⊥-elim (n (∈-++⁺ˡ i))
 
+
 notInAppVars2 : {v : Var} {l k : List Var} → ¬ v ∈ l ++ k → ¬ v ∈ k
 notInAppVars2 {v} {l} {k} n i =  ⊥-elim (n (∈-++⁺ʳ l i))
+
 
 lowerVarsApp : (l k : List Var) → lowerVars (l ++ k) ≡ lowerVars l ++ lowerVars k
 lowerVarsApp [] k = refl
 lowerVarsApp (0 ∷ l) k = lowerVarsApp l k
 lowerVarsApp (suc x ∷ l) k rewrite lowerVarsApp l k = refl
 
+
 inLowerVars : (v : Var) (l : List Var) → (suc v) ∈ l → v ∈ lowerVars l
 inLowerVars v (x ∷ l) (here px) rewrite (sym px) = here refl
 inLowerVars v (0 ∷ l) (there i) = inLowerVars v l i
 inLowerVars v (suc x ∷ l) (there i) = there (inLowerVars v l i)
+
 
 subvNotIn : (v : Var) (t u : Term) → ¬ (v ∈ fvars u) → subv v t u ≡ u
 subvNotIn v t (VAR x) n with x ≟ v
@@ -523,12 +538,14 @@ subvNotIn v t FREE n = refl
 subvNotIn v t (CS x) n = refl
 subvNotIn v t (CHOOSE u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
-  rewrite subvNotIn v t u₁ (notInAppVars2 n) = refl
+        | subvNotIn v t u₁ (notInAppVars2 n) = refl
 subvNotIn v t (IFC0 u u₁ u₂) n
   rewrite subvNotIn v t u (notInAppVars1 n)
         | subvNotIn v t u₁ (notInAppVars1 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))
         | subvNotIn v t u₂ (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n)) = refl
 subvNotIn v t (TSQUASH u) n
+  rewrite subvNotIn v t u n = refl
+subvNotIn v t (TCONST u) n
   rewrite subvNotIn v t u n = refl
 subvNotIn v t (DUM u) n
   rewrite subvNotIn v t u n = refl
@@ -540,17 +557,22 @@ subvNotIn v t (LIFT u) n rewrite subvNotIn v t u n = refl
 subvNotIn v t (LOWER u) n rewrite subvNotIn v t u n = refl
 subvNotIn v t (SHRINK u) n rewrite subvNotIn v t u n = refl
 
+
 sucLeInj : {a b : ℕ} → suc a ≤ suc b → a ≤ b
 sucLeInj {a} {b} (_≤_.s≤s i) = i
+
 
 impLeNotApp1 : (v : Var) (l k : List Var) → ((w : Var) → v ≤ w → ¬ (w ∈ l ++ k)) → ((w : Var) → v ≤ w → ¬ (w ∈ l))
 impLeNotApp1 v l k i w j h = i w j (∈-++⁺ˡ h)
 
+
 impLeNotApp2 : (v : Var) (l k : List Var) → ((w : Var) → v ≤ w → ¬ (w ∈ l ++ k)) → ((w : Var) → v ≤ w → ¬ (w ∈ k))
 impLeNotApp2 v l k i w j h = i w j (∈-++⁺ʳ l h)
 
+
 impLeNotLower : (v : Var) (l : List Var) → ((w : Var) → v ≤ w → ¬ (w ∈ lowerVars l)) → ((w : Var) → suc v ≤ w → ¬ (w ∈ l))
 impLeNotLower v l i (suc w) j h = i w (sucLeInj j) (inLowerVars _ _ h)
+
 
 shiftDownTrivial : (v : Var) (u : Term) → ((w : Var) → v ≤ w → w # u) → shiftDown v u ≡ u
 shiftDownTrivial v (VAR 0) i = refl
@@ -600,9 +622,9 @@ shiftDownTrivial v (INR u) i
   rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (DECIDE u u₁ u₂) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite lowerVarsApp (fvars u₁) (fvars u₂)
-  rewrite shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp1 v (lowerVars (fvars u₁)) _ (impLeNotApp2 v (fvars u) _ i)))
-  rewrite shiftDownTrivial (suc v) u₂ (impLeNotLower _ _ (impLeNotApp2 v (lowerVars (fvars u₁)) _ (impLeNotApp2 v (fvars u) _ i))) = refl
+        | lowerVarsApp (fvars u₁) (fvars u₂)
+        | shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp1 v (lowerVars (fvars u₁)) _ (impLeNotApp2 v (fvars u) _ i)))
+        | shiftDownTrivial (suc v) u₂ (impLeNotLower _ _ (impLeNotApp2 v (lowerVars (fvars u₁)) _ (impLeNotApp2 v (fvars u) _ i))) = refl
 shiftDownTrivial v (EQ u u₁ u₂) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
@@ -618,6 +640,8 @@ shiftDownTrivial v (IFC0 u u₁ u₂) i
         | shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
         | shiftDownTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl
 shiftDownTrivial v (TSQUASH u) i
+  rewrite shiftDownTrivial v u i = refl
+shiftDownTrivial v (TCONST u) i
   rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (DUM u) i
   rewrite shiftDownTrivial v u i = refl
@@ -695,6 +719,8 @@ shiftUpTrivial v (IFC0 u u₁ u₂) i
         | shiftUpTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl
 shiftUpTrivial v (TSQUASH u) i
   rewrite shiftUpTrivial v u i = refl
+shiftUpTrivial v (TCONST u) i
+  rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (DUM u) i
   rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (FFDEFS u u₁) i
@@ -748,6 +774,7 @@ shiftDownUp (CS x) n = refl
 shiftDownUp (CHOOSE t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (IFC0 t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n = refl
 shiftDownUp (TSQUASH t) n rewrite shiftDownUp t n = refl
+shiftDownUp (TCONST t) n rewrite shiftDownUp t n = refl
 shiftDownUp (DUM t) n rewrite shiftDownUp t n = refl
 shiftDownUp (FFDEFS t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
 shiftDownUp (UNIV x) n = refl
@@ -783,6 +810,7 @@ is-NUM (CS x) = inj₂ (λ { n () })
 is-NUM (CHOOSE t t₁) = inj₂ (λ { n () })
 is-NUM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-NUM (TSQUASH t) = inj₂ (λ { n () })
+is-NUM (TCONST t) = inj₂ (λ { n () })
 is-NUM (DUM t) = inj₂ (λ { n () })
 is-NUM (FFDEFS t t₁) = inj₂ (λ { n () })
 is-NUM (UNIV x) = inj₂ (λ { n () })
@@ -818,6 +846,7 @@ is-LAM (CS x) = inj₂ (λ { n () })
 is-LAM (CHOOSE t t₁) = inj₂ (λ { n () })
 is-LAM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-LAM (TSQUASH t) = inj₂ (λ { n () })
+is-LAM (TCONST t) = inj₂ (λ { n () })
 is-LAM (DUM t) = inj₂ (λ { n () })
 is-LAM (FFDEFS t t₁) = inj₂ (λ { n () })
 is-LAM (UNIV x) = inj₂ (λ { n () })
@@ -853,6 +882,7 @@ is-CS (CS x) = inj₁ (x , refl)
 is-CS (CHOOSE t t₁) = inj₂ (λ { n () })
 is-CS (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-CS (TSQUASH t) = inj₂ (λ { n () })
+is-CS (TCONST t) = inj₂ (λ { n () })
 is-CS (DUM t) = inj₂ (λ { n () })
 is-CS (FFDEFS t t₁) = inj₂ (λ { n () })
 is-CS (UNIV x) = inj₂ (λ { n () })
@@ -888,6 +918,7 @@ is-PAIR (CS x) = inj₂ (λ { n m () })
 is-PAIR (CHOOSE t t₁) = inj₂ (λ { n m () })
 is-PAIR (IFC0 t t₁ t₂) = inj₂ (λ { n m () })
 is-PAIR (TSQUASH t) = inj₂ (λ { n m () })
+is-PAIR (TCONST t) = inj₂ (λ { n m () })
 is-PAIR (DUM t) = inj₂ (λ { n m () })
 is-PAIR (FFDEFS t t₁) = inj₂ (λ { n m () })
 is-PAIR (UNIV x) = inj₂ (λ { n m () })
@@ -923,6 +954,7 @@ is-INL (CS x) = inj₂ (λ { n () })
 is-INL (CHOOSE t t₁) = inj₂ (λ { n () })
 is-INL (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-INL (TSQUASH t) = inj₂ (λ { n () })
+is-INL (TCONST t) = inj₂ (λ { n () })
 is-INL (DUM t) = inj₂ (λ { n () })
 is-INL (FFDEFS t t₁) = inj₂ (λ { n () })
 is-INL (UNIV x) = inj₂ (λ { n () })
@@ -958,6 +990,7 @@ is-INR (CS x) = inj₂ (λ { n () })
 is-INR (CHOOSE t t₁) = inj₂ (λ { n () })
 is-INR (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-INR (TSQUASH t) = inj₂ (λ { n () })
+is-INR (TCONST t) = inj₂ (λ { n () })
 is-INR (DUM t) = inj₂ (λ { n () })
 is-INR (FFDEFS t t₁) = inj₂ (λ { n () })
 is-INR (UNIV x) = inj₂ (λ { n () })
@@ -987,6 +1020,7 @@ data ∼vals : Term → Term → Set where
   ∼vals-FREE    : ∼vals FREE FREE
   ∼vals-CS      : {n : Name} → ∼vals (CS n) (CS n)
   ∼vals-TSQUASH : {a b : Term} → ∼vals (TSQUASH a) (TSQUASH b)
+  ∼vals-TCONST  : {a b : Term} → ∼vals (TCONST a) (TCONST b)
   ∼vals-DUM     : {a b : Term} → ∼vals (DUM a) (DUM b)
   ∼vals-FFDEFS  : {a b c d : Term} → ∼vals (FFDEFS a b) (FFDEFS c d)
   ∼vals-UNIV    : {n : ℕ} → ∼vals (UNIV n) (UNIV n)
@@ -1014,6 +1048,7 @@ data ∼vals : Term → Term → Set where
 ∼vals-sym {.FREE} {.FREE} ∼vals-FREE = ∼vals-FREE
 ∼vals-sym {.(CS _)} {.(CS _)} ∼vals-CS = ∼vals-CS
 ∼vals-sym {.(TSQUASH _)} {.(TSQUASH _)} ∼vals-TSQUASH = ∼vals-TSQUASH
+∼vals-sym {.(TCONST _)} {.(TCONST _)} ∼vals-TCONST = ∼vals-TCONST
 ∼vals-sym {.(DUM _)} {.(DUM _)} ∼vals-DUM = ∼vals-DUM
 ∼vals-sym {.(FFDEFS _ _)} {.(FFDEFS _ _)} ∼vals-FFDEFS = ∼vals-FFDEFS
 ∼vals-sym {.(UNIV _)} {.(UNIV _)} ∼vals-UNIV = ∼vals-UNIV
@@ -1041,6 +1076,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₁ {FREE} {b} isv = tt
 ∼vals→isValue₁ {CS x} {b} isv = tt
 ∼vals→isValue₁ {TSQUASH a} {b} isv = tt
+∼vals→isValue₁ {TCONST a} {b} isv = tt
 ∼vals→isValue₁ {DUM a} {b} isv = tt
 ∼vals→isValue₁ {FFDEFS a a₁} {b} isv = tt
 ∼vals→isValue₁ {UNIV x} {b} isv = tt
@@ -1074,6 +1110,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {FREE} isv = tt
 ∼vals→isValue₂ {a} {CS x} isv = tt
 ∼vals→isValue₂ {a} {TSQUASH b} isv = tt
+∼vals→isValue₂ {a} {TCONST b} isv = tt
 ∼vals→isValue₂ {a} {DUM b} isv = tt
 ∼vals→isValue₂ {a} {FFDEFS b b₁} isv = tt
 ∼vals→isValue₂ {a} {UNIV x} isv = tt

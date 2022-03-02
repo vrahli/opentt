@@ -158,6 +158,13 @@ data <TypeStep where
                 (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqtA w e) a b))
                 (w' : 𝕎·) (e' : w ⊑· w')
                 → <TypeStep {u} (eqtA w' e') {u} {w} {T1} {T2} (EQTSQUASH A1 A2 c₁ c₂ eqtA exta)
+  <TypeTCONST : (u : 𝕌) (w : 𝕎·) (T1 T2 : CTerm) (A1 A2 : CTerm)
+                (c₁ : T1 #⇛ (#TCONST A1) at w)
+                (c₂ : T2 #⇛ (#TCONST A2) at w)
+                (eqtA : ∀𝕎 w (λ w' _ → ≡Types u w' A1 A2))
+                (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqtA w e) a b))
+                (w' : 𝕎·) (e' : w ⊑· w')
+                → <TypeStep {u} (eqtA w' e') {u} {w} {T1} {T2} (EQTCONST A1 A2 c₁ c₂ eqtA exta)
 {--  <TypeDUM : (w : 𝕎·) (T1 T2 : CTerm) (A1 A2 : CTerm)
              (c₁ : T1 ⇛ (DUM A1) at w)
              (c₂ : T2 ⇛ (DUM A2) at w)
@@ -355,6 +362,17 @@ TSQUASHeq-ext {u} {w} {A1} {A2} {eqta} {w'} {e1} {e2} {a} {b} exta h =
 
 
 
+TCONSTeq-ext : {u : 𝕌} {w : 𝕎·} {A1 A2 : CTerm}
+               {eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 A2)}
+               {w' : 𝕎·} {e1 e2 : w ⊑· w'} {a b : CTerm}
+               (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqta w e) a b))
+               → TCONSTeq (≡∈Type u w' (eqta w' e1)) w' a b
+               → TCONSTeq (≡∈Type u w' (eqta w' e2)) w' a b
+TCONSTeq-ext {u} {w} {A1} {A2} {eqta} {w'} {e1} {e2} {a} {b} exta h =
+  irr-TCONSTeq eqta exta e1 e2 h
+
+
+
 -- where u will be (↓𝕌 u)
 LIFTeq-ext : {u : 𝕌} {w : 𝕎·} {A1 A2 : CTerm}
              {eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 A2)}
@@ -530,6 +548,18 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
         ind' w1 e1 {u'} {w'} {T1'} {T2'} eqt' ltt = indLtt (eqtA w1 e1) eqt' ltt
 
     indLtt {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' (<TypeS .eqt' .(eqtA w2 e') .(EQTSQUASH A1 A2 x x₁ eqtA exta) ltt (<TypeSQUASH .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta w2 e')) =
+      ind' w2 e' eqt' ltt
+      where
+        ind' : (w1 : 𝕎·) (e1 : w ⊑· w1) {u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2') → <Type {u'} eqt' (eqtA w1 e1) → P eqt'
+        ind' w1 e1 {u'} {w'} {T1'} {T2'} eqt' ltt = indLtt (eqtA w1 e1) eqt' ltt
+
+    indLtt {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) {u'} {w'} {.A1} {.A2} .(eqtA w' e') (<Type1 .(eqtA w' e') .(EQTCONST A1 A2 x x₁ eqtA exta) (<TypeTCONST .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta .w' e')) =
+      ind (eqtA w' e') (ind' w' e')
+      where
+        ind' : (w1 : 𝕎·) (e1 : w ⊑· w1) {u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2') → <Type {u'} eqt' (eqtA w1 e1) → P eqt'
+        ind' w1 e1 {u'} {w'} {T1'} {T2'} eqt' ltt = indLtt (eqtA w1 e1) eqt' ltt
+
+    indLtt {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' (<TypeS .eqt' .(eqtA w2 e') .(EQTCONST A1 A2 x x₁ eqtA exta) ltt (<TypeTCONST .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta w2 e')) =
       ind' w2 e' eqt' ltt
       where
         ind' : (w1 : 𝕎·) (e1 : w ⊑· w1) {u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2') → <Type {u'} eqt' (eqtA w1 e1) → P eqt'

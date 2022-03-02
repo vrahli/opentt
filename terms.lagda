@@ -256,6 +256,13 @@ subv-↑T {i} {suc n} p v a with i <? n
     c rewrite CTerm.closed a = refl
 
 
+#TCONST : CTerm → CTerm
+#TCONST a = ct (TCONST ⌜ a ⌝) c
+  where
+    c : # TCONST ⌜ a ⌝
+    c rewrite CTerm.closed a = refl
+
+
 #INL : CTerm → CTerm
 #INL a = ct (INL ⌜ a ⌝) c
   where
@@ -520,6 +527,7 @@ fvars-shiftUp≡ n (IFC0 t t₁ t₂)
         | fvars-shiftUp≡ n t₁
         | fvars-shiftUp≡ n t₂ = refl
 fvars-shiftUp≡ n (TSQUASH t) = fvars-shiftUp≡ n t
+fvars-shiftUp≡ n (TCONST t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (DUM t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (FFDEFS t t₁)
   rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
@@ -775,6 +783,7 @@ fvars-shiftDown≡ n (IFC0 t t₁ t₂)
         | fvars-shiftDown≡ n t₁
         | fvars-shiftDown≡ n t₂ = refl
 fvars-shiftDown≡ n (TSQUASH t) = fvars-shiftDown≡ n t
+fvars-shiftDown≡ n (TCONST t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (DUM t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (FFDEFS t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
@@ -909,6 +918,7 @@ fvars-subv v a (IFC0 b b₁ b₂) i with ∈-++⁻ (fvars (subv v a b)) i
 ... | inj₂ q = ∈removeV++R {_} {v} {fvars b} {fvars b₁ ++ fvars b₂} {fvars a}
                            (∈removeV++R {_} {v} {fvars b₁} {fvars b₂} {fvars a} (fvars-subv v a b₂ q))
 fvars-subv v a (TSQUASH b) = fvars-subv v a b
+fvars-subv v a (TCONST b) = fvars-subv v a b
 fvars-subv v a (DUM b) = fvars-subv v a b
 fvars-subv v a (FFDEFS b b₁) i with ∈-++⁻ (fvars (subv v a b)) i
 ... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b p)
@@ -1091,6 +1101,8 @@ shiftDown1-subv1-shiftUp0 n a (IFC0 b b₁ b₂) ca
         | shiftDown1-subv1-shiftUp0 n a b₁ ca
         | shiftDown1-subv1-shiftUp0 n a b₂ ca = refl
 shiftDown1-subv1-shiftUp0 n a (TSQUASH b) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
+shiftDown1-subv1-shiftUp0 n a (TCONST b) ca
   rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
 shiftDown1-subv1-shiftUp0 n a (DUM b) ca
   rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
@@ -1316,6 +1328,13 @@ TSQUASHinj refl =  refl
 #TSQUASHinj c = CTerm≡ (TSQUASHinj (≡CTerm c))
 
 
+TCONSTinj : {a b : Term} → TCONST a ≡ TCONST b → a ≡ b
+TCONSTinj refl =  refl
+
+#TCONSTinj : {a b : CTerm} → #TCONST a ≡ #TCONST b → a ≡ b
+#TCONSTinj c = CTerm≡ (TCONSTinj (≡CTerm c))
+
+
 LIFTinj : {a b : Term} → LIFT a ≡ LIFT b → a ≡ b
 LIFTinj refl =  refl
 
@@ -1401,6 +1420,9 @@ EQneqUNION {t} {a} {b} {c} {d} ()
 EQneqTSQUASH : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ TSQUASH c
 EQneqTSQUASH {t} {a} {b} {c} ()
 
+EQneqTCONST : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ TCONST c
+EQneqTCONST {t} {a} {b} {c} ()
+
 EQneqLIFT : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ LIFT c
 EQneqLIFT {t} {a} {b} {c} ()
 
@@ -1464,6 +1486,9 @@ PIneqUNION {a} {b} {c} {d} ()
 PIneqTSQUASH : {a b : Term} {c : Term} → ¬ (PI a b) ≡ TSQUASH c
 PIneqTSQUASH {a} {b} {c} ()
 
+PIneqTCONST : {a b : Term} {c : Term} → ¬ (PI a b) ≡ TCONST c
+PIneqTCONST {a} {b} {c} ()
+
 PIneqLIFT : {a b : Term} {c : Term} → ¬ (PI a b) ≡ LIFT c
 PIneqLIFT {a} {b} {c} ()
 
@@ -1515,6 +1540,9 @@ NATneqEQ {c} {d} {e} ()
 NATneqTSQUASH : {c : Term} → ¬ NAT ≡ TSQUASH c
 NATneqTSQUASH {c} ()
 
+NATneqTCONST : {c : Term} → ¬ NAT ≡ TCONST c
+NATneqTCONST {c} ()
+
 NATneqLIFT : {c : Term} → ¬ NAT ≡ LIFT c
 NATneqLIFT {c} ()
 
@@ -1562,6 +1590,7 @@ shiftUp-inj {n} {CS x} {CS .x} refl = refl
 shiftUp-inj {n} {CHOOSE a a₁} {CHOOSE b b₁} e rewrite shiftUp-inj (CHOOSEinj1 e) | shiftUp-inj (CHOOSEinj2 e) = refl
 shiftUp-inj {n} {IFC0 a a₁ a₂} {IFC0 b b₁ b₂} e rewrite shiftUp-inj (IFC0inj1 e) | shiftUp-inj (IFC0inj2 e) | shiftUp-inj (IFC0inj3 e) = refl
 shiftUp-inj {n} {TSQUASH a} {TSQUASH b} e rewrite shiftUp-inj (TSQUASHinj e) = refl
+shiftUp-inj {n} {TCONST a} {TCONST b} e rewrite shiftUp-inj (TCONSTinj e) = refl
 shiftUp-inj {n} {DUM a} {DUM b} e rewrite shiftUp-inj (DUMinj e) = refl
 shiftUp-inj {n} {FFDEFS a a₁} {FFDEFS b b₁} e rewrite shiftUp-inj (FFDEFSinj1 e) | shiftUp-inj (FFDEFSinj2 e) = refl
 shiftUp-inj {n} {UNIV x} {UNIV .x} refl = refl
@@ -1940,6 +1969,18 @@ QTNAT = TSQUASH NAT
 #[0]QTNAT = ct0 QTNAT refl
 
 
+NAT! : Term
+NAT! = TCONST NAT
+
+
+#NAT! : CTerm
+#NAT! = ct NAT! refl
+
+
+#[0]NAT! : CTerm0
+#[0]NAT! = ct0 NAT! refl
+
+
 QTBOOL : Term
 QTBOOL = TSQUASH BOOL
 
@@ -1997,6 +2038,10 @@ sub0-#[0]FUN a t u = CTerm≡ (≡PI refl e)
 
 #QTNAT≡ : #QTNAT ≡ #TSQUASH #NAT
 #QTNAT≡ = CTerm≡ refl
+
+
+#NAT!≡ : #NAT! ≡ #TCONST #NAT
+#NAT!≡ = CTerm≡ refl
 
 
 #QTBOOL≡ : #QTBOOL ≡ #TSQUASH #BOOL

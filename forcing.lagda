@@ -195,6 +195,12 @@ data eqTypes u w T1 T2 where
     → (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → eqTypes u w T1 T2
+  EQTCONST : (A1 A2 : CTerm)
+    → T1 #⇛ (#TCONST A1) at w
+    → T2 #⇛ (#TCONST A2) at w
+    → (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+    → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
+    → eqTypes u w T1 T2
 {--  EQTDUM : (A1 A2 : Term)
     → T1 ⇛ (DUM A1) at w
     → T2 ⇛ (DUM A2) at w
@@ -283,6 +289,13 @@ TSQUASHeq : (eqa : per) → wper
 TSQUASHeq eqa w t1 t2 = Σ ℕ (λ n → TSQUASHeqℕ n eqa w t1 t2)
 
 
+TCONSTeq : (eqa : per) → wper
+TCONSTeq eqa w t1 t2 =
+  eqa t1 t2
+  × #⇓→#⇓! w t1
+  × #⇓→#⇓! w t2
+
+
 FFDEFSeq : CTerm → (eqa : per) → wper
 FFDEFSeq x1 eqa w t1 t2 =
   Σ CTerm (λ x →
@@ -297,6 +310,7 @@ FFDEFSeq x1 eqa w t1 t2 =
 -- NOTE: EQTNAT's equality was defined in terms of #strongMonEq, and is now defined in terms of #⇛!sameℕ.
 -- We could have another nat type that's interpreted by #strongMonEq.
 -- We want #⇛!sameℕ here to get some functions in Nat->QT(Bool)
+-- Only to prove →equalInType-CS-NAT→T in props3?
 eqInType _ w (EQTNAT _ _) t1 t2 = □· w (λ w' _ → #⇛!sameℕ w' t1 t2)
 eqInType _ w (EQTQNAT _ _) t1 t2 = □· w (λ w' _ → #weakMonEq w' t1 t2)
 eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 = □· w (λ w' _ → #lift-<NUM-pair w' a1 b1)
@@ -314,6 +328,8 @@ eqInType u w (EQTUNION _ _ _ _ _ _ eqtA eqtB exta extb) t1 t2 =
   □· w (λ w' e → UNIONeq (eqInType u w' (eqtA w' e)) (eqInType u w' (eqtB w' e)) w' t1 t2)
 eqInType u w (EQTSQUASH _ _ _ _ eqtA exta) t1 t2 =
   □· w (λ w' e → TSQUASHeq (eqInType u w' (eqtA w' e)) w' t1 t2)
+eqInType u w (EQTCONST _ _ _ _ eqtA exta) t1 t2 =
+  □· w (λ w' e → TCONSTeq (eqInType u w' (eqtA w' e)) w' t1 t2)
 --eqInType u w (EQTDUM _ _ _ _ eqtA exta) t1 t2 = Lift {0ℓ} 1ℓ ⊤
 eqInType u w (EQFFDEFS _ _ x1 _ _ _ eqtA exta _) t1 t2 =
   □· w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqtA w' e)) w' t1 t2)

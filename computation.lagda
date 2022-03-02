@@ -171,6 +171,8 @@ step FREE = ret FREE
 step (CS name) = ret (CS name)
 -- TSQUASH
 step (TSQUASH a) = ret (TSQUASH a)
+-- TCONST
+step (TCONST a) = ret (TCONST a)
 -- DUM
 step (DUM a) = ret (DUM a)
 -- FFDEFS
@@ -246,6 +248,7 @@ stepVal AX w v = refl
 stepVal FREE w v = refl
 stepVal (CS x) w v = refl
 stepVal (TSQUASH a) w v = refl
+stepVal (TCONST a) w v = refl
 stepVal (DUM a) w v = refl
 stepVal (FFDEFS a a₁) w v = refl
 stepVal (UNIV x) w v = refl
@@ -411,6 +414,7 @@ step-APPLY-CS-¬NUM name AX b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | 
 step-APPLY-CS-¬NUM name FREE b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (CS x) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (TSQUASH a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (TCONST a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (DUM a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (FFDEFS a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (UNIV x) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
@@ -503,6 +507,11 @@ infix 30 _#⇓_at_
 _#⇓!_at_ : (T T' : CTerm) (w : 𝕎·) → Set(L)
 T #⇓! T' at w = ⌜ T ⌝ ⇓! ⌜ T' ⌝ at w
 infix 30 _#⇓!_at_
+
+
+_#⇓_from_to_ : (T T' : CTerm) (w1 w2 : 𝕎·) → Set(L)
+T #⇓ T' from w1 to w2 = ⌜ T ⌝ ⇓ ⌜ T' ⌝ from w1 to w2
+infix 30 _#⇓_from_to_
 
 
 
@@ -669,6 +678,7 @@ step⊑ {w} {w'} {IFC0 a a₁ a₂} {b} comp | false with step⊎ a w
 ... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step⊑ {w} {w'} {TSQUASH a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {TCONST a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {DUM a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {FFDEFS a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {UNIV x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
@@ -1042,6 +1052,7 @@ data ∼T : 𝕎· → Term → Term → Set where
 →-step-APPLY {w} {w'} {FREE} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {CS x} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {TSQUASH a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {TCONST a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {DUM a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {FFDEFS a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {UNIV x} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
@@ -1140,6 +1151,7 @@ step-⇓-ASSERT₁ {w} {w'} {AX} {b} comp rewrite sym (pair-inj₁ (just-inj com
 step-⇓-ASSERT₁ {w} {w'} {FREE} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {CS x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {TSQUASH a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {TCONST a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {DUM a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {FFDEFS a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {UNIV x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
@@ -1800,5 +1812,25 @@ weakMonEq! w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (⇓!sameℕ w' t
 
 #⇓!→#⇓ : {w : 𝕎·} {a b : CTerm} → a #⇓! b at w → a #⇓ b at w
 #⇓!→#⇓ {w} {a} {b} comp = ⇓!→⇓ comp
+
+
+
+#⇓→#⇓! : 𝕎· → CTerm → Set(lsuc(L))
+#⇓→#⇓! w t = ∀𝕎 w (λ w1 e1 → Lift {L} (lsuc(L)) ((v : CTerm) (w2 : 𝕎·) → #isValue v → t #⇓ v from w1 to w2 → t #⇓! v at w1))
+
+
+#⇓→from-to : {w : 𝕎·} {a b : CTerm}
+              → a #⇓ b at w
+              → Σ 𝕎· (λ w' → a #⇓ b from w to w')
+#⇓→from-to {w} {a} {b} (n , comp) = snd (steps n (⌜ a ⌝ , w)) , n , stepsT→steps {n} {⌜ a ⌝} {⌜ b ⌝} {w} comp
+
+
+#⇛→#⇛! : {w : 𝕎·} {a b : CTerm}
+            → #⇓→#⇓! w a
+            → #isValue b
+            → a #⇛ b at w
+            → a #⇛! b at w
+#⇛→#⇛! {w} {a} {b} h isv comp w1 e1 =
+  lift (lower (h w1 e1) b (fst (#⇓→from-to {w1} {a} {b} (lower (comp w1 e1)))) isv (snd (#⇓→from-to {w1} {a} {b} (lower (comp w1 e1)))))
 
 \end{code}
