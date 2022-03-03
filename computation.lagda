@@ -15,7 +15,7 @@ open import Data.Sum
 open import Data.Empty
 open import Data.Maybe
 open import Data.Unit using (⊤ ; tt)
-open import Data.Nat using (ℕ ; _≟_ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
+open import Data.Nat using (ℕ ; _≟_ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; _<?_ ; suc ; _+_ ; pred)
 open import Data.Nat.Properties
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
@@ -67,6 +67,18 @@ step (LT a b) = ret (LT a b)
 step (QLT a b) = ret (QLT a b)
 -- NUM
 step (NUM n) = ret (NUM n)
+-- IFLT
+step (IFLT a b c d) w with is-NUM a
+... | inj₁ (n , p) with is-NUM b
+... |    inj₁ (m , q) with n <? m
+... |       yes r = ret c w
+... |       no r = ret d w
+step (IFLT a b c d) w | inj₁ (n , p) | inj₂ q with step b w
+... |       just (b' , w') = ret (IFLT a b' c d) w'
+... |       nothing = nothing
+step (IFLT a b c d) w | inj₂ p with step a w
+... |    just (a' , w') = ret (IFLT a' b c d) w'
+... |    nothing = nothing
 -- PI
 step (PI a b) = ret (PI a b)
 -- LAMBDA
@@ -398,6 +410,7 @@ step-APPLY-CS-¬NUM name QNAT b w w' c s rewrite sym (pair-inj₁ (just-inj s)) 
 step-APPLY-CS-¬NUM name (LT a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (QLT a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (NUM x) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = ⊥-elim (c x refl)
+step-APPLY-CS-¬NUM name (IFLT a a₁ a₂ a₃) b w w' c s rewrite s = refl
 step-APPLY-CS-¬NUM name (PI a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (LAMBDA a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (APPLY a a₁) b w w' c s rewrite s = refl
@@ -620,6 +633,17 @@ step⊑ {w} {w'} {QNAT} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym
 step⊑ {w} {w'} {LT a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {QLT a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {NUM x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {IFLT x y t u} {b} comp with is-NUM x
+... | inj₁ (n , p) with is-NUM y
+... |    inj₁ (m , q) with n <? m
+... |       yes r rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+... |       no r rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {IFLT x y t u} {b} comp | inj₁ (n , p) | inj₂ q with step⊎ y w
+... |       inj₁ (y' , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {y} z
+... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step⊑ {w} {w'} {IFLT x y t u} {b} comp | inj₂ p with step⊎ x w
+... |    inj₁ (x' , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {x} z
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step⊑ {w} {w'} {PI a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {LAMBDA a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {APPLY a a₁} {b} comp with is-LAM a
@@ -1031,6 +1055,10 @@ data ∼T : 𝕎· → Term → Term → Set where
 →-step-APPLY {w} {w'} {LT a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {QLT a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {NUM x} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {IFLT a a₁ a₂ a₃} {b} c comp = 1 , z
+  where
+    z : steps 1 (APPLY (IFLT a a₁ a₂ a₃) c , w) ≡ (APPLY b c , w')
+    z rewrite comp = refl
 →-step-APPLY {w} {w'} {PI a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {LAMBDA a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {APPLY a a₁} {b} c comp = 1 , z
@@ -1110,6 +1138,10 @@ step-⇓-ASSERT₁ {w} {w'} {QNAT} {b} comp rewrite sym (pair-inj₁ (just-inj c
 step-⇓-ASSERT₁ {w} {w'} {LT a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {QLT a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {NUM x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {IFLT a a₁ a₂ a₃} {b} comp = 1 , z
+  where
+    z : steps 1 (ASSERT₁ (IFLT a a₁ a₂ a₃) , w) ≡ (ASSERT₁ b , w')
+    z rewrite comp = refl
 step-⇓-ASSERT₁ {w} {w'} {PI a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {LAMBDA a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {APPLY a a₁} {b} comp = 1 , z
@@ -1883,5 +1915,37 @@ lift-⇓!sameℕ-trans : {w : 𝕎·} {a b c : Term}
                      → Lift (lsuc L) (⇓!sameℕ w b c)
                      → Lift (lsuc L) (⇓!sameℕ w a c)
 lift-⇓!sameℕ-trans {w} {a} {b} {c} (lift h) (lift q) = lift (⇓!sameℕ-trans h q)
+
+
+⇓-from-to→≡ : (a b : Term) (w w' : 𝕎·) → a ⇓ b from w to w' → isValue a → a ≡ b
+⇓-from-to→≡ a b w w' (n , c) v rewrite stepsVal a w n v = pair-inj₁ c
+
+
+#⇓-from-to→≡ : (a b : CTerm) (w w' : 𝕎·) → a #⇓ b from w to w' → #isValue a → a ≡ b
+#⇓-from-to→≡ a b w w' c v = CTerm≡ (⇓-from-to→≡ ⌜ a ⌝ ⌜ b ⌝ w w' c v)
+
+
+#⇓!-refl : (T : CTerm) (w : 𝕎·) → T #⇓! T at w
+#⇓!-refl T w = (0 , refl)
+
+
+#⇓→#⇓!-NUM : (w : 𝕎·) (k : ℕ) → #⇓→#⇓! w (#NUM k)
+#⇓→#⇓!-NUM w k w1 e1 = lift h --(λ v w2 isv comp → {!!})
+  where
+    h : (v : CTerm) (w2 : 𝕎·) → #isValue v → #NUM k #⇓ v from w1 to w2 → #NUM k #⇓! v at w1
+    h v w2 isv comp rewrite sym (#⇓-from-to→≡ (#NUM k) v w1 w2 comp tt) = #⇓!-refl (#NUM k) w1
+
+
+#⇛→≡ : {a b : CTerm} {w : 𝕎·} → a #⇛ b at w → #isValue a → a ≡ b
+#⇛→≡ {a} {b} {w} = #compAllVal
+
+
+#strongMonEq→#⇛!sameℕ : {w : 𝕎·} {a b : CTerm}
+                           → #⇓→#⇓! w a
+                           → #⇓→#⇓! w b
+                           → #strongMonEq w a b
+                           → #⇛!sameℕ w a b
+#strongMonEq→#⇛!sameℕ {w} {a} {b} c₁ c₂ (n , d₁ , d₂) =
+  n , #⇛→#⇛! {w} {a} {#NUM n} c₁ tt d₁ , #⇛→#⇛! {w} {b} {#NUM n} c₂ tt d₂
 
 \end{code}

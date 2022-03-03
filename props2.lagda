@@ -445,30 +445,6 @@ isTypeNAT! : {w : 𝕎·} {i : ℕ} → isType i w #NAT!
 isTypeNAT! {w} {i} = eqTypesTCONST← eqTypesNAT
 
 
-
--- MOVE to computation
-⇓-from-to→≡ : (a b : Term) (w w' : 𝕎·) → a ⇓ b from w to w' → isValue a → a ≡ b
-⇓-from-to→≡ a b w w' (n , c) v rewrite stepsVal a w n v = pair-inj₁ c
-
-
--- MOVE to computation
-#⇓-from-to→≡ : (a b : CTerm) (w w' : 𝕎·) → a #⇓ b from w to w' → #isValue a → a ≡ b
-#⇓-from-to→≡ a b w w' c v = CTerm≡ (⇓-from-to→≡ ⌜ a ⌝ ⌜ b ⌝ w w' c v)
-
-
--- MOVE to computation
-#⇓!-refl : (T : CTerm) (w : 𝕎·) → T #⇓! T at w
-#⇓!-refl T w = (0 , refl)
-
-
--- MOVE to computation
-#⇓→#⇓!-NUM : (w : 𝕎·) (k : ℕ) → #⇓→#⇓! w (#NUM k)
-#⇓→#⇓!-NUM w k w1 e1 = lift h --(λ v w2 isv comp → {!!})
-  where
-    h : (v : CTerm) (w2 : 𝕎·) → #isValue v → #NUM k #⇓ v from w1 to w2 → #NUM k #⇓! v at w1
-    h v w2 isv comp rewrite sym (#⇓-from-to→≡ (#NUM k) v w1 w2 comp tt) = #⇓!-refl (#NUM k) w1
-
-
 NUM-equalInType-NAT! : (i : ℕ) (w : 𝕎·) (k : ℕ) → equalInType i w #NAT! (#NUM k) (#NUM k)
 NUM-equalInType-NAT! i w k =
   isTypeNAT! ,
@@ -515,13 +491,6 @@ equalInType-NAT→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                     → □· w (λ w' _ → NATeq w' a b)
 equalInType-NAT→ i w a b (eqt , eqi) =
   eqInType-⇛-NAT (uni i) w #NAT #NAT a b (#compAllRefl #NAT w) (#compAllRefl #NAT w) eqt eqi
-
-
-
-
--- MOVE to computation (or just rename #compAllVal...)
-#⇛→≡ : {a b : CTerm} {w : 𝕎·} → a #⇛ b at w → #isValue a → a ≡ b
-#⇛→≡ {a} {b} {w} = #compAllVal
 
 
 
@@ -595,16 +564,6 @@ equalInTypeTCONST→ {w} {i} {a} {b} {A} (EQTBAR x , eqi) =
                         → □· w' (↑wPred' (λ w'' e → TCONSTeq (equalInType i w'' A) w'' a b) e'))
     aw w1 e1 z h = Mod.∀𝕎-□Func M (λ w1 e1 k y → k) (equalInTypeTCONST→ (z , h))
 
-
-
--- MOVE to computation
-#strongMonEq→#⇛!sameℕ : {w : 𝕎·} {a b : CTerm}
-                           → #⇓→#⇓! w a
-                           → #⇓→#⇓! w b
-                           → #strongMonEq w a b
-                           → #⇛!sameℕ w a b
-#strongMonEq→#⇛!sameℕ {w} {a} {b} c₁ c₂ (n , d₁ , d₂) =
-  n , #⇛→#⇛! {w} {a} {#NUM n} c₁ tt d₁ , #⇛→#⇛! {w} {b} {#NUM n} c₂ tt d₂
 
 
 TCONSTeq-NAT→weakMonEq : (i : ℕ) (w : 𝕎·) (a b : CTerm)
@@ -1619,12 +1578,6 @@ NUM-equalInType-QTNAT i w k =
 
     c₂ : ∼C! w b (#NUM n)
     c₂ = #⇓!→∼C! {w} {b} {#NUM n} (snd (snd (lower (h w (⊑-refl· _)))))
-
-
-
--- MOVE to terms
-#QTNAT!≡ : #QTNAT! ≡ #TSQUASH #NAT!
-#QTNAT!≡ = CTerm≡ refl
 
 
 →equalInType-QTNAT! : (i : ℕ) (w : 𝕎·) (a b : CTerm)

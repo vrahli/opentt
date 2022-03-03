@@ -67,6 +67,7 @@ data Term : Set where
   LT : Term → Term → Term
   QLT : Term → Term → Term
   NUM : ℕ → Term
+  IFLT : Term → Term → Term → Term → Term
   -- Products
   PI :  Term → Term → Term
   LAMBDA : Term → Term
@@ -114,6 +115,7 @@ value? QNAT = true
 value? (LT _ _) = true
 value? (QLT _ _) = true
 value? (NUM _) = true
+value? (IFLT _ _ _ _) = false -- Not a value
 value? (PI _ _) = true
 value? (LAMBDA _) = true
 value? (APPLY _ _) = false -- Not a value
@@ -205,6 +207,7 @@ fvars QNAT             = []
 fvars (LT t t₁)        = fvars t ++ fvars t₁
 fvars (QLT t t₁)       = fvars t ++ fvars t₁
 fvars (NUM x)          = []
+fvars (IFLT a b c d)   = fvars a ++ fvars b ++ fvars c ++ fvars d
 fvars (PI t t₁)        = fvars t ++ lowerVars (fvars t₁)
 fvars (LAMBDA t)       = lowerVars (fvars t)
 fvars (APPLY t t₁)     = fvars t ++ fvars t₁
@@ -346,6 +349,7 @@ shiftUp c QNAT = QNAT
 shiftUp c (LT t t₁) = LT (shiftUp c t) (shiftUp c t₁)
 shiftUp c (QLT t t₁) = QLT (shiftUp c t) (shiftUp c t₁)
 shiftUp c (NUM x) = NUM x
+shiftUp c (IFLT t t₁ t₂ t₃) = IFLT (shiftUp c t) (shiftUp c t₁) (shiftUp c t₂) (shiftUp c t₃)
 shiftUp c (PI t t₁) = PI (shiftUp c t) (shiftUp (suc c) t₁)
 shiftUp c (LAMBDA t) = LAMBDA (shiftUp (suc c) t)
 shiftUp c (APPLY t t₁) = APPLY (shiftUp c t) (shiftUp c t₁)
@@ -382,6 +386,7 @@ shiftDown c QNAT = QNAT
 shiftDown c (LT t t₁) = LT (shiftDown c t) (shiftDown c t₁)
 shiftDown c (QLT t t₁) = QLT (shiftDown c t) (shiftDown c t₁)
 shiftDown c (NUM x) = NUM x
+shiftDown c (IFLT t t₁ t₂ t₃) = IFLT (shiftDown c t) (shiftDown c t₁) (shiftDown c t₂) (shiftDown c t₃)
 shiftDown c (PI t t₁) = PI (shiftDown c t) (shiftDown (suc c) t₁)
 shiftDown c (LAMBDA t) = LAMBDA (shiftDown (suc c) t)
 shiftDown c (APPLY t t₁) = APPLY (shiftDown c t) (shiftDown c t₁)
@@ -420,6 +425,7 @@ subv v t QNAT = QNAT
 subv v t (LT u u₁) = LT (subv v t u) (subv v t u₁)
 subv v t (QLT u u₁) = QLT (subv v t u) (subv v t u₁)
 subv v t (NUM x) = NUM x
+subv v t (IFLT u u₁ u₂ u₃) = IFLT (subv v t u) (subv v t u₁) (subv v t u₂) (subv v t u₃)
 subv v t (PI u u₁) =  PI (subv v t u) (subv (suc v) (shiftUp 0 t) u₁)
 subv v t (LAMBDA u) =  LAMBDA (subv (suc v) (shiftUp 0 t) u)
 subv v t (APPLY u u₁) = APPLY (subv v t u) (subv v t u₁)
@@ -487,6 +493,11 @@ subvNotIn v t (QLT u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
         | subvNotIn v t u₁ (notInAppVars2 n) = refl
 subvNotIn v t (NUM x) n = refl
+subvNotIn v t (IFLT u u₁ u₂ u₃) n
+  rewrite subvNotIn v t u (notInAppVars1 n)
+        | subvNotIn v t u₁ (notInAppVars1 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))
+        | subvNotIn v t u₂ (notInAppVars1 {v} {fvars u₂} {_} (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n)))
+        | subvNotIn v t u₃ (notInAppVars2 {v} {fvars u₂} {_} (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))) = refl
 subvNotIn v t (PI u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
         | subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
@@ -588,6 +599,11 @@ shiftDownTrivial v (QLT u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
   rewrite shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftDownTrivial v (NUM x) i = refl
+shiftDownTrivial v (IFLT u u₁ u₂ u₃) i
+  rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
+        | shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
+        | shiftDownTrivial v u₂ (impLeNotApp1 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)))
+        | shiftDownTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl
 shiftDownTrivial v (PI u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
   rewrite shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
@@ -666,6 +682,11 @@ shiftUpTrivial v (QLT u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftUpTrivial v (NUM x) i = refl
+shiftUpTrivial v (IFLT u u₁ u₂ u₃) i
+  rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
+        | shiftUpTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
+        | shiftUpTrivial v u₂ (impLeNotApp1 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)))
+        | shiftUpTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl
 shiftUpTrivial v (PI u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
@@ -754,6 +775,7 @@ shiftDownUp QNAT n = refl
 shiftDownUp (LT t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (QLT t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (NUM x) n = refl
+shiftDownUp (IFLT t t₁ t₂ t₃) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n | shiftDownUp t₃ n = refl
 shiftDownUp (PI t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
 shiftDownUp (LAMBDA t) n rewrite shiftDownUp t (suc n) = refl
 shiftDownUp (APPLY t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
@@ -790,6 +812,7 @@ is-NUM QNAT = inj₂ (λ { n () })
 is-NUM (LT t t₁) = inj₂ (λ { n () })
 is-NUM (QLT t t₁) = inj₂ (λ { n () })
 is-NUM (NUM x) = inj₁ ( x , refl)
+is-NUM (IFLT t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-NUM (PI t t₁) = inj₂ (λ { n () })
 is-NUM (LAMBDA t) = inj₂ (λ { n () })
 is-NUM (APPLY t t₁) = inj₂ (λ { n () })
@@ -826,6 +849,7 @@ is-LAM QNAT = inj₂ (λ { n () })
 is-LAM (LT t t₁) = inj₂ (λ { n () })
 is-LAM (QLT t t₁) = inj₂ (λ { n () })
 is-LAM (NUM x) = inj₂ (λ { n () })
+is-LAM (IFLT t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-LAM (PI t t₁) = inj₂ (λ { n () })
 is-LAM (LAMBDA t) = inj₁ (t , refl)
 is-LAM (APPLY t t₁) = inj₂ (λ { n () })
@@ -862,6 +886,7 @@ is-CS QNAT = inj₂ (λ { n () })
 is-CS (LT t t₁) = inj₂ (λ { n () })
 is-CS (QLT t t₁) = inj₂ (λ { n () })
 is-CS (NUM x) = inj₂ (λ { n () })
+is-CS (IFLT t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-CS (PI t t₁) = inj₂ (λ { n () })
 is-CS (LAMBDA t) = inj₂ (λ { n () })
 is-CS (APPLY t t₁) = inj₂ (λ { n () })
@@ -898,6 +923,7 @@ is-PAIR QNAT = inj₂ (λ { n m () })
 is-PAIR (LT t t₁) = inj₂ (λ { n m () })
 is-PAIR (QLT t t₁) = inj₂ (λ { n m () })
 is-PAIR (NUM x) = inj₂ (λ { n m () })
+is-PAIR (IFLT t t₁ t₂ t₃) = inj₂ (λ { n m () })
 is-PAIR (PI t t₁) = inj₂ (λ { n m () })
 is-PAIR (LAMBDA t) = inj₂ (λ { n m () })
 is-PAIR (APPLY t t₁) = inj₂ (λ { n m () })
@@ -934,6 +960,7 @@ is-INL QNAT = inj₂ (λ { n () })
 is-INL (LT t t₁) = inj₂ (λ { n () })
 is-INL (QLT t t₁) = inj₂ (λ { n () })
 is-INL (NUM x) = inj₂ (λ { n () })
+is-INL (IFLT t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-INL (PI t t₁) = inj₂ (λ { n () })
 is-INL (LAMBDA t) = inj₂ (λ { n () })
 is-INL (APPLY t t₁) = inj₂ (λ { n () })
@@ -970,6 +997,7 @@ is-INR QNAT = inj₂ (λ { n () })
 is-INR (LT t t₁) = inj₂ (λ { n () })
 is-INR (QLT t t₁) = inj₂ (λ { n () })
 is-INR (NUM x) = inj₂ (λ { n () })
+is-INR (IFLT t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-INR (PI t t₁) = inj₂ (λ { n () })
 is-INR (LAMBDA t) = inj₂ (λ { n () })
 is-INR (APPLY t t₁) = inj₂ (λ { n () })
@@ -1092,6 +1120,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {LT b b₁} isv = tt
 ∼vals→isValue₂ {a} {QLT b b₁} isv = tt
 ∼vals→isValue₂ {a} {NUM x} isv = tt
+∼vals→isValue₂ {a} {IFLT b b₁ b₂ b₃} ()
 ∼vals→isValue₂ {a} {PI b b₁} isv = tt
 ∼vals→isValue₂ {a} {LAMBDA b} isv = tt
 ∼vals→isValue₂ {a} {APPLY b b₁} ()
