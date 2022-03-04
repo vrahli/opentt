@@ -557,6 +557,10 @@ IFLE⇛¬≤ {k} {j} {w} {a} {b} lekj w1 e1 = lift (1 , c)
         z4 = <-transˡ z2 (≤-reflexive z3)
 
 
+CHOOSE-CS⇛AX : {w : 𝕎·} {name : Name} {t : Term} → CHOOSE (CS name) t ⇛ AX at w
+CHOOSE-CS⇛AX {w} {name} {t} w1 e1 = lift (1 , refl)
+
+
 -- MOVE to computation
 IFLE-CHOOSE⇛AX : {w : 𝕎·} {n a : Term} {k j : ℕ} {name : Name} {t : Term}
                   → n ⇛ NUM k at w
@@ -567,17 +571,61 @@ IFLE-CHOOSE⇛AX {w} {n} {a} {k} {j} {name} {t} c d =
   where
     concl : IFLE (NUM k) (NUM j) (CHOOSE (CS name) t) AX ⇛ AX at w
     concl with k ≤? j
-    ... | yes p = ⇛-trans (IFLE⇛≤ p) {!!}
+    ... | yes p = ⇛-trans (IFLE⇛≤ p) CHOOSE-CS⇛AX
     ... | no p = IFLE⇛¬≤ p
 
 
-bound∈ : (i : ℕ) (w : 𝕎·) (name : Name) (n : CTerm) (f : CTerm) (r : Res)
-         → compatible· name w r
-         → freezable· name w
+SEQ-steps₁ : {k : ℕ} {w w' : 𝕎·} {a b t : Term}
+              → steps k (a , w) ≡ (b , w')
+              → Σ ℕ (λ k → steps k (SEQ a t , w) ≡ (SEQ b t , w'))
+SEQ-steps₁ {0} {w} {w'} {a} {b} {t} comp rewrite pair-inj₁ comp | pair-inj₂ comp = 0 , refl
+SEQ-steps₁ {suc k} {w} {w'} {a} {b} {t} comp with isValue⊎ a
+... | inj₁ x rewrite stepsVal a w (suc k) x | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+... | inj₂ x with step⊎ a w
+... |    inj₁ (y , w'' , q) rewrite q = suc (fst c) , snd c
+  where
+    c : Σ ℕ (λ k₁ → steps (suc k₁) (SEQ a t , w) ≡ (SEQ b t , w'))
+    c with isValue⊎ a
+    ... | inj₁ x' = ⊥-elim (x x')
+    ... | inj₂ x' rewrite q = SEQ-steps₁ {k} comp
+... |    inj₂ q rewrite q | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+
+
+SEQ⇓₁ : {w w' : 𝕎·} {a b t : Term}
+         → a ⇓ b from w to w'
+         → SEQ a t ⇓ SEQ b t from w to w'
+SEQ⇓₁ {w} {w'} {a} {b} {t} (k , comp) = SEQ-steps₁ {k} {w} {w'} {a} {b} {t} comp
+
+
+
+SEQ⇛₁ : {w : 𝕎·} {a a' b : Term}
+           → a ⇛ a' at w
+           → SEQ a b ⇛ SEQ a' b at w
+SEQ⇛₁ {w} {a} {a'} {b} comp w1 e1 = lift (⇓-from-to→⇓ {w1} {fst c} (SEQ⇓₁ (snd c)))
+  where
+    c : Σ 𝕎· (λ w2 → a ⇓ a' from w1 to w2)
+    c = ⇓→from-to (lower (comp w1 e1))
+
+
+SEQ-AX⇛₁ : {w : 𝕎·} {t : Term} → # t → SEQ AX t ⇛ t at w
+SEQ-AX⇛₁ {w} {t} tc w1 e1 = lift (1 , c)
+  where
+    c : sub AX (shiftUp 0 t) ≡ t
+    c rewrite #shiftUp 0 (ct t tc) | subNotIn AX t tc = refl
+
+
+SEQ-AX⇛ : {w : 𝕎·} {a b : Term}
+           → # b
+           → a ⇛ AX at w
+           → SEQ a b ⇛ b at w
+SEQ-AX⇛ {w} {a} {b} cb comp = ⇛-trans (SEQ⇛₁ comp) (SEQ-AX⇛₁ cb)
+
+
+bound∈ : (i : ℕ) (w : 𝕎·) (name : Name) (n : CTerm) (f : CTerm)
          → ∈Type i w #NAT n
          → ∈Type i w #BAIRE f
          → equalInType i w #BAIRE (#bound name n f) (#bound name n f)
-bound∈ i w name n f r comp mut ∈n ∈f =
+bound∈ i w name n f ∈n ∈f =
   ≡CTerm→equalInTypeₗ (sym (#bound≡ name n f)) (≡CTerm→equalInTypeᵣ (sym (#bound≡ name n f)) (≡CTerm→equalInType (sym #BAIRE≡) eqi))
   where
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
@@ -598,32 +646,29 @@ bound∈ i w name n f r comp mut ∈n ∈f =
                              → NATeq w' (#APPLY f a₁) (#APPLY f a₂)
                              → NATeq w' (#SEQ (#IFLE n a₁ (#CHOOSE (#CS name) (ℂ→C· ℂ₁·)) #AX) (#APPLY f a₁))
                                          (#SEQ (#IFLE n a₂ (#CHOOSE (#CS name) (ℂ→C· ℂ₁·)) #AX) (#APPLY f a₂)))
-        aw1 w2 e2 (j , c₁ , c₂) (k , d₁ , d₂) (m , e₁ , e₂) = m , {!!} , {!!}
+        aw1 w2 e2 (j , c₁ , c₂) (k , d₁ , d₂) (m , e₁ , e₂) =
+          m ,
+          ⇛-trans (SEQ-AX⇛ (CTerm.closed (#APPLY f a₁)) (IFLE-CHOOSE⇛AX d₁ c₁)) e₁ ,
+          ⇛-trans (SEQ-AX⇛ (CTerm.closed (#APPLY f a₂)) (IFLE-CHOOSE⇛AX d₂ c₂)) e₂
 
         eqi1 : equalInType i w1 #NAT (#SEQ (#IFLE n a₁ (#CHOOSE (#CS name) (ℂ→C· ℂ₁·)) #AX) (#APPLY f a₁))
                                      (#SEQ (#IFLE n a₂ (#CHOOSE (#CS name) (ℂ→C· ℂ₁·)) #AX) (#APPLY f a₂))
         eqi1 = →equalInType-NAT i w1 _ _ (∀𝕎-□Func3 aw1 eqa eqn eqf)
-
--- This does not work with our current nats because the world changes
---∈Type i w #NAT n
---∈Type i w #NAT a
 
     eqi : equalInType i w (#FUN #NAT #NAT) (#BOUND name n f) (#BOUND name n f)
     eqi = equalInType-FUN (λ w1 e1 → eqTypesNAT) (λ w1 e1 → eqTypesNAT) aw
 
 
 
-APPLY-bound∈ : (i : ℕ) (w : 𝕎·) (F : CTerm) (name : Name) (n : CTerm) (f : CTerm) (r : Res)
-               → compatible· name w r
-               → freezable· name w
+APPLY-bound∈ : (i : ℕ) (w : 𝕎·) (F : CTerm) (name : Name) (n : CTerm) (f : CTerm)
                → ∈Type i w #BAIRE→NAT F
                → ∈Type i w #NAT n
                → ∈Type i w #BAIRE f
                → ∈Type i w #NAT (#APPLY F (#bound name n f))
-APPLY-bound∈ i w F name n f r comp mut ∈F ∈n ∈f =
+APPLY-bound∈ i w F name n f ∈F ∈n ∈f =
   equalInType-FUN→
     {i} {w} {#BAIRE} {#NAT} {F} {F} ∈F w (⊑-refl· _) (#bound name n f) (#bound name n f)
-    (bound∈ i w name n f r comp mut ∈n ∈f)
+    (bound∈ i w name n f ∈n ∈f)
 
 {-- ≡CTerm→equalInType (sym #BAIRE→NAT≡) (equalInType-FUN aw1 aw2 aw3)
   where

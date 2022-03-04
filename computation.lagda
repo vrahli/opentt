@@ -133,9 +133,9 @@ step (FIX f) w with step f w
 ... | just (g , w') = ret (FIX g) w'
 ... | nothing = nothing--}
 -- LET
-step (LET a f) w with value? a
-... | true = ret (sub a f) w
-... | false with step a w
+step (LET a f) w with isValue⊎ a
+... | inj₁ x = ret (sub a f) w
+... | inj₂ x with step a w
 ... |    just (b , w') = ret (LET b f) w'
 ... |    nothing = nothing
 -- SUM
@@ -662,9 +662,9 @@ step⊑ {w} {w'} {FIX a} {b} comp with is-LAM a
 ... | inj₂ p with step⊎ a w
 ... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
-step⊑ {w} {w'} {LET a f} {b} comp with value? a
-... | true rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
-... | false with step⊎ a w
+step⊑ {w} {w'} {LET a f} {b} comp with isValue⊎ a
+... | inj₁ x rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+... | inj₂ x with step⊎ a w
 ... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step⊑ {w} {w'} {SUM a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _

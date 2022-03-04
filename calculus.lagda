@@ -154,6 +154,12 @@ isValue : Term → Set
 isValue t = Bool→Set (value? t)
 
 
+isValue⊎ : (t : Term) → isValue t ⊎ ¬ isValue t
+isValue⊎ t with value? t
+... | true = inj₁ tt
+... | false = inj₂ λ x → x
+
+
 {--
 -- all variables
 vars : Term → List Var
