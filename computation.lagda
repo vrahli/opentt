@@ -154,6 +154,8 @@ step (SPREAD a b) w with step a w
 ... | nothing = nothing--}
 -- SET
 step (SET a b) = ret (SET a b)
+-- TUNION
+step (TUNION a b) = ret (TUNION a b)
 -- UNION
 step (UNION a b) = ret (UNION a b)
 -- INL
@@ -252,6 +254,7 @@ stepVal (LAMBDA a) w v = refl
 stepVal (SUM a a₁) w v = refl
 stepVal (PAIR a a₁) w v = refl
 stepVal (SET a a₁) w v = refl
+stepVal (TUNION a a₁) w v = refl
 stepVal (UNION a a₁) w v = refl
 stepVal (INL a) w v = refl
 stepVal (INR a) w v = refl
@@ -419,6 +422,7 @@ step-APPLY-CS-¬NUM name (LET a a₁) b w w' c s rewrite s = refl
 step-APPLY-CS-¬NUM name (SUM a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (PAIR a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (SET a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name (TUNION a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (UNION a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (INL a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (INR a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
@@ -675,6 +679,7 @@ step⊑ {w} {w'} {SPREAD a a₁} {b} comp with is-PAIR a
 ... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step⊑ {w} {w'} {SET a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {TUNION a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {UNION a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {INL a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {INR a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
@@ -1072,6 +1077,7 @@ data ∼T : 𝕎· → Term → Term → Set where
 →-step-APPLY {w} {w'} {SUM a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {PAIR a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {SET a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {TUNION a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {UNION a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {INL a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {INR a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
@@ -1155,6 +1161,7 @@ step-⇓-ASSERT₁ {w} {w'} {FIX a} {b} comp = 1 , z
 step-⇓-ASSERT₁ {w} {w'} {SUM a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {PAIR a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {SET a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {TUNION a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {UNION a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {INL a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {INR a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
@@ -1350,6 +1357,7 @@ step-preserves-fvars w (SUM a a₁) b e {x} i rewrite sym (just-inj e) = i
 step-preserves-fvars w (PAIR a a₁) b e {x} i rewrite sym (just-inj e) = i
 step-preserves-fvars w (SPREAD a a₁) b e {x} i = {!!} --rewrite sym (just-inj e) = {!!}
 step-preserves-fvars w (SET a a₁) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (TUNION a a₁) b e {x} i rewrite sym (just-inj e) = i
 step-preserves-fvars w (UNION a a₁) b e {x} i rewrite sym (just-inj e) = i
 step-preserves-fvars w (INL a) b e {x} i rewrite sym (just-inj e) = i
 step-preserves-fvars w (INR a) b e {x} i rewrite sym (just-inj e) = i

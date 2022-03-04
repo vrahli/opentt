@@ -173,6 +173,15 @@ data eqTypes u w T1 T2 where
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
     → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
     → eqTypes u w T1 T2
+  EQTTUNION : (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+    → T1 #⇛ (#TUNION A1 B1) at w
+    → T2 #⇛ (#TUNION A2 B2) at w
+    → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+    → (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
+                         → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+    → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+    → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+    → eqTypes u w T1 T2
   EQTEQ : (a1 b1 a2 b2 A B : CTerm)
     → T1 #⇛ #EQ a1 a2 A at w
     → T2 #⇛ #EQ b1 b2 B at w
@@ -266,7 +275,8 @@ UNIONeq eqa eqb w t1 t2  =
 
 
 {--
--- Positivity issues with this one...
+ -- Positivity issues with this one...
+ -- We prove in props0 that they are equivalent
 data TSQUASHeq (eqa : per) (w : 𝕎·) (t1 t2 : CTerm) : Set(lsuc(L))
 data TSQUASHeq eqa w t1 t2 where
   TSQUASHeq-base : (a1 a2 : CTerm) → #isValue a1 → #isValue a2 → eqa a1 a2 → ∼C w t1 a1 → ∼C w t2 a2 → TSQUASHeq eqa w t1 t2
@@ -287,6 +297,20 @@ TSQUASHeqℕ (suc n) eqa w t1 t2 = Σ CTerm (λ t → TSQUASHeqBase eqa w t1 t �
 
 TSQUASHeq : (eqa : per) → wper
 TSQUASHeq eqa w t1 t2 = Σ ℕ (λ n → TSQUASHeqℕ n eqa w t1 t2)
+
+
+TUNIONeqBase : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → per
+TUNIONeqBase eqa eqb t1 t2 =
+  Σ CTerm (λ a1 → Σ CTerm (λ a2 → Σ (eqa a1 a2) (λ ea → eqb a1 a2 ea t1 t2)))
+
+
+TUNIONeqℕ : ℕ → (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → per
+TUNIONeqℕ 0 eqa eqb t1 t2 = TUNIONeqBase eqa eqb t1 t2
+TUNIONeqℕ (suc n) eqa eqb t1 t2 = Σ CTerm (λ t → TUNIONeqBase eqa eqb t1 t × TUNIONeqℕ n eqa eqb t t2)
+
+
+TUNIONeq : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → per
+TUNIONeq eqa eqb t1 t2 = Σ ℕ (λ n → TUNIONeqℕ n eqa eqb t1 t2)
 
 
 TCONSTeq : (eqa : per) → wper
@@ -328,6 +352,8 @@ eqInType u w (EQTSUM _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
   □· w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' t1 t2)
 eqInType u w (EQTSET _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
   □· w (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) t1 t2)
+eqInType u w (EQTTUNION _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
+  □· w (λ w' e → TUNIONeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) t1 t2)
 eqInType u w (EQTEQ a1 _ a2 _ _ _ _ _ eqtA exta eqt1 eqt2) t1 t2 =
   □· w (λ w' e → EQeq a1 a2 (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTUNION _ _ _ _ _ _ eqtA eqtB exta extb) t1 t2 =

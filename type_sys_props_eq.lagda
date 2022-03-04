@@ -112,6 +112,7 @@ typeSysConds-EQ-ttrans u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2
 typeSysConds-EQ-ttrans u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTPI C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (EQneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-ttrans u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSUM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (EQneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-ttrans u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (EQneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-EQ-ttrans u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (EQneqTUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-ttrans u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂)
   rewrite #EQinj1 {a₁} {a₂} {A₁} {b1} {b2} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
         | #EQinj2 {a₁} {a₂} {A₁} {b1} {b2} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
@@ -234,6 +235,7 @@ typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
 typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTPI A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (EQneqPI (⇛-val-det tt tt x y))
 typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSUM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (EQneqSUM (⇛-val-det tt tt x y))
 typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqSET (⇛-val-det tt tt x y))
+typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqTUNION (⇛-val-det tt tt x y))
 typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) f g eqi
   rewrite #EQinj1 {a₁} {a₂} {A₁} {a1} {a2} {A1} (#⇛-val-det {_} {A} tt tt y x)
         | #EQinj2 {a₁} {a₂} {A₁} {a1} {a2} {A1} (#⇛-val-det {_} {A} tt tt y x)
@@ -295,6 +297,7 @@ typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
 typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqSET (⇛-val-det tt tt x y₁))
+typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqTUNION (⇛-val-det tt tt x y₁))
 typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) f g eqi
   rewrite #EQinj1 {b₁} {b₂} {B₁} {a1} {a2} {A1} (#⇛-val-det {_} {A} tt tt y₁ x)
         | #EQinj2 {b₁} {b₂} {B₁} {a1} {a2} {A1} (#⇛-val-det {_} {A} tt tt y₁ x)
@@ -366,6 +369,7 @@ typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
 typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqSET (⇛-val-det tt tt x₁ y₁))
+typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqTUNION (⇛-val-det tt tt x₁ y₁))
 typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) f g eqi
   rewrite #EQinj1 {b₁} {b₂} {B₁} {b1} {b2} {B1} (#⇛-val-det {_} {B} tt tt y₁ x₁)
         | #EQinj2 {b₁} {b₂} {B₁} {b1} {b2} {B1} (#⇛-val-det {_} {B} tt tt y₁ x₁)
@@ -439,6 +443,7 @@ typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
 typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqTUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) f g eqi
   rewrite #EQinj1 {a₁} {a₂} {A₁} {b1} {b2} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
         | #EQinj2 {a₁} {a₂} {A₁} {b1} {b2} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
@@ -505,6 +510,7 @@ typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
 typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqPI (⇛-val-det tt tt x y))
 typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqSUM (⇛-val-det tt tt x y))
 typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqSET (⇛-val-det tt tt x y))
+typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqTUNION (⇛-val-det tt tt x y))
 typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) f g eqi
   rewrite #EQinj1 {a₁} {a₂} {A₁} {a1} {a2} {A1} (#⇛-val-det {_} {A} tt tt y x)
         | #EQinj2 {a₁} {a₂} {A₁} {a1} {a2} {A1} (#⇛-val-det {_} {A} tt tt y x)
@@ -581,6 +587,7 @@ typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
 typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqSET (⇛-val-det tt tt x y₁))
+typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqTUNION (⇛-val-det tt tt x y₁))
 typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) f g eqi
   rewrite #EQinj1 {b₁} {b₂} {B₁} {a1} {a2} {A1} (#⇛-val-det {_} {A} tt tt y₁ x)
         | #EQinj2 {b₁} {b₂} {B₁} {a1} {a2} {A1} (#⇛-val-det {_} {A} tt tt y₁ x)
@@ -670,6 +677,7 @@ typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
 typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqSET (⇛-val-det tt tt x₁ y₁))
+typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqTUNION (⇛-val-det tt tt x₁ y₁))
 typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) f g eqi
   rewrite #EQinj1 {b₁} {b₂} {B₁} {b1} {b2} {B1} (#⇛-val-det {_} {B} tt tt y₁ x₁)
         | #EQinj2 {b₁} {b₂} {B₁} {b1} {b2} {B1} (#⇛-val-det {_} {B} tt tt y₁ x₁)
@@ -764,6 +772,7 @@ typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
 typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (EQneqTUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) f g eqi
   rewrite #EQinj1 {a₁} {a₂} {A₁} {b1} {b2} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
         | #EQinj2 {a₁} {a₂} {A₁} {b1} {b2} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
@@ -851,6 +860,7 @@ eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTFREE 
 eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (EQneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (EQneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (EQneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (EQneqTUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTEQ c1 d1 c2 d2 A₁ B₁ x x₁ eqta₁ exta₁ eqt1 eqt2) ei
   rewrite #EQinj1 {a1} {a2} {A1} {c1} {c2} {A₁} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #EQinj2 {a1} {a2} {A1} {c1} {c2} {A₁} (#⇛-val-det {_} {A} tt tt c₁ x)
@@ -921,6 +931,7 @@ eqInType-⇛-EQ2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTFREE x x�
 eqInType-⇛-EQ2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (EQneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (EQneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (EQneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-EQ2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (EQneqTUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTEQ c1 d1 c2 d2 A₁ B₁ x x₁ eqta₁ exta₁ eqt1 eqt2) ei ext
   rewrite #EQinj1 {a1} {a2} {A1} {c1} {c2} {A₁} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #EQinj2 {a1} {a2} {A1} {c1} {c2} {A₁} (#⇛-val-det {_} {A} tt tt c₁ x)
@@ -999,6 +1010,7 @@ eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTF
 eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (EQneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (EQneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (EQneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (EQneqTUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTEQ c1 d1 c2 d2 A₁ B₁ x x₁ eqta₁ exta₁ eqt1 eqt2) ei
   rewrite #EQinj1 {a1} {a2} {A1} {c1} {c2} {A₁} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #EQinj2 {a1} {a2} {A1} {c1} {c2} {A₁} (#⇛-val-det {_} {A} tt tt c₁ x)
@@ -1066,6 +1078,7 @@ eqInType-⇛-EQ-rev2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTFREE 
 eqInType-⇛-EQ-rev2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (EQneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ-rev2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (EQneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ-rev2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (EQneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-EQ-rev2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (EQneqTUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ-rev2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTEQ c1 d1 c2 d2 A₁ B₁ x x₁ eqta₁ exta₁ eqt1 eqt2) ext ei
   rewrite #EQinj1 {a1} {a2} {A1} {c1} {c2} {A₁} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #EQinj2 {a1} {a2} {A1} {c1} {c2} {A₁} (#⇛-val-det {_} {A} tt tt c₁ x)

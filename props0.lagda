@@ -118,6 +118,7 @@ eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTFREE x x₁) = ⊥-eli
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = ⊥-elim (NATneqPI (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = ⊥-elim (NATneqSUM (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = ⊥-elim (NATneqSET (⇛-val-det tt tt c₁ x))
+eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = ⊥-elim (NATneqTUNION (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) = ⊥-elim (NATneqEQ (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) = ⊥-elim (NATneqUNION (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTSQUASH A1 A2 x x₁ eqtA) = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt c₁ x))
@@ -172,6 +173,7 @@ eqTypes-pres-eqInType u w A B a b (EQTFREE x x₁) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb) e = {!!}
+eqTypes-pres-eqInType u w A B a b (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQTSQUASH A1 A2 x x₁ eqtA) e = {!!}
@@ -250,6 +252,15 @@ eqTypes-mon u {A} {B} {w1} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) w2 ex
     extb' : (a b a₀ b₀ : CTerm) → wPredDepExtIrr (λ w e x₂ → eqInType u w (∀𝕎-mon ext eqtb w e a b x₂) a₀ b₀)
     extb' a b a₀ b₀ w' e1 e2 x1 x2 ei = extb a b a₀ b₀ w' (⊑-trans· ext e1) (⊑-trans· ext e2) x1 x2 ei
 
+eqTypes-mon u {A} {B} {w1} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) w2 ext =
+  EQTTUNION A1 B1 A2 B2 (⇛-mon ext x) (⇛-mon ext x₁) (∀𝕎-mon ext eqta) (∀𝕎-mon ext eqtb) exta' extb'
+  where
+    exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (∀𝕎-mon ext eqta w e) a b)
+    exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
+
+    extb' : (a b a₀ b₀ : CTerm) → wPredDepExtIrr (λ w e x₂ → eqInType u w (∀𝕎-mon ext eqtb w e a b x₂) a₀ b₀)
+    extb' a b a₀ b₀ w' e1 e2 x1 x2 ei = extb a b a₀ b₀ w' (⊑-trans· ext e1) (⊑-trans· ext e2) x1 x2 ei
+
 eqTypes-mon u {A} {B} {w1} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) w2 ext =
   EQTEQ a1 b1 a2 b2 A₁ B₁ (⇛-mon ext x) (⇛-mon ext x₁)
     (∀𝕎-mon ext eqtA) exta' (∀𝕎-mon ext eqt1) (∀𝕎-mon ext eqt2)
@@ -321,6 +332,7 @@ if-equalInType-EQ-test u w T a b t₁ t₂ (EQTFREE x x₁) eqi = ⊥-elim (EQne
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (EQneqPI (compAllVal x₁ tt))
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (EQneqSUM (compAllVal x₁ tt))
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (EQneqSET (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (EQneqTUNION (compAllVal x₁ tt))
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2) eqi
   rewrite #EQinj1 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj2 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj3 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)
         | #EQinj1 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj2 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj3 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) =
@@ -382,6 +394,7 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTFREE x x₁ , eqi) = ⊥-elim (EQneqFR
 if-equalInType-EQ u w T a b t₁ t₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqPI (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSUM (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSET (compAllVal x₁ tt))
+if-equalInType-EQ u w T a b t₁ t₂ (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqTUNION (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2 , eqi)
   rewrite #EQinj1 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj2 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj3 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)
         | #EQinj1 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj2 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj3 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) =
@@ -647,6 +660,7 @@ eqTypes⇛NAT {u} {w} {A} {B} (EQTFREE x x₁) comp = ⊥-elim (NATneqFREE (⇛-
 eqTypes⇛NAT {u} {w} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) comp = ⊥-elim (NATneqPI (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) comp = ⊥-elim (NATneqSUM (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) comp = ⊥-elim (NATneqSET (⇛-val-det tt tt comp x))
+eqTypes⇛NAT {u} {w} {A} {B} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) comp = ⊥-elim (NATneqTUNION (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) comp = ⊥-elim (NATneqEQ (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) comp = ⊥-elim (NATneqUNION (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqtA exta) comp = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt comp x))
@@ -938,6 +952,154 @@ irr-fam-set u w A1 B1 A2 B2 eqta eqtb exta extb f g w1 e1 w' e' (b , eqa , eqb) 
 
       eqb' : eqInType u w' (eqtb w' z f g eqa') b b
       eqb' = extb f g b b w' (⊑-trans· e1 e') z eqa eqa' eqb
+
+
+
+-----------------------
+data TUNION-eq (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (t1 t2 : CTerm) : Set(lsuc(L))
+data TUNION-eq eqa eqb t1 t2 where
+  TUNION-eq-base : (a1 a2 : CTerm) (ea : eqa a1 a2) (eb : eqb a1 a2 ea t1 t2) → TUNION-eq eqa eqb t1 t2
+  TUNION-eq-trans : (t : CTerm) → TUNION-eq eqa eqb t1 t → TUNION-eq eqa eqb t t2 → TUNION-eq eqa eqb t1 t2
+
+
+→TUNION-eq : {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {t1 t2 : CTerm}
+               → TUNIONeq eqa eqb t1 t2
+               → TUNION-eq eqa eqb t1 t2
+→TUNION-eq {eqa} {eqb} {t1} {t2} (0 , a1 , a2 , ea , eb) = TUNION-eq-base a1 a2 ea eb
+→TUNION-eq {eqa} {eqb} {t1} {t2} (suc n , t , (a1 , a2 , ea , eb) , q) =
+  TUNION-eq-trans t (TUNION-eq-base a1 a2 ea eb) (→TUNION-eq (n , q))
+
+
+
+TUNIONeqℕ-trans : {n m : ℕ} {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {t1 t2 t3 : CTerm}
+                 → TUNIONeqℕ n eqa eqb t1 t2
+                 → TUNIONeqℕ m eqa eqb t2 t3
+                 → TUNIONeqℕ (n + suc m) eqa eqb t1 t3
+TUNIONeqℕ-trans {0} {m} {eqa} {eqb} {t1} {t2} {t3} h q = t2 , h , q
+TUNIONeqℕ-trans {suc n} {m} {eqa} {eqb} {t1} {t2} {t3} (t , h0 , h1) q = t , h0 , TUNIONeqℕ-trans h1 q
+
+
+
+TUNIONeq-trans : {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {t1 t2 t3 : CTerm}
+                 → TUNIONeq eqa eqb t1 t2
+                 → TUNIONeq eqa eqb t2 t3
+                 → TUNIONeq eqa eqb t1 t3
+TUNIONeq-trans {eqa} {eqb} {t1} {t2} {t3} (n , h) (m , q) = n + suc m , TUNIONeqℕ-trans h q
+
+
+
+TUNION-eq→ : {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {t1 t2 : CTerm}
+               → TUNION-eq eqa eqb t1 t2
+               → TUNIONeq eqa eqb t1 t2
+TUNION-eq→ {eqa} {eqb} {t1} {t2} (TUNION-eq-base a1 a2 ea eb) = 0 , a1 , a2 , ea , eb
+TUNION-eq→ {eqa} {eqb} {t1} {t2} (TUNION-eq-trans t h1 h2) = TUNIONeq-trans (TUNION-eq→ h1) (TUNION-eq→ h2)
+
+
+TUNION-eq-sym : {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {t1 t2 : CTerm}
+                 → ((a b : CTerm) → eqa a b → eqa b a)
+                 → ((f g : CTerm) (a b : CTerm) (ea1 : eqa a b) (ea2 : eqa b a) → eqb a b ea1 f g → eqb b a ea2 g f)
+                 → TUNION-eq eqa eqb t1 t2
+                 → TUNION-eq eqa eqb t2 t1
+TUNION-eq-sym {eqa} {eqb} {t1} {t2} syma symb (TUNION-eq-base a1 a2 ea eb) =
+  TUNION-eq-base a2 a1 (syma a1 a2 ea) (symb t1 t2 a1 a2 ea (syma a1 a2 ea) eb)
+TUNION-eq-sym {eqa} {eqb} {t1} {t2} syma symb (TUNION-eq-trans t h1 h2) =
+  TUNION-eq-trans t (TUNION-eq-sym syma symb h2) (TUNION-eq-sym syma symb h1)
+
+
+
+TUNIONeq-sym : {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {t1 t2 : CTerm}
+                 → ((a b : CTerm) → eqa a b → eqa b a)
+                 → ((f g : CTerm) (a b : CTerm) (ea1 : eqa a b) (ea2 : eqa b a) → eqb a b ea1 f g → eqb b a ea2 g f)
+                 → TUNIONeq eqa eqb t1 t2
+                 → TUNIONeq eqa eqb t2 t1
+TUNIONeq-sym {eqa} {eqb} {t1} {t2} syma symb h = TUNION-eq→ (TUNION-eq-sym syma symb (→TUNION-eq h))
+
+
+
+{--
+→TUNIONeqℕ-suc : {n : ℕ} {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {w : 𝕎·} {t1 t2 : CTerm} (t : CTerm)
+                    → TUNIONeqℕ n eqa w t1 t
+                    → TUNIONeqBase eqa w t t2
+                    → TUNIONeqℕ (suc n) eqa w t1 t2
+→TUNIONeqℕ-suc {0} {eqa} {w} {t1} {t2} t h q = t , h , q
+→TUNIONeqℕ-suc {suc n} {eqa} {w} {t1} {t2} t (t0 , h0 , h1) q = t0 , h0 , →TUNIONeqℕ-suc {n} t h1 q
+--}
+
+
+
+TUNION-eq-ext-eq : {eqa1 eqa2 : per}
+                   {eqb1 : (a b : CTerm) → eqa1 a b → per} {eqb2 : (a b : CTerm) → eqa2 a b → per} {t1 t2 : CTerm}
+                   → ((a b : CTerm) → eqa1 a b → eqa2 a b)
+                   → ((f g : CTerm) (a b : CTerm) (ea1 : eqa1 a b) (ea2 : eqa2 a b) → eqb1 a b ea1 f g → eqb2 a b ea2 f g)
+                   → TUNION-eq eqa1 eqb1 t1 t2
+                   → TUNION-eq eqa2 eqb2 t1 t2
+TUNION-eq-ext-eq {eqa1} {eqa2} {eqb1} {eqb2} {t1} {t2} exta extb (TUNION-eq-base a1 a2 ea eb) =
+  TUNION-eq-base a1 a2 (exta a1 a2 ea) (extb t1 t2 a1 a2 ea (exta a1 a2 ea) eb)
+TUNION-eq-ext-eq {eqa1} {eqa2} {eqb1} {eqb2} {t1} {t2} exta extb (TUNION-eq-trans t h1 h2) =
+  TUNION-eq-trans t (TUNION-eq-ext-eq exta extb h1) (TUNION-eq-ext-eq exta extb h2)
+
+
+
+TUNIONeq-ext-eq : {eqa1 eqa2 : per}
+                  {eqb1 : (a b : CTerm) → eqa1 a b → per} {eqb2 : (a b : CTerm) → eqa2 a b → per}
+                  {t1 t2 : CTerm}
+                  → ((a b : CTerm) → eqa1 a b → eqa2 a b)
+                  → ((f g : CTerm) (a b : CTerm) (ea1 : eqa1 a b) (ea2 : eqa2 a b) → eqb1 a b ea1 f g → eqb2 a b ea2 f g)
+                  → TUNIONeq eqa1 eqb1 t1 t2
+                  → TUNIONeq eqa2 eqb2 t1 t2
+TUNIONeq-ext-eq {eqa1} {eqa2} {eqb1} {eqb2} {t1} {t2} exta extb h = TUNION-eq→ (TUNION-eq-ext-eq exta extb (→TUNION-eq h))
+
+
+
+irr-TUNIONeq : {u : univs} {w w' : 𝕎·} {A1 : CTerm} {B1 : CTerm0} {A2 : CTerm} {B2 : CTerm0}
+               (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+               (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                     → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+               (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+               (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+               {f g : CTerm}
+               (e1 e2 : w ⊑· w')
+               → TUNIONeq (eqInType u w' (eqta w' e1)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e1 a1 a2 eqa)) f g
+               → TUNIONeq (eqInType u w' (eqta w' e2)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e2 a1 a2 eqa)) f g
+irr-TUNIONeq {u} {w} {w'} {A1} {B1} {A2} {B2} eqta eqtb exta extb {f} {g} e1 e2 h =
+  TUNIONeq-ext-eq (λ a b q → exta a b w' e1 e2 q) (λ f₁ g₁ a b ea1 ea2 q → extb a b f₁ g₁ w' e1 e2 ea1 ea2 q) h
+-----------------
+
+
+
+irr-fam-tunion-eq : (u : univs) (w : 𝕎·) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                    (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+                    (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                         → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                    (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                    (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                    (f g : CTerm) (w1 : 𝕎·) (e1 : w ⊑· w1)
+                    → ∀𝕎 w1 (λ w' e' → TUNION-eq (eqInType u w' (eqta w' (⊑-trans· e1 e'))) (λ a1 a2 eqa → eqInType u w' (eqtb w' (⊑-trans· e1 e') a1 a2 eqa)) f g
+                                       → (z : w ⊑· w') → TUNION-eq (eqInType u w' (eqta w' z)) (λ a1 a2 eqa → eqInType u w' (eqtb w' z a1 a2 eqa)) f g)
+irr-fam-tunion-eq u w A1 B1 A2 B2 eqta eqtb exta extb f g w1 e1 w' e' (TUNION-eq-base a1 a2 ea eb) z =
+  TUNION-eq-base
+    a1 a2
+    (exta a1 a2 w' (⊑-trans· e1 e') z ea)
+    (extb a1 a2 f g w' (⊑-trans· e1 e') z ea (exta a1 a2 w' (⊑-trans· e1 e') z ea) eb)
+irr-fam-tunion-eq u w A1 B1 A2 B2 eqta eqtb exta extb f g w1 e1 w' e' (TUNION-eq-trans t h h₁) z =
+  TUNION-eq-trans
+    t
+    (irr-fam-tunion-eq u w A1 B1 A2 B2 eqta eqtb exta extb f t w1 e1 w' e' h z)
+    (irr-fam-tunion-eq u w A1 B1 A2 B2 eqta eqtb exta extb t g w1 e1 w' e' h₁ z)
+
+
+
+irr-fam-tunion : (u : univs) (w : 𝕎·) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+                 (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+                 (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                      → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+                 (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+                 (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+                 (f g : CTerm) (w1 : 𝕎·) (e1 : w ⊑· w1)
+                 → ∀𝕎 w1 (λ w' e' → TUNIONeq (eqInType u w' (eqta w' (⊑-trans· e1 e'))) (λ a1 a2 eqa → eqInType u w' (eqtb w' (⊑-trans· e1 e') a1 a2 eqa)) f g
+                                    → (z : w ⊑· w') → TUNIONeq (eqInType u w' (eqta w' z)) (λ a1 a2 eqa → eqInType u w' (eqtb w' z a1 a2 eqa)) f g)
+irr-fam-tunion u w A1 B1 A2 B2 eqta eqtb exta extb f g w1 e1 w' e' h z =
+  TUNION-eq→ (irr-fam-tunion-eq u w A1 B1 A2 B2 eqta eqtb exta extb f g w1 e1 w' e' (→TUNION-eq h) z)
 
 
 

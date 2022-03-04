@@ -64,6 +64,7 @@ open import type_sys_props_free(W)(M)(C)(K)(P)(G)(E)
 open import type_sys_props_pi(W)(M)(C)(K)(P)(G)(E)
 open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(E)
 open import type_sys_props_set(W)(M)(C)(K)(P)(G)(E)
+open import type_sys_props_tunion(W)(M)(C)(K)(P)(G)(E)
 open import type_sys_props_eq(W)(M)(C)(K)(P)(G)(E)
 open import type_sys_props_union(W)(M)(C)(K)(P)(G)(E)
 open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(E)
@@ -109,6 +110,9 @@ UNIVneqSUM {a} {c} {d} ()
 
 UNIVneqSET : {a : ℕ} {c : Term} {d : Term} → ¬ UNIV a ≡ SET c d
 UNIVneqSET {a} {c} {d} ()
+
+UNIVneqTUNION : {a : ℕ} {c : Term} {d : Term} → ¬ UNIV a ≡ TUNION c d
+UNIVneqTUNION {a} {c} {d} ()
 
 UNIVneqUNION : {a : ℕ} {c : Term} {d : Term} → ¬ UNIV a ≡ UNION c d
 UNIVneqUNION {a} {c} {d} ()
@@ -373,6 +377,7 @@ eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTFREE x x₁) eqi = ⊥-elim (UNIV
 eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (UNIVneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (UNIVneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (UNIVneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (UNIVneqTUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) eqi = ⊥-elim (UNIVneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) eqi = ⊥-elim (UNIVneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA extA) eqi = ⊥-elim (UNIVneqTSQUASH (⇛-val-det tt tt c₁ x))
@@ -442,6 +447,7 @@ eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTFREE x x₁) eqi = ⊥-elim (UNI
 eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (UNIVneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (UNIVneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (UNIVneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (UNIVneqTUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) eqi = ⊥-elim (UNIVneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) eqi = ⊥-elim (UNIVneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA extA) eqi = ⊥-elim (UNIVneqTSQUASH (⇛-val-det tt tt c₁ x))
@@ -636,6 +642,28 @@ eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTSET A1 B1 A2 B2 x x₁ eqta
         aw1 : ∀𝕎 w' (λ w'' e'' → SETeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e'')) (λ a₁ a₂ eqa → eqInType u w'' (∀𝕎-mon e' eqtb w'' e'' a₁ a₂ eqa)) a b
                                  → ↑wPred' (λ w''' e → SETeq (eqInType u w''' (eqta w''' e)) (λ a1 a2 eqa → eqInType u w''' (eqtb w''' e a1 a2 eqa)) a b) e' w'' e'')
         aw1 w1 e1 h ext = SETeq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} exta extb h
+
+eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
+  Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+  where
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → TUNIONeq (eqInType u w'' (eqta w'' e)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' e a1 a2 eqa)) a b) e'))
+    aw w' e' z {--at--} eqi =
+      Mod.∀𝕎-□Func M
+        aw1
+        (eqInType-⇛-TUNION2
+          (mk𝕌 isu) w' A B A1 A2 B1 B2 a b
+          (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb)
+          (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')
+          (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
+
+      where
+        ind' : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u , isu} z → eqInTypeExt eqt'
+        ind' {u'} {w''} {A'} {B'} eqt' (≤Type0 .eqt') = ind eqt' (<Type1 _ _ (<TypeBAR (mk𝕌 isu) w A B i w' e' z {--at--}))
+        ind' {u'} {w''} {A'} {B'} eqt' (≤TypeS .eqt' .z x) = ind eqt' (<TypeS _ _ _ x (<TypeBAR (mk𝕌 isu) w A B i w' e' z {--at--}))
+
+        aw1 : ∀𝕎 w' (λ w'' e'' → TUNIONeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e'')) (λ a₁ a₂ eqa → eqInType u w'' (∀𝕎-mon e' eqtb w'' e'' a₁ a₂ eqa)) a b
+                                 → ↑wPred' (λ w''' e → TUNIONeq (eqInType u w''' (eqta w''' e)) (λ a1 a2 eqa → eqInType u w''' (eqtb w''' e a1 a2 eqa)) a b) e' w'' e'')
+        aw1 w1 e1 h ext = TUNIONeq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} exta extb h
 
 eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqta exta eqt1 eqt2) =
   Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
@@ -1027,6 +1055,7 @@ eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTFREE x x₁) a b eqi = ⊥-el
 eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (UNIVneqPI (Bₗ⇛-val-det tt tt c₁ x))
 eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (UNIVneqSUM (Bₗ⇛-val-det tt tt c₁ x))
 eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (UNIVneqSET (Bₗ⇛-val-det tt tt c₁ x))
+eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (UNIVneqTUNION (Bₗ⇛-val-det tt tt c₁ x))
 eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) a b eqi = ⊥-elim (UNIVneqEQ (Bₗ⇛-val-det tt tt c₁ x))
 eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (UNIVneqUNION (Bₗ⇛-val-det tt tt c₁ x))
 eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqta exta) a b eqi = ⊥-elim (UNIVneqTSQUASH (Bₗ⇛-val-det tt tt c₁ x))
@@ -1074,6 +1103,7 @@ eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTFREE x x₁) a b eqi = �
 eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (UNIVneqPI (Bₗ⇛-val-det tt tt c₁ x))
 eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (UNIVneqSUM (Bₗ⇛-val-det tt tt c₁ x))
 eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (UNIVneqSET (Bₗ⇛-val-det tt tt c₁ x))
+eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) a b eqi = ⊥-elim (UNIVneqTUNION (Bₗ⇛-val-det tt tt c₁ x))
 eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) a b eqi = ⊥-elim (UNIVneqEQ (Bₗ⇛-val-det tt tt c₁ x))
 eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (UNIVneqUNION (Bₗ⇛-val-det tt tt c₁ x))
 eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqta exta) a b eqi = ⊥-elim (UNIVneqTSQUASH (Bₗ⇛-val-det tt tt c₁ x))
@@ -1274,6 +1304,24 @@ eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTSET A1 B1 A2 B2 x x₁ eq
         ib : □· w' (λ w'' e → SETeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e)) (λ a₁ a₂ eqa → eqInType u w'' (∀𝕎-mon e' eqtb w'' e a₁ a₂ eqa)) a b)
         ib = Mod.∀𝕎-□Func M aw' (↑□· eqi e')
 
+eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi =
+  Mod.∀𝕎-□-□' M i aw
+  where
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b)
+    aw w' e' z {--at--} =
+      eqInType-⇛-TUNION-rev2
+        (mk𝕌 isu) w' A B A1 A2 B1 B2 a b
+        (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb)
+        (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')
+        (⇛-mon e' x) (⇛-mon e' x₁) z (<Type-EQTBAR-eqInTypeExt e' {--at--} ind) ib
+      where
+        aw' : ∀𝕎 w' (λ w'' e'' → ↑wPred (λ w''' e → TUNIONeq (eqInType u w''' (eqta w''' e)) (λ a₁ a₂ eqa → eqInType u w''' (eqtb w''' e a₁ a₂ eqa)) a b) e' w'' e''
+                                 → TUNIONeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e'')) (λ a₁ a₂ eqa → eqInType u w'' (∀𝕎-mon e' eqtb w'' e'' a₁ a₂ eqa)) a b)
+        aw' w1 e1 h = TUNIONeq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} exta extb h
+
+        ib : □· w' (λ w'' e → TUNIONeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e)) (λ a₁ a₂ eqa → eqInType u w'' (∀𝕎-mon e' eqtb w'' e a₁ a₂ eqa)) a b)
+        ib = Mod.∀𝕎-□Func M aw' (↑□· eqi e')
+
 eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqta exta eqt1 eqt2) eqi =
   Mod.∀𝕎-□-□' M i aw
   where
@@ -1455,6 +1503,16 @@ eqInType-ext0 {u} isu {w} {A} {B} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb
 
     indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2) → eqInTypeExt (eqtb w1 e1 a1 a2 ea))
     indb w1 e1 a₁ a₂ eqa = ind (eqtb w1 e1 a₁ a₂ eqa) (<Type1 _ _ (<TypeSETb (mk𝕌 isu) w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb w1 e1 a₁ a₂ eqa))
+
+eqInType-ext0 {u} isu {w} {A} {B} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind =
+  λ eqt2 a b → eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2 ,
+                eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb x x₁ eqt2
+  where
+    inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
+    inda w1 e1 = ind (eqta w1 e1) (<Type1 _ _ (<TypeTUNIONa (mk𝕌 isu) w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb w1 e1))
+
+    indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2) → eqInTypeExt (eqtb w1 e1 a1 a2 ea))
+    indb w1 e1 a₁ a₂ eqa = ind (eqtb w1 e1 a₁ a₂ eqa) (<Type1 _ _ (<TypeTUNIONb (mk𝕌 isu) w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb w1 e1 a₁ a₂ eqa))
 
 eqInType-ext0 {u} isu {w} {A} {B} (EQTEQ a1 b1 a2 b2 A1 B1 x x₁ eqta exta eqt1 eqt2) ind =
   λ eqt2 a b → eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda x x₁ eqt2 ,
@@ -1640,6 +1698,21 @@ local-eqInType2 u isu w A B a b (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) 
         aw' : ∀𝕎 w' (λ w'' e'' → SETeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e'')) (λ a₁ b₁ eqa → eqInType u w'' (∀𝕎-mon e' eqtb w'' e'' a₁ b₁ eqa)) a b
                                  → (x₂ : w ⊑· w'') → SETeq (eqInType u w'' (eqta w'' x₂)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x₂ a1 a2 eqa)) a b)
         aw' w1 e1 h x₂ = SETeq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
+
+local-eqInType2 u isu w A B a b (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) i j =
+  Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+  where
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
+                         → eqInType u w' z a b
+                         → □· w' (λ w1 e1 → (x : w ⊑· w1) → TUNIONeq (eqInType u w1 (eqta w1 x)) (λ a1 a2 eqa → eqInType u w1 (eqtb w1 x a1 a2 eqa)) a b))
+    aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M aw' h1
+      where
+        h1 : eqInType u w' {A} {B} (EQTTUNION A1 B1 A2 B2 (⇛-mon e' x) (⇛-mon e' x₁) (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb) (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')) a b
+        h1 = fst (eqInType-ext isu z (EQTTUNION A1 B1 A2 B2 (⇛-mon e' x) (⇛-mon e' x₁) (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb) (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')) a b) ei
+
+        aw' : ∀𝕎 w' (λ w'' e'' → TUNIONeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e'')) (λ a₁ b₁ eqa → eqInType u w'' (∀𝕎-mon e' eqtb w'' e'' a₁ b₁ eqa)) a b
+                                 → (x₂ : w ⊑· w'') → TUNIONeq (eqInType u w'' (eqta w'' x₂)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x₂ a1 a2 eqa)) a b)
+        aw' w1 e1 h x₂ = TUNIONeq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
 
 local-eqInType2 u isu w A B a b (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqta exta eqt1 eqt2) i j =
   Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
@@ -1915,6 +1988,20 @@ eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb ex
     aw w1 e1 h = SETeq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} exta extb h
 
     ib : □· w' (λ w'' e → SETeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e)) (λ a₁ a₂ eqa → eqInType u w'' (∀𝕎-mon e' eqtb w'' e a₁ a₂ eqa)) a b)
+    ib = Mod.∀𝕎-□Func M aw (↑□· eqi e')
+
+eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqt2 a b eqi =
+  eqInType-⇛-TUNION-rev2
+    (mk𝕌 isu) w' A B A1 A2 B1 B2 a b
+    (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb)
+    (wPredExtIrr-eqInType-mon eqta exta w' e') (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')
+    (⇛-mon e' x) (⇛-mon e' x₁) eqt2 (λ {u'} eqt' lety → eqInType-ext {u' ·ᵤ} (u' ·ᵢ) eqt') ib
+  where
+    aw : ∀𝕎 w' (λ w'' e'' → ↑wPred (λ w''' e → TUNIONeq (eqInType u w''' (eqta w''' e)) (λ a₁ a₂ eqa → eqInType u w''' (eqtb w''' e a₁ a₂ eqa)) a b) e' w'' e''
+                            → TUNIONeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e'')) (λ a₁ a₂ eqa → eqInType u w'' (∀𝕎-mon e' eqtb w'' e'' a₁ a₂ eqa)) a b)
+    aw w1 e1 h = TUNIONeq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} exta extb h
+
+    ib : □· w' (λ w'' e → TUNIONeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e)) (λ a₁ a₂ eqa → eqInType u w'' (∀𝕎-mon e' eqtb w'' e a₁ a₂ eqa)) a b)
     ib = Mod.∀𝕎-□Func M aw (↑□· eqi e')
 
 eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqta exta eqt1 eqt3) eqt2 a b eqi =
@@ -2225,6 +2312,7 @@ eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTFREE x x₁) = ⊥-elim (U
 eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = ⊥-elim (UNIVneqPI (⇛-val-det tt tt c₂ x))
 eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = ⊥-elim (UNIVneqSUM (⇛-val-det tt tt c₂ x))
 eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = ⊥-elim (UNIVneqSET (⇛-val-det tt tt c₂ x))
+eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = ⊥-elim (UNIVneqTUNION (⇛-val-det tt tt c₂ x))
 eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) = ⊥-elim (UNIVneqEQ (⇛-val-det tt tt c₂ x))
 eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) = ⊥-elim (UNIVneqUNION (⇛-val-det tt tt c₂ x))
 eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqta exta) = ⊥-elim (UNIVneqTSQUASH (⇛-val-det tt tt c₂ x))
@@ -2292,6 +2380,7 @@ eqTypes-preserves-in-bar-⇛-UNIV {i} {n} p {w} {A} {B} (EQTFREE x x₁) j = ⊥
 eqTypes-preserves-in-bar-⇛-UNIV {i} {n} p {w} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) j = ⊥-elim (UNIVneqPI (Bₗ⇛-val-det tt tt j x))
 eqTypes-preserves-in-bar-⇛-UNIV {i} {n} p {w} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) j = ⊥-elim (UNIVneqSUM (Bₗ⇛-val-det tt tt j x))
 eqTypes-preserves-in-bar-⇛-UNIV {i} {n} p {w} {A} {B} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) j = ⊥-elim (UNIVneqSET (Bₗ⇛-val-det tt tt j x))
+eqTypes-preserves-in-bar-⇛-UNIV {i} {n} p {w} {A} {B} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) j = ⊥-elim (UNIVneqTUNION (Bₗ⇛-val-det tt tt j x))
 eqTypes-preserves-in-bar-⇛-UNIV {i} {n} p {w} {A} {B} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) j = ⊥-elim (UNIVneqEQ (Bₗ⇛-val-det tt tt j x))
 eqTypes-preserves-in-bar-⇛-UNIV {i} {n} p {w} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) j = ⊥-elim (UNIVneqUNION (Bₗ⇛-val-det tt tt j x))
 eqTypes-preserves-in-bar-⇛-UNIV {i} {n} p {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqtA exta) j = ⊥-elim (UNIVneqTSQUASH (Bₗ⇛-val-det tt tt j x))
@@ -2325,6 +2414,7 @@ eqTypes-preserves-in-bar-⇛-UNIV-rev {i} {n} p {w} {A} {B} (EQTFREE x x₁) j =
 eqTypes-preserves-in-bar-⇛-UNIV-rev {i} {n} p {w} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) j = ⊥-elim (UNIVneqPI (Bₗ⇛-val-det tt tt j x₁))
 eqTypes-preserves-in-bar-⇛-UNIV-rev {i} {n} p {w} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) j = ⊥-elim (UNIVneqSUM (Bₗ⇛-val-det tt tt j x₁))
 eqTypes-preserves-in-bar-⇛-UNIV-rev {i} {n} p {w} {A} {B} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) j = ⊥-elim (UNIVneqSET (Bₗ⇛-val-det tt tt j x₁))
+eqTypes-preserves-in-bar-⇛-UNIV-rev {i} {n} p {w} {A} {B} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) j = ⊥-elim (UNIVneqTUNION (Bₗ⇛-val-det tt tt j x₁))
 eqTypes-preserves-in-bar-⇛-UNIV-rev {i} {n} p {w} {A} {B} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) j = ⊥-elim (UNIVneqEQ (Bₗ⇛-val-det tt tt j x₁))
 eqTypes-preserves-in-bar-⇛-UNIV-rev {i} {n} p {w} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) j = ⊥-elim (UNIVneqUNION (Bₗ⇛-val-det tt tt j x₁))
 eqTypes-preserves-in-bar-⇛-UNIV-rev {i} {n} p {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqtA exta) j = ⊥-elim (UNIVneqTSQUASH (Bₗ⇛-val-det tt tt j x₁))
@@ -2470,6 +2560,17 @@ typeSysConds-aux-u u ind w A B (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
 
 typeSysConds-aux-u u ind w A B (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
   typeSysConds-SET (u ·ᵤ) w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
+  where
+    inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1))
+    inda w1 e1 = typeSysConds-aux-u u ind w1 A1 A2 (eqta w1 e1)
+
+    indb : ∀𝕎 w (λ w1 e1 →
+                     (a1 a2 : CTerm) (ea : eqInType (u ·ᵤ) w1 (eqta w1 e1) a1 a2)
+                     → TSP (eqtb w1 e1 a1 a2 ea))
+    indb w1 e1 a1 a2 ea = typeSysConds-aux-u u ind w1 (sub0 a1 B1) (sub0 a2 B2) (eqtb w1 e1 a1 a2 ea)
+
+typeSysConds-aux-u u ind w A B (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
+  typeSysConds-TUNION (u ·ᵤ) w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
   where
     inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1))
     inda w1 e1 = typeSysConds-aux-u u ind w1 A1 A2 (eqta w1 e1)

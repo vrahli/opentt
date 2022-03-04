@@ -367,6 +367,13 @@ lowerVars-fvars-CTerm0≡[] a = ⊆[]→≡[] (lowerVars-fvars-CTerm0⊆[] a)
     c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
 
 
+#TUNION : CTerm → CTerm0 → CTerm
+#TUNION a b = ct (TUNION ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # TUNION ⌜ a ⌝ (CTerm0.cTerm b)
+    c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
+
+
 N1 : Term
 N1 = NUM 1
 
@@ -501,6 +508,11 @@ fvars-shiftUp≡ n (SET t t₁)
   | fvars-shiftUp≡ n t
   | fvars-shiftUp≡ (suc n) t₁
   | lowerVars-map-sucIf≤-suc n (fvars t₁) = refl
+fvars-shiftUp≡ n (TUNION t t₁)
+  rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (fvars t₁))
+  | fvars-shiftUp≡ n t
+  | fvars-shiftUp≡ (suc n) t₁
+  | lowerVars-map-sucIf≤-suc n (fvars t₁) = refl
 fvars-shiftUp≡ n (UNION t t₁)
   rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
   | fvars-shiftUp≡ n t
@@ -625,8 +637,13 @@ fvars-cterm a = CTerm.closed a
 ≡SQUASH : {a b : Term} → a ≡ b → SQUASH a ≡ SQUASH b
 ≡SQUASH {a} {b} e rewrite e = refl
 
+
 ≡SET : {a b c d : Term} → a ≡ b → c ≡ d → SET a c ≡ SET b d
 ≡SET {a} {b} {c} {d} e f rewrite e | f = refl
+
+
+≡TUNION : {a b c d : Term} → a ≡ b → c ≡ d → TUNION a c ≡ TUNION b d
+≡TUNION {a} {b} {c} {d} e f rewrite e | f = refl
 
 
 #shiftDown : (n : ℕ) (a : CTerm) → shiftDown n ⌜ a ⌝ ≡ ⌜ a ⌝
@@ -737,54 +754,59 @@ fvars-shiftDown≡ n (LAMBDA t)
   | lowerVars-map-predIf≤-suc n (fvars t) = refl
 fvars-shiftDown≡ n (APPLY t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
-  | fvars-shiftDown≡ n t
-  | fvars-shiftDown≡ n t₁ = refl
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ n t₁ = refl
 fvars-shiftDown≡ n (FIX t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (LET t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
-  | fvars-shiftDown≡ n t
-  | fvars-shiftDown≡ (suc n) t₁
-  | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ (suc n) t₁
+        | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
 fvars-shiftDown≡ n (SUM t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
-  | fvars-shiftDown≡ n t
-  | fvars-shiftDown≡ (suc n) t₁
-  | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ (suc n) t₁
+        | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
 fvars-shiftDown≡ n (PAIR t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
-  | fvars-shiftDown≡ n t
-  | fvars-shiftDown≡ n t₁ = refl
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ n t₁ = refl
 fvars-shiftDown≡ n (SPREAD t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (lowerVars (fvars t₁)))
-  | fvars-shiftDown≡ n t
-  | fvars-shiftDown≡ (suc (suc n)) t₁
-  | lowerVars-map-predIf≤-suc (suc n) (fvars t₁)
-  | lowerVars-map-predIf≤-suc n (lowerVars (fvars t₁)) = refl
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ (suc (suc n)) t₁
+        | lowerVars-map-predIf≤-suc (suc n) (fvars t₁)
+        | lowerVars-map-predIf≤-suc n (lowerVars (fvars t₁)) = refl
 fvars-shiftDown≡ n (SET t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
-  | fvars-shiftDown≡ n t
-  | fvars-shiftDown≡ (suc n) t₁
-  | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ (suc n) t₁
+        | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
+fvars-shiftDown≡ n (TUNION t t₁)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ (suc n) t₁
+        | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
 fvars-shiftDown≡ n (UNION t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
-  | fvars-shiftDown≡ n t
-  | fvars-shiftDown≡ n t₁ = refl
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ n t₁ = refl
 fvars-shiftDown≡ n (INL t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (INR t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (DECIDE t t₁ t₂)
   rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁) ++ lowerVars (fvars t₂))
-  | map-++-commute (predIf≤ n) (lowerVars (fvars t₁)) (lowerVars (fvars t₂))
-  | fvars-shiftDown≡ n t
-  | fvars-shiftDown≡ (suc n) t₁
-  | fvars-shiftDown≡ (suc n) t₂
-  | lowerVars-map-predIf≤-suc n (fvars t₁)
-  | lowerVars-map-predIf≤-suc n (fvars t₂) = refl
+        | map-++-commute (predIf≤ n) (lowerVars (fvars t₁)) (lowerVars (fvars t₂))
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ (suc n) t₁
+        | fvars-shiftDown≡ (suc n) t₂
+        | lowerVars-map-predIf≤-suc n (fvars t₁)
+        | lowerVars-map-predIf≤-suc n (fvars t₂) = refl
 fvars-shiftDown≡ n (EQ t t₁ t₂)
   rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
-  | map-++-commute (predIf≤ n) (fvars t₁) (fvars t₂)
-  | fvars-shiftDown≡ n t
-  | fvars-shiftDown≡ n t₁
-  | fvars-shiftDown≡ n t₂ = refl
+        | map-++-commute (predIf≤ n) (fvars t₁) (fvars t₂)
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ n t₁
+        | fvars-shiftDown≡ n t₂ = refl
 fvars-shiftDown≡ n AX = refl
 fvars-shiftDown≡ n FREE = refl
 fvars-shiftDown≡ n (CS x) = refl
@@ -904,6 +926,12 @@ fvars-subv v a (SPREAD b b₁) {x} i with ∈-++⁻ (fvars (subv v a b)) i
     j : (suc (suc x)) ∈ removeV (suc (suc v)) (fvars b₁) ++ fvars (shiftUp 0 (shiftUp 0 a))
     j = fvars-subv (suc (suc v)) (shiftUp 0 (shiftUp 0 a)) b₁ {suc (suc x)} (∈lowerVars→ (suc x) _ (∈lowerVars→ x _ p))
 fvars-subv v a (SET b b₁) {x} i with ∈-++⁻ (fvars (subv v a b)) i
+... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {lowerVars (fvars b₁)} {fvars a} (fvars-subv v a b p)
+... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {lowerVars (fvars b₁)} {fvars a} (→∈removeV-lowerVars++ x v (fvars b₁) a j)
+  where
+    j : (suc x) ∈ removeV (suc v) (fvars b₁) ++ fvars (shiftUp 0 a)
+    j = fvars-subv (suc v) (shiftUp 0 a) b₁ {suc x} (∈lowerVars→ x _ p)
+fvars-subv v a (TUNION b b₁) {x} i with ∈-++⁻ (fvars (subv v a b)) i
 ... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {lowerVars (fvars b₁)} {fvars a} (fvars-subv v a b p)
 ... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {lowerVars (fvars b₁)} {fvars a} (→∈removeV-lowerVars++ x v (fvars b₁) a j)
   where
@@ -1103,6 +1131,10 @@ shiftDown1-subv1-shiftUp0 n a (SPREAD b b₁) ca
         | shiftDown1-subv1-shiftUp0 n a b ca
         | shiftDown1-subv1-shiftUp0 (suc (suc n)) a b₁ ca = refl
 shiftDown1-subv1-shiftUp0 n a (SET b b₁) ca
+  rewrite #shiftUp 0 (ct a ca)
+        | shiftDown1-subv1-shiftUp0 (suc n) a b₁ ca
+        | shiftDown1-subv1-shiftUp0 n a b ca = refl
+shiftDown1-subv1-shiftUp0 n a (TUNION b b₁) ca
   rewrite #shiftUp 0 (ct a ca)
         | shiftDown1-subv1-shiftUp0 (suc n) a b₁ ca
         | shiftDown1-subv1-shiftUp0 n a b ca = refl
@@ -1361,6 +1393,20 @@ SETinj2 refl =  refl
 #SETinj2 c =  CTerm0≡ (SETinj2 (≡CTerm c))
 
 
+TUNIONinj1 : {a b c d : Term} → TUNION a b ≡ TUNION c d → a ≡ c
+TUNIONinj1 refl =  refl
+
+TUNIONinj2 : {a b c d : Term} → TUNION a b ≡ TUNION c d → b ≡ d
+TUNIONinj2 refl =  refl
+
+
+#TUNIONinj1 : {a : CTerm} {b : CTerm0} {c : CTerm} {d : CTerm0} → #TUNION a b ≡ #TUNION c d → a ≡ c
+#TUNIONinj1 c =  CTerm≡ (TUNIONinj1 (≡CTerm c))
+
+#TUNIONinj2 : {a : CTerm} {b : CTerm0} {c : CTerm} {d : CTerm0} → #TUNION a b ≡ #TUNION c d → b ≡ d
+#TUNIONinj2 c =  CTerm0≡ (TUNIONinj2 (≡CTerm c))
+
+
 DECIDEinj1 : {a b c d e f : Term} → DECIDE a b c ≡ DECIDE d e f → a ≡ d
 DECIDEinj1 refl =  refl
 
@@ -1464,6 +1510,9 @@ EQneqSUM {t} {a} {b} {c} {d} ()
 EQneqSET : {t a b : Term} {c : Term} {d : Term} → ¬ (EQ t a b) ≡ SET c d
 EQneqSET {t} {a} {b} {c} {d} ()
 
+EQneqTUNION : {t a b : Term} {c : Term} {d : Term} → ¬ (EQ t a b) ≡ TUNION c d
+EQneqTUNION {t} {a} {b} {c} {d} ()
+
 EQneqUNION : {t a b : Term} {c : Term} {d : Term} → ¬ (EQ t a b) ≡ UNION c d
 EQneqUNION {t} {a} {b} {c} {d} ()
 
@@ -1530,6 +1579,9 @@ PIneqSUM {a} {b} {c} {d} ()
 PIneqSET : {a b : Term} {c : Term} {d : Term} → ¬ (PI a b) ≡ SET c d
 PIneqSET {a} {b} {c} {d} ()
 
+PIneqTUNION : {a b : Term} {c : Term} {d : Term} → ¬ (PI a b) ≡ TUNION c d
+PIneqTUNION {a} {b} {c} {d} ()
+
 PIneqUNION : {a b : Term} {c : Term} {d : Term} → ¬ (PI a b) ≡ UNION c d
 PIneqUNION {a} {b} {c} {d} ()
 
@@ -1581,6 +1633,9 @@ NATneqSUM {c} {d} ()
 NATneqSET : {c : Term} {d : Term} → ¬ NAT ≡ SET c d
 NATneqSET {c} {d} ()
 
+NATneqTUNION : {c : Term} {d : Term} → ¬ NAT ≡ TUNION c d
+NATneqTUNION {c} {d} ()
+
 NATneqUNION : {c : Term} {d : Term} → ¬ NAT ≡ UNION c d
 NATneqUNION {c} {d} ()
 
@@ -1630,6 +1685,7 @@ shiftUp-inj {n} {SUM a a₁} {SUM b b₁} e rewrite shiftUp-inj (SUMinj1 e) | sh
 shiftUp-inj {n} {PAIR a a₁} {PAIR b b₁} e rewrite shiftUp-inj (PAIRinj1 e) | shiftUp-inj (PAIRinj2 e) = refl
 shiftUp-inj {n} {SPREAD a a₁} {SPREAD b b₁} e rewrite shiftUp-inj (SPREADinj1 e) | shiftUp-inj (SPREADinj2 e) = refl
 shiftUp-inj {n} {SET a a₁} {SET b b₁} e rewrite shiftUp-inj (SETinj1 e) | shiftUp-inj (SETinj2 e) = refl
+shiftUp-inj {n} {TUNION a a₁} {TUNION b b₁} e rewrite shiftUp-inj (TUNIONinj1 e) | shiftUp-inj (TUNIONinj2 e) = refl
 shiftUp-inj {n} {UNION a a₁} {UNION b b₁} e rewrite shiftUp-inj (UNIONinj1 e) | shiftUp-inj (UNIONinj2 e) = refl
 shiftUp-inj {n} {INL a} {INL b} e rewrite shiftUp-inj (INLinj e) = refl
 shiftUp-inj {n} {INR a} {INR b} e rewrite shiftUp-inj (INRinj e) = refl

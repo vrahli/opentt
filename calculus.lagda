@@ -80,6 +80,8 @@ data Term : Set where
   SPREAD : Term → Term → Term
   -- Sets --- they don't have constructors/destructors
   SET : Term → Term → Term
+  -- Unions
+  TUNION : Term → Term → Term
   -- Disjoint unions
   UNION : Term → Term → Term
   INL : Term → Term
@@ -125,6 +127,7 @@ value? (SUM _ _) = true
 value? (PAIR _ _) = true
 value? (SPREAD _ _) = false -- Not a value
 value? (SET _ _) = true
+value? (TUNION _ _) = true
 value? (UNION _ _) = true
 value? (INL _) = true
 value? (INR _) = true
@@ -223,6 +226,7 @@ fvars (SUM t t₁)       = fvars t ++ lowerVars (fvars t₁)
 fvars (PAIR t t₁)      = fvars t ++ fvars t₁
 fvars (SPREAD t t₁)    = fvars t ++ lowerVars (lowerVars (fvars t₁))
 fvars (SET t t₁)       = fvars t ++ lowerVars (fvars t₁)
+fvars (TUNION t t₁)       = fvars t ++ lowerVars (fvars t₁)
 fvars (UNION t t₁)     = fvars t ++ fvars t₁
 fvars (INL t)          = fvars t
 fvars (INR t)          = fvars t
@@ -365,6 +369,7 @@ shiftUp c (SUM t t₁) = SUM (shiftUp c t) (shiftUp (suc c) t₁)
 shiftUp c (PAIR t t₁) = PAIR (shiftUp c t) (shiftUp c t₁)
 shiftUp c (SPREAD t t₁) = SPREAD (shiftUp c t) (shiftUp (suc (suc c)) t₁)
 shiftUp c (SET t t₁) = SET (shiftUp c t) (shiftUp (suc c) t₁)
+shiftUp c (TUNION t t₁) = TUNION (shiftUp c t) (shiftUp (suc c) t₁)
 shiftUp c (UNION t t₁) = UNION (shiftUp c t) (shiftUp c t₁)
 shiftUp c (INL t) = INL (shiftUp c t)
 shiftUp c (INR t) = INR (shiftUp c t)
@@ -402,6 +407,7 @@ shiftDown c (SUM t t₁) = SUM (shiftDown c t) (shiftDown (suc c) t₁)
 shiftDown c (PAIR t t₁) = PAIR (shiftDown c t) (shiftDown c t₁)
 shiftDown c (SPREAD t t₁) = SPREAD (shiftDown c t) (shiftDown (suc (suc c)) t₁)
 shiftDown c (SET t t₁) = SET (shiftDown c t) (shiftDown (suc c) t₁)
+shiftDown c (TUNION t t₁) = TUNION (shiftDown c t) (shiftDown (suc c) t₁)
 shiftDown c (UNION t t₁) = UNION (shiftDown c t) (shiftDown c t₁)
 shiftDown c (INL t) = INL (shiftDown c t)
 shiftDown c (INR t) = INR (shiftDown c t)
@@ -441,6 +447,7 @@ subv v t (SUM u u₁) = SUM (subv v t u) (subv (suc v) (shiftUp 0 t) u₁)
 subv v t (PAIR u u₁) = PAIR (subv v t u) (subv v t u₁)
 subv v t (SPREAD u u₁) = SPREAD (subv v t u) (subv (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁)
 subv v t (SET u u₁) = SET (subv v t u) (subv (suc v) (shiftUp 0 t) u₁)
+subv v t (TUNION u u₁) = TUNION (subv v t u) (subv (suc v) (shiftUp 0 t) u₁)
 subv v t (UNION u u₁) = UNION (subv v t u) (subv v t u₁)
 subv v t (INL u) = INL (subv v t u)
 subv v t (INR u) = INR (subv v t u)
@@ -529,6 +536,9 @@ subvNotIn v t (SPREAD u u₁) n
 subvNotIn v t (SET u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
         | subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
+subvNotIn v t (TUNION u u₁) n
+  rewrite subvNotIn v t u (notInAppVars1 n)
+        | subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
 subvNotIn v t (UNION u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
         | subvNotIn v t u₁ (notInAppVars2 n) = refl
@@ -612,32 +622,35 @@ shiftDownTrivial v (IFLT u u₁ u₂ u₃) i
         | shiftDownTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl
 shiftDownTrivial v (PI u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
+        | shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
 shiftDownTrivial v (LAMBDA u) i
   rewrite shiftDownTrivial (suc v) u (impLeNotLower _ _ i) = refl
 shiftDownTrivial v (APPLY u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+        | shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftDownTrivial v (FIX u) i
   rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (LET u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
+        | shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
 shiftDownTrivial v (SUM u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
+        | shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
 shiftDownTrivial v (PAIR u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+        | shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftDownTrivial v (SPREAD u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftDownTrivial (suc (suc v)) u₁ (impLeNotLower _ _ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i))) = refl
+        | shiftDownTrivial (suc (suc v)) u₁ (impLeNotLower _ _ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i))) = refl
 shiftDownTrivial v (SET u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
+        | shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
+shiftDownTrivial v (TUNION u u₁) i
+  rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
+        | shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
 shiftDownTrivial v (UNION u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-  rewrite shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+        | shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftDownTrivial v (INL u) i
   rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (INR u) i
@@ -718,6 +731,9 @@ shiftUpTrivial v (SPREAD u u₁) i
 shiftUpTrivial v (SET u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
+shiftUpTrivial v (TUNION u u₁) i
+  rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
+        | shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
 shiftUpTrivial v (UNION u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
@@ -791,6 +807,7 @@ shiftDownUp (SUM t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = 
 shiftDownUp (PAIR t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (SPREAD t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc (suc n)) = refl
 shiftDownUp (SET t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
+shiftDownUp (TUNION t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
 shiftDownUp (UNION t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (INL t) n rewrite shiftDownUp t n = refl
 shiftDownUp (INR t) n rewrite shiftDownUp t n = refl
@@ -828,6 +845,7 @@ is-NUM (SUM t t₁) = inj₂ (λ { n () })
 is-NUM (PAIR t t₁) = inj₂ (λ { n () })
 is-NUM (SPREAD t t₁) = inj₂ (λ { n () })
 is-NUM (SET t t₁) = inj₂ (λ { n () })
+is-NUM (TUNION t t₁) = inj₂ (λ { n () })
 is-NUM (UNION t t₁) = inj₂ (λ { n () })
 is-NUM (INL t) = inj₂ (λ { n () })
 is-NUM (INR t) = inj₂ (λ { n () })
@@ -865,6 +883,7 @@ is-LAM (SUM t t₁) = inj₂ (λ { n () })
 is-LAM (PAIR t t₁) = inj₂ (λ { n () })
 is-LAM (SPREAD t t₁) = inj₂ (λ { n () })
 is-LAM (SET t t₁) = inj₂ (λ { n () })
+is-LAM (TUNION t t₁) = inj₂ (λ { n () })
 is-LAM (UNION t t₁) = inj₂ (λ { n () })
 is-LAM (INL t) = inj₂ (λ { n () })
 is-LAM (INR t) = inj₂ (λ { n () })
@@ -902,6 +921,7 @@ is-CS (SUM t t₁) = inj₂ (λ { n () })
 is-CS (PAIR t t₁) = inj₂ (λ { n () })
 is-CS (SPREAD t t₁) = inj₂ (λ { n () })
 is-CS (SET t t₁) = inj₂ (λ { n () })
+is-CS (TUNION t t₁) = inj₂ (λ { n () })
 is-CS (UNION t t₁) = inj₂ (λ { n () })
 is-CS (INL t) = inj₂ (λ { n () })
 is-CS (INR t) = inj₂ (λ { n () })
@@ -939,6 +959,7 @@ is-PAIR (SUM t t₁) = inj₂ (λ { n m () })
 is-PAIR (PAIR t t₁) = inj₁ (t , t₁ , refl)
 is-PAIR (SPREAD t t₁) = inj₂ (λ { n m () })
 is-PAIR (SET t t₁) = inj₂ (λ { n m () })
+is-PAIR (TUNION t t₁) = inj₂ (λ { n m () })
 is-PAIR (UNION t t₁) = inj₂ (λ { n m () })
 is-PAIR (INL t) = inj₂ (λ { n m () })
 is-PAIR (INR t) = inj₂ (λ { n m () })
@@ -976,6 +997,7 @@ is-INL (SUM t t₁) = inj₂ (λ { n () })
 is-INL (PAIR t t₁) = inj₂ (λ { n () })
 is-INL (SPREAD t t₁) = inj₂ (λ { n () })
 is-INL (SET t t₁) = inj₂ (λ { n () })
+is-INL (TUNION t t₁) = inj₂ (λ { n () })
 is-INL (UNION t t₁) = inj₂ (λ { n () })
 is-INL (INL t) = inj₁ (t , refl)
 is-INL (INR t) = inj₂ (λ { n () })
@@ -1013,6 +1035,7 @@ is-INR (SUM t t₁) = inj₂ (λ { n () })
 is-INR (PAIR t t₁) = inj₂ (λ { n () })
 is-INR (SPREAD t t₁) = inj₂ (λ { n () })
 is-INR (SET t t₁) = inj₂ (λ { n () })
+is-INR (TUNION t t₁) = inj₂ (λ { n () })
 is-INR (UNION t t₁) = inj₂ (λ { n () })
 is-INR (INL t) = inj₂ (λ { n () })
 is-INR (INR t) = inj₁ (t , refl)
@@ -1046,6 +1069,7 @@ data ∼vals : Term → Term → Set where
   ∼vals-SUM     : {a b c d : Term} → ∼vals (SUM a b) (SUM c d)
   ∼vals-PAIR    : {a b c d : Term} → ∼vals (PAIR a b) (PAIR c d)
   ∼vals-SET     : {a b c d : Term} → ∼vals (SET a b) (SET c d)
+  ∼vals-TUNION  : {a b c d : Term} → ∼vals (TUNION a b) (TUNION c d)
   ∼vals-UNION   : {a b c d : Term} → ∼vals (UNION a b) (UNION c d)
   ∼vals-INL     : {a b : Term} → ∼vals (INL a) (INL b)
   ∼vals-INR     : {a b : Term} → ∼vals (INR a) (INR b)
@@ -1074,6 +1098,7 @@ data ∼vals : Term → Term → Set where
 ∼vals-sym {.(SUM _ _)} {.(SUM _ _)} ∼vals-SUM = ∼vals-SUM
 ∼vals-sym {.(PAIR _ _)} {.(PAIR _ _)} ∼vals-PAIR = ∼vals-PAIR
 ∼vals-sym {.(SET _ _)} {.(SET _ _)} ∼vals-SET = ∼vals-SET
+∼vals-sym {.(TUNION _ _)} {.(TUNION _ _)} ∼vals-TUNION = ∼vals-TUNION
 ∼vals-sym {.(UNION _ _)} {.(UNION _ _)} ∼vals-UNION = ∼vals-UNION
 ∼vals-sym {.(INL _)} {.(INL _)} ∼vals-INL = ∼vals-INL
 ∼vals-sym {.(INR _)} {.(INR _)} ∼vals-INR = ∼vals-INR
@@ -1102,6 +1127,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₁ {SUM a a₁} {b} isv = tt
 ∼vals→isValue₁ {PAIR a a₁} {b} isv = tt
 ∼vals→isValue₁ {SET a a₁} {b} isv = tt
+∼vals→isValue₁ {TUNION a a₁} {b} isv = tt
 ∼vals→isValue₁ {UNION a a₁} {b} isv = tt
 ∼vals→isValue₁ {INL a} {b} isv = tt
 ∼vals→isValue₁ {INR a} {b} isv = tt
@@ -1136,6 +1162,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {PAIR b b₁} isv = tt
 ∼vals→isValue₂ {a} {SPREAD b b₁} ()
 ∼vals→isValue₂ {a} {SET b b₁} isv = tt
+∼vals→isValue₂ {a} {TUNION b b₁} isv = tt
 ∼vals→isValue₂ {a} {UNION b b₁} isv = tt
 ∼vals→isValue₂ {a} {INL b} isv = tt
 ∼vals→isValue₂ {a} {INR b} isv = tt

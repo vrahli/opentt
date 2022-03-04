@@ -84,6 +84,7 @@ equalInType-EQ→₁ {u} {w} {a} {b} {A} {f} {g} (EQTFREE x x₁ , eqi) = ⊥-el
 equalInType-EQ→₁ {u} {w} {a} {b} {A} {f} {g} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqPI (compAllVal x₁ tt))
 equalInType-EQ→₁ {u} {w} {a} {b} {A} {f} {g} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSUM (compAllVal x₁ tt))
 equalInType-EQ→₁ {u} {w} {a} {b} {A} {f} {g} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSET (compAllVal x₁ tt))
+equalInType-EQ→₁ {u} {w} {a} {b} {A} {f} {g} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqTUNION (compAllVal x₁ tt))
 equalInType-EQ→₁ {u} {w} {a} {b} {A} {f} {g} (EQTEQ a1 b1 a2 b2 A₁ B x x₁ eqtA exta eqt1 eqt2 , eqi) =
   equalInType-local (Mod.∀𝕎-□Func M aw eqi)
   where
@@ -124,6 +125,8 @@ equalTypes-#⇛-left-rev {i} {w} {a} {b} {c} comp (EQTSUM A1 B1 A2 B2 x x₁ eqt
   EQTSUM A1 B1 A2 B2 (⇛-trans comp x) x₁ eqta eqtb exta extb
 equalTypes-#⇛-left-rev {i} {w} {a} {b} {c} comp (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
   EQTSET A1 B1 A2 B2 (⇛-trans comp x) x₁ eqta eqtb exta extb
+equalTypes-#⇛-left-rev {i} {w} {a} {b} {c} comp (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
+  EQTTUNION A1 B1 A2 B2 (⇛-trans comp x) x₁ eqta eqtb exta extb
 equalTypes-#⇛-left-rev {i} {w} {a} {b} {c} comp (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2) =
   EQTEQ a1 b1 a2 b2 A B (⇛-trans comp x) x₁ eqtA exta eqt1 eqt2
 equalTypes-#⇛-left-rev {i} {w} {a} {b} {c} comp (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) =
@@ -161,6 +164,8 @@ equalTypes-#⇛-left {i} {w} {a} {b} {c} comp (EQTSUM A1 B1 A2 B2 x x₁ eqta eq
   EQTSUM A1 B1 A2 B2 (val-#⇛→ {w} {a} {b} {#SUM A1 B1} tt comp x) x₁ eqta eqtb exta extb
 equalTypes-#⇛-left {i} {w} {a} {b} {c} comp (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
   EQTSET A1 B1 A2 B2 (val-#⇛→ {w} {a} {b} {#SET A1 B1} tt comp x) x₁ eqta eqtb exta extb
+equalTypes-#⇛-left {i} {w} {a} {b} {c} comp (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
+  EQTTUNION A1 B1 A2 B2 (val-#⇛→ {w} {a} {b} {#TUNION A1 B1} tt comp x) x₁ eqta eqtb exta extb
 equalTypes-#⇛-left {i} {w} {a} {b} {c} comp (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2) =
   EQTEQ a1 b1 a2 b2 A B (val-#⇛→ {w} {a} {b} {#EQ a1 a2 A} tt comp x) x₁ eqtA exta eqt1 eqt2
 equalTypes-#⇛-left {i} {w} {a} {b} {c} comp (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) =
@@ -253,6 +258,70 @@ TSQUASHeq-#⇛-rev : {eqa : per} {w : 𝕎·} {a b c d : CTerm}
 TSQUASHeq-#⇛-rev {eqa} {w} {a} {b} {c} {d} c₁ c₂ h = TSQUASH-eq→ (TSQUASH-eq-#⇛-rev c₁ c₂ (→TSQUASH-eq h))
 
 
+
+
+
+
+-------------------
+
+
+TUNION-eq-#⇛ : {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {w : 𝕎·} {a b c d : CTerm}
+                → (cb : {a₁ a₂ : CTerm} {ea : eqa a₁ a₂} {a b c : CTerm} → b #⇛! a at w → eqb a₁ a₂ ea b c → eqb a₁ a₂ ea a c)
+                → (sb : {a₁ a₂ : CTerm} {ea : eqa a₁ a₂} {a b : CTerm} → eqb a₁ a₂ ea a b → eqb a₁ a₂ ea b a)
+                → a #⇛! b at w
+                → c #⇛! d at w
+                → TUNION-eq eqa eqb a c
+                → TUNION-eq eqa eqb b d
+TUNION-eq-#⇛ {eqa} {eqb} {w} {a} {b} {c} {d} cb sb c₁ c₂ (TUNION-eq-base a1 a2 ea eb) =
+  TUNION-eq-base a1 a2 ea (cb c₁ (sb (cb c₂ (sb eb))))
+TUNION-eq-#⇛ {eqa} {eqb} {w} {a} {b} {c} {d} cb sb c₁ c₂ (TUNION-eq-trans t h1 h2) =
+  TUNION-eq-trans
+    t
+    (TUNION-eq-#⇛ cb sb c₁ (#⇛!-refl {w} {t}) h1)
+    (TUNION-eq-#⇛ cb sb (#⇛!-refl {w} {t}) c₂ h2)
+
+
+
+TUNION-eq-#⇛-rev : {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {w : 𝕎·} {a b c d : CTerm}
+                    → (cb : {a₁ a₂ : CTerm} {ea : eqa a₁ a₂} {a b c : CTerm} → a #⇛! b at w → eqb a₁ a₂ ea b c → eqb a₁ a₂ ea a c)
+                    → (sb : {a₁ a₂ : CTerm} {ea : eqa a₁ a₂} {a b : CTerm} → eqb a₁ a₂ ea a b → eqb a₁ a₂ ea b a)
+                    → a #⇛! b at w
+                    → c #⇛! d at w
+                    → TUNION-eq eqa eqb b d
+                    → TUNION-eq eqa eqb a c
+TUNION-eq-#⇛-rev {eqa} {eqb} {w} {a} {b} {c} {d} cb sb c₁ c₂ (TUNION-eq-base a1 a2 ea eb) =
+  TUNION-eq-base a1 a2 ea (cb c₁ (sb (cb c₂ (sb eb))))
+TUNION-eq-#⇛-rev {eqa} {eqb} {w} {a} {b} {c} {d} cb sb c₁ c₂ (TUNION-eq-trans t h1 h2) =
+  TUNION-eq-trans
+    t
+    (TUNION-eq-#⇛-rev cb sb c₁ (#⇛!-refl {w} {t}) h1)
+    (TUNION-eq-#⇛-rev cb sb (#⇛!-refl {w} {t}) c₂ h2)
+
+
+TUNIONeq-#⇛ : {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {w : 𝕎·} {a b c d : CTerm}
+               → (cb : {a₁ a₂ : CTerm} {ea : eqa a₁ a₂} {a b c : CTerm} → b #⇛! a at w → eqb a₁ a₂ ea b c → eqb a₁ a₂ ea a c)
+               → (sb : {a₁ a₂ : CTerm} {ea : eqa a₁ a₂} {a b : CTerm} → eqb a₁ a₂ ea a b → eqb a₁ a₂ ea b a)
+               → a #⇛! b at w
+               → c #⇛! d at w
+               → TUNIONeq eqa eqb a c
+               → TUNIONeq eqa eqb b d
+TUNIONeq-#⇛ {eqa} {eqb} {w} {a} {b} {c} {d} cb sb c₁ c₂ h = TUNION-eq→ (TUNION-eq-#⇛ cb sb c₁ c₂ (→TUNION-eq h))
+
+
+TUNIONeq-#⇛-rev : {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {w : 𝕎·} {a b c d : CTerm}
+                   → (cb : {a₁ a₂ : CTerm} {ea : eqa a₁ a₂} {a b c : CTerm} → a #⇛! b at w → eqb a₁ a₂ ea b c → eqb a₁ a₂ ea a c)
+                   → (sb : {a₁ a₂ : CTerm} {ea : eqa a₁ a₂} {a b : CTerm} → eqb a₁ a₂ ea a b → eqb a₁ a₂ ea b a)
+                   → a #⇛! b at w
+                   → c #⇛! d at w
+                   → TUNIONeq eqa eqb b d
+                   → TUNIONeq eqa eqb a c
+TUNIONeq-#⇛-rev {eqa} {eqb} {w} {a} {b} {c} {d} cb sb c₁ c₂ h = TUNION-eq→ (TUNION-eq-#⇛-rev cb sb c₁ c₂ (→TUNION-eq h))
+
+
+
+
+
+
 {--
 TCONSTeq-#⇛ : {eqa : per} {w : 𝕎·} {a b c d : CTerm}
                      → a #⇛! b at w
@@ -326,6 +395,18 @@ equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTSET A1 B1 
       y ,
       equalTerms-#⇛-left-rev-aux ind (∀𝕎-mon e comp) (eqta w' e) ea ,
       eqInType-extr1 (sub0 c B2) (sub0 a B1) (eqtb w' e b c ea) (eqtb w' e a c (equalTerms-#⇛-left-rev-aux ind (∀𝕎-mon e comp) (eqta w' e) ea)) eb
+equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi =
+  Mod.∀𝕎-□Func M aw eqi
+  where
+    aw : ∀𝕎 w (λ w' e' → TUNIONeq (equalTerms i w' (eqta w' e')) (λ a1 a2 eqa → equalTerms i w' (eqtb w' e' a1 a2 eqa)) b c
+                        → TUNIONeq (equalTerms i w' (eqta w' e')) (λ a1 a2 eqa → equalTerms i w' (eqtb w' e' a1 a2 eqa)) a c)
+    aw w' e h =
+      TUNIONeq-#⇛-rev
+        (λ {a₁} {a₂} {ea} {x} {y} {z} cw j → equalTerms-#⇛-left-rev-aux ind cw (eqtb w' e a₁ a₂ ea) j)
+        (λ {a₁} {a₂} {ea} {x} {y} j → eqInType-sym (eqtb w' e a₁ a₂ ea) j)
+        (∀𝕎-mon e comp)
+        (#⇛!-refl {w'} {c})
+        h
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
@@ -430,6 +511,18 @@ equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTSET A1 B1 A2 B
       y ,
       equalTerms-#⇛-left-aux ind (∀𝕎-mon e comp) (eqta w' e) ea ,
       eqInType-extr1 (sub0 c B2) (sub0 b B1) (eqtb w' e a c ea) (eqtb w' e b c (equalTerms-#⇛-left-aux ind (∀𝕎-mon e comp) (eqta w' e) ea)) eb
+equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi =
+  Mod.∀𝕎-□Func M aw eqi
+  where
+    aw : ∀𝕎 w (λ w' e' → TUNIONeq (equalTerms i w' (eqta w' e')) (λ a1 a2 eqa → equalTerms i w' (eqtb w' e' a1 a2 eqa)) a c
+                        → TUNIONeq (equalTerms i w' (eqta w' e')) (λ a1 a2 eqa → equalTerms i w' (eqtb w' e' a1 a2 eqa)) b c)
+    aw w' e h =
+      TUNIONeq-#⇛
+        (λ {a₁} {a₂} {ea} {x} {y} {z} cw j → equalTerms-#⇛-left-aux ind cw (eqtb w' e a₁ a₂ ea) j)
+        (λ {a₁} {a₂} {ea} {x} {y} j → eqInType-sym (eqtb w' e a₁ a₂ ea) j)
+        (∀𝕎-mon e comp)
+        (#⇛!-refl {w'} {c})
+        h
 equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
@@ -615,6 +708,7 @@ equalInType-UNION→₁ {n} {w} {A} {B} {a} {b} (EQTFREE x x₁ , eqi) = ⊥-eli
 equalInType-UNION→₁ {n} {w} {A} {B} {a} {b} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (UNIONneqPI (compAllVal x₁ tt))
 equalInType-UNION→₁ {n} {w} {A} {B} {a} {b} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (UNIONneqSUM (compAllVal x₁ tt))
 equalInType-UNION→₁ {n} {w} {A} {B} {a} {b} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (UNIONneqSET (compAllVal x₁ tt))
+equalInType-UNION→₁ {n} {w} {A} {B} {a} {b} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (UNIONneqTUNION (compAllVal x₁ tt))
 equalInType-UNION→₁ {n} {w} {A} {B} {a} {b} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2 , eqi) = ⊥-elim (UNIONneqEQ (compAllVal x₁ tt))
 equalInType-UNION→₁ {n} {w} {A} {B} {a} {b} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi)
   rewrite sym (#UNIONinj1 {A} {B} {A1} {B1} (#compAllVal x tt))
@@ -646,6 +740,7 @@ equalInType-UNION→₂ {n} {w} {A} {B} {a} {b} (EQTFREE x x₁ , eqi) = ⊥-eli
 equalInType-UNION→₂ {n} {w} {A} {B} {a} {b} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (UNIONneqPI (compAllVal x₁ tt))
 equalInType-UNION→₂ {n} {w} {A} {B} {a} {b} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (UNIONneqSUM (compAllVal x₁ tt))
 equalInType-UNION→₂ {n} {w} {A} {B} {a} {b} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (UNIONneqSET (compAllVal x₁ tt))
+equalInType-UNION→₂ {n} {w} {A} {B} {a} {b} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (UNIONneqTUNION (compAllVal x₁ tt))
 equalInType-UNION→₂ {n} {w} {A} {B} {a} {b} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2 , eqi) = ⊥-elim (UNIONneqEQ (compAllVal x₁ tt))
 equalInType-UNION→₂ {n} {w} {A} {B} {a} {b} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi)
   rewrite sym (#UNIONinj2 {A} {B} {A1} {B1} (#compAllVal x tt))
@@ -702,6 +797,7 @@ equalTypes-LIFT→ {n} {w} {A} {B} (EQTFREE x x₁) = ⊥-elim (LIFTneqFREE (com
 equalTypes-LIFT→ {n} {w} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = ⊥-elim (LIFTneqPI (compAllVal x₁ tt))
 equalTypes-LIFT→ {n} {w} {A} {B} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = ⊥-elim (LIFTneqSUM (compAllVal x₁ tt))
 equalTypes-LIFT→ {n} {w} {A} {B} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = ⊥-elim (LIFTneqSET (compAllVal x₁ tt))
+equalTypes-LIFT→ {n} {w} {A} {B} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) = ⊥-elim (LIFTneqTUNION (compAllVal x₁ tt))
 equalTypes-LIFT→ {n} {w} {A} {B} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) = ⊥-elim (LIFTneqEQ (compAllVal x₁ tt))
 equalTypes-LIFT→ {n} {w} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) = ⊥-elim (LIFTneqUNION (compAllVal x₁ tt))
 equalTypes-LIFT→ {n} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqtA exta) = ⊥-elim (LIFTneqTSQUASH (compAllVal x₁ tt))
