@@ -1165,9 +1165,9 @@ equalInType-SQUASH→ {n} {w} {A} {a} {b} (eqt , eqi) rewrite #SQUASH≡#SET A =
 equalInType-UNION→ : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
                        → equalInType n w (#UNION A B) a b
                        → □· w (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
-                                          → (a #⇛! (#INL x) at w' × b #⇛! (#INL y) at w' × equalInType n w' A x y)
+                                          → (a #⇛ (#INL x) at w' × b #⇛ (#INL y) at w' × equalInType n w' A x y)
                                              ⊎
-                                             (a #⇛! (#INR x) at w' × b #⇛! (#INR y) at w' × equalInType n w' B x y))))
+                                             (a #⇛ (#INR x) at w' × b #⇛ (#INR y) at w' × equalInType n w' B x y))))
 {-# TERMINATING #-}
 equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTNAT x x₁ , eqi) = ⊥-elim (UNIONneqNAT (compAllVal x₁ tt))
 equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTQNAT x x₁ , eqi) = ⊥-elim (UNIONneqQNAT (compAllVal x₁ tt))
@@ -1184,9 +1184,9 @@ equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTUNION A1 B1 A2 B2 x x₁ eqtA e
   where
     aw : ∀𝕎 w (λ w' e' → UNIONeq (eqInType (uni n) w' (eqtA w' e')) (eqInType (uni n) w' (eqtB w' e')) w' a b
                        → Σ CTerm (λ y → Σ CTerm (λ z
-                       → (a #⇛! #INL y at w' × b #⇛! #INL z at w' × equalInType n w' A y z)
+                       → (a #⇛ #INL y at w' × b #⇛ #INL z at w' × equalInType n w' A y z)
                           ⊎
-                          (a #⇛! #INR y at w' × b #⇛! #INR z at w' × equalInType n w' B y z))))
+                          (a #⇛ #INR y at w' × b #⇛ #INR z at w' × equalInType n w' B y z))))
     aw w' e' (y , z , inj₁ (c₁ , c₂ , u)) = y , z , inj₁ (c₁ , c₂ , eqInType→equalInType (#UNIONinj1 {A} {B} {A1} {B1} (#compAllVal x tt)) (eqtA w' e') u)
     aw w' e' (y , z , inj₂ (c₁ , c₂ , u)) = y , z , inj₂ (c₁ , c₂ , eqInType→equalInType (#UNIONinj2 {A} {B} {A1} {B1} (#compAllVal x tt)) (eqtB w' e') u)
 equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (UNIONneqTSQUASH (compAllVal x₁ tt))
@@ -1201,16 +1201,16 @@ equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTBAR x , eqi) =
                         {--→ atbar x w' e' z--}
                         → equalTerms n w' z a b
                         → □· w' (↑wPred' (λ w'' e → Σ CTerm (λ y₁ → Σ CTerm (λ y₂
-                                                     → (a #⇛! #INL y₁ at w'' × b #⇛! #INL y₂ at w'' × equalInType n w'' A y₁ y₂)
+                                                     → (a #⇛ #INL y₁ at w'' × b #⇛ #INL y₂ at w'' × equalInType n w'' A y₁ y₂)
                                                         ⊎
-                                                        (a #⇛! #INR y₁ at w'' × b #⇛! #INR y₂ at w'' × equalInType n w'' B y₁ y₂))))
+                                                        (a #⇛ #INR y₁ at w'' × b #⇛ #INR y₂ at w'' × equalInType n w'' B y₁ y₂))))
                                              e'))
     aw w' e' z {--at--} i = Mod.∀𝕎-□Func M (λ w'' e'' h k → h) j
       where
         j : □· w' (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
-                             → (a #⇛! (#INL x) at w' × b #⇛! (#INL y) at w' × equalInType n w' A x y)
+                             → (a #⇛ (#INL x) at w' × b #⇛ (#INL y) at w' × equalInType n w' A x y)
                                 ⊎
-                                (a #⇛! (#INR x) at w' × b #⇛! (#INR y) at w' × equalInType n w' B x y))))
+                                (a #⇛ (#INR x) at w' × b #⇛ (#INR y) at w' × equalInType n w' B x y))))
         j = equalInType-UNION→ (z , i)
 
 

@@ -124,10 +124,10 @@ classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
                                 →  Σ CTerm (λ t → ∈Type n w' (#UNION (#↑T p a₁) (#NEG (#↑T p a₁))) t))
             aw w2 e2 (inj₁ (t , h)) = #INL t , →equalInType-UNION (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2)))
                                                                    (eqTypesNEG← (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2))))
-                                                                   (Mod.∀𝕎-□ M (λ w3 e3 → t , t , inj₁ (#⇛!-refl {w3} {#INL t} , #⇛!-refl {w3} {#INL t} , (equalInType-mon h w3 e3))))
+                                                                   (Mod.∀𝕎-□ M (λ w3 e3 → t , t , inj₁ (#compAllRefl (#INL t) _ , #compAllRefl (#INL t) _ , equalInType-mon h w3 e3)))
             aw w2 e2 (inj₂ (t , h)) = #INR t , →equalInType-UNION (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2)))
                                                                    (eqTypesNEG← (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2))))
-                                                                   (Mod.∀𝕎-□ M (λ w3 e3 → t , t , inj₂ (#⇛!-refl {w3} {#INR t}  , #⇛!-refl {w3} {#INR t} , (equalInType-mon h w3 e3))))
+                                                                   (Mod.∀𝕎-□ M (λ w3 e3 → t , t , inj₂ (#compAllRefl (#INR t) _ , #compAllRefl (#INR t) _ , equalInType-mon h w3 e3)))
 
 
 

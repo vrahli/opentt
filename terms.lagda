@@ -1832,6 +1832,38 @@ BOOL = UNION TRUE TRUE
 #BOOL≡ = CTerm≡ refl
 
 
+BOOL! : Term
+BOOL! = TCONST BOOL
+
+
+#BOOL! : CTerm
+#BOOL! = ct BOOL! refl
+
+
+#BOOL!≡ : #BOOL! ≡ #TCONST #BOOL
+#BOOL!≡ = CTerm≡ refl
+
+
+#[0]BOOL! : CTerm0
+#[0]BOOL! = ct0 BOOL! refl
+
+
+QTBOOL! : Term
+QTBOOL! = TSQUASH BOOL!
+
+
+#QTBOOL! : CTerm
+#QTBOOL! = ct QTBOOL! refl
+
+
+#QTBOOL!≡ : #QTBOOL! ≡ #TSQUASH #BOOL!
+#QTBOOL!≡ = CTerm≡ refl
+
+
+#[0]QTBOOL! : CTerm0
+#[0]QTBOOL! = ct0 QTBOOL! refl
+
+
 NAT→BOOL : Term
 NAT→BOOL = FUN NAT BOOL
 
@@ -2205,7 +2237,7 @@ NAT!→BOOL = FUN NAT! BOOL
 
 
 ASSERT₃ : Term → Term
-ASSERT₃ t = EQ t BTRUE QTBOOL
+ASSERT₃ t = EQ t BTRUE QTBOOL!
 
 
 fvars-ASSERT₃ : (t : Term) → fvars (ASSERT₃ t) ≡ fvars t
@@ -2220,7 +2252,7 @@ fvars-ASSERT₃ t rewrite ++[] (fvars t) = refl
     c rewrite fvars-ASSERT₃ ⌜ a ⌝ = CTerm.closed a
 
 
-#ASSERT₃≡ : (t : CTerm) → #ASSERT₃ t ≡ #EQ t #BTRUE #QTBOOL
+#ASSERT₃≡ : (t : CTerm) → #ASSERT₃ t ≡ #EQ t #BTRUE #QTBOOL!
 #ASSERT₃≡ t = CTerm≡ refl
 
 
@@ -2272,5 +2304,17 @@ IF-THEN a b = ITE a b AX
 
 IFLE : Term → Term → Term → Term → Term
 IFLE a b c d = IFLT b a d c
+
+
+NAT!→QTBOOL! : Term
+NAT!→QTBOOL! = FUN NAT! QTBOOL!
+
+
+#NAT!→QTBOOL! : CTerm
+#NAT!→QTBOOL! = ct NAT!→QTBOOL! refl
+
+
+#NAT!→QTBOOL!≡ : #NAT!→QTBOOL! ≡ #FUN #NAT! #QTBOOL!
+#NAT!→QTBOOL!≡ = CTerm≡ refl
 
 \end{code}

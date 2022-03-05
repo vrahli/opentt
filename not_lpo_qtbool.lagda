@@ -87,7 +87,7 @@ open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)(CB)
  --}
 
 LPO : Term
-LPO = PI NAT!→QTBOOL (SQUASH (UNION (SUM NAT! (ASSERT₃ (APPLY (VAR 1) (VAR 0))))
+LPO = PI NAT!→QTBOOL! (SQUASH (UNION (SUM NAT! (ASSERT₃ (APPLY (VAR 1) (VAR 0))))
                                      (PI NAT! (NEG (ASSERT₃ (APPLY (VAR 1) (VAR 0)))))))
 
 
@@ -116,7 +116,7 @@ LPO = PI NAT!→QTBOOL (SQUASH (UNION (SUM NAT! (ASSERT₃ (APPLY (VAR 1) (VAR 0
 
 
 #LPO-PI : CTerm
-#LPO-PI = #PI #NAT!→QTBOOL (#[0]SQUASH (#[0]UNION #[0]LPO-left #[0]LPO-right))
+#LPO-PI = #PI #NAT!→QTBOOL! (#[0]SQUASH (#[0]UNION #[0]LPO-left #[0]LPO-right))
 
 
 #LPO≡#PI : #LPO ≡ #LPO-PI
@@ -138,12 +138,12 @@ sub0-squash-union-LPO a =
 isTypeLPO-PI : (w : 𝕎·) (n : ℕ) → isType n w #LPO-PI
 isTypeLPO-PI w n =
   eqTypesPI← {w} {n}
-              {#NAT!→QTBOOL} {#[0]SQUASH (#[0]UNION #[0]LPO-left #[0]LPO-right)}
-              {#NAT!→QTBOOL} {#[0]SQUASH (#[0]UNION #[0]LPO-left #[0]LPO-right)}
-              (λ w' e → isType-#NAT!→QTBOOL w' n)
+              {#NAT!→QTBOOL!} {#[0]SQUASH (#[0]UNION #[0]LPO-left #[0]LPO-right)}
+              {#NAT!→QTBOOL!} {#[0]SQUASH (#[0]UNION #[0]LPO-left #[0]LPO-right)}
+              (λ w' e → isType-#NAT!→QTBOOL! w' n)
               aw
   where
-    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT!→QTBOOL a₁ a₂
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT!→QTBOOL! a₁ a₂
                       → equalTypes n w' (sub0 a₁ (#[0]SQUASH (#[0]UNION #[0]LPO-left #[0]LPO-right)))
                                          (sub0 a₂ (#[0]SQUASH (#[0]UNION #[0]LPO-left #[0]LPO-right))))
     aw w' e a₁ a₂ eqb rewrite sub0-squash-union-LPO a₁ | sub0-squash-union-LPO a₂ = eqt
@@ -168,6 +168,14 @@ isTypeNegLPO w n = eqTypesNEG← (isTypeLPO w n)
 
 
 
+-- MOVE to props3
+→equalInType-CS-NAT!→QTBOOL! : {n : ℕ} {w : 𝕎·} {a b : Name}
+                             → ∀𝕎 w (λ w' _ → (m : ℕ) → equalInType n w' #QTBOOL! (#APPLY (#CS a) (#NUM m)) (#APPLY (#CS b) (#NUM m)))
+                             → equalInType n w #NAT!→QTBOOL! (#CS a) (#CS b)
+→equalInType-CS-NAT!→QTBOOL! {n} {w} {a} {b} i rewrite #NAT!→QTBOOL!≡ = →equalInType-CS-NAT!→T (eqTypesQTBOOL! {w} {n}) i
+
+
+
 -- Assuming that our choices are QTBools
 ¬LPO : QTBoolℂ CB → (w : 𝕎·) → member w (#NEG #LPO) #lamAX
 ¬LPO bcb w = n , equalInType-NEG (isTypeLPO w n) aw1
@@ -183,11 +191,11 @@ isTypeNegLPO w n = eqTypesNEG← (isTypeLPO w n)
                                       imp2
                                       h1)
       where
-        aw2 : ∀𝕎 w1 (λ w' _ → (f g : CTerm) → equalInType n w' #NAT!→QTBOOL f g
+        aw2 : ∀𝕎 w1 (λ w' _ → (f g : CTerm) → equalInType n w' #NAT!→QTBOOL! f g
                              → equalInType n w' (sub0 f (#[0]SQUASH (#[0]UNION #[0]LPO-left #[0]LPO-right))) (#APPLY F f) (#APPLY G g))
-        aw2 = snd (snd (equalInType-PI→ {n} {w1} {#NAT!→QTBOOL} {#[0]SQUASH (#[0]UNION #[0]LPO-left #[0]LPO-right)} ea))
+        aw2 = snd (snd (equalInType-PI→ {n} {w1} {#NAT!→QTBOOL!} {#[0]SQUASH (#[0]UNION #[0]LPO-left #[0]LPO-right)} ea))
 
-        aw3 : ∀𝕎 w1 (λ w' _ → (f g : CTerm) → equalInType n w' #NAT!→QTBOOL f g
+        aw3 : ∀𝕎 w1 (λ w' _ → (f g : CTerm) → equalInType n w' #NAT!→QTBOOL! f g
                              → equalInType n w' (#SQUASH (#UNION (#LPO-left f) (#LPO-right f))) (#APPLY F f) (#APPLY G g))
         aw3 w' e f g ex = ≡CTerm→equalInType (sub0-squash-union-LPO f) (aw2 w' e f g ex)
 
@@ -209,11 +217,11 @@ isTypeNegLPO w n = eqTypesNEG← (isTypeLPO w n)
         f : CTerm
         f = #CS name
 
-        eqf2 : ∀𝕎 w2 (λ w' _ → (m : ℕ) →  equalInType n w' #QTBOOL (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
+        eqf2 : ∀𝕎 w2 (λ w' _ → (m : ℕ) →  equalInType n w' #QTBOOL! (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
         eqf2 w' e m = ≡CTerm→equalInType (fst bcb) (→equalInType-APPLY-CS-Typeℂ₀₁· (⊑-compatible· e comp1) (NUM-equalInType-NAT! n w' m))
 
-        eqf1 : ∈Type n w2 #NAT!→QTBOOL f
-        eqf1 = →equalInType-CS-NAT!→QTBOOL eqf2
+        eqf1 : ∈Type n w2 #NAT!→QTBOOL! f
+        eqf1 = →equalInType-CS-NAT!→QTBOOL! eqf2
 
         h1 : equalInType n w2 (#SQUASH (#UNION (#LPO-left f) (#LPO-right f))) (#APPLY F f) (#APPLY G f)
         h1 = aw3 w2 e2 f f eqf1

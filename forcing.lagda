@@ -264,13 +264,13 @@ EQeq a1 a2 eqa w t1 t2 =
   eqa a1 a2
 
 
--- NOTE: we constrain computations to prove 'TSQUASH-eq-BOOL→weakMonEq' in props3
+-- NOTE: we constrain computations to prove 'TSQUASH-eq-BOOL→weakMonEq' in props3 -- FIXED now
 UNIONeq : (eqa eqb : per) → wper
 UNIONeq eqa eqb w t1 t2  =
   Σ CTerm (λ a → Σ CTerm (λ b →
-    (t1 #⇛! (#INL a) at w × t2 #⇛! (#INL b) at w × eqa a b)
+    (t1 #⇛ (#INL a) at w × t2 #⇛ (#INL b) at w × eqa a b)
     ⊎
-    (t1 #⇛! (#INR a) at w × t2 #⇛! (#INR b) at w × eqb a b)))
+    (t1 #⇛ (#INR a) at w × t2 #⇛ (#INR b) at w × eqb a b)))
 
 
 
