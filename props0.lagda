@@ -1138,7 +1138,8 @@ irr-union u w A1 A2 B1 B2 eqta exta eqtb extb f g w1 e1 w' e' (a , b , inj₂ (c
 
 data TSQUASH-eq (eqa : per) (w : 𝕎·) (t1 t2 : CTerm) : Set(lsuc(L))
 data TSQUASH-eq eqa w t1 t2 where
-  TSQUASH-eq-base : (a1 a2 : CTerm) → #isValue a1 → #isValue a2 → ∼C! w t1 a1 → ∼C! w t2 a2 → eqa a1 a2 → TSQUASH-eq eqa w t1 t2
+--  TSQUASH-eq-base : (a1 a2 : CTerm) → #isValue a1 → #isValue a2 → ∼C! w t1 a1 → ∼C! w t2 a2 → eqa a1 a2 → TSQUASH-eq eqa w t1 t2
+  TSQUASH-eq-base : (a1 a2 : CTerm) → #isValue a1 → #isValue a2 → t1 #⇓ a1 at w → t2 #⇓ a2 at w → eqa a1 a2 → TSQUASH-eq eqa w t1 t2
   TSQUASH-eq-trans : (t : CTerm) → TSQUASH-eq eqa w t1 t → TSQUASH-eq eqa w t t2 → TSQUASH-eq eqa w t1 t2
 
 
@@ -1168,6 +1169,16 @@ TSQUASHeq-trans {eqa} {w} {t1} {t2} {t3} (n , h) (m , q) = n + suc m , TSQUASHeq
 
 
 
+{--
+TSQUASHeq'-trans : {eqa : per} {w : 𝕎·} {t1 t2 t3 : CTerm}
+                 → TSQUASHeq' eqa w t1 t2
+                 → TSQUASHeq' eqa w t2 t3
+                 → TSQUASHeq' eqa w t1 t3
+TSQUASHeq'-trans {eqa} {w} {t1} {t2} {t3} (a1 , a2 , i1 , i2 , c1 , c2 , a) (b1 , b2 , j1 , j2 , d1 , d2 , b) =
+  {!!}
+--}
+
+
 TSQUASH-eq→ : {eqa : per} {w : 𝕎·} {t1 t2 : CTerm}
                → TSQUASH-eq eqa w t1 t2
                → TSQUASHeq eqa w t1 t2
@@ -1190,6 +1201,17 @@ TSQUASHeq-sym : {eqa : per} {w : 𝕎·} {t1 t2 : CTerm}
                  → TSQUASHeq eqa w t1 t2
                  → TSQUASHeq eqa w t2 t1
 TSQUASHeq-sym {eqa} {w} {t1} {t2} sym h = TSQUASH-eq→ (TSQUASH-eq-sym sym (→TSQUASH-eq h))
+
+
+
+{--
+TSQUASHeq'-sym : {eqa : per} {w : 𝕎·} {t1 t2 : CTerm}
+                 → ((a b : CTerm) → eqa a b → eqa b a)
+                 → TSQUASHeq' eqa w t1 t2
+                 → TSQUASHeq' eqa w t2 t1
+TSQUASHeq'-sym {eqa} {w} {t1} {t2} sym (a1 , a2 , i1 , i2 , c1 , c2 , a) =
+  a2 , a1 , i2 , i1 , c2 , c1 , sym a1 a2 a
+--}
 
 
 

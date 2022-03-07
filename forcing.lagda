@@ -287,7 +287,8 @@ data TSQUASHeq eqa w t1 t2 where
 {-- We equivalently define the above definition as follows... --}
 TSQUASHeqBase : (eqa : per) → wper
 TSQUASHeqBase eqa w t1 t2 =
-  Σ CTerm (λ a1 → Σ CTerm (λ a2 → #isValue a1 × #isValue a2 × ∼C! w t1 a1 × ∼C! w t2 a2 × eqa a1 a2))
+--  Σ CTerm (λ a1 → Σ CTerm (λ a2 → #isValue a1 × #isValue a2 × ∼C! w t1 a1 × ∼C! w t2 a2 × eqa a1 a2))
+  Σ CTerm (λ a1 → Σ CTerm (λ a2 → #isValue a1 × #isValue a2 × t1 #⇓ a1 at w × t2 #⇓ a2 at w × eqa a1 a2))
 
 
 TSQUASHeqℕ : ℕ → (eqa : per) → wper
@@ -297,6 +298,13 @@ TSQUASHeqℕ (suc n) eqa w t1 t2 = Σ CTerm (λ t → TSQUASHeqBase eqa w t1 t �
 
 TSQUASHeq : (eqa : per) → wper
 TSQUASHeq eqa w t1 t2 = Σ ℕ (λ n → TSQUASHeqℕ n eqa w t1 t2)
+
+
+{--
+TSQUASHeq' : (eqa : per) → wper
+TSQUASHeq' eqa w t1 t2 =
+  Σ CTerm (λ a1 → Σ CTerm (λ a2 → #isValue a1 × #isValue a2 × t1 #⇓ a1 at w × t2 #⇓ a2 at w × eqa a1 a2))
+--}
 
 
 TUNIONeqBase : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → per

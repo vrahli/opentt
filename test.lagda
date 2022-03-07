@@ -16,8 +16,9 @@ data foo2 : (n : ℕ) → Set
 data foo2 where
   FOO : (n : ℕ) → D n foo2 → foo2 n
 
+-- For example D could be instantiated with λ n f → (m : ℕ) → m < n → foo2 m' to result in a type as follows:
 data bar : (n : ℕ) → Set
 data bar where
   BAR : (n : ℕ) → ((m : ℕ) → m < n → bar m) → bar n
--- C ≡ λ n f → (m : ℕ) → m < n → foo n
+-- D ≡ λ n f → (m : ℕ) → m < n → foo m
 \end{code}

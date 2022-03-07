@@ -2132,6 +2132,24 @@ QTNAT! = TSQUASH NAT!
 #[0]QTNAT! = ct0 QTNAT! refl
 
 
+
+!QTNAT : Term
+!QTNAT = TCONST QTNAT
+
+
+#!QTNAT : CTerm
+#!QTNAT = ct !QTNAT refl
+
+
+#[0]!QTNAT : CTerm0
+#[0]!QTNAT = ct0 !QTNAT refl
+
+
+#!QTNAT≡ : #!QTNAT ≡ #TCONST #QTNAT
+#!QTNAT≡ = CTerm≡ refl
+
+
+
 QTBOOL : Term
 QTBOOL = TSQUASH BOOL
 

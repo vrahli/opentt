@@ -514,13 +514,14 @@ TSQUASH-eq-NAT→weakMonEq i w a b (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) =
     j = equalInType-NAT→ i w a1 a2 ea
 
     aw : ∀𝕎 w (λ w1 e1 → NATeq w1 a1 a2 → Lift (lsuc L) (⇓sameℕ w ⌜ a ⌝ ⌜ b ⌝))
-    aw w1 e1 (n , c₁' , c₂') = lift (n , ∼C!→#⇓ {w} {a} {#NUM n} tt c₁'' ,  ∼C!→#⇓ {w} {b} {#NUM n} tt c₂'')
+    aw w1 e1 (n , c₁' , c₂') = lift (n , ≡R→#⇓ {w} {a} {a1} {#NUM n} (#⇛→≡ c₁' i1) c1 , ≡R→#⇓ {w} {b} {a2} {#NUM n} (#⇛→≡ c₂' i2) c2)
+ --∼C!→#⇓ {w} {a} {#NUM n} tt c₁'' ,  ∼C!→#⇓ {w} {b} {#NUM n} tt c₂'')
       where
-        c₁'' : ∼C! w a (#NUM n)
+{--        c₁'' : ∼C! w a (#NUM n)
         c₁'' = ≡R→∼C! {w} {a} {a1} {#NUM n} (#⇛→≡ c₁' i1) c1
 
         c₂'' : ∼C! w b (#NUM n)
-        c₂'' = ≡R→∼C! {w} {b} {a2} {#NUM n} (#⇛→≡ c₂' i2) c2
+        c₂'' = ≡R→∼C! {w} {b} {a2} {#NUM n} (#⇛→≡ c₂' i2) c2--}
 TSQUASH-eq-NAT→weakMonEq i w a b (TSQUASH-eq-trans t h1 h2) =
   lift-⇓sameℕ-trans (TSQUASH-eq-NAT→weakMonEq i w a t h1) (TSQUASH-eq-NAT→weakMonEq i w t b h2)
 
@@ -611,15 +612,17 @@ TSQUASH-eq-NAT!→weakMonEq! i w a b (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) =
     j = equalInType-NAT!→ i w a1 a2 ea
 
     aw : ∀𝕎 w (λ w1 e1 → #⇛!sameℕ w1 a1 a2 → Lift (lsuc L) (⇓!sameℕ w ⌜ a ⌝ ⌜ b ⌝))
-    aw w1 e1 (n , c₁' , c₂') = lift (n , ∼C!→#⇓! {w} {a} {#NUM n} tt c₁'' ,  ∼C!→#⇓! {w} {b} {#NUM n} tt c₂'')
+    aw w1 e1 (n , c₁' , c₂') = lift (n , {!!} , {!!}) --∼C!→#⇓! {w} {a} {#NUM n} tt c₁'' ,  ∼C!→#⇓! {w} {b} {#NUM n} tt c₂'')
       where
-        c₁'' : ∼C! w a (#NUM n)
+{--        c₁'' : ∼C! w a (#NUM n)
         c₁'' = ≡R→∼C! {w} {a} {a1} {#NUM n} (#⇛!→≡ c₁' i1) c1
 
         c₂'' : ∼C! w b (#NUM n)
-        c₂'' = ≡R→∼C! {w} {b} {a2} {#NUM n} (#⇛!→≡ c₂' i2) c2
+        c₂'' = ≡R→∼C! {w} {b} {a2} {#NUM n} (#⇛!→≡ c₂' i2) c2--}
 TSQUASH-eq-NAT!→weakMonEq! i w a b (TSQUASH-eq-trans t h1 h2) =
   lift-⇓!sameℕ-trans (TSQUASH-eq-NAT!→weakMonEq! i w a t h1) (TSQUASH-eq-NAT!→weakMonEq! i w t b h2)
+
+
 
 
 
@@ -635,6 +638,49 @@ equalInType-QTNAT!→ i w a b eqi =
     aw : ∀𝕎 w (λ w' e' → ∀𝕎 w' (↑wPred (λ w'' e → TSQUASHeq (equalInType i w'' #NAT!) w'' a b) e')
                         → #weakMonEq! w' a b)
     aw w1 e1 h w2 e2 = TSQUASH-eq-NAT!→weakMonEq! i w2 a b (→TSQUASH-eq (h w2 e2))
+
+
+
+TSQUASH-eq-NAT→weakMonEq! : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                             → #⇓→#⇓! w a
+                             → #⇓→#⇓! w b
+                             → TSQUASH-eq (equalInType i w #NAT) w a b
+                             → Lift (lsuc L) (⇓!sameℕ w ⌜ a ⌝ ⌜ b ⌝)
+TSQUASH-eq-NAT→weakMonEq! i w a b !ca !cb (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) =
+  Mod.□-const M (Mod.∀𝕎-□Func M aw j)
+  where
+    j : □· w (λ w' _ → NATeq w' a1 a2)
+    j = equalInType-NAT→ i w a1 a2 ea
+
+    aw : ∀𝕎 w (λ w1 e1 → NATeq w1 a1 a2 → Lift (lsuc L) (⇓!sameℕ w ⌜ a ⌝ ⌜ b ⌝))
+    aw w1 e1 (n , c₁' , c₂') = lift (n , {!!} , {!!}) --∼C!→#⇓! {w} {a} {#NUM n} tt c₁'' ,  ∼C!→#⇓! {w} {b} {#NUM n} tt c₂'')
+      where
+{--        c₁'' : ∼C! w a (#NUM n)
+        c₁'' = ≡R→∼C! {w} {a} {a1} {#NUM n} (#⇛!→≡ c₁' i1) c1
+
+        c₂'' : ∼C! w b (#NUM n)
+        c₂'' = ≡R→∼C! {w} {b} {a2} {#NUM n} (#⇛!→≡ c₂' i2) c2--}
+TSQUASH-eq-NAT→weakMonEq! i w a b !ca !cb (TSQUASH-eq-trans t h1 h2) =
+  lift-⇓!sameℕ-trans (TSQUASH-eq-NAT→weakMonEq! i w a t !ca {!!} h1) (TSQUASH-eq-NAT→weakMonEq! i w t b {!!} !cb h2)
+
+
+
+equalInType-!QTNAT→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                      → equalInType i w #!QTNAT a b
+                      → □· w (λ w' _ → #weakMonEq! w' a b)
+equalInType-!QTNAT→ i w a b eqi = Mod.□-idem M (Mod.∀𝕎-□Func M aw eqj)
+  where
+    eqj : □· w (λ w' _ → TCONSTeq (equalInType i w' #QTNAT) w' a b)
+    eqj = equalInTypeTCONST→ eqi
+
+    aw : ∀𝕎 w (λ w' e' → TCONSTeq (equalInType i w' #QTNAT) w' a b → □· w' (↑wPred' (λ w'' _ → #weakMonEq! w'' a b) e'))
+    aw w1 e1 (h , c₁ , c₂) = Mod.∀𝕎-□Func M aw' eqk
+      where
+        eqk : □· w1 (λ w2 _ → TSQUASHeq (equalInType i w2 #NAT) w2 a b)
+        eqk = equalInTypeTSQUASH→ h
+
+        aw' : ∀𝕎 w1 (λ w2 e2 → TSQUASHeq (equalInType i w2 #NAT) w2 a b → ↑wPred' (λ w3 _ → #weakMonEq! w3 a b) e1 w2 e2)
+        aw' w2 e2 q w3 e3 z = {!!}
 
 
 #strongMonEq-#N0 : (w : 𝕎·) → #strongMonEq w #N0 #N0
@@ -1554,16 +1600,16 @@ equalInType-EQ-QNAT→ {u} {w} {a} {b} {f} {g} eqi =
                              → #weakMonEq! w a b
                              → TSQUASHeq (equalInType i w #NAT) w a b
 #weakMonEq→TSQUASHeq-#NAT {i} {w} {a} {b} h =
-  TSQUASH-eq→ (TSQUASH-eq-base (#NUM n) (#NUM n) tt tt c₁ c₂ (NUM-equalInType-NAT i w n))
+  TSQUASH-eq→ (TSQUASH-eq-base (#NUM n) (#NUM n) tt tt (#⇓!→#⇓ {w} {a} {#NUM n} (fst (snd (lower (h w (⊑-refl· _)))))) (#⇓!→#⇓ {w} {b} {#NUM n} (snd (snd (lower (h w (⊑-refl· _)))))) {--c₁ c₂--} (NUM-equalInType-NAT i w n))
   where
     n : ℕ
     n = fst (lower (h w (⊑-refl· _)))
 
-    c₁ : ∼C! w a (#NUM n)
+{--    c₁ : ∼C! w a (#NUM n)
     c₁ = #⇓!→∼C! {w} {a} {#NUM n} (fst (snd (lower (h w (⊑-refl· _)))))
 
     c₂ : ∼C! w b (#NUM n)
-    c₂ = #⇓!→∼C! {w} {b} {#NUM n} (snd (snd (lower (h w (⊑-refl· _)))))
+    c₂ = #⇓!→∼C! {w} {b} {#NUM n} (snd (snd (lower (h w (⊑-refl· _)))))--}
 
 
 →equalInType-QTNAT : (i : ℕ) (w : 𝕎·) (a b : CTerm)
@@ -1586,16 +1632,16 @@ NUM-equalInType-QTNAT i w k =
                              → #weakMonEq! w a b
                              → TSQUASHeq (equalInType i w #NAT!) w a b
 #weakMonEq→TSQUASHeq-#NAT! {i} {w} {a} {b} h =
-  TSQUASH-eq→ (TSQUASH-eq-base (#NUM n) (#NUM n) tt tt c₁ c₂ (NUM-equalInType-NAT! i w n))
+  TSQUASH-eq→ (TSQUASH-eq-base (#NUM n) (#NUM n) tt tt (#⇓!→#⇓ {w} {a} {#NUM n} (fst (snd (lower (h w (⊑-refl· _)))))) (#⇓!→#⇓ {w} {b} {#NUM n} (snd (snd (lower (h w (⊑-refl· _)))))) {--c₁ c₂--} (NUM-equalInType-NAT! i w n))
   where
     n : ℕ
     n = fst (lower (h w (⊑-refl· _)))
 
-    c₁ : ∼C! w a (#NUM n)
+{--    c₁ : ∼C! w a (#NUM n)
     c₁ = #⇓!→∼C! {w} {a} {#NUM n} (fst (snd (lower (h w (⊑-refl· _)))))
 
     c₂ : ∼C! w b (#NUM n)
-    c₂ = #⇓!→∼C! {w} {b} {#NUM n} (snd (snd (lower (h w (⊑-refl· _)))))
+    c₂ = #⇓!→∼C! {w} {b} {#NUM n} (snd (snd (lower (h w (⊑-refl· _)))))--}
 
 
 →equalInType-QTNAT! : (i : ℕ) (w : 𝕎·) (a b : CTerm)
