@@ -41,6 +41,7 @@ open import progress
 open import freeze
 open import newChoice
 open import mod
+open import choiceBar
 
 
 module continuity {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
@@ -48,6 +49,7 @@ module continuity {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
                   (X : ChoiceExt W C K G) (N : NewChoice {L} W C K G)
                   (F : Freeze {L} W C K P G N)
                   (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+                  (CB : ChoiceBar W M C K P G X N F E) -- TODO - We won't need everything from there: use a different module
        where
 
 
@@ -64,6 +66,8 @@ open import compatibleDef{L}(W)(C)(K)
 open import getChoiceDef(W)(C)(K)(G)
 open import choiceExtDef(W)(C)(K)(G)(X)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
+
+open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)(CB)
 
 {--
 open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(E)
@@ -98,7 +102,7 @@ bound name n f = LAMBDA (SEQ (IFLE n (VAR 0) (CHOOSE (CS name) (ℂ→T ℂ₁·
 -- We assume that initially name contains ℂ₀
 test : (name : Name) (F : Term) (n : Term) (f : Term) → Term
 test name F n f = LET (APPLY F (bound name n f))
-                      (LET (IFC0 (APPLY (CS name) (NUM 0)) (VAR 0) AX) -- We check whether 'name' contains ℂ₀
+                      (LET (IFC0 (APPLY (CS name) (NUM 0)) (INL (VAR 0)) (INR AX)) -- We check whether 'name' contains ℂ₀
                            (SEQ (CHOOSE (CS name) (ℂ→T ℂ₀·)) -- resets the reference to ℂ₀
                                 (VAR 0)))
 
@@ -278,6 +282,17 @@ fvars-IFLE a b c d = refl
             | lowerVars-fvars-CTerm≡[] f
             | lowerVarsApp (fvars ⌜ ℂ→C· ℂ₁· ⌝) [ 0 ]
             | lowerVars-fvars-CTerm≡[] (ℂ→C· ℂ₁·) = refl
+
+
+#test : (name : Name) (F : CTerm) (n : CTerm) (f : CTerm) → CTerm
+#test name F n f = ct (test name ⌜ F ⌝ ⌜ n ⌝ ⌜ f ⌝) c
+  where
+    c : # test name ⌜ F ⌝ ⌜ n ⌝ ⌜ f ⌝
+    c rewrite CTerm.closed (#bound name n f)
+            | lowerVarsApp (fvars ⌜ ℂ→C· ℂ₀· ⌝) [ 0 ]
+            | lowerVars-fvars-CTerm≡[] (ℂ→C· ℂ₀·)
+            | CTerm.closed F = refl
+
 
 
 #[0]AX : CTerm0
@@ -670,19 +685,71 @@ APPLY-bound∈ i w F name n f ∈F ∈n ∈f =
     {i} {w} {#BAIRE} {#NAT} {F} {F} ∈F w (⊑-refl· _) (#bound name n f) (#bound name n f)
     (bound∈ i w name n f ∈n ∈f)
 
-{-- ≡CTerm→equalInType (sym #BAIRE→NAT≡) (equalInType-FUN aw1 aw2 aw3)
+
+-- MOVE to computation
+#⇛→#⇓from-to : {w : 𝕎·} {a b : CTerm}
+                 → a #⇛ b at w
+                 → Σ 𝕎· (λ w' → a #⇓ b from w to w')
+#⇛→#⇓from-to {w} {a} {b} comp = ⇓→from-to (lower (comp w (⊑-refl· _)))
+
+
+-- MOVE to util
+→≡snd : {l k : Level} {A : Set l} {B : Set k} {p₁ p₂ : A × B} → p₁ ≡ p₂ → snd p₁ ≡ snd p₂
+→≡snd {l} {k} {A} {B} {a₁ , b₁} {a₂ , b₂} e = pair-inj₂ e
+
+
+-- MOVE to worldDef
+≡ᵣ→⊑ : {w1 w2 w3 : 𝕎·} → w1 ⊑· w2 → w2 ≡ w3 → w1 ⊑· w3
+≡ᵣ→⊑ {w1} {w2} {w3} e₁ e₂ rewrite e₂ = e₁
+
+
+-- MOVE to computation
+#⇓from-to→⊑ : {w w' : 𝕎·} {a b : CTerm}
+               → a #⇓ b from w to w'
+               → w ⊑· w'
+#⇓from-to→⊑ {w} {w'} {a} {b} (n , comp) = ≡ᵣ→⊑ (steps⊑ w n ⌜ a ⌝) (→≡snd comp)
+
+
+test∈ : (i : ℕ) (w : 𝕎·) (F : CTerm) (name : Name) (n : CTerm) (f : CTerm)
+        → compatible· name w Resℂ₀₁
+        → ∈Type i w #BAIRE→NAT F
+        → ∈Type i w #NAT n
+        → ∈Type i w #BAIRE f
+        → ∈Type i w (#UNION Typeℂ₀₁· #TRUE) (#test name F n f)
+test∈ i w F name n f compat ∈F ∈n ∈f =
+  →equalInType-UNION (Typeℂ₀₁-isType· i w) eqTypesTRUE (∀𝕎-□Func2 aw gc ∈A)
   where
-    aw1 : ∀𝕎 w (λ w' _ → isType i w' #BAIRE)
-    aw1 w1 e1 = eqTypesBAIRE
+    ∈A : □· w (λ w' _ → NATeq w' (#APPLY F (#bound name n f)) (#APPLY F (#bound name n f)))
+    ∈A = equalInType-NAT→ i w (#APPLY F (#bound name n f)) (#APPLY F (#bound name n f)) (APPLY-bound∈ i w F name n f ∈F ∈n ∈f)
 
-    aw2 : ∀𝕎 w (λ w' _ → isType i w' #NAT)
-    aw2 w1 e1 = eqTypesNAT
+    gc : □· w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· 0 name w'' ≡ just t × ·ᵣ Resℂ₀₁ 0 t))))
+    gc = □·-choice· w name 0 Resℂ₀₁ compat
 
-    aw3 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #BAIRE a₁ a₂
-                        → equalInType i w' #NAT (#APPLY (#APPLY F (#bound name n f)) a₁) (#APPLY (#APPLY F (#bound name n f)) a₂))
-    aw3 w1 e1 a₁ a₂ ea = {!!}
+    aw : ∀𝕎 w (λ w' e' → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· 0 name w'' ≡ just t × ·ᵣ Resℂ₀₁ 0 t)))
+                        → NATeq w' (#APPLY F (#bound name n f)) (#APPLY F (#bound name n f))
+                        → Σ CTerm (λ x → Σ CTerm (λ y →
+                            #test name F n f #⇛ #INL x at w' × #test name F n f #⇛ #INL y at w' × equalInType i w' Typeℂ₀₁· x y
+                            ⊎ #test name F n f #⇛ #INR x at w' × #test name F n f #⇛ #INR y at w' × equalInType i w' #TRUE x y)))
+    aw w1 e1 gcn (m , c₁ , c₂) = {!!}
       where
-        eqn : equalInType i w1 #NAT (#APPLY (#APPLY F f) a₁) (#APPLY (#APPLY F f) a₂)
-        eqn = equalInType-FUN→ {i} {w1} {#BAIRE} {#NAT} {#APPLY F f} {#APPLY F f} {!!} w1 (⊑-refl· _)  a₁ a₂ ea
---}
+        comp : Σ 𝕎· (λ w2 → (#APPLY F (#bound name n f)) #⇓ (#NUM m) from w1 to w2)
+        comp = #⇛→#⇓from-to {w1} {#APPLY F (#bound name n f)} {#NUM m} c₁
+
+        w2 : 𝕎·
+        w2 = fst comp
+
+        cp : (#APPLY F (#bound name n f)) #⇓ (#NUM m) from w1 to w2
+        cp = snd comp
+
+        e2 : w1 ⊑· w2
+        e2 = #⇓from-to→⊑ {_} {_} {#APPLY F (#bound name n f)} {#NUM m} cp
+
+        gcc : Σ ℂ· (λ t → getChoice· 0 name w2 ≡ just t × (t ≡ ℂ₀· ⊎ t ≡ ℂ₁·))
+        gcc = lower (gcn w2 e2)
+
+
+-- Check what world (#APPLY F (#bound name n f)) ends up in and name's value in that world
+-- and compare it with with ℂ₀ before instantiating the conclusion
+-- Because we used NAT, this requires choices to be numbers (should be QTNAT in the union)
+
 \end{code}
