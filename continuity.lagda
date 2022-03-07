@@ -710,14 +710,83 @@ APPLY-bound∈ i w F name n f ∈F ∈n ∈f =
 #⇓from-to→⊑ {w} {w'} {a} {b} (n , comp) = ≡ᵣ→⊑ (steps⊑ w n ⌜ a ⌝) (→≡snd comp)
 
 
+-- MOVE to props3
+→INL-equalInType-UNION : {n : ℕ} {w : 𝕎·} {A B x y : CTerm}
+                          → isType n w B
+                          → equalInType n w A x y
+                          → equalInType n w (#UNION A B) (#INL x) (#INL y)
+→INL-equalInType-UNION {n} {w} {A} {B} {x} {y} tb h =
+  →equalInType-UNION (fst h) tb (Mod.∀𝕎-□ M aw)
+  where
+    aw : ∀𝕎 w (λ w' _ → Σ CTerm (λ x₁ → Σ CTerm (λ y₁ →
+               #INL x #⇛ #INL x₁ at w' × #INL y #⇛ #INL y₁ at w' × equalInType n w' A x₁ y₁
+               ⊎ #INL x #⇛ #INR x₁ at w' × #INL y #⇛ #INR y₁ at w' × equalInType n w' B x₁ y₁)))
+    aw w' e' = x , y , inj₁ (#compAllRefl (#INL x) w' , #compAllRefl (#INL y) w' , equalInType-mon h w' e')
+
+
+-- MOVE to props3
+→INR-equalInType-UNION : {n : ℕ} {w : 𝕎·} {A B x y : CTerm}
+                          → isType n w A
+                          → equalInType n w B x y
+                          → equalInType n w (#UNION A B) (#INR x) (#INR y)
+→INR-equalInType-UNION {n} {w} {A} {B} {x} {y} ta h =
+  →equalInType-UNION ta (fst h) (Mod.∀𝕎-□ M aw)
+  where
+    aw : ∀𝕎 w (λ w' _ → Σ CTerm (λ x₁ → Σ CTerm (λ y₁ →
+               #INR x #⇛ #INL x₁ at w' × #INR y #⇛ #INL y₁ at w' × equalInType n w' A x₁ y₁
+               ⊎ #INR x #⇛ #INR x₁ at w' × #INR y #⇛ #INR y₁ at w' × equalInType n w' B x₁ y₁)))
+    aw w' e' = x , y , inj₂ (#compAllRefl (#INR x) w' , #compAllRefl (#INR y) w' , equalInType-mon h w' e')
+
+
+
+-- MOVE to props3
+→equalInType-QTUNION : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
+                       → isType n w A
+                       → isType n w B
+                       → □· w (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
+                                          → (a #⇓! (#INL x) at w' × b #⇓! (#INL y) at w' × equalInType n w' A x y)
+                                             ⊎
+                                             (a #⇓! (#INR x) at w' × b #⇓! (#INR y) at w' × equalInType n w' B x y))))
+                       → equalInType n w (#TSQUASH (#UNION A B)) a b
+→equalInType-QTUNION {n} {w} {A} {B} {a} {b} isa isb i =
+  equalInTypeTSQUASH← (Mod.∀𝕎-□Func M aw ({--Mod.→□∀𝕎 M--} i))
+  where
+    aw : ∀𝕎 w (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
+                            a #⇓! #INL x at w' × b #⇓! #INL y at w' × equalInType n w' A x y ⊎
+                            a #⇓! #INR x at w' × b #⇓! #INR y at w' × equalInType n w' B x y))
+                        → TSQUASHeq (equalInType n w' (#UNION A B)) w' a b)
+    aw w' e' (x , y , inj₁ (c₁ , c₂ , h)) = TSQUASH-eq→ (TSQUASH-eq-base (#INL x) (#INL y) tt tt (#⇓!→∼C! {w'} {a} {#INL x} c₁) (#⇓!→∼C! {w'} {b} {#INL y} c₂) (→INL-equalInType-UNION (eqTypes-mon (uni n) isb w' e') h))
+    aw w' e' (x , y , inj₂ (c₁ , c₂ , h)) = TSQUASH-eq→ (TSQUASH-eq-base (#INR x) (#INR y) tt tt (#⇓!→∼C! {w'} {a} {#INR x} c₁) (#⇓!→∼C! {w'} {b} {#INR y} c₂) (→INR-equalInType-UNION (eqTypes-mon (uni n) isa w' e') h))
+
+
+-- MOVE to terms
+QTUNION : Term → Term → Term
+QTUNION a b = TSQUASH (UNION a b)
+
+
+-- MOVE to terms
+#QTUNION : CTerm → CTerm → CTerm
+#QTUNION a b = ct (QTUNION ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # UNION ⌜ a ⌝ ⌜ b ⌝
+    c rewrite CTerm.closed a | CTerm.closed b = refl
+
+
+#QTUNION≡ : (a b : CTerm) → #QTUNION a b ≡ #TSQUASH (#UNION a b)
+#QTUNION≡ a b = CTerm≡ refl
+
+
+
 test∈ : (i : ℕ) (w : 𝕎·) (F : CTerm) (name : Name) (n : CTerm) (f : CTerm)
         → compatible· name w Resℂ₀₁
         → ∈Type i w #BAIRE→NAT F
         → ∈Type i w #NAT n
         → ∈Type i w #BAIRE f
-        → ∈Type i w (#UNION Typeℂ₀₁· #TRUE) (#test name F n f)
+        → ∈Type i w (#QTUNION Typeℂ₀₁· #TRUE) (#test name F n f)
 test∈ i w F name n f compat ∈F ∈n ∈f =
-  →equalInType-UNION (Typeℂ₀₁-isType· i w) eqTypesTRUE (∀𝕎-□Func2 aw gc ∈A)
+  ≡CTerm→equalInType
+    (sym (#QTUNION≡ Typeℂ₀₁· #TRUE))
+    (→equalInType-QTUNION (Typeℂ₀₁-isType· i w) eqTypesTRUE (∀𝕎-□Func2 aw gc ∈A))
   where
     ∈A : □· w (λ w' _ → NATeq w' (#APPLY F (#bound name n f)) (#APPLY F (#bound name n f)))
     ∈A = equalInType-NAT→ i w (#APPLY F (#bound name n f)) (#APPLY F (#bound name n f)) (APPLY-bound∈ i w F name n f ∈F ∈n ∈f)
@@ -728,8 +797,8 @@ test∈ i w F name n f compat ∈F ∈n ∈f =
     aw : ∀𝕎 w (λ w' e' → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· 0 name w'' ≡ just t × ·ᵣ Resℂ₀₁ 0 t)))
                         → NATeq w' (#APPLY F (#bound name n f)) (#APPLY F (#bound name n f))
                         → Σ CTerm (λ x → Σ CTerm (λ y →
-                            #test name F n f #⇛ #INL x at w' × #test name F n f #⇛ #INL y at w' × equalInType i w' Typeℂ₀₁· x y
-                            ⊎ #test name F n f #⇛ #INR x at w' × #test name F n f #⇛ #INR y at w' × equalInType i w' #TRUE x y)))
+                            #test name F n f #⇓! #INL x at w' × #test name F n f #⇓! #INL y at w' × equalInType i w' Typeℂ₀₁· x y
+                            ⊎ #test name F n f #⇓! #INR x at w' × #test name F n f #⇓! #INR y at w' × equalInType i w' #TRUE x y)))
     aw w1 e1 gcn (m , c₁ , c₂) = {!!}
       where
         comp : Σ 𝕎· (λ w2 → (#APPLY F (#bound name n f)) #⇓ (#NUM m) from w1 to w2)
@@ -747,6 +816,8 @@ test∈ i w F name n f compat ∈F ∈n ∈f =
         gcc : Σ ℂ· (λ t → getChoice· 0 name w2 ≡ just t × (t ≡ ℂ₀· ⊎ t ≡ ℂ₁·))
         gcc = lower (gcn w2 e2)
 
+
+-- Do we need to constrain F's type to be in (BAIRE→NAT!)?
 
 -- Check what world (#APPLY F (#bound name n f)) ends up in and name's value in that world
 -- and compare it with with ℂ₀ before instantiating the conclusion
