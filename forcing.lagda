@@ -198,9 +198,23 @@ data eqTypes u w T1 T2 where
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtB w e) a b))
     → eqTypes u w T1 T2
+  EQTQTUNION : (A1 B1 A2 B2 : CTerm)
+    → T1 #⇛ (#QTUNION A1 B1) at w
+    → T2 #⇛ (#QTUNION A2 B2) at w
+    → (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+    → (eqtB : ∀𝕎 w (λ w' _ → eqTypes u w' B1 B2))
+    → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
+    → (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtB w e) a b))
+    → eqTypes u w T1 T2
   EQTSQUASH : (A1 A2 : CTerm)
     → T1 #⇛ (#TSQUASH A1) at w
     → T2 #⇛ (#TSQUASH A2) at w
+    → (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+    → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
+    → eqTypes u w T1 T2
+  EQTTRUNC : (A1 A2 : CTerm)
+    → T1 #⇛ (#TTRUNC A1) at w
+    → T2 #⇛ (#TTRUNC A2) at w
     → (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → eqTypes u w T1 T2
@@ -264,13 +278,20 @@ EQeq a1 a2 eqa w t1 t2 =
   eqa a1 a2
 
 
--- NOTE: we constrain computations to prove 'TSQUASH-eq-BOOL→weakMonEq' in props3 -- FIXED now
 UNIONeq : (eqa eqb : per) → wper
 UNIONeq eqa eqb w t1 t2  =
   Σ CTerm (λ a → Σ CTerm (λ b →
     (t1 #⇛ (#INL a) at w × t2 #⇛ (#INL b) at w × eqa a b)
     ⊎
     (t1 #⇛ (#INR a) at w × t2 #⇛ (#INR b) at w × eqb a b)))
+
+
+QTUNIONeq : (eqa eqb : per) → wper
+QTUNIONeq eqa eqb w t1 t2  =
+  Σ CTerm (λ a → Σ CTerm (λ b →
+    (t1 #⇓ (#INL a) at w × t2 #⇓ (#INL b) at w × eqa a b)
+    ⊎
+    (t1 #⇓ (#INR a) at w × t2 #⇓ (#INR b) at w × eqb a b)))
 
 
 
@@ -297,6 +318,23 @@ TSQUASHeqℕ (suc n) eqa w t1 t2 = Σ CTerm (λ t → TSQUASHeqBase eqa w t1 t �
 
 TSQUASHeq : (eqa : per) → wper
 TSQUASHeq eqa w t1 t2 = Σ ℕ (λ n → TSQUASHeqℕ n eqa w t1 t2)
+
+
+
+{-- We equivalently define the above definition as follows... --}
+TTRUNCeqBase : (eqa : per) → wper
+TTRUNCeqBase eqa w t1 t2 =
+  Σ CTerm (λ a1 → Σ CTerm (λ a2 → #isValue a1 × #isValue a2 × t1 #⇓ a1 at w × t2 #⇓ a2 at w × eqa a1 a2))
+
+
+TTRUNCeqℕ : ℕ → (eqa : per) → wper
+TTRUNCeqℕ 0 eqa w t1 t2 = TTRUNCeqBase eqa w t1 t2
+TTRUNCeqℕ (suc n) eqa w t1 t2 = Σ CTerm (λ t → TTRUNCeqBase eqa w t1 t × TTRUNCeqℕ n eqa w t t2)
+
+
+TTRUNCeq : (eqa : per) → wper
+TTRUNCeq eqa w t1 t2 = Σ ℕ (λ n → TTRUNCeqℕ n eqa w t1 t2)
+
 
 
 TUNIONeqBase : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → per
@@ -358,8 +396,12 @@ eqInType u w (EQTEQ a1 _ a2 _ _ _ _ _ eqtA exta eqt1 eqt2) t1 t2 =
   □· w (λ w' e → EQeq a1 a2 (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTUNION _ _ _ _ _ _ eqtA eqtB exta extb) t1 t2 =
   □· w (λ w' e → UNIONeq (eqInType u w' (eqtA w' e)) (eqInType u w' (eqtB w' e)) w' t1 t2)
+eqInType u w (EQTQTUNION _ _ _ _ _ _ eqtA eqtB exta extb) t1 t2 =
+  □· w (λ w' e → QTUNIONeq (eqInType u w' (eqtA w' e)) (eqInType u w' (eqtB w' e)) w' t1 t2)
 eqInType u w (EQTSQUASH _ _ _ _ eqtA exta) t1 t2 =
   □· w (λ w' e → TSQUASHeq (eqInType u w' (eqtA w' e)) w' t1 t2)
+eqInType u w (EQTTRUNC _ _ _ _ eqtA exta) t1 t2 =
+  □· w (λ w' e → TTRUNCeq (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTCONST _ _ _ _ eqtA exta) t1 t2 =
   □· w (λ w' e → TCONSTeq (eqInType u w' (eqtA w' e)) w' t1 t2)
 --eqInType u w (EQTDUM _ _ _ _ eqtA exta) t1 t2 = Lift {0ℓ} 1ℓ ⊤

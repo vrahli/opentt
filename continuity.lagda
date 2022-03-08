@@ -91,7 +91,7 @@ open import props3(W)(M)(C)(K)(P)(G)(E)
 
 
 -- turns 'f' into λy.(if n ≤ y then name:=ℂ₁);f(y)
--- ℂ₀ is treated as true here, and ℂ₁ as false
+-- ℂ₀ is treated as true here (i.e., "didn't reach n"), and ℂ₁ as false (i.e., "reached at least n")
 bound : (name : Name) (n : Term) (f : Term) → Term
 bound name n f = LAMBDA (SEQ (IFLE n (VAR 0) (CHOOSE (CS name) (ℂ→T ℂ₁·)) AX) (APPLY f (VAR 0)))
 
@@ -131,6 +131,24 @@ BAIRE→NAT = FUN BAIRE NAT
 -- MOVE to terms
 #BAIRE→NAT≡ : #BAIRE→NAT ≡ #FUN #BAIRE #NAT
 #BAIRE→NAT≡ = refl
+
+
+-- MOVE to terms
+BAIRE→NAT! : Term
+BAIRE→NAT! = FUN BAIRE NAT!
+
+
+-- MOVE to terms
+#BAIRE→NAT! : CTerm
+#BAIRE→NAT! = ct BAIRE→NAT! c
+  where
+    c : # BAIRE→NAT!
+    c = refl
+
+
+-- MOVE to terms
+#BAIRE→NAT!≡ : #BAIRE→NAT! ≡ #FUN #BAIRE #NAT!
+#BAIRE→NAT!≡ = refl
 
 
 -- MOVE to terms
@@ -693,6 +711,13 @@ APPLY-bound∈ i w F name n f ∈F ∈n ∈f =
 #⇛→#⇓from-to {w} {a} {b} comp = ⇓→from-to (lower (comp w (⊑-refl· _)))
 
 
+-- MOVE to computation
+#⇛!→#⇓! : {w : 𝕎·} {a b : CTerm}
+                 → a #⇛! b at w
+                 → a #⇓! b at w
+#⇛!→#⇓! {w} {a} {b} comp = lower (comp w (⊑-refl· _))
+
+
 -- MOVE to util
 →≡snd : {l k : Level} {A : Set l} {B : Set k} {p₁ p₂ : A × B} → p₁ ≡ p₂ → snd p₁ ≡ snd p₂
 →≡snd {l} {k} {A} {B} {a₁ , b₁} {a₂ , b₂} e = pair-inj₂ e
@@ -739,6 +764,7 @@ APPLY-bound∈ i w F name n f ∈F ∈n ∈f =
 
 
 
+{--
 -- MOVE to props3
 →equalInType-QTUNION : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
                        → isType n w A
@@ -757,8 +783,100 @@ APPLY-bound∈ i w F name n f ∈F ∈n ∈f =
                         → TSQUASHeq (equalInType n w' (#UNION A B)) w' a b)
     aw w' e' (x , y , inj₁ (c₁ , c₂ , h)) = TSQUASH-eq→ (TSQUASH-eq-base (#INL x) (#INL y) tt tt (#⇓!→∼C! {w'} {a} {#INL x} c₁) (#⇓!→∼C! {w'} {b} {#INL y} c₂) (→INL-equalInType-UNION (eqTypes-mon (uni n) isb w' e') h))
     aw w' e' (x , y , inj₂ (c₁ , c₂ , h)) = TSQUASH-eq→ (TSQUASH-eq-base (#INR x) (#INR y) tt tt (#⇓!→∼C! {w'} {a} {#INR x} c₁) (#⇓!→∼C! {w'} {b} {#INR y} c₂) (→INR-equalInType-UNION (eqTypes-mon (uni n) isa w' e') h))
+--}
 
 
+
+{--
+-- MOVE to props3
+→equalInType-TRUNION : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
+                       → isType n w A
+                       → isType n w B
+                       → □· w (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
+                                          → (a #⇓ (#INL x) at w' × b #⇓ (#INL y) at w' × equalInType n w' A x y)
+                                             ⊎
+                                             (a #⇓ (#INR x) at w' × b #⇓ (#INR y) at w' × equalInType n w' B x y))))
+                       → equalInType n w (#TTRUNC (#UNION A B)) a b
+→equalInType-TRUNION {n} {w} {A} {B} {a} {b} isa isb i =
+  equalInTypeTTRUNC← (Mod.∀𝕎-□Func M aw ({--Mod.→□∀𝕎 M--} i))
+  where
+    aw : ∀𝕎 w (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
+                            a #⇓ #INL x at w' × b #⇓ #INL y at w' × equalInType n w' A x y ⊎
+                            a #⇓ #INR x at w' × b #⇓ #INR y at w' × equalInType n w' B x y))
+                        → TTRUNCeq (equalInType n w' (#UNION A B)) w' a b)
+    aw w' e' (x , y , inj₁ (c₁ , c₂ , h)) =
+      TTRUNC-eq→ (TTRUNC-eq-base
+                    (#INL x) (#INL y) tt tt c₁ c₂
+                    (→INL-equalInType-UNION (eqTypes-mon (uni n) isb w' e') h))
+    aw w' e' (x , y , inj₂ (c₁ , c₂ , h)) =
+      TTRUNC-eq→ (TTRUNC-eq-base
+                    (#INR x) (#INR y) tt tt c₁ c₂
+                    (→INR-equalInType-UNION (eqTypes-mon (uni n) isa w' e') h))
+--}
+
+
+
+{--
+-- MOVE to props3
+TTRUNC-eq-UNION→ : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
+                    → TTRUNC-eq (equalInType n w (#UNION A B)) w a b
+                    → Σ CTerm (λ x → Σ CTerm (λ y →
+                           a #⇓ #INL x at w × b #⇓ #INL y at w × equalInType n w A x y ⊎
+                           a #⇓ #INR x at w × b #⇓ #INR y at w × equalInType n w B x y))
+TTRUNC-eq-UNION→ {n} {w} {A} {B} {a} {b} (TTRUNC-eq-base a1 a2 i1 i2 c1 c2 ea) = {!!} --Mod.□-const M (Mod.∀𝕎-□Func M aw eqi)
+  where
+    eqi : □· w (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
+                          → (a1 #⇛ (#INL x) at w' × a2 #⇛ (#INL y) at w' × equalInType n w' A x y)
+                             ⊎ (a1 #⇛ (#INR x) at w' × a2 #⇛ (#INR y) at w' × equalInType n w' B x y))))
+    eqi = equalInType-UNION→ ea
+
+    aw : ∀𝕎 w (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
+                           a1 #⇛ #INL x at w' × a2 #⇛ #INL y at w' × equalInType n w' A x y ⊎
+                           a1 #⇛ #INR x at w' × a2 #⇛ #INR y at w' × equalInType n w' B x y))
+                       → Σ CTerm (λ x → Σ CTerm (λ y →
+                           a #⇓ #INL x at w × b #⇓ #INL y at w × equalInType n w A x y ⊎
+                           a #⇓ #INR x at w × b #⇓ #INR y at w × equalInType n w B x y)))
+    aw w' e' (x , y , inj₁ (c₁ , c₂ , eqa)) =
+      x , y , inj₁ (≡R→#⇓ (#⇛→≡ c₁ i1) c1 ,
+                    ≡R→#⇓ (#⇛→≡ c₂ i2) c2 ,
+                    equalInType-local (Mod.∀𝕎-□Func M aw' eqi))
+      where
+        aw' : ∀𝕎 w (λ w'' e'' → Σ CTerm (λ x₁ → Σ CTerm (λ y₁ →
+                                   a1 #⇛ #INL x₁ at w'' × a2 #⇛ #INL y₁ at w'' × equalInType n w'' A x₁ y₁
+                                   ⊎ a1 #⇛ #INR x₁ at w'' × a2 #⇛ #INR y₁ at w'' × equalInType n w'' B x₁ y₁))
+                              → equalInType n w'' A x y)
+        aw' w'' e'' (x₁ , y₁ , inj₁ (d₁ , d₂ , eqa')) = {!!}
+        aw' w'' e'' (x₁ , y₁ , inj₂ (d₁ , d₂ , eqb')) = {!!}
+    aw w' e' (x , y , inj₂ (c₁ , c₂ , eqb)) = {!!}
+
+TTRUNC-eq-UNION→ {n} {w} {A} {B} {a} {b} (TTRUNC-eq-trans t h1 h2) = {!!}
+--}
+
+
+
+{--
+-- MOVE to props3
+equalInType-TRUNION→ : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
+                       → equalInType n w (#TTRUNC (#UNION A B)) a b
+                       → □· w (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y
+                                          → (a #⇓ (#INL x) at w' × b #⇓ (#INL y) at w' × equalInType n w' A x y)
+                                             ⊎
+                                             (a #⇓ (#INR x) at w' × b #⇓ (#INR y) at w' × equalInType n w' B x y))))
+equalInType-TRUNION→ {n} {w} {A} {B} {a} {b} i = Mod.∀𝕎-□Func M {!!} j
+  where
+    j : □· w (λ w' _ → TTRUNCeq (equalInType n w' (#UNION A B)) w' a b)
+    j = equalInTypeTTRUNC→ i
+
+    aw : ∀𝕎 w (λ w' e' → TTRUNCeq (equalInType n w' (#UNION A B)) w' a b
+                       → Σ CTerm (λ x → Σ CTerm (λ y →
+                           a #⇓ #INL x at w' × b #⇓ #INL y at w' × equalInType n w' A x y ⊎
+                           a #⇓ #INR x at w' × b #⇓ #INR y at w' × equalInType n w' B x y)))
+    aw w' e' h = {!!}
+--}
+
+
+
+{--
 -- MOVE to terms
 QTUNION : Term → Term → Term
 QTUNION a b = TSQUASH (UNION a b)
@@ -774,6 +892,7 @@ QTUNION a b = TSQUASH (UNION a b)
 
 #QTUNION≡ : (a b : CTerm) → #QTUNION a b ≡ #TSQUASH (#UNION a b)
 #QTUNION≡ a b = CTerm≡ refl
+--}
 
 
 
@@ -782,24 +901,32 @@ test∈ : (i : ℕ) (w : 𝕎·) (F : CTerm) (name : Name) (n : CTerm) (f : CTer
         → ∈Type i w #BAIRE→NAT F
         → ∈Type i w #NAT n
         → ∈Type i w #BAIRE f
-        → ∈Type i w (#QTUNION Typeℂ₀₁· #TRUE) (#test name F n f)
+        → ∈Type i w (#UNION #NAT #TRUE) (#test name F n f)
 test∈ i w F name n f compat ∈F ∈n ∈f =
-  ≡CTerm→equalInType
-    (sym (#QTUNION≡ Typeℂ₀₁· #TRUE))
-    (→equalInType-QTUNION (Typeℂ₀₁-isType· i w) eqTypesTRUE (∀𝕎-□Func2 aw gc ∈A))
+{--  ≡CTerm→equalInType
+    (sym (#UNION≡ Typeℂ₀₁· #TRUE))--}
+    (→equalInType-UNION eqTypesNAT eqTypesTRUE (∀𝕎-□Func2 aw gc ∈A))
   where
     ∈A : □· w (λ w' _ → NATeq w' (#APPLY F (#bound name n f)) (#APPLY F (#bound name n f)))
     ∈A = equalInType-NAT→ i w (#APPLY F (#bound name n f)) (#APPLY F (#bound name n f)) (APPLY-bound∈ i w F name n f ∈F ∈n ∈f)
 
-    gc : □· w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· 0 name w'' ≡ just t × ·ᵣ Resℂ₀₁ 0 t))))
-    gc = □·-choice· w name 0 Resℂ₀₁ compat
+    gc : □· w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (getChoice· 0 name w'' ≡ just ℂ₀· ⊎ getChoice· 0 name w'' ≡ just ℂ₁·)))
+    gc = Mod.∀𝕎-□Func M gcaw (□·-choice· w name 0 Resℂ₀₁ compat)
+      where
+        gcaw : ∀𝕎 w (λ w' e' → ∀𝕎 w' (λ w'' _ → Lift (lsuc L) (Σ ℂ· (λ t → getChoice· 0 name w'' ≡ just t × ·ᵣ Resℂ₀₁ 0 t)))
+                              → ∀𝕎 w' (λ w'' _ → Lift (lsuc L) (getChoice· 0 name w'' ≡ just ℂ₀· ⊎ getChoice· 0 name w'' ≡ just ℂ₁·)))
+        gcaw w1 e1 h w2 e2 = lift (gcj (lower (h w2 e2)))
+          where
+            gcj : Σ ℂ· (λ t → getChoice· 0 name w2 ≡ just t × ·ᵣ Resℂ₀₁ 0 t) → getChoice· 0 name w2 ≡ just ℂ₀· ⊎ getChoice· 0 name w2 ≡ just ℂ₁·
+            gcj (t , gct , inj₁ z) rewrite z = inj₁ gct
+            gcj (t , gct , inj₂ z) rewrite z = inj₂ gct
 
-    aw : ∀𝕎 w (λ w' e' → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· 0 name w'' ≡ just t × ·ᵣ Resℂ₀₁ 0 t)))
+    aw : ∀𝕎 w (λ w' e' → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (getChoice· 0 name w'' ≡ just ℂ₀· ⊎ getChoice· 0 name w'' ≡ just ℂ₁·))
                         → NATeq w' (#APPLY F (#bound name n f)) (#APPLY F (#bound name n f))
                         → Σ CTerm (λ x → Σ CTerm (λ y →
-                            #test name F n f #⇓! #INL x at w' × #test name F n f #⇓! #INL y at w' × equalInType i w' Typeℂ₀₁· x y
-                            ⊎ #test name F n f #⇓! #INR x at w' × #test name F n f #⇓! #INR y at w' × equalInType i w' #TRUE x y)))
-    aw w1 e1 gcn (m , c₁ , c₂) = {!!}
+                            #test name F n f #⇛ #INL x at w' × #test name F n f #⇛ #INL y at w' × equalInType i w' #NAT x y
+                            ⊎ #test name F n f #⇛ #INR x at w' × #test name F n f #⇛ #INR y at w' × equalInType i w' #TRUE x y)))
+    aw w1 e1 gcn (m , c₁ , c₂) = j (lower (gcn w2 e2))
       where
         comp : Σ 𝕎· (λ w2 → (#APPLY F (#bound name n f)) #⇓ (#NUM m) from w1 to w2)
         comp = #⇛→#⇓from-to {w1} {#APPLY F (#bound name n f)} {#NUM m} c₁
@@ -813,11 +940,15 @@ test∈ i w F name n f compat ∈F ∈n ∈f =
         e2 : w1 ⊑· w2
         e2 = #⇓from-to→⊑ {_} {_} {#APPLY F (#bound name n f)} {#NUM m} cp
 
-        gcc : Σ ℂ· (λ t → getChoice· 0 name w2 ≡ just t × (t ≡ ℂ₀· ⊎ t ≡ ℂ₁·))
-        gcc = lower (gcn w2 e2)
+        j : (getChoice· 0 name w2 ≡ just ℂ₀· ⊎ getChoice· 0 name w2 ≡ just ℂ₁·)
+            → Σ CTerm (λ x → Σ CTerm (λ y →
+                  #test name F n f #⇛ #INL x at w1 × #test name F n f #⇛ #INL y at w1 × equalInType i w1 #NAT x y
+                  ⊎ #test name F n f #⇛ #INR x at w1 × #test name F n f #⇛ #INR y at w1 × equalInType i w1 #TRUE x y))
+        j (inj₁ z) = #NUM m , #NUM m , inj₁ ({!!} , {!!} , NUM-equalInType-NAT i w1 m)
+        j (inj₂ z) = #AX , #AX , inj₂ ({!!} , {!!} , →equalInType-TRUE i)
 
 
--- Do we need to constrain F's type to be in (BAIRE→NAT!)?
+-- Do we need to constrain F's type to be in (BAIRE→NAT!)? -- No, doesn't make sense: what function is going to inhabit that type?
 
 -- Check what world (#APPLY F (#bound name n f)) ends up in and name's value in that world
 -- and compare it with with ℂ₀ before instantiating the conclusion
