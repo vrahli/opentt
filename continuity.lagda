@@ -99,12 +99,26 @@ bound name n f = LAMBDA (SEQ (IFLE n (VAR 0) (CHOOSE (CS name) (ℂ→T ℂ₁·
 -- TODO: the name should be a fresh name, that does not occur in F
 -- TODO: need union types?
 
--- We assume that initially name contains ℂ₀
+
+
+set : (name : Name) → Term
+set name = CHOOSE (CS name) (ℂ→T ℂ₀·)
+
+
+probe : (name : Name) (F : Term) (n : Term) (f : Term) → Term
+probe name F n f = LET (APPLY F (bound name n f))
+                       (IFC0 (APPLY (CS name) (NUM 0)) (INL (VAR 0)) (INR AX)) -- We check whether 'name' contains ℂ₀
+
+
+oldtest : (name : Name) (F : Term) (n : Term) (f : Term) → Term
+oldtest name F n f = LET (APPLY F (bound name n f))
+                         (LET (IFC0 (APPLY (CS name) (NUM 0)) (INL (VAR 0)) (INR AX)) -- We check whether 'name' contains ℂ₀
+                              (SEQ (CHOOSE (CS name) (ℂ→T ℂ₀·)) -- resets the reference to ℂ₀
+                                   (VAR 0)))
+
+
 test : (name : Name) (F : Term) (n : Term) (f : Term) → Term
-test name F n f = LET (APPLY F (bound name n f))
-                      (LET (IFC0 (APPLY (CS name) (NUM 0)) (INL (VAR 0)) (INR AX)) -- We check whether 'name' contains ℂ₀
-                           (SEQ (CHOOSE (CS name) (ℂ→T ℂ₀·)) -- resets the reference to ℂ₀
-                                (VAR 0)))
+test name F n f = SEQ (set name) (probe name F n f)
 
 
 -- MOVE to terms
@@ -302,11 +316,20 @@ fvars-IFLE a b c d = refl
             | lowerVars-fvars-CTerm≡[] (ℂ→C· ℂ₁·) = refl
 
 
+#set : (name : Name) → CTerm
+#set name = ct (set name) c
+  where
+    c : # set name
+    c rewrite CTerm.closed (ℂ→C· ℂ₀·) = refl
+
+
 #test : (name : Name) (F : CTerm) (n : CTerm) (f : CTerm) → CTerm
 #test name F n f = ct (test name ⌜ F ⌝ ⌜ n ⌝ ⌜ f ⌝) c
   where
     c : # test name ⌜ F ⌝ ⌜ n ⌝ ⌜ f ⌝
-    c rewrite CTerm.closed (#bound name n f)
+    c rewrite fvars-SEQ0 (set name) (probe name ⌜ F ⌝ ⌜ n ⌝ ⌜ f ⌝)
+            | CTerm.closed (#set name)
+            | CTerm.closed (#bound name n f)
             | lowerVarsApp (fvars ⌜ ℂ→C· ℂ₀· ⌝) [ 0 ]
             | lowerVars-fvars-CTerm≡[] (ℂ→C· ℂ₀·)
             | CTerm.closed F = refl
@@ -592,6 +615,9 @@ IFLE⇛¬≤ {k} {j} {w} {a} {b} lekj w1 e1 = lift (1 , c)
 
 CHOOSE-CS⇛AX : {w : 𝕎·} {name : Name} {t : Term} → CHOOSE (CS name) t ⇛ AX at w
 CHOOSE-CS⇛AX {w} {name} {t} w1 e1 = lift (1 , refl)
+
+#CHOOSE-CS⇛AX : {w : 𝕎·} {name : Name} {t : CTerm} → #CHOOSE (#CS name) t #⇛ #AX at w
+#CHOOSE-CS⇛AX {w} {name} {t} w1 e1 = CHOOSE-CS⇛AX w1 e1
 
 
 -- MOVE to computation
@@ -926,27 +952,40 @@ test∈ i w F name n f compat ∈F ∈n ∈f =
                         → Σ CTerm (λ x → Σ CTerm (λ y →
                             #test name F n f #⇛ #INL x at w' × #test name F n f #⇛ #INL y at w' × equalInType i w' #NAT x y
                             ⊎ #test name F n f #⇛ #INR x at w' × #test name F n f #⇛ #INR y at w' × equalInType i w' #TRUE x y)))
-    aw w1 e1 gcn (m , c₁ , c₂) = j (lower (gcn w2 e2))
+    aw w1 e1 gcn (m , c₁ , c₂) = j (lower (gcn w3 (⊑-trans· e2 e3)))
       where
-        comp : Σ 𝕎· (λ w2 → (#APPLY F (#bound name n f)) #⇓ (#NUM m) from w1 to w2)
-        comp = #⇛→#⇓from-to {w1} {#APPLY F (#bound name n f)} {#NUM m} c₁
+        comp1 : Σ 𝕎· (λ w2 → #set name #⇓ #AX from w1 to w2)
+        comp1 = #⇛→#⇓from-to {w1} {#set name} {#AX} (#CHOOSE-CS⇛AX {w1} {name} {ℂ→C· ℂ₀·})
 
         w2 : 𝕎·
-        w2 = fst comp
+        w2 = fst comp1
 
-        cp : (#APPLY F (#bound name n f)) #⇓ (#NUM m) from w1 to w2
-        cp = snd comp
+        comp1' : #set name #⇓ #AX from w1 to w2
+        comp1' = snd comp1
 
         e2 : w1 ⊑· w2
-        e2 = #⇓from-to→⊑ {_} {_} {#APPLY F (#bound name n f)} {#NUM m} cp
+        e2 = #⇓from-to→⊑ {_} {_} {#set name} {#AX} comp1'
 
-        j : (getChoice· 0 name w2 ≡ just ℂ₀· ⊎ getChoice· 0 name w2 ≡ just ℂ₁·)
+        comp2 : Σ 𝕎· (λ w3 → #APPLY F (#bound name n f) #⇓ #NUM m from w2 to w3)
+        comp2 = #⇛→#⇓from-to {w2} {#APPLY F (#bound name n f)} {#NUM m} (∀𝕎-mon e2 c₁)
+
+        w3 : 𝕎·
+        w3 = fst comp2
+
+        comp2' : (#APPLY F (#bound name n f)) #⇓ (#NUM m) from w2 to w3
+        comp2' = snd comp2
+
+        e3 : w2 ⊑· w3
+        e3 = #⇓from-to→⊑ {_} {_} {#APPLY F (#bound name n f)} {#NUM m} comp2'
+
+        j : (getChoice· 0 name w3 ≡ just ℂ₀· ⊎ getChoice· 0 name w3 ≡ just ℂ₁·)
             → Σ CTerm (λ x → Σ CTerm (λ y →
                   #test name F n f #⇛ #INL x at w1 × #test name F n f #⇛ #INL y at w1 × equalInType i w1 #NAT x y
                   ⊎ #test name F n f #⇛ #INR x at w1 × #test name F n f #⇛ #INR y at w1 × equalInType i w1 #TRUE x y))
         j (inj₁ z) = #NUM m , #NUM m , inj₁ ({!!} , {!!} , NUM-equalInType-NAT i w1 m)
         j (inj₂ z) = #AX , #AX , inj₂ ({!!} , {!!} , →equalInType-TRUE i)
 
+-- Prove this for the current world, and show that if F and f cannot read then this is true for all extensions too
 
 -- Do we need to constrain F's type to be in (BAIRE→NAT!)? -- No, doesn't make sense: what function is going to inhabit that type?
 
