@@ -15,11 +15,10 @@ open import compatible
 open import getChoice
 
 
-module choiceExt {L : Level} (W : PossibleWorlds {L}) (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M) where
+module choiceExt {L : Level} (W : PossibleWorlds {L}) (C : Choice) where
 
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import computation(W)(C)(M)(G)
 
 \end{code}
 
@@ -32,13 +31,6 @@ record ChoiceExt : Set(lsuc(L)) where
     -- ℂ contains at least 2 choices
     ℂ₀ : ℂ·
     ℂ₁ : ℂ·
-
-    -- Meant to capture the choices that are "equivalent" values (not all choices have to be values)
-    --∼ℂ : 𝕎· → ℂ· → ℂ· → Set
-    ¬∼ℂ₀₁ : (w : 𝕎·) → ¬ ∼C! w (ℂ→C· ℂ₀) (ℂ→C· ℂ₁)
-
-    isValueℂ₀ : #isValue (ℂ→C· ℂ₀)
-    isValueℂ₁ : #isValue (ℂ→C· ℂ₁)
 
     decℂ₀ : (c : ℂ·) → c ≡ ℂ₀ ⊎ ¬ c ≡ ℂ₀
     decℂ₁ : (c : ℂ·) → c ≡ ℂ₁ ⊎ ¬ c ≡ ℂ₁

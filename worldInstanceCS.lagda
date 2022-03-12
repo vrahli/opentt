@@ -770,18 +770,12 @@ isℂ₀cs _ = false
 open import getChoice(PossibleWorldsCS)(choiceCS)(compatibleCS)
 
 getChoiceCS : GetChoice
-getChoiceCS = mkGetChoice getCsChoice T→ℂcs chooseCS chooseCS⊑ isℂ₀cs
+getChoiceCS = mkGetChoice getCsChoice T→ℂcs chooseCS chooseCS⊑
 -- getCsChoiceCompatible
 
 open import getChoiceDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
-open import computation(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
 
 
-#≠01 : (w : 𝕎·) → ¬ ∼C! w (#NUM 0) (#NUM 1)
-#≠01 w h = x (#compVal (∼C!→#⇓ {w} {#NUM 0} {#NUM 1} tt h) tt)
-  where
-    x : #NUM 0 ≡ #NUM 1 → ⊥
-    x ()
 
 decℂ₀cs : (c : ℂ·) → c ≡ #NUM 0 ⊎ ¬ c ≡ #NUM 0
 decℂ₀cs c with is-NUM ⌜ c ⌝
@@ -805,12 +799,38 @@ decℂ₁cs c | inj₂ z = inj₂ x
     x e rewrite e = z 1 (≡CTerm e)
 
 
-open import choiceExt{1ℓ}(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
+open import choiceExt{1ℓ}(PossibleWorldsCS)(choiceCS)
 
 choiceExtCS : ChoiceExt
-choiceExtCS = mkChoiceExt (#NUM 0) (#NUM 1) {--∼C--} #≠01 tt tt decℂ₀cs decℂ₁cs
+choiceExtCS = mkChoiceExt (#NUM 0) (#NUM 1) decℂ₀cs decℂ₁cs
 
 open import choiceExtDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)
+
+
+open import computation(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)
+
+
+#≠01 : (w : 𝕎·) → ¬ ∼C! w (#NUM 0) (#NUM 1)
+#≠01 w h = x (#compVal (∼C!→#⇓ {w} {#NUM 0} {#NUM 1} tt h) tt)
+  where
+    x : #NUM 0 ≡ #NUM 1 → ⊥
+    x ()
+
+
+ℂ→T→ℂ0 : T→ℂ· ⌜ Cℂ₀ ⌝ ≡ ℂ₀·
+ℂ→T→ℂ0 = refl
+
+
+ℂ→T→ℂ1 : T→ℂ· ⌜ Cℂ₁ ⌝ ≡ ℂ₁·
+ℂ→T→ℂ1 = refl
+
+
+open import choiceVal{1ℓ}(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)
+
+choiceValCS : ChoiceVal
+choiceValCS = mkChoiceVal #≠01 tt tt ℂ→T→ℂ0 ℂ→T→ℂ1
+
+open import choiceValDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)(choiceValCS)
 
 
 

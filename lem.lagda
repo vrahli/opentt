@@ -37,6 +37,7 @@ open import world
 open import choice
 open import compatible
 open import choiceExt
+open import choiceVal
 open import getChoice
 open import progress
 open import exBar
@@ -45,7 +46,7 @@ open import mod
 
 module lem {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
            (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
-           (X : ChoiceExt W C K G)
+           (X : ChoiceExt W C) (V : ChoiceVal W C K G X)
            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
            (EM : ExcludedMiddle (lsuc(L)))
            (EB : ExBar W M)
@@ -55,18 +56,18 @@ module lem {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
 open import worldDef(W)
 open import choiceDef{L}(C)
 open import exBarDef(W)(M)(EB)
-open import computation(W)(C)(K)(G)
+open import computation(W)(C)(K)(G)(X)
 open import bar(W)
 open import barOpen(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(E)
-open import props0(W)(M)(C)(K)(P)(G)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(E)
+open import props0(W)(M)(C)(K)(P)(G)(X)(E)
+open import ind2(W)(M)(C)(K)(P)(G)(X)(E)
 
-open import props1(W)(M)(C)(K)(P)(G)(E)
-open import props2(W)(M)(C)(K)(P)(G)(E)
-open import props3(W)(M)(C)(K)(P)(G)(E)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(E)
+open import props1(W)(M)(C)(K)(P)(G)(X)(E)
+open import props2(W)(M)(C)(K)(P)(G)(X)(E)
+open import props3(W)(M)(C)(K)(P)(G)(X)(E)
+open import lem_props(W)(M)(C)(K)(P)(G)(X)(V)(E)
 \end{code}
 
 

@@ -36,11 +36,11 @@ open import choiceExt
 
 
 module choiceExtDef {L : Level} (W : PossibleWorlds {L})
-                    (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M) (E : ChoiceExt {L} W C M G)
+                    (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M) (E : ChoiceExt {L} W C)
        where
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import computation(W)(C)(M)(G)
+open import getChoiceDef{L}(W)(C)(M)(G)
 
 
 open ChoiceExt
@@ -57,9 +57,6 @@ open ChoiceExt
 --∼ℂ· : 𝕎· → ℂ· → ℂ· → Set
 --∼ℂ· = ∼ℂ E
 
-
-¬∼ℂ₀₁· : (w : 𝕎·) → ¬ ∼C! w (ℂ→C· ℂ₀·) (ℂ→C· ℂ₁·)
-¬∼ℂ₀₁· = ¬∼ℂ₀₁ E
 
 
 Cℂ₀ : CTerm
@@ -78,16 +75,13 @@ Tℂ₁ : Term
 Tℂ₁ = ℂ→T ℂ₁·
 
 
-isValueℂ₀· : isValue Tℂ₀
-isValueℂ₀· = isValueℂ₀ E
-
-
-isValueℂ₁· : isValue Tℂ₁
-isValueℂ₁· = isValueℂ₁ E
-
 
 decℂ₀· : (c : ℂ·) → c ≡ ℂ₀· ⊎ ¬ c ≡ ℂ₀·
 decℂ₀· = decℂ₀ E
+
+
+decT₀ : (t : Term) → T→ℂ· t ≡ ℂ₀· ⊎ ¬ T→ℂ· t ≡ ℂ₀·
+decT₀ t = decℂ₀· (T→ℂ· t)
 
 
 decℂ₁· : (c : ℂ·) → c ≡ ℂ₁· ⊎ ¬ c ≡ ℂ₁·
@@ -125,18 +119,5 @@ Res⊤ = mkRes (λ n t → ⊤) ℂ₀· (λ n → tt) (true , λ n c → inj₁
 
 sat-ℂ₁ : ⋆ᵣ Resℂ₀₁ ℂ₁·
 sat-ℂ₁ n = inj₂ refl
-
-
--- t1 and t2 compute to the same choice but that choice can change over time
-weakℂEq : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
-weakℂEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) ((c₁ c₂ : ℂ·) → t1 ⇓! ℂ→T c₁ at w' → t2 ⇓! ℂ→T c₂ at w' → ∼C! w' (ℂ→C· c₁) (ℂ→C· c₂)))
-
-
-weakℂ₀₁M : (w : 𝕎·) (f : 𝕎· → Maybe Term) → Set(lsuc(L))
-weakℂ₀₁M w f = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (Σ Term (λ t → f w' ≡ just t × (t ⇓! Tℂ₀ at w' ⊎ t ⇓! Tℂ₁ at w'))))
-
-
-#weakℂEq : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
-#weakℂEq w t1 t2 = weakℂEq w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 \end{code}

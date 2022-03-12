@@ -379,7 +379,8 @@ isℂ₀ref (suc _) = false
 open import getChoice(PossibleWorldsRef)(choiceRef)(compatibleREF)
 
 getChoiceRef : GetChoice
-getChoiceRef = mkGetChoice getRefChoice T→ℂref chooseREF chooseREF⊑ isℂ₀ref
+getChoiceRef = mkGetChoice getRefChoice T→ℂref chooseREF chooseREF⊑
+-- isℂ₀ref
 -- getRefChoiceCompatible
 
 open import getChoiceDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)
@@ -434,7 +435,6 @@ progressREF =
     refChainProgress
 
 open import progressDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(progressREF)
-open import computation(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)
 
 
 
@@ -444,14 +444,6 @@ C0 = 0 --true
 
 C1 : ℂ·
 C1 = 1 --false
-
-
-¬∼c01 : (w : 𝕎·) → ¬ ∼C! w (ℂ→C· C0) (ℂ→C· C1)
-¬∼c01 w h = x (#compVal (∼C!→#⇓ {w} {ℂ→C· C0} {ℂ→C· C1} tt h) tt)
-  where
-    x : ℂ→C· C0 ≡ ℂ→C· C1 → ⊥
-    x ()
-
 
 decℂ₀ref : (c : ℂ·) → c ≡ C0 ⊎ ¬ c ≡ C0
 decℂ₀ref c with c ≟ 0
@@ -465,12 +457,41 @@ decℂ₁ref c with c ≟ 1
 ... | no x = inj₂ λ y → x y
 
 
-open import choiceExt{1ℓ}(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)
+
+open import choiceExt{1ℓ}(PossibleWorldsRef)(choiceRef)
 
 choiceExtRef : ChoiceExt
-choiceExtRef = mkChoiceExt C0 C1 {--∼c--} ¬∼c01 tt tt decℂ₀ref decℂ₁ref
+choiceExtRef = mkChoiceExt C0 C1 decℂ₀ref decℂ₁ref
 
 open import choiceExtDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)
+
+
+open import computation(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)
+
+
+
+¬∼c01 : (w : 𝕎·) → ¬ ∼C! w (ℂ→C· C0) (ℂ→C· C1)
+¬∼c01 w h = x (#compVal (∼C!→#⇓ {w} {ℂ→C· C0} {ℂ→C· C1} tt h) tt)
+  where
+    x : ℂ→C· C0 ≡ ℂ→C· C1 → ⊥
+    x ()
+
+
+ℂ→T→ℂ0 : T→ℂ· ⌜ Cℂ₀ ⌝ ≡ ℂ₀·
+ℂ→T→ℂ0 = refl
+
+
+ℂ→T→ℂ1 : T→ℂ· ⌜ Cℂ₁ ⌝ ≡ ℂ₁·
+ℂ→T→ℂ1 = refl
+
+
+
+open import choiceVal{1ℓ}(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)
+
+choiceValRef : ChoiceVal
+choiceValRef = mkChoiceVal ¬∼c01 tt tt ℂ→T→ℂ0 ℂ→T→ℂ1
+
+open import choiceValDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)(choiceValRef)
 
 
 

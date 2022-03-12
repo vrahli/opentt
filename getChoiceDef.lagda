@@ -91,11 +91,3 @@ chooseT n w t = choose· n w (T→ℂ· t)
 
 choose⊑· : (cs : Name) (w : 𝕎·) (c : ℂ·) → w ⊑· choose· cs w c
 choose⊑· = choose⊑ G
-
-
-isℂ₀· : ℂ· → Bool
-isℂ₀· = isℂ₀ G
-
-
-isT₀ : Term → Bool
-isT₀ t = isℂ₀· (T→ℂ· t)

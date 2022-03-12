@@ -52,22 +52,26 @@ record 𝔹 (B : Bars) (w : 𝕎·) : Set(lsuc(L)) where
 {-- Bars and dependent bars --}
 ∈𝔹 : {B : Bars} {w : 𝕎·}  (b : 𝔹 B w) (f : wPred w) → Set(lsuc(L))
 ∈𝔹 {B} {w} b f = {w' : 𝕎·} (e : w ⊑· w') → 𝔹.bar b w' → ∀𝕎 w' (↑wPred' f e)
+{-# INLINE ∈𝔹 #-}
 
 
 Σ∈𝔹 : (B : Bars) {w : 𝕎·} (f : wPred w) → Set(lsuc(L))
 Σ∈𝔹 B {w} f = Σ (𝔹 B w) (λ b → ∈𝔹 b f)
+{-# INLINE Σ∈𝔹 #-}
 
 
 ∈𝔹Dep : {B : Bars} {w : 𝕎·} (b : 𝔹 B w) {g : wPred w} (i : ∀𝕎 w g) (f : wPredDep g) → Set(lsuc(L))
 ∈𝔹Dep {B} {w} b {g} i f =
   {w' : 𝕎·} (e : w ⊑· w') → 𝔹.bar b w'
   → ∀𝕎 w' (λ w'' e' → (x : w ⊑· w'') → f w'' x (i w'' x))
+{-# INLINE ∈𝔹Dep #-}
 
 
 Σ∈𝔹' : (B : Bars) {w : 𝕎·} {g : wPred w} (h : Σ∈𝔹 B g) (f : wPredDep g) → Set(lsuc(L))
-Σ∈𝔹' B {w} {g} (b , i) f =
-  {w1 : 𝕎·} (e1 : w ⊑· w1) (ib : 𝔹.bar b w1)
-  → Σ (𝔹 B w1) (λ b' → ∈𝔹Dep b' (i e1 ib) (↑wPredDep'' f e1))
+Σ∈𝔹' B {w} {g} bi f =
+  {w1 : 𝕎·} (e1 : w ⊑· w1) (ib : 𝔹.bar (fst bi) w1)
+  → Σ (𝔹 B w1) (λ b' → ∈𝔹Dep b' (snd bi e1 ib) (↑wPredDep'' f e1))
+{-# INLINE Σ∈𝔹' #-}
 
 
 {-- Intersection --}

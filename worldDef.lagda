@@ -50,9 +50,11 @@ w1 ⊑· w2 = _⊑_ W w1 w2
 
 wPred : 𝕎· → Set(lsuc(lsuc(L)))
 wPred w = (w' : 𝕎·) (e : w ⊑· w') → Set(lsuc(L))
+{-# INLINE wPred #-}
 
 wPredDep : {w : 𝕎·} (f : wPred w) → Set(lsuc(lsuc(L)))
 wPredDep {w} f = (w' : 𝕎·) (e' : w ⊑· w') (x : f w' e') → Set(lsuc(L))
+{-# INLINE wPredDep #-}
 
 wPredExtIrr : {w : 𝕎·} (f : wPred w) → Set(lsuc(L))
 wPredExtIrr {w} f = (w' : 𝕎·) (e1 e2 : w ⊑· w') → f w' e1 → f w' e2
@@ -93,6 +95,7 @@ wPredDepExtIrr {w} {g} f = (w' : 𝕎·) (e1 e2 : w ⊑· w') (x1 : g w' e1) (x2
 
 ↑wPredDep'' : {w1 : 𝕎·} {f : wPred w1} (g : wPredDep f) {w2 : 𝕎·} (e : w1 ⊑· w2) → wPredDep (↑wPred' f e)
 ↑wPredDep'' {w1} {f} g {w2} e w' e' z = (x : w1 ⊑· w') → g w' x (z x)
+{-# INLINE ↑wPredDep'' #-}
 
 
 ∀𝕎-mon : {w2 w1 : 𝕎·} {f :  wPred w1} (e : w1 ⊑· w2)

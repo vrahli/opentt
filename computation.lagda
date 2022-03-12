@@ -35,14 +35,16 @@ open import world
 open import choice
 open import compatible
 open import getChoice
+open import choiceExt
 
 
 module computation {L : Level} (W : PossibleWorlds {L})
-                   (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M)
+                   (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M) (E : ChoiceExt {L} W C)
        where
 open import worldDef(W)
 open import choiceDef{L}(C)
 open import getChoiceDef(W)(C)(M)(G)
+open import choiceExtDef(W)(C)(M)(G)(E)
 \end{code}
 
 
@@ -115,11 +117,11 @@ step (CHOOSE n t) w with step n w
 ... | just (m , w') = ret (CHOOSE m t) w'
 ... | nothing = nothing--}
 -- IFC₀
-step (IFC0 a b c) w with value? a
-... | true with isT₀ a
-... |    true = ret b w
-... |    false = ret c w
-step (IFC0 a b c) w | false with step a w
+step (IFC0 a b c) w with isValue⊎ a
+... | inj₁ x with decT₀ a
+... |    inj₁ y = ret b w
+... |    inj₂ y = ret c w
+step (IFC0 a b c) w | inj₂ x with step a w
 ... |    just (a' , w') = ret (IFC0 a' b c) w'
 ... |    nothing = nothing
 -- FIX
@@ -708,11 +710,11 @@ step⊑ {w} {w'} {CHOOSE a a₁} {b} comp with is-CS a
 ... | inj₂ x with step⊎ a w
 ... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
-step⊑ {w} {w'} {IFC0 a a₁ a₂} {b} comp with value? a
-... | true with isT₀ a
-... |    true rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
-... |    false rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
-step⊑ {w} {w'} {IFC0 a a₁ a₂} {b} comp | false with step⊎ a w
+step⊑ {w} {w'} {IFC0 a a₁ a₂} {b} comp with isValue⊎ a
+... | inj₁ x with decT₀ a
+... |    inj₁ y rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+... |    inj₂ y rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {IFC0 a a₁ a₂} {b} comp | inj₂ y with step⊎ a w
 ... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step⊑ {w} {w'} {TSQUASH a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _

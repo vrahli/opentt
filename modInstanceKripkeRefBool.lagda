@@ -41,6 +41,7 @@ open import newChoice
 open import freeze
 open import mod
 open import choiceExt
+open import choiceVal
 
 
 -- An instance with Kripke bars (inKripkeBar-Bar) and references
@@ -77,8 +78,11 @@ N = newChoiceRef
 F : Freeze W C K P G N
 F = freezeREF
 
-X : ChoiceExt W C K G
+X : ChoiceExt W C
 X = choiceExtRef
+
+V : ChoiceVal W C K G X
+V = choiceValRef
 
 open import worldDef(W)
 open import bar(W)
@@ -89,17 +93,18 @@ open import compatibleDef(W)(C)(K)
 open import progressDef(W)(C)(K)(P)
 open import getChoiceDef(W)(C)(K)(G)
 open import choiceExtDef(W)(C)(K)(G)(X)
+open import choiceValDef(W)(C)(K)(G)(X)(V)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 
 --open import barBeth(W)(C)(K)(P)
 open import barI(W)(M)--(C)(K)(P)
-open import computation(W)(C)(K)(G)
+open import computation(W)(C)(K)(G)(X)
 
-open import forcing(W)(M)(C)(K)(P)(G)(E)
-open import props1(W)(M)(C)(K)(P)(G)(E)
-open import props2(W)(M)(C)(K)(P)(G)(E)
-open import props3(W)(M)(C)(K)(P)(G)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(E)
+open import props1(W)(M)(C)(K)(P)(G)(X)(E)
+open import props2(W)(M)(C)(K)(P)(G)(X)(E)
+open import props3(W)(M)(C)(K)(P)(G)(X)(E)
 
 
 
@@ -250,7 +255,7 @@ followChoice-kripke-ref c {w} {f} {r} (bar , i) ioc comp fb =
 
 
 
-open import choiceBar(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)
+open import choiceBar(W)(M)(C)(K)(P)(G)(X)(V)(N)(F)(E)
 
 kripkeRef-choiceBar : ChoiceBar
 kripkeRef-choiceBar =

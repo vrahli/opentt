@@ -35,6 +35,7 @@ open import terms
 open import world
 open import choice
 open import choiceExt
+open import choiceVal
 open import compatible
 open import getChoice
 open import progress
@@ -46,28 +47,30 @@ open import choiceBar
 
 module continuity {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
                   (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
-                  (X : ChoiceExt W C K G) (N : NewChoice {L} W C K G)
+                  (X : ChoiceExt W C) (V : ChoiceVal W C K G X)
+                  (N : NewChoice {L} W C K G)
                   (F : Freeze {L} W C K P G N)
                   (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-                  (CB : ChoiceBar W M C K P G X N F E) -- TODO - We won't need everything from there: use a different module
+                  (CB : ChoiceBar W M C K P G X V N F E) -- TODO - We won't need everything from there: use a different module
        where
 
 
 open import worldDef(W)
-open import computation(W)(C)(K)(G)
+open import computation(W)(C)(K)(G)(X)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(E)
-open import props0(W)(M)(C)(K)(P)(G)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(E)
+open import props0(W)(M)(C)(K)(P)(G)(X)(E)
+open import ind2(W)(M)(C)(K)(P)(G)(X)(E)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
 open import getChoiceDef(W)(C)(K)(G)
 open import choiceExtDef(W)(C)(K)(G)(X)
+open import choiceValDef(W)(C)(K)(G)(X)(V)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 
-open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)(CB)
+open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(V)(N)(F)(E)(CB)
 
 {--
 open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(E)
@@ -85,9 +88,9 @@ open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(E)
 open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(E)
 --}
 
-open import props1(W)(M)(C)(K)(P)(G)(E)
-open import props2(W)(M)(C)(K)(P)(G)(E)
-open import props3(W)(M)(C)(K)(P)(G)(E)
+open import props1(W)(M)(C)(K)(P)(G)(X)(E)
+open import props2(W)(M)(C)(K)(P)(G)(X)(E)
+open import props3(W)(M)(C)(K)(P)(G)(X)(E)
 
 
 -- turns 'f' into λy.(if n ≤ y then name:=ℂ₁);f(y)
@@ -443,6 +446,21 @@ sub-APPLY a b c = refl
 
 sub-VAR0 : (a : Term) → sub a (VAR 0) ≡ a
 sub-VAR0 a rewrite shiftDownUp a 0 = refl
+
+
+sub-IFC0 : (a b c d : Term)
+           → sub a (IFC0 b c d) ≡ IFC0 (sub a b) (sub a c) (sub a d)
+sub-IFC0 a b c d = refl
+
+
+→sub-IFC0 : {a b c d b' c' d' : Term}
+                → sub a b ≡ b'
+                → sub a c ≡ c'
+                → sub a d ≡ d'
+                → sub a (IFC0 b c d) ≡ IFC0 b' c' d'
+→sub-IFC0 {a} {b} {c} {d} {b'} {c'} {d'} eb ec ed
+  rewrite sym eb | sym ec | sym ed =
+  refl
 
 
 #⇛!-#APPLY-#BOUND : (w : 𝕎·) (name : Name) (n : CTerm) (f : CTerm) (a : CTerm)
@@ -922,6 +940,117 @@ QTUNION a b = TSQUASH (UNION a b)
 
 
 
+LET-steps₁ : {k : ℕ} {w w' : 𝕎·} {a b t : Term}
+              → steps k (a , w) ≡ (b , w')
+              → Σ ℕ (λ k → steps k (LET a t , w) ≡ (LET b t , w'))
+LET-steps₁ {0} {w} {w'} {a} {b} {t} comp rewrite pair-inj₁ comp | pair-inj₂ comp = 0 , refl
+LET-steps₁ {suc k} {w} {w'} {a} {b} {t} comp with isValue⊎ a
+... | inj₁ x rewrite stepsVal a w (suc k) x | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+... | inj₂ x with step⊎ a w
+... |    inj₁ (y , w'' , q) rewrite q = suc (fst c) , snd c
+  where
+    c : Σ ℕ (λ k₁ → steps (suc k₁) (LET a t , w) ≡ (LET b t , w'))
+    c with isValue⊎ a
+    ... | inj₁ x' = ⊥-elim (x x')
+    ... | inj₂ x' rewrite q = LET-steps₁ {k} comp
+... |    inj₂ q rewrite q | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+
+
+LET⇓₁ : {w w' : 𝕎·} {a b t : Term}
+         → a ⇓ b from w to w'
+         → LET a t ⇓ LET b t from w to w'
+LET⇓₁ {w} {w'} {a} {b} {t} (k , comp) = LET-steps₁ {k} {w} {w'} {a} {b} {t} comp
+
+
+
+LET⇛₁ : {w : 𝕎·} {a a' b : Term}
+           → a ⇛ a' at w
+           → LET a b ⇛ LET a' b at w
+LET⇛₁ {w} {a} {a'} {b} comp w1 e1 = lift (⇓-from-to→⇓ {w1} {fst c} (LET⇓₁ (snd c)))
+  where
+    c : Σ 𝕎· (λ w2 → a ⇓ a' from w1 to w2)
+    c = ⇓→from-to (lower (comp w1 e1))
+
+
+isValue→LET⇓from-to : {v t : Term} {w : 𝕎·}
+                       → isValue v
+                       → LET v t ⇓ sub v t from w to w
+isValue→LET⇓from-to {v} {t} {w} isv = 1 , c
+  where
+    c : steps 1 (LET v t , w) ≡ (sub v t , w)
+    c with isValue⊎ v
+    ... | inj₁ x = refl
+    ... | inj₂ x = ⊥-elim (x isv)
+
+
+sub-num-probe-body : {m : ℕ} {name : Name}
+                     → sub (NUM m) (IFC0 (APPLY (CS name) (NUM 0)) (INL (VAR 0)) (INR AX))
+                        ≡ IFC0 (APPLY (CS name) (NUM 0)) (INL (NUM m)) (INR AX)
+sub-num-probe-body {m} {name} = refl
+
+
+≡ₗ→⇓from-to : {a b c : Term} {w1 w2 : 𝕎·}
+              → c ≡ a
+              → c ⇓ b from w1 to w2
+              → a ⇓ b from w1 to w2
+≡ₗ→⇓from-to {a} {b} {c} {w1} {w2} e comp rewrite e = comp
+
+
+
+IFC0-steps₁ : {k : ℕ} {w w' : 𝕎·} {a b t u : Term}
+              → steps k (a , w) ≡ (b , w')
+              → Σ ℕ (λ k → steps k (IFC0 a t u , w) ≡ (IFC0 b t u , w'))
+IFC0-steps₁ {0} {w} {w'} {a} {b} {t} {u} comp rewrite pair-inj₁ comp | pair-inj₂ comp = 0 , refl
+IFC0-steps₁ {suc k} {w} {w'} {a} {b} {t} {u} comp with isValue⊎ a
+... | inj₁ x rewrite stepsVal a w (suc k) x | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+... | inj₂ x with step⊎ a w
+... |    inj₁ (y , w'' , q) rewrite q = suc (fst c) , snd c
+  where
+    c : Σ ℕ (λ k₁ → steps (suc k₁) (IFC0 a t u , w) ≡ (IFC0 b t u , w'))
+    c with isValue⊎ a
+    ... | inj₁ x' = ⊥-elim (x x')
+    ... | inj₂ x' rewrite q = IFC0-steps₁ {k} comp
+... |    inj₂ q rewrite q | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+
+
+IFC0⇓₁ : {w w' : 𝕎·} {a b t u : Term}
+         → a ⇓ b from w to w'
+         → IFC0 a t u ⇓ IFC0 b t u from w to w'
+IFC0⇓₁ {w} {w'} {a} {b} {t} {u} (k , comp) = IFC0-steps₁ {k} {w} {w'} {a} {b} {t} {u} comp
+
+
+getChoice→getT : {n : ℕ} {name : Name} {w : 𝕎·} {c : ℂ·}
+                  → getChoice· n name w ≡ just c
+                  → getT n name w ≡ just ⌜ ℂ→C· c ⌝
+getChoice→getT {n} {name} {w} {c} getc rewrite getc = refl
+
+
+
+IFC0-ℂ₀⇓from-to : {a b : Term} {w : 𝕎·}
+                  → IFC0 ⌜ Cℂ₀ ⌝ a b ⇓ a from w to w
+IFC0-ℂ₀⇓from-to {a} {b} {w} = 1 , c
+  where
+    c : steps 1 (IFC0 ⌜ Cℂ₀ ⌝ a b , w) ≡ (a , w)
+    c with isValue⊎ ⌜ Cℂ₀ ⌝
+    ... | inj₁ x with decT₀ ⌜ Cℂ₀ ⌝
+    ... |    inj₁ y = refl
+    ... |    inj₂ y = ⊥-elim (y {!!}) -- ℂ₉→T→ℂ₀
+    c | inj₂ x = ⊥-elim (x isValueℂ₀·)
+
+
+probeℂ₀⇓ : {F n f : Term} {name : Name} {m : ℕ} {w1 w2 : 𝕎·}
+           → APPLY F (bound name n f) ⇓ NUM m from w1 to w2
+           → getChoice· 0 name w2 ≡ just ℂ₀·
+           → probe name F n f ⇓ INL (NUM m) from w1 to w2
+probeℂ₀⇓ {F} {n} {f} {name} {m} {w1} {w2} comp1 comp2 =
+  ⇓-trans₂ (LET⇓₁ comp1)
+           (⇓-trans₂ (isValue→LET⇓from-to tt)
+                     (≡ₗ→⇓from-to (sym sub-num-probe-body)
+                                  (⇓-trans₂ (IFC0⇓₁ ((Σ-steps-APPLY-CS 0 (NUM 0) Tℂ₀ w2 w2 0 name refl (getChoice→getT comp2))))
+                                            {!!})))
+
+
+
 test∈ : (i : ℕ) (w : 𝕎·) (F : CTerm) (name : Name) (n : CTerm) (f : CTerm)
         → compatible· name w Resℂ₀₁
         → ∈Type i w #BAIRE→NAT F
@@ -984,6 +1113,10 @@ test∈ i w F name n f compat ∈F ∈n ∈f =
                   ⊎ #test name F n f #⇛ #INR x at w1 × #test name F n f #⇛ #INR y at w1 × equalInType i w1 #TRUE x y))
         j (inj₁ z) = #NUM m , #NUM m , inj₁ ({!!} , {!!} , NUM-equalInType-NAT i w1 m)
         j (inj₂ z) = #AX , #AX , inj₂ ({!!} , {!!} , →equalInType-TRUE i)
+
+-- #set name #⇓ #AX from w1 to w2
+-- #APPLY F (#bound name n f) #⇓ #NUM m from w2 to w3
+-- getChoice· 0 name w3 ≡ just ℂ₀·
 
 -- Prove this for the current world, and show that if F and f cannot read then this is true for all extensions too
 
