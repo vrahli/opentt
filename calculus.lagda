@@ -94,6 +94,7 @@ data Term : Set where
   -- Choices
   FREE : Term
   CS : Name → Term
+  FRESH : Term → Term
   CHOOSE : Term → Term → Term
   IFC0 : Term → Term → Term → Term
   -- Time squashing
@@ -139,6 +140,7 @@ value? (EQ _ _ _) = true
 value? AX = true
 value? FREE = true
 value? (CS _) = true
+value? (FRESH _) = false
 value? (CHOOSE _ _) = false -- Not a value
 value? (IFC0 _ _ _) = false -- Not a value
 value? (TSQUASH _) = true
@@ -241,6 +243,7 @@ fvars (EQ t t₁ t₂)     = fvars t ++ fvars t₁ ++ fvars t₂
 fvars AX               = []
 fvars FREE             = []
 fvars (CS x)           = []
+fvars (FRESH t)        = lowerVars (fvars t)
 fvars (CHOOSE a b)     = fvars a ++ fvars b
 fvars (IFC0 a b c)     = fvars a ++ fvars b ++ fvars c
 fvars (TSQUASH t)      = fvars t
@@ -386,6 +389,7 @@ shiftUp c (EQ t t₁ t₂) = EQ (shiftUp c t) (shiftUp c t₁) (shiftUp c t₂)
 shiftUp c AX = AX
 shiftUp c FREE = FREE
 shiftUp c (CS x) = CS x
+shiftUp c (FRESH t) = FRESH (shiftUp (suc c) t)
 shiftUp c (CHOOSE a b) = CHOOSE (shiftUp c a) (shiftUp c b)
 shiftUp c (IFC0 a t₁ t₂) = IFC0 (shiftUp c a) (shiftUp c t₁) (shiftUp c t₂)
 shiftUp c (TSQUASH t) = TSQUASH (shiftUp c t)
@@ -426,6 +430,7 @@ shiftDown c (EQ t t₁ t₂) = EQ (shiftDown c t) (shiftDown c t₁) (shiftDown 
 shiftDown c AX = AX
 shiftDown c FREE = FREE
 shiftDown c (CS x) = CS x
+shiftDown c (FRESH a) = FRESH (shiftDown (suc c) a)
 shiftDown c (CHOOSE a b) = CHOOSE (shiftDown c a) (shiftDown c b)
 shiftDown c (IFC0 a t₁ t₂) = IFC0 (shiftDown c a) (shiftDown c t₁) (shiftDown c t₂)
 shiftDown c (TSQUASH t) = TSQUASH (shiftDown c t)
@@ -468,6 +473,7 @@ subv v t (EQ u u₁ u₂) = EQ (subv v t u) (subv v t u₁) (subv v t u₂)
 subv v t AX = AX
 subv v t FREE = FREE
 subv v t (CS x) = CS x
+subv v t (FRESH a) = FRESH (subv (suc v) (shiftUp 0 t) a)
 subv v t (CHOOSE a b) = CHOOSE (subv v t a) (subv v t b)
 subv v t (IFC0 a t₁ t₂) = IFC0 (subv v t a) (subv v t t₁) (subv v t t₂)
 subv v t (TSQUASH u) = TSQUASH (subv v t u)
@@ -579,6 +585,8 @@ subvNotIn v t (EQ u u₁ u₂) n
 subvNotIn v t AX n = refl
 subvNotIn v t FREE n = refl
 subvNotIn v t (CS x) n = refl
+subvNotIn v t (FRESH u) n
+  rewrite subvNotIn (suc v) (shiftUp 0 t) u (λ j → ⊥-elim (n (inLowerVars _ _ j))) = refl
 subvNotIn v t (CHOOSE u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
         | subvNotIn v t u₁ (notInAppVars2 n) = refl
@@ -688,6 +696,8 @@ shiftDownTrivial v (EQ u u₁ u₂) i
 shiftDownTrivial v AX i = refl
 shiftDownTrivial v FREE i = refl
 shiftDownTrivial v (CS x) i = refl
+shiftDownTrivial v (FRESH u) i
+  rewrite shiftDownTrivial (suc v) u (impLeNotLower _ _ i) = refl
 shiftDownTrivial v (CHOOSE u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
@@ -779,6 +789,8 @@ shiftUpTrivial v (EQ u u₁ u₂) i
 shiftUpTrivial v AX i = refl
 shiftUpTrivial v FREE i = refl
 shiftUpTrivial v (CS x) i = refl
+shiftUpTrivial v (FRESH u) i
+  rewrite shiftUpTrivial (suc v) u (impLeNotLower _ _ i) = refl
 shiftUpTrivial v (CHOOSE u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
@@ -845,6 +857,7 @@ shiftDownUp (EQ t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ n | sh
 shiftDownUp AX n = refl
 shiftDownUp FREE n = refl
 shiftDownUp (CS x) n = refl
+shiftDownUp (FRESH t) n rewrite shiftDownUp t (suc n) = refl
 shiftDownUp (CHOOSE t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (IFC0 t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n = refl
 shiftDownUp (TSQUASH t) n rewrite shiftDownUp t n = refl
@@ -885,6 +898,7 @@ is-NUM (EQ t t₁ t₂) = inj₂ (λ { n () })
 is-NUM AX = inj₂ (λ { n () })
 is-NUM FREE = inj₂ (λ { n () })
 is-NUM (CS x) = inj₂ (λ { n () })
+is-NUM (FRESH t) = inj₂ (λ { n () })
 is-NUM (CHOOSE t t₁) = inj₂ (λ { n () })
 is-NUM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-NUM (TSQUASH t) = inj₂ (λ { n () })
@@ -925,6 +939,7 @@ is-LAM (EQ t t₁ t₂) = inj₂ (λ { n () })
 is-LAM AX = inj₂ (λ { n () })
 is-LAM FREE = inj₂ (λ { n () })
 is-LAM (CS x) = inj₂ (λ { n () })
+is-LAM (FRESH t) = inj₂ (λ { n () })
 is-LAM (CHOOSE t t₁) = inj₂ (λ { n () })
 is-LAM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-LAM (TSQUASH t) = inj₂ (λ { n () })
@@ -965,6 +980,7 @@ is-CS (EQ t t₁ t₂) = inj₂ (λ { n () })
 is-CS AX = inj₂ (λ { n () })
 is-CS FREE = inj₂ (λ { n () })
 is-CS (CS x) = inj₁ (x , refl)
+is-CS (FRESH t) = inj₂ (λ { n () })
 is-CS (CHOOSE t t₁) = inj₂ (λ { n () })
 is-CS (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-CS (TSQUASH t) = inj₂ (λ { n () })
@@ -1005,6 +1021,7 @@ is-PAIR (EQ t t₁ t₂) = inj₂ (λ { n m () })
 is-PAIR AX = inj₂ (λ { n m () })
 is-PAIR FREE = inj₂ (λ { n m () })
 is-PAIR (CS x) = inj₂ (λ { n m () })
+is-PAIR (FRESH t) = inj₂ (λ { n m () })
 is-PAIR (CHOOSE t t₁) = inj₂ (λ { n m () })
 is-PAIR (IFC0 t t₁ t₂) = inj₂ (λ { n m () })
 is-PAIR (TSQUASH t) = inj₂ (λ { n m () })
@@ -1045,6 +1062,7 @@ is-INL (EQ t t₁ t₂) = inj₂ (λ { n () })
 is-INL AX = inj₂ (λ { n () })
 is-INL FREE = inj₂ (λ { n () })
 is-INL (CS x) = inj₂ (λ { n () })
+is-INL (FRESH t) = inj₂ (λ { n () })
 is-INL (CHOOSE t t₁) = inj₂ (λ { n () })
 is-INL (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-INL (TSQUASH t) = inj₂ (λ { n () })
@@ -1085,6 +1103,7 @@ is-INR (EQ t t₁ t₂) = inj₂ (λ { n () })
 is-INR AX = inj₂ (λ { n () })
 is-INR FREE = inj₂ (λ { n () })
 is-INR (CS x) = inj₂ (λ { n () })
+is-INR (FRESH t) = inj₂ (λ { n () })
 is-INR (CHOOSE t t₁) = inj₂ (λ { n () })
 is-INR (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-INR (TSQUASH t) = inj₂ (λ { n () })
@@ -1237,4 +1256,47 @@ data ∼vals : Term → Term → Set where
 
 #isValue : CTerm -> Set
 #isValue t = isValue ⌜ t ⌝
+
+
+-- free variables
+names : Term → List Name
+names (VAR x)          = []
+names NAT              = []
+names QNAT             = []
+names (LT t t₁)        = names t ++ names t₁
+names (QLT t t₁)       = names t ++ names t₁
+names (NUM x)          = []
+names (IFLT a b c d)   = names a ++ names b ++ names c ++ names d
+names (PI t t₁)        = names t ++ names t₁
+names (LAMBDA t)       = names t
+names (APPLY t t₁)     = names t ++ names t₁
+names (FIX t)          = names t
+names (LET t t₁)       = names t ++ names t₁
+names (SUM t t₁)       = names t ++ names t₁
+names (PAIR t t₁)      = names t ++ names t₁
+names (SPREAD t t₁)    = names t ++ names t₁
+names (SET t t₁)       = names t ++ names t₁
+names (TUNION t t₁)    = names t ++ names t₁
+names (UNION t t₁)     = names t ++ names t₁
+names (QTUNION t t₁)   = names t ++ names t₁
+names (INL t)          = names t
+names (INR t)          = names t
+names (DECIDE t t₁ t₂) = names t ++ names t₁ ++ names t₂
+names (EQ t t₁ t₂)     = names t ++ names t₁ ++ names t₂
+names AX               = []
+names FREE             = []
+names (CS x)           = [ x ]
+names (FRESH t)        = names t
+names (CHOOSE a b)     = names a ++ names b
+names (IFC0 a b c)     = names a ++ names b ++ names c
+names (TSQUASH t)      = names t
+names (TTRUNC t)       = names t
+names (TCONST t)       = names t
+names (DUM t)          = names t
+names (FFDEFS t t₁)    = names t ++ names t₁
+names (UNIV x)         = []
+names (LIFT t)         = names t
+names (LOWER t)        = names t
+names (SHRINK t)       = names t
+
 \end{code}

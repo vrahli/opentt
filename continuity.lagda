@@ -17,6 +17,7 @@ open import Data.Maybe
 open import Data.Unit using (⊤ ; tt)
 open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
 open import Data.Nat.Properties
+open import Data.Bool using (Bool ; _∧_ ; _∨_)
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
 open import Data.List
@@ -122,6 +123,8 @@ oldtest name F n f = LET (APPLY F (bound name n f))
 
 test : (name : Name) (F : Term) (n : Term) (f : Term) → Term
 test name F n f = SEQ (set name) (probe name F n f)
+
+
 
 
 -- MOVE to terms
@@ -324,6 +327,15 @@ fvars-IFLE a b c d = refl
   where
     c : # set name
     c rewrite CTerm.closed (ℂ→C· ℂ₀·) = refl
+
+
+
+#probe : (name : Name) (F n f : CTerm) → CTerm
+#probe name F n f = ct (probe name ⌜ F ⌝ ⌜ n ⌝ ⌜ f ⌝) c
+  where
+    c : # probe name ⌜ F ⌝ ⌜ n ⌝ ⌜ f ⌝
+    c rewrite CTerm.closed (#bound name n f)
+            | CTerm.closed F = refl
 
 
 #test : (name : Name) (F : CTerm) (n : CTerm) (f : CTerm) → CTerm
@@ -684,11 +696,24 @@ SEQ⇛₁ {w} {a} {a'} {b} comp w1 e1 = lift (⇓-from-to→⇓ {w1} {fst c} (SE
     c = ⇓→from-to (lower (comp w1 e1))
 
 
-SEQ-AX⇛₁ : {w : 𝕎·} {t : Term} → # t → SEQ AX t ⇛ t at w
-SEQ-AX⇛₁ {w} {t} tc w1 e1 = lift (1 , c)
+
+SEQ-AX⇓₁from-to : {w : 𝕎·} {t : Term} → # t → SEQ AX t ⇓ t from w to w
+SEQ-AX⇓₁from-to {w} {t} tc = 1 , c
+  where
+    c : (sub AX (shiftUp 0 t) , w) ≡ (t , w)
+    c rewrite #shiftUp 0 (ct t tc) | subNotIn AX t tc = refl
+
+
+
+SEQ-AX⇓₁ : {w : 𝕎·} {t : Term} → # t → SEQ AX t ⇓ t at w
+SEQ-AX⇓₁ {w} {t} tc = 1 , c
   where
     c : sub AX (shiftUp 0 t) ≡ t
     c rewrite #shiftUp 0 (ct t tc) | subNotIn AX t tc = refl
+
+
+SEQ-AX⇛₁ : {w : 𝕎·} {t : Term} → # t → SEQ AX t ⇛ t at w
+SEQ-AX⇛₁ {w} {t} tc w1 e1 = lift (SEQ-AX⇓₁ tc)
 
 
 SEQ-AX⇛ : {w : 𝕎·} {a b : Term}
@@ -1034,8 +1059,28 @@ IFC0-ℂ₀⇓from-to {a} {b} {w} = 1 , c
     c with isValue⊎ ⌜ Cℂ₀ ⌝
     ... | inj₁ x with decT₀ ⌜ Cℂ₀ ⌝
     ... |    inj₁ y = refl
-    ... |    inj₂ y = ⊥-elim (y {!!}) -- ℂ₉→T→ℂ₀
+    ... |    inj₂ y = ⊥-elim (y ℂ₉→T→ℂ₀·)
     c | inj₂ x = ⊥-elim (x isValueℂ₀·)
+
+
+≡ℂ→≡ℂ→C : {a b : ℂ·}
+             → a ≡ b
+             → ℂ→C· a ≡ ℂ→C· b
+≡ℂ→≡ℂ→C {a} {b} e rewrite e = refl
+
+
+IFC0-ℂ₁⇓from-to : {a b : Term} {w : 𝕎·}
+                  → IFC0 ⌜ Cℂ₁ ⌝ a b ⇓ b from w to w
+IFC0-ℂ₁⇓from-to {a} {b} {w} = 1 , c
+  where
+    c : steps 1 (IFC0 ⌜ Cℂ₁ ⌝ a b , w) ≡ (b , w)
+    c with isValue⊎ ⌜ Cℂ₁ ⌝
+    ... | inj₁ x with decT₀ ⌜ Cℂ₁ ⌝
+    ... |    inj₁ y = ⊥-elim (¬∼ℂ₀₁· w (∼C!-sym {w} {Cℂ₁} {Cℂ₀} (≡R→∼C! {w} {Cℂ₁} {ℂ→C· (T→ℂ· ⌜ Cℂ₁ ⌝)} {Cℂ₀}
+                                                                          (≡ℂ→≡ℂ→C y)
+                                                                          (≡R→∼C! {w} {Cℂ₁} {Cℂ₁} {_} (≡ℂ→≡ℂ→C (sym ℂ₁→T→ℂ₁·)) (∼C!-refl {w} {Cℂ₁}))))) --refl
+    ... |    inj₂ y = refl --⊥-elim (y ℂ₉→T→ℂ₀·)
+    c | inj₂ x = ⊥-elim (x isValueℂ₁·)
 
 
 probeℂ₀⇓ : {F n f : Term} {name : Name} {m : ℕ} {w1 w2 : 𝕎·}
@@ -1046,21 +1091,83 @@ probeℂ₀⇓ {F} {n} {f} {name} {m} {w1} {w2} comp1 comp2 =
   ⇓-trans₂ (LET⇓₁ comp1)
            (⇓-trans₂ (isValue→LET⇓from-to tt)
                      (≡ₗ→⇓from-to (sym sub-num-probe-body)
-                                  (⇓-trans₂ (IFC0⇓₁ ((Σ-steps-APPLY-CS 0 (NUM 0) Tℂ₀ w2 w2 0 name refl (getChoice→getT comp2))))
-                                            {!!})))
+                                  (⇓-trans₂ (IFC0⇓₁ (Σ-steps-APPLY-CS 0 (NUM 0) Tℂ₀ w2 w2 0 name refl (getChoice→getT comp2)))
+                                            IFC0-ℂ₀⇓from-to)))
 
 
 
+probeℂ₁⇓ : {F n f : Term} {name : Name} {m : ℕ} {w1 w2 : 𝕎·}
+           → APPLY F (bound name n f) ⇓ NUM m from w1 to w2
+           → getChoice· 0 name w2 ≡ just ℂ₁·
+           → probe name F n f ⇓ INR AX from w1 to w2
+probeℂ₁⇓ {F} {n} {f} {name} {m} {w1} {w2} comp1 comp2 =
+  ⇓-trans₂ (LET⇓₁ comp1)
+           (⇓-trans₂ (isValue→LET⇓from-to tt)
+                     (≡ₗ→⇓from-to (sym sub-num-probe-body)
+                                  (⇓-trans₂ (IFC0⇓₁ (Σ-steps-APPLY-CS 0 (NUM 0) Tℂ₁ w2 w2 0 name refl (getChoice→getT comp2)))
+                                            IFC0-ℂ₁⇓from-to)))
+
+
+¬read : Term → Bool
+¬read (VAR x) = true
+¬read NAT = true
+¬read QNAT = true
+¬read (LT t t₁) = ¬read t ∧ ¬read t₁
+¬read (QLT t t₁) = ¬read t ∧ ¬read t₁
+¬read (NUM x) = true
+¬read (IFLT t t₁ t₂ t₃) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂ ∧ ¬read t₃
+¬read (PI t t₁) = ¬read t ∧ ¬read t₁
+¬read (LAMBDA t) = ¬read t
+¬read (APPLY t t₁) = ¬read t ∧ ¬read t₁
+¬read (FIX t) = ¬read t
+¬read (LET t t₁) = ¬read t ∧ ¬read t₁
+¬read (SUM t t₁) = ¬read t ∧ ¬read t₁
+¬read (PAIR t t₁) = ¬read t ∧ ¬read t₁
+¬read (SPREAD t t₁) = ¬read t ∧ ¬read t₁
+¬read (SET t t₁) = ¬read t ∧ ¬read t₁
+¬read (TUNION t t₁) = ¬read t ∧ ¬read t₁
+¬read (UNION t t₁) = ¬read t ∧ ¬read t₁
+¬read (QTUNION t t₁) = ¬read t ∧ ¬read t₁
+¬read (INL t) = ¬read t
+¬read (INR t) = ¬read t
+¬read (DECIDE t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
+¬read (EQ t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
+¬read AX = true
+¬read FREE = true
+¬read (CS x) = false
+¬read (FRESH t) = ¬read t
+¬read (CHOOSE t t₁) = ¬read t ∧ ¬read t₁
+¬read (IFC0 t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
+¬read (TSQUASH t) = ¬read t
+¬read (TTRUNC t) = ¬read t
+¬read (TCONST t) = ¬read t
+¬read (DUM t) = ¬read t
+¬read (FFDEFS t t₁) = ¬read t ∧ ¬read t₁
+¬read (UNIV x) = true
+¬read (LIFT t) = ¬read t
+¬read (LOWER t) = ¬read t
+¬read (SHRINK t) = ¬read t
+
+
+#⇓from-to→#⇓ : {w1 w2 : 𝕎·} {a b : CTerm}
+                → a #⇓ b from w1 to w2
+                → a #⇓ b at w1
+#⇓from-to→#⇓ {w1} {w2} {a} {b} (m , comp) = m , steps→stepsT' {m} {⌜ a ⌝} {⌜ b ⌝} {w1} {w2} comp
+
+
+-- To prove this with UNION instead of QTUNION, we would have to assume ¬read of 'F', 'n', and 'f', so that 'test' computes
+-- to the same value in all extensions of the current world
+-- We also have to assume that 'F', 'n', and 'f' do not write to name
 test∈ : (i : ℕ) (w : 𝕎·) (F : CTerm) (name : Name) (n : CTerm) (f : CTerm)
         → compatible· name w Resℂ₀₁
         → ∈Type i w #BAIRE→NAT F
         → ∈Type i w #NAT n
         → ∈Type i w #BAIRE f
-        → ∈Type i w (#UNION #NAT #TRUE) (#test name F n f)
+        → ∈Type i w (#QTUNION #NAT #TRUE) (#test name F n f)
 test∈ i w F name n f compat ∈F ∈n ∈f =
 {--  ≡CTerm→equalInType
     (sym (#UNION≡ Typeℂ₀₁· #TRUE))--}
-    (→equalInType-UNION eqTypesNAT eqTypesTRUE (∀𝕎-□Func2 aw gc ∈A))
+    (→equalInType-QTUNION eqTypesNAT eqTypesTRUE (∀𝕎-□Func2 aw gc ∈A))
   where
     ∈A : □· w (λ w' _ → NATeq w' (#APPLY F (#bound name n f)) (#APPLY F (#bound name n f)))
     ∈A = equalInType-NAT→ i w (#APPLY F (#bound name n f)) (#APPLY F (#bound name n f)) (APPLY-bound∈ i w F name n f ∈F ∈n ∈f)
@@ -1079,8 +1186,8 @@ test∈ i w F name n f compat ∈F ∈n ∈f =
     aw : ∀𝕎 w (λ w' e' → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (getChoice· 0 name w'' ≡ just ℂ₀· ⊎ getChoice· 0 name w'' ≡ just ℂ₁·))
                         → NATeq w' (#APPLY F (#bound name n f)) (#APPLY F (#bound name n f))
                         → Σ CTerm (λ x → Σ CTerm (λ y →
-                            #test name F n f #⇛ #INL x at w' × #test name F n f #⇛ #INL y at w' × equalInType i w' #NAT x y
-                            ⊎ #test name F n f #⇛ #INR x at w' × #test name F n f #⇛ #INR y at w' × equalInType i w' #TRUE x y)))
+                            #test name F n f #⇓ #INL x at w' × #test name F n f #⇓ #INL y at w' × equalInType i w' #NAT x y
+                            ⊎ #test name F n f #⇓ #INR x at w' × #test name F n f #⇓ #INR y at w' × equalInType i w' #TRUE x y)))
     aw w1 e1 gcn (m , c₁ , c₂) = j (lower (gcn w3 (⊑-trans· e2 e3)))
       where
         comp1 : Σ 𝕎· (λ w2 → #set name #⇓ #AX from w1 to w2)
@@ -1109,14 +1216,35 @@ test∈ i w F name n f compat ∈F ∈n ∈f =
 
         j : (getChoice· 0 name w3 ≡ just ℂ₀· ⊎ getChoice· 0 name w3 ≡ just ℂ₁·)
             → Σ CTerm (λ x → Σ CTerm (λ y →
-                  #test name F n f #⇛ #INL x at w1 × #test name F n f #⇛ #INL y at w1 × equalInType i w1 #NAT x y
-                  ⊎ #test name F n f #⇛ #INR x at w1 × #test name F n f #⇛ #INR y at w1 × equalInType i w1 #TRUE x y))
-        j (inj₁ z) = #NUM m , #NUM m , inj₁ ({!!} , {!!} , NUM-equalInType-NAT i w1 m)
-        j (inj₂ z) = #AX , #AX , inj₂ ({!!} , {!!} , →equalInType-TRUE i)
+                  #test name F n f #⇓ #INL x at w1 × #test name F n f #⇓ #INL y at w1 × equalInType i w1 #NAT x y
+                  ⊎ #test name F n f #⇓ #INR x at w1 × #test name F n f #⇓ #INR y at w1 × equalInType i w1 #TRUE x y))
+        j (inj₁ z) = #NUM m , #NUM m , inj₁ (#⇓from-to→#⇓ {_} {_} {#test name F n f} {#INL (#NUM m)} comp4 ,
+                                             #⇓from-to→#⇓ {_} {_} {#test name F n f} {#INL (#NUM m)} comp4 ,
+                                             NUM-equalInType-NAT i w1 m)
+          where
+            comp3 : #probe name F n f #⇓ #INL (#NUM m) from w2 to w3
+            comp3 = probeℂ₀⇓ comp2' z
 
--- #set name #⇓ #AX from w1 to w2
--- #APPLY F (#bound name n f) #⇓ #NUM m from w2 to w3
--- getChoice· 0 name w3 ≡ just ℂ₀·
+            comp4 : #test name F n f #⇓ #INL (#NUM m) from w1 to w3
+            comp4 = ⇓-trans₂ {w1} {w2} {w3} {_} {⌜ #SEQ #AX (#probe name F n f) ⌝} {_}
+                             (SEQ⇓₁ {w1} {w2} {⌜ #set name ⌝} {AX} {⌜ #probe name F n f ⌝} comp1')
+                             (⇓-trans₂ {w2} {w2} {w3} {_} {⌜ #probe name F n f ⌝} {_}
+                                       (SEQ-AX⇓₁from-to (CTerm.closed (#probe name F n f)))
+                                       comp3)
+
+        j (inj₂ z) = #AX , #AX , inj₂ (#⇓from-to→#⇓ {_} {_} {#test name F n f} {#INR #AX} comp4 ,
+                                       #⇓from-to→#⇓ {_} {_} {#test name F n f} {#INR #AX} comp4 ,
+                                       →equalInType-TRUE i)
+          where
+            comp3 : #probe name F n f #⇓ #INR #AX from w2 to w3
+            comp3 = probeℂ₁⇓ comp2' z
+
+            comp4 : #test name F n f #⇓ #INR #AX from w1 to w3
+            comp4 = ⇓-trans₂ {w1} {w2} {w3} {_} {⌜ #SEQ #AX (#probe name F n f) ⌝} {_}
+                             (SEQ⇓₁ {w1} {w2} {⌜ #set name ⌝} {AX} {⌜ #probe name F n f ⌝} comp1')
+                             (⇓-trans₂ {w2} {w2} {w3} {_} {⌜ #probe name F n f ⌝} {_}
+                                       (SEQ-AX⇓₁from-to (CTerm.closed (#probe name F n f)))
+                                       comp3)
 
 -- Prove this for the current world, and show that if F and f cannot read then this is true for all extensions too
 
