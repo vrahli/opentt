@@ -126,6 +126,7 @@ eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTUNION A1 B1 A2 B2 x x�
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTSQUASH A1 A2 x x₁ eqtA) = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTTRUNC A1 A2 x x₁ eqtA) = ⊥-elim (NATneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTCONST A1 A2 x x₁ eqtA) = ⊥-elim (NATneqTCONST (⇛-val-det tt tt c₁ x))
+eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTSUBSING A1 A2 x x₁ eqtA) = ⊥-elim (NATneqSUBSING (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTUNIV x) =
   ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z))) -- Lift {0ℓ} 1ℓ ⊥
@@ -308,6 +309,12 @@ eqTypes-mon u {A} {B} {w1} (EQTCONST A1 A2 x x₁ eqtA exta) w2 ext =
     exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (∀𝕎-mon ext eqtA w e) a b)
     exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
 
+eqTypes-mon u {A} {B} {w1} (EQTSUBSING A1 A2 x x₁ eqtA exta) w2 ext =
+  EQTSUBSING A1 A2 (⇛-mon ext x) (⇛-mon ext x₁) (∀𝕎-mon ext eqtA) exta'
+  where
+    exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (∀𝕎-mon ext eqtA w e) a b)
+    exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
+
 {--eqTypes-mon u {A} {B} {w1} (EQTDUM A1 A2 x x₁ eqtA exta) w2 ext =
   EQTDUM A1 A2 (⇛-mon ext x) (⇛-mon ext x₁) (∀𝕎-mon ext eqtA) exta'
   where
@@ -426,6 +433,7 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB e
 if-equalInType-EQ u w T a b t₁ t₂ (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTTRUNC A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTTRUNC (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTCONST (compAllVal x₁ tt))
+if-equalInType-EQ u w T a b t₁ t₂ (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqSUBSING (compAllVal x₁ tt))
 --if-equalInType-EQ u w T a b t₁ t₂ (EQTDUM A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqDUM (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTUNIV i p c₁ c₂ , eqi) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt)) --Bar.∀𝕎-□Func barI z2 x
@@ -1427,6 +1435,33 @@ irr-tconst u w A1 A2 eqta exta f g w1 e1 w' e' h z = irr-TCONSTeq eqta exta (⊑
 
 
 
+SUBSINGeq-ext-eq : {eqa1 eqa2 : per} {t1 t2 : CTerm}
+                  → ((a b : CTerm) → eqa1 a b → eqa2 a b)
+                  → SUBSINGeq eqa1 t1 t2
+                  → SUBSINGeq eqa2 t1 t2
+SUBSINGeq-ext-eq {eqa1} {eqa2} {t1} {t2} ext (h , q) = ext t1 t1 h , ext t2 t2 q
+
+
+irr-SUBSINGeq : {u : univs} {w w' : 𝕎·} {A1 A2 : CTerm}
+               (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+               (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+               {f g : CTerm}
+               (e1 e2 : w ⊑· w')
+               → SUBSINGeq (eqInType u w' (eqta w' e1)) f g
+               → SUBSINGeq (eqInType u w' (eqta w' e2)) f g
+irr-SUBSINGeq {u} {w} {w'} {A1} {A2} eqta exta {f} {g} e1 e2 h =
+  SUBSINGeq-ext-eq (λ a b q → exta a b w' e1 e2 q) h
+
+
+irr-subsing : (u : univs) (w : 𝕎·) (A1 A2 : CTerm)
+              (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+              (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+              (f g : CTerm) (w1 : 𝕎·) (e1 : w ⊑· w1)
+              → ∀𝕎 w1 (λ w' e' → SUBSINGeq (eqInType u w' (eqta w' (⊑-trans· e1 e'))) f g
+                                 → (z : w ⊑· w') → SUBSINGeq (eqInType u w' (eqta w' z)) f g)
+irr-subsing u w A1 A2 eqta exta f g w1 e1 w' e' h z = irr-SUBSINGeq eqta exta (⊑-trans· e1 e') z h
+
+
 irr-lift : (u : univs) (w : 𝕎·) (A1 A2 : CTerm)
            (eqta : ∀𝕎 w (λ w' _ → eqTypes (↓U u) w' A1 A2))
            (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType (↓U u) w (eqta w e) a b))
@@ -1541,4 +1576,18 @@ TCONSTeq-trans : {eqa : per} {w : 𝕎·} {t1 t2 t3 : CTerm}
                  → TCONSTeq eqa w t2 t3
                  → TCONSTeq eqa w t1 t3
 TCONSTeq-trans {eqa} {w} {t1} {t2} {t3} trans (h , c₁ , c₂) (q , c₃ , c₄) = trans t1 t2 t3 h q , c₁ , c₄
+
+
+SUBSINGeq-sym : {eqa : per} {t1 t2 : CTerm}
+                 → SUBSINGeq eqa t1 t2
+                 → SUBSINGeq eqa t2 t1
+SUBSINGeq-sym {eqa} {t1} {t2} (h , q) = q , h
+
+
+SUBSINGeq-trans : {eqa : per} {t1 t2 t3 : CTerm}
+                 → SUBSINGeq eqa t1 t2
+                 → SUBSINGeq eqa t2 t3
+                 → SUBSINGeq eqa t1 t3
+SUBSINGeq-trans {eqa} {t1} {t2} {t3} (h , q) (r , s) = h , s
+
 \end{code}

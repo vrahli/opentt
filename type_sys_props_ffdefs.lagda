@@ -113,6 +113,9 @@ FFDEFSneqTTRUNC {a} {b} {c} ()
 FFDEFSneqTCONST : {a b : Term} {c : Term} → ¬ FFDEFS a b ≡ TCONST c
 FFDEFSneqTCONST {a} {b} {c} ()
 
+FFDEFSneqSUBSING : {a b : Term} {c : Term} → ¬ FFDEFS a b ≡ SUBSING c
+FFDEFSneqSUBSING {a} {b} {c} ()
+
 FFDEFSneqDUM : {a b : Term} {c : Term} → ¬ FFDEFS a b ≡ DUM c
 FFDEFSneqDUM {a} {b} {c} ()
 
@@ -178,6 +181,7 @@ typeSysConds-FFDEFS-ttrans u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTQ
 typeSysConds-FFDEFS-ttrans u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA extA) = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-ttrans u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTRUNC A3 A4 y y₁ eqtA extA) = ⊥-elim (FFDEFSneqTTRUNC (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-ttrans u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x₁ y))
+typeSysConds-FFDEFS-ttrans u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x₁ y))
 --typeSysConds-FFDEFS-ttrans u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-ttrans u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)
   rewrite #FFDEFSinj1 {A3} {u1} {B1} {x2} (#⇛-val-det {_} {B} tt tt y x₁)
@@ -289,6 +293,7 @@ typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTQT
 typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTTRUNC (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x y))
+typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x y))
 --typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)f g eqi
   rewrite #FFDEFSinj1 {A3} {u1} {A1} {x1} (#⇛-val-det {_} {A} tt tt y x)
@@ -350,6 +355,7 @@ typeSysConds-FFDEFS-extl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTQT
 typeSysConds-FFDEFS-extl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTTRUNC (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x y₁))
+typeSysConds-FFDEFS-extl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x y₁))
 --typeSysConds-FFDEFS-extl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)f g eqi
   rewrite #FFDEFSinj1 {A4} {u2} {A1} {x1} (#⇛-val-det {_} {A} tt tt y₁ x)
@@ -418,6 +424,7 @@ typeSysConds-FFDEFS-extr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTQT
 typeSysConds-FFDEFS-extr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTTRUNC (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x₁ y₁))
+typeSysConds-FFDEFS-extr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x₁ y₁))
 --typeSysConds-FFDEFS-extr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)f g eqi
   rewrite #FFDEFSinj1 {A4} {u2} {B1} {x2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
@@ -487,6 +494,7 @@ typeSysConds-FFDEFS-extr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTQT
 typeSysConds-FFDEFS-extr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTTRUNC (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x₁ y))
+typeSysConds-FFDEFS-extr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x₁ y))
 --typeSysConds-FFDEFS-extr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)f g eqi
   rewrite #FFDEFSinj1 {A3} {u1} {B1} {x2} (#⇛-val-det {_} {B} tt tt y x₁)
@@ -553,6 +561,7 @@ typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQ
 typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTTRUNC (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x y))
+typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x y))
 --typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)f g eqi
   rewrite #FFDEFSinj1 {A3} {u1} {A1} {x1} (#⇛-val-det {_} {A} tt tt y x)
@@ -625,6 +634,7 @@ typeSysConds-FFDEFS-extrevl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQ
 typeSysConds-FFDEFS-extrevl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extrevl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTTRUNC (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extrevl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x y₁))
+typeSysConds-FFDEFS-extrevl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x y₁))
 --typeSysConds-FFDEFS-extrevl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extrevl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)f g eqi
   rewrite #FFDEFSinj1 {A4} {u2} {A1} {x1} (#⇛-val-det {_} {A} tt tt y₁ x)
@@ -707,6 +717,7 @@ typeSysConds-FFDEFS-extrevr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQ
 typeSysConds-FFDEFS-extrevr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extrevr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTTRUNC (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extrevr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x₁ y₁))
+typeSysConds-FFDEFS-extrevr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x₁ y₁))
 --typeSysConds-FFDEFS-extrevr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extrevr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)f g eqi
   rewrite #FFDEFSinj1 {A4} {u2} {B1} {x2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
@@ -788,6 +799,7 @@ typeSysConds-FFDEFS-extrevr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQ
 typeSysConds-FFDEFS-extrevr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extrevr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTTRUNC (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extrevr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x₁ y))
+typeSysConds-FFDEFS-extrevr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x₁ y))
 --typeSysConds-FFDEFS-extrevr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extrevr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)f g eqi
   rewrite #FFDEFSinj1 {A3} {u1} {B1} {x2} (#⇛-val-det {_} {B} tt tt y x₁)
@@ -869,6 +881,7 @@ eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTQTUNION
 eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (FFDEFSneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt c₁ x))
+eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTDUM A3 A4 x x₁ eqta₁) ei = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQFFDEFS A3 A4 z1 z2 x x₁ eqta₁ exta₁ eqx) ei
   rewrite #FFDEFSinj1 {A1} {x1} {A3} {z1} (#⇛-val-det {_} {A} tt tt c₁ x)
@@ -945,6 +958,7 @@ eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTQTUNION A3 
 eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ei ext = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ei ext = ⊥-elim (FFDEFSneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ei ext = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt c₁ x))
+eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei ext = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTDUM A3 A4 x x₁ eqta₁) ei ext = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQFFDEFS A3 A4 z1 z2 x x₁ eqta₁ exta₁ eqx) ei ext
   rewrite #FFDEFSinj1 {A1} {x1} {A3} {z1} (#⇛-val-det {_} {A} tt tt c₁ x)
@@ -1024,6 +1038,7 @@ eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTQTU
 eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (FFDEFSneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt c₁ x))
+eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTDUM A3 A4 x x₁ eqta₁) ei = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQFFDEFS A3 A4 z1 z2 x x₁ eqta₁ exta₁ eqx) ei
   rewrite #FFDEFSinj1 {A1} {x1} {A3} {z1} (#⇛-val-det {_} {A} tt tt c₁ x)
@@ -1092,6 +1107,7 @@ eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTQTUNION
 eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ext ei = ⊥-elim (FFDEFSneqTSQUASH (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ext ei = ⊥-elim (FFDEFSneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ext ei = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt c₁ x))
+eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ext ei = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTDUM A3 A4 x x₁ eqta₁) ext ei = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQFFDEFS A3 A4 z1 z2 x x₁ eqta₁ exta₁ eqx) ext ei
   rewrite #FFDEFSinj1 {A1} {x1} {A3} {z1} (#⇛-val-det {_} {A} tt tt c₁ x)

@@ -277,6 +277,13 @@ subv-↑T {i} {suc n} p v a with i <? n
     c rewrite CTerm.closed a = refl
 
 
+#SUBSING : CTerm → CTerm
+#SUBSING a = ct (SUBSING ⌜ a ⌝) c
+  where
+    c : # SUBSING ⌜ a ⌝
+    c rewrite CTerm.closed a = refl
+
+
 #INL : CTerm → CTerm
 #INL a = ct (INL ⌜ a ⌝) c
   where
@@ -570,6 +577,7 @@ fvars-shiftUp≡ n (IFC0 t t₁ t₂)
 fvars-shiftUp≡ n (TSQUASH t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (TTRUNC t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (TCONST t) = fvars-shiftUp≡ n t
+fvars-shiftUp≡ n (SUBSING t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (DUM t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (FFDEFS t t₁)
   rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
@@ -861,6 +869,7 @@ fvars-shiftDown≡ n (IFC0 t t₁ t₂)
 fvars-shiftDown≡ n (TSQUASH t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (TTRUNC t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (TCONST t) = fvars-shiftDown≡ n t
+fvars-shiftDown≡ n (SUBSING t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (DUM t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (FFDEFS t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
@@ -1022,6 +1031,7 @@ fvars-subv v a (IFC0 b b₁ b₂) i with ∈-++⁻ (fvars (subv v a b)) i
 fvars-subv v a (TSQUASH b) = fvars-subv v a b
 fvars-subv v a (TTRUNC b) = fvars-subv v a b
 fvars-subv v a (TCONST b) = fvars-subv v a b
+fvars-subv v a (SUBSING b) = fvars-subv v a b
 fvars-subv v a (DUM b) = fvars-subv v a b
 fvars-subv v a (FFDEFS b b₁) i with ∈-++⁻ (fvars (subv v a b)) i
 ... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b p)
@@ -1224,6 +1234,8 @@ shiftDown1-subv1-shiftUp0 n a (TSQUASH b) ca
 shiftDown1-subv1-shiftUp0 n a (TTRUNC b) ca
   rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
 shiftDown1-subv1-shiftUp0 n a (TCONST b) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
+shiftDown1-subv1-shiftUp0 n a (SUBSING b) ca
   rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
 shiftDown1-subv1-shiftUp0 n a (DUM b) ca
   rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
@@ -1511,6 +1523,13 @@ TCONSTinj refl =  refl
 #TCONSTinj c = CTerm≡ (TCONSTinj (≡CTerm c))
 
 
+SUBSINGinj : {a b : Term} → SUBSING a ≡ SUBSING b → a ≡ b
+SUBSINGinj refl =  refl
+
+#SUBSINGinj : {a b : CTerm} → #SUBSING a ≡ #SUBSING b → a ≡ b
+#SUBSINGinj c = CTerm≡ (SUBSINGinj (≡CTerm c))
+
+
 LIFTinj : {a b : Term} → LIFT a ≡ LIFT b → a ≡ b
 LIFTinj refl =  refl
 
@@ -1608,6 +1627,9 @@ EQneqTTRUNC {t} {a} {b} {c} ()
 EQneqTCONST : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ TCONST c
 EQneqTCONST {t} {a} {b} {c} ()
 
+EQneqSUBSING : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ SUBSING c
+EQneqSUBSING {t} {a} {b} {c} ()
+
 EQneqLIFT : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ LIFT c
 EQneqLIFT {t} {a} {b} {c} ()
 
@@ -1683,6 +1705,9 @@ PIneqTTRUNC {a} {b} {c} ()
 PIneqTCONST : {a b : Term} {c : Term} → ¬ (PI a b) ≡ TCONST c
 PIneqTCONST {a} {b} {c} ()
 
+PIneqSUBSING : {a b : Term} {c : Term} → ¬ (PI a b) ≡ SUBSING c
+PIneqSUBSING {a} {b} {c} ()
+
 PIneqLIFT : {a b : Term} {c : Term} → ¬ (PI a b) ≡ LIFT c
 PIneqLIFT {a} {b} {c} ()
 
@@ -1746,6 +1771,9 @@ NATneqTTRUNC {c} ()
 NATneqTCONST : {c : Term} → ¬ NAT ≡ TCONST c
 NATneqTCONST {c} ()
 
+NATneqSUBSING : {c : Term} → ¬ NAT ≡ SUBSING c
+NATneqSUBSING {c} ()
+
 NATneqLIFT : {c : Term} → ¬ NAT ≡ LIFT c
 NATneqLIFT {c} ()
 
@@ -1799,6 +1827,7 @@ shiftUp-inj {n} {IFC0 a a₁ a₂} {IFC0 b b₁ b₂} e rewrite shiftUp-inj (IFC
 shiftUp-inj {n} {TSQUASH a} {TSQUASH b} e rewrite shiftUp-inj (TSQUASHinj e) = refl
 shiftUp-inj {n} {TTRUNC a} {TTRUNC b} e rewrite shiftUp-inj (TTRUNCinj e) = refl
 shiftUp-inj {n} {TCONST a} {TCONST b} e rewrite shiftUp-inj (TCONSTinj e) = refl
+shiftUp-inj {n} {SUBSING a} {SUBSING b} e rewrite shiftUp-inj (SUBSINGinj e) = refl
 shiftUp-inj {n} {DUM a} {DUM b} e rewrite shiftUp-inj (DUMinj e) = refl
 shiftUp-inj {n} {FFDEFS a a₁} {FFDEFS b b₁} e rewrite shiftUp-inj (FFDEFSinj1 e) | shiftUp-inj (FFDEFSinj2 e) = refl
 shiftUp-inj {n} {UNIV x} {UNIV .x} refl = refl

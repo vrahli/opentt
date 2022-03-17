@@ -307,4 +307,8 @@ select++→⊎∈ {L} {A} {suc k} {x ∷ l} {l'} {t} sel = select++→⊎∈ {L}
 ≤-Σ+ {suc n} {suc m} (_≤_.s≤s le) with ≤-Σ+ le
 ... | (k , p) rewrite p = k , refl
 
+
+→≡snd : {l k : Level} {A : Set l} {B : Set k} {p₁ p₂ : A × B} → p₁ ≡ p₂ → snd p₁ ≡ snd p₂
+→≡snd {l} {k} {A} {B} {a₁ , b₁} {a₂ , b₂} e = pair-inj₂ e
+
 \end{code}

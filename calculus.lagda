@@ -17,6 +17,7 @@ open import Data.Empty
 open import Data.Unit using (⊤ ; tt)
 open import Data.Nat using (ℕ ; _≟_ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _⊔_)
 open import Data.Nat.Properties
+open import Data.Bool using (Bool ; _∧_ ; _∨_)
 open import Data.Bool.Properties using ()
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
@@ -97,10 +98,11 @@ data Term : Set where
   FRESH : Term → Term
   CHOOSE : Term → Term → Term
   IFC0 : Term → Term → Term → Term
-  -- Time squashing
-  TSQUASH : Term → Term
-  TTRUNC : Term → Term
-  TCONST : Term → Term
+  -- Truncation
+  TSQUASH : Term → Term -- closed under ∼C
+  TTRUNC : Term → Term  -- closed under #⇓
+  TCONST : Term → Term  -- satisfy #⇓→#⇓!
+  SUBSING : Term → Term
   -- Dummy
   DUM : Term → Term
   -- Free from definitions
@@ -146,6 +148,7 @@ value? (IFC0 _ _ _) = false -- Not a value
 value? (TSQUASH _) = true
 value? (TTRUNC _) = true
 value? (TCONST _) = true
+value? (SUBSING _) = true
 value? (DUM _) = true
 value? (FFDEFS _ _) = true
 value? (UNIV _) = true
@@ -196,6 +199,7 @@ vars (CS x) = []
 vars (TSQUASH t) = vars t
 vars (TTRUNC t) = vars t
 vars (TCONST t) = vars t
+vars (SUBSING t) = vars t
 vars (FFDEFS t t₁) = vars t ++ vars t₁
 vars (UNIV x) = []
 vars (LOWER t) = vars t
@@ -249,6 +253,7 @@ fvars (IFC0 a b c)     = fvars a ++ fvars b ++ fvars c
 fvars (TSQUASH t)      = fvars t
 fvars (TTRUNC t)       = fvars t
 fvars (TCONST t)       = fvars t
+fvars (SUBSING t)      = fvars t
 fvars (DUM t)          = fvars t
 fvars (FFDEFS t t₁)    = fvars t ++ fvars t₁
 fvars (UNIV x)         = []
@@ -395,6 +400,7 @@ shiftUp c (IFC0 a t₁ t₂) = IFC0 (shiftUp c a) (shiftUp c t₁) (shiftUp c t�
 shiftUp c (TSQUASH t) = TSQUASH (shiftUp c t)
 shiftUp c (TTRUNC t) = TTRUNC (shiftUp c t)
 shiftUp c (TCONST t) = TCONST (shiftUp c t)
+shiftUp c (SUBSING t) = SUBSING (shiftUp c t)
 shiftUp c (DUM t) = DUM (shiftUp c t)
 shiftUp c (FFDEFS t t₁) = FFDEFS (shiftUp c t) (shiftUp c t₁)
 shiftUp c (UNIV x) = UNIV x
@@ -436,6 +442,7 @@ shiftDown c (IFC0 a t₁ t₂) = IFC0 (shiftDown c a) (shiftDown c t₁) (shiftD
 shiftDown c (TSQUASH t) = TSQUASH (shiftDown c t)
 shiftDown c (TTRUNC t) = TTRUNC (shiftDown c t)
 shiftDown c (TCONST t) = TCONST (shiftDown c t)
+shiftDown c (SUBSING t) = SUBSING (shiftDown c t)
 shiftDown c (DUM t) = DUM (shiftDown c t)
 shiftDown c (FFDEFS t t₁) = FFDEFS (shiftDown c t) (shiftDown c t₁)
 shiftDown c (UNIV x) = UNIV x
@@ -479,6 +486,7 @@ subv v t (IFC0 a t₁ t₂) = IFC0 (subv v t a) (subv v t t₁) (subv v t t₂)
 subv v t (TSQUASH u) = TSQUASH (subv v t u)
 subv v t (TTRUNC u) = TTRUNC (subv v t u)
 subv v t (TCONST u) = TCONST (subv v t u)
+subv v t (SUBSING u) = SUBSING (subv v t u)
 subv v t (DUM u) = DUM (subv v t u)
 subv v t (FFDEFS u u₁) = FFDEFS (subv v t u) (subv v t u₁)
 subv v t (UNIV x) = UNIV x
@@ -600,6 +608,8 @@ subvNotIn v t (TTRUNC u) n
   rewrite subvNotIn v t u n = refl
 subvNotIn v t (TCONST u) n
   rewrite subvNotIn v t u n = refl
+subvNotIn v t (SUBSING u) n
+  rewrite subvNotIn v t u n = refl
 subvNotIn v t (DUM u) n
   rewrite subvNotIn v t u n = refl
 subvNotIn v t (FFDEFS u u₁) n
@@ -711,6 +721,8 @@ shiftDownTrivial v (TTRUNC u) i
   rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (TCONST u) i
   rewrite shiftDownTrivial v u i = refl
+shiftDownTrivial v (SUBSING u) i
+  rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (DUM u) i
   rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (FFDEFS u u₁) i
@@ -804,6 +816,8 @@ shiftUpTrivial v (TTRUNC u) i
   rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (TCONST u) i
   rewrite shiftUpTrivial v u i = refl
+shiftUpTrivial v (SUBSING u) i
+  rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (DUM u) i
   rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (FFDEFS u u₁) i
@@ -863,6 +877,7 @@ shiftDownUp (IFC0 t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ n | 
 shiftDownUp (TSQUASH t) n rewrite shiftDownUp t n = refl
 shiftDownUp (TTRUNC t) n rewrite shiftDownUp t n = refl
 shiftDownUp (TCONST t) n rewrite shiftDownUp t n = refl
+shiftDownUp (SUBSING t) n rewrite shiftDownUp t n = refl
 shiftDownUp (DUM t) n rewrite shiftDownUp t n = refl
 shiftDownUp (FFDEFS t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
 shiftDownUp (UNIV x) n = refl
@@ -904,6 +919,7 @@ is-NUM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-NUM (TSQUASH t) = inj₂ (λ { n () })
 is-NUM (TTRUNC t) = inj₂ (λ { n () })
 is-NUM (TCONST t) = inj₂ (λ { n () })
+is-NUM (SUBSING t) = inj₂ (λ { n () })
 is-NUM (DUM t) = inj₂ (λ { n () })
 is-NUM (FFDEFS t t₁) = inj₂ (λ { n () })
 is-NUM (UNIV x) = inj₂ (λ { n () })
@@ -945,6 +961,7 @@ is-LAM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-LAM (TSQUASH t) = inj₂ (λ { n () })
 is-LAM (TTRUNC t) = inj₂ (λ { n () })
 is-LAM (TCONST t) = inj₂ (λ { n () })
+is-LAM (SUBSING t) = inj₂ (λ { n () })
 is-LAM (DUM t) = inj₂ (λ { n () })
 is-LAM (FFDEFS t t₁) = inj₂ (λ { n () })
 is-LAM (UNIV x) = inj₂ (λ { n () })
@@ -986,6 +1003,7 @@ is-CS (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-CS (TSQUASH t) = inj₂ (λ { n () })
 is-CS (TTRUNC t) = inj₂ (λ { n () })
 is-CS (TCONST t) = inj₂ (λ { n () })
+is-CS (SUBSING t) = inj₂ (λ { n () })
 is-CS (DUM t) = inj₂ (λ { n () })
 is-CS (FFDEFS t t₁) = inj₂ (λ { n () })
 is-CS (UNIV x) = inj₂ (λ { n () })
@@ -1027,6 +1045,7 @@ is-PAIR (IFC0 t t₁ t₂) = inj₂ (λ { n m () })
 is-PAIR (TSQUASH t) = inj₂ (λ { n m () })
 is-PAIR (TTRUNC t) = inj₂ (λ { n m () })
 is-PAIR (TCONST t) = inj₂ (λ { n m () })
+is-PAIR (SUBSING t) = inj₂ (λ { n m () })
 is-PAIR (DUM t) = inj₂ (λ { n m () })
 is-PAIR (FFDEFS t t₁) = inj₂ (λ { n m () })
 is-PAIR (UNIV x) = inj₂ (λ { n m () })
@@ -1068,6 +1087,7 @@ is-INL (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-INL (TSQUASH t) = inj₂ (λ { n () })
 is-INL (TTRUNC t) = inj₂ (λ { n () })
 is-INL (TCONST t) = inj₂ (λ { n () })
+is-INL (SUBSING t) = inj₂ (λ { n () })
 is-INL (DUM t) = inj₂ (λ { n () })
 is-INL (FFDEFS t t₁) = inj₂ (λ { n () })
 is-INL (UNIV x) = inj₂ (λ { n () })
@@ -1109,6 +1129,7 @@ is-INR (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-INR (TSQUASH t) = inj₂ (λ { n () })
 is-INR (TTRUNC t) = inj₂ (λ { n () })
 is-INR (TCONST t) = inj₂ (λ { n () })
+is-INR (SUBSING t) = inj₂ (λ { n () })
 is-INR (DUM t) = inj₂ (λ { n () })
 is-INR (FFDEFS t t₁) = inj₂ (λ { n () })
 is-INR (UNIV x) = inj₂ (λ { n () })
@@ -1142,6 +1163,7 @@ data ∼vals : Term → Term → Set where
   ∼vals-TSQUASH : {a b : Term} → ∼vals (TSQUASH a) (TSQUASH b)
   ∼vals-TTRUNC  : {a b : Term} → ∼vals (TTRUNC a) (TTRUNC b)
   ∼vals-TCONST  : {a b : Term} → ∼vals (TCONST a) (TCONST b)
+  ∼vals-SUBSING : {a b : Term} → ∼vals (SUBSING a) (SUBSING b)
   ∼vals-DUM     : {a b : Term} → ∼vals (DUM a) (DUM b)
   ∼vals-FFDEFS  : {a b c d : Term} → ∼vals (FFDEFS a b) (FFDEFS c d)
   ∼vals-UNIV    : {n : ℕ} → ∼vals (UNIV n) (UNIV n)
@@ -1173,6 +1195,7 @@ data ∼vals : Term → Term → Set where
 ∼vals-sym {.(TSQUASH _)} {.(TSQUASH _)} ∼vals-TSQUASH = ∼vals-TSQUASH
 ∼vals-sym {.(TTRUNC _)} {.(TTRUNC _)} ∼vals-TTRUNC = ∼vals-TTRUNC
 ∼vals-sym {.(TCONST _)} {.(TCONST _)} ∼vals-TCONST = ∼vals-TCONST
+∼vals-sym {.(SUBSING _)} {.(SUBSING _)} ∼vals-SUBSING = ∼vals-SUBSING
 ∼vals-sym {.(DUM _)} {.(DUM _)} ∼vals-DUM = ∼vals-DUM
 ∼vals-sym {.(FFDEFS _ _)} {.(FFDEFS _ _)} ∼vals-FFDEFS = ∼vals-FFDEFS
 ∼vals-sym {.(UNIV _)} {.(UNIV _)} ∼vals-UNIV = ∼vals-UNIV
@@ -1204,6 +1227,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₁ {TSQUASH a} {b} isv = tt
 ∼vals→isValue₁ {TTRUNC a} {b} isv = tt
 ∼vals→isValue₁ {TCONST a} {b} isv = tt
+∼vals→isValue₁ {SUBSING a} {b} isv = tt
 ∼vals→isValue₁ {DUM a} {b} isv = tt
 ∼vals→isValue₁ {FFDEFS a a₁} {b} isv = tt
 ∼vals→isValue₁ {UNIV x} {b} isv = tt
@@ -1242,6 +1266,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {TSQUASH b} isv = tt
 ∼vals→isValue₂ {a} {TTRUNC b} isv = tt
 ∼vals→isValue₂ {a} {TCONST b} isv = tt
+∼vals→isValue₂ {a} {SUBSING b} isv = tt
 ∼vals→isValue₂ {a} {DUM b} isv = tt
 ∼vals→isValue₂ {a} {FFDEFS b b₁} isv = tt
 ∼vals→isValue₂ {a} {UNIV x} isv = tt
@@ -1292,11 +1317,56 @@ names (IFC0 a b c)     = names a ++ names b ++ names c
 names (TSQUASH t)      = names t
 names (TTRUNC t)       = names t
 names (TCONST t)       = names t
+names (SUBSING t)      = names t
 names (DUM t)          = names t
 names (FFDEFS t t₁)    = names t ++ names t₁
 names (UNIV x)         = []
 names (LIFT t)         = names t
 names (LOWER t)        = names t
 names (SHRINK t)       = names t
+
+
+
+¬read : Term → Bool
+¬read (VAR x) = true
+¬read NAT = true
+¬read QNAT = true
+¬read (LT t t₁) = ¬read t ∧ ¬read t₁
+¬read (QLT t t₁) = ¬read t ∧ ¬read t₁
+¬read (NUM x) = true
+¬read (IFLT t t₁ t₂ t₃) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂ ∧ ¬read t₃
+¬read (PI t t₁) = ¬read t ∧ ¬read t₁
+¬read (LAMBDA t) = ¬read t
+¬read (APPLY t t₁) = ¬read t ∧ ¬read t₁
+¬read (FIX t) = ¬read t
+¬read (LET t t₁) = ¬read t ∧ ¬read t₁
+¬read (SUM t t₁) = ¬read t ∧ ¬read t₁
+¬read (PAIR t t₁) = ¬read t ∧ ¬read t₁
+¬read (SPREAD t t₁) = ¬read t ∧ ¬read t₁
+¬read (SET t t₁) = ¬read t ∧ ¬read t₁
+¬read (TUNION t t₁) = ¬read t ∧ ¬read t₁
+¬read (UNION t t₁) = ¬read t ∧ ¬read t₁
+¬read (QTUNION t t₁) = ¬read t ∧ ¬read t₁
+¬read (INL t) = ¬read t
+¬read (INR t) = ¬read t
+¬read (DECIDE t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
+¬read (EQ t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
+¬read AX = true
+¬read FREE = true
+¬read (CS x) = false
+¬read (FRESH t) = ¬read t
+¬read (CHOOSE t t₁) = ¬read t ∧ ¬read t₁
+¬read (IFC0 t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
+¬read (TSQUASH t) = ¬read t
+¬read (TTRUNC t) = ¬read t
+¬read (TCONST t) = ¬read t
+¬read (SUBSING t) = ¬read t
+¬read (DUM t) = ¬read t
+¬read (FFDEFS t t₁) = ¬read t ∧ ¬read t₁
+¬read (UNIV x) = true
+¬read (LIFT t) = ¬read t
+¬read (LOWER t) = ¬read t
+¬read (SHRINK t) = ¬read t
+
 
 \end{code}

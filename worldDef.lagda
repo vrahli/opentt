@@ -135,4 +135,9 @@ chain⊑n {w} (suc n) c = ⊑-trans· (chain⊑n n c) (chain.prop c n)
 ... | inj₁ p = ⊑-trans· (≤→chain⊑ c (s≤s-inj p)) (chain.prop c m)
 ... | inj₂ p rewrite p = ⊑-refl· _
 
+
+
+≡ᵣ→⊑ : {w1 w2 w3 : 𝕎·} → w1 ⊑· w2 → w2 ≡ w3 → w1 ⊑· w3
+≡ᵣ→⊑ {w1} {w2} {w3} e₁ e₂ rewrite e₂ = e₁
+
 \end{code}

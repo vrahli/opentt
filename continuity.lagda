@@ -94,6 +94,7 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(E)
 
 
+
 -- turns 'f' into λy.(if n ≤ y then name:=ℂ₁);f(y)
 -- ℂ₀ is treated as true here (i.e., "didn't reach n"), and ℂ₁ as false (i.e., "reached at least n")
 bound : (name : Name) (n : Term) (f : Term) → Term
@@ -102,7 +103,6 @@ bound name n f = LAMBDA (SEQ (IFLE n (VAR 0) (CHOOSE (CS name) (ℂ→T ℂ₁·
 
 -- TODO: the name should be a fresh name, that does not occur in F
 -- TODO: need union types?
-
 
 
 set : (name : Name) → Term
@@ -124,6 +124,43 @@ oldtest name F n f = LET (APPLY F (bound name n f))
 test : (name : Name) (F : Term) (n : Term) (f : Term) → Term
 test name F n f = SEQ (set name) (probe name F n f)
 
+
+
+-- TODO: we need choose to update the world only if the number is higher than the one stored
+-- We throw in a CBV to reduce the argument to a number
+upd : (name : Name) (f : Term) → Term
+upd name f = LAMBDA (LET (VAR 0) (SEQ (CHOOSE (CS name) (VAR 0)) (APPLY f (VAR 0))))
+
+
+set0 : (name : Name) → Term
+set0 name = CHOOSE (CS name) (NUM 0)
+
+
+probeM : (name : Name) (F f : Term) → Term
+probeM name F f = LET (APPLY F (upd name f)) (CS name)
+
+
+testM : (name : Name) (F f : Term) → Term
+testM name F f = SEQ (set0 name) (probeM name F f)
+
+
+NATn : Term → Term
+NATn n = SET NAT (LT (VAR 0) n)
+
+
+BAIREn : Term → Term
+BAIREn n = FUN (NATn n) NAT
+
+
+-- TODO:
+-- We need to truncate this type using SUBSING
+-- Then, prove that testM is a NAT
+-- We will need:
+--  + to assume that the choice is over nats
+--  + that it's actually a time invariant nat, which requires
+--    * F and f to not read choices, but they can write
+contBody : (F f : Term) → Term
+contBody F f = SUM NAT (PI BAIRE (FUN (EQ f (VAR 0) (BAIREn (VAR 1))) (EQ (APPLY F f) (APPLY F (VAR 0)) NAT)))
 
 
 
@@ -533,19 +570,6 @@ eqTypesBAIRE {w} {i} = ≡CTerm→eqTypes (sym #BAIRE≡) (sym #BAIRE≡) (eqTyp
 ∀𝕎-□Func3 {w} {f} {g} {h} aw a b c = Mod.□Func M (Mod.□Func M (Mod.∀𝕎-□Func M aw a) b) c
 
 
--- MOVE to computation
-⇓→from-to : {w : 𝕎·} {a b : Term}
-              → a ⇓ b at w
-              → Σ 𝕎· (λ w' → a ⇓ b from w to w')
-⇓→from-to {w} {a} {b} (n , comp) = snd (steps n (a , w)) , n , stepsT→steps {n} {a} {b} {w} comp
-
-
--- MOVE to computation
-⇓-from-to→⇓ : {w w' : 𝕎·} {a b : Term}
-              → a ⇓ b from w to w'
-              → a ⇓ b at w
-⇓-from-to→⇓ {w} {w'} {a} {b} (n , comp) = n , steps→stepsT' {n} {a} {b} {w} {w'} comp
-
 
 IFLE-steps₁ : {k : ℕ} {w w' : 𝕎·} {n m a u v : Term}
               → steps k (n , w) ≡ (m , w')
@@ -772,36 +796,6 @@ APPLY-bound∈ i w F name n f ∈F ∈n ∈f =
     {i} {w} {#BAIRE} {#NAT} {F} {F} ∈F w (⊑-refl· _) (#bound name n f) (#bound name n f)
     (bound∈ i w name n f ∈n ∈f)
 
-
--- MOVE to computation
-#⇛→#⇓from-to : {w : 𝕎·} {a b : CTerm}
-                 → a #⇛ b at w
-                 → Σ 𝕎· (λ w' → a #⇓ b from w to w')
-#⇛→#⇓from-to {w} {a} {b} comp = ⇓→from-to (lower (comp w (⊑-refl· _)))
-
-
--- MOVE to computation
-#⇛!→#⇓! : {w : 𝕎·} {a b : CTerm}
-                 → a #⇛! b at w
-                 → a #⇓! b at w
-#⇛!→#⇓! {w} {a} {b} comp = lower (comp w (⊑-refl· _))
-
-
--- MOVE to util
-→≡snd : {l k : Level} {A : Set l} {B : Set k} {p₁ p₂ : A × B} → p₁ ≡ p₂ → snd p₁ ≡ snd p₂
-→≡snd {l} {k} {A} {B} {a₁ , b₁} {a₂ , b₂} e = pair-inj₂ e
-
-
--- MOVE to worldDef
-≡ᵣ→⊑ : {w1 w2 w3 : 𝕎·} → w1 ⊑· w2 → w2 ≡ w3 → w1 ⊑· w3
-≡ᵣ→⊑ {w1} {w2} {w3} e₁ e₂ rewrite e₂ = e₁
-
-
--- MOVE to computation
-#⇓from-to→⊑ : {w w' : 𝕎·} {a b : CTerm}
-               → a #⇓ b from w to w'
-               → w ⊑· w'
-#⇓from-to→⊑ {w} {w'} {a} {b} (n , comp) = ≡ᵣ→⊑ (steps⊑ w n ⌜ a ⌝) (→≡snd comp)
 
 
 -- MOVE to props3
@@ -1107,52 +1101,6 @@ probeℂ₁⇓ {F} {n} {f} {name} {m} {w1} {w2} comp1 comp2 =
                                   (⇓-trans₂ (IFC0⇓₁ (Σ-steps-APPLY-CS 0 (NUM 0) Tℂ₁ w2 w2 0 name refl (getChoice→getT comp2)))
                                             IFC0-ℂ₁⇓from-to)))
 
-
-¬read : Term → Bool
-¬read (VAR x) = true
-¬read NAT = true
-¬read QNAT = true
-¬read (LT t t₁) = ¬read t ∧ ¬read t₁
-¬read (QLT t t₁) = ¬read t ∧ ¬read t₁
-¬read (NUM x) = true
-¬read (IFLT t t₁ t₂ t₃) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂ ∧ ¬read t₃
-¬read (PI t t₁) = ¬read t ∧ ¬read t₁
-¬read (LAMBDA t) = ¬read t
-¬read (APPLY t t₁) = ¬read t ∧ ¬read t₁
-¬read (FIX t) = ¬read t
-¬read (LET t t₁) = ¬read t ∧ ¬read t₁
-¬read (SUM t t₁) = ¬read t ∧ ¬read t₁
-¬read (PAIR t t₁) = ¬read t ∧ ¬read t₁
-¬read (SPREAD t t₁) = ¬read t ∧ ¬read t₁
-¬read (SET t t₁) = ¬read t ∧ ¬read t₁
-¬read (TUNION t t₁) = ¬read t ∧ ¬read t₁
-¬read (UNION t t₁) = ¬read t ∧ ¬read t₁
-¬read (QTUNION t t₁) = ¬read t ∧ ¬read t₁
-¬read (INL t) = ¬read t
-¬read (INR t) = ¬read t
-¬read (DECIDE t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
-¬read (EQ t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
-¬read AX = true
-¬read FREE = true
-¬read (CS x) = false
-¬read (FRESH t) = ¬read t
-¬read (CHOOSE t t₁) = ¬read t ∧ ¬read t₁
-¬read (IFC0 t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
-¬read (TSQUASH t) = ¬read t
-¬read (TTRUNC t) = ¬read t
-¬read (TCONST t) = ¬read t
-¬read (DUM t) = ¬read t
-¬read (FFDEFS t t₁) = ¬read t ∧ ¬read t₁
-¬read (UNIV x) = true
-¬read (LIFT t) = ¬read t
-¬read (LOWER t) = ¬read t
-¬read (SHRINK t) = ¬read t
-
-
-#⇓from-to→#⇓ : {w1 w2 : 𝕎·} {a b : CTerm}
-                → a #⇓ b from w1 to w2
-                → a #⇓ b at w1
-#⇓from-to→#⇓ {w1} {w2} {a} {b} (m , comp) = m , steps→stepsT' {m} {⌜ a ⌝} {⌜ b ⌝} {w1} {w2} comp
 
 
 -- To prove this with UNION instead of QTUNION, we would have to assume ¬read of 'F', 'n', and 'f', so that 'test' computes
