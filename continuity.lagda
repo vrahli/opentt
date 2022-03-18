@@ -127,6 +127,7 @@ test name F n f = SEQ (set name) (probe name F n f)
 
 
 -- TODO: we need choose to update the world only if the number is higher than the one stored
+-- This will be specified as a constraint of the 'choose' operator from getChoice.lagda
 -- We throw in a CBV to reduce the argument to a number
 upd : (name : Name) (f : Term) → Term
 upd name f = LAMBDA (LET (VAR 0) (SEQ (CHOOSE (CS name) (VAR 0)) (APPLY f (VAR 0))))
@@ -359,11 +360,29 @@ fvars-IFLE a b c d = refl
             | lowerVars-fvars-CTerm≡[] (ℂ→C· ℂ₁·) = refl
 
 
+
+#upd : (name : Name) (f : CTerm) → CTerm
+#upd name f = ct (upd name ⌜ f ⌝) c
+  where
+    c : # upd name ⌜ f ⌝
+    c rewrite CTerm.closed f
+            | #shiftUp 0 f
+            | lowerVarsApp (fvars ⌜ f ⌝) [ 1 ]
+            | lowerVars-fvars-CTerm≡[] f = refl
+
+
 #set : (name : Name) → CTerm
 #set name = ct (set name) c
   where
     c : # set name
     c rewrite CTerm.closed (ℂ→C· ℂ₀·) = refl
+
+
+#set0 : (name : Name) → CTerm
+#set0 name = ct (set0 name) c
+  where
+    c : # set0 name
+    c = refl
 
 
 
@@ -372,6 +391,14 @@ fvars-IFLE a b c d = refl
   where
     c : # probe name ⌜ F ⌝ ⌜ n ⌝ ⌜ f ⌝
     c rewrite CTerm.closed (#bound name n f)
+            | CTerm.closed F = refl
+
+
+#probeM : (name : Name) (F f : CTerm) → CTerm
+#probeM name F f = ct (probeM name ⌜ F ⌝ ⌜ f ⌝) c
+  where
+    c : # probeM name ⌜ F ⌝ ⌜ f ⌝
+    c rewrite CTerm.closed (#upd name f)
             | CTerm.closed F = refl
 
 
@@ -384,6 +411,17 @@ fvars-IFLE a b c d = refl
             | CTerm.closed (#bound name n f)
             | lowerVarsApp (fvars ⌜ ℂ→C· ℂ₀· ⌝) [ 0 ]
             | lowerVars-fvars-CTerm≡[] (ℂ→C· ℂ₀·)
+            | CTerm.closed F = refl
+
+
+
+#testM : (name : Name) (F f : CTerm) → CTerm
+#testM name F f = ct (testM name ⌜ F ⌝ ⌜ f ⌝) c
+  where
+    c : # testM name ⌜ F ⌝ ⌜ f ⌝
+    c rewrite fvars-SEQ0 (set0 name) (probeM name ⌜ F ⌝ ⌜ f ⌝)
+            | CTerm.closed (#set0 name)
+            | CTerm.closed (#upd name f)
             | CTerm.closed F = refl
 
 
@@ -402,12 +440,67 @@ fvars-IFLE a b c d = refl
 #bound≡ name n f = CTerm≡ refl
 
 
+
+-- MOVE to terms
+#[0]LET : CTerm0 → CTerm1 → CTerm0
+#[0]LET a b = ct0 (LET ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ [ 0 ] ] LET ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {[ 0 ]}
+              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+                   (lowerVars-fvars-[0,1] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm1.closed b))))
+
+
+
+-- MOVE to terms
+#[1]SEQ : CTerm1 → CTerm1 → CTerm1
+#[1]SEQ a b = ct1 (SEQ ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] SEQ ⌜ a ⌝ ⌜ b ⌝
+    c rewrite fvars-SEQ0 ⌜ a ⌝ ⌜ b ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ [ 1 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
+
+
+-- MOVE to terms
+#[1]CHOOSE : CTerm1 → CTerm1 → CTerm1
+#[1]CHOOSE a b = ct1 (CHOOSE ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] CHOOSE ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ [ 1 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
+
+
+-- MOVE to terms
+#[1]CS : Name → CTerm1
+#[1]CS name = ct1 (CS name) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] CS name
+    c = refl
+
+
+#UPD : (name : Name) (f : CTerm) → CTerm
+#UPD name f =
+  #LAMBDA (#[0]LET #[0]VAR (#[1]SEQ (#[1]CHOOSE (#[1]CS name) #[1]VAR0)
+                                    (#[1]APPLY ⌞ f ⌟ #[1]VAR0)))
+
+
+#upd≡ : (name : Name) (f : CTerm) → #upd name f ≡ #UPD name f
+#upd≡ name f = CTerm≡ refl
+
+
 →≡pair : {l k : Level} {A : Set l} {B : Set k} {a₁ a₂ : A} {b₁ b₂ : B} → a₁ ≡ a₂ → b₁ ≡ b₂ → (a₁ , b₁) ≡ (a₂ , b₂)
 →≡pair e f rewrite e | f = refl
 
 
 →≡LET : {a₁ a₂ b₁ b₂ : Term} → a₁ ≡ a₂ → b₁ ≡ b₂ → LET a₁ b₁ ≡ LET a₂ b₂
 →≡LET e f rewrite e | f = refl
+
+
+--→≡APPLY : {a₁ a₂ b₁ b₂ : Term} → a₁ ≡ a₂ → b₁ ≡ b₂ → APPLY a₁ b₁ ≡ APPLY a₂ b₂
+--→≡APPLY e f rewrite e | f = refl
 
 
 sub-SEQ : (a b c : Term) → # a → #[ [ 0 ] ] c → sub a (SEQ b c) ≡ SEQ (sub a b) (sub a c)
@@ -549,6 +642,14 @@ eqTypesBAIRE {w} {i} = ≡CTerm→eqTypes (sym #BAIRE≡) (sym #BAIRE≡) (eqTyp
                       → equalInType u w A a b
                       → equalInType u w A a b'
 ≡CTerm→equalInTypeᵣ {u} {w} {A} {a} {b} {b'} e z rewrite e = z
+
+
+-- MOVE to props2/3
+≡CTerm→∈Type : {u : ℕ} {w : 𝕎·} {A a a' : CTerm}
+                      → a ≡ a'
+                      → ∈Type u w A a
+                      → ∈Type u w A a'
+≡CTerm→∈Type {u} {w} {A} {a} {a'} e z rewrite e = z
 
 
 -- MOVE to mod
@@ -750,7 +851,7 @@ SEQ-AX⇛ {w} {a} {b} cb comp = ⇛-trans (SEQ⇛₁ comp) (SEQ-AX⇛₁ cb)
 bound∈ : (i : ℕ) (w : 𝕎·) (name : Name) (n : CTerm) (f : CTerm)
          → ∈Type i w #NAT n
          → ∈Type i w #BAIRE f
-         → equalInType i w #BAIRE (#bound name n f) (#bound name n f)
+         → ∈Type i w #BAIRE (#bound name n f)
 bound∈ i w name n f ∈n ∈f =
   ≡CTerm→equalInTypeₗ (sym (#bound≡ name n f)) (≡CTerm→equalInTypeᵣ (sym (#bound≡ name n f)) (≡CTerm→equalInType (sym #BAIRE≡) eqi))
   where
@@ -1002,6 +1103,12 @@ isValue→LET⇓from-to {v} {t} {w} isv = 1 , c
     ... | inj₂ x = ⊥-elim (x isv)
 
 
+isValue→LET⇛ : {v t : Term} {w : 𝕎·}
+                 → isValue v
+                 → LET v t ⇛ sub v t at w
+isValue→LET⇛ {v} {t} {w} isv w1 e1 = lift (⇓-from-to→⇓ {w1} {w1} {LET v t} {sub v t} (isValue→LET⇓from-to isv))
+
+
 sub-num-probe-body : {m : ℕ} {name : Name}
                      → sub (NUM m) (IFC0 (APPLY (CS name) (NUM 0)) (INL (VAR 0)) (INR AX))
                         ≡ IFC0 (APPLY (CS name) (NUM 0)) (INL (NUM m)) (INR AX)
@@ -1201,5 +1308,154 @@ test∈ i w F name n f compat ∈F ∈n ∈f =
 -- Check what world (#APPLY F (#bound name n f)) ends up in and name's value in that world
 -- and compare it with with ℂ₀ before instantiating the conclusion
 -- Because we used NAT, this requires choices to be numbers (should be QTNAT in the union)
+
+
+
+-- MOVE to terms
+#LET : CTerm → CTerm0 → CTerm
+#LET a b = ct (LET ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # LET ⌜ a ⌝ ⌜ b ⌝
+    c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
+
+
+
+sub-LET : (a b c : Term) → # a → sub a (LET b c) ≡ LET (sub a b) (shiftDown 1 (subv 1 a c))
+sub-LET a b c ca
+  rewrite #shiftUp 0 (ct a ca)
+        | #shiftUp 0 (ct a ca)
+  = →≡LET refl refl
+
+
+→sub-LET : {a b c b' c' : Term} → # a
+            → sub a b ≡ b'
+            → shiftDown 1 (subv 1 a c) ≡ c'
+            → sub a (LET b c) ≡ LET b' c'
+→sub-LET {a} {b} {c} {b'} {c'} ca eb ec rewrite sym eb | sym ec = sub-LET a b c ca
+
+
+CTerm→CTerm0→Term : (a : CTerm) → ⌜ CTerm→CTerm0 a ⌝ ≡ ⌜ a ⌝
+CTerm→CTerm0→Term (ct a c) = refl
+
+
+CTerm→CTerm1→Term : (a : CTerm) → ⌜ CTerm→CTerm1 a ⌝ ≡ ⌜ a ⌝
+CTerm→CTerm1→Term (ct a c) = refl
+
+
+
+#subv : (n : ℕ) (t u : Term) → # u → subv n t u ≡ u
+#subv n t u d rewrite subvNotIn n t u (#→¬∈ {u} d n) = refl
+
+
+
+#⇛!-#APPLY-#UPD : (w : 𝕎·) (name : Name) (f : CTerm) (a : CTerm)
+                   → #APPLY (#UPD name f) a #⇛! #LET a (#[0]SEQ (#[0]CHOOSE (#[0]CS name) (#[0]VAR)) (#[0]APPLY ⌞ f ⌟ #[0]VAR)) at w
+#⇛!-#APPLY-#UPD w name f a w1 e1
+  = lift (1 , →≡pair (→sub-LET {⌜ a ⌝} {⌜ #[0]VAR ⌝} {⌜ #[1]SEQ (#[1]CHOOSE (#[1]CS name) #[1]VAR0) (#[1]APPLY ⌞ f ⌟ #[1]VAR0) ⌝}
+                                 (CTerm.closed a)
+                                 (sub-VAR0 ⌜ a ⌝)
+                                 (→≡LET refl
+                                         (→≡APPLY e refl)))
+                     refl)
+  where
+    e : shiftDown 2 (subv 2 (shiftUp 0 ⌜ a ⌝) (shiftUp 0 ⌜ CTerm→CTerm1 f ⌝))
+        ≡ shiftUp 0 ⌜ CTerm→CTerm0 f ⌝
+    e rewrite #shiftUp 0 a
+            | CTerm→CTerm0→Term f
+            | CTerm→CTerm1→Term f
+            | #shiftUp 0 f
+            | #subv 2 ⌜ a ⌝ ⌜ f ⌝ (CTerm.closed f) = #shiftDown 2 f
+
+
+{--
+⇓-upd-body : (w : 𝕎·) (f a : Term) (m k : ℕ) (name : Name)
+              → a ⇓ NUM m at w
+              → APPLY f (NUM m) ⇛ NUM k at w
+              → LET a (SEQ (CHOOSE (CS name) (VAR 0)) (APPLY f (VAR 0))) ⇓ NUM k at w
+⇓-upd-body w f a m k name c₁ c₂ = {!!}
+--}
+
+
+≡ₗ→⇛ : {a b c : Term} (w : 𝕎·) → a ≡ c → a ⇛ b at w → c ⇛ b at w
+≡ₗ→⇛ {a} {b} {c} w e comp rewrite e = comp
+
+
+→#-APPLY : {a b : Term} → # a → # b → # APPLY a b
+→#-APPLY {a} {b} ca cb rewrite ca | cb = refl
+
+
+→#[]-APPLY : {a b : Term} {l : List Var} → #[ l ] a → #[ l ] b → #[ l ] APPLY a b
+→#[]-APPLY {a} {b} {l} ca cb =
+  ⊆→⊆? {fvars a ++ fvars b } {l}
+        (⊆++ (⊆?→⊆ {fvars a} {l} ca)
+             (⊆?→⊆ {fvars b} {l} cb))
+
+
+#→#[] : {a : Term} {l : List Var} → # a → #[ l ] a
+#→#[] {a} {l} ca rewrite ca = refl
+
+
+⇛-upd-body : (w : 𝕎·) (f a : Term) (m k : ℕ) (name : Name)
+              → # f
+              → a ⇛ NUM m at w
+              → APPLY f (NUM m) ⇛ NUM k at w
+              → LET a (SEQ (CHOOSE (CS name) (VAR 0)) (APPLY f (VAR 0))) ⇛ NUM k at w
+⇛-upd-body w f a m k name cf c₁ c₂ =
+  ⇛-trans (LET⇛₁ c₁)
+           (⇛-trans (isValue→LET⇛ tt)
+                     (≡ₗ→⇛ w (sym (→sub-SEQ {NUM m} {CHOOSE (CS name) (VAR 0)} {APPLY f (VAR 0)} {CHOOSE (CS name) (NUM m)} {APPLY f (NUM m)}
+                                              refl (→#[]-APPLY {f} {VAR 0} {[ 0 ]} (#→#[] {f} {[ 0 ]} cf) refl) refl (→sub-APPLY {NUM m} {f} {VAR 0} {f} {NUM m} (subNotIn (NUM m) f cf) refl)))
+                              (⇛-trans (SEQ⇛₁ CHOOSE-CS⇛AX)
+                                        (⇛-trans (SEQ-AX⇛₁ (→#-APPLY {f} {NUM m} cf refl)) c₂))))
+
+
+upd∈ : (i : ℕ) (w : 𝕎·) (name : Name) (f : CTerm)
+         → ∈Type i w #BAIRE f
+         → ∈Type i w #BAIRE (#upd name f)
+upd∈ i w name f ∈f = ≡CTerm→∈Type (sym (#upd≡ name f)) (≡CTerm→equalInType (sym #BAIRE≡) eqi)
+  where
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
+                       → equalInType i w' #NAT (#APPLY (#UPD name f) a₁) (#APPLY (#UPD name f) a₂))
+    aw w1 e1 a₁ a₂ ea =
+      equalInType-#⇛-LR-rev
+        (#⇛!-#APPLY-#UPD w1 name f a₁)
+        (#⇛!-#APPLY-#UPD w1 name f a₂)
+        eqi1
+      where
+        eqa : □· w1 (λ w' _ → NATeq w' a₁ a₂)
+        eqa = equalInType-NAT→ i w1 a₁ a₂ ea
+
+        aw1 : ∀𝕎 w1 (λ w' e' → NATeq w' a₁ a₂
+                              → Mod.□ M w' (↑wPred' (λ w'' _ → NATeq w''
+                                   (#LET a₁ (#[0]SEQ (#[0]CHOOSE (#[0]CS name) #[0]VAR) (#[0]APPLY (CTerm→CTerm0 f) #[0]VAR)))
+                                   (#LET a₂ (#[0]SEQ (#[0]CHOOSE (#[0]CS name) #[0]VAR) (#[0]APPLY (CTerm→CTerm0 f) #[0]VAR)))) e'))
+        aw1 w2 e2 (m , c₁ , c₂) = Mod.∀𝕎-□Func M aw2 eqf
+          where
+            aw2 : ∀𝕎 w2 (λ w' e' → NATeq w' (#APPLY f (#NUM m)) (#APPLY f (#NUM m))
+                                 → ↑wPred' (λ w'' _ → NATeq w'' (#LET a₁ (#[0]SEQ (#[0]CHOOSE (#[0]CS name) #[0]VAR) (#[0]APPLY (CTerm→CTerm0 f) #[0]VAR)))
+                                                                 (#LET a₂ (#[0]SEQ (#[0]CHOOSE (#[0]CS name) #[0]VAR) (#[0]APPLY (CTerm→CTerm0 f) #[0]VAR)))) e2 w' e')
+            aw2 w3 e3 (k , d₁ , d₂) z =
+              k ,
+              ⇛-upd-body w3 ⌜ f ⌝ ⌜ a₁ ⌝ m k name (CTerm.closed f) (∀𝕎-mon e3 c₁) d₁ ,
+              ⇛-upd-body w3 ⌜ f ⌝ ⌜ a₂ ⌝ m k name (CTerm.closed f) (∀𝕎-mon e3 c₂) d₂
+
+            eqf : □· w2 (λ w' _ → NATeq w' (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
+            eqf = equalInType-NAT→ i w2 (#APPLY f (#NUM m)) (#APPLY f (#NUM m)) (equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) w2 (⊑-refl· _) (#NUM m) (#NUM m) (NUM-equalInType-NAT i w2 m))
+
+        eqi1 : equalInType i w1 #NAT (#LET a₁ (#[0]SEQ (#[0]CHOOSE (#[0]CS name) (#[0]VAR)) (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
+                                     (#LET a₂ (#[0]SEQ (#[0]CHOOSE (#[0]CS name) (#[0]VAR)) (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
+        eqi1 = →equalInType-NAT i w1 _ _ (Mod.□-idem M (Mod.∀𝕎-□Func M aw1 eqa))
+
+    eqi : ∈Type i w (#FUN #NAT #NAT) (#UPD name f)
+    eqi = equalInType-FUN (λ w1 e1 → eqTypesNAT) (λ w1 e1 → eqTypesNAT) aw
+
+
+
+testM-NAT : (i : ℕ) (w : 𝕎·) (name : Name) (F f : CTerm)
+            → ∈Type i w #BAIRE→NAT F
+            → ∈Type i w #BAIRE f
+            → ∈Type i w #NAT (#testM name F f)
+testM-NAT i w name F f ∈F ∈f = {!!}
+
 
 \end{code}
