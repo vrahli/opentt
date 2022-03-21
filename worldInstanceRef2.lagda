@@ -359,7 +359,7 @@ isℂ₀ref b = b
 open import getChoice(PossibleWorldsRef)(choiceRef)(compatibleREF)
 
 getChoiceRef : GetChoice
-getChoiceRef = mkGetChoice getRefChoice T→ℂref chooseREF chooseREF⊑
+getChoiceRef = mkGetChoice getRefChoice T→ℂref chooseREF chooseREF⊑ wdom
 -- isℂ₀ref
 -- getRefChoiceCompatible
 

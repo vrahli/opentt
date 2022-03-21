@@ -770,7 +770,7 @@ isℂ₀cs _ = false
 open import getChoice(PossibleWorldsCS)(choiceCS)(compatibleCS)
 
 getChoiceCS : GetChoice
-getChoiceCS = mkGetChoice getCsChoice T→ℂcs chooseCS chooseCS⊑
+getChoiceCS = mkGetChoice getCsChoice T→ℂcs chooseCS chooseCS⊑ wdom
 -- getCsChoiceCompatible
 
 open import getChoiceDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)

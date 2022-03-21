@@ -91,3 +91,11 @@ chooseT n w t = choose· n w (T→ℂ· t)
 
 choose⊑· : (cs : Name) (w : 𝕎·) (c : ℂ·) → w ⊑· choose· cs w c
 choose⊑· = choose⊑ G
+
+dom𝕎· : 𝕎· → List Name
+dom𝕎· = dom𝕎 G
+
+
+-- returns a fresh name w.r.t. the world
+μ𝕎 : 𝕎· → Name
+μ𝕎 w = fst (freshName (dom𝕎· w))
