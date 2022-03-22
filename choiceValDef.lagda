@@ -33,19 +33,21 @@ open import choice
 open import compatible
 open import getChoice
 open import choiceExt
+open import newChoice
 open import choiceVal
 
 
 module choiceValDef {L : Level} (W : PossibleWorlds {L})
                     (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M)
-                    (E : ChoiceExt {L} W C)
-                    (V : ChoiceVal {L} W C M G E)
+                    (X : ChoiceExt {L} W C)
+                    (N : NewChoice W C M G)
+                    (V : ChoiceVal {L} W C M G X N)
        where
 open import worldDef(W)
 open import choiceDef{L}(C)
 open import getChoiceDef{L}(W)(C)(M)(G)
-open import choiceExtDef{L}(W)(C)(M)(G)(E)
-open import computation(W)(C)(M)(G)(E)
+open import choiceExtDef{L}(W)(C)(M)(G)(X)
+open import computation(W)(C)(M)(G)(X)(N)
 
 
 open ChoiceVal

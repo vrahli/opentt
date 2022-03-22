@@ -14,17 +14,19 @@ open import choice
 open import compatible
 open import getChoice
 open import choiceExt
+open import newChoice
 
 
 module choiceVal {L : Level} (W : PossibleWorlds {L}) (C : Choice)
-                 (M : Compatible W C) (G : GetChoice {L} W C M) (E : ChoiceExt {L} W C)
+                 (M : Compatible W C) (G : GetChoice {L} W C M) (X : ChoiceExt {L} W C)
+                 (N : NewChoice W C M G)
        where
 
 open import worldDef(W)
 open import choiceDef{L}(C)
 open import getChoiceDef{L}(W)(C)(M)(G)
-open import choiceExtDef{L}(W)(C)(M)(G)(E)
-open import computation(W)(C)(M)(G)(E)
+open import choiceExtDef{L}(W)(C)(M)(G)(X)
+open import computation(W)(C)(M)(G)(X)(N)
 
 \end{code}
 

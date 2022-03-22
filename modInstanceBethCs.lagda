@@ -80,7 +80,7 @@ F = freezeCS
 X : ChoiceExt W C
 X = choiceExtCS
 
-V : ChoiceVal W C K G X
+V : ChoiceVal W C K G X N
 V = choiceValCS
 
 open import worldDef(W)
@@ -92,18 +92,18 @@ open import compatibleDef(W)(C)(K)
 open import progressDef(W)(C)(K)(P)
 open import getChoiceDef(W)(C)(K)(G)
 open import choiceExtDef(W)(C)(K)(G)(X)
-open import choiceValDef(W)(C)(K)(G)(X)(V)
+open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 
 --open import barBeth(W)(C)(K)(P)
 open import barI(W)(M)--(C)(K)(P)
-open import computation(W)(C)(K)(G)(X)
+open import computation(W)(C)(K)(G)(X)(N)
 
-open import forcing(W)(M)(C)(K)(P)(G)(X)(E)
-open import props1(W)(M)(C)(K)(P)(G)(X)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 progressing→ΣgetCs≤ : {w : 𝕎·} {c : chain w} {r : Res} (n : Name) (m : ℕ)
@@ -461,7 +461,7 @@ followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
     z = i e (BarredChain.b bp) w' (⊑-refl· w') e
 
 
-open import choiceBar(W)(M)(C)(K)(P)(G)(X)(V)(N)(F)(E)
+open import choiceBar(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)
 
 bethCs-choiceBar : ChoiceBar
 bethCs-choiceBar =

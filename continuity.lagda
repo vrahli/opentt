@@ -49,30 +49,30 @@ open import choiceBar
 
 module continuity {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
                   (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
-                  (X : ChoiceExt W C) (V : ChoiceVal W C K G X)
-                  (N : NewChoice {L} W C K G)
+                  (X : ChoiceExt W C)
+                  (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
                   (F : Freeze {L} W C K P G N)
                   (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-                  (CB : ChoiceBar W M C K P G X V N F E) -- TODO - We won't need everything from there: use a different module
+                  (CB : ChoiceBar W M C K P G X N V F E) -- TODO - We won't need everything from there: use a different module
        where
 
 
 open import worldDef(W)
-open import computation(W)(C)(K)(G)(X)
+open import computation(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
 open import getChoiceDef(W)(C)(K)(G)
 open import choiceExtDef(W)(C)(K)(G)(X)
-open import choiceValDef(W)(C)(K)(G)(X)(V)
+open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 
-open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(V)(N)(F)(E)(CB)
+open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 
 {--
 open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(E)
@@ -90,9 +90,9 @@ open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(E)
 open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(E)
 --}
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(E)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 
@@ -126,20 +126,27 @@ test : (name : Name) (F : Term) (n : Term) (f : Term) → Term
 test name F n f = SEQ (set name) (probe name F n f)
 
 
+setT : (name : Name) (T : Term) → Term
+setT name t = CHOOSE (NAME name) t
+
+
+set0 : (name : Name) → Term
+set0 name = setT name (NUM 0)
+
+
+get0 : (name : Name) → Term
+get0 name = APPLY (CS name) (NUM 0)
+
+
+updGt : (name : Name) (t : Term) → Term
+updGt name t = IFLT (get0 name) t (setT name t) AX
+
 
 -- TODO: we need choose to update the world only if the number is higher than the one stored
 -- This will be specified as a constraint of the 'choose' operator from getChoice.lagda
 -- We throw in a CBV to reduce the argument to a number
 upd : (name : Name) (f : Term) → Term
-upd name f = LAMBDA (LET (VAR 0) (SEQ (CHOOSE (NAME name) (VAR 0)) (APPLY f (VAR 0))))
-
-
-set0 : (name : Name) → Term
-set0 name = CHOOSE (NAME name) (NUM 0)
-
-
-get0 : (name : Name) → Term
-get0 name = APPLY (CS name) (NUM 0)
+upd name f = LAMBDA (LET (VAR 0) (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))))
 
 
 probeM : (name : Name) (F f : Term) → Term
@@ -148,6 +155,10 @@ probeM name F f = SEQ (APPLY F (upd name f)) (get0 name)
 
 testM : (name : Name) (F f : Term) → Term
 testM name F f = SEQ (set0 name) (probeM name F f)
+
+
+μtestM : (name : Name) (F f : Term) → Term
+μtestM name F f = FRESH (testM name F f)
 
 
 NATn : Term → Term
@@ -501,10 +512,34 @@ fvars-IFLE a b c d = refl
     c = refl
 
 
+
+#updGt : (name : Name) (t : CTerm) → CTerm
+#updGt name t = ct (updGt name ⌜ t ⌝) c
+  where
+    c : # updGt  name ⌜ t ⌝
+    c rewrite CTerm.closed (#get0 name) | CTerm.closed t = refl
+
+
+#[0]updGt : (name : Name) (t : CTerm0) → CTerm0
+#[0]updGt name t = ct0 (updGt name ⌜ t ⌝) c
+  where
+    c : #[ [ 0 ] ] updGt  name ⌜ t ⌝
+    c rewrite CTerm.closed (#get0 name) | ++[] (fvars ⌜ t ⌝) =
+      ⊆→⊆? {fvars ⌜ t ⌝ ++ fvars ⌜ t ⌝} {[ 0 ]} (⊆++ (⊆?→⊆ {fvars ⌜ t ⌝} {[ 0 ]} (CTerm0.closed t))
+                                                    (⊆?→⊆ {fvars ⌜ t ⌝} {[ 0 ]} (CTerm0.closed t)))
+
+
+#[1]updGt : (name : Name) (t : CTerm1) → CTerm1
+#[1]updGt name t = ct1 (updGt name ⌜ t ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] updGt  name ⌜ t ⌝
+    c rewrite CTerm.closed (#get0 name) | ++[] (fvars ⌜ t ⌝) =
+      ⊆→⊆? {fvars ⌜ t ⌝ ++ fvars ⌜ t ⌝} {0 ∷ [ 1 ]} (⊆++ (⊆?→⊆ {fvars ⌜ t ⌝} {0 ∷ [ 1 ]} (CTerm1.closed t))
+                                                        (⊆?→⊆ {fvars ⌜ t ⌝} {0 ∷ [ 1 ]} (CTerm1.closed t)))
+
+
 #UPD : (name : Name) (f : CTerm) → CTerm
-#UPD name f =
-  #LAMBDA (#[0]LET #[0]VAR (#[1]SEQ (#[1]CHOOSE (#[1]NAME name) #[1]VAR0)
-                                    (#[1]APPLY ⌞ f ⌟ #[1]VAR0)))
+#UPD name f = #LAMBDA (#[0]LET #[0]VAR (#[1]SEQ (#[1]updGt name #[1]VAR0) (#[1]APPLY ⌞ f ⌟ #[1]VAR0)))
 
 
 #upd≡ : (name : Name) (f : CTerm) → #upd name f ≡ #UPD name f
@@ -804,11 +839,12 @@ IFLE⇛¬≤ {k} {j} {w} {a} {b} lekj w1 e1 = lift (1 , c)
         z4 = <-transˡ z2 (≤-reflexive z3)
 
 
-CHOOSE-CS⇛AX : {w : 𝕎·} {name : Name} {t : Term} → CHOOSE (NAME name) t ⇛ AX at w
-CHOOSE-CS⇛AX {w} {name} {t} w1 e1 = lift (1 , refl)
+CHOOSE-NAME⇛AX : {w : 𝕎·} {name : Name} {t : Term} → CHOOSE (NAME name) t ⇛ AX at w
+CHOOSE-NAME⇛AX {w} {name} {t} w1 e1 = lift (1 , refl)
 
-#CHOOSE-CS⇛AX : {w : 𝕎·} {name : Name} {t : CTerm} → #CHOOSE (#NAME name) t #⇛ #AX at w
-#CHOOSE-CS⇛AX {w} {name} {t} w1 e1 = CHOOSE-CS⇛AX w1 e1
+
+#CHOOSE-NAME⇛AX : {w : 𝕎·} {name : Name} {t : CTerm} → #CHOOSE (#NAME name) t #⇛ #AX at w
+#CHOOSE-NAME⇛AX {w} {name} {t} w1 e1 = CHOOSE-NAME⇛AX w1 e1
 
 
 -- MOVE to computation
@@ -821,7 +857,7 @@ IFLE-CHOOSE⇛AX {w} {n} {a} {k} {j} {name} {t} c d =
   where
     concl : IFLE (NUM k) (NUM j) (CHOOSE (NAME name) t) AX ⇛ AX at w
     concl with k ≤? j
-    ... | yes p = ⇛-trans (IFLE⇛≤ p) CHOOSE-CS⇛AX
+    ... | yes p = ⇛-trans (IFLE⇛≤ p) CHOOSE-NAME⇛AX
     ... | no p = IFLE⇛¬≤ p
 
 
@@ -1282,7 +1318,7 @@ test∈ i w F name n f compat ∈F ∈n ∈f =
     aw w1 e1 gcn (m , c₁ , c₂) = j (lower (gcn w3 (⊑-trans· e2 e3)))
       where
         comp1 : Σ 𝕎· (λ w2 → #set name #⇓ #AX from w1 to w2)
-        comp1 = #⇛→#⇓from-to {w1} {#set name} {#AX} (#CHOOSE-CS⇛AX {w1} {name} {ℂ→C· ℂ₀·})
+        comp1 = #⇛→#⇓from-to {w1} {#set name} {#AX} (#CHOOSE-NAME⇛AX {w1} {name} {ℂ→C· ℂ₀·})
 
         w2 : 𝕎·
         w2 = fst comp1
@@ -1376,9 +1412,9 @@ CTerm→CTerm1→Term (ct a c) = refl
 
 
 #⇛!-#APPLY-#UPD : (w : 𝕎·) (name : Name) (f : CTerm) (a : CTerm)
-                   → #APPLY (#UPD name f) a #⇛! #LET a (#[0]SEQ (#[0]CHOOSE (#[0]NAME name) (#[0]VAR)) (#[0]APPLY ⌞ f ⌟ #[0]VAR)) at w
+                   → #APPLY (#UPD name f) a #⇛! #LET a (#[0]SEQ (#[0]updGt name #[0]VAR) (#[0]APPLY ⌞ f ⌟ #[0]VAR)) at w
 #⇛!-#APPLY-#UPD w name f a w1 e1
-  = lift (1 , →≡pair (→sub-LET {⌜ a ⌝} {⌜ #[0]VAR ⌝} {⌜ #[1]SEQ (#[1]CHOOSE (#[1]NAME name) #[1]VAR0) (#[1]APPLY ⌞ f ⌟ #[1]VAR0) ⌝}
+  = lift (1 , →≡pair (→sub-LET {⌜ a ⌝} {⌜ #[0]VAR ⌝} {⌜ #[1]SEQ (#[1]updGt name #[1]VAR0) (#[1]APPLY ⌞ f ⌟ #[1]VAR0) ⌝}
                                  (CTerm.closed a)
                                  (sub-VAR0 ⌜ a ⌝)
                                  (→≡LET refl
@@ -1422,18 +1458,41 @@ CTerm→CTerm1→Term (ct a c) = refl
 #→#[] {a} {l} ca rewrite ca = refl
 
 
-⇛-upd-body : (w : 𝕎·) (f a : Term) (m k : ℕ) (name : Name)
-              → # f
-              → a ⇛ NUM m at w
-              → APPLY f (NUM m) ⇛ NUM k at w
-              → LET a (SEQ (CHOOSE (NAME name) (VAR 0)) (APPLY f (VAR 0))) ⇛ NUM k at w
-⇛-upd-body w f a m k name cf c₁ c₂ =
+old-⇛-upd-body : (w : 𝕎·) (f a : Term) (m k : ℕ) (name : Name)
+                  → # f
+                  → a ⇛ NUM m at w
+                  → APPLY f (NUM m) ⇛ NUM k at w
+                  → LET a (SEQ (CHOOSE (NAME name) (VAR 0)) (APPLY f (VAR 0))) ⇛ NUM k at w
+old-⇛-upd-body w f a m k name cf c₁ c₂ =
   ⇛-trans (LET⇛₁ c₁)
            (⇛-trans (isValue→LET⇛ tt)
                      (≡ₗ→⇛ w (sym (→sub-SEQ {NUM m} {CHOOSE (NAME name) (VAR 0)} {APPLY f (VAR 0)} {CHOOSE (NAME name) (NUM m)} {APPLY f (NUM m)}
                                               refl (→#[]-APPLY {f} {VAR 0} {[ 0 ]} (#→#[] {f} {[ 0 ]} cf) refl) refl (→sub-APPLY {NUM m} {f} {VAR 0} {f} {NUM m} (subNotIn (NUM m) f cf) refl)))
-                              (⇛-trans (SEQ⇛₁ CHOOSE-CS⇛AX)
+                              (⇛-trans (SEQ⇛₁ CHOOSE-NAME⇛AX)
                                         (⇛-trans (SEQ-AX⇛₁ (→#-APPLY {f} {NUM m} cf refl)) c₂))))
+
+
+updGt⇛AX : {w : 𝕎·} {name : Name} {m : ℕ}
+            → ∀𝕎 w (λ w' e → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ j → getT 0 name w' ≡ just (NUM j))))
+            → updGt name (NUM m) ⇛ AX at w
+updGt⇛AX {w} {name} {m} g0 w1 e1 = lift {!!}
+
+
+⇛-upd-body : (w : 𝕎·) (f a : Term) (m k : ℕ) (name : Name)
+              → ∀𝕎 w (λ w' e → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ j → getT 0 name w' ≡ just (NUM j))))
+              → # f
+              → a ⇛ NUM m at w
+              → APPLY f (NUM m) ⇛ NUM k at w
+              → LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) ⇛ NUM k at w
+⇛-upd-body w f a m k name g0 cf c₁ c₂ =
+  ⇛-trans (LET⇛₁ c₁)
+           (⇛-trans (isValue→LET⇛ tt)
+                     (≡ₗ→⇛ w (sym (→sub-SEQ {NUM m} {updGt name (VAR 0)} {APPLY f (VAR 0)} {updGt name (NUM m)} {APPLY f (NUM m)}
+                                              refl (→#[]-APPLY {f} {VAR 0} {[ 0 ]} (#→#[] {f} {[ 0 ]} cf) refl)
+                                              refl (→sub-APPLY {NUM m} {f} {VAR 0} {f} {NUM m} (subNotIn (NUM m) f cf) refl)))
+                              (⇛-trans (SEQ⇛₁ (updGt⇛AX g0))
+                                        (⇛-trans (SEQ-AX⇛₁ (→#-APPLY {f} {NUM m} cf refl)) c₂))))
+
 
 
 upd∈ : (i : ℕ) (w : 𝕎·) (name : Name) (f : CTerm)
@@ -1454,23 +1513,23 @@ upd∈ i w name f ∈f = ≡CTerm→∈Type (sym (#upd≡ name f)) (≡CTerm→e
 
         aw1 : ∀𝕎 w1 (λ w' e' → NATeq w' a₁ a₂
                               → Mod.□ M w' (↑wPred' (λ w'' _ → NATeq w''
-                                   (#LET a₁ (#[0]SEQ (#[0]CHOOSE (#[0]NAME name) #[0]VAR) (#[0]APPLY (CTerm→CTerm0 f) #[0]VAR)))
-                                   (#LET a₂ (#[0]SEQ (#[0]CHOOSE (#[0]NAME name) #[0]VAR) (#[0]APPLY (CTerm→CTerm0 f) #[0]VAR)))) e'))
+                                   (#LET a₁ (#[0]SEQ (#[0]updGt name #[0]VAR) (#[0]APPLY (CTerm→CTerm0 f) #[0]VAR)))
+                                   (#LET a₂ (#[0]SEQ (#[0]updGt name #[0]VAR) (#[0]APPLY (CTerm→CTerm0 f) #[0]VAR)))) e'))
         aw1 w2 e2 (m , c₁ , c₂) = Mod.∀𝕎-□Func M aw2 eqf
           where
             aw2 : ∀𝕎 w2 (λ w' e' → NATeq w' (#APPLY f (#NUM m)) (#APPLY f (#NUM m))
-                                 → ↑wPred' (λ w'' _ → NATeq w'' (#LET a₁ (#[0]SEQ (#[0]CHOOSE (#[0]NAME name) #[0]VAR) (#[0]APPLY (CTerm→CTerm0 f) #[0]VAR)))
-                                                                 (#LET a₂ (#[0]SEQ (#[0]CHOOSE (#[0]NAME name) #[0]VAR) (#[0]APPLY (CTerm→CTerm0 f) #[0]VAR)))) e2 w' e')
+                                 → ↑wPred' (λ w'' _ → NATeq w'' (#LET a₁ (#[0]SEQ (#[0]updGt name #[0]VAR) (#[0]APPLY (CTerm→CTerm0 f) #[0]VAR)))
+                                                                 (#LET a₂ (#[0]SEQ (#[0]updGt name #[0]VAR) (#[0]APPLY (CTerm→CTerm0 f) #[0]VAR)))) e2 w' e')
             aw2 w3 e3 (k , d₁ , d₂) z =
               k ,
-              ⇛-upd-body w3 ⌜ f ⌝ ⌜ a₁ ⌝ m k name (CTerm.closed f) (∀𝕎-mon e3 c₁) d₁ ,
-              ⇛-upd-body w3 ⌜ f ⌝ ⌜ a₂ ⌝ m k name (CTerm.closed f) (∀𝕎-mon e3 c₂) d₂
+              {!!} , --⇛-upd-body w3 ⌜ f ⌝ ⌜ a₁ ⌝ m k name (CTerm.closed f) (∀𝕎-mon e3 c₁) d₁ ,
+              {!!} --⇛-upd-body w3 ⌜ f ⌝ ⌜ a₂ ⌝ m k name (CTerm.closed f) (∀𝕎-mon e3 c₂) d₂
 
             eqf : □· w2 (λ w' _ → NATeq w' (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
             eqf = equalInType-NAT→ i w2 (#APPLY f (#NUM m)) (#APPLY f (#NUM m)) (equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) w2 (⊑-refl· _) (#NUM m) (#NUM m) (NUM-equalInType-NAT i w2 m))
 
-        eqi1 : equalInType i w1 #NAT (#LET a₁ (#[0]SEQ (#[0]CHOOSE (#[0]NAME name) (#[0]VAR)) (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
-                                     (#LET a₂ (#[0]SEQ (#[0]CHOOSE (#[0]NAME name) (#[0]VAR)) (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
+        eqi1 : equalInType i w1 #NAT (#LET a₁ (#[0]SEQ (#[0]updGt name #[0]VAR) (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
+                                     (#LET a₂ (#[0]SEQ (#[0]updGt name #[0]VAR) (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
         eqi1 = →equalInType-NAT i w1 _ _ (Mod.□-idem M (Mod.∀𝕎-□Func M aw1 eqa))
 
     eqi : ∈Type i w (#FUN #NAT #NAT) (#UPD name f)
@@ -1517,6 +1576,7 @@ record ℕℂ : Set₁ where
 
 
 -- Move to ?
+-- This is Res⊤ where when ℂ is ℕ essentially
 Resℕ : ℕℂ → Res
 Resℕ nc = mkRes (λ n t → Σ ℕ (λ m → ℂ→T t ≡ NUM m)) (T→ℂ· (NUM 0)) (λ n → 0 , e) (true , c1) (true , c2)
   where

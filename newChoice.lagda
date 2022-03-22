@@ -47,17 +47,18 @@ record NewChoice : Set(lsuc(L)) where
   constructor mkNewChoice
   field
     -- returns a Name which does not occur in w
-    newChoice : (w : 𝕎·) → Name
+    dom𝕎 : 𝕎· → List Name
+    --newChoice : (w : 𝕎·) → Name
     -- 'records' cs in w
     startChoice : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) → 𝕎·
     -- if we start a new choice then it is 'empty' according to getChoice
     getChoice-startNewChoice : (n : ℕ) (r : Res{0ℓ}) (w : 𝕎·) (t : ℂ·)
-                               → getChoice· n (newChoice w) (startChoice (newChoice w) r w) ≡ just t → t ≡ Res.def r
+                               → getChoice· n (fst (freshName (dom𝕎 w))) (startChoice (fst (freshName (dom𝕎 w))) r w) ≡ just t → t ≡ Res.def r
     -- The above is essentially onlyℂ∈𝕎
     -- starting a new choice gives us a non-trivial extension
-    startNewChoice⊏ : (r : Res{0ℓ}) (w : 𝕎·) → w ⊑· startChoice (newChoice w) r w
+    startNewChoice⊏ : (r : Res{0ℓ}) (w : 𝕎·) → w ⊑· startChoice (fst (freshName (dom𝕎 w))) r w
 
     -- starting a new choice trivially satisfies compatibility
-    startChoiceCompatible : (r : Res{0ℓ}) (w : 𝕎·) → compatible· (newChoice w) (startChoice (newChoice w) r w) r
+    startChoiceCompatible : (r : Res{0ℓ}) (w : 𝕎·) → compatible· (fst (freshName (dom𝕎 w))) (startChoice (fst (freshName (dom𝕎 w))) r w) r
 
 \end{code}

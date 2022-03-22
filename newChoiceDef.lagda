@@ -45,8 +45,17 @@ open import getChoiceDef(W)(C)(M)(G)
 open NewChoice
 
 
+dom𝕎· : 𝕎· → List Name
+dom𝕎· = dom𝕎 N
+
+
+-- returns a fresh name w.r.t. the world
+ν𝕎 : 𝕎· → Name
+ν𝕎 w = fst (freshName (dom𝕎· w))
+
+
 newChoice· : (w : 𝕎·) → Name
-newChoice· = newChoice N
+newChoice· = ν𝕎
 
 
 startChoice· : (cs : Name) (r : Res) (w : 𝕎·) → 𝕎·

@@ -38,6 +38,7 @@ open import choice
 open import compatible
 open import progress
 open import getChoice
+open import newChoice
 open import choiceExt
 open import mod --bar --mod
 
@@ -46,10 +47,11 @@ open import mod --bar --mod
 module forcing {L : Level} (W : PossibleWorlds {L}) (M : Mod W) --(B : BarsProps W) --
                (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
                (X : ChoiceExt W C)
+               (N : NewChoice W C K G)
                (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
 open import worldDef(W)
-open import computation(W)(C)(K)(G)(X)
+open import computation(W)(C)(K)(G)(X)(N)
 --open import mod(W) --bar(W)
 open import barI(W)(M)--{--(barI)--}(C)(K)(P)
 

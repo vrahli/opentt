@@ -24,23 +24,23 @@ open import mod
 
 module all {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
            (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
-           (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C) (V : ChoiceVal W C K G X)
-           (N : NewChoice {L} W C K G)
+           (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
+           (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
            (F : Freeze {L} W C K P G N)
            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
            (EM : ExcludedMiddle (lsuc(L))) -- for ExBar, used in turn in lem
-           (CB : ChoiceBar W M C K P G X V N F E)
+           (CB : ChoiceBar W M C K P G X N V F E)
            (EB : ExBar W M)
        where
 
-open import not_lem{L}(W)(M)(C)(K)(P)(G)(X)(V)(N)(F)(E)(CB)
-open import lem{L}(W)(M)(C)(K)(P)(G)(X)(V)(E)(EM)(EB)
+open import not_lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+open import lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)(EM)(EB)
 -- This version requires choices to be Booleans:
-open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(V)(N)(F)(E)(CB)
+open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 -- As opposed to the above version, this one relies on QTBool instead of Bool:
-open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(V)(N)(F)(E)(CB)
+open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 -- This version requires choices to be Booleans, but also freezable to always be true:
-open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(V)(N)(F)(E)(CB)
+open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 
 -- This instance of 'choiceBar' uses Beth bars and terms as choices:
 open import modInstanceBethCs

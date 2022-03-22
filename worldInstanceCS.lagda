@@ -770,7 +770,8 @@ isℂ₀cs _ = false
 open import getChoice(PossibleWorldsCS)(choiceCS)(compatibleCS)
 
 getChoiceCS : GetChoice
-getChoiceCS = mkGetChoice getCsChoice T→ℂcs chooseCS chooseCS⊑ wdom
+getChoiceCS = mkGetChoice getCsChoice T→ℂcs chooseCS chooseCS⊑
+-- wdom
 -- getCsChoiceCompatible
 
 open import getChoiceDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
@@ -806,31 +807,6 @@ choiceExtCS = mkChoiceExt (#NUM 0) (#NUM 1) decℂ₀cs decℂ₁cs
 
 open import choiceExtDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)
 
-
-open import computation(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)
-
-
-#≠01 : (w : 𝕎·) → ¬ ∼C! w (#NUM 0) (#NUM 1)
-#≠01 w h = x (#compVal (∼C!→#⇓ {w} {#NUM 0} {#NUM 1} tt h) tt)
-  where
-    x : #NUM 0 ≡ #NUM 1 → ⊥
-    x ()
-
-
-ℂ→T→ℂ0 : T→ℂ· ⌜ Cℂ₀ ⌝ ≡ ℂ₀·
-ℂ→T→ℂ0 = refl
-
-
-ℂ→T→ℂ1 : T→ℂ· ⌜ Cℂ₁ ⌝ ≡ ℂ₁·
-ℂ→T→ℂ1 = refl
-
-
-open import choiceVal{1ℓ}(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)
-
-choiceValCS : ChoiceVal
-choiceValCS = mkChoiceVal #≠01 tt tt ℂ→T→ℂ0 ℂ→T→ℂ1
-
-open import choiceValDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)(choiceValCS)
 
 
 
@@ -892,13 +868,39 @@ open import newChoice(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
 newChoiceCS : NewChoice
 newChoiceCS =
   mkNewChoice
-    newCsChoice
+    wdom --newCsChoice
     startCsChoice
     getCsChoice-startNewCsChoice
     startNewCsChoice⊏
     startCsChoiceCompatible
 
 open import newChoiceDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(newChoiceCS)
+
+
+open import computation(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)(newChoiceCS)
+
+
+#≠01 : (w : 𝕎·) → ¬ ∼C! w (#NUM 0) (#NUM 1)
+#≠01 w h = x (#compVal (∼C!→#⇓ {w} {#NUM 0} {#NUM 1} tt h) tt)
+  where
+    x : #NUM 0 ≡ #NUM 1 → ⊥
+    x ()
+
+
+ℂ→T→ℂ0 : T→ℂ· ⌜ Cℂ₀ ⌝ ≡ ℂ₀·
+ℂ→T→ℂ0 = refl
+
+
+ℂ→T→ℂ1 : T→ℂ· ⌜ Cℂ₁ ⌝ ≡ ℂ₁·
+ℂ→T→ℂ1 = refl
+
+
+open import choiceVal{1ℓ}(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)(newChoiceCS)
+
+choiceValCS : ChoiceVal
+choiceValCS = mkChoiceVal #≠01 tt tt ℂ→T→ℂ0 ℂ→T→ℂ1
+
+open import choiceValDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)(newChoiceCS)(choiceValCS)
 
 
 getRes : Name → world → Res

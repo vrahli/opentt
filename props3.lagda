@@ -38,41 +38,43 @@ open import compatible
 open import getChoice
 open import progress
 open import choiceExt
+open import newChoice
 open import mod
 
 
 module props3 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
               (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
               (X : ChoiceExt W C)
+              (N : NewChoice W C K G)
               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
 
 
 open import worldDef(W)
-open import computation(W)(C)(K)(G)(X)
+open import computation(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(E)
-open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(X)(E)
-open import type_sys_props_lt(W)(M)(C)(K)(P)(G)(X)(E)
-open import type_sys_props_qlt(W)(M)(C)(K)(P)(G)(X)(E)
-open import type_sys_props_free(W)(M)(C)(K)(P)(G)(X)(E)
-open import type_sys_props_pi(W)(M)(C)(K)(P)(G)(X)(E)
-open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(X)(E)
-open import type_sys_props_set(W)(M)(C)(K)(P)(G)(X)(E)
-open import type_sys_props_eq(W)(M)(C)(K)(P)(G)(X)(E)
-open import type_sys_props_union(W)(M)(C)(K)(P)(G)(X)(E)
-open import type_sys_props_qtunion(W)(M)(C)(K)(P)(G)(X)(E)
-open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(X)(E)
-open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(E)
-open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(E)
+open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_lt(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_qlt(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_free(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_pi(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_set(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_eq(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_union(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_qtunion(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(E)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 equalInType-EQ→₁ : {u : ℕ} {w : 𝕎·} {a b A : CTerm} {f g : CTerm}

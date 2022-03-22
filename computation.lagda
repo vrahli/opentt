@@ -36,15 +36,18 @@ open import choice
 open import compatible
 open import getChoice
 open import choiceExt
+open import newChoice
 
 
 module computation {L : Level} (W : PossibleWorlds {L})
                    (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M) (E : ChoiceExt {L} W C)
+                   (N : NewChoice W C M G)
        where
 open import worldDef(W)
 open import choiceDef{L}(C)
 open import getChoiceDef(W)(C)(M)(G)
 open import choiceExtDef(W)(C)(M)(G)(E)
+open import newChoiceDef(W)(C)(M)(G)(N)
 \end{code}
 
 
@@ -111,8 +114,9 @@ step (APPLY f a) w with step f w
 ... | just (g , w') = ret (APPLY g a) w'
 ... | nothing = nothing--}
 -- FRESH
--- TODO
-step (FRESH t) w = ret (renn 0 (μ𝕎 w) t) w
+-- This creates a new choice name and adds it to the current world with the default restriction
+-- TODO: allow other restrictions
+step (FRESH t) w = ret (renn 0 (newChoice· w) t) (startNewChoice Res⊤ w)
 -- CHOOSE
 step (CHOOSE n t) w with is-NAME n
 ... | inj₁ (name , p) = ret AX (chooseT name w t)
@@ -734,7 +738,7 @@ step⊑ {w} {w'} {IFC0 a a₁ a₂} {b} comp with isValue⊎ a
 step⊑ {w} {w'} {IFC0 a a₁ a₂} {b} comp | inj₂ y with step⊎ a w
 ... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
-step⊑ {w} {w'} {FRESH a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {FRESH a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = startNewChoice⊏· Res⊤ w --⊑-refl· _
 step⊑ {w} {w'} {TSQUASH a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {TTRUNC a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {TCONST a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _

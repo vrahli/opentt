@@ -379,7 +379,8 @@ isℂ₀ref (suc _) = false
 open import getChoice(PossibleWorldsRef)(choiceRef)(compatibleREF)
 
 getChoiceRef : GetChoice
-getChoiceRef = mkGetChoice getRefChoice T→ℂref chooseREF chooseREF⊑ wdom
+getChoiceRef = mkGetChoice getRefChoice T→ℂref chooseREF chooseREF⊑
+-- wdom
 -- isℂ₀ref
 -- getRefChoiceCompatible
 
@@ -466,33 +467,6 @@ choiceExtRef = mkChoiceExt C0 C1 decℂ₀ref decℂ₁ref
 open import choiceExtDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)
 
 
-open import computation(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)
-
-
-
-¬∼c01 : (w : 𝕎·) → ¬ ∼C! w (ℂ→C· C0) (ℂ→C· C1)
-¬∼c01 w h = x (#compVal (∼C!→#⇓ {w} {ℂ→C· C0} {ℂ→C· C1} tt h) tt)
-  where
-    x : ℂ→C· C0 ≡ ℂ→C· C1 → ⊥
-    x ()
-
-
-ℂ→T→ℂ0 : T→ℂ· ⌜ Cℂ₀ ⌝ ≡ ℂ₀·
-ℂ→T→ℂ0 = refl
-
-
-ℂ→T→ℂ1 : T→ℂ· ⌜ Cℂ₁ ⌝ ≡ ℂ₁·
-ℂ→T→ℂ1 = refl
-
-
-
-open import choiceVal{1ℓ}(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)
-
-choiceValRef : ChoiceVal
-choiceValRef = mkChoiceVal ¬∼c01 tt tt ℂ→T→ℂ0 ℂ→T→ℂ1
-
-open import choiceValDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)(choiceValRef)
-
 
 
 newRefChoice : (w : 𝕎·) → Name
@@ -539,13 +513,41 @@ open import newChoice(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)
 newChoiceRef : NewChoice
 newChoiceRef =
   mkNewChoice
-    newRefChoice
+    wdom --newRefChoice
     startRefChoice
     getRefChoice-startNewRefChoice
     startNewRefChoice⊏
     startRefChoiceCompatible
 
 open import newChoiceDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(newChoiceRef)
+
+
+open import computation(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)(newChoiceRef)
+
+
+
+¬∼c01 : (w : 𝕎·) → ¬ ∼C! w (ℂ→C· C0) (ℂ→C· C1)
+¬∼c01 w h = x (#compVal (∼C!→#⇓ {w} {ℂ→C· C0} {ℂ→C· C1} tt h) tt)
+  where
+    x : ℂ→C· C0 ≡ ℂ→C· C1 → ⊥
+    x ()
+
+
+ℂ→T→ℂ0 : T→ℂ· ⌜ Cℂ₀ ⌝ ≡ ℂ₀·
+ℂ→T→ℂ0 = refl
+
+
+ℂ→T→ℂ1 : T→ℂ· ⌜ Cℂ₁ ⌝ ≡ ℂ₁·
+ℂ→T→ℂ1 = refl
+
+
+
+open import choiceVal{1ℓ}(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)(newChoiceRef)
+
+choiceValRef : ChoiceVal
+choiceValRef = mkChoiceVal ¬∼c01 tt tt ℂ→T→ℂ0 ℂ→T→ℂ1
+
+open import choiceValDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)(newChoiceRef)(choiceValRef)
 
 
 
