@@ -157,8 +157,8 @@ testM : (name : Name) (F f : Term) → Term
 testM name F f = SEQ (set0 name) (probeM name F f)
 
 
-μtestM : (name : Name) (F f : Term) → Term
-μtestM name F f = FRESH (testM name F f)
+νtestM : (name : Name) (F f : Term) → Term
+νtestM name F f = FRESH (testM name F f)
 
 
 NATn : Term → Term
@@ -894,12 +894,17 @@ SEQ⇛₁ {w} {a} {a'} {b} comp w1 e1 = lift (⇓-from-to→⇓ {w1} {fst c} (SE
 
 
 
-SEQ-AX⇓₁from-to : {w : 𝕎·} {t : Term} → # t → SEQ AX t ⇓ t from w to w
-SEQ-AX⇓₁from-to {w} {t} tc = 1 , c
+SEQ-val⇓₁from-to : {w : 𝕎·} {a t : Term} → # t → isValue a → SEQ a t ⇓ t from w to w
+SEQ-val⇓₁from-to {w} {a} {t} tc isv = 1 , c
   where
-    c : (sub AX (shiftUp 0 t) , w) ≡ (t , w)
-    c rewrite #shiftUp 0 (ct t tc) | subNotIn AX t tc = refl
+    c : steps 1 (SEQ a t , w) ≡ (t , w)
+    c with isValue⊎ a
+    ... | inj₁ x rewrite #shiftUp 0 (ct t tc) | subNotIn a t tc = refl
+    ... | inj₂ x = ⊥-elim (x isv)
 
+
+SEQ-AX⇓₁from-to : {w : 𝕎·} {t : Term} → # t → SEQ AX t ⇓ t from w to w
+SEQ-AX⇓₁from-to {w} {t} tc = SEQ-val⇓₁from-to {w} {AX} {t} tc tt
 
 
 SEQ-AX⇓₁ : {w : 𝕎·} {t : Term} → # t → SEQ AX t ⇓ t at w
@@ -1472,10 +1477,47 @@ old-⇛-upd-body w f a m k name cf c₁ c₂ =
                                         (⇛-trans (SEQ-AX⇛₁ (→#-APPLY {f} {NUM m} cf refl)) c₂))))
 
 
+
+IFLT-NUM⇓< : (n m : ℕ) (w : 𝕎·) (a b : Term)
+              → n < m
+              → step (IFLT (NUM n) (NUM m) a b) w ≡ just (a , w)
+IFLT-NUM⇓< n m w a b ltnm with n <? m
+... | yes r = refl
+... | no r = ⊥-elim (r ltnm)
+
+
+IFLT-NUM⇓¬< : (n m : ℕ) (w : 𝕎·) (a b : Term)
+              → ¬ (n < m)
+              → step (IFLT (NUM n) (NUM m) a b) w ≡ just (b , w)
+IFLT-NUM⇓¬< n m w a b ltnm with n <? m
+... | yes r = ⊥-elim (ltnm r)
+... | no r = refl
+
+
+IFLT-NUM⇓ : (n m : ℕ) (w : 𝕎·) (a b c : Term)
+              → a ⇓ c at w
+              → b ⇓ c at w
+              → IFLT (NUM n) (NUM m) a b ⇓ c at w
+IFLT-NUM⇓ n m w a b c c₁ c₂ with n <? m
+... | yes r = step-⇓-trans (IFLT-NUM⇓< n m w a b r) c₁
+... | no r = step-⇓-trans (IFLT-NUM⇓¬< n m w a b r) c₂
+
+
 updGt⇛AX : {w : 𝕎·} {name : Name} {m : ℕ}
             → ∀𝕎 w (λ w' e → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ j → getT 0 name w' ≡ just (NUM j))))
             → updGt name (NUM m) ⇛ AX at w
-updGt⇛AX {w} {name} {m} g0 w1 e1 = lift {!!}
+updGt⇛AX {w} {name} {m} g0 w1 e1 =
+  lift (step-⇓-trans s (IFLT-NUM⇓ (fst z) m w1 (setT name (NUM m)) AX AX (lower (CHOOSE-NAME⇛AX w1 (⊑-refl· _))) (⇓-refl AX w1)))
+  where
+    z : Σ ℕ (λ j → getT 0 name w1 ≡ just (NUM j))
+    z = lower (g0 w1 e1)
+
+    s : step (updGt name (NUM m)) w1 ≡ just (IFLT (NUM (fst z)) (NUM m) (setT name (NUM m)) AX , w1)
+    s with is-NUM (get0 name)
+    ... | inj₁ (n , ())
+    ... | inj₂ p with step⊎ (get0 name) w1
+    ... |    inj₁ (k , w' , q) rewrite q | snd z | pair-inj₁ (just-inj (sym q)) | pair-inj₂ (just-inj (sym q)) = refl
+    ... |    inj₂ q rewrite q | snd z = ⊥-elim (¬just≡nothing q)
 
 
 ⇛-upd-body : (w : 𝕎·) (f a : Term) (m k : ℕ) (name : Name)
@@ -1496,9 +1538,10 @@ updGt⇛AX {w} {name} {m} g0 w1 e1 = lift {!!}
 
 
 upd∈ : (i : ℕ) (w : 𝕎·) (name : Name) (f : CTerm)
-         → ∈Type i w #BAIRE f
-         → ∈Type i w #BAIRE (#upd name f)
-upd∈ i w name f ∈f = ≡CTerm→∈Type (sym (#upd≡ name f)) (≡CTerm→equalInType (sym #BAIRE≡) eqi)
+       → ∀𝕎 w (λ w' e → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ j → getT 0 name w' ≡ just (NUM j))))
+       → ∈Type i w #BAIRE f
+       → ∈Type i w #BAIRE (#upd name f)
+upd∈ i w name f g0 ∈f = ≡CTerm→∈Type (sym (#upd≡ name f)) (≡CTerm→equalInType (sym #BAIRE≡) eqi)
   where
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
                        → equalInType i w' #NAT (#APPLY (#UPD name f) a₁) (#APPLY (#UPD name f) a₂))
@@ -1522,8 +1565,8 @@ upd∈ i w name f ∈f = ≡CTerm→∈Type (sym (#upd≡ name f)) (≡CTerm→e
                                                                  (#LET a₂ (#[0]SEQ (#[0]updGt name #[0]VAR) (#[0]APPLY (CTerm→CTerm0 f) #[0]VAR)))) e2 w' e')
             aw2 w3 e3 (k , d₁ , d₂) z =
               k ,
-              {!!} , --⇛-upd-body w3 ⌜ f ⌝ ⌜ a₁ ⌝ m k name (CTerm.closed f) (∀𝕎-mon e3 c₁) d₁ ,
-              {!!} --⇛-upd-body w3 ⌜ f ⌝ ⌜ a₂ ⌝ m k name (CTerm.closed f) (∀𝕎-mon e3 c₂) d₂
+              ⇛-upd-body w3 ⌜ f ⌝ ⌜ a₁ ⌝ m k name (∀𝕎-mon (⊑-trans· e1 z) g0) (CTerm.closed f) (∀𝕎-mon e3 c₁) d₁ ,
+              ⇛-upd-body w3 ⌜ f ⌝ ⌜ a₂ ⌝ m k name (∀𝕎-mon (⊑-trans· e1 z) g0) (CTerm.closed f) (∀𝕎-mon e3 c₂) d₂
 
             eqf : □· w2 (λ w' _ → NATeq w' (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
             eqf = equalInType-NAT→ i w2 (#APPLY f (#NUM m)) (#APPLY f (#NUM m)) (equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) w2 (⊑-refl· _) (#NUM m) (#NUM m) (NUM-equalInType-NAT i w2 m))
@@ -1608,20 +1651,59 @@ get-choose-ℕ nc =
 ¬read-upd≡ name f = {!refl!}
 
 
+∀𝕎-getT0-NUM→∀𝕎get0-NUM : (w : 𝕎·) (name : Name)
+                             → ∀𝕎 w (λ w' e → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ j → getT 0 name w' ≡ just (NUM j))))
+                             → ∀𝕎 w (λ w' e → Lift {L} (lsuc(L)) (Σ ℕ (λ k → get0 name ⇓ NUM k from w' to w')))
+∀𝕎-getT0-NUM→∀𝕎get0-NUM w name h w1 e1 = lift (fst z , 1 , s)
+  where
+    z : Σ ℕ (λ j → getT 0 name w1 ≡ just (NUM j))
+    z = lower (h w1 e1)
+
+    s : steps 1 (get0 name , w1) ≡ (NUM (fst z) , w1)
+    s rewrite snd z = refl
+
+
+⇓from-to→⊑ : {w w' : 𝕎·} {a b : Term}
+               → a ⇓ b from w to w'
+               → w ⊑· w'
+⇓from-to→⊑ {w} {w'} {a} {b} (n , comp) = ≡ᵣ→⊑ (steps⊑ w n a) (→≡snd comp)
+
+
 ⇓-APPLY-upd→ : (nc : ℕℂ) (w : 𝕎·) (name : Name) (F f : Term) (m : ℕ)
-                → ¬Read F
-                → ¬Read f
-                → get-choose-ℕ nc -- add to a separate record
-                → getT 0 name w ≡ just (NUM 0)
+                --→ ¬Read F
+                --→ ¬Read f
+                --→ get-choose-ℕ nc -- add to a separate record
+                --→ getT 0 name w ≡ just (NUM 0)
+                → ∀𝕎 w (λ w' e → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ j → getT 0 name w' ≡ just (NUM j))))
                 → APPLY F (upd name f) ⇛ NUM m at w
                 → Σ ℕ (λ k → SEQ (set0 name) (probeM name F f) ⇓ NUM k at w)
-⇓-APPLY-upd→ nc w name F f m nrF nrf gcn g0 ap = {!!}
+⇓-APPLY-upd→ nc w name F f m {--nrF nrf gcn--} g0 ap =
+  fst cg , ⇓-from-to→⇓ {w} {fst ca} {SEQ (set0 name) (probeM name F f)} {NUM (fst cg)}
+                       (⇓-trans₂ {w} {chooseT name w (NUM 0)} {fst ca} {SEQ (set0 name) (probeM name F f)} {SEQ AX (probeM name F f)} {NUM (fst cg)}
+                                 (SEQ⇓₁ {w} {chooseT name w (NUM 0)} {set0 name} {AX} {probeM name F f} cs)
+                                 (⇓-trans₂ {chooseT name w (NUM 0)} {chooseT name w (NUM 0)} {fst ca} {SEQ AX (probeM name F f)} {probeM name F f} {NUM (fst cg)}
+                                           (SEQ-AX⇓₁from-to {!!})
+                                           (⇓-trans₂ {chooseT name w (NUM 0)} {fst ca} {fst ca} {probeM name F f} {SEQ (NUM m) (get0 name)} {NUM (fst cg)}
+                                                     (SEQ⇓₁ (snd ca))
+                                                     (⇓-trans₂ {proj₁ ca} {proj₁ ca} {proj₁ ca} {SEQ (NUM m) (get0 name)} {get0 name} {NUM (proj₁ cg)}
+                                                               (SEQ-val⇓₁from-to refl tt)
+                                                               (snd cg)))))
+--(Σ-steps-APPLY-CS 0 (NUM 0) (NUM (fst cg)) (fst ca) (fst ca) 0 name refl {!!})
   where
     cs : set0 name ⇓ AX from w to chooseT name w (NUM 0)
     cs = 1 , refl
 
-    ca : Σ 𝕎· (λ w' → APPLY F (upd name f) ⇓ NUM m from w to w')
-    ca = ⇛→⇓from-to ap
+    cs⊑ : w ⊑· chooseT name w (NUM 0)
+    cs⊑ = ⇓from-to→⊑ {w} {chooseT name w (NUM 0)} cs
+
+    ca : Σ 𝕎· (λ w' → APPLY F (upd name f) ⇓ NUM m from (chooseT name w (NUM 0)) to w')
+    ca = ⇛→⇓from-to (∀𝕎-mon cs⊑ ap)
+
+    ca⊑ : w ⊑· fst ca
+    ca⊑ = ⊑-trans· cs⊑ (⇓from-to→⊑ {chooseT name w (NUM 0)} {fst ca} (snd ca))
+
+    cg : Σ ℕ (λ k → get0 name ⇓ NUM k from (fst ca) to (fst ca))
+    cg = lower (∀𝕎-getT0-NUM→∀𝕎get0-NUM w name g0 (fst ca) ca⊑)
 -- TODO: add a 'fresh' to testM, and make it so that it adds an "entry" in the world
 -- change choose so that the name is directly a parameter?
 
@@ -1648,8 +1730,7 @@ testM-NAT i w name F f nrF nrf nnF nnf ∈F ∈f =
     aw w1 e1 (m , c₁ , c₂) = {!!}
 
     eqa : ∈Type i w #NAT (#APPLY F (#upd name f))
-    eqa = equalInType-FUN→ ∈F w (⊑-refl· _) (#upd name f) (#upd name f) (upd∈ i w name f ∈f)
--- 
+    eqa = equalInType-FUN→ ∈F w (⊑-refl· _) (#upd name f) (#upd name f) (upd∈ i w name f {!!} ∈f)
 
 
 \end{code}
