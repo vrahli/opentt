@@ -450,6 +450,14 @@ fvars-IFLE a b c d = refl
 
 
 
+#νtestM : (F f : CTerm) → CTerm
+#νtestM F f = ct (νtestM ⌜ F ⌝ ⌜ f ⌝) c
+  where
+    c : # νtestM ⌜ F ⌝ ⌜ f ⌝
+    c = CTerm.closed (#testM 0 F f)
+
+
+
 #[0]AX : CTerm0
 #[0]AX = ct0 AX refl
 
@@ -1672,41 +1680,71 @@ get-choose-ℕ nc =
 ⇓from-to→⊑ {w} {w'} {a} {b} (n , comp) = ≡ᵣ→⊑ (steps⊑ w n a) (→≡snd comp)
 
 
+comp→∀ℕ : Set(lsuc(L))
+comp→∀ℕ = (nc : ℕℂ) (name : Name) (w : 𝕎·) (k : ℕ)
+            → compatible· name w Res⊤
+            → ∀𝕎 (chooseT name w (NUM k)) (λ w' e → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ j → getT 0 name w' ≡ just (NUM j))))
+
+
+-- The modality is Kripke-like
+K□ : Set(lsuc(lsuc(L)))
+K□ = {w : 𝕎·} {f : wPred w} → □· w f → ∀𝕎 w f
+
+
 
 -- TODO: now we ned to prove that testM computes to the same number in all extensions of w
 -- (as long as name does not occur in F or f)
-⇓APPLY-upd→⇓testM : (w : 𝕎·) (name : Name) (F f : Term) (m : ℕ)
-                    → # F
-                    → # f
-                    → ∀𝕎 w (λ w' e → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ j → getT 0 name w' ≡ just (NUM j))))
-                    → APPLY F (upd name f) ⇛ NUM m at w
-                    → Σ ℕ (λ k → testM name F f ⇓ NUM k at w)
-⇓APPLY-upd→⇓testM w name F f m cF cf {--nrF nrf gcn--} g0 ap =
-  fst cg , ⇓-from-to→⇓ {w} {fst ca} {testM name F f} {NUM (fst cg)}
-                       (⇓-trans₂ {w} {chooseT name w (NUM 0)} {fst ca} {testM name F f} {SEQ AX (probeM name F f)} {NUM (fst cg)}
-                                 (SEQ⇓₁ {w} {chooseT name w (NUM 0)} {set0 name} {AX} {probeM name F f} cs)
-                                 (⇓-trans₂ {chooseT name w (NUM 0)} {chooseT name w (NUM 0)} {fst ca} {SEQ AX (probeM name F f)} {probeM name F f} {NUM (fst cg)}
-                                           (SEQ-AX⇓₁from-to (CTerm.closed (#probeM name (ct F cF) (ct f cf))))
-                                           (⇓-trans₂ {chooseT name w (NUM 0)} {fst ca} {fst ca} {probeM name F f} {SEQ (NUM m) (get0 name)} {NUM (fst cg)}
+⇓APPLY-upd→⇓testM : (nc : ℕℂ) (cn : comp→∀ℕ) (kb : K□) (i : ℕ) (w : 𝕎·) (name : Name) (F f : CTerm)
+                     → ∈Type i w #BAIRE→NAT F
+                     → ∈Type i w #BAIRE f
+                     → compatible· name w Res⊤
+                     → Σ ℕ (λ k → testM name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM k at w)
+⇓APPLY-upd→⇓testM nc cn kb i w name F f ∈F ∈f {--nrF nrf gcn--} comp =
+  fst cg , ⇓-from-to→⇓ {w} {fst ca} {testM name ⌜ F ⌝ ⌜ f ⌝} {NUM (fst cg)}
+                       (⇓-trans₂ {w} {chooseT name w (NUM 0)} {fst ca} {testM name ⌜ F ⌝ ⌜ f ⌝} {SEQ AX (probeM name ⌜ F ⌝ ⌜ f ⌝)} {NUM (fst cg)}
+                                 (SEQ⇓₁ {w} {chooseT name w (NUM 0)} {set0 name} {AX} {probeM name ⌜ F ⌝ ⌜ f ⌝} cs)
+                                 (⇓-trans₂ {chooseT name w (NUM 0)} {chooseT name w (NUM 0)} {fst ca} {SEQ AX (probeM name ⌜ F ⌝ ⌜ f ⌝)} {probeM name ⌜ F ⌝ ⌜ f ⌝} {NUM (fst cg)}
+                                           (SEQ-AX⇓₁from-to (CTerm.closed (#probeM name F f)))
+                                           (⇓-trans₂ {chooseT name w (NUM 0)} {fst ca} {fst ca} {probeM name ⌜ F ⌝ ⌜ f ⌝} {SEQ (NUM m) (get0 name)} {NUM (fst cg)}
                                                      (SEQ⇓₁ (snd ca))
                                                      (⇓-trans₂ {proj₁ ca} {proj₁ ca} {proj₁ ca} {SEQ (NUM m) (get0 name)} {get0 name} {NUM (proj₁ cg)}
                                                                (SEQ-val⇓₁from-to refl tt)
                                                                (snd cg)))))
   where
-    cs : set0 name ⇓ AX from w to chooseT name w (NUM 0)
+    w1 : 𝕎·
+    w1 = chooseT name w (NUM 0)
+
+    cs : set0 name ⇓ AX from w to w1
     cs = 1 , refl
 
-    cs⊑ : w ⊑· chooseT name w (NUM 0)
-    cs⊑ = ⇓from-to→⊑ {w} {chooseT name w (NUM 0)} cs
+    e1 : w ⊑· w1
+    e1 = ⇓from-to→⊑ {w} {w1} cs
 
-    ca : Σ 𝕎· (λ w' → APPLY F (upd name f) ⇓ NUM m from (chooseT name w (NUM 0)) to w')
-    ca = ⇛→⇓from-to (∀𝕎-mon cs⊑ ap)
+    g0 : ∀𝕎 w1 (λ w' e → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ j → getT 0 name w' ≡ just (NUM j))))
+    g0 = cn nc name w 0 comp
 
-    ca⊑ : w ⊑· fst ca
-    ca⊑ = ⊑-trans· cs⊑ (⇓from-to→⊑ {chooseT name w (NUM 0)} {fst ca} (snd ca))
+    eqa : ∈Type i w1 #NAT (#APPLY F (#upd name f))
+    eqa = equalInType-FUN→
+            (equalInType-mon ∈F w1 e1) w1 (⊑-refl· _) (#upd name f) (#upd name f)
+            (upd∈ i w1 name f (cn nc name w 0 comp) (equalInType-mon ∈f w1 e1))
+
+    eqn : NATeq w1 (#APPLY F (#upd name f)) (#APPLY F (#upd name f))
+    eqn = kb (equalInType-NAT→ i w1 (#APPLY F (#upd name f)) (#APPLY F (#upd name f)) eqa) w1 (⊑-refl· _)
+
+    cak : Σ ℕ (λ k → APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇛ NUM k at w1)
+    cak = fst eqn , fst (snd eqn)
+
+    m : ℕ
+    m = fst cak
+
+    ca : Σ 𝕎· (λ w' → APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ NUM m from w1 to w')
+    ca = ⇛→⇓from-to (snd cak)
+
+    e2 : w1 ⊑· fst ca
+    e2 = ⇓from-to→⊑ {w1} {fst ca} (snd ca)
 
     cg : Σ ℕ (λ k → get0 name ⇓ NUM k from (fst ca) to (fst ca))
-    cg = lower (∀𝕎-getT0-NUM→∀𝕎get0-NUM w name g0 (fst ca) ca⊑)
+    cg = lower (∀𝕎-getT0-NUM→∀𝕎get0-NUM w1 name g0 (fst ca) e2)
 -- TODO: add a 'fresh' to testM, and make it so that it adds an "entry" in the world
 -- change choose so that the name is directly a parameter?
 
@@ -1896,20 +1934,21 @@ shiftNameDown-renn-shiftNameUp name F f cF cf
 ≡pair {l} {k} {A} {B} {a₁} {a₂} {b₁} {b₂} e f rewrite e | f = refl
 
 
-⇓APPLY-upd→⇓νtestM : (w : 𝕎·) (F f : Term) (m : ℕ)
-                      → # F
-                      → # f
---                      → ¬ 0 ∈ names F
---                      → ¬ 0 ∈ names f
---                    → ∀𝕎 w (λ w' e → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ j → getT 0 name w' ≡ just (NUM j))))
---                    → APPLY F (upd name f) ⇛ NUM m at w
-                    → Σ ℕ (λ k → νtestM (shiftNameUp 0 F) (shiftNameUp 0 f) ⇓ NUM k at w)
-⇓APPLY-upd→⇓νtestM w F f m cF cf {--g0 ap--} {--n0F n0f--} =
-  {!!}
+-- MOVE to newChoiceDef
+¬newChoiceT∈dom𝕎 : (w : 𝕎·) (t : Term) → ¬ newChoiceT w t ∈ dom𝕎· w
+¬newChoiceT∈dom𝕎 w t i = ¬fresh∈dom𝕎 w (↓vars (names t)) i
+
+
+⇓APPLY-upd→⇓νtestM : (nc : ℕℂ) (cn : comp→∀ℕ) (kb : K□) (i : ℕ) (w : 𝕎·) (F f : CTerm)
+                      → ∈Type i w #BAIRE→NAT F
+                      → ∈Type i w #BAIRE f
+                      → Σ ℕ (λ k → νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇓ NUM k at w)
+⇓APPLY-upd→⇓νtestM nc cn kb i w F f ∈F ∈f =
+  fst z , step-⇓-trans s2 (snd z)
 -- use s2 and ⇓APPLY-upd→⇓testM
   where
     tM : Term
-    tM = testM 0 (shiftNameUp 0 F) (shiftNameUp 0 f)
+    tM = testM 0 (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)
 
     name : Name
     name = newChoiceT w tM
@@ -1917,13 +1956,48 @@ shiftNameDown-renn-shiftNameUp name F f cF cf
     w1 : 𝕎·
     w1 = startNewChoiceT Res⊤ w tM
 
-    s1 : step (νtestM (shiftNameUp 0 F) (shiftNameUp 0 f)) w
-         ≡ just (shiftNameDown 0 (renn 0 (suc name) (testM 0 (shiftNameUp 0 F) (shiftNameUp 0 f))) , w1)
+    e1 : w ⊑· w1
+    e1 = startNewChoiceT⊏ Res⊤ w tM
+
+    comp1 : compatible· name w1 Res⊤
+    comp1 = startChoiceCompatible· Res⊤ w name (¬newChoiceT∈dom𝕎 w tM)
+
+    s1 : step (νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)) w
+         ≡ just (shiftNameDown 0 (renn 0 (suc name) (testM 0 (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝))) , w1)
     s1 = ≡just refl
 
-    s2 : step (νtestM (shiftNameUp 0 F) (shiftNameUp 0 f)) w
-         ≡ just (testM name F f , w1)
-    s2 rewrite s1 = ≡just (≡pair (shiftNameDown-renn-shiftNameUp name F f cF cf) refl)
+    s2 : step (νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)) w
+         ≡ just (testM name ⌜ F ⌝ ⌜ f ⌝ , w1)
+    s2 rewrite s1 = ≡just (≡pair (shiftNameDown-renn-shiftNameUp name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f)) refl)
+
+    z : Σ ℕ (λ k → testM name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM k at w1)
+    z = ⇓APPLY-upd→⇓testM nc cn kb i w1 name F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1) comp1
+
+
+
+#shiftNameUp : ℕ → CTerm → CTerm
+#shiftNameUp n t = ct (shiftNameUp n ⌜ t ⌝) (→#shiftNameUp n {⌜ t ⌝} (CTerm.closed t))
+
+
+νtestM-NAT : (nc : ℕℂ) (cn : comp→∀ℕ) (kb : K□) (i : ℕ) (w : 𝕎·) (F f : CTerm)
+             → ∈Type i w #BAIRE→NAT F
+             → ∈Type i w #BAIRE f
+             → NATeq w (#νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f)) (#νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f))
+νtestM-NAT nc cn kb i w F f ∈F ∈f =
+  k , {!cak , cak!}
+  where
+    eqn : Σ ℕ (λ k → νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇓ NUM k at w)
+    eqn = ⇓APPLY-upd→⇓νtestM nc cn kb i w F f ∈F ∈f
+
+    k : ℕ
+    k = fst eqn
+
+    ck : νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇓ NUM k at w
+    ck = snd eqn
+
+    cak : νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇛ NUM k at w
+    cak = {!!}
+
 
 
 testM-NAT : (i : ℕ) (w : 𝕎·) (name : Name) (F f : CTerm)
