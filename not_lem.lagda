@@ -543,7 +543,7 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     w2 = startChoice· name r w1
 
     e2 : w1 ⊑· w2
-    e2 = startNewChoice⊏· r w1
+    e2 = startNewChoice⊏ r w1
 
     k1 : ℂ·
     k1 = ℂ₁· -- This has to be different from r's default value
@@ -558,10 +558,10 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     h2 = equalInType-SQUASH-UNION→ h1
 
     oc1 : onlyℂ∈𝕎 (Res.def r) name w2
-    oc1 n = getChoice-startNewChoice· n r w1
+    oc1 n = getChoice-startNewChoice n r w1
 
     comp1 : compatible· name w2 r
-    comp1 = startChoiceCompatible· r w1
+    comp1 = startNewChoiceCompatible r w1
 
     fb1 : freezable· name w2
     fb1 = freezableStart· r w1
@@ -624,12 +624,12 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
         w2 = startChoice· name r w1
 
         e2 : w1 ⊑· w2
-        e2 = startNewChoice⊏· r w1
+        e2 = startNewChoice⊏ r w1
 
         k1 : ℂ·
         k1 = ℂ₁· -- This has to be different from r's default value
 
         h1 : equalInType i w2 (#SQUASH (#UNION (#Σchoice name k1) (#NEG (#Σchoice name k1)))) #AX #AX
-        h1 = equalInType-SQUASH-UNION-LIFT→ p (aw2 w2 e2 (#Σchoice name k1) (#Σchoice name k1) (equalInType-#Σchoice-UNIV p w2 name k1 (startChoiceCompatible· r w1) Σsat-ℂ₁))
+        h1 = equalInType-SQUASH-UNION-LIFT→ p (aw2 w2 e2 (#Σchoice name k1) (#Σchoice name k1) (equalInType-#Σchoice-UNIV p w2 name k1 (startNewChoiceCompatible r w1) Σsat-ℂ₁))
 
 \end{code}[hide]

@@ -209,10 +209,10 @@ isTypeNegLPO w n = eqTypesNEG← (isTypeLPO w n)
         w2 = startNewChoice Resℂ w1
 
         e2 : w1 ⊑· w2
-        e2 = startNewChoice⊏· Resℂ w1
+        e2 = startNewChoice⊏ Resℂ w1
 
         comp1 : compatible· name w2 Resℂ
-        comp1 = startChoiceCompatible· Resℂ w1
+        comp1 = startNewChoiceCompatible Resℂ w1
 
         h : ¬ equalInType n w2 (sq-dec (#Σchoice name ℂ₁·)) #AX #AX
         h = ¬-dec-Σchoice w1 n

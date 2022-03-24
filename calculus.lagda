@@ -513,6 +513,49 @@ shiftNameUp c (LOWER t) = LOWER (shiftNameUp c t)
 shiftNameUp c (SHRINK t) = SHRINK (shiftNameUp c t)
 
 
+shiftNameDown : ℕ → Term → Term
+shiftNameDown c (VAR x) = VAR x
+shiftNameDown c NAT = NAT
+shiftNameDown c QNAT = QNAT
+shiftNameDown c (LT t t₁) = LT (shiftNameDown c t) (shiftNameDown c t₁)
+shiftNameDown c (QLT t t₁) = QLT (shiftNameDown c t) (shiftNameDown c t₁)
+shiftNameDown c (NUM x) = NUM x
+shiftNameDown c (IFLT t t₁ t₂ t₃) = IFLT (shiftNameDown c t) (shiftNameDown c t₁) (shiftNameDown c t₂) (shiftNameDown c t₃)
+shiftNameDown c (PI t t₁) = PI (shiftNameDown c t) (shiftNameDown c t₁)
+shiftNameDown c (LAMBDA t) = LAMBDA (shiftNameDown c t)
+shiftNameDown c (APPLY t t₁) = APPLY (shiftNameDown c t) (shiftNameDown c t₁)
+shiftNameDown c (FIX t) = FIX (shiftNameDown c t)
+shiftNameDown c (LET t t₁) = LET (shiftNameDown c t) (shiftNameDown c t₁)
+shiftNameDown c (SUM t t₁) = SUM (shiftNameDown c t) (shiftNameDown c t₁)
+shiftNameDown c (PAIR t t₁) = PAIR (shiftNameDown c t) (shiftNameDown c t₁)
+shiftNameDown c (SPREAD t t₁) = SPREAD (shiftNameDown c t) (shiftNameDown c t₁)
+shiftNameDown c (SET t t₁) = SET (shiftNameDown c t) (shiftNameDown c t₁)
+shiftNameDown c (TUNION t t₁) = TUNION (shiftNameDown c t) (shiftNameDown c t₁)
+shiftNameDown c (UNION t t₁) = UNION (shiftNameDown c t) (shiftNameDown c t₁)
+shiftNameDown c (QTUNION t t₁) = QTUNION (shiftNameDown c t) (shiftNameDown c t₁)
+shiftNameDown c (INL t) = INL (shiftNameDown c t)
+shiftNameDown c (INR t) = INR (shiftNameDown c t)
+shiftNameDown c (DECIDE t t₁ t₂) = DECIDE (shiftNameDown c t) (shiftNameDown c t₁) (shiftNameDown c t₂)
+shiftNameDown c (EQ t t₁ t₂) = EQ (shiftNameDown c t) (shiftNameDown c t₁) (shiftNameDown c t₂)
+shiftNameDown c AX = AX
+shiftNameDown c FREE = FREE
+shiftNameDown c (CS x) = CS (predIf≤ c x)
+shiftNameDown c (NAME x) = NAME (predIf≤ c x)
+shiftNameDown c (FRESH a) = FRESH (shiftNameDown (suc c) a)
+shiftNameDown c (CHOOSE a b) = CHOOSE (shiftNameDown c a) (shiftNameDown c b)
+shiftNameDown c (IFC0 a t₁ t₂) = IFC0 (shiftNameDown c a) (shiftNameDown c t₁) (shiftNameDown c t₂)
+shiftNameDown c (TSQUASH t) = TSQUASH (shiftNameDown c t)
+shiftNameDown c (TTRUNC t) = TTRUNC (shiftNameDown c t)
+shiftNameDown c (TCONST t) = TCONST (shiftNameDown c t)
+shiftNameDown c (SUBSING t) = SUBSING (shiftNameDown c t)
+shiftNameDown c (DUM t) = DUM (shiftNameDown c t)
+shiftNameDown c (FFDEFS t t₁) = FFDEFS (shiftNameDown c t) (shiftNameDown c t₁)
+shiftNameDown c (UNIV x) = UNIV x
+shiftNameDown c (LIFT t) = LIFT (shiftNameDown c t)
+shiftNameDown c (LOWER t) = LOWER (shiftNameDown c t)
+shiftNameDown c (SHRINK t) = SHRINK (shiftNameDown c t)
+
+
 lowerNames : List Name → List Name
 lowerNames [] = []
 lowerNames (0 ∷ l) = lowerNames l

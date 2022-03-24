@@ -68,6 +68,7 @@ open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
 open import getChoiceDef(W)(C)(K)(G)
+open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
@@ -157,8 +158,8 @@ testM : (name : Name) (F f : Term) → Term
 testM name F f = SEQ (set0 name) (probeM name F f)
 
 
-νtestM : (name : Name) (F f : Term) → Term
-νtestM name F f = FRESH (testM name F f)
+νtestM : (F f : Term) → Term
+νtestM F f = FRESH (testM 0 F f)
 
 
 NATn : Term → Term
@@ -1647,8 +1648,10 @@ get-choose-ℕ nc =
 ⇛→⇓from-to {w} {a} {b} comp = ⇓→from-to (lower (comp w (⊑-refl· _)))
 
 
+{--
 ¬read-upd≡ : (name : Name) (f : Term) → ¬read (upd name f) ≡ ¬read f
 ¬read-upd≡ name f = {!refl!}
+--}
 
 
 ∀𝕎-getT0-NUM→∀𝕎get0-NUM : (w : 𝕎·) (name : Name)
@@ -1669,26 +1672,26 @@ get-choose-ℕ nc =
 ⇓from-to→⊑ {w} {w'} {a} {b} (n , comp) = ≡ᵣ→⊑ (steps⊑ w n a) (→≡snd comp)
 
 
-⇓-APPLY-upd→ : (nc : ℕℂ) (w : 𝕎·) (name : Name) (F f : Term) (m : ℕ)
-                --→ ¬Read F
-                --→ ¬Read f
-                --→ get-choose-ℕ nc -- add to a separate record
-                --→ getT 0 name w ≡ just (NUM 0)
-                → ∀𝕎 w (λ w' e → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ j → getT 0 name w' ≡ just (NUM j))))
-                → APPLY F (upd name f) ⇛ NUM m at w
-                → Σ ℕ (λ k → SEQ (set0 name) (probeM name F f) ⇓ NUM k at w)
-⇓-APPLY-upd→ nc w name F f m {--nrF nrf gcn--} g0 ap =
-  fst cg , ⇓-from-to→⇓ {w} {fst ca} {SEQ (set0 name) (probeM name F f)} {NUM (fst cg)}
-                       (⇓-trans₂ {w} {chooseT name w (NUM 0)} {fst ca} {SEQ (set0 name) (probeM name F f)} {SEQ AX (probeM name F f)} {NUM (fst cg)}
+
+-- TODO: now we ned to prove that testM computes to the same number in all extensions of w
+-- (as long as name does not occur in F or f)
+⇓APPLY-upd→⇓testM : (w : 𝕎·) (name : Name) (F f : Term) (m : ℕ)
+                    → # F
+                    → # f
+                    → ∀𝕎 w (λ w' e → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ j → getT 0 name w' ≡ just (NUM j))))
+                    → APPLY F (upd name f) ⇛ NUM m at w
+                    → Σ ℕ (λ k → testM name F f ⇓ NUM k at w)
+⇓APPLY-upd→⇓testM w name F f m cF cf {--nrF nrf gcn--} g0 ap =
+  fst cg , ⇓-from-to→⇓ {w} {fst ca} {testM name F f} {NUM (fst cg)}
+                       (⇓-trans₂ {w} {chooseT name w (NUM 0)} {fst ca} {testM name F f} {SEQ AX (probeM name F f)} {NUM (fst cg)}
                                  (SEQ⇓₁ {w} {chooseT name w (NUM 0)} {set0 name} {AX} {probeM name F f} cs)
                                  (⇓-trans₂ {chooseT name w (NUM 0)} {chooseT name w (NUM 0)} {fst ca} {SEQ AX (probeM name F f)} {probeM name F f} {NUM (fst cg)}
-                                           (SEQ-AX⇓₁from-to {!!})
+                                           (SEQ-AX⇓₁from-to (CTerm.closed (#probeM name (ct F cF) (ct f cf))))
                                            (⇓-trans₂ {chooseT name w (NUM 0)} {fst ca} {fst ca} {probeM name F f} {SEQ (NUM m) (get0 name)} {NUM (fst cg)}
                                                      (SEQ⇓₁ (snd ca))
                                                      (⇓-trans₂ {proj₁ ca} {proj₁ ca} {proj₁ ca} {SEQ (NUM m) (get0 name)} {get0 name} {NUM (proj₁ cg)}
                                                                (SEQ-val⇓₁from-to refl tt)
                                                                (snd cg)))))
---(Σ-steps-APPLY-CS 0 (NUM 0) (NUM (fst cg)) (fst ca) (fst ca) 0 name refl {!!})
   where
     cs : set0 name ⇓ AX from w to chooseT name w (NUM 0)
     cs = 1 , refl
@@ -1706,6 +1709,221 @@ get-choose-ℕ nc =
     cg = lower (∀𝕎-getT0-NUM→∀𝕎get0-NUM w name g0 (fst ca) ca⊑)
 -- TODO: add a 'fresh' to testM, and make it so that it adds an "entry" in the world
 -- change choose so that the name is directly a parameter?
+
+
+
+shiftUp-shiftNameUp : (c d : ℕ) (t : Term)
+                      → shiftUp c (shiftNameUp d t) ≡ shiftNameUp d (shiftUp c t)
+shiftUp-shiftNameUp c d (VAR x) = refl
+shiftUp-shiftNameUp c d NAT = refl
+shiftUp-shiftNameUp c d QNAT = refl
+shiftUp-shiftNameUp c d (LT t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
+shiftUp-shiftNameUp c d (QLT t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
+shiftUp-shiftNameUp c d (NUM x) = refl
+shiftUp-shiftNameUp c d (IFLT t t₁ t₂ t₃) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ | shiftUp-shiftNameUp c d t₂ | shiftUp-shiftNameUp c d t₃ = refl
+shiftUp-shiftNameUp c d (PI t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc c) d t₁ = refl
+shiftUp-shiftNameUp c d (LAMBDA t) rewrite shiftUp-shiftNameUp (suc c) d t = refl
+shiftUp-shiftNameUp c d (APPLY t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
+shiftUp-shiftNameUp c d (FIX t) rewrite shiftUp-shiftNameUp c d t = refl
+shiftUp-shiftNameUp c d (LET t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc c) d t₁ = refl
+shiftUp-shiftNameUp c d (SUM t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc c) d t₁ = refl
+shiftUp-shiftNameUp c d (PAIR t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
+shiftUp-shiftNameUp c d (SPREAD t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc (suc c)) d t₁ = refl
+shiftUp-shiftNameUp c d (SET t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc c) d t₁ = refl
+shiftUp-shiftNameUp c d (TUNION t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc c) d t₁ = refl
+shiftUp-shiftNameUp c d (UNION t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
+shiftUp-shiftNameUp c d (QTUNION t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
+shiftUp-shiftNameUp c d (INL t) rewrite shiftUp-shiftNameUp c d t = refl
+shiftUp-shiftNameUp c d (INR t) rewrite shiftUp-shiftNameUp c d t = refl
+shiftUp-shiftNameUp c d (DECIDE t t₁ t₂) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc c) d t₁ | shiftUp-shiftNameUp (suc c) d t₂ = refl
+shiftUp-shiftNameUp c d (EQ t t₁ t₂) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ | shiftUp-shiftNameUp c d t₂ = refl
+shiftUp-shiftNameUp c d AX = refl
+shiftUp-shiftNameUp c d FREE = refl
+shiftUp-shiftNameUp c d (CS x) = refl
+shiftUp-shiftNameUp c d (NAME x) = refl
+shiftUp-shiftNameUp c d (FRESH t) rewrite shiftUp-shiftNameUp c (suc d) t = refl
+shiftUp-shiftNameUp c d (CHOOSE t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
+shiftUp-shiftNameUp c d (IFC0 t t₁ t₂) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ | shiftUp-shiftNameUp c d t₂ = refl
+shiftUp-shiftNameUp c d (TSQUASH t) rewrite shiftUp-shiftNameUp c d t = refl
+shiftUp-shiftNameUp c d (TTRUNC t) rewrite shiftUp-shiftNameUp c d t = refl
+shiftUp-shiftNameUp c d (TCONST t) rewrite shiftUp-shiftNameUp c d t = refl
+shiftUp-shiftNameUp c d (SUBSING t) rewrite shiftUp-shiftNameUp c d t = refl
+shiftUp-shiftNameUp c d (DUM t) rewrite shiftUp-shiftNameUp c d t = refl
+shiftUp-shiftNameUp c d (FFDEFS t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
+shiftUp-shiftNameUp c d (UNIV x) = refl
+shiftUp-shiftNameUp c d (LIFT t) rewrite shiftUp-shiftNameUp c d t = refl
+shiftUp-shiftNameUp c d (LOWER t) rewrite shiftUp-shiftNameUp c d t = refl
+shiftUp-shiftNameUp c d (SHRINK t) rewrite  shiftUp-shiftNameUp c d t = refl
+
+
+renn-shiftNameUp : (n1 n2 : Name) (t : Term)
+                   → renn n1 n2 (shiftNameUp n1 t) ≡ shiftNameUp n1 t
+renn-shiftNameUp n1 n2 (VAR x) = refl
+renn-shiftNameUp n1 n2 NAT = refl
+renn-shiftNameUp n1 n2 QNAT = refl
+renn-shiftNameUp n1 n2 (LT t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
+renn-shiftNameUp n1 n2 (QLT t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
+renn-shiftNameUp n1 n2 (NUM x) = refl
+renn-shiftNameUp n1 n2 (IFLT t t₁ t₂ t₃) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ | renn-shiftNameUp n1 n2 t₂ | renn-shiftNameUp n1 n2 t₃ = refl
+renn-shiftNameUp n1 n2 (PI t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
+renn-shiftNameUp n1 n2 (LAMBDA t) rewrite renn-shiftNameUp n1 n2 t = refl
+renn-shiftNameUp n1 n2 (APPLY t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
+renn-shiftNameUp n1 n2 (FIX t) rewrite renn-shiftNameUp n1 n2 t = refl
+renn-shiftNameUp n1 n2 (LET t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
+renn-shiftNameUp n1 n2 (SUM t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
+renn-shiftNameUp n1 n2 (PAIR t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
+renn-shiftNameUp n1 n2 (SPREAD t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
+renn-shiftNameUp n1 n2 (SET t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
+renn-shiftNameUp n1 n2 (TUNION t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
+renn-shiftNameUp n1 n2 (UNION t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
+renn-shiftNameUp n1 n2 (QTUNION t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
+renn-shiftNameUp n1 n2 (INL t) rewrite renn-shiftNameUp n1 n2 t = refl
+renn-shiftNameUp n1 n2 (INR t) rewrite renn-shiftNameUp n1 n2 t = refl
+renn-shiftNameUp n1 n2 (DECIDE t t₁ t₂) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ | renn-shiftNameUp n1 n2 t₂ = refl
+renn-shiftNameUp n1 n2 (EQ t t₁ t₂) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ | renn-shiftNameUp n1 n2 t₂ = refl
+renn-shiftNameUp n1 n2 AX = refl
+renn-shiftNameUp n1 n2 FREE = refl
+renn-shiftNameUp n1 n2 (CS x) with x <? n1
+... | yes p with x ≟ n1
+... |    yes q rewrite q = ⊥-elim (1+n≰n p)
+... |    no q = refl
+renn-shiftNameUp n1 n2 (CS x) | no p with suc x ≟ n1
+... |    yes q rewrite q = ⊥-elim (p ≤-refl)
+... |    no q = refl
+renn-shiftNameUp n1 n2 (NAME x) with x <? n1
+... | yes p with x ≟ n1
+... |    yes q rewrite q = ⊥-elim (1+n≰n p)
+... |    no q = refl
+renn-shiftNameUp n1 n2 (NAME x) | no p with suc x ≟ n1
+... |    yes q rewrite q = ⊥-elim (p ≤-refl)
+... |    no q = refl
+renn-shiftNameUp n1 n2 (FRESH t) rewrite renn-shiftNameUp (suc n1) (suc n2) t = refl
+renn-shiftNameUp n1 n2 (CHOOSE t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
+renn-shiftNameUp n1 n2 (IFC0 t t₁ t₂) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ | renn-shiftNameUp n1 n2 t₂ = refl
+renn-shiftNameUp n1 n2 (TSQUASH t) rewrite renn-shiftNameUp n1 n2 t = refl
+renn-shiftNameUp n1 n2 (TTRUNC t) rewrite renn-shiftNameUp n1 n2 t = refl
+renn-shiftNameUp n1 n2 (TCONST t) rewrite renn-shiftNameUp n1 n2 t = refl
+renn-shiftNameUp n1 n2 (SUBSING t) rewrite renn-shiftNameUp n1 n2 t = refl
+renn-shiftNameUp n1 n2 (DUM t) rewrite renn-shiftNameUp n1 n2 t = refl
+renn-shiftNameUp n1 n2 (FFDEFS t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
+renn-shiftNameUp n1 n2 (UNIV x) = refl
+renn-shiftNameUp n1 n2 (LIFT t) rewrite renn-shiftNameUp n1 n2 t = refl
+renn-shiftNameUp n1 n2 (LOWER t) rewrite renn-shiftNameUp n1 n2 t = refl
+renn-shiftNameUp n1 n2 (SHRINK t) rewrite renn-shiftNameUp n1 n2 t = refl
+
+
+predIf≤-sucIf≤ : (n : ℕ) (x : Name) → predIf≤ n (sucIf≤ n x) ≡ x
+predIf≤-sucIf≤ n 0 with 0 <? n
+... | yes p = refl
+... | no p with 1 ≤? n
+... |    yes q = ⊥-elim (p q)
+... |    no q = refl
+predIf≤-sucIf≤ n (suc x) with suc x <? n
+... | yes p with suc x ≤? n
+... |    yes q = refl
+... |    no q = ⊥-elim (q (≤-trans (_≤_.s≤s (<⇒≤ (n<1+n x))) p))
+predIf≤-sucIf≤ n (suc x) | no p with suc (suc x) ≤? n
+... |    yes q = ⊥-elim (p q)
+... |    no q = refl
+
+
+shiftNameDownUp : (n : ℕ) (t : Term) → shiftNameDown n (shiftNameUp n t) ≡ t
+shiftNameDownUp n (VAR x) = refl
+shiftNameDownUp n NAT = refl
+shiftNameDownUp n QNAT = refl
+shiftNameDownUp n (LT t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
+shiftNameDownUp n (QLT t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
+shiftNameDownUp n (NUM x) = refl
+shiftNameDownUp n (IFLT t t₁ t₂ t₃) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ | shiftNameDownUp n t₂ | shiftNameDownUp n t₃ = refl
+shiftNameDownUp n (PI t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
+shiftNameDownUp n (LAMBDA t) rewrite shiftNameDownUp n t = refl
+shiftNameDownUp n (APPLY t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
+shiftNameDownUp n (FIX t) rewrite shiftNameDownUp n t = refl
+shiftNameDownUp n (LET t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
+shiftNameDownUp n (SUM t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
+shiftNameDownUp n (PAIR t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
+shiftNameDownUp n (SPREAD t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
+shiftNameDownUp n (SET t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
+shiftNameDownUp n (TUNION t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
+shiftNameDownUp n (UNION t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
+shiftNameDownUp n (QTUNION t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
+shiftNameDownUp n (INL t) rewrite shiftNameDownUp n t = refl
+shiftNameDownUp n (INR t) rewrite shiftNameDownUp n t = refl
+shiftNameDownUp n (DECIDE t t₁ t₂) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ | shiftNameDownUp n t₂ = refl
+shiftNameDownUp n (EQ t t₁ t₂) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ | shiftNameDownUp n t₂ = refl
+shiftNameDownUp n AX = refl
+shiftNameDownUp n FREE = refl
+shiftNameDownUp n (CS x) rewrite predIf≤-sucIf≤ n x = refl
+shiftNameDownUp n (NAME x) rewrite predIf≤-sucIf≤ n x = refl
+shiftNameDownUp n (FRESH t) rewrite shiftNameDownUp (suc n) t = refl
+shiftNameDownUp n (CHOOSE t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
+shiftNameDownUp n (IFC0 t t₁ t₂) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ | shiftNameDownUp n t₂ = refl
+shiftNameDownUp n (TSQUASH t) rewrite shiftNameDownUp n t = refl
+shiftNameDownUp n (TTRUNC t) rewrite shiftNameDownUp n t = refl
+shiftNameDownUp n (TCONST t) rewrite shiftNameDownUp n t = refl
+shiftNameDownUp n (SUBSING t) rewrite shiftNameDownUp n t = refl
+shiftNameDownUp n (DUM t) rewrite shiftNameDownUp n t = refl
+shiftNameDownUp n (FFDEFS t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
+shiftNameDownUp n (UNIV x) = refl
+shiftNameDownUp n (LIFT t) rewrite shiftNameDownUp n t = refl
+shiftNameDownUp n (LOWER t) rewrite shiftNameDownUp n t = refl
+shiftNameDownUp n (SHRINK t) rewrite shiftNameDownUp n t = refl
+
+
+shiftNameDown-renn-shiftNameUp : (name : Name) (F f : Term)
+                                 → # F
+                                 → # f
+                                 → shiftNameDown 0 (renn 0 (suc name) (testM 0 (shiftNameUp 0 F) (shiftNameUp 0 f)))
+                                    ≡ testM name F f
+shiftNameDown-renn-shiftNameUp name F f cF cf
+  rewrite shiftUp-shiftNameUp 0 0 F
+        | shiftUp-shiftNameUp 0 0 f
+        | #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct f cf)
+        | shiftUp-shiftNameUp 3 0 f
+        | #shiftUp 3 (ct f cf)
+        | renn-shiftNameUp 0 (suc name) F
+        | renn-shiftNameUp 0 (suc name) f
+        | shiftNameDownUp 0 F
+        | shiftNameDownUp 0 f = refl
+
+
+≡just : {l : Level} {A : Set l} {a b : A} → a ≡ b → just a ≡ just b
+≡just {l} {A} {a} {b} e rewrite e = refl
+
+
+≡pair : {l k : Level} {A : Set l} {B : Set k} {a₁ a₂ : A} {b₁ b₂ : B} → a₁ ≡ a₂ → b₁ ≡ b₂ → (a₁ , b₁) ≡ (a₂ , b₂)
+≡pair {l} {k} {A} {B} {a₁} {a₂} {b₁} {b₂} e f rewrite e | f = refl
+
+
+⇓APPLY-upd→⇓νtestM : (w : 𝕎·) (F f : Term) (m : ℕ)
+                      → # F
+                      → # f
+--                      → ¬ 0 ∈ names F
+--                      → ¬ 0 ∈ names f
+--                    → ∀𝕎 w (λ w' e → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ j → getT 0 name w' ≡ just (NUM j))))
+--                    → APPLY F (upd name f) ⇛ NUM m at w
+                    → Σ ℕ (λ k → νtestM (shiftNameUp 0 F) (shiftNameUp 0 f) ⇓ NUM k at w)
+⇓APPLY-upd→⇓νtestM w F f m cF cf {--g0 ap--} {--n0F n0f--} =
+  {!!}
+-- use s2 and ⇓APPLY-upd→⇓testM
+  where
+    tM : Term
+    tM = testM 0 (shiftNameUp 0 F) (shiftNameUp 0 f)
+
+    name : Name
+    name = newChoiceT w tM
+
+    w1 : 𝕎·
+    w1 = startNewChoiceT Res⊤ w tM
+
+    s1 : step (νtestM (shiftNameUp 0 F) (shiftNameUp 0 f)) w
+         ≡ just (shiftNameDown 0 (renn 0 (suc name) (testM 0 (shiftNameUp 0 F) (shiftNameUp 0 f))) , w1)
+    s1 = ≡just refl
+
+    s2 : step (νtestM (shiftNameUp 0 F) (shiftNameUp 0 f)) w
+         ≡ just (testM name F f , w1)
+    s2 rewrite s1 = ≡just (≡pair (shiftNameDown-renn-shiftNameUp name F f cF cf) refl)
 
 
 testM-NAT : (i : ℕ) (w : 𝕎·) (name : Name) (F f : CTerm)

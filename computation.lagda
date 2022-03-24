@@ -116,7 +116,7 @@ step (APPLY f a) w with step f w
 -- FRESH
 -- This creates a new choice name and adds it to the current world with the default restriction
 -- TODO: allow other restrictions
-step (FRESH t) w = ret (renn 0 (newChoice· w) t) (startNewChoice Res⊤ w)
+step (FRESH t) w = ret (shiftNameDown 0 (renn 0 (newChoiceT+ w t) t)) (startNewChoiceT Res⊤ w t)
 -- CHOOSE
 step (CHOOSE n t) w with is-NAME n
 ... | inj₁ (name , p) = ret AX (chooseT name w t)
@@ -738,7 +738,7 @@ step⊑ {w} {w'} {IFC0 a a₁ a₂} {b} comp with isValue⊎ a
 step⊑ {w} {w'} {IFC0 a a₁ a₂} {b} comp | inj₂ y with step⊎ a w
 ... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
-step⊑ {w} {w'} {FRESH a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = startNewChoice⊏· Res⊤ w --⊑-refl· _
+step⊑ {w} {w'} {FRESH a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = startNewChoiceT⊏ Res⊤ w a
 step⊑ {w} {w'} {TSQUASH a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {TTRUNC a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {TCONST a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _

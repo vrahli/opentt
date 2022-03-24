@@ -52,13 +52,15 @@ record NewChoice : Set(lsuc(L)) where
     -- 'records' cs in w
     startChoice : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) → 𝕎·
     -- if we start a new choice then it is 'empty' according to getChoice
-    getChoice-startNewChoice : (n : ℕ) (r : Res{0ℓ}) (w : 𝕎·) (t : ℂ·)
-                               → getChoice· n (fst (freshName (dom𝕎 w))) (startChoice (fst (freshName (dom𝕎 w))) r w) ≡ just t → t ≡ Res.def r
+    getChoice-startChoice : (n : ℕ) (r : Res{0ℓ}) (w : 𝕎·) (t : ℂ·) (name : Name)
+                            → ¬ name ∈ dom𝕎 w
+                            → getChoice· n name (startChoice name r w) ≡ just t
+                            → t ≡ Res.def r
     -- The above is essentially onlyℂ∈𝕎
     -- starting a new choice gives us a non-trivial extension
-    startNewChoice⊏ : (r : Res{0ℓ}) (w : 𝕎·) → w ⊑· startChoice (fst (freshName (dom𝕎 w))) r w
+    startChoice⊏ : (r : Res{0ℓ}) (w : 𝕎·) (name : Name) → ¬ name ∈ dom𝕎 w → w ⊑· startChoice name r w
 
     -- starting a new choice trivially satisfies compatibility
-    startChoiceCompatible : (r : Res{0ℓ}) (w : 𝕎·) → compatible· (fst (freshName (dom𝕎 w))) (startChoice (fst (freshName (dom𝕎 w))) r w) r
+    startChoiceCompatible : (r : Res{0ℓ}) (w : 𝕎·) (name : Name) → ¬ name ∈ dom𝕎 w → compatible· name (startChoice name r w) r
 
 \end{code}

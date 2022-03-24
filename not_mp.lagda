@@ -223,13 +223,13 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         w2 = startNewChoice Resℂ w1
 
         e2 : w1 ⊑· w2
-        e2 = startNewChoice⊏· Resℂ w1
+        e2 = startNewChoice⊏ Resℂ w1
 
         oc1 : onlyℂ∈𝕎 (Res.def Resℂ) name w2
-        oc1 n = getChoice-startNewChoice· n Resℂ w1
+        oc1 n = getChoice-startNewChoice n Resℂ w1
 
         comp1 : compatible· name w2 Resℂ
-        comp1 = startChoiceCompatible· Resℂ w1
+        comp1 = startNewChoiceCompatible Resℂ w1
 
         fb1 : freezable· name w2
         fb1 = freezableStart· Resℂ w1

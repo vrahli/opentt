@@ -129,7 +129,7 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
     f w' e = Lift 2ℓ (¬ freezable· c w')
 
     comp : compatible· c w r
-    comp = startChoiceCompatible· r w0
+    comp = startNewChoiceCompatible r w0
 
     k : ℂ·
     k = ℂ₁·
@@ -148,7 +148,7 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
         aw w3 e3 z = freeze→¬freezable {c} {w1} k (⊑-compatible· e1 comp) w3 e3
 
     oc : onlyℂ∈𝕎 (Res.def r) c w
-    oc n = getChoice-startNewChoice· n r w0
+    oc n = getChoice-startNewChoice n r w0
 
     fb : freezable· c w
     fb = freezableStart· r w0

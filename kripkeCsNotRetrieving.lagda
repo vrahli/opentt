@@ -119,7 +119,7 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
     w = startNewChoice r w0
 
     comp : compatible· c w r
-    comp = startChoiceCompatible· r w0
+    comp = startNewChoiceCompatible r w0
 
     m : ℕ
     m = 0
@@ -134,6 +134,6 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
     z x = ¬just≡nothing (trans (sym x) y)
       where
         y : getChoice· m c w ≡ nothing
-        y = getCsChoice-startNewCsChoice-aux m r w0 c (snd (freshName (wdom w0)))
+        y = getCsChoice-startCsChoice-nothing m r w0 c (snd (freshName (wdom w0)))
 
 \end{code}

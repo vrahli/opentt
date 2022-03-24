@@ -489,22 +489,23 @@ getRef-newCell w name r with name ≟ name
 ... | no p = ⊥-elim (p refl)
 
 
-getRefChoice-startNewRefChoice : (n : ℕ) (r : Res) (w : 𝕎·) (t : ℂ·)
-                                 → getRefChoice n (newRefChoice w) (startNewRefChoice r w) ≡ just t → t ≡ Res.def r
---                                 → getRefChoice n (newRefChoice w) (startNewRefChoice r w) ≡ nothing
-getRefChoice-startNewRefChoice n r w t e
-  rewrite getRef-newCell w (newRefChoice w) r
+getRefChoice-startRefChoice : (n : ℕ) (r : Res) (w : 𝕎·) (t : ℂ·) (name : Name)
+                              → ¬ name ∈ wdom w
+                              → getRefChoice n name (startRefChoice name r w) ≡ just t → t ≡ Res.def r
+--                            → getRefChoice n (newRefChoice w) (startNewRefChoice r w) ≡ nothing
+getRefChoice-startRefChoice n r w t name ni e
+  rewrite getRef-newCell w name r
         | just-inj e = refl
 
 
-startNewRefChoice⊏ : (r : Res) (w : 𝕎·) → w ⊑· startNewRefChoice r w
-startNewRefChoice⊏ r w = new w (newRefChoice w) r (snd (freshName (wdom w)))
+startRefChoice⊏ : (r : Res) (w : 𝕎·) (name : Name) → ¬ name ∈ wdom w → w ⊑· startRefChoice name r w
+startRefChoice⊏ r w name ni = new w name r ni
 
 
 
-startRefChoiceCompatible : (r : Res{0ℓ}) (w : 𝕎·) → compatibleRef (newRefChoice w) (startNewRefChoice r w) r
-startRefChoiceCompatible r w =
-  Res.def r , false , getRef-newCell w (newRefChoice w) r , Res.sat r
+startRefChoiceCompatible : (r : Res{0ℓ}) (w : 𝕎·) (name : Name) → ¬ name ∈ wdom w → compatibleRef name (startRefChoice name r w) r
+startRefChoiceCompatible r w name ni =
+  Res.def r , false , getRef-newCell w name r , Res.sat r
 
 
 
@@ -515,8 +516,8 @@ newChoiceRef =
   mkNewChoice
     wdom --newRefChoice
     startRefChoice
-    getRefChoice-startNewRefChoice
-    startNewRefChoice⊏
+    getRefChoice-startRefChoice
+    startRefChoice⊏
     startRefChoiceCompatible
 
 open import newChoiceDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(newChoiceRef)
