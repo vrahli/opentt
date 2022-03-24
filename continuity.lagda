@@ -1944,8 +1944,7 @@ shiftNameDown-renn-shiftNameUp name F f cF cf
                       → ∈Type i w #BAIRE f
                       → Σ ℕ (λ k → νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇓ NUM k at w)
 ⇓APPLY-upd→⇓νtestM nc cn kb i w F f ∈F ∈f =
-  fst z , step-⇓-trans s2 (snd z)
--- use s2 and ⇓APPLY-upd→⇓testM
+  fst z , step-⇓-trans s1 (snd z)
   where
     tM : Term
     tM = testM 0 (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)
@@ -1962,13 +1961,8 @@ shiftNameDown-renn-shiftNameUp name F f cF cf
     comp1 : compatible· name w1 Res⊤
     comp1 = startChoiceCompatible· Res⊤ w name (¬newChoiceT∈dom𝕎 w tM)
 
-    s1 : step (νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)) w
-         ≡ just (shiftNameDown 0 (renn 0 (suc name) (testM 0 (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝))) , w1)
-    s1 = ≡just refl
-
-    s2 : step (νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)) w
-         ≡ just (testM name ⌜ F ⌝ ⌜ f ⌝ , w1)
-    s2 rewrite s1 = ≡just (≡pair (shiftNameDown-renn-shiftNameUp name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f)) refl)
+    s1 : step (νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)) w ≡ just (testM name ⌜ F ⌝ ⌜ f ⌝ , w1)
+    s1 = ≡just (≡pair (shiftNameDown-renn-shiftNameUp name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f)) refl)
 
     z : Σ ℕ (λ k → testM name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM k at w1)
     z = ⇓APPLY-upd→⇓testM nc cn kb i w1 name F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1) comp1
@@ -1979,24 +1973,145 @@ shiftNameDown-renn-shiftNameUp name F f cF cf
 #shiftNameUp n t = ct (shiftNameUp n ⌜ t ⌝) (→#shiftNameUp n {⌜ t ⌝} (CTerm.closed t))
 
 
-νtestM-NAT : (nc : ℕℂ) (cn : comp→∀ℕ) (kb : K□) (i : ℕ) (w : 𝕎·) (F f : CTerm)
+getT-chooseT : Set(L)
+getT-chooseT = (w : 𝕎·) (name : Name) (k : ℕ)
+               → compatible· name w Res⊤
+               → getT 0 name (chooseT name w (NUM k)) ≡ just (NUM k)
+
+
+νtestM-NAT : (nc : ℕℂ) (cn : comp→∀ℕ) (kb : K□) (gc : getT-chooseT) (i : ℕ) (w : 𝕎·) (F f : CTerm)
              → ∈Type i w #BAIRE→NAT F
              → ∈Type i w #BAIRE f
              → NATeq w (#νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f)) (#νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f))
-νtestM-NAT nc cn kb i w F f ∈F ∈f =
-  k , {!cak , cak!}
+νtestM-NAT nc cn kb gc i w F f ∈F ∈f =
+  k , ack , ack
   where
-    eqn : Σ ℕ (λ k → νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇓ NUM k at w)
-    eqn = ⇓APPLY-upd→⇓νtestM nc cn kb i w F f ∈F ∈f
+    tM : Term
+    tM = testM 0 (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)
+
+    name : Name
+    name = newChoiceT w tM
+
+    w1 : 𝕎·
+    w1 = startNewChoiceT Res⊤ w tM
+
+    e1 : w ⊑· w1
+    e1 = startNewChoiceT⊏ Res⊤ w tM
+
+    comp1 : compatible· name w1 Res⊤
+    comp1 = startChoiceCompatible· Res⊤ w name (¬newChoiceT∈dom𝕎 w tM)
+
+    s1 : νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇓ testM name ⌜ F ⌝ ⌜ f ⌝ from w to w1
+    s1 = 1 , ≡pair (shiftNameDown-renn-shiftNameUp name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f)) refl
+
+    w2 : 𝕎·
+    w2 = chooseT name w1 (NUM 0)
+
+    cs : set0 name ⇓ AX from w1 to w2
+    cs = 1 , refl
+
+    e2 : w1 ⊑· w2
+    e2 = ⇓from-to→⊑ {w1} {w2} cs
+
+    -- we prove that in w2 name's value is 0
+    gc0 : getT 0 name w2 ≡ just (NUM 0)
+    gc0 = gc w1 name 0 comp1
+
+    g0 : ∀𝕎 w2 (λ w' e → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ j → getT 0 name w' ≡ just (NUM j))))
+    g0 = cn nc name w1 0 comp1
+
+    eqa : ∈Type i w2 #NAT (#APPLY F (#upd name f))
+    eqa = equalInType-FUN→
+            (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) w2 (⊑-refl· _) (#upd name f) (#upd name f)
+            (upd∈ i w2 name f g0 (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
+
+    eqn : NATeq w2 (#APPLY F (#upd name f)) (#APPLY F (#upd name f))
+    eqn = kb (equalInType-NAT→ i w2 (#APPLY F (#upd name f)) (#APPLY F (#upd name f)) eqa) w2 (⊑-refl· _)
+
+    cak : Σ ℕ (λ k → APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇛ NUM k at w2)
+    cak = fst eqn , fst (snd eqn)
+
+    m : ℕ
+    m = fst cak
+
+    ca : Σ 𝕎· (λ w' → APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ NUM m from w2 to w')
+    ca = ⇛→⇓from-to (snd cak)
+
+    w3 : 𝕎·
+    w3 = fst ca
+
+    e3 : w2 ⊑· w3
+    e3 = ⇓from-to→⊑ {w2} {w3} (snd ca)
+
+    cg : Σ ℕ (λ k → get0 name ⇓ NUM k from w3 to w3)
+    cg = lower (∀𝕎-getT0-NUM→∀𝕎get0-NUM w2 name g0 w3 e3)
 
     k : ℕ
-    k = fst eqn
+    k = fst cg
 
-    ck : νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇓ NUM k at w
-    ck = snd eqn
+    gk : get0 name ⇓ NUM k from w3 to w3
+    gk = snd cg
 
-    cak : νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇛ NUM k at w
-    cak = {!!}
+    ack : νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇛ NUM k at w
+    ack w' e' = lift {!!}
+      where
+        name' : Name
+        name' = newChoiceT w' tM
+
+        w1' : 𝕎·
+        w1' = startNewChoiceT Res⊤ w' tM
+
+        e1' : w' ⊑· w1'
+        e1' = startNewChoiceT⊏ Res⊤ w' tM
+
+        comp1' : compatible· name' w1' Res⊤
+        comp1' = startChoiceCompatible· Res⊤ w' name' (¬newChoiceT∈dom𝕎 w' tM)
+
+        s1' : νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇓ testM name' ⌜ F ⌝ ⌜ f ⌝ from w' to w1'
+        s1' = 1 , ≡pair (shiftNameDown-renn-shiftNameUp name' ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f)) refl
+
+        w2' : 𝕎·
+        w2' = chooseT name' w1' (NUM 0)
+
+        cs' : set0 name' ⇓ AX from w1' to w2'
+        cs' = 1 , refl
+
+        e2' : w1' ⊑· w2'
+        e2' = ⇓from-to→⊑ {w1'} {w2'} cs'
+
+        -- we prove that in w2 name's value is 0
+        gc0' : getT 0 name' w2' ≡ just (NUM 0)
+        gc0' = gc w1' name' 0 comp1'
+
+
+
+{--
+
+            (i : ℕ) (w1 w2 w1' : 𝕎·) (F f : CTerm) (name name' : Name) (k m : ℕ)
+            → ∈Type i w1 #BAIRE f
+            → ∈Type i w1' #BAIRE f
+            → #¬Read F
+            → #¬Read f
+            → ¬ name ∈ #names F
+            → ¬ name ∈ #names f
+            → ¬ name' ∈ #names F
+            → ¬ name' ∈ #names f
+            → getT 0 name w1 ≡ just (NUM k)
+            → getT 0 name' w1' ≡ just (NUM k)
+            → APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ NUM m from w1 to w2 -- TODO: turn those applications into contexts
+            → Σ 𝕎· (λ w2' → APPLY ⌜ F ⌝ (upd name' ⌜ f ⌝) ⇓ NUM m from w1' to w2' × getT 0 name w2 ≡ getT 0 name' w2')
+
+
+we will also need to use this for t=f(v) (i.e., if t does not read from the world--but can write--then
+it can only return the same result on a different world, and it should preserve written choices):
+
+
+  ¬Read t
+  → getT 0 name w1 ≡ getT 0 name w3
+  → t ⇓ NUM n from w1 to w2
+  → t ⇓ NUM n × getT 0 name w2 ≡ getT 0 name w4
+
+--}
 
 
 
