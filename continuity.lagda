@@ -638,10 +638,6 @@ sub-LE a b c = refl
 →sub-LE {a} {b} {c} {b'} {c'} eb ec rewrite sym eb | sym ec = sub-LE a b c
 
 
-sub-APPLY : (a b c : Term) → sub a (APPLY b c) ≡ APPLY (sub a b) (sub a c)
-sub-APPLY a b c = refl
-
-
 →sub-APPLY : {a b c b' c' : Term}
            → sub a b ≡ b'
            → sub a c ≡ c'
