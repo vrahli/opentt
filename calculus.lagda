@@ -98,7 +98,7 @@ data Term : Set where
   NAME : Name → Term
   FRESH : Term → Term
   CHOOSE : Term → Term → Term
-  IFC0 : Term → Term → Term → Term
+--  IFC0 : Term → Term → Term → Term
   -- Truncation
   TSQUASH : Term → Term -- closed under ∼C
   TTRUNC : Term → Term  -- closed under #⇓
@@ -146,7 +146,7 @@ value? (CS _) = true
 value? (NAME _) = true
 value? (FRESH _) = false
 value? (CHOOSE _ _) = false -- Not a value
-value? (IFC0 _ _ _) = false -- Not a value
+--value? (IFC0 _ _ _) = false -- Not a value
 value? (TSQUASH _) = true
 value? (TTRUNC _) = true
 value? (TCONST _) = true
@@ -266,7 +266,7 @@ fvars (CS x)           = []
 fvars (NAME x)         = []
 fvars (FRESH t)        = fvars t
 fvars (CHOOSE a b)     = fvars a ++ fvars b
-fvars (IFC0 a b c)     = fvars a ++ fvars b ++ fvars c
+--fvars (IFC0 a b c)     = fvars a ++ fvars b ++ fvars c
 fvars (TSQUASH t)      = fvars t
 fvars (TTRUNC t)       = fvars t
 fvars (TCONST t)       = fvars t
@@ -414,7 +414,7 @@ shiftUp c (CS x) = CS x
 shiftUp c (NAME x) = NAME x
 shiftUp c (FRESH t) = FRESH (shiftUp c t)
 shiftUp c (CHOOSE a b) = CHOOSE (shiftUp c a) (shiftUp c b)
-shiftUp c (IFC0 a t₁ t₂) = IFC0 (shiftUp c a) (shiftUp c t₁) (shiftUp c t₂)
+--shiftUp c (IFC0 a t₁ t₂) = IFC0 (shiftUp c a) (shiftUp c t₁) (shiftUp c t₂)
 shiftUp c (TSQUASH t) = TSQUASH (shiftUp c t)
 shiftUp c (TTRUNC t) = TTRUNC (shiftUp c t)
 shiftUp c (TCONST t) = TCONST (shiftUp c t)
@@ -457,7 +457,7 @@ shiftDown c (CS x) = CS x
 shiftDown c (NAME x) = NAME x
 shiftDown c (FRESH a) = FRESH (shiftDown c a)
 shiftDown c (CHOOSE a b) = CHOOSE (shiftDown c a) (shiftDown c b)
-shiftDown c (IFC0 a t₁ t₂) = IFC0 (shiftDown c a) (shiftDown c t₁) (shiftDown c t₂)
+--shiftDown c (IFC0 a t₁ t₂) = IFC0 (shiftDown c a) (shiftDown c t₁) (shiftDown c t₂)
 shiftDown c (TSQUASH t) = TSQUASH (shiftDown c t)
 shiftDown c (TTRUNC t) = TTRUNC (shiftDown c t)
 shiftDown c (TCONST t) = TCONST (shiftDown c t)
@@ -500,7 +500,7 @@ shiftNameUp c (CS x) = CS (sucIf≤ c x)
 shiftNameUp c (NAME x) = NAME (sucIf≤ c x)
 shiftNameUp c (FRESH t) = FRESH (shiftNameUp (suc c) t)
 shiftNameUp c (CHOOSE a b) = CHOOSE (shiftNameUp c a) (shiftNameUp c b)
-shiftNameUp c (IFC0 a t₁ t₂) = IFC0 (shiftNameUp c a) (shiftNameUp c t₁) (shiftNameUp c t₂)
+--shiftNameUp c (IFC0 a t₁ t₂) = IFC0 (shiftNameUp c a) (shiftNameUp c t₁) (shiftNameUp c t₂)
 shiftNameUp c (TSQUASH t) = TSQUASH (shiftNameUp c t)
 shiftNameUp c (TTRUNC t) = TTRUNC (shiftNameUp c t)
 shiftNameUp c (TCONST t) = TCONST (shiftNameUp c t)
@@ -543,7 +543,7 @@ shiftNameDown c (CS x) = CS (predIf≤ c x)
 shiftNameDown c (NAME x) = NAME (predIf≤ c x)
 shiftNameDown c (FRESH a) = FRESH (shiftNameDown (suc c) a)
 shiftNameDown c (CHOOSE a b) = CHOOSE (shiftNameDown c a) (shiftNameDown c b)
-shiftNameDown c (IFC0 a t₁ t₂) = IFC0 (shiftNameDown c a) (shiftNameDown c t₁) (shiftNameDown c t₂)
+--shiftNameDown c (IFC0 a t₁ t₂) = IFC0 (shiftNameDown c a) (shiftNameDown c t₁) (shiftNameDown c t₂)
 shiftNameDown c (TSQUASH t) = TSQUASH (shiftNameDown c t)
 shiftNameDown c (TTRUNC t) = TTRUNC (shiftNameDown c t)
 shiftNameDown c (TCONST t) = TCONST (shiftNameDown c t)
@@ -593,7 +593,7 @@ names (CS x)           = [ x ]
 names (NAME x)         = [ x ]
 names (FRESH t)        = lowerNames (names t)
 names (CHOOSE a b)     = names a ++ names b
-names (IFC0 a b c)     = names a ++ names b ++ names c
+--names (IFC0 a b c)     = names a ++ names b ++ names c
 names (TSQUASH t)      = names t
 names (TTRUNC t)       = names t
 names (TCONST t)       = names t
@@ -639,7 +639,7 @@ subv v t (CS x) = CS x
 subv v t (NAME x) = NAME x
 subv v t (FRESH a) = FRESH (subv v (shiftNameUp 0 t) a)
 subv v t (CHOOSE a b) = CHOOSE (subv v t a) (subv v t b)
-subv v t (IFC0 a t₁ t₂) = IFC0 (subv v t a) (subv v t t₁) (subv v t t₂)
+--subv v t (IFC0 a t₁ t₂) = IFC0 (subv v t a) (subv v t t₁) (subv v t t₂)
 subv v t (TSQUASH u) = TSQUASH (subv v t u)
 subv v t (TTRUNC u) = TTRUNC (subv v t u)
 subv v t (TCONST u) = TCONST (subv v t u)
@@ -692,7 +692,7 @@ renn v t (NAME x) with x ≟ v
 ... | no _ = NAME x
 renn v t (FRESH a) = FRESH (renn (suc v) (suc t) a)
 renn v t (CHOOSE a b) = CHOOSE (renn v t a) (renn v t b)
-renn v t (IFC0 a t₁ t₂) = IFC0 (renn v t a) (renn v t t₁) (renn v t t₂)
+--renn v t (IFC0 a t₁ t₂) = IFC0 (renn v t a) (renn v t t₁) (renn v t t₂)
 renn v t (TSQUASH u) = TSQUASH (renn v t u)
 renn v t (TTRUNC u) = TTRUNC (renn v t u)
 renn v t (TCONST u) = TCONST (renn v t u)
@@ -804,10 +804,10 @@ subvNotIn v t (FRESH u) n
 subvNotIn v t (CHOOSE u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
         | subvNotIn v t u₁ (notInAppVars2 n) = refl
-subvNotIn v t (IFC0 u u₁ u₂) n
+{--subvNotIn v t (IFC0 u u₁ u₂) n
   rewrite subvNotIn v t u (notInAppVars1 n)
         | subvNotIn v t u₁ (notInAppVars1 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))
-        | subvNotIn v t u₂ (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n)) = refl
+        | subvNotIn v t u₂ (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n)) = refl--}
 subvNotIn v t (TSQUASH u) n
   rewrite subvNotIn v t u n = refl
 subvNotIn v t (TTRUNC u) n
@@ -918,10 +918,10 @@ shiftDownTrivial v (FRESH u) i
 shiftDownTrivial v (CHOOSE u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
-shiftDownTrivial v (IFC0 u u₁ u₂) i
+{--shiftDownTrivial v (IFC0 u u₁ u₂) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
-        | shiftDownTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl
+        | shiftDownTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl--}
 shiftDownTrivial v (TSQUASH u) i
   rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (TTRUNC u) i
@@ -1014,10 +1014,10 @@ shiftUpTrivial v (FRESH u) i
 shiftUpTrivial v (CHOOSE u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
-shiftUpTrivial v (IFC0 u u₁ u₂) i
+{--shiftUpTrivial v (IFC0 u u₁ u₂) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
-        | shiftUpTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl
+        | shiftUpTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl--}
 shiftUpTrivial v (TSQUASH u) i
   rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (TTRUNC u) i
@@ -1082,7 +1082,7 @@ shiftDownUp (CS x) n = refl
 shiftDownUp (NAME x) n = refl
 shiftDownUp (FRESH t) n rewrite shiftDownUp t n = refl
 shiftDownUp (CHOOSE t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
-shiftDownUp (IFC0 t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n = refl
+--shiftDownUp (IFC0 t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n = refl
 shiftDownUp (TSQUASH t) n rewrite shiftDownUp t n = refl
 shiftDownUp (TTRUNC t) n rewrite shiftDownUp t n = refl
 shiftDownUp (TCONST t) n rewrite shiftDownUp t n = refl
@@ -1125,7 +1125,7 @@ is-NUM (CS x) = inj₂ (λ { n () })
 is-NUM (NAME x) = inj₂ (λ { n () })
 is-NUM (FRESH t) = inj₂ (λ { n () })
 is-NUM (CHOOSE t t₁) = inj₂ (λ { n () })
-is-NUM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
+--is-NUM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-NUM (TSQUASH t) = inj₂ (λ { n () })
 is-NUM (TTRUNC t) = inj₂ (λ { n () })
 is-NUM (TCONST t) = inj₂ (λ { n () })
@@ -1168,7 +1168,7 @@ is-LAM (CS x) = inj₂ (λ { n () })
 is-LAM (NAME x) = inj₂ (λ { n () })
 is-LAM (FRESH t) = inj₂ (λ { n () })
 is-LAM (CHOOSE t t₁) = inj₂ (λ { n () })
-is-LAM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
+--is-LAM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-LAM (TSQUASH t) = inj₂ (λ { n () })
 is-LAM (TTRUNC t) = inj₂ (λ { n () })
 is-LAM (TCONST t) = inj₂ (λ { n () })
@@ -1211,7 +1211,7 @@ is-CS (CS x) = inj₁ (x , refl)
 is-CS (NAME x) = inj₂ (λ { n () })
 is-CS (FRESH t) = inj₂ (λ { n () })
 is-CS (CHOOSE t t₁) = inj₂ (λ { n () })
-is-CS (IFC0 t t₁ t₂) = inj₂ (λ { n () })
+--is-CS (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-CS (TSQUASH t) = inj₂ (λ { n () })
 is-CS (TTRUNC t) = inj₂ (λ { n () })
 is-CS (TCONST t) = inj₂ (λ { n () })
@@ -1254,7 +1254,7 @@ is-NAME (CS x) = inj₂ (λ { n () })
 is-NAME (NAME x) = inj₁ (x , refl)
 is-NAME (FRESH t) = inj₂ (λ { n () })
 is-NAME (CHOOSE t t₁) = inj₂ (λ { n () })
-is-NAME (IFC0 t t₁ t₂) = inj₂ (λ { n () })
+--is-NAME (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-NAME (TSQUASH t) = inj₂ (λ { n () })
 is-NAME (TTRUNC t) = inj₂ (λ { n () })
 is-NAME (TCONST t) = inj₂ (λ { n () })
@@ -1297,7 +1297,7 @@ is-PAIR (CS x) = inj₂ (λ { n m () })
 is-PAIR (NAME x) = inj₂ (λ { n m () })
 is-PAIR (FRESH t) = inj₂ (λ { n m () })
 is-PAIR (CHOOSE t t₁) = inj₂ (λ { n m () })
-is-PAIR (IFC0 t t₁ t₂) = inj₂ (λ { n m () })
+--is-PAIR (IFC0 t t₁ t₂) = inj₂ (λ { n m () })
 is-PAIR (TSQUASH t) = inj₂ (λ { n m () })
 is-PAIR (TTRUNC t) = inj₂ (λ { n m () })
 is-PAIR (TCONST t) = inj₂ (λ { n m () })
@@ -1340,7 +1340,7 @@ is-INL (CS x) = inj₂ (λ { n () })
 is-INL (NAME x) = inj₂ (λ { n () })
 is-INL (FRESH t) = inj₂ (λ { n () })
 is-INL (CHOOSE t t₁) = inj₂ (λ { n () })
-is-INL (IFC0 t t₁ t₂) = inj₂ (λ { n () })
+--is-INL (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-INL (TSQUASH t) = inj₂ (λ { n () })
 is-INL (TTRUNC t) = inj₂ (λ { n () })
 is-INL (TCONST t) = inj₂ (λ { n () })
@@ -1383,7 +1383,7 @@ is-INR (CS x) = inj₂ (λ { n () })
 is-INR (NAME x) = inj₂ (λ { n () })
 is-INR (FRESH t) = inj₂ (λ { n () })
 is-INR (CHOOSE t t₁) = inj₂ (λ { n () })
-is-INR (IFC0 t t₁ t₂) = inj₂ (λ { n () })
+--is-INR (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-INR (TSQUASH t) = inj₂ (λ { n () })
 is-INR (TTRUNC t) = inj₂ (λ { n () })
 is-INR (TCONST t) = inj₂ (λ { n () })
@@ -1577,7 +1577,7 @@ data ∼vals : Term → Term → Set where
 ¬read (NAME x) = true
 ¬read (FRESH t) = ¬read t
 ¬read (CHOOSE t t₁) = ¬read t ∧ ¬read t₁
-¬read (IFC0 t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
+--¬read (IFC0 t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
 ¬read (TSQUASH t) = ¬read t
 ¬read (TTRUNC t) = ¬read t
 ¬read (TCONST t) = ¬read t

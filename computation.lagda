@@ -128,13 +128,13 @@ step (CHOOSE n t) w with step n w
 ... | just (m , w') = ret (CHOOSE m t) w'
 ... | nothing = nothing--}
 -- IFC₀
-step (IFC0 a b c) w with isValue⊎ a
+{--step (IFC0 a b c) w with isValue⊎ a
 ... | inj₁ x with decT₀ a
 ... |    inj₁ y = ret b w
 ... |    inj₂ y = ret c w
 step (IFC0 a b c) w | inj₂ x with step a w
 ... |    just (a' , w') = ret (IFC0 a' b c) w'
-... |    nothing = nothing
+... |    nothing = nothing--}
 -- FIX
 step (FIX f) w with is-LAM f
 ... | inj₁ (t , p) = ret (sub (FIX (LAMBDA t)) t) w
@@ -471,7 +471,7 @@ step-APPLY-CS-¬NUM name (SHRINK a) b w w' c s rewrite sym (pair-inj₁ (just-in
 step-APPLY-CS-¬NUM name (DECIDE a x y) b w w' c s rewrite s = refl
 step-APPLY-CS-¬NUM name (SPREAD a x) b w w' c s rewrite s = refl
 step-APPLY-CS-¬NUM name (CHOOSE a a₁) b w w' c s rewrite s = refl
-step-APPLY-CS-¬NUM name (IFC0 a a₁ a₂) b w w' c s rewrite s = refl
+--step-APPLY-CS-¬NUM name (IFC0 a a₁ a₂) b w w' c s rewrite s = refl
 
 
 Σ-steps-APPLY-CS≤ : (n : ℕ) (a b : Term) (w w' : 𝕎·) (name : Name)
@@ -731,13 +731,13 @@ step⊑ {w} {w'} {CHOOSE a a₁} {b} comp with is-NAME a
 ... | inj₂ x with step⊎ a w
 ... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
-step⊑ {w} {w'} {IFC0 a a₁ a₂} {b} comp with isValue⊎ a
+{--step⊑ {w} {w'} {IFC0 a a₁ a₂} {b} comp with isValue⊎ a
 ... | inj₁ x with decT₀ a
 ... |    inj₁ y rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 ... |    inj₂ y rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {IFC0 a a₁ a₂} {b} comp | inj₂ y with step⊎ a w
 ... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
-... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))--}
 step⊑ {w} {w'} {FRESH a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = startNewChoiceT⊏ Res⊤ w a
 step⊑ {w} {w'} {TSQUASH a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {TTRUNC a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
@@ -1153,10 +1153,10 @@ data ∼T : 𝕎· → Term → Term → Set where
   where
     z : steps 1 (APPLY (CHOOSE a x) c , w) ≡ (APPLY b c , w')
     z rewrite comp = refl
-→-step-APPLY {w} {w'} {IFC0 a x y} {b} c comp = 1 , z
+{--→-step-APPLY {w} {w'} {IFC0 a x y} {b} c comp = 1 , z
   where
     z : steps 1 (APPLY (IFC0 a x y) c , w) ≡ (APPLY b c , w')
-    z rewrite comp = refl
+    z rewrite comp = refl--}
 →-step-APPLY {w} {w'} {LET a x} {b} c comp = 1 , z
   where
     z : steps 1 (APPLY (LET a x) c , w) ≡ (APPLY b c , w')
@@ -1226,10 +1226,10 @@ step-⇓-ASSERT₁ {w} {w'} {CHOOSE a a₁} {b} comp = 1 , z
   where
     z : steps 1 (ASSERT₁ (CHOOSE a a₁) , w) ≡ (ASSERT₁ b , w')
     z rewrite comp = refl
-step-⇓-ASSERT₁ {w} {w'} {IFC0 a a₁ a₂} {b} comp = 1 , z
+{--step-⇓-ASSERT₁ {w} {w'} {IFC0 a a₁ a₂} {b} comp = 1 , z
   where
     z : steps 1 (ASSERT₁ (IFC0 a a₁ a₂) , w) ≡ (ASSERT₁ b , w')
-    z rewrite comp = refl
+    z rewrite comp = refl--}
 step-⇓-ASSERT₁ {w} {w'} {LET a a₁} {b} comp = 1 , z
   where
     z : steps 1 (ASSERT₁ (LET a a₁) , w) ≡ (ASSERT₁ b , w')

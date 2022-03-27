@@ -94,7 +94,7 @@ open import computation(W)(C)(M)(G)(E)(N)
 ¬names (NAME x) = false -- FALSE
 ¬names (FRESH t) = false -- FALSE
 ¬names (CHOOSE t t₁) = ¬names t ∧ ¬names t₁
-¬names (IFC0 t t₁ t₂) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂
+--¬names (IFC0 t t₁ t₂) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂
 ¬names (TSQUASH t) = ¬names t
 ¬names (TTRUNC t) = ¬names t
 ¬names (TCONST t) = ¬names t
@@ -174,7 +174,7 @@ shiftUp-shiftNameUp c d (CS x) = refl
 shiftUp-shiftNameUp c d (NAME x) = refl
 shiftUp-shiftNameUp c d (FRESH t) rewrite shiftUp-shiftNameUp c (suc d) t = refl
 shiftUp-shiftNameUp c d (CHOOSE t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
-shiftUp-shiftNameUp c d (IFC0 t t₁ t₂) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ | shiftUp-shiftNameUp c d t₂ = refl
+--shiftUp-shiftNameUp c d (IFC0 t t₁ t₂) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ | shiftUp-shiftNameUp c d t₂ = refl
 shiftUp-shiftNameUp c d (TSQUASH t) rewrite shiftUp-shiftNameUp c d t = refl
 shiftUp-shiftNameUp c d (TTRUNC t) rewrite shiftUp-shiftNameUp c d t = refl
 shiftUp-shiftNameUp c d (TCONST t) rewrite shiftUp-shiftNameUp c d t = refl
@@ -230,7 +230,7 @@ renn-shiftNameUp n1 n2 (NAME x) | no p with suc x ≟ n1
 ... |    no q = refl
 renn-shiftNameUp n1 n2 (FRESH t) rewrite renn-shiftNameUp (suc n1) (suc n2) t = refl
 renn-shiftNameUp n1 n2 (CHOOSE t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
-renn-shiftNameUp n1 n2 (IFC0 t t₁ t₂) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ | renn-shiftNameUp n1 n2 t₂ = refl
+--renn-shiftNameUp n1 n2 (IFC0 t t₁ t₂) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ | renn-shiftNameUp n1 n2 t₂ = refl
 renn-shiftNameUp n1 n2 (TSQUASH t) rewrite renn-shiftNameUp n1 n2 t = refl
 renn-shiftNameUp n1 n2 (TTRUNC t) rewrite renn-shiftNameUp n1 n2 t = refl
 renn-shiftNameUp n1 n2 (TCONST t) rewrite renn-shiftNameUp n1 n2 t = refl
@@ -288,7 +288,7 @@ shiftNameDownUp n (CS x) rewrite predIf≤-sucIf≤ n x = refl
 shiftNameDownUp n (NAME x) rewrite predIf≤-sucIf≤ n x = refl
 shiftNameDownUp n (FRESH t) rewrite shiftNameDownUp (suc n) t = refl
 shiftNameDownUp n (CHOOSE t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
-shiftNameDownUp n (IFC0 t t₁ t₂) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ | shiftNameDownUp n t₂ = refl
+--shiftNameDownUp n (IFC0 t t₁ t₂) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ | shiftNameDownUp n t₂ = refl
 shiftNameDownUp n (TSQUASH t) rewrite shiftNameDownUp n t = refl
 shiftNameDownUp n (TTRUNC t) rewrite shiftNameDownUp n t = refl
 shiftNameDownUp n (TCONST t) rewrite shiftNameDownUp n t = refl
@@ -491,7 +491,7 @@ shiftNameDownUp n (SHRINK t) rewrite shiftNameDownUp n t = refl
     i = ¬Names→step w1 w' w3 n n' name (∧≡true→ₗ (¬names n) (¬names t) nr) g0 z
 ¬Names→step w1 w2 w3 (CHOOSE n t) u name nr g0 s | inj₂ x | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
 -- IFC0
-¬Names→step w1 w2 w3 (IFC0 a b c) u name nr g0 s with isValue⊎ a
+{--¬Names→step w1 w2 w3 (IFC0 a b c) u name nr g0 s with isValue⊎ a
 ... | inj₁ x with decT₀ a
 ... |    inj₁ y rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0
 ... |    inj₂ y rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0
@@ -508,7 +508,7 @@ shiftNameDownUp n (SHRINK t) rewrite shiftNameDownUp n t = refl
   where
     i : Σ 𝕎· (λ w4 → step a w3 ≡ just (a' , w4) × getT 0 name w' ≡ getT 0 name w4)
     i = ¬Names→step w1 w' w3 a a' name (∧≡true→ₗ (¬names a) (¬names b ∧ ¬names c) nr) g0 z
-¬Names→step w1 w2 w3 (IFC0 a b c) u name nr g0 s | inj₂ x | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
+¬Names→step w1 w2 w3 (IFC0 a b c) u name nr g0 s | inj₂ x | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))--}
 -- TSQUASH
 ¬Names→step w1 w2 w3 (TSQUASH t) u name nr g0 s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0
 ¬Names→step w1 w2 w3 (TTRUNC t) u name nr g0 s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0

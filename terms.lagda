@@ -568,12 +568,12 @@ fvars-shiftUp≡ n (CHOOSE t t₁)
   rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
         | fvars-shiftUp≡ n t
         | fvars-shiftUp≡ n t₁ = refl
-fvars-shiftUp≡ n (IFC0 t t₁ t₂)
+{--fvars-shiftUp≡ n (IFC0 t t₁ t₂)
   rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
         | map-++-commute (sucIf≤ n) (fvars t₁) (fvars t₂)
         | fvars-shiftUp≡ n t
         | fvars-shiftUp≡ n t₁
-        | fvars-shiftUp≡ n t₂ = refl
+        | fvars-shiftUp≡ n t₂ = refl--}
 fvars-shiftUp≡ n (TSQUASH t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (TTRUNC t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (TCONST t) = fvars-shiftUp≡ n t
@@ -860,12 +860,12 @@ fvars-shiftDown≡ n (CHOOSE t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
         | fvars-shiftDown≡ n t
         | fvars-shiftDown≡ n t₁ = refl
-fvars-shiftDown≡ n (IFC0 t t₁ t₂)
+{--fvars-shiftDown≡ n (IFC0 t t₁ t₂)
   rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
         | map-++-commute (predIf≤ n) (fvars t₁) (fvars t₂)
         | fvars-shiftDown≡ n t
         | fvars-shiftDown≡ n t₁
-        | fvars-shiftDown≡ n t₂ = refl
+        | fvars-shiftDown≡ n t₂ = refl--}
 fvars-shiftDown≡ n (TSQUASH t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (TTRUNC t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (TCONST t) = fvars-shiftDown≡ n t
@@ -947,7 +947,7 @@ fvars-shiftNameUp n (CS x) = refl
 fvars-shiftNameUp n (NAME x) = refl
 fvars-shiftNameUp n (FRESH a) rewrite fvars-shiftNameUp (suc n) a = refl
 fvars-shiftNameUp n (CHOOSE a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
-fvars-shiftNameUp n (IFC0 a a₁ a₂) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ | fvars-shiftNameUp n a₂ = refl
+--fvars-shiftNameUp n (IFC0 a a₁ a₂) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ | fvars-shiftNameUp n a₂ = refl
 fvars-shiftNameUp n (TSQUASH a) rewrite fvars-shiftNameUp n a = refl
 fvars-shiftNameUp n (TTRUNC a) rewrite fvars-shiftNameUp n a = refl
 fvars-shiftNameUp n (TCONST a) rewrite fvars-shiftNameUp n a = refl
@@ -1081,13 +1081,13 @@ fvars-subv v a (FRESH b) {x} i =
 fvars-subv v a (CHOOSE b b₁) {x} i with ∈-++⁻ (fvars (subv v a b)) i
 ... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b p)
 ... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b₁ p)
-fvars-subv v a (IFC0 b b₁ b₂) i with ∈-++⁻ (fvars (subv v a b)) i
+{--fvars-subv v a (IFC0 b b₁ b₂) i with ∈-++⁻ (fvars (subv v a b)) i
 ... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁ ++ fvars b₂} {fvars a} (fvars-subv v a b p)
 ... | inj₂ p with ∈-++⁻ (fvars (subv v a b₁)) p
 ... | inj₁ q = ∈removeV++R {_} {v} {fvars b} {fvars b₁ ++ fvars b₂} {fvars a}
                            (∈removeV++L {_} {v} {fvars b₁} {fvars b₂} {fvars a} (fvars-subv v a b₁ q))
 ... | inj₂ q = ∈removeV++R {_} {v} {fvars b} {fvars b₁ ++ fvars b₂} {fvars a}
-                           (∈removeV++R {_} {v} {fvars b₁} {fvars b₂} {fvars a} (fvars-subv v a b₂ q))
+                           (∈removeV++R {_} {v} {fvars b₁} {fvars b₂} {fvars a} (fvars-subv v a b₂ q))--}
 fvars-subv v a (TSQUASH b) = fvars-subv v a b
 fvars-subv v a (TTRUNC b) = fvars-subv v a b
 fvars-subv v a (TCONST b) = fvars-subv v a b
@@ -1284,11 +1284,11 @@ shiftDown1-subv1-shiftUp0 n a (FRESH b) ca
 shiftDown1-subv1-shiftUp0 n a (CHOOSE b b₁) ca
   rewrite shiftDown1-subv1-shiftUp0 n a b ca
         | shiftDown1-subv1-shiftUp0 n a b₁ ca = refl
-shiftDown1-subv1-shiftUp0 n a (IFC0 b b₁ b₂) ca
+{--shiftDown1-subv1-shiftUp0 n a (IFC0 b b₁ b₂) ca
   rewrite #shiftUp 0 (ct a ca)
         | shiftDown1-subv1-shiftUp0 n a b ca
         | shiftDown1-subv1-shiftUp0 n a b₁ ca
-        | shiftDown1-subv1-shiftUp0 n a b₂ ca = refl
+        | shiftDown1-subv1-shiftUp0 n a b₂ ca = refl--}
 shiftDown1-subv1-shiftUp0 n a (TSQUASH b) ca
   rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
 shiftDown1-subv1-shiftUp0 n a (TTRUNC b) ca
@@ -1496,7 +1496,7 @@ FRESHinj : {a b : Term} → FRESH a ≡ FRESH b → a ≡ b
 FRESHinj refl =  refl
 
 
-IFC0inj1 : {a b c d e f : Term} → IFC0 a b c ≡ IFC0 d e f → a ≡ d
+{--IFC0inj1 : {a b c d e f : Term} → IFC0 a b c ≡ IFC0 d e f → a ≡ d
 IFC0inj1 refl =  refl
 
 
@@ -1506,6 +1506,7 @@ IFC0inj2 refl =  refl
 
 IFC0inj3 : {a b c d e f : Term} → IFC0 a b c ≡ IFC0 d e f → c ≡ f
 IFC0inj3 refl =  refl
+--}
 
 
 IFLTinj1 : {a b c d e f g h : Term} → IFLT a b c d ≡ IFLT e f g h → a ≡ e
@@ -1884,7 +1885,7 @@ shiftUp-inj {n} {CS x} {CS .x} refl = refl
 shiftUp-inj {n} {NAME x} {NAME .x} refl = refl
 shiftUp-inj {n} {FRESH a} {FRESH b} e rewrite shiftUp-inj (FRESHinj e) = refl
 shiftUp-inj {n} {CHOOSE a a₁} {CHOOSE b b₁} e rewrite shiftUp-inj (CHOOSEinj1 e) | shiftUp-inj (CHOOSEinj2 e) = refl
-shiftUp-inj {n} {IFC0 a a₁ a₂} {IFC0 b b₁ b₂} e rewrite shiftUp-inj (IFC0inj1 e) | shiftUp-inj (IFC0inj2 e) | shiftUp-inj (IFC0inj3 e) = refl
+--shiftUp-inj {n} {IFC0 a a₁ a₂} {IFC0 b b₁ b₂} e rewrite shiftUp-inj (IFC0inj1 e) | shiftUp-inj (IFC0inj2 e) | shiftUp-inj (IFC0inj3 e) = refl
 shiftUp-inj {n} {TSQUASH a} {TSQUASH b} e rewrite shiftUp-inj (TSQUASHinj e) = refl
 shiftUp-inj {n} {TTRUNC a} {TTRUNC b} e rewrite shiftUp-inj (TTRUNCinj e) = refl
 shiftUp-inj {n} {TCONST a} {TCONST b} e rewrite shiftUp-inj (TCONSTinj e) = refl
