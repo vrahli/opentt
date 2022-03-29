@@ -554,14 +554,6 @@ fvars-IFLE a b c d = refl
 #testM≡ name F f = CTerm≡ refl
 
 
-→≡pair : {l k : Level} {A : Set l} {B : Set k} {a₁ a₂ : A} {b₁ b₂ : B} → a₁ ≡ a₂ → b₁ ≡ b₂ → (a₁ , b₁) ≡ (a₂ , b₂)
-→≡pair e f rewrite e | f = refl
-
-
-→≡LET : {a₁ a₂ b₁ b₂ : Term} → a₁ ≡ a₂ → b₁ ≡ b₂ → LET a₁ b₁ ≡ LET a₂ b₂
-→≡LET e f rewrite e | f = refl
-
-
 --→≡APPLY : {a₁ a₂ b₁ b₂ : Term} → a₁ ≡ a₂ → b₁ ≡ b₂ → APPLY a₁ b₁ ≡ APPLY a₂ b₂
 --→≡APPLY e f rewrite e | f = refl
 
@@ -643,10 +635,6 @@ sub-LE a b c = refl
            → sub a c ≡ c'
            → sub a (APPLY b c) ≡ APPLY b' c'
 →sub-APPLY {a} {b} {c} {b'} {c'} eb ec rewrite sym eb | sym ec = sub-APPLY a b c
-
-
-sub-VAR0 : (a : Term) → sub a (VAR 0) ≡ a
-sub-VAR0 a rewrite shiftDownUp a 0 = refl
 
 
 sub-IFC0 : (a b c d : Term)
@@ -1375,21 +1363,6 @@ test∈ i w F name n f compat ∈F ∈n ∈f =
 -- Because we used NAT, this requires choices to be numbers (should be QTNAT in the union)
 
 
-
-sub-LET : (a b c : Term) → # a → sub a (LET b c) ≡ LET (sub a b) (shiftDown 1 (subv 1 a c))
-sub-LET a b c ca
-  rewrite #shiftUp 0 (ct a ca)
-        | #shiftUp 0 (ct a ca)
-  = →≡LET refl refl
-
-
-→sub-LET : {a b c b' c' : Term} → # a
-            → sub a b ≡ b'
-            → shiftDown 1 (subv 1 a c) ≡ c'
-            → sub a (LET b c) ≡ LET b' c'
-→sub-LET {a} {b} {c} {b'} {c'} ca eb ec rewrite sym eb | sym ec = sub-LET a b c ca
-
-
 CTerm→CTerm0→Term : (a : CTerm) → ⌜ CTerm→CTerm0 a ⌝ ≡ ⌜ a ⌝
 CTerm→CTerm0→Term (ct a c) = refl
 
@@ -1399,19 +1372,13 @@ CTerm→CTerm1→Term (ct a c) = refl
 
 
 
-#subv : (n : ℕ) (t u : Term) → # u → subv n t u ≡ u
-#subv n t u d rewrite subvNotIn n t u (#→¬∈ {u} d n) = refl
-
-
-
 #⇛!-#APPLY-#UPD : (w : 𝕎·) (name : Name) (f : CTerm) (a : CTerm)
                    → #APPLY (#UPD name f) a #⇛! #LET a (#[0]SEQ (#[0]updGt name #[0]VAR) (#[0]APPLY ⌞ f ⌟ #[0]VAR)) at w
 #⇛!-#APPLY-#UPD w name f a w1 e1
   = lift (1 , →≡pair (→sub-LET {⌜ a ⌝} {⌜ #[0]VAR ⌝} {⌜ #[1]SEQ (#[1]updGt name #[1]VAR0) (#[1]APPLY ⌞ f ⌟ #[1]VAR0) ⌝}
                                  (CTerm.closed a)
                                  (sub-VAR0 ⌜ a ⌝)
-                                 (→≡LET refl
-                                         (→≡APPLY e refl)))
+                                 (→≡LET refl (→≡APPLY e refl)))
                      refl)
   where
     e : shiftDown 2 (subv 2 (shiftUp 0 ⌜ a ⌝) (shiftUp 0 ⌜ CTerm→CTerm1 f ⌝))
