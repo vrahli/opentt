@@ -75,6 +75,14 @@ open import terms4(W)(C)(M)(G)(E)(N)
 
 
 
+steps→¬Names : (k : ℕ) (w1 w2 : 𝕎·) (t u : Term)
+              → steps k (t , w1) ≡ (u , w2)
+              → ¬Names t
+              → ¬Names u
+steps→¬Names k w1 w2 t u s nn = snd (snd (¬Names→steps k w1 w2 w2 t u nn s))
+
+
+
 upd⇓names : (k : ℕ) (f : Term) (name1 name2 : Name) (w1 w1' w2 : 𝕎·) (a b : Term) (v : Term)
             → # f
             → ¬Names f
@@ -86,7 +94,7 @@ upd⇓names : (k : ℕ) (f : Term) (name1 name2 : Name) (w1 w1' w2 : 𝕎·) (a 
             → getT 0 name1 w1 ≡ getT 0 name2 w1'
             → differ name1 name2 f a b
             → steps k (LET a (SEQ (updGt name1 (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (v , w2)
-            → Σ 𝕎· (λ w2' → APPLY (upd name2 f) b ⇓ v from w1' to w2' × getT 0 name1 w2 ≡ getT 0 name2 w2')
+            → Σ 𝕎· (λ w2' → APPLY (upd name2 f) b ⇓ v from w1' to w2' × getT 0 name1 w2 ≡ getT 0 name2 w2' × ¬Names v)
 upd⇓names k f name1 name2 w1 w1' w2 a b v cf nnf gtn c₁ c₂ isv pd g0 diff comp = concl comp8
   where
     h1 : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w → Σ Term (λ u →
@@ -291,8 +299,8 @@ upd⇓names k f name1 name2 w1 w1' w2 a b v cf nnf gtn c₁ c₂ isv pd g0 diff 
     compd' = ⇓-trans₂ compc' (LET⇓ (shiftUp 0 (APPLY f (NUM m))) (IFLT-NUM-1st⇓ (NUM m) (setT name2 (NUM m)) AX (APPLY-CS-NUM⇓ (NUM n) w3' 0 name2 g3)))
 
     concl : ((n < m × steps k7 (setT name1 u , w6) ≡ (u' , w4)) ⊎ (m ≤ n × steps k7 (AX , w6) ≡ (u' , w4)))
-            → Σ 𝕎· (λ w2' → APPLY (upd name2 f) b ⇓ v from w1' to w2' × getT 0 name1 w2 ≡ getT 0 name2 w2')
-    concl (inj₁ (ltnm , comp8b)) = chooseT name2 w3' (NUM m) , comph' , g5
+            → Σ 𝕎· (λ w2' → APPLY (upd name2 f) b ⇓ v from w1' to w2' × getT 0 name1 w2 ≡ getT 0 name2 w2' × ¬Names v)
+    concl (inj₁ (ltnm , comp8b)) = chooseT name2 w3' (NUM m) , comph' , g5 , nnv
       where
         compe' : APPLY (upd name2 f) b ⇓ SEQ (setT name2 (NUM m)) (APPLY f (NUM m)) from w1' to w3'
         compe' = ⇓-trans₂ compd' (LET⇓ (shiftUp 0 (APPLY f (NUM m))) (IFLT-NUM<⇓ ltnm (setT name2 (NUM m)) AX w3'))
@@ -321,7 +329,10 @@ upd⇓names k f name1 name2 w1 w1' w2 a b v cf nnf gtn c₁ c₂ isv pd g0 diff 
         g5 : getT 0 name1 w2 ≡ getT 0 name2 (chooseT name2 w3' (NUM m))
         g5 = ≡→getT≡ (chooseT name1 w3 (NUM m)) w2 0 name1 (getT 0 name2 (chooseT name2 w3' (NUM m))) (proj₁ (snd h6)) g4
 
-    concl (inj₂ (ltnm , comp8b)) = w3' , compg' , g5
+        nnv : ¬Names v
+        nnv = steps→¬Names k4 (chooseT name1 w3 (NUM m)) w2 (APPLY f (NUM m)) v comp5c (→∧≡true {¬names f} {¬names (NUM m)} nnf refl)
+
+    concl (inj₂ (ltnm , comp8b)) = w3' , compg' , g5 , nnv
       where
         compe' : APPLY (upd name2 f) b ⇓ SEQ AX (APPLY f (NUM m)) from w1' to w3'
         compe' = ⇓-trans₂ compd' (LET⇓ (shiftUp 0 (APPLY f (NUM m))) (IFLT-NUM¬<⇓ (≤⇒≯ ltnm) (setT name2 (NUM m)) AX w3'))
@@ -344,10 +355,64 @@ upd⇓names k f name1 name2 w1 w1' w2 a b v cf nnf gtn c₁ c₂ isv pd g0 diff 
         g5 : getT 0 name1 w2 ≡ getT 0 name2 w3'
         g5 = ≡→getT≡ w3 w2 0 name1 (getT 0 name2 w3') (fst (snd h6)) g1
 
+        nnv : ¬Names v
+        nnv = steps→¬Names k4 w3 w2 (APPLY f (NUM m)) v comp5c (→∧≡true {¬names f} {¬names (NUM m)} nnf refl)
 
 
 
-differ⇓-aux2 : (f : Term) (cf : # f) (name1 name2 : Name) (w1 w2 w1' : 𝕎·) (a b a' : Term) (k : ℕ)
+differ-refl : (name1 name2 : Name) (f t : Term)
+              → ¬names t ≡ true
+              → differ name1 name2 f t t
+differ-refl name1 name2 f (VAR x) nn = differ-VAR x
+differ-refl name1 name2 f NAT nn = differ-NAT
+differ-refl name1 name2 f QNAT nn = differ-QNAT
+differ-refl name1 name2 f (LT t t₁) nn = differ-LT _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+differ-refl name1 name2 f (QLT t t₁) nn = differ-QLT _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+differ-refl name1 name2 f (NUM x) nn = differ-NUM x
+differ-refl name1 name2 f (IFLT t t₁ t₂ t₃) nn = differ-IFLT _ _ _ _ _ _ _ _ (differ-refl name1 name2 f t (∧≡true→1-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn)) (differ-refl name1 name2 f t₁ (∧≡true→2-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn)) (differ-refl name1 name2 f t₂ (∧≡true→3-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn)) (differ-refl name1 name2 f t₃ (∧≡true→4-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn))
+differ-refl name1 name2 f (PI t t₁) nn = differ-PI _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+differ-refl name1 name2 f (LAMBDA t) nn = differ-LAMBDA _ _ (differ-refl name1 name2 f t nn)
+differ-refl name1 name2 f (APPLY t t₁) nn = differ-APPLY _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+differ-refl name1 name2 f (FIX t) nn = differ-FIX _ _ (differ-refl name1 name2 f t nn)
+differ-refl name1 name2 f (LET t t₁) nn = differ-LET _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+differ-refl name1 name2 f (SUM t t₁) nn = differ-SUM _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+differ-refl name1 name2 f (PAIR t t₁) nn = differ-PAIR _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+differ-refl name1 name2 f (SPREAD t t₁) nn = differ-SPREAD _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+differ-refl name1 name2 f (SET t t₁) nn = differ-SET _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+differ-refl name1 name2 f (TUNION t t₁) nn = differ-TUNION _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+differ-refl name1 name2 f (UNION t t₁) nn = differ-UNION _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+differ-refl name1 name2 f (QTUNION t t₁) nn = differ-QTUNION _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+differ-refl name1 name2 f (INL t) nn = differ-INL _ _ (differ-refl name1 name2 f t nn)
+differ-refl name1 name2 f (INR t) nn = differ-INR _ _ (differ-refl name1 name2 f t nn)
+differ-refl name1 name2 f (DECIDE t t₁ t₂) nn = differ-DECIDE _ _ _ _ _ _ (differ-refl name1 name2 f t (∧≡true→1-3 {¬names t} {¬names t₁} {¬names t₂} nn)) (differ-refl name1 name2 f t₁ (∧≡true→2-3 {¬names t} {¬names t₁} {¬names t₂} nn)) (differ-refl name1 name2 f t₂ (∧≡true→3-3 {¬names t} {¬names t₁} {¬names t₂} nn))
+differ-refl name1 name2 f (EQ t t₁ t₂) nn = differ-EQ _ _ _ _ _ _ (differ-refl name1 name2 f t (∧≡true→1-3 {¬names t} {¬names t₁} {¬names t₂} nn)) (differ-refl name1 name2 f t₁ (∧≡true→2-3 {¬names t} {¬names t₁} {¬names t₂} nn)) (differ-refl name1 name2 f t₂ (∧≡true→3-3 {¬names t} {¬names t₁} {¬names t₂} nn))
+differ-refl name1 name2 f AX nn = differ-AX
+differ-refl name1 name2 f FREE nn = differ-FREE
+differ-refl name1 name2 f (CHOOSE t t₁) nn = differ-CHOOSE _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+differ-refl name1 name2 f (TSQUASH t) nn = differ-TSQUASH _ _ (differ-refl name1 name2 f t nn)
+differ-refl name1 name2 f (TTRUNC t) nn = differ-TTRUNC _ _ (differ-refl name1 name2 f t nn)
+differ-refl name1 name2 f (TCONST t) nn = differ-TCONST _ _ (differ-refl name1 name2 f t nn)
+differ-refl name1 name2 f (SUBSING t) nn = differ-SUBSING _ _ (differ-refl name1 name2 f t nn)
+differ-refl name1 name2 f (DUM t) nn = differ-DUM _ _ (differ-refl name1 name2 f t nn)
+differ-refl name1 name2 f (FFDEFS t t₁) nn = differ-FFDEFS _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+differ-refl name1 name2 f (UNIV x) nn = differ-UNIV x
+differ-refl name1 name2 f (LIFT t) nn = differ-LIFT _ _ (differ-refl name1 name2 f t nn)
+differ-refl name1 name2 f (LOWER t) nn = differ-LOWER _ _ (differ-refl name1 name2 f t nn)
+differ-refl name1 name2 f (SHRINK t) nn = differ-SHRINK _ _ (differ-refl name1 name2 f t nn)
+
+
+
+APPLY-LAMBDA⇓→ : (k : ℕ) {w1 w2 : 𝕎·} {f a v : Term}
+                 → isValue v
+                 → steps k (APPLY (LAMBDA f) a , w1) ≡ (v , w2)
+                 → sub a f ⇓ v from w1 to w2
+APPLY-LAMBDA⇓→ 0 {w1} {w2} {f} {a} {v} isv comp rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+APPLY-LAMBDA⇓→ (suc k) {w1} {w2} {f} {a} {v} isv comp = k , comp
+
+
+
+differ⇓-aux2 : (f : Term) (cf : # f) (nn : ¬Names f) (name1 name2 : Name) (w1 w2 w1' : 𝕎·) (a b a' : Term) (k : ℕ)
+               → ∀𝕎 w1 (λ w' e → Lift (lsuc L) (Σ ℕ (λ j → getT 0 name1 w' ≡ just (NUM j))))
                → ∀𝕎 w1 (λ w' _ → (m : ℕ) → ∈ℕ w' (APPLY f (NUM m)))
                → ∀𝕎 w1' (λ w' _ → (m : ℕ) → ∈ℕ w' (APPLY f (NUM m)))
                → differ name1 name2 f a b
@@ -360,18 +425,18 @@ differ⇓-aux2 : (f : Term) (cf : # f) (name1 name2 : Name) (w1 w2 w1' : 𝕎·)
                    × b ⇓ b'' from w1' to w3'
                    × differ name1 name2 f a'' b''
                    × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .NAT .NAT a' k c₁ c₂ differ-NAT g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NAT , NAT , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NAT , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .QNAT .QNAT a' k c₁ c₂ differ-QNAT g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = QNAT , QNAT , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-QNAT , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(LT a₁ b₁) .(LT a₂ b₂) a' k c₁ c₂ (differ-LT a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = LT a₁ b₁ , LT a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-LT _ _ _ _ diff diff₁ , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(QLT a₁ b₁) .(QLT a₂ b₂) a' k c₁ c₂ (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = QLT a₁ b₁ , QLT a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-QLT _ _ _ _ diff diff₁ , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(NUM x) .(NUM x) a' k c₁ c₂ (differ-NUM x) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NUM x , NUM x , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NUM x , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .NAT .NAT a' k agtn c₁ c₂ differ-NAT g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NAT , NAT , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NAT , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .QNAT .QNAT a' k agtn c₁ c₂ differ-QNAT g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = QNAT , QNAT , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-QNAT , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(LT a₁ b₁) .(LT a₂ b₂) a' k agtn c₁ c₂ (differ-LT a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = LT a₁ b₁ , LT a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-LT _ _ _ _ diff diff₁ , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(QLT a₁ b₁) .(QLT a₂ b₂) a' k agtn c₁ c₂ (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = QLT a₁ b₁ , QLT a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-QLT _ _ _ _ diff diff₁ , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(NUM x) .(NUM x) a' k agtn c₁ c₂ (differ-NUM x) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NUM x , NUM x , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NUM x , g0
 -- IFLT
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(IFLT a₁ b₁ c₃ d₁) .(IFLT a₂ b₂ c₄ d₂) a' k c₁ c₂ (differ-IFLT a₁ a₂ b₁ b₂ c₃ c₄ d₁ d₂ diff diff₁ diff₂ diff₃) g0 s hv pd with is-NUM a₁
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(IFLT a₁ b₁ c₃ d₁) .(IFLT a₂ b₂ c₄ d₂) a' k agtn c₁ c₂ (differ-IFLT a₁ a₂ b₁ b₂ c₃ c₄ d₁ d₂ diff diff₁ diff₂ diff₃) g0 s hv pd with is-NUM a₁
 ... | inj₁ (n , p) rewrite p | differ-NUM→ diff with is-NUM b₁
 ... |    inj₁ (m , q) rewrite q | differ-NUM→ diff₁ with n <? m
 ... |       yes r rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = c₃ , c₄ , w1 , w1' , ⇓from-to-refl _ _ , IFLT-NUM<⇓ r c₄ d₂ w1' , diff₂ , g0
 ... |       no r rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = d₁ , d₂ , w1 , w1' , ⇓from-to-refl _ _ , IFLT-NUM¬<⇓ r c₄ d₂ w1' , diff₃ , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(IFLT a₁ b₁ c₃ d₁) .(IFLT a₂ b₂ c₄ d₂) a' k c₁ c₂ (differ-IFLT a₁ a₂ b₁ b₂ c₃ c₄ d₁ d₂ diff diff₁ diff₂ diff₃) g0 s hv pd | inj₁ (n , p) | inj₂ q with step⊎ b₁ w1
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(IFLT a₁ b₁ c₃ d₁) .(IFLT a₂ b₂ c₄ d₂) a' k agtn c₁ c₂ (differ-IFLT a₁ a₂ b₁ b₂ c₃ c₄ d₁ d₂ diff diff₁ diff₂ diff₃) g0 s hv pd | inj₁ (n , p) | inj₂ q with step⊎ b₁ w1
 ... | inj₁ (b₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
   IFLT (NUM n) (fst ind) c₃ d₁ ,
   IFLT (NUM n) (fst (snd ind)) c₄ d₂ ,
@@ -384,9 +449,9 @@ differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(IFLT a₁ b₁ c₃ d₁) .(IFLT a�
   where
     ind : Σ Term (λ a'' → Σ Term (λ b'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
             b₁' ⇓ a'' from w1'' to w3 × b₂ ⇓ b'' from w1' to w3' × differ name1 name2 f a'' b'' × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
-    ind = differ⇓-aux2 f cf name1 name2 w1 w1'' w1' b₁ b₂ b₁' k c₁ c₂ diff₁ g0 z (hasValue-IFLT-NUM→ n b₁' c₃ d₁ w1'' {k} hv) pd
+    ind = differ⇓-aux2 f cf nnf name1 name2 w1 w1'' w1' b₁ b₂ b₁' k agtn c₁ c₂ diff₁ g0 z (hasValue-IFLT-NUM→ n b₁' c₃ d₁ w1'' {k} hv) pd
 ... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(IFLT a₁ b₁ c₃ d₁) .(IFLT a₂ b₂ c₄ d₂) a' k c₁ c₂ (differ-IFLT a₁ a₂ b₁ b₂ c₃ c₄ d₁ d₂ diff diff₁ diff₂ diff₃) g0 s hv pd | inj₂ p with step⊎ a₁ w1
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(IFLT a₁ b₁ c₃ d₁) .(IFLT a₂ b₂ c₄ d₂) a' k agtn c₁ c₂ (differ-IFLT a₁ a₂ b₁ b₂ c₃ c₄ d₁ d₂ diff diff₁ diff₂ diff₃) g0 s hv pd | inj₂ p with step⊎ a₁ w1
 ... | inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
   IFLT (fst ind) b₁ c₃ d₁ ,
   IFLT (fst (snd ind)) b₂ c₄ d₂ ,
@@ -399,13 +464,13 @@ differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(IFLT a₁ b₁ c₃ d₁) .(IFLT a�
   where
     ind : Σ Term (λ a'' → Σ Term (λ b'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
             a₁' ⇓ a'' from w1'' to w3 × a₂ ⇓ b'' from w1' to w3' × differ name1 name2 f a'' b'' × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
-    ind = differ⇓-aux2 f cf name1 name2 w1 w1'' w1' a₁ a₂ a₁' k c₁ c₂ diff g0 z (hasValue-IFLT→ a₁' b₁ c₃ d₁ w1'' {k} hv) pd
+    ind = differ⇓-aux2 f cf nnf name1 name2 w1 w1'' w1' a₁ a₂ a₁' k agtn c₁ c₂ diff g0 z (hasValue-IFLT→ a₁' b₁ c₃ d₁ w1'' {k} hv) pd
 ... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
 -- PI
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(PI a₁ b₁) .(PI a₂ b₂) a' k c₁ c₂ (differ-PI a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = PI a₁ b₁ , PI a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-PI _ _ _ _ diff diff₁ , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(LAMBDA a) .(LAMBDA b) a' k c₁ c₂ (differ-LAMBDA a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = LAMBDA a , LAMBDA b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-LAMBDA _ _ diff , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(PI a₁ b₁) .(PI a₂ b₂) a' k agtn c₁ c₂ (differ-PI a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = PI a₁ b₁ , PI a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-PI _ _ _ _ diff diff₁ , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(LAMBDA a) .(LAMBDA b) a' k agtn c₁ c₂ (differ-LAMBDA a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = LAMBDA a , LAMBDA b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-LAMBDA _ _ diff , g0
 -- APPLY
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(APPLY a₁ b₁) .(APPLY a₂ b₂) a' k c₁ c₂ (differ-APPLY a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd with is-LAM a₁
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(APPLY a₁ b₁) .(APPLY a₂ b₂) a' k agtn c₁ c₂ (differ-APPLY a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd with is-LAM a₁
 ... | inj₁ (t , p) rewrite p | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = concl d
   where
     d : Σ Term (λ g' → a₂ ≡ LAMBDA g' × differ name1 name2 f t g') ⊎ (t ≡ updBody name1 f × a₂ ≡ upd name2 f)
@@ -421,16 +486,20 @@ differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(APPLY a₁ b₁) .(APPLY a₂ b₂) 
       ⇓from-to-refl _ _ , APPLY-LAMBDA⇓ w1' g' b₂ ,
       differ-sub cf e₂ diff₁ ,
       g0
-    concl (inj₂ (e₁ , e₂)) rewrite e₁ | e₂ | sub-upd name1 f b₁ cf = {!!}
+    concl (inj₂ (e₁ , e₂)) rewrite e₁ | e₂ | sub-upd name1 f b₁ cf =
+      fst hv1 , fst hv1 , fst (snd hv1) , fst hv2 , (k , fst (snd (snd hv1))) , fst (snd hv2) , differ-refl name1 name2 f (fst hv1) (snd (snd (snd hv2))) , fst (snd (snd hv2))
       where
         hv0 : hasValueℕ k (sub b₁ (updBody name1 f)) w1
         hv0 rewrite e₁ = hv
 
         hv1 : hasValueℕ k (LET b₁ (SEQ (updGt name1 (VAR 0)) (APPLY f (VAR 0)))) w1
         hv1 rewrite sym (sub-upd name1 f b₁ cf) = hv0
+
+        hv2 : Σ 𝕎· (λ w2' → APPLY (upd name2 f) b₂ ⇓ fst hv1 from w1' to w2' × getT 0 name1 (fst (snd hv1)) ≡ getT 0 name2 w2' × ¬Names (fst hv1))
+        hv2 = upd⇓names k f name1 name2 w1 w1' (fst (snd hv1)) b₁ b₂ (fst hv1) cf nnf agtn c₁ c₂ (snd (snd (snd hv1))) pd g0 diff₁ (fst (snd (snd hv1)))
 ... | inj₂ x with is-CS a₁
 ... |    inj₁ (name , p) rewrite p = ⊥-elim (differ-CSₗ→ diff)
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(APPLY a₁ b₁) .(APPLY a₂ b₂) a' k c₁ c₂ (differ-APPLY a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd | inj₂ x | inj₂ name with step⊎ a₁ w1
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(APPLY a₁ b₁) .(APPLY a₂ b₂) a' k agtn c₁ c₂ (differ-APPLY a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd | inj₂ x | inj₂ name with step⊎ a₁ w1
 ... | inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
   APPLY (fst ind) b₁ ,
   APPLY (fst (snd ind)) b₂ ,
@@ -443,10 +512,10 @@ differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(APPLY a₁ b₁) .(APPLY a₂ b₂) 
   where
     ind : Σ Term (λ a'' → Σ Term (λ b'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
             a₁' ⇓ a'' from w1'' to w3 × a₂ ⇓ b'' from w1' to w3' × differ name1 name2 f a'' b'' × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
-    ind = differ⇓-aux2 f cf name1 name2 w1 w1'' w1' a₁ a₂ a₁' k c₁ c₂ diff g0 z (hasValue-APPLY→ a₁' b₁ w1'' {k} hv) pd
+    ind = differ⇓-aux2 f cf nnf name1 name2 w1 w1'' w1' a₁ a₂ a₁' k agtn c₁ c₂ diff g0 z (hasValue-APPLY→ a₁' b₁ w1'' {k} hv) pd
 ... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
 -- FIX
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(FIX a) .(FIX b) a' k c₁ c₂ (differ-FIX a b diff) g0 s hv pd with is-LAM a
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(FIX a) .(FIX b) a' k agtn c₁ c₂ (differ-FIX a b diff) g0 s hv pd with is-LAM a
 ... | inj₁ (t , p) rewrite p | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = concl d --ret (sub (FIX (LAMBDA t)) t) w
   where
     d : Σ Term (λ g' → b ≡ LAMBDA g' × differ name1 name2 f t g') ⊎ (t ≡ updBody name1 f × b ≡ upd name2 f)
@@ -463,7 +532,24 @@ differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(FIX a) .(FIX b) a' k c₁ c₂ (diff
       FIX-LAMBDA⇓ w1' g' ,
       differ-sub cf e₂ (differ-FIX _ _ (differ-LAMBDA _ _ e₂)) ,
       g0
-    concl (inj₂ (e₁ , e₂)) rewrite e₁ | e₂ = {!!}
+    concl (inj₂ (e₁ , e₂)) rewrite e₁ | e₂ | sub-upd name1 f (FIX (upd name1 f)) cf =
+      fst hv1 , fst hv1 , fst (snd hv1) , fst hv2 , (k , fst (snd (snd hv1))) , (⇓-trans₂ (FIX-LAMBDA⇓ w1' (updBody name2 f)) cs) , differ-refl name1 name2 f (fst hv1) (snd (snd (snd hv2))) , fst (snd (snd hv2))
+--  (fst (snd hv2))
+      where
+        hv0 : hasValueℕ k (sub (FIX (upd name1 f)) (updBody name1 f)) w1
+        hv0 rewrite e₁ = hv
+
+        hv1 : hasValueℕ k (LET (FIX (upd name1 f)) (SEQ (updGt name1 (VAR 0)) (APPLY f (VAR 0)))) w1
+        hv1 rewrite sym (sub-upd name1 f (FIX (upd name1 f)) cf) = hv0
+
+        df : differ name1 name2 f (FIX (upd name1 f)) (FIX (upd name2 f))
+        df = differ-FIX _ _ differ-upd
+
+        hv2 : Σ 𝕎· (λ w2' → APPLY (upd name2 f) (FIX (upd name2 f)) ⇓ fst hv1 from w1' to w2' × getT 0 name1 (fst (snd hv1)) ≡ getT 0 name2 w2' × ¬Names (fst hv1))
+        hv2 = upd⇓names k f name1 name2 w1 w1' (fst (snd hv1)) (FIX (upd name1 f)) (FIX (upd name2 f)) (fst hv1) cf nnf agtn c₁ c₂ (snd (snd (snd hv1))) pd g0 df (fst (snd (snd hv1)))
+
+        cs : sub (FIX (upd name2 f)) (updBody name2 f) ⇓ fst hv1 from w1' to (fst hv2)
+        cs = APPLY-LAMBDA⇓→ (fst (fst (snd hv2))) (snd (snd (snd hv1))) (snd (fst (snd hv2)))
 ... | inj₂ x with step⊎ a w1
 ... |    inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
   FIX (fst ind) ,
@@ -477,10 +563,10 @@ differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(FIX a) .(FIX b) a' k c₁ c₂ (diff
   where
     ind : Σ Term (λ a'' → Σ Term (λ b'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
             a₁' ⇓ a'' from w1'' to w3 × b ⇓ b'' from w1' to w3' × differ name1 name2 f a'' b'' × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
-    ind = differ⇓-aux2 f cf name1 name2 w1 w1'' w1' a b a₁' k c₁ c₂ diff g0 z (hasValue-FIX→ a₁' w1'' {k} hv) pd
+    ind = differ⇓-aux2 f cf nnf name1 name2 w1 w1'' w1' a b a₁' k agtn c₁ c₂ diff g0 z (hasValue-FIX→ a₁' w1'' {k} hv) pd
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
 -- LET
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(LET a₁ b₁) .(LET a₂ b₂) a' k c₁ c₂ (differ-LET a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd with isValue⊎ a₁
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(LET a₁ b₁) .(LET a₂ b₂) a' k agtn c₁ c₂ (differ-LET a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd with isValue⊎ a₁
 ... | inj₁ x rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
   sub a₁ b₁ , sub a₂ b₂ , w1 , w1' ,
   ⇓from-to-refl _ _ , LET-val⇓ w1' a₂ b₂ isv , differ-sub cf diff₁ diff , g0
@@ -500,14 +586,14 @@ differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(LET a₁ b₁) .(LET a₂ b₂) a' k
   where
     ind : Σ Term (λ a'' → Σ Term (λ b'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
             a₁' ⇓ a'' from w1'' to w3 × a₂ ⇓ b'' from w1' to w3' × differ name1 name2 f a'' b'' × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
-    ind = differ⇓-aux2 f cf name1 name2 w1 w1'' w1' a₁ a₂ a₁' k c₁ c₂ diff g0 z (hasValue-LET→ a₁' b₁ w1'' {k} hv) pd
+    ind = differ⇓-aux2 f cf nnf name1 name2 w1 w1'' w1' a₁ a₂ a₁' k agtn c₁ c₂ diff g0 z (hasValue-LET→ a₁' b₁ w1'' {k} hv) pd
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
 -- SUM
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(SUM a₁ b₁) .(SUM a₂ b₂) a' k c₁ c₂ (differ-SUM a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = SUM a₁ b₁ , SUM a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-SUM _ _ _ _ diff diff₁ , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(SUM a₁ b₁) .(SUM a₂ b₂) a' k agtn c₁ c₂ (differ-SUM a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = SUM a₁ b₁ , SUM a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-SUM _ _ _ _ diff diff₁ , g0
 -- PAIR
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(PAIR a₁ b₁) .(PAIR a₂ b₂) a' k c₁ c₂ (differ-PAIR a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = PAIR a₁ b₁ , PAIR a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-PAIR _ _ _ _ diff diff₁ , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(PAIR a₁ b₁) .(PAIR a₂ b₂) a' k agtn c₁ c₂ (differ-PAIR a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = PAIR a₁ b₁ , PAIR a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-PAIR _ _ _ _ diff diff₁ , g0
 -- SPREAD
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(SPREAD a₁ b₁) .(SPREAD a₂ b₂) a' k c₁ c₂ (differ-SPREAD a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd with is-PAIR a₁
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(SPREAD a₁ b₁) .(SPREAD a₂ b₂) a' k agtn c₁ c₂ (differ-SPREAD a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd with is-PAIR a₁
 ... | inj₁ (u , v , p) rewrite p | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
   concl d
   where
@@ -536,17 +622,17 @@ differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(SPREAD a₁ b₁) .(SPREAD a₂ b₂
   where
     ind : Σ Term (λ a'' → Σ Term (λ b'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
             a₁' ⇓ a'' from w1'' to w3 × a₂ ⇓ b'' from w1' to w3' × differ name1 name2 f a'' b'' × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
-    ind = differ⇓-aux2 f cf name1 name2 w1 w1'' w1' a₁ a₂ a₁' k c₁ c₂ diff g0 z (hasValue-SPREAD→ a₁' b₁ w1'' {k} hv) pd
+    ind = differ⇓-aux2 f cf nnf name1 name2 w1 w1'' w1' a₁ a₂ a₁' k agtn c₁ c₂ diff g0 z (hasValue-SPREAD→ a₁' b₁ w1'' {k} hv) pd
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
 -- SET
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(SET a₁ b₁) .(SET a₂ b₂) a' k c₁ c₂ (differ-SET a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = SET a₁ b₁ , SET a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-SET _ _ _ _ diff diff₁ , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(TUNION a₁ b₁) .(TUNION a₂ b₂) a' k c₁ c₂ (differ-TUNION a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TUNION a₁ b₁ , TUNION a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TUNION _ _ _ _ diff diff₁ , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(UNION a₁ b₁) .(UNION a₂ b₂) a' k c₁ c₂ (differ-UNION a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = UNION a₁ b₁ , UNION a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-UNION _ _ _ _ diff diff₁ , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(QTUNION a₁ b₁) .(QTUNION a₂ b₂) a' k c₁ c₂ (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = QTUNION a₁ b₁ , QTUNION a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-QTUNION _ _ _ _ diff diff₁ , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(INL a) .(INL b) a' k c₁ c₂ (differ-INL a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = INL a , INL b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-INL _ _ diff , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(INR a) .(INR b) a' k c₁ c₂ (differ-INR a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = INR a , INR b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-INR _ _ diff , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(SET a₁ b₁) .(SET a₂ b₂) a' k agtn c₁ c₂ (differ-SET a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = SET a₁ b₁ , SET a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-SET _ _ _ _ diff diff₁ , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(TUNION a₁ b₁) .(TUNION a₂ b₂) a' k agtn c₁ c₂ (differ-TUNION a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TUNION a₁ b₁ , TUNION a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TUNION _ _ _ _ diff diff₁ , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(UNION a₁ b₁) .(UNION a₂ b₂) a' k agtn c₁ c₂ (differ-UNION a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = UNION a₁ b₁ , UNION a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-UNION _ _ _ _ diff diff₁ , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(QTUNION a₁ b₁) .(QTUNION a₂ b₂) a' k agtn c₁ c₂ (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = QTUNION a₁ b₁ , QTUNION a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-QTUNION _ _ _ _ diff diff₁ , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(INL a) .(INL b) a' k agtn c₁ c₂ (differ-INL a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = INL a , INL b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-INL _ _ diff , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(INR a) .(INR b) a' k agtn c₁ c₂ (differ-INR a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = INR a , INR b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-INR _ _ diff , g0
 -- DECIDE
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(DECIDE a₁ b₁ c₃) .(DECIDE a₂ b₂ c₄) a' k c₁ c₂ (differ-DECIDE a₁ a₂ b₁ b₂ c₃ c₄ diff diff₁ diff₂) g0 s hv pd with is-INL a₁
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(DECIDE a₁ b₁ c₃) .(DECIDE a₂ b₂ c₄) a' k agtn c₁ c₂ (differ-DECIDE a₁ a₂ b₁ b₂ c₃ c₄ diff diff₁ diff₂) g0 s hv pd with is-INL a₁
 ... | inj₁ (u , p) rewrite p | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
   concl d
   where
@@ -591,14 +677,14 @@ differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(DECIDE a₁ b₁ c₃) .(DECIDE a₂
   where
     ind : Σ Term (λ a'' → Σ Term (λ b'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
             a₁' ⇓ a'' from w1'' to w3 × a₂ ⇓ b'' from w1' to w3' × differ name1 name2 f a'' b'' × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
-    ind = differ⇓-aux2 f cf name1 name2 w1 w1'' w1' a₁ a₂ a₁' k c₁ c₂ diff g0 z (hasValue-DECIDE→ a₁' b₁ c₃ w1'' {k} hv) pd
+    ind = differ⇓-aux2 f cf nnf name1 name2 w1 w1'' w1' a₁ a₂ a₁' k agtn c₁ c₂ diff g0 z (hasValue-DECIDE→ a₁' b₁ c₃ w1'' {k} hv) pd
 ... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
 -- EQ
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(EQ a₁ b₁ c₃) .(EQ a₂ b₂ c₄) a' k c₁ c₂ (differ-EQ a₁ a₂ b₁ b₂ c₃ c₄ diff diff₁ diff₂) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = EQ a₁ b₁ c₃ , EQ a₂ b₂ c₄ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-EQ _ _ _ _ _ _ diff diff₁ diff₂ , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .AX .AX a' k c₁ c₂ differ-AX g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = AX , AX , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-AX , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .FREE .FREE a' k c₁ c₂ differ-FREE g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = FREE , FREE , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-FREE , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(EQ a₁ b₁ c₃) .(EQ a₂ b₂ c₄) a' k agtn c₁ c₂ (differ-EQ a₁ a₂ b₁ b₂ c₃ c₄ diff diff₁ diff₂) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = EQ a₁ b₁ c₃ , EQ a₂ b₂ c₄ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-EQ _ _ _ _ _ _ diff diff₁ diff₂ , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .AX .AX a' k agtn c₁ c₂ differ-AX g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = AX , AX , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-AX , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .FREE .FREE a' k agtn c₁ c₂ differ-FREE g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = FREE , FREE , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-FREE , g0
 -- CHOOSE
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(CHOOSE a₁ b₁) .(CHOOSE a₂ b₂) a' k c₁ c₂ (differ-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd with is-NAME a₁
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(CHOOSE a₁ b₁) .(CHOOSE a₂ b₂) a' k agtn c₁ c₂ (differ-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd with is-NAME a₁
 ... | inj₁ (name , p) rewrite p = ⊥-elim (differ-NAMEₗ→ diff)
 ... | inj₂ x with step⊎ a₁ w1
 ... |    inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
@@ -613,22 +699,24 @@ differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(CHOOSE a₁ b₁) .(CHOOSE a₂ b₂
   where
     ind : Σ Term (λ a'' → Σ Term (λ b'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
             a₁' ⇓ a'' from w1'' to w3 × a₂ ⇓ b'' from w1' to w3' × differ name1 name2 f a'' b'' × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
-    ind = differ⇓-aux2 f cf name1 name2 w1 w1'' w1' a₁ a₂ a₁' k c₁ c₂ diff g0 z (hasValue-CHOOSE→ a₁' b₁ w1'' {k} hv) pd
+    ind = differ⇓-aux2 f cf nnf name1 name2 w1 w1'' w1' a₁ a₂ a₁' k agtn c₁ c₂ diff g0 z (hasValue-CHOOSE→ a₁' b₁ w1'' {k} hv) pd
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
 -- IFC0
---differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(IFC0 a₁ b₁ c₃) .(IFC0 a₂ b₂ c₄) a' k c₁ c₂ (differ-IFC0 a₁ a₂ b₁ b₂ c₃ c₄ diff diff₁ diff₂) g0 s hv pd = {!!}
+--differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(IFC0 a₁ b₁ c₃) .(IFC0 a₂ b₂ c₄) a' k agtn c₁ c₂ (differ-IFC0 a₁ a₂ b₁ b₂ c₃ c₄ diff diff₁ diff₂) g0 s hv pd = {!!}
 -- TSQUASH
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(TSQUASH a) .(TSQUASH b) a' k c₁ c₂ (differ-TSQUASH a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TSQUASH a , TSQUASH b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TSQUASH _ _ diff , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(TTRUNC a) .(TTRUNC b) a' k c₁ c₂ (differ-TTRUNC a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TTRUNC a , TTRUNC b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TTRUNC _ _ diff , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(TCONST a) .(TCONST b) a' k c₁ c₂ (differ-TCONST a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TCONST a , TCONST b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TCONST _ _ diff , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(SUBSING a) .(SUBSING b) a' k c₁ c₂ (differ-SUBSING a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = SUBSING a , SUBSING b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-SUBSING _ _ diff , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(DUM a) .(DUM b) a' k c₁ c₂ (differ-DUM a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = DUM a , DUM b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-DUM _ _ diff , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(FFDEFS a₁ b₁) .(FFDEFS a₂ b₂) a' k c₁ c₂ (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = FFDEFS a₁ b₁ , FFDEFS a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-FFDEFS _ _ _ _ diff diff₁ , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(UNIV x) .(UNIV x) a' k c₁ c₂ (differ-UNIV x) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = UNIV x , UNIV x , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-UNIV x , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(LIFT a) .(LIFT b) a' k c₁ c₂ (differ-LIFT a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = LIFT a , LIFT b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-LIFT _ _ diff , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(LOWER a) .(LOWER b) a' k c₁ c₂ (differ-LOWER a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = LOWER a , LOWER b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-LOWER _ _ diff , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(SHRINK a) .(SHRINK b) a' k c₁ c₂ (differ-SHRINK a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = SHRINK a , SHRINK b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-SHRINK _ _ diff , g0
-differ⇓-aux2 f cf name1 name2 w1 w2 w1' .(upd name1 f) .(upd name2 f) a' k c₁ c₂ differ-upd g0 s hv pd = {!!}
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(TSQUASH a) .(TSQUASH b) a' k agtn c₁ c₂ (differ-TSQUASH a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TSQUASH a , TSQUASH b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TSQUASH _ _ diff , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(TTRUNC a) .(TTRUNC b) a' k agtn c₁ c₂ (differ-TTRUNC a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TTRUNC a , TTRUNC b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TTRUNC _ _ diff , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(TCONST a) .(TCONST b) a' k agtn c₁ c₂ (differ-TCONST a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TCONST a , TCONST b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TCONST _ _ diff , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(SUBSING a) .(SUBSING b) a' k agtn c₁ c₂ (differ-SUBSING a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = SUBSING a , SUBSING b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-SUBSING _ _ diff , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(DUM a) .(DUM b) a' k agtn c₁ c₂ (differ-DUM a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = DUM a , DUM b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-DUM _ _ diff , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(FFDEFS a₁ b₁) .(FFDEFS a₂ b₂) a' k agtn c₁ c₂ (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = FFDEFS a₁ b₁ , FFDEFS a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-FFDEFS _ _ _ _ diff diff₁ , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(UNIV x) .(UNIV x) a' k agtn c₁ c₂ (differ-UNIV x) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = UNIV x , UNIV x , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-UNIV x , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(LIFT a) .(LIFT b) a' k agtn c₁ c₂ (differ-LIFT a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = LIFT a , LIFT b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-LIFT _ _ diff , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(LOWER a) .(LOWER b) a' k agtn c₁ c₂ (differ-LOWER a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = LOWER a , LOWER b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-LOWER _ _ diff , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(SHRINK a) .(SHRINK b) a' k agtn c₁ c₂ (differ-SHRINK a b diff) g0 s hv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = SHRINK a , SHRINK b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-SHRINK _ _ diff , g0
+differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' .(upd name1 f) .(upd name2 f) a' k agtn c₁ c₂ differ-upd g0 s hv pd
+  rewrite stepVal (upd name1 f) w1 tt | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
+  upd name1 f , upd name2 f , w1 , w1' , (0 , refl) , (0 , refl) , differ-upd , g0
 
 
 
