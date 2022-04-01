@@ -360,20 +360,6 @@ sub-upd name f a cf
         | #shiftDown 2 (ct f cf) = refl
 
 
-⇓PresDiff : (f : Term) (name1 name2 : Name) (n : ℕ) → Set(lsuc(L))
-⇓PresDiff f name1 name2 n =
-  (w1 w2 w1' : 𝕎·) (a b v : Term)
-  → isValue v
-  → ∀𝕎 w1 (λ w' _ → (m : ℕ) → ∈ℕ w' (APPLY f (NUM m)))
-  → ∀𝕎 w1' (λ w' _ → (m : ℕ) → ∈ℕ w' (APPLY f (NUM m)))
-  → differ name1 name2 f a b
-  → getT 0 name1 w1 ≡ getT 0 name2 w1'
-  → steps n (a , w1) ≡ (v , w2)
-  → Σ 𝕎· (λ w2' → Σ Term (λ v' →
-      b ⇓ v' from w1' to w2' × differ name1 name2 f v v' × getT 0 name1 w2 ≡ getT 0 name2 w2'))
-
-
-
 sub-SEQ-updGt : (u : Term) (name : Name) (f : Term) (cf : # f)
                 → sub u (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))
                    ≡ LET (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u))))
