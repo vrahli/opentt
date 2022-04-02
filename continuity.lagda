@@ -115,14 +115,20 @@ set : (name : Name) → Term
 set name = CHOOSE (NAME name) (ℂ→T ℂ₀·)
 
 
+-- Assuming that choices are numbers
+--IFC0 : Term → Term → Term → Term
+--IFC0 a b c = IFLT (get0 name) (NUM 1)
+
+
+
 probe : (name : Name) (F : Term) (n : Term) (f : Term) → Term
 probe name F n f = LET (APPLY F (bound name n f))
-                       (IFC0 (APPLY (CS name) (NUM 0)) (INL (VAR 0)) (INR AX)) -- We check whether 'name' contains ℂ₀
+                       (IFLT (get0 name) (NUM 1) (INL (VAR 0)) (INR AX)) -- We check whether 'name' contains 0 (i.e., < 1 -- we assume here that choices are numbers)
 
 
 oldtest : (name : Name) (F : Term) (n : Term) (f : Term) → Term
 oldtest name F n f = LET (APPLY F (bound name n f))
-                         (LET (IFC0 (APPLY (CS name) (NUM 0)) (INL (VAR 0)) (INR AX)) -- We check whether 'name' contains ℂ₀
+                         (LET (IFLT (get0 name) (NUM 1) (INL (VAR 0)) (INR AX)) -- We check whether 'name' contains ℂ₀
                               (SEQ (set name) -- resets the reference to ℂ₀
                                    (VAR 0)))
 
@@ -639,11 +645,14 @@ sub-LE a b c = refl
 →sub-APPLY {a} {b} {c} {b'} {c'} eb ec rewrite sym eb | sym ec = sub-APPLY a b c
 
 
+{--
 sub-IFC0 : (a b c d : Term)
            → sub a (IFC0 b c d) ≡ IFC0 (sub a b) (sub a c) (sub a d)
 sub-IFC0 a b c d = refl
+--}
 
 
+{--
 →sub-IFC0 : {a b c d b' c' d' : Term}
                 → sub a b ≡ b'
                 → sub a c ≡ c'
@@ -652,6 +661,7 @@ sub-IFC0 a b c d = refl
 →sub-IFC0 {a} {b} {c} {d} {b'} {c'} {d'} eb ec ed
   rewrite sym eb | sym ec | sym ed =
   refl
+--}
 
 
 #⇛!-#APPLY-#BOUND : (w : 𝕎·) (name : Name) (n : CTerm) (f : CTerm) (a : CTerm)
@@ -1165,8 +1175,8 @@ isValue→LET⇛ {v} {t} {w} isv w1 e1 = lift (⇓-from-to→⇓ {w1} {w1} {LET 
 
 
 sub-num-probe-body : {m : ℕ} {name : Name}
-                     → sub (NUM m) (IFC0 (APPLY (CS name) (NUM 0)) (INL (VAR 0)) (INR AX))
-                        ≡ IFC0 (APPLY (CS name) (NUM 0)) (INL (NUM m)) (INR AX)
+                     → sub (NUM m) (IFLT (get0 name) (NUM 1) (INL (VAR 0)) (INR AX))
+                        ≡ IFLT (get0 name) (NUM 1) (INL (NUM m)) (INR AX)
 sub-num-probe-body {m} {name} = refl
 
 
@@ -1178,6 +1188,7 @@ sub-num-probe-body {m} {name} = refl
 
 
 
+{--
 IFC0-steps₁ : {k : ℕ} {w w' : 𝕎·} {a b t u : Term}
               → steps k (a , w) ≡ (b , w')
               → Σ ℕ (λ k → steps k (IFC0 a t u , w) ≡ (IFC0 b t u , w'))
@@ -1198,6 +1209,7 @@ IFC0⇓₁ : {w w' : 𝕎·} {a b t u : Term}
          → a ⇓ b from w to w'
          → IFC0 a t u ⇓ IFC0 b t u from w to w'
 IFC0⇓₁ {w} {w'} {a} {b} {t} {u} (k , comp) = IFC0-steps₁ {k} {w} {w'} {a} {b} {t} {u} comp
+--}
 
 
 getChoice→getT : {n : ℕ} {name : Name} {w : 𝕎·} {c : ℂ·}
@@ -1207,6 +1219,7 @@ getChoice→getT {n} {name} {w} {c} getc rewrite getc = refl
 
 
 
+{--
 IFC0-ℂ₀⇓from-to : {a b : Term} {w : 𝕎·}
                   → IFC0 ⌜ Cℂ₀ ⌝ a b ⇓ a from w to w
 IFC0-ℂ₀⇓from-to {a} {b} {w} = 1 , c
@@ -1217,6 +1230,7 @@ IFC0-ℂ₀⇓from-to {a} {b} {w} = 1 , c
     ... |    inj₁ y = refl
     ... |    inj₂ y = ⊥-elim (y ℂ₉→T→ℂ₀·)
     c | inj₂ x = ⊥-elim (x isValueℂ₀·)
+--}
 
 
 ≡ℂ→≡ℂ→C : {a b : ℂ·}
@@ -1225,6 +1239,7 @@ IFC0-ℂ₀⇓from-to {a} {b} {w} = 1 , c
 ≡ℂ→≡ℂ→C {a} {b} e rewrite e = refl
 
 
+{--
 IFC0-ℂ₁⇓from-to : {a b : Term} {w : 𝕎·}
                   → IFC0 ⌜ Cℂ₁ ⌝ a b ⇓ b from w to w
 IFC0-ℂ₁⇓from-to {a} {b} {w} = 1 , c
@@ -1237,8 +1252,10 @@ IFC0-ℂ₁⇓from-to {a} {b} {w} = 1 , c
                                                                           (≡R→∼C! {w} {Cℂ₁} {Cℂ₁} {_} (≡ℂ→≡ℂ→C (sym ℂ₁→T→ℂ₁·)) (∼C!-refl {w} {Cℂ₁}))))) --refl
     ... |    inj₂ y = refl --⊥-elim (y ℂ₉→T→ℂ₀·)
     c | inj₂ x = ⊥-elim (x isValueℂ₁·)
+--}
 
 
+{--
 probeℂ₀⇓ : {F n f : Term} {name : Name} {m : ℕ} {w1 w2 : 𝕎·}
            → APPLY F (bound name n f) ⇓ NUM m from w1 to w2
            → getChoice· 0 name w2 ≡ just ℂ₀·
@@ -1249,9 +1266,10 @@ probeℂ₀⇓ {F} {n} {f} {name} {m} {w1} {w2} comp1 comp2 =
                      (≡ₗ→⇓from-to (sym sub-num-probe-body)
                                   (⇓-trans₂ (IFC0⇓₁ (Σ-steps-APPLY-CS 0 (NUM 0) Tℂ₀ w2 w2 0 name refl (getChoice→getT comp2)))
                                             IFC0-ℂ₀⇓from-to)))
+--}
 
 
-
+{--
 probeℂ₁⇓ : {F n f : Term} {name : Name} {m : ℕ} {w1 w2 : 𝕎·}
            → APPLY F (bound name n f) ⇓ NUM m from w1 to w2
            → getChoice· 0 name w2 ≡ just ℂ₁·
@@ -1262,9 +1280,11 @@ probeℂ₁⇓ {F} {n} {f} {name} {m} {w1} {w2} comp1 comp2 =
                      (≡ₗ→⇓from-to (sym sub-num-probe-body)
                                   (⇓-trans₂ (IFC0⇓₁ (Σ-steps-APPLY-CS 0 (NUM 0) Tℂ₁ w2 w2 0 name refl (getChoice→getT comp2)))
                                             IFC0-ℂ₁⇓from-to)))
+--}
 
 
 
+{--
 -- To prove this with UNION instead of QTUNION, we would have to assume ¬read of 'F', 'n', and 'f', so that 'test' computes
 -- to the same value in all extensions of the current world
 -- We also have to assume that 'F', 'n', and 'f' do not write to name
@@ -1355,6 +1375,8 @@ test∈ i w F name n f compat ∈F ∈n ∈f =
                              (⇓-trans₂ {w2} {w2} {w3} {_} {⌜ #probe name F n f ⌝} {_}
                                        (SEQ-AX⇓₁from-to (CTerm.closed (#probe name F n f)))
                                        comp3)
+--}
+
 
 -- Prove this for the current world, and show that if F and f cannot read then this is true for all extensions too
 

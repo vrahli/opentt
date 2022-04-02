@@ -770,19 +770,92 @@ differ⇓-aux2 f cf nnf name1 name2 w1 w2 w1' w0 .(upd name1 f) .(upd name2 f) a
   upd name1 f , upd name2 f , w1 , w1' , (0 , refl) , (0 , refl) , differ-upd , g0
 
 
+steps-val-suc : (k : ℕ) (a v : Term) (w1 w2 : 𝕎·)
+                → isValue v
+                → steps k (a , w1) ≡ (v , w2)
+                → steps (suc k) (a , w1) ≡ (v , w2)
+steps-val-suc 0 a v w1 w2 isv s
+  rewrite sym (pair-inj₁ s)
+        | sym (pair-inj₂ s) = stepsVal a w1 1 isv
+steps-val-suc (suc k) a v w1 w2 isv s with step⊎ a w1
+... | inj₁ (a' , w1' , z) rewrite z = steps-val-suc k a' v w1' w2 isv s
+... | inj₂ z rewrite z = s
 
-differ⇓-aux : (f : Term) (name1 name2 : Name) (n : ℕ)
+
+steps⇓-decomp : (k k' : ℕ) (a b v : Term) (w1 w2 w3 : 𝕎·)
+                → steps k (a , w1) ≡ (v , w2)
+                → steps k' (a , w1) ≡ (b , w3)
+                → isValue v
+                → steps k (b , w3) ≡ (v , w2)
+steps⇓-decomp 0 k' a b v w1 w2 w3 s comp isv
+  rewrite sym (pair-inj₁ s)
+        | sym (pair-inj₂ s)
+        | stepsVal a w1 k' isv
+        | sym (pair-inj₁ comp)
+        | sym (pair-inj₂ comp) = refl
+steps⇓-decomp (suc k) 0 a b v w1 w2 w3 s comp isv
+  rewrite sym (pair-inj₁ comp)
+        | sym (pair-inj₂ comp) = s
+steps⇓-decomp (suc k) (suc k') a b v w1 w2 w3 s comp isv with step⊎ a w1
+... | inj₁ (a' , w1' , z)
+  rewrite z = steps-val-suc k b v w3 w2 isv c
+  where
+    c : steps k (b , w3) ≡ (v , w2)
+    c = steps⇓-decomp k k' a' b v w1' w2 w3 s comp isv
+... | inj₂ z
+  rewrite z
+        | sym (pair-inj₁ comp)
+        | sym (pair-inj₂ comp)
+        | sym (pair-inj₁ s)
+        | sym (pair-inj₂ s) = stepsVal a w1 (suc k) isv
+
+
+
+⇓→⊑ : (a b : Term) {w w' : 𝕎·} → a ⇓ b from w to w' → w ⊑· w'
+⇓→⊑ a b {w} {w'} (n , comp) = steps→⊑ n a b comp
+
+
+step→⇓ : {a b : Term} {w1 w2 : 𝕎·}
+              → step a w1 ≡ just (b , w2)
+              → a ⇓ b from w1 to w2
+step→⇓ {a} {b} {w1} {w2} comp = 1 , c
+  where
+    c : steps 1 (a , w1) ≡ (b , w2)
+    c rewrite comp = refl
+
+
+differ⇓-aux : (gc0 : getT0-chooseT) (f : Term) (cf : # f) (nn : ¬Names f) (name1 name2 : Name) (n : ℕ)
               (ind : (n' : ℕ) → n' < n → ⇓PresDiff f name1 name2 n')
               → ⇓PresDiff f name1 name2 n
-differ⇓-aux f name1 name2 0 ind w1 w2 w1' a b v isv gt0 diff g0 comp rewrite pair-inj₁ comp | pair-inj₂ comp =
+differ⇓-aux gc0 f cf nnf name1 name2 0 ind w1 w2 w1' a b v isv gt0 diff g0 comp rewrite pair-inj₁ comp | pair-inj₂ comp =
   w1' , b , (0 , refl) , diff , g0
-differ⇓-aux f name1 name2 (suc n) ind w1 w2 w1' a b v isv gt0 diff g0 comp with step⊎ a w1
-... | inj₁ (a' , w1'' , z) rewrite z = {!!}
+differ⇓-aux gc0 f cf nnf name1 name2 (suc n) ind w1 w2 w1' a b v isv gt0 diff g0 comp with step⊎ a w1
+... | inj₁ (a' , w1'' , z) rewrite z =
+  fst e , fst (snd e) , (⇓-trans₂ (fst (snd (snd (snd (snd (snd c)))))) (fst (snd (snd e)))) ,
+  fst (snd (snd (snd e))) , snd (snd (snd (snd e)))
+  where
+    c : Σ Term (λ a'' → Σ Term (λ b'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
+                   a' ⇓ a'' from w1'' to w3
+                   × b ⇓ b'' from w1' to w3'
+                   × differ name1 name2 f a'' b''
+                   × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
+    c = differ⇓-aux2 f cf nnf name1 name2 w1 w1'' w1' w2 a b a' v n gc0 gt0 diff g0 z comp isv λ k i → ind k (<-trans i (n<1+n n))
+
+    d : steps n (fst c , fst (snd (snd c))) ≡ (v , w2)
+    d = steps⇓-decomp
+          n (proj₁ (proj₁ (snd (snd (snd (snd c)))))) a'
+          (proj₁ c) v w1'' w2 (proj₁ (snd (snd c))) comp
+          (snd (fst (snd (snd (snd (snd c)))))) isv
+
+    e : Σ 𝕎· (λ w2' → Σ Term (λ v' →
+          fst (snd c) ⇓ v' from fst (snd (snd (snd c))) to w2' × differ name1 name2 f v v' × getT 0 name1 w2 ≡ getT 0 name2 w2'))
+    e = ind n ≤-refl (fst (snd (snd c))) w2 (fst (snd (snd (snd c)))) (fst c) (fst (snd c)) v isv
+            (∀𝕎-mon (⇓→⊑ a (proj₁ c) {w1} {proj₁ (snd (snd c))} (⇓-trans₂ (step→⇓ z) (fst (snd (snd (snd (snd c))))))) gt0) (fst (snd (snd (snd (snd (snd (snd c))))))) (snd (snd (snd (snd (snd (snd (snd c))))))) d
 ... | inj₂ z rewrite z | pair-inj₁ comp | pair-inj₂ comp = w1' , b , (0 , refl) , diff , g0
 
 
-differ⇓ : (f : Term) (name1 name2 : Name) (n : ℕ) → ⇓PresDiff f name1 name2 n
-differ⇓ f name1 name2 = <ℕind _ (differ⇓-aux f name1 name2)
+differ⇓ : (gc0 : getT0-chooseT) (f : Term) (cf : # f) (nn : ¬Names f) (name1 name2 : Name) (n : ℕ) → ⇓PresDiff f name1 name2 n
+differ⇓ gc0 f cf nnf name1 name2 = <ℕind _ (differ⇓-aux gc0 f cf nnf name1 name2)
 
 
 \end{code}
