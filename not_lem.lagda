@@ -598,38 +598,42 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     concl (inj₂ aw) = ¬∀𝕎¬equalInType-#Σchoice i w3 name k1 sat-ℂ₁ comp2 fb2 aw
 
 
+¬∈LEM : (w : 𝕎·) {n i : ℕ} (p : i < n) → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' (#LEM p) a₁ a₂)
+¬∈LEM w {n} {i} p w1 e1 a₁ a₂ ea = ¬-dec-Σchoice w1 i h1
+  where
+    aw1' : equalInType n w1 (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))) a₁ a₂
+    aw1' rewrite #LEM≡#PI p = ea
+
+    aw2 : ∀𝕎 w1 (λ w' _ → (u₁ u₂ : CTerm) → equalInType n w' (#UNIV i) u₁ u₂
+                         → equalInType n w' (#SQUASH (#UNION (#↑T p u₁) (#NEG (#↑T p u₁)))) (#APPLY a₁ u₁) (#APPLY a₂ u₂))
+    aw2 w' e' u₁ u₂ j = ≡CTerm→equalInType (sub0-#[0]SQUASH-LEM p u₁) (snd (snd (equalInType-PI→ aw1')) w' e' u₁ u₂ j)
+
+    -- instantiate using #Σchoice
+    name : Name
+    name = newChoice· w1
+
+    r : Res
+    r = Resℂ
+
+    w2 : 𝕎·
+    w2 = startChoice· name r w1
+
+    e2 : w1 ⊑· w2
+    e2 = startNewChoice⊏ r w1
+
+    k1 : ℂ·
+    k1 = ℂ₁· -- This has to be different from r's default value
+
+    h1 : equalInType i w2 (#SQUASH (#UNION (#Σchoice name k1) (#NEG (#Σchoice name k1)))) #AX #AX
+    h1 = equalInType-SQUASH-UNION-LIFT→ p (aw2 w2 e2 (#Σchoice name k1) (#Σchoice name k1) (equalInType-#Σchoice-UNIV p w2 name k1 (startNewChoiceCompatible r w1) Σsat-ℂ₁))
+
+
 
 ¬LEM : (w : 𝕎·) {n i : ℕ} (p : i < n) → member w (#NEG (#LEM p)) #lamAX
-¬LEM w {n} {i} p =
-  (n , equalInType-NEG (eqTypesLem w p) aw1)
-  where
-    aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' (#LEM p) a₁ a₂)
-    aw1 w1 e1 a₁ a₂ ea = ¬-dec-Σchoice w1 i h1
-      where
-        aw1' : equalInType n w1 (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))) a₁ a₂
-        aw1' rewrite #LEM≡#PI p = ea
+¬LEM w {n} {i} p = (n , equalInType-NEG (eqTypesLem w p) (¬∈LEM w p))
 
-        aw2 : ∀𝕎 w1 (λ w' _ → (u₁ u₂ : CTerm) → equalInType n w' (#UNIV i) u₁ u₂
-                             → equalInType n w' (#SQUASH (#UNION (#↑T p u₁) (#NEG (#↑T p u₁)))) (#APPLY a₁ u₁) (#APPLY a₂ u₂))
-        aw2 w' e' u₁ u₂ j = ≡CTerm→equalInType (sub0-#[0]SQUASH-LEM p u₁) (snd (snd (equalInType-PI→ aw1')) w' e' u₁ u₂ j)
 
-        -- instantiate using #Σchoice
-        name : Name
-        name = newChoice· w1
-
-        r : Res
-        r = Resℂ
-
-        w2 : 𝕎·
-        w2 = startChoice· name r w1
-
-        e2 : w1 ⊑· w2
-        e2 = startNewChoice⊏ r w1
-
-        k1 : ℂ·
-        k1 = ℂ₁· -- This has to be different from r's default value
-
-        h1 : equalInType i w2 (#SQUASH (#UNION (#Σchoice name k1) (#NEG (#Σchoice name k1)))) #AX #AX
-        h1 = equalInType-SQUASH-UNION-LIFT→ p (aw2 w2 e2 (#Σchoice name k1) (#Σchoice name k1) (equalInType-#Σchoice-UNIV p w2 name k1 (startNewChoiceCompatible r w1) Σsat-ℂ₁))
+∀¬LEM : (w : 𝕎·) {n i : ℕ} (p : i < n) → ¬ ∈Type n w (#LEM p) #AX
+∀¬LEM w {n} {i} p = ¬∈LEM w p w (⊑-refl· w) #AX #AX
 
 \end{code}[hide]

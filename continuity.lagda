@@ -1800,13 +1800,52 @@ differ-APPLY-upd name1 name2 F f nnF =
 
 
 
-νtestM-NAT : (nc : ℕℂ) (cn : comp→∀ℕ) (kb : K□) (gc : getT-chooseT) (i : ℕ) (w : 𝕎·) (F f : CTerm)
+¬Names→shiftNameUp≡ : (t : Term) (n : ℕ) → ¬names t ≡ true → shiftNameUp n t ≡ t
+¬Names→shiftNameUp≡ (VAR x) n nnt = refl
+¬Names→shiftNameUp≡ NAT n nnt = refl
+¬Names→shiftNameUp≡ QNAT n nnt = refl
+¬Names→shiftNameUp≡ (LT t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (QLT t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (NUM x) n nnt = refl
+¬Names→shiftNameUp≡ (IFLT t t₁ t₂ t₃) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→1-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→2-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nnt) | ¬Names→shiftNameUp≡ t₂ n (∧≡true→3-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nnt) | ¬Names→shiftNameUp≡ t₃ n (∧≡true→4-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nnt) = refl
+¬Names→shiftNameUp≡ (PI t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (LAMBDA t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+¬Names→shiftNameUp≡ (APPLY t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (FIX t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+¬Names→shiftNameUp≡ (LET t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (SUM t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (PAIR t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (SPREAD t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (SET t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (TUNION t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (UNION t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (QTUNION t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (INL t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+¬Names→shiftNameUp≡ (INR t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+¬Names→shiftNameUp≡ (DECIDE t t₁ t₂) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→1-3 {¬names t} {¬names t₁} {¬names t₂} nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→2-3 {¬names t} {¬names t₁} {¬names t₂} nnt) | ¬Names→shiftNameUp≡ t₂ n (∧≡true→3-3 {¬names t} {¬names t₁} {¬names t₂} nnt) = refl
+¬Names→shiftNameUp≡ (EQ t t₁ t₂) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→1-3 {¬names t} {¬names t₁} {¬names t₂} nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→2-3 {¬names t} {¬names t₁} {¬names t₂} nnt) | ¬Names→shiftNameUp≡ t₂ n (∧≡true→3-3 {¬names t} {¬names t₁} {¬names t₂} nnt) = refl
+¬Names→shiftNameUp≡ AX n nnt = refl
+¬Names→shiftNameUp≡ FREE n nnt = refl
+¬Names→shiftNameUp≡ (CHOOSE t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (TSQUASH t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+¬Names→shiftNameUp≡ (TTRUNC t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+¬Names→shiftNameUp≡ (TCONST t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+¬Names→shiftNameUp≡ (SUBSING t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+¬Names→shiftNameUp≡ (DUM t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+¬Names→shiftNameUp≡ (FFDEFS t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (UNIV x) n nnt = refl
+¬Names→shiftNameUp≡ (LIFT t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+¬Names→shiftNameUp≡ (LOWER t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+¬Names→shiftNameUp≡ (SHRINK t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+
+
+νtestM-NAT-shift : (nc : ℕℂ) (cn : comp→∀ℕ) (kb : K□) (gc : getT-chooseT) (i : ℕ) (w : 𝕎·) (F f : CTerm)
              → #¬Names F -- We require F to be pure
              → #¬Names f -- We require f to be pure
              → ∈Type i w #BAIRE→NAT F
              → ∈Type i w #BAIRE f
              → NATeq w (#νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f)) (#νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f))
-νtestM-NAT nc cn kb gc i w F f nnF nnf ∈F ∈f =
+νtestM-NAT-shift nc cn kb gc i w F f nnF nnf ∈F ∈f =
   k , ack , ack
   where
     tM : Term
@@ -1959,59 +1998,60 @@ differ-APPLY-upd name1 name2 F f nnF =
 
 
 
-{--
+νtestM-NAT : (nc : ℕℂ) (cn : comp→∀ℕ) (kb : K□) (gc : getT-chooseT)
+             (i : ℕ) (w : 𝕎·) (F f : CTerm)
+             → #¬Names F -- We require F to be pure
+             → #¬Names f -- We require f to be pure
+             → ∈Type i w #BAIRE→NAT F
+             → ∈Type i w #BAIRE f
+             → NATeq w (#νtestM F f) (#νtestM F f)
+νtestM-NAT nc cn kb gc i w F f nnF nnf ∈F ∈f = concl h
+  where
+    h : NATeq w (#νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f)) (#νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f))
+    h = νtestM-NAT-shift nc cn kb gc i w F f nnF nnf ∈F ∈f
 
-            (i : ℕ) (w1 w2 w1' : 𝕎·) (F f : CTerm) (name name' : Name) (k m : ℕ)
-            → ∈Type i w1 #BAIRE f
-            → ∈Type i w1' #BAIRE f
-            → #¬Read F
-            → #¬Read f
-            → ¬ name ∈ #names F
-            → ¬ name ∈ #names f
-            → ¬ name' ∈ #names F
-            → ¬ name' ∈ #names f
-            → getT 0 name w1 ≡ just (NUM k)
-            → getT 0 name' w1' ≡ just (NUM k)
-            → APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ NUM m from w1 to w2 -- TODO: turn those applications into contexts
-            → Σ 𝕎· (λ w2' → APPLY ⌜ F ⌝ (upd name' ⌜ f ⌝) ⇓ NUM m from w1' to w2' × getT 0 name w2 ≡ getT 0 name' w2')
-
-
-we will also need to use this for t=f(v) (i.e., if t does not read from the world--but can write--then
-it can only return the same result on a different world, and it should preserve written choices):
-
-
-  ¬Read t
-  → getT 0 name w1 ≡ getT 0 name w3
-  → t ⇓ NUM n from w1 to w2
-  → t ⇓ NUM n × getT 0 name w2 ≡ getT 0 name w4
-
---}
+    concl : NATeq w (#νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f)) (#νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f))
+            → NATeq w (#νtestM F f) (#νtestM F f)
+    concl rewrite ¬Names→shiftNameUp≡ ⌜ F ⌝ 0 nnF | ¬Names→shiftNameUp≡ ⌜ f ⌝ 0 nnf = λ x → x
 
 
 
-testM-NAT : (i : ℕ) (w : 𝕎·) (name : Name) (F f : CTerm)
-            → #¬Read F
-            → #¬Read f
-            → ¬ name ∈ #names F
-            → ¬ name ∈ #names f
+testM-NAT : (nc : ℕℂ) (cn : comp→∀ℕ) (kb : K□) (gc : getT-chooseT)
+            (i : ℕ) (w : 𝕎·) (name : Name) (F f : CTerm)
+            → #¬Names F
+            → #¬Names f
             → ∈Type i w #BAIRE→NAT F
             → ∈Type i w #BAIRE f
-            → ∈Type i w #NAT (#testM name F f)
-testM-NAT i w name F f nrF nrf nnF nnf ∈F ∈f =
-  ≡CTerm→∈Type
-    (sym (#testM≡ name F f))
-    (→equalInType-NAT
-      i w
-      (#SEQ (#set0 name) (#probeM name F f))
-      (#SEQ (#set0 name) (#probeM name F f))
-      (Mod.∀𝕎-□Func M aw (equalInType-NAT→ i w (#APPLY F (#upd name f)) (#APPLY F (#upd name f)) eqa)))
+            → ∈Type i w #NAT (#νtestM F f)
+testM-NAT nc cn kb gc i w name F f nnF nnf ∈F ∈f =
+  →equalInType-NAT i w (#νtestM F f) (#νtestM F f) (Mod.∀𝕎-□ M aw)
   where
-    aw : ∀𝕎 w (λ w' e' → NATeq w' (#APPLY F (#upd name f)) (#APPLY F (#upd name f))
-                       → NATeq w' (#SEQ (#set0 name) (#probeM name F f)) (#SEQ (#set0 name) (#probeM name F f)))
-    aw w1 e1 (m , c₁ , c₂) = {!!}
+    aw : ∀𝕎 w (λ w' _ → NATeq w' (#νtestM F f) (#νtestM F f))
+    aw w' e' = νtestM-NAT nc cn kb gc i w' F f nnF nnf (equalInType-mon ∈F w' e') (equalInType-mon ∈f w' e')
 
-    eqa : ∈Type i w #NAT (#APPLY F (#upd name f))
-    eqa = equalInType-FUN→ ∈F w (⊑-refl· _) (#upd name f) (#upd name f) (upd∈ i w name f {!!} ∈f)
 
+lam2AX : Term
+lam2AX = LAMBDA (LAMBDA AX)
+
+
+#contBody : (F f : CTerm) → CTerm
+#contBody F f = ct (contBody ⌜ F ⌝ ⌜ f ⌝) c
+  where
+    c : # contBody ⌜ F ⌝ ⌜ f ⌝
+    c rewrite CTerm.closed f
+            | #shiftUp 0 f
+            | #shiftUp 0 F
+            | CTerm.closed F
+            | CTerm.closed f = refl
+
+
+
+#lam2AX : CTerm
+#lam2AX = ct lam2AX refl
+
+
+continuity : (i : ℕ) (w : 𝕎·) (F f : CTerm)
+             → ∈Type i w (#contBody F f) (#PAIR (#νtestM F f) #lam2AX)
+continuity i w F f = {!equalInType-SUM ? ? ?!}
 
 \end{code}
