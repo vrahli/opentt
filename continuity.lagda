@@ -2360,10 +2360,18 @@ sub0-NATn-body a n rewrite CTerm→CTerm0→Term n = CTerm≡ e
               → equalInType i w #NAT n n
               → equalInType i w (#NATn n) a b
               → equalInType i w #NAT a b
-∈NATn→∈NAT {i} {w} {a} {b} {n} en ea = {!!}
+∈NATn→∈NAT {i} {w} {a} {b} {n} en ea =
+  →equalInType-NAT i w a b (Mod.□-idem M (Mod.∀𝕎-□Func M aw1 eb2))
   where
-    eb : equalInType i w (#SET #NAT (#[0]LT #[0]VAR ⌞ n ⌟)) a b
-    eb = ≡CTerm→equalInType (≡NATn n) ea
+    eb1 : equalInType i w (#SET #NAT (#[0]LT #[0]VAR ⌞ n ⌟)) a b
+    eb1 = ≡CTerm→equalInType (≡NATn n) ea
+
+    eb2 : □· w (λ w' _ → SETeq (equalInType i w' #NAT) (λ x y ea → equalInType i w' (sub0 x (#[0]LT #[0]VAR ⌞ n ⌟))) a b)
+    eb2 = equalInType-SET→ eb1
+
+    aw1 : ∀𝕎 w (λ w' e' → SETeq (equalInType i w' #NAT) (λ x y ea₁ → equalInType i w' (sub0 x (#[0]LT #[0]VAR (CTerm→CTerm0 n)))) a b
+                        → □· w' (↑wPred' (λ w'' _ → NATeq w'' a b) e'))
+    aw1 w1 e1 (x , ex , ey) = Mod.∀𝕎-□Func M (λ w2 e2 s z → s) (equalInType-NAT→ i w1 a b ex)
 
 
 ∈BAIRE→∈BAIREn : {i : ℕ} {w : 𝕎·} {f g n : CTerm}
@@ -2386,6 +2394,17 @@ sub0-NATn-body a n rewrite CTerm→CTerm0→Term n = CTerm≡ e
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#NATn n) a₁ a₂
                       → equalInType i w' #NAT (#APPLY f a₁) (#APPLY g a₂))
     aw w1 e1 a₁ a₂ ea = ef2 w1 e1 a₁ a₂ (∈NATn→∈NAT (equalInType-mon en w1 e1) ea)
+
+
+
+∈BAIRE→NAT→ : {i : ℕ} {w : 𝕎·} {F f g : CTerm}
+                → ∈Type i w #BAIRE→NAT F
+                → equalInType i w #BAIRE f g
+                → equalInType i w #NAT (#APPLY F f) (#APPLY F g)
+∈BAIRE→NAT→ {i} {w} {F} {f} {g} ∈F ∈f =
+  equalInType-FUN→
+    {i} {w} {#BAIRE} {#NAT} {F} {F} ∈F w (⊑-refl· _) f g
+    ∈f
 
 
 
@@ -2415,8 +2434,8 @@ equalTypes-contBodyPI i w F f ∈F ∈f w1 e1 a₁ a₂ ea =
                      (∈BAIRE→∈BAIREn (equalInType-refl (equalInType-mon ea w2 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
                      (∈BAIRE→∈BAIREn (equalInType-refl (equalInType-mon ea w2 e2)) eg))
         (eqTypesEQ← eqTypesNAT
-                    {!!}
-                    {!!})
+                    (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
+                    (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) eg))
 
     ea1 : equalTypes i w1
             (#PI #BAIRE
