@@ -1858,4 +1858,48 @@ NUM-equalInType-QTNAT! : (i : ℕ) (w : 𝕎·) (k : ℕ) → equalInType i w #Q
 NUM-equalInType-QTNAT! i w k =
   →equalInType-QTNAT! i w (#NUM k) (#NUM k) (Mod.∀𝕎-□ M (λ w' e' → #weakMonEq!-#NUM w' k))
 
+
+
+equalInType-SET→ : {u : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} {f g : CTerm}
+                    → equalInType u w (#SET A B) f g
+                    → □· w (λ w' _ → SETeq (equalInType u w' A) (λ a b ea → equalInType u w' (sub0 a B)) f g)
+{-# TERMINATING #-}
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTNAT x x₁ , eqi) = ⊥-elim (SETneqNAT (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTQNAT x x₁ , eqi) = ⊥-elim (SETneqQNAT (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (SETneqLT (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (SETneqQLT (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTFREE x x₁ , eqi) = ⊥-elim (SETneqFREE (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (SETneqPI (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (SETneqSUM (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) =
+  Mod.∀𝕎-□Func M aw eqi
+  where
+    aw : ∀𝕎 w (λ w' e' → SETeq (equalTerms u w' (eqta w' e')) (λ a1 a2 eqa → equalTerms u w' (eqtb w' e' a1 a2 eqa)) f g
+                       → SETeq (equalInType u w' A) (λ a b ea → equalInType u w' (sub0 a B)) f g)
+    aw w' e' (b , ea , eb) = b , ea' , eb'
+      where
+        ea' : equalInType u w' A f g
+        ea' = eqInType→equalInType {u} {w'} {A} {A1} {A2} (#SETinj1 {A} {B} {A1} {B1} (#compAllVal x tt)) (eqta w' e') ea
+
+        eb' : equalInType u w' (sub0 f B) b b
+        eb' = eqInType→equalInType {u} {w'} {sub0 f B} {sub0 f B1} {sub0 g B2} (→≡sub0 (#SETinj2 {A} {B} {A1} {B1} (#compAllVal x tt))) (eqtb w' e' f g ea) eb
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (SETneqTUNION (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2 , eqi) = ⊥-elim (SETneqEQ (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (SETneqUNION (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (SETneqQTUNION (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SETneqTSQUASH (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTTRUNC A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SETneqTTRUNC (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SETneqTCONST (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SETneqSUBSING (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (SETneqFFDEFS (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (SETneqUNIV (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SETneqLIFT (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTBAR x , eqi) =
+  Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
+  where
+    aw : ∀𝕎 w (λ w' e' → (z : equalTypes u w' (#SET A B) (#SET A B))
+                       → equalTerms u w' z f g
+                       → □· w' (↑wPred' (λ w'' e → SETeq (equalInType u w'' A) (λ a b ea → equalInType u w'' (sub0 a B)) f g) e'))
+    aw w' e' z ei = Mod.∀𝕎-□Func M (λ w1 e1 h z → h) (equalInType-SET→ (z , ei))
+
 \end{code}[hide]
