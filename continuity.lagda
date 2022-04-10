@@ -2499,8 +2499,20 @@ continuity nc cn kb gc i w F f nnF nnf ∈F ∈f =
                                   → equalInType i w2 (#FUN (#EQ f g₁ (#BAIREn (#νtestM F f)))
                                                             (#EQ (#APPLY F f) (#APPLY F g₁) #NAT))
                                                  (#APPLY #lam2AX g₁) (#APPLY #lam2AX g₂))
-            aw3 w2 e2 g₁ g₂ eg = {!!}
--- use equalInType-FUN
+            aw3 w2 e2 g₁ g₂ eg =
+              equalInType-FUN
+                (λ w3 e3 → eqTypesEQ← (→equalTypesBAIREn i w3 (#νtestM F f) (#νtestM F f) (testM-NAT nc cn kb gc i w3 F f nnF nnf (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))))
+                                        (∈BAIRE→∈BAIREn (testM-NAT nc cn kb gc i w3 F f nnF nnf (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3))))
+                                        (∈BAIRE→∈BAIREn (testM-NAT nc cn kb gc i w3 F f nnF nnf (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))) (equalInType-refl (equalInType-mon eg w3 e3))))
+                (λ w3 e3 → eqTypesEQ← eqTypesNAT
+                                       (∈BAIRE→NAT→ (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3))))
+                                       (∈BAIRE→NAT→ (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-refl (equalInType-mon eg w3 e3))))
+                aw4
+              where
+                aw4 : ∀𝕎 w2 (λ w' _ → (x₁ x₂ : CTerm)
+                                     → equalInType i w' (#EQ f g₁ (#BAIREn (#νtestM F f))) x₁ x₂
+                                     → equalInType i w' (#EQ (#APPLY F f) (#APPLY F g₁) #NAT) (#APPLY (#APPLY #lam2AX g₁) x₁) (#APPLY (#APPLY #lam2AX g₂) x₂))
+                aw4 w3 e3 x₁ x₂ ex = {!!}
 
             aw2 : ∀𝕎 w1 (λ w2 e2 → (g₁ g₂ : CTerm) → equalInType i w2 #BAIRE g₁ g₂
                                   → equalInType i w2 (sub0 g₁ (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]BAIREn ⌞ #νtestM F f ⌟))
