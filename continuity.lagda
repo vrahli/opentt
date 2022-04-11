@@ -2512,7 +2512,17 @@ continuity nc cn kb gc i w F f nnF nnf ∈F ∈f =
                 aw4 : ∀𝕎 w2 (λ w' _ → (x₁ x₂ : CTerm)
                                      → equalInType i w' (#EQ f g₁ (#BAIREn (#νtestM F f))) x₁ x₂
                                      → equalInType i w' (#EQ (#APPLY F f) (#APPLY F g₁) #NAT) (#APPLY (#APPLY #lam2AX g₁) x₁) (#APPLY (#APPLY #lam2AX g₂) x₂))
-                aw4 w3 e3 x₁ x₂ ex = {!!}
+                aw4 w3 e3 x₁ x₂ ex =
+                  equalInType-EQ
+                    eqTypesNAT
+                    concl
+                  where
+                    hyp : □· w3 (λ w4 _ → equalInType i w4 (#BAIREn (#νtestM F f)) f g₁)
+                    hyp = equalInType-EQ→ ex
+
+                    concl : □· w3 (λ w4 _ → equalInType i w4 #NAT (#APPLY F f) (#APPLY F g₁))
+                    concl = {!!}
+-- Also need to constrain g₁ to be a 'pure' function
 
             aw2 : ∀𝕎 w1 (λ w2 e2 → (g₁ g₂ : CTerm) → equalInType i w2 #BAIRE g₁ g₂
                                   → equalInType i w2 (sub0 g₁ (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]BAIREn ⌞ #νtestM F f ⌟))
