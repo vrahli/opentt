@@ -1545,8 +1545,6 @@ data ∼vals : Term → Term → Set where
 #isValue t = isValue ⌜ t ⌝
 
 
-
-
 ¬read : Term → Bool
 ¬read (VAR x) = true
 ¬read NAT = true
@@ -1589,5 +1587,82 @@ data ∼vals : Term → Term → Set where
 ¬read (LOWER t) = ¬read t
 ¬read (SHRINK t) = ¬read t
 
+
+
+#¬read : CTerm → Bool
+#¬read t = ¬read ⌜ t ⌝
+
+
+¬Read : Term → Set
+¬Read t = ¬read t ≡ true
+
+
+
+#¬Read : CTerm → Set
+#¬Read t = #¬read t ≡ true
+
+
+
+¬names : Term → Bool
+¬names (VAR x) = true
+¬names NAT = true
+¬names QNAT = true
+¬names (LT t t₁) = ¬names t ∧ ¬names t₁
+¬names (QLT t t₁) = ¬names t ∧ ¬names t₁
+¬names (NUM x) = true
+¬names (IFLT t t₁ t₂ t₃) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂ ∧ ¬names t₃
+¬names (PI t t₁) = ¬names t ∧ ¬names t₁
+¬names (LAMBDA t) = ¬names t
+¬names (APPLY t t₁) = ¬names t ∧ ¬names t₁
+¬names (FIX t) = ¬names t
+¬names (LET t t₁) = ¬names t ∧ ¬names t₁
+¬names (SUM t t₁) = ¬names t ∧ ¬names t₁
+¬names (PAIR t t₁) = ¬names t ∧ ¬names t₁
+¬names (SPREAD t t₁) = ¬names t ∧ ¬names t₁
+¬names (SET t t₁) = ¬names t ∧ ¬names t₁
+¬names (TUNION t t₁) = ¬names t ∧ ¬names t₁
+¬names (UNION t t₁) = ¬names t ∧ ¬names t₁
+¬names (QTUNION t t₁) = ¬names t ∧ ¬names t₁
+¬names (INL t) = ¬names t
+¬names (INR t) = ¬names t
+¬names (DECIDE t t₁ t₂) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂
+¬names (EQ t t₁ t₂) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂
+¬names AX = true
+¬names FREE = true
+¬names (CS x) = false -- FALSE
+¬names (NAME x) = false -- FALSE
+¬names (FRESH t) = false -- FALSE
+¬names (CHOOSE t t₁) = ¬names t ∧ ¬names t₁
+--¬names (IFC0 t t₁ t₂) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂
+¬names (TSQUASH t) = ¬names t
+¬names (TTRUNC t) = ¬names t
+¬names (TCONST t) = ¬names t
+¬names (SUBSING t) = ¬names t
+¬names (DUM t) = ¬names t
+¬names (FFDEFS t t₁) = ¬names t ∧ ¬names t₁
+¬names (UNIV x) = true
+¬names (LIFT t) = ¬names t
+¬names (LOWER t) = ¬names t
+¬names (SHRINK t) = ¬names t
+
+
+
+#¬names : CTerm → Bool
+#¬names t = ¬names ⌜ t ⌝
+
+
+
+¬Names : Term → Set
+¬Names t = ¬names t ≡ true
+
+
+
+#¬Names : CTerm → Set
+#¬Names t = #¬names t ≡ true
+
+
+
+#names : CTerm → List Name
+#names t = names ⌜ t ⌝
 
 \end{code}

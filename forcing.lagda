@@ -376,7 +376,7 @@ FFDEFSeq : CTerm → (eqa : per) → wper
 FFDEFSeq x1 eqa w t1 t2 =
   Σ CTerm (λ x →
    --(t1 #⇛ #AX at w) × (t2 #⇛ #AX at w) ×
-   eqa x1 x × nodefs ⌜ x ⌝)
+   eqa x1 x × #¬Names x)
 
 
 NATeq : wper
