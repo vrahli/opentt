@@ -349,4 +349,20 @@ equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTBAR x , eqi) =
     aw w1 e1 z h = Mod.∀𝕎-□Func M (λ w1 e1 k y → k) (equalInTypeFFDEFS→ (z , h))
 
 
+
+
+eqTypesFFDEFS← : {w : 𝕎·} {i : ℕ} {A B a b : CTerm}
+                  → equalTypes i w A B
+                  → equalInType i w A a b
+                  → equalTypes i w (#FFDEFS A a) (#FFDEFS B b)
+eqTypesFFDEFS← {w} {i} {A} {B} {a} {b} eqt eqi =
+  EQFFDEFS
+    A B a b
+    (#compAllRefl (#FFDEFS A a) w)
+    (#compAllRefl (#FFDEFS B b) w)
+    (eqTypes-mon (uni i) eqt)
+    (wPredExtIrr-eqInType (eqTypes-mon (uni i) eqt))
+    (λ w1 e1 → equalInType→eqInType {_} {_} {A} {A} {B} {a} {b} refl {eqTypes-mon (uni i) eqt w1 e1} (equalInType-mon eqi w1 e1))
+
+
 \end{code}
