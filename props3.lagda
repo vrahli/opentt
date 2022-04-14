@@ -1062,7 +1062,7 @@ isType-#NAT!→BOOL w n rewrite #NAT!→BOOL≡ = eqTypesFUN← isTypeNAT! (isTy
                           → ∀𝕎 w (λ w' _ → (m : ℕ) → equalInType n w' T (#APPLY (#CS a) (#NUM m)) (#APPLY (#CS b) (#NUM m)))
                           → equalInType n w (#NAT!→T T) (#CS a) (#CS b)
 →equalInType-CS-NAT!→T {n} {w} {a} {b} {T} ist i =
-  equalInType-FUN (λ w' _ → isTypeNAT!) (λ w' e → eqTypes-mon (uni n) ist w' e) aw
+  equalInType-FUN isTypeNAT! ist {--(λ w' e → eqTypes-mon (uni n) ist w' e)--} aw
   where
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT! a₁ a₂
                       → equalInType n w' T (#APPLY (#CS a) a₁) (#APPLY (#CS b) a₂))

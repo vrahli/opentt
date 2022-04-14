@@ -1033,15 +1033,15 @@ equalInType-PI {u} {w} {A} {B} {f} {g} ha hb eqi =
 
 
 equalInType-FUN : {u : ℕ} {w : 𝕎·} {A B f g : CTerm}
-                  → ∀𝕎 w (λ w' _ → isType u w' A)
-                  → ∀𝕎 w (λ w' _ → isType u w' B)
+                  → isType u w A
+                  → isType u w B
                   → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType u w' A a₁ a₂ → equalInType u w' B (#APPLY f a₁) (#APPLY g a₂))
                   → equalInType u w (#FUN A B) f g
 equalInType-FUN {u} {w} {A} {B} {f} {g} ha hb i rewrite #FUN≡#PI A B =
-  equalInType-PI ha hb' eqi'
+  equalInType-PI (eqTypes-mon (uni u) ha) hb' eqi'
   where
     hb' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType u w' A a₁ a₂) → equalTypes u w' (sub0 a₁ ⌞ B ⌟) (sub0 a₂ ⌞ B ⌟))
-    hb' w1 e1 a₁ a₂ ea rewrite sub0⌞⌟ a₁ B | sub0⌞⌟ a₂ B = hb w1 e1
+    hb' w1 e1 a₁ a₂ ea rewrite sub0⌞⌟ a₁ B | sub0⌞⌟ a₂ B = eqTypes-mon (uni u) hb w1 e1
 
     eqi' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType u w' A a₁ a₂ → equalInType u w' (sub0 a₁ ⌞ B ⌟) (#APPLY f a₁) (#APPLY g a₂))
     eqi' w1 e1 a₁ a₂ ea rewrite sub0⌞⌟ a₁ B = i w1 e1 a₁ a₂ ea
@@ -1066,7 +1066,7 @@ equalInType-NEG : {u : ℕ} {w : 𝕎·} {A f g : CTerm}
                   → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType u w' A a₁ a₂)
                   → equalInType u w (#NEG A) f g
 equalInType-NEG {u} {w} {A} {f} {g} ha i rewrite #NEG≡#FUN A =
-  equalInType-FUN (eqTypes-mon (uni u) ha) (λ w1 e1 → eqTypesFALSE) eqi
+  equalInType-FUN ha eqTypesFALSE eqi
   where
     eqi : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType u w' A a₁ a₂ → equalInType u w' #FALSE (#APPLY f a₁) (#APPLY g a₂))
     eqi w1 e1 a₁ a₂ ea = ⊥-elim (i w1 e1 a₁ a₂ ea)
