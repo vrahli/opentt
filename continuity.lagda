@@ -1882,6 +1882,30 @@ equalTypes-contBodyPI i w F f ∈F ∈f w1 e1 a₁ a₂ ea =
 
 
 
+equalInType-BAIREn-BAIRE-trans : {i : ℕ} {w : 𝕎·} {a b c n : CTerm}
+                                 → equalInType i w #BAIRE b c
+                                 → equalInType i w (#BAIREn n) a b
+                                 → equalInType i w #NAT n n
+                                 → equalInType i w (#BAIREn n) a c
+equalInType-BAIREn-BAIRE-trans {i} {w} {a} {b} {c} {n} h1 h2 h3 =
+  equalInType-trans h2 h4
+  where
+    h4 : equalInType i w (#BAIREn n) b c
+    h4 = ∈BAIRE→∈BAIREn h3 h1
+
+
+
+-- define an 'external' version of #νtestM that follows the computation of (APPLY F f), and keeps
+-- track of the highest number f is applied to, and prove that this 'external' version returns
+-- the same value as the 'internal' one (i.e., #νtestM)
+foo : {i : ℕ} {w : 𝕎·} {F f g : CTerm}
+      → #¬Names F
+      → #¬Names f
+      → #¬Names g
+      → equalInType i w (#BAIREn (#νtestM F f)) f g
+--       ((n : ℕ) → n < ? → ⇓sameℕ w (APPLY f (NUM n)) (APPLY g (NUM n)))
+      → equalInType i w #NAT (#APPLY F f) (#APPLY F g)
+foo {i} {w} {F} {f} {g} = {!!}
 
 
 
@@ -1982,10 +2006,29 @@ continuity nc cn kb gc i w F f nnF nnf ∈F ∈f =
                         hyp : □· w4 (λ w5 _ → equalInType i w5 (#BAIREn (#νtestM F f)) f g₁)
                         hyp = equalInType-EQ→ ey
 
+                        ff : □· w3 (λ w' _ → FFDEFSeq g₁ (equalInType i w' #BAIRE) w' x₁ x₂)
+                        ff = equalInTypeFFDEFS→ ex
+
+                        aw6 : ∀𝕎 w4 (λ w' e' → equalInType i w' (#BAIREn (#νtestM F f)) f g₁
+                                              → ↑wPred (λ w'' _ → FFDEFSeq g₁ (equalInType i w'' #BAIRE) w'' x₁ x₂) e4 w' e'
+                                              → equalInType i w' #NAT (#APPLY F f) (#APPLY F g₁))
+                        aw6 w5 e5 h1 (g , h2 , nng) = equalInType-trans cc (∈BAIRE→NAT→ (equalInType-mon ∈F w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))) (equalInType-sym h2))
+                          where
+                            h3 : equalInType i w5 (#BAIREn (#νtestM F f)) f g
+                            h3 = equalInType-BAIREn-BAIRE-trans h2 h1 (testM-NAT nc cn kb gc i w5 F f nnF nnf (equalInType-mon ∈F w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))) (equalInType-mon ∈f w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))))
+
+                            cc : equalInType i w5 #NAT (#APPLY F f) (#APPLY F g)
+                            cc = {!!}
+
+-- → #¬Names F
+-- → #¬Names f
+-- → #¬Names g
+-- → equalInType i w5 (#BAIREn (#νtestM F f)) f g
+--       ((n : ℕ) → ⇓sameℕ w (APPLY f (NUM n)) (APPLY g (NUM n)))
+-- → equalInType i w5 #NAT (#APPLY F f) (#APPLY F g)
+
                         concl : □· w4 (λ w5 _ → equalInType i w5 #NAT (#APPLY F f) (#APPLY F g₁))
-                        concl = {!!}
--- Also need to constrain g₁ to be a 'pure' function
--- -> using ffdefs (prove its properties first)
+                        concl = ∀𝕎-□Func2 aw6 hyp (Mod.↑□ M ff e4)
 
             aw2 : ∀𝕎 w1 (λ w2 e2 → (g₁ g₂ : CTerm) → equalInType i w2 #BAIRE g₁ g₂
                                   → equalInType i w2 (sub0 g₁ (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
