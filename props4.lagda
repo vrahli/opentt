@@ -365,4 +365,47 @@ eqTypesFFDEFS← {w} {i} {A} {B} {a} {b} eqt eqi =
     (λ w1 e1 → equalInType→eqInType {_} {_} {A} {A} {B} {a} {b} refl {eqTypes-mon (uni i) eqt w1 e1} (equalInType-mon eqi w1 e1))
 
 
+
+
+equalInType-LT-⇛NUM→ : {i : ℕ} {w : 𝕎·} {a b u v : CTerm} {n m : ℕ}
+                        → a #⇛ #NUM m at w
+                        → b #⇛ #NUM n at w
+                        → equalInType i w (#LT a b) u v
+                        → m < n
+{-# TERMINATING #-}
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTNAT x x₁ , eqi) = ⊥-elim (LTneqNAT (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTQNAT x x₁ , eqi) = ⊥-elim (LTneqQNAT (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) =
+  lower (Mod.□-const M {w} (Mod.∀𝕎-□Func M aw h))
+  where
+    h : □· w (λ w' _ → #lift-<NUM-pair w' a b)
+    h rewrite LTinj1 (compAllVal x tt) | LTinj2 (compAllVal x tt) = eqi
+
+    aw : ∀𝕎 w (λ w' e' → #lift-<NUM-pair w' a b → Lift (lsuc L) (m < n))
+    aw w1 e1 (lift (n1 , m1 , comp1 , comp2 , ltnm))
+      rewrite NUMinj (⇓-val-det tt tt comp1 (lower (compa w1 e1)))
+            | NUMinj (⇓-val-det tt tt comp2 (lower (compb w1 e1))) = lift ltnm
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (LTneqQLT (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTFREE x x₁ , eqi) = ⊥-elim (LTneqFREE (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (LTneqPI (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (LTneqSUM (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (LTneqSET (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (LTneqTUNION (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2 , eqi) = ⊥-elim (LTneqEQ (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (LTneqUNION (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (LTneqQTUNION (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LTneqTSQUASH (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTTRUNC A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LTneqTTRUNC (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LTneqTCONST (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LTneqSUBSING (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (LTneqFFDEFS (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTUNIV i₁ p x x₁ , eqi) = ⊥-elim (LTneqUNIV (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LTneqLIFT(compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTBAR x , eqi) =
+  lower (Mod.□-const M {w} (Mod.∀𝕎-□'-□ M x aw eqi))
+  where
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni i) w' (#LT a b) (#LT a b))
+                        → eqInType (uni i) w' z u v → Lift (lsuc L) (m < n))
+    aw w1 e1 z eqj = lift (equalInType-LT-⇛NUM→ {i} {w1} {a} {b} {u} {v} {n} {m} (∀𝕎-mon e1 compa) (∀𝕎-mon e1 compb) (z , eqj))
+
 \end{code}
