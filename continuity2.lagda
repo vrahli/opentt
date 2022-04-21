@@ -409,7 +409,7 @@ foo nc cn kb gc {i} {w} {F} {f} {g} nnF nnf nng ∈F ∈f ∈g eqb =
         comp = {!!}
 
 -- We need to prove something like this, where w1 and w1' differ only in name
--- (we should be able to prove that for any world w3 between w1' and w2 (Σ ℕ (λ j → getT 0 name w3 ≡ just (NUM j) × j ≤ m0))
+-- (we should be able to prove that for any world w3 between w1' and w2 (Σ ℕ (λ j → getT 0 name w3 ≡ just (NUM j) × j ≤ m0)) -- see steps-sat-isHighestℕ being proved below
 -- (and then define a 'differ' relation relating CTXT(upd name f)/CTXT(force f)/CTXT(force g))
 --  → APPLY F (upd name f) ⇓ NUM n from w1' to w2 -- These 3 hypotheses come from #νtestM⇓→
 --  → getT 0 name w2 ≡ just (NUM m0)
@@ -421,6 +421,194 @@ foo nc cn kb gc {i} {w} {F} {f} {g} nnF nnf nng ∈F ∈f ∈g eqb =
     eqf : equalInType i w #NAT (#APPLY F (#force f)) (#APPLY F (#force g))
     eqf = →equalInType-NAT i w (#APPLY F (#force f)) (#APPLY F (#force g)) (Mod.∀𝕎-□Func M aw (equalInType-NAT→ i w (#APPLY F (#force f)) (#APPLY F (#force f)) inn))
 
+
+getT≤ℕ : 𝕎· → ℕ → Name → Set
+getT≤ℕ w1 n name = Σ ℕ (λ j → getT 0 name w1 ≡ just (NUM j) × j ≤ n)
+
+
+isHighestℕ : {k : ℕ} {w1 w2 : 𝕎·} {a b : Term} (n : ℕ) (name : Name)
+              → steps k (a , w1) ≡ (b , w2)
+              → Set
+isHighestℕ {0} {w1} {w2} {a} {b} n name comp = getT≤ℕ w1 n name
+isHighestℕ {suc k} {w1} {w2} {a} {b} n name comp with step a w1
+... | just (x , w) = getT≤ℕ w1 n name × isHighestℕ {k} {w} {w2} {x} {b} n name comp
+... | nothing = getT≤ℕ w1 n name
+
+
+data updCtxt (name : Name) (f : Term) : Term → Set where
+  updCtxt-VAR     : (x : Var) → updCtxt name f (VAR x)
+  updCtxt-NAT     : updCtxt name f NAT
+  updCtxt-QNAT    : updCtxt name f QNAT
+  updCtxt-LT      : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (LT a b)
+  updCtxt-QLT     : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (QLT a b)
+  updCtxt-NUM     : (x : ℕ) → updCtxt name f (NUM x)
+  updCtxt-IFLT    : (a b c d : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f c → updCtxt name f d → updCtxt name f (IFLT a b c d)
+  updCtxt-PI      : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (PI a b)
+  updCtxt-LAMBDA  : (a : Term) → updCtxt name f a → updCtxt name f (LAMBDA a)
+  updCtxt-APPLY   : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (APPLY a b)
+  updCtxt-FIX     : (a : Term) → updCtxt name f a → updCtxt name f (FIX a)
+  updCtxt-LET     : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (LET a b)
+  updCtxt-SUM     : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (SUM a b)
+  updCtxt-PAIR    : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (PAIR a b)
+  updCtxt-SPREAD  : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (SPREAD a b)
+  updCtxt-SET     : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (SET a b)
+  updCtxt-TUNION  : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (TUNION a b)
+  updCtxt-UNION   : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (UNION a b)
+  updCtxt-QTUNION : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (QTUNION a b)
+  updCtxt-INL     : (a : Term) → updCtxt name f a → updCtxt name f (INL a)
+  updCtxt-INR     : (a : Term) → updCtxt name f a → updCtxt name f (INR a)
+  updCtxt-DECIDE  : (a b c : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f c → updCtxt name f (DECIDE a b c)
+  updCtxt-EQ      : (a b c : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f c → updCtxt name f (EQ a b c)
+  updCtxt-AX      : updCtxt name f AX
+  updCtxt-FREE    : updCtxt name f FREE
+  --updCtxt-CS      : updCtxt name1 name2 f (CS name1) (CS name2)
+  --updCtxt-CS      : updCtxt name1 name2 f (CS name1) (CS name2)
+  --updCtxt-NAME    : updCtxt name1 name2 f (NAME name1) (NAME name2)
+  --updCtxt-FRESH   : (a b : Term) → updCtxt name1 name2 f a b → updCtxt name1 name2 f (FRESH a) (FRESH b)
+  updCtxt-CHOOSE  : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (CHOOSE a b)
+--  updCtxt-IFC0    : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → updCtxt name1 name2 f a₁ a₂ → updCtxt name1 name2 f b₁ b₂ → updCtxt name1 name2 f c₁ c₂ → updCtxt name1 name2 f (IFC0 a₁ b₁ c₁) (IFC0 a₂ b₂ c₂)
+  updCtxt-TSQUASH : (a : Term) → updCtxt name f a → updCtxt name f (TSQUASH a)
+  updCtxt-TTRUNC  : (a : Term) → updCtxt name f a → updCtxt name f (TTRUNC a)
+  updCtxt-TCONST  : (a : Term) → updCtxt name f a → updCtxt name f (TCONST a)
+  updCtxt-SUBSING : (a : Term) → updCtxt name f a → updCtxt name f (SUBSING a)
+  updCtxt-DUM     : (a : Term) → updCtxt name f a → updCtxt name f (DUM a)
+  updCtxt-FFDEFS  : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (FFDEFS a b)
+  updCtxt-UNIV    : (x : ℕ) → updCtxt name f (UNIV x)
+  updCtxt-LIFT    : (a : Term) → updCtxt name f a → updCtxt name f (LIFT a)
+  updCtxt-LOWER   : (a : Term) → updCtxt name f a → updCtxt name f (LOWER a)
+  updCtxt-SHRINK  : (a : Term) → updCtxt name f a → updCtxt name f (SHRINK a)
+  updCtxt-upd     : updCtxt name f (upd name f)
+
+
+→updCtxt-shiftDown : (v : Var) {name : Name} {f : Term} (cf : # f) {a : Term}
+                     → updCtxt name f a
+                     → updCtxt name f (shiftDown v a)
+→updCtxt-shiftDown v {name} {f} cf {.(VAR x)} (updCtxt-VAR x) = updCtxt-VAR _
+→updCtxt-shiftDown v {name} {f} cf {.NAT} updCtxt-NAT = updCtxt-NAT
+→updCtxt-shiftDown v {name} {f} cf {.QNAT} updCtxt-QNAT = updCtxt-QNAT
+→updCtxt-shiftDown v {name} {f} cf {.(LT a b)} (updCtxt-LT a b ctxt ctxt₁) = updCtxt-LT _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown v cf ctxt₁)
+→updCtxt-shiftDown v {name} {f} cf {.(QLT a b)} (updCtxt-QLT a b ctxt ctxt₁) = updCtxt-QLT _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown v cf ctxt₁)
+→updCtxt-shiftDown v {name} {f} cf {.(NUM x)} (updCtxt-NUM x) = updCtxt-NUM _
+→updCtxt-shiftDown v {name} {f} cf {.(IFLT a b c d)} (updCtxt-IFLT a b c d ctxt ctxt₁ ctxt₂ ctxt₃) = updCtxt-IFLT _ _ _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown v cf ctxt₁) (→updCtxt-shiftDown v cf ctxt₂) (→updCtxt-shiftDown v cf ctxt₃)
+→updCtxt-shiftDown v {name} {f} cf {.(PI a b)} (updCtxt-PI a b ctxt ctxt₁) = updCtxt-PI _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown (suc v) cf ctxt₁)
+→updCtxt-shiftDown v {name} {f} cf {.(LAMBDA a)} (updCtxt-LAMBDA a ctxt) = updCtxt-LAMBDA _ (→updCtxt-shiftDown (suc v) cf ctxt)
+→updCtxt-shiftDown v {name} {f} cf {.(APPLY a b)} (updCtxt-APPLY a b ctxt ctxt₁) = updCtxt-APPLY _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown v cf ctxt₁)
+→updCtxt-shiftDown v {name} {f} cf {.(FIX a)} (updCtxt-FIX a ctxt) = updCtxt-FIX _ (→updCtxt-shiftDown v cf ctxt)
+→updCtxt-shiftDown v {name} {f} cf {.(LET a b)} (updCtxt-LET a b ctxt ctxt₁) = updCtxt-LET _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown (suc v) cf ctxt₁)
+→updCtxt-shiftDown v {name} {f} cf {.(SUM a b)} (updCtxt-SUM a b ctxt ctxt₁) = updCtxt-SUM _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown (suc v) cf ctxt₁)
+→updCtxt-shiftDown v {name} {f} cf {.(PAIR a b)} (updCtxt-PAIR a b ctxt ctxt₁) = updCtxt-PAIR _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown v cf ctxt₁)
+→updCtxt-shiftDown v {name} {f} cf {.(SPREAD a b)} (updCtxt-SPREAD a b ctxt ctxt₁) = updCtxt-SPREAD _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown (suc (suc v)) cf ctxt₁)
+→updCtxt-shiftDown v {name} {f} cf {.(SET a b)} (updCtxt-SET a b ctxt ctxt₁) = updCtxt-SET _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown (suc v) cf ctxt₁)
+→updCtxt-shiftDown v {name} {f} cf {.(TUNION a b)} (updCtxt-TUNION a b ctxt ctxt₁) = updCtxt-TUNION _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown (suc v) cf ctxt₁)
+→updCtxt-shiftDown v {name} {f} cf {.(UNION a b)} (updCtxt-UNION a b ctxt ctxt₁) = updCtxt-UNION _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown v cf ctxt₁)
+→updCtxt-shiftDown v {name} {f} cf {.(QTUNION a b)} (updCtxt-QTUNION a b ctxt ctxt₁) = updCtxt-QTUNION _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown v cf ctxt₁)
+→updCtxt-shiftDown v {name} {f} cf {.(INL a)} (updCtxt-INL a ctxt) = updCtxt-INL _ (→updCtxt-shiftDown v cf ctxt)
+→updCtxt-shiftDown v {name} {f} cf {.(INR a)} (updCtxt-INR a ctxt) = updCtxt-INR _ (→updCtxt-shiftDown v cf ctxt)
+→updCtxt-shiftDown v {name} {f} cf {.(DECIDE a b c)} (updCtxt-DECIDE a b c ctxt ctxt₁ ctxt₂) = updCtxt-DECIDE _ _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown (suc v) cf ctxt₁) (→updCtxt-shiftDown (suc v) cf ctxt₂)
+→updCtxt-shiftDown v {name} {f} cf {.(EQ a b c)} (updCtxt-EQ a b c ctxt ctxt₁ ctxt₂) = updCtxt-EQ _ _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown v cf ctxt₁) (→updCtxt-shiftDown v cf ctxt₂)
+→updCtxt-shiftDown v {name} {f} cf {.AX} updCtxt-AX = updCtxt-AX
+→updCtxt-shiftDown v {name} {f} cf {.FREE} updCtxt-FREE = updCtxt-FREE
+→updCtxt-shiftDown v {name} {f} cf {.(CHOOSE a b)} (updCtxt-CHOOSE a b ctxt ctxt₁) = updCtxt-CHOOSE _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown v cf ctxt₁)
+→updCtxt-shiftDown v {name} {f} cf {.(TSQUASH a)} (updCtxt-TSQUASH a ctxt) = updCtxt-TSQUASH _ (→updCtxt-shiftDown v cf ctxt)
+→updCtxt-shiftDown v {name} {f} cf {.(TTRUNC a)} (updCtxt-TTRUNC a ctxt) = updCtxt-TTRUNC _ (→updCtxt-shiftDown v cf ctxt)
+→updCtxt-shiftDown v {name} {f} cf {.(TCONST a)} (updCtxt-TCONST a ctxt) = updCtxt-TCONST _ (→updCtxt-shiftDown v cf ctxt)
+→updCtxt-shiftDown v {name} {f} cf {.(SUBSING a)} (updCtxt-SUBSING a ctxt) = updCtxt-SUBSING _ (→updCtxt-shiftDown v cf ctxt)
+→updCtxt-shiftDown v {name} {f} cf {.(DUM a)} (updCtxt-DUM a ctxt) = updCtxt-DUM _ (→updCtxt-shiftDown v cf ctxt)
+→updCtxt-shiftDown v {name} {f} cf {.(FFDEFS a b)} (updCtxt-FFDEFS a b ctxt ctxt₁) = updCtxt-FFDEFS _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown v cf ctxt₁)
+→updCtxt-shiftDown v {name} {f} cf {.(UNIV x)} (updCtxt-UNIV x) = updCtxt-UNIV _
+→updCtxt-shiftDown v {name} {f} cf {.(LIFT a)} (updCtxt-LIFT a ctxt) = updCtxt-LIFT _ (→updCtxt-shiftDown v cf ctxt)
+→updCtxt-shiftDown v {name} {f} cf {.(LOWER a)} (updCtxt-LOWER a ctxt) = updCtxt-LOWER _ (→updCtxt-shiftDown v cf ctxt)
+→updCtxt-shiftDown v {name} {f} cf {.(SHRINK a)} (updCtxt-SHRINK a ctxt) = updCtxt-SHRINK _ (→updCtxt-shiftDown v cf ctxt)
+→updCtxt-shiftDown v {name} {f} cf {.(LAMBDA (LET (VAR 0) (LET (IFLT (APPLY (CS name) (NUM 0)) (VAR 0) (CHOOSE (NAME name) (VAR 0)) AX) (APPLY (shiftUp 0 f) (VAR 1)))))} updCtxt-upd = {!!}
+
+
+
+updCtxt-sub : {name : Name} {f : Term} {a b : Term}
+              → updCtxt name f a
+              → updCtxt name f b
+              → updCtxt name f (sub a b)
+updCtxt-sub {name} {f} {a} {b} = {!!}
+
+
+
+-- We also need something about the way f computes as for the proof about 'differ'
+step-sat-isHighestℕ : {w1 w2 : 𝕎·} {a b : Term} {n : ℕ} {name : Name} {f : Term}
+                       → step a w1 ≡ just (b , w2)
+                       → updCtxt name f a
+                       → ¬Names f
+                       → getT 0 name w2 ≡ just (NUM n)
+                       → getT≤ℕ w1 n name × updCtxt name f b
+step-sat-isHighestℕ {w1} {w2} {.NAT} {b} {n} {name} {f} comp updCtxt-NAT nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-NAT
+step-sat-isHighestℕ {w1} {w2} {.QNAT} {b} {n} {name} {f} comp updCtxt-QNAT nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-QNAT
+step-sat-isHighestℕ {w1} {w2} {.(LT a b₁)} {b} {n} {name} {f} comp (updCtxt-LT a b₁ ctxt ctxt₁) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-LT a b₁ ctxt ctxt₁
+step-sat-isHighestℕ {w1} {w2} {.(QLT a b₁)} {b} {n} {name} {f} comp (updCtxt-QLT a b₁ ctxt ctxt₁) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-QLT a b₁ ctxt ctxt₁
+step-sat-isHighestℕ {w1} {w2} {.(NUM x)} {b} {n} {name} {f} comp (updCtxt-NUM x) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-NUM x
+step-sat-isHighestℕ {w1} {w2} {.(IFLT a b₁ c d)} {b} {n} {name} {f} comp (updCtxt-IFLT a b₁ c d ctxt ctxt₁ ctxt₂ ctxt₃) nnf g0 with is-NUM a
+... | inj₁ (k1 , p) rewrite p with is-NUM b₁
+... |    inj₁ (k2 , q) rewrite q with k1 <? k2
+... |       yes r rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , ctxt₂
+... |       no r rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , ctxt₃
+step-sat-isHighestℕ {w1} {w2} {.(IFLT a b₁ c d)} {b} {n} {name} {f} comp (updCtxt-IFLT a b₁ c d ctxt ctxt₁ ctxt₂ ctxt₃) nnf g0 | inj₁ (k1 , p) | inj₂ q with step⊎ b₁ w1
+... |       inj₁ (b₁' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = fst ind , updCtxt-IFLT (NUM k1) b₁' c d ctxt (snd ind) ctxt₂ ctxt₃
+  where
+    ind : getT≤ℕ w1 n name × updCtxt name f b₁'
+    ind = step-sat-isHighestℕ z ctxt₁ nnf g0
+... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-sat-isHighestℕ {w1} {w2} {.(IFLT a b₁ c d)} {b} {n} {name} {f} comp (updCtxt-IFLT a b₁ c d ctxt ctxt₁ ctxt₂ ctxt₃) nnf g0 | inj₂ p with step⊎ a w1
+... |    inj₁ (a' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = fst ind , updCtxt-IFLT a' b₁ c d (snd ind) ctxt₁ ctxt₂ ctxt₃
+  where
+    ind : getT≤ℕ w1 n name × updCtxt name f a'
+    ind = step-sat-isHighestℕ z ctxt nnf g0
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-sat-isHighestℕ {w1} {w2} {.(PI a b₁)} {b} {n} {name} {f} comp (updCtxt-PI a b₁ ctxt ctxt₁) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-PI a b₁ ctxt ctxt₁
+step-sat-isHighestℕ {w1} {w2} {.(LAMBDA a)} {b} {n} {name} {f} comp (updCtxt-LAMBDA a ctxt) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-LAMBDA a ctxt
+step-sat-isHighestℕ {w1} {w2} {.(APPLY a b₁)} {b} {n} {name} {f} comp (updCtxt-APPLY a b₁ ctxt ctxt₁) nnf g0 with is-LAM a
+... | inj₁ (t , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , {!!}
+... | inj₂ x with is-CS a
+... |    inj₁ (name' , p) rewrite p = {!!}
+... |    inj₂ p = {!!}
+step-sat-isHighestℕ {w1} {w2} {.(FIX a)} {b} {n} {name} {f} comp (updCtxt-FIX a ctxt) nnf g0 = {!!}
+step-sat-isHighestℕ {w1} {w2} {.(LET a b₁)} {b} {n} {name} {f} comp (updCtxt-LET a b₁ ctxt ctxt₁) nnf g0 = {!!}
+step-sat-isHighestℕ {w1} {w2} {.(SUM a b₁)} {b} {n} {name} {f} comp (updCtxt-SUM a b₁ ctxt ctxt₁) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-SUM a b₁ ctxt ctxt₁
+step-sat-isHighestℕ {w1} {w2} {.(PAIR a b₁)} {b} {n} {name} {f} comp (updCtxt-PAIR a b₁ ctxt ctxt₁) nnf g0 = {!!}
+step-sat-isHighestℕ {w1} {w2} {.(SPREAD a b₁)} {b} {n} {name} {f} comp (updCtxt-SPREAD a b₁ ctxt ctxt₁) nnf g0 = {!!}
+step-sat-isHighestℕ {w1} {w2} {.(SET a b₁)} {b} {n} {name} {f} comp (updCtxt-SET a b₁ ctxt ctxt₁) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-SET a b₁ ctxt ctxt₁
+step-sat-isHighestℕ {w1} {w2} {.(TUNION a b₁)} {b} {n} {name} {f} comp (updCtxt-TUNION a b₁ ctxt ctxt₁) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-TUNION a b₁ ctxt ctxt₁
+step-sat-isHighestℕ {w1} {w2} {.(UNION a b₁)} {b} {n} {name} {f} comp (updCtxt-UNION a b₁ ctxt ctxt₁) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-UNION a b₁ ctxt ctxt₁
+step-sat-isHighestℕ {w1} {w2} {.(QTUNION a b₁)} {b} {n} {name} {f} comp (updCtxt-QTUNION a b₁ ctxt ctxt₁) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-QTUNION a b₁ ctxt ctxt₁
+step-sat-isHighestℕ {w1} {w2} {.(INL a)} {b} {n} {name} {f} comp (updCtxt-INL a ctxt) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-INL a ctxt
+step-sat-isHighestℕ {w1} {w2} {.(INR a)} {b} {n} {name} {f} comp (updCtxt-INR a ctxt) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-INR a ctxt
+step-sat-isHighestℕ {w1} {w2} {.(DECIDE a b₁ c)} {b} {n} {name} {f} comp (updCtxt-DECIDE a b₁ c ctxt ctxt₁ ctxt₂) nnf g0 = {!!}
+step-sat-isHighestℕ {w1} {w2} {.(EQ a b₁ c)} {b} {n} {name} {f} comp (updCtxt-EQ a b₁ c ctxt ctxt₁ ctxt₂) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-EQ a b₁ c ctxt ctxt₁ ctxt₂
+step-sat-isHighestℕ {w1} {w2} {.AX} {b} {n} {name} {f} comp updCtxt-AX nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-AX
+step-sat-isHighestℕ {w1} {w2} {.FREE} {b} {n} {name} {f} comp updCtxt-FREE nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-FREE
+step-sat-isHighestℕ {w1} {w2} {.(CHOOSE a b₁)} {b} {n} {name} {f} comp (updCtxt-CHOOSE a b₁ ctxt ctxt₁) nnf g0 = {!!}
+step-sat-isHighestℕ {w1} {w2} {.(TSQUASH a)} {b} {n} {name} {f} comp (updCtxt-TSQUASH a ctxt) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-TSQUASH a ctxt
+step-sat-isHighestℕ {w1} {w2} {.(TTRUNC a)} {b} {n} {name} {f} comp (updCtxt-TTRUNC a ctxt) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-TTRUNC a ctxt
+step-sat-isHighestℕ {w1} {w2} {.(TCONST a)} {b} {n} {name} {f} comp (updCtxt-TCONST a ctxt) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-TCONST a ctxt
+step-sat-isHighestℕ {w1} {w2} {.(SUBSING a)} {b} {n} {name} {f} comp (updCtxt-SUBSING a ctxt) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-SUBSING a ctxt
+step-sat-isHighestℕ {w1} {w2} {.(DUM a)} {b} {n} {name} {f} comp (updCtxt-DUM a ctxt) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-DUM a ctxt
+step-sat-isHighestℕ {w1} {w2} {.(FFDEFS a b₁)} {b} {n} {name} {f} comp (updCtxt-FFDEFS a b₁ ctxt ctxt₁) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-FFDEFS a b₁ ctxt ctxt₁
+step-sat-isHighestℕ {w1} {w2} {.(UNIV x)} {b} {n} {name} {f} comp (updCtxt-UNIV x) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-UNIV x
+step-sat-isHighestℕ {w1} {w2} {.(LIFT a)} {b} {n} {name} {f} comp (updCtxt-LIFT a ctxt) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-LIFT a ctxt
+step-sat-isHighestℕ {w1} {w2} {.(LOWER a)} {b} {n} {name} {f} comp (updCtxt-LOWER a ctxt) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-LOWER a ctxt
+step-sat-isHighestℕ {w1} {w2} {.(SHRINK a)} {b} {n} {name} {f} comp (updCtxt-SHRINK a ctxt) nnf g0 rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , updCtxt-SHRINK a ctxt
+step-sat-isHighestℕ {w1} {w2} {.(LAMBDA (LET (VAR 0) (LET (IFLT (APPLY (CS name) (NUM 0)) (VAR 0) (CHOOSE (NAME name) (VAR 0)) AX) (APPLY (shiftUp 0 f) (VAR 1)))))} {b} {n} {name} {f} comp updCtxt-upd nnf g0 = {!!}
+
+
+
+-- We also need something about the way f computes as for the proof about 'differ'
+steps-sat-isHighestℕ : {k : ℕ} {w1 w2 : 𝕎·} {a b : Term} {n : ℕ} {name : Name} {f : Term}
+                        (comp : steps k (a , w1) ≡ (b , w2))
+                        → updCtxt name f a
+                        → ¬Names f
+                        → getT 0 name w2 ≡ just (NUM n)
+                        → isHighestℕ {k} {w1} {w2} {a} {b} n name comp
+steps-sat-isHighestℕ {0} {w1} {w2} {a} {b} {n} {name} {f} comp ctxt nnf g0
+  rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = n , g0 , ≤-refl
+steps-sat-isHighestℕ {suc k} {w1} {w2} {a} {b} {n} {name} {f} comp ctxt nnf g0 with step⊎ a w1
+... | inj₁ (x , w , p) rewrite p = {!!} , {!steps-sat-isHighestℕ comp!}
+... | inj₂ p rewrite p | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = n , g0 , ≤-refl
 
 
 continuity : (nc : ℕℂ) (cn : comp→∀ℕ) (kb : K□) (gc : getT-chooseT)
