@@ -655,8 +655,8 @@ presHighestℕ name f k =
   → isHighestℕ {k} {w1} {w2} {a} {b} n name comp
 
 
-stepsPresHigestℕ : (name : Name) (f : Term) (b : Term) (w : 𝕎·) → Set(L)
-stepsPresHigestℕ name f b w =
+stepsPresHighestℕ : (name : Name) (f : Term) (b : Term) (w : 𝕎·) → Set(L)
+stepsPresHighestℕ name f b w =
   Σ ℕ (λ k → Σ Term (λ v → Σ 𝕎· (λ w' →
     steps k (b , w) ≡ (v , w')
     × isValue v
@@ -665,10 +665,10 @@ stepsPresHigestℕ name f b w =
 
 
 
-stepsPresHigestℕ-IFLT₁→ : {name : Name} {f : Term} {a b c d : Term} {w : 𝕎·}
-                            → stepsPresHigestℕ name f (IFLT a b c d) w
-                            → stepsPresHigestℕ name f a w
-stepsPresHigestℕ-IFLT₁→ {name} {f} {a} {b} {c} {d} {w} (k , v , w' , comp , isv , ind) =
+stepsPresHighestℕ-IFLT₁→ : {name : Name} {f : Term} {a b c d : Term} {w : 𝕎·}
+                            → stepsPresHighestℕ name f (IFLT a b c d) w
+                            → stepsPresHighestℕ name f a w
+stepsPresHighestℕ-IFLT₁→ {name} {f} {a} {b} {c} {d} {w} (k , v , w' , comp , isv , ind) =
   k , fst hv , fst (snd hv) , fst (snd (snd hv)) , snd (snd (snd hv)) , ind
   where
     hv : hasValueℕ k a w
@@ -676,10 +676,10 @@ stepsPresHigestℕ-IFLT₁→ {name} {f} {a} {b} {c} {d} {w} (k , v , w' , comp 
 
 
 
-stepsPresHigestℕ-IFLT₂→ : {name : Name} {f : Term} {n : ℕ} {b c d : Term} {w : 𝕎·}
-                            → stepsPresHigestℕ name f (IFLT (NUM n) b c d) w
-                            → stepsPresHigestℕ name f b w
-stepsPresHigestℕ-IFLT₂→ {name} {f} {n} {b} {c} {d} {w} (k , v , w' , comp , isv , ind) =
+stepsPresHighestℕ-IFLT₂→ : {name : Name} {f : Term} {n : ℕ} {b c d : Term} {w : 𝕎·}
+                            → stepsPresHighestℕ name f (IFLT (NUM n) b c d) w
+                            → stepsPresHighestℕ name f b w
+stepsPresHighestℕ-IFLT₂→ {name} {f} {n} {b} {c} {d} {w} (k , v , w' , comp , isv , ind) =
   k , fst hv , fst (snd hv) , fst (snd (snd hv)) , snd (snd (snd hv)) , ind
   where
     hv : hasValueℕ k b w
@@ -801,7 +801,7 @@ stepsPresHigestℕ-IFLT₂→ {name} {f} {n} {b} {c} {d} {w} (k , v , w' , comp 
 -- We also need something about the way f computes as for the proof about 'differ'
 step-sat-isHighestℕ : {w1 w2 : 𝕎·} {a b : Term} {n : ℕ} {name : Name} {f : Term}
                        → step a w1 ≡ just (b , w2)
-                       → stepsPresHigestℕ name f b w2
+                       → stepsPresHighestℕ name f b w2
                        → updCtxt name f a
                        → ¬Names f
                        → # f
@@ -822,18 +822,49 @@ step-sat-isHighestℕ {w1} {w2} {.(IFLT a b₁ c d)} {b} {n} {name} {f} comp ind
   ΣhighestUpdCtxt-IFLT₂ ctxt₂ ctxt₃ ind
   where
     ind : ΣhighestUpdCtxt name f n b₁' w1 w1'
-    ind = step-sat-isHighestℕ z (stepsPresHigestℕ-IFLT₂→ indb) ctxt₁ nnf cf
+    ind = step-sat-isHighestℕ z (stepsPresHighestℕ-IFLT₂→ indb) ctxt₁ nnf cf
 ... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-sat-isHighestℕ {w1} {w2} {.(IFLT a b₁ c d)} {b} {n} {name} {f} comp indb (updCtxt-IFLT a b₁ c d ctxt ctxt₁ ctxt₂ ctxt₃) nnf cf | inj₂ p with step⊎ a w1
 ... |    inj₁ (a' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
   ΣhighestUpdCtxt-IFLT₁ ctxt₁ ctxt₂ ctxt₃ ind
   where
     ind : ΣhighestUpdCtxt name f n a' w1 w1'
-    ind = step-sat-isHighestℕ z (stepsPresHigestℕ-IFLT₁→ indb) ctxt nnf cf
+    ind = step-sat-isHighestℕ z (stepsPresHighestℕ-IFLT₁→ indb) ctxt nnf cf
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-sat-isHighestℕ {w1} {w2} {.(PI a b₁)} {b} {n} {name} {f} comp indb (updCtxt-PI a b₁ ctxt ctxt₁) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , PI a b₁ , w1 , refl , (λ x → x , x) , updCtxt-PI _ _ ctxt ctxt₁
 step-sat-isHighestℕ {w1} {w2} {.(LAMBDA a)} {b} {n} {name} {f} comp indb (updCtxt-LAMBDA a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , LAMBDA a , w1 , refl , (λ x → x , x) , updCtxt-LAMBDA _ ctxt
-step-sat-isHighestℕ {w1} {w2} {.(APPLY a b₁)} {b} {n} {name} {f} comp indb (updCtxt-APPLY a b₁ ctxt ctxt₁) nnf cf = {!!}
+step-sat-isHighestℕ {w1} {w2} {.(APPLY a b₁)} {b} {n} {name} {f} comp indb (updCtxt-APPLY a b₁ ctxt ctxt₁) nnf cf with is-LAM a
+... | inj₁ (t , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = concl d
+  where
+    d : updCtxt name f t ⊎ t ≡ updBody name f
+    d = updCtxt-LAMBDA→ ctxt
+
+    concl : updCtxt name f t ⊎ t ≡ updBody name f
+            → ΣhighestUpdCtxt name f n (sub b₁ t) w1 w1
+    concl (inj₁ u) = 0 , sub b₁ t , w1 , refl , (λ s → s , s) , updCtxt-sub cf ctxt₁ u
+    concl (inj₂ u) rewrite u = c2
+      where
+        c1 : ΣhighestUpdCtxt name f n (LET b₁ (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 w1
+             --updCtxt name f (LET b₁ (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))))
+        c1 = {!!}
+-- This is not going to work.
+-- Instead, we need to prove that b reduces to a term b' such that updCtxt name f b'
+-- and that this computation satisfies isHighestℕ
+
+{--
+→ steps k (LET b₁ (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (v , w2)
+→ isValue v
+→ Σ ℕ (λ k1 → Σ 𝕎· (λ w1' →
+    k1 + 4 < k
+    × steps k1 (b₁ , w1) ≡ (NUM m , w1')
+    × steps (k1 + 4) (LET b₁ (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , w1'')))
+--}
+
+        c2 : ΣhighestUpdCtxt name f n (sub b₁ (updBody name f)) w1 w1
+        c2 rewrite sub-upd name f b₁ cf = c1
+... | inj₂ x with is-CS a
+... |    inj₁ (name' , p) rewrite p = ⊥-elim (updCtxt-CS→ ctxt)
+... |    inj₂ p = {!!}
 step-sat-isHighestℕ {w1} {w2} {.(FIX a)} {b} {n} {name} {f} comp indb (updCtxt-FIX a ctxt) nnf cf = {!!}
 step-sat-isHighestℕ {w1} {w2} {.(LET a b₁)} {b} {n} {name} {f} comp indb (updCtxt-LET a b₁ ctxt ctxt₁) nnf cf = {!!}
 step-sat-isHighestℕ {w1} {w2} {.(SUM a b₁)} {b} {n} {name} {f} comp indb (updCtxt-SUM a b₁ ctxt ctxt₁) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , SUM a b₁ , w1 , refl , (λ x → x , x) , updCtxt-SUM _ _ ctxt ctxt₁
