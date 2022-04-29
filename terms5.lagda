@@ -137,8 +137,8 @@ upd⇓names k f name1 name2 w1 w1' w2 a b v cf nnf gtn compat1 compat2 gc0 isv p
             steps k1 (a , w1) ≡ (u , w)
             × isValue u
             × steps k2 (sub u (SEQ (updGt name1 (VAR 0)) (APPLY f (VAR 0))) , w) ≡ (v , w2)
-            × k1 < k
-            × k2 < k))))
+            × steps (suc k1) (LET a (SEQ (updGt name1 (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (sub u (SEQ (updGt name1 (VAR 0)) (APPLY f (VAR 0))) , w)
+            × k1 + k2 < k))))
     h1 = LET→hasValue-decomp k a (SEQ (updGt name1 (VAR 0)) (APPLY f (VAR 0))) v w1 w2 comp isv
 
     k1 : ℕ
@@ -162,11 +162,8 @@ upd⇓names k f name1 name2 w1 w1' w2 a b v cf nnf gtn compat1 compat2 gc0 isv p
     comp2 : steps k2 (sub u (SEQ (updGt name1 (VAR 0)) (APPLY f (VAR 0))) , w3) ≡ (v , w2)
     comp2 = fst (snd (snd (snd (snd (snd (snd h1))))))
 
-    ltk1 : k1 < k
-    ltk1 = fst (snd (snd (snd (snd (snd (snd (snd h1)))))))
-
-    ltk2 : k2 < k
-    ltk2 = snd (snd (snd (snd (snd (snd (snd (snd h1)))))))
+    ltk12 : k1 + k2 < k
+    ltk12 = snd (snd (snd (snd (snd (snd (snd (snd h1)))))))
 
     comp3 : steps k2 (LET (updGt name1 u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w3) ≡ (v , w2)
     comp3 rewrite sym (sub-SEQ-updGt u name1 f cf) = comp2
@@ -178,8 +175,8 @@ upd⇓names k f name1 name2 w1 w1' w2 a b v cf nnf gtn compat1 compat2 gc0 isv p
            steps k3 (updGt name1 u , w3) ≡ (u' , w4)
            × isValue u'
            × steps k4 (sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w4) ≡ (v , w2)
-           × k3 < k2
-           × k4 < k2))))
+           × steps (suc k3) (LET (updGt name1 u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w3) ≡ (sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w4)
+           × k3 + k4 < k2))))
     h2 = LET→hasValue-decomp k2 (updGt name1 u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) v w3 w2 comp3 isv
 
     k3 : ℕ
@@ -203,19 +200,14 @@ upd⇓names k f name1 name2 w1 w1' w2 a b v cf nnf gtn compat1 compat2 gc0 isv p
     comp5 : steps k4 (sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w4) ≡ (v , w2)
     comp5 = fst (snd (snd (snd (snd (snd (snd h2))))))
 
-    ltk3 : k3 < k2
-    ltk3 = fst (snd (snd (snd (snd (snd (snd (snd h2)))))))
-
-    ltk4 : k4 < k2
-    ltk4 = snd (snd (snd (snd (snd (snd (snd (snd h2)))))))
+    ltk34 : k3 + k4 < k2
+    ltk34 = snd (snd (snd (snd (snd (snd (snd (snd h2)))))))
 
     h3 : Σ ℕ (λ k5 → Σ ℕ (λ k6 → Σ ℕ (λ k7 → Σ 𝕎· (λ w5 → Σ 𝕎· (λ w6 → Σ ℕ (λ n → Σ ℕ (λ m →
            steps k5 (get0 name1 , w3) ≡ (NUM n , w5)
            × steps k6 (u , w5) ≡ (NUM m , w6)
            × ((n < m × steps k7 (setT name1 u , w6) ≡ (u' , w4)) ⊎ (m ≤ n × steps k7 (AX , w6) ≡ (u' , w4)))
-           × k5 < k3
-           × k6 < k3
-           × k7 < k3)))))))
+           × k5 + k6 + k7 < k3)))))))
     h3 = IFLT→hasValue-decomp k3 (get0 name1) u (setT name1 u) AX u' w3 w4 comp4 isvu'
 
     k5 : ℕ
@@ -248,14 +240,8 @@ upd⇓names k f name1 name2 w1 w1' w2 a b v cf nnf gtn compat1 compat2 gc0 isv p
     comp8 : ((n < m × steps k7 (setT name1 u , w6) ≡ (u' , w4)) ⊎ (m ≤ n × steps k7 (AX , w6) ≡ (u' , w4)))
     comp8 = fst (snd (snd (snd (snd (snd (snd (snd (snd (snd h3)))))))))
 
-    ltk5 : k5 < k3
-    ltk5 = fst (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd h3))))))))))
-
-    ltk6 : k6 < k3
-    ltk6 = fst (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd h3)))))))))))
-
-    ltk7 : k7 < k3
-    ltk7 = snd (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd h3)))))))))))
+    ltk567 : k5 + k6 + k7 < k3
+    ltk567 = snd (snd (snd (snd (snd (snd (snd (snd (snd (snd h3)))))))))
 
     eqm : u ≡ NUM m
     eqm = stepsVal→ₗ u (NUM m) w5 w6 k6 isvu comp7
@@ -268,7 +254,7 @@ upd⇓names k f name1 name2 w1 w1' w2 a b v cf nnf gtn compat1 compat2 gc0 isv p
 
     h4 : Σ 𝕎· (λ w3' → Σ Term (λ v' →
                 b ⇓ v' from w1' to w3' × differ name1 name2 f (NUM m) v' × getT 0 name1 w3 ≡ getT 0 name2 w3'))
-    h4 = pd k1 ltk1 w1 w3 w1' a b (NUM m) tt compat1 compat2 gtn diff g0 comp1b
+    h4 = pd k1 (<-transʳ (≤-stepsʳ k2 ≤-refl) ltk12) w1 w3 w1' a b (NUM m) tt compat1 compat2 gtn diff g0 comp1b
 
     h4→ : Σ 𝕎· (λ w3' → Σ Term (λ v' →
                 b ⇓ v' from w1' to w3' × differ name1 name2 f (NUM m) v' × getT 0 name1 w3 ≡ getT 0 name2 w3'))
