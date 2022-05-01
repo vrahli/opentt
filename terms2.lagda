@@ -933,6 +933,18 @@ sub-VAR0 a rewrite shiftDownUp a 0 = refl
 #subv n t u d rewrite subvNotIn n t u (#→¬∈ {u} d n) = refl
 
 
+
+steps→𝕎s : {k : ℕ} {w1 w2 : 𝕎·} {a b : Term}
+             → steps k (a , w1) ≡ (b , w2)
+             → List 𝕎·
+steps→𝕎s {0} {w1} {w2} {a} {b} comp = Data.List.[ w1 ]
+steps→𝕎s {suc k} {w1} {w2} {a} {b} comp with step a w1
+... | just (x , w) = w1 ∷ steps→𝕎s {k} {w} {w2} {x} {b} comp
+... | nothing = Data.List.[ w1 ]
+
+
+
+{--
 LET→hasValue-decomp : (k : ℕ) (a b v : Term) (w w' : 𝕎·)
                        → steps k (LET a b , w) ≡ (v , w')
                        → isValue v
@@ -942,7 +954,8 @@ LET→hasValue-decomp : (k : ℕ) (a b v : Term) (w w' : 𝕎·)
                            × steps k2 (sub u b , w1) ≡ (v , w')
                            × steps (suc k1) (LET a b , w) ≡ (sub u b , w1)
                            × k1 + k2 < k))))
-LET→hasValue-decomp 0 a b v w w' comp isv rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+LET→hasValue-decomp 0 a b v w w' comp isv
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
 LET→hasValue-decomp (suc k) a b v w w' comp isv with isValue⊎ a
 ... | inj₁ x = 0 , k , w , a , refl , x , comp , refl , ≤-refl
 ... | inj₂ x with step⊎ a w
@@ -961,6 +974,170 @@ LET→hasValue-decomp (suc k) a b v w w' comp isv with isValue⊎ a
             × steps (suc k1) (LET a' b , w1) ≡ (sub u b , w2)
             × k1 + k2 < k))))
     ind = LET→hasValue-decomp k a' b v w1 w' comp isv
+... |    inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+--}
+
+
+→≡∷ : {L : Level} {A : Set(L)} {a b : A} {l k : List A}
+       → a ≡ b
+       → l ≡ k
+       → a ∷ l ≡ b ∷ k
+→≡∷ {L} {A} {a} {b} {l} {k} e f rewrite e | f = refl
+
+
+step-steps-trans2 : {w w' w'' : 𝕎·} {a b c : Term} {n : ℕ}
+                   → step a w ≡ just (b , w')
+                   → steps n (b , w') ≡ (c , w'')
+                   → steps (suc n) (a , w) ≡ (c , w'')
+step-steps-trans2 {w} {w'} {w''} {a} {b} {c} {n} c₁ c₂ with step a w
+... | just (a1 , w1) rewrite just-inj c₁ = c₂
+... | nothing = ⊥-elim (¬just≡nothing (sym c₁))
+
+
+steps→𝕎s-steps-steps-trans : {w1 w2 w3 : 𝕎·} {a b c : Term} {n : ℕ}
+                               (comp1 : step a w1 ≡ just (b , w2))
+                               (comp2 : steps n (b , w2) ≡ (c , w3))
+                               → steps→𝕎s {suc n} {w1} {w3} {a} {c} (step-steps-trans2 {w1} {w2} {w3} {a} {b} {c} {n} comp1 comp2)
+                                  ≡ w1 ∷ steps→𝕎s {n} {w2} {w3} {b} {c} comp2
+steps→𝕎s-steps-steps-trans {w1} {w2} {w3} {a} {b} {c} {n} comp1 comp2 rewrite comp1 = refl
+
+
+
+-- strict steps
+ssteps : (n : ℕ) (tw : Term × 𝕎·) → Maybe (Term × 𝕎·)
+ssteps 0 (t , w) = just (t , w)
+ssteps (suc n) (t , w) with isValue⊎ t
+... | inj₁ x = nothing
+... | inj₂ x with step t w
+... |   just (u , w') = ssteps n (u , w')
+... |   nothing = nothing
+
+
+ssteps→steps : {n : ℕ} {t t' : Term} {w w' : 𝕎·}
+                → ssteps n (t , w) ≡ just (t' , w')
+                → steps n (t , w) ≡ (t' , w')
+ssteps→steps {0} {t} {t'} {w} {w'} h
+  rewrite sym (pair-inj₁ (just-inj h)) | sym (pair-inj₂ (just-inj h)) = refl
+ssteps→steps {suc n} {t} {t'} {w} {w'} h with isValue⊎ t
+... | inj₁ x = ⊥-elim (¬just≡nothing (sym h))
+... | inj₂ x with step⊎ t w
+... |    inj₁ (t1 , w1 , z) rewrite z = ssteps→steps {n} {t1} {t'} {w1} {w'} h
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym h))
+
+
+
+steps→ssteps : {n : ℕ} {t t' : Term} {w w' : 𝕎·}
+                → steps n (t , w) ≡ (t' , w')
+                → Σ ℕ (λ n' → n' ≤ n × ssteps n' (t , w) ≡ just (t' , w'))
+steps→ssteps {0} {t} {t'} {w} {w'} h
+  rewrite sym (pair-inj₁ h) | sym (pair-inj₂ h) = 0 , _≤_.z≤n , refl
+steps→ssteps {suc n} {t} {t'} {w} {w'} h with step⊎ t w
+... | inj₁ (t1 , w1 , z) rewrite z with isValue⊎ t
+... |    inj₁ x
+  rewrite stepVal t w x | sym (pair-inj₁ (just-inj z)) | sym (pair-inj₂ (just-inj z))
+        | stepsVal t w n x | sym (pair-inj₁ h) | sym (pair-inj₂ h)
+  = 0 , _≤_.z≤n , refl
+... |    inj₂ x =
+  suc (fst ind) , _≤_.s≤s (fst (snd ind)) , s
+  where
+    ind : Σ ℕ (λ n' → n' ≤ n × ssteps n' (t1 , w1) ≡ just (t' , w'))
+    ind = steps→ssteps {n} {t1} {t'} {w1} {w'} h
+
+    s : ssteps (suc (fst ind)) (t , w) ≡ just (t' , w')
+    s with isValue⊎ t
+    ... | inj₁ y = ⊥-elim (x y)
+    ... | inj₂ y rewrite z = snd (snd ind)
+steps→ssteps {suc n} {t} {t'} {w} {w'} h | inj₂ z rewrite z | sym (pair-inj₁ h) | sym (pair-inj₂ h) = 0 , _≤_.z≤n , refl
+
+
+
+step-ssteps-trans : {w w' w'' : 𝕎·} {a b c : Term} {n : ℕ}
+                    → ¬ isValue a
+                    → step a w ≡ just (b , w')
+                    → ssteps n (b , w') ≡ just (c , w'')
+                    → ssteps (suc n) (a , w) ≡ just (c , w'')
+step-ssteps-trans {w} {w'} {w''} {a} {b} {c} {n} nv c₁ c₂ with isValue⊎ a
+... | inj₁ x = ⊥-elim (nv x)
+... | inj₂ x with step a w
+... |    just (a1 , w1) rewrite just-inj c₁ = c₂
+... |    nothing = ⊥-elim (¬just≡nothing (sym c₁))
+
+
+
+strict-LET→hasValue-decomp : (k : ℕ) (a b v : Term) (w w' : 𝕎·)
+                       → steps k (LET a b , w) ≡ (v , w')
+                       → isValue v
+                       → Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w1 → Σ Term (λ u →
+                           ssteps k1 (a , w) ≡ just (u , w1)
+                           × isValue u
+                           × steps k2 (sub u b , w1) ≡ (v , w')
+                           × steps (suc k1) (LET a b , w) ≡ (sub u b , w1)
+                           × k1 + k2 < k))))
+strict-LET→hasValue-decomp 0 a b v w w' comp isv
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+strict-LET→hasValue-decomp (suc k) a b v w w' comp isv with isValue⊎ a
+... | inj₁ x = 0 , k , w , a , refl , x , comp , refl , ≤-refl
+... | inj₂ x with step⊎ a w
+... |    inj₁ (a' , w1 , z) rewrite z =
+  suc (fst ind) , fst (snd ind) , fst (snd (snd ind)) , fst (snd (snd (snd ind))) ,
+  step-ssteps-trans {w} {w1} {fst (snd (snd ind))} {a} {a'} {fst (snd (snd (snd ind)))} {fst ind} x z (fst (snd (snd (snd (snd ind))))) ,
+  fst (snd (snd (snd (snd (snd ind))))) ,
+  fst (snd (snd (snd (snd (snd (snd ind)))))) ,
+  fst (snd (snd (snd (snd (snd (snd (snd ind))))))) ,
+--  c ,
+  _≤_.s≤s (snd (snd (snd (snd (snd (snd (snd (snd ind))))))))
+  where
+    ind : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w2 → Σ Term (λ u →
+            ssteps k1 (a' , w1) ≡ just (u , w2)
+            × isValue u
+            × steps k2 (sub u b , w2) ≡ (v , w')
+            × steps (suc k1) (LET a' b , w1) ≡ (sub u b , w2)
+            × k1 + k2 < k))))
+    ind = strict-LET→hasValue-decomp k a' b v w1 w' comp isv
+... |    inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+
+
+
+LET→hasValue-decomp : (k : ℕ) (a b v : Term) (w w' : 𝕎·)
+                       → steps k (LET a b , w) ≡ (v , w')
+                       → isValue v
+                       → Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w1 → Σ Term (λ u →
+                           Σ (steps k1 (a , w) ≡ (u , w1)) (λ comp1 →
+                           isValue u
+                           × steps k2 (sub u b , w1) ≡ (v , w')
+                           × Σ (steps (suc k1) (LET a b , w) ≡ (sub u b , w1)) (λ comp2 →
+                           steps→𝕎s {k1} {w} {w1} {a} {u} comp1 ++ [ w1 ] ≡ steps→𝕎s {suc k1} {w} {w1} {LET a b} {sub u b} comp2
+                           × k1 + k2 < k))))))
+LET→hasValue-decomp 0 a b v w w' comp isv
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+LET→hasValue-decomp (suc k) a b v w w' comp isv with isValue⊎ a
+... | inj₁ x = 0 , k , w , a , refl , x , comp , refl , refl , ≤-refl
+... | inj₂ x with step⊎ a w
+... |    inj₁ (a' , w1 , z) rewrite z =
+  suc (fst ind) , fst (snd ind) , fst (snd (snd ind)) , fst (snd (snd (snd ind))) ,
+  step-steps-trans2 {w} {w1} {fst (snd (snd ind))} {a} {a'} {fst (snd (snd (snd ind)))} {fst ind} z (fst (snd (snd (snd (snd ind))))) ,
+  fst (snd (snd (snd (snd (snd ind))))) ,
+  fst (snd (snd (snd (snd (snd (snd ind)))))) ,
+  fst (snd (snd (snd (snd (snd (snd (snd ind))))))) ,
+  c ,
+  (_≤_.s≤s (snd (snd (snd (snd (snd (snd (snd (snd (snd ind))))))))))
+  where
+    ind : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w2 → Σ Term (λ u →
+            Σ (steps k1 (a' , w1) ≡ (u , w2)) (λ comp1 →
+            isValue u
+            × steps k2 (sub u b , w2) ≡ (v , w')
+            × Σ (steps (suc k1) (LET a' b , w1) ≡ (sub u b , w2)) (λ comp2 →
+            steps→𝕎s {k1} {w1} {w2} {a'} {u} comp1 ++ [ w2 ] ≡ steps→𝕎s {suc k1} {w1} {w2} {LET a' b} {sub u b} comp2
+            × k1 + k2 < k))))))
+    ind = LET→hasValue-decomp k a' b v w1 w' comp isv
+
+    c0 : steps→𝕎s {suc (fst ind)} {w} {fst (snd (snd ind))} {a} {fst (snd (snd (snd ind)))} (step-steps-trans2 {w} {w1} {fst (snd (snd ind))} {a} {a'} {fst (snd (snd (snd ind)))} {fst ind} z (fst (snd (snd (snd (snd ind))))))
+         ≡ w ∷ steps→𝕎s {fst ind} {w1} {fst (snd (snd ind))} {a'} {fst (snd (snd (snd ind)))} (fst (snd (snd (snd (snd ind)))))
+    c0 = steps→𝕎s-steps-steps-trans {w} {w1} {fst (snd (snd ind))} {a} {a'} {fst (snd (snd (snd ind)))} {fst ind} z (fst (snd (snd (snd (snd ind)))))
+
+    c : steps→𝕎s {suc (fst ind)} {w} {fst (snd (snd ind))} {a} {fst (snd (snd (snd ind)))} (step-steps-trans2 {w} {w1} {fst (snd (snd ind))} {a} {a'} {fst (snd (snd (snd ind)))} {fst ind} z (fst (snd (snd (snd (snd ind)))))) ++ [ fst (snd (snd ind)) ]
+        ≡ w ∷ steps→𝕎s {suc (fst ind)} {w1} {fst (snd (snd ind))} {LET a' b} {sub (fst (snd (snd (snd ind)))) b} (fst (snd (snd (snd (snd (snd (snd (snd ind))))))))
+    c rewrite c0 = →≡∷ refl (fst (snd (snd (snd (snd (snd (snd (snd (snd ind)))))))))
 ... |    inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
 
 

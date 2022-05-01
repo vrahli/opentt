@@ -108,12 +108,184 @@ open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 
-→ΣhighestUpdCtxt-upd : {name : Name} {f b : Term} {w : 𝕎·} {n : ℕ}
+
+
+¬Names→updCtxt : {name : Name} {f t : Term}
+                  → ¬names t ≡ true
+                  → updCtxt name f t
+¬Names→updCtxt {name} {f} {VAR x} nn = updCtxt-VAR _
+¬Names→updCtxt {name} {f} {NAT} nn = updCtxt-NAT
+¬Names→updCtxt {name} {f} {QNAT} nn = updCtxt-QNAT
+¬Names→updCtxt {name} {f} {LT t t₁} nn = updCtxt-LT _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+¬Names→updCtxt {name} {f} {QLT t t₁} nn = updCtxt-QLT _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+¬Names→updCtxt {name} {f} {NUM x} nn = updCtxt-NUM _
+¬Names→updCtxt {name} {f} {IFLT t t₁ t₂ t₃} nn = updCtxt-IFLT _ _ _ _ (¬Names→updCtxt (∧≡true→1-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn)) (¬Names→updCtxt (∧≡true→2-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn)) (¬Names→updCtxt (∧≡true→3-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn)) (¬Names→updCtxt (∧≡true→4-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn))
+¬Names→updCtxt {name} {f} {PI t t₁} nn = updCtxt-PI _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+¬Names→updCtxt {name} {f} {LAMBDA t} nn = updCtxt-LAMBDA t (¬Names→updCtxt nn)
+¬Names→updCtxt {name} {f} {APPLY t t₁} nn = updCtxt-APPLY _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+¬Names→updCtxt {name} {f} {FIX t} nn = updCtxt-FIX t (¬Names→updCtxt nn)
+¬Names→updCtxt {name} {f} {LET t t₁} nn = updCtxt-LET _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+¬Names→updCtxt {name} {f} {SUM t t₁} nn = updCtxt-SUM _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+¬Names→updCtxt {name} {f} {PAIR t t₁} nn = updCtxt-PAIR _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+¬Names→updCtxt {name} {f} {SPREAD t t₁} nn = updCtxt-SPREAD _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+¬Names→updCtxt {name} {f} {SET t t₁} nn = updCtxt-SET _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+¬Names→updCtxt {name} {f} {TUNION t t₁} nn = updCtxt-TUNION _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+¬Names→updCtxt {name} {f} {UNION t t₁} nn = updCtxt-UNION _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+¬Names→updCtxt {name} {f} {QTUNION t t₁} nn = updCtxt-QTUNION _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+¬Names→updCtxt {name} {f} {INL t} nn = updCtxt-INL t (¬Names→updCtxt nn)
+¬Names→updCtxt {name} {f} {INR t} nn = updCtxt-INR t (¬Names→updCtxt nn)
+¬Names→updCtxt {name} {f} {DECIDE t t₁ t₂} nn = updCtxt-DECIDE _ _ _ (¬Names→updCtxt (∧≡true→1-3 {¬names t} {¬names t₁} {¬names t₂} nn)) (¬Names→updCtxt (∧≡true→2-3 {¬names t} {¬names t₁} {¬names t₂} nn)) (¬Names→updCtxt (∧≡true→3-3 {¬names t} {¬names t₁} {¬names t₂} nn))
+¬Names→updCtxt {name} {f} {EQ t t₁ t₂} nn = updCtxt-EQ _ _ _ (¬Names→updCtxt (∧≡true→1-3 {¬names t} {¬names t₁} {¬names t₂} nn)) (¬Names→updCtxt (∧≡true→2-3 {¬names t} {¬names t₁} {¬names t₂} nn)) (¬Names→updCtxt (∧≡true→3-3 {¬names t} {¬names t₁} {¬names t₂} nn))
+¬Names→updCtxt {name} {f} {AX} nn = updCtxt-AX
+¬Names→updCtxt {name} {f} {FREE} nn = updCtxt-FREE
+¬Names→updCtxt {name} {f} {CHOOSE t t₁} nn = updCtxt-CHOOSE _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+¬Names→updCtxt {name} {f} {TSQUASH t} nn = updCtxt-TSQUASH t (¬Names→updCtxt nn)
+¬Names→updCtxt {name} {f} {TTRUNC t} nn = updCtxt-TTRUNC t (¬Names→updCtxt nn)
+¬Names→updCtxt {name} {f} {TCONST t} nn = updCtxt-TCONST t (¬Names→updCtxt nn)
+¬Names→updCtxt {name} {f} {SUBSING t} nn = updCtxt-SUBSING t (¬Names→updCtxt nn)
+¬Names→updCtxt {name} {f} {DUM t} nn = updCtxt-DUM t (¬Names→updCtxt nn)
+¬Names→updCtxt {name} {f} {FFDEFS t t₁} nn = updCtxt-FFDEFS _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+¬Names→updCtxt {name} {f} {UNIV x} nn = updCtxt-UNIV _
+¬Names→updCtxt {name} {f} {LIFT t} nn = updCtxt-LIFT t (¬Names→updCtxt nn)
+¬Names→updCtxt {name} {f} {LOWER t} nn = updCtxt-LOWER t (¬Names→updCtxt nn)
+¬Names→updCtxt {name} {f} {SHRINK t} nn = updCtxt-SHRINK t (¬Names→updCtxt nn)
+
+
+
+¬Names-APPLY-NUM : {f : Term} {m : ℕ} → ¬Names f → ¬Names (APPLY f (NUM m))
+¬Names-APPLY-NUM {f} {m} nn rewrite nn = refl
+
+
+
+getT≤ℕ-chooseT0if→ : (gc : getT-chooseT) {w : 𝕎·} {name : Name} {n m m' : ℕ}
+                       → compatible· name w Res⊤
+                       → getT 0 name w ≡ just (NUM m')
+                       → getT≤ℕ (chooseT0if name w m' m) n name
+                       → getT≤ℕ w n name
+getT≤ℕ-chooseT0if→ gc {w} {name} {n} {m} {m'} compat g0 (j , h , q) with m' <? m
+... | yes x rewrite gc w name m compat | sym (NUMinj (just-inj h)) = m' , g0 , ≤-trans (<⇒≤ x) q
+... | no x rewrite h = j , refl , q
+
+
+
+{--
+→isHighestℕ-upd-body-NUM2 :
+  {k : ℕ} {name : Name} {w : 𝕎·} {f : Term} {n m m' : ℕ}
+  (comp : steps k (SEQ (IFLT (NUM m') (NUM m) (setT name (NUM m)) AX) (APPLY (shiftDown 1 (subv 1 (NUM m) (shiftUp 0 f))) (NUM m)) , w)
+          ≡ (APPLY f (NUM m) , chooseT0if name w m' m))
+  → getT 0 name w ≡ just (NUM m')
+  → m' ≤ n
+  → isHighestℕ {k} {w} {chooseT0if name w m' m} n name comp
+→isHighestℕ-upd-body-NUM2 {0} {name} {w} {f} {n} {m} {m'} () g0 ltn
+→isHighestℕ-upd-body-NUM2 {suc k} {name} {w} {f} {n} {m} {m'} comp g0 ltn with m' <? m
+... | yes x = (m' , g0 , ltn) , {!!}
+... | no x = (m' , g0 , ltn) , {!!}
+
+
+
+→isHighestℕ-upd-body-NUM : {k : ℕ} {name : Name} {w : 𝕎·} {f : Term} {n m m' : ℕ}
+                             (comp : steps k (LET (NUM m) (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w) ≡ (APPLY f (NUM m) , chooseT0if name w m' m))
+                             → getT 0 name w ≡ just (NUM m')
+                             → m' ≤ n
+                             → isHighestℕ {k} {w} {chooseT0if name w m' m} n name comp
+→isHighestℕ-upd-body-NUM {0} {name} {w} {f} {n} {m} {m'} () g0 len
+→isHighestℕ-upd-body-NUM {1} {name} {w} {f} {n} {m} {m'} () g0 len
+→isHighestℕ-upd-body-NUM {suc (suc k)} {name} {w} {f} {n} {m} {m'} comp g0 len rewrite g0 =
+  (m' , refl , len) ,
+  (m' , g0 , len) ,
+  {!!}
+
+
+
+→isHighestℕ-upd-body : {k1 k2 : ℕ} {name : Name} {w1 w1' : 𝕎·} {b f : Term} {n m m' : ℕ}
+                         (comp1 : steps k1 (b , w1) ≡ (NUM m , w1'))
+                         (comp2 : steps k2 (LET b (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m))
+                         → getT 0 name w1' ≡ just (NUM m')
+                         → isHighestℕ {k1} {w1} {w1'} {b} {NUM m} n name comp1
+                         → isHighestℕ {k2} {w1} {chooseT0if name w1' m' m} n name comp2
+→isHighestℕ-upd-body {0} {k2} {name} {w1} {w1'} {b} {f} {n} {m} {m'} comp1 comp2 g0 h
+  rewrite pair-inj₁ comp1 | pair-inj₂ comp1 | g0 = {!!}
+→isHighestℕ-upd-body {suc k1} {0} {name} {w1} {w1'} {b} {f} {n} {m} {m'} comp1 () g0 h
+→isHighestℕ-upd-body {suc k1} {suc k2} {name} {w1} {w1'} {b} {f} {n} {m} {m'} comp1 comp2 g0 h with step⊎ b w1
+... | inj₁ (b' , w' , z) rewrite z with isValue⊎ b
+... |    inj₁ x
+  rewrite stepVal b w1 x
+        | sym (pair-inj₁ (just-inj z))
+        | sym (pair-inj₂ (just-inj z)) = {!!}
+  where
+    eqb : b ≡ NUM m
+    eqb = stepsVal→ₗ b (NUM m) w1 w1' k1 x comp1
+
+    eqw : w1 ≡ w1'
+    eqw = stepsVal→ᵣ b (NUM m) w1 w1' k1 x comp1
+... |    inj₂ x rewrite z =
+  fst h , →isHighestℕ-upd-body {k1} {k2} {name} {w'} {w1'} {b'} {f} {n} {m} {m'} comp1 comp2 g0 (snd h)
+→isHighestℕ-upd-body {suc k1} {suc k2} {name} {w1} {w1'} {b} {f} {n} {m} {m'} comp1 comp2 g0 h | inj₂ z
+  rewrite z | pair-inj₁ comp1 | pair-inj₂ comp1 = ⊥-elim (¬just≡nothing z)
+--}
+
+
+
+→ΣhighestUpdCtxt-upd : (gc : getT-chooseT) {name : Name} {f b : Term} {w1 : 𝕎·} {n : ℕ}
+                        → compatible· name w1 Res⊤
+                        → ∀𝕎-get0-NUM w1 name
                         → # f
                         → ¬Names f
-                        → stepsPresHighestℕ name f (LET b (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w
-                        → ΣhighestUpdCtxt name f n (LET b (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w w
-→ΣhighestUpdCtxt-upd {name} {f} {b} {w} {n} cf nnf (k , v , w' , comp , isv , ind) = {!!}
+                        → ¬Names b
+                        → stepsPresHighestℕ name f (LET b (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1
+                        → ΣhighestUpdCtxt name f n (LET b (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 w1
+→ΣhighestUpdCtxt-upd gc {name} {f} {b} {w1} {n} compat wgt0 cf nnf nnb (k , v , w2 , comp , isv , ind) =
+  k2 , APPLY f (NUM m) , chooseT0if name w1' m' m , comp2 ,
+  j ,
+  ¬Names→updCtxt {name} {f} {APPLY f (NUM m)} (¬Names-APPLY-NUM {f} {m} nnf)
+  where
+    c : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w1' → Σ ℕ (λ m → Σ ℕ (λ m' →
+           k1 < k
+           × k2 < k
+           × getT 0 name w1' ≡ just (NUM m')
+           × steps k1 (b , w1) ≡ (NUM m , w1')
+           × steps k2 (LET b (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m))))))
+    c = upd-decomp cf wgt0 comp isv
+
+    k1 : ℕ
+    k1 = fst c
+
+    k2 : ℕ
+    k2 = fst (snd c)
+
+    w1' : 𝕎·
+    w1' = fst (snd (snd c))
+
+    m : ℕ
+    m = fst (snd (snd (snd c)))
+
+    m' : ℕ
+    m' = fst (snd (snd (snd (snd c))))
+
+    ltk1 : k1 < k
+    ltk1 = fst (snd (snd (snd (snd (snd c)))))
+
+    ltk2 : k2 < k
+    ltk2 = fst (snd (snd (snd (snd (snd (snd c))))))
+
+    gt0 : getT 0 name w1' ≡ just (NUM m')
+    gt0 = fst (snd (snd (snd (snd (snd (snd (snd c)))))))
+
+    comp1 : steps k1 (b , w1) ≡ (NUM m , w1')
+    comp1 = fst (snd (snd (snd (snd (snd (snd (snd (snd c))))))))
+
+    comp2 : steps k2 (LET b (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m)
+    comp2 = snd (snd (snd (snd (snd (snd (snd (snd (snd c))))))))
+
+    e1 : w1 ⊑· w1'
+    e1 = steps→⊑ k1 b (NUM m) comp1
+
+    j : getT≤ℕ (chooseT0if name w1' m' m) n name → (getT≤ℕ w1 n name × isHighestℕ {k2} {w1} {chooseT0if name w1' m' m} n name comp2)
+    j g = {!!}
+      where
+        j1 : isHighestℕ {k1} {w1} {w1'} {b} {NUM m} n name comp1
+        j1 = ind k1 (<⇒≤ ltk1) {w1} {w1'} {b} {NUM m} {n} comp1 tt (¬Names→updCtxt nnb) (getT≤ℕ-chooseT0if→ gc {w1'} {name} {n} {m} {m'} (⊑-compatible· e1 compat) gt0 g)
+
 
 
 
@@ -302,16 +474,6 @@ step-sat-isHighestℕ {w1} {w2} {.(SHRINK a)} {b} {n} {name} {f} comp indb (updC
 step-sat-isHighestℕ {w1} {w2} {.(upd name f)} {b} {n} {name} {f} comp indb updCtxt-upd nnf cf = {!!}
 -- LAMBDA (LET (VAR 0) (LET (IFLT (APPLY (CS name) (NUM 0)) (VAR 0) (CHOOSE (NAME name) (VAR 0)) AX) (APPLY (shiftUp 0 f) (VAR 1))))
 --}
-
-
-
-steps→𝕎s : {k : ℕ} {w1 w2 : 𝕎·} {a b : Term}
-             → steps k (a , w1) ≡ (b , w2)
-             → List 𝕎·
-steps→𝕎s {0} {w1} {w2} {a} {b} comp = Data.List.[ w1 ]
-steps→𝕎s {suc k} {w1} {w2} {a} {b} comp with step a w1
-... | just (x , w) = w1 ∷ steps→𝕎s {k} {w} {w2} {x} {b} comp
-... | nothing = Data.List.[ w1 ]
 
 
 
