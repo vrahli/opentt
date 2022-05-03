@@ -816,6 +816,55 @@ stepsPresHighestℕ-IFLT₂→ {name} {f} {n} {b} {c} {d} {w} (k , v , w' , comp
 
 
 
+ΣhighestUpdCtxtAux-APPLY₁-aux : {j : ℕ} {k : ℕ} {w w0 w1 w' : 𝕎·} {a a1 a' : Term} {name : Name} {f : Term} {n : ℕ} {b : Term}
+                               → ¬ isValue a
+                               → step a w ≡ just (a1 , w1)
+                               → (comp : steps k (a1 , w1) ≡ (a' , w'))
+                               → (getT≤ℕ w' n name → (getT≤ℕ w0 n name × getT≤ℕ w n name × isHighestℕ {k} {w1} {w'} {a1} {a'} n name comp))
+                               → ΣhighestUpdCtxtAux j name f n (APPLY a1 b) (APPLY a' b) w0 w1 w'
+                               → ΣhighestUpdCtxtAux (suc j) name f n (APPLY a b) (APPLY a' b) w0 w w'
+ΣhighestUpdCtxtAux-APPLY₁-aux {j} {k} {w} {w0} {w1} {w'} {a} {a1} {a'} {name} {f} {n} {b} nv comp0 comp i (comp1 , g , u) with is-LAM a
+... | inj₁ (x , p) rewrite p = ⊥-elim (nv tt)
+... | inj₂ p with is-CS a
+... |    inj₁ (y , q) rewrite q = ⊥-elim (nv tt)
+... |    inj₂ q rewrite comp0 = comp1 , (λ s → fst (g s) , fst (snd (i s)) , snd (g s)) , u
+
+
+
+ΣhighestUpdCtxtAux-APPLY₁ : {k : ℕ} {name : Name} {f : Term} {n : ℕ} {a a' b : Term} {w0 w w' : 𝕎·}
+                        → updCtxt name f b
+                        → ΣhighestUpdCtxtAux k name f n a a' w0 w w'
+                        → Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (APPLY a b) (APPLY a' b) w0 w w')
+ΣhighestUpdCtxtAux-APPLY₁ {0} {name} {f} {n} {a} {a'} {b} {w0} {w} {w'} ub (comp , i , u)
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl , i , updCtxt-APPLY _ _ u ub
+ΣhighestUpdCtxtAux-APPLY₁ {suc k} {name} {f} {n} {a} {a'} {b} {w0} {w} {w'} ub (comp , i , u) with step⊎ a w
+... | inj₁ (a1 , w1 , z) rewrite z with isValue⊎ a
+... |    inj₁ y rewrite stepVal a w y | sym (pair-inj₁ (just-inj z)) | sym (pair-inj₂ (just-inj z)) =
+  ΣhighestUpdCtxtAux-APPLY₁ {k} ub (comp , (λ s → fst (i s) , snd (snd (i s))) , u)
+... |    inj₂ y =
+  suc (fst ind) , ΣhighestUpdCtxtAux-APPLY₁-aux {fst ind} {k} y z comp i (snd ind)
+  where
+    ind : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (APPLY a1 b) (APPLY a' b) w0 w1 w')
+    ind = ΣhighestUpdCtxtAux-APPLY₁ {k} {name} {f} {n} {a1} {a'} {b} {w0} {w1} {w'} ub (comp , (λ s → fst (i s) , snd (snd (i s))) , u)
+ΣhighestUpdCtxtAux-APPLY₁ {suc k} {name} {f} {n} {a} {a'} {b} {w0} {w} {w'} ub (comp , i , u) | inj₂ z
+  rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl , i , updCtxt-APPLY _ _ u ub
+
+
+
+ΣhighestUpdCtxt-APPLY₁ : {name : Name} {f : Term} {n : ℕ} {a b : Term} {w0 w : 𝕎·}
+                        → updCtxt name f b
+                        → ΣhighestUpdCtxt name f n a w0 w
+                        → ΣhighestUpdCtxt name f n (APPLY a b) w0 w
+ΣhighestUpdCtxt-APPLY₁ {name} {f} {n} {a} {b} {w0} {w} ub (k , a' , w' , wcomp , i , u) =
+  fst q , APPLY a' b , w' , snd q
+  where
+    q : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (APPLY a b) (APPLY a' b) w0 w w')
+    q = ΣhighestUpdCtxtAux-APPLY₁ {k} ub (wcomp , i , u)
+
+
+
 
 {--
 →steps-LET : {k : ℕ} {a b v : Term} {w1 w2 : 𝕎·}
