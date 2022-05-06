@@ -167,6 +167,11 @@ SEQ-val⇓ w a b isv = 1 , s
 ¬Names→step-nothing w1 w2 (IFLT a b c d) nn s | inj₂ p with step⊎ a w1
 ... |    inj₁ (a' , w' , z) rewrite z = ⊥-elim (¬just≡nothing s)
 ... |    inj₂ z rewrite z | ¬Names→step-nothing w1 w2 a (∧≡true→1-4 {¬names a} {¬names b} {¬names c} {¬names d} nn) z = refl
+¬Names→step-nothing w1 w2 (SUC a) nn s with is-NUM a
+... | inj₁ (n , p) = ⊥-elim (¬just≡nothing s)
+... | inj₂ x with step⊎ a w1
+... |    inj₁ (b , w' , z) rewrite z = ⊥-elim (¬just≡nothing s)
+... |    inj₂ z rewrite z | ¬Names→step-nothing w1 w2 a nn z = refl
 ¬Names→step-nothing w1 w2 (APPLY f a) nn s with is-LAM f
 ... | inj₁ (t , p) = ⊥-elim (¬just≡nothing s)
 ... | inj₂ x with is-CS f
@@ -252,6 +257,23 @@ SEQ-val⇓ w a b isv = 1 , s
     i : step a w3 ≡ just (a' , w3) × w1 ≡ w' × ¬Names a'
     i = ¬Names→step w1 w' w3 a a' (∧≡true→ₗ (¬names a) (¬names b ∧ ¬names c ∧ ¬names d) nr) z
 ¬Names→step w1 w2 w3 (IFLT a b c d) u nr s | inj₂ p | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
+-- SUC
+¬Names→step w1 w2 w3 (SUC a) u nr s with is-NUM a
+... | inj₁ (n , p) rewrite p | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , refl
+... | inj₂ x with step⊎ a w1
+... |    inj₁ (a' , w' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) with step⊎ a w3
+... |       inj₁ (a'' , w'' , z') rewrite z' = ≡just (≡pair j (pair-inj₂ (just-inj (trans (sym z') (fst i))))) , fst (snd i) , snd (snd i)
+  where
+    i : step a w3 ≡ just (a' , w3) × w1 ≡ w' × ¬Names a'
+    i = ¬Names→step w1 w' w3 a a' nr z
+
+    j : SUC a'' ≡ SUC a'
+    j rewrite pair-inj₁ (just-inj (trans (sym z') (fst i))) = refl
+... |       inj₂ z' rewrite z' = ⊥-elim (¬just≡nothing (sym (trans (sym z') (fst i))))
+  where
+    i : step a w3 ≡ just (a' , w3) × w1 ≡ w' × ¬Names a'
+    i = ¬Names→step w1 w' w3 a a' nr z
+¬Names→step w1 w2 w3 (SUC a) u nr s | inj₂ x | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
 -- PI
 ¬Names→step w1 w2 w3 (PI t t₁) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
 -- LAMBDA

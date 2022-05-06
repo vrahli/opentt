@@ -215,23 +215,53 @@ SEQ⇓-decomp a b v w w' (k , comp) isv =
 
 
 
+SUC⇓val→steps : {n : ℕ} {t v : Term} {w1 w2 : 𝕎·}
+                → steps n (SUC t , w1) ≡ (v , w2)
+                → isValue v
+                → Σ ℕ (λ k → steps n (t , w1) ≡ (NUM k , w2) × v ≡ NUM (suc k))
+SUC⇓val→steps {0} {t} {v} {w1} {w2} comp isv
+  rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = ⊥-elim isv
+SUC⇓val→steps {suc n} {t} {v} {w1} {w2} comp isv with is-NUM t
+... | inj₁ (k , p) rewrite p | stepsVal (NUM (suc k)) w1 n tt | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = k , stepsVal (NUM k) w1 n tt , refl
+... | inj₂ p with step⊎ t w1
+... |    inj₁ (t' , w1' , z) rewrite z = ind
+  where
+    ind : Σ ℕ (λ k → steps n (t' , w1') ≡ (NUM k , w2) × v ≡ NUM (suc k))
+    ind = SUC⇓val→steps {n} {t'} {v} {w1'} {w2} comp isv
+... |    inj₂ z rewrite z | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = ⊥-elim isv
+
+
+
+SUC⇓val→ : {t v : Term} {w1 w2 : 𝕎·}
+            → SUC t ⇓ v from w1 to w2
+            → isValue v
+            → Σ ℕ (λ k → t ⇓ NUM k from w1 to w2 × v ≡ NUM (suc k))
+SUC⇓val→ {t} {v} {w1} {w2} (n , comp) isv =
+  fst h , (n , fst (snd h)) , snd (snd h)
+  where
+    h : Σ ℕ (λ k → steps n (t , w1) ≡ (NUM k , w2) × v ≡ NUM (suc k))
+    h = SUC⇓val→steps {n} {t} {v} {w1} {w2} comp isv
+
+
+
 probeM⇓-decomp : (name : Name) (F f v : Term) (w w' : 𝕎·)
                  → probeM name F f ⇓ v from w to w'
                  → isValue v
                  → ∀𝕎-getT-NUM w name
-                 → Σ Term (λ u →
+                 → Σ Term (λ u → Σ ℕ (λ k →
                      appUpd name F f ⇓ u from w to w'
                      × isValue u
-                     × get0 name ⇓ v from w' to w'
-                     × getT 0 name w' ≡ just v)
+                     × get0 name ⇓ NUM k from w' to w'
+                     × getT 0 name w' ≡ just (NUM k)
+                     × v ≡ NUM (suc k)))
 probeM⇓-decomp name F f v w w' comp isv g0 =
-  u , comp1' , isv1 , comp2' , g3
+  u , j , comp1' , isv1 , comp2' , g3 , eqvj
   where
     z : Σ 𝕎· (λ w1 → Σ Term (λ u →
           appUpd name F f ⇓ u from w to w1
           × isValue u
-          × get0 name ⇓ v from w1 to w'))
-    z = SEQ⇓-decomp (appUpd name F f) (get0 name) v w w' comp isv
+          × SUC (get0 name) ⇓ v from w1 to w'))
+    z = SEQ⇓-decomp (appUpd name F f) (SUC (get0 name)) v w w' comp isv
 
     w1 : 𝕎·
     w1 = fst z
@@ -248,8 +278,20 @@ probeM⇓-decomp name F f v w w' comp isv g0 =
     isv1 : isValue u
     isv1 = fst (snd (snd (snd z)))
 
-    comp2 : get0 name ⇓ v from w1 to w'
+    comp2 : SUC (get0 name) ⇓ v from w1 to w'
     comp2 = snd (snd (snd (snd z)))
+
+    comp2b : Σ ℕ (λ j → get0 name ⇓ NUM j from w1 to w' × v ≡ NUM (suc j))
+    comp2b = SUC⇓val→ comp2 isv
+
+    j : ℕ
+    j = fst comp2b
+
+    comp2c : get0 name ⇓ NUM j from w1 to w'
+    comp2c = fst (snd comp2b)
+
+    eqvj : v ≡ NUM (suc j)
+    eqvj = snd (snd comp2b)
 
     g2 : Σ ℕ (λ k → getT 0 name w1 ≡ just (NUM k))
     g2 = lower (g0 w1 e1)
@@ -264,26 +306,26 @@ probeM⇓-decomp name F f v w w' comp isv g0 =
     comp3 = 1 , g1
 
     eqw : w1 ≡ w'
-    eqw = snd (⇓-from-to→≡𝕎 tt isv comp3 comp2)
+    eqw = snd (⇓-from-to→≡𝕎 tt tt comp3 comp2c)
 
-    eqv : v ≡ NUM k
-    eqv = fst (⇓-from-to→≡𝕎 isv tt comp2 comp3)
+    eqj : j ≡ k
+    eqj = NUMinj (fst (⇓-from-to→≡𝕎 tt tt comp2c comp3))
 
     comp1' : appUpd name F f ⇓ u from w to w'
     comp1' = ⇓-from-to≡wᵣ eqw comp1
 
-    comp2' : get0 name ⇓ v from w' to w'
-    comp2' = ⇓-from-to≡wₗ eqw comp2
+    comp2' : get0 name ⇓ NUM j from w' to w'
+    comp2' = ⇓-from-to≡wₗ eqw comp2c
 
-    g3 : getT 0 name w' ≡ just v
+    g3 : getT 0 name w' ≡ just (NUM j)
     g3 = begin
            getT 0 name w'
          ≡⟨ cong (getT 0 name) (sym eqw) ⟩
            getT 0 name w1
          ≡⟨ snd g2 ⟩
            just (NUM k)
-         ≡⟨ cong just (sym eqv) ⟩
-           just v
+         ≡⟨ cong (λ x → just (NUM x)) (sym eqj) ⟩
+           just (NUM j)
          ∎
 
 
@@ -334,16 +376,19 @@ shiftNameDown-renn {name} {F} {f} cF cf nnF nnf =
              → ¬Names F
              → ¬Names f
              → νtestM F f ⇓ NUM n from w1 to w2
-             → Σ Name (λ name → Σ Term (λ v →
+             → Σ Name (λ name → Σ Term (λ v → Σ ℕ (λ k →
                  APPLY F (upd name f) ⇓ v from (chooseT name (startNewChoiceT Res⊤ w1 (testM 0 F f)) (NUM 0)) to w2
                  × isValue v
-                 × getT 0 name w2 ≡ just (NUM n)))
+                 × getT 0 name w2 ≡ just (NUM k)
+                 × n ≡ suc k)))
 #νtestM⇓→ nc cn {w1} {w2} {F} {f} {n} cF cf nnF nnf comp =
   newChoiceT w1 (testM 0 F f) ,
   fst comp3 ,
   fst (snd comp3) ,
   fst (snd (snd comp3)) ,
-  snd (snd (snd (snd comp3)))
+  fst (snd (snd (snd comp3))) ,
+  fst (snd (snd (snd (snd (snd comp3))))) ,
+  NUMinj (snd (snd (snd (snd (snd (snd comp3))))))
   where
     name : Name
     name = newChoiceT w1 (testM 0 F f)
@@ -363,11 +408,12 @@ shiftNameDown-renn {name} {F} {f} cF cf nnF nnf =
     compat1 : compatible· name w1' Res⊤
     compat1 = startChoiceCompatible· Res⊤ w1 name (¬newChoiceT∈dom𝕎 w1 (testM 0 F f))
 
-    comp3 : Σ Term (λ u →
+    comp3 : Σ Term (λ u → Σ ℕ (λ k →
                appUpd name F f ⇓ u from w1'' to w2
                × isValue u
-               × get0 name ⇓ NUM n from w2 to w2
-               × getT 0 name w2 ≡ just (NUM n))
+               × get0 name ⇓ NUM k from w2 to w2
+               × getT 0 name w2 ≡ just (NUM k)
+               × NUM n ≡ NUM (suc k)))
     comp3 = probeM⇓-decomp name F f (NUM n) w1'' w2 comp2 tt (cn nc name w1' 0 compat1)
 
 
@@ -382,6 +428,7 @@ data updCtxt (name : Name) (f : Term) : Term → Set where
   updCtxt-QLT     : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (QLT a b)
   updCtxt-NUM     : (x : ℕ) → updCtxt name f (NUM x)
   updCtxt-IFLT    : (a b c d : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f c → updCtxt name f d → updCtxt name f (IFLT a b c d)
+  updCtxt-SUC     : (a : Term) → updCtxt name f a → updCtxt name f (SUC a)
   updCtxt-PI      : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (PI a b)
   updCtxt-LAMBDA  : (a : Term) → updCtxt name f a → updCtxt name f (LAMBDA a)
   updCtxt-APPLY   : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (APPLY a b)
@@ -429,6 +476,7 @@ data updCtxt (name : Name) (f : Term) : Term → Set where
 →updCtxt-shiftDown v {name} {f} cf {.(QLT a b)} (updCtxt-QLT a b ctxt ctxt₁) = updCtxt-QLT _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown v cf ctxt₁)
 →updCtxt-shiftDown v {name} {f} cf {.(NUM x)} (updCtxt-NUM x) = updCtxt-NUM _
 →updCtxt-shiftDown v {name} {f} cf {.(IFLT a b c d)} (updCtxt-IFLT a b c d ctxt ctxt₁ ctxt₂ ctxt₃) = updCtxt-IFLT _ _ _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown v cf ctxt₁) (→updCtxt-shiftDown v cf ctxt₂) (→updCtxt-shiftDown v cf ctxt₃)
+→updCtxt-shiftDown v {name} {f} cf {.(SUC a)} (updCtxt-SUC a ctxt) = updCtxt-SUC _ (→updCtxt-shiftDown v cf ctxt)
 →updCtxt-shiftDown v {name} {f} cf {.(PI a b)} (updCtxt-PI a b ctxt ctxt₁) = updCtxt-PI _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown (suc v) cf ctxt₁)
 →updCtxt-shiftDown v {name} {f} cf {.(LAMBDA a)} (updCtxt-LAMBDA a ctxt) = updCtxt-LAMBDA _ (→updCtxt-shiftDown (suc v) cf ctxt)
 →updCtxt-shiftDown v {name} {f} cf {.(APPLY a b)} (updCtxt-APPLY a b ctxt ctxt₁) = updCtxt-APPLY _ _ (→updCtxt-shiftDown v cf ctxt) (→updCtxt-shiftDown v cf ctxt₁)
@@ -472,6 +520,7 @@ data updCtxt (name : Name) (f : Term) : Term → Set where
 →updCtxt-shiftUp v {name} {f} cf {.(QLT a b)} (updCtxt-QLT a b ctxt ctxt₁) = updCtxt-QLT _ _ (→updCtxt-shiftUp v cf ctxt) (→updCtxt-shiftUp v cf ctxt₁)
 →updCtxt-shiftUp v {name} {f} cf {.(NUM x)} (updCtxt-NUM x) = updCtxt-NUM _
 →updCtxt-shiftUp v {name} {f} cf {.(IFLT a b c d)} (updCtxt-IFLT a b c d ctxt ctxt₁ ctxt₂ ctxt₃) = updCtxt-IFLT _ _ _ _ (→updCtxt-shiftUp v cf ctxt) (→updCtxt-shiftUp v cf ctxt₁) (→updCtxt-shiftUp v cf ctxt₂) (→updCtxt-shiftUp v cf ctxt₃)
+→updCtxt-shiftUp v {name} {f} cf {.(SUC a)} (updCtxt-SUC a ctxt) = updCtxt-SUC _ (→updCtxt-shiftUp v cf ctxt)
 →updCtxt-shiftUp v {name} {f} cf {.(PI a b)} (updCtxt-PI a b ctxt ctxt₁) = updCtxt-PI _ _ (→updCtxt-shiftUp v cf ctxt) (→updCtxt-shiftUp (suc v) cf ctxt₁)
 →updCtxt-shiftUp v {name} {f} cf {.(LAMBDA a)} (updCtxt-LAMBDA a ctxt) = updCtxt-LAMBDA _ (→updCtxt-shiftUp (suc v) cf ctxt)
 →updCtxt-shiftUp v {name} {f} cf {.(APPLY a b)} (updCtxt-APPLY a b ctxt ctxt₁) = updCtxt-APPLY _ _ (→updCtxt-shiftUp v cf ctxt) (→updCtxt-shiftUp v cf ctxt₁)
@@ -518,6 +567,7 @@ data updCtxt (name : Name) (f : Term) : Term → Set where
 →updCtxt-subv v {name} {f} cf {.(QLT a b₁)} {b} (updCtxt-QLT a b₁ ua ua₁) ub = updCtxt-QLT _ _ (→updCtxt-subv v cf ua ub) (→updCtxt-subv v cf ua₁ ub)
 →updCtxt-subv v {name} {f} cf {.(NUM x)} {b} (updCtxt-NUM x) ub = updCtxt-NUM _
 →updCtxt-subv v {name} {f} cf {.(IFLT a b₁ c d)} {b} (updCtxt-IFLT a b₁ c d ua ua₁ ua₂ ua₃) ub = updCtxt-IFLT _ _ _ _ (→updCtxt-subv v cf ua ub) (→updCtxt-subv v cf ua₁ ub) (→updCtxt-subv v cf ua₂ ub) (→updCtxt-subv v cf ua₃ ub)
+→updCtxt-subv v {name} {f} cf {.(SUC a)} {b} (updCtxt-SUC a ua) ub = updCtxt-SUC _ (→updCtxt-subv v cf ua ub)
 →updCtxt-subv v {name} {f} cf {.(PI a b₁)} {b} (updCtxt-PI a b₁ ua ua₁) ub = updCtxt-PI _ _ (→updCtxt-subv v cf ua ub) (→updCtxt-subv (suc v) cf ua₁ (→updCtxt-shiftUp 0 cf ub))
 →updCtxt-subv v {name} {f} cf {.(LAMBDA a)} {b} (updCtxt-LAMBDA a ua) ub = updCtxt-LAMBDA _ (→updCtxt-subv (suc v) cf ua (→updCtxt-shiftUp 0 cf ub))
 →updCtxt-subv v {name} {f} cf {.(APPLY a b₁)} {b} (updCtxt-APPLY a b₁ ua ua₁) ub = updCtxt-APPLY _ _ (→updCtxt-subv v cf ua ub) (→updCtxt-subv v cf ua₁ ub)
@@ -600,7 +650,7 @@ updCtxt-NAME→ {name} {n} {f} ()
 
 
 getT≤ℕ : 𝕎· → ℕ → Name → Set
-getT≤ℕ w1 n name = Σ ℕ (λ j → getT 0 name w1 ≡ just (NUM j) × j ≤ n)
+getT≤ℕ w1 n name = Σ ℕ (λ j → getT 0 name w1 ≡ just (NUM j) × j < n)
 
 
 isHighestℕ : {k : ℕ} {w1 w2 : 𝕎·} {a b : Term} (n : ℕ) (name : Name)
@@ -688,17 +738,19 @@ isHighestℕ-IFLT₂ {suc k} {b} {b'} {w} {w'} {n} {name} m c d comp h | inj₂ 
 
 
 
-presHighestℕ : (name : Name) (f : Term) (k : ℕ) → Set(L)
+presHighestℕ : (name : Name) (f : Term) (k : ℕ) → Set(lsuc L)
 presHighestℕ name f k =
   {w1 w2 : 𝕎·} {a b : Term} {n : ℕ}
   (comp : steps k (a , w1) ≡ (b , w2))
   → isValue b
   → updCtxt name f a
+  → compatible· name w1 Res⊤
+  → ∀𝕎-get0-NUM w1 name
   → getT≤ℕ w2 n name --getT 0 name w2 ≡ just (NUM n)
   → isHighestℕ {k} {w1} {w2} {a} {b} n name comp
 
 
-stepsPresHighestℕ : (name : Name) (f : Term) (b : Term) (w : 𝕎·) → Set(L)
+stepsPresHighestℕ : (name : Name) (f : Term) (b : Term) (w : 𝕎·) → Set(lsuc L)
 stepsPresHighestℕ name f b w =
   Σ ℕ (λ k → Σ Term (λ v → Σ 𝕎· (λ w' →
     steps k (b , w) ≡ (v , w')
@@ -980,6 +1032,51 @@ stepsPresHighestℕ-IFLT₂→ {name} {f} {n} {b} {c} {d} {w} (k , v , w' , comp
   where
     q : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (FIX a) (FIX a') w0 w w')
     q = ΣhighestUpdCtxtAux-FIX₁ {k} (wcomp , i , u)
+
+
+
+ΣhighestUpdCtxtAux-SUC₁-aux : {j : ℕ} {k : ℕ} {w w0 w1 w' : 𝕎·} {a a1 a' : Term} {name : Name} {f : Term} {n : ℕ}
+                               → ¬ isValue a
+                               → step a w ≡ just (a1 , w1)
+                               → (comp : steps k (a1 , w1) ≡ (a' , w'))
+                               → (getT≤ℕ w' n name → (getT≤ℕ w0 n name × getT≤ℕ w n name × isHighestℕ {k} {w1} {w'} {a1} {a'} n name comp))
+                               → ΣhighestUpdCtxtAux j name f n (SUC a1) (SUC a') w0 w1 w'
+                               → ΣhighestUpdCtxtAux (suc j) name f n (SUC a) (SUC a') w0 w w'
+ΣhighestUpdCtxtAux-SUC₁-aux {j} {k} {w} {w0} {w1} {w'} {a} {a1} {a'} {name} {f} {n} nv comp0 comp i (comp1 , g , u) with is-NUM a
+... | inj₁ (x , p) rewrite p = ⊥-elim (nv tt)
+... | inj₂ p rewrite comp0 = comp1 , (λ s → fst (g s) , fst (snd (i s)) , snd (g s)) , u
+
+
+
+ΣhighestUpdCtxtAux-SUC₁ : {k : ℕ} {name : Name} {f : Term} {n : ℕ} {a a' : Term} {w0 w w' : 𝕎·}
+                        → ΣhighestUpdCtxtAux k name f n a a' w0 w w'
+                        → Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (SUC a) (SUC a') w0 w w')
+ΣhighestUpdCtxtAux-SUC₁ {0} {name} {f} {n} {a} {a'} {w0} {w} {w'} (comp , i , u)
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl , i , updCtxt-SUC _ u
+ΣhighestUpdCtxtAux-SUC₁ {suc k} {name} {f} {n} {a} {a'} {w0} {w} {w'} (comp , i , u) with step⊎ a w
+... | inj₁ (a1 , w1 , z) rewrite z with isValue⊎ a
+... |    inj₁ y rewrite stepVal a w y | sym (pair-inj₁ (just-inj z)) | sym (pair-inj₂ (just-inj z)) =
+  ΣhighestUpdCtxtAux-SUC₁ {k} (comp , (λ s → fst (i s) , snd (snd (i s))) , u)
+... |    inj₂ y =
+  suc (fst ind) , ΣhighestUpdCtxtAux-SUC₁-aux {fst ind} {k} y z comp i (snd ind)
+  where
+    ind : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (SUC a1) (SUC a') w0 w1 w')
+    ind = ΣhighestUpdCtxtAux-SUC₁ {k} {name} {f} {n} {a1} {a'} {w0} {w1} {w'} (comp , (λ s → fst (i s) , snd (snd (i s))) , u)
+ΣhighestUpdCtxtAux-SUC₁ {suc k} {name} {f} {n} {a} {a'} {w0} {w} {w'} (comp , i , u) | inj₂ z
+  rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl , i , updCtxt-SUC _ u
+
+
+
+ΣhighestUpdCtxt-SUC₁ : {name : Name} {f : Term} {n : ℕ} {a : Term} {w0 w : 𝕎·}
+                        → ΣhighestUpdCtxt name f n a w0 w
+                        → ΣhighestUpdCtxt name f n (SUC a) w0 w
+ΣhighestUpdCtxt-SUC₁ {name} {f} {n} {a} {w0} {w} (k , a' , w' , wcomp , i , u) =
+  fst q , SUC a' , w' , snd q
+  where
+    q : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (SUC a) (SUC a') w0 w w')
+    q = ΣhighestUpdCtxtAux-SUC₁ {k} (wcomp , i , u)
 
 
 

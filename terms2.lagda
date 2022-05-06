@@ -73,6 +73,7 @@ shiftUp-shiftNameUp c d (LT t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-
 shiftUp-shiftNameUp c d (QLT t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
 shiftUp-shiftNameUp c d (NUM x) = refl
 shiftUp-shiftNameUp c d (IFLT t t₁ t₂ t₃) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ | shiftUp-shiftNameUp c d t₂ | shiftUp-shiftNameUp c d t₃ = refl
+shiftUp-shiftNameUp c d (SUC t) rewrite shiftUp-shiftNameUp c d t = refl
 shiftUp-shiftNameUp c d (PI t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc c) d t₁ = refl
 shiftUp-shiftNameUp c d (LAMBDA t) rewrite shiftUp-shiftNameUp (suc c) d t = refl
 shiftUp-shiftNameUp c d (APPLY t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
@@ -117,6 +118,7 @@ renn-shiftNameUp n1 n2 (LT t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shift
 renn-shiftNameUp n1 n2 (QLT t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
 renn-shiftNameUp n1 n2 (NUM x) = refl
 renn-shiftNameUp n1 n2 (IFLT t t₁ t₂ t₃) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ | renn-shiftNameUp n1 n2 t₂ | renn-shiftNameUp n1 n2 t₃ = refl
+renn-shiftNameUp n1 n2 (SUC t) rewrite renn-shiftNameUp n1 n2 t = refl
 renn-shiftNameUp n1 n2 (PI t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
 renn-shiftNameUp n1 n2 (LAMBDA t) rewrite renn-shiftNameUp n1 n2 t = refl
 renn-shiftNameUp n1 n2 (APPLY t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
@@ -187,6 +189,7 @@ shiftNameDownUp n (LT t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t�
 shiftNameDownUp n (QLT t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
 shiftNameDownUp n (NUM x) = refl
 shiftNameDownUp n (IFLT t t₁ t₂ t₃) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ | shiftNameDownUp n t₂ | shiftNameDownUp n t₃ = refl
+shiftNameDownUp n (SUC t) rewrite shiftNameDownUp n t = refl
 shiftNameDownUp n (PI t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
 shiftNameDownUp n (LAMBDA t) rewrite shiftNameDownUp n t = refl
 shiftNameDownUp n (APPLY t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
@@ -283,6 +286,7 @@ shiftNameDownUp n (SHRINK t) rewrite shiftNameDownUp n t = refl
 ¬names-shiftUp n (QLT a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp n a₁ = refl
 ¬names-shiftUp n (NUM x) = refl
 ¬names-shiftUp n (IFLT a a₁ a₂ a₃) rewrite ¬names-shiftUp n a | ¬names-shiftUp n a₁ | ¬names-shiftUp n a₂ | ¬names-shiftUp n a₃ = refl
+¬names-shiftUp n (SUC a) rewrite ¬names-shiftUp n a = refl
 ¬names-shiftUp n (PI a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp (suc n) a₁ = refl
 ¬names-shiftUp n (LAMBDA a) rewrite ¬names-shiftUp (suc n) a = refl
 ¬names-shiftUp n (APPLY a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp n a₁ = refl
@@ -325,6 +329,7 @@ shiftNameDownUp n (SHRINK t) rewrite shiftNameDownUp n t = refl
 ¬names-shiftDown n (QLT a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown n a₁ = refl
 ¬names-shiftDown n (NUM x) = refl
 ¬names-shiftDown n (IFLT a a₁ a₂ a₃) rewrite ¬names-shiftDown n a | ¬names-shiftDown n a₁ | ¬names-shiftDown n a₂ | ¬names-shiftDown n a₃ = refl
+¬names-shiftDown n (SUC a) rewrite ¬names-shiftDown n a = refl
 ¬names-shiftDown n (PI a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown (suc n) a₁ = refl
 ¬names-shiftDown n (LAMBDA a) rewrite ¬names-shiftDown (suc n) a = refl
 ¬names-shiftDown n (APPLY a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown n a₁ = refl
@@ -388,6 +393,7 @@ shiftNameDownUp n (SHRINK t) rewrite shiftNameDownUp n t = refl
 ¬Names-subv v {a} {QLT b b₁} na nb = →∧≡true {¬names (subv v a b)} {¬names (subv v a b₁)} (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv v {a} {b₁} na (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
 ¬Names-subv v {a} {NUM x} na nb = refl
 ¬Names-subv v {a} {IFLT b b₁ b₂ b₃} na nb = →∧4≡true (¬Names-subv v {a} {b} na (∧≡true→1-4 {¬names b} {¬names b₁} {¬names b₂} {¬names b₃} nb)) (¬Names-subv v {a} {b₁} na (∧≡true→2-4 {¬names b} {¬names b₁} {¬names b₂} {¬names b₃} nb)) (¬Names-subv v {a} {b₂} na (∧≡true→3-4 {¬names b} {¬names b₁} {¬names b₂} {¬names b₃} nb)) (¬Names-subv v {a} {b₃} na (∧≡true→4-4 {¬names b} {¬names b₁} {¬names b₂} {¬names b₃} nb))
+¬Names-subv v {a} {SUC b} na nb = ¬Names-subv v {a} {b} na nb
 ¬Names-subv v {a} {PI b b₁} na nb = →∧≡true (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv (suc v) {shiftUp 0 a} {b₁} (→¬Names-shiftUp 0 {a} na) (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
 ¬Names-subv v {a} {LAMBDA b} na nb = ¬Names-subv (suc v) {shiftUp 0 a} {b} (→¬Names-shiftUp 0 {a} na) nb
 ¬Names-subv v {a} {APPLY b b₁} na nb = →∧≡true {¬names (subv v a b)} {¬names (subv v a b₁)} (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv v {a} {b₁} na (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
@@ -513,6 +519,10 @@ FIX-LAMBDA⇓ : (w : 𝕎·) (f : Term) → FIX (LAMBDA f) ⇓ sub (FIX (LAMBDA 
 FIX-LAMBDA⇓ w f = 1 , refl
 
 
+SUC-NUM⇓ : (w : 𝕎·) (n : ℕ) → SUC (NUM n) ⇓ NUM (suc n) from w to w
+SUC-NUM⇓ w f = 1 , refl
+
+
 SPREAD-PAIR⇓ : (w : 𝕎·) (a b c : Term) → SPREAD (PAIR a b) c ⇓ sub b (sub a c) from w to w
 SPREAD-PAIR⇓ w a b c = 1 , refl
 
@@ -555,6 +565,33 @@ FIX⇓ : {a a' : Term} {w1 w2 : 𝕎·}
        → a ⇓ a' from w1 to w2
        → FIX a ⇓ FIX a' from w1 to w2
 FIX⇓ {a} {a'} {w1} {w2} (n , comp) = FIX⇓steps n comp
+
+
+
+
+SUC⇓steps : (k : ℕ) {a a' : Term} {w1 w2 : 𝕎·}
+            → steps k (a , w1) ≡ (a' , w2)
+            → SUC a ⇓ SUC a' from w1 to w2
+SUC⇓steps 0 {a} {a'} {w1} {w2} comp rewrite pair-inj₁ comp | pair-inj₂ comp = ⇓from-to-refl _ _
+SUC⇓steps (suc k) {a} {a'} {w1} {w2} comp with is-NUM a
+... | inj₁ (n , p) rewrite p | stepsVal (NUM n) w1 k tt | pair-inj₁ comp | pair-inj₂ comp = ⇓from-to-refl _ _
+... | inj₂ x with step⊎ a w1
+... |    inj₁ (g , w' , z) rewrite z = step-⇓-from-to-trans s ind
+  where
+    ind : SUC g ⇓ SUC a' from w' to w2
+    ind = SUC⇓steps k comp
+
+    s : step (SUC a) w1 ≡ just (SUC g , w')
+    s with is-NUM a
+    ... | inj₁ (n , p) rewrite p = ⊥-elim (x n refl)
+    ... | inj₂ p rewrite z = refl
+SUC⇓steps (suc k) {a} {a'} {w1} {w2} comp | inj₂ x | inj₂ z rewrite z | pair-inj₁ comp | pair-inj₂ comp = ⇓from-to-refl _ _
+
+
+SUC⇓ : {a a' : Term} {w1 w2 : 𝕎·}
+       → a ⇓ a' from w1 to w2
+       → SUC a ⇓ SUC a' from w1 to w2
+SUC⇓ {a} {a'} {w1} {w2} (n , comp) = SUC⇓steps n comp
 
 
 LET-val⇓ : (w : 𝕎·) (a b : Term) → isValue a → LET a b ⇓ sub a b from w to w
@@ -821,6 +858,25 @@ hasValue-FIX→ : (a : Term) (w : 𝕎·) {k : ℕ}
                  → hasValueℕ k (FIX a) w
                  → hasValueℕ k a w
 hasValue-FIX→ a w {k} (v , w' , comp , isv) = FIX→hasValue k a v w w' comp isv
+
+
+
+SUC→hasValue : (k : ℕ) (a v : Term) (w w' : 𝕎·)
+                 → steps k (SUC a , w) ≡ (v , w')
+                 → isValue v
+                 → hasValueℕ k a w
+SUC→hasValue 0 a v w w' comp isv rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+SUC→hasValue (suc k) a v w w' comp isv with is-NUM a
+... | inj₁ (n , p) rewrite p = isValue→hasValueℕ (suc k) (NUM n) w tt
+... | inj₂ y with step⊎ a w
+... |    inj₁ (a' , w'' , z) rewrite z = SUC→hasValue k a' v w'' w' comp isv
+... |    inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+
+
+hasValue-SUC→ : (a : Term) (w : 𝕎·) {k : ℕ}
+                 → hasValueℕ k (SUC a) w
+                 → hasValueℕ k a w
+hasValue-SUC→ a w {k} (v , w' , comp , isv) = SUC→hasValue k a v w w' comp isv
 
 
 

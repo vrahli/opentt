@@ -150,7 +150,7 @@ appUpd name F f = APPLY F (upd name f)
 
 
 probeM : (name : Name) (F f : Term) → Term
-probeM name F f = SEQ (appUpd name F f) (get0 name)
+probeM name F f = SEQ (appUpd name F f) (SUC (get0 name))
 
 
 testM : (name : Name) (F f : Term) → Term
@@ -561,7 +561,16 @@ fvars-IFLE a b c d = refl
     c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
 
 
-#probeM≡ : (name : Name) (F f : CTerm) → #probeM name F f ≡ #SEQ (#APPLY F (#upd name f)) (#get0 name)
+
+-- MOVE to terms
+#SUC : CTerm → CTerm
+#SUC a = ct (SUC ⌜ a ⌝) c
+  where
+    c : # SUC ⌜ a ⌝
+    c rewrite CTerm.closed a = refl
+
+
+#probeM≡ : (name : Name) (F f : CTerm) → #probeM name F f ≡ #SEQ (#APPLY F (#upd name f)) (#SUC (#get0 name))
 #probeM≡ name F f = CTerm≡ refl
 
 
@@ -1111,6 +1120,14 @@ probeM-NAT i w name F f ∈F ∈f = ≡CTerm→∈Type (sym (#probeM≡ name F f
 
 
 
+⇓NUM→SUC⇓NUM : {a : Term} {n : ℕ} {w1 w2 : 𝕎·}
+                → a ⇓ NUM n from w1 to w2
+                → SUC a ⇓ NUM (suc n) from w1 to w2
+⇓NUM→SUC⇓NUM {a} {n} {w1} {w2} comp =
+  ⇓-trans₂ {w1} {w2} {w2} {SUC a} {SUC (NUM n)} {NUM (suc n)} (SUC⇓ comp) (SUC-NUM⇓ w2 n)
+
+
+
 
 -- TODO: now we ned to prove that testM computes to the same number in all extensions of w
 -- (as long as name does not occur in F or f)
@@ -1118,18 +1135,18 @@ probeM-NAT i w name F f ∈F ∈f = ≡CTerm→∈Type (sym (#probeM≡ name F f
                      → ∈Type i w #BAIRE→NAT F
                      → ∈Type i w #BAIRE f
                      → compatible· name w Res⊤
-                     → Σ ℕ (λ k → testM name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM k at w)
+                     → Σ ℕ (λ k → testM name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (suc k) at w)
 ⇓APPLY-upd→⇓testM nc cn kb i w name F f ∈F ∈f {--nrF nrf gcn--} comp =
-  fst cg , ⇓-from-to→⇓ {w} {fst ca} {testM name ⌜ F ⌝ ⌜ f ⌝} {NUM (fst cg)}
-                       (⇓-trans₂ {w} {chooseT name w (NUM 0)} {fst ca} {testM name ⌜ F ⌝ ⌜ f ⌝} {SEQ AX (probeM name ⌜ F ⌝ ⌜ f ⌝)} {NUM (fst cg)}
+  fst cg , ⇓-from-to→⇓ {w} {fst ca} {testM name ⌜ F ⌝ ⌜ f ⌝} {NUM (suc (fst cg))}
+                       (⇓-trans₂ {w} {chooseT name w (NUM 0)} {fst ca} {testM name ⌜ F ⌝ ⌜ f ⌝} {SEQ AX (probeM name ⌜ F ⌝ ⌜ f ⌝)} {NUM (suc (fst cg))}
                                  (SEQ⇓₁ {w} {chooseT name w (NUM 0)} {set0 name} {AX} {probeM name ⌜ F ⌝ ⌜ f ⌝} cs)
-                                 (⇓-trans₂ {chooseT name w (NUM 0)} {chooseT name w (NUM 0)} {fst ca} {SEQ AX (probeM name ⌜ F ⌝ ⌜ f ⌝)} {probeM name ⌜ F ⌝ ⌜ f ⌝} {NUM (fst cg)}
+                                 (⇓-trans₂ {chooseT name w (NUM 0)} {chooseT name w (NUM 0)} {fst ca} {SEQ AX (probeM name ⌜ F ⌝ ⌜ f ⌝)} {probeM name ⌜ F ⌝ ⌜ f ⌝} {NUM (suc (fst cg))}
                                            (SEQ-AX⇓₁from-to (CTerm.closed (#probeM name F f)))
-                                           (⇓-trans₂ {chooseT name w (NUM 0)} {fst ca} {fst ca} {probeM name ⌜ F ⌝ ⌜ f ⌝} {SEQ (NUM m) (get0 name)} {NUM (fst cg)}
+                                           (⇓-trans₂ {chooseT name w (NUM 0)} {fst ca} {fst ca} {probeM name ⌜ F ⌝ ⌜ f ⌝} {SEQ (NUM m) (SUC (get0 name))} {NUM (suc (fst cg))}
                                                      (SEQ⇓₁ (snd ca))
-                                                     (⇓-trans₂ {proj₁ ca} {proj₁ ca} {proj₁ ca} {SEQ (NUM m) (get0 name)} {get0 name} {NUM (proj₁ cg)}
+                                                     (⇓-trans₂ {proj₁ ca} {proj₁ ca} {proj₁ ca} {SEQ (NUM m) (SUC (get0 name))} {SUC (get0 name)} {NUM (suc (fst cg))}
                                                                (SEQ-val⇓₁from-to refl tt)
-                                                               (snd cg)))))
+                                                               (⇓NUM→SUC⇓NUM (snd cg))))))
   where
     w1 : 𝕎·
     w1 = chooseT name w (NUM 0)
@@ -1198,7 +1215,7 @@ shiftNameDown-renn-shiftNameUp name F f cF cf
 ⇓APPLY-upd→⇓νtestM : (nc : ℕℂ) (cn : comp→∀ℕ) (kb : K□) (i : ℕ) (w : 𝕎·) (F f : CTerm)
                       → ∈Type i w #BAIRE→NAT F
                       → ∈Type i w #BAIRE f
-                      → Σ ℕ (λ k → νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇓ NUM k at w)
+                      → Σ ℕ (λ k → νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇓ NUM (suc k) at w)
 ⇓APPLY-upd→⇓νtestM nc cn kb i w F f ∈F ∈f =
   fst z , step-⇓-trans s1 (snd z)
   where
@@ -1220,7 +1237,7 @@ shiftNameDown-renn-shiftNameUp name F f cF cf
     s1 : step (νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)) w ≡ just (testM name ⌜ F ⌝ ⌜ f ⌝ , w1)
     s1 = ≡just (≡pair (shiftNameDown-renn-shiftNameUp name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f)) refl)
 
-    z : Σ ℕ (λ k → testM name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM k at w1)
+    z : Σ ℕ (λ k → testM name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (suc k) at w1)
     z = ⇓APPLY-upd→⇓testM nc cn kb i w1 name F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1) comp1
 
 
@@ -1265,7 +1282,7 @@ differ-APPLY-upd name1 name2 F f nnF =
              → ∈Type i w #BAIRE f
              → NATeq w (#νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f)) (#νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f))
 νtestM-NAT-shift nc cn kb gc i w F f nnF nnf ∈F ∈f =
-  k , ack , ack
+  suc k , ack , ack
   where
     tM : Term
     tM = testM 0 (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)
@@ -1333,13 +1350,13 @@ differ-APPLY-upd name1 name2 F f nnF =
     gk : get0 name ⇓ NUM k from w3 to w3
     gk = 1 , step-APPLY-CS (NUM k) w3 0 name (snd gt0)
 
-    pbk : probeM name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM k from w2 to w3
-    pbk = ⇓-trans₂ (SEQ⇓₁ (snd ca)) (⇓-trans₂ (SEQ-val⇓ w3 (NUM m) (get0 name) tt) gk)
+    pbk : probeM name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (suc k) from w2 to w3
+    pbk = ⇓-trans₂ (SEQ⇓₁ (snd ca)) (⇓-trans₂ (SEQ-val⇓ w3 (NUM m) (SUC (get0 name)) tt) (⇓NUM→SUC⇓NUM gk))
 
-    ack : νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇛ NUM k at w
-    ack w' e' = lift (⇓-from-to→⇓ {w'} {w3'} {νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)} {NUM k}
-                                   (⇓-trans₂ {w'} {w1'} {w3'} {νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)} {testM name' ⌜ F ⌝ ⌜ f ⌝} {NUM k}
-                                             s1' (⇓-trans₂ {w1'} {w2'} {w3'} {testM name' ⌜ F ⌝ ⌜ f ⌝} {SEQ AX (probeM name' ⌜ F ⌝ ⌜ f ⌝)} {NUM k}
+    ack : νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇛ NUM (suc k) at w
+    ack w' e' = lift (⇓-from-to→⇓ {w'} {w3'} {νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)} {NUM (suc k)}
+                                   (⇓-trans₂ {w'} {w1'} {w3'} {νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)} {testM name' ⌜ F ⌝ ⌜ f ⌝} {NUM (suc k)}
+                                             s1' (⇓-trans₂ {w1'} {w2'} {w3'} {testM name' ⌜ F ⌝ ⌜ f ⌝} {SEQ AX (probeM name' ⌜ F ⌝ ⌜ f ⌝)} {NUM (suc k)}
                                                            (SEQ⇓₁ {w1'} {w2'} {set0 name'} {AX} {probeM name' ⌜ F ⌝ ⌜ f ⌝}  cs')
                                                            (⇓-trans₂ (SEQ-val⇓ w2' AX (probeM name' ⌜ F ⌝ ⌜ f ⌝) tt) pb'))))
       where
@@ -1408,12 +1425,12 @@ differ-APPLY-upd name1 name2 F f nnF =
         df1 : appUpd name' ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM m from w2' to w3'
         df1 = ≡ᵣ→⇓from-to (differ-NUM→ dfv') df0
 
-        pb' : probeM name' ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM k from w2' to w3'
+        pb' : probeM name' ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (suc k) from w2' to w3'
         pb' = ⇓-trans₂
                 (SEQ⇓₁ df1)
                 (⇓-trans₂
-                  (SEQ-val⇓ w3' (NUM m) (get0 name') tt)
-                  (1 , step-APPLY-CS (NUM k) w3' 0 name' (trans (sym (snd (snd (snd (snd df))))) (snd gt0))))
+                  (SEQ-val⇓ w3' (NUM m) (SUC (get0 name')) tt)
+                  (⇓NUM→SUC⇓NUM (1 , step-APPLY-CS (NUM k) w3' 0 name' (trans (sym (snd (snd (snd (snd df))))) (snd gt0)))))
 
 
 
