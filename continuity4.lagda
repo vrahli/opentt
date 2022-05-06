@@ -166,7 +166,7 @@ presUpdRel n name f g k =
   → (comp : steps k (a , w1) ≡ (v , w2))
   → isHighestℕ {k} {w1} {w2} {a} {v} n name comp
   → isValue v
-  → Σ ℕ (λ k' → Σ Term (λ v' → steps k' (b , w) ≡ (v' , w) × updRel name f g a b))
+  → Σ ℕ (λ k' → Σ Term (λ v' → steps k' (b , w) ≡ (v' , w) × updRel name f g v v'))
 
 
 stepsPresUpdRel : (n : ℕ) (name : Name) (f g : Term) (b : Term) (w : 𝕎·) → Set(lsuc L)
@@ -712,16 +712,54 @@ isHighestℕ-updBody→< gc {n} {name} {f} {suc k1} {suc k2} {a} {v} {m} {w1} {w
 
 
 
+steps-trans+ : {n m : ℕ} {a b c : Term} {w1 w2 w3 : 𝕎·}
+              → steps n (a , w1) ≡ (b , w2)
+              → steps m (b , w2) ≡ (c , w3)
+              → steps (n + m) (a , w1) ≡ (c , w3)
+steps-trans+ {n} {m} {a} {b} {c} {w1} {w2} {w3} comp1 comp2
+  rewrite steps-+ n m a w1 | comp1 = comp2
+
+
+
+→APPLY-force⇓APPLY-NUM : {m : ℕ} {g a : Term} {w1 w2 : 𝕎·}
+                          → # g
+                          → a ⇓ NUM m from w1 to w2
+                          → APPLY (force g) a ⇓ APPLY g (NUM m) from w1 to w2
+→APPLY-force⇓APPLY-NUM {m} {g} {a} {w1} {w2} cg comp =
+  ⇓-trans₂ {w1} {w1} {w2} {APPLY (force g) a} {LET a (APPLY g (VAR 0))} {APPLY g (NUM m)}
+           (1 , →≡pair e1 refl)
+           (⇓-trans₂ {w1} {w2} {w2} {LET a (APPLY g (VAR 0))} {LET (NUM m) (APPLY g (VAR 0))} {APPLY g (NUM m)}
+                     (LET⇓ (APPLY g (VAR 0)) comp)
+                     (1 , →≡pair e2 refl))
+  where
+    e1 : sub a (LET (VAR 0) (APPLY g (VAR 0))) ≡ LET a (APPLY g (VAR 0))
+    e1 rewrite subNotIn a g cg
+             | subv# 1 (shiftUp 0 (shiftUp 0 a)) g cg
+             | #shiftDown 1 (ct g cg)
+             | shiftDownUp a 0 = refl
+
+    e2 : sub (NUM m) (APPLY g (VAR 0)) ≡ APPLY g (NUM m)
+    e2 rewrite subNotIn (NUM m) g cg = refl
+
+
+
+Σsteps-updRel-NUM→ : {name : Name} {f g : Term} {m : ℕ} {b : Term} {w1 : 𝕎·}
+                      → Σ ℕ (λ k' → Σ Term (λ v' → steps k' (b , w1) ≡ (v' , w1) × updRel name f g (NUM m) v'))
+                      → Σ ℕ (λ k' → steps k' (b , w1) ≡ (NUM m , w1))
+Σsteps-updRel-NUM→ {name} {f} {g} {m} {b} {w1} (k' , .(NUM m) , comp , updRel-NUM .m) = k' , comp
+
+
 →ΣstepsUpdRel-upd : (gc : getT-chooseT) {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w1 w : 𝕎·}
                      → # f
+                     → ¬Names g
                      → compatible· name w1 Res⊤
                      → ∀𝕎-get0-NUM w1 name
                      → updRel name f g a b
                      → ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < n → strongMonEq w' (APPLY f (NUM k)) (APPLY g (NUM k)))
                      → stepsPresUpdRel n name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1
                      → ΣstepsUpdRel name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 (APPLY (force g) b) w
-→ΣstepsUpdRel-upd gc {n} {name} {f} {g} {a} {b} {w1} {w} cf compat wgt0 u eqn (k , v , w2 , comp , isv , ish ,  ind) =
-  {!!}
+→ΣstepsUpdRel-upd gc {n} {name} {f} {g} {a} {b} {w1} {w} cf nng compat wgt0 u eqn (k , v , w2 , comp , isv , ish ,  ind) =
+  k2 + k3 , {!!}
   where
     c : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w1' → Σ ℕ (λ m → Σ ℕ (λ m' →
            k1 < k
@@ -767,6 +805,69 @@ isHighestℕ-updBody→< gc {n} {name} {f} {suc k1} {suc k2} {a} {v} {m} {w1} {w
 
     e1 : w1 ⊑· w1'
     e1 = steps→⊑ k1 a (NUM m) comp1b
+
+    e2 : w1 ⊑· chooseT0if name w1' m' m
+    e2 = {!!}
+
+    ltm : m < n -- use with eqn
+    ltm = isHighestℕ-updBody→< gc {n} {name} {f} {k1} {k} {a} {v} {m} {w1} {w1'} {w2} cf compat comp1b comp isv ish
+
+    q : strongMonEq w1 (APPLY f (NUM m)) (APPLY g (NUM m))
+    q = eqn w1 (⊑-refl· w1) m ltm
+
+    i : ℕ
+    i = fst q
+
+    c1 : Σ 𝕎· (λ w1a → APPLY f (NUM m) ⇓ NUM i from chooseT0if name w1' m' m to w1a)
+    c1 = ⇓→from-to (lower (fst (snd q) (chooseT0if name w1' m' m) e2))
+
+    w1a : 𝕎·
+    w1a = fst c1
+
+    k3 : ℕ
+    k3 = fst (snd c1)
+
+    c1b : steps k3 (APPLY f (NUM m) , chooseT0if name w1' m' m) ≡ (NUM i , w1a)
+    c1b = snd (snd c1)
+
+    comp2b : steps (k2 + k3) (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (NUM i , w1a)
+    comp2b = steps-trans+ {k2} {k3} {LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))} {APPLY f (NUM m)} {NUM i} {w1} {chooseT0if name w1' m' m} {w1a} comp2 c1b
+
+    indb : Σ ℕ (λ k' → steps k' (b , w1) ≡ (NUM m , w1))
+    indb = Σsteps-updRel-NUM→ (ind k1 {!!} {a} {b} {NUM m} {w1} {w1'} {w1} u {!!} comp1b {!!} tt)
+
+    k4 : ℕ
+    k4 = fst indb
+
+    cb : steps k4 (b , w1) ≡ (NUM m , w1)
+    cb = snd indb
+
+    compg : APPLY (force g) b ⇓ APPLY g (NUM m) from w1 to w1
+    compg = →APPLY-force⇓APPLY-NUM {m} {g} {b} {w1} {w1} {!!} (k4 , cb)
+
+    k5 : ℕ
+    k5 = fst compg
+
+    compgb : steps k5 (APPLY (force g) b , w1) ≡ (APPLY g (NUM m) , w1)
+    compgb = snd compg
+
+    c2 : Σ 𝕎· (λ w1b → APPLY g (NUM m) ⇓ NUM i from w1 to w1b)
+    c2 = ⇓→from-to (lower (snd (snd q) w1 (⊑-refl· _)))
+
+    w1b : 𝕎·
+    w1b = fst c2
+
+    k6 : ℕ
+    k6 = fst (snd c2)
+
+    c2b : steps k6 (APPLY g (NUM m) , w1) ≡ (NUM i , w1b)
+    c2b = snd (snd c2)
+
+    compgc : steps (k5 + k6) (APPLY (force g) b , w1) ≡ (NUM i , w1b)
+    compgc = steps-trans+ {k5} {k6} {APPLY (force g) b} {APPLY g (NUM m)} {NUM i} {w1} {w1} {w1b} compgb c2b
+
+    compgd : steps (k5 + k6) (APPLY (force g) b , w) ≡ (NUM i , w)
+    compgd = {!!} -- use ¬Names→steps in terms4
 
 
 
