@@ -361,6 +361,26 @@ updRel-LAMBDAₗ→ {name} {f} {g} {.(updBody name f)} {.(force g)} updRel-upd =
 
 
 
+updRel-PAIRₗ→ : {name : Name} {f g : Term} {t₁ t₂ : Term} {a : Term}
+                → updRel name f g (PAIR t₁ t₂) a
+                → Σ Term (λ u₁ → Σ Term (λ u₂ → a ≡ PAIR u₁ u₂ × updRel name f g t₁ u₁ × updRel name f g t₂ u₂))
+updRel-PAIRₗ→ {name} {f} {g} {t₁} {t₂} {.(PAIR a₁ a₂)} (updRel-PAIR .t₁ a₁ .t₂ a₂ u1 u2) = a₁ , a₂ , refl , u1 , u2
+
+
+
+updRel-INLₗ→ : {name : Name} {f g : Term} {t : Term} {a : Term}
+                → updRel name f g (INL t) a
+                → Σ Term (λ u → a ≡ INL u × updRel name f g t u)
+updRel-INLₗ→ {name} {f} {g} {t} {.(INL x)} (updRel-INL .t x u) = x , refl , u
+
+
+
+updRel-INRₗ→ : {name : Name} {f g : Term} {t : Term} {a : Term}
+                → updRel name f g (INR t) a
+                → Σ Term (λ u → a ≡ INR u × updRel name f g t u)
+updRel-INRₗ→ {name} {f} {g} {t} {.(INR x)} (updRel-INR .t x u) = x , refl , u
+
+
 
 isHighestℕ-APPLY₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v : Term} {w w' : 𝕎·}
                       → (comp : steps k (APPLY a b , w) ≡ (v , w'))
@@ -634,6 +654,144 @@ stepsPresUpdRel-FIX₁→ {n} {name} {f} {g} {a} {w} (k , v , w' , comp , isv , 
 
     comp2' : FIX a₂ ⇓ FIX y2 from w to w
     comp2' = FIX⇓steps k2 comp2
+
+
+
+isHighestℕ-SPREAD₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v : Term} {w w' : 𝕎·}
+                      → (comp : steps k (SPREAD a b , w) ≡ (v , w'))
+                      → isValue v
+                      → isHighestℕ {k} {w} {w'} {SPREAD a b} {v} n name comp
+                      → Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+isHighestℕ-SPREAD₁→ {n} {0} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+isHighestℕ-SPREAD₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h with is-PAIR a
+... | inj₁ (u₁ , u₂ , p) rewrite p = 0 , PAIR u₁ u₂ , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
+... | inj₂ x with step⊎ a w
+... |    inj₁ (a0 , w0 , z) rewrite z =
+  suc (fst ind) , concl
+  where
+    ind : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a0 , w0) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+    ind = isHighestℕ-SPREAD₁→ {n} {k} {name} {f} {g} {a0} {b} {v} {w0} {w'} comp isv (snd h)
+
+    concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × suc (fst ind) < suc k)))
+    concl rewrite z =
+      fst (snd ind) , fst (snd (snd ind)) , fst (snd (snd (snd ind))) ,
+      (fst h , fst (snd (snd (snd (snd ind))))) ,
+      fst (snd (snd (snd (snd (snd ind))))) ,
+      _≤_.s≤s (snd (snd (snd (snd (snd (snd ind))))))
+... |    inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+
+
+
+stepsPresUpdRel-SPREAD₁→ : {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w : 𝕎·}
+                           → stepsPresUpdRel n name f g (SPREAD a b) w
+                           → stepsPresUpdRel n name f g a w
+stepsPresUpdRel-SPREAD₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , isv , ish , ind) =
+  fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
+  fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
+  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  where
+    hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+    hv = isHighestℕ-SPREAD₁→ {n} {k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv ish
+
+
+
+→ΣstepsUpdRel-SPREAD₁ : {name : Name} {f g : Term} {a₁ a₂ b₁ b₂ : Term} {w1 w : 𝕎·}
+                        → updRel name f g b₁ b₂
+                        → ΣstepsUpdRel name f g a₁ w1 a₂ w
+                        → ΣstepsUpdRel name f g (SPREAD a₁ b₁) w1 (SPREAD a₂ b₂) w
+→ΣstepsUpdRel-SPREAD₁ {name} {f} {g} {a₁} {a₂} {b₁} {b₂} {w1} {w} updb (k1 , k2 , y1 , y2 , w3 , comp1 , comp2 , r) =
+  fst comp1' , fst comp2' , SPREAD y1 b₁ , SPREAD y2 b₂ , w3 , snd comp1' , snd comp2' ,
+  updRel-SPREAD _ _ _ _ r updb
+  where
+    comp1' : SPREAD a₁ b₁ ⇓ SPREAD y1 b₁ from w1 to w3
+    comp1' = SPREAD⇓steps k1 b₁ comp1
+
+    comp2' : SPREAD a₂ b₂ ⇓ SPREAD y2 b₂ from w to w
+    comp2' = SPREAD⇓steps k2 b₂ comp2
+
+
+
+isHighestℕ-DECIDE₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b c v : Term} {w w' : 𝕎·}
+                      → (comp : steps k (DECIDE a b c , w) ≡ (v , w'))
+                      → isValue v
+                      → isHighestℕ {k} {w} {w'} {DECIDE a b c} {v} n name comp
+                      → Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+isHighestℕ-DECIDE₁→ {n} {0} {name} {f} {g} {a} {b} {c} {v} {w} {w'} comp isv h
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+isHighestℕ-DECIDE₁→ {n} {suc k} {name} {f} {g} {a} {b} {c} {v} {w} {w'} comp isv h with is-INL a
+... | inj₁ (x , p) rewrite p = 0 , INL x , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
+... | inj₂ x with is-INR a
+... |    inj₁ (y , p) rewrite p = 0 , INR y , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
+... |    inj₂ y with step⊎ a w
+... |       inj₁ (a0 , w0 , z) rewrite z =
+  suc (fst ind) , concl
+  where
+    ind : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a0 , w0) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+    ind = isHighestℕ-DECIDE₁→ {n} {k} {name} {f} {g} {a0} {b} {c} {v} {w0} {w'} comp isv (snd h)
+
+    concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × suc (fst ind) < suc k)))
+    concl rewrite z =
+      fst (snd ind) , fst (snd (snd ind)) , fst (snd (snd (snd ind))) ,
+      (fst h , fst (snd (snd (snd (snd ind))))) ,
+      fst (snd (snd (snd (snd (snd ind))))) ,
+      _≤_.s≤s (snd (snd (snd (snd (snd (snd ind))))))
+... |       inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+
+
+
+stepsPresUpdRel-DECIDE₁→ : {n : ℕ} {name : Name} {f g : Term} {a b c : Term} {w : 𝕎·}
+                           → stepsPresUpdRel n name f g (DECIDE a b c) w
+                           → stepsPresUpdRel n name f g a w
+stepsPresUpdRel-DECIDE₁→ {n} {name} {f} {g} {a} {b} {c} {w} (k , v , w' , comp , isv , ish , ind) =
+  fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
+  fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
+  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  where
+    hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+    hv = isHighestℕ-DECIDE₁→ {n} {k} {name} {f} {g} {a} {b} {c} {v} {w} {w'} comp isv ish
+
+
+
+→ΣstepsUpdRel-DECIDE₁ : {name : Name} {f g : Term} {a₁ a₂ b₁ b₂ c₁ c₂ : Term} {w1 w : 𝕎·}
+                        → updRel name f g b₁ b₂
+                        → updRel name f g c₁ c₂
+                        → ΣstepsUpdRel name f g a₁ w1 a₂ w
+                        → ΣstepsUpdRel name f g (DECIDE a₁ b₁ c₁) w1 (DECIDE a₂ b₂ c₂) w
+→ΣstepsUpdRel-DECIDE₁ {name} {f} {g} {a₁} {a₂} {b₁} {b₂} {c₁} {c₂} {w1} {w} updb updc (k1 , k2 , y1 , y2 , w3 , comp1 , comp2 , r) =
+  fst comp1' , fst comp2' , DECIDE y1 b₁ c₁ , DECIDE y2 b₂ c₂ , w3 , snd comp1' , snd comp2' ,
+  updRel-DECIDE _ _ _ _ _ _ r updb updc
+  where
+    comp1' : DECIDE a₁ b₁ c₁ ⇓ DECIDE y1 b₁ c₁ from w1 to w3
+    comp1' = DECIDE⇓steps k1 b₁ c₁ comp1
+
+    comp2' : DECIDE a₂ b₂ c₂ ⇓ DECIDE y2 b₂ c₂ from w to w
+    comp2' = DECIDE⇓steps k2 b₂ c₂ comp2
+
 
 
 →isHighestℕ-val : {n : ℕ} {k : ℕ} {name : Name} {a v : Term} {w1 w2 : 𝕎·}
