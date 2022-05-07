@@ -770,6 +770,7 @@ stepsPresHighestℕ-LET₁→ {name} {f} {a} {b} {w} (k , v , w' , comp , isv , 
     hv = LET→hasValue k a b v w w' comp isv
 
 
+
 stepsPresHighestℕ-SPREAD₁→ : {name : Name} {f : Term} {a b : Term} {w : 𝕎·}
                             → stepsPresHighestℕ name f (SPREAD a b) w
                             → stepsPresHighestℕ name f a w

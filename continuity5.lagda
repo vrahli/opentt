@@ -359,7 +359,15 @@ step-updRel gc {n} {name} {f} {g} {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂
 step-updRel gc {n} {name} {f} {g} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-EQ a₁ a₂ b₁ b₂ c₁ c₂ r r₁ r₂) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , EQ a₁ b₁ c₁ , EQ a₂ b₂ c₂ , w1 , refl , refl , updRel-EQ _ _ _ _ _ _ r r₁ r₂
 step-updRel gc {n} {name} {f} {g} {.AX} {.AX} {x} {w1} {w2} {w} nnf nng cf cg comp ind updRel-AX gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , AX , AX , w1 , refl , refl , updRel-AX
 step-updRel gc {n} {name} {f} {g} {.FREE} {.FREE} {x} {w1} {w2} {w} nnf nng cf cg comp ind updRel-FREE gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , FREE , FREE , w1 , refl , refl , updRel-FREE
-step-updRel gc {n} {name} {f} {g} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-CHOOSE a₁ a₂ b₁ b₂ r r₁) gtn compat wgt0 eqn = {!!}
+step-updRel gc {n} {name} {f} {g} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-CHOOSE a₁ a₂ b₁ b₂ r r₁) gtn compat wgt0 eqn with is-NAME a₁
+... | inj₁ (name' , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ⊥-elim (updRel-NAMEₗ→ r)
+... | inj₂ q with step⊎ a₁ w1
+... |    inj₁ (a₁' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  →ΣstepsUpdRel-CHOOSE₁ r₁ ind'
+  where
+    ind' : ΣstepsUpdRel name f g a₁' w1' a₂ w
+    ind' = step-updRel gc {n} {name} {f} {g} {a₁} {a₂} {a₁'} {w1} {w1'} {w} nnf nng cf cg z (stepsPresUpdRel-CHOOSE₁→ ind) r gtn compat wgt0 eqn
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-updRel gc {n} {name} {f} {g} {.(TSQUASH a₁)} {.(TSQUASH a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-TSQUASH a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TSQUASH a₁ , TSQUASH a₂ , w1 , refl , refl , updRel-TSQUASH _ _ r
 step-updRel gc {n} {name} {f} {g} {.(TTRUNC a₁)} {.(TTRUNC a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-TTRUNC a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TTRUNC a₁ , TTRUNC a₂ , w1 , refl , refl , updRel-TTRUNC _ _ r
 step-updRel gc {n} {name} {f} {g} {.(TCONST a₁)} {.(TCONST a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-TCONST a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TCONST a₁ , TCONST a₂ , w1 , refl , refl , updRel-TCONST _ _ r
@@ -371,27 +379,123 @@ step-updRel gc {n} {name} {f} {g} {.(LIFT a₁)} {.(LIFT a₂)} {x} {w1} {w2} {w
 step-updRel gc {n} {name} {f} {g} {.(LOWER a₁)} {.(LOWER a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-LOWER a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , LOWER a₁ , LOWER a₂ , w1 , refl , refl , updRel-LOWER _ _ r
 step-updRel gc {n} {name} {f} {g} {.(SHRINK a₁)} {.(SHRINK a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-SHRINK a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , SHRINK a₁ , SHRINK a₂ , w1 , refl , refl , updRel-SHRINK _ _ r
 step-updRel gc {n} {name} {f} {g} {.(upd name f)} {.(force g)} {x} {w1} {w2} {w} nnf nng cf cg comp ind updRel-upd gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , upd name f , force g , w1 , refl , refl , updRel-upd
--- LAMBDA (LET (VAR 0) (LET (IFLT (APPLY (CS name) (NUM 0)) (VAR 0) (CHOOSE (NAME name) (VAR 0)) AX) (APPLY (shiftUp 0 f) (VAR 1))))
--- LAMBDA (LET (VAR 0) (APPLY g (VAR 0)))
+
+
+
+steps-decomp-isHighestℕ : {w w1 w2 : 𝕎·} {a b v : Term} {n m : ℕ} (i : ℕ) (name : Name)
+              → isValue v
+              → (comp1 : steps m (a , w) ≡ (b , w1))
+              → (comp2 : steps n (a , w) ≡ (v , w2))
+              → Σ ℕ (λ k → k ≤ n × Σ (steps k (b , w1) ≡ (v , w2)) (λ comp →
+                  isHighestℕ {n} {w} {w2} {a} {v} i name comp2
+                  → isHighestℕ {k} {w1} {w2} {b} {v} i name comp))
+steps-decomp-isHighestℕ {w} {w1} {w2} {a} {b} {v} {n} {0} i name isv comp1 comp2
+  rewrite pair-inj₁ (sym comp1) | pair-inj₂ (sym comp1) = n , ≤-refl , comp2 , λ x → x
+steps-decomp-isHighestℕ {w} {w1} {w2} {a} {b} {v} {0} {suc m} i name isv comp1 comp2
+  rewrite pair-inj₁ (sym comp2) | pair-inj₂ (sym comp2)
+        | stepVal a w isv
+        | stepsVal a w m isv
+        | pair-inj₁ (sym comp1) | pair-inj₂ (sym comp1)
+  = 0 , ≤-refl , refl , λ (j , e , q) → j , e , <-transˡ ≤-refl q
+steps-decomp-isHighestℕ {w} {w1} {w2} {a} {b} {v} {suc n} {suc m} i name isv comp1 comp2 with step⊎ a w
+... | inj₁ (a' , w' , z) rewrite z =
+  fst q , ≤-trans (fst (snd q)) (<⇒≤ (n<1+n n)) , fst (snd (snd q)) , λ (x1 , x2) → snd (snd (snd q)) x2
+  where
+    q : Σ ℕ (λ k → k ≤ n × Σ (steps k (b , w1) ≡ (v , w2)) (λ comp →
+           isHighestℕ {n} {w'} {w2} {a'} {v} i name comp2
+           → isHighestℕ {k} {w1} {w2} {b} {v} i name comp))
+    q = steps-decomp-isHighestℕ {w'} {w1} {w2} {a'} {b} {v} {n} {m} i name isv comp1 comp2
+... | inj₂ z rewrite z
+           | pair-inj₁ (sym comp2) | pair-inj₂ (sym comp2)
+           | pair-inj₁ (sym comp1) | pair-inj₂ (sym comp1) = 0 , _≤_.z≤n , refl , λ x → x
+
 
 
 steps-updRel-aux : (gc : getT-chooseT) {n : ℕ} {name : Name} {f g : Term}
                    → ¬Names f
+                   → ¬Names g
                    → # f
+                   → # g
                    → (k : ℕ)
                    → (ind : (k' : ℕ) → k' < k → presUpdRel n name f g k')
                    → presUpdRel n name f g k
-steps-updRel-aux gc {n} {name} {f} {g} nnf cf 0 ind {a} {b} {v} {w1} {w2} {w} r eqw comp ish isv
+steps-updRel-aux gc {n} {name} {f} {g} nnf nng cf cg 0 ind {a} {b} {v} {w1} {w2} {w} r compat wgt0 eqw comp ish isv
   rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = 0 , b , refl , r
-steps-updRel-aux gc {n} {name} {f} {g} nnf cf (suc k) ind {a} {b} {v} {w1} {w2} {w} r eqw comp ish isv
+steps-updRel-aux gc {n} {name} {f} {g} nnf nng cf cg (suc k) ind {a} {b} {v} {w1} {w2} {w} r compat wgt0 eqw comp ish isv
   with step⊎ a w1
-... | inj₁ (a' , w1' , z) rewrite z = {!!}
+... | inj₁ (a' , w1' , z) rewrite z =
+  k2 + k4 , v' , steps-trans+ {k2} {k4} {b} {y2} {v'} {w} {w} {w} comp2 comp4 , ur'
   where
     ind0 : (k' : ℕ) → k' < suc k → presUpdRel n name f g k'
     ind0 = ind
 
     ind1 : (k' : ℕ) → k' ≤ k → presUpdRel n name f g k'
     ind1 k' ltk = ind0 k' (_≤_.s≤s ltk)
+
+    spres : stepsPresUpdRel n name f g a' w1'
+    spres = k , v , w2 , comp , isv , snd ish , ind1
+
+    s : ΣstepsUpdRel name f g a' w1' b w
+    s = step-updRel gc {n} {name} {f} {g} {a} {b} {a'} {w1} {w1'} {w} nnf nng cf cg z spres r (fst ish) compat wgt0 eqw
+
+    k1 : ℕ
+    k1 = fst s
+
+    k2 : ℕ
+    k2 = fst (snd s)
+
+    y1 : Term
+    y1 = fst (snd (snd s))
+
+    y2 : Term
+    y2 = fst (snd (snd (snd s)))
+
+    w3 : 𝕎·
+    w3 = fst (snd (snd (snd (snd s))))
+
+    comp1 : steps k1 (a' , w1') ≡ (y1 , w3)
+    comp1 = fst (snd (snd (snd (snd (snd s)))))
+
+    comp2 : steps k2 (b , w) ≡ (y2 , w)
+    comp2 = fst (snd (snd (snd (snd (snd (snd s))))))
+
+    ur : updRel name f g y1 y2
+    ur = snd (snd (snd (snd (snd (snd (snd s))))))
+
+    q : Σ ℕ (λ k3 → k3 ≤ k × Σ (steps k3 (y1 , w3) ≡ (v , w2)) (λ comp' →
+                  isHighestℕ {k} {w1'} {w2} {a'} {v} n name comp
+                  → isHighestℕ {k3} {w3} {w2} {y1} {v} n name comp'))
+    q = steps-decomp-isHighestℕ {w1'} {w3} {w2} {a'} {y1} {v} {k} {k1} n name isv comp1 comp
+
+    k3 : ℕ
+    k3 = fst q
+
+    ltk2 : k3 ≤ k
+    ltk2 = fst (snd q)
+
+    comp3 : steps k3 (y1 , w3) ≡ (v , w2)
+    comp3 = fst (snd (snd q))
+
+    ish' : isHighestℕ {k3} {w3} {w2} {y1} {v} n name comp3
+    ish' = snd (snd (snd q)) (snd ish)
+
+    e3 : w1 ⊑· w3
+    e3 = ⊑-trans· (step⊑ {w1} {w1'} {a} {a'} z) (steps→⊑ k1 a' y1 {w1'} {w3} comp1)
+
+    c : Σ ℕ (λ k' → Σ Term (λ v' → steps k' (y2 , w) ≡ (v' , w) × updRel name f g v v'))
+    c = ind1 k3 ltk2 {y1} {y2} {v} {w3} {w2} {w} ur (⊑-compatible· e3 compat) (∀𝕎-mon e3 wgt0) (∀𝕎-mon e3 eqw) comp3 ish' isv
+
+    k4 : ℕ
+    k4 = fst c
+
+    v' : Term
+    v' = fst (snd c)
+
+    comp4 : steps k4 (y2 , w) ≡ (v' , w)
+    comp4 = fst (snd (snd c))
+
+    ur' : updRel name f g v v'
+    ur' = snd (snd (snd c))
 ... | inj₂ z rewrite z | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) | stepVal a w1 isv =
   ⊥-elim (¬just≡nothing z)
 
@@ -399,10 +503,12 @@ steps-updRel-aux gc {n} {name} {f} {g} nnf cf (suc k) ind {a} {b} {v} {w1} {w2} 
 
 steps-updRel : (gc : getT-chooseT) {n : ℕ} {name : Name} {f g : Term} {k : ℕ}
                → ¬Names f
+               → ¬Names g
                → # f
+               → # g
                → presUpdRel n name f g k
-steps-updRel gc {n} {name} {f} {g} {k} nnf cf =
-  <ℕind _ (steps-updRel-aux gc {n} {name} {f} {g} nnf cf) k
+steps-updRel gc {n} {name} {f} {g} {k} nnf nng cf cg =
+  <ℕind _ (steps-updRel-aux gc {n} {name} {f} {g} nnf nng cf cg) k
 
 
 

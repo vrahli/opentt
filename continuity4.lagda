@@ -162,6 +162,8 @@ presUpdRel : (n : ℕ) (name : Name) (f g : Term) (k : ℕ) → Set(lsuc L)
 presUpdRel n name f g k =
   {a b v : Term} {w1 w2 w : 𝕎·}
   → updRel name f g a b
+  → compatible· name w1 Res⊤
+  → ∀𝕎-get0-NUM w1 name
   → ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < n → strongMonEq w' (APPLY f (NUM k)) (APPLY g (NUM k)))
   → (comp : steps k (a , w1) ≡ (v , w2))
   → isHighestℕ {k} {w1} {w2} {a} {v} n name comp
@@ -721,6 +723,73 @@ stepsPresUpdRel-SPREAD₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp ,
 
     comp2' : SPREAD a₂ b₂ ⇓ SPREAD y2 b₂ from w to w
     comp2' = SPREAD⇓steps k2 b₂ comp2
+
+
+
+isHighestℕ-CHOOSE₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v : Term} {w w' : 𝕎·}
+                      → (comp : steps k (CHOOSE a b , w) ≡ (v , w'))
+                      → isValue v
+                      → isHighestℕ {k} {w} {w'} {CHOOSE a b} {v} n name comp
+                      → Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+isHighestℕ-CHOOSE₁→ {n} {0} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+isHighestℕ-CHOOSE₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h with is-NAME a
+... | inj₁ (name' , p) rewrite p = 0 , NAME name' , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
+... | inj₂ x with step⊎ a w
+... |    inj₁ (a0 , w0 , z) rewrite z =
+  suc (fst ind) , concl
+  where
+    ind : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a0 , w0) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+    ind = isHighestℕ-CHOOSE₁→ {n} {k} {name} {f} {g} {a0} {b} {v} {w0} {w'} comp isv (snd h)
+
+    concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × suc (fst ind) < suc k)))
+    concl rewrite z =
+      fst (snd ind) , fst (snd (snd ind)) , fst (snd (snd (snd ind))) ,
+      (fst h , fst (snd (snd (snd (snd ind))))) ,
+      fst (snd (snd (snd (snd (snd ind))))) ,
+      _≤_.s≤s (snd (snd (snd (snd (snd (snd ind))))))
+... |    inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+
+
+
+stepsPresUpdRel-CHOOSE₁→ : {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w : 𝕎·}
+                           → stepsPresUpdRel n name f g (CHOOSE a b) w
+                           → stepsPresUpdRel n name f g a w
+stepsPresUpdRel-CHOOSE₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , isv , ish , ind) =
+  fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
+  fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
+  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  where
+    hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+    hv = isHighestℕ-CHOOSE₁→ {n} {k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv ish
+
+
+
+→ΣstepsUpdRel-CHOOSE₁ : {name : Name} {f g : Term} {a₁ a₂ b₁ b₂ : Term} {w1 w : 𝕎·}
+                        → updRel name f g b₁ b₂
+                        → ΣstepsUpdRel name f g a₁ w1 a₂ w
+                        → ΣstepsUpdRel name f g (CHOOSE a₁ b₁) w1 (CHOOSE a₂ b₂) w
+→ΣstepsUpdRel-CHOOSE₁ {name} {f} {g} {a₁} {a₂} {b₁} {b₂} {w1} {w} updb (k1 , k2 , y1 , y2 , w3 , comp1 , comp2 , r) =
+  fst comp1' , fst comp2' , CHOOSE y1 b₁ , CHOOSE y2 b₂ , w3 , snd comp1' , snd comp2' ,
+  updRel-CHOOSE _ _ _ _ r updb
+  where
+    comp1' : CHOOSE a₁ b₁ ⇓ CHOOSE y1 b₁ from w1 to w3
+    comp1' = CHOOSE⇓steps k1 b₁ comp1
+
+    comp2' : CHOOSE a₂ b₂ ⇓ CHOOSE y2 b₂ from w to w
+    comp2' = CHOOSE⇓steps k2 b₂ comp2
 
 
 
@@ -1309,7 +1378,7 @@ steps-APPLY-val→ {suc k} {a} {b} {v} {w1} {w2} isv comp = _≤_.s≤s _≤_.z�
     ish1 = isHighestℕ-LET→ {n} {k1} {k} {name} {a} {SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))} {NUM m} {v} {w1} {w1'} {w2} comp1b comp isv ish
 
     indb : Σ ℕ (λ k' → steps k' (b , w1) ≡ (NUM m , w1))
-    indb = Σsteps-updRel-NUM→ (ind k1 (<⇒≤ ltk1) {a} {b} {NUM m} {w1} {w1'} {w1} u eqn comp1b ish1 tt)
+    indb = Σsteps-updRel-NUM→ (ind k1 (<⇒≤ ltk1) {a} {b} {NUM m} {w1} {w1'} {w1} u compat wgt0 eqn comp1b ish1 tt)
 
     k4 : ℕ
     k4 = fst indb
