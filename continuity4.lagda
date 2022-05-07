@@ -1050,6 +1050,15 @@ updRel→¬Names {name} {f} {g} {.(upd name f)} {.(force g)} nng updRel-upd rewr
 ... | no x = ⊑-refl· w
 
 
+steps-APPLY-val→ : {k : ℕ} {a b v : Term} {w1 w2 : 𝕎·}
+                    → isValue v
+                    → steps k (APPLY a b , w1) ≡ (v , w2)
+                    → 0 < k
+steps-APPLY-val→ {0} {a} {b} {v} {w1} {w2} isv comp
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+steps-APPLY-val→ {suc k} {a} {b} {v} {w1} {w2} isv comp = _≤_.s≤s _≤_.z≤n
+
+
 
 →ΣstepsUpdRel-upd : (gc : getT-chooseT) {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w1 w : 𝕎·}
                      → # f
@@ -1060,9 +1069,11 @@ updRel→¬Names {name} {f} {g} {.(upd name f)} {.(force g)} nng updRel-upd rewr
                      → updRel name f g a b
                      → ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < n → strongMonEq w' (APPLY f (NUM k)) (APPLY g (NUM k)))
                      → stepsPresUpdRel n name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1
-                     → ΣstepsUpdRel name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 (APPLY (force g) b) w
+                     → Σ (ΣstepsUpdRel name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 (APPLY (force g) b) w)
+                          (λ x → 0 < fst (snd x))
 →ΣstepsUpdRel-upd gc {n} {name} {f} {g} {a} {b} {w1} {w} cf cg nng compat wgt0 u eqn (k , v , w2 , comp , isv , ish ,  ind) =
-  k2 + k3 , k5 + k6 , NUM i , NUM i , w1a , comp2b , compgd , updRel-NUM i
+  (k2 + k3 , k5 + k6 , NUM i , NUM i , w1a , comp2b , compgd , updRel-NUM i) ,
+  steps-APPLY-val→ {k5 + k6} {force g} {b} {NUM i} {w} {w} tt compgd
   where
     c : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w1' → Σ ℕ (λ m → Σ ℕ (λ m' →
            k1 < k
@@ -1177,7 +1188,5 @@ updRel→¬Names {name} {f} {g} {.(upd name f)} {.(force g)} nng updRel-upd rewr
 
     compgd : steps (k5 + k6) (APPLY (force g) b , w) ≡ (NUM i , w)
     compgd = fst (¬Names→steps (k5 + k6) w1 w1b w (APPLY (force g) b) (NUM i) (¬Names-APPLY {force g} {b} (¬Names-force {g} nng) nnb) compgc)
-
-
 
 \end{code}
