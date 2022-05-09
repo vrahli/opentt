@@ -105,7 +105,7 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import continuity(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 
 
 
@@ -380,7 +380,8 @@ shiftNameDown-renn {name} {F} {f} cF cf nnF nnf =
                  APPLY F (upd name f) ⇓ v from (chooseT name (startNewChoiceT Res⊤ w1 (testM 0 F f)) (NUM 0)) to w2
                  × isValue v
                  × getT 0 name w2 ≡ just (NUM k)
-                 × n ≡ suc k)))
+                 × n ≡ suc k
+                 × compatible· name (startNewChoiceT Res⊤ w1 (testM 0 F f)) Res⊤)))
 #νtestM⇓→ nc cn {w1} {w2} {F} {f} {n} cF cf nnF nnf comp =
   newChoiceT w1 (testM 0 F f) ,
   fst comp3 ,
@@ -388,7 +389,8 @@ shiftNameDown-renn {name} {F} {f} cF cf nnF nnf =
   fst (snd (snd comp3)) ,
   fst (snd (snd (snd comp3))) ,
   fst (snd (snd (snd (snd (snd comp3))))) ,
-  NUMinj (snd (snd (snd (snd (snd (snd comp3))))))
+  NUMinj (snd (snd (snd (snd (snd (snd comp3)))))) ,
+  compat1
   where
     name : Name
     name = newChoiceT w1 (testM 0 F f)

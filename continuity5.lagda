@@ -105,7 +105,7 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import continuity(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
@@ -512,297 +512,72 @@ steps-updRel gc {n} {name} {f} {g} {k} nnf nng cf cg =
 
 
 
+updRel-refl : {name : Name} {f g a : Term}
+              → ¬names a ≡ true
+              → updRel name f g a a
+updRel-refl {name} {f} {g} {VAR x} nn = updRel-VAR _
+updRel-refl {name} {f} {g} {NAT} nn = updRel-NAT
+updRel-refl {name} {f} {g} {QNAT} nn = updRel-QNAT
+updRel-refl {name} {f} {g} {LT a a₁} nn = updRel-LT _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel-refl {name} {f} {g} {QLT a a₁} nn = updRel-QLT _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel-refl {name} {f} {g} {NUM x} nn = updRel-NUM _
+updRel-refl {name} {f} {g} {IFLT a a₁ a₂ a₃} nn = updRel-IFLT _ _ _ _ _ _ _ _ (updRel-refl (∧≡true→1-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel-refl (∧≡true→2-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel-refl (∧≡true→3-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel-refl (∧≡true→4-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn))
+updRel-refl {name} {f} {g} {SUC a} nn = updRel-SUC _ _ (updRel-refl nn)
+updRel-refl {name} {f} {g} {PI a a₁} nn = updRel-PI _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel-refl {name} {f} {g} {LAMBDA a} nn = updRel-LAMBDA _ _ (updRel-refl nn)
+updRel-refl {name} {f} {g} {APPLY a a₁} nn = updRel-APPLY _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel-refl {name} {f} {g} {FIX a} nn = updRel-FIX _ _ (updRel-refl nn)
+updRel-refl {name} {f} {g} {LET a a₁} nn = updRel-LET _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel-refl {name} {f} {g} {SUM a a₁} nn = updRel-SUM _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel-refl {name} {f} {g} {PAIR a a₁} nn = updRel-PAIR _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel-refl {name} {f} {g} {SPREAD a a₁} nn = updRel-SPREAD _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel-refl {name} {f} {g} {SET a a₁} nn = updRel-SET _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel-refl {name} {f} {g} {TUNION a a₁} nn = updRel-TUNION _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel-refl {name} {f} {g} {UNION a a₁} nn = updRel-UNION _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel-refl {name} {f} {g} {QTUNION a a₁} nn = updRel-QTUNION _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel-refl {name} {f} {g} {INL a} nn = updRel-INL _ _ (updRel-refl nn)
+updRel-refl {name} {f} {g} {INR a} nn = updRel-INR _ _ (updRel-refl nn)
+updRel-refl {name} {f} {g} {DECIDE a a₁ a₂} nn = updRel-DECIDE _ _ _ _ _ _ (updRel-refl (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updRel-refl (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updRel-refl (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} nn))
+updRel-refl {name} {f} {g} {EQ a a₁ a₂} nn = updRel-EQ _ _ _ _ _ _ (updRel-refl (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updRel-refl (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updRel-refl (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} nn))
+updRel-refl {name} {f} {g} {AX} nn = updRel-AX
+updRel-refl {name} {f} {g} {FREE} nn = updRel-FREE
+updRel-refl {name} {f} {g} {CHOOSE a a₁} nn = updRel-CHOOSE _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel-refl {name} {f} {g} {TSQUASH a} nn = updRel-TSQUASH _ _ (updRel-refl nn)
+updRel-refl {name} {f} {g} {TTRUNC a} nn = updRel-TTRUNC _ _ (updRel-refl nn)
+updRel-refl {name} {f} {g} {TCONST a} nn = updRel-TCONST _ _ (updRel-refl nn)
+updRel-refl {name} {f} {g} {SUBSING a} nn = updRel-SUBSING _ _ (updRel-refl nn)
+updRel-refl {name} {f} {g} {DUM a} nn = updRel-DUM _ _ (updRel-refl nn)
+updRel-refl {name} {f} {g} {FFDEFS a a₁} nn = updRel-FFDEFS _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel-refl {name} {f} {g} {UNIV x} nn = updRel-UNIV x
+updRel-refl {name} {f} {g} {LIFT a} nn = updRel-LIFT _ _ (updRel-refl nn)
+updRel-refl {name} {f} {g} {LOWER a} nn = updRel-LOWER _ _ (updRel-refl nn)
+updRel-refl {name} {f} {g} {SHRINK a} nn = updRel-SHRINK _ _ (updRel-refl nn)
+
+
+steps-updRel-app : (gc : getT-chooseT) {n : ℕ} {name : Name} {F f g v : Term} {k : ℕ} {w1 w2 w : 𝕎·}
+                   → ¬Names F
+                   → ¬Names f
+                   → ¬Names g
+                   → # f
+                   → # g
+                   → compatible· name w1 Res⊤
+                   → ∀𝕎-get0-NUM w1 name
+                   → ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < n → strongMonEq w' (APPLY f (NUM k)) (APPLY g (NUM k)))
+                   → (comp : steps k (APPLY F (upd name f)  , w1) ≡ (v , w2))
+                   → isHighestℕ {k} {w1} {w2} {APPLY F (upd name f)} {v} n name comp
+                   → isValue v
+                   → Σ ℕ (λ k' → Σ Term (λ v' → steps k' (APPLY F (force g) , w) ≡ (v' , w) × updRel name f g v v'))
+steps-updRel-app gc {n} {name} {F} {f} {g} {v} {k} {w1} {w2} {w} nnF nnf nng cf cg compat wgt0 eqn comp ish isv =
+  steps-updRel
+    gc {n} {name} {f} {g} {k}
+    nnf nng cf cg
+    {APPLY F (upd name f)} {APPLY F (force g)} {v} {w1} {w2} {w}
+    (updRel-APPLY F F (upd name f) (force g) (updRel-refl nnF) updRel-upd)
+    compat wgt0 eqn comp ish isv
+
+
+
 ≡suc→< : {a b : ℕ} → a ≡ suc b → b < a
 ≡suc→< {a} {b} e rewrite e = ≤-refl
-
-
-
--- define an 'external' version of #νtestM that follows the computation of (APPLY F f), and keeps
--- track of the highest number f is applied to, and prove that this 'external' version returns
--- the same value as the 'internal' one (i.e., #νtestM)
-eqfg : (nc : ℕℂ) (cn : comp→∀ℕ) (kb : K□) (gc : getT-chooseT)
-      {i : ℕ} {w : 𝕎·} {F f g : CTerm}
-      → #¬Names F
-      → #¬Names f
-      → #¬Names g
-      → ∈Type i w #BAIRE→NAT F
-      → ∈Type i w #BAIRE f
-      → ∈Type i w #BAIRE g
-      → equalInType i w (#BAIREn (#νtestM F f)) f g
---       ((n : ℕ) → n < ? → ⇓sameℕ w (APPLY f (NUM n)) (APPLY g (NUM n)))
-      → equalInType i w #NAT (#APPLY F f) (#APPLY F g)
-eqfg nc cn kb gc {i} {w} {F} {f} {g} nnF nnf nng ∈F ∈f ∈g eqb =
-  equalInType-trans (equalInType-APPLY-force ∈F ∈f) (equalInType-trans eqf (equalInType-sym (equalInType-APPLY-force ∈F ∈g)))
-  where
-    neqt : NATeq w (#νtestM F f) (#νtestM F f)
-    neqt = νtestM-NAT nc cn kb gc i w F f nnF nnf ∈F ∈f
-
-    tn : ℕ
-    tn = fst neqt
-
-    x : NATeq w (#νtestM F f) (#NUM tn)
-    x = tn , fst (snd neqt) , compAllRefl _ _
-
-    cx : #νtestM F f #⇛ #NUM tn at w
-    cx = NATeq→⇛ {w} {#νtestM F f} x
-
-    eqb1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#NATn (#νtestM F f)) a₁ a₂
-                         → equalInType i w' #NAT (#APPLY f a₁) (#APPLY g a₂))
-    eqb1 = equalInType-FUN→ (≡CTerm→equalInType (≡BAIREn (#νtestM F f)) eqb)
-
-    eqb2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm)
-                         → □· w' (λ w'' _ → Σ ℕ (λ k → a₁ #⇛ #NUM k at w'' × a₂ #⇛ #NUM k at w'' × k < tn))
-                         → □· w' (λ w'' _ → NATeq w'' (#APPLY f a₁) (#APPLY g a₂)))
-    eqb2 w1 e1 a₁ a₂ eqa = equalInType-NAT→ i w1 (#APPLY f a₁) (#APPLY g a₂) (eqb1 w1 e1 a₁ a₂ (→equalInType-NATn (∀𝕎-mon e1 cx) eqa))
-
-    eqb3 : ∀𝕎 w (λ w' _ → (k : ℕ) → k < tn
-                         → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
-    eqb3 w1 e1 k ltk = kb z w1 (⊑-refl· _)
-      where
-        z : □· w1 (λ w'' _ → NATeq w'' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
-        z = eqb2 w1 e1 (#NUM k) (#NUM k) (Mod.∀𝕎-□ M (λ w2 e2 → k , #compAllRefl (#NUM k) w2 , #compAllRefl (#NUM k) w2 , ltk))
-
-    inn : ∈Type i w #NAT (#APPLY F (#force f))
-    inn = equalInType-refl (equalInType-sym (equalInType-APPLY-force ∈F ∈f))
-
-    aw : ∀𝕎 w (λ w' _ → NATeq w' (#APPLY F (#force f)) (#APPLY F (#force f)) → NATeq w' (#APPLY F (#force f)) (#APPLY F (#force g)))
-    aw w1 e1 (n , comp1 , comp2) = n , comp1 , ¬Names→⇓→⇛ w1 w1 ⌜ #APPLY F (#force g) ⌝ (NUM n) (#¬Names-APPLY {F} {#force g} nnF (#¬Names-force {g} nng)) compg
-      where
-        cxb : Σ 𝕎· (λ w2 → νtestM ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM tn from w1 to w2)
-        cxb = ⇓→from-to (lower (cx w1 e1))
-
-        w2 : 𝕎·
-        w2 = fst cxb
-
-        compt : νtestM ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM tn from w1 to w2
-        compt = snd cxb
-
-        compu : Σ Name (λ name → Σ Term (λ v → Σ ℕ (λ j →
-                 APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ v from (chooseT name (startNewChoiceT Res⊤ w1 (testM 0 ⌜ F ⌝ ⌜ f ⌝)) (NUM 0)) to w2
-                 × isValue v
-                 × getT 0 name w2 ≡ just (NUM j)
-                 × tn ≡ suc j)))
-        compu = #νtestM⇓→ nc cn {w1} {w2} {⌜ F ⌝} {⌜ f ⌝} {tn} (CTerm.closed F) (CTerm.closed f) nnF nnf compt
-
-        name : Name
-        name = fst compu
-
-        v : Term
-        v = fst (snd compu)
-
-        j : ℕ
-        j = fst (snd (snd compu))
-
-        w1' : 𝕎·
-        w1' = chooseT name (startNewChoiceT Res⊤ w1 (testM 0 ⌜ F ⌝ ⌜ f ⌝)) (NUM 0)
-
-        k : ℕ
-        k = fst (fst (snd (snd (snd compu))))
-
-        compa : steps k (APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) , w1') ≡ (v , w2)
-        compa = snd (fst (snd (snd (snd compu))))
-
-        isvv : isValue v
-        isvv = fst (snd (snd (snd (snd compu))))
-
-        g0 : getT 0 name w2 ≡ just (NUM j)
-        g0 = fst (snd (snd (snd (snd (snd compu)))))
-
-        eqj : tn ≡ suc j
-        eqj = snd (snd (snd (snd (snd (snd compu)))))
-
-        ish : isHighestℕ {k} {w1'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} tn name compa
-        ish = steps-sat-isHighestℕ
-                gc {name} {⌜ f ⌝} {k} nnf (CTerm.closed f) {w1'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} {tn}
-                compa isvv (updCtxt-APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) (¬Names→updCtxt {name} {⌜ f ⌝} {⌜ F ⌝} nnF) updCtxt-upd)
-                {!!}
-                {!!}
-                (j , g0 , ≡suc→< eqj)
-
-        compg : #APPLY F (#force g) #⇓ #NUM n at w1
-        compg = {!!}
-
--- We need to prove something like this, where w1 and w1' differ only in name
--- (we should be able to prove that for any world w3 between w1' and w2 (Σ ℕ (λ j → getT 0 name w3 ≡ just (NUM j) × j ≤ m0)) -- see steps-sat-isHighestℕ being proved below
--- (and then define a 'differ' relation relating CTXT(upd name f)/CTXT(force f)/CTXT(force g))
---  → APPLY F (upd name f) ⇓ NUM n from w1' to w2 -- These 3 hypotheses come from #νtestM⇓→
---  → getT 0 name w2 ≡ just (NUM m0)
---  → m0 ≤ m
---  → ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < m → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k))) -- from eqb2
---  → APPLY F (force f) ⇓ NUM n at w1
---  → APPLY F (force g) ⇓ NUM n at w1
-
-    eqf : equalInType i w #NAT (#APPLY F (#force f)) (#APPLY F (#force g))
-    eqf = →equalInType-NAT i w (#APPLY F (#force f)) (#APPLY F (#force g)) (Mod.∀𝕎-□Func M aw (equalInType-NAT→ i w (#APPLY F (#force f)) (#APPLY F (#force f)) inn))
-
-
-
-
-
-{--foo2 : {F f g : Term} {n m : ℕ} {w1 w1' w2 : 𝕎·}
-       → APPLY F (upd name f) ⇓ NUM n from w1' to w2 -- These 2 hypotheses come from #νtestM⇓→
-       → getT≤ℕ w2 m name
-       → ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < m → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k))) -- from eqb2
-       → APPLY F (force f) ⇓ NUM n at w1
-       → APPLY F (force g) ⇓ NUM n at w1
-foo2 {F} {f} {g} {n} {m} {w1} {w1'} {w2} comp
---}
-
-
-
-continuity : (nc : ℕℂ) (cn : comp→∀ℕ) (kb : K□) (gc : getT-chooseT)
-             (i : ℕ) (w : 𝕎·) (F f : CTerm)
-             → #¬Names F
-             → #¬Names f
-             → ∈Type i w #BAIRE→NAT F
-             → ∈Type i w #BAIRE f
-             → ∈Type i w (#contBody F f) (#PAIR (#νtestM F f) #lam3AX)
-continuity nc cn kb gc i w F f nnF nnf ∈F ∈f =
-  ≡CTerm→equalInType (sym (#contBody≡ F f)) h0
-  where
-    aw : ∀𝕎 w (λ w' _ → SUMeq (equalInType i w' #NAT)
-                                (λ a b ea → equalInType i w' (sub0 a (#[0]PI #[0]BAIRE
-                                                                             (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                                                                      (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]BAIREn #[1]VAR1))
-                                                                                               (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT))))))
-                                w'
-                                (#PAIR (#νtestM F f) #lam3AX)
-                                (#PAIR (#νtestM F f) #lam3AX))
-    aw w1 e1 =
-      #νtestM F f , #νtestM F f , #lam3AX , #lam3AX ,
-      testM-NAT nc cn kb gc i w1 F f nnF nnf (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1) ,
-      #compAllRefl (#PAIR (#νtestM F f) #lam3AX) w1 ,
-      #compAllRefl (#PAIR (#νtestM F f) #lam3AX) w1 ,
-      eql1
-      where
-        ea2 : ∀𝕎 w1 (λ w2 e2 → (g₁ g₂ : CTerm) (eg : equalInType i w2 #BAIRE g₁ g₂)
-                             → equalTypes i w2
-                                           (#FUN (#FFDEFS #BAIRE g₁) (#FUN (#EQ f g₁ (#BAIREn (#νtestM F f))) (#EQ (#APPLY F f) (#APPLY F g₁) #NAT)))
-                                           (#FUN (#FFDEFS #BAIRE g₂) (#FUN (#EQ f g₂ (#BAIREn (#νtestM F f))) (#EQ (#APPLY F f) (#APPLY F g₂) #NAT))))
-        ea2 w2 e2 g₁ g₂ eg =
-          eqTypesFUN←
-            (eqTypesFFDEFS← eqTypesBAIRE eg)
-            (eqTypesFUN←
-              (eqTypesEQ← (→equalTypesBAIREn i w2 (#νtestM F f) (#νtestM F f) (testM-NAT nc cn kb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))))
-                          (∈BAIRE→∈BAIREn (testM-NAT nc cn kb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
-                          (∈BAIRE→∈BAIREn (testM-NAT nc cn kb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) eg))
-              (eqTypesEQ← eqTypesNAT
-                          (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
-                          (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) eg)))
-
-        eql2 : equalInType i w1 (#PI #BAIRE
-                                     (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
-                                              (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]BAIREn ⌞ #νtestM F f ⌟))
-                                                       (#[0]EQ (#[0]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[0]APPLY ⌞ F ⌟ #[0]VAR) #[0]NAT))))
-                                  #lam3AX
-                                  #lam3AX
-        eql2 = equalInType-PI
-                 (λ w2 e2 → eqTypesBAIRE)
-                 (λ w2 e2 g₁ g₂ eg → ≡CTerm→eqTypes (sym (sub0-contBodyPI-PI F f (#νtestM F f) g₁)) (sym (sub0-contBodyPI-PI F f (#νtestM F f) g₂)) (ea2 w2 e2 g₁ g₂ eg))
-                 aw2
-          where
-            aw3 : ∀𝕎 w1 (λ w2 e2 → (g₁ g₂ : CTerm) → equalInType i w2 #BAIRE g₁ g₂
-                                  → equalInType i w2 (#FUN (#FFDEFS #BAIRE g₁)
-                                                           (#FUN (#EQ f g₁ (#BAIREn (#νtestM F f)))
-                                                                 (#EQ (#APPLY F f) (#APPLY F g₁) #NAT)))
-                                                 (#APPLY #lam3AX g₁) (#APPLY #lam3AX g₂))
-            aw3 w2 e2 g₁ g₂ eg =
-              equalInType-FUN
-                (eqTypesFFDEFS← eqTypesBAIRE (equalInType-refl eg))
-                (eqTypesFUN←
-                  (eqTypesEQ← (→equalTypesBAIREn i w2 (#νtestM F f) (#νtestM F f) (testM-NAT nc cn kb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))))
-                              (∈BAIRE→∈BAIREn (testM-NAT nc cn kb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
-                              (∈BAIRE→∈BAIREn (testM-NAT nc cn kb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-refl eg)))
-                  (eqTypesEQ← eqTypesNAT
-                              (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
-                              (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-refl eg))))
-                aw4
-              where
-                aw4 : ∀𝕎 w2 (λ w' _ → (x₁ x₂ : CTerm)
-                                     → equalInType i w' (#FFDEFS #BAIRE g₁) x₁ x₂
-                                     → equalInType i w' (#FUN (#EQ f g₁ (#BAIREn (#νtestM F f)))
-                                                               (#EQ (#APPLY F f) (#APPLY F g₁) #NAT))
-                                                         (#APPLY (#APPLY #lam3AX g₁) x₁)
-                                                         (#APPLY (#APPLY #lam3AX g₂) x₂))
-                aw4 w3 e3 x₁ x₂ ex =
-                  equalInType-FUN
-                    (eqTypesEQ← (→equalTypesBAIREn i w3 (#νtestM F f) (#νtestM F f) (testM-NAT nc cn kb gc i w3 F f nnF nnf (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))))
-                                 (∈BAIRE→∈BAIREn (testM-NAT nc cn kb gc i w3 F f nnF nnf (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3))))
-                                 (∈BAIRE→∈BAIREn (testM-NAT nc cn kb gc i w3 F f nnF nnf (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))) (equalInType-refl (equalInType-mon eg w3 e3))))
-                    (eqTypesEQ← eqTypesNAT
-                                 (∈BAIRE→NAT→ (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3))))
-                                 (∈BAIRE→NAT→ (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-refl (equalInType-mon eg w3 e3))))
-                    aw5
-                  where
-                    aw5 : ∀𝕎 w3 (λ w' _ → (y₁ y₂ : CTerm)
-                                        → equalInType i w' (#EQ f g₁ (#BAIREn (#νtestM F f))) y₁ y₂
-                                        → equalInType i w' (#EQ (#APPLY F f) (#APPLY F g₁) #NAT)
-                                                            (#APPLY (#APPLY (#APPLY #lam3AX g₁) x₁) y₁)
-                                                            (#APPLY (#APPLY (#APPLY #lam3AX g₂) x₂) y₂))
-                    aw5 w4 e4 y₁ y₂ ey =
-                      equalInType-EQ
-                        eqTypesNAT
-                        concl
-                      where
-                        hyp : □· w4 (λ w5 _ → equalInType i w5 (#BAIREn (#νtestM F f)) f g₁)
-                        hyp = equalInType-EQ→ ey
-
-                        ff : □· w3 (λ w' _ → FFDEFSeq g₁ (equalInType i w' #BAIRE) w' x₁ x₂)
-                        ff = equalInTypeFFDEFS→ ex
-
-                        aw6 : ∀𝕎 w4 (λ w' e' → equalInType i w' (#BAIREn (#νtestM F f)) f g₁
-                                              → ↑wPred (λ w'' _ → FFDEFSeq g₁ (equalInType i w'' #BAIRE) w'' x₁ x₂) e4 w' e'
-                                              → equalInType i w' #NAT (#APPLY F f) (#APPLY F g₁))
-                        aw6 w5 e5 h1 (g , h2 , nng) = equalInType-trans cc (∈BAIRE→NAT→ (equalInType-mon ∈F w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))) (equalInType-sym h2))
-                          where
-                            h3 : equalInType i w5 (#BAIREn (#νtestM F f)) f g
-                            h3 = equalInType-BAIREn-BAIRE-trans h2 h1 (testM-NAT nc cn kb gc i w5 F f nnF nnf (equalInType-mon ∈F w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))) (equalInType-mon ∈f w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))))
-
-                            cc : equalInType i w5 #NAT (#APPLY F f) (#APPLY F g)
-                            cc = {!!}
-
--- → #¬Names F
--- → #¬Names f
--- → #¬Names g
--- → equalInType i w5 (#BAIREn (#νtestM F f)) f g
---       ((n : ℕ) → ⇓sameℕ w (APPLY f (NUM n)) (APPLY g (NUM n)))
--- → equalInType i w5 #NAT (#APPLY F f) (#APPLY F g)
-
-                        concl : □· w4 (λ w5 _ → equalInType i w5 #NAT (#APPLY F f) (#APPLY F g₁))
-                        concl = ∀𝕎-□Func2 aw6 hyp (Mod.↑□ M ff e4)
-
-            aw2 : ∀𝕎 w1 (λ w2 e2 → (g₁ g₂ : CTerm) → equalInType i w2 #BAIRE g₁ g₂
-                                  → equalInType i w2 (sub0 g₁ (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
-                                                                        (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]BAIREn ⌞ #νtestM F f ⌟))
-                                                                                 (#[0]EQ (#[0]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[0]APPLY ⌞ F ⌟ #[0]VAR) #[0]NAT))))
-                                                 (#APPLY #lam3AX g₁) (#APPLY #lam3AX g₂))
-            aw2 w2 e2 g₁ g₂ eg = ≡CTerm→equalInType (sym (sub0-contBodyPI-PI F f (#νtestM F f) g₁)) (aw3 w2 e2 g₁ g₂ eg)
-
-        eql1 : equalInType i w1 (sub0 (#νtestM F f)
-                                      (#[0]PI #[0]BAIRE
-                                              (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                                       (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]BAIREn #[1]VAR1))
-                                                                (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT)))))
-                                 #lam3AX
-                                 #lam3AX
-        eql1 = ≡CTerm→equalInType (sym (sub0-contBodyPI F f (#νtestM F f))) eql2
-
-    seq : □· w (λ w' _ → SUMeq (equalInType i w' #NAT)
-                                (λ a b ea → equalInType i w' (sub0 a (#[0]PI #[0]BAIRE
-                                                                             (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                                                                      (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]BAIREn #[1]VAR1))
-                                                                                               (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT))))))
-                                w'
-                                (#PAIR (#νtestM F f) #lam3AX)
-                                (#PAIR (#νtestM F f) #lam3AX))
-    seq = Mod.∀𝕎-□ M aw
-
-    h0 : ∈Type i w (#SUM #NAT
-                         (#[0]PI #[0]BAIRE
-                                 (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                          (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]BAIREn #[1]VAR1))
-                                                   (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT)))))
-                   (#PAIR (#νtestM F f) #lam3AX)
-    h0 = equalInType-SUM (λ w' e' → eqTypesNAT) (equalTypes-contBodyPI i w F f ∈F ∈f) seq
 
 \end{code}

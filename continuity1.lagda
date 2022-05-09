@@ -49,13 +49,13 @@ open import mod
 open import choiceBar
 
 
-module continuity {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-                  (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
-                  (X : ChoiceExt W C)
-                  (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
-                  (F : Freeze {L} W C K P G N)
-                  (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-                  (CB : ChoiceBar W M C K P G X N V F E) -- TODO - We won't need everything from there: use a different module
+module continuity1 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+                   (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
+                   (X : ChoiceExt W C)
+                   (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
+                   (F : Freeze {L} W C K P G N)
+                   (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+                   (CB : ChoiceBar W M C K P G X N V F E) -- TODO - We won't need everything from there: use a different module
        where
 
 
