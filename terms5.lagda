@@ -383,6 +383,7 @@ upd⇓names gc0 k f name1 name2 w1 w1' w2 a b v cf nnf gtn compat1 compat2 isv p
 
 
 
+
 differ-refl : (name1 name2 : Name) (f t : Term)
               → ¬names t ≡ true
               → differ name1 name2 f t t
