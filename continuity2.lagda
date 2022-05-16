@@ -105,6 +105,8 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
+open import continuity-conds(W)(C)(K)(G)(X)(N)
+
 open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 
 
@@ -247,7 +249,7 @@ SUC⇓val→ {t} {v} {w1} {w2} (n , comp) isv =
 probeM⇓-decomp : (name : Name) (F f v : Term) (w w' : 𝕎·)
                  → probeM name F f ⇓ v from w to w'
                  → isValue v
-                 → ∀𝕎-getT-NUM w name
+                 → ∀𝕎-get0-NUM w name
                  → Σ Term (λ u → Σ ℕ (λ k →
                      appUpd name F f ⇓ u from w to w'
                      × isValue u
@@ -370,7 +372,7 @@ shiftNameDown-renn {name} {F} {f} cF cf nnF nnf =
 
 
 
-#νtestM⇓→ : (nc : ℕℂ) (cn : comp→∀ℕ) {w1 w2 : 𝕎·} {F f : Term} {n : ℕ}
+#νtestM⇓→ : (cn : comp→∀ℕ) {w1 w2 : 𝕎·} {F f : Term} {n : ℕ}
              → # F
              → # f
              → ¬Names F
@@ -382,7 +384,7 @@ shiftNameDown-renn {name} {F} {f} cF cf nnF nnf =
                  × getT 0 name w2 ≡ just (NUM k)
                  × n ≡ suc k
                  × compatible· name (startNewChoiceT Res⊤ w1 (testM 0 F f)) Res⊤)))
-#νtestM⇓→ nc cn {w1} {w2} {F} {f} {n} cF cf nnF nnf comp =
+#νtestM⇓→ cn {w1} {w2} {F} {f} {n} cF cf nnF nnf comp =
   newChoiceT w1 (testM 0 F f) ,
   fst comp3 ,
   fst (snd comp3) ,
@@ -416,7 +418,7 @@ shiftNameDown-renn {name} {F} {f} cF cf nnF nnf =
                × get0 name ⇓ NUM k from w2 to w2
                × getT 0 name w2 ≡ just (NUM k)
                × NUM n ≡ NUM (suc k)))
-    comp3 = probeM⇓-decomp name F f (NUM n) w1'' w2 comp2 tt (cn nc name w1' 0 compat1)
+    comp3 = probeM⇓-decomp name F f (NUM n) w1'' w2 comp2 tt (cn name w1' 0 compat1)
 
 
 

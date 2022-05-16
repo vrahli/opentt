@@ -105,6 +105,8 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
+open import continuity-conds(W)(C)(K)(G)(X)(N)
+
 open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
@@ -1057,7 +1059,7 @@ updRel-sub {name} {f} {g} cf cg {a₁} {a₂} {b₁} {b₂} ua ub =
 
 
 
-isHighestℕ-updBody-NUM3→< : (gc : getT-chooseT) {n : ℕ} {name : Name} {f : Term} {k : ℕ} {m : ℕ} {v : Term} {w1 w2 : 𝕎·}
+isHighestℕ-updBody-NUM3→< : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f : Term} {k : ℕ} {m : ℕ} {v : Term} {w1 w2 : 𝕎·}
                              → compatible· name w1 Res⊤
                              → (comp : steps k (LET (setT name (NUM m)) (APPLY f (NUM m)) , w1) ≡ (v , w2))
                              → isValue v
@@ -1076,7 +1078,7 @@ isHighestℕ-updBody-NUM3→< gc {n} {name} {f} {suc k} {m} {v} {w1} {w2} compat
 
 
 
-isHighestℕ-updBody-NUM2→< : (gc : getT-chooseT) {n : ℕ} {name : Name} {f : Term} {k : ℕ} {j m : ℕ} {v : Term} {w1 w2 : 𝕎·}
+isHighestℕ-updBody-NUM2→< : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f : Term} {k : ℕ} {j m : ℕ} {v : Term} {w1 w2 : 𝕎·}
                              → compatible· name w1 Res⊤
                              → j < n
                              → (comp : steps k (LET (IFLT (NUM j) (NUM m) (setT name (NUM m)) AX) (APPLY f (NUM m)) , w1) ≡ (v , w2))
@@ -1090,7 +1092,7 @@ isHighestℕ-updBody-NUM2→< gc {n} {name} {f} {suc k} {j} {m} {v} {w1} {w2} co
 ... | no x = <-transʳ (≮⇒≥ x) ltjn
 
 
-isHighestℕ-updBody-NUM2b→< : (gc : getT-chooseT) {n : ℕ} {name : Name} {f : Term} {k : ℕ} {j m : ℕ} {u v : Term} {w1 w2 : 𝕎·}
+isHighestℕ-updBody-NUM2b→< : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f : Term} {k : ℕ} {j m : ℕ} {u v : Term} {w1 w2 : 𝕎·}
                              → compatible· name w1 Res⊤
                              → j < n
                              → u ≡ NUM j
@@ -1103,7 +1105,7 @@ isHighestℕ-updBody-NUM2b→< gc {n} {name} {f} {k} {j} {m} {u} {v} {w1} {w2} c
 
 
 
-isHighestℕ-updBody-NUM1→< : (gc : getT-chooseT) {n : ℕ} {name : Name} {f : Term} {k : ℕ} {m : ℕ} {v : Term} {w1 w2 : 𝕎·}
+isHighestℕ-updBody-NUM1→< : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f : Term} {k : ℕ} {m : ℕ} {v : Term} {w1 w2 : 𝕎·}
                              → compatible· name w1 Res⊤
                              → (comp : steps k (LET (IFLT (get0 name) (NUM m) (setT name (NUM m)) AX) (APPLY f (NUM m)) , w1) ≡ (v , w2))
                              → isValue v
@@ -1130,7 +1132,7 @@ isHighestℕ-updBody-NUM1→< gc {n} {name} {f} {suc k} {m} {v} {w1} {w2} compat
 
 
 
-isHighestℕ-updBody-NUM→< : (gc : getT-chooseT) {n : ℕ} {name : Name} {f : Term} {k : ℕ} {m : ℕ} {v : Term} {w1 w2 : 𝕎·}
+isHighestℕ-updBody-NUM→< : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f : Term} {k : ℕ} {m : ℕ} {v : Term} {w1 w2 : 𝕎·}
                              → # f
                              → compatible· name w1 Res⊤
                              → (comp : steps k (LET (NUM m) (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (v , w2))
@@ -1145,7 +1147,7 @@ isHighestℕ-updBody-NUM→< gc {n} {name} {f} {suc k} {m} {v} {w1} {w2} cf comp
 
 
 
-isHighestℕ-updBody→< : (gc : getT-chooseT) {n : ℕ} {name : Name} {f : Term} {k1 k2 : ℕ} {a v : Term} {m : ℕ} {w1 w2 w3 : 𝕎·}
+isHighestℕ-updBody→< : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f : Term} {k1 k2 : ℕ} {a v : Term} {m : ℕ} {w1 w2 w3 : 𝕎·}
                          → # f
                          → compatible· name w1 Res⊤
                          → (comp1 : steps k1 (a , w1) ≡ (NUM m , w2))
@@ -1287,7 +1289,7 @@ steps-APPLY-val→ {suc k} {a} {b} {v} {w1} {w2} isv comp = _≤_.s≤s _≤_.z�
 
 
 
-→ΣstepsUpdRel-upd : (gc : getT-chooseT) {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w1 w : 𝕎·}
+→ΣstepsUpdRel-upd : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w1 w : 𝕎·}
                      → # f
                      → # g
                      → ¬Names g

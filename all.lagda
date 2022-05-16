@@ -62,4 +62,6 @@ open import openNotFollowChoice
 -- which we require to prove ¬LEM for example.  This is true when using FCS as choices but not REF.
 open import kripkeCsNotRetrieving
 
+-- A proof that all functions on the Bair space are continuous by realizing the modulus of continuity using exceptions.
+open import continuity6
 \end{code}

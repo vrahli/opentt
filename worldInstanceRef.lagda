@@ -93,6 +93,10 @@ wdom [] = []
 wdom (cell name _ _ _ ∷ w) = name ∷ wdom w
 
 
+wnames : world → List Name
+wnames w = []
+
+
 update : (n : Name) (v : ℂ·) (f : Bool) (w : world) → world
 update _ _ _ [] = []
 update n v f (cell name r x b ∷ w) with n ≟ name
@@ -470,7 +474,7 @@ open import choiceExtDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceR
 
 
 newRefChoice : (w : 𝕎·) → Name
-newRefChoice w = fst (freshName (wdom w))
+newRefChoice w = fst (freshName (wdom w ++ wnames w))
 
 
 startRefChoice : (n : Name) (r : Res{0ℓ}) (w : 𝕎·) → 𝕎·
@@ -515,6 +519,7 @@ newChoiceRef : NewChoice
 newChoiceRef =
   mkNewChoice
     wdom --newRefChoice
+    wnames
     startRefChoice
     getRefChoice-startRefChoice
     startRefChoice⊏

@@ -46,8 +46,9 @@ open import getChoiceDef(W)(C)(M)(G)
 record NewChoice : Set(lsuc(L)) where
   constructor mkNewChoice
   field
-    -- returns a Name which does not occur in w
     dom𝕎 : 𝕎· → List Name
+    names𝕎 : 𝕎· → List Name
+    -- returns a Name which does not occur in w
     --newChoice : (w : 𝕎·) → Name
     -- 'records' cs in w
     startChoice : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) → 𝕎·

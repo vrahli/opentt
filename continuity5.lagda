@@ -105,6 +105,8 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
+open import continuity-conds(W)(C)(K)(G)(X)(N)
+
 open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
@@ -166,7 +168,7 @@ updRel→isValue {name} {f} {g} {.(upd name f)} {.(force g)} updRel-upd isv = tt
 
 
 
-step-updRel : (gc : getT-chooseT) {n : ℕ} {name : Name} {f g : Term}
+step-updRel : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term}
               {a b x : Term} {w1 w2 w : 𝕎·}
               → ¬Names f
               → ¬Names g
@@ -411,7 +413,7 @@ steps-decomp-isHighestℕ {w} {w1} {w2} {a} {b} {v} {suc n} {suc m} i name isv c
 
 
 
-steps-updRel-aux : (gc : getT-chooseT) {n : ℕ} {name : Name} {f g : Term}
+steps-updRel-aux : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term}
                    → ¬Names f
                    → ¬Names g
                    → # f
@@ -501,7 +503,7 @@ steps-updRel-aux gc {n} {name} {f} {g} nnf nng cf cg (suc k) ind {a} {b} {v} {w1
 
 
 
-steps-updRel : (gc : getT-chooseT) {n : ℕ} {name : Name} {f g : Term} {k : ℕ}
+steps-updRel : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term} {k : ℕ}
                → ¬Names f
                → ¬Names g
                → # f
@@ -554,7 +556,7 @@ updRel-refl {name} {f} {g} {LOWER a} nn = updRel-LOWER _ _ (updRel-refl nn)
 updRel-refl {name} {f} {g} {SHRINK a} nn = updRel-SHRINK _ _ (updRel-refl nn)
 
 
-steps-updRel-app : (gc : getT-chooseT) {n : ℕ} {name : Name} {F f g v : Term} {k : ℕ} {w1 w2 w : 𝕎·}
+steps-updRel-app : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {F f g v : Term} {k : ℕ} {w1 w2 w : 𝕎·}
                    → ¬Names F
                    → ¬Names f
                    → ¬Names g

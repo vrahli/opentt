@@ -49,9 +49,13 @@ dom𝕎· : 𝕎· → List Name
 dom𝕎· = dom𝕎 N
 
 
+names𝕎· : 𝕎· → List Name
+names𝕎· = names𝕎 N
+
+
 -- returns a fresh name w.r.t. the world
 newChoice· : (w : 𝕎·) → Name
-newChoice· w = fst (freshName (dom𝕎· w))
+newChoice· w = fst (freshName (dom𝕎· w ++ names𝕎· w))
 
 
 ↓vars : List Var → List Var
@@ -61,7 +65,7 @@ newChoice· w = fst (freshName (dom𝕎· w))
 
 
 newChoiceT : (w : 𝕎·) (T : Term) → Name
-newChoiceT w t = fst (freshName (dom𝕎· w ++ ↓vars (names t)))
+newChoiceT w t = fst (freshName (dom𝕎· w ++ names𝕎· w ++ ↓vars (names t)))
 
 
 newChoiceT+ : (w : 𝕎·) (T : Term) → Name
@@ -89,7 +93,8 @@ getChoice-startChoice· = getChoice-startChoice N
 
 getChoice-startNewChoice : (n : ℕ) (r : Res) (w : 𝕎·) (t : ℂ·)
                            → getChoice· n (newChoice· w) (startNewChoice r w) ≡ just t → t ≡ Res.def r
-getChoice-startNewChoice n r w t h = getChoice-startChoice· n r w t (newChoice· w) (snd (freshName (dom𝕎· w))) h
+getChoice-startNewChoice n r w t h =
+  getChoice-startChoice· n r w t (newChoice· w) (λ x → snd (freshName (dom𝕎· w ++ names𝕎· w)) (∈-++⁺ˡ x)) h
 
 
 startChoice⊏· : (r : Res) (w : 𝕎·) (name : Name) → ¬ name ∈ dom𝕎· w → w ⊑· startChoice· name r w
@@ -97,15 +102,19 @@ startChoice⊏· = startChoice⊏ N
 
 
 startNewChoice⊏ : (r : Res) (w : 𝕎·) → w ⊑· startNewChoice r w
-startNewChoice⊏ r w = startChoice⊏·  r w (newChoice· w) (snd (freshName (dom𝕎· w)))
+startNewChoice⊏ r w = startChoice⊏·  r w (newChoice· w) (λ x → snd (freshName (dom𝕎· w ++ names𝕎· w)) (∈-++⁺ˡ x))
 
 
 ¬fresh∈dom𝕎 : (w : 𝕎·) (l : List Name) → ¬ fst (freshName (dom𝕎· w ++ l)) ∈ dom𝕎· w
 ¬fresh∈dom𝕎 w l i = snd (freshName (dom𝕎· w ++ l)) (∈-++⁺ˡ i)
 
 
+¬fresh∈dom𝕎2 : (w : 𝕎·) (l k : List Name) → ¬ fst (freshName (dom𝕎· w ++ l ++ k)) ∈ dom𝕎· w
+¬fresh∈dom𝕎2 w l k i = snd (freshName (dom𝕎· w ++ l ++ k)) (∈-++⁺ˡ i)
+
+
 startNewChoiceT⊏ : (r : Res) (w : 𝕎·) (t : Term) → w ⊑· startNewChoiceT r w t
-startNewChoiceT⊏ r w t = startChoice⊏· r w (newChoiceT w t) (¬fresh∈dom𝕎 w (↓vars (names t)))
+startNewChoiceT⊏ r w t = startChoice⊏· r w (newChoiceT w t) (¬fresh∈dom𝕎2 w (names𝕎· w) (↓vars (names t)))
 
 
 startChoiceCompatible· : (r : Res) (w : 𝕎·) (name : Name) → ¬ name ∈ dom𝕎· w → compatible· name (startChoice· name r w) r
@@ -113,6 +122,6 @@ startChoiceCompatible· = startChoiceCompatible N
 
 
 startNewChoiceCompatible : (r : Res) (w : 𝕎·) → compatible· (newChoice· w) (startNewChoice r w) r
-startNewChoiceCompatible r w = startChoiceCompatible· r w (newChoice· w) (snd (freshName (dom𝕎· w)))
+startNewChoiceCompatible r w = startChoiceCompatible· r w (newChoice· w) (¬fresh∈dom𝕎 w (names𝕎· w))
 
 \end{code}

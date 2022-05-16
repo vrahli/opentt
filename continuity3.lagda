@@ -105,6 +105,8 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
+open import continuity-conds(W)(C)(K)(G)(X)(N)
+
 open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 
@@ -161,13 +163,13 @@ false≢true : false ≡ true → ⊥
 false≢true ()
 
 
-getT≤ℕ-chooseT0if→ : (gc : getT-chooseT) {w : 𝕎·} {name : Name} {n m m' : ℕ}
+getT≤ℕ-chooseT0if→ : (gc : get-choose-ℕ) {w : 𝕎·} {name : Name} {n m m' : ℕ}
                        → compatible· name w Res⊤
                        → getT 0 name w ≡ just (NUM m')
                        → getT≤ℕ (chooseT0if name w m' m) n name
                        → getT≤ℕ w n name
 getT≤ℕ-chooseT0if→ gc {w} {name} {n} {m} {m'} compat g0 (j , h , q) with m' <? m
-... | yes x rewrite gc w name m compat | sym (NUMinj (just-inj h)) = m' , g0 , ≤-trans x (<⇒≤ q)
+... | yes x rewrite gc name w m compat | sym (NUMinj (just-inj h)) = m' , g0 , ≤-trans x (<⇒≤ q)
 ... | no x rewrite h = j , refl , q
 
 
@@ -461,7 +463,7 @@ getT≤ℕ-chooseT0if→ gc {w} {name} {n} {m} {m'} compat g0 (j , h , q) with m
 
 
 →isHighestℕ-upd-body-NUM3b :
-  (gc : getT-chooseT) {k : ℕ} {name : Name} {w : 𝕎·} {f : Term} {n m m' : ℕ}
+  (gc : get-choose-ℕ) {k : ℕ} {name : Name} {w : 𝕎·} {f : Term} {n m m' : ℕ}
   → # f
   → ¬Names f
   → compatible· name w Res⊤
@@ -478,12 +480,12 @@ getT≤ℕ-chooseT0if→ gc {w} {name} {n} {m} {m'} compat g0 (j , h , q) with m
   ¬Names→isHighestℕ {k} {APPLY f (NUM m)} {APPLY f (NUM m)} {chooseT name w (NUM m)} {chooseT name w (NUM m)} {n} {name} (¬Names-APPLY-NUM {f} {m} nnf) g1 comp
   where
     g1 : getT≤ℕ (chooseT name w (NUM m)) n name
-    g1 rewrite gc w name m compat = m , refl , ltn
+    g1 rewrite gc name w m compat = m , refl , ltn
 
 
 
 →isHighestℕ-upd-body-NUM3 :
-  (gc : getT-chooseT) {k : ℕ} {name : Name} {w : 𝕎·} {f : Term} {n m m' : ℕ}
+  (gc : get-choose-ℕ) {k : ℕ} {name : Name} {w : 𝕎·} {f : Term} {n m m' : ℕ}
   → # f
   → ¬Names f
   → compatible· name w Res⊤
@@ -500,11 +502,11 @@ getT≤ℕ-chooseT0if→ gc {w} {name} {n} {m} {m'} compat g0 (j , h , q) with m
 
 
 
-getT≤ℕ-chooseT→ : (gc : getT-chooseT) {name : Name} {w : 𝕎·} {n m : ℕ}
+getT≤ℕ-chooseT→ : (gc : get-choose-ℕ) {name : Name} {w : 𝕎·} {n m : ℕ}
                     → compatible· name w Res⊤
                     → getT≤ℕ (chooseT name w (NUM m)) n name
                     → m < n
-getT≤ℕ-chooseT→ gc {name} {w} {n} {m} compat (j , e , x) rewrite gc w name m compat | NUMinj (just-inj e) = x
+getT≤ℕ-chooseT→ gc {name} {w} {n} {m} compat (j , e , x) rewrite gc name w m compat | NUMinj (just-inj e) = x
 
 
 
@@ -540,7 +542,7 @@ getT-getT≤ℕ→ {w} {w'} {n} {m} {name} eqw g (j , x , q) rewrite eqw | g | N
 
 
 →isHighestℕ-upd-body-NUM2 :
-  (gc : getT-chooseT) {k : ℕ} {name : Name} {w : 𝕎·} {f : Term} {n m m' : ℕ}
+  (gc : get-choose-ℕ) {k : ℕ} {name : Name} {w : 𝕎·} {f : Term} {n m m' : ℕ}
   → # f
   → ¬Names f
   → compatible· name w Res⊤
@@ -557,7 +559,7 @@ getT-getT≤ℕ→ {w} {w'} {n} {m} {name} eqw g (j , x , q) rewrite eqw | g | N
 
 
 
-→isHighestℕ-upd-body-NUM1 : (gc : getT-chooseT) {k : ℕ} {name : Name} {w : 𝕎·} {f : Term} {n m m' : ℕ}
+→isHighestℕ-upd-body-NUM1 : (gc : get-choose-ℕ) {k : ℕ} {name : Name} {w : 𝕎·} {f : Term} {n m m' : ℕ}
                              → # f
                              → ¬Names f
                              → compatible· name w Res⊤
@@ -574,7 +576,7 @@ getT-getT≤ℕ→ {w} {w'} {n} {m} {name} eqw g (j , x , q) rewrite eqw | g | N
 
 
 
-→isHighestℕ-upd-body-NUM1b : (gc : getT-chooseT) {k : ℕ} {name : Name} {w w' : 𝕎·} {b f : Term} {n m m' : ℕ}
+→isHighestℕ-upd-body-NUM1b : (gc : get-choose-ℕ) {k : ℕ} {name : Name} {w w' : 𝕎·} {b f : Term} {n m m' : ℕ}
                              → # f
                              → ¬Names f
                              → compatible· name w Res⊤
@@ -595,7 +597,7 @@ getT-getT≤ℕ→ {w} {w'} {n} {m} {name} eqw g (j , x , q) rewrite eqw | g | N
 
 
 
-→isHighestℕ-upd-body-NUM : (gc : getT-chooseT) {k : ℕ} {name : Name} {w : 𝕎·} {f : Term} {n m m' : ℕ}
+→isHighestℕ-upd-body-NUM : (gc : get-choose-ℕ) {k : ℕ} {name : Name} {w : 𝕎·} {f : Term} {n m m' : ℕ}
                              → # f
                              → ¬Names f
                              → compatible· name w Res⊤
@@ -612,7 +614,7 @@ getT-getT≤ℕ→ {w} {w'} {n} {m} {name} eqw g (j , x , q) rewrite eqw | g | N
 
 
 
-→isHighestℕ-upd-body : (gc : getT-chooseT) {k1 k2 : ℕ} {name : Name} {w1 w1' : 𝕎·} {b f : Term} {n m m' : ℕ}
+→isHighestℕ-upd-body : (gc : get-choose-ℕ) {k1 k2 : ℕ} {name : Name} {w1 w1' : 𝕎·} {b f : Term} {n m m' : ℕ}
                          → # f
                          → ¬Names f
                          → compatible· name w1 Res⊤
@@ -658,7 +660,7 @@ isHighestℕ→getT≤ℕ {suc k} {w1} {w2} {a} {b} n name comp h with step⊎ a
 
 
 
-→ΣhighestUpdCtxt-upd : (gc : getT-chooseT) {name : Name} {f b : Term} {w1 : 𝕎·} {n : ℕ}
+→ΣhighestUpdCtxt-upd : (gc : get-choose-ℕ) {name : Name} {f b : Term} {w1 : 𝕎·} {n : ℕ}
                         → compatible· name w1 Res⊤
                         → ∀𝕎-get0-NUM w1 name
                         → # f
@@ -804,7 +806,7 @@ stepsPresHighestℕ-CHOOSE₁→ {name} {f} {a} {b} {w} (k , v , w' , comp , isv
 
 
 -- We also need something about the way f computes as for the proof about 'differ'
-step-sat-isHighestℕ : (gc : getT-chooseT) {w1 w2 : 𝕎·} {a b : Term} {n : ℕ} {name : Name} {f : Term}
+step-sat-isHighestℕ : (gc : get-choose-ℕ) {w1 w2 : 𝕎·} {a b : Term} {n : ℕ} {name : Name} {f : Term}
                        → compatible· name w1 Res⊤
                        → ∀𝕎-get0-NUM w1 name
                        → step a w1 ≡ just (b , w2)
@@ -1140,7 +1142,7 @@ val-steps→ {w} {w1} {w2} {a} {b} {v} {suc n} {suc m} i name isv comp1 comp2 wi
 
 
 -- We also need something about the way f computes as for the proof about 'differ'
-steps-sat-isHighestℕ-aux : (gc : getT-chooseT) {name : Name} {f : Term}
+steps-sat-isHighestℕ-aux : (gc : get-choose-ℕ) {name : Name} {f : Term}
                             → ¬Names f
                             → # f
                             → (k : ℕ)
@@ -1205,7 +1207,7 @@ steps-sat-isHighestℕ-aux gc {name} {f} nnf cf (suc k) ind {w1} {w2} {a} {b} {n
 
 
 -- We also need something about the way f computes as for the proof about 'differ'
-steps-sat-isHighestℕ : (gc : getT-chooseT) {name : Name} {f : Term} {k : ℕ}
+steps-sat-isHighestℕ : (gc : get-choose-ℕ) {name : Name} {f : Term} {k : ℕ}
                         → ¬Names f
                         → # f
                         → presHighestℕ name f k

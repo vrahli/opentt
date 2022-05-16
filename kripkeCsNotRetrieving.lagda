@@ -134,6 +134,6 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
     z x = ¬just≡nothing (trans (sym x) y)
       where
         y : getChoice· m c w ≡ nothing
-        y = getCsChoice-startCsChoice-nothing m r w0 c (snd (freshName (wdom w0)))
+        y = getCsChoice-startCsChoice-nothing m r w0 c (¬fresh∈dom𝕎 w0 (wnames w0))
 
 \end{code}

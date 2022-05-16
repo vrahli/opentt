@@ -92,6 +92,12 @@ wdom (start name _ ∷ w) = name ∷ wdom w
 wdom (choice _ _ ∷ w) = wdom w
 
 
+wnames : world → List Name
+wnames [] = []
+wnames (start _ _ ∷ w) = wnames w
+wnames (choice _ t ∷ w) = names ⌜ t ⌝ ++ wnames w
+
+
 remNRes : {L : Level} (n : Name) (l : List (NRes{L})) → List (NRes{L})
 remNRes {L} n [] = []
 remNRes {L} n (r ∷ l) with n ≟ NRes.name r
@@ -867,6 +873,7 @@ newChoiceCS : NewChoice
 newChoiceCS =
   mkNewChoice
     wdom --newCsChoice
+    wnames
     startCsChoice
     getCsChoice-startCsChoice
     startCsChoice⊏
