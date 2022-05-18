@@ -865,15 +865,6 @@ names-shiftDown n (SHRINK a) = names-shiftDown n a
 
 
 
-suc→∈lowerNames : {x : Name} {a : List Name}
-                   → suc x ∈ a
-                   → x ∈ lowerNames a
-suc→∈lowerNames {x} {0 ∷ a} (there i) = suc→∈lowerNames {x} {a} i
-suc→∈lowerNames {x} {suc x₁ ∷ a} (here px) rewrite suc-injective px = here refl
-suc→∈lowerNames {x} {suc x₁ ∷ a} (there i) = there (suc→∈lowerNames {x} {a} i)
-
-
-
 →¬∈lowerNames : {x : Name} {a b : List Name}
                  → (¬ suc x ∈ a → ¬ suc x ∈ b)
                  → ¬ x ∈ lowerNames a

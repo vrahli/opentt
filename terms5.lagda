@@ -435,8 +435,16 @@ APPLY-LAMBDA⇓→ 0 {w1} {w2} {f} {a} {v} isv comp rewrite sym (pair-inj₁ com
 APPLY-LAMBDA⇓→ (suc k) {w1} {w2} {f} {a} {v} isv comp = k , comp
 
 
---differ-CSₗ→ : {name1 name2 name : Name} {f t : Term} → differ name1 name2 f (CS name) t → name ≡ name1 × t ≡ CS name2
---differ-CSₗ→ {name1} {name2} {.name1} {f} {.(CS name2)} differ-CS = refl , refl
+--differ-CSₗ→ : {name1 name2 name : Name} {f t : Term} → differ name1 name2 f (CS name) t → t ≡ CS name
+--differ-CSₗ→ {name1} {name2} {name} {f} {.(CS name)} (differ-CS name) = refl
+
+
+differ-CSₗ→ : {name1 name2 name : Name} {f t : Term} → ¬ differ name1 name2 f (CS name) t
+differ-CSₗ→ {name1} {name2} {name} {f} {t} ()
+
+
+differ-NAMEₗ→ : {name1 name2 name : Name} {f t : Term} → ¬ differ name1 name2 f (NAME name) t
+differ-NAMEₗ→ {name1} {name2} {name} {f} {t} ()
 
 
 
@@ -566,9 +574,14 @@ differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(APPLY a₁ b₁) .(APPLY 
         hv2 : Σ 𝕎· (λ w2' → APPLY (upd name2 f) b₂ ⇓ v from w1' to w2' × getT 0 name1 w0 ≡ getT 0 name2 w2' × ¬Names v)
         hv2 = upd⇓names gc0 k f name1 name2 w1 w1' w0 b₁ b₂ v cf nnf agtn compat1 compat2 isvv pd g0 diff₁ hv1
 ... | inj₂ x with is-CS a₁
-... |    inj₁ (name , p) rewrite p = {-- | fst (differ-CSₗ→ diff) | snd (differ-CSₗ→ diff) with is-NUM b₁
+... |    inj₁ (name , p) rewrite p = ⊥-elim (differ-CSₗ→ diff) {-- | differ-CSₗ→ diff with is-NUM b₁
+... |       inj₁ (n₁ , q) rewrite q | differ-NUM→ diff₁ | map-getT-just→ n₁ name w1 a' w2 s = a' , a' , w1 , w1' , (0 , refl) , (1 , step-APPLY-CS a' w1' n₁ name {!!}) , {!!} , g0
+ -- | map-getT-just→ n₁ name w1 a' w2 s = a' , a' , w1 , w1' , (0 , refl) , {!(1 , step-APPLY-CS a' w1' n₁) , ?!} --⊥-elim (differ-CSₗ→ diff)
+... |       inj₂ q = {!!}--}
+--
+ {-- | fst (differ-CSₗ→ diff) | snd (differ-CSₗ→ diff) with is-NUM b₁
 ... |       inj₁ (n₁ , q) rewrite q | differ-NUM→ diff₁ | map-getT-just→ n₁ name1 w1 a' w2 s = a' , a' , w1 , w1' , (0 , refl) , {!(1 , step-APPLY-CS a' w1' n₁) , ?!} --⊥-elim (differ-CSₗ→ diff)
-... |       inj₂ q = {!!} --} ⊥-elim (differ-CSₗ→ diff)
+... |       inj₂ q = {!!} --}
 differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(APPLY a₁ b₁) .(APPLY a₂ b₂) a' v k compat1 compat2 agtn (differ-APPLY a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd | inj₂ x | inj₂ name with step⊎ a₁ w1
 ... | inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
   APPLY (fst ind) b₁ ,
