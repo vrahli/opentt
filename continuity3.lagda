@@ -115,43 +115,7 @@ open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 ¬Names→updCtxt : {name : Name} {f t : Term}
                   → ¬names t ≡ true
                   → updCtxt name f t
-¬Names→updCtxt {name} {f} {VAR x} nn = updCtxt-VAR _
-¬Names→updCtxt {name} {f} {NAT} nn = updCtxt-NAT
-¬Names→updCtxt {name} {f} {QNAT} nn = updCtxt-QNAT
-¬Names→updCtxt {name} {f} {LT t t₁} nn = updCtxt-LT _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
-¬Names→updCtxt {name} {f} {QLT t t₁} nn = updCtxt-QLT _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
-¬Names→updCtxt {name} {f} {NUM x} nn = updCtxt-NUM _
-¬Names→updCtxt {name} {f} {IFLT t t₁ t₂ t₃} nn = updCtxt-IFLT _ _ _ _ (¬Names→updCtxt (∧≡true→1-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn)) (¬Names→updCtxt (∧≡true→2-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn)) (¬Names→updCtxt (∧≡true→3-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn)) (¬Names→updCtxt (∧≡true→4-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn))
-¬Names→updCtxt {name} {f} {SUC t} nn = updCtxt-SUC t (¬Names→updCtxt nn)
-¬Names→updCtxt {name} {f} {PI t t₁} nn = updCtxt-PI _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
-¬Names→updCtxt {name} {f} {LAMBDA t} nn = updCtxt-LAMBDA t (¬Names→updCtxt nn)
-¬Names→updCtxt {name} {f} {APPLY t t₁} nn = updCtxt-APPLY _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
-¬Names→updCtxt {name} {f} {FIX t} nn = updCtxt-FIX t (¬Names→updCtxt nn)
-¬Names→updCtxt {name} {f} {LET t t₁} nn = updCtxt-LET _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
-¬Names→updCtxt {name} {f} {SUM t t₁} nn = updCtxt-SUM _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
-¬Names→updCtxt {name} {f} {PAIR t t₁} nn = updCtxt-PAIR _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
-¬Names→updCtxt {name} {f} {SPREAD t t₁} nn = updCtxt-SPREAD _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
-¬Names→updCtxt {name} {f} {SET t t₁} nn = updCtxt-SET _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
-¬Names→updCtxt {name} {f} {TUNION t t₁} nn = updCtxt-TUNION _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
-¬Names→updCtxt {name} {f} {UNION t t₁} nn = updCtxt-UNION _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
-¬Names→updCtxt {name} {f} {QTUNION t t₁} nn = updCtxt-QTUNION _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
-¬Names→updCtxt {name} {f} {INL t} nn = updCtxt-INL t (¬Names→updCtxt nn)
-¬Names→updCtxt {name} {f} {INR t} nn = updCtxt-INR t (¬Names→updCtxt nn)
-¬Names→updCtxt {name} {f} {DECIDE t t₁ t₂} nn = updCtxt-DECIDE _ _ _ (¬Names→updCtxt (∧≡true→1-3 {¬names t} {¬names t₁} {¬names t₂} nn)) (¬Names→updCtxt (∧≡true→2-3 {¬names t} {¬names t₁} {¬names t₂} nn)) (¬Names→updCtxt (∧≡true→3-3 {¬names t} {¬names t₁} {¬names t₂} nn))
-¬Names→updCtxt {name} {f} {EQ t t₁ t₂} nn = updCtxt-EQ _ _ _ (¬Names→updCtxt (∧≡true→1-3 {¬names t} {¬names t₁} {¬names t₂} nn)) (¬Names→updCtxt (∧≡true→2-3 {¬names t} {¬names t₁} {¬names t₂} nn)) (¬Names→updCtxt (∧≡true→3-3 {¬names t} {¬names t₁} {¬names t₂} nn))
-¬Names→updCtxt {name} {f} {AX} nn = updCtxt-AX
-¬Names→updCtxt {name} {f} {FREE} nn = updCtxt-FREE
-¬Names→updCtxt {name} {f} {CHOOSE t t₁} nn = updCtxt-CHOOSE _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
-¬Names→updCtxt {name} {f} {TSQUASH t} nn = updCtxt-TSQUASH t (¬Names→updCtxt nn)
-¬Names→updCtxt {name} {f} {TTRUNC t} nn = updCtxt-TTRUNC t (¬Names→updCtxt nn)
-¬Names→updCtxt {name} {f} {TCONST t} nn = updCtxt-TCONST t (¬Names→updCtxt nn)
-¬Names→updCtxt {name} {f} {SUBSING t} nn = updCtxt-SUBSING t (¬Names→updCtxt nn)
-¬Names→updCtxt {name} {f} {DUM t} nn = updCtxt-DUM t (¬Names→updCtxt nn)
-¬Names→updCtxt {name} {f} {FFDEFS t t₁} nn = updCtxt-FFDEFS _ _ (¬Names→updCtxt (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (¬Names→updCtxt (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
-¬Names→updCtxt {name} {f} {UNIV x} nn = updCtxt-UNIV _
-¬Names→updCtxt {name} {f} {LIFT t} nn = updCtxt-LIFT t (¬Names→updCtxt nn)
-¬Names→updCtxt {name} {f} {LOWER t} nn = updCtxt-LOWER t (¬Names→updCtxt nn)
-¬Names→updCtxt {name} {f} {SHRINK t} nn = updCtxt-SHRINK t (¬Names→updCtxt nn)
+¬Names→updCtxt {name} {f} {t} nn = differ→updCtxt (differ-refl name name f t nn)
 
 
 
