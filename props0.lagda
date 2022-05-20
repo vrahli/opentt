@@ -1473,6 +1473,16 @@ irr-lift : (u : univs) (w : 𝕎·) (A1 A2 : CTerm)
 irr-lift u w A1 A2 eqta exta f g w1 e1 w' e' eqi z = exta f g w' (⊑-trans· e1 e') z eqi
 
 
+
+
+FFDEFSeq-ext-eq : {w : 𝕎·} {eqa1 eqa2 : per} {x t1 t2 : CTerm}
+                  → ((a b : CTerm) → eqa1 a b → eqa2 a b)
+                  → FFDEFSeq x eqa1 w t1 t2
+                  → FFDEFSeq x eqa2 w t1 t2
+FFDEFSeq-ext-eq {w} {eqa1} {eqa2} {x} {t1} {t2} ext (y , h , q) = y , ext x y h , q
+
+
+
 irr-ffdefs : (u : univs) (w : 𝕎·) (x1 A1 A2 : CTerm)
               (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
               (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))

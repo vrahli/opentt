@@ -732,6 +732,52 @@ equalInTypeSUBSING→ {w} {i} {a} {b} {A} (EQTBAR x , eqi) =
 
 
 
+equalInTypeFFDEFS→ : {w : 𝕎·} {i : ℕ} {a b A y : CTerm}
+                       → equalInType i w (#FFDEFS A y) a b
+                       → □· w (λ w' _ → FFDEFSeq y (equalInType i w' A) w' a b)
+{-# TERMINATING #-}
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTNAT x x₁ , eqi) = ⊥-elim (FFDEFSneqNAT (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTQNAT x x₁ , eqi) = ⊥-elim (FFDEFSneqQNAT (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (FFDEFSneqLT (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (FFDEFSneqQLT (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTFREE x x₁ , eqi) = ⊥-elim (FFDEFSneqFREE (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (FFDEFSneqPI (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (FFDEFSneqSUM (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (FFDEFSneqSET (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (FFDEFSneqTUNION (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTEQ a1 b1 a2 b2 A₁ B x x₁ eqtA exta eqt1 eqt2 , eqi) = ⊥-elim (FFDEFSneqEQ (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (FFDEFSneqUNION (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (FFDEFSneqQTUNION (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (FFDEFSneqTSQUASH (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTTRUNC A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (FFDEFSneqTTRUNC (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (FFDEFSneqTCONST (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (FFDEFSneqSUBSING (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi)
+  rewrite sym (#FFDEFSinj1 {A} {y} {A2} {x2} (#⇛→≡ {#FFDEFS A y} {#FFDEFS A2 x2} x₁ tt))
+        | sym (#FFDEFSinj2 {A} {y} {A2} {x2} (#⇛→≡ {#FFDEFS A y} {#FFDEFS A2 x2} x₁ tt))
+        | sym (#FFDEFSinj1 {A} {y} {A1} {x1} (#⇛→≡ {#FFDEFS A y} {#FFDEFS A1 x1} x tt))
+        | sym (#FFDEFSinj2 {A} {y} {A1} {x1} (#⇛→≡ {#FFDEFS A y} {#FFDEFS A1 x1} x tt)) =
+  Mod.∀𝕎-□Func M aw eqi
+  where
+    aw : ∀𝕎 w (λ w' e' → FFDEFSeq y (equalTerms i w' (eqtA w' e')) w' a b
+                        → FFDEFSeq y (equalInType i w' A) w' a b)
+    aw w1 e1 p =
+      FFDEFSeq-ext-eq
+        {w1} {equalTerms i w1 (eqtA w1 e1)} {equalInType i w1 A} {y} {a} {b}
+        (λ a₁ a₂ ea → eqInType→equalInType refl (eqtA w1 e1) ea)
+        p
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTUNIV i₁ p x x₁ , eqi) = ⊥-elim (FFDEFSneqUNIV (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (FFDEFSneqLIFT (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTBAR x , eqi) =
+  Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
+  where
+    aw : ∀𝕎 w (λ w' e' → (z : isType i w' (#FFDEFS A y))
+                        → equalTerms i w' z a b
+                        → □· w' (↑wPred' (λ w'' e → FFDEFSeq y (equalInType i w'' A) w'' a b) e'))
+    aw w1 e1 z h = Mod.∀𝕎-□Func M (λ w1 e1 k y → k) (equalInTypeFFDEFS→ (z , h))
+
+
+
 TCONSTeq-NAT→weakMonEq : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                           → TCONSTeq (equalInType i w #NAT) w a b
                           → □· w (λ w' _ → #⇛!sameℕ w' a b)

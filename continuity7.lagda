@@ -709,7 +709,7 @@ continuity cn kb gc i w =
     (equalInType-PI
       (λ w' e' → isType-BAIRE→NAT i w')
       h1
-      {!!})
+      aw1)
   where
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm)
                         → equalInType i w' #BAIRE→NAT a₁ a₂
@@ -750,7 +750,31 @@ continuity cn kb gc i w =
             aw3 w3 e3 f₁ f₂ ef =
               ≡CTerm→equalInType
                 (sym (sub0-cont-b2 F₁ f₁))
-                {!!} -- HERE
+                (equalInType-FUN
+                  (eqTypesFFDEFS← eqTypesBAIRE (equalInType-refl ef))
+                  (eqTypesSUBSING← (equalTypes-contBody i w3 F₁ F₁ f₁ f₁ (equalInType-mon (equalInType-refl eF) w3 (⊑-trans· e2 e3)) (equalInType-refl ef)))
+                  aw4)
+              where
+                aw4 : ∀𝕎 w3 (λ w' _ → (b₁ b₂ : CTerm)
+                                     → equalInType i w' (#FFDEFS #BAIRE f₁) b₁ b₂
+                                     → equalInType i w' (#SUBSING (#contBody F₁ f₁))
+                                                         (#APPLY (#APPLY (#APPLY (#APPLY #contExt F₁) a₁) f₁) b₁)
+                                                         (#APPLY (#APPLY (#APPLY (#APPLY #contExt F₂) a₂) f₂) b₂))
+                aw4 w4 e4 b₁ b₂ eb =
+                  →equalInTypeSUBSING
+                    (equalTypes-contBody i w4 F₁ F₁ f₁ f₁ (equalInType-mon (equalInType-refl eF) w4 (⊑-trans· e2 (⊑-trans· e3 e4))) (equalInType-mon (equalInType-refl ef) w4 e4))
+                    {!!} --(Mod.∀𝕎-□ M aw5)
+                  where
+                    aw5 : ∀𝕎 w4 (λ w' _ → SUBSINGeq (equalInType i w' (#contBody F₁ f₁))
+                                                      (#APPLY (#APPLY (#APPLY (#APPLY #contExt F₁) a₁) f₁) b₁)
+                                                      (#APPLY (#APPLY (#APPLY (#APPLY #contExt F₂) a₂) f₂) b₂))
+                    aw5 w5 e5 = {!!}
+                      where
+                        eqtc : equalTypes i w5 (#contBody F₁ f₁) (#contBody F₂ f₂)
+                        eqtc = equalTypes-contBody i w5 F₁ F₂ f₁ f₂ (equalInType-mon eF w5 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5)))) (equalInType-mon ef w5 (⊑-trans· e4 e5))
+-- HERE
+-- prove something about FFDEFS and use it before (Mod.∀𝕎-□ M aw5)
+-- use equalInTypeFFDEFS→
 
     h1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm)
                        → equalInType i w' #BAIRE→NAT a₁ a₂

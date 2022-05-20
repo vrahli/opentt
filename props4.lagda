@@ -301,16 +301,17 @@ QTUNION a b = TSQUASH (UNION a b)
 
 
 
-FFDEFSeq-ext-eq : {eqa1 eqa2 : per} {w : 𝕎·} {t1 t2 : CTerm} {a b : CTerm}
+{--FFDEFSeq-ext-eq : {eqa1 eqa2 : per} {w : 𝕎·} {t1 t2 : CTerm} {a b : CTerm}
                  → ((a b : CTerm) → eqa1 a b → eqa2 a b)
                  → a ≡ b
                  → FFDEFSeq a eqa1 w t1 t2
                  → FFDEFSeq b eqa2 w t1 t2
 FFDEFSeq-ext-eq {eqa1} {eqa2} {w} {t1} {t2} {a} {b} ext eqab (x , e , nn) rewrite eqab =
   x , ext b x e , nn
+--}
 
 
-
+{--
 equalInTypeFFDEFS→ : {w : 𝕎·} {i : ℕ} {a b A u : CTerm}
                        → equalInType i w (#FFDEFS A u) a b
                        → □· w (λ w' _ → FFDEFSeq u (equalInType i w' A) w' a b)
@@ -347,7 +348,7 @@ equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTBAR x , eqi) =
                         → equalTerms i w' z a b
                         → □· w' (↑wPred' (λ w'' e → FFDEFSeq u (equalInType i w'' A) w'' a b) e'))
     aw w1 e1 z h = Mod.∀𝕎-□Func M (λ w1 e1 k y → k) (equalInTypeFFDEFS→ (z , h))
-
+--}
 
 
 
