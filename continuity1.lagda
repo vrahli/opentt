@@ -1817,39 +1817,39 @@ sub0-NATn-body a n rewrite CTerm→CTerm0→Term n = CTerm≡ e
 
 
 
-∈BAIRE→NAT→ : {i : ℕ} {w : 𝕎·} {F f g : CTerm}
-                → ∈Type i w #BAIRE→NAT F
-                → equalInType i w #BAIRE f g
-                → equalInType i w #NAT (#APPLY F f) (#APPLY F g)
-∈BAIRE→NAT→ {i} {w} {F} {f} {g} ∈F ∈f =
+∈BAIRE→NAT→ : {i : ℕ} {w : 𝕎·} {F₁ F₂ f₁ f₂ : CTerm}
+                → equalInType i w #BAIRE→NAT F₁ F₂
+                → equalInType i w #BAIRE f₁ f₂
+                → equalInType i w #NAT (#APPLY F₁ f₁) (#APPLY F₂ f₂)
+∈BAIRE→NAT→ {i} {w} {F₁} {F₂} {f₁} {f₂} ∈F ∈f =
   equalInType-FUN→
-    {i} {w} {#BAIRE} {#NAT} {F} {F} ∈F w (⊑-refl· _) f g
+    {i} {w} {#BAIRE} {#NAT} {F₁} {F₂} ∈F w (⊑-refl· _) f₁ f₂
     ∈f
 
 
 
-equalTypes-contBodyPI : (i : ℕ) (w : 𝕎·) (F f : CTerm)
-                        → ∈Type i w #BAIRE→NAT F
-                        → ∈Type i w #BAIRE f
+equalTypes-contBodyPI : (i : ℕ) (w : 𝕎·) (F₁ F₂ f₁ f₂ : CTerm)
+                        → equalInType i w #BAIRE→NAT F₁ F₂
+                        → equalInType i w #BAIRE f₁ f₂
                         → ∀𝕎 w (λ w' e →
                              (a₁ a₂ : CTerm)
                              → equalInType i w' #NAT a₁ a₂
                              → equalTypes i w'
                                  (sub0 a₁ (#[0]PI #[0]BAIRE
                                           (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                                   (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]BAIREn #[1]VAR1))
-                                                            (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT)))))
+                                                   (#[1]FUN (#[1]EQ ⌞ f₁ ⌟ #[1]VAR0 (#[1]BAIREn #[1]VAR1))
+                                                            (#[1]EQ (#[1]APPLY ⌞ F₁ ⌟ ⌞ f₁ ⌟) (#[1]APPLY ⌞ F₁ ⌟ #[1]VAR0) #[1]NAT)))))
                                  (sub0 a₂ (#[0]PI #[0]BAIRE
                                           (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                                   (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]BAIREn #[1]VAR1))
-                                                            (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT))))))
-equalTypes-contBodyPI i w F f ∈F ∈f w1 e1 a₁ a₂ ea =
-  ≡CTerm→eqTypes (sym (sub0-contBodyPI F f a₁)) (sym (sub0-contBodyPI F f a₂)) ea1
+                                                   (#[1]FUN (#[1]EQ ⌞ f₂ ⌟ #[1]VAR0 (#[1]BAIREn #[1]VAR1))
+                                                            (#[1]EQ (#[1]APPLY ⌞ F₂ ⌟ ⌞ f₂ ⌟) (#[1]APPLY ⌞ F₂ ⌟ #[1]VAR0) #[1]NAT))))))
+equalTypes-contBodyPI i w F₁ F₂ f₁ f₂ ∈F ∈f w1 e1 a₁ a₂ ea =
+  ≡CTerm→eqTypes (sym (sub0-contBodyPI F₁ f₁ a₁)) (sym (sub0-contBodyPI F₂ f₂ a₂)) ea1
   where
     ea2 : ∀𝕎 w1 (λ w2 e2 → (g₁ g₂ : CTerm) (eg : equalInType i w2 #BAIRE g₁ g₂)
                          → equalTypes i w2
-                               (#FUN (#FFDEFS #BAIRE g₁) (#FUN (#EQ f g₁ (#BAIREn a₁)) (#EQ (#APPLY F f) (#APPLY F g₁) #NAT)))
-                               (#FUN (#FFDEFS #BAIRE g₂) (#FUN (#EQ f g₂ (#BAIREn a₂)) (#EQ (#APPLY F f) (#APPLY F g₂) #NAT))))
+                               (#FUN (#FFDEFS #BAIRE g₁) (#FUN (#EQ f₁ g₁ (#BAIREn a₁)) (#EQ (#APPLY F₁ f₁) (#APPLY F₁ g₁) #NAT)))
+                               (#FUN (#FFDEFS #BAIRE g₂) (#FUN (#EQ f₂ g₂ (#BAIREn a₂)) (#EQ (#APPLY F₂ f₂) (#APPLY F₂ g₂) #NAT))))
     ea2 w2 e2 g₁ g₂ eg =
       eqTypesFUN←
         (eqTypesFFDEFS← eqTypesBAIRE eg)
@@ -1864,14 +1864,30 @@ equalTypes-contBodyPI i w F f ∈F ∈f w1 e1 a₁ a₂ ea =
     ea1 : equalTypes i w1
             (#PI #BAIRE
                  (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
-                          (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]BAIREn ⌞ a₁ ⌟))
-                                   (#[0]EQ (#[0]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[0]APPLY ⌞ F ⌟ #[0]VAR) #[0]NAT))))
+                          (#[0]FUN (#[0]EQ ⌞ f₁ ⌟ #[0]VAR (#[0]BAIREn ⌞ a₁ ⌟))
+                                   (#[0]EQ (#[0]APPLY ⌞ F₁ ⌟ ⌞ f₁ ⌟) (#[0]APPLY ⌞ F₁ ⌟ #[0]VAR) #[0]NAT))))
             (#PI #BAIRE
                  (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
-                          (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]BAIREn ⌞ a₂ ⌟))
-                                   (#[0]EQ (#[0]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[0]APPLY ⌞ F ⌟ #[0]VAR) #[0]NAT))))
+                          (#[0]FUN (#[0]EQ ⌞ f₂ ⌟ #[0]VAR (#[0]BAIREn ⌞ a₂ ⌟))
+                                   (#[0]EQ (#[0]APPLY ⌞ F₂ ⌟ ⌞ f₂ ⌟) (#[0]APPLY ⌞ F₂ ⌟ #[0]VAR) #[0]NAT))))
     ea1 = eqTypesPI← (λ w' _ → eqTypesBAIRE)
-                      (λ w2 e2 g₁ g₂ eg → ≡CTerm→eqTypes (sym (sub0-contBodyPI-PI F f a₁ g₁)) (sym (sub0-contBodyPI-PI F f a₂ g₂)) (ea2 w2 e2 g₁ g₂ eg))
+                      (λ w2 e2 g₁ g₂ eg → ≡CTerm→eqTypes (sym (sub0-contBodyPI-PI F₁ f₁ a₁ g₁)) (sym (sub0-contBodyPI-PI F₂ f₂ a₂ g₂)) (ea2 w2 e2 g₁ g₂ eg))
+
+
+
+
+equalTypes-contBody : (i : ℕ) (w : 𝕎·) (F₁ F₂ f₁ f₂ : CTerm)
+                      → equalInType i w #BAIRE→NAT F₁ F₂
+                      → equalInType i w #BAIRE f₁ f₂
+                      → equalTypes i w (#contBody F₁ f₁) (#contBody F₂ f₂)
+equalTypes-contBody i w F₁ F₂ f₁ f₂ ∈F ∈f =
+  ≡CTerm→eqTypes
+    (sym (#contBody≡ F₁ f₁))
+    (sym (#contBody≡ F₂ f₂))
+    (eqTypesSUM←
+      (λ w' e' → eqTypesNAT)
+      (equalTypes-contBodyPI i w F₁ F₂ f₁ f₂ ∈F ∈f))
+
 
 
 
