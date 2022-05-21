@@ -158,6 +158,7 @@ updRel→isValue {name} {f} {g} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel-TSQU
 updRel→isValue {name} {f} {g} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel-TTRUNC a₁ a₂ u) isv = tt
 updRel→isValue {name} {f} {g} {.(TCONST a₁)} {.(TCONST a₂)} (updRel-TCONST a₁ a₂ u) isv = tt
 updRel→isValue {name} {f} {g} {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) isv = tt
+updRel→isValue {name} {f} {g} {.(NN a₁)} {.(NN a₂)} (updRel-NN a₁ a₂ u) isv = tt
 updRel→isValue {name} {f} {g} {.(DUM a₁)} {.(DUM a₂)} (updRel-DUM a₁ a₂ u) isv = tt
 updRel→isValue {name} {f} {g} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) isv = tt
 updRel→isValue {name} {f} {g} {.(UNIV x)} {.(UNIV x)} (updRel-UNIV x) isv = tt
@@ -374,6 +375,7 @@ step-updRel gc {n} {name} {f} {g} {.(TSQUASH a₁)} {.(TSQUASH a₂)} {x} {w1} {
 step-updRel gc {n} {name} {f} {g} {.(TTRUNC a₁)} {.(TTRUNC a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-TTRUNC a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TTRUNC a₁ , TTRUNC a₂ , w1 , refl , refl , updRel-TTRUNC _ _ r
 step-updRel gc {n} {name} {f} {g} {.(TCONST a₁)} {.(TCONST a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-TCONST a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TCONST a₁ , TCONST a₂ , w1 , refl , refl , updRel-TCONST _ _ r
 step-updRel gc {n} {name} {f} {g} {.(SUBSING a₁)} {.(SUBSING a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-SUBSING a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , SUBSING a₁ , SUBSING a₂ , w1 , refl , refl , updRel-SUBSING _ _ r
+step-updRel gc {n} {name} {f} {g} {.(NN a₁)} {.(NN a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-NN a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , NN a₁ , NN a₂ , w1 , refl , refl , updRel-NN _ _ r
 step-updRel gc {n} {name} {f} {g} {.(DUM a₁)} {.(DUM a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-DUM a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , DUM a₁ , DUM a₂ , w1 , refl , refl , updRel-DUM _ _ r
 step-updRel gc {n} {name} {f} {g} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-FFDEFS a₁ a₂ b₁ b₂ r r₁) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , FFDEFS a₁ b₁ , FFDEFS a₂ b₂ , w1 , refl , refl , updRel-FFDEFS _ _ _ _ r r₁
 step-updRel gc {n} {name} {f} {g} {.(UNIV x₁)} {.(UNIV x₁)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-UNIV x₁) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , UNIV x₁ , UNIV x₁ , w1 , refl , refl , updRel-UNIV x₁
@@ -548,6 +550,7 @@ updRel-refl {name} {f} {g} {TSQUASH a} nn = updRel-TSQUASH _ _ (updRel-refl nn)
 updRel-refl {name} {f} {g} {TTRUNC a} nn = updRel-TTRUNC _ _ (updRel-refl nn)
 updRel-refl {name} {f} {g} {TCONST a} nn = updRel-TCONST _ _ (updRel-refl nn)
 updRel-refl {name} {f} {g} {SUBSING a} nn = updRel-SUBSING _ _ (updRel-refl nn)
+updRel-refl {name} {f} {g} {NN a} nn = updRel-NN _ _ (updRel-refl nn)
 updRel-refl {name} {f} {g} {DUM a} nn = updRel-DUM _ _ (updRel-refl nn)
 updRel-refl {name} {f} {g} {FFDEFS a a₁} nn = updRel-FFDEFS _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
 updRel-refl {name} {f} {g} {UNIV x} nn = updRel-UNIV x

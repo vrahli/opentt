@@ -288,6 +288,8 @@ data ≤Type where
 
 
 
+
+
 <Type-LT : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} {eqt : ≡Types u w T1 T2}
            {u' : 𝕌} {w' : 𝕎·} {U1 U2 a1 b1 a2 b2 : CTerm} {x₁ : U1 #⇛ #LT a1 b1 at w'} {x₂ : U2 #⇛ #LT a2 b2 at w'}
            {s₁ : #strongMonEq w' a1 a2} {s₂ : #strongMonEq w' b1 b2}
@@ -311,6 +313,14 @@ data ≤Type where
              → <Type {u} {w} {T1} {T2} eqt {u'} {w'} {U1} {U2} (EQTFREE x₁ x₂) → ⊥
 <Type-FREE {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<Type1 .eqt .(EQTFREE x₁ x₂) ())
 <Type-FREE {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<TypeS .eqt eqt2 .(EQTFREE x₁ x₂) ltt ())
+
+
+
+<Type-NN : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} {eqt : ≡Types u w T1 T2}
+            {u' : 𝕌} {w' : 𝕎·} {U1 U2 : CTerm} {t : CTerm} {x₁ : U1 #⇛ #NN t at w'} {x₂ : U2 #⇛ #NN t at w'}
+            → <Type {u} {w} {T1} {T2} eqt {u'} {w'} {U1} {U2} (EQTNN t x₁ x₂) → ⊥
+<Type-NN {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {t} {x₁} {x₂} (<Type1 .eqt .(EQTNN t x₁ x₂) ())
+<Type-NN {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {t} {x₁} {x₂} (<TypeS .eqt eqt2 .(EQTNN t x₁ x₂) ltt ())
 
 
 
@@ -758,6 +768,8 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
       where
         ind' : (w1 : 𝕎·) (e1 : w ⊑· w1) {u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2') → <Type {u'} eqt' (eqtA w1 e1) → P eqt'
         ind' w1 e1 {u'} {w'} {T1'} {T2'} eqt' ltt = indLtt (eqtA w1 e1) eqt' ltt
+
+    indLtt {u} {w} {T1} {T2} (EQTNN t c₁ c₂) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-NN ltt)
 
     indLtt {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-UNIV ltt)
 

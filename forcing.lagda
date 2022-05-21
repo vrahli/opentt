@@ -247,6 +247,10 @@ data eqTypes u w T1 T2 where
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → (eqx : ∀𝕎 w (λ w' e → eqInType u w' (eqtA w' e) x1 x2))
     → eqTypes u w T1 T2
+  EQTNN : (t : CTerm)
+    → T1 #⇛ (#NN t) at w
+    → T2 #⇛ (#NN t) at w
+    → eqTypes u w T1 T2
   EQTUNIV : (i : ℕ) (p : i < fst u)
     → T1 #⇛ #UNIV i at w
     → T2 #⇛ #UNIV i at w
@@ -379,6 +383,10 @@ FFDEFSeq x1 eqa w t1 t2 =
    eqa x1 x × #¬Names x)
 
 
+NNeq : CTerm → per
+NNeq x t1 t2 = Lift {0ℓ} (lsuc L) (#¬Names x)
+
+
 NATeq : wper
 NATeq w t1 t2 =
   #strongMonEq w t1 t2
@@ -423,6 +431,8 @@ eqInType u w (EQTSUBSING _ _ _ _ eqtA exta) t1 t2 =
 --eqInType u w (EQTDUM _ _ _ _ eqtA exta) t1 t2 = Lift {0ℓ} 1ℓ ⊤
 eqInType u w (EQFFDEFS _ _ x1 _ _ _ eqtA exta _) t1 t2 =
   □· w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqtA w' e)) w' t1 t2)
+eqInType u w (EQTNN x _ _) t1 t2 =
+  □· w (λ w' e → NNeq x t1 t2)
 eqInType u w (EQTUNIV i p c₁ c₂) T1 T2 = snd u i p w T1 T2
 eqInType u w (EQTLIFT A1 A2 c₁ c₂ eqtA exta) t1 t2 =
   □· w (λ w' e → eqInType (↓U u) w' (eqtA w' e) t1 t2)

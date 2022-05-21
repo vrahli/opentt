@@ -115,6 +115,7 @@ data differ (name1 name2 : Name) (f : Term) : Term → Term → Set where
   differ-TTRUNC  : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (TTRUNC a) (TTRUNC b)
   differ-TCONST  : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (TCONST a) (TCONST b)
   differ-SUBSING : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (SUBSING a) (SUBSING b)
+  differ-NN      : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (NN a) (NN b)
   differ-DUM     : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (DUM a) (DUM b)
   differ-FFDEFS  : (a₁ a₂ b₁ b₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f (FFDEFS a₁ b₁) (FFDEFS a₂ b₂)
   differ-UNIV    : (x : ℕ) → differ name1 name2 f (UNIV x) (UNIV x)
@@ -213,6 +214,7 @@ differ-INRₗ→ {name1} {name2} {f} {a} {.(INR a₂)} (differ-INR .a a₂ diff)
 →differ-shiftUp v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftUp v cf diff)
 →differ-shiftUp v {name1} {name2} {f} cf {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) = differ-TCONST _ _ (→differ-shiftUp v cf diff)
 →differ-shiftUp v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftUp v cf diff)
+→differ-shiftUp v {name1} {name2} {f} cf {.(NN a)} {.(NN b)} (differ-NN a b diff) = differ-NN _ _ (→differ-shiftUp v cf diff)
 →differ-shiftUp v {name1} {name2} {f} cf {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) = differ-DUM _ _ (→differ-shiftUp v cf diff)
 →differ-shiftUp v {name1} {name2} {f} cf {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = differ-FFDEFS _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
 →differ-shiftUp v {name1} {name2} {f} cf {.(UNIV x)} {.(UNIV x)} (differ-UNIV x) = differ-UNIV x
@@ -305,6 +307,10 @@ differ-INRₗ→ {name1} {name2} {f} {a} {.(INR a₂)} (differ-INR .a a₂ diff)
 
 ≡SUBSING : {a b : Term} → a ≡ b → SUBSING a ≡ SUBSING b
 ≡SUBSING {a} {b} e rewrite e = refl
+
+
+≡NN : {a b : Term} → a ≡ b → NN a ≡ NN b
+≡NN {a} {b} e rewrite e = refl
 
 
 ≡LIFT : {a b : Term} → a ≡ b → LIFT a ≡ LIFT b
@@ -424,6 +430,7 @@ shiftNameUp-shiftNameUp {i} {j} {TSQUASH t} imp = ≡TSQUASH (shiftNameUp-shiftN
 shiftNameUp-shiftNameUp {i} {j} {TTRUNC t} imp = ≡TTRUNC (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {TCONST t} imp = ≡TCONST (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {SUBSING t} imp = ≡SUBSING (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+shiftNameUp-shiftNameUp {i} {j} {NN t} imp = ≡NN (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {DUM t} imp = ≡DUM (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {FFDEFS t t₁} imp = ≡FFDEFS (shiftNameUp-shiftNameUp {i} {j} {t} (λ n k → imp n (∈-++⁺ˡ k))) (shiftNameUp-shiftNameUp {i} {j} {t₁} (λ n k → imp n (∈-++⁺ʳ (names t) k)))
 shiftNameUp-shiftNameUp {i} {j} {UNIV x} imp = refl
@@ -471,6 +478,7 @@ shiftNameUp-shiftNameUp {i} {j} {TSQUASH t} imp = ≡TSQUASH (shiftNameUp-shiftN
 shiftNameUp-shiftNameUp {i} {j} {TTRUNC t} imp = ≡TTRUNC (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {TCONST t} imp = ≡TCONST (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {SUBSING t} imp = ≡SUBSING (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+shiftNameUp-shiftNameUp {i} {j} {NN t} imp = ≡NN (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {DUM t} imp = ≡DUM (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {FFDEFS t t₁} imp = ≡FFDEFS (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
 shiftNameUp-shiftNameUp {i} {j} {UNIV x} imp = refl
@@ -550,6 +558,7 @@ suc-sucIf≤ i j | no p with suc j <? suc i
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftNameUp v cf diff)
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) = differ-TCONST _ _ (→differ-shiftNameUp v cf diff)
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftNameUp v cf diff)
+→differ-shiftNameUp v {name1} {name2} {f} cf {.(NN a)} {.(NN b)} (differ-NN a b diff) = differ-NN _ _ (→differ-shiftNameUp v cf diff)
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) = differ-DUM _ _ (→differ-shiftNameUp v cf diff)
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = differ-FFDEFS _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(UNIV x)} {.(UNIV x)} (differ-UNIV x) = differ-UNIV x
@@ -630,6 +639,7 @@ differ-subv {name1} {name2} {f} cf v {.(TSQUASH a)} {.(TSQUASH b)} {b₁} {b₂}
 differ-subv {name1} {name2} {f} cf v {.(TTRUNC a)} {.(TTRUNC b)} {b₁} {b₂} (differ-TTRUNC a b d₁) d₂ = differ-TTRUNC _ _ (differ-subv cf v d₁ d₂)
 differ-subv {name1} {name2} {f} cf v {.(TCONST a)} {.(TCONST b)} {b₁} {b₂} (differ-TCONST a b d₁) d₂ = differ-TCONST _ _ (differ-subv cf v d₁ d₂)
 differ-subv {name1} {name2} {f} cf v {.(SUBSING a)} {.(SUBSING b)} {b₁} {b₂} (differ-SUBSING a b d₁) d₂ = differ-SUBSING _ _ (differ-subv cf v d₁ d₂)
+differ-subv {name1} {name2} {f} cf v {.(NN a)} {.(NN b)} {b₁} {b₂} (differ-NN a b d₁) d₂ = differ-NN _ _ (differ-subv cf v d₁ d₂)
 differ-subv {name1} {name2} {f} cf v {.(DUM a)} {.(DUM b)} {b₁} {b₂} (differ-DUM a b d₁) d₂ = differ-DUM _ _ (differ-subv cf v d₁ d₂)
 differ-subv {name1} {name2} {f} cf v {.(FFDEFS a₁ b₃)} {.(FFDEFS a₂ b₄)} {b₁} {b₂} (differ-FFDEFS a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-FFDEFS _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
 differ-subv {name1} {name2} {f} cf v {.(UNIV x)} {.(UNIV x)} {b₁} {b₂} (differ-UNIV x) d₂ = differ-UNIV x
@@ -680,6 +690,7 @@ differ-subv {name1} {name2} {f} cf v {.(upd name1 f)} {.(upd name2 f)} {b₁} {b
 →differ-shiftDown v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftDown v cf diff)
 →differ-shiftDown v {name1} {name2} {f} cf {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) = differ-TCONST _ _ (→differ-shiftDown v cf diff)
 →differ-shiftDown v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftDown v cf diff)
+→differ-shiftDown v {name1} {name2} {f} cf {.(NN a)} {.(NN b)} (differ-NN a b diff) = differ-NN _ _ (→differ-shiftDown v cf diff)
 →differ-shiftDown v {name1} {name2} {f} cf {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) = differ-DUM _ _ (→differ-shiftDown v cf diff)
 →differ-shiftDown v {name1} {name2} {f} cf {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = differ-FFDEFS _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
 →differ-shiftDown v {name1} {name2} {f} cf {.(UNIV x)} {.(UNIV x)} (differ-UNIV x) = differ-UNIV x
@@ -726,6 +737,7 @@ differ-isValue→ {name1} {name2} {f} {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQU
 differ-isValue→ {name1} {name2} {f} {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) isv = tt
 differ-isValue→ {name1} {name2} {f} {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) isv = tt
 differ-isValue→ {name1} {name2} {f} {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) isv = tt
+differ-isValue→ {name1} {name2} {f} {.(NN a)} {.(NN b)} (differ-NN a b diff) isv = tt
 differ-isValue→ {name1} {name2} {f} {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) isv = tt
 differ-isValue→ {name1} {name2} {f} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) isv = tt
 differ-isValue→ {name1} {name2} {f} {.(UNIV x)} {.(UNIV x)} (differ-UNIV x) isv = tt

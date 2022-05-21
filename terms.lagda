@@ -256,6 +256,13 @@ subv-↑T {i} {suc n} p v a with i <? n
     c rewrite CTerm.closed a | CTerm.closed b = refl
 
 
+#NN : CTerm → CTerm
+#NN a = ct (NN ⌜ a ⌝) c
+  where
+    c : # NN ⌜ a ⌝
+    c rewrite CTerm.closed a = refl
+
+
 #TSQUASH : CTerm → CTerm
 #TSQUASH a = ct (TSQUASH ⌜ a ⌝) c
   where
@@ -584,6 +591,7 @@ fvars-shiftUp≡ n (FFDEFS t t₁)
   rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
         | fvars-shiftUp≡ n t
         | fvars-shiftUp≡ n t₁ = refl
+fvars-shiftUp≡ n (NN t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (UNIV x) = refl
 fvars-shiftUp≡ n (LIFT t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (LOWER t) = fvars-shiftUp≡ n t
@@ -877,6 +885,7 @@ fvars-shiftDown≡ n (FFDEFS t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
         | fvars-shiftDown≡ n t
         | fvars-shiftDown≡ n t₁ = refl
+fvars-shiftDown≡ n (NN t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (UNIV x) = refl
 fvars-shiftDown≡ n (LIFT t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (LOWER t) = fvars-shiftDown≡ n t
@@ -957,6 +966,7 @@ fvars-shiftNameUp n (TCONST a) rewrite fvars-shiftNameUp n a = refl
 fvars-shiftNameUp n (SUBSING a) rewrite fvars-shiftNameUp n a = refl
 fvars-shiftNameUp n (DUM a) rewrite fvars-shiftNameUp n a = refl
 fvars-shiftNameUp n (FFDEFS a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
+fvars-shiftNameUp n (NN a) rewrite fvars-shiftNameUp n a = refl
 fvars-shiftNameUp n (UNIV x) = refl
 fvars-shiftNameUp n (LIFT a) rewrite fvars-shiftNameUp n a = refl
 fvars-shiftNameUp n (LOWER a) rewrite fvars-shiftNameUp n a = refl
@@ -1100,6 +1110,7 @@ fvars-subv v a (DUM b) = fvars-subv v a b
 fvars-subv v a (FFDEFS b b₁) i with ∈-++⁻ (fvars (subv v a b)) i
 ... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b p)
 ... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b₁ p)
+fvars-subv v a (NN b) = fvars-subv v a b
 fvars-subv v a (UNIV x) i = ⊥-elim (¬∈[] i)
 fvars-subv v a (LIFT b) = fvars-subv v a b
 fvars-subv v a (LOWER b) = fvars-subv v a b
@@ -1308,6 +1319,8 @@ shiftDown1-subv1-shiftUp0 n a (DUM b) ca
 shiftDown1-subv1-shiftUp0 n a (FFDEFS b b₁) ca
   rewrite shiftDown1-subv1-shiftUp0 n a b ca
         | shiftDown1-subv1-shiftUp0 n a b₁ ca = refl
+shiftDown1-subv1-shiftUp0 n a (NN b) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
 shiftDown1-subv1-shiftUp0 n a (UNIV x) ca = refl
 shiftDown1-subv1-shiftUp0 n a (LIFT b) ca
   rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
@@ -1622,6 +1635,13 @@ FFDEFSinj2 refl =  refl
 #FFDEFSinj2 c = CTerm≡ (FFDEFSinj2 (≡CTerm c))
 
 
+NNinj : {a b : Term} → NN a ≡ NN b → a ≡ b
+NNinj refl =  refl
+
+#NNinj : {a b : CTerm} → #NN a ≡ #NN b → a ≡ b
+#NNinj c = CTerm≡ (NNinj (≡CTerm c))
+
+
 DUMinj : {a b : Term} → DUM a ≡ DUM b → a ≡ b
 DUMinj refl =  refl
 
@@ -1710,6 +1730,9 @@ EQneqDUM {t} {a} {b} {c} ()
 EQneqFFDEFS : {t a b : Term} {c d : Term} → ¬ (EQ t a b) ≡ FFDEFS c d
 EQneqFFDEFS {t} {a} {b} {c} {d} ()
 
+EQneqNN : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ NN c
+EQneqNN {t} {a} {b} {c} ()
+
 EQneqLOWER : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ LOWER c
 EQneqLOWER {t} {a} {b} {c} ()
 
@@ -1788,6 +1811,9 @@ PIneqDUM {a} {b} {c} ()
 PIneqFFDEFS : {a b : Term} {c d : Term} → ¬ (PI a b) ≡ FFDEFS c d
 PIneqFFDEFS {a} {b} {c} {d} ()
 
+PIneqNN : {a b : Term} {c : Term} → ¬ (PI a b) ≡ NN c
+PIneqNN {a} {b} {c} ()
+
 PIneqLOWER : {a b : Term} {c : Term} → ¬ (PI a b) ≡ LOWER c
 PIneqLOWER {a} {b} {c} ()
 
@@ -1854,6 +1880,9 @@ NATneqDUM {c} ()
 NATneqFFDEFS : {c d : Term} → ¬ NAT ≡ FFDEFS c d
 NATneqFFDEFS {c} {d} ()
 
+NATneqNN : {c : Term} → ¬ NAT ≡ NN c
+NATneqNN {c} ()
+
 NATneqLOWER : {c : Term} → ¬ NAT ≡ LOWER c
 NATneqLOWER {c} ()
 
@@ -1903,6 +1932,7 @@ shiftUp-inj {n} {TCONST a} {TCONST b} e rewrite shiftUp-inj (TCONSTinj e) = refl
 shiftUp-inj {n} {SUBSING a} {SUBSING b} e rewrite shiftUp-inj (SUBSINGinj e) = refl
 shiftUp-inj {n} {DUM a} {DUM b} e rewrite shiftUp-inj (DUMinj e) = refl
 shiftUp-inj {n} {FFDEFS a a₁} {FFDEFS b b₁} e rewrite shiftUp-inj (FFDEFSinj1 e) | shiftUp-inj (FFDEFSinj2 e) = refl
+shiftUp-inj {n} {NN a} {NN b} e rewrite shiftUp-inj (NNinj e) = refl
 shiftUp-inj {n} {UNIV x} {UNIV .x} refl = refl
 shiftUp-inj {n} {LIFT a} {LIFT b} e rewrite shiftUp-inj (LIFTinj e) = refl
 shiftUp-inj {n} {LOWER a} {LOWER b} e rewrite shiftUp-inj (LOWERinj e) = refl

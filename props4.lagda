@@ -399,6 +399,7 @@ equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTSQUASH 
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTTRUNC A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LTneqTTRUNC (compAllVal x tt))
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LTneqTCONST (compAllVal x tt))
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LTneqSUBSING (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTNN t₁ x x₁ , eqi) = ⊥-elim (LTneqNN (compAllVal x tt))
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (LTneqFFDEFS (compAllVal x tt))
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTUNIV i₁ p x x₁ , eqi) = ⊥-elim (LTneqUNIV (compAllVal x tt))
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LTneqLIFT(compAllVal x tt))

@@ -167,6 +167,7 @@ instance
 
 
 
+-- TODO: use NN instead of FFDEFS here as the terms get in the extract
 cont : Term
 cont =
   PI BAIRE→NAT

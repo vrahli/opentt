@@ -109,6 +109,7 @@ data Term : Set where
   DUM : Term → Term
   -- Free from definitions
   FFDEFS : Term → Term → Term
+  NN : Term → Term
   -- Universes
   UNIV : ℕ → Term
   LIFT : Term -> Term
@@ -155,6 +156,7 @@ value? (TCONST _) = true
 value? (SUBSING _) = true
 value? (DUM _) = true
 value? (FFDEFS _ _) = true
+value? (NN _) = true
 value? (UNIV _) = true
 value? (LIFT _) = true
 value? (LOWER _) = true
@@ -276,6 +278,7 @@ fvars (TCONST t)       = fvars t
 fvars (SUBSING t)      = fvars t
 fvars (DUM t)          = fvars t
 fvars (FFDEFS t t₁)    = fvars t ++ fvars t₁
+fvars (NN t)           = fvars t
 fvars (UNIV x)         = []
 fvars (LIFT t)         = fvars t
 fvars (LOWER t)        = fvars t
@@ -425,6 +428,7 @@ shiftUp c (TCONST t) = TCONST (shiftUp c t)
 shiftUp c (SUBSING t) = SUBSING (shiftUp c t)
 shiftUp c (DUM t) = DUM (shiftUp c t)
 shiftUp c (FFDEFS t t₁) = FFDEFS (shiftUp c t) (shiftUp c t₁)
+shiftUp c (NN t) = NN (shiftUp c t)
 shiftUp c (UNIV x) = UNIV x
 shiftUp c (LIFT t) = LIFT (shiftUp c t)
 shiftUp c (LOWER t) = LOWER (shiftUp c t)
@@ -469,6 +473,7 @@ shiftDown c (TCONST t) = TCONST (shiftDown c t)
 shiftDown c (SUBSING t) = SUBSING (shiftDown c t)
 shiftDown c (DUM t) = DUM (shiftDown c t)
 shiftDown c (FFDEFS t t₁) = FFDEFS (shiftDown c t) (shiftDown c t₁)
+shiftDown c (NN t) = NN (shiftDown c t)
 shiftDown c (UNIV x) = UNIV x
 shiftDown c (LIFT t) = LIFT (shiftDown c t)
 shiftDown c (LOWER t) = LOWER (shiftDown c t)
@@ -513,6 +518,7 @@ shiftNameUp c (TCONST t) = TCONST (shiftNameUp c t)
 shiftNameUp c (SUBSING t) = SUBSING (shiftNameUp c t)
 shiftNameUp c (DUM t) = DUM (shiftNameUp c t)
 shiftNameUp c (FFDEFS t t₁) = FFDEFS (shiftNameUp c t) (shiftNameUp c t₁)
+shiftNameUp c (NN t) = NN (shiftNameUp c t)
 shiftNameUp c (UNIV x) = UNIV x
 shiftNameUp c (LIFT t) = LIFT (shiftNameUp c t)
 shiftNameUp c (LOWER t) = LOWER (shiftNameUp c t)
@@ -557,6 +563,7 @@ shiftNameDown c (TCONST t) = TCONST (shiftNameDown c t)
 shiftNameDown c (SUBSING t) = SUBSING (shiftNameDown c t)
 shiftNameDown c (DUM t) = DUM (shiftNameDown c t)
 shiftNameDown c (FFDEFS t t₁) = FFDEFS (shiftNameDown c t) (shiftNameDown c t₁)
+shiftNameDown c (NN t) = NN (shiftNameDown c t)
 shiftNameDown c (UNIV x) = UNIV x
 shiftNameDown c (LIFT t) = LIFT (shiftNameDown c t)
 shiftNameDown c (LOWER t) = LOWER (shiftNameDown c t)
@@ -608,6 +615,7 @@ names (TCONST t)       = names t
 names (SUBSING t)      = names t
 names (DUM t)          = names t
 names (FFDEFS t t₁)    = names t ++ names t₁
+names (NN t)           = names t
 names (UNIV x)         = []
 names (LIFT t)         = names t
 names (LOWER t)        = names t
@@ -655,6 +663,7 @@ subv v t (TCONST u) = TCONST (subv v t u)
 subv v t (SUBSING u) = SUBSING (subv v t u)
 subv v t (DUM u) = DUM (subv v t u)
 subv v t (FFDEFS u u₁) = FFDEFS (subv v t u) (subv v t u₁)
+subv v t (NN u) = NN (subv v t u)
 subv v t (UNIV x) = UNIV x
 subv v t (LIFT u) = LIFT (subv v t u)
 subv v t (LOWER u) = LOWER (subv v t u)
@@ -709,6 +718,7 @@ renn v t (TCONST u) = TCONST (renn v t u)
 renn v t (SUBSING u) = SUBSING (renn v t u)
 renn v t (DUM u) = DUM (renn v t u)
 renn v t (FFDEFS u u₁) = FFDEFS (renn v t u) (renn v t u₁)
+renn v t (NN u) = NN (renn v t u)
 renn v t (UNIV x) = UNIV x
 renn v t (LIFT u) = LIFT (renn v t u)
 renn v t (LOWER u) = LOWER (renn v t u)
@@ -833,6 +843,8 @@ subvNotIn v t (DUM u) n
 subvNotIn v t (FFDEFS u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
   rewrite subvNotIn v t u₁ (notInAppVars2 n) = refl
+subvNotIn v t (NN u) n
+  rewrite subvNotIn v t u n = refl
 subvNotIn v t (UNIV x) n = refl
 subvNotIn v t (LIFT u) n rewrite subvNotIn v t u n = refl
 subvNotIn v t (LOWER u) n rewrite subvNotIn v t u n = refl
@@ -949,6 +961,8 @@ shiftDownTrivial v (DUM u) i
 shiftDownTrivial v (FFDEFS u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+shiftDownTrivial v (NN u) i
+  rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (UNIV x) i = refl
 shiftDownTrivial v (LIFT u) i rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (LOWER u) i rewrite shiftDownTrivial v u i = refl
@@ -1047,6 +1061,8 @@ shiftUpTrivial v (DUM u) i
 shiftUpTrivial v (FFDEFS u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+shiftUpTrivial v (NN u) i
+  rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (UNIV x) i = refl
 shiftUpTrivial v (LIFT u) i rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (LOWER u) i rewrite shiftUpTrivial v u i = refl
@@ -1105,7 +1121,8 @@ shiftDownUp (TTRUNC t) n rewrite shiftDownUp t n = refl
 shiftDownUp (TCONST t) n rewrite shiftDownUp t n = refl
 shiftDownUp (SUBSING t) n rewrite shiftDownUp t n = refl
 shiftDownUp (DUM t) n rewrite shiftDownUp t n = refl
-shiftDownUp (FFDEFS t t₁) n rewrite shiftDownUp t n rewrite shiftDownUp t₁ n = refl
+shiftDownUp (FFDEFS t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
+shiftDownUp (NN t) n rewrite shiftDownUp t n = refl
 shiftDownUp (UNIV x) n = refl
 shiftDownUp (LIFT t) n rewrite shiftDownUp t n = refl
 shiftDownUp (LOWER t) n rewrite shiftDownUp t n = refl
@@ -1150,6 +1167,7 @@ is-NUM (TCONST t) = inj₂ (λ { n () })
 is-NUM (SUBSING t) = inj₂ (λ { n () })
 is-NUM (DUM t) = inj₂ (λ { n () })
 is-NUM (FFDEFS t t₁) = inj₂ (λ { n () })
+is-NUM (NN t) = inj₂ (λ { n () })
 is-NUM (UNIV x) = inj₂ (λ { n () })
 is-NUM (LIFT t) = inj₂ (λ { n () })
 is-NUM (LOWER t) = inj₂ (λ { n () })
@@ -1194,6 +1212,7 @@ is-LAM (TCONST t) = inj₂ (λ { n () })
 is-LAM (SUBSING t) = inj₂ (λ { n () })
 is-LAM (DUM t) = inj₂ (λ { n () })
 is-LAM (FFDEFS t t₁) = inj₂ (λ { n () })
+is-LAM (NN t) = inj₂ (λ { n () })
 is-LAM (UNIV x) = inj₂ (λ { n () })
 is-LAM (LIFT t) = inj₂ (λ { n () })
 is-LAM (LOWER t) = inj₂ (λ { n () })
@@ -1238,6 +1257,7 @@ is-CS (TCONST t) = inj₂ (λ { n () })
 is-CS (SUBSING t) = inj₂ (λ { n () })
 is-CS (DUM t) = inj₂ (λ { n () })
 is-CS (FFDEFS t t₁) = inj₂ (λ { n () })
+is-CS (NN t) = inj₂ (λ { n () })
 is-CS (UNIV x) = inj₂ (λ { n () })
 is-CS (LIFT t) = inj₂ (λ { n () })
 is-CS (LOWER t) = inj₂ (λ { n () })
@@ -1282,6 +1302,7 @@ is-NAME (TCONST t) = inj₂ (λ { n () })
 is-NAME (SUBSING t) = inj₂ (λ { n () })
 is-NAME (DUM t) = inj₂ (λ { n () })
 is-NAME (FFDEFS t t₁) = inj₂ (λ { n () })
+is-NAME (NN t) = inj₂ (λ { n () })
 is-NAME (UNIV x) = inj₂ (λ { n () })
 is-NAME (LIFT t) = inj₂ (λ { n () })
 is-NAME (LOWER t) = inj₂ (λ { n () })
@@ -1326,6 +1347,7 @@ is-PAIR (TCONST t) = inj₂ (λ { n m () })
 is-PAIR (SUBSING t) = inj₂ (λ { n m () })
 is-PAIR (DUM t) = inj₂ (λ { n m () })
 is-PAIR (FFDEFS t t₁) = inj₂ (λ { n m () })
+is-PAIR (NN t) = inj₂ (λ { n m () })
 is-PAIR (UNIV x) = inj₂ (λ { n m () })
 is-PAIR (LIFT t) = inj₂ (λ { n m () })
 is-PAIR (LOWER t) = inj₂ (λ { n m () })
@@ -1370,6 +1392,7 @@ is-INL (TCONST t) = inj₂ (λ { n () })
 is-INL (SUBSING t) = inj₂ (λ { n () })
 is-INL (DUM t) = inj₂ (λ { n () })
 is-INL (FFDEFS t t₁) = inj₂ (λ { n () })
+is-INL (NN t) = inj₂ (λ { n () })
 is-INL (UNIV x) = inj₂ (λ { n () })
 is-INL (LIFT t) = inj₂ (λ { n () })
 is-INL (LOWER t) = inj₂ (λ { n () })
@@ -1414,6 +1437,7 @@ is-INR (TCONST t) = inj₂ (λ { n () })
 is-INR (SUBSING t) = inj₂ (λ { n () })
 is-INR (DUM t) = inj₂ (λ { n () })
 is-INR (FFDEFS t t₁) = inj₂ (λ { n () })
+is-INR (NN t) = inj₂ (λ { n () })
 is-INR (UNIV x) = inj₂ (λ { n () })
 is-INR (LIFT t) = inj₂ (λ { n () })
 is-INR (LOWER t) = inj₂ (λ { n () })
@@ -1449,6 +1473,7 @@ data ∼vals : Term → Term → Set where
   ∼vals-SUBSING : {a b : Term} → ∼vals (SUBSING a) (SUBSING b)
   ∼vals-DUM     : {a b : Term} → ∼vals (DUM a) (DUM b)
   ∼vals-FFDEFS  : {a b c d : Term} → ∼vals (FFDEFS a b) (FFDEFS c d)
+  ∼vals-NN      : {a b : Term} → ∼vals (NN a) (NN b)
   ∼vals-UNIV    : {n : ℕ} → ∼vals (UNIV n) (UNIV n)
   ∼vals-LIFT    : {a b : Term} → ∼vals (LIFT a) (LIFT b)
   ∼vals-LOWER   : {a b : Term} → ∼vals (LOWER a) (LOWER b)
@@ -1482,6 +1507,7 @@ data ∼vals : Term → Term → Set where
 ∼vals-sym {.(SUBSING _)} {.(SUBSING _)} ∼vals-SUBSING = ∼vals-SUBSING
 ∼vals-sym {.(DUM _)} {.(DUM _)} ∼vals-DUM = ∼vals-DUM
 ∼vals-sym {.(FFDEFS _ _)} {.(FFDEFS _ _)} ∼vals-FFDEFS = ∼vals-FFDEFS
+∼vals-sym {.(NN _)} {.(NN _)} ∼vals-NN = ∼vals-NN
 ∼vals-sym {.(UNIV _)} {.(UNIV _)} ∼vals-UNIV = ∼vals-UNIV
 ∼vals-sym {.(LIFT _)} {.(LIFT _)} ∼vals-LIFT = ∼vals-LIFT
 ∼vals-sym {.(LOWER _)} {.(LOWER _)} ∼vals-LOWER = ∼vals-LOWER
@@ -1515,6 +1541,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₁ {SUBSING a} {b} isv = tt
 ∼vals→isValue₁ {DUM a} {b} isv = tt
 ∼vals→isValue₁ {FFDEFS a a₁} {b} isv = tt
+∼vals→isValue₁ {NN a} {b} isv = tt
 ∼vals→isValue₁ {UNIV x} {b} isv = tt
 ∼vals→isValue₁ {LIFT a} {b} isv = tt
 ∼vals→isValue₁ {LOWER a} {b} isv = tt
@@ -1556,6 +1583,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {SUBSING b} isv = tt
 ∼vals→isValue₂ {a} {DUM b} isv = tt
 ∼vals→isValue₂ {a} {FFDEFS b b₁} isv = tt
+∼vals→isValue₂ {a} {NN b} isv = tt
 ∼vals→isValue₂ {a} {UNIV x} isv = tt
 ∼vals→isValue₂ {a} {LIFT b} isv = tt
 ∼vals→isValue₂ {a} {LOWER b} isv = tt
@@ -1608,6 +1636,7 @@ data ∼vals : Term → Term → Set where
 ¬read (SUBSING t) = ¬read t
 ¬read (DUM t) = ¬read t
 ¬read (FFDEFS t t₁) = ¬read t ∧ ¬read t₁
+¬read (NN t) = ¬read t
 ¬read (UNIV x) = true
 ¬read (LIFT t) = ¬read t
 ¬read (LOWER t) = ¬read t
@@ -1667,6 +1696,7 @@ data ∼vals : Term → Term → Set where
 ¬names (SUBSING t) = ¬names t
 ¬names (DUM t) = ¬names t
 ¬names (FFDEFS t t₁) = ¬names t ∧ ¬names t₁
+¬names (NN t) = ¬names t
 ¬names (UNIV x) = true
 ¬names (LIFT t) = ¬names t
 ¬names (LOWER t) = ¬names t

@@ -121,6 +121,9 @@ SUBSINGneqTSQUASH {a} {c} ()
 SUBSINGneqTTRUNC : {a : Term} {c : Term} → ¬ (SUBSING a) ≡ TTRUNC c
 SUBSINGneqTTRUNC {a} {c} ()
 
+SUBSINGneqNN : {a : Term} {c : Term} → ¬ (SUBSING a) ≡ NN c
+SUBSINGneqNN {a} {c} ()
+
 SUBSINGneqTCONST : {a : Term} {c : Term} → ¬ (SUBSING a) ≡ TCONST c
 SUBSINGneqTCONST {a} {c} ()
 
@@ -177,6 +180,7 @@ typeSysConds-SUBSING-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTUNION C1 D
 typeSysConds-SUBSING-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-SUBSING-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x₁ y))
 typeSysConds-SUBSING-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x₁ y))
+typeSysConds-SUBSING-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTNN t₁ y y₁) = ⊥-elim (SUBSINGneqNN (⇛-val-det tt tt x₁ y))
 typeSysConds-SUBSING-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA)
   rewrite #SUBSINGinj {A3} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
   = EQTSUBSING A1 A4 x y₁ eqa exta'
@@ -274,6 +278,7 @@ typeSysConds-SUBSING-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNION A3 B3
 typeSysConds-SUBSING-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x y))
 typeSysConds-SUBSING-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x y))
 typeSysConds-SUBSING-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x y))
+typeSysConds-SUBSING-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTNN t₁ y y₁) f g eqi = ⊥-elim (SUBSINGneqNN (⇛-val-det tt tt x y))
 typeSysConds-SUBSING-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #SUBSINGinj {A3} {A1} (#⇛-val-det {_} {A} tt tt y x)
   = Mod.∀𝕎-□Func M aw eqi
@@ -334,6 +339,7 @@ typeSysConds-SUBSING-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNION A3 B3
 typeSysConds-SUBSING-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x y₁))
 typeSysConds-SUBSING-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x y₁))
 typeSysConds-SUBSING-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x y₁))
+typeSysConds-SUBSING-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTNN t₁ y y₁) f g eqi = ⊥-elim (SUBSINGneqNN (⇛-val-det tt tt x y₁))
 typeSysConds-SUBSING-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #SUBSINGinj {A4} {A1} (#⇛-val-det {_} {A} tt tt y₁ x)
   = Mod.∀𝕎-□Func M aw eqi
@@ -394,6 +400,7 @@ typeSysConds-SUBSING-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNION A3 B3
 typeSysConds-SUBSING-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUBSING-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUBSING-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x₁ y₁))
+typeSysConds-SUBSING-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTNN t₁ y y₁) f g eqi = ⊥-elim (SUBSINGneqNN (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUBSING-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #SUBSINGinj {A4} {B1} (#⇛-val-det {_} {B} tt tt y₁ x₁)
   = Mod.∀𝕎-□Func M aw eqi
@@ -453,6 +460,7 @@ typeSysConds-SUBSING-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNION A3 B3
 typeSysConds-SUBSING-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-SUBSING-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x₁ y))
 typeSysConds-SUBSING-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x₁ y))
+typeSysConds-SUBSING-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTNN t₁ y y₁) f g eqi = ⊥-elim (SUBSINGneqNN (⇛-val-det tt tt x₁ y))
 typeSysConds-SUBSING-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #SUBSINGinj {A3} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
   = Mod.∀𝕎-□Func M aw eqi
@@ -514,6 +522,7 @@ typeSysConds-SUBSING-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNION A3
 typeSysConds-SUBSING-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x y))
 typeSysConds-SUBSING-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x y))
 typeSysConds-SUBSING-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x y))
+typeSysConds-SUBSING-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTNN t₁ y y₁) f g eqi = ⊥-elim (SUBSINGneqNN (⇛-val-det tt tt x y))
 typeSysConds-SUBSING-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #SUBSINGinj {A3} {A1} (#⇛-val-det {_} {A} tt tt y x)
   = Mod.∀𝕎-□Func M aw eqi
@@ -583,6 +592,7 @@ typeSysConds-SUBSING-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNION A3
 typeSysConds-SUBSING-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x y₁))
 typeSysConds-SUBSING-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x y₁))
 typeSysConds-SUBSING-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x y₁))
+typeSysConds-SUBSING-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTNN t₁ y y₁) f g eqi = ⊥-elim (SUBSINGneqNN (⇛-val-det tt tt x y₁))
 typeSysConds-SUBSING-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #SUBSINGinj {A4} {A1} (#⇛-val-det {_} {A} tt tt y₁ x)
   = Mod.∀𝕎-□Func M aw eqi
@@ -652,6 +662,7 @@ typeSysConds-SUBSING-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNION A3
 typeSysConds-SUBSING-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUBSING-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUBSING-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x₁ y₁))
+typeSysConds-SUBSING-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTNN t₁ y y₁) f g eqi = ⊥-elim (SUBSINGneqNN (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUBSING-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #SUBSINGinj {A4} {B1} (#⇛-val-det {_} {B} tt tt y₁ x₁)
   = Mod.∀𝕎-□Func M aw eqi
@@ -721,6 +732,7 @@ typeSysConds-SUBSING-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTUNION A3
 typeSysConds-SUBSING-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-SUBSING-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x₁ y))
 typeSysConds-SUBSING-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x₁ y))
+typeSysConds-SUBSING-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTNN t₁ y y₁) f g eqi = ⊥-elim (SUBSINGneqNN (⇛-val-det tt tt x₁ y))
 typeSysConds-SUBSING-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #SUBSINGinj {A3} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
   = Mod.∀𝕎-□Func M aw eqi
@@ -794,6 +806,7 @@ eqInType-⇛-SUBSING u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTUNION A3 B3 
 eqInType-⇛-SUBSING u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUBSING u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUBSING u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt c₁ x))
+eqInType-⇛-SUBSING u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTNN t₁ x x₁) ei = ⊥-elim (SUBSINGneqNN (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUBSING u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei
   rewrite #SUBSINGinj {A1} {A3} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #SUBSINGinj {B1} {A4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
@@ -870,6 +883,7 @@ eqInType-⇛-SUBSING2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTUNION A3 B3 A4 B
 eqInType-⇛-SUBSING2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUBSING2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ei ext = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUBSING2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ei ext = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt c₁ x))
+eqInType-⇛-SUBSING2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTNN t₁ x x₁) ei ext = ⊥-elim (SUBSINGneqNN (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUBSING2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei ext
   rewrite #SUBSINGinj {A1} {A3} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #SUBSINGinj {B1} {A4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
@@ -949,6 +963,7 @@ eqInType-⇛-SUBSING-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTUNION A3
 eqInType-⇛-SUBSING-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUBSING-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUBSING-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt c₁ x))
+eqInType-⇛-SUBSING-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTNN t₁ x x₁) ei = ⊥-elim (SUBSINGneqNN (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUBSING-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei
   rewrite #SUBSINGinj {A1} {A3} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #SUBSINGinj {B1} {A4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
@@ -1016,6 +1031,7 @@ eqInType-⇛-SUBSING-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTUNION A3 B3 
 eqInType-⇛-SUBSING-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUBSING-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ext ei = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUBSING-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ext ei = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt c₁ x))
+eqInType-⇛-SUBSING-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTNN t₁ x x₁) ext ei = ⊥-elim (SUBSINGneqNN (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUBSING-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ext ei
   rewrite #SUBSINGinj {A1} {A3} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #SUBSINGinj {B1} {A4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =

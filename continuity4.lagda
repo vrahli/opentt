@@ -150,6 +150,7 @@ data updRel (name : Name) (f g : Term) : Term → Term → Set where
   updRel-TTRUNC  : (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (TTRUNC a₁) (TTRUNC a₂)
   updRel-TCONST  : (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (TCONST a₁) (TCONST a₂)
   updRel-SUBSING : (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (SUBSING a₁) (SUBSING a₂)
+  updRel-NN      : (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (NN a₁) (NN a₂)
   updRel-DUM     : (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (DUM a₁) (DUM a₂)
   updRel-FFDEFS  : (a₁ a₂ b₁ b₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g (FFDEFS a₁ b₁) (FFDEFS a₂ b₂)
   updRel-UNIV    : (x : ℕ) → updRel name f g (UNIV x) (UNIV x)
@@ -938,6 +939,7 @@ updRel-shiftUp n {name} {f} {g} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRe
 updRel-shiftUp n {name} {f} {g} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel-TTRUNC a₁ a₂ u) = updRel-TTRUNC _ _ (updRel-shiftUp n cf cg u)
 updRel-shiftUp n {name} {f} {g} cf cg {.(TCONST a₁)} {.(TCONST a₂)} (updRel-TCONST a₁ a₂ u) = updRel-TCONST _ _ (updRel-shiftUp n cf cg u)
 updRel-shiftUp n {name} {f} {g} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) = updRel-SUBSING _ _ (updRel-shiftUp n cf cg u)
+updRel-shiftUp n {name} {f} {g} cf cg {.(NN a₁)} {.(NN a₂)} (updRel-NN a₁ a₂ u) = updRel-NN _ _ (updRel-shiftUp n cf cg u)
 updRel-shiftUp n {name} {f} {g} cf cg {.(DUM a₁)} {.(DUM a₂)} (updRel-DUM a₁ a₂ u) = updRel-DUM _ _ (updRel-shiftUp n cf cg u)
 updRel-shiftUp n {name} {f} {g} cf cg {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updRel-FFDEFS _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
 updRel-shiftUp n {name} {f} {g} cf cg {.(UNIV x)} {.(UNIV x)} (updRel-UNIV x) = updRel-UNIV x
@@ -984,6 +986,7 @@ updRel-shiftDown n {name} {f} {g} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} (upd
 updRel-shiftDown n {name} {f} {g} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel-TTRUNC a₁ a₂ u) = updRel-TTRUNC _ _ (updRel-shiftDown n cf cg u)
 updRel-shiftDown n {name} {f} {g} cf cg {.(TCONST a₁)} {.(TCONST a₂)} (updRel-TCONST a₁ a₂ u) = updRel-TCONST _ _ (updRel-shiftDown n cf cg u)
 updRel-shiftDown n {name} {f} {g} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) = updRel-SUBSING _ _ (updRel-shiftDown n cf cg u)
+updRel-shiftDown n {name} {f} {g} cf cg {.(NN a₁)} {.(NN a₂)} (updRel-NN a₁ a₂ u) = updRel-NN _ _ (updRel-shiftDown n cf cg u)
 updRel-shiftDown n {name} {f} {g} cf cg {.(DUM a₁)} {.(DUM a₂)} (updRel-DUM a₁ a₂ u) = updRel-DUM _ _ (updRel-shiftDown n cf cg u)
 updRel-shiftDown n {name} {f} {g} cf cg {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updRel-FFDEFS _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
 updRel-shiftDown n {name} {f} {g} cf cg {.(UNIV x)} {.(UNIV x)} (updRel-UNIV x) = updRel-UNIV _
@@ -1035,6 +1038,7 @@ updRel-subv v {name} {f} {g} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} {b₁} {b
 updRel-subv v {name} {f} {g} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} {b₁} {b₂} (updRel-TTRUNC a₁ a₂ ua) ub = updRel-TTRUNC _ _ (updRel-subv v cf cg ua ub)
 updRel-subv v {name} {f} {g} cf cg {.(TCONST a₁)} {.(TCONST a₂)} {b₁} {b₂} (updRel-TCONST a₁ a₂ ua) ub = updRel-TCONST _ _ (updRel-subv v cf cg ua ub)
 updRel-subv v {name} {f} {g} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} {b₁} {b₂} (updRel-SUBSING a₁ a₂ ua) ub = updRel-SUBSING _ _ (updRel-subv v cf cg ua ub)
+updRel-subv v {name} {f} {g} cf cg {.(NN a₁)} {.(NN a₂)} {b₁} {b₂} (updRel-NN a₁ a₂ ua) ub = updRel-NN _ _ (updRel-subv v cf cg ua ub)
 updRel-subv v {name} {f} {g} cf cg {.(DUM a₁)} {.(DUM a₂)} {b₁} {b₂} (updRel-DUM a₁ a₂ ua) ub = updRel-DUM _ _ (updRel-subv v cf cg ua ub)
 updRel-subv v {name} {f} {g} cf cg {.(FFDEFS a₁ b₃)} {.(FFDEFS a₂ b₄)} {b₁} {b₂} (updRel-FFDEFS a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-FFDEFS _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
 updRel-subv v {name} {f} {g} cf cg {.(UNIV x)} {.(UNIV x)} {b₁} {b₂} (updRel-UNIV x) ub = updRel-UNIV x
@@ -1252,6 +1256,7 @@ updRel→¬Names {name} {f} {g} {.(TSQUASH a₁)} {.(TSQUASH a₂)} nng (updRel-
 updRel→¬Names {name} {f} {g} {.(TTRUNC a₁)} {.(TTRUNC a₂)} nng (updRel-TTRUNC a₁ a₂ u) = updRel→¬Names nng u
 updRel→¬Names {name} {f} {g} {.(TCONST a₁)} {.(TCONST a₂)} nng (updRel-TCONST a₁ a₂ u) = updRel→¬Names nng u
 updRel→¬Names {name} {f} {g} {.(SUBSING a₁)} {.(SUBSING a₂)} nng (updRel-SUBSING a₁ a₂ u) = updRel→¬Names nng u
+updRel→¬Names {name} {f} {g} {.(NN a₁)} {.(NN a₂)} nng (updRel-NN a₁ a₂ u) = updRel→¬Names nng u
 updRel→¬Names {name} {f} {g} {.(DUM a₁)} {.(DUM a₂)} nng (updRel-DUM a₁ a₂ u) = updRel→¬Names nng u
 updRel→¬Names {name} {f} {g} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} nng (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
 updRel→¬Names {name} {f} {g} {.(UNIV x)} {.(UNIV x)} nng (updRel-UNIV x) = refl
