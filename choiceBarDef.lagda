@@ -66,6 +66,8 @@ open import computation(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+
 
 open ChoiceBar
 
@@ -101,8 +103,16 @@ Typeℂ₀₁-isType· = Typeℂ₀₁-isType CB
 ∈Typeℂ₀₁→· : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁· a b → □· w (λ w' _ → #weakℂEq w' a b)
 ∈Typeℂ₀₁→· = ∈Typeℂ₀₁→ CB
 
+
 →∈Typeℂ₀₁· : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name} → □· w (λ w' _ → weakℂ₀₁M w' (getT n c)) → ∈Type i w Typeℂ₀₁· (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁· = →∈Typeℂ₀₁ CB
+
+
+#⇛Typeℂ₀₁· : equalTerms-pres-#⇛-left Typeℂ₀₁·
+#⇛Typeℂ₀₁· = #⇛Typeℂ₀₁ CB
+
+#⇛Typeℂ₀₁-rev· : equalTerms-pres-#⇛-left-rev Typeℂ₀₁·
+#⇛Typeℂ₀₁-rev· = #⇛Typeℂ₀₁-rev CB
 
 □·-choice· : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
                 → compatible· c w r

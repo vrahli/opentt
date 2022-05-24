@@ -627,7 +627,11 @@ bound∈ i w name n f ∈n ∈f =
   where
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
                        → equalInType i w' #NAT (#APPLY (#BOUND name n f) a₁) (#APPLY (#BOUND name n f) a₂))
-    aw w1 e1 a₁ a₂ ea = equalInType-#⇛-LR-rev (#⇛!-#APPLY-#BOUND w1 name n f a₁) (#⇛!-#APPLY-#BOUND w1 name n f a₂) eqi1
+    aw w1 e1 a₁ a₂ ea =
+      equalTerms-pres-#⇛-left-rev→equalInType-pres-#⇛-LR-rev
+        _ equalTerms-pres-#⇛-left-rev-NAT
+        (#⇛!-#APPLY-#BOUND w1 name n f a₁) (#⇛!-#APPLY-#BOUND w1 name n f a₂) eqi1
+--equalInType-#⇛-LR-rev (#⇛!-#APPLY-#BOUND w1 name n f a₁) (#⇛!-#APPLY-#BOUND w1 name n f a₂) eqi1
       where
         eqa : □· w1 (λ w' _ → NATeq w' a₁ a₂)
         eqa = equalInType-NAT→ i w1 a₁ a₂ ea
@@ -997,10 +1001,10 @@ upd∈ i w name f g0 ∈f = ≡CTerm→∈Type (sym (#upd≡ name f)) (≡CTerm�
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
                        → equalInType i w' #NAT (#APPLY (#UPD name f) a₁) (#APPLY (#UPD name f) a₂))
     aw w1 e1 a₁ a₂ ea =
-      equalInType-#⇛-LR-rev
-        (#⇛!-#APPLY-#UPD w1 name f a₁)
-        (#⇛!-#APPLY-#UPD w1 name f a₂)
-        eqi1
+      equalTerms-pres-#⇛-left-rev→equalInType-pres-#⇛-LR-rev
+        _ equalTerms-pres-#⇛-left-rev-NAT
+        (#⇛!-#APPLY-#UPD w1 name f a₁) (#⇛!-#APPLY-#UPD w1 name f a₂) eqi1
+--equalInType-#⇛-LR-rev (#⇛!-#APPLY-#UPD w1 name f a₁) (#⇛!-#APPLY-#UPD w1 name f a₂) eqi1
       where
         eqa : □· w1 (λ w' _ → NATeq w' a₁ a₂)
         eqa = equalInType-NAT→ i w1 a₁ a₂ ea

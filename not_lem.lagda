@@ -189,7 +189,12 @@ getChoice→equalInType-#Σchoice-aux2 {n} {name} {w} {k} i sat g =
   equalInType-EQ (Typeℂ₀₁-isType· i w) (Mod.∀𝕎-□ M aw)
   where
     aw : ∀𝕎 w (λ w' e → EQeq (#APPLY (#CS name) (#NUM n)) (ℂ→C· k) (equalInType i w' Typeℂ₀₁·) w' #AX #AX)
-    aw w' e = equalInType-#⇛-left-rev (∀𝕎-mon e g) (sat→equalInType-Typeℂ₀₁· i w' k (0 , sat)) --→equalInType-QNAT i w' (#APPLY (#CS name) (#NUM n)) (ℂ→C· k) (Mod.∀𝕎-□ M aw')
+    aw w' e =
+      equalTerms-pres-#⇛-left-rev→equalInType-pres-#⇛-LR-rev
+        _ #⇛Typeℂ₀₁-rev·
+        (∀𝕎-mon e g) (#⇛!-refl {w'} {ℂ→C· k})  (sat→equalInType-Typeℂ₀₁· i w' k (0 , sat))
+--equalInType-#⇛-left-rev (∀𝕎-mon e g) (sat→equalInType-Typeℂ₀₁· i w' k (0 , sat))
+--→equalInType-QNAT i w' (#APPLY (#CS name) (#NUM n)) (ℂ→C· k) (Mod.∀𝕎-□ M aw')
       where
 --         aw' : ∀𝕎 w' (λ w'' _ → #weakMonEq w'' (#APPLY (#CS name) (#NUM n)) (ℂ→C· k))
 --         aw' w2 e2 w3 e3 = lift (k , step-⇓-trans (lower (g w3 (⊑-trans· e (⊑-trans· e2 e3)))) (⇓-refl (NUM k) w3) , ⇓-refl (NUM k) w3)
@@ -362,7 +367,8 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     eb3 = equalInType-EQ→₁ eb2
 
     eb4 : equalInType i w2 Typeℂ₀₁· (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1)
-    eb4 = equalInType-#⇛-left (#⇛!-APPLY-CS {w2} {a₁} {#NUM m} c ca₁) eb3
+    eb4 = equalTerms-pres-#⇛-left→equalInType-pres-#⇛-LR _ #⇛Typeℂ₀₁· (#⇛!-APPLY-CS {w2} {a₁} {#NUM m} c ca₁) (#⇛!-refl {w2} {ℂ→C· k1}) eb3
+--equalInType-#⇛-left (#⇛!-APPLY-CS {w2} {a₁} {#NUM m} c ca₁) eb3
 
     eb5 : □· w2 (λ w' _ → #weakℂEq w' (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1))
     eb5 = ∈Typeℂ₀₁→· i w2 (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1) eb4

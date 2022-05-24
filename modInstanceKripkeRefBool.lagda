@@ -266,6 +266,8 @@ kripkeRef-choiceBar =
     ℂ₁∈Typeℂ₀₁-kripke-ref
     ∈Typeℂ₀₁→-kripke-ref
     →∈Typeℂ₀₁-kripke-ref
+    equalTerms-pres-#⇛-left-QTBOOL!
+    equalTerms-pres-#⇛-left-rev-QTBOOL!
     □·-choice-kripke-ref
     followChoice-kripke-ref
 

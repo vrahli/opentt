@@ -472,6 +472,8 @@ bethCs-choiceBar =
     ℂ₁∈Typeℂ₀₁-beth-cs
     ∈Typeℂ₀₁→-beth-cs
     →∈Typeℂ₀₁-beth-cs
+    equalTerms-pres-#⇛-left-QTNAT!
+    equalTerms-pres-#⇛-left-rev-QTNAT!
     □·-choice-beth-cs
     followChoice-beth-cs
 

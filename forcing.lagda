@@ -177,6 +177,14 @@ data eqTypes u w T1 T2 where
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
     → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
     → eqTypes u w T1 T2
+  EQTISECT : (A1 B1 A2 B2 : CTerm)
+    → T1 #⇛ (#ISECT A1 B1) at w
+    → T2 #⇛ (#ISECT A2 B2) at w
+    → (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+    → (eqtB : ∀𝕎 w (λ w' _ → eqTypes u w' B1 B2))
+    → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
+    → (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtB w e) a b))
+    → eqTypes u w T1 T2
   EQTTUNION : (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
     → T1 #⇛ (#TUNION A1 B1) at w
     → T2 #⇛ (#TUNION A2 B2) at w
@@ -247,9 +255,9 @@ data eqTypes u w T1 T2 where
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → (eqx : ∀𝕎 w (λ w' e → eqInType u w' (eqtA w' e) x1 x2))
     → eqTypes u w T1 T2
-  EQTNN : (t : CTerm)
-    → T1 #⇛ (#NN t) at w
-    → T2 #⇛ (#NN t) at w
+  EQTPURE :
+    T1 #⇛ #PURE at w
+    → T2 #⇛ #PURE at w
     → eqTypes u w T1 T2
   EQTUNIV : (i : ℕ) (p : i < fst u)
     → T1 #⇛ #UNIV i at w
@@ -290,6 +298,10 @@ EQeq : (a1 a2 : CTerm) (eqa : per) → wper
 EQeq a1 a2 eqa w t1 t2 =
   --t1 #⇛ #AX at w × t2 #⇛ #AX at w ×
   eqa a1 a2
+
+
+ISECTeq : (eqa eqb : per) → per
+ISECTeq eqa eqb t1 t2 = eqa t1 t2 × eqb t1 t2
 
 
 UNIONeq : (eqa eqb : per) → wper
@@ -383,8 +395,8 @@ FFDEFSeq x1 eqa w t1 t2 =
    eqa x1 x × #¬Names x)
 
 
-NNeq : CTerm → per
-NNeq x t1 t2 = Lift {0ℓ} (lsuc L) (#¬Names x)
+PUREeq : per
+PUREeq t1 t2 = Lift {0ℓ} (lsuc L) (#¬Names t1 × #¬Names t2)
 
 
 NATeq : wper
@@ -412,6 +424,8 @@ eqInType u w (EQTSUM _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
   □· w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' t1 t2)
 eqInType u w (EQTSET _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
   □· w (λ w' e → SETeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) t1 t2)
+eqInType u w (EQTISECT _ _ _ _ _ _ eqtA eqtB exta extb) t1 t2 =
+  □· w (λ w' e → ISECTeq (eqInType u w' (eqtA w' e)) (eqInType u w' (eqtB w' e)) t1 t2)
 eqInType u w (EQTTUNION _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
   □· w (λ w' e → TUNIONeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) t1 t2)
 eqInType u w (EQTEQ a1 _ a2 _ _ _ _ _ eqtA exta eqt1 eqt2) t1 t2 =
@@ -431,8 +445,8 @@ eqInType u w (EQTSUBSING _ _ _ _ eqtA exta) t1 t2 =
 --eqInType u w (EQTDUM _ _ _ _ eqtA exta) t1 t2 = Lift {0ℓ} 1ℓ ⊤
 eqInType u w (EQFFDEFS _ _ x1 _ _ _ eqtA exta _) t1 t2 =
   □· w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqtA w' e)) w' t1 t2)
-eqInType u w (EQTNN x _ _) t1 t2 =
-  □· w (λ w' e → NNeq x t1 t2)
+eqInType u w (EQTPURE _ _) t1 t2 =
+  □· w (λ w' e → PUREeq t1 t2)
 eqInType u w (EQTUNIV i p c₁ c₂) T1 T2 = snd u i p w T1 T2
 eqInType u w (EQTLIFT A1 A2 c₁ c₂ eqtA exta) t1 t2 =
   □· w (λ w' e → eqInType (↓U u) w' (eqtA w' e) t1 t2)
@@ -699,24 +713,5 @@ EQTloc σ = {w : 𝕎·} (A a b : CTerm) → □· w (λ w' _ → σ w' A a b) �
 
 EQTcons : EQT → Set(lsuc(L))
 EQTcons σ = (w : 𝕎·) (a : CTerm) → ¬ σ w #FALSE a a
-
-record TS (τ : TEQ) (σ : EQT) : Set(lsuc(L)) where
-  constructor mkts
-  field
-    -- τ's properties
-    tySym   : TEQsym τ
-    tyTrans : TEQtrans τ
-    tyComp  : TEQcomp τ
-    tyMon   : TEQmon τ
-    tyLoc   : TEQloc τ
-    -- σ's properties
-    eqSym   : EQTsym σ
-    eqTrans : EQTtrans σ
-    eqComp  : EQTcomp σ
-    eqMon   : EQTmon σ
-    eqLoc   : EQTloc σ
-    eqCons  : EQTcons σ
-    -- τ/σ properties
-    tsExt   : TSext τ σ
 
 \end{code}

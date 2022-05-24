@@ -84,6 +84,8 @@ data Term : Set where
   SET : Term → Term → Term
   -- Unions
   TUNION : Term → Term → Term
+  -- Binary intersection --- they don't have constructors/destructors
+  ISECT : Term → Term → Term
   -- Disjoint unions
   UNION : Term → Term → Term
   QTUNION : Term → Term → Term
@@ -109,7 +111,7 @@ data Term : Set where
   DUM : Term → Term
   -- Free from definitions
   FFDEFS : Term → Term → Term
-  NN : Term → Term
+  PURE : Term
   -- Universes
   UNIV : ℕ → Term
   LIFT : Term -> Term
@@ -136,6 +138,7 @@ value? (SUM _ _) = true
 value? (PAIR _ _) = true
 value? (SPREAD _ _) = false -- Not a value
 value? (SET _ _) = true
+value? (ISECT _ _) = true
 value? (TUNION _ _) = true
 value? (UNION _ _) = true
 value? (QTUNION _ _) = true
@@ -156,7 +159,7 @@ value? (TCONST _) = true
 value? (SUBSING _) = true
 value? (DUM _) = true
 value? (FFDEFS _ _) = true
-value? (NN _) = true
+value? PURE = true
 value? (UNIV _) = true
 value? (LIFT _) = true
 value? (LOWER _) = true
@@ -194,6 +197,7 @@ vars (SUM t x t₁) = x ∷ vars t ++ vars t₁
 vars (PAIR t t₁) = vars t ++ vars t₁
 vars (SPREAD t x x₁ t₁) = x ∷ x₁ ∷ vars t ++ vars t₁
 vars (SET t x t₁) = x ∷ vars t ++ vars t₁
+vars (ISECT t t₁) = vars t ++ vars t₁
 vars (UNION t t₁) = vars t ++ vars t₁
 vars (INL t) = vars t
 vars (INR t) = vars t
@@ -258,6 +262,7 @@ fvars (SUM t t₁)       = fvars t ++ lowerVars (fvars t₁)
 fvars (PAIR t t₁)      = fvars t ++ fvars t₁
 fvars (SPREAD t t₁)    = fvars t ++ lowerVars (lowerVars (fvars t₁))
 fvars (SET t t₁)       = fvars t ++ lowerVars (fvars t₁)
+fvars (ISECT t t₁)     = fvars t ++ fvars t₁
 fvars (TUNION t t₁)    = fvars t ++ lowerVars (fvars t₁)
 fvars (UNION t t₁)     = fvars t ++ fvars t₁
 fvars (QTUNION t t₁)   = fvars t ++ fvars t₁
@@ -278,7 +283,7 @@ fvars (TCONST t)       = fvars t
 fvars (SUBSING t)      = fvars t
 fvars (DUM t)          = fvars t
 fvars (FFDEFS t t₁)    = fvars t ++ fvars t₁
-fvars (NN t)           = fvars t
+fvars PURE             = []
 fvars (UNIV x)         = []
 fvars (LIFT t)         = fvars t
 fvars (LOWER t)        = fvars t
@@ -408,6 +413,7 @@ shiftUp c (SUM t t₁) = SUM (shiftUp c t) (shiftUp (suc c) t₁)
 shiftUp c (PAIR t t₁) = PAIR (shiftUp c t) (shiftUp c t₁)
 shiftUp c (SPREAD t t₁) = SPREAD (shiftUp c t) (shiftUp (suc (suc c)) t₁)
 shiftUp c (SET t t₁) = SET (shiftUp c t) (shiftUp (suc c) t₁)
+shiftUp c (ISECT t t₁) = ISECT (shiftUp c t) (shiftUp c t₁)
 shiftUp c (TUNION t t₁) = TUNION (shiftUp c t) (shiftUp (suc c) t₁)
 shiftUp c (UNION t t₁) = UNION (shiftUp c t) (shiftUp c t₁)
 shiftUp c (QTUNION t t₁) = QTUNION (shiftUp c t) (shiftUp c t₁)
@@ -428,7 +434,7 @@ shiftUp c (TCONST t) = TCONST (shiftUp c t)
 shiftUp c (SUBSING t) = SUBSING (shiftUp c t)
 shiftUp c (DUM t) = DUM (shiftUp c t)
 shiftUp c (FFDEFS t t₁) = FFDEFS (shiftUp c t) (shiftUp c t₁)
-shiftUp c (NN t) = NN (shiftUp c t)
+shiftUp c PURE = PURE
 shiftUp c (UNIV x) = UNIV x
 shiftUp c (LIFT t) = LIFT (shiftUp c t)
 shiftUp c (LOWER t) = LOWER (shiftUp c t)
@@ -453,6 +459,7 @@ shiftDown c (SUM t t₁) = SUM (shiftDown c t) (shiftDown (suc c) t₁)
 shiftDown c (PAIR t t₁) = PAIR (shiftDown c t) (shiftDown c t₁)
 shiftDown c (SPREAD t t₁) = SPREAD (shiftDown c t) (shiftDown (suc (suc c)) t₁)
 shiftDown c (SET t t₁) = SET (shiftDown c t) (shiftDown (suc c) t₁)
+shiftDown c (ISECT t t₁) = ISECT (shiftDown c t) (shiftDown c t₁)
 shiftDown c (TUNION t t₁) = TUNION (shiftDown c t) (shiftDown (suc c) t₁)
 shiftDown c (UNION t t₁) = UNION (shiftDown c t) (shiftDown c t₁)
 shiftDown c (QTUNION t t₁) = QTUNION (shiftDown c t) (shiftDown c t₁)
@@ -473,7 +480,7 @@ shiftDown c (TCONST t) = TCONST (shiftDown c t)
 shiftDown c (SUBSING t) = SUBSING (shiftDown c t)
 shiftDown c (DUM t) = DUM (shiftDown c t)
 shiftDown c (FFDEFS t t₁) = FFDEFS (shiftDown c t) (shiftDown c t₁)
-shiftDown c (NN t) = NN (shiftDown c t)
+shiftDown c PURE = PURE
 shiftDown c (UNIV x) = UNIV x
 shiftDown c (LIFT t) = LIFT (shiftDown c t)
 shiftDown c (LOWER t) = LOWER (shiftDown c t)
@@ -498,6 +505,7 @@ shiftNameUp c (SUM t t₁) = SUM (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (PAIR t t₁) = PAIR (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (SPREAD t t₁) = SPREAD (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (SET t t₁) = SET (shiftNameUp c t) (shiftNameUp c t₁)
+shiftNameUp c (ISECT t t₁) = ISECT (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (TUNION t t₁) = TUNION (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (UNION t t₁) = UNION (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (QTUNION t t₁) = QTUNION (shiftNameUp c t) (shiftNameUp c t₁)
@@ -518,7 +526,7 @@ shiftNameUp c (TCONST t) = TCONST (shiftNameUp c t)
 shiftNameUp c (SUBSING t) = SUBSING (shiftNameUp c t)
 shiftNameUp c (DUM t) = DUM (shiftNameUp c t)
 shiftNameUp c (FFDEFS t t₁) = FFDEFS (shiftNameUp c t) (shiftNameUp c t₁)
-shiftNameUp c (NN t) = NN (shiftNameUp c t)
+shiftNameUp c PURE = PURE
 shiftNameUp c (UNIV x) = UNIV x
 shiftNameUp c (LIFT t) = LIFT (shiftNameUp c t)
 shiftNameUp c (LOWER t) = LOWER (shiftNameUp c t)
@@ -543,6 +551,7 @@ shiftNameDown c (SUM t t₁) = SUM (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (PAIR t t₁) = PAIR (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (SPREAD t t₁) = SPREAD (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (SET t t₁) = SET (shiftNameDown c t) (shiftNameDown c t₁)
+shiftNameDown c (ISECT t t₁) = ISECT (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (TUNION t t₁) = TUNION (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (UNION t t₁) = UNION (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (QTUNION t t₁) = QTUNION (shiftNameDown c t) (shiftNameDown c t₁)
@@ -563,7 +572,7 @@ shiftNameDown c (TCONST t) = TCONST (shiftNameDown c t)
 shiftNameDown c (SUBSING t) = SUBSING (shiftNameDown c t)
 shiftNameDown c (DUM t) = DUM (shiftNameDown c t)
 shiftNameDown c (FFDEFS t t₁) = FFDEFS (shiftNameDown c t) (shiftNameDown c t₁)
-shiftNameDown c (NN t) = NN (shiftNameDown c t)
+shiftNameDown c PURE = PURE
 shiftNameDown c (UNIV x) = UNIV x
 shiftNameDown c (LIFT t) = LIFT (shiftNameDown c t)
 shiftNameDown c (LOWER t) = LOWER (shiftNameDown c t)
@@ -595,6 +604,7 @@ names (SUM t t₁)       = names t ++ names t₁
 names (PAIR t t₁)      = names t ++ names t₁
 names (SPREAD t t₁)    = names t ++ names t₁
 names (SET t t₁)       = names t ++ names t₁
+names (ISECT t t₁)     = names t ++ names t₁
 names (TUNION t t₁)    = names t ++ names t₁
 names (UNION t t₁)     = names t ++ names t₁
 names (QTUNION t t₁)   = names t ++ names t₁
@@ -615,7 +625,7 @@ names (TCONST t)       = names t
 names (SUBSING t)      = names t
 names (DUM t)          = names t
 names (FFDEFS t t₁)    = names t ++ names t₁
-names (NN t)           = names t
+names PURE             = []
 names (UNIV x)         = []
 names (LIFT t)         = names t
 names (LOWER t)        = names t
@@ -643,6 +653,7 @@ subv v t (SUM u u₁) = SUM (subv v t u) (subv (suc v) (shiftUp 0 t) u₁)
 subv v t (PAIR u u₁) = PAIR (subv v t u) (subv v t u₁)
 subv v t (SPREAD u u₁) = SPREAD (subv v t u) (subv (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁)
 subv v t (SET u u₁) = SET (subv v t u) (subv (suc v) (shiftUp 0 t) u₁)
+subv v t (ISECT u u₁) = ISECT (subv v t u) (subv v t u₁)
 subv v t (TUNION u u₁) = TUNION (subv v t u) (subv (suc v) (shiftUp 0 t) u₁)
 subv v t (UNION u u₁) = UNION (subv v t u) (subv v t u₁)
 subv v t (QTUNION u u₁) = QTUNION (subv v t u) (subv v t u₁)
@@ -663,7 +674,7 @@ subv v t (TCONST u) = TCONST (subv v t u)
 subv v t (SUBSING u) = SUBSING (subv v t u)
 subv v t (DUM u) = DUM (subv v t u)
 subv v t (FFDEFS u u₁) = FFDEFS (subv v t u) (subv v t u₁)
-subv v t (NN u) = NN (subv v t u)
+subv v t PURE = PURE
 subv v t (UNIV x) = UNIV x
 subv v t (LIFT u) = LIFT (subv v t u)
 subv v t (LOWER u) = LOWER (subv v t u)
@@ -694,6 +705,7 @@ renn v t (SUM u u₁) = SUM (renn v t u) (renn v t u₁)
 renn v t (PAIR u u₁) = PAIR (renn v t u) (renn v t u₁)
 renn v t (SPREAD u u₁) = SPREAD (renn v t u) (renn v t u₁)
 renn v t (SET u u₁) = SET (renn v t u) (renn v t u₁)
+renn v t (ISECT u u₁) = ISECT (renn v t u) (renn v t u₁)
 renn v t (TUNION u u₁) = TUNION (renn v t u) (renn v t u₁)
 renn v t (UNION u u₁) = UNION (renn v t u) (renn v t u₁)
 renn v t (QTUNION u u₁) = QTUNION (renn v t u) (renn v t u₁)
@@ -718,7 +730,7 @@ renn v t (TCONST u) = TCONST (renn v t u)
 renn v t (SUBSING u) = SUBSING (renn v t u)
 renn v t (DUM u) = DUM (renn v t u)
 renn v t (FFDEFS u u₁) = FFDEFS (renn v t u) (renn v t u₁)
-renn v t (NN u) = NN (renn v t u)
+renn v t PURE = PURE
 renn v t (UNIV x) = UNIV x
 renn v t (LIFT u) = LIFT (renn v t u)
 renn v t (LOWER u) = LOWER (renn v t u)
@@ -790,6 +802,9 @@ subvNotIn v t (SPREAD u u₁) n
 subvNotIn v t (SET u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
         | subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
+subvNotIn v t (ISECT u u₁) n
+  rewrite subvNotIn v t u (notInAppVars1 n)
+        | subvNotIn v t u₁ (notInAppVars2 n) = refl
 subvNotIn v t (TUNION u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
         | subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
@@ -843,8 +858,7 @@ subvNotIn v t (DUM u) n
 subvNotIn v t (FFDEFS u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
   rewrite subvNotIn v t u₁ (notInAppVars2 n) = refl
-subvNotIn v t (NN u) n
-  rewrite subvNotIn v t u n = refl
+subvNotIn v t PURE n = refl
 subvNotIn v t (UNIV x) n = refl
 subvNotIn v t (LIFT u) n rewrite subvNotIn v t u n = refl
 subvNotIn v t (LOWER u) n rewrite subvNotIn v t u n = refl
@@ -913,6 +927,9 @@ shiftDownTrivial v (SPREAD u u₁) i
 shiftDownTrivial v (SET u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
+shiftDownTrivial v (ISECT u u₁) i
+  rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
+        | shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftDownTrivial v (TUNION u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
@@ -961,8 +978,7 @@ shiftDownTrivial v (DUM u) i
 shiftDownTrivial v (FFDEFS u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
-shiftDownTrivial v (NN u) i
-  rewrite shiftDownTrivial v u i = refl
+shiftDownTrivial v PURE i = refl
 shiftDownTrivial v (UNIV x) i = refl
 shiftDownTrivial v (LIFT u) i rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (LOWER u) i rewrite shiftDownTrivial v u i = refl
@@ -1013,6 +1029,9 @@ shiftUpTrivial v (SPREAD u u₁) i
 shiftUpTrivial v (SET u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
+shiftUpTrivial v (ISECT u u₁) i
+  rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
+        | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftUpTrivial v (TUNION u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
@@ -1061,8 +1080,7 @@ shiftUpTrivial v (DUM u) i
 shiftUpTrivial v (FFDEFS u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
-shiftUpTrivial v (NN u) i
-  rewrite shiftUpTrivial v u i = refl
+shiftUpTrivial v PURE i = refl
 shiftUpTrivial v (UNIV x) i = refl
 shiftUpTrivial v (LIFT u) i rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (LOWER u) i rewrite shiftUpTrivial v u i = refl
@@ -1102,6 +1120,7 @@ shiftDownUp (SUM t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = 
 shiftDownUp (PAIR t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (SPREAD t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc (suc n)) = refl
 shiftDownUp (SET t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
+shiftDownUp (ISECT t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (TUNION t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
 shiftDownUp (UNION t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (QTUNION t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
@@ -1122,7 +1141,7 @@ shiftDownUp (TCONST t) n rewrite shiftDownUp t n = refl
 shiftDownUp (SUBSING t) n rewrite shiftDownUp t n = refl
 shiftDownUp (DUM t) n rewrite shiftDownUp t n = refl
 shiftDownUp (FFDEFS t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
-shiftDownUp (NN t) n rewrite shiftDownUp t n = refl
+shiftDownUp PURE n = refl
 shiftDownUp (UNIV x) n = refl
 shiftDownUp (LIFT t) n rewrite shiftDownUp t n = refl
 shiftDownUp (LOWER t) n rewrite shiftDownUp t n = refl
@@ -1147,6 +1166,7 @@ is-NUM (SUM t t₁) = inj₂ (λ { n () })
 is-NUM (PAIR t t₁) = inj₂ (λ { n () })
 is-NUM (SPREAD t t₁) = inj₂ (λ { n () })
 is-NUM (SET t t₁) = inj₂ (λ { n () })
+is-NUM (ISECT t t₁) = inj₂ (λ { n () })
 is-NUM (TUNION t t₁) = inj₂ (λ { n () })
 is-NUM (UNION t t₁) = inj₂ (λ { n () })
 is-NUM (QTUNION t t₁) = inj₂ (λ { n () })
@@ -1167,7 +1187,7 @@ is-NUM (TCONST t) = inj₂ (λ { n () })
 is-NUM (SUBSING t) = inj₂ (λ { n () })
 is-NUM (DUM t) = inj₂ (λ { n () })
 is-NUM (FFDEFS t t₁) = inj₂ (λ { n () })
-is-NUM (NN t) = inj₂ (λ { n () })
+is-NUM PURE = inj₂ (λ { n () })
 is-NUM (UNIV x) = inj₂ (λ { n () })
 is-NUM (LIFT t) = inj₂ (λ { n () })
 is-NUM (LOWER t) = inj₂ (λ { n () })
@@ -1192,6 +1212,7 @@ is-LAM (SUM t t₁) = inj₂ (λ { n () })
 is-LAM (PAIR t t₁) = inj₂ (λ { n () })
 is-LAM (SPREAD t t₁) = inj₂ (λ { n () })
 is-LAM (SET t t₁) = inj₂ (λ { n () })
+is-LAM (ISECT t t₁) = inj₂ (λ { n () })
 is-LAM (TUNION t t₁) = inj₂ (λ { n () })
 is-LAM (UNION t t₁) = inj₂ (λ { n () })
 is-LAM (QTUNION t t₁) = inj₂ (λ { n () })
@@ -1212,7 +1233,7 @@ is-LAM (TCONST t) = inj₂ (λ { n () })
 is-LAM (SUBSING t) = inj₂ (λ { n () })
 is-LAM (DUM t) = inj₂ (λ { n () })
 is-LAM (FFDEFS t t₁) = inj₂ (λ { n () })
-is-LAM (NN t) = inj₂ (λ { n () })
+is-LAM PURE = inj₂ (λ { n () })
 is-LAM (UNIV x) = inj₂ (λ { n () })
 is-LAM (LIFT t) = inj₂ (λ { n () })
 is-LAM (LOWER t) = inj₂ (λ { n () })
@@ -1237,6 +1258,7 @@ is-CS (SUM t t₁) = inj₂ (λ { n () })
 is-CS (PAIR t t₁) = inj₂ (λ { n () })
 is-CS (SPREAD t t₁) = inj₂ (λ { n () })
 is-CS (SET t t₁) = inj₂ (λ { n () })
+is-CS (ISECT t t₁) = inj₂ (λ { n () })
 is-CS (TUNION t t₁) = inj₂ (λ { n () })
 is-CS (UNION t t₁) = inj₂ (λ { n () })
 is-CS (QTUNION t t₁) = inj₂ (λ { n () })
@@ -1257,7 +1279,7 @@ is-CS (TCONST t) = inj₂ (λ { n () })
 is-CS (SUBSING t) = inj₂ (λ { n () })
 is-CS (DUM t) = inj₂ (λ { n () })
 is-CS (FFDEFS t t₁) = inj₂ (λ { n () })
-is-CS (NN t) = inj₂ (λ { n () })
+is-CS PURE = inj₂ (λ { n () })
 is-CS (UNIV x) = inj₂ (λ { n () })
 is-CS (LIFT t) = inj₂ (λ { n () })
 is-CS (LOWER t) = inj₂ (λ { n () })
@@ -1282,6 +1304,7 @@ is-NAME (SUM t t₁) = inj₂ (λ { n () })
 is-NAME (PAIR t t₁) = inj₂ (λ { n () })
 is-NAME (SPREAD t t₁) = inj₂ (λ { n () })
 is-NAME (SET t t₁) = inj₂ (λ { n () })
+is-NAME (ISECT t t₁) = inj₂ (λ { n () })
 is-NAME (TUNION t t₁) = inj₂ (λ { n () })
 is-NAME (UNION t t₁) = inj₂ (λ { n () })
 is-NAME (QTUNION t t₁) = inj₂ (λ { n () })
@@ -1302,7 +1325,7 @@ is-NAME (TCONST t) = inj₂ (λ { n () })
 is-NAME (SUBSING t) = inj₂ (λ { n () })
 is-NAME (DUM t) = inj₂ (λ { n () })
 is-NAME (FFDEFS t t₁) = inj₂ (λ { n () })
-is-NAME (NN t) = inj₂ (λ { n () })
+is-NAME PURE = inj₂ (λ { n () })
 is-NAME (UNIV x) = inj₂ (λ { n () })
 is-NAME (LIFT t) = inj₂ (λ { n () })
 is-NAME (LOWER t) = inj₂ (λ { n () })
@@ -1327,6 +1350,7 @@ is-PAIR (SUM t t₁) = inj₂ (λ { n m () })
 is-PAIR (PAIR t t₁) = inj₁ (t , t₁ , refl)
 is-PAIR (SPREAD t t₁) = inj₂ (λ { n m () })
 is-PAIR (SET t t₁) = inj₂ (λ { n m () })
+is-PAIR (ISECT t t₁) = inj₂ (λ { n m () })
 is-PAIR (TUNION t t₁) = inj₂ (λ { n m () })
 is-PAIR (UNION t t₁) = inj₂ (λ { n m () })
 is-PAIR (QTUNION t t₁) = inj₂ (λ { n m () })
@@ -1347,7 +1371,7 @@ is-PAIR (TCONST t) = inj₂ (λ { n m () })
 is-PAIR (SUBSING t) = inj₂ (λ { n m () })
 is-PAIR (DUM t) = inj₂ (λ { n m () })
 is-PAIR (FFDEFS t t₁) = inj₂ (λ { n m () })
-is-PAIR (NN t) = inj₂ (λ { n m () })
+is-PAIR PURE = inj₂ (λ { n m () })
 is-PAIR (UNIV x) = inj₂ (λ { n m () })
 is-PAIR (LIFT t) = inj₂ (λ { n m () })
 is-PAIR (LOWER t) = inj₂ (λ { n m () })
@@ -1372,6 +1396,7 @@ is-INL (SUM t t₁) = inj₂ (λ { n () })
 is-INL (PAIR t t₁) = inj₂ (λ { n () })
 is-INL (SPREAD t t₁) = inj₂ (λ { n () })
 is-INL (SET t t₁) = inj₂ (λ { n () })
+is-INL (ISECT t t₁) = inj₂ (λ { n () })
 is-INL (TUNION t t₁) = inj₂ (λ { n () })
 is-INL (UNION t t₁) = inj₂ (λ { n () })
 is-INL (QTUNION t t₁) = inj₂ (λ { n () })
@@ -1392,7 +1417,7 @@ is-INL (TCONST t) = inj₂ (λ { n () })
 is-INL (SUBSING t) = inj₂ (λ { n () })
 is-INL (DUM t) = inj₂ (λ { n () })
 is-INL (FFDEFS t t₁) = inj₂ (λ { n () })
-is-INL (NN t) = inj₂ (λ { n () })
+is-INL PURE = inj₂ (λ { n () })
 is-INL (UNIV x) = inj₂ (λ { n () })
 is-INL (LIFT t) = inj₂ (λ { n () })
 is-INL (LOWER t) = inj₂ (λ { n () })
@@ -1417,6 +1442,7 @@ is-INR (SUM t t₁) = inj₂ (λ { n () })
 is-INR (PAIR t t₁) = inj₂ (λ { n () })
 is-INR (SPREAD t t₁) = inj₂ (λ { n () })
 is-INR (SET t t₁) = inj₂ (λ { n () })
+is-INR (ISECT t t₁) = inj₂ (λ { n () })
 is-INR (TUNION t t₁) = inj₂ (λ { n () })
 is-INR (UNION t t₁) = inj₂ (λ { n () })
 is-INR (QTUNION t t₁) = inj₂ (λ { n () })
@@ -1437,7 +1463,7 @@ is-INR (TCONST t) = inj₂ (λ { n () })
 is-INR (SUBSING t) = inj₂ (λ { n () })
 is-INR (DUM t) = inj₂ (λ { n () })
 is-INR (FFDEFS t t₁) = inj₂ (λ { n () })
-is-INR (NN t) = inj₂ (λ { n () })
+is-INR PURE = inj₂ (λ { n () })
 is-INR (UNIV x) = inj₂ (λ { n () })
 is-INR (LIFT t) = inj₂ (λ { n () })
 is-INR (LOWER t) = inj₂ (λ { n () })
@@ -1457,6 +1483,7 @@ data ∼vals : Term → Term → Set where
   ∼vals-SUM     : {a b c d : Term} → ∼vals (SUM a b) (SUM c d)
   ∼vals-PAIR    : {a b c d : Term} → ∼vals (PAIR a b) (PAIR c d)
   ∼vals-SET     : {a b c d : Term} → ∼vals (SET a b) (SET c d)
+  ∼vals-ISECT   : {a b c d : Term} → ∼vals (ISECT a b) (ISECT c d)
   ∼vals-TUNION  : {a b c d : Term} → ∼vals (TUNION a b) (TUNION c d)
   ∼vals-UNION   : {a b c d : Term} → ∼vals (UNION a b) (UNION c d)
   ∼vals-QTUNION : {a b c d : Term} → ∼vals (QTUNION a b) (QTUNION c d)
@@ -1473,7 +1500,7 @@ data ∼vals : Term → Term → Set where
   ∼vals-SUBSING : {a b : Term} → ∼vals (SUBSING a) (SUBSING b)
   ∼vals-DUM     : {a b : Term} → ∼vals (DUM a) (DUM b)
   ∼vals-FFDEFS  : {a b c d : Term} → ∼vals (FFDEFS a b) (FFDEFS c d)
-  ∼vals-NN      : {a b : Term} → ∼vals (NN a) (NN b)
+  ∼vals-PURE    : ∼vals PURE PURE
   ∼vals-UNIV    : {n : ℕ} → ∼vals (UNIV n) (UNIV n)
   ∼vals-LIFT    : {a b : Term} → ∼vals (LIFT a) (LIFT b)
   ∼vals-LOWER   : {a b : Term} → ∼vals (LOWER a) (LOWER b)
@@ -1491,6 +1518,7 @@ data ∼vals : Term → Term → Set where
 ∼vals-sym {.(SUM _ _)} {.(SUM _ _)} ∼vals-SUM = ∼vals-SUM
 ∼vals-sym {.(PAIR _ _)} {.(PAIR _ _)} ∼vals-PAIR = ∼vals-PAIR
 ∼vals-sym {.(SET _ _)} {.(SET _ _)} ∼vals-SET = ∼vals-SET
+∼vals-sym {.(ISECT _ _)} {.(ISECT _ _)} ∼vals-ISECT = ∼vals-ISECT
 ∼vals-sym {.(TUNION _ _)} {.(TUNION _ _)} ∼vals-TUNION = ∼vals-TUNION
 ∼vals-sym {.(UNION _ _)} {.(UNION _ _)} ∼vals-UNION = ∼vals-UNION
 ∼vals-sym {.(QTUNION _ _)} {.(QTUNION _ _)} ∼vals-QTUNION = ∼vals-QTUNION
@@ -1507,7 +1535,7 @@ data ∼vals : Term → Term → Set where
 ∼vals-sym {.(SUBSING _)} {.(SUBSING _)} ∼vals-SUBSING = ∼vals-SUBSING
 ∼vals-sym {.(DUM _)} {.(DUM _)} ∼vals-DUM = ∼vals-DUM
 ∼vals-sym {.(FFDEFS _ _)} {.(FFDEFS _ _)} ∼vals-FFDEFS = ∼vals-FFDEFS
-∼vals-sym {.(NN _)} {.(NN _)} ∼vals-NN = ∼vals-NN
+∼vals-sym {.(PURE)} {.(PURE)} ∼vals-PURE = ∼vals-PURE
 ∼vals-sym {.(UNIV _)} {.(UNIV _)} ∼vals-UNIV = ∼vals-UNIV
 ∼vals-sym {.(LIFT _)} {.(LIFT _)} ∼vals-LIFT = ∼vals-LIFT
 ∼vals-sym {.(LOWER _)} {.(LOWER _)} ∼vals-LOWER = ∼vals-LOWER
@@ -1525,6 +1553,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₁ {SUM a a₁} {b} isv = tt
 ∼vals→isValue₁ {PAIR a a₁} {b} isv = tt
 ∼vals→isValue₁ {SET a a₁} {b} isv = tt
+∼vals→isValue₁ {ISECT a a₁} {b} isv = tt
 ∼vals→isValue₁ {TUNION a a₁} {b} isv = tt
 ∼vals→isValue₁ {UNION a a₁} {b} isv = tt
 ∼vals→isValue₁ {QTUNION a a₁} {b} isv = tt
@@ -1541,7 +1570,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₁ {SUBSING a} {b} isv = tt
 ∼vals→isValue₁ {DUM a} {b} isv = tt
 ∼vals→isValue₁ {FFDEFS a a₁} {b} isv = tt
-∼vals→isValue₁ {NN a} {b} isv = tt
+∼vals→isValue₁ {PURE} {b} isv = tt
 ∼vals→isValue₁ {UNIV x} {b} isv = tt
 ∼vals→isValue₁ {LIFT a} {b} isv = tt
 ∼vals→isValue₁ {LOWER a} {b} isv = tt
@@ -1566,6 +1595,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {PAIR b b₁} isv = tt
 ∼vals→isValue₂ {a} {SPREAD b b₁} ()
 ∼vals→isValue₂ {a} {SET b b₁} isv = tt
+∼vals→isValue₂ {a} {ISECT b b₁} isv = tt
 ∼vals→isValue₂ {a} {TUNION b b₁} isv = tt
 ∼vals→isValue₂ {a} {UNION b b₁} isv = tt
 ∼vals→isValue₂ {a} {QTUNION b b₁} isv = tt
@@ -1583,7 +1613,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {SUBSING b} isv = tt
 ∼vals→isValue₂ {a} {DUM b} isv = tt
 ∼vals→isValue₂ {a} {FFDEFS b b₁} isv = tt
-∼vals→isValue₂ {a} {NN b} isv = tt
+∼vals→isValue₂ {a} {PURE} isv = tt
 ∼vals→isValue₂ {a} {UNIV x} isv = tt
 ∼vals→isValue₂ {a} {LIFT b} isv = tt
 ∼vals→isValue₂ {a} {LOWER b} isv = tt
@@ -1616,6 +1646,7 @@ data ∼vals : Term → Term → Set where
 ¬read (PAIR t t₁) = ¬read t ∧ ¬read t₁
 ¬read (SPREAD t t₁) = ¬read t ∧ ¬read t₁
 ¬read (SET t t₁) = ¬read t ∧ ¬read t₁
+¬read (ISECT t t₁) = ¬read t ∧ ¬read t₁
 ¬read (TUNION t t₁) = ¬read t ∧ ¬read t₁
 ¬read (UNION t t₁) = ¬read t ∧ ¬read t₁
 ¬read (QTUNION t t₁) = ¬read t ∧ ¬read t₁
@@ -1636,7 +1667,7 @@ data ∼vals : Term → Term → Set where
 ¬read (SUBSING t) = ¬read t
 ¬read (DUM t) = ¬read t
 ¬read (FFDEFS t t₁) = ¬read t ∧ ¬read t₁
-¬read (NN t) = ¬read t
+¬read PURE = true
 ¬read (UNIV x) = true
 ¬read (LIFT t) = ¬read t
 ¬read (LOWER t) = ¬read t
@@ -1676,6 +1707,7 @@ data ∼vals : Term → Term → Set where
 ¬names (PAIR t t₁) = ¬names t ∧ ¬names t₁
 ¬names (SPREAD t t₁) = ¬names t ∧ ¬names t₁
 ¬names (SET t t₁) = ¬names t ∧ ¬names t₁
+¬names (ISECT t t₁) = ¬names t ∧ ¬names t₁
 ¬names (TUNION t t₁) = ¬names t ∧ ¬names t₁
 ¬names (UNION t t₁) = ¬names t ∧ ¬names t₁
 ¬names (QTUNION t t₁) = ¬names t ∧ ¬names t₁
@@ -1696,7 +1728,7 @@ data ∼vals : Term → Term → Set where
 ¬names (SUBSING t) = ¬names t
 ¬names (DUM t) = ¬names t
 ¬names (FFDEFS t t₁) = ¬names t ∧ ¬names t₁
-¬names (NN t) = ¬names t
+¬names PURE = true
 ¬names (UNIV x) = true
 ¬names (LIFT t) = ¬names t
 ¬names (LOWER t) = ¬names t

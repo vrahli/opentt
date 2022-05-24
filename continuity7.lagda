@@ -84,6 +84,9 @@ open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 
+open import type_sys_props_nn(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(X)(N)(E)
+
 {--
 open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(E)
 open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(E)
@@ -114,6 +117,23 @@ open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 
+
+
+≡++ : {L : Level} {A : Set(L)} {a b c d : List A}
+      → a ≡ b → c ≡ d → a ++ c ≡ b ++ d
+≡++ {L} {A} {a} {b} {c} {d} e f rewrite e | f = refl
+
+
+
+[]⊆ : {L : Level} {A : Set(L)} {a : List A} → [] ⊆ a
+[]⊆ {L} {A} {a} {x} ()
+
+
+++⊆ : {L : Level} {A : Set(L)} {a b c : List A}
+      → a ⊆ c → b ⊆ c → a ++ b ⊆ c
+++⊆ {L} {A} {a} {b} {c} i j {x} k with ∈-++⁻ a k
+... | inj₁ z = i z
+... | inj₂ z = j z
 
 
 
@@ -166,15 +186,36 @@ instance
   ⌞_⌟ {{CTermToCTerm3}} t = CTerm→CTerm3 t
 
 
+TPURE : Term → Term
+TPURE T = ISECT T PURE
 
--- TODO: use NN instead of FFDEFS here as the terms get in the extract
+
+#TPURE : CTerm → CTerm
+#TPURE t = ct (TPURE ⌜ t ⌝) c
+  where
+    c : # TPURE ⌜ t ⌝
+    c rewrite CTerm.closed t = refl
+
+
+#[0]TPURE : CTerm0 → CTerm0
+#[0]TPURE t = ct0 (TPURE ⌜ t ⌝) c
+  where
+    c : #[ [ 0 ] ] TPURE ⌜ t ⌝
+    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm0.closed t
+
+
+#[1]TPURE : CTerm1 → CTerm1
+#[1]TPURE t = ct1 (TPURE ⌜ t ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] TPURE ⌜ t ⌝
+    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm1.closed t
+
+
 cont : Term
 cont =
-  PI BAIRE→NAT
-     (FUN (FFDEFS BAIRE→NAT (VAR 0))
-          (PI BAIRE
-              (FUN (FFDEFS BAIRE (VAR 0))
-                   (SUBSING (contBody (VAR 3) (VAR 2))))))
+  PI (TPURE BAIRE→NAT)
+     (PI (TPURE BAIRE)
+         (SUBSING (contBody (VAR 3) (VAR 2))))
 
 
 #cont : CTerm
@@ -205,24 +246,6 @@ cont =
   where
     c : #[ [ 0 ] ] SUBSING ⌜ t ⌝
     c = CTerm0.closed t
-
-
-
-≡++ : {L : Level} {A : Set(L)} {a b c d : List A}
-      → a ≡ b → c ≡ d → a ++ c ≡ b ++ d
-≡++ {L} {A} {a} {b} {c} {d} e f rewrite e | f = refl
-
-
-
-[]⊆ : {L : Level} {A : Set(L)} {a : List A} → [] ⊆ a
-[]⊆ {L} {A} {a} {x} ()
-
-
-++⊆ : {L : Level} {A : Set(L)} {a b c : List A}
-      → a ⊆ c → b ⊆ c → a ++ b ⊆ c
-++⊆ {L} {A} {a} {b} {c} i j {x} k with ∈-++⁻ a k
-... | inj₁ z = i z
-... | inj₂ z = j z
 
 
 --fvars-contBody : (a b : Term) → fvars (contBody a b) ≡ fvars a ++ fvars a
@@ -605,16 +628,15 @@ fvars-shiftUp10-CTerm3 a {x} i rewrite fvars-shiftUp≡ 1 (shiftUp 0 ⌜ a ⌝) 
 
 #CONT : CTerm
 #CONT =
-  #PI #BAIRE→NAT
-      (#[0]FUN (#[0]FFDEFS #[0]BAIRE→NAT #[0]VAR)
-               (#[0]PI #[0]BAIRE
-                       (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                (#[1]SUBSING (#[1]contBody #[3]VAR3 #[3]VAR2)))))
+  #PI (#TPURE #BAIRE→NAT)
+      (#[0]PI (#[0]TPURE #[0]BAIRE)
+              (#[1]SUBSING (#[1]contBody #[3]VAR3 #[3]VAR2)))
 
 
 
 contExt : Term
-contExt = LAMBDA (LAMBDA (LAMBDA (LAMBDA (PAIR (νtestM (VAR 3) (VAR 1)) lam3AX))))
+--contExt = LAMBDA (LAMBDA (PAIR (νtestM (VAR 1) (VAR 0)) lam3AX))
+contExt = LAMBDA (LAMBDA (PAIR (νtestM (VAR 1) (VAR 2)) lam3AX))
 
 
 
@@ -638,67 +660,301 @@ isType-BAIRE→NAT i w =
 
 sub0-cont-b1 : (F : CTerm)
                → sub0 F
-                       (#[0]FUN (#[0]FFDEFS #[0]BAIRE→NAT #[0]VAR)
-                                (#[0]PI #[0]BAIRE
-                                        (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                                 (#[1]SUBSING (#[1]contBody #[3]VAR3 #[3]VAR2)))))
-                 ≡ #FUN (#FFDEFS #BAIRE→NAT F)
-                        (#PI #BAIRE
-                             (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
-                                                 (#[0]SUBSING (#[0]contBody F #[2]VAR2))))
+                       (#[0]PI (#[0]TPURE #[0]BAIRE)
+                               (#[1]SUBSING (#[1]contBody #[3]VAR3 #[3]VAR2)))
+                 ≡ #PI (#TPURE #BAIRE)
+                       (#[0]SUBSING (#[0]contBody F #[2]VAR2))
 sub0-cont-b1 F = CTerm≡ e0
   where
-    e0 : sub ⌜ F ⌝ (FUN (FFDEFS BAIRE→NAT (VAR 0))
-                    (PI BAIRE
-                        (FUN (FFDEFS BAIRE (VAR 0))
-                             (SUBSING (contBody (VAR 3) (VAR 2))))))
-         ≡ FUN (FFDEFS BAIRE→NAT ⌜ F ⌝)
-               (PI BAIRE
-                   (FUN (FFDEFS BAIRE (VAR 0))
-                        (SUBSING (contBody ⌜ F ⌝ (VAR 2)))))
+    e0 : sub ⌜ F ⌝ (PI (TPURE BAIRE)
+                      (SUBSING (contBody (VAR 3) (VAR 2))))
+         ≡ PI (TPURE BAIRE)
+              (SUBSING (contBody ⌜ F ⌝ (VAR 2)))
     e0 rewrite #shiftUp 0 F | #shiftUp 0 F | #shiftUp 0 F | #shiftUp 0 F
              | #shiftUp 0 F | #shiftUp 0 F | #shiftUp 0 F | #shiftUp 0 F
              | #shiftDown 0 F | #shiftDown 7 F
-             | #shiftUp 1 F | #shiftUp 4 F | #shiftUp 6 F = refl
+             | #shiftUp 1 F | #shiftUp 4 F | #shiftDown 5 F = refl --refl
 
 
 
 sub0-cont-b2 : (F f : CTerm)
-               → sub0 f (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR) (#[0]SUBSING (#[0]contBody F #[2]VAR2)))
-                  ≡ #FUN (#FFDEFS #BAIRE f) (#SUBSING (#contBody F f))
+               → sub0 f (#[0]SUBSING (#[0]contBody F #[2]VAR2))
+                  ≡ #SUBSING (#contBody F f)
 sub0-cont-b2 F f = CTerm≡ e0
   where
-    e0 : sub ⌜ f ⌝ (FUN (FFDEFS BAIRE (VAR 0)) (SUBSING (contBody ⌜ F ⌝ (VAR 2))))
-         ≡ FUN (FFDEFS BAIRE ⌜ f ⌝) (SUBSING (contBody ⌜ F ⌝ ⌜ f ⌝))
+    e0 : sub ⌜ f ⌝ (SUBSING (contBody ⌜ F ⌝ (VAR 2)))
+         ≡ SUBSING (contBody ⌜ F ⌝ ⌜ f ⌝)
     e0 rewrite #shiftUp 0 F | #shiftUp 4 F | #shiftUp 6 F | #shiftUp 1 F | #shiftUp 4 F
              | #shiftUp 0 f | #shiftUp 0 f | #shiftUp 0 f | #shiftUp 0 f | #shiftUp 0 f | #shiftUp 0 f
              | #shiftUp 3 f | #shiftDown 4 f | #shiftUp 1 f
-             | subv# 5 ⌜ f  ⌝ ⌜ F ⌝ (CTerm.closed F)
-             | #shiftDown 5 f | #shiftDown 5 F | #shiftDown 0 f | #shiftUp 4 f = refl
+             | subv# 4 ⌜ f  ⌝ ⌜ F ⌝ (CTerm.closed F)
+             | #shiftDown 4 f | #shiftDown 4 F | #shiftDown 3 f = refl
+
+
+-- MOVE to props2.lagda
+equalInType-PURE→ : {n : ℕ} {w : 𝕎·} {a b : CTerm}
+                       → equalInType n w #PURE a b
+                       → □· w (λ w' _ → PUREeq a b)
+{-# TERMINATING #-}
+equalInType-PURE→ {n} {w} {a} {b} (EQTNAT x x₁ , eqi) = ⊥-elim (PUREneqNAT (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTQNAT x x₁ , eqi) = ⊥-elim (PUREneqQNAT (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (PUREneqLT (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (PUREneqQLT (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTFREE x x₁ , eqi) = ⊥-elim (PUREneqFREE (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (PUREneqPI (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (PUREneqSUM (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (PUREneqSET (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (PUREneqISECT (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (PUREneqTUNION (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2 , eqi) = ⊥-elim (PUREneqEQ (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (PUREneqUNION (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (PUREneqQTUNION (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (PUREneqTSQUASH (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTTRUNC A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (PUREneqTTRUNC (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (PUREneqTCONST (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (PUREneqSUBSING (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTPURE x x₁ , eqi) =
+  Mod.∀𝕎-□Func M aw eqi
+  where
+    aw : ∀𝕎 w (λ w' e' → PUREeq a b → PUREeq a b)
+    aw w' e' p = p
+equalInType-PURE→ {n} {w} {a} {b} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (PUREneqFFDEFS (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (PUREneqUNIV (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (PUREneqLIFT (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTBAR x , eqi) =
+  Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
+  where
+    aw : ∀𝕎 w (λ w' e' → (z : equalTypes n w' #PURE #PURE)
+                        → equalTerms n w' z a b
+                        → □· w' (↑wPred' (λ w'' e → PUREeq a b) e'))
+    aw w' e' z {--at--} i = Mod.∀𝕎-□Func M (λ w'' e'' h k → h) j
+      where
+        j : □· w' (λ w' _ → PUREeq a b)
+        j = equalInType-PURE→ (z , i)
+
+
+
+#TPURE≡ : (T : CTerm) → #TPURE T ≡ #ISECT T #PURE
+#TPURE≡ T = CTerm≡ refl
+
+
+equalTypesTPURE : {i : ℕ} {w : 𝕎·} {A B : CTerm}
+                  → equalTypes i w A B
+                  → equalTypes i w (#TPURE A) (#TPURE B)
+equalTypesTPURE {i} {w} {A} {B} eqt =
+  ≡CTerm→eqTypes
+    (sym (#TPURE≡ A))
+    (sym (#TPURE≡ B))
+    (eqTypesISECT← eqt eqTypesPURE←)
+
+
+
+equalInType-TPURE→ : {i : ℕ} {w : 𝕎·} {T a b : CTerm}
+                      → equalInType i w (#TPURE T) a b
+                      → equalInType i w T a b
+equalInType-TPURE→ {i} {w} {T} {a} {b} eqi =
+  equalInType-local (Mod.∀𝕎-□Func M (λ w' e (h1 , h2) → h1) h)
+  where
+    h : □· w (λ w' _ → ISECTeq (equalInType i w' T) (equalInType i w' #PURE) a b)
+    h = equalInType-ISECT→ (≡CTerm→equalInType (#TPURE≡ T) eqi)
+
+
+
+equalInType-TPURE→ₗ : {i : ℕ} {w : 𝕎·} {T a b : CTerm}
+                      → equalInType i w (#TPURE T) a b
+                      → #¬Names a
+equalInType-TPURE→ₗ {i} {w} {T} {a} {b} eqi =
+  lower (Mod.□-const M {w} {Lift {0ℓ} (lsuc L) (#¬Names a)} (Mod.∀𝕎-□Func M aw h))
+  where
+    aw : ∀𝕎 w (λ w' e' → ISECTeq (equalInType i w' T) (equalInType i w' #PURE) a b
+                        → Lift (lsuc L) (#¬Names a))
+    aw w1 e1 (eqa , eqb) = Mod.□-const M {w1} {Lift {0ℓ} (lsuc L) (#¬Names a)} (Mod.∀𝕎-□Func M (λ w2 e2 (lift (h1 , h2)) → lift h1) (equalInType-PURE→ eqb))
+
+    h : □· w (λ w' _ → ISECTeq (equalInType i w' T) (equalInType i w' #PURE) a b)
+    h = equalInType-ISECT→ (≡CTerm→equalInType (#TPURE≡ T) eqi)
+
+
+
+equalInType-TPURE→ᵣ : {i : ℕ} {w : 𝕎·} {T a b : CTerm}
+                      → equalInType i w (#TPURE T) a b
+                      → #¬Names b
+equalInType-TPURE→ᵣ {i} {w} {T} {a} {b} eqi =
+  lower (Mod.□-const M {w} {Lift {0ℓ} (lsuc L) (#¬Names b)} (Mod.∀𝕎-□Func M aw h))
+  where
+    aw : ∀𝕎 w (λ w' e' → ISECTeq (equalInType i w' T) (equalInType i w' #PURE) a b
+                        → Lift (lsuc L) (#¬Names b))
+    aw w1 e1 (eqa , eqb) = Mod.□-const M {w1} {Lift {0ℓ} (lsuc L) (#¬Names b)} (Mod.∀𝕎-□Func M (λ w2 e2 (lift (h1 , h2)) → lift h2) (equalInType-PURE→ eqb))
+
+    h : □· w (λ w' _ → ISECTeq (equalInType i w' T) (equalInType i w' #PURE) a b)
+    h = equalInType-ISECT→ (≡CTerm→equalInType (#TPURE≡ T) eqi)
 
 
 
 equalTypes-cont-PI : (i : ℕ) (w : 𝕎·) (F₁ F₂ : CTerm)
-                     → equalInType i w #BAIRE→NAT F₁ F₂
-                     → equalTypes i w (#PI #BAIRE (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR) (#[0]SUBSING (#[0]contBody F₁ #[2]VAR2))))
-                                       (#PI #BAIRE (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR) (#[0]SUBSING (#[0]contBody F₂ #[2]VAR2))))
+                     → equalInType i w (#TPURE #BAIRE→NAT) F₁ F₂
+                     → equalTypes i w (#PI (#TPURE #BAIRE) (#[0]SUBSING (#[0]contBody F₁ #[2]VAR2)))
+                                       (#PI (#TPURE #BAIRE) (#[0]SUBSING (#[0]contBody F₂ #[2]VAR2)))
 equalTypes-cont-PI i w F₁ F₂ eF =
-  eqTypesPI← (λ w' e' → eqTypesBAIRE) h2
+  eqTypesPI← (λ w' e' → equalTypesTPURE eqTypesBAIRE) h2
   where
     h2 : ∀𝕎 w (λ w1 e2 → (a₁ a₂ : CTerm)
-                         → equalInType i w1 #BAIRE a₁ a₂
+                         → equalInType i w1 (#TPURE #BAIRE) a₁ a₂
                          → equalTypes
                              i w1
-                             (sub0 a₁ (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR) (#[0]SUBSING (#[0]contBody F₁ #[2]VAR2))))
-                             (sub0 a₂ (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR) (#[0]SUBSING (#[0]contBody F₂ #[2]VAR2)))))
+                             (sub0 a₁ (#[0]SUBSING (#[0]contBody F₁ #[2]VAR2)))
+                             (sub0 a₂ (#[0]SUBSING (#[0]contBody F₂ #[2]VAR2))))
     h2 w2 e2 f₁ f₂ ef =
       ≡CTerm→eqTypes
         (sym (sub0-cont-b2 F₁ f₁))
         (sym (sub0-cont-b2 F₂ f₂))
-        (eqTypesFUN←
-          (eqTypesFFDEFS← eqTypesBAIRE ef)
-          (eqTypesSUBSING← (equalTypes-contBody i w2 F₁ F₂ f₁ f₂ (equalInType-mon eF w2 e2) ef)))
+        (eqTypesSUBSING←
+          (equalTypes-contBody
+            i w2 F₁ F₂ f₁ f₂
+            (equalInType-mon (equalInType-TPURE→ eF) w2 e2)
+            (equalInType-TPURE→ ef)))
 
+
+
+→-⇛-APPLY : {w : 𝕎·} {a b : Term} (c : Term)
+                → a ⇛ b at w
+                → APPLY a c ⇛ APPLY b c at w
+→-⇛-APPLY {w} {a} {b} c comp w1 e1 =
+  lift (→-steps-APPLY c (fst (lower (comp w1 e1))) (snd (lower (comp w1 e1))))
+
+
+→-⇛!-APPLY : {w : 𝕎·} {a b : Term} (c : Term)
+                → a ⇛! b at w
+                → APPLY a c ⇛! APPLY b c at w
+→-⇛!-APPLY {w} {a} {b} c comp w1 e1 =
+  lift (→steps-APPLY c (fst (lower (comp w1 e1))) (snd (lower (comp w1 e1))))
+
+
+
+≡→APPLY-LAMBDA⇛! : (w : 𝕎·) (f a b : Term)
+                  → b ≡ sub a f
+                  → APPLY (LAMBDA f) a ⇛! b at w
+≡→APPLY-LAMBDA⇛! w f a b e w1 e1 rewrite e = lift (1 , refl)
+
+
+
+⇛!-trans : {w : 𝕎·} {a b c : Term} → a ⇛! b at w → b ⇛! c at w → a ⇛! c at w
+⇛!-trans {w} {a} {b} {c} c₁ c₂ w1 e1 = lift (⇓!-trans (lower (c₁ w1 e1)) (lower (c₂ w1 e1)))
+
+
+
+sub-lam-pair-test1 : (F : Term) (cF : # F) (nnF : ¬Names F)
+                     → LAMBDA (PAIR (νtestM F (VAR 2)) lam3AX)
+                        ≡ sub F (LAMBDA (PAIR (νtestM (VAR 1) (VAR 2)) lam3AX))
+sub-lam-pair-test1 F cF nnF
+  rewrite cF | #shiftUp 0 (ct F cF) | #shiftUp 0 (ct F cF)
+        | ¬Names→shiftNameUp≡ F 0 nnF | #shiftUp 0 (ct F cF) | #shiftDown 2 (ct F cF) = refl
+
+
+
+sub-lam-pair-test2 : (F f : Term) (cF : # F) (cf : # f) (nnf : ¬Names f)
+                     → PAIR (νtestM F f) lam3AX
+                        ≡ sub f (PAIR (νtestM F (VAR 2)) lam3AX)
+sub-lam-pair-test2 F f cF cf nnf
+  rewrite cf | #shiftUp 0 (ct F cF) | #shiftUp 0 (ct f cf) | #shiftUp 3 (ct f cf)
+        | subv# 1 (shiftUp 0 (shiftNameUp 0 f)) F cF | #shiftDown 1 (ct F cF)
+        | ¬Names→shiftNameUp≡ f 0 nnf
+        | #shiftUp 0 (ct f cf) | #shiftUp 0 (ct f cf) | #shiftUp 0 (ct f cf) | #shiftUp 0 (ct f cf)
+        | #shiftDown 4 (ct f cf) = refl
+
+
+
+APP-contExt⇛ : (w : 𝕎·) (F f : CTerm)
+                → #¬Names F
+                → #¬Names f
+                → #APPLY (#APPLY #contExt F) f #⇛! #PAIR (#νtestM F f) #lam3AX at w
+APP-contExt⇛ w F f nnF nnf =
+  ⇛!-trans {w} {APPLY (APPLY contExt ⌜ F ⌝) ⌜ f ⌝} {APPLY (LAMBDA (PAIR (νtestM ⌜ F ⌝ (VAR 2)) lam3AX)) ⌜ f ⌝} {PAIR (νtestM ⌜ F ⌝ ⌜ f ⌝) lam3AX}
+    (→-⇛!-APPLY ⌜ f ⌝ (≡→APPLY-LAMBDA⇛! w (LAMBDA (PAIR (νtestM (VAR 1) (VAR 2)) lam3AX)) ⌜ F ⌝ (LAMBDA (PAIR (νtestM ⌜ F ⌝ (VAR 2)) lam3AX)) (sub-lam-pair-test1 ⌜ F ⌝ (CTerm.closed F) nnF)))
+    (≡→APPLY-LAMBDA⇛! w (PAIR (νtestM ⌜ F ⌝ (VAR 2)) lam3AX) ⌜ f ⌝ (PAIR (νtestM ⌜ F ⌝ ⌜ f ⌝) lam3AX) (sub-lam-pair-test2 ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f) nnf))
+
+
+
+#⇛!-pres-SUMeq-rev : {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {w : 𝕎·} {a b c : CTerm}
+                      → a #⇛! b at w
+                      → SUMeq eqa eqb w b c
+                      → SUMeq eqa eqb w a c
+#⇛!-pres-SUMeq-rev {eqa} {eqb} {w} {a} {b} {c} comp (a1 , a2 , b1 , b2 , ea , c1 , c2 , eb) =
+  a1 , a2 , b1 , b2 , ea , ⇛-trans (#⇛!-#⇛ {w} {a} {b} comp) c1 , c2 , eb
+
+
+
+-- MOVE to props2.lagda
+equalInType-SUM→₁ : {u : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} {f g : CTerm}
+                     → equalInType u w (#SUM A B) f g
+                     → ∀𝕎 w (λ w' _ → isType u w' A)
+{-# TERMINATING #-}
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTNAT x x₁ , eqi) = ⊥-elim (SUMneqNAT (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTQNAT x x₁ , eqi) = ⊥-elim (SUMneqQNAT (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (SUMneqLT (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (SUMneqQLT (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTFREE x x₁ , eqi) = ⊥-elim (SUMneqFREE (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (SUMneqPI (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) w1 e1 =
+  ≡CTerm→eqTypes
+    (sym (#SUMinj1 {A} {B} {A1} {B1} (#compAllVal x tt)))
+    (sym (#SUMinj1 {A} {B} {A2} {B2} (#compAllVal x₁ tt)))
+    (eqta w1 e1)
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (SUMneqSET (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (SUMneqISECT (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (SUMneqTUNION (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2 , eqi) = ⊥-elim (SUMneqEQ (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (SUMneqUNION (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (SUMneqQTUNION (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SUMneqTSQUASH (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTTRUNC A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SUMneqTTRUNC (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SUMneqTCONST (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SUMneqSUBSING (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTPURE x x₁ , eqi) = ⊥-elim (SUMneqPURE (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (SUMneqFFDEFS (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (SUMneqUNIV (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SUMneqLIFT (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTBAR x , eqi) w1 e1 =
+  eqTypes-local (Mod.∀𝕎-□'-□ M (Mod.↑□ M x e1) aw (Mod.↑□' M {w} {_} {λ w' e' z → equalTerms u w' z f g} x e1 eqi))
+  where
+    aw : ∀𝕎 w1 (λ w' e' → (z : ↑wPred (λ w'' e → equalTypes u w'' (#SUM A B) (#SUM A B)) e1 w' e')
+                         → equalTerms u w' z f g → isType u w' A)
+    aw w' e' z eqj = equalInType-SUM→₁ (z , eqj) w' (⊑-refl· _)
+
+
+
+equalTerms-pres-#⇛-left-rev-SUM : (A : CTerm) (B : CTerm0) → equalTerms-pres-#⇛-left-rev (#SUM A B)
+equalTerms-pres-#⇛-left-rev-SUM A B {i} {w} {a} {b} {c} comp eqt eqi =
+  equalInType→eqInType {i} {w} {#SUM A B} {#SUM A B} {#SUM A B} {a} {c} refl {eqt}
+    (equalInType-SUM {i} {w} {A} {B} {a} {c}
+      (equalInType-SUM→₁ {i} {w} {A} {B} {b} {c} (eqInType→equalInType {i} {w} {#SUM A B} {#SUM A B} {#SUM A B} {b} {c} refl eqt eqi))
+      (equalInType-SUM→₂ {i} {w} {A} {B} {b} {c} (eqInType→equalInType {i} {w} {#SUM A B} {#SUM A B} {#SUM A B} {b} {c} refl eqt eqi))
+      (Mod.∀𝕎-□Func M
+        (λ w1 e1 → #⇛!-pres-SUMeq-rev {_} {_} {_} {a} {b} {c} (∀𝕎-mon e1 comp))
+        (equalInType-SUM→ {i} {w} {A} {B} {b} {c}
+          (eqInType→equalInType {i} {w} {#SUM A B} {#SUM A B} {#SUM A B} {b} {c} refl eqt eqi))))
+
+
+
+continuityBody-aux : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
+             (i : ℕ) (w : 𝕎·) (F f : CTerm)
+             → #¬Names F
+             → #¬Names f
+             → ∈Type i w #BAIRE→NAT F
+             → ∈Type i w #BAIRE f
+             → ∈Type i w (#contBody F f) (#APPLY (#APPLY #contExt F) f)
+continuityBody-aux cn kb gc i w F f nnF nnf eF ef =
+  ≡CTerm→equalInType
+    (sym (#contBody≡ F f))
+    (equalTerms-pres-#⇛-left-rev→equalInType-pres-#⇛-LR-rev _
+       (equalTerms-pres-#⇛-left-rev-SUM #NAT
+        (#[0]PI #[0]BAIRE
+         (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
+          (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]BAIREn #[1]VAR1))
+           (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0)
+            #[1]NAT)))))
+       (APP-contExt⇛ w F f nnF nnf)
+       (APP-contExt⇛ w F f nnF nnf)
+       (≡CTerm→equalInType (#contBody≡ F f) (continuityBody cn kb gc i w F f nnF nnf eF ef)))
 
 
 continuity : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
@@ -708,91 +964,66 @@ continuity cn kb gc i w =
   ≡CTerm→equalInType
     (sym #cont≡)
     (equalInType-PI
-      (λ w' e' → isType-BAIRE→NAT i w')
+      {i} {w} {#TPURE #BAIRE→NAT} {#[0]PI (#[0]TPURE #[0]BAIRE) (#[1]SUBSING (#[1]contBody #[3]VAR3 #[3]VAR2))}
+      (λ w' e' → equalTypesTPURE (isType-BAIRE→NAT i w'))
       h1
       aw1)
   where
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm)
-                        → equalInType i w' #BAIRE→NAT a₁ a₂
-                        → equalInType i w' (sub0 a₁ (#[0]FUN (#[0]FFDEFS #[0]BAIRE→NAT #[0]VAR)
-                                                           (#[0]PI #[0]BAIRE
-                                                                   (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                                                            (#[1]SUBSING (#[1]contBody #[3]VAR3 #[3]VAR2))))))
+                        → equalInType i w' (#TPURE #BAIRE→NAT) a₁ a₂
+                        → equalInType i w' (sub0 a₁ (#[0]PI (#[0]TPURE #[0]BAIRE)
+                                                             (#[1]SUBSING (#[1]contBody #[3]VAR3 #[3]VAR2))))
                                             (#APPLY #contExt a₁) (#APPLY #contExt a₂))
     aw1 w1 e1 F₁ F₂ eF =
       ≡CTerm→equalInType
         (sym (sub0-cont-b1 F₁))
-        (equalInType-FUN
-          (eqTypesFFDEFS← (isType-BAIRE→NAT i w1) (equalInType-refl eF))
-          (equalTypes-cont-PI i w1 F₁ F₁ (equalInType-refl eF))
-          aw2)
-      where
-        aw2 : ∀𝕎 w1 (λ w' _ → (a₁ a₂ : CTerm)
-                            → equalInType i w' (#FFDEFS #BAIRE→NAT F₁) a₁ a₂
-                            → equalInType i w' (#PI #BAIRE (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR) (#[0]SUBSING (#[0]contBody F₁ #[2]VAR2))))
-                                                (#APPLY (#APPLY #contExt F₁) a₁) (#APPLY (#APPLY #contExt F₂) a₂))
-        aw2 w2 e2 a₁ a₂ ea =
-          equalInType-PI
-            (λ w' e' → eqTypesBAIRE)
-            (λ w3 e3 f₁ f₂ ef →
+        (equalInType-PI
+          (λ w' e' → equalTypesTPURE eqTypesBAIRE)
+          (λ w2 e2 f₁ f₂ ef →
               ≡CTerm→eqTypes
                 (sym (sub0-cont-b2 F₁ f₁))
                 (sym (sub0-cont-b2 F₁ f₂))
-                (eqTypesFUN←
-                  (eqTypesFFDEFS← eqTypesBAIRE ef)
-                  (eqTypesSUBSING← (equalTypes-contBody i w3 F₁ F₁ f₁ f₂ (equalInType-mon (equalInType-refl eF) w3 (⊑-trans· e2 e3)) ef))))
-            aw3
+                (eqTypesSUBSING←
+                  (equalTypes-contBody
+                    i w2 F₁ F₁ f₁ f₂
+                    (equalInType-mon (equalInType-refl (equalInType-TPURE→ eF)) w2 e2)
+                    (equalInType-TPURE→ ef))))
+          aw2)
+      where
+        aw2 : ∀𝕎 w1 (λ w' _ → (f₁ f₂ : CTerm)
+                             → equalInType i w' (#TPURE #BAIRE) f₁ f₂
+                             → equalInType i w' (sub0 f₁ (#[0]SUBSING (#[0]contBody F₁ #[2]VAR2)))
+                                                 (#APPLY (#APPLY #contExt F₁) f₁)
+                                                 (#APPLY (#APPLY #contExt F₂) f₂))
+        aw2 w2 e2 f₁ f₂ ef =
+          ≡CTerm→equalInType
+            (sym (sub0-cont-b2 F₁ f₁))
+            (→equalInTypeSUBSING
+              (equalTypes-contBody i w2 F₁ F₁ f₁ f₁ (equalInType-mon (equalInType-refl (equalInType-TPURE→ eF)) w2 e2) (equalInType-refl (equalInType-TPURE→ ef)))
+              (Mod.∀𝕎-□ M aw3))
           where
-            aw3 : ∀𝕎 w2 (λ w' _ → (f₁ f₂ : CTerm)
-                                 → equalInType i w' #BAIRE f₁ f₂
-                                 → equalInType i w' (sub0 f₁ (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR) (#[0]SUBSING (#[0]contBody F₁ #[2]VAR2))))
-                                                     (#APPLY (#APPLY (#APPLY #contExt F₁) a₁) f₁)
-                                                     (#APPLY (#APPLY (#APPLY #contExt F₂) a₂) f₂))
-            aw3 w3 e3 f₁ f₂ ef =
-              ≡CTerm→equalInType
-                (sym (sub0-cont-b2 F₁ f₁))
-                (equalInType-FUN
-                  (eqTypesFFDEFS← eqTypesBAIRE (equalInType-refl ef))
-                  (eqTypesSUBSING← (equalTypes-contBody i w3 F₁ F₁ f₁ f₁ (equalInType-mon (equalInType-refl eF) w3 (⊑-trans· e2 e3)) (equalInType-refl ef)))
-                  aw4)
+            aw3 : ∀𝕎 w2 (λ w' _ → SUBSINGeq (equalInType i w' (#contBody F₁ f₁))
+                                              (#APPLY (#APPLY #contExt F₁) f₁)
+                                              (#APPLY (#APPLY #contExt F₂) f₂))
+            aw3 w3 e3 =
+              continuityBody-aux cn kb gc i w3 F₁ f₁ (equalInType-TPURE→ₗ eF) (equalInType-TPURE→ₗ ef) (equalInType-mon (equalInType-refl (equalInType-TPURE→ eF)) w3 (⊑-trans· e2 e3)) (equalInType-mon (equalInType-refl (equalInType-TPURE→ ef)) w3 e3) ,
+              equalTypes→equalInType
+                (TEQsym-equalTypes i w3 (#contBody F₁ f₁) (#contBody F₂ f₂) eqtc)
+                (continuityBody-aux cn kb gc i w3 F₂ f₂ (equalInType-TPURE→ᵣ eF) (equalInType-TPURE→ᵣ ef) (equalInType-mon (equalInType-refl (equalInType-sym (equalInType-TPURE→ eF))) w3 (⊑-trans· e2 e3)) (equalInType-mon (equalInType-refl (equalInType-sym (equalInType-TPURE→ ef))) w3 e3))
               where
-                aw4 : ∀𝕎 w3 (λ w' _ → (b₁ b₂ : CTerm)
-                                     → equalInType i w' (#FFDEFS #BAIRE f₁) b₁ b₂
-                                     → equalInType i w' (#SUBSING (#contBody F₁ f₁))
-                                                         (#APPLY (#APPLY (#APPLY (#APPLY #contExt F₁) a₁) f₁) b₁)
-                                                         (#APPLY (#APPLY (#APPLY (#APPLY #contExt F₂) a₂) f₂) b₂))
-                aw4 w4 e4 b₁ b₂ eb =
-                  →equalInTypeSUBSING
-                    (equalTypes-contBody i w4 F₁ F₁ f₁ f₁ (equalInType-mon (equalInType-refl eF) w4 (⊑-trans· e2 (⊑-trans· e3 e4))) (equalInType-mon (equalInType-refl ef) w4 e4))
-                    {!!} --(Mod.∀𝕎-□ M aw5)
-                  where
-                    aw5 : ∀𝕎 w4 (λ w' _ → SUBSINGeq (equalInType i w' (#contBody F₁ f₁))
-                                                      (#APPLY (#APPLY (#APPLY (#APPLY #contExt F₁) a₁) f₁) b₁)
-                                                      (#APPLY (#APPLY (#APPLY (#APPLY #contExt F₂) a₂) f₂) b₂))
-                    aw5 w5 e5 = {!!}
-                      where
-                        eqtc : equalTypes i w5 (#contBody F₁ f₁) (#contBody F₂ f₂)
-                        eqtc = equalTypes-contBody i w5 F₁ F₂ f₁ f₂ (equalInType-mon eF w5 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5)))) (equalInType-mon ef w5 (⊑-trans· e4 e5))
--- HERE
--- prove something about FFDEFS and use it before (Mod.∀𝕎-□ M aw5)
--- use equalInTypeFFDEFS→
+                eqtc : equalTypes i w3 (#contBody F₁ f₁) (#contBody F₂ f₂)
+                eqtc = equalTypes-contBody i w3 F₁ F₂ f₁ f₂ (equalInType-mon (equalInType-TPURE→ eF) w3 (⊑-trans· e2 e3)) (equalInType-mon (equalInType-TPURE→ ef) w3 e3)
 
     h1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm)
-                       → equalInType i w' #BAIRE→NAT a₁ a₂
-                       → equalTypes i w' (sub0 a₁ (#[0]FUN (#[0]FFDEFS #[0]BAIRE→NAT #[0]VAR)
-                                                           (#[0]PI #[0]BAIRE
-                                                                   (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                                                            (#[1]SUBSING (#[1]contBody #[3]VAR3 #[3]VAR2))))))
-                                          (sub0 a₂ (#[0]FUN (#[0]FFDEFS #[0]BAIRE→NAT #[0]VAR)
-                                                           (#[0]PI #[0]BAIRE
-                                                                   (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                                                            (#[1]SUBSING (#[1]contBody #[3]VAR3 #[3]VAR2)))))))
+                       → equalInType i w' (#TPURE #BAIRE→NAT) a₁ a₂
+                       → equalTypes i w' (sub0 a₁ (#[0]PI (#[0]TPURE #[0]BAIRE)
+                                                           (#[1]SUBSING (#[1]contBody #[3]VAR3 #[3]VAR2))))
+                                          (sub0 a₂ (#[0]PI (#[0]TPURE #[0]BAIRE)
+                                                           (#[1]SUBSING (#[1]contBody #[3]VAR3 #[3]VAR2)))))
     h1 w1 e1 F₁ F₂ eF =
       ≡CTerm→eqTypes
         (sym (sub0-cont-b1 F₁))
         (sym (sub0-cont-b1 F₂))
-        (eqTypesFUN←
-          (eqTypesFFDEFS← (isType-BAIRE→NAT i w1) eF)
-          (equalTypes-cont-PI i w1 F₁ F₂ eF))
+        (equalTypes-cont-PI i w1 F₁ F₂ eF)
 
 \end{code}

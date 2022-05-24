@@ -175,7 +175,8 @@ isTypeNegLPO w n = eqTypesNEG← (isTypeLPO w n)
 →equalInType-CS-NAT!→QTBOOL! : {n : ℕ} {w : 𝕎·} {a b : Name}
                              → ∀𝕎 w (λ w' _ → (m : ℕ) → equalInType n w' #QTBOOL! (#APPLY (#CS a) (#NUM m)) (#APPLY (#CS b) (#NUM m)))
                              → equalInType n w #NAT!→QTBOOL! (#CS a) (#CS b)
-→equalInType-CS-NAT!→QTBOOL! {n} {w} {a} {b} i rewrite #NAT!→QTBOOL!≡ = →equalInType-CS-NAT!→T (eqTypesQTBOOL! {w} {n}) i
+→equalInType-CS-NAT!→QTBOOL! {n} {w} {a} {b} i rewrite #NAT!→QTBOOL!≡ =
+  →equalInType-CS-NAT!→T (eqTypesQTBOOL! {w} {n}) equalTerms-pres-#⇛-left-rev-QTBOOL! i
 
 
 

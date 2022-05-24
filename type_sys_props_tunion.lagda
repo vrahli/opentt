@@ -97,6 +97,9 @@ TUNIONneqSUM {a} {b} {c} {d} ()
 TUNIONneqSET : {a b : Term} {c : Term} {d : Term} → ¬ (TUNION a b) ≡ SET c d
 TUNIONneqSET {a} {b} {c} {d} ()
 
+TUNIONneqISECT : {a b : Term} {c : Term} {d : Term} → ¬ (TUNION a b) ≡ ISECT c d
+TUNIONneqISECT {a} {b} {c} {d} ()
+
 TUNIONneqUNION : {a b : Term} {c : Term} {d : Term} → ¬ (TUNION a b) ≡ UNION c d
 TUNIONneqUNION {a} {b} {c} {d} ()
 
@@ -115,8 +118,8 @@ TUNIONneqTCONST {a} {b} {c} ()
 TUNIONneqSUBSING : {a b : Term} {c : Term} → ¬ (TUNION a b) ≡ SUBSING c
 TUNIONneqSUBSING {a} {b} {c} ()
 
-TUNIONneqNN : {a b : Term} {c : Term} → ¬ (TUNION a b) ≡ NN c
-TUNIONneqNN {a} {b} {c} ()
+TUNIONneqPURE : {a b : Term} → ¬ (TUNION a b) ≡ PURE
+TUNIONneqPURE {a} {b} ()
 
 TUNIONneqLIFT : {a b : Term} {c : Term} → ¬ (TUNION a b) ≡ LIFT c
 TUNIONneqLIFT {a} {b} {c} ()
@@ -270,6 +273,7 @@ typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
         ei2 = extb a b c d w' e1 e2 x₁' x₂' ei1
 
 typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (TUNIONneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (TUNIONneqISECT (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) = ⊥-elim (TUNIONneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) = ⊥-elim (TUNIONneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) = ⊥-elim (TUNIONneqQTUNION (⇛-val-det tt tt x₁ y))
@@ -277,7 +281,7 @@ typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) = ⊥-elim (TUNIONneqTTRUNC (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) = ⊥-elim (TUNIONneqTCONST (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) = ⊥-elim (TUNIONneqSUBSING (⇛-val-det tt tt x₁ y))
-typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNN t₁ y y₁) = ⊥-elim (TUNIONneqNN (⇛-val-det tt tt x₁ y))
+typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) = ⊥-elim (TUNIONneqPURE (⇛-val-det tt tt x₁ y))
 --typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (TUNIONneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) = ⊥-elim (TUNIONneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) = ⊥-elim (TUNIONneqUNIV (⇛-val-det tt tt x₁ d₁))
@@ -402,6 +406,7 @@ typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         h
 
 typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) a1 a2 eqi = ⊥-elim (TUNIONneqSET (⇛-val-det tt tt x y))
+typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) a1 a2 eqi = ⊥-elim (TUNIONneqISECT (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (TUNIONneqEQ (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (TUNIONneqUNION (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (TUNIONneqQTUNION (⇛-val-det tt tt x y))
@@ -409,7 +414,7 @@ typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqTTRUNC (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqTCONST (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqSUBSING (⇛-val-det tt tt x y))
-typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNN t₁ y y₁) f g eqi = ⊥-elim (TUNIONneqNN (⇛-val-det tt tt x y))
+typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) f g eqi = ⊥-elim (TUNIONneqPURE (⇛-val-det tt tt x y))
 --typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TUNIONneqDUM (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TUNIONneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (TUNIONneqUNIV (⇛-val-det tt tt x d₁))
@@ -469,6 +474,7 @@ typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         h
 
 typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) a1 a2 eqi = ⊥-elim (TUNIONneqSET (⇛-val-det tt tt x y₁))
+typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) a1 a2 eqi = ⊥-elim (TUNIONneqISECT (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (TUNIONneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (TUNIONneqUNION (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (TUNIONneqQTUNION (⇛-val-det tt tt x y₁))
@@ -476,7 +482,7 @@ typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqTTRUNC (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqTCONST (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqSUBSING (⇛-val-det tt tt x y₁))
-typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNN t₁ y y₁) f g eqi = ⊥-elim (TUNIONneqNN (⇛-val-det tt tt x y₁))
+typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) f g eqi = ⊥-elim (TUNIONneqPURE (⇛-val-det tt tt x y₁))
 --typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TUNIONneqDUM (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TUNIONneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (TUNIONneqUNIV (⇛-val-det tt tt x d₂))
@@ -536,6 +542,7 @@ typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         h
 
 typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) a1 a2 eqi = ⊥-elim (TUNIONneqSET (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) a1 a2 eqi = ⊥-elim (TUNIONneqISECT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (TUNIONneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (TUNIONneqUNION (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (TUNIONneqQTUNION (⇛-val-det tt tt x₁ y₁))
@@ -543,7 +550,7 @@ typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqTTRUNC (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqTCONST (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqSUBSING (⇛-val-det tt tt x₁ y₁))
-typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNN t₁ y y₁) f g eqi = ⊥-elim (TUNIONneqNN (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) f g eqi = ⊥-elim (TUNIONneqPURE (⇛-val-det tt tt x₁ y₁))
 --typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TUNIONneqDUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TUNIONneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (TUNIONneqUNIV (⇛-val-det tt tt x₁ d₂))
@@ -603,6 +610,7 @@ typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
         h
 
 typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) a1 a2 eqi = ⊥-elim (TUNIONneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) a1 a2 eqi = ⊥-elim (TUNIONneqISECT (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (TUNIONneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (TUNIONneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (TUNIONneqQTUNION (⇛-val-det tt tt x₁ y))
@@ -610,7 +618,7 @@ typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqTTRUNC (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqTCONST (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqSUBSING (⇛-val-det tt tt x₁ y))
-typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNN t₁ y y₁) f g eqi = ⊥-elim (TUNIONneqNN (⇛-val-det tt tt x₁ y))
+typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) f g eqi = ⊥-elim (TUNIONneqPURE (⇛-val-det tt tt x₁ y))
 --typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TUNIONneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TUNIONneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (TUNIONneqUNIV (⇛-val-det tt tt x₁ d₁))
@@ -671,6 +679,7 @@ typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
         h
 
 typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) a1 a2 eqi = ⊥-elim (TUNIONneqSET (⇛-val-det tt tt x y))
+typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) a1 a2 eqi = ⊥-elim (TUNIONneqISECT (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (TUNIONneqEQ (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (TUNIONneqUNION (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (TUNIONneqQTUNION (⇛-val-det tt tt x y))
@@ -678,7 +687,7 @@ typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqTTRUNC (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqTCONST (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqSUBSING (⇛-val-det tt tt x y))
-typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNN t₁ y y₁) f g eqi = ⊥-elim (TUNIONneqNN (⇛-val-det tt tt x y))
+typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) f g eqi = ⊥-elim (TUNIONneqPURE (⇛-val-det tt tt x y))
 --typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TUNIONneqDUM (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TUNIONneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (TUNIONneqUNIV (⇛-val-det tt tt x d₁))
@@ -751,6 +760,7 @@ typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
         h
 
 typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) a1 a2 eqi = ⊥-elim (TUNIONneqSET (⇛-val-det tt tt x y₁))
+typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) a1 a2 eqi = ⊥-elim (TUNIONneqISECT (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (TUNIONneqEQ (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (TUNIONneqUNION (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (TUNIONneqQTUNION (⇛-val-det tt tt x y₁))
@@ -758,7 +768,7 @@ typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqTTRUNC (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqTCONST (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqSUBSING (⇛-val-det tt tt x y₁))
-typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNN t₁ y y₁) f g eqi = ⊥-elim (TUNIONneqNN (⇛-val-det tt tt x y₁))
+typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) f g eqi = ⊥-elim (TUNIONneqPURE (⇛-val-det tt tt x y₁))
 --typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TUNIONneqDUM (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TUNIONneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (TUNIONneqUNIV (⇛-val-det tt tt x d₂))
@@ -833,6 +843,7 @@ typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
         h
 
 typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) a1 a2 eqi = ⊥-elim (TUNIONneqSET (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) a1 a2 eqi = ⊥-elim (TUNIONneqISECT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (TUNIONneqEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (TUNIONneqUNION (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (TUNIONneqQTUNION (⇛-val-det tt tt x₁ y₁))
@@ -840,7 +851,7 @@ typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqTTRUNC (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqTCONST (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqSUBSING (⇛-val-det tt tt x₁ y₁))
-typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNN t₁ y y₁) f g eqi = ⊥-elim (TUNIONneqNN (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) f g eqi = ⊥-elim (TUNIONneqPURE (⇛-val-det tt tt x₁ y₁))
 --typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TUNIONneqDUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TUNIONneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (TUNIONneqUNIV (⇛-val-det tt tt x₁ d₂))
@@ -914,6 +925,7 @@ typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
         h
 
 typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) a1 a2 eqi = ⊥-elim (TUNIONneqSET (⇛-val-det tt tt x₁ y))
+typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) a1 a2 eqi = ⊥-elim (TUNIONneqISECT (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (TUNIONneqEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (TUNIONneqUNION (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (TUNIONneqQTUNION (⇛-val-det tt tt x₁ y))
@@ -921,7 +933,7 @@ typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqTTRUNC (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqTCONST (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TUNIONneqSUBSING (⇛-val-det tt tt x₁ y))
-typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNN t₁ y y₁) f g eqi = ⊥-elim (TUNIONneqNN (⇛-val-det tt tt x₁ y))
+typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) f g eqi = ⊥-elim (TUNIONneqPURE (⇛-val-det tt tt x₁ y))
 --typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TUNIONneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TUNIONneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (TUNIONneqUNIV (⇛-val-det tt tt x₁ d₁))
@@ -998,6 +1010,7 @@ eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c
         h
 
 eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TUNIONneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TUNIONneqISECT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ei = ⊥-elim (TUNIONneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (TUNIONneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (TUNIONneqQTUNION (⇛-val-det tt tt c₁ x))
@@ -1005,7 +1018,7 @@ eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c
 eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqtA extA) ei = ⊥-elim (TUNIONneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTCONST A3 A4 x x₁ eqtA extA) ei = ⊥-elim (TUNIONneqTCONST (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqtA extA) ei = ⊥-elim (TUNIONneqSUBSING (⇛-val-det tt tt c₁ x))
-eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTNN t₁ x x₁) ei = ⊥-elim (TUNIONneqNN (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTPURE x x₁) ei = ⊥-elim (TUNIONneqPURE (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei = ⊥-elim (TUNIONneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (TUNIONneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (TUNIONneqUNIV (⇛-val-det tt tt c₁ d₁))
@@ -1087,6 +1100,7 @@ eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTT
         h
 
 eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TUNIONneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TUNIONneqISECT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ei ext = ⊥-elim (TUNIONneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei ext = ⊥-elim (TUNIONneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei ext = ⊥-elim (TUNIONneqQTUNION (⇛-val-det tt tt c₁ x))
@@ -1094,7 +1108,7 @@ eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTS
 eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqtA extA) ei ext = ⊥-elim (TUNIONneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTCONST A3 A4 x x₁ eqtA extA) ei ext = ⊥-elim (TUNIONneqTCONST (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqtA extA) ei ext = ⊥-elim (TUNIONneqSUBSING (⇛-val-det tt tt c₁ x))
-eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNN t₁ x x₁) ei ext = ⊥-elim (TUNIONneqNN (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTPURE x x₁) ei ext = ⊥-elim (TUNIONneqPURE (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei ext = ⊥-elim (TUNIONneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ei ext = ⊥-elim (TUNIONneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNIV i p d₁ d₂) ei ext = ⊥-elim (TUNIONneqUNIV (⇛-val-det tt tt c₁ d₁))
@@ -1171,6 +1185,7 @@ eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c�
         h
 
 eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TUNIONneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TUNIONneqISECT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ei = ⊥-elim (TUNIONneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (TUNIONneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (TUNIONneqQTUNION (⇛-val-det tt tt c₁ x))
@@ -1178,7 +1193,7 @@ eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c�
 eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqtA extA) ei = ⊥-elim (TUNIONneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTCONST A3 A4 x x₁ eqtA extA) ei = ⊥-elim (TUNIONneqTCONST (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqtA extA) ei = ⊥-elim (TUNIONneqSUBSING (⇛-val-det tt tt c₁ x))
-eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTNN t₁ x x₁) ei = ⊥-elim (TUNIONneqNN (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTPURE x x₁) ei = ⊥-elim (TUNIONneqPURE (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei = ⊥-elim (TUNIONneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (TUNIONneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (TUNIONneqUNIV (⇛-val-det tt tt c₁ d₁))
@@ -1253,6 +1268,7 @@ eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (
         h
 
 eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TUNIONneqSET (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TUNIONneqISECT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ext ei = ⊥-elim (TUNIONneqEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ext ei = ⊥-elim (TUNIONneqUNION (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ext ei = ⊥-elim (TUNIONneqQTUNION (⇛-val-det tt tt c₁ x))
@@ -1260,7 +1276,7 @@ eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (
 eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqtA extA) ext ei = ⊥-elim (TUNIONneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTCONST A3 A4 x x₁ eqtA extA) ext ei = ⊥-elim (TUNIONneqTCONST (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqtA extA) ext ei = ⊥-elim (TUNIONneqSUBSING (⇛-val-det tt tt c₁ x))
-eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNN t₁ x x₁) ext ei = ⊥-elim (TUNIONneqNN (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTPURE x x₁) ext ei = ⊥-elim (TUNIONneqPURE (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ext ei = ⊥-elim (TUNIONneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ext ei = ⊥-elim (TUNIONneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNIV i p d₁ d₂) ext ei = ⊥-elim (TUNIONneqUNIV (⇛-val-det tt tt c₁ d₁))

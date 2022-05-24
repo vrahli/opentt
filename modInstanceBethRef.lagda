@@ -238,6 +238,8 @@ bethRef-choiceBar =
     ℂ₁∈Typeℂ₀₁-beth-ref
     ∈Typeℂ₀₁→-beth-ref
     →∈Typeℂ₀₁-beth-ref
+    equalTerms-pres-#⇛-left-QTNAT!
+    equalTerms-pres-#⇛-left-rev-QTNAT!
     □·-choice-beth-ref
     followChoice-beth-ref
 

@@ -64,6 +64,7 @@ open import computation(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 -- TODO: call this choiceType instead
@@ -84,6 +85,9 @@ record ChoiceBar : Set(lsuc(lsuc(L))) where
     -- Typeℂ₀₁ contains all terms that weakly compute to ℂ₀ or ℂ₁
     →∈Typeℂ₀₁ : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name} → □· w (λ w' _ → weakℂ₀₁M w' (getT n c)) → ∈Type i w Typeℂ₀₁ (#APPLY (#CS c) (#NUM n))
 
+    -- Typeℂ₀₁ preserves computation
+    #⇛Typeℂ₀₁ : equalTerms-pres-#⇛-left Typeℂ₀₁
+    #⇛Typeℂ₀₁-rev : equalTerms-pres-#⇛-left-rev Typeℂ₀₁
 
     -- TODO: for any restriction not just Resℂ₀₁
     □·-choice : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
