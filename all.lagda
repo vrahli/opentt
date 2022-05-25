@@ -63,5 +63,5 @@ open import openNotFollowChoice
 open import kripkeCsNotRetrieving
 
 -- A proof that all functions on the Baire space are continuous by realizing the modulus of continuity using exceptions.
-open import continuity6
+open import continuity7
 \end{code}

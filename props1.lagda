@@ -78,7 +78,7 @@ open import type_sys_props_tconst(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import type_sys_props_subsing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_nn(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_pure(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import type_sys_props_isect(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 -- open import calculus

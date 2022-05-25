@@ -73,6 +73,7 @@ open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import type_sys_props_isect(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_pure(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -1508,6 +1509,14 @@ eqInType-⇛-QTNAT!-rev u w a b eqt h =
 
 
 
+#⇛!-pres-SUMeq-rev : {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {w : 𝕎·} {a b c : CTerm}
+                      → a #⇛! b at w
+                      → SUMeq eqa eqb w b c
+                      → SUMeq eqa eqb w a c
+#⇛!-pres-SUMeq-rev {eqa} {eqb} {w} {a} {b} {c} comp (a1 , a2 , b1 , b2 , ea , c1 , c2 , eb) =
+  a1 , a2 , b1 , b2 , ea , ⇛-trans (#⇛!-#⇛ {w} {a} {b} comp) c1 , c2 , eb
+
+
 
 equalTerms-pres-#⇛-left-rev-NAT : equalTerms-pres-#⇛-left-rev #NAT
 equalTerms-pres-#⇛-left-rev-NAT {i} {w} {a} {b} {c} comp eqt eqi =
@@ -1589,6 +1598,19 @@ equalTerms-pres-#⇛-left-rev-QTBOOL! {i} {w} {a} {b} {c} comp eqt eqi =
     (Mod.∀𝕎-□Func M
       (λ w' e → #⇛!-pres-TSQUASHeq-rev {_} {_} {b} {a} {c} (∀𝕎-mon e comp))
       (eqInType-⇛-QTBOOL! i w b c eqt eqi))
+
+
+
+equalTerms-pres-#⇛-left-rev-SUM : (A : CTerm) (B : CTerm0) → equalTerms-pres-#⇛-left-rev (#SUM A B)
+equalTerms-pres-#⇛-left-rev-SUM A B {i} {w} {a} {b} {c} comp eqt eqi =
+  equalInType→eqInType {i} {w} {#SUM A B} {#SUM A B} {#SUM A B} {a} {c} refl {eqt}
+    (equalInType-SUM {i} {w} {A} {B} {a} {c}
+      (equalInType-SUM→₁ {i} {w} {A} {B} {b} {c} (eqInType→equalInType {i} {w} {#SUM A B} {#SUM A B} {#SUM A B} {b} {c} refl eqt eqi))
+      (equalInType-SUM→₂ {i} {w} {A} {B} {b} {c} (eqInType→equalInType {i} {w} {#SUM A B} {#SUM A B} {#SUM A B} {b} {c} refl eqt eqi))
+      (Mod.∀𝕎-□Func M
+        (λ w1 e1 → #⇛!-pres-SUMeq-rev {_} {_} {_} {a} {b} {c} (∀𝕎-mon e1 comp))
+        (equalInType-SUM→ {i} {w} {A} {B} {b} {c}
+          (eqInType→equalInType {i} {w} {#SUM A B} {#SUM A B} {#SUM A B} {b} {c} refl eqt eqi))))
 
 
 

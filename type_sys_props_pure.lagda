@@ -43,11 +43,11 @@ open import newChoice
 open import mod
 
 
-module type_sys_props_nn {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-                              (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
-                              (X : ChoiceExt W C)
-                              (N : NewChoice W C K G)
-                              (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+module type_sys_props_pure {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+                           (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
+                           (X : ChoiceExt W C)
+                           (N : NewChoice W C K G)
+                           (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
 
 
