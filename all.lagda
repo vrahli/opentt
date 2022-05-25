@@ -45,6 +45,7 @@ open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 -- This instance of 'choiceBar' uses Beth bars and terms as choices:
 open import modInstanceBethCs
 -- This instance of 'choiceBar' uses Beth bars and nats as choices:
+-- (this makes use of the 'freezable' field in *restrictions*, while the other isntances don't---but could/should)
 open import modInstanceBethRef
 -- This instance of 'choiceBar' uses Beth bars and bools as choices:
 open import modInstanceBethRef2
@@ -61,6 +62,10 @@ open import openNotFollowChoice
 -- We show here that the resulting modality does not satisfy `□·-choice` (from `choiceBar`),
 -- which we require to prove ¬LEM for example.  This is true when using FCS as choices but not REF.
 open import kripkeCsNotRetrieving
+-- We also here that Kripke bars + FCS does not satisfy the ∀∃𝔹 property in exBar either,
+-- which we require to prove the compatibility with LEM
+-- So, given the above result in this one, we cannot derive wether Kripke+FCS is compatible with FCS or not
+open import kripkeCsNotExBar
 
 -- A proof that all functions on the Baire space are continuous by realizing the modulus of continuity using exceptions.
 open import continuity7

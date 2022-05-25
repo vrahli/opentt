@@ -46,8 +46,8 @@ open import progress
 open import mod
 
 
-module kripkeCsNotRetrieving {L : Level}
-                             (E : Extensionality 0ℓ 3ℓ)
+module kripkeCsNotExBar {L : Level}
+                        (E : Extensionality 0ℓ 3ℓ)
        where
 
 open import worldInstanceCS
@@ -68,7 +68,6 @@ open import barKripke(W)
 
 M : Mod W
 M = BarsProps→Mod W K𝔹BarsProps
-
 
 G : GetChoice W C K
 G = getChoiceCS
@@ -102,12 +101,32 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 
--- retrieving holds for references (see modInstanceKripkeRefBool) but not for choice sequences
-¬KripkeChoice : (w0 : 𝕎·)
-                → ¬ ((w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
-                      → compatible· c w r
-                      → □· w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} 2ℓ (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t)))))
-¬KripkeChoice w0 h = z (fst (snd q))
+select≤ : {L : Level} {A : Set(L)} {a : A} {l : List A} {k k' : ℕ}
+          → k' ≤ k
+          → select k l ≡ just a
+          → Σ A (λ b → select k' l ≡ just b)
+select≤ {L} {A} {a} {x ∷ l} {0} {0} lek h = a , h
+select≤ {L} {A} {a} {x ∷ l} {suc k} {.0} _≤_.z≤n h = x , refl
+select≤ {L} {A} {a} {x ∷ l} {suc k} {.(suc _)} (_≤_.s≤s lek) h = select≤ {_} {_} {_} {l} lek h
+
+
+
+getChoiceΣ≤ : (k : ℕ) (name : Name) (w : world) (t : ℂ·)
+             → getCsChoice k name w ≡ just t
+             → (k' : ℕ) → k' ≤ k
+             → Σ ℂ· (λ c → getCsChoice k' name w ≡ just c)
+getChoiceΣ≤ k name w t gc k' lek with getCs⊎ name w
+... | inj₁ (mkcs n l r , p) rewrite p | getCs-same-name name w (mkcs n l r) p = select≤ {_} {_} {_} {l} lek gc
+getChoiceΣ≤ k name w t gc k' lek | inj₂ p rewrite p = ⊥-elim (¬just≡nothing (sym gc))
+
+
+
+¬KripkeExBar : (w0 : 𝕎·)
+                → ¬ ({w : 𝕎·} {f : wPred w}
+                      → wPredExtIrr f
+                      → ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → □· w2 (↑wPred f (⊑-trans· e1 e2))))
+                      → □· w f)
+¬KripkeExBar w0 h = z (fst (snd q))
   where
     r : Res{0ℓ}
     r = Resℂ₀₁
@@ -118,14 +137,44 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
     w : 𝕎·
     w = startNewChoice r w0
 
-    comp : compatible· c w r
-    comp = startNewChoiceCompatible r w0
+    compat : compatible· c w r
+    compat = startNewChoiceCompatible r w0
 
     m : ℕ
     m = 0
 
+    f : wPred w
+    f w' _ = ∀𝕎 w' (λ w'' _ → Lift {0ℓ} 2ℓ (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t)))
+
+    firr : wPredExtIrr f
+    firr w' e1 e2 z = z
+
+    fcond : ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → □· w2 (↑wPred f (⊑-trans· e1 e2))))
+    fcond w1 e1 = w2 , e2 , Mod.∀𝕎-□ M q
+      where
+        w2 : 𝕎·
+        w2 = freeze· c w1 ℂ₀·
+
+        e2 : w1 ⊑· w2
+        e2 = freeze⊑· c w1 ℂ₀· (⊑-compatible· e1 compat) (λ n → inj₁ refl)
+
+        q : ∀𝕎 w2 (↑wPred f (⊑-trans· e1 e2))
+        q w3 e3 w4 e4 = lift (fst ec , snd ec , getCsChoiceCompatible c r w4 0 (fst ec) (⊑-compatible· (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4))) compat) (snd ec))
+          where
+            e : Σ ℕ (λ n → ∀𝕎 (freezeCs c w1 ℂ₀·) (λ w' _ → Lift 2ℓ (getCsChoice n c w' ≡ just ℂ₀·)))
+            e = getFreezeCsAux c w1 ℂ₀· (⊑-compatible· e1 compat)
+
+            n : ℕ
+            n = fst e
+
+            gc : getCsChoice n c w4 ≡ just ℂ₀·
+            gc = lower (snd e w4 (⊑-trans· e3 e4))
+
+            ec : Σ ℂ· (λ u → getCsChoice 0 c w4 ≡ just u)
+            ec = getChoiceΣ≤ n c w4 ℂ₀· gc 0 _≤_.z≤n
+
     q : Σ ℂ· (λ t → getChoice· m c w ≡ just t × ·ᵣ r m t)
-    q = lower (snd (h w c m r comp) (⊑-refl· _) (K𝔹all (fst (h w c m r comp))) w (⊑-refl· _) (⊑-refl· _) w (⊑-refl· _))
+    q = lower (snd (h {w} {f} firr fcond) (⊑-refl· _) (K𝔹all (fst (h {w} {f} firr fcond))) w (⊑-refl· _) (⊑-refl· _) w (⊑-refl· _))
 
     k : ℂ·
     k = fst q
