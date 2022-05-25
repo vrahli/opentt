@@ -522,10 +522,10 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     e1 = freeze⊑· name w k comp rk
 
     n1 : ℕ
-    n1 = fst (getFreeze· name w k comp fb)
+    n1 = fst (getFreeze· name w k comp tt fb)
 
     g0 : ∀𝕎 w1 (λ w' _ → Lift (lsuc(L)) (getChoice· n1 name w' ≡ just k))
-    g0 = snd (getFreeze· name w k comp fb)
+    g0 = snd (getFreeze· name w k comp tt fb)
 
     g1 : #APPLY (#CS name) (#NUM n1) #⇛! ℂ→C· k at w1
     g1 = →#APPLY-#CS#⇛ℂ→C· g0

@@ -58,6 +58,7 @@ record Freeze : Set(lsuc(L)) where
     freeze⊑ : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res{0ℓ}} → compatible· c w r → ⋆ᵣ r t → w ⊑· freeze c w t
     getFreeze : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res{0ℓ}}
                 → compatible· c w r
+                → Rfrz? r
                 → freezable c w
                 → Σ ℕ (λ n → ∀𝕎 (freeze c w t) (λ w' _ → Lift (lsuc(L)) (getChoice· n c w' ≡ just t)))
     freezableStart : (r : Res{0ℓ}) (w : 𝕎·) → freezable (newChoice· w) (startNewChoice r w)

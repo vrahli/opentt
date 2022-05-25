@@ -71,6 +71,14 @@ record Res {L : Level} : Set(lsuc(L)) where
                       false → Lift {0ℓ} L ⊤ })
     inv : Σ Bool (λ { true → (n m : ℕ) (c : ℂ·) → res n c → res m c ;
                       false → Lift {0ℓ} L ⊤ })
+    frz : Bool -- freezable
+
+
+-- checks whether the restiction allows freezing values
+Rfrz? : {L : Level} → Res{L} → Set
+Rfrz? {L} r with Res.frz r
+... | true = ⊤
+... | false = ⊥
 
 
 ·ᵣ : {L : Level} → Res{L} → ℕ → ℂ· → Set(L)
@@ -102,8 +110,8 @@ compatibleRes {L} r1 r2 =
   (n : ℕ) (t : ℂ·) → (·ᵣ r1 n t → ·ᵣ r2 n t) × (·ᵣ r2 n t → ·ᵣ r1 n t)
 
 
-Resη : {L : Level} (r : Res{L}) → mkRes (Res.res r) (Res.def r) (Res.sat r) (Res.dec r) (Res.inv r) ≡ r
-Resη {L} (mkRes r d s k i) = refl
+Resη : {L : Level} (r : Res{L}) → mkRes (Res.res r) (Res.def r) (Res.sat r) (Res.dec r) (Res.inv r) (Res.frz r) ≡ r
+Resη {L} (mkRes r d s k i f) = refl
 
 
 

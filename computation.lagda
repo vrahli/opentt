@@ -2087,4 +2087,31 @@ lift-⇓!sameℕ-trans {w} {a} {b} {c} (lift h) (lift q) = lift (⇓!sameℕ-tra
                → w ⊑· w'
 #⇓from-to→⊑ {w} {w'} {a} {b} (n , comp) = ≡ᵣ→⊑ (steps⊑ w n ⌜ a ⌝) (→≡snd comp)
 
+
+
+→-⇛-APPLY : {w : 𝕎·} {a b : Term} (c : Term)
+                → a ⇛ b at w
+                → APPLY a c ⇛ APPLY b c at w
+→-⇛-APPLY {w} {a} {b} c comp w1 e1 =
+  lift (→-steps-APPLY c (fst (lower (comp w1 e1))) (snd (lower (comp w1 e1))))
+
+
+→-⇛!-APPLY : {w : 𝕎·} {a b : Term} (c : Term)
+                → a ⇛! b at w
+                → APPLY a c ⇛! APPLY b c at w
+→-⇛!-APPLY {w} {a} {b} c comp w1 e1 =
+  lift (→steps-APPLY c (fst (lower (comp w1 e1))) (snd (lower (comp w1 e1))))
+
+
+
+≡→APPLY-LAMBDA⇛! : (w : 𝕎·) (f a b : Term)
+                  → b ≡ sub a f
+                  → APPLY (LAMBDA f) a ⇛! b at w
+≡→APPLY-LAMBDA⇛! w f a b e w1 e1 rewrite e = lift (1 , refl)
+
+
+
+⇛!-trans : {w : 𝕎·} {a b c : Term} → a ⇛! b at w → b ⇛! c at w → a ⇛! c at w
+⇛!-trans {w} {a} {b} {c} c₁ c₂ w1 e1 = lift (⇓!-trans (lower (c₁ w1 e1)) (lower (c₂ w1 e1)))
+
 \end{code}

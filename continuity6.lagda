@@ -54,10 +54,8 @@ open import choiceBar
 module continuity6 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
                    (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
                    (X : ChoiceExt W C)
-                   (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
-                   (F : Freeze {L} W C K P G N)
+                   (N : NewChoice {L} W C K G)
                    (E : Axiom.Extensionality.Propositional.Extensionality 0ℓ (lsuc(lsuc(L))))
-                   (CB : ChoiceBar W M C K P G X N V F E) -- TODO - We won't need everything from there: use a different module
        where
 
 
@@ -79,26 +77,6 @@ open import compatibleDef{L}(W)(C)(K)
 open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
-open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
-open import freezeDef(W)(C)(K)(P)(G)(N)(F)
-
-open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-
-{--
-open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_lt(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_qlt(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_free(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_pi(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_set(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_eq(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_union(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(E)
---}
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -107,11 +85,11 @@ open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 

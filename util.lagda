@@ -311,4 +311,20 @@ select++→⊎∈ {L} {A} {suc k} {x ∷ l} {l'} {t} sel = select++→⊎∈ {L}
 →≡snd : {l k : Level} {A : Set l} {B : Set k} {p₁ p₂ : A × B} → p₁ ≡ p₂ → snd p₁ ≡ snd p₂
 →≡snd {l} {k} {A} {B} {a₁ , b₁} {a₂ , b₂} e = pair-inj₂ e
 
+
+≡++ : {L : Level} {A : Set(L)} {a b c d : List A}
+      → a ≡ b → c ≡ d → a ++ c ≡ b ++ d
+≡++ {L} {A} {a} {b} {c} {d} e f rewrite e | f = refl
+
+
+[]⊆ : {L : Level} {A : Set(L)} {a : List A} → [] ⊆ a
+[]⊆ {L} {A} {a} {x} ()
+
+
+++⊆ : {L : Level} {A : Set(L)} {a b c : List A}
+      → a ⊆ c → b ⊆ c → a ++ b ⊆ c
+++⊆ {L} {A} {a} {b} {c} i j {x} k with ∈-++⁻ a k
+... | inj₁ z = i z
+... | inj₂ z = j z
+
 \end{code}

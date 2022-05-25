@@ -1010,11 +1010,13 @@ getChoiceΣ k name w t gc | inj₂ p rewrite p = ⊥-elim (¬just≡nothing (sym
 
 
 
+-- We could make use of Rfrz? as we did in worldInstanceRef
 getFreezeCs : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res{0ℓ}}
               → compatibleCs c w r
+              → Rfrz? r
               → freezableCs c w
               → Σ ℕ (λ n → ∀𝕎 (freezeCs c w t) (λ w' _ → Lift 2ℓ (getCsChoice n c w' ≡ just t)))
-getFreezeCs c w t {r} (l , comp , sat) fb =
+getFreezeCs c w t {r} (l , comp , sat) frz fb =
   length l , aw
   where
     aw : ∀𝕎 (freezeCs c w t) (λ w' _ → Lift 2ℓ (getCsChoice (length l) c w' ≡ just t))

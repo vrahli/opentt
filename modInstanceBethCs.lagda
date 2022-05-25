@@ -244,7 +244,7 @@ resSatCs-select→ {n} {suc m} {x ∷ l} {r} {t} (c , s) e rewrite sym (+-suc m 
     ind : Σ ℕ (λ k → getCs c (freezeSeq rs w n) ≡ just (mkcs c (l ++ replicate k (Res.def r)) r))
     ind = →getCsFreezeSeq-replicate n i nodp h
 
-    j : mkNRes c (mkRes (Res.res r) (Res.def r) (Res.sat r) (Res.dec r) (Res.inv r)) ∈ rs
+    j : mkNRes c (mkRes (Res.res r) (Res.def r) (Res.sat r) (Res.dec r) (Res.inv r) (Res.frz r)) ∈ rs
     j rewrite Resη r = i
 
     cc : getCs c (freezeList rs (freezeSeq rs w n)) ≡ just (mkcs c (l ++ Res.def r ∷ replicate (fst ind) (Res.def r)) r)

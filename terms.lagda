@@ -2220,6 +2220,55 @@ instance
   ⌞_⌟ {{CTermToCTerm1}} t = CTerm→CTerm1 t
 
 
+
+record CTerm2 : Set where
+  constructor ct2
+  field
+    cTerm  : Term
+    closed : #[ (0 ∷ 1 ∷ [ 2 ]) ] cTerm
+
+
+instance
+  CTerm2ToTerm : ToTerm CTerm2
+  ⌜_⌝ {{CTerm2ToTerm}} t = CTerm2.cTerm t
+
+
+CTerm→CTerm2 : CTerm → CTerm2
+CTerm→CTerm2 (ct t c) = ct2 t c'
+  where
+    c' : #[ 0 ∷ 1 ∷ [ 2 ] ] t
+    c' rewrite c = refl
+
+
+instance
+  CTermToCTerm2 : fromCTerm CTerm2
+  ⌞_⌟ {{CTermToCTerm2}} t = CTerm→CTerm2 t
+
+
+record CTerm3 : Set where
+  constructor ct3
+  field
+    cTerm  : Term
+    closed : #[ (0 ∷ 1 ∷ 2 ∷ [ 3 ]) ] cTerm
+
+
+instance
+  CTerm3ToTerm : ToTerm CTerm3
+  ⌜_⌝ {{CTerm3ToTerm}} t = CTerm3.cTerm t
+
+
+CTerm→CTerm3 : CTerm → CTerm3
+CTerm→CTerm3 (ct t c) = ct3 t c'
+  where
+    c' : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] t
+    c' rewrite c = refl
+
+
+instance
+  CTermToCTerm3 : fromCTerm CTerm3
+  ⌞_⌟ {{CTermToCTerm3}} t = CTerm→CTerm3 t
+
+
 #[1]APPLY : CTerm1 → CTerm1 → CTerm1
 #[1]APPLY a b = ct1 (APPLY ⌜ a ⌝ ⌜ b ⌝) c
   where
@@ -2628,5 +2677,45 @@ NAT!→QTBOOL! = FUN NAT! QTBOOL!
 
 INLneqINR : {a b : Term} → ¬ INL a ≡ INR b
 INLneqINR {a} {b} ()
+
+
+
+TPURE : Term → Term
+TPURE T = ISECT T PURE
+
+
+#TPURE : CTerm → CTerm
+#TPURE t = ct (TPURE ⌜ t ⌝) c
+  where
+    c : # TPURE ⌜ t ⌝
+    c rewrite CTerm.closed t = refl
+
+
+#[0]TPURE : CTerm0 → CTerm0
+#[0]TPURE t = ct0 (TPURE ⌜ t ⌝) c
+  where
+    c : #[ [ 0 ] ] TPURE ⌜ t ⌝
+    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm0.closed t
+
+
+#[1]TPURE : CTerm1 → CTerm1
+#[1]TPURE t = ct1 (TPURE ⌜ t ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] TPURE ⌜ t ⌝
+    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm1.closed t
+
+
+#[1]SUBSING : CTerm1 → CTerm1
+#[1]SUBSING t = ct1 (SUBSING ⌜ t ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] SUBSING ⌜ t ⌝
+    c = CTerm1.closed t
+
+
+#[0]SUBSING : CTerm0 → CTerm0
+#[0]SUBSING t = ct0 (SUBSING ⌜ t ⌝) c
+  where
+    c : #[ [ 0 ] ] SUBSING ⌜ t ⌝
+    c = CTerm0.closed t
 
 \end{code}

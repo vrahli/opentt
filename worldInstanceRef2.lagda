@@ -745,11 +745,13 @@ getFreezeRef-aux c w t {r} (v , false , comp , sat) fb rewrite comp = 0 , aw
 
 
 
+-- We could make use of Rfrz? as we did in worldInstanceRef
 getFreezeRef : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res{0ℓ}}
                → compatibleRef c w r
+               → Rfrz? r
                → freezableRef c w
                → Σ ℕ (λ n → ∀𝕎 (freezeRef c w t) (λ w' _ → Lift 2ℓ (getRefChoice n c w' ≡ just t)))
-getFreezeRef c w t {r} comp fb =
+getFreezeRef c w t {r} comp frz fb =
   fst (getFreezeRef-aux c w t comp fb) ,
   λ w1 e1 → lift (fst (lower (snd (getFreezeRef-aux c w t comp fb) w1 e1)))
 

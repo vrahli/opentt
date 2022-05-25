@@ -54,10 +54,8 @@ open import choiceBar
 module continuity7 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
                    (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
                    (X : ChoiceExt W C)
-                   (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
-                   (F : Freeze {L} W C K P G N)
+                   (N : NewChoice {L} W C K G)
                    (E : Axiom.Extensionality.Propositional.Extensionality 0ℓ (lsuc(lsuc(L))))
-                   (CB : ChoiceBar W M C K P G X N V F E) -- TODO - We won't need everything from there: use a different module
        where
 
 
@@ -79,26 +77,6 @@ open import compatibleDef{L}(W)(C)(K)
 open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
-open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
-open import freezeDef(W)(C)(K)(P)(G)(N)(F)
-
-open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-
-{--
-open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_lt(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_qlt(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_free(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_pi(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_set(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_eq(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_union(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(E)
-open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(E)
---}
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -107,105 +85,13 @@ open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-
-
-≡++ : {L : Level} {A : Set(L)} {a b c d : List A}
-      → a ≡ b → c ≡ d → a ++ c ≡ b ++ d
-≡++ {L} {A} {a} {b} {c} {d} e f rewrite e | f = refl
-
-
-
-[]⊆ : {L : Level} {A : Set(L)} {a : List A} → [] ⊆ a
-[]⊆ {L} {A} {a} {x} ()
-
-
-++⊆ : {L : Level} {A : Set(L)} {a b c : List A}
-      → a ⊆ c → b ⊆ c → a ++ b ⊆ c
-++⊆ {L} {A} {a} {b} {c} i j {x} k with ∈-++⁻ a k
-... | inj₁ z = i z
-... | inj₂ z = j z
-
-
-
-record CTerm2 : Set where
-  constructor ct2
-  field
-    cTerm  : Term
-    closed : #[ (0 ∷ 1 ∷ [ 2 ]) ] cTerm
-
-
-instance
-  CTerm2ToTerm : ToTerm CTerm2
-  ⌜_⌝ {{CTerm2ToTerm}} t = CTerm2.cTerm t
-
-
-CTerm→CTerm2 : CTerm → CTerm2
-CTerm→CTerm2 (ct t c) = ct2 t c'
-  where
-    c' : #[ 0 ∷ 1 ∷ [ 2 ] ] t
-    c' rewrite c = refl
-
-
-instance
-  CTermToCTerm2 : fromCTerm CTerm2
-  ⌞_⌟ {{CTermToCTerm2}} t = CTerm→CTerm2 t
-
-
-
-record CTerm3 : Set where
-  constructor ct3
-  field
-    cTerm  : Term
-    closed : #[ (0 ∷ 1 ∷ 2 ∷ [ 3 ]) ] cTerm
-
-
-instance
-  CTerm3ToTerm : ToTerm CTerm3
-  ⌜_⌝ {{CTerm3ToTerm}} t = CTerm3.cTerm t
-
-
-CTerm→CTerm3 : CTerm → CTerm3
-CTerm→CTerm3 (ct t c) = ct3 t c'
-  where
-    c' : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] t
-    c' rewrite c = refl
-
-
-instance
-  CTermToCTerm3 : fromCTerm CTerm3
-  ⌞_⌟ {{CTermToCTerm3}} t = CTerm→CTerm3 t
-
-
-TPURE : Term → Term
-TPURE T = ISECT T PURE
-
-
-#TPURE : CTerm → CTerm
-#TPURE t = ct (TPURE ⌜ t ⌝) c
-  where
-    c : # TPURE ⌜ t ⌝
-    c rewrite CTerm.closed t = refl
-
-
-#[0]TPURE : CTerm0 → CTerm0
-#[0]TPURE t = ct0 (TPURE ⌜ t ⌝) c
-  where
-    c : #[ [ 0 ] ] TPURE ⌜ t ⌝
-    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm0.closed t
-
-
-#[1]TPURE : CTerm1 → CTerm1
-#[1]TPURE t = ct1 (TPURE ⌜ t ⌝) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] TPURE ⌜ t ⌝
-    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm1.closed t
 
 
 cont : Term
@@ -231,29 +117,17 @@ cont =
 
 
 
-#[1]SUBSING : CTerm1 → CTerm1
-#[1]SUBSING t = ct1 (SUBSING ⌜ t ⌝) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] SUBSING ⌜ t ⌝
-    c = CTerm1.closed t
-
-
-#[0]SUBSING : CTerm0 → CTerm0
-#[0]SUBSING t = ct0 (SUBSING ⌜ t ⌝) c
-  where
-    c : #[ [ 0 ] ] SUBSING ⌜ t ⌝
-    c = CTerm0.closed t
-
 
 --fvars-contBody : (a b : Term) → fvars (contBody a b) ≡ fvars a ++ fvars a
 --fvars-contBody a b = ≡++ {_} {_} {fvars a} {fvars a} {fvars b} {fvars b} {!!} {!!}
 
 
+{--
 lowerVars++ : (a b : List Var) → lowerVars (a ++ b) ≡ lowerVars a ++ lowerVars b
 lowerVars++ [] b = refl
 lowerVars++ (0 ∷ a) b = lowerVars++ a b
 lowerVars++ (suc x ∷ a) b rewrite lowerVars++ a b = refl
-
+--}
 
 
 lowerVars-fvars-shiftUp1 : (t : Term) → lowerVars (fvars (shiftUp 1 t)) ≡ Data.List.map (sucIf≤ 0) (lowerVars (fvars t))
@@ -768,33 +642,6 @@ equalTypes-cont-PI i w F₁ F₂ eF =
             i w2 F₁ F₂ f₁ f₂
             (equalInType-mon (equalInType-TPURE→ eF) w2 e2)
             (equalInType-TPURE→ ef)))
-
-
-
-→-⇛-APPLY : {w : 𝕎·} {a b : Term} (c : Term)
-                → a ⇛ b at w
-                → APPLY a c ⇛ APPLY b c at w
-→-⇛-APPLY {w} {a} {b} c comp w1 e1 =
-  lift (→-steps-APPLY c (fst (lower (comp w1 e1))) (snd (lower (comp w1 e1))))
-
-
-→-⇛!-APPLY : {w : 𝕎·} {a b : Term} (c : Term)
-                → a ⇛! b at w
-                → APPLY a c ⇛! APPLY b c at w
-→-⇛!-APPLY {w} {a} {b} c comp w1 e1 =
-  lift (→steps-APPLY c (fst (lower (comp w1 e1))) (snd (lower (comp w1 e1))))
-
-
-
-≡→APPLY-LAMBDA⇛! : (w : 𝕎·) (f a b : Term)
-                  → b ≡ sub a f
-                  → APPLY (LAMBDA f) a ⇛! b at w
-≡→APPLY-LAMBDA⇛! w f a b e w1 e1 rewrite e = lift (1 , refl)
-
-
-
-⇛!-trans : {w : 𝕎·} {a b c : Term} → a ⇛! b at w → b ⇛! c at w → a ⇛! c at w
-⇛!-trans {w} {a} {b} {c} c₁ c₂ w1 e1 = lift (⇓!-trans (lower (c₁ w1 e1)) (lower (c₂ w1 e1)))
 
 
 

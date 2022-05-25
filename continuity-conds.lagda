@@ -86,7 +86,7 @@ Resℕ nc = mkRes (λ n t → Σ ℕ (λ m → ℂ→T t ≡ NUM m)) (T→ℂ· 
 -- Move to ?
 -- This is Res⊤ where when ℂ is ℕ essentially
 Resℕ : ℕℂ → Res
-Resℕ nc = mkRes (λ n t → Σ ℕ (λ m → t ≡ T→ℂ· (NUM m))) (T→ℂ· (NUM 0)) (λ n → 0 , refl) (true , c1) (true , c2)
+Resℕ nc = mkRes (λ n t → Σ ℕ (λ m → t ≡ T→ℂ· (NUM m))) (T→ℂ· (NUM 0)) (λ n → 0 , refl) (true , c1) (true , c2) false
 --(λ n → 0 , e) (true , c1) (true , c2)
   where
     e : ℂ→T (T→ℂ· (NUM 0)) ≡ NUM 0

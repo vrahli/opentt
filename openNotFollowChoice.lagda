@@ -145,7 +145,7 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
         -- This we where we could modify getFreeze or add an axiom like freeze→¬freezable
         aw : ∀𝕎 w2 (λ w3 e3 → (z : w ⊑· w3) → f w3 z)
-        aw w3 e3 z = freeze→¬freezable {c} {w1} k (⊑-compatible· e1 comp) w3 e3
+        aw w3 e3 z = freeze→¬freezable {c} {w1} k (⊑-compatible· e1 comp) tt w3 e3
 
     oc : onlyℂ∈𝕎 (Res.def r) c w
     oc n = getChoice-startNewChoice n r w0
