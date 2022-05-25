@@ -64,4 +64,6 @@ open import kripkeCsNotRetrieving
 
 -- A proof that all functions on the Baire space are continuous by realizing the modulus of continuity using exceptions.
 open import continuity7
+-- We show here that the properties used to prove continuity in continuity7 are satisfied by Kripke bars + references
+open import contInstanceKripkeRef
 \end{code}
