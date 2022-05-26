@@ -42,8 +42,8 @@ open import newChoice
 
 
 module terms5b {L : Level} (W : PossibleWorlds {L})
-              (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M) (E : ChoiceExt {L} W C)
-              (N : NewChoice W C M G)
+               (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M) (E : ChoiceExt {L} W C)
+               (N : NewChoice W C M G)
        where
 open import worldDef(W)
 open import choiceDef{L}(C)
@@ -56,15 +56,32 @@ open import terms2(W)(C)(M)(G)(E)(N)
 open import terms3(W)(C)(M)(G)(E)(N)
 open import terms4(W)(C)(M)(G)(E)(N)
 open import terms5(W)(C)(M)(G)(E)(N)
+open import terms3b(W)(C)(M)(G)(E)(N)
 
 open import continuity-conds(W)(C)(M)(G)(E)(N)
+
+
+⇓PresDiff2 : (f : Term) (name1 name2 : Name) (n : ℕ) → Set(lsuc(L))
+⇓PresDiff2 f name1 name2 n =
+  (w1 w2 w1' : 𝕎·) (a b v : Term)
+  → isValue v
+  → compatible· name1 w1 Res⊤
+  → compatible· name2 w1' Res⊤
+  → ∀𝕎-get0-NUM w1 name1
+--  → ∀𝕎 w1 (λ w' _ → (m : ℕ) → ∈ℕ w' (APPLY f (NUM m)))
+--  → ∀𝕎 w1' (λ w' _ → (m : ℕ) → ∈ℕ w' (APPLY f (NUM m)))
+  → differ2 name1 name2 f a b
+  → getT 0 name1 w1 ≡ getT 0 name2 w1'
+  → steps n (a , w1) ≡ (v , w2)
+  → Σ 𝕎· (λ w2' → Σ Term (λ v' →
+      b ⇓ v' from w1' to w2' × differ2 name1 name2 f v v' × getT 0 name1 w2 ≡ getT 0 name2 w2'))
 
 
 ¬∈→upd⇓names : (gc0 : get-choose-ℕ)
             (k : ℕ) (f : Term) (name1 name2 : Name) (w1 w1' w2 : 𝕎·) (a b : Term) (v : Term)
             → # f
-            → ¬ name1 ∈ names f
-            → ¬ name1 ∈ names𝕎· w1
+--            → ¬ name1 ∈ names f
+--            → ¬ name1 ∈ names𝕎· w1
 --            → name1 ∈ dom𝕎· w1 -- from compatibility
             → ∀𝕎-get0-NUM w1 name1
             → compatible· name1 w1 Res⊤
@@ -72,16 +89,16 @@ open import continuity-conds(W)(C)(M)(G)(E)(N)
 --            → ∀𝕎 w1 (λ w' _ → (m : ℕ) → ∈ℕ w' (APPLY f (NUM m)))
 --            → ∀𝕎 w1' (λ w' _ → (m : ℕ) → ∈ℕ w' (APPLY f (NUM m)))
             → isValue v
-            → ((k' : ℕ) → k' < k → ⇓PresDiff f name1 name2 k')
+            → ((k' : ℕ) → k' < k → ⇓PresDiff2 f name1 name2 k')
             → getT 0 name1 w1 ≡ getT 0 name2 w1'
-            → differ name1 name2 f a b
+            → differ2 name1 name2 f a b
             → steps k (LET a (SEQ (updGt name1 (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (v , w2)
             → Σ 𝕎· (λ w2' → Σ Term (λ v' →
                 APPLY (upd name2 f) b ⇓ v' from w1' to w2'
-                × differ name1 name2 f v v'
+                × differ2 name1 name2 f v v'
                 × getT 0 name1 w2 ≡ getT 0 name2 w2'))
 -- × ¬Names v
-¬∈→upd⇓names gc0 k f name1 name2 w1 w1' w2 a b v cf nnf nnw gtn compat1 compat2 isv pd g0 diff comp = concl comp8
+¬∈→upd⇓names gc0 k f name1 name2 w1 w1' w2 a b v cf {--nnf nnw--} gtn compat1 compat2 isv pd g0 diff comp = concl comp8
   where
     seqv : Term
     seqv = SEQ (updGt name1 (VAR 0)) (APPLY f (VAR 0))
@@ -211,13 +228,13 @@ open import continuity-conds(W)(C)(M)(G)(E)(N)
     comp1b rewrite sym eqm = comp1
 
     h4 : Σ 𝕎· (λ w3' → Σ Term (λ v' →
-                b ⇓ v' from w1' to w3' × differ name1 name2 f (NUM m) v' × getT 0 name1 w3 ≡ getT 0 name2 w3'))
+                b ⇓ v' from w1' to w3' × differ2 name1 name2 f (NUM m) v' × getT 0 name1 w3 ≡ getT 0 name2 w3'))
     h4 = pd k1 (<-transʳ (≤-stepsʳ k2 ≤-refl) ltk12) w1 w3 w1' a b (NUM m) tt compat1 compat2 gtn diff g0 comp1b
 
     h4→ : Σ 𝕎· (λ w3' → Σ Term (λ v' →
-                b ⇓ v' from w1' to w3' × differ name1 name2 f (NUM m) v' × getT 0 name1 w3 ≡ getT 0 name2 w3'))
+                b ⇓ v' from w1' to w3' × differ2 name1 name2 f (NUM m) v' × getT 0 name1 w3 ≡ getT 0 name2 w3'))
                 → Σ 𝕎· (λ w3' → b ⇓ NUM m from w1' to w3' × getT 0 name1 w3 ≡ getT 0 name2 w3')
-    h4→ (w3' , v' , c , d , g) rewrite differ-NUM→ d = w3' , c , g
+    h4→ (w3' , v' , c , d , g) rewrite differ2-NUM→ d = w3' , c , g
 
     w3' : 𝕎·
     w3' = fst (h4→ h4)
@@ -282,7 +299,7 @@ open import continuity-conds(W)(C)(M)(G)(E)(N)
     compd' = ⇓-trans₂ compc' (LET⇓ (shiftUp 0 (APPLY f (NUM m))) (IFLT-NUM-1st⇓ (NUM m) (setT name2 (NUM m)) AX (APPLY-CS-NUM⇓ (NUM n) w3' 0 name2 g3)))
 
     concl : ((n < m × steps k7 (setT name1 u , w6) ≡ (u' , w4)) ⊎ (m ≤ n × steps k7 (AX , w6) ≡ (u' , w4)))
-            → Σ 𝕎· (λ w2' → Σ Term (λ v' → APPLY (upd name2 f) b ⇓ v' from w1' to w2' × differ name1 name2 f v v' × getT 0 name1 w2 ≡ getT 0 name2 w2'))
+            → Σ 𝕎· (λ w2' → Σ Term (λ v' → APPLY (upd name2 f) b ⇓ v' from w1' to w2' × differ2 name1 name2 f v v' × getT 0 name1 w2 ≡ getT 0 name2 w2'))
     concl (inj₁ (ltnm , comp8b)) =
       w4' , v' , ⇓-trans₂ compg' comp5d' , diff'' , g0' --chooseT name2 w3' (NUM m) , comph' , g5 , nnv
       where
@@ -319,12 +336,12 @@ open import continuity-conds(W)(C)(M)(G)(E)(N)
         gtn' : ∀𝕎-get0-NUM (chooseT name1 w3 (NUM m)) name1
         gtn' = ∀𝕎-mon e13c gtn
 
-        diff' : differ name1 name2 f (APPLY f (NUM m)) (APPLY f (NUM m))
-        diff' = {!!}
+        diff' : differ2 name1 name2 f (APPLY f (NUM m)) (APPLY f (NUM m))
+        diff' = differ2-refl
 
         comp5d : Σ 𝕎· (λ w4' → Σ Term (λ v' →
                   APPLY f (NUM m) ⇓ v' from chooseT name2 w3' (NUM m) to w4'
-                  × differ name1 name2 f v v'
+                  × differ2 name1 name2 f v v'
                   × getT 0 name1 w2 ≡ getT 0 name2 w4'))
         comp5d = pd k4 (<-transʳ (≤-stepsˡ k1 (<⇒≤ (<-transʳ (≤-stepsˡ k3 ≤-refl) ltk34))) ltk12) (chooseT name1 w3 (NUM m)) w2 (chooseT name2 w3' (NUM m)) (APPLY f (NUM m)) (APPLY f (NUM m)) v isv compat1' compat2' gtn' diff' g4 comp5c
 
@@ -337,7 +354,7 @@ open import continuity-conds(W)(C)(M)(G)(E)(N)
         comp5d' : APPLY f (NUM m) ⇓ v' from chooseT name2 w3' (NUM m) to w4'
         comp5d' = fst (snd (snd comp5d))
 
-        diff'' : differ name1 name2 f v v'
+        diff'' : differ2 name1 name2 f v v'
         diff'' = fst (snd (snd (snd comp5d)))
 
         g0' : getT 0 name1 w2 ≡ getT 0 name2 w4'
@@ -362,7 +379,7 @@ open import continuity-conds(W)(C)(M)(G)(E)(N)
 --}
 
     concl (inj₂ (ltnm , comp8b)) =
-      {!!} -- w3' , compg' , g5 , nnv
+      w4' , v' , ⇓-trans₂ compf' comp5d' , diff'' , g0'
       where
         compe' : APPLY (upd name2 f) b ⇓ SEQ AX (APPLY f (NUM m)) from w1' to w3'
         compe' = ⇓-trans₂ compd' (LET⇓ (shiftUp 0 (APPLY f (NUM m))) (IFLT-NUM¬<⇓ (≤⇒≯ ltnm) (setT name2 (NUM m)) AX w3'))
@@ -375,6 +392,45 @@ open import continuity-conds(W)(C)(M)(G)(E)(N)
 
         comp5c : steps k4 (APPLY f (NUM m) , w3) ≡ (v , w2)
         comp5c = trans (≡𝕎→≡steps k4 (APPLY f (NUM m)) (trans (trans eqw35 eqw56) eqw64)) comp5b
+
+        compat1' : compatible· name1 w3 Res⊤
+        compat1' = ⊑-compatible· e13 compat1
+
+        compat2' : compatible· name2 w3' Res⊤
+        compat2' = ⊑-compatible· e13' compat2
+
+        gtn' : ∀𝕎-get0-NUM w3 name1
+        gtn' = ∀𝕎-mon e13 gtn
+
+        diff' : differ2 name1 name2 f (APPLY f (NUM m)) (APPLY f (NUM m))
+        diff' = differ2-refl
+
+        g4 : getT 0 name1 w3 ≡ getT 0 name2 w3'
+        g4 = trans (trans g2 (≡just eqc1)) (sym g3)
+
+        comp5d : Σ 𝕎· (λ w4' → Σ Term (λ v' →
+                  APPLY f (NUM m) ⇓ v' from w3' to w4'
+                  × differ2 name1 name2 f v v'
+                  × getT 0 name1 w2 ≡ getT 0 name2 w4'))
+        comp5d = pd k4
+                   (<-transʳ (≤-stepsˡ k1 (<⇒≤ (<-transʳ (≤-stepsˡ k3 ≤-refl) ltk34))) ltk12)
+                   w3 w2 w3' (APPLY f (NUM m)) (APPLY f (NUM m)) v isv
+                   compat1' compat2' gtn' diff' g4 comp5c
+
+        w4' : 𝕎·
+        w4' = fst comp5d
+
+        v' : Term
+        v' = fst (snd comp5d)
+
+        comp5d' : APPLY f (NUM m) ⇓ v' from w3' to w4'
+        comp5d' = fst (snd (snd comp5d))
+
+        diff'' : differ2 name1 name2 f v v'
+        diff'' = fst (snd (snd (snd comp5d)))
+
+        g0' : getT 0 name1 w2 ≡ getT 0 name2 w4'
+        g0' = snd (snd (snd (snd comp5d)))
 
 {--        h6 : steps k4 (APPLY f (NUM m) , w3') ≡ (v , w3') × w3 ≡ w2 × ¬Names v
         h6 = ¬Names→steps k4 w3 w2 w3' (APPLY f (NUM m)) v (→∧≡true {¬names f} {¬names (NUM m)} nnf refl) comp5c
