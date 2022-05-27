@@ -619,6 +619,15 @@ equalInType-QBAIREn-BAIRE-trans {i} {w} {a} {b} {c} {n} h1 h2 h3 =
                             snd (snd (snd (snd (snd (h w2 e2))))))))
 
 
+→∀𝕎-NATeq-NATeq : (w : 𝕎·) (a b : CTerm)
+                   → ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) ((k : ℕ) → a #⇓ #NUM k at w' → b #⇓ #NUM k at w'))
+                   → ∀𝕎 w (λ w' _ → NATeq w' a a → NATeq w' a b)
+→∀𝕎-NATeq-NATeq w a b h w1 e1 (n , c₁ , c₂) = n , c₁ , c
+  where
+    c : b #⇛ #NUM n at w1
+    c w2 e2 = lift (lower (h w2 (⊑-trans· e1 e2)) n (lower (c₁ w2 e2)))
+
+
 eqfgq : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
         {i : ℕ} {w : 𝕎·} {F f g : CTerm}
         → #¬Names g
@@ -640,6 +649,19 @@ eqfgq cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g eqb =
                          → □· w' (λ w'' _ → NATeq w'' (#APPLY f a₁) (#APPLY g a₂)))
     eqb2 w1 e1 a₁ a₂ eqa = equalInType-NAT→ i w1 (#APPLY f a₁) (#APPLY g a₂) (eqb1 w1 e1 a₁ a₂ (→equalInType-QNATn (testM-QNAT cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)) eqa))
 
+-- NOTE: It is not clear how this could work since to prove compg0 below we need to know that f and g compute to the same number
+-- on the same input, as long as this input is less than the modulus of F at f. However, to use eqb2 for that we would have to
+-- prove that this input is less than all possible moduli of continuity for all extensions...
+-- Counter-example?
+
+{--    eqb3 : ∀𝕎 w (λ w' _ → (n k : ℕ) → k < n → #νtestMup F f #⇓ #NUM n at w'
+                         → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
+    eqb3 w1 e1 n k ltk comp = kb z w1 (⊑-refl· _)
+      where
+        z : □· w1 (λ w'' _ → NATeq w'' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
+        z = eqb2 w1 e1 (#NUM k) (#NUM k) {!!}--}
+ --eqb2 w1 e1 (#NUM k) (#NUM k) (Mod.∀𝕎-□ M (λ w2 e2 → k , #compAllRefl (#NUM k) w2 , #compAllRefl (#NUM k) w2 , ltk))
+
 {--    neqt : NATeq w (#νtestM F f) (#νtestM F f)
     neqt = νtestM-NAT cn kb gc i w F f nnF nnf ∈F ∈f
 
@@ -651,23 +673,19 @@ eqfgq cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g eqb =
 
     cx : #νtestM F f #⇛ #NUM tn at w
     cx = NATeq→⇛ {w} {#νtestM F f} x
-
-    eqb3 : ∀𝕎 w (λ w' _ → (k : ℕ) → k < tn
-                         → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
-    eqb3 w1 e1 k ltk = kb z w1 (⊑-refl· _)
-      where
-        z : □· w1 (λ w'' _ → NATeq w'' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
-        z = eqb2 w1 e1 (#NUM k) (#NUM k) (Mod.∀𝕎-□ M (λ w2 e2 → k , #compAllRefl (#NUM k) w2 , #compAllRefl (#NUM k) w2 , ltk))
 --}
 
     inn : ∈Type i w #NAT (#APPLY F (#force f))
     inn = equalInType-refl (equalInType-sym (equalInType-APPLY-force ∈F ∈f))
 
-    aw : ∀𝕎 w (λ w' _ → NATeq w' (#APPLY F (#force f)) (#APPLY F (#force f))
-                      → NATeq w' (#APPLY F (#force f)) (#APPLY F (#force g)))
-    aw w1 e1 (n , comp1 , comp2) =
-      n , comp1 ,
-      {!!} --¬Names→⇓→⇛ w1 w1 ⌜ #APPLY F (#force g) ⌝ (NUM n) (#¬Names-APPLY {F} {#force g} nnF (#¬Names-force {g} nng)) compg
+    aw : ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) ((k : ℕ) → #APPLY F (#force f) #⇓ #NUM k at w' → #APPLY F (#force g) #⇓ #NUM k at w'))
+    aw w1 e1 = lift imp
+      where
+       imp : (k : ℕ) → #APPLY F (#force f) #⇓ #NUM k at w1 → #APPLY F (#force g) #⇓ #NUM k at w1
+       imp k c = {!!}
+
+--      n , comp1 ,
+--      {!!} --¬Names→⇓→⇛ w1 w1 ⌜ #APPLY F (#force g) ⌝ (NUM n) (#¬Names-APPLY {F} {#force g} nnF (#¬Names-force {g} nng)) compg
 {--      where
         cxb : Σ 𝕎· (λ w2 → νtestM ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM tn from w1 to w2)
         cxb = ⇓→from-to (lower (cx w1 e1))
@@ -764,7 +782,9 @@ eqfgq cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g eqb =
     eqf : equalInType i w #NAT (#APPLY F (#force f)) (#APPLY F (#force g))
     eqf = →equalInType-NAT
             i w (#APPLY F (#force f)) (#APPLY F (#force g))
-            (Mod.∀𝕎-□Func M aw (equalInType-NAT→ i w (#APPLY F (#force f)) (#APPLY F (#force f)) inn))
+            (Mod.∀𝕎-□Func M
+              (→∀𝕎-NATeq-NATeq w (#APPLY F (#force f)) (#APPLY F (#force g)) aw)
+              (equalInType-NAT→ i w (#APPLY F (#force f)) (#APPLY F (#force f)) inn))
 
 
 
