@@ -581,6 +581,150 @@ updCtxt2-refl name f (LOWER t) nn = updCtxt2-LOWER _ (updCtxt2-refl name f t nn)
 updCtxt2-refl name f (SHRINK t) nn = updCtxt2-SHRINK _ (updCtxt2-refl name f t nn)
 
 
+
+→≡sucIf≤ : {v : Var} {a b : Var}
+            → a ≡ b
+            → sucIf≤ v a ≡ sucIf≤ v b
+→≡sucIf≤ {v} {a} {b} e rewrite e = refl
+
+
+NAMEinj : {n m : Name} → NAME n ≡ NAME m → n ≡ m
+NAMEinj refl =  refl
+
+
+shiftNameUp-inj : {n : Name} {a b : Term} → shiftNameUp n a ≡ shiftNameUp n b → a ≡ b
+shiftNameUp-inj {n} {VAR x} {VAR x} refl = refl
+shiftNameUp-inj {n} {NAT} {NAT} e = refl
+shiftNameUp-inj {n} {QNAT} {QNAT} e = refl
+shiftNameUp-inj {n} {LT a a₁} {LT b b₁} e rewrite shiftNameUp-inj (LTinj1 e) | shiftNameUp-inj (LTinj2 e) = refl
+shiftNameUp-inj {n} {QLT a a₁} {QLT b b₁} e rewrite shiftNameUp-inj (QLTinj1 e) | shiftNameUp-inj (QLTinj2 e) = refl
+shiftNameUp-inj {n} {NUM x} {NUM .x} refl = refl
+shiftNameUp-inj {n} {IFLT a a₁ a₂ a₃} {IFLT b b₁ b₂ b₃} e rewrite shiftNameUp-inj (IFLTinj1 e) | shiftNameUp-inj (IFLTinj2 e) | shiftNameUp-inj (IFLTinj3 e) | shiftNameUp-inj (IFLTinj4 e) = refl
+shiftNameUp-inj {n} {SUC a} {SUC b} e rewrite shiftNameUp-inj (SUCinj e) = refl
+shiftNameUp-inj {n} {PI a a₁} {PI b b₁} e rewrite shiftNameUp-inj (PIinj1 e) | shiftNameUp-inj (PIinj2 e) = refl
+shiftNameUp-inj {n} {LAMBDA a} {LAMBDA b} e rewrite shiftNameUp-inj (LAMinj e) = refl
+shiftNameUp-inj {n} {APPLY a a₁} {APPLY b b₁} e rewrite shiftNameUp-inj (APPLYinj1 e) | shiftNameUp-inj (APPLYinj2 e) = refl
+shiftNameUp-inj {n} {FIX a} {FIX b} e rewrite shiftNameUp-inj (FIXinj e) = refl
+shiftNameUp-inj {n} {LET a a₁} {LET b b₁} e rewrite shiftNameUp-inj (LETinj1 e) | shiftNameUp-inj (LETinj2 e) = refl
+shiftNameUp-inj {n} {SUM a a₁} {SUM b b₁} e rewrite shiftNameUp-inj (SUMinj1 e) | shiftNameUp-inj (SUMinj2 e) = refl
+shiftNameUp-inj {n} {PAIR a a₁} {PAIR b b₁} e rewrite shiftNameUp-inj (PAIRinj1 e) | shiftNameUp-inj (PAIRinj2 e) = refl
+shiftNameUp-inj {n} {SPREAD a a₁} {SPREAD b b₁} e rewrite shiftNameUp-inj (SPREADinj1 e) | shiftNameUp-inj (SPREADinj2 e) = refl
+shiftNameUp-inj {n} {SET a a₁} {SET b b₁} e rewrite shiftNameUp-inj (SETinj1 e) | shiftNameUp-inj (SETinj2 e) = refl
+shiftNameUp-inj {n} {ISECT a a₁} {ISECT b b₁} e rewrite shiftNameUp-inj (ISECTinj1 e) | shiftNameUp-inj (ISECTinj2 e) = refl
+shiftNameUp-inj {n} {TUNION a a₁} {TUNION b b₁} e rewrite shiftNameUp-inj (TUNIONinj1 e) | shiftNameUp-inj (TUNIONinj2 e) = refl
+shiftNameUp-inj {n} {UNION a a₁} {UNION b b₁} e rewrite shiftNameUp-inj (UNIONinj1 e) | shiftNameUp-inj (UNIONinj2 e) = refl
+shiftNameUp-inj {n} {QTUNION a a₁} {QTUNION b b₁} e rewrite shiftNameUp-inj (QTUNIONinj1 e) | shiftNameUp-inj (QTUNIONinj2 e) = refl
+shiftNameUp-inj {n} {INL a} {INL b} e rewrite shiftNameUp-inj (INLinj e) = refl
+shiftNameUp-inj {n} {INR a} {INR b} e rewrite shiftNameUp-inj (INRinj e) = refl
+shiftNameUp-inj {n} {DECIDE a a₁ a₂} {DECIDE b b₁ b₂} e rewrite shiftNameUp-inj (DECIDEinj1 e) | shiftNameUp-inj (DECIDEinj2 e) | shiftNameUp-inj (DECIDEinj3 e) = refl
+shiftNameUp-inj {n} {EQ a a₁ a₂} {EQ b b₁ b₂} e rewrite shiftNameUp-inj (EQinj1 e) | shiftNameUp-inj (EQinj2 e) | shiftNameUp-inj (EQinj3 e) = refl
+shiftNameUp-inj {n} {AX} {AX} e = refl
+shiftNameUp-inj {n} {FREE} {FREE} e = refl
+shiftNameUp-inj {n} {CS x} {CS x₁} e = ≡CS (sucIf≤-inj {n} {x} {x₁} (CSinj e))
+shiftNameUp-inj {n} {NAME x} {NAME x₁} e = ≡NAME (sucIf≤-inj {n} {x} {x₁} (NAMEinj e))
+shiftNameUp-inj {n} {FRESH a} {FRESH b} e rewrite shiftNameUp-inj (FRESHinj e) = refl
+shiftNameUp-inj {n} {CHOOSE a a₁} {CHOOSE b b₁} e rewrite shiftNameUp-inj (CHOOSEinj1 e) | shiftNameUp-inj (CHOOSEinj2 e) = refl
+--shiftNameUp-inj {n} {IFC0 a a₁ a₂} {IFC0 b b₁ b₂} e rewrite shiftNameUp-inj (IFC0inj1 e) | shiftNameUp-inj (IFC0inj2 e) | shiftNameUp-inj (IFC0inj3 e) = refl
+shiftNameUp-inj {n} {TSQUASH a} {TSQUASH b} e rewrite shiftNameUp-inj (TSQUASHinj e) = refl
+shiftNameUp-inj {n} {TTRUNC a} {TTRUNC b} e rewrite shiftNameUp-inj (TTRUNCinj e) = refl
+shiftNameUp-inj {n} {TCONST a} {TCONST b} e rewrite shiftNameUp-inj (TCONSTinj e) = refl
+shiftNameUp-inj {n} {SUBSING a} {SUBSING b} e rewrite shiftNameUp-inj (SUBSINGinj e) = refl
+shiftNameUp-inj {n} {DUM a} {DUM b} e rewrite shiftNameUp-inj (DUMinj e) = refl
+shiftNameUp-inj {n} {FFDEFS a a₁} {FFDEFS b b₁} e rewrite shiftNameUp-inj (FFDEFSinj1 e) | shiftNameUp-inj (FFDEFSinj2 e) = refl
+shiftNameUp-inj {n} {PURE} {PURE} refl = refl
+shiftNameUp-inj {n} {UNIV x} {UNIV .x} refl = refl
+shiftNameUp-inj {n} {LIFT a} {LIFT b} e rewrite shiftNameUp-inj (LIFTinj e) = refl
+shiftNameUp-inj {n} {LOWER a} {LOWER b} e rewrite shiftNameUp-inj (LOWERinj e) = refl
+shiftNameUp-inj {n} {SHRINK a} {SHRINK b} e rewrite shiftNameUp-inj (SHRINKinj e) = refl
+
+
+shiftUp-ShiftNameUp≡ShiftNameUp→ : (v : Name) (f a : Term)
+                                    → shiftUp 0 (shiftNameUp v f) ≡ shiftNameUp v a
+                                    → a ≡ shiftUp 0 f
+shiftUp-ShiftNameUp≡ShiftNameUp→ v f a e
+  rewrite shiftUp-shiftNameUp 0 v f = sym (shiftNameUp-inj e)
+
+
+updBody≡shiftNameUp→ : (v : Var) (name : Name) (f : Term) (a : Term)
+                        → updBody (sucIf≤ v name) (shiftNameUp v f) ≡ shiftNameUp v a
+                        → a ≡ updBody name f
+updBody≡shiftNameUp→ v name f (LET (VAR 0) (LET (IFLT (APPLY (CS x₁) (NUM 0)) (VAR 0) (CHOOSE (NAME x₂) (VAR 0)) AX) (APPLY a (VAR 1)))) e
+  rewrite sym (sucIf≤-inj {v} {name} {x₁} (CSinj (APPLYinj1 (IFLTinj1 (LETinj1 (LETinj2 e))))))
+        | sym (sucIf≤-inj {v} {name} {x₂} (NAMEinj (CHOOSEinj1 (IFLTinj3 (LETinj1 (LETinj2 e))))))
+        | shiftUp-ShiftNameUp≡ShiftNameUp→ v f a (APPLYinj1 (LETinj2 (LETinj2 e))) = refl
+
+
+
+updCtxt2-shiftNameUp-LAMBDA→ : (v : Var) {name : Name} {f : Term} (cf : # f) {a t : Term}
+                                → t ≡ shiftNameUp v a
+                                → updCtxt2 (sucIf≤ v name) (shiftNameUp v f) (LAMBDA t)
+                                → (updCtxt2 (sucIf≤ v name) (shiftNameUp v f) (shiftNameUp v a) → updCtxt2 name f a)
+                                → updCtxt2 name f (LAMBDA a)
+updCtxt2-shiftNameUp-LAMBDA→ v {name} {f} cf {a} {t} e (updCtxt2-LAMBDA .t upd₁) ind rewrite e = updCtxt2-LAMBDA _ (ind upd₁)
+updCtxt2-shiftNameUp-LAMBDA→ v {name} {f} cf {a} {.(updBody (sucIf≤ v name) (shiftNameUp v f))} e updCtxt2-upd ind
+  rewrite updBody≡shiftNameUp→ v name f a e = updCtxt2-upd
+
+
+
+updCtxt2-shiftNameUp→ : (v : Var) {name : Name} {f : Term} (cf : # f) {a : Term}
+                         → updCtxt2 (sucIf≤ v name) (shiftNameUp v f) (shiftNameUp v a)
+                         → updCtxt2 name f a
+updCtxt2-shiftNameUp→ v {name} {f} cf {VAR x} (updCtxt2-VAR .x) = updCtxt2-VAR _
+updCtxt2-shiftNameUp→ v {name} {f} cf {NAT} upd = updCtxt2-NAT
+updCtxt2-shiftNameUp→ v {name} {f} cf {QNAT} upd = updCtxt2-QNAT
+updCtxt2-shiftNameUp→ v {name} {f} cf {LT a a₁} (updCtxt2-LT .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-LT _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
+updCtxt2-shiftNameUp→ v {name} {f} cf {QLT a a₁} (updCtxt2-QLT .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-QLT _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
+updCtxt2-shiftNameUp→ v {name} {f} cf {NUM x} upd = updCtxt2-NUM _
+updCtxt2-shiftNameUp→ v {name} {f} cf {IFLT a a₁ a₂ a₃} (updCtxt2-IFLT .(shiftNameUp v a) .(shiftNameUp v a₁) .(shiftNameUp v a₂) .(shiftNameUp v a₃) upd₁ upd₂ upd₃ upd₄) = updCtxt2-IFLT _ _ _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂) (updCtxt2-shiftNameUp→ v cf upd₃) (updCtxt2-shiftNameUp→ v cf upd₄)
+updCtxt2-shiftNameUp→ v {name} {f} cf {SUC a} (updCtxt2-SUC .(shiftNameUp v a) upd₁) = updCtxt2-SUC _ (updCtxt2-shiftNameUp→ v cf upd₁)
+updCtxt2-shiftNameUp→ v {name} {f} cf {PI a a₁} (updCtxt2-PI .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-PI _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
+updCtxt2-shiftNameUp→ v {name} {f} cf {LAMBDA a} upd =
+  updCtxt2-shiftNameUp-LAMBDA→ v {name} {f} cf {a} {shiftNameUp v a} refl upd ind
+  where
+    ind : updCtxt2 (sucIf≤ v name) (shiftNameUp v f) (shiftNameUp v a) → updCtxt2 name f a
+    ind = updCtxt2-shiftNameUp→ v cf
+updCtxt2-shiftNameUp→ v {name} {f} cf {APPLY a a₁} (updCtxt2-APPLY .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-APPLY _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
+updCtxt2-shiftNameUp→ v {name} {f} cf {FIX a} (updCtxt2-FIX .(shiftNameUp v a) upd₁) = updCtxt2-FIX _ (updCtxt2-shiftNameUp→ v cf upd₁)
+updCtxt2-shiftNameUp→ v {name} {f} cf {LET a a₁} (updCtxt2-LET .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-LET _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
+updCtxt2-shiftNameUp→ v {name} {f} cf {SUM a a₁} (updCtxt2-SUM .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-SUM _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
+updCtxt2-shiftNameUp→ v {name} {f} cf {PAIR a a₁} (updCtxt2-PAIR .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-PAIR _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
+updCtxt2-shiftNameUp→ v {name} {f} cf {SPREAD a a₁} (updCtxt2-SPREAD .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-SPREAD _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
+updCtxt2-shiftNameUp→ v {name} {f} cf {SET a a₁} (updCtxt2-SET .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-SET _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
+updCtxt2-shiftNameUp→ v {name} {f} cf {TUNION a a₁} (updCtxt2-TUNION .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-TUNION _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
+updCtxt2-shiftNameUp→ v {name} {f} cf {ISECT a a₁} (updCtxt2-ISECT .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-ISECT _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
+updCtxt2-shiftNameUp→ v {name} {f} cf {UNION a a₁} (updCtxt2-UNION .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-UNION _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
+updCtxt2-shiftNameUp→ v {name} {f} cf {QTUNION a a₁} (updCtxt2-QTUNION .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-QTUNION _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
+updCtxt2-shiftNameUp→ v {name} {f} cf {INL a} (updCtxt2-INL .(shiftNameUp v a) upd₁) = updCtxt2-INL _ (updCtxt2-shiftNameUp→ v cf upd₁)
+updCtxt2-shiftNameUp→ v {name} {f} cf {INR a} (updCtxt2-INR .(shiftNameUp v a) upd₁) = updCtxt2-INR _ (updCtxt2-shiftNameUp→ v cf upd₁)
+updCtxt2-shiftNameUp→ v {name} {f} cf {DECIDE a a₁ a₂} (updCtxt2-DECIDE .(shiftNameUp v a) .(shiftNameUp v a₁) .(shiftNameUp v a₂) upd₁ upd₂ upd₃) = updCtxt2-DECIDE _ _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂) (updCtxt2-shiftNameUp→ v cf upd₃)
+updCtxt2-shiftNameUp→ v {name} {f} cf {EQ a a₁ a₂} (updCtxt2-EQ .(shiftNameUp v a) .(shiftNameUp v a₁) .(shiftNameUp v a₂) upd₁ upd₂ upd₃) = updCtxt2-EQ _ _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂) (updCtxt2-shiftNameUp→ v cf upd₃)
+updCtxt2-shiftNameUp→ v {name} {f} cf {AX} upd = updCtxt2-AX
+updCtxt2-shiftNameUp→ v {name} {f} cf {FREE} upd = updCtxt2-FREE
+updCtxt2-shiftNameUp→ v {name} {f} cf {CS x} upd = updCtxt2-CS _
+updCtxt2-shiftNameUp→ v {name} {f} cf {NAME x} (updCtxt2-NAME .(sucIf≤ v x) d) = updCtxt2-NAME _ λ z → d (→≡sucIf≤ z)
+updCtxt2-shiftNameUp→ v {name} {f} cf {FRESH a} (updCtxt2-FRESH .(shiftNameUp (suc v) a) upd₁) =
+  updCtxt2-FRESH a (updCtxt2-shiftNameUp→ (suc v) {suc name} {shiftNameUp 0 f} (→#shiftNameUp 0 {f} cf) upd1)
+  where
+    seq : suc (sucIf≤ v name) ≡ sucIf≤ (suc v) (sucIf≤ 0 name)
+    seq rewrite sym (sucIf≤-sucIf≤ {name} {0} {v} _≤_.z≤n) | sym (suc≡sucIf≤0 (sucIf≤ v name)) = refl
+
+    upd1 : updCtxt2 (sucIf≤ (suc v) (suc name)) (shiftNameUp (suc v) (shiftNameUp 0 f)) (shiftNameUp (suc v) a)
+    upd1 rewrite suc≡sucIf≤0 name | sym seq | sym (shiftNameUp-shiftNameUp {0} {v} {f} _≤_.z≤n) = upd₁
+updCtxt2-shiftNameUp→ v {name} {f} cf {CHOOSE a a₁} (updCtxt2-CHOOSE .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-CHOOSE _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
+updCtxt2-shiftNameUp→ v {name} {f} cf {TSQUASH a} (updCtxt2-TSQUASH .(shiftNameUp v a) upd₁) = updCtxt2-TSQUASH _ (updCtxt2-shiftNameUp→ v cf upd₁)
+updCtxt2-shiftNameUp→ v {name} {f} cf {TTRUNC a} (updCtxt2-TTRUNC .(shiftNameUp v a) upd₁) = updCtxt2-TTRUNC _ (updCtxt2-shiftNameUp→ v cf upd₁)
+updCtxt2-shiftNameUp→ v {name} {f} cf {TCONST a} (updCtxt2-TCONST .(shiftNameUp v a) upd₁) = updCtxt2-TCONST _ (updCtxt2-shiftNameUp→ v cf upd₁)
+updCtxt2-shiftNameUp→ v {name} {f} cf {SUBSING a} (updCtxt2-SUBSING .(shiftNameUp v a) upd₁) = updCtxt2-SUBSING _ (updCtxt2-shiftNameUp→ v cf upd₁)
+updCtxt2-shiftNameUp→ v {name} {f} cf {DUM a} (updCtxt2-DUM .(shiftNameUp v a) upd₁) = updCtxt2-DUM _ (updCtxt2-shiftNameUp→ v cf upd₁)
+updCtxt2-shiftNameUp→ v {name} {f} cf {FFDEFS a a₁} (updCtxt2-FFDEFS .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-FFDEFS _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
+updCtxt2-shiftNameUp→ v {name} {f} cf {PURE} upd = updCtxt2-PURE
+updCtxt2-shiftNameUp→ v {name} {f} cf {UNIV x} upd = updCtxt2-UNIV _
+updCtxt2-shiftNameUp→ v {name} {f} cf {LIFT a} (updCtxt2-LIFT .(shiftNameUp v a) upd₁) = updCtxt2-LIFT _ (updCtxt2-shiftNameUp→ v cf upd₁)
+updCtxt2-shiftNameUp→ v {name} {f} cf {LOWER a} (updCtxt2-LOWER .(shiftNameUp v a) upd₁) = updCtxt2-LOWER _ (updCtxt2-shiftNameUp→ v cf upd₁)
+updCtxt2-shiftNameUp→ v {name} {f} cf {SHRINK a} (updCtxt2-SHRINK .(shiftNameUp v a) upd₁) = updCtxt2-SHRINK _ (updCtxt2-shiftNameUp→ v cf upd₁)
+
+
+
 ¬∈names→isHighestℕ-step : (cc : ContConds) {t u : Term} {w1 w2 : 𝕎·} {n : ℕ} {name : Name}
                            → ¬ name ∈ names t
                            → ¬ name ∈ names𝕎· w1
@@ -1224,6 +1368,144 @@ stepsPresHighestℕ2-APPLY₂→ {name} {f} {name'} {a} {w} (k , v , w' , comp ,
                      → updCtxt2 name f t
 ¬∈names𝕎→updCtxt2 cc f name name' n t w gt nn =
   updCtxt2-refl name f t (¬∈names𝕎→¬∈names cc name name' n t w gt nn)
+
+
+
+
+{--
+predIf≤-inj : {n : ℕ} {x y : Var} → predIf≤ n x ≡ predIf≤ n y → x ≡ y
+predIf≤-inj {n} {0} {0} e = refl
+predIf≤-inj {n} {0} {suc y} e with suc y ≤? n
+... | yes q = e
+... | no q  = {!!}
+predIf≤-inj {n} {suc x} {0} e with suc x ≤? n
+... | yes p = e
+... | no p  = {!!}
+predIf≤-inj {n} {suc x} {suc y} e with suc x ≤? n | suc y ≤? n
+... | yes p | yes q = e
+... | yes p | no q rewrite e = ⊥-elim {!!}
+... | no p  | yes q rewrite e = {!!}
+... | no p  | no q  rewrite e = refl
+--}
+
+
+
+fvars-shiftNameDown : (n : ℕ) (a : Term) → fvars (shiftNameDown n a) ≡ fvars a
+fvars-shiftNameDown n (VAR x) = refl
+fvars-shiftNameDown n NAT = refl
+fvars-shiftNameDown n QNAT = refl
+fvars-shiftNameDown n (LT a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
+fvars-shiftNameDown n (QLT a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
+fvars-shiftNameDown n (NUM x) = refl
+fvars-shiftNameDown n (IFLT a a₁ a₂ a₃) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ | fvars-shiftNameDown n a₂ | fvars-shiftNameDown n a₃ = refl
+fvars-shiftNameDown n (SUC a) rewrite fvars-shiftNameDown n a = refl
+fvars-shiftNameDown n (PI a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
+fvars-shiftNameDown n (LAMBDA a) rewrite fvars-shiftNameDown n a = refl
+fvars-shiftNameDown n (APPLY a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
+fvars-shiftNameDown n (FIX a) rewrite fvars-shiftNameDown n a = refl
+fvars-shiftNameDown n (LET a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
+fvars-shiftNameDown n (SUM a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
+fvars-shiftNameDown n (PAIR a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
+fvars-shiftNameDown n (SPREAD a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
+fvars-shiftNameDown n (SET a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
+fvars-shiftNameDown n (ISECT a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
+fvars-shiftNameDown n (TUNION a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
+fvars-shiftNameDown n (UNION a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
+fvars-shiftNameDown n (QTUNION a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
+fvars-shiftNameDown n (INL a) rewrite fvars-shiftNameDown n a = refl
+fvars-shiftNameDown n (INR a) rewrite fvars-shiftNameDown n a = refl
+fvars-shiftNameDown n (DECIDE a a₁ a₂) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ | fvars-shiftNameDown n a₂ = refl
+fvars-shiftNameDown n (EQ a a₁ a₂) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ | fvars-shiftNameDown n a₂ = refl
+fvars-shiftNameDown n AX = refl
+fvars-shiftNameDown n FREE = refl
+fvars-shiftNameDown n (CS x) = refl
+fvars-shiftNameDown n (NAME x) = refl
+fvars-shiftNameDown n (FRESH a) rewrite fvars-shiftNameDown (suc n) a = refl
+fvars-shiftNameDown n (CHOOSE a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
+--fvars-shiftNameDown n (IFC0 a a₁ a₂) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ | fvars-shiftNameDown n a₂ = refl
+fvars-shiftNameDown n (TSQUASH a) rewrite fvars-shiftNameDown n a = refl
+fvars-shiftNameDown n (TTRUNC a) rewrite fvars-shiftNameDown n a = refl
+fvars-shiftNameDown n (TCONST a) rewrite fvars-shiftNameDown n a = refl
+fvars-shiftNameDown n (SUBSING a) rewrite fvars-shiftNameDown n a = refl
+fvars-shiftNameDown n (DUM a) rewrite fvars-shiftNameDown n a = refl
+fvars-shiftNameDown n (FFDEFS a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
+fvars-shiftNameDown n PURE = refl
+fvars-shiftNameDown n (UNIV x) = refl
+fvars-shiftNameDown n (LIFT a) rewrite fvars-shiftNameDown n a = refl
+fvars-shiftNameDown n (LOWER a) rewrite fvars-shiftNameDown n a = refl
+fvars-shiftNameDown n (SHRINK a) rewrite fvars-shiftNameDown n a = refl
+
+
+→#shiftNameDown : (n : ℕ) {a : Term} → # a → # shiftNameDown n a
+→#shiftNameDown n {a} ca rewrite fvars-shiftNameDown n a = ca
+
+
+sucIf≤-predIf≤ : (n : ℕ) (x : Name) → (x ≡ 0 → 0 < n) → sucIf≤ n (predIf≤ n x) ≡ x
+sucIf≤-predIf≤ n 0 len with 0 <? n
+... | yes p = refl
+... | no p = ⊥-elim (p (len refl))
+sucIf≤-predIf≤ n (suc x) len with suc x ≤? n
+... | yes p with suc x <? n
+... |    yes q = refl
+... |    no q = {!!}
+sucIf≤-predIf≤ n (suc x) len | no p with x <? n
+... |    yes q = ⊥-elim (p q)
+... |    no q = refl
+
+
+
+shiftNameUpDown : (n : ℕ) (t : Term)
+                  → (0 ∈ names t → 0 < n)
+                  → shiftNameUp n (shiftNameDown n t) ≡ t
+shiftNameUpDown n (VAR x) imp = refl
+shiftNameUpDown n NAT imp = {!!}
+shiftNameUpDown n QNAT imp = {!!}
+shiftNameUpDown n (LT t t₁) imp = {!!}
+shiftNameUpDown n (QLT t t₁) imp = {!!}
+shiftNameUpDown n (NUM x) imp = {!!}
+shiftNameUpDown n (IFLT t t₁ t₂ t₃) imp = {!!}
+shiftNameUpDown n (SUC t) imp = {!!}
+shiftNameUpDown n (PI t t₁) imp = {!!}
+shiftNameUpDown n (LAMBDA t) imp = {!!}
+shiftNameUpDown n (APPLY t t₁) imp = {!!}
+shiftNameUpDown n (FIX t) imp = {!!}
+shiftNameUpDown n (LET t t₁) imp = {!!}
+shiftNameUpDown n (SUM t t₁) imp = {!!}
+shiftNameUpDown n (PAIR t t₁) imp = {!!}
+shiftNameUpDown n (SPREAD t t₁) imp = {!!}
+shiftNameUpDown n (SET t t₁) imp = {!!}
+shiftNameUpDown n (TUNION t t₁) imp = {!!}
+shiftNameUpDown n (ISECT t t₁) imp = {!!}
+shiftNameUpDown n (UNION t t₁) imp = {!!}
+shiftNameUpDown n (QTUNION t t₁) imp = {!!}
+shiftNameUpDown n (INL t) imp = {!!}
+shiftNameUpDown n (INR t) imp = {!!}
+shiftNameUpDown n (DECIDE t t₁ t₂) imp = {!!}
+shiftNameUpDown n (EQ t t₁ t₂) imp = {!!}
+shiftNameUpDown n AX imp = {!!}
+shiftNameUpDown n FREE imp = {!!}
+shiftNameUpDown n (CS x) imp = {!!} --rewrite sucIf≤-predIf≤ n x (imp x (here refl)) = refl
+shiftNameUpDown n (NAME x) imp = {!!} --rewrite sucIf≤-predIf≤ n x (imp x (here refl)) = refl
+shiftNameUpDown n (FRESH t) imp = ≡FRESH (shiftNameUpDown (suc n) t {!!})
+shiftNameUpDown n (CHOOSE t t₁) imp = {!!}
+shiftNameUpDown n (TSQUASH t) imp = {!!}
+shiftNameUpDown n (TTRUNC t) imp = {!!}
+shiftNameUpDown n (TCONST t) imp = {!!}
+shiftNameUpDown n (SUBSING t) imp = {!!}
+shiftNameUpDown n (DUM t) imp = {!!}
+shiftNameUpDown n (FFDEFS t t₁) imp = {!!}
+shiftNameUpDown n PURE imp = {!!}
+shiftNameUpDown n (UNIV x) imp = {!!}
+shiftNameUpDown n (LIFT t) imp = {!!}
+shiftNameUpDown n (LOWER t) imp = {!!}
+shiftNameUpDown n (SHRINK t) imp = {!!}
+
+
+→updCtxt2-shiftNameDown : (v : Var) {name : Name} {f : Term} (cf : # f) {a : Term}
+                           → updCtxt2 (sucIf≤ v name) (shiftNameUp v f) a
+                           → updCtxt2 name f (shiftNameDown v a)
+→updCtxt2-shiftNameDown v {name} {f} cf {a} upd =
+  updCtxt2-shiftNameUp→ v {name} {f} cf {shiftNameDown v a} {!!}
 
 
 
