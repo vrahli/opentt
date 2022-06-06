@@ -184,9 +184,11 @@ presHighestℕ2 name f k =
   → updCtxt2 name f a
   → compatible· name w1 Res⊤
   → ∀𝕎-get0-NUM w1 name
+  → ¬ name ∈ names𝕎· w1
+  → name ∈ dom𝕎· w1
   → (getT≤ℕ w2 n name --getT 0 name w2 ≡ just (NUM n)
       → isHighestℕ {k} {w1} {w2} {a} {b} n name comp)
-     × pres∈names𝕎 {k} {w1} {w2} {a} {b} name comp
+     × ∈names𝕎 {k} {w1} {w2} {a} {b} name comp
 
 
 stepsPresHighestℕ2 : (name : Name) (f : Term) (b : Term) (w : 𝕎·) → Set(lsuc L)
@@ -1239,8 +1241,8 @@ updCtxt2-shiftNameUp→ v {name} {f} cf {SHRINK a} (updCtxt2-SHRINK .(shiftNameU
     e1 = steps→⊑ k1 b (NUM m) comp1b
 
     ind' : (getT≤ℕ w1' n name → isHighestℕ {k1} {w1} {w1'} {b} {NUM m} n name comp1b)
-           × pres∈names𝕎 {k1} {w1} {w1'} {b} {NUM m} name comp1b
-    ind' = ind k1 (<⇒≤ ltk1) {w1} {w1'} {b} {NUM m} {n} comp1b tt nnb compat wgt0
+           × ∈names𝕎 {k1} {w1} {w1'} {b} {NUM m} name comp1b
+    ind' = ind k1 (<⇒≤ ltk1) {w1} {w1'} {b} {NUM m} {n} comp1b tt nnb compat wgt0 nnw idom
 
     j : getT≤ℕ (chooseT0if name w1' m' m) n name
          → (getT≤ℕ w1 n name × isHighestℕ {k2} {w1} {chooseT0if name w1' m' m} n name comp2)
@@ -1250,10 +1252,10 @@ updCtxt2-shiftNameUp→ v {name} {f} cf {SHRINK a} (updCtxt2-SHRINK .(shiftNameU
         g' = getT≤ℕ-chooseT0if→ gc {w1'} {name} {n} {m} {m'} (⊑-compatible· e1 compat) gt0 g
 
         j1 : isHighestℕ {k2} {w1} {chooseT0if name w1' m' m} {LET b (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))} {APPLY f (NUM m)} n name comp2
-        j1 = →isHighestℕ-upd-body2 cc gc {k1} {k2} {name} {w1} {w1'} {b} {f} {n} {m} {m'} cf nnf nnw idom compat comp1b comp2 gt0 g (fst ind' g') (snd ind' nnw idom)
+        j1 = →isHighestℕ-upd-body2 cc gc {k1} {k2} {name} {w1} {w1'} {b} {f} {n} {m} {m'} cf nnf nnw idom compat comp1b comp2 gt0 g (fst ind' g') (snd ind')
 
     inw : ∈names𝕎 {k2} {w1} {chooseT0if name w1' m' m} name comp2
-    inw = →isHighestℕ-upd-body2-∈names𝕎 cc gc {k1} {k2} {name} {w1} {w1'} {b} {f} {m} {m'} cf nnf nnw idom comp1b comp2 gt0 (snd ind' nnw idom)
+    inw = →isHighestℕ-upd-body2-∈names𝕎 cc gc {k1} {k2} {name} {w1} {w1'} {b} {f} {m} {m'} cf nnf nnw idom comp1b comp2 gt0 (snd ind')
 
 
 
