@@ -64,7 +64,7 @@ open import openNotFollowChoice
 open import kripkeCsNotRetrieving
 -- We also here that Kripke bars + FCS does not satisfy the ∀∃𝔹 property in exBar either,
 -- which we require to prove the compatibility with LEM
--- So, given the above result in this one, we cannot derive wether Kripke+FCS is compatible with FCS or not
+-- So, given the above result and this one, we cannot derive whether Kripke+FCS is compatible with LEM or not
 open import kripkeCsNotExBar
 
 -- A proof that all functions on the Baire space are continuous by realizing the modulus of continuity using exceptions.

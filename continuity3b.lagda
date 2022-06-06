@@ -90,6 +90,33 @@ open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
+
+steps-sat-isHighestℕ2-aux : (cc : ContConds) (gc : get-choose-ℕ) {name : Name} {f : Term}
+                             → ¬ name ∈ names f
+                             → # f
+                             → (k : ℕ)
+                             → (ind : (k' : ℕ) → k' < k → presHighestℕ2 name f k')
+                             → presHighestℕ2 name f k
+steps-sat-isHighestℕ2-aux cc gc {name} {f} nnf cf 0 ind {w1} {w2} {a} {b} {n} comp isv upd compat wgt0
+  rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = (λ g → g) , (λ nnw idom → nnw , idom)
+steps-sat-isHighestℕ2-aux cc gc {name} {f} nnf cf (suc k) ind {w1} {w2} {a} {b} {n} comp isv ctxt compat wgt0 with step⊎ a w1
+... | inj₁ (a' , w1' , z) rewrite z = {!!}
+  where
+    ind0 : (k' : ℕ) → k' < suc k → presHighestℕ2 name f k'
+    ind0 = ind
+
+    ind1 : (k' : ℕ) → k' ≤ k → presHighestℕ2 name f k'
+    ind1 k' ltk = ind0 k' (_≤_.s≤s ltk)
+
+    q : ΣhighestUpdCtxt2 name f n a' w1 w1'
+    q = step-sat-isHighestℕ2 cc gc {w1} {w1'} {a} {a'} {n} {name} {f} compat wgt0 z {!!} ctxt nnf {! !} {!!} cf
+ --step-sat-isHighestℕ gc compat wgt0 p (k , b , w2 , comp , isvb , ind1) ctxt nnf cf
+
+... | inj₂ z rewrite z | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = (λ g → g) , (λ nnw idom → nnw , idom)
+
+
+
+{--
 eqfgq : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
         {i : ℕ} {w : 𝕎·} {F f g : CTerm}
         → #¬Names g
@@ -505,5 +532,5 @@ continuityQBody cn kb gc i w F f ∈F ∈f =
                                                    (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT)))))
                    (#PAIR (#νtestMup F f) #lam3AX)
     h0 = equalInType-SUM (λ w' e' → eqTypesQNAT) (equalTypes-contQBodyPI i w F F f f ∈F ∈f) (Mod.∀𝕎-□ M aw)
-
+--}
 \end{code}

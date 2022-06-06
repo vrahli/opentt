@@ -151,6 +151,12 @@ names𝕎-chooseT = (name name' : Name) (w : 𝕎·) (t : Term)
                 → name ∈ names𝕎· w
 
 
+names𝕎-chooseT-diff : Set(L)
+names𝕎-chooseT-diff = (name name' : Name) (w : 𝕎·) (t : Term)
+                → ¬ name ≡ name'
+                → name ∈ names𝕎· (chooseT name' w t)
+                → name ∈ names𝕎· w
+
 
 
 -- because name in is dom𝕎 then it cannot be picked by startNewChoiceT
@@ -186,12 +192,13 @@ dom𝕎-startNewChoiceT = (name : Name) (w : 𝕎·) (t : Term)
 record ContConds : Set(1ℓ Level.⊔ L) where
   constructor mkContConds
   field
-    ccGnames  : getT∈names𝕎 --gsup
-    ccGcd     : get-choose-diff --gcd
-    ccNchoose : names𝕎-chooseT --sct
-    ccGstart  : ∈dom𝕎→getT-startNewChoiceT --idgs
-    ccNstart  : ∈names𝕎·-startNewChoiceT→ --isn
-    ccDchoose : dom𝕎-chooseT
+    ccGnames   : getT∈names𝕎 --gsup
+    ccGcd      : get-choose-diff --gcd
+    ccNchoose  : names𝕎-chooseT --sct
+    ccNchoosed : names𝕎-chooseT-diff
+    ccGstart   : ∈dom𝕎→getT-startNewChoiceT --idgs
+    ccNstart   : ∈names𝕎·-startNewChoiceT→ --isn
+    ccDchoose  : dom𝕎-chooseT
     ccDstart  : dom𝕎-startNewChoiceT
 
 

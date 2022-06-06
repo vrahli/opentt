@@ -464,6 +464,13 @@ updCtxt2-LAMBDA→ {name} {f} {.(updBody name f)} updCtxt2-upd = inj₂ refl
 
 
 
+updCtxt2-NAME→ : {name name' : Name} {f : Term}
+                   → updCtxt2 name f (NAME name')
+                   → ¬ name' ≡ name
+updCtxt2-NAME→ {name} {name'} {f} (updCtxt2-NAME .name' x) = x
+
+
+
 updCtxt2-PAIR→₁ : {name : Name} {f a b : Term}
                    → updCtxt2 name f (PAIR a b)
                    → updCtxt2 name f a
@@ -2167,6 +2174,25 @@ updCtxt2-renn name n m f .(upd name f) diff1 diff2 nf cf updCtxt2-upd with name 
 ... | (y , j , e) = suc-≢-0 {y} (sym e)
 
 
+choose-pres-getT≤ℕ : (cc : ContConds) (name name' : Name) (w : 𝕎·) (a : Term) (n : ℕ)
+                      → ¬ name' ≡ name
+                      → getT≤ℕ (chooseT name' w a) n name
+                      → (getT≤ℕ w n name × getT≤ℕ (chooseT name' w a) n name)
+choose-pres-getT≤ℕ cc name name' w a n diff g
+  rewrite ContConds.ccGcd cc 0 name name' w a (λ x → diff (sym x))
+  = g , g
+
+
+choose-pres-∈names𝕎 : (cc : ContConds) (name name' : Name) (w : 𝕎·) (a : Term)
+                       → ¬ name' ≡ name
+                       → ¬ name ∈ names𝕎· w
+                       → name ∈ dom𝕎· w
+                       → (¬ name ∈ names𝕎· (chooseT name' w a)) × name ∈ dom𝕎· (chooseT name' w a)
+choose-pres-∈names𝕎 cc name name' w a diff nnw idom =
+  (λ x → nnw (ContConds.ccNchoosed cc name name' w a (λ z → diff (sym z)) x)) ,
+  ContConds.ccDchoose cc name name' w a idom
+
+
 -- This is similar to step-sat-isHighestℕ in continuity3.lagda.
 -- updCtxt2's properties can essentially be copied from terms3b.lagda as this is almost the same definition.
 -- We only need to prove that name's value increases, but for this only upd must update name.
@@ -2262,8 +2288,24 @@ step-sat-isHighestℕ2 cc gc {w1} {w2} {.(APPLY g a)} {b} {n} {name} {f} compat 
 ... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-sat-isHighestℕ2 cc gc {w1} {w2} {.(FIX a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-FIX a ctxt) nnf nnw idom cf with is-LAM a
 ... | inj₁ (t , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
-  {!!}
-  -- similiar to APPLY case
+  concl d
+  where
+    d : updCtxt2 name f t ⊎ t ≡ updBody name f
+    d = updCtxt2-LAMBDA→ ctxt
+
+    concl : updCtxt2 name f t ⊎ t ≡ updBody name f
+            → ΣhighestUpdCtxt2 name f n (sub (FIX (LAMBDA t)) t) w1 w1
+    concl (inj₁ u) = 0 , sub (FIX (LAMBDA t)) t , w1 , refl , (λ s → s , s) , (nnw , idom) , updCtxt2-sub cf u (updCtxt2-FIX _ ctxt)
+    concl (inj₂ u) rewrite u = c2 --c2
+      where
+        indb' : stepsPresHighestℕ2 name f (LET (FIX (upd name f)) (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1
+        indb' rewrite u | sub-upd name f (FIX (upd name f)) cf = indb
+
+        c1 : ΣhighestUpdCtxt2 name f n (LET (FIX (upd name f)) (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 w1
+        c1 = →ΣhighestUpdCtxt2-upd cc gc {name} {f} {FIX (upd name f)} {w1} {n} compat wgt0 cf nnf nnw idom (updCtxt2-FIX _ updCtxt2-upd) indb'
+
+        c2 : ΣhighestUpdCtxt2 name f n (sub (FIX (upd name f)) (updBody name f)) w1 w1
+        c2 rewrite sub-upd name f (FIX (upd name f)) cf = c1
 ... | inj₂ x with step⊎ a w1
 ... |    inj₁ (a' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
   ΣhighestUpdCtxt2-FIX₁ ind
@@ -2347,7 +2389,11 @@ step-sat-isHighestℕ2 cc gc {w1} {w2} {.(FRESH a)} {b} {n} {name} {f} compat wg
     upd1 : updCtxt2 name f (shiftNameDown 0 (renn 0 (newChoiceT+ w1 a) a))
     upd1 = →updCtxt2-shiftNameDown 0 {name} {f} cf {renn 0 (newChoiceT+ w1 a) a} imp1 imp2 upd2
 step-sat-isHighestℕ2 cc gc {w1} {w2} {.(CHOOSE a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-CHOOSE a b₁ ctxt ctxt₁) nnf nnw idom cf with is-NAME a
-... | inj₁ (nm , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = {!!}
+... | inj₁ (nm , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+  0 , AX , chooseT nm w1 b₁ , refl ,
+  choose-pres-getT≤ℕ cc name nm w1 b₁ n (updCtxt2-NAME→ ctxt) ,
+  choose-pres-∈names𝕎 cc name nm w1 b₁ (updCtxt2-NAME→ ctxt) nnw idom ,
+  updCtxt2-AX
 ... | inj₂ x with step⊎ a w1
 ... |    inj₁ (a' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
   ΣhighestUpdCtxt2-CHOOSE₁ ctxt₁ ind
