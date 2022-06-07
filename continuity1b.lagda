@@ -746,14 +746,14 @@ testM⇓→ cn {w1} {w2} {F} {f} {n} {name} cF cf compat comp =
              → # F
              → # f
              → νtestMup F f ⇓ NUM n from w1 to w2
-             → Σ Name (λ name → Σ Term (λ v → Σ ℕ (λ k →
-                 APPLY F (upd name f) ⇓ v from (chooseT name (startNewChoiceT Res⊤ w1 (testMup 0 F f)) (NUM 0)) to w2
+             → Σ Term (λ v → Σ ℕ (λ k →
+                 APPLY F (upd (newChoiceT w1 (testMup 0 F f)) f) ⇓ v from (chooseT (newChoiceT w1 (testMup 0 F f)) (startNewChoiceT Res⊤ w1 (testMup 0 F f)) (NUM 0)) to w2
                  × isValue v
-                 × getT 0 name w2 ≡ just (NUM k)
+                 × getT 0 (newChoiceT w1 (testMup 0 F f)) w2 ≡ just (NUM k)
                  × n ≡ suc k
-                 × compatible· name (startNewChoiceT Res⊤ w1 (testMup 0 F f)) Res⊤)))
+                 × compatible· (newChoiceT w1 (testMup 0 F f)) (startNewChoiceT Res⊤ w1 (testMup 0 F f)) Res⊤))
 νtestM⇓→ cn {w1} {w2} {F} {f} {n} cF cf comp =
-  newChoiceT w1 (testMup 0 F f) ,
+  --newChoiceT w1 (testMup 0 F f) ,
   fst comp3 ,
   fst (snd comp3) ,
   fst (snd (snd comp3)) ,

@@ -2416,4 +2416,158 @@ step-sat-isHighestℕ2 cc gc {w1} {w2} {.(LOWER a)} {b} {n} {name} {f} compat wg
 step-sat-isHighestℕ2 cc gc {w1} {w2} {.(SHRINK a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-SHRINK a ctxt) nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , SHRINK a , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-SHRINK _ ctxt
 step-sat-isHighestℕ2 cc gc {w1} {w2} {.(upd name f)} {b} {n} {name} {f} compat wgt0 comp indb updCtxt2-upd nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , upd name f , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-upd
 
+
+
+∈names𝕎→¬∈name𝕎ᵣ : {k : ℕ} {w1 w2 : 𝕎·} {a b : Term} (name : Name)
+                     (comp : steps k (a , w1) ≡ (b , w2))
+                     → ∈names𝕎 {k} {w1} {w2} {a} {b} name comp
+                     → ¬ name ∈ names𝕎· w2
+∈names𝕎→¬∈name𝕎ᵣ {0} {w1} {w2} {a} {b} name comp inw
+  rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp)
+  = fst inw
+∈names𝕎→¬∈name𝕎ᵣ {suc k} {w1} {w2} {a} {b} name comp inw with step⊎ a w1
+... | inj₁ (a' , w1' , z) rewrite z = ∈names𝕎→¬∈name𝕎ᵣ {k} {w1'} {w2} {a'} {b} name comp (snd (snd inw))
+... | inj₂ z rewrite z | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = fst inw
+
+
+
+∈names𝕎→∈dom𝕎ᵣ : {k : ℕ} {w1 w2 : 𝕎·} {a b : Term} (name : Name)
+                     (comp : steps k (a , w1) ≡ (b , w2))
+                     → ∈names𝕎 {k} {w1} {w2} {a} {b} name comp
+                     → name ∈ dom𝕎· w2
+∈names𝕎→∈dom𝕎ᵣ {0} {w1} {w2} {a} {b} name comp inw
+  rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp)
+  = snd inw
+∈names𝕎→∈dom𝕎ᵣ {suc k} {w1} {w2} {a} {b} name comp inw with step⊎ a w1
+... | inj₁ (a' , w1' , z) rewrite z = ∈names𝕎→∈dom𝕎ᵣ {k} {w1'} {w2} {a'} {b} name comp (snd (snd inw))
+... | inj₂ z rewrite z | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = snd inw
+
+
+
+val-steps→names : {w w1 w2 : 𝕎·} {a b v : Term} {n m : ℕ} (i : ℕ) (name : Name)
+              → isValue v
+              → (comp1 : steps m (a , w) ≡ (b , w1))
+              → (comp2 : steps n (a , w) ≡ (v , w2))
+              → Σ ℕ (λ k → k ≤ n × Σ (steps k (b , w1) ≡ (v , w2)) (λ comp →
+                  (isHighestℕ {m} {w} {w1} {a} {b} i name comp1
+                   → isHighestℕ {k} {w1} {w2} {b} {v} i name comp
+                   → isHighestℕ {n} {w} {w2} {a} {v} i name comp2)
+                  × (∈names𝕎 {m} {w} {w1} {a} {b} name comp1
+                     → ∈names𝕎 {k} {w1} {w2} {b} {v} name comp
+                     → ∈names𝕎 {n} {w} {w2} {a} {v} name comp2)))
+val-steps→names {w} {w1} {w2} {a} {b} {v} {n} {0} i name isv comp1 comp2
+  rewrite pair-inj₁ (sym comp1) | pair-inj₂ (sym comp1)
+  = n , ≤-refl , comp2 , (λ x y → y) , (λ x y → y)
+val-steps→names {w} {w1} {w2} {a} {b} {v} {0} {suc m} i name isv comp1 comp2
+  rewrite pair-inj₁ (sym comp2) | pair-inj₂ (sym comp2)
+        | stepVal a w isv
+  = 0 , ≤-refl ,
+    ≡pair (fst (stepsVal→ a b w w1 m isv comp1)) (snd (stepsVal→ a b w w1 m isv comp1)) ,
+    (λ (x1 , x2) x3 → x1) ,
+    (λ (x1 , x2 , x3) (y1 , y2) → x1 , x2)
+val-steps→names {w} {w1} {w2} {a} {b} {v} {suc n} {suc m} i name isv comp1 comp2 with step⊎ a w
+... | inj₁ (a' , w' , z) rewrite z =
+  fst q , ≤-trans (fst (snd q)) (<⇒≤ (n<1+n n)) , fst (snd (snd q)) ,
+  (λ (x1 , x2) x3 → x1 , fst (snd (snd (snd q))) x2 x3) ,
+  (λ (x1 , x2 , x3) y → x1 , x2 , snd (snd (snd (snd q))) x3 y)
+  where
+    q : Σ ℕ (λ k → k ≤ n × Σ (steps k (b , w1) ≡ (v , w2)) (λ comp →
+           (isHighestℕ {m} {w'} {w1} {a'} {b} i name comp1
+            → isHighestℕ {k} {w1} {w2} {b} {v} i name comp
+            → isHighestℕ {n} {w'} {w2} {a'} {v} i name comp2)
+           × (∈names𝕎 {m} {w'} {w1} {a'} {b} name comp1
+              → ∈names𝕎 {k} {w1} {w2} {b} {v} name comp
+              → ∈names𝕎 {n} {w'} {w2} {a'} {v} name comp2)))
+    q = val-steps→names {w'} {w1} {w2} {a'} {b} {v} {n} {m} i name isv comp1 comp2
+... | inj₂ z rewrite z
+           | pair-inj₁ (sym comp2) | pair-inj₂ (sym comp2)
+           | pair-inj₁ (sym comp1) | pair-inj₂ (sym comp1) =
+    0 , _≤_.z≤n , refl , (λ x y → x) , (λ x y → x)
+
+
+
+steps-sat-isHighestℕ2-aux : (cc : ContConds) (gc : get-choose-ℕ) {name : Name} {f : Term}
+                             → ¬ name ∈ names f
+                             → # f
+                             → (k : ℕ)
+                             → (ind : (k' : ℕ) → k' < k → presHighestℕ2 name f k')
+                             → presHighestℕ2 name f k
+steps-sat-isHighestℕ2-aux cc gc {name} {f} nnf cf 0 ind {w1} {w2} {a} {b} {n} comp isv upd compat wgt0 nnw idom
+  rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = (λ g → g) , (nnw , idom)
+steps-sat-isHighestℕ2-aux cc gc {name} {f} nnf cf (suc k) ind {w1} {w2} {a} {b} {n} comp isv ctxt compat wgt0 nnw idom with step⊎ a w1
+... | inj₁ (a' , w1' , z) rewrite z =
+  cgn , (nnw , idom , snd (snd (snd (snd comp2))) inw (snd comp3))
+  where
+    ind0 : (k' : ℕ) → k' < suc k → presHighestℕ2 name f k'
+    ind0 = ind
+
+    ind1 : (k' : ℕ) → k' ≤ k → presHighestℕ2 name f k'
+    ind1 k' ltk = ind0 k' (_≤_.s≤s ltk)
+
+    q : ΣhighestUpdCtxt2 name f n a' w1 w1'
+    q = step-sat-isHighestℕ2 cc gc {w1} {w1'} {a} {a'} {n} {name} {f} compat wgt0 z (k , b , w2 , comp , isv , ind1) ctxt nnf nnw idom cf
+
+    k' : ℕ
+    k' = fst q
+
+    a'' : Term
+    a'' = fst (snd q)
+
+    w1'' : 𝕎·
+    w1'' = fst (snd (snd q))
+
+    comp1 : steps k' (a' , w1') ≡ (a'' , w1'')
+    comp1 = fst (snd (snd (snd q)))
+
+    e1 : w1 ⊑· w1'
+    e1 = step⊑ {w1} {w1'} {a} {a'} z
+
+    e2 : w1' ⊑· w1''
+    e2 = steps→⊑ k' a' a'' {w1'} {w1''} comp1
+
+    e3 : w1 ⊑· w1''
+    e3 = ⊑-trans· e1 e2
+
+    ii : getT≤ℕ w1'' n name → (getT≤ℕ w1 n name × isHighestℕ {k'} {w1'} {w1''} {a'} {a''} n name comp1)
+    ii = fst (snd (snd (snd (snd q))))
+
+    inw : ∈names𝕎 {k'} {w1'} {w1''} {a'} {a''} name comp1
+    inw = fst (snd (snd (snd (snd (snd q)))))
+
+    uc : updCtxt2 name f a''
+    uc = snd (snd (snd (snd (snd (snd q)))))
+
+    comp2 : Σ ℕ (λ k0 → k0 ≤ k × Σ (steps k0 (a'' , w1'') ≡ (b , w2)) (λ cmp →
+                  (isHighestℕ {k'} {w1'} {w1''} {a'} {a''} n name comp1
+                   → isHighestℕ {k0} {w1''} {w2} {a''} {b} n name cmp
+                   → isHighestℕ {k} {w1'} {w2} {a'} {b} n name comp)
+                  × (∈names𝕎 {k'} {w1'} {w1''} {a'} {a''} name comp1
+                     → ∈names𝕎 {k0} {w1''} {w2} {a''} {b} name cmp
+                     → ∈names𝕎 {k} {w1'} {w2} {a'} {b} name comp)))
+    comp2 = val-steps→names {w1'} {w1''} {w2} {a'} {a''} {b} {k} {k'} n name isv comp1 comp
+
+    comp3 : (getT≤ℕ w2 n name → isHighestℕ {fst comp2} {w1''} {w2} {a''} {b} n name (fst (snd (snd comp2))))
+            × ∈names𝕎 {fst comp2} {w1''} {w2} {a''} {b} name (fst (snd (snd comp2)))
+    comp3 = ind1 (fst comp2) (fst (snd comp2)) {w1''} {w2} {a''} {b} {n}
+                 (fst (snd (snd comp2))) isv uc
+                 (⊑-compatible· e3 compat) (∀𝕎-mon e3 wgt0)
+                 (∈names𝕎→¬∈name𝕎ᵣ {k'} {w1'} {w1''} {a'} {a''} name comp1 inw)
+                 (∈names𝕎→∈dom𝕎ᵣ {k'} {w1'} {w1''} {a'} {a''} name comp1 inw)
+
+    cgn : getT≤ℕ w2 n name → getT≤ℕ w1 n name × isHighestℕ {k} {w1'} {w2} {a'} {b} n name comp
+    cgn g = fst (ii gw') , fst (snd (snd (snd comp2))) (snd (ii gw')) (fst comp3 g)
+      where
+        gw' : getT≤ℕ w1'' n name
+        gw' = isHighestℕ→getT≤ℕ {proj₁ comp2} {w1''} {w2} {a''} {b} n name (fst (snd (snd comp2))) (fst comp3 g)
+... | inj₂ z rewrite z | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = (λ g → g) , (nnw , idom)
+
+
+
+-- We also need something about the way f computes as for the proof about 'differ'
+steps-sat-isHighestℕ2 : (cc : ContConds) (gc : get-choose-ℕ) {name : Name} {f : Term} {k : ℕ}
+                        → ¬ name ∈ names f
+                        → # f
+                        → presHighestℕ2 name f k
+steps-sat-isHighestℕ2 cc gc {name} {f} {k} nnf cf = <ℕind _ (steps-sat-isHighestℕ2-aux cc gc {name} {f} nnf cf) k
+
 \end{code}

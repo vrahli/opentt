@@ -351,8 +351,10 @@ infix 30 _≈_at_
 compAllRefl : (T : Term) (w : 𝕎·) → T ⇛ T at w
 compAllRefl T w =  λ w' e → lift (⇓-refl T w')
 
+
 compAllVal : {a b : Term} {w : 𝕎·} → a ⇛ b at w → isValue a → a ≡ b
 compAllVal {a} {b} {w} c i = let c' = c _ (⊑-refl· w) in compVal _ _ _ (lower c') i
+
 
 -- t1 and t2 compute to the same number and stay the same number in all extensions
 strongMonEq : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))

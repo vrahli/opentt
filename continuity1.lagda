@@ -94,6 +94,12 @@ K□ = {w : 𝕎·} {f : wPred w} → □· w f → ∀𝕎 w f
 
 
 
+-- MOVE to utils
+≡suc→< : {a b : ℕ} → a ≡ suc b → b < a
+≡suc→< {a} {b} e rewrite e = ≤-refl
+
+
+
 
 -- turns 'f' into λy.(if n ≤ y then name:=ℂ₁);f(y)
 -- ℂ₀ is treated as true here (i.e., "didn't reach n"), and ℂ₁ as false (i.e., "reached at least n")

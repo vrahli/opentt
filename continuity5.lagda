@@ -560,10 +560,4 @@ steps-updRel-app gc {n} {name} {F} {f} {g} {v} {k} {w1} {w2} {w} nnF nnf nng cf 
     {APPLY F (upd name f)} {APPLY F (force g)} {v} {w1} {w2} {w}
     (updRel-APPLY F F (upd name f) (force g) (updRel-refl nnF) updRel-upd)
     compat wgt0 eqn comp ish isv
-
-
-
-≡suc→< : {a b : ℕ} → a ≡ suc b → b < a
-≡suc→< {a} {b} e rewrite e = ≤-refl
-
 \end{code}

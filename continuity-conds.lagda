@@ -188,6 +188,11 @@ dom𝕎-startNewChoiceT = (name : Name) (w : 𝕎·) (t : Term)
                         → name ∈ dom𝕎· (startNewChoiceT Res⊤ w t)
 
 
+newChoiceT∈dom𝕎 : Set(L)
+newChoiceT∈dom𝕎 = (w : 𝕎·) (t : Term)
+                   → (newChoiceT w t) ∈ dom𝕎· (startNewChoiceT Res⊤ w t)
+
+
 
 record ContConds : Set(1ℓ Level.⊔ L) where
   constructor mkContConds
@@ -199,7 +204,8 @@ record ContConds : Set(1ℓ Level.⊔ L) where
     ccGstart   : ∈dom𝕎→getT-startNewChoiceT --idgs
     ccNstart   : ∈names𝕎·-startNewChoiceT→ --isn
     ccDchoose  : dom𝕎-chooseT
-    ccDstart  : dom𝕎-startNewChoiceT
+    ccDstart   : dom𝕎-startNewChoiceT
+    ccNchoice  : newChoiceT∈dom𝕎
 
 
 --getT0-chooseT : Set(L)
