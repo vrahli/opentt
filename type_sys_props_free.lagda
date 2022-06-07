@@ -74,6 +74,9 @@ FREEneqNAT ()
 FREEneqQNAT : ¬ FREE ≡ QNAT
 FREEneqQNAT ()
 
+FREEneqTNAT : ¬ FREE ≡ TNAT
+FREEneqTNAT ()
+
 FREEneqLT : {c d : Term} → ¬ FREE ≡ LT c d
 FREEneqLT {c} {d} ()
 
@@ -145,6 +148,7 @@ typeSysConds-FREE-ttrans : (u : univs) (w : 𝕎·) (A B : CTerm)
 {-# TERMINATING #-}
 typeSysConds-FREE-ttrans u w A B x x₁ C (EQTNAT y y₁) = ⊥-elim (FREEneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-ttrans u w A B x x₁ C (EQTQNAT y y₁) = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt x₁ y))
+typeSysConds-FREE-ttrans u w A B x x₁ C (EQTTNAT y y₁) = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-ttrans u w A B x x₁ C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) = ⊥-elim (FREEneqLT (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-ttrans u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) = ⊥-elim (FREEneqQLT (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-ttrans u w A B x x₁ C (EQTFREE y y₁) = EQTFREE x y₁
@@ -187,6 +191,7 @@ typeSysConds-FREE-extl1 : (u : univs) (w : 𝕎·) (A B : CTerm)
 {-# TERMINATING #-}
 typeSysConds-FREE-extl1 u w A B x x₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt x y))
 typeSysConds-FREE-extl1 u w A B x x₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt x y))
+typeSysConds-FREE-extl1 u w A B x x₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt x y))
 typeSysConds-FREE-extl1 u w A B x x₁ C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) a b eqi = ⊥-elim (FREEneqLT (⇛-val-det tt tt x y))
 typeSysConds-FREE-extl1 u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt x y))
 typeSysConds-FREE-extl1 u w A B x x₁ C (EQTFREE y y₁) a b eqi = eqi
@@ -257,6 +262,7 @@ typeSysConds-FREE-extl2 : (u : univs) (w : 𝕎·) (A B : CTerm)
 {-# TERMINATING #-}
 typeSysConds-FREE-extl2 u w A B x x₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extl2 u w A B x x₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt x y₁))
+typeSysConds-FREE-extl2 u w A B x x₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extl2 u w A B x x₁ C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) a b eqi = ⊥-elim (FREEneqLT (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extl2 u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extl2 u w A B x x₁ C (EQTFREE y y₁) a b eqi = eqi
@@ -299,6 +305,7 @@ typeSysConds-FREE-extr1 : (u : univs) (w : 𝕎·) (A B : CTerm)
 {-# TERMINATING #-}
 typeSysConds-FREE-extr1 u w A B x x₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extr1 u w A B x x₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt x₁ y₁))
+typeSysConds-FREE-extr1 u w A B x x₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extr1 u w A B x x₁ C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) a b eqi = ⊥-elim (FREEneqLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extr1 u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extr1 u w A B x x₁ C (EQTFREE y y₁) a b eqi = eqi
@@ -341,6 +348,7 @@ typeSysConds-FREE-extr2 : (u : univs) (w : 𝕎·) (A B : CTerm)
 {-# TERMINATING #-}
 typeSysConds-FREE-extr2 u w A B x x₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extr2 u w A B x x₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt x₁ y))
+typeSysConds-FREE-extr2 u w A B x x₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extr2 u w A B x x₁ C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) a b eqi = ⊥-elim (FREEneqLT (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extr2 u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extr2 u w A B x x₁ C (EQTFREE y y₁) a b eqi = eqi
@@ -383,6 +391,7 @@ typeSysConds-FREE-extrevl1 : (u : univs) (w : 𝕎·) (A B : CTerm)
 {-# TERMINATING #-}
 typeSysConds-FREE-extrevl1 u w A B x x₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt x y))
 typeSysConds-FREE-extrevl1 u w A B x x₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt x y))
+typeSysConds-FREE-extrevl1 u w A B x x₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt x y))
 typeSysConds-FREE-extrevl1 u w A B x x₁ C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) a b eqi = ⊥-elim (FREEneqLT (⇛-val-det tt tt x y))
 typeSysConds-FREE-extrevl1 u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt x y))
 typeSysConds-FREE-extrevl1 u w A B x x₁ C (EQTFREE y y₁) a b eqi = eqi
@@ -431,6 +440,7 @@ typeSysConds-FREE-extrevl2 : (u : univs) (w : 𝕎·) (A B : CTerm)
 {-# TERMINATING #-}
 typeSysConds-FREE-extrevl2 u w A B x x₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extrevl2 u w A B x x₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt x y₁))
+typeSysConds-FREE-extrevl2 u w A B x x₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extrevl2 u w A B x x₁ C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) a b eqi = ⊥-elim (FREEneqLT (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extrevl2 u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt x y₁))
 typeSysConds-FREE-extrevl2 u w A B x x₁ C (EQTFREE y y₁) a b eqi = eqi
@@ -480,6 +490,7 @@ typeSysConds-FREE-extrevr1 : (u : univs) (w : 𝕎·) (A B : CTerm)
 {-# TERMINATING #-}
 typeSysConds-FREE-extrevr1 u w A B x x₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extrevr1 u w A B x x₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt x₁ y₁))
+typeSysConds-FREE-extrevr1 u w A B x x₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extrevr1 u w A B x x₁ C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) a b eqi = ⊥-elim (FREEneqLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extrevr1 u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FREE-extrevr1 u w A B x x₁ C (EQTFREE y y₁) a b eqi = eqi
@@ -529,6 +540,7 @@ typeSysConds-FREE-extrevr2 : (u : univs) (w : 𝕎·) (A B : CTerm)
 {-# TERMINATING #-}
 typeSysConds-FREE-extrevr2 u w A B x x₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extrevr2 u w A B x x₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt x₁ y))
+typeSysConds-FREE-extrevr2 u w A B x x₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extrevr2 u w A B x x₁ C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) a b eqi = ⊥-elim (FREEneqLT (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extrevr2 u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt x₁ y))
 typeSysConds-FREE-extrevr2 u w A B x x₁ C (EQTFREE y y₁) a b eqi = eqi
@@ -581,6 +593,7 @@ eqInType-⇛-FREE : (u : univs) (w : 𝕎·) (A B a b : CTerm)
 {-# TERMINATING #-}
 eqInType-⇛-FREE u w A B a b c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (FREEneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE u w A B a b c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-FREE u w A B a b c₁ c₂ (EQTTNAT x x₁) ei = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE u w A B a b c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (FREEneqLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE u w A B a b c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (FREEneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE u w A B a b c₁ c₂ (EQTFREE x x₁) ei = ei
@@ -630,6 +643,7 @@ eqInType-⇛-FREE-rev : (u : univs) (w : 𝕎·) (A B a b : CTerm)
 {-# TERMINATING #-}
 eqInType-⇛-FREE-rev u w A B a b c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (FREEneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE-rev u w A B a b c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-FREE-rev u w A B a b c₁ c₂ (EQTTNAT x x₁) ei = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE-rev u w A B a b c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (FREEneqLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE-rev u w A B a b c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (FREEneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FREE-rev u w A B a b c₁ c₂ (EQTFREE x x₁) ei = ei

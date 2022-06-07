@@ -116,6 +116,7 @@ updRel→isValue : {name : Name} {f g a b : Term}
                   → isValue b
 updRel→isValue {name} {f} {g} {.NAT} {.NAT} updRel-NAT isv = tt
 updRel→isValue {name} {f} {g} {.QNAT} {.QNAT} updRel-QNAT isv = tt
+updRel→isValue {name} {f} {g} {.TNAT} {.TNAT} updRel-TNAT isv = tt
 updRel→isValue {name} {f} {g} {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updRel-LT a₁ a₂ b₁ b₂ u u₁) isv = tt
 updRel→isValue {name} {f} {g} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updRel-QLT a₁ a₂ b₁ b₂ u u₁) isv = tt
 updRel→isValue {name} {f} {g} {.(NUM x)} {.(NUM x)} (updRel-NUM x) isv = tt
@@ -164,6 +165,7 @@ step-updRel : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term}
               → ΣstepsUpdRel name f g x w2 b w
 step-updRel gc {n} {name} {f} {g} {.NAT} {.NAT} {x} {w1} {w2} {w} nnf nng cf cg comp ind updRel-NAT gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , NAT , NAT , w1 , refl , refl , updRel-NAT
 step-updRel gc {n} {name} {f} {g} {.QNAT} {.QNAT} {x} {w1} {w2} {w} nnf nng cf cg comp ind updRel-QNAT gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , QNAT , QNAT , w1 , refl , refl , updRel-QNAT
+step-updRel gc {n} {name} {f} {g} {.TNAT} {.TNAT} {x} {w1} {w2} {w} nnf nng cf cg comp ind updRel-TNAT gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TNAT , TNAT , w1 , refl , refl , updRel-TNAT
 step-updRel gc {n} {name} {f} {g} {.(LT a₁ b₁)} {.(LT a₂ b₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-LT a₁ a₂ b₁ b₂ r r₁) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , LT a₁ b₁ , LT a₂ b₂ , w1 , refl , refl , updRel-LT _ _ _ _ r r₁
 step-updRel gc {n} {name} {f} {g} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-QLT a₁ a₂ b₁ b₂ r r₁) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , QLT a₁ b₁ , QLT a₂ b₂ , w1 , refl , refl , updRel-QLT _ _ _ _ r r₁
 step-updRel gc {n} {name} {f} {g} {.(NUM x₁)} {.(NUM x₁)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-NUM x₁) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , NUM x₁ , NUM x₁ , w1 , refl , refl , updRel-NUM _
@@ -502,6 +504,7 @@ updRel-refl : {name : Name} {f g a : Term}
 updRel-refl {name} {f} {g} {VAR x} nn = updRel-VAR _
 updRel-refl {name} {f} {g} {NAT} nn = updRel-NAT
 updRel-refl {name} {f} {g} {QNAT} nn = updRel-QNAT
+updRel-refl {name} {f} {g} {TNAT} nn = updRel-TNAT
 updRel-refl {name} {f} {g} {LT a a₁} nn = updRel-LT _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
 updRel-refl {name} {f} {g} {QLT a a₁} nn = updRel-QLT _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
 updRel-refl {name} {f} {g} {NUM x} nn = updRel-NUM _

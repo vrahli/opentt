@@ -83,6 +83,7 @@ data differ (name1 name2 : Name) (f : Term) : Term → Term → Set where
   differ-VAR     : (x : Var) → differ name1 name2 f (VAR x) (VAR x)
   differ-NAT     : differ name1 name2 f NAT NAT
   differ-QNAT    : differ name1 name2 f QNAT QNAT
+  differ-TNAT    : differ name1 name2 f TNAT TNAT
   differ-LT      : (a₁ a₂ b₁ b₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f (LT a₁ b₁) (LT a₂ b₂)
   differ-QLT     : (a₁ a₂ b₁ b₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f (QLT a₁ b₁) (QLT a₂ b₂)
   differ-NUM     : (x : ℕ) → differ name1 name2 f (NUM x) (NUM x)
@@ -183,6 +184,7 @@ differ-INRₗ→ {name1} {name2} {f} {a} {.(INR a₂)} (differ-INR .a a₂ diff)
 →differ-shiftUp v {name1} {name2} {f} cf {.(VAR x)} {.(VAR x)} (differ-VAR x) = differ-VAR _
 →differ-shiftUp v {name1} {name2} {f} cf {.NAT} {.NAT} differ-NAT = differ-NAT
 →differ-shiftUp v {name1} {name2} {f} cf {.QNAT} {.QNAT} differ-QNAT = differ-QNAT
+→differ-shiftUp v {name1} {name2} {f} cf {.TNAT} {.TNAT} differ-TNAT = differ-TNAT
 →differ-shiftUp v {name1} {name2} {f} cf {.(LT a₁ b₁)} {.(LT a₂ b₂)} (differ-LT a₁ a₂ b₁ b₂ diff diff₁) = differ-LT _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
 →differ-shiftUp v {name1} {name2} {f} cf {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) = differ-QLT _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
 →differ-shiftUp v {name1} {name2} {f} cf {.(NUM x)} {.(NUM x)} (differ-NUM x) = differ-NUM x
@@ -393,6 +395,7 @@ shiftNameUp-shiftNameUp : {i j : ℕ} {t : Term}
 shiftNameUp-shiftNameUp {i} {j} {VAR x} imp = refl
 shiftNameUp-shiftNameUp {i} {j} {NAT} imp = refl
 shiftNameUp-shiftNameUp {i} {j} {QNAT} imp = refl
+shiftNameUp-shiftNameUp {i} {j} {TNAT} imp = refl
 shiftNameUp-shiftNameUp {i} {j} {LT t t₁} imp = ≡LT (shiftNameUp-shiftNameUp {i} {j} {t} (λ n k → imp n (∈-++⁺ˡ k))) (shiftNameUp-shiftNameUp {i} {j} {t₁} (λ n k → imp n (∈-++⁺ʳ (names t) k)))
 shiftNameUp-shiftNameUp {i} {j} {QLT t t₁} imp = ≡QLT (shiftNameUp-shiftNameUp {i} {j} {t} (λ n k → imp n (∈-++⁺ˡ k))) (shiftNameUp-shiftNameUp {i} {j} {t₁} (λ n k → imp n (∈-++⁺ʳ (names t) k)))
 shiftNameUp-shiftNameUp {i} {j} {NUM x} imp = refl
@@ -446,6 +449,7 @@ shiftNameUp-shiftNameUp : {i j : ℕ} {t : Term}
 shiftNameUp-shiftNameUp {i} {j} {VAR x} imp = refl
 shiftNameUp-shiftNameUp {i} {j} {NAT} imp = refl
 shiftNameUp-shiftNameUp {i} {j} {QNAT} imp = refl
+shiftNameUp-shiftNameUp {i} {j} {TNAT} imp = refl
 shiftNameUp-shiftNameUp {i} {j} {LT t t₁} imp = ≡LT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
 shiftNameUp-shiftNameUp {i} {j} {QLT t t₁} imp = ≡QLT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
 shiftNameUp-shiftNameUp {i} {j} {NUM x} imp = refl
@@ -505,6 +509,7 @@ suc-sucIf≤ i j | no p with suc j <? suc i
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(VAR x)} {.(VAR x)} (differ-VAR x) = differ-VAR _
 →differ-shiftNameUp v {name1} {name2} {f} cf {.NAT} {.NAT} differ-NAT = differ-NAT
 →differ-shiftNameUp v {name1} {name2} {f} cf {.QNAT} {.QNAT} differ-QNAT = differ-QNAT
+→differ-shiftNameUp v {name1} {name2} {f} cf {.TNAT} {.TNAT} differ-TNAT = differ-TNAT
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(LT a₁ b₁)} {.(LT a₂ b₂)} (differ-LT a₁ a₂ b₁ b₂ diff diff₁) = differ-LT _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) = differ-QLT _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(NUM x)} {.(NUM x)} (differ-NUM x) = differ-NUM x
@@ -608,6 +613,7 @@ differ-subv {name1} {name2} {f} cf v {.(VAR x)} {.(VAR x)} {b₁} {b₂} (differ
 ... | no p = differ-VAR _
 differ-subv {name1} {name2} {f} cf v {.NAT} {.NAT} {b₁} {b₂} differ-NAT d₂ = differ-NAT
 differ-subv {name1} {name2} {f} cf v {.QNAT} {.QNAT} {b₁} {b₂} differ-QNAT d₂ = differ-QNAT
+differ-subv {name1} {name2} {f} cf v {.TNAT} {.TNAT} {b₁} {b₂} differ-TNAT d₂ = differ-TNAT
 differ-subv {name1} {name2} {f} cf v {.(LT a₁ b₃)} {.(LT a₂ b₄)} {b₁} {b₂} (differ-LT a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-LT _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
 differ-subv {name1} {name2} {f} cf v {.(QLT a₁ b₃)} {.(QLT a₂ b₄)} {b₁} {b₂} (differ-QLT a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-QLT _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
 differ-subv {name1} {name2} {f} cf v {.(NUM x)} {.(NUM x)} {b₁} {b₂} (differ-NUM x) d₂ = differ-NUM x
@@ -660,6 +666,7 @@ differ-subv {name1} {name2} {f} cf v {.(upd name1 f)} {.(upd name2 f)} {b₁} {b
 →differ-shiftDown v {name1} {name2} {f} cf {.(VAR x)} {.(VAR x)} (differ-VAR x) = differ-VAR _
 →differ-shiftDown v {name1} {name2} {f} cf {.NAT} {.NAT} differ-NAT = differ-NAT
 →differ-shiftDown v {name1} {name2} {f} cf {.QNAT} {.QNAT} differ-QNAT = differ-QNAT
+→differ-shiftDown v {name1} {name2} {f} cf {.TNAT} {.TNAT} differ-TNAT = differ-TNAT
 →differ-shiftDown v {name1} {name2} {f} cf {.(LT a₁ b₁)} {.(LT a₂ b₂)} (differ-LT a₁ a₂ b₁ b₂ diff diff₁) = differ-LT _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
 →differ-shiftDown v {name1} {name2} {f} cf {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) = differ-QLT _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
 →differ-shiftDown v {name1} {name2} {f} cf {.(NUM x)} {.(NUM x)} (differ-NUM x) = differ-NUM x
@@ -717,6 +724,7 @@ differ-isValue→ : {name1 name2 : Name} {f : Term} {a b : Term}
                    → isValue b
 differ-isValue→ {name1} {name2} {f} {.NAT} {.NAT} differ-NAT isv = tt
 differ-isValue→ {name1} {name2} {f} {.QNAT} {.QNAT} differ-QNAT isv = tt
+differ-isValue→ {name1} {name2} {f} {.TNAT} {.TNAT} differ-TNAT isv = tt
 differ-isValue→ {name1} {name2} {f} {.(LT a₁ b₁)} {.(LT a₂ b₂)} (differ-LT a₁ a₂ b₁ b₂ diff diff₁) isv = tt
 differ-isValue→ {name1} {name2} {f} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) isv = tt
 differ-isValue→ {name1} {name2} {f} {.(NUM x)} {.(NUM x)} (differ-NUM x) isv = tt

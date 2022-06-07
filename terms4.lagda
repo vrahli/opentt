@@ -222,6 +222,7 @@ SEQ-val⇓ w a b isv = 1 , s
               → step t w3 ≡ just (u , w3) × w1 ≡ w2 × ¬Names u
 ¬Names→step w1 w2 w3 NAT u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
 ¬Names→step w1 w2 w3 QNAT u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
+¬Names→step w1 w2 w3 TNAT u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
 ¬Names→step w1 w2 w3 (LT t t₁) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
 ¬Names→step w1 w2 w3 (QLT t t₁) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
 ¬Names→step w1 w2 w3 (NUM x) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
@@ -454,6 +455,7 @@ SEQ-val⇓ w a b isv = 1 , s
               → Σ 𝕎· (λ w4 → step t w3 ≡ just (u , w4) × getT 0 name w2 ≡ getT 0 name w4 × ¬Names u)
 ¬Names→step w1 w2 w3 NAT u name nr g0 s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0 , refl
 ¬Names→step w1 w2 w3 QNAT u name nr g0 s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0 , refl
+¬Names→step w1 w2 w3 TNAT u name nr g0 s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0 , refl
 ¬Names→step w1 w2 w3 (LT t t₁) u name nr g0 s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0 , nr
 ¬Names→step w1 w2 w3 (QLT t t₁) u name nr g0 s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0 , nr
 ¬Names→step w1 w2 w3 (NUM x) u name nr g0 s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0 , nr
@@ -731,6 +733,7 @@ names-shiftUp : (n : Var) (a : Term) → names (shiftUp n a) ≡ names a
 names-shiftUp n (VAR x) = refl
 names-shiftUp n NAT = refl
 names-shiftUp n QNAT = refl
+names-shiftUp n TNAT = refl
 names-shiftUp n (LT a a₁) rewrite names-shiftUp n a | names-shiftUp n a₁ = refl
 names-shiftUp n (QLT a a₁) rewrite names-shiftUp n a | names-shiftUp n a₁ = refl
 names-shiftUp n (NUM x) = refl
@@ -777,6 +780,7 @@ names-shiftDown : (n : Var) (a : Term) → names (shiftDown n a) ≡ names a
 names-shiftDown n (VAR x) = refl
 names-shiftDown n NAT = refl
 names-shiftDown n QNAT = refl
+names-shiftDown n TNAT = refl
 names-shiftDown n (LT a a₁) rewrite names-shiftDown n a | names-shiftDown n a₁ = refl
 names-shiftDown n (QLT a a₁) rewrite names-shiftDown n a | names-shiftDown n a₁ = refl
 names-shiftDown n (NUM x) = refl
@@ -921,6 +925,7 @@ names-shiftNameUp≡ : (n : ℕ) (t : Term)
 names-shiftNameUp≡ n (VAR x) = refl
 names-shiftNameUp≡ n NAT = refl
 names-shiftNameUp≡ n QNAT = refl
+names-shiftNameUp≡ n TNAT = refl
 names-shiftNameUp≡ n (LT t t₁)
   rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
         | names-shiftNameUp≡ n t
@@ -1033,6 +1038,7 @@ names-shiftNameDown≡ : (n : ℕ) (t : Term)
 names-shiftNameDown≡ n (VAR x) = refl
 names-shiftNameDown≡ n NAT = refl
 names-shiftNameDown≡ n QNAT = refl
+names-shiftNameDown≡ n TNAT = refl
 names-shiftNameDown≡ n (LT t t₁)
   rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
         | names-shiftNameDown≡ n t
@@ -1149,6 +1155,7 @@ names-shiftNameDown≡ n (SHRINK t) = names-shiftNameDown≡ n t
 ... | no z = nb
 ¬∈names-subv {x} {v} {a} {NAT} na nb = nb
 ¬∈names-subv {x} {v} {a} {QNAT} na nb = nb
+¬∈names-subv {x} {v} {a} {TNAT} na nb = nb
 ¬∈names-subv {x} {v} {a} {LT b b₁} na nb = →¬∈++2 {_} {_} {x} {names b} {names b₁} (¬∈names-subv {x} {v} {a} {b} na) (¬∈names-subv {x} {v} {a} {b₁} na) nb
 ¬∈names-subv {x} {v} {a} {QLT b b₁} na nb = →¬∈++2 {_} {_} {x} {names b} {names b₁} (¬∈names-subv {x} {v} {a} {b} na) (¬∈names-subv {x} {v} {a} {b₁} na) nb
 ¬∈names-subv {x} {v} {a} {NUM x₁} na nb = nb
@@ -1541,6 +1548,7 @@ name¬∈→step : (cc : ContConds)
                 → getT 0 name w1 ≡ getT 0 name w2 × ¬ name ∈ names u × ¬ name ∈ names𝕎· w2 × name ∈ dom𝕎· w2
 name¬∈→step cc w1 w2 NAT u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
 name¬∈→step cc w1 w2 QNAT u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
+name¬∈→step cc w1 w2 TNAT u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
 name¬∈→step cc w1 w2 (LT t t₁) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
 name¬∈→step cc w1 w2 (QLT t t₁) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
 name¬∈→step cc w1 w2 (NUM x) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom

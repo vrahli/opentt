@@ -390,6 +390,7 @@ differ-refl : (name1 name2 : Name) (f t : Term)
 differ-refl name1 name2 f (VAR x) nn = differ-VAR x
 differ-refl name1 name2 f NAT nn = differ-NAT
 differ-refl name1 name2 f QNAT nn = differ-QNAT
+differ-refl name1 name2 f TNAT nn = differ-TNAT
 differ-refl name1 name2 f (LT t t₁) nn = differ-LT _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
 differ-refl name1 name2 f (QLT t t₁) nn = differ-QLT _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
 differ-refl name1 name2 f (NUM x) nn = differ-NUM x
@@ -478,6 +479,7 @@ differ⇓-aux2 : (gc0 : get-choose-ℕ)
                    × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
 differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .NAT .NAT a' v k compat1 compat2 agtn differ-NAT g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NAT , NAT , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NAT , g0
 differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .QNAT .QNAT a' v k compat1 compat2 agtn differ-QNAT g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = QNAT , QNAT , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-QNAT , g0
+differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .TNAT .TNAT a' v k compat1 compat2 agtn differ-TNAT g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TNAT , TNAT , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TNAT , g0
 differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(LT a₁ b₁) .(LT a₂ b₂) a' v k compat1 compat2 agtn (differ-LT a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = LT a₁ b₁ , LT a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-LT _ _ _ _ diff diff₁ , g0
 differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(QLT a₁ b₁) .(QLT a₂ b₂) a' v k compat1 compat2 agtn (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = QLT a₁ b₁ , QLT a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-QLT _ _ _ _ diff diff₁ , g0
 differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(NUM x) .(NUM x) a' v k compat1 compat2 agtn (differ-NUM x) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NUM x , NUM x , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NUM x , g0

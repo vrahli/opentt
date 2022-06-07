@@ -64,6 +64,7 @@ open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_tnat(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import type_sys_props_lt(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import type_sys_props_qlt(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import type_sys_props_free(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -303,6 +304,7 @@ eqTypesFUN→₁ : {w : 𝕎·} {i : ℕ} {A : CTerm} {B : CTerm} {C : CTerm} {D
 --{-# INLINE ↑inOpenBar #-}
 eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTNAT x x₁) = ⊥-elim (PIneqNAT (compAllVal x₁ tt))
 eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTQNAT x x₁) = ⊥-elim (PIneqQNAT (compAllVal x₁ tt))
+eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTTNAT x x₁) = ⊥-elim (PIneqTNAT (compAllVal x₁ tt))
 eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = ⊥-elim (PIneqLT (compAllVal x₁ tt))
 eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) = ⊥-elim (PIneqQLT (compAllVal x₁ tt))
 eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTFREE x x₁) = ⊥-elim (PIneqFREE (compAllVal x₁ tt))
@@ -354,6 +356,10 @@ eqTypesNAT {w} {i} = EQTNAT (#compAllRefl #NAT w) (#compAllRefl #NAT w)
 
 eqTypesQNAT : {w : 𝕎·} {i : ℕ} → equalTypes i w #QNAT #QNAT
 eqTypesQNAT {w} {i} = EQTQNAT (#compAllRefl #QNAT w) (#compAllRefl #QNAT w)
+
+
+eqTypesTNAT : {w : 𝕎·} {i : ℕ} → equalTypes i w #TNAT #TNAT
+eqTypesTNAT {w} {i} = EQTTNAT (#compAllRefl #TNAT w) (#compAllRefl #TNAT w)
 
 
 
@@ -549,6 +555,7 @@ equalInTypeTSQUASH→ : {w : 𝕎·} {i : ℕ} {a b A : CTerm}
 {-# TERMINATING #-}
 equalInTypeTSQUASH→ {w} {i} {a} {b} {A} (EQTNAT x x₁ , eqi) = ⊥-elim (TSQUASHneqNAT (compAllVal x₁ tt))
 equalInTypeTSQUASH→ {w} {i} {a} {b} {A} (EQTQNAT x x₁ , eqi) = ⊥-elim (TSQUASHneqQNAT (compAllVal x₁ tt))
+equalInTypeTSQUASH→ {w} {i} {a} {b} {A} (EQTTNAT x x₁ , eqi) = ⊥-elim (TSQUASHneqTNAT (compAllVal x₁ tt))
 equalInTypeTSQUASH→ {w} {i} {a} {b} {A} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (TSQUASHneqLT (compAllVal x₁ tt))
 equalInTypeTSQUASH→ {w} {i} {a} {b} {A} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (TSQUASHneqQLT (compAllVal x₁ tt))
 equalInTypeTSQUASH→ {w} {i} {a} {b} {A} (EQTFREE x x₁ , eqi) = ⊥-elim (TSQUASHneqFREE (compAllVal x₁ tt))
@@ -591,6 +598,7 @@ equalInTypeTTRUNC→ : {w : 𝕎·} {i : ℕ} {a b A : CTerm}
 {-# TERMINATING #-}
 equalInTypeTTRUNC→ {w} {i} {a} {b} {A} (EQTNAT x x₁ , eqi) = ⊥-elim (TTRUNCneqNAT (compAllVal x₁ tt))
 equalInTypeTTRUNC→ {w} {i} {a} {b} {A} (EQTQNAT x x₁ , eqi) = ⊥-elim (TTRUNCneqQNAT (compAllVal x₁ tt))
+equalInTypeTTRUNC→ {w} {i} {a} {b} {A} (EQTTNAT x x₁ , eqi) = ⊥-elim (TTRUNCneqTNAT (compAllVal x₁ tt))
 equalInTypeTTRUNC→ {w} {i} {a} {b} {A} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (TTRUNCneqLT (compAllVal x₁ tt))
 equalInTypeTTRUNC→ {w} {i} {a} {b} {A} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (TTRUNCneqQLT (compAllVal x₁ tt))
 equalInTypeTTRUNC→ {w} {i} {a} {b} {A} (EQTFREE x x₁ , eqi) = ⊥-elim (TTRUNCneqFREE (compAllVal x₁ tt))
@@ -679,6 +687,7 @@ equalInTypeTCONST→ : {w : 𝕎·} {i : ℕ} {a b A : CTerm}
 {-# TERMINATING #-}
 equalInTypeTCONST→ {w} {i} {a} {b} {A} (EQTNAT x x₁ , eqi) = ⊥-elim (TCONSTneqNAT (compAllVal x₁ tt))
 equalInTypeTCONST→ {w} {i} {a} {b} {A} (EQTQNAT x x₁ , eqi) = ⊥-elim (TCONSTneqQNAT (compAllVal x₁ tt))
+equalInTypeTCONST→ {w} {i} {a} {b} {A} (EQTTNAT x x₁ , eqi) = ⊥-elim (TCONSTneqTNAT (compAllVal x₁ tt))
 equalInTypeTCONST→ {w} {i} {a} {b} {A} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (TCONSTneqLT (compAllVal x₁ tt))
 equalInTypeTCONST→ {w} {i} {a} {b} {A} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (TCONSTneqQLT (compAllVal x₁ tt))
 equalInTypeTCONST→ {w} {i} {a} {b} {A} (EQTFREE x x₁ , eqi) = ⊥-elim (TCONSTneqFREE (compAllVal x₁ tt))
@@ -718,6 +727,7 @@ equalInTypeSUBSING→ : {w : 𝕎·} {i : ℕ} {a b A : CTerm}
 {-# TERMINATING #-}
 equalInTypeSUBSING→ {w} {i} {a} {b} {A} (EQTNAT x x₁ , eqi) = ⊥-elim (SUBSINGneqNAT (compAllVal x₁ tt))
 equalInTypeSUBSING→ {w} {i} {a} {b} {A} (EQTQNAT x x₁ , eqi) = ⊥-elim (SUBSINGneqQNAT (compAllVal x₁ tt))
+equalInTypeSUBSING→ {w} {i} {a} {b} {A} (EQTTNAT x x₁ , eqi) = ⊥-elim (SUBSINGneqTNAT (compAllVal x₁ tt))
 equalInTypeSUBSING→ {w} {i} {a} {b} {A} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (SUBSINGneqLT (compAllVal x₁ tt))
 equalInTypeSUBSING→ {w} {i} {a} {b} {A} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (SUBSINGneqQLT (compAllVal x₁ tt))
 equalInTypeSUBSING→ {w} {i} {a} {b} {A} (EQTFREE x x₁ , eqi) = ⊥-elim (SUBSINGneqFREE (compAllVal x₁ tt))
@@ -757,6 +767,7 @@ equalInTypeFFDEFS→ : {w : 𝕎·} {i : ℕ} {a b A y : CTerm}
 {-# TERMINATING #-}
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTNAT x x₁ , eqi) = ⊥-elim (FFDEFSneqNAT (compAllVal x₁ tt))
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTQNAT x x₁ , eqi) = ⊥-elim (FFDEFSneqQNAT (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTTNAT x x₁ , eqi) = ⊥-elim (FFDEFSneqTNAT (compAllVal x₁ tt))
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (FFDEFSneqLT (compAllVal x₁ tt))
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (FFDEFSneqQLT (compAllVal x₁ tt))
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTFREE x x₁ , eqi) = ⊥-elim (FFDEFSneqFREE (compAllVal x₁ tt))
@@ -882,11 +893,26 @@ equalInType-QTNAT!→ i w a b eqi =
 
 
 
+→equalInType-TNAT : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                    → □· w (λ w' _ → TNATeq w' a b)
+                    → equalInType i w #TNAT a b
+→equalInType-TNAT i w a b j = eqTypesTNAT , j
+
+
+
 equalInType-QNAT→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                      → equalInType i w #QNAT a b
                      → □· w (λ w' _ → #weakMonEq w' a b)
 equalInType-QNAT→ i w a b (eqt , eqi) =
   eqInType-⇛-QNAT (uni i) w #QNAT #QNAT a b (#compAllRefl #QNAT w) (#compAllRefl #QNAT w) eqt eqi
+
+
+
+equalInType-TNAT→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                     → equalInType i w #TNAT a b
+                     → □· w (λ w' _ → TNATeq w' a b)
+equalInType-TNAT→ i w a b (eqt , eqi) =
+  eqInType-⇛-TNAT (uni i) w #TNAT #TNAT a b (#compAllRefl #TNAT w) (#compAllRefl #TNAT w) eqt eqi
 
 
 
@@ -1181,6 +1207,7 @@ equalInType-LIFT→ : (n : ℕ) (w : 𝕎·) (T a b : CTerm)
 {-# TERMINATING #-}
 equalInType-LIFT→ n w T a b (EQTNAT x x₁ , eqi) = ⊥-elim (LIFTneqNAT (compAllVal x₁ tt))
 equalInType-LIFT→ n w T a b (EQTQNAT x x₁ , eqi) = ⊥-elim (LIFTneqQNAT (compAllVal x₁ tt))
+equalInType-LIFT→ n w T a b (EQTTNAT x x₁ , eqi) = ⊥-elim (LIFTneqTNAT (compAllVal x₁ tt))
 equalInType-LIFT→ n w T a b (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (LIFTneqLT (compAllVal x₁ tt))
 equalInType-LIFT→ n w T a b (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (LIFTneqQLT (compAllVal x₁ tt))
 equalInType-LIFT→ n w T a b (EQTFREE x x₁ , eqi) = ⊥-elim (LIFTneqFREE (compAllVal x₁ tt))
@@ -1290,6 +1317,7 @@ equalInType-PI→ : {u : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} {f g : CTerm
 {-# TERMINATING #-}
 equalInType-PI→ {u} {w} {A} {B} {f} {g} (EQTNAT x x₁ , eqi) = ⊥-elim (PIneqNAT (compAllVal x₁ tt))
 equalInType-PI→ {u} {w} {A} {B} {f} {g} (EQTQNAT x x₁ , eqi) = ⊥-elim (PIneqQNAT (compAllVal x₁ tt))
+equalInType-PI→ {u} {w} {A} {B} {f} {g} (EQTTNAT x x₁ , eqi) = ⊥-elim (PIneqTNAT (compAllVal x₁ tt))
 equalInType-PI→ {u} {w} {A} {B} {f} {g} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (PIneqLT (compAllVal x₁ tt))
 equalInType-PI→ {u} {w} {A} {B} {f} {g} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (PIneqQLT (compAllVal x₁ tt))
 equalInType-PI→ {u} {w} {A} {B} {f} {g} (EQTFREE x x₁ , eqi) = ⊥-elim (PIneqFREE (compAllVal x₁ tt))
@@ -1374,6 +1402,7 @@ equalInType-SQUASH-aux→ : {n : ℕ} {w : 𝕎·} {A a b : CTerm}
 {-# TERMINATING #-}
 equalInType-SQUASH-aux→ {n} {w} {A} {a} {b} (EQTNAT x x₁) eqi = ⊥-elim (SETneqNAT (compAllVal x₁ tt))
 equalInType-SQUASH-aux→ {n} {w} {A} {a} {b} (EQTQNAT x x₁) eqi = ⊥-elim (SETneqQNAT (compAllVal x₁ tt))
+equalInType-SQUASH-aux→ {n} {w} {A} {a} {b} (EQTTNAT x x₁) eqi = ⊥-elim (SETneqTNAT (compAllVal x₁ tt))
 equalInType-SQUASH-aux→ {n} {w} {A} {a} {b} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi = ⊥-elim (SETneqLT (compAllVal x₁ tt))
 equalInType-SQUASH-aux→ {n} {w} {A} {a} {b} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi = ⊥-elim (SETneqQLT (compAllVal x₁ tt))
 equalInType-SQUASH-aux→ {n} {w} {A} {a} {b} (EQTFREE x x₁) eqi = ⊥-elim (SETneqFREE (compAllVal x₁ tt))
@@ -1428,6 +1457,7 @@ equalInType-ISECT→ : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
 {-# TERMINATING #-}
 equalInType-ISECT→ {n} {w} {A} {B} {a} {b} (EQTNAT x x₁ , eqi) = ⊥-elim (ISECTneqNAT (compAllVal x₁ tt))
 equalInType-ISECT→ {n} {w} {A} {B} {a} {b} (EQTQNAT x x₁ , eqi) = ⊥-elim (ISECTneqQNAT (compAllVal x₁ tt))
+equalInType-ISECT→ {n} {w} {A} {B} {a} {b} (EQTTNAT x x₁ , eqi) = ⊥-elim (ISECTneqTNAT (compAllVal x₁ tt))
 equalInType-ISECT→ {n} {w} {A} {B} {a} {b} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (ISECTneqLT (compAllVal x₁ tt))
 equalInType-ISECT→ {n} {w} {A} {B} {a} {b} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (ISECTneqQLT (compAllVal x₁ tt))
 equalInType-ISECT→ {n} {w} {A} {B} {a} {b} (EQTFREE x x₁ , eqi) = ⊥-elim (ISECTneqFREE (compAllVal x₁ tt))
@@ -1480,6 +1510,7 @@ equalInType-UNION→ : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
 {-# TERMINATING #-}
 equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTNAT x x₁ , eqi) = ⊥-elim (UNIONneqNAT (compAllVal x₁ tt))
 equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTQNAT x x₁ , eqi) = ⊥-elim (UNIONneqQNAT (compAllVal x₁ tt))
+equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTTNAT x x₁ , eqi) = ⊥-elim (UNIONneqTNAT (compAllVal x₁ tt))
 equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (UNIONneqLT (compAllVal x₁ tt))
 equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (UNIONneqQLT (compAllVal x₁ tt))
 equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTFREE x x₁ , eqi) = ⊥-elim (UNIONneqFREE (compAllVal x₁ tt))
@@ -1539,6 +1570,7 @@ equalInType-QTUNION→ : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
 {-# TERMINATING #-}
 equalInType-QTUNION→ {n} {w} {A} {B} {a} {b} (EQTNAT x x₁ , eqi) = ⊥-elim (QTUNIONneqNAT (compAllVal x₁ tt))
 equalInType-QTUNION→ {n} {w} {A} {B} {a} {b} (EQTQNAT x x₁ , eqi) = ⊥-elim (QTUNIONneqQNAT (compAllVal x₁ tt))
+equalInType-QTUNION→ {n} {w} {A} {B} {a} {b} (EQTTNAT x x₁ , eqi) = ⊥-elim (QTUNIONneqTNAT (compAllVal x₁ tt))
 equalInType-QTUNION→ {n} {w} {A} {B} {a} {b} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (QTUNIONneqLT (compAllVal x₁ tt))
 equalInType-QTUNION→ {n} {w} {A} {B} {a} {b} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (QTUNIONneqQLT (compAllVal x₁ tt))
 equalInType-QTUNION→ {n} {w} {A} {B} {a} {b} (EQTFREE x x₁ , eqi) = ⊥-elim (QTUNIONneqFREE (compAllVal x₁ tt))
@@ -1604,6 +1636,7 @@ equalInType-FUN→ {u} {w} {A} {B} {f} {g} eqi rewrite #FUN≡#PI A B = z2
 {-# TERMINATING #-}
 ¬equalInType-FALSE {w} {i} {a} {b} (EQTNAT x x₁ , eqi) = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
 ¬equalInType-FALSE {w} {i} {a} {b} (EQTQNAT x x₁ , eqi) = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
+¬equalInType-FALSE {w} {i} {a} {b} (EQTTNAT x x₁ , eqi) = ⊥-elim (EQneqTNAT (compAllVal x₁ tt))
 ¬equalInType-FALSE {w} {i} {a} {b} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqLT (compAllVal x₁ tt))
 ¬equalInType-FALSE {w} {i} {a} {b} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqQLT (compAllVal x₁ tt))
 ¬equalInType-FALSE {w} {i} {a} {b} (EQTFREE x x₁ , eqi) = ⊥-elim (EQneqFREE (compAllVal x₁ tt))
@@ -1804,6 +1837,7 @@ equalInType-SUM→ : {u : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} {f g : CTer
 {-# TERMINATING #-}
 equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQTNAT x x₁ , eqi) = ⊥-elim (SUMneqNAT (compAllVal x₁ tt))
 equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQTQNAT x x₁ , eqi) = ⊥-elim (SUMneqQNAT (compAllVal x₁ tt))
+equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQTTNAT x x₁ , eqi) = ⊥-elim (SUMneqTNAT (compAllVal x₁ tt))
 equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (SUMneqLT (compAllVal x₁ tt))
 equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (SUMneqQLT (compAllVal x₁ tt))
 equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQTFREE x x₁ , eqi) = ⊥-elim (SUMneqFREE (compAllVal x₁ tt))
@@ -1851,6 +1885,7 @@ equalInType-SUM→₂ : {u : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} {f g : C
 {-# TERMINATING #-}
 equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQTNAT x x₁ , eqi) = ⊥-elim (SUMneqNAT (compAllVal x₁ tt))
 equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQTQNAT x x₁ , eqi) = ⊥-elim (SUMneqQNAT (compAllVal x₁ tt))
+equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQTTNAT x x₁ , eqi) = ⊥-elim (SUMneqTNAT (compAllVal x₁ tt))
 equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (SUMneqLT (compAllVal x₁ tt))
 equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (SUMneqQLT (compAllVal x₁ tt))
 equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQTFREE x x₁ , eqi) = ⊥-elim (SUMneqFREE (compAllVal x₁ tt))
@@ -1890,6 +1925,7 @@ equalInType-SUM→₁ : {u : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} {f g : C
 {-# TERMINATING #-}
 equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTNAT x x₁ , eqi) = ⊥-elim (SUMneqNAT (compAllVal x₁ tt))
 equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTQNAT x x₁ , eqi) = ⊥-elim (SUMneqQNAT (compAllVal x₁ tt))
+equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTTNAT x x₁ , eqi) = ⊥-elim (SUMneqTNAT (compAllVal x₁ tt))
 equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (SUMneqLT (compAllVal x₁ tt))
 equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (SUMneqQLT (compAllVal x₁ tt))
 equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTFREE x x₁ , eqi) = ⊥-elim (SUMneqFREE (compAllVal x₁ tt))
@@ -1929,6 +1965,7 @@ equalInType-EQ→ : {u : ℕ} {w : 𝕎·} {a b A : CTerm} {f g : CTerm}
 {-# TERMINATING #-}
 equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTNAT x x₁ , eqi) = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
 equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTQNAT x x₁ , eqi) = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
+equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTTNAT x x₁ , eqi) = ⊥-elim (EQneqTNAT (compAllVal x₁ tt))
 equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqLT (compAllVal x₁ tt))
 equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqQLT (compAllVal x₁ tt))
 equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTFREE x x₁ , eqi) = ⊥-elim (EQneqFREE (compAllVal x₁ tt))
@@ -2051,6 +2088,7 @@ equalInType-SET→ : {u : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} {f g : CTer
 {-# TERMINATING #-}
 equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTNAT x x₁ , eqi) = ⊥-elim (SETneqNAT (compAllVal x₁ tt))
 equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTQNAT x x₁ , eqi) = ⊥-elim (SETneqQNAT (compAllVal x₁ tt))
+equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTTNAT x x₁ , eqi) = ⊥-elim (SETneqTNAT (compAllVal x₁ tt))
 equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (SETneqLT (compAllVal x₁ tt))
 equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (SETneqQLT (compAllVal x₁ tt))
 equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTFREE x x₁ , eqi) = ⊥-elim (SETneqFREE (compAllVal x₁ tt))
@@ -2097,6 +2135,7 @@ equalInType-PURE→ : {n : ℕ} {w : 𝕎·} {a b : CTerm}
 {-# TERMINATING #-}
 equalInType-PURE→ {n} {w} {a} {b} (EQTNAT x x₁ , eqi) = ⊥-elim (PUREneqNAT (compAllVal x₁ tt))
 equalInType-PURE→ {n} {w} {a} {b} (EQTQNAT x x₁ , eqi) = ⊥-elim (PUREneqQNAT (compAllVal x₁ tt))
+equalInType-PURE→ {n} {w} {a} {b} (EQTTNAT x x₁ , eqi) = ⊥-elim (PUREneqTNAT (compAllVal x₁ tt))
 equalInType-PURE→ {n} {w} {a} {b} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (PUREneqLT (compAllVal x₁ tt))
 equalInType-PURE→ {n} {w} {a} {b} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (PUREneqQLT (compAllVal x₁ tt))
 equalInType-PURE→ {n} {w} {a} {b} (EQTFREE x x₁ , eqi) = ⊥-elim (PUREneqFREE (compAllVal x₁ tt))

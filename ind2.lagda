@@ -306,6 +306,14 @@ data ≤Type where
 
 
 
+<Type-TNAT : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} {eqt : ≡Types u w T1 T2}
+             {u' : 𝕌} {w' : 𝕎·} {U1 U2 : CTerm} {x₁ : U1 #⇛ #TNAT at w'} {x₂ : U2 #⇛ #TNAT at w'}
+             → <Type {u} {w} {T1} {T2} eqt {u'} {w'} {U1} {U2} (EQTTNAT x₁ x₂) → ⊥
+<Type-TNAT {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<Type1 .eqt .(EQTTNAT x₁ x₂) ())
+<Type-TNAT {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<TypeS .eqt eqt2 .(EQTTNAT x₁ x₂) ltt ())
+
+
+
 
 
 <Type-LT : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} {eqt : ≡Types u w T1 T2}
@@ -579,6 +587,7 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
              → <Type {u'} eqt' {u} eqt → P eqt'
     indLtt {u} {w} {T1} {T2} (EQTNAT x x₁) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-NAT ltt)
     indLtt {u} {w} {T1} {T2} (EQTQNAT x x₁) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-QNAT ltt)
+    indLtt {u} {w} {T1} {T2} (EQTTNAT x x₁) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-TNAT ltt)
     indLtt {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-LT ltt)
     indLtt {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-QLT ltt)
     indLtt {u} {w} {T1} {T2} (EQTFREE x x₁) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-FREE ltt)

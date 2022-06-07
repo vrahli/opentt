@@ -110,6 +110,7 @@ typeSysConds-EQ-ttrans : (u : univs) (w : 𝕎·) (A B A1 B1 a1 b1 a2 b2 : CTerm
 {-# TERMINATING #-}
 typeSysConds-EQ-ttrans u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTNAT y y₁) = ⊥-elim (EQneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-ttrans u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQNAT y y₁) = ⊥-elim (EQneqQNAT (⇛-val-det tt tt x₁ y))
+typeSysConds-EQ-ttrans u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTNAT y y₁) = ⊥-elim (EQneqTNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-ttrans u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) = ⊥-elim (EQneqLT (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-ttrans u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) = ⊥-elim (EQneqQLT (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-ttrans u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTFREE y y₁) = ⊥-elim (EQneqFREE (⇛-val-det tt tt x₁ y))
@@ -238,6 +239,7 @@ typeSysConds-EQ-extl1 : (u : univs) (w : 𝕎·) (A B A1 B1 a1 b1 a2 b2 : CTerm)
 {-# TERMINATING #-}
 typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTNAT y y₁) f g eqi = ⊥-elim (EQneqNAT (⇛-val-det tt tt x y))
 typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQNAT y y₁) f g eqi = ⊥-elim (EQneqQNAT (⇛-val-det tt tt x y))
+typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTNAT y y₁) f g eqi = ⊥-elim (EQneqTNAT (⇛-val-det tt tt x y))
 typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) f g eqi = ⊥-elim (EQneqLT (⇛-val-det tt tt x y))
 typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) f g eqi = ⊥-elim (EQneqQLT (⇛-val-det tt tt x y))
 typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTFREE y y₁) f g eqi = ⊥-elim (EQneqFREE (⇛-val-det tt tt x y))
@@ -305,6 +307,7 @@ typeSysConds-EQ-extl2 : (u : univs) (w : 𝕎·) (A B A1 B1 a1 b1 a2 b2 : CTerm)
 {-# TERMINATING #-}
 typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTNAT y y₁) f g eqi = ⊥-elim (EQneqNAT (⇛-val-det tt tt x y₁))
 typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQNAT y y₁) f g eqi = ⊥-elim (EQneqQNAT (⇛-val-det tt tt x y₁))
+typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTNAT y y₁) f g eqi = ⊥-elim (EQneqTNAT (⇛-val-det tt tt x y₁))
 typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) f g eqi = ⊥-elim (EQneqLT (⇛-val-det tt tt x y₁))
 typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) f g eqi = ⊥-elim (EQneqQLT (⇛-val-det tt tt x y₁))
 typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTFREE y y₁) f g eqi = ⊥-elim (EQneqFREE (⇛-val-det tt tt x y₁))
@@ -382,6 +385,7 @@ typeSysConds-EQ-extr1 : (u : univs) (w : 𝕎·) (A B A1 B1 a1 b1 a2 b2 : CTerm)
 {-# TERMINATING #-}
 typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTNAT y y₁) f g eqi = ⊥-elim (EQneqNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQNAT y y₁) f g eqi = ⊥-elim (EQneqQNAT (⇛-val-det tt tt x₁ y₁))
+typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTNAT y y₁) f g eqi = ⊥-elim (EQneqTNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) f g eqi = ⊥-elim (EQneqLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) f g eqi = ⊥-elim (EQneqQLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTFREE y y₁) f g eqi = ⊥-elim (EQneqFREE (⇛-val-det tt tt x₁ y₁))
@@ -461,6 +465,7 @@ typeSysConds-EQ-extr2 : (u : univs) (w : 𝕎·) (A B A1 B1 a1 b1 a2 b2 : CTerm)
 {-# TERMINATING #-}
 typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTNAT y y₁) f g eqi = ⊥-elim (EQneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQNAT y y₁) f g eqi = ⊥-elim (EQneqQNAT (⇛-val-det tt tt x₁ y))
+typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTNAT y y₁) f g eqi = ⊥-elim (EQneqTNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) f g eqi = ⊥-elim (EQneqLT (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) f g eqi = ⊥-elim (EQneqQLT (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTFREE y y₁) f g eqi = ⊥-elim (EQneqFREE (⇛-val-det tt tt x₁ y))
@@ -533,6 +538,7 @@ typeSysConds-EQ-extrevl1 : (u : univs) (w : 𝕎·) (A B A1 B1 a1 b1 a2 b2 : CTe
 {-# TERMINATING #-}
 typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTNAT y y₁) f g eqi = ⊥-elim (EQneqNAT (⇛-val-det tt tt x y))
 typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQNAT y y₁) f g eqi = ⊥-elim (EQneqQNAT (⇛-val-det tt tt x y))
+typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTNAT y y₁) f g eqi = ⊥-elim (EQneqTNAT (⇛-val-det tt tt x y))
 typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) f g eqi = ⊥-elim (EQneqLT (⇛-val-det tt tt x y))
 typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) f g eqi = ⊥-elim (EQneqQLT (⇛-val-det tt tt x y))
 typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTFREE y y₁) f g eqi = ⊥-elim (EQneqFREE (⇛-val-det tt tt x y))
@@ -615,6 +621,7 @@ typeSysConds-EQ-extrevl2 : (u : univs) (w : 𝕎·) (A B A1 B1 a1 b1 a2 b2 : CTe
 {-# TERMINATING #-}
 typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTNAT y y₁) f g eqi = ⊥-elim (EQneqNAT (⇛-val-det tt tt x y₁))
 typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQNAT y y₁) f g eqi = ⊥-elim (EQneqQNAT (⇛-val-det tt tt x y₁))
+typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTNAT y y₁) f g eqi = ⊥-elim (EQneqTNAT (⇛-val-det tt tt x y₁))
 typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) f g eqi = ⊥-elim (EQneqLT (⇛-val-det tt tt x y₁))
 typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) f g eqi = ⊥-elim (EQneqQLT (⇛-val-det tt tt x y₁))
 typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTFREE y y₁) f g eqi = ⊥-elim (EQneqFREE (⇛-val-det tt tt x y₁))
@@ -710,6 +717,7 @@ typeSysConds-EQ-extrevr1 : (u : univs) (w : 𝕎·) (A B A1 B1 a1 b1 a2 b2 : CTe
 {-# TERMINATING #-}
 typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTNAT y y₁) f g eqi = ⊥-elim (EQneqNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQNAT y y₁) f g eqi = ⊥-elim (EQneqQNAT (⇛-val-det tt tt x₁ y₁))
+typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTNAT y y₁) f g eqi = ⊥-elim (EQneqTNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) f g eqi = ⊥-elim (EQneqLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) f g eqi = ⊥-elim (EQneqQLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTFREE y y₁) f g eqi = ⊥-elim (EQneqFREE (⇛-val-det tt tt x₁ y₁))
@@ -810,6 +818,7 @@ typeSysConds-EQ-extrevr2 : (u : univs) (w : 𝕎·) (A B A1 B1 a1 b1 a2 b2 : CTe
 {-# TERMINATING #-}
 typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTNAT y y₁) f g eqi = ⊥-elim (EQneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQNAT y y₁) f g eqi = ⊥-elim (EQneqQNAT (⇛-val-det tt tt x₁ y))
+typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTTNAT y y₁) f g eqi = ⊥-elim (EQneqTNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) f g eqi = ⊥-elim (EQneqLT (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) f g eqi = ⊥-elim (EQneqQLT (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTFREE y y₁) f g eqi = ⊥-elim (EQneqFREE (⇛-val-det tt tt x₁ y))
@@ -903,6 +912,7 @@ eqInType-⇛-EQ : (u : univs) (w : 𝕎·) (A B A1 B1 a1 b1 a2 b2 a b : CTerm)
 {-# TERMINATING #-}
 eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (EQneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (EQneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTTNAT x x₁) ei = ⊥-elim (EQneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTLT c1 c2 d1 d2 x x₁ x₂ x₃) ei = ⊥-elim (EQneqLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTQLT c1 c2 d1 d2 x x₁ x₂ x₃) ei = ⊥-elim (EQneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (EQneqFREE (⇛-val-det tt tt c₁ x))
@@ -979,6 +989,7 @@ eqInType-⇛-EQ2 : (u : 𝕌) (w : 𝕎·) (A B A1 B1 a1 b1 a2 b2 a b : CTerm)
 {-# TERMINATING #-}
 eqInType-⇛-EQ2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTNAT x x₁) ei ext = ⊥-elim (EQneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTQNAT x x₁) ei ext = ⊥-elim (EQneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-EQ2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTTNAT x x₁) ei ext = ⊥-elim (EQneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTLT c1 c2 d1 d2 x x₁ x₂ x₃) ei ext = ⊥-elim (EQneqLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTQLT c1 c2 d1 d2 x x₁ x₂ x₃) ei ext = ⊥-elim (EQneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTFREE x x₁) ei ext = ⊥-elim (EQneqFREE (⇛-val-det tt tt c₁ x))
@@ -1063,6 +1074,7 @@ eqInType-⇛-EQ-rev : (u : univs) (w : 𝕎·) (A B A1 B1 a1 b1 a2 b2 a b : CTer
 {-# TERMINATING #-}
 eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (EQneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (EQneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTTNAT x x₁) ei = ⊥-elim (EQneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTLT c1 c2 d1 d2 x x₁ x₂ x₃) ei = ⊥-elim (EQneqLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTQLT c1 c2 d1 d2 x x₁ x₂ x₃) ei = ⊥-elim (EQneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (EQneqFREE (⇛-val-det tt tt c₁ x))
@@ -1136,6 +1148,7 @@ eqInType-⇛-EQ-rev2 : (u : 𝕌) (w : 𝕎·) (A B A1 B1 a1 b1 a2 b2 a b : CTer
 {-# TERMINATING #-}
 eqInType-⇛-EQ-rev2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTNAT x x₁) ext ei = ⊥-elim (EQneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ-rev2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTQNAT x x₁) ext ei = ⊥-elim (EQneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-EQ-rev2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTTNAT x x₁) ext ei = ⊥-elim (EQneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ-rev2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTLT c1 c2 d1 d2 x x₁ x₂ x₃) ext ei = ⊥-elim (EQneqLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ-rev2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTQLT c1 c2 d1 d2 x x₁ x₂ x₃) ext ei = ⊥-elim (EQneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ-rev2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTFREE x x₁) ext ei = ⊥-elim (EQneqFREE (⇛-val-det tt tt c₁ x))

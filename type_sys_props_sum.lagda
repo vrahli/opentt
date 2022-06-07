@@ -76,6 +76,9 @@ SUMneqNAT {a} {b} ()
 SUMneqQNAT : {a b : Term} → ¬ (SUM a b) ≡ QNAT
 SUMneqQNAT {a} {b} ()
 
+SUMneqTNAT : {a b : Term} → ¬ (SUM a b) ≡ TNAT
+SUMneqTNAT {a} {b} ()
+
 SUMneqLT : {a b : Term} {c d : Term} → ¬ (SUM a b) ≡ LT c d
 SUMneqLT {a} {b} {c} {d} ()
 
@@ -222,6 +225,7 @@ typeSysConds-SUM-ttrans : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B
 {-# TERMINATING #-}
 typeSysConds-SUM-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x₁ y))
+typeSysConds-SUM-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) = ⊥-elim (SUMneqLT (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x₁ y))
@@ -406,6 +410,7 @@ typeSysConds-SUM-extl1 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1
 {-# TERMINATING #-}
 typeSysConds-SUM-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x y))
 typeSysConds-SUM-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x y))
+typeSysConds-SUM-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x y))
 typeSysConds-SUM-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (SUMneqLT (⇛-val-det tt tt x y))
 typeSysConds-SUM-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x y))
 typeSysConds-SUM-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x y))
@@ -479,6 +484,7 @@ typeSysConds-SUM-extl2 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1
 {-# TERMINATING #-}
 typeSysConds-SUM-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x y₁))
+typeSysConds-SUM-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (SUMneqLT (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x y₁))
@@ -557,6 +563,7 @@ typeSysConds-SUM-extr1 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1
 {-# TERMINATING #-}
 typeSysConds-SUM-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x₁ y₁))
+typeSysConds-SUM-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (SUMneqLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x₁ y₁))
@@ -629,6 +636,7 @@ typeSysConds-SUM-extr2 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1
 {-# TERMINATING #-}
 typeSysConds-SUM-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x₁ y))
+typeSysConds-SUM-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (SUMneqLT (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x₁ y))
@@ -708,6 +716,7 @@ typeSysConds-SUM-extrevl1 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) 
 {-# TERMINATING #-}
 typeSysConds-SUM-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x y))
 typeSysConds-SUM-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x y))
+typeSysConds-SUM-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x y))
 typeSysConds-SUM-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (SUMneqLT (⇛-val-det tt tt x y))
 typeSysConds-SUM-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x y))
 typeSysConds-SUM-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x y))
@@ -794,6 +803,7 @@ typeSysConds-SUM-extrevl2 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) 
 {-# TERMINATING #-}
 typeSysConds-SUM-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x y₁))
+typeSysConds-SUM-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (SUMneqLT (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x y₁))
 typeSysConds-SUM-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x y₁))
@@ -886,6 +896,7 @@ typeSysConds-SUM-extrevr1 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) 
 {-# TERMINATING #-}
 typeSysConds-SUM-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x₁ y₁))
+typeSysConds-SUM-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (SUMneqLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-SUM-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x₁ y₁))
@@ -971,6 +982,7 @@ typeSysConds-SUM-extrevr2 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) 
 {-# TERMINATING #-}
 typeSysConds-SUM-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x₁ y))
+typeSysConds-SUM-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (SUMneqLT (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x₁ y))
 typeSysConds-SUM-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x₁ y))
@@ -1064,6 +1076,7 @@ eqInType-⇛-SUM : (u : univs) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTerm0)
 {-# TERMINATING #-}
 eqInType-⇛-SUM u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (SUMneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-SUM u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTTNAT x x₁) ei = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (SUMneqLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (SUMneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (SUMneqFREE (⇛-val-det tt tt c₁ x))
@@ -1149,6 +1162,7 @@ eqInType-⇛-SUM2 : (u : 𝕌) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTerm0)
 {-# TERMINATING #-}
 eqInType-⇛-SUM2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNAT x x₁) ei ext = ⊥-elim (SUMneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQNAT x x₁) ei ext = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-SUM2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTTNAT x x₁) ei ext = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ei ext = ⊥-elim (SUMneqLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei ext = ⊥-elim (SUMneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTFREE x x₁) ei ext = ⊥-elim (SUMneqFREE (⇛-val-det tt tt c₁ x))
@@ -1244,6 +1258,7 @@ eqInType-⇛-SUM-rev : (u : univs) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTe
 {-# TERMINATING #-}
 eqInType-⇛-SUM-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (SUMneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-SUM-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTTNAT x x₁) ei = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (SUMneqLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (SUMneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (SUMneqFREE (⇛-val-det tt tt c₁ x))
@@ -1322,6 +1337,7 @@ eqInType-⇛-SUM-rev2 : (u : 𝕌) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTe
 {-# TERMINATING #-}
 eqInType-⇛-SUM-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNAT x x₁) ext ei = ⊥-elim (SUMneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQNAT x x₁) ext ei = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-SUM-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTTNAT x x₁) ext ei = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ext ei = ⊥-elim (SUMneqLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ext ei = ⊥-elim (SUMneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-SUM-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTFREE x x₁) ext ei = ⊥-elim (SUMneqFREE (⇛-val-det tt tt c₁ x))

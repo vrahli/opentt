@@ -65,6 +65,7 @@ data Term : Set where
   -- Numbers
   NAT : Term
   QNAT : Term
+  TNAT : Term
   LT : Term → Term → Term
   QLT : Term → Term → Term
   NUM : ℕ → Term
@@ -124,6 +125,7 @@ value? : Term → Bool
 value? (VAR _) = false
 value? NAT = true
 value? QNAT = true
+value? TNAT = true
 value? (LT _ _) = true
 value? (QLT _ _) = true
 value? (NUM _) = true
@@ -187,6 +189,7 @@ vars : Term → List Var
 vars (VAR x) = [ x ]
 vars NAT = []
 vars QNAT = []
+vars TNAT = []
 vars (LT t t₁) =  vars t ++ vars t₁
 vars (QLT t t₁) = vars t ++ vars t₁
 vars (NUM x) = []
@@ -248,6 +251,7 @@ fvars : Term → List Var
 fvars (VAR x)          = [ x ]
 fvars NAT              = []
 fvars QNAT             = []
+fvars TNAT             = []
 fvars (LT t t₁)        = fvars t ++ fvars t₁
 fvars (QLT t t₁)       = fvars t ++ fvars t₁
 fvars (NUM x)          = []
@@ -399,6 +403,7 @@ shiftUp : ℕ → Term → Term
 shiftUp c (VAR x) = VAR (sucIf≤ c x)
 shiftUp c NAT = NAT
 shiftUp c QNAT = QNAT
+shiftUp c TNAT = TNAT
 shiftUp c (LT t t₁) = LT (shiftUp c t) (shiftUp c t₁)
 shiftUp c (QLT t t₁) = QLT (shiftUp c t) (shiftUp c t₁)
 shiftUp c (NUM x) = NUM x
@@ -445,6 +450,7 @@ shiftDown : ℕ → Term → Term
 shiftDown c (VAR x) = VAR (predIf≤ c x)
 shiftDown c NAT = NAT
 shiftDown c QNAT = QNAT
+shiftDown c TNAT = TNAT
 shiftDown c (LT t t₁) = LT (shiftDown c t) (shiftDown c t₁)
 shiftDown c (QLT t t₁) = QLT (shiftDown c t) (shiftDown c t₁)
 shiftDown c (NUM x) = NUM x
@@ -491,6 +497,7 @@ shiftNameUp : ℕ → Term → Term
 shiftNameUp c (VAR x) = VAR x
 shiftNameUp c NAT = NAT
 shiftNameUp c QNAT = QNAT
+shiftNameUp c TNAT = TNAT
 shiftNameUp c (LT t t₁) = LT (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (QLT t t₁) = QLT (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (NUM x) = NUM x
@@ -537,6 +544,7 @@ shiftNameDown : ℕ → Term → Term
 shiftNameDown c (VAR x) = VAR x
 shiftNameDown c NAT = NAT
 shiftNameDown c QNAT = QNAT
+shiftNameDown c TNAT = TNAT
 shiftNameDown c (LT t t₁) = LT (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (QLT t t₁) = QLT (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (NUM x) = NUM x
@@ -590,6 +598,7 @@ names : Term → List Name
 names (VAR x)          = []
 names NAT              = []
 names QNAT             = []
+names TNAT             = []
 names (LT t t₁)        = names t ++ names t₁
 names (QLT t t₁)       = names t ++ names t₁
 names (NUM x)          = []
@@ -639,6 +648,7 @@ subv v t (VAR x) with x ≟ v
 ... | no _ = VAR x
 subv v t NAT = NAT
 subv v t QNAT = QNAT
+subv v t TNAT = TNAT
 subv v t (LT u u₁) = LT (subv v t u) (subv v t u₁)
 subv v t (QLT u u₁) = QLT (subv v t u) (subv v t u₁)
 subv v t (NUM x) = NUM x
@@ -691,6 +701,7 @@ renn : Name → Name → Term → Term
 renn v t (VAR x) = VAR x
 renn v t NAT = NAT
 renn v t QNAT = QNAT
+renn v t TNAT = TNAT
 renn v t (LT u u₁) = LT (renn v t u) (renn v t u₁)
 renn v t (QLT u u₁) = QLT (renn v t u) (renn v t u₁)
 renn v t (NUM x) = NUM x
@@ -763,6 +774,7 @@ subvNotIn v t (VAR x) n with x ≟ v
 ... | no p = refl
 subvNotIn v t NAT n = refl
 subvNotIn v t QNAT n = refl
+subvNotIn v t TNAT n = refl
 subvNotIn v t (LT u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
         | subvNotIn v t u₁ (notInAppVars2 n) = refl
@@ -888,6 +900,7 @@ shiftDownTrivial v (VAR (suc x)) i with suc x ≤? v
 ... | no z = ⊥-elim (i (suc x) (<⇒≤ (≰⇒> z)) (here refl)) --(i (suc x) (sucLeInj (≰⇒> z)) (here refl))
 shiftDownTrivial v NAT i = refl
 shiftDownTrivial v QNAT i = refl
+shiftDownTrivial v TNAT i = refl
 shiftDownTrivial v (LT u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
   rewrite shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
@@ -990,6 +1003,7 @@ shiftUpTrivial v (VAR x) i with x <? v
 ... | no z = ⊥-elim (i x (sucLeInj (≰⇒> z)) (here refl))
 shiftUpTrivial v NAT i = refl
 shiftUpTrivial v QNAT i = refl
+shiftUpTrivial v TNAT i = refl
 shiftUpTrivial v (LT u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
@@ -1106,6 +1120,7 @@ shiftDownUp (VAR x) n | no p with suc x ≤? n
 ...                             | no q = refl
 shiftDownUp NAT n = refl
 shiftDownUp QNAT n = refl
+shiftDownUp TNAT n = refl
 shiftDownUp (LT t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (QLT t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (NUM x) n = refl
@@ -1152,6 +1167,7 @@ is-NUM : (t : Term) → (Σ ℕ (λ n → t ≡ NUM n)) ⊎ ((n : ℕ) → ¬ t 
 is-NUM (VAR x) = inj₂ (λ { n () })
 is-NUM NAT = inj₂ (λ { n () })
 is-NUM QNAT = inj₂ (λ { n () })
+is-NUM TNAT = inj₂ (λ { n () })
 is-NUM (LT t t₁) = inj₂ (λ { n () })
 is-NUM (QLT t t₁) = inj₂ (λ { n () })
 is-NUM (NUM x) = inj₁ ( x , refl)
@@ -1198,6 +1214,7 @@ is-LAM : (t : Term) → (Σ Term (λ u → t ≡ LAMBDA u)) ⊎ ((u : Term) → 
 is-LAM (VAR x) = inj₂ (λ { n () })
 is-LAM NAT = inj₂ (λ { n () })
 is-LAM QNAT = inj₂ (λ { n () })
+is-LAM TNAT = inj₂ (λ { n () })
 is-LAM (LT t t₁) = inj₂ (λ { n () })
 is-LAM (QLT t t₁) = inj₂ (λ { n () })
 is-LAM (NUM x) = inj₂ (λ { n () })
@@ -1244,6 +1261,7 @@ is-CS : (t : Term) → (Σ Name (λ n → t ≡ CS n)) ⊎ ((n : Name) → ¬ t 
 is-CS (VAR x) = inj₂ (λ { n () })
 is-CS NAT = inj₂ (λ { n () })
 is-CS QNAT = inj₂ (λ { n () })
+is-CS TNAT = inj₂ (λ { n () })
 is-CS (LT t t₁) = inj₂ (λ { n () })
 is-CS (QLT t t₁) = inj₂ (λ { n () })
 is-CS (NUM x) = inj₂ (λ { n () })
@@ -1290,6 +1308,7 @@ is-NAME : (t : Term) → (Σ Name (λ n → t ≡ NAME n)) ⊎ ((n : Name) → �
 is-NAME (VAR x) = inj₂ (λ { n () })
 is-NAME NAT = inj₂ (λ { n () })
 is-NAME QNAT = inj₂ (λ { n () })
+is-NAME TNAT = inj₂ (λ { n () })
 is-NAME (LT t t₁) = inj₂ (λ { n () })
 is-NAME (QLT t t₁) = inj₂ (λ { n () })
 is-NAME (NUM x) = inj₂ (λ { n () })
@@ -1336,6 +1355,7 @@ is-PAIR : (t : Term) → (Σ Term (λ a → Σ Term (λ b → t ≡ PAIR a b))) 
 is-PAIR (VAR x) = inj₂ (λ { n m () })
 is-PAIR NAT = inj₂ (λ { n m () })
 is-PAIR QNAT = inj₂ (λ { n m () })
+is-PAIR TNAT = inj₂ (λ { n m () })
 is-PAIR (LT t t₁) = inj₂ (λ { n m () })
 is-PAIR (QLT t t₁) = inj₂ (λ { n m () })
 is-PAIR (NUM x) = inj₂ (λ { n m () })
@@ -1382,6 +1402,7 @@ is-INL : (t : Term) → (Σ Term (λ u → t ≡ INL u)) ⊎ ((u : Term) → ¬ 
 is-INL (VAR x) = inj₂ (λ { n () })
 is-INL NAT = inj₂ (λ { n () })
 is-INL QNAT = inj₂ (λ { n () })
+is-INL TNAT = inj₂ (λ { n () })
 is-INL (LT t t₁) = inj₂ (λ { n () })
 is-INL (QLT t t₁) = inj₂ (λ { n () })
 is-INL (NUM x) = inj₂ (λ { n () })
@@ -1428,6 +1449,7 @@ is-INR : (t : Term) → (Σ Term (λ u → t ≡ INR u)) ⊎ ((u : Term) → ¬ 
 is-INR (VAR x) = inj₂ (λ { n () })
 is-INR NAT = inj₂ (λ { n () })
 is-INR QNAT = inj₂ (λ { n () })
+is-INR TNAT = inj₂ (λ { n () })
 is-INR (LT t t₁) = inj₂ (λ { n () })
 is-INR (QLT t t₁) = inj₂ (λ { n () })
 is-INR (NUM x) = inj₂ (λ { n () })
@@ -1475,6 +1497,7 @@ is-INR (SHRINK t) = inj₂ (λ { n () })
 data ∼vals : Term → Term → Set where
   ∼vals-NAT     : ∼vals NAT NAT
   ∼vals-QNAT    : ∼vals QNAT QNAT
+  ∼vals-TNAT    : ∼vals TNAT TNAT
   ∼vals-LT      : {a b c d : Term} → ∼vals (LT a b) (LT c d)
   ∼vals-QLT     : {a b c d : Term} → ∼vals (QLT a b) (QLT c d)
   ∼vals-NUM     : {n : ℕ} → ∼vals (NUM n) (NUM n)
@@ -1510,6 +1533,7 @@ data ∼vals : Term → Term → Set where
 ∼vals-sym : {a b : Term} → ∼vals a b → ∼vals b a
 ∼vals-sym {.NAT} {.NAT} ∼vals-NAT = ∼vals-NAT
 ∼vals-sym {.QNAT} {.QNAT} ∼vals-QNAT = ∼vals-QNAT
+∼vals-sym {.TNAT} {.TNAT} ∼vals-TNAT = ∼vals-TNAT
 ∼vals-sym {.(LT _ _)} {.(LT _ _)} ∼vals-LT = ∼vals-LT
 ∼vals-sym {.(QLT _ _)} {.(QLT _ _)} ∼vals-QLT = ∼vals-QLT
 ∼vals-sym {.(NUM _)} {.(NUM _)} ∼vals-NUM = ∼vals-NUM
@@ -1545,6 +1569,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₁ : {a b : Term} → ∼vals a b → isValue a
 ∼vals→isValue₁ {NAT} {b} isv = tt
 ∼vals→isValue₁ {QNAT} {b} isv = tt
+∼vals→isValue₁ {TNAT} {b} isv = tt
 ∼vals→isValue₁ {LT a a₁} {b} isv = tt
 ∼vals→isValue₁ {QLT a a₁} {b} isv = tt
 ∼vals→isValue₁ {NUM x} {b} isv = tt
@@ -1581,6 +1606,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {VAR x} ()
 ∼vals→isValue₂ {a} {NAT} isv = tt
 ∼vals→isValue₂ {a} {QNAT} isv = tt
+∼vals→isValue₂ {a} {TNAT} isv = tt
 ∼vals→isValue₂ {a} {LT b b₁} isv = tt
 ∼vals→isValue₂ {a} {QLT b b₁} isv = tt
 ∼vals→isValue₂ {a} {NUM x} isv = tt
@@ -1632,6 +1658,7 @@ data ∼vals : Term → Term → Set where
 ¬read (VAR x) = true
 ¬read NAT = true
 ¬read QNAT = true
+¬read TNAT = true
 ¬read (LT t t₁) = ¬read t ∧ ¬read t₁
 ¬read (QLT t t₁) = ¬read t ∧ ¬read t₁
 ¬read (NUM x) = true
@@ -1693,6 +1720,7 @@ data ∼vals : Term → Term → Set where
 ¬names (VAR x) = true
 ¬names NAT = true
 ¬names QNAT = true
+¬names TNAT = true
 ¬names (LT t t₁) = ¬names t ∧ ¬names t₁
 ¬names (QLT t t₁) = ¬names t ∧ ¬names t₁
 ¬names (NUM x) = true

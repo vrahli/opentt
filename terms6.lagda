@@ -443,6 +443,7 @@ IFLT-NUM⇓ n m w a b c c₁ c₂ with n <? m
 ¬Names→shiftNameUp≡ (VAR x) n nnt = refl
 ¬Names→shiftNameUp≡ NAT n nnt = refl
 ¬Names→shiftNameUp≡ QNAT n nnt = refl
+¬Names→shiftNameUp≡ TNAT n nnt = refl
 ¬Names→shiftNameUp≡ (LT t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
 ¬Names→shiftNameUp≡ (QLT t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
 ¬Names→shiftNameUp≡ (NUM x) n nnt = refl

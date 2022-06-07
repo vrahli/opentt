@@ -116,6 +116,7 @@ eqTypes-pres-eqInType-NAT : (u : univs) (isu : is-universe u) (w : 𝕎·) (A B 
 {-# TERMINATING #-} -- inlining [Bar.∀𝕎-□-□' barI] works: uncomment c
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTNAT x x₁) = e
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTQNAT x x₁) = ⊥-elim (NATneqQNAT (⇛-val-det tt tt c₁ x))
+eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTTNAT x x₁) = ⊥-elim (NATneqTNAT (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = ⊥-elim (NATneqLT (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) = ⊥-elim (NATneqQLT (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTFREE x x₁) = ⊥-elim (NATneqFREE (⇛-val-det tt tt c₁ x))
@@ -174,6 +175,7 @@ eqTypes-pres-eqInType : (u : univs) (w : 𝕎·) (A B a b : Term) (eqt1 : eqType
                         → (eqt2 : eqTypes u w A B) → eqInType u w eqt2 a b
 eqTypes-pres-eqInType u w A B a b (EQTNAT x x₁) e eqt2 = eqTypes-pres-eqInType-NAT u w A B a b x x₁ e eqt2
 eqTypes-pres-eqInType u w A B a b (EQTQNAT x x₁) e = {!!}
+eqTypes-pres-eqInType u w A B a b (EQTTNAT x x₁) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) e = {!!}
 eqTypes-pres-eqInType u w A B a b (EQTFREE x x₁) e = {!!}
@@ -222,6 +224,7 @@ mon p = {a b : CTerm} {w : 𝕎·} → p w a b → ∀𝕎 w (λ w' e' → p w' 
 eqTypes-mon : (u : univs) → mon (eqTypes u)
 eqTypes-mon u {A} {B} {w1} (EQTNAT x x₁) w2 ext = EQTNAT (⇛-mon ext x) (⇛-mon ext x₁)
 eqTypes-mon u {A} {B} {w1} (EQTQNAT x x₁) w2 ext = EQTQNAT (⇛-mon ext x) (⇛-mon ext x₁)
+eqTypes-mon u {A} {B} {w1} (EQTTNAT x x₁) w2 ext = EQTTNAT (⇛-mon ext x) (⇛-mon ext x₁)
 eqTypes-mon u {A} {B} {w1} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) w2 ext =
   EQTLT a1 a2 b1 b2
     (⇛-mon ext x) (⇛-mon ext x₁)
@@ -368,6 +371,7 @@ if-equalInType-EQ-test : (u : ℕ) (w : 𝕎·) (T a b t₁ t₂ : CTerm)
                          → □· w (λ w' e' → equalInType u w' T a b)
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTNAT x x₁) eqi = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTQNAT x x₁) eqi = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTTNAT x x₁) eqi = ⊥-elim (EQneqTNAT (compAllVal x₁ tt))
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi = ⊥-elim (EQneqLT (compAllVal x₁ tt))
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi = ⊥-elim (EQneqQLT (compAllVal x₁ tt))
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTFREE x x₁) eqi = ⊥-elim (EQneqFREE (compAllVal x₁ tt))
@@ -432,6 +436,7 @@ if-equalInType-EQ : (u : ℕ) (w : 𝕎·) (T a b t₁ t₂ : CTerm)
 {-# TERMINATING #-}
 if-equalInType-EQ u w T a b t₁ t₂ (EQTNAT x x₁ , eqi) = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTQNAT x x₁ , eqi) = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
+if-equalInType-EQ u w T a b t₁ t₂ (EQTTNAT x x₁ , eqi) = ⊥-elim (EQneqTNAT (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqLT (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqQLT (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTFREE x x₁ , eqi) = ⊥-elim (EQneqFREE (compAllVal x₁ tt))
@@ -569,6 +574,82 @@ TODO: keep unfolding by hand
     aw w1 e1 = weakMonEq-trans
 
 
+⇓∼ℕ-sym : {w : 𝕎·} {a b : Term}
+             → ⇓∼ℕ w a b
+             → ⇓∼ℕ w b a
+⇓∼ℕ-sym {w} {a} {b} (n , w' , c1 , c2) = n , w' , c2 , c1
+
+
+
+⇓-from-to→≡𝕎 : {w1 w2 w3 : 𝕎·} {t u v : Term}
+                 → isValue u
+                 → isValue v
+                 → t ⇓ u from w1 to w2
+                 → t ⇓ v from w1 to w3
+                 → u ≡ v × w2 ≡ w3
+⇓-from-to→≡𝕎 {w1} {w2} {w3} {t} {u} {v} isvu isvv (n , comp1) (m , comp2) with n ≤? m
+... | yes p rewrite steps-val-det w1 w2 w3 t u v n m isvu comp1 comp2 p
+                  | steps-val-det-𝕎 w1 w2 w3 t u v n m isvu comp1 comp2 p = refl , refl
+... | no p rewrite steps-val-det w1 w3 w2 t v u m n isvv comp2 comp1 (≰⇒≥ p)
+                 | steps-val-det-𝕎 w1 w3 w2 t v u m n isvv comp2 comp1 (≰⇒≥ p) = refl , refl
+
+
+⇓-from-to≡wᵣ : {a b : Term} {w1 w2 w3 : 𝕎·}
+               → w2 ≡ w3
+               → a ⇓ b from w1 to w2
+               → a ⇓ b from w1 to w3
+⇓-from-to≡wᵣ {a} {b} {w1} {w2} {w3} eqw comp rewrite eqw = comp
+
+
+
+⇓-from-to≡wₗ : {a b : Term} {w1 w2 w3 : 𝕎·}
+               → w1 ≡ w2
+               → a ⇓ b from w1 to w3
+               → a ⇓ b from w2 to w3
+⇓-from-to≡wₗ {a} {b} {w1} {w2} {w3} eqw comp rewrite eqw = comp
+
+
+⇓∼ℕ-trans : {w : 𝕎·} {a b c : Term}
+             → ⇓∼ℕ w a b
+             → ⇓∼ℕ w b c
+             → ⇓∼ℕ w a c
+⇓∼ℕ-trans {w} {a} {b} {c} (n , w1 , c1 , c2) (m , w2 , d1 , d2)
+  rewrite fst (⇓-from-to→≡𝕎 {w} {w1} {w2} {b} {NUM n} {NUM m} tt tt c2 d1)
+        | snd (⇓-from-to→≡𝕎 {w} {w1} {w2} {b} {NUM n} {NUM m} tt tt c2 d1) =
+  m , w2 , c1 , d2
+
+
+TNATeq-sym : {w : 𝕎·} {a b : CTerm}
+             → TNATeq w a b
+             → TNATeq w b a
+TNATeq-sym {w} {a} {b} h w1 e1 = lift (⇓∼ℕ-sym (lower (h w1 e1)))
+
+
+TNATeq-trans : {w : 𝕎·} {a b c : CTerm}
+             → TNATeq w a b
+             → TNATeq w b c
+             → TNATeq w a c
+TNATeq-trans {w} {a} {b} {c} h q w1 e1 = lift (⇓∼ℕ-trans (lower (h w1 e1)) (lower (q w1 e1)))
+
+
+□TNATeq-sym : {w : 𝕎·} {a b : CTerm}
+                        → □· w (λ w' _ → TNATeq w' a b)
+                        → □· w (λ w' _ → TNATeq w' b a)
+□TNATeq-sym {w} {a} {b} h =
+  Mod.∀𝕎-□Func M (λ w1 e1 → TNATeq-sym {w1} {a} {b}) h
+
+
+□TNATeq-trans : {w : 𝕎·} {a b c : CTerm}
+                        → □· w (λ w' _ → TNATeq w' a b)
+                        → □· w (λ w' _ → TNATeq w' b c)
+                        → □· w (λ w' _ → TNATeq w' a c)
+□TNATeq-trans {w} {a} {b} {c} h₁ h₂ =
+  Mod.□Func M (Mod.∀𝕎-□Func M aw h₁) h₂
+  where
+    aw : ∀𝕎 w (λ w' e' → TNATeq w' a b → TNATeq w' b c → TNATeq w' a c)
+    aw w1 e1 = TNATeq-trans {w1} {a} {b} {c}
+
+
 □NATeq-sym : {w : 𝕎·} {a b : CTerm}
                         → □· w (λ w' _ → NATeq w' a b)
                         → □· w (λ w' _ → NATeq w' b a)
@@ -703,6 +784,7 @@ eqTypes⇛NAT : {u : univs} {w : 𝕎·} {A B : CTerm}
                → □· w (λ w' _ → ⌜ B ⌝ ⇛ NAT at w')
 eqTypes⇛NAT {u} {w} {A} {B} (EQTNAT x x₁) comp = →□·⇛ x₁
 eqTypes⇛NAT {u} {w} {A} {B} (EQTQNAT x x₁) comp = ⊥-elim (NATneqQNAT (⇛-val-det tt tt comp x))
+eqTypes⇛NAT {u} {w} {A} {B} (EQTTNAT x x₁) comp = ⊥-elim (NATneqTNAT (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) comp = ⊥-elim (NATneqLT (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) comp = ⊥-elim (NATneqQLT (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} (EQTFREE x x₁) comp = ⊥-elim (NATneqFREE (⇛-val-det tt tt comp x))

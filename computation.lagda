@@ -70,6 +70,8 @@ step (VAR v) w = nothing
 step NAT = ret NAT
 -- QNAT
 step QNAT = ret QNAT
+-- TNAT
+step TNAT = ret TNAT
 -- LT
 step (LT a b) = ret (LT a b)
 -- QLT
@@ -277,6 +279,7 @@ infix 30 _⇛!_at_
 stepVal : (a : Term) (w : 𝕎·) → isValue a → step a w ≡ ret a w
 stepVal NAT w v = refl
 stepVal QNAT w v = refl
+stepVal TNAT w v = refl
 stepVal (LT a b) w v = refl
 stepVal (QLT a b) w v = refl
 stepVal (NUM x) w v = refl
@@ -378,6 +381,14 @@ weakMonEq : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
 weakMonEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (⇓sameℕ w' t1 t2))
 
 
+⇓∼ℕ : (w : 𝕎·) (t1 t2 : Term) → Set(L)
+⇓∼ℕ w t1 t2 = Σ ℕ (λ n → Σ 𝕎· (λ w' → t1 ⇓ (NUM n) from w to w' × t2 ⇓ (NUM n) from w to w'))
+
+
+∀𝕎-⇓∼ℕ : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
+∀𝕎-⇓∼ℕ w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (⇓∼ℕ w' t1 t2))
+
+
 weakℕ : (w : 𝕎·) (t : Term) → Set(lsuc(L))
 weakℕ w t = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ n → t ⇓ NUM n at w')))
 
@@ -449,6 +460,7 @@ step-APPLY-CS-¬NUM : (name : Name) (a b : Term) (w w' : 𝕎·)
                      → step (APPLY (CS name) a) w ≡ ret (APPLY (CS name) b) w'
 step-APPLY-CS-¬NUM name NAT b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name QNAT b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name TNAT b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (LT a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (QLT a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (NUM x) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = ⊥-elim (c x refl)
@@ -603,6 +615,10 @@ infix 30 _#⇛!_at_
 #strongMonEq w t1 t2 = strongMonEq w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 
+#∀𝕎-⇓∼ℕ : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
+#∀𝕎-⇓∼ℕ w t1 t2 = ∀𝕎-⇓∼ℕ w ⌜ t1 ⌝ ⌜ t2 ⌝
+
+
 #weakMonEq : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
 #weakMonEq w t1 t2 = weakMonEq w ⌜ t1 ⌝ ⌜ t2 ⌝
 
@@ -681,6 +697,7 @@ map-pair-𝕎⊑ w w' (just x) a h rewrite sym (pair-inj₁ (just-inj h)) | sym 
 step⊑ : {w w' : 𝕎·} {a b : Term} → step a w ≡ just (b , w') → w ⊑· w'
 step⊑ {w} {w'} {NAT} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {QNAT} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {TNAT} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {LT a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {QLT a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {NUM x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
@@ -1120,6 +1137,7 @@ data ∼T : 𝕎· → Term → Term → Set where
                 → APPLY a c ⇓ APPLY b c from w to w'
 →-step-APPLY {w} {w'} {NAT} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {QNAT} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {TNAT} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {LT a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {QLT a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {NUM x} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
@@ -1219,6 +1237,7 @@ step-⇓-ASSERT₁ : {w w' : 𝕎·} {a b : Term}
                  → ASSERT₁ a ⇓ ASSERT₁ b from w to w'
 step-⇓-ASSERT₁ {w} {w'} {NAT} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {QNAT} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {TNAT} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {LT a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {QLT a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {NUM x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
@@ -1439,6 +1458,7 @@ step-preserves-fvars-APPLY w f a b e {x} i = ?
 step-preserves-fvars : (w : 𝕎·) (a b : Term) → step a w ≡ just b → fvars b ⊆ fvars a
 step-preserves-fvars w NAT b e {x} i rewrite sym (just-inj e) = i
 step-preserves-fvars w QNAT b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w TNAT b e {x} i rewrite sym (just-inj e) = i
 step-preserves-fvars w (LT a a₁) b e {x} i rewrite sym (just-inj e) = i
 step-preserves-fvars w (QLT a a₁) b e {x} i rewrite sym (just-inj e) = i
 step-preserves-fvars w (NUM x₁) b e {x} i rewrite sym (just-inj e) = i

@@ -2089,34 +2089,4 @@ equalInType-APPLY-force {i} {w} {F} {f} eqF eqf = ∈BAIRE→NAT→ eqF (equalIn
 #¬Names-force : {a : CTerm} → #¬Names a → #¬Names (#force a)
 #¬Names-force {a} nna rewrite nna = refl
 
-
-
-⇓-from-to→≡𝕎 : {w1 w2 w3 : 𝕎·} {t u v : Term}
-                 → isValue u
-                 → isValue v
-                 → t ⇓ u from w1 to w2
-                 → t ⇓ v from w1 to w3
-                 → u ≡ v × w2 ≡ w3
-⇓-from-to→≡𝕎 {w1} {w2} {w3} {t} {u} {v} isvu isvv (n , comp1) (m , comp2) with n ≤? m
-... | yes p rewrite steps-val-det w1 w2 w3 t u v n m isvu comp1 comp2 p
-                  | steps-val-det-𝕎 w1 w2 w3 t u v n m isvu comp1 comp2 p = refl , refl
-... | no p rewrite steps-val-det w1 w3 w2 t v u m n isvv comp2 comp1 (≰⇒≥ p)
-                 | steps-val-det-𝕎 w1 w3 w2 t v u m n isvv comp2 comp1 (≰⇒≥ p) = refl , refl
-
-
-⇓-from-to≡wᵣ : {a b : Term} {w1 w2 w3 : 𝕎·}
-               → w2 ≡ w3
-               → a ⇓ b from w1 to w2
-               → a ⇓ b from w1 to w3
-⇓-from-to≡wᵣ {a} {b} {w1} {w2} {w3} eqw comp rewrite eqw = comp
-
-
-
-⇓-from-to≡wₗ : {a b : Term} {w1 w2 w3 : 𝕎·}
-               → w1 ≡ w2
-               → a ⇓ b from w1 to w3
-               → a ⇓ b from w2 to w3
-⇓-from-to≡wₗ {a} {b} {w1} {w2} {w3} eqw comp rewrite eqw = comp
-
-
 \end{code}

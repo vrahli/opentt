@@ -406,6 +406,7 @@ data updCtxt (name : Name) (f : Term) : Term → Set where
   updCtxt-VAR     : (x : Var) → updCtxt name f (VAR x)
   updCtxt-NAT     : updCtxt name f NAT
   updCtxt-QNAT    : updCtxt name f QNAT
+  updCtxt-TNAT    : updCtxt name f TNAT
   updCtxt-LT      : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (LT a b)
   updCtxt-QLT     : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (QLT a b)
   updCtxt-NUM     : (x : ℕ) → updCtxt name f (NUM x)
@@ -457,6 +458,7 @@ updCtxt→differ : {name : Name} {f t : Term}
 updCtxt→differ {name} {f} {.(VAR x)} (updCtxt-VAR x) = differ-VAR _
 updCtxt→differ {name} {f} {.NAT} updCtxt-NAT = differ-NAT
 updCtxt→differ {name} {f} {.QNAT} updCtxt-QNAT = differ-QNAT
+updCtxt→differ {name} {f} {.TNAT} updCtxt-TNAT = differ-TNAT
 updCtxt→differ {name} {f} {.(LT a b)} (updCtxt-LT a b u u₁) = differ-LT _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
 updCtxt→differ {name} {f} {.(QLT a b)} (updCtxt-QLT a b u u₁) = differ-QLT _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
 updCtxt→differ {name} {f} {.(NUM x)} (updCtxt-NUM x) = differ-NUM _
@@ -503,6 +505,7 @@ differ→updCtxt : {name : Name} {f t : Term}
 differ→updCtxt {name} {f} {.(VAR x)} (differ-VAR x) = updCtxt-VAR _
 differ→updCtxt {name} {f} {.NAT} differ-NAT = updCtxt-NAT
 differ→updCtxt {name} {f} {.QNAT} differ-QNAT = updCtxt-QNAT
+differ→updCtxt {name} {f} {.TNAT} differ-TNAT = updCtxt-TNAT
 differ→updCtxt {name} {f} {.(LT a₁ b₁)} (differ-LT a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-LT _ _ (differ→updCtxt d) (differ→updCtxt d₁)
 differ→updCtxt {name} {f} {.(QLT a₁ b₁)} (differ-QLT a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-QLT _ _ (differ→updCtxt d) (differ→updCtxt d₁)
 differ→updCtxt {name} {f} {.(NUM x)} (differ-NUM x) = updCtxt-NUM _

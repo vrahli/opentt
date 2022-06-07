@@ -318,6 +318,7 @@ equalInTypeFFDEFS→ : {w : 𝕎·} {i : ℕ} {a b A u : CTerm}
 {-# TERMINATING #-}
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTNAT x x₁ , eqi) = ⊥-elim (FFDEFSneqNAT (compAllVal x₁ tt))
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTQNAT x x₁ , eqi) = ⊥-elim (FFDEFSneqQNAT (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTTNAT x x₁ , eqi) = ⊥-elim (FFDEFSneqTNAT (compAllVal x₁ tt))
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (FFDEFSneqLT (compAllVal x₁ tt))
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (FFDEFSneqQLT (compAllVal x₁ tt))
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTFREE x x₁ , eqi) = ⊥-elim (FFDEFSneqFREE (compAllVal x₁ tt))
@@ -376,6 +377,7 @@ equalInType-LT-⇛NUM→ : {i : ℕ} {w : 𝕎·} {a b u v : CTerm} {n m : ℕ}
 {-# TERMINATING #-}
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTNAT x x₁ , eqi) = ⊥-elim (LTneqNAT (compAllVal x tt))
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTQNAT x x₁ , eqi) = ⊥-elim (LTneqQNAT (compAllVal x tt))
+equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTTNAT x x₁ , eqi) = ⊥-elim (LTneqTNAT (compAllVal x tt))
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) =
   lower (Mod.□-const M {w} (Mod.∀𝕎-□Func M aw h))
   where

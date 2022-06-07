@@ -72,6 +72,9 @@ QTUNIONneqNAT {a} {b} ()
 QTUNIONneqQNAT : {a b : Term} → ¬ (QTUNION a b) ≡ QNAT
 QTUNIONneqQNAT {a} {b} ()
 
+QTUNIONneqTNAT : {a b : Term} → ¬ (QTUNION a b) ≡ TNAT
+QTUNIONneqTNAT {a} {b} ()
+
 QTUNIONneqLT : {a b : Term} {c d : Term} → ¬ (QTUNION a b) ≡ LT c d
 QTUNIONneqLT {a} {b} {c} {d} ()
 
@@ -186,6 +189,7 @@ typeSysConds-QTUNION-ttrans : (u : univs) (w : 𝕎·) (A B A1 B1 A2 B2 : CTerm)
 {-# TERMINATING #-}
 typeSysConds-QTUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) = ⊥-elim (QTUNIONneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-QTUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) = ⊥-elim (QTUNIONneqQNAT (⇛-val-det tt tt x₁ y))
+typeSysConds-QTUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) = ⊥-elim (QTUNIONneqTNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-QTUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) = ⊥-elim (QTUNIONneqLT (⇛-val-det tt tt x₁ y))
 typeSysConds-QTUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) = ⊥-elim (QTUNIONneqQLT (⇛-val-det tt tt x₁ y))
 typeSysConds-QTUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) = ⊥-elim (QTUNIONneqFREE (⇛-val-det tt tt x₁ y))
@@ -318,6 +322,7 @@ typeSysConds-QTUNION-extl1 : (u : univs) (w : 𝕎·) (A B A1 B1 A2 B2 : CTerm)
 {-# TERMINATING #-}
 typeSysConds-QTUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqNAT (⇛-val-det tt tt x y))
 typeSysConds-QTUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqQNAT (⇛-val-det tt tt x y))
+typeSysConds-QTUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqTNAT (⇛-val-det tt tt x y))
 typeSysConds-QTUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (QTUNIONneqLT (⇛-val-det tt tt x y))
 typeSysConds-QTUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (QTUNIONneqQLT (⇛-val-det tt tt x y))
 typeSysConds-QTUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (QTUNIONneqFREE (⇛-val-det tt tt x y))
@@ -382,6 +387,7 @@ typeSysConds-QTUNION-extl2 : (u : univs) (w : 𝕎·) (A B A1 B1 A2 B2 : CTerm)
 {-# TERMINATING #-}
 typeSysConds-QTUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqNAT (⇛-val-det tt tt x y₁))
 typeSysConds-QTUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqQNAT (⇛-val-det tt tt x y₁))
+typeSysConds-QTUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqTNAT (⇛-val-det tt tt x y₁))
 typeSysConds-QTUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (QTUNIONneqLT (⇛-val-det tt tt x y₁))
 typeSysConds-QTUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (QTUNIONneqQLT (⇛-val-det tt tt x y₁))
 typeSysConds-QTUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (QTUNIONneqFREE (⇛-val-det tt tt x y₁))
@@ -447,6 +453,7 @@ typeSysConds-QTUNION-extr1 : (u : univs) (w : 𝕎·) (A B A1 B1 A2 B2 : CTerm)
 {-# TERMINATING #-}
 typeSysConds-QTUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QTUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqQNAT (⇛-val-det tt tt x₁ y₁))
+typeSysConds-QTUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqTNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QTUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (QTUNIONneqLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QTUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (QTUNIONneqQLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QTUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (QTUNIONneqFREE (⇛-val-det tt tt x₁ y₁))
@@ -512,6 +519,7 @@ typeSysConds-QTUNION-extr2 : (u : univs) (w : 𝕎·) (A B A1 B1 A2 B2 : CTerm)
 {-# TERMINATING #-}
 typeSysConds-QTUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-QTUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqQNAT (⇛-val-det tt tt x₁ y))
+typeSysConds-QTUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqTNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-QTUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (QTUNIONneqLT (⇛-val-det tt tt x₁ y))
 typeSysConds-QTUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (QTUNIONneqQLT (⇛-val-det tt tt x₁ y))
 typeSysConds-QTUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (QTUNIONneqFREE (⇛-val-det tt tt x₁ y))
@@ -578,6 +586,7 @@ typeSysConds-QTUNION-extrevl1 : (u : univs) (w : 𝕎·) (A B A1 B1 A2 B2 : CTer
 {-# TERMINATING #-}
 typeSysConds-QTUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqNAT (⇛-val-det tt tt x y))
 typeSysConds-QTUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqQNAT (⇛-val-det tt tt x y))
+typeSysConds-QTUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqTNAT (⇛-val-det tt tt x y))
 typeSysConds-QTUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (QTUNIONneqLT (⇛-val-det tt tt x y))
 typeSysConds-QTUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (QTUNIONneqQLT (⇛-val-det tt tt x y))
 typeSysConds-QTUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (QTUNIONneqFREE (⇛-val-det tt tt x y))
@@ -663,6 +672,7 @@ typeSysConds-QTUNION-extrevl2 : (u : univs) (w : 𝕎·) (A B A1 B1 A2 B2 : CTer
 {-# TERMINATING #-}
 typeSysConds-QTUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqNAT (⇛-val-det tt tt x y₁))
 typeSysConds-QTUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqQNAT (⇛-val-det tt tt x y₁))
+typeSysConds-QTUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqTNAT (⇛-val-det tt tt x y₁))
 typeSysConds-QTUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (QTUNIONneqLT (⇛-val-det tt tt x y₁))
 typeSysConds-QTUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (QTUNIONneqQLT (⇛-val-det tt tt x y₁))
 typeSysConds-QTUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (QTUNIONneqFREE (⇛-val-det tt tt x y₁))
@@ -745,6 +755,7 @@ typeSysConds-QTUNION-extrevr1 : (u : univs) (w : 𝕎·) (A B A1 B1 A2 B2 : CTer
 {-# TERMINATING #-}
 typeSysConds-QTUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QTUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqQNAT (⇛-val-det tt tt x₁ y₁))
+typeSysConds-QTUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqTNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QTUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (QTUNIONneqLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QTUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (QTUNIONneqQLT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QTUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (QTUNIONneqFREE (⇛-val-det tt tt x₁ y₁))
@@ -830,6 +841,7 @@ typeSysConds-QTUNION-extrevr2 : (u : univs) (w : 𝕎·) (A B A1 B1 A2 B2 : CTer
 {-# TERMINATING #-}
 typeSysConds-QTUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-QTUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqQNAT (⇛-val-det tt tt x₁ y))
+typeSysConds-QTUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (QTUNIONneqTNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-QTUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (QTUNIONneqLT (⇛-val-det tt tt x₁ y))
 typeSysConds-QTUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (QTUNIONneqQLT (⇛-val-det tt tt x₁ y))
 typeSysConds-QTUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (QTUNIONneqFREE (⇛-val-det tt tt x₁ y))
@@ -919,6 +931,7 @@ eqInType-⇛-QTUNION : (u : univs) (w : 𝕎·) (A B A1 A2 B1 B2 a b : CTerm)
 {-# TERMINATING #-}
 eqInType-⇛-QTUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (QTUNIONneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (QTUNIONneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QTUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTTNAT x x₁) ei = ⊥-elim (QTUNIONneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (QTUNIONneqLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (QTUNIONneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (QTUNIONneqFREE (⇛-val-det tt tt c₁ x))
@@ -1005,6 +1018,7 @@ eqInType-⇛-QTUNION2 : (u : 𝕌) (w : 𝕎·) (A B A1 A2 B1 B2 a b : CTerm)
 {-# TERMINATING #-}
 eqInType-⇛-QTUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNAT x x₁) ei ext = ⊥-elim (QTUNIONneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQNAT x x₁) ei ext = ⊥-elim (QTUNIONneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QTUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTTNAT x x₁) ei ext = ⊥-elim (QTUNIONneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ei ext = ⊥-elim (QTUNIONneqLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei ext = ⊥-elim (QTUNIONneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTFREE x x₁) ei ext = ⊥-elim (QTUNIONneqFREE (⇛-val-det tt tt c₁ x))
@@ -1099,6 +1113,7 @@ eqInType-⇛-QTUNION-rev : (u : univs) (w : 𝕎·) (A B A1 A2 B1 B2 a b : CTerm
 {-# TERMINATING #-}
 eqInType-⇛-QTUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (QTUNIONneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (QTUNIONneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QTUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTTNAT x x₁) ei = ⊥-elim (QTUNIONneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (QTUNIONneqLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (QTUNIONneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (QTUNIONneqFREE (⇛-val-det tt tt c₁ x))
@@ -1180,6 +1195,7 @@ eqInType-⇛-QTUNION-rev2 : (u : 𝕌) (w : 𝕎·) (A B A1 A2 B1 B2 a b : CTerm
 {-# TERMINATING #-}
 eqInType-⇛-QTUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNAT x x₁) ext ei = ⊥-elim (QTUNIONneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQNAT x x₁) ext ei = ⊥-elim (QTUNIONneqQNAT (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QTUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTTNAT x x₁) ext ei = ⊥-elim (QTUNIONneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ext ei = ⊥-elim (QTUNIONneqLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ext ei = ⊥-elim (QTUNIONneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTFREE x x₁) ext ei = ⊥-elim (QTUNIONneqFREE (⇛-val-det tt tt c₁ x))
