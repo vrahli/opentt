@@ -311,7 +311,7 @@ stepsPresUpdRel2-APPLY₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp ,
                         → ΣstepsUpdRel2 name f g (APPLY a₁ b₁) w1 (APPLY a₂ b₂) w
 →ΣstepsUpdRel2-APPLY₁ {name} {f} {g} {a₁} {a₂} {b₁} {b₂} {w1} {w} updb (k1 , k2 , y1 , y2 , w3 , w' , comp1 , comp2 , r , upw) =
   fst comp1' , fst comp2' , APPLY y1 b₁ , APPLY y2 b₂ , w3 , w' , snd comp1' , snd comp2' ,
-  updRel2-APPLY _ _ _ _ r updb , ?
+  updRel2-APPLY _ _ _ _ r updb , upw
   where
     comp1' : APPLY a₁ b₁ ⇓ APPLY y1 b₁ from w1 to w3
     comp1' = →steps-APPLY b₁ k1 comp1
@@ -406,12 +406,13 @@ updRel2-INRₗ→ {name} {f} {g} {t} {.(INR x)} (updRel2-INR .t x u) = x , refl 
                      → compatible· name w1 Res⊤
                      → ∀𝕎-get0-NUM w1 name
                      → updRel2 name f g a b
+                     → upto𝕎 name w1 w
                      → ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < n → ∀𝕎-⇓∼ℕ w' (APPLY f (NUM k)) (APPLY g (NUM k)))
                      → stepsPresUpdRel2 n name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1
                      → Σ (ΣstepsUpdRel2 name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 (APPLY (force g) b) w)
                           (λ x → 0 < fst (snd x))
-→ΣstepsUpdRel2-upd gc {n} {name} {f} {g} {a} {b} {w1} {w} cf cg {--nng--} compat wgt0 u eqn (k , v , w2 , comp , isv , ish , inw , ind) =
-  (k2 + k3 , k5 + k6 , NUM i , NUM i , w1a , ? , comp2b , compgd , updRel2-NUM i , ?) ,
+→ΣstepsUpdRel2-upd gc {n} {name} {f} {g} {a} {b} {w1} {w} cf cg {--nng--} compat wgt0 u upw eqn (k , v , w2 , comp , isv , ish , inw , ind) =
+  (k2 + k3 , k5 + k6 , NUM i , NUM i , w1a , {!!} , comp2b , compgd , updRel2-NUM i , {!!}) ,
   {!!} --steps-APPLY-val→ {k5 + k6} {force g} {b} {NUM i} {w} {w} tt compgd
   where
     c : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w1' → Σ ℕ (λ m → Σ ℕ (λ m' →
@@ -487,7 +488,7 @@ updRel2-INRₗ→ {name} {f} {g} {t} {.(INR x)} (updRel2-INR .t x u) = x , refl 
 -- TODO: prove this result (because ¬ name ∈ names t + the other assumptions)
     c1ab : Σ 𝕎· (λ w1a' → steps k3 (APPLY f (NUM m) , chooseT0if name w1' m' m) ≡ (NUM i , w1a')
                            × upto𝕎 name w1a w1a')
-    c1ab = ?
+    c1ab = {!!}
 
     w1a' : 𝕎·
     w1a' = fst c1ab
@@ -505,7 +506,7 @@ updRel2-INRₗ→ {name} {f} {g} {t} {.(INR x)} (updRel2-INR .t x u) = x , refl 
     inw1 = ∈names𝕎-LET→ {k1} {k} {name} {a} {SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))} {NUM m} {v} {w1} {w1'} {w2} comp1b comp isv inw
 
     indb : Σ ℕ (λ k' → Σ 𝕎· (λ w' → steps k' (b , w) ≡ (NUM m , w') × upto𝕎 name w1' w'))
-    indb = Σsteps-updRel2-NUM→ (ind k1 (<⇒≤ ltk1) {a} {b} {NUM m} {w1} {w1'} {w} u ? compat wgt0 eqn comp1b ish1 inw1 tt)
+    indb = Σsteps-updRel2-NUM→ (ind k1 (<⇒≤ ltk1) {a} {b} {NUM m} {w1} {w1'} {w} u upw compat wgt0 eqn comp1b ish1 inw1 tt)
 
     k4 : ℕ
     k4 = fst indb
@@ -516,17 +517,18 @@ updRel2-INRₗ→ {name} {f} {g} {t} {.(INR x)} (updRel2-INR .t x u) = x , refl 
     cb : steps k4 (b , w) ≡ (NUM m , w1x)
     cb = fst (snd (snd indb))
 
-    compg : APPLY (force g) b ⇓ APPLY g (NUM m) from w1 to w1x
-    compg = ? --→APPLY-force⇓APPLY-NUM {m} {g} {b} {w1} {w1x} cg (k4 , cb)
+    compg : APPLY (force g) b ⇓ APPLY g (NUM m) from w to w1x
+    compg = →APPLY-force⇓APPLY-NUM {m} {g} {b} {w} {w1x} cg (k4 , cb)
 
     k5 : ℕ
     k5 = fst compg
 
-    compgb : steps k5 (APPLY (force g) b , w1) ≡ (APPLY g (NUM m) , w1x)
+    compgb : steps k5 (APPLY (force g) b , w) ≡ (APPLY g (NUM m) , w1x)
     compgb = snd compg
 
-    c2 : Σ 𝕎· (λ w1b → APPLY g (NUM m) ⇓ NUM i from w1 to w1b)
-    c2 = ? --⇓→from-to (lower (snd (snd q) w1 (⊑-refl· _)))
+   -- Use eqn here instead
+    c2 : Σ 𝕎· (λ w1b → APPLY g (NUM m) ⇓ NUM i from w to w1b)
+    c2 = {!!} --⇓→from-to (lower (snd (snd q) w1 (⊑-refl· _)))
 
     w1b : 𝕎·
     w1b = fst c2
@@ -534,16 +536,16 @@ updRel2-INRₗ→ {name} {f} {g} {t} {.(INR x)} (updRel2-INR .t x u) = x , refl 
     k6 : ℕ
     k6 = fst (snd c2)
 
-    c2b : steps k6 (APPLY g (NUM m) , w1) ≡ (NUM i , w1b)
+    c2b : steps k6 (APPLY g (NUM m) , w) ≡ (NUM i , w1b)
     c2b = snd (snd c2)
 
-    compgc : steps (k5 + k6) (APPLY (force g) b , w1) ≡ (NUM i , w1b)
+    compgc : steps (k5 + k6) (APPLY (force g) b , w) ≡ (NUM i , w1b)
     compgc = {!!} --steps-trans+ {k5} {k6} {APPLY (force g) b} {APPLY g (NUM m)} {NUM i} {w1} {w1x} {w1b} compgb c2b
 
 --    nnb : ¬Names b
 --    nnb = updRel2→¬Names nng u
 
-    compgd : steps (k5 + k6) (APPLY (force g) b , w1) ≡ (NUM i , w1a)
+    compgd : steps (k5 + k6) (APPLY (force g) b , w) ≡ (NUM i , w1a)
     compgd = {!!} --fst (¬Names→steps (k5 + k6) w1 w1b w (APPLY (force g) b) (NUM i) (¬Names-APPLY {force g} {b} (¬Names-force {g} nng) nnb) compgc)
 
 
