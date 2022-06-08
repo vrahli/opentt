@@ -159,6 +159,12 @@ names𝕎-chooseT-diff = (name name' : Name) (w : 𝕎·) (t : Term)
 
 
 
+names𝕎-chooseT≡ : Set(L)
+names𝕎-chooseT≡ = (name : Name) (w : 𝕎·) (t : Term)
+                   → ¬Names t
+                   → names𝕎· (chooseT name w t) ≡ names𝕎· w
+
+
 -- because name in is dom𝕎 then it cannot be picked by startNewChoiceT
 ∈dom𝕎→getT-startNewChoiceT : Set(1ℓ Level.⊔ L)
 ∈dom𝕎→getT-startNewChoiceT = (name : Name) (n : ℕ) (r : Res) (t : Term) (w : 𝕎·)
@@ -178,6 +184,13 @@ dom𝕎-chooseT : Set(L)
 dom𝕎-chooseT = (name name' : Name) (w : 𝕎·) (t : Term)
                 → name ∈ dom𝕎· w
                 → name ∈ dom𝕎· (chooseT name' w t)
+
+
+
+-- TODO derive dom𝕎-chooseT from this one
+dom𝕎-chooseT≡ : Set(L)
+dom𝕎-chooseT≡ = (name : Name) (w : 𝕎·) (t : Term)
+                → dom𝕎· (chooseT name w t) ≡ dom𝕎· w
 
 
 
@@ -201,9 +214,11 @@ record ContConds : Set(1ℓ Level.⊔ L) where
     ccGcd      : get-choose-diff --gcd
     ccNchoose  : names𝕎-chooseT --sct
     ccNchoosed : names𝕎-chooseT-diff
+    ccNchoose≡ : names𝕎-chooseT≡
     ccGstart   : ∈dom𝕎→getT-startNewChoiceT --idgs
     ccNstart   : ∈names𝕎·-startNewChoiceT→ --isn
     ccDchoose  : dom𝕎-chooseT
+    ccDchoose≡ : dom𝕎-chooseT≡
     ccDstart   : dom𝕎-startNewChoiceT
     ccNchoice  : newChoiceT∈dom𝕎
 
