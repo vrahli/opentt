@@ -715,7 +715,12 @@ updCtxt2-shiftNameUp→ v {name} {f} cf {SHRINK a} (updCtxt2-SHRINK .(shiftNameU
   rewrite #shiftUp 0 (ct f cf) | subv# 1 (NUM m) f cf | #shiftUp 0 (ct f cf) | #shiftDown 1 (ct f cf)
         | #shiftUp 0 (ct f cf) | subv# 0 AX f cf | #shiftDown 0 (ct f cf) =
   g1 ,
-  ¬∈names→isHighestℕ cc {k} {APPLY f (NUM m)} {APPLY f (NUM m)} {chooseT name w (NUM m)} {chooseT name w (NUM m)} {n} {name} (¬∈names-APPLY {name} {f} {NUM m} nnf (¬∈names-NUM {name} {m})) (λ z → nnw (ContConds.ccNchoose cc name name w (NUM m) (¬∈names-NUM {name} {m}) z)) (ContConds.ccDchoose cc name name w (NUM m) idom) g1 comp
+  ¬∈names→isHighestℕ
+    cc {k} {APPLY f (NUM m)} {APPLY f (NUM m)} {chooseT name w (NUM m)} {chooseT name w (NUM m)} {n} {name}
+    (¬∈names-APPLY {name} {f} {NUM m} nnf (¬∈names-NUM {name} {m}))
+    (λ z → nnw (ContConds.ccNchoose cc name name w (NUM m) (¬∈names-NUM {name} {m}) z))
+    (dom𝕎-chooseT cc name name w (NUM m) idom)
+    g1 comp
   where
     g1 : getT≤ℕ (chooseT name w (NUM m)) n name
     g1 rewrite gc name w m compat = m , refl , ltn
@@ -733,17 +738,17 @@ updCtxt2-shiftNameUp→ v {name} {f} cf {SHRINK a} (updCtxt2-SHRINK .(shiftNameU
     → ∈names𝕎 {k} {chooseT name w (NUM m)} {chooseT name w (NUM m)} name comp
 →isHighestℕ-upd-body2-NUM3b-∈names𝕎 cc gc {0} {name} {w} {f} {m} {m'} cf nnf nnw idom comp =
   (λ z → nnw (ContConds.ccNchoose cc name name w (NUM m) (¬∈names-NUM {name} {m}) z)) ,
-  ContConds.ccDchoose cc name name w (NUM m) idom
+  dom𝕎-chooseT cc name name w (NUM m) idom
 →isHighestℕ-upd-body2-NUM3b-∈names𝕎 cc gc {suc k} {name} {w} {f} {m} {m'} cf nnf nnw idom comp
   rewrite #shiftUp 0 (ct f cf) | subv# 1 (NUM m) f cf | #shiftUp 0 (ct f cf) | #shiftDown 1 (ct f cf)
         | #shiftUp 0 (ct f cf) | subv# 0 AX f cf | #shiftDown 0 (ct f cf) =
   (λ z → nnw (ContConds.ccNchoose cc name name w (NUM m) (¬∈names-NUM {name} {m}) z)) ,
-  ContConds.ccDchoose cc name name w (NUM m) idom ,
+  dom𝕎-chooseT cc name name w (NUM m) idom ,
   ¬∈names→∈names𝕎
     cc {k} {APPLY f (NUM m)} {APPLY f (NUM m)} {chooseT name w (NUM m)} {chooseT name w (NUM m)} {name}
     (¬∈names-APPLY {name} {f} {NUM m} nnf (¬∈names-NUM {name} {m}))
     (λ z → nnw (ContConds.ccNchoose cc name name w (NUM m) (¬∈names-NUM {name} {m}) z))
-    (ContConds.ccDchoose cc name name w (NUM m) idom)
+    (dom𝕎-chooseT cc name name w (NUM m) idom)
     comp
 
 

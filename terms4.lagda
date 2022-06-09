@@ -1667,9 +1667,9 @@ name¬∈→step cc w1 w2 (FRESH t) u name comp nit niw idom rewrite sym (pair-i
             × ¬ name ∈ names (shiftNameDown 0 (renn 0 (newChoiceT+ w1 t) t))
             × ¬ name ∈ names𝕎· (startNewChoiceT Res⊤ w1 t)
             × name ∈ dom𝕎· (startNewChoiceT Res⊤ w1 t)
-    concl = sym (ContConds.ccGstart cc name 0 Res⊤ t w1 idom) ,
+    concl = sym (∈dom𝕎→getT-startNewChoiceT cc name 0 Res⊤ t w1 idom) ,
             (λ x → nit (suc→∈lowerNames (∈names-shiftNameDown-renn→ name (newChoiceT+ w1 t) t (_≤_.s≤s _≤_.z≤n) (∈dom𝕎→¬≡newChoiceT+ name w1 t idom) x))) , --() ,
-            (λ x → niw (ContConds.ccNstart cc name w1 t x)) ,
+            (λ x → niw (∈names𝕎-startNewChoiceT→ cc name w1 t x)) ,
             ContConds.ccDstart cc name w1 t idom
 name¬∈→step cc w1 w2 (CHOOSE n t) u name comp nit niw idom with is-NAME n
 ... | inj₁ (name' , p)
@@ -1678,7 +1678,7 @@ name¬∈→step cc w1 w2 (CHOOSE n t) u name comp nit niw idom with is-NAME n
         | ContConds.ccGcd cc 0 name name' w1 t (λ x → nit (here x)) =
             refl , ¬∈[] {Name} {name} ,
             (λ x → niw (ContConds.ccNchoose cc name name' w1 t (λ x → nit (there x)) x)) ,
-            ContConds.ccDchoose cc name name' w1 t idom --ret AX (chooseT name w t)
+            dom𝕎-chooseT cc name name' w1 t idom --ret AX (chooseT name w t)
 ... | inj₂ x with step⊎ n w1
 ... |    inj₁ (n' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
   fst ind ,  (λ x → nit (¬∈1→∈++2 (fst (snd ind)) x)) , fst (snd (snd ind)) , snd (snd (snd ind))

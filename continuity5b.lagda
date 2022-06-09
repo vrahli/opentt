@@ -149,12 +149,92 @@ upto𝕎→≡fresh-inst : {name : Name} {w1 w2 : 𝕎·} (a : Term)
 upto𝕎→≡fresh-inst {name} {w1} {w2} a upw rewrite upto𝕎→≡newChoiceT+ a upw = refl
 
 
+-- MOVE to continuity-conds
+→≡names𝕎-start : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·)
+                   → names𝕎· w1 ≡ names𝕎· w2
+                   → names𝕎· (startChoice· name Res⊤ w1) ≡ names𝕎· (startChoice· name Res⊤ w2)
+→≡names𝕎-start cc name w1 w2 e =
+  trans (ContConds.ccN≡start cc name w1) (trans e (sym (ContConds.ccN≡start cc name w2)))
 
-→upto𝕎-startNewChoiceT : {name : Name} {w1 w2 : 𝕎·} (a : Term)
+
+-- MOVE to continuity-conds
+→dom𝕎-chooseT≡ : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (t : Term)
+                   → dom𝕎· w1 ≡ dom𝕎· w2
+                   → dom𝕎· (chooseT name w1 t) ≡ dom𝕎· (chooseT name w2 t)
+→dom𝕎-chooseT≡ cc name w1 w2 t e =
+  trans (ContConds.ccDchoose≡ cc name w1 t) (trans e (sym (ContConds.ccDchoose≡ cc name w2 t)))
+
+
+
+-- MOVE to continuity-conds
+upto𝕎→≡getT : (cc : ContConds) (k : ℕ) (nm name n : Name) (w1 w2 : 𝕎·)
+                → ¬ nm ≡ name
+                → getT k nm w1 ≡ getT k nm w2
+                → getT k nm (startChoice· n Res⊤ w1) ≡ getT k nm (startChoice· n Res⊤ w2)
+upto𝕎→≡getT cc k nm name n w1 w2 diff upw with nm ≟ n
+... | yes p rewrite p = ContConds.ccGstarts cc n k Res⊤ w1 w2
+... | no p = trans (ContConds.ccGstartd cc nm n k Res⊤ w1 p) (trans upw (sym (ContConds.ccGstartd cc nm n k Res⊤ w2 p)))
+
+
+→upto𝕎-startChoice : (cc : ContConds) {name : Name} {w1 w2 : 𝕎·} (n : Name)
+                       → upto𝕎 name w1 w2
+                       → upto𝕎 name (startChoice· n Res⊤ w1) (startChoice· n Res⊤ w2)
+→upto𝕎-startChoice cc {name} {w1} {w2} n upw =
+  ContConds.ccD≡start cc n w1 w2 (fst upw) ,
+  →≡names𝕎-start cc n w1 w2 (fst (snd upw)) ,
+  λ nm k d → upto𝕎→≡getT cc k nm name n w1 w2 d (snd (snd upw) nm k d)
+
+
+→upto𝕎-startNewChoiceT : (cc : ContConds) {name : Name} {w1 w2 : 𝕎·} (a : Term)
                            → upto𝕎 name w1 w2
                            → upto𝕎 name (startNewChoiceT Res⊤ w1 a) (startNewChoiceT Res⊤ w2 a)
-→upto𝕎-startNewChoiceT {name} {w1} {w2} a upw
-  rewrite upto𝕎→≡newChoiceT a upw = {!!}
+→upto𝕎-startNewChoiceT cc {name} {w1} {w2} a upw
+  rewrite upto𝕎→≡newChoiceT a upw = →upto𝕎-startChoice cc (newChoiceT w2 a) upw
+
+
+
+{--
+ADD:
+-- Choices are Res⊤ choices (NO!), which don't contain names
+names𝕎-chooseT-Res⊤ : Set(K)
+names𝕎-chooseT-Res⊤ : (name : Name) (w : 𝕎·) (t : Term)
+                       → compatible· name w Res⊤
+                       → names𝕎· (chooseT name w t) ≡ names𝕎· w
+
+
+sameRes : (w1 w2 : 𝕎·) → Set(L)
+sameRes w1 w2 =
+  (name : Name) (r : Res)
+  → (compatible· name w1 r → compatible· name w2 r)
+     × (compatible· name w2 r → compatible· name w1 r)
+
+
+ADD:
+→ ((k : ℕ) → getT k name w1 ≡ getT k name w2)
+→ sameRes w1 w2
+→ getT k name (chooseT name w1 t) ≡ getT k name (chooseT name w2 t)
+--}
+
+
+
+→upto𝕎getT-chooseT : (cc : ContConds) (name name' : Name) (w1 w1' : 𝕎·) (t : Term)
+                 → ¬ name ≡ name'
+                 → upto𝕎 name w1 w1'
+                 → upto𝕎getT name (chooseT name' w1 t) (chooseT name' w1' t)
+→upto𝕎getT-chooseT cc name name' w1 w1' t d upw n k dn with n ≟ name'
+... | yes p rewrite p = {!!} -- we need w1 and w1' to have the same restritions
+... | no p = trans (ContConds.ccGcd cc k n name' w1 t p) (trans (snd (snd upw) n k dn) (sym (ContConds.ccGcd cc k n name' w1' t p)))
+
+
+
+upto𝕎-chooseT : (cc : ContConds) (name name' : Name) (w1 w1' : 𝕎·) (t : Term)
+                 → ¬ name ≡ name'
+                 → upto𝕎 name w1 w1'
+                 → upto𝕎 name (chooseT name' w1 t) (chooseT name' w1' t)
+upto𝕎-chooseT cc name name' w1 w1' t d upw =
+  →dom𝕎-chooseT≡ cc name' w1 w1' t (fst upw) ,
+  {!!} , -- we need to assume here that w1 and w1' have the same restrictions and change this requirement to be a set equality instead of a list equality
+  →upto𝕎getT-chooseT cc name name' w1 w1' t d upw
 
 
 step-upto𝕎 : (cc : ContConds) (name : Name) (a b : Term) (w1 w2 w1' : 𝕎·)
@@ -174,8 +254,58 @@ step-upto𝕎 cc name TNAT b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁
 step-upto𝕎 cc name (LT a a₁) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (QLT a a₁) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (NUM x) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
-step-upto𝕎 cc name (IFLT a a₁ a₂ a₃) b w1 w2 w1' nna nnw idom comp upw = {!!}
-step-upto𝕎 cc name (SUC a) b w1 w2 w1' nna nnw idom comp upw = {!!}
+step-upto𝕎 cc name (IFLT a a₁ a₂ a₃) b w1 w2 w1' nna nnw idom comp upw with is-NUM a
+... | inj₁ (n , p) rewrite p with is-NUM a₁
+... |    inj₁ (m , q) rewrite q with n <? m
+... |       yes r rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  w1' , refl , upw , ¬∈++2→¬∈1 {_} {_} {names a₂} {names a₃} {name} nna , nnw , idom
+... |       no r rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  w1' , refl , upw , ¬∈++2→¬∈2 {_} {_} {names a₂} {names a₃} {name} nna , nnw , idom
+step-upto𝕎 cc name (IFLT a a₁ a₂ a₃) b w1 w2 w1' nna nnw idom comp upw | inj₁ (n , p) | inj₂ q with step⊎ a₁ w1
+... |       inj₁ (a₁' , w1x , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp))
+                                       | fst (snd (step-upto𝕎 cc name a₁ a₁' w1 w1x w1' (¬∈++3→¬∈1 {_} {_} {names a₁} {names a₂} {names a₃} {name} nna) nnw idom z upw))
+  = fst ind , refl , fst (snd (snd ind)) ,
+    (λ x → nna (¬∈1→∈++3 {_} {_} {names a₁} {names a₂} {names a₃} {names a₁'} (fst (snd (snd (snd ind)))) x)) ,
+    snd (snd (snd (snd ind)))
+  where
+    ind : Σ 𝕎· (λ w2' → step a₁ w1' ≡ just (a₁' , w2')
+                   × upto𝕎 name w1x w2'
+                   × ¬ name ∈ names a₁'
+                   × ¬ name ∈ names𝕎· w1x
+                   × name ∈ dom𝕎· w1x)
+    ind = step-upto𝕎 cc name a₁ a₁' w1 w1x w1' (¬∈++3→¬∈1 {_} {_} {names a₁} {names a₂} {names a₃} {name} nna) nnw idom z upw
+... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-upto𝕎 cc name (IFLT a a₁ a₂ a₃) b w1 w2 w1' nna nnw idom comp upw | inj₂ p with step⊎ a w1
+... |    inj₁ (a' , w1x , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp))
+                                   | fst (snd (step-upto𝕎 cc name a a' w1 w1x w1' (¬∈++4→¬∈1 {_} {_} {names a} {names a₁} {names a₂} {names a₃} {name} nna) nnw idom z upw))
+  = fst ind , refl , fst (snd (snd ind)) ,
+    (λ x → nna (¬∈1→∈++4 {_} {_} {names a} {names a₁} {names a₂} {names a₃} {names a'} (fst (snd (snd (snd ind)))) x)) ,
+    snd (snd (snd (snd ind)))
+  where
+    ind : Σ 𝕎· (λ w2' → step a w1' ≡ just (a' , w2')
+                   × upto𝕎 name w1x w2'
+                   × ¬ name ∈ names a'
+                   × ¬ name ∈ names𝕎· w1x
+                   × name ∈ dom𝕎· w1x)
+    ind = step-upto𝕎 cc name a a' w1 w1x w1' (¬∈++4→¬∈1 {_} {_} {names a} {names a₁} {names a₂} {names a₃} {name} nna) nnw idom z upw
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-upto𝕎 cc name (SUC a) b w1 w2 w1' nna nnw idom comp upw with is-NUM a
+... | inj₁ (n , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  w1' , refl , upw , ¬∈[] {Name} {name} , nnw , idom
+... | inj₂ p with step⊎ a w1
+... |    inj₁ (a' , w1x , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp))
+                                   | fst (snd (step-upto𝕎 cc name a a' w1 w1x w1' nna nnw idom z upw))
+  = fst ind , refl , fst (snd (snd ind)) ,
+    fst (snd (snd (snd ind))) ,
+    snd (snd (snd (snd ind)))
+  where
+    ind : Σ 𝕎· (λ w2' → step a w1' ≡ just (a' , w2')
+                   × upto𝕎 name w1x w2'
+                   × ¬ name ∈ names a'
+                   × ¬ name ∈ names𝕎· w1x
+                   × name ∈ dom𝕎· w1x)
+    ind = step-upto𝕎 cc name a a' w1 w1x w1' nna nnw idom z upw
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-upto𝕎 cc name (PI a a₁) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (LAMBDA a) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (APPLY f a) b w1 w2 w1' nna nnw idom comp upw with is-LAM f
@@ -213,11 +343,63 @@ step-upto𝕎 cc name (APPLY f a) b w1 w2 w1' nna nnw idom comp upw | inj₂ x |
                    × name ∈ dom𝕎· w1x)
     ind = step-upto𝕎 cc name f f' w1 w1x w1' (¬∈++2→¬∈1 {_} {_} {names f} {names a} {name} nna) nnw idom z upw
 ... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
-step-upto𝕎 cc name (FIX a) b w1 w2 w1' nna nnw idom comp upw = {!!}
-step-upto𝕎 cc name (LET a a₁) b w1 w2 w1' nna nnw idom comp upw = {!!}
+step-upto𝕎 cc name (FIX a) b w1 w2 w1' nna nnw idom comp upw with is-LAM a
+... | inj₁ (t , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  w1' , refl , upw , ¬∈names-sub {name} {FIX (LAMBDA t)} {t} nna nna , nnw , idom
+... | inj₂ x with step⊎ a w1
+... |    inj₁ (a' , w1x , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp))
+                                   | fst (snd (step-upto𝕎 cc name a a' w1 w1x w1' nna nnw idom z upw))
+  = fst ind , refl , fst (snd (snd ind)) ,
+    fst (snd (snd (snd ind))) ,
+    snd (snd (snd (snd ind)))
+  where
+    ind : Σ 𝕎· (λ w2' → step a w1' ≡ just (a' , w2')
+                   × upto𝕎 name w1x w2'
+                   × ¬ name ∈ names a'
+                   × ¬ name ∈ names𝕎· w1x
+                   × name ∈ dom𝕎· w1x)
+    ind = step-upto𝕎 cc name a a' w1 w1x w1' nna nnw idom z upw
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-upto𝕎 cc name (LET a a₁) b w1 w2 w1' nna nnw idom comp upw with isValue⊎ a
+... | inj₁ x rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  w1' , refl , upw ,
+  ¬∈names-sub {name} {a} {a₁} (λ x → nna (∈-++⁺ˡ x)) (λ x → nna (∈-++⁺ʳ (names a) x)) ,
+  nnw , idom
+... | inj₂ x with step⊎ a w1
+... |    inj₁ (a' , w1x , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp))
+                                   | fst (snd (step-upto𝕎 cc name a a' w1 w1x w1' (¬∈++2→¬∈1 {_} {_} {names a} {names a₁} {name} nna) nnw idom z upw))
+  = fst ind , refl , fst (snd (snd ind)) ,
+    →¬∈++2 {_} {_} {name} {names a} {names a₁} {names a'} {names a₁} (λ x → fst (snd (snd (snd ind)))) (λ x → x) nna ,
+    snd (snd (snd (snd ind)))
+  where
+    ind : Σ 𝕎· (λ w2' → step a w1' ≡ just (a' , w2')
+                   × upto𝕎 name w1x w2'
+                   × ¬ name ∈ names a'
+                   × ¬ name ∈ names𝕎· w1x
+                   × name ∈ dom𝕎· w1x)
+    ind = step-upto𝕎 cc name a a' w1 w1x w1' (¬∈++2→¬∈1 {_} {_} {names a} {names a₁} {name} nna) nnw idom z upw
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-upto𝕎 cc name (SUM a a₁) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (PAIR a a₁) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
-step-upto𝕎 cc name (SPREAD a a₁) b w1 w2 w1' nna nnw idom comp upw = {!!}
+step-upto𝕎 cc name (SPREAD a a₁) b w1 w2 w1' nna nnw idom comp upw with is-PAIR a
+... | inj₁ (u , v , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  w1' , refl , upw ,
+  ¬∈names-sub {name} {v} {sub u a₁} (λ x → nna (∈-++⁺ˡ (∈-++⁺ʳ (names u) x))) (¬∈names-sub {name} {u} {a₁} (λ x → nna (∈-++⁺ˡ (∈-++⁺ˡ x))) (λ x → nna (∈-++⁺ʳ (names u ++ names v) x))) ,
+  nnw , idom
+... | inj₂ x with step⊎ a w1
+... |    inj₁ (a' , w1x , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp))
+                                   | fst (snd (step-upto𝕎 cc name a a' w1 w1x w1' (¬∈++2→¬∈1 {_} {_} {names a} {names a₁} {name} nna) nnw idom z upw))
+  = fst ind , refl , fst (snd (snd ind)) ,
+    →¬∈++2 {_} {_} {name} {names a} {names a₁} {names a'} {names a₁} (λ x → fst (snd (snd (snd ind)))) (λ x → x) nna ,
+    snd (snd (snd (snd ind)))
+  where
+    ind : Σ 𝕎· (λ w2' → step a w1' ≡ just (a' , w2')
+                   × upto𝕎 name w1x w2'
+                   × ¬ name ∈ names a'
+                   × ¬ name ∈ names𝕎· w1x
+                   × name ∈ dom𝕎· w1x)
+    ind = step-upto𝕎 cc name a a' w1 w1x w1' (¬∈++2→¬∈1 {_} {_} {names a} {names a₁} {name} nna) nnw idom z upw
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-upto𝕎 cc name (SET a a₁) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (TUNION a a₁) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (ISECT a a₁) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
@@ -225,7 +407,26 @@ step-upto𝕎 cc name (UNION a a₁) b w1 w2 w1' nna nnw idom comp upw rewrite p
 step-upto𝕎 cc name (QTUNION a a₁) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (INL a) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (INR a) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
-step-upto𝕎 cc name (DECIDE a a₁ a₂) b w1 w2 w1' nna nnw idom comp upw = {!!}
+step-upto𝕎 cc name (DECIDE a a₁ a₂) b w1 w2 w1' nna nnw idom comp upw with is-INL a
+... | inj₁ (t , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  w1' , refl , upw , ¬∈names-sub {name} {t} {a₁} (λ x → nna (∈-++⁺ˡ x)) (λ x → nna (∈-++⁺ʳ (names t) (∈-++⁺ˡ x))) , nnw , idom
+... | inj₂ x with is-INR a
+... |    inj₁ (t , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  w1' , refl , upw , ¬∈names-sub {name} {t} {a₂} (λ x → nna (∈-++⁺ˡ x)) (λ x → nna (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names a₁) x))) , nnw , idom
+... |    inj₂ y with step⊎ a w1
+... |       inj₁ (a' , w1x , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp))
+                                      | fst (snd (step-upto𝕎 cc name a a' w1 w1x w1' (¬∈++3→¬∈1 {_} {_} {names a} {names a₁} {names a₂} {name} nna) nnw idom z upw))
+  = fst ind , refl , fst (snd (snd ind)) ,
+    →¬∈++3 {_} {_} {name} {names a} {names a₁} {names a₂} {names a'} {names a₁} {names a₂} (λ x → fst (snd (snd (snd ind)))) (λ x → x) (λ x → x) nna ,
+    snd (snd (snd (snd ind)))
+  where
+    ind : Σ 𝕎· (λ w2' → step a w1' ≡ just (a' , w2')
+                   × upto𝕎 name w1x w2'
+                   × ¬ name ∈ names a'
+                   × ¬ name ∈ names𝕎· w1x
+                   × name ∈ dom𝕎· w1x)
+    ind = step-upto𝕎 cc name a a' w1 w1x w1' (¬∈++3→¬∈1 {_} {_} {names a} {names a₁} {names a₂} {name} nna) nnw idom z upw
+... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-upto𝕎 cc name (EQ a a₁ a₂) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name AX b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name FREE b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
@@ -241,11 +442,31 @@ step-upto𝕎 cc name (FRESH a) b w1 w2 w1' nna nnw idom comp upw rewrite sym (p
                    × name ∈ dom𝕎· (startNewChoiceT Res⊤ w1 a))
     concl = startNewChoiceT Res⊤ w1' a ,
             ≡just (≡pair (upto𝕎→≡fresh-inst a (upto𝕎-sym _ _ _ upw)) refl) ,
-            →upto𝕎-startNewChoiceT a upw ,
+            →upto𝕎-startNewChoiceT cc a upw ,
             (λ x → nna (suc→∈lowerNames (∈names-shiftNameDown-renn→ name (newChoiceT+ w1 a) a (_≤_.s≤s _≤_.z≤n) (∈dom𝕎→¬≡newChoiceT+ name w1 a idom) x))) ,
-            (λ x → nnw (ContConds.ccNstart cc name w1 a x)) ,
+            (λ x → nnw (∈names𝕎-startNewChoiceT→ cc name w1 a x)) ,
             ContConds.ccDstart cc name w1 a idom
-step-upto𝕎 cc name (CHOOSE a a₁) b w1 w2 w1' nna nnw idom comp upw = {!!}
+step-upto𝕎 cc name (CHOOSE n t) b w1 w2 w1' nna nnw idom comp upw with is-NAME n
+... | inj₁ (name' , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+  chooseT name' w1' t , refl ,
+  upto𝕎-chooseT cc name name' w1 w1' t (λ x → nna (here x)) upw ,
+  (λ ()) ,
+  (λ x → nnw (ContConds.ccNchoose cc name name' w1 t (λ x → nna (there x)) x)) ,
+  dom𝕎-chooseT cc name name' w1 t idom
+... | inj₂ x with step⊎ n w1
+... |    inj₁ (n' , w1x , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+                                   | fst (snd (step-upto𝕎 cc name n n' w1 w1x w1' (¬∈++2→¬∈1 {_} {_} {names n} {names t} {name} nna) nnw idom z upw))
+  = fst ind , refl , fst (snd (snd ind)) ,
+    →¬∈++2 {_} {_} {name} {names n} {names t} {names n'} {names t} (λ x → fst (snd (snd (snd ind)))) (λ x → x) nna ,
+    snd (snd (snd (snd ind)))
+  where
+    ind : Σ 𝕎· (λ w2' → step n w1' ≡ just (n' , w2')
+                   × upto𝕎 name w1x w2'
+                   × ¬ name ∈ names n'
+                   × ¬ name ∈ names𝕎· w1x
+                   × name ∈ dom𝕎· w1x)
+    ind = step-upto𝕎 cc name n n' w1 w1x w1' (¬∈++2→¬∈1 {_} {_} {names n} {names t} {name} nna) nnw idom z upw
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-upto𝕎 cc name (TSQUASH a) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (TTRUNC a) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (TCONST a) b w1 w2 w1' nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , refl , upw , nna , nnw , idom
@@ -844,7 +1065,7 @@ eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g smod eqb =
         nnw1s' = λ i → nnw1' (ContConds.ccNstart cc name w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝) (ContConds.ccNchoose cc name name w1s (NUM 0) (λ ()) i))
 
         idomw1s' : name ∈ dom𝕎· w1s'
-        idomw1s' = ContConds.ccDchoose cc name name w1s (NUM 0) (ContConds.ccNchoice cc w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝))
+        idomw1s' = dom𝕎-chooseT cc name name w1s (NUM 0) (ContConds.ccNchoice cc w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝))
 
         pish : (getT≤ℕ w2 tn name → isHighestℕ {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} tn name compa)
                × ∈names𝕎 {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} name compa

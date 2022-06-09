@@ -265,10 +265,10 @@ step-sat-isHighestℕ2 cc gc {w1} {w2} {.(FRESH a)} {b} {n} {name} {f} compat wg
     refl , (λ x → gt' x , x) , (nnw' , idom') , upd1
   where
     gt' : getT≤ℕ (startNewChoiceT Res⊤ w1 a) n name → getT≤ℕ w1 n name
-    gt' z rewrite ContConds.ccGstart cc name 0 Res⊤ a w1 idom = z
+    gt' z rewrite ∈dom𝕎→getT-startNewChoiceT cc name 0 Res⊤ a w1 idom = z
 
     nnw' : ¬ name ∈ names𝕎· (startNewChoiceT Res⊤ w1 a)
-    nnw' = λ z → nnw (ContConds.ccNstart cc name w1 a z)
+    nnw' = λ z → nnw (∈names𝕎-startNewChoiceT→ cc name w1 a z)
 
     idom' : name ∈ dom𝕎· (startNewChoiceT Res⊤ w1 a)
     idom' = ContConds.ccDstart cc name w1 a idom

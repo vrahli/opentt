@@ -165,27 +165,6 @@ names𝕎-chooseT≡ = (name : Name) (w : 𝕎·) (t : Term)
                    → names𝕎· (chooseT name w t) ≡ names𝕎· w
 
 
--- because name in is dom𝕎 then it cannot be picked by startNewChoiceT
-∈dom𝕎→getT-startNewChoiceT : Set(1ℓ Level.⊔ L)
-∈dom𝕎→getT-startNewChoiceT = (name : Name) (n : ℕ) (r : Res) (t : Term) (w : 𝕎·)
-                               → name ∈ dom𝕎· w
-                               → getT n name (startNewChoiceT r w t) ≡ getT n name w
-
-
-
--- starting a new choice does not add new names according to names𝕎, only according to dom𝕎
-∈names𝕎·-startNewChoiceT→ : Set(L)
-∈names𝕎·-startNewChoiceT→ = (name : Name) (w : 𝕎·) (t : Term)
-                              → name ∈ names𝕎· (startNewChoiceT Res⊤ w t)
-                              → name ∈ names𝕎· w
-
-
-dom𝕎-chooseT : Set(L)
-dom𝕎-chooseT = (name name' : Name) (w : 𝕎·) (t : Term)
-                → name ∈ dom𝕎· w
-                → name ∈ dom𝕎· (chooseT name' w t)
-
-
 
 -- TODO derive dom𝕎-chooseT from this one
 dom𝕎-chooseT≡ : Set(L)
@@ -207,6 +186,31 @@ newChoiceT∈dom𝕎 = (w : 𝕎·) (t : Term)
 
 
 
+≡names𝕎-start : Set(L)
+≡names𝕎-start = (name : Name) (w : 𝕎·)
+                 → names𝕎· (startChoice· name Res⊤ w) ≡ names𝕎· w
+
+
+
+≡dom𝕎-start : Set(L)
+≡dom𝕎-start = (name : Name) (w1 w2 : 𝕎·)
+               → dom𝕎· w1 ≡ dom𝕎· w2
+               → dom𝕎· (startChoice· name Res⊤ w1) ≡ dom𝕎· (startChoice· name Res⊤ w2)
+
+
+
+getT-startChoice-diff : Set(1ℓ Level.⊔ L)
+getT-startChoice-diff = (name name' : Name) (n : ℕ) (r : Res) (w : 𝕎·)
+                        → ¬ name ≡ name'
+                        → getT n name (startChoice· name' r w) ≡ getT n name w
+
+
+getT-startChoice-same : Set(1ℓ Level.⊔ L)
+getT-startChoice-same = (name : Name) (n : ℕ) (r : Res) (w1 w2 : 𝕎·)
+                        → getT n name (startChoice· name r w1) ≡ getT n name (startChoice· name r w2)
+
+
+
 record ContConds : Set(1ℓ Level.⊔ L) where
   constructor mkContConds
   field
@@ -215,12 +219,45 @@ record ContConds : Set(1ℓ Level.⊔ L) where
     ccNchoose  : names𝕎-chooseT --sct
     ccNchoosed : names𝕎-chooseT-diff
     ccNchoose≡ : names𝕎-chooseT≡
-    ccGstart   : ∈dom𝕎→getT-startNewChoiceT --idgs
-    ccNstart   : ∈names𝕎·-startNewChoiceT→ --isn
-    ccDchoose  : dom𝕎-chooseT
+--    ccGstart   : ∈dom𝕎→getT-startNewChoiceT --idgs
+--    ccNstart   : ∈names𝕎·-startNewChoiceT→ --isn
+--    ccDchoose  : dom𝕎-chooseT
     ccDchoose≡ : dom𝕎-chooseT≡
     ccDstart   : dom𝕎-startNewChoiceT
     ccNchoice  : newChoiceT∈dom𝕎
+    ccN≡start  : ≡names𝕎-start
+    ccD≡start  : ≡dom𝕎-start
+    ccGstartd  : getT-startChoice-diff
+    ccGstarts  : getT-startChoice-same
+
+
+
+-- starting a new choice does not add new names according to names𝕎, only according to dom𝕎
+∈names𝕎-startNewChoiceT→ : (cc : ContConds) (name : Name) (w : 𝕎·) (t : Term)
+                             → name ∈ names𝕎· (startNewChoiceT Res⊤ w t)
+                             → name ∈ names𝕎· w
+∈names𝕎-startNewChoiceT→ cc name w t i rewrite ContConds.ccN≡start cc (newChoiceT w t) w = i
+
+
+
+dom𝕎-chooseT : (cc : ContConds) (name name' : Name) (w : 𝕎·) (t : Term)
+                → name ∈ dom𝕎· w
+                → name ∈ dom𝕎· (chooseT name' w t)
+dom𝕎-chooseT cc name name' w t i rewrite ContConds.ccDchoose≡ cc name' w t = i
+
+
+∈dom𝕎→¬≡newChoiceT : (name : Name) (w : 𝕎·) (t : Term)
+                       → name ∈ dom𝕎· w
+                       → ¬ name ≡ newChoiceT w t
+∈dom𝕎→¬≡newChoiceT name w t i e rewrite e = ¬fresh∈dom𝕎2 w (names𝕎· w) (↓vars (names t)) i
+
+
+-- because name in is dom𝕎 then it cannot be picked by startNewChoiceT
+∈dom𝕎→getT-startNewChoiceT : (cc : ContConds) (name : Name) (n : ℕ) (r : Res) (t : Term) (w : 𝕎·)
+                               → name ∈ dom𝕎· w
+                               → getT n name (startNewChoiceT r w t) ≡ getT n name w
+∈dom𝕎→getT-startNewChoiceT cc name n r t w i =
+  ContConds.ccGstartd cc name (newChoiceT w t) n r w (∈dom𝕎→¬≡newChoiceT name w t i)
 
 
 --getT0-chooseT : Set(L)

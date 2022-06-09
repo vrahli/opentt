@@ -1254,6 +1254,6 @@ choose-pres-∈names𝕎 : (cc : ContConds) (name name' : Name) (w : 𝕎·) (a 
                        → (¬ name ∈ names𝕎· (chooseT name' w a)) × name ∈ dom𝕎· (chooseT name' w a)
 choose-pres-∈names𝕎 cc name name' w a diff nnw idom =
   (λ x → nnw (ContConds.ccNchoosed cc name name' w a (λ z → diff (sym z)) x)) ,
-  ContConds.ccDchoose cc name name' w a idom
+  dom𝕎-chooseT cc name name' w a idom
 
 \end{code}
