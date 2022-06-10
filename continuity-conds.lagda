@@ -210,6 +210,18 @@ getT-startChoice-same = (name : Name) (n : ℕ) (r : Res) (w1 w2 : 𝕎·)
                         → getT n name (startChoice· name r w1) ≡ getT n name (startChoice· name r w2)
 
 
+compatible-chooseT→ : Set(1ℓ Level.⊔ L)
+compatible-chooseT→ = (n name : Name) (w : 𝕎·) (t : Term) (r : Res)
+                       → compatible· n (chooseT name w t) r
+                       → compatible· n w r
+
+
+→compatible-chooseT : Set(1ℓ Level.⊔ L)
+→compatible-chooseT = (n name : Name) (w : 𝕎·) (t : Term) (r : Res)
+                       → compatible· n w r
+                       → compatible· n (chooseT name w t) r
+
+
 
 record ContConds : Set(1ℓ Level.⊔ L) where
   constructor mkContConds
@@ -229,6 +241,8 @@ record ContConds : Set(1ℓ Level.⊔ L) where
     ccD≡start  : ≡dom𝕎-start
     ccGstartd  : getT-startChoice-diff
     ccGstarts  : getT-startChoice-same
+    ccCchoose→ : compatible-chooseT→
+    ccCchoose← : →compatible-chooseT
 
 
 

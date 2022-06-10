@@ -217,20 +217,66 @@ upto𝕎getT : (name : Name) (w1 w2 : 𝕎·) → Set
 upto𝕎getT name w1 w2 = (n : Name) (k : ℕ) → ¬ n ≡ name → getT k n w1 ≡ getT k n w2
 
 
-upto𝕎 : (name : Name) (w1 w2 : 𝕎·) → Set
-upto𝕎 name w1 w2 =
-  dom𝕎· w1 ≡ dom𝕎· w2
-  × names𝕎· w1 ≡ names𝕎· w2
-  × upto𝕎getT name w1 w2
+sameRes : (w1 w2 : 𝕎·) → Set(1ℓ Level.⊔ L)
+sameRes w1 w2 =
+  (name : Name) (r : Res)
+  → (compatible· name w1 r → compatible· name w2 r)
+     × (compatible· name w2 r → compatible· name w1 r)
+
+
+sameRes-refl : (w : 𝕎·) → sameRes w w
+sameRes-refl w name r = (λ x → x) , (λ x → x)
+
+
+sameRes-sym : {w1 w2 : 𝕎·} → sameRes w1 w2 → sameRes w2 w1
+sameRes-sym {w1} {w2} sres name r = snd (sres name r) , fst (sres name r)
+
+
+sameRes-trans : {w1 w2 w3 : 𝕎·} → sameRes w1 w2 → sameRes w2 w3 → sameRes w1 w3
+sameRes-trans {w1} {w2} {w3} sres1 sres2 name r =
+  (λ y → fst (sres2 name r) (fst (sres1 name r) y)) ,
+  (λ y → snd (sres1 name r) (snd (sres2 name r) y))
+
+
+_≡N_ : (a b : List Name) → Set
+a ≡N b = (x : Name) → (x ∈ a → x ∈ b) × (x ∈ b → x ∈ a)
+
+
+record upto𝕎 (name : Name) (w1 w2 : 𝕎·) : Set(1ℓ Level.⊔ L) where
+  constructor mkUpto𝕎
+  field
+    upwDom   : dom𝕎· w1 ≡N dom𝕎· w2
+    upwNames : names𝕎· w1 ≡N names𝕎· w2
+    upwRes   : sameRes w1 w2
+    upwGet   : upto𝕎getT name w1 w2
+
+
+≡N-refl : (a : List Name) → a ≡N a
+≡N-refl a x = (λ x → x) , λ x → x
+
+
+≡→≡N : {a b : List Name} → a ≡ b → a ≡N b
+≡→≡N {a} {b} e rewrite e = ≡N-refl b
+
+
+≡N-sym : {a b : List Name} → a ≡N b → b ≡N a
+≡N-sym {a} {b} e x = (λ y → snd (e x) y) , λ y → fst (e x) y
+
+
+≡N-trans : {a b c : List Name} → a ≡N b → b ≡N c → a ≡N c
+≡N-trans {a} {b} {c} e₁ e₂ x =
+  (λ y → fst (e₂ x) (fst (e₁ x) y)) ,
+  (λ y → snd (e₁ x) (snd (e₂ x) y))
 
 
 upto𝕎-sym : (name : Name) (w1 w2 : 𝕎·) → upto𝕎 name w1 w2 → upto𝕎 name w2 w1
-upto𝕎-sym name w1 w2 (eqd , eqn , u) = sym eqd , sym eqn , λ n k d → sym (u n k d)
+upto𝕎-sym name w1 w2 (mkUpto𝕎 eqd eqn sres u) =
+  mkUpto𝕎 (≡N-sym eqd) (≡N-sym eqn) (sameRes-sym sres) (λ n k d → sym (u n k d))
 
 
 upto𝕎-trans : (name : Name) (w1 w2 w3 : 𝕎·) → upto𝕎 name w1 w2 → upto𝕎 name w2 w3 → upto𝕎 name w1 w3
-upto𝕎-trans name w1 w2 w3 (eqd1 , eqn1 , u1) (eqd2 , eqn2 , u2) =
-  trans eqd1 eqd2 , trans eqn1 eqn2 , λ  n k d → trans (u1 n k d) (u2 n k d)
+upto𝕎-trans name w1 w2 w3 (mkUpto𝕎 eqd1 eqn1 sres1 u1) (mkUpto𝕎 eqd2 eqn2 sres2 u2) =
+  mkUpto𝕎 (≡N-trans eqd1 eqd2) (≡N-trans eqn1 eqn2) (sameRes-trans sres1 sres2) (λ  n k d → trans (u1 n k d) (u2 n k d))
 
 
 upto𝕎getT-chooseT : (cc : ContConds) (name : Name) (w : 𝕎·) (t : Term)
@@ -239,14 +285,23 @@ upto𝕎getT-chooseT cc name w t nm k d =
   sym (ContConds.ccGcd cc k nm name w t d)
 
 
+sameRes-chooseT : (cc : ContConds) (name : Name) (w : 𝕎·) (t : Term)
+                  → sameRes (chooseT name w t) w
+sameRes-chooseT cc name w t n r =
+  (λ x → ContConds.ccCchoose→ cc n name w t r x) ,
+  (λ x → ContConds.ccCchoose← cc n name w t r x)
+
+
 upto𝕎-chooseT0if : (cc : ContConds) (name : Name) (w : 𝕎·) (n m : ℕ)
                     → upto𝕎 name w (chooseT0if name w n m)
 upto𝕎-chooseT0if cc name w n m with n <? m
 ... | yes x =
-  sym (ContConds.ccDchoose≡ cc name w (NUM m)) ,
-  sym (ContConds.ccNchoose≡ cc name w (NUM m) refl) ,
-  upto𝕎getT-chooseT cc name w (NUM m)
-... | no x = refl , refl , λ nm k d → refl
+  mkUpto𝕎
+    (≡N-sym (≡→≡N (ContConds.ccDchoose≡ cc name w (NUM m))))
+    (≡N-sym (≡→≡N (ContConds.ccNchoose≡ cc name w (NUM m) refl)))
+    (sameRes-sym (sameRes-chooseT cc name w (NUM m)))
+    (upto𝕎getT-chooseT cc name w (NUM m))
+... | no x = mkUpto𝕎 (≡N-refl _) (≡N-refl _) (sameRes-refl w) (λ nm k d → refl)
 
 
 presUpdRel2 : (n : ℕ) (name : Name) (f g : Term) (k : ℕ) → Set(lsuc L)
@@ -299,7 +354,7 @@ updRel2-CSₗ→¬≡ {name} {f} {g} {n} {.(CS n)} (updRel2-CS .n x) = x
 
 -- NOTE: We won't be able to prove that for impure terms x because it might read a choice
 -- and return 2 different values in the two worlds w2 and w
-ΣstepsUpdRel2 : (name : Name) (f g : Term) (x : Term) (w2 : 𝕎·) (b : Term) (w : 𝕎·) → Set(L)
+ΣstepsUpdRel2 : (name : Name) (f g : Term) (x : Term) (w2 : 𝕎·) (b : Term) (w : 𝕎·) → Set(1ℓ Level.⊔ L)
 ΣstepsUpdRel2 name f g x w2 b w =
   Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ Term (λ y1 → Σ Term (λ y2 → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w' →
     steps k1 (x , w2) ≡ (y1 , w3)

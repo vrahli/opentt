@@ -99,19 +99,19 @@ open import continuity4b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 upto𝕎→upto𝕎getT : {name : Name} {w1 w2 : 𝕎·}
                      → upto𝕎 name w1 w2
                      → upto𝕎getT name w1 w2
-upto𝕎→upto𝕎getT {name} {w1} {w2} upw = snd (snd upw)
+upto𝕎→upto𝕎getT {name} {w1} {w2} upw = upto𝕎.upwGet upw
 
 
 upto𝕎→≡dom𝕎 : {name : Name} {w1 w2 : 𝕎·}
                  → upto𝕎 name w1 w2
-                 → dom𝕎· w1 ≡ dom𝕎· w2
-upto𝕎→≡dom𝕎 {name} {w1} {w2} upw = fst upw
+                 → dom𝕎· w1 ≡N dom𝕎· w2
+upto𝕎→≡dom𝕎 {name} {w1} {w2} upw = upto𝕎.upwDom upw
 
 
 upto𝕎→≡names𝕎 : {name : Name} {w1 w2 : 𝕎·}
                  → upto𝕎 name w1 w2
-                 → names𝕎· w1 ≡ names𝕎· w2
-upto𝕎→≡names𝕎 {name} {w1} {w2} upw = fst (snd upw)
+                 → names𝕎· w1 ≡N names𝕎· w2
+upto𝕎→≡names𝕎 {name} {w1} {w2} upw = upto𝕎.upwNames upw
 
 
 getT≡→map-getT≡ : {n : ℕ} {name name' : Name} {w w' : 𝕎·} {t : Term}
@@ -126,8 +126,9 @@ getT≡→map-getT≡ {n} {name} {name'} {w} {w'} {t} neq upw gt
 upto𝕎→≡newChoiceT : {name : Name} {w1 w2 : 𝕎·} (a : Term)
                        → upto𝕎 name w1 w2
                        → newChoiceT w1 a ≡ newChoiceT w2 a
-upto𝕎→≡newChoiceT {name} {w1} {w2} a upw
-  rewrite upto𝕎→≡dom𝕎 upw | upto𝕎→≡names𝕎 upw = refl
+upto𝕎→≡newChoiceT {name} {w1} {w2} a upw = {!!}
+-- TODO: need to prove that fresh is invariant under equal sets
+--  rewrite upto𝕎→≡dom𝕎 upw | upto𝕎→≡names𝕎 upw = refl
 
 
 upto𝕎→≡newChoiceT+ : {name : Name} {w1 w2 : 𝕎·} (a : Term)
@@ -180,9 +181,9 @@ upto𝕎→≡getT cc k nm name n w1 w2 diff upw with nm ≟ n
                        → upto𝕎 name w1 w2
                        → upto𝕎 name (startChoice· n Res⊤ w1) (startChoice· n Res⊤ w2)
 →upto𝕎-startChoice cc {name} {w1} {w2} n upw =
-  ContConds.ccD≡start cc n w1 w2 (fst upw) ,
+  {!!} {--ContConds.ccD≡start cc n w1 w2 (fst upw) ,
   →≡names𝕎-start cc n w1 w2 (fst (snd upw)) ,
-  λ nm k d → upto𝕎→≡getT cc k nm name n w1 w2 d (snd (snd upw) nm k d)
+  λ nm k d → upto𝕎→≡getT cc k nm name n w1 w2 d (snd (snd upw) nm k d)--}
 
 
 →upto𝕎-startNewChoiceT : (cc : ContConds) {name : Name} {w1 w2 : 𝕎·} (a : Term)
@@ -202,12 +203,6 @@ names𝕎-chooseT-Res⊤ : (name : Name) (w : 𝕎·) (t : Term)
                        → names𝕎· (chooseT name w t) ≡ names𝕎· w
 
 
-sameRes : (w1 w2 : 𝕎·) → Set(L)
-sameRes w1 w2 =
-  (name : Name) (r : Res)
-  → (compatible· name w1 r → compatible· name w2 r)
-     × (compatible· name w2 r → compatible· name w1 r)
-
 
 ADD:
 → ((k : ℕ) → getT k name w1 ≡ getT k name w2)
@@ -223,7 +218,9 @@ ADD:
                  → upto𝕎getT name (chooseT name' w1 t) (chooseT name' w1' t)
 →upto𝕎getT-chooseT cc name name' w1 w1' t d upw n k dn with n ≟ name'
 ... | yes p rewrite p = {!!} -- we need w1 and w1' to have the same restritions
-... | no p = trans (ContConds.ccGcd cc k n name' w1 t p) (trans (snd (snd upw) n k dn) (sym (ContConds.ccGcd cc k n name' w1' t p)))
+... | no p = trans (ContConds.ccGcd cc k n name' w1 t p)
+                   (trans (upto𝕎.upwGet upw n k dn)
+                          (sym (ContConds.ccGcd cc k n name' w1' t p)))
 
 
 
@@ -232,9 +229,10 @@ upto𝕎-chooseT : (cc : ContConds) (name name' : Name) (w1 w1' : 𝕎·) (t : T
                  → upto𝕎 name w1 w1'
                  → upto𝕎 name (chooseT name' w1 t) (chooseT name' w1' t)
 upto𝕎-chooseT cc name name' w1 w1' t d upw =
-  →dom𝕎-chooseT≡ cc name' w1 w1' t (fst upw) ,
+  {!!} {--→dom𝕎-chooseT≡ cc name' w1 w1' t (fst upw) ,
   {!!} , -- we need to assume here that w1 and w1' have the same restrictions and change this requirement to be a set equality instead of a list equality
   →upto𝕎getT-chooseT cc name name' w1 w1' t d upw
+--}
 
 
 step-upto𝕎 : (cc : ContConds) (name : Name) (a b : Term) (w1 w2 w1' : 𝕎·)
