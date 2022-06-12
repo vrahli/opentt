@@ -32,29 +32,11 @@ open import Data.List.Membership.Propositional.Properties
 open import Axiom.UniquenessOfIdentityProofs
 
 open import util
+open import name
 \end{code}
 
 
 \begin{code}
--- the Name of a choice operator is taken as being a ℕ here
-Name : Set
-Name = ℕ
-
-
-freshNameAux : (l : List Name) → Σ Name (λ n → (x : Name) → x ∈ l → x < n)
-freshNameAux [] = (0 , λ x i → ⊥-elim (¬∈[] i))
-freshNameAux (n ∷ l) =
-  let (m , c) = freshNameAux l in
-  let z : suc (n ⊔ m) ≡ suc n ⊔ suc m
-      z = refl in
-  (suc (n ⊔ m) , λ { x (here p) → <-transˡ (subst (λ x → x < suc n) (sym p) (n<1+n n)) (≤⊔l (suc n) (suc m)) ;
-                     x (there p) → let c1 = c x p in <-trans c1 (<-transˡ (n<1+n _) (≤⊔r (suc n) (suc m)))} )
-
-
-freshName : (l : List Name) → Σ Name (λ n → ¬ (n ∈ l))
-freshName l = let (m , c) = freshNameAux l in (m , λ x → let z = c _ x in n≮n _ z)
-
-
 Var : Set
 Var = ℕ
 

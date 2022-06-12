@@ -26,6 +26,7 @@ open import Data.List.Membership.Propositional.Properties
 open import Data.List.Properties
 
 
+open import name
 open import calculus
 open import world
 open import choice

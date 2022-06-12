@@ -31,6 +31,7 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 
 open import util
+open import name
 open import calculus
 open import terms
 open import world
@@ -144,24 +145,48 @@ get-choose-diff =
 
 
 
+{--
+-- choosing doesn't bring new names
 names𝕎-chooseT : Set(L)
 names𝕎-chooseT = (name name' : Name) (w : 𝕎·) (t : Term)
-                → ¬ name ∈ names t
+--                → ¬ name ∈ names t
                 → name ∈ names𝕎· (chooseT name' w t)
                 → name ∈ names𝕎· w
+--}
 
 
-names𝕎-chooseT-diff : Set(L)
-names𝕎-chooseT-diff = (name name' : Name) (w : 𝕎·) (t : Term)
+{--
+-- No
+names𝕎-chooseT-diff→ : Set(L)
+names𝕎-chooseT-diff→ = (name name' : Name) (w : 𝕎·) (t : Term)
                 → ¬ name ≡ name'
                 → name ∈ names𝕎· (chooseT name' w t)
                 → name ∈ names𝕎· w
+--}
 
+
+{--
+-- No
+→names𝕎-chooseT-diff : Set(L)
+→names𝕎-chooseT-diff = (name name' : Name) (w : 𝕎·) (t : Term)
+                    → ¬ name ≡ name'
+                    → name ∈ names𝕎· w
+                    → name ∈ names𝕎· (chooseT name' w t)
+--}
+
+
+{--
+xxx : Set(L)
+xxx = (name : Name) (w : 𝕎·) (t : Term) (r : Res)
+                         → compatible· name w r -- has to be decidable.
+                         → name ∈ names𝕎· (chooseT name w t)
+                         →
+--}
 
 
 names𝕎-chooseT≡ : Set(L)
 names𝕎-chooseT≡ = (name : Name) (w : 𝕎·) (t : Term)
-                   → ¬Names t
+--                   → ¬Names t
                    → names𝕎· (chooseT name w t) ≡ names𝕎· w
 
 
@@ -222,28 +247,88 @@ compatible-chooseT→ = (n name : Name) (w : 𝕎·) (t : Term) (r : Res)
                        → compatible· n (chooseT name w t) r
 
 
+¬≡compatible-startChoice→ : Set(1ℓ Level.⊔ L)
+¬≡compatible-startChoice→ = (n name : Name) (r r' : Res) (w : 𝕎·)
+                             → ¬ n ≡ name
+                             → compatible· name (startChoice· n r' w) r
+                             → compatible· name w r
+
+
+
+
+→¬≡compatible-startChoice : Set(1ℓ Level.⊔ L)
+→¬≡compatible-startChoice = (n name : Name) (r r' : Res) (w : 𝕎·)
+                             → ¬ n ≡ name
+                             → compatible· name w r
+                             → compatible· name (startChoice· n r' w) r
+
+
+∈compatible-startChoice→ : Set(1ℓ Level.⊔ L)
+∈compatible-startChoice→ = (name : Name) (r r' : Res) (w : 𝕎·)
+                             → name ∈ dom𝕎· w
+                             → compatible· name (startChoice· name r' w) r
+                             → compatible· name w r
+
+
+
+→∈compatible-startChoice : Set(1ℓ Level.⊔ L)
+→∈compatible-startChoice = (name : Name) (r r' : Res) (w : 𝕎·)
+                             → name ∈ dom𝕎· w
+                             → compatible· name w r
+                             → compatible· name (startChoice· name r' w) r
+
+
+¬∈compatible-startChoice→ : Set(1ℓ Level.⊔ L)
+¬∈compatible-startChoice→ = (name : Name) (r r' : Res) (w : 𝕎·)
+                             → ¬ name ∈ dom𝕎· w
+                             → compatible· name (startChoice· name r' w) r
+                             → r' ≡ r
+
+
+sameRes : (w1 w2 : 𝕎·) → Set(1ℓ Level.⊔ L)
+sameRes w1 w2 =
+  (name : Name) (r : Res)
+  → (compatible· name w1 r → compatible· name w2 r)
+     × (compatible· name w2 r → compatible· name w1 r)
+
+
+→getT-chooseT : Set(1ℓ Level.⊔ L)
+→getT-chooseT = (name : Name) (w1 w2 : 𝕎·) (t : Term) (k : ℕ)
+                 → ((k : ℕ) → getT k name w1 ≡ getT k name w2)
+                 → sameRes w1 w2
+                 → dom𝕎· w1 ≡ dom𝕎· w2
+                 → getT k name (chooseT name w1 t) ≡ getT k name (chooseT name w2 t)
+
 
 record ContConds : Set(1ℓ Level.⊔ L) where
   constructor mkContConds
   field
-    ccGnames   : getT∈names𝕎 --gsup
-    ccGcd      : get-choose-diff --gcd
-    ccNchoose  : names𝕎-chooseT --sct
-    ccNchoosed : names𝕎-chooseT-diff
-    ccNchoose≡ : names𝕎-chooseT≡
+    ccGnames    : getT∈names𝕎 --gsup
+    -- choose Axioms
+    ccGcd       : get-choose-diff --gcd
+--    ccNchoose   : names𝕎-chooseT --sct
+--    ccNchoosed  : names𝕎-chooseT-diff
+    ccNchoose≡  : names𝕎-chooseT≡
 --    ccGstart   : ∈dom𝕎→getT-startNewChoiceT --idgs
 --    ccNstart   : ∈names𝕎·-startNewChoiceT→ --isn
 --    ccDchoose  : dom𝕎-chooseT
-    ccDchoose≡ : dom𝕎-chooseT≡
-    ccDstart   : dom𝕎-startNewChoiceT
-    ccNchoice  : newChoiceT∈dom𝕎
-    ccN≡start  : ≡names𝕎-start
-    ccD≡start  : ≡dom𝕎-start
-    ccGstartd  : getT-startChoice-diff
-    ccGstarts  : getT-startChoice-same
-    ccCchoose→ : compatible-chooseT→
-    ccCchoose← : →compatible-chooseT
-
+    ccDchoose≡  : dom𝕎-chooseT≡
+    -- Start axioms
+    ccDstart    : dom𝕎-startNewChoiceT
+    ccNchoice   : newChoiceT∈dom𝕎
+    ccN≡start   : ≡names𝕎-start
+    ccD≡start   : ≡dom𝕎-start
+    ccGstartd   : getT-startChoice-diff
+    ccGstarts   : getT-startChoice-same
+    ccGget      : →getT-chooseT
+    -- Compatibility axioms
+    ccCchoose→  : compatible-chooseT→
+    ccCchoose←  : →compatible-chooseT
+    ccC¬≡start→ : ¬≡compatible-startChoice→
+    ccC¬≡start← : →¬≡compatible-startChoice
+    ccC∈start→  : ∈compatible-startChoice→
+    ccC∈start←  : →∈compatible-startChoice
+    ccC¬∈start→ : ¬∈compatible-startChoice→
 
 
 -- starting a new choice does not add new names according to names𝕎, only according to dom𝕎
@@ -272,6 +357,18 @@ dom𝕎-chooseT cc name name' w t i rewrite ContConds.ccDchoose≡ cc name' w t 
                                → getT n name (startNewChoiceT r w t) ≡ getT n name w
 ∈dom𝕎→getT-startNewChoiceT cc name n r t w i =
   ContConds.ccGstartd cc name (newChoiceT w t) n r w (∈dom𝕎→¬≡newChoiceT name w t i)
+
+
+names𝕎-chooseT→ : (cc : ContConds) (name name' : Name) (w : 𝕎·) (t : Term)
+                → name ∈ names𝕎· (chooseT name' w t)
+                → name ∈ names𝕎· w
+names𝕎-chooseT→ cc name name' w t i rewrite ContConds.ccNchoose≡ cc name' w t = i
+
+
+names𝕎-chooseT← : (cc : ContConds) (name name' : Name) (w : 𝕎·) (t : Term)
+                → name ∈ names𝕎· w
+                → name ∈ names𝕎· (chooseT name' w t)
+names𝕎-chooseT← cc name name' w t i rewrite ContConds.ccNchoose≡ cc name' w t = i
 
 
 --getT0-chooseT : Set(L)

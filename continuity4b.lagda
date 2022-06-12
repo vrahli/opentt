@@ -34,6 +34,7 @@ open import Axiom.Extensionality.Propositional
 
 
 open import util
+open import name
 open import calculus
 open import terms
 open import world
@@ -217,13 +218,6 @@ upto𝕎getT : (name : Name) (w1 w2 : 𝕎·) → Set
 upto𝕎getT name w1 w2 = (n : Name) (k : ℕ) → ¬ n ≡ name → getT k n w1 ≡ getT k n w2
 
 
-sameRes : (w1 w2 : 𝕎·) → Set(1ℓ Level.⊔ L)
-sameRes w1 w2 =
-  (name : Name) (r : Res)
-  → (compatible· name w1 r → compatible· name w2 r)
-     × (compatible· name w2 r → compatible· name w1 r)
-
-
 sameRes-refl : (w : 𝕎·) → sameRes w w
 sameRes-refl w name r = (λ x → x) , (λ x → x)
 
@@ -238,45 +232,29 @@ sameRes-trans {w1} {w2} {w3} sres1 sres2 name r =
   (λ y → snd (sres1 name r) (snd (sres2 name r) y))
 
 
-_≡N_ : (a b : List Name) → Set
-a ≡N b = (x : Name) → (x ∈ a → x ∈ b) × (x ∈ b → x ∈ a)
-
 
 record upto𝕎 (name : Name) (w1 w2 : 𝕎·) : Set(1ℓ Level.⊔ L) where
   constructor mkUpto𝕎
   field
-    upwDom   : dom𝕎· w1 ≡N dom𝕎· w2
-    upwNames : names𝕎· w1 ≡N names𝕎· w2
+    upwDom   : dom𝕎· w1 ≡ dom𝕎· w2
+    upwNames : names𝕎· w1 ≡ names𝕎· w2
     upwRes   : sameRes w1 w2
     upwGet   : upto𝕎getT name w1 w2
 
 
-≡N-refl : (a : List Name) → a ≡N a
-≡N-refl a x = (λ x → x) , λ x → x
-
-
-≡→≡N : {a b : List Name} → a ≡ b → a ≡N b
-≡→≡N {a} {b} e rewrite e = ≡N-refl b
-
-
-≡N-sym : {a b : List Name} → a ≡N b → b ≡N a
-≡N-sym {a} {b} e x = (λ y → snd (e x) y) , λ y → fst (e x) y
-
-
-≡N-trans : {a b c : List Name} → a ≡N b → b ≡N c → a ≡N c
-≡N-trans {a} {b} {c} e₁ e₂ x =
-  (λ y → fst (e₂ x) (fst (e₁ x) y)) ,
-  (λ y → snd (e₁ x) (snd (e₂ x) y))
-
 
 upto𝕎-sym : (name : Name) (w1 w2 : 𝕎·) → upto𝕎 name w1 w2 → upto𝕎 name w2 w1
 upto𝕎-sym name w1 w2 (mkUpto𝕎 eqd eqn sres u) =
-  mkUpto𝕎 (≡N-sym eqd) (≡N-sym eqn) (sameRes-sym sres) (λ n k d → sym (u n k d))
+  mkUpto𝕎 (sym eqd) (sym eqn) (sameRes-sym sres) (λ n k d → sym (u n k d))
 
 
 upto𝕎-trans : (name : Name) (w1 w2 w3 : 𝕎·) → upto𝕎 name w1 w2 → upto𝕎 name w2 w3 → upto𝕎 name w1 w3
 upto𝕎-trans name w1 w2 w3 (mkUpto𝕎 eqd1 eqn1 sres1 u1) (mkUpto𝕎 eqd2 eqn2 sres2 u2) =
-  mkUpto𝕎 (≡N-trans eqd1 eqd2) (≡N-trans eqn1 eqn2) (sameRes-trans sres1 sres2) (λ  n k d → trans (u1 n k d) (u2 n k d))
+  mkUpto𝕎
+    (trans eqd1 eqd2)
+    (trans eqn1 eqn2)
+    (sameRes-trans sres1 sres2)
+    (λ  n k d → trans (u1 n k d) (u2 n k d))
 
 
 upto𝕎getT-chooseT : (cc : ContConds) (name : Name) (w : 𝕎·) (t : Term)
@@ -297,11 +275,11 @@ upto𝕎-chooseT0if : (cc : ContConds) (name : Name) (w : 𝕎·) (n m : ℕ)
 upto𝕎-chooseT0if cc name w n m with n <? m
 ... | yes x =
   mkUpto𝕎
-    (≡N-sym (≡→≡N (ContConds.ccDchoose≡ cc name w (NUM m))))
-    (≡N-sym (≡→≡N (ContConds.ccNchoose≡ cc name w (NUM m) refl)))
+    (sym (ContConds.ccDchoose≡ cc name w (NUM m)))
+    (sym (ContConds.ccNchoose≡ cc name w (NUM m)))
     (sameRes-sym (sameRes-chooseT cc name w (NUM m)))
     (upto𝕎getT-chooseT cc name w (NUM m))
-... | no x = mkUpto𝕎 (≡N-refl _) (≡N-refl _) (sameRes-refl w) (λ nm k d → refl)
+... | no x = mkUpto𝕎 refl refl (sameRes-refl w) (λ nm k d → refl)
 
 
 presUpdRel2 : (n : ℕ) (name : Name) (f g : Term) (k : ℕ) → Set(lsuc L)

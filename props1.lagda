@@ -32,6 +32,7 @@ open import Axiom.Extensionality.Propositional
 
 
 open import util
+open import name
 open import calculus
 open import terms
 open import world

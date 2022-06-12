@@ -28,6 +28,7 @@ open import Function.Inverse using (Inverse)
 
 
 open import util
+open import name
 open import calculus
 open import terms
 

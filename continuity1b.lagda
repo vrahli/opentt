@@ -34,6 +34,7 @@ open import Axiom.Extensionality.Propositional
 
 
 open import util
+open import name
 open import calculus
 open import terms
 open import world
@@ -1248,12 +1249,11 @@ choose-pres-getT≤ℕ cc name name' w a n diff g
 
 
 choose-pres-∈names𝕎 : (cc : ContConds) (name name' : Name) (w : 𝕎·) (a : Term)
-                       → ¬ name' ≡ name
                        → ¬ name ∈ names𝕎· w
                        → name ∈ dom𝕎· w
                        → (¬ name ∈ names𝕎· (chooseT name' w a)) × name ∈ dom𝕎· (chooseT name' w a)
-choose-pres-∈names𝕎 cc name name' w a diff nnw idom =
-  (λ x → nnw (ContConds.ccNchoosed cc name name' w a (λ z → diff (sym z)) x)) ,
+choose-pres-∈names𝕎 cc name name' w a nnw idom =
+  (λ x → nnw (names𝕎-chooseT→ cc name name' w a x)) ,
   dom𝕎-chooseT cc name name' w a idom
 
 \end{code}

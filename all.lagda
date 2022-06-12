@@ -7,6 +7,7 @@ open import Axiom.ExcludedMiddle
 
 
 open import util
+open import name
 open import calculus
 open import world
 open import choice

@@ -31,6 +31,7 @@ open import Axiom.ExcludedMiddle
 
 
 open import util
+open import name
 open import calculus
 open import terms
 open import world

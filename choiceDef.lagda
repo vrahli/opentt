@@ -27,6 +27,7 @@ open import Data.List.Properties
 
 
 open import util
+open import name
 open import calculus
 open import choice
 

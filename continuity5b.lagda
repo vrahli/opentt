@@ -34,6 +34,7 @@ open import Axiom.Extensionality.Propositional
 
 
 open import util
+open import name
 open import calculus
 open import terms
 open import world
@@ -104,13 +105,13 @@ upto𝕎→upto𝕎getT {name} {w1} {w2} upw = upto𝕎.upwGet upw
 
 upto𝕎→≡dom𝕎 : {name : Name} {w1 w2 : 𝕎·}
                  → upto𝕎 name w1 w2
-                 → dom𝕎· w1 ≡N dom𝕎· w2
+                 → dom𝕎· w1 ≡ dom𝕎· w2
 upto𝕎→≡dom𝕎 {name} {w1} {w2} upw = upto𝕎.upwDom upw
 
 
 upto𝕎→≡names𝕎 : {name : Name} {w1 w2 : 𝕎·}
                  → upto𝕎 name w1 w2
-                 → names𝕎· w1 ≡N names𝕎· w2
+                 → names𝕎· w1 ≡ names𝕎· w2
 upto𝕎→≡names𝕎 {name} {w1} {w2} upw = upto𝕎.upwNames upw
 
 
@@ -123,12 +124,41 @@ getT≡→map-getT≡ {n} {name} {name'} {w} {w'} {t} neq upw gt
   rewrite sym (upto𝕎→upto𝕎getT upw name' n neq) | gt = refl
 
 
+
+≡N→≡freshName : {a b : List Name}
+                 → a ≡N b
+                 → fst (freshName a) ≡ fst (freshName b)
+≡N→≡freshName {a} {b} e = ≡N→≡freshNameAux e
+
+
+→≡++ : {a b c d : List Name} → a ≡ b → c ≡ d → (a ++ c) ≡ (b ++ d)
+→≡++ {a} {b} {c} {d} e f rewrite e | f = refl
+
+
+→≡N++ : {a b c d : List Name} → a ≡N b → c ≡N d → (a ++ c) ≡N (b ++ d)
+→≡N++ {a} {b} {c} {d} e f x =
+  h1 , h2
+  where
+    h1 : x ∈ a ++ c → x ∈ b ++ d
+    h1 i with ∈-++⁻ a i
+    ... | inj₁ p = ∈-++⁺ˡ (fst (e x) p)
+    ... | inj₂ p = ∈-++⁺ʳ b (fst (f x) p)
+
+    h2 : x ∈ b ++ d → x ∈ a ++ c
+    h2 i with ∈-++⁻ b i
+    ... | inj₁ p = ∈-++⁺ˡ (snd (e x) p)
+    ... | inj₂ p = ∈-++⁺ʳ a (snd (f x) p)
+
+
 upto𝕎→≡newChoiceT : {name : Name} {w1 w2 : 𝕎·} (a : Term)
                        → upto𝕎 name w1 w2
                        → newChoiceT w1 a ≡ newChoiceT w2 a
-upto𝕎→≡newChoiceT {name} {w1} {w2} a upw = {!!}
--- TODO: need to prove that fresh is invariant under equal sets
---  rewrite upto𝕎→≡dom𝕎 upw | upto𝕎→≡names𝕎 upw = refl
+upto𝕎→≡newChoiceT {name} {w1} {w2} a upw =
+  ≡N→≡freshName
+    {dom𝕎· w1 ++ names𝕎· w1 ++ ↓vars (names a)}
+    {dom𝕎· w2 ++ names𝕎· w2 ++ ↓vars (names a)}
+    (≡→≡N (→≡++ (upto𝕎.upwDom upw)
+                  (→≡++ (upto𝕎.upwNames upw) refl)))
 
 
 upto𝕎→≡newChoiceT+ : {name : Name} {w1 w2 : 𝕎·} (a : Term)
@@ -151,11 +181,22 @@ upto𝕎→≡fresh-inst {name} {w1} {w2} a upw rewrite upto𝕎→≡newChoiceT
 
 
 -- MOVE to continuity-conds
+→≡Nnames𝕎-start : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·)
+                   → names𝕎· w1 ≡N names𝕎· w2
+                   → names𝕎· (startChoice· name Res⊤ w1) ≡N names𝕎· (startChoice· name Res⊤ w2)
+→≡Nnames𝕎-start cc name w1 w2 e
+  rewrite ContConds.ccN≡start cc name w1
+        | ContConds.ccN≡start cc name w2 = e
+
+
+-- MOVE to continuity-conds
 →≡names𝕎-start : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·)
                    → names𝕎· w1 ≡ names𝕎· w2
                    → names𝕎· (startChoice· name Res⊤ w1) ≡ names𝕎· (startChoice· name Res⊤ w2)
-→≡names𝕎-start cc name w1 w2 e =
-  trans (ContConds.ccN≡start cc name w1) (trans e (sym (ContConds.ccN≡start cc name w2)))
+→≡names𝕎-start cc name w1 w2 e
+  rewrite ContConds.ccN≡start cc name w1
+        | ContConds.ccN≡start cc name w2 = e
+
 
 
 -- MOVE to continuity-conds
@@ -177,13 +218,54 @@ upto𝕎→≡getT cc k nm name n w1 w2 diff upw with nm ≟ n
 ... | no p = trans (ContConds.ccGstartd cc nm n k Res⊤ w1 p) (trans upw (sym (ContConds.ccGstartd cc nm n k Res⊤ w2 p)))
 
 
+
+≡pres∈ : {a b : List Name} {x : Name}
+          → a ≡ b
+          → x ∈ a
+          → x ∈ b
+≡pres∈ {a} {b} {x} e i rewrite e = i
+
+
+≡pres¬∈ : {a b : List Name} {x : Name}
+          → a ≡ b
+          → ¬ x ∈ a
+          → ¬ x ∈ b
+≡pres¬∈ {a} {b} {x} e ni rewrite e = ni
+
+
+
+sameRes-startChoice : (cc : ContConds) (n : ℕ) (w1 w2 : 𝕎·)
+                      → dom𝕎· w1 ≡ dom𝕎· w2
+                      → sameRes w1 w2
+                      → sameRes (startChoice· n Res⊤ w1) (startChoice· n Res⊤ w2)
+sameRes-startChoice cc n w1 w2 eqd same name r =
+  c1 , c2
+  where
+    c1 : compatible· name (startChoice· n Res⊤ w1) r → compatible· name (startChoice· n Res⊤ w2) r
+    c1 compat with n ≟ name
+    ... | yes p rewrite p with Name∈⊎ name (dom𝕎· w1)
+    ... |    inj₁ i = ContConds.ccC∈start← cc name r Res⊤ w2 (≡pres∈ eqd i) (fst (same name r) (ContConds.ccC∈start→ cc name r Res⊤ w1 i compat))
+    ... |    inj₂ ni rewrite sym (ContConds.ccC¬∈start→ cc name r Res⊤ w1 ni compat) = startChoiceCompatible· Res⊤ w2 name (≡pres¬∈ eqd ni)
+    c1 compat | no p = ContConds.ccC¬≡start← cc n name r Res⊤ w2 p (fst (same name r) (ContConds.ccC¬≡start→ cc n name r Res⊤ w1 p compat))
+
+    c2 : compatible· name (startChoice· n Res⊤ w2) r → compatible· name (startChoice· n Res⊤ w1) r
+    c2 compat with n ≟ name
+    ... | yes p rewrite p with Name∈⊎ name (dom𝕎· w2)
+    ... |    inj₁ i = ContConds.ccC∈start← cc name r Res⊤ w1 (≡pres∈ (sym eqd) i) (snd (same name r) (ContConds.ccC∈start→ cc name r Res⊤ w2 i compat))
+    ... |    inj₂ ni rewrite sym (ContConds.ccC¬∈start→ cc name r Res⊤ w2 ni compat) = startChoiceCompatible· Res⊤ w1 name (≡pres¬∈ (sym eqd) ni)
+    c2 compat | no p = ContConds.ccC¬≡start← cc n name r Res⊤ w1 p (snd (same name r) (ContConds.ccC¬≡start→ cc n name r Res⊤ w2 p compat))
+
+
 →upto𝕎-startChoice : (cc : ContConds) {name : Name} {w1 w2 : 𝕎·} (n : Name)
                        → upto𝕎 name w1 w2
                        → upto𝕎 name (startChoice· n Res⊤ w1) (startChoice· n Res⊤ w2)
 →upto𝕎-startChoice cc {name} {w1} {w2} n upw =
-  {!!} {--ContConds.ccD≡start cc n w1 w2 (fst upw) ,
-  →≡names𝕎-start cc n w1 w2 (fst (snd upw)) ,
-  λ nm k d → upto𝕎→≡getT cc k nm name n w1 w2 d (snd (snd upw) nm k d)--}
+  mkUpto𝕎
+    (ContConds.ccD≡start cc n w1 w2 (upto𝕎.upwDom upw))
+    (→≡names𝕎-start cc n w1 w2 (upto𝕎.upwNames upw))
+    (sameRes-startChoice cc n w1 w2 (upto𝕎.upwDom upw) (upto𝕎.upwRes upw))
+    (λ nm k d → upto𝕎→≡getT cc k nm name n w1 w2 d (upto𝕎.upwGet upw nm k d))
+
 
 
 →upto𝕎-startNewChoiceT : (cc : ContConds) {name : Name} {w1 w2 : 𝕎·} (a : Term)
@@ -207,32 +289,57 @@ names𝕎-chooseT-Res⊤ : (name : Name) (w : 𝕎·) (t : Term)
 ADD:
 → ((k : ℕ) → getT k name w1 ≡ getT k name w2)
 → sameRes w1 w2
+→ dom𝕎· w1 ≡ dom𝕎· w2
 → getT k name (chooseT name w1 t) ≡ getT k name (chooseT name w2 t)
 --}
 
 
 
 →upto𝕎getT-chooseT : (cc : ContConds) (name name' : Name) (w1 w1' : 𝕎·) (t : Term)
-                 → ¬ name ≡ name'
                  → upto𝕎 name w1 w1'
                  → upto𝕎getT name (chooseT name' w1 t) (chooseT name' w1' t)
-→upto𝕎getT-chooseT cc name name' w1 w1' t d upw n k dn with n ≟ name'
-... | yes p rewrite p = {!!} -- we need w1 and w1' to have the same restritions
+→upto𝕎getT-chooseT cc name name' w1 w1' t upw n k dn with n ≟ name'
+... | yes p rewrite p = ContConds.ccGget cc name' w1 w1' t k (λ z → upto𝕎.upwGet upw name' z dn) (upto𝕎.upwRes upw) (upto𝕎.upwDom upw) -- we need w1 and w1' to have the same restritions
 ... | no p = trans (ContConds.ccGcd cc k n name' w1 t p)
                    (trans (upto𝕎.upwGet upw n k dn)
                           (sym (ContConds.ccGcd cc k n name' w1' t p)))
 
 
 
+→sameRes-chooseT : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (t : Term)
+                    → sameRes w1 w2
+                    → sameRes (chooseT name w1 t) (chooseT name w2 t)
+→sameRes-chooseT cc name w1 w2 t same =
+  sameRes-trans (sameRes-chooseT cc name w1 t)
+                (sameRes-trans same (sameRes-sym (sameRes-chooseT cc name w2 t)))
+
+
+→≡-names𝕎-chooseT : (cc : ContConds) (w1 w2 : 𝕎·) (name : Name) (t : Term)
+                       → names𝕎· w1 ≡ names𝕎· w2
+                       → names𝕎· (chooseT name w1 t) ≡ names𝕎· (chooseT name w2 t)
+→≡-names𝕎-chooseT cc w1 w2 name t eqn
+  rewrite ContConds.ccNchoose≡ cc name w1 t
+        | ContConds.ccNchoose≡ cc name w2 t = eqn
+
+
+→≡N-names𝕎-chooseT : (cc : ContConds) (w1 w2 : 𝕎·) (name : Name) (t : Term)
+                       → names𝕎· w1 ≡N names𝕎· w2
+                       → names𝕎· (chooseT name w1 t) ≡N names𝕎· (chooseT name w2 t)
+→≡N-names𝕎-chooseT cc w1 w2 name t eqn n
+  rewrite ContConds.ccNchoose≡ cc name w1 t
+        | ContConds.ccNchoose≡ cc name w2 t = eqn n
+
+
+
 upto𝕎-chooseT : (cc : ContConds) (name name' : Name) (w1 w1' : 𝕎·) (t : Term)
-                 → ¬ name ≡ name'
                  → upto𝕎 name w1 w1'
                  → upto𝕎 name (chooseT name' w1 t) (chooseT name' w1' t)
-upto𝕎-chooseT cc name name' w1 w1' t d upw =
-  {!!} {--→dom𝕎-chooseT≡ cc name' w1 w1' t (fst upw) ,
-  {!!} , -- we need to assume here that w1 and w1' have the same restrictions and change this requirement to be a set equality instead of a list equality
-  →upto𝕎getT-chooseT cc name name' w1 w1' t d upw
---}
+upto𝕎-chooseT cc name name' w1 w1' t upw =
+  mkUpto𝕎
+    (→dom𝕎-chooseT≡ cc name' w1 w1' t (upto𝕎.upwDom upw))
+    (→≡-names𝕎-chooseT cc w1 w1' name' t (upto𝕎.upwNames upw)) -- we need to assume here that w1 and w1' have the same restrictions and change this requirement to be a set equality instead of a list equality
+    (→sameRes-chooseT cc name' w1 w1' t (upto𝕎.upwRes upw))
+    (→upto𝕎getT-chooseT cc name name' w1 w1' t upw)
 
 
 step-upto𝕎 : (cc : ContConds) (name : Name) (a b : Term) (w1 w2 w1' : 𝕎·)
@@ -447,9 +554,9 @@ step-upto𝕎 cc name (FRESH a) b w1 w2 w1' nna nnw idom comp upw rewrite sym (p
 step-upto𝕎 cc name (CHOOSE n t) b w1 w2 w1' nna nnw idom comp upw with is-NAME n
 ... | inj₁ (name' , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
   chooseT name' w1' t , refl ,
-  upto𝕎-chooseT cc name name' w1 w1' t (λ x → nna (here x)) upw ,
+  upto𝕎-chooseT cc name name' w1 w1' t upw ,
   (λ ()) ,
-  (λ x → nnw (ContConds.ccNchoose cc name name' w1 t (λ x → nna (there x)) x)) ,
+  (λ x → nnw (names𝕎-chooseT→ cc name name' w1 t x)) ,
   dom𝕎-chooseT cc name name' w1 t idom
 ... | inj₂ x with step⊎ n w1
 ... |    inj₁ (n' , w1x , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
@@ -479,18 +586,22 @@ step-upto𝕎 cc name (SHRINK a) b w1 w2 w1' nna nnw idom comp upw rewrite pair-
 
 
 
-{--
-steps-upto𝕎 : (name : Name) (k : ℕ) (a b : Term) (w1 w2 w1' : 𝕎·)
+steps-upto𝕎 : (cc : ContConds) (name : Name) (k : ℕ) (a b : Term) (w1 w2 w1' : 𝕎·)
                → ¬ name ∈ names a
                → ¬ name ∈ names𝕎· w1
                → name ∈ dom𝕎· w1
                → steps k (a , w1) ≡ (b , w2)
                → upto𝕎 name w1 w1'
-               → Σ 𝕎· (λ w2' → steps k (a , w1') ≡ (b , w2') × upto𝕎 name w2 w2')
-steps-upto𝕎 name k a b w1 w2 w1' nna nnw idom comp upw = {!!}
+               → Σ 𝕎· (λ w2' → steps k (a , w1') ≡ (b , w2')
+                   × upto𝕎 name w2 w2'
+                   × ¬ name ∈ names b
+                   × ¬ name ∈ names𝕎· w2
+                   × name ∈ dom𝕎· w2)
+steps-upto𝕎 cc name k a b w1 w2 w1' nna nnw idom comp upw = {!!}
 
 
 
+{--
 →ΣstepsUpdRel2-upd : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w1 w : 𝕎·}
                      → ¬ name ∈ names f
                      → # f

@@ -34,6 +34,7 @@ open import Axiom.Extensionality.Propositional
 
 
 open import util
+open import name
 open import calculus
 open import terms
 open import world
@@ -291,7 +292,7 @@ step-sat-isHighestℕ2 cc gc {w1} {w2} {.(CHOOSE a b₁)} {b} {n} {name} {f} com
 ... | inj₁ (nm , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
   0 , AX , chooseT nm w1 b₁ , refl ,
   choose-pres-getT≤ℕ cc name nm w1 b₁ n (updCtxt2-NAME→ ctxt) ,
-  choose-pres-∈names𝕎 cc name nm w1 b₁ (updCtxt2-NAME→ ctxt) nnw idom ,
+  choose-pres-∈names𝕎 cc name nm w1 b₁ nnw idom ,
   updCtxt2-AX
 ... | inj₂ x with step⊎ a w1
 ... |    inj₁ (a' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =

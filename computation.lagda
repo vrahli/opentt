@@ -29,6 +29,7 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 
 open import util
+open import name
 open import calculus
 open import terms
 open import world

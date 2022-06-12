@@ -31,6 +31,7 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 
 open import util
+open import name
 open import calculus
 open import terms
 open import world
@@ -1677,7 +1678,7 @@ name¬∈→step cc w1 w2 (CHOOSE n t) u name comp nit niw idom with is-NAME n
         | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
         | ContConds.ccGcd cc 0 name name' w1 t (λ x → nit (here x)) =
             refl , ¬∈[] {Name} {name} ,
-            (λ x → niw (ContConds.ccNchoose cc name name' w1 t (λ x → nit (there x)) x)) ,
+            (λ x → niw (names𝕎-chooseT→ cc name name' w1 t x)) ,
             dom𝕎-chooseT cc name name' w1 t idom --ret AX (chooseT name w t)
 ... | inj₂ x with step⊎ n w1
 ... |    inj₁ (n' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
