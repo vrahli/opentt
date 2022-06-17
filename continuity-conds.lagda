@@ -230,9 +230,13 @@ getT-startChoice-diff = (name name' : Name) (n : ℕ) (r : Res) (w : 𝕎·)
                         → getT n name (startChoice· name' r w) ≡ getT n name w
 
 
+-- Getting a name1 choice for a new choice w.r.t. w1 is the same as getting a name2 choice
+-- for a new choice w.r.t. w2, if they start with the same restriction.
 getT-startChoice-same : Set(1ℓ Level.⊔ L)
-getT-startChoice-same = (name : Name) (n : ℕ) (r : Res) (w1 w2 : 𝕎·)
-                        → getT n name (startChoice· name r w1) ≡ getT n name (startChoice· name r w2)
+getT-startChoice-same = (name1 name2 : Name) (n : ℕ) (r : Res) (w1 w2 : 𝕎·)
+                        → ¬ name1 ∈ dom𝕎· w1
+                        → ¬ name2 ∈ dom𝕎· w2
+                        → getT n name1 (startChoice· name1 r w1) ≡ getT n name2 (startChoice· name2 r w2)
 
 
 compatible-chooseT→ : Set(1ℓ Level.⊔ L)

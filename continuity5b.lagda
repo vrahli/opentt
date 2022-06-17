@@ -97,6 +97,11 @@ open import continuity4b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 
+-- subRen r1 r2 means that r1 is a sub-renaming of r2
+data subRen : ren → ren → Set where
+  subRen-refl : (r : ren) → subRen r r
+  subRen-trans : (a b : Name) (r1 r2 : ren) → subRen r1 r2 → subRen r1 ((a , b) ∷ r2)
+
 
 presUpdRel2 : (n : ℕ) (name : Name) (f g : Term) (k : ℕ) → Set(lsuc L)
 presUpdRel2 n name f g k =
@@ -115,7 +120,8 @@ presUpdRel2 n name f g k =
   → Σ ℕ (λ k' → Σ Term (λ v' → Σ 𝕎· (λ w' → Σ ren (λ r' →
       steps k' (b , w) ≡ (v' , w')
       × updRel2 name f g r' v v'
-      × upto𝕎 name w2 w' r'))))
+      × upto𝕎 name w2 w' r'
+      × subRen r r'))))
 
 
 stepsPresUpdRel2 : (n : ℕ) (name : Name) (f g : Term) (b : Term) (w : 𝕎·) → Set(lsuc L)
@@ -130,13 +136,14 @@ stepsPresUpdRel2 n name f g b w =
 
 -- NOTE: We won't be able to prove that for impure terms x because it might read a choice
 -- and return 2 different values in the two worlds w2 and w
-ΣstepsUpdRel2 : (name : Name) (f g : Term) (x : Term) (w2 : 𝕎·) (b : Term) (w : 𝕎·) → Set(1ℓ Level.⊔ L)
-ΣstepsUpdRel2 name f g x w2 b w =
+ΣstepsUpdRel2 : (name : Name) (f g : Term) (x : Term) (w2 : 𝕎·) (b : Term) (w : 𝕎·) (r : ren) → Set(1ℓ Level.⊔ L)
+ΣstepsUpdRel2 name f g x w2 b w r =
   Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ Term (λ y1 → Σ Term (λ y2 → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w' → Σ ren (λ r' →
     steps k1 (x , w2) ≡ (y1 , w3)
     × steps k2 (b , w) ≡ (y2 , w')
     × updRel2 name f g r' y1 y2
-    × upto𝕎 name w3 w' r')))))))
+    × upto𝕎 name w3 w' r'
+    × subRen r r')))))))
 
 
 
@@ -242,10 +249,11 @@ dren ((a , b) ∷ r) = (pred a , pred b) ∷ dren r
 names∈ren-sucIf≤-ren→ : (n name1 name2 : Name) (r : ren)
                          → names∈ren (sucIf≤ n name1) (sucIf≤ n name2) (sucIf≤-ren n r)
                          → names∈ren name1 name2 r
-names∈ren-sucIf≤-ren→ n name1 name2 r (inj₁ (e , i₁ , i₂)) =
-  inj₁ (sucIf≤-inj {n} {name1} {name2} e , (λ x → i₁ (→∈renₗ-sucIf≤-ren n x)) , (λ x → i₂ (→∈renᵣ-sucIf≤-ren n x)))
---rewrite e = inj₁ (refl , →¬∈renₗ-sucIf≤-ren n i₁ , →¬∈renᵣ-sucIf≤-ren n i₂) --inj₁ refl
-names∈ren-sucIf≤-ren→ n name1 name2 r (inj₂ i) = inj₂ (∈ren-sucIf≤-ren→ n name1 name2 r i)
+names∈ren-sucIf≤-ren→ n name1 name2 [] e = sucIf≤-inj {n} {name1} {name2} e
+names∈ren-sucIf≤-ren→ n name1 name2 ((a , b) ∷ r) (inj₁ (e₁ , e₂)) =
+  inj₁ (sucIf≤-inj {n} {name1} {a} e₁ , (sucIf≤-inj {n} {name2} {b} e₂))
+names∈ren-sucIf≤-ren→ n name1 name2 ((a , b) ∷ r) (inj₂ (e₁ , e₂ , x)) =
+  inj₂ ((λ z → e₁ (→≡sucIf≤ z)) , (λ z → e₂ (→≡sucIf≤ z)) , (names∈ren-sucIf≤-ren→ n name1 name2 r x))
 
 
 
@@ -387,16 +395,9 @@ updRel2-shiftNameUp→ n {name} {f} {g} {r} cf cg {SHRINK a} {SHRINK b} (updRel2
                → ¬ n2 ≡ name2
                → names∈ren name1 name2 r
                → names∈ren name1 name2 ((n1 , n2) ∷ r)
-→names∈ren∷ {n1} {n2} {name1} {name2} {r} d1 d2 (inj₁ (i , x₁ , x₂)) = inj₁ (i , y₁ , y₂)
-  where
-    y₁ : ¬ name1 ∈ (n1 ∷ renₗ r)
-    y₁ (here p) rewrite p = d1 refl
-    y₁ (there p) = x₁ p
+→names∈ren∷ {n1} {n2} {name1} {name2} {r} d1 d2 i =
+  inj₂ ((λ z → d1 (sym z)) , (λ z → d2 (sym z)) , i)
 
-    y₂ : ¬ name2 ∈ (n2 ∷ renᵣ r)
-    y₂ (here p) rewrite p = d2  refl
-    y₂ (there p) = x₂ p
-→names∈ren∷ {n1} {n2} {name1} {name2} {r} d1 d2 (inj₂ i) = inj₂ (there i)
 
 
 →∈renₗ : (a b : Name) (r : ren) → (a , b) ∈ r → a ∈ renₗ r
@@ -423,6 +424,25 @@ suc∈renᵣ-sren→ : {n : Name} {r : ren}
 suc∈renᵣ-sren→ {n} {[]} ()
 suc∈renᵣ-sren→ {n} {(a , b) ∷ r} (here p) = here (suc-injective p)
 suc∈renᵣ-sren→ {n} {(a , b) ∷ r} (there p) = there (suc∈renᵣ-sren→ p)
+
+
+¬∈renₗ-names∈ren→ : (n1 n2 : Name) (r : ren)
+                    → names∈ren n1 n2 r
+                    → ¬ n1 ∈ renₗ r
+                    → n1 ≡ n2
+¬∈renₗ-names∈ren→ n1 n2 [] i d = i
+¬∈renₗ-names∈ren→ n1 n2 ((a , b) ∷ r) (inj₁ (i₁ , i₂)) d rewrite i₁ | i₂ = ⊥-elim (d (here refl))
+¬∈renₗ-names∈ren→ n1 n2 ((a , b) ∷ r) (inj₂ (i₁ , i₂ , x)) d = ¬∈renₗ-names∈ren→ n1 n2 r x (λ z → d (there z))
+
+
+
+¬∈renᵣ-names∈ren→ : (n1 n2 : Name) (r : ren)
+                    → names∈ren n1 n2 r
+                    → ¬ n2 ∈ renᵣ r
+                    → n1 ≡ n2
+¬∈renᵣ-names∈ren→ n1 n2 [] i d = i
+¬∈renᵣ-names∈ren→ n1 n2 ((a , b) ∷ r) (inj₁ (i₁ , i₂)) d rewrite i₁ | i₂ = ⊥-elim (d (here refl))
+¬∈renᵣ-names∈ren→ n1 n2 ((a , b) ∷ r) (inj₂ (i₁ , i₂ , x)) d = ¬∈renᵣ-names∈ren→ n1 n2 r x (λ z → d (there z))
 
 
 updRel2-renn : {name : Name} {f g : Term} {r : ren} {a b : Term} (n n1 n2 : Name)
@@ -466,30 +486,30 @@ updRel2-renn {name} {f} {g} {r} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} n 
 updRel2-renn {name} {f} {g} {r} {.AX} {.AX} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm updRel2-AX = updRel2-AX
 updRel2-renn {name} {f} {g} {r} {.FREE} {.FREE} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm updRel2-FREE = updRel2-FREE
 updRel2-renn {name} {f} {g} {r} {.(CS name1)} {.(CS name2)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-CS name1 name2 x x₁ x₂) with name1 ≟ n | name2 ≟ n
-... | yes p | yes q rewrite p | q = updRel2-CS n1 n2 d1 d2 (inj₂ (here refl))
+... | yes p | yes q rewrite p | q = updRel2-CS n1 n2 d1 d2 (inj₁ (refl , refl))
 ... | yes p | no q rewrite p = updRel2-CS n1 name2 d1 x₁ (⊥-elim (c x₂))
   where
     c : ¬ names∈ren n name2 r
-    c (inj₁ (i , x₁ , x₂)) rewrite i = q refl
-    c (inj₂ i) = nr1 (→∈renₗ n name2 r i)
+    c i = q (sym (¬∈renₗ-names∈ren→ n name2 r i nr1)) {--(inj₁ (i , x₁ , x₂)) rewrite i = q refl
+    c (inj₂ i) = nr1 (→∈renₗ n name2 r i)--}
 ... | no p | yes q rewrite q = updRel2-CS name1 n2 x d2 (⊥-elim (c x₂))
   where
     c : ¬ names∈ren name1 n r
-    c (inj₁ (i , x₁ , x₂)) rewrite i = p refl
-    c (inj₂ i) = nr2 (→∈renᵣ name1 n r i)
+    c i = p (¬∈renᵣ-names∈ren→ name1 n r i nr2) {--(inj₁ (i , x₁ , x₂)) rewrite i = p refl
+    c (inj₂ i) = nr2 (→∈renᵣ name1 n r i)--}
 ... | no p | no q = updRel2-CS name1 name2 x x₁ (→names∈ren∷ (λ x → na (here x)) (λ x → nb (here x)) x₂)
 updRel2-renn {name} {f} {g} {r} {.(NAME name1)} {.(NAME name2)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-NAME name1 name2 x x₁ x₂) with name1 ≟ n | name2 ≟ n
-... | yes p | yes q rewrite p | q = updRel2-NAME n1 n2 d1 d2 (inj₂ (here refl))
+... | yes p | yes q rewrite p | q = updRel2-NAME n1 n2 d1 d2 (inj₁ (refl , refl)) {--(inj₂ (here refl))--}
 ... | yes p | no q rewrite p = updRel2-NAME n1 name2 d1 x₁ (⊥-elim (c x₂))
   where
     c : ¬ names∈ren n name2 r
-    c (inj₁ (i , x₁ , x₂)) rewrite i = q refl
-    c (inj₂ i) = nr1 (→∈renₗ n name2 r i)
+    c i = q (sym (¬∈renₗ-names∈ren→ n name2 r i nr1)) {--(inj₁ (i , x₁ , x₂)) rewrite i = q refl
+    c (inj₂ i) = nr1 (→∈renₗ n name2 r i)--}
 ... | no p | yes q rewrite q = updRel2-NAME name1 n2 x d2 (⊥-elim (c x₂))
   where
     c : ¬ names∈ren name1 n r
-    c (inj₁ (i , x₁ , x₂)) rewrite i = p refl
-    c (inj₂ i) = nr2 (→∈renᵣ name1 n r i)
+    c i = p (¬∈renᵣ-names∈ren→ name1 n r i nr2) {--(inj₁ (i , x₁ , x₂)) rewrite i = p refl
+    c (inj₂ i) = nr2 (→∈renᵣ name1 n r i)--}
 ... | no p | no q = updRel2-NAME name1 name2 x x₁ (→names∈ren∷ (λ x → na (here x)) (λ x → nb (here x)) x₂)
 updRel2-renn {name} {f} {g} {r} {.(FRESH a)} {.(FRESH b)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-FRESH a b u) =
   updRel2-FRESH
@@ -818,6 +838,5 @@ steps-upto𝕎 cc name (suc k) a b w1 w2 w1' r nna nnw idom comp upw with step�
            (fst (snd (snd (snd h1))))
 ... | inj₂ z rewrite z | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = 0 , w1' , r , refl , upw , nna , nnw , idom
 --}
-
 
 \end{code}

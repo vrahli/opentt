@@ -186,9 +186,19 @@ renᵣ ((a , b) ∷ r) = b ∷ renᵣ r
 
 
 names∈ren : Name → Name → ren → Set
+names∈ren name1 name2 [] = name1 ≡ name2
+names∈ren name1 name2 ((a , b) ∷ r) =
+  (name1 ≡ a × name2 ≡ b)
+  ⊎ (¬ name1 ≡ a × ¬ name2 ≡ b × names∈ren name1 name2 r)
+
+
+{--
+names∈ren : Name → Name → ren → Set
 names∈ren name1 name2 r =
   (name1 ≡ name2 × ¬ name1 ∈ renₗ r × ¬ name2 ∈ renᵣ r)
   ⊎ (name1 , name2) ∈ r
+--}
+
 
 
 {--
@@ -305,6 +315,19 @@ upto𝕎getT name w1 w2 r =
   → getT k n1 w1 ≡ getT k n2 w2
 
 
+no-repeats : List Name → Set
+no-repeats [] = ⊤
+no-repeats (n ∷ l) = ¬ n ∈ l × no-repeats l
+
+
+record wfRen (w1 w2 : 𝕎·) (r : ren) : Set where
+  constructor mkWfRen
+  field
+    wfRenₗ : (n : Name) → n ∈ renₗ r → n ∈ dom𝕎· w1
+    wfRenᵣ : (n : Name) → n ∈ renᵣ r → n ∈ dom𝕎· w2
+    wfRenNRₗ : no-repeats (renₗ r)
+    wfRenNRᵣ : no-repeats (renᵣ r)
+
 
 -- We know that r is in dom𝕎 w1/dom𝕎 w2 and has no repeats
 
@@ -315,6 +338,7 @@ record upto𝕎 (name : Name) (w1 w2 : 𝕎·) (r : ren) : Set(1ℓ Level.⊔ L)
 --    upwDom   : dom𝕎· w1 ≡ dom𝕎· w2
 --    upwNames : names𝕎· w1 ≡ names𝕎· w2
 --    upwRes   : sameRes w1 w2
+    upwWf    : wfRen w1 w2 r
     upwGet   : upto𝕎getT name w1 w2 r
 
 
@@ -662,8 +686,13 @@ sucIf≤-ren n ((a , b) ∷ r) = (sucIf≤ n a , sucIf≤ n b) ∷ sucIf≤-ren 
 →names∈ren-sucIf≤-ren : (n name1 name2 : Name) (r : ren)
                          → names∈ren name1 name2 r
                          → names∈ren (sucIf≤ n name1) (sucIf≤ n name2) (sucIf≤-ren n r)
-→names∈ren-sucIf≤-ren n name1 name2 r (inj₁ (e , i₁ , i₂)) rewrite e = inj₁ (refl , →¬∈renₗ-sucIf≤-ren n i₁ , →¬∈renᵣ-sucIf≤-ren n i₂) --inj₁ refl
+→names∈ren-sucIf≤-ren n name1 name2 [] i rewrite i = refl
+→names∈ren-sucIf≤-ren n name1 name2 ((a , b) ∷ r) (inj₁ (u , v)) rewrite u | v = inj₁ (refl , refl)
+→names∈ren-sucIf≤-ren n name1 name2 ((a , b) ∷ r) (inj₂ (u , v , x)) =
+  inj₂ ((λ z → u (sucIf≤-inj z)) , (λ z → v (sucIf≤-inj z)) , →names∈ren-sucIf≤-ren n name1 name2 r x)
+{-- r (inj₁ (e , i₁ , i₂)) rewrite e = inj₁ (refl , →¬∈renₗ-sucIf≤-ren n i₁ , →¬∈renᵣ-sucIf≤-ren n i₂) --inj₁ refl
 →names∈ren-sucIf≤-ren n name1 name2 r (inj₂ i) = inj₂ (→∈ren-sucIf≤-ren n name1 name2 r i)
+--}
 
 
 sucIf≤-ren-suc-sren : (n : Name) (r : ren)
@@ -964,10 +993,12 @@ upto𝕎→≡fresh-inst {name} {w1} {w2} a upw rewrite upto𝕎→≡newChoiceT
 -- MOVE to continuity-conds
 upto𝕎→≡getT : (cc : ContConds) (k : ℕ) (nm name n : Name) (w1 w2 : 𝕎·)
                 → ¬ nm ≡ name
+                → ¬ n ∈ dom𝕎· w1
+                → ¬ n ∈ dom𝕎· w2
                 → getT k nm w1 ≡ getT k nm w2
                 → getT k nm (startChoice· n Res⊤ w1) ≡ getT k nm (startChoice· n Res⊤ w2)
-upto𝕎→≡getT cc k nm name n w1 w2 diff upw with nm ≟ n
-... | yes p rewrite p = ContConds.ccGstarts cc n k Res⊤ w1 w2
+upto𝕎→≡getT cc k nm name n w1 w2 diff d1 d2 upw with nm ≟ n
+... | yes p rewrite p = ContConds.ccGstarts cc n n k Res⊤ w1 w2 d1 d2
 ... | no p = trans (ContConds.ccGstartd cc nm n k Res⊤ w1 p) (trans upw (sym (ContConds.ccGstartd cc nm n k Res⊤ w2 p)))
 
 
