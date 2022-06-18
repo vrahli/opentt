@@ -121,23 +121,39 @@ upto𝕎-pres-¬∈names𝕎 {name} {w1} {w2} upw i rewrite upto𝕎.upwNames up
 --}
 
 
-{--
-→ΣstepsUpdRel2-upd : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w1 w : 𝕎·}
+
+Σsteps-updRel2-NUM→ : {name : Name} {f g : Term} {r : ren} {m : ℕ} {b : Term} {w0 w1 w2 : 𝕎·}
+                      → Σ ℕ (λ k' → Σ Term (λ v' → Σ 𝕎· (λ w1' → Σ ren (λ r' →
+                          steps k' (b , w1) ≡ (v' , w1')
+                          × updRel2 name f g r' (NUM m) v'
+                          × upto𝕎 name w2 w1' r'
+                          × subRen w0 w1 r r'))))
+                      → Σ ℕ (λ k' → Σ 𝕎· (λ w1' → Σ ren (λ r' →
+                          steps k' (b , w1) ≡ (NUM m , w1')
+                          × upto𝕎 name w2 w1' r'
+                          × subRen w0 w1 r r')))
+Σsteps-updRel2-NUM→ {name} {f} {g} {r} {m} {b} {w0} {w1} {w2} (k' , .(NUM m) , w1' , r' , comp , updRel2-NUM .m , upw , sub) =
+  k' , w1' , r' , comp , upw , sub
+
+
+
+→ΣstepsUpdRel2-upd : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w1 w : 𝕎·} {r : ren}
                      → ¬ name ∈ names f
+                     → ¬Names g
                      → # f
                      → # g
                      → compatible· name w1 Res⊤
                      → compatible· name w Res⊤
                      → ∀𝕎-get0-NUM w1 name
-                     → updRel2 name f g a b
-                     → upto𝕎 name w1 w
-                     → ∀𝕎 w (λ w' _ → (k : ℕ) → k < n → ∀𝕎-⇓∼ℕ w' (APPLY f (NUM k)) (APPLY g (NUM k)))
+                     → updRel2 name f g r a b
+                     → upto𝕎 name w1 w r
+                     → ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < n → strongMonEq w' (APPLY f (NUM k)) (APPLY g (NUM k)))
                      → stepsPresUpdRel2 n name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1
-                     → Σ (ΣstepsUpdRel2 name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 (APPLY (force g) b) w)
+                     → Σ (ΣstepsUpdRel2 name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 w1 (APPLY (force g) b) w r)
                           (λ x → 0 < fst (snd x))
-→ΣstepsUpdRel2-upd cc gc {n} {name} {f} {g} {a} {b} {w1} {w} nnf cf cg compat compat' wgt0 u upw eqn (k , v , w2 , comp , isv , ish , inw , ind) =
-  (k2 + k3' , k5 + k6 , NUM i , NUM i , w1a' , w1a , comp2b , compgc , updRel2-NUM i , upto𝕎-sym name w1a w1a' upw2) ,
-  steps-APPLY-val→ {k5 + k6} {force g} {b} {NUM i} {w} {w1a} tt compgc
+→ΣstepsUpdRel2-upd cc gc {n} {name} {f} {g} {a} {b} {w1} {w} {r} nnf nng cf cg compat compat' wgt0 u upw eqn (k , v , w2 , comp , isv , ish , inw , ind) =
+  (k2 + k3 , k5 + k6 , NUM i , NUM i , w1a , {!!} {--w1a--} , {!!} , comp2b , {!!} {--compgc--} , updRel2-NUM i , {!!} {--upto𝕎-sym name w1a w1a' upw2--}) ,
+  steps-APPLY-val→ {k5 + k6} {force g} {b} {NUM i} {w} {w1a} tt {!!} {--compgc--}
   where
     c : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w1' → Σ ℕ (λ m → Σ ℕ (λ m' →
            k1 < k
@@ -196,8 +212,8 @@ upto𝕎-pres-¬∈names𝕎 {name} {w1} {w2} upw i rewrite upto𝕎.upwNames up
     inw1 : ∈names𝕎 {k1} {w1} {w1'} {a} {NUM m} name comp1b
     inw1 = ∈names𝕎-LET→ {k1} {k} {name} {a} {SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))} {NUM m} {v} {w1} {w1'} {w2} comp1b comp isv inw
 
-    indb : Σ ℕ (λ k' → Σ 𝕎· (λ w' → steps k' (b , w) ≡ (NUM m , w') × upto𝕎 name w1' w'))
-    indb = Σsteps-updRel2-NUM→ (ind k1 (<⇒≤ ltk1) {a} {b} {NUM m} {w1} {w1'} {w} u upw compat compat' wgt0 eqn comp1b ish1 inw1 tt)
+    indb : Σ ℕ (λ k' → Σ 𝕎· (λ w' → Σ ren (λ r' → steps k' (b , w) ≡ (NUM m , w') × upto𝕎 name w1' w' r' × subRen w1 w r r')))
+    indb = Σsteps-updRel2-NUM→ (ind k1 (<⇒≤ ltk1) {a} {b} {NUM m} {w1} {w1'} {w} {r} u upw compat compat' wgt0 eqn comp1b ish1 inw1 tt)
 
     k4 : ℕ
     k4 = fst indb
@@ -205,11 +221,17 @@ upto𝕎-pres-¬∈names𝕎 {name} {w1} {w2} upw i rewrite upto𝕎.upwNames up
     w1x : 𝕎·
     w1x = fst (snd indb)
 
-    cb : steps k4 (b , w) ≡ (NUM m , w1x)
-    cb = fst (snd (snd indb))
+    r' : ren
+    r' = fst (snd (snd indb))
 
-    upw1 : upto𝕎 name w1' w1x
-    upw1 = snd (snd (snd indb))
+    cb : steps k4 (b , w) ≡ (NUM m , w1x)
+    cb = fst (snd (snd (snd indb)))
+
+    upw1 : upto𝕎 name w1' w1x r'
+    upw1 = fst (snd (snd (snd (snd indb))))
+
+    sub' : subRen w1 w r r'
+    sub' = snd (snd (snd (snd (snd indb))))
 
     compg : APPLY (force g) b ⇓ APPLY g (NUM m) from w to w1x
     compg = →APPLY-force⇓APPLY-NUM {m} {g} {b} {w} {w1x} cg (k4 , cb)
@@ -223,32 +245,47 @@ upto𝕎-pres-¬∈names𝕎 {name} {w1} {w2} upw i rewrite upto𝕎.upwNames up
     e1x : w ⊑· w1x
     e1x = steps→⊑ k4 b (NUM m) cb
 
-    q : ⇓∼ℕ w1x (APPLY f (NUM m)) (APPLY g (NUM m))
-    q = lower (eqn w (⊑-refl· _) m ltm w1x e1x)
+-- We could here start from w1' instead of w1x and assume that g is name-free, which we're using below anyway
+    sn : strongMonEq w1  (APPLY f (NUM m)) (APPLY g (NUM m))
+    sn = eqn w1 (⊑-refl· _) m ltm
 
     i : ℕ
-    i = fst q
+    i = fst sn
+
+    ca1 : APPLY f (NUM m) ⇓ (NUM i) at chooseT0if name w1' m' m
+    ca1 = lower (fst (snd sn) (chooseT0if name w1' m' m) e2)
+
+    cb1 : APPLY g (NUM m) ⇓ (NUM i) at w1
+    cb1 = lower (snd (snd sn) w1 (⊑-refl· _))
+
+    {--q : ⇓∼ℕ w1x (APPLY f (NUM m)) (APPLY g (NUM m))
+    q = lower ( w1x e1x)
 
     c1 : Σ 𝕎· (λ w1a → APPLY f (NUM m) ⇓ NUM i from w1x to w1a
                        × APPLY g (NUM m) ⇓ NUM i from w1x to w1a)
-    c1 = snd q
+    c1 = snd q--}
 
     w1a : 𝕎·
-    w1a = fst c1
+    w1a = fst (⇓→from-to ca1)
 
     k3 : ℕ
-    k3 = fst (fst (snd c1))
+    k3 = fst (snd (⇓→from-to ca1))
 
-    c1a : steps k3 (APPLY f (NUM m) , w1x) ≡ (NUM i , w1a)
-    c1a = snd (fst (snd c1))
+    c1a : steps k3 (APPLY f (NUM m) , chooseT0if name w1' m' m) ≡ (NUM i , w1a)
+    c1a = snd (snd (⇓→from-to ca1))
+
+    w1b : 𝕎·
+    w1b = fst (⇓→from-to cb1)
 
     k6 : ℕ
-    k6 = fst (snd (snd c1))
+    k6 = fst (snd (⇓→from-to cb1))
 
-    c1b : steps k6 (APPLY g (NUM m) , w1x) ≡ (NUM i , w1a)
-    c1b = snd (snd (snd c1))
+    c1b : steps k6 (APPLY g (NUM m) , w1) ≡ (NUM i , w1b)
+    c1b = snd (snd (⇓→from-to cb1))
+-- Move this to a computation from w1x to w1x if g is name-free
 
-    upwc : upto𝕎 name w1x (chooseT0if name w1' m' m)
+{--
+    upwc : upto𝕎 name w1x (chooseT0if name w1' m' m) r'
     upwc = upto𝕎-trans name w1x w1' (chooseT0if name w1' m' m) (upto𝕎-sym name w1' w1x upw1) (upto𝕎-chooseT0if cc name w1' m' m)
 
     nnw1x : ¬ name ∈ names𝕎· w1x
@@ -278,47 +315,68 @@ upto𝕎-pres-¬∈names𝕎 {name} {w1} {w2} upw i rewrite upto𝕎.upwNames up
 
     upw2 : upto𝕎 name w1a w1a'
     upw2 = fst (snd (snd (snd c1ab)))
+--}
 
-    comp2b : steps (k2 + k3') (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (NUM i , w1a')
-    comp2b = steps-trans+ {k2} {k3'} {LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))} {APPLY f (NUM m)} {NUM i} {w1} {chooseT0if name w1' m' m} {w1a'} comp2 c1c
+    comp2b : steps (k2 + k3) (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (NUM i , w1a)
+    comp2b = steps-trans+ {k2} {k3} {LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))} {APPLY f (NUM m)} {NUM i} {w1} {chooseT0if name w1' m' m} {w1a} comp2 c1a
 
+{--
     compgc : steps (k5 + k6) (APPLY (force g) b , w) ≡ (NUM i , w1a)
     compgc = steps-trans+ {k5} {k6} {APPLY (force g) b} {APPLY g (NUM m)} {NUM i} {w} {w1x} {w1a} compgb c1b
 --}
 
 
+
 {--
-upto𝕎-pres-getT : (k : ℕ) (name name' : Name) (w1 w2 : 𝕎·) (r : ren) (c : Term)
-                   → ¬ name' ≡ name
+upto𝕎-pres-getT : (k : ℕ) (name name1 name2 : Name) (w1 w2 : 𝕎·) (r : ren) (c : Term)
+                   → ¬ name1 ≡ name
+                   → ¬ name2 ≡ name
+                   → names∈ren name1 name2 r
                    → upto𝕎 name w1 w2 r
-                   → getT k name' w1 ≡ just c
-                   → getT k name' w2 ≡ just c
-upto𝕎-pres-getT k name name' w1 w2 r c d upw g = {!!}
- --rewrite upto𝕎.upwGet upw n1 n2 k d1 d2 i = ? --g
---}
+                   → getT k name1 w1 ≡ just c
+                   → getT k name2 w2 ≡ just c
+upto𝕎-pres-getT k name name1 name2 w1 w2 r c d1 d2 i upw g
+ rewrite upto𝕎.upwGet upw name1 name2 k d1 d2 i = g
 
 
-subRen-pres-names∈ren : (r r' : ren) (name1 name2 : Name)
-                        → subRen r r'
+
+subRen-pres-names∈ren : (r r' : ren) (name1 name2 : Name) (w1 w : 𝕎·)
+                        → subRen w1 w r r'
+                        → name1 ∈ dom𝕎· w1
+                        → name2 ∈ dom𝕎· w
                         → names∈ren name1 name2 r
                         → names∈ren name1 name2 r'
-subRen-pres-names∈ren r .r name1 name2 (subRen-refl .r) i = i
-subRen-pres-names∈ren r .((a , b) ∷ r2) name1 name2 (subRen-trans a b .r r2 sub₁) i = {!!}
+subRen-pres-names∈ren r .r name1 name2 w1 w (subRen-refl .r) i1 i2 i = i
+subRen-pres-names∈ren r .((a , b) ∷ r2) name1 name2 w1 w (subRen-trans a b .r r2 nd1 nd2 sub₁) i1 i2 i =
+  inj₂ (ne1 i1 , ne2 i2 , subRen-pres-names∈ren r r2 name1 name2 w1 w sub₁ i1 i2 i)
+  where
+    ne1 : name1 ∈ dom𝕎· w1 → ¬ name1 ≡ a
+    ne1 j x rewrite x = nd1 j
+
+    ne2 : name2 ∈ dom𝕎· w → ¬ name2 ≡ b
+    ne2 j x rewrite x = nd2 j
 
 
+updRel2-CSₗ→ : {name : Name} {f g : Term} {r : ren} {n : Name} {a : Term}
+               → updRel2 name f g r (CS n) a
+               → Σ Name (λ n' → a ≡ CS n' × ¬ n ≡ name × ¬ n' ≡ name × names∈ren n n' r)
+updRel2-CSₗ→ {name} {f} {g} {r} {n} {CS n'} (updRel2-CS .n .n' d1 d2 x) = n' , refl , d1 , d2 , x
 
-→ΣstepsUpdRel2-APPLY₂ : {name : Name} {f g : Term} {name1 name2 : Name} {r : ren} {b₁ b₂ : Term} {w1 w : 𝕎·}
+
+→ΣstepsUpdRel2-APPLY₂ : {name : Name} {f g : Term} {name1 name2 : Name} {r : ren} {b₁ b₂ : Term} {w1 w2 w : 𝕎·}
                          → ¬ name1 ≡ name
                          → ¬ name2 ≡ name
+                         → name1 ∈ dom𝕎· w1
+                         → name2 ∈ dom𝕎· w
                          → names∈ren name1 name2 r
-                         → ΣstepsUpdRel2 name f g b₁ w1 b₂ w r
-                         → ΣstepsUpdRel2 name f g (APPLY (CS name1) b₁) w1 (APPLY (CS name2) b₂) w r
-→ΣstepsUpdRel2-APPLY₂ {name} {f} {g} {name1} {name2} {r} {b₁} {b₂} {w1} {w} d1 d2 nir (k1 , k2 , y1 , y2 , w3 , w' , r' , comp1 , comp2 , ur , upw , sub) =
+                         → ΣstepsUpdRel2 name f g b₁ w1 w2 b₂ w r
+                         → ΣstepsUpdRel2 name f g (APPLY (CS name1) b₁) w1 w2 (APPLY (CS name2) b₂) w r
+→ΣstepsUpdRel2-APPLY₂ {name} {f} {g} {name1} {name2} {r} {b₁} {b₂} {w1} {w2} {w} d1 d2 nd1 nd2 nir (k1 , k2 , y1 , y2 , w3 , w' , r' , comp1 , comp2 , ur , upw , sub) =
   fst comp1' , fst comp2' , APPLY (CS name1) y1 , APPLY (CS name2) y2 , w3 , w' , r' , snd comp1' , snd comp2' ,
-  updRel2-APPLY _ _ _ _ (updRel2-CS name1 name2 d1 d2 {!!}) ur , upw , sub
+  updRel2-APPLY _ _ _ _ (updRel2-CS name1 name2 d1 d2 (subRen-pres-names∈ren r r' name1 name2 w1 w sub nd1 nd2 nir)) ur , upw , sub
   where
-    comp1' : APPLY (CS name1) b₁ ⇓ APPLY (CS name1) y1 from w1 to w3
-    comp1' = →Σ-steps-APPLY-CS k1 b₁ y1 w1 w3 name1 comp1
+    comp1' : APPLY (CS name1) b₁ ⇓ APPLY (CS name1) y1 from w2 to w3
+    comp1' = →Σ-steps-APPLY-CS k1 b₁ y1 w2 w3 name1 comp1
 
     comp2' : APPLY (CS name2) b₂ ⇓ APPLY (CS name2) y2 from w to w'
     comp2' = →Σ-steps-APPLY-CS k2 b₂ y2 w w' name2 comp2
@@ -403,6 +461,8 @@ step-updRel2 : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f
               → ¬ name ∈ names g
               → # f
               → # g
+--              → (names a) ⊆ dom𝕎· w1 -- Could these two restrictions be guaranteed by "loading" all names into the world? No, we don't have control over g in the extract...
+--              → (names b) ⊆ dom𝕎· w -- For this one we'd have to require g to be name-free
               → step a w1 ≡ just (x , w2)
               → stepsPresUpdRel2 n name f g x w2
               → updRel2 name f g r a b
@@ -414,7 +474,7 @@ step-updRel2 : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f
               → compatible· name w Res⊤
               → ∀𝕎-get0-NUM w1 name
               → ∀𝕎 w (λ w' _ → (k : ℕ) → k < n → ∀𝕎-⇓∼ℕ w' (APPLY f (NUM k)) (APPLY g (NUM k)))
-              → ΣstepsUpdRel2 name f g x w2 b w r
+              → ΣstepsUpdRel2 name f g x w1 w2 b w r
 step-updRel2 cc gc {n} {name} {f} {g} {.NAT} {.NAT} {x} {w1} {w2} {w} {r} nnf nng cf cg comp ind updRel2-NAT upw gtn nnw idom compat compat' wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , NAT , NAT , w1 , w , r , refl , refl , updRel2-NAT , upw , subRen-refl r
 step-updRel2 cc gc {n} {name} {f} {g} {.QNAT} {.QNAT} {x} {w1} {w2} {w} {r} nnf nng cf cg comp ind updRel2-QNAT upw gtn nnw idom compat compat' wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , QNAT , QNAT , w1 , w , r , refl , refl , updRel2-QNAT , upw , subRen-refl r
 step-updRel2 cc gc {n} {name} {f} {g} {.TNAT} {.TNAT} {x} {w1} {w2} {w} {r} nnf nng cf cg comp ind updRel2-TNAT upw gtn nnw idom compat compat' wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TNAT , TNAT , w1 , w , r , refl , refl , updRel2-TNAT , upw , subRen-refl r
@@ -435,41 +495,55 @@ step-updRel2 cc gc {n} {name} {f} {g} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} 
 
     concl : Σ Term (λ u → a₂ ≡ LAMBDA u × updRel2 name f g r t u)
             ⊎ (t ≡ updBody name f × a₂ ≡ force g)
-            → ΣstepsUpdRel2 name f g (sub b₁ t) w1 (APPLY a₂ b₂) w r
+            → ΣstepsUpdRel2 name f g (sub b₁ t) w1 w1 (APPLY a₂ b₂) w r
     concl (inj₁ (u , eqa , ur)) rewrite eqa = 0 , 1 , sub b₁ t , sub b₂ u , w1 , w , r , refl , refl , updRel2-sub cf cg ur ur₁ , upw , subRen-refl r
     concl (inj₂ (e1 , e2)) rewrite e1 | e2 = c2
       where
         ind' : stepsPresUpdRel2 n name f g (LET b₁ (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1
         ind' rewrite e1 | e2 | sub-upd name f b₁ cf = ind
 
-        c1 : ΣstepsUpdRel2 name f g (LET b₁ (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 (APPLY (force g) b₂) w r
+        c1 : ΣstepsUpdRel2 name f g (LET b₁ (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 w1 (APPLY (force g) b₂) w r
         c1 = {!!} --fst (→ΣstepsUpdRel2-upd cc gc {n} {name} {f} {g} {b₁} {b₂} {w1} {w} nnf cf cg compat compat' wgt0 r₁ upw eqn ind')
 
-        c2 : ΣstepsUpdRel2 name f g (sub b₁ (updBody name f)) w1 (APPLY (force g) b₂) w r
+        c2 : ΣstepsUpdRel2 name f g (sub b₁ (updBody name f)) w1 w1 (APPLY (force g) b₂) w r
         c2 rewrite sub-upd name f b₁ cf = c1
 ... | inj₂ q with is-CS a₁
 ... |    inj₁ (name' , np) rewrite np {--| updRel2-CSₗ→ r--} with is-NUM b₁
 ... |       inj₁ (k , nq) rewrite nq | updRel2-NUMₗ→ ur₁ with getT⊎ k name' w1
 ... |          inj₁ (c , nr) rewrite nr | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
-  0 , 1 , c , c , w1 , w , r , refl , {!comp'!} , --comp' ,
+  0 , 1 , c , c , w1 , w , r , refl , concl , --comp' ,
   {!!} , --updRel2-refl {name} {f} {g} {c} (λ x → nnw (ContConds.ccGnames cc name name' k c w1 nr x)) ,
+-- In case c contains a name x, we'd have to guarantee that names∈ren x x r.  We can't know that.
+-- Better only consider nats as choices here
   upw , subRen-refl r --Data.Maybe.map (λ t → t , w) (getT n name w)
-  where
-    comp' : steps 1 (APPLY (CS name') (NUM k) , w) ≡ (c , w)
-    comp' {--rewrite upto𝕎-pres-getT k name name' w1 w c (updRel2-CSₗ→¬≡ r) upw nr--} = {!!} --refl
+  where {--()--} {--()--}
+    nm2 : Σ Name (λ name'' → a₂ ≡ CS name'' × ¬ name' ≡ name × ¬ name'' ≡ name × names∈ren name' name'' r)
+    nm2 = updRel2-CSₗ→  ur
+
+    comp' : steps 1 (APPLY (CS (fst nm2)) (NUM k) , w) ≡ (c , w)
+    comp' rewrite upto𝕎-pres-getT k name name' (fst nm2) w1 w r c (fst (snd (snd nm2))) (fst (snd (snd (snd nm2)))) (snd (snd (snd (snd nm2)))) upw nr = refl
+
+    concl : steps 1 (APPLY a₂ (NUM k) , w) ≡ (c , w)
+    concl rewrite fst (snd nm2) = comp' --refl
 ... |          inj₂ nr rewrite nr = ⊥-elim (¬just≡nothing (sym comp))
 step-updRel2 cc gc {n} {name} {f} {g} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} {x} {w1} {w2} {w} {r} nnf nng cf cg comp ind (updRel2-APPLY a₁ a₂ b₁ b₂ ur ur₁) upw gtn nnw idom compat compat' wgt0 eqn | inj₂ q | inj₁ (name' , np) | inj₂ y with step⊎ b₁ w1
 ... |          inj₁ (b₁' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
-  {!!} --→ΣstepsUpdRel2-APPLY₂ (updRel2-CSₗ→¬≡ r) ind'
+  concl
   where
-    ind' : ΣstepsUpdRel2 name f g b₁' w1' b₂ w r
-    ind' = {!!} --step-updRel2 cc gc {n} {name} {f} {g} {b₁} {b₂} {b₁'} {w1} {w1'} {w} nnf nng cf cg z (stepsPresUpdRel2-APPLY₂→ ind) r₁ upw gtn nnw idom compat compat' wgt0 eqn
+    ind' : ΣstepsUpdRel2 name f g b₁' w1 w1' b₂ w r
+    ind' = step-updRel2 cc gc {n} {name} {f} {g} {b₁} {b₂} {b₁'} {w1} {w1'} {w} nnf nng cf cg z (stepsPresUpdRel2-APPLY₂→ ind) ur₁ upw gtn nnw idom compat compat' wgt0 eqn
+
+    nm2 : Σ Name (λ name'' → a₂ ≡ CS name'' × ¬ name' ≡ name × ¬ name'' ≡ name × names∈ren name' name'' r)
+    nm2 = updRel2-CSₗ→  ur
+
+    concl : ΣstepsUpdRel2 name f g (APPLY (CS name') b₁') w1 w1' (APPLY a₂ b₂) w r
+    concl rewrite fst (snd nm2) = →ΣstepsUpdRel2-APPLY₂ {name} {f} {g} {name'} {fst nm2} (fst (snd (snd nm2))) (fst (snd (snd (snd nm2)))) {!!} {!!} (snd (snd (snd (snd nm2)))) ind'
 ... |          inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-updRel2 cc gc {n} {name} {f} {g} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} {x} {w1} {w2} {w} {r} nnf nng cf cg comp ind (updRel2-APPLY a₁ a₂ b₁ b₂ ur ur₁) upw gtn nnw idom compat compat' wgt0 eqn | inj₂ q | inj₂ p with step⊎ a₁ w1
 ... | inj₁ (a₁' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
   {!!} --→ΣstepsUpdRel2-APPLY₁ r₁ ind'
   where
-    ind' : ΣstepsUpdRel2 name f g a₁' w1' a₂ w r
+    ind' : ΣstepsUpdRel2 name f g a₁' w1 w1' a₂ w r
     ind' = {!!} --step-updRel2 cc gc {n} {name} {f} {g} {a₁} {a₂} {a₁'} {w1} {w1'} {w} nnf nng cf cg z (stepsPresUpdRel2-APPLY₁→ ind) r upw gtn nnw idom compat compat' wgt0 eqn
 ... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-updRel2 cc gc {n} {name} {f} {g} {.(FIX a₁)} {.(FIX a₂)} {x} {w1} {w2} {w} {r} nnf nng cf cg comp ind (updRel2-FIX a₁ a₂ ur) upw gtn nnw idom compat compat' wgt0 eqn = {!!}
@@ -510,7 +584,7 @@ step-updRel2 cc gc {n} {name} {f} {g} {.(FRESH a)} {.(FRESH b)} {x} {w1} {w2} {w
       (¬0∈names-shiftNameUp f) (¬0∈names-shiftNameUp g)
       (λ x → suc-≢-0 (sym x)) ur) , -- we have to get force to contain name too, so that updRel2 relates terms with the same names
   →upto𝕎-startNewChoiceT cc name w1 w r a b upw ,
-  subRen-trans (newChoiceT w1 a) (newChoiceT w b) r r (subRen-refl r)
+  subRen-trans (newChoiceT w1 a) (newChoiceT w b) r r (¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a))) (¬fresh∈dom𝕎2 w (names𝕎· w) (↓vars (names b))) (subRen-refl r)
 step-updRel2 cc gc {n} {name} {f} {g} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} {x} {w1} {w2} {w} {r} nnf nng cf cg comp ind (updRel2-CHOOSE a₁ a₂ b₁ b₂ ur ur₁) upw gtn nnw idom compat compat' wgt0 eqn = {!!}
 step-updRel2 cc gc {n} {name} {f} {g} {.(TSQUASH a₁)} {.(TSQUASH a₂)} {x} {w1} {w2} {w} {r} nnf nng cf cg comp ind (updRel2-TSQUASH a₁ a₂ ur) upw gtn nnw idom compat compat' wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TSQUASH a₁ , TSQUASH a₂ , w1 , w , r , refl , refl , updRel2-TSQUASH _ _ ur , upw , subRen-refl r
 step-updRel2 cc gc {n} {name} {f} {g} {.(TTRUNC a₁)} {.(TTRUNC a₂)} {x} {w1} {w2} {w} {r} nnf nng cf cg comp ind (updRel2-TTRUNC a₁ a₂ ur) upw gtn nnw idom compat compat' wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TTRUNC a₁ , TTRUNC a₂ , w1 , w , r , refl , refl , updRel2-TTRUNC _ _ ur , upw , subRen-refl r
@@ -1126,5 +1200,5 @@ continuityQBody cn kb gc i w F f ∈F ∈f =
                    (#PAIR (#νtestMup F f) #lam3AX)
     h0 = equalInType-SUM (λ w' e' → eqTypesQNAT) (equalTypes-contQBodyPI i w F F f f ∈F ∈f) (Mod.∀𝕎-□ M aw)
 --}
-
+--}
 \end{code}
