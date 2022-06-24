@@ -98,18 +98,18 @@ open import continuity4b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 -- subRen r1 r2 means that r1 is a sub-renaming of r2
-data subRen (w1 w2 : 𝕎·) : ren → ren → Set where
-  subRen-refl : (r : ren) → subRen w1 w2 r r
+data subRen (l k : List Name) : ren → ren → Set where
+  subRen-refl : (r : ren) → subRen l k r r
   subRen-trans : (a b : Name) (r1 r2 : ren)
-                 → ¬ a ∈ dom𝕎· w1 -- The new names picked are 'fresh' names
-                 → ¬ b ∈ dom𝕎· w2
-                 → subRen w1 w2 r1 r2
-                 → subRen w1 w2 r1 ((a , b) ∷ r2)
+                 → ¬ a ∈ l -- The new names picked are 'fresh' names
+                 → ¬ b ∈ k
+                 → subRen l k r1 r2
+                 → subRen l k r1 ((a , b) ∷ r2)
 
 
 presUpdRel2 : (n : ℕ) (name : Name) (f g : Term) (k : ℕ) → Set(lsuc L)
 presUpdRel2 n name f g k =
-  {a b v : Term} {w1 w2 w : 𝕎·} {r : ren}
+  {a b v : Term} {w0 w1 w2 w : 𝕎·} {r : ren}
   → updRel2 name f g r a b
   → upto𝕎 name w1 w r
   → compatible· name w1 Res⊤
@@ -117,7 +117,9 @@ presUpdRel2 n name f g k =
   → ∀𝕎-get0-NUM w1 name
 -- We use ∀𝕎-⇓∼ℕ instead of strongMonEq because if g could change the target world, it could be used for...
 --  → ∀𝕎 w (λ w' _ → (k : ℕ) → k < n → ∀𝕎-⇓∼ℕ w' (APPLY f (NUM k)) (APPLY g (NUM k)))
-  → ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < n → strongMonEq w' (APPLY f (NUM k)) (APPLY g (NUM k)))
+  → w0 ⊑· w1
+  → w0 ⊑· w
+  → ∀𝕎 w0 (λ w' _ → (k : ℕ) → k < n → ⇛!sameℕ w' (APPLY f (NUM k)) (APPLY g (NUM k)))
   → (comp : steps k (a , w1) ≡ (v , w2))
   → isHighestℕ {k} {w1} {w2} {a} {v} n name comp
   → ∈names𝕎 {k} {w1} {w2} {a} {v} name comp
@@ -126,7 +128,7 @@ presUpdRel2 n name f g k =
       steps k' (b , w) ≡ (v' , w')
       × updRel2 name f g r' v v'
       × upto𝕎 name w2 w' r'
-      × subRen w1 w r r'))))
+      × subRen (dom𝕎· w1) (dom𝕎· w) r r'))))
 
 
 stepsPresUpdRel2 : (n : ℕ) (name : Name) (f g : Term) (b : Term) (w : 𝕎·) → Set(lsuc L)
@@ -148,7 +150,7 @@ stepsPresUpdRel2 n name f g b w =
     × steps k2 (b , w) ≡ (y2 , w')
     × updRel2 name f g r' y1 y2
     × upto𝕎 name w3 w' r'
-    × subRen w1 w r r')))))))
+    × subRen (dom𝕎· w1) (dom𝕎· w) r r')))))))
 
 
 

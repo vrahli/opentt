@@ -191,6 +191,14 @@ names𝕎-chooseT≡ = (name : Name) (w : 𝕎·) (t : Term)
 
 
 
+-- We require all choices to be name-free
+getT-names𝕎 : Set(L)
+getT-names𝕎 = (n : ℕ) (name : Name) (w : 𝕎·) (t : Term)
+               → getT n name w ≡ just t
+               → ¬Names t
+
+
+
 -- TODO derive dom𝕎-chooseT from this one
 dom𝕎-chooseT≡ : Set(L)
 dom𝕎-chooseT≡ = (name : Name) (w : 𝕎·) (t : Term)
@@ -307,7 +315,9 @@ sameRes w1 w2 =
 record ContConds : Set(1ℓ Level.⊔ L) where
   constructor mkContConds
   field
+    -- get axioms
     ccGnames    : getT∈names𝕎 --gsup
+    ccG¬names   : getT-names𝕎
     -- choose Axioms
     ccGcd       : get-choose-diff --gcd
 --    ccNchoose   : names𝕎-chooseT --sct
@@ -317,6 +327,7 @@ record ContConds : Set(1ℓ Level.⊔ L) where
 --    ccNstart   : ∈names𝕎·-startNewChoiceT→ --isn
 --    ccDchoose  : dom𝕎-chooseT
     ccDchoose≡  : dom𝕎-chooseT≡
+    ccGget      : →getT-chooseT
     -- Start axioms
     ccDstart    : dom𝕎-startNewChoiceT
     ccNchoice   : newChoiceT∈dom𝕎
@@ -324,7 +335,6 @@ record ContConds : Set(1ℓ Level.⊔ L) where
     ccD≡start   : ≡dom𝕎-start
     ccGstartd   : getT-startChoice-diff
     ccGstarts   : getT-startChoice-same
-    ccGget      : →getT-chooseT
     -- Compatibility axioms
     ccCchoose→  : compatible-chooseT→
     ccCchoose←  : →compatible-chooseT

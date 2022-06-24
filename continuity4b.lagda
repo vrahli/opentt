@@ -415,6 +415,52 @@ steps-decomp-isHighestℕ2 {w} {w1} {w2} {a} {b} {v} {suc n} {suc m} i name isv 
 
 
 
+updRel2-refl : {name : Name} {f g : Term} {r : ren} {a : Term}
+              → ¬names a ≡ true
+              → updRel2 name f g r a a
+updRel2-refl {name} {f} {g} {r} {VAR x} nn = updRel2-VAR _
+updRel2-refl {name} {f} {g} {r} {NAT} nn = updRel2-NAT
+updRel2-refl {name} {f} {g} {r} {QNAT} nn = updRel2-QNAT
+updRel2-refl {name} {f} {g} {r} {TNAT} nn = updRel2-TNAT
+updRel2-refl {name} {f} {g} {r} {LT a a₁} nn = updRel2-LT _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel2-refl {name} {f} {g} {r} {QLT a a₁} nn = updRel2-QLT _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel2-refl {name} {f} {g} {r} {NUM x} nn = updRel2-NUM _
+updRel2-refl {name} {f} {g} {r} {IFLT a a₁ a₂ a₃} nn = updRel2-IFLT _ _ _ _ _ _ _ _ (updRel2-refl (∧≡true→1-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel2-refl (∧≡true→2-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel2-refl (∧≡true→3-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel2-refl (∧≡true→4-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn))
+updRel2-refl {name} {f} {g} {r} {SUC a} nn = updRel2-SUC _ _ (updRel2-refl nn)
+updRel2-refl {name} {f} {g} {r} {PI a a₁} nn = updRel2-PI _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel2-refl {name} {f} {g} {r} {LAMBDA a} nn = updRel2-LAMBDA _ _ (updRel2-refl nn)
+updRel2-refl {name} {f} {g} {r} {APPLY a a₁} nn = updRel2-APPLY _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel2-refl {name} {f} {g} {r} {FIX a} nn = updRel2-FIX _ _ (updRel2-refl nn)
+updRel2-refl {name} {f} {g} {r} {LET a a₁} nn = updRel2-LET _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel2-refl {name} {f} {g} {r} {SUM a a₁} nn = updRel2-SUM _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel2-refl {name} {f} {g} {r} {PAIR a a₁} nn = updRel2-PAIR _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel2-refl {name} {f} {g} {r} {SPREAD a a₁} nn = updRel2-SPREAD _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel2-refl {name} {f} {g} {r} {SET a a₁} nn = updRel2-SET _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel2-refl {name} {f} {g} {r} {ISECT a a₁} nn = updRel2-ISECT _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel2-refl {name} {f} {g} {r} {TUNION a a₁} nn = updRel2-TUNION _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel2-refl {name} {f} {g} {r} {UNION a a₁} nn = updRel2-UNION _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel2-refl {name} {f} {g} {r} {QTUNION a a₁} nn = updRel2-QTUNION _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel2-refl {name} {f} {g} {r} {INL a} nn = updRel2-INL _ _ (updRel2-refl nn)
+updRel2-refl {name} {f} {g} {r} {INR a} nn = updRel2-INR _ _ (updRel2-refl nn)
+updRel2-refl {name} {f} {g} {r} {DECIDE a a₁ a₂} nn = updRel2-DECIDE _ _ _ _ _ _ (updRel2-refl (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updRel2-refl (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updRel2-refl (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} nn))
+updRel2-refl {name} {f} {g} {r} {EQ a a₁ a₂} nn = updRel2-EQ _ _ _ _ _ _ (updRel2-refl (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updRel2-refl (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updRel2-refl (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} nn))
+updRel2-refl {name} {f} {g} {r} {AX} nn = updRel2-AX
+updRel2-refl {name} {f} {g} {r} {FREE} nn = updRel2-FREE
+updRel2-refl {name} {f} {g} {r} {CHOOSE a a₁} nn = updRel2-CHOOSE _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel2-refl {name} {f} {g} {r} {TSQUASH a} nn = updRel2-TSQUASH _ _ (updRel2-refl nn)
+updRel2-refl {name} {f} {g} {r} {TTRUNC a} nn = updRel2-TTRUNC _ _ (updRel2-refl nn)
+updRel2-refl {name} {f} {g} {r} {TCONST a} nn = updRel2-TCONST _ _ (updRel2-refl nn)
+updRel2-refl {name} {f} {g} {r} {SUBSING a} nn = updRel2-SUBSING _ _ (updRel2-refl nn)
+updRel2-refl {name} {f} {g} {r} {PURE} nn = updRel2-PURE
+updRel2-refl {name} {f} {g} {r} {DUM a} nn = updRel2-DUM _ _ (updRel2-refl nn)
+updRel2-refl {name} {f} {g} {r} {FFDEFS a a₁} nn = updRel2-FFDEFS _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+updRel2-refl {name} {f} {g} {r} {UNIV x} nn = updRel2-UNIV x
+updRel2-refl {name} {f} {g} {r} {LIFT a} nn = updRel2-LIFT _ _ (updRel2-refl nn)
+updRel2-refl {name} {f} {g} {r} {LOWER a} nn = updRel2-LOWER _ _ (updRel2-refl nn)
+updRel2-refl {name} {f} {g} {r} {SHRINK a} nn = updRel2-SHRINK _ _ (updRel2-refl nn)
+
+
+
 {--
 updRel2-refl : {name : Name} {f g : Term} {r : ren} {a : Term}
                → ¬ name ∈ names a

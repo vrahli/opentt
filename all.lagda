@@ -34,6 +34,9 @@ module all {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
            (EB : ExBar W M)
        where
 
+-- Some relations between the example bar spaces
+open import subBar{L}(W)(M)(C)(K)(P)
+
 open import not_lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)(EM)(EB)
 -- This version requires choices to be Booleans:
