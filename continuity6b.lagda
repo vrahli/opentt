@@ -727,4 +727,187 @@ stepsPresUpdRel2-APPLY₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp ,
                           × k' < k))))
     hv = isHighestℕ2-APPLY₁→ {n} {k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv ish inw
 
+
+
+→¬0∈names-renn-0s : (n : Name) (a : Term) → ¬ 0 ∈ names (renn 0 (suc n) a)
+→¬0∈names-renn-0s n a i with ∈names-renn-same {0} {suc n} {a} i
+... | x , y = suc-≢-0 {n} (sym x)
+
+
+→∈↓vars : (n : Name) (l : List Name)
+           → suc n ∈ l
+           → n ∈ ↓vars l
+→∈↓vars n (x ∷ l) (here px) rewrite sym px = here refl
+→∈↓vars n (0 ∷ l) (there i) = there (→∈↓vars n l i)
+→∈↓vars n (suc x ∷ l) (there i) = there (→∈↓vars n l i)
+
+
+
+¬newChoiceT+∈names : (w : 𝕎·) (a : Term) → ¬ newChoiceT+ w a ∈ names a
+¬newChoiceT+∈names w a i =
+  snd (freshName (dom𝕎· w ++ names𝕎· w ++ ↓vars (names a)))
+      (∈-++⁺ʳ (dom𝕎· w) (∈-++⁺ʳ (names𝕎· w) (→∈↓vars (newChoiceT w a) (names a) i)))
+
+
+→¬newChoiceT+-suc : (name : Name) (w : 𝕎·) (a : Term)
+                     → name ∈ dom𝕎· w
+                     → ¬ newChoiceT+ w a ≡ suc name
+→¬newChoiceT+-suc name w a i j rewrite suc-injective (sym j) =
+  ¬fresh∈dom𝕎2 w (names𝕎· w) (↓vars (names a)) i
+
+
+
+
+isHighestℕ2-CHOOSE₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v : Term} {w w' : 𝕎·}
+                      → (comp : steps k (CHOOSE a b , w) ≡ (v , w'))
+                      → isValue v
+                      → isHighestℕ {k} {w} {w'} {CHOOSE a b} {v} n name comp
+                      → ∈names𝕎 {k} {w} {w'} {CHOOSE a b} {v} name comp
+                      → Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
+                          × ∈names𝕎 {k'} {w} {w''} {a} {u} name comp'
+                          × isValue u
+                          × k' < k))))
+isHighestℕ2-CHOOSE₁→ {n} {0} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h inw
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+isHighestℕ2-CHOOSE₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h inw with is-NAME a
+... | inj₁ (t , p) rewrite p = 0 , NAME t , w , refl , fst h , (fst inw , fst (snd inw)) , tt , _≤_.s≤s _≤_.z≤n
+... | inj₂ x with step⊎ a w
+... |    inj₁ (a0 , w0 , z) rewrite z =
+  suc (fst ind) , concl
+  where
+    ind : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a0 , w0) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
+                          × ∈names𝕎 {k'} {w0} {w''} {a0} {u} name comp'
+                          × isValue u
+                          × k' < k))))
+    ind = isHighestℕ2-CHOOSE₁→ {n} {k} {name} {f} {g} {a0} {b} {v} {w0} {w'} comp isv (snd h) (snd (snd inw))
+
+    concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
+                          × ∈names𝕎 {suc (fst ind)} {w} {w''} {a} {u} name comp'
+                          × isValue u
+                          × suc (fst ind) < suc k)))
+    concl rewrite z =
+      fst (snd ind) , fst (snd (snd ind)) , fst (snd (snd (snd ind))) ,
+      (fst h , fst (snd (snd (snd (snd ind))))) ,
+      (fst inw , fst (snd inw) , fst (snd (snd (snd (snd (snd ind)))))) ,
+      fst (snd (snd (snd (snd (snd (snd ind)))))) ,
+      _≤_.s≤s (snd (snd (snd (snd (snd (snd (snd ind)))))))
+... |    inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+
+
+
+stepsPresUpdRel2-CHOOSE₁→ : {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w : 𝕎·}
+                           → stepsPresUpdRel2 n name f g (CHOOSE a b) w
+                           → stepsPresUpdRel2 n name f g a w
+stepsPresUpdRel2-CHOOSE₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , isv , ish , inw , ind) =
+  fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
+  fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
+  fst (snd (snd (snd (snd (snd hv))))) ,
+  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+  where
+    hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
+                          × ∈names𝕎 {k'} {w} {w''} {a} {u} name comp'
+                          × isValue u
+                          × k' < k))))
+    hv = isHighestℕ2-CHOOSE₁→ {n} {k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv ish inw
+
+
+
+→ΣstepsUpdRel2-CHOOSE₁ : {name : Name} {f g : Term} {r : ren} {a₁ a₂ b₁ b₂ : Term} {w0 w1 w : 𝕎·}
+                         → names b₁ ⊆ dom𝕎· w0
+                         → names b₂ ⊆ dom𝕎· w
+                         → updRel2 name f g r b₁ b₂
+                         → ΣstepsUpdRel2 name f g a₁ w0 w1 a₂ w r
+                         → ΣstepsUpdRel2 name f g (CHOOSE a₁ b₁) w0 w1 (CHOOSE a₂ b₂) w r
+→ΣstepsUpdRel2-CHOOSE₁ {name} {f} {g} {r} {a₁} {a₂} {b₁} {b₂} {w0} {w1} {w} nd1 nd2 updb (k1 , k2 , y1 , y2 , w3 , w' , r' , comp1 , comp2 , ur , upw , sub) =
+  fst comp1' , fst comp2' , CHOOSE y1 b₁ , CHOOSE y2 b₂ , w3 , w' , r' , snd comp1' , snd comp2' ,
+  updRel2-CHOOSE
+    _ _ _ _ ur
+    (updRel2-ren-mon {name} {f} {g} {r} {r'} {b₁} {b₂} {dom𝕎· w0} {dom𝕎· w} sub nd1 nd2 updb) ,
+  upw , sub
+  where
+    comp1' : CHOOSE a₁ b₁ ⇓ CHOOSE y1 b₁ from w1 to w3
+    comp1' = CHOOSE⇓steps k1 b₁ comp1
+
+    comp2' : CHOOSE a₂ b₂ ⇓ CHOOSE y2 b₂ from w to w'
+    comp2' = CHOOSE⇓steps k2 b₂ comp2
+
+
+updRel2-NAMEₗ→ : {name : Name} {f g : Term} {r : ren} {n : Name} {a : Term}
+               → updRel2 name f g r (NAME n) a
+               → Σ Name (λ n' → a ≡ NAME n' × ¬ n ≡ name × ¬ n' ≡ name × names∈ren n n' r)
+updRel2-NAMEₗ→ {name} {f} {g} {r} {n} {NAME n'} (updRel2-NAME .n .n' d1 d2 x) = n' , refl , d1 , d2 , x
+
+
+
+names∈ren→≡ : (name name1 name2 : Name) (r : ren)
+               → names∈ren name name1 r
+               → names∈ren name name2 r
+               → name1 ≡ name2
+names∈ren→≡ name name1 name2 [] i1 i2 rewrite sym i1 | sym i2 = refl
+names∈ren→≡ name name1 name2 ((a , b) ∷ r) (inj₁ (x₁ , y₁)) (inj₁ (x₂ , y₂)) rewrite x₁ | x₂ | y₁ | y₂ = refl
+names∈ren→≡ name name1 name2 ((a , b) ∷ r) (inj₁ (x₁ , y₁)) (inj₂ (x₂ , y₂ , z₂)) rewrite x₁ = ⊥-elim (x₂ refl)
+names∈ren→≡ name name1 name2 ((a , b) ∷ r) (inj₂ (x₁ , y₁ , z₁)) (inj₁ (x₂ , y₂)) rewrite x₂ = ⊥-elim (x₁ refl)
+names∈ren→≡ name name1 name2 ((a , b) ∷ r) (inj₂ (x₁ , y₁ , z₁)) (inj₂ (x₂ , y₂ , z₂)) = names∈ren→≡ name name1 name2 r z₁ z₂
+
+
+
+names∈ren→≡-rev : (name name1 name2 : Name) (r : ren)
+                  → names∈ren name1 name r
+                  → names∈ren name2 name r
+                  → name1 ≡ name2
+names∈ren→≡-rev name name1 name2 [] i1 i2 rewrite sym i1 | sym i2 = refl
+names∈ren→≡-rev name name1 name2 ((a , b) ∷ r) (inj₁ (x₁ , y₁)) (inj₁ (x₂ , y₂)) rewrite x₁ | x₂ | y₁ | y₂ = refl
+names∈ren→≡-rev name name1 name2 ((a , b) ∷ r) (inj₁ (x₁ , y₁)) (inj₂ (x₂ , y₂ , z₂)) rewrite y₁ = ⊥-elim (y₂ refl)
+names∈ren→≡-rev name name1 name2 ((a , b) ∷ r) (inj₂ (x₁ , y₁ , z₁)) (inj₁ (x₂ , y₂)) rewrite y₂ = ⊥-elim (y₁ refl)
+names∈ren→≡-rev name name1 name2 ((a , b) ∷ r) (inj₂ (x₁ , y₁ , z₁)) (inj₂ (x₂ , y₂ , z₂)) = names∈ren→≡-rev name name1 name2 r z₁ z₂
+
+
+→wfRen-chooseT : (cc : ContConds) (name1 name2 : Name) (w1 w2 : 𝕎·) (r : ren) (t : Term)
+                   → wfRen w1 w2 r
+                   → wfRen (chooseT name1 w1 t) (chooseT name2 w2 t) r
+→wfRen-chooseT cc name1 name2 w1 w2 r t (mkWfRen dl dr nl nr) =
+  mkWfRen
+    (λ n i → dom𝕎-chooseT cc n name1 w1 t (dl n i))
+    (λ n i → dom𝕎-chooseT cc n name2 w2 t (dr n i))
+    nl
+    nr
+
+
+
+→upto𝕎getT-chooseT : (cc : ContConds) (name name1 name2 : Name) (w1 w2 : 𝕎·) (r : ren) (t : Term)
+                       → name1 ∈ dom𝕎· w1
+                       → name2 ∈ dom𝕎· w2
+                       → ¬ name1 ≡ name
+                       → ¬ name2 ≡ name
+                       → names∈ren name1 name2 r
+                       → upto𝕎getT name w1 w2 r
+                       → upto𝕎getT name (chooseT name1 w1 t) (chooseT name2 w2 t) r
+→upto𝕎getT-chooseT cc name name1 name2 w1 w2 r t nd1 nd2 nn1 nn2 ir h n1 n2 k d1 d2 i with n1 ≟ name1
+... | yes q rewrite q | names∈ren→≡ name1 n2 name2 r i ir =
+  ContConds.ccGget cc name1 name2 w1 w2 t k nd1 nd2 (λ z → h name1 name2 z d1 d2 ir)
+... | no q with n2 ≟ name2
+... |    yes p rewrite p | names∈ren→≡-rev name2 n1 name1 r i ir = ⊥-elim (q refl)
+... |    no p rewrite ContConds.ccGcd cc k n1 name1 w1 t q | ContConds.ccGcd cc k n2 name2 w2 t p =
+  h n1 n2 k d1 d2 i
+--  rewrite ContConds.ccGcd cc k n1 name w1 (NUM m) d1 = h n1 n2 k d1 d2 i
+
+
+
+→upto𝕎-chooseT : (cc : ContConds) {name name1 name2 : Name} {r : ren} {w1 w2 : 𝕎·} (t : Term)
+                   → name1 ∈ dom𝕎· w1
+                   → name2 ∈ dom𝕎· w2
+                   → ¬ name1 ≡ name
+                   → ¬ name2 ≡ name
+                   → names∈ren name1 name2 r
+                   → upto𝕎 name w1 w2 r
+                   → upto𝕎 name (chooseT name1 w1 t) (chooseT name2 w2 t) r
+→upto𝕎-chooseT cc {name} {name1} {name2} {r} {w1} {w2} t nd1 nd2 d1 d2 ir (mkUpto𝕎 wf upw) =
+  mkUpto𝕎
+    (→wfRen-chooseT cc name1 name2 w1 w2 r t wf )
+    (→upto𝕎getT-chooseT cc name name1 name2 w1 w2 r t nd1 nd2 d1 d2 ir upw)
+
 \end{code}
