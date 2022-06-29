@@ -77,10 +77,14 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
+{--
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--}
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+{--
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--}
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
@@ -88,7 +92,9 @@ open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+{--
 open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--}
 
 open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -198,6 +204,11 @@ upto𝕎-chooseT0if cc name w1 w2 r n m (mkUpto𝕎 wf upw) with n <? m
                      → compatible· name w Res⊤
                      → ∀𝕎-get0-NUM w1 name
                      → updRel2 name f g r a b
+                     → names a ⊆ dom𝕎· w1
+                     → names b ⊆ dom𝕎· w
+                     → name ∈ dom𝕎· w
+                     → names f ⊆ dom𝕎· w1
+                     → names g ⊆ dom𝕎· w
                      → upto𝕎 name w1 w r
                      → w0 ⊑· w1
                      → w0 ⊑· w
@@ -205,7 +216,7 @@ upto𝕎-chooseT0if cc name w1 w2 r n m (mkUpto𝕎 wf upw) with n <? m
                      → stepsPresUpdRel2 n name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1
                      → Σ (ΣstepsUpdRel2 name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 w1 (APPLY (force g) b) w r)
                           (λ x → 0 < fst (snd x))
-→ΣstepsUpdRel2-upd cc gc {n} {name} {f} {g} {a} {b} {w0} {w1} {w} {r} nnf cf cg compat compat' wgt0 u upw ew01 ew0 eqn (k , v , w2 , comp , isv , ish , inw , ind) =
+→ΣstepsUpdRel2-upd cc gc {n} {name} {f} {g} {a} {b} {w0} {w1} {w} {r} nnf cf cg compat compat' wgt0 u naid nbid niw nfiw ngiw upw ew01 ew0 eqn (k , v , w2 , comp , isv , ish , inw , ind) =
   (k2 + k3 , k5 + k6 , NUM i , NUM i , w1a , w1b {--w1a--} , r' , comp2b , compgc , updRel2-NUM i , upw2 , sub' {--upto𝕎-sym name w1a w1a' upw2--}) ,
   steps-APPLY-val→ {k5 + k6} {force g} {b} {NUM i} {w} {w1b} tt compgc
   where
@@ -267,7 +278,7 @@ upto𝕎-chooseT0if cc name w1 w2 r n m (mkUpto𝕎 wf upw) with n <? m
     inw1 = ∈names𝕎-LET→ {k1} {k} {name} {a} {SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))} {NUM m} {v} {w1} {w1'} {w2} comp1b comp isv inw
 
     indb : Σ ℕ (λ k' → Σ 𝕎· (λ w' → Σ ren (λ r' → steps k' (b , w) ≡ (NUM m , w') × upto𝕎 name w1' w' r' × subRen (dom𝕎· w1) (dom𝕎· w) r r')))
-    indb = Σsteps-updRel2-NUM→ (ind k1 (<⇒≤ ltk1) {a} {b} {NUM m} {w0} {w1} {w1'} {w} {r} u upw compat compat' wgt0 ew01 ew0 eqn comp1b ish1 inw1 tt)
+    indb = Σsteps-updRel2-NUM→ (ind k1 (<⇒≤ ltk1) {a} {b} {NUM m} {w0} {w1} {w1'} {w} {r} u naid nbid niw nfiw ngiw upw compat compat' wgt0 ew01 ew0 eqn comp1b ish1 inw1 tt)
 
     k4 : ℕ
     k4 = fst indb

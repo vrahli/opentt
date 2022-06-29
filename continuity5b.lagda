@@ -111,6 +111,11 @@ presUpdRel2 : (n : ℕ) (name : Name) (f g : Term) (k : ℕ) → Set(lsuc L)
 presUpdRel2 n name f g k =
   {a b v : Term} {w0 w1 w2 w : 𝕎·} {r : ren}
   → updRel2 name f g r a b
+  → names a ⊆ dom𝕎· w1
+  → names b ⊆ dom𝕎· w
+  → name ∈ dom𝕎· w
+  → names f ⊆ dom𝕎· w1
+  → names g ⊆ dom𝕎· w
   → upto𝕎 name w1 w r
   → compatible· name w1 Res⊤
   → compatible· name w Res⊤

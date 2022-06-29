@@ -101,8 +101,8 @@ open import continuity6b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity7b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
-{--
-steps-updRel2-aux : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term}
+
+steps-updRel2-aux : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term}
                    → ¬ name ∈ names f
                    → ¬ name ∈ names g
                    → # f
@@ -110,12 +110,12 @@ steps-updRel2-aux : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term}
                    → (k : ℕ)
                    → (ind : (k' : ℕ) → k' < k → presUpdRel2 n name f g k')
                    → presUpdRel2 n name f g k
-steps-updRel2-aux gc {n} {name} {f} {g} nnf nng cf cg naid nbid 0 ind {a} {b} {v} {w0} {w1} {w2} {w} r compat wgt0 eqw comp ish inw isv
-  rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = 0 , b , refl , r
-steps-updRel2-aux gc {n} {name} {f} {g} nnf nng cf cg naid nbid (suc k) ind {a} {b} {v} {w0} {w1} {w2} {w} r compat wgt0 eqw comp ish inw isv
+steps-updRel2-aux cc gc {n} {name} {f} {g} nnf nng cf cg 0 ind {a} {b} {v} {w0} {w1} {w2} {w} {r} ur naid nbid niw nfiw ngiw upw compat compat' wgt0 ew01 ew0 eqw comp ish inw isv
+  rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = 0 , b , w , r , refl , ur , upw , subRen-refl r
+steps-updRel2-aux cc gc {n} {name} {f} {g} nnf nng cf cg (suc k) ind {a} {b} {v} {w0} {w1} {w2} {w} {r} ur naid nbid niw nfiw ngiw upw compat compat' wgt0 ew01 ew0 eqw comp ish inw isv
   with step⊎ a w1
 ... | inj₁ (a' , w1' , z) rewrite z =
-  k2 + k4 , v' , steps-trans+ {k2} {k4} {b} {y2} {v'} {w} {w} {w} comp2 comp4 , ur'
+  {!!} -- k2 + k4 , v' , steps-trans+ {k2} {k4} {b} {y2} {v'} {w} {w} {w} comp2 comp4 , ur'
   where
     ind0 : (k' : ℕ) → k' < suc k → presUpdRel2 n name f g k'
     ind0 = ind
@@ -126,8 +126,8 @@ steps-updRel2-aux gc {n} {name} {f} {g} nnf nng cf cg naid nbid (suc k) ind {a} 
     spres : stepsPresUpdRel2 n name f g a' w1'
     spres = k , v , w2 , comp , isv , snd ish , snd (snd inw) , ind1
 
-    s : ΣstepsUpdRel2 name f g a' w1' b w
-    s = step-updRel2 cc gc {n} {name} {f} {g} {a} {b} {a'} {w1} {w1'} {w} nnf nng cf cg naid nbid z spres r (fst ish) (fst inw) (fst (snd inw)) compat wgt0 eqw
+    s : ΣstepsUpdRel2 name f g a' w1 w1' b w r
+    s = step-updRel2 cc gc {n} {name} {f} {g} {a} {b} {a'} {w0} {w1} {w1'} {w} {r} nnf nng cf cg naid nbid nfiw ngiw z spres ur upw (fst ish) (fst inw) (fst (snd inw)) niw compat compat' wgt0 ew01 ew0 eqw
 
     k1 : ℕ
     k1 = fst s
@@ -144,14 +144,26 @@ steps-updRel2-aux gc {n} {name} {f} {g} nnf nng cf cg naid nbid (suc k) ind {a} 
     w3 : 𝕎·
     w3 = fst (snd (snd (snd (snd s))))
 
+    w' : 𝕎·
+    w' = fst (snd (snd (snd (snd (snd s)))))
+
+    r' : ren
+    r' = fst (snd (snd (snd (snd (snd (snd s))))))
+
     comp1 : steps k1 (a' , w1') ≡ (y1 , w3)
-    comp1 = fst (snd (snd (snd (snd (snd s)))))
+    comp1 = fst (snd (snd (snd (snd (snd (snd (snd s)))))))
 
-    comp2 : steps k2 (b , w) ≡ (y2 , w)
-    comp2 = fst (snd (snd (snd (snd (snd (snd s))))))
+    comp2 : steps k2 (b , w) ≡ (y2 , w')
+    comp2 = fst (snd (snd (snd (snd (snd (snd (snd (snd s))))))))
 
-    ur : updRel2 name f g y1 y2
-    ur = snd (snd (snd (snd (snd (snd (snd s))))))
+    ur' : updRel2 name f g r' y1 y2
+    ur' = fst (snd (snd (snd (snd (snd (snd (snd (snd (snd s)))))))))
+
+    upw' : upto𝕎 name w3 w' r'
+    upw' = fst (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd s))))))))))
+
+    sub' : subRen (dom𝕎· w1) (dom𝕎· w) r r'
+    sub' = snd (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd s))))))))))
 
     q : Σ ℕ (λ k3 → k3 ≤ k × Σ (steps k3 (y1 , w3) ≡ (v , w2)) (λ comp' →
                   (isHighestℕ {k} {w1'} {w2} {a'} {v} n name comp
@@ -178,9 +190,21 @@ steps-updRel2-aux gc {n} {name} {f} {g} nnf nng cf cg naid nbid (suc k) ind {a} 
     e3 : w1 ⊑· w3
     e3 = ⊑-trans· (step⊑ {w1} {w1'} {a} {a'} z) (steps→⊑ k1 a' y1 {w1'} {w3} comp1)
 
-    c : Σ ℕ (λ k' → Σ Term (λ v' → steps k' (y2 , w) ≡ (v' , w) × updRel2 name f g v v'))
-    c = ind1 k3 ltk2 {y1} {y2} {v} {w3} {w2} {w} ur (⊑-compatible· e3 compat) (∀𝕎-mon e3 wgt0) (∀𝕎-mon e3 eqw) comp3 ish' inw' isv
+    e4 : w ⊑· w'
+    e4 = steps→⊑ k2 b y2 {w} {w'} comp2
 
+    c : Σ ℕ (λ k' → Σ Term (λ v' → Σ 𝕎· (λ w'' → Σ ren (λ r'' →
+          steps k' (y2 , w') ≡ (v' , w'')
+          × updRel2 name f g r'' v v'
+          × upto𝕎 name w2 w'' r''
+          × subRen (dom𝕎· w3) (dom𝕎· w') r' r''))))
+    c = ind1 k3 ltk2 {y1} {y2} {v} {w0} {w3} {w2} {w'}
+             ur' {!!} {!!} {!!} {!!} {!!} upw'
+             (⊑-compatible· e3 compat) (⊑-compatible· e4 compat')
+             (∀𝕎-mon e3 wgt0) (⊑-trans· ew01 e3) (⊑-trans· ew0 e4)
+             eqw comp3 ish' inw' isv
+
+{--
     k4 : ℕ
     k4 = fst c
 
@@ -192,9 +216,9 @@ steps-updRel2-aux gc {n} {name} {f} {g} nnf nng cf cg naid nbid (suc k) ind {a} 
 
     ur' : updRel2 name f g v v'
     ur' = snd (snd (snd c))
+--}
 ... | inj₂ z rewrite z | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) | stepVal a w1 isv =
   ⊥-elim (¬just≡nothing z)
---}
 
 
 eqfgq-aux : (cc : ContConds) (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
