@@ -1,4 +1,5 @@
 \begin{code}
+{-# OPTIONS --rewriting #-}
 
 -- This is similar to ind.lagda, but instead of breaking the □· abstraction, here we use a bar operator.
 -- However, one problem is that Agda does not recognize now that the function terminates, and I'm therefore

@@ -1,4 +1,5 @@
 \begin{code}
+{-# OPTIONS --rewriting #-}
 
 --open import bar
 --module type_sys_props_ffdefs (bar : Bar) where

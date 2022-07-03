@@ -461,11 +461,12 @@ steps-sat-isHighestℕ2-aux cc gc {name} {f} nnf cf (suc k) ind {w1} {w2} {a} {b
 
 
 
--- We also need something about the way f computes as for the proof about 'differ'
-steps-sat-isHighestℕ2 : (cc : ContConds) (gc : get-choose-ℕ) {name : Name} {f : Term} {k : ℕ}
+abstract
+  -- We also need something about the way f computes as for the proof about 'differ'
+  steps-sat-isHighestℕ2 : (cc : ContConds) (gc : get-choose-ℕ) {name : Name} {f : Term} {k : ℕ}
                         → ¬ name ∈ names f
                         → # f
                         → presHighestℕ2 name f k
-steps-sat-isHighestℕ2 cc gc {name} {f} {k} nnf cf = <ℕind _ (steps-sat-isHighestℕ2-aux cc gc {name} {f} nnf cf) k
+  steps-sat-isHighestℕ2 cc gc {name} {f} {k} nnf cf = <ℕind _ (steps-sat-isHighestℕ2-aux cc gc {name} {f} nnf cf) k
 
 \end{code}

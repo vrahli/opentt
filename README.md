@@ -12,7 +12,7 @@ theory.
 
 ### Compilation
 
-Compile `all.lagda` to compile all files.
+Compile `all.lagda` to compile all files. It compiles with Agda version 2.6.2.2.
 
 ### Formalization
 

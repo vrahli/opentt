@@ -743,7 +743,8 @@ testM⇓→ cn {w1} {w2} {F} {f} {n} {name} cF cf compat comp =
   = k , comp
 
 
-νtestM⇓→ : (cn : comp→∀ℕ) {w1 w2 : 𝕎·} {F f : Term} {n : ℕ}
+abstract
+  νtestM⇓→ : (cn : comp→∀ℕ) {w1 w2 : 𝕎·} {F f : Term} {n : ℕ}
              → # F
              → # f
              → νtestMup F f ⇓ NUM n from w1 to w2
@@ -753,41 +754,41 @@ testM⇓→ cn {w1} {w2} {F} {f} {n} {name} cF cf compat comp =
                  × getT 0 (newChoiceT w1 (testMup 0 F f)) w2 ≡ just (NUM k)
                  × n ≡ suc k
                  × compatible· (newChoiceT w1 (testMup 0 F f)) (startNewChoiceT Res⊤ w1 (testMup 0 F f)) Res⊤))
-νtestM⇓→ cn {w1} {w2} {F} {f} {n} cF cf comp =
-  --newChoiceT w1 (testMup 0 F f) ,
-  fst comp3 ,
-  fst (snd comp3) ,
-  fst (snd (snd comp3)) ,
-  fst (snd (snd (snd comp3))) ,
-  fst (snd (snd (snd (snd (snd comp3))))) ,
-  NUMinj (snd (snd (snd (snd (snd (snd comp3)))))) ,
-  compat1
-  where
-    name : Name
-    name = newChoiceT w1 (testMup 0 F f)
+  νtestM⇓→ cn {w1} {w2} {F} {f} {n} cF cf comp =
+    --newChoiceT w1 (testMup 0 F f) ,
+    fst comp3 ,
+    fst (snd comp3) ,
+    fst (snd (snd comp3)) ,
+    fst (snd (snd (snd comp3))) ,
+    fst (snd (snd (snd (snd (snd comp3))))) ,
+    NUMinj (snd (snd (snd (snd (snd (snd comp3)))))) ,
+    compat1
+    where
+      name : Name
+      name = newChoiceT w1 (testMup 0 F f)
 
-    w1' : 𝕎·
-    w1' = startNewChoiceT Res⊤ w1 (testMup 0 F f)
+      w1' : 𝕎·
+      w1' = startNewChoiceT Res⊤ w1 (testMup 0 F f)
 
-    comp1 : testM name F f ⇓ NUM n from w1' to w2
-    comp1 = νtestM⇓→step' cF cf tt comp
+      comp1 : testM name F f ⇓ NUM n from w1' to w2
+      comp1 = νtestM⇓→step' cF cf tt comp
 
-    w1'' : 𝕎·
-    w1'' = chooseT name w1' (NUM 0)
+      w1'' : 𝕎·
+      w1'' = chooseT name w1' (NUM 0)
 
-    comp2 : probeM name F f ⇓ NUM n from w1'' to w2
-    comp2 = testM⇓→step tt comp1
+      comp2 : probeM name F f ⇓ NUM n from w1'' to w2
+      comp2 = testM⇓→step tt comp1
 
-    compat1 : compatible· name w1' Res⊤
-    compat1 = startChoiceCompatible· Res⊤ w1 name (¬newChoiceT∈dom𝕎 w1 (testMup 0 F f))
+      compat1 : compatible· name w1' Res⊤
+      compat1 = startChoiceCompatible· Res⊤ w1 name (¬newChoiceT∈dom𝕎 w1 (testMup 0 F f))
 
-    comp3 : Σ Term (λ u → Σ ℕ (λ k →
+      comp3 : Σ Term (λ u → Σ ℕ (λ k →
                appUpd name F f ⇓ u from w1'' to w2
                × isValue u
                × get0 name ⇓ NUM k from w2 to w2
                × getT 0 name w2 ≡ just (NUM k)
                × NUM n ≡ NUM (suc k)))
-    comp3 = probeM⇓-decomp name F f (NUM n) w1'' w2 comp2 tt (cn name w1' 0 compat1)
+      comp3 = probeM⇓-decomp name F f (NUM n) w1'' w2 comp2 tt (cn name w1' 0 compat1)
 
 
 
@@ -862,7 +863,8 @@ isHighestFreshℕ→≤ cn F f cF cf {n1} {w1} {w1'} {suc k1} comp1 n2 ish
     compat = startChoiceCompatible· Res⊤ w1 name (¬newChoiceT∈dom𝕎 w1 (testMup 0 F f))
 
 
-smallestModAux→NATeq : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
+abstract
+  smallestModAux→NATeq : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
       {i : ℕ} {w : 𝕎·} {F f g : CTerm} {w1 : 𝕎·} {e1 : w ⊑· w1}
       (∈F : ∈Type i w #BAIRE→NAT F)
       (∈f : ∈Type i w #BAIRE f)
@@ -873,24 +875,24 @@ smallestModAux→NATeq : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
       → Σ ℕ (λ n → Σ 𝕎· (λ w2 → #νtestMup F f #⇓ #NUM n from w1 to w2
                    × ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < n
                                     → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))))
-smallestModAux→NATeq cn kb gc {i} {w} {F} {f} {g} {w1} {e1} ∈F ∈f sma h =
-  fst h1 , fst (snd h1) , snd (snd h1) , concl
-  where
-    h1 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w1 to w'))
-    h1 = νtestMup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
+  smallestModAux→NATeq cn kb gc {i} {w} {F} {f} {g} {w1} {e1} ∈F ∈f sma h =
+    fst h1 , fst (snd h1) , snd (snd h1) , concl
+    where
+      h1 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w1 to w'))
+      h1 = νtestMup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
 
-    concl : ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < fst h1 → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
-    concl w1' e1' k ltk = h w1' (⊑-trans· e1 e1') k q
-      where
-         q : ∀𝕎 w1' (λ w'' _ → Lift (lsuc L) (Σ ℕ (λ n → #νtestMup F f #⇓ #NUM n at w'' × k < n)))
-         q w1'' e1'' = lift (fst h2 , ⇓-from-to→⇓ (snd (snd h2)) , <-transˡ ltk (isHighestFreshℕ→≤ cn ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f) {_} {w1} {fst (snd h1)} {fst (snd (snd h1))} (snd (snd (snd h1))) (fst h2) hst))
-           where
-             h2 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w1'' to w'))
-             h2 = νtestMup⇓ℕ cn kb gc i w1'' F f (equalInType-mon ∈F w1'' (⊑-trans· e1 (⊑-trans· e1' e1''))) (equalInType-mon ∈f w1'' (⊑-trans· e1 (⊑-trans· e1' e1'')))
+      concl : ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < fst h1 → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
+      concl w1' e1' k ltk = h w1' (⊑-trans· e1 e1') k q
+        where
+          q : ∀𝕎 w1' (λ w'' _ → Lift (lsuc L) (Σ ℕ (λ n → #νtestMup F f #⇓ #NUM n at w'' × k < n)))
+          q w1'' e1'' = lift (fst h2 , ⇓-from-to→⇓ (snd (snd h2)) , <-transˡ ltk (isHighestFreshℕ→≤ cn ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f) {_} {w1} {fst (snd h1)} {fst (snd (snd h1))} (snd (snd (snd h1))) (fst h2) hst))
+            where
+              h2 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w1'' to w'))
+              h2 = νtestMup⇓ℕ cn kb gc i w1'' F f (equalInType-mon ∈F w1'' (⊑-trans· e1 (⊑-trans· e1' e1''))) (equalInType-mon ∈f w1'' (⊑-trans· e1 (⊑-trans· e1' e1'')))
 
-             hst : isHighestFreshℕ {fst (snd (snd h1))} {w1} {fst (snd h1)} {testMup 0 ⌜ F ⌝ ⌜ f ⌝}
-                                    {NUM (fst h1)} (fst h2) (snd (snd (snd h1)))
-             hst = lower (sma w1'' (⊑-trans· e1 (⊑-trans· e1' e1'')))
+              hst : isHighestFreshℕ {fst (snd (snd h1))} {w1} {fst (snd h1)} {testMup 0 ⌜ F ⌝ ⌜ f ⌝}
+                                     {NUM (fst h1)} (fst h2) (snd (snd (snd h1)))
+              hst = lower (sma w1'' (⊑-trans· e1 (⊑-trans· e1' e1'')))
 
 
 

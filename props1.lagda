@@ -1,4 +1,5 @@
 \begin{code}
+{-# OPTIONS --rewriting #-}
 
 --open import bar
 --module props1 (bar : Bar) where

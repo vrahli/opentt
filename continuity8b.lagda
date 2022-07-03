@@ -102,7 +102,283 @@ open import continuity7b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 
-steps-updRel2-aux : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term}
+∈names-shiftNameDown-renn+→ : (name : Name) (t : Term) (w : 𝕎·)
+                               → name ∈ names (shiftNameDown 0 (renn 0 (newChoiceT+ w t) t))
+                               → suc name ∈ names t ⊎ name ≡ newChoiceT w t
+∈names-shiftNameDown-renn+→ name t w i with name ≟ newChoiceT w t
+... | yes p = inj₂ p
+... | no p =
+  inj₁ (∈names-shiftNameDown-renn→
+          name (newChoiceT+ w t) t
+          (_≤_.s≤s _≤_.z≤n)
+          (λ q → p (suc-injective q))
+          i)
+
+
+names-sub⊆ : (a b : Term) → names (sub a b) ⊆ names a ++ names b
+names-sub⊆ a b {x} i with Name∈⊎ x (names a) | Name∈⊎ x (names b)
+... | inj₁ p | inj₁ q = ∈-++⁺ˡ p
+... | inj₁ p | inj₂ q = ∈-++⁺ˡ p
+... | inj₂ p | inj₁ q = ∈-++⁺ʳ (names a) q
+... | inj₂ p | inj₂ q = ⊥-elim (¬∈names-sub {x} {a} {b} p q i)
+
+
+¬names→[] : (a : Term) → ¬names a ≡ true → names a ≡ []
+¬names→[] (VAR x₁) x = refl
+¬names→[] NAT x = refl
+¬names→[] QNAT x = refl
+¬names→[] TNAT x = refl
+¬names→[] (LT a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
+¬names→[] (QLT a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
+¬names→[] (NUM x₁) x = refl
+¬names→[] (IFLT a a₁ a₂ a₃) x rewrite ¬names→[] a (∧≡true→1-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} x) | ¬names→[] a₁ (∧≡true→2-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} x) | ¬names→[] a₂ (∧≡true→3-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} x) | ¬names→[] a₃ (∧≡true→4-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} x) = refl
+¬names→[] (SUC a) x = ¬names→[] a x
+¬names→[] (PI a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
+¬names→[] (LAMBDA a) x = ¬names→[] a x
+¬names→[] (APPLY a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
+¬names→[] (FIX a) x = ¬names→[] a x
+¬names→[] (LET a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
+¬names→[] (SUM a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
+¬names→[] (PAIR a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
+¬names→[] (SPREAD a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
+¬names→[] (SET a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
+¬names→[] (TUNION a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
+¬names→[] (ISECT a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
+¬names→[] (UNION a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
+¬names→[] (QTUNION a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
+¬names→[] (INL a) x = ¬names→[] a x
+¬names→[] (INR a) x = ¬names→[] a x
+¬names→[] (DECIDE a a₁ a₂) x rewrite ¬names→[] a (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} x) | ¬names→[] a₁ (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} x) | ¬names→[] a₂ (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} x) = refl
+¬names→[] (EQ a a₁ a₂) x rewrite ¬names→[] a (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} x) | ¬names→[] a₁ (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} x) | ¬names→[] a₂ (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} x) = refl
+¬names→[] AX x = refl
+¬names→[] FREE x = refl
+¬names→[] (CHOOSE a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
+¬names→[] (TSQUASH a) x = ¬names→[] a x
+¬names→[] (TTRUNC a) x = ¬names→[] a x
+¬names→[] (TCONST a) x = ¬names→[] a x
+¬names→[] (SUBSING a) x = ¬names→[] a x
+¬names→[] (DUM a) x = ¬names→[] a x
+¬names→[] (FFDEFS a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
+¬names→[] PURE x = refl
+¬names→[] (UNIV x₁) x = refl
+¬names→[] (LIFT a) x = ¬names→[] a x
+¬names→[] (LOWER a) x = ¬names→[] a x
+¬names→[] (SHRINK a) x = ¬names→[] a x
+
+
+step-pres-dom : (cc : ContConds) {a b : Term} {w1 w2 : 𝕎·}
+                → step a w1 ≡ just (b , w2)
+                → names a ⊆ dom𝕎· w1
+                → names b ⊆ dom𝕎· w2 × dom𝕎· w1 ⊆ dom𝕎· w2
+step-pres-dom cc {NAT} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {QNAT} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {TNAT} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {LT a a₁} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {QLT a a₁} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {NUM x} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {IFLT a a₁ a₂ a₃} {b} {w1} {w2} comp ss with is-NUM a
+... | inj₁ (n , p) rewrite p with is-NUM a₁
+... |    inj₁ (m , q) rewrite q with n <? m
+... |       yes r rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ++⊆2→1 {names a₂} {names a₃} {dom𝕎· w1} ss , λ {x} i → i --ret c w
+... |       no r rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ++⊆2→2 {names a₂} {names a₃} {dom𝕎· w1} ss , λ {x} i → i --ret d w
+step-pres-dom cc {IFLT a a₁ a₂ a₃} {b} {w1} {w2} comp ss | inj₁ (n , p) | inj₂ q with step⊎ a₁ w1
+... |       inj₁ (a₁' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  ⊆++ (fst ind) (⊆++ (⊆-trans (++⊆3→2 {names a₁} {names a₂} {names a₃} {dom𝕎· w1} ss) (snd ind))
+                     (⊆-trans (++⊆3→3 {names a₁} {names a₂} {names a₃} {dom𝕎· w1} ss) (snd ind))) ,
+  snd ind
+  where
+    ind : names a₁' ⊆ dom𝕎· w1' × dom𝕎· w1 ⊆ dom𝕎· w1'
+    ind = step-pres-dom cc {a₁} {a₁'} {w1} {w1'} z (++⊆3→1 {names a₁} {names a₂} {names a₃} {dom𝕎· w1} ss)
+... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-pres-dom cc {IFLT a a₁ a₂ a₃} {b} {w1} {w2} comp ss | inj₂ p with step⊎ a w1
+... |    inj₁ (a' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  ⊆++ (fst ind) (⊆++ (⊆-trans (++⊆4→2 {names a} {names a₁} {names a₂} {names a₃} {dom𝕎· w1} ss) (snd ind))
+                     (⊆++ (⊆-trans (++⊆4→3 {names a} {names a₁} {names a₂} {names a₃} {dom𝕎· w1} ss) (snd ind))
+                          (⊆-trans (++⊆4→4 {names a} {names a₁} {names a₂} {names a₃} {dom𝕎· w1} ss) (snd ind)))) ,
+  snd ind
+  where
+    ind : names a' ⊆ dom𝕎· w1' × dom𝕎· w1 ⊆ dom𝕎· w1'
+    ind = step-pres-dom cc {a} {a'} {w1} {w1'} z (++⊆4→1 {names a} {names a₁} {names a₂} {names a₃} {dom𝕎· w1} ss)
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-pres-dom cc {SUC a} {b} {w1} {w2} comp ss with is-NUM a
+... | inj₁ (n , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = (λ {x} ()) , (λ {x} i → i)
+... | inj₂ p with step⊎ a w1
+... |    inj₁ (a' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ind --ret (SUC a') w'
+  where
+    ind : names a' ⊆ dom𝕎· w1' × dom𝕎· w1 ⊆ dom𝕎· w1'
+    ind = step-pres-dom cc {a} {a'} {w1} {w1'} z ss
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-pres-dom cc {PI a a₁} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {LAMBDA a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {APPLY a a₁} {b} {w1} {w2} comp ss with is-LAM a
+... | inj₁ (t , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  (⊆-trans (names-sub⊆ a₁ t) (⊆++ (++⊆2→2 {names t} {names a₁} {dom𝕎· w1} ss) (++⊆2→1 {names t} {names a₁} {dom𝕎· w1} ss))) ,
+  (λ {x} i → i)
+... | inj₂ x with is-CS a
+... |    inj₁ (name , p) rewrite p with is-NUM a₁
+... |       inj₁ (n , q) rewrite q with getT⊎ n name w1
+... |          inj₁ (u , g) rewrite g | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  ss' , λ {x} i → i
+  where
+    nn : ¬Names u
+    nn = ContConds.ccG¬names cc n name w1 u g
+
+    ss' : names u ⊆ dom𝕎· w1
+    ss' rewrite ¬names→[] u nn = λ ()
+... |          inj₂ g rewrite g = ⊥-elim (¬just≡nothing (sym comp)) --Data.Maybe.map (λ t → t , w) (getT n name w)
+step-pres-dom cc {APPLY a a₁} {b} {w1} {w2} comp ss | inj₂ x | inj₁ (name , p) | inj₂ y with step⊎ a₁ w1
+... |          inj₁ (a₁' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  ⊆++ (⊆-trans (++⊆2→1 {[ name ]} {names a₁} {dom𝕎· w1} ss) (snd ind)) (fst ind) ,
+  snd ind --ret (APPLY (CS name) u) w'
+  where
+    ind : names a₁' ⊆ dom𝕎· w1' × dom𝕎· w1 ⊆ dom𝕎· w1'
+    ind = step-pres-dom cc {a₁} {a₁'} {w1} {w1'} z (++⊆2→2 {[ name ]} {names a₁} {dom𝕎· w1} ss)
+... |          inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-pres-dom cc {APPLY a a₁} {b} {w1} {w2} comp ss | inj₂ x | inj₂ name with step⊎ a w1
+... | inj₁ (a' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  ⊆++ (fst ind) (⊆-trans (++⊆2→2 {names a} {names a₁} {dom𝕎· w1} ss) (snd ind)) ,
+  snd ind
+  where
+    ind : names a' ⊆ dom𝕎· w1' × dom𝕎· w1 ⊆ dom𝕎· w1'
+    ind = step-pres-dom cc {a} {a'} {w1} {w1'} z (++⊆2→1 {names a} {names a₁} {dom𝕎· w1} ss)
+... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-pres-dom cc {FIX a} {b} {w1} {w2} comp ss with is-LAM a
+... | inj₁ (t , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  ⊆-trans (names-sub⊆ (FIX (LAMBDA t)) t) (⊆++ ss ss) , (λ {x} i → i)
+... | inj₂ x with step⊎ a w1
+... |    inj₁ (a' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  ind --ret (FIX g) w'
+  where
+    ind : names a' ⊆ dom𝕎· w1' × dom𝕎· w1 ⊆ dom𝕎· w1'
+    ind = step-pres-dom cc {a} {a'} {w1} {w1'} z ss
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-pres-dom cc {LET a a₁} {b} {w1} {w2} comp ss with isValue⊎ a
+... | inj₁ x rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  ⊆-trans (names-sub⊆ a a₁) ss , λ {x} i → i
+... | inj₂ x with step⊎ a w1
+... |    inj₁ (a' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  ⊆++ (fst ind) (⊆-trans (++⊆2→2 {names a} {names a₁} {dom𝕎· w1} ss) (snd ind)) ,
+  snd ind
+  where
+    ind : names a' ⊆ dom𝕎· w1' × dom𝕎· w1 ⊆ dom𝕎· w1'
+    ind = step-pres-dom cc {a} {a'} {w1} {w1'} z (++⊆2→1 {names a} {names a₁} {dom𝕎· w1} ss)
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-pres-dom cc {SUM a a₁} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {PAIR a a₁} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {SPREAD a a₁} {b} {w1} {w2} comp ss with is-PAIR a
+... | inj₁ (u , v , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  ⊆-trans (names-sub⊆ v (sub u a₁)) (⊆++ (++⊆2→2 {names u} {names v} {dom𝕎· w1} (++⊆2→1 {names u ++ names v} {names a₁} {dom𝕎· w1} ss))
+                                         (⊆-trans (names-sub⊆ u a₁) (⊆++ (++⊆2→1 {names u} {names v} {dom𝕎· w1} (++⊆2→1 {names u ++ names v} {names a₁} {dom𝕎· w1} ss))
+                                                                         (++⊆2→2 {names u ++ names v} {names a₁} {dom𝕎· w1} ss)))) ,
+  (λ {x} i → i)
+... | inj₂ x with step⊎ a w1
+... |    inj₁ (a' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  ⊆++ (fst ind) (⊆-trans (++⊆2→2 {names a} {names a₁} {dom𝕎· w1} ss) (snd ind)) ,
+  snd ind
+  where
+    ind : names a' ⊆ dom𝕎· w1' × dom𝕎· w1 ⊆ dom𝕎· w1'
+    ind = step-pres-dom cc {a} {a'} {w1} {w1'} z (++⊆2→1 {names a} {names a₁} {dom𝕎· w1} ss)
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-pres-dom cc {SET a a₁} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {TUNION a a₁} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {ISECT a a₁} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {UNION a a₁} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {QTUNION a a₁} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {INL a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {INR a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {DECIDE a a₁ a₂} {b} {w1} {w2} comp ss with is-INL a
+... | inj₁ (t , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  ⊆-trans (names-sub⊆ t a₁) (⊆++ (++⊆2→1 {names t} {names a₁ ++ names a₂} {dom𝕎· w1} ss)
+                                 (++⊆2→1 {names a₁} {names a₂} {dom𝕎· w1} (++⊆2→2 {names t} {names a₁ ++ names a₂} {dom𝕎· w1} ss))) ,
+  λ {x} i → i
+... | inj₂ x with is-INR a
+... |    inj₁ (t , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  ⊆-trans (names-sub⊆ t a₂) (⊆++ (++⊆2→1 {names t} {names a₁ ++ names a₂} {dom𝕎· w1} ss)
+                                 (++⊆2→2 {names a₁} {names a₂} {dom𝕎· w1} (++⊆2→2 {names t} {names a₁ ++ names a₂} {dom𝕎· w1} ss))) ,
+  λ {x} i → i
+... |    inj₂ y with step⊎ a w1
+... |       inj₁ (a' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  ⊆++ (fst ind) (⊆++ (⊆-trans (++⊆3→2 {names a} {names a₁} {names a₂} {dom𝕎· w1} ss) (snd ind))
+                     (⊆-trans (++⊆3→3 {names a} {names a₁} {names a₂} {dom𝕎· w1} ss) (snd ind))) ,
+  snd ind
+  where
+    ind : names a' ⊆ dom𝕎· w1' × dom𝕎· w1 ⊆ dom𝕎· w1'
+    ind = step-pres-dom cc {a} {a'} {w1} {w1'} z (++⊆3→1 {names a} {names a₁} {names a₂} {dom𝕎· w1} ss)
+... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-pres-dom cc {EQ a a₁ a₂} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {AX} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {FREE} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {CS x} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {NAME x} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {FRESH a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  ss1 , ss2
+  where
+    ss1 : names (shiftNameDown 0 (renn 0 (newChoiceT+ w1 a) a)) ⊆ dom𝕎· (startNewChoiceT Res⊤ w1 a)
+    ss1 {x} i with ∈names-shiftNameDown-renn+→ x a w1 i
+    ... | inj₁ p = ContConds.ccDstart cc x w1 a j
+      where
+        j : x ∈ dom𝕎· w1
+        j = ss {x} (suc→∈lowerNames {x} {names a} p)
+    ... | inj₂ p rewrite p = ContConds.ccNchoice cc w1 a
+
+    ss2 : dom𝕎· w1 ⊆ dom𝕎· (startNewChoiceT Res⊤ w1 a)
+    ss2 {x} i = ContConds.ccDstart cc x w1 a i
+step-pres-dom cc {CHOOSE a a₁} {b} {w1} {w2} comp ss with is-NAME a
+... | inj₁ (name , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  (λ {x} ()) , (λ {x} i → dom𝕎-chooseT cc x name w1 a₁ i)
+... | inj₂ x with step⊎ a w1
+... |    inj₁ (a' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  ⊆++ (fst ind) (⊆-trans (++⊆2→2 {names a} {names a₁} {dom𝕎· w1} ss) (snd ind)) ,
+  snd ind
+  where
+    ind : names a' ⊆ dom𝕎· w1' × dom𝕎· w1 ⊆ dom𝕎· w1'
+    ind = step-pres-dom cc {a} {a'} {w1} {w1'} z (++⊆2→1 {names a} {names a₁} {dom𝕎· w1} ss)
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-pres-dom cc {TSQUASH a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {TTRUNC a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {TCONST a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {SUBSING a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {DUM a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {FFDEFS a a₁} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {PURE} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {UNIV x} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {LIFT a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {LOWER a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {SHRINK a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+
+
+
+steps-pres-dom : (cc : ContConds) {a b : Term} {w1 w2 : 𝕎·} {k : ℕ}
+                 → steps k (a , w1) ≡ (b , w2)
+                 → names a ⊆ dom𝕎· w1
+                 → names b ⊆ dom𝕎· w2 × dom𝕎· w1 ⊆ dom𝕎· w2
+steps-pres-dom cc {a} {b} {w1} {w2} {0} comp ss rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = ss , λ {x} i → i
+steps-pres-dom cc {a} {b} {w1} {w2} {suc k} comp ss with step⊎ a w1
+... | inj₁ (a' , w1' , z) rewrite z = fst h2 , ⊆-trans (snd h1) (snd h2)
+  where
+    h1 : names a' ⊆ dom𝕎· w1' × dom𝕎· w1 ⊆ dom𝕎· w1'
+    h1 = step-pres-dom cc {a} {a'} {w1} {w1'} z ss
+
+    h2 : names b ⊆ dom𝕎· w2 × dom𝕎· w1' ⊆ dom𝕎· w2
+    h2 = steps-pres-dom cc {a'} {b} {w1'} {w2} {k} comp (fst h1)
+... | inj₂ z rewrite z | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = ss , λ {x} i → i
+
+
+
+subRen-trans-names : {l1 l2 k1 k2 : List Name} {r1 r2 r3 : ren}
+                     → l1 ⊆ k1
+                     → l2 ⊆ k2
+                     → subRen l1 l2 r1 r2
+                     → subRen k1 k2 r2 r3
+                     → subRen l1 l2 r1 r3
+subRen-trans-names {l1} {l2} {k1} {k2} {r1} {r2} {.r2} ss1 ss2 sr1 (subRen-refl .r2) = sr1
+subRen-trans-names {l1} {l2} {k1} {k2} {r1} {r2} {.((a , b) ∷ r3)} ss1 ss2 sr1 (subRen-trans a b .r2 r3 x x₁ sr2) =
+  subRen-trans a b r1 r3 (λ z → x (ss1 {a} z)) (λ z → x₁ (ss2 {b} z)) (subRen-trans-names {l1} {l2} {k1} {k2} {r1} {r2} {r3} ss1 ss2 sr1 sr2)
+
+
+
+abstract
+  steps-updRel2-aux : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term}
                    → ¬ name ∈ names f
                    → ¬ name ∈ names g
                    → # f
@@ -110,619 +386,150 @@ steps-updRel2-aux : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Nam
                    → (k : ℕ)
                    → (ind : (k' : ℕ) → k' < k → presUpdRel2 n name f g k')
                    → presUpdRel2 n name f g k
-steps-updRel2-aux cc gc {n} {name} {f} {g} nnf nng cf cg 0 ind {a} {b} {v} {w0} {w1} {w2} {w} {r} ur naid nbid niw nfiw ngiw upw compat compat' wgt0 ew01 ew0 eqw comp ish inw isv
-  rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = 0 , b , w , r , refl , ur , upw , subRen-refl r
-steps-updRel2-aux cc gc {n} {name} {f} {g} nnf nng cf cg (suc k) ind {a} {b} {v} {w0} {w1} {w2} {w} {r} ur naid nbid niw nfiw ngiw upw compat compat' wgt0 ew01 ew0 eqw comp ish inw isv
-  with step⊎ a w1
-... | inj₁ (a' , w1' , z) rewrite z =
-  {!!} -- k2 + k4 , v' , steps-trans+ {k2} {k4} {b} {y2} {v'} {w} {w} {w} comp2 comp4 , ur'
-  where
-    ind0 : (k' : ℕ) → k' < suc k → presUpdRel2 n name f g k'
-    ind0 = ind
+  steps-updRel2-aux cc gc {n} {name} {f} {g} nnf nng cf cg 0 ind {a} {b} {v} {w0} {w1} {w2} {w} {r} ur naid nbid niw nfiw ngiw upw compat compat' wgt0 ew01 ew0 eqw comp ish inw isv
+    rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp) =
+    0 , b , w , r , refl , ur , upw , subRen-refl r
+  steps-updRel2-aux cc gc {n} {name} {f} {g} nnf nng cf cg (suc k) ind {a} {b} {v} {w0} {w1} {w2} {w} {r} ur naid nbid niw nfiw ngiw upw compat compat' wgt0 ew01 ew0 eqw comp ish inw isv
+    with step⊎ a w1
+  ... | inj₁ (a' , w1' , z) rewrite z =
+    k2 + k4 , v' , w'' , r'' ,
+    steps-trans+ {k2} {k4} {b} {y2} {v'} {w} {w'} {w''} comp2 comp4 ,
+    ur'' , upw'' ,
+    subRen-trans-names
+      {dom𝕎· w1} {dom𝕎· w} {dom𝕎· w3} {dom𝕎· w'} {r} {r'} {r''}
+      (snd (steps-pres-dom cc {a} {y1} {w1} {w3} {suc k1} comp1' naid))
+      (snd (steps-pres-dom cc {b} {y2} {w} {w'} {k2} comp2 nbid))
+      sub' sub''
+    where
+      ind0 : (k' : ℕ) → k' < suc k → presUpdRel2 n name f g k'
+      ind0 = ind
 
-    ind1 : (k' : ℕ) → k' ≤ k → presUpdRel2 n name f g k'
-    ind1 k' ltk = ind0 k' (_≤_.s≤s ltk)
+      ind1 : (k' : ℕ) → k' ≤ k → presUpdRel2 n name f g k'
+      ind1 k' ltk = ind0 k' (_≤_.s≤s ltk)
 
-    spres : stepsPresUpdRel2 n name f g a' w1'
-    spres = k , v , w2 , comp , isv , snd ish , snd (snd inw) , ind1
+      spres : stepsPresUpdRel2 n name f g a' w1'
+      spres = k , v , w2 , comp , isv , snd ish , snd (snd inw) , ind1
 
-    s : ΣstepsUpdRel2 name f g a' w1 w1' b w r
-    s = step-updRel2 cc gc {n} {name} {f} {g} {a} {b} {a'} {w0} {w1} {w1'} {w} {r} nnf nng cf cg naid nbid nfiw ngiw z spres ur upw (fst ish) (fst inw) (fst (snd inw)) niw compat compat' wgt0 ew01 ew0 eqw
+      s : ΣstepsUpdRel2 name f g a' w1 w1' b w r
+      s = step-updRel2 cc gc {n} {name} {f} {g} {a} {b} {a'} {w0} {w1} {w1'} {w} {r} nnf nng cf cg naid nbid nfiw ngiw z spres ur upw (fst ish) (fst inw) (fst (snd inw)) niw compat compat' wgt0 ew01 ew0 eqw
 
-    k1 : ℕ
-    k1 = fst s
+      k1 : ℕ
+      k1 = fst s
 
-    k2 : ℕ
-    k2 = fst (snd s)
+      k2 : ℕ
+      k2 = fst (snd s)
 
-    y1 : Term
-    y1 = fst (snd (snd s))
+      y1 : Term
+      y1 = fst (snd (snd s))
 
-    y2 : Term
-    y2 = fst (snd (snd (snd s)))
+      y2 : Term
+      y2 = fst (snd (snd (snd s)))
 
-    w3 : 𝕎·
-    w3 = fst (snd (snd (snd (snd s))))
+      w3 : 𝕎·
+      w3 = fst (snd (snd (snd (snd s))))
 
-    w' : 𝕎·
-    w' = fst (snd (snd (snd (snd (snd s)))))
+      w' : 𝕎·
+      w' = fst (snd (snd (snd (snd (snd s)))))
 
-    r' : ren
-    r' = fst (snd (snd (snd (snd (snd (snd s))))))
+      r' : ren
+      r' = fst (snd (snd (snd (snd (snd (snd s))))))
 
-    comp1 : steps k1 (a' , w1') ≡ (y1 , w3)
-    comp1 = fst (snd (snd (snd (snd (snd (snd (snd s)))))))
+      comp1 : steps k1 (a' , w1') ≡ (y1 , w3)
+      comp1 = fst (snd (snd (snd (snd (snd (snd (snd s)))))))
 
-    comp2 : steps k2 (b , w) ≡ (y2 , w')
-    comp2 = fst (snd (snd (snd (snd (snd (snd (snd (snd s))))))))
+      comp2 : steps k2 (b , w) ≡ (y2 , w')
+      comp2 = fst (snd (snd (snd (snd (snd (snd (snd (snd s))))))))
 
-    ur' : updRel2 name f g r' y1 y2
-    ur' = fst (snd (snd (snd (snd (snd (snd (snd (snd (snd s)))))))))
+      ur' : updRel2 name f g r' y1 y2
+      ur' = fst (snd (snd (snd (snd (snd (snd (snd (snd (snd s)))))))))
 
-    upw' : upto𝕎 name w3 w' r'
-    upw' = fst (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd s))))))))))
+      upw' : upto𝕎 name w3 w' r'
+      upw' = fst (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd s))))))))))
 
-    sub' : subRen (dom𝕎· w1) (dom𝕎· w) r r'
-    sub' = snd (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd s))))))))))
+      sub' : subRen (dom𝕎· w1) (dom𝕎· w) r r'
+      sub' = snd (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd s))))))))))
 
-    q : Σ ℕ (λ k3 → k3 ≤ k × Σ (steps k3 (y1 , w3) ≡ (v , w2)) (λ comp' →
+      q : Σ ℕ (λ k3 → k3 ≤ k × Σ (steps k3 (y1 , w3) ≡ (v , w2)) (λ comp' →
                   (isHighestℕ {k} {w1'} {w2} {a'} {v} n name comp
                    → isHighestℕ {k3} {w3} {w2} {y1} {v} n name comp')
                   × (∈names𝕎 {k} {w1'} {w2} {a'} {v} name comp
                      → ∈names𝕎 {k3} {w3} {w2} {y1} {v} name comp')))
-    q = steps-decomp-isHighestℕ2 {w1'} {w3} {w2} {a'} {y1} {v} {k} {k1} n name isv comp1 comp
+      q = steps-decomp-isHighestℕ2 {w1'} {w3} {w2} {a'} {y1} {v} {k} {k1} n name isv comp1 comp
 
-    k3 : ℕ
-    k3 = fst q
+      k3 : ℕ
+      k3 = fst q
 
-    ltk2 : k3 ≤ k
-    ltk2 = fst (snd q)
+      ltk2 : k3 ≤ k
+      ltk2 = fst (snd q)
 
-    comp3 : steps k3 (y1 , w3) ≡ (v , w2)
-    comp3 = fst (snd (snd q))
+      comp3 : steps k3 (y1 , w3) ≡ (v , w2)
+      comp3 = fst (snd (snd q))
 
-    ish' : isHighestℕ {k3} {w3} {w2} {y1} {v} n name comp3
-    ish' = fst (snd (snd (snd q))) (snd ish)
+      ish' : isHighestℕ {k3} {w3} {w2} {y1} {v} n name comp3
+      ish' = fst (snd (snd (snd q))) (snd ish)
 
-    inw' : ∈names𝕎 {k3} {w3} {w2} {y1} {v} name comp3
-    inw' = snd (snd (snd (snd q))) (snd (snd inw))
+      inw' : ∈names𝕎 {k3} {w3} {w2} {y1} {v} name comp3
+      inw' = snd (snd (snd (snd q))) (snd (snd inw))
 
-    e3 : w1 ⊑· w3
-    e3 = ⊑-trans· (step⊑ {w1} {w1'} {a} {a'} z) (steps→⊑ k1 a' y1 {w1'} {w3} comp1)
+      e3 : w1 ⊑· w3
+      e3 = ⊑-trans· (step⊑ {w1} {w1'} {a} {a'} z) (steps→⊑ k1 a' y1 {w1'} {w3} comp1)
 
-    e4 : w ⊑· w'
-    e4 = steps→⊑ k2 b y2 {w} {w'} comp2
+      e4 : w ⊑· w'
+      e4 = steps→⊑ k2 b y2 {w} {w'} comp2
 
-    c : Σ ℕ (λ k' → Σ Term (λ v' → Σ 𝕎· (λ w'' → Σ ren (λ r'' →
+      comp1' : steps (suc k1) (a , w1) ≡ (y1 , w3)
+      comp1' = step-steps-trans2 {w1} {w1'} {w3} {a} {a'} {y1} {k1} z comp1
+
+      ny1w : names y1 ⊆ dom𝕎· w3
+      ny1w = fst (steps-pres-dom cc {a} {y1} {w1} {w3} {suc k1} comp1' naid)
+
+      ny2w : names y2 ⊆ dom𝕎· w'
+      ny2w = fst (steps-pres-dom cc {b} {y2} {w} {w'} {k2} comp2 nbid)
+
+      niw' : name ∈ dom𝕎· w'
+      niw' = snd (steps-pres-dom cc {b} {y2} {w} {w'} {k2} comp2 nbid) {name} niw
+
+      nfiw' : names f ⊆ dom𝕎· w3
+      nfiw' {x} i = snd (steps-pres-dom cc {a} {y1} {w1} {w3} {suc k1} comp1' naid) (nfiw i)
+
+      ngiw' : names g ⊆ dom𝕎· w'
+      ngiw' {x} i = snd (steps-pres-dom cc {b} {y2} {w} {w'} {k2} comp2 nbid) (ngiw i)
+
+      c : Σ ℕ (λ k' → Σ Term (λ v' → Σ 𝕎· (λ w'' → Σ ren (λ r'' →
           steps k' (y2 , w') ≡ (v' , w'')
           × updRel2 name f g r'' v v'
           × upto𝕎 name w2 w'' r''
           × subRen (dom𝕎· w3) (dom𝕎· w') r' r''))))
-    c = ind1 k3 ltk2 {y1} {y2} {v} {w0} {w3} {w2} {w'}
-             ur' {!!} {!!} {!!} {!!} {!!} upw'
+      c = ind1 k3 ltk2 {y1} {y2} {v} {w0} {w3} {w2} {w'}
+             ur' ny1w ny2w niw' nfiw' ngiw' upw'
              (⊑-compatible· e3 compat) (⊑-compatible· e4 compat')
              (∀𝕎-mon e3 wgt0) (⊑-trans· ew01 e3) (⊑-trans· ew0 e4)
              eqw comp3 ish' inw' isv
 
-{--
-    k4 : ℕ
-    k4 = fst c
+      k4 : ℕ
+      k4 = fst c
 
-    v' : Term
-    v' = fst (snd c)
+      v' : Term
+      v' = fst (snd c)
 
-    comp4 : steps k4 (y2 , w) ≡ (v' , w)
-    comp4 = fst (snd (snd c))
+      w'' : 𝕎·
+      w'' = fst (snd (snd c))
 
-    ur' : updRel2 name f g v v'
-    ur' = snd (snd (snd c))
---}
-... | inj₂ z rewrite z | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) | stepVal a w1 isv =
-  ⊥-elim (¬just≡nothing z)
+      r'' : ren
+      r'' = fst (snd (snd (snd c)))
 
+      comp4 : steps k4 (y2 , w') ≡ (v' , w'')
+      comp4 = fst (snd (snd (snd (snd c))))
 
-eqfgq-aux : (cc : ContConds) (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
-            {i : ℕ} {w1 w1s' w2 : 𝕎·} {F f g : CTerm} {name : Name}
-            {k : ℕ} {v : Term} {j : ℕ} {tn : ℕ}
-            → ¬ name ∈ names ⌜ f ⌝
-            → ¬ name ∈ names ⌜ F ⌝
-            → ¬ name ∈ names𝕎· w1s'
-            → name ∈ dom𝕎· w1s'
-            → compatible· name w1s' Res⊤
-            → ∀𝕎-get0-NUM w1s' name
-            → getT 0 name w2 ≡ just (NUM j)
-            → tn ≡ suc j
-            → isValue v
-            → steps k (APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) , w1s') ≡ (v , w2)
-            → (k' : ℕ) → #APPLY F (#force f) #⇓ #NUM k' at w1 → #APPLY F (#force g) #⇓ #NUM k' at w1
-eqfgq-aux cc cn kb gc {i} {w1} {w1s'} {w2} {F} {f} {g} {name} {k} {v} {j} {tn} nnf nnF nnw1s' idomw1s' compat1 wgt0 g0 eqj isvv compa k' c =
-  {!!}
-  where
-    uF : updCtxt2 name ⌜ f ⌝ ⌜ F ⌝
-    uF = updCtxt2-refl name ⌜ f ⌝ ⌜ F ⌝ nnF
+      ur'' : updRel2 name f g r'' v v'
+      ur'' = fst (snd (snd (snd (snd (snd c)))))
 
-    pish : (getT≤ℕ w2 tn name → isHighestℕ {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} tn name compa)
-           × ∈names𝕎 {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} name compa
-    pish = steps-sat-isHighestℕ2
-             cc gc {name} {⌜ f ⌝} {k} nnf (CTerm.closed f)
-             {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} {tn}
-             compa isvv (updCtxt2-APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) uF updCtxt2-upd)
-             compat1 wgt0 nnw1s' idomw1s'
+      upw'' : upto𝕎 name w2 w'' r''
+      upw'' = fst (snd (snd (snd (snd (snd (snd c))))))
 
-    gt0 : getT≤ℕ w2 tn name
-    gt0 = j , g0 , ≡suc→< eqj
-
-    ish : isHighestℕ {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} tn name compa
-    ish = fst pish gt0
-
-{--
-        compg0 : Σ ℕ (λ k' → Σ Term (λ v' → steps k' (APPLY ⌜ F ⌝ (force ⌜ g ⌝) , w1) ≡ (v' , w1) × updRel name ⌜ f ⌝ ⌜ g  ⌝ v v'))
-        compg0 = ? --steps-updRel-app gc {tn} {name} {⌜ F ⌝} {⌜ f ⌝} {⌜ g ⌝} {v} {k} {w1'} {w2} {w1} nnF nnf nng (CTerm.closed f) (CTerm.closed g) compat1 wgt0 (∀𝕎-mon e1' eqb3) compa ish isvv
-
-        k' : ℕ
-        k' = fst compg0
-
-        v' : Term
-        v' = fst (snd compg0)
-
-        compg1 : steps k' (APPLY ⌜ F ⌝ (force ⌜ g ⌝) , w1) ≡ (v' , w1)
-        compg1 = fst (snd (snd compg0))
-
-        ur :  updRel name ⌜ f ⌝ ⌜ g  ⌝ v v'
-        ur = snd (snd (snd compg0))
-
-        equf : ∀𝕎 w1' (λ w' _ → NATeq w' (#APPLY F (#upd name f)) (#APPLY F (#force f)))
-        equf = kb (equalInType-NAT→ i w1' (#APPLY F (#upd name f)) (#APPLY F (#force f)) (∈BAIRE→NAT→ (equalInType-mon ∈F w1' e1') (equalInType-upd-force i w1' name f wgt0 (equalInType-mon ∈f w1' e1'))))
-
-        compg : #APPLY F (#force g) #⇓ #NUM n at w1
-        compg = eqfg-aux {w1} {w1'} e0' {name} {⌜ f ⌝} {⌜ g ⌝} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ g ⌝)} {v} {v'} {n} isvv (equf w1' (⊑-refl· _)) comp1 (⇓-from-to→⇓ (k , compa)) (⇓-from-to→⇓ (k' , compg1)) ur
---}
-
-
-
-{--
-eqfgq : (cc : ContConds) (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
-        {i : ℕ} {w : 𝕎·} {F f g : CTerm}
-        → #¬Names g
-        → (∈F : ∈Type i w #BAIRE→NAT F)
-        → (∈f : ∈Type i w #BAIRE f)
-        → ∈Type i w #BAIRE g
-        → smallestMod cn kb gc i w F f ∈F ∈f
-        → equalInType i w (#QBAIREn (#νtestMup F f)) f g
---       ((n : ℕ) → n < ? → ⇓sameℕ w (APPLY f (NUM n)) (APPLY g (NUM n)))
-        → equalInType i w #NAT (#APPLY F f) (#APPLY F g)
-eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g smod eqb =
-  equalInType-trans (equalInType-APPLY-force ∈F ∈f) (equalInType-trans eqf (equalInType-sym (equalInType-APPLY-force ∈F ∈g)))
-  where
-    eqb1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#QNATn (#νtestMup F f)) a₁ a₂
-                         → equalInType i w' #NAT (#APPLY f a₁) (#APPLY g a₂))
-    eqb1 = equalInType-FUN→ (≡CTerm→equalInType (≡QBAIREn (#νtestMup F f)) eqb)
-
-    eqb2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm)
-                         → □· w' (λ w'' _ → Σ ℕ (λ tn → Σ ℕ (λ k → #νtestMup F f #⇓ #NUM tn at w'' × a₁ #⇛ #NUM k at w'' × a₂ #⇛ #NUM k at w'' × k < tn)))
-                         → □· w' (λ w'' _ → NATeq w'' (#APPLY f a₁) (#APPLY g a₂)))
-    eqb2 w1 e1 a₁ a₂ eqa = equalInType-NAT→ i w1 (#APPLY f a₁) (#APPLY g a₂) (eqb1 w1 e1 a₁ a₂ (→equalInType-QNATn (testM-QNAT cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)) eqa))
-
--- NOTE: It is not clear how this could work since to prove compg0 below we need to know that f and g compute to the same number
--- on the same input, as long as this input is less than the modulus of F at f. However, to use eqb2 for that we would have to
--- prove that this input is less than all possible moduli of continuity for all extensions...
--- Counter-example?
-
-    eqb3 : ∀𝕎 w (λ w' _ → (k : ℕ)
-                         → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ n → #νtestMup F f #⇓ #NUM n at w'' × k < n)))
-                         → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
-    eqb3 w1 e1 k comp = kb z w1 (⊑-refl· _)
-      where
-        z : □· w1 (λ w'' _ → NATeq w'' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
-        z = eqb2 w1 e1 (#NUM k) (#NUM k) (Mod.∀𝕎-□ M λ w2 e2 → fst (lower (comp w2 e2)) , k , fst (snd (lower (comp w2 e2))) , #compAllRefl (#NUM k) w2 , #compAllRefl (#NUM k) w2 , snd (snd (lower (comp w2 e2))))
-
- --eqb2 w1 e1 (#NUM k) (#NUM k) (Mod.∀𝕎-□ M (λ w2 e2 → k , #compAllRefl (#NUM k) w2 , #compAllRefl (#NUM k) w2 , ltk))
-
-{--    neqt : NATeq w (#νtestM F f) (#νtestM F f)
-    neqt = νtestM-NAT cn kb gc i w F f nnF nnf ∈F ∈f
-
-    tn : ℕ
-    tn = fst neqt
-
-    x : NATeq w (#νtestM F f) (#NUM tn)
-    x = tn , fst (snd neqt) , compAllRefl _ _
-
-    cx : #νtestM F f #⇛ #NUM tn at w
-    cx = NATeq→⇛ {w} {#νtestM F f} x
---}
-
-    inn : ∈Type i w #NAT (#APPLY F (#force f))
-    inn = equalInType-refl (equalInType-sym (equalInType-APPLY-force ∈F ∈f))
-
-    aw : ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) ((k : ℕ) → #APPLY F (#force f) #⇓ #NUM k at w' → #APPLY F (#force g) #⇓ #NUM k at w'))
-    aw w1 e1 = lift imp
-      where
-        w1' : 𝕎·
-        w1' = fst smod
-
-        e1' : w ⊑· w1'
-        e1' = fst (snd smod)
-
-        sma : smallestModAux cn kb gc i w F f w1' e1' ∈F ∈f
-        sma = {!!} --snd (snd smod)
-
-        eqb4 : Σ ℕ (λ n → Σ 𝕎· (λ w2 → #νtestMup F f #⇓ #NUM n from w1' to w2
-                          × ∀𝕎 w1' (λ w' _ → (k : ℕ) → k < n
-                                            → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))))
-        eqb4 = smallestModAux→NATeq cn kb gc {i} {w} {F} {f} {g} {w1'} {e1'} ∈F ∈f {!!} {--sma--} eqb3
-
-        tn : ℕ
-        tn = fst eqb4
-
-        w2 : 𝕎·
-        w2 = fst (snd eqb4)
-
-        compt : νtestMup ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM tn from w1' to w2
-        compt = fst (snd (snd eqb4))
-
-        eqb5 : ∀𝕎 w1' (λ w' _ → (k : ℕ) → k < tn
-                               → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
-        eqb5 = snd (snd (snd eqb4))
-
-        w1s : 𝕎·
-        w1s = startNewChoiceT Res⊤ w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝)
-
-        name : Name
-        name = newChoiceT w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝)
-
-        compu : Σ Term (λ v → Σ ℕ (λ j →
-                 APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ v from (chooseT name w1s (NUM 0)) to w2
-                 × isValue v
-                 × getT 0 name w2 ≡ just (NUM j)
-                 × tn ≡ suc j
-                 × compatible· name w1s Res⊤))
-        compu = νtestM⇓→ cn {w1'} {w2} {⌜ F ⌝} {⌜ f ⌝} {tn} (CTerm.closed F) (CTerm.closed f) compt
-
-        v : Term
-        v = fst compu
-
-        j : ℕ
-        j = fst (snd compu)
-
-        w1s' : 𝕎·
-        w1s' = chooseT name w1s (NUM 0)
-
-        e0' : w1' ⊑· w1s'
-        e0' = ⊑-trans· (startNewChoiceT⊏ Res⊤ w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝)) (choose⊑· name w1s (T→ℂ· (NUM 0)))
-
-        e0'' : w ⊑· w1s'
-        e0'' = ⊑-trans· e1' e0'
-
-        k : ℕ
-        k = fst (fst (snd (snd compu)))
-
-        compa : steps k (APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) , w1s') ≡ (v , w2)
-        compa = snd (fst (snd (snd compu)))
-
-        isvv : isValue v
-        isvv = fst (snd (snd (snd compu)))
-
-        g0 : getT 0 name w2 ≡ just (NUM j)
-        g0 = fst (snd (snd (snd (snd compu))))
-
-        eqj : tn ≡ suc j
-        eqj = fst (snd (snd (snd (snd (snd compu)))))
-
-        compat : compatible· name w1s Res⊤
-        compat = snd (snd (snd (snd (snd (snd compu)))))
-
-        compat1 : compatible· name w1s' Res⊤
-        compat1 = ⊑-compatible· (choose⊑· name w1s (T→ℂ· (NUM 0))) compat
-
-        wgt0 : ∀𝕎-get0-NUM w1s' name
-        wgt0 = cn name w1s 0 compat
-
-        nnf : ¬ name ∈ names ⌜ f ⌝
-        nnf = ¬newChoiceT-testMup∈names-f w1' ⌜ F ⌝ ⌜ f ⌝
-
-        nnF : ¬ name ∈ names ⌜ F ⌝
-        nnF = ¬newChoiceT-testMup∈names-F w1' ⌜ F ⌝ ⌜ f ⌝
-
-        uF : updCtxt2 name ⌜ f ⌝ ⌜ F ⌝
-        uF = updCtxt2-refl name ⌜ f ⌝ ⌜ F ⌝ nnF
-
-        nnw1' : ¬ name ∈ names𝕎· w1'
-        nnw1' = ¬newChoiceT-testMup∈names𝕎 w1' ⌜ F ⌝ ⌜ f ⌝
-
-        nnw1s' : ¬ name ∈ names𝕎· w1s'
-        nnw1s' = λ i → nnw1' (ContConds.ccNstart cc name w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝) (ContConds.ccNchoose cc name name w1s (NUM 0) (λ ()) i))
-
-        idomw1s' : name ∈ dom𝕎· w1s'
-        idomw1s' = dom𝕎-chooseT cc name name w1s (NUM 0) (ContConds.ccNchoice cc w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝))
-
-        pish : (getT≤ℕ w2 tn name → isHighestℕ {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} tn name compa)
-               × ∈names𝕎 {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} name compa
-        pish = {!steps-sat-isHighestℕ2-unf
-                 cc gc {name} {⌜ f ⌝} {k} nnf (CTerm.closed f)
-                 {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} {tn}
-                 compa isvv (updCtxt2-APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) uF updCtxt2-upd)
-                 compat1 wgt0 nnw1s' idomw1s'!}
-
-        gt0 : getT≤ℕ w2 tn name
-        gt0 = j , g0 , {!≡suc→< eqj!}
-
-        ish : isHighestℕ {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} tn name compa
-        ish = {!!} {--fst pish ?--}
-
-        -- TODO: this is what we have to prove
-        imp : (k : ℕ) → #APPLY F (#force f) #⇓ #NUM k at w1 → #APPLY F (#force g) #⇓ #NUM k at w1
-        imp k' c = {!!}
-
-{--
-        compg0 : Σ ℕ (λ k' → Σ Term (λ v' → steps k' (APPLY ⌜ F ⌝ (force ⌜ g ⌝) , w1) ≡ (v' , w1) × updRel name ⌜ f ⌝ ⌜ g  ⌝ v v'))
-        compg0 = ? --steps-updRel-app gc {tn} {name} {⌜ F ⌝} {⌜ f ⌝} {⌜ g ⌝} {v} {k} {w1'} {w2} {w1} nnF nnf nng (CTerm.closed f) (CTerm.closed g) compat1 wgt0 (∀𝕎-mon e1' eqb3) compa ish isvv
-
-        k' : ℕ
-        k' = fst compg0
-
-        v' : Term
-        v' = fst (snd compg0)
-
-        compg1 : steps k' (APPLY ⌜ F ⌝ (force ⌜ g ⌝) , w1) ≡ (v' , w1)
-        compg1 = fst (snd (snd compg0))
-
-        ur :  updRel name ⌜ f ⌝ ⌜ g  ⌝ v v'
-        ur = snd (snd (snd compg0))
-
-        equf : ∀𝕎 w1' (λ w' _ → NATeq w' (#APPLY F (#upd name f)) (#APPLY F (#force f)))
-        equf = kb (equalInType-NAT→ i w1' (#APPLY F (#upd name f)) (#APPLY F (#force f)) (∈BAIRE→NAT→ (equalInType-mon ∈F w1' e1') (equalInType-upd-force i w1' name f wgt0 (equalInType-mon ∈f w1' e1'))))
-
-        compg : #APPLY F (#force g) #⇓ #NUM n at w1
-        compg = eqfg-aux {w1} {w1'} e0' {name} {⌜ f ⌝} {⌜ g ⌝} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ g ⌝)} {v} {v'} {n} isvv (equf w1' (⊑-refl· _)) comp1 (⇓-from-to→⇓ (k , compa)) (⇓-from-to→⇓ (k' , compg1)) ur
---}
-
---      n , comp1 ,
---      {!!} --¬Names→⇓→⇛ w1 w1 ⌜ #APPLY F (#force g) ⌝ (NUM n) (#¬Names-APPLY {F} {#force g} nnF (#¬Names-force {g} nng)) compg
-{--      where
-        cxb : Σ 𝕎· (λ w2 → νtestM ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM tn from w1 to w2)
-        cxb = ⇓→from-to (lower (cx w1 e1))
-
-        w2 : 𝕎·
-        w2 = fst cxb
-
-        compt : νtestM ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM tn from w1 to w2
-        compt = snd cxb
-
-        w1s : 𝕎·
-        w1s = startNewChoiceT Res⊤ w1 (testM 0 ⌜ F ⌝ ⌜ f ⌝)
-
-        compu : Σ Name (λ name → Σ Term (λ v → Σ ℕ (λ j →
-                 APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ v from (chooseT name w1s (NUM 0)) to w2
-                 × isValue v
-                 × getT 0 name w2 ≡ just (NUM j)
-                 × tn ≡ suc j
-                 × compatible· name w1s Res⊤)))
-        compu = #νtestM⇓→ cn {w1} {w2} {⌜ F ⌝} {⌜ f ⌝} {tn} (CTerm.closed F) (CTerm.closed f) nnF nnf compt
-
-        name : Name
-        name = fst compu
-
-        v : Term
-        v = fst (snd compu)
-
-        j : ℕ
-        j = fst (snd (snd compu))
-
-        w1' : 𝕎·
-        w1' = chooseT name w1s (NUM 0)
-
-        e0' : w1 ⊑· w1'
-        e0' = ⊑-trans· (startNewChoiceT⊏ Res⊤ w1 (testM 0 ⌜ F ⌝ ⌜ f ⌝)) (choose⊑· name w1s (T→ℂ· (NUM 0)))
-
-        e1' : w ⊑· w1'
-        e1' = ⊑-trans· e1 e0'
-
-        k : ℕ
-        k = fst (fst (snd (snd (snd compu))))
-
-        compa : steps k (APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) , w1') ≡ (v , w2)
-        compa = snd (fst (snd (snd (snd compu))))
-
-        isvv : isValue v
-        isvv = fst (snd (snd (snd (snd compu))))
-
-        g0 : getT 0 name w2 ≡ just (NUM j)
-        g0 = fst (snd (snd (snd (snd (snd compu)))))
-
-        eqj : tn ≡ suc j
-        eqj = fst (snd (snd (snd (snd (snd (snd compu))))))
-
-        compat : compatible· name w1s Res⊤
-        compat = snd (snd (snd (snd (snd (snd (snd compu))))))
-
-        compat1 : compatible· name w1' Res⊤
-        compat1 = ⊑-compatible· (choose⊑· name w1s (T→ℂ· (NUM 0))) compat
-
-        wgt0 : ∀𝕎-get0-NUM w1' name
-        wgt0 = cn name w1s 0 compat
-
-        ish : isHighestℕ {k} {w1'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} tn name compa
-        ish = steps-sat-isHighestℕ
-                gc {name} {⌜ f ⌝} {k} nnf (CTerm.closed f) {w1'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} {tn}
-                compa isvv (updCtxt-APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) (¬Names→updCtxt {name} {⌜ f ⌝} {⌜ F ⌝} nnF) updCtxt-upd)
-                compat1
-                wgt0
-                (j , g0 , ≡suc→< eqj)
-
-        compg0 : Σ ℕ (λ k' → Σ Term (λ v' → steps k' (APPLY ⌜ F ⌝ (force ⌜ g ⌝) , w1) ≡ (v' , w1) × updRel name ⌜ f ⌝ ⌜ g  ⌝ v v'))
-        compg0 = steps-updRel-app gc {tn} {name} {⌜ F ⌝} {⌜ f ⌝} {⌜ g ⌝} {v} {k} {w1'} {w2} {w1} nnF nnf nng (CTerm.closed f) (CTerm.closed g) compat1 wgt0 (∀𝕎-mon e1' eqb3) compa ish isvv
-
-        k' : ℕ
-        k' = fst compg0
-
-        v' : Term
-        v' = fst (snd compg0)
-
-        compg1 : steps k' (APPLY ⌜ F ⌝ (force ⌜ g ⌝) , w1) ≡ (v' , w1)
-        compg1 = fst (snd (snd compg0))
-
-        ur :  updRel name ⌜ f ⌝ ⌜ g  ⌝ v v'
-        ur = snd (snd (snd compg0))
-
-        equf : ∀𝕎 w1' (λ w' _ → NATeq w' (#APPLY F (#upd name f)) (#APPLY F (#force f)))
-        equf = kb (equalInType-NAT→ i w1' (#APPLY F (#upd name f)) (#APPLY F (#force f)) (∈BAIRE→NAT→ (equalInType-mon ∈F w1' e1') (equalInType-upd-force i w1' name f wgt0 (equalInType-mon ∈f w1' e1'))))
-
-        compg : #APPLY F (#force g) #⇓ #NUM n at w1
-        compg = eqfg-aux {w1} {w1'} e0' {name} {⌜ f ⌝} {⌜ g ⌝} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ g ⌝)} {v} {v'} {n} isvv (equf w1' (⊑-refl· _)) comp1 (⇓-from-to→⇓ (k , compa)) (⇓-from-to→⇓ (k' , compg1)) ur
---}
-
-    eqf : equalInType i w #NAT (#APPLY F (#force f)) (#APPLY F (#force g))
-    eqf = →equalInType-NAT
-            i w (#APPLY F (#force f)) (#APPLY F (#force g))
-            (Mod.∀𝕎-□Func M
-              (→∀𝕎-NATeq-NATeq w (#APPLY F (#force f)) (#APPLY F (#force g)) aw)
-              (equalInType-NAT→ i w (#APPLY F (#force f)) (#APPLY F (#force f)) inn))
---}
-
-
-
-{--
-continuityQBody : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
-                  (i : ℕ) (w : 𝕎·) (F f : CTerm)
-                  → ∈Type i w #BAIRE→NAT F
-                  → ∈Type i w #BAIRE f
-                  → ∈Type i w (#contQBody F f) (#PAIR (#νtestMup F f) #lam3AX)
-continuityQBody cn kb gc i w F f ∈F ∈f =
-  ≡CTerm→equalInType (sym (#contQBody≡ F f)) h0
-  where
-    aw : ∀𝕎 w (λ w' _ → SUMeq (equalInType i w' #QNAT)
-                                (λ a b ea → equalInType i w' (sub0 a (#[0]PI #[0]BAIRE
-                                                                             (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                                                                      (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]QBAIREn #[1]VAR1))
-                                                                                               (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT))))))
-                                w'
-                                (#PAIR (#νtestMup F f) #lam3AX)
-                                (#PAIR (#νtestMup F f) #lam3AX))
-    aw w1 e1 =
-      #νtestMup F f , #νtestMup F f , #lam3AX , #lam3AX ,
-      testM-QNAT cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1) ,
-      #compAllRefl (#PAIR (#νtestMup F f) #lam3AX) w1 ,
-      #compAllRefl (#PAIR (#νtestMup F f) #lam3AX) w1 ,
-      eql1
-      where
-        ea2 : ∀𝕎 w1 (λ w2 e2 → (g₁ g₂ : CTerm) (eg : equalInType i w2 #BAIRE g₁ g₂)
-                             → equalTypes i w2
-                                           (#FUN (#FFDEFS #BAIRE g₁) (#FUN (#EQ f g₁ (#QBAIREn (#νtestMup F f))) (#EQ (#APPLY F f) (#APPLY F g₁) #NAT)))
-                                           (#FUN (#FFDEFS #BAIRE g₂) (#FUN (#EQ f g₂ (#QBAIREn (#νtestMup F f))) (#EQ (#APPLY F f) (#APPLY F g₂) #NAT))))
-        ea2 w2 e2 g₁ g₂ eg =
-          eqTypesFUN←
-            (eqTypesFFDEFS← eqTypesBAIRE eg)
-            (eqTypesFUN←
-              (eqTypesEQ← (→equalTypesQBAIREn i w2 (#νtestMup F f) (#νtestMup F f) (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))))
-                          (∈BAIRE→∈QBAIREn (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
-                          (∈BAIRE→∈QBAIREn (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) eg))
-              (eqTypesEQ← eqTypesNAT
-                          (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
-                          (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) eg)))
-
-        aw3 : ∀𝕎 w1 (λ w2 e2 → (g₁ g₂ : CTerm) → equalInType i w2 #BAIRE g₁ g₂
-                              → equalInType i w2 (#FUN (#FFDEFS #BAIRE g₁)
-                                                        (#FUN (#EQ f g₁ (#QBAIREn (#νtestMup F f)))
-                                                              (#EQ (#APPLY F f) (#APPLY F g₁) #NAT)))
-                                             (#APPLY #lam3AX g₁) (#APPLY #lam3AX g₂))
-        aw3 w2 e2 g₁ g₂ eg =
-          equalInType-FUN
-            (eqTypesFFDEFS← eqTypesBAIRE (equalInType-refl eg))
-            (eqTypesFUN←
-              (eqTypesEQ← (→equalTypesQBAIREn i w2 (#νtestMup F f) (#νtestMup F f) (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))))
-                           (∈BAIRE→∈QBAIREn (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
-                           (∈BAIRE→∈QBAIREn (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-refl eg)))
-              (eqTypesEQ← eqTypesNAT
-                           (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
-                           (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-refl eg))))
-            aw4
-          where
-            aw4 : ∀𝕎 w2 (λ w' _ → (x₁ x₂ : CTerm)
-                                 → equalInType i w' (#FFDEFS #BAIRE g₁) x₁ x₂
-                                 → equalInType i w' (#FUN (#EQ f g₁ (#QBAIREn (#νtestMup F f)))
-                                                           (#EQ (#APPLY F f) (#APPLY F g₁) #NAT))
-                                                     (#APPLY (#APPLY #lam3AX g₁) x₁)
-                                                     (#APPLY (#APPLY #lam3AX g₂) x₂))
-            aw4 w3 e3 x₁ x₂ ex =
-              equalInType-FUN
-                (eqTypesEQ← (→equalTypesQBAIREn i w3 (#νtestMup F f) (#νtestMup F f) (testM-QNAT cn kb gc i w3 F f (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))))
-                             (∈BAIRE→∈QBAIREn (testM-QNAT cn kb gc i w3 F f (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3))))
-                             (∈BAIRE→∈QBAIREn (testM-QNAT cn kb gc i w3 F f (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))) (equalInType-refl (equalInType-mon eg w3 e3))))
-                (eqTypesEQ← eqTypesNAT
-                             (∈BAIRE→NAT→ (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3))))
-                             (∈BAIRE→NAT→ (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-refl (equalInType-mon eg w3 e3))))
-                aw5
-              where
-                aw5 : ∀𝕎 w3 (λ w' _ → (y₁ y₂ : CTerm)
-                                     → equalInType i w' (#EQ f g₁ (#QBAIREn (#νtestMup F f))) y₁ y₂
-                                     → equalInType i w' (#EQ (#APPLY F f) (#APPLY F g₁) #NAT)
-                                                         (#APPLY (#APPLY (#APPLY #lam3AX g₁) x₁) y₁)
-                                                         (#APPLY (#APPLY (#APPLY #lam3AX g₂) x₂) y₂))
-                aw5 w4 e4 y₁ y₂ ey =
-                  equalInType-EQ
-                    eqTypesNAT
-                    concl
-                  where
-                    hyp : □· w4 (λ w5 _ → equalInType i w5 (#QBAIREn (#νtestMup F f)) f g₁)
-                    hyp = equalInType-EQ→ ey
-
-                    ff : □· w3 (λ w' _ → FFDEFSeq g₁ (equalInType i w' #BAIRE) w' x₁ x₂)
-                    ff = equalInTypeFFDEFS→ ex
-
-                    aw6 : ∀𝕎 w4 (λ w' e' → equalInType i w' (#QBAIREn (#νtestMup F f)) f g₁
-                                          → ↑wPred (λ w'' _ → FFDEFSeq g₁ (equalInType i w'' #BAIRE) w'' x₁ x₂) e4 w' e'
-                                          → equalInType i w' #NAT (#APPLY F f) (#APPLY F g₁))
-                    aw6 w5 e5 h1 (g , h2 , nng) = equalInType-trans cc (∈BAIRE→NAT→ (equalInType-mon ∈F w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))) (equalInType-sym h2))
-                      where
-                        h3 : equalInType i w5 (#QBAIREn (#νtestMup F f)) f g
-                        h3 = equalInType-QBAIREn-BAIRE-trans h2 h1 (testM-QNAT cn kb gc i w5 F f (equalInType-mon ∈F w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))) (equalInType-mon ∈f w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))))
-
-                        cc : equalInType i w5 #NAT (#APPLY F f) (#APPLY F g)
-                        cc = {!!} {--eqfg cn kb gc {i} {w5} {F} {f} {g} nnF nnf nng
-                                  (equalInType-mon ∈F w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5)))))
-                                  (equalInType-mon ∈f w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5)))))
-                                  (equalInType-refl (equalInType-sym h2))
-                                  h3--}
-
-                    concl : □· w4 (λ w5 _ → equalInType i w5 #NAT (#APPLY F f) (#APPLY F g₁))
-                    concl = ∀𝕎-□Func2 aw6 hyp (Mod.↑□ M ff e4)
-
-        aw2 : ∀𝕎 w1 (λ w2 e2 → (g₁ g₂ : CTerm) → equalInType i w2 #BAIRE g₁ g₂
-                              → equalInType i w2 (sub0 g₁ (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
-                                                                    (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]QBAIREn ⌞ #νtestMup F f ⌟))
-                                                                             (#[0]EQ (#[0]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[0]APPLY ⌞ F ⌟ #[0]VAR) #[0]NAT))))
-                                             (#APPLY #lam3AX g₁) (#APPLY #lam3AX g₂))
-        aw2 w2 e2 g₁ g₂ eg =
-          ≡CTerm→equalInType (sym (sub0-contQBodyPI-PI F f (#νtestMup F f) g₁)) (aw3 w2 e2 g₁ g₂ eg)
-
-        eql2 : equalInType i w1 (#PI #BAIRE
-                                     (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
-                                              (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]QBAIREn ⌞ #νtestMup F f ⌟))
-                                                       (#[0]EQ (#[0]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[0]APPLY ⌞ F ⌟ #[0]VAR) #[0]NAT))))
-                                  #lam3AX
-                                  #lam3AX
-        eql2 = equalInType-PI
-                 (λ w2 e2 → eqTypesBAIRE)
-                 (λ w2 e2 g₁ g₂ eg → ≡CTerm→eqTypes (sym (sub0-contQBodyPI-PI F f (#νtestMup F f) g₁)) (sym (sub0-contQBodyPI-PI F f (#νtestMup F f) g₂)) (ea2 w2 e2 g₁ g₂ eg))
-                 aw2
-
-        eql1 : equalInType i w1 (sub0 (#νtestMup F f)
-                                      (#[0]PI #[0]BAIRE
-                                              (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                                       (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]QBAIREn #[1]VAR1))
-                                                                (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT)))))
-                                 #lam3AX
-                                 #lam3AX
-        eql1 = ≡CTerm→equalInType (sym (sub0-contQBodyPI F f (#νtestMup F f))) eql2
-
-
-    h0 : ∈Type i w (#SUM #QNAT
-                         (#[0]PI #[0]BAIRE
-                                 (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                          (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]QBAIREn #[1]VAR1))
-                                                   (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT)))))
-                   (#PAIR (#νtestMup F f) #lam3AX)
-    h0 = equalInType-SUM (λ w' e' → eqTypesQNAT) (equalTypes-contQBodyPI i w F F f f ∈F ∈f) (Mod.∀𝕎-□ M aw)
---}
+      sub'' : subRen (dom𝕎· w3) (dom𝕎· w') r' r''
+      sub'' = snd (snd (snd (snd (snd (snd (snd c))))))
+  ... | inj₂ z rewrite z | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) | stepVal a w1 isv =
+    ⊥-elim (¬just≡nothing z)
 
 \end{code}
