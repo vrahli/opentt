@@ -644,20 +644,21 @@ isHighestFreshℕ {suc k} {w1} {w2} {a} {b} n comp with step⊎ (FRESH a) w1
 ... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing z)
 
 
-νtestMup⇓ℕ : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
+abstract
+  νtestMup⇓ℕ : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
               → ∈Type i w #BAIRE→NAT F
               → ∈Type i w #BAIRE f
               → Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w to w'))
-νtestMup⇓ℕ cn kb gc i w F f ∈F ∈f = n , c
-  where
-    h : #⇓sameℕ w (#νtestMup F f) (#νtestMup F f)
-    h = νtestM-QNAT-shift cn kb gc i w F f ∈F ∈f
+  νtestMup⇓ℕ cn kb gc i w F f ∈F ∈f = n , c
+    where
+      h : #⇓sameℕ w (#νtestMup F f) (#νtestMup F f)
+      h = νtestM-QNAT-shift cn kb gc i w F f ∈F ∈f
 
-    n : ℕ
-    n = fst h
+      n : ℕ
+      n = fst h
 
-    c : Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w to w')
-    c = #⇓→from-to {w} {#νtestMup F f} {#NUM n} (fst (snd h))
+      c : Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w to w')
+      c = #⇓→from-to {w} {#νtestMup F f} {#NUM n} (fst (snd h))
 
 
 -- This is capturing the fact there is a world w1 ⊒ w such that all ℕs that f gets applied to in

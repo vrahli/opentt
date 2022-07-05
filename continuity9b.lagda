@@ -89,6 +89,7 @@ open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -251,6 +252,7 @@ disjoint-lowerNames-renᵣ→ {l} {r} disj (suc n) i j =
 
 
 steps-updRel2-app : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Name} {F f g v : Term} {w0 w1 w2 w : 𝕎·} {r : ren} {k : ℕ}
+                   → ¬ name ∈ names F
                    → ¬ name ∈ names f
                    → ¬ name ∈ names g
                    → # f
@@ -261,6 +263,8 @@ steps-updRel2-app : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Nam
                    → name ∈ dom𝕎· w
                    → names f ⊆ dom𝕎· w1
                    → names g ⊆ dom𝕎· w
+                   → disjoint (names F) (renₗ r)
+                   → disjoint (names F) (renᵣ r)
                    → upto𝕎 name w1 w r
                    → compatible· name w1 Res⊤
                    → compatible· name w Res⊤
@@ -277,32 +281,157 @@ steps-updRel2-app : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Nam
                        × updRel2 name f g r' v v'
                        × upto𝕎 name w2 w' r'
                        × subRen (dom𝕎· w1) (dom𝕎· w) r r'))))
-steps-updRel2-app cc gc {n} {name} {F} {f} {g} {v} {w0} {w1} {w2} {w} {r} {k} nnf nng cf cg nFiw1 nFiw idom1 idom2 nfiw ngiw upw compat1 compat2 gt0 ww1 ww eqn comp ish inw isv =
+steps-updRel2-app cc gc {n} {name} {F} {f} {g} {v} {w0} {w1} {w2} {w} {r} {k} nnF nnf nng cf cg nFiw1 nFiw idom1 idom2 nfiw ngiw disj1 disj2 upw compat1 compat2 gt0 ww1 ww eqn comp ish inw isv =
   steps-updRel2
     cc gc {n} {name} {f} {g} {k} nnf nng cf cg
     {APPLY F (upd name f)} {APPLY F (force g)} {v} {w0} {w1} {w2} {w} {r}
-    (updRel2-APPLY F F (upd name f) (force g) {!!} updRel2-upd)
+    (updRel2-APPLY F F (upd name f) (force g) (→updRel2-refl {name} {f} {g} {r} {F} nnF disj1 disj2) updRel2-upd)
     (→names-APPLY-upd⊆ {F} {f} {dom𝕎· w1} {name} nFiw1 idom1 nfiw)
     (→names-APPLY-force⊆ {F} {g} {dom𝕎· w} nFiw ngiw)
     idom2 nfiw ngiw upw compat1 compat2 gt0 ww1 ww eqn comp ish inw isv
 
 
+
+disjoint[]ᵣ : (l : List Name) → disjoint l []
+disjoint[]ᵣ l n i ()
+
+
+wfRen-refl : (w : 𝕎·) → wfRen w w []
+wfRen-refl w =
+  mkWfRen (λ n ()) (λ n ()) tt tt
+
+
+upto𝕎getT-refl : (name : Name) (w : 𝕎·) → upto𝕎getT name w w []
+upto𝕎getT-refl name w n1 n2 k d1 d2 i rewrite i = refl
+
+
+upto𝕎-refl : (name : Name) (w : 𝕎·) → upto𝕎 name w w []
+upto𝕎-refl name w = mkUpto𝕎 (wfRen-refl w) (upto𝕎getT-refl name w)
+
+
+¬Names→¬∈names : (name : Name) (a : Term) → ¬Names a → ¬ name ∈ names a
+¬Names→¬∈names name a h rewrite ¬names→[] a h = λ ()
+
+
+#⇛-#NUM≡→ : {a : CTerm} {k1 k2 : ℕ} {w : 𝕎·}
+              → k1 ≡ k2
+              → a #⇛ #NUM k1 at w
+              → a #⇛ #NUM k2 at w
+#⇛-#NUM≡→ {a} {k1} {k2} {w} e c rewrite e = c
+
+
+→equalInType-NAT-⊑ : (kb : K□) {i : ℕ} {w1 w2 : 𝕎·} {a b : CTerm} {k : ℕ}
+                      → ∈Type i w1 #NAT a
+                      → ∈Type i w1 #NAT b
+                      → w1 ⊑· w2
+                      → a #⇓ #NUM k at w2
+                      → b #⇓ #NUM k at w2
+                      → equalInType i w1 #NAT a b
+→equalInType-NAT-⊑ kb {i} {w1} {w2} {a} {b} {k} i1 i2 e c1 c2 =
+  →equalInType-NAT i w1 a b (Mod.∀𝕎-□ M concl)
+  where
+    j1 : NATeq w1 a a
+    j1 = kb (equalInType-NAT→ i w1 a a i1) w1 (⊑-refl· w1)
+
+    k1 : ℕ
+    k1 = fst j1
+
+    x1 : a #⇛ #NUM k1 at w1
+    x1 = fst (snd j1)
+
+    e1 : k ≡ k1
+    e1 = #NUMinj (#⇓-val-det {w2} {a} {#NUM k} {#NUM k1} tt tt c1 (lower (x1 w2 e)))
+
+    j2 : NATeq w1 b b
+    j2 = kb (equalInType-NAT→ i w1 b b i2) w1 (⊑-refl· w1)
+
+    k2 : ℕ
+    k2 = fst j2
+
+    x2 : b #⇛ #NUM k2 at w1
+    x2 = fst (snd j2)
+
+    e2 : k ≡ k2
+    e2 = #NUMinj (#⇓-val-det {w2} {b} {#NUM k} {#NUM k2} tt tt c2 (lower (x2 w2 e)))
+
+    concl : ∀𝕎 w1 (λ w' _ → NATeq w' a b)
+    concl w' e' = k , d1 , d2
+      where
+        d1 : a #⇛ #NUM k at w'
+        d1 = ∀𝕎-mon e' (#⇛-#NUM≡→ {a} (sym e1) x1)
+
+        d2 : b #⇛ #NUM k at w'
+        d2 = ∀𝕎-mon e' (#⇛-#NUM≡→ {b} (sym e2) x2)
+
+
+∈#BAIRE→NAT→upd-force→≡ : (kb : K□) {i : ℕ} {w0 w1 w2 : 𝕎·} {F f : CTerm} {v : Term} {k : ℕ} {name : Name}
+                             → ∀𝕎-get0-NUM w0 name
+                             → ∈Type i w0 #BAIRE→NAT F
+                             → ∈Type i w0 #BAIRE f
+                             → isValue v
+                             → w0 ⊑· w1
+                             → w0 ⊑· w2
+                             → APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ v at w1
+                             → APPLY ⌜ F ⌝ (force ⌜ f ⌝) ⇓ NUM k at w2
+                             → v ≡ NUM k
+∈#BAIRE→NAT→upd-force→≡ kb {i} {w0} {w1} {w2} {F} {f} {v} {k} {name} gt0 iF if isv e1 e2 c1 c2 =
+  trans (⇓-val-det {w1} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} {NUM k1} isv tt c1 (lower (x1 w1 e1)))
+        (sym (⇓-val-det {w2} {APPLY ⌜ F ⌝ (force ⌜ f ⌝)} {NUM k} {NUM k1} tt tt c2 (lower (x2 w2 e2))))
+  where
+    j1 : equalInType i w0 #BAIRE (#upd name f) (#force f)
+    j1 = equalInType-upd-force i w0 name f gt0 if
+
+    j2 : equalInType i w0 #NAT (#APPLY F (#upd name f)) (#APPLY F (#force f))
+    j2 = ∈BAIRE→NAT→ {i} {w0} {F} {F} {#upd name f} {#force f} iF j1
+
+    j3 : NATeq w0 (#APPLY F (#upd name f)) (#APPLY F (#force f))
+    j3 = kb (equalInType-NAT→ i w0 (#APPLY F (#upd name f)) (#APPLY F (#force f)) j2) w0 (⊑-refl· w0)
+
+    k1 : ℕ
+    k1 = fst j3
+
+    x1 : #APPLY F (#upd name f) #⇛ #NUM k1 at w0
+    x1 = fst (snd j3)
+
+    x2 : #APPLY F (#force f) #⇛ #NUM k1 at w0
+    x2 = snd (snd j3)
+
+
+-- TODO: get rid of (¬ name ∈ names ⌜ g ⌝)?
+-- NOTE: We can't guarantee the upto𝕎 assumption because in this case, w1s' and w1 might be different
+--   extensions of the same 𝕎·
+-- TODO: can't we instead derive that (APPLY F (upd name f)) computes to NUM k' in w1?
 eqfgq-aux : (cc : ContConds) (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
-            {i : ℕ} {w1 w1s' w2 : 𝕎·} {F f g : CTerm} {name : Name}
+            {i : ℕ} {w0 w1 w1s' w2 : 𝕎·} {F f g : CTerm} {name : Name}
             {k : ℕ} {v : Term} {j : ℕ} {tn : ℕ}
-            → ¬ name ∈ names ⌜ f ⌝
             → ¬ name ∈ names ⌜ F ⌝
+            → ¬ name ∈ names ⌜ f ⌝
+            → ¬ name ∈ names ⌜ g ⌝
             → ¬ name ∈ names𝕎· w1s'
             → name ∈ dom𝕎· w1s'
+            → name ∈ dom𝕎· w1
+            → names ⌜ F ⌝ ⊆ dom𝕎· w1s'
+            → names ⌜ F ⌝ ⊆ dom𝕎· w1
+            → names ⌜ f ⌝ ⊆ dom𝕎· w1s'
+            → names ⌜ g ⌝ ⊆ dom𝕎· w1
+--            → names ⌜ g ⌝ ⊆ dom𝕎· w1s'
+            → upto𝕎 name w1s' w1 []
             → compatible· name w1s' Res⊤
+            → compatible· name w1 Res⊤
             → ∀𝕎-get0-NUM w1s' name
             → getT 0 name w2 ≡ just (NUM j)
             → tn ≡ suc j
             → isValue v
+            → w0 ⊑· w1s'
+            → w0 ⊑· w1
+            → ∀𝕎-get0-NUM w0 name
+            → ∈Type i w0 #BAIRE→NAT F
+            → ∈Type i w0 #BAIRE f
+            → ∀𝕎 w0 (λ w' _ → (k : ℕ) → k < tn → ⇛!sameℕ w' (APPLY ⌜ f ⌝ (NUM k)) (APPLY ⌜ g ⌝ (NUM k)))
             → steps k (APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) , w1s') ≡ (v , w2)
             → (k' : ℕ) → #APPLY F (#force f) #⇓ #NUM k' at w1 → #APPLY F (#force g) #⇓ #NUM k' at w1
-eqfgq-aux cc cn kb gc {i} {w1} {w1s'} {w2} {F} {f} {g} {name} {k} {v} {j} {tn} nnf nnF nnw1s' idomw1s' compat1 wgt0 g0 eqj isvv compa k' c =
-  {!!}
+eqfgq-aux cc cn kb gc {i} {w0} {w1} {w1s'} {w2} {F} {f} {g} {name} {k} {v} {j} {tn} nnF nnf nng nnw1s' idomw1s' idomw1 nFiw1 nFiw2 nfiw ngiw upw compat1 compat2 wgt0 g0 eqj isvv ew1 ew2 get0 inF inf eqn compa k' c =
+  ⇓-from-to→⇓ {w1} {w'} {APPLY ⌜ F ⌝ (force ⌜ g ⌝)} {NUM k'} (k'' , compg2)
   where
     uF : updCtxt2 name ⌜ f ⌝ ⌜ F ⌝
     uF = updCtxt2-refl name ⌜ f ⌝ ⌜ F ⌝ nnF
@@ -321,27 +450,59 @@ eqfgq-aux cc cn kb gc {i} {w1} {w1s'} {w2} {F} {f} {g} {name} {k} {v} {j} {tn} n
     ish : isHighestℕ {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} tn name compa
     ish = fst pish gt0
 
+    compg0 : Σ ℕ (λ k'' → Σ Term (λ v' → Σ 𝕎· (λ w' → Σ ren (λ r' →
+               steps k'' (APPLY ⌜ F ⌝ (force ⌜ g ⌝) , w1) ≡ (v' , w')
+               × updRel2 name ⌜ f ⌝ ⌜ g  ⌝ r' v v'
+               × upto𝕎 name w2 w' r'
+               × subRen (dom𝕎· w1s') (dom𝕎· w1) [] r'))))
+    compg0 = steps-updRel2-app
+               cc gc {tn} {name} {⌜ F ⌝} {⌜ f ⌝} {⌜ g ⌝} {v} {w0} {w1s'} {w2} {w1} {[]} {k}
+               nnF nnf nng {--(¬Names→¬∈names name ⌜ g ⌝ nng)--} (CTerm.closed f) (CTerm.closed g) nFiw1 nFiw2 idomw1s' idomw1 nfiw ngiw
+               (disjoint[]ᵣ (names ⌜ F ⌝)) (disjoint[]ᵣ (names ⌜ F ⌝)) upw compat1 compat2 wgt0
+               ew1 ew2 eqn {--(∀𝕎-mon e1' eqb3)--} compa ish (snd pish) isvv
+
+    k'' : ℕ
+    k'' = fst compg0
+
+    v' : Term
+    v' = fst (snd compg0)
+
+    w' : 𝕎·
+    w' = fst (snd (snd compg0))
+
+    r' : ren
+    r' = fst (snd (snd (snd compg0)))
+
+    compg1 : steps k'' (APPLY ⌜ F ⌝ (force ⌜ g ⌝) , w1) ≡ (v' , w')
+    compg1 = fst (snd (snd (snd (snd compg0))))
+
+--    compg2 : steps k'' (APPLY ⌜ F ⌝ (force ⌜ g ⌝) , w1) ≡ (v' , w1)
+--    compg2 = fst (¬Names→steps k'' w1s' w' w1 (APPLY ⌜ F ⌝ (force ⌜ g ⌝)) v' {!!} compg1)
+
+    -- we can prove that v ≡ NUM k' from compa and c, and therefore that v' ≡ NUM k' from ur
+    ur :  updRel2 name ⌜ f ⌝ ⌜ g  ⌝ r' v v'
+    ur = fst (snd (snd (snd (snd (snd compg0)))))
+
+    eqv : v ≡ NUM k'
+    eqv = ∈#BAIRE→NAT→upd-force→≡
+            kb {i} {w0} {w1s'} {w1} {F} {f} {v} {k'} {name} get0 inF inf isvv ew1 ew2
+            (⇓-from-to→⇓ {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} (k , compa)) c
+
+    ur' :  updRel2 name ⌜ f ⌝ ⌜ g  ⌝ r' (NUM k') v'
+    ur' rewrite sym eqv = ur
+
+    eqv' : v' ≡ NUM k'
+    eqv' = updRel2-NUMₗ→ ur'
+
+    compg2 : steps k'' (APPLY ⌜ F ⌝ (force ⌜ g ⌝) , w1) ≡ (NUM k' , w')
+    compg2 rewrite (sym eqv') = compg1
+
 {--
-        compg0 : Σ ℕ (λ k' → Σ Term (λ v' → steps k' (APPLY ⌜ F ⌝ (force ⌜ g ⌝) , w1) ≡ (v' , w1) × updRel name ⌜ f ⌝ ⌜ g  ⌝ v v'))
-        compg0 = ? --steps-updRel-app gc {tn} {name} {⌜ F ⌝} {⌜ f ⌝} {⌜ g ⌝} {v} {k} {w1'} {w2} {w1} nnF nnf nng (CTerm.closed f) (CTerm.closed g) compat1 wgt0 (∀𝕎-mon e1' eqb3) compa ish isvv
+    equf : ∀𝕎 w1' (λ w' _ → NATeq w' (#APPLY F (#upd name f)) (#APPLY F (#force f)))
+    equf = kb (equalInType-NAT→ i w1' (#APPLY F (#upd name f)) (#APPLY F (#force f)) (∈BAIRE→NAT→ (equalInType-mon ∈F w1' e1') (equalInType-upd-force i w1' name f wgt0 (equalInType-mon ∈f w1' e1'))))
 
-        k' : ℕ
-        k' = fst compg0
-
-        v' : Term
-        v' = fst (snd compg0)
-
-        compg1 : steps k' (APPLY ⌜ F ⌝ (force ⌜ g ⌝) , w1) ≡ (v' , w1)
-        compg1 = fst (snd (snd compg0))
-
-        ur :  updRel name ⌜ f ⌝ ⌜ g  ⌝ v v'
-        ur = snd (snd (snd compg0))
-
-        equf : ∀𝕎 w1' (λ w' _ → NATeq w' (#APPLY F (#upd name f)) (#APPLY F (#force f)))
-        equf = kb (equalInType-NAT→ i w1' (#APPLY F (#upd name f)) (#APPLY F (#force f)) (∈BAIRE→NAT→ (equalInType-mon ∈F w1' e1') (equalInType-upd-force i w1' name f wgt0 (equalInType-mon ∈f w1' e1'))))
-
-        compg : #APPLY F (#force g) #⇓ #NUM n at w1
-        compg = eqfg-aux {w1} {w1'} e0' {name} {⌜ f ⌝} {⌜ g ⌝} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ g ⌝)} {v} {v'} {n} isvv (equf w1' (⊑-refl· _)) comp1 (⇓-from-to→⇓ (k , compa)) (⇓-from-to→⇓ (k' , compg1)) ur
+    compg : #APPLY F (#force g) #⇓ #NUM n at w1
+    compg = eqfg-aux {w1} {w1'} e0' {name} {⌜ f ⌝} {⌜ g ⌝} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ g ⌝)} {v} {v'} {n} isvv (equf w1' (⊑-refl· _)) comp1 (⇓-from-to→⇓ (k , compa)) (⇓-from-to→⇓ (k' , compg1)) ur
 --}
 
 
@@ -368,9 +529,10 @@ eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g smod eqb =
                          → □· w' (λ w'' _ → NATeq w'' (#APPLY f a₁) (#APPLY g a₂)))
     eqb2 w1 e1 a₁ a₂ eqa = equalInType-NAT→ i w1 (#APPLY f a₁) (#APPLY g a₂) (eqb1 w1 e1 a₁ a₂ (→equalInType-QNATn (testM-QNAT cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)) eqa))
 
--- NOTE: It is not clear how this could work since to prove compg0 below we need to know that f and g compute to the same number
--- on the same input, as long as this input is less than the modulus of F at f. However, to use eqb2 for that we would have to
--- prove that this input is less than all possible moduli of continuity for all extensions...
+-- NOTE: It is not clear how this could work since to prove compg0 below we need to know that f and g
+-- compute to the same number on the same input, as long as this input is less than the modulus
+-- of F at f. However, to use eqb2 for that we would have to prove that this input is less than
+-- all possible moduli of continuity for all extensions...
 -- Counter-example?
 
     eqb3 : ∀𝕎 w (λ w' _ → (k : ℕ)
@@ -399,122 +561,124 @@ eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g smod eqb =
     inn : ∈Type i w #NAT (#APPLY F (#force f))
     inn = equalInType-refl (equalInType-sym (equalInType-APPLY-force ∈F ∈f))
 
+    w1' : 𝕎·
+    w1' = fst smod
+
+    e1' : w ⊑· w1'
+    e1' = fst (snd smod)
+
+    sma : smallestModAux cn kb gc i w F f w1' e1' ∈F ∈f
+    sma = snd (snd smod)
+
+    eqb4 : Σ ℕ (λ n → Σ 𝕎· (λ w2 → #νtestMup F f #⇓ #NUM n from w1' to w2
+                     × ∀𝕎 w1' (λ w' _ → (k : ℕ) → k < n
+                                       → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))))
+    eqb4 = smallestModAux→NATeq cn kb gc {i} {w} {F} {f} {g} {w1'} {e1'} ∈F ∈f sma eqb3
+
+    tn : ℕ
+    tn = fst eqb4
+
+    w2 : 𝕎·
+    w2 = fst (snd eqb4)
+
+    compt : νtestMup ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM tn from w1' to w2
+    compt = fst (snd (snd eqb4))
+
+    eqb5 : ∀𝕎 w1' (λ w' _ → (k : ℕ) → k < tn
+                           → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
+    eqb5 = snd (snd (snd eqb4))
+
+    w1s : 𝕎·
+    w1s = startNewChoiceT Res⊤ w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝)
+
+    name : Name
+    name = newChoiceT w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝)
+
+    w1s' : 𝕎·
+    w1s' = chooseT name w1s (NUM 0)
+
+    compu : Σ Term (λ v → Σ ℕ (λ j →
+               APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ v from w1s' to w2
+               × isValue v
+               × getT 0 name w2 ≡ just (NUM j)
+               × tn ≡ suc j
+               × compatible· name w1s Res⊤))
+    compu = νtestM⇓→ cn {w1'} {w2} {⌜ F ⌝} {⌜ f ⌝} {tn} (CTerm.closed F) (CTerm.closed f) compt
+
+    v : Term
+    v = fst compu
+
+    j : ℕ
+    j = fst (snd compu)
+
+    e0' : w1' ⊑· w1s'
+    e0' = ⊑-trans· (startNewChoiceT⊏ Res⊤ w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝)) (choose⊑· name w1s (T→ℂ· (NUM 0)))
+
+    e0'' : w ⊑· w1s'
+    e0'' = ⊑-trans· e1' e0'
+
+    k : ℕ
+    k = fst (fst (snd (snd compu)))
+
+    compa : steps k (APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) , w1s') ≡ (v , w2)
+    compa = snd (fst (snd (snd compu)))
+
+    isvv : isValue v
+    isvv = fst (snd (snd (snd compu)))
+
+    g0 : getT 0 name w2 ≡ just (NUM j)
+    g0 = fst (snd (snd (snd (snd compu))))
+
+    eqj : tn ≡ suc j
+    eqj = fst (snd (snd (snd (snd (snd compu)))))
+
+    compat : compatible· name w1s Res⊤
+    compat = snd (snd (snd (snd (snd (snd compu)))))
+
+    compat1 : compatible· name w1s' Res⊤
+    compat1 = ⊑-compatible· (choose⊑· name w1s (T→ℂ· (NUM 0))) compat
+
+    wgt0 : ∀𝕎-get0-NUM w1s' name
+    wgt0 = cn name w1s 0 compat
+
+    nnf : ¬ name ∈ names ⌜ f ⌝
+    nnf = ¬newChoiceT-testMup∈names-f w1' ⌜ F ⌝ ⌜ f ⌝
+
+    nnF : ¬ name ∈ names ⌜ F ⌝
+    nnF = ¬newChoiceT-testMup∈names-F w1' ⌜ F ⌝ ⌜ f ⌝
+
+    uF : updCtxt2 name ⌜ f ⌝ ⌜ F ⌝
+    uF = updCtxt2-refl name ⌜ f ⌝ ⌜ F ⌝ nnF
+
+    nnw1' : ¬ name ∈ names𝕎· w1'
+    nnw1' = ¬newChoiceT-testMup∈names𝕎 w1' ⌜ F ⌝ ⌜ f ⌝
+
+    nnw1s' : ¬ name ∈ names𝕎· w1s'
+    nnw1s' i = nnw1' (∈names𝕎-startNewChoiceT→ cc name w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝) (names𝕎-chooseT→ cc name name w1s (NUM 0) i))
+
+    idomw1s' : name ∈ dom𝕎· w1s'
+    idomw1s' = dom𝕎-chooseT cc name name w1s (NUM 0) (ContConds.ccNchoice cc w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝))
+
+    pish : (getT≤ℕ w2 tn name → isHighestℕ {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} tn name compa)
+            × ∈names𝕎 {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} name compa
+    pish = steps-sat-isHighestℕ2
+             cc gc {name} {⌜ f ⌝} {k} nnf (CTerm.closed f)
+             {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} {tn}
+             compa isvv (updCtxt2-APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) uF updCtxt2-upd)
+             compat1 wgt0 nnw1s' idomw1s'
+
+    gt0 : getT≤ℕ w2 tn name
+    gt0 = j , g0 , ≡suc→< eqj
+
+    ish : isHighestℕ {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} tn name compa
+    ish = proj₁ pish gt0 {--fst pish ?--}
+
     aw : ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) ((k : ℕ) → #APPLY F (#force f) #⇓ #NUM k at w' → #APPLY F (#force g) #⇓ #NUM k at w'))
     aw w1 e1 = lift imp
       where
-        w1' : 𝕎·
-        w1' = fst smod
-
-        e1' : w ⊑· w1'
-        e1' = fst (snd smod)
-
-        sma : smallestModAux cn kb gc i w F f w1' e1' ∈F ∈f
-        sma = {!!} --snd (snd smod)
-
-        eqb4 : Σ ℕ (λ n → Σ 𝕎· (λ w2 → #νtestMup F f #⇓ #NUM n from w1' to w2
-                          × ∀𝕎 w1' (λ w' _ → (k : ℕ) → k < n
-                                            → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))))
-        eqb4 = smallestModAux→NATeq cn kb gc {i} {w} {F} {f} {g} {w1'} {e1'} ∈F ∈f {!!} {--sma--} eqb3
-
-        tn : ℕ
-        tn = fst eqb4
-
-        w2 : 𝕎·
-        w2 = fst (snd eqb4)
-
-        compt : νtestMup ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM tn from w1' to w2
-        compt = fst (snd (snd eqb4))
-
-        eqb5 : ∀𝕎 w1' (λ w' _ → (k : ℕ) → k < tn
-                               → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
-        eqb5 = snd (snd (snd eqb4))
-
-        w1s : 𝕎·
-        w1s = startNewChoiceT Res⊤ w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝)
-
-        name : Name
-        name = newChoiceT w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝)
-
-        compu : Σ Term (λ v → Σ ℕ (λ j →
-                 APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ v from (chooseT name w1s (NUM 0)) to w2
-                 × isValue v
-                 × getT 0 name w2 ≡ just (NUM j)
-                 × tn ≡ suc j
-                 × compatible· name w1s Res⊤))
-        compu = νtestM⇓→ cn {w1'} {w2} {⌜ F ⌝} {⌜ f ⌝} {tn} (CTerm.closed F) (CTerm.closed f) compt
-
-        v : Term
-        v = fst compu
-
-        j : ℕ
-        j = fst (snd compu)
-
-        w1s' : 𝕎·
-        w1s' = chooseT name w1s (NUM 0)
-
-        e0' : w1' ⊑· w1s'
-        e0' = ⊑-trans· (startNewChoiceT⊏ Res⊤ w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝)) (choose⊑· name w1s (T→ℂ· (NUM 0)))
-
-        e0'' : w ⊑· w1s'
-        e0'' = ⊑-trans· e1' e0'
-
-        k : ℕ
-        k = fst (fst (snd (snd compu)))
-
-        compa : steps k (APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) , w1s') ≡ (v , w2)
-        compa = snd (fst (snd (snd compu)))
-
-        isvv : isValue v
-        isvv = fst (snd (snd (snd compu)))
-
-        g0 : getT 0 name w2 ≡ just (NUM j)
-        g0 = fst (snd (snd (snd (snd compu))))
-
-        eqj : tn ≡ suc j
-        eqj = fst (snd (snd (snd (snd (snd compu)))))
-
-        compat : compatible· name w1s Res⊤
-        compat = snd (snd (snd (snd (snd (snd compu)))))
-
-        compat1 : compatible· name w1s' Res⊤
-        compat1 = ⊑-compatible· (choose⊑· name w1s (T→ℂ· (NUM 0))) compat
-
-        wgt0 : ∀𝕎-get0-NUM w1s' name
-        wgt0 = cn name w1s 0 compat
-
-        nnf : ¬ name ∈ names ⌜ f ⌝
-        nnf = ¬newChoiceT-testMup∈names-f w1' ⌜ F ⌝ ⌜ f ⌝
-
-        nnF : ¬ name ∈ names ⌜ F ⌝
-        nnF = ¬newChoiceT-testMup∈names-F w1' ⌜ F ⌝ ⌜ f ⌝
-
-        uF : updCtxt2 name ⌜ f ⌝ ⌜ F ⌝
-        uF = updCtxt2-refl name ⌜ f ⌝ ⌜ F ⌝ nnF
-
-        nnw1' : ¬ name ∈ names𝕎· w1'
-        nnw1' = ¬newChoiceT-testMup∈names𝕎 w1' ⌜ F ⌝ ⌜ f ⌝
-
-        nnw1s' : ¬ name ∈ names𝕎· w1s'
-        nnw1s' i = nnw1' (∈names𝕎-startNewChoiceT→ cc name w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝) (names𝕎-chooseT→ cc name name w1s (NUM 0) i))
-
-        idomw1s' : name ∈ dom𝕎· w1s'
-        idomw1s' = dom𝕎-chooseT cc name name w1s (NUM 0) (ContConds.ccNchoice cc w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝))
-
-        pish : (getT≤ℕ w2 tn name → isHighestℕ {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} tn name compa)
-               × ∈names𝕎 {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} name compa
-        pish = steps-sat-isHighestℕ2
-                 cc gc {name} {⌜ f ⌝} {k} nnf (CTerm.closed f)
-                 {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} {tn}
-                 compa isvv (updCtxt2-APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) uF updCtxt2-upd)
-                 compat1 wgt0 nnw1s' idomw1s'
-
-        gt0 : getT≤ℕ w2 tn name
-        gt0 = j , g0 , ≡suc→< eqj
-
-        ish : isHighestℕ {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} tn name compa
-        ish = proj₁ pish gt0 {--fst pish ?--}
-
         -- TODO: this is what we have to prove
+        -- We want to use eqfgq-aux on w0=w1s' & w1s'=w1s' & w1=w1s' too
+        -- and then use →equalInType-NAT-⊑
         imp : (k : ℕ) → #APPLY F (#force f) #⇓ #NUM k at w1 → #APPLY F (#force g) #⇓ #NUM k at w1
         imp k' c = {!!}
 
