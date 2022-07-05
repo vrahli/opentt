@@ -589,6 +589,8 @@ fvars-shiftUp≡ n (CS x) = refl
 fvars-shiftUp≡ n (NAME x) = refl
 fvars-shiftUp≡ n (FRESH t)
   rewrite fvars-shiftUp≡ n t = refl
+fvars-shiftUp≡ n (LOAD t)
+  rewrite fvars-shiftUp≡ n t = refl
 fvars-shiftUp≡ n (CHOOSE t t₁)
   rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
         | fvars-shiftUp≡ n t
@@ -897,6 +899,8 @@ fvars-shiftDown≡ n (CS x) = refl
 fvars-shiftDown≡ n (NAME x) = refl
 fvars-shiftDown≡ n (FRESH t)
   rewrite fvars-shiftDown≡ n t = refl
+fvars-shiftDown≡ n (LOAD t)
+  rewrite fvars-shiftDown≡ n t = refl
 fvars-shiftDown≡ n (CHOOSE t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
         | fvars-shiftDown≡ n t
@@ -991,6 +995,7 @@ fvars-shiftNameUp n FREE = refl
 fvars-shiftNameUp n (CS x) = refl
 fvars-shiftNameUp n (NAME x) = refl
 fvars-shiftNameUp n (FRESH a) rewrite fvars-shiftNameUp (suc n) a = refl
+fvars-shiftNameUp n (LOAD a) rewrite fvars-shiftNameUp n a = refl
 fvars-shiftNameUp n (CHOOSE a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
 --fvars-shiftNameUp n (IFC0 a a₁ a₂) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ | fvars-shiftNameUp n a₂ = refl
 fvars-shiftNameUp n (TSQUASH a) rewrite fvars-shiftNameUp n a = refl
@@ -1129,6 +1134,7 @@ fvars-subv v a (FRESH b) {x} i =
   where
     j : (suc x) ∈ removeV (suc v) (fvars b) ++ fvars (shiftUp 0 a)
     j = fvars-subv (suc v) (shiftUp 0 a) b {suc x} (∈lowerVars→ x _ i)--}
+fvars-subv v a (LOAD b) = fvars-subv v a b
 fvars-subv v a (CHOOSE b b₁) {x} i with ∈-++⁻ (fvars (subv v a b)) i
 ... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b p)
 ... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b₁ p)
@@ -1339,6 +1345,8 @@ shiftDown1-subv1-shiftUp0 n a (CS x) ca = refl
 shiftDown1-subv1-shiftUp0 n a (NAME x) ca = refl
 shiftDown1-subv1-shiftUp0 n a (FRESH b) ca
   rewrite shiftDown1-subv1-shiftUp0 n (shiftNameUp 0 a) b (→#shiftNameUp 0 {a} ca) = refl
+shiftDown1-subv1-shiftUp0 n a (LOAD b) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
 shiftDown1-subv1-shiftUp0 n a (CHOOSE b b₁) ca
   rewrite shiftDown1-subv1-shiftUp0 n a b ca
         | shiftDown1-subv1-shiftUp0 n a b₁ ca = refl
@@ -1567,6 +1575,9 @@ CHOOSEinj2 refl =  refl
 
 FRESHinj : {a b : Term} → FRESH a ≡ FRESH b → a ≡ b
 FRESHinj refl =  refl
+
+LOADinj : {a b : Term} → LOAD a ≡ LOAD b → a ≡ b
+LOADinj refl =  refl
 
 
 {--IFC0inj1 : {a b c d e f : Term} → IFC0 a b c ≡ IFC0 d e f → a ≡ d
@@ -1992,6 +2003,7 @@ shiftUp-inj {n} {FREE} {FREE} e = refl
 shiftUp-inj {n} {CS x} {CS .x} refl = refl
 shiftUp-inj {n} {NAME x} {NAME .x} refl = refl
 shiftUp-inj {n} {FRESH a} {FRESH b} e rewrite shiftUp-inj (FRESHinj e) = refl
+shiftUp-inj {n} {LOAD a} {LOAD b} e rewrite shiftUp-inj (LOADinj e) = refl
 shiftUp-inj {n} {CHOOSE a a₁} {CHOOSE b b₁} e rewrite shiftUp-inj (CHOOSEinj1 e) | shiftUp-inj (CHOOSEinj2 e) = refl
 --shiftUp-inj {n} {IFC0 a a₁ a₂} {IFC0 b b₁ b₂} e rewrite shiftUp-inj (IFC0inj1 e) | shiftUp-inj (IFC0inj2 e) | shiftUp-inj (IFC0inj3 e) = refl
 shiftUp-inj {n} {TSQUASH a} {TSQUASH b} e rewrite shiftUp-inj (TSQUASHinj e) = refl

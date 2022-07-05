@@ -282,6 +282,10 @@ differ-INRₗ→ {name1} {name2} {f} {a} {.(INR a₂)} (differ-INR .a a₂ diff)
 ≡FRESH {a} {b} e rewrite e = refl
 
 
+≡LOAD : {a b : Term} → a ≡ b → LOAD a ≡ LOAD b
+≡LOAD {a} {b} e rewrite e = refl
+
+
 ≡LAMBDA : {a b : Term} → a ≡ b → LAMBDA a ≡ LAMBDA b
 ≡LAMBDA {a} {b} e rewrite e = refl
 
@@ -428,6 +432,7 @@ shiftNameUp-shiftNameUp {i} {j} {FRESH t} imp = ≡FRESH (shiftNameUp-shiftNameU
     c : (n : Name) → n ∈ names t → suc i ≤ n
     c 0 z = {!!}
     c (suc n) z = _≤_.s≤s (imp n (suc→∈lowerNames {n} {names t} z))
+shiftNameUp-shiftNameUp {i} {j} {LOAD t} imp = ≡LOAD (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {CHOOSE t t₁} imp = ≡CHOOSE (shiftNameUp-shiftNameUp {i} {j} {t} (λ n k → imp n (∈-++⁺ˡ k))) (shiftNameUp-shiftNameUp {i} {j} {t₁} (λ n k → imp n (∈-++⁺ʳ (names t) k)))
 shiftNameUp-shiftNameUp {i} {j} {TSQUASH t} imp = ≡TSQUASH (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {TTRUNC t} imp = ≡TTRUNC (shiftNameUp-shiftNameUp {i} {j} {t} imp)
@@ -478,6 +483,7 @@ shiftNameUp-shiftNameUp {i} {j} {FREE} imp = refl
 shiftNameUp-shiftNameUp {i} {j} {CS x} imp = ≡CS (sucIf≤-sucIf≤ {x} {i} {j} imp)
 shiftNameUp-shiftNameUp {i} {j} {NAME x} imp = ≡NAME (sucIf≤-sucIf≤ {x} {i} {j} imp)
 shiftNameUp-shiftNameUp {i} {j} {FRESH t} imp = ≡FRESH (shiftNameUp-shiftNameUp {suc i} {suc j} {t} (_≤_.s≤s imp))
+shiftNameUp-shiftNameUp {i} {j} {LOAD t} imp = ≡LOAD (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {CHOOSE t t₁} imp = ≡CHOOSE (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
 shiftNameUp-shiftNameUp {i} {j} {TSQUASH t} imp = ≡TSQUASH (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {TTRUNC t} imp = ≡TTRUNC (shiftNameUp-shiftNameUp {i} {j} {t} imp)

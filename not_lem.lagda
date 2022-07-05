@@ -196,7 +196,7 @@ getChoice→equalInType-#Σchoice-aux2 {n} {name} {w} {k} i sat g =
         (∀𝕎-mon e g) (#⇛!-refl {w'} {ℂ→C· k})  (sat→equalInType-Typeℂ₀₁· i w' k (0 , sat))
 --equalInType-#⇛-left-rev (∀𝕎-mon e g) (sat→equalInType-Typeℂ₀₁· i w' k (0 , sat))
 --→equalInType-QNAT i w' (#APPLY (#CS name) (#NUM n)) (ℂ→C· k) (Mod.∀𝕎-□ M aw')
-      where
+--      where
 --         aw' : ∀𝕎 w' (λ w'' _ → #weakMonEq w'' (#APPLY (#CS name) (#NUM n)) (ℂ→C· k))
 --         aw' w2 e2 w3 e3 = lift (k , step-⇓-trans (lower (g w3 (⊑-trans· e (⊑-trans· e2 e3)))) (⇓-refl (NUM k) w3) , ⇓-refl (NUM k) w3)
 

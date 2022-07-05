@@ -412,6 +412,10 @@ step-updRel2 cc gc {n} {name} {f} {g} {.(FRESH a)} {.(FRESH b)} {x} {w0} {w1} {w
       (λ x → suc-≢-0 (sym x)) ur) , -- we have to get force to contain name too, so that updRel2 relates terms with the same names
   →upto𝕎-startNewChoiceT cc name w1 w r a b upw ,
   subRen-trans (newChoiceT w1 a) (newChoiceT w b) r r (¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a))) (¬fresh∈dom𝕎2 w (names𝕎· w) (↓vars (names b))) (subRen-refl r)
+step-updRel2 cc gc {n} {name} {f} {g} {.(LOAD a₁)} {.(LOAD a₂)} {x} {w0} {w1} {w2} {w} {r} nnf nng cf cg naid nbid nfiw ngiw comp ind (updRel2-LOAD a₁ a₂ ur) upw gtn nnw idom idom' compat compat' wgt0 ew01 ew0 eqn
+  rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  0 , 1 , AX , AX , startNewChoices Res⊤ w1 a₁ , startNewChoices Res⊤ w a₂ , {!!}
+--0 , 0 , LOAD a₁ , TSQUASH a₂ , w1 , w , r , refl , refl , updRel2-TSQUASH _ _ ur , upw , subRen-refl r
 step-updRel2 cc gc {n} {name} {f} {g} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} {x} {w0} {w1} {w2} {w} {r} nnf nng cf cg naid nbid nfiw ngiw comp ind (updRel2-CHOOSE a₁ a₂ b₁ b₂ ur ur₁) upw gtn nnw idom idom' compat compat' wgt0 ew01 ew0 eqn with is-NAME a₁
 ... | inj₁ (nm , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) | fst (snd (updRel2-NAMEₗ→ ur)) =
   0 , 1 , AX , AX , chooseT nm w1 b₁ , chooseT (fst nm2) w b₂ , r , refl , refl ,

@@ -939,6 +939,7 @@ shiftNameUp-inj {n} {FREE} {FREE} e = refl
 shiftNameUp-inj {n} {CS x} {CS x₁} e = ≡CS (sucIf≤-inj {n} {x} {x₁} (CSinj e))
 shiftNameUp-inj {n} {NAME x} {NAME x₁} e = ≡NAME (sucIf≤-inj {n} {x} {x₁} (NAMEinj e))
 shiftNameUp-inj {n} {FRESH a} {FRESH b} e rewrite shiftNameUp-inj (FRESHinj e) = refl
+shiftNameUp-inj {n} {LOAD a} {LOAD b} e rewrite shiftNameUp-inj (LOADinj e) = refl
 shiftNameUp-inj {n} {CHOOSE a a₁} {CHOOSE b b₁} e rewrite shiftNameUp-inj (CHOOSEinj1 e) | shiftNameUp-inj (CHOOSEinj2 e) = refl
 --shiftNameUp-inj {n} {IFC0 a a₁ a₂} {IFC0 b b₁ b₂} e rewrite shiftNameUp-inj (IFC0inj1 e) | shiftNameUp-inj (IFC0inj2 e) | shiftNameUp-inj (IFC0inj3 e) = refl
 shiftNameUp-inj {n} {TSQUASH a} {TSQUASH b} e rewrite shiftNameUp-inj (TSQUASHinj e) = refl
@@ -1021,6 +1022,7 @@ fvars-shiftNameDown n FREE = refl
 fvars-shiftNameDown n (CS x) = refl
 fvars-shiftNameDown n (NAME x) = refl
 fvars-shiftNameDown n (FRESH a) rewrite fvars-shiftNameDown (suc n) a = refl
+fvars-shiftNameDown n (LOAD a) rewrite fvars-shiftNameDown n a = refl
 fvars-shiftNameDown n (CHOOSE a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
 --fvars-shiftNameDown n (IFC0 a a₁ a₂) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ | fvars-shiftNameDown n a₂ = refl
 fvars-shiftNameDown n (TSQUASH a) rewrite fvars-shiftNameDown n a = refl
@@ -1096,6 +1098,7 @@ shiftNameUpDown n (FRESH t) imp1 imp2 = ≡FRESH (shiftNameUpDown (suc n) t imp1
   where
     imp1' : (x : Name) → x ∈ names t → ¬ x ≡ suc n
     imp1' x i z rewrite z = imp1 n (suc→∈lowerNames {n} {names t} i) refl
+shiftNameUpDown n (LOAD t) imp1 imp2 = ≡LOAD (shiftNameUpDown n t imp1 imp2)
 shiftNameUpDown n (CHOOSE t t₁) imp1 imp2 = ≡CHOOSE (shiftNameUpDown n t (λ x i → imp1 x (∈-++⁺ˡ i)) (λ z → imp2 (∈-++⁺ˡ z))) (shiftNameUpDown n t₁ (λ x i → imp1 x (∈-++⁺ʳ (names t) i)) (λ z → imp2 (∈-++⁺ʳ (names t) z)))
 shiftNameUpDown n (TSQUASH t) imp1 imp2 = ≡TSQUASH (shiftNameUpDown n t imp1 imp2)
 shiftNameUpDown n (TTRUNC t) imp1 imp2 = ≡TTRUNC (shiftNameUpDown n t imp1 imp2)
@@ -1216,6 +1219,7 @@ renn¬∈ n m (NAME x) ni with x ≟ n
 ... | yes p rewrite p = ⊥-elim (ni (here refl))
 ... | no p = refl
 renn¬∈ n m (FRESH t) ni = ≡FRESH (renn¬∈ (suc n) (suc m) t (λ z → ni (suc→∈lowerNames {n} {names t} z)))
+renn¬∈ n m (LOAD t) ni = ≡LOAD (renn¬∈ n m t ni)
 renn¬∈ n m (CHOOSE t t₁) ni = ≡CHOOSE (renn¬∈ n m t (¬∈++2→¬∈1 {_} {_} {names t} {names t₁} {n} ni)) (renn¬∈ n m t₁ (¬∈++2→¬∈2 {_} {_} {names t} {names t₁} {n} ni))
 renn¬∈ n m (TSQUASH t) ni = ≡TSQUASH (renn¬∈ n m t ni)
 renn¬∈ n m (TTRUNC t) ni = ≡TTRUNC (renn¬∈ n m t ni)

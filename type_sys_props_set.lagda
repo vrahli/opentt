@@ -1421,6 +1421,7 @@ typeSysConds-SET-local u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb 
 
 
 
+
 typeSysConds-SET : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
                   (x : A #⇛ #SET A1 B1 at w) (x₁ : B #⇛ #SET A2 B2 at w)
                   (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))

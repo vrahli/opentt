@@ -85,6 +85,32 @@ startNewChoiceT : Res → 𝕎· → Term → 𝕎·
 startNewChoiceT r w t = startChoice· (newChoiceT w t) r w
 
 
+startNewChoicesL : Res → 𝕎· → List Name → 𝕎·
+startNewChoicesL r w [] = w
+startNewChoicesL r w (n ∷ l) with Name∈⊎ n (dom𝕎· w)
+... | inj₁ p = startNewChoicesL r w l
+... | inj₂ p = startNewChoicesL r (startChoice· n r w) l
+
+
+startNewChoices : Res → 𝕎· → Term → 𝕎·
+startNewChoices r w t = startNewChoicesL r w (names t)
+
+
+startChoice⊏· : (r : Res) (w : 𝕎·) (name : Name) → ¬ name ∈ dom𝕎· w → w ⊑· startChoice· name r w
+startChoice⊏· = startChoice⊏ N
+
+
+startNewChoicesL⊑ : (r : Res) (w : 𝕎·) (l : List Name) → w ⊑· startNewChoicesL r w l
+startNewChoicesL⊑ r w [] = ⊑-refl· w
+startNewChoicesL⊑ r w (n ∷ l) with Name∈⊎ n (dom𝕎· w)
+... | inj₁ p = startNewChoicesL⊑ r w l
+... | inj₂ p = ⊑-trans· (startChoice⊏· r w n p) (startNewChoicesL⊑ r (startChoice· n r w) l)
+
+
+startNewChoices⊑ : (r : Res) (w : 𝕎·) (t : Term) → w ⊑· startNewChoices r w t
+startNewChoices⊑ r w t = startNewChoicesL⊑ r w (names t)
+
+
 getChoice-startChoice· : (n : ℕ) (r : Res) (w : 𝕎·) (t : ℂ·) (name : Name)
                          → ¬ name ∈ dom𝕎· w
                          → getChoice· n name (startChoice· name r w) ≡ just t
@@ -96,10 +122,6 @@ getChoice-startNewChoice : (n : ℕ) (r : Res) (w : 𝕎·) (t : ℂ·)
                            → getChoice· n (newChoice· w) (startNewChoice r w) ≡ just t → t ≡ Res.def r
 getChoice-startNewChoice n r w t h =
   getChoice-startChoice· n r w t (newChoice· w) (λ x → snd (freshName (dom𝕎· w ++ names𝕎· w)) (∈-++⁺ˡ x)) h
-
-
-startChoice⊏· : (r : Res) (w : 𝕎·) (name : Name) → ¬ name ∈ dom𝕎· w → w ⊑· startChoice· name r w
-startChoice⊏· = startChoice⊏ N
 
 
 startNewChoice⊏ : (r : Res) (w : 𝕎·) → w ⊑· startNewChoice r w
