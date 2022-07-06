@@ -182,16 +182,16 @@ upto𝕎getT-chooseT0if cc name w1 w2 r m h n1 n2 k d1 d2 i
 upto𝕎-chooseT0if : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (r : ren) (n m : ℕ)
                     → upto𝕎 name w1 w2 r
                     → upto𝕎 name (chooseT0if name w1 n m) w2 r
-upto𝕎-chooseT0if cc name w1 w2 r n m (mkUpto𝕎 wf upw) with n <? m
+upto𝕎-chooseT0if cc name w1 w2 r n m (mkUpto𝕎 {--wf--} upw) with n <? m
 ... | yes x =
   mkUpto𝕎
 --    (sym (ContConds.ccDchoose≡ cc name w (NUM m)))
 --    (sym (ContConds.ccNchoose≡ cc name w (NUM m)))
 --    (sameRes-sym (sameRes-chooseT cc name w (NUM m)))
-    (wfRen-chooseT0if cc name w1 w2 r m wf)
+--    (wfRen-chooseT0if cc name w1 w2 r m wf)
     (upto𝕎getT-chooseT0if cc name w1 w2 r m upw)
     -- (upto𝕎getT-chooseT cc name w r (NUM m))
-... | no x = mkUpto𝕎 wf upw
+... | no x = mkUpto𝕎 {--wf--} upw
  --mkUpto𝕎 {--refl refl (sameRes-refl w)--} (λ n1 n2 k d1 d2 r → {!!} {--refl--})
 
 
@@ -667,9 +667,9 @@ updRel2-ren-mon {name} {f} {g} {r} {r'} {.(upd name f)} {.(force g)} {l} {k} sub
                                 (startNewChoiceT Res⊤ w1 a)
                                 (startNewChoiceT Res⊤ w2 b)
                                 ((newChoiceT w1 a , newChoiceT w2 b) ∷ r)
-→upto𝕎-startNewChoiceT cc name w1 w2 r a b (mkUpto𝕎 wf upw) =
+→upto𝕎-startNewChoiceT cc name w1 w2 r a b (mkUpto𝕎 {--wf--} upw) =
   mkUpto𝕎
-    (→wfRen-startNewChoiceT cc w1 w2 r a b wf)
+--    (→wfRen-startNewChoiceT cc w1 w2 r a b wf)
     (→upto𝕎getT-startNewChoiceT cc name w1 w2 r a b upw)
 
 
@@ -916,9 +916,9 @@ names∈ren→≡-rev name name1 name2 ((a , b) ∷ r) (inj₂ (x₁ , y₁ , z�
                    → names∈ren name1 name2 r
                    → upto𝕎 name w1 w2 r
                    → upto𝕎 name (chooseT name1 w1 t) (chooseT name2 w2 t) r
-→upto𝕎-chooseT cc {name} {name1} {name2} {r} {w1} {w2} t nd1 nd2 d1 d2 ir (mkUpto𝕎 wf upw) =
+→upto𝕎-chooseT cc {name} {name1} {name2} {r} {w1} {w2} t nd1 nd2 d1 d2 ir (mkUpto𝕎 {--wf--} upw) =
   mkUpto𝕎
-    (→wfRen-chooseT cc name1 name2 w1 w2 r t wf )
+--    (→wfRen-chooseT cc name1 name2 w1 w2 r t wf )
     (→upto𝕎getT-chooseT cc name name1 name2 w1 w2 r t nd1 nd2 d1 d2 ir upw)
 
 

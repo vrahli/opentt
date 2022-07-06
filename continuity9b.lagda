@@ -301,12 +301,26 @@ wfRen-refl w =
   mkWfRen (λ n ()) (λ n ()) tt tt
 
 
-upto𝕎getT-refl : (name : Name) (w : 𝕎·) → upto𝕎getT name w w []
-upto𝕎getT-refl name w n1 n2 k d1 d2 i rewrite i = refl
+isReflRen : (r : ren) → Set
+isReflRen [] = ⊤
+isReflRen ((a , b) ∷ r) = a ≡ b × isReflRen r
 
 
-upto𝕎-refl : (name : Name) (w : 𝕎·) → upto𝕎 name w w []
-upto𝕎-refl name w = mkUpto𝕎 (wfRen-refl w) (upto𝕎getT-refl name w)
+isReflRen-names∈ren→ : (n1 n2 : Name) (r : ren)
+                        → names∈ren n1 n2 r
+                        → isReflRen r
+                        → n1 ≡ n2
+isReflRen-names∈ren→ n1 n2 [] i ir = i
+isReflRen-names∈ren→ n1 n2 ((a , b) ∷ r) (inj₁ (x , y)) (h , q) rewrite x | y | h = refl
+isReflRen-names∈ren→ n1 n2 ((a , b) ∷ r) (inj₂ (x , y , z)) (h , q) rewrite h = isReflRen-names∈ren→ n1 n2 r z q
+
+
+upto𝕎getT-refl : (name : Name) (w : 𝕎·) (r : ren) → isReflRen r → upto𝕎getT name w w r
+upto𝕎getT-refl name w r isr n1 n2 k d1 d2 i rewrite isReflRen-names∈ren→ n1 n2 r i isr = refl
+
+
+upto𝕎-refl : (name : Name) (w : 𝕎·) (r : ren) → isReflRen r → upto𝕎 name w w r
+upto𝕎-refl name w r i = mkUpto𝕎 {--(wfRen-refl w)--} (upto𝕎getT-refl name w r i)
 
 
 ¬Names→¬∈names : (name : Name) (a : Term) → ¬Names a → ¬ name ∈ names a
@@ -963,7 +977,7 @@ eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g smod eqb =
     aw1 k' c = eqfgq-aux
                  cc cn kb gc {i} {w1s'} {w1s'} {w1s'} {w2} {F} {f} {g} {name} {k} {v} {j} {tn}
                  nnF nnf {!!} nnw1s' idomw1s' idomw1s' {!!} {!!} {!!} {!!}
-                 (upto𝕎-refl name w1s') compat1 compat1 wgt0 g0
+                 (upto𝕎-refl name w1s' [] tt) compat1 compat1 wgt0 g0
                  eqj isvv (⊑-refl· w1s') (⊑-refl· w1s') wgt0 (equalInType-mon ∈F w1s' e0'') (equalInType-mon ∈f w1s' e0'')
                  (∀𝕎-mon e0' eqb5) compa k' c
 

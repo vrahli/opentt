@@ -338,7 +338,7 @@ record upto𝕎 (name : Name) (w1 w2 : 𝕎·) (r : ren) : Set(1ℓ Level.⊔ L)
 --    upwDom   : dom𝕎· w1 ≡ dom𝕎· w2
 --    upwNames : names𝕎· w1 ≡ names𝕎· w2
 --    upwRes   : sameRes w1 w2
-    upwWf    : wfRen w1 w2 r
+--    upwWf    : wfRen w1 w2 r
     upwGet   : upto𝕎getT name w1 w2 r
 
 
