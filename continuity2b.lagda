@@ -124,7 +124,7 @@ data updCtxt2 (name : Name) (f : Term) : Term → Set where
   updCtxt2-CS      : (name' : Name) → updCtxt2 name f (CS name')
   updCtxt2-NAME    : (name' : Name) → ¬ name' ≡ name → updCtxt2 name f (NAME name')
   updCtxt2-FRESH   : (a : Term) → updCtxt2 (suc name) (shiftNameUp 0 f) a → updCtxt2 name f (FRESH a)
-  updCtxt2-LOAD    : (a : Term) → updCtxt2 name f a → updCtxt2 name f (LOAD a)
+  updCtxt2-LOAD    : (a : Term) → updCtxt2 name f (LOAD a)
   updCtxt2-CHOOSE  : (a b : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f (CHOOSE a b)
 --  updCtxt2-IFC0    : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → updCtxt2 name1 name2 f a₁ a₂ → updCtxt2 name1 name2 f b₁ b₂ → updCtxt2 name1 name2 f c₁ c₂ → updCtxt2 name1 name2 f (IFC0 a₁ b₁ c₁) (IFC0 a₂ b₂ c₂)
   updCtxt2-TSQUASH : (a : Term) → updCtxt2 name f a → updCtxt2 name f (TSQUASH a)
@@ -250,7 +250,7 @@ stepsPresHighestℕ2 name f b w =
 →updCtxt2-shiftUp v {name} {f} cf {.(CS name')} (updCtxt2-CS name') = updCtxt2-CS _
 →updCtxt2-shiftUp v {name} {f} cf {.(NAME name')} (updCtxt2-NAME name' x) = updCtxt2-NAME _ x
 →updCtxt2-shiftUp v {name} {f} cf {.(FRESH a)} (updCtxt2-FRESH a upd₁) = updCtxt2-FRESH _ (→updCtxt2-shiftUp v (→#shiftNameUp 0 {f} cf) upd₁)
-→updCtxt2-shiftUp v {name} {f} cf {.(LOAD a)} (updCtxt2-LOAD a upd₁) = updCtxt2-LOAD _ (→updCtxt2-shiftUp v cf upd₁)
+→updCtxt2-shiftUp v {name} {f} cf {.(LOAD a)} (updCtxt2-LOAD a) = updCtxt2-LOAD _ --upd₁ --updCtxt2-LOAD _ (→updCtxt2-shiftUp v cf upd₁)
 →updCtxt2-shiftUp v {name} {f} cf {.(CHOOSE a b)} (updCtxt2-CHOOSE a b upd₁ upd₂) = updCtxt2-CHOOSE _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp v cf upd₂)
 →updCtxt2-shiftUp v {name} {f} cf {.(TSQUASH a)} (updCtxt2-TSQUASH a upd₁) = updCtxt2-TSQUASH _ (→updCtxt2-shiftUp v cf upd₁)
 →updCtxt2-shiftUp v {name} {f} cf {.(TTRUNC a)} (updCtxt2-TTRUNC a upd₁) = updCtxt2-TTRUNC _ (→updCtxt2-shiftUp v cf upd₁)
@@ -301,7 +301,7 @@ stepsPresHighestℕ2 name f b w =
 →updCtxt2-shiftDown v {name} {f} cf {.(CS name')} (updCtxt2-CS name') = updCtxt2-CS _
 →updCtxt2-shiftDown v {name} {f} cf {.(NAME name')} (updCtxt2-NAME name' x) = updCtxt2-NAME _ x
 →updCtxt2-shiftDown v {name} {f} cf {.(FRESH a)} (updCtxt2-FRESH a upd₁) = updCtxt2-FRESH _ (→updCtxt2-shiftDown v (→#shiftNameUp 0 {f} cf) upd₁)
-→updCtxt2-shiftDown v {name} {f} cf {.(LOAD a)} (updCtxt2-LOAD a upd₁) = updCtxt2-LOAD _ (→updCtxt2-shiftDown v cf upd₁)
+→updCtxt2-shiftDown v {name} {f} cf {.(LOAD a)} (updCtxt2-LOAD a) = updCtxt2-LOAD _ --upd₁ --updCtxt2-LOAD _ (→updCtxt2-shiftDown v cf upd₁)
 →updCtxt2-shiftDown v {name} {f} cf {.(CHOOSE a b)} (updCtxt2-CHOOSE a b upd₁ upd₂) = updCtxt2-CHOOSE _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown v cf upd₂)
 →updCtxt2-shiftDown v {name} {f} cf {.(TSQUASH a)} (updCtxt2-TSQUASH a upd₁) = updCtxt2-TSQUASH _ (→updCtxt2-shiftDown v cf upd₁)
 →updCtxt2-shiftDown v {name} {f} cf {.(TTRUNC a)} (updCtxt2-TTRUNC a upd₁) = updCtxt2-TTRUNC _ (→updCtxt2-shiftDown v cf upd₁)
@@ -368,7 +368,7 @@ stepsPresHighestℕ2 name f b w =
                 (shiftNameUp 0 (shiftNameUp v f))
                 (shiftNameUp (suc v) a)
     c1 rewrite shiftNameUp-shiftNameUp {0} {v} {f} _≤_.z≤n = c2
-→updCtxt2-shiftNameUp v {name} {f} cf {.(LOAD a)} (updCtxt2-LOAD a upd₁) = updCtxt2-LOAD _ (→updCtxt2-shiftNameUp v cf upd₁)
+→updCtxt2-shiftNameUp v {name} {f} cf {.(LOAD a)} (updCtxt2-LOAD a) = updCtxt2-LOAD _ --(→updCtxt2-shiftNameUp v cf upd₁)
 →updCtxt2-shiftNameUp v {name} {f} cf {.(CHOOSE a b)} (updCtxt2-CHOOSE a b upd₁ upd₂) = updCtxt2-CHOOSE _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂)
 →updCtxt2-shiftNameUp v {name} {f} cf {.(TSQUASH a)} (updCtxt2-TSQUASH a upd₁) = updCtxt2-TSQUASH _ (→updCtxt2-shiftNameUp v cf upd₁)
 →updCtxt2-shiftNameUp v {name} {f} cf {.(TTRUNC a)} (updCtxt2-TTRUNC a upd₁) = updCtxt2-TTRUNC _ (→updCtxt2-shiftNameUp v cf upd₁)
@@ -441,7 +441,7 @@ updCtxt2-subv {name} {f} cf v {.FREE} {b} updCtxt2-FREE updb = updCtxt2-FREE
 updCtxt2-subv {name} {f} cf v {.(CS name')} {b} (updCtxt2-CS name') updb = updCtxt2-CS _
 updCtxt2-subv {name} {f} cf v {.(NAME name')} {b} (updCtxt2-NAME name' x) updb = updCtxt2-NAME _ x
 updCtxt2-subv {name} {f} cf v {.(FRESH a)} {b} (updCtxt2-FRESH a upda) updb = updCtxt2-FRESH _ (updCtxt2-subv (→#shiftNameUp 0 {f} cf) v upda (→updCtxt2-shiftNameUp0 {name} cf updb))
-updCtxt2-subv {name} {f} cf v {.(LOAD a)} {b} (updCtxt2-LOAD a upda) updb = updCtxt2-LOAD _ (updCtxt2-subv cf v upda updb)
+updCtxt2-subv {name} {f} cf v {.(LOAD a)} {b} (updCtxt2-LOAD a) updb = updCtxt2-LOAD _ --upda --updCtxt2-LOAD _ (updCtxt2-subv cf v upda updb)
 updCtxt2-subv {name} {f} cf v {.(CHOOSE a b₁)} {b} (updCtxt2-CHOOSE a b₁ upda upda₁) updb = updCtxt2-CHOOSE _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf v upda₁ updb)
 updCtxt2-subv {name} {f} cf v {.(TSQUASH a)} {b} (updCtxt2-TSQUASH a upda) updb = updCtxt2-TSQUASH _ (updCtxt2-subv cf v upda updb)
 updCtxt2-subv {name} {f} cf v {.(TTRUNC a)} {b} (updCtxt2-TTRUNC a upda) updb = updCtxt2-TTRUNC _ (updCtxt2-subv cf v upda updb)
@@ -560,7 +560,7 @@ updCtxt2-refl name f FREE nn = updCtxt2-FREE
 updCtxt2-refl name f (CS x) nn = updCtxt2-CS _
 updCtxt2-refl name f (NAME x) nn = updCtxt2-NAME x (λ z → nn (here (sym z)))
 updCtxt2-refl name f (FRESH t) nn = updCtxt2-FRESH t (updCtxt2-refl (suc name) (shiftNameUp 0 f) t (λ z → nn (suc→∈lowerNames {name} {names t} z)))
-updCtxt2-refl name f (LOAD t) nn = updCtxt2-LOAD t (updCtxt2-refl name f t nn)
+updCtxt2-refl name f (LOAD t) nn = updCtxt2-LOAD t --(updCtxt2-refl name f t nn)
 updCtxt2-refl name f (CHOOSE t t₁) nn = updCtxt2-CHOOSE _ _ (updCtxt2-refl name f t (¬∈++2→¬∈1 nn)) (updCtxt2-refl name f t₁ (¬∈++2→¬∈2 nn))
 updCtxt2-refl name f (TSQUASH t) nn = updCtxt2-TSQUASH _ (updCtxt2-refl name f t nn)
 updCtxt2-refl name f (TTRUNC t) nn = updCtxt2-TTRUNC _ (updCtxt2-refl name f t nn)
@@ -632,7 +632,7 @@ updCtxt2-shiftNameUp→ v {name} {f} cf {FRESH a} (updCtxt2-FRESH .(shiftNameUp 
 
     upd1 : updCtxt2 (sucIf≤ (suc v) (suc name)) (shiftNameUp (suc v) (shiftNameUp 0 f)) (shiftNameUp (suc v) a)
     upd1 rewrite suc≡sucIf≤0 name | sym seq | sym (shiftNameUp-shiftNameUp {0} {v} {f} _≤_.z≤n) = upd₁
-updCtxt2-shiftNameUp→ v {name} {f} cf {LOAD a} (updCtxt2-LOAD .(shiftNameUp v a) upd₁) = updCtxt2-LOAD _ (updCtxt2-shiftNameUp→ v cf upd₁)
+updCtxt2-shiftNameUp→ v {name} {f} cf {LOAD a} (updCtxt2-LOAD .a) = updCtxt2-LOAD _ --(updCtxt2-shiftNameUp→ v cf upd₁)
 updCtxt2-shiftNameUp→ v {name} {f} cf {CHOOSE a a₁} (updCtxt2-CHOOSE .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-CHOOSE _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
 updCtxt2-shiftNameUp→ v {name} {f} cf {TSQUASH a} (updCtxt2-TSQUASH .(shiftNameUp v a) upd₁) = updCtxt2-TSQUASH _ (updCtxt2-shiftNameUp→ v cf upd₁)
 updCtxt2-shiftNameUp→ v {name} {f} cf {TTRUNC a} (updCtxt2-TTRUNC .(shiftNameUp v a) upd₁) = updCtxt2-TTRUNC _ (updCtxt2-shiftNameUp→ v cf upd₁)
@@ -1842,7 +1842,7 @@ updCtxt2-renn name n m f .(NAME name') diff1 diff2 nf cf (updCtxt2-NAME name' x)
 ... | yes _ = updCtxt2-NAME _ (λ z → diff2 (sym z))
 ... | no _ = updCtxt2-NAME _ x
 updCtxt2-renn name n m f .(FRESH a) diff1 diff2 nf cf (updCtxt2-FRESH a upd₁) = updCtxt2-FRESH _ (updCtxt2-renn (suc name) (suc n) (suc m) (shiftNameUp 0 f) a (λ z → diff1 (suc-injective z)) (λ z → diff2 (suc-injective z)) (→¬s∈names-shiftNameUp n f nf) (→#shiftNameUp 0 {f} cf) upd₁)
-updCtxt2-renn name n m f .(LOAD a) diff1 diff2 nf cf (updCtxt2-LOAD a upd₁) = updCtxt2-LOAD _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
+updCtxt2-renn name n m f .(LOAD a) diff1 diff2 nf cf (updCtxt2-LOAD a) = updCtxt2-LOAD _ --(updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
 updCtxt2-renn name n m f .(CHOOSE a b) diff1 diff2 nf cf (updCtxt2-CHOOSE a b upd₁ upd₂) = updCtxt2-CHOOSE _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂)
 updCtxt2-renn name n m f .(TSQUASH a) diff1 diff2 nf cf (updCtxt2-TSQUASH a upd₁) = updCtxt2-TSQUASH _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
 updCtxt2-renn name n m f .(TTRUNC a) diff1 diff2 nf cf (updCtxt2-TTRUNC a upd₁) = updCtxt2-TTRUNC _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)

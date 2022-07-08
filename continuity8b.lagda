@@ -315,14 +315,17 @@ step-pres-dom cc {FRESH a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (
   where
     ss1 : names (shiftNameDown 0 (renn 0 (newChoiceT+ w1 a) a)) ⊆ dom𝕎· (startNewChoiceT Res⊤ w1 a)
     ss1 {x} i with ∈names-shiftNameDown-renn+→ x a w1 i
-    ... | inj₁ p = ContConds.ccDstart cc x w1 a j
+    ... | inj₁ p = dom𝕎-startNewChoiceT cc x w1 a j
       where
         j : x ∈ dom𝕎· w1
         j = ss {x} (suc→∈lowerNames {x} {names a} p)
-    ... | inj₂ p rewrite p = ContConds.ccNchoice cc w1 a
+    ... | inj₂ p rewrite p = newChoiceT∈dom𝕎 cc w1 a
 
     ss2 : dom𝕎· w1 ⊆ dom𝕎· (startNewChoiceT Res⊤ w1 a)
-    ss2 {x} i = ContConds.ccDstart cc x w1 a i
+    ss2 {x} i = dom𝕎-startNewChoiceT cc x w1 a i
+step-pres-dom cc {LOAD a} {b} {w1} {w2} comp ss
+  rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  (λ ()) , ⊆dom𝕎-startNewChoicesL cc w1 a (names a)
 step-pres-dom cc {CHOOSE a a₁} {b} {w1} {w2} comp ss with is-NAME a
 ... | inj₁ (name , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
   (λ {x} ()) , (λ {x} i → dom𝕎-chooseT cc x name w1 a₁ i)

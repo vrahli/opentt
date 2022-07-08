@@ -207,15 +207,16 @@ dom𝕎-chooseT≡ = (name : Name) (w : 𝕎·) (t : Term)
 
 
 -- starting a new choice does not remove new names according to dom𝕎
-dom𝕎-startNewChoiceT : Set(L)
-dom𝕎-startNewChoiceT = (name : Name) (w : 𝕎·) (t : Term)
+dom𝕎-startChoice : Set(L)
+dom𝕎-startChoice = (name : Name) (w : 𝕎·) (n : Name)
                         → name ∈ dom𝕎· w
-                        → name ∈ dom𝕎· (startNewChoiceT Res⊤ w t)
+                        → name ∈ dom𝕎· (startChoice· n Res⊤ w)
 
 
-newChoiceT∈dom𝕎 : Set(L)
-newChoiceT∈dom𝕎 = (w : 𝕎·) (t : Term)
-                   → (newChoiceT w t) ∈ dom𝕎· (startNewChoiceT Res⊤ w t)
+newChoice∈dom𝕎 : Set(L)
+newChoice∈dom𝕎 = (w : 𝕎·) (n : Name)
+                  → ¬ n ∈ dom𝕎· w
+                  → n ∈ dom𝕎· (startChoice· n Res⊤ w)
 
 
 
@@ -346,8 +347,8 @@ record ContConds : Set(1ℓ Level.⊔ L) where
     ccGget      : →getT-chooseT
     ccCnum      : chooseT-num
     -- Start axioms
-    ccDstart    : dom𝕎-startNewChoiceT
-    ccNchoice   : newChoiceT∈dom𝕎
+    ccDstart    : dom𝕎-startChoice
+    ccNchoice   : newChoice∈dom𝕎
     ccN≡start   : ≡names𝕎-start
     ccD≡start   : ≡dom𝕎-start
     ccD⊆start   : ⊆dom𝕎-start
@@ -416,13 +417,14 @@ getT-chooseT = (w : 𝕎·) (name : Name) (k : ℕ)
 
 
 
-getT-startNewChoicesL≡ : (cc : ContConds) (name : Name) (w : 𝕎·) (l : List Name) (n : ℕ)
+getT-startNewChoicesL≡ : (cc : ContConds) (name : Name) (w : 𝕎·) (a : Term) (l : List Name) (n : ℕ)
                         → name ∈ dom𝕎· w
-                        → getT n name (startNewChoicesL Res⊤ w l) ≡ getT n name w
-getT-startNewChoicesL≡ cc name w [] n i = refl
-getT-startNewChoicesL≡ cc name w (x ∷ l) n i with Name∈⊎ x (dom𝕎· w)
-... | inj₁ p = getT-startNewChoicesL≡ cc name w l n i
-... | inj₂ p = trans (getT-startNewChoicesL≡ cc name (startChoice· x Res⊤ w) l n (ContConds.ccD⊆start cc x w i))
+                        → getT n name (startNewChoicesL Res⊤ w a l) ≡ getT n name w
+getT-startNewChoicesL≡ cc name w a [] n i = refl
+getT-startNewChoicesL≡ cc name w a (x ∷ l) n i with Name∈⊎ x (dom𝕎· w)
+... | inj₁ p = trans (getT-startNewChoicesL≡ cc name (startNewChoiceT Res⊤ w a) a l n (ContConds.ccD⊆start cc (newChoiceT w a) w i))
+                     (ContConds.ccGstartd cc name (newChoiceT w a) n Res⊤ w (∈dom𝕎→¬≡newChoiceT name w a i)) --getT-startNewChoicesL≡ cc name w l n i
+... | inj₂ p = trans (getT-startNewChoicesL≡ cc name (startChoice· x Res⊤ w) a l n (ContConds.ccD⊆start cc x w i))
                      (ContConds.ccGstartd cc name x n Res⊤ w (concl i p))
   where
     concl : name ∈ dom𝕎· w → ¬ x ∈ dom𝕎· w → ¬ name ≡ x
@@ -432,22 +434,22 @@ getT-startNewChoicesL≡ cc name w (x ∷ l) n i with Name∈⊎ x (dom𝕎· w)
 getT-startNewChoices≡ : (cc : ContConds) (name : Name) (w : 𝕎·) (t : Term) (n : ℕ)
                         → name ∈ dom𝕎· w
                         → getT n name (startNewChoices Res⊤ w t) ≡ getT n name w
-getT-startNewChoices≡ name cc w t n i = getT-startNewChoicesL≡ name cc w (names t) n i
+getT-startNewChoices≡ name cc w t n i = getT-startNewChoicesL≡ name cc w t (names t) n i
 
 
 
-names𝕎-startNewChoicesL : (cc : ContConds) (w : 𝕎·) (l : List Name)
-                          → names𝕎· (startNewChoicesL Res⊤ w l) ≡ names𝕎· w
-names𝕎-startNewChoicesL cc w [] = refl
-names𝕎-startNewChoicesL cc w (x ∷ l) with Name∈⊎ x (dom𝕎· w)
-... | inj₁ p = names𝕎-startNewChoicesL cc w l
-... | inj₂ p = trans (names𝕎-startNewChoicesL cc (startChoice· x Res⊤ w) l) (ContConds.ccN≡start cc x w)
+names𝕎-startNewChoicesL : (cc : ContConds) (w : 𝕎·) (t : Term) (l : List Name)
+                          → names𝕎· (startNewChoicesL Res⊤ w t l) ≡ names𝕎· w
+names𝕎-startNewChoicesL cc w t [] = refl
+names𝕎-startNewChoicesL cc w t (x ∷ l) with Name∈⊎ x (dom𝕎· w)
+... | inj₁ p = trans (names𝕎-startNewChoicesL cc (startNewChoiceT Res⊤ w t) t l) (ContConds.ccN≡start cc (newChoiceT w t) w) --names𝕎-startNewChoicesL cc w l
+... | inj₂ p = trans (names𝕎-startNewChoicesL cc (startChoice· x Res⊤ w) t l) (ContConds.ccN≡start cc x w)
 
 
 
 names𝕎-startNewChoices : (cc : ContConds) (w : 𝕎·) (t : Term)
                           → names𝕎· (startNewChoices Res⊤ w t) ≡ names𝕎· w
-names𝕎-startNewChoices cc w t = names𝕎-startNewChoicesL cc w (names t)
+names𝕎-startNewChoices cc w t = names𝕎-startNewChoicesL cc w t (names t)
 
 
 →¬names𝕎-startNewChoices : (cc : ContConds) (w : 𝕎·) (t : Term) (name : Name)
@@ -457,17 +459,29 @@ names𝕎-startNewChoices cc w t = names𝕎-startNewChoicesL cc w (names t)
 
 
 
-⊆dom𝕎-startNewChoicesL : (cc : ContConds) (w : 𝕎·) (l : List Name)
-                         → dom𝕎· w ⊆ dom𝕎· (startNewChoicesL Res⊤ w l)
-⊆dom𝕎-startNewChoicesL cc w [] = ⊆-refl
-⊆dom𝕎-startNewChoicesL cc w (n ∷ l) with Name∈⊎ n (dom𝕎· w)
-... | inj₁ p = ⊆dom𝕎-startNewChoicesL cc w l
-... | inj₂ p = ⊆-trans (ContConds.ccD⊆start cc n w) (⊆dom𝕎-startNewChoicesL cc (startChoice· n Res⊤ w) l)
+⊆dom𝕎-startNewChoicesL : (cc : ContConds) (w : 𝕎·) (t : Term) (l : List Name)
+                         → dom𝕎· w ⊆ dom𝕎· (startNewChoicesL Res⊤ w t l)
+⊆dom𝕎-startNewChoicesL cc w t [] = ⊆-refl
+⊆dom𝕎-startNewChoicesL cc w t (n ∷ l) with Name∈⊎ n (dom𝕎· w)
+... | inj₁ p = ⊆-trans (ContConds.ccD⊆start cc (newChoiceT w t) w) (⊆dom𝕎-startNewChoicesL cc (startNewChoiceT Res⊤ w t) t l) --⊆dom𝕎-startNewChoicesL cc w l
+... | inj₂ p = ⊆-trans (ContConds.ccD⊆start cc n w) (⊆dom𝕎-startNewChoicesL cc (startChoice· n Res⊤ w) t l)
 
 
 ⊆dom𝕎-startNewChoices : (cc : ContConds) (w : 𝕎·) (t : Term)
                          → dom𝕎· w ⊆ dom𝕎· (startNewChoices Res⊤ w t)
-⊆dom𝕎-startNewChoices cc w t {x} i = ⊆dom𝕎-startNewChoicesL cc w (names t) i
+⊆dom𝕎-startNewChoices cc w t {x} i = ⊆dom𝕎-startNewChoicesL cc w t (names t) i
+
+
+
+newChoiceT∈dom𝕎 : (cc : ContConds) (w : 𝕎·) (t : Term)
+                   → (newChoiceT w t) ∈ dom𝕎· (startNewChoiceT Res⊤ w t)
+newChoiceT∈dom𝕎 cc w t = ContConds.ccNchoice cc w (newChoiceT w t) (¬fresh∈dom𝕎2 w (names𝕎· w) (↓vars (names t)))
+
+
+dom𝕎-startNewChoiceT : (cc : ContConds) (name : Name) (w : 𝕎·) (t : Term)
+                        → name ∈ dom𝕎· w
+                        → name ∈ dom𝕎· (startNewChoiceT Res⊤ w t)
+dom𝕎-startNewChoiceT cc name w t = ContConds.ccDstart cc name w (newChoiceT w t)
 
 
 \end{code}

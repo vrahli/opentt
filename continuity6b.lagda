@@ -92,9 +92,7 @@ open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
-{--
 open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
---}
 
 open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -543,7 +541,7 @@ updRel2-ren-mon {name} {f} {g} {r} {r'} {.FREE} {.FREE} {l} {k} sub nad nbd updR
 updRel2-ren-mon {name} {f} {g} {r} {r'} {.(CS name1)} {.(CS name2)} {l} {k} sub nad nbd (updRel2-CS name1 name2 x x₁ x₂) = updRel2-CS _ _ x x₁ (subRen-pres-names∈ren r r' name1 name2 l k sub (nad (here refl)) (nbd (here refl)) x₂)
 updRel2-ren-mon {name} {f} {g} {r} {r'} {.(NAME name1)} {.(NAME name2)} {l} {k} sub nad nbd (updRel2-NAME name1 name2 x x₁ x₂) = updRel2-NAME _ _ x x₁ (subRen-pres-names∈ren r r' name1 name2 l k sub (nad (here refl)) (nbd (here refl)) x₂)
 updRel2-ren-mon {name} {f} {g} {r} {r'} {.(FRESH a)} {.(FRESH b)} {l} {k} sub nad nbd (updRel2-FRESH a b upd₁) = updRel2-FRESH _ _ (updRel2-ren-mon {suc name} {shiftNameUp 0 f} {shiftNameUp 0 g} {sren r} {sren r'} {a} {b} {0 ∷ sucNames l} {0 ∷ sucNames k} (subRen-sren sub) (→⊆sucNames nad) (→⊆sucNames nbd) upd₁)
-updRel2-ren-mon {name} {f} {g} {r} {r'} {.(LOAD a)} {.(LOAD b)} {l} {k} sub nad nbd (updRel2-LOAD a b upd₁) = updRel2-LOAD _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {a} {b} {l} {k} sub nad nbd upd₁)
+updRel2-ren-mon {name} {f} {g} {r} {r'} {.(LOAD a)} {.(LOAD a)} {l} {k} sub nad nbd (updRel2-LOAD a) = updRel2-LOAD _ --_ (updRel2-ren-mon {name} {f} {g} {r} {r'} {a} {b} {l} {k} sub nad nbd upd₁)
 updRel2-ren-mon {name} {f} {g} {r} {r'} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} {l} {k} sub nad nbd (updRel2-CHOOSE a₁ a₂ b₁ b₂ upd₁ upd₂) = updRel2-CHOOSE _ _ _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→1 {names a₁} {names b₁} nad) (++⊆2→1 {names a₂} {names b₂} nbd) upd₁) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→2 {names a₁} {names b₁} nad) (++⊆2→2 {names a₂} {names b₂} nbd) upd₂)
 updRel2-ren-mon {name} {f} {g} {r} {r'} {.(TSQUASH a₁)} {.(TSQUASH a₂)} {l} {k} sub nad nbd (updRel2-TSQUASH a₁ a₂ upd₁) = updRel2-TSQUASH _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
 updRel2-ren-mon {name} {f} {g} {r} {r'} {.(TTRUNC a₁)} {.(TTRUNC a₂)} {l} {k} sub nad nbd (updRel2-TTRUNC a₁ a₂ upd₁) = updRel2-TTRUNC _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
@@ -617,6 +615,26 @@ updRel2-ren-mon {name} {f} {g} {r} {r'} {.(upd name f)} {.(force g)} {l} {k} sub
 ¬0∈renᵣ-sren ((a , b) ∷ r) (there p) = ¬0∈renᵣ-sren r p
 
 
+→upto𝕎getT-startChoice : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (r : ren) (x1 x2 : Name)
+                           → ¬ x1 ∈ dom𝕎· w1
+                           → ¬ x2 ∈ dom𝕎· w2
+                           → upto𝕎getT name w1 w2 r
+                           → upto𝕎getT
+                                name
+                                (startChoice· x1 Res⊤ w1)
+                                (startChoice· x2 Res⊤ w2)
+                                ((x1 , x2) ∷ r)
+→upto𝕎getT-startChoice cc name w1 w2 r x1 x2 ni1 ni2 upw n1 n2 k d1 d2 (inj₁ (i₁ , i₂)) rewrite i₁ | i₂ = c
+  where
+    c : getT k x1 (startChoice· x1 Res⊤ w1)
+        ≡ getT k x2 (startChoice· x2 Res⊤ w2)
+    c = ContConds.ccGstarts cc x1 x2 k Res⊤ w1 w2 ni1 ni2
+→upto𝕎getT-startChoice cc name w1 w2 r x1 x2 ni1 ni2 upw n1 n2 k d1 d2 (inj₂ (i₁ , i₂ , x))
+  rewrite ContConds.ccGstartd cc n1 x1 k Res⊤ w1 i₁
+        | ContConds.ccGstartd cc n2 x2 k Res⊤ w2 i₂ =
+  upw n1 n2 k d1 d2 x
+
+
 →upto𝕎getT-startNewChoiceT : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (r : ren) (a b : Term)
                                → upto𝕎getT name w1 w2 r
                                → upto𝕎getT
@@ -624,17 +642,40 @@ updRel2-ren-mon {name} {f} {g} {r} {r'} {.(upd name f)} {.(force g)} {l} {k} sub
                                     (startNewChoiceT Res⊤ w1 a)
                                     (startNewChoiceT Res⊤ w2 b)
                                     ((newChoiceT w1 a , newChoiceT w2 b) ∷ r)
-→upto𝕎getT-startNewChoiceT cc name w1 w2 r a b upw n1 n2 k d1 d2 (inj₁ (i₁ , i₂)) rewrite i₁ | i₂ = c
-  where
-    c : getT k (newChoiceT w1 a) (startNewChoiceT Res⊤ w1 a)
-        ≡ getT k (newChoiceT w2 b) (startNewChoiceT Res⊤ w2 b)
-    c = ContConds.ccGstarts cc (newChoiceT w1 a) (newChoiceT w2 b) k Res⊤ w1 w2
-                            (¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a)))
-                            (¬fresh∈dom𝕎2 w2 (names𝕎· w2) (↓vars (names b)))
-→upto𝕎getT-startNewChoiceT cc name w1 w2 r a b upw n1 n2 k d1 d2 (inj₂ (i₁ , i₂ , x))
-  rewrite ContConds.ccGstartd cc n1 (newChoiceT w1 a) k Res⊤ w1 i₁
-        | ContConds.ccGstartd cc n2 (newChoiceT w2 b) k Res⊤ w2 i₂ =
-  upw n1 n2 k d1 d2 x
+→upto𝕎getT-startNewChoiceT cc name w1 w2 r a b upw =
+  →upto𝕎getT-startChoice
+    cc name w1 w2 r (newChoiceT w1 a) (newChoiceT w2 b)
+    (¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a)))
+    (¬fresh∈dom𝕎2 w2 (names𝕎· w2) (↓vars (names b)))
+    upw
+
+
+
+→wfRen-startChoice : (cc : ContConds) (w1 w2 : 𝕎·) (r : ren) (x1 x2 : Name)
+                      → ¬ x1 ∈ dom𝕎· w1
+                      → ¬ x2 ∈ dom𝕎· w2
+                      → wfRen w1 w2 r
+                      → wfRen
+                           (startChoice· x1 Res⊤ w1)
+                           (startChoice· x2 Res⊤ w2)
+                           ((x1 , x2) ∷ r)
+→wfRen-startChoice cc w1 w2 r x1 x2 ni1 ni2 (mkWfRen rl rr nrl nrr) =
+  mkWfRen rl' rr' nrl' nrr'
+    where
+      rl' : (n : Name) → n ∈ x1 ∷ renₗ r → n ∈ dom𝕎· (startChoice· x1 Res⊤ w1)
+      rl' n (here p) rewrite p = ContConds.ccNchoice cc w1 x1 ni1 --a
+      rl' n (there p) = ContConds.ccDstart cc n w1 x1 (rl n p) --a (rl n p)
+
+      rr' : (n : Name) → n ∈ x2 ∷ renᵣ r → n ∈ dom𝕎· (startChoice· x2 Res⊤ w2)
+      rr' n (here p) rewrite p = ContConds.ccNchoice cc w2 x2 ni2 --b
+      rr' n (there p) = ContConds.ccDstart cc n w2 x2 (rr n p) --b (rr n p)
+
+      nrl' : no-repeats (renₗ ((x1 , x2) ∷ r))
+      nrl' = (λ x → ni1 (rl _ x)) , nrl --(λ x → ¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a)) (rl _ x)) , nrl
+
+      nrr' : no-repeats (renᵣ ((x1 , x2) ∷ r))
+      nrr' = (λ x → ni2 (rr _ x)) , nrr --(λ x → ¬fresh∈dom𝕎2 w2 (names𝕎· w2) (↓vars (names b)) (rr _ x)) , nrr
+
 
 
 →wfRen-startNewChoiceT : (cc : ContConds) (w1 w2 : 𝕎·) (r : ren) (a b : Term)
@@ -643,22 +684,28 @@ updRel2-ren-mon {name} {f} {g} {r} {r'} {.(upd name f)} {.(force g)} {l} {k} sub
                                 (startNewChoiceT Res⊤ w1 a)
                                 (startNewChoiceT Res⊤ w2 b)
                                 ((newChoiceT w1 a , newChoiceT w2 b) ∷ r)
-→wfRen-startNewChoiceT cc w1 w2 r a b (mkWfRen rl rr nrl nrr) =
-  mkWfRen rl' rr' nrl' nrr'
-    where
-      rl' : (n : Name) → n ∈ newChoiceT w1 a ∷ renₗ r → n ∈ dom𝕎· (startNewChoiceT Res⊤ w1 a)
-      rl' n (here p) rewrite p = ContConds.ccNchoice cc w1 a
-      rl' n (there p) = ContConds.ccDstart cc n w1 a (rl n p)
+→wfRen-startNewChoiceT cc w1 w2 r a b wf =
+  →wfRen-startChoice cc
+    w1 w2 r (newChoiceT w1 a) (newChoiceT w2 b)
+    (¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a)))
+    (¬fresh∈dom𝕎2 w2 (names𝕎· w2) (↓vars (names b)))
+    wf
 
-      rr' : (n : Name) → n ∈ newChoiceT w2 b ∷ renᵣ r → n ∈ dom𝕎· (startNewChoiceT Res⊤ w2 b)
-      rr' n (here p) rewrite p = ContConds.ccNchoice cc w2 b
-      rr' n (there p) = ContConds.ccDstart cc n w2 b (rr n p)
 
-      nrl' : no-repeats (renₗ ((newChoiceT w1 a , newChoiceT w2 b) ∷ r))
-      nrl' = (λ x → ¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a)) (rl _ x)) , nrl
+→upto𝕎-startChoice : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (r : ren) (x1 x2 : Name)
+                       → ¬ x1 ∈ dom𝕎· w1
+                       → ¬ x2 ∈ dom𝕎· w2
+                       → upto𝕎 name w1 w2 r
+                       → upto𝕎
+                            name
+                            (startChoice· x1 Res⊤ w1)
+                            (startChoice· x2 Res⊤ w2)
+                            ((x1 , x2) ∷ r)
+→upto𝕎-startChoice cc name w1 w2 r x1 x2 ni1 ni2 (mkUpto𝕎 wf upw) =
+  mkUpto𝕎
+    (→wfRen-startChoice cc w1 w2 r x1 x2 ni1 ni2 wf)
+    (→upto𝕎getT-startChoice cc name w1 w2 r x1 x2 ni1 ni2 upw)
 
-      nrr' : no-repeats (renᵣ ((newChoiceT w1 a , newChoiceT w2 b) ∷ r))
-      nrr' = (λ x → ¬fresh∈dom𝕎2 w2 (names𝕎· w2) (↓vars (names b)) (rr _ x)) , nrr
 
 
 →upto𝕎-startNewChoiceT : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (r : ren) (a b : Term)
@@ -1557,5 +1604,75 @@ stepsPresUpdRel2-IFLT₂→ {n} {name} {f} {g} {m} {a} {b} {c} {w} (k , v , w' ,
     comp2' : IFLT (NUM m) a₂ b₂ c₂ ⇓ IFLT (NUM m) y2 b₂ c₂ from w to w'
     comp2' = IFLT-NUM-2nd⇓ m b₂ c₂ (k2 , comp2)
 
+
+
+ΣstepsUpdRel2-FIX-APPLY→ :
+  {name : Name} {f g : Term} {w1 w : 𝕎·} {r : ren}
+  → Σ (ΣstepsUpdRel2 name f g (LET (FIX (upd name f)) (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 w1 (APPLY (force g) (FIX (force g))) w r)
+       (λ x → 0 < fst (snd x))
+  → ΣstepsUpdRel2 name f g (LET (FIX (upd name f)) (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 w1 (FIX (force g)) w r
+ΣstepsUpdRel2-FIX-APPLY→ {name} {f} {g} {w1} {w} {r} ((k1 , k2 , y1 , y2 , w3 , w' , r' , comp1 , comp2 , u) , gt0) =
+  k1 , k2 , y1 , y2 , w3 , w' , r' , comp1 , steps-APPLY-LAMBDA-FIX→ gt0 comp2 , u
+
+
+names-FIX-upd⊆ : {name : Name} {f : Term} {l : List Name}
+                 → name ∈ l
+                 → names f ⊆ l
+                 → names (FIX (upd name f)) ⊆ l
+names-FIX-upd⊆ {name} {f} {k} q h {x} (here px) rewrite px = q
+names-FIX-upd⊆ {name} {f} {k} q h {x} (there (here px)) rewrite px = q
+names-FIX-upd⊆ {name} {f} {k} q h {x} (there (there i))
+  rewrite ++[] (names (shiftUp 0 f)) | names-shiftUp 0 f = h i
+
+
+names-FIX-force⊆ : {g : Term} {l : List Name}
+                   → names g ⊆ l
+                   → names (FIX (force g)) ⊆ l
+names-FIX-force⊆ {g} {l} h {x} i rewrite ++[] (names g) = h i
+
+
+name2ren : 𝕎· → Term → Name → Name
+name2ren w a n with Name∈⊎ n (dom𝕎· w)
+... | inj₁ p = newChoiceT w a
+... | inj₂ p = n
+
+
+names2ren : 𝕎· → 𝕎· → Term → List Name → ren → ren
+names2ren w1 w2 a [] r = r
+names2ren w1 w2 a (n ∷ l) r =
+  names2ren (startChoice· n1 Res⊤ w1) (startChoice· n2 Res⊤ w2) a l ((n1 , n2) ∷ r)
+  where
+    n1 : Name
+    n1 = name2ren w1 a n
+
+    n2 : Name
+    n2 = name2ren w2 a n
+
+
+
+
+upto𝕎-startNewChoices : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (r : ren) (a : Term) (l : List Name)
+                         → upto𝕎 name w1 w2 r
+                         → upto𝕎 name (startNewChoicesL Res⊤ w1 a l) (startNewChoicesL Res⊤ w2 a l) (names2ren w1 w2 a l r)
+upto𝕎-startNewChoices cc name w1 w2 r a [] upw = upw
+upto𝕎-startNewChoices cc name w1 w2 r a (x ∷ l) upw with Name∈⊎ x (dom𝕎· w1) | Name∈⊎ x (dom𝕎· w2)
+... | inj₁ p | inj₁ q = upto𝕎-startNewChoices cc name (startNewChoiceT Res⊤ w1 a) (startNewChoiceT Res⊤ w2 a) ((newChoiceT w1 a , newChoiceT w2 a) ∷ r) a l (→upto𝕎-startNewChoiceT cc name w1 w2 r a a upw)
+... | inj₁ p | inj₂ q = upto𝕎-startNewChoices cc name (startNewChoiceT Res⊤ w1 a) (startChoice· x Res⊤ w2) ((newChoiceT w1 a , x) ∷ r) a l (→upto𝕎-startChoice cc name w1 w2 r (newChoiceT w1 a) x (¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a))) q upw)
+... | inj₂ p | inj₁ q = upto𝕎-startNewChoices cc name (startChoice· x Res⊤ w1) (startNewChoiceT Res⊤ w2 a) ((x , newChoiceT w2 a) ∷ r) a l (→upto𝕎-startChoice cc name w1 w2 r x (newChoiceT w2 a) p (¬fresh∈dom𝕎2 w2 (names𝕎· w2) (↓vars (names a))) upw)
+... | inj₂ p | inj₂ q = upto𝕎-startNewChoices cc name (startChoice· x Res⊤ w1) (startChoice· x Res⊤ w2) ((x , x) ∷ r) a l (→upto𝕎-startChoice cc name w1 w2 r x x p q upw)
+
+
+{--
+subRen-names2ren : (w1 w2 : 𝕎·) (r1 r2 : ren) (a : Term) (l : List Name)
+                   → subRen (dom𝕎· w1) (dom𝕎· w2) r1 r2
+                   → subRen (dom𝕎· w1) (dom𝕎· w2) r1 (names2ren w1 w2 a l r2)
+subRen-names2ren w1 w2 r1 r2 a [] sub = sub
+subRen-names2ren w1 w2 r1 r2 a (x ∷ l) sub with Name∈⊎ x (dom𝕎· w1) | Name∈⊎ x (dom𝕎· w2)
+... | inj₁ p | inj₁ q = {!subRen-names2ren w1 w2 r1 r2 a l ?!}
+... | inj₁ p | inj₂ q = {!!}
+... | inj₂ p | inj₁ q = {!!}
+... | inj₂ p | inj₂ q = {!!}
+--subRen-trans (newChoiceT w1 a) (newChoiceT w2 a) r r (¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a))) (¬fresh∈dom𝕎2 w2 (names𝕎· w2) (↓vars (names a))) (subRen-refl r)
+--}
 
 \end{code}

@@ -1017,7 +1017,7 @@ names-shiftNameUp≡ n (NAME x) = refl
 names-shiftNameUp≡ n (FRESH t)
   rewrite names-shiftNameUp≡ (suc n) t
         | lowerNames-map-sucIf≤-suc n (names t) = refl
-names-shiftNameUp≡ n (LOAD t) = names-shiftNameUp≡ n t
+names-shiftNameUp≡ n (LOAD t) = refl --names-shiftNameUp≡ n t
 names-shiftNameUp≡ n (CHOOSE t t₁)
   rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
         | names-shiftNameUp≡ n t
@@ -1131,7 +1131,7 @@ names-shiftNameDown≡ n (NAME x) = refl
 names-shiftNameDown≡ n (FRESH t)
   rewrite names-shiftNameDown≡ (suc n) t
         | lowerNames-map-predIf≤-suc n (names t) = refl
-names-shiftNameDown≡ n (LOAD t) = names-shiftNameDown≡ n t
+names-shiftNameDown≡ n (LOAD t) = refl --names-shiftNameDown≡ n t
 names-shiftNameDown≡ n (CHOOSE t t₁)
   rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
         | names-shiftNameDown≡ n t
@@ -1197,7 +1197,7 @@ names-shiftNameDown≡ n (SHRINK t) = names-shiftNameDown≡ n t
 
     c : ¬ suc x ∈ names (shiftNameUp 0 a)
     c rewrite names-shiftNameUp≡ 0 a = h
-¬∈names-subv {x} {v} {a} {LOAD b} na nb = ¬∈names-subv {x} {v} {a} {b} na nb
+¬∈names-subv {x} {v} {a} {LOAD b} na nb = nb --¬∈names-subv {x} {v} {a} {b} na nb
 ¬∈names-subv {x} {v} {a} {CHOOSE b b₁} na nb = →¬∈++2 {_} {_} {x} {names b} {names b₁} (¬∈names-subv {x} {v} {a} {b} na) (¬∈names-subv {x} {v} {a} {b₁} na) nb
 ¬∈names-subv {x} {v} {a} {TSQUASH b} na nb = ¬∈names-subv {x} {v} {a} {b} na nb
 ¬∈names-subv {x} {v} {a} {TTRUNC b} na nb = ¬∈names-subv {x} {v} {a} {b} na nb
@@ -1382,7 +1382,7 @@ names-shiftNameDown≡ n (SHRINK t) = names-shiftNameDown≡ n t
     concl : suc x ≡ suc b ⊎ suc x ∈ names t → x ≡ b ⊎ x ∈ lowerNames (names t)
     concl (inj₁ e) = inj₁ (suc-injective e)
     concl (inj₂ j) = inj₂ (suc→∈lowerNames j)
-∈names-renn→ {x} {a} {b} {LOAD t} i = ∈names-renn→ {x} {a} {b} {t} i
+∈names-renn→ {x} {a} {b} {LOAD t} i = inj₂ i --∈names-renn→ {x} {a} {b} {t} i
 ∈names-renn→ {x} {a} {b} {CHOOSE t t₁} i with ∈-++⁻ (names (renn a b t)) i
 ... | inj₁ j with ∈names-renn→ {x} {a} {b} {t} j
 ... |    inj₁ k = inj₁ k
@@ -1484,7 +1484,7 @@ names-shiftNameDown≡ n (SHRINK t) = names-shiftNameDown≡ n t
   where
     ind : suc a ≡ suc b × suc a ∈ names t
     ind = ∈names-renn-same {suc a} {suc b} {t} (∈lowerNames→ i)
-∈names-renn-same {a} {b} {LOAD t} i = ∈names-renn-same {a} {b} {t} i
+∈names-renn-same {a} {b} {LOAD t} ()
 ∈names-renn-same {a} {b} {CHOOSE t t₁} i with ∈-++⁻ (names (renn a b t)) i
 ... | inj₁ j = fst (∈names-renn-same {a} {b} {t} j) , ∈-++⁺ˡ (snd (∈names-renn-same {a} {b} {t} j))
 ... | inj₂ j = fst (∈names-renn-same {a} {b} {t₁} j) , ∈-++⁺ʳ (names t) (snd (∈names-renn-same {a} {b} {t₁} j))
@@ -1680,7 +1680,7 @@ name¬∈→step cc w1 w2 (FRESH t) u name comp nit niw idom rewrite sym (pair-i
     concl = sym (∈dom𝕎→getT-startNewChoiceT cc name 0 Res⊤ t w1 idom) ,
             (λ x → nit (suc→∈lowerNames (∈names-shiftNameDown-renn→ name (newChoiceT+ w1 t) t (_≤_.s≤s _≤_.z≤n) (∈dom𝕎→¬≡newChoiceT+ name w1 t idom) x))) , --() ,
             (λ x → niw (∈names𝕎-startNewChoiceT→ cc name w1 t x)) ,
-            ContConds.ccDstart cc name w1 t idom
+            dom𝕎-startNewChoiceT cc name w1 t idom
 name¬∈→step cc w1 w2 (LOAD t) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
   concl
   where

@@ -101,29 +101,27 @@ open import continuity6b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 
-ΣstepsUpdRel2-FIX-APPLY→ :
-  {name : Name} {f g : Term} {w1 w : 𝕎·} {r : ren}
-  → Σ (ΣstepsUpdRel2 name f g (LET (FIX (upd name f)) (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 w1 (APPLY (force g) (FIX (force g))) w r)
-       (λ x → 0 < fst (snd x))
-  → ΣstepsUpdRel2 name f g (LET (FIX (upd name f)) (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 w1 (FIX (force g)) w r
-ΣstepsUpdRel2-FIX-APPLY→ {name} {f} {g} {w1} {w} {r} ((k1 , k2 , y1 , y2 , w3 , w' , r' , comp1 , comp2 , u) , gt0) =
-  k1 , k2 , y1 , y2 , w3 , w' , r' , comp1 , steps-APPLY-LAMBDA-FIX→ gt0 comp2 , u
+-- TODO: ⊆dom𝕎-start and dom𝕎-startChoice are the same
 
 
-names-FIX-upd⊆ : {name : Name} {f : Term} {l : List Name}
-                 → name ∈ l
-                 → names f ⊆ l
-                 → names (FIX (upd name f)) ⊆ l
-names-FIX-upd⊆ {name} {f} {k} q h {x} (here px) rewrite px = q
-names-FIX-upd⊆ {name} {f} {k} q h {x} (there (here px)) rewrite px = q
-names-FIX-upd⊆ {name} {f} {k} q h {x} (there (there i))
-  rewrite ++[] (names (shiftUp 0 f)) | names-shiftUp 0 f = h i
+-- MOVE to continuity-conds
+⊆dom𝕎-startNewChoiceT : (cc : ContConds) (w : 𝕎·) (t : Term)
+                        → dom𝕎· w ⊆ dom𝕎· (startNewChoiceT Res⊤ w t)
+⊆dom𝕎-startNewChoiceT cc w t {name} i = dom𝕎-startNewChoiceT cc name w t i
 
 
-names-FIX-force⊆ : {g : Term} {l : List Name}
-                   → names g ⊆ l
-                   → names (FIX (force g)) ⊆ l
-names-FIX-force⊆ {g} {l} h {x} i rewrite ++[] (names g) = h i
+
+subRen-names2ren : (cc : ContConds) (w1 w2 : 𝕎·) (r1 r2 : ren) (a : Term) (l : List Name) (u v : List Name)
+                   → u ⊆ dom𝕎· w1
+                   → v ⊆ dom𝕎· w2
+                   → subRen u v r1 r2
+                   → subRen u v r1 (names2ren w1 w2 a l r2)
+subRen-names2ren cc w1 w2 r1 r2 a [] u v su sv sub = sub
+subRen-names2ren cc w1 w2 r1 r2 a (x ∷ l) u v su sv sub with Name∈⊎ x (dom𝕎· w1) | Name∈⊎ x (dom𝕎· w2)
+... | inj₁ p | inj₁ q = subRen-names2ren cc (startNewChoiceT Res⊤ w1 a) (startNewChoiceT Res⊤ w2 a) r1 ((newChoiceT w1 a , newChoiceT w2 a) ∷ r2) a l u v (⊆-trans su (⊆dom𝕎-startNewChoiceT cc w1 a)) (⊆-trans sv (⊆dom𝕎-startNewChoiceT cc w2 a)) (subRen-trans (newChoiceT w1 a) (newChoiceT w2 a) r1 r2 (λ z → ¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a)) (su z)) (λ z → ¬fresh∈dom𝕎2 w2 (names𝕎· w2) (↓vars (names a)) (sv z)) sub)
+... | inj₁ p | inj₂ q = subRen-names2ren cc (startNewChoiceT Res⊤ w1 a) (startChoice· x Res⊤ w2) r1 ((newChoiceT w1 a , x) ∷ r2) a l u v (⊆-trans su (⊆dom𝕎-startNewChoiceT cc w1 a)) (⊆-trans sv (ContConds.ccD⊆start cc x w2)) (subRen-trans (newChoiceT w1 a) x r1 r2 (λ z → ¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a)) (su z)) (λ z → q (sv z)) sub)
+... | inj₂ p | inj₁ q = subRen-names2ren cc (startChoice· x Res⊤ w1) (startNewChoiceT Res⊤ w2 a) r1 ((x , newChoiceT w2 a) ∷ r2) a l u v (⊆-trans su (ContConds.ccD⊆start cc x w1)) (⊆-trans sv (⊆dom𝕎-startNewChoiceT cc w2 a)) (subRen-trans x (newChoiceT w2 a) r1 r2 (λ z → p (su z)) (λ z → ¬fresh∈dom𝕎2 w2 (names𝕎· w2) (↓vars (names a)) (sv z)) sub)
+... | inj₂ p | inj₂ q = subRen-names2ren cc (startChoice· x Res⊤ w1) (startChoice· x Res⊤ w2) r1 ((x , x) ∷ r2) a l u v (⊆-trans su (ContConds.ccD⊆start cc x w1)) (⊆-trans sv (ContConds.ccD⊆start cc x w2)) (subRen-trans x x r1 r2 (λ z → p (su z)) (λ z → q (sv z)) sub)
 
 
 
@@ -412,9 +410,12 @@ step-updRel2 cc gc {n} {name} {f} {g} {.(FRESH a)} {.(FRESH b)} {x} {w0} {w1} {w
       (λ x → suc-≢-0 (sym x)) ur) , -- we have to get force to contain name too, so that updRel2 relates terms with the same names
   →upto𝕎-startNewChoiceT cc name w1 w r a b upw ,
   subRen-trans (newChoiceT w1 a) (newChoiceT w b) r r (¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a))) (¬fresh∈dom𝕎2 w (names𝕎· w) (↓vars (names b))) (subRen-refl r)
-step-updRel2 cc gc {n} {name} {f} {g} {.(LOAD a₁)} {.(LOAD a₂)} {x} {w0} {w1} {w2} {w} {r} nnf nng cf cg naid nbid nfiw ngiw comp ind (updRel2-LOAD a₁ a₂ ur) upw gtn nnw idom idom' compat compat' wgt0 ew01 ew0 eqn
+step-updRel2 cc gc {n} {name} {f} {g} {.(LOAD a)} {.(LOAD a)} {x} {w0} {w1} {w2} {w} {r} nnf nng cf cg naid nbid nfiw ngiw comp ind (updRel2-LOAD a) upw gtn nnw idom idom' compat compat' wgt0 ew01 ew0 eqn
   rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
-  0 , 1 , AX , AX , startNewChoices Res⊤ w1 a₁ , startNewChoices Res⊤ w a₂ , {!!}
+  0 , 1 , AX , AX , startNewChoices Res⊤ w1 a , startNewChoices Res⊤ w a ,
+  names2ren w1 w a (names a) r , refl , refl , updRel2-AX ,
+  upto𝕎-startNewChoices cc name w1 w r a (names a) upw ,
+  subRen-names2ren cc w1 w r r a (names a) (dom𝕎· w1) (dom𝕎· w) ⊆-refl ⊆-refl (subRen-refl r)
 --0 , 0 , LOAD a₁ , TSQUASH a₂ , w1 , w , r , refl , refl , updRel2-TSQUASH _ _ ur , upw , subRen-refl r
 step-updRel2 cc gc {n} {name} {f} {g} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} {x} {w0} {w1} {w2} {w} {r} nnf nng cf cg naid nbid nfiw ngiw comp ind (updRel2-CHOOSE a₁ a₂ b₁ b₂ ur ur₁) upw gtn nnw idom idom' compat compat' wgt0 ew01 ew0 eqn with is-NAME a₁
 ... | inj₁ (nm , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) | fst (snd (updRel2-NAMEₗ→ ur)) =
