@@ -237,6 +237,7 @@ disjoint-lowerNames-renᵣ→ {l} {r} disj (suc n) i j =
 →updRel2-refl {name} {f} {g} {r} {CS x} nn nr1 nr2 = updRel2-CS x x (λ z → nn (here (sym z))) (λ z → nn (here (sym z))) (names∈ren-refl x r (nr1 x (here refl)) (nr2 x (here refl)))
 →updRel2-refl {name} {f} {g} {r} {NAME x} nn nr1 nr2 = updRel2-NAME x x (λ z → nn (here (sym z))) (λ z → nn (here (sym z))) (names∈ren-refl x r (nr1 x (here refl)) (nr2 x (here refl)))
 →updRel2-refl {name} {f} {g} {r} {FRESH a} nn nr1 nr2 = updRel2-FRESH _ _ (→updRel2-refl {suc name} {shiftNameUp 0 f} {shiftNameUp 0 g} {sren r} {a} (λ z → nn (suc→∈lowerNames {name} {names a} z)) (disjoint-lowerNames-renₗ→ nr1) (disjoint-lowerNames-renᵣ→ nr2))
+→updRel2-refl {name} {f} {g} {r} {LOAD a} nn nr1 nr2 = updRel2-LOAD _ --_ (→updRel2-refl {suc name} {shiftNameUp 0 f} {shiftNameUp 0 g} {sren r} {a} (λ z → nn (suc→∈lowerNames {name} {names a} z)) (disjoint-lowerNames-renₗ→ nr1) (disjoint-lowerNames-renᵣ→ nr2))
 →updRel2-refl {name} {f} {g} {r} {CHOOSE a a₁} nn nr1 nr2 = updRel2-CHOOSE _ _ _ _ (→updRel2-refl (¬∈++2→¬∈1 {_} {_} {names a} {names a₁} {name} nn) (disjoint++2→1 (names a) (names a₁) (renₗ r) nr1) (disjoint++2→1 (names a) (names a₁) (renᵣ r) nr2)) (→updRel2-refl (¬∈++2→¬∈2 {_} {_} {names a} {names a₁} {name} nn) (disjoint++2→2 (names a) (names a₁) (renₗ r) nr1) (disjoint++2→2 (names a) (names a₁) (renᵣ r) nr2))
 →updRel2-refl {name} {f} {g} {r} {TSQUASH a} nn nr1 nr2 = updRel2-TSQUASH _ _ (→updRel2-refl nn nr1 nr2)
 →updRel2-refl {name} {f} {g} {r} {TTRUNC a} nn nr1 nr2 = updRel2-TTRUNC _ _ (→updRel2-refl nn nr1 nr2)
@@ -814,7 +815,7 @@ eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g smod eqb =
     nnw1s' i = nnw1' (∈names𝕎-startNewChoiceT→ cc name w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝) (names𝕎-chooseT→ cc name name w1s (NUM 0) i))
 
     idomw1s' : name ∈ dom𝕎· w1s'
-    idomw1s' = dom𝕎-chooseT cc name name w1s (NUM 0) (ContConds.ccNchoice cc w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝))
+    idomw1s' = dom𝕎-chooseT cc name name w1s (NUM 0) (newChoiceT∈dom𝕎 cc w1' (testMup 0 ⌜ F ⌝ ⌜ f ⌝))
 
     pish : (getT≤ℕ w2 tn name → isHighestℕ {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} tn name compa)
             × ∈names𝕎 {k} {w1s'} {w2} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {v} name compa
@@ -959,6 +960,7 @@ eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g smod eqb =
         compg = eqfg-aux {w1} {w1'} e0' {name} {⌜ f ⌝} {⌜ g ⌝} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ g ⌝)} {v} {v'} {n} isvv (equf w1' (⊑-refl· _)) comp1 (⇓-from-to→⇓ (k , compa)) (⇓-from-to→⇓ (k' , compg1)) ur
 --}
 
+    -- Prefix a LOAD before the apply? Or νtestMup rather...
     aw1 : (k' : ℕ) → #APPLY F (#force f) #⇓ #NUM k' at w1s' → #APPLY F (#force g) #⇓ #NUM k' at w1s'
     aw1 k' c = eqfgq-aux
                  cc cn kb gc {i} {w1s'} {w1s'} {w1s'} {w2} {F} {f} {g} {name} {k} {v} {j} {tn}
