@@ -383,16 +383,16 @@ subRen-trans-names {l1} {l2} {k1} {k2} {r1} {r2} {.((a , b) ∷ r3)} ss1 ss2 sr1
 abstract
   steps-updRel2-aux : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term}
                    → ¬ name ∈ names f
-                   → ¬ name ∈ names g
+--                   → ¬ name ∈ names g
                    → # f
                    → # g
                    → (k : ℕ)
                    → (ind : (k' : ℕ) → k' < k → presUpdRel2 n name f g k')
                    → presUpdRel2 n name f g k
-  steps-updRel2-aux cc gc {n} {name} {f} {g} nnf nng cf cg 0 ind {a} {b} {v} {w0} {w1} {w2} {w} {r} ur naid nbid niw nfiw ngiw upw compat compat' wgt0 ew01 ew0 eqw comp ish inw isv
+  steps-updRel2-aux cc gc {n} {name} {f} {g} nnf cf cg 0 ind {a} {b} {v} {w0} {w1} {w2} {w} {r} ur naid nbid niw nfiw ngiw upw compat compat' wgt0 ew01 ew0 eqw comp ish inw isv
     rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp) =
     0 , b , w , r , refl , ur , upw , subRen-refl r
-  steps-updRel2-aux cc gc {n} {name} {f} {g} nnf nng cf cg (suc k) ind {a} {b} {v} {w0} {w1} {w2} {w} {r} ur naid nbid niw nfiw ngiw upw compat compat' wgt0 ew01 ew0 eqw comp ish inw isv
+  steps-updRel2-aux cc gc {n} {name} {f} {g} nnf cf cg (suc k) ind {a} {b} {v} {w0} {w1} {w2} {w} {r} ur naid nbid niw nfiw ngiw upw compat compat' wgt0 ew01 ew0 eqw comp ish inw isv
     with step⊎ a w1
   ... | inj₁ (a' , w1' , z) rewrite z =
     k2 + k4 , v' , w'' , r'' ,
@@ -414,7 +414,7 @@ abstract
       spres = k , v , w2 , comp , isv , snd ish , snd (snd inw) , ind1
 
       s : ΣstepsUpdRel2 name f g a' w1 w1' b w r
-      s = step-updRel2 cc gc {n} {name} {f} {g} {a} {b} {a'} {w0} {w1} {w1'} {w} {r} nnf nng cf cg naid nbid nfiw ngiw z spres ur upw (fst ish) (fst inw) (fst (snd inw)) niw compat compat' wgt0 ew01 ew0 eqw
+      s = step-updRel2 cc gc {n} {name} {f} {g} {a} {b} {a'} {w0} {w1} {w1'} {w} {r} nnf cf cg naid nbid nfiw ngiw z spres ur upw (fst ish) (fst inw) (fst (snd inw)) niw compat compat' wgt0 ew01 ew0 eqw
 
       k1 : ℕ
       k1 = fst s

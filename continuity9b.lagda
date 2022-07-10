@@ -104,12 +104,12 @@ open import continuity8b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 steps-updRel2 : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term} {k : ℕ}
                → ¬ name ∈ names f
-               → ¬ name ∈ names g
+--               → ¬ name ∈ names g
                → # f
                → # g
                → presUpdRel2 n name f g k
-steps-updRel2 cc gc {n} {name} {f} {g} {k} nnf nng cf cg =
-  <ℕind _ (steps-updRel2-aux cc gc {n} {name} {f} {g} nnf nng cf cg) k
+steps-updRel2 cc gc {n} {name} {f} {g} {k} nnf cf cg =
+  <ℕind _ (steps-updRel2-aux cc gc {n} {name} {f} {g} nnf cf cg) k
 
 
 
@@ -255,7 +255,7 @@ disjoint-lowerNames-renᵣ→ {l} {r} disj (suc n) i j =
 steps-updRel2-app : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Name} {F f g v : Term} {w0 w1 w2 w : 𝕎·} {r : ren} {k : ℕ}
                    → ¬ name ∈ names F
                    → ¬ name ∈ names f
-                   → ¬ name ∈ names g
+--                   → ¬ name ∈ names g
                    → # f
                    → # g
                    → names F ⊆ dom𝕎· w1
@@ -282,9 +282,9 @@ steps-updRel2-app : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Nam
                        × updRel2 name f g r' v v'
                        × upto𝕎 name w2 w' r'
                        × subRen (dom𝕎· w1) (dom𝕎· w) r r'))))
-steps-updRel2-app cc gc {n} {name} {F} {f} {g} {v} {w0} {w1} {w2} {w} {r} {k} nnF nnf nng cf cg nFiw1 nFiw idom1 idom2 nfiw ngiw disj1 disj2 upw compat1 compat2 gt0 ww1 ww eqn comp ish inw isv =
+steps-updRel2-app cc gc {n} {name} {F} {f} {g} {v} {w0} {w1} {w2} {w} {r} {k} nnF nnf cf cg nFiw1 nFiw idom1 idom2 nfiw ngiw disj1 disj2 upw compat1 compat2 gt0 ww1 ww eqn comp ish inw isv =
   steps-updRel2
-    cc gc {n} {name} {f} {g} {k} nnf nng cf cg
+    cc gc {n} {name} {f} {g} {k} nnf cf cg
     {APPLY F (upd name f)} {APPLY F (force g)} {v} {w0} {w1} {w2} {w} {r}
     (updRel2-APPLY F F (upd name f) (force g) (→updRel2-refl {name} {f} {g} {r} {F} nnF disj1 disj2) updRel2-upd)
     (→names-APPLY-upd⊆ {F} {f} {dom𝕎· w1} {name} nFiw1 idom1 nfiw)
@@ -511,7 +511,7 @@ eqfgq-aux : (cc : ContConds) (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-�
             {k : ℕ} {v : Term} {j : ℕ} {tn : ℕ}
             → ¬ name ∈ names ⌜ F ⌝
             → ¬ name ∈ names ⌜ f ⌝
-            → ¬ name ∈ names ⌜ g ⌝
+--            → ¬ name ∈ names ⌜ g ⌝
             → ¬ name ∈ names𝕎· w1s'
             → name ∈ dom𝕎· w1s'
             → name ∈ dom𝕎· w1
@@ -535,7 +535,7 @@ eqfgq-aux : (cc : ContConds) (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-�
             → ∀𝕎 w0 (λ w' _ → (k : ℕ) → k < tn → ⇛!sameℕ w' (APPLY ⌜ f ⌝ (NUM k)) (APPLY ⌜ g ⌝ (NUM k)))
             → steps k (APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) , w1s') ≡ (v , w2)
             → (k' : ℕ) → #APPLY F (#force f) #⇓ #NUM k' at w1 → #APPLY F (#force g) #⇓ #NUM k' at w1
-eqfgq-aux cc cn kb gc {i} {w0} {w1} {w1s'} {w2} {F} {f} {g} {name} {k} {v} {j} {tn} nnF nnf nng nnw1s' idomw1s' idomw1 nFiw1 nFiw2 nfiw ngiw upw compat1 compat2 wgt0 g0 eqj isvv ew1 ew2 get0 inF inf eqn compa k' c =
+eqfgq-aux cc cn kb gc {i} {w0} {w1} {w1s'} {w2} {F} {f} {g} {name} {k} {v} {j} {tn} nnF nnf nnw1s' idomw1s' idomw1 nFiw1 nFiw2 nfiw ngiw upw compat1 compat2 wgt0 g0 eqj isvv ew1 ew2 get0 inF inf eqn compa k' c =
   ⇓-from-to→⇓ {w1} {w'} {APPLY ⌜ F ⌝ (force ⌜ g ⌝)} {NUM k'} (k'' , compg2)
   where
     uF : updCtxt2 name ⌜ f ⌝ ⌜ F ⌝
@@ -562,7 +562,7 @@ eqfgq-aux cc cn kb gc {i} {w0} {w1} {w1s'} {w2} {F} {f} {g} {name} {k} {v} {j} {
                × subRen (dom𝕎· w1s') (dom𝕎· w1) [] r'))))
     compg0 = steps-updRel2-app
                cc gc {tn} {name} {⌜ F ⌝} {⌜ f ⌝} {⌜ g ⌝} {v} {w0} {w1s'} {w2} {w1} {[]} {k}
-               nnF nnf nng {--(¬Names→¬∈names name ⌜ g ⌝ nng)--} (CTerm.closed f) (CTerm.closed g) nFiw1 nFiw2 idomw1s' idomw1 nfiw ngiw
+               nnF nnf {--(¬Names→¬∈names name ⌜ g ⌝ nng)--} (CTerm.closed f) (CTerm.closed g) nFiw1 nFiw2 idomw1s' idomw1 nfiw ngiw
                (disjoint[]ᵣ (names ⌜ F ⌝)) (disjoint[]ᵣ (names ⌜ F ⌝)) upw compat1 compat2 wgt0
                ew1 ew2 eqn {--(∀𝕎-mon e1' eqb3)--} compa ish (snd pish) isvv
 
@@ -642,7 +642,6 @@ abstract
               hst : isHighestFreshℕ {fst (snd (snd h1))} {w1} {fst (snd h1)} {testMup 0 ⌜ F ⌝ ⌜ f ⌝}
                                      {NUM (fst h1)} (fst h2) (snd (snd (snd h1)))
               hst = lower (sma w1'' (⊑-trans· e1 (⊑-trans· e1' e1'')))
-
 
 
 
@@ -964,7 +963,7 @@ eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g smod eqb =
     aw1 : (k' : ℕ) → #APPLY F (#force f) #⇓ #NUM k' at w1s' → #APPLY F (#force g) #⇓ #NUM k' at w1s'
     aw1 k' c = eqfgq-aux
                  cc cn kb gc {i} {w1s'} {w1s'} {w1s'} {w2} {F} {f} {g} {name} {k} {v} {j} {tn}
-                 nnF nnf {!!} nnw1s' idomw1s' idomw1s' {!!} {!!} {!!} {!!}
+                 nnF nnf nnw1s' idomw1s' idomw1s' {!!} {!!} {!!} {!!}
                  (upto𝕎-refl name w1s') compat1 compat1 wgt0 g0
                  eqj isvv (⊑-refl· w1s') (⊑-refl· w1s') wgt0 (equalInType-mon ∈F w1s' e0'') (equalInType-mon ∈f w1s' e0'')
                  (∀𝕎-mon e0' eqb5) compa k' c

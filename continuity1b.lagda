@@ -96,6 +96,10 @@ testMup : (name : Name) (F f : Term) → Term
 testMup name F f = testM name (shiftNameUp 0 F) (shiftNameUp 0 f)
 
 
+#testMup : (name : Name) (F f : CTerm) → CTerm
+#testMup name F f = #testM name (#shiftNameUp 0 F) (#shiftNameUp 0 f)
+
+
 νtestMup : (F f : Term) → Term
 νtestMup F f = νtestM (shiftNameUp 0 F) (shiftNameUp 0 f)
 
@@ -104,32 +108,69 @@ testMup name F f = testM name (shiftNameUp 0 F) (shiftNameUp 0 f)
 #νtestMup F f = #νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f)
 
 
+testML : (name : Name) (F f : Term) → Term
+testML name F f = SEQ (LOAD F) (testM name F f)
 
-νtestM-QNAT-shift : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
+
+testMLup : (name : Name) (F f : Term) → Term
+testMLup name F f = SEQ (LOAD F) (testMup name F f)
+
+
+νtestML : (F f : Term) → Term
+νtestML F f = FRESH (testML 0 F f)
+
+
+νtestMLup : (F f : Term) → Term
+νtestMLup F f = FRESH (testMLup 0 F f)
+
+
+#LOAD : CTerm → CTerm
+#LOAD a = ct (LOAD ⌜ a ⌝) c
+  where
+    c : # LOAD ⌜ a ⌝
+    c rewrite CTerm.closed a = refl
+
+
+#testML : (name : Name) (F f : CTerm) → CTerm
+#testML name F f = ct (testML name ⌜ F ⌝ ⌜ f ⌝) c
+  where
+    c : # testML name ⌜ F ⌝ ⌜ f ⌝
+    c rewrite fvars-SEQ0 (LOAD ⌜ F ⌝) (testM name ⌜ F ⌝ ⌜ f ⌝)
+            | CTerm.closed (#testM name F f)
+            | CTerm.closed F = refl --refl
+
+
+#testMLup : (name : Name) (F f : CTerm) → CTerm
+#testMLup name F f = ct (testMLup name ⌜ F ⌝ ⌜ f ⌝) c
+  where
+    c : # testMLup name ⌜ F ⌝ ⌜ f ⌝
+    c rewrite fvars-SEQ0 (LOAD ⌜ F ⌝) (testMup name ⌜ F ⌝ ⌜ f ⌝)
+            | CTerm.closed (#testMup name F f)
+            | CTerm.closed F = refl --refl
+
+
+#νtestML : (F f : CTerm) → CTerm
+#νtestML F f = ct (νtestML ⌜ F ⌝ ⌜ f ⌝) c
+  where
+    c : # νtestML ⌜ F ⌝ ⌜ f ⌝
+    c = CTerm.closed (#testML 0 F f)
+
+
+#νtestMLup : (F f : CTerm) → CTerm
+#νtestMLup F f = ct (νtestMLup ⌜ F ⌝ ⌜ f ⌝) c
+  where
+    c : # νtestMLup ⌜ F ⌝ ⌜ f ⌝
+    c = CTerm.closed (#testMLup 0 F f)
+
+
+testM-QNAT-shift : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm) (name : Name)
+                    → compatible· name w Res⊤
                     → ∈Type i w #BAIRE→NAT F
                     → ∈Type i w #BAIRE f
-                    → #⇓sameℕ w (#νtestMup F f) (#νtestMup F f)
-νtestM-QNAT-shift cn kb gc i w F f ∈F ∈f =
+                    → #⇓sameℕ w (#testM name F f) (#testM name F f)
+testM-QNAT-shift cn kb gc i w1 F f name comp1 ∈F ∈f =
   suc k , ack , ack
   where
-    tM : Term
-    tM = testMup 0 ⌜ F ⌝ ⌜ f ⌝
-
-    name : Name
-    name = newChoiceT w tM
-
-    w1 : 𝕎·
-    w1 = startNewChoiceT Res⊤ w tM
-
-    e1 : w ⊑· w1
-    e1 = startNewChoiceT⊏ Res⊤ w tM
-
-    comp1 : compatible· name w1 Res⊤
-    comp1 = startChoiceCompatible· Res⊤ w name (¬newChoiceT∈dom𝕎 w tM)
-
-    s1 : νtestMup ⌜ F ⌝ ⌜ f ⌝ ⇓ testM name ⌜ F ⌝ ⌜ f ⌝ from w to w1
-    s1 = 1 , ≡pair (shiftNameDown-renn-shiftNameUp name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f)) refl
-
     w2 : 𝕎·
     w2 = chooseT name w1 (NUM 0)
 
@@ -148,8 +189,8 @@ testMup name F f = testM name (shiftNameUp 0 F) (shiftNameUp 0 f)
 
     eqa : ∈Type i w2 #NAT (#APPLY F (#upd name f))
     eqa = equalInType-FUN→
-            (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) w2 (⊑-refl· _) (#upd name f) (#upd name f)
-            (upd∈ i w2 name f g0 (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
+            (equalInType-mon ∈F w2 e2) w2 (⊑-refl· _) (#upd name f) (#upd name f)
+            (upd∈ i w2 name f g0 (equalInType-mon ∈f w2 e2))
 
     eqn : NATeq w2 (#APPLY F (#upd name f)) (#APPLY F (#upd name f))
     eqn = kb (equalInType-NAT→ i w2 (#APPLY F (#upd name f)) (#APPLY F (#upd name f)) eqa) w2 (⊑-refl· _)
@@ -181,12 +222,138 @@ testMup name F f = testM name (shiftNameUp 0 F) (shiftNameUp 0 f)
     pbk : probeM name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (suc k) from w2 to w3
     pbk = ⇓-trans₂ (SEQ⇓₁ (snd ca)) (⇓-trans₂ (SEQ-val⇓ w3 (NUM m) (SUC (get0 name)) tt) (⇓NUM→SUC⇓NUM gk))
 
-    ack : νtestMup ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (suc k) at w
-    ack = ⇓-from-to→⇓ {w} {w3} {νtestMup ⌜ F ⌝ ⌜ f ⌝} {NUM (suc k)}
-                       (⇓-trans₂ {w} {w1} {w3} {νtestMup ⌜ F ⌝ ⌜ f ⌝} {testM name ⌜ F ⌝ ⌜ f ⌝} {NUM (suc k)}
-                                 s1 (⇓-trans₂ {w1} {w2} {w3} {testM name ⌜ F ⌝ ⌜ f ⌝} {SEQ AX (probeM name ⌜ F ⌝ ⌜ f ⌝)} {NUM (suc k)}
-                                              (SEQ⇓₁ {w1} {w2} {set0 name} {AX} {probeM name ⌜ F ⌝ ⌜ f ⌝} cs)
-                                              (⇓-trans₂ (SEQ-val⇓ w2 AX (probeM name ⌜ F ⌝ ⌜ f ⌝) tt) pbk)))
+    ack : testM name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (suc k) at w1
+    ack = ⇓-from-to→⇓ {w1} {w3} {testM name ⌜ F ⌝ ⌜ f ⌝} {NUM (suc k)}
+                       (⇓-trans₂ {w1} {w2} {w3} {testM name ⌜ F ⌝ ⌜ f ⌝} {SEQ AX (probeM name ⌜ F ⌝ ⌜ f ⌝)} {NUM (suc k)}
+                                 (SEQ⇓₁ {w1} {w2} {set0 name} {AX} {probeM name ⌜ F ⌝ ⌜ f ⌝} cs)
+                                 (⇓-trans₂ (SEQ-val⇓ w2 AX (probeM name ⌜ F ⌝ ⌜ f ⌝) tt) pbk))
+
+
+
+νtestM-QNAT-shift : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
+                    → ∈Type i w #BAIRE→NAT F
+                    → ∈Type i w #BAIRE f
+                    → #⇓sameℕ w (#νtestMup F f) (#νtestMup F f)
+νtestM-QNAT-shift cn kb gc i w F f ∈F ∈f =
+  fst smn , ack , ack
+  where
+    tM : Term
+    tM = testMup 0 ⌜ F ⌝ ⌜ f ⌝
+
+    name : Name
+    name = newChoiceT w tM
+
+    w1 : 𝕎·
+    w1 = startNewChoiceT Res⊤ w tM
+
+    e1 : w ⊑· w1
+    e1 = startNewChoiceT⊏ Res⊤ w tM
+
+    comp1 : compatible· name w1 Res⊤
+    comp1 = startChoiceCompatible· Res⊤ w name (¬newChoiceT∈dom𝕎 w tM)
+
+    s1 : νtestMup ⌜ F ⌝ ⌜ f ⌝ ⇓ testM name ⌜ F ⌝ ⌜ f ⌝ from w to w1
+    s1 = 1 , ≡pair (shiftNameDown-renn-shiftNameUp name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f)) refl
+
+    smn : #⇓sameℕ w1 (#testM name F f) (#testM name F f)
+    smn = testM-QNAT-shift cn kb gc i w1 F f name comp1 (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
+
+    ack : νtestMup ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (fst smn) at w
+    ack = ⇓-trans₁ {w} {w1} {νtestMup ⌜ F ⌝ ⌜ f ⌝} {testM name ⌜ F ⌝ ⌜ f ⌝} {NUM (proj₁ smn)} s1 (fst (snd smn))
+
+
+
+≡SEQ : {a b c d : Term} → a ≡ b → c ≡ d → SEQ a c ≡ SEQ b d
+≡SEQ {a} {b} {c} {d} e f rewrite e | f = refl
+
+
+
+shiftNameDown-renn-shiftNameUp-LOAD :
+  (name : Name) (F f : Term)
+  → # F
+  → # f
+  → shiftNameDown 0 (renn 0 (suc name) (testMLup 0 F f))
+     ≡ testML name F f
+shiftNameDown-renn-shiftNameUp-LOAD name F f cF cf
+  rewrite shiftUp-shiftNameUp 0 0 F
+        | shiftUp-shiftNameUp 0 0 f
+        | #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct f cf)
+        | shiftUp-shiftNameUp 3 0 f
+        | #shiftUp 3 (ct f cf)
+        | renn-shiftNameUp 0 (suc name) F
+        | renn-shiftNameUp 0 (suc name) f
+        | shiftNameDownUp 0 F
+        | shiftNameDownUp 0 f
+        | shiftUp-shiftNameUp 1 0 F
+        | shiftUp-shiftNameUp 4 0 f
+        | #shiftUp 1 (ct F cF)
+        | #shiftUp 4 (ct f cf)
+        | renn-shiftNameUp 0 (suc name) F
+        | renn-shiftNameUp 0 (suc name) f
+        | shiftNameDownUp 0 F
+        | shiftNameDownUp 0 f = refl
+
+
+testML-QNAT-shift : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm) (name : Name)
+                    → compatible· name w Res⊤
+                    → ∈Type i w #BAIRE→NAT F
+                    → ∈Type i w #BAIRE f
+                    → #⇓sameℕ w (#testML name F f) (#testML name F f)
+testML-QNAT-shift cn kb gc i w F f name compat ∈F ∈f =
+  fst smn , ack , ack
+  where
+    w1 : 𝕎·
+    w1 = startNewChoices Res⊤ w ⌜ F ⌝
+
+    e1 : w ⊑· w1
+    e1 = startNewChoices⊑ Res⊤ w ⌜ F ⌝
+
+    s1 : testML name ⌜ F ⌝ ⌜ f ⌝ ⇓ SEQ AX (testM name ⌜ F ⌝ ⌜ f ⌝) from w to w1
+    s1 = 1 , refl
+
+    smn : #⇓sameℕ w1 (#testM name F f) (#testM name F f)
+    smn = testM-QNAT-shift cn kb gc i w1 F f name (⊑-compatible· e1 compat) (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
+
+    ack : testML name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (fst smn) at w
+    ack = ⇓-trans₁ {w} {w1} {testML name ⌜ F ⌝ ⌜ f ⌝} {SEQ AX (testM name ⌜ F ⌝ ⌜ f ⌝)} {NUM (proj₁ smn)}
+                   s1
+                   (⇓-trans₁ {w1} {w1} {SEQ AX (testM name ⌜ F ⌝ ⌜ f ⌝)} {testM name ⌜ F ⌝ ⌜ f ⌝} {NUM (proj₁ smn)}
+                             (SEQ-AX⇓₁from-to {w1} {testM name ⌜ F ⌝ ⌜ f ⌝} (CTerm.closed (#testM name F f)))
+                             (fst (snd smn)))
+
+
+
+νtestMLup-QNAT-shift : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
+                    → ∈Type i w #BAIRE→NAT F
+                    → ∈Type i w #BAIRE f
+                    → #⇓sameℕ w (#νtestMLup F f) (#νtestMLup F f)
+νtestMLup-QNAT-shift cn kb gc i w F f ∈F ∈f =
+  fst smn , ack , ack
+  where
+    tM : Term
+    tM = testMLup 0 ⌜ F ⌝ ⌜ f ⌝
+
+    name : Name
+    name = newChoiceT w tM
+
+    w1 : 𝕎·
+    w1 = startNewChoiceT Res⊤ w tM
+
+    e1 : w ⊑· w1
+    e1 = startNewChoiceT⊏ Res⊤ w tM
+
+    comp1 : compatible· name w1 Res⊤
+    comp1 = startChoiceCompatible· Res⊤ w name (¬newChoiceT∈dom𝕎 w tM)
+
+    s1 : νtestMLup ⌜ F ⌝ ⌜ f ⌝ ⇓ testML name ⌜ F ⌝ ⌜ f ⌝ from w to w1
+    s1 = 1 , ≡pair (shiftNameDown-renn-shiftNameUp-LOAD name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f)) refl
+
+    smn : #⇓sameℕ w1 (#testML name F f) (#testML name F f)
+    smn = testML-QNAT-shift cn kb gc i w1 F f name comp1 (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
+
+    ack : νtestMLup ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (fst smn) at w
+    ack = ⇓-trans₁ {w} {w1} {νtestMLup ⌜ F ⌝ ⌜ f ⌝} {testML name ⌜ F ⌝ ⌜ f ⌝} {NUM (proj₁ smn)} s1 (fst (snd smn))
 
 
 
@@ -659,6 +826,24 @@ abstract
 
       c : Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w to w')
       c = #⇓→from-to {w} {#νtestMup F f} {#NUM n} (fst (snd h))
+
+
+
+abstract
+  νtestMLup⇓ℕ : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
+              → ∈Type i w #BAIRE→NAT F
+              → ∈Type i w #BAIRE f
+              → Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMLup F f #⇓ #NUM n from w to w'))
+  νtestMLup⇓ℕ cn kb gc i w F f ∈F ∈f = n , c
+    where
+      h : #⇓sameℕ w (#νtestMLup F f) (#νtestMLup F f)
+      h = νtestMLup-QNAT-shift cn kb gc i w F f ∈F ∈f
+
+      n : ℕ
+      n = fst h
+
+      c : Σ 𝕎· (λ w' → #νtestMLup F f #⇓ #NUM n from w to w')
+      c = #⇓→from-to {w} {#νtestMLup F f} {#NUM n} (fst (snd h))
 
 
 -- This is capturing the fact there is a world w1 ⊒ w such that all ℕs that f gets applied to in
