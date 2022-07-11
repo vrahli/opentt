@@ -114,8 +114,8 @@ presUpdRel2 n name f g k =
   → names a ⊆ dom𝕎· w1
   → names b ⊆ dom𝕎· w
   → name ∈ dom𝕎· w
-  → names f ⊆ dom𝕎· w1
-  → names g ⊆ dom𝕎· w
+--  → names f ⊆ dom𝕎· w1
+--  → names g ⊆ dom𝕎· w
   → upto𝕎 name w1 w r
   → compatible· name w1 Res⊤
   → compatible· name w Res⊤

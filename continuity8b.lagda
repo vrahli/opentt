@@ -351,20 +351,21 @@ step-pres-dom cc {SHRINK a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj 
 
 
 
-steps-pres-dom : (cc : ContConds) {a b : Term} {w1 w2 : 𝕎·} {k : ℕ}
-                 → steps k (a , w1) ≡ (b , w2)
-                 → names a ⊆ dom𝕎· w1
-                 → names b ⊆ dom𝕎· w2 × dom𝕎· w1 ⊆ dom𝕎· w2
-steps-pres-dom cc {a} {b} {w1} {w2} {0} comp ss rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = ss , λ {x} i → i
-steps-pres-dom cc {a} {b} {w1} {w2} {suc k} comp ss with step⊎ a w1
-... | inj₁ (a' , w1' , z) rewrite z = fst h2 , ⊆-trans (snd h1) (snd h2)
-  where
-    h1 : names a' ⊆ dom𝕎· w1' × dom𝕎· w1 ⊆ dom𝕎· w1'
-    h1 = step-pres-dom cc {a} {a'} {w1} {w1'} z ss
+abstract
+  steps-pres-dom : (cc : ContConds) {a b : Term} {w1 w2 : 𝕎·} {k : ℕ}
+                   → steps k (a , w1) ≡ (b , w2)
+                   → names a ⊆ dom𝕎· w1
+                   → names b ⊆ dom𝕎· w2 × dom𝕎· w1 ⊆ dom𝕎· w2
+  steps-pres-dom cc {a} {b} {w1} {w2} {0} comp ss rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = ss , λ {x} i → i
+  steps-pres-dom cc {a} {b} {w1} {w2} {suc k} comp ss with step⊎ a w1
+  ... | inj₁ (a' , w1' , z) rewrite z = fst h2 , ⊆-trans (snd h1) (snd h2)
+    where
+      h1 : names a' ⊆ dom𝕎· w1' × dom𝕎· w1 ⊆ dom𝕎· w1'
+      h1 = step-pres-dom cc {a} {a'} {w1} {w1'} z ss
 
-    h2 : names b ⊆ dom𝕎· w2 × dom𝕎· w1' ⊆ dom𝕎· w2
-    h2 = steps-pres-dom cc {a'} {b} {w1'} {w2} {k} comp (fst h1)
-... | inj₂ z rewrite z | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = ss , λ {x} i → i
+      h2 : names b ⊆ dom𝕎· w2 × dom𝕎· w1' ⊆ dom𝕎· w2
+      h2 = steps-pres-dom cc {a'} {b} {w1'} {w2} {k} comp (fst h1)
+  ... | inj₂ z rewrite z | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = ss , λ {x} i → i
 
 
 
@@ -389,10 +390,10 @@ abstract
                    → (k : ℕ)
                    → (ind : (k' : ℕ) → k' < k → presUpdRel2 n name f g k')
                    → presUpdRel2 n name f g k
-  steps-updRel2-aux cc gc {n} {name} {f} {g} nnf cf cg 0 ind {a} {b} {v} {w0} {w1} {w2} {w} {r} ur naid nbid niw nfiw ngiw upw compat compat' wgt0 ew01 ew0 eqw comp ish inw isv
+  steps-updRel2-aux cc gc {n} {name} {f} {g} nnf cf cg 0 ind {a} {b} {v} {w0} {w1} {w2} {w} {r} ur naid nbid niw upw compat compat' wgt0 ew01 ew0 eqw comp ish inw isv
     rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp) =
     0 , b , w , r , refl , ur , upw , subRen-refl r
-  steps-updRel2-aux cc gc {n} {name} {f} {g} nnf cf cg (suc k) ind {a} {b} {v} {w0} {w1} {w2} {w} {r} ur naid nbid niw nfiw ngiw upw compat compat' wgt0 ew01 ew0 eqw comp ish inw isv
+  steps-updRel2-aux cc gc {n} {name} {f} {g} nnf cf cg (suc k) ind {a} {b} {v} {w0} {w1} {w2} {w} {r} ur naid nbid niw upw compat compat' wgt0 ew01 ew0 eqw comp ish inw isv
     with step⊎ a w1
   ... | inj₁ (a' , w1' , z) rewrite z =
     k2 + k4 , v' , w'' , r'' ,
@@ -414,7 +415,7 @@ abstract
       spres = k , v , w2 , comp , isv , snd ish , snd (snd inw) , ind1
 
       s : ΣstepsUpdRel2 name f g a' w1 w1' b w r
-      s = step-updRel2 cc gc {n} {name} {f} {g} {a} {b} {a'} {w0} {w1} {w1'} {w} {r} nnf cf cg naid nbid nfiw ngiw z spres ur upw (fst ish) (fst inw) (fst (snd inw)) niw compat compat' wgt0 ew01 ew0 eqw
+      s = step-updRel2 cc gc {n} {name} {f} {g} {a} {b} {a'} {w0} {w1} {w1'} {w} {r} nnf cf cg naid nbid z spres ur upw (fst ish) (fst inw) (fst (snd inw)) niw compat compat' wgt0 ew01 ew0 eqw
 
       k1 : ℕ
       k1 = fst s
@@ -492,19 +493,13 @@ abstract
       niw' : name ∈ dom𝕎· w'
       niw' = snd (steps-pres-dom cc {b} {y2} {w} {w'} {k2} comp2 nbid) {name} niw
 
-      nfiw' : names f ⊆ dom𝕎· w3
-      nfiw' {x} i = snd (steps-pres-dom cc {a} {y1} {w1} {w3} {suc k1} comp1' naid) (nfiw i)
-
-      ngiw' : names g ⊆ dom𝕎· w'
-      ngiw' {x} i = snd (steps-pres-dom cc {b} {y2} {w} {w'} {k2} comp2 nbid) (ngiw i)
-
       c : Σ ℕ (λ k' → Σ Term (λ v' → Σ 𝕎· (λ w'' → Σ ren (λ r'' →
           steps k' (y2 , w') ≡ (v' , w'')
           × updRel2 name f g r'' v v'
           × upto𝕎 name w2 w'' r''
           × subRen (dom𝕎· w3) (dom𝕎· w') r' r''))))
       c = ind1 k3 ltk2 {y1} {y2} {v} {w0} {w3} {w2} {w'}
-             ur' ny1w ny2w niw' nfiw' ngiw' upw'
+             ur' ny1w ny2w niw' upw'
              (⊑-compatible· e3 compat) (⊑-compatible· e4 compat')
              (∀𝕎-mon e3 wgt0) (⊑-trans· ew01 e3) (⊑-trans· ew0 e4)
              eqw comp3 ish' inw' isv

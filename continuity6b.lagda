@@ -193,8 +193,8 @@ upto𝕎-chooseT0if cc name w1 w2 r n m (mkUpto𝕎 wf upw) with n <? m
  --mkUpto𝕎 {--refl refl (sameRes-refl w)--} (λ n1 n2 k d1 d2 r → {!!} {--refl--})
 
 
-
-→ΣstepsUpdRel2-upd : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w0 w1 w : 𝕎·} {r : ren}
+abstract
+  →ΣstepsUpdRel2-upd : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w0 w1 w : 𝕎·} {r : ren}
                      → ¬ name ∈ names f
                      → # f
                      → # g
@@ -205,8 +205,8 @@ upto𝕎-chooseT0if cc name w1 w2 r n m (mkUpto𝕎 wf upw) with n <? m
                      → names a ⊆ dom𝕎· w1
                      → names b ⊆ dom𝕎· w
                      → name ∈ dom𝕎· w
-                     → names f ⊆ dom𝕎· w1
-                     → names g ⊆ dom𝕎· w
+--                     → names f ⊆ dom𝕎· w1
+--                     → names g ⊆ dom𝕎· w
                      → upto𝕎 name w1 w r
                      → w0 ⊑· w1
                      → w0 ⊑· w
@@ -214,139 +214,139 @@ upto𝕎-chooseT0if cc name w1 w2 r n m (mkUpto𝕎 wf upw) with n <? m
                      → stepsPresUpdRel2 n name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1
                      → Σ (ΣstepsUpdRel2 name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 w1 (APPLY (force g) b) w r)
                           (λ x → 0 < fst (snd x))
-→ΣstepsUpdRel2-upd cc gc {n} {name} {f} {g} {a} {b} {w0} {w1} {w} {r} nnf cf cg compat compat' wgt0 u naid nbid niw nfiw ngiw upw ew01 ew0 eqn (k , v , w2 , comp , isv , ish , inw , ind) =
-  (k2 + k3 , k5 + k6 , NUM i , NUM i , w1a , w1b {--w1a--} , r' , comp2b , compgc , updRel2-NUM i , upw2 , sub' {--upto𝕎-sym name w1a w1a' upw2--}) ,
-  steps-APPLY-val→ {k5 + k6} {force g} {b} {NUM i} {w} {w1b} tt compgc
-  where
-    c : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w1' → Σ ℕ (λ m → Σ ℕ (λ m' →
-           k1 < k
-           × k2 < k
-           × getT 0 name w1' ≡ just (NUM m')
-           × ssteps k1 (a , w1) ≡ just (NUM m , w1')
-           × steps k2 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m))))))
-    c = upd-decomp cf wgt0 comp isv
--- We need to know that m is less than n
+  →ΣstepsUpdRel2-upd cc gc {n} {name} {f} {g} {a} {b} {w0} {w1} {w} {r} nnf cf cg compat compat' wgt0 u naid nbid niw {--nfiw ngiw--} upw ew01 ew0 eqn (k , v , w2 , comp , isv , ish , inw , ind) =
+    (k2 + k3 , k5 + k6 , NUM i , NUM i , w1a , w1b {--w1a--} , r' , comp2b , compgc , updRel2-NUM i , upw2 , sub' {--upto𝕎-sym name w1a w1a' upw2--}) ,
+    steps-APPLY-val→ {k5 + k6} {force g} {b} {NUM i} {w} {w1b} tt compgc
+    where
+      c : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w1' → Σ ℕ (λ m → Σ ℕ (λ m' →
+             k1 < k
+             × k2 < k
+             × getT 0 name w1' ≡ just (NUM m')
+             × ssteps k1 (a , w1) ≡ just (NUM m , w1')
+             × steps k2 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m))))))
+      c = upd-decomp cf wgt0 comp isv
+  -- We need to know that m is less than n
 
-    k1 : ℕ
-    k1 = fst c
+      k1 : ℕ
+      k1 = fst c
 
-    k2 : ℕ
-    k2 = fst (snd c)
+      k2 : ℕ
+      k2 = fst (snd c)
 
-    w1' : 𝕎·
-    w1' = fst (snd (snd c))
+      w1' : 𝕎·
+      w1' = fst (snd (snd c))
 
-    m : ℕ
-    m = fst (snd (snd (snd c)))
+      m : ℕ
+      m = fst (snd (snd (snd c)))
 
-    m' : ℕ
-    m' = fst (snd (snd (snd (snd c))))
+      m' : ℕ
+      m' = fst (snd (snd (snd (snd c))))
 
-    ltk1 : k1 < k
-    ltk1 = fst (snd (snd (snd (snd (snd c)))))
+      ltk1 : k1 < k
+      ltk1 = fst (snd (snd (snd (snd (snd c)))))
 
-    ltk2 : k2 < k
-    ltk2 = fst (snd (snd (snd (snd (snd (snd c))))))
+      ltk2 : k2 < k
+      ltk2 = fst (snd (snd (snd (snd (snd (snd c))))))
 
-    gt0 : getT 0 name w1' ≡ just (NUM m')
-    gt0 = fst (snd (snd (snd (snd (snd (snd (snd c)))))))
+      gt0 : getT 0 name w1' ≡ just (NUM m')
+      gt0 = fst (snd (snd (snd (snd (snd (snd (snd c)))))))
 
-    comp1 : ssteps k1 (a , w1) ≡ just (NUM m , w1')
-    comp1 = fst (snd (snd (snd (snd (snd (snd (snd (snd c))))))))
+      comp1 : ssteps k1 (a , w1) ≡ just (NUM m , w1')
+      comp1 = fst (snd (snd (snd (snd (snd (snd (snd (snd c))))))))
 
-    comp1b : steps k1 (a , w1) ≡ (NUM m , w1')
-    comp1b = ssteps→steps {k1} {a} {NUM m} {w1} {w1'} comp1
+      comp1b : steps k1 (a , w1) ≡ (NUM m , w1')
+      comp1b = ssteps→steps {k1} {a} {NUM m} {w1} {w1'} comp1
 
-    comp2 : steps k2 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m)
-    comp2 = snd (snd (snd (snd (snd (snd (snd (snd (snd c))))))))
+      comp2 : steps k2 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m)
+      comp2 = snd (snd (snd (snd (snd (snd (snd (snd (snd c))))))))
 
-    e1 : w1 ⊑· w1'
-    e1 = steps→⊑ k1 a (NUM m) comp1b
+      e1 : w1 ⊑· w1'
+      e1 = steps→⊑ k1 a (NUM m) comp1b
 
-    e2 : w1 ⊑· chooseT0if name w1' m' m
-    e2 = ⊑-trans· e1 (⊑chooseT0if {w1'} {name} {m'} {m})
+      e2 : w1 ⊑· chooseT0if name w1' m' m
+      e2 = ⊑-trans· e1 (⊑chooseT0if {w1'} {name} {m'} {m})
 
-    ltm : m < n
-    ltm = isHighestℕ-updBody→< gc {n} {name} {f} {k1} {k} {a} {v} {m} {w1} {w1'} {w2} cf compat comp1b comp isv ish
+      ltm : m < n
+      ltm = isHighestℕ-updBody→< gc {n} {name} {f} {k1} {k} {a} {v} {m} {w1} {w1'} {w2} cf compat comp1b comp isv ish
 
-    ish1 : isHighestℕ {k1} {w1} {w1'} {a} {NUM m} n name comp1b
-    ish1 = isHighestℕ-LET→ {n} {k1} {k} {name} {a} {SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))} {NUM m} {v} {w1} {w1'} {w2} comp1b comp isv ish
+      ish1 : isHighestℕ {k1} {w1} {w1'} {a} {NUM m} n name comp1b
+      ish1 = isHighestℕ-LET→ {n} {k1} {k} {name} {a} {SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))} {NUM m} {v} {w1} {w1'} {w2} comp1b comp isv ish
 
-    inw1 : ∈names𝕎 {k1} {w1} {w1'} {a} {NUM m} name comp1b
-    inw1 = ∈names𝕎-LET→ {k1} {k} {name} {a} {SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))} {NUM m} {v} {w1} {w1'} {w2} comp1b comp isv inw
+      inw1 : ∈names𝕎 {k1} {w1} {w1'} {a} {NUM m} name comp1b
+      inw1 = ∈names𝕎-LET→ {k1} {k} {name} {a} {SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))} {NUM m} {v} {w1} {w1'} {w2} comp1b comp isv inw
 
-    indb : Σ ℕ (λ k' → Σ 𝕎· (λ w' → Σ ren (λ r' → steps k' (b , w) ≡ (NUM m , w') × upto𝕎 name w1' w' r' × subRen (dom𝕎· w1) (dom𝕎· w) r r')))
-    indb = Σsteps-updRel2-NUM→ (ind k1 (<⇒≤ ltk1) {a} {b} {NUM m} {w0} {w1} {w1'} {w} {r} u naid nbid niw nfiw ngiw upw compat compat' wgt0 ew01 ew0 eqn comp1b ish1 inw1 tt)
+      indb : Σ ℕ (λ k' → Σ 𝕎· (λ w' → Σ ren (λ r' → steps k' (b , w) ≡ (NUM m , w') × upto𝕎 name w1' w' r' × subRen (dom𝕎· w1) (dom𝕎· w) r r')))
+      indb = Σsteps-updRel2-NUM→ (ind k1 (<⇒≤ ltk1) {a} {b} {NUM m} {w0} {w1} {w1'} {w} {r} u naid nbid niw {--nfiw ngiw--} upw compat compat' wgt0 ew01 ew0 eqn comp1b ish1 inw1 tt)
 
-    k4 : ℕ
-    k4 = fst indb
+      k4 : ℕ
+      k4 = fst indb
 
-    w1x : 𝕎·
-    w1x = fst (snd indb)
+      w1x : 𝕎·
+      w1x = fst (snd indb)
 
-    r' : ren
-    r' = fst (snd (snd indb))
+      r' : ren
+      r' = fst (snd (snd indb))
 
-    cb : steps k4 (b , w) ≡ (NUM m , w1x)
-    cb = fst (snd (snd (snd indb)))
+      cb : steps k4 (b , w) ≡ (NUM m , w1x)
+      cb = fst (snd (snd (snd indb)))
 
-    upw1 : upto𝕎 name w1' w1x r'
-    upw1 = fst (snd (snd (snd (snd indb))))
+      upw1 : upto𝕎 name w1' w1x r'
+      upw1 = fst (snd (snd (snd (snd indb))))
 
-    sub' : subRen (dom𝕎· w1) (dom𝕎· w) r r'
-    sub' = snd (snd (snd (snd (snd indb))))
+      sub' : subRen (dom𝕎· w1) (dom𝕎· w) r r'
+      sub' = snd (snd (snd (snd (snd indb))))
 
-    compg : APPLY (force g) b ⇓ APPLY g (NUM m) from w to w1x
-    compg = →APPLY-force⇓APPLY-NUM {m} {g} {b} {w} {w1x} cg (k4 , cb)
+      compg : APPLY (force g) b ⇓ APPLY g (NUM m) from w to w1x
+      compg = →APPLY-force⇓APPLY-NUM {m} {g} {b} {w} {w1x} cg (k4 , cb)
 
-    k5 : ℕ
-    k5 = fst compg
+      k5 : ℕ
+      k5 = fst compg
 
-    compgb : steps k5 (APPLY (force g) b , w) ≡ (APPLY g (NUM m) , w1x)
-    compgb = snd compg
+      compgb : steps k5 (APPLY (force g) b , w) ≡ (APPLY g (NUM m) , w1x)
+      compgb = snd compg
 
-    e1x : w ⊑· w1x
-    e1x = steps→⊑ k4 b (NUM m) cb
+      e1x : w ⊑· w1x
+      e1x = steps→⊑ k4 b (NUM m) cb
 
 -- We could here start from w1' instead of w1x and assume that g is name-free, which we're using below anyway
 -- We won't get an upto𝕎 proof we need. We need a truncated NAT type where the worlds don't change.
 -- replace strongMonEq with #⇛!sameℕ and NAT→NAT with NAT→NAT! (this is a another way of capturing some form of purity)
-    sn : ⇛!sameℕ w0 (APPLY f (NUM m)) (APPLY g (NUM m))
-    sn = eqn w0 (⊑-refl· _) m ltm
+      sn : ⇛!sameℕ w0 (APPLY f (NUM m)) (APPLY g (NUM m))
+      sn = eqn w0 (⊑-refl· _) m ltm
 
-    i : ℕ
-    i = fst sn
+      i : ℕ
+      i = fst sn
 
-    ca1 : APPLY f (NUM m) ⇓! (NUM i) at chooseT0if name w1' m' m
-    ca1 = lower (fst (snd sn) (chooseT0if name w1' m' m) (⊑-trans· ew01 e2))
+      ca1 : APPLY f (NUM m) ⇓! (NUM i) at chooseT0if name w1' m' m
+      ca1 = lower (fst (snd sn) (chooseT0if name w1' m' m) (⊑-trans· ew01 e2))
 
-    cb1 : APPLY g (NUM m) ⇓! (NUM i) at w1x
-    cb1 = lower (snd (snd sn) w1x (⊑-trans· ew0 e1x))
+      cb1 : APPLY g (NUM m) ⇓! (NUM i) at w1x
+      cb1 = lower (snd (snd sn) w1x (⊑-trans· ew0 e1x))
 
-    {--q : ⇓∼ℕ w1x (APPLY f (NUM m)) (APPLY g (NUM m))
-    q = lower ( w1x e1x)
+      {--q : ⇓∼ℕ w1x (APPLY f (NUM m)) (APPLY g (NUM m))
+      q = lower ( w1x e1x)
 
-    c1 : Σ 𝕎· (λ w1a → APPLY f (NUM m) ⇓ NUM i from w1x to w1a
-                       × APPLY g (NUM m) ⇓ NUM i from w1x to w1a)
-    c1 = snd q--}
+      c1 : Σ 𝕎· (λ w1a → APPLY f (NUM m) ⇓ NUM i from w1x to w1a
+                         × APPLY g (NUM m) ⇓ NUM i from w1x to w1a)
+      c1 = snd q--}
 
-    w1a : 𝕎·
-    w1a = chooseT0if name w1' m' m
+      w1a : 𝕎·
+      w1a = chooseT0if name w1' m' m
 
-    k3 : ℕ
-    k3 = fst ca1
+      k3 : ℕ
+      k3 = fst ca1
 
-    c1a : steps k3 (APPLY f (NUM m) , chooseT0if name w1' m' m) ≡ (NUM i , w1a)
-    c1a = snd ca1
+      c1a : steps k3 (APPLY f (NUM m) , chooseT0if name w1' m' m) ≡ (NUM i , w1a)
+      c1a = snd ca1
 
-    w1b : 𝕎·
-    w1b = w1x
+      w1b : 𝕎·
+      w1b = w1x
 
-    k6 : ℕ
-    k6 = fst cb1
+      k6 : ℕ
+      k6 = fst cb1
 
-    c1b : steps k6 (APPLY g (NUM m) , w1x) ≡ (NUM i , w1b)
-    c1b = snd cb1
+      c1b : steps k6 (APPLY g (NUM m) , w1x) ≡ (NUM i , w1b)
+      c1b = snd cb1
 -- Move this to a computation from w1x to w1x if g is name-free
 
 {--
@@ -379,14 +379,14 @@ upto𝕎-chooseT0if cc name w1 w2 r n m (mkUpto𝕎 wf upw) with n <? m
     c1c = fst (snd (snd c1ab))
 --}
 
-    upw2 : upto𝕎 name w1a w1b r'
-    upw2 = upto𝕎-chooseT0if cc name w1' w1x r' m' m upw1
+      upw2 : upto𝕎 name w1a w1b r'
+      upw2 = upto𝕎-chooseT0if cc name w1' w1x r' m' m upw1
 
-    comp2b : steps (k2 + k3) (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (NUM i , w1a)
-    comp2b = steps-trans+ {k2} {k3} {LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))} {APPLY f (NUM m)} {NUM i} {w1} {chooseT0if name w1' m' m} {w1a} comp2 c1a
+      comp2b : steps (k2 + k3) (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (NUM i , w1a)
+      comp2b = steps-trans+ {k2} {k3} {LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))} {APPLY f (NUM m)} {NUM i} {w1} {chooseT0if name w1' m' m} {w1a} comp2 c1a
 
-    compgc : steps (k5 + k6) (APPLY (force g) b , w) ≡ (NUM i , w1b)
-    compgc = steps-trans+ {k5} {k6} {APPLY (force g) b} {APPLY g (NUM m)} {NUM i} {w} {w1x} {w1b} compgb c1b
+      compgc : steps (k5 + k6) (APPLY (force g) b , w) ≡ (NUM i , w1b)
+      compgc = steps-trans+ {k5} {k6} {APPLY (force g) b} {APPLY g (NUM m)} {NUM i} {w} {w1x} {w1b} compgb c1b
 
 
 

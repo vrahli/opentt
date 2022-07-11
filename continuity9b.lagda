@@ -289,7 +289,7 @@ steps-updRel2-app cc gc {n} {name} {F} {f} {g} {v} {w0} {w1} {w2} {w} {r} {k} nn
     (updRel2-APPLY F F (upd name f) (force g) (→updRel2-refl {name} {f} {g} {r} {F} nnF disj1 disj2) updRel2-upd)
     (→names-APPLY-upd⊆ {F} {f} {dom𝕎· w1} {name} nFiw1 idom1 nfiw)
     (→names-APPLY-force⊆ {F} {g} {dom𝕎· w} nFiw ngiw)
-    idom2 nfiw ngiw upw compat1 compat2 gt0 ww1 ww eqn comp ish inw isv
+    idom2 upw compat1 compat2 gt0 ww1 ww eqn comp ish inw isv
 
 
 
