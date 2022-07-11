@@ -746,6 +746,23 @@ names𝕎-startNewChoices→ cc w t name i rewrite names𝕎-startNewChoices cc 
 
 
 
+names⊆dom𝕎-startNewChoicesL : (cc : ContConds) (w : 𝕎·) (t : Term) (l : List Name)
+                               → l ⊆ dom𝕎· (startNewChoicesL Res⊤ w t l)
+names⊆dom𝕎-startNewChoicesL cc w t [] {x} ()
+names⊆dom𝕎-startNewChoicesL cc w t (n ∷ l) {x} (here px) rewrite px with Name∈⊎ n (dom𝕎· w)
+... | inj₁ p = ⊆dom𝕎-startNewChoicesL cc (startNewChoiceT Res⊤ w t) t l (dom𝕎-startNewChoiceT cc n w t p)
+... | inj₂ p = ⊆dom𝕎-startNewChoicesL cc (startChoice· n Res⊤ w) t l (ContConds.ccNchoice cc w n p)
+names⊆dom𝕎-startNewChoicesL cc w t (n ∷ l) {x} (there px) with Name∈⊎ n (dom𝕎· w)
+... | inj₁ p = names⊆dom𝕎-startNewChoicesL cc (startNewChoiceT Res⊤ w t) t l px
+... | inj₂ p = names⊆dom𝕎-startNewChoicesL cc (startChoice· n Res⊤ w) t l px
+
+
+names⊆dom𝕎-startNewChoices : (cc : ContConds) (w : 𝕎·) (t : Term)
+                              → names t ⊆ dom𝕎· (startNewChoices Res⊤ w t)
+names⊆dom𝕎-startNewChoices cc w t = names⊆dom𝕎-startNewChoicesL cc w t (names t)
+
+
+
 νtestML⇓→step' : {F f v : Term} {w1 w2 : 𝕎·}
                 → # F
                 → # f
@@ -891,6 +908,9 @@ eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g smod eqb =
 
     w1s' : 𝕎·
     w1s' = chooseT name w1l (NUM 0)
+
+    nFw1s' : names ⌜ F ⌝ ⊆ dom𝕎· w1s'
+    nFw1s' {x} i = dom𝕎-chooseT cc x name w1l (NUM 0) (names⊆dom𝕎-startNewChoices cc w1s ⌜ F ⌝ i)
 
     compu : Σ Term (λ v → Σ ℕ (λ j →
                APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ v from w1s' to w2
@@ -1102,11 +1122,11 @@ eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g smod eqb =
         compg = eqfg-aux {w1} {w1'} e0' {name} {⌜ f ⌝} {⌜ g ⌝} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ g ⌝)} {v} {v'} {n} isvv (equf w1' (⊑-refl· _)) comp1 (⇓-from-to→⇓ (k , compa)) (⇓-from-to→⇓ (k' , compg1)) ur
 --}
 
-    -- Prefix a LOAD before the apply? Or νtestMup rather...
+    -- TODO: can we get rid of these 2 assumptions?
     aw1 : (k' : ℕ) → #APPLY F (#force f) #⇓ #NUM k' at w1s' → #APPLY F (#force g) #⇓ #NUM k' at w1s'
     aw1 k' c = eqfgq-aux
                  cc cn kb gc {i} {w1s'} {w1s'} {w1s'} {w2} {F} {f} {g} {name} {k} {v} {j} {tn}
-                 nnF nnf nnw1s' idomw1s' idomw1s' {!!} {!!} {!!} {!!}
+                 nnF nnf nnw1s' idomw1s' idomw1s' nFw1s' nFw1s' {!!} {!!}
                  (upto𝕎-refl name w1s') compat1 compat1 wgt0 g0
                  eqj isvv (⊑-refl· w1s') (⊑-refl· w1s') wgt0 (equalInType-mon ∈F w1s' e0'') (equalInType-mon ∈f w1s' e0'')
                  (∀𝕎-mon e0' eqb5) compa k' c
