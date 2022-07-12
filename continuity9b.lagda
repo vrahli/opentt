@@ -679,66 +679,6 @@ testML-QNAT cn kb gc i w F f ∈F ∈f =
 
 
 
-→↓vars-names-testMLup-F : (v : Name) (F f : Term)
-                          → v ∈ names F
-                          → v ∈ ↓vars (names (testMLup 0 F f))
-→↓vars-names-testMLup-F v F f i
-  rewrite names-shiftUp 1 (shiftUp 0 (shiftNameUp 0 F))
-        | names-shiftUp 4 (shiftUp 3 (shiftUp 0 (shiftNameUp 0 f)))
-        | names-shiftUp 0 (shiftNameUp 0 F)
-        | names-shiftUp 3 (shiftUp 0 (shiftNameUp 0 f))
-        | names-shiftUp 0 (shiftNameUp 0 f)
-        | ↓vars++ (names (shiftNameUp 0 F) ++ 0 ∷ 0 ∷ names (shiftNameUp 0 f) ++ []) [ 0 ]
-        | ↓vars++ (names (shiftNameUp 0 F)) (0 ∷ 0 ∷ names (shiftNameUp 0 f) ++ []) =
-  there (∈-++⁺ˡ (∈-++⁺ˡ j))
-  where
-    j : v ∈ ↓vars (names (shiftNameUp 0 F))
-    j rewrite names-shiftNameUp≡ 0 F = →∈↓vars-map-suc v (names F) i
-
-
-→↓vars-names-testMLup-f : (v : Name) (F f : Term)
-                          → v ∈ names f
-                          → v ∈ ↓vars (names (testMLup 0 F f))
-→↓vars-names-testMLup-f v F f i
-  rewrite names-shiftUp 1 (shiftUp 0 (shiftNameUp 0 F))
-        | names-shiftUp 4 (shiftUp 3 (shiftUp 0 (shiftNameUp 0 f)))
-        | names-shiftUp 0 (shiftNameUp 0 F)
-        | names-shiftUp 3 (shiftUp 0 (shiftNameUp 0 f))
-        | names-shiftUp 0 (shiftNameUp 0 f)
-        | ↓vars++ (names (shiftNameUp 0 F) ++ 0 ∷ 0 ∷ names (shiftNameUp 0 f) ++ []) [ 0 ]
-        | ↓vars++ (names (shiftNameUp 0 F)) (0 ∷ 0 ∷ names (shiftNameUp 0 f) ++ [])
-        | ++[] (names (shiftNameUp 0 f)) =
-  there (∈-++⁺ˡ (∈-++⁺ʳ (↓vars (names (shiftNameUp 0 F))) (there (there j))))
-  where
-    j : v ∈ ↓vars (names (shiftNameUp 0 f))
-    j rewrite names-shiftNameUp≡ 0 f = →∈↓vars-map-suc v (names f) i
-
-
-
-¬newChoiceT-testMLup∈names-F : (w : 𝕎·) (F f : Term)
-                            → ¬ (newChoiceT w (testMLup 0 F f)) ∈ names F
-¬newChoiceT-testMLup∈names-F w F f i = q (→↓vars-names-testMLup-F (newChoiceT w (testMLup 0 F f)) F f i)
-  where
-    q : ¬ (newChoiceT w (testMLup 0 F f)) ∈ ↓vars (names (testMLup 0 F f))
-    q = λ x → snd (freshName (dom𝕎· w ++ names𝕎· w ++ ↓vars (names (testMLup 0 F f)))) (∈-++⁺ʳ (dom𝕎· w) (∈-++⁺ʳ (names𝕎· w) x))
-
-
-
-¬newChoiceT-testMLup∈names-f : (w : 𝕎·) (F f : Term)
-                            → ¬ (newChoiceT w (testMLup 0 F f)) ∈ names f
-¬newChoiceT-testMLup∈names-f w F f i = q (→↓vars-names-testMLup-f (newChoiceT w (testMLup 0 F f)) F f i)
-  where
-    q : ¬ (newChoiceT w (testMLup 0 F f)) ∈ ↓vars (names (testMLup 0 F f))
-    q = λ x → snd (freshName (dom𝕎· w ++ names𝕎· w ++ ↓vars (names (testMLup 0 F f)))) (∈-++⁺ʳ (dom𝕎· w) (∈-++⁺ʳ (names𝕎· w) x))
-
-
-
-¬newChoiceT-testMLup∈names𝕎 : (w : 𝕎·) (F f : Term)
-                            → ¬ (newChoiceT w (testMLup 0 F f)) ∈ names𝕎· w
-¬newChoiceT-testMLup∈names𝕎 w F f i =
-  snd (freshName (dom𝕎· w ++ names𝕎· w ++ ↓vars (names (testMLup 0 F f))))
-      (∈-++⁺ʳ (dom𝕎· w) (∈-++⁺ˡ i))
-
 
 
 names𝕎-startNewChoices→ : (cc : ContConds) (w : 𝕎·) (t : Term) (name : Name)
