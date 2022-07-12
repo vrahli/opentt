@@ -31,6 +31,7 @@ open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
 open import Axiom.Extensionality.Propositional
+open import Axiom.ExcludedMiddle
 
 
 open import util
@@ -55,6 +56,7 @@ module continuity9b {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
                     (X : ChoiceExt W C)
                     (N : NewChoice {L} W C K G)
                     (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+                    (EM : ExcludedMiddle (lsuc(L)))
        where
 
 
@@ -816,6 +818,8 @@ abstract
       comp3 = testML⇓→ cn {w1'} {w2} {F} {f} {n} {name} cF cf compat1 comp1
 
 
+
+
 eqfgq : (cc : ContConds) (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
         {i : ℕ} {w : 𝕎·} {F f g : CTerm}
         → #¬Names g
@@ -1290,4 +1294,5 @@ continuityQBody cn kb gc i w F f ∈F ∈f =
                    (#PAIR (#νtestMup F f) #lam3AX)
     h0 = equalInType-SUM (λ w' e' → eqTypesQNAT) (equalTypes-contQBodyPI i w F F f f ∈F ∈f) (Mod.∀𝕎-□ M aw)
 --}
+
 \end{code}
