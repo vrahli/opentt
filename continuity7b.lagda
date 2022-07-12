@@ -101,15 +101,6 @@ open import continuity6b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 
--- TODO: ⊆dom𝕎-start and dom𝕎-startChoice are the same
-
-
--- MOVE to continuity-conds
-⊆dom𝕎-startNewChoiceT : (cc : ContConds) (w : 𝕎·) (t : Term)
-                        → dom𝕎· w ⊆ dom𝕎· (startNewChoiceT Res⊤ w t)
-⊆dom𝕎-startNewChoiceT cc w t {name} i = dom𝕎-startNewChoiceT cc name w t i
-
-
 
 subRen-names2ren : (cc : ContConds) (w1 w2 : 𝕎·) (r1 r2 : ren) (a : Term) (l : List Name) (u v : List Name)
                    → u ⊆ dom𝕎· w1

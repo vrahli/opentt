@@ -293,6 +293,7 @@ data updRel2 (name : Name) (f g : Term) (r : ren) : Term → Term → Set where
 
 
 
+{--
 sameRes-refl : (w : 𝕎·) → sameRes w w
 sameRes-refl w name r = (λ x → x) , (λ x → x)
 
@@ -305,6 +306,7 @@ sameRes-trans : {w1 w2 w3 : 𝕎·} → sameRes w1 w2 → sameRes w2 w3 → same
 sameRes-trans {w1} {w2} {w3} sres1 sres2 name r =
   (λ y → fst (sres2 name r) (fst (sres1 name r) y)) ,
   (λ y → snd (sres1 name r) (snd (sres2 name r) y))
+--}
 
 
 upto𝕎getT : (name : Name) (w1 w2 : 𝕎·) (r : ren) → Set
@@ -366,11 +368,13 @@ upto𝕎-trans name w1 w2 w3 r (mkUpto𝕎 {--eqd1 eqn1 sres1--} u1) (mkUpto𝕎
 --}
 
 
+{--
 sameRes-chooseT : (cc : ContConds) (name : Name) (w : 𝕎·) (t : Term)
                   → sameRes (chooseT name w t) w
 sameRes-chooseT cc name w t n r =
   (λ x → ContConds.ccCchoose→ cc n name w t r x) ,
-  (λ x → ContConds.ccCchoose← cc n name w t r x)
+  (λ x → →compatible-chooseT n name w t r x)
+--}
 
 
 updRel2-NUMₗ→ : {name : Name} {f g : Term} {r : ren} {n : ℕ} {a : Term}
@@ -1013,45 +1017,6 @@ upto𝕎→≡fresh-inst {name} {w1} {w2} a upw rewrite upto𝕎→≡newChoiceT
 --}
 
 
--- MOVE to continuity-conds
-→≡Nnames𝕎-start : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·)
-                   → names𝕎· w1 ≡N names𝕎· w2
-                   → names𝕎· (startChoice· name Res⊤ w1) ≡N names𝕎· (startChoice· name Res⊤ w2)
-→≡Nnames𝕎-start cc name w1 w2 e
-  rewrite ContConds.ccN≡start cc name w1
-        | ContConds.ccN≡start cc name w2 = e
-
-
--- MOVE to continuity-conds
-→≡names𝕎-start : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·)
-                   → names𝕎· w1 ≡ names𝕎· w2
-                   → names𝕎· (startChoice· name Res⊤ w1) ≡ names𝕎· (startChoice· name Res⊤ w2)
-→≡names𝕎-start cc name w1 w2 e
-  rewrite ContConds.ccN≡start cc name w1
-        | ContConds.ccN≡start cc name w2 = e
-
-
-
--- MOVE to continuity-conds
-→dom𝕎-chooseT≡ : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (t : Term)
-                   → dom𝕎· w1 ≡ dom𝕎· w2
-                   → dom𝕎· (chooseT name w1 t) ≡ dom𝕎· (chooseT name w2 t)
-→dom𝕎-chooseT≡ cc name w1 w2 t e =
-  trans (ContConds.ccDchoose≡ cc name w1 t) (trans e (sym (ContConds.ccDchoose≡ cc name w2 t)))
-
-
-
--- MOVE to continuity-conds
-upto𝕎→≡getT : (cc : ContConds) (k : ℕ) (nm name n : Name) (w1 w2 : 𝕎·)
-                → ¬ nm ≡ name
-                → ¬ n ∈ dom𝕎· w1
-                → ¬ n ∈ dom𝕎· w2
-                → getT k nm w1 ≡ getT k nm w2
-                → getT k nm (startChoice· n Res⊤ w1) ≡ getT k nm (startChoice· n Res⊤ w2)
-upto𝕎→≡getT cc k nm name n w1 w2 diff d1 d2 upw with nm ≟ n
-... | yes p rewrite p = ContConds.ccGstarts cc n n k Res⊤ w1 w2 d1 d2
-... | no p = trans (ContConds.ccGstartd cc nm n k Res⊤ w1 p) (trans upw (sym (ContConds.ccGstartd cc nm n k Res⊤ w2 p)))
-
 
 
 ≡pres∈ : {a b : List Name} {x : Name}
@@ -1069,6 +1034,7 @@ upto𝕎→≡getT cc k nm name n w1 w2 diff d1 d2 upw with nm ≟ n
 
 
 
+{--
 sameRes-startChoice : (cc : ContConds) (n : ℕ) (w1 w2 : 𝕎·)
                       → dom𝕎· w1 ≡ dom𝕎· w2
                       → sameRes w1 w2
@@ -1089,6 +1055,7 @@ sameRes-startChoice cc n w1 w2 eqd same name r =
     ... |    inj₁ i = ContConds.ccC∈start← cc name r Res⊤ w1 (≡pres∈ (sym eqd) i) (snd (same name r) (ContConds.ccC∈start→ cc name r Res⊤ w2 i compat))
     ... |    inj₂ ni rewrite sym (ContConds.ccC¬∈start→ cc name r Res⊤ w2 ni compat) = startChoiceCompatible· Res⊤ w1 name (≡pres¬∈ (sym eqd) ni)
     c2 compat | no p = ContConds.ccC¬≡start← cc n name r Res⊤ w1 p (snd (same name r) (ContConds.ccC¬≡start→ cc n name r Res⊤ w2 p compat))
+--}
 
 
 
@@ -1128,12 +1095,14 @@ sameRes-startChoice cc n w1 w2 eqd same name r =
 --}
 
 
+{--
 →sameRes-chooseT : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (t : Term)
                     → sameRes w1 w2
                     → sameRes (chooseT name w1 t) (chooseT name w2 t)
 →sameRes-chooseT cc name w1 w2 t same =
   sameRes-trans (sameRes-chooseT cc name w1 t)
                 (sameRes-trans same (sameRes-sym (sameRes-chooseT cc name w2 t)))
+--}
 
 
 →≡-names𝕎-chooseT : (cc : ContConds) (w1 w2 : 𝕎·) (name : Name) (t : Term)

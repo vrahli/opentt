@@ -259,12 +259,6 @@ compatible-chooseT→ = (n name : Name) (w : 𝕎·) (t : Term) (r : Res)
                        → compatible· n w r
 
 
-→compatible-chooseT : Set(1ℓ Level.⊔ L)
-→compatible-chooseT = (n name : Name) (w : 𝕎·) (t : Term) (r : Res)
-                       → compatible· n w r
-                       → compatible· n (chooseT name w t) r
-
-
 ¬≡compatible-startChoice→ : Set(1ℓ Level.⊔ L)
 ¬≡compatible-startChoice→ = (n name : Name) (r r' : Res) (w : 𝕎·)
                              → ¬ n ≡ name
@@ -273,27 +267,12 @@ compatible-chooseT→ = (n name : Name) (w : 𝕎·) (t : Term) (r : Res)
 
 
 
-
-→¬≡compatible-startChoice : Set(1ℓ Level.⊔ L)
-→¬≡compatible-startChoice = (n name : Name) (r r' : Res) (w : 𝕎·)
-                             → ¬ n ≡ name
-                             → compatible· name w r
-                             → compatible· name (startChoice· n r' w) r
-
-
 ∈compatible-startChoice→ : Set(1ℓ Level.⊔ L)
 ∈compatible-startChoice→ = (name : Name) (r r' : Res) (w : 𝕎·)
                              → name ∈ dom𝕎· w
                              → compatible· name (startChoice· name r' w) r
                              → compatible· name w r
 
-
-
-→∈compatible-startChoice : Set(1ℓ Level.⊔ L)
-→∈compatible-startChoice = (name : Name) (r r' : Res) (w : 𝕎·)
-                             → name ∈ dom𝕎· w
-                             → compatible· name w r
-                             → compatible· name (startChoice· name r' w) r
 
 
 ¬∈compatible-startChoice→ : Set(1ℓ Level.⊔ L)
@@ -329,6 +308,33 @@ chooseT-num = (name : Name) (w : 𝕎·) (t : Term)
                → chooseT name w t ≡ w
 
 
+-- This requires making the chocie 0 whenever starting a new Res⊤ choice
+getT0-startNewChoice : Set(L)
+getT0-startNewChoice = (name : Name) (w : 𝕎·) (t : Term)
+                        → ¬ name ∈ dom𝕎· w
+                        → getT 0 name (startChoice· name Res⊤ w) ≡ just (NUM 0)
+
+
+→¬≡compatible-startChoice : Set(1ℓ Level.⊔ L)
+→¬≡compatible-startChoice = (n name : Name) (r r' : Res) (w : 𝕎·)
+                             → ¬ n ≡ name
+                             → compatible· name w r
+                             → compatible· name (startChoice· n r' w) r
+
+
+→∈compatible-startChoice : Set(1ℓ Level.⊔ L)
+→∈compatible-startChoice = (name : Name) (r r' : Res) (w : 𝕎·)
+                             → name ∈ dom𝕎· w
+                             → compatible· name w r
+                             → compatible· name (startChoice· name r' w) r
+
+
+⊑dom𝕎⊆ : Set(L)
+⊑dom𝕎⊆ = (w1 w2 : 𝕎·)
+         → w1 ⊑· w2
+         → dom𝕎· w1 ⊆ dom𝕎· w2
+
+
 record ContConds : Set(1ℓ Level.⊔ L) where
   constructor mkContConds
   field
@@ -337,31 +343,35 @@ record ContConds : Set(1ℓ Level.⊔ L) where
     ccG¬names   : getT-names𝕎
     -- choose Axioms
     ccGcd       : get-choose-diff --gcd
---    ccNchoose   : names𝕎-chooseT --sct
---    ccNchoosed  : names𝕎-chooseT-diff
     ccNchoose≡  : names𝕎-chooseT≡
---    ccGstart   : ∈dom𝕎→getT-startNewChoiceT --idgs
---    ccNstart   : ∈names𝕎·-startNewChoiceT→ --isn
---    ccDchoose  : dom𝕎-chooseT
     ccDchoose≡  : dom𝕎-chooseT≡
     ccGget      : →getT-chooseT
     ccCnum      : chooseT-num
     -- Start axioms
-    ccDstart    : dom𝕎-startChoice
     ccNchoice   : newChoice∈dom𝕎
     ccN≡start   : ≡names𝕎-start
-    ccD≡start   : ≡dom𝕎-start
     ccD⊆start   : ⊆dom𝕎-start
     ccGstartd   : getT-startChoice-diff
     ccGstarts   : getT-startChoice-same
+    ccGstart0   : getT0-startNewChoice
+    -- ⊑
+    cc⊑dom𝕎⊆   : ⊑dom𝕎⊆
+--
+--    ccD≡start   : ≡dom𝕎-start
+--    ccNchoose   : names𝕎-chooseT --sct
+--    ccNchoosed  : names𝕎-chooseT-diff
+--    ccGstart   : ∈dom𝕎→getT-startNewChoiceT --idgs
+--    ccNstart   : ∈names𝕎·-startNewChoiceT→ --isn
+--    ccDchoose  : dom𝕎-chooseT
+    --ccDstart    : dom𝕎-startChoice -- same as ccD⊆start
     -- Compatibility axioms
-    ccCchoose→  : compatible-chooseT→
-    ccCchoose←  : →compatible-chooseT
-    ccC¬≡start→ : ¬≡compatible-startChoice→
-    ccC¬≡start← : →¬≡compatible-startChoice
-    ccC∈start→  : ∈compatible-startChoice→
-    ccC∈start←  : →∈compatible-startChoice
-    ccC¬∈start→ : ¬∈compatible-startChoice→
+    --ccCchoose→  : compatible-chooseT→
+    --ccCchoose←  : →compatible-chooseT
+    --ccC¬≡start→ : ¬≡compatible-startChoice→
+    --ccC¬≡start← : →¬≡compatible-startChoice
+    --ccC∈start→  : ∈compatible-startChoice→
+    --ccC∈start←  : →∈compatible-startChoice
+    --ccC¬∈start→ : ¬∈compatible-startChoice→
 
 
 -- starting a new choice does not add new names according to names𝕎, only according to dom𝕎
@@ -481,7 +491,56 @@ newChoiceT∈dom𝕎 cc w t = ContConds.ccNchoice cc w (newChoiceT w t) (¬fresh
 dom𝕎-startNewChoiceT : (cc : ContConds) (name : Name) (w : 𝕎·) (t : Term)
                         → name ∈ dom𝕎· w
                         → name ∈ dom𝕎· (startNewChoiceT Res⊤ w t)
-dom𝕎-startNewChoiceT cc name w t = ContConds.ccDstart cc name w (newChoiceT w t)
+dom𝕎-startNewChoiceT cc name w t i = ContConds.ccD⊆start cc (newChoiceT w t) w i
+
+
+→≡Nnames𝕎-start : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·)
+                   → names𝕎· w1 ≡N names𝕎· w2
+                   → names𝕎· (startChoice· name Res⊤ w1) ≡N names𝕎· (startChoice· name Res⊤ w2)
+→≡Nnames𝕎-start cc name w1 w2 e
+  rewrite ContConds.ccN≡start cc name w1
+        | ContConds.ccN≡start cc name w2 = e
+
+
+→≡names𝕎-start : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·)
+                   → names𝕎· w1 ≡ names𝕎· w2
+                   → names𝕎· (startChoice· name Res⊤ w1) ≡ names𝕎· (startChoice· name Res⊤ w2)
+→≡names𝕎-start cc name w1 w2 e
+  rewrite ContConds.ccN≡start cc name w1
+        | ContConds.ccN≡start cc name w2 = e
+
+
+
+→dom𝕎-chooseT≡ : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (t : Term)
+                   → dom𝕎· w1 ≡ dom𝕎· w2
+                   → dom𝕎· (chooseT name w1 t) ≡ dom𝕎· (chooseT name w2 t)
+→dom𝕎-chooseT≡ cc name w1 w2 t e =
+  trans (ContConds.ccDchoose≡ cc name w1 t) (trans e (sym (ContConds.ccDchoose≡ cc name w2 t)))
+
+
+
+upto𝕎→≡getT : (cc : ContConds) (k : ℕ) (nm name n : Name) (w1 w2 : 𝕎·)
+                → ¬ nm ≡ name
+                → ¬ n ∈ dom𝕎· w1
+                → ¬ n ∈ dom𝕎· w2
+                → getT k nm w1 ≡ getT k nm w2
+                → getT k nm (startChoice· n Res⊤ w1) ≡ getT k nm (startChoice· n Res⊤ w2)
+upto𝕎→≡getT cc k nm name n w1 w2 diff d1 d2 upw with nm ≟ n
+... | yes p rewrite p = ContConds.ccGstarts cc n n k Res⊤ w1 w2 d1 d2
+... | no p = trans (ContConds.ccGstartd cc nm n k Res⊤ w1 p) (trans upw (sym (ContConds.ccGstartd cc nm n k Res⊤ w2 p)))
+
+
+
+⊆dom𝕎-startNewChoiceT : (cc : ContConds) (w : 𝕎·) (t : Term)
+                        → dom𝕎· w ⊆ dom𝕎· (startNewChoiceT Res⊤ w t)
+⊆dom𝕎-startNewChoiceT cc w t {name} i = dom𝕎-startNewChoiceT cc name w t i
+
+
+
+→compatible-chooseT : (n name : Name) (w : 𝕎·) (t : Term) (r : Res)
+                       → compatible· n w r
+                       → compatible· n (chooseT name w t) r
+→compatible-chooseT n name w t r compat = ⊑-compatible· (choose⊑· name w (T→ℂ· t)) compat
 
 
 \end{code}

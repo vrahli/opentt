@@ -664,11 +664,11 @@ updRel2-ren-mon {name} {f} {g} {r} {r'} {.(upd name f)} {.(force g)} {l} {k} sub
     where
       rl' : (n : Name) → n ∈ x1 ∷ renₗ r → n ∈ dom𝕎· (startChoice· x1 Res⊤ w1)
       rl' n (here p) rewrite p = ContConds.ccNchoice cc w1 x1 ni1 --a
-      rl' n (there p) = ContConds.ccDstart cc n w1 x1 (rl n p) --a (rl n p)
+      rl' n (there p) = ContConds.ccD⊆start cc x1 w1 (rl n p) --ccD⊆start ContConds.ccDstart cc n w1 x1 (rl n p) --a (rl n p)
 
       rr' : (n : Name) → n ∈ x2 ∷ renᵣ r → n ∈ dom𝕎· (startChoice· x2 Res⊤ w2)
       rr' n (here p) rewrite p = ContConds.ccNchoice cc w2 x2 ni2 --b
-      rr' n (there p) = ContConds.ccDstart cc n w2 x2 (rr n p) --b (rr n p)
+      rr' n (there p) = ContConds.ccD⊆start cc x2 w2 (rr n p) --ContConds.ccDstart cc n w2 x2 (rr n p) --b (rr n p)
 
       nrl' : no-repeats (renₗ ((x1 , x2) ∷ r))
       nrl' = (λ x → ni1 (rl _ x)) , nrl --(λ x → ¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a)) (rl _ x)) , nrl

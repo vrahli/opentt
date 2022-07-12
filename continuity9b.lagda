@@ -101,6 +101,7 @@ open import continuity5b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity6b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity7b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity8b(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuitySMb(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 
 
 
@@ -705,6 +706,24 @@ names⊆dom𝕎-startNewChoices cc w t = names⊆dom𝕎-startNewChoicesL cc w t
 
 
 
+names⊆dom𝕎-startNewChoicesP1 : (cc : ContConds) (w : 𝕎·) (a b c : Term)
+                              → names a ⊆ dom𝕎· (startNewChoices Res⊤ w (PAIR a (PAIR b c)))
+names⊆dom𝕎-startNewChoicesP1 cc w a b c =
+  ⊆-trans (λ {x} i → ∈-++⁺ˡ i) (names⊆dom𝕎-startNewChoices cc w (PAIR a (PAIR b c)))
+
+
+names⊆dom𝕎-startNewChoicesP2 : (cc : ContConds) (w : 𝕎·) (a b c : Term)
+                              → names b ⊆ dom𝕎· (startNewChoices Res⊤ w (PAIR a (PAIR b c)))
+names⊆dom𝕎-startNewChoicesP2 cc w a b c =
+  ⊆-trans (λ {x} i → ∈-++⁺ʳ (names a) (∈-++⁺ˡ i)) (names⊆dom𝕎-startNewChoices cc w (PAIR a (PAIR b c)))
+
+
+names⊆dom𝕎-startNewChoicesP3 : (cc : ContConds) (w : 𝕎·) (a b c : Term)
+                              → names c ⊆ dom𝕎· (startNewChoices Res⊤ w (PAIR a (PAIR b c)))
+names⊆dom𝕎-startNewChoicesP3 cc w a b c =
+  ⊆-trans (λ {x} i → ∈-++⁺ʳ (names a) (∈-++⁺ʳ (names b) i)) (names⊆dom𝕎-startNewChoices cc w (PAIR a (PAIR b c)))
+
+
 νtestML⇓→step' : {F f v : Term} {w1 w2 : 𝕎·}
                 → # F
                 → # f
@@ -766,11 +785,11 @@ eqfgq : (cc : ContConds) (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
         → (∈F : ∈Type i w #BAIRE→NAT F)
         → (∈f : ∈Type i w #BAIRE f)
         → ∈Type i w #BAIRE g
-        → smallestMod cn kb gc i w F f ∈F ∈f
+--        → ∀𝕎smallestMod cn kb gc i w F f ∈F ∈f
         → equalInType i w (#QBAIREn! (#νtestMLup F f)) f g
 --       ((n : ℕ) → n < ? → ⇓sameℕ w (APPLY f (NUM n)) (APPLY g (NUM n)))
         → equalInType i w #NAT (#APPLY F f) (#APPLY F g)
-eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g smod eqb =
+eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g {--smod--} eqb =
   equalInType-trans (equalInType-APPLY-force ∈F ∈f) (equalInType-trans eqf (equalInType-sym (equalInType-APPLY-force ∈F ∈g)))
   where
     eqb1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#QNATn (#νtestMLup F f)) a₁ a₂
@@ -814,19 +833,40 @@ eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g smod eqb =
     inn : ∈Type i w #NAT (#APPLY F (#force f))
     inn = equalInType-refl (equalInType-sym (equalInType-APPLY-force ∈F ∈f))
 
+    wx : 𝕎·
+    wx = startNewChoices Res⊤ w (PAIR ⌜ F ⌝ (PAIR ⌜ f ⌝ ⌜ g ⌝))
+
+    nFwx : names ⌜ F ⌝ ⊆ dom𝕎· wx
+    nFwx {x} i = names⊆dom𝕎-startNewChoicesP1 cc w ⌜ F ⌝ ⌜ f ⌝ ⌜ g ⌝ i
+
+    nfwx : names ⌜ f ⌝ ⊆ dom𝕎· wx
+    nfwx {x} i = names⊆dom𝕎-startNewChoicesP2 cc w ⌜ F ⌝ ⌜ f ⌝ ⌜ g ⌝ i
+
+    ngwx : names ⌜ g ⌝ ⊆ dom𝕎· wx
+    ngwx {x} i = names⊆dom𝕎-startNewChoicesP3 cc w ⌜ F ⌝ ⌜ f ⌝ ⌜ g ⌝ i
+
+    ex : w ⊑· wx
+    ex = startNewChoices⊑ Res⊤ w (PAIR ⌜ F ⌝ (PAIR ⌜ f ⌝ ⌜ g ⌝))
+
+    smod' : smallestMod cn kb gc i wx F f (equalInType-mon ∈F wx ex) (equalInType-mon ∈f wx ex)
+    smod' = ∀𝕎smallestMod⊤ cc cn kb gc i w F f ∈F ∈f wx ex
+
     w1' : 𝕎·
-    w1' = fst smod
+    w1' = fst smod'
 
-    e1' : w ⊑· w1'
-    e1' = fst (snd smod)
+    e1' : wx ⊑· w1'
+    e1' = fst (snd smod')
 
-    sma : smallestModAux cn kb gc i w F f w1' e1' ∈F ∈f
-    sma = snd (snd smod)
+    ex1' : w ⊑· w1'
+    ex1' = ⊑-trans· ex e1'
+
+    sma : smallestModAux cn kb gc i wx F f w1' e1' (equalInType-mon ∈F wx ex) (equalInType-mon ∈f wx ex)
+    sma = snd (snd smod')
 
     eqb4 : Σ ℕ (λ n → Σ 𝕎· (λ w2 → #νtestMLup F f #⇓ #NUM n from w1' to w2
                      × ∀𝕎 w1' (λ w' _ → (k : ℕ) → k < n
                                        → #⇛!sameℕ w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))))
-    eqb4 = smallestModAux→⇛!sameℕ cn kb gc {i} {w} {F} {f} {g} {w1'} {e1'} ∈F ∈f sma eqb3
+    eqb4 = smallestModAux→⇛!sameℕ cn kb gc {i} {wx} {F} {f} {g} {w1'} {e1'} (equalInType-mon ∈F wx ex) (equalInType-mon ∈f wx ex) sma (∀𝕎-mon ex eqb3)
 
     tn : ℕ
     tn = fst eqb4
@@ -853,8 +893,25 @@ eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g smod eqb =
     w1s' : 𝕎·
     w1s' = chooseT name w1l (NUM 0)
 
+    e0' : w1' ⊑· w1s'
+    e0' = ⊑-trans· (startNewChoiceT⊏ Res⊤ w1' (testMLup 0 ⌜ F ⌝ ⌜ f ⌝))
+                   (⊑-trans· (startNewChoices⊑ Res⊤ (startNewChoiceT Res⊤ w1' (testMLup 0 ⌜ F ⌝ ⌜ f ⌝)) ⌜ F ⌝)
+                             (choose⊑· name w1l (T→ℂ· (NUM 0))))
+
+    e0'' : w ⊑· w1s'
+    e0'' = ⊑-trans· ex1' e0'
+
+    ex0' : wx ⊑· w1s'
+    ex0' = ⊑-trans· e1' e0'
+
     nFw1s' : names ⌜ F ⌝ ⊆ dom𝕎· w1s'
-    nFw1s' {x} i = dom𝕎-chooseT cc x name w1l (NUM 0) (names⊆dom𝕎-startNewChoices cc w1s ⌜ F ⌝ i)
+    nFw1s' {x} i = ContConds.cc⊑dom𝕎⊆ cc wx w1s' ex0' (nFwx i) --dom𝕎-chooseT cc x name w1l (NUM 0) (names⊆dom𝕎-startNewChoices cc w1s ⌜ F ⌝ i)
+
+    nfw1s' : names ⌜ f ⌝ ⊆ dom𝕎· w1s'
+    nfw1s' {x} i = ContConds.cc⊑dom𝕎⊆ cc wx w1s' ex0' (nfwx i) --dom𝕎-chooseT cc x name w1l (NUM 0) (names⊆dom𝕎-startNewChoices cc w1s ⌜ F ⌝ i)
+
+    ngw1s' : names ⌜ g ⌝ ⊆ dom𝕎· w1s'
+    ngw1s' {x} i = ContConds.cc⊑dom𝕎⊆ cc wx w1s' ex0' (ngwx i) --dom𝕎-chooseT cc x name w1l (NUM 0) (names⊆dom𝕎-startNewChoices cc w1s ⌜ F ⌝ i)
 
     compu : Σ Term (λ v → Σ ℕ (λ j →
                APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ v from w1s' to w2
@@ -869,14 +926,6 @@ eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g smod eqb =
 
     j : ℕ
     j = fst (snd compu)
-
-    e0' : w1' ⊑· w1s'
-    e0' = ⊑-trans· (startNewChoiceT⊏ Res⊤ w1' (testMLup 0 ⌜ F ⌝ ⌜ f ⌝))
-                   (⊑-trans· (startNewChoices⊑ Res⊤ (startNewChoiceT Res⊤ w1' (testMLup 0 ⌜ F ⌝ ⌜ f ⌝)) ⌜ F ⌝)
-                             (choose⊑· name w1l (T→ℂ· (NUM 0))))
-
-    e0'' : w ⊑· w1s'
-    e0'' = ⊑-trans· e1' e0'
 
     k : ℕ
     k = fst (fst (snd (snd compu)))
@@ -1070,7 +1119,7 @@ eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g smod eqb =
     aw1 : (k' : ℕ) → #APPLY F (#force f) #⇓ #NUM k' at w1s' → #APPLY F (#force g) #⇓ #NUM k' at w1s'
     aw1 k' c = eqfgq-aux
                  cc cn kb gc {i} {w1s'} {w1s'} {w1s'} {w2} {F} {f} {g} {name} {k} {v} {j} {tn}
-                 nnF nnf nnw1s' idomw1s' idomw1s' nFw1s' nFw1s' {!!} {!!}
+                 nnF nnf nnw1s' idomw1s' idomw1s' nFw1s' nFw1s' nfw1s' ngw1s'
                  (upto𝕎-refl name w1s') compat1 compat1 wgt0 g0
                  eqj isvv (⊑-refl· w1s') (⊑-refl· w1s') wgt0 (equalInType-mon ∈F w1s' e0'') (equalInType-mon ∈f w1s' e0'')
                  (∀𝕎-mon e0' eqb5) compa k' c

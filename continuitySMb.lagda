@@ -385,26 +385,56 @@ sub-AX-probeM name F f cF cf
              compat wgt0 nnw idom) gtw
 
 
-→isHighestℕ-aux3 : (cc : ContConds) (gc : get-choose-ℕ) (k : ℕ) (name : Name) (F f : Term) (cF : # F) (cf : # f) (w1 w2 : 𝕎·) (n1 : ℕ)
+
+{--
+getT≤ℕ-chooseT→ : (name : name) (w : 𝕎·) (n : ℕ)
+                    → getT≤ℕ (chooseT name w (NUM 0)) n name
+                    → getT≤ℕ w n name
+getT≤ℕ-chooseT→ name w n (
+--}
+
+
+→isHighestℕ-aux3 : (cc : ContConds) (cn : comp→∀ℕ) (gc : get-choose-ℕ) (k : ℕ) (name : Name) (F f : Term) (cF : # F) (cf : # f) (w1 w2 : 𝕎·) (n1 : ℕ)
                      → ¬ name ∈ names F
                      → ¬ name ∈ names f
                      → ¬ name ∈ names𝕎· w1
                      → name ∈ dom𝕎· w1
                      → compatible· name w1 Res⊤
+                     → getT≤ℕ w1 n1 name
                      → getT≤ℕ w2 n1 name
                      → (comp : steps k (testM name F f , w1) ≡ (NUM n1 , w2))
                      → isHighestℕ {k} {w1} {w2} {testM name F f} {NUM n1} n1 name comp
-→isHighestℕ-aux3 cc gc 0 name F f cF cf w1 w2 n1 nnF nnf nnw idom compat gtw ()
-→isHighestℕ-aux3 cc gc 1 name F f cF cf w1 w2 n1 nnF nnf nnw idom compat gtw ()
-→isHighestℕ-aux3 cc gc (suc (suc k)) name F f cF cf w1 w2 n1 nnF nnf nnw idom compat gtw comp =
-  {!!} , {!!} ,
+→isHighestℕ-aux3 cc cn gc 0 name F f cF cf w1 w2 n1 nnF nnf nnw idom compat gtw1 gtw2 ()
+→isHighestℕ-aux3 cc cn gc 1 name F f cF cf w1 w2 n1 nnF nnf nnw idom compat gtw1 gtw2 ()
+→isHighestℕ-aux3 cc cn gc (suc (suc k)) name F f cF cf w1 w2 n1 nnF nnf nnw idom compat gtw1 gtw2 comp =
+  gtw1 , q4 ,
   ≡→isHighestℕ k name (probeM name F f) (sub AX (shiftUp 0 (probeM name F f)))
     (NUM n1) (chooseT name w1 (NUM 0)) w2 n1
-    {!!} (sym (sub-AX-probeM name F f cF cf)) comp
+    q1 (sym (sub-AX-probeM name F f cF cf)) comp
+  where
+    nnw' : ¬ name ∈ names𝕎· (chooseT name w1 (NUM 0))
+    nnw' = λ x → nnw (names𝕎-chooseT→ cc name name w1 (NUM 0) x)
 
+    idom' : name ∈ dom𝕎· (chooseT name w1 (NUM 0))
+    idom' = dom𝕎-chooseT cc name name w1 (NUM 0) idom
 
---≡suc→< : {n j : ℕ} → n ≡ suc j → j < n
---≡suc→< {n} {j} e rewrite e = ?
+    compat' : compatible· name (chooseT name w1 (NUM 0)) Res⊤
+    compat' = ⊑-compatible· (choose⊑· name w1 (T→ℂ· (NUM 0))) compat
+
+    q1 : (comp₁  : steps k (probeM name F f , chooseT name w1 (NUM 0)) ≡ (NUM n1 , w2))
+         → isHighestℕ {k} {chooseT name w1 (NUM 0)} {w2} {probeM name F f} {NUM n1} n1 name comp₁
+    q1 = →isHighestℕ-aux4
+           cc gc k name F f cF cf (chooseT name w1 (NUM 0)) w2 n1 nnF nnf
+           nnw' idom' compat' (cn name w1 0 compat) gtw2
+
+    q2 : steps k (probeM name F f , chooseT name w1 (NUM 0)) ≡ (NUM n1 , w2)
+    q2 rewrite sub-AX-probeM name F f cF cf = comp
+
+    q3 : isHighestℕ {k} {chooseT name w1 (NUM 0)} {w2} {probeM name F f} {NUM n1} n1 name q2
+    q3 = q1 q2
+
+    q4 : getT≤ℕ (chooseT name w1 (NUM 0)) n1 name
+    q4 = isHighestℕ→getT≤ℕ {k} {chooseT name w1 (NUM 0)} {w2} {probeM name F f} {NUM n1} n1 name q2 q3
 
 
 steps-testML→getT≤ℕ : (cn : comp→∀ℕ) (k : ℕ) (name : Name) (F f : Term) (cF : # F) (cf : # f) (w1 w2 : 𝕎·) (n : ℕ)
@@ -422,42 +452,70 @@ steps-testML→getT≤ℕ cn k name F f cF cf w1 w2 n compat comp =
     h = testML⇓→ cn {w1} {w2} {F} {f} {n} {name} cF cf compat (k , comp)
 
 
+steps-testML→0< : (cn : comp→∀ℕ) (k : ℕ) (name : Name) (F f : Term) (cF : # F) (cf : # f) (w1 w2 : 𝕎·) (n : ℕ)
+                        → compatible· name w1 Res⊤
+                        → steps k (testML name F f , w1) ≡ (NUM n , w2)
+                        → 0 < n
+steps-testML→0< cn k name F f cF cf w1 w2 n compat comp = c
+  where
+    h : Σ Term (λ v → Σ ℕ (λ j →
+          APPLY F (upd name f) ⇓ v from (chooseT name (startNewChoices Res⊤ w1 F) (NUM 0)) to w2
+          × isValue v
+          × getT 0 name w2 ≡ just (NUM j)
+          × n ≡ suc j))
+    h = testML⇓→ cn {w1} {w2} {F} {f} {n} {name} cF cf compat (k , comp)
+
+    c : 0 < n
+    c rewrite snd (snd (snd (snd (snd h)))) = _≤_.s≤s _≤_.z≤n
+
+
+
+→getT≤ℕ-startNewChoices : (cc : ContConds) (w : 𝕎·) (a : Term) (n : ℕ) (name : Name)
+                            → name ∈ dom𝕎· w
+                            → getT≤ℕ w n name
+                            → getT≤ℕ (startNewChoices Res⊤ w a) n name
+→getT≤ℕ-startNewChoices cc w a n name idom (j , g , x) =
+  j , trans (getT-startNewChoices≡ cc name w a 0 idom) g , x
+
+
 
 →isHighestℕ-aux2 : (cc : ContConds) (cn : comp→∀ℕ) (gc : get-choose-ℕ) (k : ℕ) (name : Name) (F f : Term) (cF : # F) (cf : # f) (w1 w2 : 𝕎·) (n1 : ℕ)
                      → ¬ name ∈ names F
                      → ¬ name ∈ names f
                      → ¬ name ∈ names𝕎· w1
                      → name ∈ dom𝕎· w1
+                     → getT≤ℕ w1 n1 name
                      → compatible· name w1 Res⊤
                      → (comp : steps k (testML name F f , w1) ≡ (NUM n1 , w2))
                      → isHighestℕ {k} {w1} {w2} {testML name F f} {NUM n1} n1 name comp
-→isHighestℕ-aux2 cc cn gc 0 name F f cF cf w1 w2 n1 nnF nnf nnw idom compat ()
-→isHighestℕ-aux2 cc cn gc 1 name F f cF cf w1 w2 n1 nnF nnf nnw idom compat ()
-→isHighestℕ-aux2 cc cn gc (suc (suc k)) name F f cF cf w1 w2 n1 nnF nnf nnw idom compat comp =
-  {!!} , {!!} , -- use q4
+→isHighestℕ-aux2 cc cn gc 0 name F f cF cf w1 w2 n1 nnF nnf nnw idom gtw  compat ()
+→isHighestℕ-aux2 cc cn gc 1 name F f cF cf w1 w2 n1 nnF nnf nnw idom gtw compat ()
+→isHighestℕ-aux2 cc cn gc (suc (suc k)) name F f cF cf w1 w2 n1 nnF nnf nnw idom gtw compat comp =
+  gtw , gtw' ,
   ≡→isHighestℕ k name (testM name F f) (sub AX (shiftUp 0 (testM name F f)))
     (NUM n1) (startNewChoices Res⊤ w1 F) w2 n1
     q1
     (sym (sub-AX-testM name F f cF cf)) comp
   where
+    nnw' : ¬ name ∈ names𝕎· (startNewChoices Res⊤ w1 F)
+    nnw' = →¬names𝕎-startNewChoices cc w1 F name nnw
+
+    idom' : name ∈ dom𝕎· (startNewChoices Res⊤ w1 F)
+    idom' = ⊆dom𝕎-startNewChoices cc w1 F idom
+
+    compat' : compatible· name (startNewChoices Res⊤ w1 F) Res⊤
+    compat' = ⊑-compatible· (startNewChoices⊑ Res⊤ w1 F) compat
+
+    gtw' : getT≤ℕ (startNewChoices Res⊤ w1 F) n1 name
+    gtw' = →getT≤ℕ-startNewChoices cc w1 F n1 name idom gtw
+
     q1 : (comp₁ : steps k (testM name F f , startNewChoices Res⊤ w1 F) ≡ (NUM n1 , w2))
          → isHighestℕ {k} {startNewChoices Res⊤ w1 F} {w2} {testM name F f} {NUM n1} n1 name comp₁
     q1 = →isHighestℕ-aux3
-           cc gc k name F f cF cf (startNewChoices Res⊤ w1 F) w2 n1 nnF nnf
-           {!!} {!!} {!!}
+           cc cn gc k name F f cF cf (startNewChoices Res⊤ w1 F) w2 n1 nnF nnf
+           nnw' idom' compat' gtw'
            (steps-testML→getT≤ℕ cn (suc (suc k)) name F f cF cf w1 w2 n1 compat comp)
 
-    q2 : steps k (testM name F f , startNewChoices Res⊤ w1 F) ≡ (NUM n1 , w2)
-    q2 rewrite sub-AX-testM name F f cF cf = comp
-
-    q3 : isHighestℕ {k} {startNewChoices Res⊤ w1 F} {w2} {testM name F f} {NUM n1} n1 name q2
-    q3 = q1 q2
-
-    q4 : getT≤ℕ (startNewChoices Res⊤ w1 F) n1 name
-    q4 = isHighestℕ→getT≤ℕ {k} {startNewChoices Res⊤ w1 F} {w2} {testM name F f} {NUM n1} n1 name q2 q3
--- use steps-sat-isHighestℕ2 & testML⇓→
-
--- use steps-sat-isHighestℕ2 & testML⇓→
 
 
 →isHighestℕ-aux1 : (cc : ContConds) (cn : comp→∀ℕ) (gc : get-choose-ℕ) (k : ℕ) (name : Name) (F f : Term) (cF : # F) (cf : # f) (w1 w2 : 𝕎·) (n1 : ℕ)
@@ -465,16 +523,18 @@ steps-testML→getT≤ℕ cn k name F f cF cf w1 w2 n compat comp =
                      → ¬ name ∈ names f
                      → ¬ name ∈ names𝕎· w1
                      → name ∈ dom𝕎· w1
+                     → getT≤ℕ w1 n1 name
                      → compatible· name w1 Res⊤
                      → (comp : steps k (shiftNameDown 0 (renn 0 (suc name) (testMLup 0 F f)) , w1) ≡ (NUM n1 , w2))
                      → isHighestℕ {k} {w1} {w2} {shiftNameDown 0 (renn 0 (suc name) (testMLup 0 F f))} {NUM n1} n1 name comp
-→isHighestℕ-aux1 cc cn gc k name F f cF cf w1 w2 n1 nnF nnf nnw idom compat comp =
+→isHighestℕ-aux1 cc cn gc k name F f cF cf w1 w2 n1 nnF nnf nnw idom gtw compat comp =
   ≡→isHighestℕ k name (testML name F f)
     (shiftNameDown 0 (renn 0 (suc name) (testMLup 0 F f))) (NUM n1) w1
     w2 n1
-    (→isHighestℕ-aux2 cc cn gc k name F f cF cf w1 w2 n1 nnF nnf nnw idom compat)
+    (→isHighestℕ-aux2 cc cn gc k name F f cF cf w1 w2 n1 nnF nnf nnw idom gtw compat)
     (sym (shiftNameDown-renn-shiftNameUp-LOAD name F f cF cf))
     comp
+
 
 
 getT≤ℕ≤ : {n1 n2 : ℕ} (h : n1 ≤ n2) {w : 𝕎·} {name : Name}
@@ -493,6 +553,7 @@ isHighestℕ≤ (suc k) w1 w2 a b n1 n2 name comp h q with step⊎ a w1
 ... | inj₁ (a' , w1' , z) rewrite z =
   getT≤ℕ≤ h (fst q) , isHighestℕ≤ k w1' w2 a' b n1 n2 name comp h (snd q)
 ... | inj₂ z rewrite z = getT≤ℕ≤ h q
+
 
 
 →smallestModAuxAux : (cc : ContConds) (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
@@ -527,12 +588,22 @@ isHighestℕ≤ (suc k) w1 w2 a b n1 n2 name comp h q with step⊎ a w1
     idom : name ∈ dom𝕎· w0
     idom = newChoiceT∈dom𝕎 cc w1 (testMLup 0 ⌜ F ⌝ ⌜ f ⌝)
 
+    nidom : ¬ name ∈ dom𝕎· w1
+    nidom = ¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names (testMLup 0 ⌜ F ⌝ ⌜ f ⌝)))
+
+    c1' : steps k1 (testML name ⌜ F ⌝ ⌜ f ⌝ , w0) ≡ (NUM n1 , w1')
+    c1' rewrite shiftNameDown-renn-shiftNameUp-LOAD name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f) = c1
+
+    gtw : getT≤ℕ w0 n1 name
+    gtw = 0 , ContConds.ccGstart0 cc name w1 (testMLup 0 ⌜ F ⌝ ⌜ f ⌝) nidom ,
+          steps-testML→0< cn k1 name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f) w0 w1' n1 compat c1'
+
     h1 : isHighestℕ {k1} {w0} {w1'} {shiftNameDown 0 (renn 0 (suc name) (testMLup 0 ⌜ F ⌝ ⌜ f ⌝))} {NUM n1} n1 name c1
     h1 = →isHighestℕ-aux1
            cc cn gc k1 name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f) w0 w1' n1
            (¬newChoiceT-testMLup∈names-F w1 ⌜ F ⌝ ⌜ f ⌝)
            (¬newChoiceT-testMLup∈names-f w1 ⌜ F ⌝ ⌜ f ⌝)
-           nnw idom compat
+           nnw idom gtw compat
            c1
 
 
@@ -615,28 +686,6 @@ isHighestℕ≤ (suc k) w1 w2 a b n1 n2 name comp h q with step⊎ a w1
                        (equalInType-mon ∈f w0 e0)
                        (snd (snd (h0 w1 e1))))
 
-{--
-    w1 : 𝕎·
-    w1 = w0
-
-    e1 : w0 ⊑· w1
-    e1 = ⊑-refl· w0
-
-    w2 : 𝕎·
-    w2 = fst (h0 w1 e1)
-
-    e2 : w0 ⊑· w2
-    e2 = fst (snd (h0 w1 e1))
-
-    h1 : ¬ smallestModAuxAux
-             cn kb gc i w0 F f w1 e1 w2 e2
-             (equalInType-mon ∈F w0 e0) (equalInType-mon ∈f w0 e0)
-    h1 = snd (snd (h0 w1 e1))
-
-    -- by induction on fst c1
-    c1 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMLup F f #⇓ #NUM n from w1 to w'))
-    c1 = νtestMLup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 (⊑-trans· e0 e1)) (equalInType-mon ∈f w1 (⊑-trans· e0 e1))
---}
 
 
 abstract
