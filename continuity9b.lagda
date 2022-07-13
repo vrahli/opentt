@@ -615,24 +615,6 @@ eqfgq-aux cc cn kb gc {i} {w0} {w1} {w1s'} {w2} {F} {f} {g} {name} {k} {v} {j} {
 
 
 
-QBAIREn! : Term → Term
-QBAIREn! n = FUN (QNATn n) NAT!
-
-
-#QBAIREn! : CTerm → CTerm
-#QBAIREn! n = ct (QBAIREn! ⌜ n ⌝) c
-  where
-    c : # QBAIREn! ⌜ n ⌝
-    c rewrite fvars-FUN0 (QNATn ⌜ n ⌝) NAT
-            | ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝)))
-            | #shiftUp 0 n
-      = lowerVars-fvars-CTerm≡[] n
-
-
-
-≡QBAIREn! : (n : CTerm) → #QBAIREn! n ≡ #FUN (#QNATn n) #NAT!
-≡QBAIREn! n = CTerm≡ refl
-
 
 νtestML-QNAT-shift : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
                     → ∈Type i w #BAIRE→NAT F
@@ -781,7 +763,7 @@ abstract
 
 eqfgq : (cc : ContConds) (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
         {i : ℕ} {w : 𝕎·} {F f g : CTerm}
-        → #¬Names g
+--        → #¬Names g
         → (∈F : ∈Type i w #BAIRE→NAT F)
         → (∈f : ∈Type i w #BAIRE f)
         → ∈Type i w #BAIRE g
@@ -789,7 +771,7 @@ eqfgq : (cc : ContConds) (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
         → equalInType i w (#QBAIREn! (#νtestMLup F f)) f g
 --       ((n : ℕ) → n < ? → ⇓sameℕ w (APPLY f (NUM n)) (APPLY g (NUM n)))
         → equalInType i w #NAT (#APPLY F f) (#APPLY F g)
-eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g {--smod--} eqb =
+eqfgq cc cn kb gc {i} {w} {F} {f} {g} {--nng--} ∈F ∈f ∈g {--smod--} eqb =
   equalInType-trans (equalInType-APPLY-force ∈F ∈f) (equalInType-trans eqf (equalInType-sym (equalInType-APPLY-force ∈F ∈g)))
   where
     eqb1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#QNATn (#νtestMLup F f)) a₁ a₂
@@ -1140,7 +1122,89 @@ eqfgq cc cn kb gc {i} {w} {F} {f} {g} nng ∈F ∈f ∈g {--smod--} eqb =
 
 
 
-{--
+
+-- TODO: this one won't be true. We have to use #BAIRE!
+∈BAIRE→∈QBAIREn! : {i : ℕ} {w : 𝕎·} {f g n : CTerm}
+                  → equalInType i w #QNAT n n
+                  → equalInType i w #BAIRE f g
+                  → equalInType i w (#QBAIREn! n) f g
+∈BAIRE→∈QBAIREn! {i} {w} {f} {g} {n} en ef =
+  ≡CTerm→equalInType
+    (sym (≡QBAIREn! n))
+    (equalInType-FUN (→equalTypesQNATn i w n n en) isTypeNAT! aw)
+  where
+    ef1 : equalInType i w (#FUN #NAT #NAT) f g
+    ef1 = ≡CTerm→equalInType #BAIRE≡ ef
+
+    ef2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂ → equalInType i w' #NAT (#APPLY f a₁) (#APPLY g a₂))
+    ef2 = equalInType-FUN→ ef1
+
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#QNATn n) a₁ a₂
+                      → equalInType i w' #NAT! (#APPLY f a₁) (#APPLY g a₂))
+    aw w1 e1 a₁ a₂ ea = {!!} --ef2 w1 e1 a₁ a₂ (∈QNATn→∈NAT (equalInType-mon en w1 e1) ea)
+
+
+
+equalTypes-contQBodyPI : (i : ℕ) (w : 𝕎·) (F₁ F₂ f₁ f₂ : CTerm)
+                        → equalInType i w #BAIRE→NAT F₁ F₂
+                        → equalInType i w #BAIRE f₁ f₂
+                        → ∀𝕎 w (λ w' e →
+                             (a₁ a₂ : CTerm)
+                             → equalInType i w' #QNAT a₁ a₂
+                             → equalTypes i w'
+                                 (sub0 a₁ (#[0]PI #[0]BAIRE
+                                                   (#[1]FUN (#[1]EQ ⌞ f₁ ⌟ #[1]VAR0 (#[1]QBAIREn! #[1]VAR1))
+                                                            (#[1]EQ (#[1]APPLY ⌞ F₁ ⌟ ⌞ f₁ ⌟) (#[1]APPLY ⌞ F₁ ⌟ #[1]VAR0) #[1]NAT))))
+                                 (sub0 a₂ (#[0]PI #[0]BAIRE
+                                                   (#[1]FUN (#[1]EQ ⌞ f₂ ⌟ #[1]VAR0 (#[1]QBAIREn! #[1]VAR1))
+                                                            (#[1]EQ (#[1]APPLY ⌞ F₂ ⌟ ⌞ f₂ ⌟) (#[1]APPLY ⌞ F₂ ⌟ #[1]VAR0) #[1]NAT)))))
+equalTypes-contQBodyPI i w F₁ F₂ f₁ f₂ ∈F ∈f w1 e1 a₁ a₂ ea =
+  ≡CTerm→eqTypes (sym (sub0-contQBodyPI F₁ f₁ a₁)) (sym (sub0-contQBodyPI F₂ f₂ a₂)) ea1
+  where
+    ea2 : ∀𝕎 w1 (λ w2 e2 → (g₁ g₂ : CTerm) (eg : equalInType i w2 #BAIRE g₁ g₂)
+                         → equalTypes i w2
+                               (#FUN (#EQ f₁ g₁ (#QBAIREn! a₁)) (#EQ (#APPLY F₁ f₁) (#APPLY F₁ g₁) #NAT))
+                               (#FUN (#EQ f₂ g₂ (#QBAIREn! a₂)) (#EQ (#APPLY F₂ f₂) (#APPLY F₂ g₂) #NAT)))
+    ea2 w2 e2 g₁ g₂ eg =
+        eqTypesFUN←
+          (eqTypesEQ← (→equalTypesQBAIREn! i w2 a₁ a₂ (equalInType-mon ea w2 e2))
+                      (∈BAIRE→∈QBAIREn! (equalInType-refl (equalInType-mon ea w2 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
+                      (∈BAIRE→∈QBAIREn! (equalInType-refl (equalInType-mon ea w2 e2)) eg))
+          (eqTypesEQ← eqTypesNAT
+                      (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
+                      (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) eg))
+
+    ea1 : equalTypes i w1
+            (#PI #BAIRE
+                 (#[0]FUN (#[0]EQ ⌞ f₁ ⌟ #[0]VAR (#[0]QBAIREn! ⌞ a₁ ⌟))
+                          (#[0]EQ (#[0]APPLY ⌞ F₁ ⌟ ⌞ f₁ ⌟) (#[0]APPLY ⌞ F₁ ⌟ #[0]VAR) #[0]NAT)))
+            (#PI #BAIRE
+                 (#[0]FUN (#[0]EQ ⌞ f₂ ⌟ #[0]VAR (#[0]QBAIREn! ⌞ a₂ ⌟))
+                          (#[0]EQ (#[0]APPLY ⌞ F₂ ⌟ ⌞ f₂ ⌟) (#[0]APPLY ⌞ F₂ ⌟ #[0]VAR) #[0]NAT)))
+    ea1 = eqTypesPI← (λ w' _ → eqTypesBAIRE)
+                      (λ w2 e2 g₁ g₂ eg →
+                        ≡CTerm→eqTypes
+                          (sym (sub0-contQBodyPI-PI F₁ f₁ a₁ g₁))
+                          (sym (sub0-contQBodyPI-PI F₂ f₂ a₂ g₂))
+                          (ea2 w2 e2 g₁ g₂ eg))
+
+
+
+
+equalTypes-contQBody : (i : ℕ) (w : 𝕎·) (F₁ F₂ f₁ f₂ : CTerm)
+                      → equalInType i w #BAIRE→NAT F₁ F₂
+                      → equalInType i w #BAIRE f₁ f₂
+                      → equalTypes i w (#contQBody F₁ f₁) (#contQBody F₂ f₂)
+equalTypes-contQBody i w F₁ F₂ f₁ f₂ ∈F ∈f =
+  ≡CTerm→eqTypes
+    (sym (#contQBody≡ F₁ f₁))
+    (sym (#contQBody≡ F₂ f₂))
+    (eqTypesSUM←
+      (λ w' e' → eqTypesQNAT)
+      (equalTypes-contQBodyPI i w F₁ F₂ f₁ f₂ ∈F ∈f))
+
+
+
 continuityQBody : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
                   (i : ℕ) (w : 𝕎·) (F f : CTerm)
                   → ∈Type i w #BAIRE→NAT F
@@ -1151,9 +1215,8 @@ continuityQBody cn kb gc i w F f ∈F ∈f =
   where
     aw : ∀𝕎 w (λ w' _ → SUMeq (equalInType i w' #QNAT)
                                 (λ a b ea → equalInType i w' (sub0 a (#[0]PI #[0]BAIRE
-                                                                             (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                                                                      (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]QBAIREn #[1]VAR1))
-                                                                                               (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT))))))
+                                                                              (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]QBAIREn! #[1]VAR1))
+                                                                                       (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT)))))
                                 w'
                                 (#PAIR (#νtestMup F f) #lam3AX)
                                 (#PAIR (#νtestMup F f) #lam3AX))
@@ -1166,54 +1229,49 @@ continuityQBody cn kb gc i w F f ∈F ∈f =
       where
         ea2 : ∀𝕎 w1 (λ w2 e2 → (g₁ g₂ : CTerm) (eg : equalInType i w2 #BAIRE g₁ g₂)
                              → equalTypes i w2
-                                           (#FUN (#FFDEFS #BAIRE g₁) (#FUN (#EQ f g₁ (#QBAIREn (#νtestMup F f))) (#EQ (#APPLY F f) (#APPLY F g₁) #NAT)))
-                                           (#FUN (#FFDEFS #BAIRE g₂) (#FUN (#EQ f g₂ (#QBAIREn (#νtestMup F f))) (#EQ (#APPLY F f) (#APPLY F g₂) #NAT))))
+                                           (#FUN (#EQ f g₁ (#QBAIREn! (#νtestMup F f))) (#EQ (#APPLY F f) (#APPLY F g₁) #NAT))
+                                           (#FUN (#EQ f g₂ (#QBAIREn! (#νtestMup F f))) (#EQ (#APPLY F f) (#APPLY F g₂) #NAT)))
         ea2 w2 e2 g₁ g₂ eg =
           eqTypesFUN←
-            (eqTypesFFDEFS← eqTypesBAIRE eg)
-            (eqTypesFUN←
-              (eqTypesEQ← (→equalTypesQBAIREn i w2 (#νtestMup F f) (#νtestMup F f) (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))))
-                          (∈BAIRE→∈QBAIREn (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
-                          (∈BAIRE→∈QBAIREn (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) eg))
+              (eqTypesEQ← (→equalTypesQBAIREn! i w2 (#νtestMup F f) (#νtestMup F f) (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))))
+                          (∈BAIRE→∈QBAIREn! (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
+                          (∈BAIRE→∈QBAIREn! (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) eg))
               (eqTypesEQ← eqTypesNAT
                           (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
-                          (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) eg)))
+                          (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) eg))
 
         aw3 : ∀𝕎 w1 (λ w2 e2 → (g₁ g₂ : CTerm) → equalInType i w2 #BAIRE g₁ g₂
-                              → equalInType i w2 (#FUN (#FFDEFS #BAIRE g₁)
-                                                        (#FUN (#EQ f g₁ (#QBAIREn (#νtestMup F f)))
-                                                              (#EQ (#APPLY F f) (#APPLY F g₁) #NAT)))
+                              → equalInType i w2 (#FUN (#EQ f g₁ (#QBAIREn! (#νtestMup F f)))
+                                                        (#EQ (#APPLY F f) (#APPLY F g₁) #NAT))
                                              (#APPLY #lam3AX g₁) (#APPLY #lam3AX g₂))
-        aw3 w2 e2 g₁ g₂ eg =
-          equalInType-FUN
-            (eqTypesFFDEFS← eqTypesBAIRE (equalInType-refl eg))
-            (eqTypesFUN←
-              (eqTypesEQ← (→equalTypesQBAIREn i w2 (#νtestMup F f) (#νtestMup F f) (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))))
-                           (∈BAIRE→∈QBAIREn (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
-                           (∈BAIRE→∈QBAIREn (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-refl eg)))
+        aw3 w2 e2 g₁ g₂ eg = ?
+            {--eqTypesFUN←
+              (eqTypesEQ← (→equalTypesQBAIREn! i w2 (#νtestMup F f) (#νtestMup F f) (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))))
+                           (∈BAIRE→∈QBAIREn! (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
+                           (∈BAIRE→∈QBAIREn! (testM-QNAT cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-refl eg)))
               (eqTypesEQ← eqTypesNAT
                            (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
-                           (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-refl eg))))
-            aw4
+                           (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-refl eg)))
+            aw4--}
           where
             aw4 : ∀𝕎 w2 (λ w' _ → (x₁ x₂ : CTerm)
                                  → equalInType i w' (#FFDEFS #BAIRE g₁) x₁ x₂
-                                 → equalInType i w' (#FUN (#EQ f g₁ (#QBAIREn (#νtestMup F f)))
+                                 → equalInType i w' (#FUN (#EQ f g₁ (#QBAIREn! (#νtestMup F f)))
                                                            (#EQ (#APPLY F f) (#APPLY F g₁) #NAT))
                                                      (#APPLY (#APPLY #lam3AX g₁) x₁)
                                                      (#APPLY (#APPLY #lam3AX g₂) x₂))
             aw4 w3 e3 x₁ x₂ ex =
               equalInType-FUN
-                (eqTypesEQ← (→equalTypesQBAIREn i w3 (#νtestMup F f) (#νtestMup F f) (testM-QNAT cn kb gc i w3 F f (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))))
-                             (∈BAIRE→∈QBAIREn (testM-QNAT cn kb gc i w3 F f (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3))))
-                             (∈BAIRE→∈QBAIREn (testM-QNAT cn kb gc i w3 F f (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))) (equalInType-refl (equalInType-mon eg w3 e3))))
+                (eqTypesEQ← (→equalTypesQBAIREn! i w3 (#νtestMup F f) (#νtestMup F f) (testM-QNAT cn kb gc i w3 F f (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))))
+                             (∈BAIRE→∈QBAIREn! (testM-QNAT cn kb gc i w3 F f (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3))))
+                             (∈BAIRE→∈QBAIREn! (testM-QNAT cn kb gc i w3 F f (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))) (equalInType-refl (equalInType-mon eg w3 e3))))
                 (eqTypesEQ← eqTypesNAT
                              (∈BAIRE→NAT→ (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3))))
                              (∈BAIRE→NAT→ (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-refl (equalInType-mon eg w3 e3))))
                 aw5
               where
                 aw5 : ∀𝕎 w3 (λ w' _ → (y₁ y₂ : CTerm)
-                                     → equalInType i w' (#EQ f g₁ (#QBAIREn (#νtestMup F f))) y₁ y₂
+                                     → equalInType i w' (#EQ f g₁ (#QBAIREn! (#νtestMup F f))) y₁ y₂
                                      → equalInType i w' (#EQ (#APPLY F f) (#APPLY F g₁) #NAT)
                                                          (#APPLY (#APPLY (#APPLY #lam3AX g₁) x₁) y₁)
                                                          (#APPLY (#APPLY (#APPLY #lam3AX g₂) x₂) y₂))
@@ -1222,19 +1280,19 @@ continuityQBody cn kb gc i w F f ∈F ∈f =
                     eqTypesNAT
                     concl
                   where
-                    hyp : □· w4 (λ w5 _ → equalInType i w5 (#QBAIREn (#νtestMup F f)) f g₁)
+                    hyp : □· w4 (λ w5 _ → equalInType i w5 (#QBAIREn! (#νtestMup F f)) f g₁)
                     hyp = equalInType-EQ→ ey
 
                     ff : □· w3 (λ w' _ → FFDEFSeq g₁ (equalInType i w' #BAIRE) w' x₁ x₂)
                     ff = equalInTypeFFDEFS→ ex
 
-                    aw6 : ∀𝕎 w4 (λ w' e' → equalInType i w' (#QBAIREn (#νtestMup F f)) f g₁
+                    aw6 : ∀𝕎 w4 (λ w' e' → equalInType i w' (#QBAIREn! (#νtestMup F f)) f g₁
                                           → ↑wPred (λ w'' _ → FFDEFSeq g₁ (equalInType i w'' #BAIRE) w'' x₁ x₂) e4 w' e'
                                           → equalInType i w' #NAT (#APPLY F f) (#APPLY F g₁))
                     aw6 w5 e5 h1 (g , h2 , nng) = equalInType-trans cc (∈BAIRE→NAT→ (equalInType-mon ∈F w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))) (equalInType-sym h2))
                       where
-                        h3 : equalInType i w5 (#QBAIREn (#νtestMup F f)) f g
-                        h3 = equalInType-QBAIREn-BAIRE-trans h2 h1 (testM-QNAT cn kb gc i w5 F f (equalInType-mon ∈F w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))) (equalInType-mon ∈f w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))))
+                        h3 : equalInType i w5 (#QBAIREn! (#νtestMup F f)) f g
+                        h3 = ? --equalInType-QBAIREn-BAIRE-trans h2 h1 (testM-QNAT cn kb gc i w5 F f (equalInType-mon ∈F w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))) (equalInType-mon ∈f w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))))
 
                         cc : equalInType i w5 #NAT (#APPLY F f) (#APPLY F g)
                         cc = {!!} {--eqfg cn kb gc {i} {w5} {F} {f} {g} nnF nnf nng
@@ -1247,29 +1305,26 @@ continuityQBody cn kb gc i w F f ∈F ∈f =
                     concl = ∀𝕎-□Func2 aw6 hyp (Mod.↑□ M ff e4)
 
         aw2 : ∀𝕎 w1 (λ w2 e2 → (g₁ g₂ : CTerm) → equalInType i w2 #BAIRE g₁ g₂
-                              → equalInType i w2 (sub0 g₁ (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
-                                                                    (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]QBAIREn ⌞ #νtestMup F f ⌟))
-                                                                             (#[0]EQ (#[0]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[0]APPLY ⌞ F ⌟ #[0]VAR) #[0]NAT))))
+                              → equalInType i w2 (sub0 g₁ (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]QBAIREn! ⌞ #νtestMup F f ⌟))
+                                                                    (#[0]EQ (#[0]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[0]APPLY ⌞ F ⌟ #[0]VAR) #[0]NAT)))
                                              (#APPLY #lam3AX g₁) (#APPLY #lam3AX g₂))
         aw2 w2 e2 g₁ g₂ eg =
-          ≡CTerm→equalInType (sym (sub0-contQBodyPI-PI F f (#νtestMup F f) g₁)) (aw3 w2 e2 g₁ g₂ eg)
+          ? --≡CTerm→equalInType (sym (sub0-contQBodyPI-PI F f (#νtestMup F f) g₁)) (aw3 w2 e2 g₁ g₂ eg)
 
         eql2 : equalInType i w1 (#PI #BAIRE
-                                     (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
-                                              (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]QBAIREn ⌞ #νtestMup F f ⌟))
-                                                       (#[0]EQ (#[0]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[0]APPLY ⌞ F ⌟ #[0]VAR) #[0]NAT))))
+                                     (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]QBAIREn! ⌞ #νtestMup F f ⌟))
+                                              (#[0]EQ (#[0]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[0]APPLY ⌞ F ⌟ #[0]VAR) #[0]NAT)))
                                   #lam3AX
                                   #lam3AX
-        eql2 = equalInType-PI
+        eql2 = ? {--equalInType-PI
                  (λ w2 e2 → eqTypesBAIRE)
                  (λ w2 e2 g₁ g₂ eg → ≡CTerm→eqTypes (sym (sub0-contQBodyPI-PI F f (#νtestMup F f) g₁)) (sym (sub0-contQBodyPI-PI F f (#νtestMup F f) g₂)) (ea2 w2 e2 g₁ g₂ eg))
-                 aw2
+                 aw2--}
 
         eql1 : equalInType i w1 (sub0 (#νtestMup F f)
                                       (#[0]PI #[0]BAIRE
-                                              (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                                       (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]QBAIREn #[1]VAR1))
-                                                                (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT)))))
+                                              (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]QBAIREn! #[1]VAR1))
+                                                       (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT))))
                                  #lam3AX
                                  #lam3AX
         eql1 = ≡CTerm→equalInType (sym (sub0-contQBodyPI F f (#νtestMup F f))) eql2
@@ -1277,11 +1332,10 @@ continuityQBody cn kb gc i w F f ∈F ∈f =
 
     h0 : ∈Type i w (#SUM #QNAT
                          (#[0]PI #[0]BAIRE
-                                 (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                          (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]QBAIREn #[1]VAR1))
-                                                   (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT)))))
+                                 (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]QBAIREn! #[1]VAR1))
+                                          (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT))))
                    (#PAIR (#νtestMup F f) #lam3AX)
     h0 = equalInType-SUM (λ w' e' → eqTypesQNAT) (equalTypes-contQBodyPI i w F F f f ∈F ∈f) (Mod.∀𝕎-□ M aw)
---}
+
 
 \end{code}
