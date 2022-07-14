@@ -275,6 +275,7 @@ data updRel2 (name : Name) (f g : Term) (r : ren) : Term → Term → Set where
   updRel2-CS      : (name1 name2 : Name) → ¬ name1 ≡ name → ¬ name2 ≡ name → names∈ren name1 name2 r → updRel2 name f g r (CS name1) (CS name2)
   updRel2-NAME    : (name1 name2 : Name) → ¬ name1 ≡ name → ¬ name2 ≡ name → names∈ren name1 name2 r → updRel2 name f g r (NAME name1) (NAME name2)
   updRel2-FRESH   : (a b : Term) → updRel2 (suc name) (shiftNameUp 0 f) (shiftNameUp 0 g) (sren r) a b → updRel2 name f g r (FRESH a) (FRESH b)
+  updRel2-LOAD    : (a : Term) → updRel2 name f g r (LOAD a) (LOAD a)
   updRel2-CHOOSE  : (a₁ a₂ b₁ b₂ : Term) → updRel2 name f g r a₁ a₂ → updRel2 name f g r b₁ b₂ → updRel2 name f g r (CHOOSE a₁ b₁) (CHOOSE a₂ b₂)
 --  updRel2-IFC0    : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → updRel2 name1 name2 f a₁ a₂ → updRel2 name1 name2 f b₁ b₂ → updRel2 name1 name2 f c₁ c₂ → updRel2 name1 name2 f (IFC0 a₁ b₁ c₁) (IFC0 a₂ b₂ c₂)
   updRel2-TSQUASH : (a₁ a₂ : Term) → updRel2 name f g r a₁ a₂ → updRel2 name f g r (TSQUASH a₁) (TSQUASH a₂)
@@ -292,6 +293,7 @@ data updRel2 (name : Name) (f g : Term) (r : ren) : Term → Term → Set where
 
 
 
+{--
 sameRes-refl : (w : 𝕎·) → sameRes w w
 sameRes-refl w name r = (λ x → x) , (λ x → x)
 
@@ -304,6 +306,7 @@ sameRes-trans : {w1 w2 w3 : 𝕎·} → sameRes w1 w2 → sameRes w2 w3 → same
 sameRes-trans {w1} {w2} {w3} sres1 sres2 name r =
   (λ y → fst (sres2 name r) (fst (sres1 name r) y)) ,
   (λ y → snd (sres1 name r) (snd (sres2 name r) y))
+--}
 
 
 upto𝕎getT : (name : Name) (w1 w2 : 𝕎·) (r : ren) → Set
@@ -365,11 +368,13 @@ upto𝕎-trans name w1 w2 w3 r (mkUpto𝕎 {--eqd1 eqn1 sres1--} u1) (mkUpto𝕎
 --}
 
 
+{--
 sameRes-chooseT : (cc : ContConds) (name : Name) (w : 𝕎·) (t : Term)
                   → sameRes (chooseT name w t) w
 sameRes-chooseT cc name w t n r =
   (λ x → ContConds.ccCchoose→ cc n name w t r x) ,
-  (λ x → ContConds.ccCchoose← cc n name w t r x)
+  (λ x → →compatible-chooseT n name w t r x)
+--}
 
 
 updRel2-NUMₗ→ : {name : Name} {f g : Term} {r : ren} {n : ℕ} {a : Term}
@@ -615,7 +620,8 @@ updRel2-shiftUp n {name} {f} {g} {r} cf cg {.AX} {.AX} updRel2-AX = updRel2-AX
 updRel2-shiftUp n {name} {f} {g} {r} cf cg {.FREE} {.FREE} updRel2-FREE = updRel2-FREE
 updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(CS name1)} {.(CS name2)} (updRel2-CS name1 name2 d1 d2 i) = updRel2-CS name1 name2 d1 d2 i
 updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(NAME name1)} {.(NAME name2)} (updRel2-NAME name1 name2 d1 d2 i) = updRel2-NAME name1 name2 d1 d2 i
-updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(FRESH a₁)} {.(FRESH a₂)} (updRel2-FRESH a₁ a₂ r₁) = updRel2-FRESH _ _ (updRel2-shiftUp n (→#shiftNameUp 0 {f} cf) (→#shiftNameUp 0 {g} cg) r₁) --updRel2-FRESH _ _ (updRel2-shiftUp n (→#shiftNameUp 0 {f} cf) (→#shiftNameUp 0 {g} cg) r)
+updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(FRESH a₁)} {.(FRESH a₂)} (updRel2-FRESH a₁ a₂ r₁) = updRel2-FRESH _ _ (updRel2-shiftUp n (→#shiftNameUp 0 {f} cf) (→#shiftNameUp 0 {g} cg) r₁)
+updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(LOAD a)} {.(LOAD a)} (updRel2-LOAD a) = updRel2-LOAD _ ---(updRel2-shiftUp n cf cg r₁)
 updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (updRel2-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updRel2-CHOOSE _ _ _ _ (updRel2-shiftUp n cf cg u) (updRel2-shiftUp n cf cg u₁)
 updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel2-TSQUASH a₁ a₂ u) = updRel2-TSQUASH _ _ (updRel2-shiftUp n cf cg u)
 updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel2-TTRUNC a₁ a₂ u) = updRel2-TTRUNC _ _ (updRel2-shiftUp n cf cg u)
@@ -668,6 +674,7 @@ updRel2-shiftDown n {name} {f} {g} {r} cf cg {.FREE} {.FREE} updRel2-FREE = updR
 updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(CS name1)} {.(CS name2)} (updRel2-CS name1 name2 d1 d2 x) = updRel2-CS name1 name2 d1 d2 x
 updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(NAME name1)} {.(NAME name2)} (updRel2-NAME name1 name2 d1 d2 x) = updRel2-NAME name1 name2 d1 d2 x
 updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(FRESH a₁)} {.(FRESH a₂)} (updRel2-FRESH a₁ a₂ r₁) = updRel2-FRESH _ _ (updRel2-shiftDown n (→#shiftNameUp 0 {f} cf) (→#shiftNameUp 0 {g} cg) r₁)
+updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(LOAD a)} {.(LOAD a)} (updRel2-LOAD a) = updRel2-LOAD _ -- (updRel2-shiftDown n cf cg r₁)
 updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (updRel2-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updRel2-CHOOSE _ _ _ _ (updRel2-shiftDown n cf cg u) (updRel2-shiftDown n cf cg u₁)
 updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel2-TSQUASH a₁ a₂ u) = updRel2-TSQUASH _ _ (updRel2-shiftDown n cf cg u)
 updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel2-TTRUNC a₁ a₂ u) = updRel2-TTRUNC _ _ (updRel2-shiftDown n cf cg u)
@@ -808,6 +815,7 @@ updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(FRESH a₁)} {.(FRESH a₂)} (
                 (shiftNameUp (suc n) a₁)
                 (shiftNameUp (suc n) a₂)
     c1 rewrite shiftNameUp-shiftNameUp {0} {n} {f} _≤_.z≤n | shiftNameUp-shiftNameUp {0} {n} {g} _≤_.z≤n = c2
+updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(LOAD a)} {.(LOAD a)} (updRel2-LOAD a) = updRel2-LOAD _ --(updRel2-shiftNameUp n cf cg u) --(updRel2-shiftNameUp n cf cg u)
 updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (updRel2-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updRel2-CHOOSE _ _ _ _ (updRel2-shiftNameUp n cf cg u) (updRel2-shiftNameUp n cf cg u₁)
 updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel2-TSQUASH a₁ a₂ u) = updRel2-TSQUASH _ _ (updRel2-shiftNameUp n cf cg u)
 updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel2-TTRUNC a₁ a₂ u) = updRel2-TTRUNC _ _ (updRel2-shiftNameUp n cf cg u)
@@ -888,6 +896,7 @@ updRel2-subv v {name} {f} {g} {r} cf cg {.FREE} {.FREE} {b₁} {b₂} updRel2-FR
 updRel2-subv v {name} {f} {g} {r} cf cg {.(CS name1)} {.(CS name2)} {b₁} {b₂} (updRel2-CS name1 name2 d1 d2 x) ub = updRel2-CS name1 name2 d1 d2 x
 updRel2-subv v {name} {f} {g} {r} cf cg {.(NAME name1)} {.(NAME name2)} {b₁} {b₂} (updRel2-NAME name1 name2 d1 d2 x) ub = updRel2-NAME name1 name2 d1 d2 x
 updRel2-subv v {name} {f} {g} {r} cf cg {.(FRESH a₁)} {.(FRESH a₂)} {b₁} {b₂} (updRel2-FRESH a₁ a₂ ua) ub = updRel2-FRESH _ _ (updRel2-subv v {suc name} (→#shiftNameUp 0 {f} cf) (→#shiftNameUp 0 {g} cg) {a₁} {a₂} {shiftNameUp 0 b₁} {shiftNameUp 0 b₂} ua (updRel2-shiftNameUp0 {name} cf cg ub))
+updRel2-subv v {name} {f} {g} {r} cf cg {.(LOAD a)} {.(LOAD a)} {b₁} {b₂} (updRel2-LOAD a) ub = updRel2-LOAD _ --ua -- (updRel2-subv v {name} cf cg {a₁} {a₂} {b₁} {b₂} ua ub)
 updRel2-subv v {name} {f} {g} {r} cf cg {.(CHOOSE a₁ b₃)} {.(CHOOSE a₂ b₄)} {b₁} {b₂} (updRel2-CHOOSE a₁ a₂ b₃ b₄ ua ua₁) ub = updRel2-CHOOSE _ _ _ _ (updRel2-subv v cf cg ua ub) (updRel2-subv v cf cg ua₁ ub)
 updRel2-subv v {name} {f} {g} {r} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} {b₁} {b₂} (updRel2-TSQUASH a₁ a₂ ua) ub = updRel2-TSQUASH _ _ (updRel2-subv v cf cg ua ub)
 updRel2-subv v {name} {f} {g} {r} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} {b₁} {b₂} (updRel2-TTRUNC a₁ a₂ ua) ub = updRel2-TTRUNC _ _ (updRel2-subv v cf cg ua ub)
@@ -1008,45 +1017,6 @@ upto𝕎→≡fresh-inst {name} {w1} {w2} a upw rewrite upto𝕎→≡newChoiceT
 --}
 
 
--- MOVE to continuity-conds
-→≡Nnames𝕎-start : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·)
-                   → names𝕎· w1 ≡N names𝕎· w2
-                   → names𝕎· (startChoice· name Res⊤ w1) ≡N names𝕎· (startChoice· name Res⊤ w2)
-→≡Nnames𝕎-start cc name w1 w2 e
-  rewrite ContConds.ccN≡start cc name w1
-        | ContConds.ccN≡start cc name w2 = e
-
-
--- MOVE to continuity-conds
-→≡names𝕎-start : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·)
-                   → names𝕎· w1 ≡ names𝕎· w2
-                   → names𝕎· (startChoice· name Res⊤ w1) ≡ names𝕎· (startChoice· name Res⊤ w2)
-→≡names𝕎-start cc name w1 w2 e
-  rewrite ContConds.ccN≡start cc name w1
-        | ContConds.ccN≡start cc name w2 = e
-
-
-
--- MOVE to continuity-conds
-→dom𝕎-chooseT≡ : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (t : Term)
-                   → dom𝕎· w1 ≡ dom𝕎· w2
-                   → dom𝕎· (chooseT name w1 t) ≡ dom𝕎· (chooseT name w2 t)
-→dom𝕎-chooseT≡ cc name w1 w2 t e =
-  trans (ContConds.ccDchoose≡ cc name w1 t) (trans e (sym (ContConds.ccDchoose≡ cc name w2 t)))
-
-
-
--- MOVE to continuity-conds
-upto𝕎→≡getT : (cc : ContConds) (k : ℕ) (nm name n : Name) (w1 w2 : 𝕎·)
-                → ¬ nm ≡ name
-                → ¬ n ∈ dom𝕎· w1
-                → ¬ n ∈ dom𝕎· w2
-                → getT k nm w1 ≡ getT k nm w2
-                → getT k nm (startChoice· n Res⊤ w1) ≡ getT k nm (startChoice· n Res⊤ w2)
-upto𝕎→≡getT cc k nm name n w1 w2 diff d1 d2 upw with nm ≟ n
-... | yes p rewrite p = ContConds.ccGstarts cc n n k Res⊤ w1 w2 d1 d2
-... | no p = trans (ContConds.ccGstartd cc nm n k Res⊤ w1 p) (trans upw (sym (ContConds.ccGstartd cc nm n k Res⊤ w2 p)))
-
 
 
 ≡pres∈ : {a b : List Name} {x : Name}
@@ -1064,6 +1034,7 @@ upto𝕎→≡getT cc k nm name n w1 w2 diff d1 d2 upw with nm ≟ n
 
 
 
+{--
 sameRes-startChoice : (cc : ContConds) (n : ℕ) (w1 w2 : 𝕎·)
                       → dom𝕎· w1 ≡ dom𝕎· w2
                       → sameRes w1 w2
@@ -1084,6 +1055,7 @@ sameRes-startChoice cc n w1 w2 eqd same name r =
     ... |    inj₁ i = ContConds.ccC∈start← cc name r Res⊤ w1 (≡pres∈ (sym eqd) i) (snd (same name r) (ContConds.ccC∈start→ cc name r Res⊤ w2 i compat))
     ... |    inj₂ ni rewrite sym (ContConds.ccC¬∈start→ cc name r Res⊤ w2 ni compat) = startChoiceCompatible· Res⊤ w1 name (≡pres¬∈ (sym eqd) ni)
     c2 compat | no p = ContConds.ccC¬≡start← cc n name r Res⊤ w1 p (snd (same name r) (ContConds.ccC¬≡start→ cc n name r Res⊤ w2 p compat))
+--}
 
 
 
@@ -1123,12 +1095,14 @@ sameRes-startChoice cc n w1 w2 eqd same name r =
 --}
 
 
+{--
 →sameRes-chooseT : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (t : Term)
                     → sameRes w1 w2
                     → sameRes (chooseT name w1 t) (chooseT name w2 t)
 →sameRes-chooseT cc name w1 w2 t same =
   sameRes-trans (sameRes-chooseT cc name w1 t)
                 (sameRes-trans same (sameRes-sym (sameRes-chooseT cc name w2 t)))
+--}
 
 
 →≡-names𝕎-chooseT : (cc : ContConds) (w1 w2 : 𝕎·) (name : Name) (t : Term)

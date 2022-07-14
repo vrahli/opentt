@@ -185,4 +185,15 @@ BarsProps→Mod b =
     (Σ∈𝔹'-comb-change (BarsProps.mon b) (BarsProps.isect b) (BarsProps.fam2 b))
     (Σ∈𝔹-const (BarsProps.ex b))
     →Σ∈𝔹∀𝕎
+
+
+→∃𝕎 : (B : BarsProps) {w : 𝕎·} {f : wPred w} → Mod.□ (BarsProps→Mod B) w f → ∃𝕎 w f
+→∃𝕎 B {w} {f} (b , h) = fst c , fst (snd c) , h (proj₁ (snd c)) (snd (snd c)) (proj₁ c) (⊑-refl· _) (fst (snd c))
+  where
+    c : Σ 𝕎· λ w' → Σ (w ⊑· w') λ e → (𝔹.bar b) w'
+    c = BarsProps.ex B (𝔹.bars b) (𝔹.ext b)
+
+    e : w ⊑· fst c
+    e = 𝔹.ext b (snd (snd c))
+
 \end{code}

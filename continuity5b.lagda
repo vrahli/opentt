@@ -114,8 +114,8 @@ presUpdRel2 n name f g k =
   → names a ⊆ dom𝕎· w1
   → names b ⊆ dom𝕎· w
   → name ∈ dom𝕎· w
-  → names f ⊆ dom𝕎· w1
-  → names g ⊆ dom𝕎· w
+--  → names f ⊆ dom𝕎· w1
+--  → names g ⊆ dom𝕎· w
   → upto𝕎 name w1 w r
   → compatible· name w1 Res⊤
   → compatible· name w Res⊤
@@ -349,6 +349,7 @@ updRel2-shiftNameUp→ n {name} {f} {g} {r} cf cg {FRESH a} {FRESH b} (updRel2-F
                    (shiftNameUp (suc n) a)
                    (shiftNameUp (suc n) b)
     upd1 rewrite suc≡sucIf≤0 name | sym seq1 | sym seq2 | sym (shiftNameUp-shiftNameUp {0} {n} {f} _≤_.z≤n) | sym (shiftNameUp-shiftNameUp {0} {n} {g} _≤_.z≤n) = u
+updRel2-shiftNameUp→ n {name} {f} {g} {r} cf cg {LOAD a} {LOAD .a} (updRel2-LOAD .a) = updRel2-LOAD _
 updRel2-shiftNameUp→ n {name} {f} {g} {r} cf cg {CHOOSE a a₁} {CHOOSE b b₁} (updRel2-CHOOSE .(shiftNameUp n a) .(shiftNameUp n b) .(shiftNameUp n a₁) .(shiftNameUp n b₁) u u₁) = updRel2-CHOOSE _ _ _ _ (updRel2-shiftNameUp→ n cf cg u) (updRel2-shiftNameUp→ n cf cg u₁)
 updRel2-shiftNameUp→ n {name} {f} {g} {r} cf cg {TSQUASH a} {TSQUASH b} (updRel2-TSQUASH .(shiftNameUp n a) .(shiftNameUp n b) u) = updRel2-TSQUASH _ _ (updRel2-shiftNameUp→ n cf cg u)
 updRel2-shiftNameUp→ n {name} {f} {g} {r} cf cg {TTRUNC a} {TTRUNC b} (updRel2-TTRUNC .(shiftNameUp n a) .(shiftNameUp n b) u) = updRel2-TTRUNC _ _ (updRel2-shiftNameUp→ n cf cg u)
@@ -537,6 +538,7 @@ updRel2-renn {name} {f} {g} {r} {.(FRESH a)} {.(FRESH b)} n n1 n2 na nb d1 d2 nr
     (→¬s∈names-shiftNameUp n g ng)
     (λ x → nnm (suc-injective x))
     u)
+updRel2-renn {name} {f} {g} {r} {.(LOAD a)} {.(LOAD a)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-LOAD a) = updRel2-LOAD _ --updRel2-LOAD _ ? -- (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)
 updRel2-renn {name} {f} {g} {r} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updRel2-CHOOSE _ _ _ _ (updRel2-renn n n1 n2 (¬∈++2→¬∈1 {_} {_} {names a₁} {names b₁} {n1} na) (¬∈++2→¬∈1 {_} {_} {names a₂} {names b₂} {n2} nb) d1 d2 nr1 nr2 nf ng nnm u) (updRel2-renn n n1 n2 (¬∈++2→¬∈2 {_} {_} {names a₁} {names b₁} {n1} na) (¬∈++2→¬∈2 {_} {_} {names a₂} {names b₂} {n2} nb) d1 d2 nr1 nr2 nf ng nnm u₁)
 updRel2-renn {name} {f} {g} {r} {.(TSQUASH a₁)} {.(TSQUASH a₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-TSQUASH a₁ a₂ u) = updRel2-TSQUASH _ _ (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)
 updRel2-renn {name} {f} {g} {r} {.(TTRUNC a₁)} {.(TTRUNC a₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-TTRUNC a₁ a₂ u) = updRel2-TTRUNC _ _ (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)

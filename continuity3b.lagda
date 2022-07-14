@@ -272,7 +272,7 @@ step-sat-isHighestℕ2 cc gc {w1} {w2} {.(FRESH a)} {b} {n} {name} {f} compat wg
     nnw' = λ z → nnw (∈names𝕎-startNewChoiceT→ cc name w1 a z)
 
     idom' : name ∈ dom𝕎· (startNewChoiceT Res⊤ w1 a)
-    idom' = ContConds.ccDstart cc name w1 a idom
+    idom' = dom𝕎-startNewChoiceT cc name w1 a idom
 
     imp1 : (x : Name) →  x ∈ names (renn 0 (newChoiceT+ w1 a) a) → ¬ x ≡ 0
     imp1 x i z rewrite z = ⊥-elim (suc-≢-0 {newChoiceT w1 a} (sym (fst (∈names-renn-same {0} {newChoiceT+ w1 a} {a} i))))
@@ -288,6 +288,11 @@ step-sat-isHighestℕ2 cc gc {w1} {w2} {.(FRESH a)} {b} {n} {name} {f} compat wg
 
     upd1 : updCtxt2 name f (shiftNameDown 0 (renn 0 (newChoiceT+ w1 a) a))
     upd1 = →updCtxt2-shiftNameDown 0 {name} {f} cf {renn 0 (newChoiceT+ w1 a) a} imp1 imp2 upd2
+step-sat-isHighestℕ2 cc gc {w1} {w2} {.(LOAD a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-LOAD a) nnf nnw idom cf
+  rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = concl
+  where
+   concl : ΣhighestUpdCtxt2 name f n AX w1 (startNewChoices Res⊤ w1 a)
+   concl = ΣhighestUpdCtxt2-startNewChoices cc name f n w1 a nnw idom
 step-sat-isHighestℕ2 cc gc {w1} {w2} {.(CHOOSE a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-CHOOSE a b₁ ctxt ctxt₁) nnf nnw idom cf with is-NAME a
 ... | inj₁ (nm , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
   0 , AX , chooseT nm w1 b₁ , refl ,

@@ -96,6 +96,10 @@ testMup : (name : Name) (F f : Term) → Term
 testMup name F f = testM name (shiftNameUp 0 F) (shiftNameUp 0 f)
 
 
+#testMup : (name : Name) (F f : CTerm) → CTerm
+#testMup name F f = #testM name (#shiftNameUp 0 F) (#shiftNameUp 0 f)
+
+
 νtestMup : (F f : Term) → Term
 νtestMup F f = νtestM (shiftNameUp 0 F) (shiftNameUp 0 f)
 
@@ -104,32 +108,69 @@ testMup name F f = testM name (shiftNameUp 0 F) (shiftNameUp 0 f)
 #νtestMup F f = #νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f)
 
 
+testML : (name : Name) (F f : Term) → Term
+testML name F f = SEQ (LOAD F) (testM name F f)
 
-νtestM-QNAT-shift : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
+
+testMLup : (name : Name) (F f : Term) → Term
+testMLup name F f = SEQ (LOAD F) (testMup name F f)
+
+
+νtestML : (F f : Term) → Term
+νtestML F f = FRESH (testML 0 F f)
+
+
+νtestMLup : (F f : Term) → Term
+νtestMLup F f = FRESH (testMLup 0 F f)
+
+
+#LOAD : CTerm → CTerm
+#LOAD a = ct (LOAD ⌜ a ⌝) c
+  where
+    c : # LOAD ⌜ a ⌝
+    c rewrite CTerm.closed a = refl
+
+
+#testML : (name : Name) (F f : CTerm) → CTerm
+#testML name F f = ct (testML name ⌜ F ⌝ ⌜ f ⌝) c
+  where
+    c : # testML name ⌜ F ⌝ ⌜ f ⌝
+    c rewrite fvars-SEQ0 (LOAD ⌜ F ⌝) (testM name ⌜ F ⌝ ⌜ f ⌝)
+            | CTerm.closed (#testM name F f)
+            | CTerm.closed F = refl --refl
+
+
+#testMLup : (name : Name) (F f : CTerm) → CTerm
+#testMLup name F f = ct (testMLup name ⌜ F ⌝ ⌜ f ⌝) c
+  where
+    c : # testMLup name ⌜ F ⌝ ⌜ f ⌝
+    c rewrite fvars-SEQ0 (LOAD ⌜ F ⌝) (testMup name ⌜ F ⌝ ⌜ f ⌝)
+            | CTerm.closed (#testMup name F f)
+            | CTerm.closed F = refl --refl
+
+
+#νtestML : (F f : CTerm) → CTerm
+#νtestML F f = ct (νtestML ⌜ F ⌝ ⌜ f ⌝) c
+  where
+    c : # νtestML ⌜ F ⌝ ⌜ f ⌝
+    c = CTerm.closed (#testML 0 F f)
+
+
+#νtestMLup : (F f : CTerm) → CTerm
+#νtestMLup F f = ct (νtestMLup ⌜ F ⌝ ⌜ f ⌝) c
+  where
+    c : # νtestMLup ⌜ F ⌝ ⌜ f ⌝
+    c = CTerm.closed (#testMLup 0 F f)
+
+
+testM-QNAT-shift : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm) (name : Name)
+                    → compatible· name w Res⊤
                     → ∈Type i w #BAIRE→NAT F
                     → ∈Type i w #BAIRE f
-                    → #⇓sameℕ w (#νtestMup F f) (#νtestMup F f)
-νtestM-QNAT-shift cn kb gc i w F f ∈F ∈f =
+                    → #⇓sameℕ w (#testM name F f) (#testM name F f)
+testM-QNAT-shift cn kb gc i w1 F f name comp1 ∈F ∈f =
   suc k , ack , ack
   where
-    tM : Term
-    tM = testMup 0 ⌜ F ⌝ ⌜ f ⌝
-
-    name : Name
-    name = newChoiceT w tM
-
-    w1 : 𝕎·
-    w1 = startNewChoiceT Res⊤ w tM
-
-    e1 : w ⊑· w1
-    e1 = startNewChoiceT⊏ Res⊤ w tM
-
-    comp1 : compatible· name w1 Res⊤
-    comp1 = startChoiceCompatible· Res⊤ w name (¬newChoiceT∈dom𝕎 w tM)
-
-    s1 : νtestMup ⌜ F ⌝ ⌜ f ⌝ ⇓ testM name ⌜ F ⌝ ⌜ f ⌝ from w to w1
-    s1 = 1 , ≡pair (shiftNameDown-renn-shiftNameUp name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f)) refl
-
     w2 : 𝕎·
     w2 = chooseT name w1 (NUM 0)
 
@@ -148,8 +189,8 @@ testMup name F f = testM name (shiftNameUp 0 F) (shiftNameUp 0 f)
 
     eqa : ∈Type i w2 #NAT (#APPLY F (#upd name f))
     eqa = equalInType-FUN→
-            (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) w2 (⊑-refl· _) (#upd name f) (#upd name f)
-            (upd∈ i w2 name f g0 (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
+            (equalInType-mon ∈F w2 e2) w2 (⊑-refl· _) (#upd name f) (#upd name f)
+            (upd∈ i w2 name f g0 (equalInType-mon ∈f w2 e2))
 
     eqn : NATeq w2 (#APPLY F (#upd name f)) (#APPLY F (#upd name f))
     eqn = kb (equalInType-NAT→ i w2 (#APPLY F (#upd name f)) (#APPLY F (#upd name f)) eqa) w2 (⊑-refl· _)
@@ -181,12 +222,138 @@ testMup name F f = testM name (shiftNameUp 0 F) (shiftNameUp 0 f)
     pbk : probeM name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (suc k) from w2 to w3
     pbk = ⇓-trans₂ (SEQ⇓₁ (snd ca)) (⇓-trans₂ (SEQ-val⇓ w3 (NUM m) (SUC (get0 name)) tt) (⇓NUM→SUC⇓NUM gk))
 
-    ack : νtestMup ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (suc k) at w
-    ack = ⇓-from-to→⇓ {w} {w3} {νtestMup ⌜ F ⌝ ⌜ f ⌝} {NUM (suc k)}
-                       (⇓-trans₂ {w} {w1} {w3} {νtestMup ⌜ F ⌝ ⌜ f ⌝} {testM name ⌜ F ⌝ ⌜ f ⌝} {NUM (suc k)}
-                                 s1 (⇓-trans₂ {w1} {w2} {w3} {testM name ⌜ F ⌝ ⌜ f ⌝} {SEQ AX (probeM name ⌜ F ⌝ ⌜ f ⌝)} {NUM (suc k)}
-                                              (SEQ⇓₁ {w1} {w2} {set0 name} {AX} {probeM name ⌜ F ⌝ ⌜ f ⌝} cs)
-                                              (⇓-trans₂ (SEQ-val⇓ w2 AX (probeM name ⌜ F ⌝ ⌜ f ⌝) tt) pbk)))
+    ack : testM name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (suc k) at w1
+    ack = ⇓-from-to→⇓ {w1} {w3} {testM name ⌜ F ⌝ ⌜ f ⌝} {NUM (suc k)}
+                       (⇓-trans₂ {w1} {w2} {w3} {testM name ⌜ F ⌝ ⌜ f ⌝} {SEQ AX (probeM name ⌜ F ⌝ ⌜ f ⌝)} {NUM (suc k)}
+                                 (SEQ⇓₁ {w1} {w2} {set0 name} {AX} {probeM name ⌜ F ⌝ ⌜ f ⌝} cs)
+                                 (⇓-trans₂ (SEQ-val⇓ w2 AX (probeM name ⌜ F ⌝ ⌜ f ⌝) tt) pbk))
+
+
+
+νtestM-QNAT-shift : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
+                    → ∈Type i w #BAIRE→NAT F
+                    → ∈Type i w #BAIRE f
+                    → #⇓sameℕ w (#νtestMup F f) (#νtestMup F f)
+νtestM-QNAT-shift cn kb gc i w F f ∈F ∈f =
+  fst smn , ack , ack
+  where
+    tM : Term
+    tM = testMup 0 ⌜ F ⌝ ⌜ f ⌝
+
+    name : Name
+    name = newChoiceT w tM
+
+    w1 : 𝕎·
+    w1 = startNewChoiceT Res⊤ w tM
+
+    e1 : w ⊑· w1
+    e1 = startNewChoiceT⊏ Res⊤ w tM
+
+    comp1 : compatible· name w1 Res⊤
+    comp1 = startChoiceCompatible· Res⊤ w name (¬newChoiceT∈dom𝕎 w tM)
+
+    s1 : νtestMup ⌜ F ⌝ ⌜ f ⌝ ⇓ testM name ⌜ F ⌝ ⌜ f ⌝ from w to w1
+    s1 = 1 , ≡pair (shiftNameDown-renn-shiftNameUp name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f)) refl
+
+    smn : #⇓sameℕ w1 (#testM name F f) (#testM name F f)
+    smn = testM-QNAT-shift cn kb gc i w1 F f name comp1 (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
+
+    ack : νtestMup ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (fst smn) at w
+    ack = ⇓-trans₁ {w} {w1} {νtestMup ⌜ F ⌝ ⌜ f ⌝} {testM name ⌜ F ⌝ ⌜ f ⌝} {NUM (proj₁ smn)} s1 (fst (snd smn))
+
+
+
+≡SEQ : {a b c d : Term} → a ≡ b → c ≡ d → SEQ a c ≡ SEQ b d
+≡SEQ {a} {b} {c} {d} e f rewrite e | f = refl
+
+
+
+shiftNameDown-renn-shiftNameUp-LOAD :
+  (name : Name) (F f : Term)
+  → # F
+  → # f
+  → shiftNameDown 0 (renn 0 (suc name) (testMLup 0 F f))
+     ≡ testML name F f
+shiftNameDown-renn-shiftNameUp-LOAD name F f cF cf
+  rewrite shiftUp-shiftNameUp 0 0 F
+        | shiftUp-shiftNameUp 0 0 f
+        | #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct f cf)
+        | shiftUp-shiftNameUp 3 0 f
+        | #shiftUp 3 (ct f cf)
+        | renn-shiftNameUp 0 (suc name) F
+        | renn-shiftNameUp 0 (suc name) f
+        | shiftNameDownUp 0 F
+        | shiftNameDownUp 0 f
+        | shiftUp-shiftNameUp 1 0 F
+        | shiftUp-shiftNameUp 4 0 f
+        | #shiftUp 1 (ct F cF)
+        | #shiftUp 4 (ct f cf)
+        | renn-shiftNameUp 0 (suc name) F
+        | renn-shiftNameUp 0 (suc name) f
+        | shiftNameDownUp 0 F
+        | shiftNameDownUp 0 f = refl
+
+
+testML-QNAT-shift : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm) (name : Name)
+                    → compatible· name w Res⊤
+                    → ∈Type i w #BAIRE→NAT F
+                    → ∈Type i w #BAIRE f
+                    → #⇓sameℕ w (#testML name F f) (#testML name F f)
+testML-QNAT-shift cn kb gc i w F f name compat ∈F ∈f =
+  fst smn , ack , ack
+  where
+    w1 : 𝕎·
+    w1 = startNewChoices Res⊤ w ⌜ F ⌝
+
+    e1 : w ⊑· w1
+    e1 = startNewChoices⊑ Res⊤ w ⌜ F ⌝
+
+    s1 : testML name ⌜ F ⌝ ⌜ f ⌝ ⇓ SEQ AX (testM name ⌜ F ⌝ ⌜ f ⌝) from w to w1
+    s1 = 1 , refl
+
+    smn : #⇓sameℕ w1 (#testM name F f) (#testM name F f)
+    smn = testM-QNAT-shift cn kb gc i w1 F f name (⊑-compatible· e1 compat) (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
+
+    ack : testML name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (fst smn) at w
+    ack = ⇓-trans₁ {w} {w1} {testML name ⌜ F ⌝ ⌜ f ⌝} {SEQ AX (testM name ⌜ F ⌝ ⌜ f ⌝)} {NUM (proj₁ smn)}
+                   s1
+                   (⇓-trans₁ {w1} {w1} {SEQ AX (testM name ⌜ F ⌝ ⌜ f ⌝)} {testM name ⌜ F ⌝ ⌜ f ⌝} {NUM (proj₁ smn)}
+                             (SEQ-AX⇓₁from-to {w1} {testM name ⌜ F ⌝ ⌜ f ⌝} (CTerm.closed (#testM name F f)))
+                             (fst (snd smn)))
+
+
+
+νtestMLup-QNAT-shift : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
+                    → ∈Type i w #BAIRE→NAT F
+                    → ∈Type i w #BAIRE f
+                    → #⇓sameℕ w (#νtestMLup F f) (#νtestMLup F f)
+νtestMLup-QNAT-shift cn kb gc i w F f ∈F ∈f =
+  fst smn , ack , ack
+  where
+    tM : Term
+    tM = testMLup 0 ⌜ F ⌝ ⌜ f ⌝
+
+    name : Name
+    name = newChoiceT w tM
+
+    w1 : 𝕎·
+    w1 = startNewChoiceT Res⊤ w tM
+
+    e1 : w ⊑· w1
+    e1 = startNewChoiceT⊏ Res⊤ w tM
+
+    comp1 : compatible· name w1 Res⊤
+    comp1 = startChoiceCompatible· Res⊤ w name (¬newChoiceT∈dom𝕎 w tM)
+
+    s1 : νtestMLup ⌜ F ⌝ ⌜ f ⌝ ⇓ testML name ⌜ F ⌝ ⌜ f ⌝ from w to w1
+    s1 = 1 , ≡pair (shiftNameDown-renn-shiftNameUp-LOAD name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f)) refl
+
+    smn : #⇓sameℕ w1 (#testML name F f) (#testML name F f)
+    smn = testML-QNAT-shift cn kb gc i w1 F f name comp1 (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
+
+    ack : νtestMLup ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (fst smn) at w
+    ack = ⇓-trans₁ {w} {w1} {νtestMLup ⌜ F ⌝ ⌜ f ⌝} {testML name ⌜ F ⌝ ⌜ f ⌝} {NUM (proj₁ smn)} s1 (fst (snd smn))
 
 
 
@@ -211,20 +378,46 @@ QBAIREn : Term → Term
 QBAIREn n = FUN (QNATn n) NAT
 
 
+QBAIREn! : Term → Term
+QBAIREn! n = FUN (QNATn n) NAT!
+
+
+#QBAIREn! : CTerm → CTerm
+#QBAIREn! n = ct (QBAIREn! ⌜ n ⌝) c
+  where
+    c : # QBAIREn! ⌜ n ⌝
+    c rewrite fvars-FUN0 (QNATn ⌜ n ⌝) NAT
+            | ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝)))
+            | #shiftUp 0 n
+      = lowerVars-fvars-CTerm≡[] n
+
+
+#QNATn : CTerm → CTerm
+#QNATn n = ct (QNATn ⌜ n ⌝) c
+  where
+    c : # QNATn ⌜ n ⌝
+    c rewrite ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝)))
+            | #shiftUp 0 n
+      = lowerVars-fvars-CTerm≡[] n
+
+
+≡QBAIREn! : (n : CTerm) → #QBAIREn! n ≡ #FUN (#QNATn n) #NAT!
+≡QBAIREn! n = CTerm≡ refl
+
+
 contQBody : (F f : Term) → Term
 contQBody F f =
   SUM QNAT
       (PI BAIRE
-          (FUN (FFDEFS BAIRE (VAR 0))
-               (FUN (EQ f (VAR 0) (QBAIREn (VAR 1)))
-                    (EQ (APPLY F f) (APPLY F (VAR 0)) NAT))))
+          (FUN (EQ f (VAR 0) (QBAIREn! (VAR 1)))
+               (EQ (APPLY F f) (APPLY F (VAR 0)) NAT)))
 
 
 
 #contQBody : (F f : CTerm) → CTerm
 #contQBody F f = ct (contQBody ⌜ F ⌝ ⌜ f ⌝) c
   where
-    c : # contBody ⌜ F ⌝ ⌜ f ⌝
+    c : # contQBody ⌜ F ⌝ ⌜ f ⌝
     c rewrite CTerm.closed f
             | #shiftUp 0 f
             | #shiftUp 0 F
@@ -247,11 +440,33 @@ contQBody F f =
 
 
 
+#[1]QBAIREn! : CTerm1 → CTerm1
+#[1]QBAIREn! n = ct1 (QBAIREn! ⌜ n ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] QBAIREn! ⌜ n ⌝
+    c rewrite fvars-FUN0 (QNATn ⌜ n ⌝) NAT | ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝))) =
+      ⊆→⊆? {lowerVars (fvars (shiftUp 0 ⌜ n ⌝))} {0 ∷ [ 1 ]}
+           (lowerVars-fvars-[0,1,2] {fvars (shiftUp 0 ⌜ n ⌝)} (→fvars-shiftUp⊆-[0,1,2] {⌜ n ⌝} (⊆?→⊆ {fvars ⌜ n ⌝} {0 ∷ [ 1 ]} (CTerm1.closed n))))
+
+
+
 #[0]QBAIREn : CTerm0 → CTerm0
 #[0]QBAIREn n = ct0 (QBAIREn ⌜ n ⌝) c
   where
     c : #[ [ 0 ] ] QBAIREn ⌜ n ⌝
     c rewrite fvars-FUN0 (QNATn ⌜ n ⌝) NAT
+            | ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝)))
+            | lowerVars-fvars-CTerm0≡[] n =
+      ⊆→⊆? {lowerVars (fvars (shiftUp 0 ⌜ n ⌝))} {[ 0 ]}
+            (lowerVars-fvars-[0,1] {fvars (shiftUp 0 ⌜ n ⌝)}
+                                   (→fvars-shiftUp⊆-[0,1] {⌜ n ⌝} (⊆?→⊆ {fvars ⌜ n ⌝} {[ 0 ]} (CTerm0.closed n))))
+
+
+#[0]QBAIREn! : CTerm0 → CTerm0
+#[0]QBAIREn! n = ct0 (QBAIREn! ⌜ n ⌝) c
+  where
+    c : #[ [ 0 ] ] QBAIREn! ⌜ n ⌝
+    c rewrite fvars-FUN0 (QNATn ⌜ n ⌝) NAT!
             | ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝)))
             | lowerVars-fvars-CTerm0≡[] n =
       ⊆→⊆? {lowerVars (fvars (shiftUp 0 ⌜ n ⌝))} {[ 0 ]}
@@ -274,20 +489,11 @@ contQBody F f =
             → #contQBody F f
                ≡ #SUM #QNAT
                       (#[0]PI #[0]BAIRE
-                              (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                       (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]QBAIREn #[1]VAR1))
-                                                (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT))))
+                              (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]QBAIREn! #[1]VAR1))
+                                       (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT)))
 #contQBody≡ F f = CTerm≡ refl
 
 
-
-#QNATn : CTerm → CTerm
-#QNATn n = ct (QNATn ⌜ n ⌝) c
-  where
-    c : # QNATn ⌜ n ⌝
-    c rewrite ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝)))
-            | #shiftUp 0 n
-      = lowerVars-fvars-CTerm≡[] n
 
 
 ≡QBAIREn : (n : CTerm) → #QBAIREn n ≡ #FUN (#QNATn n) #NAT
@@ -380,6 +586,16 @@ sub0-QNATn-body a n rewrite CTerm→CTerm0→Term n = CTerm≡ e
     (eqTypesFUN← (→equalTypesQNATn i w a₁ a₂ ea) eqTypesNAT)
 
 
+→equalTypesQBAIREn! : (i : ℕ) (w : 𝕎·) (a₁ a₂ : CTerm)
+                     → equalInType i w #QNAT a₁ a₂
+                     → equalTypes i w (#QBAIREn! a₁) (#QBAIREn! a₂)
+→equalTypesQBAIREn! i w a₁ a₂ ea =
+  ≡CTerm→eqTypes
+    (sym (≡QBAIREn! a₁))
+    (sym (≡QBAIREn! a₂))
+    (eqTypesFUN← (→equalTypesQNATn i w a₁ a₂ ea) isTypeNAT!)
+
+
 ∈QNATn→∈NAT : {i : ℕ} {w : 𝕎·} {a b n : CTerm}
               → equalInType i w #QNAT n n
               → equalInType i w (#QNATn n) a b
@@ -421,140 +637,112 @@ sub0-QNATn-body a n rewrite CTerm→CTerm0→Term n = CTerm≡ e
 
 
 
+
+BAIRE! : Term
+BAIRE! = FUN NAT NAT!
+
+
+#BAIRE! : CTerm
+#BAIRE! = ct BAIRE! c
+  where
+    c : # BAIRE!
+    c = refl
+
+
+
+-- MOVE to terms
+BAIRE!→NAT : Term
+BAIRE!→NAT = FUN BAIRE! NAT
+
+
+-- MOVE to terms
+#BAIRE!→NAT : CTerm
+#BAIRE!→NAT = ct BAIRE!→NAT c
+  where
+    c : # BAIRE!→NAT
+    c = refl
+
+
+-- MOVE to terms
+#BAIRE!→NAT≡ : #BAIRE!→NAT ≡ #FUN #BAIRE! #NAT
+#BAIRE!→NAT≡ = refl
+
+
+
+#[0]BAIRE! : CTerm0
+#[0]BAIRE! = ct0 BAIRE! c
+  where
+    c : #[ [ 0 ] ] BAIRE!
+    c = refl
+
+
+#[1]BAIRE! : CTerm1
+#[1]BAIRE! = ct1 BAIRE! c
+  where
+    c : #[ 0 ∷ [ 1 ] ] BAIRE!
+    c = refl
+
+
+
 sub0-contQBodyPI : (F f a : CTerm)
                   → sub0 a (#[0]PI #[0]BAIRE
-                                    (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                             (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]QBAIREn #[1]VAR1))
-                                                      (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT))))
+                                    (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]QBAIREn! #[1]VAR1))
+                                             (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT)))
                     ≡ #PI #BAIRE
-                          (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
-                                   (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]QBAIREn ⌞ a ⌟))
-                                            (#[0]EQ (#[0]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[0]APPLY ⌞ F ⌟ #[0]VAR) #[0]NAT)))
+                          (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]QBAIREn! ⌞ a ⌟))
+                                   (#[0]EQ (#[0]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[0]APPLY ⌞ F ⌟ #[0]VAR) #[0]NAT))
 sub0-contQBodyPI F f a
   rewrite CTerm→CTerm1→Term f
-    = CTerm≡ (≡PI refl (≡PI refl (≡PI e1 e2)))
+    = CTerm≡ (≡PI refl (≡PI e1 e2)) --e1 e2))
   where
-    e1 : EQ (shiftDown 2 (subv 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ a ⌝))) (shiftUp 0 ⌜ f ⌝)))
-            (VAR 1)
-            (PI (SET NAT (QLT (VAR 0) (shiftDown 3 (shiftUp 0 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ a ⌝))))))) NAT)
-         ≡ EQ (shiftUp 0 ⌜ f ⌝) (VAR 1) (PI (SET NAT (QLT (VAR 0) (shiftUp 1 (shiftUp 0 ⌜ a ⌝)))) NAT)
-    e1 rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftUp 0 a | #shiftUp 0 a | #shiftUp 1 a | #shiftUp 0 f
-             | #subv 2 ⌜ a ⌝ ⌜ f ⌝ (CTerm.closed f)
-             | #shiftDown 2 a | #shiftDown 3 a | #shiftDown 2 f | #shiftDown 1 f = refl
+    e1 : EQ (shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) ⌜ f ⌝))
+            (VAR 0)
+            (PI (SET NAT (QLT (VAR 0) (shiftDown 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)))))) NAT!)
+         ≡ EQ ⌜ f ⌝ (VAR 0) (PI (SET NAT (QLT (VAR 0) (shiftUp 0 ⌜ a ⌝))) NAT!)
+    e1 rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftUp 0 a
+             | #subv 1 ⌜ a ⌝ ⌜ f ⌝ (CTerm.closed f)
+             | #shiftDown 1 a | #shiftDown 2 a | #shiftDown 1 f = refl
 
-    e2 : EQ (APPLY (shiftDown 3 (subv 3 (shiftUp 0 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)))) (shiftUp 1 (shiftUp 0 ⌜ F ⌝))))
-                   (shiftDown 3 (subv 3 (shiftUp 0 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)))) (shiftUp 1 (shiftUp 0 ⌜ f ⌝)))))
-            (APPLY (shiftDown 3 (subv 3 (shiftUp 0 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)))) (shiftUp 1 (shiftUp 0 ⌜ F ⌝))))
-                   (VAR 2))
+    e2 : EQ (APPLY (shiftDown 2 (subv 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ a ⌝))) (shiftUp 0 ⌜ F ⌝)))
+                   (shiftDown 2 (subv 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ a ⌝))) (shiftUp 0 ⌜ f ⌝))))
+            (APPLY (shiftDown 2 (subv 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ a ⌝))) (shiftUp 0 ⌜ F ⌝)))
+                   (VAR 1))
             NAT
-         ≡ EQ (APPLY (shiftUp 1 (shiftUp 0 ⌜ F ⌝)) (shiftUp 1 (shiftUp 0 ⌜ f ⌝))) (APPLY (shiftUp 1 (shiftUp 0 ⌜ F ⌝)) (VAR 2)) NAT
-    e2 rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftUp 0 a | #shiftUp 0 a | #shiftUp 0 F | #shiftUp 0 f
-             | #shiftUp 1 F | #shiftUp 1 f
-             | #subv 3 ⌜ a ⌝ ⌜ F ⌝ (CTerm.closed F)
-             | #subv 3 ⌜ a ⌝ ⌜ f ⌝ (CTerm.closed f)
-             | #shiftDown 3 F | #shiftDown 3 f = refl
+         ≡ EQ (APPLY (shiftUp 0 ⌜ F ⌝) (shiftUp 0 ⌜ f ⌝)) (APPLY (shiftUp 0 ⌜ F ⌝) (VAR 1)) NAT
+    e2 rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftUp 0 a | #shiftUp 0 F | #shiftUp 0 f
+             | #subv 2 ⌜ a ⌝ ⌜ F ⌝ (CTerm.closed F)
+             | #subv 2 ⌜ a ⌝ ⌜ f ⌝ (CTerm.closed f)
+             | #shiftDown 2 F | #shiftDown 2 f = refl
 
 
 
 sub0-contQBodyPI-PI : (F f a g : CTerm)
-                    → sub0 g (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
-                                       (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]QBAIREn ⌞ a ⌟))
-                                                (#[0]EQ (#[0]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[0]APPLY ⌞ F ⌟ #[0]VAR) #[0]NAT)))
-                       ≡ #FUN (#FFDEFS #BAIRE g) (#FUN (#EQ f g (#QBAIREn a)) (#EQ (#APPLY F f) (#APPLY F g) #NAT))
+                    → sub0 g (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]QBAIREn! ⌞ a ⌟))
+                                       (#[0]EQ (#[0]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[0]APPLY ⌞ F ⌟ #[0]VAR) #[0]NAT))
+                       ≡ #FUN (#EQ f g (#QBAIREn! a)) (#EQ (#APPLY F f) (#APPLY F g) #NAT)
 sub0-contQBodyPI-PI F f a g
   rewrite CTerm→CTerm1→Term f =
-  CTerm≡ (≡PI e0 (≡PI e1 e2))
+  CTerm≡ (≡PI e1 e2)
   where
-    e0 : FFDEFS BAIRE (shiftDown 0 (shiftUp 0 ⌜ g ⌝))
-         ≡ FFDEFS BAIRE ⌜ g ⌝
-    e0 rewrite #shiftUp 0 g | #shiftDown 0 g = refl
+    e1 : EQ (shiftDown 0 (subv 0 (shiftUp 0 ⌜ g ⌝) ⌜ f ⌝))
+            (shiftDown 0 (shiftUp 0 ⌜ g ⌝))
+            (PI (SET NAT (QLT (VAR 0) (shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ g ⌝)) (shiftUp 0 ⌜ a ⌝))))) NAT!)
+         ≡ EQ ⌜ f ⌝ ⌜ g ⌝ (PI (SET NAT (QLT (VAR 0) (shiftUp 0 ⌜ a ⌝))) NAT!)
+    e1 rewrite #shiftUp 0 g | #shiftUp 0 g | #shiftUp 0 a
+             | #subv 0 ⌜ g ⌝ ⌜ f ⌝ (CTerm.closed f)
+             | #subv 1 ⌜ g ⌝ ⌜ a ⌝ (CTerm.closed a)
+             | #shiftDown 0 f | #shiftDown 1 a | #shiftDown 0 g = refl --refl
 
-    e1 : EQ (shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ g ⌝)) (shiftUp 0 ⌜ f ⌝)))
-            (shiftDown 1 (shiftUp 0 (shiftUp 0 ⌜ g ⌝)))
-            (PI (SET NAT (QLT (VAR 0) (shiftDown 2 (subv 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ g ⌝))) (shiftUp 1 (shiftUp 0 ⌜ a ⌝)))))) NAT)
-         ≡ EQ (shiftUp 0 ⌜ f ⌝) (shiftUp 0 ⌜ g ⌝) (PI (SET NAT (QLT (VAR 0) (shiftUp 1 (shiftUp 0 ⌜ a ⌝)))) NAT)
-    e1 rewrite #shiftUp 0 g | #shiftUp 0 g | #shiftUp 0 g | #shiftUp 0 a | #shiftUp 1 a | #shiftUp 0 f
-             | #subv 1 ⌜ g ⌝ ⌜ f ⌝ (CTerm.closed f)
-             | #subv 2 ⌜ g ⌝ ⌜ a ⌝ (CTerm.closed a)
-             | #shiftDown 1 f | #shiftDown 2 a | #shiftDown 1 g = refl --refl
-
-    e2 : EQ (APPLY (shiftDown 2 (subv 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ g ⌝))) (shiftUp 1 (shiftUp 0 ⌜ F ⌝))))
-                   (shiftDown 2 (subv 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ g ⌝))) (shiftUp 1 (shiftUp 0 ⌜ f ⌝)))))
-            (APPLY (shiftDown 2 (subv 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ g ⌝))) (shiftUp 1 (shiftUp 0 ⌜ F ⌝))))
-                   (shiftDown 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ g ⌝)))))
+    e2 : EQ (APPLY (shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ g ⌝)) (shiftUp 0 ⌜ F ⌝)))
+                   (shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ g ⌝)) (shiftUp 0 ⌜ f ⌝))))
+            (APPLY (shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ g ⌝)) (shiftUp 0 ⌜ F ⌝)))
+                   (shiftDown 1 (shiftUp 0 (shiftUp 0 ⌜ g ⌝))))
             NAT
-         ≡ EQ (APPLY (shiftUp 1 (shiftUp 0 ⌜ F ⌝)) (shiftUp 1 (shiftUp 0 ⌜ f ⌝))) (APPLY (shiftUp 1 (shiftUp 0 ⌜ F ⌝)) (shiftUp 1 (shiftUp 0 ⌜ g ⌝))) NAT
-    e2 rewrite #shiftUp 0 g | #shiftUp 0 g | #shiftUp 0 F | #shiftUp 0 f | #shiftUp 0 g
-             | #shiftUp 1 F | #shiftUp 1 f | #shiftUp 1 g
-             | #subv 2 ⌜ g ⌝ ⌜ F ⌝ (CTerm.closed F)
-             | #subv 2 ⌜ g ⌝ ⌜ f ⌝ (CTerm.closed f)
-             | #shiftDown 2 F | #shiftDown 2 f | #shiftDown 2 g = refl
-
-
-
-equalTypes-contQBodyPI : (i : ℕ) (w : 𝕎·) (F₁ F₂ f₁ f₂ : CTerm)
-                        → equalInType i w #BAIRE→NAT F₁ F₂
-                        → equalInType i w #BAIRE f₁ f₂
-                        → ∀𝕎 w (λ w' e →
-                             (a₁ a₂ : CTerm)
-                             → equalInType i w' #QNAT a₁ a₂
-                             → equalTypes i w'
-                                 (sub0 a₁ (#[0]PI #[0]BAIRE
-                                          (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                                   (#[1]FUN (#[1]EQ ⌞ f₁ ⌟ #[1]VAR0 (#[1]QBAIREn #[1]VAR1))
-                                                            (#[1]EQ (#[1]APPLY ⌞ F₁ ⌟ ⌞ f₁ ⌟) (#[1]APPLY ⌞ F₁ ⌟ #[1]VAR0) #[1]NAT)))))
-                                 (sub0 a₂ (#[0]PI #[0]BAIRE
-                                          (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
-                                                   (#[1]FUN (#[1]EQ ⌞ f₂ ⌟ #[1]VAR0 (#[1]QBAIREn #[1]VAR1))
-                                                            (#[1]EQ (#[1]APPLY ⌞ F₂ ⌟ ⌞ f₂ ⌟) (#[1]APPLY ⌞ F₂ ⌟ #[1]VAR0) #[1]NAT))))))
-equalTypes-contQBodyPI i w F₁ F₂ f₁ f₂ ∈F ∈f w1 e1 a₁ a₂ ea =
-  ≡CTerm→eqTypes (sym (sub0-contQBodyPI F₁ f₁ a₁)) (sym (sub0-contQBodyPI F₂ f₂ a₂)) ea1
-  where
-    ea2 : ∀𝕎 w1 (λ w2 e2 → (g₁ g₂ : CTerm) (eg : equalInType i w2 #BAIRE g₁ g₂)
-                         → equalTypes i w2
-                               (#FUN (#FFDEFS #BAIRE g₁) (#FUN (#EQ f₁ g₁ (#QBAIREn a₁)) (#EQ (#APPLY F₁ f₁) (#APPLY F₁ g₁) #NAT)))
-                               (#FUN (#FFDEFS #BAIRE g₂) (#FUN (#EQ f₂ g₂ (#QBAIREn a₂)) (#EQ (#APPLY F₂ f₂) (#APPLY F₂ g₂) #NAT))))
-    ea2 w2 e2 g₁ g₂ eg =
-      eqTypesFUN←
-        (eqTypesFFDEFS← eqTypesBAIRE eg)
-        (eqTypesFUN←
-          (eqTypesEQ← (→equalTypesQBAIREn i w2 a₁ a₂ (equalInType-mon ea w2 e2))
-                      (∈BAIRE→∈QBAIREn (equalInType-refl (equalInType-mon ea w2 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
-                      (∈BAIRE→∈QBAIREn (equalInType-refl (equalInType-mon ea w2 e2)) eg))
-          (eqTypesEQ← eqTypesNAT
-                      (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
-                      (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) eg)))
-
-    ea1 : equalTypes i w1
-            (#PI #BAIRE
-                 (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
-                          (#[0]FUN (#[0]EQ ⌞ f₁ ⌟ #[0]VAR (#[0]QBAIREn ⌞ a₁ ⌟))
-                                   (#[0]EQ (#[0]APPLY ⌞ F₁ ⌟ ⌞ f₁ ⌟) (#[0]APPLY ⌞ F₁ ⌟ #[0]VAR) #[0]NAT))))
-            (#PI #BAIRE
-                 (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
-                          (#[0]FUN (#[0]EQ ⌞ f₂ ⌟ #[0]VAR (#[0]QBAIREn ⌞ a₂ ⌟))
-                                   (#[0]EQ (#[0]APPLY ⌞ F₂ ⌟ ⌞ f₂ ⌟) (#[0]APPLY ⌞ F₂ ⌟ #[0]VAR) #[0]NAT))))
-    ea1 = eqTypesPI← (λ w' _ → eqTypesBAIRE)
-                      (λ w2 e2 g₁ g₂ eg →
-                        ≡CTerm→eqTypes
-                          (sym (sub0-contQBodyPI-PI F₁ f₁ a₁ g₁))
-                          (sym (sub0-contQBodyPI-PI F₂ f₂ a₂ g₂))
-                          (ea2 w2 e2 g₁ g₂ eg))
-
-
-
-
-equalTypes-contQBody : (i : ℕ) (w : 𝕎·) (F₁ F₂ f₁ f₂ : CTerm)
-                      → equalInType i w #BAIRE→NAT F₁ F₂
-                      → equalInType i w #BAIRE f₁ f₂
-                      → equalTypes i w (#contQBody F₁ f₁) (#contQBody F₂ f₂)
-equalTypes-contQBody i w F₁ F₂ f₁ f₂ ∈F ∈f =
-  ≡CTerm→eqTypes
-    (sym (#contQBody≡ F₁ f₁))
-    (sym (#contQBody≡ F₂ f₂))
-    (eqTypesSUM←
-      (λ w' e' → eqTypesQNAT)
-      (equalTypes-contQBodyPI i w F₁ F₂ f₁ f₂ ∈F ∈f))
+         ≡ EQ (APPLY (shiftUp 0 ⌜ F ⌝) (shiftUp 0 ⌜ f ⌝)) (APPLY (shiftUp 0 ⌜ F ⌝) (shiftUp 0 ⌜ g ⌝)) NAT
+    e2 rewrite #shiftUp 0 g | #shiftUp 0 g | #shiftUp 0 F | #shiftUp 0 f
+             | #subv 1 ⌜ g ⌝ ⌜ F ⌝ (CTerm.closed F)
+             | #subv 1 ⌜ g ⌝ ⌜ f ⌝ (CTerm.closed f)
+             | #shiftDown 1 F | #shiftDown 1 f | #shiftDown 1 g = refl
 
 
 
@@ -630,19 +818,6 @@ equalInType-QBAIREn-BAIRE-trans {i} {w} {a} {b} {c} {n} h1 h2 h3 =
     c w2 e2 = lift (lower (h w2 (⊑-trans· e1 e2)) n (lower (c₁ w2 e2)))
 
 
--- checks that n is the highest w.r.t. the name generated by 'FRESH'
-isHighestFreshℕ : {k : ℕ} {w1 w2 : 𝕎·} {a b : Term} (n : ℕ)
-                → steps k (FRESH a , w1) ≡ (b , w2)
-                → Set
-isHighestFreshℕ {0} {w1} {w2} {a} {b} n comp rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥
-isHighestFreshℕ {suc k} {w1} {w2} {a} {b} n comp with step⊎ (FRESH a) w1
-... | inj₁ (a' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj z)) | sym (pair-inj₂ (just-inj z)) =
-  isHighestℕ
-    {k} {startNewChoiceT Res⊤ w1 a} {w2}
-    {shiftNameDown 0 (renn 0 (newChoiceT+ w1 a) a)} {b} n
-    (newChoiceT w1 a) comp
-... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing z)
-
 
 abstract
   νtestMup⇓ℕ : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
@@ -661,39 +836,23 @@ abstract
       c = #⇓→from-to {w} {#νtestMup F f} {#NUM n} (fst (snd h))
 
 
--- This is capturing the fact there is a world w1 ⊒ w such that all ℕs that f gets applied to in
--- the computation of #νtestMup F f, are smaller than all #νtestMup F f for all extensions of w
--- (i.e., w1 is the world with the smallest modulus of continuity among the extensions of w)
-smallestModAux : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
-                 (w1 : 𝕎·) (e1 : w ⊑· w1)
-                 → ∈Type i w #BAIRE→NAT F
-                 → ∈Type i w #BAIRE f
-                 → Set(lsuc L)
-smallestModAux cn kb gc i w F f w1 e1 ∈F ∈f =
-  ∀𝕎 w P2
-    where
-      P2 : wPred w
-      P2 w2 e2 =
-        Lift {0ℓ} (lsuc(L))
-             (isHighestFreshℕ {fst (snd (snd h1))} {w1} {fst (snd h1)} {testMup 0 ⌜ F ⌝ ⌜ f ⌝}
-                               {NUM (fst h1)} (fst h2) (snd (snd (snd h1))))
-        where
-          h1 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w1 to w'))
-          h1 = νtestMup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
 
-          h2 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w2 to w'))
-          h2 = νtestMup⇓ℕ cn kb gc i w2 F f (equalInType-mon ∈F w2 e2) (equalInType-mon ∈f w2 e2)
-
-
-smallestMod : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
+abstract
+  νtestMLup⇓ℕ : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
               → ∈Type i w #BAIRE→NAT F
               → ∈Type i w #BAIRE f
-              → Set(lsuc L)
-smallestMod cn kb gc i w F f ∈F ∈f =
-  ∃𝕎 w P1
-  where
-    P1 : wPred w
-    P1 w1 e1 = smallestModAux cn kb gc i w F f w1 e1 ∈F ∈f
+              → Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMLup F f #⇓ #NUM n from w to w'))
+  νtestMLup⇓ℕ cn kb gc i w F f ∈F ∈f = n , c
+    where
+      h : #⇓sameℕ w (#νtestMLup F f) (#νtestMLup F f)
+      h = νtestMLup-QNAT-shift cn kb gc i w F f ∈F ∈f
+
+      n : ℕ
+      n = fst h
+
+      c : Σ 𝕎· (λ w' → #νtestMLup F f #⇓ #NUM n from w to w')
+      c = #⇓→from-to {w} {#νtestMLup F f} {#NUM n} (fst (snd h))
+
 
 
 
@@ -730,6 +889,43 @@ testM⇓→ cn {w1} {w2} {F} {f} {n} {name} cF cf compat comp =
     comp2 = probeM⇓-decomp name F f (NUM n) w1' w2 comp1 tt (cn name w1 0 compat)
 
 
+≡→steps : {k : ℕ} {a b c : Term} {w1 w2 : 𝕎·}
+           → a ≡ b
+           → steps k (a , w1) ≡ (c , w2)
+           → steps k (b , w1) ≡ (c , w2)
+≡→steps {k} {a} {b} {c} {w1} {w2} e h rewrite e = h
+
+
+testML⇓→ : (cn : comp→∀ℕ) {w1 w2 : 𝕎·} {F f : Term} {n : ℕ} {name : Name}
+           → # F
+           → # f
+           → compatible· name w1 Res⊤
+           → testML name F f ⇓ NUM n from w1 to w2
+           → Σ Term (λ v → Σ ℕ (λ k →
+               APPLY F (upd name f) ⇓ v from (chooseT name (startNewChoices Res⊤ w1 F) (NUM 0)) to w2
+               × isValue v
+               × getT 0 name w2 ≡ just (NUM k)
+               × n ≡ suc k))
+testML⇓→ cn {w1} {w2} {F} {f} {n} {name} cF cf compat (0 , ())
+testML⇓→ cn {w1} {w2} {F} {f} {n} {name} cF cf compat (1 , ())
+testML⇓→ cn {w1} {w2} {F} {f} {n} {name} cF cf compat (suc (suc k) , comp) =
+  testM⇓→
+    cn {startNewChoices Res⊤ w1 F} {w2} {F} {f} {n} {name} cF cf
+    (⊑-compatible· (startNewChoices⊑ Res⊤ w1 F) compat)
+    (k , ≡→steps {k} {sub AX (shiftUp 0 (testM name F f))} {testM name F f} {NUM n} {startNewChoices Res⊤ w1 F} {w2} c comp)
+  where
+    c : sub AX (shiftUp 0 (testM name F f)) ≡ testM name F f
+    c rewrite #shiftUp 0 (#testM name (ct F cF) (ct f cf))
+            | subNotIn AX (testM name F f) (CTerm.closed (#testM name (ct F cF) (ct f cf)))
+            | #shiftUp 0 (ct F cF)
+            | #shiftUp 1 (ct F cF)
+            | #shiftUp 0 (ct f cf)
+            | #shiftUp 3 (ct f cf)
+            | #shiftUp 4 (ct f cf)
+            | #subv 1 AX F cF
+            | #shiftDown 1 (ct F cF)
+            | #subv 4 AX f cf
+            | #shiftDown 4 (ct f cf) = refl
 
 
 νtestM⇓→step' : {F f v : Term} {w1 w2 : 𝕎·}
@@ -844,57 +1040,43 @@ isHighestℕ→≤ cn F f cF cf name n1 w1 w1' k1 comp1 n2 compat ish =
 
 
 
-isHighestFreshℕ→≤ : (cn : comp→∀ℕ) (F f : Term) (cF : # F) (cf : # f)
-                      {n1 : ℕ} {w1 w1' : 𝕎·} {k1 : ℕ} (comp1 : steps k1 (νtestMup F f , w1) ≡ (NUM n1 , w1'))
-                      (n2 : ℕ)
---                      (w2 w2' : 𝕎·) (k2 : ℕ) (comp2 : steps k2 (νtestMup F f , w2) ≡ (NUM n2 , w2'))
-                      → isHighestFreshℕ {k1} {w1} {w1'} {testMup 0 F f} {NUM n1} n2 comp1
-                      → n1 ≤ n2
-isHighestFreshℕ→≤ cn F f cF cf {n1} {w1} {w1'} {suc k1} comp1 n2 ish
-  rewrite shiftNameDown-renn-shiftNameUp (newChoiceT w1 (testMup 0 F f)) F f cF cf =
-  isHighestℕ→≤ cn F f cF cf name n1 w0 w1' k1 comp1 n2 compat ish
+isHighestℕ→≤-LOAD : (cn : comp→∀ℕ) (F f : Term) (cF : # F) (cf : # f) (name : Name)
+                 (n1 : ℕ) (w1 w1' : 𝕎·) (k1 : ℕ)
+                 (comp1 : steps k1 (testML name F f , w1) ≡ (NUM n1 , w1'))
+                 (n2 : ℕ)
+                 → compatible· name w1 Res⊤
+                 → isHighestℕ {k1} {w1} {w1'} {testML name F f} {NUM n1} n2 name comp1
+                 → n1 ≤ n2
+isHighestℕ→≤-LOAD cn F f cF cf name n1 w1 w1' k1 comp1 n2 compat ish =
+  ≤-trans (≤-reflexive (trans eqk (→s≡s (NUMinj (just-inj (trans (sym gt0) gtm)))))) ltm
   where
-    name : Name
-    name = newChoiceT w1 (testMup 0 F f)
+    h : Σ Term (λ v → Σ ℕ (λ k →
+          APPLY F (upd name f) ⇓ v from (chooseT name (startNewChoices Res⊤ w1 F) (NUM 0)) to w1'
+          × isValue v
+          × getT 0 name w1' ≡ just (NUM k)
+          × n1 ≡ suc k))
+    h = testML⇓→ cn {w1} {w1'} {F} {f} {n1} {name} cF cf compat (k1 , comp1)
 
-    w0 : 𝕎·
-    w0 = startNewChoiceT Res⊤ w1 (testMup 0 F f)
+    k : ℕ
+    k = fst (snd h)
 
-    compat : compatible· name w0 Res⊤
-    compat = startChoiceCompatible· Res⊤ w1 name (¬newChoiceT∈dom𝕎 w1 (testMup 0 F f))
+    gt0 : getT 0 name w1' ≡ just (NUM k)
+    gt0 = fst (snd (snd (snd (snd h))))
 
+    eqk : n1 ≡ suc k
+    eqk = snd (snd (snd (snd (snd h))))
 
-abstract
-  smallestModAux→NATeq : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
-      {i : ℕ} {w : 𝕎·} {F f g : CTerm} {w1 : 𝕎·} {e1 : w ⊑· w1}
-      (∈F : ∈Type i w #BAIRE→NAT F)
-      (∈f : ∈Type i w #BAIRE f)
-      → smallestModAux cn kb gc i w F f w1 e1 ∈F ∈f
-      → ∀𝕎 w (λ w' _ → (k : ℕ)
-                         → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ n → #νtestMup F f #⇓ #NUM n at w'' × k < n)))
-                         → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
-      → Σ ℕ (λ n → Σ 𝕎· (λ w2 → #νtestMup F f #⇓ #NUM n from w1 to w2
-                   × ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < n
-                                    → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))))
-  smallestModAux→NATeq cn kb gc {i} {w} {F} {f} {g} {w1} {e1} ∈F ∈f sma h =
-    fst h1 , fst (snd h1) , snd (snd h1) , concl
-    where
-      h1 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w1 to w'))
-      h1 = νtestMup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
+    gtl : getT≤ℕ w1' n2 name
+    gtl = isHighestℕ→getT≤ℕ-last {k1} {w1} {w1'} {testML name F f} {NUM n1} n2 name comp1 ish
 
-      concl : ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < fst h1 → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
-      concl w1' e1' k ltk = h w1' (⊑-trans· e1 e1') k q
-        where
-          q : ∀𝕎 w1' (λ w'' _ → Lift (lsuc L) (Σ ℕ (λ n → #νtestMup F f #⇓ #NUM n at w'' × k < n)))
-          q w1'' e1'' = lift (fst h2 , ⇓-from-to→⇓ (snd (snd h2)) , <-transˡ ltk (isHighestFreshℕ→≤ cn ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f) {_} {w1} {fst (snd h1)} {fst (snd (snd h1))} (snd (snd (snd h1))) (fst h2) hst))
-            where
-              h2 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w1'' to w'))
-              h2 = νtestMup⇓ℕ cn kb gc i w1'' F f (equalInType-mon ∈F w1'' (⊑-trans· e1 (⊑-trans· e1' e1''))) (equalInType-mon ∈f w1'' (⊑-trans· e1 (⊑-trans· e1' e1'')))
+    m : ℕ
+    m = fst gtl
 
-              hst : isHighestFreshℕ {fst (snd (snd h1))} {w1} {fst (snd h1)} {testMup 0 ⌜ F ⌝ ⌜ f ⌝}
-                                     {NUM (fst h1)} (fst h2) (snd (snd (snd h1)))
-              hst = lower (sma w1'' (⊑-trans· e1 (⊑-trans· e1' e1'')))
+    gtm : getT 0 name w1' ≡ just (NUM m)
+    gtm = fst (snd gtl)
 
+    ltm : m < n2
+    ltm = snd (snd gtl)
 
 
 →≡sucIf≤ : {v : Var} {a b : Var}
@@ -939,6 +1121,7 @@ shiftNameUp-inj {n} {FREE} {FREE} e = refl
 shiftNameUp-inj {n} {CS x} {CS x₁} e = ≡CS (sucIf≤-inj {n} {x} {x₁} (CSinj e))
 shiftNameUp-inj {n} {NAME x} {NAME x₁} e = ≡NAME (sucIf≤-inj {n} {x} {x₁} (NAMEinj e))
 shiftNameUp-inj {n} {FRESH a} {FRESH b} e rewrite shiftNameUp-inj (FRESHinj e) = refl
+shiftNameUp-inj {n} {LOAD a} {LOAD b} e = e --rewrite shiftNameUp-inj (LOADinj e) = refl
 shiftNameUp-inj {n} {CHOOSE a a₁} {CHOOSE b b₁} e rewrite shiftNameUp-inj (CHOOSEinj1 e) | shiftNameUp-inj (CHOOSEinj2 e) = refl
 --shiftNameUp-inj {n} {IFC0 a a₁ a₂} {IFC0 b b₁ b₂} e rewrite shiftNameUp-inj (IFC0inj1 e) | shiftNameUp-inj (IFC0inj2 e) | shiftNameUp-inj (IFC0inj3 e) = refl
 shiftNameUp-inj {n} {TSQUASH a} {TSQUASH b} e rewrite shiftNameUp-inj (TSQUASHinj e) = refl
@@ -1021,6 +1204,7 @@ fvars-shiftNameDown n FREE = refl
 fvars-shiftNameDown n (CS x) = refl
 fvars-shiftNameDown n (NAME x) = refl
 fvars-shiftNameDown n (FRESH a) rewrite fvars-shiftNameDown (suc n) a = refl
+fvars-shiftNameDown n (LOAD a) rewrite fvars-shiftNameDown n a = refl
 fvars-shiftNameDown n (CHOOSE a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
 --fvars-shiftNameDown n (IFC0 a a₁ a₂) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ | fvars-shiftNameDown n a₂ = refl
 fvars-shiftNameDown n (TSQUASH a) rewrite fvars-shiftNameDown n a = refl
@@ -1096,6 +1280,7 @@ shiftNameUpDown n (FRESH t) imp1 imp2 = ≡FRESH (shiftNameUpDown (suc n) t imp1
   where
     imp1' : (x : Name) → x ∈ names t → ¬ x ≡ suc n
     imp1' x i z rewrite z = imp1 n (suc→∈lowerNames {n} {names t} i) refl
+shiftNameUpDown n (LOAD t) imp1 imp2 = refl --≡LOAD (shiftNameUpDown n t imp1 imp2)
 shiftNameUpDown n (CHOOSE t t₁) imp1 imp2 = ≡CHOOSE (shiftNameUpDown n t (λ x i → imp1 x (∈-++⁺ˡ i)) (λ z → imp2 (∈-++⁺ˡ z))) (shiftNameUpDown n t₁ (λ x i → imp1 x (∈-++⁺ʳ (names t) i)) (λ z → imp2 (∈-++⁺ʳ (names t) z)))
 shiftNameUpDown n (TSQUASH t) imp1 imp2 = ≡TSQUASH (shiftNameUpDown n t imp1 imp2)
 shiftNameUpDown n (TTRUNC t) imp1 imp2 = ≡TTRUNC (shiftNameUpDown n t imp1 imp2)
@@ -1216,6 +1401,7 @@ renn¬∈ n m (NAME x) ni with x ≟ n
 ... | yes p rewrite p = ⊥-elim (ni (here refl))
 ... | no p = refl
 renn¬∈ n m (FRESH t) ni = ≡FRESH (renn¬∈ (suc n) (suc m) t (λ z → ni (suc→∈lowerNames {n} {names t} z)))
+renn¬∈ n m (LOAD t) ni = refl --≡LOAD (renn¬∈ n m t ni)
 renn¬∈ n m (CHOOSE t t₁) ni = ≡CHOOSE (renn¬∈ n m t (¬∈++2→¬∈1 {_} {_} {names t} {names t₁} {n} ni)) (renn¬∈ n m t₁ (¬∈++2→¬∈2 {_} {_} {names t} {names t₁} {n} ni))
 renn¬∈ n m (TSQUASH t) ni = ≡TSQUASH (renn¬∈ n m t ni)
 renn¬∈ n m (TTRUNC t) ni = ≡TTRUNC (renn¬∈ n m t ni)

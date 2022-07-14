@@ -85,6 +85,21 @@ startNewChoiceT : Res → 𝕎· → Term → 𝕎·
 startNewChoiceT r w t = startChoice· (newChoiceT w t) r w
 
 
+startNewChoicesL : Res → 𝕎· → Term → List Name → 𝕎·
+startNewChoicesL r w a [] = w
+startNewChoicesL r w a (n ∷ l) with Name∈⊎ n (dom𝕎· w)
+... | inj₁ p = startNewChoicesL r (startNewChoiceT r w a) a l
+... | inj₂ p = startNewChoicesL r (startChoice· n r w) a l
+
+
+startNewChoices : Res → 𝕎· → Term → 𝕎·
+startNewChoices r w t = startNewChoicesL r w t (names t)
+
+
+startChoice⊏· : (r : Res) (w : 𝕎·) (name : Name) → ¬ name ∈ dom𝕎· w → w ⊑· startChoice· name r w
+startChoice⊏· = startChoice⊏ N
+
+
 getChoice-startChoice· : (n : ℕ) (r : Res) (w : 𝕎·) (t : ℂ·) (name : Name)
                          → ¬ name ∈ dom𝕎· w
                          → getChoice· n name (startChoice· name r w) ≡ just t
@@ -96,10 +111,6 @@ getChoice-startNewChoice : (n : ℕ) (r : Res) (w : 𝕎·) (t : ℂ·)
                            → getChoice· n (newChoice· w) (startNewChoice r w) ≡ just t → t ≡ Res.def r
 getChoice-startNewChoice n r w t h =
   getChoice-startChoice· n r w t (newChoice· w) (λ x → snd (freshName (dom𝕎· w ++ names𝕎· w)) (∈-++⁺ˡ x)) h
-
-
-startChoice⊏· : (r : Res) (w : 𝕎·) (name : Name) → ¬ name ∈ dom𝕎· w → w ⊑· startChoice· name r w
-startChoice⊏· = startChoice⊏ N
 
 
 startNewChoice⊏ : (r : Res) (w : 𝕎·) → w ⊑· startNewChoice r w
@@ -116,6 +127,17 @@ startNewChoice⊏ r w = startChoice⊏·  r w (newChoice· w) (λ x → snd (fre
 
 startNewChoiceT⊏ : (r : Res) (w : 𝕎·) (t : Term) → w ⊑· startNewChoiceT r w t
 startNewChoiceT⊏ r w t = startChoice⊏· r w (newChoiceT w t) (¬fresh∈dom𝕎2 w (names𝕎· w) (↓vars (names t)))
+
+
+startNewChoicesL⊑ : (r : Res) (w : 𝕎·) (a : Term) (l : List Name) → w ⊑· startNewChoicesL r w a l
+startNewChoicesL⊑ r w a [] = ⊑-refl· w
+startNewChoicesL⊑ r w a (n ∷ l) with Name∈⊎ n (dom𝕎· w)
+... | inj₁ p = ⊑-trans· (startNewChoiceT⊏ r w a) (startNewChoicesL⊑ r (startNewChoiceT r w a) a l) --startNewChoicesL⊑ r w l
+... | inj₂ p = ⊑-trans· (startChoice⊏· r w n p) (startNewChoicesL⊑ r (startChoice· n r w) a l)
+
+
+startNewChoices⊑ : (r : Res) (w : 𝕎·) (t : Term) → w ⊑· startNewChoices r w t
+startNewChoices⊑ r w t = startNewChoicesL⊑ r w t (names t)
 
 
 startChoiceCompatible· : (r : Res) (w : 𝕎·) (name : Name) → ¬ name ∈ dom𝕎· w → compatible· name (startChoice· name r w) r

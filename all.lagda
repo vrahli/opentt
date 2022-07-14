@@ -1,4 +1,5 @@
 \begin{code}
+{-# OPTIONS --rewriting #-}
 
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
@@ -75,4 +76,6 @@ open import kripkeCsNotExBar
 open import continuity7
 -- We show here that the properties used to prove continuity in continuity7 are satisfied by Kripke bars + references
 open import contInstanceKripkeRef
+-- We show here that the properties used to prove continuity in continuity7 are satisfied by Open bars + references
+open import contInstanceOpenRef
 \end{code}

@@ -89,6 +89,7 @@ data differ2 (name1 name2 : Name) (f : Term) : Term → Term → Set where
   differ2-CS      : (name : Name) → differ2 name1 name2 f (CS name) (CS name)
   differ2-NAME    : (name : Name) → differ2 name1 name2 f (NAME name) (NAME name)
   differ2-FRESH   : (a b : Term) → differ2 (suc name1) (suc name2) (shiftNameUp 0 f) a b → differ2 name1 name2 f (FRESH a) (FRESH b)
+  differ2-LOAD    : (a b : Term) → differ2 name1 name2 f a b → differ2 name1 name2 f (LOAD a) (LOAD b)
   differ2-CHOOSE  : (a₁ a₂ b₁ b₂ : Term) → differ2 name1 name2 f a₁ a₂ → differ2 name1 name2 f b₁ b₂ → differ2 name1 name2 f (CHOOSE a₁ b₁) (CHOOSE a₂ b₂)
 --  differ2-IFC0    : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → differ2 name1 name2 f a₁ a₂ → differ2 name1 name2 f b₁ b₂ → differ2 name1 name2 f c₁ c₂ → differ2 name1 name2 f (IFC0 a₁ b₁ c₁) (IFC0 a₂ b₂ c₂)
   differ2-TSQUASH : (a b : Term) → differ2 name1 name2 f a b → differ2 name1 name2 f (TSQUASH a) (TSQUASH b)
@@ -184,6 +185,7 @@ differ2-INRₗ→ {name1} {name2} {f} {a} {.(INR a₂)} (differ2-INR .a a₂ dif
 →differ2-shiftUp v {name1} {name2} {f} cf {.(CS name)} {.(CS name)} (differ2-CS name) = differ2-CS name
 →differ2-shiftUp v {name1} {name2} {f} cf {.(NAME name)} {.(NAME name)} (differ2-NAME name) = differ2-NAME name
 →differ2-shiftUp v {name1} {name2} {f} cf {.(FRESH a)} {.(FRESH b)} (differ2-FRESH a b diff) = differ2-FRESH _ _ (→differ2-shiftUp v (→#shiftNameUp 0 {f} cf) diff)
+→differ2-shiftUp v {name1} {name2} {f} cf {.(LOAD a)} {.(LOAD b)} (differ2-LOAD a b diff) = differ2-LOAD _ _ (→differ2-shiftUp v cf diff)
 →differ2-shiftUp v {name1} {name2} {f} cf {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (differ2-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) = differ2-CHOOSE _ _ _ _ (→differ2-shiftUp v cf diff) (→differ2-shiftUp v cf diff₁)
 --→differ2-shiftUp v {name1} {name2} {f} cf {.(IFC0 a₁ b₁ c₁)} {.(IFC0 a₂ b₂ c₂)} (differ2-IFC0 a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ2-IFC0 _ _ _ _ _ _ (→differ2-shiftUp v cf diff) (→differ2-shiftUp v cf diff₁) (→differ2-shiftUp v cf diff₂)
 →differ2-shiftUp v {name1} {name2} {f} cf {.(TSQUASH a)} {.(TSQUASH b)} (differ2-TSQUASH a b diff) = differ2-TSQUASH _ _ (→differ2-shiftUp v cf diff)
@@ -260,6 +262,7 @@ shiftNameUp-shiftNameUp {i} {j} {FRESH t} imp = ≡FRESH (shiftNameUp-shiftNameU
     c : (n : Name) → n ∈ names t → suc i ≤ n
     c 0 z = {!!}
     c (suc n) z = _≤_.s≤s (imp n (suc→∈lowerNames {n} {names t} z))
+shiftNameUp-shiftNameUp {i} {j} {LOAD t} imp = ≡LOAD (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {CHOOSE t t₁} imp = ≡CHOOSE (shiftNameUp-shiftNameUp {i} {j} {t} (λ n k → imp n (∈-++⁺ˡ k))) (shiftNameUp-shiftNameUp {i} {j} {t₁} (λ n k → imp n (∈-++⁺ʳ (names t) k)))
 shiftNameUp-shiftNameUp {i} {j} {TSQUASH t} imp = ≡TSQUASH (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {TTRUNC t} imp = ≡TTRUNC (shiftNameUp-shiftNameUp {i} {j} {t} imp)
@@ -330,6 +333,7 @@ shiftNameUp-shiftNameUp {i} {j} {SHRINK t} imp = ≡SHRINK (shiftNameUp-shiftNam
                 (shiftNameUp (suc v) a)
                 (shiftNameUp (suc v) b)
     c1 rewrite shiftNameUp-shiftNameUp {0} {v} {f} _≤_.z≤n = c2
+→differ2-shiftNameUp v {name1} {name2} {f} cf {.(LOAD a)} {.(LOAD b)} (differ2-LOAD a b diff) = differ2-LOAD _ _ (→differ2-shiftNameUp v cf diff)
 →differ2-shiftNameUp v {name1} {name2} {f} cf {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (differ2-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) = differ2-CHOOSE _ _ _ _ (→differ2-shiftNameUp v cf diff) (→differ2-shiftNameUp v cf diff₁)
 --→differ2-shiftNameUp v {name1} {name2} {f} cf {.(IFC0 a₁ b₁ c₁)} {.(IFC0 a₂ b₂ c₂)} (differ2-IFC0 a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ2-IFC0 _ _ _ _ _ _ (→differ2-shiftNameUp v cf diff) (→differ2-shiftNameUp v cf diff₁) (→differ2-shiftNameUp v cf diff₂)
 →differ2-shiftNameUp v {name1} {name2} {f} cf {.(TSQUASH a)} {.(TSQUASH b)} (differ2-TSQUASH a b diff) = differ2-TSQUASH _ _ (→differ2-shiftNameUp v cf diff)
@@ -407,6 +411,7 @@ differ2-subv {name1} {name2} {f} cf v {.FREE} {.FREE} {b₁} {b₂} differ2-FREE
 differ2-subv {name1} {name2} {f} cf v {.(CS name)} {.(CS name)} {b₁} {b₂} (differ2-CS name) d₂ = differ2-CS name
 differ2-subv {name1} {name2} {f} cf v {.(NAME name)} {.(NAME name)} {b₁} {b₂} (differ2-NAME name) d₂ = differ2-NAME name
 differ2-subv {name1} {name2} {f} cf v {.(FRESH a)} {.(FRESH b)} {b₁} {b₂} (differ2-FRESH a b d₁) d₂ = differ2-FRESH _ _ (differ2-subv (→#shiftNameUp 0 {f} cf) v d₁ (→differ2-shiftNameUp0 {name1} {name2} cf d₂))
+differ2-subv {name1} {name2} {f} cf v {.(LOAD a)} {.(LOAD b)} {b₁} {b₂} (differ2-LOAD a b d₁) d₂ = differ2-LOAD _ _ (differ2-subv (→#shiftNameUp 0 {f} cf) v d₁ (→differ2-shiftNameUp0 {name1} {name2} cf d₂))
 differ2-subv {name1} {name2} {f} cf v {.(CHOOSE a₁ b₃)} {.(CHOOSE a₂ b₄)} {b₁} {b₂} (differ2-CHOOSE a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ2-CHOOSE _ _ _ _ (differ2-subv cf v d₁ d₂) (differ2-subv cf v d₃ d₂)
 --differ2-subv {name1} {name2} {f} cf v {.(IFC0 a₁ b₃ c₁)} {.(IFC0 a₂ b₄ c₂)} {b₁} {b₂} (differ2-IFC0 a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄) d₂ = differ2-IFC0 _ _ _ _ _ _ (differ2-subv cf v d₁ d₂) (differ2-subv cf v d₃ d₂) (differ2-subv cf v d₄ d₂)
 differ2-subv {name1} {name2} {f} cf v {.(TSQUASH a)} {.(TSQUASH b)} {b₁} {b₂} (differ2-TSQUASH a b d₁) d₂ = differ2-TSQUASH _ _ (differ2-subv cf v d₁ d₂)
@@ -459,6 +464,7 @@ differ2-subv {name1} {name2} {f} cf v {.(upd name1 f)} {.(upd name2 f)} {b₁} {
 →differ2-shiftDown v {name1} {name2} {f} cf {.(CS name)} {.(CS name)} (differ2-CS name) = (differ2-CS name)
 →differ2-shiftDown v {name1} {name2} {f} cf {.(NAME name)} {.(NAME name)} (differ2-NAME name) = (differ2-NAME name)
 →differ2-shiftDown v {name1} {name2} {f} cf {.(FRESH a)} {.(FRESH b)} (differ2-FRESH a b diff) = differ2-FRESH _ _ (→differ2-shiftDown v (→#shiftNameUp 0 {f} cf) diff)
+→differ2-shiftDown v {name1} {name2} {f} cf {.(LOAD a)} {.(LOAD b)} (differ2-LOAD a b diff) = differ2-LOAD _ _ (→differ2-shiftDown v (→#shiftNameUp 0 {f} cf) diff)
 →differ2-shiftDown v {name1} {name2} {f} cf {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (differ2-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) = differ2-CHOOSE _ _ _ _ (→differ2-shiftDown v cf diff) (→differ2-shiftDown v cf diff₁)
 --→differ2-shiftDown v {name1} {name2} {f} cf {.(IFC0 a₁ b₁ c₁)} {.(IFC0 a₂ b₂ c₂)} (differ2-IFC0 a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ2-IFC0 _ _ _ _ _ _ (→differ2-shiftDown v cf diff) (→differ2-shiftDown v cf diff₁) (→differ2-shiftDown v cf diff₂)
 →differ2-shiftDown v {name1} {name2} {f} cf {.(TSQUASH a)} {.(TSQUASH b)} (differ2-TSQUASH a b diff) = differ2-TSQUASH _ _ (→differ2-shiftDown v cf diff)
@@ -509,6 +515,7 @@ differ2-isValue→ {name1} {name2} {f} {.FREE} {.FREE} differ2-FREE isv = tt
 differ2-isValue→ {name1} {name2} {f} {.(CS name)} {.(CS name)} (differ2-CS name) isv = tt
 differ2-isValue→ {name1} {name2} {f} {.(NAME name)} {.(NAME name)} (differ2-NAME name) isv = tt
 differ2-isValue→ {name1} {name2} {f} {.(FRESH a)} {.(FRESH b)} (differ2-FRESH a b diff) ()
+differ2-isValue→ {name1} {name2} {f} {.(LOAD a)} {.(LOAD b)} (differ2-LOAD a b diff) ()
 differ2-isValue→ {name1} {name2} {f} {.(TSQUASH a)} {.(TSQUASH b)} (differ2-TSQUASH a b diff) isv = tt
 differ2-isValue→ {name1} {name2} {f} {.(TTRUNC a)} {.(TTRUNC b)} (differ2-TTRUNC a b diff) isv = tt
 differ2-isValue→ {name1} {name2} {f} {.(TCONST a)} {.(TCONST b)} (differ2-TCONST a b diff) isv = tt
@@ -554,6 +561,7 @@ differ2-refl {name1} {name2} {f} {FREE} = differ2-FREE
 differ2-refl {name1} {name2} {f} {CS x} = differ2-CS _
 differ2-refl {name1} {name2} {f} {NAME x} = differ2-NAME _
 differ2-refl {name1} {name2} {f} {FRESH a} = differ2-FRESH _ _ differ2-refl
+differ2-refl {name1} {name2} {f} {LOAD a} = differ2-LOAD _ _ differ2-refl
 differ2-refl {name1} {name2} {f} {CHOOSE a a₁} = differ2-CHOOSE _ _ _ _ differ2-refl differ2-refl
 differ2-refl {name1} {name2} {f} {TSQUASH a} = differ2-TSQUASH _ _ differ2-refl
 differ2-refl {name1} {name2} {f} {TTRUNC a} = differ2-TTRUNC _ _ differ2-refl

@@ -45,9 +45,9 @@ open import choiceExt
 open import choiceVal
 
 
--- An instance with Kripke bars and references
+-- An instance with Open bars and references
 
-module contInstanceKripkeRef (E : Extensionality 0ℓ 3ℓ)
+module contInstanceOpenRef (E : Extensionality 0ℓ 3ℓ)
        where
 
 open import worldInstanceRef
@@ -64,10 +64,10 @@ K = compatibleREF
 P : Progress W C K
 P = progressREF
 
-open import barKripke(W)
+open import barOpen(W)
 
 M : Mod W
-M = inKripkeBar-Mod
+M = inOpenBar-Mod-v1
 
 G : GetChoice W C K
 G = getChoiceRef
@@ -116,26 +116,22 @@ compatible→ΣNUM name w (c , b , i , s) with getRef⊎ name w
 ... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym i))
 
 
-KR-comp→∀ℕ : comp→∀ℕ
-KR-comp→∀ℕ name w k compat w1 e1 = lift (compatible→ΣNUM name w1 compat')
+OR-comp→∀ℕ : comp→∀ℕ
+OR-comp→∀ℕ name w k compat w1 e1 = lift (compatible→ΣNUM name w1 compat')
   where
     compat' : compatible· name w1 Res⊤
     compat' = ⊑-compatible· (⊑-trans· (choose⊑· name w (T→ℂ· (NUM k))) e1) compat
 
 
-KR-K□ : K□
-KR-K□ {w} {f} (b , h) w1 e1 = h e1 (lower (𝔹.bars b w1 e1)) w1 (⊑-refl· w1) e1
+OR-∃□ : ∃□
+OR-∃□ = mod.→∃𝕎 W O𝔹BarsProps
 
 
-KR-∃□ : ∃□
-KR-∃□ = mod.→∃𝕎 W K𝔹BarsProps
-
-
-KR-get-choose-ℕ : get-choose-ℕ
-KR-get-choose-ℕ name w n (c , true , i , s) with getRef⊎ name w
+OR-get-choose-ℕ : get-choose-ℕ
+OR-get-choose-ℕ name w n (c , true , i , s) with getRef⊎ name w
 ... | inj₁ (x , z) rewrite z | just-inj i | getRef-update-true-¬frz-≡ {w} n true (λ x → x) z = refl
 ... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym i))
-KR-get-choose-ℕ name w n (c , false , i , s) with getRef⊎ name w
+OR-get-choose-ℕ name w n (c , false , i , s) with getRef⊎ name w
 ... | inj₁ (x , z) rewrite z | just-inj i | getRef-update-false-≡ {w}  n false z = refl
 ... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym i))
 

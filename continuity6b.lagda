@@ -92,9 +92,7 @@ open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
-{--
 open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
---}
 
 open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -195,8 +193,8 @@ upto𝕎-chooseT0if cc name w1 w2 r n m (mkUpto𝕎 {--wf--} upw) with n <? m
  --mkUpto𝕎 {--refl refl (sameRes-refl w)--} (λ n1 n2 k d1 d2 r → {!!} {--refl--})
 
 
-
-→ΣstepsUpdRel2-upd : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w0 w1 w : 𝕎·} {r : ren}
+abstract
+  →ΣstepsUpdRel2-upd : (cc : ContConds) (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w0 w1 w : 𝕎·} {r : ren}
                      → ¬ name ∈ names f
                      → # f
                      → # g
@@ -207,8 +205,8 @@ upto𝕎-chooseT0if cc name w1 w2 r n m (mkUpto𝕎 {--wf--} upw) with n <? m
                      → names a ⊆ dom𝕎· w1
                      → names b ⊆ dom𝕎· w
                      → name ∈ dom𝕎· w
-                     → names f ⊆ dom𝕎· w1
-                     → names g ⊆ dom𝕎· w
+--                     → names f ⊆ dom𝕎· w1
+--                     → names g ⊆ dom𝕎· w
                      → upto𝕎 name w1 w r
                      → w0 ⊑· w1
                      → w0 ⊑· w
@@ -216,139 +214,159 @@ upto𝕎-chooseT0if cc name w1 w2 r n m (mkUpto𝕎 {--wf--} upw) with n <? m
                      → stepsPresUpdRel2 n name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1
                      → Σ (ΣstepsUpdRel2 name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 w1 (APPLY (force g) b) w r)
                           (λ x → 0 < fst (snd x))
-→ΣstepsUpdRel2-upd cc gc {n} {name} {f} {g} {a} {b} {w0} {w1} {w} {r} nnf cf cg compat compat' wgt0 u naid nbid niw nfiw ngiw upw ew01 ew0 eqn (k , v , w2 , comp , isv , ish , inw , ind) =
-  (k2 + k3 , k5 + k6 , NUM i , NUM i , w1a , w1b {--w1a--} , r' , comp2b , compgc , updRel2-NUM i , upw2 , sub' {--upto𝕎-sym name w1a w1a' upw2--}) ,
-  steps-APPLY-val→ {k5 + k6} {force g} {b} {NUM i} {w} {w1b} tt compgc
-  where
-    c : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w1' → Σ ℕ (λ m → Σ ℕ (λ m' →
-           k1 < k
-           × k2 < k
-           × getT 0 name w1' ≡ just (NUM m')
-           × ssteps k1 (a , w1) ≡ just (NUM m , w1')
-           × steps k2 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m))))))
-    c = upd-decomp cf wgt0 comp isv
--- We need to know that m is less than n
+  →ΣstepsUpdRel2-upd cc gc {n} {name} {f} {g} {a} {b} {w0} {w1} {w} {r} nnf cf cg compat compat' wgt0 u naid nbid niw {--nfiw ngiw--} upw ew01 ew0 eqn (k , v , w2 , comp , isv , ish , inw , ind) =
+    (k2 + k3 , k5 + k6 , NUM i , NUM i , w1a , w1b {--w1a--} , r' , comp2b , compgc , updRel2-NUM i , upw2 , sub' {--upto𝕎-sym name w1a w1a' upw2--}) ,
+    steps-APPLY-val→ {k5 + k6} {force g} {b} {NUM i} {w} {w1b} tt compgc
+    where
+{--
+      xxx : Σ ℕ (λ k' → Σ Term (λ v' → Σ 𝕎· (λ w' → Σ ren (λ r' →
+              steps k' (APPLY (force g) b , w) ≡ (v' , w')
+              × updRel2 name f g r' v v'
+              × upto𝕎 name w2 w' r'
+              × subRen (dom𝕎· w1) (dom𝕎· w) r r'))))
+      xxx = ind k ≤-refl {LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))} {APPLY (force g) b} {v} {w0} {w1} {w2} {w} {r}
+                {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} isv
+      -- o This would require proving (the first hole above):
+      --     updRel2 name f g r (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) (APPLY (force g) b)
+      --   which we can't prove because 'name' occurs in the left expression,
+      --   and in any case, the 2 expressions are not of the same shape as we did a computation step in the left expression
+      -- o We wouldn't be able to use 'ind' on 'APPLY f (NUM m)' and 'APPLY g (NUM m)' either (see 'sn' below),
+      --   as 'f' and 'g' are not related w.r.t. updRel2.
+      --   If we were to relate them, we'd have to show that the compute to updRel2-related functions.
+      --   ---> Could we add CBV calls on f and g in our extract then?
+      --   This would not solve our problem as we would then have to prove in the APPLY case for example
+      --   that beta-reducing 'f(a)' preserves updRel2.
+--}
 
-    k1 : ℕ
-    k1 = fst c
+      c : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w1' → Σ ℕ (λ m → Σ ℕ (λ m' →
+             k1 < k
+             × k2 < k
+             × getT 0 name w1' ≡ just (NUM m')
+             × ssteps k1 (a , w1) ≡ just (NUM m , w1')
+             × steps k2 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m))))))
+      c = upd-decomp cf wgt0 comp isv
+  -- We need to know that m is less than n
 
-    k2 : ℕ
-    k2 = fst (snd c)
+      k1 : ℕ
+      k1 = fst c
 
-    w1' : 𝕎·
-    w1' = fst (snd (snd c))
+      k2 : ℕ
+      k2 = fst (snd c)
 
-    m : ℕ
-    m = fst (snd (snd (snd c)))
+      w1' : 𝕎·
+      w1' = fst (snd (snd c))
 
-    m' : ℕ
-    m' = fst (snd (snd (snd (snd c))))
+      m : ℕ
+      m = fst (snd (snd (snd c)))
 
-    ltk1 : k1 < k
-    ltk1 = fst (snd (snd (snd (snd (snd c)))))
+      m' : ℕ
+      m' = fst (snd (snd (snd (snd c))))
 
-    ltk2 : k2 < k
-    ltk2 = fst (snd (snd (snd (snd (snd (snd c))))))
+      ltk1 : k1 < k
+      ltk1 = fst (snd (snd (snd (snd (snd c)))))
 
-    gt0 : getT 0 name w1' ≡ just (NUM m')
-    gt0 = fst (snd (snd (snd (snd (snd (snd (snd c)))))))
+      ltk2 : k2 < k
+      ltk2 = fst (snd (snd (snd (snd (snd (snd c))))))
 
-    comp1 : ssteps k1 (a , w1) ≡ just (NUM m , w1')
-    comp1 = fst (snd (snd (snd (snd (snd (snd (snd (snd c))))))))
+      gt0 : getT 0 name w1' ≡ just (NUM m')
+      gt0 = fst (snd (snd (snd (snd (snd (snd (snd c)))))))
 
-    comp1b : steps k1 (a , w1) ≡ (NUM m , w1')
-    comp1b = ssteps→steps {k1} {a} {NUM m} {w1} {w1'} comp1
+      comp1 : ssteps k1 (a , w1) ≡ just (NUM m , w1')
+      comp1 = fst (snd (snd (snd (snd (snd (snd (snd (snd c))))))))
 
-    comp2 : steps k2 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m)
-    comp2 = snd (snd (snd (snd (snd (snd (snd (snd (snd c))))))))
+      comp1b : steps k1 (a , w1) ≡ (NUM m , w1')
+      comp1b = ssteps→steps {k1} {a} {NUM m} {w1} {w1'} comp1
 
-    e1 : w1 ⊑· w1'
-    e1 = steps→⊑ k1 a (NUM m) comp1b
+      comp2 : steps k2 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m)
+      comp2 = snd (snd (snd (snd (snd (snd (snd (snd (snd c))))))))
 
-    e2 : w1 ⊑· chooseT0if name w1' m' m
-    e2 = ⊑-trans· e1 (⊑chooseT0if {w1'} {name} {m'} {m})
+      e1 : w1 ⊑· w1'
+      e1 = steps→⊑ k1 a (NUM m) comp1b
 
-    ltm : m < n
-    ltm = isHighestℕ-updBody→< gc {n} {name} {f} {k1} {k} {a} {v} {m} {w1} {w1'} {w2} cf compat comp1b comp isv ish
+      e2 : w1 ⊑· chooseT0if name w1' m' m
+      e2 = ⊑-trans· e1 (⊑chooseT0if {w1'} {name} {m'} {m})
 
-    ish1 : isHighestℕ {k1} {w1} {w1'} {a} {NUM m} n name comp1b
-    ish1 = isHighestℕ-LET→ {n} {k1} {k} {name} {a} {SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))} {NUM m} {v} {w1} {w1'} {w2} comp1b comp isv ish
+      ltm : m < n
+      ltm = isHighestℕ-updBody→< gc {n} {name} {f} {k1} {k} {a} {v} {m} {w1} {w1'} {w2} cf compat comp1b comp isv ish
 
-    inw1 : ∈names𝕎 {k1} {w1} {w1'} {a} {NUM m} name comp1b
-    inw1 = ∈names𝕎-LET→ {k1} {k} {name} {a} {SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))} {NUM m} {v} {w1} {w1'} {w2} comp1b comp isv inw
+      ish1 : isHighestℕ {k1} {w1} {w1'} {a} {NUM m} n name comp1b
+      ish1 = isHighestℕ-LET→ {n} {k1} {k} {name} {a} {SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))} {NUM m} {v} {w1} {w1'} {w2} comp1b comp isv ish
 
-    indb : Σ ℕ (λ k' → Σ 𝕎· (λ w' → Σ ren (λ r' → steps k' (b , w) ≡ (NUM m , w') × upto𝕎 name w1' w' r' × subRen (dom𝕎· w1) (dom𝕎· w) r r')))
-    indb = Σsteps-updRel2-NUM→ (ind k1 (<⇒≤ ltk1) {a} {b} {NUM m} {w0} {w1} {w1'} {w} {r} u naid nbid niw nfiw ngiw upw compat compat' wgt0 ew01 ew0 eqn comp1b ish1 inw1 tt)
+      inw1 : ∈names𝕎 {k1} {w1} {w1'} {a} {NUM m} name comp1b
+      inw1 = ∈names𝕎-LET→ {k1} {k} {name} {a} {SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))} {NUM m} {v} {w1} {w1'} {w2} comp1b comp isv inw
 
-    k4 : ℕ
-    k4 = fst indb
+      indb : Σ ℕ (λ k' → Σ 𝕎· (λ w' → Σ ren (λ r' → steps k' (b , w) ≡ (NUM m , w') × upto𝕎 name w1' w' r' × subRen (dom𝕎· w1) (dom𝕎· w) r r')))
+      indb = Σsteps-updRel2-NUM→ (ind k1 (<⇒≤ ltk1) {a} {b} {NUM m} {w0} {w1} {w1'} {w} {r} u naid nbid niw {--nfiw ngiw--} upw compat compat' wgt0 ew01 ew0 eqn comp1b ish1 inw1 tt)
 
-    w1x : 𝕎·
-    w1x = fst (snd indb)
+      k4 : ℕ
+      k4 = fst indb
 
-    r' : ren
-    r' = fst (snd (snd indb))
+      w1x : 𝕎·
+      w1x = fst (snd indb)
 
-    cb : steps k4 (b , w) ≡ (NUM m , w1x)
-    cb = fst (snd (snd (snd indb)))
+      r' : ren
+      r' = fst (snd (snd indb))
 
-    upw1 : upto𝕎 name w1' w1x r'
-    upw1 = fst (snd (snd (snd (snd indb))))
+      cb : steps k4 (b , w) ≡ (NUM m , w1x)
+      cb = fst (snd (snd (snd indb)))
 
-    sub' : subRen (dom𝕎· w1) (dom𝕎· w) r r'
-    sub' = snd (snd (snd (snd (snd indb))))
+      upw1 : upto𝕎 name w1' w1x r'
+      upw1 = fst (snd (snd (snd (snd indb))))
 
-    compg : APPLY (force g) b ⇓ APPLY g (NUM m) from w to w1x
-    compg = →APPLY-force⇓APPLY-NUM {m} {g} {b} {w} {w1x} cg (k4 , cb)
+      sub' : subRen (dom𝕎· w1) (dom𝕎· w) r r'
+      sub' = snd (snd (snd (snd (snd indb))))
 
-    k5 : ℕ
-    k5 = fst compg
+      compg : APPLY (force g) b ⇓ APPLY g (NUM m) from w to w1x
+      compg = →APPLY-force⇓APPLY-NUM {m} {g} {b} {w} {w1x} cg (k4 , cb)
 
-    compgb : steps k5 (APPLY (force g) b , w) ≡ (APPLY g (NUM m) , w1x)
-    compgb = snd compg
+      k5 : ℕ
+      k5 = fst compg
 
-    e1x : w ⊑· w1x
-    e1x = steps→⊑ k4 b (NUM m) cb
+      compgb : steps k5 (APPLY (force g) b , w) ≡ (APPLY g (NUM m) , w1x)
+      compgb = snd compg
+
+      e1x : w ⊑· w1x
+      e1x = steps→⊑ k4 b (NUM m) cb
 
 -- We could here start from w1' instead of w1x and assume that g is name-free, which we're using below anyway
 -- We won't get an upto𝕎 proof we need. We need a truncated NAT type where the worlds don't change.
 -- replace strongMonEq with #⇛!sameℕ and NAT→NAT with NAT→NAT! (this is a another way of capturing some form of purity)
-    sn : ⇛!sameℕ w0 (APPLY f (NUM m)) (APPLY g (NUM m))
-    sn = eqn w0 (⊑-refl· _) m ltm
+      sn : ⇛!sameℕ w0 (APPLY f (NUM m)) (APPLY g (NUM m))
+      sn = eqn w0 (⊑-refl· _) m ltm
 
-    i : ℕ
-    i = fst sn
+      i : ℕ
+      i = fst sn
 
-    ca1 : APPLY f (NUM m) ⇓! (NUM i) at chooseT0if name w1' m' m
-    ca1 = lower (fst (snd sn) (chooseT0if name w1' m' m) (⊑-trans· ew01 e2))
+      ca1 : APPLY f (NUM m) ⇓! (NUM i) at chooseT0if name w1' m' m
+      ca1 = lower (fst (snd sn) (chooseT0if name w1' m' m) (⊑-trans· ew01 e2))
 
-    cb1 : APPLY g (NUM m) ⇓! (NUM i) at w1x
-    cb1 = lower (snd (snd sn) w1x (⊑-trans· ew0 e1x))
+      cb1 : APPLY g (NUM m) ⇓! (NUM i) at w1x
+      cb1 = lower (snd (snd sn) w1x (⊑-trans· ew0 e1x))
 
-    {--q : ⇓∼ℕ w1x (APPLY f (NUM m)) (APPLY g (NUM m))
-    q = lower ( w1x e1x)
+      {--q : ⇓∼ℕ w1x (APPLY f (NUM m)) (APPLY g (NUM m))
+      q = lower ( w1x e1x)
 
-    c1 : Σ 𝕎· (λ w1a → APPLY f (NUM m) ⇓ NUM i from w1x to w1a
-                       × APPLY g (NUM m) ⇓ NUM i from w1x to w1a)
-    c1 = snd q--}
+      c1 : Σ 𝕎· (λ w1a → APPLY f (NUM m) ⇓ NUM i from w1x to w1a
+                         × APPLY g (NUM m) ⇓ NUM i from w1x to w1a)
+      c1 = snd q--}
 
-    w1a : 𝕎·
-    w1a = chooseT0if name w1' m' m
+      w1a : 𝕎·
+      w1a = chooseT0if name w1' m' m
 
-    k3 : ℕ
-    k3 = fst ca1
+      k3 : ℕ
+      k3 = fst ca1
 
-    c1a : steps k3 (APPLY f (NUM m) , chooseT0if name w1' m' m) ≡ (NUM i , w1a)
-    c1a = snd ca1
+      c1a : steps k3 (APPLY f (NUM m) , chooseT0if name w1' m' m) ≡ (NUM i , w1a)
+      c1a = snd ca1
 
-    w1b : 𝕎·
-    w1b = w1x
+      w1b : 𝕎·
+      w1b = w1x
 
-    k6 : ℕ
-    k6 = fst cb1
+      k6 : ℕ
+      k6 = fst cb1
 
-    c1b : steps k6 (APPLY g (NUM m) , w1x) ≡ (NUM i , w1b)
-    c1b = snd cb1
+      c1b : steps k6 (APPLY g (NUM m) , w1x) ≡ (NUM i , w1b)
+      c1b = snd cb1
 -- Move this to a computation from w1x to w1x if g is name-free
 
 {--
@@ -381,14 +399,14 @@ upto𝕎-chooseT0if cc name w1 w2 r n m (mkUpto𝕎 {--wf--} upw) with n <? m
     c1c = fst (snd (snd c1ab))
 --}
 
-    upw2 : upto𝕎 name w1a w1b r'
-    upw2 = upto𝕎-chooseT0if cc name w1' w1x r' m' m upw1
+      upw2 : upto𝕎 name w1a w1b r'
+      upw2 = upto𝕎-chooseT0if cc name w1' w1x r' m' m upw1
 
-    comp2b : steps (k2 + k3) (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (NUM i , w1a)
-    comp2b = steps-trans+ {k2} {k3} {LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))} {APPLY f (NUM m)} {NUM i} {w1} {chooseT0if name w1' m' m} {w1a} comp2 c1a
+      comp2b : steps (k2 + k3) (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (NUM i , w1a)
+      comp2b = steps-trans+ {k2} {k3} {LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))} {APPLY f (NUM m)} {NUM i} {w1} {chooseT0if name w1' m' m} {w1a} comp2 c1a
 
-    compgc : steps (k5 + k6) (APPLY (force g) b , w) ≡ (NUM i , w1b)
-    compgc = steps-trans+ {k5} {k6} {APPLY (force g) b} {APPLY g (NUM m)} {NUM i} {w} {w1x} {w1b} compgb c1b
+      compgc : steps (k5 + k6) (APPLY (force g) b , w) ≡ (NUM i , w1b)
+      compgc = steps-trans+ {k5} {k6} {APPLY (force g) b} {APPLY g (NUM m)} {NUM i} {w} {w1x} {w1b} compgb c1b
 
 
 
@@ -543,6 +561,7 @@ updRel2-ren-mon {name} {f} {g} {r} {r'} {.FREE} {.FREE} {l} {k} sub nad nbd updR
 updRel2-ren-mon {name} {f} {g} {r} {r'} {.(CS name1)} {.(CS name2)} {l} {k} sub nad nbd (updRel2-CS name1 name2 x x₁ x₂) = updRel2-CS _ _ x x₁ (subRen-pres-names∈ren r r' name1 name2 l k sub (nad (here refl)) (nbd (here refl)) x₂)
 updRel2-ren-mon {name} {f} {g} {r} {r'} {.(NAME name1)} {.(NAME name2)} {l} {k} sub nad nbd (updRel2-NAME name1 name2 x x₁ x₂) = updRel2-NAME _ _ x x₁ (subRen-pres-names∈ren r r' name1 name2 l k sub (nad (here refl)) (nbd (here refl)) x₂)
 updRel2-ren-mon {name} {f} {g} {r} {r'} {.(FRESH a)} {.(FRESH b)} {l} {k} sub nad nbd (updRel2-FRESH a b upd₁) = updRel2-FRESH _ _ (updRel2-ren-mon {suc name} {shiftNameUp 0 f} {shiftNameUp 0 g} {sren r} {sren r'} {a} {b} {0 ∷ sucNames l} {0 ∷ sucNames k} (subRen-sren sub) (→⊆sucNames nad) (→⊆sucNames nbd) upd₁)
+updRel2-ren-mon {name} {f} {g} {r} {r'} {.(LOAD a)} {.(LOAD a)} {l} {k} sub nad nbd (updRel2-LOAD a) = updRel2-LOAD _ --_ (updRel2-ren-mon {name} {f} {g} {r} {r'} {a} {b} {l} {k} sub nad nbd upd₁)
 updRel2-ren-mon {name} {f} {g} {r} {r'} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} {l} {k} sub nad nbd (updRel2-CHOOSE a₁ a₂ b₁ b₂ upd₁ upd₂) = updRel2-CHOOSE _ _ _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→1 {names a₁} {names b₁} nad) (++⊆2→1 {names a₂} {names b₂} nbd) upd₁) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→2 {names a₁} {names b₁} nad) (++⊆2→2 {names a₂} {names b₂} nbd) upd₂)
 updRel2-ren-mon {name} {f} {g} {r} {r'} {.(TSQUASH a₁)} {.(TSQUASH a₂)} {l} {k} sub nad nbd (updRel2-TSQUASH a₁ a₂ upd₁) = updRel2-TSQUASH _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
 updRel2-ren-mon {name} {f} {g} {r} {r'} {.(TTRUNC a₁)} {.(TTRUNC a₂)} {l} {k} sub nad nbd (updRel2-TTRUNC a₁ a₂ upd₁) = updRel2-TTRUNC _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
@@ -616,6 +635,26 @@ updRel2-ren-mon {name} {f} {g} {r} {r'} {.(upd name f)} {.(force g)} {l} {k} sub
 ¬0∈renᵣ-sren ((a , b) ∷ r) (there p) = ¬0∈renᵣ-sren r p
 
 
+→upto𝕎getT-startChoice : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (r : ren) (x1 x2 : Name)
+                           → ¬ x1 ∈ dom𝕎· w1
+                           → ¬ x2 ∈ dom𝕎· w2
+                           → upto𝕎getT name w1 w2 r
+                           → upto𝕎getT
+                                name
+                                (startChoice· x1 Res⊤ w1)
+                                (startChoice· x2 Res⊤ w2)
+                                ((x1 , x2) ∷ r)
+→upto𝕎getT-startChoice cc name w1 w2 r x1 x2 ni1 ni2 upw n1 n2 k d1 d2 (inj₁ (i₁ , i₂)) rewrite i₁ | i₂ = c
+  where
+    c : getT k x1 (startChoice· x1 Res⊤ w1)
+        ≡ getT k x2 (startChoice· x2 Res⊤ w2)
+    c = ContConds.ccGstarts cc x1 x2 k Res⊤ w1 w2 ni1 ni2
+→upto𝕎getT-startChoice cc name w1 w2 r x1 x2 ni1 ni2 upw n1 n2 k d1 d2 (inj₂ (i₁ , i₂ , x))
+  rewrite ContConds.ccGstartd cc n1 x1 k Res⊤ w1 i₁
+        | ContConds.ccGstartd cc n2 x2 k Res⊤ w2 i₂ =
+  upw n1 n2 k d1 d2 x
+
+
 →upto𝕎getT-startNewChoiceT : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (r : ren) (a b : Term)
                                → upto𝕎getT name w1 w2 r
                                → upto𝕎getT
@@ -623,17 +662,40 @@ updRel2-ren-mon {name} {f} {g} {r} {r'} {.(upd name f)} {.(force g)} {l} {k} sub
                                     (startNewChoiceT Res⊤ w1 a)
                                     (startNewChoiceT Res⊤ w2 b)
                                     ((newChoiceT w1 a , newChoiceT w2 b) ∷ r)
-→upto𝕎getT-startNewChoiceT cc name w1 w2 r a b upw n1 n2 k d1 d2 (inj₁ (i₁ , i₂)) rewrite i₁ | i₂ = c
-  where
-    c : getT k (newChoiceT w1 a) (startNewChoiceT Res⊤ w1 a)
-        ≡ getT k (newChoiceT w2 b) (startNewChoiceT Res⊤ w2 b)
-    c = ContConds.ccGstarts cc (newChoiceT w1 a) (newChoiceT w2 b) k Res⊤ w1 w2
-                            (¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a)))
-                            (¬fresh∈dom𝕎2 w2 (names𝕎· w2) (↓vars (names b)))
-→upto𝕎getT-startNewChoiceT cc name w1 w2 r a b upw n1 n2 k d1 d2 (inj₂ (i₁ , i₂ , x))
-  rewrite ContConds.ccGstartd cc n1 (newChoiceT w1 a) k Res⊤ w1 i₁
-        | ContConds.ccGstartd cc n2 (newChoiceT w2 b) k Res⊤ w2 i₂ =
-  upw n1 n2 k d1 d2 x
+→upto𝕎getT-startNewChoiceT cc name w1 w2 r a b upw =
+  →upto𝕎getT-startChoice
+    cc name w1 w2 r (newChoiceT w1 a) (newChoiceT w2 b)
+    (¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a)))
+    (¬fresh∈dom𝕎2 w2 (names𝕎· w2) (↓vars (names b)))
+    upw
+
+
+
+→wfRen-startChoice : (cc : ContConds) (w1 w2 : 𝕎·) (r : ren) (x1 x2 : Name)
+                      → ¬ x1 ∈ dom𝕎· w1
+                      → ¬ x2 ∈ dom𝕎· w2
+                      → wfRen w1 w2 r
+                      → wfRen
+                           (startChoice· x1 Res⊤ w1)
+                           (startChoice· x2 Res⊤ w2)
+                           ((x1 , x2) ∷ r)
+→wfRen-startChoice cc w1 w2 r x1 x2 ni1 ni2 (mkWfRen rl rr nrl nrr) =
+  mkWfRen rl' rr' nrl' nrr'
+    where
+      rl' : (n : Name) → n ∈ x1 ∷ renₗ r → n ∈ dom𝕎· (startChoice· x1 Res⊤ w1)
+      rl' n (here p) rewrite p = ContConds.ccNchoice cc w1 x1 ni1 --a
+      rl' n (there p) = ContConds.ccD⊆start cc x1 w1 (rl n p) --ccD⊆start ContConds.ccDstart cc n w1 x1 (rl n p) --a (rl n p)
+
+      rr' : (n : Name) → n ∈ x2 ∷ renᵣ r → n ∈ dom𝕎· (startChoice· x2 Res⊤ w2)
+      rr' n (here p) rewrite p = ContConds.ccNchoice cc w2 x2 ni2 --b
+      rr' n (there p) = ContConds.ccD⊆start cc x2 w2 (rr n p) --ContConds.ccDstart cc n w2 x2 (rr n p) --b (rr n p)
+
+      nrl' : no-repeats (renₗ ((x1 , x2) ∷ r))
+      nrl' = (λ x → ni1 (rl _ x)) , nrl --(λ x → ¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a)) (rl _ x)) , nrl
+
+      nrr' : no-repeats (renᵣ ((x1 , x2) ∷ r))
+      nrr' = (λ x → ni2 (rr _ x)) , nrr --(λ x → ¬fresh∈dom𝕎2 w2 (names𝕎· w2) (↓vars (names b)) (rr _ x)) , nrr
+
 
 
 →wfRen-startNewChoiceT : (cc : ContConds) (w1 w2 : 𝕎·) (r : ren) (a b : Term)
@@ -642,22 +704,28 @@ updRel2-ren-mon {name} {f} {g} {r} {r'} {.(upd name f)} {.(force g)} {l} {k} sub
                                 (startNewChoiceT Res⊤ w1 a)
                                 (startNewChoiceT Res⊤ w2 b)
                                 ((newChoiceT w1 a , newChoiceT w2 b) ∷ r)
-→wfRen-startNewChoiceT cc w1 w2 r a b (mkWfRen rl rr nrl nrr) =
-  mkWfRen rl' rr' nrl' nrr'
-    where
-      rl' : (n : Name) → n ∈ newChoiceT w1 a ∷ renₗ r → n ∈ dom𝕎· (startNewChoiceT Res⊤ w1 a)
-      rl' n (here p) rewrite p = ContConds.ccNchoice cc w1 a
-      rl' n (there p) = ContConds.ccDstart cc n w1 a (rl n p)
+→wfRen-startNewChoiceT cc w1 w2 r a b wf =
+  →wfRen-startChoice cc
+    w1 w2 r (newChoiceT w1 a) (newChoiceT w2 b)
+    (¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a)))
+    (¬fresh∈dom𝕎2 w2 (names𝕎· w2) (↓vars (names b)))
+    wf
 
-      rr' : (n : Name) → n ∈ newChoiceT w2 b ∷ renᵣ r → n ∈ dom𝕎· (startNewChoiceT Res⊤ w2 b)
-      rr' n (here p) rewrite p = ContConds.ccNchoice cc w2 b
-      rr' n (there p) = ContConds.ccDstart cc n w2 b (rr n p)
 
-      nrl' : no-repeats (renₗ ((newChoiceT w1 a , newChoiceT w2 b) ∷ r))
-      nrl' = (λ x → ¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a)) (rl _ x)) , nrl
+→upto𝕎-startChoice : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (r : ren) (x1 x2 : Name)
+                       → ¬ x1 ∈ dom𝕎· w1
+                       → ¬ x2 ∈ dom𝕎· w2
+                       → upto𝕎 name w1 w2 r
+                       → upto𝕎
+                            name
+                            (startChoice· x1 Res⊤ w1)
+                            (startChoice· x2 Res⊤ w2)
+                            ((x1 , x2) ∷ r)
+→upto𝕎-startChoice cc name w1 w2 r x1 x2 ni1 ni2 (mkUpto𝕎 {--wf--} upw) =
+  mkUpto𝕎
+    --(→wfRen-startChoice cc w1 w2 r x1 x2 ni1 ni2 wf)
+    (→upto𝕎getT-startChoice cc name w1 w2 r x1 x2 ni1 ni2 upw)
 
-      nrr' : no-repeats (renᵣ ((newChoiceT w1 a , newChoiceT w2 b) ∷ r))
-      nrr' = (λ x → ¬fresh∈dom𝕎2 w2 (names𝕎· w2) (↓vars (names b)) (rr _ x)) , nrr
 
 
 →upto𝕎-startNewChoiceT : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (r : ren) (a b : Term)
@@ -1556,5 +1624,75 @@ stepsPresUpdRel2-IFLT₂→ {n} {name} {f} {g} {m} {a} {b} {c} {w} (k , v , w' ,
     comp2' : IFLT (NUM m) a₂ b₂ c₂ ⇓ IFLT (NUM m) y2 b₂ c₂ from w to w'
     comp2' = IFLT-NUM-2nd⇓ m b₂ c₂ (k2 , comp2)
 
+
+
+ΣstepsUpdRel2-FIX-APPLY→ :
+  {name : Name} {f g : Term} {w1 w : 𝕎·} {r : ren}
+  → Σ (ΣstepsUpdRel2 name f g (LET (FIX (upd name f)) (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 w1 (APPLY (force g) (FIX (force g))) w r)
+       (λ x → 0 < fst (snd x))
+  → ΣstepsUpdRel2 name f g (LET (FIX (upd name f)) (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 w1 (FIX (force g)) w r
+ΣstepsUpdRel2-FIX-APPLY→ {name} {f} {g} {w1} {w} {r} ((k1 , k2 , y1 , y2 , w3 , w' , r' , comp1 , comp2 , u) , gt0) =
+  k1 , k2 , y1 , y2 , w3 , w' , r' , comp1 , steps-APPLY-LAMBDA-FIX→ gt0 comp2 , u
+
+
+names-FIX-upd⊆ : {name : Name} {f : Term} {l : List Name}
+                 → name ∈ l
+                 → names f ⊆ l
+                 → names (FIX (upd name f)) ⊆ l
+names-FIX-upd⊆ {name} {f} {k} q h {x} (here px) rewrite px = q
+names-FIX-upd⊆ {name} {f} {k} q h {x} (there (here px)) rewrite px = q
+names-FIX-upd⊆ {name} {f} {k} q h {x} (there (there i))
+  rewrite ++[] (names (shiftUp 0 f)) | names-shiftUp 0 f = h i
+
+
+names-FIX-force⊆ : {g : Term} {l : List Name}
+                   → names g ⊆ l
+                   → names (FIX (force g)) ⊆ l
+names-FIX-force⊆ {g} {l} h {x} i rewrite ++[] (names g) = h i
+
+
+name2ren : 𝕎· → Term → Name → Name
+name2ren w a n with Name∈⊎ n (dom𝕎· w)
+... | inj₁ p = newChoiceT w a
+... | inj₂ p = n
+
+
+names2ren : 𝕎· → 𝕎· → Term → List Name → ren → ren
+names2ren w1 w2 a [] r = r
+names2ren w1 w2 a (n ∷ l) r =
+  names2ren (startChoice· n1 Res⊤ w1) (startChoice· n2 Res⊤ w2) a l ((n1 , n2) ∷ r)
+  where
+    n1 : Name
+    n1 = name2ren w1 a n
+
+    n2 : Name
+    n2 = name2ren w2 a n
+
+
+
+
+upto𝕎-startNewChoices : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (r : ren) (a : Term) (l : List Name)
+                         → upto𝕎 name w1 w2 r
+                         → upto𝕎 name (startNewChoicesL Res⊤ w1 a l) (startNewChoicesL Res⊤ w2 a l) (names2ren w1 w2 a l r)
+upto𝕎-startNewChoices cc name w1 w2 r a [] upw = upw
+upto𝕎-startNewChoices cc name w1 w2 r a (x ∷ l) upw with Name∈⊎ x (dom𝕎· w1) | Name∈⊎ x (dom𝕎· w2)
+... | inj₁ p | inj₁ q = upto𝕎-startNewChoices cc name (startNewChoiceT Res⊤ w1 a) (startNewChoiceT Res⊤ w2 a) ((newChoiceT w1 a , newChoiceT w2 a) ∷ r) a l (→upto𝕎-startNewChoiceT cc name w1 w2 r a a upw)
+... | inj₁ p | inj₂ q = upto𝕎-startNewChoices cc name (startNewChoiceT Res⊤ w1 a) (startChoice· x Res⊤ w2) ((newChoiceT w1 a , x) ∷ r) a l (→upto𝕎-startChoice cc name w1 w2 r (newChoiceT w1 a) x (¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a))) q upw)
+... | inj₂ p | inj₁ q = upto𝕎-startNewChoices cc name (startChoice· x Res⊤ w1) (startNewChoiceT Res⊤ w2 a) ((x , newChoiceT w2 a) ∷ r) a l (→upto𝕎-startChoice cc name w1 w2 r x (newChoiceT w2 a) p (¬fresh∈dom𝕎2 w2 (names𝕎· w2) (↓vars (names a))) upw)
+... | inj₂ p | inj₂ q = upto𝕎-startNewChoices cc name (startChoice· x Res⊤ w1) (startChoice· x Res⊤ w2) ((x , x) ∷ r) a l (→upto𝕎-startChoice cc name w1 w2 r x x p q upw)
+
+
+{--
+subRen-names2ren : (w1 w2 : 𝕎·) (r1 r2 : ren) (a : Term) (l : List Name)
+                   → subRen (dom𝕎· w1) (dom𝕎· w2) r1 r2
+                   → subRen (dom𝕎· w1) (dom𝕎· w2) r1 (names2ren w1 w2 a l r2)
+subRen-names2ren w1 w2 r1 r2 a [] sub = sub
+subRen-names2ren w1 w2 r1 r2 a (x ∷ l) sub with Name∈⊎ x (dom𝕎· w1) | Name∈⊎ x (dom𝕎· w2)
+... | inj₁ p | inj₁ q = {!subRen-names2ren w1 w2 r1 r2 a l ?!}
+... | inj₁ p | inj₂ q = {!!}
+... | inj₂ p | inj₁ q = {!!}
+... | inj₂ p | inj₂ q = {!!}
+--subRen-trans (newChoiceT w1 a) (newChoiceT w2 a) r r (¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names a))) (¬fresh∈dom𝕎2 w2 (names𝕎· w2) (↓vars (names a))) (subRen-refl r)
+--}
 
 \end{code}
