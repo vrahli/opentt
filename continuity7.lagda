@@ -678,14 +678,14 @@ APP-contExt⇛ w F f nnF nnf =
 
 
 
-continuityBody-aux : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
+continuityBody-aux : (cn : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
              (i : ℕ) (w : 𝕎·) (F f : CTerm)
              → #¬Names F
              → #¬Names f
              → ∈Type i w #BAIRE→NAT F
              → ∈Type i w #BAIRE f
              → ∈Type i w (#contBody F f) (#APPLY (#APPLY #contExt F) f)
-continuityBody-aux cn kb gc i w F f nnF nnf eF ef =
+continuityBody-aux cn exb gc i w F f nnF nnf eF ef =
   ≡CTerm→equalInType
     (sym (#contBody≡ F f))
     (equalTerms-pres-#⇛-left-rev→equalInType-pres-#⇛-LR-rev _
@@ -697,13 +697,13 @@ continuityBody-aux cn kb gc i w F f nnF nnf eF ef =
             #[1]NAT)))))
        (APP-contExt⇛ w F f nnF nnf)
        (APP-contExt⇛ w F f nnF nnf)
-       (≡CTerm→equalInType (#contBody≡ F f) (continuityBody cn kb gc i w F f nnF nnf eF ef)))
+       (≡CTerm→equalInType (#contBody≡ F f) (continuityBody cn exb gc i w F f nnF nnf eF ef)))
 
 
-continuity : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
+continuity : (cn : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
              (i : ℕ) (w : 𝕎·)
              → ∈Type i w #cont #contExt
-continuity cn kb gc i w =
+continuity cn exb gc i w =
   ≡CTerm→equalInType
     (sym #cont≡)
     (equalInType-PI
@@ -749,10 +749,10 @@ continuity cn kb gc i w =
                                               (#APPLY (#APPLY #contExt F₁) f₁)
                                               (#APPLY (#APPLY #contExt F₂) f₂))
             aw3 w3 e3 =
-              continuityBody-aux cn kb gc i w3 F₁ f₁ (equalInType-TPURE→ₗ eF) (equalInType-TPURE→ₗ ef) (equalInType-mon (equalInType-refl (equalInType-TPURE→ eF)) w3 (⊑-trans· e2 e3)) (equalInType-mon (equalInType-refl (equalInType-TPURE→ ef)) w3 e3) ,
+              continuityBody-aux cn exb gc i w3 F₁ f₁ (equalInType-TPURE→ₗ eF) (equalInType-TPURE→ₗ ef) (equalInType-mon (equalInType-refl (equalInType-TPURE→ eF)) w3 (⊑-trans· e2 e3)) (equalInType-mon (equalInType-refl (equalInType-TPURE→ ef)) w3 e3) ,
               equalTypes→equalInType
                 (TEQsym-equalTypes i w3 (#contBody F₁ f₁) (#contBody F₂ f₂) eqtc)
-                (continuityBody-aux cn kb gc i w3 F₂ f₂ (equalInType-TPURE→ᵣ eF) (equalInType-TPURE→ᵣ ef) (equalInType-mon (equalInType-refl (equalInType-sym (equalInType-TPURE→ eF))) w3 (⊑-trans· e2 e3)) (equalInType-mon (equalInType-refl (equalInType-sym (equalInType-TPURE→ ef))) w3 e3))
+                (continuityBody-aux cn exb gc i w3 F₂ f₂ (equalInType-TPURE→ᵣ eF) (equalInType-TPURE→ᵣ ef) (equalInType-mon (equalInType-refl (equalInType-sym (equalInType-TPURE→ eF))) w3 (⊑-trans· e2 e3)) (equalInType-mon (equalInType-refl (equalInType-sym (equalInType-TPURE→ ef))) w3 e3))
               where
                 eqtc : equalTypes i w3 (#contBody F₁ f₁) (#contBody F₂ f₂)
                 eqtc = equalTypes-contBody i w3 F₁ F₂ f₁ f₂ (equalInType-mon (equalInType-TPURE→ eF) w3 (⊑-trans· e2 e3)) (equalInType-mon (equalInType-TPURE→ ef) w3 e3)

@@ -62,11 +62,14 @@ module continuity6 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
 
 open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)
+
 open import terms2(W)(C)(K)(G)(X)(N)
 open import terms3(W)(C)(K)(G)(X)(N)
 open import terms4(W)(C)(K)(G)(X)(N)
 open import terms5(W)(C)(K)(G)(X)(N)
 open import terms6(W)(C)(K)(G)(X)(N)
+open import terms7(W)(C)(K)(G)(X)(N)
+
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -230,10 +233,32 @@ eqfg-aux {w} {w1} e {name} {f} {g} {a} {b} {c} {v} {v'} {n} isv (m , c₁ , c₂
   k , ¬Names→⇛ w1 w2 ⌜ a ⌝ (NUM k) nna c₁ , ¬Names→⇛ w1 w2 ⌜ b ⌝ (NUM k) nnb c₂
 
 
+upd-force→NATeq : (gc : get-choose-ℕ) (w1 w2 : 𝕎·) (F f : CTerm) (name : Name)
+                     → #¬Names F
+                     → #¬Names f
+                     → compatible· name w1 Res⊤
+                     → compatible· name w2 Res⊤
+                     → ∀𝕎-get0-NUM w1 name
+                     → ∀𝕎-get0-NUM w2 name
+                     → NATeq w1 (#APPLY F (#upd name f)) (#APPLY F (#force f))
+                     → NATeq w2 (#APPLY F (#upd name f)) (#APPLY F (#force f))
+upd-force→NATeq gc w1 w2 F f name nnF nnf compat1 compat2 wgt1 wgt2 (k , c₁ , c₂) =
+  k ,
+  c ,
+  ¬Names→⇛ w1 w2 (APPLY ⌜ F ⌝ (force ⌜ f ⌝)) (NUM k) (¬Names-APPLY {⌜ F ⌝} {force ⌜ f ⌝} nnF (¬Names-force {⌜ f ⌝} nnf)) c₂
+  where
+    c' : Σ 𝕎· (λ w1' → APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ NUM k from w1 to w1')
+    c' = ⇓→from-to (lower (c₁ w1 (⊑-refl· w1)))
+
+    c : APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇛ NUM k at w2
+    c w e = lift (⇓-from-to→⇓ (snd (differNF⇓APPLY-upd gc ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed f) name k w1 (fst c') w nnF nnf compat1 (⊑-compatible· e compat2) wgt1 (∀𝕎-mon e wgt2) (snd c'))))
+
+
+
 -- define an 'external' version of #νtestM that follows the computation of (APPLY F f), and keeps
 -- track of the highest number f is applied to, and prove that this 'external' version returns
 -- the same value as the 'internal' one (i.e., #νtestM)
-eqfg : (cn : comp→∀ℕ) (exb : ∃□) (kb : K□) (gc : get-choose-ℕ)
+eqfg : (cn : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
       {i : ℕ} {w : 𝕎·} {F f g : CTerm}
       → #¬Names F
       → #¬Names f
@@ -244,7 +269,7 @@ eqfg : (cn : comp→∀ℕ) (exb : ∃□) (kb : K□) (gc : get-choose-ℕ)
       → equalInType i w (#BAIREn (#νtestM F f)) f g
 --       ((n : ℕ) → n < ? → ⇓sameℕ w (APPLY f (NUM n)) (APPLY g (NUM n)))
       → equalInType i w #NAT (#APPLY F f) (#APPLY F g)
-eqfg cn exb kb gc {i} {w} {F} {f} {g} nnF nnf nng ∈F ∈f ∈g eqb =
+eqfg cn exb gc {i} {w} {F} {f} {g} nnF nnf nng ∈F ∈f ∈g eqb =
   equalInType-trans (equalInType-APPLY-force ∈F ∈f) (equalInType-trans eqf (equalInType-sym (equalInType-APPLY-force ∈F ∈g)))
   where
     neqt : NATeq w (#νtestM F f) (#νtestM F f)
@@ -368,7 +393,10 @@ eqfg cn exb kb gc {i} {w} {F} {f} {g} nnF nnf nng ∈F ∈f ∈g eqb =
         ur = snd (snd (snd compg0))
 
         equf : ∀𝕎 w1' (λ w' _ → NATeq w' (#APPLY F (#upd name f)) (#APPLY F (#force f)))
-        equf w' e' = kb (equalInType-NAT→ i w1' (#APPLY F (#upd name f)) (#APPLY F (#force f)) (∈BAIRE→NAT→ (equalInType-mon ∈F w1' e1') (equalInType-upd-force i w1' name f wgt0 (equalInType-mon ∈f w1' e1'))))
+        equf w' e' = upd-force→NATeq gc (fst z) w' F f name nnF nnf (⊑-compatible· (fst (snd z)) compat1) (⊑-compatible· e' compat1) (∀𝕎-mon (fst (snd z)) wgt0) (∀𝕎-mon e' wgt0) (snd (snd z))
+          where
+            z : ∃𝕎 w1' (λ w' _ → NATeq w' (#APPLY F (#upd name f)) (#APPLY F (#force f)))
+            z = exb (equalInType-NAT→ i w1' (#APPLY F (#upd name f)) (#APPLY F (#force f)) (∈BAIRE→NAT→ (equalInType-mon ∈F w1' e1') (equalInType-upd-force i w1' name f wgt0 (equalInType-mon ∈f w1' e1'))))
 
         compg : #APPLY F (#force g) #⇓ #NUM n at w1
         compg = eqfg-aux {w1} {w1'} e0' {name} {⌜ f ⌝} {⌜ g ⌝} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ g ⌝)} {v} {v'} {n} isvv (equf w1' (⊑-refl· _)) comp1 (⇓-from-to→⇓ (k , compa)) (⇓-from-to→⇓ (k' , compg1)) ur
@@ -380,14 +408,14 @@ eqfg cn exb kb gc {i} {w} {F} {f} {g} nnF nnf nng ∈F ∈f ∈g eqb =
 
 
 
-continuityBody : (cn : comp→∀ℕ) (exb : ∃□) (kb : K□) (gc : get-choose-ℕ)
+continuityBody : (cn : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
              (i : ℕ) (w : 𝕎·) (F f : CTerm)
              → #¬Names F
              → #¬Names f
              → ∈Type i w #BAIRE→NAT F
              → ∈Type i w #BAIRE f
              → ∈Type i w (#contBody F f) (#PAIR (#νtestM F f) #lam3AX)
-continuityBody cn exb kb gc i w F f nnF nnf ∈F ∈f =
+continuityBody cn exb gc i w F f nnF nnf ∈F ∈f =
   ≡CTerm→equalInType (sym (#contBody≡ F f)) h0
   where
     aw : ∀𝕎 w (λ w' _ → SUMeq (equalInType i w' #NAT)
@@ -489,7 +517,7 @@ continuityBody cn exb kb gc i w F f nnF nnf ∈F ∈f =
                             h3 = equalInType-BAIREn-BAIRE-trans h2 h1 (testM-NAT cn exb gc i w5 F f nnF nnf (equalInType-mon ∈F w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))) (equalInType-mon ∈f w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))))
 
                             cc : equalInType i w5 #NAT (#APPLY F f) (#APPLY F g)
-                            cc = eqfg cn exb kb gc {i} {w5} {F} {f} {g} nnF nnf nng
+                            cc = eqfg cn exb gc {i} {w5} {F} {f} {g} nnF nnf nng
                                       (equalInType-mon ∈F w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5)))))
                                       (equalInType-mon ∈f w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5)))))
                                       (equalInType-refl (equalInType-sym h2))
