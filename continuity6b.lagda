@@ -218,6 +218,24 @@ abstract
     (k2 + k3 , k5 + k6 , NUM i , NUM i , w1a , w1b {--w1a--} , r' , comp2b , compgc , updRel2-NUM i , upw2 , sub' {--upto𝕎-sym name w1a w1a' upw2--}) ,
     steps-APPLY-val→ {k5 + k6} {force g} {b} {NUM i} {w} {w1b} tt compgc
     where
+      xxx : Σ ℕ (λ k' → Σ Term (λ v' → Σ 𝕎· (λ w' → Σ ren (λ r' →
+              steps k' (APPLY (force g) b , w) ≡ (v' , w')
+              × updRel2 name f g r' v v'
+              × upto𝕎 name w2 w' r'
+              × subRen (dom𝕎· w1) (dom𝕎· w) r r'))))
+      xxx = ind k ≤-refl {LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))} {APPLY (force g) b} {v} {w0} {w1} {w2} {w} {r}
+                {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} {!!} isv
+      -- o This would require proving (the first hole above):
+      --     updRel2 name f g r (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) (APPLY (force g) b)
+      --   which we can't prove because 'name' occurs in the left expression,
+      --   and in any case, the 2 expressions are not of the same shape as we did a computation step in the left expression
+      -- o We wouldn't be able to use 'ind' on 'APPLY f (NUM m)' and 'APPLY g (NUM m)' either (see 'sn' below),
+      --   as 'f' and 'g' are not related w.r.t. updRel2.
+      --   If we were to relate them, we'd have to show that the compute to updRel2-related functions.
+      --   ---> Could we add CBV calls on f and g in our extract then?
+      --   This would not solve our problem as we would then have to prove in the APPLY case for example
+      --   that beta-reducing 'f(a)' preserves updRel2.
+
       c : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w1' → Σ ℕ (λ m → Σ ℕ (λ m' →
              k1 < k
              × k2 < k

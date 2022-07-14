@@ -210,11 +210,30 @@ eqfg-aux {w} {w1} e {name} {f} {g} {a} {b} {c} {v} {v'} {n} isv (m , c₁ , c₂
     concl rewrite sym (updRel-NUMₗ→ ur') = compc
 
 
+¬Names→⇛ : (w1 w2 : 𝕎·) (t u : Term)
+            → ¬Names t
+            → t ⇛ u at w1
+            → t ⇛ u at w2
+¬Names→⇛ w1 w2 t u nnt comp w e =
+  lift (⇓-from-to→⇓ {w} {w} (¬Names→⇓ w1 (fst h) w t u nnt (snd h)))
+  where
+    h : Σ 𝕎· (λ w' → t ⇓ u from w1 to w')
+    h = ⇓→from-to (lower (comp w1 (⊑-refl· w1)))
+
+
+¬Names→NATeq : (w1 w2 : 𝕎·) {a b : CTerm}
+            → #¬Names a
+            → #¬Names b
+            → NATeq w1 a b
+            → NATeq w2 a b
+¬Names→NATeq w1 w2 {a} {b} nna nnb (k , c₁ , c₂) =
+  k , ¬Names→⇛ w1 w2 ⌜ a ⌝ (NUM k) nna c₁ , ¬Names→⇛ w1 w2 ⌜ b ⌝ (NUM k) nnb c₂
+
 
 -- define an 'external' version of #νtestM that follows the computation of (APPLY F f), and keeps
 -- track of the highest number f is applied to, and prove that this 'external' version returns
 -- the same value as the 'internal' one (i.e., #νtestM)
-eqfg : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
+eqfg : (cn : comp→∀ℕ) (exb : ∃□) (kb : K□) (gc : get-choose-ℕ)
       {i : ℕ} {w : 𝕎·} {F f g : CTerm}
       → #¬Names F
       → #¬Names f
@@ -225,11 +244,11 @@ eqfg : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
       → equalInType i w (#BAIREn (#νtestM F f)) f g
 --       ((n : ℕ) → n < ? → ⇓sameℕ w (APPLY f (NUM n)) (APPLY g (NUM n)))
       → equalInType i w #NAT (#APPLY F f) (#APPLY F g)
-eqfg cn kb gc {i} {w} {F} {f} {g} nnF nnf nng ∈F ∈f ∈g eqb =
+eqfg cn exb kb gc {i} {w} {F} {f} {g} nnF nnf nng ∈F ∈f ∈g eqb =
   equalInType-trans (equalInType-APPLY-force ∈F ∈f) (equalInType-trans eqf (equalInType-sym (equalInType-APPLY-force ∈F ∈g)))
   where
     neqt : NATeq w (#νtestM F f) (#νtestM F f)
-    neqt = νtestM-NAT cn kb gc i w F f nnF nnf ∈F ∈f
+    neqt = νtestM-NAT cn exb gc i w F f nnF nnf ∈F ∈f
 
     tn : ℕ
     tn = fst neqt
@@ -251,10 +270,10 @@ eqfg cn kb gc {i} {w} {F} {f} {g} nnF nnf nng ∈F ∈f ∈g eqb =
 
     eqb3 : ∀𝕎 w (λ w' _ → (k : ℕ) → k < tn
                          → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
-    eqb3 w1 e1 k ltk = kb z w1 (⊑-refl· _)
+    eqb3 w1 e1 k ltk = ¬Names→NATeq (fst z) w1 {#APPLY f (#NUM k)} {#APPLY g (#NUM k)} (¬Names-APPLY-NUM {⌜ f ⌝} {k} nnf) (¬Names-APPLY-NUM {⌜ g ⌝} {k} nng) (snd (snd z))
       where
-        z : □· w1 (λ w'' _ → NATeq w'' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
-        z = eqb2 w1 e1 (#NUM k) (#NUM k) (Mod.∀𝕎-□ M (λ w2 e2 → k , #compAllRefl (#NUM k) w2 , #compAllRefl (#NUM k) w2 , ltk))
+        z : ∃𝕎 w1 (λ w'' _ → NATeq w'' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
+        z = exb (eqb2 w1 e1 (#NUM k) (#NUM k) (Mod.∀𝕎-□ M (λ w2 e2 → k , #compAllRefl (#NUM k) w2 , #compAllRefl (#NUM k) w2 , ltk)))
 
     inn : ∈Type i w #NAT (#APPLY F (#force f))
     inn = equalInType-refl (equalInType-sym (equalInType-APPLY-force ∈F ∈f))
@@ -349,7 +368,7 @@ eqfg cn kb gc {i} {w} {F} {f} {g} nnF nnf nng ∈F ∈f ∈g eqb =
         ur = snd (snd (snd compg0))
 
         equf : ∀𝕎 w1' (λ w' _ → NATeq w' (#APPLY F (#upd name f)) (#APPLY F (#force f)))
-        equf = kb (equalInType-NAT→ i w1' (#APPLY F (#upd name f)) (#APPLY F (#force f)) (∈BAIRE→NAT→ (equalInType-mon ∈F w1' e1') (equalInType-upd-force i w1' name f wgt0 (equalInType-mon ∈f w1' e1'))))
+        equf w' e' = kb (equalInType-NAT→ i w1' (#APPLY F (#upd name f)) (#APPLY F (#force f)) (∈BAIRE→NAT→ (equalInType-mon ∈F w1' e1') (equalInType-upd-force i w1' name f wgt0 (equalInType-mon ∈f w1' e1'))))
 
         compg : #APPLY F (#force g) #⇓ #NUM n at w1
         compg = eqfg-aux {w1} {w1'} e0' {name} {⌜ f ⌝} {⌜ g ⌝} {APPLY ⌜ F ⌝ (upd name ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ f ⌝)} {APPLY ⌜ F ⌝ (force ⌜ g ⌝)} {v} {v'} {n} isvv (equf w1' (⊑-refl· _)) comp1 (⇓-from-to→⇓ (k , compa)) (⇓-from-to→⇓ (k' , compg1)) ur
@@ -361,14 +380,14 @@ eqfg cn kb gc {i} {w} {F} {f} {g} nnF nnf nng ∈F ∈f ∈g eqb =
 
 
 
-continuityBody : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ)
+continuityBody : (cn : comp→∀ℕ) (exb : ∃□) (kb : K□) (gc : get-choose-ℕ)
              (i : ℕ) (w : 𝕎·) (F f : CTerm)
              → #¬Names F
              → #¬Names f
              → ∈Type i w #BAIRE→NAT F
              → ∈Type i w #BAIRE f
              → ∈Type i w (#contBody F f) (#PAIR (#νtestM F f) #lam3AX)
-continuityBody cn kb gc i w F f nnF nnf ∈F ∈f =
+continuityBody cn exb kb gc i w F f nnF nnf ∈F ∈f =
   ≡CTerm→equalInType (sym (#contBody≡ F f)) h0
   where
     aw : ∀𝕎 w (λ w' _ → SUMeq (equalInType i w' #NAT)
@@ -381,7 +400,7 @@ continuityBody cn kb gc i w F f nnF nnf ∈F ∈f =
                                 (#PAIR (#νtestM F f) #lam3AX))
     aw w1 e1 =
       #νtestM F f , #νtestM F f , #lam3AX , #lam3AX ,
-      testM-NAT cn kb gc i w1 F f nnF nnf (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1) ,
+      testM-NAT cn exb gc i w1 F f nnF nnf (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1) ,
       #compAllRefl (#PAIR (#νtestM F f) #lam3AX) w1 ,
       #compAllRefl (#PAIR (#νtestM F f) #lam3AX) w1 ,
       eql1
@@ -394,9 +413,9 @@ continuityBody cn kb gc i w F f nnF nnf ∈F ∈f =
           eqTypesFUN←
             (eqTypesFFDEFS← eqTypesBAIRE eg)
             (eqTypesFUN←
-              (eqTypesEQ← (→equalTypesBAIREn i w2 (#νtestM F f) (#νtestM F f) (testM-NAT cn kb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))))
-                          (∈BAIRE→∈BAIREn (testM-NAT cn kb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
-                          (∈BAIRE→∈BAIREn (testM-NAT cn kb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) eg))
+              (eqTypesEQ← (→equalTypesBAIREn i w2 (#νtestM F f) (#νtestM F f) (testM-NAT cn exb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))))
+                          (∈BAIRE→∈BAIREn (testM-NAT cn exb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
+                          (∈BAIRE→∈BAIREn (testM-NAT cn exb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) eg))
               (eqTypesEQ← eqTypesNAT
                           (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
                           (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) eg)))
@@ -421,9 +440,9 @@ continuityBody cn kb gc i w F f nnF nnf ∈F ∈f =
               equalInType-FUN
                 (eqTypesFFDEFS← eqTypesBAIRE (equalInType-refl eg))
                 (eqTypesFUN←
-                  (eqTypesEQ← (→equalTypesBAIREn i w2 (#νtestM F f) (#νtestM F f) (testM-NAT cn kb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))))
-                              (∈BAIRE→∈BAIREn (testM-NAT cn kb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
-                              (∈BAIRE→∈BAIREn (testM-NAT cn kb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-refl eg)))
+                  (eqTypesEQ← (→equalTypesBAIREn i w2 (#νtestM F f) (#νtestM F f) (testM-NAT cn exb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))))
+                              (∈BAIRE→∈BAIREn (testM-NAT cn exb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
+                              (∈BAIRE→∈BAIREn (testM-NAT cn exb gc i w2 F f nnF nnf (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))) (equalInType-refl eg)))
                   (eqTypesEQ← eqTypesNAT
                               (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
                               (∈BAIRE→NAT→ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-refl eg))))
@@ -437,9 +456,9 @@ continuityBody cn kb gc i w F f nnF nnf ∈F ∈f =
                                                          (#APPLY (#APPLY #lam3AX g₂) x₂))
                 aw4 w3 e3 x₁ x₂ ex =
                   equalInType-FUN
-                    (eqTypesEQ← (→equalTypesBAIREn i w3 (#νtestM F f) (#νtestM F f) (testM-NAT cn kb gc i w3 F f nnF nnf (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))))
-                                 (∈BAIRE→∈BAIREn (testM-NAT cn kb gc i w3 F f nnF nnf (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3))))
-                                 (∈BAIRE→∈BAIREn (testM-NAT cn kb gc i w3 F f nnF nnf (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))) (equalInType-refl (equalInType-mon eg w3 e3))))
+                    (eqTypesEQ← (→equalTypesBAIREn i w3 (#νtestM F f) (#νtestM F f) (testM-NAT cn exb gc i w3 F f nnF nnf (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))))
+                                 (∈BAIRE→∈BAIREn (testM-NAT cn exb gc i w3 F f nnF nnf (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3))))
+                                 (∈BAIRE→∈BAIREn (testM-NAT cn exb gc i w3 F f nnF nnf (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3)))) (equalInType-refl (equalInType-mon eg w3 e3))))
                     (eqTypesEQ← eqTypesNAT
                                  (∈BAIRE→NAT→ (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon ∈f w3 (⊑-trans· e1 (⊑-trans· e2 e3))))
                                  (∈BAIRE→NAT→ (equalInType-mon ∈F w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-refl (equalInType-mon eg w3 e3))))
@@ -467,10 +486,10 @@ continuityBody cn kb gc i w F f nnF nnf ∈F ∈f =
                         aw6 w5 e5 h1 (g , h2 , nng) = equalInType-trans cc (∈BAIRE→NAT→ (equalInType-mon ∈F w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))) (equalInType-sym h2))
                           where
                             h3 : equalInType i w5 (#BAIREn (#νtestM F f)) f g
-                            h3 = equalInType-BAIREn-BAIRE-trans h2 h1 (testM-NAT cn kb gc i w5 F f nnF nnf (equalInType-mon ∈F w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))) (equalInType-mon ∈f w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))))
+                            h3 = equalInType-BAIREn-BAIRE-trans h2 h1 (testM-NAT cn exb gc i w5 F f nnF nnf (equalInType-mon ∈F w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))) (equalInType-mon ∈f w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))))
 
                             cc : equalInType i w5 #NAT (#APPLY F f) (#APPLY F g)
-                            cc = eqfg cn kb gc {i} {w5} {F} {f} {g} nnF nnf nng
+                            cc = eqfg cn exb kb gc {i} {w5} {F} {f} {g} nnF nnf nng
                                       (equalInType-mon ∈F w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5)))))
                                       (equalInType-mon ∈f w5 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5)))))
                                       (equalInType-refl (equalInType-sym h2))
