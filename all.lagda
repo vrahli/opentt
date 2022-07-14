@@ -78,4 +78,6 @@ open import continuity7
 open import contInstanceKripkeRef
 -- We show here that the properties used to prove continuity in continuity7 are satisfied by Open bars + references
 open import contInstanceOpenRef
+-- We show here that the properties used to prove continuity in continuity7 are satisfied by Beth bars + references
+open import contInstanceBethRef
 \end{code}
