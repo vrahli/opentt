@@ -80,4 +80,7 @@ open import contInstanceKripkeRef
 open import contInstanceOpenRef
 -- We show here that the properties used to prove continuity in continuity7 are satisfied by Beth bars + references
 open import contInstanceBethRef
+-- We show here that the properties used to prove continuity in continuity7 are satisfied by Kripke bars + CS
+-- (the other spaces will be similar)
+open import contInstanceKripkeCS
 \end{code}
