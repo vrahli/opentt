@@ -45,9 +45,9 @@ open import choiceExt
 open import choiceVal
 
 
--- An instance with Kripke bars and choice sequences
+-- An instance with open bars and choice sequences
 
-module contInstanceKripkeCS (E : Extensionality 0ℓ 3ℓ)
+module contInstanceOpenCS (E : Extensionality 0ℓ 3ℓ)
        where
 
 open import worldInstanceCS2
@@ -64,10 +64,10 @@ K = compatibleCS
 P : Progress W C K
 P = progressCS
 
-open import barKripke(W)
+open import barOpen(W)
 
 M : Mod W
-M = inKripkeBar-Mod
+M = inOpenBar-Mod-v1
 
 G : GetChoice W C K
 G = getChoiceCS
@@ -109,8 +109,8 @@ open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 
-KC-comp→∀ℕ : comp→∀ℕ
-KC-comp→∀ℕ name w k (l , i , s) w1 e1 rewrite i = lift (c h2)
+OC-comp→∀ℕ : comp→∀ℕ
+OC-comp→∀ℕ name w k (l , i , s) w1 e1 rewrite i = lift (c h2)
   where
     h1 : ∈world (mkcs name (k ∷ l) Res⊤) (extcs w name k)
     h1 = ∈world-extcs w name l Res⊤ k i
@@ -124,12 +124,12 @@ KC-comp→∀ℕ name w k (l , i , s) w1 e1 rewrite i = lift (c h2)
     c (x ∷ l' , j , p) rewrite j = x , refl
 
 
-KC-∃□ : ∃□
-KC-∃□ = mod.→∃𝕎 W K𝔹BarsProps
+OC-∃□ : ∃□
+OC-∃□ = mod.→∃𝕎 W O𝔹BarsProps
 
 
-KC-get-choose-ℕ : get-choose-ℕ
-KC-get-choose-ℕ name w k (l , i , s) with getCs⊎ name w
+OC-get-choose-ℕ : get-choose-ℕ
+OC-get-choose-ℕ name w k (l , i , s) with getCs⊎ name w
 ... | inj₁ (x , z) rewrite z | just-inj i | ∈world-extcs w name l Res⊤ k z = refl
 ... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym i))
 

@@ -81,6 +81,9 @@ open import contInstanceOpenRef
 -- We show here that the properties used to prove continuity in continuity7 are satisfied by Beth bars + references
 open import contInstanceBethRef
 -- We show here that the properties used to prove continuity in continuity7 are satisfied by Kripke bars + CS
--- (the other spaces will be similar)
 open import contInstanceKripkeCS
+-- We show here that the properties used to prove continuity in continuity7 are satisfied by Open bars + CS
+open import contInstanceOpenCS
+-- We show here that the properties used to prove continuity in continuity7 are satisfied by Beth bars + CS
+open import contInstanceBethCS
 \end{code}
