@@ -77,6 +77,7 @@ data Term : Set where
   DECIDE : Term → Term → Term → Term
   -- Equality
   EQ : Term → Term → Term → Term
+  EQB : Term → Term → Term → Term → Term
   AX : Term
   -- Choices
   FREE : Term
@@ -131,6 +132,7 @@ value? (INL _) = true
 value? (INR _) = true
 value? (DECIDE _ _ _) = false -- Not a value
 value? (EQ _ _ _) = true
+value? (EQB _ _ _ _) = true
 value? AX = true
 value? FREE = true
 value? (CS _) = true
@@ -190,6 +192,7 @@ vars (INL t) = vars t
 vars (INR t) = vars t
 vars (DECIDE t x₁ t₁ x₂ t₂) = x₁ ∷ x₂ ∷ vars t ++ vars t₁ ++ vars t₂
 vars (EQ t t₁ t₂) = vars t ++ vars t₁ ++ vars t₂
+vars (EQB t t₁ t₂ t₃) = vars t ++ vars t₁ ++ vars t₂ ++ vars t₃
 vars AX = []
 vars FREE = []
 vars (CS x) = []
@@ -258,6 +261,7 @@ fvars (INL t)          = fvars t
 fvars (INR t)          = fvars t
 fvars (DECIDE t t₁ t₂) = fvars t ++ lowerVars (fvars t₁) ++ lowerVars (fvars t₂)
 fvars (EQ t t₁ t₂)     = fvars t ++ fvars t₁ ++ fvars t₂
+fvars (EQB t t₁ t₂ t₃) = fvars t ++ fvars t₁ ++ fvars t₂ ++ fvars t₃
 fvars AX               = []
 fvars FREE             = []
 fvars (CS x)           = []
@@ -411,6 +415,7 @@ shiftUp c (INL t) = INL (shiftUp c t)
 shiftUp c (INR t) = INR (shiftUp c t)
 shiftUp c (DECIDE t t₁ t₂) = DECIDE (shiftUp c t) (shiftUp (suc c) t₁) (shiftUp (suc c) t₂)
 shiftUp c (EQ t t₁ t₂) = EQ (shiftUp c t) (shiftUp c t₁) (shiftUp c t₂)
+shiftUp c (EQB t t₁ t₂ t₃) = EQB (shiftUp c t) (shiftUp c t₁) (shiftUp c t₂) (shiftUp c t₃)
 shiftUp c AX = AX
 shiftUp c FREE = FREE
 shiftUp c (CS x) = CS x
@@ -459,6 +464,7 @@ shiftDown c (INL t) = INL (shiftDown c t)
 shiftDown c (INR t) = INR (shiftDown c t)
 shiftDown c (DECIDE t t₁ t₂) = DECIDE (shiftDown c t) (shiftDown (suc c) t₁) (shiftDown (suc c) t₂)
 shiftDown c (EQ t t₁ t₂) = EQ (shiftDown c t) (shiftDown c t₁) (shiftDown c t₂)
+shiftDown c (EQB t t₁ t₂ t₃) = EQB (shiftDown c t) (shiftDown c t₁) (shiftDown c t₂) (shiftDown c t₃)
 shiftDown c AX = AX
 shiftDown c FREE = FREE
 shiftDown c (CS x) = CS x
@@ -507,6 +513,7 @@ shiftNameUp c (INL t) = INL (shiftNameUp c t)
 shiftNameUp c (INR t) = INR (shiftNameUp c t)
 shiftNameUp c (DECIDE t t₁ t₂) = DECIDE (shiftNameUp c t) (shiftNameUp c t₁) (shiftNameUp c t₂)
 shiftNameUp c (EQ t t₁ t₂) = EQ (shiftNameUp c t) (shiftNameUp c t₁) (shiftNameUp c t₂)
+shiftNameUp c (EQB t t₁ t₂ t₃) = EQB (shiftNameUp c t) (shiftNameUp c t₁) (shiftNameUp c t₂) (shiftNameUp c t₃)
 shiftNameUp c AX = AX
 shiftNameUp c FREE = FREE
 shiftNameUp c (CS x) = CS (sucIf≤ c x)
@@ -555,6 +562,7 @@ shiftNameDown c (INL t) = INL (shiftNameDown c t)
 shiftNameDown c (INR t) = INR (shiftNameDown c t)
 shiftNameDown c (DECIDE t t₁ t₂) = DECIDE (shiftNameDown c t) (shiftNameDown c t₁) (shiftNameDown c t₂)
 shiftNameDown c (EQ t t₁ t₂) = EQ (shiftNameDown c t) (shiftNameDown c t₁) (shiftNameDown c t₂)
+shiftNameDown c (EQB t t₁ t₂ t₃) = EQB (shiftNameDown c t) (shiftNameDown c t₁) (shiftNameDown c t₂) (shiftNameDown c t₃)
 shiftNameDown c AX = AX
 shiftNameDown c FREE = FREE
 shiftNameDown c (CS x) = CS (predIf≤ c x)
@@ -610,6 +618,7 @@ names (INL t)          = names t
 names (INR t)          = names t
 names (DECIDE t t₁ t₂) = names t ++ names t₁ ++ names t₂
 names (EQ t t₁ t₂)     = names t ++ names t₁ ++ names t₂
+names (EQB t t₁ t₂ t₃) = names t ++ names t₁ ++ names t₂ ++ names t₃
 names AX               = []
 names FREE             = []
 names (CS x)           = [ x ]
@@ -661,6 +670,7 @@ subv v t (INL u) = INL (subv v t u)
 subv v t (INR u) = INR (subv v t u)
 subv v t (DECIDE u u₁ u₂) = DECIDE (subv v t u) (subv (suc v) (shiftUp 0 t) u₁) (subv (suc v) (shiftUp 0 t) u₂)
 subv v t (EQ u u₁ u₂) = EQ (subv v t u) (subv v t u₁) (subv v t u₂)
+subv v t (EQB u u₁ u₂ u₃) = EQB (subv v t u) (subv v t u₁) (subv v t u₂) (subv v t u₃)
 subv v t AX = AX
 subv v t FREE = FREE
 subv v t (CS x) = CS x
@@ -715,6 +725,7 @@ renn v t (INL u) = INL (renn v t u)
 renn v t (INR u) = INR (renn v t u)
 renn v t (DECIDE u u₁ u₂) = DECIDE (renn v t u) (renn v t u₁) (renn v t u₂)
 renn v t (EQ u u₁ u₂) = EQ (renn v t u) (renn v t u₁) (renn v t u₂)
+renn v t (EQB u u₁ u₂ u₃) = EQB (renn v t u) (renn v t u₁) (renn v t u₂) (renn v t u₃)
 renn v t AX = AX
 renn v t FREE = FREE
 renn v t (CS x) with x ≟ v
@@ -836,6 +847,11 @@ subvNotIn v t (EQ u u₁ u₂) n
   rewrite subvNotIn v t u (notInAppVars1 n)
         | subvNotIn v t u₁ (notInAppVars1 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))
         | subvNotIn v t u₂ (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n)) = refl
+subvNotIn v t (EQB u u₁ u₂ u₃) n
+  rewrite subvNotIn v t u (notInAppVars1 n)
+        | subvNotIn v t u₁ (notInAppVars1 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))
+        | subvNotIn v t u₂ (notInAppVars1 {v} {fvars u₂} {_} (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n)))
+        | subvNotIn v t u₃ (notInAppVars2 {v} {fvars u₂} {_} (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))) = refl
 subvNotIn v t AX n = refl
 subvNotIn v t FREE n = refl
 subvNotIn v t (CS x) n = refl
@@ -959,6 +975,11 @@ shiftDownTrivial v (EQ u u₁ u₂) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
         | shiftDownTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl
+shiftDownTrivial v (EQB u u₁ u₂ u₃) i
+  rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
+        | shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
+        | shiftDownTrivial v u₂ (impLeNotApp1 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)))
+        | shiftDownTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl
 shiftDownTrivial v AX i = refl
 shiftDownTrivial v FREE i = refl
 shiftDownTrivial v (CS x) i = refl
@@ -1064,6 +1085,11 @@ shiftUpTrivial v (EQ u u₁ u₂) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
         | shiftUpTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl
+shiftUpTrivial v (EQB u u₁ u₂ u₃) i
+  rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
+        | shiftUpTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
+        | shiftUpTrivial v u₂ (impLeNotApp1 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)))
+        | shiftUpTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl
 shiftUpTrivial v AX i = refl
 shiftUpTrivial v FREE i = refl
 shiftUpTrivial v (CS x) i = refl
@@ -1141,6 +1167,7 @@ shiftDownUp (INL t) n rewrite shiftDownUp t n = refl
 shiftDownUp (INR t) n rewrite shiftDownUp t n = refl
 shiftDownUp (DECIDE t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) | shiftDownUp t₂ (suc n) = refl
 shiftDownUp (EQ t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n = refl
+shiftDownUp (EQB t t₁ t₂ t₃) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n | shiftDownUp t₃ n = refl
 shiftDownUp AX n = refl
 shiftDownUp FREE n = refl
 shiftDownUp (CS x) n = refl
@@ -1189,6 +1216,7 @@ is-NUM (INL t) = inj₂ (λ { n () })
 is-NUM (INR t) = inj₂ (λ { n () })
 is-NUM (DECIDE t t₁ t₂) = inj₂ (λ { n () })
 is-NUM (EQ t t₁ t₂) = inj₂ (λ { n () })
+is-NUM (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-NUM AX = inj₂ (λ { n () })
 is-NUM FREE = inj₂ (λ { n () })
 is-NUM (CS x) = inj₂ (λ { n () })
@@ -1237,6 +1265,7 @@ is-LAM (INL t) = inj₂ (λ { n () })
 is-LAM (INR t) = inj₂ (λ { n () })
 is-LAM (DECIDE t t₁ t₂) = inj₂ (λ { n () })
 is-LAM (EQ t t₁ t₂) = inj₂ (λ { n () })
+is-LAM (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-LAM AX = inj₂ (λ { n () })
 is-LAM FREE = inj₂ (λ { n () })
 is-LAM (CS x) = inj₂ (λ { n () })
@@ -1285,6 +1314,7 @@ is-CS (INL t) = inj₂ (λ { n () })
 is-CS (INR t) = inj₂ (λ { n () })
 is-CS (DECIDE t t₁ t₂) = inj₂ (λ { n () })
 is-CS (EQ t t₁ t₂) = inj₂ (λ { n () })
+is-CS (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-CS AX = inj₂ (λ { n () })
 is-CS FREE = inj₂ (λ { n () })
 is-CS (CS x) = inj₁ (x , refl)
@@ -1333,6 +1363,7 @@ is-NAME (INL t) = inj₂ (λ { n () })
 is-NAME (INR t) = inj₂ (λ { n () })
 is-NAME (DECIDE t t₁ t₂) = inj₂ (λ { n () })
 is-NAME (EQ t t₁ t₂) = inj₂ (λ { n () })
+is-NAME (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-NAME AX = inj₂ (λ { n () })
 is-NAME FREE = inj₂ (λ { n () })
 is-NAME (CS x) = inj₂ (λ { n () })
@@ -1381,6 +1412,7 @@ is-PAIR (INL t) = inj₂ (λ { n m () })
 is-PAIR (INR t) = inj₂ (λ { n m () })
 is-PAIR (DECIDE t t₁ t₂) = inj₂ (λ { n m () })
 is-PAIR (EQ t t₁ t₂) = inj₂ (λ { n m () })
+is-PAIR (EQB t t₁ t₂ t₃) = inj₂ (λ { n m () })
 is-PAIR AX = inj₂ (λ { n m () })
 is-PAIR FREE = inj₂ (λ { n m () })
 is-PAIR (CS x) = inj₂ (λ { n m () })
@@ -1429,6 +1461,7 @@ is-INL (INL t) = inj₁ (t , refl)
 is-INL (INR t) = inj₂ (λ { n () })
 is-INL (DECIDE t t₁ t₂) = inj₂ (λ { n () })
 is-INL (EQ t t₁ t₂) = inj₂ (λ { n () })
+is-INL (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-INL AX = inj₂ (λ { n () })
 is-INL FREE = inj₂ (λ { n () })
 is-INL (CS x) = inj₂ (λ { n () })
@@ -1477,6 +1510,7 @@ is-INR (INL t) = inj₂ (λ { n () })
 is-INR (INR t) = inj₁ (t , refl)
 is-INR (DECIDE t t₁ t₂) = inj₂ (λ { n () })
 is-INR (EQ t t₁ t₂) = inj₂ (λ { n () })
+is-INR (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-INR AX = inj₂ (λ { n () })
 is-INR FREE = inj₂ (λ { n () })
 is-INR (CS x) = inj₂ (λ { n () })
@@ -1519,6 +1553,7 @@ data ∼vals : Term → Term → Set where
   ∼vals-INL     : {a b : Term} → ∼vals (INL a) (INL b)
   ∼vals-INR     : {a b : Term} → ∼vals (INR a) (INR b)
   ∼vals-EQ      : {a b c d e f : Term} → ∼vals (EQ a b c) (EQ d e f)
+  ∼vals-EQB      : {a b c d e f g h : Term} → ∼vals (EQB a b c d) (EQB e f g h)
   ∼vals-AX      : ∼vals AX AX
   ∼vals-FREE    : ∼vals FREE FREE
   ∼vals-CS      : {n : Name} → ∼vals (CS n) (CS n)
@@ -1555,6 +1590,7 @@ data ∼vals : Term → Term → Set where
 ∼vals-sym {.(INL _)} {.(INL _)} ∼vals-INL = ∼vals-INL
 ∼vals-sym {.(INR _)} {.(INR _)} ∼vals-INR = ∼vals-INR
 ∼vals-sym {.(EQ _ _ _)} {.(EQ _ _ _)} ∼vals-EQ = ∼vals-EQ
+∼vals-sym {.(EQB _ _ _ _)} {.(EQB _ _ _ _)} ∼vals-EQB = ∼vals-EQB
 ∼vals-sym {.AX} {.AX} ∼vals-AX = ∼vals-AX
 ∼vals-sym {.FREE} {.FREE} ∼vals-FREE = ∼vals-FREE
 ∼vals-sym {.(CS _)} {.(CS _)} ∼vals-CS = ∼vals-CS
@@ -1591,6 +1627,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₁ {INL a} {b} isv = tt
 ∼vals→isValue₁ {INR a} {b} isv = tt
 ∼vals→isValue₁ {EQ a a₁ a₂} {b} isv = tt
+∼vals→isValue₁ {EQB a a₁ a₂ a₃} {b} isv = tt
 ∼vals→isValue₁ {AX} {b} isv = tt
 ∼vals→isValue₁ {FREE} {b} isv = tt
 ∼vals→isValue₁ {CS x} {b} isv = tt
@@ -1635,6 +1672,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {INR b} isv = tt
 ∼vals→isValue₂ {a} {DECIDE b b₁ b₂} ()
 ∼vals→isValue₂ {a} {EQ b b₁ b₂} isv = tt
+∼vals→isValue₂ {a} {EQB b b₁ b₂ b₃} isv = tt
 ∼vals→isValue₂ {a} {AX} isv = tt
 ∼vals→isValue₂ {a} {FREE} isv = tt
 ∼vals→isValue₂ {a} {CS x} isv = tt
@@ -1687,6 +1725,7 @@ data ∼vals : Term → Term → Set where
 ¬read (INR t) = ¬read t
 ¬read (DECIDE t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
 ¬read (EQ t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
+¬read (EQB t t₁ t₂ t₃) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂ ∧ ¬read t₃
 ¬read AX = true
 ¬read FREE = true
 ¬read (CS x) = false -- ONLY FALSE
@@ -1750,6 +1789,7 @@ data ∼vals : Term → Term → Set where
 ¬names (INR t) = ¬names t
 ¬names (DECIDE t t₁ t₂) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂
 ¬names (EQ t t₁ t₂) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂
+¬names (EQB t t₁ t₂ t₃) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂ ∧ ¬names t₃
 ¬names AX = true
 ¬names FREE = true
 ¬names (CS x) = false -- FALSE

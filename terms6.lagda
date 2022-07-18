@@ -388,6 +388,7 @@ differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(DECIDE a₁ b₁ c₃) .(
 ... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
 -- EQ
 differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(EQ a₁ b₁ c₃) .(EQ a₂ b₂ c₄) a' v k compat1 compat2 agtn (differ-EQ a₁ a₂ b₁ b₂ c₃ c₄ diff diff₁ diff₂) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = EQ a₁ b₁ c₃ , EQ a₂ b₂ c₄ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-EQ _ _ _ _ _ _ diff diff₁ diff₂ , g0
+differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(EQB a₁ b₁ c₃ d₁) .(EQB a₂ b₂ c₄ d₂) a' v k compat1 compat2 agtn (differ-EQB a₁ a₂ b₁ b₂ c₃ c₄ d₁ d₂ diff diff₁ diff₂ diff₃) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = EQB a₁ b₁ c₃ d₁ , EQB a₂ b₂ c₄ d₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-EQB _ _ _ _ _ _ _ _ diff diff₁ diff₂ diff₃ , g0
 differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .AX .AX a' v k compat1 compat2 agtn differ-AX g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = AX , AX , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-AX , g0
 differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .FREE .FREE a' v k compat1 compat2 agtn differ-FREE g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = FREE , FREE , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-FREE , g0
 --differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(CS name1) .(CS name2) a' v k compat1 compat2 agtn differ-CS g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = CS name1 , CS name2 , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-CS , g0
@@ -935,6 +936,7 @@ IFLT-NUM⇓ n m w a b c c₁ c₂ with n <? m
 ¬Names→shiftNameUp≡ (INR t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
 ¬Names→shiftNameUp≡ (DECIDE t t₁ t₂) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→1-3 {¬names t} {¬names t₁} {¬names t₂} nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→2-3 {¬names t} {¬names t₁} {¬names t₂} nnt) | ¬Names→shiftNameUp≡ t₂ n (∧≡true→3-3 {¬names t} {¬names t₁} {¬names t₂} nnt) = refl
 ¬Names→shiftNameUp≡ (EQ t t₁ t₂) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→1-3 {¬names t} {¬names t₁} {¬names t₂} nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→2-3 {¬names t} {¬names t₁} {¬names t₂} nnt) | ¬Names→shiftNameUp≡ t₂ n (∧≡true→3-3 {¬names t} {¬names t₁} {¬names t₂} nnt) = refl
+¬Names→shiftNameUp≡ (EQB t t₁ t₂ t₃) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→1-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→2-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nnt) | ¬Names→shiftNameUp≡ t₂ n (∧≡true→3-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nnt) | ¬Names→shiftNameUp≡ t₃ n (∧≡true→4-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nnt) = refl
 ¬Names→shiftNameUp≡ AX n nnt = refl
 ¬Names→shiftNameUp≡ FREE n nnt = refl
 ¬Names→shiftNameUp≡ (CHOOSE t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl

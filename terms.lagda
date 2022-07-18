@@ -338,6 +338,13 @@ subv-↑T {i} {suc n} p v a with i <? n
     c rewrite CTerm.closed a | CTerm.closed b | CTerm.closed T = refl
 
 
+#EQB : CTerm → CTerm → CTerm → CTerm → CTerm
+#EQB a b T U = ct (EQB ⌜ a ⌝ ⌜ b ⌝ ⌜ T ⌝ ⌜ U ⌝) c
+  where
+    c : # EQB ⌜ a ⌝ ⌜ b ⌝ (CTerm.cTerm T) (CTerm.cTerm U)
+    c rewrite CTerm.closed a | CTerm.closed b | CTerm.closed T | CTerm.closed U = refl
+
+
 ∈lowerVars→ : (v : Var) (l : List Var) → v ∈ lowerVars l → suc v ∈ l
 ∈lowerVars→ v (0 ∷ l) i = there (∈lowerVars→ v l i)
 ∈lowerVars→ v (suc x ∷ l) (here px) rewrite px = here refl
@@ -583,6 +590,14 @@ fvars-shiftUp≡ n (EQ t t₁ t₂)
         | fvars-shiftUp≡ n t
         | fvars-shiftUp≡ n t₁
         | fvars-shiftUp≡ n t₂ = refl
+fvars-shiftUp≡ n (EQB t t₁ t₂ t₃)
+  rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂ ++ fvars t₃)
+        | map-++-commute (sucIf≤ n) (fvars t₁) (fvars t₂ ++ fvars t₃)
+        | map-++-commute (sucIf≤ n) (fvars t₂) (fvars t₃)
+        | fvars-shiftUp≡ n t
+        | fvars-shiftUp≡ n t₁
+        | fvars-shiftUp≡ n t₂
+        | fvars-shiftUp≡ n t₃ = refl
 fvars-shiftUp≡ n AX = refl
 fvars-shiftUp≡ n FREE = refl
 fvars-shiftUp≡ n (CS x) = refl
@@ -893,6 +908,14 @@ fvars-shiftDown≡ n (EQ t t₁ t₂)
         | fvars-shiftDown≡ n t
         | fvars-shiftDown≡ n t₁
         | fvars-shiftDown≡ n t₂ = refl
+fvars-shiftDown≡ n (EQB t t₁ t₂ t₃)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂ ++ fvars t₃)
+        | map-++-commute (predIf≤ n) (fvars t₁) (fvars t₂ ++ fvars t₃)
+        | map-++-commute (predIf≤ n) (fvars t₂) (fvars t₃)
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ n t₁
+        | fvars-shiftDown≡ n t₂
+        | fvars-shiftDown≡ n t₃ = refl
 fvars-shiftDown≡ n AX = refl
 fvars-shiftDown≡ n FREE = refl
 fvars-shiftDown≡ n (CS x) = refl
@@ -990,6 +1013,7 @@ fvars-shiftNameUp n (INL a) rewrite fvars-shiftNameUp n a = refl
 fvars-shiftNameUp n (INR a) rewrite fvars-shiftNameUp n a = refl
 fvars-shiftNameUp n (DECIDE a a₁ a₂) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ | fvars-shiftNameUp n a₂ = refl
 fvars-shiftNameUp n (EQ a a₁ a₂) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ | fvars-shiftNameUp n a₂ = refl
+fvars-shiftNameUp n (EQB a a₁ a₂ a₃) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ | fvars-shiftNameUp n a₂ | fvars-shiftNameUp n a₃ = refl
 fvars-shiftNameUp n AX = refl
 fvars-shiftNameUp n FREE = refl
 fvars-shiftNameUp n (CS x) = refl
@@ -1118,6 +1142,18 @@ fvars-subv v a (EQ b b₁ b₂) i with ∈-++⁻ (fvars (subv v a b)) i
                            (∈removeV++L {_} {v} {fvars b₁} {fvars b₂} {fvars a} (fvars-subv v a b₁ q))
 ... | inj₂ q = ∈removeV++R {_} {v} {fvars b} {fvars b₁ ++ fvars b₂} {fvars a}
                            (∈removeV++R {_} {v} {fvars b₁} {fvars b₂} {fvars a} (fvars-subv v a b₂ q))
+fvars-subv v a (EQB b b₁ b₂ b₃) i with ∈-++⁻ (fvars (subv v a b)) i
+... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁ ++ fvars b₂ ++ fvars b₃} {fvars a} (fvars-subv v a b p)
+... | inj₂ p with ∈-++⁻ (fvars (subv v a b₁)) p
+... |    inj₁ q = ∈removeV++R {_} {v} {fvars b} {fvars b₁ ++ fvars b₂ ++ fvars b₃} {fvars a}
+                              (∈removeV++L {_} {v} {fvars b₁} {fvars b₂ ++ fvars b₃} {fvars a} (fvars-subv v a b₁ q))
+... |    inj₂ q with ∈-++⁻ (fvars (subv v a b₂)) q
+... |       inj₁ r = ∈removeV++R {_} {v} {fvars b} {fvars b₁ ++ fvars b₂ ++ fvars b₃} {fvars a}
+                                 (∈removeV++R {_} {v} {fvars b₁} {fvars b₂ ++ fvars b₃} {fvars a}
+                                              (∈removeV++L {_} {v} {fvars b₂} {fvars b₃} {fvars a} (fvars-subv v a b₂ r)))
+... |       inj₂ r = ∈removeV++R {_} {v} {fvars b} {fvars b₁ ++ fvars b₂ ++ fvars b₃} {fvars a}
+                                 (∈removeV++R {_} {v} {fvars b₁} {fvars b₂ ++ fvars b₃} {fvars a}
+                                              (∈removeV++R {_} {v} {fvars b₂} {fvars b₃} {fvars a} (fvars-subv v a b₃ r)))
 fvars-subv v a AX i = ⊥-elim (¬∈[] i)
 fvars-subv v a FREE i = ⊥-elim (¬∈[] i)
 fvars-subv v a (CS x) i = ⊥-elim (¬∈[] i)
@@ -1339,6 +1375,12 @@ shiftDown1-subv1-shiftUp0 n a (EQ b b₁ b₂) ca
         | shiftDown1-subv1-shiftUp0 n a b ca
         | shiftDown1-subv1-shiftUp0 n a b₁ ca
         | shiftDown1-subv1-shiftUp0 n a b₂ ca = refl
+shiftDown1-subv1-shiftUp0 n a (EQB b b₁ b₂ b₃) ca
+  rewrite #shiftUp 0 (ct a ca)
+        | shiftDown1-subv1-shiftUp0 n a b ca
+        | shiftDown1-subv1-shiftUp0 n a b₁ ca
+        | shiftDown1-subv1-shiftUp0 n a b₂ ca
+        | shiftDown1-subv1-shiftUp0 n a b₃ ca = refl
 shiftDown1-subv1-shiftUp0 n a AX ca = refl
 shiftDown1-subv1-shiftUp0 n a FREE ca = refl
 shiftDown1-subv1-shiftUp0 n a (CS x) ca = refl
@@ -1734,6 +1776,32 @@ EQinj3 refl =  refl
 #EQinj3 c = CTerm≡ (EQinj3 (≡CTerm c))
 
 
+EQBinj1 : {a b c d e f g h : Term} → EQB a b c d ≡ EQB e f g h → a ≡ e
+EQBinj1 refl =  refl
+
+EQBinj2 : {a b c d e f g h : Term} → EQB a b c d ≡ EQB e f g h → b ≡ f
+EQBinj2 refl =  refl
+
+EQBinj3 : {a b c d e f g h : Term} → EQB a b c d ≡ EQB e f g h → c ≡ g
+EQBinj3 refl =  refl
+
+EQBinj4 : {a b c d e f g h : Term} → EQB a b c d ≡ EQB e f g h → d ≡ h
+EQBinj4 refl =  refl
+
+
+#EQBinj1 : {a b c d e f g h : CTerm} → #EQB a b c d ≡ #EQB e f g h → a ≡ e
+#EQBinj1 c = CTerm≡ (EQBinj1 (≡CTerm c))
+
+#EQBinj2 : {a b c d e f g h : CTerm} → #EQB a b c d ≡ #EQB e f g h → b ≡ f
+#EQBinj2 c = CTerm≡ (EQBinj2 (≡CTerm c))
+
+#EQBinj3 : {a b c d e f g h : CTerm} → #EQB a b c d ≡ #EQB e f g h → c ≡ g
+#EQBinj3 c = CTerm≡ (EQBinj3 (≡CTerm c))
+
+#EQBinj4 : {a b c d e f g h : CTerm} → #EQB a b c d ≡ #EQB e f g h → d ≡ h
+#EQBinj4 c = CTerm≡ (EQBinj4 (≡CTerm c))
+
+
 -- EQ
 EQneqNAT : {t a b : Term} → ¬ (EQ t a b) ≡ NAT
 EQneqNAT {t} {a} {b} ()
@@ -1752,6 +1820,9 @@ EQneqQLT {t} {a} {b} {c} {d} ()
 
 EQneqFREE : {t a b : Term} → ¬ (EQ t a b) ≡ FREE
 EQneqFREE {t} {a} {b} ()
+
+EQneqEQB : {t a b : Term} {c d e f : Term} → ¬ (EQ t a b) ≡ EQB c d e f
+EQneqEQB {t} {a} {b} {c} {d} {e} {g} ()
 
 EQneqPI : {t a b : Term} {c : Term} {d : Term} → ¬ (EQ t a b) ≡ PI c d
 EQneqPI {t} {a} {b} {c} {d} ()
@@ -1806,6 +1877,84 @@ EQneqSHRINK {t} {a} {b} {c} ()
 
 EQneqUNIV : {t a b : Term} {n : ℕ} → ¬ (EQ t a b) ≡ UNIV n
 EQneqUNIV {t} {a} {b} {n} ()
+
+
+
+-- EQB
+EQBneqNAT : {a₁ a₂ a₃ a₄ : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ NAT
+EQBneqNAT {a₁} {a₂} {a₃} {a₄} ()
+
+EQBneqQNAT : {a₁ a₂ a₃ a₄ : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ QNAT
+EQBneqQNAT {a₁} {a₂} {a₃} {a₄} ()
+
+EQBneqTNAT : {a₁ a₂ a₃ a₄ : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ TNAT
+EQBneqTNAT {a₁} {a₂} {a₃} {a₄} ()
+
+EQBneqLT : {a₁ a₂ a₃ a₄ : Term} {c d : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ LT c d
+EQBneqLT {a₁} {a₂} {a₃} {a₄} {c} {d} ()
+
+EQBneqQLT : {a₁ a₂ a₃ a₄ : Term} {c d : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ QLT c d
+EQBneqQLT {a₁} {a₂} {a₃} {a₄} {c} {d} ()
+
+EQBneqFREE : {a₁ a₂ a₃ a₄ : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ FREE
+EQBneqFREE {a₁} {a₂} {a₃} {a₄} ()
+
+EQBneqEQ : {a₁ a₂ a₃ a₄ : Term} {c d e : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ EQ c d e
+EQBneqEQ {a₁} {a₂} {a₃} {a₄} {c} {d} {e} ()
+
+EQBneqPI : {a₁ a₂ a₃ a₄ : Term} {c : Term} {d : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ PI c d
+EQBneqPI {a₁} {a₂} {a₃} {a₄} {c} {d} ()
+
+EQBneqSUM : {a₁ a₂ a₃ a₄ : Term} {c : Term} {d : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ SUM c d
+EQBneqSUM {a₁} {a₂} {a₃} {a₄} {c} {d} ()
+
+EQBneqSET : {a₁ a₂ a₃ a₄ : Term} {c : Term} {d : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ SET c d
+EQBneqSET {a₁} {a₂} {a₃} {a₄} {c} {d} ()
+
+EQBneqTUNION : {a₁ a₂ a₃ a₄ : Term} {c : Term} {d : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ TUNION c d
+EQBneqTUNION {a₁} {a₂} {a₃} {a₄} {c} {d} ()
+
+EQBneqUNION : {a₁ a₂ a₃ a₄ : Term} {c : Term} {d : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ UNION c d
+EQBneqUNION {a₁} {a₂} {a₃} {a₄} {c} {d} ()
+
+EQBneqISECT : {a₁ a₂ a₃ a₄ : Term} {c : Term} {d : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ ISECT c d
+EQBneqISECT {a₁} {a₂} {a₃} {a₄} {c} {d} ()
+
+EQBneqQTUNION : {a₁ a₂ a₃ a₄ : Term} {c : Term} {d : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ QTUNION c d
+EQBneqQTUNION {a₁} {a₂} {a₃} {a₄} {c} {d} ()
+
+EQBneqTSQUASH : {a₁ a₂ a₃ a₄ : Term} {c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ TSQUASH c
+EQBneqTSQUASH {a₁} {a₂} {a₃} {a₄} {c} ()
+
+EQBneqTTRUNC : {a₁ a₂ a₃ a₄ : Term} {c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ TTRUNC c
+EQBneqTTRUNC {a₁} {a₂} {a₃} {a₄} {c} ()
+
+EQBneqTCONST : {a₁ a₂ a₃ a₄ : Term} {c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ TCONST c
+EQBneqTCONST {a₁} {a₂} {a₃} {a₄} {c} ()
+
+EQBneqSUBSING : {a₁ a₂ a₃ a₄ : Term} {c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ SUBSING c
+EQBneqSUBSING {a₁} {a₂} {a₃} {a₄} {c} ()
+
+EQBneqLIFT : {a₁ a₂ a₃ a₄ : Term} {c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ LIFT c
+EQBneqLIFT {a₁} {a₂} {a₃} {a₄} {c} ()
+
+EQBneqDUM : {a₁ a₂ a₃ a₄ : Term} {c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ DUM c
+EQBneqDUM {a₁} {a₂} {a₃} {a₄} {c} ()
+
+EQBneqFFDEFS : {a₁ a₂ a₃ a₄ : Term} {c d : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ FFDEFS c d
+EQBneqFFDEFS {a₁} {a₂} {a₃} {a₄} {c} {d} ()
+
+EQBneqPURE : {a₁ a₂ a₃ a₄ : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ PURE
+EQBneqPURE {a₁} {a₂} {a₃} {a₄} ()
+
+EQBneqLOWER : {a₁ a₂ a₃ a₄ : Term} {c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ LOWER c
+EQBneqLOWER {a₁} {a₂} {a₃} {a₄} {c} ()
+
+EQBneqSHRINK : {a₁ a₂ a₃ a₄ : Term} {c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ SHRINK c
+EQBneqSHRINK {a₁} {a₂} {a₃} {a₄} {c} ()
+
+EQBneqUNIV : {a₁ a₂ a₃ a₄ : Term} {n : ℕ} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ UNIV n
+EQBneqUNIV {a₁} {a₂} {a₃} {a₄} {n} ()
 
 
 
@@ -1998,6 +2147,7 @@ shiftUp-inj {n} {INL a} {INL b} e rewrite shiftUp-inj (INLinj e) = refl
 shiftUp-inj {n} {INR a} {INR b} e rewrite shiftUp-inj (INRinj e) = refl
 shiftUp-inj {n} {DECIDE a a₁ a₂} {DECIDE b b₁ b₂} e rewrite shiftUp-inj (DECIDEinj1 e) | shiftUp-inj (DECIDEinj2 e) | shiftUp-inj (DECIDEinj3 e) = refl
 shiftUp-inj {n} {EQ a a₁ a₂} {EQ b b₁ b₂} e rewrite shiftUp-inj (EQinj1 e) | shiftUp-inj (EQinj2 e) | shiftUp-inj (EQinj3 e) = refl
+shiftUp-inj {n} {EQB a a₁ a₂ a₃} {EQB b b₁ b₂ b₃} e rewrite shiftUp-inj (EQBinj1 e) | shiftUp-inj (EQBinj2 e) | shiftUp-inj (EQBinj3 e) | shiftUp-inj (EQBinj4 e) = refl
 shiftUp-inj {n} {AX} {AX} e = refl
 shiftUp-inj {n} {FREE} {FREE} e = refl
 shiftUp-inj {n} {CS x} {CS .x} refl = refl
@@ -2071,6 +2221,17 @@ FUNinj2 {a} {b} {c} {d} x = shiftUp-inj (PIinj2 x)
                          (⊆?→⊆ {fvars ⌜ c ⌝} {[ 0 ]} (CTerm0.closed c))))
 
 
+#[0]EQB : CTerm0 → CTerm0 → CTerm0 → CTerm0 → CTerm0
+#[0]EQB a b c d = ct0 (EQB ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) cl
+  where
+    cl : #[ [ 0 ] ] EQB ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    cl = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝} {[ 0 ]}
+               (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+                    (⊆++ (⊆?→⊆ {fvars ⌜ b ⌝} {[ 0 ]} (CTerm0.closed b))
+                         (⊆++ (⊆?→⊆ {fvars ⌜ c ⌝} {[ 0 ]} (CTerm0.closed c))
+                              (⊆?→⊆ {fvars ⌜ d ⌝} {[ 0 ]} (CTerm0.closed d)))))
+
+
 
 #[0]CS : Name → CTerm0
 #[0]CS n = ct0 (CS n) refl
@@ -2105,8 +2266,6 @@ FUNinj2 {a} {b} {c} {d} x = shiftUp-inj (PIinj2 x)
 
 
 
-
-
 #FALSE/EQinj1 : {a b c : CTerm} → #FALSE ≡ #EQ a b c → a ≡ #N0
 #FALSE/EQinj1 {a} {b} {c} e = CTerm≡ (sym (EQinj1 (≡CTerm e)))
 
@@ -2118,10 +2277,12 @@ FUNinj2 {a} {b} {c} {d} x = shiftUp-inj (PIinj2 x)
 
 
 
-
-
 →≡EQ : {a b c d e f : Term} → a ≡ d → b ≡ e → c ≡ f → EQ a b c ≡ EQ d e f
 →≡EQ refl refl refl = refl
+
+
+→≡EQB : {a b c d e f g h : Term} → a ≡ e → b ≡ f → c ≡ g → d ≡ h → EQB a b c d ≡ EQB e f g h
+→≡EQB refl refl refl refl = refl
 
 
 →≡APPLY : {a b c d : Term} → a ≡ c → b ≡ d → APPLY a b ≡ APPLY c d
@@ -2472,6 +2633,10 @@ sub0-#[0]QTUNION a t u = CTerm≡ refl
 
 ≡#EQ : {a₁ a₂ b₁ b₂ c₁ c₂ : CTerm} → a₁ ≡ a₂ → b₁ ≡ b₂ → c₁ ≡ c₂ → #EQ a₁ b₁ c₁ ≡ #EQ a₂ b₂ c₂
 ≡#EQ {a₁} {a₂} {b₁} {b₂} {c₁} {c₂} e₁ e₂ e₃ rewrite e₁ | e₂ | e₃ = CTerm≡ refl
+
+
+≡#EQB : {a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : CTerm} → a₁ ≡ a₂ → b₁ ≡ b₂ → c₁ ≡ c₂ → d₁ ≡ d₂ → #EQB a₁ b₁ c₁ d₁ ≡ #EQB a₂ b₂ c₂ d₂
+≡#EQB {a₁} {a₂} {b₁} {b₂} {c₁} {c₂} {d₁} {d₂} e₁ e₂ e₃ e₄ rewrite e₁ | e₂ | e₃ | e₄ = CTerm≡ refl
 
 
 ≡PI : {a b c d : Term} → a ≡ b → c ≡ d → PI a c ≡ PI b d

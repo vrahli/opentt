@@ -430,6 +430,7 @@ data updCtxt (name : Name) (f : Term) : Term → Set where
   updCtxt-INR     : (a : Term) → updCtxt name f a → updCtxt name f (INR a)
   updCtxt-DECIDE  : (a b c : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f c → updCtxt name f (DECIDE a b c)
   updCtxt-EQ      : (a b c : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f c → updCtxt name f (EQ a b c)
+  updCtxt-EQB     : (a b c d : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f c → updCtxt name f d → updCtxt name f (EQB a b c d)
   updCtxt-AX      : updCtxt name f AX
   updCtxt-FREE    : updCtxt name f FREE
   --updCtxt-CS      : updCtxt name1 name2 f (CS name1) (CS name2)
@@ -482,6 +483,7 @@ updCtxt→differ {name} {f} {.(INL a)} (updCtxt-INL a u) = differ-INL _ _ (updCt
 updCtxt→differ {name} {f} {.(INR a)} (updCtxt-INR a u) = differ-INR _ _ (updCtxt→differ u)
 updCtxt→differ {name} {f} {.(DECIDE a b c)} (updCtxt-DECIDE a b c u u₁ u₂) = differ-DECIDE _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂)
 updCtxt→differ {name} {f} {.(EQ a b c)} (updCtxt-EQ a b c u u₁ u₂) = differ-EQ _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂)
+updCtxt→differ {name} {f} {.(EQB a b c d)} (updCtxt-EQB a b c d u u₁ u₂ u₃) = differ-EQB _ _ _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂) (updCtxt→differ u₃)
 updCtxt→differ {name} {f} {.AX} updCtxt-AX = differ-AX
 updCtxt→differ {name} {f} {.FREE} updCtxt-FREE = differ-FREE
 updCtxt→differ {name} {f} {.(CHOOSE a b)} (updCtxt-CHOOSE a b u u₁) = differ-CHOOSE _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
@@ -529,6 +531,7 @@ differ→updCtxt {name} {f} {.(INL a)} (differ-INL a .a d) = updCtxt-INL _ (diff
 differ→updCtxt {name} {f} {.(INR a)} (differ-INR a .a d) = updCtxt-INR _ (differ→updCtxt d)
 differ→updCtxt {name} {f} {.(DECIDE a₁ b₁ c₁)} (differ-DECIDE a₁ .a₁ b₁ .b₁ c₁ .c₁ d d₁ d₂) = updCtxt-DECIDE _ _ _ (differ→updCtxt d) (differ→updCtxt d₁) (differ→updCtxt d₂)
 differ→updCtxt {name} {f} {.(EQ a₁ b₁ c₁)} (differ-EQ a₁ .a₁ b₁ .b₁ c₁ .c₁ d d₁ d₂) = updCtxt-EQ _ _ _ (differ→updCtxt d) (differ→updCtxt d₁) (differ→updCtxt d₂)
+differ→updCtxt {name} {f} {.(EQB a₁ b₁ c₁ d₁)} (differ-EQB a₁ .a₁ b₁ .b₁ c₁ .c₁ d₁ .d₁ diff diff₁ diff₂ diff₃) = updCtxt-EQB _ _ _ _ (differ→updCtxt diff) (differ→updCtxt diff₁) (differ→updCtxt diff₂) (differ→updCtxt diff₃)
 differ→updCtxt {name} {f} {.AX} differ-AX = updCtxt-AX
 differ→updCtxt {name} {f} {.FREE} differ-FREE = updCtxt-FREE
 differ→updCtxt {name} {f} {.(CHOOSE a₁ b₁)} (differ-CHOOSE a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-CHOOSE _ _ (differ→updCtxt d) (differ→updCtxt d₁)

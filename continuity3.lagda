@@ -366,6 +366,7 @@ getT≤ℕ-chooseT0if→ gc {w} {name} {n} {m} {m'} compat g0 (j , h , q) with m
     ind = ¬Names→isHighestℕ-step {a} {a'} {w1} {w1'} {n} {name} (∧≡true→1-3 {¬names a} {¬names b} {¬names c} nn) gtn z
 ... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 ¬Names→isHighestℕ-step {EQ t t₁ t₂} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
+¬Names→isHighestℕ-step {EQB t t₁ t₂ t₃} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
 ¬Names→isHighestℕ-step {AX} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
 ¬Names→isHighestℕ-step {FREE} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
 ¬Names→isHighestℕ-step {CHOOSE k t} {u} {w1} {w2} {n} {name} nn gtn comp with is-NAME k
@@ -899,6 +900,7 @@ step-sat-isHighestℕ gc {w1} {w2} {.(DECIDE a b₁ c)} {b} {n} {name} {f} compa
     ind = step-sat-isHighestℕ gc compat wgt0 z (stepsPresHighestℕ-DECIDE₁→ indb) ctxt nnf cf
 ... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-sat-isHighestℕ gc {w1} {w2} {.(EQ a b₁ c)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-EQ a b₁ c ctxt ctxt₁ ctxt₂) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , EQ a b₁ c , w1 , refl , (λ x → x , x) , updCtxt-EQ _ _ _ ctxt ctxt₁ ctxt₂
+step-sat-isHighestℕ gc {w1} {w2} {.(EQB a b₁ c d)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-EQB a b₁ c d ctxt ctxt₁ ctxt₂ ctxt₃) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , EQB a b₁ c d , w1 , refl , (λ x → x , x) , updCtxt-EQB _ _ _ _ ctxt ctxt₁ ctxt₂ ctxt₃
 step-sat-isHighestℕ gc {w1} {w2} {.AX} {b} {n} {name} {f} compat wgt0 comp indb updCtxt-AX nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , AX , w1 , refl , (λ x → x , x) , updCtxt-AX
 step-sat-isHighestℕ gc {w1} {w2} {.FREE} {b} {n} {name} {f} compat wgt0 comp indb updCtxt-FREE nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , FREE , w1 , refl , (λ x → x , x) , updCtxt-FREE
 step-sat-isHighestℕ gc {w1} {w2} {.(CHOOSE a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-CHOOSE a b₁ ctxt ctxt₁) nnf cf with is-NAME a
