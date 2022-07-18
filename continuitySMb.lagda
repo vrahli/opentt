@@ -140,23 +140,23 @@ isHighestFreshℕ→≤ cn F f cF cf {n1} {w1} {w1'} {suc k1} comp1 n2 ish
 
 
 isHighestFreshℕ→≤-LOAD : (cn : comp→∀ℕ) (F f : Term) (cF : # F) (cf : # f)
-                      {n1 : ℕ} {w1 w1' : 𝕎·} {k1 : ℕ} (comp1 : steps k1 (νtestMLup F f , w1) ≡ (NUM n1 , w1'))
+                      {n1 : ℕ} {w1 w1' : 𝕎·} {k1 : ℕ} (comp1 : steps k1 (νtestMup F f , w1) ≡ (NUM n1 , w1'))
                       (n2 : ℕ)
 --                      (w2 w2' : 𝕎·) (k2 : ℕ) (comp2 : steps k2 (νtestMup F f , w2) ≡ (NUM n2 , w2'))
-                      → isHighestFreshℕ {k1} {w1} {w1'} {testMLup 0 F f} {NUM n1} n2 comp1
+                      → isHighestFreshℕ {k1} {w1} {w1'} {testMup 0 F f} {NUM n1} n2 comp1
                       → n1 ≤ n2
 isHighestFreshℕ→≤-LOAD cn F f cF cf {n1} {w1} {w1'} {suc k1} comp1 n2 ish
-  rewrite shiftNameDown-renn-shiftNameUp-LOAD (newChoiceT w1 (testMLup 0 F f)) F f cF cf =
-  isHighestℕ→≤-LOAD cn F f cF cf name n1 w0 w1' k1 comp1 n2 compat ish
+  rewrite shiftNameDown-renn-shiftNameUp (newChoiceT w1 (testMup 0 F f)) F f cF cf =
+  isHighestℕ→≤ cn F f cF cf name n1 w0 w1' k1 comp1 n2 compat ish
   where
     name : Name
-    name = newChoiceT w1 (testMLup 0 F f)
+    name = newChoiceT w1 (testMup 0 F f)
 
     w0 : 𝕎·
-    w0 = startNewChoiceT Res⊤ w1 (testMLup 0 F f)
+    w0 = startNewChoiceT Res⊤ w1 (testMup 0 F f)
 
     compat : compatible· name w0 Res⊤
-    compat = startChoiceCompatible· Res⊤ w1 name (¬newChoiceT∈dom𝕎 w1 (testMLup 0 F f))
+    compat = startChoiceCompatible· Res⊤ w1 name (¬newChoiceT∈dom𝕎 w1 (testMup 0 F f))
 
 
 
@@ -171,14 +171,14 @@ smallestModAuxAux : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : 
                     → Set(lsuc L)
 smallestModAuxAux cn kb gc i w F f w1 e1 w2 e2 ∈F ∈f =
   Lift {0ℓ} (lsuc(L))
-       (isHighestFreshℕ {fst (snd (snd h1))} {w1} {fst (snd h1)} {testMLup 0 ⌜ F ⌝ ⌜ f ⌝}
+       (isHighestFreshℕ {fst (snd (snd h1))} {w1} {fst (snd h1)} {testMup 0 ⌜ F ⌝ ⌜ f ⌝}
                          {NUM (fst h1)} (fst h2) (snd (snd (snd h1))))
    where
-      h1 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMLup F f #⇓ #NUM n from w1 to w'))
-      h1 = νtestMLup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
+      h1 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w1 to w'))
+      h1 = νtestMup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
 
-      h2 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMLup F f #⇓ #NUM n from w2 to w'))
-      h2 = νtestMLup⇓ℕ cn kb gc i w2 F f (equalInType-mon ∈F w2 e2) (equalInType-mon ∈f w2 e2)
+      h2 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w2 to w'))
+      h2 = νtestMup⇓ℕ cn kb gc i w2 F f (equalInType-mon ∈F w2 e2) (equalInType-mon ∈f w2 e2)
 
 
 
@@ -286,11 +286,11 @@ sub-AX-testM name F f cF cf
         | #shiftDown 4 (ct f cf) = refl
 
 
-
-→↓vars-names-testMLup-F : (v : Name) (F f : Term)
+{--
+→↓vars-names-testMup-F : (v : Name) (F f : Term)
                           → v ∈ names F
-                          → v ∈ ↓vars (names (testMLup 0 F f))
-→↓vars-names-testMLup-F v F f i
+                          → v ∈ ↓vars (names (testMup 0 F f))
+→↓vars-names-testMup-F v F f i
   rewrite names-shiftUp 1 (shiftUp 0 (shiftNameUp 0 F))
         | names-shiftUp 4 (shiftUp 3 (shiftUp 0 (shiftNameUp 0 f)))
         | names-shiftUp 0 (shiftNameUp 0 F)
@@ -302,12 +302,14 @@ sub-AX-testM name F f cF cf
   where
     j : v ∈ ↓vars (names (shiftNameUp 0 F))
     j rewrite names-shiftNameUp≡ 0 F = →∈↓vars-map-suc v (names F) i
+--}
 
 
-→↓vars-names-testMLup-f : (v : Name) (F f : Term)
+{--
+→↓vars-names-testMup-f : (v : Name) (F f : Term)
                           → v ∈ names f
-                          → v ∈ ↓vars (names (testMLup 0 F f))
-→↓vars-names-testMLup-f v F f i
+                          → v ∈ ↓vars (names (testMup 0 F f))
+→↓vars-names-testMup-f v F f i
   rewrite names-shiftUp 1 (shiftUp 0 (shiftNameUp 0 F))
         | names-shiftUp 4 (shiftUp 3 (shiftUp 0 (shiftNameUp 0 f)))
         | names-shiftUp 0 (shiftNameUp 0 F)
@@ -320,34 +322,33 @@ sub-AX-testM name F f cF cf
   where
     j : v ∈ ↓vars (names (shiftNameUp 0 f))
     j rewrite names-shiftNameUp≡ 0 f = →∈↓vars-map-suc v (names f) i
+--}
 
 
-
-
-
-¬newChoiceT-testMLup∈names𝕎 : (w : 𝕎·) (F f : Term)
-                            → ¬ (newChoiceT w (testMLup 0 F f)) ∈ names𝕎· w
-¬newChoiceT-testMLup∈names𝕎 w F f i =
-  snd (freshName (dom𝕎· w ++ names𝕎· w ++ ↓vars (names (testMLup 0 F f))))
+{--
+¬newChoiceT-testMup∈names𝕎 : (w : 𝕎·) (F f : Term)
+                            → ¬ (newChoiceT w (testMup 0 F f)) ∈ names𝕎· w
+¬newChoiceT-testMup∈names𝕎 w F f i =
+  snd (freshName (dom𝕎· w ++ names𝕎· w ++ ↓vars (names (testMup 0 F f))))
       (∈-++⁺ʳ (dom𝕎· w) (∈-++⁺ˡ i))
 
 
-¬newChoiceT-testMLup∈names-F : (w : 𝕎·) (F f : Term)
-                            → ¬ (newChoiceT w (testMLup 0 F f)) ∈ names F
-¬newChoiceT-testMLup∈names-F w F f i = q (→↓vars-names-testMLup-F (newChoiceT w (testMLup 0 F f)) F f i)
+¬newChoiceT-testMup∈names-F : (w : 𝕎·) (F f : Term)
+                            → ¬ (newChoiceT w (testMup 0 F f)) ∈ names F
+¬newChoiceT-testMup∈names-F w F f i = q (→↓vars-names-testMup-F (newChoiceT w (testMup 0 F f)) F f i)
   where
-    q : ¬ (newChoiceT w (testMLup 0 F f)) ∈ ↓vars (names (testMLup 0 F f))
-    q = λ x → snd (freshName (dom𝕎· w ++ names𝕎· w ++ ↓vars (names (testMLup 0 F f)))) (∈-++⁺ʳ (dom𝕎· w) (∈-++⁺ʳ (names𝕎· w) x))
+    q : ¬ (newChoiceT w (testMup 0 F f)) ∈ ↓vars (names (testMup 0 F f))
+    q = λ x → snd (freshName (dom𝕎· w ++ names𝕎· w ++ ↓vars (names (testMup 0 F f)))) (∈-++⁺ʳ (dom𝕎· w) (∈-++⁺ʳ (names𝕎· w) x))
 
 
 
-¬newChoiceT-testMLup∈names-f : (w : 𝕎·) (F f : Term)
-                            → ¬ (newChoiceT w (testMLup 0 F f)) ∈ names f
-¬newChoiceT-testMLup∈names-f w F f i = q (→↓vars-names-testMLup-f (newChoiceT w (testMLup 0 F f)) F f i)
+¬newChoiceT-testMup∈names-f : (w : 𝕎·) (F f : Term)
+                            → ¬ (newChoiceT w (testMup 0 F f)) ∈ names f
+¬newChoiceT-testMup∈names-f w F f i = q (→↓vars-names-testMup-f (newChoiceT w (testMup 0 F f)) F f i)
   where
-    q : ¬ (newChoiceT w (testMLup 0 F f)) ∈ ↓vars (names (testMLup 0 F f))
-    q = λ x → snd (freshName (dom𝕎· w ++ names𝕎· w ++ ↓vars (names (testMLup 0 F f)))) (∈-++⁺ʳ (dom𝕎· w) (∈-++⁺ʳ (names𝕎· w) x))
-
+    q : ¬ (newChoiceT w (testMup 0 F f)) ∈ ↓vars (names (testMup 0 F f))
+    q = λ x → snd (freshName (dom𝕎· w ++ names𝕎· w ++ ↓vars (names (testMup 0 F f)))) (∈-++⁺ʳ (dom𝕎· w) (∈-++⁺ʳ (names𝕎· w) x))
+--}
 
 
 sub-AX-probeM : (name : Name) (F f : Term) (cF : # F) (cf : # f)
@@ -437,33 +438,33 @@ getT≤ℕ-chooseT→ name w n (
     q4 = isHighestℕ→getT≤ℕ {k} {chooseT name w1 (NUM 0)} {w2} {probeM name F f} {NUM n1} n1 name q2 q3
 
 
-steps-testML→getT≤ℕ : (cn : comp→∀ℕ) (k : ℕ) (name : Name) (F f : Term) (cF : # F) (cf : # f) (w1 w2 : 𝕎·) (n : ℕ)
+steps-testM→getT≤ℕ : (cn : comp→∀ℕ) (k : ℕ) (name : Name) (F f : Term) (cF : # F) (cf : # f) (w1 w2 : 𝕎·) (n : ℕ)
                         → compatible· name w1 Res⊤
-                        → steps k (testML name F f , w1) ≡ (NUM n , w2)
+                        → steps k (testM name F f , w1) ≡ (NUM n , w2)
                         → getT≤ℕ w2 n name
-steps-testML→getT≤ℕ cn k name F f cF cf w1 w2 n compat comp =
+steps-testM→getT≤ℕ cn k name F f cF cf w1 w2 n compat comp =
   fst (snd h) , fst (snd (snd (snd (snd h)))) , ≡suc→< (snd (snd (snd (snd (snd h)))))
   where
     h : Σ Term (λ v → Σ ℕ (λ j →
-          APPLY F (upd name f) ⇓ v from (chooseT name (startNewChoices Res⊤ w1 F) (NUM 0)) to w2
+          APPLY F (upd name f) ⇓ v from (chooseT name w1 {--(startNewChoices Res⊤ w1 F)--} (NUM 0)) to w2
           × isValue v
           × getT 0 name w2 ≡ just (NUM j)
           × n ≡ suc j))
-    h = testML⇓→ cn {w1} {w2} {F} {f} {n} {name} cF cf compat (k , comp)
+    h = testM⇓→ cn {w1} {w2} {F} {f} {n} {name} cF cf compat (k , comp)
 
 
-steps-testML→0< : (cn : comp→∀ℕ) (k : ℕ) (name : Name) (F f : Term) (cF : # F) (cf : # f) (w1 w2 : 𝕎·) (n : ℕ)
+steps-testM→0< : (cn : comp→∀ℕ) (k : ℕ) (name : Name) (F f : Term) (cF : # F) (cf : # f) (w1 w2 : 𝕎·) (n : ℕ)
                         → compatible· name w1 Res⊤
-                        → steps k (testML name F f , w1) ≡ (NUM n , w2)
+                        → steps k (testM name F f , w1) ≡ (NUM n , w2)
                         → 0 < n
-steps-testML→0< cn k name F f cF cf w1 w2 n compat comp = c
+steps-testM→0< cn k name F f cF cf w1 w2 n compat comp = c
   where
     h : Σ Term (λ v → Σ ℕ (λ j →
-          APPLY F (upd name f) ⇓ v from (chooseT name (startNewChoices Res⊤ w1 F) (NUM 0)) to w2
+          APPLY F (upd name f) ⇓ v from (chooseT name w1 {--(startNewChoices Res⊤ w1 F)--} (NUM 0)) to w2
           × isValue v
           × getT 0 name w2 ≡ just (NUM j)
           × n ≡ suc j))
-    h = testML⇓→ cn {w1} {w2} {F} {f} {n} {name} cF cf compat (k , comp)
+    h = testM⇓→ cn {w1} {w2} {F} {f} {n} {name} cF cf compat (k , comp)
 
     c : 0 < n
     c rewrite snd (snd (snd (snd (snd h)))) = _≤_.s≤s _≤_.z≤n
@@ -486,36 +487,44 @@ steps-testML→0< cn k name F f cF cf w1 w2 n compat comp = c
                      → name ∈ dom𝕎· w1
                      → getT≤ℕ w1 n1 name
                      → compatible· name w1 Res⊤
-                     → (comp : steps k (testML name F f , w1) ≡ (NUM n1 , w2))
-                     → isHighestℕ {k} {w1} {w2} {testML name F f} {NUM n1} n1 name comp
-→isHighestℕ-aux2 cc cn gc 0 name F f cF cf w1 w2 n1 nnF nnf nnw idom gtw  compat ()
+                     → (comp : steps k (testM name F f , w1) ≡ (NUM n1 , w2))
+                     → isHighestℕ {k} {w1} {w2} {testM name F f} {NUM n1} n1 name comp
+→isHighestℕ-aux2 cc cn gc k name F f cF cf w1 w2 n1 nnF nnf nnw idom gtw compat comp =
+  →isHighestℕ-aux3
+     cc cn gc k name F f cF cf w1 {--(startNewChoices Res⊤ w1 F)--} w2 n1 nnF nnf
+     nnw idom compat gtw
+     (steps-testM→getT≤ℕ cn k name F f cF cf w1 w2 n1 compat comp)
+     comp
+{--
+ ()
 →isHighestℕ-aux2 cc cn gc 1 name F f cF cf w1 w2 n1 nnF nnf nnw idom gtw compat ()
 →isHighestℕ-aux2 cc cn gc (suc (suc k)) name F f cF cf w1 w2 n1 nnF nnf nnw idom gtw compat comp =
-  gtw , gtw' ,
-  ≡→isHighestℕ k name (testM name F f) (sub AX (shiftUp 0 (testM name F f)))
-    (NUM n1) (startNewChoices Res⊤ w1 F) w2 n1
+  gtw , {!!} {--gtw--} ,
+  {!!} {--≡→isHighestℕ k name (testM name F f) (sub AX (shiftUp 0 (testM name F f)))
+    (NUM n1) w1 {--(startNewChoices Res⊤ w1 F)--} w2 n1
     q1
-    (sym (sub-AX-testM name F f cF cf)) comp
+    (sym (sub-AX-testM name F f cF cf)) ? {--comp--}
+--}
   where
-    nnw' : ¬ name ∈ names𝕎· (startNewChoices Res⊤ w1 F)
-    nnw' = →¬names𝕎-startNewChoices cc w1 F name nnw
+--    nnw' : ¬ name ∈ names𝕎· (startNewChoices Res⊤ w1 F)
+--    nnw' = →¬names𝕎-startNewChoices cc w1 F name nnw
 
-    idom' : name ∈ dom𝕎· (startNewChoices Res⊤ w1 F)
-    idom' = ⊆dom𝕎-startNewChoices cc w1 F idom
+--    idom' : name ∈ dom𝕎· (startNewChoices Res⊤ w1 F)
+--    idom' = ⊆dom𝕎-startNewChoices cc w1 F idom
 
-    compat' : compatible· name (startNewChoices Res⊤ w1 F) Res⊤
-    compat' = ⊑-compatible· (startNewChoices⊑ Res⊤ w1 F) compat
+--    compat' : compatible· name (startNewChoices Res⊤ w1 F) Res⊤
+--    compat' = ⊑-compatible· (startNewChoices⊑ Res⊤ w1 F) compat
 
-    gtw' : getT≤ℕ (startNewChoices Res⊤ w1 F) n1 name
-    gtw' = →getT≤ℕ-startNewChoices cc w1 F n1 name idom gtw
+--    gtw' : getT≤ℕ w1 {--(startNewChoices Res⊤ w1 F)--} n1 name
+--    gtw' = →getT≤ℕ-startNewChoices cc w1 F n1 name idom gtw
 
-    q1 : (comp₁ : steps k (testM name F f , startNewChoices Res⊤ w1 F) ≡ (NUM n1 , w2))
-         → isHighestℕ {k} {startNewChoices Res⊤ w1 F} {w2} {testM name F f} {NUM n1} n1 name comp₁
+    q1 : (comp₁ : steps k (testM name F f , w1 {--startNewChoices Res⊤ w1 F--}) ≡ (NUM n1 , w2))
+         → isHighestℕ {k} {w1 {--startNewChoices Res⊤ w1 F--}} {w2} {testM name F f} {NUM n1} n1 name comp₁
     q1 = →isHighestℕ-aux3
-           cc cn gc k name F f cF cf (startNewChoices Res⊤ w1 F) w2 n1 nnF nnf
-           nnw' idom' compat' gtw'
-           (steps-testML→getT≤ℕ cn (suc (suc k)) name F f cF cf w1 w2 n1 compat comp)
-
+           cc cn gc k name F f cF cf w1 {--(startNewChoices Res⊤ w1 F)--} w2 n1 nnF nnf
+           nnw idom compat gtw
+           (steps-testM→getT≤ℕ cn (suc (suc k)) name F f cF cf w1 w2 n1 compat comp)
+--}
 
 
 →isHighestℕ-aux1 : (cc : ContConds) (cn : comp→∀ℕ) (gc : get-choose-ℕ) (k : ℕ) (name : Name) (F f : Term) (cF : # F) (cf : # f) (w1 w2 : 𝕎·) (n1 : ℕ)
@@ -525,14 +534,14 @@ steps-testML→0< cn k name F f cF cf w1 w2 n compat comp = c
                      → name ∈ dom𝕎· w1
                      → getT≤ℕ w1 n1 name
                      → compatible· name w1 Res⊤
-                     → (comp : steps k (shiftNameDown 0 (renn 0 (suc name) (testMLup 0 F f)) , w1) ≡ (NUM n1 , w2))
-                     → isHighestℕ {k} {w1} {w2} {shiftNameDown 0 (renn 0 (suc name) (testMLup 0 F f))} {NUM n1} n1 name comp
+                     → (comp : steps k (shiftNameDown 0 (renn 0 (suc name) (testMup 0 F f)) , w1) ≡ (NUM n1 , w2))
+                     → isHighestℕ {k} {w1} {w2} {shiftNameDown 0 (renn 0 (suc name) (testMup 0 F f))} {NUM n1} n1 name comp
 →isHighestℕ-aux1 cc cn gc k name F f cF cf w1 w2 n1 nnF nnf nnw idom gtw compat comp =
-  ≡→isHighestℕ k name (testML name F f)
-    (shiftNameDown 0 (renn 0 (suc name) (testMLup 0 F f))) (NUM n1) w1
+  ≡→isHighestℕ k name (testM name F f)
+    (shiftNameDown 0 (renn 0 (suc name) (testMup 0 F f))) (NUM n1) w1
     w2 n1
-    (→isHighestℕ-aux2 cc cn gc k name F f cF cf w1 w2 n1 nnF nnf nnw idom gtw compat)
-    (sym (shiftNameDown-renn-shiftNameUp-LOAD name F f cF cf))
+    (→isHighestℕ-aux2 cc cn gc k name F f cF cf w1 w2 n1 nnF nnf nnw idom gtw compat) --(→isHighestℕ-aux3 cc cn gc k name F f cF cf w1 w2 n1 nnF nnf nnw idom gtw compat)
+    (sym (shiftNameDown-renn-shiftNameUp name F f cF cf))
     comp
 
 
@@ -560,49 +569,49 @@ isHighestℕ≤ (suc k) w1 w2 a b n1 n2 name comp h q with step⊎ a w1
                        (w1 : 𝕎·) (e1 : w ⊑· w1) (w2 : 𝕎·) (e2 : w ⊑· w2)
                        → (∈F : ∈Type i w #BAIRE→NAT F)
                        → (∈f : ∈Type i w #BAIRE f)
-                       → fst (νtestMLup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1))
-                          ≤ fst (νtestMLup⇓ℕ cn kb gc i w2 F f (equalInType-mon ∈F w2 e2) (equalInType-mon ∈f w2 e2))
+                       → fst (νtestMup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1))
+                          ≤ fst (νtestMup⇓ℕ cn kb gc i w2 F f (equalInType-mon ∈F w2 e2) (equalInType-mon ∈f w2 e2))
                        → smallestModAuxAux cn kb gc i w F f w1 e1 w2 e2 ∈F ∈f
 →smallestModAuxAux cc cn kb gc i w F f w1 e1 w2 e2 ∈F ∈f h
-  with νtestMLup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
-     | νtestMLup⇓ℕ cn kb gc i w2 F f (equalInType-mon ∈F w2 e2) (equalInType-mon ∈f w2 e2)
+  with νtestMup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
+     | νtestMup⇓ℕ cn kb gc i w2 F f (equalInType-mon ∈F w2 e2) (equalInType-mon ∈f w2 e2)
 ... | n1 , w1' , 0 , () | n2 , w2' , k2 , c2
 ... | n1 , w1' , suc k1 , c1 | n2 , w2' , 0 , ()
 ... | n1 , w1' , suc k1 , c1 | n2 , w2' , suc k2 , c2 =
   lift (isHighestℕ≤ k1 w0 w1'
-          (shiftNameDown 0 (renn 0 (suc name) (testMLup 0 ⌜ F ⌝ ⌜ f ⌝)))
+          (shiftNameDown 0 (renn 0 (suc name) (testMup 0 ⌜ F ⌝ ⌜ f ⌝)))
           (NUM n1) n1 n2 name c1 h h1)
   where
     name : Name
-    name = newChoiceT w1 (testMLup 0 ⌜ F ⌝ ⌜ f ⌝)
+    name = newChoiceT w1 (testMup 0 ⌜ F ⌝ ⌜ f ⌝)
 
     w0 : 𝕎·
-    w0 = startNewChoiceT Res⊤ w1 (testMLup 0 ⌜ F ⌝ ⌜ f ⌝)
+    w0 = startNewChoiceT Res⊤ w1 (testMup 0 ⌜ F ⌝ ⌜ f ⌝)
 
     compat : compatible· name w0 Res⊤
-    compat = startChoiceCompatible· Res⊤ w1 name (¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names (testMLup 0 ⌜ F ⌝ ⌜ f ⌝))))
+    compat = startChoiceCompatible· Res⊤ w1 name (¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names (testMup 0 ⌜ F ⌝ ⌜ f ⌝))))
 
     nnw : ¬ name ∈ names𝕎· w0
-    nnw = λ i → ¬newChoiceT-testMLup∈names𝕎 w1 ⌜ F ⌝ ⌜ f ⌝ (∈names𝕎-startNewChoiceT→ cc name w1 (testMLup 0 ⌜ F ⌝ ⌜ f ⌝) i)
+    nnw = λ i → ¬newChoiceT-testMup∈names𝕎 w1 ⌜ F ⌝ ⌜ f ⌝ (∈names𝕎-startNewChoiceT→ cc name w1 (testMup 0 ⌜ F ⌝ ⌜ f ⌝) i)
 
     idom : name ∈ dom𝕎· w0
-    idom = newChoiceT∈dom𝕎 cc w1 (testMLup 0 ⌜ F ⌝ ⌜ f ⌝)
+    idom = newChoiceT∈dom𝕎 cc w1 (testMup 0 ⌜ F ⌝ ⌜ f ⌝)
 
     nidom : ¬ name ∈ dom𝕎· w1
-    nidom = ¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names (testMLup 0 ⌜ F ⌝ ⌜ f ⌝)))
+    nidom = ¬fresh∈dom𝕎2 w1 (names𝕎· w1) (↓vars (names (testMup 0 ⌜ F ⌝ ⌜ f ⌝)))
 
-    c1' : steps k1 (testML name ⌜ F ⌝ ⌜ f ⌝ , w0) ≡ (NUM n1 , w1')
-    c1' rewrite shiftNameDown-renn-shiftNameUp-LOAD name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f) = c1
+    c1' : steps k1 (testM name ⌜ F ⌝ ⌜ f ⌝ , w0) ≡ (NUM n1 , w1')
+    c1' rewrite shiftNameDown-renn-shiftNameUp name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f) = c1
 
     gtw : getT≤ℕ w0 n1 name
-    gtw = 0 , ContConds.ccGstart0 cc name w1 (testMLup 0 ⌜ F ⌝ ⌜ f ⌝) nidom ,
-          steps-testML→0< cn k1 name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f) w0 w1' n1 compat c1'
+    gtw = 0 , ContConds.ccGstart0 cc name w1 (testMup 0 ⌜ F ⌝ ⌜ f ⌝) nidom ,
+          steps-testM→0< cn k1 name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f) w0 w1' n1 compat c1'
 
-    h1 : isHighestℕ {k1} {w0} {w1'} {shiftNameDown 0 (renn 0 (suc name) (testMLup 0 ⌜ F ⌝ ⌜ f ⌝))} {NUM n1} n1 name c1
+    h1 : isHighestℕ {k1} {w0} {w1'} {shiftNameDown 0 (renn 0 (suc name) (testMup 0 ⌜ F ⌝ ⌜ f ⌝))} {NUM n1} n1 name c1
     h1 = →isHighestℕ-aux1
            cc cn gc k1 name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f) w0 w1' n1
-           (¬newChoiceT-testMLup∈names-F w1 ⌜ F ⌝ ⌜ f ⌝)
-           (¬newChoiceT-testMLup∈names-f w1 ⌜ F ⌝ ⌜ f ⌝)
+           (¬newChoiceT-testMup∈names-F w1 ⌜ F ⌝ ⌜ f ⌝)
+           (¬newChoiceT-testMup∈names-f w1 ⌜ F ⌝ ⌜ f ⌝)
            nnw idom gtw compat
            c1
 
@@ -612,11 +621,11 @@ isHighestℕ≤ (suc k) w1 w2 a b n1 n2 name comp h q with step⊎ a w1
                        → (∈F : ∈Type i w #BAIRE→NAT F)
                        → (∈f : ∈Type i w #BAIRE f)
                        → ¬ smallestModAuxAux cn kb gc i w F f w1 e1 w2 e2 ∈F ∈f
-                       → fst (νtestMLup⇓ℕ cn kb gc i w2 F f (equalInType-mon ∈F w2 e2) (equalInType-mon ∈f w2 e2))
-                          < fst (νtestMLup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1))
+                       → fst (νtestMup⇓ℕ cn kb gc i w2 F f (equalInType-mon ∈F w2 e2) (equalInType-mon ∈f w2 e2))
+                          < fst (νtestMup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1))
 ¬smallestModAuxAux→ cc cn kb gc i w F f w1 e1 w2 e2 ∈F ∈f h
-  with fst (νtestMLup⇓ℕ cn kb gc i w2 F f (equalInType-mon ∈F w2 e2) (equalInType-mon ∈f w2 e2))
-        <? fst (νtestMLup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1))
+  with fst (νtestMup⇓ℕ cn kb gc i w2 F f (equalInType-mon ∈F w2 e2) (equalInType-mon ∈f w2 e2))
+        <? fst (νtestMup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1))
 ... | yes q = q
 ... | no q = ⊥-elim (h (→smallestModAuxAux cc cn kb gc i w F f w1 e1 w2 e2 ∈F ∈f (≮⇒≥ q)))
 
@@ -651,8 +660,8 @@ isHighestℕ≤ (suc k) w1 w2 a b n1 n2 name comp h q with step⊎ a w1
 ... | yes p = p
 ... | no p = ⊥-elim (∀𝕎smallestMod⊤-aux
                        w0
-                       (λ w' e → fst (νtestMLup⇓ℕ cn kb gc i w' F f (equalInType-mon (equalInType-mon ∈F w0 e0) w' e) (equalInType-mon (equalInType-mon ∈f w0 e0) w' e)))
-                       (fst (νtestMLup⇓ℕ cn kb gc i w0 F f (equalInType-mon (equalInType-mon ∈F w0 e0) w0 (⊑-refl· w0)) (equalInType-mon (equalInType-mon ∈f w0 e0) w0 (⊑-refl· w0))))
+                       (λ w' e → fst (νtestMup⇓ℕ cn kb gc i w' F f (equalInType-mon (equalInType-mon ∈F w0 e0) w' e) (equalInType-mon (equalInType-mon ∈f w0 e0) w' e)))
+                       (fst (νtestMup⇓ℕ cn kb gc i w0 F f (equalInType-mon (equalInType-mon ∈F w0 e0) w0 (⊑-refl· w0)) (equalInType-mon (equalInType-mon ∈f w0 e0) w0 (⊑-refl· w0))))
                        (w0 , ⊑-refl· w0 , lift refl)
                        h1)
   where
@@ -675,8 +684,8 @@ isHighestℕ≤ (suc k) w1 w2 a b n1 n2 name comp h q with step⊎ a w1
     h0 = snd (snd h)
 
     h1 : ∀𝕎 w0 (λ w1 e1 → ∃𝕎 w0 (λ w2 e2 →
-           Lift {0ℓ} (lsuc(L)) (fst (νtestMLup⇓ℕ cn kb gc i w2 F f (equalInType-mon (equalInType-mon ∈F w0 e0) w2 e2) (equalInType-mon (equalInType-mon ∈f w0 e0) w2 e2))
-                                < fst (νtestMLup⇓ℕ cn kb gc i w1 F f (equalInType-mon (equalInType-mon ∈F w0 e0) w1 e1) (equalInType-mon (equalInType-mon ∈f w0 e0) w1 e1)))))
+           Lift {0ℓ} (lsuc(L)) (fst (νtestMup⇓ℕ cn kb gc i w2 F f (equalInType-mon (equalInType-mon ∈F w0 e0) w2 e2) (equalInType-mon (equalInType-mon ∈f w0 e0) w2 e2))
+                                < fst (νtestMup⇓ℕ cn kb gc i w1 F f (equalInType-mon (equalInType-mon ∈F w0 e0) w1 e1) (equalInType-mon (equalInType-mon ∈f w0 e0) w1 e1)))))
     h1 w1 e1 = fst (h0 w1 e1) ,
                fst (snd (h0 w1 e1)) ,
                lift (¬smallestModAuxAux→
@@ -695,27 +704,27 @@ abstract
       (∈f : ∈Type i w #BAIRE f)
       → smallestModAux cn kb gc i w F f w1 e1 ∈F ∈f
       → ∀𝕎 w (λ w' _ → (k : ℕ)
-                         → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ n → #νtestMLup F f #⇓ #NUM n at w'' × k < n)))
+                         → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ n → #νtestMup F f #⇓ #NUM n at w'' × k < n)))
                          → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
-      → Σ ℕ (λ n → Σ 𝕎· (λ w2 → #νtestMLup F f #⇓ #NUM n from w1 to w2
+      → Σ ℕ (λ n → Σ 𝕎· (λ w2 → #νtestMup F f #⇓ #NUM n from w1 to w2
                    × ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < n
                                     → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))))
   smallestModAux→NATeq cn kb gc {i} {w} {F} {f} {g} {w1} {e1} ∈F ∈f sma h =
     fst h1 , fst (snd h1) , snd (snd h1) , concl
     where
-      h1 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMLup F f #⇓ #NUM n from w1 to w'))
-      h1 = νtestMLup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
+      h1 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w1 to w'))
+      h1 = νtestMup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
 
       concl : ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < fst h1 → NATeq w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
       concl w1' e1' k ltk = h w1' (⊑-trans· e1 e1') k q
         where
-          q : ∀𝕎 w1' (λ w'' _ → Lift (lsuc L) (Σ ℕ (λ n → #νtestMLup F f #⇓ #NUM n at w'' × k < n)))
-          q w1'' e1'' = lift (fst h2 , ⇓-from-to→⇓ (snd (snd h2)) , <-transˡ ltk (isHighestFreshℕ→≤-LOAD cn ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f) {_} {w1} {fst (snd h1)} {fst (snd (snd h1))} (snd (snd (snd h1))) (fst h2) hst))
+          q : ∀𝕎 w1' (λ w'' _ → Lift (lsuc L) (Σ ℕ (λ n → #νtestMup F f #⇓ #NUM n at w'' × k < n)))
+          q w1'' e1'' = lift (fst h2 , ⇓-from-to→⇓ (snd (snd h2)) , <-transˡ ltk (isHighestFreshℕ→≤ cn ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f) {_} {w1} {fst (snd h1)} {fst (snd (snd h1))} (snd (snd (snd h1))) (fst h2) hst))
             where
-              h2 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMLup F f #⇓ #NUM n from w1'' to w'))
-              h2 = νtestMLup⇓ℕ cn kb gc i w1'' F f (equalInType-mon ∈F w1'' (⊑-trans· e1 (⊑-trans· e1' e1''))) (equalInType-mon ∈f w1'' (⊑-trans· e1 (⊑-trans· e1' e1'')))
+              h2 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w1'' to w'))
+              h2 = νtestMup⇓ℕ cn kb gc i w1'' F f (equalInType-mon ∈F w1'' (⊑-trans· e1 (⊑-trans· e1' e1''))) (equalInType-mon ∈f w1'' (⊑-trans· e1 (⊑-trans· e1' e1'')))
 
-              hst : isHighestFreshℕ {fst (snd (snd h1))} {w1} {fst (snd h1)} {testMLup 0 ⌜ F ⌝ ⌜ f ⌝}
+              hst : isHighestFreshℕ {fst (snd (snd h1))} {w1} {fst (snd h1)} {testMup 0 ⌜ F ⌝ ⌜ f ⌝}
                                      {NUM (fst h1)} (fst h2) (snd (snd (snd h1)))
               hst = lower (sma w1'' (⊑-trans· e1 (⊑-trans· e1' e1'')))
 
@@ -728,27 +737,27 @@ abstract
       (∈f : ∈Type i w #BAIRE f)
       → smallestModAux cn kb gc i w F f w1 e1 ∈F ∈f
       → ∀𝕎 w (λ w' _ → (k : ℕ)
-                         → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ n → #νtestMLup F f #⇓ #NUM n at w'' × k < n)))
+                         → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ n → #νtestMup F f #⇓ #NUM n at w'' × k < n)))
                          → #⇛!sameℕ w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
-      → Σ ℕ (λ n → Σ 𝕎· (λ w2 → #νtestMLup F f #⇓ #NUM n from w1 to w2
+      → Σ ℕ (λ n → Σ 𝕎· (λ w2 → #νtestMup F f #⇓ #NUM n from w1 to w2
                    × ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < n
                                     → #⇛!sameℕ w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))))
   smallestModAux→⇛!sameℕ cn kb gc {i} {w} {F} {f} {g} {w1} {e1} ∈F ∈f sma h =
     fst h1 , fst (snd h1) , snd (snd h1) , concl
     where
-      h1 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMLup F f #⇓ #NUM n from w1 to w'))
-      h1 = νtestMLup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
+      h1 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w1 to w'))
+      h1 = νtestMup⇓ℕ cn kb gc i w1 F f (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1)
 
       concl : ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < fst h1 → #⇛!sameℕ w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
       concl w1' e1' k ltk = h w1' (⊑-trans· e1 e1') k q
         where
-          q : ∀𝕎 w1' (λ w'' _ → Lift (lsuc L) (Σ ℕ (λ n → #νtestMLup F f #⇓ #NUM n at w'' × k < n)))
-          q w1'' e1'' = lift (fst h2 , ⇓-from-to→⇓ (snd (snd h2)) , <-transˡ ltk (isHighestFreshℕ→≤-LOAD cn ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f) {_} {w1} {fst (snd h1)} {fst (snd (snd h1))} (snd (snd (snd h1))) (fst h2) hst))
+          q : ∀𝕎 w1' (λ w'' _ → Lift (lsuc L) (Σ ℕ (λ n → #νtestMup F f #⇓ #NUM n at w'' × k < n)))
+          q w1'' e1'' = lift (fst h2 , ⇓-from-to→⇓ (snd (snd h2)) , <-transˡ ltk (isHighestFreshℕ→≤ cn ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f) {_} {w1} {fst (snd h1)} {fst (snd (snd h1))} (snd (snd (snd h1))) (fst h2) hst))
             where
-              h2 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMLup F f #⇓ #NUM n from w1'' to w'))
-              h2 = νtestMLup⇓ℕ cn kb gc i w1'' F f (equalInType-mon ∈F w1'' (⊑-trans· e1 (⊑-trans· e1' e1''))) (equalInType-mon ∈f w1'' (⊑-trans· e1 (⊑-trans· e1' e1'')))
+              h2 : Σ ℕ (λ n → Σ 𝕎· (λ w' → #νtestMup F f #⇓ #NUM n from w1'' to w'))
+              h2 = νtestMup⇓ℕ cn kb gc i w1'' F f (equalInType-mon ∈F w1'' (⊑-trans· e1 (⊑-trans· e1' e1''))) (equalInType-mon ∈f w1'' (⊑-trans· e1 (⊑-trans· e1' e1'')))
 
-              hst : isHighestFreshℕ {fst (snd (snd h1))} {w1} {fst (snd h1)} {testMLup 0 ⌜ F ⌝ ⌜ f ⌝}
+              hst : isHighestFreshℕ {fst (snd (snd h1))} {w1} {fst (snd h1)} {testMup 0 ⌜ F ⌝ ⌜ f ⌝}
                                      {NUM (fst h1)} (fst h2) (snd (snd (snd h1)))
               hst = lower (sma w1'' (⊑-trans· e1 (⊑-trans· e1' e1'')))
 
