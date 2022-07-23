@@ -150,6 +150,7 @@ names-sub⊆ a b {x} i with Name∈⊎ x (names a) | Name∈⊎ x (names b)
 ¬names→[] (INR a) x = ¬names→[] a x
 ¬names→[] (DECIDE a a₁ a₂) x rewrite ¬names→[] a (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} x) | ¬names→[] a₁ (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} x) | ¬names→[] a₂ (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} x) = refl
 ¬names→[] (EQ a a₁ a₂) x rewrite ¬names→[] a (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} x) | ¬names→[] a₁ (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} x) | ¬names→[] a₂ (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} x) = refl
+¬names→[] (EQB a a₁ a₂ a₃) x rewrite ¬names→[] a (∧≡true→1-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} x) | ¬names→[] a₁ (∧≡true→2-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} x) | ¬names→[] a₂ (∧≡true→3-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} x) | ¬names→[] a₃ (∧≡true→4-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} x) = refl
 ¬names→[] AX x = refl
 ¬names→[] FREE x = refl
 ¬names→[] (CHOOSE a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
@@ -306,6 +307,7 @@ step-pres-dom cc {DECIDE a a₁ a₂} {b} {w1} {w2} comp ss with is-INL a
     ind = step-pres-dom cc {a} {a'} {w1} {w1'} z (++⊆3→1 {names a} {names a₁} {names a₂} {dom𝕎· w1} ss)
 ... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-pres-dom cc {EQ a a₁ a₂} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+step-pres-dom cc {EQB a a₁ a₂ a₃} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
 step-pres-dom cc {AX} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
 step-pres-dom cc {FREE} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
 step-pres-dom cc {CS x} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
