@@ -46,6 +46,8 @@ open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 -- This version requires choices to be Booleans, but also freezable to always be true:
 open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+-- MP is however consistent when restricted to pure functions
+open import mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 
 -- This instance of 'choiceBar' uses Beth bars and terms as choices:
 open import modInstanceBethCs

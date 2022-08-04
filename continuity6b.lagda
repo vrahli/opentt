@@ -77,14 +77,10 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
-{--
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
---}
+--open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-{--
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
---}
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
@@ -141,22 +137,6 @@ upto𝕎-pres-¬∈names𝕎 {name} {w1} {w2} upw i rewrite upto𝕎.upwNames up
 
 
 
-→equalInType-NAT! : (i : ℕ) (w : 𝕎·) (a b : CTerm)
-                    → □· w (λ w' _ → #⇛!sameℕ w' a b)
-                    → equalInType i w #NAT! a b
-→equalInType-NAT! i w a b eqi =
-  isTypeNAT! ,
-  Mod.∀𝕎-□Func M aw eqi
-  where
-    aw : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' a b
-                       → TCONSTeq (λ t1 t2 → □· w' (λ w'' _ → #strongMonEq w'' t1 t2)) w' a b)
-    aw w1 e1 (n , c₁ , c₂) =
-      Mod.∀𝕎-□ M (λ w2 e2 → n , #⇛!-#⇛ {w2} {a} {#NUM n} (∀𝕎-mon e2 c₁) , #⇛!-#⇛ {w2} {b} {#NUM n} (∀𝕎-mon e2 c₂)) ,
-      #⇛!-pres-#⇓→#⇓!-rev {w1} {#NUM n} {a} c₁ (#⇓→#⇓!-NUM w1 n) ,
-      #⇛!-pres-#⇓→#⇓!-rev {w1} {#NUM n} {b} c₂ (#⇓→#⇓!-NUM w1 n)
-
-
-
 wfRen-chooseT0if : (cc : ContConds) (name : Name) (w1 w2 : 𝕎·) (r : ren) (m : ℕ)
                    → wfRen w1 w2 r
                    → wfRen (chooseT name w1 (NUM m)) w2 r
@@ -191,6 +171,40 @@ upto𝕎-chooseT0if cc name w1 w2 r n m (mkUpto𝕎 {--wf--} upw) with n <? m
     -- (upto𝕎getT-chooseT cc name w r (NUM m))
 ... | no x = mkUpto𝕎 {--wf--} upw
  --mkUpto𝕎 {--refl refl (sameRes-refl w)--} (λ n1 n2 k d1 d2 r → {!!} {--refl--})
+
+
+
+-- use this instead of ⇛!sameℕ below and get it from a ∼ type?
+⇛!sameV : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
+⇛!sameV w t1 t2 = ∀𝕎 w (λ w1 e1 → Lift {L} (lsuc(L)) ((w2 : 𝕎·) (v : Term)
+                                 → isValue v
+                                 → t1 ⇓ v from w1 to w2
+                                 → t2 ⇓ v from w1 to w2))
+
+
+#⇛!sameV : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
+#⇛!sameV w t1 t2 = ⇛!sameV w ⌜ t1 ⌝ ⌜ t2 ⌝
+
+
+
+⇛!sameℕ→⇛!sameV : (w : 𝕎·) (a b : CTerm)
+                    → #⇛!sameℕ w a b
+                    → #⇛!sameV w a b
+⇛!sameℕ→⇛!sameV w a b (n , c₁ , c₂) w1 e1 = lift c
+  where
+    c : (w2 : 𝕎·) (v : Term) → isValue v → ⌜ a ⌝ ⇓ v from w1 to w2 → ⌜ b ⌝ ⇓ v from w1 to w2
+    c w2 v isv comp = c'
+      where
+        c₁' : ⌜ a ⌝ ⇓ NUM n from w1 to w1
+        c₁' = lower (c₁ w1 e1)
+
+        c₂' : ⌜ b ⌝ ⇓ NUM n from w1 to w1
+        c₂' = lower (c₂ w1 e1)
+
+        c' : ⌜ b ⌝ ⇓ v from w1 to w2
+        c' rewrite fst (⇓-from-to→≡𝕎 {w1} {w2} {w1} {⌜ a ⌝} {v} {NUM n} isv tt comp c₁')
+                 | snd (⇓-from-to→≡𝕎 {w1} {w2} {w1} {⌜ a ⌝} {v} {NUM n} isv tt comp c₁') = c₂'
+
 
 
 abstract
@@ -334,6 +348,9 @@ abstract
       sn : ⇛!sameℕ w0 (APPLY f (NUM m)) (APPLY g (NUM m))
       sn = eqn w0 (⊑-refl· _) m ltm
 
+--      sv : ⇛!sameV w0 (APPLY f (NUM m)) (APPLY g (NUM m))
+--      sv = {!!}
+
       i : ℕ
       i = fst sn
 
@@ -407,6 +424,7 @@ abstract
 
       compgc : steps (k5 + k6) (APPLY (force g) b , w) ≡ (NUM i , w1b)
       compgc = steps-trans+ {k5} {k6} {APPLY (force g) b} {APPLY g (NUM m)} {NUM i} {w} {w1x} {w1b} compgb c1b
+
 
 
 

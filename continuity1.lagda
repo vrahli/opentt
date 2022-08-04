@@ -1568,13 +1568,6 @@ testM-NAT cn exb gc i w F f nnF nnf ∈F ∈f =
     aw w' e' = νtestM-NAT cn exb gc i w' F f nnF nnf (equalInType-mon ∈F w' e') (equalInType-mon ∈f w' e')
 
 
-lam2AX : Term
-lam2AX = LAMBDA (LAMBDA AX)
-
-
-lam3AX : Term
-lam3AX = LAMBDA (LAMBDA (LAMBDA AX))
-
 
 #contBody : (F f : CTerm) → CTerm
 #contBody F f = ct (contBody ⌜ F ⌝ ⌜ f ⌝) c
@@ -1766,15 +1759,6 @@ lowerVars-fvars-[0,1,2] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,2] (
                                        (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]BAIREn #[1]VAR1))
                                                 (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT))))
 #contBody≡ F f = CTerm≡ refl
-
-
-
-#lam2AX : CTerm
-#lam2AX = ct lam2AX refl
-
-
-#lam3AX : CTerm
-#lam3AX = ct lam3AX refl
 
 
 

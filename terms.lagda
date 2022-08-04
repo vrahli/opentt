@@ -129,6 +129,15 @@ closedNum n = refl
 lamAX : Term
 lamAX = LAMBDA AX
 
+
+lam2AX : Term
+lam2AX = LAMBDA (LAMBDA AX)
+
+
+lam3AX : Term
+lam3AX = LAMBDA (LAMBDA (LAMBDA AX))
+
+
 acext : Term
 acext = LAMBDA lamAX
 
@@ -469,8 +478,17 @@ lowerVars-fvars-CTerm≡[] a = ⊆[]→≡[] (lowerVars-fvars-CTerm⊆[] a)
     c : # FUN ⌜ a ⌝ ⌜ b ⌝
     c rewrite CTerm.closed a | #shiftUp 0 b | lowerVars-fvars-CTerm≡[] b = refl
 
+
 #lamAX : CTerm
 #lamAX = ct (lamAX) refl
+
+
+#lam2AX : CTerm
+#lam2AX = ct lam2AX refl
+
+
+#lam3AX : CTerm
+#lam3AX = ct lam3AX refl
 
 
 fvars-CTerm0 : (a : CTerm0) → fvars ⌜ a ⌝ ⊆ [ 0 ]

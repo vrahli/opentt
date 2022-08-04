@@ -413,4 +413,20 @@ equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTBAR x ,
                         → eqInType (uni i) w' z u v → Lift (lsuc L) (m < n))
     aw w1 e1 z eqj = lift (equalInType-LT-⇛NUM→ {i} {w1} {a} {b} {u} {v} {n} {m} (∀𝕎-mon e1 compa) (∀𝕎-mon e1 compb) (z , eqj))
 
+
+
+→equalInType-NAT! : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                    → □· w (λ w' _ → #⇛!sameℕ w' a b)
+                    → equalInType i w #NAT! a b
+→equalInType-NAT! i w a b eqi =
+  isTypeNAT! ,
+  Mod.∀𝕎-□Func M aw eqi
+  where
+    aw : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' a b
+                       → TCONSTeq (λ t1 t2 → □· w' (λ w'' _ → #strongMonEq w'' t1 t2)) w' a b)
+    aw w1 e1 (n , c₁ , c₂) =
+      Mod.∀𝕎-□ M (λ w2 e2 → n , #⇛!-#⇛ {w2} {a} {#NUM n} (∀𝕎-mon e2 c₁) , #⇛!-#⇛ {w2} {b} {#NUM n} (∀𝕎-mon e2 c₂)) ,
+      #⇛!-pres-#⇓→#⇓!-rev {w1} {#NUM n} {a} c₁ (#⇓→#⇓!-NUM w1 n) ,
+      #⇛!-pres-#⇓→#⇓!-rev {w1} {#NUM n} {b} c₂ (#⇓→#⇓!-NUM w1 n)
+
 \end{code}
