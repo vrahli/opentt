@@ -58,6 +58,7 @@ open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import terms4(W)(C)(K)(G)(X)(N)
 
 open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -611,6 +612,28 @@ equalInType-#⇛-left-rev {i} {w} {T} {a} {b} {c} comp (eqt , eqi) = eqt , equal
 
 
 
+#⇛!-pres-#¬Names : {w : 𝕎·} {a b : CTerm}
+                    → a #⇛! b at w
+                    → #¬Names a
+                    → #¬Names b
+#⇛!-pres-#¬Names {w} {a} {b} comp nn =
+  snd (snd (¬Names→steps (fst (lower (comp w (⊑-refl· w)))) w w w ⌜ a ⌝ ⌜ b ⌝ nn (snd (lower (comp w (⊑-refl· w))))))
+
+
+
+#⇛!-pres-TNATeq : {w : 𝕎·} {a b c : CTerm}
+                   → a #⇛! b at w
+                   → TNATeq w a c
+                   → TNATeq w b c
+#⇛!-pres-TNATeq {w} {a} {b} {c} comp h w1 e1 =
+  lift (fst q ,
+        fst (snd q) ,
+        val-⇓-from-to→ {w1} {w1} {fst (snd q)} {⌜ a ⌝} {⌜ b ⌝} {NUM (fst q)} tt (lower (comp w1 e1)) (fst (snd (snd q))) ,
+        snd (snd (snd q)))
+  where
+    q : ⇓∼ℕ w1 ⌜ a ⌝ ⌜ c ⌝
+    q = lower (h w1 e1)
+
 
 equalTerms-#⇛-left-at : ℕ → Set(lsuc(L))
 equalTerms-#⇛-left-at i =
@@ -621,8 +644,9 @@ equalTerms-#⇛-left-at i =
   → equalTerms i w eqt b c
 
 
+
+
 -- TODO: fix later
-{--
 equalTerms-#⇛-left-aux : {i : ℕ}
                           → (ind : (j : ℕ) → j < i → equalTerms-#⇛-left-at j)
                           → equalTerms-#⇛-left-at i
@@ -631,7 +655,8 @@ equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTNAT x x₁) eq
   Mod.∀𝕎-□Func M (λ w1 e1 h → #strongMonEq-#⇛-left {--#⇛!sameℕ-#⇛-left--} {w1} {a} {b} {c} (∀𝕎-mon e1 comp) h) eqi
 equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTQNAT x x₁) eqi =
   Mod.∀𝕎-□Func M (λ w1 e1 h → #weakMonEq-#⇛-left {w1} {a} {b} {c} (∀𝕎-mon e1 comp) h) eqi
-equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTTNAT x x₁) eqi = ?
+equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTTNAT x x₁) eqi =
+  Mod.∀𝕎-□Func M (λ w1 e1 h → #⇛!-pres-TNATeq {w1} {a} {b} {c} (∀𝕎-mon e1 comp) h ) eqi
 --  Mod.∀𝕎-□Func M (λ w1 e1 h → #weakMonEq-#⇛-left {w1} {a} {b} {c} (∀𝕎-mon e1 comp) h) eqi
 equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi =
   Mod.∀𝕎-□Func M (λ w1 e1 h → h) eqi
@@ -660,6 +685,12 @@ equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTSET A1 B1 A2 B
       y ,
       equalTerms-#⇛-left-aux ind (∀𝕎-mon e comp) (eqta w' e) ea ,
       eqInType-extr1 (sub0 c B2) (sub0 b B1) (eqtb w' e a c ea) (eqtb w' e b c (equalTerms-#⇛-left-aux ind (∀𝕎-mon e comp) (eqta w' e) ea)) eb
+equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTISECT A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi =
+  Mod.∀𝕎-□Func M aw eqi
+  where
+    aw : ∀𝕎 w (λ w' e' → ISECTeq (equalTerms i w' (eqta w' e')) (equalTerms i w' (eqtb w' e')) a c
+                        → ISECTeq (equalTerms i w' (eqta w' e')) (equalTerms i w' (eqtb w' e')) b c)
+    aw w' e (h1 , h2) = equalTerms-#⇛-left-aux ind (∀𝕎-mon e comp) (eqta w' e) h1 , equalTerms-#⇛-left-aux ind (∀𝕎-mon e comp) (eqtb w' e) h2
 equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
@@ -721,7 +752,12 @@ equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTSUBSING A1 A2 
     aw w' e (h , q) =
       equalTerms-#⇛-left-aux ind (∀𝕎-mon e comp) (eqtA w' e) (eqInType-sym (eqtA w' e) (equalTerms-#⇛-left-aux ind (∀𝕎-mon e comp) (eqtA w' e) h)) ,
       q
-equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTPURE x x₁) eqi = {!!} --eqi
+equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTPURE x x₁) eqi =
+  Mod.∀𝕎-□Func M aw eqi
+  where
+    aw : ∀𝕎 w (λ w' e' → PUREeq a c
+                        → PUREeq b c)
+    aw w' e y = lift (#⇛!-pres-#¬Names {w} {a} {b} comp (fst (lower y)) , snd (lower y))
 equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
@@ -754,6 +790,7 @@ equalInType-#⇛-left : {i : ℕ} {w : 𝕎·} {T a b c : CTerm}
 equalInType-#⇛-left {i} {w} {T} {a} {b} {c} comp (eqt , eqi) = eqt , equalTerms-#⇛-left i comp eqt eqi
 
 
+
 equalInType-#⇛-LR : {i : ℕ} {w : 𝕎·} {T a b c d : CTerm}
                        → a #⇛! b at w
                        → c #⇛! d at w
@@ -764,6 +801,7 @@ equalInType-#⇛-LR {i} {w} {T} {a} {b} {c} {d} comp1 comp2 eqi =
 
 
 
+{--
 equalInType-#⇛-LR-rev : {i : ℕ} {w : 𝕎·} {T a b c d : CTerm}
                          → a #⇛! b at w
                          → c #⇛! d at w
