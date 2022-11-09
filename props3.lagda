@@ -646,7 +646,6 @@ equalTerms-#⇛-left-at i =
 
 
 
--- TODO: fix later
 equalTerms-#⇛-left-aux : {i : ℕ}
                           → (ind : (j : ℕ) → j < i → equalTerms-#⇛-left-at j)
                           → equalTerms-#⇛-left-at i
