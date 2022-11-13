@@ -467,6 +467,26 @@ if-equalInType-EQ-test u w T a b t₁ t₂ (EQTBAR x) eqi =
 --}
 
 
+{--
+{-# INLINE bar.Σ∈𝔹 #-}
+{-# INLINE bar.Σ∈𝔹' #-}
+{-# INLINE bar.↑Σ∈𝔹 #-}
+{-# INLINE bar.↑'Σ∈𝔹 #-}
+{-# INLINE bar.↑Σ∈𝔹' #-}
+{-# INLINE bar.Σ∈𝔹Func #-}
+{-# INLINE bar.∀𝕎-Σ∈𝔹Func #-}
+{-# INLINE bar.Σ∈𝔹-Σ∈𝔹' #-}
+{-# INLINE bar.∀𝕎-Σ∈𝔹-Σ∈𝔹' #-}
+{-# INLINE bar.∀𝕎-Σ∈𝔹 #-}
+{-# INLINE bar.Σ∈𝔹-idem #-}
+{-# INLINE bar.Σ∈𝔹'-idem #-}
+{-# INLINE bar.∀𝕎-Σ∈𝔹'-Σ∈𝔹 #-}
+{-# INLINE bar.Σ∈𝔹'-comb-change #-}
+{-# INLINE bar.Σ∈𝔹-const #-}
+{-# INLINE bar.→Σ∈𝔹∀𝕎 #-}
+{-# INLINE bar.𝔹fam2 #-}
+--}
+
 
 {--
   NOTE:
