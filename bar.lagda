@@ -412,10 +412,11 @@ old-Σ∈𝔹-idem {B} fam {w} {f} (b , i) =
 --}
 
 
-Σ∈𝔹-idem : {B : Bars} (fam : BarsFam2 B) {w : 𝕎·} {f : wPred w}
-            → Σ∈𝔹 B (λ w' e' → Σ∈𝔹 B (↑wPred' f e'))
-            → Σ∈𝔹 B f
-Σ∈𝔹-idem {B} fam {w} {f} (b , i) =
+Σ∈𝔹-idem-aux : {B : Bars} (fam : BarsFam2 B) {w : 𝕎·} {f : wPred w}
+                → (b : 𝔹 B w)
+                → (i : ∈𝔹 b (λ w' e' → Σ∈𝔹 B (↑wPred' f e')))
+                → Σ∈𝔹 B f
+Σ∈𝔹-idem-aux {B} fam {w} {f} b i =
   𝔹fam2 fam {w} b (λ {w'} e ib bw → ∈𝔹 {B} bw (↑wPred' f e)) (λ {w'} e ib → i e ib w' (⊑-refl· _) e) , j
   where
     j : ∈𝔹 (𝔹fam2 fam b (λ {w'} e ib bw → ∈𝔹 bw (↑wPred' f e)) (λ {w'} e ib → i e ib w' (⊑-refl· w') e)) f
@@ -425,6 +426,12 @@ old-Σ∈𝔹-idem {B} fam {w} {f} (b , i) =
           br w1 e1
           (⊑-trans· (𝔹.ext (proj₁ (i e2 br₁ w2 (⊑-refl· _) e2)) br) e1)
           z
+
+
+Σ∈𝔹-idem : {B : Bars} (fam : BarsFam2 B) {w : 𝕎·} {f : wPred w}
+            → Σ∈𝔹 B (λ w' e' → Σ∈𝔹 B (↑wPred' f e'))
+            → Σ∈𝔹 B f
+Σ∈𝔹-idem {B} fam {w} {f} (b , i) = Σ∈𝔹-idem-aux fam b i
 
 
 {--
@@ -485,11 +492,13 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
 
 
 
-∀𝕎-Σ∈𝔹'-Σ∈𝔹 : {B : Bars} (fam : BarsFam2 B)
-                 {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w} (i : Σ∈𝔹 B f)
-                 → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → h w' e')
-                 → Σ∈𝔹' B i g → Σ∈𝔹 B h
-∀𝕎-Σ∈𝔹'-Σ∈𝔹 {B} fam {w} {f} {g} {h} (b , i) aw j =
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-aux : {B : Bars} (fam : BarsFam2 B)
+                     {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w}
+                     (b : 𝔹 B w)
+                     (i : ∈𝔹 b f)
+                     → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → h w' e')
+                     → Σ∈𝔹' B (b , i) g → Σ∈𝔹 B h
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-aux {B} fam {w} {f} {g} {h} b i aw j =
   𝔹fam2 fam {w} b (λ {w'} e ib b' → ∈𝔹Dep {B} b' (i e ib) (↑wPredDep'' g e)) j , i'
   where
     i' : ∈𝔹 {B} (𝔹fam2 fam {w} b (λ {w'} e ib b' → ∈𝔹Dep {B} b' (i e ib) (↑wPredDep'' g e)) j) h
@@ -502,6 +511,47 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
               (⊑-trans· (𝔹.ext (proj₁ (j e2 br)) F) e1)
               z)
 
+
+∀𝕎-Σ∈𝔹'-Σ∈𝔹 : {B : Bars} (fam : BarsFam2 B)
+                 {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w} (i : Σ∈𝔹 B f)
+                 → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → h w' e')
+                 → Σ∈𝔹' B i g → Σ∈𝔹 B h
+∀𝕎-Σ∈𝔹'-Σ∈𝔹 {B} fam {w} {f} {g} {h} (b , i) aw j = ∀𝕎-Σ∈𝔹'-Σ∈𝔹-aux fam b i aw j
+
+
+
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux : {B : Bars} (fam : BarsFam2 B)
+                          {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w}
+                          (b : 𝔹 B w)
+                          (i : ∈𝔹 b f)
+                          → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → Σ∈𝔹 B (↑wPred' h e'))
+                          → Σ∈𝔹' B (b , i) g → Σ∈𝔹 B h
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux {B} fam {w} {f} {g} {h} b i aw j =
+  𝔹fam2
+    fam {w} b
+    (λ {w'} e ib b' → ∈𝔹 {B} b' (↑wPred' h e))
+    (λ {w'} e ib → 𝔹fam2
+                      fam (fst (j e ib))
+                      (λ {w''} e' ib' b'' → ∈𝔹 {B} b'' (↑wPred' h (⊑-trans· e e')))
+                      (λ {w''} e' ib' → aw w'' (⊑-trans· e e') (i e ib w''  e' (⊑-trans· e e')) (snd (j e ib) e' ib' w'' (⊑-refl· w'') e' (⊑-trans· e e'))) ,
+                    λ {w1} e1 (mk𝔹In w3 e3 br , ib2) w2 e2 z →
+                      snd (aw w3 (⊑-trans· e e3) (i e ib w3 e3 (⊑-trans· e e3)) (snd (j e ib) e3 br w3 (⊑-refl· w3) e3 (⊑-trans· e e3)))
+                          (𝔹.ext (fst (aw w3 (⊑-trans· e e3) (i e ib w3 e3 (⊑-trans· e e3)) (snd (j e ib) e3 br w3 (⊑-refl· w3) e3 (⊑-trans· e e3)))) ib2)
+                          ib2 w2 e2 (⊑-trans· (𝔹.ext (fst (aw w3 (⊑-trans· e e3) (i e ib w3 e3 (⊑-trans· e e3)) (snd (j e ib) e3 br w3 (⊑-refl· w3) e3 (⊑-trans· e e3)))) ib2) e2)) ,
+  λ {w'} e (mk𝔹In w1 e1 ib , (mk𝔹In w3 e3 br , ib2)) w2 e2 z → snd
+                                                                 (aw w3 (⊑-trans· e1 e3) (i e1 ib w3 e3 (⊑-trans· e1 e3)) (snd (j e1 ib) e3 br w3 (⊑-refl· w3) e3 (⊑-trans· e1 e3)))
+                                                                 (𝔹.ext(proj₁ (aw w3 (⊑-trans· e1 e3) (i e1 ib w3 e3 (⊑-trans· e1 e3)) (snd (j e1 ib) e3 br w3 (⊑-refl· w3) e3 (⊑-trans· e1 e3)))) ib2)
+                                                                 ib2 w2 e2 ((⊑-trans· (𝔹.ext (fst (aw w3 (⊑-trans· e1 e3) (i e1 ib w3 e3 (⊑-trans· e1 e3)) (snd (j e1 ib) e3 br w3 (⊑-refl· w3) e3 (⊑-trans· e1 e3)))) ib2) e2)) z
+{-# INLINE ∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux #-}
+
+
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem : {B : Bars} (fam : BarsFam2 B)
+                     {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w}
+                     (b : Σ∈𝔹 B f)
+                     → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → Σ∈𝔹 B (↑wPred' h e'))
+                     → Σ∈𝔹' B b g → Σ∈𝔹 B h
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem {B} fam {w} {f} {g} {h} (b , i) aw j = ∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux fam b i aw j
+{-# INLINE ∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem #-}
 
 
 -- This really only need isect, but can conveniently be derived from Σ∈𝔹'-comb-change
