@@ -702,8 +702,20 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
     j : ∈𝔹 b (λ w' e → ∀𝕎 w' (↑wPred f e))
     j {w'} e b w1 e1 z w2 e2 = i e b w2 (⊑-trans· e1 e2) (⊑-trans· z e2)
 
+
+
+simb : Br → Br → Set(L)
+simb b1 b2 = (w : 𝕎·) → (b1 w → b2 w) × (b2 w → b1 w)
+
+
+BarsE : Bars → Set(lsuc L)
+BarsE bars =
+  (w : 𝕎·) (b b' : Br) → bars w b → simb b' b → bars w b'
+
+
 Bars⊑×Bars∩→Bars∩' : {bars : Bars} → Bars⊑ bars → Bars∩ bars → Bars∩' bars
-Bars⊑×Bars∩→Bars∩' {bars} bars⊑ bars∩ {w1} {w2} e b1 b2 bars1 bars2 = subst (bars w2) (E ptwise) bars∩⊑
+Bars⊑×Bars∩→Bars∩' {bars} bars⊑ bars∩ {w1} {w2} e b1 b2 bars1 bars2 =
+  {!!} --subst (bars w2) {!!} {--(E ptwise)--} bars∩⊑
   where
   bars∩⊑ : bars w2 (bar∩ (bar⊑ w2 b1) b2)
   bars∩⊑ = bars∩ (bar⊑ w2 b1) b2 (bars⊑ e b1 bars1) bars2
