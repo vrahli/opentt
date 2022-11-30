@@ -18,7 +18,8 @@ open import calculus
 open import world
 
 
-module bar {L : Level} (W : PossibleWorlds {L}) (E : Extensionality L (lsuc(L)))
+module bar {L : Level} (W : PossibleWorlds {L})
+-- (E : Extensionality L (lsuc(L)))
        where
 open import worldDef{L}(W)
 
@@ -703,62 +704,6 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
     j {w'} e b w1 e1 z w2 e2 = i e b w2 (⊑-trans· e1 e2) (⊑-trans· z e2)
 
 
-
-simb : Br → Br → Set(L)
-simb b1 b2 = (w : 𝕎·) → (b1 w → b2 w) × (b2 w → b1 w)
-
-
-BarsE : Bars → Set(lsuc L)
-BarsE bars =
-  (w : 𝕎·) (b b' : Br) → bars w b → simb b' b → bars w b'
-
-
-Bars⊑×Bars∩→Bars∩' : {bars : Bars} → Bars⊑ bars → Bars∩ bars → Bars∩' bars
-Bars⊑×Bars∩→Bars∩' {bars} bars⊑ bars∩ {w1} {w2} e b1 b2 bars1 bars2 =
-  {!!} --subst (bars w2) {!!} {--(E ptwise)--} bars∩⊑
-  where
-  bars∩⊑ : bars w2 (bar∩ (bar⊑ w2 b1) b2)
-  bars∩⊑ = bars∩ (bar⊑ w2 b1) b2 (bars⊑ e b1 bars1) bars2
-
-  ptwise : (w0 : 𝕎·) → bar∩ (bar⊑ w2 b1) b2 w0 ≡ bar∩' w2 b1 b2 w0
-  ptwise w0 = {!!}
-
---thing'' : (w0 : 𝕎·) → bar∩ (bar⊑ w2 b1) b2 w0 → bar∩' w2 b1 b2 w0
---thing'' w0 (w3 , w4 , (w5 , b15 , e53 , e23) , b24 , e30 , e40) = w5 , w4 , b15 , b24 , ⊑-trans· e53 e30 , e40 , ⊑-trans· e23 e30
---
---thing''' : (w0 : 𝕎·) → bar∩' w2 b1 b2 w0 → bar∩ (bar⊑ w2 b1) b2 w0
---thing''' w0 (w3 , w4 , b13 , b24 , e30 , e40 , e20) = (w0 , w4 , (w3 , b13 , e30 , e20) , b24 , ⊑-refl· w0 , e40)
-
-Bars∩'→Bars∩ : {bars : Bars} → Bars∩' bars → Bars∩ bars
-Bars∩'→Bars∩ {bars} bars∩' {w1} b1 b2 b11 b21 = subst (bars w1) (E ptwise) bars∩
-  where
-  bars∩ : bars w1 (bar∩' w1 b1 b2)
-  bars∩ = bars∩' (⊑-refl· w1) b1 b2 b11 b21
-
-  ptwise : (w0 : 𝕎·) → bar∩' w1 b1 b2 w0 ≡ bar∩ b1 b2 w0
-  ptwise w0 = {!!}
-
--- bar∩' w1 b1 b2 w0 = Σ 𝕎· (λ w1 → Σ 𝕎· (λ w2 → b1 w1 × b2 w2 × w1 ⊑· w0 × w2 ⊑· w0 × w1 ⊑· w0))
--- bar∩ b1 b2 w0     = Σ 𝕎· (λ w1 → Σ 𝕎· (λ w2 → b1 w1 × b2 w2 × w1 ⊑· w0 × w2 ⊑· w0))
--- If we assume that w1 ⊑· w0 is a proposition, then these should be the same on the nose
--- they also imply each other:
--- to go from top to bottom we forget one of the proofs for w1 ⊑· w0
--- to go from bottom to top we duplicate the proof of w1 ⊑· w0
-
-Bars∩'×Bars∀→Bars⊑ : {bars : Bars} → Bars∩' bars → Bars∀ bars → Bars⊑ bars
-Bars∩'×Bars∀→Bars⊑ {bars} bars∩' bars∀ {w1} {w2} e12 b1 b11 = subst (bars w2) (E ptwise) bars⊑
-  where
-  bars⊑ : bars w2 (bar∩' w2 b1 (bar∀ w2))
-  bars⊑ = bars∩' e12 b1 (bar∀ w2) b11 (bars∀ w2)
-
-  ptwise : (w0 : 𝕎·) → bar∩' w2 b1 (bar∀ w2) w0 ≡ bar⊑ w2 b1 w0
-  ptwise w0 = {!!}
-
--- bar∩' w2 b1 (bar∀ w2) w0 = Σ 𝕎· (λ w3 → Σ 𝕎· (λ w4 → b1 w3 × w2 ⊑· w4 × w3 ⊑· w0 × w4 ⊑· w0 × w2 ⊑· w0))
--- bar⊑ w2 b1 w0            = Σ 𝕎· (λ w3 →              b1 w3 ×            w3 ⊑· w0            × w2 ⊑· w0)
--- Going from top to bottom is easy, we just forget the relevant entries
--- To go from bottom to top, we can use w2 for w4
--- I don't think these are the same though on the nose, they simply imply each other?
 
 {-- Those are all the properties we need about Bars to derive the above properties,
     which in turn are the properties of Bar below.
