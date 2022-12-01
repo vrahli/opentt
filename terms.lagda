@@ -555,6 +555,21 @@ fvars-shiftUp≡ n (LET t t₁)
         | fvars-shiftUp≡ n t
         | fvars-shiftUp≡ (suc n) t₁
         | lowerVars-map-sucIf≤-suc n (fvars t₁) = refl
+fvars-shiftUp≡ n (WT t t₁)
+  rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (fvars t₁))
+        | fvars-shiftUp≡ n t
+        | fvars-shiftUp≡ (suc n) t₁
+        | lowerVars-map-sucIf≤-suc n (fvars t₁) = refl
+fvars-shiftUp≡ n (SUP t t₁)
+  rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
+        | fvars-shiftUp≡ n t
+        | fvars-shiftUp≡ n t₁ = refl
+fvars-shiftUp≡ n (DSUP t t₁)
+  rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (lowerVars (fvars t₁)))
+        | fvars-shiftUp≡ n t
+        | fvars-shiftUp≡ (suc (suc n)) t₁
+        | lowerVars-map-sucIf≤-suc (suc n) (fvars t₁)
+        | lowerVars-map-sucIf≤-suc n (lowerVars (fvars t₁)) = refl
 fvars-shiftUp≡ n (SUM t t₁)
   rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (fvars t₁))
         | fvars-shiftUp≡ n t
@@ -873,6 +888,21 @@ fvars-shiftDown≡ n (LET t t₁)
         | fvars-shiftDown≡ n t
         | fvars-shiftDown≡ (suc n) t₁
         | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
+fvars-shiftDown≡ n (WT t t₁)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ (suc n) t₁
+        | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
+fvars-shiftDown≡ n (SUP t t₁)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ n t₁ = refl
+fvars-shiftDown≡ n (DSUP t t₁)
+  rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (lowerVars (fvars t₁)))
+        | fvars-shiftDown≡ n t
+        | fvars-shiftDown≡ (suc (suc n)) t₁
+        | lowerVars-map-predIf≤-suc (suc n) (fvars t₁)
+        | lowerVars-map-predIf≤-suc n (lowerVars (fvars t₁)) = refl
 fvars-shiftDown≡ n (SUM t t₁)
   rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
         | fvars-shiftDown≡ n t
@@ -1019,6 +1049,9 @@ fvars-shiftNameUp n (LAMBDA a) rewrite fvars-shiftNameUp n a = refl
 fvars-shiftNameUp n (APPLY a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
 fvars-shiftNameUp n (FIX a) rewrite fvars-shiftNameUp n a = refl
 fvars-shiftNameUp n (LET a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
+fvars-shiftNameUp n (WT a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
+fvars-shiftNameUp n (SUP a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
+fvars-shiftNameUp n (DSUP a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
 fvars-shiftNameUp n (SUM a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
 fvars-shiftNameUp n (PAIR a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
 fvars-shiftNameUp n (SPREAD a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
@@ -1104,6 +1137,21 @@ fvars-subv v a (LET b b₁) {x} i with ∈-++⁻ (fvars (subv v a b)) i
   where
     j : (suc x) ∈ removeV (suc v) (fvars b₁) ++ fvars (shiftUp 0 a)
     j = fvars-subv (suc v) (shiftUp 0 a) b₁ {suc x} (∈lowerVars→ x _ p)
+fvars-subv v a (WT b b₁) {x} i with ∈-++⁻ (fvars (subv v a b)) i
+... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {lowerVars (fvars b₁)} {fvars a} (fvars-subv v a b p)
+... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {lowerVars (fvars b₁)} {fvars a} (→∈removeV-lowerVars++ x v (fvars b₁) a j)
+  where
+    j : (suc x) ∈ removeV (suc v) (fvars b₁) ++ fvars (shiftUp 0 a)
+    j = fvars-subv (suc v) (shiftUp 0 a) b₁ {suc x} (∈lowerVars→ x _ p)
+fvars-subv v a (SUP b b₁) {x} i with ∈-++⁻ (fvars (subv v a b)) i
+... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b p)
+... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b₁ p)
+fvars-subv v a (DSUP b b₁) {x} i with ∈-++⁻ (fvars (subv v a b)) i
+... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {lowerVars (lowerVars (fvars b₁))} {fvars a} (fvars-subv v a b p)
+... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {lowerVars (lowerVars (fvars b₁))} {fvars a} (→∈removeV-lowerVars++ x v (lowerVars (fvars b₁)) a (→∈removeV-lowerVars++ (suc x) (suc v) (fvars b₁) (shiftUp 0 a) j))
+  where
+    j : (suc (suc x)) ∈ removeV (suc (suc v)) (fvars b₁) ++ fvars (shiftUp 0 (shiftUp 0 a))
+    j = fvars-subv (suc (suc v)) (shiftUp 0 (shiftUp 0 a)) b₁ {suc (suc x)} (∈lowerVars→ (suc x) _ (∈lowerVars→ x _ p))
 fvars-subv v a (SUM b b₁) {x} i with ∈-++⁻ (fvars (subv v a b)) i
 ... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {lowerVars (fvars b₁)} {fvars a} (fvars-subv v a b p)
 ... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {lowerVars (fvars b₁)} {fvars a} (→∈removeV-lowerVars++ x v (fvars b₁) a j)
@@ -1351,6 +1399,18 @@ shiftDown1-subv1-shiftUp0 n a (LET b b₁) ca
   rewrite #shiftUp 0 (ct a ca)
         | shiftDown1-subv1-shiftUp0 (suc n) a b₁ ca
         | shiftDown1-subv1-shiftUp0 n a b ca = refl
+shiftDown1-subv1-shiftUp0 n a (WT b b₁) ca
+  rewrite #shiftUp 0 (ct a ca)
+        | shiftDown1-subv1-shiftUp0 (suc n) a b₁ ca
+        | shiftDown1-subv1-shiftUp0 n a b ca = refl
+shiftDown1-subv1-shiftUp0 n a (SUP b b₁) ca
+  rewrite #shiftUp 0 (ct a ca)
+        | shiftDown1-subv1-shiftUp0 n a b₁ ca
+        | shiftDown1-subv1-shiftUp0 n a b ca = refl
+shiftDown1-subv1-shiftUp0 n a (DSUP b b₁) ca
+  rewrite #shiftUp 0 (ct a ca) | #shiftUp 0 (ct a ca)
+        | shiftDown1-subv1-shiftUp0 (suc (suc n)) a b₁ ca
+        | shiftDown1-subv1-shiftUp0 n a b ca = refl
 shiftDown1-subv1-shiftUp0 n a (SUM b b₁) ca
   rewrite #shiftUp 0 (ct a ca)
         | shiftDown1-subv1-shiftUp0 (suc n) a b₁ ca
@@ -1584,6 +1644,27 @@ LETinj1 refl =  refl
 
 LETinj2 : {a b c d : Term} → LET a b ≡ LET c d → b ≡ d
 LETinj2 refl =  refl
+
+
+Winj1 : {a b c d : Term} → WT a b ≡ WT c d → a ≡ c
+Winj1 refl =  refl
+
+Winj2 : {a b c d : Term} → WT a b ≡ WT c d → b ≡ d
+Winj2 refl =  refl
+
+
+SUPinj1 : {a b c d : Term} → SUP a b ≡ SUP c d → a ≡ c
+SUPinj1 refl =  refl
+
+SUPinj2 : {a b c d : Term} → SUP a b ≡ SUP c d → b ≡ d
+SUPinj2 refl =  refl
+
+
+DSUPinj1 : {a b c d : Term} → DSUP a b ≡ DSUP c d → a ≡ c
+DSUPinj1 refl =  refl
+
+DSUPinj2 : {a b c d : Term} → DSUP a b ≡ DSUP c d → b ≡ d
+DSUPinj2 refl =  refl
 
 
 SPREADinj1 : {a b c d : Term} → SPREAD a b ≡ SPREAD c d → a ≡ c
@@ -2153,6 +2234,9 @@ shiftUp-inj {n} {LAMBDA a} {LAMBDA b} e rewrite shiftUp-inj (LAMinj e) = refl
 shiftUp-inj {n} {APPLY a a₁} {APPLY b b₁} e rewrite shiftUp-inj (APPLYinj1 e) | shiftUp-inj (APPLYinj2 e) = refl
 shiftUp-inj {n} {FIX a} {FIX b} e rewrite shiftUp-inj (FIXinj e) = refl
 shiftUp-inj {n} {LET a a₁} {LET b b₁} e rewrite shiftUp-inj (LETinj1 e) | shiftUp-inj (LETinj2 e) = refl
+shiftUp-inj {n} {WT a a₁} {WT b b₁} e rewrite shiftUp-inj (Winj1 e) | shiftUp-inj (Winj2 e) = refl
+shiftUp-inj {n} {SUP a a₁} {SUP b b₁} e rewrite shiftUp-inj (SUPinj1 e) | shiftUp-inj (SUPinj2 e) = refl
+shiftUp-inj {n} {DSUP a a₁} {DSUP b b₁} e rewrite shiftUp-inj (DSUPinj1 e) | shiftUp-inj (DSUPinj2 e) = refl
 shiftUp-inj {n} {SUM a a₁} {SUM b b₁} e rewrite shiftUp-inj (SUMinj1 e) | shiftUp-inj (SUMinj2 e) = refl
 shiftUp-inj {n} {PAIR a a₁} {PAIR b b₁} e rewrite shiftUp-inj (PAIRinj1 e) | shiftUp-inj (PAIRinj2 e) = refl
 shiftUp-inj {n} {SPREAD a a₁} {SPREAD b b₁} e rewrite shiftUp-inj (SPREADinj1 e) | shiftUp-inj (SPREADinj2 e) = refl
@@ -2639,6 +2723,10 @@ sub0-#[0]QTUNION a t u = CTerm≡ refl
 
 ≡SUM : {a b c d : Term} → a ≡ b → c ≡ d → SUM a c ≡ SUM b d
 ≡SUM {a} {b} {c} {d} e f rewrite e | f = refl
+
+
+≡WT : {a b c d : Term} → a ≡ b → c ≡ d → WT a c ≡ WT b d
+≡WT {a} {b} {c} {d} e f rewrite e | f = refl
 
 
 ≡ASSERT₂ : {a b : Term} → a ≡ b → ASSERT₂ a ≡ ASSERT₂ b

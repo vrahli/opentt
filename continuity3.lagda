@@ -189,6 +189,18 @@ getT≤ℕ-chooseT0if→ gc {w} {name} {n} {m} {m'} compat g0 (j , h , q) with m
     ind : w1 ≡ w1' × getT≤ℕ w1' n name
     ind = ¬Names→isHighestℕ-step {a} {a'} {w1} {w1'} {n} {name} gtn z
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+¬Names→isHighestℕ-step {WT t t₁} {u} {w1} {w2} {n} {name} gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , gtn
+¬Names→isHighestℕ-step {SUP t t₁} {u} {w1} {w2} {n} {name} gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , gtn
+¬Names→isHighestℕ-step {DSUP a b} {u} {w1} {w2} {n} {name} gtn comp with is-SUP a
+... | inj₁ (v₁ , v₂ , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+  refl , gtn
+... | inj₂ x with step⊎ a w1
+... |    inj₁ (a' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+  ind
+  where
+    ind : w1 ≡ w1' × getT≤ℕ w1' n name
+    ind = ¬Names→isHighestℕ-step {a} {a'} {w1} {w1'} {n} {name} gtn z
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 ¬Names→isHighestℕ-step {SUM t t₁} {u} {w1} {w2} {n} {name} gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , gtn
 ¬Names→isHighestℕ-step {PAIR t t₁} {u} {w1} {w2} {n} {name} gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , gtn
 ¬Names→isHighestℕ-step {SPREAD a b} {u} {w1} {w2} {n} {name} gtn comp with is-PAIR a
@@ -328,6 +340,20 @@ getT≤ℕ-chooseT0if→ gc {w} {name} {n} {m} {m'} compat g0 (j , h , q) with m
   where
     ind : w1 ≡ w1' × ¬Names a' × getT≤ℕ w1' n name
     ind = ¬Names→isHighestℕ-step {a} {a'} {w1} {w1'} {n} {name} (∧≡true→ₗ (¬names a) (¬names f) nn) gtn z
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+¬Names→isHighestℕ-step {WT t t₁} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
+¬Names→isHighestℕ-step {SUP t t₁} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
+¬Names→isHighestℕ-step {DSUP a b} {u} {w1} {w2} {n} {name} nn gtn comp with is-SUP a
+... | inj₁ (v₁ , v₂ , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+  refl , ¬Names-sub {v₂} {sub v₁ b} (∧≡true→ᵣ (¬names v₁) (¬names v₂) (∧≡true→ₗ (¬names v₁ ∧ ¬names v₂) (¬names b) nn)) (¬Names-sub {v₁} {b} (∧≡true→ₗ (¬names v₁) (¬names v₂) (∧≡true→ₗ (¬names v₁ ∧ ¬names v₂) (¬names b) nn)) (∧≡true→ᵣ (¬names v₁ ∧ ¬names v₂) (¬names b) nn)) , gtn
+... | inj₂ x with step⊎ a w1
+... |    inj₁ (a' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+  fst ind ,
+  →∧≡true (fst (snd ind)) (∧≡true→ᵣ (¬names a) (¬names b) nn) ,
+  snd (snd ind)
+  where
+    ind : w1 ≡ w1' × ¬Names a' × getT≤ℕ w1' n name
+    ind = ¬Names→isHighestℕ-step {a} {a'} {w1} {w1'} {n} {name} (∧≡true→ₗ (¬names a) (¬names b) nn) gtn z
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 ¬Names→isHighestℕ-step {SUM t t₁} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
 ¬Names→isHighestℕ-step {PAIR t t₁} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
@@ -723,6 +749,17 @@ stepsPresHighestℕ-LET₁→ {name} {f} {a} {b} {w} (k , v , w' , comp , isv , 
 
 
 
+stepsPresHighestℕ-DSUP₁→ : {name : Name} {f : Term} {a b : Term} {w : 𝕎·}
+                            → stepsPresHighestℕ name f (DSUP a b) w
+                            → stepsPresHighestℕ name f a w
+stepsPresHighestℕ-DSUP₁→ {name} {f} {a} {b} {w} (k , v , w' , comp , isv , ind) =
+  k , fst hv , fst (snd hv) , fst (snd (snd hv)) , snd (snd (snd hv)) , ind
+  where
+    hv : hasValueℕ k a w
+    hv = DSUP→hasValue k a b v w w' comp isv
+
+
+
 stepsPresHighestℕ-SPREAD₁→ : {name : Name} {f : Term} {a b : Term} {w : 𝕎·}
                             → stepsPresHighestℕ name f (SPREAD a b) w
                             → stepsPresHighestℕ name f a w
@@ -866,6 +903,18 @@ step-sat-isHighestℕ gc {w1} {w2} {.(LET a b₁)} {b} {n} {name} {f} compat wgt
   where
     ind : ΣhighestUpdCtxt name f n a' w1 w1'
     ind = step-sat-isHighestℕ gc compat wgt0 z (stepsPresHighestℕ-LET₁→ indb) ctxt nnf cf
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-sat-isHighestℕ gc {w1} {w2} {.(WT a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-WT a b₁ ctxt ctxt₁) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , WT a b₁ , w1 , refl , (λ x → x , x) , updCtxt-WT _ _ ctxt ctxt₁
+step-sat-isHighestℕ gc {w1} {w2} {.(SUP a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-SUP a b₁ ctxt ctxt₁) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , SUP a b₁ , w1 , refl , (λ x → x , x) , updCtxt-SUP _ _ ctxt ctxt₁
+step-sat-isHighestℕ gc {w1} {w2} {.(DSUP a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-DSUP a b₁ ctxt ctxt₁) nnf cf with is-SUP a
+... | inj₁ (u , v , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+  0 , sub v (sub u b₁) , w1 , refl , (λ s → s , s) , updCtxt-sub cf (snd (updCtxt-SUP→ ctxt)) (updCtxt-sub cf (fst (updCtxt-SUP→ ctxt)) ctxt₁)
+... | inj₂ x with step⊎ a w1
+... |    inj₁ (a' , w1'  , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+  ΣhighestUpdCtxt-DSUP₁ ctxt₁ ind
+  where
+    ind : ΣhighestUpdCtxt name f n a' w1 w1'
+    ind = step-sat-isHighestℕ gc compat wgt0 z (stepsPresHighestℕ-DSUP₁→ indb) ctxt nnf cf
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-sat-isHighestℕ gc {w1} {w2} {.(SUM a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-SUM a b₁ ctxt ctxt₁) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , SUM a b₁ , w1 , refl , (λ x → x , x) , updCtxt-SUM _ _ ctxt ctxt₁
 step-sat-isHighestℕ gc {w1} {w2} {.(PAIR a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-PAIR a b₁ ctxt ctxt₁) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , PAIR a b₁ , w1 , refl , (λ x → x , x) , updCtxt-PAIR _ _ ctxt ctxt₁
