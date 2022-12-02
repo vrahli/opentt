@@ -161,6 +161,15 @@ data eqTypes u w T1 T2 where
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
     → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
     → eqTypes u w T1 T2
+  EQTW : (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
+    → T1 #⇛ (#WT A1 B1) at w
+    → T2 #⇛ (#WT A2 B2) at w
+    → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+    → (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
+                         → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+    → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+    → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+    → eqTypes u w T1 T2
   EQTSUM : (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
     → T1 #⇛ (#SUM A1 B1) at w
     → T2 #⇛ (#SUM A2 B2) at w
@@ -322,6 +331,18 @@ QTUNIONeq eqa eqb w t1 t2  =
     (t1 #⇓ (#INR a) at w × t2 #⇓ (#INR b) at w × eqb a b)))
 
 
+data weq (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (w : 𝕎·) (t1 t2 : CTerm) : Set(lsuc(L))
+data weq eqa eqb w t1 t2 where
+  weqC : (a1 f1 a2 f2 : CTerm) (e : eqa a1 a2)
+             → t1 #⇓ (#SUP a1 f1) at w
+             → t2 #⇓ (#SUP a2 f2) at w
+             → ((b1 b2 : CTerm) → eqb a1 a2 e b1 b2 → weq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))
+             → weq eqa eqb w t1 t2
+
+
+Weq : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → wper
+Weq eqa eqb w t u = weq eqa eqb w t u
+
 
 {--
  -- Positivity issues with this one...
@@ -428,6 +449,8 @@ eqInType _ w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 = □· w (λ w' _ → #lift-<NUM-
 eqInType _ w (EQTFREE _ _) t1 t2 = □· w (λ w' _ → #⇛to-same-CS w' t1 t2)
 eqInType u w (EQTPI _ _ _ _ _ _ eqta eqtb exta extb) f1 f2 =
   □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) f1 f2)
+eqInType u w (EQTW _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
+  □· w (λ w' e → Weq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' t1 t2)
 eqInType u w (EQTSUM _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
   □· w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' t1 t2)
 eqInType u w (EQTSET _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =

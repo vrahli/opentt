@@ -249,6 +249,13 @@ subv-↑T {i} {suc n} p v a with i <? n
     c rewrite CTerm.closed a | CTerm.closed b = refl
 
 
+#SUP : CTerm → CTerm → CTerm
+#SUP a b = ct (SUP ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # SUP ⌜ a ⌝ ⌜ b ⌝
+    c rewrite CTerm.closed a | CTerm.closed b = refl
+
+
 #ISECT : CTerm → CTerm → CTerm
 #ISECT a b = ct (ISECT ⌜ a ⌝ ⌜ b ⌝) c
   where
@@ -413,6 +420,13 @@ lowerVars-fvars-CTerm0≡[] a = ⊆[]→≡[] (lowerVars-fvars-CTerm0⊆[] a)
 #SUM a b = ct (SUM ⌜ a ⌝ ⌜ b ⌝) c
   where
     c : # SUM ⌜ a ⌝ (CTerm0.cTerm b)
+    c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
+
+
+#WT : CTerm → CTerm0 → CTerm
+#WT a b = ct (WT ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # WT ⌜ a ⌝ (CTerm0.cTerm b)
     c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
 
 
@@ -1652,6 +1666,12 @@ Winj1 refl =  refl
 Winj2 : {a b c d : Term} → WT a b ≡ WT c d → b ≡ d
 Winj2 refl =  refl
 
+#Winj1 : {a : CTerm} {b : CTerm0} {c : CTerm} {d : CTerm0} → #WT a b ≡ #WT c d → a ≡ c
+#Winj1 c =  CTerm≡ (Winj1 (≡CTerm c))
+
+#Winj2 : {a : CTerm} {b : CTerm0} {c : CTerm} {d : CTerm0} → #WT a b ≡ #WT c d → b ≡ d
+#Winj2 c =  CTerm0≡ (Winj2 (≡CTerm c))
+
 
 SUPinj1 : {a b c d : Term} → SUP a b ≡ SUP c d → a ≡ c
 SUPinj1 refl =  refl
@@ -1926,6 +1946,9 @@ EQneqEQB {t} {a} {b} {c} {d} {e} {g} ()
 EQneqPI : {t a b : Term} {c : Term} {d : Term} → ¬ (EQ t a b) ≡ PI c d
 EQneqPI {t} {a} {b} {c} {d} ()
 
+EQneqW : {t a b : Term} {c : Term} {d : Term} → ¬ (EQ t a b) ≡ WT c d
+EQneqW {t} {a} {b} {c} {d} ()
+
 EQneqSUM : {t a b : Term} {c : Term} {d : Term} → ¬ (EQ t a b) ≡ SUM c d
 EQneqSUM {t} {a} {b} {c} {d} ()
 
@@ -2094,6 +2117,9 @@ PIneqEQ {a} {b} {c} {d} {e} ()
 PIneqSUM : {a b : Term} {c : Term} {d : Term} → ¬ (PI a b) ≡ SUM c d
 PIneqSUM {a} {b} {c} {d} ()
 
+PIneqW : {a b : Term} {c : Term} {d : Term} → ¬ (PI a b) ≡ WT c d
+PIneqW {a} {b} {c} {d} ()
+
 PIneqSET : {a b : Term} {c : Term} {d : Term} → ¬ (PI a b) ≡ SET c d
 PIneqSET {a} {b} {c} {d} ()
 
@@ -2162,6 +2188,9 @@ NATneqFREE ()
 
 NATneqPI : {c : Term} {d : Term} → ¬ NAT ≡ PI c d
 NATneqPI {c} {d} ()
+
+NATneqW : {c : Term} {d : Term} → ¬ NAT ≡ WT c d
+NATneqW {c} {d} ()
 
 NATneqSUM : {c : Term} {d : Term} → ¬ NAT ≡ SUM c d
 NATneqSUM {c} {d} ()
