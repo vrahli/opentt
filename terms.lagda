@@ -1680,6 +1680,13 @@ SUPinj2 : {a b c d : Term} → SUP a b ≡ SUP c d → b ≡ d
 SUPinj2 refl =  refl
 
 
+#SUPinj1 : {a b c d : CTerm} → #SUP a b ≡ #SUP c d → a ≡ c
+#SUPinj1 c =  CTerm≡ (SUPinj1 (≡CTerm c))
+
+#SUPinj2 : {a b c d : CTerm} → #SUP a b ≡ #SUP c d → b ≡ d
+#SUPinj2 c =  CTerm≡ (SUPinj2 (≡CTerm c))
+
+
 DSUPinj1 : {a b c d : Term} → DSUP a b ≡ DSUP c d → a ≡ c
 DSUPinj1 refl =  refl
 
