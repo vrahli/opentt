@@ -441,25 +441,22 @@ typeSysConds-W-itrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb f
         (TSP.isym (inda w1 e1))
         (λ f₁ g₁ a b ea → TSP.isym (indb w1 e1 a b ea) f₁ g₁)
         (TSP.itrans (inda w1 e1))
-        {!!} {!!}
+        ef1 ef2
         (λ f₁ g₁ h₁ a b ea → TSP.itrans (indb w1 e1 a b ea) f₁ g₁ h₁)
+      where
+        ef1 : (f₁ g₁ a b c : CTerm) (ea3 : eqInType u w1 (eqta w1 e1) a b)
+              → eqInType u w1 (eqta w1 e1) a c
+              → (ea4 : eqInType u w1 (eqta w1 e1) c b)
+              → eqInType u w1 (eqtb w1 e1 a b ea3) f₁ g₁
+              → eqInType u w1 (eqtb w1 e1 c b ea4) f₁ g₁
+        ef1 f₁ g₁ a b c ea3 e3 ea4 e4 = TSP.extrevr1 (indb w1 e1 c b ea4) (sub0 a B1) (eqtb w1 e1 a b ea3) f₁ g₁ e4
 
- {--
-        eqa1 : eqInType u w1 (eqta w1 e1) a1 a1
-        eqa1 = TSP-refl inda eqa
-
-        ef1 : eqInType u w1 (eqtb w1 e1 a1 a1 eqa1) (#APPLY f a1) (#APPLY g a1)
-        ef1 = f1 a1 a1 eqa1
-
-        ef2 : eqInType u w1 (eqtb w1 e1 a1 a2 eqa) (#APPLY g a1) (#APPLY h a2)
-        ef2 = f2 a1 a2 eqa
-
-        ef1' : eqInType u w1 (eqtb w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a1)
-        ef1' = TSP.extrevl1 (indb w1 e1 a1 a2 eqa) (sub0 a1 B2) (eqtb w1 e1 a1 a1 eqa1) (#APPLY f a1) (#APPLY g a1) ef1
---}
-
-
-\end{code}
+        ef2 : (f₁ g₁ a b c : CTerm) (ea3 : eqInType u w1 (eqta w1 e1) a b)
+              → eqInType u w1 (eqta w1 e1) b c
+              → (ea4 : eqInType u w1 (eqta w1 e1) a c)
+              → eqInType u w1 (eqtb w1 e1 a b ea3) f₁ g₁
+              → eqInType u w1 (eqtb w1 e1 a c ea4) f₁ g₁
+        ef2 f₁ g₁ a b c ea3 e3 ea4 e4 = TSP.extl1 (indb w1 e1 a b ea3) (sub0 c B2) (eqtb w1 e1 a c ea4) f₁ g₁ e4
 
 
 typeSysConds-W-extl1 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
@@ -540,6 +537,9 @@ typeSysConds-W-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C 
         (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
         (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
         C z f g (Mod.↑□ M eqi e1)
+
+
+\end{code}
 
 
 
