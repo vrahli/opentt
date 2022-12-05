@@ -482,24 +482,22 @@ typeSysConds-W-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C 
 typeSysConds-W-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi
   rewrite #Winj1 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x) -- C1≡A1
         | #Winj2 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x) -- D1≡B1
-  = {!!} {--Mod.∀𝕎-□Func M aw eqi
+  = Mod.∀𝕎-□Func M aw eqi
   where
     aw : ∀𝕎 w (λ w' e' →
-              ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-              → (a1 a2 : CTerm) (eqa : eqInType u w' (eqta0 w' e') a1 a2)
-              → eqInType u w' (eqtb0 w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP.extl1 (indb w1 e1 a1 a2 ea1) (sub0 a2 B4) (eqtb0 w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) ef1
+              Weq (eqInType u w' (eqta w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb w' e' a1 a2 eqa)) w' f g
+              → Weq (eqInType u w' (eqta0 w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb0 w' e' a1 a2 eqa)) w' f g)
+    aw w1 e1 h = weq-ext-eq ea1 eb1 h
       where
-        ea1 : eqInType u w1 (eqta w1 e1) a1 a2
-        ea1 = TSP.extrevl1 (inda w1 e1) A4 (eqta0 w1 e1) a1 a2 eqa
+        ea1 : (a b : CTerm) → eqInType u w1 (eqta w1 e1) a b → eqInType u w1 (eqta0 w1 e1) a b
+        ea1 a b q = TSP.extl1 (inda w1 e1) A4 (eqta0 w1 e1) a b q
 
-        ea2 : eqInType u w1 (eqta w1 e1) a2 a1
-        ea2 = TSP.isym (inda w1 e1) a1 a2 ea1
-
-        ef1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
-        ef1 = imp a1 a2 ea1
---}
+        eb1 : (f₁ g₁ a b : CTerm)
+              (ea2 : eqInType u w1 (eqta w1 e1) a b)
+              (ea3 : eqInType u w1 (eqta0 w1 e1) a b)
+              → eqInType u w1 (eqtb0 w1 e1 a b ea3) f₁ g₁
+              → eqInType u w1 (eqtb w1 e1 a b ea2) f₁ g₁
+        eb1 f₁ g₁ a b ea2 ea3 q = TSP.extrevl1 (indb w1 e1 a b ea2) (sub0 b B4) (eqtb0 w1 e1 a b ea3) f₁ g₁ q
 
 typeSysConds-W-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSUM (⇛-val-det tt tt x y))
 typeSysConds-W-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSET (⇛-val-det tt tt x y))
@@ -539,9 +537,6 @@ typeSysConds-W-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C 
         C z f g (Mod.↑□ M eqi e1)
 
 
-\end{code}
-
-
 
 typeSysConds-W-extl2 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
                         (x : A #⇛ #WT A1 B1 at w) (x₁ : B #⇛ #WT A2 B2 at w)
@@ -566,15 +561,25 @@ typeSysConds-W-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C 
 typeSysConds-W-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
   rewrite #Winj1 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
         | #Winj2 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
-  = {!!} {--Mod.∀𝕎-□Func M aw eqi
+  = Mod.∀𝕎-□Func M aw eqi
   where
     aw : ∀𝕎 w
               (λ w' e' →
-                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
-                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP.extl2 (indb w1 e1 a2 a1 ea2) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) eb2
+                Weq (eqInType u w' (eqta w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb w' e' a1 a2 eqa)) w' f g →
+                Weq (eqInType u w' (eqta₁ w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb₁ w' e' a1 a2 eqa)) w' f g)
+    aw w1 e1 h = weq-ext-eq ea1 eb1 h
+      where
+        ea1 : (a b : CTerm) → eqInType u w1 (eqta w1 e1) a b → eqInType u w1 (eqta₁ w1 e1) a b
+        ea1 a b q = TSP.extl2 (inda w1 e1) A3 (eqta₁ w1 e1) a b q
+
+        eb1 : (f₁ g₁ a b : CTerm)
+              (ea2 : eqInType u w1 (eqta w1 e1) a b)
+              (ea3 : eqInType u w1 (eqta₁ w1 e1) a b)
+              → eqInType u w1 (eqtb₁ w1 e1 a b ea3) f₁ g₁
+              → eqInType u w1 (eqtb w1 e1 a b ea2) f₁ g₁
+        eb1 f₁ g₁ a b ea2 ea3 q = {!TSP.extrevl2 (indb w1 e1 a b ea2) (sub0 a B3) (eqtb₁ w1 e1 a b ea3) f₁ g₁ q!} --
+
+ {-- a1 a2 eqa = TSP.extl2 (indb w1 e1 a2 a1 ea2) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) eb2
       where
         ea1 : eqInType u w1 (eqta w1 e1) a1 a2
         ea1 = TSP.extrevl2 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
@@ -625,6 +630,11 @@ typeSysConds-W-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C 
         (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
         (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
         C z f g (Mod.↑□ M eqi e1)
+
+
+
+
+\end{code}
 
 
 
