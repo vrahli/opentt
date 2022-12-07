@@ -634,10 +634,6 @@ typeSysConds-W-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C 
 
 
 
-\end{code}
-
-
-
 typeSysConds-W-extr1 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
                         (x : A #⇛ #WT A1 B1 at w) (x₁ : B #⇛ #WT A2 B2 at w)
                         (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
@@ -714,6 +710,10 @@ typeSysConds-W-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C 
         (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
         (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
         C z f g (Mod.↑□ M eqi e1)
+
+
+
+\end{code}
 
 
 
