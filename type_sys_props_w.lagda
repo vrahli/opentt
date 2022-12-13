@@ -577,22 +577,13 @@ typeSysConds-W-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C 
               (ea3 : eqInType u w1 (eqta₁ w1 e1) a b)
               → eqInType u w1 (eqtb₁ w1 e1 a b ea3) f₁ g₁
               → eqInType u w1 (eqtb w1 e1 a b ea2) f₁ g₁
-        eb1 f₁ g₁ a b ea2 ea3 q = {!TSP.extrevl2 (indb w1 e1 a b ea2) (sub0 a B3) (eqtb₁ w1 e1 a b ea3) f₁ g₁ q!} --
+        eb1 f₁ g₁ a b ea2 ea3 q = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb ebx
+          where
+            eax : eqInType u w1 (eqta w1 e1) b a
+            eax = TSP.isym (inda w1 e1) a b ea2
 
- {-- a1 a2 eqa = TSP.extl2 (indb w1 e1 a2 a1 ea2) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) eb2
-      where
-        ea1 : eqInType u w1 (eqta w1 e1) a1 a2
-        ea1 = TSP.extrevl2 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
-
-        ea2 : eqInType u w1 (eqta w1 e1) a2 a1
-        ea2 = TSP.isym (inda w1 e1) a1 a2 ea1
-
-        eb1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
-        eb1 = imp a1 a2 ea1
-
-        eb2 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (#APPLY f a1) (#APPLY g a2)
-        eb2 = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb eb1
---}
+            ebx : eqInType u w1 (eqtb w1 e1 b a eax) f₁ g₁
+            ebx = TSP.extrevl2 (indb w1 e1 b a eax) (sub0 a B3) (eqtb₁ w1 e1 a b ea3) f₁ g₁ q
 
 typeSysConds-W-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-W-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSET (⇛-val-det tt tt x y₁))
@@ -657,22 +648,21 @@ typeSysConds-W-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C 
 typeSysConds-W-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
   rewrite #Winj1 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
         | #Winj2 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
-  = {!!} {--Mod.∀𝕎-□Func M aw eqi
+  = Mod.∀𝕎-□Func M aw eqi
   where
-    aw : ∀𝕎 w
-              (λ w' e' →
-                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
-                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP.extr1 (indb w1 e1 a1 a2 ea1) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) eb1
+    aw : ∀𝕎 w (λ w' e' → Weq (eqInType u w' (eqta w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb w' e' a1 a2 eqa)) w' f g
+                       → Weq (eqInType u w' (eqta₁ w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb₁ w' e' a1 a2 eqa)) w' f g)
+    aw w1 e1 h = weq-ext-eq ea1 ea2 h
       where
-        ea1 : eqInType u w1 (eqta w1 e1) a1 a2
-        ea1 = TSP.extrevr1 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
+        ea1 : (a b : CTerm) → eqInType u w1 (eqta w1 e1) a b → eqInType u w1 (eqta₁ w1 e1) a b
+        ea1 a b q = TSP.extr1 (inda w1 e1) A3 (eqta₁ w1 e1) a b q
 
-        eb1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
-        eb1 = imp a1 a2 ea1
---}
+        ea2 : (f₁ g₁ a b : CTerm)
+              (ea1 : eqInType u w1 (eqta w1 e1) a b)
+              (ea2 : eqInType u w1 (eqta₁ w1 e1) a b)
+              → eqInType u w1 (eqtb₁ w1 e1 a b ea2) f₁ g₁
+              → eqInType u w1 (eqtb w1 e1 a b ea1) f₁ g₁
+        ea2 f₁ g₁ a b ea2 ea3 q = TSP.extrevr1 (indb w1 e1 a b ea2) (sub0 a B3) (eqtb₁ w1 e1 a b ea3) f₁ g₁ q
 
 typeSysConds-W-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-W-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSET (⇛-val-det tt tt x₁ y₁))
@@ -713,10 +703,6 @@ typeSysConds-W-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C 
 
 
 
-\end{code}
-
-
-
 typeSysConds-W-extr2 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
                         (x : A #⇛ #WT A1 B1 at w) (x₁ : B #⇛ #WT A2 B2 at w)
                         (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
@@ -740,31 +726,27 @@ typeSysConds-W-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C 
 typeSysConds-W-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
   rewrite #Winj1 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
         | #Winj2 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁) =
-  {!!} {--Mod.∀𝕎-□Func M aw eqi
+  Mod.∀𝕎-□Func M aw eqi
   where
-    aw : ∀𝕎 w
-              (λ w' e' →
-                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
-                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = ef0
+    aw : ∀𝕎 w (λ w' e' → Weq (eqInType u w' (eqta w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb w' e' a1 a2 eqa)) w' f g
+                        → Weq (eqInType u w' (eqta₁ w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb₁ w' e' a1 a2 eqa)) w' f g)
+    aw w1 e1 h = weq-ext-eq ea1 eb1 h
       where
-        ea1 : eqInType u w1 (eqta w1 e1) a1 a2
-        ea1 = TSP.extrevr2 (inda w1 e1) A4 (eqta₁ w1 e1) a1 a2 eqa
+        ea1 : (a b : CTerm) → eqInType u w1 (eqta w1 e1) a b → eqInType u w1 (eqta₁ w1 e1) a b
+        ea1 a b q = TSP.extr2 (inda w1 e1) A4 (eqta₁ w1 e1) a b q
 
-        ea2 : eqInType u w1 (eqta w1 e1) a2 a1
-        ea2 = TSP.isym (inda w1 e1) a1 a2 ea1
+        eb1 : (f₁ g₁ a b : CTerm)
+              (ea1 : eqInType u w1 (eqta w1 e1) a b)
+              (ea2 : eqInType u w1 (eqta₁ w1 e1) a b)
+              → eqInType u w1 (eqtb₁ w1 e1 a b ea2) f₁ g₁
+              → eqInType u w1 (eqtb w1 e1 a b ea1) f₁ g₁
+        eb1 f₁ g₁ a b ea2 ea3 q = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb ebx
+          where
+            eax : eqInType u w1 (eqta w1 e1) b a
+            eax = TSP.isym (inda w1 e1) a b ea2
 
-        ef1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
-        ef1 = imp a1 a2 ea1
-
-        ef2 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (#APPLY f a1) (#APPLY g a2)
-        ef2 = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb ef1
-
-        ef0 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)
-        ef0 = TSP.extr2 (indb w1 e1 a2 a1 ea2) (sub0 a2 B4) (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) ef2
---}
+            ebx : eqInType u w1 (eqtb w1 e1 b a eax) f₁ g₁
+            ebx = TSP.extrevr2 (indb w1 e1 b a eax) (sub0 b B4) (eqtb₁ w1 e1 a b ea3) f₁ g₁ q
 
 typeSysConds-W-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-W-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSET (⇛-val-det tt tt x₁ y))
@@ -828,22 +810,21 @@ typeSysConds-W-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 typeSysConds-W-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
   rewrite #Winj1 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x)
         | #Winj2 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x) =
-  {!!} {--Mod.∀𝕎-□Func M aw eqi
+  Mod.∀𝕎-□Func M aw eqi
   where
-    aw : ∀𝕎 w
-              (λ w' e' →
-                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
-                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP.extrevl1 (indb w1 e1 a1 a2 eqa) (sub0 a2 B4) (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2) ef1
+    aw : ∀𝕎 w (λ w' e' → Weq (eqInType u w' (eqta₁ w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb₁ w' e' a1 a2 eqa)) w' f g
+                        → Weq (eqInType u w' (eqta w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb w' e' a1 a2 eqa)) w' f g)
+    aw w1 e1 h = weq-ext-eq ea1 eb1 h
       where
-        ea1 : eqInType u w1 (eqta₁ w1 e1) a1 a2
-        ea1 = TSP.extl1 (inda w1 e1) A4 (eqta₁ w1 e1) a1 a2 eqa
+        ea1 : (a b : CTerm) → eqInType u w1 (eqta₁ w1 e1) a b → eqInType u w1 (eqta w1 e1) a b
+        ea1 a b q = TSP.extrevl1 (inda w1 e1) A4 (eqta₁ w1 e1) a b q
 
-        ef1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
-        ef1 = imp a1 a2 ea1
---}
+        eb1 : (f₁ g₁ a b : CTerm)
+              (ea1 : eqInType u w1 (eqta₁ w1 e1) a b)
+              (ea2 : eqInType u w1 (eqta w1 e1) a b)
+              → eqInType u w1 (eqtb w1 e1 a b ea2) f₁ g₁
+              → eqInType u w1 (eqtb₁ w1 e1 a b ea1) f₁ g₁
+        eb1 f₁ g₁ a b ea2 ea3 q = TSP.extl1 (indb w1 e1 a b ea3) (sub0 b B4) (eqtb₁ w1 e1 a b ea2) f₁ g₁ q
 
 typeSysConds-W-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSUM (⇛-val-det tt tt x y))
 typeSysConds-W-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSET (⇛-val-det tt tt x y))
@@ -870,14 +851,13 @@ typeSysConds-W-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
 typeSysConds-W-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (WneqLIFT (⇛-val-det tt tt x y))
 typeSysConds-W-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  {!!} {--Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+  Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
          (z : eqTypes u w' A C) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
-         □· w' (λ w'' e → (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' (⊑-trans· e' e)) a1 a2)
-                           → eqInType u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
+         □· w' (λ w'' e → Weq (eqInType u w'' (eqta w'' (⊑-trans· e' e))) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa)) w'' f g))
     aw0 w1 e1 z {--at--} ez =
       typeSysConds-W-extrevl1
         u w1 A B A1 B1 A2 B2
@@ -891,15 +871,14 @@ typeSysConds-W-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
       (λ w' e' →
          (z : eqTypes u w' A C) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
-         □· w' (λ w'' e → (x : w ⊑· w'') (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' x) a1 a2)
-                           → eqInType u w'' (eqtb w'' x a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
+         □· w' (λ w'' e → (x : w ⊑· w'')
+                        → Weq (eqInType u w'' (eqta w'' x)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x a1 a2 eqa)) w'' f g))
     aw w1 e1 z {--at--} ez =
       Mod.∀𝕎-□Func M
-        (irr-fam-pi
+        (irr-fam-w
           u w A1 B1 A2 B2 eqta eqtb exta extb
           f g w1 e1)
         (aw0 w1 e1 z {--at--} ez)
---}
 
 
 
@@ -926,28 +905,27 @@ typeSysConds-W-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 typeSysConds-W-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
   rewrite #Winj1 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
         | #Winj2 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x) =
-  {!!} {--Mod.∀𝕎-□Func M aw eqi
+  Mod.∀𝕎-□Func M aw eqi
   where
-    aw : ∀𝕎 w
-              (λ w' e' →
-                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
-                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb eb2
+    aw : ∀𝕎 w (λ w' e' → Weq (eqInType u w' (eqta₁ w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb₁ w' e' a1 a2 eqa)) w' f g
+                        → Weq (eqInType u w' (eqta w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb w' e' a1 a2 eqa)) w' f g)
+    aw w1 e1 h = weq-ext-eq ea1 eb1 h
       where
-        eas : eqInType u w1 (eqta w1 e1) a2 a1
-        eas = TSP.isym (inda w1 e1) a1 a2 eqa
+        ea1 : (a b : CTerm) → eqInType u w1 (eqta₁ w1 e1) a b → eqInType u w1 (eqta w1 e1) a b
+        ea1 a b q = TSP.extrevl2 (inda w1 e1) A3 (eqta₁ w1 e1) a b q
 
-        ea1 : eqInType u w1 (eqta₁ w1 e1) a1 a2
-        ea1 = TSP.extl2 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
+        eb1 : (f₁ g₁ a b : CTerm)
+              (ea1 : eqInType u w1 (eqta₁ w1 e1) a b)
+              (ea2 : eqInType u w1 (eqta w1 e1) a b)
+              → eqInType u w1 (eqtb w1 e1 a b ea2) f₁ g₁
+              → eqInType u w1 (eqtb₁ w1 e1 a b ea1) f₁ g₁
+        eb1 f₁ g₁ a b ea2 ea3 q = TSP.extl2 (indb w1 e1 b a eax) (sub0 a B3) (eqtb₁ w1 e1 a b ea2) f₁ g₁ ebx
+          where
+            eax : eqInType u w1 (eqta w1 e1) b a
+            eax = TSP.isym (inda w1 e1) a b ea3
 
-        eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
-        eb1 = imp a1 a2 ea1
-
-        eb2 : eqInType u w1 (eqtb w1 e1 a2 a1 eas) (#APPLY f a1) (#APPLY g a2)
-        eb2 = TSP.extrevl2 (indb w1 e1 a2 a1 eas) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2) eb1
---}
+            ebx : eqInType u w1 (eqtb w1 e1 b a eax) f₁ g₁
+            ebx = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb q
 
 typeSysConds-W-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-W-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSET (⇛-val-det tt tt x y₁))
@@ -974,13 +952,13 @@ typeSysConds-W-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
 typeSysConds-W-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (WneqLIFT (⇛-val-det tt tt x y₁))
 typeSysConds-W-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  {!!} {--Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+  Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
          (z : eqTypes u w' C A) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
-         □· w' (λ w'' e → Weq (eqta w'' (⊑-trans· e' e)) (eqtb w'' (⊑-trans· e' e)) w'' f g))
+         □· w' (λ w'' e → Weq (eqInType u w'' (eqta w'' (⊑-trans· e' e))) (λ a b eqa → eqInType u w'' (eqtb w'' (⊑-trans· e' e) a b eqa)) w'' f g))
     aw0 w1 e1 z {--at--} ez =
       typeSysConds-W-extrevl2
         u w1 A B A1 B1 A2 B2
@@ -994,16 +972,16 @@ typeSysConds-W-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
       (λ w' e' →
          (z : eqTypes u w' C A) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
-         □· w' (λ w'' e → (x : w ⊑· w'') (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' x) a1 a2)
-                           → eqInType u w'' (eqtb w'' x a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
+         □· w' (λ w'' e → (x : w ⊑· w'')
+                        → Weq (eqInType u w'' (eqta w'' x)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x a1 a2 eqa)) w'' f g))
     aw w1 e1 z {--at--} ez =
       Mod.∀𝕎-□Func M
-        (irr-fam-pi
+        (irr-fam-w
           u w A1 B1 A2 B2 eqta eqtb
           exta extb
           f g w1 e1)
         (aw0 w1 e1 z {--at--} ez)
---}
+
 
 
 
@@ -1030,22 +1008,21 @@ typeSysConds-W-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 typeSysConds-W-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
   rewrite #Winj1 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
         | #Winj2 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁) =
-  {!!} {--Mod.∀𝕎-□Func M aw eqi
+  Mod.∀𝕎-□Func M aw eqi
   where
-    aw : ∀𝕎 w
-              (λ w' e' →
-                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
-                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP.extrevr1 (indb w1 e1 a1 a2 eqa) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2) eb1
+    aw : ∀𝕎 w (λ w' e' → Weq (eqInType u w' (eqta₁ w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb₁ w' e' a1 a2 eqa)) w' f g
+                        → Weq (eqInType u w' (eqta w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb w' e' a1 a2 eqa)) w' f g)
+    aw w1 e1 h = weq-ext-eq ea1 eb1 h
       where
-        ea1 : eqInType u w1 (eqta₁ w1 e1) a1 a2
-        ea1 = TSP.extr1 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
+        ea1 : (a b : CTerm) → eqInType u w1 (eqta₁ w1 e1) a b → eqInType u w1 (eqta w1 e1) a b
+        ea1 a b q = TSP.extrevr1 (inda w1 e1) A3 (eqta₁ w1 e1) a b q
 
-        eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
-        eb1 = imp a1 a2 ea1
---}
+        eb1 : (f₁ g₁ a b : CTerm)
+              (ea1 : eqInType u w1 (eqta₁ w1 e1) a b)
+              (ea2 : eqInType u w1 (eqta w1 e1) a b)
+              → eqInType u w1 (eqtb w1 e1 a b ea2) f₁ g₁
+              → eqInType u w1 (eqtb₁ w1 e1 a b ea1) f₁ g₁
+        eb1 f₁ g₁ a b ea2 ea3 q = TSP.extr1 (indb w1 e1 a b ea3) (sub0 a B3) (eqtb₁ w1 e1 a b ea2) f₁ g₁ q
 
 typeSysConds-W-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-W-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSET (⇛-val-det tt tt x₁ y₁))
@@ -1072,14 +1049,13 @@ typeSysConds-W-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
 typeSysConds-W-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (WneqLIFT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-W-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  {!!} {--Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+  Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
          (z : eqTypes u w' C B) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
-         □· w' (λ w'' e → (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' (⊑-trans· e' e)) a1 a2)
-                           → eqInType u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
+         □· w' (λ w'' e → Weq (eqInType u w'' (eqta w'' (⊑-trans· e' e))) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa)) w'' f g))
     aw0 w1 e1 z {--at--} ez =
       typeSysConds-W-extrevr1
         u w1 A B A1 B1 A2 B2
@@ -1093,16 +1069,15 @@ typeSysConds-W-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
       (λ w' e' →
          (z : eqTypes u w' C B) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
-         □· w' (λ w'' e → (x : w ⊑· w'') (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' x) a1 a2)
-                           → eqInType u w'' (eqtb w'' x a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
+         □· w' (λ w'' e → (x : w ⊑· w'')
+                        → Weq (eqInType u w'' (eqta w'' x)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x a1 a2 eqa)) w'' f g))
     aw w1 e1 z {--at--} ez =
       Mod.∀𝕎-□Func M
-        (irr-fam-pi
+        (irr-fam-w
           u w A1 B1 A2 B2 eqta eqtb
           exta extb
           f g w1 e1)
         (aw0 w1 e1 z {--at--} ez)
---}
 
 
 
@@ -1129,28 +1104,27 @@ typeSysConds-W-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 typeSysConds-W-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
   rewrite #Winj1 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
         | #Winj2 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁) =
-  {!!} {--Mod.∀𝕎-□Func M aw eqi
+  Mod.∀𝕎-□Func M aw eqi
   where
-    aw : ∀𝕎 w
-              (λ w' e' →
-                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
-                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb eb2
+    aw : ∀𝕎 w (λ w' e' → Weq (eqInType u w' (eqta₁ w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb₁ w' e' a1 a2 eqa)) w' f g
+                        → Weq (eqInType u w' (eqta w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb w' e' a1 a2 eqa)) w' f g)
+    aw w1 e1 h = weq-ext-eq ea1 eb1 h
       where
-        ea1 : eqInType u w1 (eqta₁ w1 e1) a1 a2
-        ea1 = TSP.extr2 (inda w1 e1) A4 (eqta₁ w1 e1) a1 a2 eqa
+        ea1 : (a b : CTerm) → eqInType u w1 (eqta₁ w1 e1) a b → eqInType u w1 (eqta w1 e1) a b
+        ea1 a b q = TSP.extrevr2 (inda w1 e1) A4 (eqta₁ w1 e1) a b q
 
-        ea2 : eqInType u w1 (eqta w1 e1) a2 a1
-        ea2 = TSP.isym (inda w1 e1) a1 a2 eqa
+        eb1 : (f₁ g₁ a b : CTerm)
+              (ea1 : eqInType u w1 (eqta₁ w1 e1) a b)
+              (ea2 : eqInType u w1 (eqta w1 e1) a b)
+              → eqInType u w1 (eqtb w1 e1 a b ea2) f₁ g₁
+              → eqInType u w1 (eqtb₁ w1 e1 a b ea1) f₁ g₁
+        eb1 f₁ g₁ a b ea2 ea3 q = TSP.extr2 (indb w1 e1 b a eax) (sub0 b B4) (eqtb₁ w1 e1 a b ea2) f₁ g₁ ebx
+          where
+            eax : eqInType u w1 (eqta w1 e1) b a
+            eax = TSP.isym (inda w1 e1) a b ea3
 
-        eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
-        eb1 = imp a1 a2 ea1
-
-        eb2 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (#APPLY f a1) (#APPLY g a2)
-        eb2 = TSP.extrevr2 (indb w1 e1 a2 a1 ea2) (sub0 a2 B4) (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2) eb1
---}
+            ebx : eqInType u w1 (eqtb w1 e1 b a eax) f₁ g₁
+            ebx = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb q
 
 typeSysConds-W-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-W-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSET (⇛-val-det tt tt x₁ y))
@@ -1177,14 +1151,13 @@ typeSysConds-W-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
 
 typeSysConds-W-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (WneqLIFT (⇛-val-det tt tt x₁ y))
 typeSysConds-W-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  {!!} {--Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+  Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
          (z : eqTypes u w' B C) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
-         □· w' (λ w'' e → (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' (⊑-trans· e' e)) a1 a2)
-                           → eqInType u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
+         □· w' (λ w'' e → Weq (eqInType u w'' (eqta w'' (⊑-trans· e' e))) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa)) w'' f g))
     aw0 w1 e1 z {--at--} ez =
       typeSysConds-W-extrevr2
         u w1 A B A1 B1 A2 B2
@@ -1198,16 +1171,15 @@ typeSysConds-W-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
       (λ w' e' →
          (z : eqTypes u w' B C) {--(at : atbar y w' e' z)--} →
          eqInType u w' z f g →
-         □· w' (λ w'' e → (x : w ⊑· w'') (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' x) a1 a2)
-                           → eqInType u w'' (eqtb w'' x a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
+         □· w' (λ w'' e → (x : w ⊑· w'')
+                        → Weq (eqInType u w'' (eqta w'' x)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x a1 a2 eqa)) w'' f g))
     aw w1 e1 z {--at--} ez =
       Mod.∀𝕎-□Func M
-        (irr-fam-pi
+        (irr-fam-w
           u w A1 B1 A2 B2 eqta eqtb
           exta extb
           f g w1 e1)
         (aw0 w1 e1 z {--at--} ez)
---}
 
 
 
@@ -1238,18 +1210,21 @@ eqInType-⇛-W u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (
         | #Winj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #Winj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
         | #Winj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
-  {!!} {--Mod.∀𝕎-□Func M aw ei
+  Mod.∀𝕎-□Func M aw ei
   where
-    aw : ∀𝕎 w (λ w' e' → PIeq (eqInType u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb₁ w' e' a₁ a₂ eqa)) a b
-                         → PIeq (eqInType u w' (eqta w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e' a₁ a₂ eqa)) a b)
-    aw w1 e1 z a₁ a₂ eqa = snd (indb w1 e1 a₁ a₂ eqa (eqtb₁ w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)) eqb'
+    aw : ∀𝕎 w (λ w' e' → Weq (eqInType u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb₁ w' e' a₁ a₂ eqa)) w' a b
+                         → Weq (eqInType u w' (eqta w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e' a₁ a₂ eqa)) w' a b)
+    aw w1 e1 h = weq-ext-eq ea1 eb1 h
       where
-        eqa' : eqInType u w1 (eqta₁ w1 e1) a₁ a₂
-        eqa' = fst (inda w1 e1 (eqta₁ w1 e1) a₁ a₂) eqa
+        ea1 : (a₁ b₁ : CTerm) → eqInType u w1 (eqta₁ w1 e1) a₁ b₁ → eqInType u w1 (eqta w1 e1) a₁ b₁
+        ea1 a b q = snd (inda w1 e1 (eqta₁ w1 e1) a b) q
 
-        eqb' : eqInType u w1 (eqtb₁ w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)
-        eqb' = z a₁ a₂ eqa'
---}
+        eb1 : (f g a₁ b₁ : CTerm)
+              (ea1 : eqInType u w1 (eqta₁ w1 e1) a₁ b₁)
+              (ea2 : eqInType u w1 (eqta w1 e1) a₁ b₁)
+              → eqInType u w1 (eqtb w1 e1 a₁ b₁ ea2) f g
+              → eqInType u w1 (eqtb₁ w1 e1 a₁ b₁ ea1) f g
+        eb1 f g a₁ b₁ ea2 ea3 q = proj₁ (indb w1 e1 a₁ b₁ ea3 (eqtb₁ w1 e1 a₁ b₁ ea2) f g) q
 
 eqInType-⇛-W u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (WneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-W u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (WneqSET (⇛-val-det tt tt c₁ x))
@@ -1296,8 +1271,7 @@ eqInType-⇛-W u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (
          (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →
          eqInType u w' z a b →
          □· w' (λ w'' e → (x : w ⊑· w'') → Weq (eqInType u w'' (eqta w'' x)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x a1 a2 eqa)) w'' a b))
-    aw w1 e1 z {--at--} ez = {!!} --Mod.∀𝕎-□Func M (irr-fam-pi u w A1 B1 A2 B2 eqta eqtb exta extb a b w1 e1) (aw0 w1 e1 z {--at--} ez)
-
+    aw w1 e1 z {--at--} ez = Mod.∀𝕎-□Func M (irr-fam-w u w A1 B1 A2 B2 eqta eqtb exta extb a b w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
 
@@ -1327,17 +1301,17 @@ eqInType-⇛-W2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTW A3 B
         | #Winj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #Winj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
         | #Winj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
-  {!!} {--Mod.∀𝕎-□Func M aw ei
+  Mod.∀𝕎-□Func M aw ei
   where
     awexta₁ : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
-    awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypePIa u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
+    awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeWa u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
 
     awexta : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
     awexta w1 e1 = eqTypes-eqInTypeExt (eqta₁ w1 e1) (eqta w1 e1) (awexta₁ w1 e1)
 
     awextb₁ : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : ≡∈Type u w1 (eqta₁ w1 e1) a1 a2)
                               → eqInTypeExt (eqtb₁ w1 e1 a1 a2 ea))
-    awextb₁ w1 e1 a1 a2 ea = ext (eqtb₁ w1 e1 a1 a2 ea) (≤TypeS _ _ (<Type1 _ _ (<TypePIb u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1 a1 a2 ea)))
+    awextb₁ w1 e1 a1 a2 ea = ext (eqtb₁ w1 e1 a1 a2 ea) (≤TypeS _ _ (<Type1 _ _ (<TypeWb u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1 a1 a2 ea)))
 
     awextb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : ≡∈Type u w1 (eqta w1 e1) a1 a2)
                              → eqInTypeExt (eqtb w1 e1 a1 a2 ea))
@@ -1347,16 +1321,19 @@ eqInType-⇛-W2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTW A3 B
         (eqtb w1 e1 a1 a2 ea)
         (awextb₁ w1 e1 a1 a2 (proj₁ (awexta w1 e1 (eqta₁ w1 e1) a1 a2) ea))
 
-    aw : ∀𝕎 w (λ w' e' → PIeq (≡∈Type u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb₁ w' e' a₁ a₂ eqa)) a b
-                         → PIeq (≡∈Type u w' (eqta w' e')) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e' a₁ a₂ eqa)) a b)
-    aw w1 e1 z a₁ a₂ eqa = snd (awextb w1 e1 a₁ a₂ eqa (eqtb₁ w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)) eqb'
+    aw : ∀𝕎 w (λ w' e' → Weq (≡∈Type u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb₁ w' e' a₁ a₂ eqa)) w' a b
+                         → Weq (≡∈Type u w' (eqta w' e')) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e' a₁ a₂ eqa)) w' a b)
+    aw w1 e1 h = weq-ext-eq ea1 eb1 h
       where
-        eqa' : ≡∈Type u w1 (eqta₁ w1 e1) a₁ a₂
-        eqa' = fst (awexta w1 e1 (eqta₁ w1 e1) a₁ a₂) eqa
+        ea1 : (a₁ b₁ : CTerm) → ≡∈Type u w1 (eqta₁ w1 e1) a₁ b₁ → ≡∈Type u w1 (eqta w1 e1) a₁ b₁
+        ea1 a b q = snd (awexta w1 e1 (eqta₁ w1 e1) a b) q
 
-        eqb' : ≡∈Type u w1 (eqtb₁ w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)
-        eqb' = z a₁ a₂ eqa'
---}
+        eb1 : (f g a₁ b₁ : CTerm)
+              (ea1 : ≡∈Type u w1 (eqta₁ w1 e1) a₁ b₁)
+              (ea2 : ≡∈Type u w1 (eqta w1 e1) a₁ b₁)
+              → ≡∈Type u w1 (eqtb w1 e1 a₁ b₁ ea2) f g
+              → ≡∈Type u w1 (eqtb₁ w1 e1 a₁ b₁ ea1) f g
+        eb1 f g a₁ b₁ ea2 ea3 q = fst (awextb w1 e1 a₁ b₁ ea3 (eqtb₁ w1 e1 a₁ b₁ ea2) f g) q
 
 eqInType-⇛-W2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (WneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-W2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (WneqSET (⇛-val-det tt tt c₁ x))
@@ -1403,7 +1380,7 @@ eqInType-⇛-W2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTBAR x)
                {--→ atbar x w' e' z--}
                → ≡∈Type u w' z a b
                → □· w' (λ w'' e → (x : w ⊑· w'') → Weq (≡∈Type u w'' (eqta w'' x)) (λ a1 a2 eqa → ≡∈Type u w'' (eqtb w'' x a1 a2 eqa)) w'' a b))
-    aw w1 e1 z {--at--} ez = {!!} --Mod.∀𝕎-□Func M (irr-fam-pi (u ·ᵤ) w A1 B1 A2 B2 eqta eqtb exta extb a b w1 e1) (aw0 w1 e1 z {--at--} ez)
+    aw w1 e1 z {--at--} ez = Mod.∀𝕎-□Func M (irr-fam-w (u ·ᵤ) w A1 B1 A2 B2 eqta eqtb exta extb a b w1 e1) (aw0 w1 e1 z {--at--} ez)
 
 
 
@@ -1435,18 +1412,21 @@ eqInType-⇛-W-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c�
         | #Winj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #Winj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
         | #Winj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
-  {!!} {--Mod.∀𝕎-□Func M aw ei
+  Mod.∀𝕎-□Func M aw ei
   where
     aw : ∀𝕎 w (λ w' e' → Weq (eqInType u w' (eqta w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e' a₁ a₂ eqa)) w' a b
                          → Weq (eqInType u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb₁ w' e' a₁ a₂ eqa)) w' a b)
-    aw w1 e1 z a₁ a₂ eqa = proj₁ (indb w1 e1 a₁ a₂ eqa' (eqtb₁ w1 e1 a₁ a₂ eqa) (#APPLY a a₁) (#APPLY b a₂)) eqb'
+    aw w1 e1 h = weq-ext-eq ea1 eb1 h
       where
-        eqa' : eqInType u w1 (eqta w1 e1) a₁ a₂
-        eqa' = snd (inda w1 e1 (eqta₁ w1 e1) a₁ a₂) eqa
+        ea1 : (a₁ b₁ : CTerm) → eqInType u w1 (eqta w1 e1) a₁ b₁ → eqInType u w1 (eqta₁ w1 e1) a₁ b₁
+        ea1 a b q = fst (inda w1 e1 (eqta₁ w1 e1) a b) q
 
-        eqb' : eqInType u w1 (eqtb w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)
-        eqb' = z a₁ a₂ eqa'
---}
+        eb1 : (f g a₁ b₁ : CTerm)
+              (ea1 : eqInType u w1 (eqta w1 e1) a₁ b₁)
+              (ea2 : eqInType u w1 (eqta₁ w1 e1) a₁ b₁)
+              → eqInType u w1 (eqtb₁ w1 e1 a₁ b₁ ea2) f g
+              → eqInType u w1 (eqtb w1 e1 a₁ b₁ ea1) f g
+        eb1 f g a₁ b₁ ea2 ea3 q = snd (indb w1 e1 a₁ b₁ ea2 (eqtb₁ w1 e1 a₁ b₁ ea3) f g) q
 
 eqInType-⇛-W-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (WneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-W-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (WneqSET (⇛-val-det tt tt c₁ x))
@@ -1515,25 +1495,28 @@ eqInType-⇛-W-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTW 
         | #Winj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #Winj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
         | #Winj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
-  {!!} {--Mod.∀𝕎-□Func M aw ei
+  Mod.∀𝕎-□Func M aw ei
   where
     awexta₁ : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
-    awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypePIa u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
+    awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeWa u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
 
     awextb₁ : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : ≡∈Type u w1 (eqta₁ w1 e1) a1 a2)
                               → eqInTypeExt (eqtb₁ w1 e1 a1 a2 ea))
-    awextb₁ w1 e1 a1 a2 ea = ext (eqtb₁ w1 e1 a1 a2 ea) (≤TypeS _ _ (<Type1 _ _ (<TypePIb u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1 a1 a2 ea)))
+    awextb₁ w1 e1 a1 a2 ea = ext (eqtb₁ w1 e1 a1 a2 ea) (≤TypeS _ _ (<Type1 _ _ (<TypeWb u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1 a1 a2 ea)))
 
     aw : ∀𝕎 w (λ w' e' → Weq (≡∈Type u w' (eqta w' e')) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e' a₁ a₂ eqa)) w' a b
                          → Weq (≡∈Type u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb₁ w' e' a₁ a₂ eqa)) w' a b)
-    aw w1 e1 z a₁ a₂ eqa = snd (awextb₁ w1 e1 a₁ a₂ eqa (eqtb w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)) eqb'
+    aw w1 e1 h = weq-ext-eq ea1 eb1 h
       where
-        eqa' : ≡∈Type u w1 (eqta w1 e1) a₁ a₂
-        eqa' = fst (awexta₁ w1 e1 (eqta w1 e1) a₁ a₂) eqa
+        ea1 : (a₁ b₁ : CTerm) → ≡∈Type u w1 (eqta w1 e1) a₁ b₁ → ≡∈Type u w1 (eqta₁ w1 e1) a₁ b₁
+        ea1 a b q = snd (awexta₁ w1 e1 (eqta w1 e1) a b) q
 
-        eqb' : ≡∈Type u w1 (eqtb w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)
-        eqb' = z a₁ a₂ eqa'
---}
+        eb1 : (f g a₁ b₁ : CTerm)
+              (ea1 : ≡∈Type u w1 (eqta w1 e1) a₁ b₁)
+              (ea2 : ≡∈Type u w1 (eqta₁ w1 e1) a₁ b₁)
+              → ≡∈Type u w1 (eqtb₁ w1 e1 a₁ b₁ ea2) f g
+              → ≡∈Type u w1 (eqtb w1 e1 a₁ b₁ ea1) f g
+        eb1 f g a₁ b₁ ea2 ea3 q = fst (awextb₁ w1 e1 a₁ b₁ ea3 (eqtb w1 e1 a₁ b₁ ea2) f g) q
 
 eqInType-⇛-W-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (WneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-W-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (WneqSET (⇛-val-det tt tt c₁ x))
@@ -1588,7 +1571,7 @@ typeSysConds-W-local : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1 :
                                                 → eqInTypeExt (eqtb w1 e1 a1 a2 ea)))
                         → eqInTypeLocal (EQTW A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 typeSysConds-W-local u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb a b i j =
-  {!!} {--Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+  Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                          → eqInType u w' z a b
@@ -1606,14 +1589,17 @@ typeSysConds-W-local u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb a 
 
         aw'' : ∀𝕎 w1 (λ w' e' → Weq (eqInType u w' (eqta w' (⊑-trans· e1 e'))) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' (⊑-trans· e1 e') a₁ a₂ eqa)) w' a b
                                 → (x₂ : w ⊑· w') → Weq (eqInType u w' (eqta w' x₂)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' x₂ a₁ a₂ eqa)) w' a b)
-        aw'' w' e' j x₂ a1 a2 eqa = fst (indb w' (⊑-trans· e1 e') a1 a2 eqa' (eqtb w' x₂ a1 a2 eqa) (#APPLY a a1) (#APPLY b a2)) eqb'
+        aw'' w' e' j x₂ = weq-ext-eq ea1 eb1 j
           where
-            eqa' : eqInType u w' (eqta w' (⊑-trans· e1 e')) a1 a2
-            eqa' = fst (inda w' x₂ (eqta w' (⊑-trans· e1 e')) a1 a2) eqa
+            ea1 : (a₁ b₁ : CTerm) → eqInType u w' (eqta w' (⊑-trans· e1 e')) a₁ b₁ → eqInType u w' (eqta w' x₂) a₁ b₁
+            ea1 a b q = snd (inda w' x₂ (eqta w' (⊑-trans· e1 e')) a b) q
 
-            eqb' : eqInType u w' (eqtb w' (⊑-trans· e1 e') a1 a2 eqa') (#APPLY a a1) (#APPLY b a2)
-            eqb' = j a1 a2 eqa'
---}
+            eb1 : (f g a₁ b₁ : CTerm)
+                  (ea1 : eqInType u w' (eqta w' (⊑-trans· e1 e')) a₁ b₁)
+                  (ea2 : eqInType u w' (eqta w' x₂) a₁ b₁)
+                  → eqInType u w' (eqtb w' x₂ a₁ b₁ ea2) f g
+                  → eqInType u w' (eqtb w' (⊑-trans· e1 e') a₁ b₁ ea1) f g
+            eb1 f g a₁ b₁ ea2 ea3 q = snd (indb w' (⊑-trans· e1 e') a₁ b₁ ea2 (eqtb w' x₂ a₁ b₁ ea3) f g) q
 
 
 
