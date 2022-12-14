@@ -1816,7 +1816,21 @@ equalInType-W {u} {w} {A} {B} {f} {g} ha hb eqi =
   where
     aw : ∀𝕎 w (λ w' e' → Weq (equalInType u w' A) (λ a b ea → equalInType u w' (sub0 a B)) w' f g
                        → Weq (eqInType (uni u) w' (ha w' e')) (λ a1 a2 eqa → eqInType (uni u) w' (equalInTypeFam→eqTypesFam {u} {w} {A} {B} {A} {B} ha hb w' e' a1 a2 eqa)) w' f g)
-    aw w1 e1 h = {!!}
+    aw w1 e1 h = weq-ext-eq ea1 eb1 h
+      where
+        ea1 : (a b : CTerm) → equalInType u w1 A a b → eqInType (uni u) w1 (ha w1 e1) a b
+        ea1 a b q = equalInType→eqInType {u} {w1} {A} {A} {A} refl {ha w1 e1} q
+
+        eb1 : (f₁ g₁ a b : CTerm)
+              (ea1 : equalInType u w1 A a b)
+              (ea2 : eqInType (uni u) w1 (ha w1 e1) a b)
+              → eqInType (uni u) w1 (equalInTypeFam→eqTypesFam {u} {w} {A} {B} {A} {B} ha hb w1 e1 a b ea2) f₁ g₁
+              → equalInType u w1 (sub0 a B) f₁ g₁
+        eb1 f₁ g₁ a b ea2 ea3 q =
+          eqInType→equalInType
+            {u} {w1} {sub0 a B} {sub0 a B} {sub0 b B} {f₁} {g₁} refl
+            (equalInTypeFam→eqTypesFam {u} {w} {A} {B} {A} {B} ha hb w1 e1 a b ea3) q
+
  {--(λ w' e' (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) →
       a₁ , a₂ , b₁ , b₂ ,
       equalInType→eqInType {u} {w'} {A} {A} {A} refl {ha w' e'} ea ,
