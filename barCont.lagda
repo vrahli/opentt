@@ -96,49 +96,90 @@ open import continuity-conds(W)(C)(K)(G)(X)(N)
 
 
 -- generic element with the index of as 1st arg.
--- - name of the reference
--- - list as length + function
--- - index
+-- - name of the reference (r)
+-- - list as length (k) + function (f)
+-- - index (i)
+-- We assume that the reference is set to true and set it to false if we don't have enough information in the sequence
 genericI : Name → Term → Term → Term → Term
-genericI r k f i = IFLT i k b1 b2
+genericI r k f i =
+  SEQ choose (APPLY f i)
   where
-    b1 : Term
-    b1 = SEQ (CHOOSE (NAME r) BTRUE) (APPLY f i)
-
-    b2 : Term
-    b2 = NUM 0
+    choose : Term
+    choose = IFLT i k AX (CHOOSE (NAME r) BFALSE)
 
 
 generic : Name → Term → Term -- λ (l,f) i → genericI l f i
 generic r xs = LAMBDA (genericI r (FST xs) (SND xs) (VAR 0))
 
 
+FunBar : Term
+FunBar = FUN (FUN NAT NAT) NAT
 
-functionalBar : Term
-functionalBar = FUN (FUN NAT NAT) NAT -- TODO: add the condition
+
+UNIT : Term
+UNIT = TRUE
 
 
-inductiveBar : Term
-inductiveBar = {!!} -- add W types
+VOID : Term
+VOID = FALSE
+
+
+IndBarB : Term
+IndBarB = UNION NAT UNIT
+
+
+IndBarC : Term
+IndBarC = DECIDE (VAR 0) VOID UNIT
+
+
+IndBar : Term
+IndBar = WT IndBarB IndBarC
+
+
+ETA : Term → Term
+ETA n = LAMBDA (SUP (INL n) AX)
+
+
+DIGAMMA : Term → Term
+DIGAMMA f = LAMBDA (SUP (INR AX) f)
 
 
 barThesis : Term
-barThesis = FUN functionalBar inductiveBar
+barThesis = FUN FunBar IndBar
 
-loop : Name →  Term → Term → Term
-loop r bar xs =
-  FIX (LAMBDA R)
+
+-- appends a new value
+APPEND : Term → Term → Term
+APPEND l x = PAIR (SUC k) (LAMBDA (IFLT (VAR 0) k (APPLY f (VAR 0)) x))
+  where
+    k : Term
+    k = FST l
+
+    f : Term
+    f = SND l
+
+
+-- empty list
+EMPTY : Term
+EMPTY = PAIR (NUM 0) (LAMBDA AX)
+
+
+loop : Name →  Term → Term
+loop r bar =
+  FIX (LAMBDA (LAMBDA R)) -- 0 is the argument (the list), and 1 is the recursive call
   where
     R : Term
-    R = LET (APPLY bar (generic r xs)) (ITE (CS r) {!!} {!!})
+    R = SEQ (CHOOSE (NAME r) BTRUE) -- we start by assuming that we have enough information
+            (LET (APPLY bar (generic r (VAR 0)))
+                 (ITE (CS r) (ETA (VAR 0)) (DIGAMMA (LAMBDA (APPLY (VAR 3) (APPEND (VAR 2) (VAR 0)))))))
 
 
 tabI : Term → Term
-tabI bar = {!!}
+tabI bar = FRESH (APPLY (loop 0 bar) EMPTY)
 
 
 tab : Term
-tab = {!!}
+tab = LAMBDA (tabI (VAR 0))
 
 
 --sem : (w : 𝕎·) → ∈Type i w #barThesis tab
