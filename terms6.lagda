@@ -327,6 +327,45 @@ differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(DSUP a₁ b₁) .(DSUP a�
             a₁' ⇓ a'' from w1'' to w3 × a₂ ⇓ b'' from w1' to w3' × differ name1 name2 f a'' b'' × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
     ind = differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w1'' w1' (fst (snd hv0)) a₁ a₂ a₁' (fst hv0) k compat1 compat2 agtn diff g0 z (fst (snd (snd hv0))) (snd (snd (snd hv0))) pd -- (hasValue-SPREAD→ a₁' b₁ w1'' {k} hv) pd
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
+-- MT
+differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(MT a₁ b₁) .(MT a₂ b₂) a' v k compat1 compat2 agtn (differ-MT a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = MT a₁ b₁ , MT a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-MT _ _ _ _ diff diff₁ , g0
+-- MSUP
+differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(MSUP a₁ b₁) .(MSUP a₂ b₂) a' v k compat1 compat2 agtn (differ-MSUP a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = MSUP a₁ b₁ , MSUP a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-MSUP _ _ _ _ diff diff₁ , g0
+-- DMSUP
+differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(DMSUP a₁ b₁) .(DMSUP a₂ b₂) a' v k compat1 compat2 agtn (differ-DMSUP a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd with is-MSUP a₁
+... | inj₁ (u₁ , u₂ , p) rewrite p | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
+  concl d
+  where
+    d : Σ Term (λ u' → Σ Term (λ v' → a₂ ≡ MSUP u' v' × differ name1 name2 f u₁ u' × differ name1 name2 f u₂ v'))
+    d = differ-MSUPₗ→ diff
+
+    concl : Σ Term (λ u' → Σ Term (λ v' → a₂ ≡ MSUP u' v' × differ name1 name2 f u₁ u' × differ name1 name2 f u₂ v'))
+            → Σ Term (λ a'' → Σ Term (λ b'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
+                   sub u₂ (sub u₁ b₁) ⇓ a'' from w1 to w3 × DMSUP a₂ b₂ ⇓ b'' from w1' to w3' × differ name1 name2 f a'' b'' × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
+    concl (u' , v' , e , d1 , d2) rewrite e =
+      sub u₂ (sub u₁ b₁) , sub v' (sub u' b₂) , w1 , w1' ,
+      ⇓from-to-refl _ _ ,
+      DMSUP-MSUP⇓ w1' u' v' b₂ ,
+      differ-sub cf (differ-sub cf diff₁ d1) d2 ,
+      g0
+... | inj₂ x with step⊎ a₁ w1
+... |    inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
+  DMSUP (fst ind) b₁ ,
+  DMSUP (fst (snd ind)) b₂ ,
+  fst (snd (snd ind)) ,
+  fst (snd (snd (snd ind))) ,
+  DMSUP⇓ b₁ (fst (snd (snd (snd (snd ind))))) ,
+  DMSUP⇓ b₂ (fst (snd (snd (snd (snd (snd ind)))))) ,
+  differ-DMSUP _ _ _ _ (fst (snd (snd (snd (snd (snd (snd ind))))))) diff₁ ,
+  snd (snd (snd (snd (snd (snd (snd ind))))))
+  where
+    hv0 : hasValueℕ k a₁' w1''
+    hv0 = DMSUP→hasValue k a₁' b₁ v w1'' w0 hv isvv
+
+    ind : Σ Term (λ a'' → Σ Term (λ b'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
+            a₁' ⇓ a'' from w1'' to w3 × a₂ ⇓ b'' from w1' to w3' × differ name1 name2 f a'' b'' × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
+    ind = differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w1'' w1' (fst (snd hv0)) a₁ a₂ a₁' (fst hv0) k compat1 compat2 agtn diff g0 z (fst (snd (snd hv0))) (snd (snd (snd hv0))) pd -- (hasValue-SPREAD→ a₁' b₁ w1'' {k} hv) pd
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
 -- SUM
 differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(SUM a₁ b₁) .(SUM a₂ b₂) a' v k compat1 compat2 agtn (differ-SUM a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = SUM a₁ b₁ , SUM a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-SUM _ _ _ _ diff diff₁ , g0
 -- PAIR
@@ -966,6 +1005,9 @@ IFLT-NUM⇓ n m w a b c c₁ c₂ with n <? m
 ¬Names→shiftNameUp≡ (WT t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
 ¬Names→shiftNameUp≡ (SUP t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
 ¬Names→shiftNameUp≡ (DSUP t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (MT t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (MSUP t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+¬Names→shiftNameUp≡ (DMSUP t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
 ¬Names→shiftNameUp≡ (SUM t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
 ¬Names→shiftNameUp≡ (PAIR t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
 ¬Names→shiftNameUp≡ (SPREAD t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl

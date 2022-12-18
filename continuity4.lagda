@@ -110,6 +110,9 @@ data updRel (name : Name) (f g : Term) : Term → Term → Set where
   updRel-WT      : (a₁ a₂ b₁ b₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g (WT a₁ b₁) (WT a₂ b₂)
   updRel-SUP     : (a₁ a₂ b₁ b₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g (SUP a₁ b₁) (SUP a₂ b₂)
   updRel-DSUP    : (a₁ a₂ b₁ b₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g (DSUP a₁ b₁) (DSUP a₂ b₂)
+  updRel-MT      : (a₁ a₂ b₁ b₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g (MT a₁ b₁) (MT a₂ b₂)
+  updRel-MSUP    : (a₁ a₂ b₁ b₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g (MSUP a₁ b₁) (MSUP a₂ b₂)
+  updRel-DMSUP   : (a₁ a₂ b₁ b₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g (DMSUP a₁ b₁) (DMSUP a₂ b₂)
   updRel-SUM     : (a₁ a₂ b₁ b₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g (SUM a₁ b₁) (SUM a₂ b₂)
   updRel-PAIR    : (a₁ a₂ b₁ b₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g (PAIR a₁ b₁) (PAIR a₂ b₂)
   updRel-SPREAD  : (a₁ a₂ b₁ b₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g (SPREAD a₁ b₁) (SPREAD a₂ b₂)
@@ -362,6 +365,13 @@ updRel-SUPₗ→ : {name : Name} {f g : Term} {t₁ t₂ : Term} {a : Term}
                 → updRel name f g (SUP t₁ t₂) a
                 → Σ Term (λ u₁ → Σ Term (λ u₂ → a ≡ SUP u₁ u₂ × updRel name f g t₁ u₁ × updRel name f g t₂ u₂))
 updRel-SUPₗ→ {name} {f} {g} {t₁} {t₂} {.(SUP a₁ a₂)} (updRel-SUP .t₁ a₁ .t₂ a₂ u1 u2) = a₁ , a₂ , refl , u1 , u2
+
+
+
+updRel-MSUPₗ→ : {name : Name} {f g : Term} {t₁ t₂ : Term} {a : Term}
+                → updRel name f g (MSUP t₁ t₂) a
+                → Σ Term (λ u₁ → Σ Term (λ u₂ → a ≡ MSUP u₁ u₂ × updRel name f g t₁ u₁ × updRel name f g t₂ u₂))
+updRel-MSUPₗ→ {name} {f} {g} {t₁} {t₂} {.(MSUP a₁ a₂)} (updRel-MSUP .t₁ a₁ .t₂ a₂ u1 u2) = a₁ , a₂ , refl , u1 , u2
 
 
 
@@ -721,6 +731,74 @@ stepsPresUpdRel-DSUP₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , i
 
 
 
+
+isHighestℕ-DMSUP₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v : Term} {w w' : 𝕎·}
+                      → (comp : steps k (DMSUP a b , w) ≡ (v , w'))
+                      → isValue v
+                      → isHighestℕ {k} {w} {w'} {DMSUP a b} {v} n name comp
+                      → Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+isHighestℕ-DMSUP₁→ {n} {0} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+isHighestℕ-DMSUP₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h with is-MSUP a
+... | inj₁ (u₁ , u₂ , p) rewrite p = 0 , MSUP u₁ u₂ , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
+... | inj₂ x with step⊎ a w
+... |    inj₁ (a0 , w0 , z) rewrite z =
+  suc (fst ind) , concl
+  where
+    ind : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a0 , w0) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+    ind = isHighestℕ-DMSUP₁→ {n} {k} {name} {f} {g} {a0} {b} {v} {w0} {w'} comp isv (snd h)
+
+    concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × suc (fst ind) < suc k)))
+    concl rewrite z =
+      fst (snd ind) , fst (snd (snd ind)) , fst (snd (snd (snd ind))) ,
+      (fst h , fst (snd (snd (snd (snd ind))))) ,
+      fst (snd (snd (snd (snd (snd ind))))) ,
+      _≤_.s≤s (snd (snd (snd (snd (snd (snd ind))))))
+... |    inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+
+
+
+stepsPresUpdRel-DMSUP₁→ : {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w : 𝕎·}
+                           → stepsPresUpdRel n name f g (DMSUP a b) w
+                           → stepsPresUpdRel n name f g a w
+stepsPresUpdRel-DMSUP₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , isv , ish , ind) =
+  fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
+  fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
+  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  where
+    hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+    hv = isHighestℕ-DMSUP₁→ {n} {k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv ish
+
+
+
+→ΣstepsUpdRel-DMSUP₁ : {name : Name} {f g : Term} {a₁ a₂ b₁ b₂ : Term} {w1 w : 𝕎·}
+                        → updRel name f g b₁ b₂
+                        → ΣstepsUpdRel name f g a₁ w1 a₂ w
+                        → ΣstepsUpdRel name f g (DMSUP a₁ b₁) w1 (DMSUP a₂ b₂) w
+→ΣstepsUpdRel-DMSUP₁ {name} {f} {g} {a₁} {a₂} {b₁} {b₂} {w1} {w} updb (k1 , k2 , y1 , y2 , w3 , comp1 , comp2 , r) =
+  fst comp1' , fst comp2' , DMSUP y1 b₁ , DMSUP y2 b₂ , w3 , snd comp1' , snd comp2' ,
+  updRel-DMSUP _ _ _ _ r updb
+  where
+    comp1' : DMSUP a₁ b₁ ⇓ DMSUP y1 b₁ from w1 to w3
+    comp1' = DMSUP⇓steps k1 b₁ comp1
+
+    comp2' : DMSUP a₂ b₂ ⇓ DMSUP y2 b₂ from w to w
+    comp2' = DMSUP⇓steps k2 b₂ comp2
+
+
+
 isHighestℕ-SPREAD₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v : Term} {w w' : 𝕎·}
                       → (comp : steps k (SPREAD a b , w) ≡ (v , w'))
                       → isValue v
@@ -984,6 +1062,9 @@ updRel-shiftUp n {name} {f} {g} cf cg {.(LET a₁ b₁)} {.(LET a₂ b₂)} (upd
 updRel-shiftUp n {name} {f} {g} cf cg {.(WT a₁ b₁)} {.(WT a₂ b₂)} (updRel-WT a₁ a₂ b₁ b₂ u u₁) = updRel-WT _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
 updRel-shiftUp n {name} {f} {g} cf cg {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (updRel-SUP a₁ a₂ b₁ b₂ u u₁) = updRel-SUP _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
 updRel-shiftUp n {name} {f} {g} cf cg {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} (updRel-DSUP a₁ a₂ b₁ b₂ u u₁) = updRel-DSUP _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc (suc n)) cf cg u₁)
+updRel-shiftUp n {name} {f} {g} cf cg {.(MT a₁ b₁)} {.(MT a₂ b₂)} (updRel-MT a₁ a₂ b₁ b₂ u u₁) = updRel-MT _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
+updRel-shiftUp n {name} {f} {g} cf cg {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updRel-MSUP a₁ a₂ b₁ b₂ u u₁) = updRel-MSUP _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
+updRel-shiftUp n {name} {f} {g} cf cg {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} (updRel-DMSUP a₁ a₂ b₁ b₂ u u₁) = updRel-DMSUP _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc (suc n)) cf cg u₁)
 updRel-shiftUp n {name} {f} {g} cf cg {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (updRel-SUM a₁ a₂ b₁ b₂ u u₁) = updRel-SUM _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
 updRel-shiftUp n {name} {f} {g} cf cg {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (updRel-PAIR a₁ a₂ b₁ b₂ u u₁) = updRel-PAIR _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
 updRel-shiftUp n {name} {f} {g} cf cg {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} (updRel-SPREAD a₁ a₂ b₁ b₂ u u₁) = updRel-SPREAD _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc (suc n)) cf cg u₁)
@@ -1037,6 +1118,9 @@ updRel-shiftDown n {name} {f} {g} cf cg {.(LET a₁ b₁)} {.(LET a₂ b₂)} (u
 updRel-shiftDown n {name} {f} {g} cf cg {.(WT a₁ b₁)} {.(WT a₂ b₂)} (updRel-WT a₁ a₂ b₁ b₂ u u₁) = updRel-WT _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
 updRel-shiftDown n {name} {f} {g} cf cg {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (updRel-SUP a₁ a₂ b₁ b₂ u u₁) = updRel-SUP _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
 updRel-shiftDown n {name} {f} {g} cf cg {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} (updRel-DSUP a₁ a₂ b₁ b₂ u u₁) = updRel-DSUP _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc (suc n)) cf cg u₁)
+updRel-shiftDown n {name} {f} {g} cf cg {.(MT a₁ b₁)} {.(MT a₂ b₂)} (updRel-MT a₁ a₂ b₁ b₂ u u₁) = updRel-MT _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
+updRel-shiftDown n {name} {f} {g} cf cg {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updRel-MSUP a₁ a₂ b₁ b₂ u u₁) = updRel-MSUP _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
+updRel-shiftDown n {name} {f} {g} cf cg {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} (updRel-DMSUP a₁ a₂ b₁ b₂ u u₁) = updRel-DMSUP _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc (suc n)) cf cg u₁)
 updRel-shiftDown n {name} {f} {g} cf cg {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (updRel-SUM a₁ a₂ b₁ b₂ u u₁) = updRel-SUM _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
 updRel-shiftDown n {name} {f} {g} cf cg {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (updRel-PAIR a₁ a₂ b₁ b₂ u u₁) = updRel-PAIR _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
 updRel-shiftDown n {name} {f} {g} cf cg {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} (updRel-SPREAD a₁ a₂ b₁ b₂ u u₁) = updRel-SPREAD _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc (suc n)) cf cg u₁)
@@ -1095,6 +1179,9 @@ updRel-subv v {name} {f} {g} cf cg {.(LET a₁ b₃)} {.(LET a₂ b₄)} {b₁} 
 updRel-subv v {name} {f} {g} cf cg {.(WT a₁ b₃)} {.(WT a₂ b₄)} {b₁} {b₂} (updRel-WT a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-WT _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
 updRel-subv v {name} {f} {g} cf cg {.(SUP a₁ b₃)} {.(SUP a₂ b₄)} {b₁} {b₂} (updRel-SUP a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-SUP _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
 updRel-subv v {name} {f} {g} cf cg {.(DSUP a₁ b₃)} {.(DSUP a₂ b₄)} {b₁} {b₂} (updRel-DSUP a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-DSUP _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc (suc v)) cf cg ua₁ (updRel-shiftUp 0 cf cg (updRel-shiftUp 0 cf cg ub)))
+updRel-subv v {name} {f} {g} cf cg {.(MT a₁ b₃)} {.(MT a₂ b₄)} {b₁} {b₂} (updRel-MT a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-MT _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
+updRel-subv v {name} {f} {g} cf cg {.(MSUP a₁ b₃)} {.(MSUP a₂ b₄)} {b₁} {b₂} (updRel-MSUP a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-MSUP _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
+updRel-subv v {name} {f} {g} cf cg {.(DMSUP a₁ b₃)} {.(DMSUP a₂ b₄)} {b₁} {b₂} (updRel-DMSUP a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-DMSUP _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc (suc v)) cf cg ua₁ (updRel-shiftUp 0 cf cg (updRel-shiftUp 0 cf cg ub)))
 updRel-subv v {name} {f} {g} cf cg {.(SUM a₁ b₃)} {.(SUM a₂ b₄)} {b₁} {b₂} (updRel-SUM a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-SUM _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
 updRel-subv v {name} {f} {g} cf cg {.(PAIR a₁ b₃)} {.(PAIR a₂ b₄)} {b₁} {b₂} (updRel-PAIR a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-PAIR _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
 updRel-subv v {name} {f} {g} cf cg {.(SPREAD a₁ b₃)} {.(SPREAD a₂ b₄)} {b₁} {b₂} (updRel-SPREAD a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-SPREAD _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc (suc v)) cf cg ua₁ (updRel-shiftUp 0 cf cg (updRel-shiftUp 0 cf cg ub)))
@@ -1319,6 +1406,9 @@ updRel→¬Names {name} {f} {g} {.(LET a₁ b₁)} {.(LET a₂ b₂)} nng (updRe
 updRel→¬Names {name} {f} {g} {.(WT a₁ b₁)} {.(WT a₂ b₂)} nng (updRel-WT a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
 updRel→¬Names {name} {f} {g} {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} nng (updRel-SUP a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
 updRel→¬Names {name} {f} {g} {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} nng (updRel-DSUP a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+updRel→¬Names {name} {f} {g} {.(MT a₁ b₁)} {.(MT a₂ b₂)} nng (updRel-MT a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+updRel→¬Names {name} {f} {g} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} nng (updRel-MSUP a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+updRel→¬Names {name} {f} {g} {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} nng (updRel-DMSUP a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
 updRel→¬Names {name} {f} {g} {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} nng (updRel-SUM a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
 updRel→¬Names {name} {f} {g} {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} nng (updRel-PAIR a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
 updRel→¬Names {name} {f} {g} {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} nng (updRel-SPREAD a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
