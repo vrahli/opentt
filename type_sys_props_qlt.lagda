@@ -1,5 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
+{-# OPTIONS --guardedness #-}
+
 
 --open import bar
 --module type_sys_props_qlt (bar : Bar) where
@@ -91,6 +93,9 @@ QLTneqPI {u} {v} {c} {d} ()
 QLTneqW : {u v : Term} {c d : Term} → ¬ QLT u v ≡ WT c d
 QLTneqW {u} {v} {c} {d} ()
 
+QLTneqM : {u v : Term} {c d : Term} → ¬ QLT u v ≡ MT c d
+QLTneqM {u} {v} {c} {d} ()
+
 QLTneqSUM : {u v : Term} {c d : Term} → ¬ QLT u v ≡ SUM c d
 QLTneqSUM {u} {v} {c} {d} ()
 
@@ -162,6 +167,7 @@ typeSysConds-QLT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 
 typeSysConds-QLT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (QLTneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (QLTneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-QLT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (QLTneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (QLTneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) = ⊥-elim (QLTneqISECT (⇛-val-det tt tt x₁ y))
@@ -215,6 +221,7 @@ typeSysConds-QLT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y
 typeSysConds-QLT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x y))
 typeSysConds-QLT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x y))
 typeSysConds-QLT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqW (⇛-val-det tt tt x y))
+typeSysConds-QLT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqM (⇛-val-det tt tt x y))
 typeSysConds-QLT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x y))
 typeSysConds-QLT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSET (⇛-val-det tt tt x y))
 typeSysConds-QLT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (QLTneqISECT (⇛-val-det tt tt x y))
@@ -297,6 +304,7 @@ typeSysConds-QLT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y
 typeSysConds-QLT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-QLT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-QLT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqW (⇛-val-det tt tt x y₁))
+typeSysConds-QLT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqM (⇛-val-det tt tt x y₁))
 typeSysConds-QLT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-QLT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-QLT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (QLTneqISECT (⇛-val-det tt tt x y₁))
@@ -350,6 +358,7 @@ typeSysConds-QLT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y
 typeSysConds-QLT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QLT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QLT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqW (⇛-val-det tt tt x₁ y₁))
+typeSysConds-QLT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QLT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QLT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QLT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (QLTneqISECT (⇛-val-det tt tt x₁ y₁))
@@ -403,6 +412,7 @@ typeSysConds-QLT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y
 typeSysConds-QLT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-QLT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (QLTneqISECT (⇛-val-det tt tt x₁ y))
@@ -456,6 +466,7 @@ typeSysConds-QLT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d
 typeSysConds-QLT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x y))
 typeSysConds-QLT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x y))
 typeSysConds-QLT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqW (⇛-val-det tt tt x y))
+typeSysConds-QLT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqM (⇛-val-det tt tt x y))
 typeSysConds-QLT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x y))
 typeSysConds-QLT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSET (⇛-val-det tt tt x y))
 typeSysConds-QLT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (QLTneqISECT (⇛-val-det tt tt x y))
@@ -515,6 +526,7 @@ typeSysConds-QLT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d
 typeSysConds-QLT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-QLT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-QLT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqW (⇛-val-det tt tt x y₁))
+typeSysConds-QLT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqM (⇛-val-det tt tt x y₁))
 typeSysConds-QLT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-QLT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-QLT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (QLTneqISECT (⇛-val-det tt tt x y₁))
@@ -575,6 +587,7 @@ typeSysConds-QLT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d
 typeSysConds-QLT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QLT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QLT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqW (⇛-val-det tt tt x₁ y₁))
+typeSysConds-QLT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QLT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QLT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QLT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (QLTneqISECT (⇛-val-det tt tt x₁ y₁))
@@ -634,6 +647,7 @@ typeSysConds-QLT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d
 typeSysConds-QLT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (QLTneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-QLT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (QLTneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-QLT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (QLTneqISECT (⇛-val-det tt tt x₁ y))
@@ -694,6 +708,7 @@ eqInType-⇛-QLT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTQLT c1 c2 d1 d2 x x₁ x�
 eqInType-⇛-QLT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (QLTneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QLT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QLTneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QLT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTW A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QLTneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QLT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QLTneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QLT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QLTneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QLT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QLTneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QLT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (QLTneqISECT (⇛-val-det tt tt c₁ x))
@@ -747,6 +762,7 @@ eqInType-⇛-QLT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTQLT c1 c2 d1 d2 x x�
 eqInType-⇛-QLT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (QLTneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QLT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QLTneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QLT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTW A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QLTneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-QLT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QLTneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QLT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QLTneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QLT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (QLTneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QLT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (QLTneqISECT (⇛-val-det tt tt c₁ x))

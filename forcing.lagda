@@ -366,8 +366,8 @@ record meq eqa eqb w t1 t2 where
 --             → meq eqa eqb w t1 t2
 
 
-Meq : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → wper
-Meq eqa eqb w t u = Meq eqa eqb w t u
+--Meq : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → wper
+--Meq eqa eqb w t u = Meq eqa eqb w t u
 
 
 {--
@@ -478,7 +478,7 @@ eqInType u w (EQTPI _ _ _ _ _ _ eqta eqtb exta extb) f1 f2 =
 eqInType u w (EQTW _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
   □· w (λ w' e → Weq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' t1 t2)
 eqInType u w (EQTM _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
-  □· w (λ w' e → Meq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' t1 t2)
+  □· w (λ w' e → meq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' t1 t2)
 eqInType u w (EQTSUM _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
   □· w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' t1 t2)
 eqInType u w (EQTSET _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =

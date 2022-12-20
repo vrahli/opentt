@@ -1,5 +1,6 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
+{-# OPTIONS --guardedness #-}
 
 --open import bar
 --module not_lem (bar : Bar) where

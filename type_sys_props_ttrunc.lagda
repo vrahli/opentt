@@ -1,5 +1,6 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
+{-# OPTIONS --guardedness #-}
 
 --open import bar
 --module type_sys_props_tsquash (bar : Bar) where
@@ -95,6 +96,9 @@ TTRUNCneqPI {a} {c} {d} ()
 TTRUNCneqW : {a : Term} {c : Term} {d : Term} → ¬ (TTRUNC a) ≡ WT c d
 TTRUNCneqW {a} {c} {d} ()
 
+TTRUNCneqM : {a : Term} {c : Term} {d : Term} → ¬ (TTRUNC a) ≡ MT c d
+TTRUNCneqM {a} {c} {d} ()
+
 TTRUNCneqSUM : {a : Term} {c : Term} {d : Term} → ¬ (TTRUNC a) ≡ SUM c d
 TTRUNCneqSUM {a} {c} {d} ()
 
@@ -184,6 +188,7 @@ typeSysConds-TTRUNC-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d
 typeSysConds-TTRUNC-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) = ⊥-elim (TTRUNCneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-TTRUNC-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTPI C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (TTRUNCneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-TTRUNC-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTW C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (TTRUNCneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-TTRUNC-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (TTRUNCneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-TTRUNC-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (TTRUNCneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TTRUNC-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (TTRUNCneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-TTRUNC-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (TTRUNCneqISECT (⇛-val-det tt tt x₁ y))
@@ -296,6 +301,7 @@ typeSysConds-TTRUNC-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d1
 typeSysConds-TTRUNC-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (TTRUNCneqFREE (⇛-val-det tt tt x y))
 typeSysConds-TTRUNC-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (TTRUNCneqPI (⇛-val-det tt tt x y))
 typeSysConds-TTRUNC-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (TTRUNCneqW (⇛-val-det tt tt x y))
+typeSysConds-TTRUNC-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (TTRUNCneqM (⇛-val-det tt tt x y))
 typeSysConds-TTRUNC-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (TTRUNCneqSUM (⇛-val-det tt tt x y))
 typeSysConds-TTRUNC-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqSET (⇛-val-det tt tt x y))
 typeSysConds-TTRUNC-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqISECT (⇛-val-det tt tt x y))
@@ -361,6 +367,7 @@ typeSysConds-TTRUNC-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d1
 typeSysConds-TTRUNC-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (TTRUNCneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-TTRUNC-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-TTRUNC-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqW (⇛-val-det tt tt x y₁))
+typeSysConds-TTRUNC-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqM (⇛-val-det tt tt x y₁))
 typeSysConds-TTRUNC-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-TTRUNC-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-TTRUNC-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqISECT (⇛-val-det tt tt x y₁))
@@ -426,6 +433,7 @@ typeSysConds-TTRUNC-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d1
 typeSysConds-TTRUNC-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (TTRUNCneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TTRUNC-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TTRUNC-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqW (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TTRUNC-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TTRUNC-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TTRUNC-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TTRUNC-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqISECT (⇛-val-det tt tt x₁ y₁))
@@ -491,6 +499,7 @@ typeSysConds-TTRUNC-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d1
 typeSysConds-TTRUNC-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (TTRUNCneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-TTRUNC-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-TTRUNC-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-TTRUNC-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-TTRUNC-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TTRUNC-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-TTRUNC-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqISECT (⇛-val-det tt tt x₁ y))
@@ -558,6 +567,7 @@ typeSysConds-TTRUNC-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2
 typeSysConds-TTRUNC-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (TTRUNCneqFREE (⇛-val-det tt tt x y))
 typeSysConds-TTRUNC-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqPI (⇛-val-det tt tt x y))
 typeSysConds-TTRUNC-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqW (⇛-val-det tt tt x y))
+typeSysConds-TTRUNC-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqM (⇛-val-det tt tt x y))
 typeSysConds-TTRUNC-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqSUM (⇛-val-det tt tt x y))
 typeSysConds-TTRUNC-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqSET (⇛-val-det tt tt x y))
 typeSysConds-TTRUNC-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqISECT (⇛-val-det tt tt x y))
@@ -633,6 +643,7 @@ typeSysConds-TTRUNC-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2
 typeSysConds-TTRUNC-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (TTRUNCneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-TTRUNC-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-TTRUNC-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqW (⇛-val-det tt tt x y₁))
+typeSysConds-TTRUNC-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqM (⇛-val-det tt tt x y₁))
 typeSysConds-TTRUNC-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-TTRUNC-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-TTRUNC-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqISECT (⇛-val-det tt tt x y₁))
@@ -708,6 +719,7 @@ typeSysConds-TTRUNC-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2
 typeSysConds-TTRUNC-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (TTRUNCneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TTRUNC-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TTRUNC-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqW (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TTRUNC-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TTRUNC-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TTRUNC-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TTRUNC-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqISECT (⇛-val-det tt tt x₁ y₁))
@@ -783,6 +795,7 @@ typeSysConds-TTRUNC-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2
 typeSysConds-TTRUNC-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (TTRUNCneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-TTRUNC-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-TTRUNC-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-TTRUNC-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-TTRUNC-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TTRUNC-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-TTRUNC-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TTRUNCneqISECT (⇛-val-det tt tt x₁ y))
@@ -862,6 +875,7 @@ eqInType-⇛-TTRUNC u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTQLT a1 a2 b1 
 eqInType-⇛-TTRUNC u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (TTRUNCneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TTRUNCneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TTRUNCneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TTRUNC u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TTRUNCneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TTRUNCneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TTRUNCneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TTRUNCneqISECT (⇛-val-det tt tt c₁ x))
@@ -942,6 +956,7 @@ eqInType-⇛-TTRUNC2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTQLT a1 a2 b1 b2 x
 eqInType-⇛-TTRUNC2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTFREE x x₁) ei ext = ⊥-elim (TTRUNCneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TTRUNCneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TTRUNCneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TTRUNC2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TTRUNCneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TTRUNCneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TTRUNCneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TTRUNCneqISECT (⇛-val-det tt tt c₁ x))
@@ -1025,6 +1040,7 @@ eqInType-⇛-TTRUNC-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTQLT a1 a2
 eqInType-⇛-TTRUNC-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (TTRUNCneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TTRUNCneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TTRUNCneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TTRUNC-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TTRUNCneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TTRUNCneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TTRUNCneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TTRUNCneqISECT (⇛-val-det tt tt c₁ x))
@@ -1097,6 +1113,7 @@ eqInType-⇛-TTRUNC-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTQLT a1 a2 b1 
 eqInType-⇛-TTRUNC-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTFREE x x₁) ext ei = ⊥-elim (TTRUNCneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TTRUNCneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TTRUNCneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TTRUNC-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TTRUNCneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TTRUNCneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TTRUNCneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TTRUNC-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TTRUNCneqISECT (⇛-val-det tt tt c₁ x))

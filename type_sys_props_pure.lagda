@@ -1,5 +1,6 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
+{-# OPTIONS --guardedness #-}
 
 --open import bar
 --module type_sys_props_tsquash (bar : Bar) where
@@ -95,6 +96,9 @@ PUREneqPI {c} {d} ()
 PUREneqW : {c : Term} {d : Term} → ¬ PURE ≡ WT c d
 PUREneqW {c} {d} ()
 
+PUREneqM : {c : Term} {d : Term} → ¬ PURE ≡ MT c d
+PUREneqM {c} {d} ()
+
 PUREneqSUM : {c : Term} {d : Term} → ¬ PURE ≡ SUM c d
 PUREneqSUM {c} {d} ()
 
@@ -166,6 +170,7 @@ typeSysConds-PURE-ttrans u w A B x x₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) 
 typeSysConds-PURE-ttrans u w A B x x₁ C (EQTFREE y y₁) = ⊥-elim (PUREneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-ttrans u w A B x x₁ C (EQTPI C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (PUREneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-ttrans u w A B x x₁ C (EQTW C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (PUREneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-PURE-ttrans u w A B x x₁ C (EQTM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (PUREneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-ttrans u w A B x x₁ C (EQTSUM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (PUREneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-ttrans u w A B x x₁ C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (PUREneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-ttrans u w A B x x₁ C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (PUREneqISECT (⇛-val-det tt tt x₁ y))
@@ -241,6 +246,7 @@ typeSysConds-PURE-extl1 u w A B x x₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) f
 typeSysConds-PURE-extl1 u w A B x x₁ C (EQTFREE y y₁) f g eqi = ⊥-elim (PUREneqFREE (⇛-val-det tt tt x y))
 typeSysConds-PURE-extl1 u w A B x x₁ C (EQTPI A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (PUREneqPI (⇛-val-det tt tt x y))
 typeSysConds-PURE-extl1 u w A B x x₁ C (EQTW A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (PUREneqW (⇛-val-det tt tt x y))
+typeSysConds-PURE-extl1 u w A B x x₁ C (EQTM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (PUREneqM (⇛-val-det tt tt x y))
 typeSysConds-PURE-extl1 u w A B x x₁ C (EQTSUM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (PUREneqSUM (⇛-val-det tt tt x y))
 typeSysConds-PURE-extl1 u w A B x x₁ C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqSET (⇛-val-det tt tt x y))
 typeSysConds-PURE-extl1 u w A B x x₁ C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqISECT (⇛-val-det tt tt x y))
@@ -295,6 +301,7 @@ typeSysConds-PURE-extl2 u w A B x x₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) f
 typeSysConds-PURE-extl2 u w A B x x₁ C (EQTFREE y y₁) f g eqi = ⊥-elim (PUREneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-PURE-extl2 u w A B x x₁ C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-PURE-extl2 u w A B x x₁ C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqW (⇛-val-det tt tt x y₁))
+typeSysConds-PURE-extl2 u w A B x x₁ C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqM (⇛-val-det tt tt x y₁))
 typeSysConds-PURE-extl2 u w A B x x₁ C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-PURE-extl2 u w A B x x₁ C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-PURE-extl2 u w A B x x₁ C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqISECT (⇛-val-det tt tt x y₁))
@@ -351,6 +358,7 @@ typeSysConds-PURE-extr1 u w A B x x₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) f
 typeSysConds-PURE-extr1 u w A B x x₁ C (EQTFREE y y₁) f g eqi = ⊥-elim (PUREneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PURE-extr1 u w A B x x₁ C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PURE-extr1 u w A B x x₁ C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqW (⇛-val-det tt tt x₁ y₁))
+typeSysConds-PURE-extr1 u w A B x x₁ C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PURE-extr1 u w A B x x₁ C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PURE-extr1 u w A B x x₁ C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PURE-extr1 u w A B x x₁ C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqISECT (⇛-val-det tt tt x₁ y₁))
@@ -406,6 +414,7 @@ typeSysConds-PURE-extr2 u w A B x x₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) f
 typeSysConds-PURE-extr2 u w A B x x₁ C (EQTFREE y y₁) f g eqi = ⊥-elim (PUREneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-extr2 u w A B x x₁ C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-extr2 u w A B x x₁ C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-PURE-extr2 u w A B x x₁ C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-extr2 u w A B x x₁ C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-extr2 u w A B x x₁ C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-extr2 u w A B x x₁ C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqISECT (⇛-val-det tt tt x₁ y))
@@ -462,6 +471,7 @@ typeSysConds-PURE-extrevl1 u w A B x x₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅
 typeSysConds-PURE-extrevl1 u w A B x x₁ C (EQTFREE y y₁) f g eqi = ⊥-elim (PUREneqFREE (⇛-val-det tt tt x y))
 typeSysConds-PURE-extrevl1 u w A B x x₁ C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqPI (⇛-val-det tt tt x y))
 typeSysConds-PURE-extrevl1 u w A B x x₁ C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqW (⇛-val-det tt tt x y))
+typeSysConds-PURE-extrevl1 u w A B x x₁ C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqM (⇛-val-det tt tt x y))
 typeSysConds-PURE-extrevl1 u w A B x x₁ C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqSUM (⇛-val-det tt tt x y))
 typeSysConds-PURE-extrevl1 u w A B x x₁ C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqSET (⇛-val-det tt tt x y))
 typeSysConds-PURE-extrevl1 u w A B x x₁ C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqISECT (⇛-val-det tt tt x y))
@@ -528,6 +538,7 @@ typeSysConds-PURE-extrevl2 u w A B x x₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅
 typeSysConds-PURE-extrevl2 u w A B x x₁ C (EQTFREE y y₁) f g eqi = ⊥-elim (PUREneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-PURE-extrevl2 u w A B x x₁ C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-PURE-extrevl2 u w A B x x₁ C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqW (⇛-val-det tt tt x y₁))
+typeSysConds-PURE-extrevl2 u w A B x x₁ C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqM (⇛-val-det tt tt x y₁))
 typeSysConds-PURE-extrevl2 u w A B x x₁ C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-PURE-extrevl2 u w A B x x₁ C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-PURE-extrevl2 u w A B x x₁ C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqISECT (⇛-val-det tt tt x y₁))
@@ -593,6 +604,7 @@ typeSysConds-PURE-extrevr1 u w A B x x₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅
 typeSysConds-PURE-extrevr1 u w A B x x₁ C (EQTFREE y y₁) f g eqi = ⊥-elim (PUREneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PURE-extrevr1 u w A B x x₁ C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PURE-extrevr1 u w A B x x₁ C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqW (⇛-val-det tt tt x₁ y₁))
+typeSysConds-PURE-extrevr1 u w A B x x₁ C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PURE-extrevr1 u w A B x x₁ C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PURE-extrevr1 u w A B x x₁ C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PURE-extrevr1 u w A B x x₁ C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqISECT (⇛-val-det tt tt x₁ y₁))
@@ -658,6 +670,7 @@ typeSysConds-PURE-extrevr2 u w A B x x₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅
 typeSysConds-PURE-extrevr2 u w A B x x₁ C (EQTFREE y y₁) f g eqi = ⊥-elim (PUREneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-extrevr2 u w A B x x₁ C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-extrevr2 u w A B x x₁ C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-PURE-extrevr2 u w A B x x₁ C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-extrevr2 u w A B x x₁ C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-extrevr2 u w A B x x₁ C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-extrevr2 u w A B x x₁ C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PUREneqISECT (⇛-val-det tt tt x₁ y))
@@ -727,6 +740,7 @@ eqInType-⇛-PURE u w A B a b c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei
 eqInType-⇛-PURE u w A B a b c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (PUREneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE u w A B a b c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE u w A B a b c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-PURE u w A B a b c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE u w A B a b c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE u w A B a b c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE u w A B a b c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqISECT (⇛-val-det tt tt c₁ x))
@@ -795,6 +809,7 @@ eqInType-⇛-PURE2 u w A B a b c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) e
 eqInType-⇛-PURE2 u w A B a b c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (PUREneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE2 u w A B a b c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE2 u w A B a b c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-PURE2 u w A B a b c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE2 u w A B a b c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE2 u w A B a b c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE2 u w A B a b c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqISECT (⇛-val-det tt tt c₁ x))
@@ -863,6 +878,7 @@ eqInType-⇛-PURE-rev u w A B a b c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃
 eqInType-⇛-PURE-rev u w A B a b c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (PUREneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE-rev u w A B a b c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE-rev u w A B a b c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-PURE-rev u w A B a b c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE-rev u w A B a b c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE-rev u w A B a b c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE-rev u w A B a b c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqISECT (⇛-val-det tt tt c₁ x))
@@ -924,6 +940,7 @@ eqInType-⇛-PURE-rev2 u w A B a b c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x�
 eqInType-⇛-PURE-rev2 u w A B a b c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (PUREneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE-rev2 u w A B a b c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE-rev2 u w A B a b c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-PURE-rev2 u w A B a b c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE-rev2 u w A B a b c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE-rev2 u w A B a b c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE-rev2 u w A B a b c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PUREneqISECT (⇛-val-det tt tt c₁ x))

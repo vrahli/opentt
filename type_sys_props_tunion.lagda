@@ -1,5 +1,6 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
+{-# OPTIONS --guardedness #-}
 
 --open import bar
 --module type_sys_props_set (bar : Bar) where
@@ -97,6 +98,9 @@ TUNIONneqPI {a} {b} {c} {d} ()
 
 TUNIONneqW : {a b : Term} {c : Term} {d : Term} → ¬ (TUNION a b) ≡ WT c d
 TUNIONneqW {a} {b} {c} {d} ()
+
+TUNIONneqM : {a b : Term} {c : Term} {d : Term} → ¬ (TUNION a b) ≡ MT c d
+TUNIONneqM {a} {b} {c} {d} ()
 
 TUNIONneqSUM : {a b : Term} {c : Term} {d : Term} → ¬ (TUNION a b) ≡ SUM c d
 TUNIONneqSUM {a} {b} {c} {d} ()
@@ -233,6 +237,7 @@ typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) = ⊥-elim (TUNIONneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (TUNIONneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (TUNIONneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (TUNIONneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (TUNIONneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0)
   rewrite #TUNIONinj1 {C1} {D1} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
@@ -402,6 +407,7 @@ typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (TUNIONneqFREE (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (TUNIONneqPI (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (TUNIONneqW (⇛-val-det tt tt x y))
+typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (TUNIONneqM (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (TUNIONneqSUM (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi
   rewrite #TUNIONinj1 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x)
@@ -472,6 +478,7 @@ typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (TUNIONneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqW (⇛-val-det tt tt x y₁))
+typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqM (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
   rewrite #TUNIONinj1 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
@@ -542,6 +549,7 @@ typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (TUNIONneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqW (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
   rewrite #TUNIONinj1 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
@@ -612,6 +620,7 @@ typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
 typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (TUNIONneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
   rewrite #TUNIONinj1 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
@@ -683,6 +692,7 @@ typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (TUNIONneqFREE (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqPI (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqW (⇛-val-det tt tt x y))
+typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqM (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqSUM (⇛-val-det tt tt x y))
 typeSysConds-TUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
   rewrite #TUNIONinj1 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x)
@@ -766,6 +776,7 @@ typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (TUNIONneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqW (⇛-val-det tt tt x y₁))
+typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqM (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-TUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
   rewrite #TUNIONinj1 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
@@ -851,6 +862,7 @@ typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (TUNIONneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqW (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
   rewrite #TUNIONinj1 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
@@ -935,6 +947,7 @@ typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda
 typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (TUNIONneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TUNIONneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
   rewrite #TUNIONinj1 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
@@ -1020,6 +1033,7 @@ eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c
 eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (TUNIONneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TUNIONneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TUNIONneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TUNIONneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TUNIONneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei
   rewrite #TUNIONinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
@@ -1105,6 +1119,7 @@ eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQ
 eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTFREE x x₁) ei ext = ⊥-elim (TUNIONneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TUNIONneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TUNIONneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TUNIONneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TUNIONneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext
   rewrite #TUNIONinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
@@ -1199,6 +1214,7 @@ eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c�
 eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (TUNIONneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TUNIONneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TUNIONneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TUNIONneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TUNIONneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei
   rewrite #TUNIONinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
@@ -1277,6 +1293,7 @@ eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (
 eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTFREE x x₁) ext ei = ⊥-elim (TUNIONneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TUNIONneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TUNIONneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TUNIONneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TUNIONneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei
   rewrite #TUNIONinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)

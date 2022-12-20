@@ -1,5 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
+{-# OPTIONS --guardedness #-}
+
 
 --open import bar
 --module type_sys_props_lt (bar : Bar) where
@@ -91,6 +93,9 @@ LTneqPI {u} {v} {c} {d} ()
 LTneqW : {u v : Term} {c d : Term} → ¬ LT u v ≡ WT c d
 LTneqW {u} {v} {c} {d} ()
 
+LTneqM : {u v : Term} {c d : Term} → ¬ LT u v ≡ MT c d
+LTneqM {u} {v} {c} {d} ()
+
 LTneqSUM : {u v : Term} {c d : Term} → ¬ LT u v ≡ SUM c d
 LTneqSUM {u} {v} {c} {d} ()
 
@@ -162,6 +167,7 @@ typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y
 typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) = ⊥-elim (LTneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (LTneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (LTneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (LTneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (LTneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (LTneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) = ⊥-elim (LTneqISECT (⇛-val-det tt tt x₁ y))
@@ -215,6 +221,7 @@ typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y 
 typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x y))
 typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x y))
 typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x y))
+typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x y))
 typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x y))
 typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x y))
 typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x y))
@@ -296,6 +303,7 @@ typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y 
 typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x y₁))
+typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x y₁))
@@ -349,6 +357,7 @@ typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y 
 typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x₁ y₁))
+typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x₁ y₁))
@@ -402,6 +411,7 @@ typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y 
 typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x₁ y))
@@ -455,6 +465,7 @@ typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2
 typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x y))
 typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x y))
 typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x y))
+typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x y))
 typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x y))
 typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x y))
 typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x y))
@@ -514,6 +525,7 @@ typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2
 typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x y₁))
+typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x y₁))
@@ -574,6 +586,7 @@ typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2
 typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x₁ y₁))
+typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x₁ y₁))
@@ -633,6 +646,7 @@ typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2
 typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x₁ y))
@@ -693,6 +707,7 @@ eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTQLT c1 c2 d1 d2 x x₁ x�
 eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (LTneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTW A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (LTneqISECT (⇛-val-det tt tt c₁ x))
@@ -746,6 +761,7 @@ eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTQLT c1 c2 d1 d2 x x₁
 eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (LTneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTW A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (LTneqISECT (⇛-val-det tt tt c₁ x))

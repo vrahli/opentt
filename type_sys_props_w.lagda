@@ -1,5 +1,6 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
+{-# OPTIONS --guardedness #-}
 
 --open import bar
 --module type_sys_props_pi (bar : Bar) where
@@ -94,6 +95,9 @@ WneqEQ {a} {b} {c} {d} {e} ()
 
 WneqSUM : {a b : Term} {c : Term} {d : Term} → ¬ (WT a b) ≡ SUM c d
 WneqSUM {a} {b} {c} {d} ()
+
+WneqM : {a b : Term} {c : Term} {d : Term} → ¬ (WT a b) ≡ MT c d
+WneqM {a} {b} {c} {d} ()
 
 WneqPI : {a b : Term} {c : Term} {d : Term} → ¬ (WT a b) ≡ PI c d
 WneqPI {a} {b} {c} {d} ()
@@ -279,6 +283,7 @@ typeSysConds-W-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C
         ei2 : eqInType u w' (eqtb w' e2 a b x₂') c d
         ei2 = extb a b c d w' e1 e2 x₁' x₂' ei1
 
+typeSysConds-W-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (WneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-W-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (WneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-W-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (WneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-W-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) = ⊥-elim (WneqISECT (⇛-val-det tt tt x₁ y))
@@ -499,6 +504,7 @@ typeSysConds-W-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C 
               → eqInType u w1 (eqtb w1 e1 a b ea2) f₁ g₁
         eb1 f₁ g₁ a b ea2 ea3 q = TSP.extrevl1 (indb w1 e1 a b ea2) (sub0 b B4) (eqtb0 w1 e1 a b ea3) f₁ g₁ q
 
+typeSysConds-W-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqM (⇛-val-det tt tt x y))
 typeSysConds-W-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSUM (⇛-val-det tt tt x y))
 typeSysConds-W-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSET (⇛-val-det tt tt x y))
 typeSysConds-W-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (WneqISECT (⇛-val-det tt tt x y))
@@ -585,6 +591,7 @@ typeSysConds-W-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C 
             ebx : eqInType u w1 (eqtb w1 e1 b a eax) f₁ g₁
             ebx = TSP.extrevl2 (indb w1 e1 b a eax) (sub0 a B3) (eqtb₁ w1 e1 a b ea3) f₁ g₁ q
 
+typeSysConds-W-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqM (⇛-val-det tt tt x y₁))
 typeSysConds-W-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-W-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-W-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (WneqISECT (⇛-val-det tt tt x y₁))
@@ -664,6 +671,7 @@ typeSysConds-W-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C 
               → eqInType u w1 (eqtb w1 e1 a b ea1) f₁ g₁
         ea2 f₁ g₁ a b ea2 ea3 q = TSP.extrevr1 (indb w1 e1 a b ea2) (sub0 a B3) (eqtb₁ w1 e1 a b ea3) f₁ g₁ q
 
+typeSysConds-W-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-W-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-W-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-W-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (WneqISECT (⇛-val-det tt tt x₁ y₁))
@@ -748,6 +756,7 @@ typeSysConds-W-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C 
             ebx : eqInType u w1 (eqtb w1 e1 b a eax) f₁ g₁
             ebx = TSP.extrevr2 (indb w1 e1 b a eax) (sub0 b B4) (eqtb₁ w1 e1 a b ea3) f₁ g₁ q
 
+typeSysConds-W-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-W-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-W-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-W-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (WneqISECT (⇛-val-det tt tt x₁ y))
@@ -826,6 +835,7 @@ typeSysConds-W-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
               → eqInType u w1 (eqtb₁ w1 e1 a b ea1) f₁ g₁
         eb1 f₁ g₁ a b ea2 ea3 q = TSP.extl1 (indb w1 e1 a b ea3) (sub0 b B4) (eqtb₁ w1 e1 a b ea2) f₁ g₁ q
 
+typeSysConds-W-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqM (⇛-val-det tt tt x y))
 typeSysConds-W-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSUM (⇛-val-det tt tt x y))
 typeSysConds-W-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSET (⇛-val-det tt tt x y))
 typeSysConds-W-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (WneqISECT (⇛-val-det tt tt x y))
@@ -927,6 +937,7 @@ typeSysConds-W-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
             ebx : eqInType u w1 (eqtb w1 e1 b a eax) f₁ g₁
             ebx = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb q
 
+typeSysConds-W-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqM (⇛-val-det tt tt x y₁))
 typeSysConds-W-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-W-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-W-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (WneqISECT (⇛-val-det tt tt x y₁))
@@ -1024,6 +1035,7 @@ typeSysConds-W-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
               → eqInType u w1 (eqtb₁ w1 e1 a b ea1) f₁ g₁
         eb1 f₁ g₁ a b ea2 ea3 q = TSP.extr1 (indb w1 e1 a b ea3) (sub0 a B3) (eqtb₁ w1 e1 a b ea2) f₁ g₁ q
 
+typeSysConds-W-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-W-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-W-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-W-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (WneqISECT (⇛-val-det tt tt x₁ y₁))
@@ -1126,6 +1138,7 @@ typeSysConds-W-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
             ebx : eqInType u w1 (eqtb w1 e1 b a eax) f₁ g₁
             ebx = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb q
 
+typeSysConds-W-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-W-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-W-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (WneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-W-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (WneqISECT (⇛-val-det tt tt x₁ y))
@@ -1226,6 +1239,7 @@ eqInType-⇛-W u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (
               → eqInType u w1 (eqtb₁ w1 e1 a₁ b₁ ea1) f g
         eb1 f g a₁ b₁ ea2 ea3 q = proj₁ (indb w1 e1 a₁ b₁ ea3 (eqtb₁ w1 e1 a₁ b₁ ea2) f g) q
 
+eqInType-⇛-W u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (WneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-W u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (WneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-W u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (WneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-W u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (WneqISECT (⇛-val-det tt tt c₁ x))
@@ -1335,6 +1349,7 @@ eqInType-⇛-W2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTW A3 B
               → ≡∈Type u w1 (eqtb₁ w1 e1 a₁ b₁ ea1) f g
         eb1 f g a₁ b₁ ea2 ea3 q = fst (awextb w1 e1 a₁ b₁ ea3 (eqtb₁ w1 e1 a₁ b₁ ea2) f g) q
 
+eqInType-⇛-W2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (WneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-W2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (WneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-W2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (WneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-W2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei ext = ⊥-elim (WneqISECT (⇛-val-det tt tt c₁ x))
@@ -1428,6 +1443,7 @@ eqInType-⇛-W-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c�
               → eqInType u w1 (eqtb w1 e1 a₁ b₁ ea1) f g
         eb1 f g a₁ b₁ ea2 ea3 q = snd (indb w1 e1 a₁ b₁ ea2 (eqtb₁ w1 e1 a₁ b₁ ea3) f g) q
 
+eqInType-⇛-W-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (WneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-W-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (WneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-W-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (WneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-W-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (WneqISECT (⇛-val-det tt tt c₁ x))
@@ -1518,6 +1534,7 @@ eqInType-⇛-W-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTW 
               → ≡∈Type u w1 (eqtb w1 e1 a₁ b₁ ea1) f g
         eb1 f g a₁ b₁ ea2 ea3 q = fst (awextb₁ w1 e1 a₁ b₁ ea3 (eqtb w1 e1 a₁ b₁ ea2) f g) q
 
+eqInType-⇛-W-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (WneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-W-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (WneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-W-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (WneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-W-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ext ei = ⊥-elim (WneqISECT (⇛-val-det tt tt c₁ x))

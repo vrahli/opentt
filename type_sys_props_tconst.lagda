@@ -1,5 +1,6 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
+{-# OPTIONS --guardedness #-}
 
 --open import bar
 --module type_sys_props_tsquash (bar : Bar) where
@@ -95,6 +96,9 @@ TCONSTneqPI {a} {c} {d} ()
 TCONSTneqW : {a : Term} {c : Term} {d : Term} → ¬ (TCONST a) ≡ WT c d
 TCONSTneqW {a} {c} {d} ()
 
+TCONSTneqM : {a : Term} {c : Term} {d : Term} → ¬ (TCONST a) ≡ MT c d
+TCONSTneqM {a} {c} {d} ()
+
 TCONSTneqSUM : {a : Term} {c : Term} {d : Term} → ¬ (TCONST a) ≡ SUM c d
 TCONSTneqSUM {a} {c} {d} ()
 
@@ -184,6 +188,7 @@ typeSysConds-TCONST-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d
 typeSysConds-TCONST-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) = ⊥-elim (TCONSTneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTPI C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (TCONSTneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTW C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (TCONSTneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-TCONST-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (TCONSTneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (TCONSTneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (TCONSTneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (TCONSTneqISECT (⇛-val-det tt tt x₁ y))
@@ -285,6 +290,7 @@ typeSysConds-TCONST-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d1
 typeSysConds-TCONST-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (TCONSTneqFREE (⇛-val-det tt tt x y))
 typeSysConds-TCONST-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (TCONSTneqPI (⇛-val-det tt tt x y))
 typeSysConds-TCONST-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (TCONSTneqW (⇛-val-det tt tt x y))
+typeSysConds-TCONST-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (TCONSTneqM (⇛-val-det tt tt x y))
 typeSysConds-TCONST-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (TCONSTneqSUM (⇛-val-det tt tt x y))
 typeSysConds-TCONST-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqSET (⇛-val-det tt tt x y))
 typeSysConds-TCONST-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqISECT (⇛-val-det tt tt x y))
@@ -349,6 +355,7 @@ typeSysConds-TCONST-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d1
 typeSysConds-TCONST-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (TCONSTneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-TCONST-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-TCONST-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqW (⇛-val-det tt tt x y₁))
+typeSysConds-TCONST-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqM (⇛-val-det tt tt x y₁))
 typeSysConds-TCONST-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-TCONST-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-TCONST-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqISECT (⇛-val-det tt tt x y₁))
@@ -413,6 +420,7 @@ typeSysConds-TCONST-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d1
 typeSysConds-TCONST-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (TCONSTneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TCONST-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TCONST-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqW (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TCONST-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TCONST-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TCONST-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TCONST-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqISECT (⇛-val-det tt tt x₁ y₁))
@@ -476,6 +484,7 @@ typeSysConds-TCONST-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d1
 typeSysConds-TCONST-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (TCONSTneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-TCONST-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqISECT (⇛-val-det tt tt x₁ y))
@@ -541,6 +550,7 @@ typeSysConds-TCONST-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2
 typeSysConds-TCONST-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (TCONSTneqFREE (⇛-val-det tt tt x y))
 typeSysConds-TCONST-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqPI (⇛-val-det tt tt x y))
 typeSysConds-TCONST-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqW (⇛-val-det tt tt x y))
+typeSysConds-TCONST-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqM (⇛-val-det tt tt x y))
 typeSysConds-TCONST-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqSUM (⇛-val-det tt tt x y))
 typeSysConds-TCONST-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqSET (⇛-val-det tt tt x y))
 typeSysConds-TCONST-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqISECT (⇛-val-det tt tt x y))
@@ -614,6 +624,7 @@ typeSysConds-TCONST-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2
 typeSysConds-TCONST-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (TCONSTneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-TCONST-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-TCONST-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqW (⇛-val-det tt tt x y₁))
+typeSysConds-TCONST-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqM (⇛-val-det tt tt x y₁))
 typeSysConds-TCONST-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-TCONST-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-TCONST-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqISECT (⇛-val-det tt tt x y₁))
@@ -687,6 +698,7 @@ typeSysConds-TCONST-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2
 typeSysConds-TCONST-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (TCONSTneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TCONST-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TCONST-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqW (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TCONST-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TCONST-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TCONST-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TCONST-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqISECT (⇛-val-det tt tt x₁ y₁))
@@ -760,6 +772,7 @@ typeSysConds-TCONST-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2
 typeSysConds-TCONST-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (TCONSTneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-TCONST-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (TCONSTneqISECT (⇛-val-det tt tt x₁ y))
@@ -837,6 +850,7 @@ eqInType-⇛-TCONST u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTQLT a1 a2 b1 
 eqInType-⇛-TCONST u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (TCONSTneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TCONSTneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TCONSTneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TCONST u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TCONSTneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TCONSTneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TCONSTneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TCONSTneqISECT (⇛-val-det tt tt c₁ x))
@@ -917,6 +931,7 @@ eqInType-⇛-TCONST2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTQLT a1 a2 b1 b2 x
 eqInType-⇛-TCONST2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTFREE x x₁) ei ext = ⊥-elim (TCONSTneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TCONSTneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TCONSTneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TCONST2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TCONSTneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TCONSTneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TCONSTneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (TCONSTneqISECT (⇛-val-det tt tt c₁ x))
@@ -1000,6 +1015,7 @@ eqInType-⇛-TCONST-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTQLT a1 a2
 eqInType-⇛-TCONST-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (TCONSTneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TCONSTneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TCONSTneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TCONST-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TCONSTneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TCONSTneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TCONSTneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (TCONSTneqISECT (⇛-val-det tt tt c₁ x))
@@ -1071,6 +1087,7 @@ eqInType-⇛-TCONST-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTQLT a1 a2 b1 
 eqInType-⇛-TCONST-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTFREE x x₁) ext ei = ⊥-elim (TCONSTneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TCONSTneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TCONSTneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TCONST-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TCONSTneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TCONSTneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TCONSTneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (TCONSTneqISECT (⇛-val-det tt tt c₁ x))

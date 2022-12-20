@@ -1,5 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
+{-# OPTIONS --guardedness #-}
+
 
 --open import bar
 --module type_sys_props_qnat (bar : Bar) where
@@ -94,6 +96,9 @@ TNATneqSUM {c} {d} ()
 TNATneqW : {c : Term} {d : Term} → ¬ TNAT ≡ WT c d
 TNATneqW {c} {d} ()
 
+TNATneqM : {c : Term} {d : Term} → ¬ TNAT ≡ MT c d
+TNATneqM {c} {d} ()
+
 TNATneqSET : {c : Term} {d : Term} → ¬ TNAT ≡ SET c d
 TNATneqSET {c} {d} ()
 
@@ -159,6 +164,7 @@ typeSysConds-TNAT-ttrans u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) 
 typeSysConds-TNAT-ttrans u w A B x x₁ C (EQTFREE y y₁) = ⊥-elim (TNATneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-TNAT-ttrans u w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (TNATneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-TNAT-ttrans u w A B x x₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (TNATneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-TNAT-ttrans u w A B x x₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (TNATneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-TNAT-ttrans u w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (TNATneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TNAT-ttrans u w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (TNATneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-TNAT-ttrans u w A B x x₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) = ⊥-elim (TNATneqISECT (⇛-val-det tt tt x₁ y))
@@ -204,6 +210,7 @@ typeSysConds-TNAT-extl1 u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) a
 typeSysConds-TNAT-extl1 u w A B x x₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (TNATneqFREE (⇛-val-det tt tt x y))
 typeSysConds-TNAT-extl1 u w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqPI (⇛-val-det tt tt x y))
 typeSysConds-TNAT-extl1 u w A B x x₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqW (⇛-val-det tt tt x y))
+typeSysConds-TNAT-extl1 u w A B x x₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqM (⇛-val-det tt tt x y))
 typeSysConds-TNAT-extl1 u w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqSUM (⇛-val-det tt tt x y))
 typeSysConds-TNAT-extl1 u w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqSET (⇛-val-det tt tt x y))
 typeSysConds-TNAT-extl1 u w A B x x₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (TNATneqISECT (⇛-val-det tt tt x y))
@@ -276,6 +283,7 @@ typeSysConds-TNAT-extl2 u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) a
 typeSysConds-TNAT-extl2 u w A B x x₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (TNATneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-TNAT-extl2 u w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-TNAT-extl2 u w A B x x₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqW (⇛-val-det tt tt x y₁))
+typeSysConds-TNAT-extl2 u w A B x x₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqM (⇛-val-det tt tt x y₁))
 typeSysConds-TNAT-extl2 u w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-TNAT-extl2 u w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-TNAT-extl2 u w A B x x₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (TNATneqISECT (⇛-val-det tt tt x y₁))
@@ -320,6 +328,7 @@ typeSysConds-TNAT-extr1 u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) a
 typeSysConds-TNAT-extr1 u w A B x x₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (TNATneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TNAT-extr1 u w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TNAT-extr1 u w A B x x₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqW (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TNAT-extr1 u w A B x x₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TNAT-extr1 u w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TNAT-extr1 u w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TNAT-extr1 u w A B x x₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (TNATneqISECT (⇛-val-det tt tt x₁ y₁))
@@ -364,6 +373,7 @@ typeSysConds-TNAT-extr2 u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) a
 typeSysConds-TNAT-extr2 u w A B x x₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (TNATneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-TNAT-extr2 u w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-TNAT-extr2 u w A B x x₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-TNAT-extr2 u w A B x x₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-TNAT-extr2 u w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TNAT-extr2 u w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-TNAT-extr2 u w A B x x₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (TNATneqISECT (⇛-val-det tt tt x₁ y))
@@ -408,6 +418,7 @@ typeSysConds-TNAT-extrevl1 u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅
 typeSysConds-TNAT-extrevl1 u w A B x x₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (TNATneqFREE (⇛-val-det tt tt x y))
 typeSysConds-TNAT-extrevl1 u w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqPI (⇛-val-det tt tt x y))
 typeSysConds-TNAT-extrevl1 u w A B x x₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqW (⇛-val-det tt tt x y))
+typeSysConds-TNAT-extrevl1 u w A B x x₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqM (⇛-val-det tt tt x y))
 typeSysConds-TNAT-extrevl1 u w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqSUM (⇛-val-det tt tt x y))
 typeSysConds-TNAT-extrevl1 u w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqSET (⇛-val-det tt tt x y))
 typeSysConds-TNAT-extrevl1 u w A B x x₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (TNATneqISECT (⇛-val-det tt tt x y))
@@ -458,6 +469,7 @@ typeSysConds-TNAT-extrevl2 u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅
 typeSysConds-TNAT-extrevl2 u w A B x x₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (TNATneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-TNAT-extrevl2 u w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-TNAT-extrevl2 u w A B x x₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqW (⇛-val-det tt tt x y₁))
+typeSysConds-TNAT-extrevl2 u w A B x x₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqM (⇛-val-det tt tt x y₁))
 typeSysConds-TNAT-extrevl2 u w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-TNAT-extrevl2 u w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-TNAT-extrevl2 u w A B x x₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (TNATneqISECT (⇛-val-det tt tt x y₁))
@@ -509,6 +521,7 @@ typeSysConds-TNAT-extrevr1 u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅
 typeSysConds-TNAT-extrevr1 u w A B x x₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (TNATneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TNAT-extrevr1 u w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TNAT-extrevr1 u w A B x x₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqW (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TNAT-extrevr1 u w A B x x₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TNAT-extrevr1 u w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TNAT-extrevr1 u w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TNAT-extrevr1 u w A B x x₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (TNATneqISECT (⇛-val-det tt tt x₁ y₁))
@@ -559,6 +572,7 @@ typeSysConds-TNAT-extrevr2 u w A B x x₁ C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅
 typeSysConds-TNAT-extrevr2 u w A B x x₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (TNATneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-TNAT-extrevr2 u w A B x x₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-TNAT-extrevr2 u w A B x x₁ C (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-TNAT-extrevr2 u w A B x x₁ C (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-TNAT-extrevr2 u w A B x x₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TNAT-extrevr2 u w A B x x₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (TNATneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-TNAT-extrevr2 u w A B x x₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (TNATneqISECT (⇛-val-det tt tt x₁ y))
@@ -612,6 +626,7 @@ eqInType-⇛-TNAT u w A B a b c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei
 eqInType-⇛-TNAT u w A B a b c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (TNATneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TNAT u w A B a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (TNATneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TNAT u w A B a b c₁ c₂ (EQTW A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (TNATneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TNAT u w A B a b c₁ c₂ (EQTM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (TNATneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TNAT u w A B a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (TNATneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TNAT u w A B a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (TNATneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TNAT u w A B a b c₁ c₂ (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (TNATneqISECT (⇛-val-det tt tt c₁ x))
@@ -663,6 +678,7 @@ eqInType-⇛-TNAT-rev u w A B a b c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃
 eqInType-⇛-TNAT-rev u w A B a b c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (TNATneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TNAT-rev u w A B a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (TNATneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TNAT-rev u w A B a b c₁ c₂ (EQTW A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (TNATneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TNAT-rev u w A B a b c₁ c₂ (EQTM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (TNATneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TNAT-rev u w A B a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (TNATneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TNAT-rev u w A B a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (TNATneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TNAT-rev u w A B a b c₁ c₂ (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (TNATneqISECT (⇛-val-det tt tt c₁ x))

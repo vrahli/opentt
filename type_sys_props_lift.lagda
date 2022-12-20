@@ -1,5 +1,6 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
+{-# OPTIONS --guardedness #-}
 
 --open import bar
 --module type_sys_props_lift (bar : Bar) where
@@ -95,6 +96,9 @@ LIFTneqPI {a} {c} {d} ()
 LIFTneqW : {a : Term} {c : Term} {d : Term} → ¬ (LIFT a) ≡ WT c d
 LIFTneqW {a} {c} {d} ()
 
+LIFTneqM : {a : Term} {c : Term} {d : Term} → ¬ (LIFT a) ≡ MT c d
+LIFTneqM {a} {c} {d} ()
+
 LIFTneqSUM : {a : Term} {c : Term} {d : Term} → ¬ (LIFT a) ≡ SUM c d
 LIFTneqSUM {a} {c} {d} ()
 
@@ -184,6 +188,7 @@ typeSysConds-LIFT-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d1 
 typeSysConds-LIFT-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) = ⊥-elim (LIFTneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTPI C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (LIFTneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTW C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (LIFTneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-LIFT-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (LIFTneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) = ⊥-elim (LIFTneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (LIFTneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (LIFTneqISECT (⇛-val-det tt tt x₁ y))
@@ -285,6 +290,7 @@ typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d1 d
 typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (LIFTneqFREE (⇛-val-det tt tt x y))
 typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (LIFTneqPI (⇛-val-det tt tt x y))
 typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (LIFTneqW (⇛-val-det tt tt x y))
+typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (LIFTneqM (⇛-val-det tt tt x y))
 typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi = ⊥-elim (LIFTneqSUM (⇛-val-det tt tt x y))
 typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqSET (⇛-val-det tt tt x y))
 typeSysConds-LIFT-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqISECT (⇛-val-det tt tt x y))
@@ -348,6 +354,7 @@ typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d1 d
 typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (LIFTneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqW (⇛-val-det tt tt x y₁))
+typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqM (⇛-val-det tt tt x y₁))
 typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-LIFT-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqISECT (⇛-val-det tt tt x y₁))
@@ -412,6 +419,7 @@ typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d1 d
 typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (LIFTneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqW (⇛-val-det tt tt x₁ y₁))
+typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LIFT-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqISECT (⇛-val-det tt tt x₁ y₁))
@@ -476,6 +484,7 @@ typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d1 d
 typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (LIFTneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqISECT (⇛-val-det tt tt x₁ y))
@@ -541,6 +550,7 @@ typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d
 typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (LIFTneqFREE (⇛-val-det tt tt x y))
 typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqPI (⇛-val-det tt tt x y))
 typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqW (⇛-val-det tt tt x y))
+typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqM (⇛-val-det tt tt x y))
 typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqSUM (⇛-val-det tt tt x y))
 typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqSET (⇛-val-det tt tt x y))
 typeSysConds-LIFT-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqISECT (⇛-val-det tt tt x y))
@@ -615,6 +625,7 @@ typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d
 typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (LIFTneqFREE (⇛-val-det tt tt x y₁))
 typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqPI (⇛-val-det tt tt x y₁))
 typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqW (⇛-val-det tt tt x y₁))
+typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqM (⇛-val-det tt tt x y₁))
 typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqSUM (⇛-val-det tt tt x y₁))
 typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqSET (⇛-val-det tt tt x y₁))
 typeSysConds-LIFT-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqISECT (⇛-val-det tt tt x y₁))
@@ -689,6 +700,7 @@ typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d
 typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (LIFTneqFREE (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqPI (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqW (⇛-val-det tt tt x₁ y₁))
+typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqSUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqSET (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LIFT-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqISECT (⇛-val-det tt tt x₁ y₁))
@@ -763,6 +775,7 @@ typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQLT c1 c2 d
 typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTFREE y y₁) f g eqi = ⊥-elim (LIFTneqFREE (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqPI (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqW (⇛-val-det tt tt x₁ y))
+typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqM (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqSUM (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqSET (⇛-val-det tt tt x₁ y))
 typeSysConds-LIFT-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (LIFTneqISECT (⇛-val-det tt tt x₁ y))
@@ -841,6 +854,7 @@ eqInType-⇛-LIFT u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTQLT a1 a2 b1 b2
 eqInType-⇛-LIFT u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (LIFTneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (LIFTneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (LIFTneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-LIFT u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (LIFTneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (LIFTneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (LIFTneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (LIFTneqISECT (⇛-val-det tt tt c₁ x))
@@ -917,6 +931,7 @@ eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTQLT a1 a2 b1 b2 x x
 eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTFREE x x₁) ei ext = ⊥-elim (LIFTneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (LIFTneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (LIFTneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (LIFTneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (LIFTneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (LIFTneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (LIFTneqISECT (⇛-val-det tt tt c₁ x))
@@ -996,6 +1011,7 @@ eqInType-⇛-LIFT-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTQLT a1 a2 b
 eqInType-⇛-LIFT-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (LIFTneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (LIFTneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (LIFTneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-LIFT-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (LIFTneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (LIFTneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (LIFTneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (LIFTneqISECT (⇛-val-det tt tt c₁ x))
@@ -1064,6 +1080,7 @@ eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTQLT a1 a2 b1 b2
 eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTFREE x x₁) ext ei = ⊥-elim (LIFTneqFREE (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (LIFTneqPI (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (LIFTneqW (⇛-val-det tt tt c₁ x))
+eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (LIFTneqM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (LIFTneqSUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (LIFTneqSET (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LIFT-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (LIFTneqISECT (⇛-val-det tt tt c₁ x))
