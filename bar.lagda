@@ -40,7 +40,6 @@ Br = 𝕎· → Set(L)
 Bars : Set(lsuc(lsuc(L)))
 Bars = 𝕎· → Br → Set(lsuc(L))
 
-
 record 𝔹 (B : Bars) (w : 𝕎·) : Set(lsuc(L)) where
   constructor mk𝔹
   field
@@ -59,7 +58,6 @@ record 𝔹 (B : Bars) (w : 𝕎·) : Set(lsuc(L)) where
 Σ∈𝔹 : (B : Bars) {w : 𝕎·} (f : wPred w) → Set(lsuc(L))
 Σ∈𝔹 B {w} f = Σ (𝔹 B w) (λ b → ∈𝔹 b f)
 {-# INLINE Σ∈𝔹 #-}
-
 
 ∈𝔹Dep : {B : Bars} {w : 𝕎·} (b : 𝔹 B w) {g : wPred w} (i : ∀𝕎 w g) (f : wPredDep g) → Set(lsuc(L))
 ∈𝔹Dep {B} {w} b {g} i f =
@@ -250,6 +248,8 @@ BarsFam1 B =
 
 
 {-- Union --}
+-- Given a nice bar for w, this type gives the extensions of w inside this nice bar.
+-- Should be able to replace this with `Σ 𝕎· (𝔹.bar b)`
 record 𝔹In {B : Bars} {w : 𝕎·} (b : 𝔹 B w) : Set(L) where
   constructor mk𝔹In
   field
@@ -257,13 +257,24 @@ record 𝔹In {B : Bars} {w : 𝕎·} (b : 𝔹 B w) : Set(L) where
     e1 : w ⊑· w1
     br : 𝔹.bar b w1
 
+-- These give an equivalence when w ⊑· w' is a proposition for all worlds.
+𝔹In→Σ𝔹bar : {B : Bars} {w : 𝕎·} {b : 𝔹 B w} → 𝔹In b → Σ 𝕎· (𝔹.bar b)
+𝔹In→Σ𝔹bar (mk𝔹In w1 _ w1∈b) = (w1 , w1∈b)
 
+Σ𝔹bar→𝔹In : {B : Bars} {w : 𝕎·} {b : 𝔹 B w} → Σ 𝕎· (𝔹.bar b) → 𝔹In b
+Σ𝔹bar→𝔹In {_} {_} {b} (w1 , w1∈b) = mk𝔹In w1 (𝔹.ext b w1∈b) w1∈b
+
+-- fix some nice bar b of w, given
+--   - some "predicate" G on nice bars of elements inside the bar b
+--   - some proof i that each element of b has a nice bar satisfying G
+-- then we get a new bar containing worlds w' such that
+--   - there exists some w'' ∈ b whose nice bar also contains w'
+-- So this takes the union of nice bars indexed by elements of the nice bar of w
 barFam2 : {B : Bars} {w : 𝕎·} (b : 𝔹 B w)
           (G : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → 𝔹 B w' → Set(lsuc(L)))
           (i : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → Σ (𝔹 B w') (λ b' → G e ib b'))
           → Br
 barFam2 {B} {w} b G i w' = Σ (𝔹In b) (λ F → 𝔹.bar (fst (i (𝔹In.e1 F) (𝔹In.br F))) w')
-
 
 BarsFam2 : (B : Bars) → Set(lsuc(lsuc(L)))
 BarsFam2 B =
@@ -272,6 +283,36 @@ BarsFam2 B =
   (i : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → Σ (𝔹 B w') (λ b' → G e ib b'))
   → B w (barFam2 b G i)
 
+barFam2Test : {B : Bars} {w : 𝕎·} (b : 𝔹 B w)
+              (G : {w' : 𝕎·} (ib : 𝔹.bar b w') → 𝔹 B w' → Set(lsuc(L)))
+              (i : {w' : 𝕎·} (ib : 𝔹.bar b w') → Σ (𝔹 B w') (λ b' → G ib b'))
+              → Br
+barFam2Test {B} {w} b G i w' = Σ 𝕎· λ w'' → Σ (𝔹.bar b w'') λ w''∈b → 𝔹.bar (fst (i w''∈b)) w'
+
+BarsFam2Test : (B : Bars) → Set(lsuc(lsuc(L)))
+BarsFam2Test B =
+  {w : 𝕎·} (b : 𝔹 B w)
+  (G : {w' : 𝕎·} (ib : 𝔹.bar b w') → 𝔹 B w' → Set(lsuc(L)))
+  (i : {w' : 𝕎·} (ib : 𝔹.bar b w') → Σ (𝔹 B w') (λ b' → G ib b'))
+  → B w (barFam2Test b G i)
+
+𝔹fam2Test : {B : Bars} (fam : BarsFam2Test B) {w : 𝕎·} (b : 𝔹 B w)
+            (G : {w' : 𝕎·} (ib : 𝔹.bar b w') → 𝔹 B w' → Set(lsuc(L)))
+            (i : {w' : 𝕎·} (ib : 𝔹.bar b w') → Σ (𝔹 B w') (λ b' → G ib b'))
+            → 𝔹 B w
+𝔹fam2Test {B} fam {w} b G i = mk𝔹 bar bars ext mon
+  where
+    bar : Br
+    bar = barFam2Test b G i
+
+    bars : B w bar
+    bars = fam b G i
+
+    ext  : {w' : 𝕎·} → bar w' → w ⊑· w'
+    ext {w'} (w'' , w''∈b , w'∈b') = ⊑-trans· (𝔹.ext b w''∈b) (𝔹.ext (fst (i w''∈b)) w'∈b')
+
+    mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
+    mon {w1} {w2} e12 (w' , w'∈b , w1∈b')= w' , w'∈b , 𝔹.mon (fst (i w'∈b)) e12 w1∈b'
 
 𝔹fam2 : {B : Bars} (fam : BarsFam2 B) {w : 𝕎·} (b : 𝔹 B w)
          (G : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → 𝔹 B w' → Set(lsuc(L)))
@@ -548,6 +589,7 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
 
 
 ∀𝕎-Σ∈𝔹'-Σ∈𝔹 : {B : Bars} (fam : BarsFam2 B)
+
                  {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w} (i : Σ∈𝔹 B f)
                  → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → h w' e')
                  → Σ∈𝔹' B i g → Σ∈𝔹 B h
