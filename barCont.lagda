@@ -131,11 +131,15 @@ IndBarB = UNION NAT UNIT
 
 
 IndBarC : Term
-IndBarC = DECIDE (VAR 0) VOID UNIT
+IndBarC = DECIDE (VAR 0) VOID NAT
 
 
 IndBar : Term
 IndBar = WT IndBarB IndBarC
+
+
+CoIndBar : Term
+CoIndBar = MT IndBarB IndBarC
 
 
 ETA : Term → Term
@@ -166,6 +170,14 @@ EMPTY : Term
 EMPTY = PAIR (NUM 0) (LAMBDA AX)
 
 
+
+loopF : Name → Term → Term → Term → Term
+loopF r bar R xs =
+  SEQ (CHOOSE (NAME r) BTRUE) -- we start by assuming that we have enough information
+      (LET (APPLY bar (generic r xs))
+           (ITE (CS r) (ETA (VAR 0)) (DIGAMMA (LAMBDA (APPLY R (APPEND xs (VAR 0)))))))
+
+
 loop : Name →  Term → Term
 loop r bar =
   FIX (LAMBDA (LAMBDA R)) -- 0 is the argument (the list), and 1 is the recursive call
@@ -182,6 +194,21 @@ tabI bar = FRESH (APPLY (loop 0 bar) EMPTY)
 
 tab : Term
 tab = LAMBDA (tabI (VAR 0))
+
+
+-- a path is a function provides the B's to follow in a member of a W(A,B) type.
+path : (i : ℕ) (w : 𝕎·) → CTerm → CTerm0 → Set(lsuc L)
+path i w A B = (n : ℕ) → Σ CTerm (λ a → Σ CTerm (λ b → ∈Type i w A a × ∈Type i w (sub0 a B) b)) ⊎ ⊤
+
+
+-- Define what it means for a path to be correct w.r.t. a W or M type.
+
+
+-- First prove that loop belongs to CoIndBar
+--coSem : (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
+--          → ∈Type i w #FunBar F
+--          → ∈Type i w #CoIndBar (#loop r F)
+--coSem w  ?
 
 
 --sem : (w : 𝕎·) → ∈Type i w #barThesis tab
