@@ -175,17 +175,15 @@ loopF : Name → Term → Term → Term → Term
 loopF r bar R xs =
   SEQ (CHOOSE (NAME r) BTRUE) -- we start by assuming that we have enough information
       (LET (APPLY bar (generic r xs))
-           (ITE (CS r) (ETA (VAR 0)) (DIGAMMA (LAMBDA (APPLY R (APPEND xs (VAR 0)))))))
+           (ITE (CS r)
+                (ETA (VAR 0))
+                (DIGAMMA (LAMBDA (APPLY (shiftUp 0 (shiftUp 0 R)) (APPEND (shiftUp 0 (shiftUp 0 xs)) (VAR 0)))))))
 
 
 loop : Name →  Term → Term
 loop r bar =
-  FIX (LAMBDA (LAMBDA R)) -- 0 is the argument (the list), and 1 is the recursive call
-  where
-    R : Term
-    R = SEQ (CHOOSE (NAME r) BTRUE) -- we start by assuming that we have enough information
-            (LET (APPLY bar (generic r (VAR 0)))
-                 (ITE (CS r) (ETA (VAR 0)) (DIGAMMA (LAMBDA (APPLY (VAR 3) (APPEND (VAR 2) (VAR 0)))))))
+  -- 0 is the argument (the list), and 1 is the recursive call
+  FIX (LAMBDA (LAMBDA (loopF r bar (VAR 1) (VAR 0))))
 
 
 tabI : Term → Term
@@ -196,12 +194,44 @@ tab : Term
 tab = LAMBDA (tabI (VAR 0))
 
 
--- a path is a function provides the B's to follow in a member of a W(A,B) type.
+-- A path is a function that provides the B's to follow in a member of a W(A,B) of M(A,B) type
+-- An infinite path (only inj₁'s) cannot be a path of a W type because eventually (sub a B) will be false
+-- and '∈Type i w (sub0 a B) b' will be false
 path : (i : ℕ) (w : 𝕎·) → CTerm → CTerm0 → Set(lsuc L)
 path i w A B = (n : ℕ) → Σ CTerm (λ a → Σ CTerm (λ b → ∈Type i w A a × ∈Type i w (sub0 a B) b)) ⊎ ⊤
 
 
--- Define what it means for a path to be correct w.r.t. a W or M type.
+is-inj₁ : {I J : Level} {A : Set(I)} {B : Set(J)} (u : A ⊎ B) → Set
+is-inj₁ {I} {J} {A} {B} u with u
+... | inj₁ _ = ⊤
+... | inj₂ _ = ⊥
+
+
+-- A path is infinite if it is made out of inj₁'s
+isInfPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B) → Set
+isInfPath {i} {w} {A} {B} p = (n : ℕ) → is-inj₁ (p n)
+
+
+shiftPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B) → path i w A B
+shiftPath {i} {w} {A} {B} p k = p (suc k)
+
+
+-- Defines what it means for a path to be correct w.r.t. a W or M type -- up to n (with fuel)
+correctPathN : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (t : CTerm) (p : path i w A B) (n : ℕ) → Set
+correctPathN {i} {w} {A} {B} t p 0 = ⊤
+correctPathN {i} {w} {A} {B} t p (suc n) with p 0
+... | inj₁ (a , b , ia , ib) =
+  Σ CTerm (λ x → Σ CTerm (λ f →
+    t #⇓ #SUP x f at w -- For W types
+    × x ≡ a
+    × correctPathN {i} {w} {A} {B} (#APPLY f b) (shiftPath {i} {w} {A} {B} p) n))
+... | inj₂ _ = ⊤
+
+
+-- A path is correct, if it is so for all ℕs
+correctPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (t : CTerm) (p : path i w A B) → Set
+correctPath {i} {w} {A} {B} t p = (n : ℕ) → correctPathN {i} {w} {A} {B} t p n
+
 
 
 -- First prove that loop belongs to CoIndBar

@@ -360,8 +360,8 @@ record meq eqa eqb w t1 t2 where
   coinductive
   field
     meqC : Σ CTerm (λ a1 → Σ CTerm (λ f1 → Σ CTerm (λ a2 → Σ CTerm (λ f2 → Σ  (eqa a1 a2) (λ e →
-           t1 #⇓ (#MSUP a1 f1) at w
-           × t2 #⇓ (#MSUP a2 f2) at w
+           t1 #⇓ (#SUP a1 f1) at w
+           × t2 #⇓ (#SUP a2 f2) at w
            × ((b1 b2 : CTerm) → eqb a1 a2 e b1 b2 → meq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2)))))))
 --             → meq eqa eqb w t1 t2
 

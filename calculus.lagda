@@ -65,7 +65,7 @@ data Term : Set where
   DSUP : Term → Term → Term
   -- M
   MT :  Term → Term → Term
-  MSUP : Term → Term → Term
+  MSUP : Term → Term → Term -- Let's not use MSUP and DMSUP, but reuse SUP and DSUP instead
   DMSUP : Term → Term → Term
   -- Sums
   SUM : Term → Term → Term
