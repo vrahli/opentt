@@ -33,6 +33,7 @@ open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
 open import Axiom.Extensionality.Propositional
+open import Axiom.ExcludedMiddle
 
 
 open import util
@@ -53,10 +54,11 @@ open import mod
 
 
 module barCont {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-                   (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
-                   (X : ChoiceExt W C)
-                   (N : NewChoice {L} W C K G)
-                   (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+               (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
+               (X : ChoiceExt W C)
+               (N : NewChoice {L} W C K G)
+               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+               (EM : ExcludedMiddle (lsuc(L)))
        where
 
 
@@ -240,13 +242,23 @@ correctPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (t : CTerm) (p : p
 correctPath {i} {w} {A} {B} t p = (n : ℕ) → correctPathN {i} {w} {A} {B} t p n
 
 
+
 -- Can we prove?
--- Connect A/eqa B/eqb
-m2wa : (i : ℕ) (w : 𝕎·) (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (A : CTerm) (B : CTerm0) (t u : CTerm)
+m2wa : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
       → ((p : path i w A B) → correctPath {i} {w} {A} {B} t p → isFinPath {i} {w} {A} {B} p)
-      → meq eqa eqb w t u
-      → weq eqa eqb w t u
-m2wa i w eqa eqb A B t u cond h = {!!}
+      → meq (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u
+      → weq (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u
+m2wa i w A B t u cond h with meq.meqC h
+... | (a1 , f1 , a2 , f2 , e , c1 , c2 , q) =
+  weq.weqC a1 f1 a2 f2 e c1 c2 j
+  where
+    j : (b1 b2 : CTerm)
+        → equalInType i w (sub0 a1 B) b1 b2
+        → weq (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w (#APPLY f1 b1) (#APPLY f2 b2)
+    j b1 b2 eb = m2wa i w A B (#APPLY f1 b1) (#APPLY f2 b2) cond' (q b1 b2 eb)
+      where
+        cond' : (p : path i w A B) → correctPath {i} {w} {A} {B} (#APPLY f1 b1) p → isFinPath {i} {w} {A} {B} p
+        cond' p c = {!!}
 
 
 -- Can we prove?
