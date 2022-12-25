@@ -82,12 +82,10 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
-{--
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
---}
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
@@ -206,10 +204,19 @@ is-inj₁ {I} {J} {A} {B} u with u
 ... | inj₁ _ = ⊤
 ... | inj₂ _ = ⊥
 
+is-inj₂ : {I J : Level} {A : Set(I)} {B : Set(J)} (u : A ⊎ B) → Set
+is-inj₂ {I} {J} {A} {B} u with u
+... | inj₁ _ = ⊥
+... | inj₂ _ = ⊤
+
 
 -- A path is infinite if it is made out of inj₁'s
 isInfPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B) → Set
 isInfPath {i} {w} {A} {B} p = (n : ℕ) → is-inj₁ (p n)
+
+
+isFinPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B) → Set
+isFinPath {i} {w} {A} {B} p = Σ ℕ (λ n → is-inj₂ (p n))
 
 
 shiftPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B) → path i w A B
@@ -232,6 +239,31 @@ correctPathN {i} {w} {A} {B} t p (suc n) with p 0
 correctPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (t : CTerm) (p : path i w A B) → Set
 correctPath {i} {w} {A} {B} t p = (n : ℕ) → correctPathN {i} {w} {A} {B} t p n
 
+
+-- Can we prove?
+-- Connect A/eqa B/eqb
+m2wa : (i : ℕ) (w : 𝕎·) (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (A : CTerm) (B : CTerm0) (t u : CTerm)
+      → ((p : path i w A B) → correctPath {i} {w} {A} {B} t p → isFinPath {i} {w} {A} {B} p)
+      → meq eqa eqb w t u
+      → weq eqa eqb w t u
+m2wa i w eqa eqb A B t u cond h = {!!}
+
+
+-- Can we prove?
+m2w : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t : CTerm)
+      → ∀𝕎 w (λ w' _ → isType i w' A)
+      → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType i w' A a₁ a₂) → equalTypes i w' (sub0 a₁ B) (sub0 a₂ B))
+      → ((p : path i w A B) → correctPath {i} {w} {A} {B} t p → isFinPath {i} {w} {A} {B} p)
+      → ∈Type i w (#MT A B) t
+      → ∈Type i w (#WT A B) t
+m2w i w A B t eqta eqtb cond h = →equalInType-W i w A B t t eqta eqtb (Mod.∀𝕎-□Func M aw q)
+  where
+    q : □· w (λ w' _ → meq (equalInType i w' A) (λ a b eqa → equalInType i w' (sub0 a B)) w' t t)
+    q = equalInType-M→ i w A B t t h
+
+    aw : ∀𝕎 w (λ w' e' → meq (equalInType i w' A) (λ a b eqa → equalInType i w' (sub0 a B)) w' t t
+                       → weq (equalInType i w' A) (λ a b eqa → equalInType i w' (sub0 a B)) w' t t)
+    aw w' e' z = {!!}
 
 
 -- First prove that loop belongs to CoIndBar
