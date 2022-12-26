@@ -242,13 +242,50 @@ correctPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (t : CTerm) (p : p
 correctPath {i} {w} {A} {B} t p = (n : ℕ) → correctPathN {i} {w} {A} {B} t p n
 
 
+record meqb (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (w : 𝕎·) (t1 t2 : CTerm) : Set(lsuc(L))
+record meqb eqa eqb w t1 t2 where
+  coinductive
+  field
+    meqbC : Σ CTerm (λ a1 → Σ CTerm (λ f1 → Σ CTerm (λ b1 → Σ CTerm (λ a2 → Σ CTerm (λ f2 → Σ CTerm (λ b2 → Σ (eqa a1 a2) (λ e →
+           t1 #⇓ (#SUP a1 f1) at w
+           × t2 #⇓ (#SUP a2 f2) at w
+           × eqb a1 a2 e b1 b2
+           × meqb eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))))))))
+
+
+m2mb : (i : ℕ) (w : 𝕎·) (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (t u : CTerm)
+         → meq eqa eqb w t u
+         → ¬ weq eqa eqb w t u
+         → meqb eqa eqb w t u
+meqb.meqbC (m2mb i w eqa eqb t u m nw) with meq.meqC m
+... | (a1 , f1 , a2 , f2 , e , c1 , c2 , q) =
+  a1 , f1 , fst k , a2 , f2 , fst (snd k) , e , c1 , c2 , fst (snd (snd k)) ,
+  m2mb i w eqa eqb (#APPLY f1 (fst k)) (#APPLY f2 (fst (snd k))) (q (fst k) (fst (snd k)) (fst (snd (snd k)))) (snd (snd (snd k)))
+  where
+    nj : ¬ ((b1 b2 : CTerm) → eqb a1 a2 e b1 b2 → weq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))
+    nj h = nw (weq.weqC a1 f1 a2 f2 e c1 c2 h)
+
+    k : Σ CTerm (λ b1 → Σ CTerm (λ b2 → Σ (eqb a1 a2 e b1 b2) (λ eb → ¬ weq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))))
+    k with EM {Σ CTerm (λ b1 → Σ CTerm (λ b2 → Σ (eqb a1 a2 e b1 b2) (λ eb → ¬ weq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))))}
+    ... | yes p = p
+    ... | no p = ⊥-elim (nj j)
+      where
+        j : (b1 b2 : CTerm) → eqb a1 a2 e b1 b2 → weq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2)
+        j b1 b2 eb with EM {weq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2)}
+        ... | yes pp = pp
+        ... | no pp = ⊥-elim (p (b1 , b2 , eb , pp))
+
+
+-- Build a path from meqb
+
 
 -- Can we prove?
 m2wa : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
       → ((p : path i w A B) → correctPath {i} {w} {A} {B} t p → isFinPath {i} {w} {A} {B} p)
       → meq (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u
       → weq (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u
-m2wa i w A B t u cond h with meq.meqC h
+m2wa i w A B t u cond h = {!!}
+{-- with meq.meqC h
 ... | (a1 , f1 , a2 , f2 , e , c1 , c2 , q) =
   weq.weqC a1 f1 a2 f2 e c1 c2 j
   where
@@ -259,6 +296,7 @@ m2wa i w A B t u cond h with meq.meqC h
       where
         cond' : (p : path i w A B) → correctPath {i} {w} {A} {B} (#APPLY f1 b1) p → isFinPath {i} {w} {A} {B} p
         cond' p c = {!!}
+--}
 
 
 -- Can we prove?
