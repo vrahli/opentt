@@ -202,14 +202,12 @@ path i w A B = (n : ℕ) → Σ CTerm (λ a → Σ CTerm (λ b → ∈Type i w A
 
 
 is-inj₁ : {I J : Level} {A : Set(I)} {B : Set(J)} (u : A ⊎ B) → Set
-is-inj₁ {I} {J} {A} {B} u with u
-... | inj₁ _ = ⊤
-... | inj₂ _ = ⊥
+is-inj₁ {I} {J} {A} {B} (inj₁ x) = ⊤
+is-inj₁ {I} {J} {A} {B} (inj₂ x) = ⊥
 
 is-inj₂ : {I J : Level} {A : Set(I)} {B : Set(J)} (u : A ⊎ B) → Set
-is-inj₂ {I} {J} {A} {B} u with u
-... | inj₁ _ = ⊥
-... | inj₂ _ = ⊤
+is-inj₂ {I} {J} {A} {B} (inj₁ x) = ⊥
+is-inj₂ {I} {J} {A} {B} (inj₂ x) = ⊤
 
 
 -- A path is infinite if it is made out of inj₁'s
@@ -219,6 +217,19 @@ isInfPath {i} {w} {A} {B} p = (n : ℕ) → is-inj₁ (p n)
 
 isFinPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B) → Set
 isFinPath {i} {w} {A} {B} p = Σ ℕ (λ n → is-inj₂ (p n))
+
+
+is-inj₁→¬is-inj₂ : {I J : Level} {A : Set(I)} {B : Set(J)} (u : A ⊎ B)
+                    → is-inj₁ u
+                    → ¬ is-inj₂ u
+is-inj₁→¬is-inj₂ {I} {J} {A} {B} (inj₁ x) i j = j
+is-inj₁→¬is-inj₂ {I} {J} {A} {B} (inj₂ x) i j = i
+
+
+isFinPath→¬isInfPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B)
+                        → isFinPath {i} {w} {A} {B} p
+                        → ¬ isInfPath {i} {w} {A} {B} p
+isFinPath→¬isInfPath {i} {w} {A} {B} p (n , fin) inf = is-inj₁→¬is-inj₂ (p n) (inf n) fin
 
 
 shiftPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B) → path i w A B
@@ -242,25 +253,26 @@ correctPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (t : CTerm) (p : p
 correctPath {i} {w} {A} {B} t p = (n : ℕ) → correctPathN {i} {w} {A} {B} t p n
 
 
-record meqb (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (w : 𝕎·) (t1 t2 : CTerm) : Set(lsuc(L))
-record meqb eqa eqb w t1 t2 where
+record branch (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (w : 𝕎·) (t1 t2 : CTerm) : Set(lsuc(L))
+record branch eqa eqb w t1 t2 where
   coinductive
   field
-    meqbC : Σ CTerm (λ a1 → Σ CTerm (λ f1 → Σ CTerm (λ b1 → Σ CTerm (λ a2 → Σ CTerm (λ f2 → Σ CTerm (λ b2 → Σ (eqa a1 a2) (λ e →
-           t1 #⇓ (#SUP a1 f1) at w
-           × t2 #⇓ (#SUP a2 f2) at w
-           × eqb a1 a2 e b1 b2
-           × meqb eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))))))))
+    branchC : Σ CTerm (λ a1 → Σ CTerm (λ f1 → Σ CTerm (λ b1 → Σ CTerm (λ a2 → Σ CTerm (λ f2 → Σ CTerm (λ b2 → Σ (eqa a1 a2) (λ e →
+               t1 #⇓ (#SUP a1 f1) at w
+               × t2 #⇓ (#SUP a2 f2) at w
+               × eqb a1 a2 e b1 b2
+               × branch eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))))))))
 
 
-m2mb : (i : ℕ) (w : 𝕎·) (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (t u : CTerm)
+-- ¬ weq tells us which b's to follow
+m2mb : (w : 𝕎·) (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (t u : CTerm)
          → meq eqa eqb w t u
          → ¬ weq eqa eqb w t u
-         → meqb eqa eqb w t u
-meqb.meqbC (m2mb i w eqa eqb t u m nw) with meq.meqC m
+         → branch eqa eqb w t u
+branch.branchC (m2mb w eqa eqb t u m nw) with meq.meqC m
 ... | (a1 , f1 , a2 , f2 , e , c1 , c2 , q) =
   a1 , f1 , fst k , a2 , f2 , fst (snd k) , e , c1 , c2 , fst (snd (snd k)) ,
-  m2mb i w eqa eqb (#APPLY f1 (fst k)) (#APPLY f2 (fst (snd k))) (q (fst k) (fst (snd k)) (fst (snd (snd k)))) (snd (snd (snd k)))
+  m2mb w eqa eqb (#APPLY f1 (fst k)) (#APPLY f2 (fst (snd k))) (q (fst k) (fst (snd k)) (fst (snd (snd k)))) (snd (snd (snd k)))
   where
     nj : ¬ ((b1 b2 : CTerm) → eqb a1 a2 e b1 b2 → weq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))
     nj h = nw (weq.weqC a1 f1 a2 f2 e c1 c2 h)
@@ -276,27 +288,68 @@ meqb.meqbC (m2mb i w eqa eqb t u m nw) with meq.meqC m
         ... | no pp = ⊥-elim (p (b1 , b2 , eb , pp))
 
 
--- Build a path from meqb
+
+-- Build a path from branch
+mb2path : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
+          → branch (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u
+          → path i w A B
+mb2path i w A B t u m 0 with branch.branchC m
+... | (a1 , f1 , b1 , a2 , f2 , b2 , ea , c1 , c2 , eb , q) = inj₁ (a1 , b1 , equalInType-refl ea , equalInType-refl eb)
+mb2path i w A B t u m (suc n) with branch.branchC m
+... | (a1 , f1 , b1 , a2 , f2 , b2 , ea , c1 , c2 , eb , q) = mb2path i w A B (#APPLY f1 b1) (#APPLY f2 b2) q n
 
 
--- Can we prove?
+correctN-mb2path : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
+                   (b : branch (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u)
+                   (n : ℕ)
+                   → correctPathN {i} {w} {A} {B} t (mb2path i w A B t u b) n
+correctN-mb2path i w A B t u b 0 = tt
+correctN-mb2path i w A B t u b (suc n) with branch.branchC b
+... | (a1 , f1 , b1 , a2 , f2 , b2 , ea , c1 , c2 , eb , q) =
+  a1 , f1 , c1 , refl , correctN-mb2path i w A B (#APPLY f1 b1) (#APPLY f2 b2) q n
+
+
+correct-mb2path : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
+                  (b : branch (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u)
+                  → correctPath {i} {w} {A} {B} t (mb2path i w A B t u b)
+correct-mb2path i w A B t u b n = correctN-mb2path i w A B t u b n
+
+
+inf-mb2path : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
+              (b : branch (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u)
+              → isInfPath {i} {w} {A} {B} (mb2path i w A B t u b)
+inf-mb2path i w A B t u b 0 with branch.branchC b
+... | (a1 , f1 , b1 , a2 , f2 , b2 , ea , c1 , c2 , eb , q) = tt
+inf-mb2path i w A B t u b (suc n) with branch.branchC b
+... | (a1 , f1 , b1 , a2 , f2 , b2 , ea , c1 , c2 , eb , q) with inf-mb2path i w A B (#APPLY f1 b1) (#APPLY f2 b2) q n
+... |    k with mb2path i w A B (#APPLY f1 b1) (#APPLY f2 b2) q n
+... |       inj₁ x = tt
+... |       inj₂ x = k
+
+
+-- Classically, we can derive a weq from an meq as follows
 m2wa : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
       → ((p : path i w A B) → correctPath {i} {w} {A} {B} t p → isFinPath {i} {w} {A} {B} p)
       → meq (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u
       → weq (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u
-m2wa i w A B t u cond h = {!!}
-{-- with meq.meqC h
-... | (a1 , f1 , a2 , f2 , e , c1 , c2 , q) =
-  weq.weqC a1 f1 a2 f2 e c1 c2 j
+m2wa i w A B t u cond h with EM {weq (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u}
+... | yes p = p
+... | no q = ⊥-elim (isFinPath→¬isInfPath {i} {w} {A} {B} p fin inf)
   where
-    j : (b1 b2 : CTerm)
-        → equalInType i w (sub0 a1 B) b1 b2
-        → weq (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w (#APPLY f1 b1) (#APPLY f2 b2)
-    j b1 b2 eb = m2wa i w A B (#APPLY f1 b1) (#APPLY f2 b2) cond' (q b1 b2 eb)
-      where
-        cond' : (p : path i w A B) → correctPath {i} {w} {A} {B} (#APPLY f1 b1) p → isFinPath {i} {w} {A} {B} p
-        cond' p c = {!!}
---}
+    b : branch (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u
+    b = m2mb w (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) t u h q
+
+    p : path i w A B
+    p = mb2path i w A B t u b
+
+    c : correctPath {i} {w} {A} {B} t p
+    c = correctN-mb2path i w A B t u b
+
+    inf : isInfPath {i} {w} {A} {B} p
+    inf = inf-mb2path i w A B t u b
+
+    fin : isFinPath {i} {w} {A} {B} p
+    fin = cond p c
 
 
 -- Can we prove?
@@ -313,7 +366,7 @@ m2w i w A B t eqta eqtb cond h = →equalInType-W i w A B t t eqta eqtb (Mod.∀
 
     aw : ∀𝕎 w (λ w' e' → meq (equalInType i w' A) (λ a b eqa → equalInType i w' (sub0 a B)) w' t t
                        → weq (equalInType i w' A) (λ a b eqa → equalInType i w' (sub0 a B)) w' t t)
-    aw w' e' z = {!!}
+    aw w' e' z = {!!} -- ues m2wa but the worlds don't match
 
 
 -- First prove that loop belongs to CoIndBar
