@@ -3238,4 +3238,331 @@ VOID = FALSE
                (⊆++ (lowerVars-fvars-[0,1] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm1.closed b)))
                     (lowerVars-fvars-[0,1] {fvars ⌜ c ⌝} (⊆?→⊆ (CTerm1.closed c)))))
 
+
+
+#BAIRE : CTerm
+#BAIRE = ct BAIRE c
+  where
+    c : # BAIRE
+    c = refl
+
+
+BAIRE→NAT : Term
+BAIRE→NAT = FUN BAIRE NAT
+
+
+#BAIRE→NAT : CTerm
+#BAIRE→NAT = ct BAIRE→NAT c
+  where
+    c : # BAIRE→NAT
+    c = refl
+
+
+#BAIRE→NAT≡ : #BAIRE→NAT ≡ #FUN #BAIRE #NAT
+#BAIRE→NAT≡ = refl
+
+
+BAIRE→NAT! : Term
+BAIRE→NAT! = FUN BAIRE NAT!
+
+
+#BAIRE→NAT! : CTerm
+#BAIRE→NAT! = ct BAIRE→NAT! c
+  where
+    c : # BAIRE→NAT!
+    c = refl
+
+
+#BAIRE→NAT!≡ : #BAIRE→NAT! ≡ #FUN #BAIRE #NAT!
+#BAIRE→NAT!≡ = refl
+
+
+#BAIRE≡ : #BAIRE ≡ #FUN #NAT #NAT
+#BAIRE≡ = refl
+
+
+#LAMBDA : CTerm0 → CTerm
+#LAMBDA a = ct (LAMBDA ⌜ a ⌝) c
+  where
+    c : # LAMBDA (CTerm0.cTerm a)
+    c rewrite lowerVars-fvars-CTerm0≡[] a = refl
+
+
+fvars-SEQ0 : (a b : Term) → fvars (SEQ a b) ≡ fvars a ++ fvars b
+fvars-SEQ0 a b rewrite fvars-shiftUp≡ 0 b | lowerVars-map-sucIf≤-suc 0 (fvars b) | loweVars-suc (fvars b) = refl
+
+
+#SEQ : CTerm → CTerm → CTerm
+#SEQ a b = ct (SEQ ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # SEQ ⌜ a ⌝ ⌜ b ⌝
+    c rewrite fvars-SEQ0 ⌜ a ⌝ ⌜ b ⌝ | CTerm.closed a | CTerm.closed b = refl
+
+
+#[0]SEQ : CTerm0 → CTerm0 → CTerm0
+#[0]SEQ a b = ct0 (SEQ ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ [ 0 ] ] SEQ ⌜ a ⌝ ⌜ b ⌝
+    c rewrite fvars-SEQ0 ⌜ a ⌝ ⌜ b ⌝ = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝} {[ 0 ]}
+                                           (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm0.closed a)) (⊆?→⊆ (CTerm0.closed b)))
+
+
+
+fvars-ITE : (a b c : Term) → fvars (ITE a b c) ≡ fvars a ++ fvars b ++ fvars c
+fvars-ITE a b c
+  rewrite fvars-shiftUp≡ 0 b
+        | lowerVars-map-sucIf≤-suc 0 (fvars b)
+        | loweVars-suc (fvars b)
+        | fvars-shiftUp≡ 0 c
+        | lowerVars-map-sucIf≤-suc 0 (fvars c)
+        | loweVars-suc (fvars c) = refl
+
+
+fvars-IF-THEN : (a b : Term) → fvars (IF-THEN a b) ≡ fvars a ++ fvars b
+fvars-IF-THEN a b rewrite fvars-ITE a b AX | ++[] (fvars b) = refl
+
+
+fvars-IFLE : (a b c d : Term) → fvars (IFLE a b c d) ≡ fvars b ++ fvars a ++ fvars d ++ fvars c
+fvars-IFLE a b c d = refl
+
+
+#[0]IF-THEN : CTerm0 → CTerm0 → CTerm0
+#[0]IF-THEN a b = ct0 (IF-THEN ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ [ 0 ] ] IF-THEN ⌜ a ⌝ ⌜ b ⌝
+    c rewrite fvars-IF-THEN ⌜ a ⌝ ⌜ b ⌝ = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝} {[ 0 ]}
+                                              (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm0.closed a)) (⊆?→⊆ (CTerm0.closed b)))
+
+
+#IF-THEN : CTerm → CTerm → CTerm
+#IF-THEN a b = ct (IF-THEN ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # IF-THEN ⌜ a ⌝ ⌜ b ⌝
+    c rewrite fvars-IF-THEN ⌜ a ⌝ ⌜ b ⌝ | CTerm.closed a | CTerm.closed b = refl
+
+
+
+#[0]IFLE : CTerm0 → CTerm0 → CTerm0 → CTerm0 → CTerm0
+#[0]IFLE a b c d = ct0 (IFLE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) cl
+  where
+    cl : #[ [ 0 ] ] IFLE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    cl rewrite fvars-IFLE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝ =
+      ⊆→⊆? {fvars ⌜ b ⌝ ++ fvars ⌜ a ⌝ ++ fvars ⌜ d ⌝ ++ fvars ⌜ c ⌝}
+            {[ 0 ]}
+            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ a ⌝ ++ fvars ⌜ d ⌝ ++ fvars ⌜ c ⌝}
+                 (⊆?→⊆ (CTerm0.closed b))
+                 (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ d ⌝ ++ fvars ⌜ c ⌝}
+                      (⊆?→⊆ (CTerm0.closed a))
+                      (⊆++ {Var} {fvars ⌜ d ⌝} {fvars ⌜ c ⌝}
+                           (⊆?→⊆ (CTerm0.closed d))
+                           (⊆?→⊆ (CTerm0.closed c)))))
+
+
+#IFLE : CTerm → CTerm → CTerm → CTerm → CTerm
+#IFLE a b c d = ct (IFLE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) cl
+  where
+    cl : # IFLE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    cl rewrite fvars-IFLE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝ | CTerm.closed a | CTerm.closed b | CTerm.closed c | CTerm.closed d = refl
+
+
+#[0]LE : CTerm0 → CTerm0 → CTerm0
+#[0]LE a b = ct0 (LE ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ [ 0 ] ] LE ⌜ a ⌝ ⌜ b ⌝
+    c rewrite fvars-NEG (LT ⌜ b ⌝ ⌜ a ⌝) = ⊆→⊆? {fvars ⌜ b ⌝ ++ fvars ⌜ a ⌝ } {[ 0 ]}
+                                               (⊆++ (⊆?→⊆ {fvars ⌜ b ⌝} {[ 0 ]} (CTerm0.closed b))
+                                                    (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a)))
+
+
+#LE : CTerm → CTerm → CTerm
+#LE a b = ct (LE ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # LE ⌜ a ⌝ ⌜ b ⌝
+    c rewrite fvars-NEG (LT ⌜ b ⌝ ⌜ a ⌝) | CTerm.closed a | CTerm.closed b = refl
+
+
+#[0]CHOOSE : CTerm0 → CTerm0 → CTerm0
+#[0]CHOOSE a b = ct0 (CHOOSE ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ [ 0 ] ] CHOOSE ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {[ 0 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {[ 0 ]} (CTerm0.closed b)))
+
+
+
+
+lowerVars-fvars-[0,1,2] : {l : List Var}
+                        → l ⊆ (0 ∷ 1 ∷ [ 2 ])
+                        → lowerVars l ⊆ 0 ∷ [ 1 ]
+lowerVars-fvars-[0,1,2] {0 ∷ l} h x = lowerVars-fvars-[0,1,2] (λ z → h (there z)) x
+lowerVars-fvars-[0,1,2] {suc x₁ ∷ l} h (here px) rewrite px = i z
+  where
+    z : suc x₁ ∈ (0 ∷ 1 ∷ [ 2 ])
+    z = h (here refl)
+
+    i : suc x₁ ∈ (0 ∷ 1 ∷ [ 2 ]) →  x₁ ∈ 0 ∷ [ 1 ]
+    i (there (here px)) = here (suc-injective px)
+    i (there (there (here px))) = there (here (suc-injective px))
+lowerVars-fvars-[0,1,2] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,2] (λ z → h (there z)) x
+
+
+→fvars-shiftUp⊆-[0,1,2] : {t : Term}
+                           → fvars t ⊆ 0 ∷ 1 ∷ []
+                           → fvars (shiftUp 0 t) ⊆ 0 ∷ 1 ∷ [ 2 ]
+→fvars-shiftUp⊆-[0,1,2] {t} h {x} i rewrite fvars-shiftUp≡ 0 t = z₃
+  where
+     y : Var
+     y = fst (∈-map⁻ suc i)
+
+     j : y ∈ fvars t
+     j = fst (snd (∈-map⁻ suc i))
+
+     e : x ≡ suc y
+     e = snd (snd (∈-map⁻ suc i))
+
+     z₁ : y ∈ 0 ∷ 1 ∷ []
+     z₁ = h j
+
+     z→ : y ∈ 0 ∷ 1 ∷ [] → suc y ∈ 0 ∷ 1 ∷ 2 ∷ []
+     z→ (here px) rewrite px = there (here refl)
+     z→ (there (here px)) rewrite px = there (there (here refl))
+
+     z₂ : suc y ∈ 0 ∷ 1 ∷ 2 ∷ []
+     z₂ = z→ z₁
+
+     z₃ : x ∈ 0 ∷ 1 ∷ 2 ∷ []
+     z₃ rewrite e = z₂
+
+
+→fvars-shiftUp⊆-[0,1] : {t : Term}
+                           → fvars t ⊆ [ 0 ]
+                           → fvars (shiftUp 0 t) ⊆ 0 ∷ [ 1 ]
+→fvars-shiftUp⊆-[0,1] {t} h {x} i rewrite fvars-shiftUp≡ 0 t = z₃
+  where
+     y : Var
+     y = fst (∈-map⁻ suc i)
+
+     j : y ∈ fvars t
+     j = fst (snd (∈-map⁻ suc i))
+
+     e : x ≡ suc y
+     e = snd (snd (∈-map⁻ suc i))
+
+     z₁ : y ∈ [ 0 ]
+     z₁ = h j
+
+     z→ : y ∈ [ 0 ] → suc y ∈ 0 ∷ [ 1 ]
+     z→ (here px) rewrite px = there (here refl)
+
+     z₂ : suc y ∈ 0 ∷ [ 1 ]
+     z₂ = z→ z₁
+
+     z₃ : x ∈ 0 ∷ [ 1 ]
+     z₃ rewrite e = z₂
+
+
+
+NATn : Term → Term
+NATn n = SET NAT (LT (VAR 0) (shiftUp 0 n))
+
+
+BAIREn : Term → Term
+BAIREn n = FUN (NATn n) NAT
+
+
+#[1]BAIREn : CTerm1 → CTerm1
+#[1]BAIREn n = ct1 (BAIREn ⌜ n ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] BAIREn ⌜ n ⌝
+    c rewrite fvars-FUN0 (NATn ⌜ n ⌝) NAT | ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝))) =
+      ⊆→⊆? {lowerVars (fvars (shiftUp 0 ⌜ n ⌝))} {0 ∷ [ 1 ]}
+           (lowerVars-fvars-[0,1,2] {fvars (shiftUp 0 ⌜ n ⌝)} (→fvars-shiftUp⊆-[0,1,2] {⌜ n ⌝} (⊆?→⊆ {fvars ⌜ n ⌝} {0 ∷ [ 1 ]} (CTerm1.closed n))))
+
+
+#[0]BAIREn : CTerm0 → CTerm0
+#[0]BAIREn n = ct0 (BAIREn ⌜ n ⌝) c
+  where
+    c : #[ [ 0 ] ] BAIREn ⌜ n ⌝
+    c rewrite fvars-FUN0 (NATn ⌜ n ⌝) NAT
+            | ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝)))
+            | lowerVars-fvars-CTerm0≡[] n =
+      ⊆→⊆? {lowerVars (fvars (shiftUp 0 ⌜ n ⌝))} {[ 0 ]}
+            (lowerVars-fvars-[0,1] {fvars (shiftUp 0 ⌜ n ⌝)}
+                                   (→fvars-shiftUp⊆-[0,1] {⌜ n ⌝} (⊆?→⊆ {fvars ⌜ n ⌝} {[ 0 ]} (CTerm0.closed n))))
+
+
+#BAIREn : CTerm → CTerm
+#BAIREn n = ct (BAIREn ⌜ n ⌝) c
+  where
+    c : # BAIREn ⌜ n ⌝
+    c rewrite fvars-FUN0 (NATn ⌜ n ⌝) NAT
+            | ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝)))
+            | #shiftUp 0 n
+      = lowerVars-fvars-CTerm≡[] n
+
+
+
+
+#NATn : CTerm → CTerm
+#NATn n = ct (NATn ⌜ n ⌝) c
+  where
+    c : # NATn ⌜ n ⌝
+    c rewrite ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝)))
+            | #shiftUp 0 n
+      = lowerVars-fvars-CTerm≡[] n
+
+
+
+≡BAIREn : (n : CTerm) → #BAIREn n ≡ #FUN (#NATn n) #NAT
+≡BAIREn n = CTerm≡ refl
+
+
+#[0]LT : CTerm0 → CTerm0 → CTerm0
+#[0]LT a b = ct0 (LT ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ [ 0 ] ] LT ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝} {[ 0 ]}
+              (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm0.closed a)) (⊆?→⊆ (CTerm0.closed b)))
+
+
+
+CTerm→CTerm0→Term : (a : CTerm) → ⌜ CTerm→CTerm0 a ⌝ ≡ ⌜ a ⌝
+CTerm→CTerm0→Term (ct a c) = refl
+
+
+CTerm→CTerm1→Term : (a : CTerm) → ⌜ CTerm→CTerm1 a ⌝ ≡ ⌜ a ⌝
+CTerm→CTerm1→Term (ct a c) = refl
+
+
+≡NATn : (n : CTerm) → #NATn n ≡ #SET #NAT (#[0]LT #[0]VAR ⌞ n ⌟)
+≡NATn n rewrite CTerm→CTerm0→Term n = CTerm≡ (≡SET refl e)
+  where
+    e : LT (VAR 0) (shiftUp 0 ⌜ n ⌝) ≡ LT (VAR 0) ⌜ n ⌝
+    e rewrite #shiftUp 0 n = refl
+
+
+#[0]LAMBDA : CTerm1 → CTerm0
+#[0]LAMBDA b = ct0 (LAMBDA ⌜ b ⌝) c
+  where
+    c : #[ [ 0 ] ] LAMBDA ⌜ b ⌝
+    c = ⊆→⊆? {lowerVars (fvars ⌜ b ⌝)} {[ 0 ]}
+              (lowerVars-fvars-[0,1] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm1.closed b)))
+
+
+
+#[1]LAMBDA : CTerm2 → CTerm1
+#[1]LAMBDA b = ct1 (LAMBDA ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] LAMBDA ⌜ b ⌝
+    c = ⊆→⊆? {lowerVars (fvars ⌜ b ⌝)} {0 ∷ [ 1 ]}
+              (lowerVars-fvars-[0,1,2] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm2.closed b)))
+
+
+#FIX : CTerm → CTerm
+#FIX a = ct (FIX ⌜ a ⌝) c
+  where
+    c : # FIX ⌜ a ⌝
+    c rewrite CTerm.closed a = refl
+
 \end{code}

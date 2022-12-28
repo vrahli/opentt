@@ -201,6 +201,12 @@ loop r bar =
   FIX (LAMBDA (LAMBDA (loopF r bar (VAR 1) (VAR 0))))
 
 
+#loop : Name →  CTerm → CTerm
+#loop r bar =
+  -- 0 is the argument (the list), and 1 is the recursive call
+  #FIX (#LAMBDA (#[0]LAMBDA {!!}))
+
+
 tabI : Term → Term
 tabI bar = FRESH (APPLY (loop 0 bar) EMPTY)
 
