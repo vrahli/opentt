@@ -118,28 +118,44 @@ FunBar : Term
 FunBar = FUN (FUN NAT NAT) NAT
 
 
-UNIT : Term
-UNIT = TRUE
-
-
-VOID : Term
-VOID = FALSE
+#FunBar : CTerm
+#FunBar = #FUN (#FUN #NAT #NAT) #NAT
 
 
 IndBarB : Term
 IndBarB = UNION NAT UNIT
 
 
+#UNIT : CTerm
+#UNIT = ct UNIT refl
+
+
+#IndBarB : CTerm
+#IndBarB = #UNION #NAT #UNIT
+
+
 IndBarC : Term
 IndBarC = DECIDE (VAR 0) VOID NAT
+
+
+#IndBarC : CTerm0
+#IndBarC = #[0]DECIDE #[0]VAR #[1]VOID #[1]NAT
 
 
 IndBar : Term
 IndBar = WT IndBarB IndBarC
 
 
+#IndBar : CTerm
+#IndBar = #WT #IndBarB #IndBarC
+
+
 CoIndBar : Term
 CoIndBar = MT IndBarB IndBarC
+
+
+#CoIndBar : CTerm
+#CoIndBar = #MT #IndBarB #IndBarC
 
 
 ETA : Term → Term
@@ -168,7 +184,6 @@ APPEND l x = PAIR (SUC k) (LAMBDA (IFLT (VAR 0) k (APPLY f (VAR 0)) x))
 -- empty list
 EMPTY : Term
 EMPTY = PAIR (NUM 0) (LAMBDA AX)
-
 
 
 loopF : Name → Term → Term → Term → Term
@@ -370,10 +385,10 @@ m2w i w A B t eqta eqtb cond h =
 
 
 -- First prove that loop belongs to CoIndBar
---coSem : (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
---          → ∈Type i w #FunBar F
---          → ∈Type i w #CoIndBar (#loop r F)
---coSem w  ?
+coSem : (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
+        → ∈Type i w #FunBar F
+        → ∈Type i w #CoIndBar {!!} --(#loop r F)
+coSem i w r F = {!!}
 
 
 --sem : (w : 𝕎·) → ∈Type i w #barThesis tab

@@ -3185,4 +3185,57 @@ TPURE T = ISECT T PURE
     c : #[ [ 0 ] ] SUBSING ⌜ t ⌝
     c = CTerm0.closed t
 
+
+#[1]NAT : CTerm1
+#[1]NAT = ct1 NAT c
+  where
+    c : #[ 0 ∷ [ 1 ] ] NAT
+    c = refl
+
+
+UNIT : Term
+UNIT = TRUE
+
+
+VOID : Term
+VOID = FALSE
+
+
+#[1]VOID : CTerm1
+#[1]VOID = ct1 VOID c
+  where
+    c : #[ 0 ∷ [ 1 ] ] VOID
+    c = refl
+
+
+
+#[0]FFDEFS : CTerm0 → CTerm0 → CTerm0
+#[0]FFDEFS a b = ct0 (FFDEFS ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ [ 0 ] ] FFDEFS ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {[ 0 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {[ 0 ]} (CTerm0.closed b)))
+
+
+#[1]FFDEFS : CTerm1 → CTerm1 → CTerm1
+#[1]FFDEFS a b = ct1 (FFDEFS ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] FFDEFS ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ [ 1 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
+
+
+#[0]DECIDE : CTerm0 → CTerm1 → CTerm1 → CTerm0
+#[0]DECIDE a b c = ct0 (DECIDE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝) d
+  where
+    d : #[ [ 0 ] ] DECIDE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝
+    d = ⊆→⊆?
+          {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝) ++ lowerVars (fvars ⌜ c ⌝)}
+          {[ 0 ]}
+          (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+               (⊆++ (lowerVars-fvars-[0,1] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm1.closed b)))
+                    (lowerVars-fvars-[0,1] {fvars ⌜ c ⌝} (⊆?→⊆ (CTerm1.closed c)))))
+
 \end{code}

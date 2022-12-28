@@ -1727,32 +1727,6 @@ lowerVars-fvars-[0,1,2] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,2] (
       = lowerVars-fvars-CTerm≡[] n
 
 
-#[1]NAT : CTerm1
-#[1]NAT = ct1 NAT c
-  where
-    c : #[ 0 ∷ [ 1 ] ] NAT
-    c = refl
-
-
-
-#[0]FFDEFS : CTerm0 → CTerm0 → CTerm0
-#[0]FFDEFS a b = ct0 (FFDEFS ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ [ 0 ] ] FFDEFS ⌜ a ⌝ ⌜ b ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {[ 0 ]}
-             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
-                  (⊆?→⊆ {fvars ⌜ b ⌝} {[ 0 ]} (CTerm0.closed b)))
-
-
-#[1]FFDEFS : CTerm1 → CTerm1 → CTerm1
-#[1]FFDEFS a b = ct1 (FFDEFS ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] FFDEFS ⌜ a ⌝ ⌜ b ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ [ 1 ]}
-             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
-                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
-
-
 #contBody≡ : (F f : CTerm)
             → #contBody F f
                ≡ #SUM #NAT
