@@ -3565,4 +3565,60 @@ CTerm→CTerm1→Term (ct a c) = refl
     c : # FIX ⌜ a ⌝
     c rewrite CTerm.closed a = refl
 
+
+#[0]LET : CTerm0 → CTerm1 → CTerm0
+#[0]LET a b = ct0 (LET ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ [ 0 ] ] LET ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {[ 0 ]}
+              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+                   (lowerVars-fvars-[0,1] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm1.closed b))))
+
+
+#[1]SEQ : CTerm1 → CTerm1 → CTerm1
+#[1]SEQ a b = ct1 (SEQ ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] SEQ ⌜ a ⌝ ⌜ b ⌝
+    c rewrite fvars-SEQ0 ⌜ a ⌝ ⌜ b ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ [ 1 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
+
+
+#[1]CHOOSE : CTerm1 → CTerm1 → CTerm1
+#[1]CHOOSE a b = ct1 (CHOOSE ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] CHOOSE ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ [ 1 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
+
+
+#[1]CS : Name → CTerm1
+#[1]CS name = ct1 (CS name) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] CS name
+    c = refl
+
+
+#[1]NAME : Name → CTerm1
+#[1]NAME name = ct1 (NAME name) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] NAME name
+    c = refl
+
+
+#LET : CTerm → CTerm0 → CTerm
+#LET a b = ct (LET ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # LET ⌜ a ⌝ ⌜ b ⌝
+    c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
+
+
+#SUC : CTerm → CTerm
+#SUC a = ct (SUC ⌜ a ⌝) c
+  where
+    c : # SUC ⌜ a ⌝
+    c rewrite CTerm.closed a = refl
+
 \end{code}

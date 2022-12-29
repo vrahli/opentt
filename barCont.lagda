@@ -204,7 +204,7 @@ loop r bar =
 #loop : Name →  CTerm → CTerm
 #loop r bar =
   -- 0 is the argument (the list), and 1 is the recursive call
-  #FIX (#LAMBDA (#[0]LAMBDA {!!}))
+  #FIX (#LAMBDA (#[0]LAMBDA (#[1]SEQ (#[1]CHOOSE {!#[1]NAME r!} {!!}) {!!})))
 
 
 tabI : Term → Term

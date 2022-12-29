@@ -327,4 +327,20 @@ select++→⊎∈ {L} {A} {suc k} {x ∷ l} {l'} {t} sel = select++→⊎∈ {L}
 ... | inj₁ z = i z
 ... | inj₂ z = j z
 
+
+≡just : {l : Level} {A : Set l} {a b : A} → a ≡ b → just a ≡ just b
+≡just {l} {A} {a} {b} e rewrite e = refl
+
+
+≡pair : {l k : Level} {A : Set l} {B : Set k} {a₁ a₂ : A} {b₁ b₂ : B} → a₁ ≡ a₂ → b₁ ≡ b₂ → (a₁ , b₁) ≡ (a₂ , b₂)
+≡pair {l} {k} {A} {B} {a₁} {a₂} {b₁} {b₂} e f rewrite e | f = refl
+
+
+≤+-stepsˡ : {m n k : ℕ} (o : ℕ) → m ≤ n + k → m ≤ o + n + k
+≤+-stepsˡ {m} {n} {k} o h rewrite +-assoc o n k = ≤-stepsˡ o h
+
+
+≡suc→< : {a b : ℕ} → a ≡ suc b → b < a
+≡suc→< {a} {b} e rewrite e = ≤-refl
+
 \end{code}

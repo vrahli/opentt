@@ -147,4 +147,8 @@ startChoiceCompatible· = startChoiceCompatible N
 startNewChoiceCompatible : (r : Res) (w : 𝕎·) → compatible· (newChoice· w) (startNewChoice r w) r
 startNewChoiceCompatible r w = startChoiceCompatible· r w (newChoice· w) (¬fresh∈dom𝕎 w (names𝕎· w))
 
+
+¬newChoiceT∈dom𝕎 : (w : 𝕎·) (t : Term) → ¬ newChoiceT w t ∈ dom𝕎· w
+¬newChoiceT∈dom𝕎 w t i = ¬fresh∈dom𝕎2 w (names𝕎· w) (↓vars (names t)) i
+
 \end{code}

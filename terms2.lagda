@@ -54,16 +54,6 @@ open import newChoiceDef(W)(C)(M)(G)(N)
 open import computation(W)(C)(M)(G)(E)(N)
 
 
--- MOVE to util
-≡just : {l : Level} {A : Set l} {a b : A} → a ≡ b → just a ≡ just b
-≡just {l} {A} {a} {b} e rewrite e = refl
-
-
--- MOVE to util
-≡pair : {l k : Level} {A : Set l} {B : Set k} {a₁ a₂ : A} {b₁ b₂ : B} → a₁ ≡ a₂ → b₁ ≡ b₂ → (a₁ , b₁) ≡ (a₂ , b₂)
-≡pair {l} {k} {A} {B} {a₁} {a₂} {b₁} {b₂} e f rewrite e | f = refl
-
-
 
 shiftUp-shiftNameUp : (c d : ℕ) (t : Term)
                       → shiftUp c (shiftNameUp d t) ≡ shiftNameUp d (shiftUp c t)
@@ -1372,12 +1362,6 @@ stepsVal→ₗ a b w w' n isv comp rewrite stepsVal a w n isv = pair-inj₁ comp
 
 stepsVal→ᵣ : (a b : Term) (w w' : 𝕎·) (n : ℕ) → isValue a → steps n (a , w) ≡ (b ,  w') → w ≡ w'
 stepsVal→ᵣ a b w w' n isv comp rewrite stepsVal a w n isv = pair-inj₂ comp
-
-
-
---- MOVE to utils
-≤+-stepsˡ : {m n k : ℕ} (o : ℕ) → m ≤ n + k → m ≤ o + n + k
-≤+-stepsˡ {m} {n} {k} o h rewrite +-assoc o n k = ≤-stepsˡ o h
 
 
 

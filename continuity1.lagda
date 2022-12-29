@@ -105,12 +105,6 @@ K□ = {w : 𝕎·} {f : wPred w} → □· w f → ∀𝕎 w f
 
 
 
--- MOVE to utils
-≡suc→< : {a b : ℕ} → a ≡ suc b → b < a
-≡suc→< {a} {b} e rewrite e = ≤-refl
-
-
-
 
 -- turns 'f' into λy.(if n ≤ y then name:=ℂ₁);f(y)
 -- ℂ₀ is treated as true here (i.e., "didn't reach n"), and ℂ₁ as false (i.e., "reached at least n")
@@ -295,55 +289,6 @@ contBody F f =
 
 
 
--- MOVE to terms
-#[0]LET : CTerm0 → CTerm1 → CTerm0
-#[0]LET a b = ct0 (LET ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ [ 0 ] ] LET ⌜ a ⌝ ⌜ b ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {[ 0 ]}
-              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
-                   (lowerVars-fvars-[0,1] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm1.closed b))))
-
-
-
--- MOVE to terms
-#[1]SEQ : CTerm1 → CTerm1 → CTerm1
-#[1]SEQ a b = ct1 (SEQ ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] SEQ ⌜ a ⌝ ⌜ b ⌝
-    c rewrite fvars-SEQ0 ⌜ a ⌝ ⌜ b ⌝ =
-      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ [ 1 ]}
-             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
-                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
-
-
--- MOVE to terms
-#[1]CHOOSE : CTerm1 → CTerm1 → CTerm1
-#[1]CHOOSE a b = ct1 (CHOOSE ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] CHOOSE ⌜ a ⌝ ⌜ b ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ [ 1 ]}
-             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
-                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
-
-
--- MOVE to terms
-#[1]CS : Name → CTerm1
-#[1]CS name = ct1 (CS name) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] CS name
-    c = refl
-
-
--- MOVE to terms
-#[1]NAME : Name → CTerm1
-#[1]NAME name = ct1 (NAME name) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] NAME name
-    c = refl
-
-
-
 #updGt : (name : Name) (t : CTerm) → CTerm
 #updGt name t = ct (updGt name ⌜ t ⌝) c
   where
@@ -375,23 +320,6 @@ contBody F f =
 
 #upd≡ : (name : Name) (f : CTerm) → #upd name f ≡ #UPD name f
 #upd≡ name f = CTerm≡ refl
-
-
--- MOVE to terms
-#LET : CTerm → CTerm0 → CTerm
-#LET a b = ct (LET ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : # LET ⌜ a ⌝ ⌜ b ⌝
-    c rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b = refl
-
-
-
--- MOVE to terms
-#SUC : CTerm → CTerm
-#SUC a = ct (SUC ⌜ a ⌝) c
-  where
-    c : # SUC ⌜ a ⌝
-    c rewrite CTerm.closed a = refl
 
 
 #probeM≡ : (name : Name) (F f : CTerm) → #probeM name F f ≡ #SEQ (#APPLY F (#upd name f)) (#SUC (#get0 name))
@@ -850,15 +778,6 @@ probeM-NAT i w name F f ∈F ∈f = ≡CTerm→∈Type (sym (#probeM≡ name F f
 --}
 
 
-
-
--- MOVE to computation
-⇛→⇓from-to : {w : 𝕎·} {a b : Term}
-                 → a ⇛ b at w
-                 → Σ 𝕎· (λ w' → a ⇓ b from w to w')
-⇛→⇓from-to {w} {a} {b} comp = ⇓→from-to (lower (comp w (⊑-refl· _)))
-
-
 {--
 ¬read-upd≡ : (name : Name) (f : Term) → ¬read (upd name f) ≡ ¬read f
 ¬read-upd≡ name f = {!refl!}
@@ -1077,12 +996,6 @@ shiftNameDown-renn-shiftNameUp name F f cF cf
         | renn-shiftNameUp 0 (suc name) f
         | shiftNameDownUp 0 F
         | shiftNameDownUp 0 f = refl
-
-
-
--- MOVE to newChoiceDef
-¬newChoiceT∈dom𝕎 : (w : 𝕎·) (t : Term) → ¬ newChoiceT w t ∈ dom𝕎· w
-¬newChoiceT∈dom𝕎 w t i = ¬fresh∈dom𝕎2 w (names𝕎· w) (↓vars (names t)) i
 
 
 ⇓APPLY-upd→⇓νtestM : (cn : comp→∀ℕ) (kb : K□) (i : ℕ) (w : 𝕎·) (F f : CTerm)

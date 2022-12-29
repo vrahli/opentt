@@ -2225,4 +2225,10 @@ lift-⇓!sameℕ-trans {w} {a} {b} {c} (lift h) (lift q) = lift (⇓!sameℕ-tra
 ⇛!-trans : {w : 𝕎·} {a b c : Term} → a ⇛! b at w → b ⇛! c at w → a ⇛! c at w
 ⇛!-trans {w} {a} {b} {c} c₁ c₂ w1 e1 = lift (⇓!-trans (lower (c₁ w1 e1)) (lower (c₂ w1 e1)))
 
+
+⇛→⇓from-to : {w : 𝕎·} {a b : Term}
+                 → a ⇛ b at w
+                 → Σ 𝕎· (λ w' → a ⇓ b from w to w')
+⇛→⇓from-to {w} {a} {b} comp = ⇓→from-to (lower (comp w (⊑-refl· _)))
+
 \end{code}
