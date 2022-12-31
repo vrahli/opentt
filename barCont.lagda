@@ -71,6 +71,7 @@ open import terms4(W)(C)(K)(G)(X)(N)
 open import terms5(W)(C)(K)(G)(X)(N)
 open import terms6(W)(C)(K)(G)(X)(N)
 open import terms7(W)(C)(K)(G)(X)(N)
+open import terms8(W)(C)(K)(G)(X)(N)
 
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
@@ -186,22 +187,6 @@ EMPTY : Term
 EMPTY = PAIR (NUM 0) (LAMBDA AX)
 
 
-#[1]BTRUE : CTerm1
-#[1]BTRUE = ct1 BTRUE c
-  where
-    c : #[ 0 ∷ [ 1 ] ] BTRUE
-    c = refl
-
-
-#[1]LET : CTerm1 → CTerm2 → CTerm1
-#[1]LET a b = ct1 (LET ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] LET ⌜ a ⌝ ⌜ b ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {0 ∷ [ 1 ]}
-              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
-                   (lowerVars-fvars-[0,1,2] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm2.closed b))))
-
-
 loopF : Name → Term → Term → Term → Term
 loopF r bar R xs =
   SEQ (CHOOSE (NAME r) BTRUE) -- we start by assuming that we have enough information
@@ -218,126 +203,10 @@ loop r bar =
 
 
 #[1]generic : Name → CTerm1 → CTerm1 -- λ (l,f) i → genericI l f i
-#[1]generic r xs = #[1]LAMBDA {!!} -- (genericI r (FST xs) (SND xs) (VAR 0))
-
-
-#ITE : CTerm → CTerm → CTerm → CTerm
-#ITE a b c = ct (ITE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝) d
-  where
-    d : # ITE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝
-    d rewrite CTerm.closed a | #shiftUp 0 b | lowerVars-fvars-CTerm≡[] b | #shiftUp 0 c | lowerVars-fvars-CTerm≡[] c = refl
-
-
-fvars-ITE0 : (a b c : Term) → fvars (ITE a b c) ≡ fvars a ++ fvars b ++ fvars c
-fvars-ITE0 a b c
-  rewrite fvars-shiftUp≡ 0 b
-        | fvars-shiftUp≡ 0 c
-        | lowerVars-map-sucIf≤-suc 0 (fvars b)
-        | lowerVars-map-sucIf≤-suc 0 (fvars c)
-        | loweVars-suc (fvars b)
-        | loweVars-suc (fvars c) = refl
-
-
-#[0]ITE : CTerm0 → CTerm0 → CTerm0 → CTerm0
-#[0]ITE a b c = ct0 (ITE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝) d
-  where
-    d : #[ [ 0 ] ] ITE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝
-    d rewrite fvars-ITE0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ =
-      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝} {[ 0 ]}
-            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝}
-            (⊆?→⊆ (CTerm0.closed a))
-            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝} (⊆?→⊆ (CTerm0.closed b)) (⊆?→⊆ (CTerm0.closed c))))
-
-
-#[2]ITE : CTerm2 → CTerm2 → CTerm2 → CTerm2
-#[2]ITE a b c = ct2 (ITE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝) d
-  where
-    d : #[ 0 ∷ 1 ∷ [ 2 ] ] ITE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝
-    d rewrite fvars-ITE0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ =
-      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝} {0 ∷ 1 ∷ [ 2 ]}
-            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝}
-            (⊆?→⊆ (CTerm2.closed a))
-            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝} (⊆?→⊆ (CTerm2.closed b)) (⊆?→⊆ (CTerm2.closed c))))
-
-
-#[2]CS : Name → CTerm2
-#[2]CS name = ct2 (CS name) c
-  where
-    c : #[ 0 ∷ 1 ∷ [ 2 ] ] CS name
-    c = refl
-
-
-[0,1,2]⊆[0,1,2,3] : 0 ∷ 1 ∷ [ 2 ] ⊆ (0 ∷ 1 ∷ 2 ∷ [ 3 ])
-[0,1,2]⊆[0,1,2,3] (here refl) = here refl
-[0,1,2]⊆[0,1,2,3] (there (here refl)) = there (here refl)
-[0,1,2]⊆[0,1,2,3] (there (there (here refl))) = there (there (here refl))
-[0,1,2]⊆[0,1,2,3] (there (there (there ())))
-
-
-CTerm2→3 : CTerm2 → CTerm3
-CTerm2→3 t = ct3 ⌜ t ⌝ c
-  where
-    c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] ⌜ t ⌝
-    c = ⊆→⊆? {fvars ⌜ t ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
-              (⊆-trans (⊆?→⊆ (CTerm2.closed t)) [0,1,2]⊆[0,1,2,3])
-
-
-
-lowerVars-fvars-[0,1,2,3] : {l : List Var}
-                            → l ⊆ (0 ∷ 1 ∷ 2 ∷ [ 3 ])
-                            → lowerVars l ⊆ 0 ∷ 1 ∷ [ 2 ]
-lowerVars-fvars-[0,1,2,3] {0 ∷ l} h x = lowerVars-fvars-[0,1,2,3] (λ z → h (there z)) x
-lowerVars-fvars-[0,1,2,3] {suc x₁ ∷ l} h (here px) rewrite px = i z
-  where
-    z : suc x₁ ∈ (0 ∷ 1 ∷ 2 ∷ [ 3 ])
-    z = h (here refl)
-
-    i : suc x₁ ∈ (0 ∷ 1 ∷ 2 ∷ [ 3 ]) →  x₁ ∈ 0 ∷ 1 ∷ [ 2 ]
-    i (there (here px)) = here (suc-injective px)
-    i (there (there (here px))) = there (here (suc-injective px))
-    i (there (there (there (here px)))) = there (there (here (suc-injective px)))
-lowerVars-fvars-[0,1,2,3] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,2,3] (λ z → h (there z)) x
-
-
-#[2]LAMBDA : CTerm3 → CTerm2
-#[2]LAMBDA b = ct2 (LAMBDA ⌜ b ⌝) c
-  where
-    c : #[ 0 ∷ 1 ∷ [ 2 ] ] LAMBDA ⌜ b ⌝
-    c = ⊆→⊆? {lowerVars (fvars ⌜ b ⌝)} {0 ∷ 1 ∷ [ 2 ]}
-              (lowerVars-fvars-[0,1,2,3] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm3.closed b)))
-
-
-
-#[3]SUP : CTerm3 → CTerm3 → CTerm3
-#[3]SUP a b = ct3 (APPLY ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] SUP ⌜ a ⌝ ⌜ b ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
-             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed a))
-                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed b)))
-
-
-#[3]INL : CTerm3 → CTerm3
-#[3]INL a = ct3 (INL ⌜ a ⌝) c
-  where
-    c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] INL ⌜ a ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ } {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
-              (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed a))
-
-
-#[3]INR : CTerm3 → CTerm3
-#[3]INR a = ct3 (INR ⌜ a ⌝) c
-  where
-    c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] INR ⌜ a ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ } {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
-              (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed a))
-
-
-#[3]AX : CTerm3
-#[3]AX = ct3 AX c
-  where
-    c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] AX
-    c = refl
+#[1]generic r xs =
+  #[1]LAMBDA (#[2]SEQ (#[2]IFLT #[2]VAR0 (#[2]FST (CTerm1→2 xs)) #[2]AX (#[2]CHOOSE (#[2]NAME r) #[2]BFALSE))
+                      (#[2]APPLY (#[2]SND (CTerm1→2 xs)) #[2]VAR0))
+-- (genericI r (FST xs) (SND xs) (VAR 0))
 
 
 #[2]ETA : CTerm2 → CTerm2
@@ -348,42 +217,10 @@ lowerVars-fvars-[0,1,2,3] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,2,
 #[2]DIGAMMA f = #[2]LAMBDA (#[3]SUP (#[3]INR #[3]AX) (CTerm2→3 f))
 
 
-[0]⊆[0,1,2] : [ 0 ] ⊆ (0 ∷ 1 ∷ [ 2 ])
-[0]⊆[0,1,2] (here px) rewrite px = here refl
-
-
-[3]⊆[0,1,2,3] : [ 3 ] ⊆ (0 ∷ 1 ∷ 2 ∷ [ 3 ])
-[3]⊆[0,1,2,3] (here refl) = there (there (there (here refl)))
-
-
-#[2]VAR0 : CTerm2
-#[2]VAR0 = ct2 (VAR 0) c
-  where
-    c : #[ 0 ∷ 1 ∷ [ 2 ] ] VAR 0
-    c = ⊆→⊆? [0]⊆[0,1,2]
-
-
-#[3]VAR3 : CTerm3
-#[3]VAR3 = ct3 (VAR 3) c
-  where
-    c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] VAR 3
-    c = ⊆→⊆? [3]⊆[0,1,2,3]
-
-
-#[3]APPLY : CTerm3 → CTerm3 → CTerm3
-#[3]APPLY a b = ct3 (APPLY ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] APPLY ⌜ a ⌝ ⌜ b ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
-             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed a))
-                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed b)))
-
-
 #[3]APPEND : CTerm3 → CTerm3 → CTerm3
-#[3]APPEND a b = ct3 (APPEND ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] (APPEND ⌜ a ⌝ ⌜ b ⌝)
-    c = {!!}
+#[3]APPEND l x =
+  #[3]PAIR (#[3]SUC (#[3]FST l))
+           (#[3]LAMBDA (#[4]IFLT #[4]VAR0 (CTerm3→4 (#[3]FST l)) (#[4]APPLY (CTerm3→4 (#[3]SND l)) #[4]VAR0) (CTerm3→4 x)))
 
 
 #loop : Name →  CTerm → CTerm
@@ -395,7 +232,15 @@ lowerVars-fvars-[0,1,2,3] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,2,
     F = #[1]LET (#[1]APPLY ⌞ bar ⌟ (#[1]generic r #[1]VAR0))
                 (#[2]ITE (#[2]CS r)
                          (#[2]ETA #[2]VAR0)
-                         (#[2]DIGAMMA (#[2]LAMBDA (#[3]APPLY #[3]VAR3 (#[3]APPEND {!!} {!!})))))
+                         (#[2]DIGAMMA (#[2]LAMBDA (#[3]APPLY #[3]VAR3 (#[3]APPEND #[3]VAR2 #[3]VAR0)))))
+
+
+⌜#[1]generic⌝≡ : (r : Name) (xs : CTerm1) → ⌜ #[1]generic r xs ⌝ ≡ generic r ⌜ xs ⌝
+⌜#[1]generic⌝≡ r xs = refl
+
+
+⌜#loop⌝≡ : (r : Name) (F : CTerm) → ⌜ #loop r F ⌝ ≡ loop r ⌜ F ⌝
+⌜#loop⌝≡ r F rewrite ⌜#[1]generic⌝≡ r #[1]VAR0 = refl
 
 
 tabI : Term → Term
@@ -584,8 +429,8 @@ m2w i w A B t eqta eqtb cond h =
 -- First prove that loop belongs to CoIndBar
 coSem : (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
         → ∈Type i w #FunBar F
-        → ∈Type i w #CoIndBar {!!} --(#loop r F)
-coSem i w r F = {!!}
+        → ∈Type i w #CoIndBar (#loop r F)
+coSem i w r F j = {!!}
 
 
 --sem : (w : 𝕎·) → ∈Type i w #barThesis tab
