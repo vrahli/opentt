@@ -549,4 +549,27 @@ equalInType-M→ i w A B t u (EQTBAR x , h) =
                        → □· w' (↑wPred' (λ w'' _ → meq (equalInType i w'' A) (λ a b eqa → equalInType i w'' (sub0 a B)) w'' t u) e'))
     aw w' e' x₁ q = Mod.∀𝕎-□Func M (λ w1 e1 z _ → z) (equalInType-M→ i w' A B t u (x₁ , q))
 
+
+→equalInType-M : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
+                  → ∀𝕎 w (λ w' _ → isType i w' A)
+                  → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType i w' A a₁ a₂) → equalTypes i w' (sub0 a₁ B) (sub0 a₂ B))
+                  → □· w (λ w' _ → meq (equalInType i w' A) (λ a b eqa → equalInType i w' (sub0 a B)) w' t u)
+                  → equalInType i w (#MT A B) t u
+{-# TERMINATING #-}
+→equalInType-M i w A B t u eqta eqtb h =
+  EQTM
+    A B A B (#⇛-refl w (#MT A B)) (#⇛-refl w (#MT A B))
+    eqta (equalInTypeFam→eqTypesFam {i} {w} {A} {B} {A} {B} eqta eqtb)
+    (wPredExtIrr-eqInType eqta)
+    (wPredDepExtIrr-eqInType2 {i} {w} {A} {B} {A} {B} eqta (equalInTypeFam→eqTypesFam {i} {w} {A} {B} {A} {B} eqta eqtb))  ,
+  Mod.∀𝕎-□Func M aw h
+  where
+    aw : ∀𝕎 w (λ w' e' → meq (equalInType i w' A) (λ a b eqa → equalInType i w' (sub0 a B)) w' t u
+                        → meq (eqInType (uni i) w' (eqta w' e')) (λ a1 a2 eqa → eqInType (uni i) w' (equalInTypeFam→eqTypesFam {i} {w} {A} {B} {A} {B} eqta eqtb w' e' a1 a2 eqa)) w' t u)
+    aw w' e' q =
+      meq-ext-eq
+        (λ a b x → equalInType→eqInType refl {eqta w' e'} x)
+        (λ f g a b ea1 ea2 x → eqInType→equalInType refl (equalInTypeFam→eqTypesFam {i} {w} {A} {B} {A} {B} eqta eqtb w' e' a b ea2) x)
+        q
+
 \end{code}

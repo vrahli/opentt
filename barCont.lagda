@@ -116,11 +116,11 @@ generic r xs = LAMBDA (genericI r (FST xs) (SND xs) (VAR 0))
 
 
 FunBar : Term
-FunBar = FUN (FUN NAT NAT) NAT
+FunBar = BAIRE→NAT
 
 
 #FunBar : CTerm
-#FunBar = #FUN (#FUN #NAT #NAT) #NAT
+#FunBar = #BAIRE→NAT
 
 
 IndBarB : Term
@@ -187,6 +187,25 @@ EMPTY : Term
 EMPTY = PAIR (NUM 0) (LAMBDA AX)
 
 
+PROD : Term → Term → Term
+PROD a b = SUM a (shiftUp 0 b)
+
+
+#PROD : CTerm → CTerm → CTerm
+#PROD a b = ct (PROD ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # PROD ⌜ a ⌝ ⌜ b ⌝
+    c rewrite CTerm.closed a | #shiftUp 0 b | lowerVars-fvars-CTerm≡[] b = refl
+
+
+LIST : Term → Term
+LIST A = PROD NAT BAIRE
+
+
+#LIST : CTerm → CTerm
+#LIST A = #PROD #NAT #BAIRE
+
+
 loopF : Name → Term → Term → Term → Term
 loopF r bar R xs =
   SEQ (CHOOSE (NAME r) BTRUE) -- we start by assuming that we have enough information
@@ -202,25 +221,56 @@ loop r bar =
   FIX (LAMBDA (LAMBDA (loopF r bar (VAR 1) (VAR 0))))
 
 
+#generic : Name → CTerm → CTerm -- λ (l,f) i → genericI l f i
+#generic r xs =
+  #LAMBDA (#[0]SEQ (#[0]IFLT #[0]VAR (#[0]FST ⌞ xs ⌟) #[0]AX (#[0]CHOOSE (#[0]NAME r) #[0]BFALSE))
+                   (#[0]APPLY (#[0]SND ⌞ xs ⌟) #[0]VAR))
+
+
 #[1]generic : Name → CTerm1 → CTerm1 -- λ (l,f) i → genericI l f i
 #[1]generic r xs =
   #[1]LAMBDA (#[2]SEQ (#[2]IFLT #[2]VAR0 (#[2]FST (CTerm1→2 xs)) #[2]AX (#[2]CHOOSE (#[2]NAME r) #[2]BFALSE))
                       (#[2]APPLY (#[2]SND (CTerm1→2 xs)) #[2]VAR0))
--- (genericI r (FST xs) (SND xs) (VAR 0))
+
+
+#[0]ETA : CTerm0 → CTerm0
+#[0]ETA n = #[0]LAMBDA (#[1]SUP (#[1]INL (CTerm0→1 n)) #[1]AX)
 
 
 #[2]ETA : CTerm2 → CTerm2
 #[2]ETA n = #[2]LAMBDA (#[3]SUP (#[3]INL (CTerm2→3 n)) #[3]AX)
 
 
+#[0]DIGAMMA : CTerm0 → CTerm0
+#[0]DIGAMMA f = #[0]LAMBDA (#[1]SUP (#[1]INR #[1]AX) (CTerm0→1 f))
+
+
 #[2]DIGAMMA : CTerm2 → CTerm2
 #[2]DIGAMMA f = #[2]LAMBDA (#[3]SUP (#[3]INR #[3]AX) (CTerm2→3 f))
+
+
+#[1]APPEND : CTerm1 → CTerm1 → CTerm1
+#[1]APPEND l x =
+  #[1]PAIR (#[1]SUC (#[1]FST l))
+           (#[1]LAMBDA (#[2]IFLT #[2]VAR0 (CTerm1→2 (#[1]FST l)) (#[2]APPLY (CTerm1→2 (#[1]SND l)) #[2]VAR0) (CTerm1→2 x)))
 
 
 #[3]APPEND : CTerm3 → CTerm3 → CTerm3
 #[3]APPEND l x =
   #[3]PAIR (#[3]SUC (#[3]FST l))
            (#[3]LAMBDA (#[4]IFLT #[4]VAR0 (CTerm3→4 (#[3]FST l)) (#[4]APPLY (CTerm3→4 (#[3]SND l)) #[4]VAR0) (CTerm3→4 x)))
+
+
+#loopF : Name →  CTerm → CTerm → CTerm → CTerm
+#loopF r bar R l =
+  -- 0 is the argument (the list), and 1 is the recursive call
+  #SEQ (#CHOOSE (#NAME r) #BTRUE) F
+  where
+    F : CTerm
+    F = #LET (#APPLY bar (#generic r l))
+             (#[0]ITE (#[0]CS r)
+                      (#[0]ETA #[0]VAR)
+                      (#[0]DIGAMMA (#[0]LAMBDA (#[1]APPLY ⌞ R ⌟ (#[1]APPEND ⌞ l ⌟ #[1]VAR0)))))
 
 
 #loop : Name →  CTerm → CTerm
@@ -426,11 +476,48 @@ m2w i w A B t eqta eqtb cond h =
     aw w' e' z = m2wa i w' A B t t cond z
 
 
+{--→equalInType-meq : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (w : 𝕎·) (t1 t2 : CTerm)
+                    → t1 #⇓ (#SUP a1 f1) at w
+                    → t2 #⇓ (#SUP a2 f2) at w
+                    → meq eqa eqb w t1 t2
+--}
+
+
+#APPLY-#loop#⇛ : (r : Name) (F l : CTerm) (w : 𝕎·)
+                  → #APPLY (#loop r F) l #⇛ #loopF r F (#loop r F) l at w
+#APPLY-#loop#⇛ = ?
+
+
+-- First prove that loop belongs to CoIndBar
+coSemM : (i : ℕ) (w : 𝕎·) (r : Name) (F l : CTerm)
+         → ∈Type i w #FunBar F
+         → ∈Type i w (#LIST #BOOL) l
+         → meq (equalInType i w #IndBarB)
+                (λ a b eqa → equalInType i w (sub0 a #IndBarC))
+                w (#APPLY (#loop r F) l) (#APPLY (#loop r F) l)
+meq.meqC (coSemM i w r F l j k) = {!!}
+
+
 -- First prove that loop belongs to CoIndBar
 coSem : (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
         → ∈Type i w #FunBar F
         → ∈Type i w #CoIndBar (#loop r F)
-coSem i w r F j = {!!}
+coSem i w r F j =
+  →equalInType-M
+    i w #IndBarB #IndBarC (#loop r F) (#loop r F)
+      {!!}
+      {!!}
+      (Mod.∀𝕎-□ M aw)
+  where
+    aw : ∀𝕎 w (λ w' _ → meq (equalInType i w' #IndBarB)
+                              (λ a b eqa → equalInType i w' (sub0 a #IndBarC))
+                              w' (#loop r F) (#loop r F))
+    aw w1 e1 = m
+      where
+        m : meq (equalInType i w1 #IndBarB)
+                (λ a b eqa → equalInType i w1 (sub0 a #IndBarC))
+                w1 (#loop r F) (#loop r F)
+        m = {!!}
 
 
 --sem : (w : 𝕎·) → ∈Type i w #barThesis tab
