@@ -89,7 +89,14 @@ open import worldDef(W)
 --↑□·' {w} {f} {g} = ↑inBethBar' {w} {f} {g}
 
 
+∀𝕎-□· : {w : 𝕎·} {f : wPred w} → ∀𝕎 w f → □· w f
+∀𝕎-□· = Mod.∀𝕎-□ M
 
+
+∀𝕎-□Func· : {w : 𝕎·} {f g : wPred w}
+             → ∀𝕎 w (λ w' e' → f w' e' → g w' e')
+             → □· w f → □· w g
+∀𝕎-□Func· = Mod.∀𝕎-□Func M
 {--
 atbar : {w : 𝕎·} {f : wPred w} (i : □· w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
 --atbar = Bar.atBar b

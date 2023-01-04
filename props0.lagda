@@ -56,10 +56,10 @@ open import barI(W)(M)--(C)(K)(P)
 
 
 -- Let's try with a Kripke space
-open import barKripke(W)
-B : bar.BarsProps W
-B = K𝔹BarsProps
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(B)(E)
+--open import barKripke(W)
+--B : bar.BarsProps W
+--B = K𝔹BarsProps
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N){--(B)--}(E)
 
 \end{code}
 
@@ -75,6 +75,7 @@ impliesEqInType : (u : ℕ) {w : 𝕎·} {T a b : CTerm} → equalInType u w T a
 impliesEqInType u f = (u , f)
 
 
+{--
 -- MOVE
 ∀𝕎-□⋆ : {w : 𝕎·} {f : wPred w} → ∀𝕎 w f → □⋆ w f
 ∀𝕎-□⋆ {w} {f} h = Mod.∀𝕎-□ (BarsProps→Mod W B) h
@@ -113,11 +114,11 @@ impliesEqInType u f = (u , f)
             → □'⋆ w i g → □⋆ w h
 ∀𝕎-□'-□⋆ {w} {f} {g} {h} i j q = Mod.∀𝕎-□'-□ (BarsProps→Mod W B) i j q
 {-# INLINE ∀𝕎-□'-□⋆ #-}
-
+--}
 
 
 univ□· : (n : ℕ) (w : 𝕎·) → eqUnivi n w (#UNIV n) (#UNIV n)
-univ□· n w =  ∀𝕎-□⋆ λ w1 e1 → compAllRefl (UNIV n) w1 , compAllRefl (UNIV n) w1
+univ□· n w =  ∀𝕎-□· λ w1 e1 → compAllRefl (UNIV n) w1 , compAllRefl (UNIV n) w1
 
 lemma1 : (w : 𝕎·) → equalTypes 1 w (#UNIV 0) (#UNIV 0)
 lemma1 w = EQTUNIV 0 ≤-refl (compAllRefl (UNIV 0) w) (compAllRefl (UNIV 0) w)
@@ -132,7 +133,7 @@ lemma4 : (w : 𝕎·) → eqtypes w (#UNIV 1) (#UNIV 1)
 lemma4 w = impliesEqTypes 2 (lemma3 w)
 
 lemma5 : (w : 𝕎·) → equalInType 2 w (#UNIV 1) (#UNIV 0) (#UNIV 0)
-lemma5 w = (lemma3 w , ∀𝕎-□⋆ (λ w' e → lemma1 w'))
+lemma5 w = (lemma3 w , ∀𝕎-□· (λ w' e → lemma1 w'))
 
 lemma6 : (w : 𝕎·) → eqintype w (#UNIV 1) (#UNIV 0) (#UNIV 0)
 lemma6 w = impliesEqInType 2 (lemma5 w)
@@ -406,7 +407,7 @@ eqTypes-mon u {A} {B} {w1} (EQTLIFT A1 A2 c₁ c₂ eqtA exta) w2 ext =
     exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType (↓U u) w (∀𝕎-mon ext eqtA w e) a b)
     exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
 
-eqTypes-mon u {A} {B} {w1} (EQTBAR x) w2 ext = EQTBAR (↑□⋆ x ext)
+eqTypes-mon u {A} {B} {w1} (EQTBAR x) w2 ext = EQTBAR (↑□· x ext)
 
 
 
@@ -474,6 +475,7 @@ if-equalInType-EQ-test u w T a b t₁ t₂ (EQTBAR x) eqi =
 --}
 
 
+{--
 {-# INLINE bar.Σ∈𝔹 #-}
 {-# INLINE bar.Σ∈𝔹' #-}
 {-# INLINE bar.↑Σ∈𝔹 #-}
@@ -500,7 +502,7 @@ if-equalInType-EQ-test u w T a b t₁ t₂ (EQTBAR x) eqi =
 if-equalInType-EQ2 : (u : ℕ) (w : 𝕎·) (T a b t₁ t₂ : CTerm)
                     → (p : isType u w (#EQ a b T))
                     → (eqi : equalTerms u w p t₁ t₂)
-                    → □⋆ w (λ w' e' → equalInType u w' T a b)
+                    → □· w (λ w' e' → equalInType u w' T a b)
 {-# INLINE □· #-}
 --{-# TERMINATING #-}
 if-equalInType-EQ2 u w T a b t₁ t₂ (EQTNAT x x₁) eqi = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
@@ -517,7 +519,7 @@ if-equalInType-EQ2 u w T a b t₁ t₂ (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb e
 if-equalInType-EQ2 u w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2) eqi
   rewrite #EQinj1 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj2 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj3 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)
         | #EQinj1 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj2 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj3 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) =
-  ∀𝕎-□Func⋆
+  ∀𝕎-□Func·
     (λ w1 e1 eqi1 → eqtA w1 e1 , eqi1)
     eqi
 if-equalInType-EQ2 u w T a b t₁ t₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) eqi = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
@@ -542,15 +544,14 @@ if-equalInType-EQ2 u w T a b t₁ t₂ (EQTBAR (x , i)) eqi =
                 (x₁ : eqTypes (uni u) w' (#EQ a b T) (#EQ a b T))
                 {--(at : atbar x w' e' x₁)--}
                 → eqInType (uni u) w' x₁ t₁ t₂
-                → □⋆ w' (↑wPred' (λ w'' e → equalInType u w'' T a b) e'))
+                → □· w' (↑wPred' (λ w'' e → equalInType u w'' T a b) e'))
     aw w1 e1 eqt1 {--at--} eqi1 = ∀𝕎-□Func⋆ (λ w' e' x z → x) ind
       where
-        ind : □⋆ w1 (λ w' e' → equalInType u w' T a b)
+        ind : □· w1 (λ w' e' → equalInType u w' T a b)
         ind = if-equalInType-EQ2 u w1 T a b t₁ t₂ eqt1 eqi1
+--}
 
 
-
-\end{code}
 
 {--
   NOTE:
@@ -560,9 +561,9 @@ if-equalInType-EQ2 u w T a b t₁ t₂ (EQTBAR (x , i)) eqi =
  --}
 if-equalInType-EQ : (u : ℕ) (w : 𝕎·) (T a b t₁ t₂ : CTerm)
                     → equalInType u w (#EQ a b T) t₁ t₂
-                    → □⋆ w (λ w' e' → equalInType u w' T a b)
+                    → □· w (λ w' e' → equalInType u w' T a b)
 {-# INLINE □· #-}
---{-# TERMINATING #-}
+{-# TERMINATING #-}
 if-equalInType-EQ u w T a b t₁ t₂ (EQTNAT x x₁ , eqi) = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTQNAT x x₁ , eqi) = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTTNAT x x₁ , eqi) = ⊥-elim (EQneqTNAT (compAllVal x₁ tt))
@@ -577,7 +578,7 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb ex
 if-equalInType-EQ u w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2 , eqi)
   rewrite #EQinj1 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj2 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj3 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)
         | #EQinj1 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj2 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj3 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) =
-  ∀𝕎-□Func⋆
+  ∀𝕎-□Func·
     (λ w1 e1 eqi1 → eqtA w1 e1 , eqi1)
     eqi
 if-equalInType-EQ u w T a b t₁ t₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
@@ -595,17 +596,17 @@ if-equalInType-EQ u w T a b t₁ t₂ (EQTUNIV i p c₁ c₂ , eqi) = ⊥-elim (
     z2 w' e' (c₁ , c₂) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt))--}
 if-equalInType-EQ u w T a b t₁ t₂ (EQTLIFT A1 A2 c1 c2 eqtA exta , eqi) = ⊥-elim (EQneqLIFT (compAllVal c2 tt))
 if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
-  □-idem⋆ (∀𝕎-□'-□⋆ x aw eqi)
+  Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
   where
     aw : ∀𝕎 w
               (λ w' e' →
                 (x₁ : eqTypes (uni u) w' (#EQ a b T) (#EQ a b T))
                 {--(at : atbar x w' e' x₁)--}
                 → eqInType (uni u) w' x₁ t₁ t₂
-                → □⋆ w' (↑wPred' (λ w'' e → equalInType u w'' T a b) e'))
-    aw w1 e1 eqt1 {--at--} eqi1 = ∀𝕎-□Func⋆ (λ w' e' x z → x) ind
+                → □· w' (↑wPred' (λ w'' e → equalInType u w'' T a b) e'))
+    aw w1 e1 eqt1 {--at--} eqi1 = ∀𝕎-□Func· (λ w' e' x z → x) ind
       where
-        ind : □⋆ w1 (λ w' e' → equalInType u w' T a b)
+        ind : □· w1 (λ w' e' → equalInType u w' T a b)
         ind = if-equalInType-EQ u w1 T a b t₁ t₂ (eqt1 , eqi1)
 
 
