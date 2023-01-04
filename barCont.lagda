@@ -648,4 +648,22 @@ coSem i w r F j =
 --sem w  ?
 
 
+{--
+
+Plan:
+
+(1) Prove by coinduction that if (F ∈ FunBar) then (loop r F ∈ CoIndBar) which does not require to proving termination
+    - see coSem, which will use coSemM
+(2) We now have an inhabitant (t ∈ CoIndBar). Using classical logic, either t's paths are all finite,
+    or it has an inifite path.
+(3) If all its paths are finite then we get that (t ∈ IndBar)
+    - see m2w
+(4) If it has an inifite path:
+    - That path corresponds to an (α ∈ Baire).
+    - Given (F ∈ FunBar), by continuity let n by F's modulus of continuity w.r.t. α.
+    - So, it must be that F(generic r α|n) returns r:=BTRUE and so loop returns ETA, and the path cannot be infinite
+          (where α|n is the initial segment of α of length n)
+
+ --}
+
 \end{code}
