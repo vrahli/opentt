@@ -345,8 +345,8 @@ QTUNIONeq eqa eqb w t1 t2  =
 data weq (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (w : 𝕎·) (t1 t2 : CTerm) : Set(lsuc(L))
 data weq eqa eqb w t1 t2 where
   weqC : (a1 f1 a2 f2 : CTerm) (e : eqa a1 a2)
-             → t1 #⇓ (#SUP a1 f1) at w
-             → t2 #⇓ (#SUP a2 f2) at w
+             → t1 #⇛ (#SUP a1 f1) at w
+             → t2 #⇛ (#SUP a2 f2) at w
              → ((b1 b2 : CTerm) → eqb a1 a2 e b1 b2 → weq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))
              → weq eqa eqb w t1 t2
 
@@ -360,8 +360,8 @@ record meq eqa eqb w t1 t2 where
   coinductive
   field
     meqC : Σ CTerm (λ a1 → Σ CTerm (λ f1 → Σ CTerm (λ a2 → Σ CTerm (λ f2 → Σ  (eqa a1 a2) (λ e →
-           t1 #⇓ (#SUP a1 f1) at w
-           × t2 #⇓ (#SUP a2 f2) at w
+           t1 #⇛ (#SUP a1 f1) at w
+           × t2 #⇛ (#SUP a2 f2) at w
            × ((b1 b2 : CTerm) → eqb a1 a2 e b1 b2 → meq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2)))))))
 --             → meq eqa eqb w t1 t2
 

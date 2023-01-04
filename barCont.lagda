@@ -112,7 +112,7 @@ genericI r k f i =
 
 
 generic : Name → Term → Term -- λ (l,f) i → genericI l f i
-generic r xs = LAMBDA (genericI r (FST xs) (SND xs) (VAR 0))
+generic r xs = LAMBDA (genericI r (FST (shiftUp 0 xs)) (SND (shiftUp 0 xs)) (VAR 0))
 
 
 FunBar : Term
@@ -160,11 +160,11 @@ CoIndBar = MT IndBarB IndBarC
 
 
 ETA : Term → Term
-ETA n = LAMBDA (SUP (INL n) AX)
+ETA n = LAMBDA (SUP (INL (shiftUp 0 n)) AX)
 
 
 DIGAMMA : Term → Term
-DIGAMMA f = LAMBDA (SUP (INR AX) f)
+DIGAMMA f = LAMBDA (SUP (INR AX) (shiftUp 0 f))
 
 
 barThesis : Term
@@ -173,7 +173,7 @@ barThesis = FUN FunBar IndBar
 
 -- appends a new value
 APPEND : Term → Term → Term
-APPEND l x = PAIR (SUC k) (LAMBDA (IFLT (VAR 0) k (APPLY f (VAR 0)) x))
+APPEND l x = PAIR (SUC k) (LAMBDA (IFLT (VAR 0) (shiftUp 0 k) (APPLY (shiftUp 0 f) (VAR 0)) (shiftUp 0 x)))
   where
     k : Term
     k = FST l
@@ -215,50 +215,60 @@ loopF r bar R xs =
                 (DIGAMMA (LAMBDA (APPLY (shiftUp 0 (shiftUp 0 R)) (APPEND (shiftUp 0 (shiftUp 0 xs)) (VAR 0)))))))
 
 
-loop : Name →  Term → Term
-loop r bar =
+loopL : Name →  Term → Term
+loopL r bar =
   -- 0 is the argument (the list), and 1 is the recursive call
-  FIX (LAMBDA (LAMBDA (loopF r bar (VAR 1) (VAR 0))))
+  LAMBDA (LAMBDA (loopF r bar (VAR 1) (VAR 0)))
+
+
+loop : Name →  Term → Term
+loop r bar = FIX (loopL r bar)
 
 
 #generic : Name → CTerm → CTerm -- λ (l,f) i → genericI l f i
 #generic r xs =
-  #LAMBDA (#[0]SEQ (#[0]IFLT #[0]VAR (#[0]FST ⌞ xs ⌟) #[0]AX (#[0]CHOOSE (#[0]NAME r) #[0]BFALSE))
-                   (#[0]APPLY (#[0]SND ⌞ xs ⌟) #[0]VAR))
+  #LAMBDA (#[0]SEQ (#[0]IFLT #[0]VAR (#[0]FST (#[0]shiftUp0 xs)) #[0]AX (#[0]CHOOSE (#[0]NAME r) #[0]BFALSE))
+                   (#[0]APPLY (#[0]SND (#[0]shiftUp0 xs)) #[0]VAR))
 
 
 #[1]generic : Name → CTerm1 → CTerm1 -- λ (l,f) i → genericI l f i
 #[1]generic r xs =
-  #[1]LAMBDA (#[2]SEQ (#[2]IFLT #[2]VAR0 (#[2]FST (CTerm1→2 xs)) #[2]AX (#[2]CHOOSE (#[2]NAME r) #[2]BFALSE))
-                      (#[2]APPLY (#[2]SND (CTerm1→2 xs)) #[2]VAR0))
+  #[1]LAMBDA (#[2]SEQ (#[2]IFLT #[2]VAR0 (#[2]FST (#[2]shiftUp0 xs)) #[2]AX (#[2]CHOOSE (#[2]NAME r) #[2]BFALSE))
+                      (#[2]APPLY (#[2]SND (#[2]shiftUp0 xs)) #[2]VAR0))
 
 
 #[0]ETA : CTerm0 → CTerm0
-#[0]ETA n = #[0]LAMBDA (#[1]SUP (#[1]INL (CTerm0→1 n)) #[1]AX)
+#[0]ETA n = #[0]LAMBDA (#[1]SUP (#[1]INL (#[1]shiftUp0 n)) #[1]AX)
 
 
 #[2]ETA : CTerm2 → CTerm2
-#[2]ETA n = #[2]LAMBDA (#[3]SUP (#[3]INL (CTerm2→3 n)) #[3]AX)
+#[2]ETA n = #[2]LAMBDA (#[3]SUP (#[3]INL (#[3]shiftUp0 n)) #[3]AX)
 
 
 #[0]DIGAMMA : CTerm0 → CTerm0
-#[0]DIGAMMA f = #[0]LAMBDA (#[1]SUP (#[1]INR #[1]AX) (CTerm0→1 f))
+#[0]DIGAMMA f = #[0]LAMBDA (#[1]SUP (#[1]INR #[1]AX) (#[1]shiftUp0 f))
 
 
 #[2]DIGAMMA : CTerm2 → CTerm2
-#[2]DIGAMMA f = #[2]LAMBDA (#[3]SUP (#[3]INR #[3]AX) (CTerm2→3 f))
+#[2]DIGAMMA f = #[2]LAMBDA (#[3]SUP (#[3]INR #[3]AX) (#[3]shiftUp0 f))
 
 
 #[1]APPEND : CTerm1 → CTerm1 → CTerm1
 #[1]APPEND l x =
   #[1]PAIR (#[1]SUC (#[1]FST l))
-           (#[1]LAMBDA (#[2]IFLT #[2]VAR0 (CTerm1→2 (#[1]FST l)) (#[2]APPLY (CTerm1→2 (#[1]SND l)) #[2]VAR0) (CTerm1→2 x)))
+           (#[1]LAMBDA (#[2]IFLT #[2]VAR0
+                                 (#[2]shiftUp0 (#[1]FST l))
+                                 (#[2]APPLY (#[2]shiftUp0 (#[1]SND l)) #[2]VAR0)
+                                 (#[2]shiftUp0 x)))
 
 
 #[3]APPEND : CTerm3 → CTerm3 → CTerm3
 #[3]APPEND l x =
   #[3]PAIR (#[3]SUC (#[3]FST l))
-           (#[3]LAMBDA (#[4]IFLT #[4]VAR0 (CTerm3→4 (#[3]FST l)) (#[4]APPLY (CTerm3→4 (#[3]SND l)) #[4]VAR0) (CTerm3→4 x)))
+           (#[3]LAMBDA (#[4]IFLT #[4]VAR0
+                                 (#[4]shiftUp0 (#[3]FST l))
+                                 (#[4]APPLY (#[4]shiftUp0 (#[3]SND l)) #[4]VAR0)
+                                 (#[4]shiftUp0 x)))
 
 
 #loopF : Name →  CTerm → CTerm → CTerm → CTerm
@@ -270,7 +280,8 @@ loop r bar =
     F = #LET (#APPLY bar (#generic r l))
              (#[0]ITE (#[0]CS r)
                       (#[0]ETA #[0]VAR)
-                      (#[0]DIGAMMA (#[0]LAMBDA (#[1]APPLY ⌞ R ⌟ (#[1]APPEND ⌞ l ⌟ #[1]VAR0)))))
+                      (#[0]DIGAMMA (#[0]LAMBDA (#[1]APPLY (#[1]shiftUp0 (#[0]shiftUp0 R))
+                                                          (#[1]APPEND (#[1]shiftUp0 (#[0]shiftUp0 l)) #[1]VAR0)))))
 
 
 #loop : Name →  CTerm → CTerm
@@ -285,12 +296,19 @@ loop r bar =
                          (#[2]DIGAMMA (#[2]LAMBDA (#[3]APPLY #[3]VAR3 (#[3]APPEND #[3]VAR2 #[3]VAR0)))))
 
 
+-- sanity checking
 ⌜#[1]generic⌝≡ : (r : Name) (xs : CTerm1) → ⌜ #[1]generic r xs ⌝ ≡ generic r ⌜ xs ⌝
 ⌜#[1]generic⌝≡ r xs = refl
 
 
+-- sanity checking
 ⌜#loop⌝≡ : (r : Name) (F : CTerm) → ⌜ #loop r F ⌝ ≡ loop r ⌜ F ⌝
-⌜#loop⌝≡ r F rewrite ⌜#[1]generic⌝≡ r #[1]VAR0 = refl
+⌜#loop⌝≡ r F = refl
+
+
+-- sanity checking
+⌜#loopF⌝≡ : (r : Name) (F R l : CTerm) → ⌜ #loopF r F R l ⌝ ≡ loopF r ⌜ F ⌝ ⌜ R ⌝ ⌜ l ⌝
+⌜#loopF⌝≡ r F R l = refl
 
 
 tabI : Term → Term
@@ -344,19 +362,19 @@ shiftPath {i} {A} {B} p k = p (suc k)
 
 
 -- Defines what it means for a path to be correct w.r.t. a W or M type -- up to n (with fuel)
-correctPathN : {i : ℕ} {A : CTerm} {B : CTerm0} (t : CTerm) (p : path i A B) (n : ℕ) → Set
-correctPathN {i} {A} {B} t p 0 = ⊤
+correctPathN : {i : ℕ} {A : CTerm} {B : CTerm0} (t : CTerm) (p : path i A B) (n : ℕ) → Set(lsuc L)
+correctPathN {i} {A} {B} t p 0 = Lift (lsuc L) ⊤
 correctPathN {i} {A} {B} t p (suc n) with p 0
 ... | inj₁ (w , a , b , ia , ib) =
   Σ CTerm (λ x → Σ CTerm (λ f →
-    t #⇓ #SUP x f at w -- For W types
+    t #⇛ #SUP x f at w -- For W types
     × x ≡ a
     × correctPathN {i} {A} {B} (#APPLY f b) (shiftPath {i} {A} {B} p) n))
-... | inj₂ _ = ⊤
+... | inj₂ _ = Lift (lsuc L) ⊤
 
 
 -- A path is correct, if it is so for all ℕs
-correctPath : {i : ℕ} {A : CTerm} {B : CTerm0} (t : CTerm) (p : path i A B) → Set
+correctPath : {i : ℕ} {A : CTerm} {B : CTerm0} (t : CTerm) (p : path i A B) → Set(lsuc L)
 correctPath {i} {A} {B} t p = (n : ℕ) → correctPathN {i} {A} {B} t p n
 
 
@@ -365,8 +383,8 @@ record branch eqa eqb w t1 t2 where
   coinductive
   field
     branchC : Σ CTerm (λ a1 → Σ CTerm (λ f1 → Σ CTerm (λ b1 → Σ CTerm (λ a2 → Σ CTerm (λ f2 → Σ CTerm (λ b2 → Σ (eqa a1 a2) (λ e →
-               t1 #⇓ (#SUP a1 f1) at w
-               × t2 #⇓ (#SUP a2 f2) at w
+               t1 #⇛ (#SUP a1 f1) at w
+               × t2 #⇛ (#SUP a2 f2) at w
                × eqb a1 a2 e b1 b2
                × branch eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))))))))
 
@@ -410,7 +428,7 @@ correctN-mb2path : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
                    (b : branch (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u)
                    (n : ℕ)
                    → correctPathN {i} {A} {B} t (mb2path i w A B t u b) n
-correctN-mb2path i w A B t u b 0 = tt
+correctN-mb2path i w A B t u b 0 = lift tt
 correctN-mb2path i w A B t u b (suc n) with branch.branchC b
 ... | (a1 , f1 , b1 , a2 , f2 , b2 , ea , c1 , c2 , eb , q) =
   a1 , f1 , c1 , refl , correctN-mb2path i w A B (#APPLY f1 b1) (#APPLY f2 b2) q n
@@ -432,6 +450,17 @@ inf-mb2path i w A B t u b (suc n) with branch.branchC b
 ... |    k with mb2path i w A B (#APPLY f1 b1) (#APPLY f2 b2) q n
 ... |       inj₁ x = tt
 ... |       inj₂ x = k
+
+
+data compatMW (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (w : 𝕎·) (t1 t2 : CTerm)
+              : meq eqa eqb w t1 t2 → weq eqa eqb w t1 t2 → Set
+data compatMW eqa eqb w t1 t2 where
+  compMWC : (a1 f1 a2 f2 : CTerm) (ea : eqa a1 a2)
+            (c1 : t1 #⇛ (#SUP a1 f1) at w)
+            (c2 : t2 #⇛ (#SUP a2 f2) at w)
+            (eb : (b1 b2 : CTerm) → eqb a1 a2 ea b1 b2 → weq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))
+            (m : meq eqa eqb w t1 t2) -- get rid of that + induction
+            → compatMW eqa eqb w t1 t2 m {--(meq.meqC (a1 , f1 , a2 , f2 , ? , c1 , c2 , ?))--} (weq.weqC a1 f1 a2 f2 ea c1 c2 eb)
 
 
 -- Classically, we can derive a weq from an meq as follows
@@ -483,9 +512,104 @@ m2w i w A B t eqta eqtb cond h =
 --}
 
 
-#APPLY-#loop#⇛ : (r : Name) (F l : CTerm) (w : 𝕎·)
-                  → #APPLY (#loop r F) l #⇛ #loopF r F (#loop r F) l at w
-#APPLY-#loop#⇛ = ?
+sub-LAMBDA-loopF≡ : (r : Name) (F : Term) (cF : # F)
+                    → sub (loop r F) (LAMBDA (loopF r F (VAR 1) (VAR 0)))
+                       ≡ LAMBDA (loopF r F (loop r F) (VAR 0))
+sub-LAMBDA-loopF≡ r F cF
+  rewrite #subv 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 (loop r F)))) (shiftUp 0 F) (→#shiftUp 0 {F} cF)
+        | #shiftUp 0 (ct F cF)
+        | #shiftDown 2 (ct F cF)
+        | #shiftUp 3 (ct F cF)
+        | #shiftUp 3 (ct F cF)
+        | #shiftUp 3 (ct F cF)
+        | #shiftUp 3 (ct F cF)
+        | #shiftUp 3 (ct F cF)
+        | #shiftUp 3 (ct F cF)
+        | #shiftUp 3 (ct F cF)
+        | #shiftUp 4 (ct F cF)
+        | #shiftUp 5 (ct F cF)
+        | #shiftUp 7 (ct F cF)
+        | #shiftDown 9 (ct F cF)
+  = refl
+
+
+sub-loopF≡ : (r : Name) (F l : Term) (cF : # F) (cl : # l)
+             → sub l (loopF r F (loop r F) (VAR 0))
+                ≡ loopF r F (loop r F) l
+sub-loopF≡ r F l cF cl
+  rewrite #subv 1 (shiftUp 0 (shiftUp 0 l)) (shiftUp 0 F) (→#shiftUp 0 {F} cF)
+        | #shiftUp 0 (ct F cF)
+        | #shiftDown 1 (ct F cF)
+        | #shiftUp 0 (ct l cl)
+        | #shiftUp 0 (ct l cl)
+        | #shiftUp 0 (ct l cl)
+        | #shiftUp 0 (ct l cl)
+        | #shiftUp 1 (ct l cl)
+        | #shiftUp 2 (ct l cl)
+        | #shiftDown 2 (ct l cl)
+        | #shiftDown 3 (ct l cl)
+        | #shiftUp 0 (ct l cl)
+        | #shiftUp 0 (ct l cl)
+        | #shiftUp 0 (ct l cl)
+        | #shiftDown 5 (ct l cl)
+        | #shiftDown 6 (ct l cl)
+        | #shiftUp 3 (ct l cl)
+        | #shiftUp 5 (ct l cl)
+        | #shiftUp 4 (ct l cl)
+        | #shiftUp 0 (ct l cl)
+        | #shiftUp 0 (ct l cl)
+        | #shiftUp 3 (ct F cF)
+        | #shiftUp 3 (ct F cF)
+        | #shiftUp 4 (ct F cF)
+        | #shiftUp 5 (ct F cF)
+        | #shiftUp 7 (ct F cF)
+        | #subv 8 l F cF
+        | #shiftDown 8 (ct F cF)
+  = refl
+
+
+APPLY-loop⇓! : (r : Name) (F l : Term) (w : 𝕎·) (cF : # F) (cl : # l)
+                → APPLY (loop r F) l ⇓! loopF r F (loop r F) l at w
+APPLY-loop⇓! r F l w cF cl =
+  step-⇓-from-to-trans
+    {w} {w} {w}
+    {APPLY (loop r F) l}
+    {APPLY (LAMBDA (loopF r F (loop r F) (VAR 0))) l}
+    {loopF r F (loop r F) l}
+    c1
+    (step-⇓-from-to-trans
+      {w} {w} {w}
+      {APPLY (LAMBDA (loopF r F (loop r F) (VAR 0))) l}
+      {loopF r F (loop r F) l}
+      {loopF r F (loop r F) l}
+      c2
+      (0 , refl))
+  where
+    c1 : ret (APPLY (sub (loop r F) (LAMBDA (loopF r F (VAR 1) (VAR 0)))) l) w
+         ≡ just (APPLY (LAMBDA (loopF r F (loop r F) (VAR 0))) l , w)
+    c1 rewrite sub-LAMBDA-loopF≡ r F cF = refl
+
+    c2 : ret (sub l (loopF r F (loop r F) (VAR 0))) w
+         ≡ just (loopF r F (loop r F) l , w)
+    c2 rewrite sub-loopF≡ r F l cF cl = refl
+
+
+-- sanity checking
+⌜APPLY-loop⌝≡ : (r : Name) (F l : CTerm) → ⌜ #APPLY (#loop r F) l ⌝ ≡ APPLY (loop r ⌜ F ⌝) ⌜ l ⌝
+⌜APPLY-loop⌝≡ r F l = refl
+
+
+-- sanity checking
+⌜loopF-loop⌝≡ : (r : Name) (F l : CTerm) → ⌜ #loopF r F (#loop r F) l ⌝ ≡ loopF r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝
+⌜loopF-loop⌝≡ r F l rewrite ⌜#loop⌝≡ r F = refl
+
+
+#APPLY-#loop#⇛! : (r : Name) (F l : CTerm) (w : 𝕎·)
+                   → #APPLY (#loop r F) l #⇛! #loopF r F (#loop r F) l at w
+#APPLY-#loop#⇛! r F l w w1 e1 = lift c
+  where
+    c : ⌜ #APPLY (#loop r F) l ⌝ ⇓! ⌜ #loopF r F (#loop r F) l ⌝ at w1
+    c  = APPLY-loop⇓! r ⌜ F ⌝ ⌜ l ⌝ w1 (CTerm.closed F) (CTerm.closed l)
 
 
 -- First prove that loop belongs to CoIndBar

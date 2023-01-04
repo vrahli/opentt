@@ -53,6 +53,7 @@ open import choiceExtDef(W)(C)(M)(G)(E)
 open import newChoiceDef(W)(C)(M)(G)(N)
 open import computation(W)(C)(M)(G)(E)(N)
 open import terms2(W)(C)(M)(G)(E)(N)
+open import terms3(W)(C)(M)(G)(E)(N)
 
 
 
@@ -743,5 +744,131 @@ CTerm3→4 t = ct4 ⌜ t ⌝ c
     c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] ] ⌜ t ⌝
     c = ⊆→⊆? {fvars ⌜ t ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]}
               (⊆-trans (⊆?→⊆ (CTerm3.closed t)) [0,1,2,3]⊆[0,1,2,3,4])
+
+
+#[0]shiftUp0 : CTerm → CTerm0
+#[0]shiftUp0 t = ct0 (shiftUp 0 ⌜ t ⌝) c
+  where
+    c : #[ [ 0 ] ] (shiftUp 0 ⌜ t ⌝)
+    c rewrite fvars-shiftUp≡ 0 ⌜ t ⌝ | CTerm.closed t = refl
+
+
+#[1]shiftUp0 : CTerm0 → CTerm1
+#[1]shiftUp0 t = ct1 (shiftUp 0 ⌜ t ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] (shiftUp 0 ⌜ t ⌝)
+    c rewrite fvars-shiftUp≡ 0  ⌜ t ⌝ =
+      ⊆→⊆? {Data.List.map (sucIf≤ 0) (fvars ⌜ t ⌝)} {0 ∷ [ 1 ]} s
+      where
+        s : Data.List.map (sucIf≤ 0) (fvars (CTerm0.cTerm t)) ⊆ 0 ∷ [ 1 ]
+        s {x} i = k
+          where
+            y : Var
+            y = fst (∈-map⁻ (sucIf≤ 0) i)
+
+            j : y ∈ fvars ⌜ t ⌝
+            j = fst (snd (∈-map⁻ (sucIf≤ 0) i))
+
+            e : x ≡ sucIf≤ 0 y
+            e = snd (snd (∈-map⁻ (sucIf≤ 0) i))
+
+            w : y ≡ 0
+            w = ∈[1] {Var} {y} {0} (⊆?→⊆ (CTerm0.closed t) {y} j)
+
+            k : x ∈ 0 ∷ [ 1 ]
+            k rewrite e | sym (suc≡sucIf≤0 y) | w = there (here refl)
+
+
+#[2]shiftUp0 : CTerm1 → CTerm2
+#[2]shiftUp0 t = ct2 (shiftUp 0 ⌜ t ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] (shiftUp 0 ⌜ t ⌝)
+    c rewrite fvars-shiftUp≡ 0  ⌜ t ⌝ =
+      ⊆→⊆? {Data.List.map (sucIf≤ 0) (fvars ⌜ t ⌝)} {0 ∷ 1 ∷ [ 2 ]} s
+      where
+        s : Data.List.map (sucIf≤ 0) (fvars (CTerm1.cTerm t)) ⊆ 0 ∷ 1 ∷ [ 2 ]
+        s {x} i = k
+          where
+            y : Var
+            y = fst (∈-map⁻ (sucIf≤ 0) i)
+
+            j : y ∈ fvars ⌜ t ⌝
+            j = fst (snd (∈-map⁻ (sucIf≤ 0) i))
+
+            e : x ≡ sucIf≤ 0 y
+            e = snd (snd (∈-map⁻ (sucIf≤ 0) i))
+
+            w : y ∈ 0 ∷ [ 1 ]
+            w = ⊆?→⊆ (CTerm1.closed t) {y} j
+
+            z : y ∈ 0 ∷ [ 1 ] → suc y ∈ 0 ∷ 1 ∷ [ 2 ]
+            z (here px) rewrite px = there (here refl)
+            z (there (here px)) rewrite px = there (there (here refl))
+
+            k : x ∈ 0 ∷ 1 ∷ [ 2 ]
+            k rewrite e | sym (suc≡sucIf≤0 y) = z w
+
+
+#[3]shiftUp0 : CTerm2 → CTerm3
+#[3]shiftUp0 t = ct3 (shiftUp 0 ⌜ t ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] (shiftUp 0 ⌜ t ⌝)
+    c rewrite fvars-shiftUp≡ 0  ⌜ t ⌝ =
+      ⊆→⊆? {Data.List.map (sucIf≤ 0) (fvars ⌜ t ⌝)} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} s
+      where
+        s : Data.List.map (sucIf≤ 0) (fvars (CTerm2.cTerm t)) ⊆ 0 ∷ 1 ∷ 2 ∷ [ 3 ]
+        s {x} i = k
+          where
+            y : Var
+            y = fst (∈-map⁻ (sucIf≤ 0) i)
+
+            j : y ∈ fvars ⌜ t ⌝
+            j = fst (snd (∈-map⁻ (sucIf≤ 0) i))
+
+            e : x ≡ sucIf≤ 0 y
+            e = snd (snd (∈-map⁻ (sucIf≤ 0) i))
+
+            w : y ∈ 0 ∷ 1 ∷ [ 2 ]
+            w = ⊆?→⊆ (CTerm2.closed t) {y} j
+
+            z : y ∈ 0 ∷ 1 ∷ [ 2 ] → suc y ∈ 0 ∷ 1 ∷ 2 ∷ [ 3 ]
+            z (here px) rewrite px = there (here refl)
+            z (there (here px)) rewrite px = there (there (here refl))
+            z (there (there (here px))) rewrite px = there (there (there (here refl)))
+
+            k : x ∈ 0 ∷ 1 ∷ 2 ∷ [ 3 ]
+            k rewrite e | sym (suc≡sucIf≤0 y) = z w
+
+
+#[4]shiftUp0 : CTerm3 → CTerm4
+#[4]shiftUp0 t = ct4 (shiftUp 0 ⌜ t ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] ] (shiftUp 0 ⌜ t ⌝)
+    c rewrite fvars-shiftUp≡ 0  ⌜ t ⌝ =
+      ⊆→⊆? {Data.List.map (sucIf≤ 0) (fvars ⌜ t ⌝)} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]} s
+      where
+        s : Data.List.map (sucIf≤ 0) (fvars (CTerm3.cTerm t)) ⊆ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]
+        s {x} i = k
+          where
+            y : Var
+            y = fst (∈-map⁻ (sucIf≤ 0) i)
+
+            j : y ∈ fvars ⌜ t ⌝
+            j = fst (snd (∈-map⁻ (sucIf≤ 0) i))
+
+            e : x ≡ sucIf≤ 0 y
+            e = snd (snd (∈-map⁻ (sucIf≤ 0) i))
+
+            w : y ∈ 0 ∷ 1 ∷ 2 ∷ [ 3 ]
+            w = ⊆?→⊆ (CTerm3.closed t) {y} j
+
+            z : y ∈ 0 ∷ 1 ∷ 2 ∷ [ 3 ] → suc y ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]
+            z (here px) rewrite px = there (here refl)
+            z (there (here px)) rewrite px = there (there (here refl))
+            z (there (there (here px))) rewrite px = there (there (there (here refl)))
+            z (there (there (there (here px)))) rewrite px = there (there (there (there (here refl))))
+
+            k : x ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]
+            k rewrite e | sym (suc≡sucIf≤0 y) = z w
 
 \end{code}
