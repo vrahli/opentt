@@ -163,9 +163,12 @@ nucleus-monotonic {j} (well-def , _ , _ , meet-pre) = meet-preserving⇒monotoni
 undershooting : (UCSubset → UCSubset) → Set(lsuc(L))
 undershooting j = {I : Set(L)} (f : I → UCSubset) → (⋓[ i ∈ I ] (j (f i))) ⋐ j (⋓[ i ∈ I ] (f i))
 
+inhabited : (UCSubset → UCSubset) → Set(lsuc(L))
+inhabited j = {w : 𝕎· } {U : UCSubset} → w ∈· j U → Σ[ w' ∈ 𝕎· ] w' ∈· U
+
 -- A c(overing n)ucleus
 cucleus : (UCSubset → UCSubset) → Set(lsuc(L))
-cucleus j = nucleus j × undershooting j
+cucleus j = nucleus j × undershooting j × inhabited j
 
 cucleus-monotonic : {j : UCSubset → UCSubset} → cucleus j → monotonic j
 cucleus-monotonic (nuc , _) = nucleus-monotonic nuc

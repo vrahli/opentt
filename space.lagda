@@ -5,16 +5,16 @@ open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to ls
 open import Agda.Builtin.Sigma
 open import Data.Product
 open import Data.Sum
---open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; _∸_ ; pred ; _⊔_)
---open import Data.Nat.Properties
---open import Data.Nat.Induction
---open import Relation.Binary.PropositionalEquality hiding ([_]) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
---open import Relation.Nullary
---open import Data.Empty
+open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; _∸_ ; pred ; _⊔_)
+open import Data.Nat.Properties
+open import Data.Nat.Induction
+open import Relation.Binary.PropositionalEquality hiding ([_]) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
+open import Relation.Nullary
+open import Data.Empty
 
 
---open import util
---open import calculus
+open import util
+open import calculus
 open import world
 
 
@@ -216,26 +216,43 @@ module nucleusIsGood
                 (G : {w' : 𝕎·} (w'∈U : w' ∈· U) (V : UCSubset) → w' ◀ (fst V) → Set(L))
                 (i : {w' : 𝕎·} (w'∈U : w' ∈· U) → Σ UCSubset (λ V → Σ (w' ◀ (fst V)) (λ w'◀V → G w'∈U V w'◀V)))
                 → UCSubset
-  barFam2Test {B} {w} U w◀U G i = ∪[ h ∈ Σ 𝕎· (_∈· U) ] fst (i (snd h))
+  barFam2Test {B} {w} U w◀U G i = (λ w0 → Σ 𝕎· λ w1 → Σ (w1 ∈· U) λ w1∈U → w0 ∈· fst (i w1∈U))
+                                , λ {w1} {w2} e12 (w3 , w3∈U , w1∈iw3∈U) → w3 , w3∈U , {!snd (i w3∈U) ?!}
 
-  BarsFam2Test : (_◀_ : Cover) → Set(lsuc(L))
-  BarsFam2Test _◀_ =
-    {w : 𝕎·} (U : UCSubset) (w◀U : w ◀ (fst U))
-    (G : {w' : 𝕎·} (w'∈U : w' ∈· U) (V : UCSubset) → w' ◀ (fst V) → Set(L))
-    (i : {w' : 𝕎·} (w'∈U : w' ∈· U) → Σ UCSubset (λ V → Σ (w' ◀ (fst V)) (λ w'◀V → G w'∈U V w'◀V)))
-    → w ◀ (fst (barFam2Test U w◀U G i))
+  -- BarsFam2Test : (_◀_ : Cover) → Set(lsuc(L))
+  -- BarsFam2Test _◀_ =
+  --   {w : 𝕎·} (U : UCSubset) (w◀U : w ◀ (fst U))
+  --   (G : {w' : 𝕎·} (w'∈U : w' ∈· U) (V : UCSubset) → w' ◀ (fst V) → Set(L))
+  --   (i : {w' : 𝕎·} (w'∈U : w' ∈· U) → Σ UCSubset (λ V → Σ (w' ◀ (fst V)) (λ w'◀V → G w'∈U V w'◀V)))
+  --   → w ◀ barFam2Test U w◀U G i
+
+  -- the bar U covers w.
+  -- Let V be the union of bars given above
+  -- know that for any element w0 inside the bar U, we have some bar U0 covering w0.
+  --
+  -- we know that (how do we show this)
+  --   U ⊆ (union.i U_i) ▶
+  -- so
+  --   U ▶ ⊆ (union.i U_i) ▶▶ ⊆ (union.i U_i) ▶
+  -- As w ◀ U, then w ◀ union.i U_i too
+  --
+  --
+  -- WRONG:
+  -- so for any element w0 inside the bar U, we know that w is in (U0 ▶▶), hence it is in U0 ▶
+  -- hence w is covered by all the bars we are unioning, so if we can show that
+  --     union_i (U_i ▶) ⊆ (union.i U_i) ▶
+  -- (this is definitely the case for the covering relations we have so far, but I don't think it is a result of being a nucleus)
+  --
+  -- maybe can show
+  --     j (union_i (j U_i)) ⊆ j j (union U_i)
+  -- so then
+  --     union_i (j U_i) ⊆ j (union_i (j U_i)) ⊆ j j (union_i U_i) ⊆ j (union_i U_i)
 
   -- ◀-BarsFam2Test : BarsFam2Test _◀_
-  -- ◀-BarsFam2Test {w} U w◀U G i = bar w w◀U
+  -- ◀-BarsFam2Test {w} U w◀U G i = {!!}
   --   where
   --     foo : U ⊆ ((barFam2Test U w◀U G i) ▶)
-  --     foo w1 w1∈U = ▶-over (λ h → fst (i (snd h))) w1 ((w1 , w1∈U) , fst (snd (i w1∈U)))
-
-  --     -- It should be easy to now show the following
-  --     --   U ▶ ⊆ (union.i U_i) ▶▶ ⊆ (union.i U_i) ▶
-  --     -- using the fact that a nucleus is monotonic and idempotent
-  --     bar : (U ▶) ⊆ ((barFam2Test U w◀U G i) ▶)
-  --     bar = {!!}
+  --     foo = ?
 
   {-- Inhabitation --}
   -- This is not derivable from our covering giving a nucleus. To see why,
@@ -250,54 +267,5 @@ module nucleusIsGood
 
 
 
-
-Bars∩'' : (B : Bars) → Set(lsuc(L))
-Bars∩'' B =
-  {w1 w2 : 𝕎·} (e : w1 ⊑· w2) (b1 b2 : Br)
-  → B w1 b1
-  → B w2 b2
-  → B w2 (bar∩ b1 b2)
-
-
-𝔹∩'' : {B : Bars} (isect : Bars∩'' B) {w1 w2 : 𝕎·} (e : w1 ⊑· w2) → 𝔹 B w1 → 𝔹 B w2 → 𝔹 B w2
-𝔹∩'' {B} isect {w1} {w2} e (mk𝔹 b1 bars1 ext1 mon1) (mk𝔹 b2 bars2 ext2 mon2) =
-  mk𝔹 bar bars ext mon
-  where
-    bar : Br
-    bar = bar∩ b1 b2
-
-    bars : B w2 bar
-    bars = isect e b1 b2 bars1 bars2
-
-    ext : {w0 : 𝕎·} → bar w0 → w2 ⊑· w0
-    ext {w0} (w3 , w4 , b13 , b24 , e30 , e40) = ⊑-trans· (ext2 b24) e40 --e20
-
-    mon : {w3 w4 : 𝕎·} → w3 ⊑· w4 → bar w3 → bar w4
-    mon {w3} {w4} e34 (w5 , w6 , b15 , b26 , e53 , e63) = w5 , w6 , b15 , b26 , ⊑-trans· e53 e34 , ⊑-trans· e63 e34
-
-
-Bars⊑×Bars∩→Bars∩'' : {bars : Bars} → BarsE bars → BarsWf bars → Bars⊑ bars → Bars∩ bars → Bars∩'' bars
-Bars⊑×Bars∩→Bars∩'' {bars} ext wf bars⊑ bars∩ {w1} {w2} e b1 b2 bars1 bars2 =
-  ext w2 bars∩⊑ sim
-  where
-    bars∩⊑ : bars w2 (bar∩ (bar⊑ w2 b1) b2)
-    bars∩⊑ = bars∩ (bar⊑ w2 b1) b2 (bars⊑ e b1 bars1) bars2
-
-    sim : simb (bar∩ b1 b2) (bar∩ (bar⊑ w2 b1) b2)
-    sim w = i1 , i2
-      where
-        i1 : bar∩ b1 b2 w → bar∩ (bar⊑ w2 b1) b2 w
-        i1 (z1 , z2 , x1 , x2 , y1 , y2) = w , z2 , (z1 , x1 , y1 , ⊑-trans· (wf w2 z2 bars2 x2) y2) , x2 , ⊑-refl· w , y2 --z2 , z2 , (z2 , {!!} , {!!} , {!!}) , x2 , y2 , y2
-
-        i2 : bar∩ (bar⊑ w2 b1) b2 w → bar∩ b1 b2 w
-        i2 (z1 , z2 , (x1 , a1 , a2 , a3) , x2 , y1 , y2) = x1 , z2 , a1 , x2 , ⊑-trans· a2 y1 , y2
-
-
-Bars∩''→Bars∩ : {bars : Bars} → Bars∩'' bars → Bars∩ bars
-Bars∩''→Bars∩ {bars} bars∩'' {w1} b1 b2 b11 b21 = bars∩'' {w1} {w1} (⊑-refl· w1) b1 b2 b11 b21
-
-
-Bars∩''×Bars∀→Bars⊑ : {bars : Bars} → Bars∩'' bars → Bars∀ bars → Bars⊑ bars
-Bars∩''×Bars∀→Bars⊑ {bars} bars∩' bars∀ {w1} {w2} e12 b1 b11 = {!!}
 
 \end{code}
