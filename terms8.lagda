@@ -171,6 +171,17 @@ fvars-IFLT0 a b c d
         | loweVars-suc (fvars d) = refl
 
 
+#IFLT : CTerm → CTerm → CTerm → CTerm → CTerm
+#IFLT a b c d = ct (IFLT ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
+  where
+    e : # IFLT ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    e rewrite fvars-IFLT0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+            | CTerm.closed a
+            | CTerm.closed b
+            | CTerm.closed c
+            | CTerm.closed d = refl
+
+
 #[0]IFLT : CTerm0 → CTerm0 → CTerm0 → CTerm0 → CTerm0
 #[0]IFLT a b c d = ct0 (IFLT ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
   where
@@ -559,6 +570,21 @@ instance
     c = ⊆→⊆? [1]⊆[0,1,2,3,4,5]
 
 
+lowerVars2-fvars-[0,1] : {l : List Var}
+                              → l ⊆ (0 ∷ [ 1 ])
+                              → lowerVars (lowerVars l) ≡ []
+lowerVars2-fvars-[0,1] {[]} h = refl
+lowerVars2-fvars-[0,1] {0 ∷ l} h = lowerVars2-fvars-[0,1] (λ z → h (there z))
+lowerVars2-fvars-[0,1] {suc 0 ∷ l} h = lowerVars2-fvars-[0,1] (λ z → h (there z))
+lowerVars2-fvars-[0,1] {suc (suc z) ∷ l} h = ⊥-elim (i w)
+  where
+    w : suc (suc z) ∈ (0 ∷ [ 1 ])
+    w = h (here refl)
+
+    i : suc (suc z) ∈ (0 ∷ [ 1 ]) → ⊥
+    i (there (here px)) = suc-≢-0 (suc-injective px)
+
+
 lowerVars2-fvars-[0,1,2] : {l : List Var}
                               → l ⊆ (0 ∷ 1 ∷ [ 2 ])
                               → lowerVars (lowerVars l) ⊆ [ 0 ]
@@ -625,6 +651,13 @@ lowerVars2-fvars-[0,1,2,3,4,5] {suc (suc z) ∷ l} h (here px) rewrite px = i w
 lowerVars2-fvars-[0,1,2,3,4,5] {suc (suc z) ∷ l} h (there x) = lowerVars2-fvars-[0,1,2,3,4,5] (λ z → h (there z)) x
 
 
+#SPREAD : CTerm → CTerm1 → CTerm
+#SPREAD a b = ct (SPREAD ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : # SPREAD ⌜ a ⌝ ⌜ b ⌝
+    c rewrite CTerm.closed a = lowerVars2-fvars-[0,1] (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b))
+
+
 #[0]SPREAD : CTerm0 → CTerm2 → CTerm0
 #[0]SPREAD a b = ct0 (SPREAD ⌜ a ⌝ ⌜ b ⌝) c
   where
@@ -659,6 +692,14 @@ lowerVars2-fvars-[0,1,2,3,4,5] {suc (suc z) ∷ l} h (there x) = lowerVars2-fvar
     c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (lowerVars (fvars ⌜ b ⌝))} {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
               (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed a))
                    (lowerVars2-fvars-[0,1,2,3,4,5] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm5.closed b))))
+
+
+#FST : CTerm → CTerm
+#FST t = #SPREAD t #[1]VAR1
+
+
+#SND : CTerm → CTerm
+#SND t = #SPREAD t #[1]VAR0
 
 
 #[0]FST : CTerm0 → CTerm0

@@ -89,6 +89,7 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
@@ -171,48 +172,18 @@ barThesis : Term
 barThesis = FUN FunBar IndBar
 
 
--- appends a new value
-APPEND : Term → Term → Term
-APPEND l x = PAIR (SUC k) (LAMBDA (IFLT (VAR 0) (shiftUp 0 k) (APPLY (shiftUp 0 f) (VAR 0)) (shiftUp 0 x)))
-  where
-    k : Term
-    k = FST l
-
-    f : Term
-    f = SND l
-
-
--- empty list
-EMPTY : Term
-EMPTY = PAIR (NUM 0) (LAMBDA AX)
-
-
-PROD : Term → Term → Term
-PROD a b = SUM a (shiftUp 0 b)
-
-
-#PROD : CTerm → CTerm → CTerm
-#PROD a b = ct (PROD ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : # PROD ⌜ a ⌝ ⌜ b ⌝
-    c rewrite CTerm.closed a | #shiftUp 0 b | lowerVars-fvars-CTerm≡[] b = refl
-
-
-LIST : Term → Term
-LIST A = PROD NAT BAIRE
-
-
-#LIST : CTerm → CTerm
-#LIST A = #PROD #NAT #BAIRE
+loopA : Name → Term → Term → Term → Term
+loopA r bar R xs =
+  LET (APPLY bar (generic r xs))
+      (ITE (CS r)
+           (ETA (VAR 0))
+           (DIGAMMA (LAMBDA (APPLY (shiftUp 0 (shiftUp 0 R)) (APPEND (shiftUp 0 (shiftUp 0 xs)) (VAR 0))))))
 
 
 loopF : Name → Term → Term → Term → Term
 loopF r bar R xs =
   SEQ (CHOOSE (NAME r) BTRUE) -- we start by assuming that we have enough information
-      (LET (APPLY bar (generic r xs))
-           (ITE (CS r)
-                (ETA (VAR 0))
-                (DIGAMMA (LAMBDA (APPLY (shiftUp 0 (shiftUp 0 R)) (APPEND (shiftUp 0 (shiftUp 0 xs)) (VAR 0)))))))
+      (loopA r bar R xs)
 
 
 loopL : Name →  Term → Term
@@ -223,6 +194,10 @@ loopL r bar =
 
 loop : Name →  Term → Term
 loop r bar = FIX (loopL r bar)
+
+
+#genericI : Name → CTerm → CTerm → CTerm → CTerm
+#genericI r k f i = #SEQ (#IFLT i k #AX (#CHOOSE (#NAME r) #BFALSE)) (#APPLY f i)
 
 
 #generic : Name → CTerm → CTerm -- λ (l,f) i → genericI l f i
@@ -271,17 +246,19 @@ loop r bar = FIX (loopL r bar)
                                  (#[4]shiftUp0 x)))
 
 
+#loopA : Name →  CTerm → CTerm → CTerm → CTerm
+#loopA r bar R l =
+  #LET (#APPLY bar (#generic r l))
+       (#[0]ITE (#[0]CS r)
+                (#[0]ETA #[0]VAR)
+                (#[0]DIGAMMA (#[0]LAMBDA (#[1]APPLY (#[1]shiftUp0 (#[0]shiftUp0 R))
+                                                    (#[1]APPEND (#[1]shiftUp0 (#[0]shiftUp0 l)) #[1]VAR0)))))
+
+
 #loopF : Name →  CTerm → CTerm → CTerm → CTerm
 #loopF r bar R l =
   -- 0 is the argument (the list), and 1 is the recursive call
-  #SEQ (#CHOOSE (#NAME r) #BTRUE) F
-  where
-    F : CTerm
-    F = #LET (#APPLY bar (#generic r l))
-             (#[0]ITE (#[0]CS r)
-                      (#[0]ETA #[0]VAR)
-                      (#[0]DIGAMMA (#[0]LAMBDA (#[1]APPLY (#[1]shiftUp0 (#[0]shiftUp0 R))
-                                                          (#[1]APPEND (#[1]shiftUp0 (#[0]shiftUp0 l)) #[1]VAR0)))))
+  #SEQ (#CHOOSE (#NAME r) #BTRUE) (#loopA r bar R l)
 
 
 #loop : Name →  CTerm → CTerm
@@ -304,6 +281,11 @@ loop r bar = FIX (loopL r bar)
 -- sanity checking
 ⌜#loop⌝≡ : (r : Name) (F : CTerm) → ⌜ #loop r F ⌝ ≡ loop r ⌜ F ⌝
 ⌜#loop⌝≡ r F = refl
+
+
+-- sanity checking
+⌜#loopA⌝≡ : (r : Name) (F R l : CTerm) → ⌜ #loopA r F R l ⌝ ≡ loopA r ⌜ F ⌝ ⌜ R ⌝ ⌜ l ⌝
+⌜#loopA⌝≡ r F R l = refl
 
 
 -- sanity checking
@@ -604,18 +586,98 @@ APPLY-loop⇓! r F l w cF cl =
 ⌜loopF-loop⌝≡ r F l rewrite ⌜#loop⌝≡ r F = refl
 
 
-#APPLY-#loop#⇛! : (r : Name) (F l : CTerm) (w : 𝕎·)
-                   → #APPLY (#loop r F) l #⇛! #loopF r F (#loop r F) l at w
-#APPLY-#loop#⇛! r F l w w1 e1 = lift c
+#APPLY-#loop#⇓1 : (r : Name) (F l : CTerm) (w : 𝕎·)
+                   → #APPLY (#loop r F) l #⇓! #loopF r F (#loop r F) l at w
+#APPLY-#loop#⇓1 r F l w = APPLY-loop⇓! r ⌜ F ⌝ ⌜ l ⌝ w (CTerm.closed F) (CTerm.closed l)
+
+
+#APPLY-#loop#⇓2 : (r : Name) (F l : CTerm) (w : 𝕎·)
+                    → #APPLY (#loop r F) l #⇓ #loopA r F (#loop r F) l from w to (chooseT r w BTRUE)
+#APPLY-#loop#⇓2 r F l w =
+  ⇓-trans₂ {w} {w} {chooseT r w BTRUE}
+           {APPLY (loop r ⌜ F ⌝) ⌜ l ⌝}
+           {loopF r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
+           {loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
+           (#APPLY-#loop#⇓1 r F l w)
+           (step-⇓-from-to-trans {w} {chooseT r w BTRUE} {chooseT r w BTRUE}
+                                 {loopF r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
+                                 {SEQ AX (loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝)}
+                                 {loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
+                                 refl
+                                 (SEQ-AX⇓₁from-to {chooseT r w BTRUE} {loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
+                                                  (CTerm.closed (#loopA r F (#loop r F) l))))
+
+
+sub-genericI : (r : Name) (i a b : Term) (ci : # i) (ca : # a) (cb : # b)
+               → sub i (genericI r a b (VAR 0)) ≡ genericI r a b i
+sub-genericI r i a b ci ca cb
+  rewrite #shiftUp 0 (ct i ci)
+        | #shiftDown 0 (ct i ci)
+        | #subv 0 i a ca
+        | #shiftDown 0 (ct a ca)
+        | #shiftUp 0 (ct i ci)
+        | #shiftDown 1 (ct i ci)
+        | #shiftUp 0 (ct b cb)
+        | #subv 1 i b cb
+        | #shiftDown 1 (ct b cb) =
+  ≡LET (≡IFLT refl refl refl refl) (≡APPLY refl refl)
+
+
+#FST-shiftUp : (a : CTerm) → # FST (shiftUp 0 ⌜ a ⌝)
+#FST-shiftUp a rewrite →#shiftUp 0 {⌜ a ⌝} (CTerm.closed a) = refl
+
+
+#SND-shiftUp : (a : CTerm) → # SND (shiftUp 0 ⌜ a ⌝)
+#SND-shiftUp a rewrite →#shiftUp 0 {⌜ a ⌝} (CTerm.closed a) = refl
+
+
+#APPLY-#generic⇓ : (r : Name) (l i : CTerm) (w : 𝕎·)
+                   → #APPLY (#generic r l) i #⇓ #genericI r (#FST l) (#SND l) i from w to w
+#APPLY-#generic⇓ r l i w =
+  step-⇓-from-to-trans
+    {w} {w} {w}
+    {APPLY (generic r ⌜ l ⌝) ⌜ i ⌝}
+    {genericI r (FST ⌜ l ⌝) (SND ⌜ l ⌝) ⌜ i ⌝}
+    {genericI r (FST ⌜ l ⌝) (SND ⌜ l ⌝) ⌜ i ⌝}
+    c
+    (0 , refl)
   where
-    c : ⌜ #APPLY (#loop r F) l ⌝ ⇓! ⌜ #loopF r F (#loop r F) l ⌝ at w1
-    c  = APPLY-loop⇓! r ⌜ F ⌝ ⌜ l ⌝ w1 (CTerm.closed F) (CTerm.closed l)
+    c : ret (sub ⌜ i ⌝ (genericI r (FST (shiftUp 0 ⌜ l ⌝)) (SND (shiftUp 0 ⌜ l ⌝)) (VAR 0))) w
+        ≡ just (genericI r (FST ⌜ l ⌝) (SND ⌜ l ⌝) ⌜ i ⌝ , w)
+    c rewrite sub-genericI r ⌜ i ⌝ (FST (shiftUp 0 ⌜ l ⌝)) (SND (shiftUp 0 ⌜ l ⌝)) (CTerm.closed i) (#FST-shiftUp l) (#SND-shiftUp l)
+            | #shiftUp 0 l
+            | #shiftUp 0 l = refl
+
+
+generic∈BAIRE : (i : ℕ) (w : 𝕎·) (r : Name) (l : CTerm)
+                → ∈Type i w (#LIST #NAT) l
+                → ∈Type i w #BAIRE (#generic r l)
+generic∈BAIRE i w r l ∈l =
+  ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-FUN eqTypesNAT eqTypesNAT aw1)
+  where
+    p1 : □· w (λ w' _ → PRODeq (equalInType i w' #NAT) (equalInType i w' (#FUN #NAT #NAT)) w' l l)
+    p1 = equalInType-PROD→ ∈l
+
+    aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
+                        → equalInType i w' #NAT (#APPLY (#generic r l) a₁) (#APPLY (#generic r l) a₂))
+    aw1 w1 e1 a₁ a₂ ea = equalInType-local (∀𝕎-□Func2 aw2 (Mod.↑□ M p1 e1) p2)
+      where
+        p2 : □· w1 (λ w' _ → NATeq w' a₁ a₂)
+        p2 = equalInType-NAT→ i w1 a₁ a₂ ea
+
+        aw2 : ∀𝕎 w1 (λ w' e' → ↑wPred (λ w'' _ → PRODeq (equalInType i w'' #NAT) (equalInType i w'' (#FUN #NAT #NAT)) w'' l l) e1 w' e'
+                             → NATeq w' a₁ a₂
+                             → equalInType i w' #NAT (#APPLY (#generic r l) a₁) (#APPLY (#generic r l) a₂))
+        aw2 w2 e2 (k1 , k2 , f1 , f2 , ek , ef , c1 , c2) (n , d1 , d2) = {!!}
+          where
+            p3 : equalInType i w2 #NAT (#APPLY f1 a₁) (#APPLY f2 a₂)
+            p3 = equalInType-FUN→ ef w2 (⊑-refl· w2) a₁ a₂ (equalInType-mon ea w2 e2)
 
 
 -- First prove that loop belongs to CoIndBar
 coSemM : (i : ℕ) (w : 𝕎·) (r : Name) (F l : CTerm)
          → ∈Type i w #FunBar F
-         → ∈Type i w (#LIST #BOOL) l
+         → ∈Type i w (#LIST #NAT) l
          → meq (equalInType i w #IndBarB)
                 (λ a b eqa → equalInType i w (sub0 a #IndBarC))
                 w (#APPLY (#loop r F) l) (#APPLY (#loop r F) l)
