@@ -18,12 +18,12 @@ open import calculus
 open import world
 
 
-module barOpen {L : Level} (W : PossibleWorlds {L})
+module barOpen {n : Level} (W : PossibleWorlds {n})
        where
 
-open import worldDef{L}(W)
-open import bar(W)
-open import mod(W)
+open import worldDef{n}(W)
+open import bar{n}{n}(W)
+open import mod{n}{n}(W)
 
 
 
@@ -36,34 +36,34 @@ open import mod(W)
 ------
 -- An open bar
 O𝔹bars : Bars
-O𝔹bars w bar = ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 _ → Lift (lsuc(L)) (bar w2)))
+O𝔹bars w bar = ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 _ → bar w2))
 
 
 O𝔹bars⊑ : Bars⊑ O𝔹bars
 O𝔹bars⊑ {w1} {w2} e bar h w3 e3 =
   fst (h w3 (⊑-trans· e e3)) ,
   fst (snd (h w3 (⊑-trans· e e3))) ,
-  lift (fst (h w3 (⊑-trans· e e3)) ,
-        lower (snd (snd (h w3 (⊑-trans· e e3)))) ,
-        ⊑-refl· _ ,
-        ⊑-trans· e3 (fst (snd (h w3 (⊑-trans· e e3)))))
+  fst (h w3 (⊑-trans· e e3)) ,
+  snd (snd (h w3 (⊑-trans· e e3))) ,
+  ⊑-refl· _ ,
+  ⊑-trans· e3 (fst (snd (h w3 (⊑-trans· e e3))))
 
 
 O𝔹bars∩ : Bars∩ O𝔹bars
 O𝔹bars∩ {w} b1 b2 bars1 bars2 w1 e1 =
   fst h2 ,
   ⊑-trans· (fst (snd h1)) (fst (snd h2)) ,
-  lift (fst h1 , fst h2 , lower (snd (snd h1)) , lower (snd (snd h2)) , fst (snd h2) , ⊑-refl· _)
+  fst h1 , fst h2 , snd (snd h1) , snd (snd h2) , fst (snd h2) , ⊑-refl· _
   where
-    h1 : ∃𝕎 w1 (λ w2 e2 → Lift (lsuc L) (b1 w2))
+    h1 : ∃𝕎 w1 (λ w2 e2 →  b1 w2)
     h1 = bars1 w1 e1
 
-    h2 : ∃𝕎 (fst h1) (λ w2 e2 → Lift (lsuc L) (b2 w2))
+    h2 : ∃𝕎 (fst h1) (λ w2 e2 → b2 w2)
     h2 = bars2 (fst h1) (⊑-trans· e1 (fst (snd h1)))
 
 
 O𝔹bars∀ : Bars∀ O𝔹bars
-O𝔹bars∀ w w1 e1 = w1 , ⊑-refl· _ , lift e1
+O𝔹bars∀ w w1 e1 = w1 , ⊑-refl· _ , e1
 
 
 {--O𝔹barsFam1 : BarsFam1 O𝔹bars
@@ -89,12 +89,13 @@ O𝔹barsFam2 : BarsFam2 O𝔹bars
 O𝔹barsFam2 {w} b G i w1 e1 =
   fst (𝔹.bars b' (𝔹In.w1 bi) (⊑-refl· _)) ,
   ⊑-trans· (fst (snd (𝔹.bars b w1 e1))) (fst (snd (𝔹.bars b' (𝔹In.w1 bi) (⊑-refl· _)))) ,
-  lift (bi , lower (snd (snd (𝔹.bars b' (𝔹In.w1 bi) (⊑-refl· _)))))
+  bi ,
+  snd (snd (𝔹.bars b' (𝔹In.w1 bi) (⊑-refl· _)))
   where
     bi : 𝔹In b
     bi = mk𝔹In (fst (𝔹.bars b w1 e1))
                 (⊑-trans· e1 (fst (snd (𝔹.bars b w1 e1))))
-                (lower (snd (snd (𝔹.bars b w1 e1))))
+                (snd (snd (𝔹.bars b w1 e1)))
 
     b' : 𝔹 O𝔹bars (fst (𝔹.bars b w1 e1))
     b' = fst (i (𝔹In.e1 bi) (𝔹In.br bi))
@@ -102,7 +103,7 @@ O𝔹barsFam2 {w} b G i w1 e1 =
 
 O𝔹bars∃ : Bars∃ O𝔹bars
 O𝔹bars∃ {w} {bar} bars ext =
-  fst (bars w (⊑-refl· _)) , fst (snd (bars w (⊑-refl· _))) , lower (snd (snd (bars w (⊑-refl· _))))
+  fst (bars w (⊑-refl· _)) , fst (snd (bars w (⊑-refl· _))) , snd (snd (bars w (⊑-refl· _)))
 
 
 O𝔹BarsProps : BarsProps
@@ -119,7 +120,7 @@ O𝔹BarsProps =
 
 {-- We could define open bars as follows, or we can define them directly using inOpenBar as done below
  --}
-O𝔹 : 𝕎· → Set(lsuc(L))
+O𝔹 : 𝕎· → Set (lsuc n)
 O𝔹 w = 𝔹 O𝔹bars w
 
 
@@ -127,7 +128,9 @@ inOpenBar-Mod-v1 : Mod
 inOpenBar-Mod-v1 = BarsProps→Mod O𝔹BarsProps
 ----
 
+--TODO: Try fixing universe levels on the following? Technically not needed
 
+\end{code}
 
 -- f holds in an open bar
 inOpenBar : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
@@ -144,7 +147,6 @@ inOpenBar w f =
   where
     j : ∀𝕎 (fst (𝔹.bars b w1 e1)) (λ w3 e3 → (z : w ⊑· w3) → f w3 z)
     j w2 e2 z = i (⊑-trans· e1 (fst (snd (𝔹.bars b w1 e1)))) (lower (snd (snd (𝔹.bars b w1 e1)))) w2 e2 z
-
 
 
 inOpenBar→Σ∈𝔹 : (w : 𝕎·) (f : wPred w) → inOpenBar w f → Σ∈𝔹 O𝔹bars f

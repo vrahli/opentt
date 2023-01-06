@@ -1,11 +1,11 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; _⊔_ ; Setω) renaming (suc to lsuc)
 open import Agda.Builtin.Sigma
 open import Data.Product
 open import Data.Sum
-open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; _∸_ ; pred ; _⊔_)
+open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; _∸_ ; pred)
 open import Data.Nat.Properties
 open import Data.Nat.Induction
 open import Relation.Binary.PropositionalEquality hiding ([_]) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
@@ -18,10 +18,9 @@ open import calculus
 open import world
 
 
-module bar {L : Level} (W : PossibleWorlds {L})
--- (E : Extensionality L (lsuc(L)))
+module bar {n m : Level} (W : PossibleWorlds {n})
        where
-open import worldDef{L}(W)
+open import worldDef(W)
 
 
 
@@ -33,14 +32,14 @@ open import worldDef{L}(W)
  --}
 
 
-Br : Set(lsuc(L))
-Br = 𝕎· → Set(L)
+Br : Set (lsuc n)
+Br = 𝕎· → Set n
 
 
-Bars : Set(lsuc(lsuc(L)))
-Bars = 𝕎· → Br → Set(lsuc(L))
+Bars : Set (lsuc n ⊔ lsuc m)
+Bars = 𝕎· → Br → Set m
 
-record 𝔹 (B : Bars) (w : 𝕎·) : Set(lsuc(L)) where
+record 𝔹 (B : Bars) (w : 𝕎·) : Set (lsuc n ⊔ lsuc m) where
   constructor mk𝔹
   field
     bar  : Br
@@ -50,35 +49,32 @@ record 𝔹 (B : Bars) (w : 𝕎·) : Set(lsuc(L)) where
 
 
 {-- Bars and dependent bars --}
-∈𝔹 : {B : Bars} {w : 𝕎·}  (b : 𝔹 B w) (f : wPred w) → Set(lsuc(L))
-∈𝔹 {B} {w} b f = {w' : 𝕎·} (e : w ⊑· w') → 𝔹.bar b w' → ∀𝕎 w' (↑wPred' f e)
+∈𝔹 : ∀ {l} {B : Bars} {w : 𝕎·}  (b : 𝔹 B w) (f : wPred {l} w) → Set (n ⊔ l)
+∈𝔹 {l} {B} {w} b f = {w' : 𝕎·} (e : w ⊑· w') → 𝔹.bar b w' → ∀𝕎 w' (↑wPred' f e)
 {-# INLINE ∈𝔹 #-}
 
-
-Σ∈𝔹 : (B : Bars) {w : 𝕎·} (f : wPred w) → Set(lsuc(L))
+Σ∈𝔹 : ∀ {l} (B : Bars) {w : 𝕎·} (f : wPred {l} w) → Set (lsuc n ⊔ lsuc m ⊔ l)
 Σ∈𝔹 B {w} f = Σ (𝔹 B w) (λ b → ∈𝔹 b f)
 {-# INLINE Σ∈𝔹 #-}
 
-∈𝔹Dep : {B : Bars} {w : 𝕎·} (b : 𝔹 B w) {g : wPred w} (i : ∀𝕎 w g) (f : wPredDep g) → Set(lsuc(L))
-∈𝔹Dep {B} {w} b {g} i f =
+∈𝔹Dep : ∀ {l} {B : Bars} {w : 𝕎·} (b : 𝔹 B w) {g : wPred {l} w} (i : ∀𝕎 w g) (f : wPredDep g) → Set (n ⊔ l)
+∈𝔹Dep {_} {B} {w} b {g} i f =
   {w' : 𝕎·} (e : w ⊑· w') → 𝔹.bar b w'
   → ∀𝕎 w' (λ w'' e' → (x : w ⊑· w'') → f w'' x (i w'' x))
 {-# INLINE ∈𝔹Dep #-}
 
-
-Σ∈𝔹' : (B : Bars) {w : 𝕎·} {g : wPred w} (h : Σ∈𝔹 B g) (f : wPredDep g) → Set(lsuc(L))
+Σ∈𝔹' : ∀ {l} (B : Bars) {w : 𝕎·} {g : wPred {l} w} (h : Σ∈𝔹 B g) (f : wPredDep g) → Set (lsuc n ⊔ lsuc m ⊔ l)
 Σ∈𝔹' B {w} {g} bi f =
   {w1 : 𝕎·} (e1 : w ⊑· w1) (ib : 𝔹.bar (fst bi) w1)
   → Σ (𝔹 B w1) (λ b' → ∈𝔹Dep b' (snd bi e1 ib) (↑wPredDep'' f e1))
 {-# INLINE Σ∈𝔹' #-}
-
 
 {-- Intersection --}
 bar∩ : Br → Br → Br
 bar∩ b1 b2 w0 = Σ 𝕎· (λ w1 → Σ 𝕎· (λ w2 → b1 w1 × b2 w2 × w1 ⊑· w0 × w2 ⊑· w0))
 
 
-Bars∩ : (B : Bars) → Set(lsuc(L))
+Bars∩ : (B : Bars) → Set (lsuc n ⊔ m)
 Bars∩ B =
   {w : 𝕎·} (b1 b2 : Br)
   → B w b1
@@ -115,7 +111,7 @@ bar∩' w b1 b2 w0 = Σ 𝕎· (λ w1 → Σ 𝕎· (λ w2 → b1 w1 × b2 w2 ×
 bar∩' w b1 b2 w0 = Σ 𝕎· (λ w1 → Σ 𝕎· (λ w2 → b1 w1 × b2 w2 × w1 ⊑· w0 × w2 ⊑· w0 × w ⊑· w0)))
 --}
 
-Bars∩' : (B : Bars) → Set(lsuc(L))
+Bars∩' : (B : Bars) → Set (lsuc n ⊔ m)
 Bars∩' B =
   {w1 w2 : 𝕎·} (e : w1 ⊑· w2) (b1 b2 : Br)
   → B w1 b1
@@ -143,7 +139,7 @@ bar⊑ : 𝕎· → Br → Br
 bar⊑ w' bar w0 = Σ 𝕎· (λ w1 → bar w1 × w1 ⊑· w0 × w' ⊑· w0)
 
 
-Bars⊑ : (B : Bars) → Set(lsuc(L))
+Bars⊑ : (B : Bars) → Set (lsuc n ⊔ m)
 Bars⊑ B =
   {w1 w2 : 𝕎·} (e : w1 ⊑· w2) (bar : Br)
   → B w1 bar
@@ -172,7 +168,7 @@ bar∀ : 𝕎· → Br
 bar∀ w w' = w ⊑· w'
 
 
-Bars∀ : (B : Bars) → Set(lsuc(L))
+Bars∀ : (B : Bars) → Set (n ⊔ m)
 Bars∀ B = (w : 𝕎·) → B w (bar∀ w)
 
 
@@ -250,7 +246,7 @@ BarsFam1 B =
 {-- Union --}
 -- Given a nice bar for w, this type gives the extensions of w inside this nice bar.
 -- Should be able to replace this with `Σ 𝕎· (𝔹.bar b)`
-record 𝔹In {B : Bars} {w : 𝕎·} (b : 𝔹 B w) : Set(L) where
+record 𝔹In {B : Bars} {w : 𝕎·} (b : 𝔹 B w) : Set n where
   constructor mk𝔹In
   field
     w1 : 𝕎·
@@ -270,19 +266,20 @@ record 𝔹In {B : Bars} {w : 𝕎·} (b : 𝔹 B w) : Set(L) where
 -- then we get a new bar containing worlds w' such that
 --   - there exists some w'' ∈ b whose nice bar also contains w'
 -- So this takes the union of nice bars indexed by elements of the nice bar of w
-barFam2 : {B : Bars} {w : 𝕎·} (b : 𝔹 B w)
-          (G : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → 𝔹 B w' → Set(lsuc(L)))
+barFam2 : ∀ {l} {B : Bars} {w : 𝕎·} (b : 𝔹 B w)
+          (G : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → 𝔹 B w' → Set l) -- TODO: Unsure if this should be m or some fresh level l or something else
           (i : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → Σ (𝔹 B w') (λ b' → G e ib b'))
           → Br
-barFam2 {B} {w} b G i w' = Σ (𝔹In b) (λ F → 𝔹.bar (fst (i (𝔹In.e1 F) (𝔹In.br F))) w')
+barFam2 {_} {B} {w} b G i w' = Σ (𝔹In b) (λ F → 𝔹.bar (fst (i (𝔹In.e1 F) (𝔹In.br F))) w')
 
-BarsFam2 : (B : Bars) → Set(lsuc(lsuc(L)))
+BarsFam2 : (B : Bars) → Setω
 BarsFam2 B =
-  {w : 𝕎·} (b : 𝔹 B w)
-  (G : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → 𝔹 B w' → Set(lsuc(L)))
+  ∀ {l} {w : 𝕎·} (b : 𝔹 B w)
+  (G : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → 𝔹 B w' → Set l)
   (i : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → Σ (𝔹 B w') (λ b' → G e ib b'))
   → B w (barFam2 b G i)
 
+{--
 barFam2Test : {B : Bars} {w : 𝕎·} (b : 𝔹 B w)
               (G : {w' : 𝕎·} (ib : 𝔹.bar b w') → 𝔹 B w' → Set(lsuc(L)))
               (i : {w' : 𝕎·} (ib : 𝔹.bar b w') → Σ (𝔹 B w') (λ b' → G ib b'))
@@ -313,12 +310,13 @@ BarsFam2Test B =
 
     mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → bar w1 → bar w2
     mon {w1} {w2} e12 (w' , w'∈b , w1∈b')= w' , w'∈b , 𝔹.mon (fst (i w'∈b)) e12 w1∈b'
+--}
 
-𝔹fam2 : {B : Bars} (fam : BarsFam2 B) {w : 𝕎·} (b : 𝔹 B w)
-         (G : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → 𝔹 B w' → Set(lsuc(L)))
+𝔹fam2 : ∀ {l} {B : Bars} (fam : BarsFam2 B) {w : 𝕎·} (b : 𝔹 B w)
+         (G : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → 𝔹 B w' → Set l)
          (i : {w' : 𝕎·} (e : w ⊑· w') (ib : 𝔹.bar b w') → Σ (𝔹 B w') (λ b' → G e ib b'))
          → 𝔹 B w
-𝔹fam2 {B} fam {w} b G i = mk𝔹 bar bars ext mon
+𝔹fam2 {_} {B} fam {w} b G i = mk𝔹 bar bars ext mon
   where
     bar : Br
     bar = barFam2 b G i
@@ -335,37 +333,34 @@ BarsFam2Test B =
 
 
 {-- Inhabitation --}
-Bars∃ : (B : Bars) → Set(lsuc(L))
+Bars∃ : (B : Bars) → Set (lsuc n ⊔ m)
 Bars∃ B =
   {w : 𝕎·} {bar : Br} (bars : B w bar) (ext : {w' : 𝕎·} → bar w' → w ⊑· w')
   → Σ 𝕎· λ w' → Σ (w ⊑· w') λ e → bar w'
 
 
-
 ---- Consequences of the above
 
-↑Σ∈𝔹 : {B : Bars} (mon : Bars⊑ B) {w : 𝕎·} {f : wPred w} (i : Σ∈𝔹 B f) {w' : 𝕎·} (e : w ⊑· w') → Σ∈𝔹 B (↑wPred f e)
-↑Σ∈𝔹 {B} mon {w} {f} (b , i) {w'} e = 𝔹⊑ mon e b , j
+↑Σ∈𝔹 : ∀ {l} {B : Bars} (mon : Bars⊑ B) {w : 𝕎·} {f : wPred {l} w} (i : Σ∈𝔹 B f) {w' : 𝕎·} (e : w ⊑· w') → Σ∈𝔹 B (↑wPred f e)
+↑Σ∈𝔹 {_} {B} mon {w} {f} (b , i) {w'} e = 𝔹⊑ mon e b , j
   where
     j : ∈𝔹 (𝔹⊑ mon e b) (↑wPred f e)
     j {w1} e1 (w0 , b0 , e₁ , e₂) w2 e2 z = i (𝔹.ext b {w0} b0) b0 w2 (⊑-trans· e₁ e2) (⊑-trans· e z)
 
 
-↑'Σ∈𝔹 : {B : Bars} (mon : Bars⊑ B) {w : 𝕎·} {f : wPred w} (i : Σ∈𝔹 B f) {w' : 𝕎·} (e : w ⊑· w') → Σ∈𝔹 B (↑wPred' f e)
-↑'Σ∈𝔹 {B} mon {w} {f} (b , i) {w'} e = 𝔹⊑ mon e b , j
+↑'Σ∈𝔹 : ∀ {l} {B : Bars} (mon : Bars⊑ B) {w : 𝕎·} {f : wPred {l} w} (i : Σ∈𝔹 B f) {w' : 𝕎·} (e : w ⊑· w') → Σ∈𝔹 B (↑wPred' f e)
+↑'Σ∈𝔹 {_} {B} mon {w} {f} (b , i) {w'} e = 𝔹⊑ mon e b , j
   where
     j : ∈𝔹 (𝔹⊑ mon e b) (↑wPred' f e)
     j {w1} e1 (w0 , b0 , e₁ , e₂) w2 e2 z x = i (𝔹.ext b {w0} b0) b0 w2 (⊑-trans· e₁ e2) x
 
 
-
-
-↑Σ∈𝔹' : {B : Bars}  (mon : Bars⊑ B) {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : Σ∈𝔹 B f) {w' : 𝕎·} (e : w ⊑· w')
+↑Σ∈𝔹' : ∀ {l} {B : Bars}  (mon : Bars⊑ B) {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} (i : Σ∈𝔹 B f) {w' : 𝕎·} (e : w ⊑· w')
          → Σ∈𝔹' B i g → Σ∈𝔹' B (↑Σ∈𝔹 mon i e) (↑wPredDep g e)
-↑Σ∈𝔹' {B} mon {w} {f} {g} i {w'} e j {w1} e1 (w2 , b , ea , eb) =
+↑Σ∈𝔹' {_} {B} mon {w} {f} {g} i {w'} e j {w1} e1 (w2 , b , ea , eb) =
   𝔹⊑ mon ea (fst (j (𝔹.ext (fst i) b) b)) , k
   where
-    k : ∈𝔹Dep {B} (𝔹⊑ mon ea (fst (j (𝔹.ext (proj₁ i) b) b)))
+    k : ∈𝔹Dep {_} {B} (𝔹⊑ mon ea (fst (j (𝔹.ext (proj₁ i) b) b)))
                   (snd (↑Σ∈𝔹 mon i e) e1 (w2 , b , ea , eb))
                   (↑wPredDep'' (↑wPredDep g e) e1)
     k {w3} e3 (w3' , b1 , ec , ed) w4 e4 x y =
@@ -375,7 +370,7 @@ Bars∃ B =
           (⊑-trans· ec e4) (⊑-trans· ea x) (⊑-trans· e y)
 
 
-Σ∈𝔹Func : {B : Bars} (isect : Bars∩ B) {w : 𝕎·} {f g : wPred w}
+Σ∈𝔹Func : ∀ {l} {B : Bars} (isect : Bars∩ B) {w : 𝕎·} {f g : wPred {l} w}
           → Σ∈𝔹 B (λ w' e' → f w' e' → g w' e')
           → Σ∈𝔹 B f → Σ∈𝔹 B g
 Σ∈𝔹Func {B} isect {w} {f} {g} (b1 , i1) (b2 , i2) =
@@ -386,40 +381,39 @@ Bars∃ B =
       i1 (𝔹.ext b1 b₁) b₁ w' (⊑-trans· e₁ e') z
          (i2 (𝔹.ext b2 b₂) b₂ w' (⊑-trans· e₂ e') z)
 
-
-∀𝕎-Σ∈𝔹Func : {B : Bars} {w : 𝕎·} {f g : wPred w}
+∀𝕎-Σ∈𝔹Func : ∀ {l} {B : Bars} {w : 𝕎·} {f g : wPred {l} w}
               → ∀𝕎 w (λ w' e' → f w' e' → g w' e')
               → Σ∈𝔹 B f → Σ∈𝔹 B g
-∀𝕎-Σ∈𝔹Func {B} {w} {f} {g} aw (b , i) = b , j
+∀𝕎-Σ∈𝔹Func {_} {B} {w} {f} {g} aw (b , i) = b , j
   where
     j : ∈𝔹 b g
     j e b' w' e' z = aw w' z (i (𝔹.ext b b') b' w' e' z)
 
 
-∀𝕎-Σ∈𝔹 : {B : Bars} (all : Bars∀ B) {w : 𝕎·} {f : wPred w} → ∀𝕎 w f → Σ∈𝔹 B f
-∀𝕎-Σ∈𝔹 {B} all {w} {f} h = 𝔹∀ all w , i
+∀𝕎-Σ∈𝔹 : ∀ {l} {B : Bars} (all : Bars∀ B) {w : 𝕎·} {f : wPred {l} w} → ∀𝕎 w f → Σ∈𝔹 B f
+∀𝕎-Σ∈𝔹 {_} {B} all {w} {f} h = 𝔹∀ all w , i
   where
-    i : ∈𝔹 {B} (𝔹∀ all w) f
+    i : ∈𝔹 {_} {B} (𝔹∀ all w) f
     i {w'} e b w1 e1 z = h w1 z
 
 
-Σ∈𝔹-Σ∈𝔹' : {B : Bars} (mon : Bars⊑ B) {w : 𝕎·} {f : wPred w} {g : wPredDep f}
+Σ∈𝔹-Σ∈𝔹' : ∀ {l} {B : Bars} (mon : Bars⊑ B) {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f}
              → Σ∈𝔹 B (λ w' e' → (x : f w' e') → g w' e' x)
              → (i : Σ∈𝔹 B f) → Σ∈𝔹' B i g
-Σ∈𝔹-Σ∈𝔹' {B} mon {w} {f} {g} (b1 , i1) (b2 , i2) {w'} e ib =
+Σ∈𝔹-Σ∈𝔹' {_} {B} mon {w} {f} {g} (b1 , i1) (b2 , i2) {w'} e ib =
   𝔹⊑ mon e b1 , j
   where
     j : ∈𝔹Dep (𝔹⊑ mon e b1) (i2 e ib) (↑wPredDep'' g e)
     j {w0} e0 (w0' , b0 , e0' , e0'') w1 e1 x x' = i1 (𝔹.ext b1 b0) b0 w1 (⊑-trans· e0' e1) x' (i2 e ib w1 x x')
 
 
-∀𝕎-Σ∈𝔹-Σ∈𝔹' : {B : Bars} (all : Bars∀ B) {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : Σ∈𝔹 B f)
+∀𝕎-Σ∈𝔹-Σ∈𝔹' : ∀ {l} {B : Bars} (all : Bars∀ B) {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} (i : Σ∈𝔹 B f)
                 → ∀𝕎 w (λ w' e' → (x : f w' e') {--(at : atBethBar i w' e' x)--} → g w' e' x)
                 → Σ∈𝔹' B i g
-∀𝕎-Σ∈𝔹-Σ∈𝔹' {B} all {w} {f} {g} (b , i) aw {w'} e ib =
+∀𝕎-Σ∈𝔹-Σ∈𝔹' {l} {B} all {w} {f} {g} (b , i) aw {w'} e ib =
   𝔹∀ all w' , j
   where
-    j : ∈𝔹Dep {B} (𝔹∀ all w') (i e ib) (↑wPredDep'' g e)
+    j : ∈𝔹Dep {_} {B} (𝔹∀ all w') (i e ib) (↑wPredDep'' g e)
     j {w0} e0 ib' w1 e1 x y = aw w1 y (i e ib w1 x y)
 
 
@@ -431,33 +425,33 @@ bar-𝔹⊑→ {B} mon {w} {w'} e {b} {w0} h = 𝔹.mon b (fst (snd (snd h))) (f
 
 
 
-Σ∈𝔹'-comb-change : {B : Bars} (mon : Bars⊑ B) (isect : Bars∩ B) (fam : BarsFam2 B)
-                    {w : 𝕎·} {f₁ f₂ f₃ : wPred w}
+Σ∈𝔹'-comb-change : ∀ {l} {B : Bars} (mon : Bars⊑ B) (isect : Bars∩ B) (fam : BarsFam2 B)
+                    {w : 𝕎·} {f₁ f₂ f₃ : wPred {l} w}
                     {g₁ : wPredDep f₁} {g₂ : wPredDep f₂} {g₃ : wPredDep f₃}
                     (i₁ : Σ∈𝔹 B f₁) (i₂ : Σ∈𝔹 B f₂) (i₃ : Σ∈𝔹 B f₃)
                     → ∀𝕎 w (λ w' e' → (x₁ : f₁ w' e') (x₂ : f₂ w' e') (x₃ : f₃ w' e')
                                      → g₁ w' e' x₁ → g₂ w' e' x₂ → g₃ w' e' x₃)
                     → Σ∈𝔹' B i₁ g₁ → Σ∈𝔹' B i₂ g₂ → Σ∈𝔹' B i₃ g₃
-Σ∈𝔹'-comb-change {B} mon isect fam {w} {f₁} {f₂} {f₃} {g₁} {g₂} {g₃} (b₁ , i₁) (b₂ , i₂) (b₃ , i₃) aw z₁ z₂ {w'} e ib =
+Σ∈𝔹'-comb-change {l} {B} mon isect fam {w} {f₁} {f₂} {f₃} {g₁} {g₂} {g₃} (b₁ , i₁) (b₂ , i₂) (b₃ , i₃) aw z₁ z₂ {w'} e ib =
   ∩𝔹 isect b1 b2 , j
   where
     z₁' : {w0 : 𝕎·} (e0 : w' ⊑· w0) (ib0 : 𝔹.bar (𝔹⊑ mon e b₁) w0)
-          → Σ (𝔹 B w0) (λ b' → ∈𝔹Dep {B} b' (i₁ (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₁} ib0)) (↑wPredDep'' g₁ (⊑-trans· e e0)))
+          → Σ (𝔹 B w0) (λ b' → ∈𝔹Dep {_} {B} b' (i₁ (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₁} ib0)) (↑wPredDep'' g₁ (⊑-trans· e e0)))
     z₁' {w0} e0 (wa , ba , ea₁ , ea₂) = z₁ (⊑-trans· e e0) (𝔹.mon b₁ ea₁ ba)
 
     b1 : 𝔹 B w'
     b1 = 𝔹fam2 fam (𝔹⊑ mon e b₁)
-                (λ {w0} e0 ib0 b' → ∈𝔹Dep {B} b' (i₁ (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₁} ib0))
+                (λ {w0} e0 ib0 b' → ∈𝔹Dep {_} {B} b' (i₁ (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₁} ib0))
                                                   (↑wPredDep'' g₁ (⊑-trans· e e0)))
                 z₁'
 
     z₂' : {w0 : 𝕎·} (e0 : w' ⊑· w0) (ib0 : 𝔹.bar (𝔹⊑ mon e b₂) w0)
-          → Σ (𝔹 B w0) (λ b' → ∈𝔹Dep {B} b' (i₂ (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₂} ib0)) (↑wPredDep'' g₂ (⊑-trans· e e0)))
+          → Σ (𝔹 B w0) (λ b' → ∈𝔹Dep {_} {B} b' (i₂ (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₂} ib0)) (↑wPredDep'' g₂ (⊑-trans· e e0)))
     z₂' {w0} e0 (wa , ba , ea₁ , ea₂) = z₂ (⊑-trans· e e0) (𝔹.mon b₂ ea₁ ba)
 
     b2 : 𝔹 B w'
     b2 = 𝔹fam2 fam (𝔹⊑ mon e b₂)
-                (λ {w0} e0 ib0 b' → ∈𝔹Dep {B} b' (i₂ (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₂} ib0))
+                (λ {w0} e0 ib0 b' → ∈𝔹Dep {_} {B} b' (i₂ (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₂} ib0))
                                                   (↑wPredDep'' g₂ (⊑-trans· e e0)))
                 z₂'
 
@@ -469,7 +463,6 @@ bar-𝔹⊑→ {B} mon {w} {w'} e {b} {w0} h = 𝔹.mon b (fst (snd (snd h))) (f
          (i₃ e ib w3 x x₁)
          (snd (z₁' ex1 (wx2 , brx , ex2 , ex3)) (𝔹.ext (fst (z₁' ex1 (wx2 , brx , ex2 , ex3))) bfx) bfx w3 (⊑-trans· ex e3) (⊑-trans· (𝔹.ext (fst (z₁' ex1 (wx2 , brx , ex2 , ex3))) bfx) (⊑-trans· ex e3)) x₁)
          (snd (z₂' ey1 (wy2 , bry , ey2 , ey3)) (𝔹.ext (fst (z₂' ey1 (wy2 , bry , ey2 , ey3))) bfy) bfy w3 (⊑-trans· ey e3) (⊑-trans· (𝔹.ext (fst (z₂' ey1 (wy2 , bry , ey2 , ey3))) bfy) (⊑-trans· ey e3)) x₁)
-
 
 
 
@@ -488,12 +481,12 @@ old-Σ∈𝔹-idem {B} fam {w} {f} (b , i) =
 --}
 
 
-Σ∈𝔹-idem-aux : {B : Bars} (fam : BarsFam2 B) {w : 𝕎·} {f : wPred w}
+Σ∈𝔹-idem-aux : ∀ {l} {B : Bars} (fam : BarsFam2 B) {w : 𝕎·} {f : wPred {l} w}
                 → (b : 𝔹 B w)
                 → (i : ∈𝔹 b (λ w' e' → Σ∈𝔹 B (↑wPred' f e')))
                 → Σ∈𝔹 B f
-Σ∈𝔹-idem-aux {B} fam {w} {f} b i =
-  𝔹fam2 fam {w} b (λ {w'} e ib bw → ∈𝔹 {B} bw (↑wPred' f e)) (λ {w'} e ib → i e ib w' (⊑-refl· _) e) , j
+Σ∈𝔹-idem-aux {l} {B} fam {w} {f} b i =
+  𝔹fam2 fam {w} b (λ {w'} e ib bw → ∈𝔹 {_} {B} bw (↑wPred' f e)) (λ {w'} e ib → i e ib w' (⊑-refl· _) e) , j
   where
     j : ∈𝔹 (𝔹fam2 fam b (λ {w'} e ib bw → ∈𝔹 bw (↑wPred' f e)) (λ {w'} e ib → i e ib w' (⊑-refl· w') e)) f
     j {w'} e (mk𝔹In w2 e2 br₁ , br) w1 e1 z =
@@ -504,10 +497,10 @@ old-Σ∈𝔹-idem {B} fam {w} {f} (b , i) =
           z
 
 
-Σ∈𝔹-idem : {B : Bars} (fam : BarsFam2 B) {w : 𝕎·} {f : wPred w}
+Σ∈𝔹-idem : ∀ {l} {B : Bars} (fam : BarsFam2 B) {w : 𝕎·} {f : wPred {l} w}
             → Σ∈𝔹 B (λ w' e' → Σ∈𝔹 B (↑wPred' f e'))
             → Σ∈𝔹 B f
-Σ∈𝔹-idem {B} fam {w} {f} (b , i) = Σ∈𝔹-idem-aux fam b i
+Σ∈𝔹-idem {_} {B} fam {w} {f} (b , i) = Σ∈𝔹-idem-aux fam b i
 
 
 {--
@@ -540,13 +533,13 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
 --}
 
 
-Σ∈𝔹'-idem : {B : Bars} (mon : Bars⊑ B) (fam : BarsFam2 B)
-             {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : Σ∈𝔹 B f)
+Σ∈𝔹'-idem : ∀ {l} {B : Bars} (mon : Bars⊑ B) (fam : BarsFam2 B)
+             {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} (i : Σ∈𝔹 B f)
              → Σ∈𝔹 B (λ w' e' → Σ∈𝔹' B (↑'Σ∈𝔹 mon i e') (↑wPredDep' g e'))
              → Σ∈𝔹' B i g
-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
+Σ∈𝔹'-idem {l} {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
   𝔹fam2 fam {w'} (𝔹⊑ mon e b₂)
-         (λ {w₁} e₁ (wa , ba , ea₁ , ea₂) b' → ∈𝔹Dep {B} b' (λ w2 e2 z' y' → i e ib _ (⊑-trans· ea₂ e2) y') (↑wPredDep'' (↑wPredDep' g (⊑-trans· e ea₂)) (⊑-refl· _)))
+         (λ {w₁} e₁ (wa , ba , ea₁ , ea₂) b' → ∈𝔹Dep {_} {B} b' (λ w2 e2 z' y' → i e ib _ (⊑-trans· ea₂ e2) y') (↑wPredDep'' (↑wPredDep' g (⊑-trans· e ea₂)) (⊑-refl· _)))
          (λ {w₁} e₁ (wa , ba , ea₁ , ea₂) → j (𝔹.ext b₂ ba) ba w₁ ea₁ (⊑-trans· e ea₂) (⊑-refl· _) (w' , ib , ea₂ , ⊑-refl· _)) ,
   jd
   where
@@ -567,17 +560,16 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
           (i e ib w1 x y)
 
 
-
-∀𝕎-Σ∈𝔹'-Σ∈𝔹-aux : {B : Bars} (fam : BarsFam2 B)
-                     {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w}
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-aux : ∀ {l r} {B : Bars} (fam : BarsFam2 B)
+                     {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} {h : wPred {r} w} -- TODO: is using both l and r correct?
                      (b : 𝔹 B w)
                      (i : ∈𝔹 b f)
                      → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → h w' e')
                      → Σ∈𝔹' B (b , i) g → Σ∈𝔹 B h
-∀𝕎-Σ∈𝔹'-Σ∈𝔹-aux {B} fam {w} {f} {g} {h} b i aw j =
-  𝔹fam2 fam {w} b (λ {w'} e ib b' → ∈𝔹Dep {B} b' (i e ib) (↑wPredDep'' g e)) j , i'
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-aux {_} {_} {B} fam {w} {f} {g} {h} b i aw j =
+  𝔹fam2 fam {w} b (λ {w'} e ib b' → ∈𝔹Dep {_} {B} b' (i e ib) (↑wPredDep'' g e)) j , i'
   where
-    i' : ∈𝔹 {B} (𝔹fam2 fam {w} b (λ {w'} e ib b' → ∈𝔹Dep {B} b' (i e ib) (↑wPredDep'' g e)) j) h
+    i' : ∈𝔹 {_} {B} (𝔹fam2 fam {w} b (λ {w'} e ib b' → ∈𝔹Dep {_} {B} b' (i e ib) (↑wPredDep'' g e)) j) h
     i' {w'} e (mk𝔹In w2 e2 br , F) w1 e1 z =
       aw w1 z
          (i e2 br w1 (⊑-trans· (𝔹.ext (proj₁ (j e2 br)) F) e1) z)
@@ -588,28 +580,27 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
               z)
 
 
-∀𝕎-Σ∈𝔹'-Σ∈𝔹 : {B : Bars} (fam : BarsFam2 B)
 
-                 {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w} (i : Σ∈𝔹 B f)
+∀𝕎-Σ∈𝔹'-Σ∈𝔹 : ∀ {l r} {B : Bars} (fam : BarsFam2 B)
+                 {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} {h : wPred {r} w} (i : Σ∈𝔹 B f)
                  → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → h w' e')
                  → Σ∈𝔹' B i g → Σ∈𝔹 B h
-∀𝕎-Σ∈𝔹'-Σ∈𝔹 {B} fam {w} {f} {g} {h} (b , i) aw j = ∀𝕎-Σ∈𝔹'-Σ∈𝔹-aux fam b i aw j
+∀𝕎-Σ∈𝔹'-Σ∈𝔹 {_} {_} {B} fam {w} {f} {g} {h} (b , i) aw j = ∀𝕎-Σ∈𝔹'-Σ∈𝔹-aux fam b i aw j
 
 
-
-∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux : {B : Bars} (fam : BarsFam2 B)
-                          {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w}
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux : ∀ {l r} {B : Bars} (fam : BarsFam2 B)
+                          {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} {h : wPred {r} w}
                           (b : 𝔹 B w)
                           (i : ∈𝔹 b f)
                           → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → Σ∈𝔹 B (↑wPred' h e'))
                           → Σ∈𝔹' B (b , i) g → Σ∈𝔹 B h
-∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux {B} fam {w} {f} {g} {h} b i aw j =
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux {_} {_} {B} fam {w} {f} {g} {h} b i aw j =
   𝔹fam2
     fam {w} b
-    (λ {w'} e ib b' → ∈𝔹 {B} b' (↑wPred' h e))
+    (λ {w'} e ib b' → ∈𝔹 {_} {B} b' (↑wPred' h e))
     (λ {w'} e ib → 𝔹fam2
                       fam (fst (j e ib))
-                      (λ {w''} e' ib' b'' → ∈𝔹 {B} b'' (↑wPred' h (⊑-trans· e e')))
+                      (λ {w''} e' ib' b'' → ∈𝔹 {_} {B} b'' (↑wPred' h (⊑-trans· e e')))
                       (λ {w''} e' ib' → aw w'' (⊑-trans· e e') (i e ib w''  e' (⊑-trans· e e')) (snd (j e ib) e' ib' w'' (⊑-refl· w'') e' (⊑-trans· e e'))) ,
                     λ {w1} e1 (mk𝔹In w3 e3 br , ib2) w2 e2 z →
                       snd (aw w3 (⊑-trans· e e3) (i e ib w3 e3 (⊑-trans· e e3)) (snd (j e ib) e3 br w3 (⊑-refl· w3) e3 (⊑-trans· e e3)))
@@ -622,23 +613,23 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
 {-# INLINE ∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux #-}
 
 
-∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem : {B : Bars} (fam : BarsFam2 B)
-                     {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w}
+
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem : ∀ {l r} {B : Bars} (fam : BarsFam2 B)
+                     {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} {h : wPred {r} w}
                      (b : Σ∈𝔹 B f)
                      → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → Σ∈𝔹 B (↑wPred' h e'))
                      → Σ∈𝔹' B b g → Σ∈𝔹 B h
-∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem {B} fam {w} {f} {g} {h} (b , i) aw j = ∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux fam b i aw j
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem {_} {_} {B} fam {w} {f} {g} {h} (b , i) aw j = ∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux fam b i aw j
 {-# INLINE ∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem #-}
 
-
 -- This really only need isect, but can conveniently be derived from Σ∈𝔹'-comb-change
-Σ∈𝔹'-comb : {B : Bars} (mon : Bars⊑ B) (isect : Bars∩ B) (fam : BarsFam2 B)
-             {w : 𝕎·} {f : wPred w} {g h k : wPredDep f} (i : Σ∈𝔹 B f)
+Σ∈𝔹'-comb : ∀ {l} {B : Bars} (mon : Bars⊑ B) (isect : Bars∩ B) (fam : BarsFam2 B)
+             {w : 𝕎·} {f : wPred {l} w} {g h k : wPredDep f} (i : Σ∈𝔹 B f)
              → ∀𝕎 w (λ w' e' → (z zg zh : f w' e')
                               → g w' e' zg → h w' e' zh → k w' e' z)
              → Σ∈𝔹' B i g → Σ∈𝔹' B i h → Σ∈𝔹' B i k
-Σ∈𝔹'-comb {B} mon isect fam {w} {f} {g} {h} {k} i aw j₁ j₂ =
-  Σ∈𝔹'-comb-change {B} mon isect fam {w} {f} {f} {f} {g} {h} {k}
+Σ∈𝔹'-comb {_} {B} mon isect fam {w} {f} {g} {h} {k} i aw j₁ j₂ =
+  Σ∈𝔹'-comb-change {_} {B} mon isect fam {w} {f} {f} {f} {g} {h} {k}
                     i i i (λ w1 e1 x₁ x₂ x₃ a b → aw w1 e1 x₃ x₁ x₂ a b) j₁ j₂
 
 {--
@@ -671,13 +662,13 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
 
 
 -- This really only needs mon and fam, but can conveniently be derived from Σ∈𝔹'-comb-change
-Σ∈𝔹'-change : {B : Bars} (mon : Bars⊑ B) (isect : Bars∩ B) (fam : BarsFam2 B)
-               {w : 𝕎·} {f k : wPred w} {g : wPredDep f} {h : wPredDep k}
+Σ∈𝔹'-change : ∀ {l} {B : Bars} (mon : Bars⊑ B) (isect : Bars∩ B) (fam : BarsFam2 B)
+               {w : 𝕎·} {f k : wPred {l} w} {g : wPredDep f} {h : wPredDep k}
                (i : Σ∈𝔹 B f) (j : Σ∈𝔹 B k)
                → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e')
                                 → g w' e' x → h w' e' y)
                → Σ∈𝔹' B i g → Σ∈𝔹' B j h
-Σ∈𝔹'-change {B} mon isect fam {w} {f} {k} {g} {h} i j aw z =
+Σ∈𝔹'-change {_} {B} mon isect fam {w} {f} {k} {g} {h} i j aw z =
   Σ∈𝔹'-comb-change mon isect fam {w} {f} {f} {k} {g} {g} {h} i i j (λ w1 e1 x₁ x₂ x₃ a b → aw w1 e1 x₁ x₃ a) z z
 
 {--
@@ -713,10 +704,8 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
 --}
 
 
-
-
-Σ∈𝔹-const : {B : Bars} (ex : Bars∃ B) {w : 𝕎·} {t : Set(lsuc(L))} → Σ∈𝔹 B {w} (λ w e → t) → t
-Σ∈𝔹-const {B} ex {w} {t} (b , i) =
+Σ∈𝔹-const : ∀ {l} {B : Bars} (ex : Bars∃ B) {w : 𝕎·} {t : Set l} → Σ∈𝔹 B {w} (λ w e → t) → t --TODO: Check if l is correct instead of n
+Σ∈𝔹-const {_} {B} ex {w} {t} (b , i) =
   i (fst (snd (ex (𝔹.bars b) (𝔹.ext b))))
     (snd (snd (ex (𝔹.bars b) (𝔹.ext b))))
     (fst (ex (𝔹.bars b) (𝔹.ext b)))
@@ -724,8 +713,9 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
     (fst (snd (ex (𝔹.bars b) (𝔹.ext b))))
 
 
-Σ∈𝔹→∃ : {B : Bars} (ex : Bars∃ B) {w : 𝕎·} {f : wPred w} → Σ∈𝔹 B {w} f → ∃𝕎 w λ w' e → f w' e
-Σ∈𝔹→∃ {B} ex {w} {f} (b , i) =
+
+Σ∈𝔹→∃ : ∀ {l} {B : Bars} (ex : Bars∃ B) {w : 𝕎·} {f : wPred {l} w} → Σ∈𝔹 B {w} f → ∃𝕎 w λ w' e → f w' e
+Σ∈𝔹→∃ {_} {B} ex {w} {f} (b , i) =
   fst (ex (𝔹.bars b) (𝔹.ext b)) ,
   fst (snd (ex (𝔹.bars b) (𝔹.ext b))) ,
   i (𝔹.ext b (snd (snd (ex (𝔹.bars b) (𝔹.ext b)))))
@@ -735,16 +725,14 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
     (fst (snd (ex (𝔹.bars b) (𝔹.ext b))))
 
 
-
 -- TODO: is this derivable from the others?
-→Σ∈𝔹∀𝕎 : {B : Bars} {w : 𝕎·} {f : wPred w}
+→Σ∈𝔹∀𝕎 : ∀ {l} {B : Bars} {w : 𝕎·} {f : wPred {l} w}
             → Σ∈𝔹 B f
             → Σ∈𝔹 B (λ w' e → ∀𝕎 w' (↑wPred f e))
-→Σ∈𝔹∀𝕎 {B} {w} {f} (b , i) = b , j
+→Σ∈𝔹∀𝕎 {_} {B} {w} {f} (b , i) = b , j
   where
     j : ∈𝔹 b (λ w' e → ∀𝕎 w' (↑wPred f e))
     j {w'} e b w1 e1 z w2 e2 = i e b w2 (⊑-trans· e1 e2) (⊑-trans· z e2)
-
 
 
 {-- Those are all the properties we need about Bars to derive the above properties,
@@ -754,7 +742,7 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
     (2) IS𝔹BarsProps for Beth Bars
  --}
 -- bars are the open sets of a topological space equipped with the set of 𝕎
-record BarsProps : Set(lsuc(lsuc(L))) where
+record BarsProps : Setω where
   constructor mkBarsProps
   field
     bars  : Bars

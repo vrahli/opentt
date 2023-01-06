@@ -66,7 +66,7 @@ chainProgress· = chainProgress P
 
 
 -- Progressing chain
-record pchain (w : 𝕎·) : Set(lsuc(L)) where
+record pchain (w : 𝕎·) : Set (1ℓ ⊔ L) where
   constructor mkPChain
   field
     c : chain w
