@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc ; _⊔_ to _∨_)
 open import Agda.Builtin.Sigma
 open import Data.Product
 open import Data.Sum
@@ -26,8 +26,8 @@ module barBeth {L : Level} (W : PossibleWorlds {L})
                (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M)
        where
 open import worldDef{L}(W)
-open import bar{L}(W)
-open import mod{L}(W)
+open import bar{L}{L ∨ 1ℓ}(W)
+open import mod{L}{L ∨ 1ℓ}(W)
 
 -- Those are only needed by the Beth instance
 open import choiceDef{L}(C)
@@ -58,6 +58,7 @@ inI𝔹 {w} (indBar-ind .w ind) f = {w' : 𝕎·} (e' : w ⊑· w') → inI𝔹 
 
 inIBethBar : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
 inIBethBar w f = Σ (I𝔹 w) (λ b → inI𝔹 b f)
+
 
 
 -- TODO: the base case should allow a further bar
@@ -197,7 +198,7 @@ inIBethBar-inIBethBar' {w} {f} {g} (b1 , i1) (indBar-ind .w ind , i2) = {!!}
  -- Beth Bar instance -- defined from infinite sequences
  --
  --}
-record BarredChain (bar : Br) {w : 𝕎·} (c : chain w) : Set(L) where
+record BarredChain (bar : Br) {w : 𝕎·} (c : chain w) : Set L where
   constructor mkBarredChain
   field
     w'  : 𝕎·
@@ -210,13 +211,13 @@ IS𝔹bars : Bars
 IS𝔹bars w bar = (c : pchain w) → BarredChain bar (pchain.c c)
 
 -- a Beth bar where all infinite sequences are barred
-IS𝔹 : 𝕎· → Set(lsuc(L))
+IS𝔹 : 𝕎· → Set (2ℓ ∨ lsuc L)
 IS𝔹 w = 𝔹 IS𝔹bars w
 
-inBethBar : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
+inBethBar : ∀ {r} (w : 𝕎·) (f : wPred {r} w) → Set (2ℓ ∨ lsuc L ∨ r)
 inBethBar w = Σ∈𝔹 IS𝔹bars {w}
 
-inBethBar' : (w : 𝕎·) {g : wPred w} (h : inBethBar w g) (f : wPredDep g) → Set(lsuc(L))
+inBethBar' : ∀ {r} (w : 𝕎·) {g : wPred {r} w} (h : inBethBar w g) (f : wPredDep g) → Set (2ℓ ∨ lsuc L ∨ r)
 inBethBar' w = Σ∈𝔹' IS𝔹bars {w}
 
 
@@ -258,6 +259,7 @@ IS𝔹bars∀ : Bars∀ IS𝔹bars
 IS𝔹bars∀ w c = mkBarredChain w (⊑-refl· _) 0 (chain.init (pchain.c c))
 
 
+
 --IS𝔹Fam : {w : 𝕎·} (b : IS𝔹 w) → Set(L)
 --IS𝔹Fam = 𝔹Fam {IS𝔹bars}
 
@@ -286,7 +288,7 @@ IS𝔹barsFam1 {w} b G i c =
 
 
 IS𝔹barsFam2 : BarsFam2 IS𝔹bars
-IS𝔹barsFam2 {w} b G i c =
+IS𝔹barsFam2 {_} {w} b G i c =
   mkBarredChain (BarredChain.w' bp') br (BarredChain.n bp' + BarredChain.n bp) e
   where
     bp : BarredChain (𝔹.bar b) (pchain.c c)
@@ -440,8 +442,8 @@ inBethBar-Mod = BarsProps→Mod IS𝔹BarsProps
 trivialIS𝔹 : (w : 𝕎·) → IS𝔹 w
 trivialIS𝔹 = 𝔹∀ {IS𝔹bars} IS𝔹bars∀
 
-inIS𝔹 : {w : 𝕎·} (b : IS𝔹 w) (f : wPred w) → Set(lsuc(L))
-inIS𝔹 = ∈𝔹 {IS𝔹bars}
+inIS𝔹 : ∀ {r} {w : 𝕎·} (b : IS𝔹 w) (f : wPred {r} w) → Set (L ∨ r)
+inIS𝔹 = ∈𝔹 {_} {IS𝔹bars}
 
 
 

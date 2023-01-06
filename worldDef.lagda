@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -32,14 +32,14 @@ open import calculus
 -- make it a parameter of computation
 open import world
 
-module worldDef {L : Level} (W : PossibleWorlds {L}) where
+module worldDef {n : Level} (W : PossibleWorlds {n}) where
 
 open PossibleWorlds
 
-𝕎· : Set(L)
+𝕎· : Set n
 𝕎· = 𝕎 W
 
-_⊑·_ : 𝕎· → 𝕎· → Set(L)
+_⊑·_ : 𝕎· → 𝕎· → Set n
 w1 ⊑· w2 = _⊑_ W w1 w2
 
 ⊑-refl· : (a : 𝕎·) → a ⊑· a
@@ -48,75 +48,75 @@ w1 ⊑· w2 = _⊑_ W w1 w2
 ⊑-trans· : {a b c : 𝕎·} → a ⊑· b → b ⊑· c → a ⊑· c
 ⊑-trans· = ⊑-trans W
 
-wPred : 𝕎· → Set(lsuc(lsuc(L)))
-wPred w = (w' : 𝕎·) (e : w ⊑· w') → Set(lsuc(L))
+wPred : ∀ {m} → 𝕎· → Set (n ⊔ lsuc m)
+wPred {m} w = (w' : 𝕎·) (e : w ⊑· w') → Set m
 {-# INLINE wPred #-}
 
-wPredDep : {w : 𝕎·} (f : wPred w) → Set(lsuc(lsuc(L)))
-wPredDep {w} f = (w' : 𝕎·) (e' : w ⊑· w') (x : f w' e') → Set(lsuc(L))
+wPredDep : ∀ {m} {w : 𝕎·} (f : wPred {m} w) → Set (n ⊔ lsuc m)
+wPredDep {m} {w} f = (w' : 𝕎·) (e' : w ⊑· w') (x : f w' e') → Set m
 {-# INLINE wPredDep #-}
 
-wPredExtIrr : {w : 𝕎·} (f : wPred w) → Set(lsuc(L))
-wPredExtIrr {w} f = (w' : 𝕎·) (e1 e2 : w ⊑· w') → f w' e1 → f w' e2
+wPredExtIrr : ∀ {m} {w : 𝕎·} (f : wPred {m} w) → Set (n ⊔ m)
+wPredExtIrr {m} {w} f = (w' : 𝕎·) (e1 e2 : w ⊑· w') → f w' e1 → f w' e2
 
-wPredDepExtIrr : {w : 𝕎·} {g : wPred w} (f : wPredDep g) → Set(lsuc(L))
-wPredDepExtIrr {w} {g} f = (w' : 𝕎·) (e1 e2 : w ⊑· w') (x1 : g w' e1) (x2 : g w' e2) → f w' e1 x1 → f w' e2 x2
+wPredDepExtIrr : ∀ {m} {w : 𝕎·} {g : wPred {m} w} (f : wPredDep g) → Set (n ⊔ m)
+wPredDepExtIrr {m} {w} {g} f = (w' : 𝕎·) (e1 e2 : w ⊑· w') (x1 : g w' e1) (x2 : g w' e2) → f w' e1 x1 → f w' e2 x2
 
 -- f holds in all extensions
-∀𝕎 : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
-∀𝕎 w f = ∀ (w' : 𝕎·) (e : w ⊑· w') → f w' e
+∀𝕎 : ∀ {m} (w : 𝕎·) (f : wPred {m} w) → Set (n ⊔ m)
+∀𝕎 {m} w f = ∀ (w' : 𝕎·) (e : w ⊑· w') → f w' e
 
 -- f holds in one extensions
-∃𝕎 : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
-∃𝕎 w f = Σ 𝕎· (λ w' → Σ (w ⊑· w') (λ e → f w' e))
+∃𝕎 : ∀ {m} (w : 𝕎·) (f : wPred {m} w) → Set (n ⊔ m)
+∃𝕎 {m} w f = Σ 𝕎· (λ w' → Σ (w ⊑· w') (λ e → f w' e))
 
-∃∀𝕎 : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
-∃∀𝕎 w f = ∃𝕎 w (λ w1 e1 → ∀𝕎 w1 (λ w2 e2 → f w2 (⊑-trans· e1 e2)))
+∃∀𝕎 : ∀ {m} (w : 𝕎·) (f : wPred {m} w) → Set (n ⊔ m)
+∃∀𝕎 {m} w f = ∃𝕎 w (λ w1 e1 → ∀𝕎 w1 (λ w2 e2 → f w2 (⊑-trans· e1 e2)))
 
-∀∃∀𝕎 : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
-∀∃∀𝕎 w f = ∀𝕎 w (λ w1 e1 → ∃∀𝕎 w1 (λ w2 e2 → f w2 (⊑-trans· e1 e2)))
-
-
-↑wPred : {w1 : 𝕎·} (f : wPred w1) {w2 : 𝕎·} (e : w1 ⊑· w2) → wPred w2
-↑wPred {w1} f {w2} e w' e' = f w' (⊑-trans· e e')
+∀∃∀𝕎 : ∀ {m} (w : 𝕎·) (f : wPred {m} w) → Set (n ⊔ m)
+∀∃∀𝕎 {m} w f = ∀𝕎 w (λ w1 e1 → ∃∀𝕎 w1 (λ w2 e2 → f w2 (⊑-trans· e1 e2)))
 
 
-↑wPred' : {w1 : 𝕎·} (f : wPred w1) {w2 : 𝕎·} (e : w1 ⊑· w2) → wPred w2
-↑wPred' {w1} f {w2} e w' e' = (z : w1 ⊑· w') → f w' z
+↑wPred : ∀ {m} {w1 : 𝕎·} (f : wPred {m} w1) {w2 : 𝕎·} (e : w1 ⊑· w2) → wPred {m} w2
+↑wPred {_} {w1} f {w2} e w' e' = f w' (⊑-trans· e e')
 
 
-↑wPredDep : {w1 : 𝕎·} {f : wPred w1} (g : wPredDep f) {w2 : 𝕎·} (e : w1 ⊑· w2) → wPredDep (↑wPred f e)
-↑wPredDep {w1} {f} g {w2} e w' e' z = g w' (⊑-trans· e e') z
+↑wPred' : ∀ {m} {w1 : 𝕎·} (f : wPred {m} w1) {w2 : 𝕎·} (e : w1 ⊑· w2) → wPred {n ⊔ m} w2
+↑wPred' {_} {w1} f {w2} e w' e' = (z : w1 ⊑· w') → f w' z
 
 
-↑wPredDep' : {w1 : 𝕎·} {f : wPred w1} (g : wPredDep f) {w2 : 𝕎·} (e : w1 ⊑· w2) → wPredDep (↑wPred' f e)
-↑wPredDep' {w1} {f} g {w2} e w' e' z = (x : w1 ⊑· w') (y : f w' x) → g w' x y
+↑wPredDep : ∀ {m} {w1 : 𝕎·} {f : wPred {m} w1} (g : wPredDep f) {w2 : 𝕎·} (e : w1 ⊑· w2) → wPredDep (↑wPred f e)
+↑wPredDep {_} {w1} {f} g {w2} e w' e' z = g w' (⊑-trans· e e') z
 
 
-↑wPredDep'' : {w1 : 𝕎·} {f : wPred w1} (g : wPredDep f) {w2 : 𝕎·} (e : w1 ⊑· w2) → wPredDep (↑wPred' f e)
-↑wPredDep'' {w1} {f} g {w2} e w' e' z = (x : w1 ⊑· w') → g w' x (z x)
+↑wPredDep' : ∀ {m} {w1 : 𝕎·} {f : wPred {m} w1} (g : wPredDep f) {w2 : 𝕎·} (e : w1 ⊑· w2) → wPredDep (↑wPred' f e)
+↑wPredDep' {_} {w1} {f} g {w2} e w' e' z = (x : w1 ⊑· w') (y : f w' x) → g w' x y
+
+
+↑wPredDep'' : ∀ {m} {w1 : 𝕎·} {f : wPred {m} w1} (g : wPredDep f) {w2 : 𝕎·} (e : w1 ⊑· w2) → wPredDep (↑wPred' f e)
+↑wPredDep'' {_} {w1} {f} g {w2} e w' e' z = (x : w1 ⊑· w') → g w' x (z x)
 {-# INLINE ↑wPredDep'' #-}
 
 
-∀𝕎-mon : {w2 w1 : 𝕎·} {f :  wPred w1} (e : w1 ⊑· w2)
+∀𝕎-mon : ∀ {m} {w2 w1 : 𝕎·} {f : wPred {m} w1} (e : w1 ⊑· w2)
            → ∀𝕎 w1 f
            → ∀𝕎 w2 (↑wPred f e)
-∀𝕎-mon {w2} {w1} {f} e h w' e' = h w' (⊑-trans· e e')
+∀𝕎-mon {m} {w2} {w1} {f} e h w' e' = h w' (⊑-trans· e e')
 
 
-∀𝕎-mon' : {w2 w1 : 𝕎·} {f :  wPred w1} (e : w1 ⊑· w2)
+∀𝕎-mon' : ∀ {m} {w2 w1 : 𝕎·} {f : wPred {m} w1} (e : w1 ⊑· w2)
            → ∀𝕎 w1 f
            → ∀𝕎 w2 (↑wPred' f e)
-∀𝕎-mon' {w2} {w1} {f} e h w' e' z = h w' z
+∀𝕎-mon' {m} {w2} {w1} {f} e h w' e' z = h w' z
 
 
-_⊏_ : 𝕎· → 𝕎· → Set(L)
+_⊏_ : 𝕎· → 𝕎· → Set n
 w1 ⊏ w2 = w1 ⊑· w2 × ¬ w1 ≡ w2
 
 
 
 -- A chain of 𝕎·
-record chain (w : 𝕎·) : Set(L) where
+record chain (w : 𝕎·) : Set n where
   constructor mkChain
   field
     seq  : ℕ → 𝕎·
