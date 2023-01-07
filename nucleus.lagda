@@ -147,9 +147,6 @@ idempotent j = (U : UCSubset) → j (j U) ⋐ j U
 meet-preserving : (UCSubset → UCSubset) → Set(lsuc(L))
 meet-preserving j = (U V : UCSubset) →  j (U ⋒ V) ≅ j U ⋒ j V
 
-nucleus : (UCSubset → UCSubset) → Set(lsuc(L))
-nucleus j = well-defined j × extensive j × idempotent j × meet-preserving j
-
 monotonic : (UCSubset → UCSubset) → Set(lsuc(L))
 monotonic j = (U V : UCSubset) → U ⋐ V → j U ⋐ j V
 
@@ -157,20 +154,29 @@ meet-preserving⇒monotonic : {j : UCSubset → UCSubset} → well-defined j →
 meet-preserving⇒monotonic {j} well-def meet-pre U V U⋐V = ⋒-implies-⋐ {j U} {j V}
   (≅-tran {j U} {j (U ⋒ V)} {j U ⋒ j V} (well-def U (U ⋒ V) (⋐-implies-⋒ {U} {V} U⋐V)) (meet-pre U V))
 
-nucleus-monotonic : {j : UCSubset → UCSubset} → nucleus j → monotonic j
-nucleus-monotonic {j} (well-def , _ , _ , meet-pre) = meet-preserving⇒monotonic {j} well-def meet-pre
-
-undershooting : (UCSubset → UCSubset) → Set(lsuc(L))
-undershooting j = {I : Set(L)} (f : I → UCSubset) → (⋓[ i ∈ I ] (j (f i))) ⋐ j (⋓[ i ∈ I ] (f i))
-
 inhabited : (UCSubset → UCSubset) → Set(lsuc(L))
 inhabited j = {w : 𝕎· } {U : UCSubset} → w ∈· j U → Σ[ w' ∈ 𝕎· ] w' ∈· U
 
--- A c(overing n)ucleus
-cucleus : (UCSubset → UCSubset) → Set(lsuc(L))
-cucleus j = nucleus j × undershooting j × inhabited j
 
-cucleus-monotonic : {j : UCSubset → UCSubset} → cucleus j → monotonic j
-cucleus-monotonic (nuc , _) = nucleus-monotonic nuc
+record isNuclear (j : UCSubset → UCSubset) : Set (lsuc L) where
+  constructor mkNucleus
+  field
+    well-def : well-defined j
+    ext      : extensive j
+    idem     : idempotent j
+    meet-pre : meet-preserving j
+
+-- A c(overing n)ucleus
+record isCuclear (j : UCSubset → UCSubset) : Set (lsuc L) where
+  constructor mkCucleus
+  field
+    inhab : inhabited j
+    nuc   : isNuclear j
+
+nucleus-monotonic : {j : UCSubset → UCSubset} → isNuclear j → monotonic j
+nucleus-monotonic {j} nuc = meet-preserving⇒monotonic {j} (isNuclear.well-def nuc) (isNuclear.meet-pre nuc)
+
+cucleus-monotonic : {j : UCSubset → UCSubset} → isCuclear j → monotonic j
+cucleus-monotonic {j} cuc = nucleus-monotonic (isCuclear.nuc cuc)
 
 \end{code}
