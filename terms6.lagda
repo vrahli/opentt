@@ -1092,30 +1092,6 @@ isValue→SPREAD⇛ {v} {t} {w} isv w1 e1 = lift (⇓-from-to→⇓ {w1} {w1} {S
 --}
 
 
-⇓-FST-PAIR : (a b : Term) (w : 𝕎·) (ca : # a)
-             → FST (PAIR a b) ⇓ a from w to w
-⇓-FST-PAIR a b w ca = 1 , ≡pair e refl
-  where
-    e : sub b (sub a (VAR 0)) ≡ a
-    e rewrite sub-VAR0 a | #subv 0 (shiftUp 0 b) a ca | #shiftDown 0 (ct a ca) = refl
-
-
-⇛-FST-PAIR : (p a b : Term) (w : 𝕎·) (ca : # a)
-              → p ⇛ PAIR a b at w
-              → FST p ⇛ a at w
-⇛-FST-PAIR p a b w ca c w1 e1 =
-  lift (⇓-from-to→⇓
-         {w1} {proj₁ c1} {FST p} {a}
-         (⇓-trans₂ {w1} {proj₁ c1} {proj₁ c1} {FST p} {FST (PAIR a b)} {a} (snd c2) (⇓-FST-PAIR a b (proj₁ c1) ca)))
-  where
-    c1 : Σ 𝕎· (λ w2 → p ⇓ PAIR a b from w1 to w2)
-    c1 = ⇓→from-to (lower (c w1 e1))
-
-    c2 : Σ 𝕎· (λ w2 → FST p ⇓ FST (PAIR a b) from w1 to w2)
-    c2 = fst c1 , SPREAD⇓₁ {w1} {proj₁ c1} {p} {PAIR a b} {VAR 0} (snd c1)
-
-
-
 ≡ₗ→⇓from-to : {a b c : Term} {w1 w2 : 𝕎·}
               → c ≡ a
               → c ⇓ b from w1 to w2

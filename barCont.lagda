@@ -742,7 +742,54 @@ IFLT-NUM-AX-CHOOSE⇓ r n m w =
                     → i #⇛ #NUM n at w
                     → k #⇛ #NUM m at w
                     → #APPLY (#generic r l) i #⇛ #APPLY (#SND l) i at w
-#APPLY-#generic⇛ r l i k f w m n cl ci ck w1 e1 = {!!}
+#APPLY-#generic⇛ r l i k f w m n cl ci ck w1 e1 =
+  lift (⇓-from-to→⇓ {w1} {u𝕎 r n m (fst c)} (snd c))
+  where
+    c : Σ 𝕎· (λ w' → #APPLY (#generic r l) i #⇓ #APPLY (#SND l) i from w1 to u𝕎 r n m w')
+    c = #APPLY-#generic⇓2 r l i k f w1 m n (∀𝕎-mon e1 cl) (∀𝕎-mon e1 ci) (∀𝕎-mon e1 ck)
+
+
+equalInType-NAT-#⇛ : (i : ℕ) (w : 𝕎·) (a1 a2 b1 b2 : CTerm)
+                      → a1 #⇛ a2 at w
+                      → b1 #⇛ b2 at w
+                      → equalInType i w #NAT a2 b2
+                      → equalInType i w #NAT a1 b1
+equalInType-NAT-#⇛ i w a1 a2 b1 b2 c1 c2 eqi =
+  →equalInType-NAT i w a1 b1 (Mod.∀𝕎-□Func M aw (equalInType-NAT→ i w a2 b2 eqi))
+  where
+    aw : ∀𝕎 w (λ w' e' → NATeq w' a2 b2 → NATeq w' a1 b1)
+    aw w1 e1 (n , d1 , d2) = n , #⇛-trans (∀𝕎-mon e1 c1) d1 , #⇛-trans (∀𝕎-mon e1 c2) d2
+
+
+{--
+equalInType i w2 #NAT (#APPLY g1 i) (#APPLY g2 i)
+a1 #⇛ #APPLY f1 i at w
+f1 #⇛ g1 at w
+equalInType i w2 #NAT a1 a2
+--}
+
+
+LISTNATeq : (i : ℕ) → wper
+LISTNATeq i w f g =
+  Σ CTerm (λ a1 → Σ CTerm (λ a2 → Σ CTerm (λ b1 → Σ CTerm (λ b2 →
+    NATeq w a1 a2
+    × equalInType i w #BAIRE b1 b2
+    × f #⇛ (#PAIR a1 b1) at w
+    × g #⇛ (#PAIR a2 b2) at w))))
+
+
+equalInType-LIST-NAT→ : (i : ℕ) (w : 𝕎·) (f g : CTerm)
+                         → equalInType i w (#LIST #NAT) f g
+                         → □· w (λ w' _ → LISTNATeq i w' f g)
+equalInType-LIST-NAT→ i w f g eqi = Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInType-PROD→ eqi))
+  where
+    aw : ∀𝕎 w (λ w' e' → PRODeq (equalInType i w' #NAT) (equalInType i w' (#FUN #NAT #NAT)) w' f g
+                       → □· w' (↑wPred' (λ w'' _ → LISTNATeq i w'' f g) e'))
+    aw w1 e1 (k1 , k2 , f1 , f2 , ek , ef , c1 , c2) = Mod.∀𝕎-□Func M aw1 (equalInType-NAT→ i w1 k1 k2 ek)
+      where
+        aw1 : ∀𝕎 w1 (λ w' e' → NATeq w' k1 k2
+                             → ↑wPred' (λ w'' _ → LISTNATeq i w'' f g) e1 w' e')
+        aw1 w2 e2 ek' e3 = k1 , k2 , f1 , f2 , ek' , equalInType-mon ef w2 e2 , ∀𝕎-mon e2 c1 , ∀𝕎-mon e2 c2
 
 
 generic∈BAIRE : (i : ℕ) (w : 𝕎·) (r : Name) (l : CTerm)
@@ -751,8 +798,8 @@ generic∈BAIRE : (i : ℕ) (w : 𝕎·) (r : Name) (l : CTerm)
 generic∈BAIRE i w r l ∈l =
   ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-FUN eqTypesNAT eqTypesNAT aw1)
   where
-    p1 : □· w (λ w' _ → PRODeq (equalInType i w' #NAT) (equalInType i w' (#FUN #NAT #NAT)) w' l l)
-    p1 = equalInType-PROD→ ∈l
+    p1 : □· w (λ w' _ → LISTNATeq i w' l l)
+    p1 = equalInType-LIST-NAT→ i w l l ∈l
 
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
                         → equalInType i w' #NAT (#APPLY (#generic r l) a₁) (#APPLY (#generic r l) a₂))
@@ -761,13 +808,29 @@ generic∈BAIRE i w r l ∈l =
         p2 : □· w1 (λ w' _ → NATeq w' a₁ a₂)
         p2 = equalInType-NAT→ i w1 a₁ a₂ ea
 
-        aw2 : ∀𝕎 w1 (λ w' e' → ↑wPred (λ w'' _ → PRODeq (equalInType i w'' #NAT) (equalInType i w'' (#FUN #NAT #NAT)) w'' l l) e1 w' e'
+        aw2 : ∀𝕎 w1 (λ w' e' → ↑wPred (λ w'' _ → LISTNATeq i w'' l l) e1 w' e'
                              → NATeq w' a₁ a₂
                              → equalInType i w' #NAT (#APPLY (#generic r l) a₁) (#APPLY (#generic r l) a₂))
-        aw2 w2 e2 (k1 , k2 , f1 , f2 , ek , ef , c1 , c2) (n , d1 , d2) = {!#APPLY-#generic⇛!}
+        aw2 w2 e2 (k1 , k2 , f1 , f2 , ek , ef , c1 , c2) (n , d1 , d2) = p5
           where
             p3 : equalInType i w2 #NAT (#APPLY f1 a₁) (#APPLY f2 a₂)
             p3 = equalInType-FUN→ ef w2 (⊑-refl· w2) a₁ a₂ (equalInType-mon ea w2 e2)
+
+            q1 : #APPLY (#SND l) a₁ #⇛ #APPLY f1 a₁ at w2
+            q1 = →-#⇛-#APPLY a₁ (#⇛-SND-PAIR l k1 f1 w2 c1)
+
+            q2 : #APPLY (#SND l) a₂ #⇛ #APPLY f2 a₂ at w2
+            q2 = →-#⇛-#APPLY a₂ (#⇛-SND-PAIR l k2 f2 w2 c2)
+
+            p4 : equalInType i w2 #NAT (#APPLY (#SND l) a₁) (#APPLY (#SND l) a₂)
+            p4 = equalInType-NAT-#⇛ i w2 (#APPLY (#SND l) a₁) (#APPLY f1 a₁) (#APPLY (#SND l) a₂) (#APPLY f2 a₂) q1 q2 p3
+
+            p5 : equalInType i w2 #NAT (#APPLY (#generic r l) a₁) (#APPLY (#generic r l) a₂)
+            p5 = equalInType-NAT-#⇛
+                   i w2 (#APPLY (#generic r l) a₁) (#APPLY (#SND l) a₁) (#APPLY (#generic r l) a₂) (#APPLY (#SND l) a₂)
+                   (#APPLY-#generic⇛ r l a₁ k1 f1 w2 (fst ek) n c1 d1 (fst (snd ek)))
+                   (#APPLY-#generic⇛ r l a₂ k2 f2 w2 (fst ek) n c2 d2 (snd (snd ek)))
+                   p4
 
 
 -- First prove that loop belongs to CoIndBar
@@ -778,6 +841,8 @@ coSemM : (i : ℕ) (w : 𝕎·) (r : Name) (F l : CTerm)
                 (λ a b eqa → equalInType i w (sub0 a #IndBarC))
                 w (#APPLY (#loop r F) l) (#APPLY (#loop r F) l)
 meq.meqC (coSemM i w r F l j k) = {!!}
+-- Use the fact that #generic is well-typed: generic∈BAIRE
+-- It will be used to keep on reducing loop in: #APPLY-#loop#⇓2
 
 
 -- First prove that loop belongs to CoIndBar

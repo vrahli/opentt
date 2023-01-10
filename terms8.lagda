@@ -735,10 +735,66 @@ lowerVars2-fvars-[0,1,2,3,4,5] {suc (suc z) ∷ l} h (there x) = lowerVars2-fvar
 #[3]SND t = #[3]SPREAD t #[5]VAR1
 
 
+⇓-FST-PAIR : (a b : Term) (w : 𝕎·) (ca : # a)
+             → FST (PAIR a b) ⇓ a from w to w
+⇓-FST-PAIR a b w ca = 1 , ≡pair e refl
+  where
+    e : sub b (sub a (VAR 0)) ≡ a
+    e rewrite sub-VAR0 a | #subv 0 (shiftUp 0 b) a ca | #shiftDown 0 (ct a ca) = refl
+
+
+⇛-FST-PAIR : (p a b : Term) (w : 𝕎·) (ca : # a)
+              → p ⇛ PAIR a b at w
+              → FST p ⇛ a at w
+⇛-FST-PAIR p a b w ca c w1 e1 =
+  lift (⇓-from-to→⇓
+         {w1} {proj₁ c1} {FST p} {a}
+         (⇓-trans₂ {w1} {proj₁ c1} {proj₁ c1} {FST p} {FST (PAIR a b)} {a} (snd c2) (⇓-FST-PAIR a b (proj₁ c1) ca)))
+  where
+    c1 : Σ 𝕎· (λ w2 → p ⇓ PAIR a b from w1 to w2)
+    c1 = ⇓→from-to (lower (c w1 e1))
+
+    c2 : Σ 𝕎· (λ w2 → FST p ⇓ FST (PAIR a b) from w1 to w2)
+    c2 = fst c1 , SPREAD⇓₁ {w1} {proj₁ c1} {p} {PAIR a b} {VAR 0} (snd c1)
+
+
 #⇛-FST-PAIR : (p a b : CTerm) (w : 𝕎·)
                → p #⇛ #PAIR a b at w
                → #FST p #⇛ a at w
 #⇛-FST-PAIR p a b w c = ⇛-FST-PAIR ⌜ p ⌝ ⌜ a ⌝ ⌜ b ⌝ w (CTerm.closed a) c
+
+
+sub-VAR1 : (a : Term) → sub a (VAR 1) ≡ VAR 0
+sub-VAR1 a = refl
+
+
+⇓-SND-PAIR : (a b : Term) (w : 𝕎·)
+             → SND (PAIR a b) ⇓ b from w to w
+⇓-SND-PAIR a b w = 1 , ≡pair e refl
+  where
+    e : sub b (sub a (VAR 1)) ≡ b
+    e rewrite sub-VAR1 a | shiftDownUp b 0 = refl
+
+
+⇛-SND-PAIR : (p a b : Term) (w : 𝕎·)
+              → p ⇛ PAIR a b at w
+              → SND p ⇛ b at w
+⇛-SND-PAIR p a b w c w1 e1 =
+  lift (⇓-from-to→⇓
+         {w1} {fst c1} {SND p} {b}
+         (⇓-trans₂ {w1} {fst c1} {fst c1} {SND p} {SND (PAIR a b)} {b} (snd c2) (⇓-SND-PAIR a b (fst c1))))
+  where
+    c1 : Σ 𝕎· (λ w2 → p ⇓ PAIR a b from w1 to w2)
+    c1 = ⇓→from-to (lower (c w1 e1))
+
+    c2 : Σ 𝕎· (λ w2 → SND p ⇓ SND (PAIR a b) from w1 to w2)
+    c2 = fst c1 , SPREAD⇓₁ {w1} {fst c1} {p} {PAIR a b} {VAR 1} (snd c1)
+
+
+#⇛-SND-PAIR : (p a b : CTerm) (w : 𝕎·)
+               → p #⇛ #PAIR a b at w
+               → #SND p #⇛ b at w
+#⇛-SND-PAIR p a b w c = ⇛-SND-PAIR ⌜ p ⌝ ⌜ a ⌝ ⌜ b ⌝ w c
 
 
 #⇛-trans : {w : 𝕎·} {a b c : CTerm} → a #⇛ b at w → b #⇛ c at w → a #⇛ c at w
@@ -750,6 +806,13 @@ lowerVars2-fvars-[0,1,2,3,4,5] {suc (suc z) ∷ l} h (there x) = lowerVars2-fvar
                 → a #⇛ c at w
                 → #FST p #⇛ c at w
 #⇛-FST-PAIR2 p a b c w c1 c2 = #⇛-trans {w} {#FST p} {a} {c} (#⇛-FST-PAIR p a b w c1) c2
+
+
+#⇛-SND-PAIR2 : (p a b c : CTerm) (w : 𝕎·)
+                → p #⇛ #PAIR a b at w
+                → b #⇛ c at w
+                → #SND p #⇛ c at w
+#⇛-SND-PAIR2 p a b c w c1 c2 = #⇛-trans {w} {#SND p} {b} {c} (#⇛-SND-PAIR p a b w c1) c2
 
 
 #[0]BFALSE : CTerm0
