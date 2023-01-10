@@ -54,6 +54,7 @@ open import newChoiceDef(W)(C)(M)(G)(N)
 open import computation(W)(C)(M)(G)(E)(N)
 open import terms2(W)(C)(M)(G)(E)(N)
 open import terms3(W)(C)(M)(G)(E)(N)
+open import terms6(W)(C)(M)(G)(E)(N)
 
 
 
@@ -695,43 +696,60 @@ lowerVars2-fvars-[0,1,2,3,4,5] {suc (suc z) ∷ l} h (there x) = lowerVars2-fvar
 
 
 #FST : CTerm → CTerm
-#FST t = #SPREAD t #[1]VAR1
+#FST t = #SPREAD t #[1]VAR0
 
 
 #SND : CTerm → CTerm
-#SND t = #SPREAD t #[1]VAR0
+#SND t = #SPREAD t #[1]VAR1
 
 
 #[0]FST : CTerm0 → CTerm0
-#[0]FST t = #[0]SPREAD t #[2]VAR1
+#[0]FST t = #[0]SPREAD t #[2]VAR0
 
 
 #[0]SND : CTerm0 → CTerm0
-#[0]SND t = #[0]SPREAD t #[2]VAR0
+#[0]SND t = #[0]SPREAD t #[2]VAR1
 
 
 #[1]FST : CTerm1 → CTerm1
-#[1]FST t = #[1]SPREAD t #[3]VAR1
+#[1]FST t = #[1]SPREAD t #[3]VAR0
 
 
 #[1]SND : CTerm1 → CTerm1
-#[1]SND t = #[1]SPREAD t #[3]VAR0
+#[1]SND t = #[1]SPREAD t #[3]VAR1
 
 
 #[2]FST : CTerm2 → CTerm2
-#[2]FST t = #[2]SPREAD t #[4]VAR1
+#[2]FST t = #[2]SPREAD t #[4]VAR0
 
 
 #[2]SND : CTerm2 → CTerm2
-#[2]SND t = #[2]SPREAD t #[4]VAR0
+#[2]SND t = #[2]SPREAD t #[4]VAR1
 
 
 #[3]FST : CTerm3 → CTerm3
-#[3]FST t = #[3]SPREAD t #[5]VAR1
+#[3]FST t = #[3]SPREAD t #[5]VAR0
 
 
 #[3]SND : CTerm3 → CTerm3
-#[3]SND t = #[3]SPREAD t #[5]VAR0
+#[3]SND t = #[3]SPREAD t #[5]VAR1
+
+
+#⇛-FST-PAIR : (p a b : CTerm) (w : 𝕎·)
+               → p #⇛ #PAIR a b at w
+               → #FST p #⇛ a at w
+#⇛-FST-PAIR p a b w c = ⇛-FST-PAIR ⌜ p ⌝ ⌜ a ⌝ ⌜ b ⌝ w (CTerm.closed a) c
+
+
+#⇛-trans : {w : 𝕎·} {a b c : CTerm} → a #⇛ b at w → b #⇛ c at w → a #⇛ c at w
+#⇛-trans {w} {a} {b} {c} c₁ c₂ = ⇛-trans c₁ c₂
+
+
+#⇛-FST-PAIR2 : (p a b c : CTerm) (w : 𝕎·)
+                → p #⇛ #PAIR a b at w
+                → a #⇛ c at w
+                → #FST p #⇛ c at w
+#⇛-FST-PAIR2 p a b c w c1 c2 = #⇛-trans {w} {#FST p} {a} {c} (#⇛-FST-PAIR p a b w c1) c2
 
 
 #[0]BFALSE : CTerm0

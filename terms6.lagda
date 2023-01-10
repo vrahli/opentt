@@ -705,6 +705,102 @@ sub-IFC0 a b c d = refl
 --}
 
 
+IFLT-steps₁ : {k : ℕ} {w w' : 𝕎·} {n m a u v : Term}
+              → steps k (n , w) ≡ (m , w')
+              → Σ ℕ (λ k → steps k (IFLT n a u v , w) ≡ (IFLT m a u v , w'))
+IFLT-steps₁ {0} {w} {w'} {n} {m} {a} {u} {v} comp rewrite pair-inj₁ comp | pair-inj₂ comp = 0 , refl
+IFLT-steps₁ {suc k} {w} {w'} {n} {m} {a} {u} {v} comp with is-NUM n
+... | inj₁ (x , p) rewrite p | stepsVal (NUM x) w k tt | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+... | inj₂ p with step⊎ n w
+... |    inj₁ (y , w'' , q) rewrite q = suc (fst c) , snd c
+  where
+    c : Σ ℕ (λ k₁ → steps (suc k₁) (IFLT n a u v , w) ≡ (IFLT m a u v , w'))
+    c with is-NUM n
+    ... | inj₁ (x' , p') rewrite p' = ⊥-elim (p x' refl)
+    ... | inj₂ p' rewrite q = IFLT-steps₁ {k} comp
+... |    inj₂ q rewrite q | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+
+IFLT⇓₁ : {w w' : 𝕎·} {n m a u v : Term}
+         → n ⇓ m from w to w'
+         → IFLT n a u v ⇓ IFLT m a u v from w to w'
+IFLT⇓₁ {w} {w'} {n} {m} {a} {u} {v} (k , comp) = IFLT-steps₁ {k} {w} {w'} {n} {m} {a} {u} {v} comp
+
+
+IFLT⇛₁ : {w : 𝕎·} {n m a u v : Term}
+         → n ⇛ m at w
+         → IFLT n a u v ⇛ IFLT m a u v at w
+IFLT⇛₁ {w} {n} {m} {a} {u} {v} comp w1 e1 = lift (⇓-from-to→⇓ {w1} {fst c} (IFLT⇓₁ (snd c)))
+  where
+    c : Σ 𝕎· (λ w2 → n ⇓ m from w1 to w2)
+    c = ⇓→from-to (lower (comp w1 e1))
+
+
+IFLT-steps₂ : {k : ℕ} {w w' : 𝕎·} {i : ℕ} {n m u v : Term}
+              → steps k (n , w) ≡ (m , w')
+              → Σ ℕ (λ k → steps k (IFLT (NUM i) n u v , w) ≡ (IFLT (NUM i) m u v , w'))
+IFLT-steps₂ {0} {w} {w'} {i} {n} {m} {u} {v} comp rewrite pair-inj₁ comp | pair-inj₂ comp = 0 , refl
+IFLT-steps₂ {suc k} {w} {w'} {i} {n} {m} {u} {v} comp with is-NUM n
+... | inj₁ (x , p) rewrite p | stepsVal (NUM x) w k tt | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+... | inj₂ p with step⊎ n w
+... |    inj₁ (y , w'' , q) rewrite q = suc (fst c) , snd c
+  where
+    c : Σ ℕ (λ k₁ → steps (suc k₁) (IFLT (NUM i) n u v , w) ≡ (IFLT (NUM i) m u v , w'))
+    c with is-NUM n
+    ... | inj₁ (x' , p') rewrite p' = ⊥-elim (p x' refl)
+    ... | inj₂ p' rewrite q = IFLT-steps₂ {k} comp
+... |    inj₂ q rewrite q | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+
+
+IFLT⇓₂ : {w w' : 𝕎·} {i : ℕ} {n m u v : Term}
+         → n ⇓ m from w to w'
+         → IFLT (NUM i) n u v ⇓ IFLT (NUM i) m u v from w to w'
+IFLT⇓₂ {w} {w'} {i} {n} {m} {u} {v} (k , comp) = IFLT-steps₂ {k} {w} {w'} {i} {n} {m} {u} {v} comp
+
+
+IFLT⇓₃ : {w w1 w2 : 𝕎·} {i j : ℕ} {a b u v : Term}
+         → a ⇓ NUM i from w to w1
+         → b ⇓ NUM j from w1 to w2
+         → IFLT a b u v ⇓ IFLT (NUM i) (NUM j) u v from w to w2
+IFLT⇓₃ {w} {w1} {w2} {i} {j} {a} {b} {u} {v} c1 c2 =
+  ⇓-trans₂
+    {w} {w1} {w2}
+    {IFLT a b u v}
+    {IFLT (NUM i) b u v}
+    {IFLT (NUM i) (NUM j) u v}
+    (IFLT⇓₁ {w} {w1} {a} {NUM i} {b} {u} {v} c1)
+    (IFLT⇓₂ {w1} {w2} {i} {b} {NUM j} {u} {v} c2)
+
+
+IFLT⇛₂ : {w : 𝕎·} {i : ℕ} {n m u v : Term}
+         → n ⇛ m at w
+         → IFLT (NUM i) n u v ⇛ IFLT (NUM i) m u v at w
+IFLT⇛₂ {w} {i} {n} {m} {u} {v} comp w1 e1 = lift (⇓-from-to→⇓ {w1} {fst c} (IFLT⇓₂ (snd c)))
+  where
+    c : Σ 𝕎· (λ w2 → n ⇓ m from w1 to w2)
+    c = ⇓→from-to (lower (comp w1 e1))
+
+
+IFLT⇛< : {k j : ℕ} {w : 𝕎·} {a b : Term}
+          → j < k
+          → IFLT (NUM j) (NUM k) a b ⇛ a at w
+IFLT⇛< {k} {j} {w} {a} {b} lekj w1 e1 = lift (1 , c)
+  where
+    c : stepsT 1 (IFLT (NUM j) (NUM k) a b) w1 ≡ a
+    c with j <? k
+    ... | yes p = refl --⊥-elim (1+n≰n (≤-trans p lekj))
+    ... | no p = ⊥-elim (1+n≰n (≤-trans (≰⇒> p) lekj)) --refl
+
+
+IFLT⇛¬< : {k j : ℕ} {w : 𝕎·} {a b : Term}
+          → ¬ j < k
+          → IFLT (NUM j) (NUM k) a b ⇛ b at w
+IFLT⇛¬< {k} {j} {w} {a} {b} lekj w1 e1 = lift (1 , c)
+  where
+    c : stepsT 1 (IFLT (NUM j) (NUM k) a b) w1 ≡ b
+    c with j <? k
+    ... | yes p = ⊥-elim (⊥-elim (n≮n j (<-transˡ p (sucLeInj (≰⇒> lekj)))))
+    ... | no p = refl
+
 
 IFLE-steps₁ : {k : ℕ} {w w' : 𝕎·} {n m a u v : Term}
               → steps k (n , w) ≡ (m , w')
@@ -943,6 +1039,81 @@ isValue→LET⇛ : {v t : Term} {w : 𝕎·}
                  → isValue v
                  → LET v t ⇛ sub v t at w
 isValue→LET⇛ {v} {t} {w} isv w1 e1 = lift (⇓-from-to→⇓ {w1} {w1} {LET v t} {sub v t} (isValue→LET⇓from-to isv))
+
+
+SPREAD-steps₁ : {k : ℕ} {w w' : 𝕎·} {a b t : Term}
+              → steps k (a , w) ≡ (b , w')
+              → Σ ℕ (λ k → steps k (SPREAD a t , w) ≡ (SPREAD b t , w'))
+SPREAD-steps₁ {0} {w} {w'} {a} {b} {t} comp rewrite pair-inj₁ comp | pair-inj₂ comp = 0 , refl
+SPREAD-steps₁ {suc k} {w} {w'} {a} {b} {t} comp with is-PAIR a
+... | inj₁ (u , v , p) rewrite p | stepsVal (PAIR u v ) w k tt | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+... | inj₂ x with step⊎ a w
+... |    inj₁ (y , w'' , q) rewrite q = suc (fst c) , snd c
+  where
+    c : Σ ℕ (λ k₁ → steps (suc k₁) (SPREAD a t , w) ≡ (SPREAD b t , w'))
+    c with is-PAIR a
+    ... | inj₁ (u' , v' , p') rewrite p' = ⊥-elim (x u' v' refl)
+    ... | inj₂ x' rewrite q = SPREAD-steps₁ {k} comp
+... |    inj₂ q rewrite q | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+
+
+SPREAD⇓₁ : {w w' : 𝕎·} {a b t : Term}
+         → a ⇓ b from w to w'
+         → SPREAD a t ⇓ SPREAD b t from w to w'
+SPREAD⇓₁ {w} {w'} {a} {b} {t} (k , comp) = SPREAD-steps₁ {k} {w} {w'} {a} {b} {t} comp
+
+
+
+SPREAD⇛₁ : {w : 𝕎·} {a a' b : Term}
+           → a ⇛ a' at w
+           → SPREAD a b ⇛ SPREAD a' b at w
+SPREAD⇛₁ {w} {a} {a'} {b} comp w1 e1 = lift (⇓-from-to→⇓ {w1} {fst c} (SPREAD⇓₁ (snd c)))
+  where
+    c : Σ 𝕎· (λ w2 → a ⇓ a' from w1 to w2)
+    c = ⇓→from-to (lower (comp w1 e1))
+
+
+{-
+isValue→SPREAD⇓from-to : {v t : Term} {w : 𝕎·}
+                       → isValue v
+                       → SPREAD v t ⇓ sub v t from w to w
+isValue→SPREAD⇓from-to {v} {t} {w} isv = 1 , c
+  where
+    c : steps 1 (SPREAD v t , w) ≡ (sub v t , w)
+    c with is-PAIR v
+    ... | inj₁ (u1 , u2 , p) rewrite p = {!!} --refl
+    ... | inj₂ x = {!!} --⊥-elim (x isv)
+
+
+isValue→SPREAD⇛ : {v t : Term} {w : 𝕎·}
+                 → isValue v
+                 → SPREAD v t ⇛ sub v t at w
+isValue→SPREAD⇛ {v} {t} {w} isv w1 e1 = lift (⇓-from-to→⇓ {w1} {w1} {SPREAD v t} {sub v t} (isValue→SPREAD⇓from-to isv))
+--}
+
+
+⇓-FST-PAIR : (a b : Term) (w : 𝕎·) (ca : # a)
+             → FST (PAIR a b) ⇓ a from w to w
+⇓-FST-PAIR a b w ca = 1 , ≡pair e refl
+  where
+    e : sub b (sub a (VAR 0)) ≡ a
+    e rewrite sub-VAR0 a | #subv 0 (shiftUp 0 b) a ca | #shiftDown 0 (ct a ca) = refl
+
+
+⇛-FST-PAIR : (p a b : Term) (w : 𝕎·) (ca : # a)
+              → p ⇛ PAIR a b at w
+              → FST p ⇛ a at w
+⇛-FST-PAIR p a b w ca c w1 e1 =
+  lift (⇓-from-to→⇓
+         {w1} {proj₁ c1} {FST p} {a}
+         (⇓-trans₂ {w1} {proj₁ c1} {proj₁ c1} {FST p} {FST (PAIR a b)} {a} (snd c2) (⇓-FST-PAIR a b (proj₁ c1) ca)))
+  where
+    c1 : Σ 𝕎· (λ w2 → p ⇓ PAIR a b from w1 to w2)
+    c1 = ⇓→from-to (lower (c w1 e1))
+
+    c2 : Σ 𝕎· (λ w2 → FST p ⇓ FST (PAIR a b) from w1 to w2)
+    c2 = fst c1 , SPREAD⇓₁ {w1} {proj₁ c1} {p} {PAIR a b} {VAR 0} (snd c1)
+
 
 
 ≡ₗ→⇓from-to : {a b c : Term} {w1 w2 : 𝕎·}

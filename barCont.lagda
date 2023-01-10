@@ -649,6 +649,102 @@ sub-genericI r i a b ci ca cb
             | #shiftUp 0 l = refl
 
 
+𝕎< : (n m : ℕ) (w w1 w2 : 𝕎·) → 𝕎·
+𝕎< n m w w1 w2 with n <? m
+... | yes p = w1
+... | no p = w2
+
+
+u𝕎 : (r : Name) (n m : ℕ) (w : 𝕎·) → 𝕎·
+u𝕎 r n m w = 𝕎< n m w w (chooseT r w BFALSE)
+
+
+IFLT⇓𝕎< : {w w1 w2 : 𝕎·} {a b c : Term} {n m : ℕ}
+           → a ⇓ c from w to w1
+           → b ⇓ c from w to w2
+           → IFLT (NUM n) (NUM m) a b ⇓ c from w to 𝕎< n m w w1 w2
+IFLT⇓𝕎< {w} {w1} {w2} {a} {b} {c} {n} {m} c1 c2 with n <? m
+... | yes p = step-⇓-from-to-trans {w} {w} {w1} {IFLT (NUM n) (NUM m) a b} {a} {c} comp c1
+  where
+    comp : step (IFLT (NUM n) (NUM m) a b) w ≡ just (a , w)
+    comp with n <? m
+    ... | yes q = refl
+    ... | no q = ⊥-elim (q p)
+... | no p = step-⇓-from-to-trans {w} {w} {w2} {IFLT (NUM n) (NUM m) a b} {b} {c} comp c2
+  where
+    comp : step (IFLT (NUM n) (NUM m) a b) w ≡ just (b , w)
+    comp with n <? m
+    ... | yes q = ⊥-elim (p q)
+    ... | no q = refl
+
+
+IFLT-NUM-AX-CHOOSE⇓ : (r : Name) (n m : ℕ) (w : 𝕎·)
+                      → IFLT (NUM n) (NUM m) AX (CHOOSE (NAME r) BFALSE) ⇓ AX from w to u𝕎 r n m w
+IFLT-NUM-AX-CHOOSE⇓ r n m w =
+  IFLT⇓𝕎<
+    {w} {w} {chooseT r w BFALSE} {AX} {CHOOSE (NAME r) BFALSE} {AX} {n} {m}
+    (⇓!-refl AX w)
+    (1 , refl)
+
+
+#APPLY-#generic⇓2 : (r : Name) (l i k f : CTerm) (w : 𝕎·) (m n : ℕ)
+                    → l #⇛ #PAIR k f at w
+                    → i #⇛ #NUM n at w
+                    → k #⇛ #NUM m at w
+                    → Σ 𝕎· (λ w' → #APPLY (#generic r l) i #⇓ #APPLY (#SND l) i from w to u𝕎 r n m w')
+#APPLY-#generic⇓2 r l i k f w m n cl ci ck =
+  fst c2 , ⇓-trans₂
+             {w} {w} {u𝕎 r n m (fst c2)}
+             {APPLY (generic r ⌜ l ⌝) ⌜ i ⌝}
+             {genericI r (FST ⌜ l ⌝) (SND ⌜ l ⌝) ⌜ i ⌝}
+             {APPLY (SND ⌜ l ⌝) ⌜ i ⌝}
+             (#APPLY-#generic⇓ r l i w)
+             (⇓-trans₂
+                {w} {u𝕎 r n m (proj₁ c2)} {u𝕎 r n m (proj₁ c2)}
+                {genericI r (FST ⌜ l ⌝) (SND ⌜ l ⌝) ⌜ i ⌝}
+                {SEQ AX (APPLY (SND ⌜ l ⌝) ⌜ i ⌝)}
+                {APPLY (SND ⌜ l ⌝) ⌜ i ⌝}
+                c5
+                (SEQ-AX⇓₁from-to {u𝕎 r n m (proj₁ c2)} {APPLY (SND ⌜ l ⌝) ⌜ i ⌝} (CTerm.closed (#APPLY (#SND l) i))))
+  where
+    c1 : Σ 𝕎· (λ w1 → ⌜ i ⌝ ⇓ NUM n from w to w1)
+    c1 = ⇓→from-to (lower (ci w (⊑-refl· w)))
+
+    e1 : w ⊑· fst c1
+    e1 = #⇓from-to→⊑ {w} {fst c1} {i} {#NUM n} (snd c1)
+
+    c2 : Σ 𝕎· (λ w2 → FST ⌜ l ⌝ ⇓ NUM m from (fst c1) to w2)
+    c2 = ⇓→from-to (lower (#⇛-FST-PAIR2 l k f (#NUM m) w cl ck (fst c1) e1))
+
+    c3 : IFLT ⌜ i ⌝ (FST ⌜ l ⌝) AX (CHOOSE (NAME r) BFALSE) ⇓ IFLT (NUM n) (NUM m) AX (CHOOSE (NAME r) BFALSE) from w to (fst c2)
+    c3 = IFLT⇓₃ {w} {fst c1} {fst c2} {n} {m} {⌜ i ⌝} {FST ⌜ l ⌝} {AX} {CHOOSE (NAME r) BFALSE} (snd c1) (snd c2)
+
+    c4 : IFLT ⌜ i ⌝ (FST ⌜ l ⌝) AX (CHOOSE (NAME r) BFALSE) ⇓ AX from w to u𝕎 r n m (fst c2)
+    c4 = ⇓-trans₂
+           {w} {fst c2} {u𝕎 r n m (fst c2)}
+           {IFLT ⌜ i ⌝ (FST ⌜ l ⌝) AX (CHOOSE (NAME r) BFALSE)}
+           {IFLT (NUM n) (NUM m) AX (CHOOSE (NAME r) BFALSE)}
+           {AX}
+           c3
+           (IFLT-NUM-AX-CHOOSE⇓ r n m (fst c2))
+
+    c5 : genericI r (FST ⌜ l ⌝) (SND ⌜ l ⌝) ⌜ i ⌝ ⇓ SEQ AX (APPLY (SND ⌜ l ⌝) ⌜ i ⌝) from w to u𝕎 r n m (fst c2)
+    c5 = SEQ⇓₁
+           {w} {u𝕎 r n m (fst c2)}
+           {IFLT ⌜ i ⌝ (FST ⌜ l ⌝) AX (CHOOSE (NAME r) BFALSE)}
+           {AX}
+           {APPLY (SND ⌜ l ⌝) ⌜ i ⌝}
+           c4
+
+
+#APPLY-#generic⇛ : (r : Name) (l i k f : CTerm) (w : 𝕎·) (m n : ℕ)
+                    → l #⇛ #PAIR k f at w
+                    → i #⇛ #NUM n at w
+                    → k #⇛ #NUM m at w
+                    → #APPLY (#generic r l) i #⇛ #APPLY (#SND l) i at w
+#APPLY-#generic⇛ r l i k f w m n cl ci ck w1 e1 = {!!}
+
+
 generic∈BAIRE : (i : ℕ) (w : 𝕎·) (r : Name) (l : CTerm)
                 → ∈Type i w (#LIST #NAT) l
                 → ∈Type i w #BAIRE (#generic r l)
@@ -668,7 +764,7 @@ generic∈BAIRE i w r l ∈l =
         aw2 : ∀𝕎 w1 (λ w' e' → ↑wPred (λ w'' _ → PRODeq (equalInType i w'' #NAT) (equalInType i w'' (#FUN #NAT #NAT)) w'' l l) e1 w' e'
                              → NATeq w' a₁ a₂
                              → equalInType i w' #NAT (#APPLY (#generic r l) a₁) (#APPLY (#generic r l) a₂))
-        aw2 w2 e2 (k1 , k2 , f1 , f2 , ek , ef , c1 , c2) (n , d1 , d2) = {!!}
+        aw2 w2 e2 (k1 , k2 , f1 , f2 , ek , ef , c1 , c2) (n , d1 , d2) = {!#APPLY-#generic⇛!}
           where
             p3 : equalInType i w2 #NAT (#APPLY f1 a₁) (#APPLY f2 a₂)
             p3 = equalInType-FUN→ ef w2 (⊑-refl· w2) a₁ a₂ (equalInType-mon ea w2 e2)

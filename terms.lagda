@@ -112,10 +112,10 @@ AND : Term → Term → Term
 AND a b = SUM a b
 
 FST : Term → Term
-FST t = SPREAD t (VAR 1)
+FST t = SPREAD t (VAR 0)
 
 SND : Term → Term
-SND t = SPREAD t (VAR 0)
+SND t = SPREAD t (VAR 1)
 
 {--acres : (p : Term) → restriction
 acres p n t = AND (MEM t NAT) (APPLY2 p (NUM n) t)--}
