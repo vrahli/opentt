@@ -99,6 +99,12 @@ open import continuity-conds(W)(C)(K)(G)(X)(N)
 -- bib to be clarified
 
 
+
+-- MOVE to computation
+#⇓-trans₁ : {w w' : 𝕎·} {a b c : CTerm} → a #⇓ b from w to w' → b #⇓ c at w' → a #⇓ c at w
+#⇓-trans₁ {w} {w'} {a} {b} {c} c₁ c₂ = ⇓-trans₁ {w} {w'} {⌜ a ⌝} {⌜ b ⌝} {⌜ c ⌝} c₁ c₂
+
+
 -- generic element with the index of as 1st arg.
 -- - name of the reference (r)
 -- - list as length (k) + function (f)
@@ -109,7 +115,7 @@ genericI r k f i =
   SEQ choose (APPLY f i)
   where
     choose : Term
-    choose = IFLT i k AX (CHOOSE (NAME r) BFALSE)
+    choose = IFLT i k AX (set⊥ r)
 
 
 generic : Name → Term → Term -- λ (l,f) i → genericI l f i
@@ -161,28 +167,41 @@ CoIndBar = MT IndBarB IndBarC
 
 
 ETA : Term → Term
-ETA n = LAMBDA (SUP (INL (shiftUp 0 n)) AX)
+ETA n = SUP (INL n) AX
 
 
 DIGAMMA : Term → Term
-DIGAMMA f = LAMBDA (SUP (INR AX) (shiftUp 0 f))
+DIGAMMA f = SUP (INR AX) f
 
 
 barThesis : Term
 barThesis = FUN FunBar IndBar
 
 
+-- Recursive call used in DIGAMMA
+loopR : Term → Term → Term
+loopR R xs = LAMBDA (APPLY (shiftUp 0 R) (APPEND (shiftUp 0 xs) (VAR 0)))
+
+
+-- loopA's body
+loopI : Name → Term → Term → Term → Term
+loopI r R xs i =
+  ITE (get0 r)
+      (ETA i)
+      (DIGAMMA (loopR R xs))
+
+
+loopB : Name → Term → Term → Term → Term
+loopB r a R xs = LET a (loopI r (shiftUp 0 R) (shiftUp 0 xs) (VAR 0))
+
+
 loopA : Name → Term → Term → Term → Term
-loopA r bar R xs =
-  LET (APPLY bar (generic r xs))
-      (ITE (CS r)
-           (ETA (VAR 0))
-           (DIGAMMA (LAMBDA (APPLY (shiftUp 0 (shiftUp 0 R)) (APPEND (shiftUp 0 (shiftUp 0 xs)) (VAR 0))))))
+loopA r bar R xs = loopB r (APPLY bar (generic r xs)) R xs
 
 
 loopF : Name → Term → Term → Term → Term
 loopF r bar R xs =
-  SEQ (CHOOSE (NAME r) BTRUE) -- we start by assuming that we have enough information
+  SEQ (set⊤ r) -- we start by assuming that we have enough information
       (loopA r bar R xs)
 
 
@@ -197,35 +216,52 @@ loop r bar = FIX (loopL r bar)
 
 
 #genericI : Name → CTerm → CTerm → CTerm → CTerm
-#genericI r k f i = #SEQ (#IFLT i k #AX (#CHOOSE (#NAME r) #BFALSE)) (#APPLY f i)
+#genericI r k f i = #SEQ (#IFLT i k #AX (#set⊥ r)) (#APPLY f i)
 
 
 #generic : Name → CTerm → CTerm -- λ (l,f) i → genericI l f i
 #generic r xs =
-  #LAMBDA (#[0]SEQ (#[0]IFLT #[0]VAR (#[0]FST (#[0]shiftUp0 xs)) #[0]AX (#[0]CHOOSE (#[0]NAME r) #[0]BFALSE))
+  #LAMBDA (#[0]SEQ (#[0]IFLT #[0]VAR (#[0]FST (#[0]shiftUp0 xs)) #[0]AX (#[0]set⊥ r))
                    (#[0]APPLY (#[0]SND (#[0]shiftUp0 xs)) #[0]VAR))
 
 
 #[1]generic : Name → CTerm1 → CTerm1 -- λ (l,f) i → genericI l f i
 #[1]generic r xs =
-  #[1]LAMBDA (#[2]SEQ (#[2]IFLT #[2]VAR0 (#[2]FST (#[2]shiftUp0 xs)) #[2]AX (#[2]CHOOSE (#[2]NAME r) #[2]BFALSE))
+  #[1]LAMBDA (#[2]SEQ (#[2]IFLT #[2]VAR0 (#[2]FST (#[2]shiftUp0 xs)) #[2]AX (#[2]set⊥ r))
                       (#[2]APPLY (#[2]SND (#[2]shiftUp0 xs)) #[2]VAR0))
 
 
+#ETA : CTerm → CTerm
+#ETA n = #SUP (#INL n) #AX
+
+
 #[0]ETA : CTerm0 → CTerm0
-#[0]ETA n = #[0]LAMBDA (#[1]SUP (#[1]INL (#[1]shiftUp0 n)) #[1]AX)
+#[0]ETA n = #[0]SUP (#[0]INL n) #[0]AX
 
 
 #[2]ETA : CTerm2 → CTerm2
-#[2]ETA n = #[2]LAMBDA (#[3]SUP (#[3]INL (#[3]shiftUp0 n)) #[3]AX)
+#[2]ETA n = #[2]SUP (#[2]INL n) #[2]AX
+
+
+#DIGAMMA : CTerm → CTerm
+#DIGAMMA f = #SUP (#INR #AX) f
 
 
 #[0]DIGAMMA : CTerm0 → CTerm0
-#[0]DIGAMMA f = #[0]LAMBDA (#[1]SUP (#[1]INR #[1]AX) (#[1]shiftUp0 f))
+#[0]DIGAMMA f = #[0]SUP (#[0]INR #[0]AX) f
 
 
 #[2]DIGAMMA : CTerm2 → CTerm2
-#[2]DIGAMMA f = #[2]LAMBDA (#[3]SUP (#[3]INR #[3]AX) (#[3]shiftUp0 f))
+#[2]DIGAMMA f = #[2]SUP (#[2]INR #[2]AX) f
+
+
+#[0]APPEND : CTerm0 → CTerm0 → CTerm0
+#[0]APPEND l x =
+  #[0]PAIR (#[0]SUC (#[0]FST l))
+           (#[0]LAMBDA (#[1]IFLT #[1]VAR0
+                                 (#[1]shiftUp0 (#[0]FST l))
+                                 (#[1]APPLY (#[1]shiftUp0 (#[0]SND l)) #[1]VAR0)
+                                 (#[1]shiftUp0 x)))
 
 
 #[1]APPEND : CTerm1 → CTerm1 → CTerm1
@@ -246,10 +282,23 @@ loop r bar = FIX (loopL r bar)
                                  (#[4]shiftUp0 x)))
 
 
+-- Recursive call used in DIGAMMA
+#loopR : CTerm → CTerm → CTerm
+#loopR R l = #LAMBDA (#[0]APPLY (#[0]shiftUp0 R) (#[0]APPEND (#[0]shiftUp0 l) #[0]VAR))
+
+
+-- This is loopA's body
+#loopI : Name →  CTerm → CTerm → ℕ → CTerm
+#loopI r R l i =
+  #ITE (#get0 r)
+       (#ETA (#NUM i))
+       (#DIGAMMA (#loopR R l))
+
+
 #loopA : Name →  CTerm → CTerm → CTerm → CTerm
 #loopA r bar R l =
   #LET (#APPLY bar (#generic r l))
-       (#[0]ITE (#[0]CS r)
+       (#[0]ITE (#[0]get0 r)
                 (#[0]ETA #[0]VAR)
                 (#[0]DIGAMMA (#[0]LAMBDA (#[1]APPLY (#[1]shiftUp0 (#[0]shiftUp0 R))
                                                     (#[1]APPEND (#[1]shiftUp0 (#[0]shiftUp0 l)) #[1]VAR0)))))
@@ -258,17 +307,17 @@ loop r bar = FIX (loopL r bar)
 #loopF : Name →  CTerm → CTerm → CTerm → CTerm
 #loopF r bar R l =
   -- 0 is the argument (the list), and 1 is the recursive call
-  #SEQ (#CHOOSE (#NAME r) #BTRUE) (#loopA r bar R l)
+  #SEQ (#set⊤ r) (#loopA r bar R l)
 
 
 #loop : Name →  CTerm → CTerm
 #loop r bar =
   -- 0 is the argument (the list), and 1 is the recursive call
-  #FIX (#LAMBDA (#[0]LAMBDA (#[1]SEQ (#[1]CHOOSE (#[1]NAME r) #[1]BTRUE) F)))
+  #FIX (#LAMBDA (#[0]LAMBDA (#[1]SEQ (#[1]set⊤ r) F)))
   where
     F : CTerm1
     F = #[1]LET (#[1]APPLY ⌞ bar ⌟ (#[1]generic r #[1]VAR0))
-                (#[2]ITE (#[2]CS r)
+                (#[2]ITE (#[2]get0 r)
                          (#[2]ETA #[2]VAR0)
                          (#[2]DIGAMMA (#[2]LAMBDA (#[3]APPLY #[3]VAR3 (#[3]APPEND #[3]VAR2 #[3]VAR0)))))
 
@@ -281,6 +330,11 @@ loop r bar = FIX (loopL r bar)
 -- sanity checking
 ⌜#loop⌝≡ : (r : Name) (F : CTerm) → ⌜ #loop r F ⌝ ≡ loop r ⌜ F ⌝
 ⌜#loop⌝≡ r F = refl
+
+
+-- sanity checking
+⌜#loopI⌝≡ : (r : Name) (R l : CTerm) (i : ℕ) → ⌜ #loopI r R l i ⌝ ≡ loopI r ⌜ R ⌝ ⌜ l ⌝ (NUM i)
+⌜#loopI⌝≡ r R l i = refl
 
 
 -- sanity checking
@@ -510,7 +564,9 @@ sub-LAMBDA-loopF≡ r F cF
         | #shiftUp 3 (ct F cF)
         | #shiftUp 4 (ct F cF)
         | #shiftUp 5 (ct F cF)
+        | #shiftUp 6 (ct F cF)
         | #shiftUp 7 (ct F cF)
+        | #shiftDown 8 (ct F cF)
         | #shiftDown 9 (ct F cF)
   = refl
 
@@ -535,6 +591,7 @@ sub-loopF≡ r F l cF cl
         | #shiftUp 0 (ct l cl)
         | #shiftDown 5 (ct l cl)
         | #shiftDown 6 (ct l cl)
+        | #shiftDown 4 (ct l cl)
         | #shiftUp 3 (ct l cl)
         | #shiftUp 5 (ct l cl)
         | #shiftUp 4 (ct l cl)
@@ -544,9 +601,11 @@ sub-loopF≡ r F l cF cl
         | #shiftUp 3 (ct F cF)
         | #shiftUp 4 (ct F cF)
         | #shiftUp 5 (ct F cF)
+        | #shiftUp 6 (ct F cF)
         | #shiftUp 7 (ct F cF)
-        | #subv 8 l F cF
-        | #shiftDown 8 (ct F cF)
+        | #shiftUp 8 (ct F cF)
+        | #subv 7 l F cF
+        | #shiftDown 7 (ct F cF)
   = refl
 
 
@@ -592,7 +651,7 @@ APPLY-loop⇓! r F l w cF cl =
 
 
 #APPLY-#loop#⇓2 : (r : Name) (F l : CTerm) (w : 𝕎·)
-                    → #APPLY (#loop r F) l #⇓ #loopA r F (#loop r F) l from w to (chooseT r w BTRUE)
+                  → #APPLY (#loop r F) l #⇓ #loopA r F (#loop r F) l from w to (chooseT r w BTRUE)
 #APPLY-#loop#⇓2 r F l w =
   ⇓-trans₂ {w} {w} {chooseT r w BTRUE}
            {APPLY (loop r ⌜ F ⌝) ⌜ l ⌝}
@@ -679,10 +738,10 @@ IFLT⇓𝕎< {w} {w1} {w2} {a} {b} {c} {n} {m} c1 c2 with n <? m
 
 
 IFLT-NUM-AX-CHOOSE⇓ : (r : Name) (n m : ℕ) (w : 𝕎·)
-                      → IFLT (NUM n) (NUM m) AX (CHOOSE (NAME r) BFALSE) ⇓ AX from w to u𝕎 r n m w
+                      → IFLT (NUM n) (NUM m) AX (set⊥ r) ⇓ AX from w to u𝕎 r n m w
 IFLT-NUM-AX-CHOOSE⇓ r n m w =
   IFLT⇓𝕎<
-    {w} {w} {chooseT r w BFALSE} {AX} {CHOOSE (NAME r) BFALSE} {AX} {n} {m}
+    {w} {w} {chooseT r w BFALSE} {AX} {set⊥ r} {AX} {n} {m}
     (⇓!-refl AX w)
     (1 , refl)
 
@@ -716,14 +775,14 @@ IFLT-NUM-AX-CHOOSE⇓ r n m w =
     c2 : Σ 𝕎· (λ w2 → FST ⌜ l ⌝ ⇓ NUM m from (fst c1) to w2)
     c2 = ⇓→from-to (lower (#⇛-FST-PAIR2 l k f (#NUM m) w cl ck (fst c1) e1))
 
-    c3 : IFLT ⌜ i ⌝ (FST ⌜ l ⌝) AX (CHOOSE (NAME r) BFALSE) ⇓ IFLT (NUM n) (NUM m) AX (CHOOSE (NAME r) BFALSE) from w to (fst c2)
-    c3 = IFLT⇓₃ {w} {fst c1} {fst c2} {n} {m} {⌜ i ⌝} {FST ⌜ l ⌝} {AX} {CHOOSE (NAME r) BFALSE} (snd c1) (snd c2)
+    c3 : IFLT ⌜ i ⌝ (FST ⌜ l ⌝) AX (set⊥ r) ⇓ IFLT (NUM n) (NUM m) AX (set⊥ r) from w to (fst c2)
+    c3 = IFLT⇓₃ {w} {fst c1} {fst c2} {n} {m} {⌜ i ⌝} {FST ⌜ l ⌝} {AX} {set⊥ r} (snd c1) (snd c2)
 
-    c4 : IFLT ⌜ i ⌝ (FST ⌜ l ⌝) AX (CHOOSE (NAME r) BFALSE) ⇓ AX from w to u𝕎 r n m (fst c2)
+    c4 : IFLT ⌜ i ⌝ (FST ⌜ l ⌝) AX (set⊥ r) ⇓ AX from w to u𝕎 r n m (fst c2)
     c4 = ⇓-trans₂
            {w} {fst c2} {u𝕎 r n m (fst c2)}
-           {IFLT ⌜ i ⌝ (FST ⌜ l ⌝) AX (CHOOSE (NAME r) BFALSE)}
-           {IFLT (NUM n) (NUM m) AX (CHOOSE (NAME r) BFALSE)}
+           {IFLT ⌜ i ⌝ (FST ⌜ l ⌝) AX (set⊥ r)}
+           {IFLT (NUM n) (NUM m) AX (set⊥ r)}
            {AX}
            c3
            (IFLT-NUM-AX-CHOOSE⇓ r n m (fst c2))
@@ -731,7 +790,7 @@ IFLT-NUM-AX-CHOOSE⇓ r n m w =
     c5 : genericI r (FST ⌜ l ⌝) (SND ⌜ l ⌝) ⌜ i ⌝ ⇓ SEQ AX (APPLY (SND ⌜ l ⌝) ⌜ i ⌝) from w to u𝕎 r n m (fst c2)
     c5 = SEQ⇓₁
            {w} {u𝕎 r n m (fst c2)}
-           {IFLT ⌜ i ⌝ (FST ⌜ l ⌝) AX (CHOOSE (NAME r) BFALSE)}
+           {IFLT ⌜ i ⌝ (FST ⌜ l ⌝) AX (set⊥ r)}
            {AX}
            {APPLY (SND ⌜ l ⌝) ⌜ i ⌝}
            c4
@@ -758,7 +817,10 @@ equalInType-NAT-#⇛ i w a1 a2 b1 b2 c1 c2 eqi =
   →equalInType-NAT i w a1 b1 (Mod.∀𝕎-□Func M aw (equalInType-NAT→ i w a2 b2 eqi))
   where
     aw : ∀𝕎 w (λ w' e' → NATeq w' a2 b2 → NATeq w' a1 b1)
-    aw w1 e1 (n , d1 , d2) = n , #⇛-trans (∀𝕎-mon e1 c1) d1 , #⇛-trans (∀𝕎-mon e1 c2) d2
+    aw w1 e1 (n , d1 , d2) =
+      n ,
+      #⇛-trans {w1} {a1} {a2} {#NUM n} (∀𝕎-mon e1 c1) d1 ,
+      #⇛-trans {w1} {b1} {b2} {#NUM n} (∀𝕎-mon e1 c2) d2
 
 
 {--
@@ -817,10 +879,10 @@ generic∈BAIRE i w r l ∈l =
             p3 = equalInType-FUN→ ef w2 (⊑-refl· w2) a₁ a₂ (equalInType-mon ea w2 e2)
 
             q1 : #APPLY (#SND l) a₁ #⇛ #APPLY f1 a₁ at w2
-            q1 = →-#⇛-#APPLY a₁ (#⇛-SND-PAIR l k1 f1 w2 c1)
+            q1 = →-#⇛-#APPLY {w2} {#SND l} {f1} a₁ (#⇛-SND-PAIR l k1 f1 w2 c1)
 
             q2 : #APPLY (#SND l) a₂ #⇛ #APPLY f2 a₂ at w2
-            q2 = →-#⇛-#APPLY a₂ (#⇛-SND-PAIR l k2 f2 w2 c2)
+            q2 = →-#⇛-#APPLY {w2} {#SND l} {f2} a₂ (#⇛-SND-PAIR l k2 f2 w2 c2)
 
             p4 : equalInType i w2 #NAT (#APPLY (#SND l) a₁) (#APPLY (#SND l) a₂)
             p4 = equalInType-NAT-#⇛ i w2 (#APPLY (#SND l) a₁) (#APPLY f1 a₁) (#APPLY (#SND l) a₂) (#APPLY f2 a₂) q1 q2 p3
@@ -833,60 +895,145 @@ generic∈BAIRE i w r l ∈l =
                    p4
 
 
--- First prove that loop belongs to CoIndBar
-coSemM : (i : ℕ) (w : 𝕎·) (r : Name) (F l : CTerm)
-         → ∈Type i w #FunBar F
-         → ∈Type i w (#LIST #NAT) l
-         → meq (equalInType i w #IndBarB)
-                (λ a b eqa → equalInType i w (sub0 a #IndBarC))
-                w (#APPLY (#loop r F) l) (#APPLY (#loop r F) l)
-meq.meqC (coSemM i w r F l j k) = {!!}
--- Use the fact that #generic is well-typed: generic∈BAIRE
--- It will be used to keep on reducing loop in: #APPLY-#loop#⇓2
-
-
--- First prove that loop belongs to CoIndBar
-coSem : (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
-        → ∈Type i w #FunBar F
-        → ∈Type i w #CoIndBar (#loop r F)
-coSem i w r F j =
-  →equalInType-M
-    i w #IndBarB #IndBarC (#loop r F) (#loop r F)
-      {!!}
-      {!!}
-      (Mod.∀𝕎-□ M aw)
+APPLY-generic∈NAT : (i : ℕ) (w : 𝕎·) (r : Name) (F l : CTerm)
+                    → ∈Type i w #FunBar F
+                    → ∈Type i w (#LIST #NAT) l
+                    → ∈Type i w #NAT (#APPLY F (#generic r l))
+APPLY-generic∈NAT i w r F l ∈F ∈l = ∈F' w (⊑-refl· w) (#generic r l) (#generic r l) (generic∈BAIRE i w r l ∈l)
   where
-    aw : ∀𝕎 w (λ w' _ → meq (equalInType i w' #IndBarB)
-                              (λ a b eqa → equalInType i w' (sub0 a #IndBarC))
-                              w' (#loop r F) (#loop r F))
-    aw w1 e1 = m
-      where
-        m : meq (equalInType i w1 #IndBarB)
-                (λ a b eqa → equalInType i w1 (sub0 a #IndBarC))
-                w1 (#loop r F) (#loop r F)
-        m = {!!}
+    ∈F' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #BAIRE a₁ a₂ → equalInType i w' #NAT (#APPLY F a₁) (#APPLY F a₂))
+    ∈F' = equalInType-FUN→ ∈F
 
 
---sem : (w : 𝕎·) → ∈Type i w #barThesis tab
---sem w  ?
+sub-loopI≡ : (r : Name) (R l i : Term) (cR : # R) (cl : # l) (ci : # i)
+             → sub i (loopI r R l (VAR 0))
+                ≡ loopI r R l i
+sub-loopI≡ r R l i cR cl ci
+  rewrite #shiftUp 0 (ct i ci)
+        | #shiftUp 0 (ct i ci)
+        | #shiftUp 0 (ct i ci)
+        | #shiftUp 0 (ct i ci)
+        | #shiftDown 1 (ct i ci)
+        | #shiftUp 0 (ct R cR)
+        | #shiftUp 1 (ct R cR)
+        | #shiftUp 0 (ct l cl)
+        | #shiftUp 0 (ct l cl)
+        | #shiftUp 1 (ct l cl)
+        | #shiftUp 2 (ct l cl)
+        | #subv 2 i l cl
+        | #subv 3 i l cl
+        | #subv 2 i R cR
+        | #shiftDown 2 (ct l cl)
+        | #shiftDown 3 (ct l cl)
+        | #shiftDown 2 (ct R cR) =
+  ≡DECIDE refl refl refl
 
 
-{--
+loopB⇓loopI : (w : 𝕎·) (r : Name) (i : ℕ) (R l : Term) (cR : # R) (cl : # l)
+              → loopB r (NUM i) R l ⇓ loopI r R l (NUM i) from w to w
+loopB⇓loopI w r i R l cR cl = 1 , ≡pair c refl
+  where
+    c : sub (NUM i) (loopI r (shiftUp 0 R) (shiftUp 0 l) (VAR 0)) ≡ loopI r R l (NUM i)
+    c rewrite #shiftUp 0 (ct R cR)
+            | #shiftUp 0 (ct l cl)
+            | sub-loopI≡ r R l (NUM i) cR cl refl
+            | #shiftUp 0 (ct l cl)
+            | #shiftUp 0 (ct l cl)
+            | #shiftUp 0 (ct R cR) = refl
 
-Plan:
 
-(1) Prove by coinduction that if (F ∈ FunBar) then (loop r F ∈ CoIndBar) which does not require to proving termination
-    - see coSem, which will use coSemM
-(2) We now have an inhabitant (t ∈ CoIndBar). Using classical logic, either t's paths are all finite,
-    or it has an inifite path.
-(3) If all its paths are finite then we get that (t ∈ IndBar)
-    - see m2w
-(4) If it has an inifite path:
-    - That path corresponds to an (α ∈ Baire).
-    - Given (F ∈ FunBar), by continuity let n by F's modulus of continuity w.r.t. α.
-    - So, it must be that F(generic r α|n) returns r:=BTRUE and so loop returns ETA, and the path cannot be infinite
-          (where α|n is the initial segment of α of length n)
+#APPLY-#loop#⇓3 : (r : Name) (F l : CTerm) (i : ℕ) (w : 𝕎·)
+                  → #APPLY F (#generic r l) #⇛ #NUM i at w
+                  → #APPLY (#loop r F) l #⇓ #loopI r (#loop r F) l i at w
+#APPLY-#loop#⇓3 r F l i w c =
+  ⇓-trans₁
+    {w} {chooseT r w BTRUE}
+    {APPLY (loop r ⌜ F ⌝) ⌜ l ⌝}
+    {loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
+    {loopI r (loop r ⌜ F ⌝) ⌜ l ⌝ (NUM i)}
+    (#APPLY-#loop#⇓2 r F l w)
+    (⇓-from-to→⇓ {chooseT r w BTRUE} {fst c3} (snd c3))
+  where
+    c1 : Σ 𝕎· (λ w' → #APPLY F (#generic r l) #⇓ #NUM i from (chooseT r w BTRUE) to w')
+    c1 = ⇓→from-to (lower (c (chooseT r w BTRUE) (choose⊑· r w (T→ℂ· BTRUE))))
 
- --}
+    c2 : Σ 𝕎· (λ w' → loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝ ⇓ loopB r (NUM i) (loop r ⌜ F ⌝) ⌜ l ⌝ from (chooseT r w BTRUE) to w')
+    c2 = fst c1 , LET⇓₁ {chooseT r w BTRUE} {fst c1} {APPLY ⌜ F ⌝ (generic r ⌜ l ⌝)} {NUM i} (snd c1)
+
+    c3 : Σ 𝕎· (λ w' → loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝ ⇓ loopI r (loop r ⌜ F ⌝) ⌜ l ⌝ (NUM i) from (chooseT r w BTRUE) to w')
+    c3 = fst c1 , ⇓-trans₂ {chooseT r w BTRUE} {proj₁ c1} {proj₁ c1} (snd c2)
+                           (loopB⇓loopI (proj₁ c1) r i (loop r ⌜ F ⌝) ⌜ l ⌝ (CTerm.closed (#loop r F)) (CTerm.closed l))
+
+
+-- This constrains all Res⊤ choices to be Booleans, and here just BTRUE or BFALSE
+-- This will be satisfied by worldInstanceRef2, which is for example used by modInsanceKripkeRefBool
+-- This uses Res⊤ as this is the restiction used by FRESH
+c𝔹 : Set(lsuc(L))
+c𝔹 = (name : Name) (w : 𝕎·)
+      → compatible· name w Res⊤ -- (Resℕ nc)
+      → ∀𝕎 w (λ w' e → Lift {0ℓ} (lsuc(L)) (getT 0 name w' ≡ just BTRUE ⊎ getT 0 name w' ≡ just BFALSE))
+
+
+#APPLY-#loop#⇓4₁ : (r : Name) (F l : CTerm) (i : ℕ) (w : 𝕎·)
+                   → getT 0 r w ≡ just BTRUE
+                   → #loopI r (#loop r F) l i #⇓ #ETA (#NUM i) from w to w
+#APPLY-#loop#⇓4₁ r F l i w g = 2 , c1
+  where
+    c1 : steps 2 (loopI r (loop r ⌜ F ⌝) ⌜ l ⌝ (NUM i) , w) ≡ (ETA (NUM i) , w)
+    c1 rewrite g = refl
+
+
+#APPLY-#loop#⇓5₁ : (r : Name) (F l : CTerm) (i : ℕ) (w : 𝕎·)
+                   → getT 0 r w ≡ just BFALSE
+                   → #loopI r (#loop r F) l i #⇓ #DIGAMMA (#loopR (#loop r F) l) from w to w
+#APPLY-#loop#⇓5₁ r F l i w g = 2 , c1
+  where
+    c1 : steps 2 (loopI r (loop r ⌜ F ⌝) ⌜ l ⌝ (NUM i) , w) ≡ (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ l ⌝) , w)
+    c1 rewrite g
+             | subNotIn AX (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ l ⌝)) (CTerm.closed (#DIGAMMA (#loopR (#loop r F) l)))
+             | #shiftUp 0 F
+             | #shiftUp 3 F
+             | #shiftUp 4 F
+             | #subv 4 AX ⌜ F ⌝ (CTerm.closed F)
+             | #shiftDown 4 F
+             | #shiftUp 0 l
+             | #shiftUp 0 l
+             | #shiftUp 1 l
+             | #shiftUp 2 l
+             | #subv 1 AX ⌜ l ⌝ (CTerm.closed l)
+             | #subv 2 AX ⌜ l ⌝ (CTerm.closed l)
+             | #shiftDown 1 l
+             | #shiftDown 2 l = refl
+
+
+#APPLY-#loop#⇓4 : (cb : c𝔹) (r : Name) (F l : CTerm) (i : ℕ) (w : 𝕎·)
+                  → compatible· r w Res⊤
+                  → #APPLY F (#generic r l) #⇛ #NUM i at w
+                  → #APPLY (#loop r F) l #⇓ #ETA (#NUM i) at w
+                     ⊎ #APPLY (#loop r F) l #⇓ #DIGAMMA (#loopR (#loop r F) l) at w
+#APPLY-#loop#⇓4 cb r F l i w compat c = d2 d1
+  where
+    c1 : Σ 𝕎· (λ w' → #APPLY (#loop r F) l #⇓ #loopI r (#loop r F) l i from w to w')
+    c1 = ⇓→from-to (#APPLY-#loop#⇓3 r F l i w c)
+
+    e1 : w ⊑· fst c1
+    e1 = #⇓from-to→⊑ {w} {fst c1} {#APPLY (#loop r F) l} {#loopI r (#loop r F) l i} (snd c1)
+
+    d1 : getT 0 r (fst c1) ≡ just BTRUE ⊎ getT 0 r (fst c1) ≡ just BFALSE
+    d1 = lower (cb r w compat (fst c1) e1)
+
+    d2 : (getT 0 r (fst c1) ≡ just BTRUE ⊎ getT 0 r (fst c1) ≡ just BFALSE)
+         → #APPLY (#loop r F) l #⇓ #ETA (#NUM i) at w
+            ⊎ #APPLY (#loop r F) l #⇓ #DIGAMMA (#loopR (#loop r F) l) at w
+    d2 (inj₁ x) =
+      inj₁ (#⇓-trans₁
+              {w} {fst c1} {#APPLY (#loop r F) l} {#loopI r (#loop r F) l i} {#ETA (#NUM i)}
+              (snd c1)
+              (⇓-from-to→⇓ {fst c1} {fst c1} (#APPLY-#loop#⇓4₁ r F l i (fst c1) x)))
+    d2 (inj₂ x) =
+      inj₂ (#⇓-trans₁
+              {w} {fst c1} {#APPLY (#loop r F) l} {#loopI r (#loop r F) l i} {#DIGAMMA (#loopR (#loop r F) l)}
+              (snd c1)
+              (⇓-from-to→⇓ {fst c1} {fst c1} (#APPLY-#loop#⇓5₁ r F l i (fst c1) x)))
 
 \end{code}

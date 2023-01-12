@@ -67,6 +67,115 @@ open import terms6(W)(C)(M)(G)(E)(N)
                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed b)))
 
 
+#[2]APPLY : CTerm2 → CTerm2 → CTerm2
+#[2]APPLY a b = ct2 (APPLY ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] APPLY ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ 1 ∷ [ 2 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed b)))
+
+
+#[1]NUM : ℕ → CTerm1
+#[1]NUM n = ct1 (NUM n) refl
+
+
+#[2]NUM : ℕ → CTerm2
+#[2]NUM n = ct2 (NUM n) refl
+
+
+#[0]BTRUE : CTerm0
+#[0]BTRUE = ct0 BTRUE c
+  where
+    c : #[ [ 0 ] ] BTRUE
+    c = refl
+
+
+#[1]BTRUE : CTerm1
+#[1]BTRUE = ct1 BTRUE c
+  where
+    c : #[ 0 ∷ [ 1 ] ] BTRUE
+    c = refl
+
+
+#[2]BTRUE : CTerm2
+#[2]BTRUE = ct2 BTRUE c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] BTRUE
+    c = refl
+
+
+#[0]BFALSE : CTerm0
+#[0]BFALSE = ct0 BFALSE c
+  where
+    c : #[ [ 0 ] ] BFALSE
+    c = refl
+
+
+#[1]BFALSE : CTerm1
+#[1]BFALSE = ct1 BFALSE c
+  where
+    c : #[ 0 ∷ [ 1 ] ] BFALSE
+    c = refl
+
+
+#[2]BFALSE : CTerm2
+#[2]BFALSE = ct2 BFALSE c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] BFALSE
+    c = refl
+
+
+#[2]CS : Name → CTerm2
+#[2]CS name = ct2 (CS name) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] CS name
+    c = refl
+
+
+#[2]NAME : Name → CTerm2
+#[2]NAME name = ct2 (NAME name) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] NAME name
+    c = refl
+
+
+#[0]set⊤ : Name → CTerm0
+#[0]set⊤ r = #[0]CHOOSE (#[0]NAME r) #[0]BTRUE
+
+
+#[1]set⊤ : Name → CTerm1
+#[1]set⊤ r = #[1]CHOOSE (#[1]NAME r) #[1]BTRUE
+
+
+#[2]set⊤ : Name → CTerm2
+#[2]set⊤ r = #[2]CHOOSE (#[2]NAME r) #[2]BTRUE
+
+
+#[0]set⊥ : Name → CTerm0
+#[0]set⊥ r = #[0]CHOOSE (#[0]NAME r) #[0]BFALSE
+
+
+#[1]set⊥ : Name → CTerm1
+#[1]set⊥ r = #[1]CHOOSE (#[1]NAME r) #[1]BFALSE
+
+
+#[2]set⊥ : Name → CTerm2
+#[2]set⊥ r = #[2]CHOOSE (#[2]NAME r) #[2]BFALSE
+
+
+#[0]get0 : Name → CTerm0
+#[0]get0 name = #[0]APPLY (#[0]CS name) (#[0]NUM 0)
+
+
+#[1]get0 : Name → CTerm1
+#[1]get0 name = #[1]APPLY (#[1]CS name) (#[1]NUM 0)
+
+
+#[2]get0 : Name → CTerm2
+#[2]get0 name = #[2]APPLY (#[2]CS name) (#[2]NUM 0)
+
+
 #[2]SEQ : CTerm2 → CTerm2 → CTerm2
 #[2]SEQ a b = ct2 (SEQ ⌜ a ⌝ ⌜ b ⌝) c
   where
@@ -77,13 +186,13 @@ open import terms6(W)(C)(M)(G)(E)(N)
                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed b)))
 
 
-#[2]APPLY : CTerm2 → CTerm2 → CTerm2
-#[2]APPLY a b = ct2 (APPLY ⌜ a ⌝ ⌜ b ⌝) c
+#[0]PAIR : CTerm0 → CTerm0 → CTerm0
+#[0]PAIR a b = ct0 (PAIR ⌜ a ⌝ ⌜ b ⌝) c
   where
-    c : #[ 0 ∷ 1 ∷ [ 2 ] ] APPLY ⌜ a ⌝ ⌜ b ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ 1 ∷ [ 2 ]}
-             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed a))
-                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed b)))
+    c : #[ [ 0 ] ] PAIR ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {[ 0 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {[ 0 ]} (CTerm0.closed b)))
 
 
 #[1]PAIR : CTerm1 → CTerm1 → CTerm1
@@ -102,13 +211,6 @@ open import terms6(W)(C)(M)(G)(E)(N)
     c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed a))
                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed b)))
-
-
-#[1]BTRUE : CTerm1
-#[1]BTRUE = ct1 BTRUE c
-  where
-    c : #[ 0 ∷ [ 1 ] ] BTRUE
-    c = refl
 
 
 #[1]LET : CTerm1 → CTerm2 → CTerm1
@@ -197,6 +299,20 @@ fvars-IFLT0 a b c d
                       (⊆?→⊆ (CTerm0.closed c)) (⊆?→⊆ (CTerm0.closed d)))))
 
 
+#[1]IFLT : CTerm1 → CTerm1 → CTerm1 → CTerm1 → CTerm1
+#[1]IFLT a b c d = ct1 (IFLT ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
+  where
+    e : #[ 0 ∷ [ 1 ] ] IFLT ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    e rewrite fvars-IFLT0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝} {0 ∷ [ 1 ]}
+            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+            (⊆?→⊆ (CTerm1.closed a))
+            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+                 (⊆?→⊆ (CTerm1.closed b))
+                 (⊆++ {Var} {fvars ⌜ c ⌝} {fvars ⌜ d ⌝}
+                      (⊆?→⊆ (CTerm1.closed c)) (⊆?→⊆ (CTerm1.closed d)))))
+
+
 #[2]IFLT : CTerm2 → CTerm2 → CTerm2 → CTerm2 → CTerm2
 #[2]IFLT a b c d = ct2 (IFLT ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
   where
@@ -209,20 +325,6 @@ fvars-IFLT0 a b c d
                  (⊆?→⊆ (CTerm2.closed b))
                  (⊆++ {Var} {fvars ⌜ c ⌝} {fvars ⌜ d ⌝}
                       (⊆?→⊆ (CTerm2.closed c)) (⊆?→⊆ (CTerm2.closed d)))))
-
-
-#[2]CS : Name → CTerm2
-#[2]CS name = ct2 (CS name) c
-  where
-    c : #[ 0 ∷ 1 ∷ [ 2 ] ] CS name
-    c = refl
-
-
-#[2]NAME : Name → CTerm2
-#[2]NAME name = ct2 (NAME name) c
-  where
-    c : #[ 0 ∷ 1 ∷ [ 2 ] ] NAME name
-    c = refl
 
 
 [0,1]⊆[0,1,2] : 0 ∷ [ 1 ] ⊆ (0 ∷ 1 ∷ [ 2 ])
@@ -310,6 +412,15 @@ lowerVars-fvars-[0,1,2,3,4] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,
               (lowerVars-fvars-[0,1,2,3] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm3.closed b)))
 
 
+#[0]SUP : CTerm0 → CTerm0 → CTerm0
+#[0]SUP a b = ct0 (SUP ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ [ 0 ] ] SUP ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {[ 0 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {[ 0 ]} (CTerm0.closed b)))
+
+
 #[1]SUP : CTerm1 → CTerm1 → CTerm1
 #[1]SUP a b = ct1 (SUP ⌜ a ⌝ ⌜ b ⌝) c
   where
@@ -317,6 +428,15 @@ lowerVars-fvars-[0,1,2,3,4] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,
     c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ [ 1 ]}
              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
+
+
+#[2]SUP : CTerm2 → CTerm2 → CTerm2
+#[2]SUP a b = ct2 (SUP ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] SUP ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ 1 ∷ [ 2 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed b)))
 
 
 #[3]SUP : CTerm3 → CTerm3 → CTerm3
@@ -328,12 +448,28 @@ lowerVars-fvars-[0,1,2,3,4] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,
                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed b)))
 
 
+#[0]INL : CTerm0 → CTerm0
+#[0]INL a = ct0 (INL ⌜ a ⌝) c
+  where
+    c : #[ [ 0 ] ] INL ⌜ a ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ } {[ 0 ]}
+              (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+
+
 #[1]INL : CTerm1 → CTerm1
 #[1]INL a = ct1 (INL ⌜ a ⌝) c
   where
     c : #[ 0 ∷ [ 1 ] ] INL ⌜ a ⌝
     c = ⊆→⊆? {fvars ⌜ a ⌝ } {0 ∷ [ 1 ]}
               (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
+
+
+#[2]INL : CTerm2 → CTerm2
+#[2]INL a = ct2 (INL ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] INL ⌜ a ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ } {0 ∷ 1 ∷ [ 2 ]}
+              (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed a))
 
 
 #[3]INL : CTerm3 → CTerm3
@@ -344,6 +480,14 @@ lowerVars-fvars-[0,1,2,3,4] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,
               (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed a))
 
 
+#[0]INR : CTerm0 → CTerm0
+#[0]INR a = ct0 (INR ⌜ a ⌝) c
+  where
+    c : #[ [ 0 ] ] INR ⌜ a ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ } {[ 0 ]}
+              (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+
+
 #[1]INR : CTerm1 → CTerm1
 #[1]INR a = ct1 (INR ⌜ a ⌝) c
   where
@@ -352,12 +496,28 @@ lowerVars-fvars-[0,1,2,3,4] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,
               (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
 
 
+#[2]INR : CTerm2 → CTerm2
+#[2]INR a = ct2 (INR ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] INR ⌜ a ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ } {0 ∷ 1 ∷ [ 2 ]}
+              (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed a))
+
+
 #[3]INR : CTerm3 → CTerm3
 #[3]INR a = ct3 (INR ⌜ a ⌝) c
   where
     c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] INR ⌜ a ⌝
     c = ⊆→⊆? {fvars ⌜ a ⌝ } {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
               (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed a))
+
+
+#[0]SUC : CTerm0 → CTerm0
+#[0]SUC a = ct0 (SUC ⌜ a ⌝) c
+  where
+    c : #[ [ 0 ] ] SUC ⌜ a ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ } {[ 0 ]}
+              (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
 
 
 #[1]SUC : CTerm1 → CTerm1
@@ -815,20 +975,6 @@ sub-VAR1 a = refl
 #⇛-SND-PAIR2 p a b c w c1 c2 = #⇛-trans {w} {#SND p} {b} {c} (#⇛-SND-PAIR p a b w c1) c2
 
 
-#[0]BFALSE : CTerm0
-#[0]BFALSE = ct0 BFALSE c
-  where
-    c : #[ [ 0 ] ] BFALSE
-    c = refl
-
-
-#[2]BFALSE : CTerm2
-#[2]BFALSE = ct2 BFALSE c
-  where
-    c : #[ 0 ∷ 1 ∷ [ 2 ] ] BFALSE
-    c = refl
-
-
 #[3]LAMBDA : CTerm4 → CTerm3
 #[3]LAMBDA b = ct3 (LAMBDA ⌜ b ⌝) c
   where
@@ -992,5 +1138,46 @@ CTerm3→4 t = ct4 ⌜ t ⌝ c
 
             k : x ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]
             k rewrite e | sym (suc≡sucIf≤0 y) = z w
+
+
+DECIDE-steps₁ : {k : ℕ} {w w' : 𝕎·} {a b t u : Term}
+              → steps k (a , w) ≡ (b , w')
+              → Σ ℕ (λ k → steps k (DECIDE a t u , w) ≡ (DECIDE b t u , w'))
+DECIDE-steps₁ {0} {w} {w'} {a} {b} {t} {u} comp rewrite pair-inj₁ comp | pair-inj₂ comp = 0 , refl
+DECIDE-steps₁ {suc k} {w} {w'} {a} {b} {t} {u} comp with is-INL a
+... | inj₁ (v , p) rewrite p | stepsVal (INL v) w k tt | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+... | inj₂ x with is-INR a
+... |    inj₁ (v , p) rewrite p | stepsVal (INR v) w k tt | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+... |    inj₂ y with step⊎ a w
+... |       inj₁ (z , w'' , q) rewrite q = suc (fst c) , snd c
+  where
+    c : Σ ℕ (λ k₁ → steps (suc k₁) (DECIDE a t u , w) ≡ (DECIDE b t u , w'))
+    c with is-INL a
+    ... | inj₁ (u' , p') rewrite p' = ⊥-elim (x u' refl)
+    ... | inj₂ x' with is-INR a
+    ... |    inj₁ (u' , p') rewrite p' = ⊥-elim (y u' refl)
+    ... |    inj₂ y' rewrite q = DECIDE-steps₁ {k} comp
+... |       inj₂ q rewrite q | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+
+
+DECIDE⇓₁ : {w w' : 𝕎·} {a b t u : Term}
+         → a ⇓ b from w to w'
+         → DECIDE a t u ⇓ DECIDE b t u from w to w'
+DECIDE⇓₁ {w} {w'} {a} {b} {t} {u} (k , comp) = DECIDE-steps₁ {k} {w} {w'} {a} {b} {t} {u} comp
+
+
+DECIDE⇛₁ : {w : 𝕎·} {a a' b c : Term}
+           → a ⇛ a' at w
+           → DECIDE a b c ⇛ DECIDE a' b c at w
+DECIDE⇛₁ {w} {a} {a'} {b} {c} comp w1 e1 = lift (⇓-from-to→⇓ {w1} {fst z} (DECIDE⇓₁ (snd z)))
+  where
+    z : Σ 𝕎· (λ w2 → a ⇓ a' from w1 to w2)
+    z = ⇓→from-to (lower (comp w1 e1))
+
+
+ITE⇓₁ : {w w' : 𝕎·} {a b t u : Term}
+         → a ⇓ b from w to w'
+         → ITE a t u ⇓ ITE b t u from w to w'
+ITE⇓₁ {w} {w'} {a} {b} {t} {u} comp = DECIDE⇓₁ comp
 
 \end{code}

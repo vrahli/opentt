@@ -116,10 +116,6 @@ bound name n f = LAMBDA (SEQ (IFLE n (VAR 0) (CHOOSE (NAME name) (ℂ→T ℂ₁
 -- TODO: need union types?
 
 
-set : (name : Name) → Term
-set name = CHOOSE (NAME name) (ℂ→T ℂ₀·)
-
-
 -- Assuming that choices are numbers
 --IFC0 : Term → Term → Term → Term
 --IFC0 a b c = IFLT (get0 name) (NUM 1)
@@ -140,10 +136,6 @@ oldtest name F n f = LET (APPLY F (bound name n f))
 
 test : (name : Name) (F : Term) (n : Term) (f : Term) → Term
 test name F n f = SEQ (set name) (probe name F n f)
-
-
-set0 : (name : Name) → Term
-set0 name = setT name (NUM 0)
 
 
 appUpd : (name : Name) (F f : Term) → Term
@@ -202,26 +194,6 @@ contBody F f =
             | #shiftUp 0 f
             | lowerVarsApp (fvars ⌜ f ⌝) [ 1 ]
             | lowerVars-fvars-CTerm≡[] f = refl
-
-
-#set : (name : Name) → CTerm
-#set name = ct (set name) c
-  where
-    c : # set name
-    c rewrite CTerm.closed (ℂ→C· ℂ₀·) = refl
-
-
-#set0 : (name : Name) → CTerm
-#set0 name = ct (set0 name) c
-  where
-    c : # set0 name
-    c = refl
-
-#get0 : (name : Name) → CTerm
-#get0 name = ct (get0 name) c
-  where
-    c : # get0 name
-    c = refl
 
 
 

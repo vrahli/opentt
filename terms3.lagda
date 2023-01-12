@@ -65,6 +65,60 @@ setT : (name : Name) (T : Term) → Term
 setT name t = CHOOSE (NAME name) t
 
 
+-- A typical choice
+set⊥ : (name : Name) → Term
+set⊥ name = CHOOSE (NAME name) BFALSE
+
+
+-- A typical choice
+set⊤ : (name : Name) → Term
+set⊤ name = CHOOSE (NAME name) BTRUE
+
+
+-- A typical choice
+set0 : (name : Name) → Term
+set0 name = setT name (NUM 0)
+
+
+set : (name : Name) → Term
+set name = CHOOSE (NAME name) (ℂ→T ℂ₀·)
+
+
+#set : (name : Name) → CTerm
+#set name = ct (set name) c
+  where
+    c : # set name
+    c rewrite CTerm.closed (ℂ→C· ℂ₀·) = refl
+
+
+#set0 : (name : Name) → CTerm
+#set0 name = ct (set0 name) c
+  where
+    c : # set0 name
+    c = refl
+
+
+#set⊤ : (name : Name) → CTerm
+#set⊤ name = ct (set⊤ name) c
+  where
+    c : # set⊤ name
+    c = refl
+
+
+#set⊥ : (name : Name) → CTerm
+#set⊥ name = ct (set⊥ name) c
+  where
+    c : # set⊥ name
+    c = refl
+
+
+#get0 : (name : Name) → CTerm
+#get0 name = ct (get0 name) c
+  where
+    c : # get0 name
+    c = refl
+
+
 updGt : (name : Name) (t : Term) → Term
 updGt name t = IFLT (get0 name) t (setT name t) AX
 
