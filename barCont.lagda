@@ -1005,35 +1005,36 @@ c𝔹 = (name : Name) (w : 𝕎·)
              | #shiftDown 1 l
              | #shiftDown 2 l = refl
 
+abstract
 
-#APPLY-#loop#⇓4 : (cb : c𝔹) (r : Name) (F l : CTerm) (i : ℕ) (w : 𝕎·)
-                  → compatible· r w Res⊤
-                  → #APPLY F (#generic r l) #⇛ #NUM i at w
-                  → #APPLY (#loop r F) l #⇓ #ETA (#NUM i) at w
-                     ⊎ #APPLY (#loop r F) l #⇓ #DIGAMMA (#loopR (#loop r F) l) at w
-#APPLY-#loop#⇓4 cb r F l i w compat c = d2 d1
-  where
-    c1 : Σ 𝕎· (λ w' → #APPLY (#loop r F) l #⇓ #loopI r (#loop r F) l i from w to w')
-    c1 = ⇓→from-to (#APPLY-#loop#⇓3 r F l i w c)
+  #APPLY-#loop#⇓4 : (cb : c𝔹) (r : Name) (F l : CTerm) (i : ℕ) (w : 𝕎·)
+                    → compatible· r w Res⊤
+                    → #APPLY F (#generic r l) #⇛ #NUM i at w
+                    → #APPLY (#loop r F) l #⇓ #ETA (#NUM i) at w
+                       ⊎ #APPLY (#loop r F) l #⇓ #DIGAMMA (#loopR (#loop r F) l) at w
+  #APPLY-#loop#⇓4 cb r F l i w compat c = d2 d1
+    where
+      c1 : Σ 𝕎· (λ w' → #APPLY (#loop r F) l #⇓ #loopI r (#loop r F) l i from w to w')
+      c1 = ⇓→from-to (#APPLY-#loop#⇓3 r F l i w c)
 
-    e1 : w ⊑· fst c1
-    e1 = #⇓from-to→⊑ {w} {fst c1} {#APPLY (#loop r F) l} {#loopI r (#loop r F) l i} (snd c1)
+      e1 : w ⊑· fst c1
+      e1 = #⇓from-to→⊑ {w} {fst c1} {#APPLY (#loop r F) l} {#loopI r (#loop r F) l i} (snd c1)
 
-    d1 : getT 0 r (fst c1) ≡ just BTRUE ⊎ getT 0 r (fst c1) ≡ just BFALSE
-    d1 = lower (cb r w compat (fst c1) e1)
+      d1 : getT 0 r (fst c1) ≡ just BTRUE ⊎ getT 0 r (fst c1) ≡ just BFALSE
+      d1 = lower (cb r w compat (fst c1) e1)
 
-    d2 : (getT 0 r (fst c1) ≡ just BTRUE ⊎ getT 0 r (fst c1) ≡ just BFALSE)
-         → #APPLY (#loop r F) l #⇓ #ETA (#NUM i) at w
-            ⊎ #APPLY (#loop r F) l #⇓ #DIGAMMA (#loopR (#loop r F) l) at w
-    d2 (inj₁ x) =
-      inj₁ (#⇓-trans₁
-              {w} {fst c1} {#APPLY (#loop r F) l} {#loopI r (#loop r F) l i} {#ETA (#NUM i)}
-              (snd c1)
-              (⇓-from-to→⇓ {fst c1} {fst c1} (#APPLY-#loop#⇓4₁ r F l i (fst c1) x)))
-    d2 (inj₂ x) =
-      inj₂ (#⇓-trans₁
-              {w} {fst c1} {#APPLY (#loop r F) l} {#loopI r (#loop r F) l i} {#DIGAMMA (#loopR (#loop r F) l)}
-              (snd c1)
-              (⇓-from-to→⇓ {fst c1} {fst c1} (#APPLY-#loop#⇓5₁ r F l i (fst c1) x)))
+      d2 : (getT 0 r (fst c1) ≡ just BTRUE ⊎ getT 0 r (fst c1) ≡ just BFALSE)
+           → #APPLY (#loop r F) l #⇓ #ETA (#NUM i) at w
+              ⊎ #APPLY (#loop r F) l #⇓ #DIGAMMA (#loopR (#loop r F) l) at w
+      d2 (inj₁ x) =
+        inj₁ (#⇓-trans₁
+                {w} {fst c1} {#APPLY (#loop r F) l} {#loopI r (#loop r F) l i} {#ETA (#NUM i)}
+                (snd c1)
+                (⇓-from-to→⇓ {fst c1} {fst c1} (#APPLY-#loop#⇓4₁ r F l i (fst c1) x)))
+      d2 (inj₂ x) =
+        inj₂ (#⇓-trans₁
+                {w} {fst c1} {#APPLY (#loop r F) l} {#loopI r (#loop r F) l i} {#DIGAMMA (#loopR (#loop r F) l)}
+                (snd c1)
+                (⇓-from-to→⇓ {fst c1} {fst c1} (#APPLY-#loop#⇓5₁ r F l i (fst c1) x)))
 
 \end{code}

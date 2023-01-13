@@ -98,6 +98,13 @@ open import barCont(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 
 
 
+INL∈IndBarB : (i : ℕ) (w : 𝕎·) (k : ℕ) → ∈Type i w #IndBarB (#INL (#NUM k))
+INL∈IndBarB i w k =
+  →equalInType-UNION eqTypesNAT
+    (eqTypesTRUE {w} {i})
+    (Mod.∀𝕎-□ M (λ w' e → #NUM k , #NUM k , inj₁ (#compAllRefl (#INL (#NUM k)) w' , #compAllRefl (#INL (#NUM k)) w' , NUM-equalInType-NAT i w' k)))
+
+
 -- First prove that loop belongs to CoIndBar
 coSemM : (cb : c𝔹) (i : ℕ) (w : 𝕎·) (r : Name) (F l : CTerm) (k : ℕ)
          --→ ∈Type i w #FunBar F
@@ -107,24 +114,10 @@ coSemM : (cb : c𝔹) (i : ℕ) (w : 𝕎·) (r : Name) (F l : CTerm) (k : ℕ)
          → meq (equalInType i w #IndBarB)
                 (λ a b eqa → equalInType i w (sub0 a #IndBarC))
                 w (#APPLY (#loop r F) l) (#APPLY (#loop r F) l)
-meq.meqC (coSemM cb i w r F l k compat ck) = {!!}
-  where
-    c1 : #APPLY (#loop r F) l #⇓ #ETA (#NUM k) at w ⊎ #APPLY (#loop r F) l #⇓ #DIGAMMA (#loopR (#loop r F) l) at w
-    c1 = #APPLY-#loop#⇓4 cb r F l k w compat ck
-
-    c2 : Σ CTerm (λ a1 → Σ CTerm (λ f1 → Σ CTerm (λ a2 → Σ CTerm (λ f2 → Σ (equalInType i w #IndBarB a1 a2) (λ e →
-                     #APPLY (#loop r F) l #⇛ #SUP a1 f1 at w ×
-                     #APPLY (#loop r F) l #⇛ #SUP a2 f2 at w ×
-                     ((b1 b2 : CTerm)
-                       → equalInType i w (sub0 a1 #IndBarC) b1 b2
-                       →  meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC)) w (#APPLY f1 b1) (#APPLY f2 b2)))))))
-    c2 = ? {--with c1
-    ... | inj₁ x = ?
-    ... | inj₂ x = ?--}
-{-- with #APPLY-#loop#⇓4 cb r F l k w compat ck
-... | inj₁ c1 = {!!}
-... | inj₂ c1 = {!!}
---}
+meq.meqC (coSemM cb i w r F l k compat ck) with #APPLY-#loop#⇓4 cb r F l k w compat ck -- doesn't work without the 'abstract' on #APPLY-#loop#⇓4
+... | inj₁ x = #INL (#NUM k) , #AX , #INL (#NUM k) , #AX , INL∈IndBarB i w k , {!x!} , {!!} , {!!}
+               -- That's an issue because we don't know here whether if we get an ETA then we get an ETA for all extensions
+... | inj₂ x = {!!}
 
 -- Use the fact that #generic is well-typed: generic∈BAIRE
 -- It is used to reduce loop in: #APPLY-#loop#⇓3
@@ -169,7 +162,7 @@ Plan:
     - see m2w
 (4) If it has an inifite path:
     - That path corresponds to an (α ∈ Baire).
-    - Given (F ∈ FunBar), by continuity let n by F's modulus of continuity w.r.t. α.
+    - Given (F ∈ FunBar), by continuity let n be F's modulus of continuity w.r.t. α.
     - So, it must be that F(generic r α|n) returns r:=BTRUE and so loop returns ETA, and the path cannot be infinite
           (where α|n is the initial segment of α of length n)
 
