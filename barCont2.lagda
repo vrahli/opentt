@@ -100,9 +100,18 @@ open import barCont(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 
 INL∈IndBarB : (i : ℕ) (w : 𝕎·) (k : ℕ) → ∈Type i w #IndBarB (#INL (#NUM k))
 INL∈IndBarB i w k =
-  →equalInType-UNION eqTypesNAT
+  →equalInType-UNION
+    eqTypesNAT
     (eqTypesTRUE {w} {i})
     (Mod.∀𝕎-□ M (λ w' e → #NUM k , #NUM k , inj₁ (#compAllRefl (#INL (#NUM k)) w' , #compAllRefl (#INL (#NUM k)) w' , NUM-equalInType-NAT i w' k)))
+
+
+INR∈IndBarB : (i : ℕ) (w : 𝕎·) → ∈Type i w #IndBarB (#INR #AX)
+INR∈IndBarB i w =
+  →equalInType-UNION
+    eqTypesNAT
+    (eqTypesTRUE {w} {i})
+    (Mod.∀𝕎-□ M (λ w' e → #AX , #AX , inj₂ (#compAllRefl (#INR #AX) w' , #compAllRefl (#INR #AX) w' , →equalInType-TRUE i {w'} {#AX} {#AX})))
 
 
 -- First prove that loop belongs to CoIndBar
@@ -115,9 +124,9 @@ coSemM : (cb : c𝔹) (i : ℕ) (w : 𝕎·) (r : Name) (F l : CTerm) (k : ℕ)
                 (λ a b eqa → equalInType i w (sub0 a #IndBarC))
                 w (#APPLY (#loop r F) l) (#APPLY (#loop r F) l)
 meq.meqC (coSemM cb i w r F l k compat ck) with #APPLY-#loop#⇓4 cb r F l k w compat ck -- doesn't work without the 'abstract' on #APPLY-#loop#⇓4
-... | inj₁ x = #INL (#NUM k) , #AX , #INL (#NUM k) , #AX , INL∈IndBarB i w k , {!x!} , {!!} , {!!}
+... | inj₁ x = #INL (#NUM k) , #AX , #INL (#NUM k) , #AX , INL∈IndBarB i w k , {!!} , {!!} , {!!}
                -- That's an issue because we don't know here whether if we get an ETA then we get an ETA for all extensions
-... | inj₂ x = {!!}
+... | inj₂ x = #INR #AX  , #loopR (#loop r F) l , #INR #AX , #loopR (#loop r F) l , INR∈IndBarB i w , {!!} , {!!} , {!!}
 
 -- Use the fact that #generic is well-typed: generic∈BAIRE
 -- It is used to reduce loop in: #APPLY-#loop#⇓3
