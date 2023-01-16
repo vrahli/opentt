@@ -1180,4 +1180,26 @@ ITE⇓₁ : {w w' : 𝕎·} {a b t u : Term}
          → ITE a t u ⇓ ITE b t u from w to w'
 ITE⇓₁ {w} {w'} {a} {b} {t} {u} comp = DECIDE⇓₁ comp
 
+
+
+#DECIDE : CTerm → CTerm0 → CTerm0 → CTerm
+#DECIDE a b c = ct (DECIDE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝) d
+  where
+    d : # DECIDE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝
+    d rewrite CTerm.closed a | lowerVars-fvars-CTerm0≡[] b | lowerVars-fvars-CTerm0≡[] c = refl
+
+
+#[0]VOID : CTerm0
+#[0]VOID = ct0 VOID c
+  where
+    c : #[ [ 0 ] ] VOID
+    c = refl
+
+
+#VOID : CTerm
+#VOID = ct VOID c
+  where
+    c : # VOID
+    c = refl
+
 \end{code}

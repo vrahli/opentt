@@ -255,6 +255,15 @@ loop r bar = FIX (loopL r bar)
 #[2]DIGAMMA f = #[2]SUP (#[2]INR #[2]AX) f
 
 
+#APPEND : CTerm → CTerm → CTerm
+#APPEND l x =
+  #PAIR (#SUC (#FST l))
+        (#LAMBDA (#[0]IFLT #[0]VAR
+                           (#[0]shiftUp0 (#FST l))
+                           (#[0]APPLY (#[0]shiftUp0 (#SND l)) #[0]VAR)
+                           (#[0]shiftUp0 x)))
+
+
 #[0]APPEND : CTerm0 → CTerm0 → CTerm0
 #[0]APPEND l x =
   #[0]PAIR (#[0]SUC (#[0]FST l))
@@ -403,7 +412,7 @@ correctPathN {i} {A} {B} t p 0 = Lift (lsuc L) ⊤
 correctPathN {i} {A} {B} t p (suc n) with p 0
 ... | inj₁ (w , a , b , ia , ib) =
   Σ CTerm (λ x → Σ CTerm (λ f →
-    t #⇛ #SUP x f at w -- For W types
+    t #⇓ {--#⇛--} #SUP x f at w -- For W types
     × x ≡ a
     × correctPathN {i} {A} {B} (#APPLY f b) (shiftPath {i} {A} {B} p) n))
 ... | inj₂ _ = Lift (lsuc L) ⊤
@@ -419,8 +428,8 @@ record branch eqa eqb w t1 t2 where
   coinductive
   field
     branchC : Σ CTerm (λ a1 → Σ CTerm (λ f1 → Σ CTerm (λ b1 → Σ CTerm (λ a2 → Σ CTerm (λ f2 → Σ CTerm (λ b2 → Σ (eqa a1 a2) (λ e →
-               t1 #⇛ (#SUP a1 f1) at w
-               × t2 #⇛ (#SUP a2 f2) at w
+               t1 #⇓ {--#⇛--} (#SUP a1 f1) at w
+               × t2 #⇓ {--#⇛--} (#SUP a2 f2) at w
                × eqb a1 a2 e b1 b2
                × branch eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))))))))
 
@@ -488,6 +497,7 @@ inf-mb2path i w A B t u b (suc n) with branch.branchC b
 ... |       inj₂ x = k
 
 
+{--
 data compatMW (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (w : 𝕎·) (t1 t2 : CTerm)
               : meq eqa eqb w t1 t2 → weq eqa eqb w t1 t2 → Set
 data compatMW eqa eqb w t1 t2 where
@@ -497,6 +507,7 @@ data compatMW eqa eqb w t1 t2 where
             (eb : (b1 b2 : CTerm) → eqb a1 a2 ea b1 b2 → weq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))
             (m : meq eqa eqb w t1 t2) -- get rid of that + induction
             → compatMW eqa eqb w t1 t2 m {--(meq.meqC (a1 , f1 , a2 , f2 , ? , c1 , c2 , ?))--} (weq.weqC a1 f1 a2 f2 ea c1 c2 eb)
+--}
 
 
 -- Classically, we can derive a weq from an meq as follows

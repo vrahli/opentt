@@ -350,8 +350,8 @@ weq-trans : {eqa : per}
             → weq eqa eqb w b c
             → weq eqa eqb w a c
 weq-trans {eqa} {eqb} {w} {a} {b} {c} syma symb transa transb transc transd (weqC a1 f1 a2 f2 e1 c1 c2 p) (weqC a3 f3 a4 f4 e2 c3 c4 q)
-  rewrite #SUPinj1 {a2} {f2} {a3} {f3} (#⇛-val-det {_} {b} tt tt c2 c3)
-        | #SUPinj2 {a2} {f2} {a3} {f3} (#⇛-val-det {_} {b} tt tt c2 c3) =
+  rewrite #SUPinj1 {a2} {f2} {a3} {f3} (#⇓-val-det {_} {b} tt tt c2 c3)
+        | #SUPinj2 {a2} {f2} {a3} {f3} (#⇓-val-det {_} {b} tt tt c2 c3) =
   weqC a1 f1 a4 f4 (transa _ _ _ e1 e2) c1 c4 eb
   where
     eb : (b1 b2 : CTerm) → eqb a1 a4 (transa a1 a3 a4 e1 e2) b1 b2 → weq eqa eqb w (#APPLY f1 b1) (#APPLY f4 b2)
