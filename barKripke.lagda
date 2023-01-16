@@ -27,11 +27,44 @@ module barKripke {n : Level} (W : PossibleWorlds {n})
 open import worldDef{n}(W)
 open import bar{n}{n}(W)
 open import mod{n}{n}(W)
+open import nucleus{n}(W)
 
 
 -- all the worlds above w are in the bar
 K𝔹bars : Bars
 K𝔹bars w bar = ∀𝕎 w (λ w' _ → bar w')
+
+-- Kripke Bars give a nucleus (when restricted to upward closed subsets)
+j : UCSubset → UCSubset
+j (U , U-UC) = (λ w → K𝔹bars w U) , λ w1⊑w2 w1◀U w3 w2⊑w3 → w1◀U w3 (⊑-trans· w1⊑w2 w2⊑w3)
+
+K𝔹-mono : (U V : UCSubset) → U ⋐ V → j U ⋐ j V
+K𝔹-mono U V U⋐V w◀U w1 w⊑w1 = U⋐V (w◀U w1 w⊑w1)
+
+K𝔹-well-defined : well-defined j
+K𝔹-well-defined = λ U V (U⋐V , V⋐U) → K𝔹-mono U V U⋐V , K𝔹-mono V U V⋐U
+
+K𝔹-extensive : extensive j
+K𝔹-extensive (U , U-UC) w∈U w1 w⊑w1 = U-UC w⊑w1 w∈U
+
+K𝔹-idempotent : idempotent j
+K𝔹-idempotent U w◀◀U w1 w⊑w1 = (w◀◀U w1 w⊑w1) w1 (⊑-refl· w1)
+
+K𝔹-meet-preserving : meet-preserving j
+K𝔹-meet-preserving U V = jU⋒V⋐jU⋒jV , jU⋒jV⋐jU⋒V
+  where
+    jU⋒V⋐jU⋒jV : j (U ⋒ V) ⋐ j U ⋒ j V
+    jU⋒V⋐jU⋒jV = ⋒-intro {j U} {j V} {j (U ⋒ V)} (K𝔹-mono (U ⋒ V) U (⋒-elim-l {U} {V}))
+                                                 (K𝔹-mono (U ⋒ V) V (⋒-elim-r {U} {V}))
+
+    jU⋒jV⋐jU⋒V : j U ⋒ j V ⋐ j (U ⋒ V)
+    jU⋒jV⋐jU⋒V (w◀U , w◀V) w1 w⊑w1 = w◀U w1 w⊑w1 , w◀V w1 w⊑w1
+
+K𝔹-inhabited : inhabited j
+K𝔹-inhabited {w} U w◀U = w , w◀U w (⊑-refl· w)
+
+K𝔹-cucleus : isCuclear j
+K𝔹-cucleus = mkCucleus K𝔹-inhabited (mkNucleus K𝔹-well-defined K𝔹-extensive K𝔹-idempotent K𝔹-meet-preserving)
 
 
 -- a Kripke bar

@@ -48,11 +48,8 @@ ex = CoversProps.ex props
 _▶ : UCSubset → UCSubset
 _▶ U = (_◀ U) , ▶-UCSubset→UCSubset
 
-▶-mono : (U V : UCSubset) → U ⋐ V → (U ▶) ⋐ (V ▶)
-▶-mono U V U⋐V = {!!}
-
 ▶-well-def : well-defined _▶
-▶-well-def U V (U⋐V , V⋐U) = ▶-mono U V U⋐V , ▶-mono V U V⋐U
+▶-well-def U V (U⋐V , V⋐U) = {!!}
 
 ▶-ext : extensive _▶
 ▶-ext U {w} w∈U = {!!}
@@ -98,15 +95,12 @@ _▶ U = (_◀ U) , ▶-UCSubset→UCSubset
 ▶-meet-pre U V = U⋒V▶⋐U▶⋒V▶ , U▶⋒V▶⋐U⋒V▶
   where
     U⋒V▶⋐U▶⋒V▶ : ((U ⋒ V) ▶) ⋐ (U ▶) ⋒ (V ▶)
-    U⋒V▶⋐U▶⋒V▶ = ⋒-intro {U ▶} {V ▶} {(U ⋒ V) ▶} (▶-mono (U ⋒ V) U fst) ((▶-mono (U ⋒ V) V snd))
+    U⋒V▶⋐U▶⋒V▶ = {!!}
 
     U▶⋒V▶⋐U⋒V▶ : (U ▶) ⋒ (V ▶) ⋐ ((U ⋒ V) ▶)
     U▶⋒V▶⋐U⋒V▶ (w◀U , w◀V) = isect U V w◀U w◀V
 
-▶-undeer : undershooting _▶
-▶-undeer {I} f {w} (i , w◀fi) = ▶-mono (f i) (⋓[ i ∈ I ] f i) (⋓-intro f i) w◀fi
-
 ▶-inhab : inhabited _▶
-▶-inhab = ex
+▶-inhab U = ex
 
 \end{code}

@@ -28,6 +28,7 @@ module barBeth {L : Level} (W : PossibleWorlds {L})
 open import worldDef{L}(W)
 open import bar{L}{L ∨ 1ℓ}(W)
 open import mod{L}{L ∨ 1ℓ}(W)
+-- open import nucleus{L ∨ 1ℓ}(W)
 
 -- Those are only needed by the Beth instance
 open import choiceDef{L}(C)
@@ -209,6 +210,50 @@ record BarredChain (bar : Br) {w : 𝕎·} (c : chain w) : Set L where
 
 IS𝔹bars : Bars
 IS𝔹bars w bar = (c : pchain w) → BarredChain bar (pchain.c c)
+
+{--
+
+Currently we cannot turn this into a nucleus due to the jump in universe level.
+If there is some way to postulate $n ∨ 1ℓ = n$ then we could try doing this inside a module.
+
+-- Open Bars give a nucleus (when restricted to upward closed subsets)
+j : UCSubset → UCSubset
+j (U , U-UC) = (λ w → IS𝔹bars w U) , (λ w1⊑w2 w1◀U w3 w2⊑w3 → w1◀U w3 (⊑-trans· w1⊑w2 w2⊑w3))
+
+IS𝔹-mono : (U V : UCSubset) → U ⋐ V → j U ⋐ j V
+IS𝔹-mono U V U⋐V w◀U w1 w⊑w1 = let (w2 , w1⊑w2 , w2∈U) = w◀U w1 w⊑w1 in w2 , w1⊑w2 , U⋐V w2∈U
+
+IS𝔹-well-defined : well-defined j
+IS𝔹-well-defined = λ U V (U⋐V , V⋐U) → IS𝔹-mono U V U⋐V , IS𝔹-mono V U V⋐U
+
+IS𝔹-extensive : extensive j
+IS𝔹-extensive (U , U-UC) w∈U w1 w⊑w1 = w1 , ⊑-refl· w1 , U-UC w⊑w1 w∈U
+
+IS𝔹-idempotent : idempotent j
+IS𝔹-idempotent U w◀◀U w1 w⊑w1 = let (w2 , w1⊑w2 , w2◀U) = w◀◀U w1 w⊑w1
+                                   (w3 , w2⊑w3 , w3∈U) = w2◀U w2 (⊑-refl· w2)
+                                in (w3 , ⊑-trans· w1⊑w2 w2⊑w3 , w3∈U )
+
+IS𝔹-meet-preserving : meet-preserving j
+IS𝔹-meet-preserving U V = jU⋒V⋐jU⋒jV , jU⋒jV⋐jU⋒V
+  where
+    jU⋒V⋐jU⋒jV : j (U ⋒ V) ⋐ j U ⋒ j V
+    jU⋒V⋐jU⋒jV = ⋒-intro {j U} {j V} {j (U ⋒ V)} (IS𝔹-mono (U ⋒ V) U (⋒-elim-l {U} {V}))
+                                                 (IS𝔹-mono (U ⋒ V) V (⋒-elim-r {U} {V}))
+
+    jU⋒jV⋐jU⋒V : j U ⋒ j V ⋐ j (U ⋒ V)
+    jU⋒jV⋐jU⋒V (w◀U , w◀V) w1 w⊑w1 = let U-UC = snd U
+                                         (w2 , w1⊑w2 , w2∈U) = w◀U w1 w⊑w1
+                                         (w3 , w2⊑w3 , w3∈V) = w◀V w2 (⊑-trans· w⊑w1 w1⊑w2)
+                                      in w3 , ⊑-trans· w1⊑w2 w2⊑w3 , U-UC w2⊑w3 w2∈U , w3∈V
+
+IS𝔹-inhabited : inhabited j
+IS𝔹-inhabited {w} U w◀U = let (w1 , _ , w1∈U) = w◀U w (⊑-refl· w) in w1 , w1∈U
+
+IS𝔹-cucleus : isCuclear j
+IS𝔹-cucleus = mkCucleus IS𝔹-inhabited (mkNucleus IS𝔹-well-defined IS𝔹-extensive IS𝔹-idempotent IS𝔹-meet-preserving)
+
+--}
 
 -- a Beth bar where all infinite sequences are barred
 IS𝔹 : 𝕎· → Set (2ℓ ∨ lsuc L)

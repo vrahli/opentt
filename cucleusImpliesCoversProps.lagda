@@ -70,7 +70,7 @@ isNuclear⇒Cover∪ {j} nuc {w} U w◀U G i = jU⋐j⋓Ui w◀U
 
 
 inhabited⇒Cover∃ : {j : UCSubset → UCSubset} → inhabited j → Cover∃ _◀[ j ]_
-inhabited⇒Cover∃ inhab = inhab
+inhabited⇒Cover∃ inhab {w} {U}  = inhab U
 
 isCuclear⇒CoversProps : {j : UCSubset → UCSubset} → isCuclear j → CoversProps
 isCuclear⇒CoversProps {j} cuc = mkCoversProps

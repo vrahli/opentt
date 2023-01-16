@@ -155,7 +155,7 @@ meet-preserving⇒monotonic {j} well-def meet-pre U V U⋐V = ⋒-implies-⋐ {j
   (≅-tran {j U} {j (U ⋒ V)} {j U ⋒ j V} (well-def U (U ⋒ V) (⋐-implies-⋒ {U} {V} U⋐V)) (meet-pre U V))
 
 inhabited : (UCSubset → UCSubset) → Set(lsuc(L))
-inhabited j = {w : 𝕎· } {U : UCSubset} → w ∈· j U → Σ[ w' ∈ 𝕎· ] w' ∈· U
+inhabited j = {w : 𝕎· } (U : UCSubset) → w ∈· j U → Σ[ w' ∈ 𝕎· ] w' ∈· U
 
 
 record isNuclear (j : UCSubset → UCSubset) : Set (lsuc L) where

@@ -14,6 +14,8 @@ module coversProps {L : Level} (W : PossibleWorlds {L})
 open import worldDef{L}(W)
 open import nucleus{L}(W)
 
+-- TODO: reconcile these definitions with the new BarsProps definition.
+
 Cover : Set(lsuc(L))
 Cover = 𝕎· → UCSubset → Set(L)
 
