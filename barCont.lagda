@@ -142,12 +142,15 @@ IndBarB = UNION NAT UNIT
 #IndBarB = #UNION #NAT #UNIT
 
 
+-- IndBarC uses NAT! because if DIGAMMAs are functions from NAT, then to prove that (loop ∈ coW -- see coSemM)
+-- we need to jump to the 𝕎s at wihch the NATs are actual numbers, and we don't have members of the coW at the
+-- current 𝕎
 IndBarC : Term
-IndBarC = DECIDE (VAR 0) VOID NAT
+IndBarC = DECIDE (VAR 0) VOID NAT!
 
 
 #IndBarC : CTerm0
-#IndBarC = #[0]DECIDE #[0]VAR #[1]VOID #[1]NAT
+#IndBarC = #[0]DECIDE #[0]VAR #[1]VOID #[1]NAT!
 
 
 IndBar : Term
@@ -180,7 +183,7 @@ barThesis = FUN FunBar IndBar
 
 -- Recursive call used in DIGAMMA
 loopR : Term → Term → Term
-loopR R xs = LAMBDA (APPLY (shiftUp 0 R) (APPEND (shiftUp 0 xs) (VAR 0)))
+loopR R xs = LAMBDA (LET (VAR 0) (APPLY (shiftUp 0 (shiftUp 0 R)) (APPEND (shiftUp 0 (shiftUp 0 xs)) (VAR 0))))
 
 
 -- loopA's body
@@ -255,45 +258,75 @@ loop r bar = FIX (loopL r bar)
 #[2]DIGAMMA f = #[2]SUP (#[2]INR #[2]AX) f
 
 
+#APPENDf : CTerm → CTerm → CTerm → CTerm
+#APPENDf n f x =
+  #LAMBDA (#[0]IFLT #[0]VAR
+                    (#[0]shiftUp0 n)
+                    (#[0]APPLY (#[0]shiftUp0 f) #[0]VAR)
+                    (#[0]shiftUp0 x))
+
+
 #APPEND : CTerm → CTerm → CTerm
 #APPEND l x =
-  #PAIR (#SUC (#FST l))
-        (#LAMBDA (#[0]IFLT #[0]VAR
-                           (#[0]shiftUp0 (#FST l))
-                           (#[0]APPLY (#[0]shiftUp0 (#SND l)) #[0]VAR)
-                           (#[0]shiftUp0 x)))
+  #SPREAD l (#[1]PAIR (#[1]SUC #[1]VAR0)
+                      (#[1]LAMBDA (#[2]IFLT #[2]VAR0
+                                            #[2]VAR1
+                                            (#[2]APPLY #[2]VAR2 #[2]VAR0)
+                                            (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 x))))))
 
 
 #[0]APPEND : CTerm0 → CTerm0 → CTerm0
 #[0]APPEND l x =
-  #[0]PAIR (#[0]SUC (#[0]FST l))
-           (#[0]LAMBDA (#[1]IFLT #[1]VAR0
-                                 (#[1]shiftUp0 (#[0]FST l))
-                                 (#[1]APPLY (#[1]shiftUp0 (#[0]SND l)) #[1]VAR0)
-                                 (#[1]shiftUp0 x)))
+  #[0]SPREAD l (#[2]PAIR (#[2]SUC #[2]VAR0)
+                         (#[2]LAMBDA (#[3]IFLT #[3]VAR0
+                                               #[3]VAR1
+                                               (#[3]APPLY #[3]VAR2 #[3]VAR0)
+                                               (#[3]shiftUp0 (#[2]shiftUp0 (#[1]shiftUp0 x))))))
 
 
 #[1]APPEND : CTerm1 → CTerm1 → CTerm1
 #[1]APPEND l x =
-  #[1]PAIR (#[1]SUC (#[1]FST l))
-           (#[1]LAMBDA (#[2]IFLT #[2]VAR0
-                                 (#[2]shiftUp0 (#[1]FST l))
-                                 (#[2]APPLY (#[2]shiftUp0 (#[1]SND l)) #[2]VAR0)
-                                 (#[2]shiftUp0 x)))
+  #[1]SPREAD l (#[3]PAIR (#[3]SUC #[3]VAR0)
+                         (#[3]LAMBDA (#[4]IFLT #[4]VAR0
+                                               #[4]VAR1
+                                               (#[4]APPLY #[4]VAR2 #[4]VAR0)
+                                               (#[4]shiftUp0 (#[3]shiftUp0 (#[2]shiftUp0 x))))))
+
+
+#[2]APPEND : CTerm2 → CTerm2 → CTerm2
+#[2]APPEND l x =
+  #[2]SPREAD l (#[4]PAIR (#[4]SUC #[4]VAR0)
+                         (#[4]LAMBDA (#[5]IFLT #[5]VAR0
+                                               #[5]VAR1
+                                               (#[5]APPLY #[5]VAR2 #[5]VAR0)
+                                               (#[5]shiftUp0 (#[4]shiftUp0 (#[3]shiftUp0 x))))))
 
 
 #[3]APPEND : CTerm3 → CTerm3 → CTerm3
 #[3]APPEND l x =
-  #[3]PAIR (#[3]SUC (#[3]FST l))
-           (#[3]LAMBDA (#[4]IFLT #[4]VAR0
-                                 (#[4]shiftUp0 (#[3]FST l))
-                                 (#[4]APPLY (#[4]shiftUp0 (#[3]SND l)) #[4]VAR0)
-                                 (#[4]shiftUp0 x)))
+  #[3]SPREAD l (#[5]PAIR (#[5]SUC #[5]VAR0)
+                         (#[5]LAMBDA (#[6]IFLT #[6]VAR0
+                                               #[6]VAR1
+                                               (#[6]APPLY #[6]VAR2 #[6]VAR0)
+                                               (#[6]shiftUp0 (#[5]shiftUp0 (#[4]shiftUp0 x))))))
+
+
+#[4]APPEND : CTerm4 → CTerm4 → CTerm4
+#[4]APPEND l x =
+  #[4]SPREAD l (#[6]PAIR (#[6]SUC #[6]VAR0)
+                         (#[6]LAMBDA (#[7]IFLT #[7]VAR0
+                                               #[7]VAR1
+                                               (#[7]APPLY #[7]VAR2 #[7]VAR0)
+                                               (#[7]shiftUp0 (#[6]shiftUp0 (#[5]shiftUp0 x))))))
+
+
+#loopRL : CTerm → CTerm → CTerm → CTerm
+#loopRL a R l = #LET a (#[0]APPLY (#[0]shiftUp0 R) (#[0]APPEND (#[0]shiftUp0 l) #[0]VAR))
 
 
 -- Recursive call used in DIGAMMA
 #loopR : CTerm → CTerm → CTerm
-#loopR R l = #LAMBDA (#[0]APPLY (#[0]shiftUp0 R) (#[0]APPEND (#[0]shiftUp0 l) #[0]VAR))
+#loopR R l = #LAMBDA (#[0]LET #[0]VAR (#[1]APPLY (#[1]shiftUp0 (#[0]shiftUp0 R)) (#[1]APPEND (#[1]shiftUp0 (#[0]shiftUp0 l)) #[1]VAR0)))
 
 
 -- This is loopA's body
@@ -309,8 +342,8 @@ loop r bar = FIX (loopL r bar)
   #LET (#APPLY bar (#generic r l))
        (#[0]ITE (#[0]get0 r)
                 (#[0]ETA #[0]VAR)
-                (#[0]DIGAMMA (#[0]LAMBDA (#[1]APPLY (#[1]shiftUp0 (#[0]shiftUp0 R))
-                                                    (#[1]APPEND (#[1]shiftUp0 (#[0]shiftUp0 l)) #[1]VAR0)))))
+                (#[0]DIGAMMA (#[0]LAMBDA (#[1]LET #[1]VAR0 (#[2]APPLY (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 R)))
+                                                                      (#[2]APPEND (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 l))) #[2]VAR0))))))
 
 
 #loopF : Name →  CTerm → CTerm → CTerm → CTerm
@@ -328,7 +361,7 @@ loop r bar = FIX (loopL r bar)
     F = #[1]LET (#[1]APPLY ⌞ bar ⌟ (#[1]generic r #[1]VAR0))
                 (#[2]ITE (#[2]get0 r)
                          (#[2]ETA #[2]VAR0)
-                         (#[2]DIGAMMA (#[2]LAMBDA (#[3]APPLY #[3]VAR3 (#[3]APPEND #[3]VAR2 #[3]VAR0)))))
+                         (#[2]DIGAMMA (#[2]LAMBDA (#[3]LET #[3]VAR0 (#[4]APPLY #[4]VAR4 (#[4]APPEND #[4]VAR3 #[4]VAR0))))))
 
 
 -- sanity checking
@@ -586,37 +619,34 @@ sub-loopF≡ : (r : Name) (F l : Term) (cF : # F) (cl : # l)
              → sub l (loopF r F (loop r F) (VAR 0))
                 ≡ loopF r F (loop r F) l
 sub-loopF≡ r F l cF cl
-  rewrite #subv 1 (shiftUp 0 (shiftUp 0 l)) (shiftUp 0 F) (→#shiftUp 0 {F} cF)
-        | #shiftUp 0 (ct F cF)
-        | #shiftDown 1 (ct F cF)
+  rewrite #shiftUp 0 (ct F cF)
+        | #shiftUp 3 (ct F cF)
+        | #shiftUp 3 (ct F cF)
+        | #shiftUp 3 (ct F cF)
+        | #shiftUp 5 (ct F cF)
+        | #shiftUp 7 (ct F cF)
         | #shiftUp 0 (ct l cl)
         | #shiftUp 0 (ct l cl)
         | #shiftUp 0 (ct l cl)
         | #shiftUp 0 (ct l cl)
-        | #shiftUp 1 (ct l cl)
-        | #shiftUp 2 (ct l cl)
+        | #shiftUp 0 (ct l cl)
+        | #shiftUp 0 (ct l cl)
+        | #shiftUp 0 (ct l cl)
+        | #shiftUp 0 (ct l cl)
+        | #shiftUp 0 (ct l cl)
         | #shiftDown 2 (ct l cl)
         | #shiftDown 3 (ct l cl)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 0 (ct l cl)
         | #shiftDown 5 (ct l cl)
         | #shiftDown 6 (ct l cl)
-        | #shiftDown 4 (ct l cl)
+        | #subv 1 l F cF
+        | #subv 8 l F cF
+        | #shiftDown 1 (ct F cF)
+        | #shiftDown 8 (ct F cF)
+        | #shiftUp 1 (ct l cl)
+        | #shiftUp 2 (ct l cl)
         | #shiftUp 3 (ct l cl)
-        | #shiftUp 5 (ct l cl)
         | #shiftUp 4 (ct l cl)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 3 (ct F cF)
-        | #shiftUp 3 (ct F cF)
-        | #shiftUp 4 (ct F cF)
-        | #shiftUp 5 (ct F cF)
-        | #shiftUp 6 (ct F cF)
-        | #shiftUp 7 (ct F cF)
-        | #shiftUp 8 (ct F cF)
-        | #subv 7 l F cF
-        | #shiftDown 7 (ct F cF)
+        | #shiftUp 5 (ct l cl)
   = refl
 
 
@@ -865,6 +895,86 @@ equalInType-LIST-NAT→ i w f g eqi = Mod.□-idem M (Mod.∀𝕎-□Func M aw (
         aw1 w2 e2 ek' e3 = k1 , k2 , f1 , f2 , ek' , equalInType-mon ef w2 e2 , ∀𝕎-mon e2 c1 , ∀𝕎-mon e2 c2
 
 
+NATeq-mon : {w1 w2 : 𝕎·} (e : w1 ⊑· w2) {a1 a2 : CTerm}
+            → NATeq w1 a1 a2
+            → NATeq w2 a1 a2
+NATeq-mon {w1} {w2} e {a1} {a2} (n , c1 , c2) = n , ∀𝕎-mon e c1 , ∀𝕎-mon e c2
+
+
+→equalInType-LIST-NAT : (i : ℕ) (w : 𝕎·) (f g : CTerm)
+                         → □· w (λ w' _ → LISTNATeq i w' f g)
+                         → equalInType i w (#LIST #NAT) f g
+→equalInType-LIST-NAT i w f g eqi =
+  equalInType-PROD eqTypesNAT eqTypesBAIRE (Mod.∀𝕎-□Func M aw eqi)
+  where
+    aw : ∀𝕎 w (λ w' e' → LISTNATeq i w' f g
+                        → PRODeq (equalInType i w' #NAT) (equalInType i w' #BAIRE) w' f g)
+    aw w1 e1 (a1 , a2 , b1 , b2 , x , y , c1 , c2) =
+      a1 , a2 , b1 , b2 ,
+      →equalInType-NAT i w1 a1 a2 (Mod.∀𝕎-□ M λ w2 e2 → NATeq-mon {w1} {w2} e2 {a1} {a2} x) ,
+      y , c1 , c2
+
+
+SUC-steps₁ : {k : ℕ} {w w' : 𝕎·} {a b : Term}
+              → steps k (a , w) ≡ (b , w')
+              → Σ ℕ (λ k → steps k (SUC a , w) ≡ (SUC b , w'))
+SUC-steps₁ {0} {w} {w'} {a} {b} comp rewrite pair-inj₁ comp | pair-inj₂ comp = 0 , refl
+SUC-steps₁ {suc k} {w} {w'} {a} {b} comp with is-NUM a
+... | inj₁ (x , p) rewrite p | stepsVal (NUM x) w (suc k) tt | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+... | inj₂ x with step⊎ a w
+... |    inj₁ (y , w'' , q) rewrite q = suc (fst c) , snd c
+  where
+    c : Σ ℕ (λ k₁ → steps (suc k₁) (SUC a , w) ≡ (SUC b , w'))
+    c with is-NUM a
+    ... | inj₁ (x' , z) rewrite z = ⊥-elim (x x' refl)
+    ... | inj₂ x' rewrite q = SUC-steps₁ {k} comp
+... |    inj₂ q rewrite q | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+
+
+SUC⇓₁ : {w w' : 𝕎·} {a b : Term}
+         → a ⇓ b from w to w'
+         → SUC a ⇓ SUC b from w to w'
+SUC⇓₁ {w} {w'} {a} {b} (k , comp) = SUC-steps₁ {k} {w} {w'} {a} {b} comp
+
+
+
+SUC⇛₁ : {w : 𝕎·} {a a' : Term}
+           → a ⇛ a' at w
+           → SUC a ⇛ SUC a' at w
+SUC⇛₁ {w} {a} {a'} comp w1 e1 = lift (⇓-from-to→⇓ {w1} {fst c} (SUC⇓₁ (snd c)))
+  where
+    c : Σ 𝕎· (λ w2 → a ⇓ a' from w1 to w2)
+    c = ⇓→from-to (lower (comp w1 e1))
+
+
+SUC⇛₂ : {w : 𝕎·} {a : Term} {k : ℕ}
+           → a ⇛ NUM k at w
+           → SUC a ⇛ NUM (suc k) at w
+SUC⇛₂ {w} {a} {k} comp w1 e1 = lift ?
+
+
+APPEND∈LIST : (i : ℕ) (w : 𝕎·) (l n : CTerm)
+               → ∈Type i w (#LIST #NAT) l
+               → ∈Type i w #NAT n
+               → ∈Type i w (#LIST #NAT) (#APPEND l n)
+APPEND∈LIST i w l n ∈l ∈n =
+            →equalInType-LIST-NAT i w (#APPEND l n) (#APPEND l n) (∀𝕎-□Func2 aw ∈l1 ∈n1)
+  where
+    ∈l1 : □· w (λ w' _ → LISTNATeq i w' l l)
+    ∈l1 = equalInType-LIST-NAT→ i w l l ∈l
+
+    ∈n1 : □· w (λ w' _ → NATeq w' n n)
+    ∈n1 = equalInType-NAT→ i w n n ∈n
+
+    aw : ∀𝕎 w (λ w' e' → LISTNATeq i w' l l → NATeq w' n n → LISTNATeq i w' (#APPEND l n) (#APPEND l n))
+    aw w1 e1 (a1 , a2 , f1 , f2 , (m , z1 , z2) , x2 , c1 , c2) (k , d1 , d2) =
+      #SUC a1 , #SUC a2 , #APPENDf a1 f1 n , #APPENDf a2 f2 n ,
+      (suc m , {!!} , {!!}) , -- use SUC⇛₂
+      {!!} ,
+      {!!} ,
+      {!!}
+
+
 generic∈BAIRE : (i : ℕ) (w : 𝕎·) (r : Name) (l : CTerm)
                 → ∈Type i w (#LIST #NAT) l
                 → ∈Type i w #BAIRE (#generic r l)
@@ -924,20 +1034,24 @@ sub-loopI≡ r R l i cR cl ci
         | #shiftUp 0 (ct i ci)
         | #shiftUp 0 (ct i ci)
         | #shiftUp 0 (ct i ci)
-        | #shiftDown 1 (ct i ci)
+        | #shiftUp 0 (ct i ci)
+        | #shiftUp 0 (ct i ci)
         | #shiftUp 0 (ct R cR)
-        | #shiftUp 1 (ct R cR)
+        | #shiftUp 0 (ct R cR)
+        | #shiftUp 2 (ct R cR)
         | #shiftUp 0 (ct l cl)
         | #shiftUp 0 (ct l cl)
-        | #shiftUp 1 (ct l cl)
+        | #shiftUp 0 (ct l cl)
         | #shiftUp 2 (ct l cl)
-        | #subv 2 i l cl
+        | #shiftUp 3 (ct l cl)
+        | #shiftDown 1 (ct i ci)
+        | #subv 3 i R cR
         | #subv 3 i l cl
-        | #subv 2 i R cR
-        | #shiftDown 2 (ct l cl)
+        | #subv 4 i l cl
+        | #shiftDown 3 (ct R cR)
         | #shiftDown 3 (ct l cl)
-        | #shiftDown 2 (ct R cR) =
-  ≡DECIDE refl refl refl
+        | #shiftDown 4 (ct l cl) =
+  refl
 
 
 loopB⇓loopI : (w : 𝕎·) (r : Name) (i : ℕ) (R l : Term) (cR : # R) (cl : # l)
@@ -950,7 +1064,12 @@ loopB⇓loopI w r i R l cR cl = 1 , ≡pair c refl
             | sub-loopI≡ r R l (NUM i) cR cl refl
             | #shiftUp 0 (ct l cl)
             | #shiftUp 0 (ct l cl)
-            | #shiftUp 0 (ct R cR) = refl
+            | #shiftUp 0 (ct R cR)
+            | #shiftUp 0 (ct R cR)
+            | #shiftUp 2 (ct R cR)
+            | #shiftUp 0 (ct l cl)
+            | #shiftUp 2 (ct l cl)
+            | #shiftUp 3 (ct l cl) = refl
 
 
 #APPLY-#loop#⇓3 : (r : Name) (F l : CTerm) (i : ℕ) (w : 𝕎·)
@@ -1004,17 +1123,19 @@ c𝔹 = (name : Name) (w : 𝕎·)
              | subNotIn AX (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ l ⌝)) (CTerm.closed (#DIGAMMA (#loopR (#loop r F) l)))
              | #shiftUp 0 F
              | #shiftUp 3 F
-             | #shiftUp 4 F
-             | #subv 4 AX ⌜ F ⌝ (CTerm.closed F)
-             | #shiftDown 4 F
+             | #shiftUp 3 F
+             | #shiftUp 5 F
+             | #subv 5 AX ⌜ F ⌝ (CTerm.closed F)
+             | #shiftDown 5 F
              | #shiftUp 0 l
              | #shiftUp 0 l
-             | #shiftUp 1 l
+             | #shiftUp 0 l
              | #shiftUp 2 l
-             | #subv 1 AX ⌜ l ⌝ (CTerm.closed l)
+             | #shiftUp 3 l
              | #subv 2 AX ⌜ l ⌝ (CTerm.closed l)
-             | #shiftDown 1 l
-             | #shiftDown 2 l = refl
+             | #subv 3 AX ⌜ l ⌝ (CTerm.closed l)
+             | #shiftDown 2 l
+             | #shiftDown 3 l = refl
 
 abstract
 
@@ -1047,5 +1168,127 @@ abstract
                 {w} {fst c1} {#APPLY (#loop r F) l} {#loopI r (#loop r F) l i} {#DIGAMMA (#loopR (#loop r F) l)}
                 (snd c1)
                 (⇓-from-to→⇓ {fst c1} {fst c1} (#APPLY-#loop#⇓5₁ r F l i (fst c1) x)))
+
+
+INL∈IndBarB : (i : ℕ) (w : 𝕎·) (k : ℕ) → ∈Type i w #IndBarB (#INL (#NUM k))
+INL∈IndBarB i w k =
+  →equalInType-UNION
+    eqTypesNAT
+    (eqTypesTRUE {w} {i})
+    (Mod.∀𝕎-□ M (λ w' e → #NUM k , #NUM k , inj₁ (#compAllRefl (#INL (#NUM k)) w' , #compAllRefl (#INL (#NUM k)) w' , NUM-equalInType-NAT i w' k)))
+
+
+INR∈IndBarB : (i : ℕ) (w : 𝕎·) → ∈Type i w #IndBarB (#INR #AX)
+INR∈IndBarB i w =
+  →equalInType-UNION
+    eqTypesNAT
+    (eqTypesTRUE {w} {i})
+    (Mod.∀𝕎-□ M (λ w' e → #AX , #AX , inj₂ (#compAllRefl (#INR #AX) w' , #compAllRefl (#INR #AX) w' , →equalInType-TRUE i {w'} {#AX} {#AX})))
+
+
+sub0-IndBarC≡ : (a : CTerm) → sub0 a #IndBarC ≡ #DECIDE a #[0]VOID #[0]NAT!
+sub0-IndBarC≡ a = CTerm≡ (≡DECIDE x refl refl)
+  where
+    x : shiftDown 0 (shiftUp 0 ⌜ a ⌝) ≡ ⌜ a ⌝
+    x rewrite #shiftUp 0 a | #shiftDown 0 a = refl
+
+
+#DECIDE-INL-VOID⇓ : (w : 𝕎·) (a : CTerm) (b : CTerm0) → #DECIDE (#INL a) #[0]VOID b #⇓ #VOID from w to w
+#DECIDE-INL-VOID⇓ w a b = 1 , refl
+
+
+#DECIDE-INL-VOID⇛ : (w : 𝕎·) (a : CTerm) (b : CTerm0) → #DECIDE (#INL a) #[0]VOID b #⇛! #VOID at w
+#DECIDE-INL-VOID⇛ w a b w1 e1 = lift (#DECIDE-INL-VOID⇓ w1 a b)
+
+
+#DECIDE-INR-NAT⇓ : (w : 𝕎·) (a : CTerm) (b : CTerm0) → #DECIDE (#INR a) b #[0]NAT! #⇓ #NAT! from w to w
+#DECIDE-INR-NAT⇓ w a b = 1 , refl
+
+
+#DECIDE-INR-NAT⇛ : (w : 𝕎·) (a : CTerm) (b : CTerm0) → #DECIDE (#INR a) b #[0]NAT! #⇛! #NAT! at w
+#DECIDE-INR-NAT⇛ w a b w1 e1 = lift (#DECIDE-INR-NAT⇓ w1 a b)
+
+
+equalInType-#⇛ : {i : ℕ} {w : 𝕎·} {T U a b : CTerm}
+                  → T #⇛! U at w
+                  → equalInType i w T a b
+                  → equalInType i w U a b
+equalInType-#⇛ {i} {w} {T} {U} {a} {b} comp e =
+  TSext-equalTypes-equalInType
+    i w T U a b
+    (equalTypes-#⇛-left-right {i} {w} {T} {T} {U} {T} (#⇛!-refl {w} {T}) comp (fst e)) e
+
+
+equalInType-DECIDE-INL-VOID→ : (i : ℕ) (w : 𝕎·) (a b1 b2 : CTerm) (b : CTerm0)
+                                → equalInType i w (#DECIDE (#INL a) #[0]VOID b) b1 b2
+                                → ⊥
+equalInType-DECIDE-INL-VOID→ i w a b1 b2 b e =
+  ¬equalInType-FALSE {w} {i} {b1} {b2} (equalInType-#⇛ (#DECIDE-INL-VOID⇛ w a b) e)
+
+
+equalInType-DECIDE-INR-NAT→ : (i : ℕ) (w : 𝕎·) (a b1 b2 : CTerm) (b : CTerm0)
+                                → equalInType i w (#DECIDE (#INR a) b #[0]NAT!) b1 b2
+                                → equalInType i w #NAT! b1 b2
+equalInType-DECIDE-INR-NAT→ i w a b1 b2 b e =
+  equalInType-#⇛ (#DECIDE-INR-NAT⇛ w a b) e
+
+
+APPLY-loopR-⇓ : (w1 w2 : 𝕎·) (R l b : CTerm) (k : ℕ)
+                → b #⇓ #NUM k from w1 to w2
+                → #APPLY (#loopR R l) b #⇓ #APPLY R (#APPEND l (#NUM k)) from w1 to w2
+APPLY-loopR-⇓ w1 w2 R l b k comp =
+  ⇓-trans₂
+    {w1} {w1} {w2}
+    {⌜ #APPLY (#loopR R l) b ⌝}
+    {⌜ #loopRL b R l ⌝}
+    {⌜ #APPLY R (#APPEND l (#NUM k)) ⌝}
+    (1 , ≡pair c1 refl)
+    (⇓-trans₂
+       {w1} {w2} {w2}
+       {⌜ #loopRL b R l ⌝}
+       {⌜ #loopRL (#NUM k) R l ⌝}
+       {⌜ #APPLY R (#APPEND l (#NUM k)) ⌝}
+       (LET⇓ {⌜ b ⌝} {NUM k} ⌜ #[0]APPLY (#[0]shiftUp0 R) (#[0]APPEND (#[0]shiftUp0 l) #[0]VAR) ⌝ comp)
+       (1 , ≡pair c2 refl))
+-- #loopRL a R l
+--APPLY⇓ {w1} {w2}
+  where
+    c1 : sub ⌜ b ⌝ (LET (VAR 0) (APPLY (shiftUp 0 (shiftUp 0 ⌜ R ⌝)) (APPEND (shiftUp 0 (shiftUp 0 ⌜ l ⌝)) (VAR 0))))
+         ≡ ⌜ #loopRL b R l ⌝
+    c1 rewrite #shiftUp 0 b
+             | #shiftUp 0 b
+             | #shiftUp 0 b
+             | #shiftUp 0 R
+             | #shiftUp 0 R
+             | #subv 1 ⌜ b ⌝ ⌜ R ⌝ (CTerm.closed R)
+             | #shiftDown 1 R
+             | #shiftUp 0 l
+             | #shiftUp 0 l
+             | #shiftUp 0 l
+             | #subv 1 ⌜ b ⌝ ⌜ l ⌝ (CTerm.closed l)
+             | #subv 2 ⌜ b ⌝ ⌜ l ⌝ (CTerm.closed l)
+             | #shiftDown 2 l
+             | #shiftDown 1 l
+             | #shiftDown 0 b = refl
+
+    c2 : sub (NUM k) ⌜ #[0]APPLY (#[0]shiftUp0 R) (#[0]APPEND (#[0]shiftUp0 l) #[0]VAR) ⌝
+         ≡ ⌜ #APPLY R (#APPEND l (#NUM k)) ⌝
+    c2 rewrite #shiftUp 0 R
+             | #shiftUp 0 l
+             | #shiftUp 0 l
+             | #subv 0 (NUM k) ⌜ R ⌝ (CTerm.closed R)
+             | #subv 0 (NUM k) ⌜ l ⌝ (CTerm.closed l)
+             | #subv 1 (NUM k) ⌜ l ⌝ (CTerm.closed l)
+             | #shiftDown 0 R
+             | #shiftDown 0 l
+             | #shiftDown 1 l = refl
+
+
+{--
+APPLY-loopR-⇛ : (w : 𝕎·) (R l b : CTerm) (k : ℕ)
+                 → b #⇛ #NUM k at w
+                 → #APPLY (#loopR R l) b #⇛! #APPLY R (#APPEND l b) at w
+APPLY-loopR-⇛ w R l b k comp w1 e1 = {!!} --lift (APPLY-loopR-⇓ w1 R l b)
+--}
 
 \end{code}

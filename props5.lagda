@@ -85,13 +85,22 @@ open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 -- appends a new value
 APPEND : Term → Term → Term
-APPEND l x = PAIR (SUC k) (LAMBDA (IFLT (VAR 0) (shiftUp 0 k) (APPLY (shiftUp 0 f) (VAR 0)) (shiftUp 0 x)))
+APPEND l x =
+  SPREAD l (PAIR (SUC (VAR 0))
+                 (LAMBDA (IFLT (VAR 0)
+                               (VAR 1)
+                               (APPLY (VAR 2) (VAR 0))
+                               (shiftUp 0 (shiftUp 0 (shiftUp 0 x))))))
+
+{--
+  PAIR (SUC k) (LAMBDA (IFLT (VAR 0) (shiftUp 0 k) (APPLY (shiftUp 0 f) (VAR 0)) (shiftUp 0 x)))
   where
     k : Term
     k = FST l
 
     f : Term
     f = SND l
+--}
 
 
 -- empty list

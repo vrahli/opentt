@@ -58,6 +58,102 @@ open import terms6(W)(C)(M)(G)(E)(N)
 
 
 
+record CTerm4 : Set where
+  constructor ct4
+  field
+    cTerm  : Term
+    closed : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] ] cTerm
+
+
+instance
+  CTerm4ToTerm : ToTerm CTerm4
+  ⌜_⌝ {{CTerm4ToTerm}} t = CTerm4.cTerm t
+
+
+CTerm→CTerm4 : CTerm → CTerm4
+CTerm→CTerm4 (ct t c) = ct4 t c'
+  where
+    c' : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] ] t
+    c' rewrite c = refl
+
+
+instance
+  CTermToCTerm4 : fromCTerm CTerm4
+  ⌞_⌟ {{CTermToCTerm4}} t = CTerm→CTerm4 t
+
+
+record CTerm5 : Set where
+  constructor ct5
+  field
+    cTerm  : Term
+    closed : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] cTerm
+
+
+instance
+  CTerm5ToTerm : ToTerm CTerm5
+  ⌜_⌝ {{CTerm5ToTerm}} t = CTerm5.cTerm t
+
+
+CTerm→CTerm5 : CTerm → CTerm5
+CTerm→CTerm5 (ct t c) = ct5 t c'
+  where
+    c' : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] t
+    c' rewrite c = refl
+
+
+instance
+  CTermToCTerm5 : fromCTerm CTerm5
+  ⌞_⌟ {{CTermToCTerm5}} t = CTerm→CTerm5 t
+
+
+record CTerm6 : Set where
+  constructor ct6
+  field
+    cTerm  : Term
+    closed : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] cTerm
+
+
+instance
+  CTerm6ToTerm : ToTerm CTerm6
+  ⌜_⌝ {{CTerm6ToTerm}} t = CTerm6.cTerm t
+
+
+CTerm→CTerm6 : CTerm → CTerm6
+CTerm→CTerm6 (ct t c) = ct6 t c'
+  where
+    c' : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] t
+    c' rewrite c = refl
+
+
+instance
+  CTermToCTerm6 : fromCTerm CTerm6
+  ⌞_⌟ {{CTermToCTerm6}} t = CTerm→CTerm6 t
+
+
+record CTerm7 : Set where
+  constructor ct7
+  field
+    cTerm  : Term
+    closed : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ] ] cTerm
+
+
+instance
+  CTerm7ToTerm : ToTerm CTerm7
+  ⌜_⌝ {{CTerm7ToTerm}} t = CTerm7.cTerm t
+
+
+CTerm→CTerm7 : CTerm → CTerm7
+CTerm→CTerm7 (ct t c) = ct7 t c'
+  where
+    c' : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ] ] t
+    c' rewrite c = refl
+
+
+instance
+  CTermToCTerm7 : fromCTerm CTerm7
+  ⌞_⌟ {{CTermToCTerm7}} t = CTerm→CTerm7 t
+
+
 #[2]CHOOSE : CTerm2 → CTerm2 → CTerm2
 #[2]CHOOSE a b = ct2 (CHOOSE ⌜ a ⌝ ⌜ b ⌝) c
   where
@@ -140,6 +236,10 @@ open import terms6(W)(C)(M)(G)(E)(N)
     c = refl
 
 
+#[1]NAT! : CTerm1
+#[1]NAT! = ct1 NAT! refl
+
+
 #[0]set⊤ : Name → CTerm0
 #[0]set⊤ r = #[0]CHOOSE (#[0]NAME r) #[0]BTRUE
 
@@ -204,6 +304,15 @@ open import terms6(W)(C)(M)(G)(E)(N)
                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
 
 
+#[2]PAIR : CTerm2 → CTerm2 → CTerm2
+#[2]PAIR a b = ct2 (PAIR ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] PAIR ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ 1 ∷ [ 2 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed b)))
+
+
 #[3]PAIR : CTerm3 → CTerm3 → CTerm3
 #[3]PAIR a b = ct3 (PAIR ⌜ a ⌝ ⌜ b ⌝) c
   where
@@ -213,13 +322,31 @@ open import terms6(W)(C)(M)(G)(E)(N)
                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed b)))
 
 
-#[1]LET : CTerm1 → CTerm2 → CTerm1
-#[1]LET a b = ct1 (LET ⌜ a ⌝ ⌜ b ⌝) c
+#[4]PAIR : CTerm4 → CTerm4 → CTerm4
+#[4]PAIR a b = ct4 (PAIR ⌜ a ⌝ ⌜ b ⌝) c
   where
-    c : #[ 0 ∷ [ 1 ] ] LET ⌜ a ⌝ ⌜ b ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {0 ∷ [ 1 ]}
-              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
-                   (lowerVars-fvars-[0,1,2] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm2.closed b))))
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] ] PAIR ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]} (CTerm4.closed a))
+                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]} (CTerm4.closed b)))
+
+
+#[5]PAIR : CTerm5 → CTerm5 → CTerm5
+#[5]PAIR a b = ct5 (PAIR ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] PAIR ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]} (CTerm5.closed a))
+                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]} (CTerm5.closed b)))
+
+
+#[6]PAIR : CTerm6 → CTerm6 → CTerm6
+#[6]PAIR a b = ct6 (PAIR ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] PAIR ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]} (CTerm6.closed a))
+                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]} (CTerm6.closed b)))
 
 
 #ITE : CTerm → CTerm → CTerm → CTerm
@@ -404,12 +531,64 @@ lowerVars-fvars-[0,1,2,3,4] {suc x₁ ∷ l} h (here px) rewrite px = i z
 lowerVars-fvars-[0,1,2,3,4] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,2,3,4] (λ z → h (there z)) x
 
 
-#[2]LAMBDA : CTerm3 → CTerm2
-#[2]LAMBDA b = ct2 (LAMBDA ⌜ b ⌝) c
+
+lowerVars-fvars-[0,1,2,3,4,5] : {l : List Var}
+                                → l ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ])
+                                → lowerVars l ⊆ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]
+lowerVars-fvars-[0,1,2,3,4,5] {0 ∷ l} h x = lowerVars-fvars-[0,1,2,3,4,5] (λ z → h (there z)) x
+lowerVars-fvars-[0,1,2,3,4,5] {suc x₁ ∷ l} h (here px) rewrite px = i z
   where
-    c : #[ 0 ∷ 1 ∷ [ 2 ] ] LAMBDA ⌜ b ⌝
-    c = ⊆→⊆? {lowerVars (fvars ⌜ b ⌝)} {0 ∷ 1 ∷ [ 2 ]}
-              (lowerVars-fvars-[0,1,2,3] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm3.closed b)))
+    z : suc x₁ ∈ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ])
+    z = h (here refl)
+
+    i : suc x₁ ∈ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]) →  x₁ ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]
+    i (there (here px)) = here (suc-injective px)
+    i (there (there (here px))) = there (here (suc-injective px))
+    i (there (there (there (here px)))) = there (there (here (suc-injective px)))
+    i (there (there (there (there (here px))))) = there (there (there (here (suc-injective px))))
+    i (there (there (there (there (there (here px)))))) = there (there (there (there (here (suc-injective px)))))
+lowerVars-fvars-[0,1,2,3,4,5] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,2,3,4,5] (λ z → h (there z)) x
+
+
+
+lowerVars-fvars-[0,1,2,3,4,5,6] : {l : List Var}
+                                  → l ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ])
+                                  → lowerVars l ⊆ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]
+lowerVars-fvars-[0,1,2,3,4,5,6] {0 ∷ l} h x = lowerVars-fvars-[0,1,2,3,4,5,6] (λ z → h (there z)) x
+lowerVars-fvars-[0,1,2,3,4,5,6] {suc x₁ ∷ l} h (here px) rewrite px = i z
+  where
+    z : suc x₁ ∈ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ])
+    z = h (here refl)
+
+    i : suc x₁ ∈ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]) →  x₁ ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]
+    i (there (here px)) = here (suc-injective px)
+    i (there (there (here px))) = there (here (suc-injective px))
+    i (there (there (there (here px)))) = there (there (here (suc-injective px)))
+    i (there (there (there (there (here px))))) = there (there (there (here (suc-injective px))))
+    i (there (there (there (there (there (here px)))))) = there (there (there (there (here (suc-injective px)))))
+    i (there (there (there (there (there (there (here px))))))) = there (there (there (there (there (here (suc-injective px))))))
+lowerVars-fvars-[0,1,2,3,4,5,6] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,2,3,4,5,6] (λ z → h (there z)) x
+
+
+
+lowerVars-fvars-[0,1,2,3,4,5,6,7] : {l : List Var}
+                                  → l ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ])
+                                  → lowerVars l ⊆ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]
+lowerVars-fvars-[0,1,2,3,4,5,6,7] {0 ∷ l} h x = lowerVars-fvars-[0,1,2,3,4,5,6,7] (λ z → h (there z)) x
+lowerVars-fvars-[0,1,2,3,4,5,6,7] {suc x₁ ∷ l} h (here px) rewrite px = i z
+  where
+    z : suc x₁ ∈ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ])
+    z = h (here refl)
+
+    i : suc x₁ ∈ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ]) →  x₁ ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]
+    i (there (here px)) = here (suc-injective px)
+    i (there (there (here px))) = there (here (suc-injective px))
+    i (there (there (there (here px)))) = there (there (here (suc-injective px)))
+    i (there (there (there (there (here px))))) = there (there (there (here (suc-injective px))))
+    i (there (there (there (there (there (here px)))))) = there (there (there (there (here (suc-injective px)))))
+    i (there (there (there (there (there (there (here px))))))) = there (there (there (there (there (here (suc-injective px))))))
+    i (there (there (there (there (there (there (there (here px)))))))) = there (there (there (there (there (there (here (suc-injective px)))))))
+lowerVars-fvars-[0,1,2,3,4,5,6,7] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,2,3,4,5,6,7] (λ z → h (there z)) x
 
 
 #[0]SUP : CTerm0 → CTerm0 → CTerm0
@@ -528,12 +707,44 @@ lowerVars-fvars-[0,1,2,3,4] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,
               (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
 
 
+#[2]SUC : CTerm2 → CTerm2
+#[2]SUC a = ct2 (SUC ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] SUC ⌜ a ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ } {0 ∷ 1 ∷ [ 2 ]}
+              (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed a))
+
+
 #[3]SUC : CTerm3 → CTerm3
 #[3]SUC a = ct3 (SUC ⌜ a ⌝) c
   where
     c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] SUC ⌜ a ⌝
     c = ⊆→⊆? {fvars ⌜ a ⌝ } {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
               (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed a))
+
+
+#[4]SUC : CTerm4 → CTerm4
+#[4]SUC a = ct4 (SUC ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] ] SUC ⌜ a ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ } {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]}
+              (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]} (CTerm4.closed a))
+
+
+#[5]SUC : CTerm5 → CTerm5
+#[5]SUC a = ct5 (SUC ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] SUC ⌜ a ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ } {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]}
+              (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]} (CTerm5.closed a))
+
+
+#[6]SUC : CTerm6 → CTerm6
+#[6]SUC a = ct6 (SUC ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] SUC ⌜ a ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ } {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]}
+              (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]} (CTerm6.closed a))
 
 
 #[0]AX : CTerm0
@@ -572,6 +783,10 @@ lowerVars-fvars-[0,1,2,3,4] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,
 [1]⊆[0,1,2] (here px) rewrite px = there (here refl)
 
 
+[2]⊆[0,1,2] : [ 2 ] ⊆ (0 ∷ 1 ∷ [ 2 ])
+[2]⊆[0,1,2] (here px) rewrite px = there (there (here refl))
+
+
 [0]⊆[0,1,2,3] : [ 0 ] ⊆ (0 ∷ 1 ∷ 2 ∷ [ 3 ])
 [0]⊆[0,1,2,3] (here refl) = here refl
 
@@ -596,12 +811,52 @@ lowerVars-fvars-[0,1,2,3,4] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,
 [1]⊆[0,1,2,3,4] (here refl) = there (here refl)
 
 
+[2]⊆[0,1,2,3,4] : [ 2 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ])
+[2]⊆[0,1,2,3,4] (here refl) = there (there (here refl))
+
+
+[3]⊆[0,1,2,3,4] : [ 3 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ])
+[3]⊆[0,1,2,3,4] (here refl) = there (there (there (here refl)))
+
+
+[4]⊆[0,1,2,3,4] : [ 4 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ])
+[4]⊆[0,1,2,3,4] (here refl) = there (there (there (there (here refl))))
+
+
 [0]⊆[0,1,2,3,4,5] : [ 0 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ])
 [0]⊆[0,1,2,3,4,5] (here refl) = here refl
 
 
 [1]⊆[0,1,2,3,4,5] : [ 1 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ])
 [1]⊆[0,1,2,3,4,5] (here refl) = there (here refl)
+
+
+[2]⊆[0,1,2,3,4,5] : [ 2 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ])
+[2]⊆[0,1,2,3,4,5] (here refl) = there (there (here refl))
+
+
+[0]⊆[0,1,2,3,4,5,6] : [ 0 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ])
+[0]⊆[0,1,2,3,4,5,6] (here refl) = here refl
+
+
+[1]⊆[0,1,2,3,4,5,6] : [ 1 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ])
+[1]⊆[0,1,2,3,4,5,6] (here refl) = there (here refl)
+
+
+[2]⊆[0,1,2,3,4,5,6] : [ 2 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ])
+[2]⊆[0,1,2,3,4,5,6] (here refl) = there (there (here refl))
+
+
+[0]⊆[0,1,2,3,4,5,6,7] : [ 0 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ])
+[0]⊆[0,1,2,3,4,5,6,7] (here refl) = here refl
+
+
+[1]⊆[0,1,2,3,4,5,6,7] : [ 1 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ])
+[1]⊆[0,1,2,3,4,5,6,7] (here refl) = there (here refl)
+
+
+[2]⊆[0,1,2,3,4,5,6,7] : [ 2 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ])
+[2]⊆[0,1,2,3,4,5,6,7] (here refl) = there (there (here refl))
 
 
 #[2]VAR0 : CTerm2
@@ -616,6 +871,13 @@ lowerVars-fvars-[0,1,2,3,4] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,
   where
     c : #[ 0 ∷ 1 ∷ [ 2 ] ] VAR 1
     c = ⊆→⊆? [1]⊆[0,1,2]
+
+
+#[2]VAR2 : CTerm2
+#[2]VAR2 = ct2 (VAR 2) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] VAR 2
+    c = ⊆→⊆? [2]⊆[0,1,2]
 
 
 #[3]VAR0 : CTerm3
@@ -655,28 +917,22 @@ lowerVars-fvars-[0,1,2,3,4] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,
                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed b)))
 
 
-record CTerm4 : Set where
-  constructor ct4
-  field
-    cTerm  : Term
-    closed : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] ] cTerm
-
-
-instance
-  CTerm4ToTerm : ToTerm CTerm4
-  ⌜_⌝ {{CTerm4ToTerm}} t = CTerm4.cTerm t
-
-
-CTerm→CTerm4 : CTerm → CTerm4
-CTerm→CTerm4 (ct t c) = ct4 t c'
+#[1]LET : CTerm1 → CTerm2 → CTerm1
+#[1]LET a b = ct1 (LET ⌜ a ⌝ ⌜ b ⌝) c
   where
-    c' : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] ] t
-    c' rewrite c = refl
+    c : #[ 0 ∷ [ 1 ] ] LET ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {0 ∷ [ 1 ]}
+              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
+                   (lowerVars-fvars-[0,1,2] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm2.closed b))))
 
 
-instance
-  CTermToCTerm4 : fromCTerm CTerm4
-  ⌞_⌟ {{CTermToCTerm4}} t = CTerm→CTerm4 t
+#[3]LET : CTerm3 → CTerm4 → CTerm3
+#[3]LET a b = ct3 (LET ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] LET ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
+              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed a))
+                   (lowerVars-fvars-[0,1,2,3,4] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm4.closed b))))
 
 
 #[4]VAR0 : CTerm4
@@ -693,28 +949,25 @@ instance
     c = ⊆→⊆? [1]⊆[0,1,2,3,4]
 
 
-record CTerm5 : Set where
-  constructor ct5
-  field
-    cTerm  : Term
-    closed : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] cTerm
-
-
-instance
-  CTerm5ToTerm : ToTerm CTerm5
-  ⌜_⌝ {{CTerm5ToTerm}} t = CTerm5.cTerm t
-
-
-CTerm→CTerm5 : CTerm → CTerm5
-CTerm→CTerm5 (ct t c) = ct5 t c'
+#[4]VAR2 : CTerm4
+#[4]VAR2 = ct4 (VAR 2) c
   where
-    c' : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] t
-    c' rewrite c = refl
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] ] VAR 2
+    c = ⊆→⊆? [2]⊆[0,1,2,3,4]
 
 
-instance
-  CTermToCTerm5 : fromCTerm CTerm5
-  ⌞_⌟ {{CTermToCTerm5}} t = CTerm→CTerm5 t
+#[4]VAR3 : CTerm4
+#[4]VAR3 = ct4 (VAR 3) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] ] VAR 3
+    c = ⊆→⊆? [3]⊆[0,1,2,3,4]
+
+
+#[4]VAR4 : CTerm4
+#[4]VAR4 = ct4 (VAR 4) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] ] VAR 4
+    c = ⊆→⊆? [4]⊆[0,1,2,3,4]
 
 
 #[5]VAR0 : CTerm5
@@ -729,6 +982,55 @@ instance
   where
     c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] VAR 1
     c = ⊆→⊆? [1]⊆[0,1,2,3,4,5]
+
+
+#[5]VAR2 : CTerm5
+#[5]VAR2 = ct5 (VAR 2) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] VAR 2
+    c = ⊆→⊆? [2]⊆[0,1,2,3,4,5]
+
+
+#[6]VAR0 : CTerm6
+#[6]VAR0 = ct6 (VAR 0) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] VAR 0
+    c = ⊆→⊆? [0]⊆[0,1,2,3,4,5,6]
+
+
+#[6]VAR1 : CTerm6
+#[6]VAR1 = ct6 (VAR 1) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] VAR 1
+    c = ⊆→⊆? [1]⊆[0,1,2,3,4,5,6]
+
+
+#[6]VAR2 : CTerm6
+#[6]VAR2 = ct6 (VAR 2) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] VAR 2
+    c = ⊆→⊆? [2]⊆[0,1,2,3,4,5,6]
+
+
+#[7]VAR0 : CTerm7
+#[7]VAR0 = ct7 (VAR 0) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ] ] VAR 0
+    c = ⊆→⊆? [0]⊆[0,1,2,3,4,5,6,7]
+
+
+#[7]VAR1 : CTerm7
+#[7]VAR1 = ct7 (VAR 1) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ] ] VAR 1
+    c = ⊆→⊆? [1]⊆[0,1,2,3,4,5,6,7]
+
+
+#[7]VAR2 : CTerm7
+#[7]VAR2 = ct7 (VAR 2) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ] ] VAR 2
+    c = ⊆→⊆? [2]⊆[0,1,2,3,4,5,6,7]
 
 
 lowerVars2-fvars-[0,1] : {l : List Var}
@@ -812,6 +1114,25 @@ lowerVars2-fvars-[0,1,2,3,4,5] {suc (suc z) ∷ l} h (here px) rewrite px = i w
 lowerVars2-fvars-[0,1,2,3,4,5] {suc (suc z) ∷ l} h (there x) = lowerVars2-fvars-[0,1,2,3,4,5] (λ z → h (there z)) x
 
 
+lowerVars2-fvars-[0,1,2,3,4,5,6] : {l : List Var}
+                                   → l ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ])
+                                   → lowerVars (lowerVars l) ⊆ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]
+lowerVars2-fvars-[0,1,2,3,4,5,6] {0 ∷ l} h x = lowerVars2-fvars-[0,1,2,3,4,5,6] (λ z → h (there z)) x
+lowerVars2-fvars-[0,1,2,3,4,5,6] {suc 0 ∷ l} h x = lowerVars2-fvars-[0,1,2,3,4,5,6] (λ z → h (there z)) x
+lowerVars2-fvars-[0,1,2,3,4,5,6] {suc (suc z) ∷ l} h (here px) rewrite px = i w
+  where
+    w : suc (suc z) ∈ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ])
+    w = h (here refl)
+
+    i : suc (suc z) ∈ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]) →  z ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]
+    i (there (there (here q))) = here (suc-injective (suc-injective q)) --
+    i (there (there (there (here q)))) = there (here (suc-injective (suc-injective q)))
+    i (there (there (there (there (here q))))) = there (there (here (suc-injective (suc-injective q))))
+    i (there (there (there (there (there (here q)))))) = there (there (there (here (suc-injective (suc-injective q)))))
+    i (there (there (there (there (there (there (here q))))))) = there (there (there (there (here (suc-injective (suc-injective q))))))
+lowerVars2-fvars-[0,1,2,3,4,5,6] {suc (suc z) ∷ l} h (there x) = lowerVars2-fvars-[0,1,2,3,4,5,6] (λ z → h (there z)) x
+
+
 #SPREAD : CTerm → CTerm1 → CTerm
 #SPREAD a b = ct (SPREAD ⌜ a ⌝ ⌜ b ⌝) c
   where
@@ -855,6 +1176,15 @@ lowerVars2-fvars-[0,1,2,3,4,5] {suc (suc z) ∷ l} h (there x) = lowerVars2-fvar
                    (lowerVars2-fvars-[0,1,2,3,4,5] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm5.closed b))))
 
 
+#[4]SPREAD : CTerm4 → CTerm6 → CTerm4
+#[4]SPREAD a b = ct4 (SPREAD ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] ] SPREAD ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (lowerVars (fvars ⌜ b ⌝))} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]}
+              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]} (CTerm4.closed a))
+                   (lowerVars2-fvars-[0,1,2,3,4,5,6] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm6.closed b))))
+
+
 #FST : CTerm → CTerm
 #FST t = #SPREAD t #[1]VAR0
 
@@ -893,6 +1223,14 @@ lowerVars2-fvars-[0,1,2,3,4,5] {suc (suc z) ∷ l} h (there x) = lowerVars2-fvar
 
 #[3]SND : CTerm3 → CTerm3
 #[3]SND t = #[3]SPREAD t #[5]VAR1
+
+
+#[4]FST : CTerm4 → CTerm4
+#[4]FST t = #[4]SPREAD t #[6]VAR0
+
+
+#[4]SND : CTerm4 → CTerm4
+#[4]SND t = #[4]SPREAD t #[6]VAR1
 
 
 ⇓-FST-PAIR : (a b : Term) (w : 𝕎·) (ca : # a)
@@ -975,12 +1313,58 @@ sub-VAR1 a = refl
 #⇛-SND-PAIR2 p a b c w c1 c2 = #⇛-trans {w} {#SND p} {b} {c} (#⇛-SND-PAIR p a b w c1) c2
 
 
+#[2]LAMBDA : CTerm3 → CTerm2
+#[2]LAMBDA b = ct2 (LAMBDA ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] LAMBDA ⌜ b ⌝
+    c = ⊆→⊆? {lowerVars (fvars ⌜ b ⌝)} {0 ∷ 1 ∷ [ 2 ]}
+              (lowerVars-fvars-[0,1,2,3] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm3.closed b)))
+
+
 #[3]LAMBDA : CTerm4 → CTerm3
 #[3]LAMBDA b = ct3 (LAMBDA ⌜ b ⌝) c
   where
     c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] LAMBDA ⌜ b ⌝
     c = ⊆→⊆? {lowerVars (fvars ⌜ b ⌝)} {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
               (lowerVars-fvars-[0,1,2,3,4] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm4.closed b)))
+
+
+#[4]LAMBDA : CTerm5 → CTerm4
+#[4]LAMBDA b = ct4 (LAMBDA ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] ] LAMBDA ⌜ b ⌝
+    c = ⊆→⊆? {lowerVars (fvars ⌜ b ⌝)} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]}
+              (lowerVars-fvars-[0,1,2,3,4,5] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm5.closed b)))
+
+
+#[5]LAMBDA : CTerm6 → CTerm5
+#[5]LAMBDA b = ct5 (LAMBDA ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] LAMBDA ⌜ b ⌝
+    c = ⊆→⊆? {lowerVars (fvars ⌜ b ⌝)} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]}
+              (lowerVars-fvars-[0,1,2,3,4,5,6] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm6.closed b)))
+
+
+#[6]LAMBDA : CTerm7 → CTerm6
+#[6]LAMBDA b = ct6 (LAMBDA ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] LAMBDA ⌜ b ⌝
+    c = ⊆→⊆? {lowerVars (fvars ⌜ b ⌝)} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]}
+              (lowerVars-fvars-[0,1,2,3,4,5,6,7] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm7.closed b)))
+
+
+#[3]IFLT : CTerm3 → CTerm3 → CTerm3 → CTerm3 → CTerm3
+#[3]IFLT a b c d = ct3 (IFLT ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
+  where
+    e : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] IFLT ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    e rewrite fvars-IFLT0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
+            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+            (⊆?→⊆ (CTerm3.closed a))
+            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+                 (⊆?→⊆ (CTerm3.closed b))
+                 (⊆++ {Var} {fvars ⌜ c ⌝} {fvars ⌜ d ⌝}
+                      (⊆?→⊆ (CTerm3.closed c)) (⊆?→⊆ (CTerm3.closed d)))))
 
 
 #[4]IFLT : CTerm4 → CTerm4 → CTerm4 → CTerm4 → CTerm4
@@ -997,13 +1381,82 @@ sub-VAR1 a = refl
                       (⊆?→⊆ (CTerm4.closed c)) (⊆?→⊆ (CTerm4.closed d)))))
 
 
+#[5]IFLT : CTerm5 → CTerm5 → CTerm5 → CTerm5 → CTerm5
+#[5]IFLT a b c d = ct5 (IFLT ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
+  where
+    e : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] IFLT ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    e rewrite fvars-IFLT0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]}
+            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+            (⊆?→⊆ (CTerm5.closed a))
+            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+                 (⊆?→⊆ (CTerm5.closed b))
+                 (⊆++ {Var} {fvars ⌜ c ⌝} {fvars ⌜ d ⌝}
+                      (⊆?→⊆ (CTerm5.closed c)) (⊆?→⊆ (CTerm5.closed d)))))
+
+
+#[6]IFLT : CTerm6 → CTerm6 → CTerm6 → CTerm6 → CTerm6
+#[6]IFLT a b c d = ct6 (IFLT ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
+  where
+    e : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] IFLT ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    e rewrite fvars-IFLT0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]}
+            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+            (⊆?→⊆ (CTerm6.closed a))
+            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+                 (⊆?→⊆ (CTerm6.closed b))
+                 (⊆++ {Var} {fvars ⌜ c ⌝} {fvars ⌜ d ⌝}
+                      (⊆?→⊆ (CTerm6.closed c)) (⊆?→⊆ (CTerm6.closed d)))))
+
+
+#[7]IFLT : CTerm7 → CTerm7 → CTerm7 → CTerm7 → CTerm7
+#[7]IFLT a b c d = ct7 (IFLT ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
+  where
+    e : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ] ] IFLT ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    e rewrite fvars-IFLT0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ]}
+            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+            (⊆?→⊆ (CTerm7.closed a))
+            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+                 (⊆?→⊆ (CTerm7.closed b))
+                 (⊆++ {Var} {fvars ⌜ c ⌝} {fvars ⌜ d ⌝}
+                       (⊆?→⊆ (CTerm7.closed c)) (⊆?→⊆ (CTerm7.closed d)))))
+
+
 #[4]APPLY : CTerm4 → CTerm4 → CTerm4
 #[4]APPLY a b = ct4 (APPLY ⌜ a ⌝ ⌜ b ⌝) c
   where
     c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] ] APPLY ⌜ a ⌝ ⌜ b ⌝
     c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]}
              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]} (CTerm4.closed a))
-                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]} (CTerm4.closed b)))
+                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]} (CTerm4.closed b)))
+
+
+#[5]APPLY : CTerm5 → CTerm5 → CTerm5
+#[5]APPLY a b = ct5 (APPLY ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] APPLY ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]} (CTerm5.closed a))
+                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]} (CTerm5.closed b)))
+
+
+#[6]APPLY : CTerm6 → CTerm6 → CTerm6
+#[6]APPLY a b = ct6 (APPLY ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] APPLY ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]} (CTerm6.closed a))
+                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]} (CTerm6.closed b)))
+
+
+#[7]APPLY : CTerm7 → CTerm7 → CTerm7
+#[7]APPLY a b = ct7 (APPLY ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ] ] APPLY ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ]} (CTerm7.closed a))
+                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ]} (CTerm7.closed b)))
 
 
 CTerm3→4 : CTerm3 → CTerm4
@@ -1137,6 +1590,108 @@ CTerm3→4 t = ct4 ⌜ t ⌝ c
             z (there (there (there (here px)))) rewrite px = there (there (there (there (here refl))))
 
             k : x ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]
+            k rewrite e | sym (suc≡sucIf≤0 y) = z w
+
+
+#[5]shiftUp0 : CTerm4 → CTerm5
+#[5]shiftUp0 t = ct5 (shiftUp 0 ⌜ t ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] (shiftUp 0 ⌜ t ⌝)
+    c rewrite fvars-shiftUp≡ 0  ⌜ t ⌝ =
+      ⊆→⊆? {Data.List.map (sucIf≤ 0) (fvars ⌜ t ⌝)} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]} s
+      where
+        s : Data.List.map (sucIf≤ 0) (fvars (CTerm4.cTerm t)) ⊆ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]
+        s {x} i = k
+          where
+            y : Var
+            y = fst (∈-map⁻ (sucIf≤ 0) i)
+
+            j : y ∈ fvars ⌜ t ⌝
+            j = fst (snd (∈-map⁻ (sucIf≤ 0) i))
+
+            e : x ≡ sucIf≤ 0 y
+            e = snd (snd (∈-map⁻ (sucIf≤ 0) i))
+
+            w : y ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]
+            w = ⊆?→⊆ (CTerm4.closed t) {y} j
+
+            z : y ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] → suc y ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]
+            z (here px) rewrite px = there (here refl)
+            z (there (here px)) rewrite px = there (there (here refl))
+            z (there (there (here px))) rewrite px = there (there (there (here refl)))
+            z (there (there (there (here px)))) rewrite px = there (there (there (there (here refl))))
+            z (there (there (there (there (here px))))) rewrite px = there (there (there (there (there (here refl)))))
+
+            k : x ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]
+            k rewrite e | sym (suc≡sucIf≤0 y) = z w
+
+
+#[6]shiftUp0 : CTerm5 → CTerm6
+#[6]shiftUp0 t = ct6 (shiftUp 0 ⌜ t ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] (shiftUp 0 ⌜ t ⌝)
+    c rewrite fvars-shiftUp≡ 0  ⌜ t ⌝ =
+      ⊆→⊆? {Data.List.map (sucIf≤ 0) (fvars ⌜ t ⌝)} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]} s
+      where
+        s : Data.List.map (sucIf≤ 0) (fvars (CTerm5.cTerm t)) ⊆ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]
+        s {x} i = k
+          where
+            y : Var
+            y = fst (∈-map⁻ (sucIf≤ 0) i)
+
+            j : y ∈ fvars ⌜ t ⌝
+            j = fst (snd (∈-map⁻ (sucIf≤ 0) i))
+
+            e : x ≡ sucIf≤ 0 y
+            e = snd (snd (∈-map⁻ (sucIf≤ 0) i))
+
+            w : y ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]
+            w = ⊆?→⊆ (CTerm5.closed t) {y} j
+
+            z : y ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] → suc y ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]
+            z (here px) rewrite px = there (here refl)
+            z (there (here px)) rewrite px = there (there (here refl))
+            z (there (there (here px))) rewrite px = there (there (there (here refl)))
+            z (there (there (there (here px)))) rewrite px = there (there (there (there (here refl))))
+            z (there (there (there (there (here px))))) rewrite px = there (there (there (there (there (here refl)))))
+            z (there (there (there (there (there (here px)))))) rewrite px = there (there (there (there (there (there (here refl))))))
+
+            k : x ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]
+            k rewrite e | sym (suc≡sucIf≤0 y) = z w
+
+
+#[7]shiftUp0 : CTerm6 → CTerm7
+#[7]shiftUp0 t = ct7 (shiftUp 0 ⌜ t ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ] ] (shiftUp 0 ⌜ t ⌝)
+    c rewrite fvars-shiftUp≡ 0  ⌜ t ⌝ =
+      ⊆→⊆? {Data.List.map (sucIf≤ 0) (fvars ⌜ t ⌝)} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ]} s
+      where
+        s : Data.List.map (sucIf≤ 0) (fvars (CTerm6.cTerm t)) ⊆ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ]
+        s {x} i = k
+          where
+            y : Var
+            y = fst (∈-map⁻ (sucIf≤ 0) i)
+
+            j : y ∈ fvars ⌜ t ⌝
+            j = fst (snd (∈-map⁻ (sucIf≤ 0) i))
+
+            e : x ≡ sucIf≤ 0 y
+            e = snd (snd (∈-map⁻ (sucIf≤ 0) i))
+
+            w : y ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]
+            w = ⊆?→⊆ (CTerm6.closed t) {y} j
+
+            z : y ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] → suc y ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ]
+            z (here px) rewrite px = there (here refl)
+            z (there (here px)) rewrite px = there (there (here refl))
+            z (there (there (here px))) rewrite px = there (there (there (here refl)))
+            z (there (there (there (here px)))) rewrite px = there (there (there (there (here refl))))
+            z (there (there (there (there (here px))))) rewrite px = there (there (there (there (there (here refl)))))
+            z (there (there (there (there (there (here px)))))) rewrite px = there (there (there (there (there (there (here refl))))))
+            z (there (there (there (there (there (there (here px))))))) rewrite px = there (there (there (there (there (there (there (here refl)))))))
+
+            k : x ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ]
             k rewrite e | sym (suc≡sucIf≤0 y) = z w
 
 

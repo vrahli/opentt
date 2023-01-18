@@ -96,4 +96,18 @@ atbar : {w : 𝕎·} {f : wPred w} (i : □· w f) (w' : 𝕎·) (e' : w ⊑· w
 atbar = atOpenBar
 --atbar = atBethBar
 --}
+
+
+-------------------------
+-- some useful assumptions
+-- The modality is 'Kripke-like'
+K□ : Set(lsuc(lsuc(L)))
+K□ = {w : 𝕎·} {f : wPred w} → □· w f → ∀𝕎 w f
+
+
+-- the modality is non-empty
+∃□ : Set(lsuc(lsuc(L)))
+∃□ = {w : 𝕎·} {f : wPred w} → □· w f → ∃𝕎 w f
+-------------------------
+
 \end{code}

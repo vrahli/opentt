@@ -91,20 +91,6 @@ open import continuity-conds(W)(C)(K)(G)(X)(N)
 
 
 
--------------------------
--- SOME ASSUMPTIONS
--- The modality is Kripke-like
-K□ : Set(lsuc(lsuc(L)))
-K□ = {w : 𝕎·} {f : wPred w} → □· w f → ∀𝕎 w f
-
-
--- the modality is non-empty
-∃□ : Set(lsuc(lsuc(L)))
-∃□ = {w : 𝕎·} {f : wPred w} → □· w f → ∃𝕎 w f
--------------------------
-
-
-
 
 -- turns 'f' into λy.(if n ≤ y then name:=ℂ₁);f(y)
 -- ℂ₀ is treated as true here (i.e., "didn't reach n"), and ℂ₁ as false (i.e., "reached at least n")
@@ -322,12 +308,6 @@ contBody F f =
                                              (subNotIn ⌜ a ⌝ ⌜ #CHOOSE (#NAME name) (ℂ→C· ℂ₁·) ⌝ (CTerm.closed (#CHOOSE (#NAME name) (ℂ→C· ℂ₁·))))
                                              (subNotIn ⌜ a ⌝ ⌜ #AX ⌝ refl))
                                  (→sub-APPLY {⌜ a ⌝} {⌜ f ⌝} {⌜ #[0]VAR ⌝} (subNotIn ⌜ a ⌝ ⌜ f ⌝ (CTerm.closed f)) (sub-VAR0 ⌜ a ⌝))) refl)
-
-
-eqTypesBAIRE : {w : 𝕎·} {i : ℕ} → isType i w #BAIRE
-eqTypesBAIRE {w} {i} = ≡CTerm→eqTypes (sym #BAIRE≡) (sym #BAIRE≡) (eqTypesFUN← eqTypesNAT eqTypesNAT)
-
-
 
 
 bound∈ : (i : ℕ) (w : 𝕎·) (name : Name) (n : CTerm) (f : CTerm)
@@ -1480,17 +1460,6 @@ sub0-NATn-body a n rewrite CTerm→CTerm0→Term n = CTerm≡ e
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#NATn n) a₁ a₂
                       → equalInType i w' #NAT (#APPLY f a₁) (#APPLY g a₂))
     aw w1 e1 a₁ a₂ ea = ef2 w1 e1 a₁ a₂ (∈NATn→∈NAT (equalInType-mon en w1 e1) ea)
-
-
-
-∈BAIRE→NAT→ : {i : ℕ} {w : 𝕎·} {F₁ F₂ f₁ f₂ : CTerm}
-                → equalInType i w #BAIRE→NAT F₁ F₂
-                → equalInType i w #BAIRE f₁ f₂
-                → equalInType i w #NAT (#APPLY F₁ f₁) (#APPLY F₂ f₂)
-∈BAIRE→NAT→ {i} {w} {F₁} {F₂} {f₁} {f₂} ∈F ∈f =
-  equalInType-FUN→
-    {i} {w} {#BAIRE} {#NAT} {F₁} {F₂} ∈F w (⊑-refl· _) f₁ f₂
-    ∈f
 
 
 

@@ -55,6 +55,7 @@ open import newChoiceDef(W)(C)(M)(G)(N)
 open import computation(W)(C)(M)(G)(E)(N)
 
 
+
 -------------------
 -- Some assumptions
 

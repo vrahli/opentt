@@ -572,4 +572,18 @@ equalInType-M→ i w A B t u (EQTBAR x , h) =
         (λ f g a b ea1 ea2 x → eqInType→equalInType refl (equalInTypeFam→eqTypesFam {i} {w} {A} {B} {A} {B} eqta eqtb w' e' a b ea2) x)
         q
 
+
+∈BAIRE→NAT→ : {i : ℕ} {w : 𝕎·} {F₁ F₂ f₁ f₂ : CTerm}
+                → equalInType i w #BAIRE→NAT F₁ F₂
+                → equalInType i w #BAIRE f₁ f₂
+                → equalInType i w #NAT (#APPLY F₁ f₁) (#APPLY F₂ f₂)
+∈BAIRE→NAT→ {i} {w} {F₁} {F₂} {f₁} {f₂} ∈F ∈f =
+  equalInType-FUN→
+    {i} {w} {#BAIRE} {#NAT} {F₁} {F₂} ∈F w (⊑-refl· _) f₁ f₂
+    ∈f
+
+
+eqTypesBAIRE : {w : 𝕎·} {i : ℕ} → isType i w #BAIRE
+eqTypesBAIRE {w} {i} = ≡CTerm→eqTypes (sym #BAIRE≡) (sym #BAIRE≡) (eqTypesFUN← eqTypesNAT eqTypesNAT)
+
 \end{code}
