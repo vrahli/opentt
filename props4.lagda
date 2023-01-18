@@ -125,6 +125,16 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 ∀𝕎-□Func3 {w} {f} {g} {h} aw a b c = Mod.□Func M (Mod.□Func M (Mod.∀𝕎-□Func M aw a) b) c
 
 
+-- MOVE to mod
+∀𝕎-□Func4 : {w : 𝕎·} {f g h k j : wPred w}
+                       → ∀𝕎 w (λ w' e' → f w' e' → g w' e' → h w' e' → k w' e' → j w' e')
+                       → □· w f
+                       → □· w g
+                       → □· w h
+                       → □· w k
+                       → □· w j
+∀𝕎-□Func4 {w} {f} {g} {h} aw a b c d = Mod.□Func M (Mod.□Func M (Mod.□Func M (Mod.∀𝕎-□Func M aw a) b) c) d
+
 
 →equalTypesLT : {i : ℕ} {w : 𝕎·} {a₁ a₂ b₁ b₂ : CTerm}
                  → equalInType i w #NAT a₁ a₂

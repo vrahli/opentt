@@ -133,7 +133,7 @@ meq.meqC (coSemM kb cb i w r F l a b k compat il iF ck c1 c2) with #APPLY-#loop#
           eb2 = kb (equalInType-NAT!→ i w b1 b2 eb1) w (⊑-refl· w)
 
           el1 : ∈Type i w (#LIST #NAT) (#APPEND l (#NUM (fst eb2)))
-          el1 = {!!}
+          el1 = APPEND∈LIST i w l (#NUM (fst eb2)) il (NUM-equalInType-NAT i w (fst eb2))
 
           ef1 : ∈Type i w #NAT (#APPLY F (#generic r (#APPEND l (#NUM (fst eb2)))))
           ef1 = ∈BAIRE→NAT→
@@ -143,6 +143,9 @@ meq.meqC (coSemM kb cb i w r F l a b k compat il iF ck c1 c2) with #APPLY-#loop#
                   iF
                   (generic∈BAIRE i w r (#APPEND l (#NUM (fst eb2))) el1)
 
+          ef2 : NATmem w (#APPLY F (#generic r (#APPEND l (#NUM (fst eb2)))))
+          ef2 = kb (equalInType-NAT→ i w (#APPLY F (#generic r (#APPEND l (#NUM (fst eb2))))) (#APPLY F (#generic r (#APPEND l (#NUM (fst eb2))))) ef1) w (⊑-refl· w)
+
           eb3 : meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC))
                     w (#APPLY (#loopR (#loop r F) l) b1) (#APPLY (#loopR (#loop r F) l) b2)
           eb3 = coSemM
@@ -150,40 +153,79 @@ meq.meqC (coSemM kb cb i w r F l a b k compat il iF ck c1 c2) with #APPLY-#loop#
                   (#APPEND l (#NUM (fst eb2)))
                   (#APPLY (#loopR (#loop r F) l) b1)
                   (#APPLY (#loopR (#loop r F) l) b2)
-                  {!!}
-                  compat {!!} iF
-                  {!!}
+                  (fst ef2)
+                  compat el1 iF
+                  (fst (snd ef2))
                   (APPLY-loopR-⇓ w w (#loop r F) l b1 (proj₁ eb2) (lower (fst (snd eb2) w (⊑-refl· w))))
                   (APPLY-loopR-⇓ w w (#loop r F) l b2 (proj₁ eb2) (lower (snd (snd eb2) w (⊑-refl· w))))
 
-        -- use APPLY-loopR-⇓
-        -- we're probably going to have to assume a Kripke-like □ so that (#APPLY F (#generic r (#APPEND l b1/2)) #⇛ #NUM k at w)
 
--- Use the fact that #generic is well-typed: generic∈BAIRE
--- It is used to reduce loop in: #APPLY-#loop#⇓3
--- Now that we've got loopI, we need to know that r is a Boolean reference, and then go by cases
+isType-IndBarB : (i : ℕ) (w : 𝕎·) → isType i w #IndBarB
+isType-IndBarB i w = eqTypesUNION← eqTypesNAT (eqTypesTRUE {w} {i})
+
+
+equalTypes-IndBarC : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                     → equalInType i w #IndBarB a b
+                     → equalTypes i w (sub0 a #IndBarC) (sub0 b #IndBarC)
+equalTypes-IndBarC i w a b eqa rewrite sub0-IndBarC≡ a | sub0-IndBarC≡ b =
+  eqTypes-local (Mod.∀𝕎-□Func M aw1 eqa1)
+  where
+    eqa1 : □· w (λ w' _ → UNIONeq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' a b)
+    eqa1 = equalInType-UNION→ {i} {w} eqa
+
+    aw1 : ∀𝕎 w (λ w' e' → UNIONeq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' a b
+                         → equalTypes i w' (#DECIDE a #[0]VOID #[0]NAT!) (#DECIDE b #[0]VOID #[0]NAT!))
+    aw1 w1 e1 (x , y , inj₁ (c1 , c2 , eqa2)) =
+      equalTypes-#⇛-left-right-rev
+        {i} {w1} {#VOID} {#DECIDE a #[0]VOID #[0]NAT!} {#DECIDE b #[0]VOID #[0]NAT!} {#VOID}
+        (#DECIDE⇛INL-VOID⇛ w1 a x #[0]NAT! c1)
+        (#DECIDE⇛INL-VOID⇛ w1 b y #[0]NAT! c2)
+        (eqTypesFALSE {w1} {i})
+    aw1 w1 e1 (x , y , inj₂ (c1 , c2 , eqa2)) =
+      equalTypes-#⇛-left-right-rev
+        {i} {w1} {#NAT!} {#DECIDE a #[0]VOID #[0]NAT!} {#DECIDE b #[0]VOID #[0]NAT!} {#NAT!}
+        (#DECIDE⇛INR-NAT⇛ w1 a x #[0]VOID c1)
+        (#DECIDE⇛INR-NAT⇛ w1 b y #[0]VOID c2)
+        (isTypeNAT! {w1} {i})
 
 
 -- First prove that loop belongs to CoIndBar
-coSem : (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
+coSem : (kb : K□) (cb : c𝔹) (i : ℕ) (w : 𝕎·) (r : Name) (F l : CTerm)
+        → compatible· r w Res⊤
         → ∈Type i w #FunBar F
-        → ∈Type i w #CoIndBar (#loop r F)
-coSem i w r F j =
+        → ∈Type i w (#LIST #NAT) l
+        → ∈Type i w #CoIndBar (#APPLY (#loop r F) l)
+coSem kb cb i w r F l compat F∈ l∈ =
   →equalInType-M
-    i w #IndBarB #IndBarC (#loop r F) (#loop r F)
-      {!!}
-      {!!}
+    i w #IndBarB #IndBarC (#APPLY (#loop r F) l) (#APPLY (#loop r F) l)
+      (λ w1 e1 → isType-IndBarB i w1)
+      (λ w1 e1 → equalTypes-IndBarC i w1)
       (Mod.∀𝕎-□ M aw)
   where
-    aw : ∀𝕎 w (λ w' _ → meq (equalInType i w' #IndBarB)
-                              (λ a b eqa → equalInType i w' (sub0 a #IndBarC))
-                              w' (#loop r F) (#loop r F))
+    aw : ∀𝕎 w (λ w' _ → meq (equalInType i w' #IndBarB) (λ a b eqa → equalInType i w' (sub0 a #IndBarC))
+                              w' (#APPLY (#loop r F) l) (#APPLY (#loop r F) l))
     aw w1 e1 = m
       where
-        m : meq (equalInType i w1 #IndBarB)
-                (λ a b eqa → equalInType i w1 (sub0 a #IndBarC))
-                w1 (#loop r F) (#loop r F)
-        m = {!!}
+        F∈1 : ∈Type i w1 #NAT (#APPLY F (#generic r l))
+        F∈1 = ∈BAIRE→NAT→
+                  {i} {w1} {F} {F} {#generic r l} {#generic r l}
+                  (equalInType-mon F∈ w1 e1)
+                  (generic∈BAIRE i w1 r l (equalInType-mon l∈ w1 e1))
+
+        F∈2 : NATmem w1 (#APPLY F (#generic r l))
+        F∈2 = kb (equalInType-NAT→ i w1 (#APPLY F (#generic r l)) (#APPLY F (#generic r l)) F∈1) w1 (⊑-refl· w1)
+
+        m : meq (equalInType i w1 #IndBarB) (λ a b eqa → equalInType i w1 (sub0 a #IndBarC))
+                w1 (#APPLY (#loop r F) l) (#APPLY (#loop r F) l)
+        m = coSemM
+              kb cb i w1 r F l (#APPLY (#loop r F) l) (#APPLY (#loop r F) l)
+              (fst F∈2)
+              (⊑-compatible· e1 compat)
+              (equalInType-mon l∈ w1 e1)
+              (equalInType-mon F∈ w1 e1)
+              (fst (snd F∈2))
+              (#⇓!-refl (#APPLY (#loop r F) l) w1)
+              (#⇓!-refl (#APPLY (#loop r F) l) w1)
 
 
 --sem : (w : 𝕎·) → ∈Type i w #barThesis tab
@@ -195,11 +237,11 @@ coSem i w r F j =
 Plan:
 
 (1) Prove by coinduction that if (F ∈ FunBar) then (loop r F ∈ CoIndBar) which does not require to proving termination
-    - see coSem, which will use coSemM
+    - see coSem, which uses coSemM [DONE]
 (2) We now have an inhabitant (t ∈ CoIndBar). Using classical logic, either t's paths are all finite,
     or it has an inifite path.
 (3) If all its paths are finite then we get that (t ∈ IndBar)
-    - see m2w
+    - see m2w [DONE]
 (4) If it has an inifite path:
     - That path corresponds to an (α ∈ Baire).
     - Given (F ∈ FunBar), by continuity let n be F's modulus of continuity w.r.t. α.

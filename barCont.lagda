@@ -99,6 +99,10 @@ open import continuity-conds(W)(C)(K)(G)(X)(N)
 -- bib to be clarified
 
 
+-- MOVE to forcing
+NATmem : (w : 𝕎·) → CTerm → Set(lsuc(L))
+NATmem w t = NATeq w t t
+
 
 -- MOVE to computation
 #⇓-trans₁ : {w w' : 𝕎·} {a b c : CTerm} → a #⇓ b from w to w' → b #⇓ c at w' → a #⇓ c at w
@@ -266,13 +270,17 @@ loop r bar = FIX (loopL r bar)
                     (#[0]shiftUp0 x))
 
 
+-- APPEND's body
+#APPENDb : CTerm → CTerm1
+#APPENDb x =
+  #[1]PAIR (#[1]SUC #[1]VAR0)
+           (#[1]LAMBDA (#[2]IFLT #[2]VAR0
+                                 #[2]VAR1
+                                 (#[2]APPLY #[2]VAR2 #[2]VAR0)
+                                 (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 x)))))
+
 #APPEND : CTerm → CTerm → CTerm
-#APPEND l x =
-  #SPREAD l (#[1]PAIR (#[1]SUC #[1]VAR0)
-                      (#[1]LAMBDA (#[2]IFLT #[2]VAR0
-                                            #[2]VAR1
-                                            (#[2]APPLY #[2]VAR2 #[2]VAR0)
-                                            (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 x))))))
+#APPEND l x = #SPREAD l (#APPENDb x)
 
 
 #[0]APPEND : CTerm0 → CTerm0 → CTerm0
@@ -915,42 +923,165 @@ NATeq-mon {w1} {w2} e {a1} {a2} (n , c1 , c2) = n , ∀𝕎-mon e c1 , ∀𝕎-m
       y , c1 , c2
 
 
-SUC-steps₁ : {k : ℕ} {w w' : 𝕎·} {a b : Term}
-              → steps k (a , w) ≡ (b , w')
-              → Σ ℕ (λ k → steps k (SUC a , w) ≡ (SUC b , w'))
-SUC-steps₁ {0} {w} {w'} {a} {b} comp rewrite pair-inj₁ comp | pair-inj₂ comp = 0 , refl
-SUC-steps₁ {suc k} {w} {w'} {a} {b} comp with is-NUM a
-... | inj₁ (x , p) rewrite p | stepsVal (NUM x) w (suc k) tt | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
-... | inj₂ x with step⊎ a w
-... |    inj₁ (y , w'' , q) rewrite q = suc (fst c) , snd c
+∈BAIRE→ : {i : ℕ} {w : 𝕎·} {f₁ f₂ n₁ n₂ : CTerm}
+                → equalInType i w #BAIRE f₁ f₂
+                → equalInType i w #NAT n₁ n₂
+                → equalInType i w #NAT (#APPLY f₁ n₁) (#APPLY f₂ n₂)
+∈BAIRE→ {i} {w} {f₁} {f₂} {n₁} {n₂} ∈f ∈n =
+  equalInType-FUN→
+    {i} {w} {#NAT} {#NAT} {f₁} {f₂} ∈f w (⊑-refl· _) n₁ n₂
+    ∈n
+
+
+APPLY-APPENDf⇓ : (w : 𝕎·) (a f n m : CTerm) → #APPLY (#APPENDf a f n) m #⇓ #IFLT m a (#APPLY f m) n from w to w
+APPLY-APPENDf⇓ w a f n m = 1 , ≡pair e refl
   where
-    c : Σ ℕ (λ k₁ → steps (suc k₁) (SUC a , w) ≡ (SUC b , w'))
-    c with is-NUM a
-    ... | inj₁ (x' , z) rewrite z = ⊥-elim (x x' refl)
-    ... | inj₂ x' rewrite q = SUC-steps₁ {k} comp
-... |    inj₂ q rewrite q | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+    e : sub ⌜ m ⌝ ⌜ #[0]IFLT #[0]VAR (#[0]shiftUp0 a) (#[0]APPLY (#[0]shiftUp0 f) #[0]VAR) (#[0]shiftUp0 n) ⌝
+        ≡ ⌜ #IFLT m a (#APPLY f m) n ⌝
+    e rewrite #shiftUp 0 m
+            | #shiftUp 0 a
+            | #shiftUp 0 f
+            | #shiftUp 0 n
+            | #shiftDown 0 m
+            | #subv 0 ⌜ m ⌝ ⌜ a ⌝ (CTerm.closed a)
+            | #subv 0 ⌜ m ⌝ ⌜ f ⌝ (CTerm.closed f)
+            | #subv 0 ⌜ m ⌝ ⌜ n ⌝ (CTerm.closed n)
+            | #shiftDown 0 m
+            | #shiftDown 0 a
+            | #shiftDown 0 f
+            | #shiftDown 0 n = refl
 
 
-SUC⇓₁ : {w w' : 𝕎·} {a b : Term}
-         → a ⇓ b from w to w'
-         → SUC a ⇓ SUC b from w to w'
-SUC⇓₁ {w} {w'} {a} {b} (k , comp) = SUC-steps₁ {k} {w} {w'} {a} {b} comp
+APPLY-APPENDf⇛ : (w : 𝕎·) (a f n m : CTerm) → #APPLY (#APPENDf a f n) m #⇛ #IFLT m a (#APPLY f m) n at w
+APPLY-APPENDf⇛ w a f n m w1 e1 = lift (⇓-from-to→⇓ {w1} {w1} (APPLY-APPENDf⇓ w1 a f n m))
 
 
+NATeq⇛ : {w : 𝕎·} {a1 a2 b1 b2 : CTerm}
+          → a1 #⇛ a2 at w
+          → b1 #⇛ b2 at w
+          → NATeq w a2 b2
+          → NATeq w a1 b1
+NATeq⇛ {w} {a1} {a2} {b1} {b2} c1 c2 (n , z1 , z2) = n , ⇛-trans c1 z1 , ⇛-trans c2 z2
 
-SUC⇛₁ : {w : 𝕎·} {a a' : Term}
-           → a ⇛ a' at w
-           → SUC a ⇛ SUC a' at w
-SUC⇛₁ {w} {a} {a'} comp w1 e1 = lift (⇓-from-to→⇓ {w1} {fst c} (SUC⇓₁ (snd c)))
+
+→NATeq-IFLT-NUM : {w : 𝕎·} {i j : ℕ} {c1 c2 d1 d2 : CTerm}
+                   → NATeq w c1 c2
+                   → NATeq w d1 d2
+                   → NATeq w (#IFLT (#NUM i) (#NUM j) c1 d1) (#IFLT (#NUM i) (#NUM j) c2 d2)
+→NATeq-IFLT-NUM {w} {i} {j} {c1} {c2} {d1} {d2} x y with i <? j
+... | yes p = NATeq⇛
+                {w} {#IFLT (#NUM i) (#NUM j) c1 d1} {c1} {#IFLT (#NUM i) (#NUM j) c2 d2} {c2}
+                (IFLT⇛< {j} {i} {w} {⌜ c1 ⌝} {⌜ d1 ⌝} p)
+                (IFLT⇛< {j} {i} {w} {⌜ c2 ⌝} {⌜ d2 ⌝} p)
+                x
+... | no p = NATeq⇛ {w} {#IFLT (#NUM i) (#NUM j) c1 d1} {d1}
+               {#IFLT (#NUM i) (#NUM j) c2 d2} {d2}
+               (IFLT⇛¬< {j} {i} {w} {⌜ c1 ⌝} {⌜ d1 ⌝} p)
+               (IFLT⇛¬< {j} {i} {w} {⌜ c2 ⌝} {⌜ d2 ⌝} p)
+               y
+
+
+→NATeq-IFLT : {w : 𝕎·} {a1 a2 b1 b2 c1 c2 d1 d2 : CTerm}
+               → NATeq w a1 a2
+               → NATeq w b1 b2
+               → NATeq w c1 c2
+               → NATeq w d1 d2
+               → NATeq w (#IFLT a1 b1 c1 d1) (#IFLT a2 b2 c2 d2)
+→NATeq-IFLT {w} {a1} {a2} {b1} {b2} {c1} {c2} {d1} {d2} (n1 , x1 , x2) (n2 , y1 , y2) z1 z2 =
+  NATeq⇛
+    {w}
+    {#IFLT a1 b1 c1 d1} {#IFLT (#NUM n1) (#NUM n2) c1 d1}
+    {#IFLT a2 b2 c2 d2} {#IFLT (#NUM n1) (#NUM n2) c2 d2}
+    (IFLT⇛₃ {w} {n1} {n2} {⌜ a1 ⌝} {⌜ b1 ⌝} {⌜ c1 ⌝} {⌜ d1 ⌝} x1 y1)
+    (IFLT⇛₃ {w} {n1} {n2} {⌜ a2 ⌝} {⌜ b2 ⌝} {⌜ c2 ⌝} {⌜ d2 ⌝} x2 y2)
+    (→NATeq-IFLT-NUM {w} {n1} {n2} {c1} {c2} {d1} {d2} z1 z2)
+
+
+APPENDf∈BAIRE : {i : ℕ} {w : 𝕎·} {a1 a2 f1 f2 n1 n2 : CTerm}
+                 → equalInType i w #NAT a1 a2
+                 → equalInType i w #NAT n1 n2
+                 → equalInType i w #BAIRE f1 f2
+                 → equalInType i w #BAIRE (#APPENDf a1 f1 n1) (#APPENDf a2 f2 n2)
+APPENDf∈BAIRE {i} {w} {a1} {a2} {f1} {f2} {n1} {n2} a∈ n∈ f∈ =
+  ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-FUN eqTypesNAT eqTypesNAT aw)
   where
-    c : Σ 𝕎· (λ w2 → a ⇓ a' from w1 to w2)
-    c = ⇓→from-to (lower (comp w1 e1))
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
+                       → equalInType i w' #NAT (#APPLY (#APPENDf a1 f1 n1) a₁) (#APPLY (#APPENDf a2 f2 n2) a₂))
+    aw w1 e1 m1 m2 m∈ =
+      →equalInType-NAT
+        i w1
+        (#APPLY (#APPENDf a1 f1 n1) m1)
+        (#APPLY (#APPENDf a2 f2 n2) m2)
+        (∀𝕎-□Func4 aw1 f∈1 n∈1 a∈1 m∈1)
+      where
+        f∈1 : □· w1 (λ w' _ → NATeq w' (#APPLY f1 m1) (#APPLY f2 m2))
+        f∈1 = equalInType-NAT→ i w1 (#APPLY f1 m1) (#APPLY f2 m2) (∈BAIRE→ {i} {w1} (equalInType-mon f∈ w1 e1) m∈)
+
+        n∈1 : □· w1 (λ w' _ → NATeq w' n1 n2)
+        n∈1 = equalInType-NAT→ i w1 n1 n2 (equalInType-mon n∈ w1 e1)
+
+        a∈1 : □· w1 (λ w' _ → NATeq w' a1 a2)
+        a∈1 = equalInType-NAT→ i w1 a1 a2 (equalInType-mon a∈ w1 e1)
+
+        m∈1 : □· w1 (λ w' _ → NATeq w' m1 m2)
+        m∈1 = equalInType-NAT→ i w1 m1 m2 m∈
+
+        aw1 : ∀𝕎 w1 (λ w' e' → NATeq w' (#APPLY f1 m1) (#APPLY f2 m2)
+                              → NATeq w' n1 n2 → NATeq w' a1 a2 → NATeq w' m1 m2
+                              → NATeq w' (#APPLY (#APPENDf a1 f1 n1) m1) (#APPLY (#APPENDf a2 f2 n2) m2))
+        aw1 w2 e2 if ix ia im =
+          NATeq⇛
+            {w2}
+            {#APPLY (#APPENDf a1 f1 n1) m1} {#IFLT m1 a1 (#APPLY f1 m1) n1}
+            {#APPLY (#APPENDf a2 f2 n2) m2} {#IFLT m2 a2 (#APPLY f2 m2) n2}
+            (APPLY-APPENDf⇛ w2 a1 f1 n1 m1) (APPLY-APPENDf⇛ w2 a2 f2 n2 m2) c
+          where
+            c : NATeq w2 (#IFLT m1 a1 (#APPLY f1 m1) n1) (#IFLT m2 a2 (#APPLY f2 m2) n2)
+            c = →NATeq-IFLT {w2} {m1} {m2} {a1} {a2} {#APPLY f1 m1} {#APPLY f2 m2} {n1} {n2} im ia if ix
 
 
-SUC⇛₂ : {w : 𝕎·} {a : Term} {k : ℕ}
-           → a ⇛ NUM k at w
-           → SUC a ⇛ NUM (suc k) at w
-SUC⇛₂ {w} {a} {k} comp w1 e1 = lift ?
+⇛NUM→equalInType-NAT : (i : ℕ) (w : 𝕎·) (a b : CTerm) (k : ℕ)
+                         → a #⇛ #NUM k at w
+                         → b #⇛ #NUM k at w
+                         → equalInType i w #NAT a b
+⇛NUM→equalInType-NAT i w a b k c1 c2 =
+  →equalInType-NAT i w a b (Mod.∀𝕎-□ M (λ w1 e1 → k , ∀𝕎-mon e1 c1 , ∀𝕎-mon e1 c2))
+
+
+#APPEND-PAIR⇛PAIR : (w : 𝕎·) (a f n : CTerm) → #APPEND (#PAIR a f) n #⇛ #PAIR (#SUC a) (#APPENDf a f n) at w
+#APPEND-PAIR⇛PAIR w a f n w1 e1 = lift (⇓-from-to→⇓ {w1} {w1} (1 , ≡pair e refl))
+  where
+    e : sub ⌜ f ⌝ (sub ⌜ a ⌝ ⌜ #APPENDb n ⌝) ≡ ⌜ #PAIR (#SUC a) (#APPENDf a f n) ⌝
+    e rewrite #shiftUp 0 f
+            | #shiftUp 0 f
+            | #shiftUp 1 f
+            | #shiftUp 0 a
+            | #shiftUp 0 a
+            | #shiftUp 1 a
+            | #shiftUp 0 n
+            | #shiftUp 0 n
+            | #shiftUp 0 n
+            | #shiftDown 0 a
+            | #shiftDown 1 a
+            | #shiftDown 1 f
+            | #subv 0 ⌜ f ⌝ ⌜ a ⌝ (CTerm.closed a)
+            | #subv 1 ⌜ f ⌝ ⌜ a ⌝ (CTerm.closed a)
+            | #subv 1 ⌜ a ⌝ ⌜ n ⌝ (CTerm.closed n)
+            | #shiftDown 0 a
+            | #shiftDown 1 n
+            | #subv 1 ⌜ f ⌝ ⌜ n ⌝ (CTerm.closed n)
+            | #shiftDown 1 a
+            | #shiftDown 1 n = refl
+
+
+#APPEND⇛PAIR : (w : 𝕎·) (l n a f : CTerm)
+                → l #⇛ #PAIR a f at w
+                → #APPEND l n #⇛ #PAIR (#SUC a) (#APPENDf a f n) at w
+#APPEND⇛PAIR w l n a f comp =
+  #⇛-trans
+    {w} {#APPEND l n} {#APPEND (#PAIR a f) n} {#PAIR (#SUC a) (#APPENDf a f n)}
+    (SPREAD⇛₁ {w} {⌜ l ⌝} {⌜ #PAIR a f ⌝} {⌜ #APPENDb n ⌝} comp)
+    (#APPEND-PAIR⇛PAIR w a f n)
 
 
 APPEND∈LIST : (i : ℕ) (w : 𝕎·) (l n : CTerm)
@@ -963,16 +1094,16 @@ APPEND∈LIST i w l n ∈l ∈n =
     ∈l1 : □· w (λ w' _ → LISTNATeq i w' l l)
     ∈l1 = equalInType-LIST-NAT→ i w l l ∈l
 
-    ∈n1 : □· w (λ w' _ → NATeq w' n n)
+    ∈n1 : □· w (λ w' _ → NATmem w' n)
     ∈n1 = equalInType-NAT→ i w n n ∈n
 
-    aw : ∀𝕎 w (λ w' e' → LISTNATeq i w' l l → NATeq w' n n → LISTNATeq i w' (#APPEND l n) (#APPEND l n))
+    aw : ∀𝕎 w (λ w' e' → LISTNATeq i w' l l → NATmem w' n → LISTNATeq i w' (#APPEND l n) (#APPEND l n))
     aw w1 e1 (a1 , a2 , f1 , f2 , (m , z1 , z2) , x2 , c1 , c2) (k , d1 , d2) =
       #SUC a1 , #SUC a2 , #APPENDf a1 f1 n , #APPENDf a2 f2 n ,
-      (suc m , {!!} , {!!}) , -- use SUC⇛₂
-      {!!} ,
-      {!!} ,
-      {!!}
+      (suc m , SUC⇛₂ {w1} {⌜ a1 ⌝} {m} z1 , SUC⇛₂ {w1} {⌜ a2 ⌝} {m} z2) ,
+      APPENDf∈BAIRE {i} {w1} {a1} {a2} {f1} {f2} {n} {n} (⇛NUM→equalInType-NAT i w1 a1 a2 m z1 z2) (equalInType-mon ∈n w1 e1) x2 ,
+      #APPEND⇛PAIR w1 l n a1 f1 c1 ,
+      #APPEND⇛PAIR w1 l n a2 f2 c2
 
 
 generic∈BAIRE : (i : ℕ) (w : 𝕎·) (r : Name) (l : CTerm)
@@ -1201,12 +1332,32 @@ sub0-IndBarC≡ a = CTerm≡ (≡DECIDE x refl refl)
 #DECIDE-INL-VOID⇛ w a b w1 e1 = lift (#DECIDE-INL-VOID⇓ w1 a b)
 
 
+#DECIDE⇛INL-VOID⇛ : (w : 𝕎·) (x a : CTerm) (b : CTerm0)
+                     → x #⇛ #INL a at w
+                     → #DECIDE x #[0]VOID b #⇛ #VOID at w
+#DECIDE⇛INL-VOID⇛ w x a b comp =
+  #⇛-trans
+    {w} {#DECIDE x #[0]VOID b} {#DECIDE (#INL a) #[0]VOID b} {#VOID}
+    (DECIDE⇛₁ {w} {⌜ x ⌝} {⌜ #INL a ⌝} {⌜ #[0]VOID ⌝} {⌜ b ⌝} comp)
+    (#⇛!-#⇛ {w} {#DECIDE (#INL a) #[0]VOID b} {#VOID} (#DECIDE-INL-VOID⇛ w a b))
+
+
 #DECIDE-INR-NAT⇓ : (w : 𝕎·) (a : CTerm) (b : CTerm0) → #DECIDE (#INR a) b #[0]NAT! #⇓ #NAT! from w to w
 #DECIDE-INR-NAT⇓ w a b = 1 , refl
 
 
 #DECIDE-INR-NAT⇛ : (w : 𝕎·) (a : CTerm) (b : CTerm0) → #DECIDE (#INR a) b #[0]NAT! #⇛! #NAT! at w
 #DECIDE-INR-NAT⇛ w a b w1 e1 = lift (#DECIDE-INR-NAT⇓ w1 a b)
+
+
+#DECIDE⇛INR-NAT⇛ : (w : 𝕎·) (x a : CTerm) (b : CTerm0)
+                     → x #⇛ #INR a at w
+                     → #DECIDE x b #[0]NAT! #⇛ #NAT! at w
+#DECIDE⇛INR-NAT⇛ w x a b comp =
+  #⇛-trans
+    {w} {#DECIDE x b #[0]NAT!} {#DECIDE (#INR a) b #[0]NAT!} {#NAT!}
+    (DECIDE⇛₁ {w} {⌜ x ⌝} {⌜ #INR a ⌝} {⌜ b ⌝} {⌜ #[0]NAT! ⌝} comp)
+    (#⇛!-#⇛ {w} {#DECIDE (#INR a) b #[0]NAT!} {#NAT!} (#DECIDE-INR-NAT⇛ w a b))
 
 
 equalInType-#⇛ : {i : ℕ} {w : 𝕎·} {T U a b : CTerm}

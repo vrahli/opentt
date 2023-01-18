@@ -1757,4 +1757,73 @@ ITE⇓₁ {w} {w'} {a} {b} {t} {u} comp = DECIDE⇓₁ comp
     c : # VOID
     c = refl
 
+
+⇓from-to→⊑ : {w w' : 𝕎·} {a b : Term}
+               → a ⇓ b from w to w'
+               → w ⊑· w'
+⇓from-to→⊑ {w} {w'} {a} {b} (n , comp) = ≡ᵣ→⊑ (steps⊑ w n a) (→≡snd comp)
+
+
+⇓NUM→SUC⇓NUM : {a : Term} {n : ℕ} {w1 w2 : 𝕎·}
+                → a ⇓ NUM n from w1 to w2
+                → SUC a ⇓ NUM (suc n) from w1 to w2
+⇓NUM→SUC⇓NUM {a} {n} {w1} {w2} comp =
+  ⇓-trans₂ {w1} {w2} {w2} {SUC a} {SUC (NUM n)} {NUM (suc n)} (SUC⇓ comp) (SUC-NUM⇓ w2 n)
+
+
+SUC-steps₁ : {k : ℕ} {w w' : 𝕎·} {a b : Term}
+              → steps k (a , w) ≡ (b , w')
+              → Σ ℕ (λ k → steps k (SUC a , w) ≡ (SUC b , w'))
+SUC-steps₁ {0} {w} {w'} {a} {b} comp rewrite pair-inj₁ comp | pair-inj₂ comp = 0 , refl
+SUC-steps₁ {suc k} {w} {w'} {a} {b} comp with is-NUM a
+... | inj₁ (x , p) rewrite p | stepsVal (NUM x) w (suc k) tt | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+... | inj₂ x with step⊎ a w
+... |    inj₁ (y , w'' , q) rewrite q = suc (fst c) , snd c
+  where
+    c : Σ ℕ (λ k₁ → steps (suc k₁) (SUC a , w) ≡ (SUC b , w'))
+    c with is-NUM a
+    ... | inj₁ (x' , z) rewrite z = ⊥-elim (x x' refl)
+    ... | inj₂ x' rewrite q = SUC-steps₁ {k} comp
+... |    inj₂ q rewrite q | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+
+
+SUC⇓₁ : {w w' : 𝕎·} {a b : Term}
+         → a ⇓ b from w to w'
+         → SUC a ⇓ SUC b from w to w'
+SUC⇓₁ {w} {w'} {a} {b} (k , comp) = SUC-steps₁ {k} {w} {w'} {a} {b} comp
+
+
+
+SUC⇛₁ : {w : 𝕎·} {a a' : Term}
+           → a ⇛ a' at w
+           → SUC a ⇛ SUC a' at w
+SUC⇛₁ {w} {a} {a'} comp w1 e1 = lift (⇓-from-to→⇓ {w1} {fst c} (SUC⇓₁ (snd c)))
+  where
+    c : Σ 𝕎· (λ w2 → a ⇓ a' from w1 to w2)
+    c = ⇓→from-to (lower (comp w1 e1))
+
+
+SUC-NUM⇛ : (w : 𝕎·) (k : ℕ) → SUC (NUM k) ⇛ NUM (suc k) at w
+SUC-NUM⇛ w k w1 e1 = lift (⇓-from-to→⇓ {w1} {w1} (SUC-NUM⇓ w1 k))
+
+
+SUC⇛₂ : {w : 𝕎·} {a : Term} {k : ℕ}
+           → a ⇛ NUM k at w
+           → SUC a ⇛ NUM (suc k) at w
+SUC⇛₂ {w} {a} {k} comp = ⇛-trans (SUC⇛₁ comp) (SUC-NUM⇛ w k)
+
+
+IFLT⇛₃ : {w : 𝕎·} {i j : ℕ} {a b u v : Term}
+         → a ⇛ NUM i at w
+         → b ⇛ NUM j at w
+         → IFLT a b u v ⇛ IFLT (NUM i) (NUM j) u v at w
+IFLT⇛₃ {w} {i} {j} {a} {b} {u} {v} c1 c2 w1 e1 =
+  lift (⇓-from-to→⇓ {w1} {proj₁ c2'} (IFLT⇓₃ {w1} {fst c1'} {fst c2'} {i} {j} {a} {b} {u} {v} (snd c1') (snd c2')))
+  where
+    c1' : Σ 𝕎· (λ w' → a ⇓ NUM i from w1 to w')
+    c1' = ⇓→from-to (lower (c1 w1 e1))
+
+    c2' : Σ 𝕎· (λ w' → b ⇓ NUM j from (fst c1') to w')
+    c2' = ⇓→from-to (lower (c2 (fst c1') (⊑-trans· e1 (⇓from-to→⊑ {w1} {fst c1'} {a} {NUM i} (snd c1')))))
+
 \end{code}

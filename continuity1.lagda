@@ -749,21 +749,6 @@ probeM-NAT i w name F f ∈F ∈f = ≡CTerm→∈Type (sym (#probeM≡ name F f
     s rewrite snd z = refl
 
 
-⇓from-to→⊑ : {w w' : 𝕎·} {a b : Term}
-               → a ⇓ b from w to w'
-               → w ⊑· w'
-⇓from-to→⊑ {w} {w'} {a} {b} (n , comp) = ≡ᵣ→⊑ (steps⊑ w n a) (→≡snd comp)
-
-
-
-⇓NUM→SUC⇓NUM : {a : Term} {n : ℕ} {w1 w2 : 𝕎·}
-                → a ⇓ NUM n from w1 to w2
-                → SUC a ⇓ NUM (suc n) from w1 to w2
-⇓NUM→SUC⇓NUM {a} {n} {w1} {w2} comp =
-  ⇓-trans₂ {w1} {w2} {w2} {SUC a} {SUC (NUM n)} {NUM (suc n)} (SUC⇓ comp) (SUC-NUM⇓ w2 n)
-
-
-
 
 -- TODO: now we ned to prove that testM computes to the same number in all extensions of w
 -- (as long as name does not occur in F or f)
