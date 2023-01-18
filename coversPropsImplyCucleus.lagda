@@ -39,6 +39,13 @@ ex = CoversProps.ex props
 
 -- Now we show that a covering relation satisfying coversProps gives a cucleus
 
+
+{------------------------------------------------------------------------------
+ --
+ -- Parts which are not clear but probably not very interesting
+ --
+ --}
+
 ▶-UCSubset→UCSubset : {U : UCSubset} →  isUpwardsClosed (_◀ U)
 ▶-UCSubset→UCSubset {U} {w1} {w2} w1⊑w2 w1◀U = {!!}
   where
@@ -49,7 +56,23 @@ _▶ : UCSubset → UCSubset
 _▶ U = (_◀ U) , ▶-UCSubset→UCSubset
 
 ▶-well-def : well-defined _▶
-▶-well-def U V (U⋐V , V⋐U) = {!!}
+▶-well-def (U , _) (V , _) (U⊆V , V⊆U) = (λ w∈U▶ → {!!}) , {!!}
+
+
+{------------------------------------------------------------------------------
+ --
+ -- Parts which are not clear and probably not true in general
+ --
+ --}
+
+
+-- Monotonicity implies extensivity
+
+▶-mono⇒ext : monotonic _▶ → extensive _▶
+▶-mono⇒ext mono U {w} w∈U = mono (bar∀ w) U (λ w⊑w1 → snd U w⊑w1 w∈U) (all w)
+
+-- Extensivity of _▶ is a rewording of:
+--   foo : (w : 𝕎·) (U : UCSubset) → w ∈· U → w ◀ U
 
 ▶-ext : extensive _▶
 ▶-ext U {w} w∈U = {!!}
@@ -66,6 +89,41 @@ _▶ U = (_◀ U) , ▶-UCSubset→UCSubset
     w◀bar : w ◀ bar
     w◀bar = fam2 (bar∀ w) (all w) G i
 
+-- Meet preservation is equivalent to monotonicity (assuming _▶ is well defined and respects intersections)
+
+▶-meet-pre⇒mono : meet-preserving _▶ → monotonic _▶
+▶-meet-pre⇒mono = meet-preserving⇒monotonic {_▶} ▶-well-def
+
+▶-mono⇒meet-pre : monotonic _▶ → meet-preserving _▶
+▶-mono⇒meet-pre mono U V = U⋒V▶⋐U▶⋒V▶ , U▶⋒V▶⋐U⋒V▶
+  where
+    U⋒V▶⋐U▶⋒V▶ : ((U ⋒ V) ▶) ⋐ (U ▶) ⋒ (V ▶)
+    U⋒V▶⋐U▶⋒V▶ = ⋒-intro {U ▶} {V ▶} {(U ⋒ V) ▶} (mono (U ⋒ V) U (⋒-elim-l {U} {V}))
+                                                 (mono (U ⋒ V) V (⋒-elim-r {U} {V}))
+
+    U▶⋒V▶⋐U⋒V▶ : (U ▶) ⋒ (V ▶) ⋐ ((U ⋒ V) ▶)
+    U▶⋒V▶⋐U⋒V▶ (w◀U , w◀V) = isect U V w◀U w◀V
+
+-- Due to the above, it doesn't matter if we prove this or monotonicity of _▶
+-- Considering monotonicity makes it clearer why we probably cannot prove this.
+
+▶-meet-pre : meet-preserving _▶
+▶-meet-pre U V = U⋒V▶⋐U▶⋒V▶ , U▶⋒V▶⋐U⋒V▶
+  where
+    U⋒V▶⋐U▶⋒V▶ : ((U ⋒ V) ▶) ⋐ (U ▶) ⋒ (V ▶)
+    U⋒V▶⋐U▶⋒V▶ = {!!}
+
+    U▶⋒V▶⋐U⋒V▶ : (U ▶) ⋒ (V ▶) ⋐ ((U ⋒ V) ▶)
+    U▶⋒V▶⋐U⋒V▶ (w◀U , w◀V) = isect U V w◀U w◀V
+
+
+{------------------------------------------------------------------------------
+ --
+ -- The uncontroversial parts
+ --
+ --}
+
+-- Idempotency corresponds roughly to bar∪
 
 ▶-idem : idempotent _▶
 ▶-idem U {w} w∈U▶▶ = fst (▶-well-def bar U bar≅U) w◀bar
@@ -90,15 +148,6 @@ _▶ U = (_◀ U) , ▶-UCSubset→UCSubset
 
     bar≅U : bar ≅ U
     bar≅U = bar⋐U , U⋐bar
-
-▶-meet-pre : meet-preserving _▶
-▶-meet-pre U V = U⋒V▶⋐U▶⋒V▶ , U▶⋒V▶⋐U⋒V▶
-  where
-    U⋒V▶⋐U▶⋒V▶ : ((U ⋒ V) ▶) ⋐ (U ▶) ⋒ (V ▶)
-    U⋒V▶⋐U▶⋒V▶ = {!!}
-
-    U▶⋒V▶⋐U⋒V▶ : (U ▶) ⋒ (V ▶) ⋐ ((U ⋒ V) ▶)
-    U▶⋒V▶⋐U⋒V▶ (w◀U , w◀V) = isect U V w◀U w◀V
 
 ▶-inhab : inhabited _▶
 ▶-inhab U = ex
