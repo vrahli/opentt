@@ -103,9 +103,9 @@ APPEND l x =
 --}
 
 
--- empty list
+-- empty list (of numbers)
 EMPTY : Term
-EMPTY = PAIR (NUM 0) (LAMBDA AX)
+EMPTY = PAIR (NUM 0) (LAMBDA (NUM 0))
 
 
 PROD : Term → Term → Term

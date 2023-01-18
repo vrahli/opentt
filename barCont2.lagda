@@ -228,6 +228,88 @@ coSem kb cb i w r F l compat F∈ l∈ =
               (#⇓!-refl (#APPLY (#loop r F) l) w1)
 
 
+CoIndBar2IndBar : (i : ℕ) (w : 𝕎·) (t : CTerm)
+                  → ((p : path i #IndBarB #IndBarC) → correctPath {i} {#IndBarB} {#IndBarC} t p → isFinPath {i} {#IndBarB} {#IndBarC} p)
+                  → ∈Type i w #CoIndBar t
+                  → ∈Type i w #IndBar t
+CoIndBar2IndBar i w t cond h =
+  m2w
+    i w #IndBarB #IndBarC t
+    (λ w1 e1 → isType-IndBarB i w1)
+    (λ w1 e1 a b eqa → equalTypes-IndBarC  i w1 a b eqa)
+    cond h
+
+
+NATeq-NUM : (w : 𝕎·) (k : ℕ) → NATeq w (#NUM k) (#NUM k)
+NATeq-NUM w k = k , #⇛-refl w (#NUM k) , #⇛-refl w (#NUM k)
+
+
+LAM0⇛NUM0 : (w : 𝕎·) (a : CTerm) → #APPLY #LAM0 a #⇛! #NUM 0 at w
+LAM0⇛NUM0 w a w1 e1 = lift (1 , refl)
+
+
+LAM0∈BAIRE : (i : ℕ) (w : 𝕎·) → equalInType i w #BAIRE #LAM0 #LAM0
+LAM0∈BAIRE i w =
+  ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-FUN eqTypesNAT eqTypesNAT aw)
+  where
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
+                       →  equalInType i w' #NAT (#APPLY #LAM0 a₁) (#APPLY #LAM0 a₂))
+    aw w1 e1 a b eqa = →equalInType-NAT i w1 (#APPLY #LAM0 a) (#APPLY #LAM0 b) (Mod.∀𝕎-□ M aw1)
+      where
+        aw1 : ∀𝕎 w1 (λ w' _ → NATeq w' (#APPLY #LAM0 a) (#APPLY #LAM0 b))
+        aw1 w2 e2 =
+          0 ,
+          #⇛!-#⇛ {w2} {#APPLY #LAM0 a} {#NUM 0} (LAM0⇛NUM0 w2 a) ,
+          #⇛!-#⇛ {w2} {#APPLY #LAM0 b} {#NUM 0} (LAM0⇛NUM0 w2 b)
+
+
+EMPTY∈LIST : (i : ℕ) (w : 𝕎·) → ∈Type i w (#LIST #NAT) #EMPTY
+EMPTY∈LIST i w = →equalInType-LIST-NAT i w #EMPTY #EMPTY (Mod.∀𝕎-□ M aw)
+  where
+    aw : ∀𝕎 w (λ w' _ → LISTNATeq i w' #EMPTY #EMPTY)
+    aw w1 e1 =
+      #NUM 0 , #NUM 0 , #LAM0 , #LAM0 ,
+      NATeq-NUM w1 0 ,
+      LAM0∈BAIRE i w1 ,
+      #⇛-refl w1 #EMPTY , #⇛-refl w1 #EMPTY
+
+
+noInfPath : (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
+            → compatible· r w Res⊤
+            → ∈Type i w #FunBar F
+            → (p : path i #IndBarB #IndBarC)
+            → correctPath {i} {#IndBarB} {#IndBarC} (#APPLY (#loop r F) #EMPTY) p
+            → isInfPath {i} {#IndBarB} {#IndBarC} p
+            → ⊥
+noInfPath i w r F compat F∈ p cor inf = {!!}
+
+
+sem : (kb : K□) (cb : c𝔹) (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
+        → compatible· r w Res⊤
+        → ∈Type i w #FunBar F
+        → ∈Type i w #IndBar (#APPLY (#loop r F) #EMPTY)
+sem kb cb i w r F compat F∈ = concl
+  where
+    co : ∈Type i w #CoIndBar (#APPLY (#loop r F) #EMPTY)
+    co = coSem kb cb i w r F #EMPTY compat F∈ (EMPTY∈LIST i w)
+
+    concl : ∈Type i w #IndBar (#APPLY (#loop r F) #EMPTY)
+    concl with EM {Σ (path i #IndBarB #IndBarC)
+                     (λ p → correctPath {i} {#IndBarB} {#IndBarC} (#APPLY (#loop r F) #EMPTY) p
+                           × isInfPath {i} {#IndBarB} {#IndBarC} p)}
+    ... | yes pp = c
+      where
+        c : ∈Type i w #IndBar (#APPLY (#loop r F) #EMPTY)
+        c = {!!}
+    ... | no pp = CoIndBar2IndBar i w (#APPLY (#loop r F) #EMPTY) cond co
+      where
+        cond : (p : path i #IndBarB #IndBarC)
+               → correctPath {i} {#IndBarB} {#IndBarC} (#APPLY (#loop r F) #EMPTY) p
+               → isFinPath {i} {#IndBarB} {#IndBarC} p
+        cond p cor with EM {Lift {0ℓ} (lsuc(L)) (isFinPath {i} {#IndBarB} {#IndBarC} p)}
+        ... | yes qq = lower qq
+        ... | no qq = ⊥-elim (pp (p , cor , ¬isFinPath→isInfPath {i} {#IndBarB} {#IndBarC} p (λ z → qq (lift z))))
+
 --sem : (w : 𝕎·) → ∈Type i w #barThesis tab
 --sem w  ?
 
@@ -240,6 +322,7 @@ Plan:
     - see coSem, which uses coSemM [DONE]
 (2) We now have an inhabitant (t ∈ CoIndBar). Using classical logic, either t's paths are all finite,
     or it has an inifite path.
+    - see sem [DONE]
 (3) If all its paths are finite then we get that (t ∈ IndBar)
     - see m2w [DONE]
 (4) If it has an inifite path:

@@ -283,6 +283,14 @@ loop r bar = FIX (loopL r bar)
 #APPEND l x = #SPREAD l (#APPENDb x)
 
 
+#LAM0 : CTerm
+#LAM0 = #LAMBDA (#[0]NUM 0)
+
+
+#EMPTY : CTerm
+#EMPTY = #PAIR (#NUM 0) #LAM0
+
+
 #[0]APPEND : CTerm0 → CTerm0 → CTerm0
 #[0]APPEND l x =
   #[0]SPREAD l (#[2]PAIR (#[2]SUC #[2]VAR0)
@@ -437,10 +445,30 @@ is-inj₁→¬is-inj₂ {I} {J} {A} {B} (inj₁ x) i j = j
 is-inj₁→¬is-inj₂ {I} {J} {A} {B} (inj₂ x) i j = i
 
 
+¬is-inj₁→is-inj₂ : {I J : Level} {A : Set(I)} {B : Set(J)} (u : A ⊎ B)
+                    → ¬ is-inj₁ u
+                    → is-inj₂ u
+¬is-inj₁→is-inj₂ {I} {J} {A} {B} (inj₁ x) i = ⊥-elim (i tt)
+¬is-inj₁→is-inj₂ {I} {J} {A} {B} (inj₂ x) i = tt
+
+
+¬is-inj₂→is-inj₁ : {I J : Level} {A : Set(I)} {B : Set(J)} (u : A ⊎ B)
+                    → ¬ is-inj₂ u
+                    → is-inj₁ u
+¬is-inj₂→is-inj₁ {I} {J} {A} {B} (inj₁ x) i = tt
+¬is-inj₂→is-inj₁ {I} {J} {A} {B} (inj₂ x) i = ⊥-elim (i tt)
+
+
 isFinPath→¬isInfPath : {i : ℕ} {A : CTerm} {B : CTerm0} (p : path i A B)
                         → isFinPath {i} {A} {B} p
                         → ¬ isInfPath {i} {A} {B} p
 isFinPath→¬isInfPath {i} {A} {B} p (n , fin) inf = is-inj₁→¬is-inj₂ (p n) (inf n) fin
+
+
+¬isFinPath→isInfPath : {i : ℕ} {A : CTerm} {B : CTerm0} (p : path i A B)
+                        → ¬ isFinPath {i} {A} {B} p
+                        → isInfPath {i} {A} {B} p
+¬isFinPath→isInfPath {i} {A} {B} p fin n = ¬is-inj₂→is-inj₁ (p n) (λ x → fin (n , x))
 
 
 shiftPath : {i : ℕ} {A : CTerm} {B : CTerm0} (p : path i A B) → path i A B
@@ -1089,7 +1117,7 @@ APPEND∈LIST : (i : ℕ) (w : 𝕎·) (l n : CTerm)
                → ∈Type i w #NAT n
                → ∈Type i w (#LIST #NAT) (#APPEND l n)
 APPEND∈LIST i w l n ∈l ∈n =
-            →equalInType-LIST-NAT i w (#APPEND l n) (#APPEND l n) (∀𝕎-□Func2 aw ∈l1 ∈n1)
+  →equalInType-LIST-NAT i w (#APPEND l n) (#APPEND l n) (∀𝕎-□Func2 aw ∈l1 ∈n1)
   where
     ∈l1 : □· w (λ w' _ → LISTNATeq i w' l l)
     ∈l1 = equalInType-LIST-NAT→ i w l l ∈l
