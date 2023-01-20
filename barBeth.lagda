@@ -243,11 +243,11 @@ IS𝔹-meet-preserving U V = jU⋒V⋐jU⋒jV , jU⋒jV⋐jU⋒V
                                                  (IS𝔹-mono (U ⋒ V) V (⋒-elim-r {U} {V}))
 
     jU⋒jV⋐jU⋒V : j U ⋒ j V ⋐ j (U ⋒ V)
-    jU⋒jV⋐jU⋒V {w} (w◀U , w◀V) c = let mkBarredChain w1 w1∈U n w1⊑cn = w◀U c
-                                       mkBarredChain w2 w2∈V m w2⊑cm = w◀V (truncatePChain {w} {c} {n} {w} (pchain⊑n n c))
-                                       cm+n   = (chain.seq (pchain.c c) (m + n))
+    jU⋒jV⋐jU⋒V {w} (w◀U , w◀V) c = let mkBarredChain w1 w1∈U n w1⊑cn   = w◀U c
+                                       mkBarredChain w2 w2∈V m w2⊑cm+n = w◀V (truncatePChain {w} {c} {n} {w} (pchain⊑n n c))
+                                       cm+n   = chain.seq (pchain.c c) (m + n)
                                        cm+n∈U = snd U (⊑-trans· w1⊑cn (≤→pchain⊑ c (m≤n+m n m))) w1∈U
-                                       cm+n∈V = snd V w2⊑cm w2∈V
+                                       cm+n∈V = snd V w2⊑cm+n w2∈V
                                     in mkBarredChain cm+n  (cm+n∈U , cm+n∈V) (m + n) (⊑-refl· cm+n)
 
 IS𝔹-inhabited : inhabited j
