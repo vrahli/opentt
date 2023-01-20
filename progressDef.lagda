@@ -127,3 +127,9 @@ chain⊑ {w} {w'} e (mkChain seq init prop) = mkChain seq (⊑-trans· e init) p
 
 pchain⊑ : {w w' : 𝕎·} (e : w ⊑· w') → pchain w' → pchain w
 pchain⊑ {w} {w'} e (mkPChain c p) = mkPChain (chain⊑ e c) p
+
+pchain⊑n : {w : 𝕎·} (n : ℕ) (c : pchain w) → w ⊑· chain.seq (pchain.c c) n
+pchain⊑n n c = chain⊑n n (pchain.c c)
+
+≤→pchain⊑ : {w : 𝕎·} {n m : ℕ} (c : pchain w) → n ≤ m → chain.seq (pchain.c c) n ⊑· chain.seq (pchain.c c) m
+≤→pchain⊑ c h = ≤→chain⊑ (pchain.c c) h

@@ -22,13 +22,13 @@ open import progress
 
 
 -- Choice is only needed for Beth bars to build an infinite sequence of worlds
-module barBeth {L : Level} (W : PossibleWorlds {L})
-               (C : Choice) (M : Compatible {L} W C) (P : Progress {L} W C M)
+module barBeth {L : Level} (W : PossibleWorlds {L ∨ 1ℓ})
+               (C : Choice) (M : Compatible {L ∨ 1ℓ} W C) (P : Progress {L ∨ 1ℓ} W C M)
        where
-open import worldDef{L}(W)
-open import bar{L}{L ∨ 1ℓ}(W)
-open import mod{L}{L ∨ 1ℓ}(W)
--- open import nucleus{L ∨ 1ℓ}(W)
+open import worldDef{L ∨ 1ℓ}(W)
+open import bar{L ∨ 1ℓ}{L ∨ 1ℓ}(W)
+open import mod{L ∨ 1ℓ}{L ∨ 1ℓ}(W)
+open import nucleus{L ∨ 1ℓ}(W)
 
 -- Those are only needed by the Beth instance
 open import choiceDef{L}(C)
@@ -199,7 +199,7 @@ inIBethBar-inIBethBar' {w} {f} {g} (b1 , i1) (indBar-ind .w ind , i2) = {!!}
  -- Beth Bar instance -- defined from infinite sequences
  --
  --}
-record BarredChain (bar : Br) {w : 𝕎·} (c : chain w) : Set L where
+record BarredChain (bar : Br) {w : 𝕎·} (c : chain w) : Set (L ∨ 1ℓ) where
   constructor mkBarredChain
   field
     w'  : 𝕎·
@@ -211,28 +211,29 @@ record BarredChain (bar : Br) {w : 𝕎·} (c : chain w) : Set L where
 IS𝔹bars : Bars
 IS𝔹bars w bar = (c : pchain w) → BarredChain bar (pchain.c c)
 
-{--
-
-Currently we cannot turn this into a nucleus due to the jump in universe level.
-If there is some way to postulate $n ∨ 1ℓ = n$ then we could try doing this inside a module.
-
 -- Open Bars give a nucleus (when restricted to upward closed subsets)
 j : UCSubset → UCSubset
-j (U , U-UC) = (λ w → IS𝔹bars w U) , (λ w1⊑w2 w1◀U w3 w2⊑w3 → w1◀U w3 (⊑-trans· w1⊑w2 w2⊑w3))
+j (U , U-UC) = (λ w → IS𝔹bars w U) , U▶-UC
+  where
+    U▶-UC : isUpwardsClosed (λ w → IS𝔹bars w U)
+    U▶-UC w1⊑w2 w1◀U c = let mkBarredChain w3 w3∈U n w3⊑cn = w1◀U (pchain⊑ w1⊑w2 c)
+                          in mkBarredChain w3 w3∈U n w3⊑cn
+
 
 IS𝔹-mono : (U V : UCSubset) → U ⋐ V → j U ⋐ j V
-IS𝔹-mono U V U⋐V w◀U w1 w⊑w1 = let (w2 , w1⊑w2 , w2∈U) = w◀U w1 w⊑w1 in w2 , w1⊑w2 , U⋐V w2∈U
+IS𝔹-mono U V U⋐V w◀U c = let mkBarredChain w' w'∈U n w'⊑cn = w◀U c
+                          in mkBarredChain w' (U⋐V w'∈U) n w'⊑cn
 
 IS𝔹-well-defined : well-defined j
 IS𝔹-well-defined = λ U V (U⋐V , V⋐U) → IS𝔹-mono U V U⋐V , IS𝔹-mono V U V⋐U
 
 IS𝔹-extensive : extensive j
-IS𝔹-extensive (U , U-UC) w∈U w1 w⊑w1 = w1 , ⊑-refl· w1 , U-UC w⊑w1 w∈U
+IS𝔹-extensive (U , U-UC) {w} w∈U c = mkBarredChain w w∈U 0 (chain.init (pchain.c c))
 
 IS𝔹-idempotent : idempotent j
-IS𝔹-idempotent U w◀◀U w1 w⊑w1 = let (w2 , w1⊑w2 , w2◀U) = w◀◀U w1 w⊑w1
-                                   (w3 , w2⊑w3 , w3∈U) = w2◀U w2 (⊑-refl· w2)
-                                in (w3 , ⊑-trans· w1⊑w2 w2⊑w3 , w3∈U )
+IS𝔹-idempotent U {w} w◀◀U c = let mkBarredChain w1 w1◀U n w1⊑cn   = w◀◀U c
+                                  mkBarredChain w2 w2∈U m w2⊑cm+n = w1◀U (truncatePChain {w} {c} w1⊑cn)
+                               in mkBarredChain w2 w2∈U (m + n) w2⊑cm+n
 
 IS𝔹-meet-preserving : meet-preserving j
 IS𝔹-meet-preserving U V = jU⋒V⋐jU⋒jV , jU⋒jV⋐jU⋒V
@@ -242,18 +243,19 @@ IS𝔹-meet-preserving U V = jU⋒V⋐jU⋒jV , jU⋒jV⋐jU⋒V
                                                  (IS𝔹-mono (U ⋒ V) V (⋒-elim-r {U} {V}))
 
     jU⋒jV⋐jU⋒V : j U ⋒ j V ⋐ j (U ⋒ V)
-    jU⋒jV⋐jU⋒V (w◀U , w◀V) w1 w⊑w1 = let U-UC = snd U
-                                         (w2 , w1⊑w2 , w2∈U) = w◀U w1 w⊑w1
-                                         (w3 , w2⊑w3 , w3∈V) = w◀V w2 (⊑-trans· w⊑w1 w1⊑w2)
-                                      in w3 , ⊑-trans· w1⊑w2 w2⊑w3 , U-UC w2⊑w3 w2∈U , w3∈V
+    jU⋒jV⋐jU⋒V {w} (w◀U , w◀V) c = let mkBarredChain w1 w1∈U n w1⊑cn = w◀U c
+                                       mkBarredChain w2 w2∈V m w2⊑cm = w◀V (truncatePChain {w} {c} {n} {w} (pchain⊑n n c))
+                                       cm+n   = (chain.seq (pchain.c c) (m + n))
+                                       cm+n∈U = snd U (⊑-trans· w1⊑cn (≤→pchain⊑ c (m≤n+m n m))) w1∈U
+                                       cm+n∈V = snd V w2⊑cm w2∈V
+                                    in mkBarredChain cm+n  (cm+n∈U , cm+n∈V) (m + n) (⊑-refl· cm+n)
 
 IS𝔹-inhabited : inhabited j
-IS𝔹-inhabited {w} U w◀U = let (w1 , _ , w1∈U) = w◀U w (⊑-refl· w) in w1 , w1∈U
+IS𝔹-inhabited {w} U w◀U = let mkBarredChain w' w'∈U _ _ = w◀U (𝕎→pchain w) in w' , w'∈U
 
 IS𝔹-cucleus : isCuclear j
 IS𝔹-cucleus = mkCucleus IS𝔹-inhabited (mkNucleus IS𝔹-well-defined IS𝔹-extensive IS𝔹-idempotent IS𝔹-meet-preserving)
 
---}
 
 -- a Beth bar where all infinite sequences are barred
 IS𝔹 : 𝕎· → Set (2ℓ ∨ lsuc L)
@@ -487,7 +489,7 @@ inBethBar-Mod = BarsProps→Mod IS𝔹BarsProps
 trivialIS𝔹 : (w : 𝕎·) → IS𝔹 w
 trivialIS𝔹 = 𝔹∀ {IS𝔹bars} IS𝔹bars∀
 
-inIS𝔹 : ∀ {r} {w : 𝕎·} (b : IS𝔹 w) (f : wPred {r} w) → Set (L ∨ r)
+inIS𝔹 : ∀ {r} {w : 𝕎·} (b : IS𝔹 w) (f : wPred {r} w) → Set (L ∨ 1ℓ ∨ r)
 inIS𝔹 = ∈𝔹 {_} {IS𝔹bars}
 
 
