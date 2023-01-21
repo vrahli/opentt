@@ -274,6 +274,64 @@ EMPTY∈LIST i w = →equalInType-LIST-NAT i w #EMPTY #EMPTY (Mod.∀𝕎-□ M 
       #⇛-refl w1 #EMPTY , #⇛-refl w1 #EMPTY
 
 
+
+𝕊 : Set
+𝕊 = ℕ → ℕ
+
+
+correctSeqN : (r : Name) (F : CTerm) (l : CTerm) (s : 𝕊) (k : ℕ) (n : ℕ) → Set(lsuc L)
+correctSeqN r F l s k 0 = Lift (lsuc L) ⊤
+correctSeqN r F l s k (suc n) =
+  Σ ℕ (λ m → Σ 𝕎· (λ w → Σ 𝕎· (λ w' →
+    #APPLY F (#generic r l) #⇓ #NUM m from (chooseT r w BTRUE) to w'
+    × getT 0 r w' ≡ just BFALSE
+    × correctSeqN r F (#APPEND l (#NUM (s k))) s (suc k) n)))
+
+
+correctSeq : (r : Name) (F : CTerm) (s : 𝕊) → Set(lsuc L)
+correctSeq r F s = (n : ℕ) → correctSeqN r F #EMPTY s 0 n
+
+
+INL→!∈Type-IndBarC : (i : ℕ) (w : 𝕎·) (x a b : CTerm)
+                     → x #⇛ #INL a at w
+                     → ¬ ∈Type i w (sub0 x #IndBarC) b
+INL→!∈Type-IndBarC i w x a b comp j rewrite sub0-IndBarC≡ x =
+  ¬equalInType-FALSE j1
+  where
+    j1 : ∈Type i w #VOID b -- Do we have to require that (x #⇛! #INL a at w)?
+    j1 = {!equalTypes-#⇛-left-right!}
+
+
+∈Type-IndBarB-IndBarC→ : (i : ℕ) (w : 𝕎·) (b c : CTerm)
+                           → ∈Type i w #IndBarB b
+                           → ∈Type i w (sub0 b #IndBarC) c
+                           → □· w (λ w' _ → Σ ℕ (λ n → c #⇛! #NUM n at w'))
+∈Type-IndBarB-IndBarC→ i w b c b∈ c∈ =
+  Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInType-UNION→ b∈))
+  where
+    aw : ∀𝕎 w (λ w' e' → Σ CTerm (λ x →  Σ CTerm (λ y →
+                              b #⇛ #INL x at w' × b #⇛ #INL y at w' × equalInType i w' #NAT x y
+                              ⊎ b #⇛ #INR x at w' × b #⇛ #INR y at w' × equalInType i w' #UNIT x y))
+                        → Mod.□ M w' (↑wPred' (λ w'' _ → Σ ℕ (λ n → c #⇛! #NUM n at w'')) e'))
+    aw w1 e1 (x , y , inj₁ (c1 , c2 , eqi)) = {!!}
+    aw w1 e1 (x , y , inj₂ (c1 , c2 , eqi)) = {!!}
+
+
+path2𝕊 : {i : ℕ} (p : path i #IndBarB #IndBarC) → 𝕊
+path2𝕊 {i} p n with p n
+... | inj₁ (w , a , b , ia , ib) = {!!}
+path2𝕊 {i} p n | inj₂ q = 0 -- default value
+
+
+→correctSeq : (i : ℕ) (r : Name) (F : CTerm)
+               → (p : path i #IndBarB #IndBarC)
+               → correctPath {i} {#IndBarB} {#IndBarC} (#APPLY (#loop r F) #EMPTY) p
+               → isInfPath {i} {#IndBarB} {#IndBarC} p
+               → Σ 𝕊 (λ s → correctSeq r F s)
+→correctSeq i r F p cor inf = {!!}
+
+
+-- We want to create a Term ∈ BAIRE from this path.
 noInfPath : (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
             → compatible· r w Res⊤
             → ∈Type i w #FunBar F

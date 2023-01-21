@@ -480,10 +480,9 @@ correctPathN : {i : ℕ} {A : CTerm} {B : CTerm0} (t : CTerm) (p : path i A B) (
 correctPathN {i} {A} {B} t p 0 = Lift (lsuc L) ⊤
 correctPathN {i} {A} {B} t p (suc n) with p 0
 ... | inj₁ (w , a , b , ia , ib) =
-  Σ CTerm (λ x → Σ CTerm (λ f →
-    t #⇓ {--#⇛--} #SUP x f at w -- For W types
-    × x ≡ a
-    × correctPathN {i} {A} {B} (#APPLY f b) (shiftPath {i} {A} {B} p) n))
+  Σ CTerm (λ f →
+    t #⇓ {--#⇛--} #SUP a f at w -- For W types
+    × correctPathN {i} {A} {B} (#APPLY f b) (shiftPath {i} {A} {B} p) n)
 ... | inj₂ _ = Lift (lsuc L) ⊤
 
 
@@ -545,7 +544,7 @@ correctN-mb2path : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
 correctN-mb2path i w A B t u b 0 = lift tt
 correctN-mb2path i w A B t u b (suc n) with branch.branchC b
 ... | (a1 , f1 , b1 , a2 , f2 , b2 , ea , c1 , c2 , eb , q) =
-  a1 , f1 , c1 , refl , correctN-mb2path i w A B (#APPLY f1 b1) (#APPLY f2 b2) q n
+  f1 , c1 , correctN-mb2path i w A B (#APPLY f1 b1) (#APPLY f2 b2) q n
 
 
 correct-mb2path : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
