@@ -1730,6 +1730,15 @@ DECIDE⇛₁ {w} {a} {a'} {b} {c} comp w1 e1 = lift (⇓-from-to→⇓ {w1} {fst
     z = ⇓→from-to (lower (comp w1 e1))
 
 
+DECIDE⇛!₁ : {w : 𝕎·} {a a' b c : Term}
+           → a ⇛! a' at w
+           → DECIDE a b c ⇛! DECIDE a' b c at w
+DECIDE⇛!₁ {w} {a} {a'} {b} {c} comp w1 e1 = lift (DECIDE⇓₁ z)
+  where
+    z : a ⇓ a' from w1 to w1
+    z = lower (comp w1 e1)
+
+
 ITE⇓₁ : {w w' : 𝕎·} {a b t u : Term}
          → a ⇓ b from w to w'
          → ITE a t u ⇓ ITE b t u from w to w'

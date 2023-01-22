@@ -1373,6 +1373,16 @@ sub0-IndBarC≡ a = CTerm≡ (≡DECIDE x refl refl)
     (#⇛!-#⇛ {w} {#DECIDE (#INL a) #[0]VOID b} {#VOID} (#DECIDE-INL-VOID⇛ w a b))
 
 
+#DECIDE⇛INL-VOID⇛! : (w : 𝕎·) (x a : CTerm) (b : CTerm0)
+                       → x #⇛! #INL a at w
+                       → #DECIDE x #[0]VOID b #⇛! #VOID at w
+#DECIDE⇛INL-VOID⇛! w x a b comp =
+  #⇛!-trans
+    {w} {#DECIDE x #[0]VOID b} {#DECIDE (#INL a) #[0]VOID b} {#VOID}
+    (DECIDE⇛!₁ {w} {⌜ x ⌝} {⌜ #INL a ⌝} {⌜ #[0]VOID ⌝} {⌜ b ⌝} comp)
+    (#DECIDE-INL-VOID⇛ w a b)
+
+
 #DECIDE-INR-NAT⇓ : (w : 𝕎·) (a : CTerm) (b : CTerm0) → #DECIDE (#INR a) b #[0]NAT! #⇓ #NAT! from w to w
 #DECIDE-INR-NAT⇓ w a b = 1 , refl
 
@@ -1389,6 +1399,16 @@ sub0-IndBarC≡ a = CTerm≡ (≡DECIDE x refl refl)
     {w} {#DECIDE x b #[0]NAT!} {#DECIDE (#INR a) b #[0]NAT!} {#NAT!}
     (DECIDE⇛₁ {w} {⌜ x ⌝} {⌜ #INR a ⌝} {⌜ b ⌝} {⌜ #[0]NAT! ⌝} comp)
     (#⇛!-#⇛ {w} {#DECIDE (#INR a) b #[0]NAT!} {#NAT!} (#DECIDE-INR-NAT⇛ w a b))
+
+
+#DECIDE⇛INR-NAT⇛! : (w : 𝕎·) (x a : CTerm) (b : CTerm0)
+                      → x #⇛! #INR a at w
+                      → #DECIDE x b #[0]NAT! #⇛! #NAT! at w
+#DECIDE⇛INR-NAT⇛! w x a b comp =
+  #⇛!-trans
+    {w} {#DECIDE x b #[0]NAT!} {#DECIDE (#INR a) b #[0]NAT!} {#NAT!}
+    (DECIDE⇛!₁ {w} {⌜ x ⌝} {⌜ #INR a ⌝} {⌜ b ⌝} {⌜ #[0]NAT! ⌝} comp)
+    (#DECIDE-INR-NAT⇛ w a b)
 
 
 equalInType-#⇛ : {i : ℕ} {w : 𝕎·} {T U a b : CTerm}
@@ -1421,8 +1441,22 @@ INL→!∈Type-IndBarC : (i : ℕ) (w : 𝕎·) (x a b : CTerm)
 INL→!∈Type-IndBarC i w x a b comp j rewrite sub0-IndBarC≡ x =
   ¬equalInType-FALSE j1
   where
-    j1 : ∈Type i w #VOID b -- Do we have to require that (x #⇛! #INL a at w)?
-    j1 = {!equalTypes-#⇛-left-right!}
+    j1 : ∈Type i w #VOID b
+    j1 = equalInType-#⇛ (#DECIDE⇛INL-VOID⇛! w x a #[0]NAT! comp) j
+
+
+INR→!∈Type-IndBarC : (i : ℕ) (w : 𝕎·) (x a b : CTerm)
+                     → x #⇛! #INR a at w
+                     → ∈Type i w (sub0 x #IndBarC) b
+                     → □· w (λ w' _ → Σ ℕ (λ n → b #⇛! #NUM n at w'))
+INR→!∈Type-IndBarC i w x a b comp j rewrite sub0-IndBarC≡ x =
+  Mod.∀𝕎-□Func M aw (equalInType-NAT!→ i w b b j1)
+  where
+    j1 : ∈Type i w #NAT! b
+    j1 = equalInType-#⇛ (#DECIDE⇛INR-NAT⇛! w x a #[0]VOID comp) j
+
+    aw : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' b b → Σ ℕ (λ n → b #⇛! #NUM n at w'))
+    aw w1 e1 (n , c1 , c2) = n , c1
 
 
 ∈Type-IndBarB-IndBarC→ : (i : ℕ) (w : 𝕎·) (b c : CTerm)
@@ -1434,8 +1468,9 @@ INL→!∈Type-IndBarC i w x a b comp j rewrite sub0-IndBarC≡ x =
   where
     aw : ∀𝕎 w (λ w' e' → UNION!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' b b
                         → Mod.□ M w' (↑wPred' (λ w'' _ → Σ ℕ (λ n → c #⇛! #NUM n at w'')) e'))
-    aw w1 e1 (x , y , inj₁ (c1 , c2 , eqi)) = {!!}
-    aw w1 e1 (x , y , inj₂ (c1 , c2 , eqi)) = {!!}
+    aw w1 e1 (x , y , inj₁ (c1 , c2 , eqi)) = ⊥-elim (INL→!∈Type-IndBarC i w1 b x c c1 (equalInType-mon c∈ w1 e1))
+    aw w1 e1 (x , y , inj₂ (c1 , c2 , eqi)) =
+      Mod.∀𝕎-□Func M (λ w2 e2 cn z → cn) (INR→!∈Type-IndBarC i w1 b x c c1 (equalInType-mon c∈ w1 e1))
 
 
 APPLY-loopR-⇓ : (w1 w2 : 𝕎·) (R l b : CTerm) (k : ℕ)

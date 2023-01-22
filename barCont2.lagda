@@ -161,7 +161,7 @@ meq.meqC (coSemM kb cb i w r F l a b k compat il iF ck c1 c2) with #APPLY-#loop#
 
 
 isType-IndBarB : (i : ℕ) (w : 𝕎·) → isType i w #IndBarB
-isType-IndBarB i w = eqTypesUNION← eqTypesNAT (eqTypesTRUE {w} {i})
+isType-IndBarB i w = eqTypesUNION!← eqTypesNAT (eqTypesTRUE {w} {i})
 
 
 equalTypes-IndBarC : (i : ℕ) (w : 𝕎·) (a b : CTerm)
@@ -170,22 +170,22 @@ equalTypes-IndBarC : (i : ℕ) (w : 𝕎·) (a b : CTerm)
 equalTypes-IndBarC i w a b eqa rewrite sub0-IndBarC≡ a | sub0-IndBarC≡ b =
   eqTypes-local (Mod.∀𝕎-□Func M aw1 eqa1)
   where
-    eqa1 : □· w (λ w' _ → UNIONeq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' a b)
-    eqa1 = equalInType-UNION→ {i} {w} eqa
+    eqa1 : □· w (λ w' _ → UNION!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' a b)
+    eqa1 = equalInType-UNION!→ {i} {w} eqa
 
-    aw1 : ∀𝕎 w (λ w' e' → UNIONeq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' a b
+    aw1 : ∀𝕎 w (λ w' e' → UNION!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' a b
                          → equalTypes i w' (#DECIDE a #[0]VOID #[0]NAT!) (#DECIDE b #[0]VOID #[0]NAT!))
     aw1 w1 e1 (x , y , inj₁ (c1 , c2 , eqa2)) =
       equalTypes-#⇛-left-right-rev
         {i} {w1} {#VOID} {#DECIDE a #[0]VOID #[0]NAT!} {#DECIDE b #[0]VOID #[0]NAT!} {#VOID}
-        (#DECIDE⇛INL-VOID⇛ w1 a x #[0]NAT! c1)
-        (#DECIDE⇛INL-VOID⇛ w1 b y #[0]NAT! c2)
+        (#DECIDE⇛INL-VOID⇛ w1 a x #[0]NAT! (#⇛!-#⇛ {w1} {a} {#INL x} c1))
+        (#DECIDE⇛INL-VOID⇛ w1 b y #[0]NAT! (#⇛!-#⇛ {w1} {b} {#INL y} c2))
         (eqTypesFALSE {w1} {i})
     aw1 w1 e1 (x , y , inj₂ (c1 , c2 , eqa2)) =
       equalTypes-#⇛-left-right-rev
         {i} {w1} {#NAT!} {#DECIDE a #[0]VOID #[0]NAT!} {#DECIDE b #[0]VOID #[0]NAT!} {#NAT!}
-        (#DECIDE⇛INR-NAT⇛ w1 a x #[0]VOID c1)
-        (#DECIDE⇛INR-NAT⇛ w1 b y #[0]VOID c2)
+        (#DECIDE⇛INR-NAT⇛ w1 a x #[0]VOID (#⇛!-#⇛ {w1} {a} {#INR x} c1))
+        (#DECIDE⇛INR-NAT⇛ w1 b y #[0]VOID (#⇛!-#⇛ {w1} {b} {#INR y} c2))
         (isTypeNAT! {w1} {i})
 
 
@@ -292,18 +292,27 @@ correctSeq : (r : Name) (F : CTerm) (s : 𝕊) → Set(lsuc L)
 correctSeq r F s = (n : ℕ) → correctSeqN r F #EMPTY s 0 n
 
 
-path2𝕊 : {i : ℕ} (p : path i #IndBarB #IndBarC) → 𝕊
-path2𝕊 {i} p n with p n
-... | inj₁ (w , a , b , ia , ib) = {!!}
-path2𝕊 {i} p n | inj₂ q = 0 -- default value
+path2𝕊 : (kb : K□) {i : ℕ} (p : path i #IndBarB #IndBarC) → 𝕊
+path2𝕊 kb {i} p n with p n
+... | inj₁ (w , a , b , ia , ib) = fst j
+  where
+    j : Σ ℕ (λ n → b #⇛! #NUM n at w)
+    j = kb (∈Type-IndBarB-IndBarC→ i w a b ia ib) w (⊑-refl· w)
+path2𝕊 kb {i} p n | inj₂ q = 0 -- default value
 
 
-→correctSeq : (i : ℕ) (r : Name) (F : CTerm)
+→correctSeq : (kb : K□) (i : ℕ) (r : Name) (F : CTerm)
                → (p : path i #IndBarB #IndBarC)
                → correctPath {i} {#IndBarB} {#IndBarC} (#APPLY (#loop r F) #EMPTY) p
                → isInfPath {i} {#IndBarB} {#IndBarC} p
                → Σ 𝕊 (λ s → correctSeq r F s)
-→correctSeq i r F p cor inf = {!!}
+→correctSeq kb i r F p cor inf = s , cs
+  where
+    s : 𝕊
+    s = path2𝕊 kb p
+
+    cs : correctSeq r F s
+    cs n = {!!}
 
 
 -- We want to create a Term ∈ BAIRE from this path.

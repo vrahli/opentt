@@ -276,4 +276,11 @@ equalInType-UNION!→ {n} {w} {A} {B} {a} {b} equ =
                                                equalInType-mon equ1 w2 e2))) ,
       #⇛!→#⇓→#⇓! {w1} {a} {#INR x} tt c1 , #⇛!→#⇓→#⇓! {w1} {b} {#INR y} tt c2
 
+
+eqTypesUNION!← : {w : 𝕎·} {i : ℕ} {A B C D : CTerm}
+                  → equalTypes i w A B
+                  → equalTypes i w C D
+                  → equalTypes i w (#UNION! A C) (#UNION! B D)
+eqTypesUNION!← {w} {i} {A} {B} {C} {D} eq1 eq2 = eqTypesTCONST← (eqTypesUNION← eq1 eq2)
+
 \end{code}
