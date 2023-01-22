@@ -292,31 +292,6 @@ correctSeq : (r : Name) (F : CTerm) (s : 𝕊) → Set(lsuc L)
 correctSeq r F s = (n : ℕ) → correctSeqN r F #EMPTY s 0 n
 
 
-INL→!∈Type-IndBarC : (i : ℕ) (w : 𝕎·) (x a b : CTerm)
-                     → x #⇛ #INL a at w
-                     → ¬ ∈Type i w (sub0 x #IndBarC) b
-INL→!∈Type-IndBarC i w x a b comp j rewrite sub0-IndBarC≡ x =
-  ¬equalInType-FALSE j1
-  where
-    j1 : ∈Type i w #VOID b -- Do we have to require that (x #⇛! #INL a at w)?
-    j1 = {!equalTypes-#⇛-left-right!}
-
-
-∈Type-IndBarB-IndBarC→ : (i : ℕ) (w : 𝕎·) (b c : CTerm)
-                           → ∈Type i w #IndBarB b
-                           → ∈Type i w (sub0 b #IndBarC) c
-                           → □· w (λ w' _ → Σ ℕ (λ n → c #⇛! #NUM n at w'))
-∈Type-IndBarB-IndBarC→ i w b c b∈ c∈ =
-  Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInType-UNION→ b∈))
-  where
-    aw : ∀𝕎 w (λ w' e' → Σ CTerm (λ x →  Σ CTerm (λ y →
-                              b #⇛ #INL x at w' × b #⇛ #INL y at w' × equalInType i w' #NAT x y
-                              ⊎ b #⇛ #INR x at w' × b #⇛ #INR y at w' × equalInType i w' #UNIT x y))
-                        → Mod.□ M w' (↑wPred' (λ w'' _ → Σ ℕ (λ n → c #⇛! #NUM n at w'')) e'))
-    aw w1 e1 (x , y , inj₁ (c1 , c2 , eqi)) = {!!}
-    aw w1 e1 (x , y , inj₂ (c1 , c2 , eqi)) = {!!}
-
-
 path2𝕊 : {i : ℕ} (p : path i #IndBarB #IndBarC) → 𝕊
 path2𝕊 {i} p n with p n
 ... | inj₁ (w , a , b , ia , ib) = {!!}

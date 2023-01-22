@@ -135,7 +135,7 @@ FunBar = BAIRE→NAT
 
 
 IndBarB : Term
-IndBarB = UNION NAT UNIT
+IndBarB = UNION! NAT UNIT
 
 
 #UNIT : CTerm
@@ -143,7 +143,7 @@ IndBarB = UNION NAT UNIT
 
 
 #IndBarB : CTerm
-#IndBarB = #UNION #NAT #UNIT
+#IndBarB = #UNION! #NAT #UNIT
 
 
 -- IndBarC uses NAT! because if DIGAMMAs are functions from NAT, then to prove that (loop ∈ coW -- see coSemM)
@@ -1330,18 +1330,22 @@ abstract
 
 INL∈IndBarB : (i : ℕ) (w : 𝕎·) (k : ℕ) → ∈Type i w #IndBarB (#INL (#NUM k))
 INL∈IndBarB i w k =
-  →equalInType-UNION
+  →equalInType-UNION!
     eqTypesNAT
     (eqTypesTRUE {w} {i})
-    (Mod.∀𝕎-□ M (λ w' e → #NUM k , #NUM k , inj₁ (#compAllRefl (#INL (#NUM k)) w' , #compAllRefl (#INL (#NUM k)) w' , NUM-equalInType-NAT i w' k)))
+    (Mod.∀𝕎-□ M (λ w' e → #NUM k , #NUM k , inj₁ (#⇛!-refl {w'} {#INL (#NUM k)} ,
+                                                    #⇛!-refl {w'} {#INL (#NUM k)} ,
+                                                    NUM-equalInType-NAT i w' k)))
 
 
 INR∈IndBarB : (i : ℕ) (w : 𝕎·) → ∈Type i w #IndBarB (#INR #AX)
 INR∈IndBarB i w =
-  →equalInType-UNION
+  →equalInType-UNION!
     eqTypesNAT
     (eqTypesTRUE {w} {i})
-    (Mod.∀𝕎-□ M (λ w' e → #AX , #AX , inj₂ (#compAllRefl (#INR #AX) w' , #compAllRefl (#INR #AX) w' , →equalInType-TRUE i {w'} {#AX} {#AX})))
+    (Mod.∀𝕎-□ M (λ w' e → #AX , #AX , inj₂ (#⇛!-refl {w'} {#INR #AX} ,
+                                              #⇛!-refl {w'} {#INR #AX} ,
+                                              →equalInType-TRUE i {w'} {#AX} {#AX})))
 
 
 sub0-IndBarC≡ : (a : CTerm) → sub0 a #IndBarC ≡ #DECIDE a #[0]VOID #[0]NAT!
@@ -1409,6 +1413,29 @@ equalInType-DECIDE-INR-NAT→ : (i : ℕ) (w : 𝕎·) (a b1 b2 : CTerm) (b : CT
                                 → equalInType i w #NAT! b1 b2
 equalInType-DECIDE-INR-NAT→ i w a b1 b2 b e =
   equalInType-#⇛ (#DECIDE-INR-NAT⇛ w a b) e
+
+
+INL→!∈Type-IndBarC : (i : ℕ) (w : 𝕎·) (x a b : CTerm)
+                     → x #⇛! #INL a at w
+                     → ¬ ∈Type i w (sub0 x #IndBarC) b
+INL→!∈Type-IndBarC i w x a b comp j rewrite sub0-IndBarC≡ x =
+  ¬equalInType-FALSE j1
+  where
+    j1 : ∈Type i w #VOID b -- Do we have to require that (x #⇛! #INL a at w)?
+    j1 = {!equalTypes-#⇛-left-right!}
+
+
+∈Type-IndBarB-IndBarC→ : (i : ℕ) (w : 𝕎·) (b c : CTerm)
+                           → ∈Type i w #IndBarB b
+                           → ∈Type i w (sub0 b #IndBarC) c
+                           → □· w (λ w' _ → Σ ℕ (λ n → c #⇛! #NUM n at w'))
+∈Type-IndBarB-IndBarC→ i w b c b∈ c∈ =
+  Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInType-UNION!→ b∈))
+  where
+    aw : ∀𝕎 w (λ w' e' → UNION!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' b b
+                        → Mod.□ M w' (↑wPred' (λ w'' _ → Σ ℕ (λ n → c #⇛! #NUM n at w'')) e'))
+    aw w1 e1 (x , y , inj₁ (c1 , c2 , eqi)) = {!!}
+    aw w1 e1 (x , y , inj₂ (c1 , c2 , eqi)) = {!!}
 
 
 APPLY-loopR-⇓ : (w1 w2 : 𝕎·) (R l b : CTerm) (k : ℕ)

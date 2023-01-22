@@ -2246,15 +2246,17 @@ equalInType-BOOL→ i w a b eqi =
 
 
 →equalInTypeTCONST : {w : 𝕎·} {i : ℕ} {a b A : CTerm}
-                      → isType i w A -- should be provable from the next one
                       → □· w (λ w' _ → TCONSTeq (equalInType i w' A) w' a b)
                       → equalInType i w (#TCONST A) a b
-→equalInTypeTCONST {w} {i} {a} {b} {A} ist h =
-  eqTypesTCONST← ist , Mod.∀𝕎-□Func M aw h
+→equalInTypeTCONST {w} {i} {a} {b} {A} h =
+  eqTypesTCONST← ista , Mod.∀𝕎-□Func M aw h
   where
+    ista : isType i w A
+    ista = eqTypes-local (Mod.∀𝕎-□Func M (λ w1 e1 (e , c1 , c2) → fst e) h)
+
     aw : ∀𝕎 w (λ w' e' → TCONSTeq (equalInType i w' A) w' a b
-                        → TCONSTeq (equalTerms i w' (eqTypes-mon (uni i) ist w' e')) w' a b)
-    aw w' e' (q , c₁ , c₂) = equalInType→eqInType refl {eqTypes-mon (uni i) ist w' e'} q , c₁ , c₂
+                        → TCONSTeq (equalTerms i w' (eqTypes-mon (uni i) ista w' e')) w' a b)
+    aw w' e' (q , c₁ , c₂) = equalInType→eqInType refl {eqTypes-mon (uni i) ista w' e'} q , c₁ , c₂
 
 
 
@@ -2308,7 +2310,7 @@ equalInType-BOOL!→ i w a b eqi =
                     → □· w (λ w' _ → #strongBool! w' a b)
                     → equalInType i w #BOOL! a b
 →equalInType-BOOL! i w a b h =
-  →equalInTypeTCONST (isTypeBOOL w i) (Mod.∀𝕎-□Func M aw h)
+  →equalInTypeTCONST (Mod.∀𝕎-□Func M aw h)
   where
     aw : ∀𝕎 w (λ w' e' → #strongBool! w' a b → TCONSTeq (equalInType i w' #BOOL) w' a b)
     aw w' e' q =

@@ -178,4 +178,102 @@ equalInType-PROD→ {u} {w} {A} {B} {f} {g} eqi =
                         → PRODeq (equalInType u w' A) (equalInType u w' B) w' f g)
     aw w1 e1 (a1 , a2 , b1 , b2 , ea , c1 , c2 , eb) rewrite sub0⌞⌟ a1 B = a1 , a2 , b1 , b2 , ea , eb , c1 , c2
 
+
+UNION! : Term → Term → Term
+UNION! a b = TCONST (UNION a b)
+
+
+#UNION! : CTerm → CTerm → CTerm
+#UNION! a b = #TCONST (#UNION a b)
+
+
+UNION!eq : (eqa eqb : per) → wper
+UNION!eq eqa eqb w t1 t2  =
+  Σ CTerm (λ a → Σ CTerm (λ b →
+    (t1 #⇛! (#INL a) at w × t2 #⇛! (#INL b) at w × eqa a b)
+    ⊎
+    (t1 #⇛! (#INR a) at w × t2 #⇛! (#INR b) at w × eqb a b)))
+
+
+#⇓→#⇓!-mon : {w w' : 𝕎·} {a : CTerm}
+             → w ⊑· w'
+             → #⇓→#⇓! w a
+             → #⇓→#⇓! w' a
+#⇓→#⇓!-mon {w} {w'} {a} e h w1 e1 = lift (lower (h w1 (⊑-trans· e e1)))
+
+
+#⇛→#⇛!⊑ : {w w' : 𝕎·} {a b : CTerm}
+             → w ⊑· w'
+             → #⇓→#⇓! w a
+             → #isValue b
+             → a #⇛ b at w'
+             → a #⇛! b at w'
+#⇛→#⇛!⊑ {w} {w'} {a} {b} e h isv comp =
+  #⇛→#⇛! {w'} {a} {b} (#⇓→#⇓!-mon {w} {w'} {a} e h) isv comp
+
+
+equalInType-UNION!→ : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
+                       → equalInType n w (#UNION! A B) a b
+                       → □· w (λ w' _ → UNION!eq (equalInType n w' A) (equalInType n w' B) w' a b)
+equalInType-UNION!→ {n} {w} {A} {B} {a} {b} equ =
+  Mod.□-idem M (Mod.∀𝕎-□Func M aw1 (equalInTypeTCONST→ equ))
+  where
+    aw1 : ∀𝕎 w (λ w' e' → TCONSTeq (equalInType n w' (#UNION A B)) w' a b
+                        → Mod.□ M w' (↑wPred' (λ w'' _ → UNION!eq (equalInType n w'' A) (equalInType n w'' B) w'' a b) e'))
+    aw1 w1 e1 (equ1 , c1 , c2) = Mod.∀𝕎-□Func M aw2 (equalInType-UNION→ {n} {w1} {A} {B} equ1)
+      where
+        aw2 : ∀𝕎 w1 (λ w' e' → UNIONeq (equalInType n w' A) (equalInType n w' B) w' a b
+                              → ↑wPred' (λ w'' _ → UNION!eq (equalInType n w'' A) (equalInType n w'' B) w'' a b) e1 w' e')
+        aw2 w2 e2 (x , y , inj₁ (d1 , d2 , equ2)) z =
+          x , y , inj₁ (#⇛→#⇛!⊑ {w1} {w2} {a} {#INL x} e2 c1 tt d1 ,
+                        #⇛→#⇛!⊑ {w1} {w2} {b} {#INL y} e2 c2 tt d2 ,
+                        equ2)
+        aw2 w2 e2 (x , y , inj₂ (d1 , d2 , equ2)) z =
+          x , y , inj₂ (#⇛→#⇛!⊑ {w1} {w2} {a} {#INR x} e2 c1 tt d1 ,
+                        #⇛→#⇛!⊑ {w1} {w2} {b} {#INR y} e2 c2 tt d2 ,
+                        equ2)
+
+
+#⇛!→#⇓→#⇓! : {w : 𝕎·} {a v : CTerm}
+                → #isValue v
+                → a #⇛! v at w
+                → #⇓→#⇓! w a
+#⇛!→#⇓→#⇓! {w} {a} {v} isv comp w1 e1 = lift j
+  where
+    j : (u : CTerm) (w2 : 𝕎·) → #isValue u → a #⇓ u from w1 to w2 → a #⇓! u at w1
+    j u w2 isu comp1 = c
+      where
+        c : a #⇓! u at w1
+        c rewrite #⇓-val-det {w1} {a} {u} {v} isu isv
+                             (#⇓from-to→#⇓ {w1} {w2} {a} {u} comp1)
+                             (#⇓from-to→#⇓ {w1} {w1} {a} {v} (lower (comp w1 e1))) = lower (comp w1 e1)
+
+
+→equalInType-UNION! : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
+                       → isType n w A
+                       → isType n w B
+                       → □· w (λ w' _ → UNION!eq (equalInType n w' A) (equalInType n w' B) w' a b)
+                       → equalInType n w (#UNION! A B) a b
+→equalInType-UNION! {n} {w} {A} {B} {a} {b} ista istb equ =
+  →equalInTypeTCONST (Mod.∀𝕎-□Func M aw equ)
+  where
+    aw : ∀𝕎 w (λ w' e' → UNION!eq (equalInType n w' A) (equalInType n w' B) w' a b
+                        → TCONSTeq (equalInType n w' (#UNION A B)) w' a b)
+    aw w1 e1 (x , y , inj₁ (c1 , c2 , equ1)) =
+      →equalInType-UNION
+        (eqTypes-mon (uni n) ista w1 e1)
+        (eqTypes-mon (uni n) istb w1 e1)
+        (Mod.∀𝕎-□ M (λ w2 e2 → x , y , inj₁ (#⇛!-#⇛ {w2} {a} {#INL x} (∀𝕎-mon e2 c1) ,
+                                               #⇛!-#⇛ {w2} {b} {#INL y} (∀𝕎-mon e2 c2) ,
+                                               equalInType-mon equ1 w2 e2))) ,
+      #⇛!→#⇓→#⇓! {w1} {a} {#INL x} tt c1 , #⇛!→#⇓→#⇓! {w1} {b} {#INL y} tt c2
+    aw w1 e1 (x , y , inj₂ (c1 , c2 , equ1)) =
+      →equalInType-UNION
+        (eqTypes-mon (uni n) ista w1 e1)
+        (eqTypes-mon (uni n) istb w1 e1)
+        (Mod.∀𝕎-□ M (λ w2 e2 → x , y , inj₂ (#⇛!-#⇛ {w2} {a} {#INR x} (∀𝕎-mon e2 c1) ,
+                                               #⇛!-#⇛ {w2} {b} {#INR y} (∀𝕎-mon e2 c2) ,
+                                               equalInType-mon equ1 w2 e2))) ,
+      #⇛!→#⇓→#⇓! {w1} {a} {#INR x} tt c1 , #⇛!→#⇓→#⇓! {w1} {b} {#INR y} tt c2
+
 \end{code}
