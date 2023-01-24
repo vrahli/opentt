@@ -186,8 +186,13 @@ barThesis = FUN FunBar IndBar
 
 
 -- Recursive call used in DIGAMMA
+loopRR : Term → Term → Term
+loopRR R xs = LAMBDA (LET (VAR 0) (APPLY R (APPEND xs (VAR 0))))
+
+
+-- Recursive call used in DIGAMMA
 loopR : Term → Term → Term
-loopR R xs = LAMBDA (LET (VAR 0) (APPLY (shiftUp 0 (shiftUp 0 R)) (APPEND (shiftUp 0 (shiftUp 0 xs)) (VAR 0))))
+loopR R xs = loopRR (shiftUp 0 (shiftUp 0 R)) (shiftUp 0 (shiftUp 0 xs))
 
 
 -- loopA's body
@@ -416,8 +421,8 @@ tab = LAMBDA (tabI (VAR 0))
 -- A path is a function that provides the B's to follow in a member of a W(A,B) of M(A,B) type
 -- An infinite path (only inj₁'s) cannot be a path of a W type because eventually (sub a B) will be false
 -- and '∈Type i w (sub0 a B) b' will be false
-path : (i : ℕ) → CTerm → CTerm0 → Set(lsuc L)
-path i A B = (n : ℕ) → Σ 𝕎· (λ w → Σ CTerm (λ a → Σ CTerm (λ b → ∈Type i w A a × ∈Type i w (sub0 a B) b))) ⊎ ⊤
+path : (i : ℕ) (w : 𝕎·) → CTerm → CTerm0 → Set(lsuc L)
+path i w A B = (n : ℕ) → Σ CTerm (λ a → Σ CTerm (λ b → ∈Type i w A a × ∈Type i w (sub0 a B) b)) ⊎ ⊤
 
 
 is-inj₁ : {I J : Level} {A : Set(I)} {B : Set(J)} (u : A ⊎ B) → Set
@@ -430,12 +435,12 @@ is-inj₂ {I} {J} {A} {B} (inj₂ x) = ⊤
 
 
 -- A path is infinite if it is made out of inj₁'s
-isInfPath : {i : ℕ} {A : CTerm} {B : CTerm0} (p : path i A B) → Set
-isInfPath {i} {A} {B} p = (n : ℕ) → is-inj₁ (p n)
+isInfPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B) → Set
+isInfPath {i} {w} {A} {B} p = (n : ℕ) → is-inj₁ (p n)
 
 
-isFinPath : {i : ℕ} {A : CTerm} {B : CTerm0} (p : path i A B) → Set
-isFinPath {i} {A} {B} p = Σ ℕ (λ n → is-inj₂ (p n))
+isFinPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B) → Set
+isFinPath {i} {w} {A} {B} p = Σ ℕ (λ n → is-inj₂ (p n))
 
 
 is-inj₁→¬is-inj₂ : {I J : Level} {A : Set(I)} {B : Set(J)} (u : A ⊎ B)
@@ -459,36 +464,36 @@ is-inj₁→¬is-inj₂ {I} {J} {A} {B} (inj₂ x) i j = i
 ¬is-inj₂→is-inj₁ {I} {J} {A} {B} (inj₂ x) i = ⊥-elim (i tt)
 
 
-isFinPath→¬isInfPath : {i : ℕ} {A : CTerm} {B : CTerm0} (p : path i A B)
-                        → isFinPath {i} {A} {B} p
-                        → ¬ isInfPath {i} {A} {B} p
-isFinPath→¬isInfPath {i} {A} {B} p (n , fin) inf = is-inj₁→¬is-inj₂ (p n) (inf n) fin
+isFinPath→¬isInfPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B)
+                        → isFinPath {i} {w} {A} {B} p
+                        → ¬ isInfPath {i} {w} {A} {B} p
+isFinPath→¬isInfPath {i} {w} {A} {B} p (n , fin) inf = is-inj₁→¬is-inj₂ (p n) (inf n) fin
 
 
-¬isFinPath→isInfPath : {i : ℕ} {A : CTerm} {B : CTerm0} (p : path i A B)
-                        → ¬ isFinPath {i} {A} {B} p
-                        → isInfPath {i} {A} {B} p
-¬isFinPath→isInfPath {i} {A} {B} p fin n = ¬is-inj₂→is-inj₁ (p n) (λ x → fin (n , x))
+¬isFinPath→isInfPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B)
+                        → ¬ isFinPath {i} {w} {A} {B} p
+                        → isInfPath {i} {w} {A} {B} p
+¬isFinPath→isInfPath {i} {w} {A} {B} p fin n = ¬is-inj₂→is-inj₁ (p n) (λ x → fin (n , x))
 
 
-shiftPath : {i : ℕ} {A : CTerm} {B : CTerm0} (p : path i A B) → path i A B
-shiftPath {i} {A} {B} p k = p (suc k)
+shiftPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B) → path i w A B
+shiftPath {i} {w} {A} {B} p k = p (suc k)
 
 
 -- Defines what it means for a path to be correct w.r.t. a W or M type -- up to n (with fuel)
-correctPathN : {i : ℕ} {A : CTerm} {B : CTerm0} (t : CTerm) (p : path i A B) (n : ℕ) → Set(lsuc L)
-correctPathN {i} {A} {B} t p 0 = Lift (lsuc L) ⊤
-correctPathN {i} {A} {B} t p (suc n) with p 0
-... | inj₁ (w , a , b , ia , ib) =
+correctPathN : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (t : CTerm) (p : path i w A B) (n : ℕ) → Set(lsuc L)
+correctPathN {i} {w} {A} {B} t p 0 = Lift (lsuc L) ⊤
+correctPathN {i} {w} {A} {B} t p (suc n) with p 0
+... | inj₁ (a , b , ia , ib) =
   Σ CTerm (λ f →
-    t #⇓ {--#⇛--} #SUP a f at w -- For W types
-    × correctPathN {i} {A} {B} (#APPLY f b) (shiftPath {i} {A} {B} p) n)
+    t #⇓ #SUP a f at w -- {--#⇛--} -- For W types
+    × correctPathN {i} {w} {A} {B} (#APPLY f b) (shiftPath {i} {w} {A} {B} p) n)
 ... | inj₂ _ = Lift (lsuc L) ⊤
 
 
 -- A path is correct, if it is so for all ℕs
-correctPath : {i : ℕ} {A : CTerm} {B : CTerm0} (t : CTerm) (p : path i A B) → Set(lsuc L)
-correctPath {i} {A} {B} t p = (n : ℕ) → correctPathN {i} {A} {B} t p n
+correctPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (t : CTerm) (p : path i w A B) → Set(lsuc L)
+correctPath {i} {w} {A} {B} t p = (n : ℕ) → correctPathN {i} {w} {A} {B} t p n
 
 
 record branch (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (w : 𝕎·) (t1 t2 : CTerm) : Set(lsuc(L))
@@ -530,9 +535,9 @@ branch.branchC (m2mb w eqa eqb t u m nw) with meq.meqC m
 -- Build a path from branch
 mb2path : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
           → branch (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u
-          → path i A B
+          → path i w A B
 mb2path i w A B t u m 0 with branch.branchC m
-... | (a1 , f1 , b1 , a2 , f2 , b2 , ea , c1 , c2 , eb , q) = inj₁ (w , a1 , b1 , equalInType-refl ea , equalInType-refl eb)
+... | (a1 , f1 , b1 , a2 , f2 , b2 , ea , c1 , c2 , eb , q) = inj₁ (a1 , b1 , equalInType-refl ea , equalInType-refl eb)
 mb2path i w A B t u m (suc n) with branch.branchC m
 ... | (a1 , f1 , b1 , a2 , f2 , b2 , ea , c1 , c2 , eb , q) = mb2path i w A B (#APPLY f1 b1) (#APPLY f2 b2) q n
 
@@ -540,7 +545,7 @@ mb2path i w A B t u m (suc n) with branch.branchC m
 correctN-mb2path : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
                    (b : branch (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u)
                    (n : ℕ)
-                   → correctPathN {i} {A} {B} t (mb2path i w A B t u b) n
+                   → correctPathN {i} {w} {A} {B} t (mb2path i w A B t u b) n
 correctN-mb2path i w A B t u b 0 = lift tt
 correctN-mb2path i w A B t u b (suc n) with branch.branchC b
 ... | (a1 , f1 , b1 , a2 , f2 , b2 , ea , c1 , c2 , eb , q) =
@@ -549,13 +554,13 @@ correctN-mb2path i w A B t u b (suc n) with branch.branchC b
 
 correct-mb2path : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
                   (b : branch (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u)
-                  → correctPath {i} {A} {B} t (mb2path i w A B t u b)
+                  → correctPath {i} {w} {A} {B} t (mb2path i w A B t u b)
 correct-mb2path i w A B t u b n = correctN-mb2path i w A B t u b n
 
 
 inf-mb2path : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
               (b : branch (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u)
-              → isInfPath {i} {A} {B} (mb2path i w A B t u b)
+              → isInfPath {i} {w} {A} {B} (mb2path i w A B t u b)
 inf-mb2path i w A B t u b 0 with branch.branchC b
 ... | (a1 , f1 , b1 , a2 , f2 , b2 , ea , c1 , c2 , eb , q) = tt
 inf-mb2path i w A B t u b (suc n) with branch.branchC b
@@ -580,33 +585,33 @@ data compatMW eqa eqb w t1 t2 where
 
 -- Classically, we can derive a weq from an meq as follows
 m2wa : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
-      → ((p : path i A B) → correctPath {i} {A} {B} t p → isFinPath {i} {A} {B} p)
+      → ((p : path i w A B) → correctPath {i} {w} {A} {B} t p → isFinPath {i} {w} {A} {B} p)
       → meq (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u
       → weq (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u
 m2wa i w A B t u cond h with EM {weq (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u}
 ... | yes p = p
-... | no q = ⊥-elim (isFinPath→¬isInfPath {i} {A} {B} p fin inf)
+... | no q = ⊥-elim (isFinPath→¬isInfPath {i} {w} {A} {B} p fin inf)
   where
     b : branch (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u
     b = m2mb w (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) t u h q
 
-    p : path i A B
+    p : path i w A B
     p = mb2path i w A B t u b
 
-    c : correctPath {i} {A} {B} t p
+    c : correctPath {i} {w} {A} {B} t p
     c = correctN-mb2path i w A B t u b
 
-    inf : isInfPath {i} {A} {B} p
+    inf : isInfPath {i} {w} {A} {B} p
     inf = inf-mb2path i w A B t u b
 
-    fin : isFinPath {i} {A} {B} p
+    fin : isFinPath {i} {w} {A} {B} p
     fin = cond p c
 
 
 m2w : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t : CTerm)
       → ∀𝕎 w (λ w' _ → isType i w' A)
       → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType i w' A a₁ a₂) → equalTypes i w' (sub0 a₁ B) (sub0 a₂ B))
-      → ((p : path i A B) → correctPath {i} {A} {B} t p → isFinPath {i} {A} {B} p)
+      → ∀𝕎 w (λ w' _ → (p : path i w' A B) → correctPath {i} {w'} {A} {B} t p → isFinPath {i} {w'} {A} {B} p)
       → ∈Type i w (#MT A B) t
       → ∈Type i w (#WT A B) t
 m2w i w A B t eqta eqtb cond h =
@@ -617,7 +622,7 @@ m2w i w A B t eqta eqtb cond h =
 
     aw : ∀𝕎 w (λ w' e' → meq (equalInType i w' A) (λ a b eqa → equalInType i w' (sub0 a B)) w' t t
                        → weq (equalInType i w' A) (λ a b eqa → equalInType i w' (sub0 a B)) w' t t)
-    aw w' e' z = m2wa i w' A B t t cond z
+    aw w' e' z = m2wa i w' A B t t (cond w' e') z
 
 
 {--→equalInType-meq : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (w : 𝕎·) (t1 t2 : CTerm)
@@ -1231,7 +1236,7 @@ loopB⇓loopI w r i R l cR cl = 1 , ≡pair c refl
 
 
 #APPLY-#loop#⇓3 : (r : Name) (F l : CTerm) (i : ℕ) (w : 𝕎·)
-                  → #APPLY F (#generic r l) #⇛ #NUM i at w
+                  → #APPLY F (#generic r l) #⇓ #NUM i at (chooseT r w BTRUE)
                   → #APPLY (#loop r F) l #⇓ #loopI r (#loop r F) l i at w
 #APPLY-#loop#⇓3 r F l i w c =
   ⇓-trans₁
@@ -1243,7 +1248,7 @@ loopB⇓loopI w r i R l cR cl = 1 , ≡pair c refl
     (⇓-from-to→⇓ {chooseT r w BTRUE} {fst c3} (snd c3))
   where
     c1 : Σ 𝕎· (λ w' → #APPLY F (#generic r l) #⇓ #NUM i from (chooseT r w BTRUE) to w')
-    c1 = ⇓→from-to (lower (c (chooseT r w BTRUE) (choose⊑· r w (T→ℂ· BTRUE))))
+    c1 = ⇓→from-to c
 
     c2 : Σ 𝕎· (λ w' → loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝ ⇓ loopB r (NUM i) (loop r ⌜ F ⌝) ⌜ l ⌝ from (chooseT r w BTRUE) to w')
     c2 = fst c1 , LET⇓₁ {chooseT r w BTRUE} {fst c1} {APPLY ⌜ F ⌝ (generic r ⌜ l ⌝)} {NUM i} (snd c1)
@@ -1299,7 +1304,7 @@ abstract
 
   #APPLY-#loop#⇓4 : (cb : c𝔹) (r : Name) (F l : CTerm) (i : ℕ) (w : 𝕎·)
                     → compatible· r w Res⊤
-                    → #APPLY F (#generic r l) #⇛ #NUM i at w
+                    → #APPLY F (#generic r l) #⇓ #NUM i at (chooseT r w BTRUE)
                     → #APPLY (#loop r F) l #⇓ #ETA (#NUM i) at w
                        ⊎ #APPLY (#loop r F) l #⇓ #DIGAMMA (#loopR (#loop r F) l) at w
   #APPLY-#loop#⇓4 cb r F l i w compat c = d2 d1
@@ -1462,15 +1467,18 @@ INR→!∈Type-IndBarC i w x a b comp j rewrite sub0-IndBarC≡ x =
 ∈Type-IndBarB-IndBarC→ : (i : ℕ) (w : 𝕎·) (b c : CTerm)
                            → ∈Type i w #IndBarB b
                            → ∈Type i w (sub0 b #IndBarC) c
-                           → □· w (λ w' _ → Σ ℕ (λ n → c #⇛! #NUM n at w'))
+                           → □· w (λ w' _ → Σ CTerm (λ t → b #⇛! #INR t at w') × Σ ℕ (λ n → c #⇛! #NUM n at w'))
 ∈Type-IndBarB-IndBarC→ i w b c b∈ c∈ =
   Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInType-UNION!→ b∈))
   where
     aw : ∀𝕎 w (λ w' e' → UNION!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' b b
-                        → Mod.□ M w' (↑wPred' (λ w'' _ → Σ ℕ (λ n → c #⇛! #NUM n at w'')) e'))
+                        → Mod.□ M w' (↑wPred' (λ w'' _ → Σ CTerm (λ t → b #⇛! #INR t at w'') × Σ ℕ (λ n → c #⇛! #NUM n at w'')) e'))
     aw w1 e1 (x , y , inj₁ (c1 , c2 , eqi)) = ⊥-elim (INL→!∈Type-IndBarC i w1 b x c c1 (equalInType-mon c∈ w1 e1))
     aw w1 e1 (x , y , inj₂ (c1 , c2 , eqi)) =
-      Mod.∀𝕎-□Func M (λ w2 e2 cn z → cn) (INR→!∈Type-IndBarC i w1 b x c c1 (equalInType-mon c∈ w1 e1))
+      Mod.∀𝕎-□Func
+        M
+        (λ w2 e2 (n , cn) z → (x , ∀𝕎-mon e2 c1) , (n , cn))
+        (INR→!∈Type-IndBarC i w1 b x c c1 (equalInType-mon c∈ w1 e1))
 
 
 APPLY-loopR-⇓ : (w1 w2 : 𝕎·) (R l b : CTerm) (k : ℕ)
