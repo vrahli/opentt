@@ -610,166 +610,21 @@ shift-path2𝕊 kb {i} {w} p n = refl
     ind2 rewrite sym (imp 0) = ind1
 
 
--- n is the fuel
-→correctSeqN : (kb : K□) (cb : c𝔹) (i : ℕ) (r : Name) (F : CTerm) (l : CTerm) (n : ℕ) (w : 𝕎·)
-                → compatible· r w Res⊤
-                → ∈Type i w #FunBar F
-                → ∈Type i w (#LIST #NAT) l
-                → (p : path i w #IndBarB #IndBarC)
-                → isInfPath {i} {w} {#IndBarB} {#IndBarC} p
-                → correctPathN {i} {w} {#IndBarB} {#IndBarC} (#APPLY (#loop r F) l) p n
-                → correctSeqN r F l (path2𝕊 kb p) n
-→correctSeqN kb cb i r F l 0 w compat F∈ l∈ p inf cor = lift tt
-→correctSeqN kb cb i r F l (suc n) w compat F∈ l∈ p inf cor with inf 0
-... | inf0 with p 0
-... |    inj₁ (a , b , ia , ib) with cor
-... |       (f , comp , cp) =
-  k , w , w' , compF1 , fst compF3 , ind
-  where
-    comp1 : #APPLY (#loop r F) l #⇓ #SUP a f at w
-    comp1 = comp
 
--- Get all that from comp1? We're still uing F∈ and l∈ here.
-    F∈1 : ∈Type i w #NAT (#APPLY F (#generic r l))
-    F∈1 = ∈BAIRE→NAT→
-             {i} {w} {F} {F} {#generic r l} {#generic r l}
-             F∈
-             (generic∈BAIRE i w r l l∈)
-
-    F∈2 : NATmem w (#APPLY F (#generic r l))
-    F∈2 = kb (equalInType-NAT→ i w (#APPLY F (#generic r l)) (#APPLY F (#generic r l)) F∈1) w (⊑-refl· w)
-
-    k : ℕ
-    k = fst F∈2
-
-    compF : Σ 𝕎· (λ w' →
-              #APPLY F (#generic r l) #⇓ #NUM k from (chooseT r w BTRUE) to w'
-              × ((getT 0 r w' ≡ just BTRUE × a ≡ #INL (#NUM k) × f ≡ #AX)
-                 ⊎ (getT 0 r w' ≡ just BFALSE × a ≡ #INR #AX × f ≡ #loopR (#loop r F) l)))
-    compF = #APPLY-loop⇓SUP→ cb w r F l a f k compat (fst (snd F∈2)) comp1
-
-    w' : 𝕎·
-    w' = fst compF
-
-    compF1 : #APPLY F (#generic r l) #⇓ #NUM k from (chooseT r w BTRUE) to w'
-    compF1 = fst (snd compF)
---
-
-    ia' : Σ CTerm (λ t → a #⇛! #INR t at w)
-    ia' = fst (kb (∈Type-IndBarB-IndBarC→ i w a b ia ib) w (⊑-refl· w))
-
-    ib' : Σ ℕ (λ n → b #⇛! #NUM n at w)
-    ib' = snd (kb (∈Type-IndBarB-IndBarC→ i w a b ia ib) w (⊑-refl· w))
-
-    compF2 : (getT 0 r w' ≡ just BTRUE × a ≡ #INL (#NUM k) × f ≡ #AX)
-             ⊎ (getT 0 r w' ≡ just BFALSE × a ≡ #INR #AX × f ≡ #loopR (#loop r F) l)
-             → getT 0 r w' ≡ just BFALSE × a ≡ #INR #AX × f ≡ #loopR (#loop r F) l
-    compF2 (inj₁ (x , y , z)) = ⊥-elim (#INL→¬#⇛!#INR w a (#NUM k) (proj₁ ia') y (snd ia'))
-    compF2 (inj₂ x) = x
-
-    compF3 : getT 0 r w' ≡ just BFALSE × a ≡ #INR #AX × f ≡ #loopR (#loop r F) l
-    compF3 = compF2 (snd (snd compF))
-
-    ind1 : correctSeqN r F (#APPEND l (#NUM (fst ib'))) (path2𝕊 kb (shiftPath {i} {w} {#IndBarB} {#IndBarC} p)) n
-    ind1 = {!!}
-
-    ind : correctSeqN r F (#APPEND l (#NUM (fst ib'))) (shift𝕊 (path2𝕊 kb p)) n
-    ind = →≡correctSeqN r F (#APPEND l (#NUM (proj₁ ib')))
-            (path2𝕊 kb (shiftPath {i} {w} {#IndBarB} {#IndBarC} p))
-            (shift𝕊 (path2𝕊 kb p))
-            n (λ z → sym (shift-path2𝕊 kb {i} {w} p z)) ind1
-
-{--
-    comp2 : #APPLY (#loop r F) l #⇓ #ETA (#NUM k) at w
-            ⊎ #APPLY (#loop r F) l #⇓ #DIGAMMA (#loopR (#loop r F) l) at w
-    comp2 = #APPLY-#loop#⇓4
-              cb r F l k w compat
-              (#⇓from-to→#⇓ {chooseT r w BTRUE} {fst compF} {#APPLY F (#generic r l)} {#NUM k} (fst (snd compF)))
-
-    comp3 : (#APPLY (#loop r F) l #⇓ #ETA (#NUM k) at w
-             ⊎ #APPLY (#loop r F) l #⇓ #DIGAMMA (#loopR (#loop r F) l) at w)
-            → (a ≡ #INR #AX × f ≡ #loopR (#loop r F) l)
-    comp3 (inj₁ c) = ⊥-elim (#INL→¬#⇛!#INR w (#APPLY (#loop r F) l) a (#NUM k) (fst ia') f #AX comp1 c (snd ia'))
-    comp3 (inj₂ c) =
-      #SUPinj1 (#⇓-val-det {w} {#APPLY (#loop r F) l} {#SUP a f} {#DIGAMMA (#loopR (#loop r F) l)} tt tt comp1 c) ,
-      #SUPinj2 {a} (#⇓-val-det {w} {#APPLY (#loop r F) l} {#SUP a f} {#DIGAMMA (#loopR (#loop r F) l)} tt tt comp1 c)
---}
-
-\end{code}
+isInfPath-shiftPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B)
+                      → isInfPath {i} {w} {A} {B} p
+                      → isInfPath {i} {w} {A} {B} (shiftPath {i} {w} {A} {B} p)
+isInfPath-shiftPath {i} {w} {A} {B} p inf n = inf (suc n)
 
 
-→correctSeq : (kb : K□) (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
-               → (p : path i w #IndBarB #IndBarC)
-               → correctPath {i} {w} {#IndBarB} {#IndBarC} (#APPLY (#loop r F) #EMPTY) p
-               → isInfPath {i} {w} {#IndBarB} {#IndBarC} p
-               → Σ 𝕊 (λ s → correctSeq r F s)
-→correctSeq kb i w r F p cor inf = s , cs
-  where
-    s : 𝕊
-    s = path2𝕊 kb p
-
-    cs : correctSeq r F s
-    cs n = {!!}
+→≡#APPLY : {a b c d : CTerm} → a ≡ c → b ≡ d → #APPLY a b ≡ #APPLY c d
+→≡#APPLY {a} {b} {c} {d} e f rewrite e | f = refl
 
 
--- We want to create a Term ∈ BAIRE from this path.
-noInfPath : (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
-            → compatible· r w Res⊤
-            → ∈Type i w #FunBar F
-            → (p : path i w #IndBarB #IndBarC)
-            → correctPath {i} {w} {#IndBarB} {#IndBarC} (#APPLY (#loop r F) #EMPTY) p
-            → isInfPath {i} {w} {#IndBarB} {#IndBarC} p
-            → ⊥
-noInfPath i w r F compat F∈ p cor inf = {!!}
-
-
-sem : (kb : K□) (cb : c𝔹) (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
-        → compatible· r w Res⊤
-        → ∈Type i w #FunBar F
-        → ∈Type i w #IndBar (#APPLY (#loop r F) #EMPTY)
-sem kb cb i w r F compat F∈ = concl
-  where
-    co : ∈Type i w #CoIndBar (#APPLY (#loop r F) #EMPTY)
-    co = coSem kb cb i w r F #EMPTY compat F∈ (EMPTY∈LIST i w)
-
-    concl : ∈Type i w #IndBar (#APPLY (#loop r F) #EMPTY)
-    concl with EM {∃𝕎 w (λ w' _ → Σ (path i w' #IndBarB #IndBarC)
-                                   (λ p → correctPath {i} {w'} {#IndBarB} {#IndBarC} (#APPLY (#loop r F) #EMPTY) p
-                                         × isInfPath {i} {w'} {#IndBarB} {#IndBarC} p))}
-    ... | yes pp = c
-      where
-        c : ∈Type i w #IndBar (#APPLY (#loop r F) #EMPTY)
-        c = {!!}
-    ... | no pp = CoIndBar2IndBar i w (#APPLY (#loop r F) #EMPTY) cond co
-      where
-        cond : ∀𝕎 w (λ w' _ → (p : path i w' #IndBarB #IndBarC)
-               → correctPath {i} {w'} {#IndBarB} {#IndBarC} (#APPLY (#loop r F) #EMPTY) p
-               → isFinPath {i} {w'} {#IndBarB} {#IndBarC} p)
-        cond w1 e1 p cor with EM {Lift {0ℓ} (lsuc(L)) (isFinPath {i} {w1} {#IndBarB} {#IndBarC} p)}
-        ... | yes qq = lower qq
-        ... | no qq = ⊥-elim (pp (w1 , e1 , p , cor , ¬isFinPath→isInfPath {i} {w1} {#IndBarB} {#IndBarC} p (λ z → qq (lift z))))
-
---sem : (w : 𝕎·) → ∈Type i w #barThesis tab
---sem w  ?
-
-
-{--
-
-Plan:
-
-(1) Prove by coinduction that if (F ∈ FunBar) then (loop r F ∈ CoIndBar) which does not require to proving termination
-    - see coSem, which uses coSemM [DONE]
-(2) We now have an inhabitant (t ∈ CoIndBar). Using classical logic, either t's paths are all finite,
-    or it has an inifite path.
-    - see sem [DONE]
-(3) If all its paths are finite then we get that (t ∈ IndBar)
-    - see m2w [DONE]
-(4) If it has an inifite path:
-    - That path corresponds to an (α ∈ Baire).
-    - Given (F ∈ FunBar), by continuity let n be F's modulus of continuity w.r.t. α.
-    - So, it must be that F(generic r α|n) returns r:=BTRUE and so loop returns ETA, and the path cannot be infinite
-          (where α|n is the initial segment of α of length n)
-
- --}
+≡→correctPathN : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B) {t u : CTerm} (n : ℕ)
+                  → t ≡ u
+                  → correctPathN {i} {w} {A} {B} t p n
+                  → correctPathN {i} {w} {A} {B} u p n
+≡→correctPathN {i} {w} {A} {B} p {t} {u} n e cor rewrite e = cor
 
 \end{code}

@@ -480,6 +480,7 @@ shiftPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B) �
 shiftPath {i} {w} {A} {B} p k = p (suc k)
 
 
+
 -- Defines what it means for a path to be correct w.r.t. a W or M type -- up to n (with fuel)
 correctPathN : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (t : CTerm) (p : path i w A B) (n : ℕ) → Set(lsuc L)
 correctPathN {i} {w} {A} {B} t p 0 = Lift (lsuc L) ⊤
