@@ -69,6 +69,7 @@ open import terms4(W)(C)(K)(G)(X)(N)
 open import terms5(W)(C)(K)(G)(X)(N)
 open import terms6(W)(C)(K)(G)(X)(N)
 open import terms7(W)(C)(K)(G)(X)(N)
+open import terms8(W)(C)(K)(G)(X)(N)
 
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
@@ -229,11 +230,6 @@ contBody F f =
   where
     c : # νtestM ⌜ F ⌝ ⌜ f ⌝
     c = CTerm.closed (#testM 0 F f)
-
-
-
-#[0]AX : CTerm0
-#[0]AX = ct0 AX refl
 
 
 #BOUND : (name : Name) (n : CTerm) (f : CTerm) → CTerm

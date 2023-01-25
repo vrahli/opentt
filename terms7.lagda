@@ -785,6 +785,7 @@ differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(EQ a₁ b₁ c₁) b v k compa
 differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(EQB a₁ b₁ c₁ d₁) b v k compat1 compat2 agtn atgn' (differ-EQB a₁ .a₁ b₁ .b₁ c₁ .c₁ d₁ .d₁ diff diff₁ diff₂ diff₃) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = EQB _ _ _ _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-EQB _ _ _ _ _ _ _ _ diff diff₁ diff₂ diff₃
 differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .AX b v k compat1 compat2 agtn atgn' differ-AX s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = AX , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-AX
 differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .FREE b v k compat1 compat2 agtn atgn' differ-FREE s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = FREE , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-FREE
+differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(MSEQ x) b v k compat1 compat2 agtn atgn' (differ-MSEQ x) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = MSEQ x , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-MSEQ x
 differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(CHOOSE a₁ b₁) b v k compat1 compat2 agtn atgn' (differ-CHOOSE a₁ .a₁ b₁ .b₁ diff diff₁) s hv isvv pd with is-NAME a₁
 ... | inj₁ (name , p) rewrite p = ⊥-elim (differ-NAMEₗ→ diff)
 ... | inj₂ x with step⊎ a₁ w1

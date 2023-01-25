@@ -275,10 +275,6 @@ EMPTY∈LIST i w = →equalInType-LIST-NAT i w #EMPTY #EMPTY (Mod.∀𝕎-□ M 
 
 
 
-𝕊 : Set
-𝕊 = ℕ → ℕ
-
-
 shift𝕊 : (s : 𝕊) → 𝕊
 shift𝕊 s k = s (suc k)
 

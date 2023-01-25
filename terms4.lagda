@@ -440,6 +440,8 @@ SEQ-val⇓ w a b isv = 1 , s
 ¬Names→step w1 w2 w3 (EQB t t₁ t₂ t₃) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
 ¬Names→step w1 w2 w3 AX u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
 ¬Names→step w1 w2 w3 FREE u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
+--
+¬Names→step w1 w2 w3 (MSEQ x) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
 ¬Names→step w1 w2 w3 (NAME x) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
 -- FRESH
 ¬Names→step w1 w2 w3 (FRESH t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = ⊥-elim (¬false≡true nr) --startNewChoiceT Res⊤ w3 t , {!refl!} , {!!}
@@ -822,6 +824,7 @@ names-shiftUp n (EQ a a₁ a₂) rewrite names-shiftUp n a | names-shiftUp n a�
 names-shiftUp n (EQB a a₁ a₂ a₃) rewrite names-shiftUp n a | names-shiftUp n a₁ | names-shiftUp n a₂ | names-shiftUp n a₃ = refl
 names-shiftUp n AX = refl
 names-shiftUp n FREE = refl
+names-shiftUp n (MSEQ x) = refl
 names-shiftUp n (CS x) = refl
 names-shiftUp n (NAME x) = refl
 names-shiftUp n (FRESH a) rewrite names-shiftUp n a = refl
@@ -877,6 +880,7 @@ names-shiftDown n (EQ a a₁ a₂) rewrite names-shiftDown n a | names-shiftDown
 names-shiftDown n (EQB a a₁ a₂ a₃) rewrite names-shiftDown n a | names-shiftDown n a₁ | names-shiftDown n a₂ | names-shiftDown n a₃ = refl
 names-shiftDown n AX = refl
 names-shiftDown n FREE = refl
+names-shiftDown n (MSEQ x) = refl
 names-shiftDown n (CS x) = refl
 names-shiftDown n (NAME x) = refl
 names-shiftDown n (FRESH a) rewrite names-shiftDown n a = refl
@@ -1112,6 +1116,7 @@ names-shiftNameUp≡ n (EQB t t₁ t₂ t₃)
         | names-shiftNameUp≡ n t₃ = refl
 names-shiftNameUp≡ n AX = refl
 names-shiftNameUp≡ n FREE = refl
+names-shiftNameUp≡ n (MSEQ x) = refl
 names-shiftNameUp≡ n (CS x) = refl
 names-shiftNameUp≡ n (NAME x) = refl
 names-shiftNameUp≡ n (FRESH t)
@@ -1258,6 +1263,7 @@ names-shiftNameDown≡ n (EQB t t₁ t₂ t₃)
         | names-shiftNameDown≡ n t₃ = refl
 names-shiftNameDown≡ n AX = refl
 names-shiftNameDown≡ n FREE = refl
+names-shiftNameDown≡ n (MSEQ x) = refl
 names-shiftNameDown≡ n (CS x) = refl
 names-shiftNameDown≡ n (NAME x) = refl
 names-shiftNameDown≡ n (FRESH t)
@@ -1326,6 +1332,7 @@ names-shiftNameDown≡ n (SHRINK t) = names-shiftNameDown≡ n t
 ¬∈names-subv {x} {v} {a} {EQB b b₁ b₂ b₃} na nb = →¬∈++4 {_} {_} {x} {names b} {names b₁} {names b₂} {names b₃} (¬∈names-subv {x} {v} {a} {b} na) (¬∈names-subv {x} {v} {a} {b₁} na) (¬∈names-subv {x} {v} {a} {b₂} na) (¬∈names-subv {x} {v} {a} {b₃} na) nb
 ¬∈names-subv {x} {v} {a} {AX} na nb = nb
 ¬∈names-subv {x} {v} {a} {FREE} na nb = nb
+¬∈names-subv {x} {v} {a} {MSEQ x₁} na nb = nb
 ¬∈names-subv {x} {v} {a} {CS x₁} na nb = nb
 ¬∈names-subv {x} {v} {a} {NAME x₁} na nb = nb
 ¬∈names-subv {x} {v} {a} {FRESH b} na nb = →¬∈lowerNames {x} {names b} {names (subv v (shiftNameUp 0 a) b)} (λ nxb → ¬∈names-subv {suc x} {v} {shiftNameUp 0 a} {b} c nxb) nb
@@ -1566,6 +1573,7 @@ names-shiftNameDown≡ n (SHRINK t) = names-shiftNameDown≡ n t
 ∈names-renn→ {x} {a} {b} {EQB t t₁ t₂ t₃} i | inj₂ j | inj₂ p | inj₂ q with ∈names-renn→ {x} {a} {b} {t₃} q
 ... |    inj₁ k = inj₁ k
 ... |    inj₂ k = inj₂ (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) (∈-++⁺ʳ (names t₂) k)))
+∈names-renn→ {x} {a} {b} {MSEQ x₁} ()
 ∈names-renn→ {x} {a} {b} {CS x₁} i with x₁ ≟ a
 ... | yes z = inj₁ (∈[1] i)
 ... | no z = inj₂ i
@@ -1695,6 +1703,7 @@ names-shiftNameDown≡ n (SHRINK t) = names-shiftNameDown≡ n t
 ... |    inj₂ k with ∈-++⁻ (names (renn a b t₂)) k
 ... |       inj₁ q = fst (∈names-renn-same {a} {b} {t₂} q) , ∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) (∈-++⁺ˡ (snd (∈names-renn-same {a} {b} {t₂} q))))
 ... |       inj₂ q = fst (∈names-renn-same {a} {b} {t₃} q) , ∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) (∈-++⁺ʳ (names t₂) (snd (∈names-renn-same {a} {b} {t₃} q))))
+∈names-renn-same {a} {b} {MSEQ x} ()
 ∈names-renn-same {a} {b} {CS x} i with x ≟ a
 ... | yes z = ∈[1] i , here (sym z)
 ... | no z = ⊥-elim (z (sym (∈[1] i)))
@@ -1914,6 +1923,7 @@ name¬∈→step cc w1 w2 (EQ t t₁ t₂) u name comp nit niw idom rewrite sym 
 name¬∈→step cc w1 w2 (EQB t t₁ t₂ t₃) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
 name¬∈→step cc w1 w2 AX u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
 name¬∈→step cc w1 w2 FREE u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
+name¬∈→step cc w1 w2 (MSEQ x) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
 name¬∈→step cc w1 w2 (CS x) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
 name¬∈→step cc w1 w2 (NAME x) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
 name¬∈→step cc w1 w2 (FRESH t) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
@@ -2003,4 +2013,48 @@ name¬∈→steps : (k : ℕ) (w1 w2 : 𝕎·) (t u : Term) (name : Name)
                 → getT 0 name w1 ≡ getT 0 name w2 × ¬ name ∈ names u × ¬ name ∈ sub𝕎 w2
 name¬∈→steps k w1 w2 w3 t u name comp ni = ?
 --}
+
+
+≡→getT≡ : (w1 w2 : 𝕎·) (n : ℕ) (name : Name) (x : Maybe Term)
+           → w1 ≡ w2
+           → getT n name w1 ≡ x
+           → getT n name w2 ≡ x
+≡→getT≡ w1 w2 n name x e h rewrite e = h
+
+
+steps→¬Names : (k : ℕ) (w1 w2 : 𝕎·) (t u : Term)
+              → steps k (t , w1) ≡ (u , w2)
+              → ¬Names t
+              → ¬Names u
+steps→¬Names k w1 w2 t u s nn = snd (snd (¬Names→steps k w1 w2 w2 t u nn s))
+
+
+APPLY-LAMBDA⇓→ : (k : ℕ) {w1 w2 : 𝕎·} {f a v : Term}
+                 → isValue v
+                 → steps k (APPLY (LAMBDA f) a , w1) ≡ (v , w2)
+                 → sub a f ⇓ v from w1 to w2
+APPLY-LAMBDA⇓→ 0 {w1} {w2} {f} {a} {v} isv comp rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+APPLY-LAMBDA⇓→ (suc k) {w1} {w2} {f} {a} {v} isv comp = k , comp
+
+
+--differ-CSₗ→ : {name1 name2 name : Name} {f t : Term} → differ name1 name2 f (CS name) t → t ≡ CS name
+--differ-CSₗ→ {name1} {name2} {name} {f} {.(CS name)} (differ-CS name) = refl
+
+
+differ-CSₗ→ : {name1 name2 name : Name} {f t : Term} → ¬ differ name1 name2 f (CS name) t
+differ-CSₗ→ {name1} {name2} {name} {f} {t} ()
+
+
+differ-NAMEₗ→ : {name1 name2 name : Name} {f t : Term} → ¬ differ name1 name2 f (NAME name) t
+differ-NAMEₗ→ {name1} {name2} {name} {f} {t} ()
+
+
+
+map-getT-just→ : (n : ℕ) (name : Name) (w : 𝕎·) (t : Term) (w' : 𝕎·)
+                  → Data.Maybe.map (λ t → t , w) (getT n name w) ≡ just (t , w')
+                  → w' ≡ w
+map-getT-just→ n name w t w' s with getT n name w
+... | just u rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+... | nothing = ⊥-elim (¬just≡nothing (sym s))
+
 \end{code}

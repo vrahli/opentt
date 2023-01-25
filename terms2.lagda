@@ -92,6 +92,7 @@ shiftUp-shiftNameUp c d (EQ t t₁ t₂) rewrite shiftUp-shiftNameUp c d t | shi
 shiftUp-shiftNameUp c d (EQB t t₁ t₂ t₃) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ | shiftUp-shiftNameUp c d t₂ | shiftUp-shiftNameUp c d t₃ = refl
 shiftUp-shiftNameUp c d AX = refl
 shiftUp-shiftNameUp c d FREE = refl
+shiftUp-shiftNameUp c d (MSEQ x) = refl
 shiftUp-shiftNameUp c d (CS x) = refl
 shiftUp-shiftNameUp c d (NAME x) = refl
 shiftUp-shiftNameUp c d (FRESH t) rewrite shiftUp-shiftNameUp c (suc d) t = refl
@@ -148,6 +149,7 @@ renn-shiftNameUp n1 n2 (EQ t t₁ t₂) rewrite renn-shiftNameUp n1 n2 t | renn-
 renn-shiftNameUp n1 n2 (EQB t t₁ t₂ t₃) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ | renn-shiftNameUp n1 n2 t₂ | renn-shiftNameUp n1 n2 t₃ = refl
 renn-shiftNameUp n1 n2 AX = refl
 renn-shiftNameUp n1 n2 FREE = refl
+renn-shiftNameUp n1 n2 (MSEQ x) = refl
 renn-shiftNameUp n1 n2 (CS x) with x <? n1
 ... | yes p with x ≟ n1
 ... |    yes q rewrite q = ⊥-elim (1+n≰n p)
@@ -230,6 +232,7 @@ shiftNameDownUp n (EQ t t₁ t₂) rewrite shiftNameDownUp n t | shiftNameDownUp
 shiftNameDownUp n (EQB t t₁ t₂ t₃) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ | shiftNameDownUp n t₂ | shiftNameDownUp n t₃ = refl
 shiftNameDownUp n AX = refl
 shiftNameDownUp n FREE = refl
+shiftNameDownUp n (MSEQ x) = refl
 shiftNameDownUp n (CS x) rewrite predIf≤-sucIf≤ n x = refl
 shiftNameDownUp n (NAME x) rewrite predIf≤-sucIf≤ n x = refl
 shiftNameDownUp n (FRESH t) rewrite shiftNameDownUp (suc n) t = refl
@@ -338,6 +341,7 @@ shiftNameDownUp n (SHRINK t) rewrite shiftNameDownUp n t = refl
 ¬names-shiftUp n (EQB a a₁ a₂ a₃) rewrite ¬names-shiftUp n a | ¬names-shiftUp n a₁ | ¬names-shiftUp n a₂ | ¬names-shiftUp n a₃ = refl
 ¬names-shiftUp n AX = refl
 ¬names-shiftUp n FREE = refl
+¬names-shiftUp n (MSEQ x) = refl
 ¬names-shiftUp n (CS x) = refl
 ¬names-shiftUp n (NAME x) = refl
 ¬names-shiftUp n (FRESH a) rewrite ¬names-shiftUp n a = refl
@@ -392,6 +396,7 @@ shiftNameDownUp n (SHRINK t) rewrite shiftNameDownUp n t = refl
 ¬names-shiftDown n (EQB a a₁ a₂ a₃) rewrite ¬names-shiftDown n a | ¬names-shiftDown n a₁ | ¬names-shiftDown n a₂ | ¬names-shiftDown n a₃ = refl
 ¬names-shiftDown n AX = refl
 ¬names-shiftDown n FREE = refl
+¬names-shiftDown n (MSEQ x) = refl
 ¬names-shiftDown n (CS x) = refl
 ¬names-shiftDown n (NAME x) = refl
 ¬names-shiftDown n (FRESH a) rewrite ¬names-shiftDown n a = refl
@@ -467,6 +472,7 @@ shiftNameDownUp n (SHRINK t) rewrite shiftNameDownUp n t = refl
 ¬Names-subv v {a} {EQB b b₁ b₂ b₃} na nb = →∧4≡true (¬Names-subv v {a} {b} na (∧≡true→1-4 {¬names b} {¬names b₁} {¬names b₂} {¬names b₃} nb)) (¬Names-subv v {a} {b₁} na (∧≡true→2-4 {¬names b} {¬names b₁} {¬names b₂} {¬names b₃} nb)) (¬Names-subv v {a} {b₂} na (∧≡true→3-4 {¬names b} {¬names b₁} {¬names b₂} {¬names b₃} nb)) (¬Names-subv v {a} {b₃} na (∧≡true→4-4 {¬names b} {¬names b₁} {¬names b₂} {¬names b₃} nb))
 ¬Names-subv v {a} {AX} na nb = refl
 ¬Names-subv v {a} {FREE} na nb = refl
+¬Names-subv v {a} {MSEQ x} na nb = refl
 ¬Names-subv v {a} {CHOOSE b b₁} na nb = →∧≡true {¬names (subv v a b)} {¬names (subv v a b₁)} (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv v {a} {b₁} na (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
 ¬Names-subv v {a} {TSQUASH b} na nb = ¬Names-subv v {a} {b} na nb
 ¬Names-subv v {a} {TTRUNC b} na nb = ¬Names-subv v {a} {b} na nb

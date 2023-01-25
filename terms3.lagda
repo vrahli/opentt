@@ -170,6 +170,7 @@ data differ (name1 name2 : Name) (f : Term) : Term → Term → Set where
   differ-EQB     : (a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f c₁ c₂ → differ name1 name2 f d₁ d₂ → differ name1 name2 f (EQB a₁ b₁ c₁ d₁) (EQB a₂ b₂ c₂ d₂)
   differ-AX      : differ name1 name2 f AX AX
   differ-FREE    : differ name1 name2 f FREE FREE
+  differ-MSEQ    : (s : 𝕊) → differ name1 name2 f (MSEQ s) (MSEQ s)
 --  differ-CS      : (name : Name) → differ name1 name2 f (CS name) (CS name)
 --  differ-NAME    : (name : Name) → differ name1 name2 f (NAME name) (NAME name)
 --  differ-FRESH   : (a b : Term) → differ (suc name1) (suc name2) (shiftNameUp 0 f) a b → differ name1 name2 f (FRESH a) (FRESH b)
@@ -290,6 +291,7 @@ differ-INRₗ→ {name1} {name2} {f} {a} {.(INR a₂)} (differ-INR .a a₂ diff)
 →differ-shiftUp v {name1} {name2} {f} cf {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-EQB _ _ _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂) (→differ-shiftUp v cf diff₃)
 →differ-shiftUp v {name1} {name2} {f} cf {.AX} {.AX} differ-AX = differ-AX
 →differ-shiftUp v {name1} {name2} {f} cf {.FREE} {.FREE} differ-FREE = differ-FREE
+→differ-shiftUp v {name1} {name2} {f} cf {.MSEQ s} {.MSEQ s} (differ-MSEQ s) = differ-MSEQ s
 --→differ-shiftUp v {name1} {name2} {f} cf {.(CS name)} {.(CS name)} (differ-CS name) = differ-CS name
 --→differ-shiftUp v {name1} {name2} {f} cf {.(NAME name)} {.(NAME name)} (differ-NAME name) = differ-NAME name
 --→differ-shiftUp v {name1} {name2} {f} cf {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) = differ-FRESH _ _ (→differ-shiftUp v (→#shiftNameUp 0 {f} cf) diff)
@@ -442,6 +444,10 @@ differ-INRₗ→ {name1} {name2} {f} {a} {.(INR a₂)} (differ-INR .a a₂ diff)
 ≡CS {a} {b} e rewrite e = refl
 
 
+≡MSEQ : {a b : 𝕊} → a ≡ b → MSEQ a ≡ MSEQ b
+≡MSEQ {a} {b} e rewrite e = refl
+
+
 
 {--
 sucIf≤-sucIf≤ : {x i j : Name}
@@ -587,6 +593,7 @@ shiftNameUp-shiftNameUp {i} {j} {EQ t t₁ t₂} imp = ≡EQ (shiftNameUp-shiftN
 shiftNameUp-shiftNameUp {i} {j} {EQB t t₁ t₂ t₃} imp = ≡EQB (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp) (shiftNameUp-shiftNameUp {i} {j} {t₃} imp)
 shiftNameUp-shiftNameUp {i} {j} {AX} imp = refl
 shiftNameUp-shiftNameUp {i} {j} {FREE} imp = refl
+shiftNameUp-shiftNameUp {i} {j} {MSEQ x} imp = ≡MSEQ refl
 shiftNameUp-shiftNameUp {i} {j} {CS x} imp = ≡CS (sucIf≤-sucIf≤ {x} {i} {j} imp)
 shiftNameUp-shiftNameUp {i} {j} {NAME x} imp = ≡NAME (sucIf≤-sucIf≤ {x} {i} {j} imp)
 shiftNameUp-shiftNameUp {i} {j} {FRESH t} imp = ≡FRESH (shiftNameUp-shiftNameUp {suc i} {suc j} {t} (_≤_.s≤s imp))
@@ -655,6 +662,7 @@ suc-sucIf≤ i j | no p with suc j <? suc i
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-EQB _ _ _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂) (→differ-shiftNameUp v cf diff₃)
 →differ-shiftNameUp v {name1} {name2} {f} cf {.AX} {.AX} differ-AX = differ-AX
 →differ-shiftNameUp v {name1} {name2} {f} cf {.FREE} {.FREE} differ-FREE = differ-FREE
+→differ-shiftNameUp v {name1} {name2} {f} cf {.(MSEQ x)} {.(MSEQ x)} (differ-MSEQ x) = differ-MSEQ _
 --→differ-shiftNameUp v {name1} {name2} {f} cf {.(CS name)} {.(CS name)} (differ-CS name) = differ-CS _
 --→differ-shiftNameUp v {name1} {name2} {f} cf {.(NAME name)} {.(NAME name)} (differ-NAME name) = differ-NAME _
 {--→differ-shiftNameUp v {name1} {name2} {f} cf {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) = differ-FRESH (shiftNameUp (suc v) a) (shiftNameUp (suc v) b) c1
@@ -766,6 +774,7 @@ differ-subv {name1} {name2} {f} cf v {.(EQ a₁ b₃ c₁)} {.(EQ a₂ b₄ c₂
 differ-subv {name1} {name2} {f} cf v {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} {z₁} {z₂} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ x₁ x₂ x₃ x₄) y = differ-EQB _ _ _ _ _ _ _ _ (differ-subv cf v x₁ y) (differ-subv cf v x₂ y) (differ-subv cf v x₃ y) (differ-subv cf v x₄ y)
 differ-subv {name1} {name2} {f} cf v {.AX} {.AX} {b₁} {b₂} differ-AX d₂ = differ-AX
 differ-subv {name1} {name2} {f} cf v {.FREE} {.FREE} {b₁} {b₂} differ-FREE d₂ = differ-FREE
+differ-subv {name1} {name2} {f} cf v {.(MSEQ x)} {.(MSEQ x)} {b₁} {b₂} (differ-MSEQ x) d₂ = differ-MSEQ x
 --differ-subv {name1} {name2} {f} cf v {.(CS name)} {.(CS name)} {b₁} {b₂} (differ-CS name) d₂ = differ-CS name
 --differ-subv {name1} {name2} {f} cf v {.(NAME name)} {.(NAME name)} {b₁} {b₂} (differ-NAME name) d₂ = differ-NAME name
 --differ-subv {name1} {name2} {f} cf v {.(FRESH a)} {.(FRESH b)} {b₁} {b₂} (differ-FRESH a b d₁) d₂ = differ-FRESH _ _ (differ-subv (→#shiftNameUp 0 {f} cf) v d₁ (→differ-shiftNameUp0 {name1} {name2} cf d₂))
@@ -826,6 +835,7 @@ differ-subv {name1} {name2} {f} cf v {.(upd name1 f)} {.(upd name2 f)} {b₁} {b
 →differ-shiftDown v {name1} {name2} {f} cf {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-EQB _ _ _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂) (→differ-shiftDown v cf diff₃)
 →differ-shiftDown v {name1} {name2} {f} cf {.AX} {.AX} differ-AX = differ-AX
 →differ-shiftDown v {name1} {name2} {f} cf {.FREE} {.FREE} differ-FREE = differ-FREE
+→differ-shiftDown v {name1} {name2} {f} cf {.(MSEQ x)} {.(MSEQ x)} (differ-MSEQ x) = (differ-MSEQ x)
 --→differ-shiftDown v {name1} {name2} {f} cf {.(CS name)} {.(CS name)} (differ-CS name) = (differ-CS name)
 --→differ-shiftDown v {name1} {name2} {f} cf {.(NAME name)} {.(NAME name)} (differ-NAME name) = (differ-NAME name)
 --→differ-shiftDown v {name1} {name2} {f} cf {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) = differ-FRESH _ _ (→differ-shiftDown v (→#shiftNameUp 0 {f} cf) diff)
@@ -882,6 +892,7 @@ differ-isValue→ {name1} {name2} {f} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c�
 differ-isValue→ {name1} {name2} {f} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) isv = tt
 differ-isValue→ {name1} {name2} {f} {.AX} {.AX} differ-AX isv = tt
 differ-isValue→ {name1} {name2} {f} {.FREE} {.FREE} differ-FREE isv = tt
+differ-isValue→ {name1} {name2} {f} {.(MSEQ x)} {.(MSEQ x)} (differ-MSEQ x) isv = tt
 --differ-isValue→ {name1} {name2} {f} {.(CS name)} {.(CS name)} (differ-CS name) isv = tt
 --differ-isValue→ {name1} {name2} {f} {.(NAME name)} {.(NAME name)} (differ-NAME name) isv = tt
 --differ-isValue→ {name1} {name2} {f} {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) ()
