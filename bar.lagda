@@ -272,230 +272,160 @@ bar-𝔹⊑→ mon {w0} {w1} e01 {b} {w2} (w2∈b , _) = w2∈b
         (snd (z₁' (mk𝔹In w1 (w1∈b₁ , e4))) (𝔹.ext (fst (z₁' (mk𝔹In w1 (w1∈b₁ , e4)))) w''∈U1) w''∈U1 w3 e3 ((⊑-trans· (𝔹.ext (fst (z₁' (mk𝔹In w1 (w1∈b₁ , e4)))) w''∈U1) e3)) x₁)
         (snd (z₂' (mk𝔹In w2 (w2∈b₂ , e5))) (𝔹.ext (fst (z₂' (mk𝔹In w2 (w2∈b₂ , e5)))) w''∈U2) w''∈U2 w3 e3 ((⊑-trans· (𝔹.ext (fst (z₂' (mk𝔹In w2 (w2∈b₂ , e5)))) w''∈U2) e3)) x₁)
 
-\end{code}
-Σ∈𝔹-idem-aux : ∀ {l} {B : Coverage} (fam : Coverage∪ B) {w : 𝕎·} {f : wPred {l} w}
-                → (b : 𝔹 B w)
-                → (i : ∈𝔹 b (λ w' e' → Σ∈𝔹 B (↑wPred' f e')))
-                → Σ∈𝔹 B f
-Σ∈𝔹-idem-aux {l} {B} fam {w} {f} b i =
-  𝔹fam2 fam {w} b (λ {w'} e ib bw → ∈𝔹 {_} {B} bw (↑wPred' f e)) (λ {w'} e ib → i e ib w' (⊑-refl· _) e) , j
+Σ∈𝔹-idem-aux : ∀ {l} {_◀_ : Coverage} (fam : Coverage∪ _◀_) {w : 𝕎·} {f : wPred {l} w}
+                → (b : 𝔹 _◀_ w)
+                → (i : ∈𝔹 b (λ w' e' → Σ∈𝔹 _◀_ (↑wPred' f e')))
+                → Σ∈𝔹 _◀_ f
+Σ∈𝔹-idem-aux fam {w} {f} b i =
+  𝔹∪ fam {w} b G k , j
   where
-    j : ∈𝔹 (𝔹fam2 fam b (λ {w'} e ib bw → ∈𝔹 bw (↑wPred' f e)) (λ {w'} e ib → i e ib w' (⊑-refl· w') e)) f
-    j {w'} e (mk𝔹In w2 e2 br₁ , br) w1 e1 z =
-      snd (i e2 br₁ w2 (⊑-refl· _) e2)
-          (𝔹.ext (proj₁ (i e2 br₁ w2 (⊑-refl· _) e2)) br)
-          br w1 e1
-          (⊑-trans· (𝔹.ext (proj₁ (i e2 br₁ w2 (⊑-refl· _) e2)) br) e1)
-          z
+    G = λ (mk𝔹In wi wi∈b) bw → ∈𝔹 bw (↑wPred' f (𝔹.ext b wi∈b))
+    k = λ (mk𝔹In wi wi∈b) → i (𝔹.ext b wi∈b) wi∈b wi (⊑-refl· _) (𝔹.ext b wi∈b)
+
+    j : ∈𝔹 (𝔹∪ fam b G k) f
+    j {w1} e (mk𝔹In wi wi∈b , w1∈bi) w2 e12 e2 =
+      snd (i (𝔹.ext b wi∈b) wi∈b wi (⊑-refl· wi) (𝔹.ext b wi∈b))
+        (𝔹.ext (fst (k (mk𝔹In wi wi∈b))) w1∈bi)
+        w1∈bi w2 e12
+        (⊑-trans· (𝔹.ext (fst (k (mk𝔹In wi wi∈b))) w1∈bi) e12)
+        e2
 
 
-Σ∈𝔹-idem : ∀ {l} {B : Coverage} (fam : Coverage∪ B) {w : 𝕎·} {f : wPred {l} w}
-            → Σ∈𝔹 B (λ w' e' → Σ∈𝔹 B (↑wPred' f e'))
-            → Σ∈𝔹 B f
-Σ∈𝔹-idem {_} {B} fam {w} {f} (b , i) = Σ∈𝔹-idem-aux fam b i
+Σ∈𝔹-idem : ∀ {l} {_◀_ : Coverage} (fam : Coverage∪ _◀_) {w : 𝕎·} {f : wPred {l} w}
+            → Σ∈𝔹 _◀_ (λ w' e' → Σ∈𝔹 _◀_ (↑wPred' f e'))
+            → Σ∈𝔹 _◀_ f
+Σ∈𝔹-idem fam {w} {f} (b , i) = Σ∈𝔹-idem-aux fam b i
 
 
-Σ∈𝔹'-idem : ∀ {l} {B : Coverage} (mon : Coverage⊑ B) (fam : Coverage∪ B)
-             {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} (i : Σ∈𝔹 B f)
-             → Σ∈𝔹 B (λ w' e' → Σ∈𝔹' B (↑'Σ∈𝔹 mon i e') (↑wPredDep' g e'))
-             → Σ∈𝔹' B i g
-Σ∈𝔹'-idem {l} {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
-  𝔹fam2 fam {w'} (𝔹⊑ mon e b₂)
-         (λ {w₁} e₁ (wa , ba , ea₁ , ea₂) b' → ∈𝔹Dep {_} {B} b' (λ w2 e2 z' y' → i e ib _ (⊑-trans· ea₂ e2) y') (↑wPredDep'' (↑wPredDep' g (⊑-trans· e ea₂)) (⊑-refl· _)))
-         (λ {w₁} e₁ (wa , ba , ea₁ , ea₂) → j (𝔹.ext b₂ ba) ba w₁ ea₁ (⊑-trans· e ea₂) (⊑-refl· _) (w' , ib , ea₂ , ⊑-refl· _)) ,
-  jd
+Σ∈𝔹'-idem : ∀ {l} {_◀_ : Coverage} (mon : Coverage⊑ _◀_) (fam : Coverage∪ _◀_)
+             {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} (i : Σ∈𝔹 _◀_ f)
+             → Σ∈𝔹 _◀_ (λ w' e' → Σ∈𝔹' _◀_ (↑'Σ∈𝔹 mon i e') (↑wPredDep' g e'))
+             → Σ∈𝔹' _◀_ i g
+Σ∈𝔹'-idem {l} {_◀_} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
+  𝔹∪ fam (𝔹⊑ mon e b₂) G k , jd
   where
-    jd : ∈𝔹Dep (𝔹fam2 fam (𝔹⊑ mon e b₂)
-                        (λ {w₁} e₁ (wa , ba , ea₁ , ea₂) b' → ∈𝔹Dep b' (λ w2 e2 z' y' → i e ib w2 (⊑-trans· ea₂ e2) y') (↑wPredDep'' (↑wPredDep' g (⊑-trans· e ea₂)) (⊑-refl· _)))
-                        (λ {w₁} e₁ (wa , ba , ea₁ , ea₂) → j (𝔹.ext b₂ ba) ba w₁ ea₁ (⊑-trans· e ea₂) (⊑-refl· _) (w' , ib , ea₂ , ⊑-refl· _)))
-                (i e ib)
-                (↑wPredDep'' g e)
-    jd {w0} eo (mk𝔹In w2 e2 (wa , ba , ea₁ , ea₂) , b0) w1 e1 x y =
-      snd (j (𝔹.ext b₂ ba) ba w2 ea₁ (⊑-trans· e ea₂) (⊑-refl· w2) (w' , ib , ea₂ , ⊑-refl· w2))
-          (𝔹.ext (fst (j (𝔹.ext b₂ ba) ba w2 ea₁ (⊑-trans· e ea₂) (⊑-refl· w2) (w' , ib , ea₂ , ⊑-refl· w2))) b0)
-          b0
-          w1
-          e1
-          (⊑-trans· (𝔹.ext (fst (j (𝔹.ext b₂ ba) ba w2 ea₁ (⊑-trans· e ea₂) (⊑-refl· w2) (w' , ib , ea₂ , ⊑-refl· w2))) b0) e1)
-          (⊑-trans· (𝔹.ext (fst (j (𝔹.ext b₂ ba) ba w2 ea₁ (⊑-trans· e ea₂) (⊑-refl· w2) (w' , ib , ea₂ , ⊑-refl· w2))) b0) e1)
-          y
-          (i e ib w1 x y)
+    G = λ (mk𝔹In wi (wi∈b₂ , e'i)) bi → ∈𝔹Dep bi (λ w2 e2 z' y' → i e ib _ (⊑-trans· e'i e2) y') (↑wPredDep'' (↑wPredDep' g (⊑-trans· e e'i)) (⊑-refl· _))
+    k = λ (mk𝔹In wi (wi∈b₂ , e'i)) → j (𝔹.ext b₂ wi∈b₂) wi∈b₂ wi (⊑-refl· wi) (⊑-trans· e e'i) (⊑-refl· wi) (snd (𝔹.U b₁) e'i ib , ⊑-refl· wi)
+
+    jd : ∈𝔹Dep (𝔹∪ fam (𝔹⊑ mon e b₂) G k) (i e ib) (↑wPredDep'' g e)
+    jd {w0} e₁ (mk𝔹In wi (wi∈b₂ , e'i) , w0∈ki) w1 e01 e'1 e1 =
+      snd (j (𝔹.ext b₂ wi∈b₂) wi∈b₂ wi (⊑-refl· wi) (⊑-trans· e e'i) (⊑-refl· wi) (snd (𝔹.U b₁) e'i ib , ⊑-refl· wi))
+        (𝔹.ext (fst (j (𝔹.ext b₂ wi∈b₂) wi∈b₂ wi (⊑-refl· wi) (⊑-trans· e e'i) (⊑-refl· wi) (snd (𝔹.U b₁) e'i ib , ⊑-refl· wi))) w0∈ki)
+        w0∈ki w1 e01
+        (⊑-trans· (𝔹.ext (fst (j (𝔹.ext b₂ wi∈b₂) wi∈b₂ wi (⊑-refl· wi) (⊑-trans· e e'i) (⊑-refl· wi) (snd (𝔹.U b₁) e'i ib , ⊑-refl· wi))) w0∈ki) e01)
+        (⊑-trans· (𝔹.ext (fst (j (𝔹.ext b₂ wi∈b₂) wi∈b₂ wi (⊑-refl· wi) (⊑-trans· e e'i) (⊑-refl· wi) (snd (𝔹.U b₁) e'i ib , ⊑-refl· wi))) w0∈ki) e01)
+        e1 (i e ib w1 e'1 e1)
 
 
-∀𝕎-Σ∈𝔹'-Σ∈𝔹-aux : ∀ {l r} {B : Coverage} (fam : Coverage∪ B)
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-aux : ∀ {l r} {_◀_ : Coverage} (fam : Coverage∪ _◀_)
                      {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} {h : wPred {r} w} -- TODO: is using both l and r correct?
-                     (b : 𝔹 B w)
+                     (b : 𝔹 _◀_ w)
                      (i : ∈𝔹 b f)
                      → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → h w' e')
-                     → Σ∈𝔹' B (b , i) g → Σ∈𝔹 B h
-∀𝕎-Σ∈𝔹'-Σ∈𝔹-aux {_} {_} {B} fam {w} {f} {g} {h} b i aw j =
-  𝔹fam2 fam {w} b (λ {w'} e ib b' → ∈𝔹Dep {_} {B} b' (i e ib) (↑wPredDep'' g e)) j , i'
+                     → Σ∈𝔹' _◀_ (b , i) g → Σ∈𝔹 _◀_ h
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-aux fam {w} {f} {g} {h} b i aw j =
+  𝔹∪ fam b G k , i'
   where
-    i' : ∈𝔹 {_} {B} (𝔹fam2 fam {w} b (λ {w'} e ib b' → ∈𝔹Dep {_} {B} b' (i e ib) (↑wPredDep'' g e)) j) h
-    i' {w'} e (mk𝔹In w2 e2 br , F) w1 e1 z =
+    G = λ (mk𝔹In wi wi∈b) bi → ∈𝔹Dep bi (i (𝔹.ext b wi∈b) wi∈b) (↑wPredDep'' g (𝔹.ext b wi∈b))
+    k = λ (mk𝔹In wi wi∈b) → j (𝔹.ext b wi∈b) wi∈b
+
+    i' : ∈𝔹 (𝔹∪ fam b G k) h
+    i' {w'} e (mk𝔹In wi wi∈b , F) w1 e1 z =
       aw w1 z
-         (i e2 br w1 (⊑-trans· (𝔹.ext (proj₁ (j e2 br)) F) e1) z)
-         (snd (j e2 br)
-              (𝔹.ext (proj₁ (j e2 br)) F)
+         (i (𝔹.ext b wi∈b) wi∈b w1 (⊑-trans· (𝔹.ext (proj₁ (j (𝔹.ext b wi∈b) wi∈b)) F) e1) z)
+         (snd (j (𝔹.ext b wi∈b) wi∈b)
+              (𝔹.ext (proj₁ (j (𝔹.ext b wi∈b) wi∈b)) F)
               F w1 e1
-              (⊑-trans· (𝔹.ext (proj₁ (j e2 br)) F) e1)
+              (⊑-trans· (𝔹.ext (proj₁ (j (𝔹.ext b wi∈b) wi∈b)) F) e1)
               z)
 
 
-
-∀𝕎-Σ∈𝔹'-Σ∈𝔹 : ∀ {l r} {B : Coverage} (fam : Coverage∪ B)
-                 {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} {h : wPred {r} w} (i : Σ∈𝔹 B f)
+∀𝕎-Σ∈𝔹'-Σ∈𝔹 : ∀ {l r} {_◀_ : Coverage} (fam : Coverage∪ _◀_)
+                 {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} {h : wPred {r} w} (i : Σ∈𝔹 _◀_ f)
                  → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → h w' e')
-                 → Σ∈𝔹' B i g → Σ∈𝔹 B h
-∀𝕎-Σ∈𝔹'-Σ∈𝔹 {_} {_} {B} fam {w} {f} {g} {h} (b , i) aw j = ∀𝕎-Σ∈𝔹'-Σ∈𝔹-aux fam b i aw j
+                 → Σ∈𝔹' _◀_ i g → Σ∈𝔹 _◀_ h
+∀𝕎-Σ∈𝔹'-Σ∈𝔹 fam (b , i) aw j = ∀𝕎-Σ∈𝔹'-Σ∈𝔹-aux fam b i aw j
 
 
-∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux : ∀ {l r} {B : Coverage} (fam : Coverage∪ B)
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux : ∀ {l r} {_◀_ : Coverage} (fam : Coverage∪ _◀_)
                           {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} {h : wPred {r} w}
-                          (b : 𝔹 B w)
+                          (b : 𝔹 _◀_ w)
                           (i : ∈𝔹 b f)
-                          → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → Σ∈𝔹 B (↑wPred' h e'))
-                          → Σ∈𝔹' B (b , i) g → Σ∈𝔹 B h
-∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux {_} {_} {B} fam {w} {f} {g} {h} b i aw j =
-  𝔹fam2
-    fam {w} b
-    (λ {w'} e ib b' → ∈𝔹 {_} {B} b' (↑wPred' h e))
-    (λ {w'} e ib → 𝔹fam2
-                      fam (fst (j e ib))
-                      (λ {w''} e' ib' b'' → ∈𝔹 {_} {B} b'' (↑wPred' h (⊑-trans· e e')))
-                      (λ {w''} e' ib' → aw w'' (⊑-trans· e e') (i e ib w''  e' (⊑-trans· e e')) (snd (j e ib) e' ib' w'' (⊑-refl· w'') e' (⊑-trans· e e'))) ,
-                    λ {w1} e1 (mk𝔹In w3 e3 br , ib2) w2 e2 z →
-                      snd (aw w3 (⊑-trans· e e3) (i e ib w3 e3 (⊑-trans· e e3)) (snd (j e ib) e3 br w3 (⊑-refl· w3) e3 (⊑-trans· e e3)))
-                          (𝔹.ext (fst (aw w3 (⊑-trans· e e3) (i e ib w3 e3 (⊑-trans· e e3)) (snd (j e ib) e3 br w3 (⊑-refl· w3) e3 (⊑-trans· e e3)))) ib2)
-                          ib2 w2 e2 (⊑-trans· (𝔹.ext (fst (aw w3 (⊑-trans· e e3) (i e ib w3 e3 (⊑-trans· e e3)) (snd (j e ib) e3 br w3 (⊑-refl· w3) e3 (⊑-trans· e e3)))) ib2) e2)) ,
-  λ {w'} e (mk𝔹In w1 e1 ib , (mk𝔹In w3 e3 br , ib2)) w2 e2 z → snd
-                                                                 (aw w3 (⊑-trans· e1 e3) (i e1 ib w3 e3 (⊑-trans· e1 e3)) (snd (j e1 ib) e3 br w3 (⊑-refl· w3) e3 (⊑-trans· e1 e3)))
-                                                                 (𝔹.ext(proj₁ (aw w3 (⊑-trans· e1 e3) (i e1 ib w3 e3 (⊑-trans· e1 e3)) (snd (j e1 ib) e3 br w3 (⊑-refl· w3) e3 (⊑-trans· e1 e3)))) ib2)
-                                                                 ib2 w2 e2 ((⊑-trans· (𝔹.ext (fst (aw w3 (⊑-trans· e1 e3) (i e1 ib w3 e3 (⊑-trans· e1 e3)) (snd (j e1 ib) e3 br w3 (⊑-refl· w3) e3 (⊑-trans· e1 e3)))) ib2) e2)) z
+                          → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → Σ∈𝔹 _◀_ (↑wPred' h e'))
+                          → Σ∈𝔹' _◀_ (b , i) g → Σ∈𝔹 _◀_ h
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux fam {w} {f} {g} {h} b i aw j =
+  𝔹∪ fam b G k ,
+  λ {w'} e (mk𝔹In w1 ib , (mk𝔹In w3 br , ib2)) w2 e2 z →
+    let e1 = 𝔹.ext b ib
+        e3 = 𝔹.ext (fst (j e1 ib)) br
+     in snd (aw w3 (⊑-trans· e1 e3) (i e1 ib w3 e3 (⊑-trans· e1 e3)) (snd (j e1 ib) e3 br w3 (⊑-refl· w3) e3 (⊑-trans· e1 e3)))
+            (𝔹.ext(proj₁ (aw w3 (⊑-trans· e1 e3) (i e1 ib w3 e3 (⊑-trans· e1 e3)) (snd (j e1 ib) e3 br w3 (⊑-refl· w3) e3 (⊑-trans· e1 e3)))) ib2)
+            ib2 w2 e2 ((⊑-trans· (𝔹.ext (fst (aw w3 (⊑-trans· e1 e3) (i e1 ib w3 e3 (⊑-trans· e1 e3)) (snd (j e1 ib) e3 br w3 (⊑-refl· w3) e3 (⊑-trans· e1 e3)))) ib2) e2)) z
+  where
+    G = λ (mk𝔹In wi wi∈b) bi → ∈𝔹 bi (↑wPred' h (𝔹.ext b wi∈b))
+    k = λ (mk𝔹In wi wi∈b) →
+      let ei = 𝔹.ext b wi∈b
+          b' , g∈b' = j ei wi∈b
+          G' = λ (mk𝔹In wj wj∈b') bj → ∈𝔹 bj (↑wPred' h (⊑-trans· ei (𝔹.ext b' wj∈b')))
+          k' = λ (mk𝔹In wj wj∈b') → aw wj (⊑-trans· ei (𝔹.ext b' wj∈b')) (i ei wi∈b wj  (𝔹.ext b' wj∈b') (⊑-trans· ei (𝔹.ext b' wj∈b'))) (g∈b' (𝔹.ext b' wj∈b') wj∈b' wj (⊑-refl· wj) (𝔹.ext b' wj∈b') (⊑-trans· ei (𝔹.ext b' wj∈b')))
+       in 𝔹∪ fam b' G' k' ,
+         λ {w1} e1 (mk𝔹In w3 w3∈b' , w1∈bj) w2 e2 e32 → let e3 = 𝔹.ext b' w3∈b' in
+           snd (aw w3 (⊑-trans· ei e3) (i ei wi∈b w3 e3 (⊑-trans· ei e3)) (snd (j ei wi∈b) e3 w3∈b' w3 (⊑-refl· w3) e3 (⊑-trans· ei e3)))
+               (𝔹.ext (fst (aw w3 (⊑-trans· ei e3) (i ei wi∈b w3 e3 (⊑-trans· ei e3)) (snd (j ei wi∈b) e3 w3∈b' w3 (⊑-refl· w3) e3 (⊑-trans· ei e3)))) w1∈bj)
+               w1∈bj w2 e2 (⊑-trans· (𝔹.ext (fst (aw w3 (⊑-trans· ei e3) (i ei wi∈b w3 e3 (⊑-trans· ei e3)) (snd (j ei wi∈b) e3 w3∈b' w3 (⊑-refl· w3) e3 (⊑-trans· ei e3)))) w1∈bj) e2)
 {-# INLINE ∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux #-}
 
 
-
-∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem : ∀ {l r} {B : Coverage} (fam : Coverage∪ B)
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem : ∀ {l r} {_◀_ : Coverage} (fam : Coverage∪ _◀_)
                      {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} {h : wPred {r} w}
-                     (b : Σ∈𝔹 B f)
-                     → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → Σ∈𝔹 B (↑wPred' h e'))
-                     → Σ∈𝔹' B b g → Σ∈𝔹 B h
-∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem {_} {_} {B} fam {w} {f} {g} {h} (b , i) aw j = ∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux fam b i aw j
+                     (b : Σ∈𝔹 _◀_ f)
+                     → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → Σ∈𝔹 _◀_ (↑wPred' h e'))
+                     → Σ∈𝔹' _◀_ b g → Σ∈𝔹 _◀_ h
+∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem fam (b , i) aw j = ∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem-aux fam b i aw j
 {-# INLINE ∀𝕎-Σ∈𝔹'-Σ∈𝔹-idem #-}
 
 -- This really only need isect, but can conveniently be derived from Σ∈𝔹'-comb-change
-Σ∈𝔹'-comb : ∀ {l} {B : Coverage} (mon : Coverage⊑ B) (isect : Coverage∩ B) (fam : Coverage∪ B)
-             {w : 𝕎·} {f : wPred {l} w} {g h k : wPredDep f} (i : Σ∈𝔹 B f)
+Σ∈𝔹'-comb : ∀ {l} {_◀_ : Coverage} (mon : Coverage⊑ _◀_) (isect : Coverage∩ _◀_) (fam : Coverage∪ _◀_)
+             {w : 𝕎·} {f : wPred {l} w} {g h k : wPredDep f} (i : Σ∈𝔹 _◀_ f)
              → ∀𝕎 w (λ w' e' → (z zg zh : f w' e')
                               → g w' e' zg → h w' e' zh → k w' e' z)
-             → Σ∈𝔹' B i g → Σ∈𝔹' B i h → Σ∈𝔹' B i k
-Σ∈𝔹'-comb {_} {B} mon isect fam {w} {f} {g} {h} {k} i aw j₁ j₂ =
-  Σ∈𝔹'-comb-change {_} {B} mon isect fam {w} {f} {f} {f} {g} {h} {k}
+             → Σ∈𝔹' _◀_ i g → Σ∈𝔹' _◀_ i h → Σ∈𝔹' _◀_ i k
+Σ∈𝔹'-comb {_} {_◀_} mon isect fam {w} {f} {g} {h} {k} i aw j₁ j₂ =
+  Σ∈𝔹'-comb-change {_} {_◀_} mon isect fam {w} {f} {f} {f} {g} {h} {k}
                     i i i (λ w1 e1 x₁ x₂ x₃ a b → aw w1 e1 x₃ x₁ x₂ a b) j₁ j₂
 
-{--
-Σ∈𝔹'-comb : {B : Coverage} (mon : Coverage⊑ B) (isect : Coverage∩ B) (fam : Coverage∪ B)
-             {w : 𝕎·} {f : wPred w} {g h k : wPredDep f} (i : Σ∈𝔹 B f)
-             → ∀𝕎 w (λ w' e' → (z zg zh : f w' e')
-                              → g w' e' zg → h w' e' zh → k w' e' z)
-             → Σ∈𝔹' B i g → Σ∈𝔹' B i h → Σ∈𝔹' B i k
-Σ∈𝔹'-comb {B} mon isect fam {w} {f} {g} {h} {k} (b , i) aw j₁ j₂ {w'} e ib =
-  ∩𝔹 isect b1 b2 , j
-  where
-    b1 : 𝔹 B w'
-    b1 = fst (j₁ e ib)
-
-    i1 : ∈𝔹Dep {B} b1 (i e ib) (↑wPredDep'' g e)
-    i1 = snd (j₁ e ib)
-
-    b2 : 𝔹 B w'
-    b2 = fst (j₂ e ib)
-
-    i2 : ∈𝔹Dep {B} b2 (i e ib) (↑wPredDep'' h e)
-    i2 = snd (j₂ e ib)
-
-    j : ∈𝔹Dep {B} (∩𝔹 isect b1 b2) (i e ib) (↑wPredDep'' k e)
-    j {w0} e0 (wa , wb , ba , bb , ea , eb) w1 e1 x y =
-      aw w1 y (i e ib w1 x y) (i e ib w1 x y) (i e ib w1 x y)
-         (i1 (𝔹.ext b1 ba) ba w1 (⊑-trans· ea e1) x y)
-         (i2 (𝔹.ext b2 bb) bb w1 (⊑-trans· eb e1) x y)
---}
-
-
 -- This really only needs mon and fam, but can conveniently be derived from Σ∈𝔹'-comb-change
-Σ∈𝔹'-change : ∀ {l} {B : Coverage} (mon : Coverage⊑ B) (isect : Coverage∩ B) (fam : Coverage∪ B)
+Σ∈𝔹'-change : ∀ {l} {_◀_ : Coverage} (mon : Coverage⊑ _◀_) (isect : Coverage∩ _◀_) (fam : Coverage∪ _◀_)
                {w : 𝕎·} {f k : wPred {l} w} {g : wPredDep f} {h : wPredDep k}
-               (i : Σ∈𝔹 B f) (j : Σ∈𝔹 B k)
+               (i : Σ∈𝔹 _◀_ f) (j : Σ∈𝔹 _◀_ k)
                → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e')
                                 → g w' e' x → h w' e' y)
-               → Σ∈𝔹' B i g → Σ∈𝔹' B j h
-Σ∈𝔹'-change {_} {B} mon isect fam {w} {f} {k} {g} {h} i j aw z =
+               → Σ∈𝔹' _◀_ i g → Σ∈𝔹' _◀_ j h
+Σ∈𝔹'-change {_} {_◀_} mon isect fam {w} {f} {k} {g} {h} i j aw z =
   Σ∈𝔹'-comb-change mon isect fam {w} {f} {f} {k} {g} {g} {h} i i j (λ w1 e1 x₁ x₂ x₃ a b → aw w1 e1 x₁ x₃ a) z z
-
-{--
-Σ∈𝔹'-change : {B : Coverage} (mon : Coverage⊑ B) (fam : Coverage∪ B)
-               {w : 𝕎·} {f k : wPred w} {g : wPredDep f} {h : wPredDep k}
-               (i : Σ∈𝔹 B f) (j : Σ∈𝔹 B k)
-               → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e')
-                                → g w' e' x → h w' e' y)
-               → Σ∈𝔹' B i g → Σ∈𝔹' B j h
-Σ∈𝔹'-change {B} mon fam {w} {f} {k} {g} {h} (b₁ , i) (b₂ , j) aw z {w'} e ib =
-  𝔹fam2 fam (𝔹⊑ mon e b₁)
-             (λ {w0} e0 ib0 b' → ∈𝔹Dep {B} b' (i (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₁} ib0))
-                                               (↑wPredDep'' g (⊑-trans· e e0)))
-             z' {--z'--} ,
-  jd
-  where
-    z' : {w0 : 𝕎·} (e0 : w' ⊑· w0) (ib0 : 𝔹.bar (𝔹⊑ mon e b₁) w0)
-          → Σ (𝔹 B w0) (λ b' → ∈𝔹Dep {B} b' (i (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₁} ib0)) (↑wPredDep'' g (⊑-trans· e e0)))
-    z' {w0} e0 (wa , ba , ea₁ , ea₂) = z (⊑-trans· e e0) (𝔹.mon b₁ ea₁ ba)
-
-    jd : ∈𝔹Dep {B} (𝔹fam2 fam (𝔹⊑ mon e b₁) (λ {w0} e0 ib0 b' → ∈𝔹Dep {B} b' (i (⊑-trans· e e0) (bar-𝔹⊑→ mon e {b₁} ib0)) (↑wPredDep'' g (⊑-trans· e e0))) z')
-                    (j e ib)
-                    (↑wPredDep'' h e)
-    jd {w0} e0 (mk𝔹In w2 e2 (w3 , br , e3 , e4) , b0) w1 e1 x y =
-      aw w1 y
-         (i (⊑-trans· e e2) (𝔹.mon b₁ e3 br) w1 (⊑-trans· (𝔹.ext (fst (z' e2 (w3 , br , e3 , e4))) b0) e1) y)
-         (j e ib w1 x y)
-         (snd (z' e2 (w3 , br , e3 , e4))
-              (𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0)
-              b0 w1 e1
-              (⊑-trans· (𝔹.ext (proj₁ (z' e2 (w3 , br , e3 , e4))) b0) e1)
-              y)
---}
 
 
 Σ∈𝔹-const : ∀ {l} {B : Coverage} (ex : Coverage∃ B) {w : 𝕎·} {t : Set l} → Σ∈𝔹 B {w} (λ w e → t) → t --TODO: Check if l is correct instead of n
 Σ∈𝔹-const {_} {B} ex {w} {t} (b , i) =
-  i (fst (snd (ex (𝔹.bars b) (𝔹.ext b))))
-    (snd (snd (ex (𝔹.bars b) (𝔹.ext b))))
-    (fst (ex (𝔹.bars b) (𝔹.ext b)))
-    (⊑-refl· _)
-    (fst (snd (ex (𝔹.bars b) (𝔹.ext b))))
+  let w' , w'∈b = ex (𝔹.covers b)
+   in i (𝔹.ext b w'∈b ) w'∈b w' (⊑-refl· w') (𝔹.ext b w'∈b )
 
 
 Σ∈𝔹→∃ : ∀ {l} {B : Coverage} (ex : Coverage∃ B) {w : 𝕎·} {f : wPred {l} w} → Σ∈𝔹 B {w} f → ∃𝕎 w λ w' e → f w' e
 Σ∈𝔹→∃ {_} {B} ex {w} {f} (b , i) =
-  fst (ex (𝔹.bars b) (𝔹.ext b)) ,
-  fst (snd (ex (𝔹.bars b) (𝔹.ext b))) ,
-  i (𝔹.ext b (snd (snd (ex (𝔹.bars b) (𝔹.ext b)))))
-    (snd (snd (ex (𝔹.bars b) (𝔹.ext b))))
-    (fst (ex (𝔹.bars b) (𝔹.ext b)))
-    (⊑-refl· _)
-    (fst (snd (ex (𝔹.bars b) (𝔹.ext b))))
+  let w' , w'∈b = ex (𝔹.covers b)
+   in w' , 𝔹.ext b w'∈b , i (𝔹.ext b w'∈b ) w'∈b w' (⊑-refl· w') (𝔹.ext b w'∈b )
 
 
 -- TODO: is this derivable from the others?
-→Σ∈𝔹∀𝕎 : ∀ {l} {B : Coverage} {w : 𝕎·} {f : wPred {l} w}
-            → Σ∈𝔹 B f
-            → Σ∈𝔹 B (λ w' e → ∀𝕎 w' (↑wPred f e))
-→Σ∈𝔹∀𝕎 {_} {B} {w} {f} (b , i) = b , j
+→Σ∈𝔹∀𝕎 : ∀ {l} {_◀_ : Coverage} {w : 𝕎·} {f : wPred {l} w}
+            → Σ∈𝔹 _◀_ f
+            → Σ∈𝔹 _◀_ (λ w' e → ∀𝕎 w' (↑wPred f e))
+→Σ∈𝔹∀𝕎 {_} {_} {w} {f} (b , i) = b , j
   where
     j : ∈𝔹 b (λ w' e → ∀𝕎 w' (↑wPred f e))
     j {w'} e b w1 e1 z w2 e2 = i e b w2 (⊑-trans· e1 e2) (⊑-trans· z e2)
 
-\begin{code}
 
 {-- Those are all the properties we need about Bars to derive the above properties,
     which in turn are the properties of Bar below.
