@@ -423,6 +423,13 @@ getT≤ℕ-chooseT0if→ gc {w} {name} {n} {m} {m'} compat g0 (j , h , q) with m
 ¬Names→isHighestℕ-step {AX} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
 ¬Names→isHighestℕ-step {FREE} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
 ¬Names→isHighestℕ-step {MSEQ x} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
+¬Names→isHighestℕ-step {MAPP s a} {u} {w1} {w2} {n} {name} nn gtn comp with is-NUM a
+... | inj₁ (k , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+  refl , refl , gtn
+... | inj₂ x with step⊎ a w1
+... |    inj₁ (a' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+  ¬Names→isHighestℕ-step {a} {a'} {w1} {w1'} {n} {name} nn gtn z
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 ¬Names→isHighestℕ-step {CHOOSE k t} {u} {w1} {w2} {n} {name} nn gtn comp with is-NAME k
 ... | inj₁ (name' , p) rewrite p = ⊥-elim (false≢true nn)
 ... | inj₂ x with step⊎ k w1
@@ -744,6 +751,17 @@ stepsPresHighestℕ-APPLY₁→ {name} {f} {a} {b} {w} (k , v , w' , comp , isv 
 
 
 
+stepsPresHighestℕ-MAPP₁→ : {name : Name} {f : Term} {s : 𝕊} {a : Term} {w : 𝕎·}
+                            → stepsPresHighestℕ name f (MAPP s a) w
+                            → stepsPresHighestℕ name f a w
+stepsPresHighestℕ-MAPP₁→ {name} {f} {s} {a} {w} (k , v , w' , comp , isv , ind) =
+  k , fst hv , fst (snd hv) , fst (snd (snd hv)) , snd (snd (snd hv)) , ind
+  where
+    hv : hasValueℕ k a w
+    hv = MAPP→hasValue k s a v w w' comp isv
+
+
+
 stepsPresHighestℕ-FIX₁→ : {name : Name} {f : Term} {a : Term} {w : 𝕎·}
                             → stepsPresHighestℕ name f (FIX a) w
                             → stepsPresHighestℕ name f a w
@@ -1004,6 +1022,16 @@ step-sat-isHighestℕ gc {w1} {w2} {.(EQB a b₁ c d)} {b} {n} {name} {f} compat
 step-sat-isHighestℕ gc {w1} {w2} {.AX} {b} {n} {name} {f} compat wgt0 comp indb updCtxt-AX nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , AX , w1 , refl , (λ x → x , x) , updCtxt-AX
 step-sat-isHighestℕ gc {w1} {w2} {.FREE} {b} {n} {name} {f} compat wgt0 comp indb updCtxt-FREE nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , FREE , w1 , refl , (λ x → x , x) , updCtxt-FREE
 step-sat-isHighestℕ gc {w1} {w2} {.(MSEQ x)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-MSEQ x) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , MSEQ x , w1 , refl , (λ x → x , x) , updCtxt-MSEQ x
+step-sat-isHighestℕ gc {w1} {w2} {.(MAPP s a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-MAPP s a ctxt) nnf cf with is-NUM a
+... | inj₁ (k , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+  0 , NUM (s k) , w1 , refl , (λ s → s , s) , updCtxt-NUM (s k)
+... | inj₂ x with step⊎ a w1
+... |    inj₁ (a' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+  ΣhighestUpdCtxt-MAPP₁ ind
+  where
+    ind : ΣhighestUpdCtxt name f n a' w1 w1'
+    ind = step-sat-isHighestℕ gc compat wgt0 z (stepsPresHighestℕ-MAPP₁→ indb) ctxt nnf cf
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-sat-isHighestℕ gc {w1} {w2} {.(CHOOSE a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-CHOOSE a b₁ ctxt ctxt₁) nnf cf with is-NAME a
 ... | inj₁ (name' , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
   ⊥-elim (updCtxt-NAME→ ctxt)

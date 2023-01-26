@@ -130,6 +130,7 @@ data updRel (name : Name) (f g : Term) : Term → Term → Set where
   updRel-AX      : updRel name f g AX AX
   updRel-FREE    : updRel name f g FREE FREE
   updRel-MSEQ    : (s : 𝕊) → updRel name f g (MSEQ s) (MSEQ s)
+  updRel-MAPP    : (s : 𝕊) (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (MAPP s a₁) (MAPP s a₂)
   --updRel-CS      : updRel name1 name2 f (CS name1) (CS name2)
   --updRel-CS      : updRel name1 name2 f (CS name1) (CS name2)
   --updRel-NAME    : updRel name1 name2 f (NAME name1) (NAME name2)
@@ -465,6 +466,68 @@ stepsPresUpdRel-APPLY₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , 
     comp2' = →steps-APPLY b₂ k2 comp2
 
 
+isHighestℕ-MAPP₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {s : 𝕊} {a v : Term} {w w' : 𝕎·}
+                      → (comp : steps k (MAPP s a , w) ≡ (v , w'))
+                      → isValue v
+                      → isHighestℕ {k} {w} {w'} {MAPP s a} {v} n name comp
+                      → Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+isHighestℕ-MAPP₁→ {n} {0} {name} {f} {g} {s} {a} {v} {w} {w'} comp isv h
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+isHighestℕ-MAPP₁→ {n} {suc k} {name} {f} {g} {s} {a} {v} {w} {w'} comp isv h with is-NUM a
+... | inj₁ (m , p) rewrite p = 0 , NUM m , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
+... | inj₂ x with step⊎ a w
+... |    inj₁ (a0 , w0 , z) rewrite z =
+  suc (fst ind) , concl
+  where
+    ind : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a0 , w0) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+    ind = isHighestℕ-MAPP₁→ {n} {k} {name} {f} {g} {s} {a0} {v} {w0} {w'} comp isv (snd h)
+
+    concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × suc (fst ind) < suc k)))
+    concl rewrite z =
+      fst (snd ind) , fst (snd (snd ind)) , fst (snd (snd (snd ind))) ,
+      (fst h , fst (snd (snd (snd (snd ind))))) ,
+      fst (snd (snd (snd (snd (snd ind))))) ,
+      _≤_.s≤s (snd (snd (snd (snd (snd (snd ind))))))
+... |    inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+
+
+stepsPresUpdRel-MAPP₁→ : {n : ℕ} {name : Name} {f g : Term} {s : 𝕊} {a : Term} {w : 𝕎·}
+                           → stepsPresUpdRel n name f g (MAPP s a) w
+                           → stepsPresUpdRel n name f g a w
+stepsPresUpdRel-MAPP₁→ {n} {name} {f} {g} {s} {a} {w} (k , v , w' , comp , isv , ish , ind) =
+  fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
+  fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
+  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  where
+    hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+    hv = isHighestℕ-MAPP₁→ {n} {k} {name} {f} {g} {s} {a} {v} {w} {w'} comp isv ish
+
+
+
+→ΣstepsUpdRel-MAPP₁ : {name : Name} {f g : Term} {s : 𝕊} {a₁ a₂ : Term} {w1 w : 𝕎·}
+                        → ΣstepsUpdRel name f g a₁ w1 a₂ w
+                        → ΣstepsUpdRel name f g (MAPP s a₁) w1 (MAPP s a₂) w
+→ΣstepsUpdRel-MAPP₁ {name} {f} {g} {s} {a₁} {a₂} {w1} {w} (k1 , k2 , y1 , y2 , w3 , comp1 , comp2 , r) =
+  fst comp1' , fst comp2' , MAPP s y1 , MAPP s y2 , w3 , snd comp1' , snd comp2' ,
+  updRel-MAPP _ _ _ r
+  where
+    comp1' : MAPP s a₁ ⇓ MAPP s y1 from w1 to w3
+    comp1' = →steps-MAPP s k1 comp1
+
+    comp2' : MAPP s a₂ ⇓ MAPP s y2 from w to w
+    comp2' = →steps-MAPP s k2 comp2
 
 
 isHighestℕ-LET₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v : Term} {w w' : 𝕎·}
@@ -1083,6 +1146,7 @@ updRel-shiftUp n {name} {f} {g} cf cg {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b
 updRel-shiftUp n {name} {f} {g} cf cg {.AX} {.AX} updRel-AX = updRel-AX
 updRel-shiftUp n {name} {f} {g} cf cg {.FREE} {.FREE} updRel-FREE = updRel-FREE
 updRel-shiftUp n {name} {f} {g} cf cg {.(MSEQ x)} {.(MSEQ x)} (updRel-MSEQ x) = updRel-MSEQ x
+updRel-shiftUp n {name} {f} {g} cf cg {.(MAPP s a₁)} {.(MAPP s a₂)} (updRel-MAPP s a₁ a₂ u) = updRel-MAPP _ _ _ (updRel-shiftUp n cf cg u)
 updRel-shiftUp n {name} {f} {g} cf cg {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (updRel-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updRel-CHOOSE _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
 updRel-shiftUp n {name} {f} {g} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel-TSQUASH a₁ a₂ u) = updRel-TSQUASH _ _ (updRel-shiftUp n cf cg u)
 updRel-shiftUp n {name} {f} {g} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel-TTRUNC a₁ a₂ u) = updRel-TTRUNC _ _ (updRel-shiftUp n cf cg u)
@@ -1140,6 +1204,7 @@ updRel-shiftDown n {name} {f} {g} cf cg {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂
 updRel-shiftDown n {name} {f} {g} cf cg {.AX} {.AX} updRel-AX = updRel-AX
 updRel-shiftDown n {name} {f} {g} cf cg {.FREE} {.FREE} updRel-FREE = updRel-FREE
 updRel-shiftDown n {name} {f} {g} cf cg {.(MSEQ x)} {.(MSEQ x)} (updRel-MSEQ x) = updRel-MSEQ x
+updRel-shiftDown n {name} {f} {g} cf cg {.(MAPP s a₁)} {.(MAPP s a₂)} (updRel-MAPP s a₁ a₂ u) = updRel-MAPP _ _ _ (updRel-shiftDown n cf cg u)
 updRel-shiftDown n {name} {f} {g} cf cg {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (updRel-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updRel-CHOOSE _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
 updRel-shiftDown n {name} {f} {g} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel-TSQUASH a₁ a₂ u) = updRel-TSQUASH _ _ (updRel-shiftDown n cf cg u)
 updRel-shiftDown n {name} {f} {g} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel-TTRUNC a₁ a₂ u) = updRel-TTRUNC _ _ (updRel-shiftDown n cf cg u)
@@ -1202,6 +1267,7 @@ updRel-subv v {name} {f} {g} cf cg {.(EQB a₁ b₃ c₁ d₁)} {.(EQB a₂ b₄
 updRel-subv v {name} {f} {g} cf cg {.AX} {.AX} {b₁} {b₂} updRel-AX ub = updRel-AX
 updRel-subv v {name} {f} {g} cf cg {.FREE} {.FREE} {b₁} {b₂} updRel-FREE ub = updRel-FREE
 updRel-subv v {name} {f} {g} cf cg {.(MSEQ x)} {.(MSEQ x)} {b₁} {b₂} (updRel-MSEQ x) ub = updRel-MSEQ x
+updRel-subv v {name} {f} {g} cf cg {.(MAPP s a₁)} {.(MAPP s a₂)} {b₁} {b₂} (updRel-MAPP s a₁ a₂ ua) ub = updRel-MAPP _ _ _ (updRel-subv v cf cg ua ub)
 updRel-subv v {name} {f} {g} cf cg {.(CHOOSE a₁ b₃)} {.(CHOOSE a₂ b₄)} {b₁} {b₂} (updRel-CHOOSE a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-CHOOSE _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
 updRel-subv v {name} {f} {g} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} {b₁} {b₂} (updRel-TSQUASH a₁ a₂ ua) ub = updRel-TSQUASH _ _ (updRel-subv v cf cg ua ub)
 updRel-subv v {name} {f} {g} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} {b₁} {b₂} (updRel-TTRUNC a₁ a₂ ua) ub = updRel-TTRUNC _ _ (updRel-subv v cf cg ua ub)
@@ -1430,6 +1496,7 @@ updRel→¬Names {name} {f} {g} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c�
 updRel→¬Names {name} {f} {g} {.AX} {.AX} nng updRel-AX = refl
 updRel→¬Names {name} {f} {g} {.FREE} {.FREE} nng updRel-FREE = refl
 updRel→¬Names {name} {f} {g} {.(MSEQ x)} {.(MSEQ x)} nng (updRel-MSEQ x) = refl
+updRel→¬Names {name} {f} {g} {.(MAPP s a₁)} {.(MAPP s a₂)} nng (updRel-MAPP s a₁ a₂ u) = updRel→¬Names nng u
 updRel→¬Names {name} {f} {g} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} nng (updRel-CHOOSE a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
 updRel→¬Names {name} {f} {g} {.(TSQUASH a₁)} {.(TSQUASH a₂)} nng (updRel-TSQUASH a₁ a₂ u) = updRel→¬Names nng u
 updRel→¬Names {name} {f} {g} {.(TTRUNC a₁)} {.(TTRUNC a₂)} nng (updRel-TTRUNC a₁ a₂ u) = updRel→¬Names nng u
@@ -1601,5 +1668,67 @@ steps-APPLY-val→ {suc k} {a} {b} {v} {w1} {w2} isv comp = _≤_.s≤s _≤_.z�
 
     compgd : steps (k5 + k6) (APPLY (force g) b , w) ≡ (NUM i , w)
     compgd = fst (¬Names→steps (k5 + k6) w1 w1b w (APPLY (force g) b) (NUM i) (¬Names-APPLY {force g} {b} (¬Names-force {g} nng) nnb) compgc)
+
+
+steps-APPLY-LAMBDA-FIX→ : {k : ℕ} {t u : Term} {w1 w2 : 𝕎·}
+                           → 0 < k
+                           → steps k (APPLY (LAMBDA t) (FIX (LAMBDA t)) , w1) ≡ (u , w2)
+                           → steps k (FIX (LAMBDA t) , w1) ≡ (u , w2)
+steps-APPLY-LAMBDA-FIX→ {0} {t} {u} {w1} {w2} ltk comp = ⊥-elim (<-irrefl refl ltk)
+steps-APPLY-LAMBDA-FIX→ {suc k} {t} {u} {w1} {w2} ltk comp = comp
+
+
+ΣstepsUpdRel-FIX-APPLY→ :
+  {name : Name} {f g : Term} {w1 w : 𝕎·}
+  → Σ (ΣstepsUpdRel name f g (LET (FIX (upd name f)) (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 (APPLY (force g) (FIX (force g))) w)
+       (λ x → 0 < fst (snd x))
+  → ΣstepsUpdRel name f g (LET (FIX (upd name f)) (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 (FIX (force g)) w
+ΣstepsUpdRel-FIX-APPLY→ {name} {f} {g} {w1} {w} ((k1 , k2 , y1 , y2 , w3 , comp1 , comp2 , u) , gt0) =
+  k1 , k2 , y1 , y2 , w3 , comp1 , steps-APPLY-LAMBDA-FIX→ gt0 comp2 , u
+
+
+
+updRel→isValue : {name : Name} {f g a b : Term}
+                  → updRel name f g a b
+                  → isValue a
+                  → isValue b
+updRel→isValue {name} {f} {g} {.NAT} {.NAT} updRel-NAT isv = tt
+updRel→isValue {name} {f} {g} {.QNAT} {.QNAT} updRel-QNAT isv = tt
+updRel→isValue {name} {f} {g} {.TNAT} {.TNAT} updRel-TNAT isv = tt
+updRel→isValue {name} {f} {g} {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updRel-LT a₁ a₂ b₁ b₂ u u₁) isv = tt
+updRel→isValue {name} {f} {g} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updRel-QLT a₁ a₂ b₁ b₂ u u₁) isv = tt
+updRel→isValue {name} {f} {g} {.(NUM x)} {.(NUM x)} (updRel-NUM x) isv = tt
+updRel→isValue {name} {f} {g} {.(PI a₁ b₁)} {.(PI a₂ b₂)} (updRel-PI a₁ a₂ b₁ b₂ u u₁) isv = tt
+updRel→isValue {name} {f} {g} {.(LAMBDA a₁)} {.(LAMBDA a₂)} (updRel-LAMBDA a₁ a₂ u) isv = tt
+updRel→isValue {name} {f} {g} {.(WT a₁ b₁)} {.(WT a₂ b₂)} (updRel-WT a₁ a₂ b₁ b₂ u u₁) isv = tt
+updRel→isValue {name} {f} {g} {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (updRel-SUP a₁ a₂ b₁ b₂ u u₁) isv = tt
+updRel→isValue {name} {f} {g} {.(MT a₁ b₁)} {.(MT a₂ b₂)} (updRel-MT a₁ a₂ b₁ b₂ u u₁) isv = tt
+updRel→isValue {name} {f} {g} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updRel-MSUP a₁ a₂ b₁ b₂ u u₁) isv = tt
+updRel→isValue {name} {f} {g} {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (updRel-SUM a₁ a₂ b₁ b₂ u u₁) isv = tt
+updRel→isValue {name} {f} {g} {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (updRel-PAIR a₁ a₂ b₁ b₂ u u₁) isv = tt
+updRel→isValue {name} {f} {g} {.(SET a₁ b₁)} {.(SET a₂ b₂)} (updRel-SET a₁ a₂ b₁ b₂ u u₁) isv = tt
+updRel→isValue {name} {f} {g} {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (updRel-ISECT a₁ a₂ b₁ b₂ u u₁) isv = tt
+updRel→isValue {name} {f} {g} {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (updRel-TUNION a₁ a₂ b₁ b₂ u u₁) isv = tt
+updRel→isValue {name} {f} {g} {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (updRel-UNION a₁ a₂ b₁ b₂ u u₁) isv = tt
+updRel→isValue {name} {f} {g} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (updRel-QTUNION a₁ a₂ b₁ b₂ u u₁) isv = tt
+updRel→isValue {name} {f} {g} {.(INL a₁)} {.(INL a₂)} (updRel-INL a₁ a₂ u) isv = tt
+updRel→isValue {name} {f} {g} {.(INR a₁)} {.(INR a₂)} (updRel-INR a₁ a₂ u) isv = tt
+updRel→isValue {name} {f} {g} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (updRel-EQ a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) isv = tt
+updRel→isValue {name} {f} {g} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (updRel-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) isv = tt
+updRel→isValue {name} {f} {g} {.AX} {.AX} updRel-AX isv = tt
+updRel→isValue {name} {f} {g} {.FREE} {.FREE} updRel-FREE isv = tt
+updRel→isValue {name} {f} {g} {.(MSEQ x)} {.(MSEQ x)} (updRel-MSEQ x) isv = tt
+updRel→isValue {name} {f} {g} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel-TSQUASH a₁ a₂ u) isv = tt
+updRel→isValue {name} {f} {g} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel-TTRUNC a₁ a₂ u) isv = tt
+updRel→isValue {name} {f} {g} {.(TCONST a₁)} {.(TCONST a₂)} (updRel-TCONST a₁ a₂ u) isv = tt
+updRel→isValue {name} {f} {g} {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) isv = tt
+updRel→isValue {name} {f} {g} {.(PURE)} {.(PURE)} (updRel-PURE) isv = tt
+updRel→isValue {name} {f} {g} {.(DUM a₁)} {.(DUM a₂)} (updRel-DUM a₁ a₂ u) isv = tt
+updRel→isValue {name} {f} {g} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) isv = tt
+updRel→isValue {name} {f} {g} {.(UNIV x)} {.(UNIV x)} (updRel-UNIV x) isv = tt
+updRel→isValue {name} {f} {g} {.(LIFT a₁)} {.(LIFT a₂)} (updRel-LIFT a₁ a₂ u) isv = tt
+updRel→isValue {name} {f} {g} {.(LOWER a₁)} {.(LOWER a₂)} (updRel-LOWER a₁ a₂ u) isv = tt
+updRel→isValue {name} {f} {g} {.(SHRINK a₁)} {.(SHRINK a₂)} (updRel-SHRINK a₁ a₂ u) isv = tt
+updRel→isValue {name} {f} {g} {.(upd name f)} {.(force g)} updRel-upd isv = tt
 
 \end{code}

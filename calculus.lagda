@@ -93,12 +93,14 @@ data Term : Set where
   AX : Term
   -- Choices
   FREE : Term
-  MSEQ : 𝕊 → Term -- used for termination
   CS : Name → Term
   NAME : Name → Term
   FRESH : Term → Term
   CHOOSE : Term → Term → Term
   LOAD : Term → Term
+  -- Internal sequences
+  MSEQ : 𝕊 → Term -- used for termination
+  MAPP : 𝕊 → Term → Term
 --  IFC0 : Term → Term → Term → Term
   -- Truncation
   TSQUASH : Term → Term -- closed under ∼C
@@ -155,6 +157,7 @@ value? (EQB _ _ _ _) = true
 value? AX = true
 value? FREE = true
 value? (MSEQ _) = true
+value? (MAPP _ _) = false
 value? (CS _) = true
 value? (NAME _) = true
 value? (FRESH _) = false
@@ -290,7 +293,8 @@ fvars (EQ t t₁ t₂)     = fvars t ++ fvars t₁ ++ fvars t₂
 fvars (EQB t t₁ t₂ t₃) = fvars t ++ fvars t₁ ++ fvars t₂ ++ fvars t₃
 fvars AX               = []
 fvars FREE             = []
-fvars (MSEQ f)         = []
+fvars (MSEQ s)         = []
+fvars (MAPP s t)       = fvars t
 fvars (CS x)           = []
 fvars (NAME x)         = []
 fvars (FRESH t)        = fvars t
@@ -452,6 +456,7 @@ shiftUp c (EQB t t₁ t₂ t₃) = EQB (shiftUp c t) (shiftUp c t₁) (shiftUp c
 shiftUp c AX = AX
 shiftUp c FREE = FREE
 shiftUp c (MSEQ x) = MSEQ x
+shiftUp c (MAPP s t) = MAPP s (shiftUp c t)
 shiftUp c (CS x) = CS x
 shiftUp c (NAME x) = NAME x
 shiftUp c (FRESH t) = FRESH (shiftUp c t)
@@ -508,6 +513,7 @@ shiftDown c (EQB t t₁ t₂ t₃) = EQB (shiftDown c t) (shiftDown c t₁) (shi
 shiftDown c AX = AX
 shiftDown c FREE = FREE
 shiftDown c (MSEQ x) = MSEQ x
+shiftDown c (MAPP s t) = MAPP s (shiftDown c t)
 shiftDown c (CS x) = CS x
 shiftDown c (NAME x) = NAME x
 shiftDown c (FRESH a) = FRESH (shiftDown c a)
@@ -564,6 +570,7 @@ shiftNameUp c (EQB t t₁ t₂ t₃) = EQB (shiftNameUp c t) (shiftNameUp c t₁
 shiftNameUp c AX = AX
 shiftNameUp c FREE = FREE
 shiftNameUp c (MSEQ x) = MSEQ x
+shiftNameUp c (MAPP s t) = MAPP s (shiftNameUp c t)
 shiftNameUp c (CS x) = CS (sucIf≤ c x)
 shiftNameUp c (NAME x) = NAME (sucIf≤ c x)
 shiftNameUp c (FRESH t) = FRESH (shiftNameUp (suc c) t)
@@ -620,6 +627,7 @@ shiftNameDown c (EQB t t₁ t₂ t₃) = EQB (shiftNameDown c t) (shiftNameDown 
 shiftNameDown c AX = AX
 shiftNameDown c FREE = FREE
 shiftNameDown c (MSEQ x) = MSEQ x
+shiftNameDown c (MAPP s t) = MAPP s (shiftNameDown c t)
 shiftNameDown c (CS x) = CS (predIf≤ c x)
 shiftNameDown c (NAME x) = NAME (predIf≤ c x)
 shiftNameDown c (FRESH a) = FRESH (shiftNameDown (suc c) a)
@@ -683,6 +691,7 @@ names (EQB t t₁ t₂ t₃) = names t ++ names t₁ ++ names t₂ ++ names t₃
 names AX               = []
 names FREE             = []
 names (MSEQ x)         = []
+names (MAPP s t)       = names t
 names (CS x)           = [ x ]
 names (NAME x)         = [ x ]
 names (FRESH t)        = lowerNames (names t)
@@ -742,6 +751,7 @@ subv v t (EQB u u₁ u₂ u₃) = EQB (subv v t u) (subv v t u₁) (subv v t u�
 subv v t AX = AX
 subv v t FREE = FREE
 subv v t (MSEQ x) = MSEQ x
+subv v t (MAPP s u) = MAPP s (subv v t u)
 subv v t (CS x) = CS x
 subv v t (NAME x) = NAME x
 subv v t (FRESH a) = FRESH (subv v (shiftNameUp 0 t) a)
@@ -802,8 +812,9 @@ renn v t (DECIDE u u₁ u₂) = DECIDE (renn v t u) (renn v t u₁) (renn v t u�
 renn v t (EQ u u₁ u₂) = EQ (renn v t u) (renn v t u₁) (renn v t u₂)
 renn v t (EQB u u₁ u₂ u₃) = EQB (renn v t u) (renn v t u₁) (renn v t u₂) (renn v t u₃)
 renn v t AX = AX
-renn v t FREE = FREE
 renn v t (MSEQ x) = MSEQ x
+renn v t (MAPP s u) = MAPP s (renn v t u)
+renn v t FREE = FREE
 renn v t (CS x) with x ≟ v
 ... | yes _ = CS t
 ... | no _ = CS x
@@ -949,6 +960,8 @@ subvNotIn v t (EQB u u₁ u₂ u₃) n
 subvNotIn v t AX n = refl
 subvNotIn v t FREE n = refl
 subvNotIn v t (MSEQ x) n = refl
+subvNotIn v t (MAPP s u) n
+  rewrite subvNotIn v t u n = refl
 subvNotIn v t (CS x) n = refl
 subvNotIn v t (NAME x) n = refl
 subvNotIn v t (FRESH u) n
@@ -1096,6 +1109,8 @@ shiftDownTrivial v (EQB u u₁ u₂ u₃) i
 shiftDownTrivial v AX i = refl
 shiftDownTrivial v FREE i = refl
 shiftDownTrivial v (MSEQ x) i = refl
+shiftDownTrivial v (MAPP s u) i
+  rewrite shiftDownTrivial v u i = refl
 shiftDownTrivial v (CS x) i = refl
 shiftDownTrivial v (NAME x) i = refl
 shiftDownTrivial v (FRESH u) i
@@ -1225,6 +1240,8 @@ shiftUpTrivial v (EQB u u₁ u₂ u₃) i
 shiftUpTrivial v AX i = refl
 shiftUpTrivial v FREE i = refl
 shiftUpTrivial v (MSEQ x) i = refl
+shiftUpTrivial v (MAPP s u) i
+  rewrite shiftUpTrivial v u i = refl
 shiftUpTrivial v (CS x) i = refl
 shiftUpTrivial v (NAME x) i = refl
 shiftUpTrivial v (FRESH u) i
@@ -1310,6 +1327,7 @@ shiftDownUp (EQB t t₁ t₂ t₃) n rewrite shiftDownUp t n | shiftDownUp t₁ 
 shiftDownUp AX n = refl
 shiftDownUp FREE n = refl
 shiftDownUp (MSEQ x) n = refl
+shiftDownUp (MAPP s t) n rewrite shiftDownUp t n = refl
 shiftDownUp (CS x) n = refl
 shiftDownUp (NAME x) n = refl
 shiftDownUp (FRESH t) n rewrite shiftDownUp t n = refl
@@ -1366,6 +1384,7 @@ is-NUM (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-NUM AX = inj₂ (λ { n () })
 is-NUM FREE = inj₂ (λ { n () })
 is-NUM (MSEQ x) = inj₂ (λ { n () })
+is-NUM (MAPP s t) = inj₂ (λ { n () })
 is-NUM (CS x) = inj₂ (λ { n () })
 is-NUM (NAME x) = inj₂ (λ { n () })
 is-NUM (FRESH t) = inj₂ (λ { n () })
@@ -1422,6 +1441,7 @@ is-LAM (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-LAM AX = inj₂ (λ { n () })
 is-LAM FREE = inj₂ (λ { n () })
 is-LAM (MSEQ x) = inj₂ (λ { n () })
+is-LAM (MAPP s t) = inj₂ (λ { n () })
 is-LAM (CS x) = inj₂ (λ { n () })
 is-LAM (NAME x) = inj₂ (λ { n () })
 is-LAM (FRESH t) = inj₂ (λ { n () })
@@ -1478,6 +1498,7 @@ is-CS (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-CS AX = inj₂ (λ { n () })
 is-CS FREE = inj₂ (λ { n () })
 is-CS (MSEQ x) = inj₂ (λ { n () })
+is-CS (MAPP s t) = inj₂ (λ { n () })
 is-CS (CS x) = inj₁ (x , refl)
 is-CS (NAME x) = inj₂ (λ { n () })
 is-CS (FRESH t) = inj₂ (λ { n () })
@@ -1534,6 +1555,7 @@ is-NAME (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-NAME AX = inj₂ (λ { n () })
 is-NAME FREE = inj₂ (λ { n () })
 is-NAME (MSEQ x) = inj₂ (λ { n () })
+is-NAME (MAPP s t) = inj₂ (λ { n () })
 is-NAME (CS x) = inj₂ (λ { n () })
 is-NAME (NAME x) = inj₁ (x , refl)
 is-NAME (FRESH t) = inj₂ (λ { n () })
@@ -1590,6 +1612,7 @@ is-MSEQ (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-MSEQ AX = inj₂ (λ { n () })
 is-MSEQ FREE = inj₂ (λ { n () })
 is-MSEQ (MSEQ x) = inj₁ (x , refl)
+is-MSEQ (MAPP s t) = inj₂ (λ { n () })
 is-MSEQ (CS x) = inj₂ (λ { n () })
 is-MSEQ (NAME x) = inj₂ (λ { n () })
 is-MSEQ (FRESH t) = inj₂ (λ { n () })
@@ -1646,6 +1669,7 @@ is-PAIR (EQB t t₁ t₂ t₃) = inj₂ (λ { n m () })
 is-PAIR AX = inj₂ (λ { n m () })
 is-PAIR FREE = inj₂ (λ { n m () })
 is-PAIR (MSEQ x) = inj₂ (λ { n m () })
+is-PAIR (MAPP s t) = inj₂ (λ { n m () })
 is-PAIR (CS x) = inj₂ (λ { n m () })
 is-PAIR (NAME x) = inj₂ (λ { n m () })
 is-PAIR (FRESH t) = inj₂ (λ { n m () })
@@ -1702,6 +1726,7 @@ is-SUP (EQB t t₁ t₂ t₃) = inj₂ (λ { n m () })
 is-SUP AX = inj₂ (λ { n m () })
 is-SUP FREE = inj₂ (λ { n m () })
 is-SUP (MSEQ x) = inj₂ (λ { n m () })
+is-SUP (MAPP s t) = inj₂ (λ { n m () })
 is-SUP (CS x) = inj₂ (λ { n m () })
 is-SUP (NAME x) = inj₂ (λ { n m () })
 is-SUP (FRESH t) = inj₂ (λ { n m () })
@@ -1758,6 +1783,7 @@ is-MSUP (EQB t t₁ t₂ t₃) = inj₂ (λ { n m () })
 is-MSUP AX = inj₂ (λ { n m () })
 is-MSUP FREE = inj₂ (λ { n m () })
 is-MSUP (MSEQ x) = inj₂ (λ { n m () })
+is-MSUP (MAPP s t) = inj₂ (λ { n m () })
 is-MSUP (CS x) = inj₂ (λ { n m () })
 is-MSUP (NAME x) = inj₂ (λ { n m () })
 is-MSUP (FRESH t) = inj₂ (λ { n m () })
@@ -1815,6 +1841,7 @@ is-INL (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-INL AX = inj₂ (λ { n () })
 is-INL FREE = inj₂ (λ { n () })
 is-INL (MSEQ x) = inj₂ (λ { n () })
+is-INL (MAPP s t) = inj₂ (λ { n () })
 is-INL (CS x) = inj₂ (λ { n () })
 is-INL (NAME x) = inj₂ (λ { n () })
 is-INL (FRESH t) = inj₂ (λ { n () })
@@ -1871,6 +1898,7 @@ is-INR (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-INR AX = inj₂ (λ { n () })
 is-INR FREE = inj₂ (λ { n () })
 is-INR (MSEQ x) = inj₂ (λ { n () })
+is-INR (MAPP s t) = inj₂ (λ { n () })
 is-INR (CS x) = inj₂ (λ { n () })
 is-INR (NAME x) = inj₂ (λ { n () })
 is-INR (FRESH t) = inj₂ (λ { n () })
@@ -1914,7 +1942,7 @@ data ∼vals : Term → Term → Set where
   ∼vals-EQB      : {a b c d e f g h : Term} → ∼vals (EQB a b c d) (EQB e f g h)
   ∼vals-AX      : ∼vals AX AX
   ∼vals-FREE    : ∼vals FREE FREE
-  ∼vals-MSEQ    : {n : 𝕊} → ∼vals (MSEQ n) (MSEQ n)
+  ∼vals-MSEQ    : {s : 𝕊} → ∼vals (MSEQ s) (MSEQ s)
   ∼vals-CS      : {n : Name} → ∼vals (CS n) (CS n)
   ∼vals-NAME    : {n : Name} → ∼vals (NAME n) (NAME n)
   ∼vals-TSQUASH : {a b : Term} → ∼vals (TSQUASH a) (TSQUASH b)
@@ -2103,6 +2131,7 @@ data ∼vals : Term → Term → Set where
 ¬read AX = true
 ¬read FREE = true
 ¬read (MSEQ x) = true
+¬read (MAPP s t) = ¬read t
 ¬read (CS x) = false -- ONLY FALSE
 ¬read (NAME x) = true
 ¬read (FRESH t) = ¬read t
@@ -2174,6 +2203,7 @@ data ∼vals : Term → Term → Set where
 ¬names AX = true
 ¬names FREE = true
 ¬names (MSEQ x) = true
+¬names (MAPP s t) = ¬names t
 ¬names (CS x) = false -- FALSE
 ¬names (NAME x) = false -- FALSE
 ¬names (FRESH t) = false -- FALSE

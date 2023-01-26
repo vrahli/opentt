@@ -171,6 +171,7 @@ data differ (name1 name2 : Name) (f : Term) : Term → Term → Set where
   differ-AX      : differ name1 name2 f AX AX
   differ-FREE    : differ name1 name2 f FREE FREE
   differ-MSEQ    : (s : 𝕊) → differ name1 name2 f (MSEQ s) (MSEQ s)
+  differ-MAPP    : (s : 𝕊) (a₁ a₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f (MAPP s a₁) (MAPP s a₂)
 --  differ-CS      : (name : Name) → differ name1 name2 f (CS name) (CS name)
 --  differ-NAME    : (name : Name) → differ name1 name2 f (NAME name) (NAME name)
 --  differ-FRESH   : (a b : Term) → differ (suc name1) (suc name2) (shiftNameUp 0 f) a b → differ name1 name2 f (FRESH a) (FRESH b)
@@ -292,6 +293,7 @@ differ-INRₗ→ {name1} {name2} {f} {a} {.(INR a₂)} (differ-INR .a a₂ diff)
 →differ-shiftUp v {name1} {name2} {f} cf {.AX} {.AX} differ-AX = differ-AX
 →differ-shiftUp v {name1} {name2} {f} cf {.FREE} {.FREE} differ-FREE = differ-FREE
 →differ-shiftUp v {name1} {name2} {f} cf {.MSEQ s} {.MSEQ s} (differ-MSEQ s) = differ-MSEQ s
+→differ-shiftUp v {name1} {name2} {f} cf {.(MAPP s a₁)} {.(MAPP s a₂)} (differ-MAPP s a₁ a₂ diff) = differ-MAPP _ _ _ (→differ-shiftUp v cf diff)
 --→differ-shiftUp v {name1} {name2} {f} cf {.(CS name)} {.(CS name)} (differ-CS name) = differ-CS name
 --→differ-shiftUp v {name1} {name2} {f} cf {.(NAME name)} {.(NAME name)} (differ-NAME name) = differ-NAME name
 --→differ-shiftUp v {name1} {name2} {f} cf {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) = differ-FRESH _ _ (→differ-shiftUp v (→#shiftNameUp 0 {f} cf) diff)
@@ -322,6 +324,10 @@ differ-INRₗ→ {name1} {name2} {f} {a} {.(INR a₂)} (differ-INR .a a₂ diff)
 
 ≡APPLY : {a b c d : Term} → a ≡ b → c ≡ d → APPLY a c ≡ APPLY b d
 ≡APPLY {a} {b} {c} {d} e f rewrite e | f = refl
+
+
+≡MAPP : {a b : 𝕊} {c d : Term} → a ≡ b → c ≡ d → MAPP a c ≡ MAPP b d
+≡MAPP {a} {b} {c} {d} e f rewrite e | f = refl
 
 
 ≡IFLT : {a b c d e f g h : Term} → a ≡ b → c ≡ d → e ≡ f → g ≡ h → IFLT a c e g ≡ IFLT b d f h
@@ -594,6 +600,7 @@ shiftNameUp-shiftNameUp {i} {j} {EQB t t₁ t₂ t₃} imp = ≡EQB (shiftNameUp
 shiftNameUp-shiftNameUp {i} {j} {AX} imp = refl
 shiftNameUp-shiftNameUp {i} {j} {FREE} imp = refl
 shiftNameUp-shiftNameUp {i} {j} {MSEQ x} imp = ≡MSEQ refl
+shiftNameUp-shiftNameUp {i} {j} {MAPP s t} imp = ≡MAPP refl (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {CS x} imp = ≡CS (sucIf≤-sucIf≤ {x} {i} {j} imp)
 shiftNameUp-shiftNameUp {i} {j} {NAME x} imp = ≡NAME (sucIf≤-sucIf≤ {x} {i} {j} imp)
 shiftNameUp-shiftNameUp {i} {j} {FRESH t} imp = ≡FRESH (shiftNameUp-shiftNameUp {suc i} {suc j} {t} (_≤_.s≤s imp))
@@ -663,6 +670,7 @@ suc-sucIf≤ i j | no p with suc j <? suc i
 →differ-shiftNameUp v {name1} {name2} {f} cf {.AX} {.AX} differ-AX = differ-AX
 →differ-shiftNameUp v {name1} {name2} {f} cf {.FREE} {.FREE} differ-FREE = differ-FREE
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(MSEQ x)} {.(MSEQ x)} (differ-MSEQ x) = differ-MSEQ _
+→differ-shiftNameUp v {name1} {name2} {f} cf {.(MAPP s a₁)} {.(MAPP s a₂)} (differ-MAPP s a₁ a₂ diff) = differ-MAPP _ _ _ (→differ-shiftNameUp v cf diff)
 --→differ-shiftNameUp v {name1} {name2} {f} cf {.(CS name)} {.(CS name)} (differ-CS name) = differ-CS _
 --→differ-shiftNameUp v {name1} {name2} {f} cf {.(NAME name)} {.(NAME name)} (differ-NAME name) = differ-NAME _
 {--→differ-shiftNameUp v {name1} {name2} {f} cf {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) = differ-FRESH (shiftNameUp (suc v) a) (shiftNameUp (suc v) b) c1
@@ -775,6 +783,7 @@ differ-subv {name1} {name2} {f} cf v {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b�
 differ-subv {name1} {name2} {f} cf v {.AX} {.AX} {b₁} {b₂} differ-AX d₂ = differ-AX
 differ-subv {name1} {name2} {f} cf v {.FREE} {.FREE} {b₁} {b₂} differ-FREE d₂ = differ-FREE
 differ-subv {name1} {name2} {f} cf v {.(MSEQ x)} {.(MSEQ x)} {b₁} {b₂} (differ-MSEQ x) d₂ = differ-MSEQ x
+differ-subv {name1} {name2} {f} cf v {.(MAPP s a₁)} {.(MAPP s a₂)} {b₁} {b₂} (differ-MAPP s a₁ a₂ d₁) d₂ = differ-MAPP _ _ _ (differ-subv cf v d₁ d₂)
 --differ-subv {name1} {name2} {f} cf v {.(CS name)} {.(CS name)} {b₁} {b₂} (differ-CS name) d₂ = differ-CS name
 --differ-subv {name1} {name2} {f} cf v {.(NAME name)} {.(NAME name)} {b₁} {b₂} (differ-NAME name) d₂ = differ-NAME name
 --differ-subv {name1} {name2} {f} cf v {.(FRESH a)} {.(FRESH b)} {b₁} {b₂} (differ-FRESH a b d₁) d₂ = differ-FRESH _ _ (differ-subv (→#shiftNameUp 0 {f} cf) v d₁ (→differ-shiftNameUp0 {name1} {name2} cf d₂))
@@ -836,6 +845,7 @@ differ-subv {name1} {name2} {f} cf v {.(upd name1 f)} {.(upd name2 f)} {b₁} {b
 →differ-shiftDown v {name1} {name2} {f} cf {.AX} {.AX} differ-AX = differ-AX
 →differ-shiftDown v {name1} {name2} {f} cf {.FREE} {.FREE} differ-FREE = differ-FREE
 →differ-shiftDown v {name1} {name2} {f} cf {.(MSEQ x)} {.(MSEQ x)} (differ-MSEQ x) = (differ-MSEQ x)
+→differ-shiftDown v {name1} {name2} {f} cf {.(MAPP s a₁)} {.(MAPP s a₂)} (differ-MAPP s a₁ a₂ diff) = differ-MAPP _ _ _ (→differ-shiftDown v cf diff)
 --→differ-shiftDown v {name1} {name2} {f} cf {.(CS name)} {.(CS name)} (differ-CS name) = (differ-CS name)
 --→differ-shiftDown v {name1} {name2} {f} cf {.(NAME name)} {.(NAME name)} (differ-NAME name) = (differ-NAME name)
 --→differ-shiftDown v {name1} {name2} {f} cf {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) = differ-FRESH _ _ (→differ-shiftDown v (→#shiftNameUp 0 {f} cf) diff)

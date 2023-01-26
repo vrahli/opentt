@@ -94,69 +94,6 @@ open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 
-steps-APPLY-LAMBDA-FIX→ : {k : ℕ} {t u : Term} {w1 w2 : 𝕎·}
-                           → 0 < k
-                           → steps k (APPLY (LAMBDA t) (FIX (LAMBDA t)) , w1) ≡ (u , w2)
-                           → steps k (FIX (LAMBDA t) , w1) ≡ (u , w2)
-steps-APPLY-LAMBDA-FIX→ {0} {t} {u} {w1} {w2} ltk comp = ⊥-elim (<-irrefl refl ltk)
-steps-APPLY-LAMBDA-FIX→ {suc k} {t} {u} {w1} {w2} ltk comp = comp
-
-
-ΣstepsUpdRel-FIX-APPLY→ :
-  {name : Name} {f g : Term} {w1 w : 𝕎·}
-  → Σ (ΣstepsUpdRel name f g (LET (FIX (upd name f)) (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 (APPLY (force g) (FIX (force g))) w)
-       (λ x → 0 < fst (snd x))
-  → ΣstepsUpdRel name f g (LET (FIX (upd name f)) (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 (FIX (force g)) w
-ΣstepsUpdRel-FIX-APPLY→ {name} {f} {g} {w1} {w} ((k1 , k2 , y1 , y2 , w3 , comp1 , comp2 , u) , gt0) =
-  k1 , k2 , y1 , y2 , w3 , comp1 , steps-APPLY-LAMBDA-FIX→ gt0 comp2 , u
-
-
-
-updRel→isValue : {name : Name} {f g a b : Term}
-                  → updRel name f g a b
-                  → isValue a
-                  → isValue b
-updRel→isValue {name} {f} {g} {.NAT} {.NAT} updRel-NAT isv = tt
-updRel→isValue {name} {f} {g} {.QNAT} {.QNAT} updRel-QNAT isv = tt
-updRel→isValue {name} {f} {g} {.TNAT} {.TNAT} updRel-TNAT isv = tt
-updRel→isValue {name} {f} {g} {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updRel-LT a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updRel-QLT a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(NUM x)} {.(NUM x)} (updRel-NUM x) isv = tt
-updRel→isValue {name} {f} {g} {.(PI a₁ b₁)} {.(PI a₂ b₂)} (updRel-PI a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(LAMBDA a₁)} {.(LAMBDA a₂)} (updRel-LAMBDA a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(WT a₁ b₁)} {.(WT a₂ b₂)} (updRel-WT a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (updRel-SUP a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(MT a₁ b₁)} {.(MT a₂ b₂)} (updRel-MT a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updRel-MSUP a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (updRel-SUM a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (updRel-PAIR a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(SET a₁ b₁)} {.(SET a₂ b₂)} (updRel-SET a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (updRel-ISECT a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (updRel-TUNION a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (updRel-UNION a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (updRel-QTUNION a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(INL a₁)} {.(INL a₂)} (updRel-INL a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(INR a₁)} {.(INR a₂)} (updRel-INR a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (updRel-EQ a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) isv = tt
-updRel→isValue {name} {f} {g} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (updRel-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) isv = tt
-updRel→isValue {name} {f} {g} {.AX} {.AX} updRel-AX isv = tt
-updRel→isValue {name} {f} {g} {.FREE} {.FREE} updRel-FREE isv = tt
-updRel→isValue {name} {f} {g} {.(MSEQ x)} {.(MSEQ x)} (updRel-MSEQ x) isv = tt
-updRel→isValue {name} {f} {g} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel-TSQUASH a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel-TTRUNC a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(TCONST a₁)} {.(TCONST a₂)} (updRel-TCONST a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(PURE)} {.(PURE)} (updRel-PURE) isv = tt
-updRel→isValue {name} {f} {g} {.(DUM a₁)} {.(DUM a₂)} (updRel-DUM a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(UNIV x)} {.(UNIV x)} (updRel-UNIV x) isv = tt
-updRel→isValue {name} {f} {g} {.(LIFT a₁)} {.(LIFT a₂)} (updRel-LIFT a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(LOWER a₁)} {.(LOWER a₂)} (updRel-LOWER a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(SHRINK a₁)} {.(SHRINK a₂)} (updRel-SHRINK a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(upd name f)} {.(force g)} updRel-upd isv = tt
-
-
-
 step-updRel : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term}
               {a b x : Term} {w1 w2 w : 𝕎·}
               → ¬Names f
@@ -392,6 +329,16 @@ step-updRel gc {n} {name} {f} {g} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ 
 step-updRel gc {n} {name} {f} {g} {.AX} {.AX} {x} {w1} {w2} {w} nnf nng cf cg comp ind updRel-AX gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , AX , AX , w1 , refl , refl , updRel-AX
 step-updRel gc {n} {name} {f} {g} {.FREE} {.FREE} {x} {w1} {w2} {w} nnf nng cf cg comp ind updRel-FREE gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , FREE , FREE , w1 , refl , refl , updRel-FREE
 step-updRel gc {n} {name} {f} {g} {.(MSEQ s)} {.(MSEQ s)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-MSEQ s) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , MSEQ s , MSEQ s , w1 , refl , refl , updRel-MSEQ s
+step-updRel gc {n} {name} {f} {g} {.(MAPP s a₁)} {.(MAPP s a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-MAPP s a₁ a₂ r) gtn compat wgt0 eqn with is-NUM a₁
+... | inj₁ (k , q) rewrite q | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) | updRel-NUMₗ→ r =
+  0 , 1 , NUM (s k) , NUM (s k) , w1 , refl , refl , updRel-NUM _
+... | inj₂ q with step⊎ a₁ w1
+... |    inj₁ (a₁' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  →ΣstepsUpdRel-MAPP₁ ind'
+  where
+    ind' : ΣstepsUpdRel name f g a₁' w1' a₂ w
+    ind' = step-updRel gc {n} {name} {f} {g} {a₁} {a₂} {a₁'} {w1} {w1'} {w} nnf nng cf cg z (stepsPresUpdRel-MAPP₁→ ind) r gtn compat wgt0 eqn
+... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-updRel gc {n} {name} {f} {g} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-CHOOSE a₁ a₂ b₁ b₂ r r₁) gtn compat wgt0 eqn with is-NAME a₁
 ... | inj₁ (name' , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ⊥-elim (updRel-NAMEₗ→ r)
 ... | inj₂ q with step⊎ a₁ w1
@@ -413,7 +360,6 @@ step-updRel gc {n} {name} {f} {g} {.(LIFT a₁)} {.(LIFT a₂)} {x} {w1} {w2} {w
 step-updRel gc {n} {name} {f} {g} {.(LOWER a₁)} {.(LOWER a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-LOWER a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , LOWER a₁ , LOWER a₂ , w1 , refl , refl , updRel-LOWER _ _ r
 step-updRel gc {n} {name} {f} {g} {.(SHRINK a₁)} {.(SHRINK a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-SHRINK a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , SHRINK a₁ , SHRINK a₂ , w1 , refl , refl , updRel-SHRINK _ _ r
 step-updRel gc {n} {name} {f} {g} {.(upd name f)} {.(force g)} {x} {w1} {w2} {w} nnf nng cf cg comp ind updRel-upd gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , upd name f , force g , w1 , refl , refl , updRel-upd
-
 
 
 steps-decomp-isHighestℕ : {w w1 w2 : 𝕎·} {a b v : Term} {n m : ℕ} (i : ℕ) (name : Name)
@@ -585,6 +531,7 @@ updRel-refl {name} {f} {g} {EQB a a₁ a₂ a₃} nn = updRel-EQB _ _ _ _ _ _ _ 
 updRel-refl {name} {f} {g} {AX} nn = updRel-AX
 updRel-refl {name} {f} {g} {FREE} nn = updRel-FREE
 updRel-refl {name} {f} {g} {MSEQ s} nn = updRel-MSEQ s
+updRel-refl {name} {f} {g} {MAPP s a} nn = updRel-MAPP _ _ _ (updRel-refl nn)
 updRel-refl {name} {f} {g} {CHOOSE a a₁} nn = updRel-CHOOSE _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
 updRel-refl {name} {f} {g} {TSQUASH a} nn = updRel-TSQUASH _ _ (updRel-refl nn)
 updRel-refl {name} {f} {g} {TTRUNC a} nn = updRel-TTRUNC _ _ (updRel-refl nn)

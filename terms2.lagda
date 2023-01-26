@@ -93,6 +93,7 @@ shiftUp-shiftNameUp c d (EQB t t₁ t₂ t₃) rewrite shiftUp-shiftNameUp c d t
 shiftUp-shiftNameUp c d AX = refl
 shiftUp-shiftNameUp c d FREE = refl
 shiftUp-shiftNameUp c d (MSEQ x) = refl
+shiftUp-shiftNameUp c d (MAPP s t) rewrite shiftUp-shiftNameUp c d t = refl
 shiftUp-shiftNameUp c d (CS x) = refl
 shiftUp-shiftNameUp c d (NAME x) = refl
 shiftUp-shiftNameUp c d (FRESH t) rewrite shiftUp-shiftNameUp c (suc d) t = refl
@@ -150,6 +151,7 @@ renn-shiftNameUp n1 n2 (EQB t t₁ t₂ t₃) rewrite renn-shiftNameUp n1 n2 t |
 renn-shiftNameUp n1 n2 AX = refl
 renn-shiftNameUp n1 n2 FREE = refl
 renn-shiftNameUp n1 n2 (MSEQ x) = refl
+renn-shiftNameUp n1 n2 (MAPP s t) rewrite renn-shiftNameUp n1 n2 t = refl
 renn-shiftNameUp n1 n2 (CS x) with x <? n1
 ... | yes p with x ≟ n1
 ... |    yes q rewrite q = ⊥-elim (1+n≰n p)
@@ -233,6 +235,7 @@ shiftNameDownUp n (EQB t t₁ t₂ t₃) rewrite shiftNameDownUp n t | shiftName
 shiftNameDownUp n AX = refl
 shiftNameDownUp n FREE = refl
 shiftNameDownUp n (MSEQ x) = refl
+shiftNameDownUp n (MAPP s t) rewrite shiftNameDownUp n t = refl
 shiftNameDownUp n (CS x) rewrite predIf≤-sucIf≤ n x = refl
 shiftNameDownUp n (NAME x) rewrite predIf≤-sucIf≤ n x = refl
 shiftNameDownUp n (FRESH t) rewrite shiftNameDownUp (suc n) t = refl
@@ -342,6 +345,7 @@ shiftNameDownUp n (SHRINK t) rewrite shiftNameDownUp n t = refl
 ¬names-shiftUp n AX = refl
 ¬names-shiftUp n FREE = refl
 ¬names-shiftUp n (MSEQ x) = refl
+¬names-shiftUp n (MAPP s a) rewrite ¬names-shiftUp n a = refl
 ¬names-shiftUp n (CS x) = refl
 ¬names-shiftUp n (NAME x) = refl
 ¬names-shiftUp n (FRESH a) rewrite ¬names-shiftUp n a = refl
@@ -397,6 +401,7 @@ shiftNameDownUp n (SHRINK t) rewrite shiftNameDownUp n t = refl
 ¬names-shiftDown n AX = refl
 ¬names-shiftDown n FREE = refl
 ¬names-shiftDown n (MSEQ x) = refl
+¬names-shiftDown n (MAPP s a) rewrite ¬names-shiftDown n a = refl
 ¬names-shiftDown n (CS x) = refl
 ¬names-shiftDown n (NAME x) = refl
 ¬names-shiftDown n (FRESH a) rewrite ¬names-shiftDown n a = refl
@@ -473,6 +478,7 @@ shiftNameDownUp n (SHRINK t) rewrite shiftNameDownUp n t = refl
 ¬Names-subv v {a} {AX} na nb = refl
 ¬Names-subv v {a} {FREE} na nb = refl
 ¬Names-subv v {a} {MSEQ x} na nb = refl
+¬Names-subv v {a} {MAPP s b} na nb = ¬Names-subv v {a} {b} na nb
 ¬Names-subv v {a} {CHOOSE b b₁} na nb = →∧≡true {¬names (subv v a b)} {¬names (subv v a b₁)} (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv v {a} {b₁} na (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
 ¬Names-subv v {a} {TSQUASH b} na nb = ¬Names-subv v {a} {b} na nb
 ¬Names-subv v {a} {TTRUNC b} na nb = ¬Names-subv v {a} {b} na nb
@@ -610,6 +616,30 @@ APPLY⇓ : {w w' : 𝕎·} {a b : Term} (c : Term)
          → APPLY a c ⇓ APPLY b c from w to w'
 APPLY⇓ {w} {w'} {a} {b} c (n , comp) = →steps-APPLY c n comp
 
+
+→steps-MAPP : {w w' : 𝕎·} {a b : Term} (s : 𝕊) (n : ℕ)
+               → steps n (a , w) ≡ (b , w')
+               → MAPP s a ⇓ MAPP s b from w to w'
+→steps-MAPP {w} {w'} {a} {b} s 0 comp rewrite pair-inj₁ comp | pair-inj₂ comp = 0 , refl
+→steps-MAPP {w} {w'} {a} {b} s (suc n) comp with is-NUM a
+... | inj₁ (k , p) rewrite p | stepsVal (NUM k) w n tt | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl
+... | inj₂ p with step⊎ a w
+... |    inj₁ (a1 , w1 , q) rewrite q =
+  step-⇓-from-to-trans s1 (→steps-MAPP s n comp)
+  where
+    s1 : step (MAPP s a) w ≡ just (MAPP s a1 , w1)
+    s1 with is-NUM a
+    ... | inj₁ (k1 , p1) rewrite p1 = ⊥-elim (p k1 refl)
+    ... | inj₂ p1 rewrite q = refl
+→steps-MAPP {w} {w'} {a} {b} s (suc n) comp | inj₂ p | inj₂ q
+  rewrite q | sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl
+
+
+MAPP⇓ : {w w' : 𝕎·} {a b : Term} (s : 𝕊)
+         → a ⇓ b from w to w'
+         → MAPP s a ⇓ MAPP s b from w to w'
+MAPP⇓ {w} {w'} {a} {b} s (n , comp) = →steps-MAPP s n comp
 
 
 FIX⇓steps : (k : ℕ) {a a' : Term} {w1 w2 : 𝕎·}
@@ -966,6 +996,23 @@ hasValue-APPLY→ : (a b : Term) (w : 𝕎·) {k : ℕ}
                   → hasValueℕ k a w
 hasValue-APPLY→ a b w {k} (v , w' , comp , isv) = APPLY→hasValue k a b v w w' comp isv
 
+
+MAPP→hasValue : (k : ℕ) (s : 𝕊) (a v : Term) (w w' : 𝕎·)
+                 → steps k (MAPP s a , w) ≡ (v , w')
+                 → isValue v
+                 → hasValueℕ k a w
+MAPP→hasValue 0 s a v w w' comp isv rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+MAPP→hasValue (suc k) s a v w w' comp isv with is-NUM a
+... | inj₁ (n , p) rewrite p = isValue→hasValueℕ (suc k) (NUM n) w tt
+... | inj₂ y with step⊎ a w
+... |    inj₁ (a1 , w1 , z) rewrite z = MAPP→hasValue k s a1 v w1 w' comp isv
+... |    inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+
+
+hasValue-MAPP→ : (s : 𝕊) (a : Term) (w : 𝕎·) {k : ℕ}
+                  → hasValueℕ k (MAPP s a) w
+                  → hasValueℕ k a w
+hasValue-MAPP→ s a w {k} (v , w' , comp , isv) = MAPP→hasValue k s a v w w' comp isv
 
 
 FIX→hasValue : (k : ℕ) (a v : Term) (w w' : 𝕎·)

@@ -101,6 +101,7 @@ differ-refl name1 name2 f (EQB t t₁ t₂ t₃) nn = differ-EQB _ _ _ _ _ _ _ _
 differ-refl name1 name2 f AX nn = differ-AX
 differ-refl name1 name2 f FREE nn = differ-FREE
 differ-refl name1 name2 f (MSEQ x) nn = differ-MSEQ x
+differ-refl name1 name2 f (MAPP s t) nn = differ-MAPP _ _ _ (differ-refl name1 name2 f t nn)
 differ-refl name1 name2 f (CHOOSE t t₁) nn = differ-CHOOSE _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
 differ-refl name1 name2 f (TSQUASH t) nn = differ-TSQUASH _ _ (differ-refl name1 name2 f t nn)
 differ-refl name1 name2 f (TTRUNC t) nn = differ-TTRUNC _ _ (differ-refl name1 name2 f t nn)
@@ -522,6 +523,35 @@ differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(EQB a₁ b₁ c₃ d₁) 
 differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .AX .AX a' v k compat1 compat2 agtn differ-AX g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = AX , AX , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-AX , g0
 differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .FREE .FREE a' v k compat1 compat2 agtn differ-FREE g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = FREE , FREE , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-FREE , g0
 differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(MSEQ x) .(MSEQ x) a' v k compat1 compat2 agtn (differ-MSEQ x) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = MSEQ x , MSEQ x , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-MSEQ x , g0
+-- MAPP
+differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(MAPP x a₁) .(MAPP x a₂) a' v k compat1 compat2 agtn (differ-MAPP x a₁ a₂ diff) g0 s hv isvv pd with is-NUM a₁
+... | inj₁ (n , p)
+  rewrite p
+        | sym (pair-inj₁ (just-inj s))
+        | sym (pair-inj₂ (just-inj s))
+        | differ-NUM→ diff
+        | stepsVal (NUM (x n)) w1 k tt
+        | sym (pair-inj₁ hv)
+        | sym (pair-inj₂ hv) =
+  NUM (x n) , NUM (x n) , w1 , w1' , (0 , refl) , (1 , refl) , differ-NUM (x n) , g0
+... | inj₂ y with step⊎ a₁ w1
+... |    inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
+  MAPP x (fst ind) ,
+  MAPP x (fst (snd ind)) ,
+  fst (snd (snd ind)) ,
+  fst (snd (snd (snd ind))) ,
+  MAPP⇓ x (fst (snd (snd (snd (snd ind))))) ,
+  MAPP⇓ x (fst (snd (snd (snd (snd (snd ind)))))) ,
+  differ-MAPP _ _ _ (fst (snd (snd (snd (snd (snd (snd ind))))))) ,
+  snd (snd (snd (snd (snd (snd (snd ind))))))
+  where
+    hv0 : hasValueℕ k a₁' w1''
+    hv0 = MAPP→hasValue k x a₁' v w1'' w0 hv isvv
+
+    ind : Σ Term (λ a'' → Σ Term (λ b'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
+            a₁' ⇓ a'' from w1'' to w3 × a₂ ⇓ b'' from w1' to w3' × differ name1 name2 f a'' b'' × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
+    ind = differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w1'' w1' (fst (snd hv0)) a₁ a₂ a₁' (fst hv0) k compat1 compat2 agtn diff g0 z (fst (snd (snd hv0))) (snd (snd (snd hv0))) pd -- (hasValue-APPLY→ a₁' b₁ w1'' {k} hv) pd
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
 --differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(CS name1) .(CS name2) a' v k compat1 compat2 agtn differ-CS g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = CS name1 , CS name2 , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-CS , g0
 -- CHOOSE
 differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(CHOOSE a₁ b₁) .(CHOOSE a₂ b₂) a' v k compat1 compat2 agtn (differ-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd with is-NAME a₁
@@ -1224,6 +1254,7 @@ IFLT-NUM⇓ n m w a b c c₁ c₂ with n <? m
 ¬Names→shiftNameUp≡ AX n nnt = refl
 ¬Names→shiftNameUp≡ FREE n nnt = refl
 ¬Names→shiftNameUp≡ (MSEQ x) n nnt = refl
+¬Names→shiftNameUp≡ (MAPP s t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
 ¬Names→shiftNameUp≡ (CHOOSE t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
 ¬Names→shiftNameUp≡ (TSQUASH t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
 ¬Names→shiftNameUp≡ (TTRUNC t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl

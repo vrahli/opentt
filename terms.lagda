@@ -677,6 +677,7 @@ fvars-shiftUp≡ n (EQB t t₁ t₂ t₃)
 fvars-shiftUp≡ n AX = refl
 fvars-shiftUp≡ n FREE = refl
 fvars-shiftUp≡ n (MSEQ x) = refl
+fvars-shiftUp≡ n (MAPP s t) = fvars-shiftUp≡ n t
 fvars-shiftUp≡ n (CS x) = refl
 fvars-shiftUp≡ n (NAME x) = refl
 fvars-shiftUp≡ n (FRESH t)
@@ -1026,6 +1027,7 @@ fvars-shiftDown≡ n (EQB t t₁ t₂ t₃)
 fvars-shiftDown≡ n AX = refl
 fvars-shiftDown≡ n FREE = refl
 fvars-shiftDown≡ n (MSEQ x) = refl
+fvars-shiftDown≡ n (MAPP s t) = fvars-shiftDown≡ n t
 fvars-shiftDown≡ n (CS x) = refl
 fvars-shiftDown≡ n (NAME x) = refl
 fvars-shiftDown≡ n (FRESH t)
@@ -1131,6 +1133,7 @@ fvars-shiftNameUp n (EQB a a₁ a₂ a₃) rewrite fvars-shiftNameUp n a | fvars
 fvars-shiftNameUp n AX = refl
 fvars-shiftNameUp n FREE = refl
 fvars-shiftNameUp n (MSEQ x) = refl
+fvars-shiftNameUp n (MAPP s a) rewrite fvars-shiftNameUp n a = refl
 fvars-shiftNameUp n (CS x) = refl
 fvars-shiftNameUp n (NAME x) = refl
 fvars-shiftNameUp n (FRESH a) rewrite fvars-shiftNameUp (suc n) a = refl
@@ -1302,6 +1305,7 @@ fvars-subv v a (EQB b b₁ b₂ b₃) i with ∈-++⁻ (fvars (subv v a b)) i
 fvars-subv v a AX i = ⊥-elim (¬∈[] i)
 fvars-subv v a FREE i = ⊥-elim (¬∈[] i)
 fvars-subv v a (MSEQ x) i = ⊥-elim (¬∈[] i)
+fvars-subv v a (MAPP s t) = fvars-subv v a t
 fvars-subv v a (CS x) i = ⊥-elim (¬∈[] i)
 fvars-subv v a (NAME x) i = ⊥-elim (¬∈[] i)
 fvars-subv v a (FRESH b) {x} i =
@@ -1554,6 +1558,8 @@ shiftDown1-subv1-shiftUp0 n a (EQB b b₁ b₂ b₃) ca
 shiftDown1-subv1-shiftUp0 n a AX ca = refl
 shiftDown1-subv1-shiftUp0 n a FREE ca = refl
 shiftDown1-subv1-shiftUp0 n a (MSEQ x) ca = refl
+shiftDown1-subv1-shiftUp0 n a (MAPP s b) ca
+  rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
 shiftDown1-subv1-shiftUp0 n a (CS x) ca = refl
 shiftDown1-subv1-shiftUp0 n a (NAME x) ca = refl
 shiftDown1-subv1-shiftUp0 n a (FRESH b) ca
@@ -2041,6 +2047,26 @@ EQBinj4 refl =  refl
 #EQBinj4 c = CTerm≡ (EQBinj4 (≡CTerm c))
 
 
+#MAPP : 𝕊 → CTerm → CTerm
+#MAPP s a = ct (MAPP s ⌜ a ⌝) (CTerm.closed a)
+
+
+MAPPinj1 : {a c : 𝕊} {b d : Term} → MAPP a b ≡ MAPP c d → a ≡ c
+MAPPinj1 refl = refl
+
+
+MAPPinj2 : {a c : 𝕊} {b d : Term} → MAPP a b ≡ MAPP c d → b ≡ d
+MAPPinj2 refl = refl
+
+
+#MAPPinj1 : {a c : 𝕊} {b d : CTerm} → #MAPP a b ≡ #MAPP c d → a ≡ c
+#MAPPinj1 e = MAPPinj1 (≡CTerm e)
+
+
+#MAPPinj2 : {a c : 𝕊} {b d : CTerm} → #MAPP a b ≡ #MAPP c d → b ≡ d
+#MAPPinj2 e = CTerm≡ (MAPPinj2 (≡CTerm e))
+
+
 -- EQ
 EQneqNAT : {t a b : Term} → ¬ (EQ t a b) ≡ NAT
 EQneqNAT {t} {a} {b} ()
@@ -2414,6 +2440,7 @@ shiftUp-inj {n} {EQB a a₁ a₂ a₃} {EQB b b₁ b₂ b₃} e rewrite shiftUp-
 shiftUp-inj {n} {AX} {AX} e = refl
 shiftUp-inj {n} {FREE} {FREE} e = refl
 shiftUp-inj {n} {MSEQ x} {MSEQ .x} refl = refl
+shiftUp-inj {n} {MAPP s1 a1} {MAPP s2 a2} e rewrite MAPPinj1 e | shiftUp-inj (MAPPinj2 e) = refl
 shiftUp-inj {n} {CS x} {CS .x} refl = refl
 shiftUp-inj {n} {NAME x} {NAME .x} refl = refl
 shiftUp-inj {n} {FRESH a} {FRESH b} e rewrite shiftUp-inj (FRESHinj e) = refl
@@ -2498,6 +2525,10 @@ FUNinj2 {a} {b} {c} {d} x = shiftUp-inj (PIinj2 x)
 
 #[0]MSEQ : 𝕊 → CTerm0
 #[0]MSEQ n = ct0 (MSEQ n) refl
+
+
+#[0]MAPP : 𝕊 → CTerm0 → CTerm0
+#[0]MAPP s a = ct0 (MAPP s ⌜ a ⌝) (CTerm0.closed a)
 
 
 #[0]CS : Name → CTerm0
@@ -3612,6 +3643,10 @@ CTerm→CTerm1→Term (ct a c) = refl
   where
     c : #[ 0 ∷ [ 1 ] ] MSEQ s
     c = refl
+
+
+#[1]MAPP : 𝕊 → CTerm1 → CTerm1
+#[1]MAPP s a = ct1 (MAPP s ⌜ a ⌝) (CTerm1.closed a)
 
 
 #[1]CS : Name → CTerm1

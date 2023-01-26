@@ -111,7 +111,7 @@ step (APPLY f a) w with is-LAM f
 ... |       inj₂ y with step a w
 ... |          just (u , w') = ret (APPLY (CS name) u) w'
 ... |          nothing = nothing
-step (APPLY f a) w | inj₂ x | inj₂ name with step f w
+step (APPLY f a) w | inj₂ x {-- ¬LAM --} | inj₂ name {-- ¬SEQ --} with step f w
 ... | just (g , w') = ret (APPLY g a) w'
 ... | nothing = nothing
 {--step (APPLY (CS name) (NUM n)) w = Data.Maybe.map (λ t → t , w) (getT n name w)
@@ -233,6 +233,13 @@ step AX = ret AX
 step FREE = ret FREE
 -- MSEQ
 step (MSEQ f) = ret (MSEQ f)
+-- APPLY
+-- access the n^th choice in the history of choices made for "name"
+step (MAPP s a) w with is-NUM a
+... | inj₁ (n , q) = ret (NUM (s n)) w
+... | inj₂ y with step a w
+... |    just (u , w') = ret (MAPP s u) w'
+... |    nothing = nothing
 -- CS
 step (CS name) = ret (CS name)
 -- NAME
@@ -542,6 +549,7 @@ step-APPLY-CS-¬NUM name (SPREAD a x) b w w' c s rewrite s = refl
 step-APPLY-CS-¬NUM name (DSUP a x) b w w' c s rewrite s = refl
 step-APPLY-CS-¬NUM name (DMSUP a x) b w w' c s rewrite s = refl
 step-APPLY-CS-¬NUM name (CHOOSE a a₁) b w w' c s rewrite s = refl
+step-APPLY-CS-¬NUM name (MAPP x a) b w w' c s rewrite s = refl
 --step-APPLY-CS-¬NUM name (IFC0 a a₁ a₂) b w w' c s rewrite s = refl
 
 
@@ -772,6 +780,11 @@ step⊑ {w} {w'} {APPLY a a₁} {b} comp with is-LAM a
 step⊑ {w} {w'} {APPLY a a₁} {b} comp | inj₂ x | inj₂ y with step⊎ a w
 ... | inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
 ... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step⊑ {w} {w'} {MAPP s a} {b} comp with is-NUM a
+... | inj₁ (n , q) rewrite sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+... | inj₂ y with step⊎ a w
+... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step⊑ {w} {w'} {FIX a} {b} comp with is-LAM a
 ... | inj₁ (t , p) rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 ... | inj₂ p with step⊎ a w
@@ -1236,6 +1249,10 @@ data ∼T : 𝕎· → Term → Term → Set where
 →-step-APPLY {w} {w'} {AX} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {FREE} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {MSEQ x} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {MAPP s a} {b} c comp = 1 , z
+  where
+    z : steps 1 (APPLY (MAPP s a) c , w) ≡ (APPLY b c , w')
+    z rewrite comp = refl
 →-step-APPLY {w} {w'} {CS x} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {NAME x} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {FRESH a} {b} c comp = 1 , z
@@ -1382,6 +1399,10 @@ step-⇓-ASSERT₁ {w} {w'} {EQB a a₁ a₂ a₃} {b} comp rewrite sym (pair-in
 step-⇓-ASSERT₁ {w} {w'} {AX} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {FREE} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {MSEQ x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {MAPP s a} {b} comp = 1 , z
+  where
+    z : steps 1 (ASSERT₁ (MAPP s a) , w) ≡ (ASSERT₁ b , w')
+    z rewrite comp = refl
 step-⇓-ASSERT₁ {w} {w'} {CS x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {NAME x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {FRESH a} {b} comp = 1 , z

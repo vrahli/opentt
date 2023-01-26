@@ -403,8 +403,6 @@ shiftNameDown-renn {name} {F} {f} cF cf nnF nnf =
 
 
 
-
-
 data updCtxt (name : Name) (f : Term) : Term → Set where
   updCtxt-VAR     : (x : Var) → updCtxt name f (VAR x)
   updCtxt-NAT     : updCtxt name f NAT
@@ -442,6 +440,7 @@ data updCtxt (name : Name) (f : Term) : Term → Set where
   updCtxt-AX      : updCtxt name f AX
   updCtxt-FREE    : updCtxt name f FREE
   updCtxt-MSEQ    : (x : 𝕊) → updCtxt name f (MSEQ x)
+  updCtxt-MAPP    : (s : 𝕊) (a : Term) → updCtxt name f a → updCtxt name f (MAPP s a)
   --updCtxt-CS      : updCtxt name1 name2 f (CS name1) (CS name2)
   --updCtxt-CS      : updCtxt name1 name2 f (CS name1) (CS name2)
   --updCtxt-NAME    : updCtxt name1 name2 f (NAME name1) (NAME name2)
@@ -502,6 +501,7 @@ updCtxt→differ {name} {f} {.(EQB a b c d)} (updCtxt-EQB a b c d u u₁ u₂ u�
 updCtxt→differ {name} {f} {.AX} updCtxt-AX = differ-AX
 updCtxt→differ {name} {f} {.FREE} updCtxt-FREE = differ-FREE
 updCtxt→differ {name} {f} {.(MSEQ x)} (updCtxt-MSEQ x) = differ-MSEQ x
+updCtxt→differ {name} {f} {.(MAPP s a)} (updCtxt-MAPP s a u) = differ-MAPP _ _ _ (updCtxt→differ u)
 updCtxt→differ {name} {f} {.(CHOOSE a b)} (updCtxt-CHOOSE a b u u₁) = differ-CHOOSE _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
 updCtxt→differ {name} {f} {.(TSQUASH a)} (updCtxt-TSQUASH a u) = differ-TSQUASH _ _ (updCtxt→differ u)
 updCtxt→differ {name} {f} {.(TTRUNC a)} (updCtxt-TTRUNC a u) = differ-TTRUNC _ _ (updCtxt→differ u)
@@ -557,6 +557,7 @@ differ→updCtxt {name} {f} {.(EQB a₁ b₁ c₁ d₁)} (differ-EQB a₁ .a₁ 
 differ→updCtxt {name} {f} {.AX} differ-AX = updCtxt-AX
 differ→updCtxt {name} {f} {.FREE} differ-FREE = updCtxt-FREE
 differ→updCtxt {name} {f} {.(MSEQ x)} (differ-MSEQ x) = updCtxt-MSEQ x
+differ→updCtxt {name} {f} {.(MAPP s a₁)} (differ-MAPP s a₁ .a₁ d) = updCtxt-MAPP _ _ (differ→updCtxt d)
 differ→updCtxt {name} {f} {.(CHOOSE a₁ b₁)} (differ-CHOOSE a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-CHOOSE _ _ (differ→updCtxt d) (differ→updCtxt d₁)
 differ→updCtxt {name} {f} {.(TSQUASH a)} (differ-TSQUASH a .a d) = updCtxt-TSQUASH _ (differ→updCtxt d)
 differ→updCtxt {name} {f} {.(TTRUNC a)} (differ-TTRUNC a .a d) = updCtxt-TTRUNC _ (differ→updCtxt d)
@@ -945,6 +946,49 @@ stepsPresHighestℕ-IFLT₂→ {name} {f} {n} {b} {c} {d} {w} (k , v , w' , comp
     q : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (APPLY a b) (APPLY a' b) w0 w w')
     q = ΣhighestUpdCtxtAux-APPLY₁ {k} ub (wcomp , i , u)
 
+
+
+ΣhighestUpdCtxtAux-MAPP₁-aux : {j : ℕ} {k : ℕ} {w w0 w1 w' : 𝕎·} {a a1 a' : Term} {name : Name} {f : Term} {n : ℕ} {s : 𝕊}
+                               → ¬ isValue a
+                               → step a w ≡ just (a1 , w1)
+                               → (comp : steps k (a1 , w1) ≡ (a' , w'))
+                               → (getT≤ℕ w' n name → (getT≤ℕ w0 n name × getT≤ℕ w n name × isHighestℕ {k} {w1} {w'} {a1} {a'} n name comp))
+                               → ΣhighestUpdCtxtAux j name f n (MAPP s a1) (MAPP s a') w0 w1 w'
+                               → ΣhighestUpdCtxtAux (suc j) name f n (MAPP s a) (MAPP s a') w0 w w'
+ΣhighestUpdCtxtAux-MAPP₁-aux {j} {k} {w} {w0} {w1} {w'} {a} {a1} {a'} {name} {f} {n} {s} nv comp0 comp i (comp1 , g , u) with is-NUM a
+... | inj₁ (x , p) rewrite p = ⊥-elim (nv tt)
+... | inj₂ p rewrite comp0 = comp1 , (λ s → fst (g s) , fst (snd (i s)) , snd (g s)) , u
+
+
+ΣhighestUpdCtxtAux-MAPP₁ : {k : ℕ} {name : Name} {f : Term} {n : ℕ} {a a' : Term} {s : 𝕊} {w0 w w' : 𝕎·}
+                        → ΣhighestUpdCtxtAux k name f n a a' w0 w w'
+                        → Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (MAPP s a) (MAPP s a') w0 w w')
+ΣhighestUpdCtxtAux-MAPP₁ {0} {name} {f} {n} {a} {a'} {s} {w0} {w} {w'} (comp , i , u)
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl , i , updCtxt-MAPP _ _ u
+ΣhighestUpdCtxtAux-MAPP₁ {suc k} {name} {f} {n} {a} {a'} {s} {w0} {w} {w'} (comp , i , u) with step⊎ a w
+... | inj₁ (a1 , w1 , z) rewrite z with isValue⊎ a
+... |    inj₁ y rewrite stepVal a w y | sym (pair-inj₁ (just-inj z)) | sym (pair-inj₂ (just-inj z)) =
+  ΣhighestUpdCtxtAux-MAPP₁ {k} (comp , (λ s → fst (i s) , snd (snd (i s))) , u)
+... |    inj₂ y =
+  suc (fst ind) , ΣhighestUpdCtxtAux-MAPP₁-aux {fst ind} {k} y z comp i (snd ind)
+  where
+    ind : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (MAPP s a1) (MAPP s a') w0 w1 w')
+    ind = ΣhighestUpdCtxtAux-MAPP₁ {k} {name} {f} {n} {a1} {a'} {s} {w0} {w1} {w'} (comp , (λ s → fst (i s) , snd (snd (i s))) , u)
+ΣhighestUpdCtxtAux-MAPP₁ {suc k} {name} {f} {n} {a} {a'} {s} {w0} {w} {w'} (comp , i , u) | inj₂ z
+  rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl , i , updCtxt-MAPP _ _ u
+
+
+
+ΣhighestUpdCtxt-MAPP₁ : {name : Name} {f : Term} {n : ℕ} {a : Term} {s : 𝕊} {w0 w : 𝕎·}
+                        → ΣhighestUpdCtxt name f n a w0 w
+                        → ΣhighestUpdCtxt name f n (MAPP s a) w0 w
+ΣhighestUpdCtxt-MAPP₁ {name} {f} {n} {a} {s} {w0} {w} (k , a' , w' , wcomp , i , u) =
+  fst q , MAPP s a' , w' , snd q
+  where
+    q : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (MAPP s a) (MAPP s a') w0 w w')
+    q = ΣhighestUpdCtxtAux-MAPP₁ {k} (wcomp , i , u)
 
 
 

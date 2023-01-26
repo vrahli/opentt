@@ -786,6 +786,30 @@ differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(EQB a₁ b₁ c₁ d₁) b v k
 differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .AX b v k compat1 compat2 agtn atgn' differ-AX s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = AX , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-AX
 differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .FREE b v k compat1 compat2 agtn atgn' differ-FREE s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = FREE , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-FREE
 differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(MSEQ x) b v k compat1 compat2 agtn atgn' (differ-MSEQ x) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = MSEQ x , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-MSEQ x
+differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(MAPP x a₁) b v k compat1 compat2 agtn atgn' (differ-MAPP x a₁ .a₁ diff) s hv isvv pd with is-NUM a₁
+... | inj₁ (n , p)
+  rewrite p
+        | sym (pair-inj₁ (just-inj s))
+        | sym (pair-inj₂ (just-inj s))
+        | stepsVal (NUM (x n)) w1 k tt
+        | sym (pair-inj₁ hv)
+        | sym (pair-inj₂ hv) = NUM (x n) , w1 , w1' , (0 , refl) , (1 , refl) , differ-NUM (x n)
+... | inj₂ y with step⊎ a₁ w1
+... |    inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
+  MAPP x (fst ind) ,
+  fst (snd ind) ,
+  fst (snd (snd ind)) ,
+  MAPP⇓ x (fst (snd (snd (snd ind)))) ,
+  MAPP⇓ x (fst (snd (snd (snd (snd ind))))) ,
+  differ-MAPP _ _ _ (snd (snd (snd (snd (snd ind)))))
+  where
+    hv0 : hasValueℕ k a₁' w1''
+    hv0 = MAPP→hasValue k x a₁' v w1'' w0 hv isvv
+
+    ind : Σ Term (λ a'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
+            a₁' ⇓ a'' from w1'' to w3 × a₁ ⇓ a'' from w1' to w3' × differ name name f a'' a'')))
+    ind = differNF⇓-aux2 gc0 f cf nnf name w1 w1'' w1' (fst (snd hv0)) a₁ a₁' (fst hv0) k compat1 compat2 agtn atgn' diff z (fst (snd (snd hv0))) (snd (snd (snd hv0))) pd -- (hasValue-APPLY→ a₁' b₁ w1'' {k} hv) pd
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
 differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(CHOOSE a₁ b₁) b v k compat1 compat2 agtn atgn' (differ-CHOOSE a₁ .a₁ b₁ .b₁ diff diff₁) s hv isvv pd with is-NAME a₁
 ... | inj₁ (name , p) rewrite p = ⊥-elim (differ-NAMEₗ→ diff)
 ... | inj₂ x with step⊎ a₁ w1
