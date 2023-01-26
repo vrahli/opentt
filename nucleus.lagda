@@ -14,14 +14,14 @@ open import worldDef{L}(W)
 
 -- The frame of subsets of the Kripke frame
 
-Subset : Set(lsuc(L))
-Subset = 𝕎· → Set(L)
+Subset : Set (lsuc L)
+Subset = 𝕎· → Set L
 
-_∈_ : 𝕎· → Subset → Set(L)
+_∈_ : 𝕎· → Subset → Set L
 _∈_ w U = U w
 infix 20 _∈_
 
-_⊆_ : Subset → Subset → Set(L)
+_⊆_ : Subset → Subset → Set L
 _⊆_ U V = {w : 𝕎·} → w ∈ U → w ∈ V
 infix 21 _⊆_
 
@@ -31,7 +31,7 @@ infix 21 _⊆_
 ⊆-tran : {U V W : Subset} → U ⊆ V → V ⊆ W → U ⊆ W
 ⊆-tran U⊆V V⊆W w∈U = V⊆W (U⊆V w∈U)
 
-_≃_ : Subset → Subset → Set(L)
+_≃_ : Subset → Subset → Set L
 _≃_ X Y = X ⊆ Y × Y ⊆ X
 infix 21 _≃_
 
@@ -60,30 +60,30 @@ infix 22 _∩_
 ⊆-implies-∩ : {U V : Subset} → U ⊆ V → U ≃ U ∩ V
 ⊆-implies-∩ {U} {V} U⊆V = ∩-intro {U} (⊆-refl U) U⊆V , ∩-elim-l {U} {V}
 
-union : {I : Set(L)} (f : I → Subset) → Subset
+union : {I : Set L} (f : I → Subset) → Subset
 union {I} f w = Σ[ i ∈ I ] (w ∈ f i)
 
 syntax union {I} (λ i → M) = ∪[ i ∈ I ] M
 
-∪-intro : {I : Set(L)} (f : I → Subset) (i : I) → f i ⊆ union f
+∪-intro : {I : Set L} (f : I → Subset) (i : I) → f i ⊆ union f
 ∪-intro f i w∈fi = (i , w∈fi)
 
-∪-elim : {I : Set(L)} (f : I → Subset) {U : Subset} → ((i : I) → f i ⊆ U) → union f ⊆ U
-∪-elim f g (i , w∈fi) =  g i w∈fi
+∪-elim : {I : Set L} (f : I → Subset) {U : Subset} → ((i : I) → f i ⊆ U) → union f ⊆ U
+∪-elim f g (i , w∈fi) = g i w∈fi
 
 -- The frame of upward closed subsets of the Kripke frame
 
-isUpwardsClosed : Subset → Set(L)
+isUpwardsClosed : Subset → Set L
 isUpwardsClosed U = {w1 w2 : 𝕎·} → w1 ⊑· w2 → w1 ∈ U → w2 ∈ U
 
-UCSubset : Set(lsuc(L))
+UCSubset : Set (lsuc L)
 UCSubset = Σ Subset isUpwardsClosed
 
-_∈·_ : 𝕎· → UCSubset → Set(L)
+_∈·_ : 𝕎· → UCSubset → Set L
 _∈·_ w (U , _) = w ∈ U
 infix 20 _∈·_
 
-_⋐_ : UCSubset → UCSubset → Set(L)
+_⋐_ : UCSubset → UCSubset → Set L
 _⋐_ U V = {w : 𝕎·} → w ∈· U → w ∈· V
 infix 21 _⋐_
 
@@ -93,7 +93,7 @@ infix 21 _⋐_
 ⋐-tran : {U V W : UCSubset} → U ⋐ V → V ⋐ W → U ⋐ W
 ⋐-tran {U , _} {V , _} {W , _} = ⊆-tran {U} {V} {W}
 
-_≅_ : UCSubset → UCSubset → Set(L)
+_≅_ : UCSubset → UCSubset → Set L
 _≅_ U V = U ⋐ V × V ⋐ U
 infix 21 _≅_
 
@@ -122,39 +122,39 @@ infix 22 _⋒_
 ⋐-implies-⋒ : {U V : UCSubset} → U ⋐ V → U ≅ U ⋒ V
 ⋐-implies-⋒ {U , _} {V , _} = ⊆-implies-∩ {U} {V}
 
-union· : {I : Set(L)} (f : I → UCSubset) → UCSubset
+union· : {I : Set L} (f : I → UCSubset) → UCSubset
 union· {I} f = ∪[ i ∈ I ] (fst (f i)) , λ e12 (i , w1∈fi) → i , snd (f i) e12 w1∈fi
 
 syntax union· {I} (λ i → M) = ⋓[ i ∈ I ] M
 
-⋓-intro : {I : Set(L)} (f : I → UCSubset) (i : I) → f i ⋐ union· f
+⋓-intro : {I : Set L} (f : I → UCSubset) (i : I) → f i ⋐ union· f
 ⋓-intro f = ∪-intro (λ i → fst (f i))
 
-⋓-elim : {I : Set(L)} (f : I → UCSubset) {U : UCSubset} → ((i : I) → f i ⋐ U) → union· f ⋐ U
+⋓-elim : {I : Set L} (f : I → UCSubset) {U : UCSubset} → ((i : I) → f i ⋐ U) → union· f ⋐ U
 ⋓-elim f = ∪-elim (λ i → fst (f i))
 
 -- Definition of a nucleus on the frame of upward closed subsets
 
-well-defined : (UCSubset → UCSubset) → Set(lsuc(L))
+well-defined : (UCSubset → UCSubset) → Set (lsuc L)
 well-defined j = (U V : UCSubset) → U ≅ V → j U ≅ j V
 
-extensive : (UCSubset → UCSubset) → Set(lsuc(L))
+extensive : (UCSubset → UCSubset) → Set (lsuc L)
 extensive j = (U : UCSubset) → U ⋐ j U
 
-idempotent : (UCSubset → UCSubset) → Set(lsuc(L))
+idempotent : (UCSubset → UCSubset) → Set (lsuc L)
 idempotent j = (U : UCSubset) → j (j U) ⋐ j U
 
-meet-preserving : (UCSubset → UCSubset) → Set(lsuc(L))
-meet-preserving j = (U V : UCSubset) →  j (U ⋒ V) ≅ j U ⋒ j V
+meet-preserving : (UCSubset → UCSubset) → Set (lsuc L)
+meet-preserving j = (U V : UCSubset) → j (U ⋒ V) ≅ j U ⋒ j V
 
-monotonic : (UCSubset → UCSubset) → Set(lsuc(L))
+monotonic : (UCSubset → UCSubset) → Set (lsuc L)
 monotonic j = (U V : UCSubset) → U ⋐ V → j U ⋐ j V
 
 meet-preserving⇒monotonic : {j : UCSubset → UCSubset} → well-defined j → meet-preserving j → monotonic j
 meet-preserving⇒monotonic {j} well-def meet-pre U V U⋐V = ⋒-implies-⋐ {j U} {j V}
   (≅-tran {j U} {j (U ⋒ V)} {j U ⋒ j V} (well-def U (U ⋒ V) (⋐-implies-⋒ {U} {V} U⋐V)) (meet-pre U V))
 
-inhabited : (UCSubset → UCSubset) → Set(lsuc(L))
+inhabited : (UCSubset → UCSubset) → Set (lsuc L)
 inhabited j = {w : 𝕎· } (U : UCSubset) → w ∈· j U → Σ[ w' ∈ 𝕎· ] w' ∈· U
 
 

@@ -10,28 +10,28 @@ open import Data.Sum
 open import world
 
 
-module cucleusImpliesCoversProps {L : Level} (W : PossibleWorlds {L})
+module cucleusImpliesCoversProps {n : Level} (W : PossibleWorlds {n})
        where
-open import worldDef{L}(W)
-open import nucleus{L}(W)
-open import coversProps{L}(W)
+open import worldDef(W)
+open import nucleus(W)
+open import bar{n}{n}(W)
 
 -- From an arbitrary covering nucleus we can get a covering relation
-_◀[_]_ : 𝕎· → (UCSubset → UCSubset) → UCSubset → Set L
+_◀[_]_ : 𝕎· → (UCSubset → UCSubset) → UCSubset → Set n
 _◀[_]_ w j U = w ∈· (j U)
 
-isNuclear⇒Cover∩ : {j : UCSubset → UCSubset} → isNuclear j → Cover∩ _◀[ j ]_
-isNuclear⇒Cover∩ nuc U V w◀U w◀V = snd (isNuclear.meet-pre nuc U V) (w◀U , w◀V)
+isNuclear⇒Coverage∩ : {j : UCSubset → UCSubset} → isNuclear j → Coverage∩ _◀[ j ]_
+isNuclear⇒Coverage∩ nuc U V w◀U w◀V = snd (isNuclear.meet-pre nuc U V) (w◀U , w◀V)
 
-isNuclear⇒Cover∀ : {j : UCSubset → UCSubset} → isNuclear j → Cover∀ _◀[ j ]_
-isNuclear⇒Cover∀ nuc w = isNuclear.ext nuc (bar∀ w) (⊑-refl· w)
+isNuclear⇒Coverage∀ : {j : UCSubset → UCSubset} → isNuclear j → Coverage∀ _◀[ j ]_
+isNuclear⇒Coverage∀ nuc w = isNuclear.ext nuc (bar∀ w) (⊑-refl· w)
 
-isNuclear⇒Cover⊑ : {j : UCSubset → UCSubset} → isNuclear j → Cover⊑ _◀[ j ]_
-isNuclear⇒Cover⊑ {j} nuc {w1} {w2} e12 U w1◀U =
+isNuclear⇒Coverage⊑ : {j : UCSubset → UCSubset} → isNuclear j → Coverage⊑ _◀[ j ]_
+isNuclear⇒Coverage⊑ {j} nuc {w1} {w2} e12 U w1◀U =
   fst (isNuclear.well-def nuc (U ⋒ (bar∀ w2)) (res≥ w2 U) ⋒∀≅res≥) w2◀U∩bar∀
   where
-    cover∩ = isNuclear⇒Cover∩ nuc
-    cover∀ = isNuclear⇒Cover∀ nuc
+    cover∩ = isNuclear⇒Coverage∩ nuc
+    cover∀ = isNuclear⇒Coverage∀ nuc
 
     w2◀U∩bar∀ : w2 ◀[ j ] U ⋒ (bar∀ w2)
     w2◀U∩bar∀ = cover∩ U (bar∀ w2) (snd (j U) e12 w1◀U) (cover∀ w2)
@@ -39,25 +39,26 @@ isNuclear⇒Cover⊑ {j} nuc {w1} {w2} e12 U w1◀U =
     ⋒∀≅res≥ : U ⋒ (bar∀ w2) ≅ res≥ w2 U
     ⋒∀≅res≥ = (λ x → x) , (λ x → x)
 
-isNuclear⇒Cover∪ : {j : UCSubset → UCSubset} → isNuclear j → Cover∪ _◀[ j ]_
-isNuclear⇒Cover∪ {j} nuc {w} U w◀U G i = jU⋐j⋓Ui w◀U
+isNuclear⇒Coverage∪ : {j : UCSubset → UCSubset} → isNuclear j → Coverage∪ _◀[ j ]_
+isNuclear⇒Coverage∪ {j} nuc {_} {w} (mk𝔹 U w◀U Uext) G i = jU⋐j⋓Ui w◀U
   where
+    b    = mk𝔹 U w◀U Uext
     mono = nucleus-monotonic nuc
 
     ⋓Ui : UCSubset
-    ⋓Ui = bar∪ U w◀U G i
+    ⋓Ui = bar∪ b G i
 
-    f : Σ 𝕎· (_∈· U) → UCSubset
-    f (wi , wi∈U) = fst (i wi∈U)
+    f : 𝔹In b → UCSubset
+    f ind = 𝔹.U (fst (i ind))
 
-    jf : Σ 𝕎· (_∈· U) → UCSubset
-    jf (wi , wi∈U) = j (fst (i wi∈U))
+    jf : 𝔹In b → UCSubset
+    jf ind = j (f ind)
 
     ⋓jUi : UCSubset
     ⋓jUi = union· jf
 
     U⋐⋓jUi : U ⋐ ⋓jUi
-    U⋐⋓jUi {wi} wi∈U = let (_ , wi◀Ui , _) = i wi∈U in (wi , wi∈U) , wi◀Ui
+    U⋐⋓jUi {wi} wi∈U = let (mk𝔹 Ui wi◀Ui _ , _) = i (mk𝔹In wi wi∈U) in (mk𝔹In wi wi∈U) , wi◀Ui
 
     ⋓jUi⋐j⋓Ui : ⋓jUi ⋐ j ⋓Ui
     ⋓jUi⋐j⋓Ui = ⋓-elim jf {j ⋓Ui} (λ x → mono (f x) ⋓Ui (⋓-intro f x))
@@ -65,20 +66,19 @@ isNuclear⇒Cover∪ {j} nuc {w} U w◀U G i = jU⋐j⋓Ui w◀U
     U⋐j⋓Ui : U ⋐ j ⋓Ui
     U⋐j⋓Ui = ⋐-tran {U} {⋓jUi} {j ⋓Ui} U⋐⋓jUi ⋓jUi⋐j⋓Ui
 
-    jU⋐j⋓Ui : j U ⋐ j (bar∪ U w◀U G i)
+    jU⋐j⋓Ui : j U ⋐ j ⋓Ui
     jU⋐j⋓Ui = ⋐-tran {j U} {j (j ⋓Ui)} {j ⋓Ui} (mono U (j ⋓Ui) U⋐j⋓Ui) (isNuclear.idem nuc ⋓Ui)
 
+inhabited⇒Coverage∃ : {j : UCSubset → UCSubset} → inhabited j → Coverage∃ _◀[ j ]_
+inhabited⇒Coverage∃ inhab {w} {U}  = inhab U
 
-inhabited⇒Cover∃ : {j : UCSubset → UCSubset} → inhabited j → Cover∃ _◀[ j ]_
-inhabited⇒Cover∃ inhab {w} {U}  = inhab U
-
-isCuclear⇒CoversProps : {j : UCSubset → UCSubset} → isCuclear j → CoversProps
-isCuclear⇒CoversProps {j} cuc = mkCoversProps
+isCuclear⇒CoverageProps : {j : UCSubset → UCSubset} → isCuclear j → CoverageProps
+isCuclear⇒CoverageProps {j} cuc = mkCoverageProps
   _◀[ j ]_
-  (isNuclear⇒Cover⊑ {j} (isCuclear.nuc cuc))
-  (isNuclear⇒Cover∩ {j} (isCuclear.nuc cuc))
-  (isNuclear⇒Cover∀ {j} (isCuclear.nuc cuc))
-  (isNuclear⇒Cover∪ {j} (isCuclear.nuc cuc))
-  (inhabited⇒Cover∃ {j} (isCuclear.inhab cuc))
+  (isNuclear⇒Coverage⊑ {j} (isCuclear.nuc cuc))
+  (isNuclear⇒Coverage∩ {j} (isCuclear.nuc cuc))
+  (isNuclear⇒Coverage∀ {j} (isCuclear.nuc cuc))
+  (isNuclear⇒Coverage∪ {j} (isCuclear.nuc cuc))
+  (inhabited⇒Coverage∃ {j} (isCuclear.inhab cuc))
 
 \end{code}
