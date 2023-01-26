@@ -10,7 +10,7 @@ open import Data.Sum
 open import world
 
 
-module cucleusImpliesCoversProps {n : Level} (W : PossibleWorlds {n})
+module cucleusImpliesCoverageProps {n : Level} (W : PossibleWorlds {n})
        where
 open import worldDef(W)
 open import nucleus(W)

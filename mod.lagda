@@ -21,6 +21,7 @@ open import world
 module mod {n m : Level} (W : PossibleWorlds {n})
        where
 open import worldDef{n}(W)
+open import nucleus{n}(W)
 open import bar{n}{m}(W)
 
 
@@ -163,34 +164,34 @@ record Mod : Setω where
 
 
 
-BarsProps→Mod : BarsProps → Mod
-BarsProps→Mod b =
+CoverageProps→Mod : CoverageProps → Mod
+CoverageProps→Mod b =
   mkMod
-    (λ w → Σ∈𝔹 (BarsProps.bars b) {w})
-    (λ w → Σ∈𝔹' (BarsProps.bars b) {w})
-    (↑Σ∈𝔹 (BarsProps.mon b))
-    (↑'Σ∈𝔹 (BarsProps.mon b))
-    (λ {_} {w} {f} {g} → ↑Σ∈𝔹' (BarsProps.mon b) {w} {f} {g})
-    (Σ∈𝔹Func (BarsProps.isect b))
-    (∀𝕎-Σ∈𝔹Func {_} {BarsProps.bars b})
-    (Σ∈𝔹-Σ∈𝔹' (BarsProps.mon b))
-    (∀𝕎-Σ∈𝔹-Σ∈𝔹' (BarsProps.all b))
-    (∀𝕎-Σ∈𝔹 (BarsProps.all b))
-    (Σ∈𝔹-idem (BarsProps.fam2 b))
-    (Σ∈𝔹'-idem (BarsProps.mon b) (BarsProps.fam2 b))
-    (∀𝕎-Σ∈𝔹'-Σ∈𝔹 (BarsProps.fam2 b))
---    (Σ∈𝔹'-comb (BarsProps.mon b) (BarsProps.isect b) (BarsProps.fam2 b))
---    (Σ∈𝔹'-change (BarsProps.mon b) (BarsProps.isect b) (BarsProps.fam2 b))
-    (Σ∈𝔹'-comb-change (BarsProps.mon b) (BarsProps.isect b) (BarsProps.fam2 b))
-    (Σ∈𝔹-const (BarsProps.ex b))
+    (λ w → Σ∈𝔹 (CoverageProps.bars b) {w})
+    (λ w → Σ∈𝔹' (CoverageProps.bars b) {w})
+    (↑Σ∈𝔹 (CoverageProps.mon b))
+    (↑'Σ∈𝔹 (CoverageProps.mon b))
+    (λ {_} {w} {f} {g} → ↑Σ∈𝔹' (CoverageProps.mon b) {w} {f} {g})
+    (Σ∈𝔹Func (CoverageProps.isect b))
+    (∀𝕎-Σ∈𝔹Func {_} {CoverageProps.bars b})
+    (Σ∈𝔹-Σ∈𝔹' (CoverageProps.mon b))
+    (∀𝕎-Σ∈𝔹-Σ∈𝔹' (CoverageProps.all b))
+    (∀𝕎-Σ∈𝔹 (CoverageProps.all b))
+    (Σ∈𝔹-idem (CoverageProps.fam b))
+    (Σ∈𝔹'-idem (CoverageProps.mon b) (CoverageProps.fam b))
+    (∀𝕎-Σ∈𝔹'-Σ∈𝔹 (CoverageProps.fam b))
+--    (Σ∈𝔹'-comb (CoverageProps.mon b) (CoverageProps.isect b) (CoverageProps.fam b))
+--    (Σ∈𝔹'-change (CoverageProps.mon b) (CoverageProps.isect b) (CoverageProps.fam b))
+    (Σ∈𝔹'-comb-change (CoverageProps.mon b) (CoverageProps.isect b) (CoverageProps.fam b))
+    (Σ∈𝔹-const (CoverageProps.ex b))
     →Σ∈𝔹∀𝕎
 
 
-→∃𝕎 : ∀ {l} (B : BarsProps) {w : 𝕎·} {f : wPred {l} w} → Mod.□ (BarsProps→Mod B) w f → ∃𝕎 w f
+→∃𝕎 : ∀ {l} (B : CoverageProps) {w : 𝕎·} {f : wPred {l} w} → Mod.□ (CoverageProps→Mod B) w f → ∃𝕎 w f
 →∃𝕎 B {w} {f} (b , h) = fst c , fst (snd c) , h (proj₁ (snd c)) (snd (snd c)) (proj₁ c) (⊑-refl· _) (fst (snd c))
   where
-    c : Σ 𝕎· λ w' → Σ (w ⊑· w') λ e → (𝔹.bar b) w'
-    c = BarsProps.ex B (𝔹.bars b) (𝔹.ext b)
+    c : Σ 𝕎· λ w' → Σ (w ⊑· w') λ e → w' ∈· 𝔹.U b
+    c = let (w' , w'∈b) = CoverageProps.ex B (𝔹.covers b) in (w' , 𝔹.ext b w'∈b , w'∈b)
 
     e : w ⊑· fst c
     e = 𝔹.ext b (snd (snd c))
