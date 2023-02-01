@@ -215,6 +215,40 @@ infPath-mon {i} {w1} {w2} {B} {C} {t} e p cor inf = {!!}
 --}
 
 
+APPLY-MSEQ⇓ : (w : 𝕎·) (s : 𝕊) (a : Term) (k : ℕ)
+             → a ⇓ NUM k at w
+             → APPLY (MSEQ s) a ⇓ NUM (s k) at w
+APPLY-MSEQ⇓ w s a k comp =
+  step-⇓-trans {w} {w} refl
+    (⇓-from-to→⇓
+      {w} {proj₁ comp1}
+      (⇓-trans₂ {w} {proj₁ comp1} {proj₁ comp1} {MAPP s a} {MAPP s (NUM k)} (MAPP⇓ s (snd comp1)) (1 , refl)))
+  where
+    comp1 : Σ 𝕎· (λ w' → a ⇓ NUM k from w to w')
+    comp1 = ⇓→from-to {w} {a} {NUM k} comp
+
+
+APPLY-MSEQ⇛ : (w : 𝕎·) (s : 𝕊) (a : Term) (k : ℕ)
+             → a ⇛ NUM k at w
+             → APPLY (MSEQ s) a ⇛ NUM (s k) at w
+APPLY-MSEQ⇛ w s a k comp w1 e1 = lift (APPLY-MSEQ⇓ w1 s a k (lower (comp w1 e1)))
+
+
+mseq∈baire : (i : ℕ) (w : 𝕎·) (s : 𝕊) → ∈Type i w #BAIRE (#MSEQ s)
+mseq∈baire i w s =
+  ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-FUN eqTypesNAT eqTypesNAT aw)
+  where
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
+                      → equalInType i w' #NAT (#APPLY (#MSEQ s) a₁) (#APPLY (#MSEQ s) a₂))
+    aw w1 e1 a₁ a₂ eqa =
+      →equalInType-NAT
+        i w1 (#APPLY (#MSEQ s) a₁) (#APPLY (#MSEQ s) a₂)
+        (Mod.∀𝕎-□Func M aw1 (equalInType-NAT→ i w1 a₁ a₂ eqa))
+      where
+        aw1 : ∀𝕎 w1 (λ w' e' → NATeq w' a₁ a₂ → NATeq w' (#APPLY (#MSEQ s) a₁) (#APPLY (#MSEQ s) a₂))
+        aw1 w2 e2 (k , c1 , c2) = s k , APPLY-MSEQ⇛ w2 s ⌜ a₁ ⌝ k c1 , APPLY-MSEQ⇛ w2 s ⌜ a₂ ⌝ k c2
+
+
 -- We want to create a Term ∈ BAIRE from this path.
 noInfPath : (kb : K□) (cb : c𝔹) (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
             → compatible· r w Res⊤
