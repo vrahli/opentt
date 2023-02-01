@@ -1676,12 +1676,6 @@ sub-force-body-let a f
     ca = ⇓→from-to (lower (comp w1 e1))
 
 
-⇛NUM→equalInType-NAT : {i : ℕ} {w : 𝕎·} {a : CTerm} {k : ℕ}
-                        → a #⇛ #NUM k at w
-                        → equalInType i w #NAT a (#NUM k)
-⇛NUM→equalInType-NAT {i} {w} {a} {k} comp = →equalInType-NAT i w a (#NUM k) (Mod.∀𝕎-□ M (λ w1 e1 → (k , ∀𝕎-mon e1 comp , #compAllRefl (#NUM k) w1)))
-
-
 equalInType-force : {i : ℕ} {w : 𝕎·} {f : CTerm}
                     → ∈Type i w #BAIRE f
                     → equalInType i w #BAIRE f (#force f)

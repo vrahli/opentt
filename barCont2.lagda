@@ -92,6 +92,8 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
+open import list(W)(M)(C)(K)(P)(G)(X)(N)(E)
+
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
 open import barCont(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
@@ -240,40 +242,6 @@ CoIndBar2IndBar i w t cond h =
     cond h
 
 
-NATeq-NUM : (w : 𝕎·) (k : ℕ) → NATeq w (#NUM k) (#NUM k)
-NATeq-NUM w k = k , #⇛-refl w (#NUM k) , #⇛-refl w (#NUM k)
-
-
-LAM0⇛NUM0 : (w : 𝕎·) (a : CTerm) → #APPLY #LAM0 a #⇛! #NUM 0 at w
-LAM0⇛NUM0 w a w1 e1 = lift (1 , refl)
-
-
-LAM0∈BAIRE : (i : ℕ) (w : 𝕎·) → equalInType i w #BAIRE #LAM0 #LAM0
-LAM0∈BAIRE i w =
-  ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-FUN eqTypesNAT eqTypesNAT aw)
-  where
-    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
-                       →  equalInType i w' #NAT (#APPLY #LAM0 a₁) (#APPLY #LAM0 a₂))
-    aw w1 e1 a b eqa = →equalInType-NAT i w1 (#APPLY #LAM0 a) (#APPLY #LAM0 b) (Mod.∀𝕎-□ M aw1)
-      where
-        aw1 : ∀𝕎 w1 (λ w' _ → NATeq w' (#APPLY #LAM0 a) (#APPLY #LAM0 b))
-        aw1 w2 e2 =
-          0 ,
-          #⇛!-#⇛ {w2} {#APPLY #LAM0 a} {#NUM 0} (LAM0⇛NUM0 w2 a) ,
-          #⇛!-#⇛ {w2} {#APPLY #LAM0 b} {#NUM 0} (LAM0⇛NUM0 w2 b)
-
-
-EMPTY∈LIST : (i : ℕ) (w : 𝕎·) → ∈Type i w (#LIST #NAT) #EMPTY
-EMPTY∈LIST i w = →equalInType-LIST-NAT i w #EMPTY #EMPTY (Mod.∀𝕎-□ M aw)
-  where
-    aw : ∀𝕎 w (λ w' _ → LISTNATeq i w' #EMPTY #EMPTY)
-    aw w1 e1 =
-      #NUM 0 , #NUM 0 , #LAM0 , #LAM0 ,
-      NATeq-NUM w1 0 ,
-      LAM0∈BAIRE i w1 ,
-      #⇛-refl w1 #EMPTY , #⇛-refl w1 #EMPTY
-
-
 
 shift𝕊 : (s : 𝕊) → 𝕊
 shift𝕊 s k = s (suc k)
@@ -312,49 +280,6 @@ seq2list s 0 = #EMPTY
 seq2list s (suc n) = #APPEND (seq2list s n) (#NUM n)
 
 
-INL¬≡INR : {a b : Term} → ¬ (INL a) ≡ INR b
-INL¬≡INR {a} {b} ()
-
-
-#INL¬≡INR : {a b : CTerm} → ¬ (#INL a) ≡ #INR b
-#INL¬≡INR {a} {b} x = INL¬≡INR {⌜ a ⌝} {⌜ b ⌝} (≡CTerm x)
-
-
-#⇓#INL→¬#⇛!#INR : (w : 𝕎·) (t a b c f g : CTerm)
-                    → t #⇓ #SUP a f at w
-                    → t #⇓ #SUP (#INL b) g at w
-                    → a #⇛! #INR c at w
-                    → ⊥
-#⇓#INL→¬#⇛!#INR w t a b c f g c1 c2 c3
-  rewrite #SUPinj1 {a} {f} {#INL b} {g} (#⇓-val-det {w} {t} {#SUP a f} {#SUP (#INL b) g} tt tt c1 c2)
-  = #INL¬≡INR (#⇛!→≡ {#INL b} {#INR c} {w} c3 tt)
-
-
-#INL→¬#⇛!#INR : (w : 𝕎·) (a b c : CTerm)
-                   → a ≡ #INL b
-                   → a #⇛! #INR c at w
-                   → ⊥
-#INL→¬#⇛!#INR w a b c e comp
-  rewrite e
-  = #INL¬≡INR (#⇛!→≡ {#INL b} {#INR c} {w} comp tt)
-
-
-APPLY-FIX⇓→ : (w : 𝕎·) (F a v : Term)
-               → isValue v
-               → APPLY (FIX (LAMBDA F)) a ⇓ v at w
-               → APPLY (sub (FIX (LAMBDA F)) F) a ⇓ v at w
-APPLY-FIX⇓→ w F a v isv (0 , comp) rewrite sym comp = ⊥-elim isv
-APPLY-FIX⇓→ w F a v isv (suc n , comp) = n , comp
-
-
-APPLY-LAMBDA⇓val→ : {w : 𝕎·} {f a v : Term}
-                     → isValue v
-                     → APPLY (LAMBDA f) a ⇓ v at w
-                     → sub a f ⇓ v at w
-APPLY-LAMBDA⇓val→ {w} {f} {a} {v} isv (0 , comp) rewrite sym comp = ⊥-elim isv
-APPLY-LAMBDA⇓val→ {w} {f} {a} {v} isv (suc n , comp) = n , comp
-
-
 SEQ-set⊤⇓val→ : {w : 𝕎·} {r : Name} {a v : Term} (ca : # a)
                   → isValue v
                   → SEQ (set⊤ r) a ⇓ v at w
@@ -365,77 +290,6 @@ SEQ-set⊤⇓val→ {w} {r} {a} {v} ca isv (suc (suc n) , comp)
   rewrite #shiftUp 0 (ct a ca)
         | #subv 0 AX a ca
         | #shiftDown 0 (ct a ca) = n , comp
-
-
-LET-steps-val→ : {n : ℕ} {w1 w2 : 𝕎·} {a b v : Term}
-                  → isValue v
-                  → steps n (LET a b , w1) ≡ (v , w2)
-                  → Σ Term (λ u → Σ 𝕎· (λ w → isValue u × a ⇓ u from w1 to w × sub u b ⇓ v from w to w2))
-LET-steps-val→ {0} {w1} {w2} {a} {b} {v} isv comp rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-LET-steps-val→ {suc n} {w1} {w2} {a} {b} {v} isv comp with isValue⊎ a
-... | inj₁ x = a , w1 , x , (0 , refl) , (n , comp)
-... | inj₂ x with step⊎ a w1
-... |    inj₁ (y , w' , q) rewrite q =
-  fst ind , fst (snd ind) , fst (snd (snd ind)) ,
-  step-⇓-from-to-trans {w1} {w'} {proj₁ (snd ind)} {a} {y} {proj₁ ind} q (fst (snd (snd (snd ind)))) ,
-  snd (snd (snd (snd ind)))
-  where
-    ind : Σ Term (λ u → Σ 𝕎· (λ w → isValue u × y ⇓ u from w' to w × sub u b ⇓ v from w to w2))
-    ind = LET-steps-val→ {n} {w'} {w2} {y} {b} {v} isv comp
-... |    inj₂ q rewrite q | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-
-
-LET⇓val→ : {w : 𝕎·} {a b v : Term}
-            → isValue v
-            → LET a b ⇓ v at w
-            → Σ Term (λ u → Σ 𝕎· (λ w' → isValue u × a ⇓ u from w to w' × sub u b ⇓ v at w'))
-LET⇓val→ {w} {a} {b} {v} isv comp =
-  fst j2 , fst (snd j2) , fst (snd (snd j2)) , fst (snd (snd (snd j2))) ,
-  ⇓-from-to→⇓ {proj₁ (snd j2)} {proj₁ j1} {sub (proj₁ j2) b} {v} (snd (snd (snd (snd j2))))
-  where
-    j1 : Σ 𝕎· (λ w' → LET a b ⇓ v from w to w')
-    j1 = ⇓→from-to {w} {LET a b} {v} comp
-
-    j2 : Σ Term (λ u → Σ 𝕎· (λ w' → isValue u × a ⇓ u from w to w' × sub u b ⇓ v from w' to fst j1))
-    j2 = LET-steps-val→ {proj₁ (snd j1)} {w} {proj₁ j1} {a} {b} {v} isv (snd (snd j1))
-
-
-LET-val⇓val→ : {w : 𝕎·} {a b v u : Term}
-            → isValue v
-            → isValue u
-            → a ⇓ u at w
-            → LET a b ⇓ v at w
-            → Σ 𝕎· (λ w' → a ⇓ u from w to w' × sub u b ⇓ v at w')
-LET-val⇓val→ {w} {a} {b} {v} {u} isv isu compa comp =
-  w1 , comp1' , comp2'
-  where
-    j1 : Σ Term (λ u → Σ 𝕎· (λ w' → isValue u × a ⇓ u from w to w' × sub u b ⇓ v at w'))
-    j1 = LET⇓val→ {w} {a} {b} {v} isv comp
-
-    u1 : Term
-    u1 = fst j1
-
-    w1 : 𝕎·
-    w1 = fst (snd j1)
-
-    isu1 : isValue u1
-    isu1 = fst (snd (snd j1))
-
-    comp1 : a ⇓ u1 from w to w1
-    comp1 = fst (snd (snd (snd j1)))
-
-    comp2 : sub u1 b ⇓ v at w1
-    comp2 = snd (snd (snd (snd j1)))
-
-    comp1' : a ⇓ u from w to w1
-    comp1' rewrite ⇓-val-det {w} {a} {u} {u1} isu isu1 compa (⇓-from-to→⇓ {w} {w1} {a} {u1} comp1) = comp1
-
-    comp2' : sub u b ⇓ v at w1
-    comp2' rewrite ⇓-val-det {w} {a} {u} {u1} isu isu1 compa (⇓-from-to→⇓ {w} {w1} {a} {u1} comp1) = comp2
-
-
-≡ₗ→⇓ : {a b c : Term} {w : 𝕎·} → a ≡ b → a ⇓ c at w → b ⇓ c at w
-≡ₗ→⇓ {a} {b} {c} {w} e comp rewrite e = comp
 
 
 sub-loopI-shift≡ : (r : Name) (F l v : Term) (cF : # F) (cl : # l) (cv : # v)
@@ -611,10 +465,6 @@ isInfPath-shiftPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path 
                       → isInfPath {i} {w} {A} {B} p
                       → isInfPath {i} {w} {A} {B} (shiftPath {i} {w} {A} {B} p)
 isInfPath-shiftPath {i} {w} {A} {B} p inf n = inf (suc n)
-
-
-→≡#APPLY : {a b c d : CTerm} → a ≡ c → b ≡ d → #APPLY a b ≡ #APPLY c d
-→≡#APPLY {a} {b} {c} {d} e f rewrite e | f = refl
 
 
 ≡→correctPathN : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B) {t u : CTerm} (n : ℕ)

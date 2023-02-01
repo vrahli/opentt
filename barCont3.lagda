@@ -92,6 +92,8 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
+open import list(W)(M)(C)(K)(P)(G)(X)(N)(E)
+
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
 open import barCont(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
@@ -213,25 +215,6 @@ infPath-mon :  {i : ℕ} {w1 w2 : 𝕎·} {B : CTerm} {C : CTerm0} {t : CTerm}
                → Σ (path i w2 B C) (λ q → correctPath {i} {w2} {B} {C} t q × isInfPath {i} {w2} {B} {C} q)
 infPath-mon {i} {w1} {w2} {B} {C} {t} e p cor inf = {!!}
 --}
-
-
-APPLY-MSEQ⇓ : (w : 𝕎·) (s : 𝕊) (a : Term) (k : ℕ)
-             → a ⇓ NUM k at w
-             → APPLY (MSEQ s) a ⇓ NUM (s k) at w
-APPLY-MSEQ⇓ w s a k comp =
-  step-⇓-trans {w} {w} refl
-    (⇓-from-to→⇓
-      {w} {proj₁ comp1}
-      (⇓-trans₂ {w} {proj₁ comp1} {proj₁ comp1} {MAPP s a} {MAPP s (NUM k)} (MAPP⇓ s (snd comp1)) (1 , refl)))
-  where
-    comp1 : Σ 𝕎· (λ w' → a ⇓ NUM k from w to w')
-    comp1 = ⇓→from-to {w} {a} {NUM k} comp
-
-
-APPLY-MSEQ⇛ : (w : 𝕎·) (s : 𝕊) (a : Term) (k : ℕ)
-             → a ⇛ NUM k at w
-             → APPLY (MSEQ s) a ⇛ NUM (s k) at w
-APPLY-MSEQ⇛ w s a k comp w1 e1 = lift (APPLY-MSEQ⇓ w1 s a k (lower (comp w1 e1)))
 
 
 mseq∈baire : (i : ℕ) (w : 𝕎·) (s : 𝕊) → ∈Type i w #BAIRE (#MSEQ s)

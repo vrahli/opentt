@@ -83,29 +83,14 @@ open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 
--- appends a new value
-APPEND : Term → Term → Term
-APPEND l x =
-  SPREAD l (PAIR (SUC (VAR 0))
-                 (LAMBDA (IFLT (VAR 0)
-                               (VAR 1)
-                               (APPLY (VAR 2) (VAR 0))
-                               (shiftUp 0 (shiftUp 0 (shiftUp 0 x))))))
-
-{--
-  PAIR (SUC k) (LAMBDA (IFLT (VAR 0) (shiftUp 0 k) (APPLY (shiftUp 0 f) (VAR 0)) (shiftUp 0 x)))
-  where
-    k : Term
-    k = FST l
-
-    f : Term
-    f = SND l
---}
+-- MOVE to computation
+#⇓-trans₁ : {w w' : 𝕎·} {a b c : CTerm} → a #⇓ b from w to w' → b #⇓ c at w' → a #⇓ c at w
+#⇓-trans₁ {w} {w'} {a} {b} {c} c₁ c₂ = ⇓-trans₁ {w} {w'} {⌜ a ⌝} {⌜ b ⌝} {⌜ c ⌝} c₁ c₂
 
 
--- empty list (of numbers)
-EMPTY : Term
-EMPTY = PAIR (NUM 0) (LAMBDA (NUM 0))
+-- MOVE to forcing
+NATmem : (w : 𝕎·) → CTerm → Set(lsuc(L))
+NATmem w t = NATeq w t t
 
 
 PROD : Term → Term → Term
@@ -124,14 +109,6 @@ PROD a b = SUM a (shiftUp 0 b)
   where
     e : PROD ⌜ A ⌝ ⌜ B ⌝ ≡ SUM ⌜ A ⌝ ⌜ B ⌝
     e rewrite #shiftUp 0 B = refl
-
-
-LIST : Term → Term
-LIST A = PROD NAT (FUN NAT A)
-
-
-#LIST : CTerm → CTerm
-#LIST A = #PROD #NAT (#FUN #NAT A)
 
 
 PRODeq : (eqa eqb : per) → wper
@@ -282,5 +259,44 @@ eqTypesUNION!← : {w : 𝕎·} {i : ℕ} {A B C D : CTerm}
                   → equalTypes i w C D
                   → equalTypes i w (#UNION! A C) (#UNION! B D)
 eqTypesUNION!← {w} {i} {A} {B} {C} {D} eq1 eq2 = eqTypesTCONST← (eqTypesUNION← eq1 eq2)
+
+
+NATeq-mon : {w1 w2 : 𝕎·} (e : w1 ⊑· w2) {a1 a2 : CTerm}
+            → NATeq w1 a1 a2
+            → NATeq w2 a1 a2
+NATeq-mon {w1} {w2} e {a1} {a2} (n , c1 , c2) = n , ∀𝕎-mon e c1 , ∀𝕎-mon e c2
+
+
+equalInType-NAT-#⇛ : (i : ℕ) (w : 𝕎·) (a1 a2 b1 b2 : CTerm)
+                      → a1 #⇛ a2 at w
+                      → b1 #⇛ b2 at w
+                      → equalInType i w #NAT a2 b2
+                      → equalInType i w #NAT a1 b1
+equalInType-NAT-#⇛ i w a1 a2 b1 b2 c1 c2 eqi =
+  →equalInType-NAT i w a1 b1 (Mod.∀𝕎-□Func M aw (equalInType-NAT→ i w a2 b2 eqi))
+  where
+    aw : ∀𝕎 w (λ w' e' → NATeq w' a2 b2 → NATeq w' a1 b1)
+    aw w1 e1 (n , d1 , d2) =
+      n ,
+      ⇛-trans {w1} {⌜ a1 ⌝} {⌜ a2 ⌝} {NUM n} (∀𝕎-mon e1 c1) d1 ,
+      ⇛-trans {w1} {⌜ b1 ⌝} {⌜ b2 ⌝} {NUM n} (∀𝕎-mon e1 c2) d2
+
+
+∈BAIRE→ : {i : ℕ} {w : 𝕎·} {f₁ f₂ n₁ n₂ : CTerm}
+                → equalInType i w #BAIRE f₁ f₂
+                → equalInType i w #NAT n₁ n₂
+                → equalInType i w #NAT (#APPLY f₁ n₁) (#APPLY f₂ n₂)
+∈BAIRE→ {i} {w} {f₁} {f₂} {n₁} {n₂} ∈f ∈n =
+  equalInType-FUN→
+    {i} {w} {#NAT} {#NAT} {f₁} {f₂} ∈f w (⊑-refl· _) n₁ n₂
+    ∈n
+
+
+NATeq⇛ : {w : 𝕎·} {a1 a2 b1 b2 : CTerm}
+          → a1 #⇛ a2 at w
+          → b1 #⇛ b2 at w
+          → NATeq w a2 b2
+          → NATeq w a1 b1
+NATeq⇛ {w} {a1} {a2} {b1} {b2} c1 c2 (n , z1 , z2) = n , ⇛-trans c1 z1 , ⇛-trans c2 z2
 
 \end{code}

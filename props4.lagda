@@ -596,4 +596,19 @@ equalInType-M→ i w A B t u (EQTBAR x , h) =
 eqTypesBAIRE : {w : 𝕎·} {i : ℕ} → isType i w #BAIRE
 eqTypesBAIRE {w} {i} = ≡CTerm→eqTypes (sym #BAIRE≡) (sym #BAIRE≡) (eqTypesFUN← eqTypesNAT eqTypesNAT)
 
+
+⇛NUMs→equalInType-NAT : (i : ℕ) (w : 𝕎·) (a b : CTerm) (k : ℕ)
+                          → a #⇛ #NUM k at w
+                          → b #⇛ #NUM k at w
+                          → equalInType i w #NAT a b
+⇛NUMs→equalInType-NAT i w a b k c1 c2 =
+  →equalInType-NAT i w a b (Mod.∀𝕎-□ M (λ w1 e1 → k , ∀𝕎-mon e1 c1 , ∀𝕎-mon e1 c2))
+
+
+⇛NUM→equalInType-NAT : {i : ℕ} {w : 𝕎·} {a : CTerm} {k : ℕ}
+                        → a #⇛ #NUM k at w
+                        → equalInType i w #NAT a (#NUM k)
+⇛NUM→equalInType-NAT {i} {w} {a} {k} comp =
+  ⇛NUMs→equalInType-NAT i w a (#NUM k) k comp (#⇛-refl w (#NUM k))
+
 \end{code}
