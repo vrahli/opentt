@@ -180,6 +180,12 @@ updRel-NUMₗ→ : {name : Name} {f g : Term} {n : ℕ} {a : Term}
 updRel-NUMₗ→ {name} {f} {g} {n} {.(NUM n)} (updRel-NUM .n) = refl
 
 
+updRel-MSEQₗ→ : {name : Name} {f g : Term} {s : 𝕊} {a : Term}
+               → updRel name f g (MSEQ s) a
+               → a ≡ MSEQ s
+updRel-MSEQₗ→ {name} {f} {g} {s} {.(MSEQ s)} (updRel-MSEQ .s) = refl
+
+
 ΣstepsUpdRel : (name : Name) (f g : Term) (x : Term) (w2 : 𝕎·) (b : Term)  (w : 𝕎·) → Set(L)
 ΣstepsUpdRel name f g x w2 b w =
   Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ Term (λ y1 → Σ Term (λ y2 → Σ 𝕎· (λ w3 →
@@ -412,7 +418,9 @@ isHighestℕ-APPLY₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp is
 isHighestℕ-APPLY₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h | inj₂ x | inj₁ (name' , q) | inj₂ r with step⊎ b w
 ... |          inj₁ (b0 , w0 , z) rewrite z = 0 , CS name' , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... |          inj₂ z rewrite z = 0 , CS name' , w , refl , h , tt , _≤_.s≤s _≤_.z≤n
-isHighestℕ-APPLY₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h | inj₂ x | inj₂ y with step⊎ a w
+isHighestℕ-APPLY₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h | inj₂ x | inj₂ y with is-MSEQ a
+... | inj₁ (sq , r) rewrite r = 0 , MSEQ sq , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
+... | inj₂ r with step⊎ a w
 ... |    inj₁ (a0 , w0 , z) rewrite z =
   suc (fst ind) , concl
   where

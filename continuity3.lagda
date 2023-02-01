@@ -323,8 +323,11 @@ getT≤ℕ-chooseT0if→ gc {w} {name} {n} {m} {m'} compat g0 (j , h , q) with m
   refl , ¬Names-sub {a} {t} (∧≡true→ᵣ (¬names t) (¬names a) nn) (∧≡true→ₗ (¬names t) (¬names a) nn) , gtn
 ... | inj₂ x with is-CS f
 ... |    inj₁ (name' , p) rewrite p = ⊥-elim (false≢true nn)
-... |    inj₂ y with step⊎ f w1
-... |       inj₁ (f' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+... |    inj₂ y with is-MSEQ f
+... |       inj₁ (sq , r) rewrite r | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+  refl , nn , gtn
+... |       inj₂ r with step⊎ f w1
+... |          inj₁ (f' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
   fst ind ,
   →∧≡true (fst (snd ind)) (∧≡true→ᵣ (¬names f) (¬names a) nn) ,
   snd (snd ind)
@@ -917,8 +920,11 @@ step-sat-isHighestℕ gc {w1} {w2} {.(APPLY a b₁)} {b} {n} {name} {f} compat w
         c2 rewrite sub-upd name f b₁ cf = c1
 ... | inj₂ x with is-CS a
 ... |    inj₁ (name' , p) rewrite p = ⊥-elim (updCtxt-CS→ ctxt)
-... |    inj₂ p with step⊎ a w1
-... |       inj₁ (a' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+... |    inj₂ p with is-MSEQ a
+... |       inj₁ (sq , r) rewrite r | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+  0 , MAPP sq b₁ , w1 , refl , (λ s → s , s) , updCtxt-MAPP sq b₁ ctxt₁
+... |       inj₂ r with step⊎ a w1
+... |          inj₁ (a' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
   ΣhighestUpdCtxt-APPLY₁ ctxt₁ ind
   where
     ind : ΣhighestUpdCtxt name f n a' w1 w1'

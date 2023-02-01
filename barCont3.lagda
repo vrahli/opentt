@@ -204,6 +204,17 @@ open import barCont2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
     (EMPTY∈LIST i w) p inf (#⇓!-refl (#APPLY (#loop r F) #EMPTY) w) (cor n)
 
 
+{--
+infPath-mon :  {i : ℕ} {w1 w2 : 𝕎·} {B : CTerm} {C : CTerm0} {t : CTerm}
+               → w1 ⊑· w2
+               → (p : path i w1 B C)
+               → correctPath {i} {w1} {B} {C} t p
+               → isInfPath {i} {w1} {B} {C} p
+               → Σ (path i w2 B C) (λ q → correctPath {i} {w2} {B} {C} t q × isInfPath {i} {w2} {B} {C} q)
+infPath-mon {i} {w1} {w2} {B} {C} {t} e p cor inf = {!!}
+--}
+
+
 -- We want to create a Term ∈ BAIRE from this path.
 noInfPath : (kb : K□) (cb : c𝔹) (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
             → compatible· r w Res⊤

@@ -540,8 +540,11 @@ differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(APPLY a₁ b₁) b v k compat1
         hv2 = updNF⇓names gc0 k f name w1 w1' w0 b₁ v cf nnf agtn atgn' compat1 compat2 isvv pd diff₁ hv1
 ... | inj₂ x with is-CS a₁
 ... |    inj₁ (name , p) rewrite p = ⊥-elim (differ-CSₗ→ diff)
-differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(APPLY a₁ b₁) a' v k compat1 compat2 agtn atgn' (differ-APPLY a₁ .a₁ b₁ .b₁ diff diff₁) s hv isvv pd | inj₂ x | inj₂ y with step⊎ a₁ w1
-... | inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
+differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(APPLY a₁ b₁) a' v k compat1 compat2 agtn atgn' (differ-APPLY a₁ .a₁ b₁ .b₁ diff diff₁) s hv isvv pd | inj₂ x | inj₂ y with is-MSEQ a₁
+... | inj₁ (sq , r) rewrite r | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
+  MAPP sq b₁ , w1 , w1' , (0 , refl) , (1 , refl) , differ-MAPP sq b₁ b₁ diff₁
+... | inj₂ r with step⊎ a₁ w1
+... |    inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
   APPLY (fst ind) b₁ ,
   fst (snd ind) ,
   fst (snd (snd ind)) ,

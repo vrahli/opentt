@@ -910,7 +910,9 @@ stepsPresHighestℕ-IFLT₂→ {name} {f} {n} {b} {c} {d} {w} (k , v , w' , comp
 ... | inj₁ (x , p) rewrite p = ⊥-elim (nv tt)
 ... | inj₂ p with is-CS a
 ... |    inj₁ (y , q) rewrite q = ⊥-elim (nv tt)
-... |    inj₂ q rewrite comp0 = comp1 , (λ s → fst (g s) , fst (snd (i s)) , snd (g s)) , u
+... |    inj₂ q with is-MSEQ a
+... |       inj₁ (sq , r) rewrite r = ⊥-elim (nv tt)
+... |       inj₂ r rewrite comp0 = comp1 , (λ s → fst (g s) , fst (snd (i s)) , snd (g s)) , u
 
 
 

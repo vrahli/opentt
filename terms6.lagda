@@ -243,8 +243,11 @@ differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(APPLY a₁ b₁) .(APPLY 
  {-- | fst (differ-CSₗ→ diff) | snd (differ-CSₗ→ diff) with is-NUM b₁
 ... |       inj₁ (n₁ , q) rewrite q | differ-NUM→ diff₁ | map-getT-just→ n₁ name1 w1 a' w2 s = a' , a' , w1 , w1' , (0 , refl) , {!(1 , step-APPLY-CS a' w1' n₁) , ?!} --⊥-elim (differ-CSₗ→ diff)
 ... |       inj₂ q = {!!} --}
-differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(APPLY a₁ b₁) .(APPLY a₂ b₂) a' v k compat1 compat2 agtn (differ-APPLY a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd | inj₂ x | inj₂ name with step⊎ a₁ w1
-... | inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
+differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(APPLY a₁ b₁) .(APPLY a₂ b₂) a' v k compat1 compat2 agtn (differ-APPLY a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd | inj₂ x | inj₂ name with is-MSEQ a₁
+... | inj₁ (sq , r) rewrite r | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) | differ-MSEQ→ diff =
+  MAPP sq b₁ , MAPP sq b₂ , w1 , w1' , (0 , refl) , (1 , refl) , differ-MAPP sq b₁ b₂ diff₁ , g0
+... | inj₂ r with step⊎ a₁ w1
+... |    inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
   APPLY (fst ind) b₁ ,
   APPLY (fst (snd ind)) b₂ ,
   fst (snd (snd ind)) ,

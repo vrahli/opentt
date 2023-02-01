@@ -204,6 +204,13 @@ differ-NUM→ {name1} {name2} {f} {.(NUM m)} {m} (differ-NUM .m) = refl
 
 
 
+differ-MSEQ→ : {name1 name2 : Name} {f t : Term} {s : 𝕊}
+               → differ name1 name2 f (MSEQ s) t
+               → t ≡ MSEQ s
+differ-MSEQ→ {name1} {name2} {f} {.(MSEQ s)} {s} (differ-MSEQ .s) = refl
+
+
+
 {--
 differ-CSₗ→ : {name1 name2 name : Name} {f t : Term} → ¬ differ name1 name2 f (CS name) t
 differ-CSₗ→ {name1} {name2} {name} {f} {t} ()

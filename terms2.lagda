@@ -986,9 +986,11 @@ APPLY→hasValue (suc k) a b v w w' comp isv with is-LAM a
 ... | inj₁ (t , p) rewrite p = isValue→hasValueℕ (suc k) (LAMBDA t) w tt
 ... | inj₂ p with is-CS a
 ... |    inj₁ (n , q) rewrite q = isValue→hasValueℕ (suc k) (CS n) w tt
-... |    inj₂ y with step⊎ a w
-... |       inj₁ (a' , w'' , z) rewrite z = APPLY→hasValue k a' b v w'' w' comp isv
-... |       inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+... |    inj₂ y with is-MSEQ a
+... |       inj₁ (s , r) rewrite r = isValue→hasValueℕ (suc k) (MSEQ s) w tt
+... |       inj₂ r with step⊎ a w
+... |          inj₁ (a' , w'' , z) rewrite z = APPLY→hasValue k a' b v w'' w' comp isv
+... |          inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
 
 
 hasValue-APPLY→ : (a b : Term) (w : 𝕎·) {k : ℕ}

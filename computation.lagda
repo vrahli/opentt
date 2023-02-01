@@ -111,9 +111,11 @@ step (APPLY f a) w with is-LAM f
 ... |       inj₂ y with step a w
 ... |          just (u , w') = ret (APPLY (CS name) u) w'
 ... |          nothing = nothing
-step (APPLY f a) w | inj₂ x {-- ¬LAM --} | inj₂ name {-- ¬SEQ --} with step f w
-... | just (g , w') = ret (APPLY g a) w'
-... | nothing = nothing
+step (APPLY f a) w | inj₂ x {-- ¬LAM --} | inj₂ name {-- ¬SEQ --} with is-MSEQ f
+... | inj₁ (s , r) = ret (MAPP s a) w
+... | inj₂ r with step f w
+... |    just (g , w') = ret (APPLY g a) w'
+... |    nothing = nothing
 {--step (APPLY (CS name) (NUM n)) w = Data.Maybe.map (λ t → t , w) (getT n name w)
 step (APPLY (CS name) t) w with step t w
 ... | just (u , w') = ret (APPLY (CS name) u) w'
@@ -777,9 +779,11 @@ step⊑ {w} {w'} {APPLY a a₁} {b} comp with is-LAM a
 ... |       inj₂ y with step⊎ a₁ w
 ... |          inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a₁} z
 ... |          inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
-step⊑ {w} {w'} {APPLY a a₁} {b} comp | inj₂ x | inj₂ y with step⊎ a w
-... | inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
-... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step⊑ {w} {w'} {APPLY a a₁} {b} comp | inj₂ x | inj₂ y with is-MSEQ a
+... | inj₁ (s , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+... | inj₂ r with step⊎ a w
+... |    inj₁ (u , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {a} z
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step⊑ {w} {w'} {MAPP s a} {b} comp with is-NUM a
 ... | inj₁ (n , q) rewrite sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 ... | inj₂ y with step⊎ a w

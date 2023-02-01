@@ -181,8 +181,11 @@ step-updRel gc {n} {name} {f} {g} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} {x} 
         c2 rewrite sub-upd name f b₁ cf = c1
 ... | inj₂ q with is-CS a₁
 ... |    inj₁ (name' , p) rewrite p = ⊥-elim (updRel-CSₗ→ r)
-step-updRel gc {n} {name} {f} {g} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-APPLY a₁ a₂ b₁ b₂ r r₁) gtn compat wgt0 eqn | inj₂ q | inj₂ p with step⊎ a₁ w1
-... | inj₁ (a₁' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+step-updRel gc {n} {name} {f} {g} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-APPLY a₁ a₂ b₁ b₂ r r₁) gtn compat wgt0 eqn | inj₂ q | inj₂ p with is-MSEQ a₁
+... | inj₁ (sq , sqr) rewrite sqr | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) | updRel-MSEQₗ→ r =
+  0 , 1 , MAPP sq b₁ , MAPP sq b₂ , w1 , refl , refl , updRel-MAPP sq b₁ b₂ r₁
+... | inj₂ sqr with step⊎ a₁ w1
+... |   inj₁ (a₁' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
   →ΣstepsUpdRel-APPLY₁ r₁ ind'
   where
     ind' : ΣstepsUpdRel name f g a₁' w1' a₂ w
