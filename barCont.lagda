@@ -682,14 +682,6 @@ sub-genericI r i a b ci ca cb
   ≡LET (≡IFLT refl refl refl refl) (≡APPLY refl refl)
 
 
-#FST-shiftUp : (a : CTerm) → # FST (shiftUp 0 ⌜ a ⌝)
-#FST-shiftUp a rewrite →#shiftUp 0 {⌜ a ⌝} (CTerm.closed a) = refl
-
-
-#SND-shiftUp : (a : CTerm) → # SND (shiftUp 0 ⌜ a ⌝)
-#SND-shiftUp a rewrite →#shiftUp 0 {⌜ a ⌝} (CTerm.closed a) = refl
-
-
 #APPLY-#generic⇓ : (r : Name) (l i : CTerm) (w : 𝕎·)
                    → #APPLY (#generic r l) i #⇓ #genericI r (#FST l) (#SND l) i from w to w
 #APPLY-#generic⇓ r l i w =

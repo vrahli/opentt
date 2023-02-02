@@ -103,6 +103,23 @@ open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 -- bib to be clarified
 
 
+-- This constrains all Res⊤ choices to be Booleans, and here just BTRUE or BFALSE
+-- This will be satisfied by worldInstanceRef2, which is for example used by modInsanceKripkeRefBool
+-- This uses Res⊤ as this is the restiction used by FRESH
+c𝔹 : Set(lsuc(L))
+c𝔹 = (name : Name) (w : 𝕎·)
+      → compatible· name w Res⊤ -- (Resℕ nc)
+      → ∀𝕎 w (λ w' e → Lift {0ℓ} (lsuc(L)) (getT 0 name w' ≡ just BTRUE ⊎ getT 0 name w' ≡ just BFALSE))
+
+
+-- This constrains all Res⊤ choices to be ℕs and here just (NUM k) for some k
+-- This uses Res⊤ as this is the restiction used by FRESH
+cℕ : Set(lsuc(L))
+cℕ = (name : Name) (w : 𝕎·)
+      → compatible· name w Res⊤ -- (Resℕ nc)
+      → ∀𝕎 w (λ w' e → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ k → getT 0 name w' ≡ just (NUM k))))
+
+
 FunBar : Term
 FunBar = BAIRE→NAT
 
@@ -251,9 +268,9 @@ loop r bar = FIX (loopL r bar)
 
 #loopA : Name →  CTerm → CTerm → CTerm → CTerm
 #loopA r bar R l =
-  #LET (#APPLY bar (#upd r (#SND l)))
+  #LET (#APPLY bar (#upd r (#SND (#shiftUp0 (#shiftUp0 l)))))
        (#[0]IFLT (#[0]get0 r)
-                 (#[0]SND (#[0]shiftUp0 l))
+                 (#[0]FST (#[0]shiftUp0 l))
                  (#[0]ETA #[0]VAR)
                  (#[0]DIGAMMA (#[0]LAMBDA (#[1]LET #[1]VAR0 (#[2]APPLY (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 R)))
                                                                        (#[2]APPEND (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 l))) #[2]VAR0))))))
@@ -310,7 +327,7 @@ fvars-upd name f
     F : CTerm1
     F = #[1]LET (#[1]APPLY ⌞ bar ⌟ (#[1]upd r (#[3]SND #[3]VAR2)))
                 (#[2]IFLT (#[2]get0 r)
-                          (#[2]SND #[2]VAR1)
+                          (#[2]FST #[2]VAR1)
                           (#[2]ETA #[2]VAR0)
                           (#[2]DIGAMMA (#[2]LAMBDA (#[3]LET #[3]VAR0 (#[4]APPLY #[4]VAR4 (#[4]APPEND #[4]VAR3 #[4]VAR0))))))
 
@@ -318,9 +335,6 @@ fvars-upd name f
 -- sanity checking
 ⌜#loopA⌝≡ : (r : Name) (F R l : CTerm) → ⌜ #loopA r F R l ⌝ ≡ loopA r ⌜ F ⌝ ⌜ R ⌝ ⌜ l ⌝
 ⌜#loopA⌝≡ r F R l = refl
-
-
-\end{code}
 
 
 -- sanity checking
@@ -616,6 +630,10 @@ sub-loopF≡ r F l cF cl
         | #shiftUp 3 (ct l cl)
         | #shiftUp 4 (ct l cl)
         | #shiftUp 5 (ct l cl)
+        | #shiftDown 4 (ct l cl)
+        | #shiftUp 6 (ct F cF)
+        | #subv 7 l F cF
+        | #shiftDown 7 (ct F cF)
   = refl
 
 
@@ -661,22 +679,23 @@ APPLY-loop⇓! r F l w cF cl =
 
 
 #APPLY-#loop#⇓2 : (r : Name) (F l : CTerm) (w : 𝕎·)
-                  → #APPLY (#loop r F) l #⇓ #loopA r F (#loop r F) l from w to (chooseT r w BTRUE)
+                  → #APPLY (#loop r F) l #⇓ #loopA r F (#loop r F) l from w to (chooseT r w N0)
 #APPLY-#loop#⇓2 r F l w =
-  ⇓-trans₂ {w} {w} {chooseT r w BTRUE}
+  ⇓-trans₂ {w} {w} {chooseT r w N0}
            {APPLY (loop r ⌜ F ⌝) ⌜ l ⌝}
            {loopF r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
            {loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
            (#APPLY-#loop#⇓1 r F l w)
-           (step-⇓-from-to-trans {w} {chooseT r w BTRUE} {chooseT r w BTRUE}
+           (step-⇓-from-to-trans {w} {chooseT r w N0} {chooseT r w N0}
                                  {loopF r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
                                  {SEQ AX (loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝)}
                                  {loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
                                  refl
-                                 (SEQ-AX⇓₁from-to {chooseT r w BTRUE} {loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
+                                 (SEQ-AX⇓₁from-to {chooseT r w N0} {loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
                                                   (CTerm.closed (#loopA r F (#loop r F) l))))
 
 
+{--
 sub-genericI : (r : Name) (i a b : Term) (ci : # i) (ca : # a) (cb : # b)
                → sub i (genericI r a b (VAR 0)) ≡ genericI r a b i
 sub-genericI r i a b ci ca cb
@@ -690,16 +709,10 @@ sub-genericI r i a b ci ca cb
         | #subv 1 i b cb
         | #shiftDown 1 (ct b cb) =
   ≡LET (≡IFLT refl refl refl refl) (≡APPLY refl refl)
+--}
 
 
-#FST-shiftUp : (a : CTerm) → # FST (shiftUp 0 ⌜ a ⌝)
-#FST-shiftUp a rewrite →#shiftUp 0 {⌜ a ⌝} (CTerm.closed a) = refl
-
-
-#SND-shiftUp : (a : CTerm) → # SND (shiftUp 0 ⌜ a ⌝)
-#SND-shiftUp a rewrite →#shiftUp 0 {⌜ a ⌝} (CTerm.closed a) = refl
-
-
+{--
 #APPLY-#generic⇓ : (r : Name) (l i : CTerm) (w : 𝕎·)
                    → #APPLY (#generic r l) i #⇓ #genericI r (#FST l) (#SND l) i from w to w
 #APPLY-#generic⇓ r l i w =
@@ -716,19 +729,25 @@ sub-genericI r i a b ci ca cb
     c rewrite sub-genericI r ⌜ i ⌝ (FST (shiftUp 0 ⌜ l ⌝)) (SND (shiftUp 0 ⌜ l ⌝)) (CTerm.closed i) (#FST-shiftUp l) (#SND-shiftUp l)
             | #shiftUp 0 l
             | #shiftUp 0 l = refl
+--}
 
 
-𝕎< : (n m : ℕ) (w w1 w2 : 𝕎·) → 𝕎·
-𝕎< n m w w1 w2 with n <? m
-... | yes p = w1
-... | no p = w2
+𝕎< : (r : Name) (n : ℕ) (w w1 w2 : 𝕎·) → 𝕎·
+𝕎< r n w w1 w2 with getT 0 r w
+... | just u with is-NUM u
+... |    inj₁ (m , q) with m <? n
+... |       yes p = w2
+... |       no p = w1
+𝕎< r n w w1 w2 | just u | inj₂ q = w1
+𝕎< r n w w1 w2 | nothing = w1
 
 
-u𝕎 : (r : Name) (n m : ℕ) (w : 𝕎·) → 𝕎·
-u𝕎 r n m w = 𝕎< n m w w (chooseT r w BFALSE)
+u𝕎 : (r : Name) (n : ℕ) (w : 𝕎·) → 𝕎·
+u𝕎 r n w = 𝕎< r n w w (chooseT r w (NUM n))
 
 
-IFLT⇓𝕎< : {w w1 w2 : 𝕎·} {a b c : Term} {n m : ℕ}
+{--
+IFLT⇓𝕎< : {w w1 w2 : 𝕎·} {a b c : Term} {n : ℕ}
            → a ⇓ c from w to w1
            → b ⇓ c from w to w2
            → IFLT (NUM n) (NUM m) a b ⇓ c from w to 𝕎< n m w w1 w2
@@ -754,27 +773,94 @@ IFLT-NUM-AX-CHOOSE⇓ r n m w =
     {w} {w} {chooseT r w BFALSE} {AX} {set⊥ r} {AX} {n} {m}
     (⇓!-refl AX w)
     (1 , refl)
+--}
 
 
-#APPLY-#generic⇓2 : (r : Name) (l i k f : CTerm) (w : 𝕎·) (m n : ℕ)
-                    → l #⇛ #PAIR k f at w
-                    → i #⇛ #NUM n at w
-                    → k #⇛ #NUM m at w
-                    → Σ 𝕎· (λ w' → #APPLY (#generic r l) i #⇓ #APPLY (#SND l) i from w to u𝕎 r n m w')
-#APPLY-#generic⇓2 r l i k f w m n cl ci ck =
-  fst c2 , ⇓-trans₂
-             {w} {w} {u𝕎 r n m (fst c2)}
-             {APPLY (generic r ⌜ l ⌝) ⌜ i ⌝}
-             {genericI r (FST ⌜ l ⌝) (SND ⌜ l ⌝) ⌜ i ⌝}
-             {APPLY (SND ⌜ l ⌝) ⌜ i ⌝}
-             (#APPLY-#generic⇓ r l i w)
-             (⇓-trans₂
-                {w} {u𝕎 r n m (proj₁ c2)} {u𝕎 r n m (proj₁ c2)}
-                {genericI r (FST ⌜ l ⌝) (SND ⌜ l ⌝) ⌜ i ⌝}
-                {SEQ AX (APPLY (SND ⌜ l ⌝) ⌜ i ⌝)}
-                {APPLY (SND ⌜ l ⌝) ⌜ i ⌝}
-                c5
-                (SEQ-AX⇓₁from-to {u𝕎 r n m (proj₁ c2)} {APPLY (SND ⌜ l ⌝) ⌜ i ⌝} (CTerm.closed (#APPLY (#SND l) i))))
+APPLY-upd⇓ : (r : Name) (w : 𝕎·) (f i : Term) (ci : # i) (cf : # f)
+             → APPLY (upd r f) i ⇓ LET i (SEQ (updGt r (VAR 0)) (APPLY f (VAR 0))) from w to w
+APPLY-upd⇓ r w f i ci cf = 1 , ≡pair c refl
+  where
+    c : sub i (LET (VAR 0) (SEQ (updGt r (VAR 0)) (APPLY f (VAR 0)))) ≡ LET i (SEQ (updGt r (VAR 0)) (APPLY f (VAR 0)))
+    c rewrite #shiftUp 0 (ct i ci)
+            | #shiftUp 0 (ct i ci)
+            | #shiftUp 0 (ct i ci)
+            | #shiftUp 0 (ct f cf)
+            | #subv 2 i f cf
+            | #shiftDown 0 (ct i ci)
+            | #shiftDown 2 (ct f cf) = refl
+
+
+updBody-LET⇓ : (r : Name) (w : 𝕎·) (f : Term) (n : ℕ) (cf : # f)
+               → LET (NUM n) (SEQ (updGt r (VAR 0)) (APPLY f (VAR 0))) ⇓ SEQ (updGt r (NUM n)) (APPLY f (NUM n)) from w to w
+updBody-LET⇓ r w f n cf = 1 , ≡pair c refl
+  where
+    c : sub (NUM n) (SEQ (updGt r (VAR 0)) (APPLY f (VAR 0))) ≡ SEQ (updGt r (NUM n)) (APPLY f (NUM n))
+    c rewrite #shiftUp 0 (ct f cf)
+            | #subv 1 (NUM n) f cf
+            | #shiftDown 1 (ct f cf) = refl
+
+
+SEQ-updtGt-step : (r : Name) (w : 𝕎·) (n m : ℕ) (t : Term)
+                  → getT 0 r w ≡ just (NUM m)
+                  → compatible· r w Res⊤
+                  → Σ ℕ (λ k → steps (suc (suc k)) (SEQ (updGt r (NUM n)) t , w) ≡ (SEQ AX t , u𝕎 r n w))
+SEQ-updtGt-step r w n m t gt0 compat with getT 0 r w
+... | just u with is-NUM u
+... |    inj₁ (m , q) with m <? n
+... |       yes p = 1 , refl
+... |       no p = 0 , refl
+SEQ-updtGt-step r w n m t gt0 compat | just u | inj₂ q = ⊥-elim (q m (just-inj gt0))
+SEQ-updtGt-step r w n m t gt0 compat | nothing = ⊥-elim (¬just≡nothing (sym gt0))
+
+
+SEQ-updtGt⇓₁ : (cn : cℕ) (r : Name) (w : 𝕎·) (n : ℕ) (t : Term)
+               → compatible· r w Res⊤
+               → SEQ (updGt r (NUM n)) t ⇓ SEQ AX t from w to u𝕎 r n w
+SEQ-updtGt⇓₁ cn r w n t compat = suc (suc (fst c)) , snd c
+  where
+    g : Σ ℕ (λ m → getT 0 r w ≡ just (NUM m))
+    g = lower (cn r w compat w (⊑-refl· w))
+
+    c : Σ ℕ (λ k → steps (suc (suc k)) (SEQ (updGt r (NUM n)) t , w) ≡ (SEQ AX t , u𝕎 r n w))
+    c = SEQ-updtGt-step r w n (fst g) t (snd g) compat
+
+
+SEQ-updtGt⇓ : (cn : cℕ) (r : Name) (w : 𝕎·) (n : ℕ) (t : Term) (clt : # t)
+               → compatible· r w Res⊤
+               → SEQ (updGt r (NUM n)) t ⇓ t from w to u𝕎 r n w
+SEQ-updtGt⇓ cn r w n t clt compat =
+  ⇓-trans₂
+    {w} {u𝕎 r n w} {u𝕎 r n w}
+    {SEQ (updGt r (NUM n)) t} {SEQ AX t} {t}
+    (SEQ-updtGt⇓₁ cn r w n t compat)
+    (SEQ-AX⇓₁from-to {u𝕎 r n w} {t} clt)
+
+
+#APPLY-#upd⇓2 : (cn : cℕ) (r : Name) (i f : CTerm) (w : 𝕎·) (n : ℕ)
+                → compatible· r w Res⊤
+                → i #⇛ #NUM n at w
+                → Σ 𝕎· (λ w' → #APPLY (#upd r f) i #⇓ #APPLY f (#NUM n) from w to u𝕎 r n w')
+#APPLY-#upd⇓2 cn r i f w n compat ci =
+  fst c1 , -- LET⇓₁
+  ⇓-trans₂
+    {w} {w} {u𝕎 r n (fst c1)}
+    {APPLY (upd r ⌜ f ⌝) ⌜ i ⌝}
+    {LET ⌜ i ⌝ (SEQ (updGt r (VAR 0)) (APPLY ⌜ f ⌝ (VAR 0)))}
+    {APPLY ⌜ f ⌝ (NUM n)}
+    (APPLY-upd⇓ r w ⌜ f ⌝ ⌜ i ⌝ (CTerm.closed i) (CTerm.closed f))
+    (⇓-trans₂
+       {w} {fst c1} {u𝕎 r n (fst c1)}
+       {LET ⌜ i ⌝ (SEQ (updGt r (VAR 0)) (APPLY ⌜ f ⌝ (VAR 0)))}
+       {LET (NUM n) (SEQ (updGt r (VAR 0)) (APPLY ⌜ f ⌝ (VAR 0)))}
+       {APPLY ⌜ f ⌝ (NUM n)}
+       (LET⇓₁ {w} {fst c1} {⌜ i ⌝} {NUM n} {SEQ (updGt r (VAR 0)) (APPLY ⌜ f ⌝ (VAR 0))} (snd c1))
+       (⇓-trans₂
+         {fst c1} {fst c1} {u𝕎 r n (fst c1)}
+         {LET (NUM n) (SEQ (updGt r (VAR 0)) (APPLY ⌜ f ⌝ (VAR 0)))}
+         {SEQ (updGt r (NUM n)) (APPLY ⌜ f ⌝ (NUM n))}
+         {APPLY ⌜ f ⌝ (NUM n)}
+         (updBody-LET⇓ r (fst c1) ⌜ f ⌝ n (CTerm.closed f))
+         (SEQ-updtGt⇓ cn r (fst c1) n (APPLY ⌜ f ⌝ (NUM n)) (CTerm.closed (#APPLY f (#NUM n))) (⊑-compatible· e1 compat))))
   where
     c1 : Σ 𝕎· (λ w1 → ⌜ i ⌝ ⇓ NUM n from w to w1)
     c1 = ⇓→from-to (lower (ci w (⊑-refl· w)))
@@ -782,40 +868,16 @@ IFLT-NUM-AX-CHOOSE⇓ r n m w =
     e1 : w ⊑· fst c1
     e1 = #⇓from-to→⊑ {w} {fst c1} {i} {#NUM n} (snd c1)
 
-    c2 : Σ 𝕎· (λ w2 → FST ⌜ l ⌝ ⇓ NUM m from (fst c1) to w2)
-    c2 = ⇓→from-to (lower (#⇛-FST-PAIR2 l k f (#NUM m) w cl ck (fst c1) e1))
 
-    c3 : IFLT ⌜ i ⌝ (FST ⌜ l ⌝) AX (set⊥ r) ⇓ IFLT (NUM n) (NUM m) AX (set⊥ r) from w to (fst c2)
-    c3 = IFLT⇓₃ {w} {fst c1} {fst c2} {n} {m} {⌜ i ⌝} {FST ⌜ l ⌝} {AX} {set⊥ r} (snd c1) (snd c2)
-
-    c4 : IFLT ⌜ i ⌝ (FST ⌜ l ⌝) AX (set⊥ r) ⇓ AX from w to u𝕎 r n m (fst c2)
-    c4 = ⇓-trans₂
-           {w} {fst c2} {u𝕎 r n m (fst c2)}
-           {IFLT ⌜ i ⌝ (FST ⌜ l ⌝) AX (set⊥ r)}
-           {IFLT (NUM n) (NUM m) AX (set⊥ r)}
-           {AX}
-           c3
-           (IFLT-NUM-AX-CHOOSE⇓ r n m (fst c2))
-
-    c5 : genericI r (FST ⌜ l ⌝) (SND ⌜ l ⌝) ⌜ i ⌝ ⇓ SEQ AX (APPLY (SND ⌜ l ⌝) ⌜ i ⌝) from w to u𝕎 r n m (fst c2)
-    c5 = SEQ⇓₁
-           {w} {u𝕎 r n m (fst c2)}
-           {IFLT ⌜ i ⌝ (FST ⌜ l ⌝) AX (set⊥ r)}
-           {AX}
-           {APPLY (SND ⌜ l ⌝) ⌜ i ⌝}
-           c4
-
-
-#APPLY-#generic⇛ : (r : Name) (l i k f : CTerm) (w : 𝕎·) (m n : ℕ)
-                    → l #⇛ #PAIR k f at w
-                    → i #⇛ #NUM n at w
-                    → k #⇛ #NUM m at w
-                    → #APPLY (#generic r l) i #⇛ #APPLY (#SND l) i at w
-#APPLY-#generic⇛ r l i k f w m n cl ci ck w1 e1 =
-  lift (⇓-from-to→⇓ {w1} {u𝕎 r n m (fst c)} (snd c))
+#APPLY-#upd⇛ : (cn : cℕ) (r : Name) (i f : CTerm) (w : 𝕎·) (n : ℕ)
+                → compatible· r w Res⊤
+                → i #⇛ #NUM n at w
+                → #APPLY (#upd r f) i #⇛ #APPLY f (#NUM n) at w
+#APPLY-#upd⇛ cn r i f w n compat ci w1 e1 =
+  lift (⇓-from-to→⇓ {w1} {u𝕎 r n (fst c)} (snd c))
   where
-    c : Σ 𝕎· (λ w' → #APPLY (#generic r l) i #⇓ #APPLY (#SND l) i from w1 to u𝕎 r n m w')
-    c = #APPLY-#generic⇓2 r l i k f w1 m n (∀𝕎-mon e1 cl) (∀𝕎-mon e1 ci) (∀𝕎-mon e1 ck)
+    c : Σ 𝕎· (λ w' → #APPLY (#upd r f) i #⇓ #APPLY f (#NUM n) from w1 to u𝕎 r n w')
+    c = #APPLY-#upd⇓2 cn r i f w1 n (⊑-compatible· e1 compat) (∀𝕎-mon e1 ci)
 
 
 {--
@@ -865,6 +927,9 @@ generic∈BAIRE i w r l ∈l =
                    (#APPLY-#generic⇛ r l a₁ k1 f1 w2 (fst ek) n c1 d1 (fst (snd ek)))
                    (#APPLY-#generic⇛ r l a₂ k2 f2 w2 (fst ek) n c2 d2 (snd (snd ek)))
                    p4
+
+
+\end{code}
 
 
 APPLY-generic∈NAT : (i : ℕ) (w : 𝕎·) (r : Name) (F l : CTerm)
@@ -944,15 +1009,6 @@ loopB⇓loopI w r i R l cR cl = 1 , ≡pair c refl
     c3 : Σ 𝕎· (λ w' → loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝ ⇓ loopI r (loop r ⌜ F ⌝) ⌜ l ⌝ (NUM i) from (chooseT r w BTRUE) to w')
     c3 = fst c1 , ⇓-trans₂ {chooseT r w BTRUE} {proj₁ c1} {proj₁ c1} (snd c2)
                            (loopB⇓loopI (proj₁ c1) r i (loop r ⌜ F ⌝) ⌜ l ⌝ (CTerm.closed (#loop r F)) (CTerm.closed l))
-
-
--- This constrains all Res⊤ choices to be Booleans, and here just BTRUE or BFALSE
--- This will be satisfied by worldInstanceRef2, which is for example used by modInsanceKripkeRefBool
--- This uses Res⊤ as this is the restiction used by FRESH
-c𝔹 : Set(lsuc(L))
-c𝔹 = (name : Name) (w : 𝕎·)
-      → compatible· name w Res⊤ -- (Resℕ nc)
-      → ∀𝕎 w (λ w' e → Lift {0ℓ} (lsuc(L)) (getT 0 name w' ≡ just BTRUE ⊎ getT 0 name w' ≡ just BFALSE))
 
 
 #APPLY-#loop#⇓4₁ : (r : Name) (F l : CTerm) (i : ℕ) (w : 𝕎·)

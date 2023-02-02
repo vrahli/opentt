@@ -1467,6 +1467,13 @@ CTerm3→4 t = ct4 ⌜ t ⌝ c
               (⊆-trans (⊆?→⊆ (CTerm3.closed t)) [0,1,2,3]⊆[0,1,2,3,4])
 
 
+#shiftUp0 : CTerm → CTerm
+#shiftUp0 t = ct (shiftUp 0 ⌜ t ⌝) c
+  where
+    c : # (shiftUp 0 ⌜ t ⌝)
+    c rewrite fvars-shiftUp≡ 0 ⌜ t ⌝ | CTerm.closed t = refl
+
+
 #[0]shiftUp0 : CTerm → CTerm0
 #[0]shiftUp0 t = ct0 (shiftUp 0 ⌜ t ⌝) c
   where
@@ -1975,5 +1982,13 @@ APPLY-MSEQ⇛ : (w : 𝕎·) (s : 𝕊) (a : Term) (k : ℕ)
              → a ⇛ NUM k at w
              → APPLY (MSEQ s) a ⇛ NUM (s k) at w
 APPLY-MSEQ⇛ w s a k comp w1 e1 = lift (APPLY-MSEQ⇓ w1 s a k (lower (comp w1 e1)))
+
+
+#FST-shiftUp : (a : CTerm) → # FST (shiftUp 0 ⌜ a ⌝)
+#FST-shiftUp a rewrite →#shiftUp 0 {⌜ a ⌝} (CTerm.closed a) = refl
+
+
+#SND-shiftUp : (a : CTerm) → # SND (shiftUp 0 ⌜ a ⌝)
+#SND-shiftUp a rewrite →#shiftUp 0 {⌜ a ⌝} (CTerm.closed a) = refl
 
 \end{code}
