@@ -423,4 +423,59 @@ EMPTY∈LIST i w = →equalInType-LIST-NAT i w #EMPTY #EMPTY (Mod.∀𝕎-□ M 
       LAM0∈BAIRE i w1 ,
       #⇛-refl w1 #EMPTY , #⇛-refl w1 #EMPTY
 
+
+#⇛∈LIST : (i : ℕ) (w : 𝕎·) (l k f : CTerm) (n : ℕ)
+            → l #⇛ #PAIR k f at w
+            → k #⇛ #NUM n at w
+            → ∈Type i w #BAIRE f
+            → ∈Type i w (#LIST #NAT) l
+#⇛∈LIST i w l k f n compl compk f∈ =
+  →equalInType-LIST-NAT
+    i w l l
+    (Mod.∀𝕎-□ M aw)
+  where
+    aw : ∀𝕎 w (λ w' _ → LISTNATeq i w' l l)
+    aw w1 e1 =
+      k , k , f , f ,
+      (n , ∀𝕎-mon e1 compk , ∀𝕎-mon e1 compk) ,
+      equalInType-mon f∈ w1 e1 ,
+      ∀𝕎-mon e1 compl , ∀𝕎-mon e1 compl
+
+
+APPLY⇓₁ : {w : 𝕎·} {a b : Term} (c : Term)
+         → a ⇓ b at w
+         → APPLY a c ⇓ APPLY b c at w
+APPLY⇓₁ {w} {a} {b} c comp = ⇓-from-to→⇓ (APPLY⇓ {w} {fst comp'} {a} {b} c (snd comp'))
+  where
+    comp' : Σ 𝕎· (λ w' → a ⇓ b from w to w')
+    comp' = ⇓→from-to {w} {a} {b} comp
+
+
+#APPLY#⇛ : {w : 𝕎·} {a b : CTerm} (c : CTerm)
+            → a #⇛ b at w
+            → #APPLY a c #⇛ #APPLY b c at w
+#APPLY#⇛ {w} {a} {b} c comp w1 e1 = lift (APPLY⇓₁ {w1} {⌜ a ⌝} {⌜ b ⌝} ⌜ c ⌝ (lower (comp w1 e1)))
+
+
+∈LIST→SND : (i : ℕ) (w : 𝕎·) (l : CTerm)
+              → ∈Type i w (#LIST #NAT) l
+              → ∈Type i w #BAIRE (#SND l)
+∈LIST→SND i w l l∈ =
+  equalInType-local (Mod.∀𝕎-□Func M aw (equalInType-LIST-NAT→ i w l l l∈))
+  where
+    aw : ∀𝕎 w (λ w' e' → LISTNATeq i w' l l → equalInType i w' #BAIRE (#SND l) (#SND l))
+    aw w1 e1 (a1 , a2 , b1 , b2 , aeq , beq , c1 , c2) =
+      ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-FUN eqTypesNAT eqTypesNAT aw1)
+      where
+        aw1 : ∀𝕎 w1 (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
+                             → equalInType i w' #NAT (#APPLY (#SND l) a₁) (#APPLY (#SND l) a₂))
+        aw1 w2 e2 a₁ a₂ ea =
+          equalInType-NAT-#⇛
+            i w2
+            (#APPLY (#SND l) a₁) (#APPLY b1 a₁)
+            (#APPLY (#SND l) a₂) (#APPLY b2 a₂)
+            (#APPLY#⇛ {w2} {#SND l} {b1} a₁ (#⇛-SND-PAIR l a1 b1 w2 (∀𝕎-mon e2 c1)))
+            (#APPLY#⇛ {w2} {#SND l} {b2} a₂ (#⇛-SND-PAIR l a2 b2 w2 (∀𝕎-mon e2 c2)))
+            (equalInType-FUN→ {i} {w1} {#NAT} {#NAT} {b1} {b2} beq w2 e2 a₁ a₂ ea)
+
 \end{code}

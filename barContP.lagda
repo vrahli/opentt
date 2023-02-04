@@ -1306,4 +1306,13 @@ APPLY-loopR-⇛ : (w : 𝕎·) (R l b : CTerm) (k : ℕ)
 APPLY-loopR-⇛ w R l b k comp w1 e1 = {!!} --lift (APPLY-loopR-⇓ w1 R l b)
 --}
 
+
+upd-SND∈BAIRE : (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (l : CTerm)
+                 → compatible· r w Res⊤
+                 → ∈Type i w (#LIST #NAT) l
+                 → ∈Type i w #BAIRE (#upd r (#SND l))
+upd-SND∈BAIRE cn i w r l compat l∈ =
+  upd∈BAIRE cn i w r (#SND l) compat (∈LIST→SND i w l l∈)
+
+
 \end{code}

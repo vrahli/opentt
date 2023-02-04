@@ -101,28 +101,53 @@ open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 
 
+∈LISTNAT→ : (kb : K□) (i : ℕ) (w : 𝕎·) (l : CTerm)
+              → ∈Type i w (#LIST #NAT) l
+              → Σ CTerm (λ k → Σ CTerm (λ f → Σ ℕ (λ n → l #⇛ #PAIR k f at w × k #⇛ #NUM n at w × ∈Type i w #BAIRE f)))
+∈LISTNAT→ kb i w l l∈ =
+  fst c ,
+  fst (snd (snd c)) ,
+  fst (fst (snd (snd (snd (snd c))))) ,
+  fst (snd (snd (snd (snd (snd (snd c)))))) ,
+  fst (snd (fst (snd (snd (snd (snd c)))))) ,
+  equalInType-refl (fst (snd (snd (snd (snd (snd c))))))
+  where
+    c : Σ CTerm (λ a1 → Σ CTerm (λ a2 → Σ CTerm (λ b1 → Σ CTerm (λ b2 →
+          NATeq w a1 a2
+          × equalInType i w #BAIRE b1 b2
+          × l #⇛ (#PAIR a1 b1) at w
+          × l #⇛ (#PAIR a2 b2) at w))))
+    c = kb (equalInType-LIST-NAT→ i w l l l∈) w (⊑-refl· w)
+
+
 -- First prove that loop belongs to CoIndBar
-coSemM : (kb : K□) (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (F l a b : CTerm) (k : ℕ)
+coSemM : (kb : K□) (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (F l j f a b : CTerm) (k n : ℕ)
          --→ ∈Type i w #FunBar F
          --→ ∈Type i w (#LIST #NAT) l
          → compatible· r w Res⊤
-         → ∈Type i w (#LIST #NAT) l
+         → l #⇛ #PAIR j f at w
+         → j #⇛ #NUM n at w
+--         → ∈Type i w (#LIST #NAT) l
+         → ∈Type i w #BAIRE f
          → ∈Type i w #FunBar F
          → #APPLY F (#upd r (#SND l)) #⇛ #NUM k at w -- follows from APPLY-generic∈NAT
          → a #⇓! #APPLY (#loop r F) l at w
          → b #⇓! #APPLY (#loop r F) l at w
          → meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC)) w a b
-meq.meqC (coSemM kb cn i w r F l a b k compat il iF ck c1 c2) with #APPLY-#loop#⇓4 cb r F l k w compat (lower (ck (chooseT r w BTRUE) (choose⊑· r w (T→ℂ· BTRUE))))
--- 'with' doesn't work without the 'abstract' on #APPLY-#loop#⇓4
-... | inj₁ x = #INL (#NUM k) , #AX , #INL (#NUM k) , #AX , INL∈IndBarB i w k , ⇓-trans₁ {w} {w} c1 x , ⇓-trans₁ {w} {w} c2 x , eqb --x , x , eqb
-               -- That's an issue because we don't know here whether if we get an ETA in w then we get an ETA for all its extensions
+meq.meqC (coSemM kb cn i w r F l j f a b k n compat compl compj f∈ F∈ ck c1 c2)
+  with #APPLY-#loop#⇓4 cn r F l j f k n w compat compl compj (lower (ck (chooseT r w N0) (choose⊑· r w (T→ℂ· N0))))
+-- NOTE: 'with' doesn't work without the 'abstract' on #APPLY-#loop#⇓4
+... | inj₁ x =
+  #INL (#NUM k) , #AX , #INL (#NUM k) , #AX , INL∈IndBarB i w k , ⇓-trans₁ {w} {w} c1 x , ⇓-trans₁ {w} {w} c2 x , eqb
+  -- That's an issue because we don't know here whether if we get an ETA in w then we get an ETA for all its extensions
     where
       eqb : (b1 b2 : CTerm)
             → equalInType i w (sub0 (#INL (#NUM k)) #IndBarC) b1 b2
             → meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC))
                    w (#APPLY #AX b1) (#APPLY #AX b2)
       eqb b1 b2 eb rewrite sub0-IndBarC≡ (#INL (#NUM k)) = ⊥-elim (equalInType-DECIDE-INL-VOID→ i w (#NUM k) b1 b2 #[0]NAT! eb)
-... | inj₂ x = #INR #AX  , #loopR (#loop r F) l , #INR #AX , #loopR (#loop r F) l , INR∈IndBarB i w , ⇓-trans₁ {w} {w} c1 x , ⇓-trans₁ {w} {w} c2 x , eqb --x , x , eqb
+... | inj₂ x =
+  #INR #AX  , #loopR (#loop r F) l , #INR #AX , #loopR (#loop r F) l , INR∈IndBarB i w , ⇓-trans₁ {w} {w} c1 x , ⇓-trans₁ {w} {w} c2 x , eqb
     where
       eqb : (b1 b2 : CTerm)
             → equalInType i w (sub0 (#INR #AX) #IndBarC) b1 b2
@@ -137,31 +162,41 @@ meq.meqC (coSemM kb cn i w r F l a b k compat il iF ck c1 c2) with #APPLY-#loop#
           eb2 = kb (equalInType-NAT!→ i w b1 b2 eb1) w (⊑-refl· w)
 
           el1 : ∈Type i w (#LIST #NAT) (#APPEND l (#NUM (fst eb2)))
-          el1 = APPEND∈LIST i w l (#NUM (fst eb2)) il (NUM-equalInType-NAT i w (fst eb2))
+          el1 = APPEND∈LIST i w l (#NUM (fst eb2)) (#⇛∈LIST i w l j f n compl compj f∈) (NUM-equalInType-NAT i w (fst eb2))
 
-          ef1 : ∈Type i w #NAT (#APPLY F (#generic r (#APPEND l (#NUM (fst eb2)))))
+          el2 : Σ CTerm (λ k → Σ CTerm (λ f → Σ ℕ (λ n →
+                  #APPEND l (#NUM (fst eb2)) #⇛ #PAIR k f at w × k #⇛ #NUM n at w × ∈Type i w #BAIRE f)))
+          el2 = ∈LISTNAT→ kb i w (#APPEND l (#NUM (fst eb2))) el1
+
+          ef1 : ∈Type i w #NAT (#APPLY F (#upd r (#SND (#APPEND l (#NUM (fst eb2))))))
           ef1 = ∈BAIRE→NAT→
                   {i} {w} {F} {F}
-                  {#generic r (#APPEND l (#NUM (fst eb2)))}
-                  {#generic r (#APPEND l (#NUM (fst eb2)))}
-                  iF
-                  (generic∈BAIRE i w r (#APPEND l (#NUM (fst eb2))) el1)
+                  {#upd r (#SND (#APPEND l (#NUM (fst eb2))))}
+                  {#upd r (#SND (#APPEND l (#NUM (fst eb2))))}
+                  F∈
+                  (upd-SND∈BAIRE cn i w r (#APPEND l (#NUM (proj₁ eb2))) compat el1)
 
-          ef2 : NATmem w (#APPLY F (#generic r (#APPEND l (#NUM (fst eb2)))))
-          ef2 = kb (equalInType-NAT→ i w (#APPLY F (#generic r (#APPEND l (#NUM (fst eb2))))) (#APPLY F (#generic r (#APPEND l (#NUM (fst eb2))))) ef1) w (⊑-refl· w)
+          ef2 : NATmem w (#APPLY F (#upd r (#SND (#APPEND l (#NUM (fst eb2))))))
+          ef2 = kb (equalInType-NAT→ i w (#APPLY F (#upd r (#SND (#APPEND l (#NUM (fst eb2)))))) (#APPLY F (#upd r (#SND (#APPEND l (#NUM (fst eb2)))))) ef1) w (⊑-refl· w)
 
           eb3 : meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC))
                     w (#APPLY (#loopR (#loop r F) l) b1) (#APPLY (#loopR (#loop r F) l) b2)
           eb3 = coSemM
-                  kb cb i w r F
+                  kb cn i w r F
                   (#APPEND l (#NUM (fst eb2)))
+                  (fst el2) (fst (snd el2))
                   (#APPLY (#loopR (#loop r F) l) b1)
                   (#APPLY (#loopR (#loop r F) l) b2)
                   (fst ef2)
-                  compat el1 iF
+                  (fst (snd (snd el2)))
+                  compat
+                  --el1
+                  (fst (snd (snd (snd el2)))) (fst (snd (snd (snd (snd el2)))))
+                  (snd (snd (snd (snd (snd el2)))))
+                  F∈
                   (fst (snd ef2))
-                  (APPLY-loopR-⇓ w w (#loop r F) l b1 (proj₁ eb2) (lower (fst (snd eb2) w (⊑-refl· w))))
-                  (APPLY-loopR-⇓ w w (#loop r F) l b2 (proj₁ eb2) (lower (snd (snd eb2) w (⊑-refl· w))))
+                  (APPLY-loopR-⇓ w w (#loop r F) l b1 (fst eb2) (lower (fst (snd eb2) w (⊑-refl· w))))
+                  (APPLY-loopR-⇓ w w (#loop r F) l b2 (fst eb2) (lower (snd (snd eb2) w (⊑-refl· w))))
 
 
 isType-IndBarB : (i : ℕ) (w : 𝕎·) → isType i w #IndBarB
@@ -194,12 +229,12 @@ equalTypes-IndBarC i w a b eqa rewrite sub0-IndBarC≡ a | sub0-IndBarC≡ b =
 
 
 -- First prove that loop belongs to CoIndBar
-coSem : (kb : K□) (cb : c𝔹) (i : ℕ) (w : 𝕎·) (r : Name) (F l : CTerm)
+coSem : (kb : K□) (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (F l : CTerm)
         → compatible· r w Res⊤
         → ∈Type i w #FunBar F
         → ∈Type i w (#LIST #NAT) l
         → ∈Type i w #CoIndBar (#APPLY (#loop r F) l)
-coSem kb cb i w r F l compat F∈ l∈ =
+coSem kb cn i w r F l compat F∈ l∈ =
   →equalInType-M
     i w #IndBarB #IndBarC (#APPLY (#loop r F) l) (#APPLY (#loop r F) l)
       (λ w1 e1 → isType-IndBarB i w1)
@@ -210,22 +245,28 @@ coSem kb cb i w r F l compat F∈ l∈ =
                               w' (#APPLY (#loop r F) l) (#APPLY (#loop r F) l))
     aw w1 e1 = m
       where
-        F∈1 : ∈Type i w1 #NAT (#APPLY F (#generic r l))
+        F∈1 : ∈Type i w1 #NAT (#APPLY F (#upd r (#SND l)))
         F∈1 = ∈BAIRE→NAT→
-                  {i} {w1} {F} {F} {#generic r l} {#generic r l}
+                  {i} {w1} {F} {F} {#upd r (#SND l)} {#upd r (#SND l)}
                   (equalInType-mon F∈ w1 e1)
-                  (generic∈BAIRE i w1 r l (equalInType-mon l∈ w1 e1))
+                  (upd∈BAIRE cn i w1 r (#SND l) (⊑-compatible· e1 compat) (∈LIST→SND i w1 l (equalInType-mon l∈ w1 e1)))
 
-        F∈2 : NATmem w1 (#APPLY F (#generic r l))
-        F∈2 = kb (equalInType-NAT→ i w1 (#APPLY F (#generic r l)) (#APPLY F (#generic r l)) F∈1) w1 (⊑-refl· w1)
+        F∈2 : NATmem w1 (#APPLY F (#upd r (#SND l)))
+        F∈2 = kb (equalInType-NAT→ i w1 (#APPLY F (#upd r (#SND l))) (#APPLY F (#upd r (#SND l))) F∈1) w1 (⊑-refl· w1)
+
+        l∈2 : Σ CTerm (λ k → Σ CTerm (λ f → Σ ℕ (λ n →
+                l #⇛ #PAIR k f at w1 × k #⇛ #NUM n at w1 × ∈Type i w1 #BAIRE f)))
+        l∈2 = ∈LISTNAT→ kb i w1 l (equalInType-mon l∈ w1 e1)
 
         m : meq (equalInType i w1 #IndBarB) (λ a b eqa → equalInType i w1 (sub0 a #IndBarC))
                 w1 (#APPLY (#loop r F) l) (#APPLY (#loop r F) l)
         m = coSemM
-              kb cb i w1 r F l (#APPLY (#loop r F) l) (#APPLY (#loop r F) l)
-              (fst F∈2)
+              kb cn i w1 r F l (fst l∈2) (fst (snd l∈2)) (#APPLY (#loop r F) l) (#APPLY (#loop r F) l)
+              (fst F∈2) (fst (snd (snd l∈2)))
               (⊑-compatible· e1 compat)
-              (equalInType-mon l∈ w1 e1)
+              (fst (snd (snd (snd l∈2)))) (fst (snd (snd (snd (snd l∈2)))))
+              (snd (snd (snd (snd (snd l∈2)))))
+              --(equalInType-mon l∈ w1 e1)
               (equalInType-mon F∈ w1 e1)
               (fst (snd F∈2))
               (#⇓!-refl (#APPLY (#loop r F) l) w1)
@@ -255,17 +296,18 @@ shifts𝕊 (suc n) s = shift𝕊 (shifts𝕊 n s)
 
 
 -- n is the fuel
-correctSeqN : (r : Name) (F : CTerm) (l : CTerm) (s : 𝕊) (n : ℕ) → Set(lsuc L)
-correctSeqN r F l s 0 = Lift (lsuc L) ⊤
-correctSeqN r F l s (suc n) =
-  Σ ℕ (λ m → Σ 𝕎· (λ w → Σ 𝕎· (λ w' →
-    #APPLY F (#generic r l) #⇓ #NUM m from (chooseT r w BTRUE) to w'
-    × getT 0 r w' ≡ just BFALSE
-    × correctSeqN r F (#APPEND l (#NUM (s 0))) (shift𝕊 s) n)))
+correctSeqN : (r : Name) (F : CTerm) (k : ℕ) (f : CTerm) (s : 𝕊) (n : ℕ) → Set(lsuc L)
+correctSeqN r F k f s 0 = Lift (lsuc L) ⊤
+correctSeqN r F k f s (suc n) =
+  Σ ℕ (λ m → Σ 𝕎· (λ w → Σ 𝕎· (λ w' → Σ ℕ (λ j →
+    #APPLY F (#upd r f) #⇓ #NUM m from (chooseT r w N0) to w'
+    × getT 0 r w' ≡ just (NUM j)
+    × ¬ k < j
+    × correctSeqN r F (suc k) (#APPENDf (#NUM k) f (#NUM (s 0))) (shift𝕊 s) n))))
 
 
 correctSeq : (r : Name) (F : CTerm) (s : 𝕊) → Set(lsuc L)
-correctSeq r F s = (n : ℕ) → correctSeqN r F #EMPTY s n
+correctSeq r F s = (n : ℕ) → correctSeqN r F 0 #LAM0 s n
 
 
 path2𝕊 : (kb : K□) {i : ℕ} {w : 𝕎·} (p : path i w #IndBarB #IndBarC) → 𝕊
@@ -282,10 +324,44 @@ seq2list s 0 = #EMPTY
 seq2list s (suc n) = #APPEND (seq2list s n) (#NUM n)
 
 
+shift-path2𝕊 : (kb : K□) {i : ℕ} {w : 𝕎·} (p : path i w #IndBarB #IndBarC)
+                → (n : ℕ) → shift𝕊 (path2𝕊 kb p) n ≡ path2𝕊 kb (shiftPath {i} {w} {#IndBarB} {#IndBarC} p) n
+shift-path2𝕊 kb {i} {w} p n = refl
+
+
+→≡correctSeqN : (r : Name) (F : CTerm) (k : ℕ) (f : CTerm) (s1 s2 : 𝕊) (n : ℕ)
+                 → ((k : ℕ) → s1 k ≡ s2 k)
+                 → correctSeqN r F k f s1 n
+                 → correctSeqN r F k f s2 n
+→≡correctSeqN r F k f s1 s2 0 imp cor = cor
+→≡correctSeqN r F k f s1 s2 (suc n) imp (m , w , w' , j , x , y , z , c) =
+  m , w , w' , j , x , y , z , ind2
+  where
+    ind1 : correctSeqN r F (suc k) (#APPENDf (#NUM k) f (#NUM (s1 0))) (shift𝕊 s2) n
+    ind1 = →≡correctSeqN r F (suc k) (#APPENDf (#NUM k) f (#NUM (s1 0))) (shift𝕊 s1) (shift𝕊 s2) n (λ j → imp (suc j)) c
+
+    ind2 : correctSeqN r F (suc k) (#APPENDf (#NUM k) f (#NUM (s2 0))) (shift𝕊 s2) n
+    ind2 rewrite sym (imp 0) = ind1
+
+
+
+isInfPath-shiftPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B)
+                      → isInfPath {i} {w} {A} {B} p
+                      → isInfPath {i} {w} {A} {B} (shiftPath {i} {w} {A} {B} p)
+isInfPath-shiftPath {i} {w} {A} {B} p inf n = inf (suc n)
+
+
+≡→correctPathN : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B) {t u : CTerm} (n : ℕ)
+                  → t ≡ u
+                  → correctPathN {i} {w} {A} {B} t p n
+                  → correctPathN {i} {w} {A} {B} u p n
+≡→correctPathN {i} {w} {A} {B} p {t} {u} n e cor rewrite e = cor
+
+
 SEQ-set⊤⇓val→ : {w : 𝕎·} {r : Name} {a v : Term} (ca : # a)
                   → isValue v
-                  → SEQ (set⊤ r) a ⇓ v at w
-                  → a ⇓ v at chooseT r w BTRUE
+                  → SEQ (set0 r) a ⇓ v at w
+                  → a ⇓ v at chooseT r w N0
 SEQ-set⊤⇓val→ {w} {r} {a} {v} ca isv (0 , comp) rewrite sym comp = ⊥-elim isv
 SEQ-set⊤⇓val→ {w} {r} {a} {v} ca isv (1 , comp) rewrite sym comp = ⊥-elim isv
 SEQ-set⊤⇓val→ {w} {r} {a} {v} ca isv (suc (suc n) , comp)
@@ -308,48 +384,67 @@ sub-loopI-shift≡ r F l v cF cl cv
         | #shiftUp 3 (ct F cF) = refl
 
 
-loopI⇓→ : (r : Name) (w : 𝕎·) (R l i v : Term) (cR : # R) (cl : # l) (ci : # i)
-           → (getT 0 r w ≡ just BTRUE ⊎ getT 0 r w ≡ just BFALSE)
+IFLT→⇓NUM₁ : (w w' : 𝕎·) (k : ℕ) (n : ℕ) (a b c v : Term)
+              → isValue v
+              → steps k (IFLT (NUM n) a b c , w) ≡ (v , w')
+              → Σ ℕ (λ m → Σ 𝕎· (λ w0 → a ⇓ NUM m from w to w0
+                  × ((n < m × b ⇓ v from w0 to w') ⊎ (¬ n < m × c ⇓ v from w0 to w'))))
+IFLT→⇓NUM₁ w w' 0 n a b c v isv comp rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+IFLT→⇓NUM₁ w w' (suc k) n a b c v isv comp with is-NUM a
+... | inj₁ (m , p) rewrite p with n <? m
+... |    yes q = m , w , (0 , refl) , inj₁ (q , k , comp)
+... |    no q = m , w , (0 , refl) , inj₂ (q , k , comp)
+IFLT→⇓NUM₁ w w' (suc k) n a b c v isv comp | inj₂ p with step⊎ a w
+... | inj₁ (a' , w1 , q) rewrite q with IFLT→⇓NUM₁ w1 w' k n a' b c v isv comp
+... |    (m , w0 , comp' , x) = m , w0 , step-⇓-from-to-trans {w} {w1} {w0} {a} {a'} {NUM m} q comp' , x
+IFLT→⇓NUM₁ w w' (suc k) n a b c v isv comp | inj₂ p | inj₂ q
+  rewrite q | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+
+
+loopI⇓from-to→ : (r : Name) (w w' : 𝕎·) (n : ℕ) (R l i v : Term) (k : ℕ) (cR : # R) (cl : # l) (ci : # i)
+           → getT 0 r w ≡ just (NUM k)
+           → isValue v
+           → steps n (loopI r R l i , w) ≡ (v , w')
+           → Σ ℕ (λ j → FST l ⇓ NUM j at w × ((k < j × v ≡ ETA i) ⊎ ¬ k < j × v ≡ DIGAMMA (loopR R l)))
+loopI⇓from-to→ r w w' 0 R l i v k cR cl ci e isv comp
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+loopI⇓from-to→ r w w' (suc n) R l i v k cR cl ci e isv comp
+  rewrite e
+  with IFLT→⇓NUM₁ w w' n k (FST l) (ETA i) (DIGAMMA (loopR R l)) v isv comp
+... | (m , w0 , comp1 , inj₁ (q , comp2)) = m , ⇓-from-to→⇓ comp1 , inj₁ (q , sym (⇓-from-to→≡ (ETA i) v w0 w' comp2 tt))
+... | (m , w0 , comp1 , inj₂ (q , comp2)) = m , ⇓-from-to→⇓ comp1 , inj₂ (q , sym (⇓-from-to→≡ (DIGAMMA (loopR R l)) v w0 w' comp2 tt))
+
+
+loopI⇓→ : (r : Name) (w : 𝕎·) (R l i v : Term) (k : ℕ) (cR : # R) (cl : # l) (ci : # i)
+           → getT 0 r w ≡ just (NUM k)
            → isValue v
            → loopI r R l i ⇓ v at w
-           → (getT 0 r w ≡ just BTRUE × v ≡ ETA i)
-              ⊎ (getT 0 r w ≡ just BFALSE × v ≡ DIGAMMA (loopR R l))
-loopI⇓→ r w R l i v cR cl ci e isv (0 , comp) rewrite sym comp = ⊥-elim isv
-loopI⇓→ r w R l i v cR cl ci (inj₁ e) isv (1 , comp) rewrite e | sym comp = ⊥-elim isv
-loopI⇓→ r w R l i v cR cl ci (inj₁ e) isv (suc (suc n) , comp)
-  rewrite e
-        | #shiftUp 0 (ct i ci)
-        | #subv 0 AX i ci
-        | #shiftDown 0 (ct i ci)
-        | stepsVal (ETA i) w n tt
-        | sym comp = inj₁ (refl , refl)
-loopI⇓→ r w R l i v cR cl ci (inj₂ e) isv (1 , comp) rewrite e | sym comp = ⊥-elim isv
-loopI⇓→ r w R l i v cR cl ci (inj₂ e) isv (suc (suc n) , comp)
-  rewrite e
-        | #shiftUp 0 (ct R cR)
-        | #shiftUp 0 (ct R cR)
-        | #shiftUp 2 (ct R cR)
-        | #subv 2 AX R cR
-        | #shiftDown 2 (ct R cR)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 2 (ct l cl)
-        | #subv 2 AX l cl
-        | #shiftDown 2 (ct l cl)
-        | stepsVal (DIGAMMA (loopRR R l)) w n tt
-        | sym comp = inj₂ (refl , refl)
+           → Σ ℕ (λ j → FST l ⇓ NUM j at w × ((k < j × v ≡ ETA i) ⊎ (¬ k < j × v ≡ DIGAMMA (loopR R l))))
+loopI⇓→ r w R l i v k cR cl ci e isv comp =
+  loopI⇓from-to→ r w (proj₁ comp') (proj₁ (snd comp')) R l i v k cR cl ci e isv (snd (snd comp'))
+  where
+    comp' : Σ 𝕎· (λ w' → loopI r R l i ⇓ v from w to w')
+    comp' = ⇓→from-to {w} {loopI r R l i} {v} comp
 
 
-APPLY-loop⇓SUP→ : (cb : c𝔹) (w : 𝕎·) (r : Name) (F l a f : Term) (cF : # F) (cl : # l) (k : ℕ)
+loopA⇓→loopB⇓ : (w : 𝕎·) (r : Name) (F R l v : Term) (cl : # l)
+                 → loopA r F R l ⇓ v at w
+                 → loopB r (appUpd r F (SND l)) R l ⇓ v at w
+loopA⇓→loopB⇓ w r F R l v cl comp rewrite shiftUp00 (ct l cl) = comp
+
+
+APPLY-loop⇓SUP→ : (cn : cℕ) (w : 𝕎·) (r : Name) (F l a f : Term) (cF : # F) (cl : # l) (k : ℕ)
                    → compatible· r w Res⊤
-                   → APPLY F (generic r l) ⇛ NUM k at w
+                   → APPLY F (upd r (SND l)) ⇛ NUM k at w
                    → APPLY (loop r F) l ⇓ SUP a f at w
-                   → Σ 𝕎· (λ w' →
-                      APPLY F (generic r l) ⇓ NUM k from (chooseT r w BTRUE) to w'
-                      × ((getT 0 r w' ≡ just BTRUE × a ≡ INL (NUM k) × f ≡ AX)
-                         ⊎ (getT 0 r w' ≡ just BFALSE × a ≡ INR AX × f ≡ loopR (loop r F) l)))
-APPLY-loop⇓SUP→ cb w r F l a f cF cl k compat compk comp =
-  w' , comp7 , d3 d2
+                   → Σ 𝕎· (λ w' → Σ ℕ (λ n → Σ ℕ (λ m →
+                      APPLY F (upd r (SND l)) ⇓ NUM k from (chooseT r w N0) to w'
+                      × getT 0 r w' ≡ just (NUM n)
+                      × FST l ⇓ NUM m at w'
+                      × ((n < m × a ≡ INL (NUM k) × f ≡ AX)
+                         ⊎ (¬ n < m × a ≡ INR AX × f ≡ loopR (loop r F) l)))))
+APPLY-loop⇓SUP→ cn w r F l a f cF cl k compat compk comp =
+  w' , n , m , comp7 , snd d1 , cfl , d3 (snd (snd d2))
   where
     comp1 : APPLY (sub (loop r F) (LAMBDA (loopF r F (VAR 1) (VAR 0)))) l ⇓ SUP a f at w
     comp1 = APPLY-FIX⇓→ w (LAMBDA (loopF r F (VAR 1) (VAR 0))) l (SUP a f) tt comp
@@ -363,28 +458,31 @@ APPLY-loop⇓SUP→ cb w r F l a f cF cl k compat compk comp =
     comp4 : loopF r F (loop r F) l ⇓ SUP a f at w
     comp4 rewrite sym (sub-loopF≡ r F l cF cl) = comp3
 
-    comp5 : loopA r F (loop r F) l ⇓ SUP a f at chooseT r w BTRUE
+    comp5 : loopA r F (loop r F) l ⇓ SUP a f at chooseT r w N0
     comp5 = SEQ-set⊤⇓val→ (CTerm.closed (#loopA r (ct F cF) (#loop r (ct F cF)) (ct l cl))) tt comp4
 
+    comp5' : loopB r (appUpd r F (SND l)) (loop r F) l ⇓ SUP a f at chooseT r w N0
+    comp5' = loopA⇓→loopB⇓ (chooseT r w N0) r F (loop r F) l (SUP a f) cl comp5
+
     comp6 : Σ 𝕎· (λ w' →
-              APPLY F (generic r l) ⇓ NUM k from chooseT r w BTRUE to w'
+              APPLY F (upd r (SND l)) ⇓ NUM k from chooseT r w N0 to w'
               × sub (NUM k) (loopI r (shiftUp 0 (loop r F)) (shiftUp 0 l) (VAR 0)) ⇓ SUP a f at w')
     comp6 = LET-val⇓val→
-              {chooseT r w BTRUE}
-              {APPLY F (generic r l)}
+              {chooseT r w N0}
+              {APPLY F (upd r (SND l))}
               {loopI r (shiftUp 0 (loop r F)) (shiftUp 0 l) (VAR 0)}
               {SUP a f}
               {NUM k}
-              tt tt (lower (compk (chooseT r w BTRUE) (choose⊑· r w (T→ℂ· BTRUE)))) comp5
+              tt tt (lower (compk (chooseT r w N0) (choose⊑· r w (T→ℂ· N0)))) comp5'
 
     w' : 𝕎·
     w' = fst comp6
 
-    comp7 : APPLY F (generic r l) ⇓ NUM k from chooseT r w BTRUE to w'
+    comp7 : APPLY F (upd r (SND l)) ⇓ NUM k from chooseT r w N0 to w'
     comp7 = fst (snd comp6)
 
     e' : w ⊑· w'
-    e' = ⊑-trans· (choose⊑· r w (T→ℂ· BTRUE)) (⇓from-to→⊑ {chooseT r w BTRUE} {w'} {APPLY F (generic r l)} {NUM k} comp7)
+    e' = ⊑-trans· (choose⊑· r w (T→ℂ· N0)) (⇓from-to→⊑ {chooseT r w N0} {w'} {APPLY F (upd r (SND l))} {NUM k} comp7)
 
     comp8 : loopI r (loop r F) l (NUM k) ⇓ SUP a f at w'
     comp8 = ≡ₗ→⇓ {sub (NUM k) (loopI r (shiftUp 0 (loop r F)) (shiftUp 0 l) (VAR 0))}
@@ -392,87 +490,72 @@ APPLY-loop⇓SUP→ cb w r F l a f cF cl k compat compk comp =
                  (sub-loopI-shift≡ r F l (NUM k) cF cl refl)
                  (snd (snd comp6))
 
-    d1 : getT 0 r w' ≡ just BTRUE ⊎ getT 0 r w' ≡ just BFALSE
-    d1 = lower (cb r w compat w' e')
+    d1 : Σ ℕ (λ n → getT 0 r w' ≡ just (NUM n))
+    d1 = lower (cn r w compat w' e')
 
-    d2 : (getT 0 r w' ≡ just BTRUE × SUP a f ≡ ETA (NUM k))
-         ⊎ (getT 0 r w' ≡ just BFALSE × SUP a f ≡ DIGAMMA (loopR (loop r F) l))
-    d2 = loopI⇓→ r w' (loop r F) l (NUM k) (SUP a f) (CTerm.closed (#loop r (ct F cF))) cl refl d1 tt comp8
+    n : ℕ
+    n = fst d1
 
-    d3 : (getT 0 r w' ≡ just BTRUE × SUP a f ≡ ETA (NUM k))
-         ⊎ (getT 0 r w' ≡ just BFALSE × SUP a f ≡ DIGAMMA (loopR (loop r F) l))
-         → getT 0 r w' ≡ just BTRUE × a ≡ INL (NUM k) × f ≡ AX
-            ⊎ getT 0 r w' ≡ just BFALSE × a ≡ INR AX × f ≡ loopR (loop r F) l
+    d2 : Σ ℕ (λ m → FST l ⇓ NUM m at w' × ((n < m × SUP a f ≡ ETA (NUM k)) ⊎ (¬ n < m × SUP a f ≡ DIGAMMA (loopR (loop r F) l))))
+    d2 = loopI⇓→ r w' (loop r F) l (NUM k) (SUP a f) n (CTerm.closed (#loop r (ct F cF))) cl refl (snd d1) tt comp8
+
+    m : ℕ
+    m = fst d2
+
+    cfl : FST l ⇓ NUM m at w'
+    cfl = fst (snd d2)
+
+    d3 : ((n < m × SUP a f ≡ ETA (NUM k)) ⊎ (¬ n < m × SUP a f ≡ DIGAMMA (loopR (loop r F) l)))
+         → ((n < m × a ≡ INL (NUM k) × f ≡ AX) ⊎ (¬ n < m × a ≡ INR AX × f ≡ loopR (loop r F) l))
     d3 (inj₁ (x , y)) = inj₁ (x , SUPinj1 y , SUPinj2 y)
     d3 (inj₂ (x , y)) = inj₂ (x , SUPinj1 y , SUPinj2 y)
 
 
-#APPLY-loop⇓SUP→ : (cb : c𝔹) (w : 𝕎·) (r : Name) (F l a f : CTerm) (k : ℕ)
+#APPLY-loop⇓SUP→ : (cn : cℕ) (w : 𝕎·) (r : Name) (F l a f : CTerm) (k : ℕ)
                     → compatible· r w Res⊤
-                    → #APPLY F (#generic r l) #⇛ #NUM k at w
+                    → #APPLY F (#upd r (#SND l)) #⇛ #NUM k at w
                     → #APPLY (#loop r F) l #⇓ #SUP a f at w
-                    → Σ 𝕎· (λ w' →
-                       #APPLY F (#generic r l) #⇓ #NUM k from (chooseT r w BTRUE) to w'
-                       × ((getT 0 r w' ≡ just BTRUE × a ≡ #INL (#NUM k) × f ≡ #AX)
-                          ⊎ (getT 0 r w' ≡ just BFALSE × a ≡ #INR #AX × f ≡ #loopR (#loop r F) l)))
-#APPLY-loop⇓SUP→ cb w r F l a f k compat compk comp =
-  w' , comp1 , comp3 comp2
+                    → Σ 𝕎· (λ w' → Σ ℕ (λ n → Σ ℕ (λ m →
+                       #APPLY F (#upd r (#SND l)) #⇓ #NUM k from (chooseT r w N0) to w'
+                       × getT 0 r w' ≡ just (NUM n)
+                       × #FST l #⇓ #NUM m at w'
+                       × ((n < m × a ≡ #INL (#NUM k) × f ≡ #AX)
+                          ⊎ (¬ n < m × a ≡ #INR #AX × f ≡ #loopR (#loop r F) l)))))
+#APPLY-loop⇓SUP→ cn w r F l a f k compat compk comp =
+  w' , n , m , comp1 , compg , compl , comp3 comp2
   where
-    j1 : Σ 𝕎· (λ w' →
-           #APPLY F (#generic r l) #⇓ #NUM k from (chooseT r w BTRUE) to w'
-           × ((getT 0 r w' ≡ just BTRUE × ⌜ a ⌝ ≡ INL (NUM k) × ⌜ f ⌝ ≡ AX)
-              ⊎ (getT 0 r w' ≡ just BFALSE × ⌜ a ⌝ ≡ INR AX × ⌜ f ⌝ ≡ loopR (loop r ⌜ F ⌝) ⌜ l ⌝)))
-    j1 = APPLY-loop⇓SUP→ cb w r ⌜ F ⌝ ⌜ l ⌝ ⌜ a ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed l) k compat compk comp
+    j1 : Σ 𝕎· (λ w' → Σ ℕ (λ n → Σ ℕ (λ m →
+           #APPLY F (#upd r (#SND l)) #⇓ #NUM k from (chooseT r w N0) to w'
+           × getT 0 r w' ≡ just (NUM n)
+           × FST ⌜ l ⌝ ⇓ NUM m at w'
+           × ((n < m × ⌜ a ⌝ ≡ INL (NUM k) × ⌜ f ⌝ ≡ AX)
+              ⊎ (¬ n < m × ⌜ a ⌝ ≡ INR AX × ⌜ f ⌝ ≡ loopR (loop r ⌜ F ⌝) ⌜ l ⌝)))))
+    j1 = APPLY-loop⇓SUP→ cn w r ⌜ F ⌝ ⌜ l ⌝ ⌜ a ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed l) k compat compk comp
 
     w' : 𝕎·
     w' = fst j1
 
-    comp1 : #APPLY F (#generic r l) #⇓ #NUM k from (chooseT r w BTRUE) to w'
-    comp1 = fst (snd j1)
+    n : ℕ
+    n = fst (snd j1)
 
-    comp2 : (getT 0 r w' ≡ just BTRUE × ⌜ a ⌝ ≡ INL (NUM k) × ⌜ f ⌝ ≡ AX)
-             ⊎ (getT 0 r w' ≡ just BFALSE × ⌜ a ⌝ ≡ INR AX × ⌜ f ⌝ ≡ loopR (loop r ⌜ F ⌝) ⌜ l ⌝)
-    comp2 = snd (snd j1)
+    m : ℕ
+    m = fst (snd (snd j1))
 
-    comp3 : (getT 0 r w' ≡ just BTRUE × ⌜ a ⌝ ≡ INL (NUM k) × ⌜ f ⌝ ≡ AX)
-             ⊎ (getT 0 r w' ≡ just BFALSE × ⌜ a ⌝ ≡ INR AX × ⌜ f ⌝ ≡ loopR (loop r ⌜ F ⌝) ⌜ l ⌝)
-            → getT 0 r w' ≡ just BTRUE × a ≡ #INL (#NUM k) × f ≡ #AX
-               ⊎ getT 0 r w' ≡ just BFALSE × a ≡ #INR #AX × f ≡ #loopR (#loop r F) l
+    comp1 : #APPLY F (#upd r (#SND l)) #⇓ #NUM k from (chooseT r w N0) to w'
+    comp1 = fst (snd (snd (snd j1)))
+
+    compg : getT 0 r w' ≡ just (NUM n)
+    compg = fst (snd (snd (snd (snd j1))))
+
+    compl : FST ⌜ l ⌝ ⇓ NUM m at w'
+    compl = fst (snd (snd (snd (snd (snd j1)))))
+
+    comp2 : ((n < m × ⌜ a ⌝ ≡ INL (NUM k) × ⌜ f ⌝ ≡ AX) ⊎ (¬ n < m × ⌜ a ⌝ ≡ INR AX × ⌜ f ⌝ ≡ loopR (loop r ⌜ F ⌝) ⌜ l ⌝))
+    comp2 = snd (snd (snd (snd (snd (snd j1)))))
+
+    comp3 : ((n < m × ⌜ a ⌝ ≡ INL (NUM k) × ⌜ f ⌝ ≡ AX) ⊎ (¬ n < m × ⌜ a ⌝ ≡ INR AX × ⌜ f ⌝ ≡ loopR (loop r ⌜ F ⌝) ⌜ l ⌝))
+            → ((n < m × a ≡ #INL (#NUM k) × f ≡ #AX) ⊎ (¬ n < m × a ≡ #INR #AX × f ≡ #loopR (#loop r F) l))
     comp3 (inj₁ (x , y , z)) = inj₁ (x , CTerm≡ y , CTerm≡ z)
     comp3 (inj₂ (x , y , z)) = inj₂ (x , CTerm≡ y , CTerm≡ z)
-
-
-shift-path2𝕊 : (kb : K□) {i : ℕ} {w : 𝕎·} (p : path i w #IndBarB #IndBarC)
-                → (n : ℕ) → shift𝕊 (path2𝕊 kb p) n ≡ path2𝕊 kb (shiftPath {i} {w} {#IndBarB} {#IndBarC} p) n
-shift-path2𝕊 kb {i} {w} p n = refl
-
-
-→≡correctSeqN : (r : Name) (F : CTerm) (l : CTerm) (s1 s2 : 𝕊) (n : ℕ)
-                 → ((k : ℕ) → s1 k ≡ s2 k)
-                 → correctSeqN r F l s1 n
-                 → correctSeqN r F l s2 n
-→≡correctSeqN r F l s1 s2 0 imp cor = cor
-→≡correctSeqN r F l s1 s2 (suc n) imp (k , w , w' , x , y , z) =
-  k , w , w' , x , y , ind2
-  where
-    ind1 : correctSeqN r F (#APPEND l (#NUM (s1 0))) (shift𝕊 s2) n
-    ind1 = →≡correctSeqN r F (#APPEND l (#NUM (s1 0))) (shift𝕊 s1) (shift𝕊 s2) n (λ j → imp (suc j)) z
-
-    ind2 : correctSeqN r F (#APPEND l (#NUM (s2 0))) (shift𝕊 s2) n
-    ind2 rewrite sym (imp 0) = ind1
-
-
-
-isInfPath-shiftPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B)
-                      → isInfPath {i} {w} {A} {B} p
-                      → isInfPath {i} {w} {A} {B} (shiftPath {i} {w} {A} {B} p)
-isInfPath-shiftPath {i} {w} {A} {B} p inf n = inf (suc n)
-
-
-≡→correctPathN : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B) {t u : CTerm} (n : ℕ)
-                  → t ≡ u
-                  → correctPathN {i} {w} {A} {B} t p n
-                  → correctPathN {i} {w} {A} {B} u p n
-≡→correctPathN {i} {w} {A} {B} p {t} {u} n e cor rewrite e = cor
 
 \end{code}
