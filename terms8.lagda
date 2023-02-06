@@ -180,6 +180,10 @@ instance
 #[2]NUM n = ct2 (NUM n) refl
 
 
+#[3]NUM : ℕ → CTerm3
+#[3]NUM n = ct3 (NUM n) refl
+
+
 #[0]BTRUE : CTerm0
 #[0]BTRUE = ct0 BTRUE c
   where
@@ -229,6 +233,13 @@ instance
     c = refl
 
 
+#[3]CS : Name → CTerm3
+#[3]CS name = ct3 (CS name) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] CS name
+    c = refl
+
+
 #[2]NAME : Name → CTerm2
 #[2]NAME name = ct2 (NAME name) c
   where
@@ -238,6 +249,15 @@ instance
 
 #[1]NAT! : CTerm1
 #[1]NAT! = ct1 NAT! refl
+
+
+#[3]APPLY : CTerm3 → CTerm3 → CTerm3
+#[3]APPLY a b = ct3 (APPLY ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] APPLY ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed a))
+                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed b)))
 
 
 #[0]set⊤ : Name → CTerm0
@@ -274,6 +294,10 @@ instance
 
 #[2]get0 : Name → CTerm2
 #[2]get0 name = #[2]APPLY (#[2]CS name) (#[2]NUM 0)
+
+
+#[3]get0 : Name → CTerm3
+#[3]get0 name = #[3]APPLY (#[3]CS name) (#[3]NUM 0)
 
 
 #[2]SEQ : CTerm2 → CTerm2 → CTerm2
@@ -835,6 +859,18 @@ lowerVars-fvars-[0,1,2,3,4,5,6,7] {suc x₁ ∷ l} h (there x) = lowerVars-fvars
 [2]⊆[0,1,2,3,4,5] (here refl) = there (there (here refl))
 
 
+[3]⊆[0,1,2,3,4,5] : [ 3 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ])
+[3]⊆[0,1,2,3,4,5] (here refl) = there (there (there (here refl)))
+
+
+[4]⊆[0,1,2,3,4,5] : [ 4 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ])
+[4]⊆[0,1,2,3,4,5] (here refl) = there (there (there (there (here refl))))
+
+
+[5]⊆[0,1,2,3,4,5] : [ 5 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ])
+[5]⊆[0,1,2,3,4,5] (here refl) = there (there (there (there (there (here refl)))))
+
+
 [0]⊆[0,1,2,3,4,5,6] : [ 0 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ])
 [0]⊆[0,1,2,3,4,5,6] (here refl) = here refl
 
@@ -908,15 +944,6 @@ lowerVars-fvars-[0,1,2,3,4,5,6,7] {suc x₁ ∷ l} h (there x) = lowerVars-fvars
     c = ⊆→⊆? [3]⊆[0,1,2,3]
 
 
-#[3]APPLY : CTerm3 → CTerm3 → CTerm3
-#[3]APPLY a b = ct3 (APPLY ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] APPLY ⌜ a ⌝ ⌜ b ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
-             (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed a))
-                  (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed b)))
-
-
 #[1]LET : CTerm1 → CTerm2 → CTerm1
 #[1]LET a b = ct1 (LET ⌜ a ⌝ ⌜ b ⌝) c
   where
@@ -926,6 +953,15 @@ lowerVars-fvars-[0,1,2,3,4,5,6,7] {suc x₁ ∷ l} h (there x) = lowerVars-fvars
                    (lowerVars-fvars-[0,1,2] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm2.closed b))))
 
 
+#[2]LET : CTerm2 → CTerm3 → CTerm2
+#[2]LET a b = ct2 (LET ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] LET ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {0 ∷ 1 ∷ [ 2 ]}
+              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed a))
+                   (lowerVars-fvars-[0,1,2,3] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm3.closed b))))
+
+
 #[3]LET : CTerm3 → CTerm4 → CTerm3
 #[3]LET a b = ct3 (LET ⌜ a ⌝ ⌜ b ⌝) c
   where
@@ -933,6 +969,15 @@ lowerVars-fvars-[0,1,2,3,4,5,6,7] {suc x₁ ∷ l} h (there x) = lowerVars-fvars
     c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
               (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed a))
                    (lowerVars-fvars-[0,1,2,3,4] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm4.closed b))))
+
+
+#[4]LET : CTerm4 → CTerm5 → CTerm4
+#[4]LET a b = ct4 (LET ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] ] LET ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]}
+              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]} (CTerm4.closed a))
+                   (lowerVars-fvars-[0,1,2,3,4,5] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm5.closed b))))
 
 
 #[4]VAR0 : CTerm4
@@ -989,6 +1034,27 @@ lowerVars-fvars-[0,1,2,3,4,5,6,7] {suc x₁ ∷ l} h (there x) = lowerVars-fvars
   where
     c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] VAR 2
     c = ⊆→⊆? [2]⊆[0,1,2,3,4,5]
+
+
+#[5]VAR3 : CTerm5
+#[5]VAR3 = ct5 (VAR 3) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] VAR 3
+    c = ⊆→⊆? [3]⊆[0,1,2,3,4,5]
+
+
+#[5]VAR4 : CTerm5
+#[5]VAR4 = ct5 (VAR 4) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] VAR 4
+    c = ⊆→⊆? [4]⊆[0,1,2,3,4,5]
+
+
+#[5]VAR5 : CTerm5
+#[5]VAR5 = ct5 (VAR 5) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] VAR 5
+    c = ⊆→⊆? [5]⊆[0,1,2,3,4,5]
 
 
 #[6]VAR0 : CTerm6
@@ -1990,5 +2056,33 @@ APPLY-MSEQ⇛ w s a k comp w1 e1 = lift (APPLY-MSEQ⇓ w1 s a k (lower (comp w1 
 
 #SND-shiftUp : (a : CTerm) → # SND (shiftUp 0 ⌜ a ⌝)
 #SND-shiftUp a rewrite →#shiftUp 0 {⌜ a ⌝} (CTerm.closed a) = refl
+
+
+#APPLY2 : CTerm → CTerm → CTerm → CTerm
+#APPLY2 a b c = #APPLY (#APPLY a b) c
+
+
+#[0]APPLY2 : CTerm0 → CTerm0 → CTerm0 → CTerm0
+#[0]APPLY2 a b c = #[0]APPLY (#[0]APPLY a b) c
+
+
+#[1]APPLY2 : CTerm1 → CTerm1 → CTerm1 → CTerm1
+#[1]APPLY2 a b c = #[1]APPLY (#[1]APPLY a b) c
+
+
+#[2]APPLY2 : CTerm2 → CTerm2 → CTerm2 → CTerm2
+#[2]APPLY2 a b c = #[2]APPLY (#[2]APPLY a b) c
+
+
+#[3]APPLY2 : CTerm3 → CTerm3 → CTerm3 → CTerm3
+#[3]APPLY2 a b c = #[3]APPLY (#[3]APPLY a b) c
+
+
+#[4]APPLY2 : CTerm3 → CTerm3 → CTerm3 → CTerm3
+#[4]APPLY2 a b c = #[3]APPLY (#[3]APPLY a b) c
+
+
+#[5]APPLY2 : CTerm5 → CTerm5 → CTerm5 → CTerm5
+#[5]APPLY2 a b c = #[5]APPLY (#[5]APPLY a b) c
 
 \end{code}

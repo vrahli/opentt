@@ -180,44 +180,44 @@ barThesis = FUN FunBar IndBar
 
 
 -- Recursive call used in DIGAMMA
-loopRR : Term → Term → Term
-loopRR R xs = LAMBDA (LET (VAR 0) (APPLY R (APPEND xs (VAR 0))))
+loopRR : Term → Term → Term → Term
+loopRR R k f = LAMBDA (LET (VAR 0) (APPLY2 R (SUC k) (APPENDf k f (VAR 0))))
 
 
 -- Recursive call used in DIGAMMA
-loopR : Term → Term → Term
-loopR R xs = loopRR (shiftUp 0 (shiftUp 0 R)) (shiftUp 0 (shiftUp 0 xs))
+loopR : Term → Term → Term → Term
+loopR R k f = loopRR (shiftUp 0 (shiftUp 0 R)) (shiftUp 0 (shiftUp 0 k)) (shiftUp 0 (shiftUp 0 f))
 
 
 -- loopA's body
-loopI : Name → Term → Term → Term → Term
-loopI r R l i =
+loopI : Name → Term → Term → Term → Term → Term
+loopI r R k f i =
   IFLT (get0 r)
-       (FST l)
+       k
        (ETA i)
-       (DIGAMMA (loopR R l))
+       (DIGAMMA (loopR R k f))
 
 
-loopB : Name → Term → Term → Term → Term
-loopB r a R xs = LET a (loopI r (shiftUp 0 R) (shiftUp 0 xs) (VAR 0))
+loopB : Name → Term → Term → Term → Term → Term
+loopB r a R k f = LET a (loopI r (shiftUp 0 R) (shiftUp 0 k) (shiftUp 0 f) (VAR 0))
 
 
--- l is a list, so its 2nd component is a function
-loopA : Name → Term → Term → Term → Term
-loopA r F R l = loopB r (appUpd r F (SND (shiftUp 0 (shiftUp 0 l)))) R l
+-- ⟨k,f⟩ is a list, so its 2nd component f is a function
+loopA : Name → Term → Term → Term → Term → Term
+loopA r F R k f = loopB r (appUpd r F (shiftUp 0 (shiftUp 0 f))) R k f
 
 
 -- this is similar to testM in continuity1.lagda
-loopF : Name → Term → Term → Term → Term
-loopF r F R l =
+loopF : Name → Term → Term → Term → Term → Term
+loopF r F R k f =
   SEQ (set0 r) -- we start by assuming that we have enough information
-      (loopA r F R l)
+      (loopA r F R k f)
 
 
 loopL : Name →  Term → Term
-loopL r bar =
-  -- 0 is the argument (the list), and 1 is the recursive call
-  LAMBDA (LAMBDA (loopF r bar (VAR 1) (VAR 0)))
+loopL r F =
+  -- 0 & 1 are the argument (the list: length (1) + function (0)), and 2 is the recursive call
+  LAMBDA (LAMBDA (LAMBDA (loopF r F (VAR 2) (VAR 1) (VAR 0))))
 
 
 loop : Name →  Term → Term
@@ -236,6 +236,10 @@ loop r bar = FIX (loopL r bar)
 #[2]ETA n = #[2]SUP (#[2]INL n) #[2]AX
 
 
+#[3]ETA : CTerm3 → CTerm3
+#[3]ETA n = #[3]SUP (#[3]INL n) #[3]AX
+
+
 #DIGAMMA : CTerm → CTerm
 #DIGAMMA f = #SUP (#INR #AX) f
 
@@ -248,44 +252,64 @@ loop r bar = FIX (loopL r bar)
 #[2]DIGAMMA f = #[2]SUP (#[2]INR #[2]AX) f
 
 
-#loopRL : CTerm → CTerm → CTerm → CTerm
-#loopRL a R l = #LET a (#[0]APPLY (#[0]shiftUp0 R) (#[0]APPEND (#[0]shiftUp0 l) #[0]VAR))
+#[3]DIGAMMA : CTerm3 → CTerm3
+#[3]DIGAMMA f = #[3]SUP (#[3]INR #[3]AX) f
+
+
+#loopRL : CTerm → CTerm → CTerm → CTerm → CTerm
+#loopRL a R k f =
+  #LET a (#[0]APPLY2 (#[0]shiftUp0 R)
+                     (#[0]SUC (#[0]shiftUp0 k))
+                     (#[0]APPENDf (#[0]shiftUp0 k) (#[0]shiftUp0 f) #[0]VAR))
 
 
 -- Recursive call used in DIGAMMA
-#loopR : CTerm → CTerm → CTerm
-#loopR R l = #LAMBDA (#[0]LET #[0]VAR (#[1]APPLY (#[1]shiftUp0 (#[0]shiftUp0 R)) (#[1]APPEND (#[1]shiftUp0 (#[0]shiftUp0 l)) #[1]VAR0)))
+#loopR : CTerm → CTerm → CTerm → CTerm
+#loopR R k f =
+  #LAMBDA (#[0]LET #[0]VAR
+                   (#[1]APPLY2 (#[1]shiftUp0 (#[0]shiftUp0 R))
+                               (#[1]SUC (#[1]shiftUp0 (#[0]shiftUp0 k)))
+                               (#[1]APPENDf (#[1]shiftUp0 (#[0]shiftUp0 k)) (#[1]shiftUp0 (#[0]shiftUp0 f)) #[1]VAR0)))
 
 
 -- This is loopA's body
-#loopI : Name →  CTerm → CTerm → ℕ → CTerm
-#loopI r R l i =
+#loopI : Name →  CTerm → CTerm → CTerm → ℕ → CTerm
+#loopI r R k f i =
   #IFLT (#get0 r)
-        (#FST l)
+        k
         (#ETA (#NUM i))
-        (#DIGAMMA (#loopR R l))
+        (#DIGAMMA (#loopR R k f))
 
 
-#loopA : Name →  CTerm → CTerm → CTerm → CTerm
-#loopA r bar R l =
-  #LET (#APPLY bar (#upd r (#SND (#shiftUp0 (#shiftUp0 l)))))
+#loopA : Name →  CTerm → CTerm → CTerm → CTerm → CTerm
+#loopA r bar R k f =
+  #LET (#APPLY bar (#upd r (#shiftUp0 (#shiftUp0 f))))
        (#[0]IFLT (#[0]get0 r)
-                 (#[0]FST (#[0]shiftUp0 l))
+                 (#[0]shiftUp0 k)
                  (#[0]ETA #[0]VAR)
-                 (#[0]DIGAMMA (#[0]LAMBDA (#[1]LET #[1]VAR0 (#[2]APPLY (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 R)))
-                                                                       (#[2]APPEND (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 l))) #[2]VAR0))))))
+                 (#[0]DIGAMMA (#[0]LAMBDA (#[1]LET #[1]VAR0 (#[2]APPLY2 (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 R)))
+                                                                        (#[2]SUC (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 k))))
+                                                                        (#[2]APPENDf (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 k)))
+                                                                                     (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 f)))
+                                                                                     #[2]VAR0))))))
 
 
-#loopF : Name →  CTerm → CTerm → CTerm → CTerm
-#loopF r F R l =
-  -- 0 is the argument (the list), and 1 is the recursive call
-  #SEQ (#set0 r) (#loopA r F R l)
+#loopF : Name →  CTerm → CTerm → CTerm → CTerm → CTerm
+#loopF r F R k f =
+  #SEQ (#set0 r) (#loopA r F R k f)
 
 
 #[1]set0 : (name : Name) → CTerm1
 #[1]set0 name = ct1 (set0 name) c
   where
     c : #[ 0 ∷ [ 1 ] ] set0 name
+    c = refl
+
+
+#[2]set0 : (name : Name) → CTerm2
+#[2]set0 name = ct2 (set0 name) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] set0 name
     c = refl
 
 
@@ -319,22 +343,47 @@ fvars-upd name f
           (lowerVars-fvars-[0,1,2,3] {fvars ⌜ f ⌝} (⊆?→⊆ {fvars ⌜ f ⌝} (CTerm3.closed f))))
 
 
+#[2]upd : (name : Name) (f : CTerm4) → CTerm2
+#[2]upd name f = ct2 (upd name ⌜ f ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] upd name ⌜ f ⌝
+    c rewrite fvars-upd name ⌜ f ⌝ =
+      ⊆→⊆?
+        {lowerVars (lowerVars (fvars ⌜ f ⌝))}
+        (lowerVars-fvars-[0,1,2,3]
+          {lowerVars (fvars ⌜ f ⌝)}
+          (lowerVars-fvars-[0,1,2,3,4] {fvars ⌜ f ⌝} (⊆?→⊆ {fvars ⌜ f ⌝} (CTerm4.closed f))))
+
+
 #loop : Name →  CTerm → CTerm
 #loop r bar =
-  -- 0 is the argument (the list), and 1 is the recursive call
-  #FIX (#LAMBDA (#[0]LAMBDA (#[1]SEQ (#[1]set0 r) F)))
+  -- 0&1 are the argument (the list): 1 is the length and 0 the function
+  -- and 2 is the recursive call
+  #FIX (#LAMBDA (#[0]LAMBDA (#[1]LAMBDA (#[2]SEQ (#[2]set0 r) F))))
   where
-    F : CTerm1
-    F = #[1]LET (#[1]APPLY ⌞ bar ⌟ (#[1]upd r (#[3]SND #[3]VAR2)))
-                (#[2]IFLT (#[2]get0 r)
-                          (#[2]FST #[2]VAR1)
-                          (#[2]ETA #[2]VAR0)
-                          (#[2]DIGAMMA (#[2]LAMBDA (#[3]LET #[3]VAR0 (#[4]APPLY #[4]VAR4 (#[4]APPEND #[4]VAR3 #[4]VAR0))))))
+    F : CTerm2
+    F = #[2]LET (#[2]APPLY ⌞ bar ⌟ (#[2]upd r #[4]VAR2))
+                (#[3]IFLT (#[3]get0 r)
+                          #[3]VAR2
+                          (#[3]ETA #[3]VAR0)
+                          (#[3]DIGAMMA (#[3]LAMBDA (#[4]LET #[4]VAR0 (#[5]APPLY2 #[5]VAR5
+                                                                                 (#[5]SUC #[5]VAR4)
+                                                                                 (#[5]APPENDf #[5]VAR4 #[5]VAR3 #[5]VAR0))))))
 
 
 -- sanity checking
-⌜#loopA⌝≡ : (r : Name) (F R l : CTerm) → ⌜ #loopA r F R l ⌝ ≡ loopA r ⌜ F ⌝ ⌜ R ⌝ ⌜ l ⌝
-⌜#loopA⌝≡ r F R l = refl
+⌜#loopA⌝≡ : (r : Name) (F R k f : CTerm) → ⌜ #loopA r F R k f ⌝ ≡ loopA r ⌜ F ⌝ ⌜ R ⌝ ⌜ k ⌝ ⌜ f ⌝
+⌜#loopA⌝≡ r F R k f = refl
+
+
+-- sanity checking
+⌜#loopF⌝≡ : (r : Name) (F R k f : CTerm) → ⌜ #loopF r F R k f ⌝ ≡ loopF r ⌜ F ⌝ ⌜ R ⌝ ⌜ k ⌝ ⌜ f ⌝
+⌜#loopF⌝≡ r F R k f = refl
+
+
+-- sanity checking
+⌜#loopI⌝≡ : (r : Name) (R k f : CTerm) (i : ℕ) → ⌜ #loopI r R k f i ⌝ ≡ loopI r ⌜ R ⌝ ⌜ k ⌝ ⌜ f ⌝ (NUM i)
+⌜#loopI⌝≡ r R k f i = refl
 
 
 -- sanity checking
@@ -343,13 +392,18 @@ fvars-upd name f
 
 
 -- sanity checking
-⌜#loopI⌝≡ : (r : Name) (R l : CTerm) (i : ℕ) → ⌜ #loopI r R l i ⌝ ≡ loopI r ⌜ R ⌝ ⌜ l ⌝ (NUM i)
-⌜#loopI⌝≡ r R l i = refl
+⌜APPLY-loop⌝≡ : (r : Name) (F l : CTerm) → ⌜ #APPLY (#loop r F) l ⌝ ≡ APPLY (loop r ⌜ F ⌝) ⌜ l ⌝
+⌜APPLY-loop⌝≡ r F l = refl
 
 
 -- sanity checking
-⌜#loopF⌝≡ : (r : Name) (F R l : CTerm) → ⌜ #loopF r F R l ⌝ ≡ loopF r ⌜ F ⌝ ⌜ R ⌝ ⌜ l ⌝
-⌜#loopF⌝≡ r F R l = refl
+⌜APPLY2-loop⌝≡ : (r : Name) (F k f : CTerm) → ⌜ #APPLY2 (#loop r F) k f ⌝ ≡ APPLY2 (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝
+⌜APPLY2-loop⌝≡ r F k f = refl
+
+
+-- sanity checking
+⌜loopF-loop⌝≡ : (r : Name) (F k f : CTerm) → ⌜ #loopF r F (#loop r F) k f ⌝ ≡ loopF r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝
+⌜loopF-loop⌝≡ r F k f rewrite ⌜#loop⌝≡ r F = refl
 
 
 tabI : Term → Term
@@ -575,124 +629,154 @@ m2w i w A B t eqta eqtb cond h =
 --}
 
 
-sub-LAMBDA-loopF≡ : (r : Name) (F : Term) (cF : # F)
-                    → sub (loop r F) (LAMBDA (loopF r F (VAR 1) (VAR 0)))
-                       ≡ LAMBDA (loopF r F (loop r F) (VAR 0))
-sub-LAMBDA-loopF≡ r F cF
-  rewrite #subv 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 (loop r F)))) (shiftUp 0 F) (→#shiftUp 0 {F} cF)
+sub-LAMBDA-LAMBDA-loopF≡ : (r : Name) (F : Term) (cF : # F)
+                           → sub (loop r F) (LAMBDA (LAMBDA (loopF r F (VAR 2) (VAR 1) (VAR 0))))
+                              ≡ LAMBDA (LAMBDA (loopF r F (loop r F) (VAR 1) (VAR 0)))
+sub-LAMBDA-LAMBDA-loopF≡ r F cF
+  rewrite #subv 3 (shiftUp 0 (shiftUp 0 (shiftUp 0 (shiftUp 0 (loop r F))))) (shiftUp 0 F) (→#shiftUp 0 {F} cF)
         | #shiftUp 0 (ct F cF)
-        | #shiftDown 2 (ct F cF)
-        | #shiftUp 3 (ct F cF)
-        | #shiftUp 3 (ct F cF)
-        | #shiftUp 3 (ct F cF)
-        | #shiftUp 3 (ct F cF)
-        | #shiftUp 3 (ct F cF)
-        | #shiftUp 3 (ct F cF)
-        | #shiftUp 3 (ct F cF)
         | #shiftUp 4 (ct F cF)
-        | #shiftUp 5 (ct F cF)
-        | #shiftUp 6 (ct F cF)
+        | #shiftUp 4 (ct F cF)
+        | #shiftUp 4 (ct F cF)
+        | #shiftUp 4 (ct F cF)
+        | #shiftUp 4 (ct F cF)
+        | #shiftUp 4 (ct F cF)
+        | #shiftUp 4 (ct F cF)
         | #shiftUp 7 (ct F cF)
-        | #shiftDown 8 (ct F cF)
+        | #shiftDown 3 (ct F cF)
+        | #shiftDown 10 (ct F cF)
+  = refl
+
+
+sub-LAMBDA-loopF≡ : (r : Name) (F k : Term) (cF : # F) (ck : # k)
+                    → sub k (LAMBDA (loopF r F (loop r F) (VAR 1) (VAR 0)))
+                       ≡ LAMBDA (loopF r F (loop r F) k (VAR 0))
+sub-LAMBDA-loopF≡ r F k cF ck
+  rewrite #shiftUp 0 (ct F cF)
+        | #shiftUp 4 (ct F cF)
+        | #shiftUp 4 (ct F cF)
+        | #shiftUp 4 (ct F cF)
+        | #shiftUp 7 (ct F cF)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 1 (ct k ck)
+        | #shiftUp 3 (ct k ck)
+        | #shiftUp 4 (ct k ck)
+        | #subv 2 k F cF
+        | #subv 9 k F cF
+        | #shiftDown 2 (ct F cF)
+        | #shiftDown 3 (ct k ck)
+        | #shiftDown 5 (ct k ck)
+        | #shiftDown 6 (ct k ck)
         | #shiftDown 9 (ct F cF)
   = refl
 
 
-sub-loopF≡ : (r : Name) (F l : Term) (cF : # F) (cl : # l)
-             → sub l (loopF r F (loop r F) (VAR 0))
-                ≡ loopF r F (loop r F) l
-sub-loopF≡ r F l cF cl
+sub-loopF≡ : (r : Name) (F k f : Term) (cF : # F) (ck : # k) (cf : # f)
+             → sub f (loopF r F (loop r F) k (VAR 0))
+                ≡ loopF r F (loop r F) k f
+sub-loopF≡ r F k f cF ck cf
   rewrite #shiftUp 0 (ct F cF)
-        | #shiftUp 3 (ct F cF)
-        | #shiftUp 3 (ct F cF)
-        | #shiftUp 3 (ct F cF)
-        | #shiftUp 5 (ct F cF)
+        | #shiftUp 4 (ct F cF)
+        | #shiftUp 4 (ct F cF)
+        | #shiftUp 4 (ct F cF)
         | #shiftUp 7 (ct F cF)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 0 (ct l cl)
-        | #shiftDown 2 (ct l cl)
-        | #shiftDown 3 (ct l cl)
-        | #shiftDown 5 (ct l cl)
-        | #shiftDown 6 (ct l cl)
-        | #subv 1 l F cF
-        | #subv 8 l F cF
+        | #shiftUp 0 (ct f cf)
+        | #shiftUp 0 (ct f cf)
+        | #shiftUp 0 (ct f cf)
+        | #shiftUp 0 (ct f cf)
+        | #shiftUp 0 (ct f cf)
+        | #shiftUp 0 (ct f cf)
+        | #shiftUp 0 (ct f cf)
+        | #shiftUp 0 (ct f cf)
+        | #shiftUp 0 (ct f cf)
+        | #shiftUp 2 (ct f cf)
+        | #shiftUp 3 (ct f cf)
+        | #shiftUp 4 (ct f cf)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 1 (ct k ck)
+        | #shiftUp 3 (ct k ck)
+        | #shiftUp 4 (ct k ck)
+        | #shiftUp 4 (ct k ck)
+        | #subv 1 f F cF
+        | #subv 8 f F cF
+        | #subv 2 f k ck
+        | #subv 4 f k ck
+        | #subv 5 f k ck
         | #shiftDown 1 (ct F cF)
         | #shiftDown 8 (ct F cF)
-        | #shiftUp 1 (ct l cl)
-        | #shiftUp 2 (ct l cl)
-        | #shiftUp 3 (ct l cl)
-        | #shiftUp 4 (ct l cl)
-        | #shiftUp 5 (ct l cl)
-        | #shiftDown 4 (ct l cl)
-        | #shiftUp 6 (ct F cF)
-        | #subv 7 l F cF
-        | #shiftDown 7 (ct F cF)
+        | #shiftDown 2 (ct f cf)
+        | #shiftDown 4 (ct f cf)
+        | #shiftDown 5 (ct f cf)
+        | #shiftDown 2 (ct k ck)
+        | #shiftDown 4 (ct k ck)
+        | #shiftDown 5 (ct k ck)
   = refl
 
 
-APPLY-loop⇓! : (r : Name) (F l : Term) (w : 𝕎·) (cF : # F) (cl : # l)
-                → APPLY (loop r F) l ⇓! loopF r F (loop r F) l at w
-APPLY-loop⇓! r F l w cF cl =
+APPLY-loop⇓! : (r : Name) (F k f : Term) (w : 𝕎·) (cF : # F) (ck : # k) (cf : # f)
+                → APPLY2 (loop r F) k f ⇓! loopF r F (loop r F) k f at w
+APPLY-loop⇓! r F k f w cF ck cf =
   step-⇓-from-to-trans
     {w} {w} {w}
-    {APPLY (loop r F) l}
-    {APPLY (LAMBDA (loopF r F (loop r F) (VAR 0))) l}
-    {loopF r F (loop r F) l}
+    {APPLY2 (loop r F) k f}
+    {APPLY2 (LAMBDA (LAMBDA (loopF r F (loop r F) (VAR 1) (VAR 0)))) k f}
+    {loopF r F (loop r F) k f}
     c1
     (step-⇓-from-to-trans
-      {w} {w} {w}
-      {APPLY (LAMBDA (loopF r F (loop r F) (VAR 0))) l}
-      {loopF r F (loop r F) l}
-      {loopF r F (loop r F) l}
-      c2
-      (0 , refl))
+       {w} {w} {w}
+       {APPLY2 (LAMBDA (LAMBDA (loopF r F (loop r F) (VAR 1) (VAR 0)))) k f}
+       {APPLY (LAMBDA (loopF r F (loop r F) k (VAR 0))) f}
+       {loopF r F (loop r F) k f}
+       c2
+       (step→⇓ c3))
   where
-    c1 : ret (APPLY (sub (loop r F) (LAMBDA (loopF r F (VAR 1) (VAR 0)))) l) w
-         ≡ just (APPLY (LAMBDA (loopF r F (loop r F) (VAR 0))) l , w)
-    c1 rewrite sub-LAMBDA-loopF≡ r F cF = refl
+    c1 : ret (APPLY2 (sub (loop r F) (LAMBDA (LAMBDA (loopF r F (VAR 2) (VAR 1) (VAR 0))))) k f) w
+         ≡ just (APPLY2 (LAMBDA (LAMBDA (loopF r F (loop r F) (VAR 1) (VAR 0)))) k f , w)
+    c1 rewrite sub-LAMBDA-LAMBDA-loopF≡ r F cF = refl
 
-    c2 : ret (sub l (loopF r F (loop r F) (VAR 0))) w
-         ≡ just (loopF r F (loop r F) l , w)
-    c2 rewrite sub-loopF≡ r F l cF cl = refl
+    c2 : ret (APPLY (sub k (LAMBDA (loopF r F (loop r F) (VAR 1) (VAR 0)))) f) w
+         ≡ just (APPLY (LAMBDA (loopF r F (loop r F) k (VAR 0))) f , w)
+    c2 rewrite sub-LAMBDA-loopF≡ r F k cF ck = refl
 
-
--- sanity checking
-⌜APPLY-loop⌝≡ : (r : Name) (F l : CTerm) → ⌜ #APPLY (#loop r F) l ⌝ ≡ APPLY (loop r ⌜ F ⌝) ⌜ l ⌝
-⌜APPLY-loop⌝≡ r F l = refl
-
-
--- sanity checking
-⌜loopF-loop⌝≡ : (r : Name) (F l : CTerm) → ⌜ #loopF r F (#loop r F) l ⌝ ≡ loopF r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝
-⌜loopF-loop⌝≡ r F l rewrite ⌜#loop⌝≡ r F = refl
+    c3 : ret (sub f (loopF r F (loop r F) k (VAR 0))) w
+         ≡ just (loopF r F (loop r F) k f , w)
+    c3 rewrite sub-loopF≡ r F k f cF ck cf = refl
 
 
-#APPLY-#loop#⇓1 : (r : Name) (F l : CTerm) (w : 𝕎·)
-                   → #APPLY (#loop r F) l #⇓! #loopF r F (#loop r F) l at w
-#APPLY-#loop#⇓1 r F l w = APPLY-loop⇓! r ⌜ F ⌝ ⌜ l ⌝ w (CTerm.closed F) (CTerm.closed l)
+#APPLY-#loop#⇓1 : (r : Name) (F k f : CTerm) (w : 𝕎·)
+                   → #APPLY2 (#loop r F) k f #⇓! #loopF r F (#loop r F) k f at w
+#APPLY-#loop#⇓1 r F k f w =
+  APPLY-loop⇓! r ⌜ F ⌝ ⌜ k ⌝ ⌜ f ⌝ w (CTerm.closed F) (CTerm.closed k) (CTerm.closed f)
 
 
-#APPLY-#loop#⇓2 : (r : Name) (F l : CTerm) (w : 𝕎·)
-                  → #APPLY (#loop r F) l #⇓ #loopA r F (#loop r F) l from w to (chooseT r w N0)
-#APPLY-#loop#⇓2 r F l w =
+#APPLY-#loop#⇓2 : (r : Name) (F k f : CTerm) (w : 𝕎·)
+                  → #APPLY2 (#loop r F) k f #⇓ #loopA r F (#loop r F) k f from w to (chooseT r w N0)
+#APPLY-#loop#⇓2 r F k f w =
   ⇓-trans₂ {w} {w} {chooseT r w N0}
-           {APPLY (loop r ⌜ F ⌝) ⌜ l ⌝}
-           {loopF r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
-           {loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
-           (#APPLY-#loop#⇓1 r F l w)
+           {APPLY2 (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝}
+           {loopF r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝}
+           {loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝}
+           (#APPLY-#loop#⇓1 r F k f w)
            (step-⇓-from-to-trans {w} {chooseT r w N0} {chooseT r w N0}
-                                 {loopF r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
-                                 {SEQ AX (loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝)}
-                                 {loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
+                                 {loopF r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝}
+                                 {SEQ AX (loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝)}
+                                 {loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝}
                                  refl
-                                 (SEQ-AX⇓₁from-to {chooseT r w N0} {loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
-                                                  (CTerm.closed (#loopA r F (#loop r F) l))))
+                                 (SEQ-AX⇓₁from-to {chooseT r w N0} {loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝}
+                                                  (CTerm.closed (#loopA r F (#loop r F) k f))))
 
 
 {--
@@ -1077,10 +1161,10 @@ INR→!∈Type-IndBarC i w x a b comp j rewrite sub0-IndBarC≡ x =
         (INR→!∈Type-IndBarC i w1 b x c c1 (equalInType-mon c∈ w1 e1))
 
 
-sub-loopI≡ : (r : Name) (R l i : Term) (cR : # R) (cl : # l) (ci : # i)
-             → sub i (loopI r R l (VAR 0))
-                ≡ loopI r R l i
-sub-loopI≡ r R l i cR cl ci
+sub-loopI≡ : (r : Name) (R k f i : Term) (cR : # R) (ck : # k) (cf : # f) (ci : # i)
+             → sub i (loopI r R k f (VAR 0))
+                ≡ loopI r R k f i
+sub-loopI≡ r R k f i cR ck cf ci
   rewrite #shiftUp 0 (ct i ci)
         | #shiftUp 0 (ct i ci)
         | #shiftUp 0 (ct i ci)
@@ -1090,118 +1174,143 @@ sub-loopI≡ r R l i cR cl ci
         | #shiftUp 0 (ct R cR)
         | #shiftUp 0 (ct R cR)
         | #shiftUp 2 (ct R cR)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 0 (ct l cl)
-        | #shiftUp 2 (ct l cl)
-        | #shiftUp 3 (ct l cl)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 0 (ct k ck)
+        | #shiftUp 2 (ct k ck)
+        | #shiftUp 3 (ct k ck)
+        | #shiftUp 0 (ct f cf)
+        | #shiftUp 0 (ct f cf)
+        | #shiftUp 0 (ct f cf)
         | #shiftDown 1 (ct i ci)
         | #subv 3 i R cR
-        | #subv 3 i l cl
-        | #subv 4 i l cl
+        | #subv 3 i k ck
+        | #subv 4 i k ck
+        | #subv 3 i f cf
         | #shiftDown 3 (ct R cR)
-        | #shiftDown 3 (ct l cl)
-        | #shiftDown 4 (ct l cl)
+        | #shiftDown 3 (ct k ck)
+        | #shiftDown 4 (ct k ck)
+        | #shiftDown 3 (ct f cf)
         | #subv 2 i R cR
-        | #subv 0 i l cl
-        | #subv 2 i l cl
+        | #subv 0 i k ck
+        | #subv 2 i k ck
         | #shiftDown 0 (ct i ci)
-        | #shiftDown 0 (ct l cl)
-        | #shiftDown 2 (ct l cl)
-        | #shiftDown 2 (ct R cR) =
-  refl
+        | #shiftDown 0 (ct k ck)
+        | #shiftDown 2 (ct k ck)
+        | #shiftDown 2 (ct R cR)
+  = refl
 
 
-loopB⇓loopI : (w : 𝕎·) (r : Name) (i : ℕ) (R l : Term) (cR : # R) (cl : # l)
-              → loopB r (NUM i) R l ⇓ loopI r R l (NUM i) from w to w
-loopB⇓loopI w r i R l cR cl = 1 , ≡pair c refl
+loopB⇓loopI : (w : 𝕎·) (r : Name) (i : ℕ) (R k f : Term) (cR : # R) (ck : # k) (cf : # f)
+              → loopB r (NUM i) R k f ⇓ loopI r R k f (NUM i) from w to w
+loopB⇓loopI w r i R k f cR ck cf = 1 , ≡pair c refl
   where
-    c : sub (NUM i) (loopI r (shiftUp 0 R) (shiftUp 0 l) (VAR 0)) ≡ loopI r R l (NUM i)
+    c : sub (NUM i) (loopI r (shiftUp 0 R) (shiftUp 0 k) (shiftUp 0 f) (VAR 0)) ≡ loopI r R k f (NUM i)
     c rewrite #shiftUp 0 (ct R cR)
-            | #shiftUp 0 (ct l cl)
-            | sub-loopI≡ r R l (NUM i) cR cl refl
-            | #shiftUp 0 (ct l cl)
-            | #shiftUp 0 (ct l cl)
+            | #shiftUp 0 (ct k ck)
+            | sub-loopI≡ r R k f (NUM i) cR ck cf refl
+            | #shiftUp 0 (ct k ck)
+            | #shiftUp 0 (ct k ck)
+            | #shiftUp 0 (ct k ck)
+            | #shiftUp 2 (ct k ck)
+            | #shiftUp 3 (ct k ck)
             | #shiftUp 0 (ct R cR)
             | #shiftUp 0 (ct R cR)
             | #shiftUp 2 (ct R cR)
-            | #shiftUp 0 (ct l cl)
-            | #shiftUp 2 (ct l cl)
-            | #shiftUp 3 (ct l cl) = refl
+            | #shiftUp 0 (ct f cf)
+            | #shiftUp 0 (ct f cf)
+            | #shiftUp 0 (ct f cf)
+            | #shiftUp 0 (ct f cf)
+            | #subv 0 (NUM i) k ck
+            | #subv 2 (NUM i) k ck
+            | #subv 3 (NUM i) k ck
+            | #subv 3 (NUM i) f cf
+            | #subv 2 (NUM i) R cR
+            | #shiftDown 0 (ct k ck)
+            | #shiftDown 2 (ct k ck)
+            | #shiftDown 3 (ct k ck)
+            | #shiftDown 3 (ct f cf)
+            | #shiftDown 2 (ct R cR) = refl
 
 
 shiftUp00 : (l : CTerm) → shiftUp 0 (shiftUp 0 ⌜ l ⌝) ≡ ⌜ l ⌝
 shiftUp00 l rewrite #shiftUp 0 l | #shiftUp 0 l = refl
 
 
-#APPLY-#loop#⇓3 : (r : Name) (F l : CTerm) (i : ℕ) (w : 𝕎·)
-                  → #APPLY F (#upd r (#SND l)) #⇓ #NUM i at (chooseT r w N0)
-                  → #APPLY (#loop r F) l #⇓ #loopI r (#loop r F) l i at w
-#APPLY-#loop#⇓3 r F l i w c =
+#APPLY-#loop#⇓3 : (r : Name) (F k f : CTerm) (i : ℕ) (w : 𝕎·)
+                  → #APPLY F (#upd r f) #⇓ #NUM i at (chooseT r w N0)
+                  → #APPLY2 (#loop r F) k f #⇓ #loopI r (#loop r F) k f i at w
+#APPLY-#loop#⇓3 r F k f i w c =
   ⇓-trans₁
     {w} {chooseT r w N0}
-    {APPLY (loop r ⌜ F ⌝) ⌜ l ⌝}
-    {loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝}
-    {loopI r (loop r ⌜ F ⌝) ⌜ l ⌝ (NUM i)}
-    (#APPLY-#loop#⇓2 r F l w)
+    {APPLY2 (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝}
+    {loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝}
+    {loopI r (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝ (NUM i)}
+    (#APPLY-#loop#⇓2 r F k f w)
     (⇓-from-to→⇓ {chooseT r w N0} {fst c1} c3)
   where
-    c1 : Σ 𝕎· (λ w' → #APPLY F (#upd r (#SND l)) #⇓ #NUM i from (chooseT r w N0) to w')
+    c1 : Σ 𝕎· (λ w' → #APPLY F (#upd r f) #⇓ #NUM i from (chooseT r w N0) to w')
     c1 = ⇓→from-to c
 
-    c0 : appUpd r ⌜ F ⌝ (SND (shiftUp 0 (shiftUp 0 ⌜ l ⌝))) ⇓ NUM i from chooseT r w N0 to fst c1
-    c0 rewrite shiftUp00 l = snd c1
+    c0 : appUpd r ⌜ F ⌝ (shiftUp 0 (shiftUp 0 ⌜ f ⌝)) ⇓ NUM i from chooseT r w N0 to fst c1
+    c0 rewrite shiftUp00 f = snd c1
 
-    c2 : loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝ ⇓ loopB r (NUM i) (loop r ⌜ F ⌝) ⌜ l ⌝ from (chooseT r w N0) to fst c1
-    c2 = LET⇓₁ {chooseT r w N0} {fst c1} {appUpd r ⌜ F ⌝ (SND (shiftUp 0 (shiftUp 0 ⌜ l ⌝)))} {NUM i} c0
+    c2 : loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝ ⇓ loopB r (NUM i) (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝ from (chooseT r w N0) to fst c1
+    c2 = LET⇓₁ {chooseT r w N0} {fst c1} {appUpd r ⌜ F ⌝ (shiftUp 0 (shiftUp 0 ⌜ f ⌝))} {NUM i} c0
 
-    c3 : loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ l ⌝ ⇓ loopI r (loop r ⌜ F ⌝) ⌜ l ⌝ (NUM i) from (chooseT r w N0) to fst c1
+    c3 : loopA r ⌜ F ⌝ (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝ ⇓ loopI r (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝ (NUM i) from (chooseT r w N0) to fst c1
     c3 = ⇓-trans₂ {chooseT r w N0} {fst c1} {fst c1} c2
-                           (loopB⇓loopI (fst c1) r i (loop r ⌜ F ⌝) ⌜ l ⌝ (CTerm.closed (#loop r F)) (CTerm.closed l))
+                           (loopB⇓loopI
+                             (fst c1) r i (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝
+                             (CTerm.closed (#loop r F)) (CTerm.closed k) (CTerm.closed f))
 
 
-#APPLY-#loop#⇓4₁ : (r : Name) (F l k f : CTerm) (i : ℕ) (w : 𝕎·) (m n : ℕ)
+#APPLY-#loop#⇓4₁ : (r : Name) (F k f : CTerm) (i : ℕ) (w : 𝕎·) (m n : ℕ)
                    → getT 0 r w ≡ just (NUM m)
-                   → l #⇛ #PAIR k f at w
                    → k #⇛ #NUM n at w
                    → m < n
-                   → Σ 𝕎· (λ w' → #loopI r (#loop r F) l i #⇓ #ETA (#NUM i) from w to w')
-#APPLY-#loop#⇓4₁ r F l k f i w m n g cl ck mn =
-  fst c1 , ⇓-trans₂ {w} {proj₁ c1} {proj₁ c1} c3 (step→⇓ (IFLT-NUM⇓< m n (fst c1) (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ l ⌝)) mn))
+                   → Σ 𝕎· (λ w' → #loopI r (#loop r F) k f i #⇓ #ETA (#NUM i) from w to w')
+#APPLY-#loop#⇓4₁ r F k f i w m n g ck mn =
+  fst c1 ,
+  ⇓-trans₂
+    {w} {proj₁ c1} {proj₁ c1} c3
+    (step→⇓ (IFLT-NUM⇓< m n (fst c1) (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝)) mn))
   where
-    c1 : Σ 𝕎· (λ w' → #FST l #⇓ #NUM n from w to w')
-    c1 = #⇓→from-to {w} {#FST l} {#NUM n} (lower (#⇛-FST-PAIR2 l k f (#NUM n) w cl ck w (⊑-refl· w)))
+    c1 : Σ 𝕎· (λ w' → k #⇓ #NUM n from w to w')
+    c1 = #⇓→from-to {w} {k} {#NUM n} (lower (ck w (⊑-refl· w)))
 
     c0 : steps 1 (get0 r , w) ≡ (NUM m , w)
     c0 rewrite g = refl
 
-    c2 : #loopI r (#loop r F) l i #⇓ #IFLT (#NUM m) (#FST l) (#ETA (#NUM i)) (#DIGAMMA (#loopR (#loop r F) l)) from w to w
-    c2 = IFLT-NUM-1st⇓ {get0 r} {NUM m} (FST ⌜ l ⌝) (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ l ⌝)) (1 , c0)
+    c2 : #loopI r (#loop r F) k f i #⇓ #IFLT (#NUM m) k (#ETA (#NUM i)) (#DIGAMMA (#loopR (#loop r F) k f)) from w to w
+    c2 = IFLT-NUM-1st⇓ {get0 r} {NUM m} ⌜ k ⌝ (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝)) (1 , c0)
 
-    c3 : #loopI r (#loop r F) l i #⇓ #IFLT (#NUM m) (#NUM n) (#ETA (#NUM i)) (#DIGAMMA (#loopR (#loop r F) l)) from w to fst c1
-    c3 = ⇓-trans₂ {w} {w} {fst c1} c2 (IFLT-NUM-2nd⇓ m {FST ⌜ l ⌝} {NUM n} (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ l ⌝)) (snd c1))
+    c3 : #loopI r (#loop r F) k f i #⇓ #IFLT (#NUM m) (#NUM n) (#ETA (#NUM i)) (#DIGAMMA (#loopR (#loop r F) k f)) from w to fst c1
+    c3 = ⇓-trans₂ {w} {w} {fst c1} c2 (IFLT-NUM-2nd⇓ m {⌜ k ⌝} {NUM n} (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝)) (snd c1))
 
 
-#APPLY-#loop#⇓5₁ : (r : Name) (F l k f : CTerm) (i : ℕ) (w : 𝕎·) (m n : ℕ)
+#APPLY-#loop#⇓5₁ : (r : Name) (F k f : CTerm) (i : ℕ) (w : 𝕎·) (m n : ℕ)
                    → getT 0 r w ≡ just (NUM m)
-                   → l #⇛ #PAIR k f at w
                    → k #⇛ #NUM n at w
                    → ¬ m < n
-                   → Σ 𝕎· (λ w' → #loopI r (#loop r F) l i #⇓ #DIGAMMA (#loopR (#loop r F) l) from w to w')
-#APPLY-#loop#⇓5₁ r F l k f i w m n g cl ck mn =
-  fst c1 , ⇓-trans₂ {w} {proj₁ c1} {proj₁ c1} c3 (step→⇓ (IFLT-NUM⇓¬< m n (fst c1) (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ l ⌝)) mn))
+                   → Σ 𝕎· (λ w' → #loopI r (#loop r F) k f i #⇓ #DIGAMMA (#loopR (#loop r F) k f) from w to w')
+#APPLY-#loop#⇓5₁ r F k f i w m n g ck mn =
+  fst c1 ,
+  ⇓-trans₂
+    {w} {proj₁ c1} {proj₁ c1} c3
+    (step→⇓ (IFLT-NUM⇓¬< m n (fst c1) (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝)) mn))
   where
-    c1 : Σ 𝕎· (λ w' → #FST l #⇓ #NUM n from w to w')
-    c1 = #⇓→from-to {w} {#FST l} {#NUM n} (lower (#⇛-FST-PAIR2 l k f (#NUM n) w cl ck w (⊑-refl· w)))
+    c1 : Σ 𝕎· (λ w' → k #⇓ #NUM n from w to w')
+    c1 = #⇓→from-to {w} {k} {#NUM n} (lower (ck w (⊑-refl· w)))
 
     c0 : steps 1 (get0 r , w) ≡ (NUM m , w)
     c0 rewrite g = refl
 
-    c2 : #loopI r (#loop r F) l i #⇓ #IFLT (#NUM m) (#FST l) (#ETA (#NUM i)) (#DIGAMMA (#loopR (#loop r F) l)) from w to w
-    c2 = IFLT-NUM-1st⇓ {get0 r} {NUM m} (FST ⌜ l ⌝) (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ l ⌝)) (1 , c0)
+    c2 : #loopI r (#loop r F) k f i #⇓ #IFLT (#NUM m) k (#ETA (#NUM i)) (#DIGAMMA (#loopR (#loop r F) k f)) from w to w
+    c2 = IFLT-NUM-1st⇓ {get0 r} {NUM m} ⌜ k ⌝ (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝)) (1 , c0)
 
-    c3 : #loopI r (#loop r F) l i #⇓ #IFLT (#NUM m) (#NUM n) (#ETA (#NUM i)) (#DIGAMMA (#loopR (#loop r F) l)) from w to fst c1
-    c3 = ⇓-trans₂ {w} {w} {fst c1} c2 (IFLT-NUM-2nd⇓ m {FST ⌜ l ⌝} {NUM n} (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ l ⌝)) (snd c1))
+    c3 : #loopI r (#loop r F) k f i #⇓ #IFLT (#NUM m) (#NUM n) (#ETA (#NUM i)) (#DIGAMMA (#loopR (#loop r F) k f)) from w to fst c1
+    c3 = ⇓-trans₂ {w} {w} {fst c1} c2 (IFLT-NUM-2nd⇓ m {⌜ k ⌝} {NUM n} (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝)) (snd c1))
 
 
 <⊎¬ : (a b : ℕ) → a < b ⊎ ¬ a < b
@@ -1212,20 +1321,19 @@ shiftUp00 l rewrite #shiftUp 0 l | #shiftUp 0 l = refl
 
 abstract
 
-  #APPLY-#loop#⇓4 : (cn : cℕ) (r : Name) (F l k f : CTerm) (i n : ℕ) (w : 𝕎·)
+  #APPLY-#loop#⇓4 : (cn : cℕ) (r : Name) (F k f : CTerm) (i n : ℕ) (w : 𝕎·)
                     → compatible· r w Res⊤
-                    → l #⇛ #PAIR k f at w
                     → k #⇛ #NUM n at w
-                    → #APPLY F (#upd r (#SND l)) #⇓ #NUM i at (chooseT r w N0)
-                    → #APPLY (#loop r F) l #⇓ #ETA (#NUM i) at w
-                       ⊎ #APPLY (#loop r F) l #⇓ #DIGAMMA (#loopR (#loop r F) l) at w
-  #APPLY-#loop#⇓4 cn r F l k f i n w compat compl compk c = d2 (<⊎¬ m n)
+                    → #APPLY F (#upd r f) #⇓ #NUM i at (chooseT r w N0)
+                    → #APPLY2 (#loop r F) k f #⇓ #ETA (#NUM i) at w
+                       ⊎ #APPLY2 (#loop r F) k f #⇓ #DIGAMMA (#loopR (#loop r F) k f) at w
+  #APPLY-#loop#⇓4 cn r F k f i n w compat compk c = d2 (<⊎¬ m n)
     where
-      c1 : Σ 𝕎· (λ w' → #APPLY (#loop r F) l #⇓ #loopI r (#loop r F) l i from w to w')
-      c1 = ⇓→from-to (#APPLY-#loop#⇓3 r F l i w c)
+      c1 : Σ 𝕎· (λ w' → #APPLY2 (#loop r F) k f #⇓ #loopI r (#loop r F) k f i from w to w')
+      c1 = ⇓→from-to (#APPLY-#loop#⇓3 r F k f i w c)
 
       e1 : w ⊑· fst c1
-      e1 = #⇓from-to→⊑ {w} {fst c1} {#APPLY (#loop r F) l} {#loopI r (#loop r F) l i} (snd c1)
+      e1 = #⇓from-to→⊑ {w} {fst c1} {#APPLY2 (#loop r F) k f} {#loopI r (#loop r F) k f i} (snd c1)
 
       d1 : Σ ℕ (λ j → getT 0 r (fst c1) ≡ just (NUM j))
       d1 = lower (cn r w compat (fst c1) e1)
@@ -1234,42 +1342,42 @@ abstract
       m = fst d1
 
       d2 : (m < n ⊎ ¬ m < n)
-           → #APPLY (#loop r F) l #⇓ #ETA (#NUM i) at w
-              ⊎ #APPLY (#loop r F) l #⇓ #DIGAMMA (#loopR (#loop r F) l) at w
+           → #APPLY2 (#loop r F) k f #⇓ #ETA (#NUM i) at w
+              ⊎ #APPLY2 (#loop r F) k f #⇓ #DIGAMMA (#loopR (#loop r F) k f) at w
       d2 (inj₁ x) =
         inj₁ (#⇓-trans₁
-                {w} {fst c1} {#APPLY (#loop r F) l} {#loopI r (#loop r F) l i} {#ETA (#NUM i)}
+                {w} {fst c1} {#APPLY2 (#loop r F) k f} {#loopI r (#loop r F) k f i} {#ETA (#NUM i)}
                 (snd c1)
-                (Σ⇓-from-to→⇓ (#APPLY-#loop#⇓4₁ r F l k f i (fst c1) m n (snd d1) (∀𝕎-mon e1 compl) (∀𝕎-mon e1 compk) x)))
+                (Σ⇓-from-to→⇓ (#APPLY-#loop#⇓4₁ r F k f i (fst c1) m n (snd d1) (∀𝕎-mon e1 compk) x)))
       d2 (inj₂ x) =
         inj₂ (#⇓-trans₁
-                {w} {fst c1} {#APPLY (#loop r F) l} {#loopI r (#loop r F) l i} {#DIGAMMA (#loopR (#loop r F) l)}
+                {w} {fst c1} {#APPLY2 (#loop r F) k f} {#loopI r (#loop r F) k f i} {#DIGAMMA (#loopR (#loop r F) k f)}
                 (snd c1)
-                (Σ⇓-from-to→⇓ (#APPLY-#loop#⇓5₁ r F l k f i (fst c1) m n (snd d1) (∀𝕎-mon e1 compl) (∀𝕎-mon e1 compk) x)))
+                (Σ⇓-from-to→⇓ (#APPLY-#loop#⇓5₁ r F k f i (fst c1) m n (snd d1) (∀𝕎-mon e1 compk) x)))
 
 
-APPLY-loopR-⇓ : (w1 w2 : 𝕎·) (R l b : CTerm) (k : ℕ)
-                → b #⇓ #NUM k from w1 to w2
-                → #APPLY (#loopR R l) b #⇓ #APPLY R (#APPEND l (#NUM k)) from w1 to w2
-APPLY-loopR-⇓ w1 w2 R l b k comp =
+APPLY-loopR-⇓ : (w1 w2 : 𝕎·) (R k f b : CTerm) (m : ℕ)
+                → b #⇓ #NUM m from w1 to w2
+                → #APPLY (#loopR R k f) b #⇓ #APPLY2 R (#SUC k) (#APPENDf k f (#NUM m)) from w1 to w2
+APPLY-loopR-⇓ w1 w2 R k f b m comp =
   ⇓-trans₂
     {w1} {w1} {w2}
-    {⌜ #APPLY (#loopR R l) b ⌝}
-    {⌜ #loopRL b R l ⌝}
-    {⌜ #APPLY R (#APPEND l (#NUM k)) ⌝}
+    {⌜ #APPLY (#loopR R k f) b ⌝}
+    {⌜ #loopRL b R k f ⌝}
+    {⌜ #APPLY2 R (#SUC k) (#APPENDf k f (#NUM m)) ⌝}
     (1 , ≡pair c1 refl)
     (⇓-trans₂
        {w1} {w2} {w2}
-       {⌜ #loopRL b R l ⌝}
-       {⌜ #loopRL (#NUM k) R l ⌝}
-       {⌜ #APPLY R (#APPEND l (#NUM k)) ⌝}
-       (LET⇓ {⌜ b ⌝} {NUM k} ⌜ #[0]APPLY (#[0]shiftUp0 R) (#[0]APPEND (#[0]shiftUp0 l) #[0]VAR) ⌝ comp)
+       {⌜ #loopRL b R k f ⌝}
+       {⌜ #loopRL (#NUM m) R k f ⌝}
+       {⌜ #APPLY2 R (#SUC k) (#APPENDf k f (#NUM m)) ⌝}
+       (LET⇓ {⌜ b ⌝} {NUM m} ⌜ #[0]APPLY2 (#[0]shiftUp0 R) (#[0]SUC (#[0]shiftUp0 k)) (#[0]APPENDf (#[0]shiftUp0 k) (#[0]shiftUp0 f) #[0]VAR) ⌝ comp)
        (1 , ≡pair c2 refl))
 -- #loopRL a R l
 --APPLY⇓ {w1} {w2}
   where
-    c1 : sub ⌜ b ⌝ (LET (VAR 0) (APPLY (shiftUp 0 (shiftUp 0 ⌜ R ⌝)) (APPEND (shiftUp 0 (shiftUp 0 ⌜ l ⌝)) (VAR 0))))
-         ≡ ⌜ #loopRL b R l ⌝
+    c1 : sub ⌜ b ⌝ (LET (VAR 0) (APPLY2 (shiftUp 0 (shiftUp 0 ⌜ R ⌝)) (SUC (shiftUp 0 (shiftUp 0 ⌜ k ⌝))) (APPENDf (shiftUp 0 (shiftUp 0 ⌜ k ⌝)) (shiftUp 0 (shiftUp 0 ⌜ f ⌝)) (VAR 0))))
+         ≡ ⌜ #loopRL b R k f ⌝
     c1 rewrite #shiftUp 0 b
              | #shiftUp 0 b
              | #shiftUp 0 b
@@ -1277,26 +1385,35 @@ APPLY-loopR-⇓ w1 w2 R l b k comp =
              | #shiftUp 0 R
              | #subv 1 ⌜ b ⌝ ⌜ R ⌝ (CTerm.closed R)
              | #shiftDown 1 R
-             | #shiftUp 0 l
-             | #shiftUp 0 l
-             | #shiftUp 0 l
-             | #subv 1 ⌜ b ⌝ ⌜ l ⌝ (CTerm.closed l)
-             | #subv 2 ⌜ b ⌝ ⌜ l ⌝ (CTerm.closed l)
-             | #shiftDown 2 l
-             | #shiftDown 1 l
+             | #shiftUp 0 k
+             | #shiftUp 0 k
+             | #shiftUp 0 k
+             | #shiftUp 0 f
+             | #shiftUp 0 f
+             | #shiftUp 0 f
+             | #subv 1 ⌜ b ⌝ ⌜ k ⌝ (CTerm.closed k)
+             | #subv 2 ⌜ b ⌝ ⌜ k ⌝ (CTerm.closed k)
+             | #subv 2 ⌜ b ⌝ ⌜ f ⌝ (CTerm.closed f)
+             | #shiftDown 2 k
+             | #shiftDown 1 k
+             | #shiftDown 2 f
              | #shiftDown 0 b = refl
 
-    c2 : sub (NUM k) ⌜ #[0]APPLY (#[0]shiftUp0 R) (#[0]APPEND (#[0]shiftUp0 l) #[0]VAR) ⌝
-         ≡ ⌜ #APPLY R (#APPEND l (#NUM k)) ⌝
+    c2 : sub (NUM m) ⌜ #[0]APPLY2 (#[0]shiftUp0 R) (#[0]SUC (#[0]shiftUp0 k)) (#[0]APPENDf (#[0]shiftUp0 k) (#[0]shiftUp0 f) #[0]VAR) ⌝
+         ≡ ⌜ #APPLY2 R (#SUC k) (#APPENDf k f (#NUM m)) ⌝
     c2 rewrite #shiftUp 0 R
-             | #shiftUp 0 l
-             | #shiftUp 0 l
-             | #subv 0 (NUM k) ⌜ R ⌝ (CTerm.closed R)
-             | #subv 0 (NUM k) ⌜ l ⌝ (CTerm.closed l)
-             | #subv 1 (NUM k) ⌜ l ⌝ (CTerm.closed l)
+             | #shiftUp 0 k
+             | #shiftUp 0 k
+             | #shiftUp 0 f
+             | #shiftUp 0 f
+             | #subv 0 (NUM m) ⌜ R ⌝ (CTerm.closed R)
+             | #subv 0 (NUM m) ⌜ k ⌝ (CTerm.closed k)
+             | #subv 1 (NUM m) ⌜ k ⌝ (CTerm.closed k)
+             | #subv 1 (NUM m) ⌜ f ⌝ (CTerm.closed f)
              | #shiftDown 0 R
-             | #shiftDown 0 l
-             | #shiftDown 1 l = refl
+             | #shiftDown 0 k
+             | #shiftDown 1 k
+             | #shiftDown 1 f = refl
 
 
 {--
@@ -1307,12 +1424,13 @@ APPLY-loopR-⇛ w R l b k comp w1 e1 = {!!} --lift (APPLY-loopR-⇓ w1 R l b)
 --}
 
 
-upd-SND∈BAIRE : (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (l : CTerm)
+{--
+upd-SND∈BAIRE : (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (f : CTerm)
                  → compatible· r w Res⊤
                  → ∈Type i w (#LIST #NAT) l
                  → ∈Type i w #BAIRE (#upd r (#SND l))
 upd-SND∈BAIRE cn i w r l compat l∈ =
   upd∈BAIRE cn i w r (#SND l) compat (∈LIST→SND i w l l∈)
-
+--}
 
 \end{code}

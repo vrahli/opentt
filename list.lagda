@@ -87,14 +87,20 @@ open import terms6(W)(C)(K)(G)(X)(N)
 open import terms8(W)(C)(K)(G)(X)(N)
 
 
+-- 2nd component of APPEND
+APPENDf : Term → Term → Term → Term
+APPENDf k f x =
+  LAMBDA (IFLT (VAR 0)
+               (shiftUp 0 k)
+               (APPLY (shiftUp 0 f) (VAR 0))
+               (shiftUp 0 x))
+
+
 -- appends a new value
 APPEND : Term → Term → Term
 APPEND l x =
   SPREAD l (PAIR (SUC (VAR 0))
-                 (LAMBDA (IFLT (VAR 0)
-                               (VAR 1)
-                               (APPLY (VAR 2) (VAR 0))
-                               (shiftUp 0 (shiftUp 0 (shiftUp 0 x))))))
+                 (APPENDf (VAR 0) (VAR 1) (shiftUp 0 (shiftUp 0 x))))
 
 {--
   PAIR (SUC k) (LAMBDA (IFLT (VAR 0) (shiftUp 0 k) (APPLY (shiftUp 0 f) (VAR 0)) (shiftUp 0 x)))
@@ -135,6 +141,38 @@ LIST A = PROD NAT (FUN NAT A)
                     (#[0]shiftUp0 n)
                     (#[0]APPLY (#[0]shiftUp0 f) #[0]VAR)
                     (#[0]shiftUp0 x))
+
+
+#[0]APPENDf : CTerm0 → CTerm0 → CTerm0 → CTerm0
+#[0]APPENDf n f x =
+  #[0]LAMBDA (#[1]IFLT #[1]VAR0
+                       (#[1]shiftUp0 n)
+                       (#[1]APPLY (#[1]shiftUp0 f) #[1]VAR0)
+                       (#[1]shiftUp0 x))
+
+
+#[1]APPENDf : CTerm1 → CTerm1 → CTerm1 → CTerm1
+#[1]APPENDf n f x =
+  #[1]LAMBDA (#[2]IFLT #[2]VAR0
+                       (#[2]shiftUp0 n)
+                       (#[2]APPLY (#[2]shiftUp0 f) #[2]VAR0)
+                       (#[2]shiftUp0 x))
+
+
+#[2]APPENDf : CTerm2 → CTerm2 → CTerm2 → CTerm2
+#[2]APPENDf n f x =
+  #[2]LAMBDA (#[3]IFLT #[3]VAR0
+                       (#[3]shiftUp0 n)
+                       (#[3]APPLY (#[3]shiftUp0 f) #[3]VAR0)
+                       (#[3]shiftUp0 x))
+
+
+#[5]APPENDf : CTerm5 → CTerm5 → CTerm5 → CTerm5
+#[5]APPENDf n f x =
+  #[5]LAMBDA (#[6]IFLT #[6]VAR0
+                       (#[6]shiftUp0 n)
+                       (#[6]APPLY (#[6]shiftUp0 f) #[6]VAR0)
+                       (#[6]shiftUp0 x))
 
 
 -- APPEND's body
