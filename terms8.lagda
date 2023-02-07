@@ -883,6 +883,22 @@ lowerVars-fvars-[0,1,2,3,4,5,6,7] {suc x₁ ∷ l} h (there x) = lowerVars-fvars
 [2]⊆[0,1,2,3,4,5,6] (here refl) = there (there (here refl))
 
 
+[3]⊆[0,1,2,3,4,5,6] : [ 3 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ])
+[3]⊆[0,1,2,3,4,5,6] (here refl) = there (there (there (here refl)))
+
+
+[4]⊆[0,1,2,3,4,5,6] : [ 4 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ])
+[4]⊆[0,1,2,3,4,5,6] (here refl) = there (there (there (there (here refl))))
+
+
+[5]⊆[0,1,2,3,4,5,6] : [ 5 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ])
+[5]⊆[0,1,2,3,4,5,6] (here refl) = there (there (there (there (there (here refl)))))
+
+
+[6]⊆[0,1,2,3,4,5,6] : [ 6 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ])
+[6]⊆[0,1,2,3,4,5,6] (here refl) = there (there (there (there (there (there (here refl))))))
+
+
 [0]⊆[0,1,2,3,4,5,6,7] : [ 0 ] ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ])
 [0]⊆[0,1,2,3,4,5,6,7] (here refl) = here refl
 
@@ -978,6 +994,15 @@ lowerVars-fvars-[0,1,2,3,4,5,6,7] {suc x₁ ∷ l} h (there x) = lowerVars-fvars
     c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]}
               (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]} (CTerm4.closed a))
                    (lowerVars-fvars-[0,1,2,3,4,5] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm5.closed b))))
+
+
+#[5]LET : CTerm5 → CTerm6 → CTerm5
+#[5]LET a b = ct5 (LET ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] LET ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]}
+              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]} (CTerm5.closed a))
+                   (lowerVars-fvars-[0,1,2,3,4,5,6] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm6.closed b))))
 
 
 #[4]VAR0 : CTerm4
@@ -1076,6 +1101,34 @@ lowerVars-fvars-[0,1,2,3,4,5,6,7] {suc x₁ ∷ l} h (there x) = lowerVars-fvars
   where
     c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] VAR 2
     c = ⊆→⊆? [2]⊆[0,1,2,3,4,5,6]
+
+
+#[6]VAR3 : CTerm6
+#[6]VAR3 = ct6 (VAR 3) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] VAR 3
+    c = ⊆→⊆? [3]⊆[0,1,2,3,4,5,6]
+
+
+#[6]VAR4 : CTerm6
+#[6]VAR4 = ct6 (VAR 4) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] VAR 4
+    c = ⊆→⊆? [4]⊆[0,1,2,3,4,5,6]
+
+
+#[6]VAR5 : CTerm6
+#[6]VAR5 = ct6 (VAR 5) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] VAR 5
+    c = ⊆→⊆? [5]⊆[0,1,2,3,4,5,6]
+
+
+#[6]VAR6 : CTerm6
+#[6]VAR6 = ct6 (VAR 6) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] VAR 6
+    c = ⊆→⊆? [6]⊆[0,1,2,3,4,5,6]
 
 
 #[7]VAR0 : CTerm7
@@ -1945,6 +1998,14 @@ APPLY-FIX⇓→ w F a v isv (0 , comp) rewrite sym comp = ⊥-elim isv
 APPLY-FIX⇓→ w F a v isv (suc n , comp) = n , comp
 
 
+APPLY2-FIX⇓→ : (w : 𝕎·) (F a b v : Term)
+                → isValue v
+                → APPLY2 (FIX (LAMBDA F)) a b ⇓ v at w
+                → APPLY2 (sub (FIX (LAMBDA F)) F) a b ⇓ v at w
+APPLY2-FIX⇓→ w F a b v isv (0 , comp) rewrite sym comp = ⊥-elim isv
+APPLY2-FIX⇓→ w F a b v isv (suc n , comp) = n , comp
+
+
 APPLY-LAMBDA⇓val→ : {w : 𝕎·} {f a v : Term}
                      → isValue v
                      → APPLY (LAMBDA f) a ⇓ v at w
@@ -1952,6 +2013,13 @@ APPLY-LAMBDA⇓val→ : {w : 𝕎·} {f a v : Term}
 APPLY-LAMBDA⇓val→ {w} {f} {a} {v} isv (0 , comp) rewrite sym comp = ⊥-elim isv
 APPLY-LAMBDA⇓val→ {w} {f} {a} {v} isv (suc n , comp) = n , comp
 
+
+APPLY2-LAMBDA⇓val→ : {w : 𝕎·} {f a b v : Term}
+                      → isValue v
+                      → APPLY2 (LAMBDA (LAMBDA f)) a b ⇓ v at w
+                      → APPLY (sub a (LAMBDA f)) b ⇓ v at w
+APPLY2-LAMBDA⇓val→ {w} {f} {a} {b} {v} isv (0 , comp) rewrite sym comp = ⊥-elim isv
+APPLY2-LAMBDA⇓val→ {w} {f} {a} {b} {v} isv (suc n , comp) = n , comp
 
 
 LET-steps-val→ : {n : ℕ} {w1 w2 : 𝕎·} {a b v : Term}
@@ -2084,5 +2152,9 @@ APPLY-MSEQ⇛ w s a k comp w1 e1 = lift (APPLY-MSEQ⇓ w1 s a k (lower (comp w1 
 
 #[5]APPLY2 : CTerm5 → CTerm5 → CTerm5 → CTerm5
 #[5]APPLY2 a b c = #[5]APPLY (#[5]APPLY a b) c
+
+
+#[6]APPLY2 : CTerm6 → CTerm6 → CTerm6 → CTerm6
+#[6]APPLY2 a b c = #[6]APPLY (#[6]APPLY a b) c
 
 \end{code}

@@ -167,12 +167,28 @@ LIST A = PROD NAT (FUN NAT A)
                        (#[3]shiftUp0 x))
 
 
+#[3]APPENDf : CTerm3 → CTerm3 → CTerm3 → CTerm3
+#[3]APPENDf n f x =
+  #[3]LAMBDA (#[4]IFLT #[4]VAR0
+                       (#[4]shiftUp0 n)
+                       (#[4]APPLY (#[4]shiftUp0 f) #[4]VAR0)
+                       (#[4]shiftUp0 x))
+
+
 #[5]APPENDf : CTerm5 → CTerm5 → CTerm5 → CTerm5
 #[5]APPENDf n f x =
   #[5]LAMBDA (#[6]IFLT #[6]VAR0
                        (#[6]shiftUp0 n)
                        (#[6]APPLY (#[6]shiftUp0 f) #[6]VAR0)
                        (#[6]shiftUp0 x))
+
+
+#[6]APPENDf : CTerm6 → CTerm6 → CTerm6 → CTerm6
+#[6]APPENDf n f x =
+  #[6]LAMBDA (#[7]IFLT #[7]VAR0
+                       (#[7]shiftUp0 n)
+                       (#[7]APPLY (#[7]shiftUp0 f) #[7]VAR0)
+                       (#[7]shiftUp0 x))
 
 
 -- APPEND's body
