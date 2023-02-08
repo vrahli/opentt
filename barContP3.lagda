@@ -208,16 +208,52 @@ equalInType-APPENDf-last≡ i w f a₁ a₂ j k s e c1 c2 rewrite e = equalInTyp
             eqk = <s→¬<→≡ {j} {k} ltk p
 
 
-correctSeqN-inv : (i : ℕ) (r : Name) (w : 𝕎·) (F f : CTerm) (s : 𝕊) (k n : ℕ)
-                  → equalInType i w (#BAIREn (#NUM k)) f (#MSEQ s)
-                  → correctSeqN r w F k f s (suc n)
-                  → Σ CTerm (λ f' → Σ ℕ (λ m → Σ 𝕎· (λ w' → Σ ℕ (λ j →
-                      #APPLY F (#upd r f') #⇓ #NUM m from (chooseT r w N0) to w'
-                      × equalInType i w (#BAIREn (#NUM (n + k))) f' (#MSEQ s)
+seq2list : (s : 𝕊) (n : ℕ) → CTerm
+seq2list s 0 = #LAM0
+seq2list s (suc n) = #APPENDf (#NUM n) (seq2list s n) (#NUM (s n))
+
+
+seq2list+suc : (s : 𝕊) (n k : ℕ) → seq2list s (n + suc k) ≡ seq2list s (suc (n + k))
+seq2list+suc s n k rewrite +-suc n k = refl
+
+
+correctSeqN-inv : (i : ℕ) (r : Name) (w : 𝕎·) (F : CTerm) (s : 𝕊) (k n : ℕ)
+                  → correctSeqN r w F k (seq2list s k) s (suc n)
+                  → Σ ℕ (λ m → Σ 𝕎· (λ w' → Σ ℕ (λ j →
+                      #APPLY F (#upd r (seq2list s (n + k))) #⇓ #NUM m from (chooseT r w N0) to w'
                       × getT 0 r w' ≡ just (NUM j)
-                      × ¬ j < n + k))))
-correctSeqN-inv i r w F f s k 0 eqb (m , w' , j , comp , gt0 , nlt , cor) = f , m , w' , j , comp , eqb , gt0 , nlt
-correctSeqN-inv i r w F f s k (suc n) eqb (m , w' , j , comp , gt0 , nlt , cor) =
+                      × ¬ j < n + k)))
+correctSeqN-inv i r w F s k 0 (m , w' , j , comp , gt0 , nlt , cor) = m , w' , j , comp , gt0 , nlt
+correctSeqN-inv i r w F s k (suc n) (m , w' , j , comp , gt0 , nlt , cor) =
+  fst ind , fst (snd ind) , fst (snd (snd ind)) ,
+  comp' (fst (snd (snd (snd ind)))) ,
+  fst (snd (snd (snd (snd ind)))) ,
+  nlt'
+  where
+    ind : Σ ℕ (λ m → Σ 𝕎· (λ w' → Σ ℕ (λ j →
+            #APPLY F (#upd r (seq2list s (n + suc k))) #⇓ #NUM m from (chooseT r w N0) to w'
+            × getT 0 r w' ≡ just (NUM j)
+            × ¬ j < n + suc k)))
+    ind = correctSeqN-inv i r w F s (suc k) n cor
+
+    comp' : #APPLY F (#upd r (seq2list s (n + suc k))) #⇓ #NUM (fst ind) from (chooseT r w N0) to fst (snd ind)
+            → #APPLY F (#upd r (seq2list s (suc (n + k)))) #⇓ #NUM (fst ind) from (chooseT r w N0) to fst (snd ind)
+    comp' x rewrite +-suc n k = x
+
+    nlt' : ¬ fst (snd (snd ind)) < suc (n + k)
+    nlt' rewrite sym (+-suc n k) = snd (snd (snd (snd (snd ind))))
+
+
+correctSeqN-inv2 : (i : ℕ) (r : Name) (w : 𝕎·) (F f : CTerm) (s : 𝕊) (k n : ℕ)
+                   → equalInType i w (#BAIREn (#NUM k)) f (#MSEQ s)
+                   → correctSeqN r w F k f s (suc n)
+                   → Σ CTerm (λ f' → Σ ℕ (λ m → Σ 𝕎· (λ w' → Σ ℕ (λ j →
+                       #APPLY F (#upd r f') #⇓ #NUM m from (chooseT r w N0) to w'
+                       × equalInType i w (#BAIREn (#NUM (n + k))) f' (#MSEQ s)
+                       × getT 0 r w' ≡ just (NUM j)
+                       × ¬ j < n + k))))
+correctSeqN-inv2 i r w F f s k 0 eqb (m , w' , j , comp , gt0 , nlt , cor) = f , m , w' , j , comp , eqb , gt0 , nlt
+correctSeqN-inv2 i r w F f s k (suc n) eqb (m , w' , j , comp , gt0 , nlt , cor) =
   fst ind , fst (snd ind) , fst (snd (snd ind)) , fst (snd (snd (snd ind))) ,
   fst (snd (snd (snd (snd ind)))) ,
   eqb' ,
@@ -229,7 +265,7 @@ correctSeqN-inv i r w F f s k (suc n) eqb (m , w' , j , comp , gt0 , nlt , cor) 
             × equalInType i w (#BAIREn (#NUM (n + suc k))) f' (#MSEQ s)
             × getT 0 r w' ≡ just (NUM j)
             × ¬ j < n + suc k))))
-    ind = correctSeqN-inv i r w F (#APPENDf (#NUM k) f (#NUM (s k))) s (suc k) n
+    ind = correctSeqN-inv2 i r w F (#APPENDf (#NUM k) f (#NUM (s k))) s (suc k) n
                           (→equalInType-BAIREn-suc-APPENDf i w k s f eqb) cor
 
     eqb' : equalInType i w (#BAIREn (#NUM (suc (n + k)))) (fst ind)  (#MSEQ s)

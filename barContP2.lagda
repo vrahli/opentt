@@ -332,11 +332,6 @@ path2𝕊 kb {i} {w} p n with p n
 ... | inj₂ q = 0 -- default value
 
 
-seq2list : (s : 𝕊) (n : ℕ) → CTerm
-seq2list s 0 = #EMPTY
-seq2list s (suc n) = #APPEND (seq2list s n) (#NUM n)
-
-
 shift-path2𝕊 : (kb : K□) {i : ℕ} {w : 𝕎·} (p : path i w #IndBarB #IndBarC)
                 → (n : ℕ) → shift𝕊 (path2𝕊 kb p) n ≡ path2𝕊 kb (shiftPath {i} {w} {#IndBarB} {#IndBarC} p) n
 shift-path2𝕊 kb {i} {w} p n = refl

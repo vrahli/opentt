@@ -105,8 +105,97 @@ open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 
 
+equalInType-BAIREn0 : (i : ℕ) (w : 𝕎·) (f g : CTerm)
+                      → equalInType i w (#BAIREn (#NUM 0)) f g
+equalInType-BAIREn0 i w f g =
+  equalInType-FUN
+    (→equalTypesNATn i w (#NUM 0) (#NUM 0) (NUM-equalInType-NAT i w 0))
+    eqTypesNAT
+    aw
+  where
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) →  equalInType i w' (#NATn (#NUM 0)) a₁ a₂
+                       → equalInType i w' #NAT (#APPLY f a₁) (#APPLY g a₂))
+    aw w1 e1 a₁ a₂ eqa = ⊥-elim (lower {0ℓ} {lsuc(L)} (Mod.□-const M (Mod.∀𝕎-□Func M aw1 eqa1)))
+      where
+        aw1 : ∀𝕎 w1 (λ w' e' → Σ ℕ (λ j → a₁ #⇛ #NUM j at w' × a₂ #⇛ #NUM j at w' × j < 0)
+                              → Lift (lsuc L) ⊥)
+        aw1 w2 e2 (j , c1 , c2 , x) = lift (1+n≢0 {j} (n≤0⇒n≡0 {suc j} x))
 
-\end{code}
+        eqa1 : □· w1 (λ w' _ → Σ ℕ (λ j → a₁ #⇛ #NUM j at w' × a₂ #⇛ #NUM j at w' × j < 0))
+        eqa1 = equalInType-NATn→ {i} {w1} {0} {#NUM 0} {a₁} {a₂} (#⇛-refl w1 (#NUM 0)) eqa
+
+
+#APPLY-seq2list⇛ : (w : 𝕎·) (s : 𝕊) (a : CTerm) (k n : ℕ)
+                    → k < n
+                    → a #⇛ #NUM k at w
+                    → #APPLY (seq2list s n) a #⇛ #NUM (s k) at w
+#APPLY-seq2list⇛ w s a k 0 ltn comp = ⊥-elim (1+n≢0 {k} (n≤0⇒n≡0 {suc k} ltn))
+#APPLY-seq2list⇛ w s a k (suc n) ltn comp =
+  #⇛-trans
+    {w} {#APPLY (seq2list s (suc n)) a} {#IFLT a (#NUM n) (#APPLY (seq2list s n) a) (#NUM (s n))} {#NUM (s k)}
+    (APPLY-APPENDf⇛ w (#NUM n) (seq2list s n) (#NUM (s n)) a)
+    (#⇛-trans
+       {w}
+       {#IFLT a (#NUM n) (#APPLY (seq2list s n) a) (#NUM (s n))}
+       {#IFLT (#NUM k) (#NUM n) (#APPLY (seq2list s n) a) (#NUM (s n))}
+       {#NUM (s k)}
+       (IFLT⇛₃ {w} {k} {n} {⌜ a ⌝} {NUM n} {⌜ #APPLY (seq2list s n) a ⌝} {⌜ #NUM (s n) ⌝} comp (#⇛-refl w (#NUM n)))
+       c1)
+  where
+    c1 : #IFLT (#NUM k) (#NUM n) (#APPLY (seq2list s n) a) (#NUM (s n)) #⇛ #NUM (s k) at w
+    c1 with k <? n
+    ... | yes p =
+      #⇛-trans
+          {w}
+          {#IFLT (#NUM k) (#NUM n) (#APPLY (seq2list s n) a) (#NUM (s n))}
+          {#APPLY (seq2list s n) a} {#NUM (s k)}
+          (IFLT-NUM<⇛ {k} {n} p ⌜ #APPLY (seq2list s n) a ⌝ ⌜ #NUM (s n) ⌝ w)
+          (#APPLY-seq2list⇛ w s a k n p comp)
+    ... | no p =
+      #⇛-trans
+        {w}
+        {#IFLT (#NUM k) (#NUM n) (#APPLY (seq2list s n) a) (#NUM (s n))}
+        {#NUM (s n)} {#NUM (s k)}
+        (IFLT-NUM¬<⇛ {k} {n} p ⌜ #APPLY (seq2list s n) a ⌝ ⌜ #NUM (s n) ⌝ w)
+        c2
+      where
+        eqk : k ≡ n
+        eqk = <s→¬<→≡ {k} {n} ltn p
+
+        c2 : #NUM (s n) #⇛ #NUM (s k) at w
+        c2 rewrite eqk = #⇛-refl w (#NUM (s n))
+
+
+equalInType-BAIREn-seq2list : (i : ℕ) (w : 𝕎·) (s : 𝕊) (n : ℕ)
+                              → equalInType i w (#BAIREn (#NUM n)) (seq2list s n) (#MSEQ s)
+equalInType-BAIREn-seq2list i w s n =
+  equalInType-FUN
+    (→equalTypesNATn i w (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n))
+    eqTypesNAT
+    aw
+  where
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#NATn (#NUM n)) a₁ a₂
+                       → equalInType i w' #NAT (#APPLY (seq2list s n) a₁) (#APPLY (#MSEQ s) a₂))
+    aw w1 e1 a₁ a₂ eqa =
+      →equalInType-NAT
+        i w1 (#APPLY (seq2list s n) a₁) (#APPLY (#MSEQ s) a₂)
+        (Mod.∀𝕎-□Func M aw1 (equalInType-NATn→ {i} {w1} {n} {#NUM n} {a₁} {a₂} (#⇛-refl w1 (#NUM n)) eqa))
+      where
+        aw1 : ∀𝕎 w1 (λ w' e' → Σ ℕ (λ k → a₁ #⇛ #NUM k at w' × a₂ #⇛ #NUM k at w' × k < n)
+                              → NATeq w' (#APPLY (seq2list s n) a₁) (#APPLY (#MSEQ s) a₂))
+        aw1 w2 e2 (k , c1 , c2 , ltn) = s k , #APPLY-seq2list⇛ w2 s a₁ k n ltn c1 , APPLY-MSEQ⇛ w2 s ⌜ a₂ ⌝ k c2
+
+
+correctSeqN-inv0 : (i : ℕ) (r : Name) (w : 𝕎·) (F : CTerm) (s : 𝕊) (n : ℕ)
+                   → correctSeqN r w F 0 #LAM0 s (suc n)
+                   → Σ ℕ (λ m → Σ 𝕎· (λ w' → Σ ℕ (λ j →
+                       #APPLY F (#upd r (seq2list s n)) #⇓ #NUM m from (chooseT r w N0) to w'
+                       × getT 0 r w' ≡ just (NUM j)
+                       × ¬ j < n)))
+correctSeqN-inv0 i r w F s n cor
+  with correctSeqN-inv i r w F s 0 n cor
+... | (m , w' , j , comp , gt0 , nlt) rewrite +0 n =
+  m , w' , j , comp , gt0 , nlt
 
 
 -- We want to create a Term ∈ BAIRE from this path.
@@ -132,7 +221,7 @@ noInfPath kb cn can exb gc i w r F nnF compat F∈ p cor inf =
     nnf = refl
 
     cs : correctSeq r w F s
-    cs = →correctSeq kb cn i w r F compat F∈ p cor inf
+    cs = corSeq→correctSeq r w F s (→corSeq kb cn i w r F compat F∈ p cor inf)
 
     f∈ : ∈Type i w #BAIRE f
     f∈ = mseq∈baire i w s
@@ -183,8 +272,14 @@ noInfPath kb cn can exb gc i w r F nnF compat F∈ p cor inf =
             {APPLY ⌜ F ⌝ (upd r ⌜ f ⌝)} {NUM k} {suc n} (snd ca2)
             tt uc compat wgt0 gtn
 
-    csn : correctSeqN r w F 0 #LAM0 s (suc n)
-    csn = cs (suc n)
+    csn : correctSeqN r w F 0 #LAM0 s (suc (suc n))
+    csn = cs (suc (suc n))
+
+    inv : Σ ℕ (λ m → Σ 𝕎· (λ w' → Σ ℕ (λ j →
+            #APPLY F (#upd r (seq2list s (suc n))) #⇓ #NUM m from (chooseT r w N0) to w'
+            × getT 0 r w' ≡ just (NUM j)
+            × ¬ j < (suc n))))
+    inv = correctSeqN-inv0 i r w F s (suc n) csn
 
 {--    neqt : NATeq w (#νtestM F f) (#νtestM F f)
     neqt = νtestM-NAT can exb gc i w F f nnF nnf F∈ s∈1
