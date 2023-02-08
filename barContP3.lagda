@@ -281,20 +281,38 @@ corSeq r w F s = (n : ℕ) → corSeqN r w F 0 #LAM0 s n
 ++𝕊0 (suc m) s0 s = ++𝕊0 m (shift𝕊 s0) s
 
 
-≡++𝕊 : (m : ℕ) (s0 s : 𝕊) (k : ℕ) →  ∷𝕊 (𝕊∷ m (s 0) s0 0) (++𝕊 m (shift𝕊 (𝕊∷ m (s 0) s0)) (shift𝕊 s)) k ≡ ++𝕊 m s0 s k
-≡++𝕊 0 s0 s 0 = refl
-≡++𝕊 0 s0 s (suc k) = refl
-≡++𝕊 (suc m) s0 s k = c
+≡∷𝕊 : {k m : ℕ} {s1 s2 : 𝕊} → ((n : ℕ) → s1 n ≡ s2 n) → ∷𝕊 k s1 m ≡ ∷𝕊 k s2 m
+≡∷𝕊 {k} {0} {s1} {s2} imp = refl
+≡∷𝕊 {k} {suc m} {s1} {s2} imp = imp m
+
+
+≡++𝕊 : {k m : ℕ} {sa sb s : 𝕊} → ((n : ℕ) → sa n ≡ sb n) → ++𝕊 k sa s m ≡ ++𝕊 k sb s m
+≡++𝕊 {0} {m} {sa} {sb} {s} imp = refl
+≡++𝕊 {suc k} {m} {sa} {sb} {s} imp rewrite imp 0 =
+  ≡∷𝕊 {sb 0} {m} λ n → ≡++𝕊 {k} {n} (λ z → imp (suc z))
+
+
+∷𝕊≡++𝕊 : (m : ℕ) (s0 s : 𝕊) (k : ℕ) →  ∷𝕊 (𝕊∷ m (s 0) s0 0) (++𝕊 m (shift𝕊 (𝕊∷ m (s 0) s0)) (shift𝕊 s)) k ≡ ++𝕊 m s0 s k
+∷𝕊≡++𝕊 0 s0 s 0 = refl
+∷𝕊≡++𝕊 0 s0 s (suc k) = refl
+∷𝕊≡++𝕊 (suc m) s0 s 0 = refl
+∷𝕊≡++𝕊 (suc m) s0 s (suc k) = c
   where
-    c : ∷𝕊 (s0 0)
-             (∷𝕊 (𝕊∷ m (s 0) (shift𝕊 s0) 0)
-                   (++𝕊 m
-                         (shift𝕊 (shift𝕊 (∷𝕊 (s0 0) (𝕊∷ m (s 0) (shift𝕊 s0))))) -- need to replace with (shift𝕊 (𝕊∷ m (s 0) (shift𝕊 s0)))
-                         (shift𝕊 s)))
+    a : (k : ℕ) → ++𝕊 m
+                        (shift𝕊 (shift𝕊 (∷𝕊 (s0 0) (𝕊∷ m (s 0) (shift𝕊 s0))))) -- need to replace with (shift𝕊 (𝕊∷ m (s 0) (shift𝕊 s0)))
+                        (shift𝕊 s)
+                        k
+                   ≡ ++𝕊 m (shift𝕊 (𝕊∷ m (s 0) (shift𝕊 s0))) (shift𝕊 s) k
+    a k = ≡++𝕊 {m} {k} (λ n → refl)
+
+    c : ∷𝕊 (𝕊∷ m (s 0) (shift𝕊 s0) 0)
+             (++𝕊 m
+                   (shift𝕊 (shift𝕊 (∷𝕊 (s0 0) (𝕊∷ m (s 0) (shift𝕊 s0))))) -- need to replace with (shift𝕊 (𝕊∷ m (s 0) (shift𝕊 s0)))
+                   (shift𝕊 s))
 
              k
-        ≡ ∷𝕊 (s0 0) (++𝕊 m (shift𝕊 s0) s) k
-    c = {!!}
+        ≡ ++𝕊 m (shift𝕊 s0) s k
+    c = trans (≡∷𝕊 {𝕊∷ m (s 0) (shift𝕊 s0) 0} {k} a) (∷𝕊≡++𝕊 m (shift𝕊 s0) s k)
 
 
 -- n is the fuel
@@ -310,7 +328,7 @@ corSeqN→correctSeqN r w m (suc n) F f s0 s (z , w' , j , comp , gt0 , nlt , co
     ind = corSeqN→correctSeqN r w (suc m) n F (#APPENDf (#NUM m) f (#NUM (s 0))) (𝕊∷ m (s 0) s0) (shift𝕊 s) cor
 
     imp : (k : ℕ) →  ∷𝕊 (𝕊∷ m (s 0) s0 0) (++𝕊 m (shift𝕊 (𝕊∷ m (s 0) s0)) (shift𝕊 s)) k ≡ ++𝕊 m s0 s k
-    imp k = {!!}
+    imp = ∷𝕊≡++𝕊 m s0 s
 
     ind1 : correctSeqN r w F (suc m) (#APPENDf (#NUM m) f (#NUM (s 0))) (++𝕊 m s0 s) n
     ind1 = →≡correctSeqN
@@ -326,9 +344,6 @@ corSeq→correctSeq : (r : Name) (w : 𝕎·) (F : CTerm) (s : 𝕊)
                      → corSeq r w F s
                      → correctSeq r w F s
 corSeq→correctSeq r w F s cor n = corSeqN→correctSeqN r w 0 n F #LAM0 s s (cor n)
-
-
-\end{code}
 
 
 -- n is the fuel
