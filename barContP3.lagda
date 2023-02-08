@@ -68,10 +68,10 @@ open import computation(W)(C)(K)(G)(X)(N)
 
 open import terms2(W)(C)(K)(G)(X)(N)
 open import terms3(W)(C)(K)(G)(X)(N)
-open import terms4(W)(C)(K)(G)(X)(N)
-open import terms5(W)(C)(K)(G)(X)(N)
-open import terms6(W)(C)(K)(G)(X)(N)
-open import terms7(W)(C)(K)(G)(X)(N)
+--open import terms4(W)(C)(K)(G)(X)(N)
+--open import terms5(W)(C)(K)(G)(X)(N)
+--open import terms6(W)(C)(K)(G)(X)(N)
+--open import terms7(W)(C)(K)(G)(X)(N)
 open import terms8(W)(C)(K)(G)(X)(N)
 
 open import bar(W)
@@ -86,9 +86,9 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
@@ -97,17 +97,242 @@ open import list(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
 open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
+
+
+
 
 
 ≡→¬< : (k1 k2 m : ℕ) → k2 ≡ m → ¬ k1 < k2 → ¬ k1 < m
 ≡→¬< k1 k2 m e h rewrite e = h
 
 
+IFLT-NUM<⇛ : {n m : ℕ} (p : n < m) (a b : Term) (w : 𝕎·) → IFLT (NUM n) (NUM m) a b ⇛ a at w
+IFLT-NUM<⇛ {n} {m} p a b w w1 e1 =
+  lift (⇓-from-to→⇓ {w1} {w1} {IFLT (NUM n) (NUM m) a b} {a} (IFLT-NUM<⇓ {n} {m} p a b w1))
+
+
+IFLT-NUM¬<⇛ : {n m : ℕ} (p : ¬ n < m) (a b : Term) (w : 𝕎·) → IFLT (NUM n) (NUM m) a b ⇛ b at w
+IFLT-NUM¬<⇛ {n} {m} p a b w w1 e1 =
+  lift (⇓-from-to→⇓ {w1} {w1} {IFLT (NUM n) (NUM m) a b} {b} (IFLT-NUM¬<⇓ {n} {m} p a b w1))
+
+
+→APPLY-APPENDf⇛NUM₁ : (w : 𝕎·) (j k m : ℕ) (f a b : CTerm)
+                       → j < k
+                       → a #⇛ #NUM j at w
+                       → #APPLY f a #⇛ #NUM m at w
+                       → #APPLY (#APPENDf (#NUM k) f b) a #⇛ #NUM m at w
+→APPLY-APPENDf⇛NUM₁ w j k m f a b ltk compn compa =
+  #⇛-trans {w} {#APPLY (#APPENDf (#NUM k) f b) a} {#IFLT a (#NUM k) (#APPLY f a) b} {#NUM m}
+            (APPLY-APPENDf⇛ w (#NUM k) f b a)
+            (#⇛-trans {w} {#IFLT a (#NUM k) (#APPLY f a) b} {#IFLT (#NUM j) (#NUM k) (#APPLY f a) b} {#NUM m}
+                       (IFLT⇛₃ {w} {j} {k} {⌜ a ⌝} {NUM k} {⌜ #APPLY f a ⌝} {⌜ b ⌝} compn (#⇛-refl w (#NUM k)))
+                       (#⇛-trans {w} {#IFLT (#NUM j) (#NUM k) (#APPLY f a) b} {#APPLY f a} {#NUM m}
+                                  (IFLT-NUM<⇛ {j} {k} ltk ⌜ #APPLY f a ⌝ ⌜ b ⌝ w)
+                                  compa))
+
+
+→APPLY-APPENDf⇛NUM₂ : (w : 𝕎·) (k : ℕ) (f a b : CTerm)
+                       → a #⇛ #NUM k at w
+                       → #APPLY (#APPENDf (#NUM k) f b) a #⇛ b at w
+→APPLY-APPENDf⇛NUM₂ w k f a b compa =
+  #⇛-trans {w} {#APPLY (#APPENDf (#NUM k) f b) a} {#IFLT a (#NUM k) (#APPLY f a) b} {b}
+            (APPLY-APPENDf⇛ w (#NUM k) f b a)
+            (#⇛-trans {w} {#IFLT a (#NUM k) (#APPLY f a) b} {#IFLT (#NUM k) (#NUM k) (#APPLY f a) b} {b}
+                       (IFLT⇛₃ {w} {k} {k} {⌜ a ⌝} {NUM k} {⌜ #APPLY f a ⌝} {⌜ b ⌝} compa (#⇛-refl w (#NUM k)))
+                       (IFLT-NUM¬<⇛ {k} {k} (<-irrefl refl) ⌜ #APPLY f a ⌝ ⌜ b ⌝ w))
+
+
+equalInType-APPENDf-last : (i : ℕ) (w : 𝕎·) (f a₁ a₂ : CTerm) (k : ℕ) (s : 𝕊)
+                           → a₁ #⇛ #NUM k at w
+                           → a₂ #⇛ #NUM k at w
+                           → equalInType i w #NAT (#APPLY (#APPENDf (#NUM k) f (#NUM (s k))) a₁) (#APPLY (#MSEQ s) a₂)
+equalInType-APPENDf-last i w f a₁ a₂ k s c1 c2 =
+  →equalInType-NAT i w (#APPLY (#APPENDf (#NUM k) f (#NUM (s k))) a₁) (#APPLY (#MSEQ s) a₂) (Mod.∀𝕎-□ M aw)
+  where
+    aw : ∀𝕎 w (λ w' _ → NATeq w' (#APPLY (#APPENDf (#NUM k) f (#NUM (s k))) a₁) (#APPLY (#MSEQ s) a₂))
+    aw w1 e1 = s k , →APPLY-APPENDf⇛NUM₂ w1 k f a₁ (#NUM (s k)) (∀𝕎-mon e1 c1) , APPLY-MSEQ⇛ w1 s ⌜ a₂ ⌝ k (∀𝕎-mon e1 c2)
+
+
+equalInType-APPENDf-last≡ : (i : ℕ) (w : 𝕎·) (f a₁ a₂ : CTerm) (j k : ℕ) (s : 𝕊)
+                            → j ≡ k
+                            → a₁ #⇛ #NUM j at w
+                            → a₂ #⇛ #NUM j at w
+                            → equalInType i w #NAT (#APPLY (#APPENDf (#NUM k) f (#NUM (s k))) a₁) (#APPLY (#MSEQ s) a₂)
+equalInType-APPENDf-last≡ i w f a₁ a₂ j k s e c1 c2 rewrite e = equalInType-APPENDf-last i w f a₁ a₂ k s c1 c2
+
+
+→equalInType-BAIREn-suc-APPENDf : (i : ℕ) (w : 𝕎·) (k : ℕ) (s : 𝕊) (f : CTerm)
+                                   → equalInType i w (#BAIREn (#NUM k)) f (#MSEQ s)
+                                   → equalInType i w (#BAIREn (#NUM (suc k))) (#APPENDf (#NUM k) f (#NUM (s k))) (#MSEQ s)
+→equalInType-BAIREn-suc-APPENDf i w k s f eqb =
+  equalInType-FUN
+    (→equalTypesNATn i w (#NUM (suc k)) (#NUM (suc k)) (NUM-equalInType-NAT i w (suc k)))
+    eqTypesNAT
+    aw
+  where
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) →  equalInType i w' (#NATn (#NUM (suc k))) a₁ a₂
+                       → equalInType i w' #NAT (#APPLY (#APPENDf (#NUM k) f (#NUM (s k))) a₁) (#APPLY (#MSEQ s) a₂))
+    aw w1 e1 a₁ a₂ eqa = equalInType-local (Mod.∀𝕎-□Func M aw1 eqa1)
+      where
+        eqa1 : □· w1 (λ w' _ → Σ ℕ (λ j → a₁ #⇛ #NUM j at w' × a₂ #⇛ #NUM j at w' × j < suc k))
+        eqa1 = equalInType-NATn→ {i} {w1} {suc k} {#NUM (suc k)} {a₁} {a₂} (#⇛-refl w1 (#NUM (suc k))) eqa
+
+        aw1 : ∀𝕎 w1 (λ w' e' → Σ ℕ (λ j → a₁ #⇛ #NUM j at w' × a₂ #⇛ #NUM j at w' × j < suc k)
+                              → equalInType i w' #NAT (#APPLY (#APPENDf (#NUM k) f (#NUM (s k))) a₁) (#APPLY (#MSEQ s) a₂))
+        aw1 w2 e2 (j , c1 , c2 , ltk) with j <? k
+        ... | yes p =
+          →equalInType-NAT
+            i w2 (#APPLY (#APPENDf (#NUM k) f (#NUM (s k))) a₁) (#APPLY (#MSEQ s) a₂)
+            (Mod.∀𝕎-□Func M aw3 (equalInType-NAT→ i w2 (#APPLY f a₁) (#APPLY (#MSEQ s) a₂) eqa2))
+          where
+            aw3 : ∀𝕎 w2 (λ w' e' → NATeq w' (#APPLY f a₁) (#APPLY (#MSEQ s) a₂)
+                                  → NATeq w' (#APPLY (#APPENDf (#NUM k) f (#NUM (s k))) a₁) (#APPLY (#MSEQ s) a₂))
+            aw3 w3 e3 (m , d1 , d2) = m , →APPLY-APPENDf⇛NUM₁ w3 j k m f a₁ (#NUM (s k)) p (∀𝕎-mon e3 c1) d1 , d2
+
+            aw2 : ∀𝕎 w2 (λ w' _ → Σ ℕ (λ k₁ → a₁ #⇛ #NUM k₁ at w' × a₂ #⇛ #NUM k₁ at w' × k₁ < k))
+            aw2 w3 e3 = j , ∀𝕎-mon e3 c1 , ∀𝕎-mon e3 c2 , p
+
+            eqn1 : equalInType i w2 (#NATn (#NUM k)) a₁ a₂
+            eqn1 = →equalInType-NATn {i} {w2} {k} {#NUM k} {a₁} {a₂} (#⇛-refl w2 (#NUM k)) (Mod.∀𝕎-□ M aw2)
+
+            eqa2 : equalInType i w2 #NAT (#APPLY f a₁) (#APPLY (#MSEQ s) a₂)
+            eqa2 = equalInType-FUN→ eqb w2 (⊑-trans· e1 e2) a₁ a₂ eqn1
+        ... | no p = equalInType-APPENDf-last≡ i w2 f a₁ a₂ j k s eqk c1 c2
+          where
+            eqk : j ≡ k
+            eqk = <s→¬<→≡ {j} {k} ltk p
+
+
+correctSeqN-inv : (i : ℕ) (r : Name) (w : 𝕎·) (F f : CTerm) (s : 𝕊) (k n : ℕ)
+                  → equalInType i w (#BAIREn (#NUM k)) f (#MSEQ s)
+                  → correctSeqN r w F k f s (suc n)
+                  → Σ CTerm (λ f' → Σ ℕ (λ m → Σ 𝕎· (λ w' → Σ ℕ (λ j →
+                      #APPLY F (#upd r f') #⇓ #NUM m from (chooseT r w N0) to w'
+                      × equalInType i w (#BAIREn (#NUM (n + k))) f' (#MSEQ s)
+                      × getT 0 r w' ≡ just (NUM j)
+                      × ¬ j < n + k))))
+correctSeqN-inv i r w F f s k 0 eqb (m , w' , j , comp , gt0 , nlt , cor) = f , m , w' , j , comp , eqb , gt0 , nlt
+correctSeqN-inv i r w F f s k (suc n) eqb (m , w' , j , comp , gt0 , nlt , cor) =
+  fst ind , fst (snd ind) , fst (snd (snd ind)) , fst (snd (snd (snd ind))) ,
+  fst (snd (snd (snd (snd ind)))) ,
+  eqb' ,
+  fst (snd (snd (snd (snd (snd (snd ind)))))) ,
+  nlt'
+  where
+    ind : Σ CTerm (λ f' → Σ ℕ (λ m → Σ 𝕎· (λ w' → Σ ℕ (λ j →
+            #APPLY F (#upd r f') #⇓ #NUM m from (chooseT r w N0) to w'
+            × equalInType i w (#BAIREn (#NUM (n + suc k))) f' (#MSEQ s)
+            × getT 0 r w' ≡ just (NUM j)
+            × ¬ j < n + suc k))))
+    ind = correctSeqN-inv i r w F (#APPENDf (#NUM k) f (#NUM (s k))) s (suc k) n
+                          (→equalInType-BAIREn-suc-APPENDf i w k s f eqb) cor
+
+    eqb' : equalInType i w (#BAIREn (#NUM (suc (n + k)))) (fst ind)  (#MSEQ s)
+    eqb' rewrite sym (+-suc n k) = fst (snd (snd (snd (snd (snd ind)))))
+
+    nlt' : ¬ fst (snd (snd (snd ind))) < suc (n + k)
+    nlt' rewrite sym (+-suc n k) = snd (snd (snd (snd (snd (snd (snd ind))))))
+
+
+𝕊∷ : (k m : ℕ) (s : 𝕊) → 𝕊
+𝕊∷ 0 m s = ∷𝕊 m s
+𝕊∷ (suc k) m s = ∷𝕊 (s 0) (𝕊∷ k m (shift𝕊 s))
+
+
 -- n is the fuel
-→correctSeqN : (kb : K□) (cn : cℕ) (i : ℕ) (r : Name) (t F g : CTerm) (m : ℕ) (n : ℕ) (w : 𝕎·)
+-- k is the length of f
+corSeqN : (r : Name) (w : 𝕎·) (F : CTerm) (k : ℕ) (f : CTerm) (s : 𝕊) (n : ℕ) → Set(lsuc L)
+corSeqN r w F k f s 0 = Lift (lsuc L) ⊤
+corSeqN r w F k f s (suc n) =
+  Σ ℕ (λ m → Σ 𝕎· (λ w' → Σ ℕ (λ j →
+    #APPLY F (#upd r f) #⇓ #NUM m from (chooseT r w N0) to w'
+    × getT 0 r w' ≡ just (NUM j)
+    × ¬ j < k
+    × corSeqN r w F (suc k) (#APPENDf (#NUM k) f (#NUM (s 0))) (shift𝕊 s) n)))
+
+
+corSeq : (r : Name) (w : 𝕎·) (F : CTerm) (s : 𝕊) → Set(lsuc L)
+corSeq r w F s = (n : ℕ) → corSeqN r w F 0 #LAM0 s n
+
+
+→≡corSeqN : (r : Name) (w : 𝕎·) (F : CTerm) (k : ℕ) (f : CTerm) (s1 s2 : 𝕊) (n : ℕ)
+             → ((k : ℕ) → s1 k ≡ s2 k)
+             → corSeqN r w F k f s1 n
+             → corSeqN r w F k f s2 n
+→≡corSeqN r w F k f s1 s2 0 imp cor = cor
+→≡corSeqN r w F k f s1 s2 (suc n) imp (m , w' , j , x , y , z , c) =
+  m , w' , j , x , y , z , ind2
+  where
+    ind1 : corSeqN r w F (suc k) (#APPENDf (#NUM k) f (#NUM (s1 0))) (shift𝕊 s2) n
+    ind1 = →≡corSeqN r w F (suc k) (#APPENDf (#NUM k) f (#NUM (s1 0))) (shift𝕊 s1) (shift𝕊 s2) n (λ j → imp (suc j)) c
+
+    ind2 : corSeqN r w F (suc k) (#APPENDf (#NUM k) f (#NUM (s2 0))) (shift𝕊 s2) n
+    ind2 rewrite sym (imp 0) = ind1
+
+
+
+++𝕊0 : (m : ℕ) (s0 s : 𝕊) → ++𝕊 m s0 s m ≡ s 0
+++𝕊0 0 s0 s = refl
+++𝕊0 (suc m) s0 s = ++𝕊0 m (shift𝕊 s0) s
+
+
+≡++𝕊 : (m : ℕ) (s0 s : 𝕊) (k : ℕ) →  ∷𝕊 (𝕊∷ m (s 0) s0 0) (++𝕊 m (shift𝕊 (𝕊∷ m (s 0) s0)) (shift𝕊 s)) k ≡ ++𝕊 m s0 s k
+≡++𝕊 0 s0 s 0 = refl
+≡++𝕊 0 s0 s (suc k) = refl
+≡++𝕊 (suc m) s0 s k = c
+  where
+    c : ∷𝕊 (s0 0)
+             (∷𝕊 (𝕊∷ m (s 0) (shift𝕊 s0) 0)
+                   (++𝕊 m
+                         (shift𝕊 (shift𝕊 (∷𝕊 (s0 0) (𝕊∷ m (s 0) (shift𝕊 s0))))) -- need to replace with (shift𝕊 (𝕊∷ m (s 0) (shift𝕊 s0)))
+                         (shift𝕊 s)))
+
+             k
+        ≡ ∷𝕊 (s0 0) (++𝕊 m (shift𝕊 s0) s) k
+    c = {!!}
+
+
+-- n is the fuel
+-- m is the length of f
+corSeqN→correctSeqN : (r : Name) (w : 𝕎·) (m n : ℕ) (F f : CTerm) (s0 s : 𝕊)
+                       → corSeqN r w F m f s n
+                       → correctSeqN r w F m f (++𝕊 m s0 s) n
+corSeqN→correctSeqN r w m 0 F f s0 s cor = cor
+corSeqN→correctSeqN r w m (suc n) F f s0 s (z , w' , j , comp , gt0 , nlt , cor) =
+  z , w' , j , comp , gt0 , nlt , ind2
+  where
+    ind : correctSeqN r w F (suc m) (#APPENDf (#NUM m) f (#NUM (s 0))) (++𝕊 (suc m) (𝕊∷ m (s 0) s0) (shift𝕊 s)) n
+    ind = corSeqN→correctSeqN r w (suc m) n F (#APPENDf (#NUM m) f (#NUM (s 0))) (𝕊∷ m (s 0) s0) (shift𝕊 s) cor
+
+    imp : (k : ℕ) →  ∷𝕊 (𝕊∷ m (s 0) s0 0) (++𝕊 m (shift𝕊 (𝕊∷ m (s 0) s0)) (shift𝕊 s)) k ≡ ++𝕊 m s0 s k
+    imp k = {!!}
+
+    ind1 : correctSeqN r w F (suc m) (#APPENDf (#NUM m) f (#NUM (s 0))) (++𝕊 m s0 s) n
+    ind1 = →≡correctSeqN
+             r w F (suc m) (#APPENDf (#NUM m) f (#NUM (s 0)))
+             (++𝕊 (suc m) (𝕊∷ m (s 0) s0) (shift𝕊 s)) (++𝕊 m s0 s)
+             n imp ind
+
+    ind2 : correctSeqN r w F (suc m) (#APPENDf (#NUM m) f (#NUM (++𝕊 m s0 s m))) (++𝕊 m s0 s) n
+    ind2 rewrite ++𝕊0 m s0 s = ind1
+
+
+corSeq→correctSeq : (r : Name) (w : 𝕎·) (F : CTerm) (s : 𝕊)
+                     → corSeq r w F s
+                     → correctSeq r w F s
+corSeq→correctSeq r w F s cor n = corSeqN→correctSeqN r w 0 n F #LAM0 s s (cor n)
+
+
+\end{code}
+
+
+-- n is the fuel
+→corSeqN : (kb : K□) (cn : cℕ) (i : ℕ) (r : Name) (t F g : CTerm) (m : ℕ) (n : ℕ) (w : 𝕎·)
                 → compatible· r w Res⊤
                 → ∈Type i w #FunBar F
 --                → ∈Type i w (#LIST #NAT) l
@@ -118,9 +343,9 @@ open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
                 → isInfPath {i} {w} {#IndBarB} {#IndBarC} p
                 → t #⇓! #APPLY2 (#loop r F) (#NUM m) g at w
                 → correctPathN {i} {w} {#IndBarB} {#IndBarC} t p n
-                → correctSeqN r w F m g (path2𝕊 kb p) n
-→correctSeqN kb cn i r t F g m 0 w compat F∈ g∈ p inf compt cor = lift tt
-→correctSeqN kb cn i r t F g m (suc n) w compat F∈ g∈ p inf compt cor with inf 0
+                → corSeqN r w F m g (path2𝕊 kb p) n
+→corSeqN kb cn i r t F g m 0 w compat F∈ g∈ p inf compt cor = lift tt
+→corSeqN kb cn i r t F g m (suc n) w compat F∈ g∈ p inf compt cor with inf 0
 ... | inf0 with p 0
 ... |    inj₁ (a , b , ia , ib) with cor
 ... |       (f , comp , cp) =
@@ -209,8 +434,8 @@ open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
             {i} {w} {#IndBarB} {#IndBarC} (shiftPath {i} {w} {#IndBarB} {#IndBarC} p)
             {#APPLY f b} {#APPLY (#loopR (#loop r F) (#NUM m) g) b} n (→≡#APPLY (snd (snd compF3)) refl) cp1
 
-    ind1 : correctSeqN r w F (suc m) (#APPENDf (#NUM m) g (#NUM bn)) (path2𝕊 kb (shiftPath {i} {w} {#IndBarB} {#IndBarC} p)) n
-    ind1 = →correctSeqN
+    ind1 : corSeqN r w F (suc m) (#APPENDf (#NUM m) g (#NUM bn)) (path2𝕊 kb (shiftPath {i} {w} {#IndBarB} {#IndBarC} p)) n
+    ind1 = →corSeqN
              kb cn i r (#APPLY (#loopR (#loop r F) (#NUM m) g) b) F
              (#APPENDf (#NUM m) g (#NUM bn)) (suc m)
              n w compat F∈
@@ -224,22 +449,22 @@ open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
              (APPLY-loopR-⇓ w w w (#loop r F) (#NUM m) g b bn m (lower (snd ib' w (⊑-refl· w))) (⇓!-refl (NUM m) w))
              cp2
 
-    ind : correctSeqN r w F (suc m) (#APPENDf (#NUM m) g (#NUM bn)) (shift𝕊 (path2𝕊 kb p)) n
-    ind = →≡correctSeqN r w F (suc m) (#APPENDf (#NUM m) g (#NUM bn))
+    ind : corSeqN r w F (suc m) (#APPENDf (#NUM m) g (#NUM bn)) (shift𝕊 (path2𝕊 kb p)) n
+    ind = →≡corSeqN r w F (suc m) (#APPENDf (#NUM m) g (#NUM bn))
             (path2𝕊 kb (shiftPath {i} {w} {#IndBarB} {#IndBarC} p))
             (shift𝕊 (path2𝕊 kb p))
             n (λ z → sym (shift-path2𝕊 kb {i} {w} p z)) ind1
 
 
-→correctSeq : (kb : K□) (cb : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
+→corSeq : (kb : K□) (cb : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
                → compatible· r w Res⊤
                → ∈Type i w #FunBar F
                → (p : path i w #IndBarB #IndBarC)
                → correctPath {i} {w} {#IndBarB} {#IndBarC} (#APPLY2 (#loop r F) (#NUM 0) #LAM0) p
                → isInfPath {i} {w} {#IndBarB} {#IndBarC} p
-               → correctSeq r w F (path2𝕊 kb p)
-→correctSeq kb cb i w r F compat F∈ p cor inf n =
-  →correctSeqN
+               → corSeq r w F (path2𝕊 kb p)
+→corSeq kb cb i w r F compat F∈ p cor inf n =
+  →corSeqN
     kb cb i r (#APPLY2 (#loop r F) (#NUM 0) #LAM0) F #LAM0 0 n w compat F∈
     (LAM0∈BAIRE i w)
     p inf (#⇓!-refl (#APPLY2 (#loop r F) (#NUM 0) #LAM0) w) (cor n)
@@ -270,71 +495,4 @@ mseq∈baire i w s =
         aw1 : ∀𝕎 w1 (λ w' e' → NATeq w' a₁ a₂ → NATeq w' (#APPLY (#MSEQ s) a₁) (#APPLY (#MSEQ s) a₂))
         aw1 w2 e2 (k , c1 , c2) = s k , APPLY-MSEQ⇛ w2 s ⌜ a₁ ⌝ k c1 , APPLY-MSEQ⇛ w2 s ⌜ a₂ ⌝ k c2
 
-
--- We want to create a Term ∈ BAIRE from this path.
-noInfPath : (kb : K□) (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
-            → compatible· r w Res⊤
-            → ∈Type i w #FunBar F
-            → (p : path i w #IndBarB #IndBarC)
-            → correctPath {i} {w} {#IndBarB} {#IndBarC} (#APPLY2 (#loop r F) (#NUM 0) #LAM0) p
-            → isInfPath {i} {w} {#IndBarB} {#IndBarC} p
-            → ⊥
-noInfPath kb cn i w r F compat F∈ p cor inf =
-  {!!}
-  where
-    s : 𝕊
-    s = path2𝕊 kb p
-
-    cs : correctSeq r w F s
-    cs = →correctSeq kb cn i w r F compat F∈ p cor inf
-
-
-sem : (kb : K□) (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
-        → compatible· r w Res⊤
-        → ∈Type i w #FunBar F
-        → ∈Type i w #IndBar (#APPLY2 (#loop r F) (#NUM 0) #LAM0)
-sem kb cn i w r F compat F∈ = concl
-  where
-    co : ∈Type i w #CoIndBar (#APPLY2 (#loop r F) (#NUM 0) #LAM0)
-    co = coSem kb cn i w r F (#NUM 0) #LAM0 compat F∈ (NUM-equalInType-NAT! i w 0) (LAM0∈BAIRE i w) -- (EMPTY∈LIST i w)
-
-    concl : ∈Type i w #IndBar (#APPLY2 (#loop r F) (#NUM 0) #LAM0)
-    concl with EM {∃𝕎 w (λ w' _ → Σ (path i w' #IndBarB #IndBarC)
-                                   (λ p → correctPath {i} {w'} {#IndBarB} {#IndBarC} (#APPLY2 (#loop r F) (#NUM 0) #LAM0) p
-                                         × isInfPath {i} {w'} {#IndBarB} {#IndBarC} p))}
-    ... | yes pp = c
-      where
-        c : ∈Type i w #IndBar (#APPLY2 (#loop r F) (#NUM 0) #LAM0)
-        c = {!!}
-    ... | no pp = CoIndBar2IndBar i w (#APPLY2 (#loop r F) (#NUM 0) #LAM0) cond co
-      where
-        cond : ∀𝕎 w (λ w' _ → (p : path i w' #IndBarB #IndBarC)
-               → correctPath {i} {w'} {#IndBarB} {#IndBarC} (#APPLY2 (#loop r F) (#NUM 0) #LAM0) p
-               → isFinPath {i} {w'} {#IndBarB} {#IndBarC} p)
-        cond w1 e1 p cor with EM {Lift {0ℓ} (lsuc(L)) (isFinPath {i} {w1} {#IndBarB} {#IndBarC} p)}
-        ... | yes qq = lower qq
-        ... | no qq = ⊥-elim (pp (w1 , e1 , p , cor , ¬isFinPath→isInfPath {i} {w1} {#IndBarB} {#IndBarC} p (λ z → qq (lift z))))
-
---sem : (w : 𝕎·) → ∈Type i w #barThesis tab
---sem w  ?
-
-
-{--
-
-Plan:
-
-(1) Prove by coinduction that if (F ∈ FunBar) then (loop r F ∈ CoIndBar) which does not require to proving termination
-    - see coSem, which uses coSemM [DONE]
-(2) We now have an inhabitant (t ∈ CoIndBar). Using classical logic, either t's paths are all finite,
-    or it has an inifite path.
-    - see sem [DONE]
-(3) If all its paths are finite then we get that (t ∈ IndBar)
-    - see m2w [DONE]
-(4) If it has an inifite path:
-    - That path corresponds to an (α ∈ Baire).
-    - Given (F ∈ FunBar), by continuity let n be F's modulus of continuity w.r.t. α.
-    - So, it must be that F(generic r α|n) returns r:=BTRUE and so loop returns ETA, and the path cannot be infinite
-          (where α|n is the initial segment of α of length n)
-
- --}
 \end{code}

@@ -297,7 +297,18 @@ shifts𝕊 0 s = s
 shifts𝕊 (suc n) s = shift𝕊 (shifts𝕊 n s)
 
 
+∷𝕊 : (k : ℕ) (s : 𝕊) → 𝕊
+∷𝕊 k s 0 = k
+∷𝕊 k s (suc n) = s n
+
+
+++𝕊 : (k : ℕ) (s1 s2 : 𝕊) → 𝕊
+++𝕊 0 s1 s2 = s2
+++𝕊 (suc k) s1 s2 = ∷𝕊 (s1 0) (++𝕊 k (shift𝕊 s1) s2)
+
+
 -- n is the fuel
+-- k is the length of f
 correctSeqN : (r : Name) (w : 𝕎·) (F : CTerm) (k : ℕ) (f : CTerm) (s : 𝕊) (n : ℕ) → Set(lsuc L)
 correctSeqN r w F k f s 0 = Lift (lsuc L) ⊤
 correctSeqN r w F k f s (suc n) =
@@ -305,7 +316,7 @@ correctSeqN r w F k f s (suc n) =
     #APPLY F (#upd r f) #⇓ #NUM m from (chooseT r w N0) to w'
     × getT 0 r w' ≡ just (NUM j)
     × ¬ j < k
-    × correctSeqN r w F (suc k) (#APPENDf (#NUM k) f (#NUM (s 0))) (shift𝕊 s) n)))
+    × correctSeqN r w F (suc k) (#APPENDf (#NUM k) f (#NUM (s k))) s n)))
 
 
 correctSeq : (r : Name) (w : 𝕎·) (F : CTerm) (s : 𝕊) → Set(lsuc L)
@@ -339,12 +350,11 @@ shift-path2𝕊 kb {i} {w} p n = refl
 →≡correctSeqN r w F k f s1 s2 (suc n) imp (m , w' , j , x , y , z , c) =
   m , w' , j , x , y , z , ind2
   where
-    ind1 : correctSeqN r w F (suc k) (#APPENDf (#NUM k) f (#NUM (s1 0))) (shift𝕊 s2) n
-    ind1 = →≡correctSeqN r w F (suc k) (#APPENDf (#NUM k) f (#NUM (s1 0))) (shift𝕊 s1) (shift𝕊 s2) n (λ j → imp (suc j)) c
+    ind1 : correctSeqN r w F (suc k) (#APPENDf (#NUM k) f (#NUM (s1 k))) s2 n
+    ind1 = →≡correctSeqN r w F (suc k) (#APPENDf (#NUM k) f (#NUM (s1 k))) s1 s2 n imp c
 
-    ind2 : correctSeqN r w F (suc k) (#APPENDf (#NUM k) f (#NUM (s2 0))) (shift𝕊 s2) n
-    ind2 rewrite sym (imp 0) = ind1
-
+    ind2 : correctSeqN r w F (suc k) (#APPENDf (#NUM k) f (#NUM (s2 k))) s2 n
+    ind2 rewrite sym (imp k) = ind1
 
 
 isInfPath-shiftPath : {i : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} (p : path i w A B)
