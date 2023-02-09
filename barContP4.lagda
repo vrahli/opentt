@@ -281,20 +281,12 @@ noInfPath kb cn can exb gc i w r F nnF compat F∈ p cor inf =
             × ¬ j < (suc n))))
     inv = correctSeqN-inv0 i r w F s (suc n) csn
 
-{--    neqt : NATeq w (#νtestM F f) (#νtestM F f)
-    neqt = νtestM-NAT can exb gc i w F f nnF nnf F∈ s∈1
 
-    tn : ℕ
-    tn = fst neqt
 
-    x : NATeq w (#νtestM F f) (#NUM tn)
-    x = tn , fst (snd neqt) , compAllRefl _ _
-
-    cx : #νtestM F f #⇛ #NUM tn at w
-    cx = NATeq→⇛ {w} {#νtestM F f} x
-
-    cxb : Σ 𝕎· (λ w2 → νtestM ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM tn from w1 to w2)
-    cxb = ⇓→from-to (lower (cx w1 e1))
+{--
+updSeq r s n t u
+step t w1 ≡ just (x , w2)
+Σ ℕ (λ k → Σ Term (λ y → steps k (u , w1) ≡ (y , w2) × updSeq r s n x y))
 --}
 
 

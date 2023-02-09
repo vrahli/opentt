@@ -412,6 +412,7 @@ data updCtxt (name : Name) (f : Term) : Term → Set where
   updCtxt-QLT     : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (QLT a b)
   updCtxt-NUM     : (x : ℕ) → updCtxt name f (NUM x)
   updCtxt-IFLT    : (a b c d : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f c → updCtxt name f d → updCtxt name f (IFLT a b c d)
+  updCtxt-IFEQ    : (a b c d : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f c → updCtxt name f d → updCtxt name f (IFEQ a b c d)
   updCtxt-SUC     : (a : Term) → updCtxt name f a → updCtxt name f (SUC a)
   updCtxt-PI      : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (PI a b)
   updCtxt-LAMBDA  : (a : Term) → updCtxt name f a → updCtxt name f (LAMBDA a)
@@ -473,6 +474,7 @@ updCtxt→differ {name} {f} {.(LT a b)} (updCtxt-LT a b u u₁) = differ-LT _ _ 
 updCtxt→differ {name} {f} {.(QLT a b)} (updCtxt-QLT a b u u₁) = differ-QLT _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
 updCtxt→differ {name} {f} {.(NUM x)} (updCtxt-NUM x) = differ-NUM _
 updCtxt→differ {name} {f} {.(IFLT a b c d)} (updCtxt-IFLT a b c d u u₁ u₂ u₃) = differ-IFLT _ _ _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂) (updCtxt→differ u₃)
+updCtxt→differ {name} {f} {.(IFEQ a b c d)} (updCtxt-IFEQ a b c d u u₁ u₂ u₃) = differ-IFEQ _ _ _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂) (updCtxt→differ u₃)
 updCtxt→differ {name} {f} {.(SUC a)} (updCtxt-SUC a u) = differ-SUC _ _ (updCtxt→differ u)
 updCtxt→differ {name} {f} {.(PI a b)} (updCtxt-PI a b u u₁) = differ-PI _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
 updCtxt→differ {name} {f} {.(LAMBDA a)} (updCtxt-LAMBDA a u) = differ-LAMBDA _ _ (updCtxt→differ u)
@@ -529,6 +531,7 @@ differ→updCtxt {name} {f} {.(LT a₁ b₁)} (differ-LT a₁ .a₁ b₁ .b₁ d
 differ→updCtxt {name} {f} {.(QLT a₁ b₁)} (differ-QLT a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-QLT _ _ (differ→updCtxt d) (differ→updCtxt d₁)
 differ→updCtxt {name} {f} {.(NUM x)} (differ-NUM x) = updCtxt-NUM _
 differ→updCtxt {name} {f} {.(IFLT a₁ b₁ c₁ d₁)} (differ-IFLT a₁ .a₁ b₁ .b₁ c₁ .c₁ d₁ .d₁ d d₂ d₃ d₄) = updCtxt-IFLT _ _ _ _ (differ→updCtxt d) (differ→updCtxt d₂) (differ→updCtxt d₃) (differ→updCtxt d₄)
+differ→updCtxt {name} {f} {.(IFEQ a₁ b₁ c₁ d₁)} (differ-IFEQ a₁ .a₁ b₁ .b₁ c₁ .c₁ d₁ .d₁ d d₂ d₃ d₄) = updCtxt-IFEQ _ _ _ _ (differ→updCtxt d) (differ→updCtxt d₂) (differ→updCtxt d₃) (differ→updCtxt d₄)
 differ→updCtxt {name} {f} {.(SUC a)} (differ-SUC a .a d) = updCtxt-SUC _ (differ→updCtxt d)
 differ→updCtxt {name} {f} {.(PI a₁ b₁)} (differ-PI a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-PI _ _ (differ→updCtxt d) (differ→updCtxt d₁)
 differ→updCtxt {name} {f} {.(LAMBDA a)} (differ-LAMBDA a .a d) = updCtxt-LAMBDA _ (differ→updCtxt d)
@@ -743,6 +746,64 @@ isHighestℕ-IFLT₂ {suc k} {b} {b'} {w} {w'} {n} {name} m c d comp h | inj₂ 
 
 
 
+isHighestℕ-IFEQ₁ : {k : ℕ} {a a' : Term} {w w' : 𝕎·} {n : ℕ} {name : Name} (b c d : Term)
+                    → (comp : steps k (a , w) ≡ (a' , w'))
+                    → isHighestℕ {k} {w} {w'} {a} {a'} n name comp
+                    → Σ ℕ (λ k' → Σ (steps k' (IFEQ a b c d , w) ≡ (IFEQ a' b c d , w'))
+                         (isHighestℕ {k'} {w} {w'} {IFEQ a b c d} {IFEQ a' b c d} n name))
+isHighestℕ-IFEQ₁ {0} {a} {a'} {w} {w'} {n} {name} b c d comp h
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) =
+  0 , refl , h
+isHighestℕ-IFEQ₁ {suc k} {a} {a'} {w} {w'} {n} {name} b c d comp h with step⊎ a w
+... | inj₁ (a1 , w1 , z) rewrite z with isValue⊎ a
+... |    inj₁ x rewrite stepVal a w x | sym (pair-inj₁ (just-inj z)) | sym (pair-inj₂ (just-inj z)) = ind
+  where
+    ind : Σ ℕ (λ k' → Σ (steps k' (IFEQ a b c d , w) ≡ (IFEQ a' b c d , w'))
+            (isHighestℕ {k'} {w} {w'} {IFEQ a b c d} {IFEQ a' b c d} n name))
+    ind = isHighestℕ-IFEQ₁ {k} {a} {a'} {w} {w'} {n} {name} b c d comp (snd h)
+... |    inj₂ x = suc (fst ind) , comp1
+  where
+    ind : Σ ℕ (λ k' → Σ (steps k' (IFEQ a1 b c d , w1) ≡ (IFEQ a' b c d , w'))
+            (isHighestℕ {k'} {w1} {w'} {IFEQ a1 b c d} {IFEQ a' b c d} n name))
+    ind = isHighestℕ-IFEQ₁ {k} {a1} {a'} {w1} {w'} {n} {name} b c d comp (snd h)
+
+    comp1 : Σ (steps (suc (fst ind)) (IFEQ a b c d , w) ≡ (IFEQ a' b c d , w'))
+              (isHighestℕ {suc (fst ind)} {w} {w'} {IFEQ a b c d} {IFEQ a' b c d} n name)
+    comp1 with is-NUM a
+    ... | inj₁ (na , pa) rewrite pa = ⊥-elim (x tt)
+    ... | inj₂ pa rewrite z = fst (snd ind) , fst h , snd (snd ind)
+isHighestℕ-IFEQ₁ {suc k} {a} {a'} {w} {w'} {n} {name} b c d comp h | inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl , h
+
+
+
+isHighestℕ-IFEQ₂ : {k : ℕ} {b b' : Term} {w w' : 𝕎·} {n : ℕ} {name : Name} (m : ℕ) (c d : Term)
+                    → (comp : steps k (b , w) ≡ (b' , w'))
+                    → isHighestℕ {k} {w} {w'} {b} {b'} n name comp
+                    → Σ ℕ (λ k' → Σ (steps k' (IFEQ (NUM m) b c d , w) ≡ (IFEQ (NUM m) b' c d , w'))
+                         (isHighestℕ {k'} {w} {w'} {IFEQ (NUM m) b c d} {IFEQ (NUM m) b' c d} n name))
+isHighestℕ-IFEQ₂ {0} {b} {b'} {w} {w'} {n} {name} m c d comp h
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) =
+  0 , refl , h
+isHighestℕ-IFEQ₂ {suc k} {b} {b'} {w} {w'} {n} {name} m c d comp h with step⊎ b w
+... | inj₁ (b1 , w1 , z) rewrite z with isValue⊎ b
+... |    inj₁ x rewrite stepVal b w x | sym (pair-inj₁ (just-inj z)) | sym (pair-inj₂ (just-inj z)) = ind
+  where
+    ind : Σ ℕ (λ k' → Σ (steps k' (IFEQ (NUM m) b c d , w) ≡ (IFEQ (NUM m) b' c d , w'))
+            (λ comp' → isHighestℕ {k'} {w} {w'} {IFEQ (NUM m) b c d} {IFEQ (NUM m) b' c d} n name comp'))
+    ind = isHighestℕ-IFEQ₂ {k} {b} {b'} {w} {w'} {n} {name} m c d comp (snd h)
+... |    inj₂ x = suc (fst ind) , comp1
+  where
+    ind : Σ ℕ (λ k' → Σ (steps k' (IFEQ (NUM m) b1 c d , w1) ≡ (IFEQ (NUM m) b' c d , w'))
+            (λ comp' → isHighestℕ {k'} {w1} {w'} {IFEQ (NUM m) b1 c d} {IFEQ (NUM m) b' c d} n name comp'))
+    ind = isHighestℕ-IFEQ₂ {k} {b1} {b'} {w1} {w'} {n} {name} m c d comp (snd h)
+
+    comp1 : Σ (steps (suc (fst ind)) (IFEQ (NUM m) b c d , w) ≡ (IFEQ (NUM m) b' c d , w'))
+              (isHighestℕ {suc (fst ind)} {w} {w'} {IFEQ (NUM m) b c d} {IFEQ (NUM m) b' c d} n name)
+    comp1 with is-NUM b
+    ... | inj₁ (nb , pb) rewrite pb = ⊥-elim (x tt)
+    ... | inj₂ pb rewrite z = fst (snd ind) , fst h , snd (snd ind)
+isHighestℕ-IFEQ₂ {suc k} {b} {b'} {w} {w'} {n} {name} m c d comp h | inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = 0 , refl , h
+
 
 presHighestℕ : (name : Name) (f : Term) (k : ℕ) → Set(lsuc L)
 presHighestℕ name f k =
@@ -762,8 +823,6 @@ stepsPresHighestℕ name f b w =
     steps k (b , w) ≡ (v , w')
     × isValue v
     × ((k' : ℕ) → k' ≤ k → presHighestℕ name f k'))))
-
-
 
 
 stepsPresHighestℕ-IFLT₁→ : {name : Name} {f : Term} {a b c d : Term} {w : 𝕎·}
@@ -896,6 +955,137 @@ stepsPresHighestℕ-IFLT₂→ {name} {f} {n} {b} {c} {d} {w} (k , v , w' , comp
   where
     q : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (IFLT a b c d) (IFLT a' b c d) w0 w w')
     q = ΣhighestUpdCtxtAux-IFLT₁ {k} ub uc ud (wcomp , i , u)
+
+
+
+stepsPresHighestℕ-IFEQ₁→ : {name : Name} {f : Term} {a b c d : Term} {w : 𝕎·}
+                            → stepsPresHighestℕ name f (IFEQ a b c d) w
+                            → stepsPresHighestℕ name f a w
+stepsPresHighestℕ-IFEQ₁→ {name} {f} {a} {b} {c} {d} {w} (k , v , w' , comp , isv , ind) =
+  k , fst hv , fst (snd hv) , fst (snd (snd hv)) , snd (snd (snd hv)) , ind
+  where
+    hv : hasValueℕ k a w
+    hv = IFEQ→hasValue k a b c d v w w' comp isv
+
+
+
+stepsPresHighestℕ-IFEQ₂→ : {name : Name} {f : Term} {n : ℕ} {b c d : Term} {w : 𝕎·}
+                            → stepsPresHighestℕ name f (IFEQ (NUM n) b c d) w
+                            → stepsPresHighestℕ name f b w
+stepsPresHighestℕ-IFEQ₂→ {name} {f} {n} {b} {c} {d} {w} (k , v , w' , comp , isv , ind) =
+  k , fst hv , fst (snd hv) , fst (snd (snd hv)) , snd (snd (snd hv)) , ind
+  where
+    hv : hasValueℕ k b w
+    hv = IFEQ-NUM→hasValue k n b c d v w w' comp isv
+
+
+→step-IFEQ₂ : {w w' : 𝕎·} {n : ℕ} {b b' : Term} (c d : Term)
+               → ¬ isValue b
+               → step b w ≡ just (b' , w')
+               → step (IFEQ (NUM n) b c d) w ≡ just (IFEQ (NUM n) b' c d , w')
+→step-IFEQ₂ {w} {w'} {n} {b} {b'} c d nv s with is-NUM b
+... | inj₁ (k , p) rewrite p = ⊥-elim (nv tt)
+... | inj₂ p rewrite s = refl
+
+
+
+ΣhighestUpdCtxtAux-IFEQ₂-aux : {j : ℕ} {k : ℕ} {w w0 w1 w' : 𝕎·} {b b1 b' : Term} {name : Name} {f : Term} {n : ℕ} {m : ℕ} {c d : Term}
+                               → ¬ isValue b
+                               → step b w ≡ just (b1 , w1)
+                               → (comp : steps k (b1 , w1) ≡ (b' , w'))
+                               → (getT≤ℕ w' n name → (getT≤ℕ w0 n name × getT≤ℕ w n name × isHighestℕ {k} {w1} {w'} {b1} {b'} n name comp))
+                               → ΣhighestUpdCtxtAux j name f n (IFEQ (NUM m) b1 c d) (IFEQ (NUM m) b' c d) w0 w1 w'
+                               → ΣhighestUpdCtxtAux (suc j) name f n (IFEQ (NUM m) b c d) (IFEQ (NUM m) b' c d) w0 w w'
+ΣhighestUpdCtxtAux-IFEQ₂-aux {j} {k} {w} {w0} {w1} {w'} {b} {b1} {b'} {name} {f} {n} {m} {c} {d} nv comp0 comp i (comp1 , g , u) with is-NUM b
+... | inj₁ (x , p) rewrite p = ⊥-elim (nv tt)
+... | inj₂ p rewrite comp0 = comp1 , (λ s → fst (g s) , fst (snd (i s)) , snd (g s)) , u
+
+
+
+ΣhighestUpdCtxtAux-IFEQ₂ : {k : ℕ} {name : Name} {f : Term} {n : ℕ} {m : ℕ} {b b' c d : Term} {w0 w w' : 𝕎·}
+                        → updCtxt name f c
+                        → updCtxt name f d
+                        → ΣhighestUpdCtxtAux k name f n b b' w0 w w'
+                        → Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (IFEQ (NUM m) b c d) (IFEQ (NUM m) b' c d) w0 w w')
+ΣhighestUpdCtxtAux-IFEQ₂ {0} {name} {f} {n} {m} {b} {b'} {c} {d} {w0} {w} {w'} uc ud (comp , i , u)
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl , i , updCtxt-IFEQ _ _ _ _ (updCtxt-NUM m) u uc ud
+ΣhighestUpdCtxtAux-IFEQ₂ {suc k} {name} {f} {n} {m} {b} {b'} {c} {d} {w0} {w} {w'} uc ud (comp , i , u) with step⊎ b w
+... | inj₁ (b1 , w1 , z) rewrite z with isValue⊎ b
+... |    inj₁ y rewrite stepVal b w y | sym (pair-inj₁ (just-inj z)) | sym (pair-inj₂ (just-inj z)) =
+  ΣhighestUpdCtxtAux-IFEQ₂ {k} uc ud (comp , (λ s → fst (i s) , snd (snd (i s))) , u)
+... |    inj₂ y =
+  suc (fst ind) , ΣhighestUpdCtxtAux-IFEQ₂-aux {fst ind} {k} y z comp i (snd ind)
+  where
+    ind : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (IFEQ (NUM m) b1 c d) (IFEQ (NUM m) b' c d) w0 w1 w')
+    ind = ΣhighestUpdCtxtAux-IFEQ₂ {k} {name} {f} {n} {m} {b1} {b'} {c} {d} {w0} {w1} {w'} uc ud (comp , (λ s → fst (i s) , snd (snd (i s))) , u)
+ΣhighestUpdCtxtAux-IFEQ₂ {suc k} {name} {f} {n} {m} {b} {b'} {c} {d} {w0} {w} {w'} uc ud (comp , i , u) | inj₂ z
+  rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl , i , updCtxt-IFEQ _ _ _ _ (updCtxt-NUM m) u uc ud
+
+
+
+ΣhighestUpdCtxt-IFEQ₂ : {name : Name} {f : Term} {n : ℕ} {m : ℕ} {b c d : Term} {w0 w : 𝕎·}
+                        → updCtxt name f c
+                        → updCtxt name f d
+                        → ΣhighestUpdCtxt name f n b w0 w
+                        → ΣhighestUpdCtxt name f n (IFEQ (NUM m) b c d) w0 w
+ΣhighestUpdCtxt-IFEQ₂ {name} {f} {n} {m} {b} {c} {d} {w0} {w} uc ud (k , b' , w' , wcomp , i , u) =
+  fst q , IFEQ (NUM m) b' c d , w' , snd q
+  where
+    q : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (IFEQ (NUM m) b c d) (IFEQ (NUM m) b' c d) w0 w w')
+    q = ΣhighestUpdCtxtAux-IFEQ₂ {k} uc ud (wcomp , i , u)
+
+
+
+ΣhighestUpdCtxtAux-IFEQ₁-aux : {j : ℕ} {k : ℕ} {w w0 w1 w' : 𝕎·} {a a1 a' : Term} {name : Name} {f : Term} {n : ℕ} {b c d : Term}
+                               → ¬ isValue a
+                               → step a w ≡ just (a1 , w1)
+                               → (comp : steps k (a1 , w1) ≡ (a' , w'))
+                               → (getT≤ℕ w' n name → (getT≤ℕ w0 n name × getT≤ℕ w n name × isHighestℕ {k} {w1} {w'} {a1} {a'} n name comp))
+                               → ΣhighestUpdCtxtAux j name f n (IFEQ a1 b c d) (IFEQ a' b c d) w0 w1 w'
+                               → ΣhighestUpdCtxtAux (suc j) name f n (IFEQ a b c d) (IFEQ a' b c d) w0 w w'
+ΣhighestUpdCtxtAux-IFEQ₁-aux {j} {k} {w} {w0} {w1} {w'} {a} {a1} {a'} {name} {f} {n} {b} {c} {d} nv comp0 comp i (comp1 , g , u) with is-NUM a
+... | inj₁ (x , p) rewrite p = ⊥-elim (nv tt)
+... | inj₂ p rewrite comp0 = comp1 , (λ s → fst (g s) , fst (snd (i s)) , snd (g s)) , u
+
+
+
+ΣhighestUpdCtxtAux-IFEQ₁ : {k : ℕ} {name : Name} {f : Term} {n : ℕ} {a a' b c d : Term} {w0 w w' : 𝕎·}
+                        → updCtxt name f b
+                        → updCtxt name f c
+                        → updCtxt name f d
+                        → ΣhighestUpdCtxtAux k name f n a a' w0 w w'
+                        → Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (IFEQ a b c d) (IFEQ a' b c d) w0 w w')
+ΣhighestUpdCtxtAux-IFEQ₁ {0} {name} {f} {n} {a} {a'} {b} {c} {d} {w0} {w} {w'} ub uc ud (comp , i , u)
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl , i , updCtxt-IFEQ _ _ _ _ u ub uc ud
+ΣhighestUpdCtxtAux-IFEQ₁ {suc k} {name} {f} {n} {a} {a'} {b} {c} {d} {w0} {w} {w'} ub uc ud (comp , i , u) with step⊎ a w
+... | inj₁ (a1 , w1 , z) rewrite z with isValue⊎ a
+... |    inj₁ y rewrite stepVal a w y | sym (pair-inj₁ (just-inj z)) | sym (pair-inj₂ (just-inj z)) =
+  ΣhighestUpdCtxtAux-IFEQ₁ {k} ub uc ud (comp , (λ s → fst (i s) , snd (snd (i s))) , u)
+... |    inj₂ y =
+  suc (fst ind) , ΣhighestUpdCtxtAux-IFEQ₁-aux {fst ind} {k} y z comp i (snd ind)
+  where
+    ind : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (IFEQ a1 b c d) (IFEQ a' b c d) w0 w1 w')
+    ind = ΣhighestUpdCtxtAux-IFEQ₁ {k} {name} {f} {n} {a1} {a'} {b} {c} {d} {w0} {w1} {w'} ub uc ud (comp , (λ s → fst (i s) , snd (snd (i s))) , u)
+ΣhighestUpdCtxtAux-IFEQ₁ {suc k} {name} {f} {n} {a} {a'} {b} {c} {d} {w0} {w} {w'} ub uc ud (comp , i , u) | inj₂ z
+  rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl , i , updCtxt-IFEQ _ _ _ _ u ub uc ud
+
+
+
+ΣhighestUpdCtxt-IFEQ₁ : {name : Name} {f : Term} {n : ℕ} {a b c d : Term} {w0 w : 𝕎·}
+                        → updCtxt name f b
+                        → updCtxt name f c
+                        → updCtxt name f d
+                        → ΣhighestUpdCtxt name f n a w0 w
+                        → ΣhighestUpdCtxt name f n (IFEQ a b c d) w0 w
+ΣhighestUpdCtxt-IFEQ₁ {name} {f} {n} {a} {b} {c} {d} {w0} {w} ub uc ud (k , a' , w' , wcomp , i , u) =
+  fst q , IFEQ a' b c d , w' , snd q
+  where
+    q : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (IFEQ a b c d) (IFEQ a' b c d) w0 w w')
+    q = ΣhighestUpdCtxtAux-IFEQ₁ {k} ub uc ud (wcomp , i , u)
 
 
 

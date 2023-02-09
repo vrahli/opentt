@@ -91,6 +91,18 @@ step (IFLT a b c d) w | inj₁ (n , p) | inj₂ q with step b w
 step (IFLT a b c d) w | inj₂ p with step a w
 ... |    just (a' , w') = ret (IFLT a' b c d) w'
 ... |    nothing = nothing
+-- IFEQ
+step (IFEQ a b c d) w with is-NUM a
+... | inj₁ (n , p) with is-NUM b
+... |    inj₁ (m , q) with n ≟ m
+... |       yes r = ret c w
+... |       no r = ret d w
+step (IFEQ a b c d) w | inj₁ (n , p) | inj₂ q with step b w
+... |       just (b' , w') = ret (IFEQ a b' c d) w'
+... |       nothing = nothing
+step (IFEQ a b c d) w | inj₂ p with step a w
+... |    just (a' , w') = ret (IFEQ a' b c d) w'
+... |    nothing = nothing
 -- SUC
 step (SUC a) w with is-NUM a
 ... | inj₁ (n , p) = ret (NUM (suc n)) w
@@ -507,6 +519,7 @@ step-APPLY-CS-¬NUM name (LT a a₁) b w w' c s rewrite sym (pair-inj₁ (just-i
 step-APPLY-CS-¬NUM name (QLT a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (NUM x) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = ⊥-elim (c x refl)
 step-APPLY-CS-¬NUM name (IFLT a a₁ a₂ a₃) b w w' c s rewrite s = refl
+step-APPLY-CS-¬NUM name (IFEQ a a₁ a₂ a₃) b w w' c s rewrite s = refl
 step-APPLY-CS-¬NUM name (SUC a) b w w' c s rewrite s = refl
 step-APPLY-CS-¬NUM name (PI a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (LAMBDA a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
@@ -762,6 +775,17 @@ step⊑ {w} {w'} {IFLT x y t u} {b} comp | inj₁ (n , p) | inj₂ q with step�
 ... |       inj₁ (y' , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {y} z
 ... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step⊑ {w} {w'} {IFLT x y t u} {b} comp | inj₂ p with step⊎ x w
+... |    inj₁ (x' , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {x} z
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step⊑ {w} {w'} {IFEQ x y t u} {b} comp with is-NUM x
+... | inj₁ (n , p) with is-NUM y
+... |    inj₁ (m , q) with n ≟ m
+... |       yes r rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+... |       no r rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {IFEQ x y t u} {b} comp | inj₁ (n , p) | inj₂ q with step⊎ y w
+... |       inj₁ (y' , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {y} z
+... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step⊑ {w} {w'} {IFEQ x y t u} {b} comp | inj₂ p with step⊎ x w
 ... |    inj₁ (x' , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {x} z
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step⊑ {w} {w'} {SUC x} {b} comp with is-NUM x
@@ -1221,6 +1245,10 @@ data ∼T : 𝕎· → Term → Term → Set where
   where
     z : steps 1 (APPLY (IFLT a a₁ a₂ a₃) c , w) ≡ (APPLY b c , w')
     z rewrite comp = refl
+→-step-APPLY {w} {w'} {IFEQ a a₁ a₂ a₃} {b} c comp = 1 , z
+  where
+    z : steps 1 (APPLY (IFEQ a a₁ a₂ a₃) c , w) ≡ (APPLY b c , w')
+    z rewrite comp = refl
 →-step-APPLY {w} {w'} {SUC a} {b} c comp = 1 , z
   where
     z : steps 1 (APPLY (SUC a) c , w) ≡ (APPLY b c , w')
@@ -1342,6 +1370,10 @@ step-⇓-ASSERT₁ {w} {w'} {NUM x} {b} comp rewrite sym (pair-inj₁ (just-inj 
 step-⇓-ASSERT₁ {w} {w'} {IFLT a a₁ a₂ a₃} {b} comp = 1 , z
   where
     z : steps 1 (ASSERT₁ (IFLT a a₁ a₂ a₃) , w) ≡ (ASSERT₁ b , w')
+    z rewrite comp = refl
+step-⇓-ASSERT₁ {w} {w'} {IFEQ a a₁ a₂ a₃} {b} comp = 1 , z
+  where
+    z : steps 1 (ASSERT₁ (IFEQ a a₁ a₂ a₃) , w) ≡ (ASSERT₁ b , w')
     z rewrite comp = refl
 step-⇓-ASSERT₁ {w} {w'} {SUC a} {b} comp = 1 , z
   where

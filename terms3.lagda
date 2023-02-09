@@ -143,6 +143,7 @@ data differ (name1 name2 : Name) (f : Term) : Term → Term → Set where
   differ-QLT     : (a₁ a₂ b₁ b₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f (QLT a₁ b₁) (QLT a₂ b₂)
   differ-NUM     : (x : ℕ) → differ name1 name2 f (NUM x) (NUM x)
   differ-IFLT    : (a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f c₁ c₂ → differ name1 name2 f d₁ d₂ → differ name1 name2 f (IFLT a₁ b₁ c₁ d₁) (IFLT a₂ b₂ c₂ d₂)
+  differ-IFEQ    : (a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f c₁ c₂ → differ name1 name2 f d₁ d₂ → differ name1 name2 f (IFEQ a₁ b₁ c₁ d₁) (IFEQ a₂ b₂ c₂ d₂)
   differ-SUC     : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (SUC a) (SUC b)
   differ-PI      : (a₁ a₂ b₁ b₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f (PI a₁ b₁) (PI a₂ b₂)
   differ-LAMBDA  : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (LAMBDA a) (LAMBDA b)
@@ -272,6 +273,7 @@ differ-INRₗ→ {name1} {name2} {f} {a} {.(INR a₂)} (differ-INR .a a₂ diff)
 →differ-shiftUp v {name1} {name2} {f} cf {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) = differ-QLT _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
 →differ-shiftUp v {name1} {name2} {f} cf {.(NUM x)} {.(NUM x)} (differ-NUM x) = differ-NUM x
 →differ-shiftUp v {name1} {name2} {f} cf {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (differ-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFLT _ _ _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂) (→differ-shiftUp v cf diff₃)
+→differ-shiftUp v {name1} {name2} {f} cf {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (differ-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFEQ _ _ _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂) (→differ-shiftUp v cf diff₃)
 →differ-shiftUp v {name1} {name2} {f} cf {.(SUC a)} {.(SUC b)} (differ-SUC a b diff) = differ-SUC _ _ (→differ-shiftUp v cf diff)
 →differ-shiftUp v {name1} {name2} {f} cf {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differ-PI a₁ a₂ b₁ b₂ diff diff₁) = differ-PI _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁)
 →differ-shiftUp v {name1} {name2} {f} cf {.(LAMBDA a)} {.(LAMBDA b)} (differ-LAMBDA a b diff) = differ-LAMBDA _ _ (→differ-shiftUp (suc v) cf diff)
@@ -339,6 +341,10 @@ differ-INRₗ→ {name1} {name2} {f} {a} {.(INR a₂)} (differ-INR .a a₂ diff)
 
 ≡IFLT : {a b c d e f g h : Term} → a ≡ b → c ≡ d → e ≡ f → g ≡ h → IFLT a c e g ≡ IFLT b d f h
 ≡IFLT {a} {b} {c} {d} {e} {f} {g} {h} x y z w rewrite x | y | z | w = refl
+
+
+≡IFEQ : {a b c d e f g h : Term} → a ≡ b → c ≡ d → e ≡ f → g ≡ h → IFEQ a c e g ≡ IFEQ b d f h
+≡IFEQ {a} {b} {c} {d} {e} {f} {g} {h} x y z w rewrite x | y | z | w = refl
 
 
 ≡EQ : {a b c d e f : Term} → a ≡ b → c ≡ d → e ≡ f → EQ a c e ≡ EQ b d f
@@ -524,6 +530,7 @@ shiftNameUp-shiftNameUp {i} {j} {LT t t₁} imp = ≡LT (shiftNameUp-shiftNameUp
 shiftNameUp-shiftNameUp {i} {j} {QLT t t₁} imp = ≡QLT (shiftNameUp-shiftNameUp {i} {j} {t} (λ n k → imp n (∈-++⁺ˡ k))) (shiftNameUp-shiftNameUp {i} {j} {t₁} (λ n k → imp n (∈-++⁺ʳ (names t) k)))
 shiftNameUp-shiftNameUp {i} {j} {NUM x} imp = refl
 shiftNameUp-shiftNameUp {i} {j} {IFLT t t₁ t₂ t₃} imp = ≡IFLT (shiftNameUp-shiftNameUp {i} {j} {t} (λ n k → imp n (∈-++⁺ˡ k))) (shiftNameUp-shiftNameUp {i} {j} {t₁} (λ n k → imp n (∈-++⁺ʳ (names t) (∈-++⁺ˡ k)))) (shiftNameUp-shiftNameUp {i} {j} {t₂} (λ n k → imp n (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) (∈-++⁺ˡ k))))) (shiftNameUp-shiftNameUp {i} {j} {t₃} (λ n k → imp n (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) (∈-++⁺ʳ (names t₂) k)))))
+shiftNameUp-shiftNameUp {i} {j} {IFEQ t t₁ t₂ t₃} imp = ≡IFEQ (shiftNameUp-shiftNameUp {i} {j} {t} (λ n k → imp n (∈-++⁺ˡ k))) (shiftNameUp-shiftNameUp {i} {j} {t₁} (λ n k → imp n (∈-++⁺ʳ (names t) (∈-++⁺ˡ k)))) (shiftNameUp-shiftNameUp {i} {j} {t₂} (λ n k → imp n (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) (∈-++⁺ˡ k))))) (shiftNameUp-shiftNameUp {i} {j} {t₃} (λ n k → imp n (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) (∈-++⁺ʳ (names t₂) k)))))
 shiftNameUp-shiftNameUp {i} {j} {SUC t} imp = ≡SUC (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {PI t t₁} imp = ≡PI (shiftNameUp-shiftNameUp {i} {j} {t} (λ n k → imp n (∈-++⁺ˡ k))) (shiftNameUp-shiftNameUp {i} {j} {t₁} (λ n k → imp n (∈-++⁺ʳ (names t) k)))
 shiftNameUp-shiftNameUp {i} {j} {LAMBDA t} imp = ≡LAMBDA (shiftNameUp-shiftNameUp {i} {j} {t} imp)
@@ -579,6 +586,7 @@ shiftNameUp-shiftNameUp {i} {j} {LT t t₁} imp = ≡LT (shiftNameUp-shiftNameUp
 shiftNameUp-shiftNameUp {i} {j} {QLT t t₁} imp = ≡QLT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
 shiftNameUp-shiftNameUp {i} {j} {NUM x} imp = refl
 shiftNameUp-shiftNameUp {i} {j} {IFLT t t₁ t₂ t₃} imp = ≡IFLT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp) (shiftNameUp-shiftNameUp {i} {j} {t₃} imp)
+shiftNameUp-shiftNameUp {i} {j} {IFEQ t t₁ t₂ t₃} imp = ≡IFEQ (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp) (shiftNameUp-shiftNameUp {i} {j} {t₃} imp)
 shiftNameUp-shiftNameUp {i} {j} {SUC t} imp = ≡SUC (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {PI t t₁} imp = ≡PI (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
 shiftNameUp-shiftNameUp {i} {j} {LAMBDA t} imp = ≡LAMBDA (shiftNameUp-shiftNameUp {i} {j} {t} imp)
@@ -649,6 +657,7 @@ suc-sucIf≤ i j | no p with suc j <? suc i
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) = differ-QLT _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(NUM x)} {.(NUM x)} (differ-NUM x) = differ-NUM x
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (differ-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFLT _ _ _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂) (→differ-shiftNameUp v cf diff₃)
+→differ-shiftNameUp v {name1} {name2} {f} cf {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (differ-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFEQ _ _ _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂) (→differ-shiftNameUp v cf diff₃)
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(SUC a)} {.(SUC b)} (differ-SUC a b diff) = differ-SUC _ _ (→differ-shiftNameUp v cf diff)
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differ-PI a₁ a₂ b₁ b₂ diff diff₁) = differ-PI _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
 →differ-shiftNameUp v {name1} {name2} {f} cf {.(LAMBDA a)} {.(LAMBDA b)} (differ-LAMBDA a b diff) = differ-LAMBDA _ _ (→differ-shiftNameUp v cf diff)
@@ -762,6 +771,7 @@ differ-subv {name1} {name2} {f} cf v {.(LT a₁ b₃)} {.(LT a₂ b₄)} {b₁} 
 differ-subv {name1} {name2} {f} cf v {.(QLT a₁ b₃)} {.(QLT a₂ b₄)} {b₁} {b₂} (differ-QLT a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-QLT _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
 differ-subv {name1} {name2} {f} cf v {.(NUM x)} {.(NUM x)} {b₁} {b₂} (differ-NUM x) d₂ = differ-NUM x
 differ-subv {name1} {name2} {f} cf v {.(IFLT a₁ b₃ c₁ d₁)} {.(IFLT a₂ b₄ c₂ d₃)} {b₁} {b₂} (differ-IFLT a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄ d₅ d₆ d₇) d₂ = differ-IFLT _ _ _ _ _ _ _ _ (differ-subv cf v d₄ d₂) (differ-subv cf v d₅ d₂) (differ-subv cf v d₆ d₂) (differ-subv cf v d₇ d₂)
+differ-subv {name1} {name2} {f} cf v {.(IFEQ a₁ b₃ c₁ d₁)} {.(IFEQ a₂ b₄ c₂ d₃)} {b₁} {b₂} (differ-IFEQ a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄ d₅ d₆ d₇) d₂ = differ-IFEQ _ _ _ _ _ _ _ _ (differ-subv cf v d₄ d₂) (differ-subv cf v d₅ d₂) (differ-subv cf v d₆ d₂) (differ-subv cf v d₇ d₂)
 differ-subv {name1} {name2} {f} cf v {.(SUC a)} {.(SUC b)} {b₁} {b₂} (differ-SUC a b d₁) d₂ = differ-SUC _ _ (differ-subv cf v d₁ d₂)
 differ-subv {name1} {name2} {f} cf v {.(PI a₁ b₃)} {.(PI a₂ b₄)} {b₁} {b₂} (differ-PI a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-PI _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂))
 differ-subv {name1} {name2} {f} cf v {.(LAMBDA a)} {.(LAMBDA b)} {b₁} {b₂} (differ-LAMBDA a b d₁) d₂ = differ-LAMBDA _ _ (differ-subv cf (suc v) d₁ (→differ-shiftUp 0 cf d₂))
@@ -824,6 +834,7 @@ differ-subv {name1} {name2} {f} cf v {.(upd name1 f)} {.(upd name2 f)} {b₁} {b
 →differ-shiftDown v {name1} {name2} {f} cf {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) = differ-QLT _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
 →differ-shiftDown v {name1} {name2} {f} cf {.(NUM x)} {.(NUM x)} (differ-NUM x) = differ-NUM x
 →differ-shiftDown v {name1} {name2} {f} cf {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (differ-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFLT _ _ _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂) (→differ-shiftDown v cf diff₃)
+→differ-shiftDown v {name1} {name2} {f} cf {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (differ-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFEQ _ _ _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂) (→differ-shiftDown v cf diff₃)
 →differ-shiftDown v {name1} {name2} {f} cf {.(SUC a)} {.(SUC b)} (differ-SUC a b diff) = differ-SUC _ _ (→differ-shiftDown v cf diff)
 →differ-shiftDown v {name1} {name2} {f} cf {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differ-PI a₁ a₂ b₁ b₂ diff diff₁) = differ-PI _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁)
 →differ-shiftDown v {name1} {name2} {f} cf {.(LAMBDA a)} {.(LAMBDA b)} (differ-LAMBDA a b diff) = differ-LAMBDA _ _ (→differ-shiftDown (suc v) cf diff)

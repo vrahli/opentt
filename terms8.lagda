@@ -478,6 +478,72 @@ fvars-IFLT0 a b c d
                       (⊆?→⊆ (CTerm2.closed c)) (⊆?→⊆ (CTerm2.closed d)))))
 
 
+fvars-IFEQ0 : (a b c d : Term) → fvars (IFEQ a b c d) ≡ fvars a ++ fvars b ++ fvars c ++ fvars d
+fvars-IFEQ0 a b c d
+  rewrite fvars-shiftUp≡ 0 b
+        | fvars-shiftUp≡ 0 c
+        | fvars-shiftUp≡ 0 d
+        | lowerVars-map-sucIf≤-suc 0 (fvars b)
+        | lowerVars-map-sucIf≤-suc 0 (fvars c)
+        | lowerVars-map-sucIf≤-suc 0 (fvars d)
+        | loweVars-suc (fvars b)
+        | loweVars-suc (fvars c)
+        | loweVars-suc (fvars d) = refl
+
+
+#IFEQ : CTerm → CTerm → CTerm → CTerm → CTerm
+#IFEQ a b c d = ct (IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
+  where
+    e : # IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    e rewrite fvars-IFEQ0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+            | CTerm.closed a
+            | CTerm.closed b
+            | CTerm.closed c
+            | CTerm.closed d = refl
+
+
+#[0]IFEQ : CTerm0 → CTerm0 → CTerm0 → CTerm0 → CTerm0
+#[0]IFEQ a b c d = ct0 (IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
+  where
+    e : #[ [ 0 ] ] IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    e rewrite fvars-IFEQ0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝} {[ 0 ]}
+            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+            (⊆?→⊆ (CTerm0.closed a))
+            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+                 (⊆?→⊆ (CTerm0.closed b))
+                 (⊆++ {Var} {fvars ⌜ c ⌝} {fvars ⌜ d ⌝}
+                      (⊆?→⊆ (CTerm0.closed c)) (⊆?→⊆ (CTerm0.closed d)))))
+
+
+#[1]IFEQ : CTerm1 → CTerm1 → CTerm1 → CTerm1 → CTerm1
+#[1]IFEQ a b c d = ct1 (IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
+  where
+    e : #[ 0 ∷ [ 1 ] ] IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    e rewrite fvars-IFEQ0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝} {0 ∷ [ 1 ]}
+            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+            (⊆?→⊆ (CTerm1.closed a))
+            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+                 (⊆?→⊆ (CTerm1.closed b))
+                 (⊆++ {Var} {fvars ⌜ c ⌝} {fvars ⌜ d ⌝}
+                      (⊆?→⊆ (CTerm1.closed c)) (⊆?→⊆ (CTerm1.closed d)))))
+
+
+#[2]IFEQ : CTerm2 → CTerm2 → CTerm2 → CTerm2 → CTerm2
+#[2]IFEQ a b c d = ct2 (IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
+  where
+    e : #[ 0 ∷ 1 ∷ [ 2 ] ] IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    e rewrite fvars-IFEQ0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝} {0 ∷ 1 ∷ [ 2 ]}
+            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+            (⊆?→⊆ (CTerm2.closed a))
+            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+                 (⊆?→⊆ (CTerm2.closed b))
+                 (⊆++ {Var} {fvars ⌜ c ⌝} {fvars ⌜ d ⌝}
+                      (⊆?→⊆ (CTerm2.closed c)) (⊆?→⊆ (CTerm2.closed d)))))
+
+
 [0,1]⊆[0,1,2] : 0 ∷ [ 1 ] ⊆ (0 ∷ 1 ∷ [ 2 ])
 [0,1]⊆[0,1,2] (here refl) = here refl
 [0,1]⊆[0,1,2] (there (here refl)) = there (here refl)
@@ -1542,6 +1608,76 @@ sub-VAR1 a = refl
                        (⊆?→⊆ (CTerm7.closed c)) (⊆?→⊆ (CTerm7.closed d)))))
 
 
+#[3]IFEQ : CTerm3 → CTerm3 → CTerm3 → CTerm3 → CTerm3
+#[3]IFEQ a b c d = ct3 (IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
+  where
+    e : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    e rewrite fvars-IFEQ0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
+            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+            (⊆?→⊆ (CTerm3.closed a))
+            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+                 (⊆?→⊆ (CTerm3.closed b))
+                 (⊆++ {Var} {fvars ⌜ c ⌝} {fvars ⌜ d ⌝}
+                      (⊆?→⊆ (CTerm3.closed c)) (⊆?→⊆ (CTerm3.closed d)))))
+
+
+#[4]IFEQ : CTerm4 → CTerm4 → CTerm4 → CTerm4 → CTerm4
+#[4]IFEQ a b c d = ct4 (IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
+  where
+    e : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ] ] IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    e rewrite fvars-IFEQ0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]}
+            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+            (⊆?→⊆ (CTerm4.closed a))
+            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+                 (⊆?→⊆ (CTerm4.closed b))
+                 (⊆++ {Var} {fvars ⌜ c ⌝} {fvars ⌜ d ⌝}
+                      (⊆?→⊆ (CTerm4.closed c)) (⊆?→⊆ (CTerm4.closed d)))))
+
+
+#[5]IFEQ : CTerm5 → CTerm5 → CTerm5 → CTerm5 → CTerm5
+#[5]IFEQ a b c d = ct5 (IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
+  where
+    e : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ] ] IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    e rewrite fvars-IFEQ0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]}
+            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+            (⊆?→⊆ (CTerm5.closed a))
+            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+                 (⊆?→⊆ (CTerm5.closed b))
+                 (⊆++ {Var} {fvars ⌜ c ⌝} {fvars ⌜ d ⌝}
+                      (⊆?→⊆ (CTerm5.closed c)) (⊆?→⊆ (CTerm5.closed d)))))
+
+
+#[6]IFEQ : CTerm6 → CTerm6 → CTerm6 → CTerm6 → CTerm6
+#[6]IFEQ a b c d = ct6 (IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
+  where
+    e : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ] ] IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    e rewrite fvars-IFEQ0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [ 6 ]}
+            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+            (⊆?→⊆ (CTerm6.closed a))
+            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+                 (⊆?→⊆ (CTerm6.closed b))
+                 (⊆++ {Var} {fvars ⌜ c ⌝} {fvars ⌜ d ⌝}
+                      (⊆?→⊆ (CTerm6.closed c)) (⊆?→⊆ (CTerm6.closed d)))))
+
+
+#[7]IFEQ : CTerm7 → CTerm7 → CTerm7 → CTerm7 → CTerm7
+#[7]IFEQ a b c d = ct7 (IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
+  where
+    e : #[ 0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ] ] IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    e rewrite fvars-IFEQ0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ 6 ∷ [ 7 ]}
+            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+            (⊆?→⊆ (CTerm7.closed a))
+            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝ ++ fvars ⌜ d ⌝}
+                 (⊆?→⊆ (CTerm7.closed b))
+                 (⊆++ {Var} {fvars ⌜ c ⌝} {fvars ⌜ d ⌝}
+                       (⊆?→⊆ (CTerm7.closed c)) (⊆?→⊆ (CTerm7.closed d)))))
+
+
 #[4]APPLY : CTerm4 → CTerm4 → CTerm4
 #[4]APPLY a b = ct4 (APPLY ⌜ a ⌝ ⌜ b ⌝) c
   where
@@ -1961,6 +2097,19 @@ IFLT⇛₃ {w} {i} {j} {a} {b} {u} {v} c1 c2 w1 e1 =
     c2' : Σ 𝕎· (λ w' → b ⇓ NUM j from (fst c1') to w')
     c2' = ⇓→from-to (lower (c2 (fst c1') (⊑-trans· e1 (⇓from-to→⊑ {w1} {fst c1'} {a} {NUM i} (snd c1')))))
 
+
+IFEQ⇛₃ : {w : 𝕎·} {i j : ℕ} {a b u v : Term}
+         → a ⇛ NUM i at w
+         → b ⇛ NUM j at w
+         → IFEQ a b u v ⇛ IFEQ (NUM i) (NUM j) u v at w
+IFEQ⇛₃ {w} {i} {j} {a} {b} {u} {v} c1 c2 w1 e1 =
+  lift (⇓-from-to→⇓ {w1} {proj₁ c2'} (IFEQ⇓₃ {w1} {fst c1'} {fst c2'} {i} {j} {a} {b} {u} {v} (snd c1') (snd c2')))
+  where
+    c1' : Σ 𝕎· (λ w' → a ⇓ NUM i from w1 to w')
+    c1' = ⇓→from-to (lower (c1 w1 e1))
+
+    c2' : Σ 𝕎· (λ w' → b ⇓ NUM j from (fst c1') to w')
+    c2' = ⇓→from-to (lower (c2 (fst c1') (⊑-trans· e1 (⇓from-to→⊑ {w1} {fst c1'} {a} {NUM i} (snd c1')))))
 
 
 INL¬≡INR : {a b : Term} → ¬ (INL a) ≡ INR b

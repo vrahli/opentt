@@ -143,6 +143,35 @@ step-updRel gc {n} {name} {f} {g} {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b�
     ind' : ΣstepsUpdRel name f g a₁' w1' a₂ w
     ind' = step-updRel gc {n} {name} {f} {g} {a₁} {a₂} {a₁'} {w1} {w1'} {w} nnf nng cf cg z (stepsPresUpdRel-IFLT₁→ ind) r gtn compat wgt0 eqn
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-updRel gc {n} {name} {f} {g} {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ r r₁ r₂ r₃) gtn compat wgt0 eqn with is-NUM a₁
+... | inj₁ (i1 , p) rewrite p | updRel-NUMₗ→ r with is-NUM b₁
+... |    inj₁ (i2 , q) rewrite q | updRel-NUMₗ→ r₁ with i1 ≟ i2
+... |       yes j rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 1 , c₁ , c₂ , w1 , refl , concl , r₂
+  where
+    concl : steps 1 (IFEQ (NUM i1) (NUM i2) c₂ d₂ , w) ≡ (c₂ , w)
+    concl with i1 ≟ i2
+    ... | yes j' = refl
+    ... | no j' = ⊥-elim (j' j)
+... |       no j rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 1 , d₁ , d₂ , w1 , refl , concl , r₃
+  where
+    concl : steps 1 (IFEQ (NUM i1) (NUM i2) c₂ d₂ , w) ≡ (d₂ , w)
+    concl with i1 ≟ i2
+    ... | yes j' = ⊥-elim (j j')
+    ... | no j' = refl
+step-updRel gc {n} {name} {f} {g} {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ r r₁ r₂ r₃) gtn compat wgt0 eqn | inj₁ (i1 , p) | inj₂ q with step⊎ b₁ w1
+... |       inj₁ (b₁' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  →ΣstepsUpdRel-IFEQ₂ r₂ r₃ ind'
+  where
+    ind' : ΣstepsUpdRel name f g b₁' w1' b₂ w
+    ind' = step-updRel gc {n} {name} {f} {g} {b₁} {b₂} {b₁'} {w1} {w1'} {w} nnf nng cf cg z (stepsPresUpdRel-IFEQ₂→ ind) r₁ gtn compat wgt0 eqn
+... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step-updRel gc {n} {name} {f} {g} {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ r r₁ r₂ r₃) gtn compat wgt0 eqn | inj₂ p with step⊎ a₁ w1
+... |    inj₁ (a₁' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  →ΣstepsUpdRel-IFEQ₁ r₁ r₂ r₃ ind'
+  where
+    ind' : ΣstepsUpdRel name f g a₁' w1' a₂ w
+    ind' = step-updRel gc {n} {name} {f} {g} {a₁} {a₂} {a₁'} {w1} {w1'} {w} nnf nng cf cg z (stepsPresUpdRel-IFEQ₁→ ind) r gtn compat wgt0 eqn
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step-updRel gc {n} {name} {f} {g} {.(SUC a₁)} {.(SUC a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-SUC a₁ a₂ r) gtn compat wgt0 eqn with is-NUM a₁
 ... | inj₁ (i , p)
   rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) | updRel-NUMₗ→ r =
@@ -506,6 +535,7 @@ updRel-refl {name} {f} {g} {LT a a₁} nn = updRel-LT _ _ _ _ (updRel-refl (∧�
 updRel-refl {name} {f} {g} {QLT a a₁} nn = updRel-QLT _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
 updRel-refl {name} {f} {g} {NUM x} nn = updRel-NUM _
 updRel-refl {name} {f} {g} {IFLT a a₁ a₂ a₃} nn = updRel-IFLT _ _ _ _ _ _ _ _ (updRel-refl (∧≡true→1-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel-refl (∧≡true→2-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel-refl (∧≡true→3-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel-refl (∧≡true→4-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn))
+updRel-refl {name} {f} {g} {IFEQ a a₁ a₂ a₃} nn = updRel-IFEQ _ _ _ _ _ _ _ _ (updRel-refl (∧≡true→1-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel-refl (∧≡true→2-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel-refl (∧≡true→3-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel-refl (∧≡true→4-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn))
 updRel-refl {name} {f} {g} {SUC a} nn = updRel-SUC _ _ (updRel-refl nn)
 updRel-refl {name} {f} {g} {PI a a₁} nn = updRel-PI _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
 updRel-refl {name} {f} {g} {LAMBDA a} nn = updRel-LAMBDA _ _ (updRel-refl nn)
