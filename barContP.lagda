@@ -909,18 +909,15 @@ IFLT-NUM-AX-CHOOSE⇓ r n m w =
 --}
 
 
-APPLY-upd⇓ : (r : Name) (w : 𝕎·) (f i : Term) (ci : # i) (cf : # f)
+APPLY-upd⇓ : (r : Name) (w : 𝕎·) (f i : Term) (cf : # f)
              → APPLY (upd r f) i ⇓ LET i (SEQ (updGt r (VAR 0)) (APPLY f (VAR 0))) from w to w
-APPLY-upd⇓ r w f i ci cf = 1 , ≡pair c refl
+APPLY-upd⇓ r w f i cf = 1 , ≡pair c refl
   where
     c : sub i (LET (VAR 0) (SEQ (updGt r (VAR 0)) (APPLY f (VAR 0)))) ≡ LET i (SEQ (updGt r (VAR 0)) (APPLY f (VAR 0)))
-    c rewrite #shiftUp 0 (ct i ci)
-            | #shiftUp 0 (ct i ci)
-            | #shiftUp 0 (ct i ci)
-            | #shiftUp 0 (ct f cf)
-            | #subv 2 i f cf
-            | #shiftDown 0 (ct i ci)
-            | #shiftDown 2 (ct f cf) = refl
+    c rewrite #shiftUp 0 (ct f cf)
+            | #subv 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 i))) f cf
+            | #shiftDown 2 (ct f cf)
+            | shiftDownUp i 0 = refl
 
 
 updBody-LET⇓ : (r : Name) (w : 𝕎·) (f : Term) (n : ℕ) (cf : # f)
@@ -969,37 +966,44 @@ SEQ-updtGt⇓ cn r w n t clt compat =
     (SEQ-AX⇓₁from-to {u𝕎 r n w} {t} clt)
 
 
+APPLY-upd⇓2 : (cn : cℕ) (r : Name) (i f : Term) (w w' : 𝕎·) (n : ℕ) (cf : # f)
+               → compatible· r w Res⊤
+               → i ⇓ NUM n from w to w'
+               → APPLY (upd r f) i ⇓ APPLY f (NUM n) from w to u𝕎 r n w'
+APPLY-upd⇓2 cn r i f w w' n cf compat ci =
+  ⇓-trans₂
+    {w} {w} {u𝕎 r n w'}
+    {APPLY (upd r f) i}
+    {LET i (SEQ (updGt r (VAR 0)) (APPLY f (VAR 0)))}
+    {APPLY f (NUM n)}
+    (APPLY-upd⇓ r w f i cf)
+    (⇓-trans₂
+       {w} {w'} {u𝕎 r n w'}
+       {LET i (SEQ (updGt r (VAR 0)) (APPLY f (VAR 0)))}
+       {LET (NUM n) (SEQ (updGt r (VAR 0)) (APPLY f (VAR 0)))}
+       {APPLY f (NUM n)}
+       (LET⇓₁ {w} {w'} {i} {NUM n} {SEQ (updGt r (VAR 0)) (APPLY f (VAR 0))} ci)
+       (⇓-trans₂
+         {w'} {w'} {u𝕎 r n w'}
+         {LET (NUM n) (SEQ (updGt r (VAR 0)) (APPLY f (VAR 0)))}
+         {SEQ (updGt r (NUM n)) (APPLY f (NUM n))}
+         {APPLY f (NUM n)}
+         (updBody-LET⇓ r w' f n cf)
+         (SEQ-updtGt⇓ cn r w' n (APPLY f (NUM n)) (CTerm.closed (#APPLY (ct f cf) (#NUM n))) (⊑-compatible· e1 compat))))
+  where
+    e1 : w ⊑· w'
+    e1 = ⇓from-to→⊑ {w} {w'} {i} {NUM n} ci
+
+
 #APPLY-#upd⇓2 : (cn : cℕ) (r : Name) (i f : CTerm) (w : 𝕎·) (n : ℕ)
                 → compatible· r w Res⊤
                 → i #⇛ #NUM n at w
                 → Σ 𝕎· (λ w' → #APPLY (#upd r f) i #⇓ #APPLY f (#NUM n) from w to u𝕎 r n w')
 #APPLY-#upd⇓2 cn r i f w n compat ci =
-  fst c1 , -- LET⇓₁
-  ⇓-trans₂
-    {w} {w} {u𝕎 r n (fst c1)}
-    {APPLY (upd r ⌜ f ⌝) ⌜ i ⌝}
-    {LET ⌜ i ⌝ (SEQ (updGt r (VAR 0)) (APPLY ⌜ f ⌝ (VAR 0)))}
-    {APPLY ⌜ f ⌝ (NUM n)}
-    (APPLY-upd⇓ r w ⌜ f ⌝ ⌜ i ⌝ (CTerm.closed i) (CTerm.closed f))
-    (⇓-trans₂
-       {w} {fst c1} {u𝕎 r n (fst c1)}
-       {LET ⌜ i ⌝ (SEQ (updGt r (VAR 0)) (APPLY ⌜ f ⌝ (VAR 0)))}
-       {LET (NUM n) (SEQ (updGt r (VAR 0)) (APPLY ⌜ f ⌝ (VAR 0)))}
-       {APPLY ⌜ f ⌝ (NUM n)}
-       (LET⇓₁ {w} {fst c1} {⌜ i ⌝} {NUM n} {SEQ (updGt r (VAR 0)) (APPLY ⌜ f ⌝ (VAR 0))} (snd c1))
-       (⇓-trans₂
-         {fst c1} {fst c1} {u𝕎 r n (fst c1)}
-         {LET (NUM n) (SEQ (updGt r (VAR 0)) (APPLY ⌜ f ⌝ (VAR 0)))}
-         {SEQ (updGt r (NUM n)) (APPLY ⌜ f ⌝ (NUM n))}
-         {APPLY ⌜ f ⌝ (NUM n)}
-         (updBody-LET⇓ r (fst c1) ⌜ f ⌝ n (CTerm.closed f))
-         (SEQ-updtGt⇓ cn r (fst c1) n (APPLY ⌜ f ⌝ (NUM n)) (CTerm.closed (#APPLY f (#NUM n))) (⊑-compatible· e1 compat))))
+  fst ci' , APPLY-upd⇓2 cn r ⌜ i ⌝ ⌜ f ⌝ w (fst ci') n (CTerm.closed f) compat (snd ci')
   where
-    c1 : Σ 𝕎· (λ w1 → ⌜ i ⌝ ⇓ NUM n from w to w1)
-    c1 = ⇓→from-to (lower (ci w (⊑-refl· w)))
-
-    e1 : w ⊑· fst c1
-    e1 = #⇓from-to→⊑ {w} {fst c1} {i} {#NUM n} (snd c1)
+    ci' : Σ 𝕎· (λ w' → ⌜ i ⌝ ⇓ NUM n from w to w')
+    ci' = ⇓→from-to (lower (ci w (⊑-refl· w)))
 
 
 #APPLY-#upd⇛ : (cn : cℕ) (r : Name) (i f : CTerm) (w : 𝕎·) (n : ℕ)

@@ -196,7 +196,7 @@ updRel-MSEQₗ→ {name} {f} {g} {s} {.(MSEQ s)} (updRel-MSEQ .s) = refl
 
 
 
-isHighestℕ-IFLT₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b c d v : Term} {w w' : 𝕎·}
+isHighestℕ-IFLT₁→ : {n : ℕ} {k : ℕ} {name : Name} {a b c d v : Term} {w w' : 𝕎·}
                       → (comp : steps k (IFLT a b c d , w) ≡ (v , w'))
                       → isValue v
                       → isHighestℕ {k} {w} {w'} {IFLT a b c d} {v} n name comp
@@ -204,17 +204,17 @@ isHighestℕ-IFLT₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b c 
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-isHighestℕ-IFLT₁→ {n} {0} {name} {f} {g} {a} {b} {c} {d} {v} {w} {w'} comp isv h
+isHighestℕ-IFLT₁→ {n} {0} {name} {a} {b} {c} {d} {v} {w} {w'} comp isv h
   rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-isHighestℕ-IFLT₁→ {n} {suc k} {name} {f} {g} {a} {b} {c} {d} {v} {w} {w'} comp isv h with is-NUM a
+isHighestℕ-IFLT₁→ {n} {suc k} {name} {a} {b} {c} {d} {v} {w} {w'} comp isv h with is-NUM a
 ... | inj₁ (i1 , p) rewrite p with is-NUM b
 ... |    inj₁ (i2 , q) rewrite q with i1 <? i2
 ... |       yes r = 0 , NUM i1 , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... |       no r = 0 , NUM i1 , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
-isHighestℕ-IFLT₁→ {n} {suc k} {name} {f} {g} {a} {b} {c} {d} {v} {w} {w'} comp isv h | inj₁ (i1 , p) | inj₂ q with step⊎ b w
+isHighestℕ-IFLT₁→ {n} {suc k} {name} {a} {b} {c} {d} {v} {w} {w'} comp isv h | inj₁ (i1 , p) | inj₂ q with step⊎ b w
 ... |       inj₁ (b' , w0 , z) rewrite z = 0 , NUM i1 , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n --ret (IFLT a b' c d) w'
 ... |       inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-isHighestℕ-IFLT₁→ {n} {suc k} {name} {f} {g} {a} {b} {c} {d} {v} {w} {w'} comp isv h | inj₂ p with step⊎ a w
+isHighestℕ-IFLT₁→ {n} {suc k} {name} {a} {b} {c} {d} {v} {w} {w'} comp isv h | inj₂ p with step⊎ a w
 ... |    inj₁ (a0 , w0 , z) rewrite z =
   suc (fst ind) , concl
   where
@@ -222,7 +222,7 @@ isHighestℕ-IFLT₁→ {n} {suc k} {name} {f} {g} {a} {b} {c} {d} {v} {w} {w'} 
                           isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    ind = isHighestℕ-IFLT₁→ {n} {k} {name} {f} {g} {a0} {b} {c} {d} {v} {w0} {w'} comp isv (snd h)
+    ind = isHighestℕ-IFLT₁→ {n} {k} {name} {a0} {b} {c} {d} {v} {w0} {w'} comp isv (snd h)
 
     concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
@@ -249,11 +249,11 @@ stepsPresUpdRel-IFLT₁→ {n} {name} {f} {g} {a} {b} {c} {d} {w} (k , v , w' , 
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    hv = isHighestℕ-IFLT₁→ {n} {k} {name} {f} {g} {a} {b} {c} {d} {v} {w} {w'} comp isv ish
+    hv = isHighestℕ-IFLT₁→ {n} {k} {name} {a} {b} {c} {d} {v} {w} {w'} comp isv ish
 
 
 
-isHighestℕ-IFLT₂→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {m : ℕ} {b c d v : Term} {w w' : 𝕎·}
+isHighestℕ-IFLT₂→ : {n : ℕ} {k : ℕ} {name : Name} {m : ℕ} {b c d v : Term} {w w' : 𝕎·}
                       → (comp : steps k (IFLT (NUM m) b c d , w) ≡ (v , w'))
                       → isValue v
                       → isHighestℕ {k} {w} {w'} {IFLT (NUM m) b c d} {v} n name comp
@@ -261,13 +261,13 @@ isHighestℕ-IFLT₂→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {m : �
                           isHighestℕ {k'} {w} {w''} {b} {u} n name comp'
                           × isValue u
                           × k' < k))))
-isHighestℕ-IFLT₂→ {n} {0} {name} {f} {g} {m} {b} {c} {d} {v} {w} {w'} comp isv h
+isHighestℕ-IFLT₂→ {n} {0} {name} {m} {b} {c} {d} {v} {w} {w'} comp isv h
   rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-isHighestℕ-IFLT₂→ {n} {suc k} {name} {f} {g} {m} {b} {c} {d} {v} {w} {w'} comp isv h with is-NUM b
+isHighestℕ-IFLT₂→ {n} {suc k} {name} {m} {b} {c} {d} {v} {w} {w'} comp isv h with is-NUM b
 ... | inj₁ (m' , q) rewrite q with m <? m'
 ... |    yes r = 0 , NUM m' , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... |    no r = 0 , NUM m' , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
-isHighestℕ-IFLT₂→ {n} {suc k} {name} {f} {g} {m} {b} {c} {d} {v} {w} {w'} comp isv h | inj₂ q with step⊎ b w
+isHighestℕ-IFLT₂→ {n} {suc k} {name} {m} {b} {c} {d} {v} {w} {w'} comp isv h | inj₂ q with step⊎ b w
 ... |    inj₁ (b0 , w0 , z) rewrite z =
   suc (fst ind) , concl
   where
@@ -275,7 +275,7 @@ isHighestℕ-IFLT₂→ {n} {suc k} {name} {f} {g} {m} {b} {c} {d} {v} {w} {w'} 
                           isHighestℕ {k'} {w0} {w''} {b0} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    ind = isHighestℕ-IFLT₂→ {n} {k} {name} {f} {g} {m} {b0} {c} {d} {v} {w0} {w'} comp isv (snd h)
+    ind = isHighestℕ-IFLT₂→ {n} {k} {name} {m} {b0} {c} {d} {v} {w0} {w'} comp isv (snd h)
 
     concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (b , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {suc (fst ind)} {w} {w''} {b} {u} n name comp'
@@ -302,7 +302,7 @@ stepsPresUpdRel-IFLT₂→ {n} {name} {f} {g} {m} {b} {c} {d} {w} (k , v , w' , 
                           isHighestℕ {k'} {w} {w''} {b} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    hv = isHighestℕ-IFLT₂→ {n} {k} {name} {f} {g} {m} {b} {c} {d} {v} {w} {w'} comp isv ish
+    hv = isHighestℕ-IFLT₂→ {n} {k} {name} {m} {b} {c} {d} {v} {w} {w'} comp isv ish
 
 
 
@@ -340,7 +340,7 @@ stepsPresUpdRel-IFLT₂→ {n} {name} {f} {g} {m} {b} {c} {d} {w} (k , v , w' , 
     comp2' = IFLT-NUM-1st⇓steps k2 b₂ c₂ d₂ comp2
 
 
-isHighestℕ-IFEQ₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b c d v : Term} {w w' : 𝕎·}
+isHighestℕ-IFEQ₁→ : {n : ℕ} {k : ℕ} {name : Name} {a b c d v : Term} {w w' : 𝕎·}
                       → (comp : steps k (IFEQ a b c d , w) ≡ (v , w'))
                       → isValue v
                       → isHighestℕ {k} {w} {w'} {IFEQ a b c d} {v} n name comp
@@ -348,17 +348,17 @@ isHighestℕ-IFEQ₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b c 
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-isHighestℕ-IFEQ₁→ {n} {0} {name} {f} {g} {a} {b} {c} {d} {v} {w} {w'} comp isv h
+isHighestℕ-IFEQ₁→ {n} {0} {name} {a} {b} {c} {d} {v} {w} {w'} comp isv h
   rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-isHighestℕ-IFEQ₁→ {n} {suc k} {name} {f} {g} {a} {b} {c} {d} {v} {w} {w'} comp isv h with is-NUM a
+isHighestℕ-IFEQ₁→ {n} {suc k} {name} {a} {b} {c} {d} {v} {w} {w'} comp isv h with is-NUM a
 ... | inj₁ (i1 , p) rewrite p with is-NUM b
 ... |    inj₁ (i2 , q) rewrite q with i1 ≟ i2
 ... |       yes r = 0 , NUM i1 , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... |       no r = 0 , NUM i1 , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
-isHighestℕ-IFEQ₁→ {n} {suc k} {name} {f} {g} {a} {b} {c} {d} {v} {w} {w'} comp isv h | inj₁ (i1 , p) | inj₂ q with step⊎ b w
+isHighestℕ-IFEQ₁→ {n} {suc k} {name} {a} {b} {c} {d} {v} {w} {w'} comp isv h | inj₁ (i1 , p) | inj₂ q with step⊎ b w
 ... |       inj₁ (b' , w0 , z) rewrite z = 0 , NUM i1 , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n --ret (IFEQ a b' c d) w'
 ... |       inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-isHighestℕ-IFEQ₁→ {n} {suc k} {name} {f} {g} {a} {b} {c} {d} {v} {w} {w'} comp isv h | inj₂ p with step⊎ a w
+isHighestℕ-IFEQ₁→ {n} {suc k} {name} {a} {b} {c} {d} {v} {w} {w'} comp isv h | inj₂ p with step⊎ a w
 ... |    inj₁ (a0 , w0 , z) rewrite z =
   suc (fst ind) , concl
   where
@@ -366,7 +366,7 @@ isHighestℕ-IFEQ₁→ {n} {suc k} {name} {f} {g} {a} {b} {c} {d} {v} {w} {w'} 
                           isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    ind = isHighestℕ-IFEQ₁→ {n} {k} {name} {f} {g} {a0} {b} {c} {d} {v} {w0} {w'} comp isv (snd h)
+    ind = isHighestℕ-IFEQ₁→ {n} {k} {name} {a0} {b} {c} {d} {v} {w0} {w'} comp isv (snd h)
 
     concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
@@ -393,11 +393,11 @@ stepsPresUpdRel-IFEQ₁→ {n} {name} {f} {g} {a} {b} {c} {d} {w} (k , v , w' , 
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    hv = isHighestℕ-IFEQ₁→ {n} {k} {name} {f} {g} {a} {b} {c} {d} {v} {w} {w'} comp isv ish
+    hv = isHighestℕ-IFEQ₁→ {n} {k} {name} {a} {b} {c} {d} {v} {w} {w'} comp isv ish
 
 
 
-isHighestℕ-IFEQ₂→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {m : ℕ} {b c d v : Term} {w w' : 𝕎·}
+isHighestℕ-IFEQ₂→ : {n : ℕ} {k : ℕ} {name : Name} {m : ℕ} {b c d v : Term} {w w' : 𝕎·}
                       → (comp : steps k (IFEQ (NUM m) b c d , w) ≡ (v , w'))
                       → isValue v
                       → isHighestℕ {k} {w} {w'} {IFEQ (NUM m) b c d} {v} n name comp
@@ -405,13 +405,13 @@ isHighestℕ-IFEQ₂→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {m : �
                           isHighestℕ {k'} {w} {w''} {b} {u} n name comp'
                           × isValue u
                           × k' < k))))
-isHighestℕ-IFEQ₂→ {n} {0} {name} {f} {g} {m} {b} {c} {d} {v} {w} {w'} comp isv h
+isHighestℕ-IFEQ₂→ {n} {0} {name} {m} {b} {c} {d} {v} {w} {w'} comp isv h
   rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-isHighestℕ-IFEQ₂→ {n} {suc k} {name} {f} {g} {m} {b} {c} {d} {v} {w} {w'} comp isv h with is-NUM b
+isHighestℕ-IFEQ₂→ {n} {suc k} {name} {m} {b} {c} {d} {v} {w} {w'} comp isv h with is-NUM b
 ... | inj₁ (m' , q) rewrite q with m ≟ m'
 ... |    yes r = 0 , NUM m' , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... |    no r = 0 , NUM m' , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
-isHighestℕ-IFEQ₂→ {n} {suc k} {name} {f} {g} {m} {b} {c} {d} {v} {w} {w'} comp isv h | inj₂ q with step⊎ b w
+isHighestℕ-IFEQ₂→ {n} {suc k} {name} {m} {b} {c} {d} {v} {w} {w'} comp isv h | inj₂ q with step⊎ b w
 ... |    inj₁ (b0 , w0 , z) rewrite z =
   suc (fst ind) , concl
   where
@@ -419,7 +419,7 @@ isHighestℕ-IFEQ₂→ {n} {suc k} {name} {f} {g} {m} {b} {c} {d} {v} {w} {w'} 
                           isHighestℕ {k'} {w0} {w''} {b0} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    ind = isHighestℕ-IFEQ₂→ {n} {k} {name} {f} {g} {m} {b0} {c} {d} {v} {w0} {w'} comp isv (snd h)
+    ind = isHighestℕ-IFEQ₂→ {n} {k} {name} {m} {b0} {c} {d} {v} {w0} {w'} comp isv (snd h)
 
     concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (b , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {suc (fst ind)} {w} {w''} {b} {u} n name comp'
@@ -446,7 +446,7 @@ stepsPresUpdRel-IFEQ₂→ {n} {name} {f} {g} {m} {b} {c} {d} {w} (k , v , w' , 
                           isHighestℕ {k'} {w} {w''} {b} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    hv = isHighestℕ-IFEQ₂→ {n} {k} {name} {f} {g} {m} {b} {c} {d} {v} {w} {w'} comp isv ish
+    hv = isHighestℕ-IFEQ₂→ {n} {k} {name} {m} {b} {c} {d} {v} {w} {w'} comp isv ish
 
 
 
@@ -542,7 +542,7 @@ updRel-INRₗ→ {name} {f} {g} {t} {.(INR x)} (updRel-INR .t x u) = x , refl , 
 
 
 
-isHighestℕ-APPLY₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v : Term} {w w' : 𝕎·}
+isHighestℕ-APPLY₁→ : {n : ℕ} {k : ℕ} {name : Name} {a b v : Term} {w w' : 𝕎·}
                       → (comp : steps k (APPLY a b , w) ≡ (v , w'))
                       → isValue v
                       → isHighestℕ {k} {w} {w'} {APPLY a b} {v} n name comp
@@ -550,19 +550,19 @@ isHighestℕ-APPLY₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-isHighestℕ-APPLY₁→ {n} {0} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h
+isHighestℕ-APPLY₁→ {n} {0} {name} {a} {b} {v} {w} {w'} comp isv h
   rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-isHighestℕ-APPLY₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h with is-LAM a
+isHighestℕ-APPLY₁→ {n} {suc k} {name} {a} {b} {v} {w} {w'} comp isv h with is-LAM a
 ... | inj₁ (t , p) rewrite p = 0 , LAMBDA t , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... | inj₂ x with is-CS a
 ... |    inj₁ (name' , q) rewrite q with is-NUM b
 ... |       inj₁ (j , r) rewrite r with getT j name' w
 ... |          just t = 0 , CS name' , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... |          nothing = 0 , CS name' , w , refl , h , tt , _≤_.s≤s _≤_.z≤n
-isHighestℕ-APPLY₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h | inj₂ x | inj₁ (name' , q) | inj₂ r with step⊎ b w
+isHighestℕ-APPLY₁→ {n} {suc k} {name} {a} {b} {v} {w} {w'} comp isv h | inj₂ x | inj₁ (name' , q) | inj₂ r with step⊎ b w
 ... |          inj₁ (b0 , w0 , z) rewrite z = 0 , CS name' , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... |          inj₂ z rewrite z = 0 , CS name' , w , refl , h , tt , _≤_.s≤s _≤_.z≤n
-isHighestℕ-APPLY₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h | inj₂ x | inj₂ y with is-MSEQ a
+isHighestℕ-APPLY₁→ {n} {suc k} {name} {a} {b} {v} {w} {w'} comp isv h | inj₂ x | inj₂ y with is-MSEQ a
 ... | inj₁ (sq , r) rewrite r = 0 , MSEQ sq , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... | inj₂ r with step⊎ a w
 ... |    inj₁ (a0 , w0 , z) rewrite z =
@@ -572,7 +572,7 @@ isHighestℕ-APPLY₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp is
                           isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    ind = isHighestℕ-APPLY₁→ {n} {k} {name} {f} {g} {a0} {b} {v} {w0} {w'} comp isv (snd h)
+    ind = isHighestℕ-APPLY₁→ {n} {k} {name} {a0} {b} {v} {w0} {w'} comp isv (snd h)
 
     concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
@@ -599,7 +599,7 @@ stepsPresUpdRel-APPLY₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , 
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    hv = isHighestℕ-APPLY₁→ {n} {k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv ish
+    hv = isHighestℕ-APPLY₁→ {n} {k} {name} {a} {b} {v} {w} {w'} comp isv ish
 
 
 
@@ -618,7 +618,7 @@ stepsPresUpdRel-APPLY₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , 
     comp2' = →steps-APPLY b₂ k2 comp2
 
 
-isHighestℕ-MAPP₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {s : 𝕊} {a v : Term} {w w' : 𝕎·}
+isHighestℕ-MAPP₁→ : {n : ℕ} {k : ℕ} {name : Name} {s : 𝕊} {a v : Term} {w w' : 𝕎·}
                       → (comp : steps k (MAPP s a , w) ≡ (v , w'))
                       → isValue v
                       → isHighestℕ {k} {w} {w'} {MAPP s a} {v} n name comp
@@ -626,9 +626,9 @@ isHighestℕ-MAPP₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {s : �
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-isHighestℕ-MAPP₁→ {n} {0} {name} {f} {g} {s} {a} {v} {w} {w'} comp isv h
+isHighestℕ-MAPP₁→ {n} {0} {name} {s} {a} {v} {w} {w'} comp isv h
   rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-isHighestℕ-MAPP₁→ {n} {suc k} {name} {f} {g} {s} {a} {v} {w} {w'} comp isv h with is-NUM a
+isHighestℕ-MAPP₁→ {n} {suc k} {name} {s} {a} {v} {w} {w'} comp isv h with is-NUM a
 ... | inj₁ (m , p) rewrite p = 0 , NUM m , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... | inj₂ x with step⊎ a w
 ... |    inj₁ (a0 , w0 , z) rewrite z =
@@ -638,7 +638,7 @@ isHighestℕ-MAPP₁→ {n} {suc k} {name} {f} {g} {s} {a} {v} {w} {w'} comp isv
                           isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    ind = isHighestℕ-MAPP₁→ {n} {k} {name} {f} {g} {s} {a0} {v} {w0} {w'} comp isv (snd h)
+    ind = isHighestℕ-MAPP₁→ {n} {k} {name} {s} {a0} {v} {w0} {w'} comp isv (snd h)
 
     concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
@@ -664,7 +664,7 @@ stepsPresUpdRel-MAPP₁→ {n} {name} {f} {g} {s} {a} {w} (k , v , w' , comp , i
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    hv = isHighestℕ-MAPP₁→ {n} {k} {name} {f} {g} {s} {a} {v} {w} {w'} comp isv ish
+    hv = isHighestℕ-MAPP₁→ {n} {k} {name} {s} {a} {v} {w} {w'} comp isv ish
 
 
 
@@ -682,7 +682,7 @@ stepsPresUpdRel-MAPP₁→ {n} {name} {f} {g} {s} {a} {w} (k , v , w' , comp , i
     comp2' = →steps-MAPP s k2 comp2
 
 
-isHighestℕ-LET₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v : Term} {w w' : 𝕎·}
+isHighestℕ-LET₁→ : {n : ℕ} {k : ℕ} {name : Name} {a b v : Term} {w w' : 𝕎·}
                       → (comp : steps k (LET a b , w) ≡ (v , w'))
                       → isValue v
                       → isHighestℕ {k} {w} {w'} {LET a b} {v} n name comp
@@ -690,9 +690,9 @@ isHighestℕ-LET₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v :
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-isHighestℕ-LET₁→ {n} {0} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h
+isHighestℕ-LET₁→ {n} {0} {name} {a} {b} {v} {w} {w'} comp isv h
   rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-isHighestℕ-LET₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h with isValue⊎ a
+isHighestℕ-LET₁→ {n} {suc k} {name} {a} {b} {v} {w} {w'} comp isv h with isValue⊎ a
 ... | inj₁ x = 0 , a , w , refl , fst h , x , _≤_.s≤s _≤_.z≤n
 ... | inj₂ x with step⊎ a w
 ... |    inj₁ (a0 , w0 , z) rewrite z =
@@ -702,7 +702,7 @@ isHighestℕ-LET₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv 
                           isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    ind = isHighestℕ-LET₁→ {n} {k} {name} {f} {g} {a0} {b} {v} {w0} {w'} comp isv (snd h)
+    ind = isHighestℕ-LET₁→ {n} {k} {name} {a0} {b} {v} {w0} {w'} comp isv (snd h)
 
     concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
@@ -729,7 +729,7 @@ stepsPresUpdRel-LET₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , is
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    hv = isHighestℕ-LET₁→ {n} {k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv ish
+    hv = isHighestℕ-LET₁→ {n} {k} {name} {a} {b} {v} {w} {w'} comp isv ish
 
 
 
@@ -750,7 +750,7 @@ stepsPresUpdRel-LET₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , is
 
 
 
-isHighestℕ-SUC₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a v : Term} {w w' : 𝕎·}
+isHighestℕ-SUC₁→ : {n : ℕ} {k : ℕ} {name : Name} {a v : Term} {w w' : 𝕎·}
                       → (comp : steps k (SUC a , w) ≡ (v , w'))
                       → isValue v
                       → isHighestℕ {k} {w} {w'} {SUC a} {v} n name comp
@@ -758,9 +758,9 @@ isHighestℕ-SUC₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a v : T
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-isHighestℕ-SUC₁→ {n} {0} {name} {f} {g} {a} {v} {w} {w'} comp isv h
+isHighestℕ-SUC₁→ {n} {0} {name} {a} {v} {w} {w'} comp isv h
   rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-isHighestℕ-SUC₁→ {n} {suc k} {name} {f} {g} {a} {v} {w} {w'} comp isv h with is-NUM a
+isHighestℕ-SUC₁→ {n} {suc k} {name} {a} {v} {w} {w'} comp isv h with is-NUM a
 ... | inj₁ (i , p) rewrite p = 0 , NUM i , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... | inj₂ x with step⊎ a w
 ... |    inj₁ (a0 , w0 , z) rewrite z =
@@ -770,7 +770,7 @@ isHighestℕ-SUC₁→ {n} {suc k} {name} {f} {g} {a} {v} {w} {w'} comp isv h wi
                           isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    ind = isHighestℕ-SUC₁→ {n} {k} {name} {f} {g} {a0} {v} {w0} {w'} comp isv (snd h)
+    ind = isHighestℕ-SUC₁→ {n} {k} {name} {a0} {v} {w0} {w'} comp isv (snd h)
 
     concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
@@ -797,7 +797,7 @@ stepsPresUpdRel-SUC₁→ {n} {name} {f} {g} {a} {w} (k , v , w' , comp , isv , 
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    hv = isHighestℕ-SUC₁→ {n} {k} {name} {f} {g} {a} {v} {w} {w'} comp isv ish
+    hv = isHighestℕ-SUC₁→ {n} {k} {name} {a} {v} {w} {w'} comp isv ish
 
 
 
@@ -815,7 +815,7 @@ stepsPresUpdRel-SUC₁→ {n} {name} {f} {g} {a} {w} (k , v , w' , comp , isv , 
     comp2' = SUC⇓steps k2 comp2
 
 
-isHighestℕ-FIX₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a v : Term} {w w' : 𝕎·}
+isHighestℕ-FIX₁→ : {n : ℕ} {k : ℕ} {name : Name} {a v : Term} {w w' : 𝕎·}
                       → (comp : steps k (FIX a , w) ≡ (v , w'))
                       → isValue v
                       → isHighestℕ {k} {w} {w'} {FIX a} {v} n name comp
@@ -823,9 +823,9 @@ isHighestℕ-FIX₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a v : T
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-isHighestℕ-FIX₁→ {n} {0} {name} {f} {g} {a} {v} {w} {w'} comp isv h
+isHighestℕ-FIX₁→ {n} {0} {name} {a} {v} {w} {w'} comp isv h
   rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-isHighestℕ-FIX₁→ {n} {suc k} {name} {f} {g} {a} {v} {w} {w'} comp isv h with is-LAM a
+isHighestℕ-FIX₁→ {n} {suc k} {name} {a} {v} {w} {w'} comp isv h with is-LAM a
 ... | inj₁ (t , p) rewrite p = 0 , LAMBDA t , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... | inj₂ x with step⊎ a w
 ... |    inj₁ (a0 , w0 , z) rewrite z =
@@ -835,7 +835,7 @@ isHighestℕ-FIX₁→ {n} {suc k} {name} {f} {g} {a} {v} {w} {w'} comp isv h wi
                           isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    ind = isHighestℕ-FIX₁→ {n} {k} {name} {f} {g} {a0} {v} {w0} {w'} comp isv (snd h)
+    ind = isHighestℕ-FIX₁→ {n} {k} {name} {a0} {v} {w0} {w'} comp isv (snd h)
 
     concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
@@ -862,7 +862,7 @@ stepsPresUpdRel-FIX₁→ {n} {name} {f} {g} {a} {w} (k , v , w' , comp , isv , 
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    hv = isHighestℕ-FIX₁→ {n} {k} {name} {f} {g} {a} {v} {w} {w'} comp isv ish
+    hv = isHighestℕ-FIX₁→ {n} {k} {name} {a} {v} {w} {w'} comp isv ish
 
 
 
@@ -881,7 +881,7 @@ stepsPresUpdRel-FIX₁→ {n} {name} {f} {g} {a} {w} (k , v , w' , comp , isv , 
 
 
 
-isHighestℕ-DSUP₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v : Term} {w w' : 𝕎·}
+isHighestℕ-DSUP₁→ : {n : ℕ} {k : ℕ} {name : Name} {a b v : Term} {w w' : 𝕎·}
                       → (comp : steps k (DSUP a b , w) ≡ (v , w'))
                       → isValue v
                       → isHighestℕ {k} {w} {w'} {DSUP a b} {v} n name comp
@@ -889,9 +889,9 @@ isHighestℕ-DSUP₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v 
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-isHighestℕ-DSUP₁→ {n} {0} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h
+isHighestℕ-DSUP₁→ {n} {0} {name} {a} {b} {v} {w} {w'} comp isv h
   rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-isHighestℕ-DSUP₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h with is-SUP a
+isHighestℕ-DSUP₁→ {n} {suc k} {name} {a} {b} {v} {w} {w'} comp isv h with is-SUP a
 ... | inj₁ (u₁ , u₂ , p) rewrite p = 0 , SUP u₁ u₂ , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... | inj₂ x with step⊎ a w
 ... |    inj₁ (a0 , w0 , z) rewrite z =
@@ -901,7 +901,7 @@ isHighestℕ-DSUP₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv
                           isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    ind = isHighestℕ-DSUP₁→ {n} {k} {name} {f} {g} {a0} {b} {v} {w0} {w'} comp isv (snd h)
+    ind = isHighestℕ-DSUP₁→ {n} {k} {name} {a0} {b} {v} {w0} {w'} comp isv (snd h)
 
     concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
@@ -928,7 +928,7 @@ stepsPresUpdRel-DSUP₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , i
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    hv = isHighestℕ-DSUP₁→ {n} {k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv ish
+    hv = isHighestℕ-DSUP₁→ {n} {k} {name} {a} {b} {v} {w} {w'} comp isv ish
 
 
 
@@ -949,7 +949,7 @@ stepsPresUpdRel-DSUP₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , i
 
 
 
-isHighestℕ-DMSUP₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v : Term} {w w' : 𝕎·}
+isHighestℕ-DMSUP₁→ : {n : ℕ} {k : ℕ} {name : Name} {a b v : Term} {w w' : 𝕎·}
                       → (comp : steps k (DMSUP a b , w) ≡ (v , w'))
                       → isValue v
                       → isHighestℕ {k} {w} {w'} {DMSUP a b} {v} n name comp
@@ -957,9 +957,9 @@ isHighestℕ-DMSUP₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-isHighestℕ-DMSUP₁→ {n} {0} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h
+isHighestℕ-DMSUP₁→ {n} {0} {name} {a} {b} {v} {w} {w'} comp isv h
   rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-isHighestℕ-DMSUP₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h with is-MSUP a
+isHighestℕ-DMSUP₁→ {n} {suc k} {name} {a} {b} {v} {w} {w'} comp isv h with is-MSUP a
 ... | inj₁ (u₁ , u₂ , p) rewrite p = 0 , MSUP u₁ u₂ , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... | inj₂ x with step⊎ a w
 ... |    inj₁ (a0 , w0 , z) rewrite z =
@@ -969,7 +969,7 @@ isHighestℕ-DMSUP₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp is
                           isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    ind = isHighestℕ-DMSUP₁→ {n} {k} {name} {f} {g} {a0} {b} {v} {w0} {w'} comp isv (snd h)
+    ind = isHighestℕ-DMSUP₁→ {n} {k} {name} {a0} {b} {v} {w0} {w'} comp isv (snd h)
 
     concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
@@ -996,7 +996,7 @@ stepsPresUpdRel-DMSUP₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , 
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    hv = isHighestℕ-DMSUP₁→ {n} {k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv ish
+    hv = isHighestℕ-DMSUP₁→ {n} {k} {name} {a} {b} {v} {w} {w'} comp isv ish
 
 
 
@@ -1016,7 +1016,7 @@ stepsPresUpdRel-DMSUP₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , 
 
 
 
-isHighestℕ-SPREAD₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v : Term} {w w' : 𝕎·}
+isHighestℕ-SPREAD₁→ : {n : ℕ} {k : ℕ} {name : Name} {a b v : Term} {w w' : 𝕎·}
                       → (comp : steps k (SPREAD a b , w) ≡ (v , w'))
                       → isValue v
                       → isHighestℕ {k} {w} {w'} {SPREAD a b} {v} n name comp
@@ -1024,9 +1024,9 @@ isHighestℕ-SPREAD₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b 
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-isHighestℕ-SPREAD₁→ {n} {0} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h
+isHighestℕ-SPREAD₁→ {n} {0} {name} {a} {b} {v} {w} {w'} comp isv h
   rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-isHighestℕ-SPREAD₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h with is-PAIR a
+isHighestℕ-SPREAD₁→ {n} {suc k} {name} {a} {b} {v} {w} {w'} comp isv h with is-PAIR a
 ... | inj₁ (u₁ , u₂ , p) rewrite p = 0 , PAIR u₁ u₂ , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... | inj₂ x with step⊎ a w
 ... |    inj₁ (a0 , w0 , z) rewrite z =
@@ -1036,7 +1036,7 @@ isHighestℕ-SPREAD₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp i
                           isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    ind = isHighestℕ-SPREAD₁→ {n} {k} {name} {f} {g} {a0} {b} {v} {w0} {w'} comp isv (snd h)
+    ind = isHighestℕ-SPREAD₁→ {n} {k} {name} {a0} {b} {v} {w0} {w'} comp isv (snd h)
 
     concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
@@ -1063,7 +1063,7 @@ stepsPresUpdRel-SPREAD₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp ,
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    hv = isHighestℕ-SPREAD₁→ {n} {k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv ish
+    hv = isHighestℕ-SPREAD₁→ {n} {k} {name} {a} {b} {v} {w} {w'} comp isv ish
 
 
 
@@ -1083,7 +1083,7 @@ stepsPresUpdRel-SPREAD₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp ,
 
 
 
-isHighestℕ-CHOOSE₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b v : Term} {w w' : 𝕎·}
+isHighestℕ-CHOOSE₁→ : {n : ℕ} {k : ℕ} {name : Name} {a b v : Term} {w w' : 𝕎·}
                       → (comp : steps k (CHOOSE a b , w) ≡ (v , w'))
                       → isValue v
                       → isHighestℕ {k} {w} {w'} {CHOOSE a b} {v} n name comp
@@ -1091,9 +1091,9 @@ isHighestℕ-CHOOSE₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b 
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-isHighestℕ-CHOOSE₁→ {n} {0} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h
+isHighestℕ-CHOOSE₁→ {n} {0} {name} {a} {b} {v} {w} {w'} comp isv h
   rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-isHighestℕ-CHOOSE₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv h with is-NAME a
+isHighestℕ-CHOOSE₁→ {n} {suc k} {name} {a} {b} {v} {w} {w'} comp isv h with is-NAME a
 ... | inj₁ (name' , p) rewrite p = 0 , NAME name' , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... | inj₂ x with step⊎ a w
 ... |    inj₁ (a0 , w0 , z) rewrite z =
@@ -1103,7 +1103,7 @@ isHighestℕ-CHOOSE₁→ {n} {suc k} {name} {f} {g} {a} {b} {v} {w} {w'} comp i
                           isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    ind = isHighestℕ-CHOOSE₁→ {n} {k} {name} {f} {g} {a0} {b} {v} {w0} {w'} comp isv (snd h)
+    ind = isHighestℕ-CHOOSE₁→ {n} {k} {name} {a0} {b} {v} {w0} {w'} comp isv (snd h)
 
     concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
@@ -1130,7 +1130,7 @@ stepsPresUpdRel-CHOOSE₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp ,
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    hv = isHighestℕ-CHOOSE₁→ {n} {k} {name} {f} {g} {a} {b} {v} {w} {w'} comp isv ish
+    hv = isHighestℕ-CHOOSE₁→ {n} {k} {name} {a} {b} {v} {w} {w'} comp isv ish
 
 
 
@@ -1150,7 +1150,7 @@ stepsPresUpdRel-CHOOSE₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp ,
 
 
 
-isHighestℕ-DECIDE₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b c v : Term} {w w' : 𝕎·}
+isHighestℕ-DECIDE₁→ : {n : ℕ} {k : ℕ} {name : Name} {a b c v : Term} {w w' : 𝕎·}
                       → (comp : steps k (DECIDE a b c , w) ≡ (v , w'))
                       → isValue v
                       → isHighestℕ {k} {w} {w'} {DECIDE a b c} {v} n name comp
@@ -1158,9 +1158,9 @@ isHighestℕ-DECIDE₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b 
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-isHighestℕ-DECIDE₁→ {n} {0} {name} {f} {g} {a} {b} {c} {v} {w} {w'} comp isv h
+isHighestℕ-DECIDE₁→ {n} {0} {name} {a} {b} {c} {v} {w} {w'} comp isv h
   rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
-isHighestℕ-DECIDE₁→ {n} {suc k} {name} {f} {g} {a} {b} {c} {v} {w} {w'} comp isv h with is-INL a
+isHighestℕ-DECIDE₁→ {n} {suc k} {name} {a} {b} {c} {v} {w} {w'} comp isv h with is-INL a
 ... | inj₁ (x , p) rewrite p = 0 , INL x , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
 ... | inj₂ x with is-INR a
 ... |    inj₁ (y , p) rewrite p = 0 , INR y , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
@@ -1172,7 +1172,7 @@ isHighestℕ-DECIDE₁→ {n} {suc k} {name} {f} {g} {a} {b} {c} {v} {w} {w'} co
                           isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    ind = isHighestℕ-DECIDE₁→ {n} {k} {name} {f} {g} {a0} {b} {c} {v} {w0} {w'} comp isv (snd h)
+    ind = isHighestℕ-DECIDE₁→ {n} {k} {name} {a0} {b} {c} {v} {w0} {w'} comp isv (snd h)
 
     concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
@@ -1199,7 +1199,7 @@ stepsPresUpdRel-DECIDE₁→ {n} {name} {f} {g} {a} {b} {c} {w} (k , v , w' , co
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
                           × isValue u
                           × k' < k))))
-    hv = isHighestℕ-DECIDE₁→ {n} {k} {name} {f} {g} {a} {b} {c} {v} {w} {w'} comp isv ish
+    hv = isHighestℕ-DECIDE₁→ {n} {k} {name} {a} {b} {c} {v} {w} {w'} comp isv ish
 
 
 

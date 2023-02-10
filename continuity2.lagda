@@ -1662,260 +1662,261 @@ steps-CHOOSE-NAME→𝕎 {suc k} {name} {w1} {w2} {t} {u} isv comp
 ... | no x = refl
 
 
+abstract
 
-upd-decomp : {k : ℕ} {name : Name} {f a v : Term} {w1 w2 : 𝕎·}
-             → # f
-             → ∀𝕎-get0-NUM w1 name
-             → steps k (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (v , w2)
-             → isValue v
-             → Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w1' → Σ ℕ (λ m → Σ ℕ (λ m' →
-                 k1 < k
-                 × k2 < k
-                 × getT 0 name w1' ≡ just (NUM m')
-                 × ssteps k1 (a , w1) ≡ just (NUM m , w1')
-                 × steps k2 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m))))))
---                 steps→𝕎s {k1} {w1} {w1'} {a} {NUM m} comp1 ++ w1' ∷ chooseT0if name w1' m' m ∷ chooseT0if name w1' m' m ∷ []
---                 ≡ steps→𝕎s {k2} {w1} {chooseT0if name w1' m' m} {LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))} {APPLY f (NUM m)} comp2
---)))))
-upd-decomp {k} {name} {f} {a} {v} {w1} {w2} cf gtn comp isv =
-  k1 , k8 , w3 , m , n ,
-  <-transʳ (m≤m+n k1 k2) ltk12 ,
-  k8<k ,
-  g2a ,
-  comp1b ,
-  comp9b
-  where
-    seqv : Term
-    seqv = SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))
+  upd-decomp : {k : ℕ} {name : Name} {f a v : Term} {w1 w2 : 𝕎·}
+               → # f
+               → ∀𝕎-get0-NUM w1 name
+               → steps k (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (v , w2)
+               → isValue v
+               → Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w1' → Σ ℕ (λ m → Σ ℕ (λ m' →
+                   k1 < k
+                   × k2 < k
+                   × getT 0 name w1' ≡ just (NUM m')
+                   × ssteps k1 (a , w1) ≡ just (NUM m , w1')
+                   × steps k2 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m))))))
+  --                 steps→𝕎s {k1} {w1} {w1'} {a} {NUM m} comp1 ++ w1' ∷ chooseT0if name w1' m' m ∷ chooseT0if name w1' m' m ∷ []
+  --                 ≡ steps→𝕎s {k2} {w1} {chooseT0if name w1' m' m} {LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))} {APPLY f (NUM m)} comp2
+  --)))))
+  upd-decomp {k} {name} {f} {a} {v} {w1} {w2} cf gtn comp isv =
+    k1 , k8 , w3 , m , n ,
+    <-transʳ (m≤m+n k1 k2) ltk12 ,
+    k8<k ,
+    g2a ,
+    comp1b ,
+    comp9b
+    where
+      seqv : Term
+      seqv = SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))
 
-    h1 : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w → Σ Term (λ u →
-            ssteps k1 (a , w1) ≡ just (u , w)
-            × isValue u
-            × steps k2 (sub u seqv , w) ≡ (v , w2)
-            × steps (suc k1) (LET a seqv , w1) ≡ (sub u seqv , w)
---            steps→𝕎s {k1} {w1} {w} {a} {u} comp1 ++ Data.List.[ w ] ≡ steps→𝕎s {suc k1} {w1} {w} {LET a seqv} {sub u seqv} comp2
-            × k1 + k2 < k))))
-    h1 = strict-LET→hasValue-decomp k a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) v w1 w2 comp isv
+      h1 : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w → Σ Term (λ u →
+             ssteps k1 (a , w1) ≡ just (u , w)
+             × isValue u
+             × steps k2 (sub u seqv , w) ≡ (v , w2)
+             × steps (suc k1) (LET a seqv , w1) ≡ (sub u seqv , w)
+  --            steps→𝕎s {k1} {w1} {w} {a} {u} comp1 ++ Data.List.[ w ] ≡ steps→𝕎s {suc k1} {w1} {w} {LET a seqv} {sub u seqv} comp2
+                × k1 + k2 < k))))
+      h1 = strict-LET→hasValue-decomp k a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) v w1 w2 comp isv
 
-    k1 : ℕ
-    k1 = fst h1
+      k1 : ℕ
+      k1 = fst h1
 
-    k2 : ℕ
-    k2 = fst (snd h1)
+      k2 : ℕ
+      k2 = fst (snd h1)
 
-    w3 : 𝕎·
-    w3 = fst (snd (snd h1))
+      w3 : 𝕎·
+      w3 = fst (snd (snd h1))
 
-    u : Term
-    u = fst (snd (snd (snd h1)))
+      u : Term
+      u = fst (snd (snd (snd h1)))
 
-    comp1 : ssteps k1 (a , w1) ≡ just (u , w3)
-    comp1 = fst (snd (snd (snd (snd h1))))
+      comp1 : ssteps k1 (a , w1) ≡ just (u , w3)
+      comp1 = fst (snd (snd (snd (snd h1))))
 
-    isvu : isValue u
-    isvu = fst (snd (snd (snd (snd (snd h1)))))
+      isvu : isValue u
+      isvu = fst (snd (snd (snd (snd (snd h1)))))
 
-    comp2 : steps k2 (sub u (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w3) ≡ (v , w2)
-    comp2 = fst (snd (snd (snd (snd (snd (snd h1))))))
+      comp2 : steps k2 (sub u (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w3) ≡ (v , w2)
+      comp2 = fst (snd (snd (snd (snd (snd (snd h1))))))
 
-    comp2x : steps (suc k1) (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))), w1) ≡ (sub u (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w3)
-    comp2x = fst (snd (snd (snd (snd (snd (snd (snd h1)))))))
+      comp2x : steps (suc k1) (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))), w1) ≡ (sub u (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w3)
+      comp2x = fst (snd (snd (snd (snd (snd (snd (snd h1)))))))
 
-    ltk12 : k1 + k2 < k
-    ltk12 = snd (snd (snd (snd (snd (snd (snd (snd h1)))))))
+      ltk12 : k1 + k2 < k
+      ltk12 = snd (snd (snd (snd (snd (snd (snd (snd h1)))))))
 
-    comp2xb : steps (suc k1) (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))), w1) ≡ (LET (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w3)
-    comp2xb rewrite sym (sub-SEQ-updGt u name f cf) = comp2x
+      comp2xb : steps (suc k1) (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))), w1) ≡ (LET (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w3)
+      comp2xb rewrite sym (sub-SEQ-updGt u name f cf) = comp2x
 
-    comp3 : steps k2 (LET (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w3) ≡ (v , w2)
-    comp3 rewrite sym (sub-SEQ-updGt u name f cf) = comp2
+      comp3 : steps k2 (LET (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w3) ≡ (v , w2)
+      comp3 rewrite sym (sub-SEQ-updGt u name f cf) = comp2
 
 --    eqws1 : steps→𝕎s {k1} {w1} {w3} {a} {u} comp1 ++ Data.List.[ w3 ] ≡ steps→𝕎s {suc k1} {w1} {w3} {LET a seqv} {sub u seqv} comp2x
 --    eqws1 = fst (snd (snd (snd (snd (snd (snd (snd (snd h1))))))))
 
-    e13 : w1 ⊑· w3
-    e13 = steps→⊑ k1 a u (ssteps→steps {k1} {a} {u} {w1} {w3} comp1)
+      e13 : w1 ⊑· w3
+      e13 = steps→⊑ k1 a u (ssteps→steps {k1} {a} {u} {w1} {w3} comp1)
 
-    h2 : Σ ℕ (λ k3 → Σ ℕ (λ k4 → Σ 𝕎· (λ w4 → Σ Term (λ u' →
-           ssteps k3 (updGt name u , w3) ≡ just (u' , w4)
-           × isValue u'
-           × steps k4 (sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w4) ≡ (v , w2)
-           × steps (suc k3) (LET (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w3) ≡ (sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w4)
---           steps→𝕎s {k3} {w3} {w4} {updGt name u} {u'} comp1 ++ Data.List.[ w4 ] ≡ steps→𝕎s {suc k3} {w3} {w4} {LET (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u))))} {sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u))))} comp2
-           × k3 + k4 < k2))))
-    h2 = strict-LET→hasValue-decomp k2 (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) v w3 w2 comp3 isv
+      h2 : Σ ℕ (λ k3 → Σ ℕ (λ k4 → Σ 𝕎· (λ w4 → Σ Term (λ u' →
+             ssteps k3 (updGt name u , w3) ≡ just (u' , w4)
+             × isValue u'
+             × steps k4 (sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w4) ≡ (v , w2)
+             × steps (suc k3) (LET (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w3) ≡ (sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w4)
+      --           steps→𝕎s {k3} {w3} {w4} {updGt name u} {u'} comp1 ++ Data.List.[ w4 ] ≡ steps→𝕎s {suc k3} {w3} {w4} {LET (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u))))} {sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u))))} comp2
+             × k3 + k4 < k2))))
+      h2 = strict-LET→hasValue-decomp k2 (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) v w3 w2 comp3 isv
 
-    k3 : ℕ
-    k3 = fst h2
+      k3 : ℕ
+      k3 = fst h2
 
-    k4 : ℕ
-    k4 = fst (snd h2)
+      k4 : ℕ
+      k4 = fst (snd h2)
 
-    w4 : 𝕎·
-    w4 = fst (snd (snd h2))
+      w4 : 𝕎·
+      w4 = fst (snd (snd h2))
 
-    u' : Term
-    u' = fst (snd (snd (snd h2)))
+      u' : Term
+      u' = fst (snd (snd (snd h2)))
 
-    comp4 : ssteps k3 (updGt name u , w3) ≡ just (u' , w4)
-    comp4 = fst (snd (snd (snd (snd h2))))
+      comp4 : ssteps k3 (updGt name u , w3) ≡ just (u' , w4)
+      comp4 = fst (snd (snd (snd (snd h2))))
 
-    isvu' : isValue u'
-    isvu' = fst (snd (snd (snd (snd (snd h2)))))
+      isvu' : isValue u'
+      isvu' = fst (snd (snd (snd (snd (snd h2)))))
 
-    comp5 : steps k4 (sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w4) ≡ (v , w2)
-    comp5 = fst (snd (snd (snd (snd (snd (snd h2))))))
+      comp5 : steps k4 (sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w4) ≡ (v , w2)
+      comp5 = fst (snd (snd (snd (snd (snd (snd h2))))))
 
-    comp5x : steps (suc k3) (LET (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w3) ≡ (sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w4)
-    comp5x = fst (snd (snd (snd (snd (snd (snd (snd h2)))))))
+      comp5x : steps (suc k3) (LET (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w3) ≡ (sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w4)
+      comp5x = fst (snd (snd (snd (snd (snd (snd (snd h2)))))))
 
 --    eqws2 : steps→𝕎s {k3} {w3} {w4} {updGt name u} {u'} comp4 ++ Data.List.[ w4 ] ≡ steps→𝕎s {suc k3} {w3} {w4} {LET (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u))))} {sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u))))} comp5x
 --    eqws2 = fst (snd (snd (snd (snd (snd (snd (snd (snd h2))))))))
 
-    ltk34 : k3 + k4 < k2
-    ltk34 = snd (snd (snd (snd (snd (snd (snd (snd h2)))))))
+      ltk34 : k3 + k4 < k2
+      ltk34 = snd (snd (snd (snd (snd (snd (snd (snd h2)))))))
 
-    h3 : Σ ℕ (λ k5 → Σ ℕ (λ k6 → Σ ℕ (λ k7 → Σ 𝕎· (λ w5 → Σ 𝕎· (λ w6 → Σ ℕ (λ n → Σ ℕ (λ m →
-           steps k5 (get0 name , w3) ≡ (NUM n , w5)
-           × steps k6 (u , w5) ≡ (NUM m , w6)
-           × ((n < m × steps k7 (setT name u , w6) ≡ (u' , w4)) ⊎ (m ≤ n × steps k7 (AX , w6) ≡ (u' , w4)))
-           × k5 + k6 + k7 < k3)))))))
-    h3 = IFLT→hasValue-decomp k3 (get0 name) u (setT name u) AX u' w3 w4 (ssteps→steps {k3} {updGt name u} {u'} {w3} {w4} comp4) isvu'
+      h3 : Σ ℕ (λ k5 → Σ ℕ (λ k6 → Σ ℕ (λ k7 → Σ 𝕎· (λ w5 → Σ 𝕎· (λ w6 → Σ ℕ (λ n → Σ ℕ (λ m →
+             steps k5 (get0 name , w3) ≡ (NUM n , w5)
+             × steps k6 (u , w5) ≡ (NUM m , w6)
+             × ((n < m × steps k7 (setT name u , w6) ≡ (u' , w4)) ⊎ (m ≤ n × steps k7 (AX , w6) ≡ (u' , w4)))
+             × k5 + k6 + k7 < k3)))))))
+      h3 = IFLT→hasValue-decomp k3 (get0 name) u (setT name u) AX u' w3 w4 (ssteps→steps {k3} {updGt name u} {u'} {w3} {w4} comp4) isvu'
 
-    k5 : ℕ
-    k5 = fst h3
+      k5 : ℕ
+      k5 = fst h3
 
-    k6 : ℕ
-    k6 = fst (snd h3)
+      k6 : ℕ
+      k6 = fst (snd h3)
 
-    k7 : ℕ
-    k7 = fst (snd (snd h3))
+      k7 : ℕ
+      k7 = fst (snd (snd h3))
 
-    w5 : 𝕎·
-    w5 = fst (snd (snd (snd h3)))
+      w5 : 𝕎·
+      w5 = fst (snd (snd (snd h3)))
 
-    w6 : 𝕎·
-    w6 = fst (snd (snd (snd (snd h3))))
+      w6 : 𝕎·
+      w6 = fst (snd (snd (snd (snd h3))))
 
-    n : ℕ
-    n = fst (snd (snd (snd (snd (snd h3)))))
+      n : ℕ
+      n = fst (snd (snd (snd (snd (snd h3)))))
 
-    m : ℕ
-    m = fst (snd (snd (snd (snd (snd (snd h3))))))
+      m : ℕ
+      m = fst (snd (snd (snd (snd (snd (snd h3))))))
 
-    comp6 : steps k5 (get0 name , w3) ≡ (NUM n , w5)
-    comp6 = fst (snd (snd (snd (snd (snd (snd (snd h3)))))))
+      comp6 : steps k5 (get0 name , w3) ≡ (NUM n , w5)
+      comp6 = fst (snd (snd (snd (snd (snd (snd (snd h3)))))))
 
-    comp7 : steps k6 (u , w5) ≡ (NUM m , w6)
-    comp7 = fst (snd (snd (snd (snd (snd (snd (snd (snd h3))))))))
+      comp7 : steps k6 (u , w5) ≡ (NUM m , w6)
+      comp7 = fst (snd (snd (snd (snd (snd (snd (snd (snd h3))))))))
 
-    comp8 : ((n < m × steps k7 (setT name u , w6) ≡ (u' , w4)) ⊎ (m ≤ n × steps k7 (AX , w6) ≡ (u' , w4)))
-    comp8 = fst (snd (snd (snd (snd (snd (snd (snd (snd (snd h3)))))))))
+      comp8 : ((n < m × steps k7 (setT name u , w6) ≡ (u' , w4)) ⊎ (m ≤ n × steps k7 (AX , w6) ≡ (u' , w4)))
+      comp8 = fst (snd (snd (snd (snd (snd (snd (snd (snd (snd h3)))))))))
 
-    ltk567 : k5 + k6 + k7 < k3
-    ltk567 = snd (snd (snd (snd (snd (snd (snd (snd (snd (snd h3)))))))))
+      ltk567 : k5 + k6 + k7 < k3
+      ltk567 = snd (snd (snd (snd (snd (snd (snd (snd (snd (snd h3)))))))))
 
-    eqm : u ≡ NUM m
-    eqm = stepsVal→ₗ u (NUM m) w5 w6 k6 isvu comp7
+      eqm : u ≡ NUM m
+      eqm = stepsVal→ₗ u (NUM m) w5 w6 k6 isvu comp7
 
-    eqw56 : w5 ≡ w6
-    eqw56 = stepsVal→ᵣ u (NUM m) w5 w6 k6 isvu comp7
+      eqw56 : w5 ≡ w6
+      eqw56 = stepsVal→ᵣ u (NUM m) w5 w6 k6 isvu comp7
 
-    comp1b : ssteps k1 (a , w1) ≡ just (NUM m , w3)
-    comp1b rewrite sym eqm = comp1
+      comp1b : ssteps k1 (a , w1) ≡ just (NUM m , w3)
+      comp1b rewrite sym eqm = comp1
 
-    comp5b : steps k4 (APPLY f (NUM m) , w4) ≡ (v , w2)
-    comp5b = sym (begin
-                    (v , w2)
-                  ≡⟨ sym comp5 ⟩
-                    steps k4 (sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w4)
-                  ≡⟨ cong (λ x → steps k4 (x , w4)) (sub-APPLY-shift-NUM {u'} {f} {u} {m} cf eqm) ⟩
-                   steps k4 (APPLY f (NUM m) , w4)
-                  ∎)
+      comp5b : steps k4 (APPLY f (NUM m) , w4) ≡ (v , w2)
+      comp5b = sym (begin
+                      (v , w2)
+                    ≡⟨ sym comp5 ⟩
+                      steps k4 (sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w4)
+                    ≡⟨ cong (λ x → steps k4 (x , w4)) (sub-APPLY-shift-NUM {u'} {f} {u} {m} cf eqm) ⟩
+                     steps k4 (APPLY f (NUM m) , w4)
+                    ∎)
 
-    ltk04 : 0 < k4
-    ltk04 = steps-APPLY-to-val>0 comp5b isv
+      ltk04 : 0 < k4
+      ltk04 = steps-APPLY-to-val>0 comp5b isv
 
-    comp5xb : steps (suc k3) (LET (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w3) ≡ (APPLY f (NUM m) , w4)
-    comp5xb = begin
-                steps (suc k3) (LET (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w3)
-              ≡⟨ comp5x ⟩
-                (sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w4)
-              ≡⟨ cong (λ x → (x , w4)) (sub-APPLY-shift-NUM cf eqm) ⟩
-                (APPLY f (NUM m) , w4)
-              ∎
+      comp5xb : steps (suc k3) (LET (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w3) ≡ (APPLY f (NUM m) , w4)
+      comp5xb = begin
+                  steps (suc k3) (LET (updGt name u) (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w3)
+                ≡⟨ comp5x ⟩
+                  (sub u' (APPLY f (shiftDown 1 (shiftUp 0 (shiftUp 0 u)))) , w4)
+                ≡⟨ cong (λ x → (x , w4)) (sub-APPLY-shift-NUM cf eqm) ⟩
+                  (APPLY f (NUM m) , w4)
+                ∎
 
 -- need comp2xb to be a ssteps and k3 to be 2/3
-    cc1 : Σ ℕ (λ k → k ≤ suc k1 + suc k3 × steps k (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))), w1) ≡ (APPLY f (NUM m) , w4))
-    cc1 = steps-trans comp2xb comp5xb
+      cc1 : Σ ℕ (λ k → k ≤ suc k1 + suc k3 × steps k (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))), w1) ≡ (APPLY f (NUM m) , w4))
+      cc1 = steps-trans comp2xb comp5xb
 
-    k8 : ℕ
-    k8 = fst cc1
+      k8 : ℕ
+      k8 = fst cc1
 
-    ltk8 : k8 ≤ suc k1 + suc k3
-    ltk8 = fst (snd cc1)
+      ltk8 : k8 ≤ suc k1 + suc k3
+      ltk8 = fst (snd cc1)
 
-    k8<k : k8 < k
-    k8<k = <-transʳ ltk8 (<-transʳ (steps-counter-aux1 ltk04 ltk34) ltk12)
+      k8<k : k8 < k
+      k8<k = <-transʳ ltk8 (<-transʳ (steps-counter-aux1 ltk04 ltk34) ltk12)
 
-    comp9 : steps k8 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))), w1) ≡ (APPLY f (NUM m) , w4)
-    comp9 = snd (snd cc1)
+      comp9 : steps k8 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))), w1) ≡ (APPLY f (NUM m) , w4)
+      comp9 = snd (snd cc1)
 
-    h5 : Σ Term (λ u → Σ ℕ (λ k5' → k5' < k5 × getT 0 name w3 ≡ just u × steps k5' (u , w3) ≡ (NUM n , w5)))
-    h5 = steps-get0 k5 name w3 w5 (NUM n) tt comp6
+      h5 : Σ Term (λ u → Σ ℕ (λ k5' → k5' < k5 × getT 0 name w3 ≡ just u × steps k5' (u , w3) ≡ (NUM n , w5)))
+      h5 = steps-get0 k5 name w3 w5 (NUM n) tt comp6
 
-    c1 : Term
-    c1 = fst h5
+      c1 : Term
+      c1 = fst h5
 
-    k5' : ℕ
-    k5' = fst (snd h5)
+      k5' : ℕ
+      k5' = fst (snd h5)
 
-    ltk5' : k5' < k5
-    ltk5' = fst (snd (snd h5))
+      ltk5' : k5' < k5
+      ltk5' = fst (snd (snd h5))
 
-    g2 : getT 0 name w3 ≡ just c1
-    g2 = fst (snd (snd (snd h5)))
+      g2 : getT 0 name w3 ≡ just c1
+      g2 = fst (snd (snd (snd h5)))
 
-    comp6b : steps k5' (c1 , w3) ≡ (NUM n , w5)
-    comp6b = snd (snd (snd (snd h5)))
+      comp6b : steps k5' (c1 , w3) ≡ (NUM n , w5)
+      comp6b = snd (snd (snd (snd h5)))
 
-    gtn0 : Σ ℕ (λ j → getT 0 name w3 ≡ just (NUM j))
-    gtn0 = lower (gtn w3 e13)
+      gtn0 : Σ ℕ (λ j → getT 0 name w3 ≡ just (NUM j))
+      gtn0 = lower (gtn w3 e13)
 
-    eqc1 : c1 ≡ NUM n
-    eqc1 = fst (Σ≡just-NUM×steps→≡NUM k5' (getT 0 name w3) c1 n w3 w5 gtn0 g2 comp6b)
+      eqc1 : c1 ≡ NUM n
+      eqc1 = fst (Σ≡just-NUM×steps→≡NUM k5' (getT 0 name w3) c1 n w3 w5 gtn0 g2 comp6b)
 
-    eqw35 : w3 ≡ w5
-    eqw35 = snd (Σ≡just-NUM×steps→≡NUM k5' (getT 0 name w3) c1 n w3 w5 gtn0 g2 comp6b)
+      eqw35 : w3 ≡ w5
+      eqw35 = snd (Σ≡just-NUM×steps→≡NUM k5' (getT 0 name w3) c1 n w3 w5 gtn0 g2 comp6b)
 
-    g2a : getT 0 name w3 ≡ just (NUM n)
-    g2a rewrite sym eqc1 = g2
+      g2a : getT 0 name w3 ≡ just (NUM n)
+      g2a rewrite sym eqc1 = g2
 
-    g2b : getT 0 name w6 ≡ just (NUM n)
-    g2b rewrite sym eqw56 | sym eqw35 = g2a
+      g2b : getT 0 name w6 ≡ just (NUM n)
+      g2b rewrite sym eqw56 | sym eqw35 = g2a
 
-    comp8b : ((n < m × steps k7 (setT name (NUM m) , w6) ≡ (u' , w4)) ⊎ (m ≤ n × steps k7 (AX , w6) ≡ (u' , w4)))
-    comp8b rewrite sym eqm = comp8
+      comp8b : ((n < m × steps k7 (setT name (NUM m) , w6) ≡ (u' , w4)) ⊎ (m ≤ n × steps k7 (AX , w6) ≡ (u' , w4)))
+      comp8b rewrite sym eqm = comp8
 
-    eqw4' : w4 ≡ chooseT0if name w6 n m
-    eqw4' = ⊎→≡chooseT0if {n} {m} {k7} isvu' {--g2b--} comp8b
+      eqw4' : w4 ≡ chooseT0if name w6 n m
+      eqw4' = ⊎→≡chooseT0if {n} {m} {k7} isvu' {--g2b--} comp8b
 
-    eqw4 : w4 ≡ chooseT0if name w3 n m
-    eqw4 = begin
-             w4
-           ≡⟨ eqw4' ⟩
-             chooseT0if name w6 n m
-           ≡⟨ cong (λ x → chooseT0if name x n m) (sym (trans eqw35 eqw56)) ⟩
-             chooseT0if name w3 n m
-           ∎
-
-    comp9b : steps k8 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))), w1) ≡ (APPLY f (NUM m) , chooseT0if name w3 n m)
-    comp9b = begin
-               steps k8 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))), w1)
-             ≡⟨ comp9 ⟩
-               (APPLY f (NUM m) , w4)
-             ≡⟨ cong (λ x → (APPLY f (NUM m) , x)) eqw4 ⟩
-               (APPLY f (NUM m) , chooseT0if name w3 n m)
+      eqw4 : w4 ≡ chooseT0if name w3 n m
+      eqw4 = begin
+               w4
+             ≡⟨ eqw4' ⟩
+               chooseT0if name w6 n m
+             ≡⟨ cong (λ x → chooseT0if name x n m) (sym (trans eqw35 eqw56)) ⟩
+               chooseT0if name w3 n m
              ∎
+
+      comp9b : steps k8 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))), w1) ≡ (APPLY f (NUM m) , chooseT0if name w3 n m)
+      comp9b = begin
+                 steps k8 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))), w1)
+               ≡⟨ comp9 ⟩
+                 (APPLY f (NUM m) , w4)
+               ≡⟨ cong (λ x → (APPLY f (NUM m) , x)) eqw4 ⟩
+                 (APPLY f (NUM m) , chooseT0if name w3 n m)
+               ∎
 \end{code}
 
