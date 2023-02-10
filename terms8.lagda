@@ -2306,4 +2306,100 @@ APPLY-MSEQ⇛ w s a k comp w1 e1 = lift (APPLY-MSEQ⇓ w1 s a k (lower (comp w1 
 #[6]APPLY2 : CTerm6 → CTerm6 → CTerm6 → CTerm6
 #[6]APPLY2 a b c = #[6]APPLY (#[6]APPLY a b) c
 
+
+ID : Term
+ID = LAMBDA (VAR 0)
+
+
+BOT : Term
+BOT = FIX ID
+
+
+#ID : CTerm
+#ID = #LAMBDA #[0]VAR
+
+
+#BOT : CTerm
+#BOT = #FIX #ID
+
+
+#[0]FIX : CTerm0 → CTerm0
+#[0]FIX a = ct0 (FIX ⌜ a ⌝) c
+  where
+    c : #[ [ 0 ] ] FIX ⌜ a ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ } {[ 0 ]}
+              (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+
+
+#[0]ID : CTerm0
+#[0]ID = #[0]LAMBDA #[1]VAR0
+
+
+#[0]BOT : CTerm0
+#[0]BOT = #[0]FIX #[0]ID
+
+
+#[0]N0 : CTerm0
+#[0]N0 = #[0]NUM 0
+
+
+#[1]FIX : CTerm1 → CTerm1
+#[1]FIX a = ct1 (FIX ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] FIX ⌜ a ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ } {0 ∷ [ 1 ]}
+              (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
+
+
+#[1]ID : CTerm1
+#[1]ID = #[1]LAMBDA #[2]VAR0
+
+
+#[1]BOT : CTerm1
+#[1]BOT = #[1]FIX #[1]ID
+
+
+#[1]N0 : CTerm1
+#[1]N0 = #[1]NUM 0
+
+
+#[2]FIX : CTerm2 → CTerm2
+#[2]FIX a = ct2 (FIX ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] FIX ⌜ a ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ } {0 ∷ 1 ∷ [ 2 ]}
+              (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed a))
+
+
+#[2]ID : CTerm2
+#[2]ID = #[2]LAMBDA #[3]VAR0
+
+
+#[2]BOT : CTerm2
+#[2]BOT = #[2]FIX #[2]ID
+
+
+#[2]N0 : CTerm2
+#[2]N0 = #[2]NUM 0
+
+
+#[3]FIX : CTerm3 → CTerm3
+#[3]FIX a = ct3 (FIX ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] FIX ⌜ a ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ } {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
+              (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed a))
+
+
+#[3]ID : CTerm3
+#[3]ID = #[3]LAMBDA #[4]VAR0
+
+
+#[3]BOT : CTerm3
+#[3]BOT = #[3]FIX #[3]ID
+
+
+#[3]N0 : CTerm3
+#[3]N0 = #[3]NUM 0
+
 \end{code}

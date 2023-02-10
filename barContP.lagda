@@ -189,13 +189,17 @@ loopR R k f =
                            (APPENDf (shiftUp 0 (shiftUp 0 (shiftUp 0 k))) (shiftUp 0 (shiftUp 0 (shiftUp 0 f))) (VAR 1)))))
 
 
--- loopA's body
-loopI : Name → Term → Term → Term → Term → Term
-loopI r R k f i =
+loopII : Name → Term → Term → Term → Term → Term
+loopII r R k f i =
   IFLT (get0 r)
        k
        (ETA i)
        (DIGAMMA (loopR R k f))
+
+
+-- loopA's body
+loopI : Name → Term → Term → Term → Term → Term
+loopI r R k f i = IFLT i N0 BOT (loopII r R k f i) -- forces i to be a number
 
 
 loopB : Name → Term → Term → Term → Term → Term
@@ -298,28 +302,33 @@ loop r bar = FIX (loopL r bar)
   #LAMBDA (#[0]loopRL (#[0]shiftUp0 R) (#[0]shiftUp0 k) (#[0]shiftUp0 f))
 
 
+#loopII : Name →  CTerm → CTerm → CTerm → ℕ → CTerm
+#loopII r R k f i =
+  #IFLT (#get0 r)
+         k
+         (#ETA (#NUM i))
+         (#DIGAMMA (#loopR R k f))
+
+
 -- This is loopA's body
 #loopI : Name →  CTerm → CTerm → CTerm → ℕ → CTerm
-#loopI r R k f i =
-  #IFLT (#get0 r)
-        k
-        (#ETA (#NUM i))
-        (#DIGAMMA (#loopR R k f))
+#loopI r R k f i = #IFLT (#NUM i) #N0 #BOT (#loopII r R k f i)
 
 
 #loopA : Name →  CTerm → CTerm → CTerm → CTerm → CTerm
 #loopA r bar R k f =
   #LET (#APPLY bar (#upd r (#shiftUp0 (#shiftUp0 f))))
-       (#[0]IFLT (#[0]get0 r)
-                 (#[0]shiftUp0 k)
-                 (#[0]ETA #[0]VAR)
-                 (#[0]DIGAMMA (#[0]LAMBDA (#[1]LET #[1]VAR0
-                                                   (#[2]LET (#[2]SUC (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 k))))
-                                                            (#[3]APPLY2 (#[3]shiftUp0 (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 R))))
-                                                                        #[3]VAR0
-                                                                        (#[3]APPENDf (#[3]shiftUp0 (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 k))))
-                                                                                     (#[3]shiftUp0 (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 f))))
-                                                                                     #[3]VAR1)))))))
+       (#[0]IFLT #[0]VAR #[0]N0 #[0]BOT
+                 (#[0]IFLT (#[0]get0 r)
+                           (#[0]shiftUp0 k)
+                           (#[0]ETA #[0]VAR)
+                           (#[0]DIGAMMA (#[0]LAMBDA (#[1]LET #[1]VAR0
+                                                             (#[2]LET (#[2]SUC (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 k))))
+                                                                      (#[3]APPLY2 (#[3]shiftUp0 (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 R))))
+                                                                                  #[3]VAR0
+                                                                                  (#[3]APPENDf (#[3]shiftUp0 (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 k))))
+                                                                                               (#[3]shiftUp0 (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 f))))
+                                                                                               #[3]VAR1))))))))
 
 
 #loopF : Name →  CTerm → CTerm → CTerm → CTerm → CTerm
@@ -391,6 +400,7 @@ fvars-upd name f
   where
     F : CTerm2
     F = #[2]LET (#[2]APPLY ⌞ bar ⌟ (#[2]upd r #[4]VAR2))
+                (#[3]IFLT #[3]VAR0 #[3]N0 #[3]BOT
                 (#[3]IFLT (#[3]get0 r)
                           #[3]VAR2
                           (#[3]ETA #[3]VAR0)
@@ -398,7 +408,7 @@ fvars-upd name f
                                                             (#[5]LET (#[5]SUC #[5]VAR4)
                                                                      (#[6]APPLY2 #[6]VAR6
                                                                                  #[6]VAR0
-                                                                                 (#[6]APPENDf #[6]VAR5 #[6]VAR4 #[6]VAR1)))))))
+                                                                                 (#[6]APPENDf #[6]VAR5 #[6]VAR4 #[6]VAR1))))))))
 
 
 -- sanity checking
@@ -1200,17 +1210,11 @@ INR→!∈Type-IndBarC i w x a b comp j rewrite sub0-IndBarC≡ x =
         (INR→!∈Type-IndBarC i w1 b x c c1 (equalInType-mon c∈ w1 e1))
 
 
-sub-loopI≡ : (r : Name) (R k f i : Term) (cR : # R) (ck : # k) (cf : # f) (ci : # i)
+sub-loopI≡ : (r : Name) (R k f i : Term) (cR : # R) (ck : # k) (cf : # f)
              → sub i (loopI r R k f (VAR 0))
                 ≡ loopI r R k f i
-sub-loopI≡ r R k f i cR ck cf ci
-  rewrite #shiftUp 0 (ct i ci)
-        | #shiftUp 0 (ct i ci)
-        | #shiftUp 0 (ct i ci)
-        | #shiftUp 0 (ct i ci)
-        | #shiftUp 0 (ct i ci)
-        | #shiftUp 0 (ct i ci)
-        | #shiftUp 0 (ct R cR)
+sub-loopI≡ r R k f i cR ck cf
+  rewrite #shiftUp 0 (ct R cR)
         | #shiftUp 0 (ct R cR)
         | #shiftUp 0 (ct R cR)
         | #shiftUp 2 (ct R cR)
@@ -1224,22 +1228,20 @@ sub-loopI≡ r R k f i cR ck cf ci
         | #shiftUp 0 (ct f cf)
         | #shiftUp 0 (ct f cf)
         | #shiftUp 0 (ct f cf)
-        | #shiftDown 1 (ct i ci)
-        | #subv 3 i R cR
-        | #subv 3 i k ck
-        | #subv 4 i k ck
-        | #subv 4 i f cf
+        | #subv 3 (shiftUp 0 (shiftUp 0 (shiftUp 0 (shiftUp 0 i)))) R cR
+        | #subv 4 (shiftUp 0 (shiftUp 0 (shiftUp 0 (shiftUp 0 (shiftUp 0 i))))) k ck
+        | #subv 4 (shiftUp 0 (shiftUp 0 (shiftUp 0 (shiftUp 0 (shiftUp 0 i))))) f cf
         | #shiftDown 3 (ct R cR)
         | #shiftDown 3 (ct k ck)
         | #shiftDown 4 (ct k ck)
         | #shiftDown 4 (ct f cf)
         | #subv 2 i R cR
-        | #subv 0 i k ck
-        | #subv 2 i k ck
-        | #shiftDown 0 (ct i ci)
+        | #subv 0 (shiftUp 0 i) k ck
+        | #subv 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 i))) k ck
         | #shiftDown 0 (ct k ck)
         | #shiftDown 2 (ct k ck)
         | #shiftDown 2 (ct R cR)
+        | shiftDownUp i 0
   = refl
 
 
@@ -1251,7 +1253,7 @@ loopB⇓loopI w r i R k f cR ck cf = 1 , ≡pair c refl
     c : sub (NUM i) (loopI r (shiftUp 0 R) (shiftUp 0 k) (shiftUp 0 f) (VAR 0)) ≡ loopI r R k f (NUM i)
     c rewrite #shiftUp 0 (ct R cR)
             | #shiftUp 0 (ct k ck)
-            | sub-loopI≡ r R k f (NUM i) cR ck cf refl
+            | sub-loopI≡ r R k f (NUM i) cR ck cf
             | #shiftUp 0 (ct k ck)
             | #shiftUp 0 (ct k ck)
             | #shiftUp 0 (ct k ck)
@@ -1311,6 +1313,11 @@ shiftUp00 l rewrite #shiftUp 0 l | #shiftUp 0 l = refl
                              (CTerm.closed (#loop r F)) (CTerm.closed k) (CTerm.closed f))
 
 
+#loopI⇓#loopII : (w : 𝕎·) (r : Name ) (R k f : CTerm) (i : ℕ)
+                 → #loopI r R k f i #⇓ #loopII r R k f i from w to w
+#loopI⇓#loopII w r R k f i = 1 , refl
+
+
 #APPLY-#loop#⇓4₁ : (r : Name) (F k f : CTerm) (i : ℕ) (w : 𝕎·) (m n : ℕ)
                    → getT 0 r w ≡ just (NUM m)
                    → k #⇛ #NUM n at w
@@ -1329,7 +1336,9 @@ shiftUp00 l rewrite #shiftUp 0 l | #shiftUp 0 l = refl
     c0 rewrite g = refl
 
     c2 : #loopI r (#loop r F) k f i #⇓ #IFLT (#NUM m) k (#ETA (#NUM i)) (#DIGAMMA (#loopR (#loop r F) k f)) from w to w
-    c2 = IFLT-NUM-1st⇓ {get0 r} {NUM m} ⌜ k ⌝ (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝)) (1 , c0)
+    c2 = ⇓-trans₂
+           {w} {w} {w} (#loopI⇓#loopII w r (#loop r F) k f i)
+           (IFLT-NUM-1st⇓ {get0 r} {NUM m} ⌜ k ⌝ (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝)) (1 , c0))
 
     c3 : #loopI r (#loop r F) k f i #⇓ #IFLT (#NUM m) (#NUM n) (#ETA (#NUM i)) (#DIGAMMA (#loopR (#loop r F) k f)) from w to fst c1
     c3 = ⇓-trans₂ {w} {w} {fst c1} c2 (IFLT-NUM-2nd⇓ m {⌜ k ⌝} {NUM n} (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝)) (snd c1))
@@ -1353,7 +1362,8 @@ shiftUp00 l rewrite #shiftUp 0 l | #shiftUp 0 l = refl
     c0 rewrite g = refl
 
     c2 : #loopI r (#loop r F) k f i #⇓ #IFLT (#NUM m) k (#ETA (#NUM i)) (#DIGAMMA (#loopR (#loop r F) k f)) from w to w
-    c2 = IFLT-NUM-1st⇓ {get0 r} {NUM m} ⌜ k ⌝ (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝)) (1 , c0)
+    c2 = ⇓-trans₂ {w} {w} {w} (#loopI⇓#loopII w r (#loop r F) k f i)
+           (IFLT-NUM-1st⇓ {get0 r} {NUM m} ⌜ k ⌝ (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝)) (1 , c0))
 
     c3 : #loopI r (#loop r F) k f i #⇓ #IFLT (#NUM m) (#NUM n) (#ETA (#NUM i)) (#DIGAMMA (#loopR (#loop r F) k f)) from w to fst c1
     c3 = ⇓-trans₂ {w} {w} {fst c1} c2 (IFLT-NUM-2nd⇓ m {⌜ k ⌝} {NUM n} (ETA (NUM i)) (DIGAMMA (loopR (loop r ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝)) (snd c1))

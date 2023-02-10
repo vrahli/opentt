@@ -90,10 +90,10 @@ open import terms8(W)(C)(K)(G)(X)(N)
 -- 2nd component of APPEND
 APPENDf : Term → Term → Term → Term
 APPENDf k f x =
-  LAMBDA (IFLT (VAR 0)
+  LAMBDA (IFEQ (VAR 0)
                (shiftUp 0 k)
-               (APPLY (shiftUp 0 f) (VAR 0))
-               (shiftUp 0 x))
+               (shiftUp 0 x)
+               (APPLY (shiftUp 0 f) (VAR 0)))
 
 
 -- appends a new value
@@ -137,68 +137,68 @@ LIST A = PROD NAT (FUN NAT A)
 -- APPEND's 2nd component
 #APPENDf : CTerm → CTerm → CTerm → CTerm
 #APPENDf n f x =
-  #LAMBDA (#[0]IFLT #[0]VAR
+  #LAMBDA (#[0]IFEQ #[0]VAR
                     (#[0]shiftUp0 n)
-                    (#[0]APPLY (#[0]shiftUp0 f) #[0]VAR)
-                    (#[0]shiftUp0 x))
+                    (#[0]shiftUp0 x)
+                    (#[0]APPLY (#[0]shiftUp0 f) #[0]VAR))
 
 
 #[0]APPENDf : CTerm0 → CTerm0 → CTerm0 → CTerm0
 #[0]APPENDf n f x =
-  #[0]LAMBDA (#[1]IFLT #[1]VAR0
+  #[0]LAMBDA (#[1]IFEQ #[1]VAR0
                        (#[1]shiftUp0 n)
-                       (#[1]APPLY (#[1]shiftUp0 f) #[1]VAR0)
-                       (#[1]shiftUp0 x))
+                       (#[1]shiftUp0 x)
+                       (#[1]APPLY (#[1]shiftUp0 f) #[1]VAR0))
 
 
 #[1]APPENDf : CTerm1 → CTerm1 → CTerm1 → CTerm1
 #[1]APPENDf n f x =
-  #[1]LAMBDA (#[2]IFLT #[2]VAR0
+  #[1]LAMBDA (#[2]IFEQ #[2]VAR0
                        (#[2]shiftUp0 n)
-                       (#[2]APPLY (#[2]shiftUp0 f) #[2]VAR0)
-                       (#[2]shiftUp0 x))
+                       (#[2]shiftUp0 x)
+                       (#[2]APPLY (#[2]shiftUp0 f) #[2]VAR0))
 
 
 #[2]APPENDf : CTerm2 → CTerm2 → CTerm2 → CTerm2
 #[2]APPENDf n f x =
-  #[2]LAMBDA (#[3]IFLT #[3]VAR0
+  #[2]LAMBDA (#[3]IFEQ #[3]VAR0
                        (#[3]shiftUp0 n)
-                       (#[3]APPLY (#[3]shiftUp0 f) #[3]VAR0)
-                       (#[3]shiftUp0 x))
+                       (#[3]shiftUp0 x)
+                       (#[3]APPLY (#[3]shiftUp0 f) #[3]VAR0))
 
 
 #[3]APPENDf : CTerm3 → CTerm3 → CTerm3 → CTerm3
 #[3]APPENDf n f x =
-  #[3]LAMBDA (#[4]IFLT #[4]VAR0
+  #[3]LAMBDA (#[4]IFEQ #[4]VAR0
                        (#[4]shiftUp0 n)
-                       (#[4]APPLY (#[4]shiftUp0 f) #[4]VAR0)
-                       (#[4]shiftUp0 x))
+                       (#[4]shiftUp0 x)
+                       (#[4]APPLY (#[4]shiftUp0 f) #[4]VAR0))
 
 
 #[5]APPENDf : CTerm5 → CTerm5 → CTerm5 → CTerm5
 #[5]APPENDf n f x =
-  #[5]LAMBDA (#[6]IFLT #[6]VAR0
+  #[5]LAMBDA (#[6]IFEQ #[6]VAR0
                        (#[6]shiftUp0 n)
-                       (#[6]APPLY (#[6]shiftUp0 f) #[6]VAR0)
-                       (#[6]shiftUp0 x))
+                       (#[6]shiftUp0 x)
+                       (#[6]APPLY (#[6]shiftUp0 f) #[6]VAR0))
 
 
 #[6]APPENDf : CTerm6 → CTerm6 → CTerm6 → CTerm6
 #[6]APPENDf n f x =
-  #[6]LAMBDA (#[7]IFLT #[7]VAR0
+  #[6]LAMBDA (#[7]IFEQ #[7]VAR0
                        (#[7]shiftUp0 n)
-                       (#[7]APPLY (#[7]shiftUp0 f) #[7]VAR0)
-                       (#[7]shiftUp0 x))
+                       (#[7]shiftUp0 x)
+                       (#[7]APPLY (#[7]shiftUp0 f) #[7]VAR0))
 
 
 -- APPEND's body
 #APPENDb : CTerm → CTerm1
 #APPENDb x =
   #[1]PAIR (#[1]SUC #[1]VAR0)
-           (#[1]LAMBDA (#[2]IFLT #[2]VAR0
+           (#[1]LAMBDA (#[2]IFEQ #[2]VAR0
                                  #[2]VAR1
-                                 (#[2]APPLY #[2]VAR2 #[2]VAR0)
-                                 (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 x)))))
+                                 (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 x)))
+                                 (#[2]APPLY #[2]VAR2 #[2]VAR0)))
 
 
 #APPEND : CTerm → CTerm → CTerm
@@ -208,53 +208,53 @@ LIST A = PROD NAT (FUN NAT A)
 #[0]APPEND : CTerm0 → CTerm0 → CTerm0
 #[0]APPEND l x =
   #[0]SPREAD l (#[2]PAIR (#[2]SUC #[2]VAR0)
-                         (#[2]LAMBDA (#[3]IFLT #[3]VAR0
+                         (#[2]LAMBDA (#[3]IFEQ #[3]VAR0
                                                #[3]VAR1
-                                               (#[3]APPLY #[3]VAR2 #[3]VAR0)
-                                               (#[3]shiftUp0 (#[2]shiftUp0 (#[1]shiftUp0 x))))))
+                                               (#[3]shiftUp0 (#[2]shiftUp0 (#[1]shiftUp0 x)))
+                                               (#[3]APPLY #[3]VAR2 #[3]VAR0))))
 
 
 #[1]APPEND : CTerm1 → CTerm1 → CTerm1
 #[1]APPEND l x =
   #[1]SPREAD l (#[3]PAIR (#[3]SUC #[3]VAR0)
-                         (#[3]LAMBDA (#[4]IFLT #[4]VAR0
+                         (#[3]LAMBDA (#[4]IFEQ #[4]VAR0
                                                #[4]VAR1
-                                               (#[4]APPLY #[4]VAR2 #[4]VAR0)
-                                               (#[4]shiftUp0 (#[3]shiftUp0 (#[2]shiftUp0 x))))))
+                                               (#[4]shiftUp0 (#[3]shiftUp0 (#[2]shiftUp0 x)))
+                                               (#[4]APPLY #[4]VAR2 #[4]VAR0))))
 
 
 #[2]APPEND : CTerm2 → CTerm2 → CTerm2
 #[2]APPEND l x =
   #[2]SPREAD l (#[4]PAIR (#[4]SUC #[4]VAR0)
-                         (#[4]LAMBDA (#[5]IFLT #[5]VAR0
+                         (#[4]LAMBDA (#[5]IFEQ #[5]VAR0
                                                #[5]VAR1
-                                               (#[5]APPLY #[5]VAR2 #[5]VAR0)
-                                               (#[5]shiftUp0 (#[4]shiftUp0 (#[3]shiftUp0 x))))))
+                                               (#[5]shiftUp0 (#[4]shiftUp0 (#[3]shiftUp0 x)))
+                                               (#[5]APPLY #[5]VAR2 #[5]VAR0))))
 
 
 #[3]APPEND : CTerm3 → CTerm3 → CTerm3
 #[3]APPEND l x =
   #[3]SPREAD l (#[5]PAIR (#[5]SUC #[5]VAR0)
-                         (#[5]LAMBDA (#[6]IFLT #[6]VAR0
+                         (#[5]LAMBDA (#[6]IFEQ #[6]VAR0
                                                #[6]VAR1
-                                               (#[6]APPLY #[6]VAR2 #[6]VAR0)
-                                               (#[6]shiftUp0 (#[5]shiftUp0 (#[4]shiftUp0 x))))))
+                                               (#[6]shiftUp0 (#[5]shiftUp0 (#[4]shiftUp0 x)))
+                                               (#[6]APPLY #[6]VAR2 #[6]VAR0))))
 
 
 #[4]APPEND : CTerm4 → CTerm4 → CTerm4
 #[4]APPEND l x =
   #[4]SPREAD l (#[6]PAIR (#[6]SUC #[6]VAR0)
-                         (#[6]LAMBDA (#[7]IFLT #[7]VAR0
+                         (#[6]LAMBDA (#[7]IFEQ #[7]VAR0
                                                #[7]VAR1
-                                               (#[7]APPLY #[7]VAR2 #[7]VAR0)
-                                               (#[7]shiftUp0 (#[6]shiftUp0 (#[5]shiftUp0 x))))))
+                                               (#[7]shiftUp0 (#[6]shiftUp0 (#[5]shiftUp0 x)))
+                                               (#[7]APPLY #[7]VAR2 #[7]VAR0))))
 
 
-APPLY-APPENDf⇓ : (w : 𝕎·) (a f n m : CTerm) → #APPLY (#APPENDf a f n) m #⇓ #IFLT m a (#APPLY f m) n from w to w
+APPLY-APPENDf⇓ : (w : 𝕎·) (a f n m : CTerm) → #APPLY (#APPENDf a f n) m #⇓ #IFEQ m a n (#APPLY f m) from w to w
 APPLY-APPENDf⇓ w a f n m = 1 , ≡pair e refl
   where
-    e : sub ⌜ m ⌝ ⌜ #[0]IFLT #[0]VAR (#[0]shiftUp0 a) (#[0]APPLY (#[0]shiftUp0 f) #[0]VAR) (#[0]shiftUp0 n) ⌝
-        ≡ ⌜ #IFLT m a (#APPLY f m) n ⌝
+    e : sub ⌜ m ⌝ ⌜ #[0]IFEQ #[0]VAR (#[0]shiftUp0 a) (#[0]shiftUp0 n) (#[0]APPLY (#[0]shiftUp0 f) #[0]VAR) ⌝
+        ≡ ⌜ #IFEQ m a n (#APPLY f m) ⌝
     e rewrite #shiftUp 0 m
             | #shiftUp 0 a
             | #shiftUp 0 f
@@ -269,7 +269,7 @@ APPLY-APPENDf⇓ w a f n m = 1 , ≡pair e refl
             | #shiftDown 0 n = refl
 
 
-APPLY-APPENDf⇛ : (w : 𝕎·) (a f n m : CTerm) → #APPLY (#APPENDf a f n) m #⇛ #IFLT m a (#APPLY f m) n at w
+APPLY-APPENDf⇛ : (w : 𝕎·) (a f n m : CTerm) → #APPLY (#APPENDf a f n) m #⇛ #IFEQ m a n (#APPLY f m) at w
 APPLY-APPENDf⇛ w a f n m w1 e1 = lift (⇓-from-to→⇓ {w1} {w1} (APPLY-APPENDf⇓ w1 a f n m))
 
 
@@ -343,6 +343,39 @@ equalInType-LIST-NAT→ i w f g eqi = Mod.□-idem M (Mod.∀𝕎-□Func M aw (
     (→NATeq-IFLT-NUM {w} {n1} {n2} {c1} {c2} {d1} {d2} z1 z2)
 
 
+→NATeq-IFEQ-NUM : {w : 𝕎·} {i j : ℕ} {c1 c2 d1 d2 : CTerm}
+                   → NATeq w c1 c2
+                   → NATeq w d1 d2
+                   → NATeq w (#IFEQ (#NUM i) (#NUM j) c1 d1) (#IFEQ (#NUM i) (#NUM j) c2 d2)
+→NATeq-IFEQ-NUM {w} {i} {j} {c1} {c2} {d1} {d2} x y with i ≟ j
+... | yes p = NATeq⇛
+                {w} {#IFEQ (#NUM i) (#NUM j) c1 d1} {c1} {#IFEQ (#NUM i) (#NUM j) c2 d2} {c2}
+                (IFEQ⇛= {j} {i} {w} {⌜ c1 ⌝} {⌜ d1 ⌝} p)
+                (IFEQ⇛= {j} {i} {w} {⌜ c2 ⌝} {⌜ d2 ⌝} p)
+                x
+... | no p = NATeq⇛ {w} {#IFEQ (#NUM i) (#NUM j) c1 d1} {d1}
+               {#IFEQ (#NUM i) (#NUM j) c2 d2} {d2}
+               (IFEQ⇛¬= {j} {i} {w} {⌜ c1 ⌝} {⌜ d1 ⌝} p)
+               (IFEQ⇛¬= {j} {i} {w} {⌜ c2 ⌝} {⌜ d2 ⌝} p)
+               y
+
+
+→NATeq-IFEQ : {w : 𝕎·} {a1 a2 b1 b2 c1 c2 d1 d2 : CTerm}
+               → NATeq w a1 a2
+               → NATeq w b1 b2
+               → NATeq w c1 c2
+               → NATeq w d1 d2
+               → NATeq w (#IFEQ a1 b1 c1 d1) (#IFEQ a2 b2 c2 d2)
+→NATeq-IFEQ {w} {a1} {a2} {b1} {b2} {c1} {c2} {d1} {d2} (n1 , x1 , x2) (n2 , y1 , y2) z1 z2 =
+  NATeq⇛
+    {w}
+    {#IFEQ a1 b1 c1 d1} {#IFEQ (#NUM n1) (#NUM n2) c1 d1}
+    {#IFEQ a2 b2 c2 d2} {#IFEQ (#NUM n1) (#NUM n2) c2 d2}
+    (IFEQ⇛₃ {w} {n1} {n2} {⌜ a1 ⌝} {⌜ b1 ⌝} {⌜ c1 ⌝} {⌜ d1 ⌝} x1 y1)
+    (IFEQ⇛₃ {w} {n1} {n2} {⌜ a2 ⌝} {⌜ b2 ⌝} {⌜ c2 ⌝} {⌜ d2 ⌝} x2 y2)
+    (→NATeq-IFEQ-NUM {w} {n1} {n2} {c1} {c2} {d1} {d2} z1 z2)
+
+
 APPENDf∈BAIRE : {i : ℕ} {w : 𝕎·} {a1 a2 f1 f2 n1 n2 : CTerm}
                  → equalInType i w #NAT a1 a2
                  → equalInType i w #NAT n1 n2
@@ -378,12 +411,12 @@ APPENDf∈BAIRE {i} {w} {a1} {a2} {f1} {f2} {n1} {n2} a∈ n∈ f∈ =
         aw1 w2 e2 if ix ia im =
           NATeq⇛
             {w2}
-            {#APPLY (#APPENDf a1 f1 n1) m1} {#IFLT m1 a1 (#APPLY f1 m1) n1}
-            {#APPLY (#APPENDf a2 f2 n2) m2} {#IFLT m2 a2 (#APPLY f2 m2) n2}
+            {#APPLY (#APPENDf a1 f1 n1) m1} {#IFEQ m1 a1 n1 (#APPLY f1 m1)}
+            {#APPLY (#APPENDf a2 f2 n2) m2} {#IFEQ m2 a2 n2 (#APPLY f2 m2)}
             (APPLY-APPENDf⇛ w2 a1 f1 n1 m1) (APPLY-APPENDf⇛ w2 a2 f2 n2 m2) c
           where
-            c : NATeq w2 (#IFLT m1 a1 (#APPLY f1 m1) n1) (#IFLT m2 a2 (#APPLY f2 m2) n2)
-            c = →NATeq-IFLT {w2} {m1} {m2} {a1} {a2} {#APPLY f1 m1} {#APPLY f2 m2} {n1} {n2} im ia if ix
+            c : NATeq w2 (#IFEQ m1 a1 n1 (#APPLY f1 m1)) (#IFEQ m2 a2 n2 (#APPLY f2 m2))
+            c = →NATeq-IFEQ {w2} {m1} {m2} {a1} {a2} {n1} {n2} {#APPLY f1 m1} {#APPLY f2 m2} im ia ix if
 
 
 #APPEND-PAIR⇛PAIR : (w : 𝕎·) (a f n : CTerm) → #APPEND (#PAIR a f) n #⇛ #PAIR (#SUC a) (#APPENDf a f n) at w
