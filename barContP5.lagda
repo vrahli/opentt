@@ -107,6 +107,52 @@ open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 open import barContP4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 
 
+
+
+updSeq→isValue : {r : Name} {s : 𝕊} {n : ℕ} {a b : Term}
+                  → updSeq r s n a b
+                  → isValue a
+                  → isValue b
+updSeq→isValue {r} {s} {n} {.NAT} {.NAT} updSeq-NAT isv = tt
+updSeq→isValue {r} {s} {n} {.QNAT} {.QNAT} updSeq-QNAT isv = tt
+updSeq→isValue {r} {s} {n} {.TNAT} {.TNAT} updSeq-TNAT isv = tt
+updSeq→isValue {r} {s} {n} {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updSeq-LT a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updSeq-QLT a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(NUM x)} {.(NUM x)} (updSeq-NUM x) isv = tt
+updSeq→isValue {r} {s} {n} {.(PI a₁ b₁)} {.(PI a₂ b₂)} (updSeq-PI a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(LAMBDA a₁)} {.(LAMBDA a₂)} (updSeq-LAMBDA a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(WT a₁ b₁)} {.(WT a₂ b₂)} (updSeq-WT a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (updSeq-SUP a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(MT a₁ b₁)} {.(MT a₂ b₂)} (updSeq-MT a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updSeq-MSUP a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (updSeq-SUM a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (updSeq-PAIR a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(SET a₁ b₁)} {.(SET a₂ b₂)} (updSeq-SET a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (updSeq-ISECT a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (updSeq-TUNION a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (updSeq-UNION a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (updSeq-QTUNION a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(INL a₁)} {.(INL a₂)} (updSeq-INL a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(INR a₁)} {.(INR a₂)} (updSeq-INR a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (updSeq-EQ a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) isv = tt
+updSeq→isValue {r} {s} {n} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (updSeq-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) isv = tt
+updSeq→isValue {r} {s} {n} {.AX} {.AX} updSeq-AX isv = tt
+updSeq→isValue {r} {s} {n} {.FREE} {.FREE} updSeq-FREE isv = tt
+updSeq→isValue {r} {s} {n} {.(MSEQ x)} {.(MSEQ x)} (updSeq-MSEQ x) isv = tt
+updSeq→isValue {r} {s} {n} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updSeq-TSQUASH a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updSeq-TTRUNC a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(TCONST a₁)} {.(TCONST a₂)} (updSeq-TCONST a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(SUBSING a₁)} {.(SUBSING a₂)} (updSeq-SUBSING a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(PURE)} {.(PURE)} (updSeq-PURE) isv = tt
+updSeq→isValue {r} {s} {n} {.(DUM a₁)} {.(DUM a₂)} (updSeq-DUM a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updSeq-FFDEFS a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(UNIV x)} {.(UNIV x)} (updSeq-UNIV x) isv = tt
+updSeq→isValue {r} {s} {n} {.(LIFT a₁)} {.(LIFT a₂)} (updSeq-LIFT a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(LOWER a₁)} {.(LOWER a₂)} (updSeq-LOWER a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(SHRINK a₁)} {.(SHRINK a₂)} (updSeq-SHRINK a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(upd r (MSEQ s))} {.(upd r (s2l s n))} updSeq-upd isv = tt
+
+
 ≡sub-updSeqStepInd : (r : Name) (s : 𝕊) (n : ℕ) (b : Term) (t u : Term) (w : 𝕎·)
                      → t ≡ u
                      → updSeqStepInd r s n (sub b t) w
@@ -357,7 +403,16 @@ updSeq-step cn gc w1 w2 r s n .(FIX a₁) .(FIX a₂) u (updSeq-FIX a₁ a₂ up
     ind : updSeqStep w1 w1' r s n a₂ a₁'
     ind = updSeq-step cn gc w1 w1' r s n a₁ a₂ a₁' upd₁ gtn compat q (updSeqStepInd-FIX₁→ w1' r s n a₁' sind)
 ... |    inj₂ q rewrite q = ⊥-elim (¬just≡nothing (sym comp))
-updSeq-step cn gc w1 w2 r s n .(LET a₁ b₁) .(LET a₂ b₂) u (updSeq-LET a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind = {!!}
+updSeq-step cn gc w1 w2 r s n .(LET a₁ b₁) .(LET a₂ b₂) u (updSeq-LET a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind with isValue⊎ a₁
+... | inj₁ x rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  0 , 1 , sub a₁ b₁ , sub a₂ b₂ , w1 , refl , snd (LET-val⇓ w1 a₂ b₂ (updSeq→isValue upd₁ x)) , updSeq-sub upd₂ upd₁
+... | inj₂ x with step⊎ a₁ w1
+... |    inj₁ (a₁' , w1' , q) rewrite q | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+  →updSeqStep-LET₁ w1 w1' r s n a₁' a₂ b₁ b₂ upd₂ ind
+  where
+    ind : updSeqStep w1 w1' r s n a₂ a₁'
+    ind = updSeq-step cn gc w1 w1' r s n a₁ a₂ a₁' upd₁ gtn compat q (updSeqStepInd-LET₁→ w1' r s n a₁' b₁ sind)
+... |    inj₂ q rewrite q = ⊥-elim (¬just≡nothing (sym comp))
 updSeq-step cn gc w1 w2 r s n .(WT a₁ b₁) .(WT a₂ b₂) u (updSeq-WT a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , WT a₁ b₁ , WT a₂ b₂ , w1 , refl , refl , updSeq-WT a₁ a₂ b₁ b₂ upd₁ upd₂
 updSeq-step cn gc w1 w2 r s n .(SUP a₁ b₁) .(SUP a₂ b₂) u (updSeq-SUP a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , SUP a₁ b₁ , SUP a₂ b₂ , w1 , refl , refl , updSeq-SUP a₁ a₂ b₁ b₂ upd₁ upd₂
 updSeq-step cn gc w1 w2 r s n .(DSUP a₁ b₁) .(DSUP a₂ b₂) u (updSeq-DSUP a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind = {!!}

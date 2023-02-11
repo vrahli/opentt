@@ -517,6 +517,22 @@ updSeqStep w1 w2 r s n u x =
     comp2' = →steps-APPLY {w1} {w3} {a₂} {z} b₂ k2 comp2
 
 
+→updSeqStep-LET₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a₁ a₂ b₁ b₂ : Term)
+                      → updSeq r s n b₁ b₂
+                      → updSeqStep w1 w1' r s n a₂ a₁
+                      → updSeqStep w1 w1' r s n (LET a₂ b₂) (LET a₁ b₁)
+→updSeqStep-LET₁ w1 w1' r s n a₁ a₂ b₁ b₂ ub (k1 , k2 , y , z , w3 , comp1 , comp2 , u) =
+  fst comp1' , fst comp2' ,
+  LET y b₁ , LET z b₂ ,
+  w3 , snd comp1' , snd comp2' , updSeq-LET _ _ _ _ u ub
+  where
+    comp1' : Σ ℕ (λ k0 → steps k0 (LET a₁ b₁ , w1') ≡ (LET y b₁ , w3))
+    comp1' = LET⇓steps k1 {a₁} {y} b₁ {w1'} {w3} comp1
+
+    comp2' : Σ ℕ (λ k0 → steps k0 (LET a₂ b₂ , w1) ≡ (LET z b₂ , w3))
+    comp2' = LET⇓steps k2 {a₂} {z} b₂ {w1} {w3} comp2
+
+
 updSeqSteps : (r : Name) (s : 𝕊) (n : ℕ) (k : ℕ) → Set(L)
 updSeqSteps r s n k =
   {a b v : Term} {w1 w2 : 𝕎·}
@@ -587,6 +603,15 @@ updSeqStepInd-APPLY₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b : 
                          → updSeqStepInd r s n a w
 updSeqStepInd-APPLY₁→ w r s n a b (k1 , v , w' , comp , ish , isv , ind)
   with isHighestℕ-APPLY₁→ {n} {k1} {r} {a} {b} {v} {w} {w'} comp isv ish
+... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
+  k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
+
+
+updSeqStepInd-LET₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b : Term)
+                         → updSeqStepInd r s n (LET a b) w
+                         → updSeqStepInd r s n a w
+updSeqStepInd-LET₁→ w r s n a b (k1 , v , w' , comp , ish , isv , ind)
+  with isHighestℕ-LET₁→ {n} {k1} {r} {a} {b} {v} {w} {w'} comp isv ish
 ... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
   k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
 
