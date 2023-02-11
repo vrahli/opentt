@@ -486,6 +486,21 @@ updSeqStep w1 w2 r s n u x =
     comp2' = SUC-steps₁ {k2} {w1} {w3} {a₂} {z} comp2
 
 
+→updSeqStep-FIX₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a₁ a₂ : Term)
+                    → updSeqStep w1 w1' r s n a₂ a₁
+                    → updSeqStep w1 w1' r s n (FIX a₂) (FIX a₁)
+→updSeqStep-FIX₁ w1 w1' r s n a₁ a₂ (k1 , k2 , y , z , w3 , comp1 , comp2 , u) =
+  fst comp1' , fst comp2' ,
+  FIX y , FIX z ,
+  w3 , snd comp1' , snd comp2' , updSeq-FIX _ _ u
+  where
+    comp1' : Σ ℕ (λ k0 → steps k0 (FIX a₁ , w1') ≡ (FIX y , w3))
+    comp1' = FIX⇓steps k1 {a₁} {y} {w1'} {w3} comp1
+
+    comp2' : Σ ℕ (λ k0 → steps k0 (FIX a₂ , w1) ≡ (FIX z , w3))
+    comp2' = FIX⇓steps k2 {a₂} {z} {w1} {w3} comp2
+
+
 →updSeqStep-APPLY₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a₁ a₂ b₁ b₂ : Term)
                       → updSeq r s n b₁ b₂
                       → updSeqStep w1 w1' r s n a₂ a₁
@@ -565,5 +580,207 @@ updSeqStepInd-SUC₁→ w r s n a (k1 , v , w' , comp , ish , isv , ind)
   with isHighestℕ-SUC₁→ {n} {k1} {r} {a} {v} {w} {w'} comp isv ish
 ... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
   k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
+
+
+updSeqStepInd-APPLY₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b : Term)
+                         → updSeqStepInd r s n (APPLY a b) w
+                         → updSeqStepInd r s n a w
+updSeqStepInd-APPLY₁→ w r s n a b (k1 , v , w' , comp , ish , isv , ind)
+  with isHighestℕ-APPLY₁→ {n} {k1} {r} {a} {b} {v} {w} {w'} comp isv ish
+... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
+  k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
+
+
+updSeqStepInd-FIX₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a : Term)
+                        → updSeqStepInd r s n (FIX a) w
+                        → updSeqStepInd r s n a w
+updSeqStepInd-FIX₁→ w r s n a (k1 , v , w' , comp , ish , isv , ind)
+  with isHighestℕ-FIX₁→ {n} {k1} {r} {a} {v} {w} {w'} comp isv ish
+... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
+  k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
+
+
+<s→¬≡→< : {i n : ℕ} → i < suc n → ¬ i ≡ n → i < n
+<s→¬≡→< {i} {n} lts neq with i <? n
+... | yes p = p
+... | no p = ⊥-elim (neq (<s→¬<→≡ lts p))
+
+
+equalInType-BAIREn0 : (i : ℕ) (w : 𝕎·) (f g : CTerm)
+                      → equalInType i w (#BAIREn (#NUM 0)) f g
+equalInType-BAIREn0 i w f g =
+  equalInType-FUN
+    (→equalTypesNATn i w (#NUM 0) (#NUM 0) (NUM-equalInType-NAT i w 0))
+    eqTypesNAT
+    aw
+  where
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) →  equalInType i w' (#NATn (#NUM 0)) a₁ a₂
+                       → equalInType i w' #NAT (#APPLY f a₁) (#APPLY g a₂))
+    aw w1 e1 a₁ a₂ eqa = ⊥-elim (lower {0ℓ} {lsuc(L)} (Mod.□-const M (Mod.∀𝕎-□Func M aw1 eqa1)))
+      where
+        aw1 : ∀𝕎 w1 (λ w' e' → Σ ℕ (λ j → a₁ #⇛ #NUM j at w' × a₂ #⇛ #NUM j at w' × j < 0)
+                              → Lift (lsuc L) ⊥)
+        aw1 w2 e2 (j , c1 , c2 , x) = lift (1+n≢0 {j} (n≤0⇒n≡0 {suc j} x))
+
+        eqa1 : □· w1 (λ w' _ → Σ ℕ (λ j → a₁ #⇛ #NUM j at w' × a₂ #⇛ #NUM j at w' × j < 0))
+        eqa1 = equalInType-NATn→ {i} {w1} {0} {#NUM 0} {a₁} {a₂} (#⇛-refl w1 (#NUM 0)) eqa
+
+
+#APPLY-seq2list⇛ : (w : 𝕎·) (s : 𝕊) (a : CTerm) (k n : ℕ)
+                    → k < n
+                    → a #⇛ #NUM k at w
+                    → #APPLY (seq2list s n) a #⇛ #NUM (s k) at w
+#APPLY-seq2list⇛ w s a k 0 ltn comp = ⊥-elim (1+n≢0 {k} (n≤0⇒n≡0 {suc k} ltn))
+#APPLY-seq2list⇛ w s a k (suc n) ltn comp =
+  #⇛-trans
+    {w} {#APPLY (seq2list s (suc n)) a} {#IFEQ a (#NUM n) (#NUM (s n)) (#APPLY (seq2list s n) a)} {#NUM (s k)}
+    (APPLY-APPENDf⇛ w (#NUM n) (seq2list s n) (#NUM (s n)) a)
+    (#⇛-trans
+       {w}
+       {#IFEQ a (#NUM n) (#NUM (s n)) (#APPLY (seq2list s n) a)}
+       {#IFEQ (#NUM k) (#NUM n) (#NUM (s n)) (#APPLY (seq2list s n) a)}
+       {#NUM (s k)}
+       (IFEQ⇛₁ {w} {⌜ a ⌝} {NUM k} {NUM n} {NUM (s n)} {⌜ #APPLY (seq2list s n) a ⌝} comp)
+       c1)
+  where
+    c1 : #IFEQ (#NUM k) (#NUM n) (#NUM (s n)) (#APPLY (seq2list s n) a)  #⇛ #NUM (s k) at w
+    c1 with k ≟ n
+    ... | yes p rewrite p = IFEQ⇛= {n} {n} {w} {NUM (s n)} {⌜ #APPLY (seq2list s n) a ⌝} refl
+    ... | no p =
+      #⇛-trans
+        {w}
+        {#IFEQ (#NUM k) (#NUM n) (#NUM (s n)) (#APPLY (seq2list s n) a)}
+        {#APPLY (seq2list s n) a}
+        {#NUM (s k)}
+        (IFEQ⇛¬= {n} {k} {w} {NUM (s n)} {⌜ #APPLY (seq2list s n) a ⌝} p)
+        (#APPLY-seq2list⇛ w s a k n (<s→¬≡→< ltn p) comp)
+
+
+equalInType-BAIREn-seq2list : (i : ℕ) (w : 𝕎·) (s : 𝕊) (n : ℕ)
+                              → equalInType i w (#BAIREn (#NUM n)) (seq2list s n) (#MSEQ s)
+equalInType-BAIREn-seq2list i w s n =
+  equalInType-FUN
+    (→equalTypesNATn i w (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n))
+    eqTypesNAT
+    aw
+  where
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#NATn (#NUM n)) a₁ a₂
+                       → equalInType i w' #NAT (#APPLY (seq2list s n) a₁) (#APPLY (#MSEQ s) a₂))
+    aw w1 e1 a₁ a₂ eqa =
+      →equalInType-NAT
+        i w1 (#APPLY (seq2list s n) a₁) (#APPLY (#MSEQ s) a₂)
+        (Mod.∀𝕎-□Func M aw1 (equalInType-NATn→ {i} {w1} {n} {#NUM n} {a₁} {a₂} (#⇛-refl w1 (#NUM n)) eqa))
+      where
+        aw1 : ∀𝕎 w1 (λ w' e' → Σ ℕ (λ k → a₁ #⇛ #NUM k at w' × a₂ #⇛ #NUM k at w' × k < n)
+                              → NATeq w' (#APPLY (seq2list s n) a₁) (#APPLY (#MSEQ s) a₂))
+        aw1 w2 e2 (k , c1 , c2 , ltn) = s k , #APPLY-seq2list⇛ w2 s a₁ k n ltn c1 , APPLY-MSEQ⇛ w2 s ⌜ a₂ ⌝ k c2
+
+
+correctSeqN-inv0 : (i : ℕ) (r : Name) (w : 𝕎·) (F : CTerm) (s : 𝕊) (n : ℕ)
+                   → correctSeqN r w F 0 #INIT s (suc n)
+                   → Σ ℕ (λ m → Σ 𝕎· (λ w' → Σ ℕ (λ j →
+                       #APPLY F (#upd r (seq2list s n)) #⇓ #NUM m from (chooseT r w N0) to w'
+                       × getT 0 r w' ≡ just (NUM j)
+                       × ¬ j < n)))
+correctSeqN-inv0 i r w F s n cor
+  with correctSeqN-inv i r w F s 0 n cor
+... | (m , w' , j , comp , gt0 , nlt) rewrite +0 n =
+  m , w' , j , comp , gt0 , nlt
+
+
+Σsteps-updSeq-NUM→ : (w w' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (m : ℕ) (b : Term)
+                      → Σ ℕ (λ k → Σ Term (λ v → steps k (b , w) ≡ (v , w') × updSeq r s n (NUM m) v))
+                      → Σ ℕ (λ k → steps k (b , w) ≡ (NUM m , w'))
+Σsteps-updSeq-NUM→ w w' r s n m b (k , v , comp , u)
+  rewrite updSeq-NUM→ r s n m v u =
+  k , comp
+
+
+chooseT0if≡u𝕎 : (w : 𝕎·) (r : Name) (m m' : ℕ)
+                 → getT 0 r w ≡ just (NUM m')
+                 → chooseT0if r w m' m ≡ u𝕎 r m w
+chooseT0if≡u𝕎 w r m m' gt0 rewrite gt0 with m' <? m
+... | yes p = refl
+... | no p = refl
+
+
+isHighestℕ→<last : {k : ℕ} {w1 w2 : 𝕎·} {a b : Term} {m : ℕ} (n : ℕ) (name : Name) (comp : steps k (a , w1) ≡ (b , w2))
+                       → isHighestℕ {k} {w1} {w2} {a} {b} n name comp
+                       → getT 0 name w2 ≡ just (NUM m)
+                       → m < n
+isHighestℕ→<last {0} {w1} {w2} {a} {b} {m} n name comp h gt0
+  rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp) | gt0 with h
+... | (j , e , q) rewrite sym (NUMinj (just-inj e)) = q
+isHighestℕ→<last {suc k} {w1} {w2} {a} {b} {m} n name comp h gt0 with step⊎ a w1
+... | inj₁ (a' , w' , z) rewrite z = isHighestℕ→<last {k} {w'} {w2} {a'} {b} {m} n name comp (snd h) gt0
+... | inj₂ z rewrite z | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) | gt0 with h
+... |    (j , e , q) rewrite sym (NUMinj (just-inj e)) = q
+
+
+isHighestℕ→<≡upd : (gc : get-choose-ℕ)
+                    {k : ℕ} {w1 w2 w : 𝕎·} {a b : Term} {m m' : ℕ} (n : ℕ) (name : Name)
+                    (comp : steps k (a , w1) ≡ (b , w2))
+                    → isHighestℕ {k} {w1} {w2} {a} {b} n name comp
+                    → getT 0 name w ≡ just (NUM m')
+                    → compatible· name w Res⊤
+                    → w2 ≡ chooseT0if name w m' m
+                    → m < n
+isHighestℕ→<≡upd gc {k} {w1} {w2} {w} {a} {b} {m} {m'} n name comp h gt0 compat e rewrite e with m' <? m
+... | yes p = isHighestℕ→<last {k} {w1} {chooseT name w (NUM m)} {a} {b} {m} n name comp h (gc name w m compat)
+... | no p = <-transʳ (≮⇒≥ p) (isHighestℕ→<last {k} {w1} {w} {a} {b} {m'} n name comp h gt0)
+
+
+steps→≡𝕎 : (w w₁ w₂ : 𝕎·) (a v₁ v₂ : Term) (n m : ℕ)
+             → isValue v₁
+             → isValue v₂
+             → steps n (a , w) ≡ (v₁ , w₁)
+             → steps m (a , w) ≡ (v₂ , w₂)
+             → w₁ ≡ w₂
+steps→≡𝕎 w w₁ w₂ a v₁ v₂ n m isv₁ isv₂ c₁ c₂ with n ≤? m
+... | yes p = steps-val-det-𝕎 w w₁ w₂ a v₁ v₂ n m isv₁ c₁ c₂ p
+... | no p = sym (steps-val-det-𝕎 w w₂ w₁ a v₂ v₁ m n isv₂ c₂ c₁ (<⇒≤ (≰⇒> p)))
+
+
+steps→≡ : (w w₁ w₂ : 𝕎·) (a v₁ v₂ : Term) (n m : ℕ)
+             → isValue v₁
+             → isValue v₂
+             → steps n (a , w) ≡ (v₁ , w₁)
+             → steps m (a , w) ≡ (v₂ , w₂)
+             → v₁ ≡ v₂
+steps→≡ w w₁ w₂ a v₁ v₂ n m isv₁ isv₂ c₁ c₂ with n ≤? m
+... | yes p = steps-val-det w w₁ w₂ a v₁ v₂ n m isv₁ c₁ c₂ p
+... | no p = sym (steps-val-det w w₂ w₁ a v₂ v₁ m n isv₂ c₂ c₁ (<⇒≤ (≰⇒> p)))
+
+
+s2l⇓ : (w : 𝕎·) (s : 𝕊) (n m : ℕ)
+       → m < n
+       → APPLY (s2l s n) (NUM m) ⇓ NUM (s m) from w to w
+s2l⇓ w s 0 m ltn = ⊥-elim (1+n≢0 {m} (n≤0⇒n≡0 {suc m} ltn))
+s2l⇓ w s (suc n) m ltn =
+  ⇓-trans₂
+    {w} {w} {w}
+    {APPLY (APPENDf (NUM n) (s2l s n) (NUM (s n))) (NUM m)}
+    {IFEQ (NUM m) (NUM n) (NUM (s n)) (APPLY (s2l s n) (NUM m))}
+    {NUM (s m)}
+    (APPLY-APPENDf⇓ w (#NUM n) (ct (s2l s n) (s2l# s n)) (#NUM (s n)) (#NUM m))
+    c
+  where
+    c : IFEQ (NUM m) (NUM n) (NUM (s n)) (APPLY (s2l s n) (NUM m)) ⇓ NUM (s m) from w to w
+    c with m ≟ n
+    ... | yes p rewrite p = IFEQ-NUM=⇓ {n} {n} refl (NUM (s n)) (APPLY (s2l s n) (NUM n)) w
+    ... | no p =
+      ⇓-trans₂
+        {w} {w} {w}
+        {IFEQ (NUM m) (NUM n) (NUM (s n)) (APPLY (s2l s n) (NUM m))}
+        {APPLY (s2l s n) (NUM m)} {NUM (s m)}
+        (IFEQ-NUM¬=⇓ {m} {n} p (NUM (s n)) (APPLY (s2l s n) (NUM m)) w)
+        (s2l⇓ w s n m (<s→¬≡→< ltn p))
+
+
+≡𝕎→⇓from-to : (w w1 w2 : 𝕎·) (a b : Term)
+                → w1 ≡ w2
+                → a ⇓ b from w to w1
+                → a ⇓ b from w to w2
+≡𝕎→⇓from-to w w1 w2 a b e comp rewrite e = comp
 
 \end{code}
