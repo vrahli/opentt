@@ -198,12 +198,48 @@ updSeq-CS→ : (r : Name) (s : 𝕊) (n : ℕ) (m : Name) (b : Term)
 updSeq-CS→ r s n m b ()
 
 
+updSeq-NAME→ : (r : Name) (s : 𝕊) (n : ℕ) (m : Name) (b : Term)
+              → updSeq r s n (NAME m) b
+              → ⊥
+updSeq-NAME→ r s n m b ()
+
+
 updSeq-LAMBDA→ : {r : Name} {s : 𝕊} {n : ℕ} {t : Term} {a : Term}
                   → updSeq r s n (LAMBDA t) a
                   → Σ Term (λ u → a ≡ LAMBDA u × updSeq r s n t u)
                      ⊎ (t ≡ updBody r (MSEQ s) × a ≡ upd r (s2l s n))
 updSeq-LAMBDA→ {r} {s} {n} {t} {.(LAMBDA a₂)} (updSeq-LAMBDA .t a₂ u) = inj₁ (a₂ , refl , u)
 updSeq-LAMBDA→ {r} {s} {n} {.(updBody r (MSEQ s))} {.(upd r (s2l s n))} updSeq-upd = inj₂ (refl , refl)
+
+
+updSeq-SUP→ : (r : Name) (s : 𝕊) (n : ℕ) (t u : Term) (b : Term)
+                → updSeq r s n (SUP t u) b
+                → Σ Term (λ x → Σ Term (λ y → b ≡ SUP x y × updSeq r s n t x × updSeq r s n u y))
+updSeq-SUP→ r s n t u .(SUP a₂ b₂) (updSeq-SUP .t a₂ .u b₂ h h₁) = a₂ , b₂ , refl , h , h₁
+
+
+updSeq-MSUP→ : (r : Name) (s : 𝕊) (n : ℕ) (t u : Term) (b : Term)
+                → updSeq r s n (MSUP t u) b
+                → Σ Term (λ x → Σ Term (λ y → b ≡ MSUP x y × updSeq r s n t x × updSeq r s n u y))
+updSeq-MSUP→ r s n t u .(MSUP a₂ b₂) (updSeq-MSUP .t a₂ .u b₂ h h₁) = a₂ , b₂ , refl , h , h₁
+
+
+updSeq-PAIR→ : (r : Name) (s : 𝕊) (n : ℕ) (t u : Term) (b : Term)
+                → updSeq r s n (PAIR t u) b
+                → Σ Term (λ x → Σ Term (λ y → b ≡ PAIR x y × updSeq r s n t x × updSeq r s n u y))
+updSeq-PAIR→ r s n t u .(PAIR a₂ b₂) (updSeq-PAIR .t a₂ .u b₂ h h₁) = a₂ , b₂ , refl , h , h₁
+
+
+updSeq-INL→ : (r : Name) (s : 𝕊) (n : ℕ) (t : Term) (b : Term)
+                → updSeq r s n (INL t) b
+                → Σ Term (λ x → b ≡ INL x × updSeq r s n t x)
+updSeq-INL→ r s n t .(INL a₂) (updSeq-INL .t a₂ h) = a₂ , refl , h
+
+
+updSeq-INR→ : (r : Name) (s : 𝕊) (n : ℕ) (t : Term) (b : Term)
+                → updSeq r s n (INR t) b
+                → Σ Term (λ x → b ≡ INR x × updSeq r s n t x)
+updSeq-INR→ r s n t .(INR a₂) (updSeq-INR .t a₂ h) = a₂ , refl , h
 
 
 updSeq-shiftUp : (n : ℕ) {r : Name} {s : 𝕊} {k : ℕ} {a b : Term}
@@ -501,6 +537,21 @@ updSeqStep w1 w2 r s n u x =
     comp2' = FIX⇓steps k2 {a₂} {z} {w1} {w3} comp2
 
 
+→updSeqStep-MAPP₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (x : 𝕊) (a₁ a₂ : Term)
+                    → updSeqStep w1 w1' r s n a₂ a₁
+                    → updSeqStep w1 w1' r s n (MAPP x a₂) (MAPP x a₁)
+→updSeqStep-MAPP₁ w1 w1' r s n x a₁ a₂ (k1 , k2 , y , z , w3 , comp1 , comp2 , u) =
+  fst comp1' , fst comp2' ,
+  MAPP x y , MAPP x z ,
+  w3 , snd comp1' , snd comp2' , updSeq-MAPP x _ _ u
+  where
+    comp1' : Σ ℕ (λ k0 → steps k0 (MAPP x a₁ , w1') ≡ (MAPP x y , w3))
+    comp1' = →steps-MAPP {w1'} {w3} {a₁} {y} x k1 comp1
+
+    comp2' : Σ ℕ (λ k0 → steps k0 (MAPP x a₂ , w1) ≡ (MAPP x z , w3))
+    comp2' = →steps-MAPP {w1} {w3} {a₂} {z} x k2 comp2
+
+
 →updSeqStep-APPLY₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a₁ a₂ b₁ b₂ : Term)
                       → updSeq r s n b₁ b₂
                       → updSeqStep w1 w1' r s n a₂ a₁
@@ -531,6 +582,87 @@ updSeqStep w1 w2 r s n u x =
 
     comp2' : Σ ℕ (λ k0 → steps k0 (LET a₂ b₂ , w1) ≡ (LET z b₂ , w3))
     comp2' = LET⇓steps k2 {a₂} {z} b₂ {w1} {w3} comp2
+
+
+→updSeqStep-CHOOSE₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a₁ a₂ b₁ b₂ : Term)
+                      → updSeq r s n b₁ b₂
+                      → updSeqStep w1 w1' r s n a₂ a₁
+                      → updSeqStep w1 w1' r s n (CHOOSE a₂ b₂) (CHOOSE a₁ b₁)
+→updSeqStep-CHOOSE₁ w1 w1' r s n a₁ a₂ b₁ b₂ ub (k1 , k2 , y , z , w3 , comp1 , comp2 , u) =
+  fst comp1' , fst comp2' ,
+  CHOOSE y b₁ , CHOOSE z b₂ ,
+  w3 , snd comp1' , snd comp2' , updSeq-CHOOSE _ _ _ _ u ub
+  where
+    comp1' : Σ ℕ (λ k0 → steps k0 (CHOOSE a₁ b₁ , w1') ≡ (CHOOSE y b₁ , w3))
+    comp1' = CHOOSE⇓steps k1 {a₁} {y} b₁ {w1'} {w3} comp1
+
+    comp2' : Σ ℕ (λ k0 → steps k0 (CHOOSE a₂ b₂ , w1) ≡ (CHOOSE z b₂ , w3))
+    comp2' = CHOOSE⇓steps k2 {a₂} {z} b₂ {w1} {w3} comp2
+
+
+→updSeqStep-DSUP₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a₁ a₂ b₁ b₂ : Term)
+                      → updSeq r s n b₁ b₂
+                      → updSeqStep w1 w1' r s n a₂ a₁
+                      → updSeqStep w1 w1' r s n (DSUP a₂ b₂) (DSUP a₁ b₁)
+→updSeqStep-DSUP₁ w1 w1' r s n a₁ a₂ b₁ b₂ ub (k1 , k2 , y , z , w3 , comp1 , comp2 , u) =
+  fst comp1' , fst comp2' ,
+  DSUP y b₁ , DSUP z b₂ ,
+  w3 , snd comp1' , snd comp2' , updSeq-DSUP _ _ _ _ u ub
+  where
+    comp1' : Σ ℕ (λ k0 → steps k0 (DSUP a₁ b₁ , w1') ≡ (DSUP y b₁ , w3))
+    comp1' = DSUP⇓steps k1 {a₁} {y} b₁ {w1'} {w3} comp1
+
+    comp2' : Σ ℕ (λ k0 → steps k0 (DSUP a₂ b₂ , w1) ≡ (DSUP z b₂ , w3))
+    comp2' = DSUP⇓steps k2 {a₂} {z} b₂ {w1} {w3} comp2
+
+
+→updSeqStep-DMSUP₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a₁ a₂ b₁ b₂ : Term)
+                      → updSeq r s n b₁ b₂
+                      → updSeqStep w1 w1' r s n a₂ a₁
+                      → updSeqStep w1 w1' r s n (DMSUP a₂ b₂) (DMSUP a₁ b₁)
+→updSeqStep-DMSUP₁ w1 w1' r s n a₁ a₂ b₁ b₂ ub (k1 , k2 , y , z , w3 , comp1 , comp2 , u) =
+  fst comp1' , fst comp2' ,
+  DMSUP y b₁ , DMSUP z b₂ ,
+  w3 , snd comp1' , snd comp2' , updSeq-DMSUP _ _ _ _ u ub
+  where
+    comp1' : Σ ℕ (λ k0 → steps k0 (DMSUP a₁ b₁ , w1') ≡ (DMSUP y b₁ , w3))
+    comp1' = DMSUP⇓steps k1 {a₁} {y} b₁ {w1'} {w3} comp1
+
+    comp2' : Σ ℕ (λ k0 → steps k0 (DMSUP a₂ b₂ , w1) ≡ (DMSUP z b₂ , w3))
+    comp2' = DMSUP⇓steps k2 {a₂} {z} b₂ {w1} {w3} comp2
+
+
+→updSeqStep-SPREAD₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a₁ a₂ b₁ b₂ : Term)
+                      → updSeq r s n b₁ b₂
+                      → updSeqStep w1 w1' r s n a₂ a₁
+                      → updSeqStep w1 w1' r s n (SPREAD a₂ b₂) (SPREAD a₁ b₁)
+→updSeqStep-SPREAD₁ w1 w1' r s n a₁ a₂ b₁ b₂ ub (k1 , k2 , y , z , w3 , comp1 , comp2 , u) =
+  fst comp1' , fst comp2' ,
+  SPREAD y b₁ , SPREAD z b₂ ,
+  w3 , snd comp1' , snd comp2' , updSeq-SPREAD _ _ _ _ u ub
+  where
+    comp1' : Σ ℕ (λ k0 → steps k0 (SPREAD a₁ b₁ , w1') ≡ (SPREAD y b₁ , w3))
+    comp1' = SPREAD⇓steps k1 {a₁} {y} b₁ {w1'} {w3} comp1
+
+    comp2' : Σ ℕ (λ k0 → steps k0 (SPREAD a₂ b₂ , w1) ≡ (SPREAD z b₂ , w3))
+    comp2' = SPREAD⇓steps k2 {a₂} {z} b₂ {w1} {w3} comp2
+
+
+→updSeqStep-DECIDE₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a₁ a₂ b₁ b₂ c₁ c₂ : Term)
+                      → updSeq r s n b₁ b₂
+                      → updSeq r s n c₁ c₂
+                      → updSeqStep w1 w1' r s n a₂ a₁
+                      → updSeqStep w1 w1' r s n (DECIDE a₂ b₂ c₂) (DECIDE a₁ b₁ c₁)
+→updSeqStep-DECIDE₁ w1 w1' r s n a₁ a₂ b₁ b₂ c₁ c₂ ub uc (k1 , k2 , y , z , w3 , comp1 , comp2 , u) =
+  fst comp1' , fst comp2' ,
+  DECIDE y b₁ c₁ , DECIDE z b₂ c₂ ,
+  w3 , snd comp1' , snd comp2' , updSeq-DECIDE _ _ _ _ _ _ u ub uc
+  where
+    comp1' : Σ ℕ (λ k0 → steps k0 (DECIDE a₁ b₁ c₁ , w1') ≡ (DECIDE y b₁ c₁ , w3))
+    comp1' = DECIDE⇓steps k1 {a₁} {y} b₁ c₁ {w1'} {w3} comp1
+
+    comp2' : Σ ℕ (λ k0 → steps k0 (DECIDE a₂ b₂ c₂ , w1) ≡ (DECIDE z b₂ c₂ , w3))
+    comp2' = DECIDE⇓steps k2 {a₂} {z} b₂ c₂ {w1} {w3} comp2
 
 
 updSeqSteps : (r : Name) (s : 𝕊) (n : ℕ) (k : ℕ) → Set(L)
@@ -616,11 +748,65 @@ updSeqStepInd-LET₁→ w r s n a b (k1 , v , w' , comp , ish , isv , ind)
   k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
 
 
+updSeqStepInd-CHOOSE₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b : Term)
+                         → updSeqStepInd r s n (CHOOSE a b) w
+                         → updSeqStepInd r s n a w
+updSeqStepInd-CHOOSE₁→ w r s n a b (k1 , v , w' , comp , ish , isv , ind)
+  with isHighestℕ-CHOOSE₁→ {n} {k1} {r} {a} {b} {v} {w} {w'} comp isv ish
+... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
+  k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
+
+
+updSeqStepInd-DSUP₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b : Term)
+                         → updSeqStepInd r s n (DSUP a b) w
+                         → updSeqStepInd r s n a w
+updSeqStepInd-DSUP₁→ w r s n a b (k1 , v , w' , comp , ish , isv , ind)
+  with isHighestℕ-DSUP₁→ {n} {k1} {r} {a} {b} {v} {w} {w'} comp isv ish
+... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
+  k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
+
+
+updSeqStepInd-DMSUP₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b : Term)
+                         → updSeqStepInd r s n (DMSUP a b) w
+                         → updSeqStepInd r s n a w
+updSeqStepInd-DMSUP₁→ w r s n a b (k1 , v , w' , comp , ish , isv , ind)
+  with isHighestℕ-DMSUP₁→ {n} {k1} {r} {a} {b} {v} {w} {w'} comp isv ish
+... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
+  k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
+
+
+updSeqStepInd-SPREAD₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b : Term)
+                         → updSeqStepInd r s n (SPREAD a b) w
+                         → updSeqStepInd r s n a w
+updSeqStepInd-SPREAD₁→ w r s n a b (k1 , v , w' , comp , ish , isv , ind)
+  with isHighestℕ-SPREAD₁→ {n} {k1} {r} {a} {b} {v} {w} {w'} comp isv ish
+... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
+  k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
+
+
+updSeqStepInd-DECIDE₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b c : Term)
+                         → updSeqStepInd r s n (DECIDE a b c) w
+                         → updSeqStepInd r s n a w
+updSeqStepInd-DECIDE₁→ w r s n a b c (k1 , v , w' , comp , ish , isv , ind)
+  with isHighestℕ-DECIDE₁→ {n} {k1} {r} {a} {b} {c} {v} {w} {w'} comp isv ish
+... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
+  k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
+
+
 updSeqStepInd-FIX₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a : Term)
                         → updSeqStepInd r s n (FIX a) w
                         → updSeqStepInd r s n a w
 updSeqStepInd-FIX₁→ w r s n a (k1 , v , w' , comp , ish , isv , ind)
   with isHighestℕ-FIX₁→ {n} {k1} {r} {a} {v} {w} {w'} comp isv ish
+... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
+  k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
+
+
+updSeqStepInd-MAPP₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (x : 𝕊) (a : Term)
+                        → updSeqStepInd r s n (MAPP x a) w
+                        → updSeqStepInd r s n a w
+updSeqStepInd-MAPP₁→ w r s n x a (k1 , v , w' , comp , ish , isv , ind)
+  with isHighestℕ-MAPP₁→ {n} {k1} {r} {x} {a} {v} {w} {w'} comp isv ish
 ... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
   k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
 
@@ -807,5 +993,74 @@ s2l⇓ w s (suc n) m ltn =
                 → a ⇓ b from w to w1
                 → a ⇓ b from w to w2
 ≡𝕎→⇓from-to w w1 w2 a b e comp rewrite e = comp
+
+
+
+updSeq→isValue : {r : Name} {s : 𝕊} {n : ℕ} {a b : Term}
+                  → updSeq r s n a b
+                  → isValue a
+                  → isValue b
+updSeq→isValue {r} {s} {n} {.NAT} {.NAT} updSeq-NAT isv = tt
+updSeq→isValue {r} {s} {n} {.QNAT} {.QNAT} updSeq-QNAT isv = tt
+updSeq→isValue {r} {s} {n} {.TNAT} {.TNAT} updSeq-TNAT isv = tt
+updSeq→isValue {r} {s} {n} {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updSeq-LT a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updSeq-QLT a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(NUM x)} {.(NUM x)} (updSeq-NUM x) isv = tt
+updSeq→isValue {r} {s} {n} {.(PI a₁ b₁)} {.(PI a₂ b₂)} (updSeq-PI a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(LAMBDA a₁)} {.(LAMBDA a₂)} (updSeq-LAMBDA a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(WT a₁ b₁)} {.(WT a₂ b₂)} (updSeq-WT a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (updSeq-SUP a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(MT a₁ b₁)} {.(MT a₂ b₂)} (updSeq-MT a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updSeq-MSUP a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (updSeq-SUM a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (updSeq-PAIR a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(SET a₁ b₁)} {.(SET a₂ b₂)} (updSeq-SET a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (updSeq-ISECT a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (updSeq-TUNION a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (updSeq-UNION a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (updSeq-QTUNION a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(INL a₁)} {.(INL a₂)} (updSeq-INL a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(INR a₁)} {.(INR a₂)} (updSeq-INR a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (updSeq-EQ a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) isv = tt
+updSeq→isValue {r} {s} {n} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (updSeq-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) isv = tt
+updSeq→isValue {r} {s} {n} {.AX} {.AX} updSeq-AX isv = tt
+updSeq→isValue {r} {s} {n} {.FREE} {.FREE} updSeq-FREE isv = tt
+updSeq→isValue {r} {s} {n} {.(MSEQ x)} {.(MSEQ x)} (updSeq-MSEQ x) isv = tt
+updSeq→isValue {r} {s} {n} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updSeq-TSQUASH a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updSeq-TTRUNC a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(TCONST a₁)} {.(TCONST a₂)} (updSeq-TCONST a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(SUBSING a₁)} {.(SUBSING a₂)} (updSeq-SUBSING a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(PURE)} {.(PURE)} (updSeq-PURE) isv = tt
+updSeq→isValue {r} {s} {n} {.(DUM a₁)} {.(DUM a₂)} (updSeq-DUM a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updSeq-FFDEFS a₁ a₂ b₁ b₂ u u₁) isv = tt
+updSeq→isValue {r} {s} {n} {.(UNIV x)} {.(UNIV x)} (updSeq-UNIV x) isv = tt
+updSeq→isValue {r} {s} {n} {.(LIFT a₁)} {.(LIFT a₂)} (updSeq-LIFT a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(LOWER a₁)} {.(LOWER a₂)} (updSeq-LOWER a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(SHRINK a₁)} {.(SHRINK a₂)} (updSeq-SHRINK a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(upd r (MSEQ s))} {.(upd r (s2l s n))} updSeq-upd isv = tt
+
+
+≡sub-updSeqStepInd : (r : Name) (s : 𝕊) (n : ℕ) (b : Term) (t u : Term) (w : 𝕎·)
+                     → t ≡ u
+                     → updSeqStepInd r s n (sub b t) w
+                     → updSeqStepInd r s n (sub b u) w
+≡sub-updSeqStepInd r s n b t u w e h rewrite e = h
+
+
+≡sub-FIX-updSeqStepInd : (r : Name) (s : 𝕊) (n : ℕ) (t u : Term) (w : 𝕎·)
+                         → t ≡ u
+                         → updSeqStepInd r s n (sub (FIX (LAMBDA t)) t) w
+                         → updSeqStepInd r s n (sub (FIX (LAMBDA u)) u) w
+≡sub-FIX-updSeqStepInd r s n t u w e h rewrite e = h
+
+
+⇓ₗ→updSeqStep : (w1 w2 : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a a' b : Term)
+                 → a ⇓ a' from w1 to w1
+                 → updSeqStep w1 w2 r s n a' b
+                 → updSeqStep w1 w2 r s n a b
+⇓ₗ→updSeqStep w1 w2 r s n a a' b comp (k1 , k2 , y , z , w3 , comp1 , comp2 , u) =
+  k1 , fst comp + k2 , y , z , w3 , comp1 ,
+  steps-trans+ {fst comp} {k2} {a} {a'} {z} {w1} {w1} {w3} (snd comp) comp2 ,
+  u
 
 \end{code}
