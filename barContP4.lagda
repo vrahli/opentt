@@ -887,16 +887,18 @@ equalInType-BAIREn-seq2list i w s n =
         aw1 w2 e2 (k , c1 , c2 , ltn) = s k , #APPLY-seq2list⇛ w2 s a₁ k n ltn c1 , APPLY-MSEQ⇛ w2 s ⌜ a₂ ⌝ k c2
 
 
-correctSeqN-inv0 : (i : ℕ) (r : Name) (w : 𝕎·) (F : CTerm) (s : 𝕊) (n : ℕ)
-                   → correctSeqN r w F 0 #INIT s (suc n)
-                   → Σ ℕ (λ m → Σ 𝕎· (λ w' → Σ ℕ (λ j →
-                       #APPLY F (#upd r (seq2list s n)) #⇓ #NUM m from (chooseT r w N0) to w'
-                       × getT 0 r w' ≡ just (NUM j)
-                       × ¬ j < n)))
-correctSeqN-inv0 i r w F s n cor
-  with correctSeqN-inv i r w F s 0 n cor
-... | (m , w' , j , comp , gt0 , nlt) rewrite +0 n =
-  m , w' , j , comp , gt0 , nlt
+abstract
+
+  correctSeqN-inv0 : (i : ℕ) (r : Name) (w : 𝕎·) (F : CTerm) (s : 𝕊) (n : ℕ)
+                     → correctSeqN r w F 0 #INIT s (suc n)
+                     → Σ ℕ (λ m → Σ 𝕎· (λ w' → Σ ℕ (λ j →
+                         #APPLY F (#upd r (seq2list s n)) #⇓ #NUM m from (chooseT r w N0) to w'
+                         × getT 0 r w' ≡ just (NUM j)
+                         × ¬ j < n)))
+  correctSeqN-inv0 i r w F s n cor
+    with correctSeqN-inv i r w F s 0 n cor
+  ... | (m , w' , j , comp , gt0 , nlt) rewrite +0 n =
+    m , w' , j , comp , gt0 , nlt
 
 
 Σsteps-updSeq-NUM→ : (w w' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (m : ℕ) (b : Term)
