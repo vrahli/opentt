@@ -101,6 +101,7 @@ open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
@@ -358,15 +359,37 @@ noInfPath kb cn can exb gc i w r F nnF compat F∈ p cor inf =
     eqw' = steps→≡𝕎 (chooseT r w N0) w0 w' ⌜ #APPLY F (#upd r (seq2list s (suc n))) ⌝ (NUM m0) (NUM k) (fst comp0) (fst c) tt tt (snd comp0) (snd c)
 
 
+FunBarP : Term
+FunBarP = TPURE FunBar
 
+
+barThesisP : Term
+barThesisP = FUN FunBarP IndBar
+
+
+#FunBarP : CTerm
+#FunBarP = #TPURE #FunBar
+
+
+#barThesisP : CTerm
+#barThesisP = #FUN #FunBarP #IndBar
+
+
+-- comp→∀ℕ is stronger than cℕ. get rid of cℕ?
 sem : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
       (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
-      → #¬Names F -- This is currently required by continuity
+--      → #¬Names F -- This is currently required by continuity (captured by #FunBarP)
       → compatible· r w Res⊤
-      → ∈Type i w #FunBar F
+      → ∈Type i w #FunBarP F
       → ∈Type i w #IndBar (#APPLY2 (#loop r F) (#NUM 0) #INIT)
-sem kb cn can exb gc i w r F nnF compat F∈ = concl
+sem kb cn can exb gc i w r F {--nnF--} compat F∈P = concl
   where
+    nnF  : #¬Names F
+    nnF = equalInType-TPURE→ₗ F∈P
+
+    F∈ : ∈Type i w #FunBar F
+    F∈ = equalInType-TPURE→ F∈P
+
     co : ∈Type i w #CoIndBar (#APPLY2 (#loop r F) (#NUM 0) #INIT)
     co = coSem kb cn i w r F (#NUM 0) #INIT compat F∈ (NUM-equalInType-NAT! i w 0) (LAM0∈BAIRE i w)
 
