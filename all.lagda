@@ -89,4 +89,7 @@ open import contInstanceKripkeCS
 open import contInstanceOpenCS
 -- We show here that the properties used to prove continuity in continuity7 are satisfied by Beth bars + CS
 open import contInstanceBethCS
+
+-- A first version of the bar theorem (sem)
+open import barContP6
 \end{code}
