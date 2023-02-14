@@ -67,11 +67,12 @@ data Term : Set where
   -- W
   WT :  Term → Term → Term
   SUP : Term → Term → Term
-  DSUP : Term → Term → Term
+--  DSUP : Term → Term → Term
+  WREC : Term → Term → Term
   -- M
   MT :  Term → Term → Term
-  MSUP : Term → Term → Term -- Let's not use MSUP and DMSUP, but reuse SUP and DSUP instead
-  DMSUP : Term → Term → Term
+--  MSUP : Term → Term → Term -- Let's not use MSUP and DMSUP, but reuse SUP and DSUP instead
+--  DMSUP : Term → Term → Term
   -- Sums
   SUM : Term → Term → Term
   PAIR : Term → Term → Term
@@ -139,10 +140,11 @@ value? (FIX _) = false -- Not a value
 value? (LET _ _) = false -- Not a value
 value? (WT _ _) = true
 value? (SUP _ _) = true
-value? (DSUP _ _) = false -- Not a value
+--value? (DSUP _ _) = false -- Not a value
+value? (WREC _ _) = false -- Not a value
 value? (MT _ _) = true
-value? (MSUP _ _) = true
-value? (DMSUP _ _) = false -- Not a value
+--value? (MSUP _ _) = true
+--value? (DMSUP _ _) = false -- Not a value
 value? (SUM _ _) = true
 value? (PAIR _ _) = true
 value? (SPREAD _ _) = false -- Not a value
@@ -277,10 +279,11 @@ fvars (FIX t)          = fvars t
 fvars (LET t t₁)       = fvars t ++ lowerVars (fvars t₁)
 fvars (WT t t₁)        = fvars t ++ lowerVars (fvars t₁)
 fvars (SUP t t₁)       = fvars t ++ fvars t₁
-fvars (DSUP t t₁)      = fvars t ++ lowerVars (lowerVars (fvars t₁))
+--fvars (DSUP t t₁)      = fvars t ++ lowerVars (lowerVars (fvars t₁))
+fvars (WREC t t₁)      = fvars t ++ lowerVars (lowerVars (lowerVars (fvars t₁)))
 fvars (MT t t₁)        = fvars t ++ lowerVars (fvars t₁)
-fvars (MSUP t t₁)      = fvars t ++ fvars t₁
-fvars (DMSUP t t₁)     = fvars t ++ lowerVars (lowerVars (fvars t₁))
+--fvars (MSUP t t₁)      = fvars t ++ fvars t₁
+--fvars (DMSUP t t₁)     = fvars t ++ lowerVars (lowerVars (fvars t₁))
 fvars (SUM t t₁)       = fvars t ++ lowerVars (fvars t₁)
 fvars (PAIR t t₁)      = fvars t ++ fvars t₁
 fvars (SPREAD t t₁)    = fvars t ++ lowerVars (lowerVars (fvars t₁))
@@ -440,10 +443,11 @@ shiftUp c (FIX t) = FIX (shiftUp c t)
 shiftUp c (LET t t₁) = LET (shiftUp c t) (shiftUp (suc c) t₁)
 shiftUp c (WT t t₁) = WT (shiftUp c t) (shiftUp (suc c) t₁)
 shiftUp c (SUP t t₁) = SUP (shiftUp c t) (shiftUp c t₁)
-shiftUp c (DSUP t t₁) = DSUP (shiftUp c t) (shiftUp (suc (suc c)) t₁)
+--shiftUp c (DSUP t t₁) = DSUP (shiftUp c t) (shiftUp (suc (suc c)) t₁)
+shiftUp c (WREC t t₁) = WREC (shiftUp c t) (shiftUp (suc (suc (suc c))) t₁)
 shiftUp c (MT t t₁) = MT (shiftUp c t) (shiftUp (suc c) t₁)
-shiftUp c (MSUP t t₁) = MSUP (shiftUp c t) (shiftUp c t₁)
-shiftUp c (DMSUP t t₁) = DMSUP (shiftUp c t) (shiftUp (suc (suc c)) t₁)
+--shiftUp c (MSUP t t₁) = MSUP (shiftUp c t) (shiftUp c t₁)
+--shiftUp c (DMSUP t t₁) = DMSUP (shiftUp c t) (shiftUp (suc (suc c)) t₁)
 shiftUp c (SUM t t₁) = SUM (shiftUp c t) (shiftUp (suc c) t₁)
 shiftUp c (PAIR t t₁) = PAIR (shiftUp c t) (shiftUp c t₁)
 shiftUp c (SPREAD t t₁) = SPREAD (shiftUp c t) (shiftUp (suc (suc c)) t₁)
@@ -498,10 +502,11 @@ shiftDown c (FIX t) = FIX (shiftDown c t)
 shiftDown c (LET t t₁) = LET (shiftDown c t) (shiftDown (suc c) t₁)
 shiftDown c (WT t t₁) = WT (shiftDown c t) (shiftDown (suc c) t₁)
 shiftDown c (SUP t t₁) = SUP (shiftDown c t) (shiftDown c t₁)
-shiftDown c (DSUP t t₁) = DSUP (shiftDown c t) (shiftDown (suc (suc c)) t₁)
+--shiftDown c (DSUP t t₁) = DSUP (shiftDown c t) (shiftDown (suc (suc c)) t₁)
+shiftDown c (WREC t t₁) = WREC (shiftDown c t) (shiftDown (suc (suc (suc c))) t₁)
 shiftDown c (MT t t₁) = MT (shiftDown c t) (shiftDown (suc c) t₁)
-shiftDown c (MSUP t t₁) = MSUP (shiftDown c t) (shiftDown c t₁)
-shiftDown c (DMSUP t t₁) = DMSUP (shiftDown c t) (shiftDown (suc (suc c)) t₁)
+--shiftDown c (MSUP t t₁) = MSUP (shiftDown c t) (shiftDown c t₁)
+--shiftDown c (DMSUP t t₁) = DMSUP (shiftDown c t) (shiftDown (suc (suc c)) t₁)
 shiftDown c (SUM t t₁) = SUM (shiftDown c t) (shiftDown (suc c) t₁)
 shiftDown c (PAIR t t₁) = PAIR (shiftDown c t) (shiftDown c t₁)
 shiftDown c (SPREAD t t₁) = SPREAD (shiftDown c t) (shiftDown (suc (suc c)) t₁)
@@ -556,10 +561,11 @@ shiftNameUp c (FIX t) = FIX (shiftNameUp c t)
 shiftNameUp c (LET t t₁) = LET (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (WT t t₁) = WT (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (SUP t t₁) = SUP (shiftNameUp c t) (shiftNameUp c t₁)
-shiftNameUp c (DSUP t t₁) = DSUP (shiftNameUp c t) (shiftNameUp c t₁)
+--shiftNameUp c (DSUP t t₁) = DSUP (shiftNameUp c t) (shiftNameUp c t₁)
+shiftNameUp c (WREC t t₁) = WREC (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (MT t t₁) = MT (shiftNameUp c t) (shiftNameUp c t₁)
-shiftNameUp c (MSUP t t₁) = MSUP (shiftNameUp c t) (shiftNameUp c t₁)
-shiftNameUp c (DMSUP t t₁) = DMSUP (shiftNameUp c t) (shiftNameUp c t₁)
+--shiftNameUp c (MSUP t t₁) = MSUP (shiftNameUp c t) (shiftNameUp c t₁)
+--shiftNameUp c (DMSUP t t₁) = DMSUP (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (SUM t t₁) = SUM (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (PAIR t t₁) = PAIR (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (SPREAD t t₁) = SPREAD (shiftNameUp c t) (shiftNameUp c t₁)
@@ -614,10 +620,11 @@ shiftNameDown c (FIX t) = FIX (shiftNameDown c t)
 shiftNameDown c (LET t t₁) = LET (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (WT t t₁) = WT (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (SUP t t₁) = SUP (shiftNameDown c t) (shiftNameDown c t₁)
-shiftNameDown c (DSUP t t₁) = DSUP (shiftNameDown c t) (shiftNameDown c t₁)
+--shiftNameDown c (DSUP t t₁) = DSUP (shiftNameDown c t) (shiftNameDown c t₁)
+shiftNameDown c (WREC t t₁) = WREC (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (MT t t₁) = MT (shiftNameDown c t) (shiftNameDown c t₁)
-shiftNameDown c (MSUP t t₁) = MSUP (shiftNameDown c t) (shiftNameDown c t₁)
-shiftNameDown c (DMSUP t t₁) = DMSUP (shiftNameDown c t) (shiftNameDown c t₁)
+--shiftNameDown c (MSUP t t₁) = MSUP (shiftNameDown c t) (shiftNameDown c t₁)
+--shiftNameDown c (DMSUP t t₁) = DMSUP (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (SUM t t₁) = SUM (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (PAIR t t₁) = PAIR (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (SPREAD t t₁) = SPREAD (shiftNameDown c t) (shiftNameDown c t₁)
@@ -679,10 +686,11 @@ names (FIX t)          = names t
 names (LET t t₁)       = names t ++ names t₁
 names (WT t t₁)        = names t ++ names t₁
 names (SUP t t₁)       = names t ++ names t₁
-names (DSUP t t₁)      = names t ++ names t₁
+--names (DSUP t t₁)      = names t ++ names t₁
+names (WREC t t₁)      = names t ++ names t₁
 names (MT t t₁)        = names t ++ names t₁
-names (MSUP t t₁)      = names t ++ names t₁
-names (DMSUP t t₁)     = names t ++ names t₁
+--names (MSUP t t₁)      = names t ++ names t₁
+--names (DMSUP t t₁)     = names t ++ names t₁
 names (SUM t t₁)       = names t ++ names t₁
 names (PAIR t t₁)      = names t ++ names t₁
 names (SPREAD t t₁)    = names t ++ names t₁
@@ -740,10 +748,11 @@ subv v t (FIX u)      = FIX (subv v t u)
 subv v t (LET u u₁)   = LET (subv v t u) (subv (suc v) (shiftUp 0 t) u₁)
 subv v t (WT u u₁)    = WT (subv v t u) (subv (suc v) (shiftUp 0 t) u₁)
 subv v t (SUP u u₁)   = SUP (subv v t u) (subv v t u₁)
-subv v t (DSUP u u₁)  = DSUP (subv v t u) (subv (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁)
+--subv v t (DSUP u u₁)  = DSUP (subv v t u) (subv (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁)
+subv v t (WREC u u₁)  = WREC (subv v t u) (subv (suc (suc (suc v))) (shiftUp 0 (shiftUp 0 (shiftUp 0 t))) u₁)
 subv v t (MT u u₁)    = MT (subv v t u) (subv (suc v) (shiftUp 0 t) u₁)
-subv v t (MSUP u u₁)  = MSUP (subv v t u) (subv v t u₁)
-subv v t (DMSUP u u₁) = DMSUP (subv v t u) (subv (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁)
+--subv v t (MSUP u u₁)  = MSUP (subv v t u) (subv v t u₁)
+--subv v t (DMSUP u u₁) = DMSUP (subv v t u) (subv (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁)
 subv v t (SUM u u₁) = SUM (subv v t u) (subv (suc v) (shiftUp 0 t) u₁)
 subv v t (PAIR u u₁) = PAIR (subv v t u) (subv v t u₁)
 subv v t (SPREAD u u₁) = SPREAD (subv v t u) (subv (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁)
@@ -804,10 +813,11 @@ renn v t (FIX u) = FIX (renn v t u)
 renn v t (LET u u₁) = LET (renn v t u) (renn v t u₁)
 renn v t (WT u u₁) = WT (renn v t u) (renn v t u₁)
 renn v t (SUP u u₁) = SUP (renn v t u) (renn v t u₁)
-renn v t (DSUP u u₁) = DSUP (renn v t u) (renn v t u₁)
+--renn v t (DSUP u u₁) = DSUP (renn v t u) (renn v t u₁)
+renn v t (WREC u u₁) = WREC (renn v t u) (renn v t u₁)
 renn v t (MT u u₁) = MT (renn v t u) (renn v t u₁)
-renn v t (MSUP u u₁) = MSUP (renn v t u) (renn v t u₁)
-renn v t (DMSUP u u₁) = DMSUP (renn v t u) (renn v t u₁)
+--renn v t (MSUP u u₁) = MSUP (renn v t u) (renn v t u₁)
+--renn v t (DMSUP u u₁) = DMSUP (renn v t u) (renn v t u₁)
 renn v t (SUM u u₁) = SUM (renn v t u) (renn v t u₁)
 renn v t (PAIR u u₁) = PAIR (renn v t u) (renn v t u₁)
 renn v t (SPREAD u u₁) = SPREAD (renn v t u) (renn v t u₁)
@@ -913,18 +923,21 @@ subvNotIn v t (WT u u₁) n
 subvNotIn v t (SUP u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
         | subvNotIn v t u₁ (notInAppVars2 n) = refl
-subvNotIn v t (DSUP u u₁) n
+{--subvNotIn v t (DSUP u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
-        | subvNotIn (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ (inLowerVars _ _ j)))) = refl
+        | subvNotIn (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ (inLowerVars _ _ j)))) = refl--}
+subvNotIn v t (WREC u u₁) n
+  rewrite subvNotIn v t u (notInAppVars1 n)
+        | subvNotIn (suc (suc (suc v))) (shiftUp 0 (shiftUp 0 (shiftUp 0 t))) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ (inLowerVars _ _ (inLowerVars _ _ j))))) = refl
 subvNotIn v t (MT u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
         | subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
-subvNotIn v t (MSUP u u₁) n
+{--subvNotIn v t (MSUP u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
         | subvNotIn v t u₁ (notInAppVars2 n) = refl
 subvNotIn v t (DMSUP u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
-        | subvNotIn (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ (inLowerVars _ _ j)))) = refl
+        | subvNotIn (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ (inLowerVars _ _ j)))) = refl--}
 subvNotIn v t (SUM u u₁) n
   rewrite subvNotIn v t u (notInAppVars1 n)
         | subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
@@ -1072,18 +1085,21 @@ shiftDownTrivial v (WT u u₁) i
 shiftDownTrivial v (SUP u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
-shiftDownTrivial v (DSUP u u₁) i
+{--shiftDownTrivial v (DSUP u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-        | shiftDownTrivial (suc (suc v)) u₁ (impLeNotLower _ _ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i))) = refl
+        | shiftDownTrivial (suc (suc v)) u₁ (impLeNotLower _ _ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i))) = refl--}
+shiftDownTrivial v (WREC u u₁) i
+  rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
+        | shiftDownTrivial (suc (suc (suc v))) u₁ (impLeNotLower _ _ (impLeNotLower _ _ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)))) = refl
 shiftDownTrivial v (MT u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
-shiftDownTrivial v (MSUP u u₁) i
+{--shiftDownTrivial v (MSUP u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftDownTrivial v (DMSUP u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-        | shiftDownTrivial (suc (suc v)) u₁ (impLeNotLower _ _ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i))) = refl
+        | shiftDownTrivial (suc (suc v)) u₁ (impLeNotLower _ _ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i))) = refl--}
 shiftDownTrivial v (SUM u u₁) i
   rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
@@ -1208,18 +1224,21 @@ shiftUpTrivial v (WT u u₁) i
 shiftUpTrivial v (SUP u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
-shiftUpTrivial v (DSUP u u₁) i
+{--shiftUpTrivial v (DSUP u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-        | shiftUpTrivial (suc (suc v)) u₁ (impLeNotLower _ _ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i))) = refl
+        | shiftUpTrivial (suc (suc v)) u₁ (impLeNotLower _ _ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i))) = refl--}
+shiftUpTrivial v (WREC u u₁) i
+  rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
+        | shiftUpTrivial (suc (suc (suc v))) u₁ (impLeNotLower _ _ (impLeNotLower _ _ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)))) = refl
 shiftUpTrivial v (MT u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
-shiftUpTrivial v (MSUP u u₁) i
+{--shiftUpTrivial v (MSUP u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
 shiftUpTrivial v (DMSUP u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-        | shiftUpTrivial (suc (suc v)) u₁ (impLeNotLower _ _ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i))) = refl
+        | shiftUpTrivial (suc (suc v)) u₁ (impLeNotLower _ _ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i))) = refl--}
 shiftUpTrivial v (SUM u u₁) i
   rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
         | shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
@@ -1333,10 +1352,11 @@ shiftDownUp (FIX t) n rewrite shiftDownUp t n = refl
 shiftDownUp (LET t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
 shiftDownUp (WT t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
 shiftDownUp (SUP t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
-shiftDownUp (DSUP t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc (suc n)) = refl
+--shiftDownUp (DSUP t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc (suc n)) = refl
+shiftDownUp (WREC t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc (suc (suc n))) = refl
 shiftDownUp (MT t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
-shiftDownUp (MSUP t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
-shiftDownUp (DMSUP t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc (suc n)) = refl
+--shiftDownUp (MSUP t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
+--shiftDownUp (DMSUP t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc (suc n)) = refl
 shiftDownUp (SUM t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
 shiftDownUp (PAIR t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
 shiftDownUp (SPREAD t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc (suc n)) = refl
@@ -1391,10 +1411,11 @@ is-NUM (FIX t) = inj₂ (λ { n () })
 is-NUM (LET t t₁) = inj₂ (λ { n () })
 is-NUM (WT t t₁) = inj₂ (λ { n () })
 is-NUM (SUP t t₁) = inj₂ (λ { n () })
-is-NUM (DSUP t t₁) = inj₂ (λ { n () })
+--is-NUM (DSUP t t₁) = inj₂ (λ { n () })
+is-NUM (WREC t t₁) = inj₂ (λ { n () })
 is-NUM (MT t t₁) = inj₂ (λ { n () })
-is-NUM (MSUP t t₁) = inj₂ (λ { n () })
-is-NUM (DMSUP t t₁) = inj₂ (λ { n () })
+--is-NUM (MSUP t t₁) = inj₂ (λ { n () })
+--is-NUM (DMSUP t t₁) = inj₂ (λ { n () })
 is-NUM (SUM t t₁) = inj₂ (λ { n () })
 is-NUM (PAIR t t₁) = inj₂ (λ { n () })
 is-NUM (SPREAD t t₁) = inj₂ (λ { n () })
@@ -1449,10 +1470,11 @@ is-LAM (FIX t) = inj₂ (λ { n () })
 is-LAM (LET t t₁) = inj₂ (λ { n () })
 is-LAM (WT t t₁) = inj₂ (λ { n () })
 is-LAM (SUP t t₁) = inj₂ (λ { n () })
-is-LAM (DSUP t t₁) = inj₂ (λ { n () })
+--is-LAM (DSUP t t₁) = inj₂ (λ { n () })
+is-LAM (WREC t t₁) = inj₂ (λ { n () })
 is-LAM (MT t t₁) = inj₂ (λ { n () })
-is-LAM (MSUP t t₁) = inj₂ (λ { n () })
-is-LAM (DMSUP t t₁) = inj₂ (λ { n () })
+--is-LAM (MSUP t t₁) = inj₂ (λ { n () })
+--is-LAM (DMSUP t t₁) = inj₂ (λ { n () })
 is-LAM (SUM t t₁) = inj₂ (λ { n () })
 is-LAM (PAIR t t₁) = inj₂ (λ { n () })
 is-LAM (SPREAD t t₁) = inj₂ (λ { n () })
@@ -1507,10 +1529,11 @@ is-CS (FIX t) = inj₂ (λ { n () })
 is-CS (LET t t₁) = inj₂ (λ { n () })
 is-CS (WT t t₁) = inj₂ (λ { n () })
 is-CS (SUP t t₁) = inj₂ (λ { n () })
-is-CS (DSUP t t₁) = inj₂ (λ { n () })
+--is-CS (DSUP t t₁) = inj₂ (λ { n () })
+is-CS (WREC t t₁) = inj₂ (λ { n () })
 is-CS (MT t t₁) = inj₂ (λ { n () })
-is-CS (MSUP t t₁) = inj₂ (λ { n () })
-is-CS (DMSUP t t₁) = inj₂ (λ { n () })
+--is-CS (MSUP t t₁) = inj₂ (λ { n () })
+--is-CS (DMSUP t t₁) = inj₂ (λ { n () })
 is-CS (SUM t t₁) = inj₂ (λ { n () })
 is-CS (PAIR t t₁) = inj₂ (λ { n () })
 is-CS (SPREAD t t₁) = inj₂ (λ { n () })
@@ -1565,10 +1588,11 @@ is-NAME (FIX t) = inj₂ (λ { n () })
 is-NAME (LET t t₁) = inj₂ (λ { n () })
 is-NAME (WT t t₁) = inj₂ (λ { n () })
 is-NAME (SUP t t₁) = inj₂ (λ { n () })
-is-NAME (DSUP t t₁) = inj₂ (λ { n () })
+--is-NAME (DSUP t t₁) = inj₂ (λ { n () })
+is-NAME (WREC t t₁) = inj₂ (λ { n () })
 is-NAME (MT t t₁) = inj₂ (λ { n () })
-is-NAME (MSUP t t₁) = inj₂ (λ { n () })
-is-NAME (DMSUP t t₁) = inj₂ (λ { n () })
+--is-NAME (MSUP t t₁) = inj₂ (λ { n () })
+--is-NAME (DMSUP t t₁) = inj₂ (λ { n () })
 is-NAME (SUM t t₁) = inj₂ (λ { n () })
 is-NAME (PAIR t t₁) = inj₂ (λ { n () })
 is-NAME (SPREAD t t₁) = inj₂ (λ { n () })
@@ -1623,10 +1647,11 @@ is-MSEQ (FIX t) = inj₂ (λ { n () })
 is-MSEQ (LET t t₁) = inj₂ (λ { n () })
 is-MSEQ (WT t t₁) = inj₂ (λ { n () })
 is-MSEQ (SUP t t₁) = inj₂ (λ { n () })
-is-MSEQ (DSUP t t₁) = inj₂ (λ { n () })
+--is-MSEQ (DSUP t t₁) = inj₂ (λ { n () })
+is-MSEQ (WREC t t₁) = inj₂ (λ { n () })
 is-MSEQ (MT t t₁) = inj₂ (λ { n () })
-is-MSEQ (MSUP t t₁) = inj₂ (λ { n () })
-is-MSEQ (DMSUP t t₁) = inj₂ (λ { n () })
+--is-MSEQ (MSUP t t₁) = inj₂ (λ { n () })
+--is-MSEQ (DMSUP t t₁) = inj₂ (λ { n () })
 is-MSEQ (SUM t t₁) = inj₂ (λ { n () })
 is-MSEQ (PAIR t t₁) = inj₂ (λ { n () })
 is-MSEQ (SPREAD t t₁) = inj₂ (λ { n () })
@@ -1681,10 +1706,11 @@ is-PAIR (FIX t) = inj₂ (λ { n m () })
 is-PAIR (LET t t₁) = inj₂ (λ { n m () })
 is-PAIR (WT t t₁) = inj₂ (λ { n m () })
 is-PAIR (SUP t t₁) = inj₂ (λ { n m () })
-is-PAIR (DSUP t t₁) = inj₂ (λ { n m () })
+--is-PAIR (DSUP t t₁) = inj₂ (λ { n m () })
+is-PAIR (WREC t t₁) = inj₂ (λ { n m () })
 is-PAIR (MT t t₁) = inj₂ (λ { n m () })
-is-PAIR (MSUP t t₁) = inj₂ (λ { n m () })
-is-PAIR (DMSUP t t₁) = inj₂ (λ { n m () })
+--is-PAIR (MSUP t t₁) = inj₂ (λ { n m () })
+--is-PAIR (DMSUP t t₁) = inj₂ (λ { n m () })
 is-PAIR (SUM t t₁) = inj₂ (λ { n m () })
 is-PAIR (PAIR t t₁) = inj₁ (t , t₁ , refl)
 is-PAIR (SPREAD t t₁) = inj₂ (λ { n m () })
@@ -1739,10 +1765,11 @@ is-SUP (FIX t) = inj₂ (λ { n m () })
 is-SUP (LET t t₁) = inj₂ (λ { n m () })
 is-SUP (WT t t₁) = inj₂ (λ { n m () })
 is-SUP (SUP t t₁) = inj₁ (t , t₁ , refl)
-is-SUP (DSUP t t₁) = inj₂ (λ { n m () })
+--is-SUP (DSUP t t₁) = inj₂ (λ { n m () })
+is-SUP (WREC t t₁) = inj₂ (λ { n m () })
 is-SUP (MT t t₁) = inj₂ (λ { n m () })
-is-SUP (MSUP t t₁) = inj₂ (λ { n m () })
-is-SUP (DMSUP t t₁) = inj₂ (λ { n m () })
+--is-SUP (MSUP t t₁) = inj₂ (λ { n m () })
+--is-SUP (DMSUP t t₁) = inj₂ (λ { n m () })
 is-SUP (SUM t t₁) = inj₂ (λ { n m () })
 is-SUP (PAIR t t₁) = inj₂ (λ { n m () })
 is-SUP (SPREAD t t₁) = inj₂ (λ { n m () })
@@ -1779,6 +1806,7 @@ is-SUP (LOWER t) = inj₂ (λ { n m () })
 is-SUP (SHRINK t) = inj₂ (λ { n m () })
 
 
+{--
 is-MSUP : (t : Term) → (Σ Term (λ a → Σ Term (λ b → t ≡ MSUP a b))) ⊎ ((a b : Term) → ¬ t ≡ MSUP a b)
 is-MSUP (VAR x) = inj₂ (λ { n m () })
 is-MSUP NAT = inj₂ (λ { n m () })
@@ -1798,6 +1826,7 @@ is-MSUP (LET t t₁) = inj₂ (λ { n m () })
 is-MSUP (WT t t₁) = inj₂ (λ { n m () })
 is-MSUP (SUP t t₁) = inj₂ (λ { n m () })
 is-MSUP (DSUP t t₁) = inj₂ (λ { n m () })
+is-MSUP (WREC t t₁) = inj₂ (λ { n m () })
 is-MSUP (MT t t₁) = inj₂ (λ { n m () })
 is-MSUP (MSUP t t₁) = inj₁ (t , t₁ , refl)
 is-MSUP (DMSUP t t₁) = inj₂ (λ { n m () })
@@ -1835,7 +1864,7 @@ is-MSUP (UNIV x) = inj₂ (λ { n m () })
 is-MSUP (LIFT t) = inj₂ (λ { n m () })
 is-MSUP (LOWER t) = inj₂ (λ { n m () })
 is-MSUP (SHRINK t) = inj₂ (λ { n m () })
-
+--}
 
 
 is-INL : (t : Term) → (Σ Term (λ u → t ≡ INL u)) ⊎ ((u : Term) → ¬ t ≡ INL u)
@@ -1856,10 +1885,11 @@ is-INL (FIX t) = inj₂ (λ { n () })
 is-INL (LET t t₁) = inj₂ (λ { n () })
 is-INL (WT t t₁) = inj₂ (λ { n () })
 is-INL (SUP t t₁) = inj₂ (λ { n () })
-is-INL (DSUP t t₁) = inj₂ (λ { n () })
+--is-INL (DSUP t t₁) = inj₂ (λ { n () })
+is-INL (WREC t t₁) = inj₂ (λ { n () })
 is-INL (MT t t₁) = inj₂ (λ { n () })
-is-INL (MSUP t t₁) = inj₂ (λ { n () })
-is-INL (DMSUP t t₁) = inj₂ (λ { n () })
+--is-INL (MSUP t t₁) = inj₂ (λ { n () })
+--is-INL (DMSUP t t₁) = inj₂ (λ { n () })
 is-INL (SUM t t₁) = inj₂ (λ { n () })
 is-INL (PAIR t t₁) = inj₂ (λ { n () })
 is-INL (SPREAD t t₁) = inj₂ (λ { n () })
@@ -1914,10 +1944,11 @@ is-INR (FIX t) = inj₂ (λ { n () })
 is-INR (LET t t₁) = inj₂ (λ { n () })
 is-INR (WT t t₁) = inj₂ (λ { n () })
 is-INR (SUP t t₁) = inj₂ (λ { n () })
-is-INR (DSUP t t₁) = inj₂ (λ { n () })
+--is-INR (DSUP t t₁) = inj₂ (λ { n () })
+is-INR (WREC t t₁) = inj₂ (λ { n () })
 is-INR (MT t t₁) = inj₂ (λ { n () })
-is-INR (MSUP t t₁) = inj₂ (λ { n () })
-is-INR (DMSUP t t₁) = inj₂ (λ { n () })
+--is-INR (MSUP t t₁) = inj₂ (λ { n () })
+--is-INR (DMSUP t t₁) = inj₂ (λ { n () })
 is-INR (SUM t t₁) = inj₂ (λ { n () })
 is-INR (PAIR t t₁) = inj₂ (λ { n () })
 is-INR (SPREAD t t₁) = inj₂ (λ { n () })
@@ -2088,10 +2119,11 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {LET b b₁} ()
 ∼vals→isValue₂ {a} {WT b b₁} isv = tt
 ∼vals→isValue₂ {a} {SUP b b₁} isv = tt
-∼vals→isValue₂ {a} {DSUP b b₁} ()
+--∼vals→isValue₂ {a} {DSUP b b₁} ()
+∼vals→isValue₂ {a} {WREC b b₁} ()
 ∼vals→isValue₂ {a} {MT b b₁} isv = tt
-∼vals→isValue₂ {a} {MSUP b b₁} isv = tt
-∼vals→isValue₂ {a} {DMSUP b b₁} ()
+--∼vals→isValue₂ {a} {MSUP b b₁} isv = tt
+--∼vals→isValue₂ {a} {DMSUP b b₁} ()
 ∼vals→isValue₂ {a} {SUM b b₁} isv = tt
 ∼vals→isValue₂ {a} {PAIR b b₁} isv = tt
 ∼vals→isValue₂ {a} {SPREAD b b₁} ()
@@ -2149,10 +2181,11 @@ data ∼vals : Term → Term → Set where
 ¬read (LET t t₁) = ¬read t ∧ ¬read t₁
 ¬read (WT t t₁) = ¬read t ∧ ¬read t₁
 ¬read (SUP t t₁) = ¬read t ∧ ¬read t₁
-¬read (DSUP t t₁) = ¬read t ∧ ¬read t₁
+--¬read (DSUP t t₁) = ¬read t ∧ ¬read t₁
+¬read (WREC t t₁) = ¬read t ∧ ¬read t₁
 ¬read (MT t t₁) = ¬read t ∧ ¬read t₁
-¬read (MSUP t t₁) = ¬read t ∧ ¬read t₁
-¬read (DMSUP t t₁) = ¬read t ∧ ¬read t₁
+--¬read (MSUP t t₁) = ¬read t ∧ ¬read t₁
+--¬read (DMSUP t t₁) = ¬read t ∧ ¬read t₁
 ¬read (SUM t t₁) = ¬read t ∧ ¬read t₁
 ¬read (PAIR t t₁) = ¬read t ∧ ¬read t₁
 ¬read (SPREAD t t₁) = ¬read t ∧ ¬read t₁
@@ -2222,10 +2255,11 @@ data ∼vals : Term → Term → Set where
 ¬names (LET t t₁) = ¬names t ∧ ¬names t₁
 ¬names (WT t t₁) = ¬names t ∧ ¬names t₁
 ¬names (SUP t t₁) = ¬names t ∧ ¬names t₁
-¬names (DSUP t t₁) = ¬names t ∧ ¬names t₁
+--¬names (DSUP t t₁) = ¬names t ∧ ¬names t₁
+¬names (WREC t t₁) = ¬names t ∧ ¬names t₁
 ¬names (MT t t₁) = ¬names t ∧ ¬names t₁
-¬names (MSUP t t₁) = ¬names t ∧ ¬names t₁
-¬names (DMSUP t t₁) = ¬names t ∧ ¬names t₁
+--¬names (MSUP t t₁) = ¬names t ∧ ¬names t₁
+--¬names (DMSUP t t₁) = ¬names t ∧ ¬names t₁
 ¬names (SUM t t₁) = ¬names t ∧ ¬names t₁
 ¬names (PAIR t t₁) = ¬names t ∧ ¬names t₁
 ¬names (SPREAD t t₁) = ¬names t ∧ ¬names t₁

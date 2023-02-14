@@ -347,7 +347,7 @@ abstract
   ... |    inj₂ q rewrite q = ⊥-elim (¬just≡nothing (sym comp))
   updSeq-step cn gc w1 w2 r s n .(WT a₁ b₁) .(WT a₂ b₂) u (updSeq-WT a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , WT a₁ b₁ , WT a₂ b₂ , w1 , refl , refl , updSeq-WT a₁ a₂ b₁ b₂ upd₁ upd₂
   updSeq-step cn gc w1 w2 r s n .(SUP a₁ b₁) .(SUP a₂ b₂) u (updSeq-SUP a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , SUP a₁ b₁ , SUP a₂ b₂ , w1 , refl , refl , updSeq-SUP a₁ a₂ b₁ b₂ upd₁ upd₂
-  updSeq-step cn gc w1 w2 r s n .(DSUP a₁ b₁) .(DSUP a₂ b₂) u (updSeq-DSUP a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind with is-SUP a₁
+{--  updSeq-step cn gc w1 w2 r s n .(DSUP a₁ b₁) .(DSUP a₂ b₂) u (updSeq-DSUP a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind with is-SUP a₁
   ... | inj₁ (u₁ , u₂ , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
     concl d
     where
@@ -363,10 +363,27 @@ abstract
     where
       ind : updSeqStep w1 w1' r s n a₂ a₁'
       ind = updSeq-step cn gc w1 w1' r s n a₁ a₂ a₁' upd₁ gtn compat q (updSeqStepInd-DSUP₁→ w1' r s n a₁' b₁ sind)
+  ... |    inj₂ q rewrite q = ⊥-elim (¬just≡nothing (sym comp))--}
+  updSeq-step cn gc w1 w2 r s n .(WREC a₁ b₁) .(WREC a₂ b₂) u (updSeq-WREC a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind with is-SUP a₁
+  ... | inj₁ (u₁ , u₂ , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+    concl d
+    where
+      d : Σ Term (λ x₁ → Σ Term (λ x₂ → a₂ ≡ SUP x₁ x₂ × updSeq r s n u₁ x₁ × updSeq r s n u₂ x₂))
+      d = updSeq-SUP→ r s n u₁ u₂ a₂ upd₁
+
+      concl : Σ Term (λ x₁ → Σ Term (λ x₂ → a₂ ≡ SUP x₁ x₂ × updSeq r s n u₁ x₁ × updSeq r s n u₂ x₂))
+              → updSeqStep w1 w1 r s n (WREC a₂ b₂) (sub (WRECr b₁ u₂) (sub u₂ (sub u₁ b₁)))
+      concl (x₁ , x₂ , eqa , us1 , us2) rewrite eqa = 0 , 1 , sub (WRECr b₁ u₂) (sub u₂ (sub u₁ b₁)) , sub (WRECr b₂ x₂) (sub x₂ (sub x₁ b₂)) , w1 , refl , refl , updSeq-sub (updSeq-sub (updSeq-sub upd₂ us1) us2) (updSeq-WRECr upd₂ us2)
+  ... | inj₂ x with step⊎ a₁ w1
+  ... |    inj₁ (a₁' , w1' , q) rewrite q | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+    →updSeqStep-WREC₁ w1 w1' r s n a₁' a₂ b₁ b₂ upd₂ ind
+    where
+      ind : updSeqStep w1 w1' r s n a₂ a₁'
+      ind = updSeq-step cn gc w1 w1' r s n a₁ a₂ a₁' upd₁ gtn compat q (updSeqStepInd-WREC₁→ w1' r s n a₁' b₁ sind)
   ... |    inj₂ q rewrite q = ⊥-elim (¬just≡nothing (sym comp))
   updSeq-step cn gc w1 w2 r s n .(MT a₁ b₁) .(MT a₂ b₂) u (updSeq-MT a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , MT a₁ b₁ , MT a₂ b₂ , w1 , refl , refl , updSeq-MT a₁ a₂ b₁ b₂ upd₁ upd₂
-  updSeq-step cn gc w1 w2 r s n .(MSUP a₁ b₁) .(MSUP a₂ b₂) u (updSeq-MSUP a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , MSUP a₁ b₁ , MSUP a₂ b₂ , w1 , refl , refl , updSeq-MSUP a₁ a₂ b₁ b₂ upd₁ upd₂
-  updSeq-step cn gc w1 w2 r s n .(DMSUP a₁ b₁) .(DMSUP a₂ b₂) u (updSeq-DMSUP a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind with is-MSUP a₁
+--  updSeq-step cn gc w1 w2 r s n .(MSUP a₁ b₁) .(MSUP a₂ b₂) u (updSeq-MSUP a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , MSUP a₁ b₁ , MSUP a₂ b₂ , w1 , refl , refl , updSeq-MSUP a₁ a₂ b₁ b₂ upd₁ upd₂
+{--  updSeq-step cn gc w1 w2 r s n .(DMSUP a₁ b₁) .(DMSUP a₂ b₂) u (updSeq-DMSUP a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind with is-MSUP a₁
   ... | inj₁ (u₁ , u₂ , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
     concl d
     where
@@ -382,7 +399,7 @@ abstract
     where
       ind : updSeqStep w1 w1' r s n a₂ a₁'
       ind = updSeq-step cn gc w1 w1' r s n a₁ a₂ a₁' upd₁ gtn compat q (updSeqStepInd-DMSUP₁→ w1' r s n a₁' b₁ sind)
-  ... |    inj₂ q rewrite q = ⊥-elim (¬just≡nothing (sym comp))
+  ... |    inj₂ q rewrite q = ⊥-elim (¬just≡nothing (sym comp))--}
   updSeq-step cn gc w1 w2 r s n .(SUM a₁ b₁) .(SUM a₂ b₂) u (updSeq-SUM a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , SUM a₁ b₁ , SUM a₂ b₂ , w1 , refl , refl , updSeq-SUM a₁ a₂ b₁ b₂ upd₁ upd₂
   updSeq-step cn gc w1 w2 r s n .(PAIR a₁ b₁) .(PAIR a₂ b₂) u (updSeq-PAIR a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , PAIR a₁ b₁ , PAIR a₂ b₂ , w1 , refl , refl , updSeq-PAIR a₁ a₂ b₁ b₂ upd₁ upd₂
   updSeq-step cn gc w1 w2 r s n .(SPREAD a₁ b₁) .(SPREAD a₂ b₂) u (updSeq-SPREAD a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind with is-PAIR a₁

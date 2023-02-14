@@ -421,10 +421,11 @@ data updCtxt (name : Name) (f : Term) : Term → Set where
   updCtxt-LET     : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (LET a b)
   updCtxt-WT      : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (WT a b)
   updCtxt-SUP     : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (SUP a b)
-  updCtxt-DSUP    : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (DSUP a b)
+--  updCtxt-DSUP    : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (DSUP a b)
+  updCtxt-WREC    : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (WREC a b)
   updCtxt-MT      : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (MT a b)
-  updCtxt-MSUP    : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (MSUP a b)
-  updCtxt-DMSUP   : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (DMSUP a b)
+--  updCtxt-MSUP    : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (MSUP a b)
+--  updCtxt-DMSUP   : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (DMSUP a b)
   updCtxt-SUM     : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (SUM a b)
   updCtxt-PAIR    : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (PAIR a b)
   updCtxt-SPREAD  : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (SPREAD a b)
@@ -483,10 +484,11 @@ updCtxt→differ {name} {f} {.(FIX a)} (updCtxt-FIX a u) = differ-FIX _ _ (updCt
 updCtxt→differ {name} {f} {.(LET a b)} (updCtxt-LET a b u u₁) = differ-LET _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
 updCtxt→differ {name} {f} {.(WT a b)} (updCtxt-WT a b u u₁) = differ-WT _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
 updCtxt→differ {name} {f} {.(SUP a b)} (updCtxt-SUP a b u u₁) = differ-SUP _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(DSUP a b)} (updCtxt-DSUP a b u u₁) = differ-DSUP _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+--updCtxt→differ {name} {f} {.(DSUP a b)} (updCtxt-DSUP a b u u₁) = differ-DSUP _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+updCtxt→differ {name} {f} {.(WREC a b)} (updCtxt-WREC a b u u₁) = differ-WREC _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
 updCtxt→differ {name} {f} {.(MT a b)} (updCtxt-MT a b u u₁) = differ-MT _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(MSUP a b)} (updCtxt-MSUP a b u u₁) = differ-MSUP _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(DMSUP a b)} (updCtxt-DMSUP a b u u₁) = differ-DMSUP _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+--updCtxt→differ {name} {f} {.(MSUP a b)} (updCtxt-MSUP a b u u₁) = differ-MSUP _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+--updCtxt→differ {name} {f} {.(DMSUP a b)} (updCtxt-DMSUP a b u u₁) = differ-DMSUP _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
 updCtxt→differ {name} {f} {.(SUM a b)} (updCtxt-SUM a b u u₁) = differ-SUM _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
 updCtxt→differ {name} {f} {.(PAIR a b)} (updCtxt-PAIR a b u u₁) = differ-PAIR _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
 updCtxt→differ {name} {f} {.(SPREAD a b)} (updCtxt-SPREAD a b u u₁) = differ-SPREAD _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
@@ -540,10 +542,11 @@ differ→updCtxt {name} {f} {.(FIX a)} (differ-FIX a .a d) = updCtxt-FIX _ (diff
 differ→updCtxt {name} {f} {.(LET a₁ b₁)} (differ-LET a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-LET _ _ (differ→updCtxt d) (differ→updCtxt d₁)
 differ→updCtxt {name} {f} {.(WT a₁ b₁)} (differ-WT a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-WT _ _ (differ→updCtxt d) (differ→updCtxt d₁)
 differ→updCtxt {name} {f} {.(SUP a₁ b₁)} (differ-SUP a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-SUP _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(DSUP a₁ b₁)} (differ-DSUP a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-DSUP _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+--differ→updCtxt {name} {f} {.(DSUP a₁ b₁)} (differ-DSUP a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-DSUP _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+differ→updCtxt {name} {f} {.(WREC a₁ b₁)} (differ-WREC a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-WREC _ _ (differ→updCtxt d) (differ→updCtxt d₁)
 differ→updCtxt {name} {f} {.(MT a₁ b₁)} (differ-MT a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-MT _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(MSUP a₁ b₁)} (differ-MSUP a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-MSUP _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(DMSUP a₁ b₁)} (differ-DMSUP a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-DMSUP _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+--differ→updCtxt {name} {f} {.(MSUP a₁ b₁)} (differ-MSUP a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-MSUP _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+--differ→updCtxt {name} {f} {.(DMSUP a₁ b₁)} (differ-DMSUP a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-DMSUP _ _ (differ→updCtxt d) (differ→updCtxt d₁)
 differ→updCtxt {name} {f} {.(SUM a₁ b₁)} (differ-SUM a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-SUM _ _ (differ→updCtxt d) (differ→updCtxt d₁)
 differ→updCtxt {name} {f} {.(PAIR a₁ b₁)} (differ-PAIR a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-PAIR _ _ (differ→updCtxt d) (differ→updCtxt d₁)
 differ→updCtxt {name} {f} {.(SPREAD a₁ b₁)} (differ-SPREAD a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-SPREAD _ _ (differ→updCtxt d) (differ→updCtxt d₁)
@@ -627,11 +630,12 @@ updCtxt-SUP→ : {name : Name} {f a b : Term}
 updCtxt-SUP→ {name} {f} {a} {b} (updCtxt-SUP .a .b u v) = u , v
 
 
+{--
 updCtxt-MSUP→ : {name : Name} {f a b : Term}
                    → updCtxt name f (MSUP a b)
                    → updCtxt name f a × updCtxt name f b
 updCtxt-MSUP→ {name} {f} {a} {b} (updCtxt-MSUP .a .b u v) = u , v
-
+--}
 
 
 updCtxt-INL→ : {name : Name} {f a : Term}
@@ -1320,7 +1324,7 @@ stepsPresHighestℕ-IFEQ₂→ {name} {f} {n} {b} {c} {d} {w} (k , v , w' , comp
     q = ΣhighestUpdCtxtAux-SUC₁ {k} (wcomp , i , u)
 
 
-
+{--
 ΣhighestUpdCtxtAux-DSUP₁-aux : {j : ℕ} {k : ℕ} {w w0 w1 w' : 𝕎·} {a a1 a' : Term} {name : Name} {f : Term} {n : ℕ} {b : Term}
                                → ¬ isValue a
                                → step a w ≡ just (a1 , w1)
@@ -1365,9 +1369,57 @@ stepsPresHighestℕ-IFEQ₂→ {name} {f} {n} {b} {c} {d} {w} (k , v , w' , comp
   where
     q : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (DSUP a b) (DSUP a' b) w0 w w')
     q = ΣhighestUpdCtxtAux-DSUP₁ {k} ub (wcomp , i , u)
+--}
+
+
+ΣhighestUpdCtxtAux-WREC₁-aux : {j : ℕ} {k : ℕ} {w w0 w1 w' : 𝕎·} {a a1 a' : Term} {name : Name} {f : Term} {n : ℕ} {b : Term}
+                               → ¬ isValue a
+                               → step a w ≡ just (a1 , w1)
+                               → (comp : steps k (a1 , w1) ≡ (a' , w'))
+                               → (getT≤ℕ w' n name → (getT≤ℕ w0 n name × getT≤ℕ w n name × isHighestℕ {k} {w1} {w'} {a1} {a'} n name comp))
+                               → ΣhighestUpdCtxtAux j name f n (WREC a1 b) (WREC a' b) w0 w1 w'
+                               → ΣhighestUpdCtxtAux (suc j) name f n (WREC a b) (WREC a' b) w0 w w'
+ΣhighestUpdCtxtAux-WREC₁-aux {j} {k} {w} {w0} {w1} {w'} {a} {a1} {a'} {name} {f} {n} {b} nv comp0 comp i (comp1 , g , u) with is-SUP a
+... | inj₁ (x , y , p) rewrite p = ⊥-elim (nv tt)
+... | inj₂ q rewrite comp0 = comp1 , (λ s → fst (g s) , fst (snd (i s)) , snd (g s)) , u
 
 
 
+ΣhighestUpdCtxtAux-WREC₁ : {k : ℕ} {name : Name} {f : Term} {n : ℕ} {a a' b : Term} {w0 w w' : 𝕎·}
+                        → updCtxt name f b
+                        → ΣhighestUpdCtxtAux k name f n a a' w0 w w'
+                        → Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (WREC a b) (WREC a' b) w0 w w')
+ΣhighestUpdCtxtAux-WREC₁ {0} {name} {f} {n} {a} {a'} {b} {w0} {w} {w'} ub (comp , i , u)
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl , i , updCtxt-WREC _ _ u ub
+ΣhighestUpdCtxtAux-WREC₁ {suc k} {name} {f} {n} {a} {a'} {b} {w0} {w} {w'} ub (comp , i , u) with step⊎ a w
+... | inj₁ (a1 , w1 , z) rewrite z with isValue⊎ a
+... |    inj₁ y rewrite stepVal a w y | sym (pair-inj₁ (just-inj z)) | sym (pair-inj₂ (just-inj z)) =
+  ΣhighestUpdCtxtAux-WREC₁ {k} ub (comp , (λ s → fst (i s) , snd (snd (i s))) , u)
+... |    inj₂ y =
+  suc (fst ind) , ΣhighestUpdCtxtAux-WREC₁-aux {fst ind} {k} y z comp i (snd ind)
+  where
+    ind : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (WREC a1 b) (WREC a' b) w0 w1 w')
+    ind = ΣhighestUpdCtxtAux-WREC₁ {k} {name} {f} {n} {a1} {a'} {b} {w0} {w1} {w'} ub (comp , (λ s → fst (i s) , snd (snd (i s))) , u)
+ΣhighestUpdCtxtAux-WREC₁ {suc k} {name} {f} {n} {a} {a'} {b} {w0} {w} {w'} ub (comp , i , u) | inj₂ z
+  rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl , i , updCtxt-WREC _ _ u ub
+
+
+
+ΣhighestUpdCtxt-WREC₁ : {name : Name} {f : Term} {n : ℕ} {a b : Term} {w0 w : 𝕎·}
+                        → updCtxt name f b
+                        → ΣhighestUpdCtxt name f n a w0 w
+                        → ΣhighestUpdCtxt name f n (WREC a b) w0 w
+ΣhighestUpdCtxt-WREC₁ {name} {f} {n} {a} {b} {w0} {w} ub (k , a' , w' , wcomp , i , u) =
+  fst q , WREC a' b , w' , snd q
+  where
+    q : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (WREC a b) (WREC a' b) w0 w w')
+    q = ΣhighestUpdCtxtAux-WREC₁ {k} ub (wcomp , i , u)
+
+
+
+{--
 ΣhighestUpdCtxtAux-DMSUP₁-aux : {j : ℕ} {k : ℕ} {w w0 w1 w' : 𝕎·} {a a1 a' : Term} {name : Name} {f : Term} {n : ℕ} {b : Term}
                                → ¬ isValue a
                                → step a w ≡ just (a1 , w1)
@@ -1412,7 +1464,7 @@ stepsPresHighestℕ-IFEQ₂→ {name} {f} {n} {b} {c} {d} {w} (k , v , w' , comp
   where
     q : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (DMSUP a b) (DMSUP a' b) w0 w w')
     q = ΣhighestUpdCtxtAux-DMSUP₁ {k} ub (wcomp , i , u)
-
+--}
 
 
 ΣhighestUpdCtxtAux-SPREAD₁-aux : {j : ℕ} {k : ℕ} {w w0 w1 w' : 𝕎·} {a a1 a' : Term} {name : Name} {f : Term} {n : ℕ} {b : Term}

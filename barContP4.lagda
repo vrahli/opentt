@@ -139,10 +139,11 @@ data updSeq (r : Name) (s : 𝕊) (n : ℕ) : Term → Term → Set where
   updSeq-LET     : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (LET a₁ b₁) (LET a₂ b₂)
   updSeq-WT      : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (WT a₁ b₁) (WT a₂ b₂)
   updSeq-SUP     : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (SUP a₁ b₁) (SUP a₂ b₂)
-  updSeq-DSUP    : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (DSUP a₁ b₁) (DSUP a₂ b₂)
+--  updSeq-DSUP    : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (DSUP a₁ b₁) (DSUP a₂ b₂)
+  updSeq-WREC    : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (WREC a₁ b₁) (WREC a₂ b₂)
   updSeq-MT      : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (MT a₁ b₁) (MT a₂ b₂)
-  updSeq-MSUP    : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (MSUP a₁ b₁) (MSUP a₂ b₂)
-  updSeq-DMSUP   : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (DMSUP a₁ b₁) (DMSUP a₂ b₂)
+--  updSeq-MSUP    : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (MSUP a₁ b₁) (MSUP a₂ b₂)
+--  updSeq-DMSUP   : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (DMSUP a₁ b₁) (DMSUP a₂ b₂)
   updSeq-SUM     : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (SUM a₁ b₁) (SUM a₂ b₂)
   updSeq-PAIR    : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (PAIR a₁ b₁) (PAIR a₂ b₂)
   updSeq-SPREAD  : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (SPREAD a₁ b₁) (SPREAD a₂ b₂)
@@ -218,10 +219,12 @@ updSeq-SUP→ : (r : Name) (s : 𝕊) (n : ℕ) (t u : Term) (b : Term)
 updSeq-SUP→ r s n t u .(SUP a₂ b₂) (updSeq-SUP .t a₂ .u b₂ h h₁) = a₂ , b₂ , refl , h , h₁
 
 
+{--
 updSeq-MSUP→ : (r : Name) (s : 𝕊) (n : ℕ) (t u : Term) (b : Term)
                 → updSeq r s n (MSUP t u) b
                 → Σ Term (λ x → Σ Term (λ y → b ≡ MSUP x y × updSeq r s n t x × updSeq r s n u y))
 updSeq-MSUP→ r s n t u .(MSUP a₂ b₂) (updSeq-MSUP .t a₂ .u b₂ h h₁) = a₂ , b₂ , refl , h , h₁
+--}
 
 
 updSeq-PAIR→ : (r : Name) (s : 𝕊) (n : ℕ) (t u : Term) (b : Term)
@@ -262,10 +265,11 @@ updSeq-shiftUp n {r} {s} {k} {.(FIX a₁)} {.(FIX a₂)} (updSeq-FIX a₁ a₂ u
 updSeq-shiftUp n {r} {s} {k} {.(LET a₁ b₁)} {.(LET a₂ b₂)} (updSeq-LET a₁ a₂ b₁ b₂ u u₁) = updSeq-LET _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp (suc n) u₁)
 updSeq-shiftUp n {r} {s} {k} {.(WT a₁ b₁)} {.(WT a₂ b₂)} (updSeq-WT a₁ a₂ b₁ b₂ u u₁) = updSeq-WT _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp (suc n) u₁)
 updSeq-shiftUp n {r} {s} {k} {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (updSeq-SUP a₁ a₂ b₁ b₂ u u₁) = updSeq-SUP _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁)
-updSeq-shiftUp n {r} {s} {k} {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} (updSeq-DSUP a₁ a₂ b₁ b₂ u u₁) = updSeq-DSUP _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp (suc (suc n)) u₁)
+--updSeq-shiftUp n {r} {s} {k} {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} (updSeq-DSUP a₁ a₂ b₁ b₂ u u₁) = updSeq-DSUP _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp (suc (suc n)) u₁)
+updSeq-shiftUp n {r} {s} {k} {.(WREC a₁ b₁)} {.(WREC a₂ b₂)} (updSeq-WREC a₁ a₂ b₁ b₂ u u₁) = updSeq-WREC _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp (suc (suc (suc n))) u₁)
 updSeq-shiftUp n {r} {s} {k} {.(MT a₁ b₁)} {.(MT a₂ b₂)} (updSeq-MT a₁ a₂ b₁ b₂ u u₁) = updSeq-MT _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp (suc n) u₁)
-updSeq-shiftUp n {r} {s} {k} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updSeq-MSUP a₁ a₂ b₁ b₂ u u₁) = updSeq-MSUP _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁)
-updSeq-shiftUp n {r} {s} {k} {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} (updSeq-DMSUP a₁ a₂ b₁ b₂ u u₁) = updSeq-DMSUP _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp (suc (suc n)) u₁)
+--updSeq-shiftUp n {r} {s} {k} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updSeq-MSUP a₁ a₂ b₁ b₂ u u₁) = updSeq-MSUP _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁)
+--updSeq-shiftUp n {r} {s} {k} {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} (updSeq-DMSUP a₁ a₂ b₁ b₂ u u₁) = updSeq-DMSUP _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp (suc (suc n)) u₁)
 updSeq-shiftUp n {r} {s} {k} {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (updSeq-SUM a₁ a₂ b₁ b₂ u u₁) = updSeq-SUM _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp (suc n) u₁)
 updSeq-shiftUp n {r} {s} {k} {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (updSeq-PAIR a₁ a₂ b₁ b₂ u u₁) = updSeq-PAIR _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁)
 updSeq-shiftUp n {r} {s} {k} {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} (updSeq-SPREAD a₁ a₂ b₁ b₂ u u₁) = updSeq-SPREAD _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp (suc (suc n)) u₁)
@@ -320,10 +324,11 @@ updSeq-shiftDown n {r} {s} {k} {.(FIX a₁)} {.(FIX a₂)} (updSeq-FIX a₁ a₂
 updSeq-shiftDown n {r} {s} {k} {.(LET a₁ b₁)} {.(LET a₂ b₂)} (updSeq-LET a₁ a₂ b₁ b₂ u u₁) = updSeq-LET _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown (suc n) u₁)
 updSeq-shiftDown n {r} {s} {k} {.(WT a₁ b₁)} {.(WT a₂ b₂)} (updSeq-WT a₁ a₂ b₁ b₂ u u₁) = updSeq-WT _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown (suc n) u₁)
 updSeq-shiftDown n {r} {s} {k} {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (updSeq-SUP a₁ a₂ b₁ b₂ u u₁) = updSeq-SUP _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁)
-updSeq-shiftDown n {r} {s} {k} {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} (updSeq-DSUP a₁ a₂ b₁ b₂ u u₁) = updSeq-DSUP _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown (suc (suc n)) u₁)
+--updSeq-shiftDown n {r} {s} {k} {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} (updSeq-DSUP a₁ a₂ b₁ b₂ u u₁) = updSeq-DSUP _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown (suc (suc n)) u₁)
+updSeq-shiftDown n {r} {s} {k} {.(WREC a₁ b₁)} {.(WREC a₂ b₂)} (updSeq-WREC a₁ a₂ b₁ b₂ u u₁) = updSeq-WREC _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown (suc (suc (suc n))) u₁)
 updSeq-shiftDown n {r} {s} {k} {.(MT a₁ b₁)} {.(MT a₂ b₂)} (updSeq-MT a₁ a₂ b₁ b₂ u u₁) = updSeq-MT _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown (suc n) u₁)
-updSeq-shiftDown n {r} {s} {k} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updSeq-MSUP a₁ a₂ b₁ b₂ u u₁) = updSeq-MSUP _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁)
-updSeq-shiftDown n {r} {s} {k} {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} (updSeq-DMSUP a₁ a₂ b₁ b₂ u u₁) = updSeq-DMSUP _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown (suc (suc n)) u₁)
+--updSeq-shiftDown n {r} {s} {k} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updSeq-MSUP a₁ a₂ b₁ b₂ u u₁) = updSeq-MSUP _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁)
+--updSeq-shiftDown n {r} {s} {k} {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} (updSeq-DMSUP a₁ a₂ b₁ b₂ u u₁) = updSeq-DMSUP _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown (suc (suc n)) u₁)
 updSeq-shiftDown n {r} {s} {k} {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (updSeq-SUM a₁ a₂ b₁ b₂ u u₁) = updSeq-SUM _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown (suc n) u₁)
 updSeq-shiftDown n {r} {s} {k} {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (updSeq-PAIR a₁ a₂ b₁ b₂ u u₁) = updSeq-PAIR _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁)
 updSeq-shiftDown n {r} {s} {k} {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} (updSeq-SPREAD a₁ a₂ b₁ b₂ u u₁) = updSeq-SPREAD _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown (suc (suc n)) u₁)
@@ -381,10 +386,11 @@ updSeq-subv v {r} {s} {k} {.(FIX a₁)} {.(FIX a₂)} {b₁} {b₂} (updSeq-FIX 
 updSeq-subv v {r} {s} {k} {.(LET a₁ b₃)} {.(LET a₂ b₄)} {b₁} {b₂} (updSeq-LET a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-LET _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv (suc v) ua₁ (updSeq-shiftUp 0 ub))
 updSeq-subv v {r} {s} {k} {.(WT a₁ b₃)} {.(WT a₂ b₄)} {b₁} {b₂} (updSeq-WT a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-WT _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv (suc v) ua₁ (updSeq-shiftUp 0 ub))
 updSeq-subv v {r} {s} {k} {.(SUP a₁ b₃)} {.(SUP a₂ b₄)} {b₁} {b₂} (updSeq-SUP a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-SUP _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub)
-updSeq-subv v {r} {s} {k} {.(DSUP a₁ b₃)} {.(DSUP a₂ b₄)} {b₁} {b₂} (updSeq-DSUP a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-DSUP _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv (suc (suc v)) ua₁ (updSeq-shiftUp 0 (updSeq-shiftUp 0 ub)))
+--updSeq-subv v {r} {s} {k} {.(DSUP a₁ b₃)} {.(DSUP a₂ b₄)} {b₁} {b₂} (updSeq-DSUP a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-DSUP _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv (suc (suc v)) ua₁ (updSeq-shiftUp 0 (updSeq-shiftUp 0 ub)))
+updSeq-subv v {r} {s} {k} {.(WREC a₁ b₃)} {.(WREC a₂ b₄)} {b₁} {b₂} (updSeq-WREC a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-WREC _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv (suc (suc (suc v))) ua₁ (updSeq-shiftUp 0 (updSeq-shiftUp 0 (updSeq-shiftUp 0 ub))))
 updSeq-subv v {r} {s} {k} {.(MT a₁ b₃)} {.(MT a₂ b₄)} {b₁} {b₂} (updSeq-MT a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-MT _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv (suc v) ua₁ (updSeq-shiftUp 0 ub))
-updSeq-subv v {r} {s} {k} {.(MSUP a₁ b₃)} {.(MSUP a₂ b₄)} {b₁} {b₂} (updSeq-MSUP a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-MSUP _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub)
-updSeq-subv v {r} {s} {k} {.(DMSUP a₁ b₃)} {.(DMSUP a₂ b₄)} {b₁} {b₂} (updSeq-DMSUP a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-DMSUP _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv (suc (suc v)) ua₁ (updSeq-shiftUp 0 (updSeq-shiftUp 0 ub)))
+--updSeq-subv v {r} {s} {k} {.(MSUP a₁ b₃)} {.(MSUP a₂ b₄)} {b₁} {b₂} (updSeq-MSUP a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-MSUP _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub)
+--updSeq-subv v {r} {s} {k} {.(DMSUP a₁ b₃)} {.(DMSUP a₂ b₄)} {b₁} {b₂} (updSeq-DMSUP a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-DMSUP _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv (suc (suc v)) ua₁ (updSeq-shiftUp 0 (updSeq-shiftUp 0 ub)))
 updSeq-subv v {r} {s} {k} {.(SUM a₁ b₃)} {.(SUM a₂ b₄)} {b₁} {b₂} (updSeq-SUM a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-SUM _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv (suc v) ua₁ (updSeq-shiftUp 0 ub))
 updSeq-subv v {r} {s} {k} {.(PAIR a₁ b₃)} {.(PAIR a₂ b₄)} {b₁} {b₂} (updSeq-PAIR a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-PAIR _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub)
 updSeq-subv v {r} {s} {k} {.(SPREAD a₁ b₃)} {.(SPREAD a₂ b₄)} {b₁} {b₂} (updSeq-SPREAD a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-SPREAD _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv (suc (suc v)) ua₁ (updSeq-shiftUp 0 (updSeq-shiftUp 0 ub)))
@@ -600,6 +606,7 @@ updSeqStep w1 w2 r s n u x =
     comp2' = CHOOSE⇓steps k2 {a₂} {z} b₂ {w1} {w3} comp2
 
 
+{--
 →updSeqStep-DSUP₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a₁ a₂ b₁ b₂ : Term)
                       → updSeq r s n b₁ b₂
                       → updSeqStep w1 w1' r s n a₂ a₁
@@ -614,8 +621,26 @@ updSeqStep w1 w2 r s n u x =
 
     comp2' : Σ ℕ (λ k0 → steps k0 (DSUP a₂ b₂ , w1) ≡ (DSUP z b₂ , w3))
     comp2' = DSUP⇓steps k2 {a₂} {z} b₂ {w1} {w3} comp2
+--}
 
 
+→updSeqStep-WREC₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a₁ a₂ b₁ b₂ : Term)
+                      → updSeq r s n b₁ b₂
+                      → updSeqStep w1 w1' r s n a₂ a₁
+                      → updSeqStep w1 w1' r s n (WREC a₂ b₂) (WREC a₁ b₁)
+→updSeqStep-WREC₁ w1 w1' r s n a₁ a₂ b₁ b₂ ub (k1 , k2 , y , z , w3 , comp1 , comp2 , u) =
+  fst comp1' , fst comp2' ,
+  WREC y b₁ , WREC z b₂ ,
+  w3 , snd comp1' , snd comp2' , updSeq-WREC _ _ _ _ u ub
+  where
+    comp1' : Σ ℕ (λ k0 → steps k0 (WREC a₁ b₁ , w1') ≡ (WREC y b₁ , w3))
+    comp1' = WREC⇓steps k1 {a₁} {y} b₁ {w1'} {w3} comp1
+
+    comp2' : Σ ℕ (λ k0 → steps k0 (WREC a₂ b₂ , w1) ≡ (WREC z b₂ , w3))
+    comp2' = WREC⇓steps k2 {a₂} {z} b₂ {w1} {w3} comp2
+
+
+{--
 →updSeqStep-DMSUP₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a₁ a₂ b₁ b₂ : Term)
                       → updSeq r s n b₁ b₂
                       → updSeqStep w1 w1' r s n a₂ a₁
@@ -630,6 +655,7 @@ updSeqStep w1 w2 r s n u x =
 
     comp2' : Σ ℕ (λ k0 → steps k0 (DMSUP a₂ b₂ , w1) ≡ (DMSUP z b₂ , w3))
     comp2' = DMSUP⇓steps k2 {a₂} {z} b₂ {w1} {w3} comp2
+--}
 
 
 →updSeqStep-SPREAD₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a₁ a₂ b₁ b₂ : Term)
@@ -757,6 +783,7 @@ updSeqStepInd-CHOOSE₁→ w r s n a b (k1 , v , w' , comp , ish , isv , ind)
   k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
 
 
+{--
 updSeqStepInd-DSUP₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b : Term)
                          → updSeqStepInd r s n (DSUP a b) w
                          → updSeqStepInd r s n a w
@@ -764,8 +791,19 @@ updSeqStepInd-DSUP₁→ w r s n a b (k1 , v , w' , comp , ish , isv , ind)
   with isHighestℕ-DSUP₁→ {n} {k1} {r} {a} {b} {v} {w} {w'} comp isv ish
 ... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
   k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
+--}
 
 
+updSeqStepInd-WREC₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b : Term)
+                         → updSeqStepInd r s n (WREC a b) w
+                         → updSeqStepInd r s n a w
+updSeqStepInd-WREC₁→ w r s n a b (k1 , v , w' , comp , ish , isv , ind)
+  with isHighestℕ-WREC₁→ {n} {k1} {r} {a} {b} {v} {w} {w'} comp isv ish
+... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
+  k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
+
+
+{--
 updSeqStepInd-DMSUP₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b : Term)
                          → updSeqStepInd r s n (DMSUP a b) w
                          → updSeqStepInd r s n a w
@@ -773,6 +811,7 @@ updSeqStepInd-DMSUP₁→ w r s n a b (k1 , v , w' , comp , ish , isv , ind)
   with isHighestℕ-DMSUP₁→ {n} {k1} {r} {a} {b} {v} {w} {w'} comp isv ish
 ... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
   k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
+--}
 
 
 updSeqStepInd-SPREAD₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b : Term)
@@ -1013,7 +1052,7 @@ updSeq→isValue {r} {s} {n} {.(LAMBDA a₁)} {.(LAMBDA a₂)} (updSeq-LAMBDA a�
 updSeq→isValue {r} {s} {n} {.(WT a₁ b₁)} {.(WT a₂ b₂)} (updSeq-WT a₁ a₂ b₁ b₂ u u₁) isv = tt
 updSeq→isValue {r} {s} {n} {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (updSeq-SUP a₁ a₂ b₁ b₂ u u₁) isv = tt
 updSeq→isValue {r} {s} {n} {.(MT a₁ b₁)} {.(MT a₂ b₂)} (updSeq-MT a₁ a₂ b₁ b₂ u u₁) isv = tt
-updSeq→isValue {r} {s} {n} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updSeq-MSUP a₁ a₂ b₁ b₂ u u₁) isv = tt
+--updSeq→isValue {r} {s} {n} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updSeq-MSUP a₁ a₂ b₁ b₂ u u₁) isv = tt
 updSeq→isValue {r} {s} {n} {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (updSeq-SUM a₁ a₂ b₁ b₂ u u₁) isv = tt
 updSeq→isValue {r} {s} {n} {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (updSeq-PAIR a₁ a₂ b₁ b₂ u u₁) isv = tt
 updSeq→isValue {r} {s} {n} {.(SET a₁ b₁)} {.(SET a₂ b₂)} (updSeq-SET a₁ a₂ b₁ b₂ u u₁) isv = tt
@@ -1064,5 +1103,19 @@ updSeq→isValue {r} {s} {n} {.(upd r (MSEQ s))} {.(upd r (s2l s n))} updSeq-upd
   k1 , fst comp + k2 , y , z , w3 , comp1 ,
   steps-trans+ {fst comp} {k2} {a} {a'} {z} {w1} {w1} {w3} (snd comp) comp2 ,
   u
+
+
+
+updSeq-WRECr : {r : Name} {s : 𝕊} {n : ℕ} {r1 r2 f1 f2 : Term}
+               → updSeq r s n r1 r2
+               → updSeq r s n f1 f2
+               → updSeq r s n (WRECr r1 f1) (WRECr r2 f2)
+updSeq-WRECr {r} {s} {n} {r1} {r2} {f1} {f2} dr df =
+  updSeq-LAMBDA
+    _ _
+    (updSeq-WREC
+      _ _ _ _
+      (updSeq-APPLY _ _ _ _ (updSeq-shiftUp 0 df) (updSeq-VAR 0))
+      (updSeq-shiftUp 0 dr))
 
 \end{code}
