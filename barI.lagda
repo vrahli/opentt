@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -39,8 +39,8 @@ open import progress
 --open import bar
 open import mod
 
-module barI {L : Level} (W : PossibleWorlds {L}) (M : Mod W) --(B : BarsProps W) --
---            (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K)
+module barI {n m : Level} (W : PossibleWorlds {n}) (M : Mod {n} {m} W) --(B : BarsProps W) --
+--            (C : Choice) (K : Compatible {n} W C) (P : Progress {n} W C K)
        where
 
 open import worldDef(W)
@@ -61,44 +61,44 @@ open import worldDef(W)
 --barI = inBethBar-Bar
 
 
-□· : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
+□· : ∀ {l} (w : 𝕎·) (f : wPred {l} w) → Set (lsuc n ⊔ lsuc m ⊔ l)
 □· = Mod.□ M
 --□· = inOpenBar
 --□· = inBethBar
 
-□·' : (w : 𝕎·) {g : wPred w} (h : □· w g) (f : wPredDep g) → Set(lsuc(L))
+□·' : ∀ {l} (w : 𝕎·) {g : wPred {l} w} (h : □· w g) (f : wPredDep g) → Set (lsuc n ⊔ lsuc m ⊔ l)
 □·' = Mod.□' M
 --□·' = inOpenBar'
 --□·' = inBethBar'
 
-↑□· : {w : 𝕎·} {f : wPred w} (i : □· w f) {w' : 𝕎·} (e : w ⊑· w') → □· w' (↑wPred f e)
+↑□· : ∀ {l} {w : 𝕎·} {f : wPred {l} w} (i : □· w f) {w' : 𝕎·} (e : w ⊑· w') → □· w' (↑wPred f e)
 ↑□· = Mod.↑□ M
 --↑□· = ↑inOpenBar
 --↑□· = ↑inBethBar
 
-↑'□· : {w : 𝕎·} {f : wPred w} (i : □· w f) {w' : 𝕎·} (e : w ⊑· w') → □· w' (↑wPred' f e)
+↑'□· : ∀ {l} {w : 𝕎·} {f : wPred {l} w} (i : □· w f) {w' : 𝕎·} (e : w ⊑· w') → □· w' (↑wPred' f e)
 ↑'□· = Mod.↑'□ M
 --↑'□· = ↑'inOpenBar
 --↑'□· = ↑'inBethBar
 
 
-↑□·' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : □· w f) {w' : 𝕎·} (e : w ⊑· w')
+↑□·' : ∀ {l} {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} (i : □· w f) {w' : 𝕎·} (e : w ⊑· w')
           → □·' w i g → □·' w' (↑□· i e) (↑wPredDep g e)
-↑□·' {w} {f} {g} = Mod.↑□' M {w} {f} {g}
---↑□·' {w} {f} {g} = ↑inOpenBar' {w} {f} {g}
---↑□·' {w} {f} {g} = ↑inBethBar' {w} {f} {g}
+↑□·' {l} {w} {f} {g} = Mod.↑□' M {l} {w} {f} {g}
+--↑□·' {l} {w} {f} {g} = ↑inOpenBar' {l} {w} {f} {g}
+--↑□·' {l} {w} {f} {g} = ↑inBethBar' {l} {w} {f} {g}
 
 
-∀𝕎-□· : {w : 𝕎·} {f : wPred w} → ∀𝕎 w f → □· w f
+∀𝕎-□· : ∀ {l} {w : 𝕎·} {f : wPred {l} w} → ∀𝕎 w f → □· w f
 ∀𝕎-□· = Mod.∀𝕎-□ M
 
 
-∀𝕎-□Func· : {w : 𝕎·} {f g : wPred w}
+∀𝕎-□Func· : ∀ {l} {w : 𝕎·} {f g : wPred {l} w}
              → ∀𝕎 w (λ w' e' → f w' e' → g w' e')
              → □· w f → □· w g
 ∀𝕎-□Func· = Mod.∀𝕎-□Func M
 {--
-atbar : {w : 𝕎·} {f : wPred w} (i : □· w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
+atbar : {w : 𝕎·} {f : wPred w} (i : □· w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(n))
 --atbar = Bar.atBar b
 atbar = atOpenBar
 --atbar = atBethBar

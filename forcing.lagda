@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -46,12 +46,12 @@ open import bar
 
 
 -- TODO: Progress is not required here
-module forcing {L : Level} (W : PossibleWorlds {L}) (M : Mod W) --(B : BarsProps W) --
-               (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
+module forcing {n m : Level} (W : PossibleWorlds {n}) (M : Mod {n} {m} W) --(B : BarsProps W) --
+               (C : Choice) (K : Compatible W C) (P : Progress W C K) (G : GetChoice W C K)
                (X : ChoiceExt W C)
                (N : NewChoice W C K G)
 --               (B : BarsProps W)
-               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+               (E : Extensionality 0ℓ (lsuc (lsuc n) ⊔ lsuc (lsuc m)))
        where
 open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)
@@ -77,18 +77,17 @@ wpreddepextirr = wPredDepExtIrr-inOpenBar--}
 
 
 -- PERs and world dependent PERs
-per : Set(lsuc(lsuc(L)))
-per = CTerm → CTerm → Set(lsuc(L))
+per : Set (lsuc (lsuc n) ⊔ lsuc (lsuc m))
+per = CTerm → CTerm → Set (lsuc n ⊔ lsuc m)
 
-wper : Set(lsuc(lsuc(L)))
+wper : Set (lsuc (lsuc n) ⊔ lsuc (lsuc m))
 wper = (w : 𝕎·) → per
 
-ist : Set(lsuc(lsuc(L)))
-ist = CTerm → Set(lsuc(L))
+ist : Set (lsuc (lsuc n) ⊔ lsuc (lsuc m))
+ist = CTerm → Set (lsuc n ⊔ lsuc m)
 
-wist : Set(lsuc(lsuc(L)))
+wist : Set (lsuc (lsuc n) ⊔ lsuc (lsuc m))
 wist = (w : 𝕎·) → ist
-
 
 𝕃 : Set
 𝕃 = ℕ
@@ -96,11 +95,12 @@ wist = (w : 𝕎·) → ist
 -- eqTypes and eqInType provide meaning to types w.r.t. already interpreted universes,
 -- given by univs (1st conjunct defines the equality between such universes, while the
 -- second conjunct defines the equality in such universes)
-univsUpTo : 𝕃 → Set(lsuc(lsuc(L)))
+univsUpTo : 𝕃 → Set (lsuc (lsuc n) ⊔ lsuc (lsuc m))
 univsUpTo n = (m : 𝕃) (p : m < n) → wper
 
 
-univs : Set(lsuc(lsuc(L)))
+
+univs : Set (lsuc (lsuc n) ⊔ lsuc (lsuc m))
 univs = Σ ℕ univsUpTo
 
 
@@ -127,6 +127,7 @@ data BC : Set where
   BCb : BC
 
 
+{--
 Σ∈𝔹'' : (B : Bars W) {w : 𝕎·} {g : wPred w} (b : 𝔹 W B w) (i : ∈𝔹 W b g) (f : wPredDep g) → Set(lsuc(L))
 Σ∈𝔹'' B {w} {g} b i f =
   {w1 : 𝕎·} (e1 : w ⊑· w1) (ib : 𝔹.bar b w1)
@@ -134,7 +135,6 @@ data BC : Set where
 {-# INLINE Σ∈𝔹'' #-}
 
 
-{--
 □⋆ : {--BC →--} (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
 □⋆ {--_--} {--BCb--} = Mod.□ (BarsProps→Mod W B)
 --λ w f → Σ∈𝔹 W (BarsProps.bars B) {w} f
@@ -154,7 +154,7 @@ data BC : Set where
 -- and equality in types (a recursive function)
 -- We don't check positivity here, this can be done for all instances of bar.Bar
 {-# NO_POSITIVITY_CHECK #-}
-data eqTypes (u : univs) (w : 𝕎·) (T1 T2 : CTerm) : Set(lsuc(L))
+data eqTypes (u : univs) (w : 𝕎·) (T1 T2 : CTerm) : Set (lsuc n ⊔ lsuc m)
 --{-# TERMINATING #-}
 eqInType : (u : univs) (w : 𝕎·) {T1 T2 : CTerm} → (eqTypes u w T1 T2) → per
 \end{code}
@@ -303,14 +303,11 @@ data eqTypes u w T1 T2 where
   EQTBAR : □· w (λ w' _ → eqTypes u w' T1 T2) → eqTypes u w T1 T2
 \end{code}
 
-
 Equality in types is defined as the following recursive function.
-
 
 \begin{code}
 PIeq : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → per
 PIeq eqa eqb f g = (a b : CTerm) → (e : eqa a b) → eqb a b e (#APPLY f a) (#APPLY g b)
-
 
 SUMeq : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → wper
 SUMeq eqa eqb w f g =
@@ -319,7 +316,6 @@ SUMeq eqa eqb w f g =
     f #⇛ (#PAIR a1 b1) at w
     × g #⇛ (#PAIR a2 b2) at w
     × eqb a1 a2 ea b1 b2)))))
-
 
 SETeq : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → per
 SETeq eqa eqb f g = Σ CTerm (λ b → Σ (eqa f g) (λ ea → eqb f g ea b b))
@@ -351,7 +347,6 @@ QTUNIONeq eqa eqb w t1 t2  =
     (t1 #⇓ (#INR a) at w × t2 #⇓ (#INR b) at w × eqb a b)))
 
 
-
 {--
  -- Positivity issues with this one...
  -- We prove in props0 that they are equivalent
@@ -377,7 +372,6 @@ TSQUASHeq : (eqa : per) → wper
 TSQUASHeq eqa w t1 t2 = Σ ℕ (λ n → TSQUASHeqℕ n eqa w t1 t2)
 
 
-
 {-- We equivalently define the above definition as follows... --}
 TTRUNCeqBase : (eqa : per) → wper
 TTRUNCeqBase eqa w t1 t2 =
@@ -391,7 +385,6 @@ TTRUNCeqℕ (suc n) eqa w t1 t2 = Σ CTerm (λ t → TTRUNCeqBase eqa w t1 t × 
 
 TTRUNCeq : (eqa : per) → wper
 TTRUNCeq eqa w t1 t2 = Σ ℕ (λ n → TTRUNCeqℕ n eqa w t1 t2)
-
 
 
 TUNIONeqBase : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → per
@@ -427,18 +420,16 @@ FFDEFSeq x1 eqa w t1 t2 =
 
 
 PUREeq : per
-PUREeq t1 t2 = Lift {0ℓ} (lsuc L) (#¬Names t1 × #¬Names t2)
+PUREeq t1 t2 = Lift {0ℓ} (lsuc n ⊔ lsuc m) (#¬Names t1 × #¬Names t2)
 
 
 NATeq : wper
-NATeq w t1 t2 =
-  #strongMonEq w t1 t2
+NATeq w t1 t2 = Lift {lsuc n} (lsuc n ⊔ lsuc m) (#strongMonEq w t1 t2)
 --  #⇛!sameℕ w t1 t2
 
 
 TNATeq : wper
-TNATeq w t1 t2 =
-  #∀𝕎-⇓∼ℕ w t1 t2
+TNATeq w t1 t2 = Lift {lsuc n} (lsuc n ⊔ lsuc m) (#∀𝕎-⇓∼ℕ w t1 t2)
 
 
 {-# TERMINATING #-}
@@ -511,14 +502,12 @@ We finally close the construction as follows:
 eqUnivi : (m : ℕ) → wper
 eqUnivi m w T1 T2 = □· w (λ w' _ → ⌜ T1 ⌝ ⇛ (UNIV m) at w' × ⌜ T2 ⌝ ⇛ (UNIV m) at w')
 
-
 {--uni0 : univsUpTo 0
 uni0 i ()--}
 
 
-□·EqTypes : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) → Set(lsuc(L))
+□·EqTypes : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) → Set (lsuc n ⊔ lsuc m)
 □·EqTypes u w T1 T2 = □· w (λ w' _ → eqTypes u w' T1 T2)
-
 
 uniUpTo : (n : ℕ) → univsUpTo n
 uniUpTo 0 i ()
@@ -544,7 +533,6 @@ eqInUnivi≤ 0 i p = λ _ _ _ → Lift {0ℓ} 1ℓ ⊥
 eqInUnivi≤ (suc m) i p w T1 T2 with suc m ≤? c =
   □· w (λ w' _ → eqTypes (m , (eqUnivi m , eqInUnivi m)) w' T1 T2 {-- ⊎ eqInUnivi m w' T1 T2--})--}
 
-
 --- Add an explicit level-lifting constructor to the type system
 mkU : (n : ℕ) (u : univsUpTo n) → univs
 mkU n u = (n , u)
@@ -557,53 +545,47 @@ uni n = mkU n (uniUpTo n) --(eqUnivi n , eqInUnivi n))
 ul n = {--suc--} n--}
 
 
-is-uni : (u : univs) → Set(lsuc(lsuc(L)))
+is-uni : (u : univs) → Set (lsuc (lsuc n) ⊔ lsuc (lsuc m))
 is-uni u = u ≡ uni (fst u)
 
+is-uni→ : {i : ℕ} (u : univsUpTo i) → is-uni (i , u) → u ≡ uniUpTo i
+is-uni→ {i} .(uniUpTo i) refl = refl
 
-is-uni→ : {n : ℕ} (u : univsUpTo n) → is-uni (n , u) → u ≡ uniUpTo n
-is-uni→ {n} .(uniUpTo n) refl = refl
-
-
-is-uni-uni : (n : 𝕃) → is-uni (uni n)
-is-uni-uni n = refl
+is-uni-uni : (i : 𝕃) → is-uni (uni i)
+is-uni-uni r = refl
 
 
-≡univs : {n : 𝕃} {u1 u2 : univsUpTo n} → u1 ≡ u2 → mkU n u1 ≡ mkU n u2
-≡univs {n} {u1} {u2} e rewrite e = refl
+≡univs : {i : 𝕃} {u1 u2 : univsUpTo i} → u1 ≡ u2 → mkU i u1 ≡ mkU i u2
+≡univs {i} {u1} {u2} e rewrite e = refl
 
-
-≡uniUpTo : (n i : 𝕃) (p q : i < n) → uniUpTo n i p ≡ uniUpTo n i q
-≡uniUpTo (suc n) i p q with i <? n
+≡uniUpTo : (i j : 𝕃) (p q : j < i) → uniUpTo i j p ≡ uniUpTo i j q
+≡uniUpTo (suc i) j p q with j <? i
 ... | yes w = refl
 ... | no w = refl
 
-
-↓U-uni : (n : 𝕃) → ↓U (uni n) ≡ uni (↓𝕃 n)
+↓U-uni : (i : 𝕃) → ↓U (uni i) ≡ uni (↓𝕃 i)
 ↓U-uni 0 = refl
-↓U-uni (suc n) = ≡univs (E e)
+↓U-uni (suc i) = ≡univs (E e)
   where
-    e : (x : 𝕃) → ↓univsUpTo (uniUpTo (suc n)) x ≡ uniUpTo n x
-    e x with x <? n
+    e : (x : 𝕃) → ↓univsUpTo (uniUpTo (suc i)) x ≡ uniUpTo i x
+    e x with x <? i
     ... | yes p = E f
       where
-        f : (x₁ : suc x ≤ n) → uniUpTo n x p ≡ uniUpTo n x x₁
-        f q = ≡uniUpTo n x p q
+        f : (x₁ : suc x ≤ i) → uniUpTo i x p ≡ uniUpTo i x x₁
+        f q = ≡uniUpTo i x p q
     ... | no p = E f
       where
-        f : (x₁ : suc x ≤ n) → □·EqTypes (n , uniUpTo n) ≡ uniUpTo n x x₁
+        f : (x₁ : suc x ≤ i) → □·EqTypes (i , uniUpTo i) ≡ uniUpTo i x x₁
         f q = ⊥-elim (p q)
 
-
-𝕌 : Set(lsuc(lsuc(L)))
+𝕌 : Set (lsuc (lsuc n) ⊔ lsuc (lsuc m))
 𝕌 = Σ univs is-uni
 
 mk𝕌 : {u : univs} (isu : is-uni u) → 𝕌
 mk𝕌 {u} isu = (u , isu)
 
-
 ℕ→𝕌 : ℕ → 𝕌
-ℕ→𝕌 n = mk𝕌 {uni n} (is-uni-uni n)
+ℕ→𝕌 i = mk𝕌 {uni i} (is-uni-uni i)
 
 
 is-uni-↓U : {u : univs} → is-uni u → is-uni (↓U u)
@@ -629,23 +611,20 @@ _·ₙ u = fst (u ·ᵤ)
 ≡Types : (u : 𝕌) → wper
 ≡Types u = eqTypes (u ·ᵤ)
 
-
 ≡∈Type : (u : 𝕌) (w : 𝕎·) {T1 T2 : CTerm} → (eqTypes (u ·ᵤ) w T1 T2) → per
 ≡∈Type u w eqt = eqInType (u ·ᵤ) w eqt
 
-
-
-TEQ : Set(lsuc(lsuc(L)))
+TEQ : Set (lsuc (lsuc n) ⊔ lsuc (lsuc m))
 TEQ = wper
 
-IST : Set(lsuc(lsuc(L)))
+IST : Set (lsuc (lsuc n) ⊔ lsuc (lsuc m))
 IST = wist
 
-EQT : Set(lsuc(lsuc(L)))
-EQT = (w : 𝕎·) (T a b : CTerm) → Set(lsuc(L))
+EQT : Set (lsuc (lsuc n) ⊔ lsuc (lsuc m))
+EQT = (w : 𝕎·) (T a b : CTerm) → Set (lsuc n ⊔ lsuc m)
 
-MEMT : Set(lsuc(lsuc(L)))
-MEMT = (w : 𝕎·) (T a : CTerm) → Set(lsuc(L))
+MEMT : Set (lsuc (lsuc n) ⊔ lsuc (lsuc m))
+MEMT = (w : 𝕎·) (T a : CTerm) → Set (lsuc n ⊔ lsuc m)
 
 -- Finally, the 'equal types' and 'equal in types' relations
 equalTypes : (u : ℕ) → TEQ
@@ -664,16 +643,13 @@ equalInType u w T a b = Σ (isType u w T) (λ p → equalTerms u w p a b)
 ∈Type u w T a = equalInType u w T a a
 
 
-INHT : Set(lsuc(lsuc(L)))
-INHT = (w : 𝕎·) (T : CTerm) → Set(lsuc(L))
+INHT : Set (lsuc (lsuc n) ⊔ lsuc (lsuc m))
+INHT = (w : 𝕎·) (T : CTerm) → Set (lsuc n ⊔ lsuc m)
 
 
 inhType : (u : ℕ) → INHT
 inhType u w T = Σ CTerm (λ t → ∈Type u w T t)
-\end{code}
 
-
-\begin{code}
 eqtypes : TEQ
 eqtypes w T1 T2 = Σ ℕ (λ u → equalTypes u w T1 T2)
 
@@ -688,7 +664,6 @@ wfinhN1L j = ≤-refl
 
 wfinhN2L : (j : ℕ) → wfInh (inhN2L j)
 wfinhN2L j = (n≤1+n _)--}
-
 
 ¬s≤ : (j : ℕ) → ¬ suc j ≤ j
 ¬s≤ .(suc _) (_≤_.s≤s h) = ¬s≤ _ h
@@ -710,45 +685,45 @@ eq-pair {a} {b} {A} {B} {a₁} {a₂} {b₁} {b₂} p q rewrite p | q = refl
 
 -- ---------------------------------
 -- Type system
-intype : (w : 𝕎·) (T t : CTerm) → Set(lsuc(L))
+intype : (w : 𝕎·) (T t : CTerm) → Set (lsuc n ⊔ lsuc m)
 intype w T t = eqintype w T t t
 
-TEQsym : TEQ → Set(lsuc(L))
+TEQsym : TEQ → Set (lsuc n ⊔ lsuc m)
 TEQsym τ = (w : 𝕎·) (A B : CTerm) → τ w A B → τ w B A
 
-TEQtrans : TEQ → Set(lsuc(L))
+TEQtrans : TEQ → Set (lsuc n ⊔ lsuc m)
 TEQtrans τ = (w : 𝕎·) (A B C : CTerm) → τ w A B → τ w B C → τ w A C
 
-EQTsym : EQT → Set(lsuc(L))
+EQTsym : EQT → Set (lsuc n ⊔ lsuc m)
 EQTsym σ = (w : 𝕎·) (A a b : CTerm) → σ w A a b → σ w A b a
 
-EQTtrans : EQT → Set(lsuc(L))
+EQTtrans : EQT → Set (lsuc n ⊔ lsuc m)
 EQTtrans σ  = (w : 𝕎·) (A a b c : CTerm) → σ w A a b → σ w A b c → σ w A a c
 
-TSext : TEQ → EQT → Set(lsuc(L))
+TSext : TEQ → EQT → Set (lsuc n ⊔ lsuc m)
 TSext τ σ = (w : 𝕎·) (A B a b : CTerm) → τ w A B → σ w A a b → σ w B a b
 
 -- NOTE: Can we do be better than #⇛!?
-TEQcomp : TEQ → Set(lsuc(L))
+TEQcomp : TEQ → Set (lsuc n ⊔ lsuc m)
 TEQcomp τ = (w : 𝕎·) (A B : CTerm) → A #⇛! B at w → τ w A A → τ w A B
 
 -- NOTE: Can we do be better than #⇛!?
-EQTcomp : EQT → Set(lsuc(L))
+EQTcomp : EQT → Set (lsuc n ⊔ lsuc m)
 EQTcomp σ = (w : 𝕎·) (A a b : CTerm) → a #⇛! b at w → σ w A a a → σ w A a b
 
-TEQmon : TEQ → Set(lsuc(L))
+TEQmon : TEQ → Set (lsuc n ⊔ lsuc m)
 TEQmon τ = {w1 w2 : 𝕎·} (A B : CTerm) → w1 ⊑· w2 → τ w1 A B → τ w2 A B
 
-EQTmon : EQT → Set(lsuc(L))
+EQTmon : EQT → Set (lsuc n ⊔ lsuc m)
 EQTmon σ = {w1 w2 : 𝕎·} (A a b : CTerm) → w1 ⊑· w2 → σ w1 A a b → σ w2 A a b
 
-TEQloc : TEQ → Set(lsuc(L))
+TEQloc : TEQ → Set (lsuc n ⊔ lsuc m)
 TEQloc τ = {w : 𝕎·} (A B : CTerm) → □· w (λ w' _ → τ w' A B) → τ w A B
 
-EQTloc : EQT → Set(lsuc(L))
+EQTloc : EQT → Set (lsuc n ⊔ lsuc m)
 EQTloc σ = {w : 𝕎·} (A a b : CTerm) → □· w (λ w' _ → σ w' A a b) → σ w A a b
 
-EQTcons : EQT → Set(lsuc(L))
+EQTcons : EQT → Set (lsuc n ⊔ lsuc m)
 EQTcons σ = (w : 𝕎·) (a : CTerm) → ¬ σ w #FALSE a a
 
 \end{code}
