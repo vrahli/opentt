@@ -2696,6 +2696,13 @@ NUMinj refl =  refl
 #NUMinj {n} {m} e = NUMinj (≡CTerm e)
 
 
+MSEQinj : {n m : 𝕊} → MSEQ n ≡ MSEQ m → n ≡ m
+MSEQinj refl =  refl
+
+
+#MSEQinj : {n m : 𝕊} → #MSEQ n ≡ #MSEQ m → n ≡ m
+#MSEQinj {n} {m} e = MSEQinj (≡CTerm e)
+
 
 BOOL : Term
 BOOL = UNION TRUE TRUE

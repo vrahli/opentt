@@ -81,10 +81,10 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
@@ -464,120 +464,123 @@ data updCtxt (name : Name) (f : Term) : Term → Set where
 
 
 
-updCtxt→differ : {name : Name} {f t : Term}
-                  → updCtxt name f t
-                  → differ name name f t t
-updCtxt→differ {name} {f} {.(VAR x)} (updCtxt-VAR x) = differ-VAR _
-updCtxt→differ {name} {f} {.NAT} updCtxt-NAT = differ-NAT
-updCtxt→differ {name} {f} {.QNAT} updCtxt-QNAT = differ-QNAT
-updCtxt→differ {name} {f} {.TNAT} updCtxt-TNAT = differ-TNAT
-updCtxt→differ {name} {f} {.(LT a b)} (updCtxt-LT a b u u₁) = differ-LT _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(QLT a b)} (updCtxt-QLT a b u u₁) = differ-QLT _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(NUM x)} (updCtxt-NUM x) = differ-NUM _
-updCtxt→differ {name} {f} {.(IFLT a b c d)} (updCtxt-IFLT a b c d u u₁ u₂ u₃) = differ-IFLT _ _ _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂) (updCtxt→differ u₃)
-updCtxt→differ {name} {f} {.(IFEQ a b c d)} (updCtxt-IFEQ a b c d u u₁ u₂ u₃) = differ-IFEQ _ _ _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂) (updCtxt→differ u₃)
-updCtxt→differ {name} {f} {.(SUC a)} (updCtxt-SUC a u) = differ-SUC _ _ (updCtxt→differ u)
-updCtxt→differ {name} {f} {.(PI a b)} (updCtxt-PI a b u u₁) = differ-PI _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(LAMBDA a)} (updCtxt-LAMBDA a u) = differ-LAMBDA _ _ (updCtxt→differ u)
-updCtxt→differ {name} {f} {.(APPLY a b)} (updCtxt-APPLY a b u u₁) = differ-APPLY _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(FIX a)} (updCtxt-FIX a u) = differ-FIX _ _ (updCtxt→differ u)
-updCtxt→differ {name} {f} {.(LET a b)} (updCtxt-LET a b u u₁) = differ-LET _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(WT a b)} (updCtxt-WT a b u u₁) = differ-WT _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(SUP a b)} (updCtxt-SUP a b u u₁) = differ-SUP _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
---updCtxt→differ {name} {f} {.(DSUP a b)} (updCtxt-DSUP a b u u₁) = differ-DSUP _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(WREC a b)} (updCtxt-WREC a b u u₁) = differ-WREC _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(MT a b)} (updCtxt-MT a b u u₁) = differ-MT _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
---updCtxt→differ {name} {f} {.(MSUP a b)} (updCtxt-MSUP a b u u₁) = differ-MSUP _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
---updCtxt→differ {name} {f} {.(DMSUP a b)} (updCtxt-DMSUP a b u u₁) = differ-DMSUP _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(SUM a b)} (updCtxt-SUM a b u u₁) = differ-SUM _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(PAIR a b)} (updCtxt-PAIR a b u u₁) = differ-PAIR _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(SPREAD a b)} (updCtxt-SPREAD a b u u₁) = differ-SPREAD _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(SET a b)} (updCtxt-SET a b u u₁) = differ-SET _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(ISECT a b)} (updCtxt-ISECT a b u u₁) = differ-ISECT _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(TUNION a b)} (updCtxt-TUNION a b u u₁) = differ-TUNION _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(UNION a b)} (updCtxt-UNION a b u u₁) = differ-UNION _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(QTUNION a b)} (updCtxt-QTUNION a b u u₁) = differ-QTUNION _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(INL a)} (updCtxt-INL a u) = differ-INL _ _ (updCtxt→differ u)
-updCtxt→differ {name} {f} {.(INR a)} (updCtxt-INR a u) = differ-INR _ _ (updCtxt→differ u)
-updCtxt→differ {name} {f} {.(DECIDE a b c)} (updCtxt-DECIDE a b c u u₁ u₂) = differ-DECIDE _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂)
-updCtxt→differ {name} {f} {.(EQ a b c)} (updCtxt-EQ a b c u u₁ u₂) = differ-EQ _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂)
-updCtxt→differ {name} {f} {.(EQB a b c d)} (updCtxt-EQB a b c d u u₁ u₂ u₃) = differ-EQB _ _ _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂) (updCtxt→differ u₃)
-updCtxt→differ {name} {f} {.AX} updCtxt-AX = differ-AX
-updCtxt→differ {name} {f} {.FREE} updCtxt-FREE = differ-FREE
-updCtxt→differ {name} {f} {.(MSEQ x)} (updCtxt-MSEQ x) = differ-MSEQ x
-updCtxt→differ {name} {f} {.(MAPP s a)} (updCtxt-MAPP s a u) = differ-MAPP _ _ _ (updCtxt→differ u)
-updCtxt→differ {name} {f} {.(CHOOSE a b)} (updCtxt-CHOOSE a b u u₁) = differ-CHOOSE _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(TSQUASH a)} (updCtxt-TSQUASH a u) = differ-TSQUASH _ _ (updCtxt→differ u)
-updCtxt→differ {name} {f} {.(TTRUNC a)} (updCtxt-TTRUNC a u) = differ-TTRUNC _ _ (updCtxt→differ u)
-updCtxt→differ {name} {f} {.(TCONST a)} (updCtxt-TCONST a u) = differ-TCONST _ _ (updCtxt→differ u)
-updCtxt→differ {name} {f} {.(SUBSING a)} (updCtxt-SUBSING a u) = differ-SUBSING _ _ (updCtxt→differ u)
-updCtxt→differ {name} {f} {.(PURE)} (updCtxt-PURE) = differ-PURE
-updCtxt→differ {name} {f} {.(DUM a)} (updCtxt-DUM a u) = differ-DUM _ _ (updCtxt→differ u)
-updCtxt→differ {name} {f} {.(FFDEFS a b)} (updCtxt-FFDEFS a b u u₁) = differ-FFDEFS _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-updCtxt→differ {name} {f} {.(UNIV x)} (updCtxt-UNIV x) = differ-UNIV x
-updCtxt→differ {name} {f} {.(LIFT a)} (updCtxt-LIFT a u) = differ-LIFT _ _ (updCtxt→differ u)
-updCtxt→differ {name} {f} {.(LOWER a)} (updCtxt-LOWER a u) = differ-LOWER _ _ (updCtxt→differ u)
-updCtxt→differ {name} {f} {.(SHRINK a)} (updCtxt-SHRINK a u) = differ-SHRINK _ _ (updCtxt→differ u)
-updCtxt→differ {name} {f} {.(upd name f)} updCtxt-upd = differ-upd
+abstract
+
+  updCtxt→differ : {name : Name} {f t : Term}
+                    → updCtxt name f t
+                    → differ name name f t t
+  updCtxt→differ {name} {f} {.(VAR x)} (updCtxt-VAR x) = differ-VAR _
+  updCtxt→differ {name} {f} {.NAT} updCtxt-NAT = differ-NAT
+  updCtxt→differ {name} {f} {.QNAT} updCtxt-QNAT = differ-QNAT
+  updCtxt→differ {name} {f} {.TNAT} updCtxt-TNAT = differ-TNAT
+  updCtxt→differ {name} {f} {.(LT a b)} (updCtxt-LT a b u u₁) = differ-LT _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(QLT a b)} (updCtxt-QLT a b u u₁) = differ-QLT _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(NUM x)} (updCtxt-NUM x) = differ-NUM _
+  updCtxt→differ {name} {f} {.(IFLT a b c d)} (updCtxt-IFLT a b c d u u₁ u₂ u₃) = differ-IFLT _ _ _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂) (updCtxt→differ u₃)
+  updCtxt→differ {name} {f} {.(IFEQ a b c d)} (updCtxt-IFEQ a b c d u u₁ u₂ u₃) = differ-IFEQ _ _ _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂) (updCtxt→differ u₃)
+  updCtxt→differ {name} {f} {.(SUC a)} (updCtxt-SUC a u) = differ-SUC _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(PI a b)} (updCtxt-PI a b u u₁) = differ-PI _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(LAMBDA a)} (updCtxt-LAMBDA a u) = differ-LAMBDA _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(APPLY a b)} (updCtxt-APPLY a b u u₁) = differ-APPLY _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(FIX a)} (updCtxt-FIX a u) = differ-FIX _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(LET a b)} (updCtxt-LET a b u u₁) = differ-LET _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(WT a b)} (updCtxt-WT a b u u₁) = differ-WT _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(SUP a b)} (updCtxt-SUP a b u u₁) = differ-SUP _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  --updCtxt→differ {name} {f} {.(DSUP a b)} (updCtxt-DSUP a b u u₁) = differ-DSUP _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(WREC a b)} (updCtxt-WREC a b u u₁) = differ-WREC _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(MT a b)} (updCtxt-MT a b u u₁) = differ-MT _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  --updCtxt→differ {name} {f} {.(MSUP a b)} (updCtxt-MSUP a b u u₁) = differ-MSUP _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  --updCtxt→differ {name} {f} {.(DMSUP a b)} (updCtxt-DMSUP a b u u₁) = differ-DMSUP _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(SUM a b)} (updCtxt-SUM a b u u₁) = differ-SUM _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(PAIR a b)} (updCtxt-PAIR a b u u₁) = differ-PAIR _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(SPREAD a b)} (updCtxt-SPREAD a b u u₁) = differ-SPREAD _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(SET a b)} (updCtxt-SET a b u u₁) = differ-SET _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(ISECT a b)} (updCtxt-ISECT a b u u₁) = differ-ISECT _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(TUNION a b)} (updCtxt-TUNION a b u u₁) = differ-TUNION _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(UNION a b)} (updCtxt-UNION a b u u₁) = differ-UNION _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(QTUNION a b)} (updCtxt-QTUNION a b u u₁) = differ-QTUNION _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(INL a)} (updCtxt-INL a u) = differ-INL _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(INR a)} (updCtxt-INR a u) = differ-INR _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(DECIDE a b c)} (updCtxt-DECIDE a b c u u₁ u₂) = differ-DECIDE _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂)
+  updCtxt→differ {name} {f} {.(EQ a b c)} (updCtxt-EQ a b c u u₁ u₂) = differ-EQ _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂)
+  updCtxt→differ {name} {f} {.(EQB a b c d)} (updCtxt-EQB a b c d u u₁ u₂ u₃) = differ-EQB _ _ _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂) (updCtxt→differ u₃)
+  updCtxt→differ {name} {f} {.AX} updCtxt-AX = differ-AX
+  updCtxt→differ {name} {f} {.FREE} updCtxt-FREE = differ-FREE
+  updCtxt→differ {name} {f} {.(MSEQ x)} (updCtxt-MSEQ x) = differ-MSEQ x
+  updCtxt→differ {name} {f} {.(MAPP s a)} (updCtxt-MAPP s a u) = differ-MAPP _ _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(CHOOSE a b)} (updCtxt-CHOOSE a b u u₁) = differ-CHOOSE _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(TSQUASH a)} (updCtxt-TSQUASH a u) = differ-TSQUASH _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(TTRUNC a)} (updCtxt-TTRUNC a u) = differ-TTRUNC _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(TCONST a)} (updCtxt-TCONST a u) = differ-TCONST _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(SUBSING a)} (updCtxt-SUBSING a u) = differ-SUBSING _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(PURE)} (updCtxt-PURE) = differ-PURE
+  updCtxt→differ {name} {f} {.(DUM a)} (updCtxt-DUM a u) = differ-DUM _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(FFDEFS a b)} (updCtxt-FFDEFS a b u u₁) = differ-FFDEFS _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
+  updCtxt→differ {name} {f} {.(UNIV x)} (updCtxt-UNIV x) = differ-UNIV x
+  updCtxt→differ {name} {f} {.(LIFT a)} (updCtxt-LIFT a u) = differ-LIFT _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(LOWER a)} (updCtxt-LOWER a u) = differ-LOWER _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(SHRINK a)} (updCtxt-SHRINK a u) = differ-SHRINK _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(upd name f)} updCtxt-upd = differ-upd
 
 
 
-differ→updCtxt : {name : Name} {f t : Term}
-                  → differ name name f t t
-                  → updCtxt name f t
-differ→updCtxt {name} {f} {.(VAR x)} (differ-VAR x) = updCtxt-VAR _
-differ→updCtxt {name} {f} {.NAT} differ-NAT = updCtxt-NAT
-differ→updCtxt {name} {f} {.QNAT} differ-QNAT = updCtxt-QNAT
-differ→updCtxt {name} {f} {.TNAT} differ-TNAT = updCtxt-TNAT
-differ→updCtxt {name} {f} {.(LT a₁ b₁)} (differ-LT a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-LT _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(QLT a₁ b₁)} (differ-QLT a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-QLT _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(NUM x)} (differ-NUM x) = updCtxt-NUM _
-differ→updCtxt {name} {f} {.(IFLT a₁ b₁ c₁ d₁)} (differ-IFLT a₁ .a₁ b₁ .b₁ c₁ .c₁ d₁ .d₁ d d₂ d₃ d₄) = updCtxt-IFLT _ _ _ _ (differ→updCtxt d) (differ→updCtxt d₂) (differ→updCtxt d₃) (differ→updCtxt d₄)
-differ→updCtxt {name} {f} {.(IFEQ a₁ b₁ c₁ d₁)} (differ-IFEQ a₁ .a₁ b₁ .b₁ c₁ .c₁ d₁ .d₁ d d₂ d₃ d₄) = updCtxt-IFEQ _ _ _ _ (differ→updCtxt d) (differ→updCtxt d₂) (differ→updCtxt d₃) (differ→updCtxt d₄)
-differ→updCtxt {name} {f} {.(SUC a)} (differ-SUC a .a d) = updCtxt-SUC _ (differ→updCtxt d)
-differ→updCtxt {name} {f} {.(PI a₁ b₁)} (differ-PI a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-PI _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(LAMBDA a)} (differ-LAMBDA a .a d) = updCtxt-LAMBDA _ (differ→updCtxt d)
-differ→updCtxt {name} {f} {.(APPLY a₁ b₁)} (differ-APPLY a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-APPLY _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(FIX a)} (differ-FIX a .a d) = updCtxt-FIX _ (differ→updCtxt d)
-differ→updCtxt {name} {f} {.(LET a₁ b₁)} (differ-LET a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-LET _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(WT a₁ b₁)} (differ-WT a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-WT _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(SUP a₁ b₁)} (differ-SUP a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-SUP _ _ (differ→updCtxt d) (differ→updCtxt d₁)
---differ→updCtxt {name} {f} {.(DSUP a₁ b₁)} (differ-DSUP a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-DSUP _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(WREC a₁ b₁)} (differ-WREC a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-WREC _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(MT a₁ b₁)} (differ-MT a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-MT _ _ (differ→updCtxt d) (differ→updCtxt d₁)
---differ→updCtxt {name} {f} {.(MSUP a₁ b₁)} (differ-MSUP a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-MSUP _ _ (differ→updCtxt d) (differ→updCtxt d₁)
---differ→updCtxt {name} {f} {.(DMSUP a₁ b₁)} (differ-DMSUP a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-DMSUP _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(SUM a₁ b₁)} (differ-SUM a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-SUM _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(PAIR a₁ b₁)} (differ-PAIR a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-PAIR _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(SPREAD a₁ b₁)} (differ-SPREAD a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-SPREAD _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(SET a₁ b₁)} (differ-SET a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-SET _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(ISECT a₁ b₁)} (differ-ISECT a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-ISECT _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(TUNION a₁ b₁)} (differ-TUNION a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-TUNION _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(UNION a₁ b₁)} (differ-UNION a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-UNION _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(QTUNION a₁ b₁)} (differ-QTUNION a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-QTUNION _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(INL a)} (differ-INL a .a d) = updCtxt-INL _ (differ→updCtxt d)
-differ→updCtxt {name} {f} {.(INR a)} (differ-INR a .a d) = updCtxt-INR _ (differ→updCtxt d)
-differ→updCtxt {name} {f} {.(DECIDE a₁ b₁ c₁)} (differ-DECIDE a₁ .a₁ b₁ .b₁ c₁ .c₁ d d₁ d₂) = updCtxt-DECIDE _ _ _ (differ→updCtxt d) (differ→updCtxt d₁) (differ→updCtxt d₂)
-differ→updCtxt {name} {f} {.(EQ a₁ b₁ c₁)} (differ-EQ a₁ .a₁ b₁ .b₁ c₁ .c₁ d d₁ d₂) = updCtxt-EQ _ _ _ (differ→updCtxt d) (differ→updCtxt d₁) (differ→updCtxt d₂)
-differ→updCtxt {name} {f} {.(EQB a₁ b₁ c₁ d₁)} (differ-EQB a₁ .a₁ b₁ .b₁ c₁ .c₁ d₁ .d₁ diff diff₁ diff₂ diff₃) = updCtxt-EQB _ _ _ _ (differ→updCtxt diff) (differ→updCtxt diff₁) (differ→updCtxt diff₂) (differ→updCtxt diff₃)
-differ→updCtxt {name} {f} {.AX} differ-AX = updCtxt-AX
-differ→updCtxt {name} {f} {.FREE} differ-FREE = updCtxt-FREE
-differ→updCtxt {name} {f} {.(MSEQ x)} (differ-MSEQ x) = updCtxt-MSEQ x
-differ→updCtxt {name} {f} {.(MAPP s a₁)} (differ-MAPP s a₁ .a₁ d) = updCtxt-MAPP _ _ (differ→updCtxt d)
-differ→updCtxt {name} {f} {.(CHOOSE a₁ b₁)} (differ-CHOOSE a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-CHOOSE _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(TSQUASH a)} (differ-TSQUASH a .a d) = updCtxt-TSQUASH _ (differ→updCtxt d)
-differ→updCtxt {name} {f} {.(TTRUNC a)} (differ-TTRUNC a .a d) = updCtxt-TTRUNC _ (differ→updCtxt d)
-differ→updCtxt {name} {f} {.(TCONST a)} (differ-TCONST a .a d) = updCtxt-TCONST _ (differ→updCtxt d)
-differ→updCtxt {name} {f} {.(SUBSING a)} (differ-SUBSING a .a d) = updCtxt-SUBSING _ (differ→updCtxt d)
-differ→updCtxt {name} {f} {.(PURE)} (differ-PURE) = updCtxt-PURE
-differ→updCtxt {name} {f} {.(DUM a)} (differ-DUM a .a d) = updCtxt-DUM _ (differ→updCtxt d)
-differ→updCtxt {name} {f} {.(FFDEFS a₁ b₁)} (differ-FFDEFS a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-FFDEFS _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-differ→updCtxt {name} {f} {.(UNIV x)} (differ-UNIV x) = updCtxt-UNIV _
-differ→updCtxt {name} {f} {.(LIFT a)} (differ-LIFT a .a d) = updCtxt-LIFT _ (differ→updCtxt d)
-differ→updCtxt {name} {f} {.(LOWER a)} (differ-LOWER a .a d) = updCtxt-LOWER _ (differ→updCtxt d)
-differ→updCtxt {name} {f} {.(SHRINK a)} (differ-SHRINK a .a d) = updCtxt-SHRINK _ (differ→updCtxt d)
-differ→updCtxt {name} {f} {.(upd name f)} differ-upd = updCtxt-upd
+abstract
 
+  differ→updCtxt : {name : Name} {f t : Term}
+                    → differ name name f t t
+                    → updCtxt name f t
+  differ→updCtxt {name} {f} {.(VAR x)} (differ-VAR x) = updCtxt-VAR _
+  differ→updCtxt {name} {f} {.NAT} differ-NAT = updCtxt-NAT
+  differ→updCtxt {name} {f} {.QNAT} differ-QNAT = updCtxt-QNAT
+  differ→updCtxt {name} {f} {.TNAT} differ-TNAT = updCtxt-TNAT
+  differ→updCtxt {name} {f} {.(LT a₁ b₁)} (differ-LT a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-LT _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(QLT a₁ b₁)} (differ-QLT a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-QLT _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(NUM x)} (differ-NUM x) = updCtxt-NUM _
+  differ→updCtxt {name} {f} {.(IFLT a₁ b₁ c₁ d₁)} (differ-IFLT a₁ .a₁ b₁ .b₁ c₁ .c₁ d₁ .d₁ d d₂ d₃ d₄) = updCtxt-IFLT _ _ _ _ (differ→updCtxt d) (differ→updCtxt d₂) (differ→updCtxt d₃) (differ→updCtxt d₄)
+  differ→updCtxt {name} {f} {.(IFEQ a₁ b₁ c₁ d₁)} (differ-IFEQ a₁ .a₁ b₁ .b₁ c₁ .c₁ d₁ .d₁ d d₂ d₃ d₄) = updCtxt-IFEQ _ _ _ _ (differ→updCtxt d) (differ→updCtxt d₂) (differ→updCtxt d₃) (differ→updCtxt d₄)
+  differ→updCtxt {name} {f} {.(SUC a)} (differ-SUC a .a d) = updCtxt-SUC _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(PI a₁ b₁)} (differ-PI a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-PI _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(LAMBDA a)} (differ-LAMBDA a .a d) = updCtxt-LAMBDA _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(APPLY a₁ b₁)} (differ-APPLY a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-APPLY _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(FIX a)} (differ-FIX a .a d) = updCtxt-FIX _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(LET a₁ b₁)} (differ-LET a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-LET _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(WT a₁ b₁)} (differ-WT a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-WT _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(SUP a₁ b₁)} (differ-SUP a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-SUP _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  --differ→updCtxt {name} {f} {.(DSUP a₁ b₁)} (differ-DSUP a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-DSUP _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(WREC a₁ b₁)} (differ-WREC a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-WREC _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(MT a₁ b₁)} (differ-MT a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-MT _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  --differ→updCtxt {name} {f} {.(MSUP a₁ b₁)} (differ-MSUP a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-MSUP _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  --differ→updCtxt {name} {f} {.(DMSUP a₁ b₁)} (differ-DMSUP a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-DMSUP _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(SUM a₁ b₁)} (differ-SUM a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-SUM _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(PAIR a₁ b₁)} (differ-PAIR a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-PAIR _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(SPREAD a₁ b₁)} (differ-SPREAD a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-SPREAD _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(SET a₁ b₁)} (differ-SET a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-SET _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(ISECT a₁ b₁)} (differ-ISECT a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-ISECT _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(TUNION a₁ b₁)} (differ-TUNION a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-TUNION _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(UNION a₁ b₁)} (differ-UNION a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-UNION _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(QTUNION a₁ b₁)} (differ-QTUNION a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-QTUNION _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(INL a)} (differ-INL a .a d) = updCtxt-INL _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(INR a)} (differ-INR a .a d) = updCtxt-INR _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(DECIDE a₁ b₁ c₁)} (differ-DECIDE a₁ .a₁ b₁ .b₁ c₁ .c₁ d d₁ d₂) = updCtxt-DECIDE _ _ _ (differ→updCtxt d) (differ→updCtxt d₁) (differ→updCtxt d₂)
+  differ→updCtxt {name} {f} {.(EQ a₁ b₁ c₁)} (differ-EQ a₁ .a₁ b₁ .b₁ c₁ .c₁ d d₁ d₂) = updCtxt-EQ _ _ _ (differ→updCtxt d) (differ→updCtxt d₁) (differ→updCtxt d₂)
+  differ→updCtxt {name} {f} {.(EQB a₁ b₁ c₁ d₁)} (differ-EQB a₁ .a₁ b₁ .b₁ c₁ .c₁ d₁ .d₁ diff diff₁ diff₂ diff₃) = updCtxt-EQB _ _ _ _ (differ→updCtxt diff) (differ→updCtxt diff₁) (differ→updCtxt diff₂) (differ→updCtxt diff₃)
+  differ→updCtxt {name} {f} {.AX} differ-AX = updCtxt-AX
+  differ→updCtxt {name} {f} {.FREE} differ-FREE = updCtxt-FREE
+  differ→updCtxt {name} {f} {.(MSEQ x)} (differ-MSEQ x) = updCtxt-MSEQ x
+  differ→updCtxt {name} {f} {.(MAPP s a₁)} (differ-MAPP s a₁ .a₁ d) = updCtxt-MAPP _ _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(CHOOSE a₁ b₁)} (differ-CHOOSE a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-CHOOSE _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(TSQUASH a)} (differ-TSQUASH a .a d) = updCtxt-TSQUASH _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(TTRUNC a)} (differ-TTRUNC a .a d) = updCtxt-TTRUNC _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(TCONST a)} (differ-TCONST a .a d) = updCtxt-TCONST _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(SUBSING a)} (differ-SUBSING a .a d) = updCtxt-SUBSING _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(PURE)} (differ-PURE) = updCtxt-PURE
+  differ→updCtxt {name} {f} {.(DUM a)} (differ-DUM a .a d) = updCtxt-DUM _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(FFDEFS a₁ b₁)} (differ-FFDEFS a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-FFDEFS _ _ (differ→updCtxt d) (differ→updCtxt d₁)
+  differ→updCtxt {name} {f} {.(UNIV x)} (differ-UNIV x) = updCtxt-UNIV _
+  differ→updCtxt {name} {f} {.(LIFT a)} (differ-LIFT a .a d) = updCtxt-LIFT _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(LOWER a)} (differ-LOWER a .a d) = updCtxt-LOWER _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(SHRINK a)} (differ-SHRINK a .a d) = updCtxt-SHRINK _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(upd name f)} differ-upd = updCtxt-upd
 
 
 

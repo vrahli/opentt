@@ -2282,6 +2282,12 @@ lift-⇓!sameℕ-trans {w} {a} {b} {c} (lift h) (lift q) = lift (⇓!sameℕ-tra
 #⇛!→#⇓! {w} {a} {b} comp = lower (comp w (⊑-refl· _))
 
 
+⇓from-to→⊑ : {w w' : 𝕎·} {a b : Term}
+               → a ⇓ b from w to w'
+               → w ⊑· w'
+⇓from-to→⊑ {w} {w'} {a} {b} (n , comp) = ≡ᵣ→⊑ (steps⊑ w n a) (→≡snd comp)
+
+
 #⇓from-to→⊑ : {w w' : 𝕎·} {a b : CTerm}
                → a #⇓ b from w to w'
                → w ⊑· w'

@@ -92,4 +92,9 @@ open import contInstanceBethCS
 
 -- A first version of the bar theorem (sem)
 open import barContP6
+
+-- Another attempt at validating continuity. It is unfinighed: continuity10b has holes
+open import continuity9b
+--open import continuity10b
+
 \end{code}

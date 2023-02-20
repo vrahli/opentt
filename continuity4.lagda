@@ -80,10 +80,10 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
@@ -1326,192 +1326,196 @@ isHighestℕ-LET→ {n} {suc k1} {suc k2} {name} {a} {b} {u} {v} {w1} {w2} {w3} 
 
 
 
+abstract
 
-updRel-shiftUp : (n : ℕ) {name : Name} {f g : Term} (cf : # f) (cg : # g) {a b : Term}
-                 → updRel name f g a b
-                 → updRel name f g (shiftUp n a) (shiftUp n b)
-updRel-shiftUp n {name} {f} {g} cf cg {.(VAR x)} {.(VAR x)} (updRel-VAR x) = updRel-VAR _
-updRel-shiftUp n {name} {f} {g} cf cg {.NAT} {.NAT} updRel-NAT = updRel-NAT
-updRel-shiftUp n {name} {f} {g} cf cg {.QNAT} {.QNAT} updRel-QNAT = updRel-QNAT
-updRel-shiftUp n {name} {f} {g} cf cg {.TNAT} {.TNAT} updRel-TNAT = updRel-TNAT
-updRel-shiftUp n {name} {f} {g} cf cg {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updRel-LT a₁ a₂ b₁ b₂ u u₁) = updRel-LT _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updRel-QLT a₁ a₂ b₁ b₂ u u₁) = updRel-QLT _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(NUM x)} {.(NUM x)} (updRel-NUM x) = updRel-NUM _
-updRel-shiftUp n {name} {f} {g} cf cg {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (updRel-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updRel-IFLT _ _ _ _ _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁) (updRel-shiftUp n cf cg u₂) (updRel-shiftUp n cf cg u₃)
-updRel-shiftUp n {name} {f} {g} cf cg {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (updRel-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updRel-IFEQ _ _ _ _ _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁) (updRel-shiftUp n cf cg u₂) (updRel-shiftUp n cf cg u₃)
-updRel-shiftUp n {name} {f} {g} cf cg {.(SUC a₁)} {.(SUC a₂)} (updRel-SUC a₁ a₂ u) = updRel-SUC _ _ (updRel-shiftUp n cf cg u)
-updRel-shiftUp n {name} {f} {g} cf cg {.(PI a₁ b₁)} {.(PI a₂ b₂)} (updRel-PI a₁ a₂ b₁ b₂ u u₁) = updRel-PI _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(LAMBDA a₁)} {.(LAMBDA a₂)} (updRel-LAMBDA a₁ a₂ u) = updRel-LAMBDA _ _ (updRel-shiftUp (suc n) cf cg u)
-updRel-shiftUp n {name} {f} {g} cf cg {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (updRel-APPLY a₁ a₂ b₁ b₂ u u₁) = updRel-APPLY _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(FIX a₁)} {.(FIX a₂)} (updRel-FIX a₁ a₂ u) = updRel-FIX _ _ (updRel-shiftUp n cf cg u)
-updRel-shiftUp n {name} {f} {g} cf cg {.(LET a₁ b₁)} {.(LET a₂ b₂)} (updRel-LET a₁ a₂ b₁ b₂ u u₁) = updRel-LET _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(WT a₁ b₁)} {.(WT a₂ b₂)} (updRel-WT a₁ a₂ b₁ b₂ u u₁) = updRel-WT _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (updRel-SUP a₁ a₂ b₁ b₂ u u₁) = updRel-SUP _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
---updRel-shiftUp n {name} {f} {g} cf cg {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} (updRel-DSUP a₁ a₂ b₁ b₂ u u₁) = updRel-DSUP _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc (suc n)) cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(WREC a₁ b₁)} {.(WREC a₂ b₂)} (updRel-WREC a₁ a₂ b₁ b₂ u u₁) = updRel-WREC _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc (suc (suc n))) cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(MT a₁ b₁)} {.(MT a₂ b₂)} (updRel-MT a₁ a₂ b₁ b₂ u u₁) = updRel-MT _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
---updRel-shiftUp n {name} {f} {g} cf cg {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updRel-MSUP a₁ a₂ b₁ b₂ u u₁) = updRel-MSUP _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
---updRel-shiftUp n {name} {f} {g} cf cg {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} (updRel-DMSUP a₁ a₂ b₁ b₂ u u₁) = updRel-DMSUP _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc (suc n)) cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (updRel-SUM a₁ a₂ b₁ b₂ u u₁) = updRel-SUM _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (updRel-PAIR a₁ a₂ b₁ b₂ u u₁) = updRel-PAIR _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} (updRel-SPREAD a₁ a₂ b₁ b₂ u u₁) = updRel-SPREAD _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc (suc n)) cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(SET a₁ b₁)} {.(SET a₂ b₂)} (updRel-SET a₁ a₂ b₁ b₂ u u₁) = updRel-SET _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (updRel-ISECT a₁ a₂ b₁ b₂ u u₁) = updRel-ISECT _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (updRel-TUNION a₁ a₂ b₁ b₂ u u₁) = updRel-TUNION _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (updRel-UNION a₁ a₂ b₁ b₂ u u₁) = updRel-UNION _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (updRel-QTUNION a₁ a₂ b₁ b₂ u u₁) = updRel-QTUNION _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(INL a₁)} {.(INL a₂)} (updRel-INL a₁ a₂ u) = updRel-INL _ _ (updRel-shiftUp n cf cg u)
-updRel-shiftUp n {name} {f} {g} cf cg {.(INR a₁)} {.(INR a₂)} (updRel-INR a₁ a₂ u) = updRel-INR _ _ (updRel-shiftUp n cf cg u)
-updRel-shiftUp n {name} {f} {g} cf cg {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (updRel-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = updRel-DECIDE _ _ _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁) (updRel-shiftUp (suc n) cf cg u₂)
-updRel-shiftUp n {name} {f} {g} cf cg {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (updRel-EQ a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = updRel-EQ _ _ _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁) (updRel-shiftUp n cf cg u₂)
-updRel-shiftUp n {name} {f} {g} cf cg {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (updRel-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updRel-EQB _ _ _ _ _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁) (updRel-shiftUp n cf cg u₂) (updRel-shiftUp n cf cg u₃)
-updRel-shiftUp n {name} {f} {g} cf cg {.AX} {.AX} updRel-AX = updRel-AX
-updRel-shiftUp n {name} {f} {g} cf cg {.FREE} {.FREE} updRel-FREE = updRel-FREE
-updRel-shiftUp n {name} {f} {g} cf cg {.(MSEQ x)} {.(MSEQ x)} (updRel-MSEQ x) = updRel-MSEQ x
-updRel-shiftUp n {name} {f} {g} cf cg {.(MAPP s a₁)} {.(MAPP s a₂)} (updRel-MAPP s a₁ a₂ u) = updRel-MAPP _ _ _ (updRel-shiftUp n cf cg u)
-updRel-shiftUp n {name} {f} {g} cf cg {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (updRel-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updRel-CHOOSE _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel-TSQUASH a₁ a₂ u) = updRel-TSQUASH _ _ (updRel-shiftUp n cf cg u)
-updRel-shiftUp n {name} {f} {g} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel-TTRUNC a₁ a₂ u) = updRel-TTRUNC _ _ (updRel-shiftUp n cf cg u)
-updRel-shiftUp n {name} {f} {g} cf cg {.(TCONST a₁)} {.(TCONST a₂)} (updRel-TCONST a₁ a₂ u) = updRel-TCONST _ _ (updRel-shiftUp n cf cg u)
-updRel-shiftUp n {name} {f} {g} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) = updRel-SUBSING _ _ (updRel-shiftUp n cf cg u)
-updRel-shiftUp n {name} {f} {g} cf cg {.(PURE)} {.(PURE)} (updRel-PURE) = updRel-PURE
-updRel-shiftUp n {name} {f} {g} cf cg {.(DUM a₁)} {.(DUM a₂)} (updRel-DUM a₁ a₂ u) = updRel-DUM _ _ (updRel-shiftUp n cf cg u)
-updRel-shiftUp n {name} {f} {g} cf cg {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updRel-FFDEFS _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
-updRel-shiftUp n {name} {f} {g} cf cg {.(UNIV x)} {.(UNIV x)} (updRel-UNIV x) = updRel-UNIV x
-updRel-shiftUp n {name} {f} {g} cf cg {.(LIFT a₁)} {.(LIFT a₂)} (updRel-LIFT a₁ a₂ u) = updRel-LIFT _ _ (updRel-shiftUp n cf cg u)
-updRel-shiftUp n {name} {f} {g} cf cg {.(LOWER a₁)} {.(LOWER a₂)} (updRel-LOWER a₁ a₂ u) = updRel-LOWER _ _ (updRel-shiftUp n cf cg u)
-updRel-shiftUp n {name} {f} {g} cf cg {.(SHRINK a₁)} {.(SHRINK a₂)} (updRel-SHRINK a₁ a₂ u) = updRel-SHRINK _ _ (updRel-shiftUp n cf cg u)
-updRel-shiftUp n {name} {f} {g} cf cg {.(upd name f)} {.(force g)} updRel-upd
-  rewrite #shiftUp (suc (suc n)) (ct g cg)
-        | #shiftUp (suc (suc (suc n))) (ct (shiftUp 0 f) (→#shiftUp 0 {f} cf)) = updRel-upd
-
-
-
-updRel-shiftDown : (n : ℕ) {name : Name} {f g : Term} (cf : # f) (cg : # g) {a b : Term}
-                 → updRel name f g a b
-                 → updRel name f g (shiftDown n a) (shiftDown n b)
-updRel-shiftDown n {name} {f} {g} cf cg {.(VAR x)} {.(VAR x)} (updRel-VAR x) = updRel-VAR _
-updRel-shiftDown n {name} {f} {g} cf cg {.NAT} {.NAT} updRel-NAT = updRel-NAT
-updRel-shiftDown n {name} {f} {g} cf cg {.QNAT} {.QNAT} updRel-QNAT = updRel-QNAT
-updRel-shiftDown n {name} {f} {g} cf cg {.TNAT} {.TNAT} updRel-TNAT = updRel-TNAT
-updRel-shiftDown n {name} {f} {g} cf cg {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updRel-LT a₁ a₂ b₁ b₂ u u₁) = updRel-LT _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updRel-QLT a₁ a₂ b₁ b₂ u u₁) = updRel-QLT _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(NUM x)} {.(NUM x)} (updRel-NUM x) = updRel-NUM _
-updRel-shiftDown n {name} {f} {g} cf cg {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (updRel-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updRel-IFLT _ _ _ _ _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁) (updRel-shiftDown n cf cg u₂) (updRel-shiftDown n cf cg u₃)
-updRel-shiftDown n {name} {f} {g} cf cg {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (updRel-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updRel-IFEQ _ _ _ _ _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁) (updRel-shiftDown n cf cg u₂) (updRel-shiftDown n cf cg u₃)
-updRel-shiftDown n {name} {f} {g} cf cg {.(SUC a₁)} {.(SUC a₂)} (updRel-SUC a₁ a₂ u) = updRel-SUC _ _ (updRel-shiftDown n cf cg u)
-updRel-shiftDown n {name} {f} {g} cf cg {.(PI a₁ b₁)} {.(PI a₂ b₂)} (updRel-PI a₁ a₂ b₁ b₂ u u₁) = updRel-PI _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(LAMBDA a₁)} {.(LAMBDA a₂)} (updRel-LAMBDA a₁ a₂ u) = updRel-LAMBDA _ _ (updRel-shiftDown (suc n) cf cg u)
-updRel-shiftDown n {name} {f} {g} cf cg {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (updRel-APPLY a₁ a₂ b₁ b₂ u u₁) = updRel-APPLY _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(FIX a₁)} {.(FIX a₂)} (updRel-FIX a₁ a₂ u) = updRel-FIX _ _ (updRel-shiftDown n cf cg u)
-updRel-shiftDown n {name} {f} {g} cf cg {.(LET a₁ b₁)} {.(LET a₂ b₂)} (updRel-LET a₁ a₂ b₁ b₂ u u₁) = updRel-LET _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(WT a₁ b₁)} {.(WT a₂ b₂)} (updRel-WT a₁ a₂ b₁ b₂ u u₁) = updRel-WT _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (updRel-SUP a₁ a₂ b₁ b₂ u u₁) = updRel-SUP _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
---updRel-shiftDown n {name} {f} {g} cf cg {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} (updRel-DSUP a₁ a₂ b₁ b₂ u u₁) = updRel-DSUP _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc (suc n)) cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(WREC a₁ b₁)} {.(WREC a₂ b₂)} (updRel-WREC a₁ a₂ b₁ b₂ u u₁) = updRel-WREC _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc (suc (suc n))) cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(MT a₁ b₁)} {.(MT a₂ b₂)} (updRel-MT a₁ a₂ b₁ b₂ u u₁) = updRel-MT _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
---updRel-shiftDown n {name} {f} {g} cf cg {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updRel-MSUP a₁ a₂ b₁ b₂ u u₁) = updRel-MSUP _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
---updRel-shiftDown n {name} {f} {g} cf cg {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} (updRel-DMSUP a₁ a₂ b₁ b₂ u u₁) = updRel-DMSUP _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc (suc n)) cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (updRel-SUM a₁ a₂ b₁ b₂ u u₁) = updRel-SUM _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (updRel-PAIR a₁ a₂ b₁ b₂ u u₁) = updRel-PAIR _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} (updRel-SPREAD a₁ a₂ b₁ b₂ u u₁) = updRel-SPREAD _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc (suc n)) cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(SET a₁ b₁)} {.(SET a₂ b₂)} (updRel-SET a₁ a₂ b₁ b₂ u u₁) = updRel-SET _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (updRel-ISECT a₁ a₂ b₁ b₂ u u₁) = updRel-ISECT _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (updRel-TUNION a₁ a₂ b₁ b₂ u u₁) = updRel-TUNION _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (updRel-UNION a₁ a₂ b₁ b₂ u u₁) = updRel-UNION _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (updRel-QTUNION a₁ a₂ b₁ b₂ u u₁) = updRel-QTUNION _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(INL a₁)} {.(INL a₂)} (updRel-INL a₁ a₂ u) = updRel-INL _ _ (updRel-shiftDown n cf cg u)
-updRel-shiftDown n {name} {f} {g} cf cg {.(INR a₁)} {.(INR a₂)} (updRel-INR a₁ a₂ u) = updRel-INR _ _ (updRel-shiftDown n cf cg u)
-updRel-shiftDown n {name} {f} {g} cf cg {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (updRel-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = updRel-DECIDE _ _ _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁) (updRel-shiftDown (suc n) cf cg u₂)
-updRel-shiftDown n {name} {f} {g} cf cg {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (updRel-EQ a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = updRel-EQ _ _ _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁) (updRel-shiftDown n cf cg u₂)
-updRel-shiftDown n {name} {f} {g} cf cg {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (updRel-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updRel-EQB _ _ _ _ _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁) (updRel-shiftDown n cf cg u₂) (updRel-shiftDown n cf cg u₃)
-updRel-shiftDown n {name} {f} {g} cf cg {.AX} {.AX} updRel-AX = updRel-AX
-updRel-shiftDown n {name} {f} {g} cf cg {.FREE} {.FREE} updRel-FREE = updRel-FREE
-updRel-shiftDown n {name} {f} {g} cf cg {.(MSEQ x)} {.(MSEQ x)} (updRel-MSEQ x) = updRel-MSEQ x
-updRel-shiftDown n {name} {f} {g} cf cg {.(MAPP s a₁)} {.(MAPP s a₂)} (updRel-MAPP s a₁ a₂ u) = updRel-MAPP _ _ _ (updRel-shiftDown n cf cg u)
-updRel-shiftDown n {name} {f} {g} cf cg {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (updRel-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updRel-CHOOSE _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel-TSQUASH a₁ a₂ u) = updRel-TSQUASH _ _ (updRel-shiftDown n cf cg u)
-updRel-shiftDown n {name} {f} {g} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel-TTRUNC a₁ a₂ u) = updRel-TTRUNC _ _ (updRel-shiftDown n cf cg u)
-updRel-shiftDown n {name} {f} {g} cf cg {.(TCONST a₁)} {.(TCONST a₂)} (updRel-TCONST a₁ a₂ u) = updRel-TCONST _ _ (updRel-shiftDown n cf cg u)
-updRel-shiftDown n {name} {f} {g} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) = updRel-SUBSING _ _ (updRel-shiftDown n cf cg u)
-updRel-shiftDown n {name} {f} {g} cf cg {.(PURE)} {.(PURE)} (updRel-PURE) = updRel-PURE
-updRel-shiftDown n {name} {f} {g} cf cg {.(DUM a₁)} {.(DUM a₂)} (updRel-DUM a₁ a₂ u) = updRel-DUM _ _ (updRel-shiftDown n cf cg u)
-updRel-shiftDown n {name} {f} {g} cf cg {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updRel-FFDEFS _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
-updRel-shiftDown n {name} {f} {g} cf cg {.(UNIV x)} {.(UNIV x)} (updRel-UNIV x) = updRel-UNIV _
-updRel-shiftDown n {name} {f} {g} cf cg {.(LIFT a₁)} {.(LIFT a₂)} (updRel-LIFT a₁ a₂ u) = updRel-LIFT _ _ (updRel-shiftDown n cf cg u)
-updRel-shiftDown n {name} {f} {g} cf cg {.(LOWER a₁)} {.(LOWER a₂)} (updRel-LOWER a₁ a₂ u) = updRel-LOWER _ _ (updRel-shiftDown n cf cg u)
-updRel-shiftDown n {name} {f} {g} cf cg {.(SHRINK a₁)} {.(SHRINK a₂)} (updRel-SHRINK a₁ a₂ u) = updRel-SHRINK _ _ (updRel-shiftDown n cf cg u)
-updRel-shiftDown n {name} {f} {g} cf cg {.(upd name f)} {.(force g)} updRel-upd
-  rewrite #shiftDown (suc (suc n)) (ct g cg)
-        | #shiftDown (suc (suc (suc n))) (ct (shiftUp 0 f) (→#shiftUp 0 {f} cf)) = updRel-upd
--- LAMBDA (LET (VAR 0) (LET (IFLT (APPLY (CS name) (NUM 0)) (VAR 0) (CHOOSE (NAME name) (VAR 0)) AX) (APPLY (shiftUp 0 f) (VAR 1))))
--- LAMBDA (LET (VAR 0) (APPLY g (VAR 0)))
+  updRel-shiftUp : (n : ℕ) {name : Name} {f g : Term} (cf : # f) (cg : # g) {a b : Term}
+                   → updRel name f g a b
+                   → updRel name f g (shiftUp n a) (shiftUp n b)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(VAR x)} {.(VAR x)} (updRel-VAR x) = updRel-VAR _
+  updRel-shiftUp n {name} {f} {g} cf cg {.NAT} {.NAT} updRel-NAT = updRel-NAT
+  updRel-shiftUp n {name} {f} {g} cf cg {.QNAT} {.QNAT} updRel-QNAT = updRel-QNAT
+  updRel-shiftUp n {name} {f} {g} cf cg {.TNAT} {.TNAT} updRel-TNAT = updRel-TNAT
+  updRel-shiftUp n {name} {f} {g} cf cg {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updRel-LT a₁ a₂ b₁ b₂ u u₁) = updRel-LT _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updRel-QLT a₁ a₂ b₁ b₂ u u₁) = updRel-QLT _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(NUM x)} {.(NUM x)} (updRel-NUM x) = updRel-NUM _
+  updRel-shiftUp n {name} {f} {g} cf cg {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (updRel-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updRel-IFLT _ _ _ _ _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁) (updRel-shiftUp n cf cg u₂) (updRel-shiftUp n cf cg u₃)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (updRel-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updRel-IFEQ _ _ _ _ _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁) (updRel-shiftUp n cf cg u₂) (updRel-shiftUp n cf cg u₃)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(SUC a₁)} {.(SUC a₂)} (updRel-SUC a₁ a₂ u) = updRel-SUC _ _ (updRel-shiftUp n cf cg u)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(PI a₁ b₁)} {.(PI a₂ b₂)} (updRel-PI a₁ a₂ b₁ b₂ u u₁) = updRel-PI _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(LAMBDA a₁)} {.(LAMBDA a₂)} (updRel-LAMBDA a₁ a₂ u) = updRel-LAMBDA _ _ (updRel-shiftUp (suc n) cf cg u)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (updRel-APPLY a₁ a₂ b₁ b₂ u u₁) = updRel-APPLY _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(FIX a₁)} {.(FIX a₂)} (updRel-FIX a₁ a₂ u) = updRel-FIX _ _ (updRel-shiftUp n cf cg u)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(LET a₁ b₁)} {.(LET a₂ b₂)} (updRel-LET a₁ a₂ b₁ b₂ u u₁) = updRel-LET _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(WT a₁ b₁)} {.(WT a₂ b₂)} (updRel-WT a₁ a₂ b₁ b₂ u u₁) = updRel-WT _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (updRel-SUP a₁ a₂ b₁ b₂ u u₁) = updRel-SUP _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
+  --updRel-shiftUp n {name} {f} {g} cf cg {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} (updRel-DSUP a₁ a₂ b₁ b₂ u u₁) = updRel-DSUP _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc (suc n)) cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(WREC a₁ b₁)} {.(WREC a₂ b₂)} (updRel-WREC a₁ a₂ b₁ b₂ u u₁) = updRel-WREC _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc (suc (suc n))) cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(MT a₁ b₁)} {.(MT a₂ b₂)} (updRel-MT a₁ a₂ b₁ b₂ u u₁) = updRel-MT _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
+  --updRel-shiftUp n {name} {f} {g} cf cg {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updRel-MSUP a₁ a₂ b₁ b₂ u u₁) = updRel-MSUP _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
+  --updRel-shiftUp n {name} {f} {g} cf cg {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} (updRel-DMSUP a₁ a₂ b₁ b₂ u u₁) = updRel-DMSUP _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc (suc n)) cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (updRel-SUM a₁ a₂ b₁ b₂ u u₁) = updRel-SUM _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (updRel-PAIR a₁ a₂ b₁ b₂ u u₁) = updRel-PAIR _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} (updRel-SPREAD a₁ a₂ b₁ b₂ u u₁) = updRel-SPREAD _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc (suc n)) cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(SET a₁ b₁)} {.(SET a₂ b₂)} (updRel-SET a₁ a₂ b₁ b₂ u u₁) = updRel-SET _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (updRel-ISECT a₁ a₂ b₁ b₂ u u₁) = updRel-ISECT _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (updRel-TUNION a₁ a₂ b₁ b₂ u u₁) = updRel-TUNION _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (updRel-UNION a₁ a₂ b₁ b₂ u u₁) = updRel-UNION _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (updRel-QTUNION a₁ a₂ b₁ b₂ u u₁) = updRel-QTUNION _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(INL a₁)} {.(INL a₂)} (updRel-INL a₁ a₂ u) = updRel-INL _ _ (updRel-shiftUp n cf cg u)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(INR a₁)} {.(INR a₂)} (updRel-INR a₁ a₂ u) = updRel-INR _ _ (updRel-shiftUp n cf cg u)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (updRel-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = updRel-DECIDE _ _ _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁) (updRel-shiftUp (suc n) cf cg u₂)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (updRel-EQ a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = updRel-EQ _ _ _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁) (updRel-shiftUp n cf cg u₂)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (updRel-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updRel-EQB _ _ _ _ _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁) (updRel-shiftUp n cf cg u₂) (updRel-shiftUp n cf cg u₃)
+  updRel-shiftUp n {name} {f} {g} cf cg {.AX} {.AX} updRel-AX = updRel-AX
+  updRel-shiftUp n {name} {f} {g} cf cg {.FREE} {.FREE} updRel-FREE = updRel-FREE
+  updRel-shiftUp n {name} {f} {g} cf cg {.(MSEQ x)} {.(MSEQ x)} (updRel-MSEQ x) = updRel-MSEQ x
+  updRel-shiftUp n {name} {f} {g} cf cg {.(MAPP s a₁)} {.(MAPP s a₂)} (updRel-MAPP s a₁ a₂ u) = updRel-MAPP _ _ _ (updRel-shiftUp n cf cg u)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (updRel-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updRel-CHOOSE _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel-TSQUASH a₁ a₂ u) = updRel-TSQUASH _ _ (updRel-shiftUp n cf cg u)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel-TTRUNC a₁ a₂ u) = updRel-TTRUNC _ _ (updRel-shiftUp n cf cg u)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(TCONST a₁)} {.(TCONST a₂)} (updRel-TCONST a₁ a₂ u) = updRel-TCONST _ _ (updRel-shiftUp n cf cg u)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) = updRel-SUBSING _ _ (updRel-shiftUp n cf cg u)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(PURE)} {.(PURE)} (updRel-PURE) = updRel-PURE
+  updRel-shiftUp n {name} {f} {g} cf cg {.(DUM a₁)} {.(DUM a₂)} (updRel-DUM a₁ a₂ u) = updRel-DUM _ _ (updRel-shiftUp n cf cg u)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updRel-FFDEFS _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(UNIV x)} {.(UNIV x)} (updRel-UNIV x) = updRel-UNIV x
+  updRel-shiftUp n {name} {f} {g} cf cg {.(LIFT a₁)} {.(LIFT a₂)} (updRel-LIFT a₁ a₂ u) = updRel-LIFT _ _ (updRel-shiftUp n cf cg u)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(LOWER a₁)} {.(LOWER a₂)} (updRel-LOWER a₁ a₂ u) = updRel-LOWER _ _ (updRel-shiftUp n cf cg u)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(SHRINK a₁)} {.(SHRINK a₂)} (updRel-SHRINK a₁ a₂ u) = updRel-SHRINK _ _ (updRel-shiftUp n cf cg u)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(upd name f)} {.(force g)} updRel-upd
+    rewrite #shiftUp (suc (suc n)) (ct g cg)
+            | #shiftUp (suc (suc (suc n))) (ct (shiftUp 0 f) (→#shiftUp 0 {f} cf)) = updRel-upd
 
 
+abstract
 
-updRel-subv : (v : Var) {name : Name} {f g : Term} (cf : # f) (cg : # g) {a₁ a₂ b₁ b₂ : Term}
-              → updRel name f g a₁ a₂
-              → updRel name f g b₁ b₂
-              → updRel name f g (subv v b₁ a₁) (subv v b₂ a₂)
-updRel-subv v {name} {f} {g} cf cg {.(VAR x)} {.(VAR x)} {b₁} {b₂} (updRel-VAR x) ub with x ≟ v
-... | yes p = ub
-... | no p = updRel-VAR x
-updRel-subv v {name} {f} {g} cf cg {.NAT} {.NAT} {b₁} {b₂} updRel-NAT ub = updRel-NAT
-updRel-subv v {name} {f} {g} cf cg {.QNAT} {.QNAT} {b₁} {b₂} updRel-QNAT ub = updRel-QNAT
-updRel-subv v {name} {f} {g} cf cg {.TNAT} {.TNAT} {b₁} {b₂} updRel-TNAT ub = updRel-TNAT
-updRel-subv v {name} {f} {g} cf cg {.(LT a₁ b₃)} {.(LT a₂ b₄)} {b₁} {b₂} (updRel-LT a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-LT _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
-updRel-subv v {name} {f} {g} cf cg {.(QLT a₁ b₃)} {.(QLT a₂ b₄)} {b₁} {b₂} (updRel-QLT a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-QLT _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
-updRel-subv v {name} {f} {g} cf cg {.(NUM x)} {.(NUM x)} {b₁} {b₂} (updRel-NUM x) ub = updRel-NUM x
-updRel-subv v {name} {f} {g} cf cg {.(IFLT a₁ b₃ c₁ d₁)} {.(IFLT a₂ b₄ c₂ d₂)} {b₁} {b₂} (updRel-IFLT a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₂ ua ua₁ ua₂ ua₃) ub = updRel-IFLT _ _ _ _ _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub) (updRel-subv v cf cg ua₂ ub) (updRel-subv v cf cg ua₃ ub)
-updRel-subv v {name} {f} {g} cf cg {.(IFEQ a₁ b₃ c₁ d₁)} {.(IFEQ a₂ b₄ c₂ d₂)} {b₁} {b₂} (updRel-IFEQ a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₂ ua ua₁ ua₂ ua₃) ub = updRel-IFEQ _ _ _ _ _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub) (updRel-subv v cf cg ua₂ ub) (updRel-subv v cf cg ua₃ ub)
-updRel-subv v {name} {f} {g} cf cg {.(SUC a₁)} {.(SUC a₂)} {b₁} {b₂} (updRel-SUC a₁ a₂ ua) ub = updRel-SUC _ _ (updRel-subv v cf cg ua ub)
-updRel-subv v {name} {f} {g} cf cg {.(PI a₁ b₃)} {.(PI a₂ b₄)} {b₁} {b₂} (updRel-PI a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-PI _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
-updRel-subv v {name} {f} {g} cf cg {.(LAMBDA a₁)} {.(LAMBDA a₂)} {b₁} {b₂} (updRel-LAMBDA a₁ a₂ ua) ub = updRel-LAMBDA _ _ (updRel-subv (suc v) cf cg ua (updRel-shiftUp 0 cf cg ub))
-updRel-subv v {name} {f} {g} cf cg {.(APPLY a₁ b₃)} {.(APPLY a₂ b₄)} {b₁} {b₂} (updRel-APPLY a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-APPLY _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
-updRel-subv v {name} {f} {g} cf cg {.(FIX a₁)} {.(FIX a₂)} {b₁} {b₂} (updRel-FIX a₁ a₂ ua) ub = updRel-FIX _ _ (updRel-subv v cf cg ua ub)
-updRel-subv v {name} {f} {g} cf cg {.(LET a₁ b₃)} {.(LET a₂ b₄)} {b₁} {b₂} (updRel-LET a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-LET _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
-updRel-subv v {name} {f} {g} cf cg {.(WT a₁ b₃)} {.(WT a₂ b₄)} {b₁} {b₂} (updRel-WT a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-WT _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
-updRel-subv v {name} {f} {g} cf cg {.(SUP a₁ b₃)} {.(SUP a₂ b₄)} {b₁} {b₂} (updRel-SUP a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-SUP _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
---updRel-subv v {name} {f} {g} cf cg {.(DSUP a₁ b₃)} {.(DSUP a₂ b₄)} {b₁} {b₂} (updRel-DSUP a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-DSUP _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc (suc v)) cf cg ua₁ (updRel-shiftUp 0 cf cg (updRel-shiftUp 0 cf cg ub)))
-updRel-subv v {name} {f} {g} cf cg {.(WREC a₁ b₃)} {.(WREC a₂ b₄)} {b₁} {b₂} (updRel-WREC a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-WREC _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc (suc (suc v))) cf cg ua₁ (updRel-shiftUp 0 cf cg (updRel-shiftUp 0 cf cg (updRel-shiftUp 0 cf cg ub))))
-updRel-subv v {name} {f} {g} cf cg {.(MT a₁ b₃)} {.(MT a₂ b₄)} {b₁} {b₂} (updRel-MT a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-MT _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
---updRel-subv v {name} {f} {g} cf cg {.(MSUP a₁ b₃)} {.(MSUP a₂ b₄)} {b₁} {b₂} (updRel-MSUP a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-MSUP _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
---updRel-subv v {name} {f} {g} cf cg {.(DMSUP a₁ b₃)} {.(DMSUP a₂ b₄)} {b₁} {b₂} (updRel-DMSUP a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-DMSUP _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc (suc v)) cf cg ua₁ (updRel-shiftUp 0 cf cg (updRel-shiftUp 0 cf cg ub)))
-updRel-subv v {name} {f} {g} cf cg {.(SUM a₁ b₃)} {.(SUM a₂ b₄)} {b₁} {b₂} (updRel-SUM a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-SUM _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
-updRel-subv v {name} {f} {g} cf cg {.(PAIR a₁ b₃)} {.(PAIR a₂ b₄)} {b₁} {b₂} (updRel-PAIR a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-PAIR _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
-updRel-subv v {name} {f} {g} cf cg {.(SPREAD a₁ b₃)} {.(SPREAD a₂ b₄)} {b₁} {b₂} (updRel-SPREAD a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-SPREAD _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc (suc v)) cf cg ua₁ (updRel-shiftUp 0 cf cg (updRel-shiftUp 0 cf cg ub)))
-updRel-subv v {name} {f} {g} cf cg {.(SET a₁ b₃)} {.(SET a₂ b₄)} {b₁} {b₂} (updRel-SET a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-SET _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
-updRel-subv v {name} {f} {g} cf cg {.(ISECT a₁ b₃)} {.(ISECT a₂ b₄)} {b₁} {b₂} (updRel-ISECT a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-ISECT _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
-updRel-subv v {name} {f} {g} cf cg {.(TUNION a₁ b₃)} {.(TUNION a₂ b₄)} {b₁} {b₂} (updRel-TUNION a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-TUNION _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
-updRel-subv v {name} {f} {g} cf cg {.(UNION a₁ b₃)} {.(UNION a₂ b₄)} {b₁} {b₂} (updRel-UNION a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-UNION _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
-updRel-subv v {name} {f} {g} cf cg {.(QTUNION a₁ b₃)} {.(QTUNION a₂ b₄)} {b₁} {b₂} (updRel-QTUNION a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-QTUNION _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
-updRel-subv v {name} {f} {g} cf cg {.(INL a₁)} {.(INL a₂)} {b₁} {b₂} (updRel-INL a₁ a₂ ua) ub = updRel-INL _ _ (updRel-subv v cf cg ua ub)
-updRel-subv v {name} {f} {g} cf cg {.(INR a₁)} {.(INR a₂)} {b₁} {b₂} (updRel-INR a₁ a₂ ua) ub = updRel-INR _ _ (updRel-subv v cf cg ua ub)
-updRel-subv v {name} {f} {g} cf cg {.(DECIDE a₁ b₃ c₁)} {.(DECIDE a₂ b₄ c₂)} {b₁} {b₂} (updRel-DECIDE a₁ a₂ b₃ b₄ c₁ c₂ ua ua₁ ua₂) ub = updRel-DECIDE _ _ _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub)) (updRel-subv (suc v) cf cg ua₂ (updRel-shiftUp 0 cf cg ub))
-updRel-subv v {name} {f} {g} cf cg {.(EQ a₁ b₃ c₁)} {.(EQ a₂ b₄ c₂)} {b₁} {b₂} (updRel-EQ a₁ a₂ b₃ b₄ c₁ c₂ ua ua₁ ua₂) ub = updRel-EQ _ _ _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub) (updRel-subv v cf cg ua₂ ub)
-updRel-subv v {name} {f} {g} cf cg {.(EQB a₁ b₃ c₁ d₁)} {.(EQB a₂ b₄ c₂ d₂)} {b₁} {b₂} (updRel-EQB a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₂ ua ua₁ ua₂ ua₃) ub = updRel-EQB _ _ _ _ _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub) (updRel-subv v cf cg ua₂ ub) (updRel-subv v cf cg ua₃ ub)
-updRel-subv v {name} {f} {g} cf cg {.AX} {.AX} {b₁} {b₂} updRel-AX ub = updRel-AX
-updRel-subv v {name} {f} {g} cf cg {.FREE} {.FREE} {b₁} {b₂} updRel-FREE ub = updRel-FREE
-updRel-subv v {name} {f} {g} cf cg {.(MSEQ x)} {.(MSEQ x)} {b₁} {b₂} (updRel-MSEQ x) ub = updRel-MSEQ x
-updRel-subv v {name} {f} {g} cf cg {.(MAPP s a₁)} {.(MAPP s a₂)} {b₁} {b₂} (updRel-MAPP s a₁ a₂ ua) ub = updRel-MAPP _ _ _ (updRel-subv v cf cg ua ub)
-updRel-subv v {name} {f} {g} cf cg {.(CHOOSE a₁ b₃)} {.(CHOOSE a₂ b₄)} {b₁} {b₂} (updRel-CHOOSE a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-CHOOSE _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
-updRel-subv v {name} {f} {g} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} {b₁} {b₂} (updRel-TSQUASH a₁ a₂ ua) ub = updRel-TSQUASH _ _ (updRel-subv v cf cg ua ub)
-updRel-subv v {name} {f} {g} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} {b₁} {b₂} (updRel-TTRUNC a₁ a₂ ua) ub = updRel-TTRUNC _ _ (updRel-subv v cf cg ua ub)
-updRel-subv v {name} {f} {g} cf cg {.(TCONST a₁)} {.(TCONST a₂)} {b₁} {b₂} (updRel-TCONST a₁ a₂ ua) ub = updRel-TCONST _ _ (updRel-subv v cf cg ua ub)
-updRel-subv v {name} {f} {g} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} {b₁} {b₂} (updRel-SUBSING a₁ a₂ ua) ub = updRel-SUBSING _ _ (updRel-subv v cf cg ua ub)
-updRel-subv v {name} {f} {g} cf cg {.(PURE)} {.(PURE)} {b₁} {b₂} (updRel-PURE) ub = updRel-PURE
-updRel-subv v {name} {f} {g} cf cg {.(DUM a₁)} {.(DUM a₂)} {b₁} {b₂} (updRel-DUM a₁ a₂ ua) ub = updRel-DUM _ _ (updRel-subv v cf cg ua ub)
-updRel-subv v {name} {f} {g} cf cg {.(FFDEFS a₁ b₃)} {.(FFDEFS a₂ b₄)} {b₁} {b₂} (updRel-FFDEFS a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-FFDEFS _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
-updRel-subv v {name} {f} {g} cf cg {.(UNIV x)} {.(UNIV x)} {b₁} {b₂} (updRel-UNIV x) ub = updRel-UNIV x
-updRel-subv v {name} {f} {g} cf cg {.(LIFT a₁)} {.(LIFT a₂)} {b₁} {b₂} (updRel-LIFT a₁ a₂ ua) ub = updRel-LIFT _ _ (updRel-subv v cf cg ua ub)
-updRel-subv v {name} {f} {g} cf cg {.(LOWER a₁)} {.(LOWER a₂)} {b₁} {b₂} (updRel-LOWER a₁ a₂ ua) ub = updRel-LOWER _ _ (updRel-subv v cf cg ua ub)
-updRel-subv v {name} {f} {g} cf cg {.(SHRINK a₁)} {.(SHRINK a₂)} {b₁} {b₂} (updRel-SHRINK a₁ a₂ ua) ub = updRel-SHRINK _ _ (updRel-subv v cf cg ua ub)
-updRel-subv v {name} {f} {g} cf cg {.(upd name f)} {.(force g)} {b₁} {b₂} updRel-upd ub
-  rewrite subv# (suc (suc (suc v))) (shiftUp 0 (shiftUp 0 (shiftUp 0 b₁))) (shiftUp 0 f) (→#shiftUp 0 {f} cf)
-        | subv# (suc (suc v)) (shiftUp 0 (shiftUp 0 b₂)) g cg
-  = updRel-upd
--- LAMBDA (LET (VAR 0) (LET (IFLT (APPLY (CS name) (NUM 0)) (VAR 0) (CHOOSE (NAME name) (VAR 0)) AX) (APPLY (shiftUp 0 f) (VAR 1))))
--- LAMBDA (LET (VAR 0) (APPLY g (VAR 0)))
+  updRel-shiftDown : (n : ℕ) {name : Name} {f g : Term} (cf : # f) (cg : # g) {a b : Term}
+                     → updRel name f g a b
+                     → updRel name f g (shiftDown n a) (shiftDown n b)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(VAR x)} {.(VAR x)} (updRel-VAR x) = updRel-VAR _
+  updRel-shiftDown n {name} {f} {g} cf cg {.NAT} {.NAT} updRel-NAT = updRel-NAT
+  updRel-shiftDown n {name} {f} {g} cf cg {.QNAT} {.QNAT} updRel-QNAT = updRel-QNAT
+  updRel-shiftDown n {name} {f} {g} cf cg {.TNAT} {.TNAT} updRel-TNAT = updRel-TNAT
+  updRel-shiftDown n {name} {f} {g} cf cg {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updRel-LT a₁ a₂ b₁ b₂ u u₁) = updRel-LT _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updRel-QLT a₁ a₂ b₁ b₂ u u₁) = updRel-QLT _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(NUM x)} {.(NUM x)} (updRel-NUM x) = updRel-NUM _
+  updRel-shiftDown n {name} {f} {g} cf cg {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (updRel-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updRel-IFLT _ _ _ _ _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁) (updRel-shiftDown n cf cg u₂) (updRel-shiftDown n cf cg u₃)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (updRel-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updRel-IFEQ _ _ _ _ _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁) (updRel-shiftDown n cf cg u₂) (updRel-shiftDown n cf cg u₃)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(SUC a₁)} {.(SUC a₂)} (updRel-SUC a₁ a₂ u) = updRel-SUC _ _ (updRel-shiftDown n cf cg u)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(PI a₁ b₁)} {.(PI a₂ b₂)} (updRel-PI a₁ a₂ b₁ b₂ u u₁) = updRel-PI _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(LAMBDA a₁)} {.(LAMBDA a₂)} (updRel-LAMBDA a₁ a₂ u) = updRel-LAMBDA _ _ (updRel-shiftDown (suc n) cf cg u)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (updRel-APPLY a₁ a₂ b₁ b₂ u u₁) = updRel-APPLY _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(FIX a₁)} {.(FIX a₂)} (updRel-FIX a₁ a₂ u) = updRel-FIX _ _ (updRel-shiftDown n cf cg u)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(LET a₁ b₁)} {.(LET a₂ b₂)} (updRel-LET a₁ a₂ b₁ b₂ u u₁) = updRel-LET _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(WT a₁ b₁)} {.(WT a₂ b₂)} (updRel-WT a₁ a₂ b₁ b₂ u u₁) = updRel-WT _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (updRel-SUP a₁ a₂ b₁ b₂ u u₁) = updRel-SUP _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
+  --updRel-shiftDown n {name} {f} {g} cf cg {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} (updRel-DSUP a₁ a₂ b₁ b₂ u u₁) = updRel-DSUP _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc (suc n)) cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(WREC a₁ b₁)} {.(WREC a₂ b₂)} (updRel-WREC a₁ a₂ b₁ b₂ u u₁) = updRel-WREC _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc (suc (suc n))) cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(MT a₁ b₁)} {.(MT a₂ b₂)} (updRel-MT a₁ a₂ b₁ b₂ u u₁) = updRel-MT _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
+  --updRel-shiftDown n {name} {f} {g} cf cg {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updRel-MSUP a₁ a₂ b₁ b₂ u u₁) = updRel-MSUP _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
+  --updRel-shiftDown n {name} {f} {g} cf cg {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} (updRel-DMSUP a₁ a₂ b₁ b₂ u u₁) = updRel-DMSUP _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc (suc n)) cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (updRel-SUM a₁ a₂ b₁ b₂ u u₁) = updRel-SUM _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (updRel-PAIR a₁ a₂ b₁ b₂ u u₁) = updRel-PAIR _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} (updRel-SPREAD a₁ a₂ b₁ b₂ u u₁) = updRel-SPREAD _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc (suc n)) cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(SET a₁ b₁)} {.(SET a₂ b₂)} (updRel-SET a₁ a₂ b₁ b₂ u u₁) = updRel-SET _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (updRel-ISECT a₁ a₂ b₁ b₂ u u₁) = updRel-ISECT _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (updRel-TUNION a₁ a₂ b₁ b₂ u u₁) = updRel-TUNION _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (updRel-UNION a₁ a₂ b₁ b₂ u u₁) = updRel-UNION _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (updRel-QTUNION a₁ a₂ b₁ b₂ u u₁) = updRel-QTUNION _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(INL a₁)} {.(INL a₂)} (updRel-INL a₁ a₂ u) = updRel-INL _ _ (updRel-shiftDown n cf cg u)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(INR a₁)} {.(INR a₂)} (updRel-INR a₁ a₂ u) = updRel-INR _ _ (updRel-shiftDown n cf cg u)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (updRel-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = updRel-DECIDE _ _ _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁) (updRel-shiftDown (suc n) cf cg u₂)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (updRel-EQ a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = updRel-EQ _ _ _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁) (updRel-shiftDown n cf cg u₂)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (updRel-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updRel-EQB _ _ _ _ _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁) (updRel-shiftDown n cf cg u₂) (updRel-shiftDown n cf cg u₃)
+  updRel-shiftDown n {name} {f} {g} cf cg {.AX} {.AX} updRel-AX = updRel-AX
+  updRel-shiftDown n {name} {f} {g} cf cg {.FREE} {.FREE} updRel-FREE = updRel-FREE
+  updRel-shiftDown n {name} {f} {g} cf cg {.(MSEQ x)} {.(MSEQ x)} (updRel-MSEQ x) = updRel-MSEQ x
+  updRel-shiftDown n {name} {f} {g} cf cg {.(MAPP s a₁)} {.(MAPP s a₂)} (updRel-MAPP s a₁ a₂ u) = updRel-MAPP _ _ _ (updRel-shiftDown n cf cg u)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (updRel-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updRel-CHOOSE _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel-TSQUASH a₁ a₂ u) = updRel-TSQUASH _ _ (updRel-shiftDown n cf cg u)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel-TTRUNC a₁ a₂ u) = updRel-TTRUNC _ _ (updRel-shiftDown n cf cg u)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(TCONST a₁)} {.(TCONST a₂)} (updRel-TCONST a₁ a₂ u) = updRel-TCONST _ _ (updRel-shiftDown n cf cg u)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) = updRel-SUBSING _ _ (updRel-shiftDown n cf cg u)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(PURE)} {.(PURE)} (updRel-PURE) = updRel-PURE
+  updRel-shiftDown n {name} {f} {g} cf cg {.(DUM a₁)} {.(DUM a₂)} (updRel-DUM a₁ a₂ u) = updRel-DUM _ _ (updRel-shiftDown n cf cg u)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updRel-FFDEFS _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(UNIV x)} {.(UNIV x)} (updRel-UNIV x) = updRel-UNIV _
+  updRel-shiftDown n {name} {f} {g} cf cg {.(LIFT a₁)} {.(LIFT a₂)} (updRel-LIFT a₁ a₂ u) = updRel-LIFT _ _ (updRel-shiftDown n cf cg u)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(LOWER a₁)} {.(LOWER a₂)} (updRel-LOWER a₁ a₂ u) = updRel-LOWER _ _ (updRel-shiftDown n cf cg u)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(SHRINK a₁)} {.(SHRINK a₂)} (updRel-SHRINK a₁ a₂ u) = updRel-SHRINK _ _ (updRel-shiftDown n cf cg u)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(upd name f)} {.(force g)} updRel-upd
+    rewrite #shiftDown (suc (suc n)) (ct g cg)
+            | #shiftDown (suc (suc (suc n))) (ct (shiftUp 0 f) (→#shiftUp 0 {f} cf)) = updRel-upd
+  -- LAMBDA (LET (VAR 0) (LET (IFLT (APPLY (CS name) (NUM 0)) (VAR 0) (CHOOSE (NAME name) (VAR 0)) AX) (APPLY (shiftUp 0 f) (VAR 1))))
+  -- LAMBDA (LET (VAR 0) (APPLY g (VAR 0)))
+
+
+
+abstract
+
+  updRel-subv : (v : Var) {name : Name} {f g : Term} (cf : # f) (cg : # g) {a₁ a₂ b₁ b₂ : Term}
+                → updRel name f g a₁ a₂
+                → updRel name f g b₁ b₂
+                → updRel name f g (subv v b₁ a₁) (subv v b₂ a₂)
+  updRel-subv v {name} {f} {g} cf cg {.(VAR x)} {.(VAR x)} {b₁} {b₂} (updRel-VAR x) ub with x ≟ v
+  ... | yes p = ub
+  ... | no p = updRel-VAR x
+  updRel-subv v {name} {f} {g} cf cg {.NAT} {.NAT} {b₁} {b₂} updRel-NAT ub = updRel-NAT
+  updRel-subv v {name} {f} {g} cf cg {.QNAT} {.QNAT} {b₁} {b₂} updRel-QNAT ub = updRel-QNAT
+  updRel-subv v {name} {f} {g} cf cg {.TNAT} {.TNAT} {b₁} {b₂} updRel-TNAT ub = updRel-TNAT
+  updRel-subv v {name} {f} {g} cf cg {.(LT a₁ b₃)} {.(LT a₂ b₄)} {b₁} {b₂} (updRel-LT a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-LT _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
+  updRel-subv v {name} {f} {g} cf cg {.(QLT a₁ b₃)} {.(QLT a₂ b₄)} {b₁} {b₂} (updRel-QLT a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-QLT _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
+  updRel-subv v {name} {f} {g} cf cg {.(NUM x)} {.(NUM x)} {b₁} {b₂} (updRel-NUM x) ub = updRel-NUM x
+  updRel-subv v {name} {f} {g} cf cg {.(IFLT a₁ b₃ c₁ d₁)} {.(IFLT a₂ b₄ c₂ d₂)} {b₁} {b₂} (updRel-IFLT a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₂ ua ua₁ ua₂ ua₃) ub = updRel-IFLT _ _ _ _ _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub) (updRel-subv v cf cg ua₂ ub) (updRel-subv v cf cg ua₃ ub)
+  updRel-subv v {name} {f} {g} cf cg {.(IFEQ a₁ b₃ c₁ d₁)} {.(IFEQ a₂ b₄ c₂ d₂)} {b₁} {b₂} (updRel-IFEQ a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₂ ua ua₁ ua₂ ua₃) ub = updRel-IFEQ _ _ _ _ _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub) (updRel-subv v cf cg ua₂ ub) (updRel-subv v cf cg ua₃ ub)
+  updRel-subv v {name} {f} {g} cf cg {.(SUC a₁)} {.(SUC a₂)} {b₁} {b₂} (updRel-SUC a₁ a₂ ua) ub = updRel-SUC _ _ (updRel-subv v cf cg ua ub)
+  updRel-subv v {name} {f} {g} cf cg {.(PI a₁ b₃)} {.(PI a₂ b₄)} {b₁} {b₂} (updRel-PI a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-PI _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
+  updRel-subv v {name} {f} {g} cf cg {.(LAMBDA a₁)} {.(LAMBDA a₂)} {b₁} {b₂} (updRel-LAMBDA a₁ a₂ ua) ub = updRel-LAMBDA _ _ (updRel-subv (suc v) cf cg ua (updRel-shiftUp 0 cf cg ub))
+  updRel-subv v {name} {f} {g} cf cg {.(APPLY a₁ b₃)} {.(APPLY a₂ b₄)} {b₁} {b₂} (updRel-APPLY a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-APPLY _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
+  updRel-subv v {name} {f} {g} cf cg {.(FIX a₁)} {.(FIX a₂)} {b₁} {b₂} (updRel-FIX a₁ a₂ ua) ub = updRel-FIX _ _ (updRel-subv v cf cg ua ub)
+  updRel-subv v {name} {f} {g} cf cg {.(LET a₁ b₃)} {.(LET a₂ b₄)} {b₁} {b₂} (updRel-LET a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-LET _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
+  updRel-subv v {name} {f} {g} cf cg {.(WT a₁ b₃)} {.(WT a₂ b₄)} {b₁} {b₂} (updRel-WT a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-WT _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
+  updRel-subv v {name} {f} {g} cf cg {.(SUP a₁ b₃)} {.(SUP a₂ b₄)} {b₁} {b₂} (updRel-SUP a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-SUP _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
+  --updRel-subv v {name} {f} {g} cf cg {.(DSUP a₁ b₃)} {.(DSUP a₂ b₄)} {b₁} {b₂} (updRel-DSUP a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-DSUP _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc (suc v)) cf cg ua₁ (updRel-shiftUp 0 cf cg (updRel-shiftUp 0 cf cg ub)))
+  updRel-subv v {name} {f} {g} cf cg {.(WREC a₁ b₃)} {.(WREC a₂ b₄)} {b₁} {b₂} (updRel-WREC a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-WREC _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc (suc (suc v))) cf cg ua₁ (updRel-shiftUp 0 cf cg (updRel-shiftUp 0 cf cg (updRel-shiftUp 0 cf cg ub))))
+  updRel-subv v {name} {f} {g} cf cg {.(MT a₁ b₃)} {.(MT a₂ b₄)} {b₁} {b₂} (updRel-MT a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-MT _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
+  --updRel-subv v {name} {f} {g} cf cg {.(MSUP a₁ b₃)} {.(MSUP a₂ b₄)} {b₁} {b₂} (updRel-MSUP a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-MSUP _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
+  --updRel-subv v {name} {f} {g} cf cg {.(DMSUP a₁ b₃)} {.(DMSUP a₂ b₄)} {b₁} {b₂} (updRel-DMSUP a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-DMSUP _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc (suc v)) cf cg ua₁ (updRel-shiftUp 0 cf cg (updRel-shiftUp 0 cf cg ub)))
+  updRel-subv v {name} {f} {g} cf cg {.(SUM a₁ b₃)} {.(SUM a₂ b₄)} {b₁} {b₂} (updRel-SUM a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-SUM _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
+  updRel-subv v {name} {f} {g} cf cg {.(PAIR a₁ b₃)} {.(PAIR a₂ b₄)} {b₁} {b₂} (updRel-PAIR a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-PAIR _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
+  updRel-subv v {name} {f} {g} cf cg {.(SPREAD a₁ b₃)} {.(SPREAD a₂ b₄)} {b₁} {b₂} (updRel-SPREAD a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-SPREAD _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc (suc v)) cf cg ua₁ (updRel-shiftUp 0 cf cg (updRel-shiftUp 0 cf cg ub)))
+  updRel-subv v {name} {f} {g} cf cg {.(SET a₁ b₃)} {.(SET a₂ b₄)} {b₁} {b₂} (updRel-SET a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-SET _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
+  updRel-subv v {name} {f} {g} cf cg {.(ISECT a₁ b₃)} {.(ISECT a₂ b₄)} {b₁} {b₂} (updRel-ISECT a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-ISECT _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
+  updRel-subv v {name} {f} {g} cf cg {.(TUNION a₁ b₃)} {.(TUNION a₂ b₄)} {b₁} {b₂} (updRel-TUNION a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-TUNION _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
+  updRel-subv v {name} {f} {g} cf cg {.(UNION a₁ b₃)} {.(UNION a₂ b₄)} {b₁} {b₂} (updRel-UNION a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-UNION _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
+  updRel-subv v {name} {f} {g} cf cg {.(QTUNION a₁ b₃)} {.(QTUNION a₂ b₄)} {b₁} {b₂} (updRel-QTUNION a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-QTUNION _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
+  updRel-subv v {name} {f} {g} cf cg {.(INL a₁)} {.(INL a₂)} {b₁} {b₂} (updRel-INL a₁ a₂ ua) ub = updRel-INL _ _ (updRel-subv v cf cg ua ub)
+  updRel-subv v {name} {f} {g} cf cg {.(INR a₁)} {.(INR a₂)} {b₁} {b₂} (updRel-INR a₁ a₂ ua) ub = updRel-INR _ _ (updRel-subv v cf cg ua ub)
+  updRel-subv v {name} {f} {g} cf cg {.(DECIDE a₁ b₃ c₁)} {.(DECIDE a₂ b₄ c₂)} {b₁} {b₂} (updRel-DECIDE a₁ a₂ b₃ b₄ c₁ c₂ ua ua₁ ua₂) ub = updRel-DECIDE _ _ _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub)) (updRel-subv (suc v) cf cg ua₂ (updRel-shiftUp 0 cf cg ub))
+  updRel-subv v {name} {f} {g} cf cg {.(EQ a₁ b₃ c₁)} {.(EQ a₂ b₄ c₂)} {b₁} {b₂} (updRel-EQ a₁ a₂ b₃ b₄ c₁ c₂ ua ua₁ ua₂) ub = updRel-EQ _ _ _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub) (updRel-subv v cf cg ua₂ ub)
+  updRel-subv v {name} {f} {g} cf cg {.(EQB a₁ b₃ c₁ d₁)} {.(EQB a₂ b₄ c₂ d₂)} {b₁} {b₂} (updRel-EQB a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₂ ua ua₁ ua₂ ua₃) ub = updRel-EQB _ _ _ _ _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub) (updRel-subv v cf cg ua₂ ub) (updRel-subv v cf cg ua₃ ub)
+  updRel-subv v {name} {f} {g} cf cg {.AX} {.AX} {b₁} {b₂} updRel-AX ub = updRel-AX
+  updRel-subv v {name} {f} {g} cf cg {.FREE} {.FREE} {b₁} {b₂} updRel-FREE ub = updRel-FREE
+  updRel-subv v {name} {f} {g} cf cg {.(MSEQ x)} {.(MSEQ x)} {b₁} {b₂} (updRel-MSEQ x) ub = updRel-MSEQ x
+  updRel-subv v {name} {f} {g} cf cg {.(MAPP s a₁)} {.(MAPP s a₂)} {b₁} {b₂} (updRel-MAPP s a₁ a₂ ua) ub = updRel-MAPP _ _ _ (updRel-subv v cf cg ua ub)
+  updRel-subv v {name} {f} {g} cf cg {.(CHOOSE a₁ b₃)} {.(CHOOSE a₂ b₄)} {b₁} {b₂} (updRel-CHOOSE a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-CHOOSE _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
+  updRel-subv v {name} {f} {g} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} {b₁} {b₂} (updRel-TSQUASH a₁ a₂ ua) ub = updRel-TSQUASH _ _ (updRel-subv v cf cg ua ub)
+  updRel-subv v {name} {f} {g} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} {b₁} {b₂} (updRel-TTRUNC a₁ a₂ ua) ub = updRel-TTRUNC _ _ (updRel-subv v cf cg ua ub)
+  updRel-subv v {name} {f} {g} cf cg {.(TCONST a₁)} {.(TCONST a₂)} {b₁} {b₂} (updRel-TCONST a₁ a₂ ua) ub = updRel-TCONST _ _ (updRel-subv v cf cg ua ub)
+  updRel-subv v {name} {f} {g} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} {b₁} {b₂} (updRel-SUBSING a₁ a₂ ua) ub = updRel-SUBSING _ _ (updRel-subv v cf cg ua ub)
+  updRel-subv v {name} {f} {g} cf cg {.(PURE)} {.(PURE)} {b₁} {b₂} (updRel-PURE) ub = updRel-PURE
+  updRel-subv v {name} {f} {g} cf cg {.(DUM a₁)} {.(DUM a₂)} {b₁} {b₂} (updRel-DUM a₁ a₂ ua) ub = updRel-DUM _ _ (updRel-subv v cf cg ua ub)
+  updRel-subv v {name} {f} {g} cf cg {.(FFDEFS a₁ b₃)} {.(FFDEFS a₂ b₄)} {b₁} {b₂} (updRel-FFDEFS a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-FFDEFS _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
+  updRel-subv v {name} {f} {g} cf cg {.(UNIV x)} {.(UNIV x)} {b₁} {b₂} (updRel-UNIV x) ub = updRel-UNIV x
+  updRel-subv v {name} {f} {g} cf cg {.(LIFT a₁)} {.(LIFT a₂)} {b₁} {b₂} (updRel-LIFT a₁ a₂ ua) ub = updRel-LIFT _ _ (updRel-subv v cf cg ua ub)
+  updRel-subv v {name} {f} {g} cf cg {.(LOWER a₁)} {.(LOWER a₂)} {b₁} {b₂} (updRel-LOWER a₁ a₂ ua) ub = updRel-LOWER _ _ (updRel-subv v cf cg ua ub)
+  updRel-subv v {name} {f} {g} cf cg {.(SHRINK a₁)} {.(SHRINK a₂)} {b₁} {b₂} (updRel-SHRINK a₁ a₂ ua) ub = updRel-SHRINK _ _ (updRel-subv v cf cg ua ub)
+  updRel-subv v {name} {f} {g} cf cg {.(upd name f)} {.(force g)} {b₁} {b₂} updRel-upd ub
+    rewrite subv# (suc (suc (suc v))) (shiftUp 0 (shiftUp 0 (shiftUp 0 b₁))) (shiftUp 0 f) (→#shiftUp 0 {f} cf)
+            | subv# (suc (suc v)) (shiftUp 0 (shiftUp 0 b₂)) g cg
+    = updRel-upd
+  -- LAMBDA (LET (VAR 0) (LET (IFLT (APPLY (CS name) (NUM 0)) (VAR 0) (CHOOSE (NAME name) (VAR 0)) AX) (APPLY (shiftUp 0 f) (VAR 1))))
+  -- LAMBDA (LET (VAR 0) (APPLY g (VAR 0)))
 
 
 
@@ -1682,62 +1686,64 @@ steps-trans+ {n} {m} {a} {b} {c} {w1} {w2} {w3} comp1 comp2
 
 
 
-updRel→¬Names : {name : Name} {f g a b : Term}
-                 → ¬Names g
-                 → updRel name f g a b
-                 → ¬names b ≡ true
-updRel→¬Names {name} {f} {g} {.(VAR x)} {.(VAR x)} nng (updRel-VAR x) = refl
-updRel→¬Names {name} {f} {g} {.NAT} {.NAT} nng updRel-NAT = refl
-updRel→¬Names {name} {f} {g} {.QNAT} {.QNAT} nng updRel-QNAT = refl
-updRel→¬Names {name} {f} {g} {.TNAT} {.TNAT} nng updRel-TNAT = refl
-updRel→¬Names {name} {f} {g} {.(LT a₁ b₁)} {.(LT a₂ b₂)} nng (updRel-LT a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} nng (updRel-QLT a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(NUM x)} {.(NUM x)} nng (updRel-NUM x) = refl
-updRel→¬Names {name} {f} {g} {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} nng (updRel-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = →∧4≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁) (updRel→¬Names nng u₂) (updRel→¬Names nng u₃)
-updRel→¬Names {name} {f} {g} {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} nng (updRel-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = →∧4≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁) (updRel→¬Names nng u₂) (updRel→¬Names nng u₃)
-updRel→¬Names {name} {f} {g} {.(SUC a₁)} {.(SUC a₂)} nng (updRel-SUC a₁ a₂ u) = updRel→¬Names nng u
-updRel→¬Names {name} {f} {g} {.(PI a₁ b₁)} {.(PI a₂ b₂)} nng (updRel-PI a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(LAMBDA a₁)} {.(LAMBDA a₂)} nng (updRel-LAMBDA a₁ a₂ u) = updRel→¬Names nng u
-updRel→¬Names {name} {f} {g} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} nng (updRel-APPLY a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(FIX a₁)} {.(FIX a₂)} nng (updRel-FIX a₁ a₂ u) = updRel→¬Names nng u
-updRel→¬Names {name} {f} {g} {.(LET a₁ b₁)} {.(LET a₂ b₂)} nng (updRel-LET a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(WT a₁ b₁)} {.(WT a₂ b₂)} nng (updRel-WT a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} nng (updRel-SUP a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
---updRel→¬Names {name} {f} {g} {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} nng (updRel-DSUP a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(WREC a₁ b₁)} {.(WREC a₂ b₂)} nng (updRel-WREC a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(MT a₁ b₁)} {.(MT a₂ b₂)} nng (updRel-MT a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
---updRel→¬Names {name} {f} {g} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} nng (updRel-MSUP a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
---updRel→¬Names {name} {f} {g} {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} nng (updRel-DMSUP a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} nng (updRel-SUM a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} nng (updRel-PAIR a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} nng (updRel-SPREAD a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(SET a₁ b₁)} {.(SET a₂ b₂)} nng (updRel-SET a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} nng (updRel-ISECT a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} nng (updRel-TUNION a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} nng (updRel-UNION a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} nng (updRel-QTUNION a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(INL a₁)} {.(INL a₂)} nng (updRel-INL a₁ a₂ u) = updRel→¬Names nng u
-updRel→¬Names {name} {f} {g} {.(INR a₁)} {.(INR a₂)} nng (updRel-INR a₁ a₂ u) = updRel→¬Names nng u
-updRel→¬Names {name} {f} {g} {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} nng (updRel-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = →∧3≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁) (updRel→¬Names nng u₂)
-updRel→¬Names {name} {f} {g} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} nng (updRel-EQ a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = →∧3≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁) (updRel→¬Names nng u₂)
-updRel→¬Names {name} {f} {g} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} nng (updRel-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = →∧4≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁) (updRel→¬Names nng u₂) (updRel→¬Names nng u₃)
-updRel→¬Names {name} {f} {g} {.AX} {.AX} nng updRel-AX = refl
-updRel→¬Names {name} {f} {g} {.FREE} {.FREE} nng updRel-FREE = refl
-updRel→¬Names {name} {f} {g} {.(MSEQ x)} {.(MSEQ x)} nng (updRel-MSEQ x) = refl
-updRel→¬Names {name} {f} {g} {.(MAPP s a₁)} {.(MAPP s a₂)} nng (updRel-MAPP s a₁ a₂ u) = updRel→¬Names nng u
-updRel→¬Names {name} {f} {g} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} nng (updRel-CHOOSE a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(TSQUASH a₁)} {.(TSQUASH a₂)} nng (updRel-TSQUASH a₁ a₂ u) = updRel→¬Names nng u
-updRel→¬Names {name} {f} {g} {.(TTRUNC a₁)} {.(TTRUNC a₂)} nng (updRel-TTRUNC a₁ a₂ u) = updRel→¬Names nng u
-updRel→¬Names {name} {f} {g} {.(TCONST a₁)} {.(TCONST a₂)} nng (updRel-TCONST a₁ a₂ u) = updRel→¬Names nng u
-updRel→¬Names {name} {f} {g} {.(SUBSING a₁)} {.(SUBSING a₂)} nng (updRel-SUBSING a₁ a₂ u) = updRel→¬Names nng u
-updRel→¬Names {name} {f} {g} {.(PURE)} {.(PURE)} nng (updRel-PURE) = refl
-updRel→¬Names {name} {f} {g} {.(DUM a₁)} {.(DUM a₂)} nng (updRel-DUM a₁ a₂ u) = updRel→¬Names nng u
-updRel→¬Names {name} {f} {g} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} nng (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
-updRel→¬Names {name} {f} {g} {.(UNIV x)} {.(UNIV x)} nng (updRel-UNIV x) = refl
-updRel→¬Names {name} {f} {g} {.(LIFT a₁)} {.(LIFT a₂)} nng (updRel-LIFT a₁ a₂ u) = updRel→¬Names nng u
-updRel→¬Names {name} {f} {g} {.(LOWER a₁)} {.(LOWER a₂)} nng (updRel-LOWER a₁ a₂ u) = updRel→¬Names nng u
-updRel→¬Names {name} {f} {g} {.(SHRINK a₁)} {.(SHRINK a₂)} nng (updRel-SHRINK a₁ a₂ u) = updRel→¬Names nng u
-updRel→¬Names {name} {f} {g} {.(upd name f)} {.(force g)} nng updRel-upd rewrite nng = refl
+abstract
+
+  updRel→¬Names : {name : Name} {f g a b : Term}
+                    → ¬Names g
+                    → updRel name f g a b
+                    → ¬names b ≡ true
+  updRel→¬Names {name} {f} {g} {.(VAR x)} {.(VAR x)} nng (updRel-VAR x) = refl
+  updRel→¬Names {name} {f} {g} {.NAT} {.NAT} nng updRel-NAT = refl
+  updRel→¬Names {name} {f} {g} {.QNAT} {.QNAT} nng updRel-QNAT = refl
+  updRel→¬Names {name} {f} {g} {.TNAT} {.TNAT} nng updRel-TNAT = refl
+  updRel→¬Names {name} {f} {g} {.(LT a₁ b₁)} {.(LT a₂ b₂)} nng (updRel-LT a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} nng (updRel-QLT a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(NUM x)} {.(NUM x)} nng (updRel-NUM x) = refl
+  updRel→¬Names {name} {f} {g} {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} nng (updRel-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = →∧4≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁) (updRel→¬Names nng u₂) (updRel→¬Names nng u₃)
+  updRel→¬Names {name} {f} {g} {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} nng (updRel-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = →∧4≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁) (updRel→¬Names nng u₂) (updRel→¬Names nng u₃)
+  updRel→¬Names {name} {f} {g} {.(SUC a₁)} {.(SUC a₂)} nng (updRel-SUC a₁ a₂ u) = updRel→¬Names nng u
+  updRel→¬Names {name} {f} {g} {.(PI a₁ b₁)} {.(PI a₂ b₂)} nng (updRel-PI a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(LAMBDA a₁)} {.(LAMBDA a₂)} nng (updRel-LAMBDA a₁ a₂ u) = updRel→¬Names nng u
+  updRel→¬Names {name} {f} {g} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} nng (updRel-APPLY a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(FIX a₁)} {.(FIX a₂)} nng (updRel-FIX a₁ a₂ u) = updRel→¬Names nng u
+  updRel→¬Names {name} {f} {g} {.(LET a₁ b₁)} {.(LET a₂ b₂)} nng (updRel-LET a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(WT a₁ b₁)} {.(WT a₂ b₂)} nng (updRel-WT a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} nng (updRel-SUP a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  --updRel→¬Names {name} {f} {g} {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} nng (updRel-DSUP a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(WREC a₁ b₁)} {.(WREC a₂ b₂)} nng (updRel-WREC a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(MT a₁ b₁)} {.(MT a₂ b₂)} nng (updRel-MT a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  --updRel→¬Names {name} {f} {g} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} nng (updRel-MSUP a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  --updRel→¬Names {name} {f} {g} {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} nng (updRel-DMSUP a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} nng (updRel-SUM a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} nng (updRel-PAIR a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} nng (updRel-SPREAD a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(SET a₁ b₁)} {.(SET a₂ b₂)} nng (updRel-SET a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} nng (updRel-ISECT a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} nng (updRel-TUNION a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} nng (updRel-UNION a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} nng (updRel-QTUNION a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(INL a₁)} {.(INL a₂)} nng (updRel-INL a₁ a₂ u) = updRel→¬Names nng u
+  updRel→¬Names {name} {f} {g} {.(INR a₁)} {.(INR a₂)} nng (updRel-INR a₁ a₂ u) = updRel→¬Names nng u
+  updRel→¬Names {name} {f} {g} {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} nng (updRel-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = →∧3≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁) (updRel→¬Names nng u₂)
+  updRel→¬Names {name} {f} {g} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} nng (updRel-EQ a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = →∧3≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁) (updRel→¬Names nng u₂)
+  updRel→¬Names {name} {f} {g} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} nng (updRel-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = →∧4≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁) (updRel→¬Names nng u₂) (updRel→¬Names nng u₃)
+  updRel→¬Names {name} {f} {g} {.AX} {.AX} nng updRel-AX = refl
+  updRel→¬Names {name} {f} {g} {.FREE} {.FREE} nng updRel-FREE = refl
+  updRel→¬Names {name} {f} {g} {.(MSEQ x)} {.(MSEQ x)} nng (updRel-MSEQ x) = refl
+  updRel→¬Names {name} {f} {g} {.(MAPP s a₁)} {.(MAPP s a₂)} nng (updRel-MAPP s a₁ a₂ u) = updRel→¬Names nng u
+  updRel→¬Names {name} {f} {g} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} nng (updRel-CHOOSE a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(TSQUASH a₁)} {.(TSQUASH a₂)} nng (updRel-TSQUASH a₁ a₂ u) = updRel→¬Names nng u
+  updRel→¬Names {name} {f} {g} {.(TTRUNC a₁)} {.(TTRUNC a₂)} nng (updRel-TTRUNC a₁ a₂ u) = updRel→¬Names nng u
+  updRel→¬Names {name} {f} {g} {.(TCONST a₁)} {.(TCONST a₂)} nng (updRel-TCONST a₁ a₂ u) = updRel→¬Names nng u
+  updRel→¬Names {name} {f} {g} {.(SUBSING a₁)} {.(SUBSING a₂)} nng (updRel-SUBSING a₁ a₂ u) = updRel→¬Names nng u
+  updRel→¬Names {name} {f} {g} {.(PURE)} {.(PURE)} nng (updRel-PURE) = refl
+  updRel→¬Names {name} {f} {g} {.(DUM a₁)} {.(DUM a₂)} nng (updRel-DUM a₁ a₂ u) = updRel→¬Names nng u
+  updRel→¬Names {name} {f} {g} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} nng (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
+  updRel→¬Names {name} {f} {g} {.(UNIV x)} {.(UNIV x)} nng (updRel-UNIV x) = refl
+  updRel→¬Names {name} {f} {g} {.(LIFT a₁)} {.(LIFT a₂)} nng (updRel-LIFT a₁ a₂ u) = updRel→¬Names nng u
+  updRel→¬Names {name} {f} {g} {.(LOWER a₁)} {.(LOWER a₂)} nng (updRel-LOWER a₁ a₂ u) = updRel→¬Names nng u
+  updRel→¬Names {name} {f} {g} {.(SHRINK a₁)} {.(SHRINK a₂)} nng (updRel-SHRINK a₁ a₂ u) = updRel→¬Names nng u
+  updRel→¬Names {name} {f} {g} {.(upd name f)} {.(force g)} nng updRel-upd rewrite nng = refl
 
 
 
@@ -1768,134 +1774,137 @@ steps-APPLY-val→ {suc k} {a} {b} {v} {w1} {w2} isv comp = _≤_.s≤s _≤_.z�
 
 
 
-→ΣstepsUpdRel-upd : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w1 w : 𝕎·}
-                     → # f
-                     → # g
-                     → ¬Names g
-                     → compatible· name w1 Res⊤
-                     → ∀𝕎-get0-NUM w1 name
-                     → updRel name f g a b
-                     → ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < n → strongMonEq w' (APPLY f (NUM k)) (APPLY g (NUM k)))
-                     → stepsPresUpdRel n name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1
-                     → Σ (ΣstepsUpdRel name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 (APPLY (force g) b) w)
-                          (λ x → 0 < fst (snd x))
-→ΣstepsUpdRel-upd gc {n} {name} {f} {g} {a} {b} {w1} {w} cf cg nng compat wgt0 u eqn (k , v , w2 , comp , isv , ish ,  ind) =
-  (k2 + k3 , k5 + k6 , NUM i , NUM i , w1a , comp2b , compgd , updRel-NUM i) ,
-  steps-APPLY-val→ {k5 + k6} {force g} {b} {NUM i} {w} {w} tt compgd
-  where
-    c : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w1' → Σ ℕ (λ m → Σ ℕ (λ m' →
-           k1 < k
-           × k2 < k
-           × getT 0 name w1' ≡ just (NUM m')
-           × ssteps k1 (a , w1) ≡ just (NUM m , w1')
-           × steps k2 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m))))))
-    c = upd-decomp cf wgt0 comp isv
--- We need to know that m is less than n
+abstract
 
-    k1 : ℕ
-    k1 = fst c
+  →ΣstepsUpdRel-upd : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w1 w : 𝕎·}
+                       → # f
+                       → # g
+                       → ¬Names g
+                       → compatible· name w1 Res⊤
+                       → ∀𝕎-get0-NUM w1 name
+                       → updRel name f g a b
+                       → ∀𝕎 w1 (λ w' _ → (k : ℕ) → k < n → strongMonEq w' (APPLY f (NUM k)) (APPLY g (NUM k)))
+                       → stepsPresUpdRel n name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1
+                       → Σ (ΣstepsUpdRel name f g (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))) w1 (APPLY (force g) b) w)
+                            (λ x → 0 < fst (snd x))
+  →ΣstepsUpdRel-upd gc {n} {name} {f} {g} {a} {b} {w1} {w} cf cg nng compat wgt0 u eqn (k , v , w2 , comp , isv , ish ,  ind) =
+    (k2 + k3 , k5 + k6 , NUM i , NUM i , w1a , comp2b , compgd , updRel-NUM i) ,
+    steps-APPLY-val→ {k5 + k6} {force g} {b} {NUM i} {w} {w} tt compgd
+    where
+      c : Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ 𝕎· (λ w1' → Σ ℕ (λ m → Σ ℕ (λ m' →
+            k1 < k
+            × k2 < k
+            × getT 0 name w1' ≡ just (NUM m')
+            × ssteps k1 (a , w1) ≡ just (NUM m , w1')
+            × steps k2 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m))))))
+      c = upd-decomp cf wgt0 comp isv
+      -- We need to know that m is less than n
 
-    k2 : ℕ
-    k2 = fst (snd c)
+      k1 : ℕ
+      k1 = fst c
 
-    w1' : 𝕎·
-    w1' = fst (snd (snd c))
+      k2 : ℕ
+      k2 = fst (snd c)
 
-    m : ℕ
-    m = fst (snd (snd (snd c)))
+      w1' : 𝕎·
+      w1' = fst (snd (snd c))
 
-    m' : ℕ
-    m' = fst (snd (snd (snd (snd c))))
+      m : ℕ
+      m = fst (snd (snd (snd c)))
 
-    ltk1 : k1 < k
-    ltk1 = fst (snd (snd (snd (snd (snd c)))))
+      m' : ℕ
+      m' = fst (snd (snd (snd (snd c))))
 
-    ltk2 : k2 < k
-    ltk2 = fst (snd (snd (snd (snd (snd (snd c))))))
+      ltk1 : k1 < k
+      ltk1 = fst (snd (snd (snd (snd (snd c)))))
 
-    gt0 : getT 0 name w1' ≡ just (NUM m')
-    gt0 = fst (snd (snd (snd (snd (snd (snd (snd c)))))))
+      ltk2 : k2 < k
+      ltk2 = fst (snd (snd (snd (snd (snd (snd c))))))
 
-    comp1 : ssteps k1 (a , w1) ≡ just (NUM m , w1')
-    comp1 = fst (snd (snd (snd (snd (snd (snd (snd (snd c))))))))
+      gt0 : getT 0 name w1' ≡ just (NUM m')
+      gt0 = fst (snd (snd (snd (snd (snd (snd (snd c)))))))
 
-    comp1b : steps k1 (a , w1) ≡ (NUM m , w1')
-    comp1b = ssteps→steps {k1} {a} {NUM m} {w1} {w1'} comp1
+      comp1 : ssteps k1 (a , w1) ≡ just (NUM m , w1')
+      comp1 = fst (snd (snd (snd (snd (snd (snd (snd (snd c))))))))
 
-    comp2 : steps k2 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m)
-    comp2 = snd (snd (snd (snd (snd (snd (snd (snd (snd c))))))))
+      comp1b : steps k1 (a , w1) ≡ (NUM m , w1')
+      comp1b = ssteps→steps {k1} {a} {NUM m} {w1} {w1'} comp1
 
-    e1 : w1 ⊑· w1'
-    e1 = steps→⊑ k1 a (NUM m) comp1b
+      comp2 : steps k2 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (APPLY f (NUM m) , chooseT0if name w1' m' m)
+      comp2 = snd (snd (snd (snd (snd (snd (snd (snd (snd c))))))))
 
-    e2 : w1 ⊑· chooseT0if name w1' m' m
-    e2 = ⊑-trans· e1 (⊑chooseT0if {w1'} {name} {m'} {m})
+      e1 : w1 ⊑· w1'
+      e1 = steps→⊑ k1 a (NUM m) comp1b
 
-    ltm : m < n
-    ltm = isHighestℕ-updBody→< gc {n} {name} {f} {k1} {k} {a} {v} {m} {w1} {w1'} {w2} cf compat comp1b comp isv ish
+      e2 : w1 ⊑· chooseT0if name w1' m' m
+      e2 = ⊑-trans· e1 (⊑chooseT0if {w1'} {name} {m'} {m})
 
-    q : strongMonEq w1 (APPLY f (NUM m)) (APPLY g (NUM m))
-    q = eqn w1 (⊑-refl· w1) m ltm
+      ltm : m < n
+      ltm = isHighestℕ-updBody→< gc {n} {name} {f} {k1} {k} {a} {v} {m} {w1} {w1'} {w2} cf compat comp1b comp isv ish
 
-    i : ℕ
-    i = fst q
+      q : strongMonEq w1 (APPLY f (NUM m)) (APPLY g (NUM m))
+      q = eqn w1 (⊑-refl· w1) m ltm
 
-    c1 : Σ 𝕎· (λ w1a → APPLY f (NUM m) ⇓ NUM i from chooseT0if name w1' m' m to w1a)
-    c1 = ⇓→from-to (lower (fst (snd q) (chooseT0if name w1' m' m) e2))
+      i : ℕ
+      i = fst q
 
-    w1a : 𝕎·
-    w1a = fst c1
+      c1 : Σ 𝕎· (λ w1a → APPLY f (NUM m) ⇓ NUM i from chooseT0if name w1' m' m to w1a)
+      c1 = ⇓→from-to (lower (fst (snd q) (chooseT0if name w1' m' m) e2))
 
-    k3 : ℕ
-    k3 = fst (snd c1)
+      w1a : 𝕎·
+      w1a = fst c1
 
-    c1b : steps k3 (APPLY f (NUM m) , chooseT0if name w1' m' m) ≡ (NUM i , w1a)
-    c1b = snd (snd c1)
+      k3 : ℕ
+      k3 = fst (snd c1)
 
-    comp2b : steps (k2 + k3) (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (NUM i , w1a)
-    comp2b = steps-trans+ {k2} {k3} {LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))} {APPLY f (NUM m)} {NUM i} {w1} {chooseT0if name w1' m' m} {w1a} comp2 c1b
+      c1b : steps k3 (APPLY f (NUM m) , chooseT0if name w1' m' m) ≡ (NUM i , w1a)
+      c1b = snd (snd c1)
 
-    ish1 : isHighestℕ {k1} {w1} {w1'} {a} {NUM m} n name comp1b
-    ish1 = isHighestℕ-LET→ {n} {k1} {k} {name} {a} {SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))} {NUM m} {v} {w1} {w1'} {w2} comp1b comp isv ish
+      comp2b : steps (k2 + k3) (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))) , w1) ≡ (NUM i , w1a)
+      comp2b = steps-trans+ {k2} {k3} {LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0)))} {APPLY f (NUM m)} {NUM i} {w1} {chooseT0if name w1' m' m} {w1a} comp2 c1b
 
-    indb : Σ ℕ (λ k' → steps k' (b , w1) ≡ (NUM m , w1))
-    indb = Σsteps-updRel-NUM→ (ind k1 (<⇒≤ ltk1) {a} {b} {NUM m} {w1} {w1'} {w1} u compat wgt0 eqn comp1b ish1 tt)
+      ish1 : isHighestℕ {k1} {w1} {w1'} {a} {NUM m} n name comp1b
+      ish1 = isHighestℕ-LET→ {n} {k1} {k} {name} {a} {SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))} {NUM m} {v} {w1} {w1'} {w2} comp1b comp isv ish
 
-    k4 : ℕ
-    k4 = fst indb
+      indb : Σ ℕ (λ k' → steps k' (b , w1) ≡ (NUM m , w1))
+      indb = Σsteps-updRel-NUM→ (ind k1 (<⇒≤ ltk1) {a} {b} {NUM m} {w1} {w1'} {w1} u compat wgt0 eqn comp1b ish1 tt)
 
-    cb : steps k4 (b , w1) ≡ (NUM m , w1)
-    cb = snd indb
+      k4 : ℕ
+      k4 = fst indb
 
-    compg : APPLY (force g) b ⇓ APPLY g (NUM m) from w1 to w1
-    compg = →APPLY-force⇓APPLY-NUM {m} {g} {b} {w1} {w1} cg (k4 , cb)
+      cb : steps k4 (b , w1) ≡ (NUM m , w1)
+      cb = snd indb
 
-    k5 : ℕ
-    k5 = fst compg
+      compg : APPLY (force g) b ⇓ APPLY g (NUM m) from w1 to w1
+      compg = →APPLY-force⇓APPLY-NUM {m} {g} {b} {w1} {w1} cg (k4 , cb)
 
-    compgb : steps k5 (APPLY (force g) b , w1) ≡ (APPLY g (NUM m) , w1)
-    compgb = snd compg
+      k5 : ℕ
+      k5 = fst compg
 
-    c2 : Σ 𝕎· (λ w1b → APPLY g (NUM m) ⇓ NUM i from w1 to w1b)
-    c2 = ⇓→from-to (lower (snd (snd q) w1 (⊑-refl· _)))
+      compgb : steps k5 (APPLY (force g) b , w1) ≡ (APPLY g (NUM m) , w1)
+      compgb = snd compg
 
-    w1b : 𝕎·
-    w1b = fst c2
+      c2 : Σ 𝕎· (λ w1b → APPLY g (NUM m) ⇓ NUM i from w1 to w1b)
+      c2 = ⇓→from-to (lower (snd (snd q) w1 (⊑-refl· _)))
 
-    k6 : ℕ
-    k6 = fst (snd c2)
+      w1b : 𝕎·
+      w1b = fst c2
 
-    c2b : steps k6 (APPLY g (NUM m) , w1) ≡ (NUM i , w1b)
-    c2b = snd (snd c2)
+      k6 : ℕ
+      k6 = fst (snd c2)
 
-    compgc : steps (k5 + k6) (APPLY (force g) b , w1) ≡ (NUM i , w1b)
-    compgc = steps-trans+ {k5} {k6} {APPLY (force g) b} {APPLY g (NUM m)} {NUM i} {w1} {w1} {w1b} compgb c2b
+      c2b : steps k6 (APPLY g (NUM m) , w1) ≡ (NUM i , w1b)
+      c2b = snd (snd c2)
 
-    nnb : ¬Names b
-    nnb = updRel→¬Names nng u
+      compgc : steps (k5 + k6) (APPLY (force g) b , w1) ≡ (NUM i , w1b)
+      compgc = steps-trans+ {k5} {k6} {APPLY (force g) b} {APPLY g (NUM m)} {NUM i} {w1} {w1} {w1b} compgb c2b
 
-    compgd : steps (k5 + k6) (APPLY (force g) b , w) ≡ (NUM i , w)
-    compgd = fst (¬Names→steps (k5 + k6) w1 w1b w (APPLY (force g) b) (NUM i) (¬Names-APPLY {force g} {b} (¬Names-force {g} nng) nnb) compgc)
+      nnb : ¬Names b
+      nnb = updRel→¬Names nng u
+
+      compgd : steps (k5 + k6) (APPLY (force g) b , w) ≡ (NUM i , w)
+      compgd = fst (¬Names→steps (k5 + k6) w1 w1b w (APPLY (force g) b) (NUM i) (¬Names-APPLY {force g} {b} (¬Names-force {g} nng) nnb) compgc)
+
 
 
 steps-APPLY-LAMBDA-FIX→ : {k : ℕ} {t u : Term} {w1 w2 : 𝕎·}
@@ -1916,47 +1925,49 @@ steps-APPLY-LAMBDA-FIX→ {suc k} {t} {u} {w1} {w2} ltk comp = comp
 
 
 
-updRel→isValue : {name : Name} {f g a b : Term}
-                  → updRel name f g a b
-                  → isValue a
-                  → isValue b
-updRel→isValue {name} {f} {g} {.NAT} {.NAT} updRel-NAT isv = tt
-updRel→isValue {name} {f} {g} {.QNAT} {.QNAT} updRel-QNAT isv = tt
-updRel→isValue {name} {f} {g} {.TNAT} {.TNAT} updRel-TNAT isv = tt
-updRel→isValue {name} {f} {g} {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updRel-LT a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updRel-QLT a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(NUM x)} {.(NUM x)} (updRel-NUM x) isv = tt
-updRel→isValue {name} {f} {g} {.(PI a₁ b₁)} {.(PI a₂ b₂)} (updRel-PI a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(LAMBDA a₁)} {.(LAMBDA a₂)} (updRel-LAMBDA a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(WT a₁ b₁)} {.(WT a₂ b₂)} (updRel-WT a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (updRel-SUP a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(MT a₁ b₁)} {.(MT a₂ b₂)} (updRel-MT a₁ a₂ b₁ b₂ u u₁) isv = tt
---updRel→isValue {name} {f} {g} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updRel-MSUP a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (updRel-SUM a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (updRel-PAIR a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(SET a₁ b₁)} {.(SET a₂ b₂)} (updRel-SET a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (updRel-ISECT a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (updRel-TUNION a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (updRel-UNION a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (updRel-QTUNION a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(INL a₁)} {.(INL a₂)} (updRel-INL a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(INR a₁)} {.(INR a₂)} (updRel-INR a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (updRel-EQ a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) isv = tt
-updRel→isValue {name} {f} {g} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (updRel-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) isv = tt
-updRel→isValue {name} {f} {g} {.AX} {.AX} updRel-AX isv = tt
-updRel→isValue {name} {f} {g} {.FREE} {.FREE} updRel-FREE isv = tt
-updRel→isValue {name} {f} {g} {.(MSEQ x)} {.(MSEQ x)} (updRel-MSEQ x) isv = tt
-updRel→isValue {name} {f} {g} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel-TSQUASH a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel-TTRUNC a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(TCONST a₁)} {.(TCONST a₂)} (updRel-TCONST a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(PURE)} {.(PURE)} (updRel-PURE) isv = tt
-updRel→isValue {name} {f} {g} {.(DUM a₁)} {.(DUM a₂)} (updRel-DUM a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) isv = tt
-updRel→isValue {name} {f} {g} {.(UNIV x)} {.(UNIV x)} (updRel-UNIV x) isv = tt
-updRel→isValue {name} {f} {g} {.(LIFT a₁)} {.(LIFT a₂)} (updRel-LIFT a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(LOWER a₁)} {.(LOWER a₂)} (updRel-LOWER a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(SHRINK a₁)} {.(SHRINK a₂)} (updRel-SHRINK a₁ a₂ u) isv = tt
-updRel→isValue {name} {f} {g} {.(upd name f)} {.(force g)} updRel-upd isv = tt
+abstract
+
+  updRel→isValue : {name : Name} {f g a b : Term}
+                    → updRel name f g a b
+                    → isValue a
+                    → isValue b
+  updRel→isValue {name} {f} {g} {.NAT} {.NAT} updRel-NAT isv = tt
+  updRel→isValue {name} {f} {g} {.QNAT} {.QNAT} updRel-QNAT isv = tt
+  updRel→isValue {name} {f} {g} {.TNAT} {.TNAT} updRel-TNAT isv = tt
+  updRel→isValue {name} {f} {g} {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updRel-LT a₁ a₂ b₁ b₂ u u₁) isv = tt
+  updRel→isValue {name} {f} {g} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updRel-QLT a₁ a₂ b₁ b₂ u u₁) isv = tt
+  updRel→isValue {name} {f} {g} {.(NUM x)} {.(NUM x)} (updRel-NUM x) isv = tt
+  updRel→isValue {name} {f} {g} {.(PI a₁ b₁)} {.(PI a₂ b₂)} (updRel-PI a₁ a₂ b₁ b₂ u u₁) isv = tt
+  updRel→isValue {name} {f} {g} {.(LAMBDA a₁)} {.(LAMBDA a₂)} (updRel-LAMBDA a₁ a₂ u) isv = tt
+  updRel→isValue {name} {f} {g} {.(WT a₁ b₁)} {.(WT a₂ b₂)} (updRel-WT a₁ a₂ b₁ b₂ u u₁) isv = tt
+  updRel→isValue {name} {f} {g} {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (updRel-SUP a₁ a₂ b₁ b₂ u u₁) isv = tt
+  updRel→isValue {name} {f} {g} {.(MT a₁ b₁)} {.(MT a₂ b₂)} (updRel-MT a₁ a₂ b₁ b₂ u u₁) isv = tt
+  --updRel→isValue {name} {f} {g} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (updRel-MSUP a₁ a₂ b₁ b₂ u u₁) isv = tt
+  updRel→isValue {name} {f} {g} {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (updRel-SUM a₁ a₂ b₁ b₂ u u₁) isv = tt
+  updRel→isValue {name} {f} {g} {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (updRel-PAIR a₁ a₂ b₁ b₂ u u₁) isv = tt
+  updRel→isValue {name} {f} {g} {.(SET a₁ b₁)} {.(SET a₂ b₂)} (updRel-SET a₁ a₂ b₁ b₂ u u₁) isv = tt
+  updRel→isValue {name} {f} {g} {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (updRel-ISECT a₁ a₂ b₁ b₂ u u₁) isv = tt
+  updRel→isValue {name} {f} {g} {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (updRel-TUNION a₁ a₂ b₁ b₂ u u₁) isv = tt
+  updRel→isValue {name} {f} {g} {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (updRel-UNION a₁ a₂ b₁ b₂ u u₁) isv = tt
+  updRel→isValue {name} {f} {g} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (updRel-QTUNION a₁ a₂ b₁ b₂ u u₁) isv = tt
+  updRel→isValue {name} {f} {g} {.(INL a₁)} {.(INL a₂)} (updRel-INL a₁ a₂ u) isv = tt
+  updRel→isValue {name} {f} {g} {.(INR a₁)} {.(INR a₂)} (updRel-INR a₁ a₂ u) isv = tt
+  updRel→isValue {name} {f} {g} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (updRel-EQ a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) isv = tt
+  updRel→isValue {name} {f} {g} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (updRel-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) isv = tt
+  updRel→isValue {name} {f} {g} {.AX} {.AX} updRel-AX isv = tt
+  updRel→isValue {name} {f} {g} {.FREE} {.FREE} updRel-FREE isv = tt
+  updRel→isValue {name} {f} {g} {.(MSEQ x)} {.(MSEQ x)} (updRel-MSEQ x) isv = tt
+  updRel→isValue {name} {f} {g} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel-TSQUASH a₁ a₂ u) isv = tt
+  updRel→isValue {name} {f} {g} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel-TTRUNC a₁ a₂ u) isv = tt
+  updRel→isValue {name} {f} {g} {.(TCONST a₁)} {.(TCONST a₂)} (updRel-TCONST a₁ a₂ u) isv = tt
+  updRel→isValue {name} {f} {g} {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) isv = tt
+  updRel→isValue {name} {f} {g} {.(PURE)} {.(PURE)} (updRel-PURE) isv = tt
+  updRel→isValue {name} {f} {g} {.(DUM a₁)} {.(DUM a₂)} (updRel-DUM a₁ a₂ u) isv = tt
+  updRel→isValue {name} {f} {g} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) isv = tt
+  updRel→isValue {name} {f} {g} {.(UNIV x)} {.(UNIV x)} (updRel-UNIV x) isv = tt
+  updRel→isValue {name} {f} {g} {.(LIFT a₁)} {.(LIFT a₂)} (updRel-LIFT a₁ a₂ u) isv = tt
+  updRel→isValue {name} {f} {g} {.(LOWER a₁)} {.(LOWER a₂)} (updRel-LOWER a₁ a₂ u) isv = tt
+  updRel→isValue {name} {f} {g} {.(SHRINK a₁)} {.(SHRINK a₂)} (updRel-SHRINK a₁ a₂ u) isv = tt
+  updRel→isValue {name} {f} {g} {.(upd name f)} {.(force g)} updRel-upd isv = tt
 
 \end{code}

@@ -265,65 +265,67 @@ differ-INRₗ→ {name1} {name2} {f} {a} {.(INR a₂)} (differ-INR .a a₂ diff)
 
 
 
-→differ-shiftUp : (v : Var) {name1 name2 : Name} {f : Term} (cf : # f) {a b : Term}
-                   → differ name1 name2 f a b
-                   → differ name1 name2 f (shiftUp v a) (shiftUp v b)
-→differ-shiftUp v {name1} {name2} {f} cf {.(VAR x)} {.(VAR x)} (differ-VAR x) = differ-VAR _
-→differ-shiftUp v {name1} {name2} {f} cf {.NAT} {.NAT} differ-NAT = differ-NAT
-→differ-shiftUp v {name1} {name2} {f} cf {.QNAT} {.QNAT} differ-QNAT = differ-QNAT
-→differ-shiftUp v {name1} {name2} {f} cf {.TNAT} {.TNAT} differ-TNAT = differ-TNAT
-→differ-shiftUp v {name1} {name2} {f} cf {.(LT a₁ b₁)} {.(LT a₂ b₂)} (differ-LT a₁ a₂ b₁ b₂ diff diff₁) = differ-LT _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) = differ-QLT _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(NUM x)} {.(NUM x)} (differ-NUM x) = differ-NUM x
-→differ-shiftUp v {name1} {name2} {f} cf {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (differ-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFLT _ _ _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂) (→differ-shiftUp v cf diff₃)
-→differ-shiftUp v {name1} {name2} {f} cf {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (differ-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFEQ _ _ _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂) (→differ-shiftUp v cf diff₃)
-→differ-shiftUp v {name1} {name2} {f} cf {.(SUC a)} {.(SUC b)} (differ-SUC a b diff) = differ-SUC _ _ (→differ-shiftUp v cf diff)
-→differ-shiftUp v {name1} {name2} {f} cf {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differ-PI a₁ a₂ b₁ b₂ diff diff₁) = differ-PI _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(LAMBDA a)} {.(LAMBDA b)} (differ-LAMBDA a b diff) = differ-LAMBDA _ _ (→differ-shiftUp (suc v) cf diff)
-→differ-shiftUp v {name1} {name2} {f} cf {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (differ-APPLY a₁ a₂ b₁ b₂ diff diff₁) = differ-APPLY _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(FIX a)} {.(FIX b)} (differ-FIX a b diff) = differ-FIX _ _ (→differ-shiftUp v cf diff)
-→differ-shiftUp v {name1} {name2} {f} cf {.(LET a₁ b₁)} {.(LET a₂ b₂)} (differ-LET a₁ a₂ b₁ b₂ diff diff₁) = differ-LET _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(WT a₁ b₁)} {.(WT a₂ b₂)} (differ-WT a₁ a₂ b₁ b₂ diff diff₁) = differ-WT _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (differ-SUP a₁ a₂ b₁ b₂ diff diff₁) = differ-SUP _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
---→differ-shiftUp v {name1} {name2} {f} cf {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} (differ-DSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-DSUP _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc (suc v)) cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(WREC a₁ b₁)} {.(WREC a₂ b₂)} (differ-WREC a₁ a₂ b₁ b₂ diff diff₁) = differ-WREC _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc (suc (suc v))) cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(MT a₁ b₁)} {.(MT a₂ b₂)} (differ-MT a₁ a₂ b₁ b₂ diff diff₁) = differ-MT _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁)
---→differ-shiftUp v {name1} {name2} {f} cf {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (differ-MSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-MSUP _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
---→differ-shiftUp v {name1} {name2} {f} cf {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} (differ-DMSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-DMSUP _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc (suc v)) cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (differ-SUM a₁ a₂ b₁ b₂ diff diff₁) = differ-SUM _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (differ-PAIR a₁ a₂ b₁ b₂ diff diff₁) = differ-PAIR _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} (differ-SPREAD a₁ a₂ b₁ b₂ diff diff₁) = differ-SPREAD _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc (suc v)) cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(SET a₁ b₁)} {.(SET a₂ b₂)} (differ-SET a₁ a₂ b₁ b₂ diff diff₁) = differ-SET _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (differ-ISECT a₁ a₂ b₁ b₂ diff diff₁) = differ-ISECT _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (differ-TUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-TUNION _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (differ-UNION a₁ a₂ b₁ b₂ diff diff₁) = differ-UNION _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-QTUNION _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(INL a)} {.(INL b)} (differ-INL a b diff) = differ-INL _ _ (→differ-shiftUp v cf diff)
-→differ-shiftUp v {name1} {name2} {f} cf {.(INR a)} {.(INR b)} (differ-INR a b diff) = differ-INR _ _ (→differ-shiftUp v cf diff)
-→differ-shiftUp v {name1} {name2} {f} cf {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (differ-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-DECIDE _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁) (→differ-shiftUp (suc v) cf diff₂)
-→differ-shiftUp v {name1} {name2} {f} cf {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (differ-EQ a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-EQ _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂)
-→differ-shiftUp v {name1} {name2} {f} cf {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-EQB _ _ _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂) (→differ-shiftUp v cf diff₃)
-→differ-shiftUp v {name1} {name2} {f} cf {.AX} {.AX} differ-AX = differ-AX
-→differ-shiftUp v {name1} {name2} {f} cf {.FREE} {.FREE} differ-FREE = differ-FREE
-→differ-shiftUp v {name1} {name2} {f} cf {.MSEQ s} {.MSEQ s} (differ-MSEQ s) = differ-MSEQ s
-→differ-shiftUp v {name1} {name2} {f} cf {.(MAPP s a₁)} {.(MAPP s a₂)} (differ-MAPP s a₁ a₂ diff) = differ-MAPP _ _ _ (→differ-shiftUp v cf diff)
---→differ-shiftUp v {name1} {name2} {f} cf {.(CS name)} {.(CS name)} (differ-CS name) = differ-CS name
---→differ-shiftUp v {name1} {name2} {f} cf {.(NAME name)} {.(NAME name)} (differ-NAME name) = differ-NAME name
---→differ-shiftUp v {name1} {name2} {f} cf {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) = differ-FRESH _ _ (→differ-shiftUp v (→#shiftNameUp 0 {f} cf) diff)
-→differ-shiftUp v {name1} {name2} {f} cf {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (differ-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) = differ-CHOOSE _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
---→differ-shiftUp v {name1} {name2} {f} cf {.(IFC0 a₁ b₁ c₁)} {.(IFC0 a₂ b₂ c₂)} (differ-IFC0 a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-IFC0 _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂)
-→differ-shiftUp v {name1} {name2} {f} cf {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQUASH a b diff) = differ-TSQUASH _ _ (→differ-shiftUp v cf diff)
-→differ-shiftUp v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftUp v cf diff)
-→differ-shiftUp v {name1} {name2} {f} cf {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) = differ-TCONST _ _ (→differ-shiftUp v cf diff)
-→differ-shiftUp v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftUp v cf diff)
-→differ-shiftUp v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
-→differ-shiftUp v {name1} {name2} {f} cf {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) = differ-DUM _ _ (→differ-shiftUp v cf diff)
-→differ-shiftUp v {name1} {name2} {f} cf {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = differ-FFDEFS _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
-→differ-shiftUp v {name1} {name2} {f} cf {.(UNIV x)} {.(UNIV x)} (differ-UNIV x) = differ-UNIV x
-→differ-shiftUp v {name1} {name2} {f} cf {.(LIFT a)} {.(LIFT b)} (differ-LIFT a b diff) = differ-LIFT _ _ (→differ-shiftUp v cf diff)
-→differ-shiftUp v {name1} {name2} {f} cf {.(LOWER a)} {.(LOWER b)} (differ-LOWER a b diff) = differ-LOWER _ _ (→differ-shiftUp v cf diff)
-→differ-shiftUp v {name1} {name2} {f} cf {.(SHRINK a)} {.(SHRINK b)} (differ-SHRINK a b diff) = differ-SHRINK _ _ (→differ-shiftUp v cf diff)
-→differ-shiftUp v {name1} {name2} {f} cf {.(upd name1 f)} {.(upd name2 f)} differ-upd rewrite sucIf≤s0 v | #shiftUp (suc (suc (suc v))) (ct (shiftUp 0 f) (→#shiftUp 0 {f} cf)) = differ-upd
+abstract
+
+  →differ-shiftUp : (v : Var) {name1 name2 : Name} {f : Term} (cf : # f) {a b : Term}
+                     → differ name1 name2 f a b
+                     → differ name1 name2 f (shiftUp v a) (shiftUp v b)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(VAR x)} {.(VAR x)} (differ-VAR x) = differ-VAR _
+  →differ-shiftUp v {name1} {name2} {f} cf {.NAT} {.NAT} differ-NAT = differ-NAT
+  →differ-shiftUp v {name1} {name2} {f} cf {.QNAT} {.QNAT} differ-QNAT = differ-QNAT
+  →differ-shiftUp v {name1} {name2} {f} cf {.TNAT} {.TNAT} differ-TNAT = differ-TNAT
+  →differ-shiftUp v {name1} {name2} {f} cf {.(LT a₁ b₁)} {.(LT a₂ b₂)} (differ-LT a₁ a₂ b₁ b₂ diff diff₁) = differ-LT _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) = differ-QLT _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(NUM x)} {.(NUM x)} (differ-NUM x) = differ-NUM x
+  →differ-shiftUp v {name1} {name2} {f} cf {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (differ-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFLT _ _ _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂) (→differ-shiftUp v cf diff₃)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (differ-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFEQ _ _ _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂) (→differ-shiftUp v cf diff₃)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(SUC a)} {.(SUC b)} (differ-SUC a b diff) = differ-SUC _ _ (→differ-shiftUp v cf diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differ-PI a₁ a₂ b₁ b₂ diff diff₁) = differ-PI _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(LAMBDA a)} {.(LAMBDA b)} (differ-LAMBDA a b diff) = differ-LAMBDA _ _ (→differ-shiftUp (suc v) cf diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (differ-APPLY a₁ a₂ b₁ b₂ diff diff₁) = differ-APPLY _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(FIX a)} {.(FIX b)} (differ-FIX a b diff) = differ-FIX _ _ (→differ-shiftUp v cf diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(LET a₁ b₁)} {.(LET a₂ b₂)} (differ-LET a₁ a₂ b₁ b₂ diff diff₁) = differ-LET _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(WT a₁ b₁)} {.(WT a₂ b₂)} (differ-WT a₁ a₂ b₁ b₂ diff diff₁) = differ-WT _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (differ-SUP a₁ a₂ b₁ b₂ diff diff₁) = differ-SUP _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
+  --→differ-shiftUp v {name1} {name2} {f} cf {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} (differ-DSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-DSUP _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc (suc v)) cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(WREC a₁ b₁)} {.(WREC a₂ b₂)} (differ-WREC a₁ a₂ b₁ b₂ diff diff₁) = differ-WREC _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc (suc (suc v))) cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(MT a₁ b₁)} {.(MT a₂ b₂)} (differ-MT a₁ a₂ b₁ b₂ diff diff₁) = differ-MT _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁)
+  --→differ-shiftUp v {name1} {name2} {f} cf {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (differ-MSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-MSUP _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
+  --→differ-shiftUp v {name1} {name2} {f} cf {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} (differ-DMSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-DMSUP _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc (suc v)) cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (differ-SUM a₁ a₂ b₁ b₂ diff diff₁) = differ-SUM _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (differ-PAIR a₁ a₂ b₁ b₂ diff diff₁) = differ-PAIR _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} (differ-SPREAD a₁ a₂ b₁ b₂ diff diff₁) = differ-SPREAD _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc (suc v)) cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(SET a₁ b₁)} {.(SET a₂ b₂)} (differ-SET a₁ a₂ b₁ b₂ diff diff₁) = differ-SET _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (differ-ISECT a₁ a₂ b₁ b₂ diff diff₁) = differ-ISECT _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (differ-TUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-TUNION _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (differ-UNION a₁ a₂ b₁ b₂ diff diff₁) = differ-UNION _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-QTUNION _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(INL a)} {.(INL b)} (differ-INL a b diff) = differ-INL _ _ (→differ-shiftUp v cf diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(INR a)} {.(INR b)} (differ-INR a b diff) = differ-INR _ _ (→differ-shiftUp v cf diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (differ-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-DECIDE _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁) (→differ-shiftUp (suc v) cf diff₂)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (differ-EQ a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-EQ _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-EQB _ _ _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂) (→differ-shiftUp v cf diff₃)
+  →differ-shiftUp v {name1} {name2} {f} cf {.AX} {.AX} differ-AX = differ-AX
+  →differ-shiftUp v {name1} {name2} {f} cf {.FREE} {.FREE} differ-FREE = differ-FREE
+  →differ-shiftUp v {name1} {name2} {f} cf {.MSEQ s} {.MSEQ s} (differ-MSEQ s) = differ-MSEQ s
+  →differ-shiftUp v {name1} {name2} {f} cf {.(MAPP s a₁)} {.(MAPP s a₂)} (differ-MAPP s a₁ a₂ diff) = differ-MAPP _ _ _ (→differ-shiftUp v cf diff)
+  --→differ-shiftUp v {name1} {name2} {f} cf {.(CS name)} {.(CS name)} (differ-CS name) = differ-CS name
+  --→differ-shiftUp v {name1} {name2} {f} cf {.(NAME name)} {.(NAME name)} (differ-NAME name) = differ-NAME name
+  --→differ-shiftUp v {name1} {name2} {f} cf {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) = differ-FRESH _ _ (→differ-shiftUp v (→#shiftNameUp 0 {f} cf) diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (differ-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) = differ-CHOOSE _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
+  --→differ-shiftUp v {name1} {name2} {f} cf {.(IFC0 a₁ b₁ c₁)} {.(IFC0 a₂ b₂ c₂)} (differ-IFC0 a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-IFC0 _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQUASH a b diff) = differ-TSQUASH _ _ (→differ-shiftUp v cf diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftUp v cf diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) = differ-TCONST _ _ (→differ-shiftUp v cf diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftUp v cf diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
+  →differ-shiftUp v {name1} {name2} {f} cf {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) = differ-DUM _ _ (→differ-shiftUp v cf diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = differ-FFDEFS _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(UNIV x)} {.(UNIV x)} (differ-UNIV x) = differ-UNIV x
+  →differ-shiftUp v {name1} {name2} {f} cf {.(LIFT a)} {.(LIFT b)} (differ-LIFT a b diff) = differ-LIFT _ _ (→differ-shiftUp v cf diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(LOWER a)} {.(LOWER b)} (differ-LOWER a b diff) = differ-LOWER _ _ (→differ-shiftUp v cf diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(SHRINK a)} {.(SHRINK b)} (differ-SHRINK a b diff) = differ-SHRINK _ _ (→differ-shiftUp v cf diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(upd name1 f)} {.(upd name2 f)} differ-upd rewrite sucIf≤s0 v | #shiftUp (suc (suc (suc v))) (ct (shiftUp 0 f) (→#shiftUp 0 {f} cf)) = differ-upd
 
 
 
@@ -582,65 +584,67 @@ shiftNameUp-shiftNameUp {i} {j} {SHRINK t} imp = ≡SHRINK (shiftNameUp-shiftNam
 --}
 
 
-shiftNameUp-shiftNameUp : {i j : ℕ} {t : Term}
-                          → i ≤ j
-                          → shiftNameUp i (shiftNameUp j t)
-                             ≡ shiftNameUp (suc j) (shiftNameUp i t)
-shiftNameUp-shiftNameUp {i} {j} {VAR x} imp = refl
-shiftNameUp-shiftNameUp {i} {j} {NAT} imp = refl
-shiftNameUp-shiftNameUp {i} {j} {QNAT} imp = refl
-shiftNameUp-shiftNameUp {i} {j} {TNAT} imp = refl
-shiftNameUp-shiftNameUp {i} {j} {LT t t₁} imp = ≡LT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {QLT t t₁} imp = ≡QLT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {NUM x} imp = refl
-shiftNameUp-shiftNameUp {i} {j} {IFLT t t₁ t₂ t₃} imp = ≡IFLT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp) (shiftNameUp-shiftNameUp {i} {j} {t₃} imp)
-shiftNameUp-shiftNameUp {i} {j} {IFEQ t t₁ t₂ t₃} imp = ≡IFEQ (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp) (shiftNameUp-shiftNameUp {i} {j} {t₃} imp)
-shiftNameUp-shiftNameUp {i} {j} {SUC t} imp = ≡SUC (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-shiftNameUp-shiftNameUp {i} {j} {PI t t₁} imp = ≡PI (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {LAMBDA t} imp = ≡LAMBDA (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-shiftNameUp-shiftNameUp {i} {j} {APPLY t t₁} imp = ≡APPLY (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {FIX t} imp = ≡FIX (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-shiftNameUp-shiftNameUp {i} {j} {LET t t₁} imp = ≡LET (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {WT t t₁} imp = ≡WT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {SUP t t₁} imp = ≡SUP (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
---shiftNameUp-shiftNameUp {i} {j} {DSUP t t₁} imp = ≡DSUP (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {WREC t t₁} imp = ≡WREC (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {MT t t₁} imp = ≡MT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
---shiftNameUp-shiftNameUp {i} {j} {MSUP t t₁} imp = ≡MSUP (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
---shiftNameUp-shiftNameUp {i} {j} {DMSUP t t₁} imp = ≡DMSUP (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {SUM t t₁} imp = ≡SUM (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {PAIR t t₁} imp = ≡PAIR (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {SPREAD t t₁} imp = ≡SPREAD (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {SET t t₁} imp = ≡SET (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {ISECT t t₁} imp = ≡ISECT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {TUNION t t₁} imp = ≡TUNION (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {UNION t t₁} imp = ≡UNION (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {QTUNION t t₁} imp = ≡QTUNION (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {INL t} imp = ≡INL (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-shiftNameUp-shiftNameUp {i} {j} {INR t} imp = ≡INR (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-shiftNameUp-shiftNameUp {i} {j} {DECIDE t t₁ t₂} imp = ≡DECIDE (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp)
-shiftNameUp-shiftNameUp {i} {j} {EQ t t₁ t₂} imp = ≡EQ (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp)
-shiftNameUp-shiftNameUp {i} {j} {EQB t t₁ t₂ t₃} imp = ≡EQB (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp) (shiftNameUp-shiftNameUp {i} {j} {t₃} imp)
-shiftNameUp-shiftNameUp {i} {j} {AX} imp = refl
-shiftNameUp-shiftNameUp {i} {j} {FREE} imp = refl
-shiftNameUp-shiftNameUp {i} {j} {MSEQ x} imp = ≡MSEQ refl
-shiftNameUp-shiftNameUp {i} {j} {MAPP s t} imp = ≡MAPP refl (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-shiftNameUp-shiftNameUp {i} {j} {CS x} imp = ≡CS (sucIf≤-sucIf≤ {x} {i} {j} imp)
-shiftNameUp-shiftNameUp {i} {j} {NAME x} imp = ≡NAME (sucIf≤-sucIf≤ {x} {i} {j} imp)
-shiftNameUp-shiftNameUp {i} {j} {FRESH t} imp = ≡FRESH (shiftNameUp-shiftNameUp {suc i} {suc j} {t} (_≤_.s≤s imp))
-shiftNameUp-shiftNameUp {i} {j} {LOAD t} imp = refl --≡LOAD (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-shiftNameUp-shiftNameUp {i} {j} {CHOOSE t t₁} imp = ≡CHOOSE (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {TSQUASH t} imp = ≡TSQUASH (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-shiftNameUp-shiftNameUp {i} {j} {TTRUNC t} imp = ≡TTRUNC (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-shiftNameUp-shiftNameUp {i} {j} {TCONST t} imp = ≡TCONST (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-shiftNameUp-shiftNameUp {i} {j} {SUBSING t} imp = ≡SUBSING (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-shiftNameUp-shiftNameUp {i} {j} {PURE} imp = refl
-shiftNameUp-shiftNameUp {i} {j} {DUM t} imp = ≡DUM (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-shiftNameUp-shiftNameUp {i} {j} {FFDEFS t t₁} imp = ≡FFDEFS (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-shiftNameUp-shiftNameUp {i} {j} {UNIV x} imp = refl
-shiftNameUp-shiftNameUp {i} {j} {LIFT t} imp = ≡LIFT (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-shiftNameUp-shiftNameUp {i} {j} {LOWER t} imp = ≡LOWER (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-shiftNameUp-shiftNameUp {i} {j} {SHRINK t} imp = ≡SHRINK (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+abstract
+
+  shiftNameUp-shiftNameUp : {i j : ℕ} {t : Term}
+                            → i ≤ j
+                            → shiftNameUp i (shiftNameUp j t)
+                               ≡ shiftNameUp (suc j) (shiftNameUp i t)
+  shiftNameUp-shiftNameUp {i} {j} {VAR x} imp = refl
+  shiftNameUp-shiftNameUp {i} {j} {NAT} imp = refl
+  shiftNameUp-shiftNameUp {i} {j} {QNAT} imp = refl
+  shiftNameUp-shiftNameUp {i} {j} {TNAT} imp = refl
+  shiftNameUp-shiftNameUp {i} {j} {LT t t₁} imp = ≡LT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {QLT t t₁} imp = ≡QLT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {NUM x} imp = refl
+  shiftNameUp-shiftNameUp {i} {j} {IFLT t t₁ t₂ t₃} imp = ≡IFLT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp) (shiftNameUp-shiftNameUp {i} {j} {t₃} imp)
+  shiftNameUp-shiftNameUp {i} {j} {IFEQ t t₁ t₂ t₃} imp = ≡IFEQ (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp) (shiftNameUp-shiftNameUp {i} {j} {t₃} imp)
+  shiftNameUp-shiftNameUp {i} {j} {SUC t} imp = ≡SUC (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {PI t t₁} imp = ≡PI (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {LAMBDA t} imp = ≡LAMBDA (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {APPLY t t₁} imp = ≡APPLY (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {FIX t} imp = ≡FIX (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {LET t t₁} imp = ≡LET (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {WT t t₁} imp = ≡WT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {SUP t t₁} imp = ≡SUP (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  --shiftNameUp-shiftNameUp {i} {j} {DSUP t t₁} imp = ≡DSUP (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {WREC t t₁} imp = ≡WREC (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {MT t t₁} imp = ≡MT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  --shiftNameUp-shiftNameUp {i} {j} {MSUP t t₁} imp = ≡MSUP (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  --shiftNameUp-shiftNameUp {i} {j} {DMSUP t t₁} imp = ≡DMSUP (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {SUM t t₁} imp = ≡SUM (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {PAIR t t₁} imp = ≡PAIR (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {SPREAD t t₁} imp = ≡SPREAD (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {SET t t₁} imp = ≡SET (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {ISECT t t₁} imp = ≡ISECT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {TUNION t t₁} imp = ≡TUNION (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {UNION t t₁} imp = ≡UNION (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {QTUNION t t₁} imp = ≡QTUNION (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {INL t} imp = ≡INL (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {INR t} imp = ≡INR (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {DECIDE t t₁ t₂} imp = ≡DECIDE (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp)
+  shiftNameUp-shiftNameUp {i} {j} {EQ t t₁ t₂} imp = ≡EQ (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp)
+  shiftNameUp-shiftNameUp {i} {j} {EQB t t₁ t₂ t₃} imp = ≡EQB (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp) (shiftNameUp-shiftNameUp {i} {j} {t₃} imp)
+  shiftNameUp-shiftNameUp {i} {j} {AX} imp = refl
+  shiftNameUp-shiftNameUp {i} {j} {FREE} imp = refl
+  shiftNameUp-shiftNameUp {i} {j} {MSEQ x} imp = ≡MSEQ refl
+  shiftNameUp-shiftNameUp {i} {j} {MAPP s t} imp = ≡MAPP refl (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {CS x} imp = ≡CS (sucIf≤-sucIf≤ {x} {i} {j} imp)
+  shiftNameUp-shiftNameUp {i} {j} {NAME x} imp = ≡NAME (sucIf≤-sucIf≤ {x} {i} {j} imp)
+  shiftNameUp-shiftNameUp {i} {j} {FRESH t} imp = ≡FRESH (shiftNameUp-shiftNameUp {suc i} {suc j} {t} (_≤_.s≤s imp))
+  shiftNameUp-shiftNameUp {i} {j} {LOAD t} imp = refl --≡LOAD (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {CHOOSE t t₁} imp = ≡CHOOSE (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {TSQUASH t} imp = ≡TSQUASH (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {TTRUNC t} imp = ≡TTRUNC (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {TCONST t} imp = ≡TCONST (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {SUBSING t} imp = ≡SUBSING (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {PURE} imp = refl
+  shiftNameUp-shiftNameUp {i} {j} {DUM t} imp = ≡DUM (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {FFDEFS t t₁} imp = ≡FFDEFS (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+  shiftNameUp-shiftNameUp {i} {j} {UNIV x} imp = refl
+  shiftNameUp-shiftNameUp {i} {j} {LIFT t} imp = ≡LIFT (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {LOWER t} imp = ≡LOWER (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {SHRINK t} imp = ≡SHRINK (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 
 
 
@@ -655,100 +659,102 @@ suc-sucIf≤ i j | no p with suc j <? suc i
 
 
 
-→differ-shiftNameUp : (v : Var) {name1 name2 : Name} {f : Term} (cf : # f) {a b : Term}
-                   → differ name1 name2 f a b
-                   → differ (sucIf≤ v name1) (sucIf≤ v name2) (shiftNameUp v f) (shiftNameUp v a) (shiftNameUp v b)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(VAR x)} {.(VAR x)} (differ-VAR x) = differ-VAR _
-→differ-shiftNameUp v {name1} {name2} {f} cf {.NAT} {.NAT} differ-NAT = differ-NAT
-→differ-shiftNameUp v {name1} {name2} {f} cf {.QNAT} {.QNAT} differ-QNAT = differ-QNAT
-→differ-shiftNameUp v {name1} {name2} {f} cf {.TNAT} {.TNAT} differ-TNAT = differ-TNAT
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(LT a₁ b₁)} {.(LT a₂ b₂)} (differ-LT a₁ a₂ b₁ b₂ diff diff₁) = differ-LT _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) = differ-QLT _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(NUM x)} {.(NUM x)} (differ-NUM x) = differ-NUM x
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (differ-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFLT _ _ _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂) (→differ-shiftNameUp v cf diff₃)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (differ-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFEQ _ _ _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂) (→differ-shiftNameUp v cf diff₃)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(SUC a)} {.(SUC b)} (differ-SUC a b diff) = differ-SUC _ _ (→differ-shiftNameUp v cf diff)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differ-PI a₁ a₂ b₁ b₂ diff diff₁) = differ-PI _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(LAMBDA a)} {.(LAMBDA b)} (differ-LAMBDA a b diff) = differ-LAMBDA _ _ (→differ-shiftNameUp v cf diff)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (differ-APPLY a₁ a₂ b₁ b₂ diff diff₁) = differ-APPLY _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(FIX a)} {.(FIX b)} (differ-FIX a b diff) = differ-FIX _ _ (→differ-shiftNameUp v cf diff)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(LET a₁ b₁)} {.(LET a₂ b₂)} (differ-LET a₁ a₂ b₁ b₂ diff diff₁) = differ-LET _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(WT a₁ b₁)} {.(WT a₂ b₂)} (differ-WT a₁ a₂ b₁ b₂ diff diff₁) = differ-WT _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (differ-SUP a₁ a₂ b₁ b₂ diff diff₁) = differ-SUP _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
---→differ-shiftNameUp v {name1} {name2} {f} cf {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} (differ-DSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-DSUP _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(WREC a₁ b₁)} {.(WREC a₂ b₂)} (differ-WREC a₁ a₂ b₁ b₂ diff diff₁) = differ-WREC _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(MT a₁ b₁)} {.(MT a₂ b₂)} (differ-MT a₁ a₂ b₁ b₂ diff diff₁) = differ-MT _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
---→differ-shiftNameUp v {name1} {name2} {f} cf {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (differ-MSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-MSUP _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
---→differ-shiftNameUp v {name1} {name2} {f} cf {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} (differ-DMSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-DMSUP _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (differ-SUM a₁ a₂ b₁ b₂ diff diff₁) = differ-SUM _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (differ-PAIR a₁ a₂ b₁ b₂ diff diff₁) = differ-PAIR _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} (differ-SPREAD a₁ a₂ b₁ b₂ diff diff₁) = differ-SPREAD _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(SET a₁ b₁)} {.(SET a₂ b₂)} (differ-SET a₁ a₂ b₁ b₂ diff diff₁) = differ-SET _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (differ-ISECT a₁ a₂ b₁ b₂ diff diff₁) = differ-ISECT _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (differ-TUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-TUNION _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (differ-UNION a₁ a₂ b₁ b₂ diff diff₁) = differ-UNION _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-QTUNION _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(INL a)} {.(INL b)} (differ-INL a b diff) = differ-INL _ _ (→differ-shiftNameUp v cf diff)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(INR a)} {.(INR b)} (differ-INR a b diff) = differ-INR _ _ (→differ-shiftNameUp v cf diff)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (differ-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-DECIDE _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (differ-EQ a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-EQ _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-EQB _ _ _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂) (→differ-shiftNameUp v cf diff₃)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.AX} {.AX} differ-AX = differ-AX
-→differ-shiftNameUp v {name1} {name2} {f} cf {.FREE} {.FREE} differ-FREE = differ-FREE
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(MSEQ x)} {.(MSEQ x)} (differ-MSEQ x) = differ-MSEQ _
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(MAPP s a₁)} {.(MAPP s a₂)} (differ-MAPP s a₁ a₂ diff) = differ-MAPP _ _ _ (→differ-shiftNameUp v cf diff)
---→differ-shiftNameUp v {name1} {name2} {f} cf {.(CS name)} {.(CS name)} (differ-CS name) = differ-CS _
---→differ-shiftNameUp v {name1} {name2} {f} cf {.(NAME name)} {.(NAME name)} (differ-NAME name) = differ-NAME _
-{--→differ-shiftNameUp v {name1} {name2} {f} cf {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) = differ-FRESH (shiftNameUp (suc v) a) (shiftNameUp (suc v) b) c1
-  where
-    c3 : differ (sucIf≤ (suc v) (suc name1))
-                (sucIf≤ (suc v) (suc name2))
-                (shiftNameUp (suc v) (shiftNameUp 0 f))
-                (shiftNameUp (suc v) a)
-                (shiftNameUp (suc v) b)
-    c3 = →differ-shiftNameUp (suc v) {suc name1} {suc name2} (→#shiftNameUp 0 {f} cf) diff
+abstract
 
-    c2 : differ (suc (sucIf≤ v name1))
-                (suc (sucIf≤ v name2))
-                (shiftNameUp (suc v) (shiftNameUp 0 f))
-                (shiftNameUp (suc v) a)
-                (shiftNameUp (suc v) b)
-    c2 rewrite suc-sucIf≤ v name1 | suc-sucIf≤ v name2 = c3
+  →differ-shiftNameUp : (v : Var) {name1 name2 : Name} {f : Term} (cf : # f) {a b : Term}
+                         → differ name1 name2 f a b
+                         → differ (sucIf≤ v name1) (sucIf≤ v name2) (shiftNameUp v f) (shiftNameUp v a) (shiftNameUp v b)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(VAR x)} {.(VAR x)} (differ-VAR x) = differ-VAR _
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.NAT} {.NAT} differ-NAT = differ-NAT
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.QNAT} {.QNAT} differ-QNAT = differ-QNAT
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.TNAT} {.TNAT} differ-TNAT = differ-TNAT
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(LT a₁ b₁)} {.(LT a₂ b₂)} (differ-LT a₁ a₂ b₁ b₂ diff diff₁) = differ-LT _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) = differ-QLT _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(NUM x)} {.(NUM x)} (differ-NUM x) = differ-NUM x
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (differ-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFLT _ _ _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂) (→differ-shiftNameUp v cf diff₃)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (differ-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFEQ _ _ _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂) (→differ-shiftNameUp v cf diff₃)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(SUC a)} {.(SUC b)} (differ-SUC a b diff) = differ-SUC _ _ (→differ-shiftNameUp v cf diff)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differ-PI a₁ a₂ b₁ b₂ diff diff₁) = differ-PI _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(LAMBDA a)} {.(LAMBDA b)} (differ-LAMBDA a b diff) = differ-LAMBDA _ _ (→differ-shiftNameUp v cf diff)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (differ-APPLY a₁ a₂ b₁ b₂ diff diff₁) = differ-APPLY _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(FIX a)} {.(FIX b)} (differ-FIX a b diff) = differ-FIX _ _ (→differ-shiftNameUp v cf diff)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(LET a₁ b₁)} {.(LET a₂ b₂)} (differ-LET a₁ a₂ b₁ b₂ diff diff₁) = differ-LET _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(WT a₁ b₁)} {.(WT a₂ b₂)} (differ-WT a₁ a₂ b₁ b₂ diff diff₁) = differ-WT _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (differ-SUP a₁ a₂ b₁ b₂ diff diff₁) = differ-SUP _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  --→differ-shiftNameUp v {name1} {name2} {f} cf {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} (differ-DSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-DSUP _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(WREC a₁ b₁)} {.(WREC a₂ b₂)} (differ-WREC a₁ a₂ b₁ b₂ diff diff₁) = differ-WREC _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(MT a₁ b₁)} {.(MT a₂ b₂)} (differ-MT a₁ a₂ b₁ b₂ diff diff₁) = differ-MT _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  --→differ-shiftNameUp v {name1} {name2} {f} cf {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (differ-MSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-MSUP _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  --→differ-shiftNameUp v {name1} {name2} {f} cf {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} (differ-DMSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-DMSUP _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (differ-SUM a₁ a₂ b₁ b₂ diff diff₁) = differ-SUM _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (differ-PAIR a₁ a₂ b₁ b₂ diff diff₁) = differ-PAIR _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} (differ-SPREAD a₁ a₂ b₁ b₂ diff diff₁) = differ-SPREAD _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(SET a₁ b₁)} {.(SET a₂ b₂)} (differ-SET a₁ a₂ b₁ b₂ diff diff₁) = differ-SET _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (differ-ISECT a₁ a₂ b₁ b₂ diff diff₁) = differ-ISECT _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (differ-TUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-TUNION _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (differ-UNION a₁ a₂ b₁ b₂ diff diff₁) = differ-UNION _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-QTUNION _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(INL a)} {.(INL b)} (differ-INL a b diff) = differ-INL _ _ (→differ-shiftNameUp v cf diff)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(INR a)} {.(INR b)} (differ-INR a b diff) = differ-INR _ _ (→differ-shiftNameUp v cf diff)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (differ-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-DECIDE _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (differ-EQ a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-EQ _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-EQB _ _ _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂) (→differ-shiftNameUp v cf diff₃)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.AX} {.AX} differ-AX = differ-AX
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.FREE} {.FREE} differ-FREE = differ-FREE
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(MSEQ x)} {.(MSEQ x)} (differ-MSEQ x) = differ-MSEQ _
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(MAPP s a₁)} {.(MAPP s a₂)} (differ-MAPP s a₁ a₂ diff) = differ-MAPP _ _ _ (→differ-shiftNameUp v cf diff)
+  --→differ-shiftNameUp v {name1} {name2} {f} cf {.(CS name)} {.(CS name)} (differ-CS name) = differ-CS _
+  --→differ-shiftNameUp v {name1} {name2} {f} cf {.(NAME name)} {.(NAME name)} (differ-NAME name) = differ-NAME _
+  {--→differ-shiftNameUp v {name1} {name2} {f} cf {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) = differ-FRESH (shiftNameUp (suc v) a) (shiftNameUp (suc v) b) c1
+    where
+      c3 : differ (sucIf≤ (suc v) (suc name1))
+                  (sucIf≤ (suc v) (suc name2))
+                  (shiftNameUp (suc v) (shiftNameUp 0 f))
+                  (shiftNameUp (suc v) a)
+                  (shiftNameUp (suc v) b)
+      c3 = →differ-shiftNameUp (suc v) {suc name1} {suc name2} (→#shiftNameUp 0 {f} cf) diff
 
-    c1 : differ (suc (sucIf≤ v name1))
-                (suc (sucIf≤ v name2))
-                (shiftNameUp 0 (shiftNameUp v f))
-                (shiftNameUp (suc v) a)
-                (shiftNameUp (suc v) b)
-    c1 rewrite shiftNameUp-shiftNameUp {0} {v} {f} _≤_.z≤n = c2--}
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (differ-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) = differ-CHOOSE _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
---→differ-shiftNameUp v {name1} {name2} {f} cf {.(IFC0 a₁ b₁ c₁)} {.(IFC0 a₂ b₂ c₂)} (differ-IFC0 a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-IFC0 _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQUASH a b diff) = differ-TSQUASH _ _ (→differ-shiftNameUp v cf diff)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftNameUp v cf diff)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) = differ-TCONST _ _ (→differ-shiftNameUp v cf diff)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftNameUp v cf diff)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) = differ-DUM _ _ (→differ-shiftNameUp v cf diff)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = differ-FFDEFS _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(UNIV x)} {.(UNIV x)} (differ-UNIV x) = differ-UNIV x
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(LIFT a)} {.(LIFT b)} (differ-LIFT a b diff) = differ-LIFT _ _ (→differ-shiftNameUp v cf diff)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(LOWER a)} {.(LOWER b)} (differ-LOWER a b diff) = differ-LOWER _ _ (→differ-shiftNameUp v cf diff)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(SHRINK a)} {.(SHRINK b)} (differ-SHRINK a b diff) = differ-SHRINK _ _ (→differ-shiftNameUp v cf diff)
-→differ-shiftNameUp v {name1} {name2} {f} cf {.(upd name1 f)} {.(upd name2 f)} differ-upd = c2
-  where
-    c1 : differ (sucIf≤ v name1) (sucIf≤ v name2) (shiftNameUp v f) (upd (sucIf≤ v name1) (shiftNameUp v f)) (upd (sucIf≤ v name2) (shiftNameUp v f))
-    c1 = differ-upd
+      c2 : differ (suc (sucIf≤ v name1))
+                  (suc (sucIf≤ v name2))
+                  (shiftNameUp (suc v) (shiftNameUp 0 f))
+                  (shiftNameUp (suc v) a)
+                  (shiftNameUp (suc v) b)
+      c2 rewrite suc-sucIf≤ v name1 | suc-sucIf≤ v name2 = c3
 
-    c2 : differ (sucIf≤ v name1) (sucIf≤ v name2) (shiftNameUp v f)
-                (LAMBDA (LET (VAR 0)
-                             (LET (IFLT (APPLY (CS (sucIf≤ v name1)) (NUM 0)) (VAR 0)
-                                        (CHOOSE (NAME (sucIf≤ v name1)) (VAR 0)) AX)
-                                  (APPLY (shiftNameUp v (shiftUp 0 f)) (VAR (sucIf≤ 0 0))))))
-                (LAMBDA (LET (VAR 0)
-                             (LET (IFLT (APPLY (CS (sucIf≤ v name2)) (NUM 0)) (VAR 0)
-                                        (CHOOSE (NAME (sucIf≤ v name2)) (VAR 0)) AX)
-                                  (APPLY (shiftNameUp v (shiftUp 0 f)) (VAR (sucIf≤ 0 0))))))
-    c2 rewrite sym (shiftUp-shiftNameUp 0 v f)  = c1
+      c1 : differ (suc (sucIf≤ v name1))
+                  (suc (sucIf≤ v name2))
+                  (shiftNameUp 0 (shiftNameUp v f))
+                  (shiftNameUp (suc v) a)
+                  (shiftNameUp (suc v) b)
+      c1 rewrite shiftNameUp-shiftNameUp {0} {v} {f} _≤_.z≤n = c2--}
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (differ-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) = differ-CHOOSE _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  --→differ-shiftNameUp v {name1} {name2} {f} cf {.(IFC0 a₁ b₁ c₁)} {.(IFC0 a₂ b₂ c₂)} (differ-IFC0 a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-IFC0 _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQUASH a b diff) = differ-TSQUASH _ _ (→differ-shiftNameUp v cf diff)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftNameUp v cf diff)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) = differ-TCONST _ _ (→differ-shiftNameUp v cf diff)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftNameUp v cf diff)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) = differ-DUM _ _ (→differ-shiftNameUp v cf diff)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = differ-FFDEFS _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(UNIV x)} {.(UNIV x)} (differ-UNIV x) = differ-UNIV x
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(LIFT a)} {.(LIFT b)} (differ-LIFT a b diff) = differ-LIFT _ _ (→differ-shiftNameUp v cf diff)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(LOWER a)} {.(LOWER b)} (differ-LOWER a b diff) = differ-LOWER _ _ (→differ-shiftNameUp v cf diff)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(SHRINK a)} {.(SHRINK b)} (differ-SHRINK a b diff) = differ-SHRINK _ _ (→differ-shiftNameUp v cf diff)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(upd name1 f)} {.(upd name2 f)} differ-upd = c2
+    where
+      c1 : differ (sucIf≤ v name1) (sucIf≤ v name2) (shiftNameUp v f) (upd (sucIf≤ v name1) (shiftNameUp v f)) (upd (sucIf≤ v name2) (shiftNameUp v f))
+      c1 = differ-upd
+
+      c2 : differ (sucIf≤ v name1) (sucIf≤ v name2) (shiftNameUp v f)
+                  (LAMBDA (LET (VAR 0)
+                               (LET (IFLT (APPLY (CS (sucIf≤ v name1)) (NUM 0)) (VAR 0)
+                                          (CHOOSE (NAME (sucIf≤ v name1)) (VAR 0)) AX)
+                                    (APPLY (shiftNameUp v (shiftUp 0 f)) (VAR (sucIf≤ 0 0))))))
+                  (LAMBDA (LET (VAR 0)
+                               (LET (IFLT (APPLY (CS (sucIf≤ v name2)) (NUM 0)) (VAR 0)
+                                          (CHOOSE (NAME (sucIf≤ v name2)) (VAR 0)) AX)
+                                    (APPLY (shiftNameUp v (shiftUp 0 f)) (VAR (sucIf≤ 0 0))))))
+      c2 rewrite sym (shiftUp-shiftNameUp 0 v f)  = c1
 
 
 
@@ -767,132 +773,136 @@ suc≡sucIf≤0 n with n <? 0
 
 
 
-differ-subv : {name1 name2 : Name} {f : Term} (cf : # f) (v : Var) {a₁ a₂ b₁ b₂ : Term}
-             → differ name1 name2 f a₁ a₂
-             → differ name1 name2 f b₁ b₂
-             → differ name1 name2 f (subv v b₁ a₁) (subv v b₂ a₂)
-differ-subv {name1} {name2} {f} cf v {.(VAR x)} {.(VAR x)} {b₁} {b₂} (differ-VAR x) d₂ with x ≟ v
-... | yes p = d₂ -- rewrite shiftDownUp b₁ 0 | shiftDownUp b₂ 0 = d₂
-... | no p = differ-VAR _
-differ-subv {name1} {name2} {f} cf v {.NAT} {.NAT} {b₁} {b₂} differ-NAT d₂ = differ-NAT
-differ-subv {name1} {name2} {f} cf v {.QNAT} {.QNAT} {b₁} {b₂} differ-QNAT d₂ = differ-QNAT
-differ-subv {name1} {name2} {f} cf v {.TNAT} {.TNAT} {b₁} {b₂} differ-TNAT d₂ = differ-TNAT
-differ-subv {name1} {name2} {f} cf v {.(LT a₁ b₃)} {.(LT a₂ b₄)} {b₁} {b₂} (differ-LT a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-LT _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
-differ-subv {name1} {name2} {f} cf v {.(QLT a₁ b₃)} {.(QLT a₂ b₄)} {b₁} {b₂} (differ-QLT a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-QLT _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
-differ-subv {name1} {name2} {f} cf v {.(NUM x)} {.(NUM x)} {b₁} {b₂} (differ-NUM x) d₂ = differ-NUM x
-differ-subv {name1} {name2} {f} cf v {.(IFLT a₁ b₃ c₁ d₁)} {.(IFLT a₂ b₄ c₂ d₃)} {b₁} {b₂} (differ-IFLT a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄ d₅ d₆ d₇) d₂ = differ-IFLT _ _ _ _ _ _ _ _ (differ-subv cf v d₄ d₂) (differ-subv cf v d₅ d₂) (differ-subv cf v d₆ d₂) (differ-subv cf v d₇ d₂)
-differ-subv {name1} {name2} {f} cf v {.(IFEQ a₁ b₃ c₁ d₁)} {.(IFEQ a₂ b₄ c₂ d₃)} {b₁} {b₂} (differ-IFEQ a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄ d₅ d₆ d₇) d₂ = differ-IFEQ _ _ _ _ _ _ _ _ (differ-subv cf v d₄ d₂) (differ-subv cf v d₅ d₂) (differ-subv cf v d₆ d₂) (differ-subv cf v d₇ d₂)
-differ-subv {name1} {name2} {f} cf v {.(SUC a)} {.(SUC b)} {b₁} {b₂} (differ-SUC a b d₁) d₂ = differ-SUC _ _ (differ-subv cf v d₁ d₂)
-differ-subv {name1} {name2} {f} cf v {.(PI a₁ b₃)} {.(PI a₂ b₄)} {b₁} {b₂} (differ-PI a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-PI _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂))
-differ-subv {name1} {name2} {f} cf v {.(LAMBDA a)} {.(LAMBDA b)} {b₁} {b₂} (differ-LAMBDA a b d₁) d₂ = differ-LAMBDA _ _ (differ-subv cf (suc v) d₁ (→differ-shiftUp 0 cf d₂))
-differ-subv {name1} {name2} {f} cf v {.(APPLY a₁ b₃)} {.(APPLY a₂ b₄)} {b₁} {b₂} (differ-APPLY a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-APPLY _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
-differ-subv {name1} {name2} {f} cf v {.(FIX a)} {.(FIX b)} {b₁} {b₂} (differ-FIX a b d₁) d₂ = differ-FIX _ _ (differ-subv cf v d₁ d₂)
-differ-subv {name1} {name2} {f} cf v {.(LET a₁ b₃)} {.(LET a₂ b₄)} {b₁} {b₂} (differ-LET a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-LET _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂))
-differ-subv {name1} {name2} {f} cf v {.(WT a₁ b₃)} {.(WT a₂ b₄)} {b₁} {b₂} (differ-WT a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-WT _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂))
-differ-subv {name1} {name2} {f} cf v {.(SUP a₁ b₃)} {.(SUP a₂ b₄)} {b₁} {b₂} (differ-SUP a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-SUP _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
---differ-subv {name1} {name2} {f} cf v {.(DSUP a₁ b₃)} {.(DSUP a₂ b₄)} {b₁} {b₂} (differ-DSUP a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-DSUP _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc (suc v)) d₃ (→differ-shiftUp 0 cf (→differ-shiftUp 0 cf d₂)))
-differ-subv {name1} {name2} {f} cf v {.(WREC a₁ b₃)} {.(WREC a₂ b₄)} {b₁} {b₂} (differ-WREC a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-WREC _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc (suc (suc v))) d₃ (→differ-shiftUp 0 cf (→differ-shiftUp 0 cf (→differ-shiftUp 0 cf d₂))))
-differ-subv {name1} {name2} {f} cf v {.(MT a₁ b₃)} {.(MT a₂ b₄)} {b₁} {b₂} (differ-MT a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-MT _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂))
---differ-subv {name1} {name2} {f} cf v {.(MSUP a₁ b₃)} {.(MSUP a₂ b₄)} {b₁} {b₂} (differ-MSUP a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-MSUP _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
---differ-subv {name1} {name2} {f} cf v {.(DMSUP a₁ b₃)} {.(DMSUP a₂ b₄)} {b₁} {b₂} (differ-DMSUP a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-DMSUP _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc (suc v)) d₃ (→differ-shiftUp 0 cf (→differ-shiftUp 0 cf d₂)))
-differ-subv {name1} {name2} {f} cf v {.(SUM a₁ b₃)} {.(SUM a₂ b₄)} {b₁} {b₂} (differ-SUM a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-SUM _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂))
-differ-subv {name1} {name2} {f} cf v {.(PAIR a₁ b₃)} {.(PAIR a₂ b₄)} {b₁} {b₂} (differ-PAIR a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-PAIR _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
-differ-subv {name1} {name2} {f} cf v {.(SPREAD a₁ b₃)} {.(SPREAD a₂ b₄)} {b₁} {b₂} (differ-SPREAD a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-SPREAD _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc (suc v)) d₃ (→differ-shiftUp 0 cf (→differ-shiftUp 0 cf d₂)))
-differ-subv {name1} {name2} {f} cf v {.(SET a₁ b₃)} {.(SET a₂ b₄)} {b₁} {b₂} (differ-SET a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-SET _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂))
-differ-subv {name1} {name2} {f} cf v {.(ISECT a₁ b₃)} {.(ISECT a₂ b₄)} {b₁} {b₂} (differ-ISECT a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-ISECT _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
-differ-subv {name1} {name2} {f} cf v {.(TUNION a₁ b₃)} {.(TUNION a₂ b₄)} {b₁} {b₂} (differ-TUNION a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-TUNION _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂))
-differ-subv {name1} {name2} {f} cf v {.(UNION a₁ b₃)} {.(UNION a₂ b₄)} {b₁} {b₂} (differ-UNION a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-UNION _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
-differ-subv {name1} {name2} {f} cf v {.(QTUNION a₁ b₃)} {.(QTUNION a₂ b₄)} {b₁} {b₂} (differ-QTUNION a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-QTUNION _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
-differ-subv {name1} {name2} {f} cf v {.(INL a)} {.(INL b)} {b₁} {b₂} (differ-INL a b d₁) d₂ = differ-INL _ _ (differ-subv cf v d₁ d₂)
-differ-subv {name1} {name2} {f} cf v {.(INR a)} {.(INR b)} {b₁} {b₂} (differ-INR a b d₁) d₂ = differ-INR _ _ (differ-subv cf v d₁ d₂)
-differ-subv {name1} {name2} {f} cf v {.(DECIDE a₁ b₃ c₁)} {.(DECIDE a₂ b₄ c₂)} {b₁} {b₂} (differ-DECIDE a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄) d₂ = differ-DECIDE _ _ _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂)) (differ-subv cf (suc v) d₄ (→differ-shiftUp 0 cf d₂))
-differ-subv {name1} {name2} {f} cf v {.(EQ a₁ b₃ c₁)} {.(EQ a₂ b₄ c₂)} {b₁} {b₂} (differ-EQ a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄) d₂ = differ-EQ _ _ _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂) (differ-subv cf v d₄ d₂)
-differ-subv {name1} {name2} {f} cf v {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} {z₁} {z₂} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ x₁ x₂ x₃ x₄) y = differ-EQB _ _ _ _ _ _ _ _ (differ-subv cf v x₁ y) (differ-subv cf v x₂ y) (differ-subv cf v x₃ y) (differ-subv cf v x₄ y)
-differ-subv {name1} {name2} {f} cf v {.AX} {.AX} {b₁} {b₂} differ-AX d₂ = differ-AX
-differ-subv {name1} {name2} {f} cf v {.FREE} {.FREE} {b₁} {b₂} differ-FREE d₂ = differ-FREE
-differ-subv {name1} {name2} {f} cf v {.(MSEQ x)} {.(MSEQ x)} {b₁} {b₂} (differ-MSEQ x) d₂ = differ-MSEQ x
-differ-subv {name1} {name2} {f} cf v {.(MAPP s a₁)} {.(MAPP s a₂)} {b₁} {b₂} (differ-MAPP s a₁ a₂ d₁) d₂ = differ-MAPP _ _ _ (differ-subv cf v d₁ d₂)
---differ-subv {name1} {name2} {f} cf v {.(CS name)} {.(CS name)} {b₁} {b₂} (differ-CS name) d₂ = differ-CS name
---differ-subv {name1} {name2} {f} cf v {.(NAME name)} {.(NAME name)} {b₁} {b₂} (differ-NAME name) d₂ = differ-NAME name
---differ-subv {name1} {name2} {f} cf v {.(FRESH a)} {.(FRESH b)} {b₁} {b₂} (differ-FRESH a b d₁) d₂ = differ-FRESH _ _ (differ-subv (→#shiftNameUp 0 {f} cf) v d₁ (→differ-shiftNameUp0 {name1} {name2} cf d₂))
-differ-subv {name1} {name2} {f} cf v {.(CHOOSE a₁ b₃)} {.(CHOOSE a₂ b₄)} {b₁} {b₂} (differ-CHOOSE a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-CHOOSE _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
---differ-subv {name1} {name2} {f} cf v {.(IFC0 a₁ b₃ c₁)} {.(IFC0 a₂ b₄ c₂)} {b₁} {b₂} (differ-IFC0 a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄) d₂ = differ-IFC0 _ _ _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂) (differ-subv cf v d₄ d₂)
-differ-subv {name1} {name2} {f} cf v {.(TSQUASH a)} {.(TSQUASH b)} {b₁} {b₂} (differ-TSQUASH a b d₁) d₂ = differ-TSQUASH _ _ (differ-subv cf v d₁ d₂)
-differ-subv {name1} {name2} {f} cf v {.(TTRUNC a)} {.(TTRUNC b)} {b₁} {b₂} (differ-TTRUNC a b d₁) d₂ = differ-TTRUNC _ _ (differ-subv cf v d₁ d₂)
-differ-subv {name1} {name2} {f} cf v {.(TCONST a)} {.(TCONST b)} {b₁} {b₂} (differ-TCONST a b d₁) d₂ = differ-TCONST _ _ (differ-subv cf v d₁ d₂)
-differ-subv {name1} {name2} {f} cf v {.(SUBSING a)} {.(SUBSING b)} {b₁} {b₂} (differ-SUBSING a b d₁) d₂ = differ-SUBSING _ _ (differ-subv cf v d₁ d₂)
-differ-subv {name1} {name2} {f} cf v {.(PURE)} {.(PURE)} {b₁} {b₂} (differ-PURE) d₂ = differ-PURE
-differ-subv {name1} {name2} {f} cf v {.(DUM a)} {.(DUM b)} {b₁} {b₂} (differ-DUM a b d₁) d₂ = differ-DUM _ _ (differ-subv cf v d₁ d₂)
-differ-subv {name1} {name2} {f} cf v {.(FFDEFS a₁ b₃)} {.(FFDEFS a₂ b₄)} {b₁} {b₂} (differ-FFDEFS a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-FFDEFS _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
-differ-subv {name1} {name2} {f} cf v {.(UNIV x)} {.(UNIV x)} {b₁} {b₂} (differ-UNIV x) d₂ = differ-UNIV x
-differ-subv {name1} {name2} {f} cf v {.(LIFT a)} {.(LIFT b)} {b₁} {b₂} (differ-LIFT a b d₁) d₂ = differ-LIFT _ _ (differ-subv cf v d₁ d₂)
-differ-subv {name1} {name2} {f} cf v {.(LOWER a)} {.(LOWER b)} {b₁} {b₂} (differ-LOWER a b d₁) d₂ = differ-LOWER _ _ (differ-subv cf v d₁ d₂)
-differ-subv {name1} {name2} {f} cf v {.(SHRINK a)} {.(SHRINK b)} {b₁} {b₂} (differ-SHRINK a b d₁) d₂ = differ-SHRINK _ _ (differ-subv cf v d₁ d₂)
-differ-subv {name1} {name2} {f} cf v {.(upd name1 f)} {.(upd name2 f)} {b₁} {b₂} differ-upd d₂
-  rewrite sucIf≤00
-        | subv# (suc (suc (suc v))) (shiftUp 0 (shiftUp 0 (shiftUp 0 b₁))) (shiftUp 0 f) (→#shiftUp 0 {f} cf)
-        | subv# (suc (suc (suc v))) (shiftUp 0 (shiftUp 0 (shiftUp 0 b₂))) (shiftUp 0 f) (→#shiftUp 0 {f} cf) = differ-upd
+abstract
+
+  differ-subv : {name1 name2 : Name} {f : Term} (cf : # f) (v : Var) {a₁ a₂ b₁ b₂ : Term}
+                → differ name1 name2 f a₁ a₂
+                → differ name1 name2 f b₁ b₂
+                → differ name1 name2 f (subv v b₁ a₁) (subv v b₂ a₂)
+  differ-subv {name1} {name2} {f} cf v {.(VAR x)} {.(VAR x)} {b₁} {b₂} (differ-VAR x) d₂ with x ≟ v
+  ... | yes p = d₂ -- rewrite shiftDownUp b₁ 0 | shiftDownUp b₂ 0 = d₂
+  ... | no p = differ-VAR _
+  differ-subv {name1} {name2} {f} cf v {.NAT} {.NAT} {b₁} {b₂} differ-NAT d₂ = differ-NAT
+  differ-subv {name1} {name2} {f} cf v {.QNAT} {.QNAT} {b₁} {b₂} differ-QNAT d₂ = differ-QNAT
+  differ-subv {name1} {name2} {f} cf v {.TNAT} {.TNAT} {b₁} {b₂} differ-TNAT d₂ = differ-TNAT
+  differ-subv {name1} {name2} {f} cf v {.(LT a₁ b₃)} {.(LT a₂ b₄)} {b₁} {b₂} (differ-LT a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-LT _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(QLT a₁ b₃)} {.(QLT a₂ b₄)} {b₁} {b₂} (differ-QLT a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-QLT _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(NUM x)} {.(NUM x)} {b₁} {b₂} (differ-NUM x) d₂ = differ-NUM x
+  differ-subv {name1} {name2} {f} cf v {.(IFLT a₁ b₃ c₁ d₁)} {.(IFLT a₂ b₄ c₂ d₃)} {b₁} {b₂} (differ-IFLT a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄ d₅ d₆ d₇) d₂ = differ-IFLT _ _ _ _ _ _ _ _ (differ-subv cf v d₄ d₂) (differ-subv cf v d₅ d₂) (differ-subv cf v d₆ d₂) (differ-subv cf v d₇ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(IFEQ a₁ b₃ c₁ d₁)} {.(IFEQ a₂ b₄ c₂ d₃)} {b₁} {b₂} (differ-IFEQ a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄ d₅ d₆ d₇) d₂ = differ-IFEQ _ _ _ _ _ _ _ _ (differ-subv cf v d₄ d₂) (differ-subv cf v d₅ d₂) (differ-subv cf v d₆ d₂) (differ-subv cf v d₇ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(SUC a)} {.(SUC b)} {b₁} {b₂} (differ-SUC a b d₁) d₂ = differ-SUC _ _ (differ-subv cf v d₁ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(PI a₁ b₃)} {.(PI a₂ b₄)} {b₁} {b₂} (differ-PI a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-PI _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂))
+  differ-subv {name1} {name2} {f} cf v {.(LAMBDA a)} {.(LAMBDA b)} {b₁} {b₂} (differ-LAMBDA a b d₁) d₂ = differ-LAMBDA _ _ (differ-subv cf (suc v) d₁ (→differ-shiftUp 0 cf d₂))
+  differ-subv {name1} {name2} {f} cf v {.(APPLY a₁ b₃)} {.(APPLY a₂ b₄)} {b₁} {b₂} (differ-APPLY a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-APPLY _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(FIX a)} {.(FIX b)} {b₁} {b₂} (differ-FIX a b d₁) d₂ = differ-FIX _ _ (differ-subv cf v d₁ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(LET a₁ b₃)} {.(LET a₂ b₄)} {b₁} {b₂} (differ-LET a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-LET _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂))
+  differ-subv {name1} {name2} {f} cf v {.(WT a₁ b₃)} {.(WT a₂ b₄)} {b₁} {b₂} (differ-WT a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-WT _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂))
+  differ-subv {name1} {name2} {f} cf v {.(SUP a₁ b₃)} {.(SUP a₂ b₄)} {b₁} {b₂} (differ-SUP a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-SUP _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
+  --differ-subv {name1} {name2} {f} cf v {.(DSUP a₁ b₃)} {.(DSUP a₂ b₄)} {b₁} {b₂} (differ-DSUP a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-DSUP _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc (suc v)) d₃ (→differ-shiftUp 0 cf (→differ-shiftUp 0 cf d₂)))
+  differ-subv {name1} {name2} {f} cf v {.(WREC a₁ b₃)} {.(WREC a₂ b₄)} {b₁} {b₂} (differ-WREC a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-WREC _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc (suc (suc v))) d₃ (→differ-shiftUp 0 cf (→differ-shiftUp 0 cf (→differ-shiftUp 0 cf d₂))))
+  differ-subv {name1} {name2} {f} cf v {.(MT a₁ b₃)} {.(MT a₂ b₄)} {b₁} {b₂} (differ-MT a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-MT _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂))
+  --differ-subv {name1} {name2} {f} cf v {.(MSUP a₁ b₃)} {.(MSUP a₂ b₄)} {b₁} {b₂} (differ-MSUP a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-MSUP _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
+  --differ-subv {name1} {name2} {f} cf v {.(DMSUP a₁ b₃)} {.(DMSUP a₂ b₄)} {b₁} {b₂} (differ-DMSUP a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-DMSUP _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc (suc v)) d₃ (→differ-shiftUp 0 cf (→differ-shiftUp 0 cf d₂)))
+  differ-subv {name1} {name2} {f} cf v {.(SUM a₁ b₃)} {.(SUM a₂ b₄)} {b₁} {b₂} (differ-SUM a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-SUM _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂))
+  differ-subv {name1} {name2} {f} cf v {.(PAIR a₁ b₃)} {.(PAIR a₂ b₄)} {b₁} {b₂} (differ-PAIR a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-PAIR _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(SPREAD a₁ b₃)} {.(SPREAD a₂ b₄)} {b₁} {b₂} (differ-SPREAD a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-SPREAD _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc (suc v)) d₃ (→differ-shiftUp 0 cf (→differ-shiftUp 0 cf d₂)))
+  differ-subv {name1} {name2} {f} cf v {.(SET a₁ b₃)} {.(SET a₂ b₄)} {b₁} {b₂} (differ-SET a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-SET _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂))
+  differ-subv {name1} {name2} {f} cf v {.(ISECT a₁ b₃)} {.(ISECT a₂ b₄)} {b₁} {b₂} (differ-ISECT a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-ISECT _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(TUNION a₁ b₃)} {.(TUNION a₂ b₄)} {b₁} {b₂} (differ-TUNION a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-TUNION _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂))
+  differ-subv {name1} {name2} {f} cf v {.(UNION a₁ b₃)} {.(UNION a₂ b₄)} {b₁} {b₂} (differ-UNION a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-UNION _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(QTUNION a₁ b₃)} {.(QTUNION a₂ b₄)} {b₁} {b₂} (differ-QTUNION a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-QTUNION _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(INL a)} {.(INL b)} {b₁} {b₂} (differ-INL a b d₁) d₂ = differ-INL _ _ (differ-subv cf v d₁ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(INR a)} {.(INR b)} {b₁} {b₂} (differ-INR a b d₁) d₂ = differ-INR _ _ (differ-subv cf v d₁ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(DECIDE a₁ b₃ c₁)} {.(DECIDE a₂ b₄ c₂)} {b₁} {b₂} (differ-DECIDE a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄) d₂ = differ-DECIDE _ _ _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂)) (differ-subv cf (suc v) d₄ (→differ-shiftUp 0 cf d₂))
+  differ-subv {name1} {name2} {f} cf v {.(EQ a₁ b₃ c₁)} {.(EQ a₂ b₄ c₂)} {b₁} {b₂} (differ-EQ a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄) d₂ = differ-EQ _ _ _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂) (differ-subv cf v d₄ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} {z₁} {z₂} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ x₁ x₂ x₃ x₄) y = differ-EQB _ _ _ _ _ _ _ _ (differ-subv cf v x₁ y) (differ-subv cf v x₂ y) (differ-subv cf v x₃ y) (differ-subv cf v x₄ y)
+  differ-subv {name1} {name2} {f} cf v {.AX} {.AX} {b₁} {b₂} differ-AX d₂ = differ-AX
+  differ-subv {name1} {name2} {f} cf v {.FREE} {.FREE} {b₁} {b₂} differ-FREE d₂ = differ-FREE
+  differ-subv {name1} {name2} {f} cf v {.(MSEQ x)} {.(MSEQ x)} {b₁} {b₂} (differ-MSEQ x) d₂ = differ-MSEQ x
+  differ-subv {name1} {name2} {f} cf v {.(MAPP s a₁)} {.(MAPP s a₂)} {b₁} {b₂} (differ-MAPP s a₁ a₂ d₁) d₂ = differ-MAPP _ _ _ (differ-subv cf v d₁ d₂)
+  --differ-subv {name1} {name2} {f} cf v {.(CS name)} {.(CS name)} {b₁} {b₂} (differ-CS name) d₂ = differ-CS name
+  --differ-subv {name1} {name2} {f} cf v {.(NAME name)} {.(NAME name)} {b₁} {b₂} (differ-NAME name) d₂ = differ-NAME name
+  --differ-subv {name1} {name2} {f} cf v {.(FRESH a)} {.(FRESH b)} {b₁} {b₂} (differ-FRESH a b d₁) d₂ = differ-FRESH _ _ (differ-subv (→#shiftNameUp 0 {f} cf) v d₁ (→differ-shiftNameUp0 {name1} {name2} cf d₂))
+  differ-subv {name1} {name2} {f} cf v {.(CHOOSE a₁ b₃)} {.(CHOOSE a₂ b₄)} {b₁} {b₂} (differ-CHOOSE a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-CHOOSE _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
+  --differ-subv {name1} {name2} {f} cf v {.(IFC0 a₁ b₃ c₁)} {.(IFC0 a₂ b₄ c₂)} {b₁} {b₂} (differ-IFC0 a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄) d₂ = differ-IFC0 _ _ _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂) (differ-subv cf v d₄ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(TSQUASH a)} {.(TSQUASH b)} {b₁} {b₂} (differ-TSQUASH a b d₁) d₂ = differ-TSQUASH _ _ (differ-subv cf v d₁ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(TTRUNC a)} {.(TTRUNC b)} {b₁} {b₂} (differ-TTRUNC a b d₁) d₂ = differ-TTRUNC _ _ (differ-subv cf v d₁ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(TCONST a)} {.(TCONST b)} {b₁} {b₂} (differ-TCONST a b d₁) d₂ = differ-TCONST _ _ (differ-subv cf v d₁ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(SUBSING a)} {.(SUBSING b)} {b₁} {b₂} (differ-SUBSING a b d₁) d₂ = differ-SUBSING _ _ (differ-subv cf v d₁ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(PURE)} {.(PURE)} {b₁} {b₂} (differ-PURE) d₂ = differ-PURE
+  differ-subv {name1} {name2} {f} cf v {.(DUM a)} {.(DUM b)} {b₁} {b₂} (differ-DUM a b d₁) d₂ = differ-DUM _ _ (differ-subv cf v d₁ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(FFDEFS a₁ b₃)} {.(FFDEFS a₂ b₄)} {b₁} {b₂} (differ-FFDEFS a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-FFDEFS _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(UNIV x)} {.(UNIV x)} {b₁} {b₂} (differ-UNIV x) d₂ = differ-UNIV x
+  differ-subv {name1} {name2} {f} cf v {.(LIFT a)} {.(LIFT b)} {b₁} {b₂} (differ-LIFT a b d₁) d₂ = differ-LIFT _ _ (differ-subv cf v d₁ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(LOWER a)} {.(LOWER b)} {b₁} {b₂} (differ-LOWER a b d₁) d₂ = differ-LOWER _ _ (differ-subv cf v d₁ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(SHRINK a)} {.(SHRINK b)} {b₁} {b₂} (differ-SHRINK a b d₁) d₂ = differ-SHRINK _ _ (differ-subv cf v d₁ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(upd name1 f)} {.(upd name2 f)} {b₁} {b₂} differ-upd d₂
+    rewrite sucIf≤00
+          | subv# (suc (suc (suc v))) (shiftUp 0 (shiftUp 0 (shiftUp 0 b₁))) (shiftUp 0 f) (→#shiftUp 0 {f} cf)
+          | subv# (suc (suc (suc v))) (shiftUp 0 (shiftUp 0 (shiftUp 0 b₂))) (shiftUp 0 f) (→#shiftUp 0 {f} cf) = differ-upd
 
 
-→differ-shiftDown : (v : Var) {name1 name2 : Name} {f : Term} (cf : # f) {a b : Term}
-                     → differ name1 name2 f a b
-                     → differ name1 name2 f (shiftDown v a) (shiftDown v b)
-→differ-shiftDown v {name1} {name2} {f} cf {.(VAR x)} {.(VAR x)} (differ-VAR x) = differ-VAR _
-→differ-shiftDown v {name1} {name2} {f} cf {.NAT} {.NAT} differ-NAT = differ-NAT
-→differ-shiftDown v {name1} {name2} {f} cf {.QNAT} {.QNAT} differ-QNAT = differ-QNAT
-→differ-shiftDown v {name1} {name2} {f} cf {.TNAT} {.TNAT} differ-TNAT = differ-TNAT
-→differ-shiftDown v {name1} {name2} {f} cf {.(LT a₁ b₁)} {.(LT a₂ b₂)} (differ-LT a₁ a₂ b₁ b₂ diff diff₁) = differ-LT _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) = differ-QLT _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(NUM x)} {.(NUM x)} (differ-NUM x) = differ-NUM x
-→differ-shiftDown v {name1} {name2} {f} cf {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (differ-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFLT _ _ _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂) (→differ-shiftDown v cf diff₃)
-→differ-shiftDown v {name1} {name2} {f} cf {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (differ-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFEQ _ _ _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂) (→differ-shiftDown v cf diff₃)
-→differ-shiftDown v {name1} {name2} {f} cf {.(SUC a)} {.(SUC b)} (differ-SUC a b diff) = differ-SUC _ _ (→differ-shiftDown v cf diff)
-→differ-shiftDown v {name1} {name2} {f} cf {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differ-PI a₁ a₂ b₁ b₂ diff diff₁) = differ-PI _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(LAMBDA a)} {.(LAMBDA b)} (differ-LAMBDA a b diff) = differ-LAMBDA _ _ (→differ-shiftDown (suc v) cf diff)
-→differ-shiftDown v {name1} {name2} {f} cf {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (differ-APPLY a₁ a₂ b₁ b₂ diff diff₁) = differ-APPLY _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(FIX a)} {.(FIX b)} (differ-FIX a b diff) = differ-FIX _ _ (→differ-shiftDown v cf diff)
-→differ-shiftDown v {name1} {name2} {f} cf {.(LET a₁ b₁)} {.(LET a₂ b₂)} (differ-LET a₁ a₂ b₁ b₂ diff diff₁) = differ-LET _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(WT a₁ b₁)} {.(WT a₂ b₂)} (differ-WT a₁ a₂ b₁ b₂ diff diff₁) = differ-WT _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (differ-SUP a₁ a₂ b₁ b₂ diff diff₁) = differ-SUP _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
---→differ-shiftDown v {name1} {name2} {f} cf {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} (differ-DSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-DSUP _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc (suc v)) cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(WREC a₁ b₁)} {.(WREC a₂ b₂)} (differ-WREC a₁ a₂ b₁ b₂ diff diff₁) = differ-WREC _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc (suc (suc v))) cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(MT a₁ b₁)} {.(MT a₂ b₂)} (differ-MT a₁ a₂ b₁ b₂ diff diff₁) = differ-MT _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁)
---→differ-shiftDown v {name1} {name2} {f} cf {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (differ-MSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-MSUP _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
---→differ-shiftDown v {name1} {name2} {f} cf {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} (differ-DMSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-DMSUP _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc (suc v)) cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (differ-SUM a₁ a₂ b₁ b₂ diff diff₁) = differ-SUM _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (differ-PAIR a₁ a₂ b₁ b₂ diff diff₁) = differ-PAIR _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} (differ-SPREAD a₁ a₂ b₁ b₂ diff diff₁) = differ-SPREAD _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc (suc v)) cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(SET a₁ b₁)} {.(SET a₂ b₂)} (differ-SET a₁ a₂ b₁ b₂ diff diff₁) = differ-SET _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (differ-ISECT a₁ a₂ b₁ b₂ diff diff₁) = differ-ISECT _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (differ-TUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-TUNION _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (differ-UNION a₁ a₂ b₁ b₂ diff diff₁) = differ-UNION _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-QTUNION _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(INL a)} {.(INL b)} (differ-INL a b diff) = differ-INL _ _ (→differ-shiftDown v cf diff)
-→differ-shiftDown v {name1} {name2} {f} cf {.(INR a)} {.(INR b)} (differ-INR a b diff) = differ-INR _ _ (→differ-shiftDown v cf diff)
-→differ-shiftDown v {name1} {name2} {f} cf {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (differ-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-DECIDE _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁) (→differ-shiftDown (suc v) cf diff₂)
-→differ-shiftDown v {name1} {name2} {f} cf {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (differ-EQ a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-EQ _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂)
-→differ-shiftDown v {name1} {name2} {f} cf {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-EQB _ _ _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂) (→differ-shiftDown v cf diff₃)
-→differ-shiftDown v {name1} {name2} {f} cf {.AX} {.AX} differ-AX = differ-AX
-→differ-shiftDown v {name1} {name2} {f} cf {.FREE} {.FREE} differ-FREE = differ-FREE
-→differ-shiftDown v {name1} {name2} {f} cf {.(MSEQ x)} {.(MSEQ x)} (differ-MSEQ x) = (differ-MSEQ x)
-→differ-shiftDown v {name1} {name2} {f} cf {.(MAPP s a₁)} {.(MAPP s a₂)} (differ-MAPP s a₁ a₂ diff) = differ-MAPP _ _ _ (→differ-shiftDown v cf diff)
---→differ-shiftDown v {name1} {name2} {f} cf {.(CS name)} {.(CS name)} (differ-CS name) = (differ-CS name)
---→differ-shiftDown v {name1} {name2} {f} cf {.(NAME name)} {.(NAME name)} (differ-NAME name) = (differ-NAME name)
---→differ-shiftDown v {name1} {name2} {f} cf {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) = differ-FRESH _ _ (→differ-shiftDown v (→#shiftNameUp 0 {f} cf) diff)
-→differ-shiftDown v {name1} {name2} {f} cf {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (differ-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) = differ-CHOOSE _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
---→differ-shiftDown v {name1} {name2} {f} cf {.(IFC0 a₁ b₁ c₁)} {.(IFC0 a₂ b₂ c₂)} (differ-IFC0 a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-IFC0 _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂)
-→differ-shiftDown v {name1} {name2} {f} cf {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQUASH a b diff) = differ-TSQUASH _ _ (→differ-shiftDown v cf diff)
-→differ-shiftDown v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftDown v cf diff)
-→differ-shiftDown v {name1} {name2} {f} cf {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) = differ-TCONST _ _ (→differ-shiftDown v cf diff)
-→differ-shiftDown v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftDown v cf diff)
-→differ-shiftDown v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
-→differ-shiftDown v {name1} {name2} {f} cf {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) = differ-DUM _ _ (→differ-shiftDown v cf diff)
-→differ-shiftDown v {name1} {name2} {f} cf {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = differ-FFDEFS _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
-→differ-shiftDown v {name1} {name2} {f} cf {.(UNIV x)} {.(UNIV x)} (differ-UNIV x) = differ-UNIV x
-→differ-shiftDown v {name1} {name2} {f} cf {.(LIFT a)} {.(LIFT b)} (differ-LIFT a b diff) = differ-LIFT _ _ (→differ-shiftDown v cf diff)
-→differ-shiftDown v {name1} {name2} {f} cf {.(LOWER a)} {.(LOWER b)} (differ-LOWER a b diff) = differ-LOWER _ _ (→differ-shiftDown v cf diff)
-→differ-shiftDown v {name1} {name2} {f} cf {.(SHRINK a)} {.(SHRINK b)} (differ-SHRINK a b diff) = differ-SHRINK _ _ (→differ-shiftDown v cf diff)
-→differ-shiftDown v {name1} {name2} {f} cf {.(upd name1 f)} {.(upd name2 f)} differ-upd rewrite sucIf≤s0 v | #shiftDown (suc (suc (suc v))) (ct (shiftUp 0 f) (→#shiftUp 0 {f} cf)) = differ-upd
+abstract
+
+  →differ-shiftDown : (v : Var) {name1 name2 : Name} {f : Term} (cf : # f) {a b : Term}
+                       → differ name1 name2 f a b
+                       → differ name1 name2 f (shiftDown v a) (shiftDown v b)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(VAR x)} {.(VAR x)} (differ-VAR x) = differ-VAR _
+  →differ-shiftDown v {name1} {name2} {f} cf {.NAT} {.NAT} differ-NAT = differ-NAT
+  →differ-shiftDown v {name1} {name2} {f} cf {.QNAT} {.QNAT} differ-QNAT = differ-QNAT
+  →differ-shiftDown v {name1} {name2} {f} cf {.TNAT} {.TNAT} differ-TNAT = differ-TNAT
+  →differ-shiftDown v {name1} {name2} {f} cf {.(LT a₁ b₁)} {.(LT a₂ b₂)} (differ-LT a₁ a₂ b₁ b₂ diff diff₁) = differ-LT _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) = differ-QLT _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(NUM x)} {.(NUM x)} (differ-NUM x) = differ-NUM x
+  →differ-shiftDown v {name1} {name2} {f} cf {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (differ-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFLT _ _ _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂) (→differ-shiftDown v cf diff₃)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (differ-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-IFEQ _ _ _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂) (→differ-shiftDown v cf diff₃)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(SUC a)} {.(SUC b)} (differ-SUC a b diff) = differ-SUC _ _ (→differ-shiftDown v cf diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differ-PI a₁ a₂ b₁ b₂ diff diff₁) = differ-PI _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(LAMBDA a)} {.(LAMBDA b)} (differ-LAMBDA a b diff) = differ-LAMBDA _ _ (→differ-shiftDown (suc v) cf diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (differ-APPLY a₁ a₂ b₁ b₂ diff diff₁) = differ-APPLY _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(FIX a)} {.(FIX b)} (differ-FIX a b diff) = differ-FIX _ _ (→differ-shiftDown v cf diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(LET a₁ b₁)} {.(LET a₂ b₂)} (differ-LET a₁ a₂ b₁ b₂ diff diff₁) = differ-LET _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(WT a₁ b₁)} {.(WT a₂ b₂)} (differ-WT a₁ a₂ b₁ b₂ diff diff₁) = differ-WT _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (differ-SUP a₁ a₂ b₁ b₂ diff diff₁) = differ-SUP _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
+  --→differ-shiftDown v {name1} {name2} {f} cf {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} (differ-DSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-DSUP _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc (suc v)) cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(WREC a₁ b₁)} {.(WREC a₂ b₂)} (differ-WREC a₁ a₂ b₁ b₂ diff diff₁) = differ-WREC _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc (suc (suc v))) cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(MT a₁ b₁)} {.(MT a₂ b₂)} (differ-MT a₁ a₂ b₁ b₂ diff diff₁) = differ-MT _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁)
+  --→differ-shiftDown v {name1} {name2} {f} cf {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (differ-MSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-MSUP _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
+  --→differ-shiftDown v {name1} {name2} {f} cf {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} (differ-DMSUP a₁ a₂ b₁ b₂ diff diff₁) = differ-DMSUP _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc (suc v)) cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (differ-SUM a₁ a₂ b₁ b₂ diff diff₁) = differ-SUM _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (differ-PAIR a₁ a₂ b₁ b₂ diff diff₁) = differ-PAIR _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} (differ-SPREAD a₁ a₂ b₁ b₂ diff diff₁) = differ-SPREAD _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc (suc v)) cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(SET a₁ b₁)} {.(SET a₂ b₂)} (differ-SET a₁ a₂ b₁ b₂ diff diff₁) = differ-SET _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (differ-ISECT a₁ a₂ b₁ b₂ diff diff₁) = differ-ISECT _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (differ-TUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-TUNION _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (differ-UNION a₁ a₂ b₁ b₂ diff diff₁) = differ-UNION _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-QTUNION _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(INL a)} {.(INL b)} (differ-INL a b diff) = differ-INL _ _ (→differ-shiftDown v cf diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(INR a)} {.(INR b)} (differ-INR a b diff) = differ-INR _ _ (→differ-shiftDown v cf diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (differ-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-DECIDE _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁) (→differ-shiftDown (suc v) cf diff₂)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (differ-EQ a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-EQ _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-EQB _ _ _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂) (→differ-shiftDown v cf diff₃)
+  →differ-shiftDown v {name1} {name2} {f} cf {.AX} {.AX} differ-AX = differ-AX
+  →differ-shiftDown v {name1} {name2} {f} cf {.FREE} {.FREE} differ-FREE = differ-FREE
+  →differ-shiftDown v {name1} {name2} {f} cf {.(MSEQ x)} {.(MSEQ x)} (differ-MSEQ x) = (differ-MSEQ x)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(MAPP s a₁)} {.(MAPP s a₂)} (differ-MAPP s a₁ a₂ diff) = differ-MAPP _ _ _ (→differ-shiftDown v cf diff)
+  --→differ-shiftDown v {name1} {name2} {f} cf {.(CS name)} {.(CS name)} (differ-CS name) = (differ-CS name)
+  --→differ-shiftDown v {name1} {name2} {f} cf {.(NAME name)} {.(NAME name)} (differ-NAME name) = (differ-NAME name)
+  --→differ-shiftDown v {name1} {name2} {f} cf {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) = differ-FRESH _ _ (→differ-shiftDown v (→#shiftNameUp 0 {f} cf) diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (differ-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) = differ-CHOOSE _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
+  --→differ-shiftDown v {name1} {name2} {f} cf {.(IFC0 a₁ b₁ c₁)} {.(IFC0 a₂ b₂ c₂)} (differ-IFC0 a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-IFC0 _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQUASH a b diff) = differ-TSQUASH _ _ (→differ-shiftDown v cf diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftDown v cf diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) = differ-TCONST _ _ (→differ-shiftDown v cf diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftDown v cf diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
+  →differ-shiftDown v {name1} {name2} {f} cf {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) = differ-DUM _ _ (→differ-shiftDown v cf diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = differ-FFDEFS _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(UNIV x)} {.(UNIV x)} (differ-UNIV x) = differ-UNIV x
+  →differ-shiftDown v {name1} {name2} {f} cf {.(LIFT a)} {.(LIFT b)} (differ-LIFT a b diff) = differ-LIFT _ _ (→differ-shiftDown v cf diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(LOWER a)} {.(LOWER b)} (differ-LOWER a b diff) = differ-LOWER _ _ (→differ-shiftDown v cf diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(SHRINK a)} {.(SHRINK b)} (differ-SHRINK a b diff) = differ-SHRINK _ _ (→differ-shiftDown v cf diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(upd name1 f)} {.(upd name2 f)} differ-upd rewrite sucIf≤s0 v | #shiftDown (suc (suc (suc v))) (ct (shiftUp 0 f) (→#shiftUp 0 {f} cf)) = differ-upd
 
 
 differ-sub : {name1 name2 : Name} {f : Term} (cf : # f) {a₁ a₂ b₁ b₂ : Term}
@@ -903,51 +913,54 @@ differ-sub {name1} {name2} {f} cf {a₁} {a₂} {b₁} {b₂} d₁ d₂ =
   →differ-shiftDown 0 cf (differ-subv {name1} {name2} {f} cf 0 {a₁} {a₂} {shiftUp 0 b₁} {shiftUp 0 b₂} d₁ (→differ-shiftUp 0 cf d₂))
 
 
-differ-isValue→ : {name1 name2 : Name} {f : Term} {a b : Term}
-                   → differ name1 name2 f a b
-                   → isValue a
-                   → isValue b
-differ-isValue→ {name1} {name2} {f} {.NAT} {.NAT} differ-NAT isv = tt
-differ-isValue→ {name1} {name2} {f} {.QNAT} {.QNAT} differ-QNAT isv = tt
-differ-isValue→ {name1} {name2} {f} {.TNAT} {.TNAT} differ-TNAT isv = tt
-differ-isValue→ {name1} {name2} {f} {.(LT a₁ b₁)} {.(LT a₂ b₂)} (differ-LT a₁ a₂ b₁ b₂ diff diff₁) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(NUM x)} {.(NUM x)} (differ-NUM x) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differ-PI a₁ a₂ b₁ b₂ diff diff₁) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(LAMBDA a)} {.(LAMBDA b)} (differ-LAMBDA a b diff) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(WT a₁ b₁)} {.(WT a₂ b₂)} (differ-WT a₁ a₂ b₁ b₂ diff diff₁) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (differ-SUP a₁ a₂ b₁ b₂ diff diff₁) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(MT a₁ b₁)} {.(MT a₂ b₂)} (differ-MT a₁ a₂ b₁ b₂ diff diff₁) isv = tt
---differ-isValue→ {name1} {name2} {f} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (differ-MSUP a₁ a₂ b₁ b₂ diff diff₁) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (differ-SUM a₁ a₂ b₁ b₂ diff diff₁) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (differ-PAIR a₁ a₂ b₁ b₂ diff diff₁) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(SET a₁ b₁)} {.(SET a₂ b₂)} (differ-SET a₁ a₂ b₁ b₂ diff diff₁) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (differ-ISECT a₁ a₂ b₁ b₂ diff diff₁) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (differ-TUNION a₁ a₂ b₁ b₂ diff diff₁) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (differ-UNION a₁ a₂ b₁ b₂ diff diff₁) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(INL a)} {.(INL b)} (differ-INL a b diff) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(INR a)} {.(INR b)} (differ-INR a b diff) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (differ-EQ a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) isv = tt
-differ-isValue→ {name1} {name2} {f} {.AX} {.AX} differ-AX isv = tt
-differ-isValue→ {name1} {name2} {f} {.FREE} {.FREE} differ-FREE isv = tt
-differ-isValue→ {name1} {name2} {f} {.(MSEQ x)} {.(MSEQ x)} (differ-MSEQ x) isv = tt
---differ-isValue→ {name1} {name2} {f} {.(CS name)} {.(CS name)} (differ-CS name) isv = tt
---differ-isValue→ {name1} {name2} {f} {.(NAME name)} {.(NAME name)} (differ-NAME name) isv = tt
---differ-isValue→ {name1} {name2} {f} {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) ()
-differ-isValue→ {name1} {name2} {f} {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQUASH a b diff) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(PURE)} {.(PURE)} (differ-PURE) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(UNIV x)} {.(UNIV x)} (differ-UNIV x) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(LIFT a)} {.(LIFT b)} (differ-LIFT a b diff) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(LOWER a)} {.(LOWER b)} (differ-LOWER a b diff) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(SHRINK a)} {.(SHRINK b)} (differ-SHRINK a b diff) isv = tt
-differ-isValue→ {name1} {name2} {f} {.(upd name1 f)} {.(upd name2 f)} differ-upd isv = tt
+
+abstract
+
+  differ-isValue→ : {name1 name2 : Name} {f : Term} {a b : Term}
+                     → differ name1 name2 f a b
+                     → isValue a
+                     → isValue b
+  differ-isValue→ {name1} {name2} {f} {.NAT} {.NAT} differ-NAT isv = tt
+  differ-isValue→ {name1} {name2} {f} {.QNAT} {.QNAT} differ-QNAT isv = tt
+  differ-isValue→ {name1} {name2} {f} {.TNAT} {.TNAT} differ-TNAT isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(LT a₁ b₁)} {.(LT a₂ b₂)} (differ-LT a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differ-QLT a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(NUM x)} {.(NUM x)} (differ-NUM x) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differ-PI a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(LAMBDA a)} {.(LAMBDA b)} (differ-LAMBDA a b diff) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(WT a₁ b₁)} {.(WT a₂ b₂)} (differ-WT a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (differ-SUP a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(MT a₁ b₁)} {.(MT a₂ b₂)} (differ-MT a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+  --differ-isValue→ {name1} {name2} {f} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} (differ-MSUP a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (differ-SUM a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (differ-PAIR a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(SET a₁ b₁)} {.(SET a₂ b₂)} (differ-SET a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (differ-ISECT a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (differ-TUNION a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (differ-UNION a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(INL a)} {.(INL b)} (differ-INL a b diff) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(INR a)} {.(INR b)} (differ-INR a b diff) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (differ-EQ a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.AX} {.AX} differ-AX isv = tt
+  differ-isValue→ {name1} {name2} {f} {.FREE} {.FREE} differ-FREE isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(MSEQ x)} {.(MSEQ x)} (differ-MSEQ x) isv = tt
+  --differ-isValue→ {name1} {name2} {f} {.(CS name)} {.(CS name)} (differ-CS name) isv = tt
+  --differ-isValue→ {name1} {name2} {f} {.(NAME name)} {.(NAME name)} (differ-NAME name) isv = tt
+  --differ-isValue→ {name1} {name2} {f} {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) ()
+  differ-isValue→ {name1} {name2} {f} {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQUASH a b diff) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(PURE)} {.(PURE)} (differ-PURE) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(UNIV x)} {.(UNIV x)} (differ-UNIV x) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(LIFT a)} {.(LIFT b)} (differ-LIFT a b diff) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(LOWER a)} {.(LOWER b)} (differ-LOWER a b diff) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(SHRINK a)} {.(SHRINK b)} (differ-SHRINK a b diff) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(upd name1 f)} {.(upd name2 f)} differ-upd isv = tt
 
 
 

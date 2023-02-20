@@ -415,6 +415,14 @@ sem kb cn can exb gc i w r F {--nnF--} compat F∈P = concl
 --sem w  ?
 
 
+follow : (s : Term) (w : Term) → Term
+follow s w = APPLY (WREC w (LAMBDA (DECIDE (VAR 0) (VAR 0) (APPLY2 (VAR 4) (APPLY s (VAR 1)) (SUC (VAR 1)))))) (NUM 0)
+                            -- VAR 0: k
+                            -- VAR 1: a
+                            -- VAR 2: f
+                            -- VAR 3: r
+
+
 {--
 
 Plan:
