@@ -2289,8 +2289,8 @@ APPLY-MSEQ⇛ w s a k comp w1 e1 = lift (APPLY-MSEQ⇓ w1 s a k (lower (comp w1 
 #[3]APPLY2 a b c = #[3]APPLY (#[3]APPLY a b) c
 
 
-#[4]APPLY2 : CTerm3 → CTerm3 → CTerm3 → CTerm3
-#[4]APPLY2 a b c = #[3]APPLY (#[3]APPLY a b) c
+#[4]APPLY2 : CTerm4 → CTerm4 → CTerm4 → CTerm4
+#[4]APPLY2 a b c = #[4]APPLY (#[4]APPLY a b) c
 
 
 #[5]APPLY2 : CTerm5 → CTerm5 → CTerm5 → CTerm5

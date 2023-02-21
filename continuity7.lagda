@@ -64,10 +64,11 @@ module continuity7 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
 open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)
 open import terms2(W)(C)(K)(G)(X)(N)
-open import terms3(W)(C)(K)(G)(X)(N)
-open import terms4(W)(C)(K)(G)(X)(N)
-open import terms5(W)(C)(K)(G)(X)(N)
+--open import terms3(W)(C)(K)(G)(X)(N)
+--open import terms4(W)(C)(K)(G)(X)(N)
+--open import terms5(W)(C)(K)(G)(X)(N)
 open import terms6(W)(C)(K)(G)(X)(N)
+open import terms8(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -134,61 +135,6 @@ lowerVars++ (suc x ∷ a) b rewrite lowerVars++ a b = refl
 
 lowerVars-fvars-shiftUp1 : (t : Term) → lowerVars (fvars (shiftUp 1 t)) ≡ Data.List.map (sucIf≤ 0) (lowerVars (fvars t))
 lowerVars-fvars-shiftUp1 t rewrite fvars-shiftUp≡ 1 t | lowerVars-map-sucIf≤-suc 0 (fvars t) = refl
-
-
-
-
-lowerVars-fvars-[0,1,2,3] : {l : List Var}
-                        → l ⊆ (0 ∷ 1 ∷ 2 ∷ [ 3 ])
-                        → lowerVars l ⊆ 0 ∷ 1 ∷ [ 2 ]
-lowerVars-fvars-[0,1,2,3] {0 ∷ l} h x = lowerVars-fvars-[0,1,2,3] (λ z → h (there z)) x
-lowerVars-fvars-[0,1,2,3] {suc x₁ ∷ l} h (here px) rewrite px = i z
-  where
-    z : suc x₁ ∈ (0 ∷ 1 ∷ 2 ∷ [ 3 ])
-    z = h (here refl)
-
-    i : suc x₁ ∈ (0 ∷ 1 ∷ 2 ∷ [ 3 ]) →  x₁ ∈ 0 ∷ 1 ∷ [ 2 ]
-    i (there (here px)) = here (suc-injective px)
-    i (there (there (here px))) = there (here (suc-injective px))
-    i (there (there (there (here px)))) = there (there (here (suc-injective px)))
-lowerVars-fvars-[0,1,2,3] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,2,3] (λ z → h (there z)) x
-
-
-
-lowerVars-fvars-[0,1,2,3,4] : {l : List Var}
-                        → l ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ])
-                        → lowerVars l ⊆ 0 ∷ 1 ∷ 2 ∷ [ 3 ]
-lowerVars-fvars-[0,1,2,3,4] {0 ∷ l} h x = lowerVars-fvars-[0,1,2,3,4] (λ z → h (there z)) x
-lowerVars-fvars-[0,1,2,3,4] {suc x₁ ∷ l} h (here px) rewrite px = i z
-  where
-    z : suc x₁ ∈ (0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ])
-    z = h (here refl)
-
-    i : suc x₁ ∈ (0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]) →  x₁ ∈ 0 ∷ 1 ∷ 2 ∷ [ 3 ]
-    i (there (here px)) = here (suc-injective px)
-    i (there (there (here px))) = there (here (suc-injective px))
-    i (there (there (there (here px)))) = there (there (here (suc-injective px)))
-    i (there (there (there (there (here px))))) = there (there (there (here (suc-injective px))))
-lowerVars-fvars-[0,1,2,3,4] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,2,3,4] (λ z → h (there z)) x
-
-
-
-lowerVars-fvars-[0,1,2,3,4,5] : {l : List Var}
-                        → l ⊆ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ])
-                        → lowerVars l ⊆ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]
-lowerVars-fvars-[0,1,2,3,4,5] {0 ∷ l} h x = lowerVars-fvars-[0,1,2,3,4,5] (λ z → h (there z)) x
-lowerVars-fvars-[0,1,2,3,4,5] {suc x₁ ∷ l} h (here px) rewrite px = i z
-  where
-    z : suc x₁ ∈ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ])
-    z = h (here refl)
-
-    i : suc x₁ ∈ (0 ∷ 1 ∷ 2 ∷ 3 ∷ 4 ∷ [ 5 ]) →  x₁ ∈ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]
-    i (there (here px)) = here (suc-injective px)
-    i (there (there (here px))) = there (here (suc-injective px))
-    i (there (there (there (here px)))) = there (there (here (suc-injective px)))
-    i (there (there (there (there (here px))))) = there (there (there (here (suc-injective px))))
-    i (there (there (there (there (there (here px)))))) = there (there (there (there (here (suc-injective px)))))
-lowerVars-fvars-[0,1,2,3,4,5] {suc x₁ ∷ l} h (there x) = lowerVars-fvars-[0,1,2,3,4,5] (λ z → h (there z)) x
 
 
 12⊆01234 : 1 ∷ [ 2 ] ⊆ 0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]
@@ -332,30 +278,6 @@ fvars-shiftUp10-CTerm3 a {x} i rewrite fvars-shiftUp≡ 1 (shiftUp 0 ⌜ a ⌝) 
 
 3⊆0123 : [ 3 ] ⊆ 0 ∷ 1 ∷ 2 ∷ [ 3 ]
 3⊆0123 {x} (here px) rewrite px = there (there (there (here refl)))
-
-
-
-#[3]VAR2 : CTerm3
-#[3]VAR2 = ct3 (VAR 2) c
-  where
-    c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] VAR 2
-    c = ⊆→⊆? 2⊆0123
-
-
-
-#[3]VAR3 : CTerm3
-#[3]VAR3 = ct3 (VAR 3) c
-  where
-    c : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] VAR 3
-    c = ⊆→⊆? 3⊆0123
-
-
-
-#[2]VAR2 : CTerm2
-#[2]VAR2 = ct2 (VAR 2) c
-  where
-    c : #[ 0 ∷ 1 ∷ [ 2 ] ] VAR 2
-    c = ⊆→⊆? 2⊆012
 
 
 
