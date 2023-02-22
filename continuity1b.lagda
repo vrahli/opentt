@@ -61,12 +61,15 @@ module continuity1b {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
 
 open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)
+
 open import terms2(W)(C)(K)(G)(X)(N)
 open import terms3(W)(C)(K)(G)(X)(N)
 open import terms4(W)(C)(K)(G)(X)(N)
-open import terms5(W)(C)(K)(G)(X)(N)
+--open import terms5(W)(C)(K)(G)(X)(N)
 open import terms6(W)(C)(K)(G)(X)(N)
 open import terms8(W)(C)(K)(G)(X)(N)
+open import terms9(W)(C)(K)(G)(X)(N)
+
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -371,42 +374,6 @@ testM-QNAT cn kb gc i w F f ∈F ∈f =
     aw w1 e1 w2 e2 = lift (νtestM-QNAT-shift cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
 
 
-
-QNATn : Term → Term
-QNATn n = SET NAT (QLT (VAR 0) (shiftUp 0 n))
-
-
-QBAIREn : Term → Term
-QBAIREn n = FUN (QNATn n) NAT
-
-
-QBAIREn! : Term → Term
-QBAIREn! n = FUN (QNATn n) NAT!
-
-
-#QBAIREn! : CTerm → CTerm
-#QBAIREn! n = ct (QBAIREn! ⌜ n ⌝) c
-  where
-    c : # QBAIREn! ⌜ n ⌝
-    c rewrite fvars-FUN0 (QNATn ⌜ n ⌝) NAT
-            | ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝)))
-            | #shiftUp 0 n
-      = lowerVars-fvars-CTerm≡[] n
-
-
-#QNATn : CTerm → CTerm
-#QNATn n = ct (QNATn ⌜ n ⌝) c
-  where
-    c : # QNATn ⌜ n ⌝
-    c rewrite ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝)))
-            | #shiftUp 0 n
-      = lowerVars-fvars-CTerm≡[] n
-
-
-≡QBAIREn! : (n : CTerm) → #QBAIREn! n ≡ #FUN (#QNATn n) #NAT!
-≡QBAIREn! n = CTerm≡ refl
-
-
 contQBody : (F f : Term) → Term
 contQBody F f =
   SUM QNAT
@@ -432,61 +399,6 @@ contQBody F f =
 
 
 
-#[1]QBAIREn : CTerm1 → CTerm1
-#[1]QBAIREn n = ct1 (QBAIREn ⌜ n ⌝) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] QBAIREn ⌜ n ⌝
-    c rewrite fvars-FUN0 (QNATn ⌜ n ⌝) NAT | ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝))) =
-      ⊆→⊆? {lowerVars (fvars (shiftUp 0 ⌜ n ⌝))} {0 ∷ [ 1 ]}
-           (lowerVars-fvars-[0,1,2] {fvars (shiftUp 0 ⌜ n ⌝)} (→fvars-shiftUp⊆-[0,1,2] {⌜ n ⌝} (⊆?→⊆ {fvars ⌜ n ⌝} {0 ∷ [ 1 ]} (CTerm1.closed n))))
-
-
-
-#[1]QBAIREn! : CTerm1 → CTerm1
-#[1]QBAIREn! n = ct1 (QBAIREn! ⌜ n ⌝) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] QBAIREn! ⌜ n ⌝
-    c rewrite fvars-FUN0 (QNATn ⌜ n ⌝) NAT | ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝))) =
-      ⊆→⊆? {lowerVars (fvars (shiftUp 0 ⌜ n ⌝))} {0 ∷ [ 1 ]}
-           (lowerVars-fvars-[0,1,2] {fvars (shiftUp 0 ⌜ n ⌝)} (→fvars-shiftUp⊆-[0,1,2] {⌜ n ⌝} (⊆?→⊆ {fvars ⌜ n ⌝} {0 ∷ [ 1 ]} (CTerm1.closed n))))
-
-
-
-#[0]QBAIREn : CTerm0 → CTerm0
-#[0]QBAIREn n = ct0 (QBAIREn ⌜ n ⌝) c
-  where
-    c : #[ [ 0 ] ] QBAIREn ⌜ n ⌝
-    c rewrite fvars-FUN0 (QNATn ⌜ n ⌝) NAT
-            | ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝)))
-            | lowerVars-fvars-CTerm0≡[] n =
-      ⊆→⊆? {lowerVars (fvars (shiftUp 0 ⌜ n ⌝))} {[ 0 ]}
-            (lowerVars-fvars-[0,1] {fvars (shiftUp 0 ⌜ n ⌝)}
-                                   (→fvars-shiftUp⊆-[0,1] {⌜ n ⌝} (⊆?→⊆ {fvars ⌜ n ⌝} {[ 0 ]} (CTerm0.closed n))))
-
-
-#[0]QBAIREn! : CTerm0 → CTerm0
-#[0]QBAIREn! n = ct0 (QBAIREn! ⌜ n ⌝) c
-  where
-    c : #[ [ 0 ] ] QBAIREn! ⌜ n ⌝
-    c rewrite fvars-FUN0 (QNATn ⌜ n ⌝) NAT!
-            | ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝)))
-            | lowerVars-fvars-CTerm0≡[] n =
-      ⊆→⊆? {lowerVars (fvars (shiftUp 0 ⌜ n ⌝))} {[ 0 ]}
-            (lowerVars-fvars-[0,1] {fvars (shiftUp 0 ⌜ n ⌝)}
-                                   (→fvars-shiftUp⊆-[0,1] {⌜ n ⌝} (⊆?→⊆ {fvars ⌜ n ⌝} {[ 0 ]} (CTerm0.closed n))))
-
-
-#QBAIREn : CTerm → CTerm
-#QBAIREn n = ct (QBAIREn ⌜ n ⌝) c
-  where
-    c : # QBAIREn ⌜ n ⌝
-    c rewrite fvars-FUN0 (QNATn ⌜ n ⌝) NAT
-            | ++[] (lowerVars (fvars (shiftUp 0 ⌜ n ⌝)))
-            | #shiftUp 0 n
-      = lowerVars-fvars-CTerm≡[] n
-
-
-
 #contQBody≡ : (F f : CTerm)
             → #contQBody F f
                ≡ #SUM #QNAT
@@ -494,12 +406,6 @@ contQBody F f =
                               (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]QBAIREn! #[1]VAR1))
                                        (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT)))
 #contQBody≡ F f = CTerm≡ refl
-
-
-
-
-≡QBAIREn : (n : CTerm) → #QBAIREn n ≡ #FUN (#QNATn n) #NAT
-≡QBAIREn n = CTerm≡ refl
 
 
 →equalTypesQLT : {i : ℕ} {w : 𝕎·} {a₁ a₂ b₁ b₂ : CTerm}
@@ -636,53 +542,6 @@ sub0-QNATn-body a n rewrite CTerm→CTerm0→Term n = CTerm≡ e
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#QNATn n) a₁ a₂
                       → equalInType i w' #NAT (#APPLY f a₁) (#APPLY g a₂))
     aw w1 e1 a₁ a₂ ea = ef2 w1 e1 a₁ a₂ (∈QNATn→∈NAT (equalInType-mon en w1 e1) ea)
-
-
-
-
-BAIRE! : Term
-BAIRE! = FUN NAT NAT!
-
-
-#BAIRE! : CTerm
-#BAIRE! = ct BAIRE! c
-  where
-    c : # BAIRE!
-    c = refl
-
-
-
--- MOVE to terms
-BAIRE!→NAT : Term
-BAIRE!→NAT = FUN BAIRE! NAT
-
-
--- MOVE to terms
-#BAIRE!→NAT : CTerm
-#BAIRE!→NAT = ct BAIRE!→NAT c
-  where
-    c : # BAIRE!→NAT
-    c = refl
-
-
--- MOVE to terms
-#BAIRE!→NAT≡ : #BAIRE!→NAT ≡ #FUN #BAIRE! #NAT
-#BAIRE!→NAT≡ = refl
-
-
-
-#[0]BAIRE! : CTerm0
-#[0]BAIRE! = ct0 BAIRE! c
-  where
-    c : #[ [ 0 ] ] BAIRE!
-    c = refl
-
-
-#[1]BAIRE! : CTerm1
-#[1]BAIRE! = ct1 BAIRE! c
-  where
-    c : #[ 0 ∷ [ 1 ] ] BAIRE!
-    c = refl
 
 
 

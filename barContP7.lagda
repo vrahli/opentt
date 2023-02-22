@@ -73,6 +73,7 @@ open import terms4(W)(C)(K)(G)(X)(N)
 --open import terms6(W)(C)(K)(G)(X)(N)
 --open import terms7(W)(C)(K)(G)(X)(N)
 open import terms8(W)(C)(K)(G)(X)(N)
+open import terms9(W)(C)(K)(G)(X)(N)
 
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
@@ -86,9 +87,9 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
---open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
@@ -160,11 +161,32 @@ APPLY-∈BAIRE-NUM→ i w f n f∈ =
   equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n)
 
 
+APPLY-∈BAIRE!-NUM→ : (i : ℕ) (w : 𝕎·) (f : CTerm) (n : ℕ)
+                      → ∈Type i w #BAIRE! f
+                      → ∈Type i w #NAT! (#APPLY f (#NUM n))
+APPLY-∈BAIRE!-NUM→ i w f n f∈ =
+  equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n)
+
+
+APPLY-≡∈BAIRE!-NUM→ : (i : ℕ) (w : 𝕎·) (f g : CTerm) (n : ℕ)
+                      → equalInType i w #BAIRE! f g
+                      → equalInType i w #NAT! (#APPLY f (#NUM n)) (#APPLY g (#NUM n))
+APPLY-≡∈BAIRE!-NUM→ i w f g n f∈ =
+  equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n)
+
+
 BAIRE2𝕊 : (kb : K□) {i : ℕ} {w : 𝕎·} {f : CTerm} (f∈ : ∈Type i w #BAIRE f) → 𝕊
 BAIRE2𝕊 kb {i} {w} {f} f∈ n = fst j
   where
     j : NATmem w (#APPLY f (#NUM n))
     j = kb (equalInType-NAT→ i w _ _ (APPLY-∈BAIRE-NUM→ i w f n f∈)) w (⊑-refl· w)
+
+
+BAIRE!2𝕊 : (kb : K□) {i : ℕ} {w : 𝕎·} {f : CTerm} (f∈ : ∈Type i w #BAIRE! f) → 𝕊
+BAIRE!2𝕊 kb {i} {w} {f} f∈ n = fst j
+  where
+    j : #⇛!sameℕ w (#APPLY f (#NUM n)) (#APPLY f (#NUM n))
+    j = kb (equalInType-NAT!→ i w _ _ (APPLY-∈BAIRE!-NUM→ i w f n f∈)) w (⊑-refl· w)
 
 
 #⇛NUM→equalInType-NAT : (i : ℕ) (w : 𝕎·) (a : CTerm) (k : ℕ)
@@ -256,7 +278,9 @@ equalInType-IndBarB→ i w a b b∈ =
 
 
 followDA2 : (k k' r s : Term) → Term
-followDA2 k k' r s = APPLY2 r (APPLY s k) k'
+followDA2 k k' r s =
+  LET (APPLY s k)
+      (APPLY2 (shiftUp 0 r) (VAR 0) (shiftUp 0 k'))
 
 
 followDA : (k r s : Term) → Term
@@ -297,10 +321,11 @@ follow s w n =
   #APPLY (#WREC w (#[2]LAMBDA (#[3]DECIDE #[3]VAR1 -- a
                                           #[4]VAR0 -- i
                                           (#[4]LET (#[4]SUC #[4]VAR1)
-                                                   (#[5]APPLY2 #[5]VAR5 -- r
-                                                               (#[5]APPLY (#[5]shiftUp0 (#[4]shiftUp0 (#[3]shiftUp0 (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 s))))))
-                                                                          #[5]VAR2) --k
-                                                               (#[5]VAR0)))))) -- k
+                                                   (#[5]LET (#[5]APPLY (#[5]shiftUp0 (#[4]shiftUp0 (#[3]shiftUp0 (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 s))))))
+                                                                       #[5]VAR2) --k
+                                                            (#[6]APPLY2 #[6]VAR6 -- r
+                                                                        #[6]VAR0
+                                                                        #[6]VAR1)))))) -- k
          (#NUM n)
 
 
@@ -333,25 +358,27 @@ sub3-followB≡ a g f
          | #shiftUp 7 f
          | #shiftUp 7 f
          | #shiftUp 7 f
+         | #shiftUp 7 f
          | #shiftUp 0 g
          | #shiftUp 0 g
          | #shiftUp 0 g
          | #shiftUp 0 g
+         | #shiftUp 1 g
          | #shiftUp 1 g
          | #shiftUp 1 g
          | #shiftUp 1 g
          | #shiftUp 1 g
          | #shiftDown 1 a
-         | #shiftDown 4 g
-         | #shiftDown 10 f
+         | #shiftDown 5 g
+         | #shiftDown 11 f
          | #subv 1 ⌜ g ⌝ ⌜ a ⌝ (CTerm.closed a)
          | #subv 3 ⌜ a ⌝ ⌜ f ⌝ (CTerm.closed f)
          | #shiftDown 1 a
          | #shiftDown 3 f
          | #subv 3 ⌜ g ⌝ ⌜ f ⌝ (CTerm.closed f)
          | #shiftDown 3 f
-         | #subv 1 (LAMBDA (WREC (APPLY ⌜ g ⌝ (VAR 0)) (LAMBDA (DECIDE (VAR 1) (VAR 0) (LET (SUC (VAR 1)) (APPLY2 (VAR 5) (APPLY ⌜ f ⌝ (VAR 2)) (VAR 0))))))) ⌜ a ⌝ (CTerm.closed a)
-         | #subv 3 (LAMBDA (WREC (APPLY ⌜ g ⌝ (VAR 0)) (LAMBDA (DECIDE (VAR 1) (VAR 0) (LET (SUC (VAR 1)) (APPLY2 (VAR 5) (APPLY ⌜ f ⌝ (VAR 2)) (VAR 0))))))) ⌜ f ⌝ (CTerm.closed f)
+         | #subv 1 (LAMBDA (WREC (APPLY ⌜ g ⌝ (VAR 0)) (LAMBDA (DECIDE (VAR 1) (VAR 0) (LET (SUC (VAR 1)) (LET (APPLY ⌜ f ⌝ (VAR 2)) (APPLY2 (VAR 6) (VAR 0) (VAR 1)))))))) ⌜ a ⌝ (CTerm.closed a)
+         | #subv 3 (LAMBDA (WREC (APPLY ⌜ g ⌝ (VAR 0)) (LAMBDA (DECIDE (VAR 1) (VAR 0) (LET (SUC (VAR 1)) (LET (APPLY ⌜ f ⌝ (VAR 2)) (APPLY2 (VAR 6) (VAR 0) (VAR 1)))))))) ⌜ f ⌝ (CTerm.closed f)
          | #shiftDown 1 a
          | #shiftDown 3 f
    = refl
@@ -373,17 +400,19 @@ sub-followD≡ k a g f
         | #shiftUp 7 f
         | #shiftUp 7 f
         | #shiftUp 7 f
+        | #shiftUp 7 f
         | #shiftUp 0 g
         | #shiftUp 1 g
         | #shiftUp 1 g
         | #shiftUp 1 g
+        | #shiftUp 1 g
         | #subv 0 ⌜ #NUM k ⌝ ⌜ a ⌝ (CTerm.closed a)
-        | #subv 3 ⌜ #NUM k ⌝ ⌜ g ⌝ (CTerm.closed g)
+        | #subv 4 ⌜ #NUM k ⌝ ⌜ g ⌝ (CTerm.closed g)
         | #subv 2 ⌜ #NUM k ⌝ ⌜ f ⌝ (CTerm.closed f)
-        | #subv 9 ⌜ #NUM k ⌝ ⌜ f ⌝ (CTerm.closed f)
+        | #subv 10 ⌜ #NUM k ⌝ ⌜ f ⌝ (CTerm.closed f)
         | #shiftDown 0 a
-        | #shiftDown 3 g
-        | #shiftDown 9 f
+        | #shiftDown 4 g
+        | #shiftDown 10 f
         | #shiftDown 2 f
   = refl
 
@@ -449,6 +478,8 @@ sub-followDA≡ t f g k
          | #shiftUp 6 f
          | #shiftUp 7 f
          | #shiftUp 7 f
+         | #shiftUp 7 f
+         | #shiftUp 0 t
          | #shiftUp 0 t
          | #shiftUp 0 t
          | #shiftUp 0 t
@@ -461,12 +492,14 @@ sub-followDA≡ t f g k
          | #shiftUp 0 g
          | #shiftUp 1 g
          | #shiftUp 1 g
-         | #subv 2 ⌜ t ⌝ ⌜ g ⌝ (CTerm.closed g)
+         | #shiftUp 1 g
+         | #subv 3 ⌜ t ⌝ ⌜ g ⌝ (CTerm.closed g)
          | #subv 1 ⌜ t ⌝ ⌜ f ⌝ (CTerm.closed f)
-         | #subv 8 ⌜ t ⌝ ⌜ f ⌝ (CTerm.closed f)
-         | #shiftDown 2 g
+         | #subv 9 ⌜ t ⌝ ⌜ f ⌝ (CTerm.closed f)
+         | #shiftDown 3 g
          | #shiftDown 1 f
-         | #shiftDown 8 f
+         | #shiftDown 0 f
+         | #shiftDown 9 f
    = refl
 
 
@@ -483,14 +516,16 @@ sub-followDA2≡ m k f g
         | #shiftUp 3 f
         | #shiftUp 6 f
         | #shiftUp 7 f
+        | #shiftUp 7 f
         | #shiftUp 0 g
         | #shiftUp 1 g
-        | #subv 1 ⌜ #NUM m ⌝ ⌜ g ⌝ (CTerm.closed g)
+        | #shiftUp 1 g
+        | #subv 2 ⌜ #NUM m ⌝ ⌜ g ⌝ (CTerm.closed g)
         | #subv 0 ⌜ #NUM m ⌝ ⌜ f ⌝ (CTerm.closed f)
-        | #subv 7 ⌜ #NUM m ⌝ ⌜ f ⌝ (CTerm.closed f)
-        | #shiftDown 1 g
+        | #subv 8 ⌜ #NUM m ⌝ ⌜ f ⌝ (CTerm.closed f)
+        | #shiftDown 2 g
         | #shiftDown 0 f
-        | #shiftDown 7 f
+        | #shiftDown 8 f
   = refl
 
 
@@ -523,11 +558,33 @@ sub-WREC-followB a g f
   = refl
 
 
-#follow-INR⇓from-to : (w w' : 𝕎·) (I a g f t : CTerm) (k : ℕ)
+sub-APPLY2-WRECr-followB : (j k : ℕ) (f g : CTerm)
+                           → sub (NUM j) (APPLY2 (shiftUp 0 (WRECr (followB ⌜ f ⌝) ⌜ g ⌝)) (VAR 0) (NUM (suc k)))
+                              ≡ APPLY2 (WRECr (followB ⌜ f ⌝) ⌜ g ⌝) (NUM j) (NUM (suc k))
+sub-APPLY2-WRECr-followB j k f g
+  rewrite #shiftUp 0 f
+        | #shiftUp 0 f
+        | #shiftUp 0 f
+        | #shiftUp 0 f
+        | #shiftUp 0 f
+        | #shiftUp 0 f
+        | #shiftUp 6 f
+        | #shiftUp 7 f
+        | #shiftUp 0 g
+        | #shiftUp 1 g
+        | #subv 1 ⌜ #NUM j ⌝ ⌜ g ⌝ (CTerm.closed g)
+        | #subv 7 ⌜ #NUM j ⌝ ⌜ f ⌝ (CTerm.closed f)
+        | #shiftDown 1 g
+        | #shiftDown 7 f
+  = refl
+
+
+#follow-INR⇓from-to : (w w' : 𝕎·) (I a g f t : CTerm) (k j : ℕ)
                       → I #⇓ #SUP a g from w to w'
                       → a #⇛! #INR t at w
-                      → #follow f I k #⇓ #follow f (#APPLY g (#APPLY f (#NUM k))) (suc k) from w to w'
-#follow-INR⇓from-to w w' I a g f t k cI ca =
+                      → #APPLY f (#NUM k) #⇛! #NUM j at w'
+                      → #follow f I k #⇓ #follow f (#APPLY g (#NUM j)) (suc k) from w to w'
+#follow-INR⇓from-to w w' I a g f t k j cI ca cj =
   ⇓-trans₂
     (APPLY⇓ (NUM k) (WREC⇓ (followB ⌜ f ⌝) cI))
     (⇓-trans₂
@@ -540,7 +597,7 @@ sub-WREC-followB a g f
             (sub-followD≡ k a g f)
             (⇓-trans₂
                (DECIDE⇓ (VAR 0) (followDA (NUM k) (shiftUp 0 (WRECr (followB ⌜ f ⌝) ⌜ g ⌝)) (shiftUp 0 ⌜ f ⌝))
-                        (lower (ca w' (⇓from-to→⊑ {w} {w'} {⌜ I ⌝} {⌜ #SUP a g ⌝} cI))))
+                        (lower (ca w' e')))
                (⇓-trans₂
                   (DECIDE-INR⇓ w' ⌜ t ⌝ (VAR 0) (followDA (NUM k) (shiftUp 0 (WRECr (followB ⌜ f ⌝) ⌜ g ⌝)) (shiftUp 0 ⌜ f ⌝)))
                   (≡ₗ→⇓from-to
@@ -552,60 +609,153 @@ sub-WREC-followB a g f
                         (≡ₗ→⇓from-to
                           (sub-followDA2≡ (suc k) k f g)
                           (⇓-trans₂
-                             (APPLY⇓ (NUM (suc k)) (APPLY-LAMBDA⇓ w' (WREC (APPLY (shiftUp 0 ⌜ g ⌝) (VAR 0)) (shiftUp 3 (followB ⌜ f ⌝))) (APPLY ⌜ f ⌝ (NUM k))))
-                             (≡ₗ→⇓from-to
-                               (≡APPLY (sub-WREC-followB (#APPLY f (#NUM k)) g f) refl)
-                               (⇓from-to-refl _ w')))))))))))))
+                            (LET⇓ (APPLY2 (shiftUp 0 (WRECr (followB ⌜ f ⌝) ⌜ g ⌝)) (VAR 0) (NUM (suc k))) (lower (cj w' (⊑-refl· w'))))
+                            (⇓-trans₂
+                               (LET-val⇓ w' (NUM j) (APPLY2 (shiftUp 0 (WRECr (followB ⌜ f ⌝) ⌜ g ⌝)) (VAR 0) (NUM (suc k))) tt)
+                               (≡ₗ→⇓from-to
+                                 (sub-APPLY2-WRECr-followB j k f g)
+                                 (⇓-trans₂
+                                   (APPLY⇓ (NUM (suc k)) (APPLY-LAMBDA⇓ w' (WREC (APPLY (shiftUp 0 ⌜ g ⌝) (VAR 0)) (shiftUp 3 (followB ⌜ f ⌝))) (NUM j)))
+                                   (≡ₗ→⇓from-to
+                                     (≡APPLY (sub-WREC-followB (#NUM j) g f) refl)
+                                     (⇓from-to-refl _ w'))))))))))))))))
+  where
+    e' : w ⊑· w'
+    e' = ⇓from-to→⊑ {w} {w'} {⌜ I ⌝} {⌜ #SUP a g ⌝} cI
 
 
+{--
 -- INR case - this case depends on f
-#follow-INR⇓ : (w : 𝕎·) (I a g f t : CTerm) (k : ℕ)
+#follow-INR⇓ : (w : 𝕎·) (I a g f t : CTerm) (k j : ℕ)
                → I #⇓ #SUP a g at w
                → a #⇛! #INR t at w
-               → #follow f I k #⇓ #follow f (#APPLY g (#APPLY f (#NUM k))) (suc k) at w
-#follow-INR⇓ w I a g f t k cI ca =
+               → #APPLY f (#NUM k) #⇛! #NUM j at w
+               → #follow f I k #⇓ #follow f (#APPLY g (#NUM j)) (suc k) at w
+#follow-INR⇓ w I a g f t k j cI ca cj =
   #⇓from-to→#⇓
-    {w} {fst cI'} {#follow f I k} {#follow f (#APPLY g (#APPLY f (#NUM k))) (suc k)}
-    (#follow-INR⇓from-to w (proj₁ cI') I a g f t k (snd cI') ca)
+    {w} {fst cI'} {#follow f I k} {#follow f (#APPLY g (#NUM j)) (suc k)}
+    (#follow-INR⇓from-to w (proj₁ cI') I a g f t k j (snd cI') ca cj)
   where
     cI' : Σ 𝕎· (λ w' → I #⇓ #SUP a g from w to w')
     cI' = #⇓→from-to {w} {I} {#SUP a g} cI
+--}
 
 
-wmem→follow-NATeq : (kb : K□) (i : ℕ) (w : 𝕎·) (I J f g : CTerm) (k : ℕ)
-                     → weq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC)) w I J
-                     → equalInType i w #BAIRE f g
-                     → #⇓sameℕ w (#follow f I k) (#follow g J k)
-wmem→follow-NATeq kb i w I J f g k (weqC a1 f1 a2 f2 e c1 c2 ind) eqf =
+INR→!≡∈Type-IndBarC : (i : ℕ) (w : 𝕎·) (x a b c : CTerm)
+                     → x #⇛! #INR a at w
+                     → equalInType i w (sub0 x #IndBarC) b c
+                     → □· w (λ w' _ → #⇛!sameℕ w' b c)
+INR→!≡∈Type-IndBarC i w x a b c comp j rewrite sub0-IndBarC≡ x =
+  equalInType-NAT!→ i w b c j1
+  where
+    j1 : equalInType i w #NAT! b c
+    j1 = equalInType-#⇛ (#DECIDE⇛INR-NAT⇛! w x a #[0]VOID comp) j
+
+
+equalInType-#⇛-rev : {i : ℕ} {w : 𝕎·} {T U a b : CTerm}
+                      → U #⇛! T at w
+                      → equalInType i w T a b
+                      → equalInType i w U a b
+equalInType-#⇛-rev {i} {w} {T} {U} {a} {b} comp e =
+  TSext-equalTypes-equalInType
+    i w T U a b
+    (equalTypes-#⇛-left-right-rev {i} {w} {T} {T} {U} {T} (#⇛-refl w T) (#⇛!→#⇛ {w} {U} {T} comp) (fst e))
+    e
+
+
+sub0-indBarC⇛INR-NAT⇛! : (w : 𝕎·) (x a : CTerm)
+                           → x #⇛! #INR a at w
+                           → sub0 x #IndBarC #⇛! #NAT! at w
+sub0-indBarC⇛INR-NAT⇛! w x a comp rewrite #shiftUp 0 x | #shiftDown 0 x =
+  #DECIDE⇛INR-NAT⇛! w x a #[0]VOID comp
+
+
+#⇓from-to→#⇓sameℕ : {w w' : 𝕎·} {a1 a2 b1 b2 : CTerm}
+                      → b1 #⇓ a1 from w to w'
+                      → b2 #⇓ a2 from w to w'
+                      → #⇓sameℕ w a1 a2 -- that should be at w'
+                      → #⇓sameℕ w b1 b2
+#⇓from-to→#⇓sameℕ {w} {w'} {a1} {a2} {b1} {b2} c1 c2 (j , d1 , d2) =
+  j , {!!} , {!!}
+
+
+#⇓SUP→weq-refl : {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {w : 𝕎·} {I a1 a2 f1 f2 : CTerm} {j : ℕ}
+                  → I #⇓ #SUP a1 f1 at w
+                  → I #⇓ #SUP a2 f2 at w
+                  → weq eqa eqb w (#APPLY f1 (#NUM j)) (#APPLY f2 (#NUM j))
+                  → weq eqa eqb w (#APPLY f1 (#NUM j)) (#APPLY f1 (#NUM j))
+#⇓SUP→weq-refl {eqa} {eqb} {w} {I} {a1} {a2} {f1} {f2} {j} c1 c2 h
+  rewrite #SUPinj1 {a2} {f2} {a1} {f1} (#⇓-val-det {_} {I} tt tt c2 c1)
+        | #SUPinj2 {a2} {f2} {a1} {f1} (#⇓-val-det {_} {I} tt tt c2 c1) = h
+
+
+wmem→follow-NATeq : (kb : K□) (i : ℕ) (w : 𝕎·) (I f g : CTerm) (k : ℕ)
+                     → weq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC)) w I I
+                     → equalInType i w #BAIRE! f g
+                     → #⇓sameℕ w (#follow f I k) (#follow g I k)
+wmem→follow-NATeq kb i w I f g k (weqC a1 f1 a2 f2 e c1 c2 ind) eqf =
   d (kb (equalInType-IndBarB→ i w a1 a2 e) w (⊑-refl· w))
   where
     d : Σ CTerm (λ t → Σ CTerm (λ u → Σ ℕ (λ n → a1 #⇛! #INL t at w × a2 #⇛! #INL u at w × t #⇛ #NUM n at w × u #⇛ #NUM n at w)))
         ⊎ Σ CTerm (λ t → Σ CTerm (λ u → a1 #⇛! #INR t at w × a2 #⇛! #INR u at w))
-        → #⇓sameℕ w (#follow f I k) (#follow g J k)
+        → #⇓sameℕ w (#follow f I k) (#follow g I k)
     d (inj₁ (t , u , n , d1 , d2 , x1 , x2)) = n , comp1 , comp2
       where
         comp1 : #follow f I k #⇓ #NUM n at w
         comp1 = #follow-INL⇓ w I a1 f1 f t k n c1 d1 x1
 
-        comp2 : #follow g J k #⇓ #NUM n at w
-        comp2 = #follow-INL⇓ w J a2 f2 g u k n c2 d2 x2
-    d (inj₂ (t , u , d1 , d2)) = {!!} -- use ind
+        comp2 : #follow g I k #⇓ #NUM n at w
+        comp2 = #follow-INL⇓ w I a2 f2 g u k n c2 d2 x2
+    d (inj₂ (t , u , d1 , d2)) = {!!} -- use ind' + comp1 + comp2, but that won't work because the worlds will be off
       where
-        comp1 : #follow f I k #⇓ #follow f (#APPLY f1 (#APPLY f (#NUM k))) (suc k) at w
-        comp1 = #follow-INR⇓ w I a1 f1 f t k c1 d1
+        cI : Σ 𝕎· (λ w' → I #⇓ #SUP a1 f1 from w to w')
+        cI = #⇓→from-to {w} {I} {#SUP a1 f1} c1
 
-        comp2 : #follow g J k #⇓ #follow g (#APPLY f2 (#APPLY g (#NUM k))) (suc k) at w
-        comp2 = #follow-INR⇓ w J a2 f2 g u k c2 d2
+        w' : 𝕎·
+        w' = fst cI
 
-        eqf' : equalInType i w (sub0 a1 #IndBarC) (#APPLY f (#NUM k)) (#APPLY g (#NUM k))
-        eqf' = {!!}
+        cI' : I #⇓ #SUP a1 f1 from w to w'
+        cI' = snd cI
+
+        eqf0 : equalInType i w #NAT! (#APPLY f (#NUM k)) (#APPLY g (#NUM k))
+        eqf0 = APPLY-≡∈BAIRE!-NUM→ i w f g k eqf
+
+        eqf1 : equalInType i w (sub0 a1 #IndBarC) (#APPLY f (#NUM k)) (#APPLY g (#NUM k))
+        eqf1 = equalInType-#⇛-rev (sub0-indBarC⇛INR-NAT⇛! w a1 t d1) eqf0
+
+        eqf2 : □· w (λ w' _ → #⇛!sameℕ w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
+        eqf2 = INR→!≡∈Type-IndBarC i w a1 t _ _ d1 eqf1
+
+        eqf3 : #⇛!sameℕ w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k))
+        eqf3 = kb eqf2 w' (⇓from-to→⊑ {w} {w'} {⌜ I ⌝} {⌜ #SUP a1 f1 ⌝} cI')
+
+        j : ℕ
+        j = fst eqf3
+
+        cf : #APPLY f (#NUM k) #⇛! #NUM j at w'
+        cf = fst (snd eqf3)
+
+        cg : #APPLY g (#NUM k) #⇛! #NUM j at w'
+        cg = snd (snd eqf3)
+
+        comp1 : #follow f I k #⇓ #follow f (#APPLY f1 (#NUM j)) (suc k) from w to w'
+        comp1 = #follow-INR⇓from-to w w' I a1 f1 f t k j cI' d1 cf
+
+        comp2 : #follow g I k #⇓ #follow g (#APPLY f1 (#NUM j)) (suc k) from w to w'
+        comp2 = #follow-INR⇓from-to w w' I a1 f1 g t k j cI' d1 cg
+
+        eqj : equalInType i w (sub0 a1 #IndBarC) (#NUM j) (#NUM j)
+        eqj = equalInType-#⇛-rev (sub0-indBarC⇛INR-NAT⇛! w a1 t d1) (NUM-equalInType-NAT! i w j)
+
+        wf1 : weq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC)) w (#APPLY f1 (#NUM j)) (#APPLY f2 (#NUM j))
+        wf1 = ind (#NUM j) (#NUM j) eqj
 
         -- The world is off - comp1 and comp2 might not end in the same world because c1 and c2 might not end in the same world...
-        ind' : #⇓sameℕ w (#follow f (#APPLY f1 (#APPLY f (#NUM k))) (suc k)) (#follow g (#APPLY f2 (#APPLY g (#NUM k))) (suc k))
+        ind' : #⇓sameℕ w (#follow f (#APPLY f1 (#NUM j)) (suc k)) (#follow g (#APPLY f1 (#NUM j)) (suc k))
         ind' = wmem→follow-NATeq
-                 kb i w (#APPLY f1 (#APPLY f (#NUM k))) (#APPLY f2 (#APPLY g (#NUM k))) f g (suc k)
-                 (ind (#APPLY f (#NUM k)) (#APPLY g (#NUM k)) eqf') eqf
-
+                 kb i w (#APPLY f1 (#NUM j)) f g (suc k)
+                 (#⇓SUP→weq-refl {_} {_} {_} {I} {a1} {a2} {f1} {f2} c1 c2 wf1)
+                 eqf
 
 
 {--
@@ -619,7 +769,7 @@ semCond : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get
           (i : ℕ) (w : 𝕎·) (r : Name) (F f : CTerm)
           → compatible· r w Res⊤
           → ∈Type i w #FunBarP F
-          → ∈Type i w #BAIRE f
+          → ∈Type i w #BAIRE! f
           → equalInType i w #QNAT (#APPLY F f) (#follow f (#tab r F 0 #INIT) 0)
 -- It's a #QNAT and not a #NAT because of the computation on #tab, which is a "time-dependent" computation
 semCond kb cn can exb gc i w r F f compat F∈ f∈ =
@@ -628,7 +778,7 @@ semCond kb cn can exb gc i w r F f compat F∈ f∈ =
     (Mod.∀𝕎-□Func M aw (equalInType-W→ i w #IndBarB #IndBarC I I I∈))
   where
     s : 𝕊
-    s = BAIRE2𝕊 kb f∈
+    s = BAIRE!2𝕊 kb f∈
 
     I : CTerm
     I = #tab r F 0 #INIT
