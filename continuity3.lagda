@@ -923,7 +923,7 @@ updCtxt-WRECr {name} {f} {r} {g} cf dr df =
     (updCtxt-WREC
       _ _
       (updCtxt-APPLY _ _ (→updCtxt-shiftUp 0 cf df) (updCtxt-VAR 0))
-      (→updCtxt-shiftUp 0 cf dr))
+      (→updCtxt-shiftUp 3 cf dr))
 
 
 

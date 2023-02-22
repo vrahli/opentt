@@ -1116,6 +1116,6 @@ updSeq-WRECr {r} {s} {n} {r1} {r2} {f1} {f2} dr df =
     (updSeq-WREC
       _ _ _ _
       (updSeq-APPLY _ _ _ _ (updSeq-shiftUp 0 df) (updSeq-VAR 0))
-      (updSeq-shiftUp 0 dr))
+      (updSeq-shiftUp 3 dr))
 
 \end{code}

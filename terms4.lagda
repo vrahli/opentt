@@ -249,7 +249,7 @@ SEQ-val⇓ w a b isv = 1 , s
                → ¬Names r
                → ¬Names f
                → ¬Names (WRECr r f)
-¬Names-WRECr {r} {f} nnr nnf rewrite →¬Names-shiftUp 0 {r} nnr | →¬Names-shiftUp 0 {f} nnf = refl
+¬Names-WRECr {r} {f} nnr nnf rewrite →¬Names-shiftUp 3 {r} nnr | →¬Names-shiftUp 0 {f} nnf = refl
 
 
 
@@ -965,7 +965,7 @@ abstract
                  → ¬ name ∈ names f
                  → ¬ name ∈ names (WRECr r f)
 ¬∈names-WRECr {name} {r} {f} nnr nnf i
-  rewrite names-shiftUp 0 r | names-shiftUp 0 f | ++[] (names f)
+  rewrite names-shiftUp 3 r | names-shiftUp 0 f | ++[] (names f)
   with ∈-++⁻ (names f) i
 ... | inj₁ p = nnf p
 ... | inj₂ p = nnr p

@@ -104,7 +104,7 @@ updRel-WRECr {name} {f} {g} {r1} {r2} {f1} {f2} cf cg dr df =
     (updRel-WREC
       _ _ _ _
       (updRel-APPLY _ _ _ _ (updRel-shiftUp 0 cf cg df) (updRel-VAR 0))
-      (updRel-shiftUp 0 cf cg dr))
+      (updRel-shiftUp 3 cf cg dr))
 
 
 abstract

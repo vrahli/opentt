@@ -66,7 +66,7 @@ ret t w = just (t , w)
 
 -- recursive call of WREC
 WRECr : Term → Term → Term
-WRECr r f = LAMBDA (WREC (APPLY (shiftUp 0 f) (VAR 0)) (shiftUp 0 r))
+WRECr r f = LAMBDA (WREC (APPLY (shiftUp 0 f) (VAR 0)) (shiftUp 3 r))
 
 
 step : ∀ (T : Term) (w : 𝕎·) → Maybe (Term × 𝕎·)

@@ -130,7 +130,7 @@ differ-WRECr {name1} {name2} {f} {r1} {r2} {f1} {f2} cf dr df =
     (differ-WREC
       _ _ _ _
       (differ-APPLY _ _ _ _ (→differ-shiftUp 0 cf df) (differ-VAR 0))
-      (→differ-shiftUp 0 cf dr))
+      (→differ-shiftUp 3 cf dr))
 
 
 
