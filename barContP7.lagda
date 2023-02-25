@@ -715,11 +715,11 @@ sub0-indBarC⇛INR-NAT⇛! w x a comp rewrite #shiftUp 0 x | #shiftDown 0 x =
         | #SUPinj2 {a2} {f2} {a1} {f1} (#⇓-val-det {_} {I} tt tt c2 c1) = h
 
 
-wmem→follow-NATeq : (kb : K□) (i : ℕ) (w : 𝕎·) (I1 I2 f g : CTerm) (k : ℕ)
+weq→follow-NATeq : (kb : K□) (i : ℕ) (w : 𝕎·) (I1 I2 f g : CTerm) (k : ℕ)
                      → weq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC)) w I1 I2
                      → equalInType i w #BAIRE! f g
                      → NATeq {--#⇓sameℕ--} w (#follow f I1 k) (#follow g I2 k)
-wmem→follow-NATeq kb i w I1 I2 f g k (weqC a1 f1 a2 f2 e c1 c2 ind) eqf
+weq→follow-NATeq kb i w I1 I2 f g k (weqC a1 f1 a2 f2 e c1 c2 ind) eqf
   with kb (equalInType-IndBarB→ i w a1 a2 e) w (⊑-refl· w)
 ... | inj₁ (t , u , n , d1 , d2 , x1 , x2) = n , comp1 , comp2
       where
@@ -763,7 +763,7 @@ wmem→follow-NATeq kb i w I1 I2 f g k (weqC a1 f1 a2 f2 e c1 c2 ind) eqf
         eqj = equalInType-#⇛-rev (sub0-indBarC⇛INR-NAT⇛! w a1 t d1) (NUM-equalInType-NAT! i w j)
 
         ind' : NATeq {--#⇓sameℕ--} w (#follow f (#APPLY f1 (#NUM j)) (suc k)) (#follow g (#APPLY f2 (#NUM j)) (suc k))
-        ind' = wmem→follow-NATeq kb i w (#APPLY f1 (#NUM j)) (#APPLY f2 (#NUM j)) f g (suc k) (ind (#NUM j) (#NUM j) eqj) eqf
+        ind' = weq→follow-NATeq kb i w (#APPLY f1 (#NUM j)) (#APPLY f2 (#NUM j)) f g (suc k) (ind (#NUM j) (#NUM j) eqj) eqf
 
         comp1 : #follow f I1 k #⇛ #follow f (#APPLY f1 (#NUM j)) (suc k) at w
         comp1 = #follow-INR⇛ w I1 a1 f1 f t k j c1 d1 cf
@@ -804,7 +804,7 @@ semCond kb cn can exb gc i w r F f compat F∈ f∈ =
                         → NATeq {--#weakMonEq--} w' (#APPLY F f) (#follow f I 0))
     aw w1 e1 h = {!!}
     -- use BAIRE2𝕊-equalInBAIRE to switch from (#APPLY F f) to (#APPLY F (#MSEQ s))
-    -- Can we do the same with (#follow f I 0)?
+    -- Can we do the same with (#follow f I 0)? → weq→follow-NATeq
 
 
 \end{code}
