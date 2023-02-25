@@ -405,11 +405,11 @@ corSeq→correctSeq r w F s cor n = corSeqN→correctSeqN r w 0 n F #INIT s s (c
 --    compz' : z #⇛ #NUM m at w
 --    compz' = #⇛!-#⇛ {w} {z} {#NUM m} compz
 
-    comp0 : t #⇓ #SUP a f at w
-    comp0 = comp
+--    comp0 : t #⇛ #SUP a f at w
+--    comp0 = comp
 
     comp1 : #APPLY2 (#loop r F) (#NUM m) g #⇓ #SUP a f at w
-    comp1 = val-⇓→ {w} {w} {⌜ t ⌝} {⌜ #APPLY2 (#loop r F) (#NUM m) g ⌝} {⌜ #SUP a f ⌝} tt compt comp
+    comp1 = val-⇓→ {w} {w} {⌜ t ⌝} {⌜ #APPLY2 (#loop r F) (#NUM m) g ⌝} {⌜ #SUP a f ⌝} tt compt (lower (comp w (⊑-refl· w)))
 
 {--
 -- Get all that from comp1? We're still uing F∈ and l∈ here.

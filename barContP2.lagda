@@ -101,6 +101,22 @@ open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 
 
+→#¬Names-#APPENDf : (j f : CTerm) (n : ℕ)
+                     → #¬Names j
+                     → #¬Names f
+                     → #¬Names (#APPENDf j f (#NUM n))
+→#¬Names-#APPENDf j f n nnj nnf
+  rewrite #shiftUp 0 j | #shiftUp 0 f | nnj | nnf = refl
+
+
+APPLY-loopR-⇛! : (w : 𝕎·) (R k f b : CTerm) (m n : ℕ)
+                  → b #⇛! #NUM m at w
+                  → k #⇛! #NUM n at w
+                  → #APPLY (#loopR R k f) b #⇛! #APPLY2 R (#NUM (suc n)) (#APPENDf k f (#NUM m)) at w
+APPLY-loopR-⇛! w R k f b m n compb compk w1 e1 =
+  lift (APPLY-loopR-⇓ w1 w1 w1 R k f b m n (lower (compb w1 e1)) (lower (compk w1 e1)))
+
+
 ∈LISTNAT→ : (kb : K□) (i : ℕ) (w : 𝕎·) (l : CTerm)
               → ∈Type i w (#LIST #NAT) l
               → Σ CTerm (λ k → Σ CTerm (λ f → Σ ℕ (λ n → l #⇛ #PAIR k f at w × k #⇛ #NUM n at w × ∈Type i w #BAIRE f)))
@@ -121,32 +137,44 @@ open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 
 
 -- First prove that loop belongs to CoIndBar
-coSemM : (kb : K□) (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (F j f a b : CTerm) (k n : ℕ)
+coSemM : (can : comp→∀ℕ) (gc0 : get-choose-ℕ) (kb : K□) (cn : cℕ)
+         (i : ℕ) (w : 𝕎·) (r : Name) (F j f a b : CTerm) (k n : ℕ)
          --→ ∈Type i w #FunBar F
          --→ ∈Type i w (#LIST #NAT) l
+         → (nnj : #¬Names j) (nnf : #¬Names f) (nnF : #¬Names F)
          → compatible· r w Res⊤
          → j #⇛! #NUM n at w
 --         → ∈Type i w (#LIST #NAT) l
          → ∈Type i w #BAIRE f
          → ∈Type i w #FunBar F
          → #APPLY F (#upd r f) #⇛ #NUM k at w -- follows from APPLY-generic∈NAT
-         → a #⇓! #APPLY2 (#loop r F) j f at w
-         → b #⇓! #APPLY2 (#loop r F) j f at w
+         → a #⇛! #APPLY2 (#loop r F) j f at w
+         → b #⇛! #APPLY2 (#loop r F) j f at w
          → meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC)) w a b
-meq.meqC (coSemM kb cn i w r F j f a b k n compat compj f∈ F∈ ck c1 c2)
-  with #APPLY-#loop#⇓4 cn r F j f k n w compat (#⇛!-#⇛ {w} {j} {#NUM n} compj) (lower (ck (chooseT r w N0) (choose⊑· r w (T→ℂ· N0))))
+meq.meqC (coSemM can gc0 kb cn i w r F j f a b k n nnj nnf nnF compat compj f∈ F∈ ck c1 c2)
+  with #APPLY-#loop#⇓5 can gc0 cn r F j f k n w nnf nnF compat compj ck
 -- NOTE: 'with' doesn't work without the 'abstract' on #APPLY-#loop#⇓4
 ... | inj₁ x =
-  #INL (#NUM k) , #AX , #INL (#NUM k) , #AX , INL∈IndBarB i w k , ⇓-trans₁ {w} {w} c1 x , ⇓-trans₁ {w} {w} c2 x , eqb
-  -- That's an issue because we don't know here whether if we get an ETA in w then we get an ETA for all its extensions
+  #INL (#NUM k) , #AX , #INL (#NUM k) , #AX , INL∈IndBarB i w k , d1 , d2 , eqb
+  -- That's an issue because we don't know here whether if we get an ETA in w then4 we get an ETA for all its extensions
+  -- We do now with the ¬Names hyp
     where
+      d1 : a #⇛ #ETA (#NUM k) at w
+      d1 = #⇛-trans {w} {a} {#APPLY2 (#loop r F) j f} {#ETA (#NUM k)} (#⇛!→#⇛ {w} {a} {#APPLY2 (#loop r F) j f} c1) x
+
+      d2 : b #⇛ #ETA (#NUM k) at w
+      d2 = #⇛-trans {w} {b} {#APPLY2 (#loop r F) j f} {#ETA (#NUM k)} (#⇛!→#⇛ {w} {b} {#APPLY2 (#loop r F) j f} c2) x
+
       eqb : (b1 b2 : CTerm)
             → equalInType i w (sub0 (#INL (#NUM k)) #IndBarC) b1 b2
             → meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC))
                    w (#APPLY #AX b1) (#APPLY #AX b2)
       eqb b1 b2 eb rewrite sub0-IndBarC≡ (#INL (#NUM k)) = ⊥-elim (equalInType-DECIDE-INL-VOID→ i w (#NUM k) b1 b2 #[0]NAT! eb)
 ... | inj₂ x =
-  #INR #AX  , #loopR (#loop r F) j f , #INR #AX , #loopR (#loop r F) j f , INR∈IndBarB i w , ⇓-trans₁ {w} {w} c1 x , ⇓-trans₁ {w} {w} c2 x , eqb
+  #INR #AX  , #loopR (#loop r F) j f , #INR #AX , #loopR (#loop r F) j f , INR∈IndBarB i w ,
+  #⇛-trans {w} {a} {#APPLY2 (#loop r F) j f} {#DIGAMMA (#loopR (#loop r F) j f)} (#⇛!→#⇛ {w} {a} {#APPLY2 (#loop r F) j f} c1) x ,
+  #⇛-trans {w} {b} {#APPLY2 (#loop r F) j f} {#DIGAMMA (#loopR (#loop r F) j f)} (#⇛!→#⇛ {w} {b} {#APPLY2 (#loop r F) j f} c2) x ,
+  eqb
     where
       eqb : (b1 b2 : CTerm)
             → equalInType i w (sub0 (#INR #AX) #IndBarC) b1 b2
@@ -188,18 +216,19 @@ meq.meqC (coSemM kb cn i w r F j f a b k n compat compj f∈ F∈ ck c1 c2)
           eb3 : meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC))
                     w (#APPLY (#loopR (#loop r F) j f) b1) (#APPLY (#loopR (#loop r F) j f) b2)
           eb3 = coSemM
-                  kb cn i w r F (#NUM (suc n)) (#APPENDf j f (#NUM (fst eb2)))
+                  can gc0 kb cn i w r F (#NUM (suc n)) (#APPENDf j f (#NUM (fst eb2)))
                   (#APPLY (#loopR (#loop r F) j f) b1)
                   (#APPLY (#loopR (#loop r F) j f) b2)
                   (fst ef2)
                   (suc n)
+                  refl (→#¬Names-#APPENDf j f (fst eb2) nnj nnf) nnF
                   compat
                   (#⇛!-refl {w} {#NUM (suc n)}) --(SUC⇛₂ {w} {⌜ j ⌝} {n} compj)
                   el1
                   F∈
                   (fst (snd ef2))
-                  (APPLY-loopR-⇓ w w w (#loop r F) j f b1 (fst eb2) n (lower (fst (snd eb2) w (⊑-refl· w))) (lower (compj w (⊑-refl· w))))
-                  (APPLY-loopR-⇓ w w w (#loop r F) j f b2 (fst eb2) n (lower (snd (snd eb2) w (⊑-refl· w))) (lower (compj w (⊑-refl· w))))
+                  (APPLY-loopR-⇛! w (#loop r F) j f b1 (fst eb2) n (fst (snd eb2)) compj)
+                  (APPLY-loopR-⇛! w (#loop r F) j f b2 (fst eb2) n (snd (snd eb2)) compj)
 
 
 isType-IndBarB : (i : ℕ) (w : 𝕎·) → isType i w #IndBarB
@@ -232,13 +261,14 @@ equalTypes-IndBarC i w a b eqa rewrite sub0-IndBarC≡ a | sub0-IndBarC≡ b =
 
 
 -- First prove that loop belongs to CoIndBar
-coSem : (kb : K□) (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (F k f : CTerm)
+coSem : (can : comp→∀ℕ) (gc0 : get-choose-ℕ) (kb : K□) (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (F k f : CTerm)
+        (nnk : #¬Names k) (nnf : #¬Names f) (nnF : #¬Names F)
         → compatible· r w Res⊤
         → ∈Type i w #FunBar F
         → ∈Type i w #NAT! k
         → ∈Type i w #BAIRE f
         → ∈Type i w #CoIndBar (#APPLY2 (#loop r F) k f)
-coSem kb cn i w r F k f compat F∈ k∈ f∈ =
+coSem can gc0 kb cn i w r F k f nnk nnf nnF compat F∈ k∈ f∈ =
   →equalInType-M
     i w #IndBarB #IndBarC (#APPLY2 (#loop r F) k f) (#APPLY2 (#loop r F) k f)
       (λ w1 e1 → isType-IndBarB i w1)
@@ -264,15 +294,16 @@ coSem kb cn i w r F k f compat F∈ k∈ f∈ =
         m : meq (equalInType i w1 #IndBarB) (λ a b eqa → equalInType i w1 (sub0 a #IndBarC))
                 w1 (#APPLY2 (#loop r F) k f) (#APPLY2 (#loop r F) k f)
         m = coSemM
-              kb cn i w1 r F k f (#APPLY2 (#loop r F) k f) (#APPLY2 (#loop r F) k f)
+              can gc0 kb cn i w1 r F k f (#APPLY2 (#loop r F) k f) (#APPLY2 (#loop r F) k f)
               (fst F∈2) (fst k∈2)
+              nnk nnf nnF
               (⊑-compatible· e1 compat)
               (fst (snd k∈2))
               (equalInType-mon f∈ w1 e1)
               (equalInType-mon F∈ w1 e1)
               (fst (snd F∈2))
-              (#⇓!-refl (#APPLY2 (#loop r F) k f) w1)
-              (#⇓!-refl (#APPLY2 (#loop r F) k f) w1)
+              (#⇛!-refl {w1} {#APPLY2 (#loop r F) k f})
+              (#⇛!-refl {w1} {#APPLY2 (#loop r F) k f})
 
 
 CoIndBar2IndBar : (i : ℕ) (w : 𝕎·) (t : CTerm)

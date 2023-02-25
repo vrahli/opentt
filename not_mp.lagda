@@ -88,6 +88,7 @@ open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 
 
 
+-- π (F : ℕ → 𝔹). ¬(Π (n : ℕ). ¬(F n ≡ true)) → ||Σ (n : ℕ). F n ≡ true||
 MP : Term
 MP = PI NAT!→BOOL (FUN (NEG (PI NAT! (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))
                         (SQUASH (SUM NAT! (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))

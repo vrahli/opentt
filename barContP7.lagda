@@ -168,6 +168,13 @@ APPLY-∈BAIRE!-NUM→ i w f n f∈ =
   equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n)
 
 
+APPLY-≡∈BAIRE-NUM→ : (i : ℕ) (w : 𝕎·) (f g : CTerm) (n : ℕ)
+                      → equalInType i w #BAIRE f g
+                      → equalInType i w #NAT (#APPLY f (#NUM n)) (#APPLY g (#NUM n))
+APPLY-≡∈BAIRE-NUM→ i w f g n f∈ =
+  equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n)
+
+
 APPLY-≡∈BAIRE!-NUM→ : (i : ℕ) (w : 𝕎·) (f g : CTerm) (n : ℕ)
                       → equalInType i w #BAIRE! f g
                       → equalInType i w #NAT! (#APPLY f (#NUM n)) (#APPLY g (#NUM n))
@@ -461,6 +468,15 @@ sub-followD≡ k a g f
     c = #follow-INL⇓from-to w (fst cI') I a g f t k n (snd cI') ca cn
 
 
+-- INL case - this does not depend on f
+#follow-INL⇛ : (w : 𝕎·) (I a g f t : CTerm) (k n : ℕ)
+               → I #⇛ #SUP a g at w
+               → a #⇛! #INL t at w
+               → t #⇛ #NUM n at w
+               → #follow f I k #⇛ #NUM n at w
+#follow-INL⇛ w I a g f t k n cI ca cn w1 e1 =
+  lift (#follow-INL⇓ w1 I a g f t k n (lower (cI w1 e1)) (∀𝕎-mon e1 ca) (∀𝕎-mon e1 cn))
+
 
 sub-followDA≡ : (t f g : CTerm) (k : ℕ)
                 → sub ⌜ t ⌝ (followDA (NUM k) (shiftUp 0 (WRECr (followB ⌜ f ⌝) ⌜ g ⌝)) (shiftUp 0 ⌜ f ⌝))
@@ -624,7 +640,6 @@ sub-APPLY2-WRECr-followB j k f g
     e' = ⇓from-to→⊑ {w} {w'} {⌜ I ⌝} {⌜ #SUP a g ⌝} cI
 
 
-{--
 -- INR case - this case depends on f
 #follow-INR⇓ : (w : 𝕎·) (I a g f t : CTerm) (k j : ℕ)
                → I #⇓ #SUP a g at w
@@ -634,11 +649,22 @@ sub-APPLY2-WRECr-followB j k f g
 #follow-INR⇓ w I a g f t k j cI ca cj =
   #⇓from-to→#⇓
     {w} {fst cI'} {#follow f I k} {#follow f (#APPLY g (#NUM j)) (suc k)}
-    (#follow-INR⇓from-to w (proj₁ cI') I a g f t k j (snd cI') ca cj)
+    (#follow-INR⇓from-to w (fst cI') I a g f t k j (snd cI') ca (∀𝕎-mon e' cj))
   where
     cI' : Σ 𝕎· (λ w' → I #⇓ #SUP a g from w to w')
     cI' = #⇓→from-to {w} {I} {#SUP a g} cI
---}
+
+    e' : w ⊑· fst cI'
+    e' = ⇓from-to→⊑ {w} {fst cI'} {⌜ I ⌝} {⌜ #SUP a g ⌝} (snd cI')
+
+
+#follow-INR⇛ : (w : 𝕎·) (I a g f t : CTerm) (k j : ℕ)
+                → I #⇛ #SUP a g at w
+                → a #⇛! #INR t at w
+                → #APPLY f (#NUM k) #⇛! #NUM j at w
+                → #follow f I k #⇛ #follow f (#APPLY g (#NUM j)) (suc k) at w
+#follow-INR⇛ w I a g f t k j cI ca cj w1 e1 =
+  lift (#follow-INR⇓ w1 I a g f t k j (lower (cI w1 e1)) (∀𝕎-mon e1 ca) (∀𝕎-mon e1 cj))
 
 
 INR→!≡∈Type-IndBarC : (i : ℕ) (w : 𝕎·) (x a b c : CTerm)
@@ -670,13 +696,13 @@ sub0-indBarC⇛INR-NAT⇛! w x a comp rewrite #shiftUp 0 x | #shiftDown 0 x =
   #DECIDE⇛INR-NAT⇛! w x a #[0]VOID comp
 
 
-#⇓from-to→#⇓sameℕ : {w w' : 𝕎·} {a1 a2 b1 b2 : CTerm}
-                      → b1 #⇓ a1 from w to w'
-                      → b2 #⇓ a2 from w to w'
-                      → #⇓sameℕ w a1 a2 -- that should be at w'
-                      → #⇓sameℕ w b1 b2
-#⇓from-to→#⇓sameℕ {w} {w'} {a1} {a2} {b1} {b2} c1 c2 (j , d1 , d2) =
-  j , {!!} , {!!}
+#⇛→NATeq : {w : 𝕎·} {a1 a2 b1 b2 : CTerm}
+             → b1 #⇛ a1 at w
+             → b2 #⇛ a2 at w
+             → NATeq w a1 a2
+             → NATeq w b1 b2
+#⇛→NATeq {w} {a1} {a2} {b1} {b2} c1 c2 (j , d1 , d2) =
+  j , ⇛-trans c1 d1 , ⇛-trans c2 d2
 
 
 #⇓SUP→weq-refl : {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {w : 𝕎·} {I a1 a2 f1 f2 : CTerm} {j : ℕ}
@@ -689,34 +715,29 @@ sub0-indBarC⇛INR-NAT⇛! w x a comp rewrite #shiftUp 0 x | #shiftDown 0 x =
         | #SUPinj2 {a2} {f2} {a1} {f1} (#⇓-val-det {_} {I} tt tt c2 c1) = h
 
 
-wmem→follow-NATeq : (kb : K□) (i : ℕ) (w : 𝕎·) (I f g : CTerm) (k : ℕ)
-                     → weq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC)) w I I
+wmem→follow-NATeq : (kb : K□) (i : ℕ) (w : 𝕎·) (I1 I2 f g : CTerm) (k : ℕ)
+                     → weq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC)) w I1 I2
                      → equalInType i w #BAIRE! f g
-                     → #⇓sameℕ w (#follow f I k) (#follow g I k)
-wmem→follow-NATeq kb i w I f g k (weqC a1 f1 a2 f2 e c1 c2 ind) eqf =
-  d (kb (equalInType-IndBarB→ i w a1 a2 e) w (⊑-refl· w))
-  where
-    d : Σ CTerm (λ t → Σ CTerm (λ u → Σ ℕ (λ n → a1 #⇛! #INL t at w × a2 #⇛! #INL u at w × t #⇛ #NUM n at w × u #⇛ #NUM n at w)))
-        ⊎ Σ CTerm (λ t → Σ CTerm (λ u → a1 #⇛! #INR t at w × a2 #⇛! #INR u at w))
-        → #⇓sameℕ w (#follow f I k) (#follow g I k)
-    d (inj₁ (t , u , n , d1 , d2 , x1 , x2)) = n , comp1 , comp2
+                     → NATeq {--#⇓sameℕ--} w (#follow f I1 k) (#follow g I2 k)
+wmem→follow-NATeq kb i w I1 I2 f g k (weqC a1 f1 a2 f2 e c1 c2 ind) eqf
+  with kb (equalInType-IndBarB→ i w a1 a2 e) w (⊑-refl· w)
+... | inj₁ (t , u , n , d1 , d2 , x1 , x2) = n , comp1 , comp2
       where
-        comp1 : #follow f I k #⇓ #NUM n at w
-        comp1 = #follow-INL⇓ w I a1 f1 f t k n c1 d1 x1
+        comp1 : #follow f I1 k #⇛ #NUM n at w
+        comp1 = #follow-INL⇛ w I1 a1 f1 f t k n c1 d1 x1
 
-        comp2 : #follow g I k #⇓ #NUM n at w
-        comp2 = #follow-INL⇓ w I a2 f2 g u k n c2 d2 x2
-    d (inj₂ (t , u , d1 , d2)) = {!!} -- use ind' + comp1 + comp2, but that won't work because the worlds will be off
+        comp2 : #follow g I2 k #⇛ #NUM n at w
+        comp2 = #follow-INL⇛ w I2 a2 f2 g u k n c2 d2 x2
+... | inj₂ (t , u , d1 , d2) =
+    #⇛→NATeq
+      {w}
+      {#follow f (#APPLY f1 (#NUM j)) (suc k)}
+      {#follow g (#APPLY f2 (#NUM j)) (suc k)}
+      {#follow f I1 k}
+      {#follow g I2 k}
+      comp1 comp2
+      ind'
       where
-        cI : Σ 𝕎· (λ w' → I #⇓ #SUP a1 f1 from w to w')
-        cI = #⇓→from-to {w} {I} {#SUP a1 f1} c1
-
-        w' : 𝕎·
-        w' = fst cI
-
-        cI' : I #⇓ #SUP a1 f1 from w to w'
-        cI' = snd cI
-
         eqf0 : equalInType i w #NAT! (#APPLY f (#NUM k)) (#APPLY g (#NUM k))
         eqf0 = APPLY-≡∈BAIRE!-NUM→ i w f g k eqf
 
@@ -726,36 +747,29 @@ wmem→follow-NATeq kb i w I f g k (weqC a1 f1 a2 f2 e c1 c2 ind) eqf =
         eqf2 : □· w (λ w' _ → #⇛!sameℕ w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
         eqf2 = INR→!≡∈Type-IndBarC i w a1 t _ _ d1 eqf1
 
-        eqf3 : #⇛!sameℕ w' (#APPLY f (#NUM k)) (#APPLY g (#NUM k))
-        eqf3 = kb eqf2 w' (⇓from-to→⊑ {w} {w'} {⌜ I ⌝} {⌜ #SUP a1 f1 ⌝} cI')
+        eqf3 : #⇛!sameℕ w (#APPLY f (#NUM k)) (#APPLY g (#NUM k))
+        eqf3 = kb eqf2 w (⊑-refl· w)
 
         j : ℕ
         j = fst eqf3
 
-        cf : #APPLY f (#NUM k) #⇛! #NUM j at w'
+        cf : #APPLY f (#NUM k) #⇛! #NUM j at w
         cf = fst (snd eqf3)
 
-        cg : #APPLY g (#NUM k) #⇛! #NUM j at w'
+        cg : #APPLY g (#NUM k) #⇛! #NUM j at w
         cg = snd (snd eqf3)
-
-        comp1 : #follow f I k #⇓ #follow f (#APPLY f1 (#NUM j)) (suc k) from w to w'
-        comp1 = #follow-INR⇓from-to w w' I a1 f1 f t k j cI' d1 cf
-
-        comp2 : #follow g I k #⇓ #follow g (#APPLY f1 (#NUM j)) (suc k) from w to w'
-        comp2 = #follow-INR⇓from-to w w' I a1 f1 g t k j cI' d1 cg
 
         eqj : equalInType i w (sub0 a1 #IndBarC) (#NUM j) (#NUM j)
         eqj = equalInType-#⇛-rev (sub0-indBarC⇛INR-NAT⇛! w a1 t d1) (NUM-equalInType-NAT! i w j)
 
-        wf1 : weq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC)) w (#APPLY f1 (#NUM j)) (#APPLY f2 (#NUM j))
-        wf1 = ind (#NUM j) (#NUM j) eqj
+        ind' : NATeq {--#⇓sameℕ--} w (#follow f (#APPLY f1 (#NUM j)) (suc k)) (#follow g (#APPLY f2 (#NUM j)) (suc k))
+        ind' = wmem→follow-NATeq kb i w (#APPLY f1 (#NUM j)) (#APPLY f2 (#NUM j)) f g (suc k) (ind (#NUM j) (#NUM j) eqj) eqf
 
-        -- The world is off - comp1 and comp2 might not end in the same world because c1 and c2 might not end in the same world...
-        ind' : #⇓sameℕ w (#follow f (#APPLY f1 (#NUM j)) (suc k)) (#follow g (#APPLY f1 (#NUM j)) (suc k))
-        ind' = wmem→follow-NATeq
-                 kb i w (#APPLY f1 (#NUM j)) f g (suc k)
-                 (#⇓SUP→weq-refl {_} {_} {_} {I} {a1} {a2} {f1} {f2} c1 c2 wf1)
-                 eqf
+        comp1 : #follow f I1 k #⇛ #follow f (#APPLY f1 (#NUM j)) (suc k) at w
+        comp1 = #follow-INR⇛ w I1 a1 f1 f t k j c1 d1 cf
+
+        comp2 : #follow g I2 k #⇛ #follow g (#APPLY f2 (#NUM j)) (suc k) at w
+        comp2 = #follow-INR⇛ w I2 a2 f2 g u k j c2 d2 cg
 
 
 {--
@@ -770,10 +784,10 @@ semCond : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get
           → compatible· r w Res⊤
           → ∈Type i w #FunBarP F
           → ∈Type i w #BAIRE! f
-          → equalInType i w #QNAT (#APPLY F f) (#follow f (#tab r F 0 #INIT) 0)
+          → equalInType i w #NAT (#APPLY F f) (#follow f (#tab r F 0 #INIT) 0)
 -- It's a #QNAT and not a #NAT because of the computation on #tab, which is a "time-dependent" computation
 semCond kb cn can exb gc i w r F f compat F∈ f∈ =
-  →equalInType-QNAT
+  →equalInType-NAT
     i w (#APPLY F f) (#follow f I 0)
     (Mod.∀𝕎-□Func M aw (equalInType-W→ i w #IndBarB #IndBarC I I I∈))
   where
@@ -787,8 +801,8 @@ semCond kb cn can exb gc i w r F f compat F∈ f∈ =
     I∈ = sem kb cn can exb gc i w r F compat F∈
 
     aw : ∀𝕎 w (λ w' e' → wmem (equalInType i w' #IndBarB) (λ a b eqa → equalInType i w' (sub0 a #IndBarC)) w' I
-                        → #weakMonEq w' (#APPLY F f) (#follow f I 0))
-    aw w1 e1 h w2 e2 = lift {!!}
+                        → NATeq {--#weakMonEq--} w' (#APPLY F f) (#follow f I 0))
+    aw w1 e1 h = {!!}
     -- use BAIRE2𝕊-equalInBAIRE to switch from (#APPLY F f) to (#APPLY F (#MSEQ s))
     -- Can we do the same with (#follow f I 0)?
 

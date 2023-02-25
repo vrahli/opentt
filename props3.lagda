@@ -653,7 +653,7 @@ equalInType-#⇛-left-rev {i} {w} {T} {a} {b} {c} comp (eqt , eqi) = eqt , equal
                   → Weq eqa eqb w a c
                   → Weq eqa eqb w b c
 #⇛!-pres-Weq-L {w} {a} {b} {c} {eqa} {eqb} comp (weqC a1 f1 a2 f2 e x x₁ x₂) =
-  weqC a1 f1 a2 f2 e (val-⇓→ tt (lower (comp w (⊑-refl· w))) x) {--(val-⇛→ tt comp x)--} x₁ x₂
+  weqC a1 f1 a2 f2 e {--(val-⇓→ tt (lower (comp w (⊑-refl· w))) x)--} (val-⇛→ tt comp x) x₁ x₂
 
 
 
@@ -664,7 +664,7 @@ equalInType-#⇛-left-rev {i} {w} {T} {a} {b} {c} comp (eqt , eqi) = eqt , equal
                   → meq eqa eqb w b c
 meq.meqC (#⇛!-pres-Meq-L {w} {a} {b} {c} {eqa} {eqb} comp h) with meq.meqC h
 ... | (a1 , f1 , a2 , f2 , e , x , x₁ , x₂) =
-  a1 , f1 , a2 , f2 , e , val-⇓→ tt (lower (comp w (⊑-refl· w))) x {--val-⇛→ tt comp x--} ,  x₁ , x₂
+  a1 , f1 , a2 , f2 , e , {--val-⇓→ tt (lower (comp w (⊑-refl· w))) x--} val-⇛→ tt comp x ,  x₁ , x₂
 
 
 equalTerms-#⇛-left-at : ℕ → Set(lsuc(L))

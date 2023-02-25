@@ -350,8 +350,8 @@ meq-trans : {eqa : per}
             → meq eqa eqb w a c
 meq.meqC (meq-trans {eqa} {eqb} {w} {a} {b} {c} syma symb transa transb transc transd h1 h2) with meq.meqC h1 | meq.meqC h2
 ... | (a1 , f1 , a2 , f2 , e1 , c1 , c2 , p) | (a3 , f3 , a4 , f4 , e2 , c3 , c4 , q)
-  rewrite #SUPinj1 {a2} {f2} {a3} {f3} (#⇓-val-det {_} {b} tt tt c2 c3)
-        | #SUPinj2 {a2} {f2} {a3} {f3} (#⇓-val-det {_} {b} tt tt c2 c3) =
+  rewrite #SUPinj1 {a2} {f2} {a3} {f3} (#⇛-val-det {--#⇓-val-det--} {_} {b} tt tt c2 c3)
+        | #SUPinj2 {a2} {f2} {a3} {f3} (#⇛-val-det {--#⇓-val-det--} {_} {b} tt tt c2 c3) =
   a1 , f1 , a4 , f4 , transa _ _ _ e1 e2 , c1 , c4 , eb
   where
     eb : (b1 b2 : CTerm) → eqb a1 a4 (transa a1 a3 a4 e1 e2) b1 b2 → meq eqa eqb w (#APPLY f1 b1) (#APPLY f4 b2)

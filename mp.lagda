@@ -128,6 +128,7 @@ strongBool-BTRUE→ w t (x , y , inj₂ (c₁ , c₂)) = ⊥-elim (h (compAllVal
 
 
 -- pure version
+-- πₚ (F : ℕ → 𝔹). ¬(Π (n : ℕ). ¬(F n ≡ true)) → ||Σ (n : ℕ). F n ≡ true||
 MPp : Term
 MPp = PI (TPURE NAT!→BOOL) (FUN (NEG (PI NAT! (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))
                                  (SQUASH (SUM NAT! (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))

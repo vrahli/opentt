@@ -392,7 +392,7 @@ sem kb cn can exb gc i w r F {--nnF--} compat F∈P = concl
     F∈ = equalInType-TPURE→ F∈P
 
     co : ∈Type i w #CoIndBar (#APPLY2 (#loop r F) (#NUM 0) #INIT)
-    co = coSem kb cn i w r F (#NUM 0) #INIT compat F∈ (NUM-equalInType-NAT! i w 0) (LAM0∈BAIRE i w)
+    co = coSem can gc kb cn i w r F (#NUM 0) #INIT refl refl nnF compat F∈ (NUM-equalInType-NAT! i w 0) (LAM0∈BAIRE i w)
 
     concl : ∈Type i w #IndBar (#APPLY2 (#loop r F) (#NUM 0) #INIT)
     concl with EM {∃𝕎 w (λ w' _ → Σ (path i w' #IndBarB #IndBarC)
