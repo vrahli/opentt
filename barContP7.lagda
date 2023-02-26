@@ -841,11 +841,11 @@ BAIRE!2𝕊-equalInBAIRE kb {i} {w} {f} f∈ =
 #⇛!sameℕ→NATeq {w} {a} {b} (k , c1 , c2) = k , #⇛!→#⇛ {w} {a} {#NUM k} c1 , #⇛!→#⇛ {w} {b} {#NUM k} c2
 
 
-{--
-xxx : (k : ℕ)
-      → wmem (equalInType i w' #IndBarB) (λ a b eqa → equalInType i w' (sub0 a #IndBarC)) w' (#tab r F k (BAIRE2list f k))
-      → NATeq w' (#APPLY F f) (#follow f I k)
---}
+follow-NUM : (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm) (s : 𝕊) (k n : ℕ)
+             → wmem (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC)) w (#tab r F k (seq2list s k))
+             → #APPLY F (#MSEQ s) #⇛ #NUM n at w
+             → #follow (#MSEQ s) (#tab r F k (seq2list s k)) k #⇛ #NUM n at w
+follow-NUM i w r F s k n wm h comp = ?
 
 
 semCond : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
@@ -892,6 +892,6 @@ semCond kb cn can exb gc i w r F f compat F∈P f∈ =
         neq1 = kb (equalInType-NAT→ i w1 _ _ (equalInType-FUN→ F∈ w1 e1 f (#MSEQ s) (equalInType-mon f≡2 w1 e1))) w1 (⊑-refl· w1)
 
         neq2 : NATeq w1 (#APPLY F (#MSEQ s)) (#follow (#MSEQ s) I 0)
-        neq2 = {!!}
+        neq2 = fst neq1 , snd (snd neq1) , {!!}
 
 \end{code}
