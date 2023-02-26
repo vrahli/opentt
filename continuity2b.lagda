@@ -2245,6 +2245,6 @@ updCtxt2-WRECr {name} {f} {r} {g} cf dr df =
     (updCtxt2-WREC
       _ _
       (updCtxt2-APPLY _ _ (→updCtxt2-shiftUp 0 cf df) (updCtxt2-VAR 0))
-      (→updCtxt2-shiftUp 0 cf dr))
+      (→updCtxt2-shiftUp 3 cf dr))
 
 \end{code}

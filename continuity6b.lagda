@@ -2115,7 +2115,7 @@ updRel2-WRECr {name} {f} {g} {r} {r1} {r2} {f1} {f2} cf cg ur uf =
     (updRel2-WREC
       _ _ _ _
       (updRel2-APPLY _ _ _ _ (updRel2-shiftUp 0 cf cg uf) (updRel2-VAR 0))
-      (updRel2-shiftUp 0 cf cg ur))
+      (updRel2-shiftUp 3 cf cg ur))
 
 
 {--

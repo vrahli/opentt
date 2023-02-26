@@ -211,6 +211,14 @@ NATeq→#⇛NUMₗ {w} {a} {b} {k} (j , c1 , c2) c
   rewrite NUMinj (⇛-val-det {w} {⌜ b ⌝} {NUM j} {NUM k} tt tt c2 c) = c1
 
 
+#⇛!sameℕ→#⇛!NUMₗ : {w : 𝕎·} {a b : CTerm} {k : ℕ}
+                      → #⇛!sameℕ w a b
+                      → b #⇛! #NUM k at w
+                      → a #⇛! #NUM k at w
+#⇛!sameℕ→#⇛!NUMₗ {w} {a} {b} {k} (j , c1 , c2) c
+  rewrite NUMinj (⇛!-val-det {w} {⌜ b ⌝} {NUM j} {NUM k} tt tt c2 c) = c1
+
+
 BAIRE2𝕊-equalInBAIRE : (kb : K□) {i : ℕ} {w : 𝕎·} {f : CTerm} (f∈ : ∈Type i w #BAIRE f)
                         → equalInType i w #BAIRE f (#MSEQ (BAIRE2𝕊 kb f∈))
 BAIRE2𝕊-equalInBAIRE kb {i} {w} {f} f∈ =
@@ -235,6 +243,26 @@ BAIRE2𝕊-equalInBAIRE kb {i} {w} {f} f∈ =
 
             j3 : #APPLY f a₁ #⇛ #NUM (s k) at w2
             j3 = NATeq→#⇛NUMₗ {w2} {#APPLY f a₁} {#APPLY f (#NUM k)} j2 (∀𝕎-mon (⊑-trans· e1 e2) j1)
+
+
+APPLY-NUM-MSEQ⇛! : (w : 𝕎·) (s : 𝕊) (k : ℕ)
+                    → APPLY (MSEQ s) (NUM k) ⇛! NUM (s k) at w
+APPLY-NUM-MSEQ⇛! w s k w1 e1 = lift (2 , refl)
+
+
+BAIRE!2𝕊-equalInNAT! : (kb : K□) {i : ℕ} {w : 𝕎·} {f : CTerm} (f∈ : ∈Type i w #BAIRE! f) (k : ℕ)
+                         → equalInType i w #NAT! (#APPLY f (#NUM k)) (#APPLY (#MSEQ (BAIRE!2𝕊 kb f∈)) (#NUM k))
+BAIRE!2𝕊-equalInNAT! kb {i} {w} {f} f∈ k =
+  →equalInType-NAT! i w (#APPLY f (#NUM k)) (#APPLY (#MSEQ (BAIRE!2𝕊 kb f∈)) (#NUM k)) (Mod.∀𝕎-□ M aw)
+  where
+    s : 𝕊
+    s = BAIRE!2𝕊 kb f∈
+
+    j1 : #APPLY f (#NUM k) #⇛! #NUM (s k) at w
+    j1 = fst (snd (kb (equalInType-NAT!→ i w _ _ (APPLY-∈BAIRE!-NUM→ i w f k f∈)) w (⊑-refl· w)))
+
+    aw : ∀𝕎 w (λ w' _ → #⇛!sameℕ w' (#APPLY f (#NUM k)) (#APPLY (#MSEQ (BAIRE!2𝕊 kb f∈)) (#NUM k)))
+    aw w1 e1 = s k , ∀𝕎-mon e1 j1 , APPLY-NUM-MSEQ⇛! w1 s k
 
 
 #tab : (r : Name) (F : CTerm) (k : ℕ) (f : CTerm) → CTerm
@@ -717,7 +745,7 @@ sub0-indBarC⇛INR-NAT⇛! w x a comp rewrite #shiftUp 0 x | #shiftDown 0 x =
 
 weq→follow-NATeq : (kb : K□) (i : ℕ) (w : 𝕎·) (I1 I2 f g : CTerm) (k : ℕ)
                      → weq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC)) w I1 I2
-                     → equalInType i w #BAIRE! f g
+                     → ((k : ℕ) → equalInType i w #NAT! (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
                      → NATeq {--#⇓sameℕ--} w (#follow f I1 k) (#follow g I2 k)
 weq→follow-NATeq kb i w I1 I2 f g k (weqC a1 f1 a2 f2 e c1 c2 ind) eqf
   with kb (equalInType-IndBarB→ i w a1 a2 e) w (⊑-refl· w)
@@ -739,7 +767,7 @@ weq→follow-NATeq kb i w I1 I2 f g k (weqC a1 f1 a2 f2 e c1 c2 ind) eqf
       ind'
       where
         eqf0 : equalInType i w #NAT! (#APPLY f (#NUM k)) (#APPLY g (#NUM k))
-        eqf0 = APPLY-≡∈BAIRE!-NUM→ i w f g k eqf
+        eqf0 = eqf k --APPLY-≡∈BAIRE!-NUM→ i w f g k eqf
 
         eqf1 : equalInType i w (sub0 a1 #IndBarC) (#APPLY f (#NUM k)) (#APPLY g (#NUM k))
         eqf1 = equalInType-#⇛-rev (sub0-indBarC⇛INR-NAT⇛! w a1 t d1) eqf0
@@ -772,6 +800,47 @@ weq→follow-NATeq kb i w I1 I2 f g k (weqC a1 f1 a2 f2 e c1 c2 ind) eqf
         comp2 = #follow-INR⇛ w I2 a2 f2 g u k j c2 d2 cg
 
 
+NATeq-trans : {w : 𝕎·} {a b c : CTerm}
+              → NATeq w a b
+              → NATeq w b c
+              → NATeq w a c
+NATeq-trans {w} {a} {b} {c} (k , c1 , c2) (j , d1 , d2)
+  rewrite #NUMinj (#⇛-val-det {_} {b} tt tt d1 c2) = k , c1 , d2
+
+
+BAIRE!2𝕊-equalInBAIRE : (kb : K□) {i : ℕ} {w : 𝕎·} {f : CTerm} (f∈ : ∈Type i w #BAIRE! f)
+                        → equalInType i w #BAIRE f (#MSEQ (BAIRE!2𝕊 kb f∈))
+BAIRE!2𝕊-equalInBAIRE kb {i} {w} {f} f∈ =
+  equalInType-FUN eqTypesNAT eqTypesNAT aw
+  where
+    s : 𝕊
+    s = BAIRE!2𝕊 kb f∈
+
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
+                       → equalInType i w' #NAT (#APPLY f a₁) (#APPLY (#MSEQ s) a₂))
+    aw w1 e1 a₁ a₂ ea =
+      →equalInType-NAT i w1 _  _ (Mod.∀𝕎-□Func M aw1 (equalInType-NAT→ i w1 _ _ ea))
+      where
+        aw1 : ∀𝕎 w1 (λ w' e' → NATeq w' a₁ a₂ → NATeq w' (#APPLY f a₁) (#APPLY (#MSEQ s) a₂))
+        aw1 w2 e2 (k , c1 , c2) = s k , #⇛!→#⇛ {w2} {#APPLY f a₁} {#NUM (s k)} j3 , APPLY-MSEQ⇛ w2 s ⌜ a₂ ⌝ k c2
+          where
+            j1 : #APPLY f (#NUM k) #⇛! #NUM (s k) at w
+            j1 = fst (snd (kb (equalInType-NAT!→ i w _ _ (APPLY-∈BAIRE!-NUM→ i w f k f∈)) w (⊑-refl· w)))
+
+            j2 : #⇛!sameℕ w2 (#APPLY f a₁) (#APPLY f (#NUM k))
+            j2 = kb (equalInType-NAT!→ i w2 _ _ (equalInType-FUN→ f∈ w2 (⊑-trans· e1 e2) a₁ (#NUM k) (#⇛NUM→equalInType-NAT i w2 a₁ k c1))) w2 (⊑-refl· w2)
+
+            j3 : #APPLY f a₁ #⇛! #NUM (s k) at w2
+            j3 = #⇛!sameℕ→#⇛!NUMₗ {w2} {#APPLY f a₁} {#APPLY f (#NUM k)} j2 (∀𝕎-mon (⊑-trans· e1 e2) j1)
+
+
+
+#⇛!sameℕ→NATeq : {w : 𝕎·} {a b : CTerm}
+                    → #⇛!sameℕ w a b
+                    → NATeq w a b
+#⇛!sameℕ→NATeq {w} {a} {b} (k , c1 , c2) = k , #⇛!→#⇛ {w} {a} {#NUM k} c1 , #⇛!→#⇛ {w} {b} {#NUM k} c2
+
+
 {--
 xxx : (k : ℕ)
       → wmem (equalInType i w' #IndBarB) (λ a b eqa → equalInType i w' (sub0 a #IndBarC)) w' (#tab r F k (BAIRE2list f k))
@@ -786,11 +855,17 @@ semCond : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get
           → ∈Type i w #BAIRE! f
           → equalInType i w #NAT (#APPLY F f) (#follow f (#tab r F 0 #INIT) 0)
 -- It's a #QNAT and not a #NAT because of the computation on #tab, which is a "time-dependent" computation
-semCond kb cn can exb gc i w r F f compat F∈ f∈ =
+semCond kb cn can exb gc i w r F f compat F∈P f∈ =
   →equalInType-NAT
     i w (#APPLY F f) (#follow f I 0)
     (Mod.∀𝕎-□Func M aw (equalInType-W→ i w #IndBarB #IndBarC I I I∈))
   where
+    nnF  : #¬Names F
+    nnF = equalInType-TPURE→ₗ F∈P
+
+    F∈ : ∈Type i w #FunBar F
+    F∈ = equalInType-TPURE→ F∈P
+
     s : 𝕊
     s = BAIRE!2𝕊 kb f∈
 
@@ -798,13 +873,25 @@ semCond kb cn can exb gc i w r F f compat F∈ f∈ =
     I = #tab r F 0 #INIT
 
     I∈ : ∈Type i w #IndBar I
-    I∈ = sem kb cn can exb gc i w r F compat F∈
+    I∈ = sem kb cn can exb gc i w r F compat F∈P
+
+    f≡1 : (k : ℕ) → equalInType i w #NAT! (#APPLY f (#NUM k)) (#APPLY (#MSEQ s) (#NUM k))
+    f≡1 k = BAIRE!2𝕊-equalInNAT! kb {i} {w} {f} f∈ k
+
+    f≡2 : equalInType i w #BAIRE f (#MSEQ (BAIRE!2𝕊 kb f∈))
+    f≡2 = BAIRE!2𝕊-equalInBAIRE kb {i} {w} {f} f∈
 
     aw : ∀𝕎 w (λ w' e' → wmem (equalInType i w' #IndBarB) (λ a b eqa → equalInType i w' (sub0 a #IndBarC)) w' I
                         → NATeq {--#weakMonEq--} w' (#APPLY F f) (#follow f I 0))
-    aw w1 e1 h = {!!}
-    -- use BAIRE2𝕊-equalInBAIRE to switch from (#APPLY F f) to (#APPLY F (#MSEQ s))
-    -- Can we do the same with (#follow f I 0)? → weq→follow-NATeq
+    aw w1 e1 h =
+      NATeq-trans {w1} {#APPLY F f} {#follow (#MSEQ s) I 0} {#follow f I 0}
+        (NATeq-trans {w1} {#APPLY F f} {#APPLY F (#MSEQ s)} {#follow (#MSEQ s) I 0} neq1 neq2)
+        (weq→follow-NATeq kb i w1 I I (#MSEQ s) f 0 h (λ k → equalInType-mon (equalInType-sym (f≡1 k)) w1 e1))
+      where
+        neq1 : NATeq w1 (#APPLY F f) (#APPLY F (#MSEQ s))
+        neq1 = kb (equalInType-NAT→ i w1 _ _ (equalInType-FUN→ F∈ w1 e1 f (#MSEQ s) (equalInType-mon f≡2 w1 e1))) w1 (⊑-refl· w1)
 
+        neq2 : NATeq w1 (#APPLY F (#MSEQ s)) (#follow (#MSEQ s) I 0)
+        neq2 = {!!}
 
 \end{code}

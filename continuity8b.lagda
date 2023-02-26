@@ -184,7 +184,7 @@ names-WRECr⊆ : (r f : Term) (s : List Name)
                 → names f ⊆ s
                 → names (WRECr r f) ⊆ s
 names-WRECr⊆ r f s ssr ssf
-  rewrite names-shiftUp 0 r
+  rewrite names-shiftUp 3 r
         | names-shiftUp 0 f
         | ++[] (names f)
   = ⊆++ ssf ssr
