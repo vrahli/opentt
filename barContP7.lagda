@@ -912,4 +912,53 @@ BAIRE!2𝕊-equalInBAIRE kb {i} {w} {f} f∈ =
 #¬Names-seq2list s 0 = refl
 #¬Names-seq2list s (suc k) rewrite ¬names-shiftUp 0 ⌜ seq2list s k ⌝ | #¬Names-seq2list s k = refl
 
+
+#APPLY-MSEQ-NUM#⇛! : (s : 𝕊) (k : ℕ) (w : 𝕎·)
+                      → #APPLY (#MSEQ s) (#NUM k) #⇛! #NUM (s k) at w
+#APPLY-MSEQ-NUM#⇛! s k w w1 e1 = lift (2 , refl)
+
+
+APPLY-loopR-NUM⇛! : (w : 𝕎·) (R f : CTerm) (m n : ℕ)
+                    → #APPLY (#loopR R (#NUM n) f) (#NUM m) #⇛! #APPLY2 R (#NUM (suc n)) (#APPENDf (#NUM n) f (#NUM m)) at w
+APPLY-loopR-NUM⇛! w R f m n w1 e1 =
+  lift (APPLY-loopR-⇓ w1 w1 w1 R (#NUM n) f (#NUM m) m n (0 , refl) (0 , refl))
+
+
+#⇛SUP→× : (w : 𝕎·) (I t a f b g : CTerm)
+            → I #⇛! t at w
+            → I #⇛ #SUP a f at w
+            → t #⇛ #SUP b g at w
+            → a ≡ b × f ≡ g
+#⇛SUP→× w I t a f b g c1 c2 c3
+  rewrite #SUPinj1 {b} {g} {a} {f} (#⇛-val-det {_} {I} tt tt (#⇛-trans {w} {I} {t} {#SUP b g} (#⇛!→#⇛ {w} {I} {t} c1) c3) c2)
+        | #SUPinj2 {b} {g} {a} {f} (#⇛-val-det {_} {I} tt tt (#⇛-trans {w} {I} {t} {#SUP b g} (#⇛!→#⇛ {w} {I} {t} c1) c3) c2)
+  = refl , refl
+
+
+NUM∈sub0-IndBarc : (i : ℕ) (w : 𝕎·) (a x : CTerm) (k : ℕ)
+                    → a #⇛! #INR x at w
+                    → ∈Type i w (sub0 a #IndBarC) (#NUM k)
+NUM∈sub0-IndBarc i w a x k comp =
+  equalInType-#⇛-rev (sub0-indBarC⇛INR-NAT⇛! w a x comp) (NUM-equalInType-NAT! i w k)
+
+
+≡ₗ→#⇛! : (w : 𝕎·) (a b : CTerm)
+          → a ≡ b
+          → a #⇛! b at w
+≡ₗ→#⇛! w a b e rewrite e = #⇛!-refl {w} {b}
+
+
+≡ₗ→#⇛ : (w : 𝕎·) (a b : CTerm)
+         → a ≡ b
+         → a #⇛ b at w
+≡ₗ→#⇛ w a b e rewrite e = #⇛-refl w b
+
+
+≡#follow : (a1 a2 b1 b2 : CTerm) (c1 c2 : ℕ)
+           → a1 ≡ a2
+           → b1 ≡ b2
+           → c1 ≡ c2
+           → #follow a1 b1 c1 ≡ #follow a2 b2 c2
+≡#follow a1 a2 b1 b2 c1 c2 e1 e2 e3 rewrite e1 | e2 | e3 = refl
+
 \end{code}
