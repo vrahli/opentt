@@ -196,12 +196,23 @@ abstract
         c7 : #APPLY F (#MSEQ s) #⇓ #NUM n at (chooseT r w N0)
         c7 = lower (comp (chooseT r w N0) (choose⊑· r w (T→ℂ· N0)))
 
-        -- This is backward...
-        upds : updSeq r s n ⌜ #APPLY F (#upd r (seq2list s k)) ⌝ ⌜ #APPLY F (#MSEQ s) ⌝
+{--
+        c8 : #APPLY F (#upd r (#MSEQ s)) #⇓ #NUM n at (chooseT r w N0)
+        c8 = ?
+
+        c9 : Σ 𝕎· (λ w'' → #APPLY F (#upd r (#MSEQ s)) #⇓ #NUM n from (chooseT r w N0) to w'')
+        c9 = ?
+
+        gt0' : Σ ℕ (λ j → getT 0 r (fst c9) ≡ just (NUM j))
+        gt0' = ?
+
+        upds : updSeq r s n ⌜ #APPLY F (#upd r (#MSEQ s)) ⌝ ⌜ #APPLY F (#upd r (seq2list s k)) ⌝
         upds = {!!}
 
-        ish : isHighestℕ {fst c6} {chooseT r w N0} {w'} {⌜ #APPLY F (#upd r (seq2list s k)) ⌝} {NUM j} k r (snd c6)
+        ish : isHighestℕ {fst (snd c9)} {chooseT r w N0} {fst c9} {⌜ #APPLY F (#upd r (#MSEQ S)) ⌝} {NUM n} (fst gt0') r (snd (snd c9))
         ish = {!!}
+--}
+
 
         -- use updSeq-steps-NUM in barContP6
         -- and steps-sat-isHighestℕ in continuity3
