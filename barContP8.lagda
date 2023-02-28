@@ -99,7 +99,7 @@ open import continuity-conds(W)(C)(K)(G)(X)(N)
 
 open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#upd)
 --open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#⇓sameℕ)
---open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E) using (isHighestℕ)
 --open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -108,7 +108,7 @@ open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalInType-TPURE→�
 open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (#INIT ; #APPLY-loop⇓SUP→)
 open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (seq2list)
---open import barContP4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
+open import barContP4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 --open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 open import barContP6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (#FunBarP ; sem)
 open import barContP7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
@@ -142,6 +142,7 @@ abstract
 
 abstract
 
+  -- TODO: remove the unused hyps
   follow-NUM-ETA : (kb : K□) (can : comp→∀ℕ) (gc : get-choose-ℕ) (cn : cℕ)
                    (i : ℕ) (w : 𝕎·) (r : Name) (I F a f : CTerm) (s : 𝕊) (k n j : ℕ)
                    → #¬Names F
@@ -170,6 +171,40 @@ abstract
 
         ef1 : f ≡ #AX
         ef1 = snd (#⇛SUP→× w I (#tab r F k (seq2list s k)) a f (#INL (#NUM j)) #AX cI c1 c3)
+
+        h1 : Σ 𝕎· (λ w' → Σ ℕ (λ m →
+                #APPLY F (#upd r (seq2list s k)) #⇓ #NUM j from (chooseT r w N0) to w'
+                × getT 0 r w' ≡ just (NUM m)
+                × m < k))
+        h1 = lower (#tab#⇛#ETA→ cn w r F (seq2list s k) k j compat c3 w (⊑-refl· w))
+
+        w' : 𝕎·
+        w' = fst h1
+
+        m : ℕ
+        m = fst (snd h1)
+
+        c6 : #APPLY F (#upd r (seq2list s k)) #⇓ #NUM j from (chooseT r w N0) to w'
+        c6 = fst (snd (snd h1))
+
+        gt0 : getT 0 r w' ≡ just (NUM m)
+        gt0 = fst (snd (snd (snd h1)))
+
+        ltk : m < k
+        ltk = snd (snd (snd (snd h1)))
+
+        c7 : #APPLY F (#MSEQ s) #⇓ #NUM n at (chooseT r w N0)
+        c7 = lower (comp (chooseT r w N0) (choose⊑· r w (T→ℂ· N0)))
+
+        -- This is backward...
+        upds : updSeq r s n ⌜ #APPLY F (#upd r (seq2list s k)) ⌝ ⌜ #APPLY F (#MSEQ s) ⌝
+        upds = {!!}
+
+        ish : isHighestℕ {fst c6} {chooseT r w N0} {w'} {⌜ #APPLY F (#upd r (seq2list s k)) ⌝} {NUM j} k r (snd c6)
+        ish = {!!}
+
+        -- use updSeq-steps-NUM in barContP6
+        -- and steps-sat-isHighestℕ in continuity3
 
         eqjn : j ≡ n
         eqjn = {!!}
