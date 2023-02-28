@@ -72,7 +72,7 @@ open import terms3(W)(C)(K)(G)(X)(N) using (≡APPLY)
 --open import terms5(W)(C)(K)(G)(X)(N)
 --open import terms6(W)(C)(K)(G)(X)(N)
 --open import terms7(W)(C)(K)(G)(X)(N)
-open import terms8(W)(C)(K)(G)(X)(N) using (#APPLY2 ; #⇛-trans)
+open import terms8(W)(C)(K)(G)(X)(N) using (#APPLY2 ; #⇛-trans ; #INL¬≡INR)
 open import terms9(W)(C)(K)(G)(X)(N) using (#BAIRE!)
 
 open import bar(W)
@@ -106,13 +106,30 @@ open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#upd)
 open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalInType-TPURE→ₗ ; equalInType-TPURE→)
 
 open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
-open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (#INIT)
+open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (#INIT ; #APPLY-loop⇓SUP→)
 open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (seq2list)
 --open import barContP4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 --open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 open import barContP6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (#FunBarP ; sem)
 open import barContP7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 
+
+
+abstract
+
+  #tab#⇛#ETA→ : (cn : cℕ) (w : 𝕎·) (r : Name) (F f : CTerm) (k j : ℕ)
+                  → compatible· r w Res⊤
+                  → #tab r F k f #⇛ #ETA (#NUM j) at w
+                  → ∀𝕎 w (λ w1 e1 → Lift (lsuc L) (Σ 𝕎· (λ w' → Σ ℕ (λ n →
+                       #APPLY F (#upd r f) #⇓ #NUM j from (chooseT r w1 N0) to w'
+                       × getT 0 r w' ≡ just (NUM n)
+                       × n < k))))
+  #tab#⇛#ETA→ cn w r F f k j compat comp w1 e1
+    with #APPLY-loop⇓SUP→ cn w1 r F (#NUM k) f (#INL (#NUM j)) #AX (⊑-compatible· e1 compat) (lower (comp w1 e1))
+  ... | (i , w' , n , m , comp' , gt0 ,  ck , inj₁ (x , y , z))
+    rewrite #NUMinj (#INLinj y) | #NUMinj (#compVal {#NUM k} {#NUM m} {w'} ck tt)
+    = lift (w' , n , comp' , gt0 , x)
+  ... | (i , w' , n , m , comp' , gt0 ,  ck , inj₂ (x , y , z)) = ⊥-elim (#INL¬≡INR {#NUM j} {#AX} y)
 
 
 abstract
@@ -157,6 +174,7 @@ abstract
         eqjn : j ≡ n
         eqjn = {!!}
         -- (j ≡ n) because in the computation c3 that uses c4, r never goes about k and so comp must compute to the same result
+        -- use #tab#⇛#ETA→ on c3  + continuity
 
 
 abstract
