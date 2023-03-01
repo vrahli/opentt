@@ -173,8 +173,8 @@ updSeqStep-sub-sub-upd : (cn : cℕ) (gc : get-choose-ℕ) (w : 𝕎·) (r : Nam
                          → updSeqStepInd r s n (sub a (updBody r (MSEQ s))) w
                          → updSeqStep w w r s n (sub b (updBody r (s2l s n))) (sub a (updBody r (MSEQ s)))
 updSeqStep-sub-sub-upd cn gc w r s n a b compat u ind
-  rewrite sub-upd r (MSEQ s) a refl | sub-upd r (s2l s n) b (s2l# s n) =
-  updSeqStep-upd cn gc w r s n a b compat u ind
+  rewrite sub-upd r (MSEQ s) a refl | sub-upd r (s2l s n) b (s2l# s n)
+  = updSeqStep-upd cn gc w r s n a b compat u ind
 
 
 updSeqStep-sub-upd : (cn : cℕ) (gc : get-choose-ℕ) (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b : Term)
@@ -190,6 +190,95 @@ updSeqStep-sub-upd cn gc w r s n a b compat u ind =
     (sub a (updBody r (MSEQ s)))
     (1 , refl)
     (updSeqStep-sub-sub-upd cn gc w r s n a b compat u ind)
+
+
+updSeqStep-updr : (cn : cℕ) (gc : get-choose-ℕ) (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b : Term)
+                 → compatible· r w Res⊤
+                 → updSeq r s n a b
+                 → updSeqStepInd r s n (updBodyL r a (s2l s n)) w
+                 → updSeqStep w w r s n (updBodyL r b (MSEQ s)) (updBodyL r a (s2l s n))
+updSeqStep-updr cn gc w r s n a b compat u (k , v , w' , comp , ish , isv , ind)
+  with upd-decomp {k} {r} {s2l s n} {a} {v} {w} {w'} (s2l# s n) (cn r w compat) comp isv
+... | (k1 , k2 , w1' , m , m' , ltk1 , ltk2 , gt0 , comp1 , comp2) =
+  k2 + k3 , fst comp3c , NUM (s m) , NUM (s m) , w2 , comp2b , snd comp3c , updSeq-NUM (s m)
+  where
+    comp1b : steps k1 (a , w) ≡ (NUM m , w1')
+    comp1b = ssteps→steps {k1} {a} {NUM m} {w} {w1'} comp1
+
+    e' : w ⊑· w1'
+    e' = ⇓from-to→⊑ {w} {w1'} {a} {NUM m} (k1 , comp1b)
+
+    w2 : 𝕎·
+    w2 = chooseT0if r w1' m' m
+
+    ltn : m < n
+    ltn = isHighestℕ-updBody→< gc {n} {r} {s2l s n} {k1} {k} {a} {v} {m} {w} {w1'} {w'} (s2l# s n) compat comp1b comp isv ish
+
+    compa : APPLY (s2l s n) (NUM m) ⇓ NUM (s m) from w2 to w2
+    compa = s2l⇓ w2 s n m ltn
+
+    k3 : ℕ
+    k3 = fst compa
+
+    compa2 : steps k3 (APPLY (s2l s n) (NUM m) , w2) ≡ (NUM (s m) , w2)
+    compa2 = snd compa
+
+    ish1 : isHighestℕ {k1} {w} {w1'} {a} {NUM m} n r comp1b
+    ish1 = isHighestℕ-LET→ {n} {k1} {k} {r} {a} {SEQ (updGt r (VAR 0)) (APPLY (s2l s n) (VAR 0))} {NUM m} {v} {w} {w1'} {w'} comp1b comp isv ish
+
+    h1 : Σ ℕ (λ k' → Σ Term (λ v' → steps k' (b , w) ≡ (v' , w1') × updSeq r s n (NUM m) v'))
+    h1 = ind k1 (<⇒≤ ltk1) compat u comp1b ish1 tt
+
+    h2 : Σ ℕ (λ k' → steps k' (b , w) ≡ (NUM m , w1'))
+    h2 = Σsteps-updSeq-NUM→ w w1' r s n m b h1
+
+    comp2b : steps (k2 + k3) (updBodyL r a (s2l s n) , w) ≡ (NUM (s m) , w2)
+    comp2b = steps-trans+
+               {k2} {k3}
+               {updBodyL r a (s2l s n)}
+               {APPLY (s2l s n) (NUM m)} {NUM (s m)} {w} {w2} {w2}
+               comp2 compa2
+
+    eqv : v ≡ NUM (s m)
+    eqv = steps→≡ w w' w2 (updBodyL r a (s2l s n)) v (NUM (s m)) k (k2 + k3) isv tt comp comp2b
+
+    eqw' : w' ≡ w2
+    eqw' = steps→≡𝕎 w w' w2 (updBodyL r a (s2l s n)) v (NUM (s m)) k (k2 + k3) isv tt comp comp2b
+
+    comp3 : updBodyL r b (MSEQ s) ⇓ APPLY (MSEQ s) (NUM m) from w to u𝕎 r m w1'
+    comp3 = updBodyL⇓APPLY cn r b (MSEQ s) w w1' m refl compat h2
+
+    comp3b : updBodyL r b (MSEQ s) ⇓ NUM (s m) from w to u𝕎 r m w1'
+    comp3b = ⇓-trans₂ {w} {u𝕎 r m w1'} {u𝕎 r m w1'} {updBodyL r b (MSEQ s)}
+               {APPLY (MSEQ s) (NUM m)} {NUM (s m)} comp3 (2 , refl)
+
+    comp3c : updBodyL r b (MSEQ s) ⇓ NUM (s m) from w to w2
+    comp3c = ≡𝕎→⇓from-to w (u𝕎 r m w1') w2 (updBodyL r b (MSEQ s)) (NUM (s m)) (sym (chooseT0if≡u𝕎 w1' r m m' gt0)) comp3b
+
+
+updSeqStep-sub-sub-updr : (cn : cℕ) (gc : get-choose-ℕ) (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b : Term)
+                         → compatible· r w Res⊤
+                         → updSeq r s n a b
+                         → updSeqStepInd r s n (sub a (updBody r (s2l s n))) w
+                         → updSeqStep w w r s n (sub b (updBody r (MSEQ s))) (sub a (updBody r (s2l s n)))
+updSeqStep-sub-sub-updr cn gc w r s n a b compat u ind
+  rewrite sub-upd r (MSEQ s) b refl | sub-upd r (s2l s n) a (s2l# s n)
+  = updSeqStep-updr cn gc w r s n a b compat u ind
+
+
+updSeqStep-sub-updr : (cn : cℕ) (gc : get-choose-ℕ) (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b : Term)
+                     → compatible· r w Res⊤
+                     → updSeq r s n a b
+                     → updSeqStepInd r s n (sub a (updBody r (s2l s n))) w
+                     → updSeqStep w w r s n (APPLY (upd r (MSEQ s)) b) (sub a (updBody r (s2l s n)))
+updSeqStep-sub-updr cn gc w r s n a b compat u ind =
+  ⇓ₗ→updSeqStep
+    w w r s n
+    (APPLY (upd r (MSEQ s)) b)
+    (sub b (updBody r (MSEQ s)))
+    (sub a (updBody r (s2l s n)))
+    (1 , refl)
+    (updSeqStep-sub-sub-updr cn gc w r s n a b compat u ind)
 
 
 abstract
@@ -284,16 +373,24 @@ abstract
   updSeq-step cn gc w1 w2 r s n .(APPLY a₁ b₁) .(APPLY a₂ b₂) u (updSeq-APPLY a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind with is-LAM a₁
   ... | inj₁ (t , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = concl d
     where
-      d : Σ Term (λ t' → a₂ ≡ LAMBDA t' × updSeq r s n t t') ⊎ (t ≡ updBody r (MSEQ s) × a₂ ≡ upd r (s2l s n))
+      d : Σ Term (λ t' → a₂ ≡ LAMBDA t' × updSeq r s n t t')
+          ⊎ (t ≡ updBody r (MSEQ s) × a₂ ≡ upd r (s2l s n))
+          ⊎ (t ≡ updBody r (s2l s n) × a₂ ≡ upd r (MSEQ s))
       d = updSeq-LAMBDA→ {r} {s} {n} {t} {a₂} upd₁
 
-      concl : Σ Term (λ t' → a₂ ≡ LAMBDA t' × updSeq r s n t t') ⊎ (t ≡ updBody r (MSEQ s) × a₂ ≡ upd r (s2l s n))
+      concl : Σ Term (λ t' → a₂ ≡ LAMBDA t' × updSeq r s n t t')
+              ⊎ (t ≡ updBody r (MSEQ s) × a₂ ≡ upd r (s2l s n))
+              ⊎ (t ≡ updBody r (s2l s n) × a₂ ≡ upd r (MSEQ s))
               → updSeqStep w1 w1 r s n (APPLY a₂ b₂) (sub b₁ t)
       concl (inj₁ (t' , e , u')) rewrite e = 0 , 1 , sub b₁ t , sub b₂ t' , w1 , refl , refl , updSeq-sub u' upd₂
-      concl (inj₂ (e , f)) rewrite e | f = c0
+      concl (inj₂ (inj₁ (e , f))) rewrite e | f = c0
         where
           c0 : updSeqStep w1 w1 r s n (APPLY (upd r (s2l s n)) b₂) (sub b₁ (updBody r (MSEQ s)))
           c0 = updSeqStep-sub-upd cn gc w1 r s n b₁ b₂ compat upd₂ (≡sub-updSeqStepInd r s n b₁ t (updBody r (MSEQ s)) w1 e sind)
+      concl (inj₂ (inj₂ (e , f))) rewrite e | f = c0
+        where
+          c0 : updSeqStep w1 w1 r s n (APPLY (upd r (MSEQ s)) b₂) (sub b₁ (updBody r (s2l s n)))
+          c0 = updSeqStep-sub-updr cn gc w1 r s n b₁ b₂ compat upd₂ (≡sub-updSeqStepInd r s n b₁ t (updBody r (s2l s n)) w1 e sind)
   ... | inj₂ x with is-CS a₁
   ... |    inj₁ (nm , p) rewrite p = ⊥-elim (updSeq-CS→ r s n nm a₂ upd₁)
   updSeq-step cn gc w1 w2 r s n .(APPLY a₁ b₁) .(APPLY a₂ b₂) u (updSeq-APPLY a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind | inj₂ x {-- ¬LAM --} | inj₂ name {-- ¬SEQ --} with is-MSEQ a₁
@@ -309,13 +406,17 @@ abstract
   updSeq-step cn gc w1 w2 r s n .(FIX a₁) .(FIX a₂) u (updSeq-FIX a₁ a₂ upd₁) gtn compat comp sind with is-LAM a₁
   ... | inj₁ (t , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = concl d
     where
-      d : Σ Term (λ t' → a₂ ≡ LAMBDA t' × updSeq r s n t t') ⊎ (t ≡ updBody r (MSEQ s) × a₂ ≡ upd r (s2l s n))
+      d : Σ Term (λ t' → a₂ ≡ LAMBDA t' × updSeq r s n t t')
+          ⊎ (t ≡ updBody r (MSEQ s) × a₂ ≡ upd r (s2l s n))
+          ⊎ (t ≡ updBody r (s2l s n) × a₂ ≡ upd r (MSEQ s))
       d = updSeq-LAMBDA→ {r} {s} {n} {t} {a₂} upd₁
 
-      concl : Σ Term (λ t' → a₂ ≡ LAMBDA t' × updSeq r s n t t') ⊎ (t ≡ updBody r (MSEQ s) × a₂ ≡ upd r (s2l s n))
+      concl : Σ Term (λ t' → a₂ ≡ LAMBDA t' × updSeq r s n t t')
+              ⊎ (t ≡ updBody r (MSEQ s) × a₂ ≡ upd r (s2l s n))
+              ⊎ (t ≡ updBody r (s2l s n) × a₂ ≡ upd r (MSEQ s))
               → updSeqStep w1 w1 r s n (FIX a₂) (sub (FIX (LAMBDA t)) t)
       concl (inj₁ (t' , e , u')) rewrite e = 0 , 1 , sub (FIX (LAMBDA t)) t , sub (FIX (LAMBDA t')) t' , w1 , refl , refl , updSeq-sub u' (updSeq-FIX (LAMBDA t) (LAMBDA t') (updSeq-LAMBDA t t' u'))
-      concl (inj₂ (e , f)) rewrite e | f = c0
+      concl (inj₂ (inj₁ (e , f))) rewrite e | f = c0
         where
           c0 : updSeqStep w1 w1 r s n (FIX (upd r (s2l s n))) (sub (FIX (LAMBDA (updBody r (MSEQ s)))) (updBody r (MSEQ s)))
           c0 = ⇓ₗ→updSeqStep
@@ -328,6 +429,19 @@ abstract
                    cn gc w1 r s n (FIX (upd r (MSEQ s))) (FIX (upd r (s2l s n))) compat
                    (updSeq-FIX (upd r (MSEQ s)) (upd r (s2l s n)) updSeq-upd)
                    (≡sub-FIX-updSeqStepInd r s n t (updBody r (MSEQ s)) w1 e sind))
+      concl (inj₂ (inj₂ (e , f))) rewrite e | f = c0
+        where
+          c0 : updSeqStep w1 w1 r s n (FIX (upd r (MSEQ s))) (sub (FIX (LAMBDA (updBody r (s2l s n)))) (updBody r (s2l s n)))
+          c0 = ⇓ₗ→updSeqStep
+                 w1 w1 r s n
+                 (FIX (upd r (MSEQ s)))
+                 (sub (FIX (upd r (MSEQ s))) (updBody r (MSEQ s)))
+                 (sub (FIX (upd r (s2l s n))) (updBody r (s2l s n)))
+                 (1 , refl)
+                 (updSeqStep-sub-sub-updr
+                   cn gc w1 r s n (FIX (upd r (s2l s n))) (FIX (upd r (MSEQ s))) compat
+                   (updSeq-FIX (upd r (s2l s n)) (upd r (MSEQ s)) updSeq-updr)
+                   (≡sub-FIX-updSeqStepInd r s n t (updBody r (s2l s n)) w1 e sind))
   ... | inj₂ x with step⊎ a₁ w1
   ... |    inj₁ (a₁' , w1' , q) rewrite q | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
     →updSeqStep-FIX₁ w1 w1' r s n a₁' a₂ ind
@@ -490,5 +604,7 @@ abstract
   updSeq-step cn gc w1 w2 r s n .(SHRINK a₁) .(SHRINK a₂) u (updSeq-SHRINK a₁ a₂ upd₁) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , SHRINK a₁ , SHRINK a₂ , w1 , refl , refl , updSeq-SHRINK a₁ a₂ upd₁
   updSeq-step cn gc w1 w2 r s n .(upd r (MSEQ s)) .(upd r (s2l s n)) u updSeq-upd gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
     0 , 0 , upd r (MSEQ s) , upd r (s2l s n) , w1 , refl , refl , updSeq-upd
+  updSeq-step cn gc w1 w2 r s n .(upd r (s2l s n)) .(upd r (MSEQ s)) u updSeq-updr gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+    0 , 0 , upd r (s2l s n) , upd r (MSEQ s) , w1 , refl , refl , updSeq-updr
 
 \end{code}

@@ -228,9 +228,26 @@ seq2list≡ s 0 = refl
 seq2list≡ s (suc n) rewrite seq2list≡ s n = refl
 
 
-#updSeq-upd : (r : Name) (s : 𝕊) (n : ℕ) (F : CTerm)
+#updSeq-upd : (r : Name) (s : 𝕊) (n : ℕ)
               → updSeq r s n ⌜ #upd r (#MSEQ s) ⌝ ⌜ #upd r (seq2list s n) ⌝
-#updSeq-upd r s n F rewrite seq2list≡ s n = updSeq-upd
+#updSeq-upd r s n rewrite seq2list≡ s n = updSeq-upd
+
+
+#updSeq-updr : (r : Name) (s : 𝕊) (n : ℕ)
+               → updSeq r s n ⌜ #upd r (seq2list s n) ⌝ ⌜ #upd r (#MSEQ s) ⌝
+#updSeq-updr r s n rewrite seq2list≡ s n = updSeq-updr
+
+
+#updSeq-APPLY-upd : (r : Name) (s : 𝕊) (n : ℕ) (F : CTerm) (nnF : #¬Names F)
+                    → updSeq r s n ⌜ #APPLY F (#upd r (#MSEQ s)) ⌝ ⌜ #APPLY F (#upd r (seq2list s n)) ⌝
+#updSeq-APPLY-upd r s n F nnF =
+  updSeq-APPLY ⌜ F ⌝ ⌜ F ⌝ ⌜ #upd r (#MSEQ s) ⌝ ⌜ #upd r (seq2list s n) ⌝ (updSeq-refl nnF) (#updSeq-upd r s n)
+
+
+#updSeq-APPLY-updr : (r : Name) (s : 𝕊) (n : ℕ) (F : CTerm) (nnF : #¬Names F)
+                     → updSeq r s n ⌜ #APPLY F (#upd r (seq2list s n)) ⌝ ⌜ #APPLY F (#upd r (#MSEQ s)) ⌝
+#updSeq-APPLY-updr r s n F nnF =
+  updSeq-APPLY ⌜ F ⌝ ⌜ F ⌝ ⌜ #upd r (seq2list s n) ⌝ ⌜ #upd r (#MSEQ s) ⌝ (updSeq-refl nnF) (#updSeq-updr r s n)
 
 
 ≡getT≤ℕ→< : (w w' : 𝕎·) (r : Name) (n j : ℕ)
@@ -353,7 +370,7 @@ noInfPath kb cn can exb gc i w r F nnF compat F∈ p cor inf =
           cn gc r s (suc n) (fst ca2)
           ⌜ #APPLY F (#upd r f) ⌝ ⌜ #APPLY F (#upd r (seq2list s (suc n))) ⌝
           k w1 w' (⊑-compatible· e1 compat)
-          (updSeq-APPLY ⌜ F ⌝ ⌜ F ⌝ ⌜ #upd r f ⌝ ⌜ #upd r (seq2list s (suc n)) ⌝ (updSeq-refl nnF) (#updSeq-upd r s (suc n) F))
+          (#updSeq-APPLY-upd r s (suc n) F nnF)
           (snd ca2) ish
 
     eqw' : w0 ≡ w'
