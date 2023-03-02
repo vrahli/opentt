@@ -4,7 +4,7 @@
 --open import bar
 --module type_sys_props_set (bar : Bar) where
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -44,21 +44,21 @@ open import newChoice
 open import mod
 
 
-module type_sys_props_tunion {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+module type_sys_props_tunion {L : Level} (L' : Level) (W : PossibleWorlds {L}) (M : Mod L' W)
                              (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
                              (X : ChoiceExt W C)
                              (N : NewChoice W C K G)
-                             (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+                             (E : Extensionality 0ℓ (lsuc (lsuc L) ⊔ lsuc (lsuc L')))
        where
 
 
 open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)
-open import bar(W)
-open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import bar(L')(W)
+open import barI(L')(W)(M)--(C)(K)(P)
+open import forcing(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props0(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import ind2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 -- open import calculus
 -- open import world

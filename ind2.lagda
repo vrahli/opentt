@@ -6,7 +6,7 @@
 -- using the {-# TERMINATING #-} pragma.
 
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -46,19 +46,19 @@ open import choiceExt
 open import newChoice
 open import mod
 
-module ind2 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+module ind2 {L : Level} (L' : Level) (W : PossibleWorlds {L}) (M : Mod L' W)
             (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
             (X : ChoiceExt W C)
             (N : NewChoice W C K G)
-            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+            (E : Extensionality 0ℓ (lsuc (lsuc L) ⊔ lsuc (lsuc L')))
        where
 
 open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)
-open import bar(W)
-open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import bar(L')(W)
+open import barI(L')(W)(M)--(C)(K)(P)
+open import forcing(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props0(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 \end{code}
 
 
@@ -68,7 +68,7 @@ open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 -- add the missing cases & make it transitive
 data <TypeStep : {u1 : 𝕌} {w1 : 𝕎·} {T1 U1 : CTerm} (eqt1 : ≡Types u1 w1 T1 U1)
-                 {u2 : 𝕌} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : ≡Types u2 w2 T2 U2) → Set(lsuc(L))
+                 {u2 : 𝕌} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : ≡Types u2 w2 T2 U2) → Set (lsuc L ⊔ lsuc L')
 data <TypeStep where
   <TypePIa : (u : 𝕌) (w : 𝕎·) (T1 T2 : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
              (c₁ : T1 #⇛ (#PI A1 B1) at w)
@@ -270,7 +270,7 @@ data <TypeStep where
 
 
 data <Type : {u1 : 𝕌} {w1 : 𝕎·} {T1 U1 : CTerm} (eqt1 : ≡Types u1 w1 T1 U1)
-             {u2 : 𝕌} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : ≡Types u2 w2 T2 U2) → Set(lsuc(lsuc(L)))
+             {u2 : 𝕌} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : ≡Types u2 w2 T2 U2) → Set (lsuc (lsuc L) ⊔ lsuc (lsuc L'))
 data <Type where
   <Type1 : {u1 : 𝕌} {w1 : 𝕎·} {T1 U1 : CTerm} (eqt1 : ≡Types u1 w1 T1 U1)
            {u2 : 𝕌} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : ≡Types u2 w2 T2 U2)
@@ -283,7 +283,7 @@ data <Type where
 
 
 data ≤Type : {u1 : 𝕌} {w1 : 𝕎·} {T1 U1 : CTerm} (eqt1 : ≡Types u1 w1 T1 U1)
-             {u2 : 𝕌} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : ≡Types u2 w2 T2 U2) → Set(lsuc(lsuc(L)))
+             {u2 : 𝕌} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : ≡Types u2 w2 T2 U2) → Set (lsuc (lsuc L) ⊔ lsuc (lsuc L'))
 data ≤Type where
   ≤Type0 : {u : 𝕌} {w : 𝕎·} {T U : CTerm} (eqt : ≡Types u w T U) → ≤Type {u} eqt {u} eqt
   ≤TypeS : {u1 : 𝕌} {w1 : 𝕎·} {T1 U1 : CTerm} (eqt1 : ≡Types u1 w1 T1 U1)
@@ -363,7 +363,7 @@ data ≤Type where
 
 
 #⇛-refl : (w : 𝕎·) (T : CTerm) → T #⇛ T at w
-#⇛-refl w T w' e' = lift (⇓-refl ⌜ T ⌝ w')
+#⇛-refl w T w' e' = ⇓-refl ⌜ T ⌝ w'
 
 
 
@@ -558,7 +558,7 @@ FFDEFSeq-ext {u} {w} {A1} {A2} {x1} {eqta} {w'} {e1} {e2} {a} {b} exta (x , h , 
 
 
 
-ind<Type : (P : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} → ≡Types u w T1 T2 → Set(lsuc(L)))
+ind<Type : (P : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} → ≡Types u w T1 T2 → Set (lsuc L ⊔ lsuc L'))
            → ({u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} (eqt : ≡Types u w T1 T2)
                → ({u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2') → <Type {u'} eqt' {u} eqt → P {u'} eqt')
                → P {u} eqt)

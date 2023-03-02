@@ -46,7 +46,7 @@ open import bar
 
 
 -- TODO: Progress is not required here
-module forcing {n m : Level} (W : PossibleWorlds {n}) (M : Mod {n} {m} W) --(B : BarsProps W) --
+module forcing {n : Level} (m : Level) (W : PossibleWorlds {n}) (M : Mod m W) --(B : BarsProps W) --
                (C : Choice) (K : Compatible W C) (P : Progress W C K) (G : GetChoice W C K)
                (X : ChoiceExt W C)
                (N : NewChoice W C K G)
@@ -56,7 +56,7 @@ module forcing {n m : Level} (W : PossibleWorlds {n}) (M : Mod {n} {m} W) --(B :
 open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)
 --open import mod(W) --bar(W)
-open import barI(W)(M)--{--(barI)--}(C)(K)(P)
+open import barI(m)(W)(M)--{--(barI)--}(C)(K)(P)
 
 \end{code}
 
@@ -424,12 +424,12 @@ PUREeq t1 t2 = Lift {0ℓ} (lsuc n ⊔ lsuc m) (#¬Names t1 × #¬Names t2)
 
 
 NATeq : wper
-NATeq w t1 t2 = Lift {lsuc n} (lsuc n ⊔ lsuc m) (#strongMonEq w t1 t2)
+NATeq w t1 t2 = Lift {n} (lsuc n ⊔ lsuc m) (#strongMonEq w t1 t2)
 --  #⇛!sameℕ w t1 t2
 
 
 TNATeq : wper
-TNATeq w t1 t2 = Lift {lsuc n} (lsuc n ⊔ lsuc m) (#∀𝕎-⇓∼ℕ w t1 t2)
+TNATeq w t1 t2 = Lift {n} (lsuc n ⊔ lsuc m) (#∀𝕎-⇓∼ℕ w t1 t2)
 
 
 {-# TERMINATING #-}
@@ -443,8 +443,8 @@ TNATeq w t1 t2 = Lift {lsuc n} (lsuc n ⊔ lsuc m) (#∀𝕎-⇓∼ℕ w t1 t2)
 eqInType _ w (EQTNAT _ _) t1 t2 = □· w (λ w' _ → NATeq w' t1 t2)
 eqInType _ w (EQTQNAT _ _) t1 t2 = □· w (λ w' _ → #weakMonEq w' t1 t2)
 eqInType _ w (EQTTNAT _ _) t1 t2 = □· w (λ w' _ → TNATeq w' t1 t2)
-eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 = □· w (λ w' _ → #lift-<NUM-pair w' a1 b1)
-eqInType _ w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 = □· w (λ w' _ → #lift-<NUM-pair w' a1 b1)
+eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 = □· w (λ w' _ → #<NUM-pair w' a1 b1)
+eqInType _ w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 = □· w (λ w' _ → #<NUM-pair w' a1 b1)
 eqInType _ w (EQTFREE _ _) t1 t2 = □· w (λ w' _ → #⇛to-same-CS w' t1 t2)
 eqInType u w (EQTPI _ _ _ _ _ _ eqta eqtb exta extb) f1 f2 =
   □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) f1 f2)

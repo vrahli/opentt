@@ -4,7 +4,7 @@
 --open import bar
 --module classical (bar : Bar) where
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -46,44 +46,44 @@ open import mod
 
 
 --module props2 (bar : Bar) where
-module props2 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+module props2 {L : Level} (L' : Level) (W : PossibleWorlds {L}) (M : Mod L' W)
               (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
               (X : ChoiceExt W C)
               (N : NewChoice W C K G)
-              (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+              (E : Extensionality 0ℓ (lsuc (lsuc L) ⊔ lsuc (lsuc L')))
        where
 
 
 open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)
-open import bar(W)
-open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import bar(L')(W)
+open import barI(L')(W)(M)--(C)(K)(P)
+open import forcing(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props0(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import ind2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_tnat(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_lt(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_qlt(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_free(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_pi(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_set(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_eq(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_union(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_qtunion(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_ttrunc(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_tconst(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_subsing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_isect(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_pure(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_nat(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_qnat(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_tnat(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_lt(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_qlt(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_free(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_pi(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_sum(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_set(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_eq(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_union(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_qtunion(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_tsquash(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_ttrunc(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_tconst(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_subsing(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_ffdefs(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_lift(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_isect(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_pure(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 -- open import calculus
 -- open import world
@@ -536,7 +536,7 @@ eqTypesQTNAT {w} {i} = eqTypesTSQUASH← eqTypesNAT
 
 
 NUM-equalInType-NAT : (i : ℕ) (w : 𝕎·) (k : ℕ) → equalInType i w #NAT (#NUM k) (#NUM k)
-NUM-equalInType-NAT i w k = eqTypesNAT , Mod.∀𝕎-□ M (λ w' e' → #strongMonEq-#NUM w' k)
+NUM-equalInType-NAT i w k = eqTypesNAT , Mod.∀𝕎-□ M (λ w' e' → lift (#strongMonEq-#NUM w' k))
 
 
 isTypeNAT! : {w : 𝕎·} {i : ℕ} → isType i w #NAT!
@@ -546,7 +546,7 @@ isTypeNAT! {w} {i} = eqTypesTCONST← eqTypesNAT
 NUM-equalInType-NAT! : (i : ℕ) (w : 𝕎·) (k : ℕ) → equalInType i w #NAT! (#NUM k) (#NUM k)
 NUM-equalInType-NAT! i w k =
   isTypeNAT! ,
-  Mod.∀𝕎-□ M (λ w' e' → Mod.∀𝕎-□ M (λ w'' e'' → #strongMonEq-#NUM w'' k) , #⇓→#⇓!-NUM w' k , #⇓→#⇓!-NUM w' k)
+  Mod.∀𝕎-□ M (λ w' e' → Mod.∀𝕎-□ M (λ w'' e'' → lift (#strongMonEq-#NUM w'' k)) , #⇓→#⇓!-NUM w' k , #⇓→#⇓!-NUM w' k)
 
 
 equalInTypeTSQUASH→ : {w : 𝕎·} {i : ℕ} {a b A : CTerm}
@@ -645,15 +645,15 @@ equalInType-NAT→ i w a b (eqt , eqi) =
 
 TSQUASH-eq-NAT→weakMonEq : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                             → TSQUASH-eq (equalInType i w #NAT) w a b
-                            → Lift (lsuc L) (⇓sameℕ w ⌜ a ⌝ ⌜ b ⌝)
+                            → ⇓sameℕ w ⌜ a ⌝ ⌜ b ⌝
 TSQUASH-eq-NAT→weakMonEq i w a b (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) =
   Mod.□-const M (Mod.∀𝕎-□Func M aw j)
   where
     j : □· w (λ w' _ → NATeq w' a1 a2)
     j = equalInType-NAT→ i w a1 a2 ea
 
-    aw : ∀𝕎 w (λ w1 e1 → NATeq w1 a1 a2 → Lift (lsuc L) (⇓sameℕ w ⌜ a ⌝ ⌜ b ⌝))
-    aw w1 e1 (n , c₁' , c₂') = lift (n , ∼C!→#⇓ {w} {a} {#NUM n} tt c₁'' ,  ∼C!→#⇓ {w} {b} {#NUM n} tt c₂'')
+    aw : ∀𝕎 w (λ w1 e1 → NATeq w1 a1 a2 → ⇓sameℕ w ⌜ a ⌝ ⌜ b ⌝)
+    aw w1 e1 (lift (n , c₁' , c₂')) = (n , ∼C!→#⇓ {w} {a} {#NUM n} tt c₁'' ,  ∼C!→#⇓ {w} {b} {#NUM n} tt c₂'')
       where
         c₁'' : ∼C! w a (#NUM n)
         c₁'' = ≡R→∼C! {w} {a} {a1} {#NUM n} (#⇛→≡ c₁' i1) c1
@@ -661,21 +661,20 @@ TSQUASH-eq-NAT→weakMonEq i w a b (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) =
         c₂'' : ∼C! w b (#NUM n)
         c₂'' = ≡R→∼C! {w} {b} {a2} {#NUM n} (#⇛→≡ c₂' i2) c2
 TSQUASH-eq-NAT→weakMonEq i w a b (TSQUASH-eq-trans t h1 h2) =
-  lift-⇓sameℕ-trans (TSQUASH-eq-NAT→weakMonEq i w a t h1) (TSQUASH-eq-NAT→weakMonEq i w t b h2)
+  ⇓sameℕ-trans (TSQUASH-eq-NAT→weakMonEq i w a t h1) (TSQUASH-eq-NAT→weakMonEq i w t b h2)
 
 
 
 equalInType-QTNAT→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                       → equalInType i w #QTNAT a b
                       → □· w (λ w' _ → #weakMonEq w' a b)
-equalInType-QTNAT→ i w a b eqi =
-  Mod.∀𝕎-□Func M aw (Mod.→□∀𝕎 M eqj) --Mod.∀𝕎-□Func M aw (Mod.→□∀𝕎 M eqj)
+equalInType-QTNAT→ i w a b eqi = Mod.∀𝕎-□Func M aw (Mod.→□∀𝕎 M eqj)
   where
     eqj : □· w (λ w' _ → TSQUASHeq (equalInType i w' #NAT) w' a b)
     eqj = equalInTypeTSQUASH→ {w} {i} {a} {b} {#NAT} eqi
 
     aw : ∀𝕎 w (λ w' e' → ∀𝕎 w' (↑wPred (λ w'' e → TSQUASHeq (equalInType i w'' #NAT) w'' a b) e')
-                        → #weakMonEq w' a b)
+                         → #weakMonEq w' a b)
     aw w1 e1 h w2 e2 = TSQUASH-eq-NAT→weakMonEq i w2 a b (→TSQUASH-eq (h w2 e2))
 
 
@@ -814,10 +813,11 @@ TCONSTeq-NAT→weakMonEq : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                           → TCONSTeq (equalInType i w #NAT) w a b
                           → □· w (λ w' _ → #⇛!sameℕ w' a b)
 TCONSTeq-NAT→weakMonEq i w a b (h , c₁ , c₂) =
-  Mod.∀𝕎-□Func M (λ w1 e1 z → #strongMonEq→#⇛!sameℕ {w1} {a} {b} (∀𝕎-mon e1 c₁) (∀𝕎-mon e1 c₂) z) j
+  Mod.∀𝕎-□Func M (λ w1 e1 (lift z) → #strongMonEq→#⇛!sameℕ {w1} {a} {b} (∀𝕎-mon e1 c₁) (∀𝕎-mon e1 c₂) z) j
   where
     j : □· w (λ w' _ → NATeq w' a b)
     j = equalInType-NAT→ i w a b h
+
 
 
 equalInType-NAT!→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
@@ -837,15 +837,15 @@ equalInType-NAT!→ i w a b eqi =
 
 TSQUASH-eq-NAT!→weakMonEq! : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                              → TSQUASH-eq (equalInType i w #NAT!) w a b
-                             → Lift (lsuc L) (⇓!sameℕ w ⌜ a ⌝ ⌜ b ⌝)
+                             → ⇓!sameℕ w ⌜ a ⌝ ⌜ b ⌝
 TSQUASH-eq-NAT!→weakMonEq! i w a b (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) =
   Mod.□-const M (Mod.∀𝕎-□Func M aw j)
   where
     j : □· w (λ w' _ → #⇛!sameℕ w' a1 a2)
     j = equalInType-NAT!→ i w a1 a2 ea
 
-    aw : ∀𝕎 w (λ w1 e1 → #⇛!sameℕ w1 a1 a2 → Lift (lsuc L) (⇓!sameℕ w ⌜ a ⌝ ⌜ b ⌝))
-    aw w1 e1 (n , c₁' , c₂') = lift (n , ∼C!→#⇓! {w} {a} {#NUM n} tt c₁'' ,  ∼C!→#⇓! {w} {b} {#NUM n} tt c₂'')
+    aw : ∀𝕎 w (λ w1 e1 → #⇛!sameℕ w1 a1 a2 → ⇓!sameℕ w ⌜ a ⌝ ⌜ b ⌝)
+    aw w1 e1 (n , c₁' , c₂') = (n , ∼C!→#⇓! {w} {a} {#NUM n} tt c₁'' ,  ∼C!→#⇓! {w} {b} {#NUM n} tt c₂'')
       where
         c₁'' : ∼C! w a (#NUM n)
         c₁'' = ≡R→∼C! {w} {a} {a1} {#NUM n} (#⇛!→≡ c₁' i1) c1
@@ -853,7 +853,7 @@ TSQUASH-eq-NAT!→weakMonEq! i w a b (TSQUASH-eq-base a1 a2 i1 i2 c1 c2 ea) =
         c₂'' : ∼C! w b (#NUM n)
         c₂'' = ≡R→∼C! {w} {b} {a2} {#NUM n} (#⇛!→≡ c₂' i2) c2
 TSQUASH-eq-NAT!→weakMonEq! i w a b (TSQUASH-eq-trans t h1 h2) =
-  lift-⇓!sameℕ-trans (TSQUASH-eq-NAT!→weakMonEq! i w a t h1) (TSQUASH-eq-NAT!→weakMonEq! i w t b h2)
+  ⇓!sameℕ-trans (TSQUASH-eq-NAT!→weakMonEq! i w a t h1) (TSQUASH-eq-NAT!→weakMonEq! i w t b h2)
 
 
 
@@ -950,8 +950,8 @@ eqTypesUniv w n i p = EQTUNIV i p (compAllRefl (UNIV i) w) (compAllRefl (UNIV i)
 
 
 
-∀𝕎-□·-#strongMonEq-#N0 : (w : 𝕎·) → ∀𝕎 w (λ w' e → □· w' (λ w'' _ → #strongMonEq w'' #N0 #N0))
-∀𝕎-□·-#strongMonEq-#N0 w w1 e1 = Mod.∀𝕎-□ M (λ w2 e2 → #strongMonEq-#N0 w2)
+∀𝕎-□·-#strongMonEq-#N0 : (w : 𝕎·) → ∀𝕎 w (λ w' e → □· w' (λ w'' _ → NATeq w'' #N0 #N0))
+∀𝕎-□·-#strongMonEq-#N0 w w1 e1 = Mod.∀𝕎-□ M (λ w2 e2 → lift (#strongMonEq-#N0 w2))
 
 
 ∀𝕎-□·-#⇛!sameℕ-#N0 : (w : 𝕎·) → ∀𝕎 w (λ w' e → □· w' (λ w'' _ → #⇛!sameℕ w'' #N0 #N0))
@@ -1196,7 +1196,7 @@ equalInType-local {u} {w} {T} {a} {b} i =
     aw'' w1 e1 x y ei = eqInType-extl1 T T (fst x) y ei
 
     eqi : equalTerms u w (EQTBAR (Mod.∀𝕎-□Func M aw i)) a b
-    eqi = □'-change W M i (Mod.∀𝕎-□Func M aw i) aw'' (Mod.∀𝕎-□-□' M i aw')
+    eqi = □'-change L' W M i (Mod.∀𝕎-□Func M aw i) aw'' (Mod.∀𝕎-□-□' M i aw')
 
 -- Used to go through with just??? Mod.∀𝕎-□-□' M i aw'
 
@@ -1276,7 +1276,7 @@ equalInType-#↑T→ {suc n} {i} p w T a b eqi rewrite #↑T≡↑T# p T = equal
 
 
 
-isFam : (u : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (F G : CTerm → CTerm) → Set(lsuc(L))
+isFam : (u : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (F G : CTerm → CTerm) → Set (lsuc L ⊔ lsuc L')
 isFam u w A B F G =
     isType u w A
   × ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType u w' A a₁ a₂ → equalTypes u w' (sub0 a₁ B) (sub0 a₂ B))
@@ -1653,19 +1653,19 @@ equalInType-FUN→ {u} {w} {A} {B} {f} {g} eqi rewrite #FUN≡#PI A B = z2
         | #FALSE/EQinj2 {b1} {b2} {B} (#compAllVal x₁ tt)
         | #FALSE/EQinj3 {b1} {b2} {B} (#compAllVal x₁ tt)
   =
-  lower {0ℓ} {lsuc(L)} (Mod.□-const M (Mod.∀𝕎-□Func M aw e))
+  Mod.□-const M (Mod.∀𝕎-□Func M aw e)
   where
     e : □· w (λ w' e → EQeq #N0 #N1 (equalTerms i w' (eqtA w' e)) w' a b)
     e = eqi
 
-    aw : ∀𝕎 w (λ w' e' → EQeq #N0 #N1 (equalTerms i w' (eqtA w' e')) w' a b → Lift (lsuc(L)) ⊥)
+    aw : ∀𝕎 w (λ w' e' → EQeq #N0 #N1 (equalTerms i w' (eqtA w' e')) w' a b → ⊥)
     aw w' e' ea = Mod.□-const M (Mod.∀𝕎-□Func M aw' z)
       where
         z : □· w' (λ w'' e → NATeq w'' #N0 #N1)
         z = eqInType-⇛-NAT (uni i) w' #NAT #NAT #N0 #N1 (#compAllRefl #NAT w') (#compAllRefl #NAT w') (eqtA w' e') ea
 
-        aw' : ∀𝕎 w' (λ w'' e'' → NATeq w'' #N0 #N1 → Lift (lsuc(L)) ⊥)
-        aw' w'' e'' s = lift (¬#strongMonEq-N0-N1 w'' s) --(¬#⇛!sameℕ-N0-N1 w'' s)
+        aw' : ∀𝕎 w' (λ w'' e'' → NATeq w'' #N0 #N1 → ⊥)
+        aw' w'' e'' (lift s) = ¬#strongMonEq-N0-N1 w'' s --(¬#⇛!sameℕ-N0-N1 w'' s)
 ¬equalInType-FALSE {w} {i} {a} {b} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
 ¬equalInType-FALSE {w} {i} {a} {b} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (EQneqQTUNION (compAllVal x₁ tt))
 ¬equalInType-FALSE {w} {i} {a} {b} (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
@@ -1910,7 +1910,7 @@ equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA 
 equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (SUMneqUNIV (compAllVal x₁ tt))
 equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SUMneqLIFT (compAllVal x₁ tt))
 equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQTBAR x , eqi) w1 e1 a₁ a₂ ea =
-  eqTypes-local (Mod.∀𝕎-□'-□ M (Mod.↑□ M x e1) aw (Mod.↑□' M {w} {_} {λ w' e' z → equalTerms u w' z f g} x e1 eqi))
+  eqTypes-local (Mod.∀𝕎-□'-□ M (Mod.↑□ M x e1) aw (Mod.↑□' M {_} {w} {_} {λ w' e' z → equalTerms u w' z f g} x e1 eqi))
   where
     aw : ∀𝕎 w1 (λ w' e' → (z : ↑wPred (λ w'' e → equalTypes u w'' (#SUM A B) (#SUM A B)) e1 w' e')
                          → equalTerms u w' z f g → equalTypes u w' (sub0 a₁ B) (sub0 a₂ B))
@@ -1950,7 +1950,7 @@ equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA 
 equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (SUMneqUNIV (compAllVal x₁ tt))
 equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SUMneqLIFT (compAllVal x₁ tt))
 equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTBAR x , eqi) w1 e1 =
-  eqTypes-local (Mod.∀𝕎-□'-□ M (Mod.↑□ M x e1) aw (Mod.↑□' M {w} {_} {λ w' e' z → equalTerms u w' z f g} x e1 eqi))
+  eqTypes-local (Mod.∀𝕎-□'-□ M (Mod.↑□ M x e1) aw (Mod.↑□' M {_} {w} {_} {λ w' e' z → equalTerms u w' z f g} x e1 eqi))
   where
     aw : ∀𝕎 w1 (λ w' e' → (z : ↑wPred (λ w'' e → equalTypes u w'' (#SUM A B) (#SUM A B)) e1 w' e')
                          → equalTerms u w' z f g → isType u w' A)
@@ -2025,13 +2025,13 @@ equalInType-EQ-QNAT→ {u} {w} {a} {b} {f} {g} eqi =
   TSQUASH-eq→ (TSQUASH-eq-base (#NUM n) (#NUM n) tt tt c₁ c₂ (NUM-equalInType-NAT i w n))
   where
     n : ℕ
-    n = fst (lower (h w (⊑-refl· _)))
+    n = fst (h w (⊑-refl· _))
 
     c₁ : ∼C! w a (#NUM n)
-    c₁ = #⇓!→∼C! {w} {a} {#NUM n} (fst (snd (lower (h w (⊑-refl· _)))))
+    c₁ = #⇓!→∼C! {w} {a} {#NUM n} (fst (snd (h w (⊑-refl· _))))
 
     c₂ : ∼C! w b (#NUM n)
-    c₂ = #⇓!→∼C! {w} {b} {#NUM n} (snd (snd (lower (h w (⊑-refl· _)))))
+    c₂ = #⇓!→∼C! {w} {b} {#NUM n} (snd (snd (h w (⊑-refl· _))))
 
 
 →equalInType-QTNAT : (i : ℕ) (w : 𝕎·) (a b : CTerm)
@@ -2057,13 +2057,13 @@ NUM-equalInType-QTNAT i w k =
   TSQUASH-eq→ (TSQUASH-eq-base (#NUM n) (#NUM n) tt tt c₁ c₂ (NUM-equalInType-NAT! i w n))
   where
     n : ℕ
-    n = fst (lower (h w (⊑-refl· _)))
+    n = fst (h w (⊑-refl· _))
 
     c₁ : ∼C! w a (#NUM n)
-    c₁ = #⇓!→∼C! {w} {a} {#NUM n} (fst (snd (lower (h w (⊑-refl· _)))))
+    c₁ = #⇓!→∼C! {w} {a} {#NUM n} (fst (snd (h w (⊑-refl· _))))
 
     c₂ : ∼C! w b (#NUM n)
-    c₂ = #⇓!→∼C! {w} {b} {#NUM n} (snd (snd (lower (h w (⊑-refl· _)))))
+    c₂ = #⇓!→∼C! {w} {b} {#NUM n} (snd (snd (h w (⊑-refl· _))))
 
 
 →equalInType-QTNAT! : (i : ℕ) (w : 𝕎·) (a b : CTerm)

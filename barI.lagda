@@ -39,7 +39,7 @@ open import progress
 --open import bar
 open import mod
 
-module barI {n m : Level} (W : PossibleWorlds {n}) (M : Mod {n} {m} W) --(B : BarsProps W) --
+module barI {n : Level} (m : Level) (W : PossibleWorlds {n}) (M : Mod m W) --(B : BarsProps W) --
 --            (C : Choice) (K : Compatible {n} W C) (P : Progress {n} W C K)
        where
 

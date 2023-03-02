@@ -18,7 +18,7 @@ open import calculus
 open import world
 
 
-module bar {n m : Level} (W : PossibleWorlds {n})
+module bar {n : Level} (m : Level) (W : PossibleWorlds {n})
        where
 open import worldDef(W)
 open import nucleus(W)
@@ -183,7 +183,7 @@ Coverage∃ _◀_ = {w : 𝕎·} {U : UCSubset} → w ◀ U → Σ[ w' ∈ 𝕎�
     k {w3} e23 w3∈j w4 e34 e24 e14 = snd (j (𝔹.ext (fst i) w2∈U) w2∈U) e23 w3∈j w4 e34 e24 (⊑-trans· e01 e14)
 
 
-Σ∈𝔹Func : ∀ {l} {_◀_ : Coverage} (isect : Coverage∩ _◀_) {w : 𝕎·} {f g : wPred {l} w}
+Σ∈𝔹Func : ∀ {l r} {_◀_ : Coverage} (isect : Coverage∩ _◀_) {w : 𝕎·} {f : wPred {l} w} {g : wPred {r} w}
           → Σ∈𝔹 _◀_ (λ w' e' → f w' e' → g w' e')
           → Σ∈𝔹 _◀_ f → Σ∈𝔹 _◀_ g
 Σ∈𝔹Func isect {w0} {f} {g} (b1 , i1) (b2 , i2) =
@@ -193,10 +193,10 @@ Coverage∃ _◀_ = {w : 𝕎·} {U : UCSubset} → w ◀ U → Σ[ w' ∈ 𝕎�
     i {w1} e01 (w1∈U1 , w1∈U2) w2 w12 e02 = i1 (𝔹.ext b1 w1∈U1) w1∈U1 w2 w12 e02 (i2 (𝔹.ext b2 w1∈U2) w1∈U2 w2 w12 e02)
 
 
-∀𝕎-Σ∈𝔹Func : ∀ {l} {_◀_ : Coverage} {w : 𝕎·} {f g : wPred {l} w}
+∀𝕎-Σ∈𝔹Func : ∀ {l r} {_◀_ : Coverage} {w : 𝕎·} {f : wPred {l} w} {g : wPred {r} w}
               → ∀𝕎 w (λ w' e' → f w' e' → g w' e')
               → Σ∈𝔹 _◀_ f → Σ∈𝔹 _◀_ g
-∀𝕎-Σ∈𝔹Func {_} {_◀_} {w} {f} {g} aw (b , i) = b , j
+∀𝕎-Σ∈𝔹Func {_} {_} {_◀_} {w} {f} {g} aw (b , i) = b , j
   where
     j : ∈𝔹 b g
     j e b' w' e' z = aw w' z (i (𝔹.ext b b') b' w' e' z)
@@ -235,14 +235,14 @@ bar-𝔹⊑→ : {_◀_ : Coverage} (mon : Coverage⊑ _◀_) {w w' : 𝕎·} (e
 bar-𝔹⊑→ mon {w0} {w1} e01 {b} {w2} (w2∈b , _) = w2∈b
 
 
-Σ∈𝔹'-comb-change : ∀ {l} {_◀_ : Coverage} (mon : Coverage⊑ _◀_) (isect : Coverage∩ _◀_) (fam : Coverage∪ _◀_)
-                    {w : 𝕎·} {f₁ f₂ f₃ : wPred {l} w}
+Σ∈𝔹'-comb-change : ∀ {l r s} {_◀_ : Coverage} (mon : Coverage⊑ _◀_) (isect : Coverage∩ _◀_) (fam : Coverage∪ _◀_)
+                    {w : 𝕎·} {f₁ : wPred {l} w} {f₂ : wPred {r} w} {f₃ : wPred {s} w}
                     {g₁ : wPredDep f₁} {g₂ : wPredDep f₂} {g₃ : wPredDep f₃}
                     (i₁ : Σ∈𝔹 _◀_ f₁) (i₂ : Σ∈𝔹 _◀_ f₂) (i₃ : Σ∈𝔹 _◀_ f₃)
                     → ∀𝕎 w (λ w' e' → (x₁ : f₁ w' e') (x₂ : f₂ w' e') (x₃ : f₃ w' e')
                                      → g₁ w' e' x₁ → g₂ w' e' x₂ → g₃ w' e' x₃)
                     → Σ∈𝔹' _◀_ i₁ g₁ → Σ∈𝔹' _◀_ i₂ g₂ → Σ∈𝔹' _◀_ i₃ g₃
-Σ∈𝔹'-comb-change {_} {_◀_} mon isect fam {w} {f₁} {f₂} {f₃} {g₁} {g₂} {g₃} (b₁ , i₁) (b₂ , i₂) (b₃ , i₃) aw z₁ z₂ {w'} e ib =
+Σ∈𝔹'-comb-change {_} {_} {_} {_◀_} mon isect fam {w} {f₁} {f₂} {f₃} {g₁} {g₂} {g₃} (b₁ , i₁) (b₂ , i₂) (b₃ , i₃) aw z₁ z₂ {w'} e ib =
   𝔹∩ isect b1 b2 , j
   where
     z₁' : (ind : 𝔹In (𝔹⊑ mon e b₁))
@@ -390,8 +390,8 @@ bar-𝔹⊑→ mon {w0} {w1} e01 {b} {w2} (w2∈b , _) = w2∈b
              → ∀𝕎 w (λ w' e' → (z zg zh : f w' e')
                               → g w' e' zg → h w' e' zh → k w' e' z)
              → Σ∈𝔹' _◀_ i g → Σ∈𝔹' _◀_ i h → Σ∈𝔹' _◀_ i k
-Σ∈𝔹'-comb {_} {_◀_} mon isect fam {w} {f} {g} {h} {k} i aw j₁ j₂ =
-  Σ∈𝔹'-comb-change {_} {_◀_} mon isect fam {w} {f} {f} {f} {g} {h} {k}
+Σ∈𝔹'-comb {l} {_◀_} mon isect fam {w} {f} {g} {h} {k} i aw j₁ j₂ =
+  Σ∈𝔹'-comb-change {l} {l} {l} {_◀_} mon isect fam {w} {f} {f} {f} {g} {h} {k}
                     i i i (λ w1 e1 x₁ x₂ x₃ a b → aw w1 e1 x₃ x₁ x₂ a b) j₁ j₂
 
 -- This really only needs mon and fam, but can conveniently be derived from Σ∈𝔹'-comb-change

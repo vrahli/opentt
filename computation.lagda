@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -266,14 +266,14 @@ infix 30 _⇓!_at_
 
 
 -- T computes to T' in all extensions of w
-_⇛_at_ : (T T' : Term) (w : 𝕎·) → Set(lsuc(L))
-T ⇛ T' at w = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (T ⇓ T' at w'))
+_⇛_at_ : (T T' : Term) (w : 𝕎·) → Set L
+T ⇛ T' at w = ∀𝕎 w (λ w' _ → T ⇓ T' at w')
 infix 30 _⇛_at_
 
 
 -- as opposed to the one above, this one does not allow the computation to change the world
-_⇛!_at_ : (T T' : Term) (w : 𝕎·) → Set(lsuc(L))
-T ⇛! T' at w = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (T ⇓! T' at w'))
+_⇛!_at_ : (T T' : Term) (w : 𝕎·) → Set L
+T ⇛! T' at w = ∀𝕎 w (λ w' _ → T ⇓! T' at w')
 infix 30 _⇛!_at_
 
 
@@ -340,41 +340,41 @@ postulate
 infix 30 _∼_at_
 
 -- T computationally equivalent to T' in all extensions of w
-_≈_at_ : (T T' : Term) (w : 𝕎·) → Set(lsuc(L))
-T ≈ T' at w = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (T ∼ T' at w'))
+_≈_at_ : (T T' : Term) (w : 𝕎·) → Set L
+T ≈ T' at w = ∀𝕎 w (λ w' _ → T ∼ T' at w')
 infix 30 _≈_at_
 
 ≈-refl : {a : Term} {w : 𝕎·} → a ≈ a at w
-≈-refl {a} {w} w1 e1 = lift ∼-refl
+≈-refl {a} {w} w1 e1 = ∼-refl
 
 ≈-sym : {a b : Term} {w : 𝕎·} → a ≈ b at w → b ≈ a at w
-≈-sym {a} {b} {w} h w1 e1 = lift (∼-sym (lower (h w1 e1)))
+≈-sym {a} {b} {w} h w1 e1 = ∼-sym (h w1 e1)
 
 ≈-trans : {a b c : Term} {w : 𝕎·} → a ≈ b at w → b ≈ c at w → a ≈ c at w
-≈-trans {a} {b} {c} {w} h q w1 e1 = lift (∼-trans (lower (h w1 e1)) (lower (q w1 e1)))
+≈-trans {a} {b} {c} {w} h q w1 e1 = ∼-trans (h w1 e1) (q w1 e1)
 
 ≈-∼ : {a b : Term} {w : 𝕎·} → a ≈ b at w → a ∼ b at w
-≈-∼ {a} {b} {w} h = lower (h w (⊑-refl· w))
+≈-∼ {a} {b} {w} h = h w (⊑-refl· w)
 
 
 compAllRefl : (T : Term) (w : 𝕎·) → T ⇛ T at w
-compAllRefl T w =  λ w' e → lift (⇓-refl T w')
+compAllRefl T w w' e = ⇓-refl T w'
 
 
 compAllVal : {a b : Term} {w : 𝕎·} → a ⇛ b at w → isValue a → a ≡ b
-compAllVal {a} {b} {w} c i = let c' = c _ (⊑-refl· w) in compVal _ _ _ (lower c') i
+compAllVal {a} {b} {w} c i = let c' = c _ (⊑-refl· w) in compVal _ _ _ c' i
 
 
 -- t1 and t2 compute to the same number and stay the same number in all extensions
-strongMonEq : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
+strongMonEq : (w : 𝕎·) (t1 t2 : Term) → Set L
 strongMonEq w t1 t2 = Σ ℕ (λ n → t1 ⇛ (NUM n) at w × t2 ⇛ (NUM n) at w)
 
 
-⇛!sameℕ : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
+⇛!sameℕ : (w : 𝕎·) (t1 t2 : Term) → Set L
 ⇛!sameℕ w t1 t2 = Σ ℕ (λ n → t1 ⇛! (NUM n) at w × t2 ⇛! (NUM n) at w)
 
 
-#⇛!sameℕ : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
+#⇛!sameℕ : (w : 𝕎·) (t1 t2 : CTerm) → Set L
 #⇛!sameℕ w t1 t2 = ⇛!sameℕ w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 
@@ -383,28 +383,28 @@ strongMonEq w t1 t2 = Σ ℕ (λ n → t1 ⇛ (NUM n) at w × t2 ⇛ (NUM n) at 
 
 
 -- t1 and t2 compute to the same number but that number can change over time
-weakMonEq : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
-weakMonEq w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (⇓sameℕ w' t1 t2))
+weakMonEq : (w : 𝕎·) (t1 t2 : Term) → Set L
+weakMonEq w t1 t2 = ∀𝕎 w (λ w' _ → ⇓sameℕ w' t1 t2)
 
 
-⇓∼ℕ : (w : 𝕎·) (t1 t2 : Term) → Set(L)
+⇓∼ℕ : (w : 𝕎·) (t1 t2 : Term) → Set L
 ⇓∼ℕ w t1 t2 = Σ ℕ (λ n → Σ 𝕎· (λ w' → t1 ⇓ (NUM n) from w to w' × t2 ⇓ (NUM n) from w to w'))
 
 
-∀𝕎-⇓∼ℕ : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
-∀𝕎-⇓∼ℕ w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (⇓∼ℕ w' t1 t2))
+∀𝕎-⇓∼ℕ : (w : 𝕎·) (t1 t2 : Term) → Set L
+∀𝕎-⇓∼ℕ w t1 t2 = ∀𝕎 w (λ w' _ → ⇓∼ℕ w' t1 t2)
 
 
-weakℕ : (w : 𝕎·) (t : Term) → Set(lsuc(L))
-weakℕ w t = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ n → t ⇓ NUM n at w')))
+weakℕ : (w : 𝕎·) (t : Term) → Set L
+weakℕ w t = ∀𝕎 w (λ w' _ → Σ ℕ (λ n → t ⇓ NUM n at w'))
 
 
 
-weakℕM : (w : 𝕎·) (f : 𝕎· → Maybe Term) → Set(lsuc(L))
-weakℕM w f = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ Term (λ t → f w' ≡ just t × Σ ℕ (λ n → t ⇓ NUM n at w'))))
+weakℕM : (w : 𝕎·) (f : 𝕎· → Maybe Term) → Set L
+weakℕM w f = ∀𝕎 w (λ w' _ → Σ Term (λ t → f w' ≡ just t × Σ ℕ (λ n → t ⇓ NUM n at w')))
 
 
-⇛to-same-CS : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
+⇛to-same-CS : (w : 𝕎·) (t1 t2 : Term) → Set L
 ⇛to-same-CS w t1 t2 = Σ Name (λ n → t1 ⇛ (CS n) at w × t2 ⇛ (CS n) at w)
 
 
@@ -412,8 +412,8 @@ weakℕM w f = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ Term (λ t → f
 <NUM-pair w t1 t2 = Σ ℕ (λ n → Σ ℕ (λ m → t1 ⇓ (NUM n) at w × t2 ⇓ (NUM m) at w × n < m))
 
 
-lift-<NUM-pair : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
-lift-<NUM-pair w t1 t2 = Lift {0ℓ} (lsuc(L)) (<NUM-pair w t1 t2)
+--lift-<NUM-pair : ∀ {l} (w : 𝕎·) (t1 t2 : Term) → Set l
+--lift-<NUM-pair {l} w t1 t2 = Lift {0ℓ} l (<NUM-pair w t1 t2)
 
 
 ⇛-mon : {a b : Term} {w2 w1 : 𝕎·}
@@ -599,13 +599,13 @@ infix 30 _#⇓_from_to_
 
 
 
-_#⇛_at_ : (T T' : CTerm) (w : 𝕎·) → Set(lsuc(L))
+_#⇛_at_ : (T T' : CTerm) (w : 𝕎·) → Set L
 T #⇛ T' at w = ⌜ T ⌝ ⇛ ⌜ T' ⌝ at w
 infix 30 _#⇛_at_
 
 
 
-_#⇛!_at_ : (T T' : CTerm) (w : 𝕎·) → Set(lsuc(L))
+_#⇛!_at_ : (T T' : CTerm) (w : 𝕎·) → Set L
 T #⇛! T' at w = ⌜ T ⌝ ⇛! ⌜ T' ⌝ at w
 infix 30 _#⇛!_at_
 
@@ -619,27 +619,27 @@ infix 30 _#⇛!_at_
 #compAllVal {ct a ca} {ct b cb} {w} c i = CTerm≡ (compAllVal c i)
 
 
-#strongMonEq : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
+#strongMonEq : (w : 𝕎·) (t1 t2 : CTerm) → Set L
 #strongMonEq w t1 t2 = strongMonEq w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 
-#∀𝕎-⇓∼ℕ : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
+#∀𝕎-⇓∼ℕ : (w : 𝕎·) (t1 t2 : CTerm) → Set L
 #∀𝕎-⇓∼ℕ w t1 t2 = ∀𝕎-⇓∼ℕ w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 
-#weakMonEq : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
+#weakMonEq : (w : 𝕎·) (t1 t2 : CTerm) → Set L
 #weakMonEq w t1 t2 = weakMonEq w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 
 #weakMonEq→ : {w : 𝕎·} {a b : CTerm}
                → #weakMonEq w a b
                → Σ ℕ (λ n → a #⇓ #NUM n at w × b #⇓ #NUM n at w)
-#weakMonEq→ {w} {a} {B} h = lower (h w (⊑-refl· w))
+#weakMonEq→ {w} {a} {B} h = h w (⊑-refl· w)
 
 
 
 #weakMonEq-#NUM : (w : 𝕎·) (k : ℕ) → #weakMonEq w (#NUM k) (#NUM k)
-#weakMonEq-#NUM w k w' e' = lift (k , ⇓-refl (NUM k) w' , ⇓-refl (NUM k) w')
+#weakMonEq-#NUM w k w' e' = k , ⇓-refl (NUM k) w' , ⇓-refl (NUM k) w'
 
 
 #strongMonEq-#NUM : (w : 𝕎·) (k : ℕ) → #strongMonEq w (#NUM k) (#NUM k)
@@ -660,23 +660,22 @@ strongMonEq-refl-rev {w} {a} {b} (n , c₁ , c₂) = n , c₂ , c₂
 
 
 
-
 weakMonEq-refl : {w : 𝕎·} {a b : Term}
                  → weakMonEq w a b
                  → weakMonEq w a a
-weakMonEq-refl {w} {a} {b} wm w1 e1 = lift (fst z , fst (snd z) , fst (snd z))
+weakMonEq-refl {w} {a} {b} wm w1 e1 = fst z , fst (snd z) , fst (snd z)
   where
     z : Σ ℕ (λ n → a ⇓ NUM n at w1 × b ⇓ NUM n at w1)
-    z = lower (wm w1 e1)
+    z = wm w1 e1
 
 
 weakMonEq-refl-rev : {w : 𝕎·} {a b : Term}
                      → weakMonEq w a b
                      → weakMonEq w b b
-weakMonEq-refl-rev {w} {a} {b} wm w1 e1 = lift (fst z , snd (snd z) , snd (snd z))
+weakMonEq-refl-rev {w} {a} {b} wm w1 e1 = fst z , snd (snd z) , snd (snd z)
   where
     z : Σ ℕ (λ n → a ⇓ NUM n at w1 × b ⇓ NUM n at w1)
-    z = lower (wm w1 e1)
+    z = wm w1 e1
 
 
 
@@ -827,7 +826,7 @@ steps⊑ w (suc n) t with step⊎ t w
 
 
 ⇓-trans : {w : 𝕎·} {a b c : Term} → a ⇓ b at w → b ⇛ c at w → a ⇓ c at w
-⇓-trans {w} {a} {b} {c} (n , c₁) c₂ = steps-⇓-trans n (stepsT→steps {n} c₁) (lower (c₂ (snd (steps n (a , w))) (steps⊑ w n a)))
+⇓-trans {w} {a} {b} {c} (n , c₁) c₂ = steps-⇓-trans n (stepsT→steps {n} c₁) (c₂ (snd (steps n (a , w))) (steps⊑ w n a))
 
 
 Σ-steps-APPLY-CS : (n : ℕ) (a t : Term) (w w' : 𝕎·) (k : ℕ) (name : Name)
@@ -914,10 +913,10 @@ stepsT-val-det w a v₁ v₂ n m isv c₁ c₂ p =
   ⇓-val-det isv₁ isv₂ h1 h2
   where
     h1 : a ⇓ v₁ at w
-    h1 = let c = c₁ w (⊑-refl· w) in Level.lower c
+    h1 = c₁ w (⊑-refl· w)
 
     h2 : a ⇓ v₂ at w
-    h2 = let c = c₂ w (⊑-refl· w) in Level.lower c
+    h2 = c₂ w (⊑-refl· w)
 
 
 #⇛-val-det : {w : 𝕎·} {a v₁ v₂ : CTerm} → #isValue v₁ → #isValue v₂ → a #⇛ v₁ at w → a #⇛ v₂ at w → v₁ ≡ v₂
@@ -936,13 +935,10 @@ strongMonEq-trans {w} {a} {b} {c} (n , c₁ , c₂) (m , d₁ , d₂) rewrite NU
 weakMonEq-sym : {w : 𝕎·} {a b : Term}
                 → weakMonEq w a b
                 → weakMonEq w b a
-weakMonEq-sym {w} {a} {b} h w1 e1 = lift (fst z₂ , snd (snd z₂) , fst (snd z₂))
+weakMonEq-sym {w} {a} {b} h w1 e1 = fst z , snd (snd z) , fst (snd z)
   where
-    z₁ : Lift (lsuc(L)) (Σ ℕ (λ n → a ⇓ NUM n at w1 × b ⇓ NUM n at w1))
-    z₁ = h w1 e1
-
-    z₂ : Σ ℕ (λ n → a ⇓ NUM n at w1 × b ⇓ NUM n at w1)
-    z₂ = lower z₁
+    z : Σ ℕ (λ n → a ⇓ NUM n at w1 × b ⇓ NUM n at w1)
+    z = h w1 e1
 
 
 
@@ -950,10 +946,10 @@ weakMonEq-trans : {w : 𝕎·} {a b c : Term}
                   → weakMonEq w a b
                   → weakMonEq w b c
                   → weakMonEq w a c
-weakMonEq-trans {w} {a} {b} {c} weak1 weak2 w1 e1 = lift (n , c₁ , d)
+weakMonEq-trans {w} {a} {b} {c} weak1 weak2 w1 e1 = n , c₁ , d
   where
     wk1 : Σ ℕ (λ n → a ⇓ (NUM n) at w1 × b ⇓ (NUM n) at w1)
-    wk1 = lower (weak1 w1 e1)
+    wk1 = weak1 w1 e1
 
     n : ℕ
     n = fst wk1
@@ -965,7 +961,7 @@ weakMonEq-trans {w} {a} {b} {c} weak1 weak2 w1 e1 = lift (n , c₁ , d)
     c₂ = snd (snd wk1)
 
     wk2 : Σ ℕ (λ n → b ⇓ (NUM n) at w1 × c ⇓ (NUM n) at w1)
-    wk2 = lower (weak2 w1 e1)
+    wk2 = weak2 w1 e1
 
     m : ℕ
     m = fst wk2
@@ -1007,19 +1003,21 @@ all>++R {n} {l} {k} i v j = i v (∈-++⁺ʳ _ j)
 ¬isValue-APPLY a b ()
 
 
+#<NUM-pair : (w : 𝕎·) (t1 t2 : CTerm) → Set
+#<NUM-pair w t1 t2 = <NUM-pair w ⌜ t1 ⌝ ⌜ t2 ⌝
 
-#lift-<NUM-pair : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
-#lift-<NUM-pair w t1 t2 = lift-<NUM-pair w ⌜ t1 ⌝ ⌜ t2 ⌝
+--#lift-<NUM-pair : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
+--#lift-<NUM-pair w t1 t2 = lift-<NUM-pair w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 
-#⇛to-same-CS : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
+#⇛to-same-CS : (w : 𝕎·) (t1 t2 : CTerm) → Set L
 #⇛to-same-CS w t1 t2 = ⇛to-same-CS w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 
 ⇛-APPLY-CS : (w : 𝕎·) (a b : Term) (name : Name)
              → a ⇛ b at w
              → (APPLY (CS name) a) ⇛ (APPLY (CS name) b) at w
-⇛-APPLY-CS w a b name comp w1 e1 = lift (⇓-APPLY-CS w1 a b name (lower (comp w1 e1)))
+⇛-APPLY-CS w a b name comp w1 e1 = ⇓-APPLY-CS w1 a b name (comp w1 e1)
 
 
 #⇛-APPLY-CS : {w : 𝕎·} {a b : CTerm} (name : Name)
@@ -1030,7 +1028,7 @@ all>++R {n} {l} {k} i v j = i v (∈-++⁺ʳ _ j)
 
 
 ⇛-trans : {w : 𝕎·} {a b c : Term} → a ⇛ b at w → b ⇛ c at w → a ⇛ c at w
-⇛-trans {w} {a} {b} {c} c₁ c₂ w1 e1 = lift (⇓-trans (lower (c₁ w1 e1)) (∀𝕎-mon e1 c₂)) --(lower (c₂ w1 e1))
+⇛-trans {w} {a} {b} {c} c₁ c₂ w1 e1 = ⇓-trans (c₁ w1 e1) (∀𝕎-mon e1 c₂)
 
 
 
@@ -1048,8 +1046,8 @@ data ∼T : 𝕎· → Term → Term → Set where
 ∼C w a b = ∼T w ⌜ a ⌝ ⌜ b ⌝
 
 
-≈C : 𝕎· → CTerm → CTerm → Set(lsuc(L))
-≈C w a b = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (∼C w' a b))
+≈C : 𝕎· → CTerm → CTerm → Set L
+≈C w a b = ∀𝕎 w (λ w' _ → ∼C w' a b)
 
 
 ∼T-sym : {w : 𝕎·} {a b : Term} → ∼T w a b → ∼T w b a
@@ -1063,7 +1061,7 @@ data ∼T : 𝕎· → Term → Term → Set where
 
 
 ≈C-sym : {w : 𝕎·} {a b : CTerm} → ≈C w a b → ≈C w b a
-≈C-sym {w} {a} {b} h w1 e1 = lift (∼C-sym {w1} {a} {b} (lower (h w1 e1)))
+≈C-sym {w} {a} {b} h w1 e1 = ∼C-sym {w1} {a} {b} (h w1 e1)
 
 
 ∼T-refl : {w : 𝕎·} {a : Term} → ∼T w a a
@@ -1075,7 +1073,7 @@ data ∼T : 𝕎· → Term → Term → Set where
 
 
 ≈C-refl : {w : 𝕎·} {a : CTerm} → ≈C w a a
-≈C-refl {w} {a} w1 e1 = lift (∼C-refl {w1} {a})
+≈C-refl {w} {a} w1 e1 = ∼C-refl {w1} {a}
 
 
 ∼C-trans : {w : 𝕎·} {a b c : CTerm} → ∼C w a b → ∼C w b c → ∼C w a c
@@ -1083,7 +1081,7 @@ data ∼T : 𝕎· → Term → Term → Set where
 
 
 ≈C-trans : {w : 𝕎·} {a b c : CTerm} → ≈C w a b → ≈C w b c → ≈C w a c
-≈C-trans {w} {a} {b} {c} h1 h2 w1 e1 = lift (∼C-trans {w1} {a} {b} {c} (lower (h1 w1 e1)) (lower (h2 w1 e1)))
+≈C-trans {w} {a} {b} {c} h1 h2 w1 e1 = ∼C-trans {w1} {a} {b} {c} (h1 w1 e1) (h2 w1 e1)
 
 
 ⇓→∼T : {w : 𝕎·} {a b : Term} → a ⇓ b at w → ∼T w a b
@@ -1095,11 +1093,11 @@ data ∼T : 𝕎· → Term → Term → Set where
 
 
 #⇛→≈C : {w : 𝕎·} {a b : CTerm} → a #⇛ b at w → ≈C w a b
-#⇛→≈C {w} {a} {b} c w1 e1 = lift (#⇓→∼C {w1} {a} {b} (lower (c w1 e1)))
+#⇛→≈C {w} {a} {b} c w1 e1 = #⇓→∼C {w1} {a} {b} (c w1 e1)
 
 
 ≈C-∼C : {w : 𝕎·} {a b : CTerm} → ≈C w a b → ∼C w a b
-≈C-∼C {w} {a} {b} h = lower (h w (⊑-refl· w))
+≈C-∼C {w} {a} {b} h = h w (⊑-refl· w)
 
 
 
@@ -1108,7 +1106,7 @@ data ∼T : 𝕎· → Term → Term → Set where
 ⇛→≈ : {w : 𝕎·} {a b : Term}
         → a ⇛ b at w
         → a ≈ b at w
-⇛→≈ {w} {a} {b} comp w1 e1 = lift (⇓→∼ (lower (comp w1 e1)))
+⇛→≈ {w} {a} {b} comp w1 e1 = ⇓→∼ (comp w1 e1)
 
 
 
@@ -1240,7 +1238,7 @@ data ∼T : 𝕎· → Term → Term → Set where
                 → a #⇛ b at w
                 → #APPLY a c #⇛ #APPLY b c at w
 →-#⇛-#APPLY {w} {a} {b} c comp w1 e1 =
-  lift (→-steps-APPLY ⌜ c ⌝ (fst (lower (comp w1 e1))) (snd (lower (comp w1 e1))))
+  →-steps-APPLY ⌜ c ⌝ (fst (comp w1 e1)) (snd (comp w1 e1))
 
 
 #compVal : {a b : CTerm} {w : 𝕎·} → a #⇓ b at w → #isValue a → a ≡ b
@@ -1344,35 +1342,35 @@ steps-⇓-ASSERT₁ {w} (suc n) {a} {b} comp with step⊎ a w
 ⇓-ASSERT₁-INL : {w : 𝕎·} {a x : Term}
                 → a ⇓ INL x at w
                 → ASSERT₁ a ⇓ TRUE at w
-⇓-ASSERT₁-INL {w} {a} {x} comp = ⇓-trans (steps-⇓-ASSERT₁ (fst comp) (snd comp)) (λ w1 e1 → lift (1 , refl))
+⇓-ASSERT₁-INL {w} {a} {x} comp = ⇓-trans (steps-⇓-ASSERT₁ (fst comp) (snd comp)) (λ w1 e1 → 1 , refl)
 
 
 #⇛-ASSERT₁-INL : {w : 𝕎·} {a x : CTerm}
                   → a #⇛ #INL x at w
                   → #ASSERT₁ a #⇛ #TRUE at w
-#⇛-ASSERT₁-INL {w} {a} {x} comp w' e = lift (⇓-ASSERT₁-INL (lower (comp w' e)))
+#⇛-ASSERT₁-INL {w} {a} {x} comp w' e = ⇓-ASSERT₁-INL (comp w' e)
 
 
 ⇓-ASSERT₁-INR : {w : 𝕎·} {a x : Term}
                 → a ⇓ INR x at w
                 → ASSERT₁ a ⇓ FALSE at w
-⇓-ASSERT₁-INR {w} {a} {x} comp = ⇓-trans (steps-⇓-ASSERT₁ (fst comp) (snd comp)) (λ w1 e1 → lift (1 , refl))
+⇓-ASSERT₁-INR {w} {a} {x} comp = ⇓-trans (steps-⇓-ASSERT₁ (fst comp) (snd comp)) (λ w1 e1 → 1 , refl)
 
 
 #⇛-ASSERT₁-INR : {w : 𝕎·} {a x : CTerm}
                 → a #⇛ #INR x at w
                 → #ASSERT₁ a #⇛ #FALSE at w
-#⇛-ASSERT₁-INR {w} {a} {x} comp w' e = lift (⇓-ASSERT₁-INR (lower (comp w' e)))
+#⇛-ASSERT₁-INR {w} {a} {x} comp w' e = ⇓-ASSERT₁-INR (comp w' e)
 
 
 #weakMonEq→≈C : {w : 𝕎·} {a b : CTerm} → #weakMonEq w a b → ≈C w a b
 #weakMonEq→≈C {w} {a} {b} h w1 e1 =
-  lift (∼C-trans {w1} {a} {#NUM n} {b}
-                 (#⇓→∼C {w1} {a} {#NUM n} (fst (snd (lower (h w1 e1)))))
-                 (∼C-sym {w1} {b} {#NUM n} (#⇓→∼C {w1} {b} {#NUM n} (snd (snd (lower (h w1 e1)))))))
+  ∼C-trans {w1} {a} {#NUM n} {b}
+                 (#⇓→∼C {w1} {a} {#NUM n} (fst (snd (h w1 e1))))
+                 (∼C-sym {w1} {b} {#NUM n} (#⇓→∼C {w1} {b} {#NUM n} (snd (snd (h w1 e1)))))
   where
     n : ℕ
-    n = fst (lower (h w1 e1))
+    n = fst (h w1 e1)
 
 
 ⇓same-bool : 𝕎· → Term → Term → Set
@@ -1393,13 +1391,12 @@ steps-⇓-ASSERT₁ {w} (suc n) {a} {b} comp with step⊎ a w
 
 
 
-weakBool : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
-weakBool w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (⇓same-bool w' t1 t2))
+weakBool : (w : 𝕎·) (t1 t2 : Term) → Set L
+weakBool w t1 t2 = ∀𝕎 w (λ w' _ → ⇓same-bool w' t1 t2)
 
 
-#weakBool : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
-#weakBool w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (#⇓same-bool w' t1 t2))
---weakBool w ⌜ t1 ⌝ ⌜ t2 ⌝
+#weakBool : (w : 𝕎·) (t1 t2 : CTerm) → Set L
+#weakBool w t1 t2 = ∀𝕎 w (λ w' _ → #⇓same-bool w' t1 t2)
 
 
 
@@ -1421,13 +1418,12 @@ weakBool w t1 t2 = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (⇓same-bool w'
 
 
 
-weakBool! : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
-weakBool! w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (⇓!same-bool w' t1 t2))
+weakBool! : (w : 𝕎·) (t1 t2 : Term) → Set L
+weakBool! w t1 t2 = ∀𝕎 w (λ w' _ → ⇓!same-bool w' t1 t2)
 
 
-#weakBool! : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
-#weakBool! w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (#⇓!same-bool w' t1 t2))
---weakBool w ⌜ t1 ⌝ ⌜ t2 ⌝
+#weakBool! : (w : 𝕎·) (t1 t2 : CTerm) → Set L
+#weakBool! w t1 t2 = ∀𝕎 w (λ w' _ → #⇓!same-bool w' t1 t2)
 
 
 
@@ -1451,7 +1447,7 @@ weakBool! w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (⇓!same-bool w' 
 
 
 
-strongBool : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
+strongBool : (w : 𝕎·) (t1 t2 : Term) → Set L
 strongBool w t1 t2 =
   Σ Term (λ x → Σ Term (λ y →
   (t1 ⇛ INL x at w × t2 ⇛ INL y at w)
@@ -1460,7 +1456,7 @@ strongBool w t1 t2 =
 
 
 
-#strongBool : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
+#strongBool : (w : 𝕎·) (t1 t2 : CTerm) → Set L
 #strongBool w t1 t2 =
   Σ CTerm (λ x → Σ CTerm (λ y →
   (t1 #⇛ #INL x at w × t2 #⇛ #INL y at w)
@@ -1514,11 +1510,11 @@ step-preserves-fvars w (SHRINK a) b e {x} i rewrite sym (just-inj e) = i
 
 
 #weakBool-#INL : (w : 𝕎·) (x y : CTerm) → #weakBool w (#INL x) (#INL y)
-#weakBool-#INL w x y w' e' = lift (x , y , inj₁ (⇓-refl (INL ⌜ x ⌝) w' , ⇓-refl (INL ⌜ y ⌝) w'))
+#weakBool-#INL w x y w' e' = x , y , inj₁ (⇓-refl (INL ⌜ x ⌝) w' , ⇓-refl (INL ⌜ y ⌝) w')
 
 
 #weakBool-#INR : (w : 𝕎·) (x y : CTerm) → #weakBool w (#INR x) (#INR y)
-#weakBool-#INR w x y w' e' = lift (x , y , inj₂ (⇓-refl (INR ⌜ x ⌝) w' , ⇓-refl (INR ⌜ y ⌝) w'))
+#weakBool-#INR w x y w' e' = x , y , inj₂ (⇓-refl (INR ⌜ x ⌝) w' , ⇓-refl (INR ⌜ y ⌝) w')
 
 
 ⇓!-refl : (T : Term) (w : 𝕎·) → T ⇓! T at w
@@ -1526,11 +1522,11 @@ step-preserves-fvars w (SHRINK a) b e {x} i rewrite sym (just-inj e) = i
 
 
 #weakBool!-#INL : (w : 𝕎·) (x y : CTerm) → #weakBool! w (#INL x) (#INL y)
-#weakBool!-#INL w x y w' e' = lift (x , y , inj₁ (⇓!-refl (INL ⌜ x ⌝) w' , ⇓!-refl (INL ⌜ y ⌝) w'))
+#weakBool!-#INL w x y w' e' = x , y , inj₁ (⇓!-refl (INL ⌜ x ⌝) w' , ⇓!-refl (INL ⌜ y ⌝) w')
 
 
 #weakBool!-#INR : (w : 𝕎·) (x y : CTerm) → #weakBool! w (#INR x) (#INR y)
-#weakBool!-#INR w x y w' e' = lift (x , y , inj₂ (⇓!-refl (INR ⌜ x ⌝) w' , ⇓!-refl (INR ⌜ y ⌝) w'))
+#weakBool!-#INR w x y w' e' = x , y , inj₂ (⇓!-refl (INR ⌜ x ⌝) w' , ⇓!-refl (INR ⌜ y ⌝) w')
 
 
 
@@ -1550,11 +1546,11 @@ step-preserves-fvars w (SHRINK a) b e {x} i rewrite sym (just-inj e) = i
 #⇓same-bool-trans {w} {a} {b} {c} (x , y , inj₂ (h1 , h2)) (u , v , inj₂ (q1 , q2)) = x , v ,  inj₂ (h1 , q2) -- , h1 , q
 
 
-lift-#⇓same-bool-trans : {w : 𝕎·} {a b c : CTerm}
-                        → Lift (lsuc L) (#⇓same-bool w a b)
-                        → Lift (lsuc L) (#⇓same-bool w b c)
-                        → Lift (lsuc L) (#⇓same-bool w a c)
-lift-#⇓same-bool-trans {w} {a} {b} {c} (lift h) (lift q) = lift (#⇓same-bool-trans {w} {a} {b} {c} h q)
+--lift-#⇓same-bool-trans : ∀ {l} {w : 𝕎·} {a b c : CTerm}
+--                        → Lift l (#⇓same-bool w a b)
+--                        → Lift l (#⇓same-bool w b c)
+--                        → Lift l (#⇓same-bool w a c)
+--lift-#⇓same-bool-trans {l} {w} {a} {b} {c} (lift h) (lift q) = lift (#⇓same-bool-trans {w} {a} {b} {c} h q)
 
 
 
@@ -1580,11 +1576,11 @@ lift-#⇓same-bool-trans {w} {a} {b} {c} (lift h) (lift q) = lift (#⇓same-bool
 #⇓!same-bool-trans {w} {a} {b} {c} (x , y , inj₂ (h1 , h2)) (u , v , inj₂ (q1 , q2)) = x , v ,  inj₂ (h1 , q2) -- , h1 , q
 
 
-lift-#⇓!same-bool-trans : {w : 𝕎·} {a b c : CTerm}
-                        → Lift (lsuc L) (#⇓!same-bool w a b)
-                        → Lift (lsuc L) (#⇓!same-bool w b c)
-                        → Lift (lsuc L) (#⇓!same-bool w a c)
-lift-#⇓!same-bool-trans {w} {a} {b} {c} (lift h) (lift q) = lift (#⇓!same-bool-trans {w} {a} {b} {c} h q)
+--lift-#⇓!same-bool-trans : ∀ {l} {w : 𝕎·} {a b c : CTerm}
+--                        → Lift l (#⇓!same-bool w a b)
+--                        → Lift l (#⇓!same-bool w b c)
+--                        → Lift l (#⇓!same-bool w a c)
+--lift-#⇓!same-bool-trans {l} {w} {a} {b} {c} (lift h) (lift q) = lift (#⇓!same-bool-trans {w} {a} {b} {c} h q)
 
 
 
@@ -1604,7 +1600,7 @@ val-⇛→ : {w : 𝕎·} {a b v : Term}
             → a ⇛! b at w
             → a ⇛ v at w
             → b ⇛ v at w
-val-⇛→ {w} {a} {b} {v} isv comp1 comp2 w1 e1 = lift (val-⇓→ isv (lower (comp1 w1 e1)) (lower (comp2 w1 e1)))
+val-⇛→ {w} {a} {b} {v} isv comp1 comp2 w1 e1 = val-⇓→ isv (comp1 w1 e1) (comp2 w1 e1)
 
 
 -- the '!' is necessary otherise the world in the conclusion might be different
@@ -1632,7 +1628,7 @@ data ∼T! : 𝕎· → Term → Term → Set(L) where
 
 
 ⇛→⇓ : {w : 𝕎·} {a b : Term} → a ⇛ b at w → a ⇓ b at w
-⇛→⇓ {w} {a} {b} comp = lower (comp w (⊑-refl· _))
+⇛→⇓ {w} {a} {b} comp = comp w (⊑-refl· _)
 
 
 
@@ -1661,7 +1657,7 @@ data ∼T! : 𝕎· → Term → Term → Set(L) where
                       → #weakMonEq w a c
                       → #weakMonEq w b c
 #weakMonEq-#⇛-left {w} {a} {b} {c} comp h w1 e1 =
-  lift (fst (lower (h w1 e1)) , val-⇓→ tt (lower (comp w1 e1)) (fst (snd (lower (h w1 e1)))) , snd (snd (lower (h w1 e1))))
+  fst (h w1 e1) , val-⇓→ tt (comp w1 e1) (fst (snd (h w1 e1))) , snd (snd (h w1 e1))
 
 
 
@@ -1679,9 +1675,9 @@ data ∼T! : 𝕎· → Term → Term → Set(L) where
                           → #weakMonEq w b c
                           → #weakMonEq w a c
 #weakMonEq-#⇛-left-rev {w} {a} {b} {c} comp h w1 e1 =
-  lift (fst (lower (h w1 e1)) ,
-        ⇓-trans₁ (lower (comp w1 e1)) (fst (snd (lower (h w1 e1)))) ,
-        snd (snd (lower (h w1 e1))))
+  fst (h w1 e1) ,
+        ⇓-trans₁ (comp w1 e1) (fst (snd (h w1 e1))) ,
+        snd (snd (h w1 e1))
 
 
 
@@ -1695,11 +1691,11 @@ data ∼T! : 𝕎· → Term → Term → Set(L) where
   q rewrite NUMinj (⇓-val-det tt tt h2 q1) = q2
 
 
-lift-⇓sameℕ-trans : {w : 𝕎·} {a b c : Term}
-                     → Lift (lsuc L) (⇓sameℕ w a b)
-                     → Lift (lsuc L) (⇓sameℕ w b c)
-                     → Lift (lsuc L) (⇓sameℕ w a c)
-lift-⇓sameℕ-trans {w} {a} {b} {c} (lift h) (lift q) = lift (⇓sameℕ-trans h q)
+--lift-⇓sameℕ-trans : ∀ {l} {w : 𝕎·} {a b c : Term}
+--                     → Lift l (⇓sameℕ w a b)
+--                     → Lift l (⇓sameℕ w b c)
+--                     → Lift l (⇓sameℕ w a c)
+--lift-⇓sameℕ-trans {w} {a} {b} {c} (lift h) (lift q) = lift (⇓sameℕ-trans h q)
 
 
 ≡R→∼C! : {w : 𝕎·} {a b c : CTerm} → b ≡ c → ∼C! w a b → ∼C! w a c
@@ -1741,21 +1737,20 @@ lift-⇓sameℕ-trans {w} {a} {b} {c} (lift h) (lift q) = lift (⇓sameℕ-trans
 
 
 #⇛!-pres-∼C! : {w : 𝕎·} {a b c : CTerm} → a #⇛! b at w → ∼C! w a c → ∼C! w b c
-#⇛!-pres-∼C! {w} {a} {b} {c} c₁ c₂ = ∼C!-trans {w} {b} {a} {c} (#⇓!-rev→∼C! {w} {b} {a} (lower (c₁ w (⊑-refl· _)))) c₂
---  ∼C!-trans {w} {b} {a} {c} (∼C!-sym {w} {a} {b} (#⇓!→∼C! {w} {a} {b} (lower (c₁ w (⊑-refl· _))))) c₂
+#⇛!-pres-∼C! {w} {a} {b} {c} c₁ c₂ = ∼C!-trans {w} {b} {a} {c} (#⇓!-rev→∼C! {w} {b} {a} (c₁ w (⊑-refl· _))) c₂
 
 
 #⇛!-pres-∼C!-rev : {w : 𝕎·} {a b c : CTerm} → a #⇛! b at w → ∼C! w b c → ∼C! w a c
 #⇛!-pres-∼C!-rev {w} {a} {b} {c} c₁ c₂ =
-  ∼C!-trans {w} {a} {b} {c} (#⇓!→∼C! {w} {a} {b} (lower (c₁ w (⊑-refl· _)))) c₂
+  ∼C!-trans {w} {a} {b} {c} (#⇓!→∼C! {w} {a} {b} (c₁ w (⊑-refl· _))) c₂
 
 
 #⇛!-refl : {w : 𝕎·} {t : CTerm} → t #⇛! t at w
-#⇛!-refl {w} {t} w1 e1 = lift (⇓!-refl ⌜ t ⌝ w1)
+#⇛!-refl {w} {t} w1 e1 = ⇓!-refl ⌜ t ⌝ w1
 
 
 #⇛!-#⇛ : {w : 𝕎·} {a b : CTerm} → a #⇛! b at w → a #⇛ b at w
-#⇛!-#⇛ {w} {a} {b} comp w1 e1 = lift (⇓!→⇓ (lower (comp w1 e1)))
+#⇛!-#⇛ {w} {a} {b} comp w1 e1 = ⇓!→⇓ (comp w1 e1)
 
 
 step-⇓-from-to-trans : {w w' w'' : 𝕎·} {a b c : Term} → step a w ≡ just (b , w') → b ⇓ c from w' to w'' → a ⇓ c from w to w''
@@ -1788,12 +1783,12 @@ steps-⇓-from-to-trans {w} {w'} {w''} {a} {b} {c} (suc n) c₁ c₂ with step�
                 → a #⇛! b at w
                 → #APPLY a c #⇛! #APPLY b c at w
 →-#⇛!-#APPLY {w} {a} {b} c comp w1 e1 =
-  lift (→steps-APPLY ⌜ c ⌝ (fst (lower (comp w1 e1))) (snd (lower (comp w1 e1))))
+  →steps-APPLY ⌜ c ⌝ (fst (comp w1 e1)) (snd (comp w1 e1))
 
 
 
 ⇛!→⇓! : {w : 𝕎·} {a b : Term} → a ⇛! b at w → a ⇓! b at w
-⇛!→⇓! {w} {a} {b} comp = lower (comp w (⊑-refl· _))
+⇛!→⇓! {w} {a} {b} comp = comp w (⊑-refl· _)
 
 
 ⇛!-val-det : {w : 𝕎·} {a v₁ v₂ : Term} → isValue v₁ → isValue v₂ → a ⇛! v₁ at w → a ⇛! v₂ at w → v₁ ≡ v₂
@@ -1828,7 +1823,7 @@ steps-⇓-from-to-trans {w} {w'} {w''} {a} {b} {c} (suc n) c₁ c₂ with step�
 
 
 ⇛!→≡ : {a b : Term} {w : 𝕎·} → a ⇛! b at w → isValue a → a ≡ b
-⇛!→≡ {a} {b} {w} c i = ⇓!→≡ a b w (lower (c w (⊑-refl· _))) i
+⇛!→≡ {a} {b} {w} c i = ⇓!→≡ a b w (c w (⊑-refl· _)) i
 
 
 #⇛!→≡ : {a b : CTerm} {w : 𝕎·} → a #⇛! b at w → #isValue a → a ≡ b
@@ -1862,7 +1857,7 @@ steps-⇓-from-to-trans {w} {w'} {w''} {a} {b} {c} (suc n) c₁ c₂ with step�
 
 
 #⇛!-trans : {w : 𝕎·} {a b c : CTerm} → a #⇛! b at w → b #⇛! c at w → a #⇛! c at w
-#⇛!-trans {w} {a} {b} {c} c₁ c₂ w1 e1 = lift (⇓!-trans (lower (c₁ w1 e1)) (lower (c₂ w1 e1)))
+#⇛!-trans {w} {a} {b} {c} c₁ c₂ w1 e1 = ⇓!-trans (c₁ w1 e1) (c₂ w1 e1)
 
 
 #⇛!sameℕ-#⇛-left-rev : {w : 𝕎·} {a b c : CTerm}
@@ -1899,7 +1894,7 @@ val-⇛!→ : {w : 𝕎·} {a b v : Term}
             → a ⇛! b at w
             → a ⇛! v at w
             → b ⇛! v at w
-val-⇛!→ {w} {a} {b} {v} isv comp1 comp2 w1 e1 = lift (val-⇓-from-to→ isv (lower (comp1 w1 e1)) (lower (comp2 w1 e1)))
+val-⇛!→ {w} {a} {b} {v} isv comp1 comp2 w1 e1 = val-⇓-from-to→ isv (comp1 w1 e1) (comp2 w1 e1)
 
 
 val-#⇛!→ : {w : 𝕎·} {a b v : CTerm}
@@ -1931,7 +1926,7 @@ val-#⇛!→ {w} {a} {b} {v} isv comp1 comp2 = val-⇛!→ isv comp1 comp2
 ⇛!-APPLY-CS : (w : 𝕎·) (a b : Term) (name : Name)
              → a ⇛! b at w
              → (APPLY (CS name) a) ⇛! (APPLY (CS name) b) at w
-⇛!-APPLY-CS w a b name comp w1 e1 = lift (⇓!-APPLY-CS w1 a b name (lower (comp w1 e1)))
+⇛!-APPLY-CS w a b name comp w1 e1 = ⇓!-APPLY-CS w1 a b name (comp w1 e1)
 
 
 
@@ -1942,10 +1937,10 @@ val-#⇛!→ {w} {a} {b} {v} isv comp1 comp2 = val-⇛!→ isv comp1 comp2
 
 
 #⇛!→#⇛ : {w : 𝕎·} {a b : CTerm} → a #⇛! b at w → a #⇛ b at w
-#⇛!→#⇛ {w} {a} {b} comp w1 e1 = lift (⇓!→⇓ (lower (comp w1 e1)))
+#⇛!→#⇛ {w} {a} {b} comp w1 e1 = ⇓!→⇓ (comp w1 e1)
 
 
-strongBool! : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
+strongBool! : (w : 𝕎·) (t1 t2 : Term) → Set L
 strongBool! w t1 t2 =
   Σ Term (λ x → Σ Term (λ y →
   (t1 ⇛! INL x at w × t2 ⇛! INL y at w)
@@ -1953,7 +1948,7 @@ strongBool! w t1 t2 =
   (t1 ⇛! INR x at w × t2 ⇛! INR y at w)))
 
 
-#strongBool! : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
+#strongBool! : (w : 𝕎·) (t1 t2 : CTerm) → Set L
 #strongBool! w t1 t2 =
   Σ CTerm (λ x → Σ CTerm (λ y →
   (t1 #⇛! #INL x at w × t2 #⇛! #INL y at w)
@@ -1971,20 +1966,20 @@ strongBool! w t1 t2 =
 ∼C!→#⇓! {w} {a} {b} isv h = ∼T!→⇓! isv h (⇓!-refl ⌜ b ⌝ w) --∼T!→⇓ isv h (⇓-refl ⌜ b ⌝ w)
 
 
-⇓!sameℕ : (w : 𝕎·) (t1 t2 : Term) → Set(L)
+⇓!sameℕ : (w : 𝕎·) (t1 t2 : Term) → Set L
 ⇓!sameℕ w t1 t2 = Σ ℕ (λ n → t1 ⇓! (NUM n) at w × t2 ⇓! (NUM n) at w)
 
 
-weakMonEq! : (w : 𝕎·) (t1 t2 : Term) → Set(lsuc(L))
-weakMonEq! w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (⇓!sameℕ w' t1 t2))
+weakMonEq! : (w : 𝕎·) (t1 t2 : Term) → Set L
+weakMonEq! w t1 t2 = ∀𝕎 w (λ w' _ → ⇓!sameℕ w' t1 t2)
 
 
-#weakMonEq! : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
+#weakMonEq! : (w : 𝕎·) (t1 t2 : CTerm) → Set L
 #weakMonEq! w t1 t2 = weakMonEq! w ⌜ t1 ⌝ ⌜ t2 ⌝
 
 
 #weakMonEq!-#NUM : (w : 𝕎·) (k : ℕ) → #weakMonEq! w (#NUM k) (#NUM k)
-#weakMonEq!-#NUM w k w' e' = lift (k , ⇓!-refl (NUM k) w' , ⇓!-refl (NUM k) w')
+#weakMonEq!-#NUM w k w' e' = k , ⇓!-refl (NUM k) w' , ⇓!-refl (NUM k) w'
 
 
 #⇓!→#⇓ : {w : 𝕎·} {a b : CTerm} → a #⇓! b at w → a #⇓ b at w
@@ -1992,8 +1987,8 @@ weakMonEq! w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (⇓!sameℕ w' t
 
 
 
-#⇓→#⇓! : 𝕎· → CTerm → Set(lsuc(L))
-#⇓→#⇓! w t = ∀𝕎 w (λ w1 e1 → Lift {L} (lsuc(L)) ((v : CTerm) (w2 : 𝕎·) → #isValue v → t #⇓ v from w1 to w2 → t #⇓! v at w1))
+#⇓→#⇓! : 𝕎· → CTerm → Set L
+#⇓→#⇓! w t = ∀𝕎 w (λ w1 e1 → (v : CTerm) (w2 : 𝕎·) → #isValue v → t #⇓ v from w1 to w2 → t #⇓! v at w1)
 
 
 #⇓→from-to : {w : 𝕎·} {a b : CTerm}
@@ -2008,7 +2003,7 @@ weakMonEq! w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (⇓!sameℕ w' t
             → a #⇛ b at w
             → a #⇛! b at w
 #⇛→#⇛! {w} {a} {b} h isv comp w1 e1 =
-  lift (lower (h w1 e1) b (fst (#⇓→from-to {w1} {a} {b} (lower (comp w1 e1)))) isv (snd (#⇓→from-to {w1} {a} {b} (lower (comp w1 e1)))))
+  h w1 e1 b (fst (#⇓→from-to {w1} {a} {b} (comp w1 e1))) isv (snd (#⇓→from-to {w1} {a} {b} (comp w1 e1)))
 
 
 
@@ -2022,13 +2017,13 @@ weakMonEq! w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (⇓!sameℕ w' t
                     → #⇓→#⇓! w a
                     → #⇓→#⇓! w b
 #⇛!-pres-#⇓→#⇓! {w} {a} {b} comp h w1 e1 =
-  lift comp'
+  comp'
   where
     comp' : (v : CTerm) (w2 : PossibleWorlds.𝕎 W) → #isValue v → b #⇓ v from w1 to w2 → b #⇓! v at w1
     comp' v w2 isv c = val-⇓-from-to→ isv (⇛!→⇓! (∀𝕎-mon e1 comp)) z
       where
         z : a #⇓! v at w1
-        z = lower (h w1 e1) v w2 isv (⇓-trans₂ (⇛!→⇓! (∀𝕎-mon e1 comp)) c)
+        z = h w1 e1 v w2 isv (⇓-trans₂ (⇛!→⇓! (∀𝕎-mon e1 comp)) c)
 
 
 #⇛!-pres-#⇓→#⇓!-rev : {w : 𝕎·} {a b : CTerm}
@@ -2036,13 +2031,13 @@ weakMonEq! w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (⇓!sameℕ w' t
                     → #⇓→#⇓! w a
                     → #⇓→#⇓! w b
 #⇛!-pres-#⇓→#⇓!-rev {w} {a} {b} comp h w1 e1 =
-  lift comp'
+  comp'
   where
     comp' : (v : CTerm) (w2 : PossibleWorlds.𝕎 W) → #isValue v → b #⇓ v from w1 to w2 → b #⇓! v at w1
-    comp' v w2 isv c = #⇓!-trans {w1} {b} {a} {v} (⇛!→⇓! (∀𝕎-mon e1 comp)) z --val-⇓-from-to→ isv (⇛!→⇓! (∀𝕎-mon e1 comp)) z
+    comp' v w2 isv c = #⇓!-trans {w1} {b} {a} {v} (⇛!→⇓! (∀𝕎-mon e1 comp)) z
       where
         z : a #⇓! v at w1
-        z = lower (h w1 e1) v w2 isv (val-⇓-from-to→ isv (⇛!→⇓! (∀𝕎-mon e1 comp)) c) --lower (h w1 e1) v w2 isv (⇓-trans₂ (⇛!→⇓! (∀𝕎-mon e1 comp)) c)
+        z = h w1 e1 v w2 isv (val-⇓-from-to→ isv (⇛!→⇓! (∀𝕎-mon e1 comp)) c)
 
 
 ⇓!sameℕ-trans : {w : 𝕎·} {a b c : Term}
@@ -2055,11 +2050,11 @@ weakMonEq! w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (⇓!sameℕ w' t
   q rewrite NUMinj (⇓!-val-det tt tt h2 q1) = q2
 
 
-lift-⇓!sameℕ-trans : {w : 𝕎·} {a b c : Term}
-                     → Lift (lsuc L) (⇓!sameℕ w a b)
-                     → Lift (lsuc L) (⇓!sameℕ w b c)
-                     → Lift (lsuc L) (⇓!sameℕ w a c)
-lift-⇓!sameℕ-trans {w} {a} {b} {c} (lift h) (lift q) = lift (⇓!sameℕ-trans h q)
+--lift-⇓!sameℕ-trans : ∀ {l} {w : 𝕎·} {a b c : Term}
+--                     → Lift l (⇓!sameℕ w a b)
+--                     → Lift l (⇓!sameℕ w b c)
+--                     → Lift l (⇓!sameℕ w a c)
+--lift-⇓!sameℕ-trans {w} {a} {b} {c} (lift h) (lift q) = lift (⇓!sameℕ-trans h q)
 
 
 ⇓-from-to→≡ : (a b : Term) (w w' : 𝕎·) → a ⇓ b from w to w' → isValue a → a ≡ b
@@ -2075,7 +2070,7 @@ lift-⇓!sameℕ-trans {w} {a} {b} {c} (lift h) (lift q) = lift (⇓!sameℕ-tra
 
 
 #⇓→#⇓!-NUM : (w : 𝕎·) (k : ℕ) → #⇓→#⇓! w (#NUM k)
-#⇓→#⇓!-NUM w k w1 e1 = lift h --(λ v w2 isv comp → {!!})
+#⇓→#⇓!-NUM w k w1 e1 = h
   where
     h : (v : CTerm) (w2 : 𝕎·) → #isValue v → #NUM k #⇓ v from w1 to w2 → #NUM k #⇓! v at w1
     h v w2 isv comp rewrite sym (#⇓-from-to→≡ (#NUM k) v w1 w2 comp tt) = #⇓!-refl (#NUM k) w1
@@ -2116,13 +2111,13 @@ lift-⇓!sameℕ-trans {w} {a} {b} {c} (lift h) (lift q) = lift (⇓!sameℕ-tra
 #⇛→#⇓from-to : {w : 𝕎·} {a b : CTerm}
                  → a #⇛ b at w
                  → Σ 𝕎· (λ w' → a #⇓ b from w to w')
-#⇛→#⇓from-to {w} {a} {b} comp = ⇓→from-to (lower (comp w (⊑-refl· _)))
+#⇛→#⇓from-to {w} {a} {b} comp = ⇓→from-to (comp w (⊑-refl· _))
 
 
 #⇛!→#⇓! : {w : 𝕎·} {a b : CTerm}
                  → a #⇛! b at w
                  → a #⇓! b at w
-#⇛!→#⇓! {w} {a} {b} comp = lower (comp w (⊑-refl· _))
+#⇛!→#⇓! {w} {a} {b} comp = comp w (⊑-refl· _)
 
 
 #⇓from-to→⊑ : {w w' : 𝕎·} {a b : CTerm}
@@ -2136,25 +2131,25 @@ lift-⇓!sameℕ-trans {w} {a} {b} {c} (lift h) (lift q) = lift (⇓!sameℕ-tra
                 → a ⇛ b at w
                 → APPLY a c ⇛ APPLY b c at w
 →-⇛-APPLY {w} {a} {b} c comp w1 e1 =
-  lift (→-steps-APPLY c (fst (lower (comp w1 e1))) (snd (lower (comp w1 e1))))
+  →-steps-APPLY c (fst (comp w1 e1)) (snd (comp w1 e1))
 
 
 →-⇛!-APPLY : {w : 𝕎·} {a b : Term} (c : Term)
                 → a ⇛! b at w
                 → APPLY a c ⇛! APPLY b c at w
 →-⇛!-APPLY {w} {a} {b} c comp w1 e1 =
-  lift (→steps-APPLY c (fst (lower (comp w1 e1))) (snd (lower (comp w1 e1))))
+  →steps-APPLY c (fst (comp w1 e1)) (snd (comp w1 e1))
 
 
 
 ≡→APPLY-LAMBDA⇛! : (w : 𝕎·) (f a b : Term)
                   → b ≡ sub a f
                   → APPLY (LAMBDA f) a ⇛! b at w
-≡→APPLY-LAMBDA⇛! w f a b e w1 e1 rewrite e = lift (1 , refl)
+≡→APPLY-LAMBDA⇛! w f a b e w1 e1 rewrite e = 1 , refl
 
 
 
 ⇛!-trans : {w : 𝕎·} {a b c : Term} → a ⇛! b at w → b ⇛! c at w → a ⇛! c at w
-⇛!-trans {w} {a} {b} {c} c₁ c₂ w1 e1 = lift (⇓!-trans (lower (c₁ w1 e1)) (lower (c₂ w1 e1)))
+⇛!-trans {w} {a} {b} {c} c₁ c₂ w1 e1 = ⇓!-trans (c₁ w1 e1) (c₂ w1 e1)
 
 \end{code}

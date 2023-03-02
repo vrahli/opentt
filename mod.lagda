@@ -18,11 +18,11 @@ open import calculus
 open import world
 
 
-module mod {n m : Level} (W : PossibleWorlds {n})
+module mod {n : Level} (m : Level) (W : PossibleWorlds {n})
        where
-open import worldDef{n}(W)
-open import nucleus{n}(W)
-open import bar{n}{m}(W)
+open import worldDef(W)
+open import nucleus(W)
+open import bar(m)(W)
 
 
 
@@ -41,24 +41,24 @@ record Mod : Setω where
                         → □' w i g → □' w' (↑□ i e) (↑wPredDep g e)
 
     -- axiom K: □(A→B)→□A→□B
-    □Func         : ∀ {l} {w : 𝕎·} {f g : wPred {l} w}
+    □Func         : ∀ {l r} {w : 𝕎·} {f : wPred {l} w} {g : wPred {r} w}
                         → □ w (λ w' e' → f w' e' → g w' e')
                         → □ w f → □ w g
     -- similar to axiom K??
-    ∀𝕎-□Func    : ∀ {l} {w : 𝕎·} {f g : wPred {l} w}
+    ∀𝕎-□Func      : ∀ {l r} {w : 𝕎·} {f : wPred {l} w} {g : wPred {r} w}
                         → ∀𝕎 w (λ w' e' → f w' e' → g w' e')
                         → □ w f → □ w g
     -- □ → □'
-    □-□'      : ∀ {l} {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f}
+    □-□'          : ∀ {l} {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f}
                         → □ w (λ w' e' → (x : f w' e') → g w' e' x)
                         → (i : □ w f) → □' w i g
     -- similar to above without □
-    ∀𝕎-□-□' : ∀ {l} {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} (i : □ w f)
+    ∀𝕎-□-□'       : ∀ {l} {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} (i : □ w f)
                         → ∀𝕎 w (λ w' e' → (x : f w' e') {--(at : atBar i w' e' x)--} → g w' e' x)
                         → □' w i g
 
     -- name?
-    ∀𝕎-□        : ∀ {l} {w : 𝕎·} {f : wPred {l} w} → ∀𝕎 w f → □ w f
+    ∀𝕎-□          : ∀ {l} {w : 𝕎·} {f : wPred {l} w} → ∀𝕎 w f → □ w f
 
     -- □□A→□A name?
     □-idem        : ∀ {l} {w : 𝕎·} {f : wPred {l} w}
@@ -70,12 +70,12 @@ record Mod : Setω where
                         → □' w i g
 
     -- □' → □
-    ∀𝕎-□'-□ : ∀ {l r} {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} {h : wPred {r} w} (i : □ w f)
+    ∀𝕎-□'-□       : ∀ {l r} {w : 𝕎·} {f : wPred {l} w} {g : wPredDep f} {h : wPred {r} w} (i : □ w f)
                         → ∀𝕎 w (λ w' e' → (x : f w' e') {--→ atBar i w' e' x--} → g w' e' x → h w' e')
                         → □' w i g → □ w h
 
     -- (A→B→C) → □'A→□'B→□'C
-    □'-comb-change : ∀ {l} {w : 𝕎·} {f₁ f₂ f₃ : wPred {l} w}
+    □'-comb-change : ∀ {l r s} {w : 𝕎·} {f₁ : wPred {l} w} {f₂ : wPred {r} w} {f₃ : wPred {s} w}
                          {g₁ : wPredDep f₁} {g₂ : wPredDep f₂} {g₃ : wPredDep f₃}
                          (i₁ : □ w f₁) (i₂ : □ w f₂) (i₃ : □ w f₃)
                          → ∀𝕎 w (λ w' e' → (x₁ : f₁ w' e') (x₂ : f₂ w' e') (x₃ : f₃ w' e')
@@ -173,7 +173,7 @@ CoverageProps→Mod b =
     (↑'Σ∈𝔹 (CoverageProps.mon b))
     (λ {_} {w} {f} {g} → ↑Σ∈𝔹' (CoverageProps.mon b) {w} {f} {g})
     (Σ∈𝔹Func (CoverageProps.isect b))
-    (∀𝕎-Σ∈𝔹Func {_} {CoverageProps.bars b})
+    (∀𝕎-Σ∈𝔹Func {_} {_} {CoverageProps.bars b})
     (Σ∈𝔹-Σ∈𝔹' (CoverageProps.mon b))
     (∀𝕎-Σ∈𝔹-Σ∈𝔹' (CoverageProps.all b))
     (∀𝕎-Σ∈𝔹 (CoverageProps.all b))

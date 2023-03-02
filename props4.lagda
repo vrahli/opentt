@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -42,40 +42,40 @@ open import newChoice
 open import mod
 
 
-module props4 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+module props4 {L : Level} (L' : Level) (W : PossibleWorlds {L}) (M : Mod L' W)
               (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
               (X : ChoiceExt W C)
               (N : NewChoice W C K G)
-              (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+              (E : Extensionality 0ℓ (lsuc (lsuc L) ⊔ lsuc (lsuc L')))
        where
 
 
 open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)
-open import bar(W)
-open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import bar(L')(W)
+open import barI(L')(W)(M)--(C)(K)(P)
+open import forcing(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props0(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import ind2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_lt(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_qlt(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_free(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_pi(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_set(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_eq(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_union(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_qtunion(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_nat(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_qnat(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_lt(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_qlt(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_free(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_pi(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_sum(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_set(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_eq(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_union(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_qtunion(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_tsquash(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_ffdefs(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_lift(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props3(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 
@@ -104,22 +104,22 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 -- MOVE to mod
-∀𝕎-□Func2 : {w : 𝕎·} {f g h : wPred w}
+∀𝕎-□Func2 : ∀ {l r s} {w : 𝕎·} {f : wPred {l} w}  {g : wPred {r} w} {h : wPred {s} w}
                        → ∀𝕎 w (λ w' e' → f w' e' → g w' e' → h w' e')
                        → □· w f
                        → □· w g
                        → □· w h
-∀𝕎-□Func2 {w} {f} {g} {h} aw a b = Mod.□Func M (Mod.∀𝕎-□Func M aw a) b
+∀𝕎-□Func2 {l} {r} {s} {w} {f} {g} {h} aw a b = Mod.□Func M (Mod.∀𝕎-□Func M aw a) b
 
 
 -- MOVE to mod
-∀𝕎-□Func3 : {w : 𝕎·} {f g h k : wPred w}
+∀𝕎-□Func3 : ∀ {l r s t} {w : 𝕎·} {f : wPred {l} w}  {g : wPred {r} w} {h : wPred {s} w} {k : wPred {t} w}
                        → ∀𝕎 w (λ w' e' → f w' e' → g w' e' → h w' e' → k w' e')
                        → □· w f
                        → □· w g
                        → □· w h
                        → □· w k
-∀𝕎-□Func3 {w} {f} {g} {h} aw a b c = Mod.□Func M (Mod.□Func M (Mod.∀𝕎-□Func M aw a) b) c
+∀𝕎-□Func3 {l} {r} {s} {t} {w} {f} {g} {h} aw a b c = Mod.□Func M (Mod.□Func M (Mod.∀𝕎-□Func M aw a) b) c
 
 
 
@@ -137,7 +137,7 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
     eb1 = equalInType-NAT→ i w b₁ b₂ eb
 
     aw : ∀𝕎 w (λ w' e' → NATeq w' a₁ a₂ → NATeq w' b₁ b₂ → equalTypes i w' (#LT a₁ b₁) (#LT a₂ b₂))
-    aw  w1 e1 ha hb =
+    aw  w1 e1 (lift ha) (lift hb) =
       EQTLT a₁ a₂ b₁ b₂ (#compAllRefl (#LT a₁ b₁) w1) (#compAllRefl (#LT a₂ b₂) w1) ha hb
 
 
@@ -379,15 +379,15 @@ equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTNAT x x
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTQNAT x x₁ , eqi) = ⊥-elim (LTneqQNAT (compAllVal x tt))
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTTNAT x x₁ , eqi) = ⊥-elim (LTneqTNAT (compAllVal x tt))
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) =
-  lower (Mod.□-const M {w} (Mod.∀𝕎-□Func M aw h))
+  Mod.□-const M {_} {w} (Mod.∀𝕎-□Func M aw h)
   where
-    h : □· w (λ w' _ → #lift-<NUM-pair w' a b)
+    h : □· w (λ w' _ → #<NUM-pair w' a b)
     h rewrite LTinj1 (compAllVal x tt) | LTinj2 (compAllVal x tt) = eqi
 
-    aw : ∀𝕎 w (λ w' e' → #lift-<NUM-pair w' a b → Lift (lsuc L) (m < n))
-    aw w1 e1 (lift (n1 , m1 , comp1 , comp2 , ltnm))
-      rewrite NUMinj (⇓-val-det tt tt comp1 (lower (compa w1 e1)))
-            | NUMinj (⇓-val-det tt tt comp2 (lower (compb w1 e1))) = lift ltnm
+    aw : ∀𝕎 w (λ w' e' → #<NUM-pair w' a b → m < n)
+    aw w1 e1 (n1 , m1 , comp1 , comp2 , ltnm)
+      rewrite NUMinj (⇓-val-det tt tt comp1 (compa w1 e1))
+            | NUMinj (⇓-val-det tt tt comp2 (compb w1 e1)) = ltnm
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (LTneqQLT (compAllVal x tt))
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTFREE x x₁ , eqi) = ⊥-elim (LTneqFREE (compAllVal x tt))
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (LTneqPI (compAllVal x tt))
@@ -407,11 +407,11 @@ equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQFFDEFS A
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTUNIV i₁ p x x₁ , eqi) = ⊥-elim (LTneqUNIV (compAllVal x tt))
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LTneqLIFT(compAllVal x tt))
 equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTBAR x , eqi) =
-  lower (Mod.□-const M {w} (Mod.∀𝕎-□'-□ M x aw eqi))
+  Mod.□-const M {_} {w} (Mod.∀𝕎-□'-□ M x aw eqi)
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni i) w' (#LT a b) (#LT a b))
-                        → eqInType (uni i) w' z u v → Lift (lsuc L) (m < n))
-    aw w1 e1 z eqj = lift (equalInType-LT-⇛NUM→ {i} {w1} {a} {b} {u} {v} {n} {m} (∀𝕎-mon e1 compa) (∀𝕎-mon e1 compb) (z , eqj))
+                        → eqInType (uni i) w' z u v → m < n)
+    aw w1 e1 z eqj = equalInType-LT-⇛NUM→ {i} {w1} {a} {b} {u} {v} {n} {m} (∀𝕎-mon e1 compa) (∀𝕎-mon e1 compb) (z , eqj)
 
 
 
@@ -423,10 +423,11 @@ equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTBAR x ,
   Mod.∀𝕎-□Func M aw eqi
   where
     aw : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' a b
-                       → TCONSTeq (λ t1 t2 → □· w' (λ w'' _ → #strongMonEq w'' t1 t2)) w' a b)
+                       → TCONSTeq (λ t1 t2 → □· w' (λ w'' _ → NATeq w'' t1 t2)) w' a b)
     aw w1 e1 (n , c₁ , c₂) =
-      Mod.∀𝕎-□ M (λ w2 e2 → n , #⇛!-#⇛ {w2} {a} {#NUM n} (∀𝕎-mon e2 c₁) , #⇛!-#⇛ {w2} {b} {#NUM n} (∀𝕎-mon e2 c₂)) ,
+      Mod.∀𝕎-□ M (λ w2 e2 → lift (n , #⇛!-#⇛ {w2} {a} {#NUM n} (∀𝕎-mon e2 c₁) , #⇛!-#⇛ {w2} {b} {#NUM n} (∀𝕎-mon e2 c₂))) ,
       #⇛!-pres-#⇓→#⇓!-rev {w1} {#NUM n} {a} c₁ (#⇓→#⇓!-NUM w1 n) ,
       #⇛!-pres-#⇓→#⇓!-rev {w1} {#NUM n} {b} c₂ (#⇓→#⇓!-NUM w1 n)
+
 
 \end{code}

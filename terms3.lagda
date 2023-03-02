@@ -130,7 +130,7 @@ data differ (name1 name2 : Name) (f : Term) : Term → Term → Set where
 
 
 
-∈ℕ : (w : 𝕎·) (t : Term) → Set(lsuc(L))
+∈ℕ : (w : 𝕎·) (t : Term) → Set L
 ∈ℕ w t = Σ ℕ (λ n → t ⇛ (NUM n) at w)
 
 
