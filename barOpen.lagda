@@ -1,11 +1,11 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Sigma
 open import Data.Product
 open import Data.Sum
-open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; _∸_ ; pred ; _⊔_)
+open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; _∸_ ; pred)
 open import Data.Nat.Properties
 open import Data.Nat.Induction
 open import Relation.Binary.PropositionalEquality hiding ([_]) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
@@ -21,11 +21,11 @@ open import world
 module barOpen {n : Level} (W : PossibleWorlds {n})
        where
 
-open import worldDef{n}(W)
-open import bar{n}{n}(W)
-open import mod{n}{n}(W)
-open import nucleus{n}(W)
-open import cucleusImpliesCoverageProps{n}(W)
+open import worldDef(W)
+open import bar(n)(W)
+open import mod(n)(W)
+open import nucleus(W)
+open import cucleusImpliesCoverageProps(W)
 
 {-----------------------------------------
  --
@@ -33,11 +33,9 @@ open import cucleusImpliesCoverageProps{n}(W)
  --
  --}
 
-------
 -- An open bar
 O𝔹bars : Coverage
 O𝔹bars w bar = ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 _ → w2 ∈· bar))
-
 
 -- Open Coverage give a nucleus (when restricted to upward closed subsets)
 j : UCSubset → UCSubset
@@ -84,5 +82,49 @@ inOpenBar-Mod = CoverageProps→Mod O𝔹CoverageProps
 
 O𝔹 : 𝕎· → Set (lsuc n)
 O𝔹 w = 𝔹 O𝔹bars w
+
+-- f holds in an open bar
+inOpenBar : ∀ {l}  (w : 𝕎·) (f : wPred {l} w) → Set (n ⊔ l)
+inOpenBar w f =
+  ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → ∀𝕎 w2 (λ w3 e3 →
+     (z : w ⊑· w3) → f w3 z)))
+
+Σ∈𝔹→inOpenBar : ∀ {l} (w : 𝕎·) (f : wPred {l} w) → Mod.□ inOpenBar-Mod w f → inOpenBar w f
+Σ∈𝔹→inOpenBar w f (b , i) w1 e1 =
+  fst (𝔹.covers b w1 e1) ,
+  fst (snd (𝔹.covers b w1 e1)) ,
+  g
+  where
+    g : ∀𝕎 (fst (𝔹.covers b w1 e1)) (λ w3 e3 → (z : w ⊑· w3) → f w3 z)
+    g w2 e2 z = i (⊑-trans· e1 (fst (snd (𝔹.covers b w1 e1)))) (snd (snd (𝔹.covers b w1 e1))) w2 e2 z
+
+
+inOpenBar→Σ∈𝔹 : ∀ {l} (w : 𝕎·) (f : wPred {l} w) → inOpenBar w f → Mod.□ inOpenBar-Mod w f
+inOpenBar→Σ∈𝔹 {l} w f i =
+  mk𝔹 bar w◀U Uext , g
+  where
+    -- Even though the predicate may be valued in any universe `l`, we can still get the subset of worlds satisfying it.
+    -- The idea is that `i` gives us the worlds satisfying the predicate along with the proof they satisfy it,
+    -- but if we forget the proof exists, then we come back down to the correct universe.
+    U : Subset
+    U w0 = Σ 𝕎· λ w1 → Σ (w ⊑· w1) λ e1 → fst (i w1 e1) ⊑· w0
+
+    U-UC : isUpwardsClosed U
+    U-UC {w1} {w2} e12 (w3 , e01 , e41) = w3 , e01 , ⊑-trans· e41 e12
+
+    bar : UCSubset
+    bar = U , U-UC
+
+    w◀U : O𝔹bars w bar
+    w◀U w1 e1 = fst (i w1 e1) , fst (snd (i w1 e1)) , w1 , e1 , ⊑-refl· _
+
+    Uext : {w' : 𝕎·} → w' ∈ U → w ⊑· w'
+    Uext {w'} (w1 , e1 , e) = ⊑-trans· e1 (⊑-trans· (fst (snd (i w1 e1))) e)
+
+    mon : {w1 w2 : 𝕎·} → w1 ⊑· w2 → w1 ∈ U → w2 ∈ U
+    mon {w1} {w2} e (w0 , e0 , e') = w0 , e0 , ⊑-trans· e' e
+
+    g : ∈𝔹 {l} {O𝔹bars} {w} (mk𝔹 bar w◀U Uext) f
+    g {w'} e (w1 , e1 , e') w2 e2 z = snd (snd (i w1 e1)) w2 (⊑-trans· e' e2) z
 
 \end{code}

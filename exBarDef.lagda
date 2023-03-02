@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -42,22 +42,17 @@ open import exBar
 open import mod
 
 
-module exBarDef {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
---                (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K)
---                (C : Choice) (G : GetChoice {L} W C) (N : NewChoice {L} W C G) (F : Freeze {L} W C G N) (P : Progress {L} W C G N F)
---                (E : Extensionality 0ℓ (lsuc(lsuc(L))))
---                (EB : ExBar W C G N F P E)
-                (EB : ExBar W M)
+module exBarDef {L : Level} (L' : Level) (W : PossibleWorlds {L}) (M : Mod L' W)
+                (EB : ExBar L' W M)
        where
 
 open import worldDef(W)
-open import bar(W)
-open import barI(W)(M)--(C)(K)(P)
+open import bar(L')(W)
+open import barI(L')(W)(M)
 
---open Bar B
 open ExBar
 
-∀∃𝔹· : {w : 𝕎·} {f : wPred w} → wPredExtIrr f
+∀∃𝔹· : ∀ {l} {w : 𝕎·} {f : wPred {l} w} → wPredExtIrr f
        → ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → □· w2 (↑wPred f (⊑-trans· e1 e2))))
        → □· w f
 ∀∃𝔹· = ∀∃𝔹 EB

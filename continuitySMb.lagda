@@ -2,7 +2,7 @@
 {-# OPTIONS --rewriting #-}
 --{-# OPTIONS +RTS -M6G -RTS #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 --open import Agda.Builtin.Equality.Rewrite
@@ -51,11 +51,11 @@ open import mod
 open import choiceBar
 
 
-module continuitySMb {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+module continuitySMb {L : Level} (L' : Level) (W : PossibleWorlds {L}) (M : Mod L' W)
                      (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
                      (X : ChoiceExt W C)
                      (N : NewChoice {L} W C K G)
-                     (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+                     (E : Extensionality 0ℓ (lsuc (lsuc L) ⊔ lsuc (lsuc L')))
                      (EM : ExcludedMiddle (lsuc(L)))
        where
 
@@ -67,11 +67,11 @@ open import terms3(W)(C)(K)(G)(X)(N)
 open import terms4(W)(C)(K)(G)(X)(N)
 open import terms5(W)(C)(K)(G)(X)(N)
 open import terms6(W)(C)(K)(G)(X)(N)
-open import bar(W)
-open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import bar(L')(W)
+open import barI(L')(W)(M)--(C)(K)(P)
+open import forcing(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props0(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import ind2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -79,28 +79,28 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props3(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props4(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity1(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity3(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity4(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity5(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity6(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity3b(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity4b(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity5b(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity6b(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity7b(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity8b(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity1b(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity2b(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity3b(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity4b(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity5b(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity6b(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity7b(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity8b(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 
@@ -221,10 +221,10 @@ smallestMod cn kb gc i w F f ∈F ∈f =
     ... | no q = ⊥-elim (p (w1 , e1 , q))
 
 
-¬∃𝕎→ : {w : 𝕎·} {P : wPred w}
+¬∃𝕎→ : ∀ {l} {w : 𝕎·} {P : wPred {l} w}
          → ¬ ∃𝕎 w P
          → ∀𝕎 w (λ w1 e1 → ¬ (P w1 e1))
-¬∃𝕎→ {w} {P} h w1 e1 q = h (w1 , e1 , q)
+¬∃𝕎→ {l} {w} {P} h w1 e1 q = h (w1 , e1 , q)
 
 
 ¬∀𝕎smallestMod→1 : (cn : comp→∀ℕ) (kb : K□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)

@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_ ; Setω) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -46,12 +46,12 @@ open import progress
 open import mod
 
 
-module choiceBar {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+module choiceBar {L : Level} (L' : Level) (W : PossibleWorlds {L}) (M : Mod L' W)
                  (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
                  (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
                  (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
                  (F : Freeze {L} W C K P G N)
-                 (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+                 (E : Extensionality 0ℓ (lsuc (lsuc L) ⊔ lsuc (lsuc L')))
        where
 
 open import worldDef(W)
@@ -62,14 +62,14 @@ open import choiceExtDef(W)(C)(K)(G)(X)
 open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import computation(W)(C)(K)(G)(X)(N)
-open import bar(W)
-open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import bar(L')(W)
+open import barI(L')(W)(M)--(C)(K)(P)
+open import forcing(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props3(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 -- TODO: call this choiceType instead
-record ChoiceBar : Set(lsuc(lsuc(L))) where
+record ChoiceBar : Setω where
   constructor mkChoiceBar
   field
     Typeℂ₀₁ : CTerm
@@ -100,7 +100,7 @@ record ChoiceBar : Set(lsuc(lsuc(L))) where
     --choice-weakℕ : {w : 𝕎·} {c : Name} (m : ℕ) → compatible· c w Resℕ → □· w (λ w' _ → weakℕM w' (getC m c))
 
     -- This allows selecting a branch of a bar that follows a given choice 'u'
-    followChoice : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
+    followChoice : ∀ {l} (c : Name) {w : 𝕎·} {f : wPred {l} w} {r : Res{0ℓ}}
                    → □· w f
                    → onlyℂ∈𝕎 (Res.def r) c w
                    → compatible· c w r

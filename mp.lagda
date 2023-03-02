@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -51,12 +51,12 @@ open import choiceBar
 open import mod
 
 
-module mp {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+module mp {L : Level} (L' : Level) (W : PossibleWorlds {L}) (M : Mod W)
           (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
           (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
           (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
           (F : Freeze {L} W C K P G N)
-          (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+          (E : Extensionality 0ℓ (lsuc (lsuc L) ⊔ lsuc (lsuc L')))
           (CB : ChoiceBar W M C K P G X N V F E)
           (EM : ExcludedMiddle (lsuc(L)))
        where

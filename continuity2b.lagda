@@ -2,7 +2,7 @@
 {-# OPTIONS --rewriting #-}
 --{-# OPTIONS --auto-inline #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -50,11 +50,11 @@ open import mod
 open import choiceBar
 
 
-module continuity2b {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+module continuity2b {L : Level} (L' : Level) (W : PossibleWorlds {L}) (M : Mod L' W)
                     (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
                     (X : ChoiceExt W C)
                     (N : NewChoice {L} W C K G)
-                    (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+                    (E : Extensionality 0ℓ (lsuc (lsuc L) ⊔ lsuc (lsuc L')))
        where
 
 
@@ -65,11 +65,11 @@ open import terms3(W)(C)(K)(G)(X)(N)
 open import terms4(W)(C)(K)(G)(X)(N)
 open import terms5(W)(C)(K)(G)(X)(N)
 open import terms6(W)(C)(K)(G)(X)(N)
-open import bar(W)
-open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import bar(L')(W)
+open import barI(L')(W)(M)--(C)(K)(P)
+open import forcing(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props0(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import ind2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -77,18 +77,18 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props3(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props4(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity1(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity3(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity1b(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 

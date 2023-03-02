@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -46,32 +46,33 @@ open import exBar
 open import mod
 
 
-module lem {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+module lem {L : Level} (W : PossibleWorlds {L}) (M : Mod L W)
            (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
            (X : ChoiceExt W C)
            (N : NewChoice W C K G)
            (V : ChoiceVal W C K G X N)
-           (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+           (E : Extensionality 0ℓ (lsuc (lsuc L)))
            (EM : ExcludedMiddle (lsuc(L)))
-           (EB : ExBar W M)
+           (EB : ExBar L W M)
        where
 
 
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import exBarDef(W)(M)(EB)
+open import exBarDef(L)(W)(M)(EB)
 open import computation(W)(C)(K)(G)(X)(N)
-open import bar(W)
+open import bar(L)(W)
+open import nucleus(W)
 open import barOpen(W)
-open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import barI(L)(W)(M)
+open import forcing(L)(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props0(L)(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import ind2(L)(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)
+open import props1(L)(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props2(L)(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props3(L)(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import lem_props(L)(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)
 \end{code}
 
 
@@ -103,6 +104,9 @@ classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
         (sym (sub0-#[0]SQUASH-LEM p a₁))
         (→equalInType-SQUASH p4)
       where
+        f : wPred {lsuc L} w
+        f w' _ = inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁))
+
         p6 : □· w1 (λ w' _ → inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁)))
         p6 = ∀∃𝔹· (λ w' e1 e2 h → h) aw
           where
@@ -135,10 +139,9 @@ classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
                                                                    (Mod.∀𝕎-□ M (λ w3 e3 → t , t , inj₂ (#compAllRefl (#INR t) _ , #compAllRefl (#INR t) _ , equalInType-mon h w3 e3)))
 
 
-
 -- We now prove that open bars satisfy the ExBar property
-∀∃𝔹-open : {w : 𝕎·} {f : wPred w} → wPredExtIrr f → ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → inOpenBar w2 (↑wPred f (⊑-trans· e1 e2)))) → inOpenBar w f
-∀∃𝔹-open {w} {f} ext h w1 e1 =
+∀∃𝔹-open : ∀ {l} {w0 : 𝕎·} {f : wPred {l} w0} → wPredExtIrr f → ∀𝕎 w0 (λ w1 e01 → ∃𝕎 w1 (λ w2 e12 → inOpenBar w2 (↑wPred f (⊑-trans· e01 e12)))) → inOpenBar w0 f
+∀∃𝔹-open {l} {w} {f} ext h w1 e1 =
   w3 ,
   ⊑-trans· e2 e3 ,
   λ w4 e4 z → ext w4 (⊑-trans· (⊑-trans· e1 e2) (⊑-trans· e3 e4)) z (h3 w4 e4 (⊑-trans· e3 e4))
@@ -162,7 +165,7 @@ classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
     h3 = snd (snd (h2 w2 (⊑-refl· _)))
 
 
-exBar-open : ExBar W inOpenBar-Mod
-exBar-open = mkExBar ∀∃𝔹-open
+exBar-open : ExBar L W inOpenBar-Mod
+exBar-open = mkExBar λ {l} {w} {f} fext h → inOpenBar→Σ∈𝔹 w f (∀∃𝔹-open {l} {w} {f} fext λ w e → let (w' , e' , h) = h w e in w' , e' , Σ∈𝔹→inOpenBar w' (↑wPred f (⊑-trans· e e')) h)
 
 \end{code}[hide]

@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -44,45 +44,45 @@ open import newChoice
 open import progress
 open import mod
 
-module lem_props {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+module lem_props {L : Level} (L' : Level) (W : PossibleWorlds {L}) (M : Mod L' W)
                  (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
                  (X : ChoiceExt W C)
                  (N : NewChoice W C K G)
                  (V : ChoiceVal W C K G X N)
-                 (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+                 (E : Extensionality 0ℓ (lsuc (lsuc L) ⊔ lsuc (lsuc L')))
        where
 
 
 open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)
-open import bar(W)
-open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import bar(L')(W)
+open import barI(L')(W)(M)--(C)(K)(P)
+open import forcing(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props0(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import ind2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceDef{L}(C)
 open import getChoiceDef(W)(C)(K)(G)
 open import choiceExtDef(W)(C)(K)(G)(X)
 open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
 
-open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_lt(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_qlt(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_free(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_pi(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_set(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_eq(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_union(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_nat(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_qnat(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_lt(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_qlt(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_free(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_pi(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_sum(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_set(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_eq(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_union(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_tsquash(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_ffdefs(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import type_sys_props_lift(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props3(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 -- open import calculus
 -- open import world
@@ -341,7 +341,7 @@ onlyℂ∈𝕎→⇓ {w} {c} {u} {m} oc (t , gc) = 1 , comp
 →#APPLY-#CS#⇛ℂ→C· : {w : 𝕎·} {name : Name} {n : ℕ} {k : ℂ·}
                        → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getChoice· n name w' ≡ just k))
                        → #APPLY (#CS name) (#NUM n) #⇛! ℂ→C· k at w
-→#APPLY-#CS#⇛ℂ→C· {w} {name} {n} {k} aw w1 e1 = lift (1 , step-APPLY-CS (ℂ→T k) w1 n name h)
+→#APPLY-#CS#⇛ℂ→C· {w} {name} {n} {k} aw w1 e1 = 1 , step-APPLY-CS (ℂ→T k) w1 n name h
   where
     h : getT n name w1 ≡ just (ℂ→T k)
     h rewrite lower (aw w1 e1) = refl

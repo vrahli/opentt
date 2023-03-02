@@ -2,7 +2,7 @@
 {-# OPTIONS --rewriting #-}
 --{-# OPTIONS --auto-inline #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -50,11 +50,11 @@ open import mod
 open import choiceBar
 
 
-module continuity1b {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+module continuity1b {L : Level} (L' : Level) (W : PossibleWorlds {L}) (M : Mod L' W)
                     (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
                     (X : ChoiceExt W C)
                     (N : NewChoice {L} W C K G)
-                    (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+                    (E : Extensionality 0ℓ (lsuc (lsuc L) ⊔ lsuc (lsuc L')))
        where
 
 
@@ -65,11 +65,11 @@ open import terms3(W)(C)(K)(G)(X)(N)
 open import terms4(W)(C)(K)(G)(X)(N)
 open import terms5(W)(C)(K)(G)(X)(N)
 open import terms6(W)(C)(K)(G)(X)(N)
-open import bar(W)
-open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import bar(L')(W)
+open import barI(L')(W)(M)--(C)(K)(P)
+open import forcing(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props0(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import ind2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -77,14 +77,14 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props3(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props4(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity1(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 
@@ -196,7 +196,7 @@ testM-QNAT-shift cn kb gc i w1 F f name comp1 ∈F ∈f =
     eqn = kb (equalInType-NAT→ i w2 (#APPLY F (#upd name f)) (#APPLY F (#upd name f)) eqa) w2 (⊑-refl· _)
 
     cak : Σ ℕ (λ k → appUpd name ⌜ F ⌝ ⌜ f ⌝ ⇛ NUM k at w2)
-    cak = fst eqn , fst (snd eqn)
+    cak = fst (lower eqn) , fst (snd (lower eqn))
 
     m : ℕ
     m = fst cak
@@ -366,7 +366,7 @@ testM-QNAT cn kb gc i w F f ∈F ∈f =
   →equalInType-QNAT i w (#νtestMup F f) (#νtestMup F f) (Mod.∀𝕎-□ M aw)
   where
     aw : ∀𝕎 w (λ w' _ → #weakMonEq w' (#νtestMup F f) (#νtestMup F f))
-    aw w1 e1 w2 e2 = lift (νtestM-QNAT-shift cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
+    aw w1 e1 w2 e2 = νtestM-QNAT-shift cn kb gc i w2 F f (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) (equalInType-mon ∈f w2 (⊑-trans· e1 e2))
 
 
 
@@ -555,7 +555,7 @@ sub0-QNATn-body a n rewrite CTerm→CTerm0→Term n = CTerm≡ e
     ea2 = equalInType-NAT→ i w a b ea
 
     aw : ∀𝕎 w (λ w' e' → NATeq w' a b → #weakMonEq w' a b)
-    aw w1 e1 (k , c₁ , c₂) w2 e2 = lift (k , lower (c₁ w2 e2) , lower (c₂ w2 e2))
+    aw w1 e1 (lift (k , c₁ , c₂)) w2 e2 = k , c₁ w2 e2 , c₂ w2 e2
 
 
 →equalTypesQNATn : (i : ℕ) (w : 𝕎·) (a₁ a₂ : CTerm)
@@ -760,26 +760,26 @@ equalInType-QBAIREn-BAIRE-trans {i} {w} {a} {b} {c} {n} h1 h2 h3 =
 
 
 #lift-<NUM-pair→#weakMonEqₗ : {w : 𝕎·} {a b : CTerm}
-                              → ∀𝕎 w (λ w' _ → #lift-<NUM-pair w' a b)
+                              → ∀𝕎 w (λ w' _ → #<NUM-pair w' a b)
                               → #weakMonEq w a a
 #lift-<NUM-pair→#weakMonEqₗ {w} {a} {b} h w1 e1 =
-  lift (fst (lower (h w1 e1)) , fst (snd (snd (lower (h w1 e1)))) , fst (snd (snd (lower (h w1 e1)))))
+  fst (h w1 e1) , fst (snd (snd (h w1 e1))) , fst (snd (snd (h w1 e1)))
 
 
 
 #lift-<NUM-pair→#weakMonEqᵣ : {w : 𝕎·} {a b : CTerm}
-                              → ∀𝕎 w (λ w' _ → #lift-<NUM-pair w' a b)
+                              → ∀𝕎 w (λ w' _ → #<NUM-pair w' a b)
                               → #weakMonEq w b b
 #lift-<NUM-pair→#weakMonEqᵣ {w} {a} {b} h w1 e1 =
-  lift (fst (snd (lower (h w1 e1))) , fst (snd (snd (snd (lower (h w1 e1))))) , fst (snd (snd (snd (lower (h w1 e1))))))
+  fst (snd (h w1 e1)) , fst (snd (snd (snd (h w1 e1)))) , fst (snd (snd (snd (h w1 e1))))
 
 
 →equalInTypeQLT : {i : ℕ} {w : 𝕎·} {a b u v : CTerm}
-                  → ∀𝕎 w (λ w' _ → #lift-<NUM-pair w' a b)
+                  → ∀𝕎 w (λ w' _ → #<NUM-pair w' a b)
                   → equalInType i w (#QLT a b) u v
 →equalInTypeQLT {i} {w} {a} {b} {u} {v} h =
   (EQTQLT a a b b (#compAllRefl (#QLT a b) w) (#compAllRefl (#QLT a b) w) (#lift-<NUM-pair→#weakMonEqₗ {w} {a} {b} h) (#lift-<NUM-pair→#weakMonEqᵣ {w} {a} {b} h)) ,
-  Mod.∀𝕎-□ M (λ w1 e1 → lift (lower (h w1 e1)))
+  Mod.∀𝕎-□ M h
 
 
 →equalInType-QNATn : {i : ℕ} {w : 𝕎·} {t a b : CTerm}
@@ -792,7 +792,7 @@ equalInType-QBAIREn-BAIRE-trans {i} {w} {a} {b} {c} {n} h1 h2 h3 =
     (equalInType-SET
       (λ w' _ → eqTypesNAT)
       (λ w' e' a₁ a₂ eqa → ≡CTerm→eqTypes (sym (sub0-QNATn-body a₁ t)) (sym (sub0-QNATn-body a₂ t)) (→equalTypesQLT (∈NAT→∈QNAT eqa) (equalInType-mon eqt w' e')))
-      (λ w' e' → →equalInType-NAT i w' a b (Mod.∀𝕎-□Func M (λ w'' e'' (n , k , c , c1 , c2 , ltn) → k , c1 , c2) (Mod.↑□ M eqi e')))
+      (λ w' e' → →equalInType-NAT i w' a b (Mod.∀𝕎-□Func M (λ w'' e'' (n , k , c , c1 , c2 , ltn) → lift (k , c1 , c2)) (Mod.↑□ M eqi e')))
       (Mod.∀𝕎-□Func M aw (Mod.→□∀𝕎 M eqi)))
   where
     aw : ∀𝕎 w (λ w' _ → ∀𝕎 w' (λ w'' _ → Σ ℕ (λ n → Σ ℕ (λ k → t #⇓ #NUM n at w'' × a #⇛ #NUM k at w'' × b #⇛ #NUM k at w'' × k < n)))
@@ -802,20 +802,20 @@ equalInType-QBAIREn-BAIRE-trans {i} {w} {a} {b} {c} {n} h1 h2 h3 =
       ≡CTerm→equalInType
         (sym (sub0-QNATn-body a t))
         (→equalInTypeQLT {i} {w1} {a} {t}
-          (λ w2 e2 → lift (fst (snd (h w2 e2)) ,
+          (λ w2 e2 → fst (snd (h w2 e2)) ,
                             fst (h w2 e2) ,
-                            lower (fst (snd (snd (snd (h w2 e2)))) w2 (⊑-refl· _)) ,
+                            fst (snd (snd (snd (h w2 e2)))) w2 (⊑-refl· _) ,
                             fst (snd (snd (h w2 e2))) ,
-                            snd (snd (snd (snd (snd (h w2 e2))))))))
+                            snd (snd (snd (snd (snd (h w2 e2)))))))
 
 
 →∀𝕎-NATeq-NATeq : (w : 𝕎·) (a b : CTerm)
-                   → ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) ((k : ℕ) → a #⇓ #NUM k at w' → b #⇓ #NUM k at w'))
+                   → ∀𝕎 w (λ w' _ → (k : ℕ) → a #⇓ #NUM k at w' → b #⇓ #NUM k at w')
                    → ∀𝕎 w (λ w' _ → NATeq w' a a → NATeq w' a b)
-→∀𝕎-NATeq-NATeq w a b h w1 e1 (n , c₁ , c₂) = n , c₁ , c
+→∀𝕎-NATeq-NATeq w a b h w1 e1 (lift (n , c₁ , c₂)) = lift (n , c₁ , c)
   where
     c : b #⇛ #NUM n at w1
-    c w2 e2 = lift (lower (h w2 (⊑-trans· e1 e2)) n (lower (c₁ w2 e2)))
+    c w2 e2 = h w2 (⊑-trans· e1 e2) n (c₁ w2 e2)
 
 
 

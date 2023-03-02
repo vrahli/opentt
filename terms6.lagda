@@ -653,10 +653,10 @@ IFLE⇓₁ {w} {w'} {n} {m} {a} {u} {v} (k , comp) = IFLE-steps₁ {k} {w} {w'} 
 IFLE⇛₁ : {w : 𝕎·} {n m a u v : Term}
          → n ⇛ m at w
          → IFLE a n u v ⇛ IFLE a m u v at w
-IFLE⇛₁ {w} {n} {m} {a} {u} {v} comp w1 e1 = lift (⇓-from-to→⇓ {w1} {fst c} (IFLE⇓₁ (snd c)))
+IFLE⇛₁ {w} {n} {m} {a} {u} {v} comp w1 e1 = ⇓-from-to→⇓ {w1} {fst c} (IFLE⇓₁ (snd c))
   where
     c : Σ 𝕎· (λ w2 → n ⇓ m from w1 to w2)
-    c = ⇓→from-to (lower (comp w1 e1))
+    c = ⇓→from-to (comp w1 e1)
 
 
 IFLE-steps₂ : {k : ℕ} {w w' : 𝕎·} {i : ℕ} {n m u v : Term}
@@ -684,16 +684,16 @@ IFLE⇓₂ {w} {w'} {i} {n} {m} {u} {v} (k , comp) = IFLE-steps₂ {k} {w} {w'} 
 IFLE⇛₂ : {w : 𝕎·} {i : ℕ} {n m u v : Term}
          → n ⇛ m at w
          → IFLE n (NUM i) u v ⇛ IFLE m (NUM i) u v at w
-IFLE⇛₂ {w} {i} {n} {m} {u} {v} comp w1 e1 = lift (⇓-from-to→⇓ {w1} {fst c} (IFLE⇓₂ (snd c)))
+IFLE⇛₂ {w} {i} {n} {m} {u} {v} comp w1 e1 = ⇓-from-to→⇓ {w1} {fst c} (IFLE⇓₂ (snd c))
   where
     c : Σ 𝕎· (λ w2 → n ⇓ m from w1 to w2)
-    c = ⇓→from-to (lower (comp w1 e1))
+    c = ⇓→from-to (comp w1 e1)
 
 
 IFLE⇛≤ : {k j : ℕ} {w : 𝕎·} {a b : Term}
           → k ≤ j
           → IFLE (NUM k) (NUM j) a b ⇛ a at w
-IFLE⇛≤ {k} {j} {w} {a} {b} lekj w1 e1 = lift (1 , c)
+IFLE⇛≤ {k} {j} {w} {a} {b} lekj w1 e1 = 1 , c
   where
     c : stepsT 1 (IFLE (NUM k) (NUM j) a b) w1 ≡ a
     c with j <? k
@@ -704,7 +704,7 @@ IFLE⇛≤ {k} {j} {w} {a} {b} lekj w1 e1 = lift (1 , c)
 IFLE⇛¬≤ : {k j : ℕ} {w : 𝕎·} {a b : Term}
           → ¬ k ≤ j
           → IFLE (NUM k) (NUM j) a b ⇛ b at w
-IFLE⇛¬≤ {k} {j} {w} {a} {b} lekj w1 e1 = lift (1 , c)
+IFLE⇛¬≤ {k} {j} {w} {a} {b} lekj w1 e1 = 1 , c
   where
     c : stepsT 1 (IFLE (NUM k) (NUM j) a b) w1 ≡ b
     c with j <? k
@@ -725,7 +725,7 @@ IFLE⇛¬≤ {k} {j} {w} {a} {b} lekj w1 e1 = lift (1 , c)
 
 
 CHOOSE-NAME⇛AX : {w : 𝕎·} {name : Name} {t : Term} → CHOOSE (NAME name) t ⇛ AX at w
-CHOOSE-NAME⇛AX {w} {name} {t} w1 e1 = lift (1 , refl)
+CHOOSE-NAME⇛AX {w} {name} {t} w1 e1 = 1 , refl
 
 
 #CHOOSE : CTerm → CTerm → CTerm
@@ -779,10 +779,10 @@ SEQ⇓₁ {w} {w'} {a} {b} {t} (k , comp) = SEQ-steps₁ {k} {w} {w'} {a} {b} {t
 SEQ⇛₁ : {w : 𝕎·} {a a' b : Term}
            → a ⇛ a' at w
            → SEQ a b ⇛ SEQ a' b at w
-SEQ⇛₁ {w} {a} {a'} {b} comp w1 e1 = lift (⇓-from-to→⇓ {w1} {fst c} (SEQ⇓₁ (snd c)))
+SEQ⇛₁ {w} {a} {a'} {b} comp w1 e1 = ⇓-from-to→⇓ {w1} {fst c} (SEQ⇓₁ (snd c))
   where
     c : Σ 𝕎· (λ w2 → a ⇓ a' from w1 to w2)
-    c = ⇓→from-to (lower (comp w1 e1))
+    c = ⇓→from-to (comp w1 e1)
 
 
 
@@ -807,7 +807,7 @@ SEQ-AX⇓₁ {w} {t} tc = 1 , c
 
 
 SEQ-AX⇛₁ : {w : 𝕎·} {t : Term} → # t → SEQ AX t ⇛ t at w
-SEQ-AX⇛₁ {w} {t} tc w1 e1 = lift (SEQ-AX⇓₁ tc)
+SEQ-AX⇛₁ {w} {t} tc w1 e1 = SEQ-AX⇓₁ tc
 
 
 SEQ-AX⇛ : {w : 𝕎·} {a b : Term}
@@ -844,10 +844,10 @@ LET⇓₁ {w} {w'} {a} {b} {t} (k , comp) = LET-steps₁ {k} {w} {w'} {a} {b} {t
 LET⇛₁ : {w : 𝕎·} {a a' b : Term}
            → a ⇛ a' at w
            → LET a b ⇛ LET a' b at w
-LET⇛₁ {w} {a} {a'} {b} comp w1 e1 = lift (⇓-from-to→⇓ {w1} {fst c} (LET⇓₁ (snd c)))
+LET⇛₁ {w} {a} {a'} {b} comp w1 e1 = ⇓-from-to→⇓ {w1} {fst c} (LET⇓₁ (snd c))
   where
     c : Σ 𝕎· (λ w2 → a ⇓ a' from w1 to w2)
-    c = ⇓→from-to (lower (comp w1 e1))
+    c = ⇓→from-to (comp w1 e1)
 
 
 isValue→LET⇓from-to : {v t : Term} {w : 𝕎·}
@@ -864,7 +864,7 @@ isValue→LET⇓from-to {v} {t} {w} isv = 1 , c
 isValue→LET⇛ : {v t : Term} {w : 𝕎·}
                  → isValue v
                  → LET v t ⇛ sub v t at w
-isValue→LET⇛ {v} {t} {w} isv w1 e1 = lift (⇓-from-to→⇓ {w1} {w1} {LET v t} {sub v t} (isValue→LET⇓from-to isv))
+isValue→LET⇛ {v} {t} {w} isv w1 e1 = ⇓-from-to→⇓ {w1} {w1} {LET v t} {sub v t} (isValue→LET⇓from-to isv)
 
 
 ≡ₗ→⇓from-to : {a b c : Term} {w1 w2 : 𝕎·}

@@ -14,7 +14,7 @@ module cucleusImpliesCoverageProps {n : Level} (W : PossibleWorlds {n})
        where
 open import worldDef(W)
 open import nucleus(W)
-open import bar{n}{n}(W)
+open import bar(n)(W)
 
 -- From an arbitrary covering nucleus we can get a covering relation
 _◀[_]_ : 𝕎· → (UCSubset → UCSubset) → UCSubset → Set n

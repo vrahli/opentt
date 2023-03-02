@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; Setω) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -40,26 +40,19 @@ open import progress
 open import mod
 
 
-module exBar {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
---             (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K)
+module exBar {L : Level} (L' : Level) (W : PossibleWorlds {L}) (M : Mod L' W)
        where
 
 open import worldDef(W)
-open import bar(W)
-open import barI(W)(M)--(C)(K)(P)
+open import bar(L')(W)
+open import barI(L')(W)(M)
 
-
---open Bar B
-
-record ExBar : Set(lsuc(lsuc(L))) where
+record ExBar : Setω where
   constructor mkExBar
   field
-    ∀∃𝔹 : {w : 𝕎·} {f : wPred w}
+    ∀∃𝔹 : ∀ {l} {w : 𝕎·} {f : wPred {l} w}
           → wPredExtIrr f
           → ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → □· w2 (↑wPred f (⊑-trans· e1 e2))))
           → □· w f
-
---- (∀𝕎 ∃𝕎 □ f) → (□ f)
---- ¬followChoice (classically): □f ∧ C(w) → ∀ w' → w ⊑· w' → C(w') → ¬f
 
 \end{code}

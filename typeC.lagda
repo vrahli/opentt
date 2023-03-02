@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -50,13 +50,13 @@ open import choiceBar
 open import mod
 
 
-module typeC {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+module typeC {L : Level} (L' : Level) (W : PossibleWorlds {L}) (M : Mod L' W)
              (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
              (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
              (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
              (F : Freeze {L} W C K P G N)
-             (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-             (CB : ChoiceBar W M C K P G X N V F E)
+             (E : Extensionality 0ℓ (lsuc (lsuc L) ⊔ lsuc (lsuc L')))
+             (CB : ChoiceBar L' W M C K P G X N V F E)
        where
 
 
@@ -69,18 +69,18 @@ open import choiceExtDef(W)(C)(K)(G)(X)
 open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import computation(W)(C)(K)(G)(X)(N)
-open import bar(W)
-open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import bar(L')(W)
+open import barI(L')(W)(M)--(C)(K)(P)
+open import forcing(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props0(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import ind2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props3(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+open import choiceBarDef(L')(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 --open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)(CB)
 
 

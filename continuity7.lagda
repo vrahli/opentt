@@ -2,7 +2,7 @@
 {-# OPTIONS --rewriting #-}
 --{-# OPTIONS --auto-inline #-}
 
-open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Equality
 open import Agda.Builtin.Equality.Rewrite
@@ -52,11 +52,11 @@ open import mod
 open import choiceBar
 
 
-module continuity7 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+module continuity7 {L : Level} (L' : Level) (W : PossibleWorlds {L}) (M : Mod L' W)
                    (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
                    (X : ChoiceExt W C)
                    (N : NewChoice {L} W C K G)
-                   (E : Axiom.Extensionality.Propositional.Extensionality 0ℓ (lsuc(lsuc(L))))
+                   (E : Axiom.Extensionality.Propositional.Extensionality 0ℓ (lsuc (lsuc L) ⊔ lsuc (lsuc L')))
        where
 
 
@@ -67,11 +67,11 @@ open import terms3(W)(C)(K)(G)(X)(N)
 open import terms4(W)(C)(K)(G)(X)(N)
 open import terms5(W)(C)(K)(G)(X)(N)
 open import terms6(W)(C)(K)(G)(X)(N)
-open import bar(W)
-open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import bar(L')(W)
+open import barI(L')(W)(M)--(C)(K)(P)
+open import forcing(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props0(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import ind2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -79,19 +79,19 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props3(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props4(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity1(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity2(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity3(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity4(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity5(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity6(L')(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 
@@ -595,11 +595,11 @@ equalInType-TPURE→ₗ : {i : ℕ} {w : 𝕎·} {T a b : CTerm}
                       → equalInType i w (#TPURE T) a b
                       → #¬Names a
 equalInType-TPURE→ₗ {i} {w} {T} {a} {b} eqi =
-  lower (Mod.□-const M {w} {Lift {0ℓ} (lsuc L) (#¬Names a)} (Mod.∀𝕎-□Func M aw h))
+  Mod.□-const M {_} {w} (Mod.∀𝕎-□Func M aw h)
   where
     aw : ∀𝕎 w (λ w' e' → ISECTeq (equalInType i w' T) (equalInType i w' #PURE) a b
-                        → Lift (lsuc L) (#¬Names a))
-    aw w1 e1 (eqa , eqb) = Mod.□-const M {w1} {Lift {0ℓ} (lsuc L) (#¬Names a)} (Mod.∀𝕎-□Func M (λ w2 e2 (lift (h1 , h2)) → lift h1) (equalInType-PURE→ eqb))
+                        → #¬Names a)
+    aw w1 e1 (eqa , eqb) = Mod.□-const M {_} {w1} (Mod.∀𝕎-□Func M (λ w2 e2 (lift (h1 , h2)) → h1) (equalInType-PURE→ eqb))
 
     h : □· w (λ w' _ → ISECTeq (equalInType i w' T) (equalInType i w' #PURE) a b)
     h = equalInType-ISECT→ (≡CTerm→equalInType (#TPURE≡ T) eqi)
@@ -610,11 +610,11 @@ equalInType-TPURE→ᵣ : {i : ℕ} {w : 𝕎·} {T a b : CTerm}
                       → equalInType i w (#TPURE T) a b
                       → #¬Names b
 equalInType-TPURE→ᵣ {i} {w} {T} {a} {b} eqi =
-  lower (Mod.□-const M {w} {Lift {0ℓ} (lsuc L) (#¬Names b)} (Mod.∀𝕎-□Func M aw h))
+  Mod.□-const M {_} {w} (Mod.∀𝕎-□Func M aw h)
   where
     aw : ∀𝕎 w (λ w' e' → ISECTeq (equalInType i w' T) (equalInType i w' #PURE) a b
-                        → Lift (lsuc L) (#¬Names b))
-    aw w1 e1 (eqa , eqb) = Mod.□-const M {w1} {Lift {0ℓ} (lsuc L) (#¬Names b)} (Mod.∀𝕎-□Func M (λ w2 e2 (lift (h1 , h2)) → lift h2) (equalInType-PURE→ eqb))
+                        → #¬Names b)
+    aw w1 e1 (eqa , eqb) = Mod.□-const M {_} {w1} (Mod.∀𝕎-□Func M (λ w2 e2 (lift (h1 , h2)) → h2) (equalInType-PURE→ eqb))
 
     h : □· w (λ w' _ → ISECTeq (equalInType i w' T) (equalInType i w' #PURE) a b)
     h = equalInType-ISECT→ (≡CTerm→equalInType (#TPURE≡ T) eqi)
