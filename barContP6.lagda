@@ -258,6 +258,62 @@ seq2list≡ s (suc n) rewrite seq2list≡ s n = refl
 ≡getT≤ℕ→< w w' r n j e gt1 (k , gt2 , ltj) rewrite e | gt2 | NUMinj (just-inj gt1) = ltj
 
 
+path-mon : {i : ℕ} {w w' : 𝕎·} {A : CTerm} {B : CTerm0}
+           → w ⊑· w'
+           → path i w A B
+           → path i w' A B
+path-mon {i} {w} {w'} {A} {B} e p n with p n
+... | inj₁ (a , b , a∈ , b∈) = inj₁ (a , b , equalInType-mon a∈ w' e , equalInType-mon b∈ w' e)
+... | inj₂ x = inj₂ tt
+
+
+correctPathN-mon : (i : ℕ) (w w' : 𝕎·) (e : w ⊑· w') (t : CTerm) (A : CTerm) (B : CTerm0) (p : path i w A B) (n : ℕ)
+                  → correctPathN {i} {w} {A} {B} t p n
+                  → correctPathN {i} {w'} {A} {B} t (path-mon {i} {w} {w'} {A} {B} e p) n
+correctPathN-mon i w w' e t A B p 0 cor = cor
+correctPathN-mon i w w' e t A B p (suc n) cor with p 0
+... | inj₁ (a , b , a∈ , b∈) with p n
+... |    inj₁ (a0 , b0 , a0∈ , b0∈) =
+  fst cor ,
+  ∀𝕎-mon e (fst (snd cor)) ,
+  correctPathN-mon i w w' e (#APPLY (proj₁ cor) b) A B _ n (snd (snd cor))
+... |    inj₂ x =
+  fst cor ,
+  ∀𝕎-mon e (fst (snd cor)) ,
+  correctPathN-mon i w w' e (#APPLY (proj₁ cor) b) A B _ n (snd (snd cor))
+correctPathN-mon i w w' e t A B p (suc n) cor | inj₂ x = cor
+
+
+correctPath-mon : (i : ℕ) (w w' : 𝕎·) (e : w ⊑· w') (t : CTerm) (A : CTerm) (B : CTerm0) (p : path i w A B)
+                  → correctPath {i} {w} {A} {B} t p
+                  → correctPath {i} {w'} {A} {B} t (path-mon {i} {w} {w'} {A} {B} e p)
+correctPath-mon i w w' e t A B p cor n =
+  correctPathN-mon i w w' e t A B p n (cor n)
+
+
+isInfPath-mon : (i : ℕ) (w w' : 𝕎·) (e : w ⊑· w') (A : CTerm) (B : CTerm0) (p : path i w A B)
+                → isInfPath {i} {w} {A} {B} p
+                → isInfPath {i} {w'} {A} {B} (path-mon {i} {w} {w'} {A} {B} e p)
+isInfPath-mon i w w' e A B p j n with j n
+... | y with p n
+... | inj₁ (a , b , a∈ , b∈) = tt
+... | inj₂ x = y
+
+
+infPath-mon : (i : ℕ) (w w' : 𝕎·) (t : CTerm) (A : CTerm) (B : CTerm0)
+              → w ⊑· w'
+              → (p : path i w A B)
+              → correctPath {i} {w} {A} {B} t p
+              → isInfPath {i} {w} {A} {B} p
+              → Σ (path i w' A B) (λ p' →
+                  correctPath {i} {w'} {A} {B} t p'
+                  × isInfPath {i} {w'} {A} {B} p')
+infPath-mon i w w' t A B e p cor inf =
+  path-mon {i} {w} {w'} {A} {B} e p ,
+  correctPath-mon i w w' e t A B p cor ,
+  isInfPath-mon i w w' e A B p inf
+
+
 -- We want to create a Term ∈ BAIRE from this path.
 noInfPath : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
             (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
