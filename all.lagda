@@ -93,9 +93,10 @@ open import contInstanceOpenCS
 -- We show here that the properties used to prove continuity in continuity7 are satisfied by Beth bars + CS
 open import contInstanceBethCS
 
--- A first version of the bar theorem (sem) and its condition (semCond)
+-- A first version of the bar theorem (sem) and its condition (semCond) -- contDiagVal puts the 2 results together
 open import barContP6 using (sem)
 open import barContP9 using (semCond)
+open import barContP10 using (contDiagVal)
 
 -- Another attempt at validating continuity. It is unfinighed: continuity10b has holes
 open import continuity9b
