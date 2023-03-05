@@ -221,7 +221,7 @@ loopF r F R k f =
 loopL : Name →  Term → Term
 loopL r F =
   -- 0 & 1 are the argument (the list: length (1) + function (0)), and 2 is the recursive call
-  LAMBDA (LAMBDA (LAMBDA (loopF r F (VAR 2) (VAR 1) (VAR 0))))
+  LAMBDA (LAMBDA (LAMBDA (loopF r (shiftUp 0 (shiftUp 0 (shiftUp 0 F))) (VAR 2) (VAR 1) (VAR 0))))
 
 
 loop : Name →  Term → Term
@@ -399,7 +399,7 @@ fvars-upd name f
   #FIX (#LAMBDA (#[0]LAMBDA (#[1]LAMBDA (#[2]SEQ (#[2]set0 r) F))))
   where
     F : CTerm2
-    F = #[2]LET (#[2]APPLY ⌞ bar ⌟ (#[2]upd r #[4]VAR2))
+    F = #[2]LET (#[2]APPLY (#[2]shiftUp0 (#[1]shiftUp0 (#[0]shiftUp0 bar))) (#[2]upd r #[4]VAR2))
                 (#[3]IFLT #[3]VAR0 #[3]N0 #[3]BOT
                 (#[3]IFLT (#[3]get0 r)
                           #[3]VAR2
@@ -670,10 +670,18 @@ m2w i w A B t eqta eqtb cond h =
 
 
 sub-LAMBDA-LAMBDA-loopF≡ : (r : Name) (F : Term) (cF : # F)
-                           → sub (loop r F) (LAMBDA (LAMBDA (loopF r F (VAR 2) (VAR 1) (VAR 0))))
+                           → sub (loop r F) (LAMBDA (LAMBDA (loopF r (shiftUp 0 (shiftUp 0 (shiftUp 0 F))) (VAR 2) (VAR 1) (VAR 0))))
                               ≡ LAMBDA (LAMBDA (loopF r F (loop r F) (VAR 1) (VAR 0)))
 sub-LAMBDA-LAMBDA-loopF≡ r F cF
-  rewrite #subv 3 (shiftUp 0 (shiftUp 0 (shiftUp 0 (shiftUp 0 (loop r F))))) (shiftUp 0 F) (→#shiftUp 0 {F} cF)
+  rewrite #subv 3 (shiftUp 0 (shiftUp 0 (shiftUp 0 (shiftUp 0 (loop r F)))))
+                  (shiftUp 0 (shiftUp 0 (shiftUp 0 (shiftUp 0 F))))
+                  (→#shiftUp 0 {shiftUp 0 (shiftUp 0 (shiftUp 0 F))} (→#shiftUp 0 {shiftUp 0 (shiftUp 0 F)} (→#shiftUp 0 {shiftUp 0 F} (→#shiftUp 0 {F} cF))))
+        | #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct F cF)
         | #shiftUp 0 (ct F cF)
         | #shiftUp 4 (ct F cF)
         | #shiftUp 4 (ct F cF)
@@ -695,6 +703,9 @@ sub-LAMBDA-loopF≡ : (r : Name) (F k : Term) (cF : # F) (ck : # k)
                        ≡ LAMBDA (loopF r F (loop r F) k (VAR 0))
 sub-LAMBDA-loopF≡ r F k cF ck
   rewrite #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct F cF)
         | #shiftUp 4 (ct F cF)
         | #shiftUp 4 (ct F cF)
         | #shiftUp 4 (ct F cF)
@@ -730,6 +741,9 @@ sub-loopF≡ : (r : Name) (F k f : Term) (cF : # F) (ck : # k) (cf : # f)
                 ≡ loopF r F (loop r F) k f
 sub-loopF≡ r F k f cF ck cf
   rewrite #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct F cF)
         | #shiftUp 4 (ct F cF)
         | #shiftUp 4 (ct F cF)
         | #shiftUp 4 (ct F cF)
@@ -792,7 +806,7 @@ APPLY-loop⇓! r F k f w cF ck cf =
        c2
        (step→⇓ c3))
   where
-    c1 : ret (APPLY2 (sub (loop r F) (LAMBDA (LAMBDA (loopF r F (VAR 2) (VAR 1) (VAR 0))))) k f) w
+    c1 : ret (APPLY2 (sub (loop r F) (LAMBDA (LAMBDA (loopF r (shiftUp 0 (shiftUp 0 (shiftUp 0 F))) (VAR 2) (VAR 1) (VAR 0))))) k f) w
          ≡ just (APPLY2 (LAMBDA (LAMBDA (loopF r F (loop r F) (VAR 1) (VAR 0)))) k f , w)
     c1 rewrite sub-LAMBDA-LAMBDA-loopF≡ r F cF = refl
 

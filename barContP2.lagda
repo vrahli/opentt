@@ -428,6 +428,9 @@ sub-loopI-shift≡ r F k f v cF ck cf
         | #shiftUp 0 (ct f cf)
         | #shiftUp 0 (ct f cf)
         | #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct F cF)
+        | #shiftUp 0 (ct F cF)
         | #shiftUp 4 (ct F cF)
         | #shiftUp 4 (ct F cF)
         | #shiftUp 4 (ct F cF)
@@ -551,8 +554,8 @@ abstract
   APPLY-loop⇓SUP→ cn w r F j g a f cF cj cg compat comp =
     z , w' ,  n , m , comp7' , snd d1 , cfl , d3 (snd (snd (snd (snd d2))))
     where
-      comp1 : APPLY2 (sub (loop r F) (LAMBDA (LAMBDA (loopF r F (VAR 2) (VAR 1) (VAR 0))))) j g ⇓ SUP a f at w
-      comp1 = APPLY2-FIX⇓→ w (LAMBDA (LAMBDA (loopF r F (VAR 2) (VAR 1) (VAR 0)))) j g (SUP a f) tt comp
+      comp1 : APPLY2 (sub (loop r F) (LAMBDA (LAMBDA (loopF r (shiftUp 0 (shiftUp 0 (shiftUp 0 F))) (VAR 2) (VAR 1) (VAR 0))))) j g ⇓ SUP a f at w
+      comp1 = APPLY2-FIX⇓→ w (LAMBDA (LAMBDA (loopF r (shiftUp 0 (shiftUp 0 (shiftUp 0 F))) (VAR 2) (VAR 1) (VAR 0)))) j g (SUP a f) tt comp
 
       comp2 : APPLY2 (LAMBDA (LAMBDA (loopF r F (loop r F) (VAR 1) (VAR 0)))) j g ⇓ SUP a f at w
       comp2 rewrite sym (sub-LAMBDA-LAMBDA-loopF≡ r F cF) = comp1

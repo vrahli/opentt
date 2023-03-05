@@ -36,15 +36,18 @@ module all {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
            (EB : ExBar W M)
        where
 
--- Some relations between the example bar spaces
+-- Weak consistency of the theory
+open import consistency using (weak-consistency)
+
+-- Some relations between some example of bar spaces
 open import subBar{L}(W)(M)(C)(K)(P)
 
 open import not_lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)(EM)(EB)
 -- This version requires choices to be Booleans:
-open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (¬LPO)
 -- As opposed to the above version, this one relies on QTBool instead of Bool:
-open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (¬LPO)
 -- This version requires choices to be Booleans, but also freezable to always be true:
 open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 -- MP is however consistent when restricted to pure functions
