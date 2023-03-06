@@ -449,6 +449,7 @@ contDiagVal1 kb cn can exb gc i w F₁ F₂ r compat F∈ =
                      (equalInType-refl a∈)))
 
 
+-- TODO: get rid of the name by adding a FRESH
 contDiagVal : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
               (i : ℕ) (w : 𝕎·) (r : Name)
               → compatible· r w Res⊤
