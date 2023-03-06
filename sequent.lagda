@@ -69,7 +69,7 @@ open import terms3(W)(C)(K)(G)(X)(N)
 subn : Var → Term → Term → Term
 subn v t (VAR x) with x ≟ v
 ... | yes _ = t
-... | no _ = VAR (predIf≤ v x)
+... | no _ = VAR (predIf≤ v x) -- (pred x) if v < x
 subn v t NAT = NAT
 subn v t QNAT = QNAT
 subn v t TNAT = TNAT
@@ -239,6 +239,95 @@ subn≡sub n t (LOWER u) = ≡LOWER (subn≡sub n t u)
 subn≡sub n t (SHRINK u) = ≡SHRINK (subn≡sub n t u)
 
 
+diff : (l k : List Var) → List Var
+diff [] k = []
+diff (x ∷ l) k with x ∈? k
+... | yes p = diff l k
+... | no p = x ∷ diff l k
+
+
+remove : (x : Var) (l : List Var) → List Var
+remove x [] = []
+remove x (y ∷ l) with x ≟ y
+... | yes p = remove x l
+... | no p = y ∷ remove x l
+
+
+diff[] : (l : List Var) → diff l [] ≡ l
+diff[] [] = refl
+diff[] (x ∷ l) rewrite diff[] l = refl
+
+
+diff∷ : (l : List Var) (x : Var) (k : List Var) → diff l (x ∷ k) ≡ diff (remove x l) k
+diff∷ [] x k = refl
+diff∷ (y ∷ l) x k with x ≟ y
+... | yes p rewrite p with y ∈? y ∷ k
+... |    yes q = diff∷ l y k
+... |    no q = ⊥-elim (q (here refl))
+diff∷ (y ∷ l) x k | no p with y ∈? x ∷ k
+... |    yes q with y ∈? k
+... |       yes z = diff∷ l x k
+... |       no z = ⊥-elim (z (c q))
+  where
+    c : y ∈ x ∷ k → y ∈ k
+    c (here w) = ⊥-elim (p (sym w))
+    c (there w) = w
+diff∷ (y ∷ l) x k | no p | no q with y ∈? k
+... |       yes z = ⊥-elim (q (there z))
+... |       no z rewrite diff∷ l x k = refl
+
+
+diff-remove≡ : (l : List Var) (x : Var) (k : List Var) → diff (remove x l) k ≡ remove x (diff l k)
+diff-remove≡ [] x k = refl
+diff-remove≡ (y ∷ l) x k with x ≟ y
+... | yes p rewrite p with y ∈? k
+... |    yes q = diff-remove≡ l y k
+... |    no q with y ≟ y
+... |       yes z = diff-remove≡ l y k
+... |       no z = ⊥-elim (z refl)
+diff-remove≡ (y ∷ l) x k | no p with y ∈? k
+... |    yes q = diff-remove≡ l x k
+... |    no q with x ≟ y
+... |       yes z = ⊥-elim (p z)
+... |       no z rewrite diff-remove≡ l x k = refl
+
+
+fvars-subn0⊆ : (u t : Term) → fvars (subn 0 u t) ⊆ lowerVars (fvars t) ++ fvars u
+fvars-subn0⊆ u t rewrite sym (subn≡sub 0 u t) = fvars-sub u t
+
+
+lowerVarsN : (n : ℕ) (l : List Var) → List Var
+lowerVarsN 0 l = l
+lowerVarsN (suc n) l = lowerVars (lowerVarsN n l)
+
+
+lowerVars-lowerVarsN : (n : ℕ) (l : List Var) → lowerVars (lowerVarsN n l) ≡ lowerVarsN n (lowerVars l)
+lowerVars-lowerVarsN 0 l = refl
+lowerVars-lowerVarsN (suc n) l rewrite lowerVars-lowerVarsN n l = refl
+
+
+lowerVars⊆lowerVars : (l k : List Var) → l ⊆ k → lowerVars l ⊆ lowerVars k
+lowerVars⊆lowerVars l k ss {x} i = →∈lowerVars x k (ss (∈lowerVars→ x l i))
+
+
+lowerVarsN⊆lowerVarsN : (n : ℕ) (l k : List Var) → l ⊆ k → lowerVarsN n l ⊆ lowerVarsN n k
+lowerVarsN⊆lowerVarsN 0 l k ss = ss
+lowerVarsN⊆lowerVarsN (suc n) l k ss =
+  lowerVars⊆lowerVars
+    (lowerVarsN n l)
+    (lowerVarsN n k)
+    (lowerVarsN⊆lowerVarsN n l k ss)
+
+
+raiseVars : List Var → List Var
+raiseVars l = Data.List.map suc l
+
+
+lowerVars-raiseVars : (l : List Var) → lowerVars (raiseVars l) ≡ l
+lowerVars-raiseVars [] = refl
+lowerVars-raiseVars (x ∷ l) rewrite lowerVars-raiseVars l = refl
+
+
 -- ---------------------------------
 -- Sequents
 
@@ -260,13 +349,9 @@ record sequent : Set where
     ext   : Term
 
 
-shiftVars : List Var → List Var
-shiftVars l = Data.List.map suc l
-
-
 #hypothesesUpto : List Var → hypotheses → Bool
 #hypothesesUpto vs [] = true
-#hypothesesUpto vs (mkHyp t ∷ hs) = (fvars t) ⊆? vs ∧ #hypothesesUpto (0 ∷ shiftVars vs) hs
+#hypothesesUpto vs (mkHyp t ∷ hs) = (fvars t) ⊆? vs ∧ #hypothesesUpto (0 ∷ raiseVars vs) hs
 
 
 #hypotheses : hypotheses → Set
@@ -276,7 +361,7 @@ shiftVars l = Data.List.map suc l
 -- We don't care about the hypotheses, only the length of the list matters
 hdom : hypotheses → List Var
 hdom [] = []
-hdom (h ∷ hs) = 0 ∷ shiftVars (hdom hs)
+hdom (h ∷ hs) = 0 ∷ raiseVars (hdom hs)
 
 
 record #sequent : Set where
@@ -310,7 +395,7 @@ subHyps n t (mkHyp h ∷ hs) = mkHyp (subn n t h) ∷ subHyps (suc n) t hs
 -- We don't care about the substitution, only its length matters
 sdom : Sub → List Var
 sdom [] = []
-sdom (x ∷ l) = 0 ∷ shiftVars (sdom l)
+sdom (x ∷ l) = 0 ∷ raiseVars (sdom l)
 
 
 -- The 'similarity' relation
@@ -341,12 +426,40 @@ subs [] t = t
 subs (u ∷ s) t = subn 0 ⌜ u ⌝ (subs s t)
 
 
+fvars-subs : (s : Sub) (t : Term) → fvars (subs s t) ⊆ lowerVarsN (length s) (fvars t)
+fvars-subs [] t = ⊆-refl
+fvars-subs (u ∷ s) t = h1
+  where
+    ind : fvars (subs s t) ⊆ lowerVarsN (length s) (fvars t)
+    ind = fvars-subs s t
+
+    h3 : lowerVars (fvars (subs s t)) ⊆ lowerVars (lowerVarsN (length s) (fvars t))
+    h3 = lowerVars⊆lowerVars (fvars (subs s t)) (lowerVarsN (length s) (fvars t)) ind
+
+    h2 : lowerVars (fvars (subs s t)) ++ fvars ⌜ u ⌝ ⊆ lowerVars (lowerVarsN (length s) (fvars t))
+    h2 rewrite CTerm.closed u | ++[] (lowerVars (fvars (subs s t))) = h3
+
+    h1 : fvars (subn 0 ⌜ u ⌝ (subs s t)) ⊆ lowerVars (lowerVarsN (length s) (fvars t))
+    h1 = ⊆-trans (fvars-subn0⊆ ⌜ u ⌝ (subs s t)) h2
+
+
+lowerVarsN-all-sdom : (s : Sub) → lowerVarsN (length s) (sdom s) ≡ []
+lowerVarsN-all-sdom [] = refl
+lowerVarsN-all-sdom (x ∷ l)
+  rewrite lowerVars-lowerVarsN (length l) (0 ∷ raiseVars (sdom l))
+        | lowerVars-raiseVars (sdom l)
+  = lowerVarsN-all-sdom l
+
+
 -- apply the substution s to t - we get a closed term because s 'covers' t
 #subs : (s : Sub) (t : Term) (c : covered s t) → CTerm
 #subs s t c = ct (subs s t) c'
   where
+    ss1 : fvars (subs s t) ⊆ lowerVarsN (length s) (sdom s)
+    ss1 = ⊆-trans (fvars-subs s t) (lowerVarsN⊆lowerVarsN (length s) (fvars t) (sdom s) c)
+
     c' : # subs s t
-    c' = {!!}
+    c' = ⊆[]→≡[] (⊆-trans ss1 (≡[]→⊆[] (lowerVarsN-all-sdom s)))
 
 
 sequent_pairwise_true : ℕ → 𝕎· → sequent → Set(lsuc(L))
