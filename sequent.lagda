@@ -261,22 +261,22 @@ record sequent : Set where
 
 
 shiftVars : List Var → List Var
-shiftVars [] = [ 0 ]
-shiftVars (v ∷ l) = suc v ∷ shiftVars l
+shiftVars l = Data.List.map suc l
 
 
 #hypothesesUpto : List Var → hypotheses → Bool
 #hypothesesUpto vs [] = true
-#hypothesesUpto vs (mkHyp t ∷ hs) = (fvars t) ⊆? vs ∧ #hypothesesUpto (shiftVars vs) hs
+#hypothesesUpto vs (mkHyp t ∷ hs) = (fvars t) ⊆? vs ∧ #hypothesesUpto (0 ∷ shiftVars vs) hs
 
 
 #hypotheses : hypotheses → Set
 #hypotheses hs = #hypothesesUpto [] hs ≡ true
 
 
-hypotheses→vars : hypotheses → List Var
-hypotheses→vars [] = []
-hypotheses→vars (h ∷ hs) = shiftVars (hypotheses→vars hs)
+-- We don't care about the hypotheses, only the length of the list matters
+hdom : hypotheses → List Var
+hdom [] = []
+hdom (h ∷ hs) = 0 ∷ shiftVars (hdom hs)
 
 
 record #sequent : Set where
@@ -284,8 +284,8 @@ record #sequent : Set where
   field
     seq    : sequent
     #hyps  : #hypotheses (sequent.hyps seq)
-    #concl : #[ hypotheses→vars (sequent.hyps seq) ] (sequent.concl seq)
-    #ext   : #[ hypotheses→vars (sequent.hyps seq) ] (sequent.ext seq)
+    #concl : #[ hdom (sequent.hyps seq) ] (sequent.concl seq)
+    #ext   : #[ hdom (sequent.hyps seq) ] (sequent.ext seq)
 
 
 record rule : Set where
@@ -295,7 +295,7 @@ record rule : Set where
     goal     : sequent
 
 
--- [t,u,v] is the substitution [0\t,1\u,2\v]
+-- [t,u,v] is the substitution [2\t,1\u,0\v]
 Sub : Set
 Sub = List CTerm
 
@@ -307,9 +307,10 @@ subHyps n t [] = []
 subHyps n t (mkHyp h ∷ hs) = mkHyp (subn n t h) ∷ subHyps (suc n) t hs
 
 
-dom : Sub → List Var
-dom [] = []
-dom (x ∷ l) = 0 ∷ Data.List.map suc (dom l)
+-- We don't care about the substitution, only its length matters
+sdom : Sub → List Var
+sdom [] = []
+sdom (x ∷ l) = 0 ∷ shiftVars (sdom l)
 
 
 -- The 'similarity' relation
@@ -332,12 +333,20 @@ data ≡hyps : ℕ → 𝕎· → Sub → Sub → hypotheses → hypotheses → 
 
 
 covered : (s : Sub) (t : Term) → Set
-covered s t = fvars t ⊆ dom s
+covered s t = fvars t ⊆ sdom s
 
 
-subs : (s : Sub) (t : Term) (c : covered s t) → CTerm
-subs [] t c = {!t!}
-subs (u ∷ l) t c = {!!}
+subs : (s : Sub) (t : Term) → Term
+subs [] t = t
+subs (u ∷ s) t = subn 0 ⌜ u ⌝ (subs s t)
+
+
+-- apply the substution s to t - we get a closed term because s 'covers' t
+#subs : (s : Sub) (t : Term) (c : covered s t) → CTerm
+#subs s t c = ct (subs s t) c'
+  where
+    c' : # subs s t
+    c' = {!!}
 
 
 sequent_pairwise_true : ℕ → 𝕎· → sequent → Set(lsuc(L))
@@ -345,7 +354,7 @@ sequent_pairwise_true i w (mkSeq hyps concl ext) =
   (s1 s2 : Sub) (cc1 : covered s1 concl) (cc2 : covered s2 concl) (ce1 : covered s1 ext) (ce2 : covered s2 ext)
   → ≡subs i w s1 s2 hyps
   → ≡hyps i w s1 s2 hyps hyps
-  → equalTypes i w (subs s1 concl cc1) (subs s2 concl cc2)
-     × equalInType i w (subs s1 concl cc1) (subs s1 ext ce1) (subs s2 ext ce2)
+  → equalTypes i w (#subs s1 concl cc1) (#subs s2 concl cc2)
+     × equalInType i w (#subs s1 concl cc1) (#subs s1 ext ce1) (#subs s2 ext ce2)
 
 \end{code}
