@@ -183,4 +183,42 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         h8 : ¬ inhType n w3 (#Σchoice name ℂ₁·)
         h8 = ¬equalInType-#Σchoice n w3 Resℂ name isValueℂ₀· isValueℂ₁· ¬∼ℂ₀₁· oc2 comp2 fb2
 
+
+-- This is similar to ¬MP but proved here for #MP₂, which is stated using ¬¬∃, instead of #MP, which is stated using ¬∀¬
+¬MP₂ : Boolℂ CB → alwaysFreezable F → (w : 𝕎·) → member w (#NEG #MP₂) #lamAX
+¬MP₂ bcb afb w =
+  n , →∈Type-NEG n w #MP #MP₂ #lamAX #lamAX (isTypeMP₂ w n) aw1 (snd (¬MP bcb afb w))
+  where
+    n : ℕ
+    n = 1
+
+    p2 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' #NAT!→BOOL f₁ f₂
+                       → equalTypes n w' (sub0 f₁ (#[0]FUN #[0]MP-left #[0]MP-right)) (sub0 f₂ (#[0]FUN #[0]MP-left #[0]MP-right)))
+    p2 w1 e1 f₁ f₂ f∈ =
+      →≡equalTypes
+        (sym (sub0-fun-mp f₁))
+        (sym (sub0-fun-mp f₂))
+        (eqTypesFUN← (→equalTypes-#MP-left f∈) (→equalTypes-#MP-right f∈))
+
+    p3 : ∀𝕎 w (λ w' _ → (a b₁ b₂ : CTerm) → ∈Type n w' #NAT!→BOOL a
+                       → equalInType n w' (sub0 a (#[0]FUN #[0]MP-left3 #[0]MP-right)) b₁ b₂
+                       → equalInType n w' (sub0 a (#[0]FUN #[0]MP-left #[0]MP-right)) b₁ b₂)
+    p3 w1 e1 a b₁ b₂ a∈ b∈ =
+      →≡equalInType
+        (sym (sub0-fun-mp a))
+        (→∈Type-FUN
+           n w1 (#MP-left3 a) (#MP-left a) (#MP-right a) (#MP-right a)
+           b₁ b₂ (→equalTypes-#MP-left a∈) (→equalTypes-#MP-right a∈)
+           (λ w2 e2 x y h → #MP-left2→#MP-left3 n w2 a x y (equalInType-mon a∈ w2 e2) (#MP-left→#MP-left2 n w2 a x y (equalInType-mon a∈ w2 e2) h))
+           (λ w2 e2 a b h → h) (→≡equalInType (sub0-fun-mp₂ a) b∈))
+
+    aw1 : ∀𝕎 w (λ w' _ → (u₁ u₂ : CTerm) → equalInType n w' #MP₂ u₁ u₂ → equalInType n w' #MP u₁ u₂)
+    aw1 w1 e1 u₁ u₂ u∈ =
+      →∈Type-PI
+        n w1 #NAT!→BOOL #NAT!→BOOL
+        (#[0]FUN #[0]MP-left3 #[0]MP-right)
+        (#[0]FUN #[0]MP-left #[0]MP-right)
+        u₁ u₂ (isType-#NAT!→BOOL w1 n) (∀𝕎-mon e1 p2) (λ w1 e1 a b h → h)
+        (∀𝕎-mon e1 p3) u∈
+
 \end{code}[hide]
