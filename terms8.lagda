@@ -401,6 +401,17 @@ fvars-ITE0 a b c
             (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝} (⊆?→⊆ (CTerm0.closed b)) (⊆?→⊆ (CTerm0.closed c))))
 
 
+#[1]ITE : CTerm1 → CTerm1 → CTerm1 → CTerm1
+#[1]ITE a b c = ct1 (ITE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝) d
+  where
+    d : #[ 0 ∷ [ 1 ] ] ITE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝
+    d rewrite fvars-ITE0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝} {0 ∷ [ 1 ]}
+            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝}
+            (⊆?→⊆ (CTerm1.closed a))
+            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝} (⊆?→⊆ (CTerm1.closed b)) (⊆?→⊆ (CTerm1.closed c))))
+
+
 #[2]ITE : CTerm2 → CTerm2 → CTerm2 → CTerm2
 #[2]ITE a b c = ct2 (ITE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝) d
   where

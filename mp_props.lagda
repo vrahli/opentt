@@ -77,6 +77,7 @@ open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import terms3(W)(C)(K)(G)(X)(N)
+open import terms8(W)(C)(K)(G)(X)(N)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -568,4 +569,31 @@ equalInType-#MP-left3→ i w f a₁ a₂ f∈ a∈ w1 e1 h =
       hb w1 e1 (#APPLY t₁ a₁) (#APPLY t₂ a₂)
          (equalInType-FUN→ a∈ w1 e1 a₁ a₂ (ha w1 e1 a₁ a₂ q))
 
+
+
+-- f is a function in #NAT!→BOOL
+-- We're defining here the infinite search: fix(λR.λn.if f(n) then n else R(suc(n)))0
+-- The closed version #infSearch is below
+infSearch : Term → Term
+infSearch f =
+  -- 1 is the recursive call and 0 is the number
+  APPLY
+    (FIX (LAMBDA (LAMBDA (ITE (APPLY (shiftUp 0 (shiftUp 0 f)) (VAR 0))
+                              (VAR 0)
+                              (APPLY (VAR 1) (SUC (VAR 0)))))))
+    N0
+
+
+#infSearch : CTerm → CTerm
+#infSearch f =
+  #APPLY
+    (#FIX (#LAMBDA (#[0]LAMBDA (#[1]ITE (#[1]APPLY (#[1]shiftUp0 (#[0]shiftUp0 f)) (#[1]VAR0))
+                                        (#[1]VAR0)
+                                        (#[1]APPLY #[1]VAR1 (#[1]SUC #[1]VAR0))))))
+    #N0
+
+
+-- sanity check
+⌜#infSearch⌝ : (f : CTerm) → ⌜ #infSearch f ⌝ ≡ infSearch ⌜ f ⌝
+⌜#infSearch⌝ f = refl
 \end{code}[hide]
