@@ -53,14 +53,14 @@ open import choiceBar
 open import mod
 
 
-module mp {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-          (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
-          (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
-          (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
-          (F : Freeze {L} W C K P G N)
-          (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-          (CB : ChoiceBar W M C K P G X N V F E)
-          (EM : ExcludedMiddle (lsuc(L)))
+module mpp {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+           (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
+           (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
+           (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
+           (F : Freeze {L} W C K P G N)
+           (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+           (CB : ChoiceBar W M C K P G X N V F E)
+           (EM : ExcludedMiddle (lsuc(L)))
        where
 
 
@@ -149,14 +149,14 @@ MPp = PI (TPURE NAT!→BOOL) (FUN (NEG (PI NAT! (NEG (ASSERT₂ (APPLY (VAR 1) (
 #MPp≡#PI = CTerm≡ refl
 
 
-
 isType-#TPURE-NAT!→BOOL : (w : 𝕎·) (n : ℕ) → isType n w (#TPURE #NAT!→BOOL)
 isType-#TPURE-NAT!→BOOL w n rewrite #NAT!→BOOL≡ = equalTypesTPURE (eqTypesFUN← isTypeNAT! (isTypeBOOL w n))
 
 
-
-MP-inh : (w : 𝕎·) → member w #MPp #lam2AX
-MP-inh w =
+-- As shown in not_mp, MP is invalid when considering a Beth or Kripke □ and references
+-- It is however valid when restricting to pure functions (the proof uses classical logic)
+MPp-inh : (w : 𝕎·) → member w #MPp #lam2AX
+MPp-inh w =
   n ,
   ≡CTerm→equalInType
     (sym #MPp≡#PI)
