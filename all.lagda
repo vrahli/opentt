@@ -42,7 +42,9 @@ open import consistency using (weak-consistency)
 -- Some relations between some example of bar spaces
 open import subBar{L}(W)(M)(C)(K)(P)
 
+-- LEM is false for Beth/Kripke-like modalities using choices
 open import not_lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+-- Using classical, we can however prove that LEM is consistent when using an open-like modality (see ExBar in exBar.lagda)
 open import lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)(EM)(EB)
 -- This version requires choices to be Booleans:
 open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (¬LPO)
@@ -52,6 +54,8 @@ open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (¬LPOq
 open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (¬MP)
 -- MP is however consistent when restricted to pure functions
 open import mpp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (MPp-inh)
+-- Using classsical logic, MP is also consistent when using an open-like modality (see ExBar in exBar.lagda)
+open import mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)(EB)(EM) using (MPvalid)
 
 -- This instance of 'choiceBar' uses Beth bars and terms as choices:
 open import modInstanceBethCs

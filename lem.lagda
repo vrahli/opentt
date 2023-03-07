@@ -63,7 +63,6 @@ open import choiceDef{L}(C)
 open import exBarDef(W)(M)(EB)
 open import computation(W)(C)(K)(G)(X)(N)
 open import bar(W)
-open import barOpen(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -138,6 +137,9 @@ classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
 
 
 -- We now prove that open bars satisfy the ExBar property
+open import barOpen(W)
+
+
 ∀∃𝔹-open : {w : 𝕎·} {f : wPred w} → wPredExtIrr f → ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → inOpenBar w2 (↑wPred f (⊑-trans· e1 e2)))) → inOpenBar w f
 ∀∃𝔹-open {w} {f} ext h w1 e1 =
   w3 ,

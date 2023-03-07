@@ -89,11 +89,12 @@ open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import not_mp(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 -- This one is to use ¬Names→⇛ (TODO: extract the ¬Names results from the continuity files)
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#¬Names-APPLY)
+open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E) using (¬Names→⇛)
+open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalTypesTPURE ; equalInType-TPURE→ ; equalInType-TPURE→ₗ)
 
 
 
@@ -173,7 +174,7 @@ MPp-inh w =
                       → equalTypes n w' (sub0 a₁ (#[0]FUN #[0]MP-left #[0]MP-right))
                                          (sub0 a₂ (#[0]FUN #[0]MP-left #[0]MP-right)))
     aw1 w' e a₁ a₂ eqb rewrite sub0-fun-mp a₁ | sub0-fun-mp a₂ =
-      eqTypesFUN← (→equalTypes-#MP-left (equalInType-TPURE→ eqb)) (→equalTypes-#MP-right (equalInType-TPURE→ eqb))
+        eqTypesFUN← (→equalTypes-#MP-left (equalInType-TPURE→ eqb)) (→equalTypes-#MP-right (equalInType-TPURE→ eqb))
 
     aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#TPURE #NAT!→BOOL) a₁ a₂
                         → equalInType n w' (sub0 a₁ (#[0]FUN #[0]MP-left #[0]MP-right)) (#APPLY #lam2AX a₁) (#APPLY #lam2AX a₂))
