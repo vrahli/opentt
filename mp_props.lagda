@@ -104,37 +104,54 @@ MP = PI NAT!→BOOL (FUN (NEG (PI NAT! (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0))))
     c = refl
 
 
+-- Similar to #[0]MP-right (without the squash): Σ(n:ℕ).f(n)=true
+#[0]MP-right2 : CTerm0
+#[0]MP-right2 = #[0]SUM #[0]NAT! (#[1]ASSERT₂ (#[1]APPLY #[1]VAR1 #[1]VAR0))
 
+
+-- ↓Σ(n:ℕ).f(n)=true
+#[0]MP-right : CTerm0
+#[0]MP-right = #[0]SQUASH #[0]MP-right2
+
+
+-- ¬Π(n : ℕ).¬(f(n)=true)
 #[0]MP-left : CTerm0
 #[0]MP-left = #[0]NEG (#[0]PI #[0]NAT! (#[1]NEG (#[1]ASSERT₂ (#[1]APPLY #[1]VAR1 #[1]VAR0))))
 
 
+-- Similar to #[0]MP-left: ¬¬Σ(n:ℕ).f(n)=true
 #[0]MP-left2 : CTerm0
-#[0]MP-left2 = #[0]NEG (#[0]NEG (#[0]SUM #[0]NAT! (#[1]ASSERT₂ (#[1]APPLY #[1]VAR1 #[1]VAR0))))
+#[0]MP-left2 = #[0]NEG (#[0]NEG #[0]MP-right2)
 
 
+-- Similar to #[0]MP-left2 (with a squash): ¬¬↓Σ(n:ℕ).f(n)=true
 #[0]MP-left3 : CTerm0
-#[0]MP-left3 = #[0]NEG (#[0]NEG (#[0]SQUASH (#[0]SUM #[0]NAT! (#[1]ASSERT₂ (#[1]APPLY #[1]VAR1 #[1]VAR0)))))
+#[0]MP-left3 = #[0]NEG (#[0]NEG #[0]MP-right)
 
 
-#[0]MP-right : CTerm0
-#[0]MP-right = #[0]SQUASH (#[0]SUM #[0]NAT! (#[1]ASSERT₂ (#[1]APPLY #[1]VAR1 #[1]VAR0)))
+-- Σ(n:ℕ).f(n)=true
+#MP-right2 : CTerm → CTerm
+#MP-right2 f = #SUM-ASSERT₂ f
 
 
+-- ↓Σ(n:ℕ).f(n)=true
+#MP-right : CTerm → CTerm
+#MP-right f = #SQUASH (#MP-right2 f)
+
+
+-- ¬Π(n : ℕ).¬(f(n)=true)
 #MP-left : CTerm → CTerm
 #MP-left f = #NEG (#PI-NEG-ASSERT₂ f)
 
 
+-- ¬¬Σ(n:ℕ).f(n)=true
 #MP-left2 : CTerm → CTerm
-#MP-left2 f = #NEG (#NEG (#SUM-ASSERT₂ f))
+#MP-left2 f = #NEG (#NEG (#MP-right2 f))
 
 
+-- ¬¬↓Σ(n:ℕ).f(n)=true
 #MP-left3 : CTerm → CTerm
-#MP-left3 f = #NEG (#NEG (#SQUASH (#SUM-ASSERT₂ f)))
-
-
-#MP-right : CTerm → CTerm
-#MP-right f = #SQUASH (#SUM-ASSERT₂ f)
+#MP-left3 f = #NEG (#NEG (#MP-right f))
 
 
 #MP-PI : CTerm
@@ -221,24 +238,23 @@ sub0-fun-mp₂ a =
   eqTypesNEG← (eqTypesNEG← (eqTypesSQUASH← (→equalTypes-#SUM-ASSERT₂ eqt)))
 
 
+isType-MP-right-body : (i : ℕ) (w : 𝕎·) (f₁ f₂ : CTerm)
+                       → equalInType i w #NAT!→BOOL f₁ f₂
+                       → ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType i w' #NAT! a b)
+                                        → equalTypes i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))
+                                                           (sub0 b (#[0]ASSERT₂ (#[0]APPLY ⌞ f₂ ⌟ #[0]VAR))))
+isType-MP-right-body i w f₁ f₂ f∈ w1 e1 a₁ a₂ a∈ =
+  →≡equalTypes
+    (sym (sub0-ASSERT₂-APPLY a₁ f₁))
+    (sym (sub0-ASSERT₂-APPLY a₂ f₂))
+    (equalInType-BOOL→equalTypes-ASSERT₂ (equalInType-FUN→ f∈ w1 e1 a₁ a₂ a∈))
+
+
 →equalTypes-#MP-right : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
                           → equalInType n w #NAT!→BOOL a₁ a₂
                           → equalTypes n w (#MP-right a₁) (#MP-right a₂)
-→equalTypes-#MP-right {n} {w} {a₁} {a₂} eqt = eqTypesSQUASH← (eqTypesSUM← (λ w' _ → isTypeNAT!) aw1)
-  where
-    aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT! a b → equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b))
-    aw0 = equalInType-FUN→ eqt
-
-    aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
-                       → equalTypes n w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))) (sub0 b (#[0]ASSERT₂ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR))))
-    aw1 w' e a b ea rewrite sub0-ASSERT₂-APPLY a a₁ | sub0-ASSERT₂-APPLY b a₂ = aw2
-      where
-        eqb : equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b)
-        eqb = aw0 w' e a b ea
-
-        aw2 : equalTypes n w' (#ASSERT₂ (#APPLY a₁ a)) (#ASSERT₂ (#APPLY a₂ b))
-        aw2 = equalInType-BOOL→equalTypes-ASSERT₂ eqb
-
+→equalTypes-#MP-right {n} {w} {a₁} {a₂} eqt =
+  eqTypesSQUASH← (eqTypesSUM← (λ w' _ → isTypeNAT!) (isType-MP-right-body n w a₁ a₂ eqt))
 
 
 isTypeMP-PI : (w : 𝕎·) (n : ℕ) → isType n w #MP-PI
@@ -389,7 +405,7 @@ equalInType-#MP-left2→ i w f a₁ a₂ f∈ a∈ w1 e1 h =
             p∈ : equalInType i w2 (#SUM-ASSERT₂ f) (#PAIR n₁ t) (#PAIR n₂ t)
             p∈ = equalInType-SUM
                     (λ w' _ → isTypeNAT!)
-                    (λ w' e' a₁ a₂ a∈ → →≡equalTypes (sym (sub0-ASSERT₂-APPLY a₁ f)) (sym (sub0-ASSERT₂-APPLY a₂ f)) (equalInType-BOOL→equalTypes-ASSERT₂ (equalInType-FUN→ f∈ w' (⊑-trans· e1 (⊑-trans· e2 e')) a₁ a₂ a∈)))
+                    (isType-MP-right-body i w2 f f (equalInType-mon f∈ w2 (⊑-trans· e1 e2)))
                     (Mod.∀𝕎-□ M aw3)
 
 
@@ -453,11 +469,7 @@ equalInType-#MP-left3→ i w f a₁ a₂ f∈ a∈ w1 e1 h =
               #PAIR n₁ t ,
               equalInType-SUM
                 (λ w' _ → isTypeNAT!)
-                (λ w' e' a₁ a₂ a∈ →
-                   →≡equalTypes
-                     (sym (sub0-ASSERT₂-APPLY a₁ f))
-                     (sym (sub0-ASSERT₂-APPLY a₂ f))
-                     (equalInType-BOOL→equalTypes-ASSERT₂ (equalInType-FUN→ f∈ w' (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e'))) a₁ a₂ a∈)))
+                (isType-MP-right-body i w3 f f (equalInType-mon f∈ w3 (⊑-trans· e1 (⊑-trans· e2 e3))))
                 (Mod.∀𝕎-□ M aw3)
               where
                 aw3 : ∀𝕎 w3 (λ w' _ → SUMeq (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))) w' (#PAIR n₁ t) (#PAIR n₁ t))
@@ -569,31 +581,4 @@ equalInType-#MP-left3→ i w f a₁ a₂ f∈ a∈ w1 e1 h =
       hb w1 e1 (#APPLY t₁ a₁) (#APPLY t₂ a₂)
          (equalInType-FUN→ a∈ w1 e1 a₁ a₂ (ha w1 e1 a₁ a₂ q))
 
-
-
--- f is a function in #NAT!→BOOL
--- We're defining here the infinite search: fix(λR.λn.if f(n) then n else R(suc(n)))0
--- The closed version #infSearch is below
-infSearch : Term → Term
-infSearch f =
-  -- 1 is the recursive call and 0 is the number
-  APPLY
-    (FIX (LAMBDA (LAMBDA (ITE (APPLY (shiftUp 0 (shiftUp 0 f)) (VAR 0))
-                              (VAR 0)
-                              (APPLY (VAR 1) (SUC (VAR 0)))))))
-    N0
-
-
-#infSearch : CTerm → CTerm
-#infSearch f =
-  #APPLY
-    (#FIX (#LAMBDA (#[0]LAMBDA (#[1]ITE (#[1]APPLY (#[1]shiftUp0 (#[0]shiftUp0 f)) (#[1]VAR0))
-                                        (#[1]VAR0)
-                                        (#[1]APPLY #[1]VAR1 (#[1]SUC #[1]VAR0))))))
-    #N0
-
-
--- sanity check
-⌜#infSearch⌝ : (f : CTerm) → ⌜ #infSearch f ⌝ ≡ infSearch ⌜ f ⌝
-⌜#infSearch⌝ f = refl
 \end{code}[hide]
