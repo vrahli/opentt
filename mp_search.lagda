@@ -147,6 +147,72 @@ infSearch f =
     (equalInType-FUN→ f∈ w1 e1 n₁ n₂ (→equalInType-NAT! i w1 n₁ n₂ (Mod.∀𝕎-□ M λ w2 e2 → #⇛!sameℕ-mon e2 {n₁} {n₂} n∈)))
 
 
+≤suc→⊎ : {a b : ℕ} → a ≤ suc b → a ≡ suc b ⊎ a ≤ b
+≤suc→⊎ {0} {b} _≤_.z≤n = inj₂ _≤_.z≤n
+≤suc→⊎ {suc 0} {0} (_≤_.s≤s _≤_.z≤n) = inj₁ refl
+≤suc→⊎ {suc m} {suc b} (_≤_.s≤s h) with ≤suc→⊎ h
+... | inj₁ p rewrite p = inj₁ refl
+... | inj₂ p = inj₂ (_≤_.s≤s p)
+
+
+∈#NAT!→BOOL≤→ : (i : ℕ) (w : 𝕎·) (f : CTerm) (n : ℕ)
+                   → ∈Type i w #NAT!→BOOL f
+                   → □· w (λ w' e → (m : ℕ) → m ≤ n → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
+∈#NAT!→BOOL≤→ i w f 0 f∈ = Mod.∀𝕎-□Func M aw c
+  where
+    c : □· w (λ w' e → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f #N0) (#APPLY f #N0))
+    c = ∈#NAT!→BOOL→ i w f f∈ w (⊑-refl· w) #N0 #N0 (#⇛!sameℕ-NUM w 0)
+
+    aw : ∀𝕎 w (λ w' e' → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f #N0) (#APPLY f #N0)
+                        → (m : ℕ) → m ≤ 0 → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
+    aw w1 e1 h .ℕ.zero _≤_.z≤n = h
+∈#NAT!→BOOL≤→ i w f (suc n) f∈ = ∀𝕎-□Func2 aw c ind
+  where
+    ind : □· w (λ w' e → (m : ℕ) → m ≤ n → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
+    ind = ∈#NAT!→BOOL≤→ i w f n f∈
+
+    c : □· w (λ w' e → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f (#NUM (suc n))) (#APPLY f (#NUM (suc n))))
+    c = ∈#NAT!→BOOL→ i w f f∈ w (⊑-refl· w) (#NUM (suc n)) (#NUM (suc n)) (#⇛!sameℕ-NUM w (suc n))
+
+    aw : ∀𝕎 w (λ w' e' → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f (#NUM (suc n))) (#APPLY f (#NUM (suc n)))
+                        → ((m : ℕ) → m ≤ n → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
+                        → (m : ℕ) → m ≤ suc n → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
+    aw w1 e1 h1 h2 m len with ≤suc→⊎ len
+    ... | inj₁ p rewrite p = h1
+    ... | inj₂ p = h2 m p
+
+
+∈#ASSERT₂→ : (i : ℕ) (w : 𝕎·) (t a b : CTerm)
+               → equalInType i w (#ASSERT₂ t) a b
+               → □· w (λ w' _ → Σ CTerm (λ u → t #⇛ #INL u at w'))
+∈#ASSERT₂→ i w t a b a∈ =
+  Mod.□-idem M (Mod.∀𝕎-□Func M aw1 (equalInType-EQ→ (≡CTerm→equalInType (#ASSERT₂≡ t) a∈)))
+  where
+    aw1 : ∀𝕎 w (λ w' e' → EQeq t #BTRUE (equalInType i w' #BOOL) w' a b
+                         → Mod.□ M w' (↑wPred' (λ w'' _ → Σ CTerm (λ u → t #⇛ #INL u at w'')) e'))
+    aw1 w1 e1 h = Mod.∀𝕎-□Func M aw2 (∈#BOOL→ i w1 t #BTRUE h)
+      where
+        aw2 : ∀𝕎 w1 (λ w' e' → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' t #BTRUE
+                              → ↑wPred' (λ w'' _ → Σ CTerm (λ u → t #⇛ #INL u at w'')) e1 w' e')
+        aw2 w2 e2 (x , y , inj₁ (c₁ , c₂ , q)) z = x , c₁
+        aw2 w2 e2 (x , y , inj₂ (c₁ , c₂ , q)) z = ⊥-elim (INLneqINR (≡CTerm (#compAllVal {#BTRUE} {#INR y} {w2} c₂ tt)))
+
+
+mpSearch1 : (i : ℕ) (w : 𝕎·) (f k : CTerm) (n : ℕ)
+            → k #⇛! #NUM n at w
+            → ((m : ℕ) → m ≤ n → UNIONeq (equalInType i w #TRUE) (equalInType i w #TRUE) w (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
+            → (Σ CTerm (λ u → #APPLY f k #⇛ #INL u at w))
+            → SUMeq (equalInType i w #NAT!) (λ a b ea → equalInType i w (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))) w (#infSearchP f) (#infSearchP f)
+mpSearch1 i w f k n ck hn ha =
+  #infSearch f , #infSearch f , #AX , #AX ,
+  {!!} , -- How can we prove that it lives in #NAT! if f is not pure? Could we use #NAT for the impure version of MP? Negation is fine though
+  #⇛-refl w (#infSearchP f) , #⇛-refl w (#infSearchP f) ,
+  {!!}
+-- For this we need to prove that (#infSearch f) computes to a number m ≤ n such that (#APPLY f (#NUM m)) computes to #INL
+-- If f is not pure this might only be at a higher world, but if f is pure we can bring back the computation to the current world
+-- ...so assume #¬Names f for this
+
+
 mpSearch : (i : ℕ) (w : 𝕎·) (f a₁ a₂ : CTerm)
            → ∈Type i w #NAT!→BOOL f
            → equalInType i w (#MP-right f) a₁ a₂
@@ -160,29 +226,34 @@ mpSearch i w f a₁ a₂ f∈ a∈ =
     aw1 : ∀𝕎 w (λ w' e' → inhType i w' (#MP-right2 f)
                          → ∈Type i w' (#MP-right2 f) (#infSearchP f))
     aw1 w1 e1 (t , t∈) =
-      equalInType-local (Mod.∀𝕎-□Func M aw2 p∈) {--equalInType-SUM
-        (λ w' _ → isTypeNAT!)
-        (isType-MP-right-body i w1 f f (equalInType-mon f∈ w1 e1))
+      equalInType-local (Mod.∀𝕎-□Func M aw2 p∈) {--
         {!!}--}
       where
         p∈ : □· w1 (λ w' _ → SUMeq (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))) w' t t)
         p∈ = equalInType-SUM→ t∈
 
-        aw2 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY (fromCTerm.⌞ CTermToCTerm0 ⌟ f) #[0]VAR)))) w' t t
+        aw2 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))) w' t t
                               → ∈Type i w' (#MP-right2 f) (#infSearchP f))
         aw2 w2 e2 (n₁ , n₂ , x₁ , x₂ , n∈ , c₁ , c₂ , x∈) =
           equalInType-local (Mod.∀𝕎-□Func M aw3 (equalInType-NAT!→ i w2 n₁ n₂ n∈))
           where
-            y∈ : equalInType i w2 (#ASSERT₂ (#APPLY f n₁)) x₁ x₂
-            y∈ = ≡CTerm→equalInType (sub0-ASSERT₂-APPLY n₁ f) x∈
+            y∈ : □· w2 (λ w' _ → Σ CTerm (λ u → #APPLY f n₁ #⇛ #INL u at w'))
+            y∈ = ∈#ASSERT₂→ i w2 (#APPLY f n₁) x₁ x₂ (≡CTerm→equalInType (sub0-ASSERT₂-APPLY n₁ f) x∈)
 
             aw3 : ∀𝕎 w2 (λ w' e' → #⇛!sameℕ w' n₁ n₂
                                   → ∈Type i w' (#MP-right2 f) (#infSearchP f))
-            aw3 w3 e3 (n , d₁ , d₂) = {!!}
--- We'll have to compute with f using ∈#NAT!→BOOL→ potentially, but it has a □...
--- can we get rid of it for the 1st n's?
+            aw3 w3 e3 (n , d₁ , d₂) =
+              equalInType-SUM
+                (λ w' _ → isTypeNAT!)
+                (isType-MP-right-body i w3 f f (equalInType-mon f∈ w3 (⊑-trans· e1 (⊑-trans· e2 e3))))
+                (∀𝕎-□Func2 aw4 h2 (Mod.↑□ M y∈ e3))
+              where
+                h2 : □· w3 (λ w' e → (m : ℕ) → m ≤ n → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
+                h2 = ∈#NAT!→BOOL≤→ i w3 f n (equalInType-mon f∈ w3 (⊑-trans· e1 (⊑-trans· e2 e3)))
 
--- we have to also get y∈ down to a computation so that we can prove that the search terminate
--- because it at least terminate on n
+                aw4 : ∀𝕎 w3 (λ w' e' → ((m : ℕ) → m ≤ n → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
+                                      → (Σ CTerm (λ u → #APPLY f n₁ #⇛ #INL u at w'))
+                                      → SUMeq (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))) w' (#infSearchP f) (#infSearchP f))
+                aw4 w4 e4 hn ha = {!!} -- use mpSearch1
 
 \end{code}
