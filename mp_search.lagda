@@ -93,27 +93,42 @@ open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 
 
 
+-- This is the body of the fix in infSearch
+infSearchL : Term → Term
+infSearchL f =
+  -- 1 is the recursive call and 0 is the number
+  LAMBDA (LAMBDA (ITE (APPLY (shiftUp 0 (shiftUp 0 f)) (VAR 0))
+                      (VAR 0)
+                      (LET (SUC (VAR 0)) (APPLY (VAR 2) (VAR 0)))))
 
 -- f is a function in #NAT!→BOOL
 -- We're defining here the infinite search: fix(λR.λn.if f(n) then n else R(suc(n)))0
 -- The closed version #infSearch is below
 infSearch : Term → Term
-infSearch f =
-  -- 1 is the recursive call and 0 is the number
-  APPLY
-    (FIX (LAMBDA (LAMBDA (ITE (APPLY (shiftUp 0 (shiftUp 0 f)) (VAR 0))
-                              (VAR 0)
-                              (LET (SUC (VAR 0)) (APPLY (VAR 2) (VAR 0)))))))
-    N0
+infSearch f = APPLY (FIX (infSearchL f)) N0
+
+
+#infSearchI : CTerm → CTerm → CTerm → CTerm
+#infSearchI f R n =
+  #ITE (#APPLY f n)
+       n
+       (#LET (#SUC n) (#[0]APPLY ⌞ R ⌟ #[0]VAR))
+
+
+-- The body of #infSearch fix's body
+#infSearchL : CTerm → CTerm
+#infSearchL f =
+  #LAMBDA (#[0]LAMBDA (#[1]ITE (#[1]APPLY (#[1]shiftUp0 (#[0]shiftUp0 f)) (#[1]VAR0))
+                               (#[1]VAR0)
+                               (#[1]LET (#[1]SUC #[1]VAR0) (#[2]APPLY #[2]VAR2 (#[2]VAR0)))))
+
+
+#infSearchF : CTerm → CTerm
+#infSearchF f = #FIX (#infSearchL f)
 
 
 #infSearch : CTerm → CTerm
-#infSearch f =
-  #APPLY
-    (#FIX (#LAMBDA (#[0]LAMBDA (#[1]ITE (#[1]APPLY (#[1]shiftUp0 (#[0]shiftUp0 f)) (#[1]VAR0))
-                                        (#[1]VAR0)
-                                        (#[1]LET (#[1]SUC #[1]VAR0) (#[2]APPLY #[2]VAR2 (#[2]VAR0)))))))
-    #N0
+#infSearch f = #APPLY (#infSearchF f) #N0
 
 
 #infSearchP : CTerm → CTerm
@@ -218,6 +233,10 @@ infSearch f =
     aw w1 e1 (x , y , inj₁ (c₁ , c₂ , q)) (u , d) = y , c₂
     aw w1 e1 (x , y , inj₂ (c₁ , c₂ , q)) (u , d) = ⊥-elim (INLneqINR (≡CTerm (#⇛-val-det {w1} {#APPLY f k} {#INL u} {#INR x} tt tt d c₁)))
 
+
+#infSearch⇛₁ : (w : 𝕎·) (f : CTerm) (n : ℕ)
+                → #APPLY (#infSearchF f) (#NUM n) #⇛ #infSearchI f (#infSearchF f) (#NUM n) at w
+#infSearch⇛₁ w f n w1 e1 = lift {!!}
 
 
 -- by induction on n
