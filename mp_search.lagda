@@ -482,15 +482,36 @@ mpSearch2¬Names i w f u n nnf hn ha with mpSearch2 i w f u n hn ha
                                      → t #⇛! #NUM m at w
                                      → #APPLY f (#NUM m) #⇛ #INL u at w
                                      → ∈Type i w (#ASSERT₂ (#APPLY f t)) #AX
-∈#NAT!→BOOL→equalInType-#ASSERT₂ i w f t m f∈ cm cl = {!!}
+∈#NAT!→BOOL→equalInType-#ASSERT₂ i w f t u m f∈ cm cl =
+  ≡CTerm→equalInType
+    (sym (#ASSERT₂≡ (#APPLY f t)))
+    (equalInType-EQ
+      (isTypeBOOL w i)
+      (Mod.∀𝕎-□ M aw))
+  where
+    aw : ∀𝕎 w (λ w' _ → equalInType i w' #BOOL (#APPLY f t) #BTRUE)
+    aw w1 e1 =
+      equalInType-trans eqb (→equalInType-BOOL i w1 (#APPLY f (#NUM m)) #BTRUE (Mod.∀𝕎-□ M aw1))
+      where
+        aw1 : ∀𝕎 w1 (λ w' _ → #strongBool w' (#APPLY f (#NUM m)) #BTRUE)
+        aw1 w2 e2 = u , #AX , inj₁ (∀𝕎-mon (⊑-trans· e1 e2) cl , #⇛-refl w2 #BTRUE)
+
+        eqn : equalInType i w1 #NAT! t (#NUM m)
+        eqn = →equalInType-NAT!
+                i w1 t (#NUM m)
+                (Mod.∀𝕎-□ M (λ w2 e2 → m , ∀𝕎-mon (⊑-trans· e1 e2) cm , #⇛!-refl {w2} {#NUM m}))
+
+        eqb : equalInType i w1 #BOOL (#APPLY f t) (#APPLY f (#NUM m))
+        eqb = equalInType-FUN→ f∈ w1 e1 t (#NUM m) eqn
 
 
 mpSearch1 : (i : ℕ) (w : 𝕎·) (f u : CTerm) (n : ℕ)
+            → ∈Type i w #NAT!→BOOL f
             → #¬Names f
             → ((m : ℕ) → m ≤ n → UNIONeq (equalInType i w #TRUE) (equalInType i w #TRUE) w (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
             → #APPLY f (#NUM n) #⇛ #INL u at w
             → SUMeq (equalInType i w #NAT!) (λ a b ea → equalInType i w (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))) w (#infSearchP f) (#infSearchP f)
-mpSearch1 i w f u n nnf hn ha with mpSearch2¬Names i w f u n nnf hn ha
+mpSearch1 i w f u n f∈ nnf hn ha with mpSearch2¬Names i w f u n nnf hn ha
 ... | m , v , len , c₁ , c₂ =
   #infSearch f , #infSearch f , #AX , #AX ,
   →equalInType-NAT! i w (#infSearch f) (#infSearch f) (Mod.∀𝕎-□ M p1) , -- How can we prove that it lives in #NAT! if f is not pure? Could we use #NAT for the impure version of MP? Negation is fine though
@@ -504,14 +525,17 @@ mpSearch1 i w f u n nnf hn ha with mpSearch2¬Names i w f u n nnf hn ha
     p1 w1 e1 = m , ∀𝕎-mon e1 c₁ , ∀𝕎-mon e1 c₁
 
     p2 : ∈Type i w (sub0 (#infSearch f) (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR))) #AX
-    p2 = ≡CTerm→equalInType (sym (sub0-ASSERT₂-APPLY (#infSearch f) f)) {!!}
+    p2 = ≡CTerm→equalInType
+           (sym (sub0-ASSERT₂-APPLY (#infSearch f) f))
+           (∈#NAT!→BOOL→equalInType-#ASSERT₂ i w f (#infSearch f) v m f∈ c₁ c₂)
 
 
 mpSearch : (i : ℕ) (w : 𝕎·) (f a₁ a₂ : CTerm)
+           → #¬Names f
            → ∈Type i w #NAT!→BOOL f
            → equalInType i w (#MP-right f) a₁ a₂
            → ∈Type i w (#MP-right2 f) (#infSearchP f)
-mpSearch i w f a₁ a₂ f∈ a∈ =
+mpSearch i w f a₁ a₂ nnf f∈ a∈ =
   equalInType-local (Mod.∀𝕎-□Func M aw1 h1)
   where
     h1 : □· w (λ w' _ → inhType i w' (#MP-right2 f))
@@ -548,6 +572,6 @@ mpSearch i w f a₁ a₂ f∈ a∈ =
                 aw4 : ∀𝕎 w3 (λ w' e' → ((m : ℕ) → m ≤ n → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
                                       → (Σ CTerm (λ u → #APPLY f (#NUM n) #⇛ #INL u at w'))
                                       → SUMeq (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))) w' (#infSearchP f) (#infSearchP f))
-                aw4 w4 e4 hn ha = {!!} -- use mpSearch1
+                aw4 w4 e4 hn (u , ha) = mpSearch1 i w4 f u n (equalInType-mon f∈ w4 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4)))) nnf hn ha
 
 \end{code}
