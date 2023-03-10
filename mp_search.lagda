@@ -76,7 +76,9 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
+open import terms2(W)(C)(K)(G)(X)(N)
 open import terms3(W)(C)(K)(G)(X)(N)
+open import terms4(W)(C)(K)(G)(X)(N)
 open import terms8(W)(C)(K)(G)(X)(N)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -93,26 +95,36 @@ open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 
 
 
+infSearchI : Term → Term → Term → Term
+infSearchI f R n =
+  ITE (APPLY f n)
+      n
+      (LET (SUC n) (APPLY (shiftUp 0 R) (VAR 0)))
+
+
 -- This is the body of the fix in infSearch
 infSearchL : Term → Term
 infSearchL f =
   -- 1 is the recursive call and 0 is the number
-  LAMBDA (LAMBDA (ITE (APPLY (shiftUp 0 (shiftUp 0 f)) (VAR 0))
-                      (VAR 0)
-                      (LET (SUC (VAR 0)) (APPLY (VAR 2) (VAR 0)))))
+  LAMBDA (LAMBDA (infSearchI (shiftUp 0 (shiftUp 0 f)) (VAR 1) (VAR 0)))
+
+
+infSearchF : Term → Term
+infSearchF f = FIX (infSearchL f)
+
 
 -- f is a function in #NAT!→BOOL
 -- We're defining here the infinite search: fix(λR.λn.if f(n) then n else R(suc(n)))0
 -- The closed version #infSearch is below
 infSearch : Term → Term
-infSearch f = APPLY (FIX (infSearchL f)) N0
+infSearch f = APPLY (infSearchF f) N0
 
 
 #infSearchI : CTerm → CTerm → CTerm → CTerm
 #infSearchI f R n =
   #ITE (#APPLY f n)
        n
-       (#LET (#SUC n) (#[0]APPLY ⌞ R ⌟ #[0]VAR))
+       (#LET (#SUC n) (#[0]APPLY (#[0]shiftUp0 R) #[0]VAR))
 
 
 -- The body of #infSearch fix's body
@@ -234,36 +246,257 @@ infSearch f = APPLY (FIX (infSearchL f)) N0
     aw w1 e1 (x , y , inj₂ (c₁ , c₂ , q)) (u , d) = ⊥-elim (INLneqINR (≡CTerm (#⇛-val-det {w1} {#APPLY f k} {#INL u} {#INR x} tt tt d c₁)))
 
 
+≡→⇓from-to : {a b : Term} (w : 𝕎·) → a ≡ b → a ⇓ b from w to w
+≡→⇓from-to {a} {b} w e rewrite e = 0 , refl
+
+
+sub-LAMBDA-infSearchI : (f : Term) (#f : # f)
+                        → sub (infSearchF f) (LAMBDA (infSearchI (shiftUp 0 (shiftUp 0 f)) (VAR 1) (VAR 0)))
+                           ≡ LAMBDA (infSearchI f (infSearchF f) (VAR 0))
+sub-LAMBDA-infSearchI f #f
+  rewrite #shiftUp 0 (ct f #f)
+        | #shiftUp 0 (ct f #f)
+        | #shiftUp 2 (ct f #f)
+        | #shiftUp 2 (ct f #f)
+        | #shiftUp 2 (ct f #f)
+        | #shiftUp 2 (ct f #f)
+        | #shiftUp 3 (ct f #f)
+        | #shiftUp 5 (ct f #f)
+        | #subv 1 (FIX (LAMBDA (LAMBDA (DECIDE (APPLY f (VAR 0)) (VAR 1) (LET (SUC (VAR 1)) (APPLY (VAR 3) (VAR 0))))))) f #f
+        | #shiftDown 1 (ct f #f)
+        | #shiftDown 5 (ct f #f)
+  = refl
+
+
+sub-infSearchI : (f : Term) (#f : # f) (n : ℕ)
+                 → sub (NUM n) (infSearchI f (infSearchF f) (VAR 0))
+                    ≡ infSearchI f (infSearchF f) (NUM n)
+sub-infSearchI f #f n
+  rewrite #shiftUp 0 (ct f #f)
+        | #shiftUp 0 (ct f #f)
+        | #shiftUp 2 (ct f #f)
+        | #shiftUp 3 (ct f #f)
+        | #subv 0 (NUM n) f #f
+        | #subv 4 (NUM n) f #f
+        | #shiftDown 0 (ct f #f)
+        | #shiftDown 4 (ct f #f)
+  = refl
+
+
+infSearch⇓₁ : (w : 𝕎·) (f : Term) (#f : # f) (n : ℕ)
+              → APPLY (infSearchF f) (NUM n) ⇓ infSearchI f (infSearchF f) (NUM n) from w to w
+infSearch⇓₁ w f #f n =
+  step-⇓-from-to-trans
+    {w} {w} {w}
+    {APPLY (infSearchF f) (NUM n)}
+    {APPLY (sub (infSearchF f) (LAMBDA (infSearchI (shiftUp 0 (shiftUp 0 f)) (VAR 1) (VAR 0)))) (NUM n)}
+    {infSearchI f (infSearchF f) (NUM n)}
+    refl
+    (⇓-trans₂
+      {w} {w} {w}
+      {APPLY (sub (infSearchF f) (LAMBDA (infSearchI (shiftUp 0 (shiftUp 0 f)) (VAR 1) (VAR 0)))) (NUM n)}
+      {APPLY (LAMBDA (infSearchI f (infSearchF f) (VAR 0))) (NUM n)}
+      {infSearchI f (infSearchF f) (NUM n)}
+      (≡→⇓from-to w (≡APPLY (sub-LAMBDA-infSearchI f #f) refl))
+      (step-⇓-from-to-trans
+        {w} {w} {w}
+        {APPLY (LAMBDA (infSearchI f (infSearchF f) (VAR 0))) (NUM n)}
+        {sub (NUM n) (infSearchI f (infSearchF f) (VAR 0))}
+        {infSearchI f (infSearchF f) (NUM n)}
+        refl
+        (≡→⇓from-to w (sub-infSearchI f #f n))))
+
+
 #infSearch⇛₁ : (w : 𝕎·) (f : CTerm) (n : ℕ)
                 → #APPLY (#infSearchF f) (#NUM n) #⇛ #infSearchI f (#infSearchF f) (#NUM n) at w
-#infSearch⇛₁ w f n w1 e1 = lift {!!}
+#infSearch⇛₁ w f n w1 e1 = lift (⇓-from-to→⇓ (infSearch⇓₁ w1 ⌜ f ⌝ (CTerm.closed f) n))
 
 
--- by induction on n
--- add #¬Names f
+#infSearch⇓₂ : (w1 w2 : 𝕎·) (f u R : Term) (n : ℕ)
+                → APPLY f (NUM n) ⇓ INL u from w1 to w2
+                → infSearchI f R (NUM n) ⇓ NUM n from w1 to w2
+#infSearch⇓₂ w1 w2 f u R n comp =
+  ⇓-trans₂
+    {w1} {w2} {w2}
+    {infSearchI f R (NUM n)}
+    {ITE (INL u) (NUM n) (LET (SUC (NUM n)) (APPLY (shiftUp 0 R) (VAR 0)))}
+    {NUM n}
+    (ITE⇓₁ {w1} {w2} {APPLY f (NUM n)} {INL u} {NUM n} {LET (SUC (NUM n)) (APPLY (shiftUp 0 R) (VAR 0))} comp)
+    (1 , refl)
+
+
+#infSearch⇛₂ : (w : 𝕎·) (f u R : CTerm) (n : ℕ)
+                → #APPLY f (#NUM n) #⇛ #INL u at w
+                → #infSearchI f R (#NUM n) #⇛ #NUM n at w
+#infSearch⇛₂ w f u R n comp w1 e1 =
+  lift (⇓-from-to→⇓ (#infSearch⇓₂ w1 (fst c) ⌜ f ⌝ ⌜ u ⌝ ⌜ R ⌝ n (snd c)))
+  where
+    c : Σ 𝕎· (λ w' → #APPLY f (#NUM n) #⇓ #INL u from w1 to w')
+    c = ⇛→⇓from-to (∀𝕎-mon e1 comp)
+
+
+ITE-INR⇓ : (w : 𝕎·) (a t u : Term)
+            → ITE (INR a) t u ⇓ u from w to w
+ITE-INR⇓ w a t u = 1 , ≡pair (sub-shiftUp0≡ a u) refl
+
+
+sub-APPLY-shiftUp0-VAR0 : (n : ℕ) (R : Term) (#R : # R)
+                          → sub (NUM n) (APPLY (shiftUp 0 R) (VAR 0))
+                             ≡ APPLY R (NUM n)
+sub-APPLY-shiftUp0-VAR0 n R #R
+  rewrite #shiftUp 0 (ct R #R)
+        | #subv 0 (NUM n) R #R
+        | #shiftDown 0 (ct R #R)
+   = refl
+
+
+#infSearch⇓₃ : (w1 w2 : 𝕎·) (f u R : Term) (n : ℕ) (#R : # R)
+                → APPLY f (NUM n) ⇓ INR u from w1 to w2
+                → infSearchI f R (NUM n) ⇓ APPLY R (NUM (suc n)) from w1 to w2
+#infSearch⇓₃ w1 w2 f u R n #R comp =
+  ⇓-trans₂
+    {w1} {w2} {w2}
+    {infSearchI f R (NUM n)}
+    {ITE (INR u) (NUM n) (LET (SUC (NUM n)) (APPLY (shiftUp 0 R) (VAR 0)))}
+    {APPLY R (NUM (suc n))}
+    (ITE⇓₁ {w1} {w2} {APPLY f (NUM n)} {INR u} {NUM n} {LET (SUC (NUM n)) (APPLY (shiftUp 0 R) (VAR 0))} comp)
+    (⇓-trans₂
+      {w2} {w2} {w2}
+      {ITE (INR u) (NUM n) (LET (SUC (NUM n)) (APPLY (shiftUp 0 R) (VAR 0)))}
+      {LET (SUC (NUM n)) (APPLY (shiftUp 0 R) (VAR 0))}
+      {APPLY R (NUM (suc n))}
+      (ITE-INR⇓ w2 u (NUM n) (LET (SUC (NUM n)) (APPLY (shiftUp 0 R) (VAR 0))))
+      (⇓-trans₂
+        {w2} {w2} {w2}
+        {LET (SUC (NUM n)) (APPLY (shiftUp 0 R) (VAR 0))}
+        {LET (NUM (suc n)) (APPLY (shiftUp 0 R) (VAR 0))}
+        {APPLY R (NUM (suc n))}
+        (LET⇓ {SUC (NUM n)} {NUM (suc n)} (APPLY (shiftUp 0 R) (VAR 0)) {w2} {w2} (1 , refl))
+        (⇓-trans₂
+          {w2} {w2} {w2}
+          {LET (NUM (suc n)) (APPLY (shiftUp 0 R) (VAR 0))}
+          {sub (NUM (suc n)) (APPLY (shiftUp 0 R) (VAR 0))}
+          {APPLY R (NUM (suc n))}
+          (LET-val⇓ w2 (NUM (suc n)) (APPLY (shiftUp 0 R) (VAR 0)) tt)
+          (≡→⇓from-to w2 (sub-APPLY-shiftUp0-VAR0 (suc n) R #R)))))
+
+
+#infSearch⇛₃ : (w : 𝕎·) (f u R : CTerm) (n : ℕ)
+                → #APPLY f (#NUM n) #⇛ #INR u at w
+                → #infSearchI f R (#NUM n) #⇛ #APPLY R (#NUM (suc n)) at w
+#infSearch⇛₃ w f u R n comp w1 e1 =
+  lift (⇓-from-to→⇓ (#infSearch⇓₃ w1 (fst c) ⌜ f ⌝ ⌜ u ⌝ ⌜ R ⌝ n (CTerm.closed R) (snd c)))
+  where
+    c : Σ 𝕎· (λ w' → #APPLY f (#NUM n) #⇓ #INR u from w1 to w')
+    c = ⇛→⇓from-to (∀𝕎-mon e1 comp)
+
+
+-- There are 3 of those! move it to utils
++0 : (n : ℕ) → n + 0 ≡ n
++0 0 = refl
++0 (suc n) rewrite +0 n = refl
+
+
++≡→≤ : (k j n : ℕ) → k + j ≡ n → k ≤ n
++≡→≤ k j n e rewrite sym e = ≤-stepsʳ j ≤-refl
+
+
+-- by induction on j
+mpSearch3 : (i : ℕ) (w : 𝕎·) (f u : CTerm) (n k j : ℕ)
+            → k + j ≡ n
+            → ((m : ℕ) → m ≤ n → UNIONeq (equalInType i w #TRUE) (equalInType i w #TRUE) w (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
+            → #APPLY f (#NUM n) #⇛ #INL u at w
+            → Σ ℕ (λ m → Σ CTerm (λ u → m ≤ n × #APPLY (#infSearchF f) (#NUM k) #⇛ #NUM m at w × #APPLY f (#NUM m) #⇛ #INL u at w))
+mpSearch3 i w f u n k 0 eqn hn ha rewrite +0 k | eqn =
+  n , u , ≤-refl ,
+  #⇛-trans
+    {w} {#APPLY (#infSearchF f) (#NUM n)} {#infSearchI f (#infSearchF f) (#NUM n)} {#NUM n}
+    (#infSearch⇛₁ w f n)
+    (#infSearch⇛₂ w f u (#infSearchF f) n ha) ,
+  ha
+mpSearch3 i w f u n k (suc j) eqn hn ha with hn k (+≡→≤ k (suc j) n eqn)
+... | a , b , inj₁ (c₁ , c₂ , q) = concl
+  where
+    comp : #APPLY (#infSearchF f) (#NUM k) #⇛ #NUM k at w
+    comp = #⇛-trans
+             {w} {#APPLY (#infSearchF f) (#NUM k)} {#infSearchI f (#infSearchF f) (#NUM k)} {#NUM k}
+             (#infSearch⇛₁ w f k)
+             (#infSearch⇛₂ w f a (#infSearchF f) k c₁)
+
+    concl : Σ ℕ (λ m → Σ CTerm (λ u → m ≤ n × #APPLY (#infSearchF f) (#NUM k) #⇛ #NUM m at w × #APPLY f (#NUM m) #⇛ #INL u at w))
+    concl = k , a , +≡→≤ k (suc j) n eqn , comp , c₁
+... | a , b , inj₂ (c₁ , c₂ , q) = concl
+  where
+    comp : #APPLY (#infSearchF f) (#NUM k) #⇛ #APPLY (#infSearchF f) (#NUM (suc k)) at w
+    comp = #⇛-trans
+             {w} {#APPLY (#infSearchF f) (#NUM k)} {#infSearchI f (#infSearchF f) (#NUM k)} {#APPLY (#infSearchF f) (#NUM (suc k))}
+             (#infSearch⇛₁ w f k)
+             (#infSearch⇛₃ w f a (#infSearchF f) k c₁)
+
+    ind : Σ ℕ (λ m → Σ CTerm (λ u → m ≤ n × #APPLY (#infSearchF f) (#NUM (suc k)) #⇛ #NUM m at w × #APPLY f (#NUM m) #⇛ #INL u at w))
+    ind = mpSearch3 i w f u n (suc k) j (trans (sym (+-suc k j)) eqn) hn ha
+
+    concl : Σ ℕ (λ m → Σ CTerm (λ u → m ≤ n × #APPLY (#infSearchF f) (#NUM k) #⇛ #NUM m at w × #APPLY f (#NUM m) #⇛ #INL u at w))
+    concl = fst ind , fst (snd ind) , fst (snd (snd ind)) ,
+            #⇛-trans {w} {#APPLY (#infSearchF f) (#NUM k)} {#APPLY (#infSearchF f) (#NUM (suc k))} {#NUM (fst ind)} comp (fst (snd (snd (snd ind)))) ,
+            snd (snd (snd (snd ind)))
+
+
 mpSearch2 : (i : ℕ) (w : 𝕎·) (f u : CTerm) (n : ℕ)
             → ((m : ℕ) → m ≤ n → UNIONeq (equalInType i w #TRUE) (equalInType i w #TRUE) w (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
             → #APPLY f (#NUM n) #⇛ #INL u at w
             → Σ ℕ (λ m → Σ CTerm (λ u → m ≤ n × #infSearch f #⇛ #NUM m at w × #APPLY f (#NUM m) #⇛ #INL u at w))
-mpSearch2 i w f u 0 hn ha = 0 , u , ≤-refl , {!!} , ha -- need to start proving lemmas about how infSearch computes
-mpSearch2 i w f u (suc n) hn ha = {!!}
+mpSearch2 i w f u n hn ha = mpSearch3 i w f u n 0 n refl hn ha
+
+
+#¬Names→⇛! : (w : 𝕎·) (t u : CTerm)
+               → #¬Names t
+               → t #⇛ u at w
+               → t #⇛! u at w
+#¬Names→⇛! w t u nnt comp w1 e1 = lift (¬Names→⇓from-to w1 w1 ⌜ t ⌝ ⌜ u ⌝ nnt (lower (comp w1 e1)))
+
+
+#¬Names-#infSearch : {f : CTerm}
+                     → #¬Names f
+                     → #¬Names (#infSearch f)
+#¬Names-#infSearch {f} nnf
+  rewrite #shiftUp 0 f
+        | #shiftUp 0 f
+        | nnf = refl
+
+
+mpSearch2¬Names : (i : ℕ) (w : 𝕎·) (f u : CTerm) (n : ℕ)
+                  → #¬Names f
+                  → ((m : ℕ) → m ≤ n → UNIONeq (equalInType i w #TRUE) (equalInType i w #TRUE) w (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
+                  → #APPLY f (#NUM n) #⇛ #INL u at w
+                  → Σ ℕ (λ m → Σ CTerm (λ u → m ≤ n × #infSearch f #⇛! #NUM m at w × #APPLY f (#NUM m) #⇛ #INL u at w))
+mpSearch2¬Names i w f u n nnf hn ha with mpSearch2 i w f u n hn ha
+... | m , v , len , c₁ , c₂ = m , v , len , concl , c₂
+  where
+    concl : #infSearch f #⇛! #NUM m at w
+    concl = #¬Names→⇛! w (#infSearch f) (#NUM m) (#¬Names-#infSearch {f} nnf) c₁
 
 
 mpSearch1 : (i : ℕ) (w : 𝕎·) (f u : CTerm) (n : ℕ)
+            → #¬Names f
             → ((m : ℕ) → m ≤ n → UNIONeq (equalInType i w #TRUE) (equalInType i w #TRUE) w (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
             → #APPLY f (#NUM n) #⇛ #INL u at w
             → SUMeq (equalInType i w #NAT!) (λ a b ea → equalInType i w (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))) w (#infSearchP f) (#infSearchP f)
-mpSearch1 i w f u n hn ha =
+mpSearch1 i w f u n nnf hn ha with mpSearch2¬Names i w f u n nnf hn ha
+... | m , v , len , c₁ , c₂ =
   #infSearch f , #infSearch f , #AX , #AX ,
   →equalInType-NAT! i w (#infSearch f) (#infSearch f) (Mod.∀𝕎-□ M p1) , -- How can we prove that it lives in #NAT! if f is not pure? Could we use #NAT for the impure version of MP? Negation is fine though
   #⇛-refl w (#infSearchP f) , #⇛-refl w (#infSearchP f) ,
-  {!!}
+  p2
 -- For this we need to prove that (#infSearch f) computes to a number m ≤ n such that (#APPLY f (#NUM m)) computes to #INL
 -- If f is not pure this might only be at a higher world, but if f is pure we can bring back the computation to the current world
 -- ...so assume #¬Names f for this
   where
     p1 : ∀𝕎 w (λ w' _ → #⇛!sameℕ w' (#infSearch f) (#infSearch f))
-    p1 w1 e1 = {!!} -- use mpSearch2
+    p1 w1 e1 = m , ∀𝕎-mon e1 c₁ , ∀𝕎-mon e1 c₁
+
+    p2 : ∈Type i w (sub0 (#infSearch f) (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR))) #AX
+    p2 = ≡CTerm→equalInType (sym (sub0-ASSERT₂-APPLY (#infSearch f) f)) {!!}
 
 
 mpSearch : (i : ℕ) (w : 𝕎·) (f a₁ a₂ : CTerm)

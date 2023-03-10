@@ -848,6 +848,23 @@ abstract
 ... | inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) | ¬Names→step-nothing w1 w3 t nn z = refl , refl , nn
 
 
+¬Names→⇓ : (w1 w2 w3 : 𝕎·) (t u : Term)
+            → ¬Names t
+            → t ⇓ u from w1 to w2
+            → t ⇓ u from w3 to w3
+¬Names→⇓ w1 w2 w3 t u nnt (k , c) = k , fst (¬Names→steps k w1 w2 w3 t u nnt c)
+
+
+¬Names→⇓from-to : (w1 w2 : 𝕎·) (t u : Term)
+                   → ¬Names t
+                   → t ⇓ u at w1
+                   → t ⇓ u from w2 to w2
+¬Names→⇓from-to w1 w2 t u nnt c =
+  ¬Names→⇓ w1 (fst c') w2 t u nnt (snd c')
+  where
+    c' : Σ 𝕎· (λ w' → t ⇓ u from w1 to w')
+    c' = ⇓→from-to c
+
 
 ¬∈2→∈++4 : {L : Level} {A : Set(L)} {a b c d b' : List A} {x : A}
            → ¬ x ∈ b'

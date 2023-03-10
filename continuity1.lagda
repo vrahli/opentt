@@ -803,14 +803,6 @@ probeM-NAT i w name F f ∈F ∈f = ≡CTerm→∈Type (sym (#probeM≡ name F f
 -- change choose so that the name is directly a parameter?
 
 
-¬Names→⇓ : (w1 w2 w3 : 𝕎·) (t u : Term)
-            → ¬Names t
-            → t ⇓ u from w1 to w2
-            → t ⇓ u from w3 to w3
-¬Names→⇓ w1 w2 w3 t u nnt (k , c) = k , fst (¬Names→steps k w1 w2 w3 t u nnt c)
-
-
-
 differ⇓from-to : (gc0 : get-choose-ℕ) (f : Term) (cf : # f) (nn : ¬Names f) (name1 name2 : Name)
                  (w1 w2 w1' : 𝕎·) (a b v : Term)
                  → isValue v
