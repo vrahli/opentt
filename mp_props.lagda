@@ -167,6 +167,11 @@ MP = PI NAT!→BOOL (FUN (NEG (PI NAT! (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0))))
 #MP₂ = #PI #NAT!→BOOL (#[0]FUN #[0]MP-left3 #[0]MP-right)
 
 
+-- Another version of MP using similar to #MP₂ but without the truncation
+#MP₃ : CTerm
+#MP₃ = #PI #NAT!→BOOL (#[0]FUN #[0]MP-left2 #[0]MP-right2)
+
+
 sub0-fun-mp : (a : CTerm) → sub0 a (#[0]FUN #[0]MP-left #[0]MP-right)
                              ≡ #FUN (#MP-left a) (#MP-right a)
 sub0-fun-mp a =
@@ -196,6 +201,21 @@ sub0-fun-mp₂ a =
 
     e1 : shiftDown 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ a ⌝))) ≡ shiftUp 1 ⌜ a ⌝
     e1 rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftUp 0 a | #shiftUp 1 a | #shiftDown 2 a = refl
+
+
+sub0-fun-mp₃ : (a : CTerm) → sub0 a (#[0]FUN #[0]MP-left2 #[0]MP-right2)
+                             ≡ #FUN (#MP-left2 a) (#MP-right2 a)
+sub0-fun-mp₃ a =
+  ≡sub0-#[0]FUN
+    a #[0]MP-left2 #[0]MP-right2 (#MP-left2 a) (#MP-right2 a)
+    (CTerm≡ (≡NEG (≡NEG (≡SUM refl (≡EQ (≡APPLY e1 refl) refl refl))))) --(CTerm≡ (≡NEG (≡NEG (≡SET refl (≡SUM refl (≡EQ (≡APPLY e1 refl) refl refl))))))
+    (CTerm≡ (≡SUM refl (≡ASSERT₂ (→≡APPLY e refl))))
+  where
+    e : shiftDown 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) ≡ ⌜ a ⌝
+    e rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftDown 1 a = refl
+
+    e1 : shiftDown 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) ≡ ⌜ a ⌝
+    e1 rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftDown 1 a = refl
 
 
 →≡equalTypes : {i : ℕ} {w : 𝕎·} {a1 a2 b1 b2 : CTerm}
@@ -231,6 +251,13 @@ sub0-fun-mp₂ a =
   eqTypesNEG← (→equalTypes-#PI-NEG-ASSERT₂ eqt)
 
 
+→equalTypes-#MP-left2 : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
+                        → equalInType n w #NAT!→BOOL a₁ a₂
+                        → equalTypes n w (#MP-left2 a₁) (#MP-left2 a₂)
+→equalTypes-#MP-left2 {n} {w} {a₁} {a₂} eqt =
+  eqTypesNEG← (eqTypesNEG← (→equalTypes-#SUM-ASSERT₂ eqt))
+
+
 →equalTypes-#MP-left3 : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
                         → equalInType n w #NAT!→BOOL a₁ a₂
                         → equalTypes n w (#MP-left3 a₁) (#MP-left3 a₂)
@@ -255,6 +282,13 @@ isType-MP-right-body i w f₁ f₂ f∈ w1 e1 a₁ a₂ a∈ =
                           → equalTypes n w (#MP-right a₁) (#MP-right a₂)
 →equalTypes-#MP-right {n} {w} {a₁} {a₂} eqt =
   eqTypesSQUASH← (eqTypesSUM← (λ w' _ → isTypeNAT!) (isType-MP-right-body n w a₁ a₂ eqt))
+
+
+→equalTypes-#MP-right2 : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
+                          → equalInType n w #NAT!→BOOL a₁ a₂
+                          → equalTypes n w (#MP-right2 a₁) (#MP-right2 a₂)
+→equalTypes-#MP-right2 {n} {w} {a₁} {a₂} eqt =
+  eqTypesSUM← (λ w' _ → isTypeNAT!) (isType-MP-right-body n w a₁ a₂ eqt)
 
 
 isTypeMP-PI : (w : 𝕎·) (n : ℕ) → isType n w #MP-PI
@@ -288,6 +322,23 @@ isTypeMP₂ w n =
                                          (sub0 a₂ (#[0]FUN #[0]MP-left3 #[0]MP-right)))
     aw w' e a₁ a₂ eqb rewrite sub0-fun-mp₂ a₁ | sub0-fun-mp₂ a₂ =
       eqTypesFUN← (→equalTypes-#MP-left3 eqb) (→equalTypes-#MP-right eqb)
+
+
+
+isTypeMP₃ : (w : 𝕎·) (n : ℕ) → isType n w #MP₃
+isTypeMP₃ w n =
+  eqTypesPI←
+    {w} {n}
+    {#NAT!→BOOL} {#[0]FUN #[0]MP-left2 #[0]MP-right2}
+    {#NAT!→BOOL} {#[0]FUN #[0]MP-left2 #[0]MP-right2}
+    (λ w' e → isType-#NAT!→BOOL w' n)
+    aw
+  where
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT!→BOOL a₁ a₂
+                      → equalTypes n w' (sub0 a₁ (#[0]FUN #[0]MP-left2 #[0]MP-right2))
+                                         (sub0 a₂ (#[0]FUN #[0]MP-left2 #[0]MP-right2)))
+    aw w' e a₁ a₂ eqb rewrite sub0-fun-mp₃ a₁ | sub0-fun-mp₃ a₂ =
+      eqTypesFUN← (→equalTypes-#MP-left2 eqb) (→equalTypes-#MP-right2 eqb)
 
 
 
@@ -580,5 +631,16 @@ equalInType-#MP-left3→ i w f a₁ a₂ f∈ a∈ w1 e1 h =
     aw1 w1 e1 a₁ a₂ q =
       hb w1 e1 (#APPLY t₁ a₁) (#APPLY t₂ a₂)
          (equalInType-FUN→ a∈ w1 e1 a₁ a₂ (ha w1 e1 a₁ a₂ q))
+
+
+∈#MP-right2→∈MP-right : (i : ℕ) (w : 𝕎·) (f a₁ a₂ b₁ b₂ : CTerm)
+                          → ∈Type i w #NAT!→BOOL f
+                          → equalInType i w (#MP-right2 f) a₁ a₂
+                          → equalInType i w (#MP-right f) b₁ b₂
+∈#MP-right2→∈MP-right i w f a₁ a₂ b₁ b₂ f∈ a∈ =
+  →equalInType-SQUASH (Mod.∀𝕎-□ M aw)
+  where
+    aw : ∀𝕎 w (λ w' _ → Σ CTerm (λ t → equalInType i w' (#MP-right2 f) t t))
+    aw w1 e1 = a₁ , equalInType-refl (equalInType-mon a∈ w1 e1)
 
 \end{code}[hide]

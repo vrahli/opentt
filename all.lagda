@@ -51,7 +51,7 @@ open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (¬LPO)
 -- As opposed to the above version, this one relies on QTBool instead of Bool:
 open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (¬LPOq)
 -- This version requires choices to be Booleans, but also freezable to always be true:
-open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (¬MP ; ¬MP₂)
+open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (¬MP ; ¬MP₂ ; ¬MP₃)
 -- MP is however consistent when restricted to pure functions
 open import mpp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (MPp-inh ; MPp₂-inh)
 -- Using classsical logic, MP is also consistent when using an open-like modality (see ExBar in exBar.lagda)

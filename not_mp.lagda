@@ -221,4 +221,42 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         u₁ u₂ (isType-#NAT!→BOOL w1 n) (∀𝕎-mon e1 p2) (λ w1 e1 a b h → h)
         (∀𝕎-mon e1 p3) u∈
 
+
+-- This is similar to ¬MP₂ but proved here for an non-truncated version of #MP₂
+¬MP₃ : Boolℂ CB → alwaysFreezable F → (w : 𝕎·) → member w (#NEG #MP₃) #lamAX
+¬MP₃ bcb afb w =
+  n , →∈Type-NEG n w #MP₂ #MP₃ #lamAX #lamAX (isTypeMP₃ w n) aw1 (snd (¬MP₂ bcb afb w))
+  where
+    n : ℕ
+    n = 1
+
+    p2 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' #NAT!→BOOL f₁ f₂
+                       → equalTypes n w' (sub0 f₁ (#[0]FUN #[0]MP-left3 #[0]MP-right)) (sub0 f₂ (#[0]FUN #[0]MP-left3 #[0]MP-right)))
+    p2 w1 e1 f₁ f₂ f∈ =
+      →≡equalTypes
+        (sym (sub0-fun-mp₂ f₁))
+        (sym (sub0-fun-mp₂ f₂))
+        (eqTypesFUN← (→equalTypes-#MP-left3 f∈) (→equalTypes-#MP-right f∈))
+
+    p3 : ∀𝕎 w (λ w' _ → (a b₁ b₂ : CTerm) → ∈Type n w' #NAT!→BOOL a
+                       → equalInType n w' (sub0 a (#[0]FUN #[0]MP-left2 #[0]MP-right2)) b₁ b₂
+                       → equalInType n w' (sub0 a (#[0]FUN #[0]MP-left3 #[0]MP-right)) b₁ b₂)
+    p3 w1 e1 a b₁ b₂ a∈ b∈ =
+      →≡equalInType
+        (sym (sub0-fun-mp₂ a))
+        (→∈Type-FUN
+          n w1 (#MP-left2 a) (#MP-left3 a) (#MP-right2 a) (#MP-right a) b₁ b₂
+          (→equalTypes-#MP-left3 a∈) (→equalTypes-#MP-right a∈)
+          (λ w2 e2 x y h → #MP-left3→#MP-left2 n w2 a x y (equalInType-mon a∈ w2 e2) h)
+          (λ w2 e2 x y h → ∈#MP-right2→∈MP-right n w2 a x y x y (equalInType-mon a∈ w2 e2) h)
+          (→≡equalInType (sub0-fun-mp₃ a) b∈))
+
+    aw1 : ∀𝕎 w (λ w' _ → (u₁ u₂ : CTerm) → equalInType n w' #MP₃ u₁ u₂ → equalInType n w' #MP₂ u₁ u₂)
+    aw1 w1 e1 u₁ u₂ u∈ = →∈Type-PI
+        n w1 #NAT!→BOOL #NAT!→BOOL
+        (#[0]FUN #[0]MP-left2 #[0]MP-right2)
+        (#[0]FUN #[0]MP-left3 #[0]MP-right)
+        u₁ u₂ (isType-#NAT!→BOOL w1 n) (∀𝕎-mon e1 p2) (λ w1 e1 a b h → h)
+        (∀𝕎-mon e1 p3) u∈
+
 \end{code}[hide]
