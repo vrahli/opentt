@@ -423,6 +423,17 @@ fvars-ITE0 a b c
             (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝} (⊆?→⊆ (CTerm2.closed b)) (⊆?→⊆ (CTerm2.closed c))))
 
 
+#[3]ITE : CTerm3 → CTerm3 → CTerm3 → CTerm3
+#[3]ITE a b c = ct3 (ITE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝) d
+  where
+    d : #[ 0 ∷ 1 ∷ 2 ∷ [ 3 ] ] ITE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝
+    d rewrite fvars-ITE0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]}
+            (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝}
+            (⊆?→⊆ (CTerm3.closed a))
+            (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝} (⊆?→⊆ (CTerm3.closed b)) (⊆?→⊆ (CTerm3.closed c))))
+
+
 fvars-IFLT0 : (a b c d : Term) → fvars (IFLT a b c d) ≡ fvars a ++ fvars b ++ fvars c ++ fvars d
 fvars-IFLT0 a b c d
   rewrite fvars-shiftUp≡ 0 b

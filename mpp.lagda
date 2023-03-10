@@ -79,6 +79,8 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
+open import terms8(W)(C)(K)(G)(X)(N)
+
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -152,6 +154,10 @@ MPp = PI (TPURE NAT!→BOOL) (FUN (NEG (PI NAT! (NEG (ASSERT₂ (APPLY (VAR 1) (
 
 #MPp₂ : CTerm
 #MPp₂ = #PI (#TPURE #NAT!→BOOL) (#[0]FUN #[0]MP-left3 #[0]MP-right)
+
+
+#MPp₃ : CTerm
+#MPp₃ = #PI (#TPURE #NAT!→BOOL) (#[0]FUN #[0]MP-left2 #[0]MP-right2)
 
 
 isType-#TPURE-NAT!→BOOL : (w : 𝕎·) (n : ℕ) → isType n w (#TPURE #NAT!→BOOL)
@@ -280,7 +286,6 @@ MPp-inh w =
                     aw5 = #lam2AX , equalInType-PI (λ w' e → isTypeNAT!) aw6 aw7
 
 
-
 -- This is similar to MPp-inh but proved here for #MPp₂, which is stated using ¬¬∃, instead of #MPp, which is stated using ¬∀¬
 MPp₂-inh : (w : 𝕎·) → member w #MPp₂ #lam2AX
 MPp₂-inh w =
@@ -314,5 +319,67 @@ MPp₂-inh w =
            b₁ b₂ (→equalTypes-#MP-left3 (equalInType-TPURE→ a∈)) (→equalTypes-#MP-right (equalInType-TPURE→ a∈))
            (λ w2 e2 x y h → #MP-left2→#MP-left n w2 a x y (equalInType-mon (equalInType-TPURE→ a∈) w2 e2) (#MP-left3→#MP-left2 n w2 a x y (equalInType-mon (equalInType-TPURE→ a∈) w2 e2) h))
            (λ w2 e2 a b h → h) (→≡equalInType (sub0-fun-mp a) b∈))
+
+
+#lamInfSearchP : CTerm
+#lamInfSearchP =
+  #LAMBDA -- F
+    (#[0]LAMBDA -- cond
+      (#[1]PAIR
+        (#[1]APPLY
+          (#[1]FIX
+            (#[1]LAMBDA -- R
+              (#[2]LAMBDA -- n
+                (#[3]ITE (#[3]APPLY #[3]VAR3 #[3]VAR0)
+                         (#[3]VAR0)
+                         (#[3]LET (#[3]SUC #[3]VAR0) (#[4]APPLY #[4]VAR2 #[4]VAR0))))))
+          (#[1]NUM 0))
+        #[1]AX))
+
+
+-- This is similar to MPp₂-inh but proved here for non-truncated sums
+MPp₃-inh : (w : 𝕎·) → member w #MPp₃ #lamInfSearchP
+MPp₃-inh w =
+  n ,
+  equalInType-PI
+    {n} {w} {#TPURE #NAT!→BOOL} {#[0]FUN #[0]MP-left2 #[0]MP-right2}
+    (λ w1 e1 → isType-#TPURE-NAT!→BOOL w1 n)
+    p2
+    p3
+  where
+    n : ℕ
+    n = 1
+
+    p2 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' (#TPURE #NAT!→BOOL) f₁ f₂
+                       → equalTypes n w' (sub0 f₁ (#[0]FUN #[0]MP-left2 #[0]MP-right2)) (sub0 f₂ (#[0]FUN #[0]MP-left2 #[0]MP-right2)))
+    p2 w1 e1 f₁ f₂ f∈ =
+      →≡equalTypes
+        (sym (sub0-fun-mp₃ f₁))
+        (sym (sub0-fun-mp₃ f₂))
+        (eqTypesFUN← (→equalTypes-#MP-left2 (equalInType-TPURE→ f∈)) (→equalTypes-#MP-right2 (equalInType-TPURE→ f∈)))
+
+    p3 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' (#TPURE #NAT!→BOOL) f₁ f₂
+                       → equalInType n w' (sub0 f₁ (#[0]FUN #[0]MP-left2 #[0]MP-right2)) (#APPLY #lamInfSearchP f₁) (#APPLY #lamInfSearchP f₂))
+    p3 w1 e1 f₁ f₂ f∈ =
+      →≡equalInType
+        (sym (sub0-fun-mp₃ f₁))
+        (equalInType-FUN
+          (→equalTypes-#MP-left2 (equalInType-refl (equalInType-TPURE→ f∈)))
+          (→equalTypes-#MP-right2 (equalInType-refl (equalInType-TPURE→ f∈)))
+          p4)
+      where
+        p5 : equalInType n w1 (#FUN (#MP-left3 f₁) (#MP-right f₁)) (#APPLY #lam2AX f₁) (#APPLY #lam2AX f₂)
+        p5 = →≡equalInType
+               (sub0-fun-mp₂ f₁)
+               (snd (snd (equalInType-PI→ {n} {w} {#TPURE #NAT!→BOOL} {#[0]FUN #[0]MP-left3 #[0]MP-right}
+                                           (snd (MPp₂-inh w)))) w1 e1 f₁ f₂ f∈)
+
+        p4 : ∀𝕎 w1 (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#MP-left2 f₁) a₁ a₂
+                            → equalInType n w' (#MP-right2 f₁) (#APPLY (#APPLY #lamInfSearchP f₁) a₁) (#APPLY (#APPLY #lamInfSearchP f₂) a₂))
+        p4 w2 e2 a₁ a₂ a∈ = {!!} -- We need something like mpSearch in mp_search, but that one is not functional
+          where
+            p6 : equalInType n w2 (#MP-right f₁) (#APPLY (#APPLY #lam2AX f₁) a₁) (#APPLY (#APPLY #lam2AX f₂) a₂)
+            p6 = equalInType-FUN→ p5 w2 e2 a₁ a₂ (#MP-left2→#MP-left3 n w2 f₁ a₁ a₂ (equalInType-mon (equalInType-TPURE→ (equalInType-refl f∈)) w2 e2) a∈)
+
 
 \end{code}[hide]
