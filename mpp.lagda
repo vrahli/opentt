@@ -79,6 +79,7 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
+open import terms2(W)(C)(K)(G)(X)(N)
 open import terms8(W)(C)(K)(G)(X)(N)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -92,11 +93,12 @@ open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import not_mp(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 -- This one is to use ¬Names→⇛ (TODO: extract the ¬Names results from the continuity files)
 open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#¬Names-APPLY)
 open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E) using (¬Names→⇛)
-open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalTypesTPURE ; equalInType-TPURE→ ; equalInType-TPURE→ₗ)
+open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalTypesTPURE ; equalInType-TPURE→ ; equalInType-TPURE→ₗ ; equalInType-TPURE→ᵣ)
 
 
 
@@ -337,6 +339,25 @@ MPp₂-inh w =
         #[1]AX))
 
 
+#APPLY-#APPLY-#lamInfSearchP : (f a : CTerm) (w : 𝕎·)
+                               → #APPLY (#APPLY #lamInfSearchP f) a #⇛ #infSearchP f at w
+#APPLY-#APPLY-#lamInfSearchP f a w w1 e1 =
+  lift (⇓-from-to→⇓ {w1} {w1} {⌜ #APPLY (#APPLY #lamInfSearchP f) a ⌝} {⌜ #infSearchP f ⌝} (2 , ≡pair e refl))
+  where
+    e : sub ⌜ a ⌝ (PAIR (APPLY (FIX (LAMBDA (LAMBDA (DECIDE (APPLY (shiftDown 3 (shiftUp 0 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ f ⌝))))) (VAR 0)) (VAR 1) (LET (SUC (VAR 1)) (APPLY (VAR 3) (VAR 0))))))) (NUM 0)) AX)
+        ≡ ⌜ #infSearchP f ⌝
+    e rewrite #shiftUp 0 f
+            | #shiftUp 0 f
+            | #shiftUp 0 f
+            | #shiftUp 0 f
+            | #shiftDown 3 f
+            | #shiftUp 0 a
+            | #shiftUp 0 a
+            | #shiftUp 0 a
+            | #subv 2 ⌜ a ⌝ ⌜ f ⌝ (CTerm.closed f)
+            | #shiftDown 2 f = refl
+
+
 -- This is similar to MPp₂-inh but proved here for non-truncated sums
 MPp₃-inh : (w : 𝕎·) → member w #MPp₃ #lamInfSearchP
 MPp₃-inh w =
@@ -376,7 +397,15 @@ MPp₃-inh w =
 
         p4 : ∀𝕎 w1 (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#MP-left2 f₁) a₁ a₂
                             → equalInType n w' (#MP-right2 f₁) (#APPLY (#APPLY #lamInfSearchP f₁) a₁) (#APPLY (#APPLY #lamInfSearchP f₂) a₂))
-        p4 w2 e2 a₁ a₂ a∈ = {!!} -- We need something like mpSearch in mp_search, but that one is not functional
+        p4 w2 e2 a₁ a₂ a∈ =
+          mpSearch
+            n w2 f₁ f₂
+            (#APPLY (#APPLY #lam2AX f₁) a₁) (#APPLY (#APPLY #lam2AX f₂) a₂)
+            (#APPLY (#APPLY #lamInfSearchP f₁) a₁) (#APPLY (#APPLY #lamInfSearchP f₂) a₂)
+            (equalInType-TPURE→ₗ f∈) (equalInType-TPURE→ᵣ f∈)
+            (#APPLY-#APPLY-#lamInfSearchP f₁ a₁ w2) (#APPLY-#APPLY-#lamInfSearchP f₂ a₂ w2)
+            (equalInType-mon (equalInType-TPURE→ f∈) w2 e2)
+            p6
           where
             p6 : equalInType n w2 (#MP-right f₁) (#APPLY (#APPLY #lam2AX f₁) a₁) (#APPLY (#APPLY #lam2AX f₂) a₂)
             p6 = equalInType-FUN→ p5 w2 e2 a₁ a₂ (#MP-left2→#MP-left3 n w2 f₁ a₁ a₂ (equalInType-mon (equalInType-TPURE→ (equalInType-refl f∈)) w2 e2) a∈)
