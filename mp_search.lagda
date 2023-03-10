@@ -477,6 +477,14 @@ mpSearch2¬Names i w f u n nnf hn ha with mpSearch2 i w f u n hn ha
     concl = #¬Names→⇛! w (#infSearch f) (#NUM m) (#¬Names-#infSearch {f} nnf) c₁
 
 
+∈#NAT!→BOOL→equalInType-#ASSERT₂ : (i : ℕ) (w : 𝕎·) (f t u : CTerm) (m : ℕ)
+                                     → ∈Type i w #NAT!→BOOL f
+                                     → t #⇛! #NUM m at w
+                                     → #APPLY f (#NUM m) #⇛ #INL u at w
+                                     → ∈Type i w (#ASSERT₂ (#APPLY f t)) #AX
+∈#NAT!→BOOL→equalInType-#ASSERT₂ i w f t m f∈ cm cl = {!!}
+
+
 mpSearch1 : (i : ℕ) (w : 𝕎·) (f u : CTerm) (n : ℕ)
             → #¬Names f
             → ((m : ℕ) → m ≤ n → UNIONeq (equalInType i w #TRUE) (equalInType i w #TRUE) w (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
