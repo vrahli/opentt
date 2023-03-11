@@ -111,12 +111,24 @@ DECℕ F = PI NAT! (SQUASH (UNION (APPLY (shiftUp 0 F) (VAR 0)) (NEG (APPLY (shi
 -- π (F : ℕ → 𝕌ᵢ). (Π (n : ℕ). F n ∨ ¬ F n) → ¬(Π (n : ℕ). ¬(F n)) → ||Σ (n : ℕ). F n||
 MPℙ : ℕ → Term
 MPℙ i = PI (NAT!→U i) (FUN (DECℕ (VAR 0))
-                            (FUN (NEG (NEG (SQUASH (SUM NAT! (APPLY (VAR 1) (VAR 0))))))
-                                 (SQUASH (SUM NAT! (APPLY (VAR 1) (VAR 0))))))
+                            (FUN (NEG (NEG (SQUASH (SUM NAT! (LIFT (APPLY (VAR 1) (VAR 0)))))))
+                                 (SQUASH (SUM NAT! (LIFT (APPLY (VAR 1) (VAR 0)))))))
+
+
+#[0]LIFT : CTerm0 → CTerm0
+#[0]LIFT a = ct0 (LIFT ⌜ a ⌝) (CTerm0.closed a)
+
+
+#[1]LIFT : CTerm1 → CTerm1
+#[1]LIFT a = ct1 (LIFT ⌜ a ⌝) (CTerm1.closed a)
+
+
+#[2]LIFT : CTerm2 → CTerm2
+#[2]LIFT a = ct2 (LIFT ⌜ a ⌝) (CTerm2.closed a)
 
 
 #[0]MPℙ-right : CTerm0
-#[0]MPℙ-right = #[0]SQUASH (#[0]SUM #[0]NAT! (#[1]APPLY #[1]VAR1 #[1]VAR0))
+#[0]MPℙ-right = #[0]SQUASH (#[0]SUM #[0]NAT! (#[1]LIFT (#[1]APPLY #[1]VAR1 #[1]VAR0)))
 
 
 #[0]MPℙ-left : CTerm0
@@ -229,7 +241,7 @@ fvars-CTerm1 a = ⊆?→⊆ (CTerm1.closed a)
 
 
 #MPℙ-right : CTerm → CTerm
-#MPℙ-right f = #SQUASH (#SUM #NAT! (#[0]APPLY ⌞ f ⌟ #[0]VAR))
+#MPℙ-right f = #SQUASH (#SUM #NAT! (#[0]LIFT (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
 
 
 #MPℙ-left : CTerm → CTerm
@@ -250,10 +262,10 @@ sub0-fun-mpℙ : (a : CTerm) → sub0 a (#[0]FUN #[0]MPℙ-left #[0]MPℙ-right)
 sub0-fun-mpℙ a =
   ≡sub0-#[0]FUN
     a #[0]MPℙ-left #[0]MPℙ-right (#MPℙ-left a) (#MPℙ-right a)
-    (CTerm≡ (≡NEG (≡NEG (≡SET refl (≡SUM refl (≡APPLY e1 refl))))))
+    (CTerm≡ (≡NEG (≡NEG (≡SET refl (≡SUM refl (≡LIFT (≡APPLY e1 refl)))))))
     (≡sub0-#[0]SQUASH
-      a (#[0]SUM #[0]NAT! (#[1]APPLY #[1]VAR1 #[1]VAR0)) (#SUM #NAT! (#[0]APPLY ⌞ a ⌟ #[0]VAR))
-      (CTerm≡ (≡SUM refl (→≡APPLY e refl))))
+      a (#[0]SUM #[0]NAT! (#[1]LIFT (#[1]APPLY #[1]VAR1 #[1]VAR0))) (#SUM #NAT! (#[0]LIFT (#[0]APPLY ⌞ a ⌟ #[0]VAR)))
+      (CTerm≡ (≡SUM refl (≡LIFT (→≡APPLY e refl)))))
   where
     e : shiftDown 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) ≡ ⌜ a ⌝
     e rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftDown 1 a = refl
@@ -263,11 +275,45 @@ sub0-fun-mpℙ a =
     e1 rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftUp 0 a | #shiftUp 1 a | #shiftDown 2 a = refl
 
 
-→equalTypes-#MPℙ-left : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm} {i : ℕ}
-                         → equalInType n w (#NAT!→U i) a₁ a₂
-                         → equalTypes n w (#MPℙ-left a₁) (#MPℙ-left a₂)
-→equalTypes-#MPℙ-left {n} {w} {a₁} {a₂} {i} eqt =
-  eqTypesNEG← (eqTypesNEG← {!!}) --(→equalTypes-#PI-NEG-ASSERT₂ eqt)
+
+sub0-LIFT-APPLY : (a b : CTerm) → sub0 a (#[0]LIFT (#[0]APPLY ⌞ b ⌟ #[0]VAR)) ≡ #LIFT (#APPLY b a)
+sub0-LIFT-APPLY a b = CTerm≡ (≡LIFT (→≡APPLY x y))
+  where
+    x : shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) ⌜ b ⌝) ≡ ⌜ b ⌝
+    x rewrite subNotIn ⌜ a ⌝ ⌜ b ⌝ (CTerm.closed b) = refl
+
+    y : shiftDown 0 (shiftUp 0 ⌜ a ⌝) ≡ ⌜ a ⌝
+    y rewrite #shiftUp 0 a | #shiftDown 0 a = refl
+
+
+isType-MPℙ-right-body : (i : ℕ) (w : 𝕎·) (f₁ f₂ : CTerm)
+                        → equalInType (suc i) w (#NAT!→U i) f₁ f₂
+                        → ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType (suc i) w' #NAT! a b)
+                                         → equalTypes (suc i) w' (sub0 a (#[0]LIFT (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))
+                                                                  (sub0 b (#[0]LIFT (#[0]APPLY ⌞ f₂ ⌟ #[0]VAR))))
+isType-MPℙ-right-body i w f₁ f₂ f∈ w1 e1 a₁ a₂ a∈ =
+  →≡equalTypes
+    (sym (sub0-LIFT-APPLY a₁ f₁))
+    (sym (sub0-LIFT-APPLY a₂ f₂))
+    (equalTypes-LIFT2
+      i w1 (#APPLY f₁ a₁) (#APPLY f₂ a₂)
+      (equalInType→equalTypes-aux
+        (suc i) i ≤-refl w1 (#APPLY f₁ a₁) (#APPLY f₂ a₂)
+        (equalInType-FUN→ f∈ w1 e1 a₁ a₂ a∈)))
+
+
+→equalTypes-#MPℙ-right : {i : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
+                         → equalInType (suc i) w (#NAT!→U i) a₁ a₂
+                         → equalTypes (suc i) w (#MPℙ-right a₁) (#MPℙ-right a₂)
+→equalTypes-#MPℙ-right {i} {w} {a₁} {a₂} eqt =
+  eqTypesSQUASH← (eqTypesSUM← (λ w' _ → isTypeNAT!) (isType-MPℙ-right-body i w a₁ a₂ eqt))
+
+
+→equalTypes-#MPℙ-left : {i : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
+                         → equalInType (suc i) w (#NAT!→U i) a₁ a₂
+                         → equalTypes (suc i) w (#MPℙ-left a₁) (#MPℙ-left a₂)
+→equalTypes-#MPℙ-left {i} {w} {a₁} {a₂} eqt =
+  eqTypesNEG← (eqTypesNEG← (→equalTypes-#MPℙ-right eqt))
 
 
 
