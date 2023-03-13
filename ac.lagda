@@ -180,6 +180,9 @@ sub0-ac00-left-body2 R n m = CTerm≡ c
             | #shiftDown 0 m = refl
 
 
+--     Π(R : ℕ→ℕ→ℙ).
+--        (Π(n:ℕ).∃(b:ℕ).R n b)
+--        → ∃(f:ℕ→ℕ).Π(n:ℕ).R n (f n)
 #AC₀₀ : ℕ → CTerm
 #AC₀₀ i = #PI (#NREL i) (#[0]FUN #[0]AC₀₀-left #[0]AC₀₀-right)
 
@@ -422,7 +425,12 @@ RBac₀₀ δ n m =
     (#NEG (#Aac₀₀ δ n))
 
 
--- R n j = if j ≡ 0 then ∀m≥n.δ(m)=0 else ¬∀m≥n.δ(m)=0
+-- This is the following relation:
+--   R n j = if j ≡ 0 then ∀m≥n.δ(m)=0 else ¬∀m≥n.δ(m)=0
+-- which we want to use to prove the negation of AC₀₀
+--
+-- Could we try something along these lines, where δ is a ref, not a CS:
+--   R n j = δ=j
 Rac₀₀ : Name → CTerm
 Rac₀₀ δ =
   #LAMBDA -- n
@@ -622,6 +630,15 @@ equalTypes-RBac₀₀ cn i w δ n₁ n₂ m₁ m₂ n m cn₁ cn₂ cm₁ cm₂ 
             aw3 w3 e3 (n , cn₁ , cn₂) (m , cm₁ , cm₂) = equalTypes-RBac₀₀ cn i w3 δ n₁ n₂ m₁ m₂ n m cn₁ cn₂ cm₁ cm₂
 
 
+
+{--
+inhTypeAac₀₀ : (i : ℕ) (w : 𝕎·) (δ : Name) (n : CTerm)
+               → ∈Type (suc i) w #NAT n
+               → ∀𝕎 w (λ w' _ → ∃𝕎 w' (λ w' _ → inhType (suc i) w' (#Aac₀₀ δ n)))
+inhTypeAac₀₀ i w δ n n∈ = {!!}
+--}
+
+
 -- Can we prove that AC₀₀ is invalid using Rac₀₀
 -- 1st proving that it satisfies its left side
 AC₀₀-left-R : (cn : CS∈NAT) (i : ℕ) (w : 𝕎·) (δ : Name) → ∈Type (suc i) w (#AC₀₀-left (Rac₀₀ δ)) #lamAX
@@ -640,7 +657,15 @@ AC₀₀-left-R cn i w δ =
     aw1 w1 e1 n₁ n₂ n∈ =
       →≡equalInType
         (sym (sub0-ac00-left-body1 (Rac₀₀ δ) n₁))
-        ? --(→equalInType-SQUASH {!!})
+        (→equalInType-SQUASH (Mod.∀𝕎-□ M aw2))
+      where
+        aw2 : ∀𝕎 w1 (λ w' _ → inhType (suc i) w' (#SUM #NAT (#[0]LIFT (#[0]APPLY2 ⌞ Rac₀₀ δ ⌟ ⌞ n₁ ⌟ #[0]VAR))))
+        aw2 w2 e2 = {!!}
+
+
+AC₀₀-right-R : (cn : CS∈NAT) (i : ℕ) (w : 𝕎·) (δ : Name) → ¬ inhType (suc i) w (#AC₀₀-right (Rac₀₀ δ))
+AC₀₀-right-R cn i w δ p = ?
+
 
 
 -- Can we prove that AC₀₀ is valid?
