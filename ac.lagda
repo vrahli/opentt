@@ -31,6 +31,7 @@ open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
 open import Axiom.Extensionality.Propositional
+open import Axiom.ExcludedMiddle
 
 
 open import util
@@ -48,6 +49,7 @@ open import newChoice
 open import freeze
 open import progress
 open import choiceBar
+open import exBar
 open import mod
 
 
@@ -58,11 +60,14 @@ module ac {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
           (F : Freeze {L} W C K P G N)
           (E : Extensionality 0ℓ (lsuc(lsuc(L))))
           (CB : ChoiceBar W M C K P G X N V F E)
+          (EM : ExcludedMiddle (lsuc(L)))
+          (EB : ExBar W M)
        where
 
 
 open import worldDef(W)
 open import choiceDef{L}(C)
+open import exBarDef(W)(M)(EB)
 open import compatibleDef{L}(W)(C)(K)
 open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
@@ -469,7 +474,7 @@ sub-Rac₀₀-2 δ n m
 
 
 APPLY-APPLY-Rac₀₀⇓! : (w : 𝕎·) (δ : Name) (n m : CTerm)
-                       → APPLY (APPLY ⌜ Rac₀₀ δ ⌝ ⌜ n ⌝) ⌜ m ⌝ ⇓ ⌜ RBac₀₀ δ n m ⌝ from w to w
+                       → APPLY2 ⌜ Rac₀₀ δ ⌝ ⌜ n ⌝ ⌜ m ⌝ ⇓ ⌜ RBac₀₀ δ n m ⌝ from w to w
 APPLY-APPLY-Rac₀₀⇓! w δ n m =
   ⇓-trans₂
     {w} {w} {w}
@@ -493,8 +498,36 @@ APPLY-APPLY-Rac₀₀⇓! w δ n m =
 
 
 #APPLY-#APPLY-Rac₀₀⇛! : (w : 𝕎·) (δ : Name) (n m : CTerm)
-                         → #APPLY (#APPLY (Rac₀₀ δ) n) m #⇛! RBac₀₀ δ n m at w
+                         → #APPLY2 (Rac₀₀ δ) n m #⇛! RBac₀₀ δ n m at w
 #APPLY-#APPLY-Rac₀₀⇛! w δ n m w1 e1 = lift (APPLY-APPLY-Rac₀₀⇓! w1 δ n m)
+
+
+#APPLY-#APPLY-RBac₀₀⇛!0 : (w : 𝕎·) (δ : Name) (n : CTerm)
+                         → RBac₀₀ δ n #N0 #⇛! #Aac₀₀ δ n at w
+#APPLY-#APPLY-RBac₀₀⇛!0 w δ n w1 e1 = lift (1 , refl)
+
+
+#APPLY-#APPLY-RBac₀₀⇛!1 : (w : 𝕎·) (δ : Name) (n : CTerm)
+                         → RBac₀₀ δ n #N1 #⇛! #NEG (#Aac₀₀ δ n) at w
+#APPLY-#APPLY-RBac₀₀⇛!1 w δ n w1 e1 = lift (1 , refl)
+
+
+#APPLY-#APPLY-Rac₀₀⇛!0 : (w : 𝕎·) (δ : Name) (n : CTerm)
+                         → #APPLY2 (Rac₀₀ δ) n #N0 #⇛! #Aac₀₀ δ n at w
+#APPLY-#APPLY-Rac₀₀⇛!0 w δ n =
+  #⇛!-trans
+    {w} {#APPLY2 (Rac₀₀ δ) n #N0} {RBac₀₀ δ n #N0} {#Aac₀₀ δ n}
+    (#APPLY-#APPLY-Rac₀₀⇛! w δ n #N0)
+    (#APPLY-#APPLY-RBac₀₀⇛!0 w δ n)
+
+
+#APPLY-#APPLY-Rac₀₀⇛!1 : (w : 𝕎·) (δ : Name) (n : CTerm)
+                         → #APPLY2 (Rac₀₀ δ) n #N1 #⇛! #NEG (#Aac₀₀ δ n) at w
+#APPLY-#APPLY-Rac₀₀⇛!1 w δ n =
+  #⇛!-trans
+    {w} {#APPLY2 (Rac₀₀ δ) n #N1} {RBac₀₀ δ n #N1} {#NEG (#Aac₀₀ δ n)}
+    (#APPLY-#APPLY-Rac₀₀⇛! w δ n #N1)
+    (#APPLY-#APPLY-RBac₀₀⇛!1 w δ n)
 
 
 sub-#ABac₀₀ : (δ : Name) (k n : CTerm)
@@ -561,6 +594,14 @@ equalTypes-Aac₀₀ cn i w δ n₁ n₂ n cn₁ cn₂ =
             eqTypesNAT
             (cn {i} {w1} {k₁} {k₂} δ k∈)
             (NUM-equalInType-NAT i w1 0)))
+
+
+→equalTypes-Aac₀₀ : (cn : CS∈NAT) (i j : ℕ) (w : 𝕎·) (δ : Name) (n₁ n₂ : CTerm)
+                    → equalInType j w #NAT n₁ n₂
+                    → equalTypes i w (#Aac₀₀ δ n₁) (#Aac₀₀ δ n₂)
+→equalTypes-Aac₀₀ cn i j w δ n₁ n₂ n∈ =
+  eqTypes-local
+    (Mod.∀𝕎-□Func M (λ w1 e1 (n , c₁ , c₂) → equalTypes-Aac₀₀ cn i w1 δ n₁ n₂ n c₁ c₂) (equalInType-NAT→ j w n₁ n₂ n∈))
 
 
 equalTypes-RBac₀₀ : (cn : CS∈NAT) (i : ℕ) (w : 𝕎·) (δ : Name) (n₁ n₂ m₁ m₂ : CTerm) (n m : ℕ)
@@ -630,17 +671,19 @@ equalTypes-RBac₀₀ cn i w δ n₁ n₂ m₁ m₂ n m cn₁ cn₂ cm₁ cm₂ 
             aw3 w3 e3 (n , cn₁ , cn₂) (m , cm₁ , cm₂) = equalTypes-RBac₀₀ cn i w3 δ n₁ n₂ m₁ m₂ n m cn₁ cn₂ cm₁ cm₂
 
 
+equalInType-#⇛-rev-type : {i : ℕ} {w : 𝕎·} {A B a b : CTerm}
+                          → A #⇛ B at w
+                          → equalInType i w B a b
+                          → equalInType i w A a b
+equalInType-#⇛-rev-type {i} {w} {A} {B} {a} {b} comp h =
+  TS.tsExt (typeSys i) w B A a b (equalTypes-#⇛-left-right-rev (#⇛-refl w B) comp (fst h)) h
 
-{--
-inhTypeAac₀₀ : (i : ℕ) (w : 𝕎·) (δ : Name) (n : CTerm)
-               → ∈Type (suc i) w #NAT n
-               → ∀𝕎 w (λ w' _ → ∃𝕎 w' (λ w' _ → inhType (suc i) w' (#Aac₀₀ δ n)))
-inhTypeAac₀₀ i w δ n n∈ = {!!}
---}
 
-
--- Can we prove that AC₀₀ is invalid using Rac₀₀
--- 1st proving that it satisfies its left side
+-- Can we prove that AC₀₀ is invalid using Rac₀₀?
+--
+-- We first prove that it satisfies its left side using
+--   - an open modality as in lem.lagda
+--   - classical reasoning (LEM)
 AC₀₀-left-R : (cn : CS∈NAT) (i : ℕ) (w : 𝕎·) (δ : Name) → ∈Type (suc i) w (#AC₀₀-left (Rac₀₀ δ)) #lamAX
 AC₀₀-left-R cn i w δ =
   equalInType-PI
@@ -657,14 +700,75 @@ AC₀₀-left-R cn i w δ =
     aw1 w1 e1 n₁ n₂ n∈ =
       →≡equalInType
         (sym (sub0-ac00-left-body1 (Rac₀₀ δ) n₁))
-        (→equalInType-SQUASH (Mod.∀𝕎-□ M aw2))
+        (→equalInType-SQUASH p1)
       where
-        aw2 : ∀𝕎 w1 (λ w' _ → inhType (suc i) w' (#SUM #NAT (#[0]LIFT (#[0]APPLY2 ⌞ Rac₀₀ δ ⌟ ⌞ n₁ ⌟ #[0]VAR))))
-        aw2 w2 e2 = {!!}
+        -- This follows the proof to prove LEM in lem.lagda (see p6) there (generalize that result)
+        p2 : □· w1 (λ w' _ → inhType i w' (#Aac₀₀ δ n₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' (#Aac₀₀ δ n₁)))
+        p2 = ∀∃𝔹· (λ w' e1 e2 h → h) aw
+          where
+            aw : ∀𝕎 w1 (λ w2 e2 → ∃𝕎 w2 (λ w3 e3 → □· w3 (λ w' e → inhType i w' (#Aac₀₀ δ n₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' (#Aac₀₀ δ n₁)))))
+            aw w2 e2 = cc (EM {∃𝕎 w2 (λ w3 e3 → inhType i w3 (#Aac₀₀ δ n₁))})
+              where
+                cc : Dec (∃𝕎 w2 (λ w3 e3 → inhType i w3 (#Aac₀₀ δ n₁)))
+                     → ∃𝕎 w2 (λ w3 e3 → □· w3 (λ w' e → inhType i w' (#Aac₀₀ δ n₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' (#Aac₀₀ δ n₁))))
+                cc (no ¬p) = w2 , ⊑-refl· _ , Mod.∀𝕎-□ M (λ w4 e4 → inj₂ (λ w5 e5 z → ¬p (w5 , ⊑-trans· e4 e5 , z)))
+                cc (yes (w3 , e3 , p)) = w3 , e3 , Mod.∀𝕎-□ M (λ w4 e4 → inj₁ (inhType-mon e4 p))
+
+        p1 : □· w1 (λ w' _ → inhType (suc i) w' (#SUM #NAT (#[0]LIFT (#[0]APPLY2 ⌞ Rac₀₀ δ ⌟ ⌞ n₁ ⌟ #[0]VAR))))
+        p1 = Mod.∀𝕎-□Func M aw2 p2
+          where
+            aw2 : ∀𝕎 w1 (λ w' e' → inhType i w' (#Aac₀₀ δ n₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' (#Aac₀₀ δ n₁))
+                                  → inhType (suc i) w' (#SUM #NAT (#[0]LIFT (#[0]APPLY2 ⌞ Rac₀₀ δ ⌟ ⌞ n₁ ⌟ #[0]VAR))))
+            aw2 w2 e2 (inj₁ (f , f∈)) =
+              #PAIR #N0 f ,
+              equalInType-SUM
+                (λ w3 e3 → eqTypesNAT)
+                (isType-#AC₀₀-left2 i w2 (Rac₀₀ δ) (Rac₀₀ δ) n₁ n₁ (#NREL-R cn i w2 δ) (equalInType-refl (equalInType-mon n∈ w2 e2)))
+                (Mod.∀𝕎-□ M q1)
+              where
+                q1 : ∀𝕎 w2 (λ w' _ → SUMeq (equalInType (suc i) w' #NAT)
+                                            (λ m₁ m₂ m∈ → equalInType (suc i) w' (sub0 m₁ (#[0]LIFT (#[0]APPLY2 ⌞ Rac₀₀ δ ⌟ ⌞ n₁ ⌟ #[0]VAR))))
+                                            w' (#PAIR #N0 f) (#PAIR #N0 f))
+                q1 w3 e3 =
+                  #N0 , #N0 , f , f ,
+                  NUM-equalInType-NAT (suc i) w3 0 ,
+                  #⇛-refl w3 (#PAIR #N0 f) , #⇛-refl w3 (#PAIR #N0 f) ,
+                  →≡equalInType
+                    (sym (sub0-ac00-left-body2 (Rac₀₀ δ) n₁ #N0))
+                    (equalInType-LIFT← i w3 (#APPLY2 (Rac₀₀ δ) n₁ #N0) f f q2)
+                  where
+                    q2 : ∈Type i w3 (#APPLY2 (Rac₀₀ δ) n₁ #N0) f
+                    q2 = equalInType-#⇛-rev-type
+                           (#⇛!→#⇛ {w3} {#APPLY2 (Rac₀₀ δ) n₁ #N0} {#Aac₀₀ δ n₁} (#APPLY-#APPLY-Rac₀₀⇛!0 w3 δ n₁))
+                           (equalInType-mon f∈ w3 e3)
+            aw2 w2 e2 (inj₂ g) =
+              #PAIR #N1 #AX ,
+              equalInType-SUM
+                (λ w3 e3 → eqTypesNAT)
+                (isType-#AC₀₀-left2 i w2 (Rac₀₀ δ) (Rac₀₀ δ) n₁ n₁ (#NREL-R cn i w2 δ) (equalInType-refl (equalInType-mon n∈ w2 e2)))
+                (Mod.∀𝕎-□ M q1)
+              where
+                q1 : ∀𝕎 w2 (λ w' _ → SUMeq (equalInType (suc i) w' #NAT)
+                                            (λ m₁ m₂ m∈ → equalInType (suc i) w' (sub0 m₁ (#[0]LIFT (#[0]APPLY2 ⌞ Rac₀₀ δ ⌟ ⌞ n₁ ⌟ #[0]VAR))))
+                                            w' (#PAIR #N1 #AX) (#PAIR #N1 #AX))
+                q1 w3 e3 =
+                  #N1 , #N1 , #AX , #AX ,
+                  NUM-equalInType-NAT (suc i) w3 1 ,
+                  #⇛-refl w3 (#PAIR #N1 #AX) , #⇛-refl w3 (#PAIR #N1 #AX) ,
+                  →≡equalInType
+                    (sym (sub0-ac00-left-body2 (Rac₀₀ δ) n₁ #N1))
+                    (equalInType-LIFT← i w3 (#APPLY2 (Rac₀₀ δ) n₁ #N1) #AX #AX q2)
+                  where
+                    q2 : ∈Type i w3 (#APPLY2 (Rac₀₀ δ) n₁ #N1) #AX
+                    q2 = equalInType-#⇛-rev-type
+                           (#⇛!→#⇛ {w3} {#APPLY2 (Rac₀₀ δ) n₁ #N1} {#NEG (#Aac₀₀ δ n₁)} (#APPLY-#APPLY-Rac₀₀⇛!1 w3 δ n₁))
+                           (equalInType-NEG
+                             (→equalTypes-Aac₀₀ cn i (suc i) w3 δ n₁ n₁ (equalInType-mon (equalInType-refl n∈) w3 (⊑-trans· e2 e3)))
+                             λ w4 e4 a₁ a₂ a∈ → g w4 (⊑-trans· e3 e4) (a₁ , equalInType-refl a∈))
 
 
 AC₀₀-right-R : (cn : CS∈NAT) (i : ℕ) (w : 𝕎·) (δ : Name) → ¬ inhType (suc i) w (#AC₀₀-right (Rac₀₀ δ))
-AC₀₀-right-R cn i w δ p = ?
+AC₀₀-right-R cn i w δ p = {!!}
 
 
 
