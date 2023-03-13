@@ -79,6 +79,7 @@ open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import terms2(W)(C)(K)(G)(X)(N)
 open import terms3(W)(C)(K)(G)(X)(N)
 open import terms4(W)(C)(K)(G)(X)(N)
+open import terms6(W)(C)(K)(G)(X)(N) using (IFEQ⇛₁ ; IFEQ⇛= ; IFEQ⇛¬=)
 open import terms8(W)(C)(K)(G)(X)(N)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -93,6 +94,7 @@ open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import mp_prop(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (≡→⇓from-to)
 
 
 -- Also defined in continuity1
@@ -359,6 +361,289 @@ equalInType-#AC₀₀-left→ i w R a₁ a₂ a∈ w1 e1 n n∈ =
           equalInType-LIFT→ i w3 (#APPLY2 R n m₁) b₁ b₁ (→≡equalInType (sub0-ac00-left-body2 R n m₁) (equalInType-refl b∈))
 
 
+#[2]LE : CTerm2 → CTerm2 → CTerm2
+#[2]LE a b = ct2 (LE ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] LE ⌜ a ⌝ ⌜ b ⌝
+    c rewrite fvars-NEG (LT ⌜ b ⌝ ⌜ a ⌝) = ⊆→⊆? {fvars ⌜ b ⌝ ++ fvars ⌜ a ⌝ } {0 ∷ 1 ∷ [ 2 ]}
+                                                  (⊆++ (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed b))
+                                                        (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed a)))
+
+
+
+#[2]FUN : CTerm2 → CTerm2 → CTerm2
+#[2]FUN a b = ct2 (FUN ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] FUN ⌜ a ⌝ ⌜ b ⌝
+    c rewrite fvars-FUN0 ⌜ a ⌝ ⌜ b ⌝ =
+        ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ 1 ∷ [ 2 ]}
+               (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed a))
+                     (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed b)))
+
+
+#[2]EQ : CTerm2 → CTerm2 → CTerm2 → CTerm2
+#[2]EQ a b c = ct2 (EQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝) cl
+  where
+    cl : #[ 0 ∷ 1 ∷ [ 2 ] ] EQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝
+    cl = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝} {0 ∷ 1 ∷ [ 2 ]}
+                (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed a))
+                      (⊆++ (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed b))
+                            (⊆?→⊆ {fvars ⌜ c ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed c))))
+
+
+#[2]NAT : CTerm2
+#[2]NAT = ct2 NAT refl
+
+
+-- ∀m≥n.δ(m)=0 (where n is VAR 2)
+#[1]Aac₀₀ : Name → CTerm1
+#[1]Aac₀₀ δ = #[1]PI #[1]NAT (#[2]FUN (#[2]LE #[2]VAR2 #[2]VAR0) (#[2]EQ (#[2]APPLY (#[2]CS δ) #[2]VAR0) (#[2]NUM 0) #[2]NAT))
+
+
+-- #Aac₀₀'s body
+#ABac₀₀ : Name → CTerm → CTerm → CTerm
+#ABac₀₀ δ n k = #FUN (#LE n k) (#EQ (#APPLY (#CS δ) k) (#NUM 0) #NAT)
+
+
+#Aac₀₀ : Name → CTerm → CTerm
+#Aac₀₀ δ n = #PI #NAT (#[0]FUN (#[0]LE ⌞ n ⌟ #[0]VAR) (#[0]EQ (#[0]APPLY (#[0]CS δ) #[0]VAR) (#[0]NUM 0) #[0]NAT))
+
+
+Aac₀₀ : Name → Term → Term
+Aac₀₀ δ n = PI NAT (FUN (LE n (VAR 0)) (EQ (APPLY (CS δ) (VAR 0)) (NUM 0) NAT))
+
+
+RBac₀₀ : Name → CTerm → CTerm → CTerm
+RBac₀₀ δ n m =
+  #IFEQ
+    m
+    #N0
+    (#Aac₀₀ δ n)
+    (#NEG (#Aac₀₀ δ n))
+
+
+-- R n j = if j ≡ 0 then ∀m≥n.δ(m)=0 else ¬∀m≥n.δ(m)=0
+Rac₀₀ : Name → CTerm
+Rac₀₀ δ =
+  #LAMBDA -- n
+    (#[0]LAMBDA -- j
+      (#[1]IFEQ
+        #[1]VAR0
+        (#[1]NUM 0)
+        (#[1]Aac₀₀ δ)
+        (#[1]NEG (#[1]Aac₀₀ δ))))
+
+
+sub-Rac₀₀-1 : (δ : Name) (n m : CTerm)
+              → APPLY (sub ⌜ n ⌝ (LAMBDA (IFEQ (VAR 0) (NUM 0) ⌜ #[1]Aac₀₀ δ ⌝ (NEG ⌜ #[1]Aac₀₀ δ ⌝)))) ⌜ m ⌝
+                 ≡ APPLY (LAMBDA (IFEQ (VAR 0) (NUM 0) ⌜ #Aac₀₀ δ n ⌝ (NEG ⌜ #Aac₀₀ δ n ⌝))) ⌜ m ⌝
+sub-Rac₀₀-1 δ n m
+  rewrite #shiftUp 0 n
+        | #shiftUp 0 n
+        | #shiftUp 0 n
+        | #shiftDown 2 n
+  = refl
+
+
+sub-Rac₀₀-2 : (δ : Name) (n m : CTerm)
+              → sub ⌜ m ⌝ (IFEQ (VAR 0) (NUM 0) ⌜ #Aac₀₀ δ n ⌝ (NEG ⌜ #Aac₀₀ δ n ⌝))
+                ≡ IFEQ ⌜ m ⌝ (NUM 0) ⌜ #Aac₀₀ δ n ⌝ (NEG ⌜ #Aac₀₀ δ n ⌝)
+sub-Rac₀₀-2 δ n m
+  rewrite #shiftUp 0 n
+        | #shiftUp 0 n
+        | #shiftUp 0 m
+        | #shiftUp 0 m
+        | #subv 1 ⌜ m ⌝ ⌜ n ⌝ (CTerm.closed n)
+        | #shiftDown 1 n
+        | #shiftDown 0 m
+        | #shiftDown 1 m
+  = refl
+
+
+APPLY-APPLY-Rac₀₀⇓! : (w : 𝕎·) (δ : Name) (n m : CTerm)
+                       → APPLY (APPLY ⌜ Rac₀₀ δ ⌝ ⌜ n ⌝) ⌜ m ⌝ ⇓ ⌜ RBac₀₀ δ n m ⌝ from w to w
+APPLY-APPLY-Rac₀₀⇓! w δ n m =
+  ⇓-trans₂
+    {w} {w} {w}
+    {APPLY (APPLY ⌜ Rac₀₀ δ ⌝ ⌜ n ⌝) ⌜ m ⌝}
+    {APPLY (sub ⌜ n ⌝ (LAMBDA (IFEQ (VAR 0) (NUM 0) ⌜ #[1]Aac₀₀ δ ⌝ (NEG ⌜ #[1]Aac₀₀ δ ⌝)))) ⌜ m ⌝}
+    {⌜ RBac₀₀ δ n m ⌝}
+    (1 , refl)
+    (⇓-trans₂
+       {w} {w} {w}
+       {APPLY (sub ⌜ n ⌝ (LAMBDA (IFEQ (VAR 0) (NUM 0) ⌜ #[1]Aac₀₀ δ ⌝ (NEG ⌜ #[1]Aac₀₀ δ ⌝)))) ⌜ m ⌝}
+       {APPLY (LAMBDA (IFEQ (VAR 0) (NUM 0) ⌜ #Aac₀₀ δ n ⌝ (NEG ⌜ #Aac₀₀ δ n ⌝))) ⌜ m ⌝}
+       {⌜ RBac₀₀ δ n m ⌝}
+       (≡→⇓from-to w (sub-Rac₀₀-1 δ n m))
+       (⇓-trans₂
+          {w} {w} {w}
+          {APPLY (LAMBDA (IFEQ (VAR 0) (NUM 0) ⌜ #Aac₀₀ δ n ⌝ (NEG ⌜ #Aac₀₀ δ n ⌝))) ⌜ m ⌝}
+          {sub ⌜ m ⌝ (IFEQ (VAR 0) (NUM 0) ⌜ #Aac₀₀ δ n ⌝ (NEG ⌜ #Aac₀₀ δ n ⌝))}
+          {⌜ RBac₀₀ δ n m ⌝}
+          (1 , refl)
+          (≡→⇓from-to w (sub-Rac₀₀-2 δ n m))))
+
+
+#APPLY-#APPLY-Rac₀₀⇛! : (w : 𝕎·) (δ : Name) (n m : CTerm)
+                         → #APPLY (#APPLY (Rac₀₀ δ) n) m #⇛! RBac₀₀ δ n m at w
+#APPLY-#APPLY-Rac₀₀⇛! w δ n m w1 e1 = lift (APPLY-APPLY-Rac₀₀⇓! w1 δ n m)
+
+
+sub-#ABac₀₀ : (δ : Name) (k n : CTerm)
+              → sub0 k (#[0]FUN (#[0]LE ⌞ n ⌟ #[0]VAR) (#[0]EQ (#[0]APPLY (#[0]CS δ) #[0]VAR) (#[0]NUM 0) #[0]NAT))
+                 ≡ #ABac₀₀ δ n k
+sub-#ABac₀₀ δ k n = CTerm≡ c
+  where
+    c : ⌜ sub0 k (#[0]FUN (#[0]LE ⌞ n ⌟ #[0]VAR) (#[0]EQ (#[0]APPLY (#[0]CS δ) #[0]VAR) (#[0]NUM 0) #[0]NAT)) ⌝
+        ≡ ⌜ #ABac₀₀ δ n k ⌝
+    c rewrite #shiftUp 0 n
+            | #shiftUp 0 n
+            | #shiftUp 0 k
+            | #shiftUp 0 k
+            | #shiftDown 0 k
+            | #subv 0 ⌜ k ⌝ ⌜ n ⌝ (CTerm.closed n)
+            | #shiftDown 0 n
+            | #shiftDown 1 k = refl
+
+
+#LE≡ : (a b : CTerm) → #LE a b ≡ #NEG (#LT b a)
+#LE≡ a b = CTerm≡ refl
+
+
+→equalTypesLE : {i : ℕ} {w : 𝕎·} {a₁ a₂ b₁ b₂ : CTerm}
+                 → equalInType i w #NAT a₁ a₂
+                 → equalInType i w #NAT b₁ b₂
+                 → equalTypes i w (#LE a₁ b₁) (#LE a₂ b₂)
+→equalTypesLE {i} {w} {a₁} {a₂} {b₁} {b₂} a∈ b∈ =
+  →≡equalTypes
+    (sym (#LE≡ a₁ b₁)) (sym (#LE≡ a₂ b₂))
+    (eqTypesNEG← (→equalTypesLT b∈ a∈))
+
+
+-- This is a constraint on names that requires them to compute to numbers
+CS∈NAT : Set(lsuc(L))
+CS∈NAT = {i : ℕ} {w : 𝕎·} {k₁ k₂ : CTerm} (δ : Name)
+          → equalInType i w #NAT k₁ k₂
+          → equalInType i w #NAT (#APPLY (#CS δ) k₁) (#APPLY (#CS δ) k₂)
+
+
+equalTypes-Aac₀₀ : (cn : CS∈NAT) (i : ℕ) (w : 𝕎·) (δ : Name) (n₁ n₂ : CTerm) (n : ℕ)
+                    → n₁ #⇛ #NUM n at w
+                    → n₂ #⇛ #NUM n at w
+                    → equalTypes i w (#Aac₀₀ δ n₁) (#Aac₀₀ δ n₂)
+equalTypes-Aac₀₀ cn i w δ n₁ n₂ n cn₁ cn₂ =
+  eqTypesPI←
+    (λ w1 e1 → eqTypesNAT)
+    aw1
+  where
+    aw1 : ∀𝕎 w (λ w' _ → (k₁ k₂ : CTerm) (k∈ : equalInType i w' #NAT k₁ k₂)
+                        → equalTypes i w' (sub0 k₁ (#[0]FUN (#[0]LE ⌞ n₁ ⌟ #[0]VAR) (#[0]EQ (#[0]APPLY (#[0]CS δ) #[0]VAR) (#[0]NUM 0) #[0]NAT)))
+                                           (sub0 k₂ (#[0]FUN (#[0]LE ⌞ n₂ ⌟ #[0]VAR) (#[0]EQ (#[0]APPLY (#[0]CS δ) #[0]VAR) (#[0]NUM 0) #[0]NAT))))
+    aw1 w1 e1 k₁ k₂ k∈ =
+      →≡equalTypes
+        (sym (sub-#ABac₀₀ δ k₁ n₁))
+        (sym (sub-#ABac₀₀ δ k₂ n₂))
+        (eqTypesFUN←
+          (→equalTypesLE
+            (→equalInType-NAT
+              i w1 n₁ n₂
+              (Mod.∀𝕎-□ M (λ w2 e2 → n , #⇛-mon {n₁} {#NUM n} (⊑-trans· e1 e2) cn₁ , #⇛-mon {n₂} {#NUM n} (⊑-trans· e1 e2) cn₂)))
+            k∈)
+          (eqTypesEQ←
+            eqTypesNAT
+            (cn {i} {w1} {k₁} {k₂} δ k∈)
+            (NUM-equalInType-NAT i w1 0)))
+
+
+equalTypes-RBac₀₀ : (cn : CS∈NAT) (i : ℕ) (w : 𝕎·) (δ : Name) (n₁ n₂ m₁ m₂ : CTerm) (n m : ℕ)
+                    → n₁ #⇛ #NUM n at w
+                    → n₂ #⇛ #NUM n at w
+                    → m₁ #⇛ #NUM m at w
+                    → m₂ #⇛ #NUM m at w
+                    → equalTypes i w (RBac₀₀ δ n₁ m₁) (RBac₀₀ δ n₂ m₂)
+equalTypes-RBac₀₀ cn i w δ n₁ n₂ m₁ m₂ n m cn₁ cn₂ cm₁ cm₂ =
+  equalTypes-#⇛-left-right-rev
+    {i} {w}
+    {RBac₀₀ δ n₁ (#NUM m)} {RBac₀₀ δ n₁ m₁}
+    {RBac₀₀ δ n₂ m₂} {RBac₀₀ δ n₂ (#NUM m)}
+    (IFEQ⇛₁ {w} {⌜ m₁ ⌝} {NUM m} {N0} {⌜ #Aac₀₀ δ n₁ ⌝} {NEG ⌜ #Aac₀₀ δ n₁ ⌝} cm₁)
+    (IFEQ⇛₁ {w} {⌜ m₂ ⌝} {NUM m} {N0} {⌜ #Aac₀₀ δ n₂ ⌝} {NEG ⌜ #Aac₀₀ δ n₂ ⌝} cm₂)
+    concl
+  where
+    concl : equalTypes i w (RBac₀₀ δ n₁ (#NUM m)) (RBac₀₀ δ n₂ (#NUM m))
+    concl with m ≟ 0
+    ... | yes p =
+      equalTypes-#⇛-left-right-rev
+        {i} {w}
+        {#Aac₀₀ δ n₁} {RBac₀₀ δ n₁ (#NUM m)}
+        {RBac₀₀ δ n₂ (#NUM m)} {#Aac₀₀ δ n₂}
+        (IFEQ⇛= {0} {m} {w} {⌜ #Aac₀₀ δ n₁ ⌝} {NEG ⌜ #Aac₀₀ δ n₁ ⌝} p)
+        (IFEQ⇛= {0} {m} {w} {⌜ #Aac₀₀ δ n₂ ⌝} {NEG ⌜ #Aac₀₀ δ n₂ ⌝} p)
+        (equalTypes-Aac₀₀ cn i w δ n₁ n₂ n cn₁ cn₂)
+    ... | no p =
+      equalTypes-#⇛-left-right-rev
+        {i} {w}
+        {#NEG (#Aac₀₀ δ n₁)} {RBac₀₀ δ n₁ (#NUM m)}
+        {RBac₀₀ δ n₂ (#NUM m)} {#NEG (#Aac₀₀ δ n₂)}
+        (IFEQ⇛¬= {0} {m} {w} {⌜ #Aac₀₀ δ n₁ ⌝} {NEG ⌜ #Aac₀₀ δ n₁ ⌝} p)
+        (IFEQ⇛¬= {0} {m} {w} {⌜ #Aac₀₀ δ n₂ ⌝} {NEG ⌜ #Aac₀₀ δ n₂ ⌝} p)
+        (eqTypesNEG← (equalTypes-Aac₀₀ cn i w δ n₁ n₂ n cn₁ cn₂))
+
+
+#NREL-R : (cn : CS∈NAT) (i : ℕ) (w : 𝕎·) (δ : Name) → ∈Type (suc i) w (#NREL i) (Rac₀₀ δ)
+#NREL-R cn i w δ =
+  equalInType-FUN
+    eqTypesNAT
+    (eqTypesFUN← eqTypesNAT (eqTypesUniv w (suc i) i ≤-refl))
+    aw1
+  where
+    aw1 : ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → equalInType (suc i) w' #NAT n₁ n₂
+                        → equalInType (suc i) w' (#FUN #NAT (#UNIV i)) (#APPLY (Rac₀₀ δ) n₁) (#APPLY (Rac₀₀ δ) n₂))
+    aw1 w1 e1 n₁ n₂ n∈ =
+      equalInType-FUN
+        eqTypesNAT
+        (eqTypesUniv w1 (suc i) i ≤-refl)
+        aw2
+      where
+        aw2 : ∀𝕎 w1 (λ w' _ → (m₁ m₂ : CTerm) → equalInType (suc i) w' #NAT m₁ m₂
+                             → equalInType (suc i) w' (#UNIV i) (#APPLY (#APPLY (Rac₀₀ δ) n₁) m₁) (#APPLY (#APPLY (Rac₀₀ δ) n₂) m₂))
+        aw2 w2 e2 m₁ m₂ m∈ =
+          equalTypes→equalInType-UNIV
+            ≤-refl
+            (equalTypes-#⇛-left-right-rev
+               {i} {w2}
+               {RBac₀₀ δ n₁ m₁} {#APPLY (#APPLY (Rac₀₀ δ) n₁) m₁}
+               {#APPLY (#APPLY (Rac₀₀ δ) n₂) m₂} {RBac₀₀ δ n₂ m₂}
+               (#⇛!→#⇛ {w2} {#APPLY (#APPLY (Rac₀₀ δ) n₁) m₁} {RBac₀₀ δ n₁ m₁} (#APPLY-#APPLY-Rac₀₀⇛! w2 δ n₁ m₁))
+               (#⇛!→#⇛ {w2} {#APPLY (#APPLY (Rac₀₀ δ) n₂) m₂} {RBac₀₀ δ n₂ m₂} (#APPLY-#APPLY-Rac₀₀⇛! w2 δ n₂ m₂))
+               (eqTypes-local (∀𝕎-□Func2 aw3 (equalInType-NAT→ (suc i) w2 n₁ n₂ (equalInType-mon n∈ w2 e2)) (equalInType-NAT→ (suc i) w2 m₁ m₂ m∈))))
+          where
+            aw3 : ∀𝕎 w2 (λ w' e' → NATeq w' n₁ n₂ → NATeq w' m₁ m₂ → equalTypes i w' (RBac₀₀ δ n₁ m₁) (RBac₀₀ δ n₂ m₂))
+            aw3 w3 e3 (n , cn₁ , cn₂) (m , cm₁ , cm₂) = equalTypes-RBac₀₀ cn i w3 δ n₁ n₂ m₁ m₂ n m cn₁ cn₂ cm₁ cm₂
+
+
+-- Can we prove that AC₀₀ is invalid using Rac₀₀
+-- 1st proving that it satisfies its left side
+AC₀₀-left-R : (cn : CS∈NAT) (i : ℕ) (w : 𝕎·) (δ : Name) → ∈Type (suc i) w (#AC₀₀-left (Rac₀₀ δ)) #lamAX
+AC₀₀-left-R cn i w δ =
+  equalInType-PI
+    {suc i} {w} {#NAT} {#[0]SQUASH (#[0]SUM #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ Rac₀₀ δ ⌟ #[1]VAR1 #[1]VAR0)))}
+    (λ w1 e1 → eqTypesNAT)
+    (isType-#AC₀₀-left1 i w (Rac₀₀ δ) (Rac₀₀ δ) (#NREL-R cn i w δ))
+    aw1
+  where
+    aw1 : ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → equalInType (suc i) w' #NAT n₁ n₂
+                        →  equalInType
+                              (suc i) w'
+                              (sub0 n₁ (#[0]SQUASH (#[0]SUM #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ Rac₀₀ δ ⌟ #[1]VAR1 #[1]VAR0)))))
+                              (#APPLY #lamAX n₁) (#APPLY #lamAX n₂))
+    aw1 w1 e1 n₁ n₂ n∈ =
+      →≡equalInType
+        (sym (sub0-ac00-left-body1 (Rac₀₀ δ) n₁))
+        ? --(→equalInType-SQUASH {!!})
+
+
+-- Can we prove that AC₀₀ is valid?
 AC₀₀-valid : (i : ℕ) (w : 𝕎·) → ∈Type (suc i) w (#AC₀₀ i) #lam2AX
 AC₀₀-valid i w =
   equalInType-PI

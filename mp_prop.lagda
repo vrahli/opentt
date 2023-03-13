@@ -327,6 +327,7 @@ isType-MPℙ-right-body i w f₁ f₂ f∈ w1 e1 a₁ a₂ a∈ =
 --     R n false = ¬∀m≥n.δ(m)=0
 -- ?
 -- If that was the case, we would also be able to invalidate AC₀₀
+-- If we want to use it for MP, we probably want #NAT! not #NAT
 #uniqueChoice : ℕ → CTerm
 #uniqueChoice i =
   #PI (#FUN #NAT (#FUN #BOOL (#UNIV i))) -- R
