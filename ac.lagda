@@ -126,8 +126,12 @@ open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (≡→⇓from-
 #AC₀₀-left R = #PI #NAT (#[0]SQUASH (#[0]SUM #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR1 #[1]VAR0))))
 
 
+#AC₀₀-right-SUM : CTerm → CTerm
+#AC₀₀-right-SUM R = #SUM #BAIRE (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))
+
+
 #AC₀₀-right : CTerm → CTerm
-#AC₀₀-right R = #SQUASH (#SUM #BAIRE (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))))
+#AC₀₀-right R = #SQUASH (#AC₀₀-right-SUM R)
 
 
 sub0-ac00-body : (R : CTerm)
@@ -768,11 +772,28 @@ AC₀₀-left-R cn i w δ =
 
 
 AC₀₀-right-R : (cn : CS∈NAT) (i : ℕ) (w : 𝕎·) (δ : Name) → ¬ inhType (suc i) w (#AC₀₀-right (Rac₀₀ δ))
-AC₀₀-right-R cn i w δ p = {!!}
+AC₀₀-right-R cn i w δ (s , s∈) =
+  lower (Mod.□-const M (Mod.∀𝕎-□Func M aw1 (equalInType-SQUASH→ s∈)))
+  where
+    aw1 : ∀𝕎 w (λ w' e' → inhType (suc i) w' (#AC₀₀-right-SUM (Rac₀₀ δ))
+                         → Lift (lsuc L) ⊥)
+    aw1 w1 e1 (p , p∈) =
+      Mod.□-const M (Mod.∀𝕎-□Func M aw2 (equalInType-SUM→ {suc i} {w1} {#BAIRE} {#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ Rac₀₀ δ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))} p∈))
+      where
+        aw2 : ∀𝕎 w1 (λ w' e' →  SUMeq (equalInType (suc i) w' #BAIRE)
+                                        (λ a b ea →  equalInType (suc i) w' (sub0 a (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ Rac₀₀ δ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))))
+                                        w' p p
+                              → Lift (lsuc L) ⊥)
+        aw2 w2 e2 (f₁ , f₂ , q₁ , q₂ , f∈ , c₁ , c₂ , q∈) = {!!}
+          where
+            q∈1 : equalInType (suc i) w2 (#PI #NAT (#[0]LIFT (#[0]APPLY2 ⌞ Rac₀₀ δ ⌟ #[0]VAR (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) q₁ q₂
+            q∈1 = →≡equalInType (sub0-ac00-right-body1 (Rac₀₀ δ) f₁) q∈
+
 
 
 
 -- Can we prove that AC₀₀ is valid?
+-- Maybe a proof similar to the one we had in Coq could work for Kripke modalities.
 AC₀₀-valid : (i : ℕ) (w : 𝕎·) → ∈Type (suc i) w (#AC₀₀ i) #lam2AX
 AC₀₀-valid i w =
   equalInType-PI
