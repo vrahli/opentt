@@ -100,6 +100,7 @@ open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import mp_prop(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (≡→⇓from-to)
+open import lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)(EM)(EB) using (□·⊎inhType)
 
 
 -- Also defined in continuity1
@@ -706,17 +707,8 @@ AC₀₀-left-R cn i w δ =
         (sym (sub0-ac00-left-body1 (Rac₀₀ δ) n₁))
         (→equalInType-SQUASH p1)
       where
-        -- This follows the proof to prove LEM in lem.lagda (see p6) there (generalize that result)
         p2 : □· w1 (λ w' _ → inhType i w' (#Aac₀₀ δ n₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' (#Aac₀₀ δ n₁)))
-        p2 = ∀∃𝔹· (λ w' e1 e2 h → h) aw
-          where
-            aw : ∀𝕎 w1 (λ w2 e2 → ∃𝕎 w2 (λ w3 e3 → □· w3 (λ w' e → inhType i w' (#Aac₀₀ δ n₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' (#Aac₀₀ δ n₁)))))
-            aw w2 e2 = cc (EM {∃𝕎 w2 (λ w3 e3 → inhType i w3 (#Aac₀₀ δ n₁))})
-              where
-                cc : Dec (∃𝕎 w2 (λ w3 e3 → inhType i w3 (#Aac₀₀ δ n₁)))
-                     → ∃𝕎 w2 (λ w3 e3 → □· w3 (λ w' e → inhType i w' (#Aac₀₀ δ n₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' (#Aac₀₀ δ n₁))))
-                cc (no ¬p) = w2 , ⊑-refl· _ , Mod.∀𝕎-□ M (λ w4 e4 → inj₂ (λ w5 e5 z → ¬p (w5 , ⊑-trans· e4 e5 , z)))
-                cc (yes (w3 , e3 , p)) = w3 , e3 , Mod.∀𝕎-□ M (λ w4 e4 → inj₁ (inhType-mon e4 p))
+        p2 = □·⊎inhType i w1 (#Aac₀₀ δ n₁)
 
         p1 : □· w1 (λ w' _ → inhType (suc i) w' (#SUM #NAT (#[0]LIFT (#[0]APPLY2 ⌞ Rac₀₀ δ ⌟ ⌞ n₁ ⌟ #[0]VAR))))
         p1 = Mod.∀𝕎-□Func M aw2 p2

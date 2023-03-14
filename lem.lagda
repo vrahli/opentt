@@ -72,12 +72,22 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)
-\end{code}
 
 
+□·⊎inhType : (i : ℕ) (w : 𝕎·) (T : CTerm)
+              → □· w (λ w' _ → inhType i w' T ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' T))
+□·⊎inhType i w T =
+  ∀∃𝔹· (λ w' e1 e2 h → h) aw
+  where
+    aw : ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (λ w2 e2 → □· w2 (λ w' e → inhType i w' T ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' T))))
+    aw w1 e1 = cc (EM {∃𝕎 w1 (λ w2 e2 → inhType i w2 T)})
+      where
+        cc : Dec (∃𝕎 w1 (λ w2 e2 → inhType i w2 T))
+             → ∃𝕎 w1 (λ w2 e2 → □· w2 (λ w' e → inhType i w' T ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' T)))
+        cc (no ¬p) = w1 , ⊑-refl· _ , Mod.∀𝕎-□ M (λ w3 e3 → inj₂ (λ w4 e4 z → ¬p (w4 , ⊑-trans· e3 e4 , z)))
+        cc (yes (w2 , e2 , p)) = w2 , e2 , Mod.∀𝕎-□ M (λ w3 e3 → inj₁ (inhType-mon e3 p))
 
 
-\begin{code}[hide]
 classical : (w : 𝕎·) {n i : ℕ} (p : i < n) → member w (#LEM p) #lamAX
 classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
   where
@@ -104,15 +114,7 @@ classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
         (→equalInType-SQUASH p4)
       where
         p6 : □· w1 (λ w' _ → inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁)))
-        p6 = ∀∃𝔹· (λ w' e1 e2 h → h) aw
-          where
-            aw : ∀𝕎 w1 (λ w2 e2 → ∃𝕎 w2 (λ w3 e3 → □· w3 (λ w' e → inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁)))))
-            aw w2 e2 = cc (EM {∃𝕎 w2 (λ w3 e3 → inhType n w3 (#↑T p a₁))})
-              where
-                cc : Dec (∃𝕎 w2 (λ w3 e3 → inhType n w3 (#↑T p a₁)))
-                     → ∃𝕎 w2 (λ w3 e3 → □· w3 (λ w' e → inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁))))
-                cc (no ¬p) = w2 , ⊑-refl· _ , Mod.∀𝕎-□ M (λ w4 e4 → inj₂ (λ w5 e5 z → ¬p (w5 , ⊑-trans· e4 e5 , z)))
-                cc (yes (w3 , e3 , p)) = w3 , e3 , Mod.∀𝕎-□ M (λ w4 e4 → inj₁ (inhType-mon e4 p))
+        p6 = □·⊎inhType n w1 (#↑T p a₁)
 
         p5 : □· w1 (λ w' _ → inhType n w' (#↑T p a₁) ⊎ inhType n w' (#NEG (#↑T p a₁)))
         p5 = Mod.∀𝕎-□Func M aw p6
