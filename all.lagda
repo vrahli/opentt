@@ -102,7 +102,7 @@ open import barContP6 using (sem)
 open import barContP9 using (semCond)
 open import barContP10 using (contDiagVal)
 
--- Another attempt at validating continuity. It is unfinighed: continuity10b has holes
+-- Another attempt at validating continuity. It is unfinished: continuity10b has holes
 open import continuity9b
 --open import continuity10b
 

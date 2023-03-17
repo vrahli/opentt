@@ -101,6 +101,7 @@ open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import mp_prop(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (≡→⇓from-to)
 open import lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)(EM)(EB) using (□·⊎inhType)
+open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (mseq∈baire)
 
 
 -- Also defined in continuity1
@@ -436,7 +437,7 @@ RBac₀₀ δ n m =
 
 
 -- This is the following relation:
---   R n j = if j ≡ 0 then ∀m≥n.δ(m)=0 else ¬∀m≥n.δ(m)=0
+--   R n j = if j=0 then (∀m≥n.δ(m)=0) else ¬(∀m≥n.δ(m)=0)
 -- which we want to use to prove the negation of AC₀₀
 --
 -- Could we try something along these lines, where δ is a ref, not a CS:
@@ -689,6 +690,7 @@ equalInType-#⇛-rev-type {i} {w} {A} {B} {a} {b} comp h =
 -- We first prove that it satisfies its left side using
 --   - an open modality as in lem.lagda
 --   - classical reasoning (LEM)
+-- This probably wouldn't work with a Beth or Kripke modality because we can probably prove that (Rac₀₀ δ) is undecidable
 AC₀₀-left-R : (cn : CS∈NAT) (i : ℕ) (w : 𝕎·) (δ : Name) → ∈Type (suc i) w (#AC₀₀-left (Rac₀₀ δ)) #lamAX
 AC₀₀-left-R cn i w δ =
   equalInType-PI
@@ -772,22 +774,90 @@ AC₀₀-right-R cn i w δ (s , s∈) =
     aw1 w1 e1 (p , p∈) =
       Mod.□-const M (Mod.∀𝕎-□Func M aw2 (equalInType-SUM→ {suc i} {w1} {#BAIRE} {#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ Rac₀₀ δ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))} p∈))
       where
-        aw2 : ∀𝕎 w1 (λ w' e' →  SUMeq (equalInType (suc i) w' #BAIRE)
-                                        (λ a b ea →  equalInType (suc i) w' (sub0 a (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ Rac₀₀ δ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))))
-                                        w' p p
+        aw2 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType (suc i) w' #BAIRE)
+                                       (λ a b ea →  equalInType (suc i) w' (sub0 a (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ Rac₀₀ δ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))))
+                                       w' p p
                               → Lift (lsuc L) ⊥)
         aw2 w2 e2 (f₁ , f₂ , q₁ , q₂ , f∈ , c₁ , c₂ , q∈) = {!!}
           where
+            -- q∈1 is: Π(n:ℕ).if f(n)=0 then ∀m≥n.δ(m)=0 else ¬(∀m≥n.δ(m)=0)
+            -- we also know that (Π(n:ℕ).∃(b:ℕ).R n b), but here b is f(n), so this is not so useful
+            -- are we trying to prove that even though ∀m≥n.δ(m)=0 is classically decidable, it is not computable so?
+            -- Shouldn't we be able to prove ¬(∀m≥n.δ(m)=0) with an open bar model since we can always select a non-zero (see below #NEG-#Aac₀₀)
             q∈1 : equalInType (suc i) w2 (#PI #NAT (#[0]LIFT (#[0]APPLY2 ⌞ Rac₀₀ δ ⌟ #[0]VAR (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) q₁ q₂
             q∈1 = →≡equalInType (sub0-ac00-right-body1 (Rac₀₀ δ) f₁) q∈
 
 
+#NEG-#Aac₀₀ : (cn : CS∈NAT) (i : ℕ) (w : 𝕎·) (δ : Name) (n a b : CTerm) (k : ℕ)
+             → n #⇛ #NUM k at w
+             → equalInType i w (#NEG (#Aac₀₀ δ n)) a b
+#NEG-#Aac₀₀ cn i w δ n a b k comp =
+  equalInType-NEG
+    (equalTypes-Aac₀₀ cn i w δ n n k comp comp)
+    aw1
+  where
+    aw1 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → ¬ equalInType i w' (#Aac₀₀ δ n) f₁ f₂)
+    aw1 w1 e1 f₁ f₂ f∈ = {!!}
+      where
+        -- extends w1 with choices at least as high as n, and then add a 1 at index k≥n
+        aw2 : ∀𝕎 w1 (λ w' _ → (m₁ m₂ : CTerm) → equalInType i w' #NAT m₁ m₂
+                             → equalInType i w' (#ABac₀₀ δ n m₁) (#APPLY f₁ m₁) (#APPLY f₂ m₂))
+        aw2 w2 e2 m₁ m₂ m∈ =
+          →≡equalInType
+            (sub-#ABac₀₀ δ m₁ n)
+            (snd (snd (equalInType-PI→
+              {i} {w2} {#NAT} {#[0]FUN (#[0]LE ⌞ n ⌟ #[0]VAR) (#[0]EQ (#[0]APPLY (#[0]CS δ) #[0]VAR) (#[0]NUM 0) #[0]NAT)} {f₁} {f₂}
+              (equalInType-mon f∈ w2 e2))) w2 (⊑-refl· w2) m₁ m₂ m∈)
+
+
+∈NREL→inh-NUMᵣ : (i : ℕ) (w : 𝕎·) (R m : CTerm) (n k : ℕ)
+                  → ∈Type (suc i) w (#NREL i) R
+                  → m #⇛ #NUM k at w
+                  → inhType i w (#APPLY2 R (#NUM n) m)
+                  → inhType i w (#APPLY2 R (#NUM n) (#NUM k))
+∈NREL→inh-NUMᵣ i w R m n k R∈ ck (t , t∈) =
+  t ,
+  TS.tsExt
+    (typeSys i) w (#APPLY2 R (#NUM n) m) (#APPLY2 R (#NUM n) (#NUM k)) t t
+    (equalInType→equalTypes-aux (suc i) i ≤-refl w
+       (#APPLY2 R (#NUM n) m) (#APPLY2 R (#NUM n) (#NUM k))
+       (equalInType-FUN→
+         (equalInType-FUN→ R∈ w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT (suc i) w n))
+         w (⊑-refl· w) m (#NUM k)
+         (→equalInType-NAT (suc i) w m (#NUM k) (Mod.∀𝕎-□ M (λ w' e' → k , #⇛-mon {m} {#NUM k} e' ck , #⇛-refl w' (#NUM k))))))
+    t∈
+
+
+CTermFun→ℕFun : (kb : K□) (i : ℕ) (w : 𝕎·) (R : CTerm)
+                 → ∈Type (suc i) w (#NREL i) R
+                 → ((n : CTerm) → ∈Type (suc i) w #NAT n → Σ CTerm (λ m → ∈Type (suc i) w #NAT m × inhType i w (#APPLY2 R n m)))
+                 → (n : ℕ) → Σ ℕ (λ m → inhType i w (#APPLY2 R (#NUM n) (#NUM m)))
+CTermFun→ℕFun kb i w R R∈ f n =
+  k , ∈NREL→inh-NUMᵣ i w R m n k R∈ ck inh
+  where
+    h1 : Σ CTerm (λ m → ∈Type (suc i) w #NAT m × inhType i w (#APPLY2 R (#NUM n) m))
+    h1 = f (#NUM n) (NUM-equalInType-NAT (suc i) w n)
+
+    m : CTerm
+    m = fst h1
+
+    m∈ : NATeq w m m
+    m∈ = kb (equalInType-NAT→ (suc i) w m m (fst (snd h1))) w (⊑-refl· w)
+
+    k : ℕ
+    k = fst m∈
+
+    ck : m #⇛ #NUM k at w
+    ck = fst (snd m∈)
+
+    inh : inhType i w (#APPLY2 R (#NUM n) m)
+    inh = snd (snd h1)
 
 
 -- Can we prove that AC₀₀ is valid?
 -- Maybe a proof similar to the one we had in Coq could work for Kripke modalities.
-AC₀₀-valid : (i : ℕ) (w : 𝕎·) → ∈Type (suc i) w (#AC₀₀ i) #lam2AX
-AC₀₀-valid i w =
+AC₀₀-valid : (kb : K□) (i : ℕ) (w : 𝕎·) → ∈Type (suc i) w (#AC₀₀ i) #lam2AX
+AC₀₀-valid kb i w =
   equalInType-PI
     {suc i} {w} {#NREL i} {#[0]FUN #[0]AC₀₀-left #[0]AC₀₀-right}
     (λ w1 e1 → isType-NREL i w1)
@@ -807,7 +877,54 @@ AC₀₀-valid i w =
       where
         aw2 : ∀𝕎 w1 (λ w' _ → (a₁ a₂ : CTerm) → equalInType (suc i) w' (#AC₀₀-left R₁) a₁ a₂
                              → equalInType (suc i) w' (#AC₀₀-right R₁) (#APPLY (#APPLY #lam2AX R₁) a₁) (#APPLY (#APPLY #lam2AX R₂) a₂))
-        aw2 w2 e2 a₁ a₂ a∈ = {!!}
+        aw2 w2 e2 a₁ a₂ a∈ =
+          →equalInType-SQUASH (Mod.∀𝕎-□ M aw6)
+          where
+            aw3 : (n : CTerm) → ∈Type (suc i) w2 #NAT n
+                              → ∀𝕎 w2 (λ w'' e'' → Σ CTerm (λ m → ∈Type (suc i) w'' #NAT m × inhType i w'' (#APPLY2 R₁ n m)))
+            aw3 n n∈ = kb (equalInType-#AC₀₀-left→ i w2 R₁ a₁ a₂ a∈ w2 (⊑-refl· w2) n n∈)
+
+            aw4 : (n : CTerm) → ∈Type (suc i) w2 #NAT n
+                              → Σ CTerm (λ m → ∈Type (suc i) w2 #NAT m × inhType i w2 (#APPLY2 R₁ n m))
+            aw4 n n∈ = aw3 n n∈ w2 (⊑-refl· w2)
+
+            aw5 : (n : ℕ) → Σ ℕ (λ m → inhType i w2 (#APPLY2 R₁ (#NUM n) (#NUM m)))
+            aw5 = CTermFun→ℕFun kb i w2 R₁ (equalInType-refl (equalInType-mon R∈ w2 e2)) aw4
+
+            -- our generic element
+            f : ℕ → ℕ
+            f n = fst (aw5 n)
+
+            inh : (n : ℕ) → inhType i w2 (#APPLY2 R₁ (#NUM n) (#NUM (f n)))
+            inh n = snd (aw5 n)
+
+            aw6 : ∀𝕎 w2 (λ w' _ → inhType (suc i) w' (#AC₀₀-right-SUM R₁))
+            aw6 w3 e3 =
+              #PAIR (#MSEQ f) #AX ,
+              equalInType-SUM
+                (λ w2 e2 → eqTypesBAIRE)
+                (isType-#AC₀₀-right-body1 i w3 R₁ R₁ (equalInType-refl (equalInType-mon R∈ w3 (⊑-trans· e2 e3))))
+                (Mod.∀𝕎-□ M aw7)
+              where
+                aw7 : ∀𝕎 w3 (λ w' _ → SUMeq (equalInType (suc i) w' #BAIRE) (λ a b ea → equalInType (suc i) w' (sub0 a (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R₁ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))))) w' (#PAIR (#MSEQ f) #AX) (#PAIR (#MSEQ f) #AX))
+                aw7 w4 e4 =
+                  #MSEQ f , #MSEQ f , #AX , #AX ,
+                  mseq∈baire (suc i) w4 f ,
+                  #⇛-refl w4 (#PAIR (#MSEQ f) #AX) ,
+                  #⇛-refl w4 (#PAIR (#MSEQ f) #AX) ,
+                  →≡equalInType
+                    (sym (sub0-ac00-right-body1 R₁ (#MSEQ f)))
+                    (equalInType-PI
+                      (λ w' e' → eqTypesNAT)
+                      (isType-#AC₀₀-right-body2 i w4 R₁ R₁ (#MSEQ f) (#MSEQ f) (equalInType-refl (equalInType-mon R∈ w4 (⊑-trans· e2 (⊑-trans· e3 e4)))) (mseq∈baire (suc i) w4 f))
+                      (λ w5 e5 m₁ m₂ m∈ → →≡equalInType (sym (sub0-ac00-right-body2 R₁ (#MSEQ f) m₁)) (aw8 w5 e5 m₁ m₂ m∈)))
+                  where
+                    aw8 : ∀𝕎 w4 (λ w' _ → (m₁ m₂ : CTerm) → equalInType (suc i) w' #NAT m₁ m₂
+                                        → equalInType (suc i) w' (#LIFT (#APPLY2 R₁ m₁ (#APPLY (#MSEQ f) m₁))) (#APPLY #AX m₁) (#APPLY #AX m₂))
+                    aw8 w5 e5 m₁ m₂ m∈ =
+                      equalInType-LIFT←
+                        i w5 (#APPLY2 R₁ m₁ (#APPLY (#MSEQ f) m₁)) (#APPLY #AX m₁) (#APPLY #AX m₂)
+                        {!!} -- The goal is to use inh above, but the extract is off. We need to truncate the APPLY2 too.
 
 
 \end{code}
