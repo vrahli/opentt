@@ -139,6 +139,10 @@ fvars-CTerm1 : (a : CTerm1) → fvars ⌜ a ⌝ ⊆ 0 ∷ [ 1 ]
 fvars-CTerm1 a = ⊆?→⊆ (CTerm1.closed a)
 
 
+fvars-CTerm2 : (a : CTerm2) → fvars ⌜ a ⌝ ⊆ 0 ∷ 1 ∷ [ 2 ]
+fvars-CTerm2 a = ⊆?→⊆ (CTerm2.closed a)
+
+
 #[1]SQUASH : CTerm1 → CTerm1
 #[1]SQUASH a = ct1 (SQUASH ⌜ a ⌝) c
   where
@@ -162,6 +166,31 @@ fvars-CTerm1 a = ⊆?→⊆ (CTerm1.closed a)
 
             w : z ∈ 0 ∷ [ 1 ]
             w rewrite e = fvars-CTerm1 a j
+
+
+#[2]SQUASH : CTerm2 → CTerm2
+#[2]SQUASH a = ct2 (SQUASH ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] SQUASH ⌜ a ⌝
+    c rewrite fvars-shiftUp≡ 0 ⌜ a ⌝ = ⊆→⊆? {lowerVars (Data.List.map suc (fvars ⌜ a ⌝))} {0 ∷ 1 ∷ [ 2 ]} s
+      where
+        s : lowerVars (Data.List.map suc (fvars ⌜ a ⌝)) ⊆ 0 ∷ 1 ∷ [ 2 ]
+        s {z} i = w
+          where
+            x : suc z ∈ Data.List.map suc (fvars ⌜ a ⌝)
+            x = ∈lowerVars→ z (Data.List.map suc (fvars ⌜ a ⌝)) i
+
+            y : Var
+            y = fst (∈-map⁻ suc x)
+
+            j : y ∈ fvars ⌜ a ⌝
+            j = fst (snd (∈-map⁻ suc x))
+
+            e : z ≡ y
+            e = suc-injective (snd (snd (∈-map⁻ suc x)))
+
+            w : z ∈ 0 ∷ 1 ∷ [ 2 ]
+            w rewrite e = fvars-CTerm2 a j
 
 
 #[1]UNION : CTerm1 → CTerm1 → CTerm1
