@@ -16,7 +16,8 @@ open import Data.Sum
 open import Data.Empty
 open import Data.Unit using (⊤ ; tt)
 open import Data.Nat using (ℕ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; _∸_ ; _*_ ; _^_ ; pred)
-open import Data.Nat.DivMod -- using (_%_ ; _/_)
+open import Data.Nat.DivMod -- using (_%_ ; _/_ ; _∣_)
+open import Data.Nat.Divisibility
 open import Data.Nat.Properties
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
@@ -157,6 +158,16 @@ unpairing-inj n m h =
     h1 rewrite h = refl
 
 
++assoc-aux : (x y : ℕ) → x + x + (y + y) ≡ y + x + (y + x)
++assoc-aux x y
+  rewrite +-comm y x
+        | sym (+-assoc (x + y) x y)
+        | +-assoc x y x
+        | +-comm y x
+        | sym (+-assoc x x y)
+        | sym (+-assoc (x + x) y y)  = refl
+
+
 pairing-spec-aux : (n x y : ℕ) → n ≡ y + x → pairing (x , y) * 2 ≡ y * 2 + n * suc n
 pairing-spec-aux 0 x y h rewrite fst (+≡0→ y x (sym h)) | snd (+≡0→ y x (sym h)) = refl
 pairing-spec-aux (suc n) 0 0 ()
@@ -185,17 +196,32 @@ pairing-spec-aux (suc n) x (suc y) h
         | +0 x
         | sym (+-assoc (y + x) (y + x) ((y + x) * suc (y + x)))
         | sym (+-assoc (x + x) (y + y) ((y + x) * suc (y + x)))
-        | +-comm y x
-        | sym (+-assoc (x + y) x y)
-        | +-assoc x y x
-        | +-comm y x
-        | sym (+-assoc x x y)
-        | sym (+-assoc (x + x) y y)
-  = →s≡s (→s≡s refl)
+        | +assoc-aux x y = refl
 
 
 pairing-spec : (x y : ℕ) → pairing (x , y) * 2 ≡ y * 2 + (y + x) * suc (y + x)
 pairing-spec x y = pairing-spec-aux (y + x) x y refl
+
+
+2∣+* : (x : ℕ) → 2 ∣ (x + x * x)
+2∣+* 0 = divides 0 refl
+2∣+* (suc x)
+  rewrite *-suc x x
+        | +-suc x (x + (x + x * x))
+        | sym (+-assoc x x (x + x * x))
+  with 2∣+* x
+... | divides z q rewrite q = divides (1 + x + z) (→s≡s (→s≡s h1))
+  where
+    h1 : x + x + z * 2 ≡ (x + z) * 2
+    h1 rewrite *-comm (x + z) 2
+             | *-comm z 2
+             | +0 z
+             | +0 (x + z)
+             | +-comm x z = +assoc-aux x z
+
+
+→≡+ₗ : {a b c : ℕ} → a ≡ b → a + c ≡ b + c
+→≡+ₗ {a} {b} {c} h rewrite h = refl
 
 
 pairing-spec2 : (x y : ℕ) → pairing (x , y) ≡ y + (y + x) * suc (y + x) / 2
@@ -204,12 +230,26 @@ pairing-spec2 x y = trans (sym (m*n/n≡m (pairing (x , y)) 2)) (trans h1 h2)
     h1 : (pairing (x , y) * 2) / 2 ≡ (y * 2 + (y + x) * suc (y + x)) / 2
     h1 rewrite sym (pairing-spec x y) = refl
 
+    h3 : (y * 2 / 2) + ((y + x) + (y + x) * (y + x)) / 2 ≡ y + ((y + x) + (y + x) * (y + x)) / 2
+    h3 = →≡+ₗ {y * 2 / 2} {y} {((y + x) + (y + x) * (y + x)) / 2} (m*n/n≡m y 2)
+
     h2 : (y * 2 + (y + x) * suc (y + x)) / 2 ≡ y + (y + x) * suc (y + x) / 2
-    h2 = ? --rewrite +-distrib-/-∣ʳ {y * 2} ((y + x) * suc (y + x)) {2} {!!} = {!!}
+    h2 rewrite *-suc (y + x) (y + x)
+             | +-distrib-/-∣ʳ {y * 2} ((y + x) + (y + x) * (y + x)) {2} (2∣+* (y + x)) = h3
+
+
+→≤/2 : (x y : ℕ) → x ≤ y → x ≤ y * suc y / 2
+→≤/2 x 0 h = h
+→≤/2 x (suc y) h = {!!}
 
 
 pairing-non-dec : (x y : ℕ) → y + x ≤ pairing (x , y)
-pairing-non-dec x y rewrite pairing-spec2 x y = {!!}
+pairing-non-dec x y
+  rewrite pairing-spec2 x y
+  = +-mono-≤ {y} {y} {x} {(y + x) * suc (y + x) / 2} ≤-refl h1
+  where
+    h1 : x ≤ (y + x) * suc (y + x) / 2
+    h1 = →≤/2 x (y + x) (m≤n+m x y)
 
 
 -- This only converts the untyped λ-calculus (vars, lams, apps) - everything else is mapped to 0
