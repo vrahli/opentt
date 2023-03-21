@@ -87,6 +87,7 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)
+open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
@@ -96,9 +97,9 @@ open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import not_mp(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 -- This one is to use ¬Names→⇛ (TODO: extract the ¬Names results from the continuity files)
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#¬Names-APPLY)
-open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E) using (¬Names→⇛)
-open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalTypesTPURE ; equalInType-TPURE→ ; equalInType-TPURE→ₗ ; equalInType-TPURE→ᵣ)
+--open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#¬Names-APPLY)
+--open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E) using (¬Names→⇛)
+--open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalTypesTPURE ; equalInType-TPURE→ ; equalInType-TPURE→ₗ ; equalInType-TPURE→ᵣ)
 
 
 
@@ -282,7 +283,10 @@ MPp-inh w =
                                     h1 = strongBool-BTRUE→ w7 (#APPLY a₁ (#NUM k)) h
 
                                     aw11 : ∀𝕎 w3 (λ w' _ → #strongBool w' (#APPLY a₁ (#NUM k)) #BTRUE)
-                                    aw11 w3' e3' = fst h1 , #AX , inj₁ (¬Names→⇛ w7 w3' ⌜ #APPLY a₁ (#NUM k) ⌝ ⌜ #INL (fst h1) ⌝ (#¬Names-APPLY {a₁} {#NUM k} (equalInType-TPURE→ₗ eqa) refl) (snd h1) , #⇛-refl w3' #BTRUE)
+                                    aw11 w3' e3' =
+                                      fst h1 , #AX ,
+                                      inj₁ (¬Names→⇛ w7 w3' ⌜ #APPLY a₁ (#NUM k) ⌝ ⌜ #INL (fst h1) ⌝ (#¬Names-APPLY {a₁} {#NUM k} (equalInType-TPURE→ₗ eqa) refl) (snd h1) ,
+                                            #⇛-refl w3' #BTRUE)
 
                     aw5 : inhType n w3 (#PI-NEG-ASSERT₂ a₁)
                     aw5 = #lam2AX , equalInType-PI (λ w' e → isTypeNAT!) aw6 aw7

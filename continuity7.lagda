@@ -85,6 +85,7 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
@@ -484,63 +485,6 @@ sub0-cont-b2 F f = CTerm≡ e0
              | #shiftUp 3 f | #shiftDown 4 f | #shiftUp 1 f
              | subv# 4 ⌜ f  ⌝ ⌜ F ⌝ (CTerm.closed F)
              | #shiftDown 4 f | #shiftDown 4 F | #shiftDown 3 f = refl
-
-
-
-
-#TPURE≡ : (T : CTerm) → #TPURE T ≡ #ISECT T #PURE
-#TPURE≡ T = CTerm≡ refl
-
-
-equalTypesTPURE : {i : ℕ} {w : 𝕎·} {A B : CTerm}
-                  → equalTypes i w A B
-                  → equalTypes i w (#TPURE A) (#TPURE B)
-equalTypesTPURE {i} {w} {A} {B} eqt =
-  ≡CTerm→eqTypes
-    (sym (#TPURE≡ A))
-    (sym (#TPURE≡ B))
-    (eqTypesISECT← eqt eqTypesPURE←)
-
-
-
-equalInType-TPURE→ : {i : ℕ} {w : 𝕎·} {T a b : CTerm}
-                      → equalInType i w (#TPURE T) a b
-                      → equalInType i w T a b
-equalInType-TPURE→ {i} {w} {T} {a} {b} eqi =
-  equalInType-local (Mod.∀𝕎-□Func M (λ w' e (h1 , h2) → h1) h)
-  where
-    h : □· w (λ w' _ → ISECTeq (equalInType i w' T) (equalInType i w' #PURE) a b)
-    h = equalInType-ISECT→ (≡CTerm→equalInType (#TPURE≡ T) eqi)
-
-
-
-equalInType-TPURE→ₗ : {i : ℕ} {w : 𝕎·} {T a b : CTerm}
-                      → equalInType i w (#TPURE T) a b
-                      → #¬Names a
-equalInType-TPURE→ₗ {i} {w} {T} {a} {b} eqi =
-  lower (Mod.□-const M {w} {Lift {0ℓ} (lsuc L) (#¬Names a)} (Mod.∀𝕎-□Func M aw h))
-  where
-    aw : ∀𝕎 w (λ w' e' → ISECTeq (equalInType i w' T) (equalInType i w' #PURE) a b
-                        → Lift (lsuc L) (#¬Names a))
-    aw w1 e1 (eqa , eqb) = Mod.□-const M {w1} {Lift {0ℓ} (lsuc L) (#¬Names a)} (Mod.∀𝕎-□Func M (λ w2 e2 (lift (h1 , h2)) → lift h1) (equalInType-PURE→ eqb))
-
-    h : □· w (λ w' _ → ISECTeq (equalInType i w' T) (equalInType i w' #PURE) a b)
-    h = equalInType-ISECT→ (≡CTerm→equalInType (#TPURE≡ T) eqi)
-
-
-
-equalInType-TPURE→ᵣ : {i : ℕ} {w : 𝕎·} {T a b : CTerm}
-                      → equalInType i w (#TPURE T) a b
-                      → #¬Names b
-equalInType-TPURE→ᵣ {i} {w} {T} {a} {b} eqi =
-  lower (Mod.□-const M {w} {Lift {0ℓ} (lsuc L) (#¬Names b)} (Mod.∀𝕎-□Func M aw h))
-  where
-    aw : ∀𝕎 w (λ w' e' → ISECTeq (equalInType i w' T) (equalInType i w' #PURE) a b
-                        → Lift (lsuc L) (#¬Names b))
-    aw w1 e1 (eqa , eqb) = Mod.□-const M {w1} {Lift {0ℓ} (lsuc L) (#¬Names b)} (Mod.∀𝕎-□Func M (λ w2 e2 (lift (h1 , h2)) → lift h2) (equalInType-PURE→ eqb))
-
-    h : □· w (λ w' _ → ISECTeq (equalInType i w' T) (equalInType i w' #PURE) a b)
-    h = equalInType-ISECT→ (≡CTerm→equalInType (#TPURE≡ T) eqi)
 
 
 

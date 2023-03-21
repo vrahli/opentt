@@ -106,6 +106,9 @@ open import barContP10 using (contDiagVal)
 open import continuity9b
 --open import continuity10b
 
+-- On AC (not finished yet)
+-- open import ac
+
 -- A definition of sequents and their semantics
 open import sequent
 \end{code}

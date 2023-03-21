@@ -87,6 +87,7 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
@@ -212,17 +213,6 @@ eqfg-aux {w} {w1} e {name} {f} {g} {a} {b} {c} {v} {v'} {n} isv (m , c₁ , c₂
 
     concl : c ⇓ NUM n at w
     concl rewrite sym (updRel-NUMₗ→ ur') = compc
-
-
-¬Names→⇛ : (w1 w2 : 𝕎·) (t u : Term)
-            → ¬Names t
-            → t ⇛ u at w1
-            → t ⇛ u at w2
-¬Names→⇛ w1 w2 t u nnt comp w e =
-  lift (⇓-from-to→⇓ {w} {w} (¬Names→⇓ w1 (fst h) w t u nnt (snd h)))
-  where
-    h : Σ 𝕎· (λ w' → t ⇓ u from w1 to w')
-    h = ⇓→from-to (lower (comp w1 (⊑-refl· w1)))
 
 
 ¬Names→NATeq : (w1 w2 : 𝕎·) {a b : CTerm}

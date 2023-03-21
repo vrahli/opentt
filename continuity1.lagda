@@ -74,8 +74,8 @@ open import terms8(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -83,10 +83,11 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalInType-NAT→ ; equalInType-mon ; equalInType-FUN→ ; ≡CTerm→equalInType ; →equalInType-NAT ; equalInType-FUN ; eqTypesNAT ; NUM-equalInType-NAT ; ≡CTerm→eqTypes ; eqTypesSET← ; eqTypesFUN← ; equalInType-SET→ ; eqTypesEQ← ; equalInType-refl ; eqTypesPI← ; eqTypesSUM← ; equalInType-local)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalTerms-pres-#⇛-left-rev→equalInType-pres-#⇛-LR-rev ; equalTerms-pres-#⇛-left-rev-NAT ; equalInType-trans ; equalInType-SET)
+open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E) using (∀𝕎-□Func3 ; ≡CTerm→equalInTypeₗ ; ≡CTerm→equalInTypeᵣ ; ≡CTerm→∈Type ; →equalTypesLT ; eqTypesFFDEFS← ; eqTypesBAIRE ; ∈BAIRE→NAT→ ; equalInType-LT-⇛NUM→ ; ⇛NUM→equalInType-NAT)
+open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
@@ -1522,22 +1523,6 @@ data apps (f : Term) : ℕ → Term → Set where
 
 --steps K (APPLY F f , w) ≡ (NUM n , w)
 --→ Σ ℕ (λ m → #νtestM F f ≡ NUM m × )
-
-
-
-¬Names→⇓→⇛ : (w w' : 𝕎·) (t u : Term)
-               → ¬Names t
-               → t ⇓ u at w
-               → t ⇛ u at w
-¬Names→⇓→⇛ w w' t u nnt comp w1 e1 =
-  lift (⇓-from-to→⇓ {w1} {w1} (fst (snd h) , fst (¬Names→steps (fst (snd h)) w (fst h) w1 t u nnt (snd (snd h)))))
-  where
-    h : Σ 𝕎· (λ w' → t ⇓ u from w to w')
-    h = ⇓→from-to comp
-
-
-#¬Names-APPLY : {a b : CTerm} → #¬Names a → #¬Names b → #¬Names (#APPLY a b)
-#¬Names-APPLY {a} {b} nna nnb rewrite nna | nnb = refl
 
 
 
