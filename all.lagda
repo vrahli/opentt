@@ -75,9 +75,9 @@ open import openNotFollowChoice
 
 -- `barKripke` provides an example of a bar containing all worlds.
 -- We show here that the resulting modality does not satisfy `□·-choice` (from `choiceBar`),
--- which we require to prove ¬LEM for example.  This is true when using FCS as choices but not REF.
+-- which we require to prove ¬LEM for example. This is true when using FCS as choices but not REF.
 open import kripkeCsNotRetrieving
--- We also here that Kripke bars + FCS does not satisfy the ∀∃𝔹 property in exBar either,
+-- We also show that Kripke bars + FCS does not satisfy the ∀∃𝔹 property in exBar either,
 -- which we require to prove the compatibility with LEM
 -- So, given the above result and this one, we cannot derive whether Kripke+FCS is compatible with LEM or not
 open import kripkeCsNotExBar
@@ -103,7 +103,7 @@ open import barContP9 using (semCond)
 open import barContP10 using (contDiagVal)
 
 -- Another attempt at validating continuity. It is unfinished: continuity10b has holes
-open import continuity9b
+--open import continuity9b
 --open import continuity10b
 
 -- On AC (not finished yet)

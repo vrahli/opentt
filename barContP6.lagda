@@ -91,6 +91,7 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalInType-TPURE→ₗ ; equalInType-TPURE→)
 
 open import list(W)(M)(C)(K)(P)(G)(X)(N)(E)
 

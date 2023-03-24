@@ -137,6 +137,14 @@ unpairing≡ n with unpairing n
 ... | x , y = x , y , refl
 
 
+fst-unpairing≡ : (n x y : ℕ) → unpairing n ≡ (x , y) → fst (unpairing n) ≡ x
+fst-unpairing≡ n x y u rewrite u = refl
+
+
+snd-unpairing≡ : (n x y : ℕ) → unpairing n ≡ (x , y) → snd (unpairing n) ≡ y
+snd-unpairing≡ n x y u rewrite u = refl
+
+
 pairing-unpairing : (n : ℕ) → pairing (unpairing n) ≡ n
 pairing-unpairing 0 = refl
 pairing-unpairing (suc n) with unpairing≡ n
@@ -238,9 +246,29 @@ pairing-spec2 x y = trans (sym (m*n/n≡m (pairing (x , y)) 2)) (trans h1 h2)
              | +-distrib-/-∣ʳ {y * 2} ((y + x) + (y + x) * (y + x)) {2} (2∣+* (y + x)) = h3
 
 
+m≤m*m : (m : ℕ) → m ≤ m * m
+m≤m*m 0 = ≤-refl
+m≤m*m (suc m) = m≤m*n (suc m) (_≤_.s≤s _≤_.z≤n)
+
+
+≤/2 : (y : ℕ) → y ≤ y * suc y / 2
+≤/2 y rewrite *-suc y y = ≤-trans h1 h2
+  where
+    h0 : y ≡ y * 2 / 2
+    h0 = sym (m*n/n≡m y 2)
+
+    h1 : y ≤ y * 2 / 2
+    h1 rewrite sym h0 = ≤-refl
+
+    h3 : y * 2 ≤ y + y * y
+    h3 rewrite *-suc y 1 | *-suc y 0 | *-zeroʳ y | +0 y = +-mono-≤ {y} {y} {y} {y * y} ≤-refl (m≤m*m y)
+
+    h2 : y * 2 / 2 ≤ (y + (y * y)) / 2
+    h2 = /-mono-≤ {y * 2} {y + (y * y)} {2} h3 ≤-refl
+
+
 →≤/2 : (x y : ℕ) → x ≤ y → x ≤ y * suc y / 2
-→≤/2 x 0 h = h
-→≤/2 x (suc y) h = {!!}
+→≤/2 x y h = ≤-trans h (≤/2 y)
 
 
 pairing-non-dec : (x y : ℕ) → y + x ≤ pairing (x , y)
@@ -266,12 +294,52 @@ Term→ℕ x = 0
 ¬≡0→1≤ (suc n) h = _≤_.s≤s _≤_.z≤n
 
 
+≡→≤ : (a b : ℕ) → a ≡ b → a ≤ b
+≡→≤ a b e rewrite e = ≤-refl
+
+
+unpairing≤ : (n : ℕ) → fst (unpairing n) ≤ n × snd (unpairing n) ≤ n
+unpairing≤ 0 = ≤-refl , ≤-refl
+unpairing≤ (suc n) with unpairing≡ n
+... | suc x , y , p rewrite p =
+  ≤-trans (m<n⇒m≤1+n (≡→≤ (suc x) (proj₁ (unpairing n)) (sym (fst-unpairing≡ n (suc x) y p))))
+          (_≤_.s≤s (fst (unpairing≤ n))) ,
+  _≤_.s≤s (≤-trans (≡→≤ y (snd (unpairing n)) (sym (snd-unpairing≡ n (suc x) y p))) (snd (unpairing≤ n)))
+... | 0 , y , p rewrite p | sym (snd-unpairing≡ n 0 y p) = _≤_.s≤s (snd (unpairing≤ n)) , _≤_.z≤n
+
+
+-- MOVE to utils
+≤suc : (n : ℕ) → n ≤ suc n
+≤suc 0 = _≤_.z≤n
+≤suc (suc n) = _≤_.s≤s (≤suc n)
+
+
+suc≤*3 : (n : ℕ) → ¬ n ≡ 0 → suc n ≤ n * 3
+suc≤*3 0 d0 = ⊥-elim (d0 refl)
+suc≤*3 (suc n) d0 with n ≟ 0
+... | yes p rewrite p = _≤_.s≤s (_≤_.s≤s _≤_.z≤n)
+... | no p = _≤_.s≤s (≤-trans (suc≤*3 n p) (≤-trans (≤suc (n * 3)) (≤suc (suc (n * 3)))))
+
+
+suc/3≤ : (n : ℕ) → ¬ n ≡ 0 → suc (n / 3) ≤ n
+suc/3≤ 0 d0 = ⊥-elim (d0 refl)
+suc/3≤ (suc n) d0 = _≤_.s≤s h1
+  where
+    h2 : (suc n / 3) * 3 ≤ n * 3
+    h2 with n ≟ 0
+    ... | yes p rewrite p = ≤-refl
+    ... | no p = ≤-trans (m/n*n≤m (suc n) 3) (suc≤*3 n p)
+
+    h1 : suc n / 3 ≤ n
+    h1 = *-cancelʳ-≤ (suc n / 3) n 2 h2
+
+
 ℕ→Term-aux : (n : ℕ) → ((m : ℕ) → m < n → Term) → Term
 ℕ→Term-aux n ind with n ≟ 0
 ... | yes p = AX -- default value
 ... | no p with n % 3 ≟ 0
 ... | yes p₀ = -- then it is an application
-  APPLY (ind x {!!}) (ind y {!!})
+  APPLY (ind x cx) (ind y cy)
   where
     m : ℕ
     m = n / 3
@@ -281,9 +349,15 @@ Term→ℕ x = 0
     x : ℕ
     x = pairing→x m
 
+    cx : suc x ≤ n
+    cx = ≤-trans (_≤_.s≤s (fst (unpairing≤ m))) (suc/3≤ n p)
+
     -- We need to extract y from the pairing m
     y : ℕ
     y = pairing→y m
+
+    cy : suc y ≤ n
+    cy = ≤-trans (_≤_.s≤s (snd (unpairing≤ m))) (suc/3≤ n p)
 ... | no p₀ with n % 3 ≟ 1
 ... |   yes p₁ = -- then it is a lambda
   LAMBDA (ind ((n ∸ 1) / 3) (<-transʳ (m/n≤m (n ∸ 1) 3) (∸-monoʳ-< {n} {1} {0} ≤-refl (¬≡0→1≤ n p))))

@@ -80,6 +80,7 @@ open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import terms2(W)(C)(K)(G)(X)(N)
+open import terms4(W)(C)(K)(G)(X)(N) using (¬Names→⇓)
 open import terms8(W)(C)(K)(G)(X)(N)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -96,10 +97,6 @@ open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import not_mp(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
--- This one is to use ¬Names→⇛ (TODO: extract the ¬Names results from the continuity files)
---open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#¬Names-APPLY)
---open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E) using (¬Names→⇛)
---open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalTypesTPURE ; equalInType-TPURE→ ; equalInType-TPURE→ₗ ; equalInType-TPURE→ᵣ)
 
 
 
@@ -122,6 +119,25 @@ equalInType-ASSERT₂→ n w t a b eqa = equalInType-local (Mod.∀𝕎-□Func 
   ≡CTerm→equalInType (sym (#ASSERT₂≡ t)) (equalInType-EQ (isTypeBOOL w n) (Mod.∀𝕎-□ M (λ w1 e1 → equalInType-mon h w1 e1)))
 
 
+equalInType-ASSERT₃→ : (n : ℕ) (w : 𝕎·) (t a b : CTerm)
+                        → equalInType n w (#ASSERT₃ t) a b
+                        → equalInType n w #QTBOOL! t #BTRUE
+equalInType-ASSERT₃→ n w t a b eqa = equalInType-local (Mod.∀𝕎-□Func M aw eqb)
+  where
+    aw : ∀𝕎 w (λ w' e' → EQeq t #BTRUE (equalInType n w' #QTBOOL!) w' a b → equalInType n w' #QTBOOL! t #BTRUE)
+    aw w1 e1 h = h
+
+    eqb : □· w (λ w' _ → EQeq t #BTRUE (equalInType n w' #QTBOOL!) w' a b)
+    eqb = equalInType-EQ→ (≡CTerm→equalInType (#ASSERT₃≡ t) eqa)
+
+
+→equalInType-ASSERT₃ : (n : ℕ) (w : 𝕎·) (t a b : CTerm)
+                        → equalInType n w #QTBOOL! t #BTRUE
+                        → equalInType n w (#ASSERT₃ t) a b
+→equalInType-ASSERT₃ n w t a b h =
+  ≡CTerm→equalInType (sym (#ASSERT₃≡ t)) (equalInType-EQ (eqTypesQTBOOL! {w} {n}) (Mod.∀𝕎-□ M (λ w1 e1 → equalInType-mon h w1 e1)))
+
+
 strongBool-BTRUE→ : (w : 𝕎·) (t : CTerm)
                      → #strongBool w t #BTRUE
                      → Σ CTerm (λ x → t #⇛ #INL x at w)
@@ -131,6 +147,13 @@ strongBool-BTRUE→ w t (x , y , inj₂ (c₁ , c₂)) = ⊥-elim (h (compAllVal
     h : (INL AX ≡ INR ⌜ y ⌝) → ⊥
     h ()
 
+
+weakBool-BTRUE→ : (w : 𝕎·) (t : CTerm)
+                   → #weakBool! w t #BTRUE
+                   → ∀𝕎 w (λ w' _ → Lift (lsuc L) (Σ CTerm (λ x → t #⇓! #INL x at w')))
+weakBool-BTRUE→ w t h w1 e1 with lower (h w1 e1)
+... | x , y , inj₁ (c₁ , c₂) = lift (x , c₁)
+... | x , y , inj₂ (c₁ , c₂) = ⊥-elim (INLneqINR (⇓-from-to→≡ (INL AX) (INR ⌜ y ⌝) w1 w1 c₂ tt))
 
 
 -- pure version
@@ -163,26 +186,30 @@ MPp = PI (TPURE NAT!→BOOL) (FUN (NEG (PI NAT! (NEG (ASSERT₂ (APPLY (VAR 1) (
 #MPp₃ = #PI (#TPURE #NAT!→BOOL) (#[0]FUN #[0]MP-left2 #[0]MP-right2)
 
 
+#MPp₄ : CTerm
+#MPp₄ = #PI (#TPURE #NAT!→QTBOOL!) (#[0]FUN #[0]MP-left-qt #[0]MP-right-qt)
+
+
 isType-#TPURE-NAT!→BOOL : (w : 𝕎·) (n : ℕ) → isType n w (#TPURE #NAT!→BOOL)
 isType-#TPURE-NAT!→BOOL w n rewrite #NAT!→BOOL≡ = equalTypesTPURE (eqTypesFUN← isTypeNAT! (isTypeBOOL w n))
 
 
+isType-#TPURE-NAT!→QTBOOL! : (w : 𝕎·) (n : ℕ) → isType n w (#TPURE #NAT!→QTBOOL!)
+isType-#TPURE-NAT!→QTBOOL! w n rewrite #NAT!→QTBOOL!≡ = equalTypesTPURE (eqTypesFUN← isTypeNAT! (eqTypesQTBOOL! {w} {n}))
+
+
 -- As shown in not_mp, MP is invalid when considering a Beth or Kripke □ and references
 -- It is however valid when restricting to pure functions (the proof uses classical logic)
-MPp-inh : (w : 𝕎·) → member w #MPp #lam2AX
-MPp-inh w =
-  n ,
+MPp-inh : (n : ℕ) (w : 𝕎·) → ∈Type n w #MPp #lam2AX
+MPp-inh n w =
   ≡CTerm→equalInType
     (sym #MPp≡#PI)
     (equalInType-PI
       {n} {w} {#TPURE (#NAT!→BOOL)} {#[0]FUN #[0]MP-left #[0]MP-right}
       (λ w' e → isType-#TPURE-NAT!→BOOL w' n)
       aw1
-      aw2) -- equalInType-NEG (isTypeMP w n) aw1
+      aw2)
   where
-    n : ℕ
-    n = 1
-
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#TPURE #NAT!→BOOL) a₁ a₂
                       → equalTypes n w' (sub0 a₁ (#[0]FUN #[0]MP-left #[0]MP-right))
                                          (sub0 a₂ (#[0]FUN #[0]MP-left #[0]MP-right)))
@@ -285,6 +312,7 @@ MPp-inh w =
                                     aw11 : ∀𝕎 w3 (λ w' _ → #strongBool w' (#APPLY a₁ (#NUM k)) #BTRUE)
                                     aw11 w3' e3' =
                                       fst h1 , #AX ,
+                                      -- ¬Names→⇛ is used here to change the world from w7 (in h1) to the unrelated w3' world
                                       inj₁ (¬Names→⇛ w7 w3' ⌜ #APPLY a₁ (#NUM k) ⌝ ⌜ #INL (fst h1) ⌝ (#¬Names-APPLY {a₁} {#NUM k} (equalInType-TPURE→ₗ eqa) refl) (snd h1) ,
                                             #⇛-refl w3' #BTRUE)
 
@@ -292,20 +320,121 @@ MPp-inh w =
                     aw5 = #lam2AX , equalInType-PI (λ w' e → isTypeNAT!) aw6 aw7
 
 
+→inhType-ASSERT₃-APPLY : (i : ℕ) (w : 𝕎·) (f n : CTerm) (k : ℕ)
+                          → ∈Type i w #NAT!→QTBOOL! f
+                          → n #⇛! #NUM k at w
+                          → inhType i w (#ASSERT₃ (#APPLY f n))
+                          → inhType i w (#ASSERT₃ (#APPLY f (#NUM k)))
+→inhType-ASSERT₃-APPLY i w f n k f∈ ck (t , t∈) =
+  t ,
+  →equalInType-ASSERT₃
+    i w (#APPLY f (#NUM k)) t t
+    (equalInType-trans
+      (equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM k) n (→equalInType-NAT! i w (#NUM k) n (Mod.∀𝕎-□ M aw)))
+      (equalInType-ASSERT₃→ i w (#APPLY f n) t t t∈))
+  where
+    aw : ∀𝕎 w (λ w' _ → #⇛!sameℕ w' (#NUM k) n)
+    aw w1 e1 = k , #⇛!-refl {w1} {#NUM k} , ∀𝕎-mon e1 ck
+
+
+#¬Names→inhType-ASSERT₃ : (n : ℕ) (w1 w2 : 𝕎·) (t : CTerm)
+                           → #¬Names t
+                           → (Σ CTerm (λ x → t #⇓! #INL x at w1))
+                           → inhType n w2 (#ASSERT₃ t)
+#¬Names→inhType-ASSERT₃ n w1 w2 t nnt (x , cx) =
+  #AX ,
+  →equalInType-ASSERT₃ n w2 t #AX #AX (→equalInType-QTBOOL! n w2 t #BTRUE (Mod.∀𝕎-□ M aw))
+  where
+    aw : ∀𝕎 w2 (λ w' _ → #weakBool! w' t #BTRUE)
+    aw w3 e3 w4 e4 = lift (x , #AX , inj₁ (¬Names→⇓ w1 w1 w4 ⌜ t ⌝ ⌜ #INL x ⌝ nnt cx , (#⇓!-refl #BTRUE w4)))
+
+
+-- This version uses QTBOOL! instead of BOOL
+MPp₄-inh : (n : ℕ) (w : 𝕎·) → ∈Type n w #MPp₄ #lam2AX
+MPp₄-inh n w =
+  equalInType-PI
+    {n} {w} {#TPURE #NAT!→QTBOOL!} {#[0]FUN #[0]MP-left-qt #[0]MP-right-qt}
+    (λ w' e → isType-#TPURE-NAT!→QTBOOL! w' n)
+    aw1
+    aw2
+  where
+    aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#TPURE #NAT!→QTBOOL!) a₁ a₂
+                      → equalTypes n w' (sub0 a₁ (#[0]FUN #[0]MP-left-qt #[0]MP-right-qt))
+                                         (sub0 a₂ (#[0]FUN #[0]MP-left-qt #[0]MP-right-qt)))
+    aw1 w' e a₁ a₂ eqb rewrite sub0-fun-mp₄ a₁ | sub0-fun-mp₄ a₂ =
+        eqTypesFUN← (→equalTypes-#MP-left-qt (equalInType-TPURE→ eqb)) (→equalTypes-#MP-right-qt (equalInType-TPURE→ eqb))
+
+    aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#TPURE #NAT!→QTBOOL!) a₁ a₂
+                        → equalInType n w' (sub0 a₁ (#[0]FUN #[0]MP-left-qt #[0]MP-right-qt)) (#APPLY #lam2AX a₁) (#APPLY #lam2AX a₂))
+    aw2 w1 e1 a₁ a₂ eqa =
+      ≡CTerm→equalInType
+        (sym (sub0-fun-mp₄ a₁))
+        (equalInType-FUN
+          (→equalTypes-#MP-left-qt (equalInType-refl (equalInType-TPURE→ eqa)))
+          (→equalTypes-#MP-right-qt (equalInType-refl (equalInType-TPURE→ eqa)))
+          aw3)
+      where
+        aw3 : ∀𝕎 w1 (λ w' _ → (a₃ a₄ : CTerm) → equalInType n w' (#MP-left-qt a₁) a₃ a₄
+                             → equalInType n w' (#MP-right-qt a₁) (#APPLY (#APPLY #lam2AX a₁) a₃) (#APPLY (#APPLY #lam2AX a₂) a₄))
+        aw3 w2 e2 b₁ b₂ eqb = →equalInType-SQUASH (Mod.∀𝕎-□ M aw4)
+          where
+            aw4 : ∀𝕎 w2 (λ w' _ → Σ CTerm (λ t → equalInType n w' (#SUM-ASSERT₃ a₁) t t))
+            aw4 w3 e3 = cc (EM {Σ ℕ (λ k → inhType n w3 (#ASSERT₃ (#APPLY a₁ (#NUM k))))})
+              where
+                cc : Dec (Σ ℕ (λ k → inhType n w3 (#ASSERT₃ (#APPLY a₁ (#NUM k)))))
+                     → Σ CTerm (λ t → equalInType n w3 (#SUM-ASSERT₃ a₁) t t)
+                cc (yes (k , t , p)) = #PAIR (#NUM k) t , equalInType-SUM (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
+                  where
+                    aw6 : ∀𝕎 w3 (λ w' _ → SUMeq (equalInType n w' #NAT!)
+                                                  (λ a b ea → equalInType n w' (sub0 a (#[0]ASSERT₃ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))))
+                                                  w' (#PAIR (#NUM k) t) (#PAIR (#NUM k) t))
+                    aw6 w4 e4 =
+                      #NUM k , #NUM k , t , t ,
+                      NUM-equalInType-NAT! n w4 k ,
+                      #compAllRefl (#PAIR (#NUM k) t) w4 ,
+                      (#compAllRefl (#PAIR (#NUM k) t) w4) ,
+                      (≡CTerm→equalInType (sym (sub0-ASSERT₃-APPLY (#NUM k) a₁)) (equalInType-mon p w4 e4))
+
+                    aw5 : ∀𝕎 w3 (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
+                                        → equalTypes n w' (sub0 a (#[0]ASSERT₃ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))) (sub0 b (#[0]ASSERT₃ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))))
+                    aw5 w4 e4 a b ea rewrite sub0-ASSERT₃-APPLY a a₁ | sub0-ASSERT₃-APPLY b a₁ = aw5'
+                      where
+                        eb : equalInType n w4 #QTBOOL! (#APPLY a₁ a) (#APPLY a₁ b)
+                        eb = equalInType-FUN→ (equalInType-refl (equalInType-TPURE→ eqa)) w4 (⊑-trans· (⊑-trans· e2 e3) e4) a b ea
+
+                        aw5' : equalTypes n w4 (#ASSERT₃ (#APPLY a₁ a)) (#ASSERT₃ (#APPLY a₁ b))
+                        aw5' = equalInType-QTBOOL!→equalTypes-ASSERT₃ eb
+
+                -- The hard case...
+                cc (no p) = ⊥-elim (equalInType-#MP-left-qt→
+                                       n w2 a₁ b₁ b₂
+                                       (equalInType-mon (equalInType-refl (equalInType-TPURE→ eqa)) w2 e2)
+                                       eqb w3 e3 aw6)
+                   where
+                     aw6 : ∀𝕎 w3 (λ w' _ → Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #NAT! n₁ n₂ × inhType n w' (#ASSERT₃ (#APPLY a₁ n₁)))) → ⊥)
+                     aw6 w4 e4 (n₁ , n₂ , n∈ , inh) = lower (Mod.□-const M (Mod.∀𝕎-□Func M aw7 (equalInType-NAT!→ n w4 n₁ n₂ n∈)))
+                       where
+                         aw7 : ∀𝕎 w4 (λ w' e' → #⇛!sameℕ w' n₁ n₂ → Lift (lsuc L) ⊥)
+                         aw7 w5 e5 (k , k₁ , k₂) =
+                           Mod.□-const M (Mod.∀𝕎-□Func M aw8 (equalInType-QTBOOL!→ n w5 (#APPLY a₁ (#NUM k)) #BTRUE (equalInType-ASSERT₃→ n w5 (#APPLY a₁ (#NUM k)) (fst inh') (fst inh') (snd inh')))) --lift (p (k , {!!}))
+                           where
+                             inh' : inhType n w5 (#ASSERT₃ (#APPLY a₁ (#NUM k)))
+                             inh' = →inhType-ASSERT₃-APPLY n w5 a₁ n₁ k (equalInType-mon (equalInType-refl (equalInType-TPURE→ eqa)) w5 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5)))) k₁ (inhType-mon e5 inh)
+
+                             aw8 : ∀𝕎 w5 (λ w' e' → #weakBool! w' (#APPLY a₁ (#NUM k)) #BTRUE → Lift (lsuc L) ⊥)
+                             aw8 w6 e6 wbe = lift (p (k , #¬Names→inhType-ASSERT₃ n w6 w3 (#APPLY a₁ (#NUM k)) (#¬Names-APPLY {a₁} {#NUM k} (equalInType-TPURE→ₗ eqa) refl) (lower (weakBool-BTRUE→ w6 (#APPLY a₁ (#NUM k)) wbe w6 (⊑-refl· w6)))))
+
+
 -- This is similar to MPp-inh but proved here for #MPp₂, which is stated using ¬¬∃, instead of #MPp, which is stated using ¬∀¬
-MPp₂-inh : (w : 𝕎·) → member w #MPp₂ #lam2AX
-MPp₂-inh w =
-  n ,
+MPp₂-inh : (n : ℕ) (w : 𝕎·) → ∈Type n w #MPp₂ #lam2AX
+MPp₂-inh n w =
   →∈Type-PI
     n w (#TPURE #NAT!→BOOL) (#TPURE #NAT!→BOOL)
     (#[0]FUN #[0]MP-left #[0]MP-right)
     (#[0]FUN #[0]MP-left3 #[0]MP-right)
     #lam2AX #lam2AX (isType-#TPURE-NAT!→BOOL w n) p2 (λ w1 e1 a b h → h)
-    p3 (snd (MPp-inh w))
+    p3 (MPp-inh n w)
   where
-    n : ℕ
-    n = 1
-
     p2 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' (#TPURE #NAT!→BOOL) f₁ f₂
                        → equalTypes n w' (sub0 f₁ (#[0]FUN #[0]MP-left3 #[0]MP-right)) (sub0 f₂ (#[0]FUN #[0]MP-left3 #[0]MP-right)))
     p2 w1 e1 f₁ f₂ f∈ =
@@ -363,18 +492,14 @@ MPp₂-inh w =
 
 
 -- This is similar to MPp₂-inh but proved here for non-truncated sums
-MPp₃-inh : (w : 𝕎·) → member w #MPp₃ #lamInfSearchP
-MPp₃-inh w =
-  n ,
+MPp₃-inh : (n : ℕ) (w : 𝕎·) → ∈Type n w #MPp₃ #lamInfSearchP
+MPp₃-inh n w =
   equalInType-PI
     {n} {w} {#TPURE #NAT!→BOOL} {#[0]FUN #[0]MP-left2 #[0]MP-right2}
     (λ w1 e1 → isType-#TPURE-NAT!→BOOL w1 n)
     p2
     p3
   where
-    n : ℕ
-    n = 1
-
     p2 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' (#TPURE #NAT!→BOOL) f₁ f₂
                        → equalTypes n w' (sub0 f₁ (#[0]FUN #[0]MP-left2 #[0]MP-right2)) (sub0 f₂ (#[0]FUN #[0]MP-left2 #[0]MP-right2)))
     p2 w1 e1 f₁ f₂ f∈ =
@@ -397,7 +522,7 @@ MPp₃-inh w =
         p5 = →≡equalInType
                (sub0-fun-mp₂ f₁)
                (snd (snd (equalInType-PI→ {n} {w} {#TPURE #NAT!→BOOL} {#[0]FUN #[0]MP-left3 #[0]MP-right}
-                                           (snd (MPp₂-inh w)))) w1 e1 f₁ f₂ f∈)
+                                           (MPp₂-inh n w))) w1 e1 f₁ f₂ f∈)
 
         p4 : ∀𝕎 w1 (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#MP-left2 f₁) a₁ a₂
                             → equalInType n w' (#MP-right2 f₁) (#APPLY (#APPLY #lamInfSearchP f₁) a₁) (#APPLY (#APPLY #lamInfSearchP f₂) a₂))

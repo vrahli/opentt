@@ -85,4 +85,8 @@ weakℂ₀₁M w f = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (Σ Term (λ t �
 #weakℂEq : (w : 𝕎·) (t1 t2 : CTerm) → Set(lsuc(L))
 #weakℂEq w t1 t2 = weakℂEq w ⌜ t1 ⌝ ⌜ t2 ⌝
 
+
+strongℂ₀₁M : (w : 𝕎·) (f : 𝕎· → Maybe Term) → Set(lsuc(L))
+strongℂ₀₁M w f = Σ Term (λ t → f w ≡ just t × (t ⇛ Tℂ₀ at w ⊎ t ⇛ Tℂ₁ at w))
+
 \end{code}

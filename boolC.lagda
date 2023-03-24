@@ -150,7 +150,6 @@ equalInType-QT-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈QTBOOL! n w
 #PI-NEG-ASSERT₂ f = #PI #NAT! (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
 
 
-
 #SUM-ASSERT₃ : CTerm → CTerm
 #SUM-ASSERT₃ f = #SUM #NAT! (#[0]ASSERT₃ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
 
@@ -158,6 +157,9 @@ equalInType-QT-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈QTBOOL! n w
 #PI-NEG-ASSERT₃ : CTerm → CTerm
 #PI-NEG-ASSERT₃ f = #PI #NAT! (#[0]NEG (#[0]ASSERT₃ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
 
+
+#SUM-ASSERT₄ : CTerm → CTerm
+#SUM-ASSERT₄ f = #SUM #QTNAT! (#[0]ASSERT₃ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
 
 
 →equalTypes-#SUM-ASSERT₂ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
@@ -198,6 +200,37 @@ equalInType-QT-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈QTBOOL! n w
         aw2 : equalTypes n w' (#ASSERT₃ (#APPLY a₁ a)) (#ASSERT₃ (#APPLY a₂ b))
         aw2 = equalInType-QTBOOL!→equalTypes-ASSERT₃ eqb
 
+
+
+QTNAT!→QTBOOL! : Term
+QTNAT!→QTBOOL! = FUN QTNAT! QTBOOL!
+
+
+#QTNAT!→QTBOOL! : CTerm
+#QTNAT!→QTBOOL! = ct QTNAT!→QTBOOL! refl
+
+
+#QTNAT!→QTBOOL!≡ : #QTNAT!→QTBOOL! ≡ #FUN #QTNAT! #QTBOOL!
+#QTNAT!→QTBOOL!≡ = CTerm≡ refl
+
+
+→equalTypes-#SUM-ASSERT₄ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
+                           → equalInType n w #QTNAT!→QTBOOL! a₁ a₂
+                           → equalTypes n w (#SUM-ASSERT₄ a₁) (#SUM-ASSERT₄ a₂)
+→equalTypes-#SUM-ASSERT₄ {n} {w} {a₁} {a₂} eqt = eqTypesSUM← (λ w' _ → eqTypesQTNAT!) aw1
+  where
+    aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #QTNAT! a b → equalInType n w' #QTBOOL! (#APPLY a₁ a) (#APPLY a₂ b))
+    aw0 = equalInType-FUN→ eqt
+
+    aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #QTNAT! a b)
+                       → equalTypes n w' (sub0 a (#[0]ASSERT₃ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))) (sub0 b (#[0]ASSERT₃ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR))))
+    aw1 w' e a b ea rewrite sub0-ASSERT₃-APPLY a a₁ | sub0-ASSERT₃-APPLY b a₂ = aw2
+      where
+        eqb : equalInType n w' #QTBOOL! (#APPLY a₁ a) (#APPLY a₂ b)
+        eqb = aw0 w' e a b ea
+
+        aw2 : equalTypes n w' (#ASSERT₃ (#APPLY a₁ a)) (#ASSERT₃ (#APPLY a₂ b))
+        aw2 = equalInType-QTBOOL!→equalTypes-ASSERT₃ eqb
 
 
 →equalTypes-#PI-NEG-ASSERT₂-body : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}

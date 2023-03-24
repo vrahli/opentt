@@ -112,7 +112,6 @@ open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 Σchoice n k = SUM NAT! (EQ (APPLY (CS n) (VAR 0)) (ℂ→T k) typeℂ₀₁)
 
 
-
 #Σchoice : (n : Name) (k : ℂ·) → CTerm
 #Σchoice n k = ct (Σchoice n k) c
   where
@@ -130,7 +129,6 @@ sub0-#Σchoice-body≡ : (a : CTerm) (c : Name) (k : ℂ·)
 sub0-#Σchoice-body≡ a c k = CTerm≡ (→≡EQ (→≡APPLY refl (shiftDownUp ⌜ a ⌝ 0))
                                           (subNotIn ⌜ a ⌝ _ (CTerm.closed (ℂ→C· k)))
                                           (subNotIn ⌜ a ⌝ _ (CTerm.closed Typeℂ₀₁·)))
-
 
 
 equalTypes-#Σchoice-body : (i : ℕ) (w : 𝕎·) (c : Name) (k : ℂ·)
