@@ -90,13 +90,10 @@ open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)
 open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import not_mp(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+-- TOOD: move the usings to a non-CB-depedent file -- a propsX.lagda kinda file or lem_props?
+open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (#QTNAT!→QTBOOL! ; #QTNAT!→QTBOOL!≡ ; #SUM-ASSERT₂ ; #PI-NEG-ASSERT₂ ; #SUM-ASSERT₃)
+open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (#[0]MP-left ; #[0]MP-right ; #[0]MP-left3 ; #[0]MP-left2 ; #[0]MP-right2 ; #[0]MP-left-qt ; #[0]MP-right-qt ; #[0]MP-left-qt₂ ; #[0]MP-right-qt₂ ; sub0-fun-mp ; →equalTypes-#MP-left ; →equalTypes-#MP-right ; #MP-left ; #MP-right ; sub0-fun-mp₄ ; →equalTypes-#MP-left-qt ; →equalTypes-#MP-right-qt ; #MP-left-qt ; #MP-right-qt ; equalInType-#MP-left-qt→ ; →≡equalTypes ; sub0-fun-mp₂ ; →equalTypes-#MP-left3 ; →≡equalInType ; →∈Type-FUN ; #MP-left3 ; #MP-left2→#MP-left ; #MP-left3→#MP-left2 ; →∈Type-PI ; sub0-fun-mp₃ ; →equalTypes-#MP-left2 ; →equalTypes-#MP-right2 ; #MP-left2 ; #MP-right2 ; #MP-left2→#MP-left3)
+open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (#infSearchP ; mpSearch)
 
 
 
@@ -190,12 +187,20 @@ MPp = PI (TPURE NAT!→BOOL) (FUN (NEG (PI NAT! (NEG (ASSERT₂ (APPLY (VAR 1) (
 #MPp₄ = #PI (#TPURE #NAT!→QTBOOL!) (#[0]FUN #[0]MP-left-qt #[0]MP-right-qt)
 
 
+#MPp₅ : CTerm
+#MPp₅ = #PI (#TPURE #QTNAT!→QTBOOL!) (#[0]FUN #[0]MP-left-qt₂ #[0]MP-right-qt₂)
+
+
 isType-#TPURE-NAT!→BOOL : (w : 𝕎·) (n : ℕ) → isType n w (#TPURE #NAT!→BOOL)
 isType-#TPURE-NAT!→BOOL w n rewrite #NAT!→BOOL≡ = equalTypesTPURE (eqTypesFUN← isTypeNAT! (isTypeBOOL w n))
 
 
 isType-#TPURE-NAT!→QTBOOL! : (w : 𝕎·) (n : ℕ) → isType n w (#TPURE #NAT!→QTBOOL!)
 isType-#TPURE-NAT!→QTBOOL! w n rewrite #NAT!→QTBOOL!≡ = equalTypesTPURE (eqTypesFUN← isTypeNAT! (eqTypesQTBOOL! {w} {n}))
+
+
+isType-#TPURE-QTNAT!→QTBOOL! : (w : 𝕎·) (n : ℕ) → isType n w (#TPURE #QTNAT!→QTBOOL!)
+isType-#TPURE-QTNAT!→QTBOOL! w n rewrite #QTNAT!→QTBOOL!≡ = equalTypesTPURE (eqTypesFUN← eqTypesQTNAT! (eqTypesQTBOOL! {w} {n}))
 
 
 -- As shown in not_mp, MP is invalid when considering a Beth or Kripke □ and references
@@ -337,6 +342,30 @@ MPp-inh n w =
     aw w1 e1 = k , #⇛!-refl {w1} {#NUM k} , ∀𝕎-mon e1 ck
 
 
+#weakMonEq!-sym : (w : 𝕎·) (t1 t2 : CTerm)
+                  → #weakMonEq! w t1 t2
+                  → #weakMonEq! w t2 t1
+#weakMonEq!-sym w t1 t2 h w1 e1 with lower (h w1 e1)
+... | k , c₁ , c₂ = lift (k , c₂ , c₁)
+
+
+→inhType-ASSERT₃-APPLY-qt : (i : ℕ) (w : 𝕎·) (f n : CTerm) (k : ℕ)
+                             → ∈Type i w #QTNAT!→QTBOOL! f
+                             → #weakMonEq! w n (#NUM k)
+                             → inhType i w (#ASSERT₃ (#APPLY f n))
+                             → inhType i w (#ASSERT₃ (#APPLY f (#NUM k)))
+→inhType-ASSERT₃-APPLY-qt i w f n k f∈ ck (t , t∈) =
+  t ,
+  →equalInType-ASSERT₃
+    i w (#APPLY f (#NUM k)) t t
+    (equalInType-trans
+      (equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM k) n (→equalInType-QTNAT! i w (#NUM k) n (Mod.∀𝕎-□ M aw)))
+      (equalInType-ASSERT₃→ i w (#APPLY f n) t t t∈))
+  where
+    aw : ∀𝕎 w (λ w' _ → #weakMonEq! w' (#NUM k) n)
+    aw w1 e1 = ∀𝕎-mon e1 (#weakMonEq!-sym w n (#NUM k) ck)
+
+
 #¬Names→inhType-ASSERT₃ : (n : ℕ) (w1 w2 : 𝕎·) (t : CTerm)
                            → #¬Names t
                            → (Σ CTerm (λ x → t #⇓! #INL x at w1))
@@ -423,6 +452,7 @@ MPp₄-inh n w =
 
                              aw8 : ∀𝕎 w5 (λ w' e' → #weakBool! w' (#APPLY a₁ (#NUM k)) #BTRUE → Lift (lsuc L) ⊥)
                              aw8 w6 e6 wbe = lift (p (k , #¬Names→inhType-ASSERT₃ n w6 w3 (#APPLY a₁ (#NUM k)) (#¬Names-APPLY {a₁} {#NUM k} (equalInType-TPURE→ₗ eqa) refl) (lower (weakBool-BTRUE→ w6 (#APPLY a₁ (#NUM k)) wbe w6 (⊑-refl· w6)))))
+
 
 
 -- This is similar to MPp-inh but proved here for #MPp₂, which is stated using ¬¬∃, instead of #MPp, which is stated using ¬∀¬

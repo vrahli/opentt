@@ -100,7 +100,7 @@ cℂ = (c : Name) (r : Res) (w : 𝕎·) (n : ℕ)
 
 
 -- It seems that this would only be true with references because we don't have to jump to where 'a' is defined at 'n'
--- and we might then be able to use cℂ above
+-- and can then use cℂ above
 ⇓!sameℕ→⇓!same-bool : (cb : QTBoolℂ CB) (cc : cℂ) (w : 𝕎·) (t1 t2 : Term) (a : Name)
                          → compatible· a w Resℂ
                          → ⇓!sameℕ w t1 t2
@@ -533,6 +533,15 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
     eb6 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB c eb5 oc2 comp2 fb2)))))
 
 
+-- This version makes use of #QTNAT! and #QTBOOL!
+-- It requires alwaysFreezable, which means that all names are always mutable.
+-- Freezable/mutable is used to guarantee that if a name is freezable then freezing it will make it immutable.
+-- + FCSs are always freezable, because freezable returns always true because FCS slots are immutable once filled out.
+-- + References are not always freezable. Freezable retuns whether the cell is frozen, and once it is, it is not freezable anymore.
+--   This is because a reference has only 1 cell to fill out.
+-- Questions:
+-- (1) Is cℂ necessary?
+-- (2) Are there stateful computations that satisfy both properties?
 ¬MP₅ : (bcb : QTBoolℂ CB) (cc : cℂ) → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₅) #lamAX
 ¬MP₅ bcb cc afb w n = equalInType-NEG (isTypeMP₅ w n) aw1
   where
@@ -569,11 +578,8 @@ fun-equalInType-SUM-QTNAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
         f : CTerm
         f = #CS name
 
-        --eqf2 : ∀𝕎 w2 (λ w' _ → (m : ℕ) →  equalInType n w' #QTBOOL! (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
-        --eqf2 w' e m = ≡CTerm→equalInType (fst bcb) (→equalInType-APPLY-CS-Typeℂ₀₁· (⊑-compatible· e comp1) (NUM-equalInType-NAT! n w' m))
-
         eqf1 : ∈Type n w2 #QTNAT!→QTBOOL! f
-        eqf1 = →equalInType-CS-QTNAT!→QTBOOL! bcb cc {n} {w2} {name} comp1 --→equalInType-CS-QTNAT!→QTBOOL! eqf2
+        eqf1 = →equalInType-CS-QTNAT!→QTBOOL! bcb cc {n} {w2} {name} comp1
 
         h3 : ∀𝕎 w2 (λ w' _ → ∀𝕎 w' (λ w' _ → (Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #QTNAT! n₁ n₂
                                                    × inhType n w' (#ASSERT₃ (#APPLY f n₁)))))

@@ -59,6 +59,8 @@ open import mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)(EB)(EM) using (MPvalid ; 
 
 -- This instance of 'choiceBar' uses Beth bars and terms as choices:
 open import modInstanceBethCs
+-- This instance of 'choiceBar' uses Beth bars and bools as choices:
+open import modInstanceBethCsBool
 -- This instance of 'choiceBar' uses Beth bars and nats as choices:
 -- (this makes use of the 'freezable' field in *restrictions*, while the other isntances don't---but could/should)
 open import modInstanceBethRef
@@ -83,7 +85,7 @@ open import kripkeCsNotRetrieving
 open import kripkeCsNotExBar
 
 -- A proof that all functions on the Baire space are continuous by realizing the modulus of continuity using exceptions.
-open import continuity7
+open import continuity7 using (continuity)
 -- We show here that the properties used to prove continuity in continuity7 are satisfied by Kripke bars + references
 open import contInstanceKripkeRef
 -- We show here that the properties used to prove continuity in continuity7 are satisfied by Open bars + references
@@ -103,7 +105,9 @@ open import barContP9 using (semCond)
 open import barContP10 using (contDiagVal)
 
 -- Another attempt at validating continuity. It is unfinished: continuity10b has holes
+-- This one it finished and shouldn't be commented out, but it takes too long to compile
 --open import continuity9b
+-- This one is unfinished
 --open import continuity10b
 
 -- On AC (not finished yet)

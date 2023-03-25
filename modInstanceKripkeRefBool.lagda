@@ -181,7 +181,8 @@ isvalue-choice false = tt
 
 
 
-∈Typeℂ₀₁→-kripke-ref : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-kripke-ref a b → □· w (λ w' _ → #weakℂEq w' a b)
+∈Typeℂ₀₁→-kripke-ref : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                         → equalInType i w Typeℂ₀₁-kripke-ref a b → □· w (λ w' _ → #weakℂEq w' a b)
 ∈Typeℂ₀₁→-kripke-ref i w a b eqi = Mod.∀𝕎-□Func M aw (equalInType-QTBOOL!→ i w a b eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #weakBool! w' a b → #weakℂEq w' a b)
@@ -196,7 +197,8 @@ isvalue-choice false = tt
             y : CTerm
             y = fst (snd (lower (h w2 e2)))
 
-            c : ((a #⇓! #INL x at w2 × b #⇓! #INL y at w2) ⊎ (a #⇓! #INR x at w2 × b #⇓! #INR y at w2)) → ∼C! w2 (ℂ→C· c₁) (ℂ→C· c₂)
+            c : ((a #⇓! #INL x at w2 × b #⇓! #INL y at w2) ⊎ (a #⇓! #INR x at w2 × b #⇓! #INR y at w2))
+                → ∼C! w2 (ℂ→C· c₁) (ℂ→C· c₂)
             c (inj₁ (c1 , c2)) rewrite #⇓!-true w2 a x c₁ comp₁ c1 | #⇓!-true w2 b y c₂ comp₂ c2 = ∼C!-refl {w2} {#BTRUE}
             c (inj₂ (c1 , c2)) rewrite #⇓!-false w2 a x c₁ comp₁ c1 | #⇓!-false w2 b y c₂ comp₂ c2 = ∼C!-refl {w2} {#BFALSE}
 
