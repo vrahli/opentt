@@ -101,23 +101,6 @@ cℂ = (c : Name) (r : Res) (w : 𝕎·) (n : ℕ)
 
 -- It seems that this would only be true with references because we don't have to jump to where 'a' is defined at 'n'
 -- and can then use cℂ above
-⇓!sameℕ→⇓!same-bool : (cb : QTBoolℂ CB) (cc : cℂ) (w : 𝕎·) (t1 t2 : Term) (a : Name)
-                         → compatible· a w Resℂ
-                         → ⇓!sameℕ w t1 t2
-                         → ⇓!same-bool w (APPLY (CS a) t1) (APPLY (CS a) t2)
-⇓!sameℕ→⇓!same-bool cb cc w t1 t2 a compat (n , c₁ , c₂) with lower (cc a Resℂ w n compat w (⊑-refl· w))
-... | inj₁ gc = AX , AX , inj₂ (Σ-steps-APPLY-CS (fst c₁) t1 BFALSE w w n a (snd c₁) gt ,
-                                Σ-steps-APPLY-CS (fst c₂) t2 BFALSE w w n a (snd c₂) gt)
-    where
-      gt : getT n a w ≡ just BFALSE
-      gt rewrite gc = ≡just (≡CTerm (fst (snd cb)))
-... | inj₂ gc = AX , AX , inj₁ (Σ-steps-APPLY-CS (fst c₁) t1 BTRUE w w n a (snd c₁) gt ,
-                                Σ-steps-APPLY-CS (fst c₂) t2 BTRUE w w n a (snd c₂) gt)
-    where
-      gt : getT n a w ≡ just BTRUE
-      gt rewrite gc = ≡just (≡CTerm (snd (snd cb)))
-
-
 ⇓!sameℕ→#⇓!same-bool : (cb : QTBoolℂ CB) (cc : cℂ) (w : 𝕎·) (t1 t2 : CTerm) (a : Name)
                          → compatible· a w Resℂ
                          → ⇓!sameℕ w ⌜ t1 ⌝ ⌜ t2 ⌝
@@ -135,20 +118,25 @@ cℂ = (c : Name) (r : Res) (w : 𝕎·) (n : ℕ)
       gt rewrite gc = ≡just (≡CTerm (snd (snd cb)))
 
 
-→equalInType-APPLY-CS-Typeℂ₀₁-qt : (cb : QTBoolℂ CB) (cc : cℂ) {i : ℕ} {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
-                                  → compatible· c w Resℂ
-                                  → equalInType i w #QTNAT! a₁ a₂
-                                  → equalInType i w Typeℂ₀₁· (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
-→equalInType-APPLY-CS-Typeℂ₀₁-qt cb cc {i} {w} {c} {a₁} {a₂} compat ea =
-  ≡CTerm→equalInType
-    (sym (fst cb))
-    (→equalInType-QTBOOL! i w (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂) (Mod.∀𝕎-□Func M aw1 ea1))
-  where
-    ea1 : □· w (λ w' _ → #weakMonEq! w' a₁ a₂)
-    ea1 = equalInType-QTNAT!→ i w a₁ a₂ ea
+□#weakMonEq!→□#⇓!sameℕ : (w : 𝕎·) (a₁ a₂ : CTerm)
+                            → □· w (λ w' _ → #weakMonEq! w' a₁ a₂)
+                            → □· w (λ w' _ → Lift (lsuc(L)) (⇓!sameℕ w' ⌜ a₁ ⌝ ⌜ a₂ ⌝))
+□#weakMonEq!→□#⇓!sameℕ w a₁ a₂ h =
+  Mod.∀𝕎-□Func M (λ w1 e1 q → q w1 (⊑-refl· w1)) h
 
-    aw1 : ∀𝕎 w (λ w' e' → #weakMonEq! w' a₁ a₂ → #weakBool! w' (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂))
-    aw1 w1 e1 wm w2 e2 = lift (⇓!sameℕ→#⇓!same-bool cb cc w2 a₁ a₂ c (⊑-compatible· (⊑-trans· e1 e2) compat) (lower (wm w2 e2)))
+
+-- Could we prove this without cℂ, by creating a covering that fills out the choices up to the numbers provided in
+-- the covering in the hypothesis?
+□⇓!sameℕ→#⇓!same-bool : (cb : QTBoolℂ CB) (cc : cℂ) {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
+                             → compatible· c w Resℂ
+                             → □· w (λ w' _ → Lift (lsuc(L)) (⇓!sameℕ w' ⌜ a₁ ⌝ ⌜ a₂ ⌝))
+                             → □· w (λ w' _ → Lift (lsuc(L)) (#⇓!same-bool w' (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)))
+□⇓!sameℕ→#⇓!same-bool cb cc {w} {c} {a₁} {a₂} compat ea =
+  Mod.∀𝕎-□Func M aw1 ea
+  where
+    aw1 : ∀𝕎 w (λ w' e' → Lift (lsuc(L)) (⇓!sameℕ w' ⌜ a₁ ⌝ ⌜ a₂ ⌝)
+                         → Lift (lsuc(L)) (#⇓!same-bool w' (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)))
+    aw1 w1 e1 wm = lift (⇓!sameℕ→#⇓!same-bool cb cc w1 a₁ a₂ c (⊑-compatible· e1 compat) (lower wm))
 
 
 →equalInType-APPLY-CS-QTBOOL!-qt : (cb : QTBoolℂ CB) (cc : cℂ) {i : ℕ} {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
@@ -156,7 +144,19 @@ cℂ = (c : Name) (r : Res) (w : 𝕎·) (n : ℕ)
                                   → equalInType i w #QTNAT! a₁ a₂
                                   → equalInType i w #QTBOOL! (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
 →equalInType-APPLY-CS-QTBOOL!-qt cb cc {i} {w} {c} {a₁} {a₂} compat ea =
-  ≡CTerm→equalInType (fst cb) (→equalInType-APPLY-CS-Typeℂ₀₁-qt cb cc compat ea)
+  →equalInType-QTBOOL!
+    i w (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
+    (Mod.→□∀𝕎 M (□⇓!sameℕ→#⇓!same-bool
+                    cb cc {w} {c} {a₁} {a₂} compat
+                    (□#weakMonEq!→□#⇓!sameℕ w a₁ a₂ (equalInType-QTNAT!→ i w a₁ a₂ ea))))
+
+
+→equalInType-APPLY-CS-Typeℂ₀₁-qt : (cb : QTBoolℂ CB) (cc : cℂ) {i : ℕ} {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
+                                  → compatible· c w Resℂ
+                                  → equalInType i w #QTNAT! a₁ a₂
+                                  → equalInType i w Typeℂ₀₁· (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
+→equalInType-APPLY-CS-Typeℂ₀₁-qt cb cc {i} {w} {c} {a₁} {a₂} compat ea =
+  ≡CTerm→equalInType (sym (fst cb)) (→equalInType-APPLY-CS-QTBOOL!-qt cb cc compat ea)
 
 
 →equalInType-CS-QTNAT!→QTBOOL! : (cb : QTBoolℂ CB) (cc : cℂ) {n : ℕ} {w : 𝕎·} {a : Name}
