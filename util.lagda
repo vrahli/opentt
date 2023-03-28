@@ -343,4 +343,21 @@ select++→⊎∈ {L} {A} {suc k} {x ∷ l} {l'} {t} sel = select++→⊎∈ {L}
 ≡suc→< : {a b : ℕ} → a ≡ suc b → b < a
 ≡suc→< {a} {b} e rewrite e = ≤-refl
 
+
+≤suc→⊎ : {a b : ℕ} → a ≤ suc b → a ≡ suc b ⊎ a ≤ b
+≤suc→⊎ {0} {b} _≤_.z≤n = inj₂ _≤_.z≤n
+≤suc→⊎ {suc 0} {0} (_≤_.s≤s _≤_.z≤n) = inj₁ refl
+≤suc→⊎ {suc m} {suc b} (_≤_.s≤s h) with ≤suc→⊎ h
+... | inj₁ p rewrite p = inj₁ refl
+... | inj₂ p = inj₂ (_≤_.s≤s p)
+
+
++0 : (n : ℕ) → n + 0 ≡ n
++0 0 = refl
++0 (suc n) rewrite +0 n = refl
+
+
++≡→≤ : (k j n : ℕ) → k + j ≡ n → k ≤ n
++≡→≤ k j n e rewrite sym e = ≤-stepsʳ j ≤-refl
+
 \end{code}

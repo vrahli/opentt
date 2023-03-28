@@ -93,6 +93,16 @@ open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 
+→≡sucIf≤ : {v : Var} {a b : Var}
+            → a ≡ b
+            → sucIf≤ v a ≡ sucIf≤ v b
+→≡sucIf≤ {v} {a} {b} e rewrite e = refl
+
+
+NAMEinj : {n m : Name} → NAME n ≡ NAME m → n ≡ m
+NAMEinj refl =  refl
+
+
 #⇓sameℕ : (w : 𝕎·) (t1 t2 : CTerm) → Set
 #⇓sameℕ w t1 t2 = Σ ℕ (λ n → t1 #⇓ (#NUM n) at w × t2 #⇓ (#NUM n) at w)
 
@@ -194,7 +204,8 @@ testM-QNAT-shift cn kb gc i w1 F f name comp1 ∈F ∈f =
 
     eqa : ∈Type i w2 #NAT (#APPLY F (#upd name f))
     eqa = equalInType-FUN→
-            (equalInType-mon ∈F w2 e2) w2 (⊑-refl· _) (#upd name f) (#upd name f)
+            (≡CTerm→equalInType #BAIRE→NAT≡ (equalInType-mon ∈F w2 e2))
+            w2 (⊑-refl· _) (#upd name f) (#upd name f)
             (upd∈ i w2 name f g0 (equalInType-mon ∈f w2 e2))
 
     eqn : NATeq w2 (#APPLY F (#upd name f)) (#APPLY F (#upd name f))
@@ -424,16 +435,6 @@ contQBody F f =
     aw : ∀𝕎 w (λ w' e' → #weakMonEq w' a₁ a₂ → #weakMonEq w' b₁ b₂ → equalTypes i w' (#QLT a₁ b₁) (#QLT a₂ b₂))
     aw  w1 e1 ha hb =
       EQTQLT a₁ a₂ b₁ b₂ (#compAllRefl (#QLT a₁ b₁) w1) (#compAllRefl (#QLT a₂ b₂) w1) ha hb
-
-
-
--- MOVE to terms
-#[0]QLT : CTerm0 → CTerm0 → CTerm0
-#[0]QLT a b = ct0 (QLT ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ [ 0 ] ] QLT ⌜ a ⌝ ⌜ b ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝} {[ 0 ]}
-              (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm0.closed a)) (⊆?→⊆ (CTerm0.closed b)))
 
 
 sub0-QNATn-body : (a n : CTerm) → sub0 a (#[0]QLT #[0]VAR ⌞ n ⌟) ≡ #QLT a n
@@ -850,107 +851,6 @@ abstract
 
 
 
-isHighestℕ→getT≤ℕ-last : {k : ℕ} {w1 w2 : 𝕎·} {a b : Term} (n : ℕ) (name : Name) (comp : steps k (a , w1) ≡ (b , w2))
-                            → isHighestℕ {k} {w1} {w2} {a} {b} n name comp
-                            → getT≤ℕ w2 n name
-isHighestℕ→getT≤ℕ-last {0} {w1} {w2} {a} {b} n name comp h
-  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = h --h
-isHighestℕ→getT≤ℕ-last {suc k} {w1} {w2} {a} {b} n name comp h with step⊎ a w1
-... | inj₁ (a' , w' , z) rewrite z = isHighestℕ→getT≤ℕ-last {k} {w'} {w2} {a'} {b} n name comp (snd h)
-... | inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = h
-
-
-
-isHighestℕ→≤ : (cn : comp→∀ℕ) (F f : Term) (cF : # F) (cf : # f) (name : Name)
-                 (n1 : ℕ) (w1 w1' : 𝕎·) (k1 : ℕ)
-                 (comp1 : steps k1 (testM name F f , w1) ≡ (NUM n1 , w1'))
-                 (n2 : ℕ)
-                 → compatible· name w1 Res⊤
-                 → isHighestℕ {k1} {w1} {w1'} {testM name F f} {NUM n1} n2 name comp1
-                 → n1 ≤ n2
-isHighestℕ→≤ cn F f cF cf name n1 w1 w1' k1 comp1 n2 compat ish =
-  ≤-trans (≤-reflexive (trans eqk (→s≡s (NUMinj (just-inj (trans (sym gt0) gtm)))))) ltm
-  where
-    h : Σ Term (λ v → Σ ℕ (λ k →
-          APPLY F (upd name f) ⇓ v from (chooseT name w1 (NUM 0)) to w1'
-          × isValue v
-          × getT 0 name w1' ≡ just (NUM k)
-          × n1 ≡ suc k))
-    h = testM⇓→ cn {w1} {w1'} {F} {f} {n1} {name} cF cf compat (k1 , comp1)
-
-    k : ℕ
-    k = fst (snd h)
-
-    gt0 : getT 0 name w1' ≡ just (NUM k)
-    gt0 = fst (snd (snd (snd (snd h))))
-
-    eqk : n1 ≡ suc k
-    eqk = snd (snd (snd (snd (snd h))))
-
-    gtl : getT≤ℕ w1' n2 name
-    gtl = isHighestℕ→getT≤ℕ-last {k1} {w1} {w1'} {testM name F f} {NUM n1} n2 name comp1 ish
-
-    m : ℕ
-    m = fst gtl
-
-    gtm : getT 0 name w1' ≡ just (NUM m)
-    gtm = fst (snd gtl)
-
-    ltm : m < n2
-    ltm = snd (snd gtl)
-
-
-
-isHighestℕ→≤-LOAD : (cn : comp→∀ℕ) (F f : Term) (cF : # F) (cf : # f) (name : Name)
-                 (n1 : ℕ) (w1 w1' : 𝕎·) (k1 : ℕ)
-                 (comp1 : steps k1 (testML name F f , w1) ≡ (NUM n1 , w1'))
-                 (n2 : ℕ)
-                 → compatible· name w1 Res⊤
-                 → isHighestℕ {k1} {w1} {w1'} {testML name F f} {NUM n1} n2 name comp1
-                 → n1 ≤ n2
-isHighestℕ→≤-LOAD cn F f cF cf name n1 w1 w1' k1 comp1 n2 compat ish =
-  ≤-trans (≤-reflexive (trans eqk (→s≡s (NUMinj (just-inj (trans (sym gt0) gtm)))))) ltm
-  where
-    h : Σ Term (λ v → Σ ℕ (λ k →
-          APPLY F (upd name f) ⇓ v from (chooseT name (startNewChoices Res⊤ w1 F) (NUM 0)) to w1'
-          × isValue v
-          × getT 0 name w1' ≡ just (NUM k)
-          × n1 ≡ suc k))
-    h = testML⇓→ cn {w1} {w1'} {F} {f} {n1} {name} cF cf compat (k1 , comp1)
-
-    k : ℕ
-    k = fst (snd h)
-
-    gt0 : getT 0 name w1' ≡ just (NUM k)
-    gt0 = fst (snd (snd (snd (snd h))))
-
-    eqk : n1 ≡ suc k
-    eqk = snd (snd (snd (snd (snd h))))
-
-    gtl : getT≤ℕ w1' n2 name
-    gtl = isHighestℕ→getT≤ℕ-last {k1} {w1} {w1'} {testML name F f} {NUM n1} n2 name comp1 ish
-
-    m : ℕ
-    m = fst gtl
-
-    gtm : getT 0 name w1' ≡ just (NUM m)
-    gtm = fst (snd gtl)
-
-    ltm : m < n2
-    ltm = snd (snd gtl)
-
-
-→≡sucIf≤ : {v : Var} {a b : Var}
-            → a ≡ b
-            → sucIf≤ v a ≡ sucIf≤ v b
-→≡sucIf≤ {v} {a} {b} e rewrite e = refl
-
-
-NAMEinj : {n m : Name} → NAME n ≡ NAME m → n ≡ m
-NAMEinj refl =  refl
-
-
-
 abstract
 
   shiftNameUp-inj : {n : Name} {a b : Term} → shiftNameUp n a ≡ shiftNameUp n b → a ≡ b
@@ -1003,6 +903,7 @@ abstract
   shiftNameUp-inj {n} {DUM a} {DUM b} e rewrite shiftNameUp-inj (DUMinj e) = refl
   shiftNameUp-inj {n} {FFDEFS a a₁} {FFDEFS b b₁} e rewrite shiftNameUp-inj (FFDEFSinj1 e) | shiftNameUp-inj (FFDEFSinj2 e) = refl
   shiftNameUp-inj {n} {PURE} {PURE} refl = refl
+  shiftNameUp-inj {n} {TERM} {TERM} refl = refl
   shiftNameUp-inj {n} {UNIV x} {UNIV .x} refl = refl
   shiftNameUp-inj {n} {LIFT a} {LIFT b} e rewrite shiftNameUp-inj (LIFTinj e) = refl
   shiftNameUp-inj {n} {LOWER a} {LOWER b} e rewrite shiftNameUp-inj (LOWERinj e) = refl
@@ -1096,6 +997,7 @@ abstract
   fvars-shiftNameDown n (DUM a) rewrite fvars-shiftNameDown n a = refl
   fvars-shiftNameDown n (FFDEFS a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
   fvars-shiftNameDown n PURE = refl
+  fvars-shiftNameDown n TERM = refl
   fvars-shiftNameDown n (UNIV x) = refl
   fvars-shiftNameDown n (LIFT a) rewrite fvars-shiftNameDown n a = refl
   fvars-shiftNameDown n (LOWER a) rewrite fvars-shiftNameDown n a = refl
@@ -1181,6 +1083,7 @@ abstract
   shiftNameUpDown n (DUM t) imp1 imp2 = ≡DUM (shiftNameUpDown n t imp1 imp2)
   shiftNameUpDown n (FFDEFS t t₁) imp1 imp2 = ≡FFDEFS (shiftNameUpDown n t (λ x i → imp1 x (∈-++⁺ˡ i)) (λ z → imp2 (∈-++⁺ˡ z))) (shiftNameUpDown n t₁ (λ x i → imp1 x (∈-++⁺ʳ (names t) i)) (λ z → imp2 (∈-++⁺ʳ (names t) z)))
   shiftNameUpDown n PURE imp1 imp2 = refl
+  shiftNameUpDown n TERM imp1 imp2 = refl
   shiftNameUpDown n (UNIV x) imp1 imp2 = refl
   shiftNameUpDown n (LIFT t) imp1 imp2 = ≡LIFT (shiftNameUpDown n t imp1 imp2)
   shiftNameUpDown n (LOWER t) imp1 imp2 = ≡LOWER (shiftNameUpDown n t imp1 imp2)
@@ -1312,6 +1215,7 @@ abstract
   renn¬∈ n m (DUM t) ni = ≡DUM (renn¬∈ n m t ni)
   renn¬∈ n m (FFDEFS t t₁) ni = ≡FFDEFS (renn¬∈ n m t (¬∈++2→¬∈1 {_} {_} {names t} {names t₁} {n} ni)) (renn¬∈ n m t₁ (¬∈++2→¬∈2 {_} {_} {names t} {names t₁} {n} ni))
   renn¬∈ n m PURE ni = refl
+  renn¬∈ n m TERM ni = refl
   renn¬∈ n m (UNIV x) ni = refl
   renn¬∈ n m (LIFT t) ni = ≡LIFT (renn¬∈ n m t ni)
   renn¬∈ n m (LOWER t) ni = ≡LOWER (renn¬∈ n m t ni)

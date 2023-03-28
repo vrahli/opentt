@@ -69,8 +69,8 @@ open import terms6(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -173,6 +173,7 @@ abstract
   ¬names→[] (DUM a) x = ¬names→[] a x
   ¬names→[] (FFDEFS a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
   ¬names→[] PURE x = refl
+  ¬names→[] TERM x = refl
   ¬names→[] (UNIV x₁) x = refl
   ¬names→[] (LIFT a) x = ¬names→[] a x
   ¬names→[] (LOWER a) x = ¬names→[] a x
@@ -434,6 +435,7 @@ abstract
   step-pres-dom cc {DUM a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
   step-pres-dom cc {FFDEFS a a₁} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
   step-pres-dom cc {PURE} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+  step-pres-dom cc {TERM} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
   step-pres-dom cc {UNIV x} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
   step-pres-dom cc {LIFT a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
   step-pres-dom cc {LOWER a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x

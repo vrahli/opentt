@@ -54,27 +54,28 @@ open import mod
 module mp_search {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
                  (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
                  (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
-                 (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
-                 (F : Freeze {L} W C K P G N)
+                 (N : NewChoice {L} W C K G)
+--                 (V : ChoiceVal W C K G X N)
+--                 (F : Freeze {L} W C K P G N)
                  (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-                 (CB : ChoiceBar W M C K P G X N V F E)
+--                 (CB : ChoiceBar W M C K P G X N V F E)
        where
 
 
 open import worldDef(W)
 open import choiceDef{L}(C)
-open import compatibleDef{L}(W)(C)(K)
-open import getChoiceDef(W)(C)(K)(G)
-open import newChoiceDef(W)(C)(K)(G)(N)
-open import choiceExtDef(W)(C)(K)(G)(X)
-open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
-open import freezeDef(W)(C)(K)(P)(G)(N)(F)
+--open import compatibleDef{L}(W)(C)(K)
+--open import getChoiceDef(W)(C)(K)(G)
+--open import newChoiceDef(W)(C)(K)(G)(N)
+--open import choiceExtDef(W)(C)(K)(G)(X)
+--open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
+--open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import computation(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import terms2(W)(C)(K)(G)(X)(N)
 open import terms3(W)(C)(K)(G)(X)(N)
@@ -86,7 +87,7 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (#MP-right ; #MP-right2 ; isType-MP-right-body)
+open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#MP-right ; #MP-right2 ; isType-MP-right-body)
 
 
 
@@ -166,16 +167,10 @@ infSearch f = APPLY (infSearchF f) N0
 ∈#NAT!→BOOL→ i w f₁ f₂ f∈ w1 e1 n₁ n₂ n∈ =
   ∈#BOOL→
     i w1 (#APPLY f₁ n₁) (#APPLY f₂ n₂)
-    (equalInType-FUN→ f∈ w1 e1 n₁ n₂ (→equalInType-NAT! i w1 n₁ n₂ (Mod.∀𝕎-□ M λ w2 e2 → #⇛!sameℕ-mon e2 {n₁} {n₂} n∈)))
-
-
--- MOVE to utils
-≤suc→⊎ : {a b : ℕ} → a ≤ suc b → a ≡ suc b ⊎ a ≤ b
-≤suc→⊎ {0} {b} _≤_.z≤n = inj₂ _≤_.z≤n
-≤suc→⊎ {suc 0} {0} (_≤_.s≤s _≤_.z≤n) = inj₁ refl
-≤suc→⊎ {suc m} {suc b} (_≤_.s≤s h) with ≤suc→⊎ h
-... | inj₁ p rewrite p = inj₁ refl
-... | inj₂ p = inj₂ (_≤_.s≤s p)
+    (equalInType-FUN→
+      (≡CTerm→equalInType #NAT!→BOOL≡ f∈)
+      w1 e1 n₁ n₂
+      (→equalInType-NAT! i w1 n₁ n₂ (Mod.∀𝕎-□ M λ w2 e2 → #⇛!sameℕ-mon e2 {n₁} {n₂} n∈)))
 
 
 ∈#NAT!→BOOL≤→ : (i : ℕ) (w : 𝕎·) (f₁ f₂ : CTerm) (n : ℕ)
@@ -416,16 +411,6 @@ sub-APPLY-shiftUp0-VAR0 n R #R
     c = ⇛→⇓from-to (∀𝕎-mon e1 comp)
 
 
--- There are 3 of those! move it to utils
-+0 : (n : ℕ) → n + 0 ≡ n
-+0 0 = refl
-+0 (suc n) rewrite +0 n = refl
-
-
-+≡→≤ : (k j n : ℕ) → k + j ≡ n → k ≤ n
-+≡→≤ k j n e rewrite sym e = ≤-stepsʳ j ≤-refl
-
-
 -- by induction on j
 mpSearch3 : (i : ℕ) (w : 𝕎·) (f₁ f₂ u₁ u₂ : CTerm) (n k j : ℕ)
             → k + j ≡ n
@@ -577,7 +562,7 @@ mpSearch2¬Names i w f₁ f₂ u₁ u₂ n nnf₁ nnf₂ hn ha₁ ha₂ with mpS
                 (Mod.∀𝕎-□ M (λ w2 e2 → m , ∀𝕎-mon (⊑-trans· e1 e2) cm , #⇛!-refl {w2} {#NUM m}))
 
         eqb : equalInType i w1 #BOOL (#APPLY f t) (#APPLY f (#NUM m))
-        eqb = equalInType-FUN→ f∈ w1 e1 t (#NUM m) eqn
+        eqb = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL≡ f∈) w1 e1 t (#NUM m) eqn
 
 
 mpSearch1 : (i : ℕ) (w : 𝕎·) (f₁ f₂ u₁ u₂ t₁ t₂ : CTerm) (n : ℕ)

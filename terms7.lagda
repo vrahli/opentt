@@ -909,6 +909,7 @@ abstract
   differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(TCONST a) b v k compat1 compat2 agtn atgn' (differ-TCONST a .a diff) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TCONST _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TCONST _ _ diff
   differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(SUBSING a) b v k compat1 compat2 agtn atgn' (differ-SUBSING a .a diff) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = SUBSING _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-SUBSING _ _ diff
   differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .PURE b v k compat1 compat2 agtn atgn' differ-PURE s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = PURE , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-PURE
+  differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .TERM b v k compat1 compat2 agtn atgn' differ-TERM s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TERM , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TERM
   differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(DUM a) b v k compat1 compat2 agtn atgn' (differ-DUM a .a diff) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = DUM _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-DUM _ _ diff
   differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(FFDEFS a₁ b₁) b v k compat1 compat2 agtn atgn' (differ-FFDEFS a₁ .a₁ b₁ .b₁ diff diff₁) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = FFDEFS _ _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-FFDEFS _ _ _ _ diff diff₁
   differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(UNIV x) b v k compat1 compat2 agtn atgn' (differ-UNIV x) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = UNIV _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-UNIV _
@@ -919,48 +920,51 @@ abstract
 
 
 
-differNF⇓-aux : (gc0 : get-choose-ℕ) (f : Term) (cf : # f) (nn : ¬Names f) (name : Name) (n : ℕ)
-              (ind : (n' : ℕ) → n' < n → ⇓PresDiffNF f name n')
-              → ⇓PresDiffNF f name n
-differNF⇓-aux gc0 f cf nnf name 0 ind w1 w2 w1' a v isv compat1 compat2 gt0 gt0' diff comp rewrite pair-inj₁ comp | pair-inj₂ comp =
-  w1' , (0 , refl) , diff
-differNF⇓-aux gc0 f cf nnf name (suc n) ind w1 w2 w1' a v isv compat1 compat2 gt0 gt0' diff comp with step⊎ a w1
-... | inj₁ (a' , w1'' , z) rewrite z =
-  fst e ,
-  ⇓-trans₂ (fst (snd (snd (snd (snd c))))) (fst (snd e)) ,
-  snd (snd e)
-  where
-    c : Σ Term (λ a'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
-                   a' ⇓ a'' from w1'' to w3
-                   × a ⇓ a'' from w1' to w3'
-                   × differ name name f a'' a'')))
-    c = differNF⇓-aux2 gc0 f cf nnf name w1 w1'' w1' w2 a a' v n compat1 compat2 gt0 gt0' diff z comp isv λ k i → ind k (<-trans i (n<1+n n))
+abstract
+  differNF⇓-aux : (gc0 : get-choose-ℕ) (f : Term) (cf : # f) (nn : ¬Names f) (name : Name) (n : ℕ)
+                  (ind : (n' : ℕ) → n' < n → ⇓PresDiffNF f name n')
+                  → ⇓PresDiffNF f name n
+  differNF⇓-aux gc0 f cf nnf name 0 ind w1 w2 w1' a v isv compat1 compat2 gt0 gt0' diff comp rewrite pair-inj₁ comp | pair-inj₂ comp =
+    w1' , (0 , refl) , diff
+  differNF⇓-aux gc0 f cf nnf name (suc n) ind w1 w2 w1' a v isv compat1 compat2 gt0 gt0' diff comp with step⊎ a w1
+  ... | inj₁ (a' , w1'' , z) rewrite z =
+    fst e ,
+    ⇓-trans₂ (fst (snd (snd (snd (snd c))))) (fst (snd e)) ,
+    snd (snd e)
+    where
+      c : Σ Term (λ a'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
+                    a' ⇓ a'' from w1'' to w3
+                    × a ⇓ a'' from w1' to w3'
+                    × differ name name f a'' a'')))
+      c = differNF⇓-aux2 gc0 f cf nnf name w1 w1'' w1' w2 a a' v n compat1 compat2 gt0 gt0' diff z comp isv λ k i → ind k (<-trans i (n<1+n n))
 
-    d : steps n (fst c , fst (snd c)) ≡ (v , w2)
-    d = steps⇓-decomp
-          n (fst (fst (snd (snd (snd c))))) a'
-          (fst c) v w1'' w2 (fst (snd c)) comp
-          (snd (fst (snd (snd (snd c))))) isv
+      d : steps n (fst c , fst (snd c)) ≡ (v , w2)
+      d = steps⇓-decomp
+            n (fst (fst (snd (snd (snd c))))) a'
+            (fst c) v w1'' w2 (fst (snd c)) comp
+            (snd (fst (snd (snd (snd c))))) isv
 
-    e₁ : w1 ⊑· fst (snd c)
-    e₁ = ⇓→⊑ a (fst c) (step-⇓-from-to-trans z (fst (snd (snd (snd c)))))
+      e₁ : w1 ⊑· fst (snd c)
+      e₁ = ⇓→⊑ a (fst c) (step-⇓-from-to-trans z (fst (snd (snd (snd c)))))
 
-    e₂ : w1' ⊑· fst (snd (snd c))
-    e₂ = ⇓→⊑ a (fst c) (fst (snd (snd (snd (snd c)))))
+      e₂ : w1' ⊑· fst (snd (snd c))
+      e₂ = ⇓→⊑ a (fst c) (fst (snd (snd (snd (snd c)))))
 
-    e : Σ 𝕎· (λ w2' → fst c ⇓ v from fst (snd (snd c)) to w2' × differ name name f v v)
-    e = ind n ≤-refl (fst (snd c)) w2 (fst (snd (snd c))) (fst c) v isv
-            (⊑-compatible· e₁ compat1) (⊑-compatible· e₂ compat2)
-            (∀𝕎-mon e₁ gt0)
-            (∀𝕎-mon e₂ gt0')
-            (snd (snd (snd (snd (snd c)))))
-            d
-... | inj₂ z rewrite z | pair-inj₁ comp | pair-inj₂ comp = w1' , (0 , refl) , diff
+      e : Σ 𝕎· (λ w2' → fst c ⇓ v from fst (snd (snd c)) to w2' × differ name name f v v)
+      e = ind n ≤-refl (fst (snd c)) w2 (fst (snd (snd c))) (fst c) v isv
+              (⊑-compatible· e₁ compat1) (⊑-compatible· e₂ compat2)
+              (∀𝕎-mon e₁ gt0)
+              (∀𝕎-mon e₂ gt0')
+              (snd (snd (snd (snd (snd c)))))
+              d
+  ... | inj₂ z rewrite z | pair-inj₁ comp | pair-inj₂ comp = w1' , (0 , refl) , diff
+
 
 
 differNF⇓ : (gc0 : get-choose-ℕ) (f : Term) (cf : # f) (nn : ¬Names f) (name : Name) (n : ℕ)
           → ⇓PresDiffNF f name n
 differNF⇓ gc0 f cf nnf name = <ℕind _ (differNF⇓-aux gc0 f cf nnf name)
+
 
 
 differNF⇓APPLY-upd : (gc0 : get-choose-ℕ) (F f : Term) (cf : # f) (name : Name) (n : ℕ)

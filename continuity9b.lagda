@@ -72,8 +72,8 @@ open import terms9(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -104,6 +104,7 @@ open import continuity6b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import continuity7b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity8b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuitySMb(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
+open import continuitySMb2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (∀𝕎smallestMod⊤ ; smallestModAux→⇛!sameℕ)
 
 
 
@@ -261,6 +262,7 @@ abstract
   →updRel2-refl {name} {f} {g} {r} {DUM a} nn nr1 nr2 = updRel2-DUM _ _ (→updRel2-refl nn nr1 nr2)
   →updRel2-refl {name} {f} {g} {r} {FFDEFS a a₁} nn nr1 nr2 = updRel2-FFDEFS _ _ _ _ (→updRel2-refl (¬∈++2→¬∈1 {_} {_} {names a} {names a₁} {name} nn) (disjoint++2→1 (names a) (names a₁) (renₗ r) nr1) (disjoint++2→1 (names a) (names a₁) (renᵣ r) nr2)) (→updRel2-refl (¬∈++2→¬∈2 {_} {_} {names a} {names a₁} {name} nn) (disjoint++2→2 (names a) (names a₁) (renₗ r) nr1) (disjoint++2→2 (names a) (names a₁) (renᵣ r) nr2))
   →updRel2-refl {name} {f} {g} {r} {PURE} nn nr1 nr2 = updRel2-PURE
+  →updRel2-refl {name} {f} {g} {r} {TERM} nn nr1 nr2 = updRel2-TERM
   →updRel2-refl {name} {f} {g} {r} {UNIV x} nn nr1 nr2 = updRel2-UNIV x
   →updRel2-refl {name} {f} {g} {r} {LIFT a} nn nr1 nr2 = updRel2-LIFT _ _ (→updRel2-refl nn nr1 nr2)
   →updRel2-refl {name} {f} {g} {r} {LOWER a} nn nr1 nr2 = updRel2-LOWER _ _ (→updRel2-refl nn nr1 nr2)

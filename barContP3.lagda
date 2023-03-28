@@ -166,14 +166,20 @@ equalInType-APPENDf-last≡ : (i : ℕ) (w : 𝕎·) (f a₁ a₂ : CTerm) (j k 
 equalInType-APPENDf-last≡ i w f a₁ a₂ j k s e c1 c2 rewrite e = equalInType-APPENDf-last i w f a₁ a₂ k s c1 c2
 
 
+#BAIREn≡ : (n : CTerm) → #BAIREn n ≡ #FUN (#NATn n) #NAT
+#BAIREn≡ n = CTerm≡ refl
+
+
 →equalInType-BAIREn-suc-APPENDf : (i : ℕ) (w : 𝕎·) (k : ℕ) (s : 𝕊) (f : CTerm)
                                    → equalInType i w (#BAIREn (#NUM k)) f (#MSEQ s)
                                    → equalInType i w (#BAIREn (#NUM (suc k))) (#APPENDf (#NUM k) f (#NUM (s k))) (#MSEQ s)
 →equalInType-BAIREn-suc-APPENDf i w k s f eqb =
-  equalInType-FUN
-    (→equalTypesNATn i w (#NUM (suc k)) (#NUM (suc k)) (NUM-equalInType-NAT i w (suc k)))
-    eqTypesNAT
-    aw
+  ≡CTerm→equalInType
+    (sym (#BAIREn≡ (#NUM (suc k))))
+    (equalInType-FUN
+      (→equalTypesNATn i w (#NUM (suc k)) (#NUM (suc k)) (NUM-equalInType-NAT i w (suc k)))
+      eqTypesNAT
+      aw)
   where
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) →  equalInType i w' (#NATn (#NUM (suc k))) a₁ a₂
                        → equalInType i w' #NAT (#APPLY (#APPENDf (#NUM k) f (#NUM (s k))) a₁) (#APPLY (#MSEQ s) a₂))
@@ -201,7 +207,7 @@ equalInType-APPENDf-last≡ i w f a₁ a₂ j k s e c1 c2 rewrite e = equalInTyp
             eqn1 = →equalInType-NATn {i} {w2} {k} {#NUM k} {a₁} {a₂} (#⇛-refl w2 (#NUM k)) (Mod.∀𝕎-□ M aw2)
 
             eqa2 : equalInType i w2 #NAT (#APPLY f a₁) (#APPLY (#MSEQ s) a₂)
-            eqa2 = equalInType-FUN→ eqb w2 (⊑-trans· e1 e2) a₁ a₂ eqn1
+            eqa2 = equalInType-FUN→ (≡CTerm→equalInType (#BAIREn≡ (#NUM k)) eqb) w2 (⊑-trans· e1 e2) a₁ a₂ eqn1
         ... | no p = equalInType-APPENDf-last≡ i w2 f a₁ a₂ j k s eqk c1 c2
           where
             eqk : j ≡ k

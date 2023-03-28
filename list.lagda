@@ -59,22 +59,22 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_lt(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_qlt(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_free(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_pi(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_w(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_m(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_set(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_eq(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_union(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_qtunion(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_lt(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_qlt(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_free(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_pi(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_w(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_m(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_set(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_eq(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_union(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_qtunion(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -293,21 +293,24 @@ equalInType-LIST-NAT→ i w f g eqi = Mod.□-idem M (Mod.∀𝕎-□Func M aw (
       where
         aw1 : ∀𝕎 w1 (λ w' e' → NATeq w' k1 k2
                              → ↑wPred' (λ w'' _ → LISTNATeq i w'' f g) e1 w' e')
-        aw1 w2 e2 ek' e3 = k1 , k2 , f1 , f2 , ek' , equalInType-mon ef w2 e2 , ∀𝕎-mon e2 c1 , ∀𝕎-mon e2 c2
+        aw1 w2 e2 ek' e3 =
+          k1 , k2 , f1 , f2 , ek' ,
+          ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-mon ef w2 e2) ,
+          ∀𝕎-mon e2 c1 , ∀𝕎-mon e2 c2
 
 
 →equalInType-LIST-NAT : (i : ℕ) (w : 𝕎·) (f g : CTerm)
                          → □· w (λ w' _ → LISTNATeq i w' f g)
                          → equalInType i w (#LIST #NAT) f g
 →equalInType-LIST-NAT i w f g eqi =
-  equalInType-PROD eqTypesNAT eqTypesBAIRE (Mod.∀𝕎-□Func M aw eqi)
+  equalInType-PROD eqTypesNAT (≡CTerm→eqTypes #BAIRE≡ #BAIRE≡ eqTypesBAIRE) (Mod.∀𝕎-□Func M aw eqi)
   where
     aw : ∀𝕎 w (λ w' e' → LISTNATeq i w' f g
-                        → PRODeq (equalInType i w' #NAT) (equalInType i w' #BAIRE) w' f g)
+                        → PRODeq (equalInType i w' #NAT) (equalInType i w' (#FUN #NAT #NAT)) w' f g)
     aw w1 e1 (a1 , a2 , b1 , b2 , x , y , c1 , c2) =
       a1 , a2 , b1 , b2 ,
       →equalInType-NAT i w1 a1 a2 (Mod.∀𝕎-□ M λ w2 e2 → NATeq-mon {w1} {w2} e2 {a1} {a2} x) ,
-      y , c1 , c2
+      ≡CTerm→equalInType #BAIRE≡ y , c1 , c2
 
 
 →NATeq-IFLT-NUM : {w : 𝕎·} {i j : ℕ} {c1 c2 d1 d2 : CTerm}
@@ -563,6 +566,6 @@ APPLY⇓₁ {w} {a} {b} c comp = ⇓-from-to→⇓ (APPLY⇓ {w} {fst comp'} {a}
             (#APPLY (#SND l) a₂) (#APPLY b2 a₂)
             (#APPLY#⇛ {w2} {#SND l} {b1} a₁ (#⇛-SND-PAIR l a1 b1 w2 (∀𝕎-mon e2 c1)))
             (#APPLY#⇛ {w2} {#SND l} {b2} a₂ (#⇛-SND-PAIR l a2 b2 w2 (∀𝕎-mon e2 c2)))
-            (equalInType-FUN→ {i} {w1} {#NAT} {#NAT} {b1} {b2} beq w2 e2 a₁ a₂ ea)
+            (equalInType-FUN→ {i} {w1} {#NAT} {#NAT} {b1} {b2} (≡CTerm→equalInType #BAIRE≡ beq) w2 e2 a₁ a₂ ea)
 
 \end{code}

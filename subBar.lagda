@@ -83,11 +83,6 @@ pchainThrough : {w w1 : 𝕎·} (e : w ⊑· w1) → pchain w
 pchainThrough {w} {w1} e = extPChain e (𝕎→pchain w1)
 
 
-+0 : (n : ℕ) → n + 0 ≡ n
-+0 0 = refl
-+0 (suc n) rewrite +0 n = refl
-
-
 pchainThrough-prop : {w w1 : 𝕎·} (e : w ⊑· w1) (n : ℕ)
                      → w1 ⊑· chain.seq (pchain.c (pchainThrough e)) n
 pchainThrough-prop {w} {w1} e n rewrite +0 n = chain⊑n {w1} n (𝕎→chain· w1)

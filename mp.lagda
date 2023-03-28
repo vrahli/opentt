@@ -78,9 +78,10 @@ open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 
 
 -- This is classically equivalent to equalInType-#MP-left→
@@ -130,7 +131,10 @@ MPvalid-aux i w f₁ f₂ a₁ a₂ f∈ a∈ =
             #PAIR n₁ t ,
             equalInType-SUM
               (λ w' _ → isTypeNAT!)
-              (λ w' e' a₁ a₂ a∈ → →≡equalTypes (sym (sub0-ASSERT₂-APPLY a₁ f₁)) (sym (sub0-ASSERT₂-APPLY a₂ f₁)) (equalInType-BOOL→equalTypes-ASSERT₂ (equalInType-FUN→ (equalInType-refl f∈) w' (⊑-trans· e3 (⊑-trans· e4 e')) a₁ a₂ a∈)))
+              (λ w' e' a₁ a₂ a∈ →
+                →≡equalTypes
+                  (sym (sub0-ASSERT₂-APPLY a₁ f₁)) (sym (sub0-ASSERT₂-APPLY a₂ f₁))
+                  (equalInType-BOOL→equalTypes-ASSERT₂ (equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL≡ (equalInType-refl f∈)) w' (⊑-trans· e3 (⊑-trans· e4 e')) a₁ a₂ a∈)))
               (Mod.∀𝕎-□ M aw2)
             where
               aw2 : ∀𝕎 w4 (λ w' _ → SUMeq (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w' (#PAIR n₁ t) (#PAIR n₁ t))

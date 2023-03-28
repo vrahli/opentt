@@ -76,8 +76,8 @@ open import terms8(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -1078,7 +1078,7 @@ upd∈BAIRE cn i w r f compat f∈ =
             p3 : □· w2 (λ w' _ → NATeq w' (#APPLY f (#NUM k)) (#APPLY f (#NUM k)))
             p3 = equalInType-NAT→
                    i w2 (#APPLY f (#NUM k)) (#APPLY f (#NUM k))
-                   (equalInType-FUN→ f∈ w2 (⊑-trans· e1 e2) (#NUM k) (#NUM k) (NUM-equalInType-NAT i w2 k))
+                   (equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ f∈) w2 (⊑-trans· e1 e2) (#NUM k) (#NUM k) (NUM-equalInType-NAT i w2 k))
 
             aw2 : ∀𝕎 w2 (λ w' e' → NATeq w' (#APPLY f (#NUM k)) (#APPLY f (#NUM k))
                                   → NATeq w' (#APPLY (#upd r f) a₁) (#APPLY (#upd r f) a₂))
@@ -1096,7 +1096,7 @@ APPLY-upd∈NAT : (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (F f : CTerm)
 APPLY-upd∈NAT cn i w r F f compat F∈ f∈ = F∈' w (⊑-refl· w) (#upd r f) (#upd r f) (upd∈BAIRE cn i w r f compat f∈)
   where
     F∈' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #BAIRE a₁ a₂ → equalInType i w' #NAT (#APPLY F a₁) (#APPLY F a₂))
-    F∈' = equalInType-FUN→ F∈
+    F∈' = equalInType-FUN→ (≡CTerm→equalInType #BAIRE→NAT≡ F∈)
 
 
 INL∈IndBarB : (i : ℕ) (w : 𝕎·) (k : ℕ) → ∈Type i w #IndBarB (#INL (#NUM k))

@@ -78,8 +78,8 @@ open import terms9(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -154,32 +154,36 @@ lowerVars3-fvars-CTerm2≡[] a = ⊆[]→≡[] (lowerVars3-fvars-CTerm2⊆[] a)
                           (lowerVars-fvars-[0,1,2,3,4] {fvars ⌜ c ⌝} (⊆?→⊆ {fvars ⌜ c ⌝} {0 ∷ 1 ∷ 2 ∷ 3 ∷ [ 4 ]} (CTerm4.closed c)))))
 
 
+#BAIRE!≡ : #BAIRE! ≡ #FUN #NAT #NAT!
+#BAIRE!≡ = CTerm≡ refl
+
+
 APPLY-∈BAIRE-NUM→ : (i : ℕ) (w : 𝕎·) (f : CTerm) (n : ℕ)
                       → ∈Type i w #BAIRE f
                       → ∈Type i w #NAT (#APPLY f (#NUM n))
 APPLY-∈BAIRE-NUM→ i w f n f∈ =
-  equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n)
+  equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ f∈) w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n)
 
 
 APPLY-∈BAIRE!-NUM→ : (i : ℕ) (w : 𝕎·) (f : CTerm) (n : ℕ)
                       → ∈Type i w #BAIRE! f
                       → ∈Type i w #NAT! (#APPLY f (#NUM n))
 APPLY-∈BAIRE!-NUM→ i w f n f∈ =
-  equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n)
+  equalInType-FUN→ (≡CTerm→equalInType #BAIRE!≡ f∈) w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n)
 
 
 APPLY-≡∈BAIRE-NUM→ : (i : ℕ) (w : 𝕎·) (f g : CTerm) (n : ℕ)
                       → equalInType i w #BAIRE f g
                       → equalInType i w #NAT (#APPLY f (#NUM n)) (#APPLY g (#NUM n))
 APPLY-≡∈BAIRE-NUM→ i w f g n f∈ =
-  equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n)
+  equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ f∈) w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n)
 
 
 APPLY-≡∈BAIRE!-NUM→ : (i : ℕ) (w : 𝕎·) (f g : CTerm) (n : ℕ)
                       → equalInType i w #BAIRE! f g
                       → equalInType i w #NAT! (#APPLY f (#NUM n)) (#APPLY g (#NUM n))
 APPLY-≡∈BAIRE!-NUM→ i w f g n f∈ =
-  equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n)
+  equalInType-FUN→ (≡CTerm→equalInType #BAIRE!≡ f∈) w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n)
 
 
 BAIRE2𝕊 : (kb : K□) {i : ℕ} {w : 𝕎·} {f : CTerm} (f∈ : ∈Type i w #BAIRE f) → 𝕊
@@ -222,7 +226,7 @@ NATeq→#⇛NUMₗ {w} {a} {b} {k} (j , c1 , c2) c
 BAIRE2𝕊-equalInBAIRE : (kb : K□) {i : ℕ} {w : 𝕎·} {f : CTerm} (f∈ : ∈Type i w #BAIRE f)
                         → equalInType i w #BAIRE f (#MSEQ (BAIRE2𝕊 kb f∈))
 BAIRE2𝕊-equalInBAIRE kb {i} {w} {f} f∈ =
-  equalInType-FUN eqTypesNAT eqTypesNAT aw
+  ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-FUN eqTypesNAT eqTypesNAT aw)
   where
     s : 𝕊
     s = BAIRE2𝕊 kb f∈
@@ -239,7 +243,7 @@ BAIRE2𝕊-equalInBAIRE kb {i} {w} {f} f∈ =
             j1 = fst (snd (kb (equalInType-NAT→ i w _ _ (APPLY-∈BAIRE-NUM→ i w f k f∈)) w (⊑-refl· w)))
 
             j2 : NATeq w2 (#APPLY f a₁) (#APPLY f (#NUM k))
-            j2 = kb (equalInType-NAT→ i w2 _ _ (equalInType-FUN→ f∈ w2 (⊑-trans· e1 e2) a₁ (#NUM k) (#⇛NUM→equalInType-NAT i w2 a₁ k c1))) w2 (⊑-refl· w2)
+            j2 = kb (equalInType-NAT→ i w2 _ _ (equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ f∈) w2 (⊑-trans· e1 e2) a₁ (#NUM k) (#⇛NUM→equalInType-NAT i w2 a₁ k c1))) w2 (⊑-refl· w2)
 
             j3 : #APPLY f a₁ #⇛ #NUM (s k) at w2
             j3 = NATeq→#⇛NUMₗ {w2} {#APPLY f a₁} {#APPLY f (#NUM k)} j2 (∀𝕎-mon (⊑-trans· e1 e2) j1)
@@ -811,7 +815,7 @@ NATeq-trans {w} {a} {b} {c} (k , c1 , c2) (j , d1 , d2)
 BAIRE!2𝕊-equalInBAIRE : (kb : K□) {i : ℕ} {w : 𝕎·} {f : CTerm} (f∈ : ∈Type i w #BAIRE! f)
                         → equalInType i w #BAIRE f (#MSEQ (BAIRE!2𝕊 kb f∈))
 BAIRE!2𝕊-equalInBAIRE kb {i} {w} {f} f∈ =
-  equalInType-FUN eqTypesNAT eqTypesNAT aw
+  ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-FUN eqTypesNAT eqTypesNAT aw)
   where
     s : 𝕊
     s = BAIRE!2𝕊 kb f∈
@@ -828,7 +832,7 @@ BAIRE!2𝕊-equalInBAIRE kb {i} {w} {f} f∈ =
             j1 = fst (snd (kb (equalInType-NAT!→ i w _ _ (APPLY-∈BAIRE!-NUM→ i w f k f∈)) w (⊑-refl· w)))
 
             j2 : #⇛!sameℕ w2 (#APPLY f a₁) (#APPLY f (#NUM k))
-            j2 = kb (equalInType-NAT!→ i w2 _ _ (equalInType-FUN→ f∈ w2 (⊑-trans· e1 e2) a₁ (#NUM k) (#⇛NUM→equalInType-NAT i w2 a₁ k c1))) w2 (⊑-refl· w2)
+            j2 = kb (equalInType-NAT!→ i w2 _ _ (equalInType-FUN→ (≡CTerm→equalInType #BAIRE!≡ f∈) w2 (⊑-trans· e1 e2) a₁ (#NUM k) (#⇛NUM→equalInType-NAT i w2 a₁ k c1))) w2 (⊑-refl· w2)
 
             j3 : #APPLY f a₁ #⇛! #NUM (s k) at w2
             j3 = #⇛!sameℕ→#⇛!NUMₗ {w2} {#APPLY f a₁} {#APPLY f (#NUM k)} j2 (∀𝕎-mon (⊑-trans· e1 e2) j1)
@@ -879,7 +883,7 @@ BAIRE!2𝕊-equalInBAIRE kb {i} {w} {f} f∈ =
 ∈Type-BAIRE-seq2list : (i : ℕ) (w : 𝕎·) (s : 𝕊) (n : ℕ)
                         → ∈Type i w #BAIRE (seq2list s n)
 ∈Type-BAIRE-seq2list i w s n =
-  equalInType-FUN eqTypesNAT eqTypesNAT aw
+  ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-FUN eqTypesNAT eqTypesNAT aw)
   where
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
                        → equalInType i w' #NAT (#APPLY (seq2list s n) a₁) (#APPLY (seq2list s n) a₂))
@@ -905,7 +909,7 @@ BAIRE!2𝕊-equalInBAIRE kb {i} {w} {f} f∈ =
     ∈B = upd∈ i w r (seq2list s k) gc (∈Type-BAIRE-seq2list i w s k)
 
     neq : NATmem w (#APPLY F (#upd r (seq2list s k)))
-    neq = kb (equalInType-NAT→ i w _ _ (equalInType-FUN→ F∈ w (⊑-refl· w) (#upd r (seq2list s k)) (#upd r (seq2list s k)) ∈B)) w (⊑-refl· w)
+    neq = kb (equalInType-NAT→ i w _ _ (equalInType-FUN→ (≡CTerm→equalInType #BAIRE→NAT≡ F∈) w (⊑-refl· w) (#upd r (seq2list s k)) (#upd r (seq2list s k)) ∈B)) w (⊑-refl· w)
 
 
 #¬Names-seq2list : (s : 𝕊) (k : ℕ) → #¬Names (seq2list s k)

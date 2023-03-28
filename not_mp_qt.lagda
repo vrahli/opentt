@@ -127,6 +127,8 @@ cℂ = (c : Name) (r : Res) (w : 𝕎·) (n : ℕ)
 
 -- Could we prove this without cℂ, by creating a covering that fills out the choices up to the numbers provided in
 -- the covering in the hypothesis?
+-- I'm not sure how because those numbers could always be just above the coverings they are associated with, which
+-- means that we would end up having to increase the coverings infinitely often...
 □⇓!sameℕ→#⇓!same-bool : (cb : QTBoolℂ CB) (cc : cℂ) {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
                              → compatible· c w Resℂ
                              → □· w (λ w' _ → Lift (lsuc(L)) (⇓!sameℕ w' ⌜ a₁ ⌝ ⌜ a₂ ⌝))

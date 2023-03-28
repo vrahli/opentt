@@ -74,11 +74,12 @@ open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
@@ -139,155 +140,6 @@ equalInType-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈BOOL n w
 
 equalInType-QT-BTRUE-ℂ₁ : QTBoolℂ CB → (n : ℕ) (w : 𝕎·) → equalInType n w #QTBOOL! #BTRUE Cℂ₁
 equalInType-QT-BTRUE-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈QTBOOL! n w
-
-
-
-#SUM-ASSERT₂ : CTerm → CTerm
-#SUM-ASSERT₂ f = #SUM #NAT! (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
-
-
-#PI-NEG-ASSERT₂ : CTerm → CTerm
-#PI-NEG-ASSERT₂ f = #PI #NAT! (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
-
-
-#SUM-ASSERT₃ : CTerm → CTerm
-#SUM-ASSERT₃ f = #SUM #NAT! (#[0]ASSERT₃ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
-
-
-#PI-NEG-ASSERT₃ : CTerm → CTerm
-#PI-NEG-ASSERT₃ f = #PI #NAT! (#[0]NEG (#[0]ASSERT₃ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
-
-
-#SUM-ASSERT₄ : CTerm → CTerm
-#SUM-ASSERT₄ f = #SUM #QTNAT! (#[0]ASSERT₃ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
-
-
-→equalTypes-#SUM-ASSERT₂ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
-                           → equalInType n w #NAT!→BOOL a₁ a₂
-                           → equalTypes n w (#SUM-ASSERT₂ a₁) (#SUM-ASSERT₂ a₂)
-→equalTypes-#SUM-ASSERT₂ {n} {w} {a₁} {a₂} eqt = eqTypesSUM← (λ w' _ → isTypeNAT!) aw1
-  where
-    aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT! a b → equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b))
-    aw0 = equalInType-FUN→ eqt
-
-    aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
-                       → equalTypes n w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))) (sub0 b (#[0]ASSERT₂ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR))))
-    aw1 w' e a b ea rewrite sub0-ASSERT₂-APPLY a a₁ | sub0-ASSERT₂-APPLY b a₂ = aw2
-      where
-        eqb : equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b)
-        eqb = aw0 w' e a b ea
-
-        aw2 : equalTypes n w' (#ASSERT₂ (#APPLY a₁ a)) (#ASSERT₂ (#APPLY a₂ b))
-        aw2 = equalInType-BOOL→equalTypes-ASSERT₂ eqb
-
-
-
-→equalTypes-#SUM-ASSERT₃ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
-                           → equalInType n w #NAT!→QTBOOL! a₁ a₂
-                           → equalTypes n w (#SUM-ASSERT₃ a₁) (#SUM-ASSERT₃ a₂)
-→equalTypes-#SUM-ASSERT₃ {n} {w} {a₁} {a₂} eqt = eqTypesSUM← (λ w' _ → isTypeNAT!) aw1
-  where
-    aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT! a b → equalInType n w' #QTBOOL! (#APPLY a₁ a) (#APPLY a₂ b))
-    aw0 = equalInType-FUN→ eqt
-
-    aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
-                       → equalTypes n w' (sub0 a (#[0]ASSERT₃ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))) (sub0 b (#[0]ASSERT₃ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR))))
-    aw1 w' e a b ea rewrite sub0-ASSERT₃-APPLY a a₁ | sub0-ASSERT₃-APPLY b a₂ = aw2
-      where
-        eqb : equalInType n w' #QTBOOL! (#APPLY a₁ a) (#APPLY a₂ b)
-        eqb = aw0 w' e a b ea
-
-        aw2 : equalTypes n w' (#ASSERT₃ (#APPLY a₁ a)) (#ASSERT₃ (#APPLY a₂ b))
-        aw2 = equalInType-QTBOOL!→equalTypes-ASSERT₃ eqb
-
-
-
-QTNAT!→QTBOOL! : Term
-QTNAT!→QTBOOL! = FUN QTNAT! QTBOOL!
-
-
-#QTNAT!→QTBOOL! : CTerm
-#QTNAT!→QTBOOL! = ct QTNAT!→QTBOOL! refl
-
-
-#QTNAT!→QTBOOL!≡ : #QTNAT!→QTBOOL! ≡ #FUN #QTNAT! #QTBOOL!
-#QTNAT!→QTBOOL!≡ = CTerm≡ refl
-
-
-→equalTypes-#SUM-ASSERT₄ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
-                           → equalInType n w #QTNAT!→QTBOOL! a₁ a₂
-                           → equalTypes n w (#SUM-ASSERT₄ a₁) (#SUM-ASSERT₄ a₂)
-→equalTypes-#SUM-ASSERT₄ {n} {w} {a₁} {a₂} eqt = eqTypesSUM← (λ w' _ → eqTypesQTNAT!) aw1
-  where
-    aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #QTNAT! a b → equalInType n w' #QTBOOL! (#APPLY a₁ a) (#APPLY a₂ b))
-    aw0 = equalInType-FUN→ eqt
-
-    aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #QTNAT! a b)
-                       → equalTypes n w' (sub0 a (#[0]ASSERT₃ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))) (sub0 b (#[0]ASSERT₃ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR))))
-    aw1 w' e a b ea rewrite sub0-ASSERT₃-APPLY a a₁ | sub0-ASSERT₃-APPLY b a₂ = aw2
-      where
-        eqb : equalInType n w' #QTBOOL! (#APPLY a₁ a) (#APPLY a₂ b)
-        eqb = aw0 w' e a b ea
-
-        aw2 : equalTypes n w' (#ASSERT₃ (#APPLY a₁ a)) (#ASSERT₃ (#APPLY a₂ b))
-        aw2 = equalInType-QTBOOL!→equalTypes-ASSERT₃ eqb
-
-
-→equalTypes-#PI-NEG-ASSERT₂-body : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
-                                    → equalInType n w #NAT!→BOOL a₁ a₂
-                                    → ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
-                                         → equalTypes n w' (sub0 a (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))))
-                                                            (sub0 b (#[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR)))))
-→equalTypes-#PI-NEG-ASSERT₂-body {n} {w} {a₁} {a₂} eqt w' e a b ea
-  rewrite sub0-NEG-ASSERT₂-APPLY a a₁ | sub0-NEG-ASSERT₂-APPLY b a₂
-  = aw2
-  where
-    eqb : equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b)
-    eqb = equalInType-FUN→ eqt w' e a b ea
-
-    aw2 : equalTypes n w' (#NEG (#ASSERT₂ (#APPLY a₁ a))) (#NEG (#ASSERT₂ (#APPLY a₂ b)))
-    aw2 = eqTypesNEG← (equalInType-BOOL→equalTypes-ASSERT₂ eqb)
-
-
-→equalTypes-#PI-NEG-ASSERT₂-body2 : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
-                                     → equalInType n w #NAT!→BOOL a₁ a₂
-                                     → ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
-                                          → equalTypes n w' (#NEG (#ASSERT₂ (#APPLY a₁ a)))
-                                                             (#NEG (#ASSERT₂ (#APPLY a₂ b))))
-→equalTypes-#PI-NEG-ASSERT₂-body2 {n} {w} {a₁} {a₂} a∈ w1 e1 a b ea =
-  ≡CTerm→eqTypes
-    (sub0-NEG-ASSERT₂-APPLY a a₁) (sub0-NEG-ASSERT₂-APPLY b a₂)
-    (→equalTypes-#PI-NEG-ASSERT₂-body a∈ w1 e1 a b ea)
-
-
-→equalTypes-#PI-NEG-ASSERT₂ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
-                              → equalInType n w #NAT!→BOOL a₁ a₂
-                              → equalTypes n w (#PI-NEG-ASSERT₂ a₁) (#PI-NEG-ASSERT₂ a₂)
-→equalTypes-#PI-NEG-ASSERT₂ {n} {w} {a₁} {a₂} eqt =
-  eqTypesPI← (λ w' _ → isTypeNAT!) (→equalTypes-#PI-NEG-ASSERT₂-body {n} {w} {a₁} {a₂} eqt)
-
-
-
-→equalTypes-#PI-NEG-ASSERT₃ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
-                              → equalInType n w #NAT!→QTBOOL! a₁ a₂
-                              → equalTypes n w (#PI-NEG-ASSERT₃ a₁) (#PI-NEG-ASSERT₃ a₂)
-→equalTypes-#PI-NEG-ASSERT₃ {n} {w} {a₁} {a₂} eqt =
-  eqTypesPI← (λ w' _ → isTypeNAT!) aw1
-  where
-    aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT! a b → equalInType n w' #QTBOOL! (#APPLY a₁ a) (#APPLY a₂ b))
-    aw0 = equalInType-FUN→ eqt
-
-    aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
-                       → equalTypes n w' (sub0 a (#[0]NEG (#[0]ASSERT₃ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))))
-                                          (sub0 b (#[0]NEG (#[0]ASSERT₃ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR)))))
-    aw1 w' e a b ea rewrite sub0-NEG-ASSERT₃-APPLY a a₁ | sub0-NEG-ASSERT₃-APPLY b a₂ = aw2
-      where
-        eqb : equalInType n w' #QTBOOL! (#APPLY a₁ a) (#APPLY a₂ b)
-        eqb = aw0 w' e a b ea
-
-        aw2 : equalTypes n w' (#NEG (#ASSERT₃ (#APPLY a₁ a))) (#NEG (#ASSERT₃ (#APPLY a₂ b)))
-        aw2 = eqTypesNEG← (equalInType-QTBOOL!→equalTypes-ASSERT₃ eqb)
-
 
 
 #SUM-ASSERT₂→#Σchoice : Boolℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}

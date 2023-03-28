@@ -61,16 +61,16 @@ module continuity6b {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
 
 open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)
-open import terms2(W)(C)(K)(G)(X)(N)
-open import terms3(W)(C)(K)(G)(X)(N)
-open import terms4(W)(C)(K)(G)(X)(N)
-open import terms5(W)(C)(K)(G)(X)(N)
-open import terms6(W)(C)(K)(G)(X)(N)
+open import terms2(W)(C)(K)(G)(X)(N) using (ssteps ; ssteps→steps ; CHOOSE⇓steps ; SUC⇓steps ; →steps-MAPP ; LET⇓steps ; SPREAD⇓steps ; WREC⇓steps ; DECIDE⇓steps ; IFLT-NUM-1st⇓steps ; IFEQ-NUM-1st⇓steps ; FIX⇓steps ; IFLT-NUM-2nd⇓ ; IFEQ-NUM-2nd⇓)
+open import terms3(W)(C)(K)(G)(X)(N) using (updGt ; suc→∈lowerNames ; upd)
+open import terms4(W)(C)(K)(G)(X)(N) using (steps→⊑ ; ∈names-renn-same ; names-shiftUp)
+--open import terms5(W)(C)(K)(G)(X)(N)
+--open import terms6(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E) using (⇓-from-to→≡𝕎)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -85,10 +85,10 @@ open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (force)
+open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E) using (chooseT0if ; upd-decomp ; isHighestℕ)
 --open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E) using (⊑chooseT0if ; isHighestℕ-updBody→< ; isHighestℕ-LET→ ; →APPLY-force⇓APPLY-NUM ; steps-trans+ ; steps-APPLY-val→ ; steps-APPLY-LAMBDA-FIX→)
 --open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 --open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -604,6 +604,7 @@ abstract
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(TCONST a₁)} {.(TCONST a₂)} {l} {k} sub nad nbd (updRel2-TCONST a₁ a₂ upd₁) = updRel2-TCONST _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(SUBSING a₁)} {.(SUBSING a₂)} {l} {k} sub nad nbd (updRel2-SUBSING a₁ a₂ upd₁) = updRel2-SUBSING _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.PURE} {.PURE} {l} {k} sub nad nbd updRel2-PURE = updRel2-PURE
+  updRel2-ren-mon {name} {f} {g} {r} {r'} {.TERM} {.TERM} {l} {k} sub nad nbd updRel2-TERM = updRel2-TERM
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(DUM a₁)} {.(DUM a₂)} {l} {k} sub nad nbd (updRel2-DUM a₁ a₂ upd₁) = updRel2-DUM _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} {l} {k} sub nad nbd (updRel2-FFDEFS a₁ a₂ b₁ b₂ upd₁ upd₂) = updRel2-FFDEFS _ _ _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→1 {names a₁} {names b₁} nad) (++⊆2→1 {names a₂} {names b₂} nbd) upd₁) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→2 {names a₁} {names b₁} nad) (++⊆2→2 {names a₂} {names b₂} nbd) upd₂)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(UNIV x)} {.(UNIV x)} {l} {k} sub nad nbd (updRel2-UNIV x) = updRel2-UNIV x
@@ -1364,6 +1365,7 @@ abstract
   updRel2-valₗ→ name f g r .(TCONST a₁) .(TCONST a₂) (updRel2-TCONST a₁ a₂ upd₁) isv = isv
   updRel2-valₗ→ name f g r .(SUBSING a₁) .(SUBSING a₂) (updRel2-SUBSING a₁ a₂ upd₁) isv = isv
   updRel2-valₗ→ name f g r .PURE .PURE updRel2-PURE isv = isv
+  updRel2-valₗ→ name f g r .TERM .TERM updRel2-TERM isv = isv
   updRel2-valₗ→ name f g r .(DUM a₁) .(DUM a₂) (updRel2-DUM a₁ a₂ upd₁) isv = isv
   updRel2-valₗ→ name f g r .(FFDEFS a₁ b₁) .(FFDEFS a₂ b₂) (updRel2-FFDEFS a₁ a₂ b₁ b₂ upd₁ upd₂) isv = isv
   updRel2-valₗ→ name f g r .(UNIV x) .(UNIV x) (updRel2-UNIV x) isv = isv

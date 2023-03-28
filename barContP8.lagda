@@ -79,7 +79,7 @@ open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#⇛-refl)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -104,7 +104,7 @@ open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E) using (steps-sat-isHighestℕ
 --open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalInType-upd-force)
-open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalInType-TPURE→ₗ ; equalInType-TPURE→)
+--open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalInType-TPURE→ₗ ; equalInType-TPURE→)
 open import continuitySMb(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (isHighestℕ≤)
 
 open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
@@ -171,7 +171,7 @@ abstract
                           → ∈Type i w #BAIRE f
                           → equalInType i w #NAT (#APPLY F (#upd name f)) (#APPLY F f)
   equalInType-APPLY-upd i w name F f wgn F∈ f∈ =
-    equalInType-FUN→ F∈ w (⊑-refl· w) (#upd name f) f (equalInType-upd i w name f wgn f∈)
+    equalInType-FUN→ (≡CTerm→equalInType #BAIRE→NAT≡ F∈) w (⊑-refl· w) (#upd name f) f (equalInType-upd i w name f wgn f∈)
 
 
 

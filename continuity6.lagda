@@ -154,11 +154,11 @@ equalInType-upd-force : (i : ℕ) (w : 𝕎·) (name : Name) (f : CTerm)
                         → ∈Type i w #BAIRE f
                         → equalInType i w #BAIRE (#upd name f) (#force f)
 equalInType-upd-force i w name f wgn eqf =
-  equalInType-FUN eqTypesNAT eqTypesNAT aw
+  ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-FUN eqTypesNAT eqTypesNAT aw)
   where
     eqf1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
                          → equalInType i w' #NAT (#APPLY f a₁) (#APPLY f a₂))
-    eqf1 = equalInType-FUN→ eqf
+    eqf1 = equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ eqf)
 
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
                        → equalInType i w' #NAT (#APPLY (#upd name f) a₁) (#APPLY (#force f) a₂))

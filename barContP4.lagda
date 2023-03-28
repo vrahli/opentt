@@ -172,6 +172,7 @@ data updSeq (r : Name) (s : 𝕊) (n : ℕ) : Term → Term → Set where
   updSeq-TCONST  : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (TCONST a₁) (TCONST a₂)
   updSeq-SUBSING : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (SUBSING a₁) (SUBSING a₂)
   updSeq-PURE    : updSeq r s n PURE PURE
+  updSeq-TERM    : updSeq r s n TERM TERM
   updSeq-DUM     : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (DUM a₁) (DUM a₂)
   updSeq-FFDEFS  : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (FFDEFS a₁ b₁) (FFDEFS a₂ b₂)
   updSeq-UNIV    : (x : ℕ) → updSeq r s n (UNIV x) (UNIV x)
@@ -298,6 +299,7 @@ abstract
   updSeq-shiftUp n {r} {s} {k} {.(TCONST a₁)} {.(TCONST a₂)} (updSeq-TCONST a₁ a₂ u) = updSeq-TCONST _ _ (updSeq-shiftUp n u)
   updSeq-shiftUp n {r} {s} {k} {.(SUBSING a₁)} {.(SUBSING a₂)} (updSeq-SUBSING a₁ a₂ u) = updSeq-SUBSING _ _ (updSeq-shiftUp n u)
   updSeq-shiftUp n {r} {s} {k} {.(PURE)} {.(PURE)} (updSeq-PURE) = updSeq-PURE
+  updSeq-shiftUp n {r} {s} {k} {.(TERM)} {.(TERM)} (updSeq-TERM) = updSeq-TERM
   updSeq-shiftUp n {r} {s} {k} {.(DUM a₁)} {.(DUM a₂)} (updSeq-DUM a₁ a₂ u) = updSeq-DUM _ _ (updSeq-shiftUp n u)
   updSeq-shiftUp n {r} {s} {k} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updSeq-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updSeq-FFDEFS _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁)
   updSeq-shiftUp n {r} {s} {k} {.(UNIV x)} {.(UNIV x)} (updSeq-UNIV x) = updSeq-UNIV x
@@ -362,6 +364,7 @@ abstract
   updSeq-shiftDown n {r} {s} {k} {.(TCONST a₁)} {.(TCONST a₂)} (updSeq-TCONST a₁ a₂ u) = updSeq-TCONST _ _ (updSeq-shiftDown n u)
   updSeq-shiftDown n {r} {s} {k} {.(SUBSING a₁)} {.(SUBSING a₂)} (updSeq-SUBSING a₁ a₂ u) = updSeq-SUBSING _ _ (updSeq-shiftDown n u)
   updSeq-shiftDown n {r} {s} {k} {.(PURE)} {.(PURE)} (updSeq-PURE) = updSeq-PURE
+  updSeq-shiftDown n {r} {s} {k} {.(TERM)} {.(TERM)} (updSeq-TERM) = updSeq-TERM
   updSeq-shiftDown n {r} {s} {k} {.(DUM a₁)} {.(DUM a₂)} (updSeq-DUM a₁ a₂ u) = updSeq-DUM _ _ (updSeq-shiftDown n u)
   updSeq-shiftDown n {r} {s} {k} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updSeq-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updSeq-FFDEFS _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁)
   updSeq-shiftDown n {r} {s} {k} {.(UNIV x)} {.(UNIV x)} (updSeq-UNIV x) = updSeq-UNIV _
@@ -429,6 +432,7 @@ abstract
   updSeq-subv v {r} {s} {k} {.(TCONST a₁)} {.(TCONST a₂)} {b₁} {b₂} (updSeq-TCONST a₁ a₂ ua) ub = updSeq-TCONST _ _ (updSeq-subv v ua ub)
   updSeq-subv v {r} {s} {k} {.(SUBSING a₁)} {.(SUBSING a₂)} {b₁} {b₂} (updSeq-SUBSING a₁ a₂ ua) ub = updSeq-SUBSING _ _ (updSeq-subv v ua ub)
   updSeq-subv v {r} {s} {k} {.(PURE)} {.(PURE)} {b₁} {b₂} (updSeq-PURE) ub = updSeq-PURE
+  updSeq-subv v {r} {s} {k} {.(TERM)} {.(TERM)} {b₁} {b₂} (updSeq-TERM) ub = updSeq-TERM
   updSeq-subv v {r} {s} {k} {.(DUM a₁)} {.(DUM a₂)} {b₁} {b₂} (updSeq-DUM a₁ a₂ ua) ub = updSeq-DUM _ _ (updSeq-subv v ua ub)
   updSeq-subv v {r} {s} {k} {.(FFDEFS a₁ b₃)} {.(FFDEFS a₂ b₄)} {b₁} {b₂} (updSeq-FFDEFS a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-FFDEFS _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub)
   updSeq-subv v {r} {s} {k} {.(UNIV x)} {.(UNIV x)} {b₁} {b₂} (updSeq-UNIV x) ub = updSeq-UNIV x
@@ -877,10 +881,12 @@ updSeqStepInd-MAPP₁→ w r s n x a (k1 , v , w' , comp , ish , isv , ind)
 equalInType-BAIREn0 : (i : ℕ) (w : 𝕎·) (f g : CTerm)
                       → equalInType i w (#BAIREn (#NUM 0)) f g
 equalInType-BAIREn0 i w f g =
-  equalInType-FUN
-    (→equalTypesNATn i w (#NUM 0) (#NUM 0) (NUM-equalInType-NAT i w 0))
-    eqTypesNAT
-    aw
+  ≡CTerm→equalInType
+    (sym (#BAIREn≡ (#NUM 0)))
+    (equalInType-FUN
+      (→equalTypesNATn i w (#NUM 0) (#NUM 0) (NUM-equalInType-NAT i w 0))
+      eqTypesNAT
+      aw)
   where
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) →  equalInType i w' (#NATn (#NUM 0)) a₁ a₂
                        → equalInType i w' #NAT (#APPLY f a₁) (#APPLY g a₂))
@@ -927,10 +933,12 @@ equalInType-BAIREn0 i w f g =
 equalInType-BAIREn-seq2list : (i : ℕ) (w : 𝕎·) (s : 𝕊) (n : ℕ)
                               → equalInType i w (#BAIREn (#NUM n)) (seq2list s n) (#MSEQ s)
 equalInType-BAIREn-seq2list i w s n =
-  equalInType-FUN
-    (→equalTypesNATn i w (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n))
-    eqTypesNAT
-    aw
+  ≡CTerm→equalInType
+    (sym (#BAIREn≡ (#NUM n)))
+    (equalInType-FUN
+      (→equalTypesNATn i w (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n))
+      eqTypesNAT
+      aw)
   where
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#NATn (#NUM n)) a₁ a₂
                        → equalInType i w' #NAT (#APPLY (seq2list s n) a₁) (#APPLY (#MSEQ s) a₂))
@@ -1090,6 +1098,7 @@ updSeq→isValue {r} {s} {n} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updSeq-TTRUNC a�
 updSeq→isValue {r} {s} {n} {.(TCONST a₁)} {.(TCONST a₂)} (updSeq-TCONST a₁ a₂ u) isv = tt
 updSeq→isValue {r} {s} {n} {.(SUBSING a₁)} {.(SUBSING a₂)} (updSeq-SUBSING a₁ a₂ u) isv = tt
 updSeq→isValue {r} {s} {n} {.(PURE)} {.(PURE)} (updSeq-PURE) isv = tt
+updSeq→isValue {r} {s} {n} {.(TERM)} {.(TERM)} (updSeq-TERM) isv = tt
 updSeq→isValue {r} {s} {n} {.(DUM a₁)} {.(DUM a₂)} (updSeq-DUM a₁ a₂ u) isv = tt
 updSeq→isValue {r} {s} {n} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updSeq-FFDEFS a₁ a₂ b₁ b₂ u u₁) isv = tt
 updSeq→isValue {r} {s} {n} {.(UNIV x)} {.(UNIV x)} (updSeq-UNIV x) isv = tt

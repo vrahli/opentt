@@ -85,7 +85,7 @@ BAIRE!→NAT = FUN BAIRE! NAT
 
 -- MOVE to terms
 #BAIRE!→NAT≡ : #BAIRE!→NAT ≡ #FUN #BAIRE! #NAT
-#BAIRE!→NAT≡ = refl
+#BAIRE!→NAT≡ = CTerm≡ refl
 
 
 

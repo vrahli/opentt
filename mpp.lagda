@@ -56,10 +56,11 @@ open import mod
 module mpp {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
            (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
            (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
-           (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
-           (F : Freeze {L} W C K P G N)
+           (N : NewChoice {L} W C K G)
+--           (V : ChoiceVal W C K G X N)
+--           (F : Freeze {L} W C K P G N)
            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-           (CB : ChoiceBar W M C K P G X N V F E)
+--           (CB : ChoiceBar W M C K P G X N V F E)
            (EM : ExcludedMiddle (lsuc(L)))
        where
 
@@ -70,8 +71,8 @@ open import compatibleDef{L}(W)(C)(K)
 open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
-open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
-open import freezeDef(W)(C)(K)(P)(G)(N)(F)
+--open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
+--open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import computation(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
@@ -87,13 +88,13 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)
+open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 -- TOOD: move the usings to a non-CB-depedent file -- a propsX.lagda kinda file or lem_props?
-open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (#QTNAT!→QTBOOL! ; #QTNAT!→QTBOOL!≡ ; #SUM-ASSERT₂ ; #PI-NEG-ASSERT₂ ; #SUM-ASSERT₃)
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (#[0]MP-left ; #[0]MP-right ; #[0]MP-left3 ; #[0]MP-left2 ; #[0]MP-right2 ; #[0]MP-left-qt ; #[0]MP-right-qt ; #[0]MP-left-qt₂ ; #[0]MP-right-qt₂ ; sub0-fun-mp ; →equalTypes-#MP-left ; →equalTypes-#MP-right ; #MP-left ; #MP-right ; sub0-fun-mp₄ ; →equalTypes-#MP-left-qt ; →equalTypes-#MP-right-qt ; #MP-left-qt ; #MP-right-qt ; equalInType-#MP-left-qt→ ; →≡equalTypes ; sub0-fun-mp₂ ; →equalTypes-#MP-left3 ; →≡equalInType ; →∈Type-FUN ; #MP-left3 ; #MP-left2→#MP-left ; #MP-left3→#MP-left2 ; →∈Type-PI ; sub0-fun-mp₃ ; →equalTypes-#MP-left2 ; →equalTypes-#MP-right2 ; #MP-left2 ; #MP-right2 ; #MP-left2→#MP-left3)
-open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (#infSearchP ; mpSearch)
+--open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (#QTNAT!→QTBOOL! ; #QTNAT!→QTBOOL!≡ ; #SUM-ASSERT₂ ; #PI-NEG-ASSERT₂ ; #SUM-ASSERT₃)
+open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#[0]MP-left ; #[0]MP-right ; #[0]MP-left3 ; #[0]MP-left2 ; #[0]MP-right2 ; #[0]MP-left-qt ; #[0]MP-right-qt ; #[0]MP-left-qt₂ ; #[0]MP-right-qt₂ ; sub0-fun-mp ; →equalTypes-#MP-left ; →equalTypes-#MP-right ; #MP-left ; #MP-right ; sub0-fun-mp₄ ; →equalTypes-#MP-left-qt ; →equalTypes-#MP-right-qt ; #MP-left-qt ; #MP-right-qt ; equalInType-#MP-left-qt→ ; →≡equalTypes ; sub0-fun-mp₂ ; →equalTypes-#MP-left3 ; →≡equalInType ; →∈Type-FUN ; #MP-left3 ; #MP-left2→#MP-left ; #MP-left3→#MP-left2 ; →∈Type-PI ; sub0-fun-mp₃ ; →equalTypes-#MP-left2 ; →equalTypes-#MP-right2 ; #MP-left2 ; #MP-right2 ; #MP-left2→#MP-left3)
+open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#infSearchP ; mpSearch)
 
 
 
@@ -192,15 +193,27 @@ MPp = PI (TPURE NAT!→BOOL) (FUN (NEG (PI NAT! (NEG (ASSERT₂ (APPLY (VAR 1) (
 
 
 isType-#TPURE-NAT!→BOOL : (w : 𝕎·) (n : ℕ) → isType n w (#TPURE #NAT!→BOOL)
-isType-#TPURE-NAT!→BOOL w n rewrite #NAT!→BOOL≡ = equalTypesTPURE (eqTypesFUN← isTypeNAT! (isTypeBOOL w n))
+isType-#TPURE-NAT!→BOOL w n =
+  equalTypesTPURE
+    (≡CTerm→eqTypes
+      (sym #NAT!→BOOL≡) (sym #NAT!→BOOL≡)
+      (eqTypesFUN← isTypeNAT! (isTypeBOOL w n)))
 
 
 isType-#TPURE-NAT!→QTBOOL! : (w : 𝕎·) (n : ℕ) → isType n w (#TPURE #NAT!→QTBOOL!)
-isType-#TPURE-NAT!→QTBOOL! w n rewrite #NAT!→QTBOOL!≡ = equalTypesTPURE (eqTypesFUN← isTypeNAT! (eqTypesQTBOOL! {w} {n}))
+isType-#TPURE-NAT!→QTBOOL! w n =
+  equalTypesTPURE
+    (≡CTerm→eqTypes
+      (sym #NAT!→QTBOOL!≡) (sym #NAT!→QTBOOL!≡)
+      (eqTypesFUN← isTypeNAT! (eqTypesQTBOOL! {w} {n})))
 
 
 isType-#TPURE-QTNAT!→QTBOOL! : (w : 𝕎·) (n : ℕ) → isType n w (#TPURE #QTNAT!→QTBOOL!)
-isType-#TPURE-QTNAT!→QTBOOL! w n rewrite #QTNAT!→QTBOOL!≡ = equalTypesTPURE (eqTypesFUN← eqTypesQTNAT! (eqTypesQTBOOL! {w} {n}))
+isType-#TPURE-QTNAT!→QTBOOL! w n =
+  equalTypesTPURE
+    (≡CTerm→eqTypes
+      (sym #QTNAT!→QTBOOL!≡) (sym #QTNAT!→QTBOOL!≡)
+      (eqTypesFUN← eqTypesQTNAT! (eqTypesQTBOOL! {w} {n})))
 
 
 -- As shown in not_mp, MP is invalid when considering a Beth or Kripke □ and references
@@ -257,7 +270,7 @@ MPp-inh n w =
                     aw5 w4 e4 a b ea rewrite sub0-ASSERT₂-APPLY a a₁ | sub0-ASSERT₂-APPLY b a₁ = aw5'
                       where
                         eb : equalInType n w4 #BOOL (#APPLY a₁ a) (#APPLY a₁ b)
-                        eb = equalInType-FUN→ (equalInType-refl (equalInType-TPURE→ eqa)) w4 (⊑-trans· (⊑-trans· e2 e3) e4) a b ea
+                        eb = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL≡ (equalInType-refl (equalInType-TPURE→ eqa))) w4 (⊑-trans· (⊑-trans· e2 e3) e4) a b ea
 
                         aw5' : equalTypes n w4 (#ASSERT₂ (#APPLY a₁ a)) (#ASSERT₂ (#APPLY a₁ b))
                         aw5' = equalInType-BOOL→equalTypes-ASSERT₂ eb
@@ -270,7 +283,7 @@ MPp-inh n w =
                     aw6 w4 e4 a b ea rewrite sub0-NEG-ASSERT₂-APPLY a a₁ | sub0-NEG-ASSERT₂-APPLY b a₁ = aw5'
                       where
                         eb : equalInType n w4 #BOOL (#APPLY a₁ a) (#APPLY a₁ b)
-                        eb = equalInType-FUN→ (equalInType-refl (equalInType-TPURE→ eqa)) w4 (⊑-trans· (⊑-trans· e2 e3) e4) a b ea
+                        eb = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL≡ (equalInType-refl (equalInType-TPURE→ eqa))) w4 (⊑-trans· (⊑-trans· e2 e3) e4) a b ea
 
                         aw5' : equalTypes n w4 (#NEG (#ASSERT₂ (#APPLY a₁ a))) (#NEG (#ASSERT₂ (#APPLY a₁ b)))
                         aw5' = eqTypesNEG← (equalInType-BOOL→equalTypes-ASSERT₂ eb)
@@ -281,7 +294,10 @@ MPp-inh n w =
                     aw7 w4 e4 b₁ b₂ eb =
                       ≡CTerm→equalInType
                         (sym (sub0-NEG-ASSERT₂-APPLY b₁ a₁))
-                        (equalInType-NEG (equalInType-BOOL→equalTypes-ASSERT₂ (equalInType-FUN→ (equalInType-refl (equalInType-TPURE→ eqa)) w4 (⊑-trans· (⊑-trans· e2 e3) e4) b₁ b₁ (equalInType-refl eb)))
+                        (equalInType-NEG (equalInType-BOOL→equalTypes-ASSERT₂
+                                           (equalInType-FUN→
+                                             (≡CTerm→equalInType #NAT!→BOOL≡ (equalInType-refl (equalInType-TPURE→ eqa)))
+                                             w4 (⊑-trans· (⊑-trans· e2 e3) e4) b₁ b₁ (equalInType-refl eb)))
                                          aw8)
                       where
                         eqn : □· w4 (λ w' _ → #⇛!sameℕ w' b₁ b₂)
@@ -300,7 +316,7 @@ MPp-inh n w =
                                 ec1 = equalInType-trans
                                        (equalInType-sym
                                          (equalInType-FUN→
-                                           (equalInType-mon (equalInType-refl (equalInType-TPURE→ eqa)) w5 (⊑-trans· (⊑-trans· (⊑-trans· e2 e3) e4) e5))
+                                           (≡CTerm→equalInType #NAT!→BOOL≡ (equalInType-mon (equalInType-refl (equalInType-TPURE→ eqa)) w5 (⊑-trans· (⊑-trans· (⊑-trans· e2 e3) e4) e5)))
                                            w6 e6 b₁ (#NUM k)
                                            (→equalInType-NAT! n w6 b₁ (#NUM k) (Mod.∀𝕎-□ M λ w7 e7 → k , ∀𝕎-mon e7 d₁ , #⇛!-refl {w7} {#NUM k}))))
                                        (equalInType-mon ec0 w6 e6)
@@ -335,7 +351,7 @@ MPp-inh n w =
   →equalInType-ASSERT₃
     i w (#APPLY f (#NUM k)) t t
     (equalInType-trans
-      (equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM k) n (→equalInType-NAT! i w (#NUM k) n (Mod.∀𝕎-□ M aw)))
+      (equalInType-FUN→ (≡CTerm→equalInType #NAT!→QTBOOL!≡ f∈) w (⊑-refl· w) (#NUM k) n (→equalInType-NAT! i w (#NUM k) n (Mod.∀𝕎-□ M aw)))
       (equalInType-ASSERT₃→ i w (#APPLY f n) t t t∈))
   where
     aw : ∀𝕎 w (λ w' _ → #⇛!sameℕ w' (#NUM k) n)
@@ -359,7 +375,7 @@ MPp-inh n w =
   →equalInType-ASSERT₃
     i w (#APPLY f (#NUM k)) t t
     (equalInType-trans
-      (equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM k) n (→equalInType-QTNAT! i w (#NUM k) n (Mod.∀𝕎-□ M aw)))
+      (equalInType-FUN→ (≡CTerm→equalInType #QTNAT!→QTBOOL!≡ f∈) w (⊑-refl· w) (#NUM k) n (→equalInType-QTNAT! i w (#NUM k) n (Mod.∀𝕎-□ M aw)))
       (equalInType-ASSERT₃→ i w (#APPLY f n) t t t∈))
   where
     aw : ∀𝕎 w (λ w' _ → #weakMonEq! w' (#NUM k) n)
@@ -429,7 +445,7 @@ MPp₄-inh n w =
                     aw5 w4 e4 a b ea rewrite sub0-ASSERT₃-APPLY a a₁ | sub0-ASSERT₃-APPLY b a₁ = aw5'
                       where
                         eb : equalInType n w4 #QTBOOL! (#APPLY a₁ a) (#APPLY a₁ b)
-                        eb = equalInType-FUN→ (equalInType-refl (equalInType-TPURE→ eqa)) w4 (⊑-trans· (⊑-trans· e2 e3) e4) a b ea
+                        eb = equalInType-FUN→ (≡CTerm→equalInType #NAT!→QTBOOL!≡ (equalInType-refl (equalInType-TPURE→ eqa))) w4 (⊑-trans· (⊑-trans· e2 e3) e4) a b ea
 
                         aw5' : equalTypes n w4 (#ASSERT₃ (#APPLY a₁ a)) (#ASSERT₃ (#APPLY a₁ b))
                         aw5' = equalInType-QTBOOL!→equalTypes-ASSERT₃ eb
@@ -568,6 +584,5 @@ MPp₃-inh n w =
           where
             p6 : equalInType n w2 (#MP-right f₁) (#APPLY (#APPLY #lam2AX f₁) a₁) (#APPLY (#APPLY #lam2AX f₂) a₂)
             p6 = equalInType-FUN→ p5 w2 e2 a₁ a₂ (#MP-left2→#MP-left3 n w2 f₁ a₁ a₂ (equalInType-mon (equalInType-TPURE→ (equalInType-refl f∈)) w2 e2) a∈)
-
 
 \end{code}[hide]

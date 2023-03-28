@@ -73,19 +73,19 @@ open import computation(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)
+open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 
 
 alwaysFreezable : Freeze W C K P G N → Set(L)
@@ -180,13 +180,6 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
 
         h8 : ¬ inhType n w3 (#Σchoice name ℂ₁·)
         h8 = ¬equalInType-#Σchoice n w3 Resℂ name isValueℂ₀· isValueℂ₁· ¬∼ℂ₀₁· oc2 comp2 fb2
-
-
-→equalInType-CS-NAT!→QTBOOL! : {n : ℕ} {w : 𝕎·} {a b : Name}
-                             → ∀𝕎 w (λ w' _ → (m : ℕ) → equalInType n w' #QTBOOL! (#APPLY (#CS a) (#NUM m)) (#APPLY (#CS b) (#NUM m)))
-                             → equalInType n w #NAT!→QTBOOL! (#CS a) (#CS b)
-→equalInType-CS-NAT!→QTBOOL! {n} {w} {a} {b} i rewrite #NAT!→QTBOOL!≡ =
-  →equalInType-CS-NAT!→T (eqTypesQTBOOL! {w} {n}) equalTerms-pres-#⇛-left-rev-QTBOOL! i
 
 
 ¬ΣNAT!→¬inhType-Σchoice : QTBoolℂ CB → (n : ℕ) (w : 𝕎·) (name : Name)

@@ -73,13 +73,13 @@ open import computation(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)
+open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
@@ -170,15 +170,6 @@ isTypeLPO w n rewrite #LPO≡#PI = isTypeLPO-PI w n
 
 isTypeNegLPO : (w : 𝕎·) (n : ℕ) → isType n w (#NEG #LPO)
 isTypeNegLPO w n = eqTypesNEG← (isTypeLPO w n)
-
-
-
--- MOVE to props3
-→equalInType-CS-NAT!→QTBOOL! : {n : ℕ} {w : 𝕎·} {a b : Name}
-                             → ∀𝕎 w (λ w' _ → (m : ℕ) → equalInType n w' #QTBOOL! (#APPLY (#CS a) (#NUM m)) (#APPLY (#CS b) (#NUM m)))
-                             → equalInType n w #NAT!→QTBOOL! (#CS a) (#CS b)
-→equalInType-CS-NAT!→QTBOOL! {n} {w} {a} {b} i rewrite #NAT!→QTBOOL!≡ =
-  →equalInType-CS-NAT!→T (eqTypesQTBOOL! {w} {n}) equalTerms-pres-#⇛-left-rev-QTBOOL! i
 
 
 

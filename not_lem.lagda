@@ -73,12 +73,12 @@ open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)
+open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
@@ -268,6 +268,12 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
 
 {--∼ℂ≡-r : {c c1 c2 : ℂ·} → c1 ≡ c2 → ∼ℂ· c c1 → ∼ℂ· c c2
 ∼ℂ≡-r {c} {c1} {c2} e h rewrite e = h--}
+
+
+#weakℂEq→ : {w : 𝕎·} {a b : CTerm}
+             → #weakℂEq w a b
+             → (c₁ c₂ : ℂ·) → a #⇓! ℂ→C· c₁ at w → b #⇓! ℂ→C· c₂ at w → ∼C! w (ℂ→C· c₁) (ℂ→C· c₂)
+#weakℂEq→ {w} {a} {B} h = lower (h w (⊑-refl· w))
 
 
 

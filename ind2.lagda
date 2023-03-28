@@ -404,13 +404,6 @@ data ≤Type where
 
 
 
-
-
-#⇛-refl : (w : 𝕎·) (T : CTerm) → T #⇛ T at w
-#⇛-refl w T w' e' = lift (⇓-refl ⌜ T ⌝ w')
-
-
-
 PIeq-ext : {u : 𝕌} {w : 𝕎·} {A1 A2 : CTerm} {B1 B2 : CTerm0}
            {eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 A2)}
            {eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → ≡∈Type u w' (eqta w' e) a1 a2

@@ -54,40 +54,41 @@ open import mod
 module mp_props {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
                 (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
                 (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
-                (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
-                (F : Freeze {L} W C K P G N)
+                (N : NewChoice {L} W C K G)
+--                (V : ChoiceVal W C K G X N)
+--                (F : Freeze {L} W C K P G N)
                 (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-                (CB : ChoiceBar W M C K P G X N V F E)
+--                (CB : ChoiceBar W M C K P G X N V F E)
        where
 
 
 open import worldDef(W)
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
-open import getChoiceDef(W)(C)(K)(G)
-open import newChoiceDef(W)(C)(K)(G)(N)
-open import choiceExtDef(W)(C)(K)(G)(X)
-open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
-open import freezeDef(W)(C)(K)(P)(G)(N)(F)
+--open import getChoiceDef(W)(C)(K)(G)
+--open import newChoiceDef(W)(C)(K)(G)(N)
+--open import choiceExtDef(W)(C)(K)(G)(X)
+--open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
+--open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import computation(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E) using (eqTypes-mon)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import terms3(W)(C)(K)(G)(X)(N)
 open import terms8(W)(C)(K)(G)(X)(N)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E) using (sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-ASSERT₃-APPLY ; equalInType-QTBOOL!→equalTypes-ASSERT₃ ; isType-#NAT!→BOOL ; isType-#NAT!→QTBOOL! ; isType-#NAT→BOOL ; equalInType-NEG→¬inh ; sub0-NEG-ASSERT₂-APPLY ; →equalInType-SQUASH ; eqTypesQTNAT! ; isTypeBOOL ; eqTypesQTBOOL!)
+open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+--open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+--open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+--open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+--open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (→equalTypes-#PI-NEG-ASSERT₂ ; →equalTypes-#SUM-ASSERT₂; →equalTypes-#SUM-ASSERT₃ ; →equalTypes-#SUM-ASSERT₄ ; →equalTypes-#PI-NEG-ASSERT₂-body)
 
 
 
@@ -440,14 +441,16 @@ sub0-fun-mp₅ a =
                              → equalInType n w #NAT→BOOL f₁ f₂
                              → equalInType n w #NAT!→BOOL f₁ f₂
 ∈#NAT→BOOL→∈#NAT!→BOOL {n} {w} {f₁} {f₂} f∈ =
-  equalInType-FUN
-    isTypeNAT!
-    (isTypeBOOL w n)
-    aw
+  ≡CTerm→equalInType
+    (sym #NAT!→BOOL≡)
+    (equalInType-FUN
+      isTypeNAT!
+      (isTypeBOOL w n)
+      aw)
   where
     aw : ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → equalInType n w' #NAT! n₁ n₂
                        → equalInType n w' #BOOL (#APPLY f₁ n₁) (#APPLY f₂ n₂))
-    aw w1 e1 n₁ n₂ n∈ = equalInType-FUN→ f∈ w1 e1 n₁ n₂ (∈#NAT!→∈#NAT n∈)
+    aw w1 e1 n₁ n₂ n∈ = equalInType-FUN→ (≡CTerm→equalInType #NAT→BOOL≡ f∈) w1 e1 n₁ n₂ (∈#NAT!→∈#NAT n∈)
 
 
 →equalTypes-#MPₙ-left3 : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
@@ -466,7 +469,7 @@ isType-MP-right-body i w f₁ f₂ f∈ w1 e1 a₁ a₂ a∈ =
   →≡equalTypes
     (sym (sub0-ASSERT₂-APPLY a₁ f₁))
     (sym (sub0-ASSERT₂-APPLY a₂ f₂))
-    (equalInType-BOOL→equalTypes-ASSERT₂ (equalInType-FUN→ f∈ w1 e1 a₁ a₂ a∈))
+    (equalInType-BOOL→equalTypes-ASSERT₂ (equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL≡ f∈) w1 e1 a₁ a₂ a∈))
 
 
 isType-MP-right-qt-body : (i : ℕ) (w : 𝕎·) (f₁ f₂ : CTerm)
@@ -478,7 +481,7 @@ isType-MP-right-qt-body i w f₁ f₂ f∈ w1 e1 a₁ a₂ a∈ =
   →≡equalTypes
     (sym (sub0-ASSERT₃-APPLY a₁ f₁))
     (sym (sub0-ASSERT₃-APPLY a₂ f₂))
-    (equalInType-QTBOOL!→equalTypes-ASSERT₃ (equalInType-FUN→ f∈ w1 e1 a₁ a₂ a∈))
+    (equalInType-QTBOOL!→equalTypes-ASSERT₃ (equalInType-FUN→ (≡CTerm→equalInType #NAT!→QTBOOL!≡ f∈) w1 e1 a₁ a₂ a∈))
 
 
 isType-MP-right-qt₂-body : (i : ℕ) (w : 𝕎·) (f₁ f₂ : CTerm)
@@ -490,7 +493,7 @@ isType-MP-right-qt₂-body i w f₁ f₂ f∈ w1 e1 a₁ a₂ a∈ =
   →≡equalTypes
     (sym (sub0-ASSERT₃-APPLY a₁ f₁))
     (sym (sub0-ASSERT₃-APPLY a₂ f₂))
-    (equalInType-QTBOOL!→equalTypes-ASSERT₃ (equalInType-FUN→ f∈ w1 e1 a₁ a₂ a∈))
+    (equalInType-QTBOOL!→equalTypes-ASSERT₃ (equalInType-FUN→ (≡CTerm→equalInType #QTNAT!→QTBOOL!≡ f∈) w1 e1 a₁ a₂ a∈))
 
 
 →equalTypes-#MP-right : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
@@ -530,7 +533,7 @@ isType-MP-rightₙ-body i w f₁ f₂ f∈ w1 e1 a₁ a₂ a∈ =
   →≡equalTypes
     (sym (sub0-ASSERT₂-APPLY a₁ f₁))
     (sym (sub0-ASSERT₂-APPLY a₂ f₂))
-    (equalInType-BOOL→equalTypes-ASSERT₂ (equalInType-FUN→ f∈ w1 e1 a₁ a₂ a∈))
+    (equalInType-BOOL→equalTypes-ASSERT₂ (equalInType-FUN→ (≡CTerm→equalInType #NAT→BOOL≡ f∈) w1 e1 a₁ a₂ a∈))
 
 
 →equalTypes-#MPₙ-right : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
@@ -614,7 +617,10 @@ isTypeMP₄ w n =
 
 
 isType-#QTNAT!→QTBOOL! : (w : 𝕎·) (n : ℕ) → isType n w #QTNAT!→QTBOOL!
-isType-#QTNAT!→QTBOOL! w n = eqTypesFUN← eqTypesQTNAT! (eqTypesQTBOOL! {w} {n})
+isType-#QTNAT!→QTBOOL! w n =
+  ≡CTerm→eqTypes
+    (sym #QTNAT!→QTBOOL!≡) (sym #QTNAT!→QTBOOL!≡)
+    (eqTypesFUN← eqTypesQTNAT! (eqTypesQTBOOL! {w} {n}))
 
 
 isTypeMP₅ : (w : 𝕎·) (n : ℕ) → isType n w #MP₅
@@ -675,8 +681,9 @@ equalInType-#MP-left→ i w f a₁ a₂ f∈ a∈ w1 e1 h =
                  ≡CTerm→equalInType
                    (sym (sub0-NEG-ASSERT₂-APPLY n₁ f))
                    (equalInType-NEG
-                     (equalInType-BOOL→equalTypes-ASSERT₂ (equalInType-FUN→ (equalInType-refl f∈) w2 (⊑-trans· e1 e2) n₁ n₁ (equalInType-refl n∈)))
+                     (equalInType-BOOL→equalTypes-ASSERT₂ (equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL≡ f∈) w2 (⊑-trans· e1 e2) n₁ n₁ (equalInType-refl n∈)))
                      λ w3 e3 b₁ b₂ q → h w3 (⊑-trans· e2 e3) n₁ n₂ (equalInType-mon n∈ w3 e3) (b₁ , equalInType-refl q)))
+--  {--(equalInType-refl f∈)--}
 
 
 -- We prove that the result in equalInType-#MP-left→ is an equivalence
@@ -849,7 +856,7 @@ equalInType-#MP-left3→ i w f a₁ a₂ f∈ a∈ w1 e1 h =
 →equalTypes-#SUM-ASSERTₙ {n} {w} {a₁} {a₂} eqt = eqTypesSUM← (λ w' _ → eqTypesNAT) aw1
   where
     aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT a b → equalInType n w' #BOOL (#APPLY a₁ a) (#APPLY a₂ b))
-    aw0 = equalInType-FUN→ eqt
+    aw0 = equalInType-FUN→ (≡CTerm→equalInType #NAT→BOOL≡ eqt)
 
     aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT a b)
                        → equalTypes n w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))) (sub0 b (#[0]ASSERT₂ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR))))

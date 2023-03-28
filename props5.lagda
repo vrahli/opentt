@@ -57,24 +57,24 @@ open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_lt(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_qlt(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_free(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_pi(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_w(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_m(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_set(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_eq(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_union(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_qtunion(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_lt(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_qlt(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_free(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_pi(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_w(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_m(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_set(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_eq(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_union(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_qtunion(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -288,7 +288,7 @@ equalInType-NAT-#⇛ i w a1 a2 b1 b2 c1 c2 eqi =
                 → equalInType i w #NAT (#APPLY f₁ n₁) (#APPLY f₂ n₂)
 ∈BAIRE→ {i} {w} {f₁} {f₂} {n₁} {n₂} ∈f ∈n =
   equalInType-FUN→
-    {i} {w} {#NAT} {#NAT} {f₁} {f₂} ∈f w (⊑-refl· _) n₁ n₂
+    {i} {w} {#NAT} {#NAT} {f₁} {f₂} (≡CTerm→equalInType #BAIRE≡ ∈f) w (⊑-refl· _) n₁ n₂
     ∈n
 
 

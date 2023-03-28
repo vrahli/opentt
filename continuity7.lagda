@@ -449,8 +449,7 @@ contExt = LAMBDA (LAMBDA (PAIR (νtestM (VAR 1) (VAR 2)) lam3AX))
 
 isType-BAIRE→NAT : (i : ℕ) (w : 𝕎·) → isType i w #BAIRE→NAT
 isType-BAIRE→NAT i w =
-  eqTypesFUN← eqTypesBAIRE eqTypesNAT
-
+  ≡CTerm→eqTypes (sym #BAIRE→NAT≡) (sym #BAIRE→NAT≡) (eqTypesFUN← eqTypesBAIRE eqTypesNAT)
 
 
 

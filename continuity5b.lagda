@@ -61,18 +61,18 @@ module continuity5b {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
 
 open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)
-open import terms2(W)(C)(K)(G)(X)(N)
-open import terms3(W)(C)(K)(G)(X)(N)
-open import terms4(W)(C)(K)(G)(X)(N)
-open import terms5(W)(C)(K)(G)(X)(N)
-open import terms6(W)(C)(K)(G)(X)(N)
+--open import terms2(W)(C)(K)(G)(X)(N)
+open import terms3(W)(C)(K)(G)(X)(N) using (updBody ; sucIf≤-sucIf≤ ; suc≡sucIf≤0 ; shiftNameUp-shiftNameUp ; suc→∈lowerNames ; upd)
+open import terms4(W)(C)(K)(G)(X)(N) using (→¬∈names-shiftUp)
+--open import terms5(W)(C)(K)(G)(X)(N)
+--open import terms6(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import choiceDef{L}(C)
+--open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
 open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
@@ -86,14 +86,14 @@ open import choiceExtDef(W)(C)(K)(G)(X)
 open import continuity-conds(W)(C)(K)(G)(X)(N)
 
 open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E) using (isHighestℕ)
+--open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity3b(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E) --using (→≡sucIf≤ ; shiftNameUp-inj ; updBody≡shiftNameUp→ ; shiftNameUpDown ; ¬∈++2→¬∈1 ; ¬∈++2→¬∈2 ; ¬∈++4→¬∈1 ; ¬∈++4→¬∈2 ; ¬∈++4→¬∈3 ; ¬∈++4→¬∈4)
+open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E) using (∈names𝕎)
+--open import continuity3b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity4b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
@@ -369,6 +369,7 @@ abstract
   updRel2-shiftNameUp→ n {name} {f} {g} {r} cf cg {DUM a} {DUM b} (updRel2-DUM .(shiftNameUp n a) .(shiftNameUp n b) u) = updRel2-DUM _ _ (updRel2-shiftNameUp→ n cf cg u)
   updRel2-shiftNameUp→ n {name} {f} {g} {r} cf cg {FFDEFS a a₁} {FFDEFS b b₁} (updRel2-FFDEFS .(shiftNameUp n a) .(shiftNameUp n b) .(shiftNameUp n a₁) .(shiftNameUp n b₁) u u₁) = updRel2-FFDEFS _ _ _ _ (updRel2-shiftNameUp→ n cf cg u) (updRel2-shiftNameUp→ n cf cg u₁)
   updRel2-shiftNameUp→ n {name} {f} {g} {r} cf cg {PURE} {PURE} updRel2-PURE = updRel2-PURE
+  updRel2-shiftNameUp→ n {name} {f} {g} {r} cf cg {TERM} {TERM} updRel2-TERM = updRel2-TERM
   updRel2-shiftNameUp→ n {name} {f} {g} {r} cf cg {UNIV x} {UNIV .x} (updRel2-UNIV .x) = updRel2-UNIV x
   updRel2-shiftNameUp→ n {name} {f} {g} {r} cf cg {LIFT a} {LIFT b} (updRel2-LIFT .(shiftNameUp n a) .(shiftNameUp n b) u) = updRel2-LIFT _ _ (updRel2-shiftNameUp→ n cf cg u)
   updRel2-shiftNameUp→ n {name} {f} {g} {r} cf cg {LOWER a} {LOWER b} (updRel2-LOWER .(shiftNameUp n a) .(shiftNameUp n b) u) = updRel2-LOWER _ _ (updRel2-shiftNameUp→ n cf cg u)
@@ -567,6 +568,7 @@ abstract
   updRel2-renn {name} {f} {g} {r} {.(TCONST a₁)} {.(TCONST a₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-TCONST a₁ a₂ u) = updRel2-TCONST _ _ (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)
   updRel2-renn {name} {f} {g} {r} {.(SUBSING a₁)} {.(SUBSING a₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-SUBSING a₁ a₂ u) = updRel2-SUBSING _ _ (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)
   updRel2-renn {name} {f} {g} {r} {.PURE} {.PURE} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm updRel2-PURE = updRel2-PURE
+  updRel2-renn {name} {f} {g} {r} {.TERM} {.TERM} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm updRel2-TERM = updRel2-TERM
   updRel2-renn {name} {f} {g} {r} {.(DUM a₁)} {.(DUM a₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-DUM a₁ a₂ u) = updRel2-DUM _ _ (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)
   updRel2-renn {name} {f} {g} {r} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updRel2-FFDEFS _ _ _ _ (updRel2-renn n n1 n2 (¬∈++2→¬∈1 {_} {_} {names a₁} {names b₁} {n1} na) (¬∈++2→¬∈1 {_} {_} {names a₂} {names b₂} {n2} nb) d1 d2 nr1 nr2 nf ng nnm u) (updRel2-renn n n1 n2 (¬∈++2→¬∈2 {_} {_} {names a₁} {names b₁} {n1} na) (¬∈++2→¬∈2 {_} {_} {names a₂} {names b₂} {n2} nb) d1 d2 nr1 nr2 nf ng nnm u₁)
   updRel2-renn {name} {f} {g} {r} {.(UNIV x)} {.(UNIV x)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-UNIV x) = updRel2-UNIV _
@@ -829,6 +831,7 @@ step-upto𝕎 cc name (SUBSING a) b w1 w2 w1' r nna nnw idom comp upw rewrite pa
 step-upto𝕎 cc name (DUM a) b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (FFDEFS a a₁) b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name PURE b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom
+step-upto𝕎 cc name TERM b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (UNIV x) b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (LIFT a) b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (LOWER a) b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom

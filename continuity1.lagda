@@ -357,7 +357,7 @@ APPLY-bound∈ : (i : ℕ) (w : 𝕎·) (F : CTerm) (name : Name) (n : CTerm) (f
                → ∈Type i w #NAT (#APPLY F (#bound name n f))
 APPLY-bound∈ i w F name n f ∈F ∈n ∈f =
   equalInType-FUN→
-    {i} {w} {#BAIRE} {#NAT} {F} {F} ∈F w (⊑-refl· _) (#bound name n f) (#bound name n f)
+    {i} {w} {#BAIRE} {#NAT} {F} {F} (≡CTerm→equalInType #BAIRE→NAT≡ ∈F) w (⊑-refl· _) (#bound name n f) (#bound name n f)
     (bound∈ i w name n f ∈n ∈f)
 
 
@@ -780,7 +780,8 @@ probeM-NAT i w name F f ∈F ∈f = ≡CTerm→∈Type (sym (#probeM≡ name F f
 
     eqa : ∈Type i w1 #NAT (#APPLY F (#upd name f))
     eqa = equalInType-FUN→
-            (equalInType-mon ∈F w1 e1) w1 (⊑-refl· _) (#upd name f) (#upd name f)
+            (≡CTerm→equalInType #BAIRE→NAT≡ (equalInType-mon ∈F w1 e1))
+            w1 (⊑-refl· _) (#upd name f) (#upd name f)
             (upd∈ i w1 name f (cn name w 0 comp) (equalInType-mon ∈f w1 e1))
 
     eqn : NATeq w1 (#APPLY F (#upd name f)) (#APPLY F (#upd name f))
@@ -854,7 +855,8 @@ differ⇓from-to gc0 f cf nnf name1 name2 w1 w2 w1' a b v isv compat1 compat2 gt
 
     eqa : ∈Type i w1 #NAT (#APPLY F (#upd name f))
     eqa = equalInType-FUN→
-            (equalInType-mon ∈F w1 e1) w1 (⊑-refl· _) (#upd name f) (#upd name f)
+            (≡CTerm→equalInType #BAIRE→NAT≡ (equalInType-mon ∈F w1 e1))
+            w1 (⊑-refl· _) (#upd name f) (#upd name f)
             (upd∈ i w1 name f (cn name w 0 comp) (equalInType-mon ∈f w1 e1))
 
     eqn1 : □· w1 (λ w' _ → NATeq w' (#APPLY F (#upd name f)) (#APPLY F (#upd name f)))
@@ -1003,99 +1005,100 @@ differ-APPLY-upd name1 name2 F f nnF =
 
 
 
+abstract
+  νtestM-NAT-shift : (cn : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
+                     → #¬Names F -- We require F to be pure
+                     → #¬Names f -- We require f to be pure
+                     → ∈Type i w #BAIRE→NAT F
+                     → ∈Type i w #BAIRE f
+                     → NATeq w (#νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f)) (#νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f))
+  νtestM-NAT-shift cn exb gc i w F f nnF nnf ∈F ∈f =
+    suc k , ack , ack
+    where
+      tM : Term
+      tM = testM 0 (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)
 
-νtestM-NAT-shift : (cn : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ) (i : ℕ) (w : 𝕎·) (F f : CTerm)
-             → #¬Names F -- We require F to be pure
-             → #¬Names f -- We require f to be pure
-             → ∈Type i w #BAIRE→NAT F
-             → ∈Type i w #BAIRE f
-             → NATeq w (#νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f)) (#νtestM (#shiftNameUp 0 F) (#shiftNameUp 0 f))
-νtestM-NAT-shift cn exb gc i w F f nnF nnf ∈F ∈f =
-  suc k , ack , ack
-  where
-    tM : Term
-    tM = testM 0 (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)
+      name : Name
+      name = newChoiceT w tM
 
-    name : Name
-    name = newChoiceT w tM
+      w1 : 𝕎·
+      w1 = startNewChoiceT Res⊤ w tM
 
-    w1 : 𝕎·
-    w1 = startNewChoiceT Res⊤ w tM
+      e1 : w ⊑· w1
+      e1 = startNewChoiceT⊏ Res⊤ w tM
 
-    e1 : w ⊑· w1
-    e1 = startNewChoiceT⊏ Res⊤ w tM
+      comp1 : compatible· name w1 Res⊤
+      comp1 = startChoiceCompatible· Res⊤ w name (¬newChoiceT∈dom𝕎 w tM)
 
-    comp1 : compatible· name w1 Res⊤
-    comp1 = startChoiceCompatible· Res⊤ w name (¬newChoiceT∈dom𝕎 w tM)
+      s1 : νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇓ testM name ⌜ F ⌝ ⌜ f ⌝ from w to w1
+      s1 = 1 , ≡pair (shiftNameDown-renn-shiftNameUp name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f)) refl
 
-    s1 : νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇓ testM name ⌜ F ⌝ ⌜ f ⌝ from w to w1
-    s1 = 1 , ≡pair (shiftNameDown-renn-shiftNameUp name ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f)) refl
+      w2 : 𝕎·
+      w2 = chooseT name w1 (NUM 0)
 
-    w2 : 𝕎·
-    w2 = chooseT name w1 (NUM 0)
+      cs : set0 name ⇓ AX from w1 to w2
+      cs = 1 , refl
 
-    cs : set0 name ⇓ AX from w1 to w2
-    cs = 1 , refl
+      e2 : w1 ⊑· w2
+      e2 = ⇓from-to→⊑ {w1} {w2} cs
 
-    e2 : w1 ⊑· w2
-    e2 = ⇓from-to→⊑ {w1} {w2} cs
+      -- we prove that in w2 name's value is 0
+      gc0 : getT 0 name w2 ≡ just (NUM 0)
+      gc0 = gc name w1 0 comp1
 
-    -- we prove that in w2 name's value is 0
-    gc0 : getT 0 name w2 ≡ just (NUM 0)
-    gc0 = gc name w1 0 comp1
+      g0 : ∀𝕎-get0-NUM w2 name
+      g0 = cn name w1 0 comp1
 
-    g0 : ∀𝕎-get0-NUM w2 name
-    g0 = cn name w1 0 comp1
+      eqa : ∈Type i w2 #NAT (#APPLY F (#upd name f))
+      eqa = equalInType-FUN→
+              (≡CTerm→equalInType #BAIRE→NAT≡ (equalInType-mon ∈F w2 (⊑-trans· e1 e2)))
+              w2 (⊑-refl· _) (#upd name f) (#upd name f)
+              (upd∈ i w2 name f g0 (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
 
-    eqa : ∈Type i w2 #NAT (#APPLY F (#upd name f))
-    eqa = equalInType-FUN→
-            (equalInType-mon ∈F w2 (⊑-trans· e1 e2)) w2 (⊑-refl· _) (#upd name f) (#upd name f)
-            (upd∈ i w2 name f g0 (equalInType-mon ∈f w2 (⊑-trans· e1 e2)))
+      eqn : ∃𝕎 w2 (λ w' _ → NATeq w' (#APPLY F (#upd name f)) (#APPLY F (#upd name f)))
+      eqn = exb (equalInType-NAT→ i w2 (#APPLY F (#upd name f)) (#APPLY F (#upd name f)) eqa)
 
-    eqn : ∃𝕎 w2 (λ w' _ → NATeq w' (#APPLY F (#upd name f)) (#APPLY F (#upd name f)))
-    eqn = exb (equalInType-NAT→ i w2 (#APPLY F (#upd name f)) (#APPLY F (#upd name f)) eqa)
+      wx2 : 𝕎·
+      wx2 = fst eqn
 
-    wx2 : 𝕎·
-    wx2 = fst eqn
+      ex2 : w2 ⊑· wx2
+      ex2 = fst (snd eqn)
 
-    ex2 : w2 ⊑· wx2
-    ex2 = fst (snd eqn)
+      eqn' : NATeq wx2 (#APPLY F (#upd name f)) (#APPLY F (#upd name f))
+      eqn' = snd (snd eqn)
 
-    eqn' : NATeq wx2 (#APPLY F (#upd name f)) (#APPLY F (#upd name f))
-    eqn' = snd (snd eqn)
+      cak : Σ ℕ (λ k → appUpd name ⌜ F ⌝ ⌜ f ⌝ ⇛ NUM k at wx2)
+      cak = fst eqn' , fst (snd eqn')
 
-    cak : Σ ℕ (λ k → appUpd name ⌜ F ⌝ ⌜ f ⌝ ⇛ NUM k at wx2)
-    cak = fst eqn' , fst (snd eqn')
+      m : ℕ
+      m = fst cak
 
-    m : ℕ
-    m = fst cak
+      ca : Σ 𝕎· (λ w' → appUpd name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM m from wx2 to w')
+      ca = ⇛→⇓from-to (snd cak)
 
-    ca : Σ 𝕎· (λ w' → appUpd name ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM m from wx2 to w')
-    ca = ⇛→⇓from-to (snd cak)
+      w3 : 𝕎·
+      w3 = fst ca
 
-    w3 : 𝕎·
-    w3 = fst ca
+      e3 : wx2 ⊑· w3
+      e3 = ⇓from-to→⊑ {wx2} {w3} (snd ca)
 
-    e3 : wx2 ⊑· w3
-    e3 = ⇓from-to→⊑ {wx2} {w3} (snd ca)
+      ca1 : Σ 𝕎· (λ w' → APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ NUM m from w2 to w')
+      ca1 = differNF⇓APPLY-upd gc ⌜ F ⌝  ⌜ f ⌝ (CTerm.closed f) name m wx2 w3 w2 nnF nnf
+                               (⊑-compatible· (⊑-trans· e2 ex2) comp1) (⊑-compatible· e2 comp1)
+                               (∀𝕎-mon ex2 g0) g0
+                               (snd ca)
 
-    ca1 : Σ 𝕎· (λ w' → APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ NUM m from w2 to w')
-    ca1 = differNF⇓APPLY-upd gc ⌜ F ⌝  ⌜ f ⌝ (CTerm.closed f) name m wx2 w3 w2 nnF nnf
-                             (⊑-compatible· (⊑-trans· e2 ex2) comp1) (⊑-compatible· e2 comp1)
-                             (∀𝕎-mon ex2 g0) g0
-                             (snd ca)
+      w2x : 𝕎·
+      w2x = fst ca1
 
-    w2x : 𝕎·
-    w2x = fst ca1
+      ca2 : APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ NUM m from w2 to w2x
+      ca2 = snd ca1
 
-    ca2 : APPLY ⌜ F ⌝ (upd name ⌜ f ⌝) ⇓ NUM m from w2 to w2x
-    ca2 = snd ca1
+      gt0 : Σ ℕ (λ k → getT 0 name w2x ≡ just (NUM k))
+      gt0 = lower (g0 w2x (⇓from-to→⊑ {w2} {w2x} ca2))
 
-    gt0 : Σ ℕ (λ k → getT 0 name w2x ≡ just (NUM k))
-    gt0 = lower (g0 w2x (⇓from-to→⊑ {w2} {w2x} ca2))
-
-    k : ℕ
-    k = fst gt0
+      k : ℕ
+      k = fst gt0
 
 {--
     gk : get0 name ⇓ NUM k from w2x to w2x
@@ -1105,84 +1108,84 @@ differ-APPLY-upd name1 name2 F f nnF =
     pbk = ⇓-trans₂ (SEQ⇓₁ ca2) (⇓-trans₂ (SEQ-val⇓ w2x (NUM m) (SUC (get0 name)) tt) (⇓NUM→SUC⇓NUM gk))
 --}
 
-    ack : νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇛ NUM (suc k) at w
-    ack w' e' = lift (⇓-from-to→⇓ {w'} {w3'} {νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)} {NUM (suc k)}
+      ack : νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇛ NUM (suc k) at w
+      ack w' e' = lift (⇓-from-to→⇓ {w'} {w3'} {νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)} {NUM (suc k)}
                                    (⇓-trans₂ {w'} {w1'} {w3'} {νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝)} {testM name' ⌜ F ⌝ ⌜ f ⌝} {NUM (suc k)}
                                              s1' (⇓-trans₂ {w1'} {w2'} {w3'} {testM name' ⌜ F ⌝ ⌜ f ⌝} {SEQ AX (probeM name' ⌜ F ⌝ ⌜ f ⌝)} {NUM (suc k)}
                                                            (SEQ⇓₁ {w1'} {w2'} {set0 name'} {AX} {probeM name' ⌜ F ⌝ ⌜ f ⌝}  cs')
                                                            (⇓-trans₂ (SEQ-val⇓ w2' AX (probeM name' ⌜ F ⌝ ⌜ f ⌝) tt) pb'))))
-      where
-        name' : Name
-        name' = newChoiceT w' tM
+        where
+          name' : Name
+          name' = newChoiceT w' tM
 
-        w1' : 𝕎·
-        w1' = startNewChoiceT Res⊤ w' tM
+          w1' : 𝕎·
+          w1' = startNewChoiceT Res⊤ w' tM
 
-        e1' : w' ⊑· w1'
-        e1' = startNewChoiceT⊏ Res⊤ w' tM
+          e1' : w' ⊑· w1'
+          e1' = startNewChoiceT⊏ Res⊤ w' tM
 
-        comp1' : compatible· name' w1' Res⊤
-        comp1' = startChoiceCompatible· Res⊤ w' name' (¬newChoiceT∈dom𝕎 w' tM)
+          comp1' : compatible· name' w1' Res⊤
+          comp1' = startChoiceCompatible· Res⊤ w' name' (¬newChoiceT∈dom𝕎 w' tM)
 
-        s1' : νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇓ testM name' ⌜ F ⌝ ⌜ f ⌝ from w' to w1'
-        s1' = 1 , ≡pair (shiftNameDown-renn-shiftNameUp name' ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f)) refl
+          s1' : νtestM (shiftNameUp 0 ⌜ F ⌝) (shiftNameUp 0 ⌜ f ⌝) ⇓ testM name' ⌜ F ⌝ ⌜ f ⌝ from w' to w1'
+          s1' = 1 , ≡pair (shiftNameDown-renn-shiftNameUp name' ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed F) (CTerm.closed f)) refl
 
-        w2' : 𝕎·
-        w2' = chooseT name' w1' (NUM 0)
+          w2' : 𝕎·
+          w2' = chooseT name' w1' (NUM 0)
 
-        cs' : set0 name' ⇓ AX from w1' to w2'
-        cs' = 1 , refl
+          cs' : set0 name' ⇓ AX from w1' to w2'
+          cs' = 1 , refl
 
-        e2' : w1' ⊑· w2'
-        e2' = ⇓from-to→⊑ {w1'} {w2'} cs'
+          e2' : w1' ⊑· w2'
+          e2' = ⇓from-to→⊑ {w1'} {w2'} cs'
 
-        -- we prove that in w2 name's value is 0
-        gc0' : getT 0 name' w2' ≡ just (NUM 0)
-        gc0' = gc name' w1' 0 comp1'
+          -- we prove that in w2 name's value is 0
+          gc0' : getT 0 name' w2' ≡ just (NUM 0)
+          gc0' = gc name' w1' 0 comp1'
 
-        eqgt : getT 0 name w2 ≡ getT 0 name' w2'
-        eqgt = trans gc0 (sym gc0')
+          eqgt : getT 0 name w2 ≡ getT 0 name' w2'
+          eqgt = trans gc0 (sym gc0')
 
-        compat1 : compatible· name w2 Res⊤
-        compat1 = ⊑-compatible· e2 comp1
+          compat1 : compatible· name w2 Res⊤
+          compat1 = ⊑-compatible· e2 comp1
 
-        compat2 : compatible· name' w2' Res⊤
-        compat2 = ⊑-compatible· e2' comp1'
+          compat2 : compatible· name' w2' Res⊤
+          compat2 = ⊑-compatible· e2' comp1'
 
-        gt0n : ∀𝕎-get0-NUM w2 name
-        gt0n w' e' = cn name w1 0 comp1 w' e'
+          gt0n : ∀𝕎-get0-NUM w2 name
+          gt0n w' e' = cn name w1 0 comp1 w' e'
 
-        df : Σ 𝕎· (λ w3' → Σ Term (λ v' →
-              appUpd name' ⌜ F ⌝ ⌜ f ⌝ ⇓ v' from w2' to w3' × differ name name' ⌜ f ⌝ (NUM m) v' × getT 0 name w2x ≡ getT 0 name' w3'))
-        df = differ⇓from-to
-               gc ⌜ f ⌝ (CTerm.closed f) nnf name name' w2 w2x w2'
-               (appUpd name ⌜ F ⌝ ⌜ f ⌝)
-               (appUpd name' ⌜ F ⌝ ⌜ f ⌝)
-               (NUM m) tt compat1 compat2 gt0n
-               (differ-APPLY-upd name name' ⌜ F ⌝ ⌜ f ⌝ nnF)
-               eqgt ca2
+          df : Σ 𝕎· (λ w3' → Σ Term (λ v' →
+                 appUpd name' ⌜ F ⌝ ⌜ f ⌝ ⇓ v' from w2' to w3' × differ name name' ⌜ f ⌝ (NUM m) v' × getT 0 name w2x ≡ getT 0 name' w3'))
+          df = differ⇓from-to
+                 gc ⌜ f ⌝ (CTerm.closed f) nnf name name' w2 w2x w2'
+                 (appUpd name ⌜ F ⌝ ⌜ f ⌝)
+                 (appUpd name' ⌜ F ⌝ ⌜ f ⌝)
+                 (NUM m) tt compat1 compat2 gt0n
+                 (differ-APPLY-upd name name' ⌜ F ⌝ ⌜ f ⌝ nnF)
+                 eqgt ca2
 
-        w3' : 𝕎·
-        w3' = fst df
+          w3' : 𝕎·
+          w3' = fst df
 
-        v' : Term
-        v' = fst (snd df)
+          v' : Term
+          v' = fst (snd df)
 
-        dfv' : differ name name' ⌜ f ⌝ (NUM m) v'
-        dfv' = fst (snd (snd (snd df)))
+          dfv' : differ name name' ⌜ f ⌝ (NUM m) v'
+          dfv' = fst (snd (snd (snd df)))
 
-        df0 : appUpd name' ⌜ F ⌝ ⌜ f ⌝ ⇓ v' from w2' to w3'
-        df0 = fst (snd (snd df))
+          df0 : appUpd name' ⌜ F ⌝ ⌜ f ⌝ ⇓ v' from w2' to w3'
+          df0 = fst (snd (snd df))
 
-        df1 : appUpd name' ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM m from w2' to w3'
-        df1 = ≡ᵣ→⇓from-to (differ-NUM→ dfv') df0
+          df1 : appUpd name' ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM m from w2' to w3'
+          df1 = ≡ᵣ→⇓from-to (differ-NUM→ dfv') df0
 
-        pb' : probeM name' ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (suc k) from w2' to w3'
-        pb' = ⇓-trans₂
-                (SEQ⇓₁ df1)
-                (⇓-trans₂
-                  (SEQ-val⇓ w3' (NUM m) (SUC (get0 name')) tt)
-                  (⇓NUM→SUC⇓NUM (1 , step-APPLY-CS (NUM k) w3' 0 name' (trans (sym (snd (snd (snd (snd df))))) (snd gt0)))))
+          pb' : probeM name' ⌜ F ⌝ ⌜ f ⌝ ⇓ NUM (suc k) from w2' to w3'
+          pb' = ⇓-trans₂
+                  (SEQ⇓₁ df1)
+                  (⇓-trans₂
+                    (SEQ-val⇓ w3' (NUM m) (SUC (get0 name')) tt)
+                    (⇓NUM→SUC⇓NUM (1 , step-APPLY-CS (NUM k) w3' 0 name' (trans (sym (snd (snd (snd (snd df))))) (snd gt0)))))
 
 
 
@@ -1657,10 +1660,12 @@ equalInType-force : {i : ℕ} {w : 𝕎·} {f : CTerm}
                     → ∈Type i w #BAIRE f
                     → equalInType i w #BAIRE f (#force f)
 equalInType-force {i} {w} {f} eqi =
-  equalInType-FUN
-    eqTypesNAT
-    eqTypesNAT
-    aw1
+  ≡CTerm→equalInType
+    (sym #BAIRE≡)
+    (equalInType-FUN
+      eqTypesNAT
+      eqTypesNAT
+      aw1)
   where
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
                         → equalInType i w' #NAT (#APPLY f a₁) (#APPLY (#force f) a₂))
@@ -1671,7 +1676,7 @@ equalInType-force {i} {w} {f} eqi =
         aw2 w2 e2 (k , c1 , c2) = →equalInType-NAT i w2 (#APPLY f a₁) (#APPLY (#force f) a₂) (Mod.∀𝕎-□Func M aw3 (equalInType-NAT→ i w2 (#APPLY f a₁) (#APPLY f (#NUM k)) eqi1))
           where
             eqi1 : equalInType i w2 #NAT (#APPLY f a₁) (#APPLY f (#NUM k))
-            eqi1 = equalInType-FUN→ eqi w2 (⊑-trans· e1 e2) a₁ (#NUM k) (⇛NUM→equalInType-NAT c1)
+            eqi1 = equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ eqi) w2 (⊑-trans· e1 e2) a₁ (#NUM k) (⇛NUM→equalInType-NAT c1)
 
             aw3 : ∀𝕎 w2 (λ w' e' → NATeq w' (#APPLY f a₁) (#APPLY f (#NUM k)) → NATeq w' (#APPLY f a₁) (#APPLY (#force f) a₂))
             aw3 w3 e3 (z , comp1 , comp2) = z , comp1 , ⇛-trans (#APPLY-force {w3} {f} {a₂} (∀𝕎-mon e3 c2)) comp2

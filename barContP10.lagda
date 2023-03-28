@@ -79,7 +79,7 @@ open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#⇛-refl)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#⇛-refl)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -92,6 +92,7 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalInType-trans ; →equalInTypeSUBSING)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E) using (→equalInType-NAT! ; equalInType-W→)
 --open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 --open import list(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
@@ -104,7 +105,7 @@ open import continuity-conds(W)(C)(K)(G)(X)(N)
 --open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalInType-upd-force)
-open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalInType-TPURE→ₗ ; equalInType-TPURE→ ; equalTypesTPURE ; isType-BAIRE→NAT)
+open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E) using (isType-BAIRE→NAT)
 --open import continuitySMb(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (isHighestℕ≤)
 
 open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
@@ -113,7 +114,7 @@ open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (isType-IndBarB ; equ
 open import barContP4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (INIT)
 --open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 open import barContP6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (#FunBarP ; FunBarP ; sem)
-open import barContP7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (follow ; #follow ; weq→follow-NATeq ; #tab)
+open import barContP7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (follow ; #follow ; weq→follow-NATeq ; #tab ; #BAIRE!≡)
 --open import barContP8(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (follow-NUM-ETA)
 open import barContP9(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (semCond)
 
@@ -262,7 +263,8 @@ isType-IndBar i w =
 
 
 isType-BAIRE! : {w : 𝕎·} {i : ℕ} → isType i w #BAIRE!
-isType-BAIRE! {w} {i} = eqTypesFUN← {w} {i} {#NAT} {#NAT!} eqTypesNAT isTypeNAT!
+isType-BAIRE! {w} {i} =
+  ≡CTerm→eqTypes (sym #BAIRE!≡) (sym #BAIRE!≡) (eqTypesFUN← {w} {i} {#NAT} {#NAT!} eqTypesNAT isTypeNAT!)
 
 
 APPLY-∈BAIRE!→NAT! : (i : ℕ) (w : 𝕎·) (f₁ f₂ a₁ a₂ : CTerm)
@@ -270,7 +272,7 @@ APPLY-∈BAIRE!→NAT! : (i : ℕ) (w : 𝕎·) (f₁ f₂ a₁ a₂ : CTerm)
                        → equalInType i w #NAT a₁ a₂
                        → equalInType i w #NAT! (#APPLY f₁ a₁) (#APPLY f₂ a₂)
 APPLY-∈BAIRE!→NAT! i w f₁ f₂ a₁ a₂ f∈ a∈ =
-  equalInType-FUN→ f∈ w (⊑-refl· w) a₁ a₂ a∈
+  equalInType-FUN→ (≡CTerm→equalInType #BAIRE!≡ f∈) w (⊑-refl· w) a₁ a₂ a∈
 
 
 NAT!→NAT : (i : ℕ) (w : 𝕎·) (a b : CTerm)
@@ -286,10 +288,10 @@ BAIRE!→BAIRE : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                 → equalInType i w #BAIRE! a b
                 → equalInType i w #BAIRE a b
 BAIRE!→BAIRE i w a b h =
-  equalInType-FUN eqTypesNAT eqTypesNAT aw
+  ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-FUN eqTypesNAT eqTypesNAT aw)
   where
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂ → equalInType i w' #NAT (#APPLY a a₁) (#APPLY b a₂))
-    aw w1 e1 a₁ a₂ ea = NAT!→NAT i w1 (#APPLY a a₁) (#APPLY b a₂) (equalInType-FUN→ h w1 e1 a₁ a₂ ea)
+    aw w1 e1 a₁ a₂ ea = NAT!→NAT i w1 (#APPLY a a₁) (#APPLY b a₂) (equalInType-FUN→ (≡CTerm→equalInType #BAIRE!≡ h) w1 e1 a₁ a₂ ea)
 
 
 
@@ -298,7 +300,7 @@ APPLY-FunBarP-BAIRE!→ : {i : ℕ} {w : 𝕎·} {F₁ F₂ a₁ a₂ : CTerm}
                          → equalInType i w #BAIRE! a₁ a₂
                          → equalInType i w #NAT (#APPLY F₁ a₁) (#APPLY F₂ a₂)
 APPLY-FunBarP-BAIRE!→ {i} {w} {F₁} {F₂} {a₁} {a₂} F∈P a∈ =
-  equalInType-FUN→ F∈ w (⊑-refl· w) a₁ a₂ (BAIRE!→BAIRE i w a₁ a₂ a∈)
+  equalInType-FUN→ (≡CTerm→equalInType #BAIRE→NAT≡ F∈) w (⊑-refl· w) a₁ a₂ (BAIRE!→BAIRE i w a₁ a₂ a∈)
   where
     F∈ : equalInType i w #FunBar F₁ F₂
     F∈ = equalInType-TPURE→ F∈P
@@ -318,7 +320,7 @@ APPLY-FunBarP-BAIRE!→ {i} {w} {F₁} {F₂} {a₁} {a₂} F∈P a∈ =
     aw w1 e1 h =
       weq→follow-NATeq
         kb i w1 W₁ W₂ a₁ a₂ 0 h
-        (λ k → equalInType-FUN→ a∈ w1 e1 (#NUM k) (#NUM k) (NUM-equalInType-NAT i w1 k))
+        (λ k → equalInType-FUN→ (≡CTerm→equalInType #BAIRE!≡ a∈) w1 e1 (#NUM k) (#NUM k) (NUM-equalInType-NAT i w1 k))
 
 
 contDiagVal-type3 : (kb : K□) (i : ℕ) (w : 𝕎·) (F₁ F₂ W₁ W₂ a₁ a₂ : CTerm)

@@ -79,7 +79,7 @@ open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#⇛-refl)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#⇛-refl)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -92,6 +92,7 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalInType-trans)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E) using (→equalInType-NAT! ; equalInType-W→)
 --open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 --open import list(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
@@ -104,8 +105,8 @@ open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E) using (steps-sat-isHighestℕ
 --open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalInType-upd-force)
-open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalInType-TPURE→ₗ ; equalInType-TPURE→)
-open import continuitySMb(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (isHighestℕ≤)
+--open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalInType-TPURE→ₗ ; equalInType-TPURE→)
+--open import continuitySMb(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (isHighestℕ≤)
 
 open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)
 open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (#INIT ; #APPLY-loop⇓SUP→)
@@ -249,7 +250,7 @@ semCond kb cn can exb gc i w r F f compat F∈P f∈ =
         (weq→follow-NATeq kb i w1 I I (#MSEQ s) f 0 h (λ k → equalInType-mon (equalInType-sym (f≡1 k)) w1 e1))
       where
         neq1 : NATeq w1 (#APPLY F f) (#APPLY F (#MSEQ s))
-        neq1 = kb (equalInType-NAT→ i w1 _ _ (equalInType-FUN→ F∈ w1 e1 f (#MSEQ s) (equalInType-mon f≡2 w1 e1))) w1 (⊑-refl· w1)
+        neq1 = kb (equalInType-NAT→ i w1 _ _ (equalInType-FUN→ (≡CTerm→equalInType #BAIRE→NAT≡ F∈) w1 e1 f (#MSEQ s) (equalInType-mon f≡2 w1 e1))) w1 (⊑-refl· w1)
 
         neq2 : NATeq w1 (#APPLY F (#MSEQ s)) (#follow (#MSEQ s) I 0)
         neq2 = fst neq1 ,

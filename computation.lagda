@@ -283,6 +283,8 @@ step (DUM a) = ret (DUM a)
 step (FFDEFS a b) = ret (FFDEFS a b)
 -- PURE
 step PURE = ret PURE
+-- TERM
+step TERM = ret TERM
 -- UNIV
 step (UNIV u) = ret (UNIV u)
 -- LIFT
@@ -371,6 +373,7 @@ stepVal (SUBSING a) w v = refl
 stepVal (DUM a) w v = refl
 stepVal (FFDEFS a a₁) w v = refl
 stepVal PURE w v = refl
+stepVal TERM w v = refl
 stepVal (UNIV x) w v = refl
 stepVal (LIFT x) w v = refl
 stepVal (LOWER a) w v = refl
@@ -566,6 +569,7 @@ step-APPLY-CS-¬NUM name (SUBSING a) b w w' c s rewrite sym (pair-inj₁ (just-i
 step-APPLY-CS-¬NUM name (DUM a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (FFDEFS a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name PURE b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
+step-APPLY-CS-¬NUM name TERM b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (UNIV x) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (LIFT a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (LOWER a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
@@ -903,6 +907,7 @@ step⊑ {w} {w'} {SUBSING a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) 
 step⊑ {w} {w'} {DUM a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {FFDEFS a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {PURE} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {TERM} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {UNIV x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {LIFT a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {LOWER a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
@@ -1320,6 +1325,7 @@ data ∼T : 𝕎· → Term → Term → Set where
 →-step-APPLY {w} {w'} {DUM a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {FFDEFS a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {PURE} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+→-step-APPLY {w} {w'} {TERM} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {UNIV x} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {LIFT a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {LOWER a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
@@ -1482,6 +1488,7 @@ step-⇓-ASSERT₁ {w} {w'} {SUBSING a} {b} comp rewrite sym (pair-inj₁ (just-
 step-⇓-ASSERT₁ {w} {w'} {DUM a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {FFDEFS a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {PURE} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {TERM} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {UNIV x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {LIFT a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {LOWER a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
@@ -1663,6 +1670,7 @@ step-preserves-fvars w (TTRUNC a) b e {x} i rewrite sym (just-inj e) = i
 step-preserves-fvars w (DUM a) b e {x} i rewrite sym (just-inj e) = i
 step-preserves-fvars w (FFDEFS a a₁) b e {x} i rewrite sym (just-inj e) = i
 step-preserves-fvars w (PURE) b e {x} i rewrite sym (just-inj e) = i
+step-preserves-fvars w (TERM) b e {x} i rewrite sym (just-inj e) = i
 step-preserves-fvars w (UNIV x₁) b e {x} i rewrite sym (just-inj e) = i
 step-preserves-fvars w (LIFT a) b e {x} i rewrite sym (just-inj e) = i
 step-preserves-fvars w (LOWER a) b e {x} i rewrite sym (just-inj e) = i
@@ -2325,5 +2333,64 @@ lift-⇓!sameℕ-trans {w} {a} {b} {c} (lift h) (lift q) = lift (⇓!sameℕ-tra
                  → a ⇛ b at w
                  → Σ 𝕎· (λ w' → a ⇓ b from w to w')
 ⇛→⇓from-to {w} {a} {b} comp = ⇓→from-to (lower (comp w (⊑-refl· _)))
+
+
+#⇛-refl : (w : 𝕎·) (T : CTerm) → T #⇛ T at w
+#⇛-refl w T w' e' = lift (⇓-refl ⌜ T ⌝ w')
+
+
+
+#strongBool→#strongBool! : {w : 𝕎·} {a b : CTerm}
+                           → #⇓→#⇓! w a
+                           → #⇓→#⇓! w b
+                           → #strongBool w a b
+                           → #strongBool! w a b
+#strongBool→#strongBool! {w} {a} {b} c₁ c₂ (x , y , inj₁ (d₁ , d₂)) = x , y , inj₁ (#⇛→#⇛! {w} {a} {#INL x} c₁ tt d₁ , #⇛→#⇛! {w} {b} {#INL y} c₂ tt d₂)
+#strongBool→#strongBool! {w} {a} {b} c₁ c₂ (x , y , inj₂ (d₁ , d₂)) = x , y , inj₂ (#⇛→#⇛! {w} {a} {#INR x} c₁ tt d₁ , #⇛→#⇛! {w} {b} {#INR y} c₂ tt d₂)
+
+
+
+#strongBool!-mon : {w w' : 𝕎·} {a b : CTerm}
+                   → w ⊑· w'
+                   → #strongBool! w a b
+                   → #strongBool! w' a b
+#strongBool!-mon {w} {w'} {a} {b} e (x , y , inj₁ (d₁ , d₂)) = x , y , inj₁ (∀𝕎-mon e d₁ , ∀𝕎-mon e d₂)
+#strongBool!-mon {w} {w'} {a} {b} e (x , y , inj₂ (d₁ , d₂)) = x , y , inj₂ (∀𝕎-mon e d₁ , ∀𝕎-mon e d₂)
+
+
+#strongBool!→#strongBool : {w : 𝕎·} {a b : CTerm}
+                           → #strongBool! w a b
+                           → #strongBool w a b
+#strongBool!→#strongBool {w} {a} {b} (x , y , inj₁ (d₁ , d₂)) = x , y , inj₁ (#⇛!→#⇛ {w} {a} {#INL x} d₁ , #⇛!→#⇛ {w} {b} {#INL y} d₂)
+#strongBool!→#strongBool {w} {a} {b} (x , y , inj₂ (d₁ , d₂)) = x , y , inj₂ (#⇛!→#⇛ {w} {a} {#INR x} d₁ , #⇛!→#⇛ {w} {b} {#INR y} d₂)
+
+
+
+#⇓→#⇓!-val : (w : 𝕎·) (a : CTerm) → #isValue a → #⇓→#⇓! w a
+#⇓→#⇓!-val w a isva w1 e1 = lift h
+  where
+    h : (v : CTerm) (w2 : 𝕎·) → #isValue v → a #⇓ v from w1 to w2 → a #⇓! v at w1
+    h v w2 isv comp rewrite sym (#⇓-from-to→≡ a v w1 w2 comp isva) = #⇓!-refl a w1
+
+
+#⇛!-val→#⇓→#⇓! : {w : 𝕎·} {a b : CTerm}
+                   → b #⇛! a at w
+                   → #isValue a
+                   → #⇓→#⇓! w b
+#⇛!-val→#⇓→#⇓! {w} {a} {b} comp isv = #⇛!-pres-#⇓→#⇓!-rev {w} {a} {b} comp (#⇓→#⇓!-val w a isv)
+
+
+#strongBool!→#⇓→#⇓!ₗ : {w : 𝕎·} {a b : CTerm}
+                        → #strongBool! w a b
+                        → #⇓→#⇓! w a
+#strongBool!→#⇓→#⇓!ₗ {w} {a} {b} (x , y , inj₁ (c₁ , c₂)) = #⇛!-val→#⇓→#⇓! {w} {#INL x} {a} c₁ tt
+#strongBool!→#⇓→#⇓!ₗ {w} {a} {b} (x , y , inj₂ (c₁ , c₂)) = #⇛!-val→#⇓→#⇓! {w} {#INR x} {a} c₁ tt
+
+
+#strongBool!→#⇓→#⇓!ᵣ : {w : 𝕎·} {a b : CTerm}
+                        → #strongBool! w a b
+                        → #⇓→#⇓! w b
+#strongBool!→#⇓→#⇓!ᵣ {w} {a} {b} (x , y , inj₁ (c₁ , c₂)) = #⇛!-val→#⇓→#⇓! {w} {#INL y} {b} c₂ tt
+#strongBool!→#⇓→#⇓!ᵣ {w} {a} {b} (x , y , inj₂ (c₁ , c₂)) = #⇛!-val→#⇓→#⇓! {w} {#INR y} {b} c₂ tt
 
 \end{code}
