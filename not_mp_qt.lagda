@@ -79,13 +79,13 @@ open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)
+open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import not_mp(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 
 
@@ -165,7 +165,7 @@ cℂ = (c : Name) (r : Res) (w : 𝕎·) (n : ℕ)
                                    → compatible· a w Resℂ
                                    → ∈Type n w (#QTNAT!→QTBOOL!) (#CS a)
 →equalInType-CS-QTNAT!→QTBOOL! cb cc {n} {w} {a} compat =
-  equalInType-FUN eqTypesQTNAT! (eqTypesQTBOOL! {w} {n}) aw
+  ≡CTerm→equalInType (sym #QTNAT!→QTBOOL!≡) (equalInType-FUN eqTypesQTNAT! (eqTypesQTBOOL! {w} {n}) aw)
   where
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #QTNAT! a₁ a₂
                       → equalInType n w' #QTBOOL! (#APPLY (#CS a) a₁) (#APPLY (#CS a) a₂))
