@@ -420,6 +420,7 @@ abstract
   equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LTneqTCONST (compAllVal x tt))
   equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LTneqSUBSING (compAllVal x tt))
   equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTPURE x x₁ , eqi) = ⊥-elim (LTneqPURE (compAllVal x tt))
+  equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTTERM x x₁ , eqi) = ⊥-elim (LTneqTERM (compAllVal x tt))
   equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (LTneqFFDEFS (compAllVal x tt))
   equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTUNIV i₁ p x x₁ , eqi) = ⊥-elim (LTneqUNIV (compAllVal x tt))
   equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LTneqLIFT(compAllVal x tt))
@@ -506,6 +507,7 @@ abstract
   equalInType-W→ i w A B t u (EQTSUBSING A1 A2 x x₁ eqtA exta , h) = ⊥-elim (WneqSUBSING (compAllVal x tt))
   equalInType-W→ i w A B t u (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , h) = ⊥-elim (WneqFFDEFS (compAllVal x tt))
   equalInType-W→ i w A B t u (EQTPURE x x₁ , h) = ⊥-elim (WneqPURE (compAllVal x tt))
+  equalInType-W→ i w A B t u (EQTTERM x x₁ , h) = ⊥-elim (WneqTERM (compAllVal x tt))
   equalInType-W→ i w A B t u (EQTUNIV i₁ p x x₁ , h) = ⊥-elim (WneqUNIV (compAllVal x tt))
   equalInType-W→ i w A B t u (EQTLIFT A1 A2 x x₁ eqtA exta , h) = ⊥-elim (WneqLIFT (compAllVal x tt))
   equalInType-W→ i w A B t u (EQTBAR x , h) =
@@ -554,6 +556,7 @@ abstract
   equalInType-M→ i w A B t u (EQTSUBSING A1 A2 x x₁ eqtA exta , h) = ⊥-elim (MneqSUBSING (compAllVal x tt))
   equalInType-M→ i w A B t u (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , h) = ⊥-elim (MneqFFDEFS (compAllVal x tt))
   equalInType-M→ i w A B t u (EQTPURE x x₁ , h) = ⊥-elim (MneqPURE (compAllVal x tt))
+  equalInType-M→ i w A B t u (EQTTERM x x₁ , h) = ⊥-elim (MneqTERM (compAllVal x tt))
   equalInType-M→ i w A B t u (EQTUNIV i₁ p x x₁ , h) = ⊥-elim (MneqUNIV (compAllVal x tt))
   equalInType-M→ i w A B t u (EQTLIFT A1 A2 x x₁ eqtA exta , h) = ⊥-elim (MneqLIFT (compAllVal x tt))
   equalInType-M→ i w A B t u (EQTBAR x , h) =

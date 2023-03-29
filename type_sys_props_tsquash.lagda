@@ -138,6 +138,9 @@ TSQUASHneqSUBSING {a} {c} ()
 TSQUASHneqPURE : {a : Term} → ¬ (TSQUASH a) ≡ PURE
 TSQUASHneqPURE {a} ()
 
+TSQUASHneqTERM : {a : Term} → ¬ (TSQUASH a) ≡ TERM
+TSQUASHneqTERM {a} ()
+
 TSQUASHneqTTRUNC : {a : Term} {c : Term} → ¬ (TSQUASH a) ≡ TTRUNC c
 TSQUASHneqTTRUNC {a} {c} ()
 
@@ -199,6 +202,7 @@ typeSysConds-TSQUASH-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION C1
 typeSysConds-TSQUASH-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x₁ y))
 typeSysConds-TSQUASH-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x₁ y))
 typeSysConds-TSQUASH-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x₁ y))
+typeSysConds-TSQUASH-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x₁ y))
 typeSysConds-TSQUASH-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x₁ y))
 typeSysConds-TSQUASH-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA)
   rewrite #TSQUASHinj {A3} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
@@ -313,6 +317,7 @@ typeSysConds-TSQUASH-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION A3 
 typeSysConds-TSQUASH-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x y))
 typeSysConds-TSQUASH-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x y))
 typeSysConds-TSQUASH-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) f g eqi = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x y))
+typeSysConds-TSQUASH-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) f g eqi = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x y))
 typeSysConds-TSQUASH-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x y))
 typeSysConds-TSQUASH-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #TSQUASHinj {A3} {A1} (#⇛-val-det {_} {A} tt tt y x)
@@ -379,6 +384,7 @@ typeSysConds-TSQUASH-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION A3 
 typeSysConds-TSQUASH-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x y₁))
 typeSysConds-TSQUASH-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x y₁))
 typeSysConds-TSQUASH-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) f g eqi = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x y₁))
+typeSysConds-TSQUASH-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) f g eqi = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x y₁))
 typeSysConds-TSQUASH-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x y₁))
 typeSysConds-TSQUASH-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #TSQUASHinj {A4} {A1} (#⇛-val-det {_} {A} tt tt y₁ x)
@@ -445,6 +451,7 @@ typeSysConds-TSQUASH-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION A3 
 typeSysConds-TSQUASH-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TSQUASH-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TSQUASH-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) f g eqi = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TSQUASH-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) f g eqi = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TSQUASH-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TSQUASH-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #TSQUASHinj {A4} {B1} (#⇛-val-det {_} {B} tt tt y₁ x₁)
@@ -511,6 +518,7 @@ typeSysConds-TSQUASH-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION A3 
 typeSysConds-TSQUASH-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x₁ y))
 typeSysConds-TSQUASH-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x₁ y))
 typeSysConds-TSQUASH-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) f g eqi = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x₁ y))
+typeSysConds-TSQUASH-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) f g eqi = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x₁ y))
 typeSysConds-TSQUASH-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x₁ y))
 typeSysConds-TSQUASH-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #TSQUASHinj {A3} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
@@ -579,6 +587,7 @@ typeSysConds-TSQUASH-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION 
 typeSysConds-TSQUASH-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x y))
 typeSysConds-TSQUASH-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x y))
 typeSysConds-TSQUASH-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) f g eqi = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x y))
+typeSysConds-TSQUASH-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) f g eqi = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x y))
 typeSysConds-TSQUASH-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x y))
 typeSysConds-TSQUASH-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #TSQUASHinj {A3} {A1} (#⇛-val-det {_} {A} tt tt y x)
@@ -655,6 +664,7 @@ typeSysConds-TSQUASH-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION 
 typeSysConds-TSQUASH-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x y₁))
 typeSysConds-TSQUASH-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x y₁))
 typeSysConds-TSQUASH-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) f g eqi = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x y₁))
+typeSysConds-TSQUASH-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) f g eqi = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x y₁))
 typeSysConds-TSQUASH-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x y₁))
 typeSysConds-TSQUASH-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #TSQUASHinj {A4} {A1} (#⇛-val-det {_} {A} tt tt y₁ x)
@@ -732,6 +742,7 @@ typeSysConds-TSQUASH-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION 
 typeSysConds-TSQUASH-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TSQUASH-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TSQUASH-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) f g eqi = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TSQUASH-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) f g eqi = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TSQUASH-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TSQUASH-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #TSQUASHinj {A4} {B1} (#⇛-val-det {_} {B} tt tt y₁ x₁)
@@ -808,6 +819,7 @@ typeSysConds-TSQUASH-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTQTUNION 
 typeSysConds-TSQUASH-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x₁ y))
 typeSysConds-TSQUASH-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x₁ y))
 typeSysConds-TSQUASH-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) f g eqi = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x₁ y))
+typeSysConds-TSQUASH-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) f g eqi = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x₁ y))
 typeSysConds-TSQUASH-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x₁ y))
 typeSysConds-TSQUASH-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #TSQUASHinj {A3} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
@@ -888,6 +900,7 @@ eqInType-⇛-TSQUASH u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTQTUNION A3 B
 eqInType-⇛-TSQUASH u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTPURE x x₁) ei = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTTERM x x₁) ei = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ei
   rewrite #TSQUASHinj {A1} {A3} (#⇛-val-det {_} {A} tt tt c₁ x)
@@ -969,6 +982,7 @@ eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTQTUNION A3 B3 A4
 eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ei ext = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei ext = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTPURE x x₁) ei ext = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTTERM x x₁) ei ext = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ei ext = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ei ext
   rewrite #TSQUASHinj {A1} {A3} (#⇛-val-det {_} {A} tt tt c₁ x)
@@ -1053,6 +1067,7 @@ eqInType-⇛-TSQUASH-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTQTUNION 
 eqInType-⇛-TSQUASH-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTPURE x x₁) ei = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTTERM x x₁) ei = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ei
   rewrite #TSQUASHinj {A1} {A3} (#⇛-val-det {_} {A} tt tt c₁ x)
@@ -1126,6 +1141,7 @@ eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTQTUNION A3 B
 eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ext ei = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ext ei = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTPURE x x₁) ext ei = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTTERM x x₁) ext ei = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ext ei = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ext ei
   rewrite #TSQUASHinj {A1} {A3} (#⇛-val-det {_} {A} tt tt c₁ x)

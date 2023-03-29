@@ -77,12 +77,6 @@ pairing→y : (n : ℕ) → ℕ
 pairing→y n = snd (unpairing n)
 
 
--- There are 4 of those! move it to utils
-+0 : (n : ℕ) → n + 0 ≡ n
-+0 0 = refl
-+0 (suc n) rewrite +0 n = refl
-
-
 +≡0→ : (n m : ℕ) → n + m ≡ 0 → n ≡ 0 × m ≡ 0
 +≡0→ 0 m h = refl , h
 +≡0→ (suc n) m ()

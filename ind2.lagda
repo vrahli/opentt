@@ -394,6 +394,14 @@ data ≤Type where
 
 
 
+<Type-TERM : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} {eqt : ≡Types u w T1 T2}
+            {u' : 𝕌} {w' : 𝕎·} {U1 U2 : CTerm} {x₁ : U1 #⇛ #TERM at w'} {x₂ : U2 #⇛ #TERM at w'}
+            → <Type {u} {w} {T1} {T2} eqt {u'} {w'} {U1} {U2} (EQTTERM x₁ x₂) → ⊥
+<Type-TERM {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<Type1 .eqt .(EQTTERM x₁ x₂) ())
+<Type-TERM {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<TypeS .eqt eqt2 .(EQTTERM x₁ x₂) ltt ())
+
+
+
 <Type-UNIV : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} {eqt : ≡Types u w T1 T2}
              {u' : 𝕌} {w' : 𝕎·} {U1 U2 : CTerm}
              {i : ℕ} {p : i < u' ·ₙ} {c₁ : U1 #⇛ #UNIV i at w'} {c₂ : U2 #⇛ #UNIV i at w'}
@@ -962,6 +970,8 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
         ind' w1 e1 {u'} {w'} {T1'} {T2'} eqt' ltt = indLtt (eqtA w1 e1) eqt' ltt
 
     indLtt {u} {w} {T1} {T2} (EQTPURE c₁ c₂) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-PURE ltt)
+
+    indLtt {u} {w} {T1} {T2} (EQTTERM c₁ c₂) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-TERM ltt)
 
     indLtt {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-UNIV ltt)
 
