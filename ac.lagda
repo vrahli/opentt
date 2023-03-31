@@ -56,10 +56,11 @@ open import mod
 module ac {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
           (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
           (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
-          (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
-          (F : Freeze {L} W C K P G N)
+          (N : NewChoice {L} W C K G)
+--          (V : ChoiceVal W C K G X N)
+--          (F : Freeze {L} W C K P G N)
           (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-          (CB : ChoiceBar W M C K P G X N V F E)
+--          (CB : ChoiceBar W M C K P G X N V F E)
           (EM : ExcludedMiddle (lsuc(L)))
           (EB : ExBar W M)
        where
@@ -72,35 +73,35 @@ open import compatibleDef{L}(W)(C)(K)
 open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
-open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
-open import freezeDef(W)(C)(K)(P)(G)(N)(F)
+--open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
+--open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import computation(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import terms2(W)(C)(K)(G)(X)(N)
-open import terms3(W)(C)(K)(G)(X)(N)
-open import terms4(W)(C)(K)(G)(X)(N)
+open import terms2(W)(C)(K)(G)(X)(N) using (#subv)
+--open import terms3(W)(C)(K)(G)(X)(N)
+--open import terms4(W)(C)(K)(G)(X)(N)
 open import terms6(W)(C)(K)(G)(X)(N) using (IFEQ⇛₁ ; IFEQ⇛= ; IFEQ⇛¬=)
 open import terms8(W)(C)(K)(G)(X)(N)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#⇛-mon)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalTypes-#⇛-left-right-rev ; TS ; typeSys ; →equalInType-SQUASH ; inhType-mon)
+open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E) using (eqTypesBAIRE ; →equalTypesLT ; ∀𝕎-□Func2)
+--open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import mp_prop(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (≡→⇓from-to)
-open import lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(E)(EM)(EB) using (□·⊎inhType)
+--open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+--open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+--open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+--open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+open import mp_prop(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(E) using (≡→⇓from-to)
+open import lem(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EB) using (□·⊎inhType)
 open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM) using (mseq∈baire)
 
 
@@ -346,7 +347,7 @@ isType-#AC₀₀-right-body2 i w R₁ R₂ f₁ f₂ R∈ f∈ w1 e1 n₁ n₂ n
             {suc i} {w1} {#NAT} {#UNIV i}
             (equalInType-FUN→ R∈ w1 e1 n₁ n₂ n∈)
             w1 (⊑-refl· w1) (#APPLY f₁ n₁) (#APPLY f₂ n₂)
-            (equalInType-FUN→ f∈ w1 e1 n₁ n₂ n∈))))
+            (equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ f∈) w1 e1 n₁ n₂ n∈))))
 
 
 isType-#AC₀₀-right-body1 : (i : ℕ) (w : 𝕎·) (R₁ R₂ : CTerm)
@@ -440,7 +441,7 @@ isType-#sAC₀₀-right-body2 i w R₁ R₂ f₁ f₂ R∈ f∈ w1 e1 n₁ n₂ 
             {suc i} {w1} {#NAT} {#UNIV i}
             (equalInType-FUN→ R∈ w1 e1 n₁ n₂ n∈)
             w1 (⊑-refl· w1) (#APPLY f₁ n₁) (#APPLY f₂ n₂)
-            (equalInType-FUN→ f∈ w1 e1 n₁ n₂ n∈)))))
+            (equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ f∈) w1 e1 n₁ n₂ n∈)))))
 
 
 isType-#sAC₀₀-right-body1 : (i : ℕ) (w : 𝕎·) (R₁ R₂ : CTerm)
@@ -695,6 +696,10 @@ sub-#ABac₀₀ δ k n = CTerm≡ c
             | #subv 0 ⌜ k ⌝ ⌜ n ⌝ (CTerm.closed n)
             | #shiftDown 0 n
             | #shiftDown 1 k = refl
+
+
+#term : CTerm → CTerm
+#term n = #SUBSING (#EQ n n #TERM)
 
 
 #LE≡ : (a b : CTerm) → #LE a b ≡ #NEG (#LT b a)
