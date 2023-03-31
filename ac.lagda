@@ -698,8 +698,10 @@ sub-#ABac₀₀ δ k n = CTerm≡ c
             | #shiftDown 1 k = refl
 
 
+-- We'll need to prove that (n ∈ #term) is a type when (n ∈ #NAT), but currently for (n ∈ #term) to be a type
+-- it must be true, which defeats the purpose
 #term : CTerm → CTerm
-#term n = #SUBSING (#EQ n n #TERM)
+#term n = #EQ n n #TERM
 
 
 #LE≡ : (a b : CTerm) → #LE a b ≡ #NEG (#LT b a)
