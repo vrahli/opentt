@@ -172,7 +172,7 @@ data updSeq (r : Name) (s : 𝕊) (n : ℕ) : Term → Term → Set where
   updSeq-TCONST  : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (TCONST a₁) (TCONST a₂)
   updSeq-SUBSING : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (SUBSING a₁) (SUBSING a₂)
   updSeq-PURE    : updSeq r s n PURE PURE
-  updSeq-TERM    : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (TERM a₁ (TERM a₂)
+  updSeq-TERM    : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (TERM a₁) (TERM a₂)
   updSeq-DUM     : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (DUM a₁) (DUM a₂)
   updSeq-FFDEFS  : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (FFDEFS a₁ b₁) (FFDEFS a₂ b₂)
   updSeq-UNIV    : (x : ℕ) → updSeq r s n (UNIV x) (UNIV x)
