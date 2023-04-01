@@ -79,7 +79,7 @@ open import computation(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E) using (∀𝕎-□Func2)
 --open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import terms2(W)(C)(K)(G)(X)(N) using (#subv)
@@ -91,7 +91,7 @@ open import terms8(W)(C)(K)(G)(X)(N)
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#⇛-mon)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalTypes-#⇛-left-right-rev ; TS ; typeSys ; →equalInType-SQUASH ; inhType-mon)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E) using (eqTypesBAIRE ; →equalTypesLT ; ∀𝕎-□Func2)
+open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E) using (eqTypesBAIRE ; →equalTypesLT)
 --open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
@@ -700,8 +700,8 @@ sub-#ABac₀₀ δ k n = CTerm≡ c
 
 -- We'll need to prove that (n ∈ #term) is a type when (n ∈ #NAT), but currently for (n ∈ #term) to be a type
 -- it must be true, which defeats the purpose
-#term : CTerm → CTerm
-#term n = #EQ n n #TERM
+--#term : CTerm → CTerm
+--#term n = #EQ n n #TERM
 
 
 #LE≡ : (a b : CTerm) → #LE a b ≡ #NEG (#LT b a)

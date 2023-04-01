@@ -108,7 +108,7 @@ abstract
   shiftUp-shiftNameUp c d (TCONST t) rewrite shiftUp-shiftNameUp c d t = refl
   shiftUp-shiftNameUp c d (SUBSING t) rewrite shiftUp-shiftNameUp c d t = refl
   shiftUp-shiftNameUp c d PURE = refl
-  shiftUp-shiftNameUp c d TERM = refl
+  shiftUp-shiftNameUp c d (TERM t) rewrite shiftUp-shiftNameUp c d t = refl
   shiftUp-shiftNameUp c d (DUM t) rewrite shiftUp-shiftNameUp c d t = refl
   shiftUp-shiftNameUp c d (FFDEFS t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
   shiftUp-shiftNameUp c d (UNIV x) = refl
@@ -182,7 +182,7 @@ abstract
   renn-shiftNameUp n1 n2 (TCONST t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 (SUBSING t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 PURE = refl
-  renn-shiftNameUp n1 n2 TERM = refl
+  renn-shiftNameUp n1 n2 (TERM t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 (DUM t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 (FFDEFS t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
   renn-shiftNameUp n1 n2 (UNIV x) = refl
@@ -258,7 +258,7 @@ abstract
   shiftNameDownUp n (TCONST t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n (SUBSING t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n PURE = refl
-  shiftNameDownUp n TERM = refl
+  shiftNameDownUp n (TERM t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n (DUM t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n (FFDEFS t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
   shiftNameDownUp n (UNIV x) = refl
@@ -371,7 +371,7 @@ abstract
   ¬names-shiftUp n (TCONST a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n (SUBSING a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n PURE = refl
-  ¬names-shiftUp n TERM = refl
+  ¬names-shiftUp n (TERM a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n (DUM a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n (FFDEFS a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp n a₁ = refl
   ¬names-shiftUp n (UNIV x) = refl
@@ -431,7 +431,7 @@ abstract
   ¬names-shiftDown n (TCONST a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n (SUBSING a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n PURE = refl
-  ¬names-shiftDown n TERM = refl
+  ¬names-shiftDown n (TERM a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n (DUM a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n (FFDEFS a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown n a₁ = refl
   ¬names-shiftDown n (UNIV x) = refl
@@ -508,7 +508,7 @@ abstract
   ¬Names-subv v {a} {TCONST b} na nb = ¬Names-subv v {a} {b} na nb
   ¬Names-subv v {a} {SUBSING b} na nb = ¬Names-subv v {a} {b} na nb
   ¬Names-subv v {a} {PURE} na nb = refl
-  ¬Names-subv v {a} {TERM} na nb = refl
+  ¬Names-subv v {a} {TERM b} na nb = ¬Names-subv v {a} {b} na nb
   ¬Names-subv v {a} {DUM b} na nb = ¬Names-subv v {a} {b} na nb
   ¬Names-subv v {a} {FFDEFS b b₁} na nb = →∧≡true {¬names (subv v a b)} {¬names (subv v a b₁)} (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv v {a} {b₁} na (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
   ¬Names-subv v {a} {UNIV x} na nb = refl

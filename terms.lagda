@@ -300,11 +300,11 @@ subv-↑T {i} {suc n} p v a with i <? n
     c = refl
 
 
-#TERM : CTerm
-#TERM = ct TERM c
+#TERM : CTerm → CTerm
+#TERM a = ct (TERM ⌜ a ⌝) c
   where
-    c : # TERM
-    c = refl
+    c : # TERM ⌜ a ⌝
+    c = CTerm.closed a
 
 
 #TSQUASH : CTerm → CTerm
@@ -728,7 +728,7 @@ abstract
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁ = refl
   fvars-shiftUp≡ n PURE = refl
-  fvars-shiftUp≡ n TERM = refl
+  fvars-shiftUp≡ n (TERM t) = fvars-shiftUp≡ n t
   fvars-shiftUp≡ n (UNIV x) = refl
   fvars-shiftUp≡ n (LIFT t) = fvars-shiftUp≡ n t
   fvars-shiftUp≡ n (LOWER t) = fvars-shiftUp≡ n t
@@ -1095,7 +1095,7 @@ abstract
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁ = refl
   fvars-shiftDown≡ n PURE = refl
-  fvars-shiftDown≡ n TERM = refl
+  fvars-shiftDown≡ n (TERM t) = fvars-shiftDown≡ n t
   fvars-shiftDown≡ n (UNIV x) = refl
   fvars-shiftDown≡ n (LIFT t) = fvars-shiftDown≡ n t
   fvars-shiftDown≡ n (LOWER t) = fvars-shiftDown≡ n t
@@ -1191,7 +1191,7 @@ abstract
   fvars-shiftNameUp n (DUM a) rewrite fvars-shiftNameUp n a = refl
   fvars-shiftNameUp n (FFDEFS a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
   fvars-shiftNameUp n PURE = refl
-  fvars-shiftNameUp n TERM = refl
+  fvars-shiftNameUp n (TERM a) rewrite fvars-shiftNameUp n a = refl
   fvars-shiftNameUp n (UNIV x) = refl
   fvars-shiftNameUp n (LIFT a) rewrite fvars-shiftNameUp n a = refl
   fvars-shiftNameUp n (LOWER a) rewrite fvars-shiftNameUp n a = refl
@@ -1403,7 +1403,7 @@ abstract
   ... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b p)
   ... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b₁ p)
   fvars-subv v a PURE i = ⊥-elim (¬∈[] i)
-  fvars-subv v a TERM i = ⊥-elim (¬∈[] i)
+  fvars-subv v a (TERM b) = fvars-subv v a b
   fvars-subv v a (UNIV x) i = ⊥-elim (¬∈[] i)
   fvars-subv v a (LIFT b) = fvars-subv v a b
   fvars-subv v a (LOWER b) = fvars-subv v a b
@@ -1663,7 +1663,8 @@ abstract
     rewrite shiftDown1-subv1-shiftUp0 n a b ca
             | shiftDown1-subv1-shiftUp0 n a b₁ ca = refl
   shiftDown1-subv1-shiftUp0 n a PURE ca = refl
-  shiftDown1-subv1-shiftUp0 n a TERM ca = refl
+  shiftDown1-subv1-shiftUp0 n a (TERM b) ca
+    rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
   shiftDown1-subv1-shiftUp0 n a (UNIV x) ca = refl
   shiftDown1-subv1-shiftUp0 n a (LIFT b) ca
     rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
@@ -2074,6 +2075,13 @@ LIFTinj refl =  refl
 #LIFTinj c = CTerm≡ (LIFTinj (≡CTerm c))
 
 
+TERMinj : {a b : Term} → TERM a ≡ TERM b → a ≡ b
+TERMinj refl =  refl
+
+#TERMinj : {a b : CTerm} → #TERM a ≡ #TERM b → a ≡ b
+#TERMinj c = CTerm≡ (TERMinj (≡CTerm c))
+
+
 FFDEFSinj1 : {a b c d : Term} → FFDEFS a b ≡ FFDEFS c d → a ≡ c
 FFDEFSinj1 refl =  refl
 
@@ -2241,8 +2249,8 @@ EQneqFFDEFS {t} {a} {b} {c} {d} ()
 EQneqPURE : {t a b : Term} → ¬ (EQ t a b) ≡ PURE
 EQneqPURE {t} {a} {b} ()
 
-EQneqTERM : {t a b : Term} → ¬ (EQ t a b) ≡ TERM
-EQneqTERM {t} {a} {b} ()
+EQneqTERM : {t a b c : Term} → ¬ (EQ t a b) ≡ TERM c
+EQneqTERM {t} {a} {b} {c} ()
 
 EQneqLOWER : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ LOWER c
 EQneqLOWER {t} {a} {b} {c} ()
@@ -2322,8 +2330,8 @@ EQBneqFFDEFS {a₁} {a₂} {a₃} {a₄} {c} {d} ()
 EQBneqPURE : {a₁ a₂ a₃ a₄ : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ PURE
 EQBneqPURE {a₁} {a₂} {a₃} {a₄} ()
 
-EQBneqTERM : {a₁ a₂ a₃ a₄ : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ TERM
-EQBneqTERM {a₁} {a₂} {a₃} {a₄} ()
+EQBneqTERM : {a₁ a₂ a₃ a₄ c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ TERM c
+EQBneqTERM {a₁} {a₂} {a₃} {a₄} {c} ()
 
 EQBneqLOWER : {a₁ a₂ a₃ a₄ : Term} {c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ LOWER c
 EQBneqLOWER {a₁} {a₂} {a₃} {a₄} {c} ()
@@ -2418,8 +2426,8 @@ PIneqFFDEFS {a} {b} {c} {d} ()
 PIneqPURE : {a b : Term} → ¬ (PI a b) ≡ PURE
 PIneqPURE {a} {b} ()
 
-PIneqTERM : {a b : Term} → ¬ (PI a b) ≡ TERM
-PIneqTERM {a} {b} ()
+PIneqTERM : {a b c : Term} → ¬ (PI a b) ≡ TERM c
+PIneqTERM {a} {b} {c} ()
 
 PIneqLOWER : {a b : Term} {c : Term} → ¬ (PI a b) ≡ LOWER c
 PIneqLOWER {a} {b} {c} ()
@@ -2502,8 +2510,8 @@ NATneqFFDEFS {c} {d} ()
 NATneqPURE : ¬ NAT ≡ PURE
 NATneqPURE ()
 
-NATneqTERM : ¬ NAT ≡ TERM
-NATneqTERM ()
+NATneqTERM : {c : Term} → ¬ NAT ≡ TERM c
+NATneqTERM {c} ()
 
 NATneqLOWER : {c : Term} → ¬ NAT ≡ LOWER c
 NATneqLOWER {c} ()
@@ -2569,7 +2577,7 @@ abstract
   shiftUp-inj {n} {DUM a} {DUM b} e rewrite shiftUp-inj (DUMinj e) = refl
   shiftUp-inj {n} {FFDEFS a a₁} {FFDEFS b b₁} e rewrite shiftUp-inj (FFDEFSinj1 e) | shiftUp-inj (FFDEFSinj2 e) = refl
   shiftUp-inj {n} {PURE} {PURE} refl = refl
-  shiftUp-inj {n} {TERM} {TERM} refl = refl
+  shiftUp-inj {n} {TERM a} {TERM b} e rewrite shiftUp-inj (TERMinj e) = refl
   shiftUp-inj {n} {UNIV x} {UNIV .x} refl = refl
   shiftUp-inj {n} {LIFT a} {LIFT b} e rewrite shiftUp-inj (LIFTinj e) = refl
   shiftUp-inj {n} {LOWER a} {LOWER b} e rewrite shiftUp-inj (LOWERinj e) = refl
@@ -3338,29 +3346,35 @@ TPURE T = ISECT T PURE
     c rewrite ++[] (fvars ⌜ t ⌝) = CTerm1.closed t
 
 
-TTERM : Term → Term
-TTERM T = ISECT T TERM
+TTERM : Term → Term → Term
+TTERM t T = ISECT T (TERM t)
 
 
-#TTERM : CTerm → CTerm
-#TTERM t = ct (TTERM ⌜ t ⌝) c
+#TTERM : CTerm → CTerm → CTerm
+#TTERM t T = ct (TTERM ⌜ t ⌝ ⌜ T ⌝) c
   where
-    c : # TTERM ⌜ t ⌝
-    c rewrite CTerm.closed t = refl
+    c : # TTERM ⌜ t ⌝ ⌜ T ⌝
+    c rewrite CTerm.closed t | CTerm.closed T = refl
 
 
-#[0]TTERM : CTerm0 → CTerm0
-#[0]TTERM t = ct0 (TTERM ⌜ t ⌝) c
+#[0]TTERM : CTerm0 → CTerm0 → CTerm0
+#[0]TTERM t T = ct0 (TTERM ⌜ t ⌝ ⌜ T ⌝) c
   where
-    c : #[ [ 0 ] ] TTERM ⌜ t ⌝
-    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm0.closed t
+    c : #[ [ 0 ] ] TTERM ⌜ t ⌝ ⌜ T ⌝
+    c rewrite ++[] (fvars ⌜ t ⌝ ++ fvars ⌜ T ⌝) =
+      ⊆→⊆? {fvars ⌜ T ⌝ ++ fvars ⌜ t ⌝ } {[ 0 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ T ⌝} {[ 0 ]} (CTerm0.closed T))
+                  (⊆?→⊆ {fvars ⌜ t ⌝} {[ 0 ]} (CTerm0.closed t)))
 
 
-#[1]TTERM : CTerm1 → CTerm1
-#[1]TTERM t = ct1 (TTERM ⌜ t ⌝) c
+#[1]TTERM : CTerm1 → CTerm1 → CTerm1
+#[1]TTERM t T = ct1 (TTERM ⌜ t ⌝ ⌜ T ⌝) c
   where
-    c : #[ 0 ∷ [ 1 ] ] TTERM ⌜ t ⌝
-    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm1.closed t
+    c : #[ 0 ∷ [ 1 ] ] TTERM ⌜ t ⌝ ⌜ T ⌝
+    c rewrite ++[] (fvars ⌜ t ⌝ ++ fvars ⌜ T ⌝) =
+      ⊆→⊆? {fvars ⌜ T ⌝ ++ fvars ⌜ t ⌝ } {0 ∷ [ 1 ]}
+             (⊆++ (⊆?→⊆ {fvars ⌜ T ⌝} {0 ∷ [ 1 ]} (CTerm1.closed T))
+                  (⊆?→⊆ {fvars ⌜ t ⌝} {0 ∷ [ 1 ]} (CTerm1.closed t)))
 
 
 #[1]SUBSING : CTerm1 → CTerm1

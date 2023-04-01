@@ -282,9 +282,10 @@ data eqTypes u w T1 T2 where
     T1 #⇛ #PURE at w
     → T2 #⇛ #PURE at w
     → eqTypes u w T1 T2
-  EQTTERM :
-    T1 #⇛ #TERM at w
-    → T2 #⇛ #TERM at w
+  EQTTERM : (t1 t2 : CTerm)
+    → T1 #⇛ #TERM t1 at w
+    → T2 #⇛ #TERM t2 at w
+    → □· w (λ w' _ → #strongMonEq w' t1 t2)
     → eqTypes u w T1 T2
   EQTUNIV : (i : ℕ) (p : i < fst u)
     → T1 #⇛ #UNIV i at w
@@ -524,8 +525,8 @@ eqInType u w (EQFFDEFS _ _ x1 _ _ _ eqtA exta _) t1 t2 =
   □· w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTPURE _ _) t1 t2 =
   □· w (λ w' e → PUREeq t1 t2)
-eqInType u w (EQTTERM _ _) t1 t2 =
-  □· w (λ w' e → TERMeq w' t1 t2)
+eqInType u w (EQTTERM x1 x2 _ _ _) t1 t2 =
+  □· w (λ w' e → TERMeq w' x1 x2)
 eqInType u w (EQTUNIV i p c₁ c₂) T1 T2 = snd u i p w T1 T2
 eqInType u w (EQTLIFT A1 A2 c₁ c₂ eqtA exta) t1 t2 =
   □· w (λ w' e → eqInType (↓U u) w' (eqtA w' e) t1 t2)

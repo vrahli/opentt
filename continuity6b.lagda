@@ -604,7 +604,7 @@ abstract
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(TCONST a₁)} {.(TCONST a₂)} {l} {k} sub nad nbd (updRel2-TCONST a₁ a₂ upd₁) = updRel2-TCONST _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(SUBSING a₁)} {.(SUBSING a₂)} {l} {k} sub nad nbd (updRel2-SUBSING a₁ a₂ upd₁) = updRel2-SUBSING _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.PURE} {.PURE} {l} {k} sub nad nbd updRel2-PURE = updRel2-PURE
-  updRel2-ren-mon {name} {f} {g} {r} {r'} {.TERM} {.TERM} {l} {k} sub nad nbd updRel2-TERM = updRel2-TERM
+  updRel2-ren-mon {name} {f} {g} {r} {r'} {.(TERM a₁)} {.(TERM a₂)} {l} {k} sub nad nbd (updRel2-TERM a₁ a₂ upd₁) = updRel2-TERM _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(DUM a₁)} {.(DUM a₂)} {l} {k} sub nad nbd (updRel2-DUM a₁ a₂ upd₁) = updRel2-DUM _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} {l} {k} sub nad nbd (updRel2-FFDEFS a₁ a₂ b₁ b₂ upd₁ upd₂) = updRel2-FFDEFS _ _ _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→1 {names a₁} {names b₁} nad) (++⊆2→1 {names a₂} {names b₂} nbd) upd₁) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→2 {names a₁} {names b₁} nad) (++⊆2→2 {names a₂} {names b₂} nbd) upd₂)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(UNIV x)} {.(UNIV x)} {l} {k} sub nad nbd (updRel2-UNIV x) = updRel2-UNIV x
@@ -1365,7 +1365,7 @@ abstract
   updRel2-valₗ→ name f g r .(TCONST a₁) .(TCONST a₂) (updRel2-TCONST a₁ a₂ upd₁) isv = isv
   updRel2-valₗ→ name f g r .(SUBSING a₁) .(SUBSING a₂) (updRel2-SUBSING a₁ a₂ upd₁) isv = isv
   updRel2-valₗ→ name f g r .PURE .PURE updRel2-PURE isv = isv
-  updRel2-valₗ→ name f g r .TERM .TERM updRel2-TERM isv = isv
+  updRel2-valₗ→ name f g r .(TERM a₁) .(TERM a₂) (updRel2-TERM a₁ a₂ upd₁) isv = isv
   updRel2-valₗ→ name f g r .(DUM a₁) .(DUM a₂) (updRel2-DUM a₁ a₂ upd₁) isv = isv
   updRel2-valₗ→ name f g r .(FFDEFS a₁ b₁) .(FFDEFS a₂ b₂) (updRel2-FFDEFS a₁ a₂ b₁ b₂ upd₁ upd₂) isv = isv
   updRel2-valₗ→ name f g r .(UNIV x) .(UNIV x) (updRel2-UNIV x) isv = isv

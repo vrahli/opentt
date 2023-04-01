@@ -144,7 +144,7 @@ data updRel (name : Name) (f g : Term) : Term → Term → Set where
   updRel-TCONST  : (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (TCONST a₁) (TCONST a₂)
   updRel-SUBSING : (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (SUBSING a₁) (SUBSING a₂)
   updRel-PURE    : updRel name f g PURE PURE
-  updRel-TERM    : updRel name f g TERM TERM
+  updRel-TERM    : (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (TERM a₁) (TERM a₂)
   updRel-DUM     : (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (DUM a₁) (DUM a₂)
   updRel-FFDEFS  : (a₁ a₂ b₁ b₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g (FFDEFS a₁ b₁) (FFDEFS a₂ b₂)
   updRel-UNIV    : (x : ℕ) → updRel name f g (UNIV x) (UNIV x)
@@ -1377,7 +1377,7 @@ abstract
   updRel-shiftUp n {name} {f} {g} cf cg {.(TCONST a₁)} {.(TCONST a₂)} (updRel-TCONST a₁ a₂ u) = updRel-TCONST _ _ (updRel-shiftUp n cf cg u)
   updRel-shiftUp n {name} {f} {g} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) = updRel-SUBSING _ _ (updRel-shiftUp n cf cg u)
   updRel-shiftUp n {name} {f} {g} cf cg {.(PURE)} {.(PURE)} (updRel-PURE) = updRel-PURE
-  updRel-shiftUp n {name} {f} {g} cf cg {.(TERM)} {.(TERM)} (updRel-TERM) = updRel-TERM
+  updRel-shiftUp n {name} {f} {g} cf cg {.(TERM a₁)} {.(TERM a₂)} (updRel-TERM a₁ a₂ u) = updRel-TERM _ _ (updRel-shiftUp n cf cg u)
   updRel-shiftUp n {name} {f} {g} cf cg {.(DUM a₁)} {.(DUM a₂)} (updRel-DUM a₁ a₂ u) = updRel-DUM _ _ (updRel-shiftUp n cf cg u)
   updRel-shiftUp n {name} {f} {g} cf cg {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updRel-FFDEFS _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
   updRel-shiftUp n {name} {f} {g} cf cg {.(UNIV x)} {.(UNIV x)} (updRel-UNIV x) = updRel-UNIV x
@@ -1439,7 +1439,7 @@ abstract
   updRel-shiftDown n {name} {f} {g} cf cg {.(TCONST a₁)} {.(TCONST a₂)} (updRel-TCONST a₁ a₂ u) = updRel-TCONST _ _ (updRel-shiftDown n cf cg u)
   updRel-shiftDown n {name} {f} {g} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) = updRel-SUBSING _ _ (updRel-shiftDown n cf cg u)
   updRel-shiftDown n {name} {f} {g} cf cg {.(PURE)} {.(PURE)} (updRel-PURE) = updRel-PURE
-  updRel-shiftDown n {name} {f} {g} cf cg {.(TERM)} {.(TERM)} (updRel-TERM) = updRel-TERM
+  updRel-shiftDown n {name} {f} {g} cf cg {.(TERM a₁)} {.(TERM a₂)} (updRel-TERM a₁ a₂ u) = updRel-TERM _ _ (updRel-shiftDown n cf cg u)
   updRel-shiftDown n {name} {f} {g} cf cg {.(DUM a₁)} {.(DUM a₂)} (updRel-DUM a₁ a₂ u) = updRel-DUM _ _ (updRel-shiftDown n cf cg u)
   updRel-shiftDown n {name} {f} {g} cf cg {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updRel-FFDEFS _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
   updRel-shiftDown n {name} {f} {g} cf cg {.(UNIV x)} {.(UNIV x)} (updRel-UNIV x) = updRel-UNIV _
@@ -1507,7 +1507,7 @@ abstract
   updRel-subv v {name} {f} {g} cf cg {.(TCONST a₁)} {.(TCONST a₂)} {b₁} {b₂} (updRel-TCONST a₁ a₂ ua) ub = updRel-TCONST _ _ (updRel-subv v cf cg ua ub)
   updRel-subv v {name} {f} {g} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} {b₁} {b₂} (updRel-SUBSING a₁ a₂ ua) ub = updRel-SUBSING _ _ (updRel-subv v cf cg ua ub)
   updRel-subv v {name} {f} {g} cf cg {.(PURE)} {.(PURE)} {b₁} {b₂} (updRel-PURE) ub = updRel-PURE
-  updRel-subv v {name} {f} {g} cf cg {.(TERM)} {.(TERM)} {b₁} {b₂} (updRel-TERM) ub = updRel-TERM
+  updRel-subv v {name} {f} {g} cf cg {.(TERM a₁)} {.(TERM a₂)} {b₁} {b₂} (updRel-TERM a₁ a₂ ua) ub = updRel-TERM _ _ (updRel-subv v cf cg ua ub)
   updRel-subv v {name} {f} {g} cf cg {.(DUM a₁)} {.(DUM a₂)} {b₁} {b₂} (updRel-DUM a₁ a₂ ua) ub = updRel-DUM _ _ (updRel-subv v cf cg ua ub)
   updRel-subv v {name} {f} {g} cf cg {.(FFDEFS a₁ b₃)} {.(FFDEFS a₂ b₄)} {b₁} {b₂} (updRel-FFDEFS a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-FFDEFS _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
   updRel-subv v {name} {f} {g} cf cg {.(UNIV x)} {.(UNIV x)} {b₁} {b₂} (updRel-UNIV x) ub = updRel-UNIV x
@@ -1741,7 +1741,7 @@ abstract
   updRel→¬Names {name} {f} {g} {.(TCONST a₁)} {.(TCONST a₂)} nng (updRel-TCONST a₁ a₂ u) = updRel→¬Names nng u
   updRel→¬Names {name} {f} {g} {.(SUBSING a₁)} {.(SUBSING a₂)} nng (updRel-SUBSING a₁ a₂ u) = updRel→¬Names nng u
   updRel→¬Names {name} {f} {g} {.(PURE)} {.(PURE)} nng (updRel-PURE) = refl
-  updRel→¬Names {name} {f} {g} {.(TERM)} {.(TERM)} nng (updRel-TERM) = refl
+  updRel→¬Names {name} {f} {g} {.(TERM a₁)} {.(TERM a₂)} nng (updRel-TERM a₁ a₂ u) = updRel→¬Names nng u
   updRel→¬Names {name} {f} {g} {.(DUM a₁)} {.(DUM a₂)} nng (updRel-DUM a₁ a₂ u) = updRel→¬Names nng u
   updRel→¬Names {name} {f} {g} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} nng (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
   updRel→¬Names {name} {f} {g} {.(UNIV x)} {.(UNIV x)} nng (updRel-UNIV x) = refl
@@ -1967,7 +1967,7 @@ abstract
   updRel→isValue {name} {f} {g} {.(TCONST a₁)} {.(TCONST a₂)} (updRel-TCONST a₁ a₂ u) isv = tt
   updRel→isValue {name} {f} {g} {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) isv = tt
   updRel→isValue {name} {f} {g} {.(PURE)} {.(PURE)} (updRel-PURE) isv = tt
-  updRel→isValue {name} {f} {g} {.(TERM)} {.(TERM)} (updRel-TERM) isv = tt
+  updRel→isValue {name} {f} {g} {.(TERM a₁)} {.(TERM a₂)} (updRel-TERM a₁ a₂ u) isv = tt
   updRel→isValue {name} {f} {g} {.(DUM a₁)} {.(DUM a₂)} (updRel-DUM a₁ a₂ u) isv = tt
   updRel→isValue {name} {f} {g} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel-FFDEFS a₁ a₂ b₁ b₂ u u₁) isv = tt
   updRel→isValue {name} {f} {g} {.(UNIV x)} {.(UNIV x)} (updRel-UNIV x) isv = tt

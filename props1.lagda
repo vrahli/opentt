@@ -163,8 +163,8 @@ UNIVneqTTRUNC {a} {c} ()
 UNIVneqPURE : {a : ℕ} → ¬ UNIV a ≡ PURE
 UNIVneqPURE {a} ()
 
-UNIVneqTERM : {a : ℕ} → ¬ UNIV a ≡ TERM
-UNIVneqTERM {a} ()
+UNIVneqTERM : {a : ℕ} {c : Term} → ¬ UNIV a ≡ TERM c
+UNIVneqTERM {a} {c} ()
 
 UNIVneqTCONST : {a : ℕ} {c : Term} → ¬ UNIV a ≡ TCONST c
 UNIVneqTCONST {a} {c} ()
@@ -447,7 +447,7 @@ abstract
   eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTCONST A1 A2 x x₁ eqtA extA) eqi = ⊥-elim (UNIVneqTCONST (⇛-val-det tt tt c₁ x))
   eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTSUBSING A1 A2 x x₁ eqtA extA) eqi = ⊥-elim (UNIVneqSUBSING (⇛-val-det tt tt c₁ x))
   eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTPURE x x₁) eqi = ⊥-elim (UNIVneqPURE (⇛-val-det tt tt c₁ x))
-  eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTTERM x x₁) eqi = ⊥-elim (UNIVneqTERM (⇛-val-det tt tt c₁ x))
+  eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTTERM u1 u2 x x₁ x₂) eqi = ⊥-elim (UNIVneqTERM (⇛-val-det tt tt c₁ x))
   --eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) eqi = ⊥-elim (UNIVneqDUM (⇛-val-det tt tt c₁ x))
   eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) eqi = ⊥-elim (UNIVneqFFDEFS (⇛-val-det tt tt c₁ x))
   eqInType-⇛-UNIV->0 (suc n) w A B a b c₁ c₂ (EQTUNIV m p d₁ d₂) eqi = _≤_.s≤s _≤_.z≤n
@@ -527,7 +527,7 @@ abstract
   eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTCONST A1 A2 x x₁ eqtA extA) eqi = ⊥-elim (UNIVneqTCONST (⇛-val-det tt tt c₁ x))
   eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTSUBSING A1 A2 x x₁ eqtA extA) eqi = ⊥-elim (UNIVneqSUBSING (⇛-val-det tt tt c₁ x))
   eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTPURE x x₁) eqi = ⊥-elim (UNIVneqPURE (⇛-val-det tt tt c₁ x))
-  eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTTERM x x₁) eqi = ⊥-elim (UNIVneqTERM (⇛-val-det tt tt c₁ x))
+  eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTTERM u1 u2 x x₁ x₂) eqi = ⊥-elim (UNIVneqTERM (⇛-val-det tt tt c₁ x))
   --eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) eqi = ⊥-elim (UNIVneqDUM (⇛-val-det tt tt c₁ x))
   eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) eqi = ⊥-elim (UNIVneqFFDEFS (⇛-val-det tt tt c₁ x))
   eqInType-⇛-UNIV i (suc n) p w A B a b c₁ c₂ (EQTUNIV m q d₁ d₂) eqi = c'
@@ -916,15 +916,15 @@ abstract
         Mod.∀𝕎-□Func M
           (λ w1 e1 s ext → s)
           (eqInType-⇛-PURE u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
-  eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTTERM x x₁) =
+  eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTTERM u1 u2 x x₁ x₂) =
     Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b
-                         → □· w' (↑wPred' (λ w'' e → TERMeq w'' a b) e'))
+                         → □· w' (↑wPred' (λ w'' e → TERMeq w'' u1 u2) e'))
       aw w' e' z {--at--} eqt' =
         Mod.∀𝕎-□Func M
           (λ w1 e1 s ext → s)
-          (eqInType-⇛-TERM u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
+          (eqInType-⇛-TERM u w' A B u1 u2 a b (Mod.↑□ M x₂ e') (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTSQUASH A1 A2 x x₁ eqta exta) =
     Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
     where
@@ -1271,7 +1271,7 @@ abstract
   eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTCONST A1 A2 x x₁ eqta exta) a b eqi = ⊥-elim (UNIVneqTCONST (Bₗ⇛-val-det tt tt c₁ x))
   eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTSUBSING A1 A2 x x₁ eqta exta) a b eqi = ⊥-elim (UNIVneqSUBSING (Bₗ⇛-val-det tt tt c₁ x))
   eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTPURE x x₁) a b eqi = ⊥-elim (UNIVneqPURE (Bₗ⇛-val-det tt tt c₁ x))
-  eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTTERM x x₁) a b eqi = ⊥-elim (UNIVneqTERM (Bₗ⇛-val-det tt tt c₁ x))
+  eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTTERM u1 u2 x x₁ x₂) a b eqi = ⊥-elim (UNIVneqTERM (Bₗ⇛-val-det tt tt c₁ x))
   --eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) a b eqi = ⊥-elim (lower (Mod.□-const M (Mod.∀𝕎-□Func M (λ w' e' (c₁ , c₂) → lift (UNIVneqDUM (Bₗ⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
   eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) a b eqi = ⊥-elim (UNIVneqFFDEFS (Bₗ⇛-val-det tt tt c₁ x))
   eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTUNIV m q d₁ d₂) a b eqi rewrite UNIVinj (Bₗ⇛-val-det tt tt c₁ d₁) = uniUpTo-<irr {m} {n} {p} {q} eqi
@@ -1329,7 +1329,7 @@ abstract
   eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTCONST A1 A2 x x₁ eqta exta) a b eqi = ⊥-elim (UNIVneqTCONST (Bₗ⇛-val-det tt tt c₁ x))
   eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTSUBSING A1 A2 x x₁ eqta exta) a b eqi = ⊥-elim (UNIVneqSUBSING (Bₗ⇛-val-det tt tt c₁ x))
   eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTPURE x x₁) a b eqi = ⊥-elim (UNIVneqPURE (Bₗ⇛-val-det tt tt c₁ x))
-  eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTTERM x x₁) a b eqi = ⊥-elim (UNIVneqTERM (Bₗ⇛-val-det tt tt c₁ x))
+  eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTTERM u1 u2 x x₁ x₂) a b eqi = ⊥-elim (UNIVneqTERM (Bₗ⇛-val-det tt tt c₁ x))
   --eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) a b eqi = ⊥-elim (lower (Mod.□-const M (Mod.∀𝕎-□Func M (λ w' e' (c₁ , c₂) → lift (UNIVneqDUM (Bₗ⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
   eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) a b eqi = ⊥-elim (UNIVneqFFDEFS (Bₗ⇛-val-det tt tt c₁ x))
   eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTUNIV m q d₁ d₂) a b eqi rewrite UNIVinj (Bₗ⇛-val-det tt tt c₁ d₁) = uniUpTo-<irr {m} {n} {q} {p} eqi
@@ -1693,13 +1693,13 @@ abstract
         where
           ei : □· w' (λ w'' e → PUREeq a b)
           ei = ↑□· eqi e'
-  eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTTERM x x₁) eqi =
+  eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTTERM u1 u2 x x₁ x₂) eqi =
     Mod.∀𝕎-□-□' M i aw
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b)
-      aw w' e' z {--at--} = eqInType-⇛-TERM-rev u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
+      aw w' e' z {--at--} = eqInType-⇛-TERM-rev u w' A B u1 u2 a b (Mod.↑□ M x₂ e') (⇛-mon e' x) (⇛-mon e' x₁) z ei
         where
-          ei : □· w' (λ w'' e → TERMeq w'' a b)
+          ei : □· w' (λ w'' e → TERMeq w'' u1 u2)
           ei = ↑□· eqi e'
   eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTSQUASH A1 A2 x x₁ eqta exta) eqi =
     Mod.∀𝕎-□-□' M i aw
@@ -1912,9 +1912,9 @@ abstract
   eqInType-ext0 {u} isu {w} {A} {B} (EQTPURE x x₁) ind =
     λ eqt2 a b → eqInType-⇛-PURE-rev u w A B a b x x₁ eqt2 ,
                  eqInType-⇛-PURE u w A B a b x x₁ eqt2
-  eqInType-ext0 {u} isu {w} {A} {B} (EQTTERM x x₁) ind =
-    λ eqt2 a b → eqInType-⇛-TERM-rev u w A B a b x x₁ eqt2 ,
-                 eqInType-⇛-TERM u w A B a b x x₁ eqt2
+  eqInType-ext0 {u} isu {w} {A} {B} (EQTTERM u1 u2 x x₁ x₂) ind =
+    λ eqt2 a b → eqInType-⇛-TERM-rev u w A B u1 u2 a b x₂ x x₁ eqt2 ,
+                 eqInType-⇛-TERM u w A B u1 u2 a b x₂ x x₁ eqt2
   eqInType-ext0 {u} isu {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqta exta) ind =
     λ eqt2 a b → eqInType-⇛-TSQUASH-rev u w A B A1 A2 a b eqta exta inda x x₁ eqt2 ,
                  eqInType-⇛-TSQUASH u w A B A1 A2 a b eqta exta inda x x₁ eqt2
@@ -2213,14 +2213,14 @@ abstract
         where
           h1 : eqInType u w' {A} {B} (EQTPURE (⇛-mon e' x) (⇛-mon e' x₁)) a b
           h1 = fst (eqInType-ext isu z (EQTPURE (⇛-mon e' x) (⇛-mon e' x₁)) a b) ei
-  local-eqInType2 u isu w A B a b (EQTTERM x x₁) i j =
+  local-eqInType2 u isu w A B a b (EQTTERM u1 u2 x x₁ x₂) i j =
     Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
     where
-      aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → TERMeq w1 a b))
+      aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → TERMeq w1 u1 u2))
       aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M (λ w1 e1 s x → s) h1
         where
-          h1 : eqInType u w' {A} {B} (EQTTERM (⇛-mon e' x) (⇛-mon e' x₁)) a b
-          h1 = fst (eqInType-ext isu z (EQTTERM (⇛-mon e' x) (⇛-mon e' x₁)) a b) ei
+          h1 : eqInType u w' {A} {B} (EQTTERM u1 u2 (⇛-mon e' x) (⇛-mon e' x₁) (Mod.↑□ M x₂ e')) a b
+          h1 = fst (eqInType-ext isu z (EQTTERM u1 u2 (⇛-mon e' x) (⇛-mon e' x₁) (Mod.↑□ M x₂ e')) a b) ei
   local-eqInType2 u isu w A B a b (EQTSQUASH A1 A2 x x₁ eqta exta) i j =
     Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
     where
@@ -2584,10 +2584,10 @@ abstract
     where
       ei : □· w' (λ w'' e → PUREeq a b)
       ei = ↑□· eqi e'
-  eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTTERM x x₁) eqt2 a b eqi =
-    eqInType-⇛-TERM-rev u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
+  eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTTERM u1 u2 x x₁ x₂) eqt2 a b eqi =
+    eqInType-⇛-TERM-rev u w' A B u1 u2 a b (Mod.↑□ M x₂ e') (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
     where
-      ei : □· w' (λ w'' e → TERMeq w'' a b)
+      ei : □· w' (λ w'' e → TERMeq w'' u1 u2)
       ei = ↑□· eqi e'
   eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTSQUASH A1 A2 x x₁ eqta exta) eqt2 a b eqi =
     eqInType-⇛-TSQUASH-rev2
@@ -2878,7 +2878,7 @@ abstract
   eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTCONST A1 A2 x x₁ eqta exta) = ⊥-elim (UNIVneqTCONST (⇛-val-det tt tt c₂ x))
   eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTSUBSING A1 A2 x x₁ eqta exta) = ⊥-elim (UNIVneqSUBSING (⇛-val-det tt tt c₂ x))
   eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTPURE x x₁) = ⊥-elim (UNIVneqPURE (⇛-val-det tt tt c₂ x))
-  eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTTERM x x₁) = ⊥-elim (UNIVneqTERM (⇛-val-det tt tt c₂ x))
+  eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTTERM u1 u2 x x₁ x₂) = ⊥-elim (UNIVneqTERM (⇛-val-det tt tt c₂ x))
   --eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTDUM A1 A2 x x₁ eqta) = ⊥-elim (UNIVneqDUM (⇛-val-det tt tt c₂ x))
   eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) = ⊥-elim (UNIVneqFFDEFS (⇛-val-det tt tt c₂ x))
   eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTUNIV m q d₁ d₂) =
@@ -2956,7 +2956,7 @@ abstract
   eqTypes-preserves-in-bar-⇛-UNIV {i} {n} p {w} {A} {B} (EQTCONST A1 A2 x x₁ eqtA exta) j = ⊥-elim (UNIVneqTCONST (Bₗ⇛-val-det tt tt j x))
   eqTypes-preserves-in-bar-⇛-UNIV {i} {n} p {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqtA exta) j = ⊥-elim (UNIVneqSUBSING (Bₗ⇛-val-det tt tt j x))
   eqTypes-preserves-in-bar-⇛-UNIV {i} {n} p {w} {A} {B} (EQTPURE x x₁) j = ⊥-elim (UNIVneqPURE (Bₗ⇛-val-det tt tt j x))
-  eqTypes-preserves-in-bar-⇛-UNIV {i} {n} p {w} {A} {B} (EQTTERM x x₁) j = ⊥-elim (UNIVneqTERM (Bₗ⇛-val-det tt tt j x))
+  eqTypes-preserves-in-bar-⇛-UNIV {i} {n} p {w} {A} {B} (EQTTERM u1 u2 x x₁ x₂) j = ⊥-elim (UNIVneqTERM (Bₗ⇛-val-det tt tt j x))
   eqTypes-preserves-in-bar-⇛-UNIV {i} {n} p {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) j = ⊥-elim (UNIVneqFFDEFS (Bₗ⇛-val-det tt tt j x))
   eqTypes-preserves-in-bar-⇛-UNIV {i} {n} p {w} {A} {B} (EQTUNIV m q c₁ c₂) j rewrite UNIVinj (Bₗ⇛-val-det tt tt j c₁) = #⇛→B#⇛ {B} {#UNIV m} c₂
   --  Mod.□Func M (Mod.∀𝕎-□Func M (λ w' e' (a , b) c → b) x) i
@@ -3000,7 +3000,7 @@ abstract
   eqTypes-preserves-in-bar-⇛-UNIV-rev {i} {n} p {w} {A} {B} (EQTCONST A1 A2 x x₁ eqtA exta) j = ⊥-elim (UNIVneqTCONST (Bₗ⇛-val-det tt tt j x₁))
   eqTypes-preserves-in-bar-⇛-UNIV-rev {i} {n} p {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqtA exta) j = ⊥-elim (UNIVneqSUBSING (Bₗ⇛-val-det tt tt j x₁))
   eqTypes-preserves-in-bar-⇛-UNIV-rev {i} {n} p {w} {A} {B} (EQTPURE x x₁) j = ⊥-elim (UNIVneqPURE (Bₗ⇛-val-det tt tt j x₁))
-  eqTypes-preserves-in-bar-⇛-UNIV-rev {i} {n} p {w} {A} {B} (EQTTERM x x₁) j = ⊥-elim (UNIVneqTERM (Bₗ⇛-val-det tt tt j x₁))
+  eqTypes-preserves-in-bar-⇛-UNIV-rev {i} {n} p {w} {A} {B} (EQTTERM u1 u2 x x₁ x₂) j = ⊥-elim (UNIVneqTERM (Bₗ⇛-val-det tt tt j x₁))
   eqTypes-preserves-in-bar-⇛-UNIV-rev {i} {n} p {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) j = ⊥-elim (UNIVneqFFDEFS (Bₗ⇛-val-det tt tt j x₁))
   eqTypes-preserves-in-bar-⇛-UNIV-rev {i} {n} p {w} {A} {B} (EQTUNIV m q c₁ c₂) j rewrite UNIVinj (Bₗ⇛-val-det tt tt j c₂) = #⇛→B#⇛ {A} {#UNIV m} c₁
   --  Mod.□Func M (Mod.∀𝕎-□Func M (λ w' e' (a , b) c → a) x) i
@@ -3220,7 +3220,7 @@ abstract
       inda : ∀𝕎 w (λ w1 e1 → TSP (eqtA w1 e1))
       inda w1 e1 = typeSysConds-aux-u u ind w1 A1 A2 (eqtA w1 e1)
   typeSysConds-aux-u u ind w A B (EQTPURE x x₁) = typeSysConds-PURE (u ·ᵤ) w A B x x₁
-  typeSysConds-aux-u u ind w A B (EQTTERM x x₁) = typeSysConds-TERM (u ·ᵤ) w A B x x₁
+  typeSysConds-aux-u u ind w A B (EQTTERM u1 u2 x x₁ x₂) = typeSysConds-TERM (u ·ᵤ) w A B u1 u2 x x₁ x₂
   typeSysConds-aux-u u ind w A B (EQTSQUASH A1 A2 x x₁ eqtA exta) =
     typeSysConds-TSQUASH (u ·ᵤ) w A B A1 A2 x x₁ eqtA exta inda
     where

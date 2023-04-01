@@ -394,11 +394,15 @@ data ≤Type where
 
 
 
+
 <Type-TERM : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} {eqt : ≡Types u w T1 T2}
-            {u' : 𝕌} {w' : 𝕎·} {U1 U2 : CTerm} {x₁ : U1 #⇛ #TERM at w'} {x₂ : U2 #⇛ #TERM at w'}
-            → <Type {u} {w} {T1} {T2} eqt {u'} {w'} {U1} {U2} (EQTTERM x₁ x₂) → ⊥
-<Type-TERM {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<Type1 .eqt .(EQTTERM x₁ x₂) ())
-<Type-TERM {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<TypeS .eqt eqt2 .(EQTTERM x₁ x₂) ltt ())
+             {u' : 𝕌} {w' : 𝕎·} {U1 U2 : CTerm}
+             {t1 t2 : CTerm}
+             {x₁ : U1 #⇛ #TERM t1 at w'} {x₂ : U2 #⇛ #TERM t2 at w'}
+             {x : □· w' (λ w' _ → #strongMonEq w' t1 t2)}
+             → <Type {u} {w} {T1} {T2} eqt {u'} {w'} {U1} {U2} (EQTTERM t1 t2 x₁ x₂ x) → ⊥
+<Type-TERM {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {t1} {t2} {x₁} {x₂} {x} (<Type1 .eqt .(EQTTERM t1 t2 x₁ x₂ x) ())
+<Type-TERM {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {t1} {t2} {x₁} {x₂} {x} (<TypeS .eqt eqt2 .(EQTTERM t1 t2 x₁ x₂ x) ltt ())
 
 
 
@@ -971,7 +975,7 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
 
     indLtt {u} {w} {T1} {T2} (EQTPURE c₁ c₂) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-PURE ltt)
 
-    indLtt {u} {w} {T1} {T2} (EQTTERM c₁ c₂) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-TERM ltt)
+    indLtt {u} {w} {T1} {T2} (EQTTERM t1 t2 c₁ c₂ x) {u'} {w'} {A1} {A2} eqt' ltt = ⊥-elim (<Type-TERM ltt)
 
     indLtt {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-UNIV ltt)
 

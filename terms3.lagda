@@ -184,7 +184,7 @@ data differ (name1 name2 : Name) (f : Term) : Term → Term → Set where
   differ-TCONST  : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (TCONST a) (TCONST b)
   differ-SUBSING : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (SUBSING a) (SUBSING b)
   differ-PURE    : differ name1 name2 f PURE PURE
-  differ-TERM    : differ name1 name2 f TERM TERM
+  differ-TERM    : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (TERM a) (TERM b)
   differ-DUM     : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (DUM a) (DUM b)
   differ-FFDEFS  : (a₁ a₂ b₁ b₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f (FFDEFS a₁ b₁) (FFDEFS a₂ b₂)
   differ-UNIV    : (x : ℕ) → differ name1 name2 f (UNIV x) (UNIV x)
@@ -320,7 +320,7 @@ abstract
   →differ-shiftUp v {name1} {name2} {f} cf {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) = differ-TCONST _ _ (→differ-shiftUp v cf diff)
   →differ-shiftUp v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftUp v cf diff)
   →differ-shiftUp v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
-  →differ-shiftUp v {name1} {name2} {f} cf {.(TERM)} {.(TERM)} (differ-TERM) = differ-TERM
+  →differ-shiftUp v {name1} {name2} {f} cf {.(TERM a)} {.(TERM b)} (differ-TERM a b diff) = differ-TERM _ _ (→differ-shiftUp v cf diff)
   →differ-shiftUp v {name1} {name2} {f} cf {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) = differ-DUM _ _ (→differ-shiftUp v cf diff)
   →differ-shiftUp v {name1} {name2} {f} cf {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = differ-FFDEFS _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
   →differ-shiftUp v {name1} {name2} {f} cf {.(UNIV x)} {.(UNIV x)} (differ-UNIV x) = differ-UNIV x
@@ -465,6 +465,10 @@ abstract
 
 ≡DUM : {a b : Term} → a ≡ b → DUM a ≡ DUM b
 ≡DUM {a} {b} e rewrite e = refl
+
+
+≡TERM : {a b : Term} → a ≡ b → TERM a ≡ TERM b
+≡TERM {a} {b} e rewrite e = refl
 
 
 ≡NAME : {a b : Name} → a ≡ b → NAME a ≡ NAME b
@@ -641,7 +645,7 @@ abstract
   shiftNameUp-shiftNameUp {i} {j} {TCONST t} imp = ≡TCONST (shiftNameUp-shiftNameUp {i} {j} {t} imp)
   shiftNameUp-shiftNameUp {i} {j} {SUBSING t} imp = ≡SUBSING (shiftNameUp-shiftNameUp {i} {j} {t} imp)
   shiftNameUp-shiftNameUp {i} {j} {PURE} imp = refl
-  shiftNameUp-shiftNameUp {i} {j} {TERM} imp = refl
+  shiftNameUp-shiftNameUp {i} {j} {TERM t} imp = ≡TERM (shiftNameUp-shiftNameUp {i} {j} {t} imp)
   shiftNameUp-shiftNameUp {i} {j} {DUM t} imp = ≡DUM (shiftNameUp-shiftNameUp {i} {j} {t} imp)
   shiftNameUp-shiftNameUp {i} {j} {FFDEFS t t₁} imp = ≡FFDEFS (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
   shiftNameUp-shiftNameUp {i} {j} {UNIV x} imp = refl
@@ -737,7 +741,7 @@ abstract
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) = differ-TCONST _ _ (→differ-shiftNameUp v cf diff)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftNameUp v cf diff)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
-  →differ-shiftNameUp v {name1} {name2} {f} cf {.(TERM)} {.(TERM)} (differ-TERM) = differ-TERM
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(TERM a)} {.(TERM b)} (differ-TERM a b diff) = differ-TERM _ _ (→differ-shiftNameUp v cf diff)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) = differ-DUM _ _ (→differ-shiftNameUp v cf diff)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = differ-FFDEFS _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(UNIV x)} {.(UNIV x)} (differ-UNIV x) = differ-UNIV x
@@ -834,7 +838,7 @@ abstract
   differ-subv {name1} {name2} {f} cf v {.(TCONST a)} {.(TCONST b)} {b₁} {b₂} (differ-TCONST a b d₁) d₂ = differ-TCONST _ _ (differ-subv cf v d₁ d₂)
   differ-subv {name1} {name2} {f} cf v {.(SUBSING a)} {.(SUBSING b)} {b₁} {b₂} (differ-SUBSING a b d₁) d₂ = differ-SUBSING _ _ (differ-subv cf v d₁ d₂)
   differ-subv {name1} {name2} {f} cf v {.(PURE)} {.(PURE)} {b₁} {b₂} (differ-PURE) d₂ = differ-PURE
-  differ-subv {name1} {name2} {f} cf v {.(TERM)} {.(TERM)} {b₁} {b₂} (differ-TERM) d₂ = differ-TERM
+  differ-subv {name1} {name2} {f} cf v {.(TERM a)} {.(TERM b)} {b₁} {b₂} (differ-TERM a b d₁) d₂ = differ-TERM _ _ (differ-subv cf v d₁ d₂)
   differ-subv {name1} {name2} {f} cf v {.(DUM a)} {.(DUM b)} {b₁} {b₂} (differ-DUM a b d₁) d₂ = differ-DUM _ _ (differ-subv cf v d₁ d₂)
   differ-subv {name1} {name2} {f} cf v {.(FFDEFS a₁ b₃)} {.(FFDEFS a₂ b₄)} {b₁} {b₂} (differ-FFDEFS a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-FFDEFS _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
   differ-subv {name1} {name2} {f} cf v {.(UNIV x)} {.(UNIV x)} {b₁} {b₂} (differ-UNIV x) d₂ = differ-UNIV x
@@ -901,7 +905,7 @@ abstract
   →differ-shiftDown v {name1} {name2} {f} cf {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) = differ-TCONST _ _ (→differ-shiftDown v cf diff)
   →differ-shiftDown v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftDown v cf diff)
   →differ-shiftDown v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
-  →differ-shiftDown v {name1} {name2} {f} cf {.(TERM)} {.(TERM)} (differ-TERM) = differ-TERM
+  →differ-shiftDown v {name1} {name2} {f} cf {.(TERM a)} {.(TERM b)} (differ-TERM a b diff) = differ-TERM _ _ (→differ-shiftDown v cf diff)
   →differ-shiftDown v {name1} {name2} {f} cf {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) = differ-DUM _ _ (→differ-shiftDown v cf diff)
   →differ-shiftDown v {name1} {name2} {f} cf {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = differ-FFDEFS _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
   →differ-shiftDown v {name1} {name2} {f} cf {.(UNIV x)} {.(UNIV x)} (differ-UNIV x) = differ-UNIV x
@@ -960,7 +964,7 @@ abstract
   differ-isValue→ {name1} {name2} {f} {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(PURE)} {.(PURE)} (differ-PURE) isv = tt
-  differ-isValue→ {name1} {name2} {f} {.(TERM)} {.(TERM)} (differ-TERM) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(TERM a)} {.(TERM b)} (differ-TERM a b diff) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(UNIV x)} {.(UNIV x)} (differ-UNIV x) isv = tt

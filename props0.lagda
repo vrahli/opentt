@@ -60,6 +60,61 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 
 \begin{code}[hide]
+
+≡CTerm→equalInTypeₗ : {u : ℕ} {w : 𝕎·} {A a a' b : CTerm}
+                      → a ≡ a'
+                      → equalInType u w A a b
+                      → equalInType u w A a' b
+≡CTerm→equalInTypeₗ {u} {w} {A} {a} {a'} {b} e z rewrite e = z
+
+
+
+≡CTerm→equalInTypeᵣ : {u : ℕ} {w : 𝕎·} {A a b b' : CTerm}
+                      → b ≡ b'
+                      → equalInType u w A a b
+                      → equalInType u w A a b'
+≡CTerm→equalInTypeᵣ {u} {w} {A} {a} {b} {b'} e z rewrite e = z
+
+
+
+≡CTerm→∈Type : {u : ℕ} {w : 𝕎·} {A a a' : CTerm}
+                      → a ≡ a'
+                      → ∈Type u w A a
+                      → ∈Type u w A a'
+≡CTerm→∈Type {u} {w} {A} {a} {a'} e z rewrite e = z
+
+
+
+-- MOVE to mod
+∀𝕎-□Func2 : {w : 𝕎·} {f g h : wPred w}
+                       → ∀𝕎 w (λ w' e' → f w' e' → g w' e' → h w' e')
+                       → □· w f
+                       → □· w g
+                       → □· w h
+∀𝕎-□Func2 {w} {f} {g} {h} aw a b = Mod.□Func M (Mod.∀𝕎-□Func M aw a) b
+
+
+-- MOVE to mod
+∀𝕎-□Func3 : {w : 𝕎·} {f g h k : wPred w}
+                       → ∀𝕎 w (λ w' e' → f w' e' → g w' e' → h w' e' → k w' e')
+                       → □· w f
+                       → □· w g
+                       → □· w h
+                       → □· w k
+∀𝕎-□Func3 {w} {f} {g} {h} aw a b c = Mod.□Func M (Mod.□Func M (Mod.∀𝕎-□Func M aw a) b) c
+
+
+-- MOVE to mod
+∀𝕎-□Func4 : {w : 𝕎·} {f g h k j : wPred w}
+                       → ∀𝕎 w (λ w' e' → f w' e' → g w' e' → h w' e' → k w' e' → j w' e')
+                       → □· w f
+                       → □· w g
+                       → □· w h
+                       → □· w k
+                       → □· w j
+∀𝕎-□Func4 {w} {f} {g} {h} aw a b c d = Mod.□Func M (Mod.□Func M (Mod.□Func M (Mod.∀𝕎-□Func M aw a) b) c) d
+
+
 impliesEqTypes : (u : ℕ) {w : 𝕎·} {A B : CTerm} → equalTypes u w A B → eqtypes w A B
 impliesEqTypes u e = (u , e)
 
@@ -366,8 +421,8 @@ eqTypes-mon u {A} {B} {w1} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) w2 ext =
 eqTypes-mon u {A} {B} {w1} (EQTPURE x x₁) w2 ext =
   EQTPURE (⇛-mon ext x) (⇛-mon ext x₁)
 
-eqTypes-mon u {A} {B} {w1} (EQTTERM x x₁) w2 ext =
-  EQTTERM (⇛-mon ext x) (⇛-mon ext x₁)
+eqTypes-mon u {A} {B} {w1} (EQTTERM t1 t2 c₁ c₂ x) w2 ext =
+  EQTTERM t1 t2 (⇛-mon ext c₁) (⇛-mon ext c₂) (Mod.↑□ M x ext)
 
 eqTypes-mon u {A} {B} {w1} (EQTUNIV i p c₁ c₂) w2 ext = EQTUNIV i p (⇛-mon ext c₁) (⇛-mon ext c₂) --(m x w2 ext)
 
@@ -486,7 +541,7 @@ abstract
   --if-equalInType-EQ u w T a b t₁ t₂ (EQTDUM A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqDUM (compAllVal x₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQTPURE x x₁ , eqi) = ⊥-elim (EQneqPURE (compAllVal x₁ tt))
-  if-equalInType-EQ u w T a b t₁ t₂ (EQTTERM x x₁ , eqi) = ⊥-elim (EQneqTERM (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTTERM t1 t2 c₁ c₂ x , eqi) = ⊥-elim (EQneqTERM (compAllVal c₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQTUNIV i p c₁ c₂ , eqi) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt)) --Bar.∀𝕎-□Func barI z2 x
   {--  where
        z2 : ∀𝕎 w (λ w' e' → (#EQ a b T #⇛ #UNIV u at w' × #EQ a b T #⇛ #UNIV u at w') → t₁ #⇛ #AX at w' × t₂ #⇛ #AX at w' × equalInType u w' T a b)

@@ -602,7 +602,7 @@ abstract
   ¬Names→step w1 w2 w3 (TCONST t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
   ¬Names→step w1 w2 w3 (SUBSING t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
   ¬Names→step w1 w2 w3 (PURE) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
-  ¬Names→step w1 w2 w3 (TERM) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
+  ¬Names→step w1 w2 w3 (TERM t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
   ¬Names→step w1 w2 w3 (DUM t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
   ¬Names→step w1 w2 w3 (FFDEFS t t₁) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
   ¬Names→step w1 w2 w3 (UNIV x) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr
@@ -970,7 +970,7 @@ abstract
   names-shiftUp n (TCONST a) = names-shiftUp n a
   names-shiftUp n (SUBSING a) = names-shiftUp n a
   names-shiftUp n (PURE) = refl
-  names-shiftUp n (TERM) = refl
+  names-shiftUp n (TERM a) = names-shiftUp n a
   names-shiftUp n (DUM a) = names-shiftUp n a
   names-shiftUp n (FFDEFS a a₁) rewrite names-shiftUp n a | names-shiftUp n a₁ = refl
   names-shiftUp n (UNIV x) = refl
@@ -1043,7 +1043,7 @@ abstract
   names-shiftDown n (TCONST a) = names-shiftDown n a
   names-shiftDown n (SUBSING a) = names-shiftDown n a
   names-shiftDown n (PURE) = refl
-  names-shiftDown n (TERM) = refl
+  names-shiftDown n (TERM a) = names-shiftDown n a
   names-shiftDown n (DUM a) = names-shiftDown n a
   names-shiftDown n (FFDEFS a a₁) rewrite names-shiftDown n a | names-shiftDown n a₁ = refl
   names-shiftDown n (UNIV x) = refl
@@ -1300,7 +1300,7 @@ abstract
   names-shiftNameUp≡ n (TCONST t) = names-shiftNameUp≡ n t
   names-shiftNameUp≡ n (SUBSING t) = names-shiftNameUp≡ n t
   names-shiftNameUp≡ n (PURE) = refl
-  names-shiftNameUp≡ n (TERM) = refl
+  names-shiftNameUp≡ n (TERM t) = names-shiftNameUp≡ n t
   names-shiftNameUp≡ n (DUM t) = names-shiftNameUp≡ n t
   names-shiftNameUp≡ n (FFDEFS t t₁)
     rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
@@ -1463,7 +1463,7 @@ abstract
   names-shiftNameDown≡ n (TCONST t) = names-shiftNameDown≡ n t
   names-shiftNameDown≡ n (SUBSING t) = names-shiftNameDown≡ n t
   names-shiftNameDown≡ n (PURE) = refl
-  names-shiftNameDown≡ n (TERM) = refl
+  names-shiftNameDown≡ n (TERM t) = names-shiftNameDown≡ n t
   names-shiftNameDown≡ n (DUM t) = names-shiftNameDown≡ n t
   names-shiftNameDown≡ n (FFDEFS t t₁)
     rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
@@ -1540,7 +1540,7 @@ abstract
   ¬∈names-subv {x} {v} {a} {TCONST b} na nb = ¬∈names-subv {x} {v} {a} {b} na nb
   ¬∈names-subv {x} {v} {a} {SUBSING b} na nb = ¬∈names-subv {x} {v} {a} {b} na nb
   ¬∈names-subv {x} {v} {a} {PURE} na nb = nb
-  ¬∈names-subv {x} {v} {a} {TERM} na nb = nb
+  ¬∈names-subv {x} {v} {a} {TERM b} na nb = ¬∈names-subv {x} {v} {a} {b} na nb
   ¬∈names-subv {x} {v} {a} {DUM b} na nb = ¬∈names-subv {x} {v} {a} {b} na nb
   ¬∈names-subv {x} {v} {a} {FFDEFS b b₁} na nb = →¬∈++2 {_} {_} {x} {names b} {names b₁} (¬∈names-subv {x} {v} {a} {b} na) (¬∈names-subv {x} {v} {a} {b₁} na) nb
   ¬∈names-subv {x} {v} {a} {UNIV x₁} na nb = nb
@@ -1816,6 +1816,7 @@ abstract
   ∈names-renn→ {x} {a} {b} {TCONST t} i = ∈names-renn→ {x} {a} {b} {t} i
   ∈names-renn→ {x} {a} {b} {SUBSING t} i = ∈names-renn→ {x} {a} {b} {t} i
   --∈names-renn→ {x} {a} {b} {PURE} i = {!!} --∈names-renn→ {x} {a} {b} {t} i
+  ∈names-renn→ {x} {a} {b} {TERM t} i = ∈names-renn→ {x} {a} {b} {t} i
   ∈names-renn→ {x} {a} {b} {DUM t} i = ∈names-renn→ {x} {a} {b} {t} i
   ∈names-renn→ {x} {a} {b} {FFDEFS t t₁} i with ∈-++⁻ (names (renn a b t)) i
   ... | inj₁ j with ∈names-renn→ {x} {a} {b} {t} j
@@ -1953,6 +1954,7 @@ abstract
   ∈names-renn-same {a} {b} {SUBSING t} i = ∈names-renn-same {a} {b} {t} i
   --∈names-renn-same {a} {b} {PURE} i = {!!} --∈names-renn-same {a} {b} {t} i
   ∈names-renn-same {a} {b} {DUM t} i = ∈names-renn-same {a} {b} {t} i
+  ∈names-renn-same {a} {b} {TERM t} i = ∈names-renn-same {a} {b} {t} i
   ∈names-renn-same {a} {b} {FFDEFS t t₁} i with ∈-++⁻ (names (renn a b t)) i
   ... | inj₁ j = fst (∈names-renn-same {a} {b} {t} j) , ∈-++⁺ˡ (snd (∈names-renn-same {a} {b} {t} j))
   ... | inj₂ j = fst (∈names-renn-same {a} {b} {t₁} j) , ∈-++⁺ʳ (names t) (snd (∈names-renn-same {a} {b} {t₁} j))
@@ -2247,7 +2249,7 @@ abstract
   name¬∈→step cc w1 w2 (TCONST t) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
   name¬∈→step cc w1 w2 (SUBSING t) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
   name¬∈→step cc w1 w2 (PURE) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
-  name¬∈→step cc w1 w2 (TERM) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
+  name¬∈→step cc w1 w2 (TERM t) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
   name¬∈→step cc w1 w2 (DUM t) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
   name¬∈→step cc w1 w2 (FFDEFS t t₁) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
   name¬∈→step cc w1 w2 (UNIV x) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom

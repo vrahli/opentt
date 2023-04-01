@@ -141,8 +141,8 @@ TCONSTneqSUBSING {a} {c} ()
 TCONSTneqPURE : {a : Term} → ¬ (TCONST a) ≡ PURE
 TCONSTneqPURE {a} ()
 
-TCONSTneqTERM : {a : Term} → ¬ (TCONST a) ≡ TERM
-TCONSTneqTERM {a} ()
+TCONSTneqTERM : {a c : Term} → ¬ (TCONST a) ≡ TERM c
+TCONSTneqTERM {a} {c} ()
 
 TCONSTneqLOWER : {a : Term} {c : Term} → ¬ (TCONST a) ≡ LOWER c
 TCONSTneqLOWER {a} {c} ()
@@ -203,7 +203,7 @@ typeSysConds-TCONST-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A
 typeSysConds-TCONST-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) = ⊥-elim (TCONSTneqTTRUNC (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) = ⊥-elim (TCONSTneqSUBSING (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) = ⊥-elim (TCONSTneqPURE (⇛-val-det tt tt x₁ y))
-typeSysConds-TCONST-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x₁ y))
+typeSysConds-TCONST-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM z₁ z₂ y y₁ y₂) = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-ttrans u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA)
   rewrite #TCONSTinj {A3} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
   = EQTCONST A1 A4 x y₁ eqa exta'
@@ -306,7 +306,7 @@ typeSysConds-TCONST-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4
 typeSysConds-TCONST-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TCONSTneqTTRUNC (⇛-val-det tt tt x y))
 typeSysConds-TCONST-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TCONSTneqSUBSING (⇛-val-det tt tt x y))
 typeSysConds-TCONST-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) f g eqi = ⊥-elim (TCONSTneqPURE (⇛-val-det tt tt x y))
-typeSysConds-TCONST-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) f g eqi = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x y))
+typeSysConds-TCONST-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x y))
 typeSysConds-TCONST-extl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #TCONSTinj {A3} {A1} (#⇛-val-det {_} {A} tt tt y x)
   = Mod.∀𝕎-□Func M aw eqi
@@ -372,7 +372,7 @@ typeSysConds-TCONST-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4
 typeSysConds-TCONST-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TCONSTneqTTRUNC (⇛-val-det tt tt x y₁))
 typeSysConds-TCONST-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TCONSTneqSUBSING (⇛-val-det tt tt x y₁))
 typeSysConds-TCONST-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) f g eqi = ⊥-elim (TCONSTneqPURE (⇛-val-det tt tt x y₁))
-typeSysConds-TCONST-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) f g eqi = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x y₁))
+typeSysConds-TCONST-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x y₁))
 typeSysConds-TCONST-extl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #TCONSTinj {A4} {A1} (#⇛-val-det {_} {A} tt tt y₁ x)
   = Mod.∀𝕎-□Func M aw eqi
@@ -438,7 +438,7 @@ typeSysConds-TCONST-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4
 typeSysConds-TCONST-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TCONSTneqTTRUNC (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TCONST-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TCONSTneqSUBSING (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TCONST-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) f g eqi = ⊥-elim (TCONSTneqPURE (⇛-val-det tt tt x₁ y₁))
-typeSysConds-TCONST-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) f g eqi = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TCONST-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TCONST-extr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #TCONSTinj {A4} {B1} (#⇛-val-det {_} {B} tt tt y₁ x₁)
   = Mod.∀𝕎-□Func M aw eqi
@@ -503,7 +503,7 @@ typeSysConds-TCONST-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3 A4
 typeSysConds-TCONST-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TCONSTneqTTRUNC (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TCONSTneqSUBSING (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) f g eqi = ⊥-elim (TCONSTneqPURE (⇛-val-det tt tt x₁ y))
-typeSysConds-TCONST-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) f g eqi = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x₁ y))
+typeSysConds-TCONST-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-extr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #TCONSTinj {A3} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
   = Mod.∀𝕎-□Func M aw eqi
@@ -570,7 +570,7 @@ typeSysConds-TCONST-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3
 typeSysConds-TCONST-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TCONSTneqTTRUNC (⇛-val-det tt tt x y))
 typeSysConds-TCONST-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TCONSTneqSUBSING (⇛-val-det tt tt x y))
 typeSysConds-TCONST-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) f g eqi = ⊥-elim (TCONSTneqPURE (⇛-val-det tt tt x y))
-typeSysConds-TCONST-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) f g eqi = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x y))
+typeSysConds-TCONST-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x y))
 typeSysConds-TCONST-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #TCONSTinj {A3} {A1} (#⇛-val-det {_} {A} tt tt y x)
   = Mod.∀𝕎-□Func M aw eqi
@@ -645,7 +645,7 @@ typeSysConds-TCONST-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3
 typeSysConds-TCONST-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TCONSTneqTTRUNC (⇛-val-det tt tt x y₁))
 typeSysConds-TCONST-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TCONSTneqSUBSING (⇛-val-det tt tt x y₁))
 typeSysConds-TCONST-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) f g eqi = ⊥-elim (TCONSTneqPURE (⇛-val-det tt tt x y₁))
-typeSysConds-TCONST-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) f g eqi = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x y₁))
+typeSysConds-TCONST-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x y₁))
 typeSysConds-TCONST-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #TCONSTinj {A4} {A1} (#⇛-val-det {_} {A} tt tt y₁ x)
   = Mod.∀𝕎-□Func M aw eqi
@@ -720,7 +720,7 @@ typeSysConds-TCONST-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3
 typeSysConds-TCONST-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TCONSTneqTTRUNC (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TCONST-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TCONSTneqSUBSING (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TCONST-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) f g eqi = ⊥-elim (TCONSTneqPURE (⇛-val-det tt tt x₁ y₁))
-typeSysConds-TCONST-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) f g eqi = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TCONST-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TCONST-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #TCONSTinj {A4} {B1} (#⇛-val-det {_} {B} tt tt y₁ x₁)
   = Mod.∀𝕎-□Func M aw eqi
@@ -795,7 +795,7 @@ typeSysConds-TCONST-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSQUASH A3
 typeSysConds-TCONST-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TCONSTneqTTRUNC (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TCONSTneqSUBSING (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTPURE y y₁) f g eqi = ⊥-elim (TCONSTneqPURE (⇛-val-det tt tt x₁ y))
-typeSysConds-TCONST-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM y y₁) f g eqi = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x₁ y))
+typeSysConds-TCONST-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt x₁ y))
 typeSysConds-TCONST-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi
   rewrite #TCONSTinj {A3} {B1} (#⇛-val-det {_} {B} tt tt y x₁)
   = Mod.∀𝕎-□Func M aw eqi
@@ -874,7 +874,7 @@ eqInType-⇛-TCONST u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSQUASH A3 A4 
 eqInType-⇛-TCONST u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TCONSTneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TCONSTneqSUBSING (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTPURE x x₁) ei = ⊥-elim (TCONSTneqPURE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-TCONST u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTTERM x x₁) ei = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TCONST u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTTERM z₁ z₂ x x₁ x₂) ei = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ei
   rewrite #TCONSTinj {A1} {A3} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #TCONSTinj {B1} {A4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
@@ -956,7 +956,7 @@ eqInType-⇛-TCONST2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSQUASH A3 A4 x x�
 eqInType-⇛-TCONST2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ei ext = ⊥-elim (TCONSTneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei ext = ⊥-elim (TCONSTneqSUBSING (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTPURE x x₁) ei ext = ⊥-elim (TCONSTneqPURE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-TCONST2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTTERM x x₁) ei ext = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TCONST2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTTERM z₁ z₂ x x₁ x₂) ei ext = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ei ext
   rewrite #TCONSTinj {A1} {A3} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #TCONSTinj {B1} {A4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
@@ -1041,7 +1041,7 @@ eqInType-⇛-TCONST-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSQUASH A3
 eqInType-⇛-TCONST-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TCONSTneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TCONSTneqSUBSING (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTPURE x x₁) ei = ⊥-elim (TCONSTneqPURE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-TCONST-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTTERM x x₁) ei = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TCONST-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTTERM z₁ z₂ x x₁ x₂) ei = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ei
   rewrite #TCONSTinj {A1} {A3} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #TCONSTinj {B1} {A4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
@@ -1114,7 +1114,7 @@ eqInType-⇛-TCONST-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSQUASH A3 A4 
 eqInType-⇛-TCONST-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ext ei = ⊥-elim (TCONSTneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ext ei = ⊥-elim (TCONSTneqSUBSING (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTPURE x x₁) ext ei = ⊥-elim (TCONSTneqPURE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-TCONST-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTTERM x x₁) ext ei = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TCONST-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTTERM z₁ z₂ x x₁ x₂) ext ei = ⊥-elim (TCONSTneqTERM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TCONST-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ext ei
   rewrite #TCONSTinj {A1} {A3} (#⇛-val-det {_} {A} tt tt c₁ x)
         | #TCONSTinj {B1} {A4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =

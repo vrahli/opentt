@@ -262,7 +262,7 @@ abstract
   →updRel2-refl {name} {f} {g} {r} {DUM a} nn nr1 nr2 = updRel2-DUM _ _ (→updRel2-refl nn nr1 nr2)
   →updRel2-refl {name} {f} {g} {r} {FFDEFS a a₁} nn nr1 nr2 = updRel2-FFDEFS _ _ _ _ (→updRel2-refl (¬∈++2→¬∈1 {_} {_} {names a} {names a₁} {name} nn) (disjoint++2→1 (names a) (names a₁) (renₗ r) nr1) (disjoint++2→1 (names a) (names a₁) (renᵣ r) nr2)) (→updRel2-refl (¬∈++2→¬∈2 {_} {_} {names a} {names a₁} {name} nn) (disjoint++2→2 (names a) (names a₁) (renₗ r) nr1) (disjoint++2→2 (names a) (names a₁) (renᵣ r) nr2))
   →updRel2-refl {name} {f} {g} {r} {PURE} nn nr1 nr2 = updRel2-PURE
-  →updRel2-refl {name} {f} {g} {r} {TERM} nn nr1 nr2 = updRel2-TERM
+  →updRel2-refl {name} {f} {g} {r} {TERM a} nn nr1 nr2 = updRel2-TERM _ _ (→updRel2-refl nn nr1 nr2)
   →updRel2-refl {name} {f} {g} {r} {UNIV x} nn nr1 nr2 = updRel2-UNIV x
   →updRel2-refl {name} {f} {g} {r} {LIFT a} nn nr1 nr2 = updRel2-LIFT _ _ (→updRel2-refl nn nr1 nr2)
   →updRel2-refl {name} {f} {g} {r} {LOWER a} nn nr1 nr2 = updRel2-LOWER _ _ (→updRel2-refl nn nr1 nr2)
