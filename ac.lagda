@@ -51,6 +51,7 @@ open import progress
 open import choiceBar
 open import exBar
 open import mod
+open import encoding
 
 
 module ac {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
@@ -85,12 +86,12 @@ open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E) using (∀𝕎-□Func2)
 open import terms2(W)(C)(K)(G)(X)(N) using (#subv)
 --open import terms3(W)(C)(K)(G)(X)(N)
 --open import terms4(W)(C)(K)(G)(X)(N)
-open import terms6(W)(C)(K)(G)(X)(N) using (IFEQ⇛₁ ; IFEQ⇛= ; IFEQ⇛¬=)
+open import terms6(W)(C)(K)(G)(X)(N) using (IFEQ⇛₁ ; IFEQ⇛= ; IFEQ⇛¬= ; IFEQ⇓₁)
 open import terms8(W)(C)(K)(G)(X)(N)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#⇛-mon)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalTypes-#⇛-left-right-rev ; TS ; typeSys ; →equalInType-SQUASH ; inhType-mon)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalTypes-#⇛-left-right-rev ; TS ; typeSys ; →equalInType-SQUASH ; inhType-mon ; equalTypes-#⇛-left-right ; →equalInTypeTERM)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E) using (eqTypesBAIRE ; →equalTypesLT)
 --open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -797,6 +798,17 @@ APPLY-APPLY-Tac₀₀⇓! w n m =
 #APPLY-#APPLY-TBac₀₀⇛!1 w n w1 e1 = lift (1 , refl)
 
 
+#APPLY-#APPLY-TBac₀₀⇛!¬0 : (w : 𝕎·) (n : CTerm) (k : ℕ)
+                            → ¬ k ≡ 0
+                            → TBac₀₀ n (#NUM k) #⇛! #NEG (#TERM n) at w
+#APPLY-#APPLY-TBac₀₀⇛!¬0 w n k nk0 w1 e1 = lift (1 , concl)
+  where
+    concl : steps 1 (⌜ TBac₀₀ n (#NUM k) ⌝ , w1) ≡  (⌜ #NEG (#TERM n) ⌝ , w1)
+    concl with k ≟ 0
+    ... | yes p rewrite p = ⊥-elim (nk0 refl)
+    ... | no p = refl
+
+
 #APPLY-#APPLY-Tac₀₀⇛!0 : (w : 𝕎·) (n : CTerm)
                          → #APPLY2 Tac₀₀ n #N0 #⇛! #TERM n at w
 #APPLY-#APPLY-Tac₀₀⇛!0 w n =
@@ -1237,6 +1249,142 @@ AC₀₀-left-T cn i w δ =
                              λ w4 e4 a₁ a₂ a∈ → g w4 (⊑-trans· e3 e4) (a₁ , equalInType-refl a∈))
 
 
+#⇛T-equalInType : {i : ℕ} {w : 𝕎·} {T U a b : CTerm}
+                   → T #⇛! U at w
+                   → equalInType i w T a b
+                   → equalInType i w U a b
+#⇛T-equalInType {i} {w} {T} {U} {a} {b} comp h =
+  TS.tsExt (typeSys i) w T U a b (equalTypes-#⇛-left-right (#⇛!-refl {w} {T}) comp (fst h)) h
+
+
+∈-PI-APPLY2-Tac₀₀→ : (i : ℕ) (w : 𝕎·) (f q₁ q₂ : CTerm)
+                       → equalInType (suc i) w (#PI #NAT (#[0]LIFT (#[0]APPLY2 ⌞ Tac₀₀ ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR)))) q₁ q₂
+                       → ∀𝕎 w (λ w' _ → (n : ℕ) → equalInType i w' (TBac₀₀ (#NUM n) (#APPLY f (#NUM n))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n)))
+∈-PI-APPLY2-Tac₀₀→ i w f q₁ q₂ f∈ w1 e1 n = h4
+  where
+    h1 : equalInType (suc i) w1 (sub0 (#NUM n) (#[0]LIFT (#[0]APPLY2 ⌞ Tac₀₀ ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR)))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n))
+    h1 = snd (snd (equalInType-PI→ f∈)) w1 e1 (#NUM n) (#NUM n) (NUM-equalInType-NAT (suc i) w1 n)
+
+    h2 : equalInType (suc i) w1 (#LIFT (#APPLY2 Tac₀₀ (#NUM n) (#APPLY f (#NUM n)))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n))
+    h2 = ≡CTerm→equalInType (sub0-ac00-right-body2 Tac₀₀ f (#NUM n)) h1
+
+    h3 : equalInType i w1 (#APPLY2 Tac₀₀ (#NUM n) (#APPLY f (#NUM n))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n))
+    h3 = equalInType-LIFT→ i w1 (#APPLY2 Tac₀₀ (#NUM n) (#APPLY f (#NUM n))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n)) h2
+
+    h4 : equalInType i w1 (TBac₀₀ (#NUM n) (#APPLY f (#NUM n))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n))
+    h4 = #⇛T-equalInType (#APPLY-#APPLY-Tac₀₀⇛! w1 (#NUM n) (#APPLY f (#NUM n))) h3
+
+
+TBac₀₀⇛→ : (w : 𝕎·) (n m k : CTerm)
+              → m #⇛ k at w
+              → TBac₀₀ n m #⇛ TBac₀₀ n k at w
+TBac₀₀⇛→ w n m k comp =
+  IFEQ⇛₁ {w} {⌜ m ⌝} {⌜ k ⌝} {NUM 0} {TERM ⌜ n ⌝} {NEG (TERM ⌜ n ⌝)} comp
+
+
+TBac₀₀⇛0→ : (w : 𝕎·) (n m : CTerm)
+              → m #⇛ #NUM 0 at w
+              → TBac₀₀ n m #⇛ #TERM n at w
+TBac₀₀⇛0→ w n m comp =
+  #⇛-trans
+    {w} {TBac₀₀ n m} {TBac₀₀ n (#NUM 0)} {#TERM n}
+    (TBac₀₀⇛→ w n m (#NUM 0) comp)
+    (λ w1 e1 → lift (1 , refl))
+
+
+IFEQ⇛!₁ : {w : 𝕎·} {n m a u v : Term}
+         → n ⇛! m at w
+         → IFEQ n a u v ⇛! IFEQ m a u v at w
+IFEQ⇛!₁ {w} {n} {m} {a} {u} {v} comp w1 e1 = lift (IFEQ⇓₁ (lower (comp w1 e1)))
+
+
+TBac₀₀⇛!→ : (w : 𝕎·) (n m k : CTerm)
+              → m #⇛! k at w
+              → TBac₀₀ n m #⇛! TBac₀₀ n k at w
+TBac₀₀⇛!→ w n m k comp =
+  IFEQ⇛!₁ {w} {⌜ m ⌝} {⌜ k ⌝} {NUM 0} {TERM ⌜ n ⌝} {NEG (TERM ⌜ n ⌝)} comp
+
+
+TBac₀₀⇛!0→ : (w : 𝕎·) (n m : CTerm)
+              → m #⇛! #NUM 0 at w
+              → TBac₀₀ n m #⇛! #TERM n at w
+TBac₀₀⇛!0→ w n m comp =
+  #⇛!-trans
+    {w} {TBac₀₀ n m} {TBac₀₀ n (#NUM 0)} {#TERM n}
+    (TBac₀₀⇛!→ w n m (#NUM 0) comp)
+    (λ w1 e1 → lift (1 , refl))
+
+
+TBac₀₀⇛!¬0→ : (w : 𝕎·) (n m : CTerm) (k : ℕ)
+               → ¬ k ≡ 0
+               → m #⇛! #NUM k at w
+               → TBac₀₀ n m #⇛! #NEG (#TERM n) at w
+TBac₀₀⇛!¬0→ w n m k nk0 comp =
+  #⇛!-trans
+    {w} {TBac₀₀ n m} {TBac₀₀ n (#NUM k)} {#NEG (#TERM n)}
+    (TBac₀₀⇛!→ w n m (#NUM k) comp)
+    (#APPLY-#APPLY-TBac₀₀⇛!¬0 w n k nk0)
+
+
+terminatesℕ : 𝕎· → ℕ → Set(lsuc L)
+terminatesℕ w n = terminates w (ℕ→Term n)
+
+
+terminates-mon : {w1 w2 : 𝕎·} (n : Term)
+                 → w1 ⊑· w2
+                 → terminates w1 n
+                 → terminates w2 n
+terminates-mon {w1} {w2} n e (v , isv , comp) = v , isv , ∀𝕎-mon e comp
+
+
+→¬terminatesℕ : (i : ℕ) (w1 w2 : 𝕎·) (n : ℕ) (a b : CTerm)
+                  → w1 ⊑· w2
+                  → equalInType i w1 (#NEG (#TERM (#NUM n))) a b
+                  → ¬ terminatesℕ w2 n
+→¬terminatesℕ i w1 w2 n a b e h tm =
+  equalInType-NEG→
+    h w2 e #AX #AX
+    (→equalInTypeTERM (Mod.∀𝕎-□ M (λ w' e' → n , #⇛-refl w' (#NUM n) , #⇛-refl w' (#NUM n) , terminates-mon (ℕ→Term n) e' tm)))
+
+
+-- We turned the NAT into a NAT! here because otherwise we can't reduce TBac₀₀ in the hypothesis using #⇛T-equalInType as it requires #⇛!
+-- This means that we'll need to consider AC where NAT is NAT! instead
+equalInType-TBac₀₀→ : (i : ℕ) (w : 𝕎·) (n : ℕ) (m a b : CTerm)
+                       → ∈Type i w #NAT! m
+                       → equalInType i w (TBac₀₀ (#NUM n) m) a b
+                       → □· w (λ w' _ → (m #⇛! #N0 at w' × terminatesℕ w' n)
+                                          ⊎
+                                          Σ ℕ (λ k → (0 < k) × (m #⇛! #NUM k at w') × (¬ terminatesℕ w' n)))
+equalInType-TBac₀₀→ i w n m a b m∈ h =
+  Mod.□-idem M (Mod.∀𝕎-□Func M aw1 (equalInType-NAT!→ i w m m m∈))
+  where
+    aw1 : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' m m
+                         → □· w' (↑wPred' (λ w'' _ → (m #⇛! #N0 at w'' × terminatesℕ w'' n)
+                                                       ⊎ Σ ℕ (λ k → 0 < k × m #⇛! #NUM k at w'' × ¬ terminatesℕ w'' n)) e'))
+    aw1 w1 e1 (k , c₁ , c₂) with k ≟ 0
+    ... | yes q rewrite q = Mod.∀𝕎-□Func M aw2 (equalInType-TERM→ h1)
+      where
+        aw2 : ∀𝕎 w1 (λ w' e' → TERMeq w' (#NUM n) (#NUM n)
+                              → ↑wPred' (λ w'' _ → (m #⇛! #N0 at w'' × terminatesℕ w'' n)
+                                                     ⊎ Σ ℕ (λ k → 0 < k × m #⇛! #NUM k at w'' × ¬ terminatesℕ w'' n)) e1 w' e')
+        aw2 w2 e2 (j , d₁ , d₂ , tm) z
+          rewrite #NUMinj (sym (#⇛→≡ {#NUM n} {#NUM j} {w2} d₁ tt)) =
+          inj₁ (∀𝕎-mon e2 c₁ , tm)
+
+        h1 : equalInType i w1 (#TERM (#NUM n)) a b
+        h1 = #⇛T-equalInType {i} {w1} {TBac₀₀ (#NUM n) m} {#TERM (#NUM n)} {a} {b} (TBac₀₀⇛!0→ w1 (#NUM n) m c₁) (equalInType-mon h w1 e1)
+-- we can't quite use #⇛T-equalInType because TBac₀₀⇛0→ uses #⇛ and not #⇛! because of the NAT and not NAT! in m∈
+-- so we switched from NAT to NAT!
+    ... | no q = Mod.∀𝕎-□ M aw2
+      where
+        h1 : equalInType i w1 (#NEG (#TERM (#NUM n))) a b
+        h1 = #⇛T-equalInType {i} {w1} {TBac₀₀ (#NUM n) m} {#NEG (#TERM (#NUM n))} {a} {b} (TBac₀₀⇛!¬0→ w1 (#NUM n) m k q c₁) (equalInType-mon h w1 e1)
+
+        aw2 : ∀𝕎 w1 (λ w' e' → ↑wPred' (λ w'' _ → (m #⇛! #N0 at w'' × terminatesℕ w'' n)
+                                                     ⊎ Σ ℕ (λ k → 0 < k × m #⇛! #NUM k at w'' × ¬ terminatesℕ w'' n)) e1 w' e')
+        aw2 w2 e2 z = inj₂ (k , ≤∧≢⇒< {0} {k} _≤_.z≤n (λ x → q (sym x)) , ∀𝕎-mon e2 c₁ , →¬terminatesℕ i w1 w2 n a b e2 h1)
+
+
 ¬AC₀₀-right-T : (i : ℕ) (w : 𝕎·) → ¬ inhType (suc i) w (#AC₀₀-right Tac₀₀)
 ¬AC₀₀-right-T i w (s , s∈) =
   lower (Mod.□-const M (Mod.∀𝕎-□Func M aw1 (equalInType-SQUASH→ s∈)))
@@ -1250,12 +1398,15 @@ AC₀₀-left-T cn i w δ =
                                        (λ a b ea →  equalInType (suc i) w' (sub0 a (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ Tac₀₀ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))))
                                        w' p p
                               → Lift (lsuc L) ⊥)
-        aw2 w2 e2 (f₁ , f₂ , q₁ , q₂ , f∈ , c₁ , c₂ , q∈) = {!!}
+        aw2 w2 e2 (f₁ , f₂ , q₁ , q₂ , f∈ , c₁ , c₂ , q∈) = {!!} -- use equalInType-TBac₀₀→ on q∈2?
           where
             -- q∈1 is: Π(n:ℕ).if f₁(n)=0 then TERM(n) else ¬TERM(n)
             -- We now want to prove that such an f₁ does not exist
             q∈1 : equalInType (suc i) w2 (#PI #NAT (#[0]LIFT (#[0]APPLY2 ⌞ Tac₀₀ ⌟ #[0]VAR (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) q₁ q₂
             q∈1 = →≡equalInType (sub0-ac00-right-body1 Tac₀₀ f₁) q∈
+
+            q∈2 : ∀𝕎 w2 (λ w' _ → (n : ℕ) → equalInType i w' (TBac₀₀ (#NUM n) (#APPLY f₁ (#NUM n))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n)))
+            q∈2 = ∈-PI-APPLY2-Tac₀₀→ i w2 f₁ q₁ q₂ q∈1
 
 
 ∈NREL→inh-NUMᵣ : (i : ℕ) (w : 𝕎·) (R m : CTerm) (n k : ℕ)
