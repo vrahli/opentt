@@ -1408,6 +1408,12 @@ equalInType-TBac₀₀→ i w n m a b m∈ h =
             q∈2 : ∀𝕎 w2 (λ w' _ → (n : ℕ) → equalInType i w' (TBac₀₀ (#NUM n) (#APPLY f₁ (#NUM n))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n)))
             q∈2 = ∈-PI-APPLY2-Tac₀₀→ i w2 f₁ q₁ q₂ q∈1
 
+            -- Should we use K□ to get rid of the □?
+            -- That's fine because that's what we've used to prove the validity of AC below in AC₀₀-valid.
+            q∈3 : ∀𝕎 w2 (λ w' _ → (n : ℕ) → □· w' (λ w' _ → (#APPLY f₁ (#NUM n) #⇛! #N0 at w' × terminatesℕ w' n)
+                                                                  ⊎ Σ ℕ (λ k → (0 < k) × (#APPLY f₁ (#NUM n) #⇛! #NUM k at w') × (¬ terminatesℕ w' n))))
+            q∈3 w3 e3 n = equalInType-TBac₀₀→ i w3 n (#APPLY f₁ (#NUM n)) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n)) {!--not quite from f∈--!} (q∈2 w3 e3 n)
+
 
 ∈NREL→inh-NUMᵣ : (i : ℕ) (w : 𝕎·) (R m : CTerm) (n k : ℕ)
                   → ∈Type (suc i) w (#NREL i) R
