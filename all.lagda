@@ -52,6 +52,8 @@ open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (¬LPO)
 open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (¬LPOq)
 -- This version requires choices to be Booleans, but also freezable to always be true:
 open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (¬MP ; ¬MP₂ ; ¬MP₃ ; ¬MP₄)
+-- In here, we've tried to prove to prove ¬MP for a read/no-write version of MP, but it is not finished
+-- open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 -- MP is however consistent when restricted to pure functions
 open import mpp{L}(W)(M)(C)(K)(P)(G)(X)(N)(E) using (MPp-inh ; MPp₂-inh ; MPp₃-inh ; MPp₄-inh)
 -- Using classsical logic, MP is also consistent when using an open-like modality (see ExBar in exBar.lagda)
@@ -109,8 +111,10 @@ open import continuity9b
 -- This one is unfinished
 --open import continuity10b
 
--- On AC (not finished yet)
--- open import ac
+-- On AC (not finished yet -- see ac2)
+-- ac contains a proof that AC₀₀ is valid when using a Kriple □ and a generic element.
+open import ac using (AC₀₀-valid)
+-- open import ac2
 
 -- A definition of sequents and their semantics
 open import sequent
