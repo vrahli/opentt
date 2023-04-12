@@ -16,7 +16,7 @@ open import Data.Sum
 open import Data.Empty
 open import Data.Maybe
 open import Data.Unit using (⊤ ; tt)
-open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
+open import Data.Nat using (ℕ ; _>_ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
 open import Data.Nat.Properties
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
@@ -83,7 +83,7 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E) using (∀𝕎-□Func2)
 --open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import terms2(W)(C)(K)(G)(X)(N) using (#subv)
+open import terms2(W)(C)(K)(G)(X)(N) using (#subv ; IFEQ→hasValue-decomp)
 --open import terms3(W)(C)(K)(G)(X)(N)
 --open import terms4(W)(C)(K)(G)(X)(N)
 open import terms6(W)(C)(K)(G)(X)(N) using (IFEQ⇛₁ ; IFEQ⇛= ; IFEQ⇛¬= ; IFEQ⇓₁)
@@ -189,6 +189,7 @@ AC₀₀-left-R cn i w δ =
                              λ w4 e4 a₁ a₂ a∈ → g w4 (⊑-trans· e3 e4) (a₁ , equalInType-refl a∈))
 
 
+{--
 AC₀₀-right-R : (cn : CS∈NAT) (i : ℕ) (w : 𝕎·) (δ : Name) → ¬ inhType (suc i) w (#AC₀₀-right (Rac₀₀ δ))
 AC₀₀-right-R cn i w δ (s , s∈) =
   lower (Mod.□-const M (Mod.∀𝕎-□Func M aw1 (equalInType-SQUASH→ s∈)))
@@ -210,8 +211,10 @@ AC₀₀-right-R cn i w δ (s , s∈) =
             -- Shouldn't we be able to prove ¬(∀m≥n.δ(m)=0) with an open bar model since we can always select a non-zero (see below #NEG-#Aac₀₀)
             q∈1 : equalInType (suc i) w2 (#PI #NAT (#[0]LIFT (#[0]APPLY2 ⌞ Rac₀₀ δ ⌟ #[0]VAR (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) q₁ q₂
             q∈1 = →≡equalInType (sub0-ac00-right-body1 (Rac₀₀ δ) f₁) q∈
+--}
 
 
+{--
 #NEG-#Aac₀₀ : (cn : CS∈NAT) (i : ℕ) (w : 𝕎·) (δ : Name) (n a b : CTerm) (k : ℕ)
              → n #⇛ #NUM k at w
              → equalInType i w (#NEG (#Aac₀₀ δ n)) a b
@@ -232,6 +235,7 @@ AC₀₀-right-R cn i w δ (s , s∈) =
             (snd (snd (equalInType-PI→
               {i} {w2} {#NAT} {#[0]FUN (#[0]LE ⌞ n ⌟ #[0]VAR) (#[0]EQ (#[0]APPLY (#[0]CS δ) #[0]VAR) (#[0]NUM 0) #[0]NAT)} {f₁} {f₂}
               (equalInType-mon f∈ w2 e2))) w2 (⊑-refl· w2) m₁ m₂ m∈)
+--}
 
 
 -- Can we prove that AC₀₀ is invalid using Tac₀₀?
@@ -390,6 +394,7 @@ TBac₀₀⇛!¬0→ w n m k nk0 comp =
     (#APPLY-#APPLY-TBac₀₀⇛!¬0 w n k nk0)
 
 
+-- MOVE - this belongs somewhere else
 terminatesℕ : 𝕎· → ℕ → Set(lsuc L)
 terminatesℕ w n = terminates w (ℕ→Term n)
 
@@ -449,6 +454,140 @@ equalInType-TBac₀₀→ i w n m a b m∈ h =
         aw2 w2 e2 z = inj₂ (k , ≤∧≢⇒< {0} {k} _≤_.z≤n (λ x → q (sym x)) , ∀𝕎-mon e2 c₁ , →¬terminatesℕ i w1 w2 n a b e2 h1)
 
 
+-- MOVE to encoding
+CTerm→ℕ : CTerm → ℕ
+CTerm→ℕ t = Term→ℕ ⌜ t ⌝
+
+
+-- TODO and MOVE to encoding
+ℕ→Term→ℕ : (t : Term) → ℕ→Term (Term→ℕ t) ≡ t
+ℕ→Term→ℕ t = {!!}
+
+
+-- MOVE - this belongs somewhere else
+terminatesℕ-Term→ℕ→ : (w : 𝕎·) (t : Term)
+                         → terminatesℕ w (Term→ℕ t)
+                         → terminates w t
+terminatesℕ-Term→ℕ→ w t term rewrite ℕ→Term→ℕ t = term
+
+
+-- MOVE - this belongs somewhere else
+¬terminatesℕ-Term→ℕ→ : (w : 𝕎·) (t : Term)
+                         → ¬ terminatesℕ w (Term→ℕ t)
+                         → ¬ terminates w t
+¬terminatesℕ-Term→ℕ→ w t term rewrite ℕ→Term→ℕ t = term
+
+
+-- MOVE to utils
+¬≡0→0< : (i : ℕ) → ¬ i ≡ 0 → 0 < i
+¬≡0→0< 0 h = ⊥-elim (h refl)
+¬≡0→0< (suc i) h = _≤_.s≤s _≤_.z≤n
+
+
+-- MOVE - this belongs somewhere else
+BOT-does-not-converge : (k : ℕ) (v : Term) (w1 w2 : 𝕎·)
+                        → steps k (BOT , w1) ≡ (v , w2)
+                        → isValue v
+                        → ⊥
+BOT-does-not-converge 0 v w1 w2 comp isv rewrite sym (pair-inj₁ comp) = isv
+BOT-does-not-converge (suc k) v w1 w2 comp isv = BOT-does-not-converge k v w1 w2 comp isv
+
+
+steps-ENC→ : (n : ℕ) (w1 w2 : 𝕎·) (t v : Term)
+              → steps n (ENC t , w1) ≡ (v , w2)
+              → isValue v
+              → Σ ℕ (λ k →
+                     APPLY t (NUM (Term→ℕ (ENC t))) ⇓ NUM k from w1 to w2
+                     × k > 0
+                     × ENC t ⇓ N0 from w1 to w2
+                     × v ≡ N0)
+steps-ENC→ 0 w1 w2 t v comp isv rewrite sym (pair-inj₁ comp) = ⊥-elim isv
+steps-ENC→ (suc n) w1 w2 t v comp isv with IFEQ→hasValue-decomp n (APPLY t (NUM (Term→ℕ (ENC t)))) N0 BOT N0 v w1 w2 comp isv
+... | (k1 , k2 , k3 , wa , wb , i , j , c1 , c2 , inj₁ (x , y) , c4)
+  rewrite stepsVal N0 wa k2 tt | x | sym (NUMinj (pair-inj₁ c2)) | pair-inj₂ c2
+  = ⊥-elim (BOT-does-not-converge k3 v wb w2 y isv)
+... | (k1 , k2 , k3 , wa , wb , i , j , c1 , c2 , inj₂ (x , y) , c4)
+  rewrite stepsVal N0 wa k2 tt | stepsVal N0 wb k3 tt
+        | sym (pair-inj₁ y) | pair-inj₂ y
+        | sym (NUMinj (pair-inj₁ c2)) | pair-inj₂ c2 = i , (k1 , c1) , ¬≡0→0< i x , (suc n , comp) , refl
+
+
+ENC⇓from-val→ : (w1 w2 : 𝕎·) (t v : Term)
+                 → ENC t ⇓ v from w1 to w2
+                 → isValue v
+                 → Σ ℕ (λ k →
+                     APPLY t (NUM (Term→ℕ (ENC t))) ⇓ NUM k from w1 to w2
+                     × k > 0
+                     × ENC t ⇓ N0 from w1 to w2
+                     × v ≡ N0)
+ENC⇓from-val→ w1 w2 t v (n , comp) isv = steps-ENC→ n w1 w2 t v comp isv
+
+
+ENC⇓val→ : (w : 𝕎·) (t v : Term)
+             → ENC t ⇓ v at w
+             → isValue v
+             → Σ ℕ (λ k →
+                  APPLY t (NUM (Term→ℕ (ENC t))) ⇓ NUM k at w
+                  × k > 0
+                  × ENC t ⇓ N0 at w
+                  × v ≡ N0)
+ENC⇓val→ w t v comp isv
+  with ENC⇓from-val→ w (fst (⇓→from-to {w} {ENC t} {v} comp)) t v (snd (⇓→from-to {w} {ENC t} {v} comp)) isv
+... | (k , c1 , gt0 , c2 , eqv) = k , ⇓-from-to→⇓ c1 , gt0 , ⇓-from-to→⇓ c2 , eqv
+
+
+⇓→⇛ : (w : 𝕎·) (t u v : Term)
+        → isValue v
+        → isValue u
+        → t ⇛ v at w
+        → t ⇓ u at w
+        → t ⇛ u at w
+⇓→⇛ w t u v isvv isvu compv compu w1 e1 = lift comp3
+  where
+    comp1 : t ⇓ v at w1
+    comp1 = lower (compv w1 e1)
+
+    comp2 : t ⇓ v at w
+    comp2 = lower (compv w (⊑-refl· w))
+
+    comp3 : t ⇓ u at w1
+    comp3 rewrite ⇓-val-det {w} {t} {u} {v} isvu isvv compu comp2 = comp1
+
+
+ENC⇛val→ : (w : 𝕎·) (t v : Term)
+             → ((n : ℕ) → Σ ℕ (λ k → APPLY t (NUM n) ⇛ NUM k at w))
+             → ENC t ⇛ v at w
+             → isValue v
+             → Σ ℕ (λ k →
+                  APPLY t (NUM (Term→ℕ (ENC t))) ⇛ NUM k at w
+                  × k > 0
+                  × ENC t ⇛ N0 at w
+                  × v ≡ N0)
+ENC⇛val→ w t v cf comp isv with ENC⇓val→ w t v (lower (comp w (⊑-refl· w))) isv
+... | (k , c1 , gt0 , c2 , eqv) = k , c1' , gt0 , c2'  , eqv
+  where
+    c1' : APPLY t (NUM (Term→ℕ (ENC t))) ⇛ NUM k at w
+    c1' = ⇓→⇛ w (APPLY t (NUM (Term→ℕ (ENC t)))) (NUM k) (NUM (fst (cf (Term→ℕ (ENC t))))) tt tt (snd (cf (Term→ℕ (ENC t)))) c1
+
+    c2' : ENC t ⇛ N0 at w
+    c2' rewrite eqv = comp
+
+
+ENC⇓¬val→ : (w : 𝕎·) (t : Term) (k : ℕ)
+             → APPLY t (NUM (Term→ℕ (ENC t))) ⇛ NUM k at w
+             → ¬ terminates w (ENC t)
+             → APPLY t (NUM (Term→ℕ (ENC t))) ⇛ N0 at w
+ENC⇓¬val→ w t k ca nterm with k ≟ 0
+... | yes p rewrite p = ca
+... | no p = ⊥-elim (nterm (N0 , tt , comp1))
+  where
+    comp2 : ENCr t ⇛ N0 at w
+    comp2 = ⇛-trans (IFEQ⇛₃ {w} {k} {0} {APPLY t (NUM (Term→ℕ (ENC t)))} {NUM 0} {BOT} {NUM 0} ca (compAllRefl (NUM 0) w)) (IFEQ⇛¬= p)
+
+    comp1 : ENC t ⇛ N0 at w
+    comp1 = ⇛-trans {w} {ENC t} {ENCr t} {N0} (λ w1 e1 → lift (1 , refl)) comp2
+
+
 ¬AC₀₀-right-T : (kb : K□) (i : ℕ) (w : 𝕎·) → ¬ inhType (suc i) w (#AC₀₀-right Tac₀₀)
 ¬AC₀₀-right-T kb i w (s , s∈) =
   lower (Mod.□-const M (Mod.∀𝕎-□Func M aw1 (equalInType-SQUASH→ s∈)))
@@ -462,7 +601,7 @@ equalInType-TBac₀₀→ i w n m a b m∈ h =
                                        (λ a b ea →  equalInType (suc i) w' (sub0 a (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ Tac₀₀ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))))
                                        w' p p
                               → Lift (lsuc L) ⊥)
-        aw2 w2 e2 (f₁ , f₂ , q₁ , q₂ , f∈ , c₁ , c₂ , q∈) = {!!} -- use equalInType-TBac₀₀→ on q∈2?
+        aw2 w2 e2 (f₁ , f₂ , q₁ , q₂ , f∈ , c₁ , c₂ , q∈) = lift (concl (q∈4 ε)) -- use equalInType-TBac₀₀→ on q∈2?
           where
             -- q∈1 is: Π(n:ℕ).if f₁(n)=0 then TERM(n) else ¬TERM(n)
             -- We now want to prove that such an f₁ does not exist
@@ -485,5 +624,52 @@ equalInType-TBac₀₀→ i w n m a b m∈ h =
             q∈4 : (n : ℕ) → ((#APPLY f₁ (#NUM n) #⇛! #N0 at w2 × terminatesℕ w2 n)
                                 ⊎ Σ ℕ (λ k → (0 < k) × (#APPLY f₁ (#NUM n) #⇛! #NUM k at w2) × (¬ terminatesℕ w2 n)))
             q∈4 n = kb (q∈3 w2 (⊑-refl· w2) n) w2 (⊑-refl· w2)
+
+            q∈5 : (n : ℕ) → Σ ℕ (λ k → #APPLY f₁ (#NUM n) #⇛ #NUM k at w2)
+            q∈5 n with q∈4 n
+            ... | inj₁ (x , y) = 0 , #⇛!→#⇛ {w2} {#APPLY f₁ (#NUM n)} {#NUM 0} x
+            ... | inj₂ (k , gt0 , x , y) = k , #⇛!→#⇛ {w2} {#APPLY f₁ (#NUM n)} {#NUM k} x
+
+            ε : ℕ
+            ε = CTerm→ℕ (#ENC f₁)
+
+            concl : ((#APPLY f₁ (#NUM ε) #⇛! #N0 at w2 × terminatesℕ w2 ε)
+                     ⊎ Σ ℕ (λ k → (0 < k) × (#APPLY f₁ (#NUM ε) #⇛! #NUM k at w2) × (¬ terminatesℕ w2 ε)))
+                     → ⊥
+            concl (inj₁ (comp , term)) = <-irrefl (sym ce3) ce2
+              where
+                term' : terminates w2 ⌜ #ENC f₁ ⌝
+                term' = terminatesℕ-Term→ℕ→ w2 ⌜ #ENC f₁ ⌝ term
+
+                v : Term
+                v = fst term'
+
+                isv : isValue v
+                isv = fst (snd term')
+
+                ce : ⌜ #ENC f₁ ⌝ ⇛ v at w2
+                ce = snd (snd term')
+
+                k : ℕ
+                k = fst (ENC⇛val→ w2 ⌜ f₁ ⌝ v q∈5 ce isv)
+
+                ce1 : #APPLY f₁ (#NUM ε) #⇛ #NUM k at w2
+                ce1 = fst (snd (ENC⇛val→ w2 ⌜ f₁ ⌝ v q∈5 ce isv))
+
+                ce2 : k > 0
+                ce2 = fst (snd (snd (ENC⇛val→ w2 ⌜ f₁ ⌝ v q∈5 ce isv)))
+
+                ce3 : k ≡ 0
+                ce3 = #NUMinj (#⇛-val-det {w2} {#APPLY f₁ (#NUM ε)} {#NUM k} {#N0} tt tt ce1 (#⇛!→#⇛ {w2} {#APPLY f₁ (#NUM ε)} {#NUM 0} comp))
+            concl (inj₂ (k , ltk , comp , nterm)) = <-irrefl (sym eq0) ltk
+              where
+                nterm' : ¬ terminates w2 ⌜ #ENC f₁ ⌝
+                nterm' = ¬terminatesℕ-Term→ℕ→ w2 ⌜ #ENC f₁ ⌝ nterm
+
+                ca : #APPLY f₁ (#NUM ε) #⇛ #N0 at w2
+                ca = ENC⇓¬val→ w2 ⌜ f₁ ⌝ k (#⇛!→#⇛ {w2} {#APPLY f₁ (#NUM ε)} {#NUM k} comp) nterm'
+
+                eq0 : k ≡ 0
+                eq0 = #NUMinj (#⇛-val-det {w2} {#APPLY f₁ (#NUM ε)} {#NUM k} {#N0} tt tt (#⇛!→#⇛ {w2} {#APPLY f₁ (#NUM ε)} {#NUM k} comp) ca)
 
 \end{code}
