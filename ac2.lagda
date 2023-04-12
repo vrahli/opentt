@@ -80,7 +80,7 @@ open import computation(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E) using (∀𝕎-□Func2)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E) using (∀𝕎-□Func2 ; eqTypes-mon)
 --open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import terms2(W)(C)(K)(G)(X)(N) using (#subv ; IFEQ→hasValue-decomp)
@@ -91,8 +91,9 @@ open import terms8(W)(C)(K)(G)(X)(N)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#⇛-mon)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalTypes-#⇛-left-right-rev ; TS ; typeSys ; →equalInType-SQUASH ; inhType-mon ; equalTypes-#⇛-left-right ; →equalInTypeTERM)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalTypes-#⇛-left-right-rev ; TS ; typeSys ; →equalInType-SQUASH ; inhType-mon ; equalTypes-#⇛-left-right ; →equalInTypeTERM ; →equalInType-UNION)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E) using (eqTypesBAIRE ; →equalTypesLT)
+open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E) using (PROD ; #PROD ; #PROD≡#SUM ; equalInType-PROD ; PRODeq)
 --open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
@@ -317,6 +318,139 @@ AC₀₀-left-T cn i w δ =
                              λ w4 e4 a₁ a₂ a∈ → g w4 (⊑-trans· e3 e4) (a₁ , equalInType-refl a∈))
 
 
+equalInType-EQ-NAT : (i : ℕ) (w : 𝕎·) (j : ℕ) (a b : CTerm)
+                     → equalInType i w (#EQ (#NUM j) (#NUM j) #NAT) a b
+equalInType-EQ-NAT i w j a b =
+  equalInType-EQ
+    eqTypesNAT
+    (Mod.∀𝕎-□ M (λ w1 e1 → NUM-equalInType-NAT i w1 j))
+
+
+abstract
+  →equalInType-LT-NUM : {i : ℕ} {w : 𝕎·} {u v : CTerm} {n m : ℕ}
+                         → n < m
+                         → equalInType i w (#LT (#NUM n) (#NUM m)) u v
+  →equalInType-LT-NUM {i} {w} {u} {v} {n} {m} ltm =
+    EQTLT
+      (#NUM n) (#NUM n) (#NUM m) (#NUM m)
+      (#⇛-refl w (#LT (#NUM n) (#NUM m))) (#⇛-refl w (#LT (#NUM n) (#NUM m)))
+      (n , #⇛-refl w (#NUM n) , #⇛-refl w (#NUM n))
+      (m , #⇛-refl w (#NUM m) , #⇛-refl w (#NUM m)) ,
+    Mod.∀𝕎-□ M (λ w1 e1 → lift (n , m , ⇓-refl (NUM n) w1 , ⇓-refl (NUM m) w1 , ltm))
+
+
+AC₀₀-left-TO : (cn : CS∈NAT) (i : ℕ) (w : 𝕎·) (δ : Name) → ∈Type (suc i) w (#AC₀₀-left TOac₀₀) #lamAX
+AC₀₀-left-TO cn i w δ =
+  equalInType-PI
+    {suc i} {w} {#NAT} {#[0]SQUASH (#[0]SUM #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ TOac₀₀ ⌟ #[1]VAR1 #[1]VAR0)))}
+    (λ w1 e1 → eqTypesNAT)
+    (isType-#AC₀₀-left1 i w TOac₀₀ TOac₀₀ (#NREL-TO i w))
+    aw1
+  where
+    aw1 : ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → equalInType (suc i) w' #NAT n₁ n₂
+                        →  equalInType
+                              (suc i) w'
+                              (sub0 n₁ (#[0]SQUASH (#[0]SUM #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ TOac₀₀ ⌟ #[1]VAR1 #[1]VAR0)))))
+                              (#APPLY #lamAX n₁) (#APPLY #lamAX n₂))
+    aw1 w1 e1 n₁ n₂ n∈ =
+      →≡equalInType
+        (sym (sub0-ac00-left-body1 TOac₀₀ n₁))
+        (→equalInType-SQUASH p1)
+      where
+        p2 : □· w1 (λ w' _ → inhType i w' (#TERM n₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' (#TERM n₁)))
+        p2 = □·⊎inhType i w1 (#TERM n₁)
+
+        p1 : □· w1 (λ w' _ → inhType (suc i) w' (#SUM #NAT (#[0]LIFT (#[0]APPLY2 ⌞ TOac₀₀ ⌟ ⌞ n₁ ⌟ #[0]VAR))))
+        p1 = Mod.∀𝕎-□Func M aw2 p2
+          where
+            aw2 : ∀𝕎 w1 (λ w' e' → inhType i w' (#TERM n₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' (#TERM n₁))
+                                  → inhType (suc i) w' (#SUM #NAT (#[0]LIFT (#[0]APPLY2 ⌞ TOac₀₀ ⌟ ⌞ n₁ ⌟ #[0]VAR))))
+            aw2 w2 e2 (inj₁ (f , f∈)) =
+              #PAIR #N0 (#INL (#PAIR #AX f)) ,
+              equalInType-SUM
+                (λ w3 e3 → eqTypesNAT)
+                (isType-#AC₀₀-left2 i w2 TOac₀₀ TOac₀₀ n₁ n₁ (#NREL-TO i w2) (equalInType-refl (equalInType-mon n∈ w2 e2)))
+                (Mod.∀𝕎-□ M q1)
+              where
+                q1 : ∀𝕎 w2 (λ w' _ → SUMeq (equalInType (suc i) w' #NAT)
+                                            (λ m₁ m₂ m∈ → equalInType (suc i) w' (sub0 m₁ (#[0]LIFT (#[0]APPLY2 ⌞ TOac₀₀ ⌟ ⌞ n₁ ⌟ #[0]VAR))))
+                                            w' (#PAIR #N0 (#INL (#PAIR #AX f))) (#PAIR #N0 (#INL (#PAIR #AX f))))
+                q1 w3 e3 =
+                  #N0 , #N0 , #INL (#PAIR #AX f) , #INL (#PAIR #AX f) ,
+                  NUM-equalInType-NAT (suc i) w3 0 ,
+                  #⇛-refl w3 (#PAIR #N0 (#INL (#PAIR #AX f))) , #⇛-refl w3 (#PAIR #N0 (#INL (#PAIR #AX f))) ,
+                  →≡equalInType
+                    (sym (sub0-ac00-left-body2 TOac₀₀ n₁ #N0))
+                    (equalInType-LIFT← i w3 (#APPLY2 TOac₀₀ n₁ #N0) (#INL (#PAIR #AX f)) (#INL (#PAIR #AX f)) q2)
+                  where
+                    q3 : ∀𝕎 w3 (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y →
+                            #INL (#PAIR #AX f) #⇛ #INL x at w' × #INL (#PAIR #AX f) #⇛ #INL y at w' × equalInType i w' (#PROD (#EQ (#NUM 0) (#NUM 0) #NAT) (#TERM n₁)) x y
+                            ⊎  #INL (#PAIR #AX f) #⇛ #INR x at w' × #INL (#PAIR #AX f) #⇛ #INR y at w' × equalInType i w' (#PROD (#LT #N0 #N0) (#NEG (#TERM n₁))) x y)))
+                    q3 w4 e4 = #PAIR #AX f , #PAIR #AX f , inj₁ (#⇛-refl w4 (#INL (#PAIR #AX f)) , #⇛-refl w4 (#INL (#PAIR #AX f)) , q4)
+                      where
+                        q4 : equalInType i w4 (#PROD (#EQ (#NUM 0) (#NUM 0) #NAT) (#TERM n₁)) (#PAIR #AX f) (#PAIR #AX f)
+                        q4 = equalInType-PROD
+                               (eqTypesEQ← eqTypesNAT (NUM-equalInType-NAT i w4 0) (NUM-equalInType-NAT i w4 0))
+                               (eqTypes-mon (uni i) (fst f∈) w4 (⊑-trans· e3 e4))
+                               (Mod.∀𝕎-□ M q5)
+                           where
+                             q5 : ∀𝕎 w4 (λ w' _ → PRODeq (equalInType i w' (#EQ #N0 #N0 #NAT)) (equalInType i w' (#TERM n₁)) w' (#PAIR #AX f) (#PAIR #AX f))
+                             q5 w5 e5 = #AX , #AX , f , f , equalInType-EQ-NAT i w5 0 #AX #AX , equalInType-mon f∈ w5 (⊑-trans· e3 (⊑-trans· e4 e5)) , #⇛-refl w5 (#PAIR #AX f) , #⇛-refl w5 (#PAIR #AX f)
+
+                    q2 : ∈Type i w3 (#APPLY2 TOac₀₀ n₁ #N0) (#INL (#PAIR #AX f))
+                    q2 = equalInType-#⇛-rev-type
+                           (#⇛!→#⇛ {w3} {#APPLY2 TOac₀₀ n₁ #N0} {TOBac₀₀ n₁ #N0} (#APPLY-#APPLY-TOac₀₀⇛! w3 n₁ #N0))
+                           (→equalInType-UNION
+                             (eqTypesPROD← (eqTypesEQ← eqTypesNAT (NUM-equalInType-NAT i w3 0) (NUM-equalInType-NAT i w3 0)) (eqTypes-mon (uni i) (fst f∈) w3 e3))
+                             (eqTypesPROD← (→equalTypesLT (NUM-equalInType-NAT i w3 0) (NUM-equalInType-NAT i w3 0)) (eqTypesNEG← (eqTypes-mon (uni i) (fst f∈) w3 e3)))
+                             (Mod.∀𝕎-□ M q3))
+            aw2 w2 e2 (inj₂ g) =
+              #PAIR #N1 (#INR (#PAIR #AX #AX)) ,
+              equalInType-SUM
+                (λ w3 e3 → eqTypesNAT)
+                (isType-#AC₀₀-left2 i w2 TOac₀₀ TOac₀₀ n₁ n₁ (#NREL-TO i w2) (equalInType-refl (equalInType-mon n∈ w2 e2)))
+                (Mod.∀𝕎-□ M q1)
+              where
+                q1 : ∀𝕎 w2 (λ w' _ → SUMeq (equalInType (suc i) w' #NAT)
+                                            (λ m₁ m₂ m∈ → equalInType (suc i) w' (sub0 m₁ (#[0]LIFT (#[0]APPLY2 ⌞ TOac₀₀ ⌟ ⌞ n₁ ⌟ #[0]VAR))))
+                                            w' (#PAIR #N1 (#INR (#PAIR #AX #AX))) (#PAIR #N1 (#INR (#PAIR #AX #AX))))
+                q1 w3 e3 =
+                  #N1 , #N1 , #INR (#PAIR #AX #AX) , #INR (#PAIR #AX #AX) ,
+                  NUM-equalInType-NAT (suc i) w3 1 ,
+                  #⇛-refl w3 (#PAIR #N1 (#INR (#PAIR #AX #AX))) , #⇛-refl w3 (#PAIR #N1 (#INR (#PAIR #AX #AX))) ,
+                  →≡equalInType
+                    (sym (sub0-ac00-left-body2 TOac₀₀ n₁ #N1))
+                    (equalInType-LIFT← i w3 (#APPLY2 TOac₀₀ n₁ #N1) (#INR (#PAIR #AX #AX)) (#INR (#PAIR #AX #AX)) q2)
+                  where
+                    q3 : ∀𝕎 w3 (λ w' _ → Σ CTerm (λ x → Σ CTerm (λ y →
+                            #INR (#PAIR #AX #AX) #⇛ #INL x at w' × #INR (#PAIR #AX #AX) #⇛ #INL y at w' × equalInType i w' (#PROD (#EQ (#NUM 1) (#NUM 0) #NAT) (#TERM n₁)) x y
+                            ⊎  #INR (#PAIR #AX #AX) #⇛ #INR x at w' × #INR (#PAIR #AX #AX) #⇛ #INR y at w' × equalInType i w' (#PROD (#LT #N0 #N1) (#NEG (#TERM n₁))) x y)))
+                    q3 w4 e4 = #PAIR #AX #AX , #PAIR #AX #AX , inj₂ (#⇛-refl w4 (#INR (#PAIR #AX #AX)) , #⇛-refl w4 (#INR (#PAIR #AX #AX)) , q4)
+                      where
+                        q4 : equalInType i w4 (#PROD (#LT (#NUM 0) (#NUM 1)) (#NEG (#TERM n₁))) (#PAIR #AX #AX) (#PAIR #AX #AX)
+                        q4 = equalInType-PROD
+                               (→equalTypesLT (NUM-equalInType-NAT i w4 0) (NUM-equalInType-NAT i w4 1))
+                               (eqTypesNEG← (∈NAT→equalTypes-TERM i (suc i) w4 n₁ n₁ (equalInType-mon (equalInType-refl n∈) w4 (⊑-trans· e2 (⊑-trans· e3 e4)))))
+                               (Mod.∀𝕎-□ M q5)
+                           where
+                             q5 : ∀𝕎 w4 (λ w' _ → PRODeq (equalInType i w' (#LT #N0 #N1)) (equalInType i w' (#NEG (#TERM n₁))) w' (#PAIR #AX #AX) (#PAIR #AX #AX))
+                             q5 w5 e5 =
+                               #AX , #AX , #AX , #AX ,
+                               →equalInType-LT-NUM {i} {w5} {#AX} {#AX} {0} {1} ≤-refl ,
+                               equalInType-NEG
+                                 (∈NAT→equalTypes-TERM i (suc i) w5 n₁ n₁ (equalInType-mon (equalInType-refl n∈) w5 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5)))))
+                                 (λ w6 e6 a₁ a₂ a∈ → g w6 (⊑-trans· e3 (⊑-trans· e4 (⊑-trans· e5 e6))) (a₁ , equalInType-refl a∈)) ,
+                               #⇛-refl w5 (#PAIR #AX #AX) , #⇛-refl w5 (#PAIR #AX #AX)
+
+                    q2 : ∈Type i w3 (#APPLY2 TOac₀₀ n₁ #N1) (#INR (#PAIR #AX #AX))
+                    q2 = equalInType-#⇛-rev-type
+                           (#⇛!→#⇛ {w3} {#APPLY2 TOac₀₀ n₁ #N1} {TOBac₀₀ n₁ #N1} (#APPLY-#APPLY-TOac₀₀⇛! w3 n₁ #N1))
+                           (→equalInType-UNION
+                              (eqTypesPROD← (eqTypesEQ← eqTypesNAT (NUM-equalInType-NAT i w3 1) (NUM-equalInType-NAT i w3 0)) (∈NAT→equalTypes-TERM i (suc i) w3 n₁ n₁ (equalInType-mon (equalInType-refl n∈) w3 (⊑-trans· e2 e3))))
+                              (eqTypesPROD← (→equalTypesLT (NUM-equalInType-NAT i w3 0) (NUM-equalInType-NAT i w3 1)) (eqTypesNEG← (∈NAT→equalTypes-TERM i (suc i) w3 n₁ n₁ (equalInType-mon (equalInType-refl n∈) w3 (⊑-trans· e2 e3)))))
+                              (Mod.∀𝕎-□ M q3))
+
+
 #⇛T-equalInType : {i : ℕ} {w : 𝕎·} {T U a b : CTerm}
                    → T #⇛! U at w
                    → equalInType i w T a b
@@ -341,6 +475,24 @@ AC₀₀-left-T cn i w δ =
 
     h4 : equalInType i w1 (TBac₀₀ (#NUM n) (#APPLY f (#NUM n))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n))
     h4 = #⇛T-equalInType (#APPLY-#APPLY-Tac₀₀⇛! w1 (#NUM n) (#APPLY f (#NUM n))) h3
+
+
+∈-PI-APPLY2-TOac₀₀→ : (i : ℕ) (w : 𝕎·) (f q₁ q₂ : CTerm)
+                       → equalInType (suc i) w (#PI #NAT (#[0]LIFT (#[0]APPLY2 ⌞ TOac₀₀ ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR)))) q₁ q₂
+                       → ∀𝕎 w (λ w' _ → (n : ℕ) → equalInType i w' (TOBac₀₀ (#NUM n) (#APPLY f (#NUM n))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n)))
+∈-PI-APPLY2-TOac₀₀→ i w f q₁ q₂ f∈ w1 e1 n = h4
+  where
+    h1 : equalInType (suc i) w1 (sub0 (#NUM n) (#[0]LIFT (#[0]APPLY2 ⌞ TOac₀₀ ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR)))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n))
+    h1 = snd (snd (equalInType-PI→ f∈)) w1 e1 (#NUM n) (#NUM n) (NUM-equalInType-NAT (suc i) w1 n)
+
+    h2 : equalInType (suc i) w1 (#LIFT (#APPLY2 TOac₀₀ (#NUM n) (#APPLY f (#NUM n)))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n))
+    h2 = ≡CTerm→equalInType (sub0-ac00-right-body2 TOac₀₀ f (#NUM n)) h1
+
+    h3 : equalInType i w1 (#APPLY2 TOac₀₀ (#NUM n) (#APPLY f (#NUM n))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n))
+    h3 = equalInType-LIFT→ i w1 (#APPLY2 TOac₀₀ (#NUM n) (#APPLY f (#NUM n))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n)) h2
+
+    h4 : equalInType i w1 (TOBac₀₀ (#NUM n) (#APPLY f (#NUM n))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n))
+    h4 = #⇛T-equalInType (#APPLY-#APPLY-TOac₀₀⇛! w1 (#NUM n) (#APPLY f (#NUM n))) h3
 
 
 TBac₀₀⇛→ : (w : 𝕎·) (n m k : CTerm)
@@ -452,6 +604,15 @@ equalInType-TBac₀₀→ i w n m a b m∈ h =
         aw2 : ∀𝕎 w1 (λ w' e' → ↑wPred' (λ w'' _ → (m #⇛! #N0 at w'' × terminatesℕ w'' n)
                                                      ⊎ Σ ℕ (λ k → 0 < k × m #⇛! #NUM k at w'' × ¬ terminatesℕ w'' n)) e1 w' e')
         aw2 w2 e2 z = inj₂ (k , ≤∧≢⇒< {0} {k} _≤_.z≤n (λ x → q (sym x)) , ∀𝕎-mon e2 c₁ , →¬terminatesℕ i w1 w2 n a b e2 h1)
+
+
+equalInType-TOBac₀₀→ : (i : ℕ) (w : 𝕎·) (n : ℕ) (m a b : CTerm)
+                       → ∈Type i w #NAT m
+                       → equalInType i w (TOBac₀₀ (#NUM n) m) a b
+                       → □· w (λ w' _ → (m #⇛ #N0 at w' × terminatesℕ w' n)
+                                          ⊎
+                                          Σ ℕ (λ k → (0 < k) × (m #⇛ #NUM k at w') × (¬ terminatesℕ w' n)))
+equalInType-TOBac₀₀→ i w n m a b m∈ h = ?
 
 
 -- MOVE to encoding

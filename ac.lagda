@@ -80,7 +80,7 @@ open import computation(W)(C)(K)(G)(X)(N)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E) using (∀𝕎-□Func2)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E) using (∀𝕎-□Func2 ; eqTypes-mon)
 --open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import terms2(W)(C)(K)(G)(X)(N) using (#subv)
@@ -93,6 +93,7 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#⇛-mon)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalTypes-#⇛-left-right-rev ; TS ; typeSys ; →equalInType-SQUASH ; inhType-mon ; equalTypes-#⇛-left-right ; →equalInTypeTERM)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E) using (eqTypesBAIRE ; →equalTypesLT)
+open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E) using (PROD ; #PROD ; #PROD≡#SUM)
 --open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
@@ -886,6 +887,116 @@ APPLY-APPLY-Tac₀₀⇓! w n m =
     (#APPLY-#APPLY-TBac₀₀⇛!1 w n)
 
 
+-- MOVE
+fvars-PROD0 : (a b : Term) → fvars (PROD a b) ≡ fvars a ++ fvars b
+fvars-PROD0 a b rewrite fvars-shiftUp≡ 0 b | lowerVars-map-sucIf≤-suc 0 (fvars b) | loweVars-suc (fvars b) = refl
+
+
+-- MOVE
+#[1]PROD : CTerm1 → CTerm1 → CTerm1
+#[1]PROD a b = ct1 (PROD ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] PROD ⌜ a ⌝ ⌜ b ⌝
+    c rewrite fvars-PROD0 ⌜ a ⌝ ⌜ b ⌝ =
+        ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ [ 1 ]}
+               (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
+                     (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
+
+
+-- MOVE - this is also defined in continuity1...
+#[1]EQ : CTerm1 → CTerm1 → CTerm1 → CTerm1
+#[1]EQ a b c = ct1 (EQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝) cl
+  where
+    cl : #[ 0 ∷ [ 1 ] ] EQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝
+    cl = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝} {0 ∷ [ 1 ]}
+                (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
+                      (⊆++ (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b))
+                            (⊆?→⊆ {fvars ⌜ c ⌝} {0 ∷ [ 1 ]} (CTerm1.closed c))))
+
+
+-- MOVE
+#[1]LT : CTerm1 → CTerm1 → CTerm1
+#[1]LT a b = ct1 (LT ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] LT ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝} {0 ∷ [ 1 ]}
+               (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm1.closed a)) (⊆?→⊆ (CTerm1.closed b)))
+
+
+
+-- R n j = (j=0 × Term(n)) + (j>0 × ¬Term(n))
+TOac₀₀ : CTerm
+TOac₀₀ =
+  #LAMBDA -- n
+    (#[0]LAMBDA -- j
+      (#[1]UNION
+        (#[1]PROD (#[1]EQ #[1]VAR0 (#[1]NUM 0) #[1]NAT) (#[1]TERM #[1]VAR1))
+        (#[1]PROD (#[1]LT (#[1]NUM 0) #[1]VAR0) (#[1]NEG (#[1]TERM #[1]VAR1)))))
+
+
+TOBac₀₀ : CTerm → CTerm → CTerm
+TOBac₀₀ n m =
+  #UNION
+    (#PROD (#EQ m #N0 #NAT) (#TERM n))
+    (#PROD (#LT #N0 m) (#NEG (#TERM n)))
+
+
+sub-TOac₀₀-1 : (n m : CTerm)
+              → APPLY (sub ⌜ n ⌝ (LAMBDA (UNION (PROD (EQ (VAR 0) N0 NAT) (TERM (VAR 1))) (PROD (LT N0 (VAR 0)) (NEG (TERM (VAR 1))))))) ⌜ m ⌝
+                 ≡ APPLY (LAMBDA (UNION (PROD (EQ (VAR 0) N0 NAT) (TERM ⌜ n ⌝)) (PROD (LT N0 (VAR 0)) (NEG (TERM ⌜ n ⌝))))) ⌜ m ⌝
+sub-TOac₀₀-1 n m
+  rewrite #shiftUp 0 n
+        | #shiftUp 0 n
+        | #shiftUp 0 n
+        | #shiftDown 1 n
+        | #shiftDown 2 n
+  = refl
+
+
+sub-TOac₀₀-2 : (n m : CTerm)
+              → sub ⌜ m ⌝ (UNION (PROD (EQ (VAR 0) N0 NAT) (TERM ⌜ n ⌝)) (PROD (LT N0 (VAR 0)) (NEG (TERM ⌜ n ⌝))))
+                ≡ UNION (PROD (EQ ⌜ m ⌝ N0 NAT) (TERM ⌜ n ⌝)) (PROD (LT N0 ⌜ m ⌝) (NEG (TERM ⌜ n ⌝)))
+sub-TOac₀₀-2 n m
+  rewrite #shiftUp 0 n
+        | #shiftUp 0 n
+        | #shiftUp 0 m
+        | #shiftUp 0 m
+        | #subv 1 ⌜ m ⌝ ⌜ n ⌝ (CTerm.closed n)
+        | #shiftDown 1 n
+        | #shiftDown 0 m
+        | #shiftDown 1 m
+  = refl
+
+
+APPLY-APPLY-TOac₀₀⇓! : (w : 𝕎·) (n m : CTerm)
+                       → APPLY2 ⌜ TOac₀₀ ⌝ ⌜ n ⌝ ⌜ m ⌝ ⇓ ⌜ TOBac₀₀ n m ⌝ from w to w
+APPLY-APPLY-TOac₀₀⇓! w n m =
+  ⇓-trans₂
+    {w} {w} {w}
+    {APPLY (APPLY ⌜ TOac₀₀ ⌝ ⌜ n ⌝) ⌜ m ⌝}
+    {APPLY (sub ⌜ n ⌝ (LAMBDA (UNION (PROD (EQ (VAR 0) N0 NAT) (TERM (VAR 1))) (PROD (LT N0 (VAR 0)) (NEG (TERM (VAR 1))))))) ⌜ m ⌝}
+    {⌜ TOBac₀₀ n m ⌝}
+    (1 , refl)
+    (⇓-trans₂
+       {w} {w} {w}
+       {APPLY (sub ⌜ n ⌝ (LAMBDA (UNION (PROD (EQ (VAR 0) N0 NAT) (TERM (VAR 1))) (PROD (LT N0 (VAR 0)) (NEG (TERM (VAR 1))))))) ⌜ m ⌝}
+       {APPLY (LAMBDA (UNION (PROD (EQ (VAR 0) N0 NAT) (TERM ⌜ n ⌝)) (PROD (LT N0 (VAR 0)) (NEG (TERM ⌜ n ⌝))))) ⌜ m ⌝}
+       {⌜ TOBac₀₀ n m ⌝}
+       (≡→⇓from-to w (sub-TOac₀₀-1 n m))
+       (⇓-trans₂
+          {w} {w} {w}
+          {APPLY (LAMBDA (UNION (PROD (EQ (VAR 0) N0 NAT) (TERM ⌜ n ⌝)) (PROD (LT N0 (VAR 0)) (NEG (TERM ⌜ n ⌝))))) ⌜ m ⌝}
+          {sub ⌜ m ⌝ (UNION (PROD (EQ (VAR 0) N0 NAT) (TERM ⌜ n ⌝)) (PROD (LT N0 (VAR 0)) (NEG (TERM ⌜ n ⌝))))}
+          {⌜ TOBac₀₀ n m ⌝}
+          (1 , refl)
+          (≡→⇓from-to w (sub-TOac₀₀-2 n m))))
+
+
+#APPLY-#APPLY-TOac₀₀⇛! : (w : 𝕎·) (n m : CTerm)
+                         → #APPLY2 TOac₀₀ n m #⇛! TOBac₀₀ n m at w
+#APPLY-#APPLY-TOac₀₀⇛! w n m w1 e1 = lift (APPLY-APPLY-TOac₀₀⇓! w1 n m)
+
+
 #LE≡ : (a b : CTerm) → #LE a b ≡ #NEG (#LT b a)
 #LE≡ a b = CTerm≡ refl
 
@@ -1010,15 +1121,23 @@ equalTypes-RBac₀₀ cn i w δ n₁ n₂ m₁ m₂ n m cn₁ cn₂ cm₁ cm₂ 
             aw3 w3 e3 (n , cn₁ , cn₂) (m , cm₁ , cm₂) = equalTypes-RBac₀₀ cn i w3 δ n₁ n₂ m₁ m₂ n m cn₁ cn₂ cm₁ cm₂
 
 
+#⇛→∈NAT : (i : ℕ) (w : 𝕎·) (n₁ n₂ : CTerm) (n : ℕ)
+             → n₁ #⇛ #NUM n at w
+             → n₂ #⇛ #NUM n at w
+             → equalInType i w #NAT n₁ n₂
+#⇛→∈NAT i w n₁ n₂ n cn₁ cn₂ =
+  →equalInType-NAT i w n₁ n₂ (Mod.∀𝕎-□ M aw)
+  where
+    aw : ∀𝕎 w (λ w' _ → NATeq w' n₁ n₂)
+    aw w1 e1 = n , ∀𝕎-mon e1 cn₁ , ∀𝕎-mon e1 cn₂
+
+
 #⇛→equalTypes-TERM : (i : ℕ) (w : 𝕎·) (n₁ n₂ : CTerm) (n : ℕ)
                     → n₁ #⇛ #NUM n at w
                     → n₂ #⇛ #NUM n at w
                     → equalTypes i w (#TERM n₁) (#TERM n₂)
 #⇛→equalTypes-TERM i w n₁ n₂ n cn₁ cn₂ =
-  eqTypesTERM← (→equalInType-NAT i w n₁ n₂ (Mod.∀𝕎-□ M aw))
-  where
-    aw : ∀𝕎 w (λ w' _ → NATeq w' n₁ n₂)
-    aw w1 e1 = n , ∀𝕎-mon e1 cn₁ , ∀𝕎-mon e1 cn₂
+  eqTypesTERM← (#⇛→∈NAT i w n₁ n₂ n cn₁ cn₂)
 
 
 ∈NAT→equalTypes-TERM : (i j : ℕ) (w : 𝕎·) (n₁ n₂ : CTerm)
@@ -1064,6 +1183,30 @@ equalTypes-TBac₀₀ i w n₁ n₂ m₁ m₂ n m cn₁ cn₂ cm₁ cm₂ =
         (eqTypesNEG← (#⇛→equalTypes-TERM i w n₁ n₂ n cn₁ cn₂))
 
 
+-- MOVE
+eqTypesPROD← : {w : 𝕎·} {i : ℕ} {A : CTerm} {B : CTerm} {C : CTerm} {D : CTerm}
+               → equalTypes i w A C
+               → equalTypes i w B D
+               → equalTypes i w (#PROD A B) (#PROD C D)
+eqTypesPROD← {w} {i} {A} {B} {C} {D} eqta eqtb rewrite #PROD≡#SUM A B | #PROD≡#SUM C D =
+  eqTypesSUM← (eqTypes-mon (uni i) eqta) eqb
+    where
+      eqb : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' A a₁ a₂ → equalTypes i w' (sub0 a₁ ⌞ B ⌟) (sub0 a₂ ⌞ D ⌟))
+      eqb w1 e1 a₁ a₂ eqa rewrite sub0⌞⌟ a₁ B | sub0⌞⌟ a₂ D = eqTypes-mon (uni i) eqtb w1 e1
+
+
+equalTypes-TOBac₀₀ : (i : ℕ) (w : 𝕎·) (n₁ n₂ m₁ m₂ : CTerm) (n m : ℕ)
+                    → n₁ #⇛ #NUM n at w
+                    → n₂ #⇛ #NUM n at w
+                    → m₁ #⇛ #NUM m at w
+                    → m₂ #⇛ #NUM m at w
+                    → equalTypes i w (TOBac₀₀ n₁ m₁) (TOBac₀₀ n₂ m₂)
+equalTypes-TOBac₀₀ i w n₁ n₂ m₁ m₂ n m cn₁ cn₂ cm₁ cm₂ =
+  eqTypesUNION←
+    (eqTypesPROD← (eqTypesEQ← eqTypesNAT (#⇛→∈NAT i w m₁ m₂ m cm₁ cm₂) (NUM-equalInType-NAT i w 0)) (#⇛→equalTypes-TERM i w n₁ n₂ n cn₁ cn₂))
+    (eqTypesPROD← (→equalTypesLT (NUM-equalInType-NAT i w 0) (#⇛→∈NAT i w m₁ m₂ m cm₁ cm₂)) (eqTypesNEG← (#⇛→equalTypes-TERM i w n₁ n₂ n cn₁ cn₂)))
+
+
 #NREL-T : (i : ℕ) (w : 𝕎·) → ∈Type (suc i) w (#NREL i) Tac₀₀
 #NREL-T i w =
   equalInType-FUN
@@ -1094,6 +1237,38 @@ equalTypes-TBac₀₀ i w n₁ n₂ m₁ m₂ n m cn₁ cn₂ cm₁ cm₂ =
           where
             aw3 : ∀𝕎 w2 (λ w' e' → NATeq w' n₁ n₂ → NATeq w' m₁ m₂ → equalTypes i w' (TBac₀₀ n₁ m₁) (TBac₀₀ n₂ m₂))
             aw3 w3 e3 (n , cn₁ , cn₂) (m , cm₁ , cm₂) = equalTypes-TBac₀₀ i w3 n₁ n₂ m₁ m₂ n m cn₁ cn₂ cm₁ cm₂
+
+
+#NREL-TO : (i : ℕ) (w : 𝕎·) → ∈Type (suc i) w (#NREL i) TOac₀₀
+#NREL-TO i w =
+  equalInType-FUN
+    eqTypesNAT
+    (eqTypesFUN← eqTypesNAT (eqTypesUniv w (suc i) i ≤-refl))
+    aw1
+  where
+    aw1 : ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → equalInType (suc i) w' #NAT n₁ n₂
+                        → equalInType (suc i) w' (#FUN #NAT (#UNIV i)) (#APPLY TOac₀₀ n₁) (#APPLY TOac₀₀ n₂))
+    aw1 w1 e1 n₁ n₂ n∈ =
+      equalInType-FUN
+        eqTypesNAT
+        (eqTypesUniv w1 (suc i) i ≤-refl)
+        aw2
+      where
+        aw2 : ∀𝕎 w1 (λ w' _ → (m₁ m₂ : CTerm) → equalInType (suc i) w' #NAT m₁ m₂
+                             → equalInType (suc i) w' (#UNIV i) (#APPLY (#APPLY TOac₀₀ n₁) m₁) (#APPLY (#APPLY TOac₀₀ n₂) m₂))
+        aw2 w2 e2 m₁ m₂ m∈ =
+          equalTypes→equalInType-UNIV
+            ≤-refl
+            (equalTypes-#⇛-left-right-rev
+               {i} {w2}
+               {TOBac₀₀ n₁ m₁} {#APPLY (#APPLY TOac₀₀ n₁) m₁}
+               {#APPLY (#APPLY TOac₀₀ n₂) m₂} {TOBac₀₀ n₂ m₂}
+               (#⇛!→#⇛ {w2} {#APPLY (#APPLY TOac₀₀ n₁) m₁} {TOBac₀₀ n₁ m₁} (#APPLY-#APPLY-TOac₀₀⇛! w2 n₁ m₁))
+               (#⇛!→#⇛ {w2} {#APPLY (#APPLY TOac₀₀ n₂) m₂} {TOBac₀₀ n₂ m₂} (#APPLY-#APPLY-TOac₀₀⇛! w2 n₂ m₂))
+               (eqTypes-local (∀𝕎-□Func2 aw3 (equalInType-NAT→ (suc i) w2 n₁ n₂ (equalInType-mon n∈ w2 e2)) (equalInType-NAT→ (suc i) w2 m₁ m₂ m∈))))
+          where
+            aw3 : ∀𝕎 w2 (λ w' e' → NATeq w' n₁ n₂ → NATeq w' m₁ m₂ → equalTypes i w' (TOBac₀₀ n₁ m₁) (TOBac₀₀ n₂ m₂))
+            aw3 w3 e3 (n , cn₁ , cn₂) (m , cm₁ , cm₂) = equalTypes-TOBac₀₀ i w3 n₁ n₂ m₁ m₂ n m cn₁ cn₂ cm₁ cm₂
 
 
 equalInType-#⇛-rev-type : {i : ℕ} {w : 𝕎·} {A B a b : CTerm}
