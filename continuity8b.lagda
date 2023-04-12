@@ -174,6 +174,7 @@ abstract
   ¬names→[] (FFDEFS a a₁) x rewrite ¬names→[] a (∧≡true→ₗ (¬names a) (¬names a₁) x) | ¬names→[] a₁ (∧≡true→ᵣ (¬names a) (¬names a₁) x) = refl
   ¬names→[] PURE x = refl
   ¬names→[] (TERM a) x = ¬names→[] a x
+  ¬names→[] (ENC a) x = ¬names→[] a x
   ¬names→[] (UNIV x₁) x = refl
   ¬names→[] (LIFT a) x = ¬names→[] a x
   ¬names→[] (LOWER a) x = ¬names→[] a x
@@ -436,6 +437,7 @@ abstract
   step-pres-dom cc {FFDEFS a a₁} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
   step-pres-dom cc {PURE} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
   step-pres-dom cc {TERM a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
+  step-pres-dom cc {ENC a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
   step-pres-dom cc {UNIV x} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
   step-pres-dom cc {LIFT a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x
   step-pres-dom cc {LOWER a} {b} {w1} {w2} comp ss rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = ss , λ x → x

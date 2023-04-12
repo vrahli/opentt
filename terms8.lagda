@@ -500,30 +500,6 @@ fvars-IFLT0 a b c d
                       (⊆?→⊆ (CTerm2.closed c)) (⊆?→⊆ (CTerm2.closed d)))))
 
 
-fvars-IFEQ0 : (a b c d : Term) → fvars (IFEQ a b c d) ≡ fvars a ++ fvars b ++ fvars c ++ fvars d
-fvars-IFEQ0 a b c d
-  rewrite fvars-shiftUp≡ 0 b
-        | fvars-shiftUp≡ 0 c
-        | fvars-shiftUp≡ 0 d
-        | lowerVars-map-sucIf≤-suc 0 (fvars b)
-        | lowerVars-map-sucIf≤-suc 0 (fvars c)
-        | lowerVars-map-sucIf≤-suc 0 (fvars d)
-        | loweVars-suc (fvars b)
-        | loweVars-suc (fvars c)
-        | loweVars-suc (fvars d) = refl
-
-
-#IFEQ : CTerm → CTerm → CTerm → CTerm → CTerm
-#IFEQ a b c d = ct (IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
-  where
-    e : # IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
-    e rewrite fvars-IFEQ0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
-            | CTerm.closed a
-            | CTerm.closed b
-            | CTerm.closed c
-            | CTerm.closed d = refl
-
-
 #[0]IFEQ : CTerm0 → CTerm0 → CTerm0 → CTerm0 → CTerm0
 #[0]IFEQ a b c d = ct0 (IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
   where
@@ -2321,22 +2297,6 @@ APPLY-MSEQ⇛ w s a k comp w1 e1 = lift (APPLY-MSEQ⇓ w1 s a k (lower (comp w1 
 
 #[6]APPLY2 : CTerm6 → CTerm6 → CTerm6 → CTerm6
 #[6]APPLY2 a b c = #[6]APPLY (#[6]APPLY a b) c
-
-
-ID : Term
-ID = LAMBDA (VAR 0)
-
-
-BOT : Term
-BOT = FIX ID
-
-
-#ID : CTerm
-#ID = #LAMBDA #[0]VAR
-
-
-#BOT : CTerm
-#BOT = #FIX #ID
 
 
 #[0]FIX : CTerm0 → CTerm0

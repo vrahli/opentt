@@ -293,6 +293,7 @@ data updRel2 (name : Name) (f g : Term) (r : ren) : Term → Term → Set where
   updRel2-SUBSING : (a₁ a₂ : Term) → updRel2 name f g r a₁ a₂ → updRel2 name f g r (SUBSING a₁) (SUBSING a₂)
   updRel2-PURE    : updRel2 name f g r PURE PURE
   updRel2-TERM    : (a₁ a₂ : Term) → updRel2 name f g r a₁ a₂ → updRel2 name f g r (TERM a₁) (TERM a₂)
+  updRel2-ENC     : (a : Term) → updRel2 name f g r a a → updRel2 name f g r (ENC a) (ENC a)
   updRel2-DUM     : (a₁ a₂ : Term) → updRel2 name f g r a₁ a₂ → updRel2 name f g r (DUM a₁) (DUM a₂)
   updRel2-FFDEFS  : (a₁ a₂ b₁ b₂ : Term) → updRel2 name f g r a₁ a₂ → updRel2 name f g r b₁ b₂ → updRel2 name f g r (FFDEFS a₁ b₁) (FFDEFS a₂ b₂)
   updRel2-UNIV    : (x : ℕ) → updRel2 name f g r (UNIV x) (UNIV x)
@@ -478,6 +479,7 @@ abstract
   updRel2-refl {name} {f} {g} {r} {SUBSING a} nn = updRel2-SUBSING _ _ (updRel2-refl nn)
   updRel2-refl {name} {f} {g} {r} {PURE} nn = updRel2-PURE
   updRel2-refl {name} {f} {g} {r} {TERM a} nn = updRel2-TERM _ _ (updRel2-refl nn)
+  updRel2-refl {name} {f} {g} {r} {ENC a} nn = updRel2-ENC _ (updRel2-refl nn)
   updRel2-refl {name} {f} {g} {r} {DUM a} nn = updRel2-DUM _ _ (updRel2-refl nn)
   updRel2-refl {name} {f} {g} {r} {FFDEFS a a₁} nn = updRel2-FFDEFS _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   updRel2-refl {name} {f} {g} {r} {UNIV x} nn = updRel2-UNIV x
@@ -668,6 +670,7 @@ abstract
   updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel2-SUBSING a₁ a₂ u) = updRel2-SUBSING _ _ (updRel2-shiftUp n cf cg u)
   updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(PURE)} {.(PURE)} (updRel2-PURE) = updRel2-PURE
   updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(TERM a₁)} {.(TERM a₂)} (updRel2-TERM a₁ a₂ u) = updRel2-TERM _ _ (updRel2-shiftUp n cf cg u)
+  updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(ENC a)} {.(ENC a)} (updRel2-ENC a u) = updRel2-ENC _ u
   updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(DUM a₁)} {.(DUM a₂)} (updRel2-DUM a₁ a₂ u) = updRel2-DUM _ _ (updRel2-shiftUp n cf cg u)
   updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel2-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updRel2-FFDEFS _ _ _ _ (updRel2-shiftUp n cf cg u) (updRel2-shiftUp n cf cg u₁)
   updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(UNIV x)} {.(UNIV x)} (updRel2-UNIV x) = updRel2-UNIV x
@@ -732,6 +735,7 @@ abstract
   updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel2-SUBSING a₁ a₂ u) = updRel2-SUBSING _ _ (updRel2-shiftDown n cf cg u)
   updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(PURE)} {.(PURE)} (updRel2-PURE) = updRel2-PURE
   updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(TERM a₁)} {.(TERM a₂)} (updRel2-TERM a₁ a₂ u) = updRel2-TERM _ _ (updRel2-shiftDown n cf cg u)
+  updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(ENC a)} {.(ENC a)} (updRel2-ENC a u) = updRel2-ENC _ u
   updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(DUM a₁)} {.(DUM a₂)} (updRel2-DUM a₁ a₂ u) = updRel2-DUM _ _ (updRel2-shiftDown n cf cg u)
   updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel2-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updRel2-FFDEFS _ _ _ _ (updRel2-shiftDown n cf cg u) (updRel2-shiftDown n cf cg u₁)
   updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(UNIV x)} {.(UNIV x)} (updRel2-UNIV x) = updRel2-UNIV _
@@ -885,6 +889,7 @@ abstract
   updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel2-SUBSING a₁ a₂ u) = updRel2-SUBSING _ _ (updRel2-shiftNameUp n cf cg u)
   updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(PURE)} {.(PURE)} (updRel2-PURE) = updRel2-PURE
   updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(TERM a₁)} {.(TERM a₂)} (updRel2-TERM a₁ a₂ u) = updRel2-TERM _ _ (updRel2-shiftNameUp n cf cg u)
+  updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(ENC a)} {.(ENC a)} (updRel2-ENC a u) = updRel2-ENC _ (updRel2-shiftNameUp n cf cg u)
   updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(DUM a₁)} {.(DUM a₂)} (updRel2-DUM a₁ a₂ u) = updRel2-DUM _ _ (updRel2-shiftNameUp n cf cg u)
   updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel2-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updRel2-FFDEFS _ _ _ _ (updRel2-shiftNameUp n cf cg u) (updRel2-shiftNameUp n cf cg u₁)
   updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(UNIV x)} {.(UNIV x)} (updRel2-UNIV x) = updRel2-UNIV x
@@ -977,6 +982,7 @@ abstract
   updRel2-subv v {name} {f} {g} {r} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} {b₁} {b₂} (updRel2-SUBSING a₁ a₂ ua) ub = updRel2-SUBSING _ _ (updRel2-subv v cf cg ua ub)
   updRel2-subv v {name} {f} {g} {r} cf cg {.(PURE)} {.(PURE)} {b₁} {b₂} (updRel2-PURE) ub = updRel2-PURE
   updRel2-subv v {name} {f} {g} {r} cf cg {.(TERM a₁)} {.(TERM a₂)} {b₁} {b₂} (updRel2-TERM a₁ a₂ ua) ub = updRel2-TERM _ _ (updRel2-subv v cf cg ua ub)
+  updRel2-subv v {name} {f} {g} {r} cf cg {.(ENC a)} {.(ENC a)} {b₁} {b₂} (updRel2-ENC a ua) ub = updRel2-ENC _ ua
   updRel2-subv v {name} {f} {g} {r} cf cg {.(DUM a₁)} {.(DUM a₂)} {b₁} {b₂} (updRel2-DUM a₁ a₂ ua) ub = updRel2-DUM _ _ (updRel2-subv v cf cg ua ub)
   updRel2-subv v {name} {f} {g} {r} cf cg {.(FFDEFS a₁ b₃)} {.(FFDEFS a₂ b₄)} {b₁} {b₂} (updRel2-FFDEFS a₁ a₂ b₃ b₄ ua ua₁) ub = updRel2-FFDEFS _ _ _ _ (updRel2-subv v cf cg ua ub) (updRel2-subv v cf cg ua₁ ub)
   updRel2-subv v {name} {f} {g} {r} cf cg {.(UNIV x)} {.(UNIV x)} {b₁} {b₂} (updRel2-UNIV x) ub = updRel2-UNIV x
@@ -1334,5 +1340,203 @@ upto𝕎-chooseT0if cc name w r n m with n <? m
     (upto𝕎getT-chooseT cc name w r (NUM m))
 ... | no x = mkUpto𝕎 {--refl refl (sameRes-refl w)--} (λ n1 n2 k d1 d2 r → {!!} {--refl--})
 --}
+
+
+
+
+-- subRen r1 r2 means that r1 is a sub-renaming of r2
+data subRen (l k : List Name) : ren → ren → Set where
+  subRen-refl : (r : ren) → subRen l k r r
+  subRen-trans : (a b : Name) (r1 r2 : ren)
+                 → ¬ a ∈ l -- The new names picked are 'fresh' names
+                 → ¬ b ∈ k
+                 → subRen l k r1 r2
+                 → subRen l k r1 ((a , b) ∷ r2)
+
+
+presUpdRel2 : (n : ℕ) (name : Name) (f g : Term) (k : ℕ) → Set(lsuc L)
+presUpdRel2 n name f g k =
+  {a b v : Term} {w0 w1 w2 w : 𝕎·} {r : ren}
+  → updRel2 name f g r a b
+  → names a ⊆ dom𝕎· w1
+  → names b ⊆ dom𝕎· w
+  → name ∈ dom𝕎· w
+--  → names f ⊆ dom𝕎· w1
+--  → names g ⊆ dom𝕎· w
+  → upto𝕎 name w1 w r
+  → compatible· name w1 Res⊤
+  → compatible· name w Res⊤
+  → ∀𝕎-get0-NUM w1 name
+-- We use ∀𝕎-⇓∼ℕ instead of strongMonEq because if g could change the target world, it could be used for...
+--  → ∀𝕎 w (λ w' _ → (k : ℕ) → k < n → ∀𝕎-⇓∼ℕ w' (APPLY f (NUM k)) (APPLY g (NUM k)))
+  → w0 ⊑· w1
+  → w0 ⊑· w
+  → ∀𝕎 w0 (λ w' _ → (k : ℕ) → k < n → ⇛!sameℕ w' (APPLY f (NUM k)) (APPLY g (NUM k)))
+  → (comp : steps k (a , w1) ≡ (v , w2))
+  → isHighestℕ {k} {w1} {w2} {a} {v} n name comp
+  → ∈names𝕎 {k} {w1} {w2} {a} {v} name comp
+  → isValue v
+  → Σ ℕ (λ k' → Σ Term (λ v' → Σ 𝕎· (λ w' → Σ ren (λ r' →
+      steps k' (b , w) ≡ (v' , w')
+      × updRel2 name f g r' v v'
+      × upto𝕎 name w2 w' r'
+      × subRen (dom𝕎· w1) (dom𝕎· w) r r'))))
+
+
+stepsPresUpdRel2 : (n : ℕ) (name : Name) (f g : Term) (b : Term) (w : 𝕎·) → Set(lsuc L)
+stepsPresUpdRel2 n name f g b w =
+  Σ ℕ (λ k → Σ Term (λ v → Σ 𝕎· (λ w' →
+    Σ (steps k (b , w) ≡ (v , w')) (λ comp →
+    isValue v
+    × isHighestℕ {k} {w} {w'} {b} {v} n name comp
+    × ∈names𝕎 {k} {w} {w'} {b} {v} name comp
+    × ((k' : ℕ) → k' ≤ k → presUpdRel2 n name f g k')))))
+
+
+-- NOTE: We won't be able to prove that for impure terms x because it might read a choice
+-- and return 2 different values in the two worlds w2 and w
+ΣstepsUpdRel2 : (name : Name) (f g : Term) (x : Term) (w1 w2 : 𝕎·) (b : Term) (w : 𝕎·) (r : ren) → Set(1ℓ Level.⊔ L)
+ΣstepsUpdRel2 name f g x w1 w2 b w r =
+  Σ ℕ (λ k1 → Σ ℕ (λ k2 → Σ Term (λ y1 → Σ Term (λ y2 → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w' → Σ ren (λ r' →
+    steps k1 (x , w2) ≡ (y1 , w3)
+    × steps k2 (b , w) ≡ (y2 , w')
+    × updRel2 name f g r' y1 y2
+    × upto𝕎 name w3 w' r'
+    × subRen (dom𝕎· w1) (dom𝕎· w) r r')))))))
+
+
+
+abstract
+  isHighestℕ2-APPLY₂→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {name' : Name} {b v : Term} {w w' : 𝕎·}
+                        → (comp : steps k (APPLY (CS name') b , w) ≡ (v , w'))
+                        → isValue v
+                        → isHighestℕ {k} {w} {w'} {APPLY (CS name') b} {v} n name comp
+                        → ∈names𝕎 {k} {w} {w'} {APPLY (CS name') b} {v} name comp
+                        → Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (b , w) ≡ (u , w'')) (λ comp' →
+                            isHighestℕ {k'} {w} {w''} {b} {u} n name comp'
+                            × ∈names𝕎 {k'} {w} {w''} {b} {u} name comp'
+                            × isValue u
+                            × k' < k))))
+  isHighestℕ2-APPLY₂→ {n} {0} {name} {f} {g} {name'} {b} {v} {w} {w'} comp isv h inw
+    rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+  isHighestℕ2-APPLY₂→ {n} {suc k} {name} {f} {g} {name'} {b} {v} {w} {w'} comp isv h inw with is-NUM b
+  ... | inj₁ (j , r) rewrite r with getT j name' w
+  ... |    just t = 0 , NUM j , w , refl , fst h , (fst inw , fst (snd inw)) , tt , _≤_.s≤s _≤_.z≤n
+  ... |    nothing = 0 , NUM j , w , refl , h , inw , tt , _≤_.s≤s _≤_.z≤n
+  isHighestℕ2-APPLY₂→ {n} {suc k} {name} {f} {g} {name'} {b} {v} {w} {w'} comp isv h inw | inj₂ r with step⊎ b w
+  ... |    inj₁ (b0 , w0 , z) rewrite z = suc (fst ind) , concl
+    where
+      ind : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (b0 , w0) ≡ (u , w'')) (λ comp' →
+                               isHighestℕ {k'} {w0} {w''} {b0} {u} n name comp'
+                               × ∈names𝕎 {k'} {w0} {w''} {b0} {u} name comp'
+                               × isValue u
+                               × k' < k))))
+      ind = isHighestℕ2-APPLY₂→ {n} {k} {name} {f} {g} {name'} {b0} {v} {w0} {w'} comp isv (snd h) (snd (snd inw))
+
+      concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (b , w) ≡ (u , w'')) (λ comp' →
+                            isHighestℕ {suc (fst ind)} {w} {w''} {b} {u} n name comp'
+                            × ∈names𝕎 {suc (fst ind)} {w} {w''} {b} {u} name comp'
+                            × isValue u
+                            × suc (fst ind) < suc k)))
+      concl rewrite z =
+        fst (snd ind) , fst (snd (snd ind)) , fst (snd (snd (snd ind))) ,
+        (fst h , fst (snd (snd (snd (snd ind))))) ,
+        (fst inw , fst (snd inw) , fst (snd (snd (snd (snd (snd ind)))))) ,
+        fst (snd (snd (snd (snd (snd (snd ind)))))) ,
+        _≤_.s≤s (snd (snd (snd (snd (snd (snd (snd ind)))))))
+  ... |    inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+
+
+
+abstract
+  stepsPresUpdRel2-APPLY₂→ : {n : ℕ} {name : Name} {f g : Term} {name' : Name} {b : Term} {w : 𝕎·}
+                             → stepsPresUpdRel2 n name f g (APPLY (CS name') b) w
+                             → stepsPresUpdRel2 n name f g b w
+  stepsPresUpdRel2-APPLY₂→ {n} {name} {f} {g} {name'} {b} {w} (k , v , w' , comp , isv , ish , inw , ind) =
+    fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
+    fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
+    fst (snd (snd (snd (snd (snd hv))))) ,
+    λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+    where
+      hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (b , w) ≡ (u , w'')) (λ comp' →
+                              isHighestℕ {k'} {w} {w''} {b} {u} n name comp'
+                              × ∈names𝕎 {k'} {w} {w''} {b} {u} name comp'
+                              × isValue u
+                              × k' < k))))
+      hv = isHighestℕ2-APPLY₂→ {n} {k} {name} {f} {g} {name'} {b} {v} {w} {w'} comp isv ish inw
+
+
+→Σ-steps-APPLY-CS : (n : ℕ) (a b : Term) (w w' : 𝕎·) (name : Name)
+                 → steps n (a , w) ≡ (b , w')
+                 → Σ ℕ (λ m → steps m (APPLY (CS name) a , w) ≡ (APPLY (CS name) b , w'))
+→Σ-steps-APPLY-CS n a b w w' name h =
+  fst (Σ-steps-APPLY-CS≤ n a b w w' name h) ,
+  snd (snd (Σ-steps-APPLY-CS≤ n a b w w' name h))
+
+
+
+dren : ren → ren
+dren [] = []
+dren ((a , b) ∷ r) = (pred a , pred b) ∷ dren r
+
+
+
+∈ren-sucIf≤-ren→ : (n name1 name2 : Name) (r : ren)
+                    → (sucIf≤ n name1 , sucIf≤ n name2) ∈ sucIf≤-ren n r
+                    → (name1 , name2) ∈ r
+∈ren-sucIf≤-ren→ n name1 name2 ((a , b) ∷ xs) (here px)
+  rewrite sym (sucIf≤-inj {n} {name1} {a} (pair-inj₁ px))
+        | sym (sucIf≤-inj {n} {name2} {b} (pair-inj₂ px)) = here refl
+∈ren-sucIf≤-ren→ n name1 name2 (x ∷ xs) (there i) = there (∈ren-sucIf≤-ren→ n name1 name2 xs i)
+
+
+
+→∈renₗ-sucIf≤-ren : {name : Name} {r : ren} (n : Name)
+                    → name ∈ renₗ r
+                    → sucIf≤ n name ∈ renₗ (sucIf≤-ren n r)
+→∈renₗ-sucIf≤-ren {name} {[]} n ()
+→∈renₗ-sucIf≤-ren {name} {(a , b) ∷ r} n (here px) rewrite sym px = here refl
+→∈renₗ-sucIf≤-ren {name} {(a , b) ∷ r} n (there i) = there (→∈renₗ-sucIf≤-ren {name} {r} n i)
+
+
+→∈renᵣ-sucIf≤-ren : {name : Name} {r : ren} (n : Name)
+                    → name ∈ renᵣ r
+                    → sucIf≤ n name ∈ renᵣ (sucIf≤-ren n r)
+→∈renᵣ-sucIf≤-ren {name} {[]} n ()
+→∈renᵣ-sucIf≤-ren {name} {(a , b) ∷ r} n (here px) rewrite sym px = here refl
+→∈renᵣ-sucIf≤-ren {name} {(a , b) ∷ r} n (there i) = there (→∈renᵣ-sucIf≤-ren {name} {r} n i)
+
+
+names∈ren-sucIf≤-ren→ : (n name1 name2 : Name) (r : ren)
+                         → names∈ren (sucIf≤ n name1) (sucIf≤ n name2) (sucIf≤-ren n r)
+                         → names∈ren name1 name2 r
+names∈ren-sucIf≤-ren→ n name1 name2 [] e = sucIf≤-inj {n} {name1} {name2} e
+names∈ren-sucIf≤-ren→ n name1 name2 ((a , b) ∷ r) (inj₁ (e₁ , e₂)) =
+  inj₁ (sucIf≤-inj {n} {name1} {a} e₁ , (sucIf≤-inj {n} {name2} {b} e₂))
+names∈ren-sucIf≤-ren→ n name1 name2 ((a , b) ∷ r) (inj₂ (e₁ , e₂ , x)) =
+  inj₂ ((λ z → e₁ (→≡sucIf≤ z)) , (λ z → e₂ (→≡sucIf≤ z)) , (names∈ren-sucIf≤-ren→ n name1 name2 r x))
+
+
+
+force≡shiftNameUp→ : (v : Var) (name : Name) (g : Term) (b : Term)
+                      → LET (VAR 0) (APPLY (shiftNameUp v g) (VAR 0)) ≡ shiftNameUp v b
+                      → b ≡ LET (VAR 0) (APPLY g (VAR 0))
+force≡shiftNameUp→ v name g (LET (VAR 0) (APPLY b (VAR 0))) e
+  rewrite shiftNameUp-inj {v} {g} {b} (APPLYinj1 (LETinj2 e)) = refl
+
+
+
+updRel2-shiftNameUp-LAMBDA→ : (v : Name) {name : Name} {f g : Term} (cf : # f) (cg : # g) {r : ren} {a b t u : Term}
+                                → t ≡ shiftNameUp v a
+                                → u ≡ shiftNameUp v b
+                                → updRel2 (sucIf≤ v name) (shiftNameUp v f) (shiftNameUp v g) (sucIf≤-ren v r) (LAMBDA t) u
+                                → ((c : Term)
+                                    → updRel2 (sucIf≤ v name) (shiftNameUp v f) (shiftNameUp v g) (sucIf≤-ren v r) (shiftNameUp v a) (shiftNameUp v c)
+                                    → updRel2 name f g r a c)
+                                → updRel2 name f g r (LAMBDA a) b
+updRel2-shiftNameUp-LAMBDA→ v {name} {f} {g} cf cg {r} {a} {LAMBDA b} {t} {.(LAMBDA c)} e₁ e₂ (updRel2-LAMBDA .t c u₁) ind rewrite e₁ | LAMinj e₂ = updRel2-LAMBDA _ _ (ind b u₁)
+updRel2-shiftNameUp-LAMBDA→ v {name} {f} {g} cf cg {r} {a} {LAMBDA b} {.(updBody (sucIf≤ v name) (shiftNameUp v f))} {.(force (shiftNameUp v g))} e₁ e₂ updRel2-upd ind
+  rewrite updBody≡shiftNameUp→ v name f a e₁
+        | force≡shiftNameUp→ v name g b (LAMinj e₂) = updRel2-upd
 
 \end{code}

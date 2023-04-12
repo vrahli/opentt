@@ -307,6 +307,13 @@ subv-↑T {i} {suc n} p v a with i <? n
     c = CTerm.closed a
 
 
+#ENC : CTerm → CTerm
+#ENC a = ct (ENC ⌜ a ⌝) c
+  where
+    c : # ENC ⌜ a ⌝
+    c = refl --CTerm.closed a
+
+
 #TSQUASH : CTerm → CTerm
 #TSQUASH a = ct (TSQUASH ⌜ a ⌝) c
   where
@@ -729,6 +736,7 @@ abstract
             | fvars-shiftUp≡ n t₁ = refl
   fvars-shiftUp≡ n PURE = refl
   fvars-shiftUp≡ n (TERM t) = fvars-shiftUp≡ n t
+  fvars-shiftUp≡ n (ENC t) = refl --fvars-shiftUp≡ n t
   fvars-shiftUp≡ n (UNIV x) = refl
   fvars-shiftUp≡ n (LIFT t) = fvars-shiftUp≡ n t
   fvars-shiftUp≡ n (LOWER t) = fvars-shiftUp≡ n t
@@ -1096,6 +1104,7 @@ abstract
             | fvars-shiftDown≡ n t₁ = refl
   fvars-shiftDown≡ n PURE = refl
   fvars-shiftDown≡ n (TERM t) = fvars-shiftDown≡ n t
+  fvars-shiftDown≡ n (ENC t) = refl --fvars-shiftDown≡ n t
   fvars-shiftDown≡ n (UNIV x) = refl
   fvars-shiftDown≡ n (LIFT t) = fvars-shiftDown≡ n t
   fvars-shiftDown≡ n (LOWER t) = fvars-shiftDown≡ n t
@@ -1192,6 +1201,7 @@ abstract
   fvars-shiftNameUp n (FFDEFS a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
   fvars-shiftNameUp n PURE = refl
   fvars-shiftNameUp n (TERM a) rewrite fvars-shiftNameUp n a = refl
+  fvars-shiftNameUp n (ENC a) rewrite fvars-shiftNameUp n a = refl
   fvars-shiftNameUp n (UNIV x) = refl
   fvars-shiftNameUp n (LIFT a) rewrite fvars-shiftNameUp n a = refl
   fvars-shiftNameUp n (LOWER a) rewrite fvars-shiftNameUp n a = refl
@@ -1404,6 +1414,7 @@ abstract
   ... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b₁ p)
   fvars-subv v a PURE i = ⊥-elim (¬∈[] i)
   fvars-subv v a (TERM b) = fvars-subv v a b
+  fvars-subv v a (ENC b) i = ⊥-elim (¬∈[] i) --fvars-subv v a b
   fvars-subv v a (UNIV x) i = ⊥-elim (¬∈[] i)
   fvars-subv v a (LIFT b) = fvars-subv v a b
   fvars-subv v a (LOWER b) = fvars-subv v a b
@@ -1664,6 +1675,8 @@ abstract
             | shiftDown1-subv1-shiftUp0 n a b₁ ca = refl
   shiftDown1-subv1-shiftUp0 n a PURE ca = refl
   shiftDown1-subv1-shiftUp0 n a (TERM b) ca
+    rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
+  shiftDown1-subv1-shiftUp0 n a (ENC b) ca
     rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
   shiftDown1-subv1-shiftUp0 n a (UNIV x) ca = refl
   shiftDown1-subv1-shiftUp0 n a (LIFT b) ca
@@ -2082,6 +2095,13 @@ TERMinj refl =  refl
 #TERMinj c = CTerm≡ (TERMinj (≡CTerm c))
 
 
+ENCinj : {a b : Term} → ENC a ≡ ENC b → a ≡ b
+ENCinj refl =  refl
+
+#ENCinj : {a b : CTerm} → #ENC a ≡ #ENC b → a ≡ b
+#ENCinj c = CTerm≡ (ENCinj (≡CTerm c))
+
+
 FFDEFSinj1 : {a b c d : Term} → FFDEFS a b ≡ FFDEFS c d → a ≡ c
 FFDEFSinj1 refl =  refl
 
@@ -2252,6 +2272,9 @@ EQneqPURE {t} {a} {b} ()
 EQneqTERM : {t a b c : Term} → ¬ (EQ t a b) ≡ TERM c
 EQneqTERM {t} {a} {b} {c} ()
 
+EQneqENC : {t a b c : Term} → ¬ (EQ t a b) ≡ ENC c
+EQneqENC {t} {a} {b} {c} ()
+
 EQneqLOWER : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ LOWER c
 EQneqLOWER {t} {a} {b} {c} ()
 
@@ -2332,6 +2355,9 @@ EQBneqPURE {a₁} {a₂} {a₃} {a₄} ()
 
 EQBneqTERM : {a₁ a₂ a₃ a₄ c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ TERM c
 EQBneqTERM {a₁} {a₂} {a₃} {a₄} {c} ()
+
+EQBneqENC : {a₁ a₂ a₃ a₄ c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ ENC c
+EQBneqENC {a₁} {a₂} {a₃} {a₄} {c} ()
 
 EQBneqLOWER : {a₁ a₂ a₃ a₄ : Term} {c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ LOWER c
 EQBneqLOWER {a₁} {a₂} {a₃} {a₄} {c} ()
@@ -2429,6 +2455,9 @@ PIneqPURE {a} {b} ()
 PIneqTERM : {a b c : Term} → ¬ (PI a b) ≡ TERM c
 PIneqTERM {a} {b} {c} ()
 
+PIneqENC : {a b c : Term} → ¬ (PI a b) ≡ ENC c
+PIneqENC {a} {b} {c} ()
+
 PIneqLOWER : {a b : Term} {c : Term} → ¬ (PI a b) ≡ LOWER c
 PIneqLOWER {a} {b} {c} ()
 
@@ -2513,6 +2542,9 @@ NATneqPURE ()
 NATneqTERM : {c : Term} → ¬ NAT ≡ TERM c
 NATneqTERM {c} ()
 
+NATneqENC : {c : Term} → ¬ NAT ≡ ENC c
+NATneqENC {c} ()
+
 NATneqLOWER : {c : Term} → ¬ NAT ≡ LOWER c
 NATneqLOWER {c} ()
 
@@ -2578,6 +2610,7 @@ abstract
   shiftUp-inj {n} {FFDEFS a a₁} {FFDEFS b b₁} e rewrite shiftUp-inj (FFDEFSinj1 e) | shiftUp-inj (FFDEFSinj2 e) = refl
   shiftUp-inj {n} {PURE} {PURE} refl = refl
   shiftUp-inj {n} {TERM a} {TERM b} e rewrite shiftUp-inj (TERMinj e) = refl
+  shiftUp-inj {n} {ENC a} {ENC b} e = e --rewrite shiftUp-inj (ENCinj e) = refl
   shiftUp-inj {n} {UNIV x} {UNIV .x} refl = refl
   shiftUp-inj {n} {LIFT a} {LIFT b} e rewrite shiftUp-inj (LIFTinj e) = refl
   shiftUp-inj {n} {LOWER a} {LOWER b} e rewrite shiftUp-inj (LOWERinj e) = refl
@@ -3844,5 +3877,54 @@ CTerm→CTerm1→Term (ct a c) = refl
     c : #[ [ 0 ] ] QLT ⌜ a ⌝ ⌜ b ⌝
     c = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝} {[ 0 ]}
               (⊆++ {Var} {fvars ⌜ a ⌝} {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm0.closed a)) (⊆?→⊆ (CTerm0.closed b)))
+
+
+ID : Term
+ID = LAMBDA (VAR 0)
+
+
+BOT : Term
+BOT = FIX ID
+
+
+#ID : CTerm
+#ID = #LAMBDA #[0]VAR
+
+
+#BOT : CTerm
+#BOT = #FIX #ID
+
+
+fvars-IFEQ0 : (a b c d : Term) → fvars (IFEQ a b c d) ≡ fvars a ++ fvars b ++ fvars c ++ fvars d
+fvars-IFEQ0 a b c d
+  rewrite fvars-shiftUp≡ 0 b
+        | fvars-shiftUp≡ 0 c
+        | fvars-shiftUp≡ 0 d
+        | lowerVars-map-sucIf≤-suc 0 (fvars b)
+        | lowerVars-map-sucIf≤-suc 0 (fvars c)
+        | lowerVars-map-sucIf≤-suc 0 (fvars d)
+        | loweVars-suc (fvars b)
+        | loweVars-suc (fvars c)
+        | loweVars-suc (fvars d) = refl
+
+
+#IFEQ : CTerm → CTerm → CTerm → CTerm → CTerm
+#IFEQ a b c d = ct (IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝) e
+  where
+    e : # IFEQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+    e rewrite fvars-IFEQ0 ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝ ⌜ d ⌝
+            | CTerm.closed a
+            | CTerm.closed b
+            | CTerm.closed c
+            | CTerm.closed d = refl
+
+
+-- This is some sort of negation: if t=0 then diverge otherwise return 0
+NEGD : Term → Term
+NEGD t = IFEQ t N0 BOT N0
+
+
+#NEGD : CTerm → CTerm
+#NEGD t = #IFEQ t #N0 #BOT #N0
 
 \end{code}

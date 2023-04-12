@@ -455,6 +455,7 @@ data updCtxt (name : Name) (f : Term) : Term → Set where
   updCtxt-SUBSING : (a : Term) → updCtxt name f a → updCtxt name f (SUBSING a)
   updCtxt-PURE    : updCtxt name f PURE
   updCtxt-TERM    : (a : Term) → updCtxt name f a → updCtxt name f (TERM a)
+  updCtxt-ENC     : (a : Term) → updCtxt name f a → updCtxt name f (ENC a)
   updCtxt-DUM     : (a : Term) → updCtxt name f a → updCtxt name f (DUM a)
   updCtxt-FFDEFS  : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (FFDEFS a b)
   updCtxt-UNIV    : (x : ℕ) → updCtxt name f (UNIV x)
@@ -516,6 +517,7 @@ abstract
   updCtxt→differ {name} {f} {.(SUBSING a)} (updCtxt-SUBSING a u) = differ-SUBSING _ _ (updCtxt→differ u)
   updCtxt→differ {name} {f} {.(PURE)} (updCtxt-PURE) = differ-PURE
   updCtxt→differ {name} {f} {.(TERM a)} (updCtxt-TERM a u) = differ-TERM _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(ENC a)} (updCtxt-ENC a u) = differ-ENC _ (updCtxt→differ u)
   updCtxt→differ {name} {f} {.(DUM a)} (updCtxt-DUM a u) = differ-DUM _ _ (updCtxt→differ u)
   updCtxt→differ {name} {f} {.(FFDEFS a b)} (updCtxt-FFDEFS a b u u₁) = differ-FFDEFS _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
   updCtxt→differ {name} {f} {.(UNIV x)} (updCtxt-UNIV x) = differ-UNIV x
@@ -577,6 +579,7 @@ abstract
   differ→updCtxt {name} {f} {.(SUBSING a)} (differ-SUBSING a .a d) = updCtxt-SUBSING _ (differ→updCtxt d)
   differ→updCtxt {name} {f} {.(PURE)} (differ-PURE) = updCtxt-PURE
   differ→updCtxt {name} {f} {.(TERM a)} (differ-TERM a .a d) = updCtxt-TERM _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(ENC a)} (differ-ENC a d) = updCtxt-ENC _ (differ→updCtxt d)
   differ→updCtxt {name} {f} {.(DUM a)} (differ-DUM a .a d) = updCtxt-DUM _ (differ→updCtxt d)
   differ→updCtxt {name} {f} {.(FFDEFS a₁ b₁)} (differ-FFDEFS a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-FFDEFS _ _ (differ→updCtxt d) (differ→updCtxt d₁)
   differ→updCtxt {name} {f} {.(UNIV x)} (differ-UNIV x) = updCtxt-UNIV _

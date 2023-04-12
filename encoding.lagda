@@ -276,10 +276,12 @@ pairing-non-dec x y
 
 -- This only converts the untyped λ-calculus (vars, lams, apps) - everything else is mapped to 0
 -- From here: https://math.stackexchange.com/questions/1315256/encode-lambda-calculus-in-arithmetic
+-- TODO: add all the terms in calculus
 Term→ℕ : Term → ℕ
-Term→ℕ (VAR n) = 2 + (3 * n)
-Term→ℕ (LAMBDA t) = 1 + (3 * (Term→ℕ t))
-Term→ℕ (APPLY a b) = 3 * pairing (Term→ℕ a , Term→ℕ b)
+Term→ℕ (VAR n) = 3 + (4 * n)
+Term→ℕ (LAMBDA t) = 2 + (4 * (Term→ℕ t))
+Term→ℕ (APPLY a b) = 1 + (4 * pairing (Term→ℕ a , Term→ℕ b))
+Term→ℕ (ENC a) = 0 + (4 * (Term→ℕ a))
 Term→ℕ x = 0
 
 
@@ -308,35 +310,55 @@ unpairing≤ (suc n) with unpairing≡ n
 ≤suc (suc n) = _≤_.s≤s (≤suc n)
 
 
-suc≤*3 : (n : ℕ) → ¬ n ≡ 0 → suc n ≤ n * 3
-suc≤*3 0 d0 = ⊥-elim (d0 refl)
-suc≤*3 (suc n) d0 with n ≟ 0
+suc≤*m : (n m : ℕ) → ¬ n ≡ 0 → suc n ≤ n * (suc (suc m))
+suc≤*m 0 m d0 = ⊥-elim (d0 refl)
+suc≤*m (suc n) m d0 with n ≟ 0
 ... | yes p rewrite p = _≤_.s≤s (_≤_.s≤s _≤_.z≤n)
-... | no p = _≤_.s≤s (≤-trans (suc≤*3 n p) (≤-trans (≤suc (n * 3)) (≤suc (suc (n * 3)))))
+... | no p = _≤_.s≤s ((≤-trans (suc≤*m n m p) (≤-trans (≤suc (n * suc (suc m))) (_≤_.s≤s (≤-stepsˡ m ≤-refl)))))
 
 
-suc/3≤ : (n : ℕ) → ¬ n ≡ 0 → suc (n / 3) ≤ n
-suc/3≤ 0 d0 = ⊥-elim (d0 refl)
-suc/3≤ (suc n) d0 = _≤_.s≤s h1
+suc/4≤ : (n : ℕ) → ¬ n ≡ 0 → suc (n / 4) ≤ n
+suc/4≤ 0 d0 = ⊥-elim (d0 refl)
+suc/4≤ (suc n) d0 = _≤_.s≤s h1
   where
-    h2 : (suc n / 3) * 3 ≤ n * 3
+    h2 : (suc n / 4) * 4 ≤ n * 4
     h2 with n ≟ 0
     ... | yes p rewrite p = ≤-refl
-    ... | no p = ≤-trans (m/n*n≤m (suc n) 3) (suc≤*3 n p)
+    ... | no p = ≤-trans (m/n*n≤m (suc n) 4) (suc≤*m n 2 p)
 
-    h1 : suc n / 3 ≤ n
-    h1 = *-cancelʳ-≤ (suc n / 3) n 2 h2
+    h1 : suc n / 4 ≤ n
+    h1 = *-cancelʳ-≤ (suc n / 4) n 3 h2
 
 
+→2≤n : {n : ℕ}
+        → ¬ (n % 4 ≡ 0)
+        → ¬ (n % 4 ≡ 1)
+        → 2 ≤ n
+→2≤n {0} h1 h2 = ⊥-elim (h1 refl)
+→2≤n {1} h1 h2 = ⊥-elim (h2 refl)
+→2≤n {suc (suc n)} h1 h2 = _≤_.s≤s (_≤_.s≤s _≤_.z≤n)
+
+
+suc-/m : (n m : ℕ) → suc ((n ∸ m) / 4) ≤ suc (n / 4)
+suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {4} {4} (m∸n≤m n m) ≤-refl)
+
+
+-- TODO: add all the terms in calculus
 ℕ→Term-aux : (n : ℕ) → ((m : ℕ) → m < n → Term) → Term
 ℕ→Term-aux n ind with n ≟ 0
 ... | yes p = AX -- default value
-... | no p with n % 3 ≟ 0
-... | yes p₀ = -- then it is an application
+... | no p with n % 4 ≟ 0
+... | yes p₀ = -- then it is an ENC
+  ENC (ind (n / 4) x)
+  where
+    x : n / 4 < n
+    x = suc/4≤ n p
+... | no p₀ with n % 4 ≟ 1
+... | yes p₁ = -- then it is an application
   APPLY (ind x cx) (ind y cy)
   where
     m : ℕ
-    m = n / 3
+    m = (n ∸ 1) / 4
 
     -- We need to extract x from the pairing m
     -- We also need to show that x < n
@@ -344,20 +366,20 @@ suc/3≤ (suc n) d0 = _≤_.s≤s h1
     x = pairing→x m
 
     cx : suc x ≤ n
-    cx = ≤-trans (_≤_.s≤s (fst (unpairing≤ m))) (suc/3≤ n p)
+    cx = ≤-trans (_≤_.s≤s (fst (unpairing≤ m))) (≤-trans (suc-/m n 1) (suc/4≤ n p))
 
     -- We need to extract y from the pairing m
     y : ℕ
     y = pairing→y m
 
     cy : suc y ≤ n
-    cy = ≤-trans (_≤_.s≤s (snd (unpairing≤ m))) (suc/3≤ n p)
-... | no p₀ with n % 3 ≟ 1
-... |   yes p₁ = -- then it is a lambda
-  LAMBDA (ind ((n ∸ 1) / 3) (<-transʳ (m/n≤m (n ∸ 1) 3) (∸-monoʳ-< {n} {1} {0} ≤-refl (¬≡0→1≤ n p))))
-... |   no p₁ with n % 3 ≟ 2
-... |   yes p₁ = VAR ((n ∸ 2) / 3) -- then it is a variable
-... |   no p₁ = AX -- not possible - we return a default value
+    cy = ≤-trans (_≤_.s≤s (snd (unpairing≤ m))) (≤-trans (suc-/m n 1) (suc/4≤ n p))
+... | no p₁ with n % 4 ≟ 2
+... |   yes p₂ = -- then it is a lambda
+  LAMBDA (ind ((n ∸ 2) / 4) (<-transʳ (m/n≤m (n ∸ 2) 4) (∸-monoʳ-< {n} {2} {0} 0<1+n (→2≤n p₀ p₁))))
+... |   no p₂ with n % 4 ≟ 3
+... |   yes p₃ = VAR ((n ∸ 3) / 4) -- then it is a variable
+... |   no p₃ = AX -- not possible - we return a default value
 
 
 ℕ→Term : ℕ → Term

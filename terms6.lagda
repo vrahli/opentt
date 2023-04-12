@@ -40,6 +40,7 @@ open import compatible
 open import getChoice
 open import choiceExt
 open import newChoice
+open import encoding
 
 
 module terms6 {L : Level} (W : PossibleWorlds {L})
@@ -113,6 +114,7 @@ abstract
   differ-refl name1 name2 f (SUBSING t) nn = differ-SUBSING _ _ (differ-refl name1 name2 f t nn)
   differ-refl name1 name2 f (PURE) nn = differ-PURE
   differ-refl name1 name2 f (TERM t) nn = differ-TERM _ _ (differ-refl name1 name2 f t nn)
+  differ-refl name1 name2 f (ENC t) nn = differ-ENC _ (differ-refl name1 name2 f t nn)
   differ-refl name1 name2 f (DUM t) nn = differ-DUM _ _ (differ-refl name1 name2 f t nn)
   differ-refl name1 name2 f (FFDEFS t t₁) nn = differ-FFDEFS _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
   differ-refl name1 name2 f (UNIV x) nn = differ-UNIV x
@@ -133,6 +135,29 @@ differ-WRECr {name1} {name2} {f} {r1} {r2} {f1} {f2} cf dr df =
       (differ-APPLY _ _ _ _ (→differ-shiftUp 0 cf df) (differ-VAR 0))
       (→differ-shiftUp 3 cf dr))
 
+
+→differ-ID : (name1 name2 : Name) (f : Term)
+               → differ name1 name2 f ID ID
+→differ-ID name1 name2 f = differ-LAMBDA (VAR 0) (VAR 0) (differ-VAR 0)
+
+
+→differ-BOT : (name1 name2 : Name) (f : Term)
+               → differ name1 name2 f BOT BOT
+→differ-BOT name1 name2 f = differ-FIX ID ID (→differ-ID name1 name2 f)
+
+
+→differ-ENCr : {name1 name2 : Name} {f a : Term}
+                → differ name1 name2 f a a
+                → differ name1 name2 f (ENCr a) (ENCr a)
+→differ-ENCr {name1} {name2} {f} {a} diff =
+  differ-IFEQ
+    (APPLY a (NUM (Term→ℕ (ENC a))))
+    (APPLY a (NUM (Term→ℕ (ENC a))))
+    N0 N0 BOT BOT N0 N0
+    (differ-APPLY a a (NUM (Term→ℕ (ENC a))) (NUM (Term→ℕ (ENC a))) diff (differ-NUM _))
+    (differ-NUM _)
+    (→differ-BOT name1 name2 f)
+    (differ-NUM _)
 
 
 abstract
@@ -684,6 +709,9 @@ abstract
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(SUBSING a) .(SUBSING b) a' v k compat1 compat2 agtn (differ-SUBSING a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = SUBSING a , SUBSING b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-SUBSING _ _ diff , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(PURE) .(PURE) a' v k compat1 compat2 agtn (differ-PURE) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = PURE , PURE , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-PURE , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(TERM a) .(TERM b) a' v k compat1 compat2 agtn (differ-TERM a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TERM a , TERM b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TERM _ _ diff , g0
+  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(ENC a) .(ENC a) a' v k compat1 compat2 agtn (differ-ENC a diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
+    ENCr a , ENCr a , w1 , w1' , ⇓from-to-refl _ _ , (1 , refl) , →differ-ENCr diff , g0
+  --NUM (Term→ℕ a) , {!!} --ENC a , ENC b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-ENC _ _ diff , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(DUM a) .(DUM b) a' v k compat1 compat2 agtn (differ-DUM a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = DUM a , DUM b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-DUM _ _ diff , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(FFDEFS a₁ b₁) .(FFDEFS a₂ b₂) a' v k compat1 compat2 agtn (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = FFDEFS a₁ b₁ , FFDEFS a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-FFDEFS _ _ _ _ diff diff₁ , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(UNIV x) .(UNIV x) a' v k compat1 compat2 agtn (differ-UNIV x) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = UNIV x , UNIV x , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-UNIV x , g0
@@ -1492,6 +1520,7 @@ abstract
   ¬Names→shiftNameUp≡ (SUBSING t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
   ¬Names→shiftNameUp≡ (PURE) n nnt = refl
   ¬Names→shiftNameUp≡ (TERM t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+  ¬Names→shiftNameUp≡ (ENC t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
   ¬Names→shiftNameUp≡ (DUM t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
   ¬Names→shiftNameUp≡ (FFDEFS t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
   ¬Names→shiftNameUp≡ (UNIV x) n nnt = refl

@@ -904,6 +904,7 @@ abstract
   shiftNameUp-inj {n} {FFDEFS a a₁} {FFDEFS b b₁} e rewrite shiftNameUp-inj (FFDEFSinj1 e) | shiftNameUp-inj (FFDEFSinj2 e) = refl
   shiftNameUp-inj {n} {PURE} {PURE} refl = refl
   shiftNameUp-inj {n} {TERM a} {TERM b} e rewrite shiftNameUp-inj (TERMinj e) = refl
+  shiftNameUp-inj {n} {ENC a} {ENC b} e rewrite shiftNameUp-inj (ENCinj e) = refl
   shiftNameUp-inj {n} {UNIV x} {UNIV .x} refl = refl
   shiftNameUp-inj {n} {LIFT a} {LIFT b} e rewrite shiftNameUp-inj (LIFTinj e) = refl
   shiftNameUp-inj {n} {LOWER a} {LOWER b} e rewrite shiftNameUp-inj (LOWERinj e) = refl
@@ -998,6 +999,7 @@ abstract
   fvars-shiftNameDown n (FFDEFS a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
   fvars-shiftNameDown n PURE = refl
   fvars-shiftNameDown n (TERM a) rewrite fvars-shiftNameDown n a = refl
+  fvars-shiftNameDown n (ENC a) rewrite fvars-shiftNameDown n a = refl
   fvars-shiftNameDown n (UNIV x) = refl
   fvars-shiftNameDown n (LIFT a) rewrite fvars-shiftNameDown n a = refl
   fvars-shiftNameDown n (LOWER a) rewrite fvars-shiftNameDown n a = refl
@@ -1084,6 +1086,7 @@ abstract
   shiftNameUpDown n (FFDEFS t t₁) imp1 imp2 = ≡FFDEFS (shiftNameUpDown n t (λ x i → imp1 x (∈-++⁺ˡ i)) (λ z → imp2 (∈-++⁺ˡ z))) (shiftNameUpDown n t₁ (λ x i → imp1 x (∈-++⁺ʳ (names t) i)) (λ z → imp2 (∈-++⁺ʳ (names t) z)))
   shiftNameUpDown n PURE imp1 imp2 = refl
   shiftNameUpDown n (TERM t) imp1 imp2 = ≡TERM (shiftNameUpDown n t imp1 imp2)
+  shiftNameUpDown n (ENC t) imp1 imp2 = ≡ENC (shiftNameUpDown n t imp1 imp2)
   shiftNameUpDown n (UNIV x) imp1 imp2 = refl
   shiftNameUpDown n (LIFT t) imp1 imp2 = ≡LIFT (shiftNameUpDown n t imp1 imp2)
   shiftNameUpDown n (LOWER t) imp1 imp2 = ≡LOWER (shiftNameUpDown n t imp1 imp2)
@@ -1216,6 +1219,7 @@ abstract
   renn¬∈ n m (FFDEFS t t₁) ni = ≡FFDEFS (renn¬∈ n m t (¬∈++2→¬∈1 {_} {_} {names t} {names t₁} {n} ni)) (renn¬∈ n m t₁ (¬∈++2→¬∈2 {_} {_} {names t} {names t₁} {n} ni))
   renn¬∈ n m PURE ni = refl
   renn¬∈ n m (TERM t) ni = ≡TERM (renn¬∈ n m t ni)
+  renn¬∈ n m (ENC t) ni = ≡ENC (renn¬∈ n m t ni)
   renn¬∈ n m (UNIV x) ni = refl
   renn¬∈ n m (LIFT t) ni = ≡LIFT (renn¬∈ n m t ni)
   renn¬∈ n m (LOWER t) ni = ≡LOWER (renn¬∈ n m t ni)

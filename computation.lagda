@@ -38,6 +38,7 @@ open import compatible
 open import getChoice
 open import choiceExt
 open import newChoice
+open import encoding
 
 
 module computation {L : Level} (W : PossibleWorlds {L})
@@ -67,6 +68,10 @@ ret t w = just (t , w)
 -- recursive call of WREC
 WRECr : Term → Term → Term
 WRECr r f = LAMBDA (WREC (APPLY (shiftUp 0 f) (VAR 0)) (shiftUp 3 r))
+
+
+ENCr : Term → Term
+ENCr t = NEGD (APPLY t (NUM (Term→ℕ (ENC t))))
 
 
 step : ∀ (T : Term) (w : 𝕎·) → Maybe (Term × 𝕎·)
@@ -285,6 +290,8 @@ step (FFDEFS a b) = ret (FFDEFS a b)
 step PURE = ret PURE
 -- TERM
 step (TERM t) = ret (TERM t)
+-- ENC
+step (ENC t) = ret (ENCr t) -- ret (NUM (Term→ℕ t))
 -- UNIV
 step (UNIV u) = ret (UNIV u)
 -- LIFT
@@ -581,6 +588,7 @@ step-APPLY-CS-¬NUM name (WREC a x) b w w' c s rewrite s = refl
 --step-APPLY-CS-¬NUM name (DMSUP a x) b w w' c s rewrite s = refl
 step-APPLY-CS-¬NUM name (CHOOSE a a₁) b w w' c s rewrite s = refl
 step-APPLY-CS-¬NUM name (MAPP x a) b w w' c s rewrite s = refl
+step-APPLY-CS-¬NUM name (ENC a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 --step-APPLY-CS-¬NUM name (IFC0 a a₁ a₂) b w w' c s rewrite s = refl
 
 
@@ -908,6 +916,7 @@ step⊑ {w} {w'} {DUM a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sy
 step⊑ {w} {w'} {FFDEFS a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {PURE} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {TERM a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+step⊑ {w} {w'} {ENC a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {UNIV x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {LIFT a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 step⊑ {w} {w'} {LOWER a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
@@ -1362,6 +1371,7 @@ data ∼T : 𝕎· → Term → Term → Set where
   where
     z : steps 1 (APPLY (LET a x) c , w) ≡ (APPLY b c , w')
     z rewrite comp = refl
+→-step-APPLY {w} {w'} {ENC a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 1 , refl
 
 
 
@@ -1489,6 +1499,7 @@ step-⇓-ASSERT₁ {w} {w'} {DUM a} {b} comp rewrite sym (pair-inj₁ (just-inj 
 step-⇓-ASSERT₁ {w} {w'} {FFDEFS a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {PURE} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {TERM a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
+step-⇓-ASSERT₁ {w} {w'} {ENC a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 1 , refl
 step-⇓-ASSERT₁ {w} {w'} {UNIV x} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {LIFT a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {LOWER a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl

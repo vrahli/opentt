@@ -51,6 +51,7 @@ open import freeze
 open import newChoice
 open import mod
 open import choiceBar
+open import encoding
 
 
 module continuity3 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
@@ -500,6 +501,7 @@ abstract
   ¬Names→isHighestℕ-step {SUBSING t} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
   ¬Names→isHighestℕ-step {PURE} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
   ¬Names→isHighestℕ-step {TERM t} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
+  ¬Names→isHighestℕ-step {ENC t} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) | nn = refl , refl , gtn
   ¬Names→isHighestℕ-step {DUM t} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
   ¬Names→isHighestℕ-step {FFDEFS t t₁} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
   ¬Names→isHighestℕ-step {UNIV x} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
@@ -927,6 +929,22 @@ updCtxt-WRECr {name} {f} {r} {g} cf dr df =
       (→updCtxt-shiftUp 3 cf dr))
 
 
+updCtxt-BOT : (name : Name) (f : Term)
+              → updCtxt name f BOT
+updCtxt-BOT name f = updCtxt-FIX ID (updCtxt-LAMBDA (VAR 0) (updCtxt-VAR _))
+
+
+updCtxt-ENCr : {name : Name} {f : Term} {a : Term}
+               → updCtxt name f a
+               → updCtxt name f (ENCr a)
+updCtxt-ENCr {name} {f} {a} c =
+  updCtxt-IFEQ
+    (APPLY a (NUM (Term→ℕ (ENC a)))) N0 BOT N0
+    (updCtxt-APPLY a (NUM (Term→ℕ (ENC a))) c (updCtxt-NUM _))
+    (updCtxt-NUM _)
+    (updCtxt-BOT name f)
+    (updCtxt-NUM _)
+
 
 abstract
 
@@ -1164,6 +1182,7 @@ abstract
   step-sat-isHighestℕ gc {w1} {w2} {.(SUBSING a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-SUBSING a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , SUBSING a , w1 , refl , (λ x → x , x) , updCtxt-SUBSING _ ctxt
   step-sat-isHighestℕ gc {w1} {w2} {.(PURE)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-PURE) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , PURE , w1 , refl , (λ x → x , x) , updCtxt-PURE
   step-sat-isHighestℕ gc {w1} {w2} {.(TERM a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-TERM a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , TERM a , w1 , refl , (λ x → x , x) , updCtxt-TERM _ ctxt
+  step-sat-isHighestℕ gc {w1} {w2} {.(ENC a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-ENC a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , ENCr a , w1 , refl , (λ x → x , x) , updCtxt-ENCr ctxt --0 , ENC a , w1 , refl , (λ x → x , x) , updCtxt-ENC _ ctxt
   step-sat-isHighestℕ gc {w1} {w2} {.(DUM a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-DUM a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , DUM a , w1 , refl , (λ x → x , x) , updCtxt-DUM _ ctxt
   step-sat-isHighestℕ gc {w1} {w2} {.(FFDEFS a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-FFDEFS a b₁ ctxt ctxt₁) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , FFDEFS a b₁ , w1 , refl , (λ x → x , x) , updCtxt-FFDEFS _ _ ctxt ctxt₁
   step-sat-isHighestℕ gc {w1} {w2} {.(UNIV x)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-UNIV x) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , UNIV x , w1 , refl , (λ x → x , x) , updCtxt-UNIV x

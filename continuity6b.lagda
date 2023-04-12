@@ -605,6 +605,7 @@ abstract
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(SUBSING a₁)} {.(SUBSING a₂)} {l} {k} sub nad nbd (updRel2-SUBSING a₁ a₂ upd₁) = updRel2-SUBSING _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.PURE} {.PURE} {l} {k} sub nad nbd updRel2-PURE = updRel2-PURE
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(TERM a₁)} {.(TERM a₂)} {l} {k} sub nad nbd (updRel2-TERM a₁ a₂ upd₁) = updRel2-TERM _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
+  updRel2-ren-mon {name} {f} {g} {r} {r'} {.(ENC a)} {.(ENC a)} {l} {k} sub nad nbd (updRel2-ENC a upd₁) = updRel2-ENC _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(DUM a₁)} {.(DUM a₂)} {l} {k} sub nad nbd (updRel2-DUM a₁ a₂ upd₁) = updRel2-DUM _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} {l} {k} sub nad nbd (updRel2-FFDEFS a₁ a₂ b₁ b₂ upd₁ upd₂) = updRel2-FFDEFS _ _ _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→1 {names a₁} {names b₁} nad) (++⊆2→1 {names a₂} {names b₂} nbd) upd₁) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→2 {names a₁} {names b₁} nad) (++⊆2→2 {names a₂} {names b₂} nbd) upd₂)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(UNIV x)} {.(UNIV x)} {l} {k} sub nad nbd (updRel2-UNIV x) = updRel2-UNIV x

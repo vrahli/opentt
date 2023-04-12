@@ -52,6 +52,7 @@ open import freeze
 open import newChoice
 open import mod
 --open import choiceBar
+open import encoding
 
 
 module barContP4 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
@@ -173,6 +174,7 @@ data updSeq (r : Name) (s : 𝕊) (n : ℕ) : Term → Term → Set where
   updSeq-SUBSING : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (SUBSING a₁) (SUBSING a₂)
   updSeq-PURE    : updSeq r s n PURE PURE
   updSeq-TERM    : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (TERM a₁) (TERM a₂)
+  updSeq-ENC     : (a : Term) → updSeq r s n a a → updSeq r s n (ENC a) (ENC a)
   updSeq-DUM     : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (DUM a₁) (DUM a₂)
   updSeq-FFDEFS  : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (FFDEFS a₁ b₁) (FFDEFS a₂ b₂)
   updSeq-UNIV    : (x : ℕ) → updSeq r s n (UNIV x) (UNIV x)
@@ -300,6 +302,7 @@ abstract
   updSeq-shiftUp n {r} {s} {k} {.(SUBSING a₁)} {.(SUBSING a₂)} (updSeq-SUBSING a₁ a₂ u) = updSeq-SUBSING _ _ (updSeq-shiftUp n u)
   updSeq-shiftUp n {r} {s} {k} {.(PURE)} {.(PURE)} (updSeq-PURE) = updSeq-PURE
   updSeq-shiftUp n {r} {s} {k} {.(TERM a₁)} {.(TERM a₂)} (updSeq-TERM a₁ a₂ u) = updSeq-TERM _ _ (updSeq-shiftUp n u)
+  updSeq-shiftUp n {r} {s} {k} {.(ENC a)} {.(ENC a)} (updSeq-ENC a u) = updSeq-ENC _ u
   updSeq-shiftUp n {r} {s} {k} {.(DUM a₁)} {.(DUM a₂)} (updSeq-DUM a₁ a₂ u) = updSeq-DUM _ _ (updSeq-shiftUp n u)
   updSeq-shiftUp n {r} {s} {k} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updSeq-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updSeq-FFDEFS _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁)
   updSeq-shiftUp n {r} {s} {k} {.(UNIV x)} {.(UNIV x)} (updSeq-UNIV x) = updSeq-UNIV x
@@ -365,6 +368,7 @@ abstract
   updSeq-shiftDown n {r} {s} {k} {.(SUBSING a₁)} {.(SUBSING a₂)} (updSeq-SUBSING a₁ a₂ u) = updSeq-SUBSING _ _ (updSeq-shiftDown n u)
   updSeq-shiftDown n {r} {s} {k} {.(PURE)} {.(PURE)} (updSeq-PURE) = updSeq-PURE
   updSeq-shiftDown n {r} {s} {k} {.(TERM a₁)} {.(TERM a₂)} (updSeq-TERM a₁ a₂ u) = updSeq-TERM _ _ (updSeq-shiftDown n u)
+  updSeq-shiftDown n {r} {s} {k} {.(ENC a)} {.(ENC a)} (updSeq-ENC a u) = updSeq-ENC _ u
   updSeq-shiftDown n {r} {s} {k} {.(DUM a₁)} {.(DUM a₂)} (updSeq-DUM a₁ a₂ u) = updSeq-DUM _ _ (updSeq-shiftDown n u)
   updSeq-shiftDown n {r} {s} {k} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updSeq-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updSeq-FFDEFS _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁)
   updSeq-shiftDown n {r} {s} {k} {.(UNIV x)} {.(UNIV x)} (updSeq-UNIV x) = updSeq-UNIV _
@@ -433,6 +437,7 @@ abstract
   updSeq-subv v {r} {s} {k} {.(SUBSING a₁)} {.(SUBSING a₂)} {b₁} {b₂} (updSeq-SUBSING a₁ a₂ ua) ub = updSeq-SUBSING _ _ (updSeq-subv v ua ub)
   updSeq-subv v {r} {s} {k} {.(PURE)} {.(PURE)} {b₁} {b₂} (updSeq-PURE) ub = updSeq-PURE
   updSeq-subv v {r} {s} {k} {.(TERM a₁)} {.(TERM a₂)} {b₁} {b₂} (updSeq-TERM a₁ a₂ ua) ub = updSeq-TERM _ _ (updSeq-subv v ua ub)
+  updSeq-subv v {r} {s} {k} {.(ENC a)} {.(ENC a)} {b₁} {b₂} (updSeq-ENC a ua) ub = updSeq-ENC _ ua
   updSeq-subv v {r} {s} {k} {.(DUM a₁)} {.(DUM a₂)} {b₁} {b₂} (updSeq-DUM a₁ a₂ ua) ub = updSeq-DUM _ _ (updSeq-subv v ua ub)
   updSeq-subv v {r} {s} {k} {.(FFDEFS a₁ b₃)} {.(FFDEFS a₂ b₄)} {b₁} {b₂} (updSeq-FFDEFS a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-FFDEFS _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub)
   updSeq-subv v {r} {s} {k} {.(UNIV x)} {.(UNIV x)} {b₁} {b₂} (updSeq-UNIV x) ub = updSeq-UNIV x
@@ -1145,5 +1150,22 @@ updSeq-WRECr {r} {s} {n} {r1} {r2} {f1} {f2} dr df =
       _ _ _ _
       (updSeq-APPLY _ _ _ _ (updSeq-shiftUp 0 df) (updSeq-VAR 0))
       (updSeq-shiftUp 3 dr))
+
+
+updSeq-BOT : (r : Name) (s : 𝕊) (n : ℕ)
+             → updSeq r s n BOT BOT
+updSeq-BOT r s n = updSeq-FIX ID ID (updSeq-LAMBDA (VAR 0) (VAR 0) (updSeq-VAR _))
+
+
+updSeq-ENCr : {r : Name} {s : 𝕊} {n : ℕ} {a : Term}
+               → updSeq r s n a a
+               → updSeq r s n (ENCr a) (ENCr a)
+updSeq-ENCr {r} {s} {n} {a} u =
+  updSeq-IFEQ
+    (APPLY a (NUM (Term→ℕ (ENC a)))) (APPLY a (NUM (Term→ℕ (ENC a)))) N0 N0 BOT BOT N0 N0
+    (updSeq-APPLY a a (NUM (Term→ℕ (ENC a))) (NUM (Term→ℕ (ENC a))) u (updSeq-NUM _))
+    (updSeq-NUM _)
+    (updSeq-BOT r s n)
+    (updSeq-NUM _)
 
 \end{code}
