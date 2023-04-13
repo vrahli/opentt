@@ -800,53 +800,71 @@ ENC⇓¬val→ w t k ca nterm with k ≟ 0
     comp1 = ⇛-trans {w} {ENC t} {ENCr t} {N0} (λ w1 e1 → lift (1 , refl)) comp2
 
 
-¬AC₀₀-right-T : (kb : K□) (i : ℕ) (w : 𝕎·) → ¬ inhType (suc i) w (#AC₀₀-right Tac₀₀)
-¬AC₀₀-right-T kb i w (s , s∈) =
+equalInType-NAT-change-univ : (i j : ℕ) {w : 𝕎·} {a b : CTerm}
+                              → equalInType i w #NAT a b
+                              → equalInType j w #NAT a b
+equalInType-NAT-change-univ i j {w} {a} {b} n∈ =
+  →equalInType-NAT j w a b (equalInType-NAT→ i w a b n∈)
+
+
+equalInType-BAIRE→∈Type-NAT : (i j : ℕ) {w1 w2 : 𝕎·} {f₁ f₂ : CTerm} (n : ℕ)
+                                → w1 ⊑· w2
+                                → equalInType i w1 #BAIRE f₁ f₂
+                                → ∈Type j w2 #NAT (#APPLY f₁ (#NUM n))
+equalInType-BAIRE→∈Type-NAT i j {w1} {w2} {f₁} {f₂} n e f∈ =
+  equalInType-NAT-change-univ i j (equalInType-refl h)
+  where
+    h : equalInType i w2 #NAT (#APPLY f₁ (#NUM n)) (#APPLY f₂ (#NUM n))
+    h = equalInType-FUN→ (→≡equalInType #BAIRE≡ f∈) w2 e (#NUM n) (#NUM n) (NUM-equalInType-NAT i w2 n)
+
+
+¬AC₀₀-right-TO : (kb : K□) (i : ℕ) (w : 𝕎·) → ¬ inhType (suc i) w (#AC₀₀-right TOac₀₀)
+¬AC₀₀-right-TO kb i w (s , s∈) =
   lower (Mod.□-const M (Mod.∀𝕎-□Func M aw1 (equalInType-SQUASH→ s∈)))
   where
-    aw1 : ∀𝕎 w (λ w' e' → inhType (suc i) w' (#AC₀₀-right-SUM Tac₀₀)
+    aw1 : ∀𝕎 w (λ w' e' → inhType (suc i) w' (#AC₀₀-right-SUM TOac₀₀)
                          → Lift (lsuc L) ⊥)
     aw1 w1 e1 (p , p∈) =
-      Mod.□-const M (Mod.∀𝕎-□Func M aw2 (equalInType-SUM→ {suc i} {w1} {#BAIRE} {#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ Tac₀₀ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))} p∈))
+      Mod.□-const M (Mod.∀𝕎-□Func M aw2 (equalInType-SUM→ {suc i} {w1} {#BAIRE} {#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ TOac₀₀ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))} p∈))
       where
         aw2 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType (suc i) w' #BAIRE)
-                                       (λ a b ea →  equalInType (suc i) w' (sub0 a (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ Tac₀₀ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))))
+                                       (λ a b ea →  equalInType (suc i) w' (sub0 a (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ TOac₀₀ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))))
                                        w' p p
                               → Lift (lsuc L) ⊥)
         aw2 w2 e2 (f₁ , f₂ , q₁ , q₂ , f∈ , c₁ , c₂ , q∈) = lift (concl (q∈4 ε)) -- use equalInType-TBac₀₀→ on q∈2?
           where
             -- q∈1 is: Π(n:ℕ).if f₁(n)=0 then TERM(n) else ¬TERM(n)
             -- We now want to prove that such an f₁ does not exist
-            q∈1 : equalInType (suc i) w2 (#PI #NAT (#[0]LIFT (#[0]APPLY2 ⌞ Tac₀₀ ⌟ #[0]VAR (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) q₁ q₂
-            q∈1 = →≡equalInType (sub0-ac00-right-body1 Tac₀₀ f₁) q∈
+            q∈1 : equalInType (suc i) w2 (#PI #NAT (#[0]LIFT (#[0]APPLY2 ⌞ TOac₀₀ ⌟ #[0]VAR (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) q₁ q₂
+            q∈1 = →≡equalInType (sub0-ac00-right-body1 TOac₀₀ f₁) q∈
 
-            q∈2 : ∀𝕎 w2 (λ w' _ → (n : ℕ) → equalInType i w' (TBac₀₀ (#NUM n) (#APPLY f₁ (#NUM n))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n)))
-            q∈2 = ∈-PI-APPLY2-Tac₀₀→ i w2 f₁ q₁ q₂ q∈1
+            q∈2 : ∀𝕎 w2 (λ w' _ → (n : ℕ) → equalInType i w' (TOBac₀₀ (#NUM n) (#APPLY f₁ (#NUM n))) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n)))
+            q∈2 = ∈-PI-APPLY2-TOac₀₀→ i w2 f₁ q₁ q₂ q∈1
 
             -- Should we use K□ to get rid of the □?
             -- That's fine because that's what we've used to prove the validity of AC below in AC₀₀-valid.
-            q∈3 : ∀𝕎 w2 (λ w' _ → (n : ℕ) → □· w' (λ w' _ → (#APPLY f₁ (#NUM n) #⇛! #N0 at w' × terminatesℕ w' n)
-                                                                  ⊎ Σ ℕ (λ k → (0 < k) × (#APPLY f₁ (#NUM n) #⇛! #NUM k at w') × (¬ terminatesℕ w' n))))
+            q∈3 : ∀𝕎 w2 (λ w' _ → (n : ℕ) → □· w' (λ w' _ → (#APPLY f₁ (#NUM n) #⇛ #N0 at w' × terminatesℕ w' n)
+                                                                  ⊎ Σ ℕ (λ k → (0 < k) × (#APPLY f₁ (#NUM n) #⇛ #NUM k at w') × (¬ terminatesℕ w' n))))
             q∈3 w3 e3 n =
-              equalInType-TBac₀₀→
+              equalInType-TOBac₀₀→
                 i w3 n (#APPLY f₁ (#NUM n)) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n))
-                {!--not quite from f∈--!}
+                (equalInType-BAIRE→∈Type-NAT (suc i) i n e3 f∈)
                 (q∈2 w3 e3 n)
 
-            q∈4 : (n : ℕ) → ((#APPLY f₁ (#NUM n) #⇛! #N0 at w2 × terminatesℕ w2 n)
-                                ⊎ Σ ℕ (λ k → (0 < k) × (#APPLY f₁ (#NUM n) #⇛! #NUM k at w2) × (¬ terminatesℕ w2 n)))
+            q∈4 : (n : ℕ) → ((#APPLY f₁ (#NUM n) #⇛ #N0 at w2 × terminatesℕ w2 n)
+                                ⊎ Σ ℕ (λ k → (0 < k) × (#APPLY f₁ (#NUM n) #⇛ #NUM k at w2) × (¬ terminatesℕ w2 n)))
             q∈4 n = kb (q∈3 w2 (⊑-refl· w2) n) w2 (⊑-refl· w2)
 
             q∈5 : (n : ℕ) → Σ ℕ (λ k → #APPLY f₁ (#NUM n) #⇛ #NUM k at w2)
             q∈5 n with q∈4 n
-            ... | inj₁ (x , y) = 0 , #⇛!→#⇛ {w2} {#APPLY f₁ (#NUM n)} {#NUM 0} x
-            ... | inj₂ (k , gt0 , x , y) = k , #⇛!→#⇛ {w2} {#APPLY f₁ (#NUM n)} {#NUM k} x
+            ... | inj₁ (x , y) = 0 , x
+            ... | inj₂ (k , gt0 , x , y) = k , x
 
             ε : ℕ
             ε = CTerm→ℕ (#ENC f₁)
 
-            concl : ((#APPLY f₁ (#NUM ε) #⇛! #N0 at w2 × terminatesℕ w2 ε)
-                     ⊎ Σ ℕ (λ k → (0 < k) × (#APPLY f₁ (#NUM ε) #⇛! #NUM k at w2) × (¬ terminatesℕ w2 ε)))
+            concl : ((#APPLY f₁ (#NUM ε) #⇛ #N0 at w2 × terminatesℕ w2 ε)
+                     ⊎ Σ ℕ (λ k → (0 < k) × (#APPLY f₁ (#NUM ε) #⇛ #NUM k at w2) × (¬ terminatesℕ w2 ε)))
                      → ⊥
             concl (inj₁ (comp , term)) = <-irrefl (sym ce3) ce2
               where
@@ -872,16 +890,16 @@ ENC⇓¬val→ w t k ca nterm with k ≟ 0
                 ce2 = fst (snd (snd (ENC⇛val→ w2 ⌜ f₁ ⌝ v q∈5 ce isv)))
 
                 ce3 : k ≡ 0
-                ce3 = #NUMinj (#⇛-val-det {w2} {#APPLY f₁ (#NUM ε)} {#NUM k} {#N0} tt tt ce1 (#⇛!→#⇛ {w2} {#APPLY f₁ (#NUM ε)} {#NUM 0} comp))
+                ce3 = #NUMinj (#⇛-val-det {w2} {#APPLY f₁ (#NUM ε)} {#NUM k} {#N0} tt tt ce1 comp)
             concl (inj₂ (k , ltk , comp , nterm)) = <-irrefl (sym eq0) ltk
               where
                 nterm' : ¬ terminates w2 ⌜ #ENC f₁ ⌝
                 nterm' = ¬terminatesℕ-Term→ℕ→ w2 ⌜ #ENC f₁ ⌝ nterm
 
                 ca : #APPLY f₁ (#NUM ε) #⇛ #N0 at w2
-                ca = ENC⇓¬val→ w2 ⌜ f₁ ⌝ k (#⇛!→#⇛ {w2} {#APPLY f₁ (#NUM ε)} {#NUM k} comp) nterm'
+                ca = ENC⇓¬val→ w2 ⌜ f₁ ⌝ k comp nterm'
 
                 eq0 : k ≡ 0
-                eq0 = #NUMinj (#⇛-val-det {w2} {#APPLY f₁ (#NUM ε)} {#NUM k} {#N0} tt tt (#⇛!→#⇛ {w2} {#APPLY f₁ (#NUM ε)} {#NUM k} comp) ca)
+                eq0 = #NUMinj (#⇛-val-det {w2} {#APPLY f₁ (#NUM ε)} {#NUM k} {#N0} tt tt comp ca)
 
 \end{code}
