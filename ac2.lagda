@@ -92,8 +92,8 @@ open import terms8(W)(C)(K)(G)(X)(N)
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#⇛-mon)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E) using (equalTypes-#⇛-left-right-rev ; TS ; typeSys ; →equalInType-SQUASH ; inhType-mon ; equalTypes-#⇛-left-right ; →equalInTypeTERM ; →equalInType-UNION)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E) using (eqTypesBAIRE ; →equalTypesLT)
-open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E) using (PROD ; #PROD ; #PROD≡#SUM ; equalInType-PROD ; PRODeq)
+open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E) using (eqTypesBAIRE ; →equalTypesLT ; equalInType-LT-⇛NUM→)
+open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E) using (PROD ; #PROD ; #PROD≡#SUM ; equalInType-PROD ; PRODeq ; equalInType-PROD→)
 --open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
@@ -606,13 +606,64 @@ equalInType-TBac₀₀→ i w n m a b m∈ h =
         aw2 w2 e2 z = inj₂ (k , ≤∧≢⇒< {0} {k} _≤_.z≤n (λ x → q (sym x)) , ∀𝕎-mon e2 c₁ , →¬terminatesℕ i w1 w2 n a b e2 h1)
 
 
+equalInType-EQ-NAT→ : {i : ℕ} {w : 𝕎·} {n m a b : CTerm}
+                       → equalInType i w (#EQ n m #NAT) a b
+                       → □· w (λ w' _ → NATeq w' n m)
+equalInType-EQ-NAT→ {i} {w} {n} {m} {a} {b} eqn =
+  Mod.□-idem M (Mod.∀𝕎-□Func M aw1 (equalInType-EQ→ eqn))
+  where
+    aw1 : ∀𝕎 w (λ w' e' → EQeq n m (equalInType i w' #NAT) w' a b
+                         → □· w' (↑wPred' (λ w'' _ → NATeq w'' n m) e'))
+    aw1 w1 e1 eqn1 = Mod.∀𝕎-□Func M (λ w2 e2 eqn2 z → eqn2) (equalInType-NAT→ i w1 n m eqn1)
+
+
 equalInType-TOBac₀₀→ : (i : ℕ) (w : 𝕎·) (n : ℕ) (m a b : CTerm)
                        → ∈Type i w #NAT m
                        → equalInType i w (TOBac₀₀ (#NUM n) m) a b
                        → □· w (λ w' _ → (m #⇛ #N0 at w' × terminatesℕ w' n)
                                           ⊎
                                           Σ ℕ (λ k → (0 < k) × (m #⇛ #NUM k at w') × (¬ terminatesℕ w' n)))
-equalInType-TOBac₀₀→ i w n m a b m∈ h = ?
+equalInType-TOBac₀₀→ i w n m a b m∈ h =
+  Mod.□-idem M (∀𝕎-□Func2 aw1 (equalInType-NAT→ i w m m m∈) (equalInType-UNION→ h))
+  where
+    aw1 : ∀𝕎 w (λ w' e' → NATeq w' m m
+                         → Σ CTerm (λ x → Σ CTerm (λ y →
+                             a #⇛ #INL x at w' × b #⇛ #INL y at w' × equalInType i w' (#PROD (#EQ m #N0 #NAT) (#TERM (#NUM n))) x y
+                             ⊎ a #⇛ #INR x at w' × b #⇛ #INR y at w' × equalInType i w' (#PROD (#LT #N0 m) (#NEG (#TERM (#NUM n)))) x y))
+                         → □· w' (↑wPred' (λ w'' _ → (m #⇛ #N0 at w'' × terminatesℕ w'' n)
+                                                       ⊎ Σ ℕ (λ k → 0 < k × m #⇛ #NUM k at w'' × ¬ terminatesℕ w'' n)) e'))
+    aw1 w1 e1 (k , c₁ , c₂) (x , y , inj₁ (d₁ , d₂ , eqp)) =
+      Mod.□-idem M (Mod.∀𝕎-□Func M aw2 (equalInType-PROD→ eqp))
+        where
+          aw2 : ∀𝕎 w1 (λ w' e' → PRODeq (equalInType i w' (#EQ m #N0 #NAT)) (equalInType i w' (#TERM (#NUM n))) w' x y
+                                → □· w' (↑wPred' (↑wPred' (λ w'' _ →
+                                     m #⇛ #N0 at w'' × terminatesℕ w'' n
+                                     ⊎ Σ ℕ (λ k₁ → 0 < k₁ × m #⇛ #NUM k₁ at w'' × ¬ terminatesℕ w'' n)) e1) e'))
+          aw2 w2 e2 (a1 , a2 , b1 , b2 , eqa , eqb , z₁ , z₂) =
+            ∀𝕎-□Func2 aw3 (equalInType-EQ-NAT→ {i} {w2} {m} {#N0} {a1} {a2} eqa) (equalInType-TERM→ eqb)
+              where
+                aw3 : ∀𝕎 w2 (λ w' e' → NATeq w' m #N0
+                                      → TERMeq w' (#NUM n) (#NUM n)
+                                      → ↑wPred' (↑wPred' (λ w'' _ →
+                                           m #⇛ #N0 at w'' × terminatesℕ w'' n
+                                           ⊎ Σ ℕ (λ k₁ → 0 < k₁ × m #⇛ #NUM k₁ at w'' × ¬ terminatesℕ w'' n)) e1) e2 w' e')
+                aw3 w3 e3 (k1 , u₁ , u₂) (k2 , v₁ , v₂ , v₃) z1 z2
+                  rewrite #NUMinj (sym (#⇛→≡ {#NUM n} {#NUM k2} {w3} v₁ tt))
+                        | #NUMinj (sym (#⇛→≡ {#NUM 0} {#NUM k1} {w3} u₂ tt))
+                        | #NUMinj (#⇛-val-det {w3} {m} {#NUM k} {#NUM 0} tt tt (#⇛-mon {m} {#NUM k} (⊑-trans· e2 e3) c₁) u₁)
+                  = inj₁ (u₁ , v₃)
+    aw1 w1 e1 (k , c₁ , c₂) (x , y , inj₂ (d₁ , d₂ , eqp)) =
+      Mod.∀𝕎-□Func M aw2 (equalInType-PROD→ eqp)
+        where
+          aw2 : ∀𝕎 w1 (λ w' e' → PRODeq (equalInType i w' (#LT #N0 m)) (equalInType i w' (#NEG (#TERM (#NUM n)))) w' x y
+                                → ↑wPred' (λ w'' _ →
+                                     m #⇛ #N0 at w'' × terminatesℕ w'' n
+                                     ⊎ Σ ℕ (λ k₁ → 0 < k₁ × m #⇛ #NUM k₁ at w'' × ¬ terminatesℕ w'' n)) e1 w' e')
+          aw2 w2 e2 (a1 , a2 , b1 , b2 , eqa , eqb , z₁ , z₂) z =
+            inj₂ (k , ltk , #⇛-mon {m} {#NUM k} e2 c₁ , →¬terminatesℕ i w2 w2 n b1 b2 (⊑-refl· w2) eqb)
+            where
+              ltk : 0 < k
+              ltk = equalInType-LT-⇛NUM→ {i} {w2} {#N0} {m} {a1} {a2} {k} {0} (#⇛-refl w2 #N0) (#⇛-mon {m} {#NUM k} e2 c₁) eqa
 
 
 -- MOVE to encoding
