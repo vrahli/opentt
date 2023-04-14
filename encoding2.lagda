@@ -387,60 +387,60 @@ pairing-non-dec x y
 -- MSEQ and MAPP are mapped to 0 as they involve meta sequences
 -- Based on: https://math.stackexchange.com/questions/1315256/encode-lambda-calculus-in-arithmetic
 Term→ℕ : Term → ℕ
-Term→ℕ (VAR x) = 0 + (#cons * x)
+Term→ℕ (VAR x) = 0 + (x * #cons)
 Term→ℕ NAT = 1
 Term→ℕ QNAT = 2
 Term→ℕ TNAT = 3
-Term→ℕ (LT t t₁) = 4 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (QLT t t₁) = 5 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (NUM x) = 6 + (#cons * x)
-Term→ℕ (IFLT t t₁ t₂ t₃) = 7 + (#cons * pairing4 (Term→ℕ t , Term→ℕ t₁ , Term→ℕ t₂ , Term→ℕ t₃))
-Term→ℕ (IFEQ t t₁ t₂ t₃) = 8 + (#cons * pairing4 (Term→ℕ t , Term→ℕ t₁ , Term→ℕ t₂ , Term→ℕ t₃))
-Term→ℕ (SUC t) = 9 + (#cons * Term→ℕ t)
-Term→ℕ (PI t t₁) = 10 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (LAMBDA t) = 11 + (#cons * Term→ℕ t)
-Term→ℕ (APPLY t t₁) = 12 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (FIX t) = 13 + (#cons * Term→ℕ t)
-Term→ℕ (LET t t₁) = 14 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (WT t t₁) = 15 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (SUP t t₁) = 16 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (WREC t t₁) = 17 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (MT t t₁) = 18 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (SUM t t₁) = 19 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (PAIR t t₁) = 20 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (SPREAD t t₁) = 21 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (SET t t₁) = 22 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (TUNION t t₁) = 23 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (ISECT t t₁) = 24 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (UNION t t₁) = 25 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (QTUNION t t₁) = 26 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (INL t) = 27 + (#cons * Term→ℕ t)
-Term→ℕ (INR t) = 28 + (#cons * Term→ℕ t)
-Term→ℕ (DECIDE t t₁ t₂) = 29 + (#cons * pairing3 (Term→ℕ t , Term→ℕ t₁ , Term→ℕ t₂))
-Term→ℕ (EQ t t₁ t₂) = 30 + (#cons * pairing3 (Term→ℕ t , Term→ℕ t₁ , Term→ℕ t₂))
-Term→ℕ (EQB t t₁ t₂ t₃) = 31 + (#cons * pairing4 (Term→ℕ t , Term→ℕ t₁ , Term→ℕ t₂ , Term→ℕ t₃))
+Term→ℕ (LT t t₁) = 4 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (QLT t t₁) = 5 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (NUM x) = 6 + (x * #cons)
+Term→ℕ (IFLT t t₁ t₂ t₃) = 7 + (pairing4 (Term→ℕ t , Term→ℕ t₁ , Term→ℕ t₂ , Term→ℕ t₃) * #cons)
+Term→ℕ (IFEQ t t₁ t₂ t₃) = 8 + (pairing4 (Term→ℕ t , Term→ℕ t₁ , Term→ℕ t₂ , Term→ℕ t₃) * #cons)
+Term→ℕ (SUC t) = 9 + (Term→ℕ t * #cons)
+Term→ℕ (PI t t₁) = 10 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (LAMBDA t) = 11 + (Term→ℕ t * #cons)
+Term→ℕ (APPLY t t₁) = 12 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (FIX t) = 13 + (Term→ℕ t * #cons)
+Term→ℕ (LET t t₁) = 14 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (WT t t₁) = 15 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (SUP t t₁) = 16 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (WREC t t₁) = 17 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (MT t t₁) = 18 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (SUM t t₁) = 19 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (PAIR t t₁) = 20 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (SPREAD t t₁) = 21 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (SET t t₁) = 22 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (TUNION t t₁) = 23 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (ISECT t t₁) = 24 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (UNION t t₁) = 25 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (QTUNION t t₁) = 26 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (INL t) = 27 + (Term→ℕ t * #cons)
+Term→ℕ (INR t) = 28 + (Term→ℕ t * #cons)
+Term→ℕ (DECIDE t t₁ t₂) = 29 + (pairing3 (Term→ℕ t , Term→ℕ t₁ , Term→ℕ t₂) * #cons)
+Term→ℕ (EQ t t₁ t₂) = 30 + (pairing3 (Term→ℕ t , Term→ℕ t₁ , Term→ℕ t₂) * #cons)
+Term→ℕ (EQB t t₁ t₂ t₃) = 31 + (pairing4 (Term→ℕ t , Term→ℕ t₁ , Term→ℕ t₂ , Term→ℕ t₃) * #cons)
 Term→ℕ AX = 32
 Term→ℕ FREE = 33
-Term→ℕ (CS x) = 34 + (#cons * x)
-Term→ℕ (NAME x) = 35 + (#cons * x)
-Term→ℕ (FRESH t) = 36 + (#cons * Term→ℕ t)
-Term→ℕ (CHOOSE t t₁) = 37 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ (LOAD t) = 38 + (#cons * Term→ℕ t)
+Term→ℕ (CS x) = 34 + (x * #cons)
+Term→ℕ (NAME x) = 35 + (x * #cons)
+Term→ℕ (FRESH t) = 36 + (Term→ℕ t * #cons)
+Term→ℕ (CHOOSE t t₁) = 37 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (LOAD t) = 38 + (Term→ℕ t * #cons)
 Term→ℕ (MSEQ x) = 0
 Term→ℕ (MAPP x t) = 0
-Term→ℕ (TSQUASH t) = 39 + (#cons * Term→ℕ t)
-Term→ℕ (TTRUNC t) = 40 + (#cons * Term→ℕ t)
-Term→ℕ (TCONST t) = 41 + (#cons * Term→ℕ t)
-Term→ℕ (SUBSING t) = 42 + (#cons * Term→ℕ t)
-Term→ℕ (DUM t) = 43 + (#cons * Term→ℕ t)
-Term→ℕ (FFDEFS t t₁) = 44 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
+Term→ℕ (TSQUASH t) = 39 + (Term→ℕ t * #cons)
+Term→ℕ (TTRUNC t) = 40 + (Term→ℕ t * #cons)
+Term→ℕ (TCONST t) = 41 + (Term→ℕ t * #cons)
+Term→ℕ (SUBSING t) = 42 + (Term→ℕ t * #cons)
+Term→ℕ (DUM t) = 43 + (Term→ℕ t * #cons)
+Term→ℕ (FFDEFS t t₁) = 44 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
 Term→ℕ PURE = 45
-Term→ℕ (TERM t) = 46 + (#cons * Term→ℕ t)
-Term→ℕ (ENC t) = 47 + (#cons * Term→ℕ t)
-Term→ℕ (UNIV x) = 48 + (#cons * x)
-Term→ℕ (LIFT t) = 49 + (#cons * Term→ℕ t)
-Term→ℕ (LOWER t) = 50 + (#cons * Term→ℕ t)
-Term→ℕ (SHRINK t) = 51 + (#cons * Term→ℕ t)
+Term→ℕ (TERM t) = 46 + (Term→ℕ t * #cons)
+Term→ℕ (ENC t) = 47 + (Term→ℕ t * #cons)
+Term→ℕ (UNIV x) = 48 + (x * #cons)
+Term→ℕ (LIFT t) = 49 + (Term→ℕ t * #cons)
+Term→ℕ (LOWER t) = 50 + (Term→ℕ t * #cons)
+Term→ℕ (SHRINK t) = 51 + (Term→ℕ t * #cons)
 
 
 ¬≡0→1≤ : (n : ℕ) → ¬ n ≡ 0 → 1 ≤ n
@@ -524,13 +524,16 @@ suc-/m : (n m : ℕ) → suc ((n ∸ m) / #cons) ≤ suc (n / #cons)
 suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n m) ≤-refl)
 
 
+suc-/≤ : (n m : ℕ) → ¬ n ≡ 0 → suc ((n ∸ m) / #cons) ≤ n
+suc-/≤ n m d0 = ≤-trans (suc-/m n m) (suc/≤ n d0)
+
+
 -- TODO: add all the terms in calculus
 ℕ→Term-aux : (n : ℕ) → ((m : ℕ) → m < n → Term) → Term
-ℕ→Term-aux n ind with n ≟ 0
-... | yes p₀ = VAR 0
-... | no p₀ with n % #cons
+ℕ→Term-aux 0 ind = VAR 0
+ℕ→Term-aux n@(suc z) ind with n % #cons
 -- VAR
-... | 0 = VAR ((n ∸ 0) / #cons) -- then it is a variable
+... | 0 = VAR ((n ∸ 0) / #cons)
 -- NAT
 ... | 1 = NAT
 -- QNAT
@@ -549,14 +552,14 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     x₁ : ℕ
     x₁ = pairing→₁ m
 
-    cx₁ : suc x₁ ≤ n
-    cx₁ = ≤-trans (_≤_.s≤s (pairing→₁≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₁ : x₁ < n
+    cx₁ = <-transʳ (pairing→₁≤ m) (suc-/≤ n k (λ ()))
 
     x₂ : ℕ
     x₂ = pairing→₂ m
 
-    cx₂ : suc x₂ ≤ n
-    cx₂ = ≤-trans (_≤_.s≤s (pairing→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₂ : x₂ < n
+    cx₂ = <-transʳ (pairing→₂≤ m) (suc-/≤ n k (λ ()))
 -- QLT
 ... | 5 = QLT (ind x₁ cx₁) (ind x₂ cx₂)
   where
@@ -569,14 +572,14 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     x₁ : ℕ
     x₁ = pairing→₁ m
 
-    cx₁ : suc x₁ ≤ n
-    cx₁ = ≤-trans (_≤_.s≤s (pairing→₁≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₁ : x₁ < n
+    cx₁ = <-transʳ (pairing→₁≤ m) (suc-/≤ n k (λ ()))
 
     x₂ : ℕ
     x₂ = pairing→₂ m
 
-    cx₂ : suc x₂ ≤ n
-    cx₂ = ≤-trans (_≤_.s≤s (pairing→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₂ : x₂ < n
+    cx₂ = <-transʳ (pairing→₂≤ m) (suc-/≤ n k (λ ()))
 -- NUM
 ... | 6 = NUM ((n ∸ 6) / #cons) -- then it is a variable
 -- IFLT
@@ -591,26 +594,26 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     x₁ : ℕ
     x₁ = pairing4→₁ m
 
-    cx₁ : suc x₁ ≤ n
-    cx₁ = ≤-trans (_≤_.s≤s (pairing4→₁≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₁ : x₁ < n
+    cx₁ = <-transʳ (pairing4→₁≤ m) (suc-/≤ n k (λ ()))
 
     x₂ : ℕ
     x₂ = pairing4→₂ m
 
-    cx₂ : suc x₂ ≤ n
-    cx₂ = ≤-trans (_≤_.s≤s (pairing4→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₂ : x₂ < n
+    cx₂ = <-transʳ (pairing4→₂≤ m) (suc-/≤ n k (λ ()))
 
     x₃ : ℕ
     x₃ = pairing4→₃ m
 
-    cx₃ : suc x₃ ≤ n
-    cx₃ = ≤-trans (_≤_.s≤s (pairing4→₃≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₃ : x₃ < n
+    cx₃ = <-transʳ (pairing4→₃≤ m) (suc-/≤ n k (λ ()))
 
     x₄ : ℕ
     x₄ = pairing4→₄ m
 
-    cx₄ : suc x₄ ≤ n
-    cx₄ = ≤-trans (_≤_.s≤s (pairing4→₄≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₄ : x₄ < n
+    cx₄ = <-transʳ (pairing4→₄≤ m) (suc-/≤ n k (λ ()))
 -- IFEQ
 ... | 8 = IFEQ (ind x₁ cx₁) (ind x₂ cx₂) (ind x₃ cx₃) (ind x₄ cx₄)
   where
@@ -623,26 +626,26 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     x₁ : ℕ
     x₁ = pairing4→₁ m
 
-    cx₁ : suc x₁ ≤ n
-    cx₁ = ≤-trans (_≤_.s≤s (pairing4→₁≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₁ : x₁ < n
+    cx₁ = <-transʳ (pairing4→₁≤ m) (suc-/≤ n k (λ ()))
 
     x₂ : ℕ
     x₂ = pairing4→₂ m
 
-    cx₂ : suc x₂ ≤ n
-    cx₂ = ≤-trans (_≤_.s≤s (pairing4→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₂ : x₂ < n
+    cx₂ = <-transʳ (pairing4→₂≤ m) (suc-/≤ n k (λ ()))
 
     x₃ : ℕ
     x₃ = pairing4→₃ m
 
-    cx₃ : suc x₃ ≤ n
-    cx₃ = ≤-trans (_≤_.s≤s (pairing4→₃≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₃ : x₃ < n
+    cx₃ = <-transʳ (pairing4→₃≤ m) (suc-/≤ n k (λ ()))
 
     x₄ : ℕ
     x₄ = pairing4→₄ m
 
-    cx₄ : suc x₄ ≤ n
-    cx₄ = ≤-trans (_≤_.s≤s (pairing4→₄≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₄ : x₄ < n
+    cx₄ = <-transʳ (pairing4→₄≤ m) (suc-/≤ n k (λ ()))
 -- SUC
 ... | 9 = SUC (ind m cm)
   where
@@ -652,8 +655,8 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     m : ℕ
     m = (n ∸ k) / #cons
 
-    cm : suc m ≤ n
-    cm = ≤-trans (suc-/m n k) (suc/≤ n p₀)
+    cm : m < n
+    cm = suc-/≤ n k (λ ())
 -- PI
 ... | 10 = PI (ind x₁ cx₁) (ind x₂ cx₂)
   where
@@ -666,14 +669,14 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     x₁ : ℕ
     x₁ = pairing→₁ m
 
-    cx₁ : suc x₁ ≤ n
-    cx₁ = ≤-trans (_≤_.s≤s (pairing→₁≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₁ : x₁ < n
+    cx₁ = <-transʳ (pairing→₁≤ m) (suc-/≤ n k (λ ()))
 
     x₂ : ℕ
     x₂ = pairing→₂ m
 
-    cx₂ : suc x₂ ≤ n
-    cx₂ = ≤-trans (_≤_.s≤s (pairing→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₂ : x₂ < n
+    cx₂ = <-transʳ (pairing→₂≤ m) (suc-/≤ n k (λ ()))
 -- LAMBDA
 ... | 11 = LAMBDA (ind m cm)
   where
@@ -683,8 +686,8 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     m : ℕ
     m = (n ∸ k) / #cons
 
-    cm : suc m ≤ n
-    cm = ≤-trans (suc-/m n k) (suc/≤ n p₀)
+    cm : m < n
+    cm = suc-/≤ n k (λ ())
 -- APPLY
 ... | 12 = APPLY (ind x₁ cx₁) (ind x₂ cx₂)
   where
@@ -697,14 +700,14 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     x₁ : ℕ
     x₁ = pairing→₁ m
 
-    cx₁ : suc x₁ ≤ n
-    cx₁ = ≤-trans (_≤_.s≤s (pairing→₁≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₁ : x₁ < n
+    cx₁ = <-transʳ (pairing→₁≤ m) (suc-/≤ n k (λ ()))
 
     x₂ : ℕ
     x₂ = pairing→₂ m
 
-    cx₂ : suc x₂ ≤ n
-    cx₂ = ≤-trans (_≤_.s≤s (pairing→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₂ : x₂ < n
+    cx₂ = <-transʳ (pairing→₂≤ m) (suc-/≤ n k (λ ()))
 -- FIX
 ... | 13 = FIX (ind m cm)
   where
@@ -714,8 +717,8 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     m : ℕ
     m = (n ∸ k) / #cons
 
-    cm : suc m ≤ n
-    cm = ≤-trans (suc-/m n k) (suc/≤ n p₀)
+    cm : m < n
+    cm = suc-/≤ n k (λ ())
 -- LET
 ... | 14 = LET (ind x₁ cx₁) (ind x₂ cx₂)
   where
@@ -728,14 +731,14 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     x₁ : ℕ
     x₁ = pairing→₁ m
 
-    cx₁ : suc x₁ ≤ n
-    cx₁ = ≤-trans (_≤_.s≤s (pairing→₁≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₁ : x₁ < n
+    cx₁ = <-transʳ (pairing→₁≤ m) (suc-/≤ n k (λ ()))
 
     x₂ : ℕ
     x₂ = pairing→₂ m
 
-    cx₂ : suc x₂ ≤ n
-    cx₂ = ≤-trans (_≤_.s≤s (pairing→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+    cx₂ : x₂ < n
+    cx₂ = <-transʳ (pairing→₂≤ m) (suc-/≤ n k (λ ()))
 --
 -- TO FINISH!
 --
@@ -761,28 +764,94 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
 →≡% a b c e rewrite e = refl
 
 
+→≡+ : (a b c : ℕ) → b ≡ c → a + b ≡ a + c
+→≡+ a b c e rewrite e = refl
+
+
+{--
 abstract
   n*m/n≡m : (m n : ℕ) → (suc n * m / suc n) ≡ m
   n*m/n≡m m n = trans (/-congˡ (*-comm (suc n) m)) (m*n/n≡m m (suc n))
+--}
+
+
+{--
+abstract
+  #cons%≡k : (k x : ℕ) → k < #cons → (k + (#cons * x)) % #cons ≡ k
+  #cons%≡k k x cond =
+    trans
+      (→≡% (k + #cons * x) (k + x * #cons) #cons-1 (→≡+ k (#cons * x) (x * #cons) (*-comm #cons x)))
+      (trans ([m+kn]%n≡m%n k x #cons-1) (m≤n⇒m%n≡m (s≤s-inj cond)))
+--}
 
 
 abstract
-  #cons%≡0 : (x : ℕ) → (#cons * x) % #cons ≡ 0
-  #cons%≡0 x = trans (→≡% (#cons * x) (x * #cons) #cons-1 (*-comm #cons x)) (m*n%n≡0 x #cons-1)
+  m*sn/sn≡m : (m n : ℕ) → (m * suc n / suc n) ≡ m
+  m*sn/sn≡m m n = m*n/n≡m m (suc n)
 
 
-ℕ→Term→ℕ-VAR : (x : Var) → ℕ→Term (#cons * x) ≡ VAR x
-ℕ→Term→ℕ-VAR x with n*m/n≡m x #cons-1 | #cons%≡0 x
-... | p | q with #cons * x
-... |   0 rewrite 0/#cons | sym p = refl
-... |   suc y rewrite q | p = refl
+abstract
+  *#cons%≡k : (k x : ℕ) → k < #cons → (k + (x * #cons)) % #cons ≡ k
+  *#cons%≡k k x cond = trans ([m+kn]%n≡m%n k x #cons-1) (m≤n⇒m%n≡m (s≤s-inj cond))
+
+
+ℕ→Term→ℕ-VAR : (x : Var) → ℕ→Term (x * #cons) ≡ VAR x
+ℕ→Term→ℕ-VAR 0 = refl
+ℕ→Term→ℕ-VAR x@(suc y) rewrite *#cons%≡k 0 x (_≤_.s≤s _≤_.z≤n) | m*sn/sn≡m x #cons-1 = refl
+
+
+{--
+comp-ind-ℕ-aux2≡ : {n m : ℕ} (p : m ≤ n)
+                    → comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux n m p
+                       ≡ comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux m m ≤-refl
+comp-ind-ℕ-aux2≡ {0} {0} _≤_.z≤n = refl
+comp-ind-ℕ-aux2≡ {suc n} {0} p = refl
+comp-ind-ℕ-aux2≡ {suc n} {suc m} p with (suc m) % #cons
+... | 0 = refl
+... | 1 = refl
+... | 2 = refl
+... | 3 = refl
+... | 4 = {!!}
+... | 5 = {!!}
+... | 6 = {!!}
+... | k = {!!}
+--}
+
+
+comp-ind-ℕ-aux2≡ℕ→Term : {n m : ℕ} (p : m ≤ n)
+                            → comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux n m p ≡ ℕ→Term m
+comp-ind-ℕ-aux2≡ℕ→Term {n} {m} p = concl
+  where
+    concl : comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux n m p
+            ≡ comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux m m ≤-refl
+    concl = {!!}
 
 
 ℕ→Term→ℕ-LT : (t₁ t₂ : Term)
                  → ℕ→Term (Term→ℕ t₁) ≡ t₁
                  → ℕ→Term (Term→ℕ t₂) ≡ t₂
-                 → ℕ→Term (4 + (#cons * pairing (Term→ℕ t₁ , Term→ℕ t₂))) ≡ LT t₁ t₂
-ℕ→Term→ℕ-LT t₁ t₂ ind₁ ind₂ = {!!}
+                 → ℕ→Term (4 + (pairing (Term→ℕ t₁ , Term→ℕ t₂) * #cons)) ≡ LT t₁ t₂
+ℕ→Term→ℕ-LT t₁ t₂ ind₁ ind₂
+  rewrite *#cons%≡k 4 (pairing (Term→ℕ t₁ , Term→ℕ t₂)) (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s _≤_.z≤n)))))
+  = concl
+  where
+    k : ℕ
+    k = pairing (Term→ℕ t₁ , Term→ℕ t₂)
+
+    n : ℕ
+    n = 4 + k * #cons
+
+    m : ℕ
+    m = (k * #cons) / #cons
+
+    concl : LT (comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux (n ∸ 1) (pairing→₁ m) (≤-trans (s≤s-inj (<-transʳ (pairing→₁≤ m) (suc-/≤ n 4 (λ ())))) (s≤s-inj ≤-refl)))
+               (comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux (n ∸ 1) (pairing→₂ m) (≤-trans (s≤s-inj (<-transʳ (pairing→₂≤ m) (suc-/≤ n 4 (λ ())))) (s≤s-inj ≤-refl)))
+            ≡ LT t₁ t₂
+    concl rewrite comp-ind-ℕ-aux2≡ℕ→Term (≤-trans (s≤s-inj (<-transʳ (pairing→₁≤ m) (suc-/≤ n 4 (λ ())))) (s≤s-inj ≤-refl))
+                | comp-ind-ℕ-aux2≡ℕ→Term (≤-trans (s≤s-inj (<-transʳ (pairing→₂≤ m) (suc-/≤ n 4 (λ ())))) (s≤s-inj ≤-refl))
+                | m*sn/sn≡m k #cons-1
+                | unpairing-pairing (Term→ℕ t₁ , Term→ℕ t₂)
+                | ind₁ | ind₂ = refl
 
 
 ℕ→Term→ℕ : (t : Term) → noseq t ≡ true → ℕ→Term (Term→ℕ t) ≡ t
