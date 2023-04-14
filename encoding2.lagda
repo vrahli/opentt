@@ -31,6 +31,7 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
+open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -38,23 +39,60 @@ open import name
 open import calculus
 
 
-module encoding2 where
+module encoding2 (E : Extensionality 0ℓ 0ℓ) where
 
 
 -- MOVE to util
-comp-ind-ℕ-aux2 : {L : Level} (P : ℕ → Set(L))
+comp-ind-ℕ-aux2 : (P : ℕ → Set)
                    → ((n : ℕ) → ((m : ℕ) → m < n → P m) → P n)
                    → (n m : ℕ) → m ≤ n → P m
-comp-ind-ℕ-aux2 {L} P ind 0 0 z = ind 0 (λ m ())
-comp-ind-ℕ-aux2 {L} P ind (suc n) 0 z = ind 0 (λ m ())
-comp-ind-ℕ-aux2 {L} P ind (suc n) (suc m) z =
+comp-ind-ℕ-aux2 P ind 0 0 z = ind 0 (λ m ())
+comp-ind-ℕ-aux2 P ind (suc n) 0 z = ind 0 (λ m ())
+comp-ind-ℕ-aux2 P ind (suc n) (suc m) z =
   ind (suc m) (λ k h → comp-ind-ℕ-aux2 P ind n k (≤-trans (s≤s-inj h) (s≤s-inj z)))
 
 
-<ℕind2 : {L : Level} (P : ℕ → Set(L))
+<ℕind2 : (P : ℕ → Set)
           → ((n : ℕ) → ((m : ℕ) → m < n → P m) → P n)
           → (n : ℕ) → P n
-<ℕind2 {L} P ind n = comp-ind-ℕ-aux2 P ind n n ≤-refl
+<ℕind2 P ind n = comp-ind-ℕ-aux2 P ind n n ≤-refl
+
+
+-- These ∧ lemmas come from terms2 - MOVE them to util
+∧≡true→ₗ : {a b : Bool} → a ∧ b ≡ true → a ≡ true
+∧≡true→ₗ {true} {b} x = refl
+
+
+∧≡true→ᵣ : {a b : Bool} → a ∧ b ≡ true → b ≡ true
+∧≡true→ᵣ {true} {b} x = x
+
+
+∧≡true→1-4 : {a b c d : Bool} → a ∧ b ∧ c ∧ d ≡ true → a ≡ true
+∧≡true→1-4 {a} {b} {c} {d} x = ∧≡true→ₗ {a} {b ∧ c ∧ d} x
+
+
+∧≡true→2-4 : {a b c d : Bool} → a ∧ b ∧ c ∧ d ≡ true → b ≡ true
+∧≡true→2-4 {a} {b} {c} {d} x = ∧≡true→ₗ {b} {c ∧ d} (∧≡true→ᵣ {a} {b ∧ c ∧ d} x)
+
+
+∧≡true→3-4 : {a b c d : Bool} → a ∧ b ∧ c ∧ d ≡ true → c ≡ true
+∧≡true→3-4 {a} {b} {c} {d} x = ∧≡true→ₗ {c} {d} (∧≡true→ᵣ {b} {c ∧ d} (∧≡true→ᵣ {a} {b ∧ c ∧ d} x))
+
+
+∧≡true→1-3 : {a b c : Bool} → a ∧ b ∧ c ≡ true → a ≡ true
+∧≡true→1-3 {a} {b} {c} x = ∧≡true→ₗ {a} {b ∧ c} x
+
+
+∧≡true→2-3 : {a b c : Bool} → a ∧ b ∧ c ≡ true → b ≡ true
+∧≡true→2-3 {a} {b} {c} x = ∧≡true→ₗ {b} {c} (∧≡true→ᵣ {a} {b ∧ c} x)
+
+
+∧≡true→3-3 : {a b c : Bool} → a ∧ b ∧ c ≡ true → c ≡ true
+∧≡true→3-3 {a} {b} {c} x = ∧≡true→ᵣ {b} {c} (∧≡true→ᵣ {a} {b ∧ c} x)
+
+
+∧≡true→4-4 : {a b c d : Bool} → a ∧ b ∧ c ∧ d ≡ true → d ≡ true
+∧≡true→4-4 {a} {b} {c} {d} x = ∧≡true→ᵣ {c} {d} (∧≡true→ᵣ {b} {c ∧ d} (∧≡true→ᵣ {a} {b ∧ c ∧ d} x))
 
 
 noseq : Term → Bool
@@ -795,63 +833,99 @@ abstract
   *#cons%≡k k x cond = trans ([m+kn]%n≡m%n k x #cons-1) (m≤n⇒m%n≡m (s≤s-inj cond))
 
 
+--abstract
+  -- Can we prove that withoug function extensionality? Probably for the function we care about below.
+comp-ind-ℕ-aux2≡ : (P : ℕ → Set) (ind : (n : ℕ) → ((m : ℕ) → m < n → P m) → P n)
+                      {n m k : ℕ} (p : m ≤ n) (q : m ≤ k)
+                      → comp-ind-ℕ-aux2 P ind n m p
+                         ≡ comp-ind-ℕ-aux2 P ind k m q
+comp-ind-ℕ-aux2≡ P ind {0} {0} {0} _≤_.z≤n q = refl
+comp-ind-ℕ-aux2≡ P ind {0} {0} {suc k} _≤_.z≤n q = refl
+comp-ind-ℕ-aux2≡ P ind {suc n} {0} {0} p q = refl
+comp-ind-ℕ-aux2≡ P ind {suc n} {0} {suc k} p q = refl
+comp-ind-ℕ-aux2≡ P ind {suc n} {suc m} {suc k} p q = c
+    where
+      j : (λ k₁ h → comp-ind-ℕ-aux2 P ind n k₁ (≤-trans (s≤s-inj h) (s≤s-inj p)))
+          ≡ (λ k₁ h → comp-ind-ℕ-aux2 P ind k k₁ (≤-trans (s≤s-inj h) (s≤s-inj q)))
+      j = E (λ x → E (λ x₁ → comp-ind-ℕ-aux2≡ P ind (≤-trans (s≤s-inj x₁) (s≤s-inj p)) (≤-trans (s≤s-inj x₁) (s≤s-inj q))))
+
+      c : ind (suc m) (λ k₁ h → comp-ind-ℕ-aux2 P ind n k₁ (≤-trans (s≤s-inj h) (s≤s-inj p)))
+          ≡ ind (suc m) (λ k₁ h → comp-ind-ℕ-aux2 P ind k k₁ (≤-trans (s≤s-inj h) (s≤s-inj q)))
+      c rewrite j = refl
+
+
+--abstract
+comp-ind-ℕ-aux2≡ℕ→Term : {n m : ℕ} (p : m ≤ n)
+                              → comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux n m p ≡ ℕ→Term m
+comp-ind-ℕ-aux2≡ℕ→Term {n} {m} p = comp-ind-ℕ-aux2≡ (λ _ → Term) ℕ→Term-aux p ≤-refl
+
+
+--abstract
 ℕ→Term→ℕ-VAR : (x : Var) → ℕ→Term (x * #cons) ≡ VAR x
 ℕ→Term→ℕ-VAR 0 = refl
 ℕ→Term→ℕ-VAR x@(suc y) rewrite *#cons%≡k 0 x (_≤_.s≤s _≤_.z≤n) | m*sn/sn≡m x #cons-1 = refl
 
 
-{--
-comp-ind-ℕ-aux2≡ : {n m : ℕ} (p : m ≤ n)
-                    → comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux n m p
-                       ≡ comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux m m ≤-refl
-comp-ind-ℕ-aux2≡ {0} {0} _≤_.z≤n = refl
-comp-ind-ℕ-aux2≡ {suc n} {0} p = refl
-comp-ind-ℕ-aux2≡ {suc n} {suc m} p with (suc m) % #cons
-... | 0 = refl
-... | 1 = refl
-... | 2 = refl
-... | 3 = refl
-... | 4 = {!!}
-... | 5 = {!!}
-... | 6 = {!!}
-... | k = {!!}
---}
-
-
-comp-ind-ℕ-aux2≡ℕ→Term : {n m : ℕ} (p : m ≤ n)
-                            → comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux n m p ≡ ℕ→Term m
-comp-ind-ℕ-aux2≡ℕ→Term {n} {m} p = concl
-  where
-    concl : comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux n m p
-            ≡ comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux m m ≤-refl
-    concl = {!!}
-
-
+--abstract
 ℕ→Term→ℕ-LT : (t₁ t₂ : Term)
-                 → ℕ→Term (Term→ℕ t₁) ≡ t₁
-                 → ℕ→Term (Term→ℕ t₂) ≡ t₂
-                 → ℕ→Term (4 + (pairing (Term→ℕ t₁ , Term→ℕ t₂) * #cons)) ≡ LT t₁ t₂
+                    → ℕ→Term (Term→ℕ t₁) ≡ t₁
+                    → ℕ→Term (Term→ℕ t₂) ≡ t₂
+                    → ℕ→Term (4 + (pairing (Term→ℕ t₁ , Term→ℕ t₂) * #cons)) ≡ LT t₁ t₂
 ℕ→Term→ℕ-LT t₁ t₂ ind₁ ind₂
-  rewrite *#cons%≡k 4 (pairing (Term→ℕ t₁ , Term→ℕ t₂)) (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s _≤_.z≤n)))))
-  = concl
-  where
-    k : ℕ
-    k = pairing (Term→ℕ t₁ , Term→ℕ t₂)
+    rewrite *#cons%≡k 4 (pairing (Term→ℕ t₁ , Term→ℕ t₂)) (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s _≤_.z≤n)))))
+    = concl
+    where
+      k : ℕ
+      k = pairing (Term→ℕ t₁ , Term→ℕ t₂)
 
-    n : ℕ
-    n = 4 + k * #cons
+      n : ℕ
+      n = 4 + k * #cons
 
-    m : ℕ
-    m = (k * #cons) / #cons
+      m : ℕ
+      m = (k * #cons) / #cons
 
-    concl : LT (comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux (n ∸ 1) (pairing→₁ m) (≤-trans (s≤s-inj (<-transʳ (pairing→₁≤ m) (suc-/≤ n 4 (λ ())))) (s≤s-inj ≤-refl)))
-               (comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux (n ∸ 1) (pairing→₂ m) (≤-trans (s≤s-inj (<-transʳ (pairing→₂≤ m) (suc-/≤ n 4 (λ ())))) (s≤s-inj ≤-refl)))
-            ≡ LT t₁ t₂
-    concl rewrite comp-ind-ℕ-aux2≡ℕ→Term (≤-trans (s≤s-inj (<-transʳ (pairing→₁≤ m) (suc-/≤ n 4 (λ ())))) (s≤s-inj ≤-refl))
-                | comp-ind-ℕ-aux2≡ℕ→Term (≤-trans (s≤s-inj (<-transʳ (pairing→₂≤ m) (suc-/≤ n 4 (λ ())))) (s≤s-inj ≤-refl))
-                | m*sn/sn≡m k #cons-1
-                | unpairing-pairing (Term→ℕ t₁ , Term→ℕ t₂)
-                | ind₁ | ind₂ = refl
+      concl : LT (comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux (n ∸ 1) (pairing→₁ m) (≤-trans (s≤s-inj (<-transʳ (pairing→₁≤ m) (suc-/≤ n 4 (λ ())))) (s≤s-inj ≤-refl)))
+                 (comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux (n ∸ 1) (pairing→₂ m) (≤-trans (s≤s-inj (<-transʳ (pairing→₂≤ m) (suc-/≤ n 4 (λ ())))) (s≤s-inj ≤-refl)))
+              ≡ LT t₁ t₂
+      concl rewrite comp-ind-ℕ-aux2≡ℕ→Term (≤-trans (s≤s-inj (<-transʳ (pairing→₁≤ m) (suc-/≤ n 4 (λ ())))) (s≤s-inj ≤-refl))
+          | comp-ind-ℕ-aux2≡ℕ→Term (≤-trans (s≤s-inj (<-transʳ (pairing→₂≤ m) (suc-/≤ n 4 (λ ())))) (s≤s-inj ≤-refl))
+          | m*sn/sn≡m k #cons-1
+          | unpairing-pairing (Term→ℕ t₁ , Term→ℕ t₂)
+          | ind₁ | ind₂ = refl
+
+
+--abstract
+ℕ→Term→ℕ-QLT : (t₁ t₂ : Term)
+                    → ℕ→Term (Term→ℕ t₁) ≡ t₁
+                    → ℕ→Term (Term→ℕ t₂) ≡ t₂
+                    → ℕ→Term (5 + (pairing (Term→ℕ t₁ , Term→ℕ t₂) * #cons)) ≡ QLT t₁ t₂
+ℕ→Term→ℕ-QLT t₁ t₂ ind₁ ind₂
+    rewrite *#cons%≡k 5 (pairing (Term→ℕ t₁ , Term→ℕ t₂)) (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s _≤_.z≤n))))))
+    = concl
+    where
+      k : ℕ
+      k = pairing (Term→ℕ t₁ , Term→ℕ t₂)
+
+      n : ℕ
+      n = 5 + k * #cons
+
+      m : ℕ
+      m = (k * #cons) / #cons
+
+      concl : QLT (comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux (n ∸ 1) (pairing→₁ m) (≤-trans (s≤s-inj (<-transʳ (pairing→₁≤ m) (suc-/≤ n 5 (λ ())))) (s≤s-inj ≤-refl)))
+                 (comp-ind-ℕ-aux2 (λ _ → Term) ℕ→Term-aux (n ∸ 1) (pairing→₂ m) (≤-trans (s≤s-inj (<-transʳ (pairing→₂≤ m) (suc-/≤ n 5 (λ ())))) (s≤s-inj ≤-refl)))
+              ≡ QLT t₁ t₂
+      concl rewrite comp-ind-ℕ-aux2≡ℕ→Term (≤-trans (s≤s-inj (<-transʳ (pairing→₁≤ m) (suc-/≤ n 5 (λ ())))) (s≤s-inj ≤-refl))
+          | comp-ind-ℕ-aux2≡ℕ→Term (≤-trans (s≤s-inj (<-transʳ (pairing→₂≤ m) (suc-/≤ n 5 (λ ())))) (s≤s-inj ≤-refl))
+          | m*sn/sn≡m k #cons-1
+          | unpairing-pairing (Term→ℕ t₁ , Term→ℕ t₂)
+          | ind₁ | ind₂ = refl
+
+
+--abstract
+ℕ→Term→ℕ-NUM : (x : ℕ) → ℕ→Term (6 + x * #cons) ≡ NUM x
+ℕ→Term→ℕ-NUM 0 = refl
+ℕ→Term→ℕ-NUM x@(suc y) rewrite *#cons%≡k 6 x (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s _≤_.z≤n))))))) | m*sn/sn≡m x #cons-1 = refl
 
 
 ℕ→Term→ℕ : (t : Term) → noseq t ≡ true → ℕ→Term (Term→ℕ t) ≡ t
@@ -859,9 +933,9 @@ comp-ind-ℕ-aux2≡ℕ→Term {n} {m} p = concl
 ℕ→Term→ℕ NAT nseq = refl
 ℕ→Term→ℕ QNAT nseq = refl
 ℕ→Term→ℕ TNAT nseq = refl
-ℕ→Term→ℕ (LT t t₁) nseq = ℕ→Term→ℕ-LT t t₁ (ℕ→Term→ℕ t {!!}) (ℕ→Term→ℕ t₁ {!!}) -- we need the ∧ lemmas from terms2 → move them somewhere else
-ℕ→Term→ℕ (QLT t t₁) nseq = {!!}
-ℕ→Term→ℕ (NUM x) nseq = {!!}
+ℕ→Term→ℕ (LT t t₁) nseq = ℕ→Term→ℕ-LT t t₁ (ℕ→Term→ℕ t (∧≡true→ₗ nseq)) (ℕ→Term→ℕ t₁ (∧≡true→ᵣ nseq))
+ℕ→Term→ℕ (QLT t t₁) nseq = ℕ→Term→ℕ-QLT t t₁ (ℕ→Term→ℕ t (∧≡true→ₗ nseq)) (ℕ→Term→ℕ t₁ (∧≡true→ᵣ nseq))
+ℕ→Term→ℕ (NUM x) nseq = ℕ→Term→ℕ-NUM x
 ℕ→Term→ℕ (IFLT t t₁ t₂ t₃) nseq = {!!}
 ℕ→Term→ℕ (IFEQ t t₁ t₂ t₃) nseq = {!!}
 ℕ→Term→ℕ (SUC t) nseq = {!!}
