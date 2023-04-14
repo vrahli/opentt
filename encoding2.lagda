@@ -302,16 +302,6 @@ pairing-non-dec x y
     h1 = →≤/2 x (y + x) (m≤n+m x y)
 
 
-{--
-Term→ℕ : Term → ℕ
-Term→ℕ (VAR n) = 3 + (4 * n)
-Term→ℕ (LAMBDA t) = 2 + (4 * (Term→ℕ t))
-Term→ℕ (APPLY a b) = 1 + (4 * pairing (Term→ℕ a , Term→ℕ b))
-Term→ℕ (ENC a) = 0 + (4 * (Term→ℕ a))
-Term→ℕ x = 0
---}
-
-
 #cons : ℕ
 #cons = 52
 
@@ -385,7 +375,9 @@ Term→ℕ (SHRINK t) = 51 + (#cons * Term→ℕ t)
 ≡→≤ a b e rewrite e = ≤-refl
 
 
-unpairing≤ : (n : ℕ) → fst (unpairing n) ≤ n × snd (unpairing n) ≤ n
+unpairing≤ : (n : ℕ)
+             → fst (unpairing n) ≤ n
+              × snd (unpairing n) ≤ n
 unpairing≤ 0 = ≤-refl , ≤-refl
 unpairing≤ (suc n) with unpairing≡ n
 ... | suc x , y , p rewrite p =
@@ -393,6 +385,36 @@ unpairing≤ (suc n) with unpairing≡ n
           (_≤_.s≤s (fst (unpairing≤ n))) ,
   _≤_.s≤s (≤-trans (≡→≤ y (snd (unpairing n)) (sym (snd-unpairing≡ n (suc x) y p))) (snd (unpairing≤ n)))
 ... | 0 , y , p rewrite p | sym (snd-unpairing≡ n 0 y p) = _≤_.s≤s (snd (unpairing≤ n)) , _≤_.z≤n
+
+
+pairing→₁≤ : (n : ℕ) → pairing→₁ n ≤ n
+pairing→₁≤ n = fst (unpairing≤ n)
+
+
+pairing→₂≤ : (n : ℕ) → pairing→₂ n ≤ n
+pairing→₂≤ n = snd (unpairing≤ n)
+
+
+pairing4→₁≤ : (n : ℕ) → pairing4→₁ n ≤ n
+pairing4→₁≤ n = fst (unpairing≤ n)
+
+
+pairing4→₂≤ : (n : ℕ) → pairing4→₂ n ≤ n
+pairing4→₂≤ n = ≤-trans (fst (unpairing≤ (snd (unpairing n)))) (snd (unpairing≤ n))
+
+
+pairing4→₃≤ : (n : ℕ) → pairing4→₃ n ≤ n
+pairing4→₃≤ n =
+  ≤-trans
+    (fst (unpairing≤ (snd (unpairing (snd (unpairing n))))))
+    (≤-trans (snd (unpairing≤ (snd (unpairing n)))) (snd (unpairing≤ n)))
+
+
+pairing4→₄≤ : (n : ℕ) → pairing4→₄ n ≤ n
+pairing4→₄≤ n =
+  ≤-trans
+    (snd (unpairing≤ (snd (unpairing (snd (unpairing n))))))
+    (≤-trans (snd (unpairing≤ (snd (unpairing n)))) (snd (unpairing≤ n)))
 
 
 -- MOVE to utils
@@ -422,8 +444,8 @@ suc/≤ (suc n) d0 = _≤_.s≤s h1
 
 
 →2≤n : {n : ℕ}
-        → ¬ (n % 4 ≡ 0)
-        → ¬ (n % 4 ≡ 1)
+        → ¬ (n % #cons ≡ 0)
+        → ¬ (n % #cons ≡ 1)
         → 2 ≤ n
 →2≤n {0} h1 h2 = ⊥-elim (h1 refl)
 →2≤n {1} h1 h2 = ⊥-elim (h2 refl)
@@ -442,124 +464,229 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
 ... | no p₀ with n % #cons ≟ 0
 ... | yes p₁ = VAR ((n ∸ 0) / #cons) -- then it is a variable
 -- NAT
-... | no p₁ with n % #cons ≟ 1
-... | yes p₂ = NAT
+... | no p with n % #cons ≟ 1
+... | yes p = NAT
 -- QNAT
-... | no p₂ with n % #cons ≟ 2
-... | yes p₃ = QNAT
+... | no p with n % #cons ≟ 2
+... | yes p = QNAT
 -- TNAT
-... | no p₃ with n % #cons ≟ 3
-... | yes p₄ = TNAT
+... | no p with n % #cons ≟ 3
+... | yes p = TNAT
 -- LT
-... | no p₄ with n % #cons ≟ 4
-... | yes p₅ = LT (ind x₁ cx₁) (ind x₂ cx₂)
+... | no p with n % #cons ≟ 4
+... | yes p = LT (ind x₁ cx₁) (ind x₂ cx₂)
   where
+    k : ℕ
+    k = 4
+
     m : ℕ
-    m = (n ∸ 4) / #cons
+    m = (n ∸ k) / #cons
 
     x₁ : ℕ
     x₁ = pairing→₁ m
 
     cx₁ : suc x₁ ≤ n
-    cx₁ = ≤-trans (_≤_.s≤s (fst (unpairing≤ m))) (≤-trans (suc-/m n 4) (suc/≤ n p₀))
+    cx₁ = ≤-trans (_≤_.s≤s (pairing→₁≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
 
     x₂ : ℕ
     x₂ = pairing→₂ m
 
     cx₂ : suc x₂ ≤ n
-    cx₂ = ≤-trans (_≤_.s≤s (snd (unpairing≤ m))) (≤-trans (suc-/m n 4) (suc/≤ n p₀))
+    cx₂ = ≤-trans (_≤_.s≤s (pairing→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
 -- QLT
-... | no p₅ with n % #cons ≟ 5
-... | yes p₆ = QLT (ind x₁ cx₁) (ind x₂ cx₂)
+... | no p with n % #cons ≟ 5
+... | yes p = QLT (ind x₁ cx₁) (ind x₂ cx₂)
   where
+    k : ℕ
+    k = 5
+
     m : ℕ
-    m = (n ∸ 5) / #cons
+    m = (n ∸ k) / #cons
 
     x₁ : ℕ
     x₁ = pairing→₁ m
 
     cx₁ : suc x₁ ≤ n
-    cx₁ = ≤-trans (_≤_.s≤s (fst (unpairing≤ m))) (≤-trans (suc-/m n 5) (suc/≤ n p₀))
+    cx₁ = ≤-trans (_≤_.s≤s (pairing→₁≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
 
     x₂ : ℕ
     x₂ = pairing→₂ m
 
     cx₂ : suc x₂ ≤ n
-    cx₂ = ≤-trans (_≤_.s≤s (snd (unpairing≤ m))) (≤-trans (suc-/m n 5) (suc/≤ n p₀))
+    cx₂ = ≤-trans (_≤_.s≤s (pairing→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
 -- NUM
-... | no p₆ with n % #cons ≟ 6
-... | yes p₇ = NUM ((n ∸ 6) / #cons) -- then it is a variable
+... | no p with n % #cons ≟ 6
+... | yes p = NUM ((n ∸ 6) / #cons) -- then it is a variable
 -- IFLT
-... | no p₇ with n % #cons ≟ 7
-... | yes p₈ = IFLT (ind x₁ cx₁) (ind x₂ cx₂) (ind x₃ cx₃) (ind x₄ cx₄)
+... | no p with n % #cons ≟ 7
+... | yes p = IFLT (ind x₁ cx₁) (ind x₂ cx₂) (ind x₃ cx₃) (ind x₄ cx₄)
   where
+    k : ℕ
+    k = 7
+
     m : ℕ
-    m = (n ∸ 7) / #cons
+    m = (n ∸ k) / #cons
 
     x₁ : ℕ
     x₁ = pairing4→₁ m
 
     cx₁ : suc x₁ ≤ n
-    cx₁ = ≤-trans (_≤_.s≤s (fst (unpairing≤ m))) (≤-trans (suc-/m n 7) (suc/≤ n p₀))
+    cx₁ = ≤-trans (_≤_.s≤s (pairing4→₁≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
 
     x₂ : ℕ
     x₂ = pairing4→₂ m
 
     cx₂ : suc x₂ ≤ n
-    cx₂ = {!!} --≤-trans (_≤_.s≤s (snd (unpairing≤ m))) (≤-trans (suc-/m n 7) (suc/≤ n p₀))
+    cx₂ = ≤-trans (_≤_.s≤s (pairing4→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
 
     x₃ : ℕ
     x₃ = pairing4→₃ m
 
     cx₃ : suc x₃ ≤ n
-    cx₃ = {!!}
+    cx₃ = ≤-trans (_≤_.s≤s (pairing4→₃≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
 
     x₄ : ℕ
     x₄ = pairing4→₄ m
 
     cx₄ : suc x₄ ≤ n
-    cx₄ = {!!}
+    cx₄ = ≤-trans (_≤_.s≤s (pairing4→₄≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+-- IFEQ
+... | no p with n % #cons ≟ 8
+... | yes p = IFEQ (ind x₁ cx₁) (ind x₂ cx₂) (ind x₃ cx₃) (ind x₄ cx₄)
+  where
+    k : ℕ
+    k = 8
+
+    m : ℕ
+    m = (n ∸ k) / #cons
+
+    x₁ : ℕ
+    x₁ = pairing4→₁ m
+
+    cx₁ : suc x₁ ≤ n
+    cx₁ = ≤-trans (_≤_.s≤s (pairing4→₁≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+
+    x₂ : ℕ
+    x₂ = pairing4→₂ m
+
+    cx₂ : suc x₂ ≤ n
+    cx₂ = ≤-trans (_≤_.s≤s (pairing4→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+
+    x₃ : ℕ
+    x₃ = pairing4→₃ m
+
+    cx₃ : suc x₃ ≤ n
+    cx₃ = ≤-trans (_≤_.s≤s (pairing4→₃≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+
+    x₄ : ℕ
+    x₄ = pairing4→₄ m
+
+    cx₄ : suc x₄ ≤ n
+    cx₄ = ≤-trans (_≤_.s≤s (pairing4→₄≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+-- SUC
+... | no p with n % #cons ≟ 9
+... | yes p = SUC (ind m cm)
+  where
+    k : ℕ
+    k = 9
+
+    m : ℕ
+    m = (n ∸ k) / #cons
+
+    cm : suc m ≤ n
+    cm = ≤-trans (suc-/m n k) (suc/≤ n p₀)
+-- PI
+... | no p with n % #cons ≟ 10
+... | yes p = PI (ind x₁ cx₁) (ind x₂ cx₂)
+  where
+    k : ℕ
+    k = 10
+
+    m : ℕ
+    m = (n ∸ k) / #cons
+
+    x₁ : ℕ
+    x₁ = pairing→₁ m
+
+    cx₁ : suc x₁ ≤ n
+    cx₁ = ≤-trans (_≤_.s≤s (pairing→₁≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+
+    x₂ : ℕ
+    x₂ = pairing→₂ m
+
+    cx₂ : suc x₂ ≤ n
+    cx₂ = ≤-trans (_≤_.s≤s (pairing→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+-- LAMBDA
+... | no p with n % #cons ≟ 11
+... | yes p = LAMBDA (ind m cm)
+  where
+    k : ℕ
+    k = 11
+
+    m : ℕ
+    m = (n ∸ k) / #cons
+
+    cm : suc m ≤ n
+    cm = ≤-trans (suc-/m n k) (suc/≤ n p₀)
+-- APPLY
+... | no p with n % #cons ≟ 12
+... | yes p = APPLY (ind x₁ cx₁) (ind x₂ cx₂)
+  where
+    k : ℕ
+    k = 12
+
+    m : ℕ
+    m = (n ∸ k) / #cons
+
+    x₁ : ℕ
+    x₁ = pairing→₁ m
+
+    cx₁ : suc x₁ ≤ n
+    cx₁ = ≤-trans (_≤_.s≤s (pairing→₁≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+
+    x₂ : ℕ
+    x₂ = pairing→₂ m
+
+    cx₂ : suc x₂ ≤ n
+    cx₂ = ≤-trans (_≤_.s≤s (pairing→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+-- FIX
+... | no p with n % #cons ≟ 13
+... | yes p = FIX (ind m cm)
+  where
+    k : ℕ
+    k = 13
+
+    m : ℕ
+    m = (n ∸ k) / #cons
+
+    cm : suc m ≤ n
+    cm = ≤-trans (suc-/m n k) (suc/≤ n p₀)
+-- LET
+... | no p with n % #cons ≟ 14
+... | yes p = LET (ind x₁ cx₁) (ind x₂ cx₂)
+  where
+    k : ℕ
+    k = 14
+
+    m : ℕ
+    m = (n ∸ k) / #cons
+
+    x₁ : ℕ
+    x₁ = pairing→₁ m
+
+    cx₁ : suc x₁ ≤ n
+    cx₁ = ≤-trans (_≤_.s≤s (pairing→₁≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+
+    x₂ : ℕ
+    x₂ = pairing→₂ m
+
+    cx₂ : suc x₂ ≤ n
+    cx₂ = ≤-trans (_≤_.s≤s (pairing→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
+--
+-- TO FINISH!
+--
 -- otherwise
 ... | no pₒ = AX -- not possible - we return a default value
-
-
-{--
--- APPLY
-... | no p₀ with n % 4 ≟ 1
-... | yes p₁ = -- then it is an application
-  APPLY (ind x cx) (ind y cy)
-  where
-    m : ℕ
-    m = (n ∸ 1) / 4
-
-    -- We need to extract x from the pairing m
-    -- We also need to show that x < n
-    x : ℕ
-    x = pairing→x m
-
-    cx : suc x ≤ n
-    cx = ≤-trans (_≤_.s≤s (fst (unpairing≤ m))) (≤-trans (suc-/m n 1) (suc/4≤ n p))
-
-    -- We need to extract y from the pairing m
-    y : ℕ
-    y = pairing→y m
-
-    cy : suc y ≤ n
-    cy = ≤-trans (_≤_.s≤s (snd (unpairing≤ m))) (≤-trans (suc-/m n 1) (suc/4≤ n p))
--- LAMBDA
-... | no p₁ with n % 4 ≟ 2
-... |   yes p₂ = -- then it is a lambda
-  LAMBDA (ind ((n ∸ 2) / 4) (<-transʳ (m/n≤m (n ∸ 2) 4) (∸-monoʳ-< {n} {2} {0} 0<1+n (→2≤n p₀ p₁))))
--- VAR
-... |   no p₂ with n % 4 ≟ 3
-... | yes p₀ = -- then it is an ENC
-  ENC (ind ((n ∸ 3) / 4) ?)
-  where
-    x : n / 4 < n
-    x = suc/4≤ n p
--- and otherwise
-... |   no p₃ = AX -- not possible - we return a default value
---}
 
 
 ℕ→Term : ℕ → Term
@@ -567,7 +694,10 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
 
 
 ℕ→Term→ℕ : (t : Term) → ℕ→Term (Term→ℕ t) ≡ t
-ℕ→Term→ℕ (VAR x) = {!!}
+ℕ→Term→ℕ (VAR x) = concl
+  where
+    concl : ℕ→Term (#cons * x) ≡ VAR x
+    concl = {!!}
 ℕ→Term→ℕ NAT = {!!}
 ℕ→Term→ℕ QNAT = {!!}
 ℕ→Term→ℕ TNAT = {!!}
