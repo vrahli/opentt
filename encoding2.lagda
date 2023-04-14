@@ -19,6 +19,7 @@ open import Data.Nat using (ℕ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; _�
 open import Data.Nat.DivMod -- using (_%_ ; _/_ ; _∣_)
 open import Data.Nat.Divisibility
 open import Data.Nat.Properties
+open import Data.Bool using (Bool ; _∧_ ; _∨_)
 open import Agda.Builtin.String
 open import Agda.Builtin.String.Properties
 open import Data.List
@@ -38,6 +39,79 @@ open import calculus
 
 
 module encoding2 where
+
+
+-- MOVE to util
+comp-ind-ℕ-aux2 : {L : Level} (P : ℕ → Set(L))
+                   → ((n : ℕ) → ((m : ℕ) → m < n → P m) → P n)
+                   → (n m : ℕ) → m ≤ n → P m
+comp-ind-ℕ-aux2 {L} P ind 0 0 z = ind 0 (λ m ())
+comp-ind-ℕ-aux2 {L} P ind (suc n) 0 z = ind 0 (λ m ())
+comp-ind-ℕ-aux2 {L} P ind (suc n) (suc m) z =
+  ind (suc m) (λ k h → comp-ind-ℕ-aux2 P ind n k (≤-trans (s≤s-inj h) (s≤s-inj z)))
+
+
+<ℕind2 : {L : Level} (P : ℕ → Set(L))
+          → ((n : ℕ) → ((m : ℕ) → m < n → P m) → P n)
+          → (n : ℕ) → P n
+<ℕind2 {L} P ind n = comp-ind-ℕ-aux2 P ind n n ≤-refl
+
+
+noseq : Term → Bool
+noseq (VAR x) = true
+noseq NAT = true
+noseq QNAT = true
+noseq TNAT = true
+noseq (LT t t₁) = noseq t ∧ noseq t₁
+noseq (QLT t t₁) = noseq t ∧ noseq t₁
+noseq (NUM x) = true
+noseq (IFLT t t₁ t₂ t₃) = noseq t ∧ noseq t₁ ∧ noseq t₂ ∧ noseq t₃
+noseq (IFEQ t t₁ t₂ t₃) = noseq t ∧ noseq t₁ ∧ noseq t₂ ∧ noseq t₃
+noseq (SUC t) = noseq t
+noseq (PI t t₁) = noseq t ∧ noseq t₁
+noseq (LAMBDA t) = noseq t
+noseq (APPLY t t₁) = noseq t ∧ noseq t₁
+noseq (FIX t) = noseq t
+noseq (LET t t₁) = noseq t ∧ noseq t₁
+noseq (WT t t₁) = noseq t ∧ noseq t₁
+noseq (SUP t t₁) = noseq t ∧ noseq t₁
+noseq (WREC t t₁) = noseq t ∧ noseq t₁
+noseq (MT t t₁) = noseq t ∧ noseq t₁
+noseq (SUM t t₁) = noseq t ∧ noseq t₁
+noseq (PAIR t t₁) = noseq t ∧ noseq t₁
+noseq (SPREAD t t₁) = noseq t ∧ noseq t₁
+noseq (SET t t₁) = noseq t ∧ noseq t₁
+noseq (TUNION t t₁) = noseq t ∧ noseq t₁
+noseq (ISECT t t₁) = noseq t ∧ noseq t₁
+noseq (UNION t t₁) = noseq t ∧ noseq t₁
+noseq (QTUNION t t₁) = noseq t ∧ noseq t₁
+noseq (INL t) = noseq t
+noseq (INR t) = noseq t
+noseq (DECIDE t t₁ t₂) = noseq t ∧ noseq t₁ ∧ noseq t₂
+noseq (EQ t t₁ t₂) = noseq t ∧ noseq t₁ ∧ noseq t₂
+noseq (EQB t t₁ t₂ t₃) = noseq t ∧ noseq t₁ ∧ noseq t₂ ∧ noseq t₃
+noseq AX = true
+noseq FREE = true
+noseq (CS x) = true
+noseq (NAME x) = true
+noseq (FRESH t) = noseq t
+noseq (CHOOSE t t₁) = noseq t ∧ noseq t₁
+noseq (LOAD t) = noseq t
+noseq (MSEQ x) = false
+noseq (MAPP x t) = false
+noseq (TSQUASH t) = noseq t
+noseq (TTRUNC t) = noseq t
+noseq (TCONST t) = noseq t
+noseq (SUBSING t) = noseq t
+noseq (DUM t) = noseq t
+noseq (FFDEFS t t₁) = noseq t ∧ noseq t₁
+noseq PURE = true
+noseq (TERM t) = noseq t
+noseq (ENC t) = noseq t
+noseq (UNIV x) = true
+noseq (LIFT t) = noseq t
+noseq (LOWER t) = noseq t
+noseq (SHRINK t) = noseq t
 
 
 -- The one described here: https://engineering.purdue.edu/kak/ComputabilityComplexityLanguages/Lecture7.pdf
@@ -306,14 +380,17 @@ pairing-non-dec x y
 #cons = 52
 
 
--- This only converts the untyped λ-calculus (vars, lams, apps) - everything else is mapped to 0
--- From here: https://math.stackexchange.com/questions/1315256/encode-lambda-calculus-in-arithmetic
--- TODO: add all the terms in calculus
+#cons-1 : ℕ
+#cons-1 = 51
+
+
+-- MSEQ and MAPP are mapped to 0 as they involve meta sequences
+-- Based on: https://math.stackexchange.com/questions/1315256/encode-lambda-calculus-in-arithmetic
 Term→ℕ : Term → ℕ
 Term→ℕ (VAR x) = 0 + (#cons * x)
-Term→ℕ NAT = 1 + #cons
-Term→ℕ QNAT = 2 + #cons
-Term→ℕ TNAT = 3 + #cons
+Term→ℕ NAT = 1
+Term→ℕ QNAT = 2
+Term→ℕ TNAT = 3
 Term→ℕ (LT t t₁) = 4 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
 Term→ℕ (QLT t t₁) = 5 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
 Term→ℕ (NUM x) = 6 + (#cons * x)
@@ -342,8 +419,8 @@ Term→ℕ (INR t) = 28 + (#cons * Term→ℕ t)
 Term→ℕ (DECIDE t t₁ t₂) = 29 + (#cons * pairing3 (Term→ℕ t , Term→ℕ t₁ , Term→ℕ t₂))
 Term→ℕ (EQ t t₁ t₂) = 30 + (#cons * pairing3 (Term→ℕ t , Term→ℕ t₁ , Term→ℕ t₂))
 Term→ℕ (EQB t t₁ t₂ t₃) = 31 + (#cons * pairing4 (Term→ℕ t , Term→ℕ t₁ , Term→ℕ t₂ , Term→ℕ t₃))
-Term→ℕ AX = 32 + #cons
-Term→ℕ FREE = 33 + #cons
+Term→ℕ AX = 32
+Term→ℕ FREE = 33
 Term→ℕ (CS x) = 34 + (#cons * x)
 Term→ℕ (NAME x) = 35 + (#cons * x)
 Term→ℕ (FRESH t) = 36 + (#cons * Term→ℕ t)
@@ -357,7 +434,7 @@ Term→ℕ (TCONST t) = 41 + (#cons * Term→ℕ t)
 Term→ℕ (SUBSING t) = 42 + (#cons * Term→ℕ t)
 Term→ℕ (DUM t) = 43 + (#cons * Term→ℕ t)
 Term→ℕ (FFDEFS t t₁) = 44 + (#cons * pairing (Term→ℕ t , Term→ℕ t₁))
-Term→ℕ PURE = 45 * #cons
+Term→ℕ PURE = 45
 Term→ℕ (TERM t) = 46 + (#cons * Term→ℕ t)
 Term→ℕ (ENC t) = 47 + (#cons * Term→ℕ t)
 Term→ℕ (UNIV x) = 48 + (#cons * x)
@@ -443,15 +520,6 @@ suc/≤ (suc n) d0 = _≤_.s≤s h1
     h1 = *-cancelʳ-≤ (suc n / #cons) n (#cons ∸ 1) h2
 
 
-→2≤n : {n : ℕ}
-        → ¬ (n % #cons ≡ 0)
-        → ¬ (n % #cons ≡ 1)
-        → 2 ≤ n
-→2≤n {0} h1 h2 = ⊥-elim (h1 refl)
-→2≤n {1} h1 h2 = ⊥-elim (h2 refl)
-→2≤n {suc (suc n)} h1 h2 = _≤_.s≤s (_≤_.s≤s _≤_.z≤n)
-
-
 suc-/m : (n m : ℕ) → suc ((n ∸ m) / #cons) ≤ suc (n / #cons)
 suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n m) ≤-refl)
 
@@ -459,22 +527,18 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
 -- TODO: add all the terms in calculus
 ℕ→Term-aux : (n : ℕ) → ((m : ℕ) → m < n → Term) → Term
 ℕ→Term-aux n ind with n ≟ 0
-... | yes p₀ = AX -- default value
+... | yes p₀ = VAR 0
+... | no p₀ with n % #cons
 -- VAR
-... | no p₀ with n % #cons ≟ 0
-... | yes p₁ = VAR ((n ∸ 0) / #cons) -- then it is a variable
+... | 0 = VAR ((n ∸ 0) / #cons) -- then it is a variable
 -- NAT
-... | no p with n % #cons ≟ 1
-... | yes p = NAT
+... | 1 = NAT
 -- QNAT
-... | no p with n % #cons ≟ 2
-... | yes p = QNAT
+... | 2 = QNAT
 -- TNAT
-... | no p with n % #cons ≟ 3
-... | yes p = TNAT
+... | 3 = TNAT
 -- LT
-... | no p with n % #cons ≟ 4
-... | yes p = LT (ind x₁ cx₁) (ind x₂ cx₂)
+... | 4 = LT (ind x₁ cx₁) (ind x₂ cx₂)
   where
     k : ℕ
     k = 4
@@ -494,8 +558,7 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     cx₂ : suc x₂ ≤ n
     cx₂ = ≤-trans (_≤_.s≤s (pairing→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
 -- QLT
-... | no p with n % #cons ≟ 5
-... | yes p = QLT (ind x₁ cx₁) (ind x₂ cx₂)
+... | 5 = QLT (ind x₁ cx₁) (ind x₂ cx₂)
   where
     k : ℕ
     k = 5
@@ -515,11 +578,9 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     cx₂ : suc x₂ ≤ n
     cx₂ = ≤-trans (_≤_.s≤s (pairing→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
 -- NUM
-... | no p with n % #cons ≟ 6
-... | yes p = NUM ((n ∸ 6) / #cons) -- then it is a variable
+... | 6 = NUM ((n ∸ 6) / #cons) -- then it is a variable
 -- IFLT
-... | no p with n % #cons ≟ 7
-... | yes p = IFLT (ind x₁ cx₁) (ind x₂ cx₂) (ind x₃ cx₃) (ind x₄ cx₄)
+... | 7 = IFLT (ind x₁ cx₁) (ind x₂ cx₂) (ind x₃ cx₃) (ind x₄ cx₄)
   where
     k : ℕ
     k = 7
@@ -551,8 +612,7 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     cx₄ : suc x₄ ≤ n
     cx₄ = ≤-trans (_≤_.s≤s (pairing4→₄≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
 -- IFEQ
-... | no p with n % #cons ≟ 8
-... | yes p = IFEQ (ind x₁ cx₁) (ind x₂ cx₂) (ind x₃ cx₃) (ind x₄ cx₄)
+... | 8 = IFEQ (ind x₁ cx₁) (ind x₂ cx₂) (ind x₃ cx₃) (ind x₄ cx₄)
   where
     k : ℕ
     k = 8
@@ -584,8 +644,7 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     cx₄ : suc x₄ ≤ n
     cx₄ = ≤-trans (_≤_.s≤s (pairing4→₄≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
 -- SUC
-... | no p with n % #cons ≟ 9
-... | yes p = SUC (ind m cm)
+... | 9 = SUC (ind m cm)
   where
     k : ℕ
     k = 9
@@ -596,8 +655,7 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     cm : suc m ≤ n
     cm = ≤-trans (suc-/m n k) (suc/≤ n p₀)
 -- PI
-... | no p with n % #cons ≟ 10
-... | yes p = PI (ind x₁ cx₁) (ind x₂ cx₂)
+... | 10 = PI (ind x₁ cx₁) (ind x₂ cx₂)
   where
     k : ℕ
     k = 10
@@ -617,8 +675,7 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     cx₂ : suc x₂ ≤ n
     cx₂ = ≤-trans (_≤_.s≤s (pairing→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
 -- LAMBDA
-... | no p with n % #cons ≟ 11
-... | yes p = LAMBDA (ind m cm)
+... | 11 = LAMBDA (ind m cm)
   where
     k : ℕ
     k = 11
@@ -629,8 +686,7 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     cm : suc m ≤ n
     cm = ≤-trans (suc-/m n k) (suc/≤ n p₀)
 -- APPLY
-... | no p with n % #cons ≟ 12
-... | yes p = APPLY (ind x₁ cx₁) (ind x₂ cx₂)
+... | 12 = APPLY (ind x₁ cx₁) (ind x₂ cx₂)
   where
     k : ℕ
     k = 12
@@ -650,8 +706,7 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     cx₂ : suc x₂ ≤ n
     cx₂ = ≤-trans (_≤_.s≤s (pairing→₂≤ m)) (≤-trans (suc-/m n k) (suc/≤ n p₀))
 -- FIX
-... | no p with n % #cons ≟ 13
-... | yes p = FIX (ind m cm)
+... | 13 = FIX (ind m cm)
   where
     k : ℕ
     k = 13
@@ -662,8 +717,7 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
     cm : suc m ≤ n
     cm = ≤-trans (suc-/m n k) (suc/≤ n p₀)
 -- LET
-... | no p with n % #cons ≟ 14
-... | yes p = LET (ind x₁ cx₁) (ind x₂ cx₂)
+... | 14 = LET (ind x₁ cx₁) (ind x₂ cx₂)
   where
     k : ℕ
     k = 14
@@ -686,71 +740,104 @@ suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n 
 -- TO FINISH!
 --
 -- otherwise
-... | no pₒ = AX -- not possible - we return a default value
+... | _ = AX -- not possible - we return a default value
 
 
 ℕ→Term : ℕ → Term
-ℕ→Term = <ℕind (λ _ → Term) ℕ→Term-aux
+ℕ→Term = <ℕind2 (λ _ → Term) ℕ→Term-aux
 
 
-ℕ→Term→ℕ : (t : Term) → ℕ→Term (Term→ℕ t) ≡ t
-ℕ→Term→ℕ (VAR x) = concl
-  where
-    concl : ℕ→Term (#cons * x) ≡ VAR x
-    concl = {!!}
-ℕ→Term→ℕ NAT = {!!}
-ℕ→Term→ℕ QNAT = {!!}
-ℕ→Term→ℕ TNAT = {!!}
-ℕ→Term→ℕ (LT t t₁) = {!!}
-ℕ→Term→ℕ (QLT t t₁) = {!!}
-ℕ→Term→ℕ (NUM x) = {!!}
-ℕ→Term→ℕ (IFLT t t₁ t₂ t₃) = {!!}
-ℕ→Term→ℕ (IFEQ t t₁ t₂ t₃) = {!!}
-ℕ→Term→ℕ (SUC t) = {!!}
-ℕ→Term→ℕ (PI t t₁) = {!!}
-ℕ→Term→ℕ (LAMBDA t) = {!!}
-ℕ→Term→ℕ (APPLY t t₁) = {!!}
-ℕ→Term→ℕ (FIX t) = {!!}
-ℕ→Term→ℕ (LET t t₁) = {!!}
-ℕ→Term→ℕ (WT t t₁) = {!!}
-ℕ→Term→ℕ (SUP t t₁) = {!!}
-ℕ→Term→ℕ (WREC t t₁) = {!!}
-ℕ→Term→ℕ (MT t t₁) = {!!}
-ℕ→Term→ℕ (SUM t t₁) = {!!}
-ℕ→Term→ℕ (PAIR t t₁) = {!!}
-ℕ→Term→ℕ (SPREAD t t₁) = {!!}
-ℕ→Term→ℕ (SET t t₁) = {!!}
-ℕ→Term→ℕ (TUNION t t₁) = {!!}
-ℕ→Term→ℕ (ISECT t t₁) = {!!}
-ℕ→Term→ℕ (UNION t t₁) = {!!}
-ℕ→Term→ℕ (QTUNION t t₁) = {!!}
-ℕ→Term→ℕ (INL t) = {!!}
-ℕ→Term→ℕ (INR t) = {!!}
-ℕ→Term→ℕ (DECIDE t t₁ t₂) = {!!}
-ℕ→Term→ℕ (EQ t t₁ t₂) = {!!}
-ℕ→Term→ℕ (EQB t t₁ t₂ t₃) = {!!}
-ℕ→Term→ℕ AX = {!!}
-ℕ→Term→ℕ FREE = {!!}
-ℕ→Term→ℕ (CS x) = {!!}
-ℕ→Term→ℕ (NAME x) = {!!}
-ℕ→Term→ℕ (FRESH t) = {!!}
-ℕ→Term→ℕ (CHOOSE t t₁) = {!!}
-ℕ→Term→ℕ (LOAD t) = {!!}
-ℕ→Term→ℕ (MSEQ x) = {!!}
-ℕ→Term→ℕ (MAPP x t) = {!!}
-ℕ→Term→ℕ (TSQUASH t) = {!!}
-ℕ→Term→ℕ (TTRUNC t) = {!!}
-ℕ→Term→ℕ (TCONST t) = {!!}
-ℕ→Term→ℕ (SUBSING t) = {!!}
-ℕ→Term→ℕ (DUM t) = {!!}
-ℕ→Term→ℕ (FFDEFS t t₁) = {!!}
-ℕ→Term→ℕ PURE = {!!}
-ℕ→Term→ℕ (TERM t) = {!!}
-ℕ→Term→ℕ (ENC t) = {!!}
-ℕ→Term→ℕ (UNIV x) = {!!}
-ℕ→Term→ℕ (LIFT t) = {!!}
-ℕ→Term→ℕ (LOWER t) = {!!}
-ℕ→Term→ℕ (SHRINK t) = {!!}
+#cons*≡0→ : (x : ℕ) → #cons * x ≡ 0 → x ≡ 0
+#cons*≡0→ x h with m*n≡0⇒m≡0∨n≡0 #cons {x} h
+... | inj₁ ()
+... | inj₂ p = p
+
+
+0/#cons : (0 / #cons) ≡ 0
+0/#cons = 0/n≡0 #cons
+
+
+→≡% : (a b c : ℕ) → a ≡ b → a % suc c ≡ b % suc c
+→≡% a b c e rewrite e = refl
+
+
+abstract
+  n*m/n≡m : (m n : ℕ) → (suc n * m / suc n) ≡ m
+  n*m/n≡m m n = trans (/-congˡ (*-comm (suc n) m)) (m*n/n≡m m (suc n))
+
+
+abstract
+  #cons%≡0 : (x : ℕ) → (#cons * x) % #cons ≡ 0
+  #cons%≡0 x = trans (→≡% (#cons * x) (x * #cons) #cons-1 (*-comm #cons x)) (m*n%n≡0 x #cons-1)
+
+
+ℕ→Term→ℕ-VAR : (x : Var) → ℕ→Term (#cons * x) ≡ VAR x
+ℕ→Term→ℕ-VAR x with n*m/n≡m x #cons-1 | #cons%≡0 x
+... | p | q with #cons * x
+... |   0 rewrite 0/#cons | sym p = refl
+... |   suc y rewrite q | p = refl
+
+
+ℕ→Term→ℕ-LT : (t₁ t₂ : Term)
+                 → ℕ→Term (Term→ℕ t₁) ≡ t₁
+                 → ℕ→Term (Term→ℕ t₂) ≡ t₂
+                 → ℕ→Term (4 + (#cons * pairing (Term→ℕ t₁ , Term→ℕ t₂))) ≡ LT t₁ t₂
+ℕ→Term→ℕ-LT t₁ t₂ ind₁ ind₂ = {!!}
+
+
+ℕ→Term→ℕ : (t : Term) → noseq t ≡ true → ℕ→Term (Term→ℕ t) ≡ t
+ℕ→Term→ℕ (VAR x) nseq = ℕ→Term→ℕ-VAR x
+ℕ→Term→ℕ NAT nseq = refl
+ℕ→Term→ℕ QNAT nseq = refl
+ℕ→Term→ℕ TNAT nseq = refl
+ℕ→Term→ℕ (LT t t₁) nseq = ℕ→Term→ℕ-LT t t₁ (ℕ→Term→ℕ t {!!}) (ℕ→Term→ℕ t₁ {!!}) -- we need the ∧ lemmas from terms2 → move them somewhere else
+ℕ→Term→ℕ (QLT t t₁) nseq = {!!}
+ℕ→Term→ℕ (NUM x) nseq = {!!}
+ℕ→Term→ℕ (IFLT t t₁ t₂ t₃) nseq = {!!}
+ℕ→Term→ℕ (IFEQ t t₁ t₂ t₃) nseq = {!!}
+ℕ→Term→ℕ (SUC t) nseq = {!!}
+ℕ→Term→ℕ (PI t t₁) nseq = {!!}
+ℕ→Term→ℕ (LAMBDA t) nseq = {!!}
+ℕ→Term→ℕ (APPLY t t₁) nseq = {!!}
+ℕ→Term→ℕ (FIX t) nseq = {!!}
+ℕ→Term→ℕ (LET t t₁) nseq = {!!}
+ℕ→Term→ℕ (WT t t₁) nseq = {!!}
+ℕ→Term→ℕ (SUP t t₁) nseq = {!!}
+ℕ→Term→ℕ (WREC t t₁) nseq = {!!}
+ℕ→Term→ℕ (MT t t₁) nseq = {!!}
+ℕ→Term→ℕ (SUM t t₁) nseq = {!!}
+ℕ→Term→ℕ (PAIR t t₁) nseq = {!!}
+ℕ→Term→ℕ (SPREAD t t₁) nseq = {!!}
+ℕ→Term→ℕ (SET t t₁) nseq = {!!}
+ℕ→Term→ℕ (TUNION t t₁) nseq = {!!}
+ℕ→Term→ℕ (ISECT t t₁) nseq = {!!}
+ℕ→Term→ℕ (UNION t t₁) nseq = {!!}
+ℕ→Term→ℕ (QTUNION t t₁) nseq = {!!}
+ℕ→Term→ℕ (INL t) nseq = {!!}
+ℕ→Term→ℕ (INR t) nseq = {!!}
+ℕ→Term→ℕ (DECIDE t t₁ t₂) nseq = {!!}
+ℕ→Term→ℕ (EQ t t₁ t₂) nseq = {!!}
+ℕ→Term→ℕ (EQB t t₁ t₂ t₃) nseq = {!!}
+ℕ→Term→ℕ AX nseq = {!!}
+ℕ→Term→ℕ FREE nseq = {!!}
+ℕ→Term→ℕ (CS x) nseq = {!!}
+ℕ→Term→ℕ (NAME x) nseq = {!!}
+ℕ→Term→ℕ (FRESH t) nseq = {!!}
+ℕ→Term→ℕ (CHOOSE t t₁) nseq = {!!}
+ℕ→Term→ℕ (LOAD t) nseq = {!!}
+ℕ→Term→ℕ (TSQUASH t) nseq = {!!}
+ℕ→Term→ℕ (TTRUNC t) nseq = {!!}
+ℕ→Term→ℕ (TCONST t) nseq = {!!}
+ℕ→Term→ℕ (SUBSING t) nseq = {!!}
+ℕ→Term→ℕ (DUM t) nseq = {!!}
+ℕ→Term→ℕ (FFDEFS t t₁) nseq = {!!}
+ℕ→Term→ℕ PURE nseq = {!!}
+ℕ→Term→ℕ (TERM t) nseq = {!!}
+ℕ→Term→ℕ (ENC t) nseq = {!!}
+ℕ→Term→ℕ (UNIV x) nseq = {!!}
+ℕ→Term→ℕ (LIFT t) nseq = {!!}
+ℕ→Term→ℕ (LOWER t) nseq = {!!}
+ℕ→Term→ℕ (SHRINK t) nseq = {!!}
 
 
 -- We can then add Term→ℕ to the computation system and encode termination as a type:
