@@ -46,13 +46,15 @@ open import newChoice
 open import freeze
 open import progress
 open import mod
+open import encode
 
 
 module kripkeCsNotExBar {L : Level}
-                        (E : Extensionality 0ℓ 3ℓ)
+                        (E3 : Extensionality 0ℓ 3ℓ)
+                        (E0 : Extensionality 0ℓ 0ℓ)
        where
 
-open import worldInstanceCS
+open import worldInstanceCS(E0)
 
 W : PossibleWorlds
 W = PossibleWorldsCS
@@ -83,7 +85,12 @@ F = freezeCS
 X : ChoiceExt W C
 X = choiceExtCS
 
-V : ChoiceVal W C K G X N
+open import encoding3(E0)
+
+EC : Encode
+EC = enc
+
+V : ChoiceVal W C K G X N EC
 V = choiceValCS
 
 open import worldDef(W)
@@ -95,11 +102,11 @@ open import compatibleDef(W)(C)(K)
 open import progressDef(W)(C)(K)(P)
 open import getChoiceDef(W)(C)(K)(G)
 open import choiceExtDef(W)(C)(K)(G)(X)
-open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
+open import choiceValDef(W)(C)(K)(G)(X)(N)(EC)(V)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E3)(EC)
 
 
 

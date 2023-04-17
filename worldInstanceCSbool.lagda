@@ -8,7 +8,7 @@ open import Agda.Builtin.Equality.Rewrite
 open import Agda.Builtin.Sigma
 open import Relation.Nullary
 open import Relation.Unary using (Pred; Decidable)
-open import Relation.Binary.PropositionalEquality hiding ([_]) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
+open import Relation.Binary.PropositionalEquality hiding ([_] ; Extensionality) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
 open ≡-Reasoning
 open import Data.Product
 open import Data.Sum
@@ -25,6 +25,7 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Data.List.Properties
 open import Function.Inverse using (Inverse)
+open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -33,7 +34,7 @@ open import calculus
 open import terms
 
 
-module worldInstanceCSbool where
+module worldInstanceCSbool (E : Extensionality 0ℓ 0ℓ) where
 \end{code}
 
 
@@ -881,7 +882,10 @@ newChoiceCS =
 open import newChoiceDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(newChoiceCS)
 
 
-open import computation(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)(newChoiceCS)
+open import encoding3(E)
+
+
+open import computation(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)(newChoiceCS)(enc)
 
 
 #≠01 : (w : 𝕎·) → ¬ ∼C! w (#NUM 0) (#NUM 1)
@@ -906,12 +910,12 @@ open import computation(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(c
 ℂ→T→ℂ1 = refl
 
 
-open import choiceVal{1ℓ}(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)(newChoiceCS)
+open import choiceVal{1ℓ}(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)(newChoiceCS)(enc)
 
 choiceValCS : ChoiceVal
 choiceValCS = mkChoiceVal ¬∼c01 tt tt ℂ→T→ℂ0 ℂ→T→ℂ1
 
-open import choiceValDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)(newChoiceCS)(choiceValCS)
+open import choiceValDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)(newChoiceCS)(enc)(choiceValCS)
 
 
 getRes : Name → world → Res

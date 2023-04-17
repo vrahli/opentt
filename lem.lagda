@@ -45,6 +45,7 @@ open import newChoice
 open import progress
 open import exBar
 open import mod
+open import encode
 
 
 module lem {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
@@ -55,23 +56,24 @@ module lem {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
            (EM : ExcludedMiddle (lsuc(L)))
            (EB : ExBar W M)
+           (EC : Encode)
        where
 
 
 open import worldDef(W)
 open import choiceDef{L}(C)
 open import exBarDef(W)(M)(EB)
-open import computation(W)(C)(K)(G)(X)(N)
+open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 
 □·⊎inhType : (i : ℕ) (w : 𝕎·) (T : CTerm)

@@ -51,6 +51,7 @@ open import freeze
 open import progress
 open import choiceBar
 open import mod
+open import encode
 
 
 module mpp {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
@@ -62,6 +63,7 @@ module mpp {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
 --           (CB : ChoiceBar W M C K P G X N V F E)
            (EM : ExcludedMiddle (lsuc(L)))
+           (EC : Encode)
        where
 
 
@@ -73,28 +75,29 @@ open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 --open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
 --open import freezeDef(W)(C)(K)(P)(G)(N)(F)
-open import computation(W)(C)(K)(G)(X)(N)
+
+open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import terms2(W)(C)(K)(G)(X)(N)
-open import terms4(W)(C)(K)(G)(X)(N) using (¬Names→⇓)
-open import terms8(W)(C)(K)(G)(X)(N)
+open import terms2(W)(C)(K)(G)(X)(N)(EC)
+open import terms4(W)(C)(K)(G)(X)(N)(EC) using (¬Names→⇓)
+open import terms8(W)(C)(K)(G)(X)(N)(EC)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 -- TOOD: move the usings to a non-CB-depedent file -- a propsX.lagda kinda file or lem_props?
 --open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (#QTNAT!→QTBOOL! ; #QTNAT!→QTBOOL!≡ ; #SUM-ASSERT₂ ; #PI-NEG-ASSERT₂ ; #SUM-ASSERT₃)
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#[0]MP-left ; #[0]MP-right ; #[0]MP-left3 ; #[0]MP-left2 ; #[0]MP-right2 ; #[0]MP-left-qt ; #[0]MP-right-qt ; #[0]MP-left-qt₂ ; #[0]MP-right-qt₂ ; sub0-fun-mp ; →equalTypes-#MP-left ; →equalTypes-#MP-right ; #MP-left ; #MP-right ; sub0-fun-mp₄ ; →equalTypes-#MP-left-qt ; →equalTypes-#MP-right-qt ; #MP-left-qt ; #MP-right-qt ; equalInType-#MP-left-qt→ ; →≡equalTypes ; sub0-fun-mp₂ ; →equalTypes-#MP-left3 ; →≡equalInType ; →∈Type-FUN ; #MP-left3 ; #MP-left2→#MP-left ; #MP-left3→#MP-left2 ; →∈Type-PI ; sub0-fun-mp₃ ; →equalTypes-#MP-left2 ; →equalTypes-#MP-right2 ; #MP-left2 ; #MP-right2 ; #MP-left2→#MP-left3)
-open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#infSearchP ; mpSearch)
+open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#[0]MP-left ; #[0]MP-right ; #[0]MP-left3 ; #[0]MP-left2 ; #[0]MP-right2 ; #[0]MP-left-qt ; #[0]MP-right-qt ; #[0]MP-left-qt₂ ; #[0]MP-right-qt₂ ; sub0-fun-mp ; →equalTypes-#MP-left ; →equalTypes-#MP-right ; #MP-left ; #MP-right ; sub0-fun-mp₄ ; →equalTypes-#MP-left-qt ; →equalTypes-#MP-right-qt ; #MP-left-qt ; #MP-right-qt ; equalInType-#MP-left-qt→ ; →≡equalTypes ; sub0-fun-mp₂ ; →equalTypes-#MP-left3 ; →≡equalInType ; →∈Type-FUN ; #MP-left3 ; #MP-left2→#MP-left ; #MP-left3→#MP-left2 ; →∈Type-PI ; sub0-fun-mp₃ ; →equalTypes-#MP-left2 ; →equalTypes-#MP-right2 ; #MP-left2 ; #MP-right2 ; #MP-left2→#MP-left3)
+open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#infSearchP ; mpSearch)
 
 
 

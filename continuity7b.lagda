@@ -49,6 +49,7 @@ open import freeze
 open import newChoice
 open import mod
 open import choiceBar
+open import encode
 
 
 module continuity7b {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
@@ -56,21 +57,22 @@ module continuity7b {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
                     (X : ChoiceExt W C)
                     (N : NewChoice {L} W C K G)
                     (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+                    (EC : Encode)
        where
 
 
 open import worldDef(W)
-open import computation(W)(C)(K)(G)(X)(N)
---open import terms2(W)(C)(K)(G)(X)(N)
-open import terms3(W)(C)(K)(G)(X)(N)
---open import terms4(W)(C)(K)(G)(X)(N)
---open import terms5(W)(C)(K)(G)(X)(N)
---open import terms6(W)(C)(K)(G)(X)(N)
+open import computation(W)(C)(K)(G)(X)(N)(EC)
+--open import terms2(W)(C)(K)(G)(X)(N)(EC)
+open import terms3(W)(C)(K)(G)(X)(N)(EC)
+--open import terms4(W)(C)(K)(G)(X)(N)(EC)
+--open import terms5(W)(C)(K)(G)(X)(N)(EC)
+--open import terms6(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -85,20 +87,20 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --}
 
-open import continuity-conds(W)(C)(K)(G)(X)(N)
+open import continuity-conds(W)(C)(K)(G)(X)(N)(EC)
 
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (force)
-open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E) using (getT≤ℕ)
---open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (force)
+open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (getT≤ℕ)
+--open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E) using (¬0∈names-shiftNameUp)
---open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import continuity3b(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity4b(W)(M)(C)(K)(P)(G)(X)(N)(E) --using (ren ; updRel2 ; upto𝕎)
-open import continuity5b2(W)(M)(C)(K)(P)(G)(X)(N)(E) using (→updRel2-shiftNameDown0)
-open import continuity6b(W)(M)(C)(K)(P)(G)(X)(N)(E) using (++⊆2→1 ; ++⊆2→2 ; ++⊆3→1 ; ++⊆3→2 ; ++⊆3→3 ; ++⊆4→1 ; ++⊆4→2 ; ++⊆4→3 ; ++⊆4→4 ; stepsPresUpdRel2-IFLT₂→ ; →ΣstepsUpdRel2-IFLT₂ ; stepsPresUpdRel2-IFLT₁→ ; →ΣstepsUpdRel2-IFLT₁ ; stepsPresUpdRel2-IFEQ₂→ ; →ΣstepsUpdRel2-IFEQ₂ ; stepsPresUpdRel2-IFEQ₁→ ; →ΣstepsUpdRel2-IFEQ₁ ; stepsPresUpdRel2-SUC₁→ ; →ΣstepsUpdRel2-SUC₁ ; stepsPresUpdRel2-MAPP₁→ ; →ΣstepsUpdRel2-MAPP₁ ; →ΣstepsUpdRel2-upd ; updRel2-CSₗ→ ; upto𝕎-pres-getT ; →ΣstepsUpdRel2-APPLY₂ ; stepsPresUpdRel2-APPLY₁→ ; →ΣstepsUpdRel2-APPLY₁ ; ΣstepsUpdRel2-FIX-APPLY→ ; stepsPresUpdRel2-FIX₁→ ; →ΣstepsUpdRel2-FIX₁ ; updRel2-valₗ→ ; stepsPresUpdRel2-LET₁→ ; →ΣstepsUpdRel2-LET₁ ; stepsPresUpdRel2-SPREAD₁→ ; →ΣstepsUpdRel2-SPREAD₁ ; stepsPresUpdRel2-WREC₁→ ; →ΣstepsUpdRel2-WREC₁ ; stepsPresUpdRel2-DECIDE₁→ ; →ΣstepsUpdRel2-DECIDE₁ ; →¬0∈names-renn-0s ; ¬newChoiceT+∈names ; →¬newChoiceT+-suc ; ¬0∈renₗ-sren ; ¬0∈renᵣ-sren ; →upto𝕎-startNewChoiceT ; names2ren ; upto𝕎-startNewChoices ; subRen-names2ren ; updRel2-NAMEₗ→ ; →upto𝕎-chooseT ; updRel2-¬NUM→ ; stepsPresUpdRel2-CHOOSE₁→ ; →ΣstepsUpdRel2-CHOOSE₁ ; updRel2-WRECr)
+open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC using (¬0∈names-shiftNameUp)
+--open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import continuity3b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import continuity4b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) --using (ren ; updRel2 ; upto𝕎)
+open import continuity5b2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (→updRel2-shiftNameDown0)
+open import continuity6b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (++⊆2→1 ; ++⊆2→2 ; ++⊆3→1 ; ++⊆3→2 ; ++⊆3→3 ; ++⊆4→1 ; ++⊆4→2 ; ++⊆4→3 ; ++⊆4→4 ; stepsPresUpdRel2-IFLT₂→ ; →ΣstepsUpdRel2-IFLT₂ ; stepsPresUpdRel2-IFLT₁→ ; →ΣstepsUpdRel2-IFLT₁ ; stepsPresUpdRel2-IFEQ₂→ ; →ΣstepsUpdRel2-IFEQ₂ ; stepsPresUpdRel2-IFEQ₁→ ; →ΣstepsUpdRel2-IFEQ₁ ; stepsPresUpdRel2-SUC₁→ ; →ΣstepsUpdRel2-SUC₁ ; stepsPresUpdRel2-MAPP₁→ ; →ΣstepsUpdRel2-MAPP₁ ; →ΣstepsUpdRel2-upd ; updRel2-CSₗ→ ; upto𝕎-pres-getT ; →ΣstepsUpdRel2-APPLY₂ ; stepsPresUpdRel2-APPLY₁→ ; →ΣstepsUpdRel2-APPLY₁ ; ΣstepsUpdRel2-FIX-APPLY→ ; stepsPresUpdRel2-FIX₁→ ; →ΣstepsUpdRel2-FIX₁ ; updRel2-valₗ→ ; stepsPresUpdRel2-LET₁→ ; →ΣstepsUpdRel2-LET₁ ; stepsPresUpdRel2-SPREAD₁→ ; →ΣstepsUpdRel2-SPREAD₁ ; stepsPresUpdRel2-WREC₁→ ; →ΣstepsUpdRel2-WREC₁ ; stepsPresUpdRel2-DECIDE₁→ ; →ΣstepsUpdRel2-DECIDE₁ ; →¬0∈names-renn-0s ; ¬newChoiceT+∈names ; →¬newChoiceT+-suc ; ¬0∈renₗ-sren ; ¬0∈renᵣ-sren ; →upto𝕎-startNewChoiceT ; names2ren ; upto𝕎-startNewChoices ; subRen-names2ren ; updRel2-NAMEₗ→ ; →upto𝕎-chooseT ; updRel2-¬NUM→ ; stepsPresUpdRel2-CHOOSE₁→ ; →ΣstepsUpdRel2-CHOOSE₁ ; updRel2-WRECr)
 
 
 

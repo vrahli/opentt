@@ -49,6 +49,7 @@ open import freeze
 open import newChoice
 open import mod
 open import choiceBar
+open import encode
 
 
 module continuity5b {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
@@ -56,21 +57,22 @@ module continuity5b {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
                     (X : ChoiceExt W C)
                     (N : NewChoice {L} W C K G)
                     (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+                    (EC : Encode)
        where
 
 
 open import worldDef(W)
-open import computation(W)(C)(K)(G)(X)(N)
-open import terms2(W)(C)(K)(G)(X)(N) using (shiftUp-shiftNameUp)
-open import terms3(W)(C)(K)(G)(X)(N) using (updBody ; sucIf≤-sucIf≤ ; suc≡sucIf≤0 ; shiftNameUp-shiftNameUp ; suc→∈lowerNames ; upd ; ≡LAMBDA ; ≡LET ; ≡IFLT ; ≡CS ; ≡CHOOSE ; ≡APPLY ; ≡NAME)
-open import terms4(W)(C)(K)(G)(X)(N) using (→¬∈names-shiftUp)
---open import terms5(W)(C)(K)(G)(X)(N)
---open import terms6(W)(C)(K)(G)(X)(N)
+open import computation(W)(C)(K)(G)(X)(N)(EC)
+open import terms2(W)(C)(K)(G)(X)(N)(EC) using (shiftUp-shiftNameUp)
+open import terms3(W)(C)(K)(G)(X)(N)(EC) using (updBody ; sucIf≤-sucIf≤ ; suc≡sucIf≤0 ; shiftNameUp-shiftNameUp ; suc→∈lowerNames ; upd ; ≡LAMBDA ; ≡LET ; ≡IFLT ; ≡CS ; ≡CHOOSE ; ≡APPLY ; ≡NAME)
+open import terms4(W)(C)(K)(G)(X)(N)(EC) using (→¬∈names-shiftUp)
+--open import terms5(W)(C)(K)(G)(X)(N)(EC)
+--open import terms6(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E) using (CSinj)
---open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (CSinj)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 --open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -78,23 +80,23 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (UNIVinj)
---open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (UNIVinj)
+--open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC
 
---open import continuity-conds(W)(C)(K)(G)(X)(N)
+--open import continuity-conds(W)(C)(K)(G)(X)(N)(EC)
 
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (force)
---open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E) using (isHighestℕ)
---open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (force)
+--open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (isHighestℕ)
+--open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E) using (→≡sucIf≤ ; NAMEinj ; shiftNameUp-inj) --using (→≡sucIf≤ ; shiftNameUp-inj ; updBody≡shiftNameUp→ ; shiftNameUpDown ; ¬∈++2→¬∈1 ; ¬∈++2→¬∈2 ; ¬∈++4→¬∈1 ; ¬∈++4→¬∈2 ; ¬∈++4→¬∈3 ; ¬∈++4→¬∈4)
---open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E) using (∈names𝕎)
---open import continuity3b(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity4b(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (→≡sucIf≤ ; NAMEinj ; shiftNameUp-inj) --using (→≡sucIf≤ ; shiftNameUp-inj ; updBody≡shiftNameUp→ ; shiftNameUpDown ; ¬∈++2→¬∈1 ; ¬∈++2→¬∈2 ; ¬∈++4→¬∈1 ; ¬∈++4→¬∈2 ; ¬∈++4→¬∈3 ; ¬∈++4→¬∈4)
+--open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (∈names𝕎)
+--open import continuity3b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import continuity4b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 
 abstract

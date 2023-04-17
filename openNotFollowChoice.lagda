@@ -47,10 +47,12 @@ open import choiceExt
 open import choiceVal
 
 
-module openNotFollowChoice (E : Extensionality 0ℓ 3ℓ)
+module openNotFollowChoice (E0 : Extensionality 0ℓ 0ℓ) (E : Extensionality 0ℓ 3ℓ)
        where
 
-open import worldInstanceRef
+open import encoding3(E0)
+
+open import worldInstanceRef(E0)
 
 W : PossibleWorlds
 W = PossibleWorldsRef
@@ -81,7 +83,7 @@ F = freezeREF
 X : ChoiceExt W C
 X = choiceExtRef
 
-V : ChoiceVal W C K G X N
+V : ChoiceVal W C K G X N enc
 V = choiceValRef
 
 open import worldDef(W)
@@ -93,7 +95,7 @@ open import compatibleDef(W)(C)(K)
 open import progressDef(W)(C)(K)(P)
 open import getChoiceDef(W)(C)(K)(G)
 open import choiceExtDef(W)(C)(K)(G)(X)
-open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
+open import choiceValDef(W)(C)(K)(G)(X)(N)(enc)(V)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 
@@ -101,10 +103,10 @@ open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import barI(W)(M)--(C)(K)(P)
 --open import computation(W)(C)(K)(G)(X)
 
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
 
 
 -- TODO: if we didn't want to rely on the choice instance at all,

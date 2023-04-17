@@ -43,23 +43,24 @@ open import progress
 open import choiceExt
 open import newChoice
 open import mod
-
+open import encode
 
 module type_sys_props_tnat {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
                            (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
                            (X : ChoiceExt W C)
                            (N : NewChoice W C K G)
                            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+                           (EC : Encode)
        where
 
 
 open import worldDef(W)
-open import computation(W)(C)(K)(G)(X)(N)
+open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 -- open import Function.Bundles
 -- open import calculus

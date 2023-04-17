@@ -49,6 +49,7 @@ open import freeze
 open import progress
 open import choiceBar
 open import mod
+open import encode
 
 
 module mp_props {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
@@ -59,6 +60,7 @@ module mp_props {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
 --                (F : Freeze {L} W C K P G N)
                 (E : Extensionality 0ℓ (lsuc(lsuc(L))))
 --                (CB : ChoiceBar W M C K P G X N V F E)
+                (EC : Encode)
        where
 
 
@@ -70,20 +72,20 @@ open import compatibleDef{L}(W)(C)(K)
 --open import choiceExtDef(W)(C)(K)(G)(X)
 --open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
 --open import freezeDef(W)(C)(K)(P)(G)(N)(F)
-open import computation(W)(C)(K)(G)(X)(N)
+open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E) using (eqTypes-mon)
---open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (eqTypes-mon)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import terms3(W)(C)(K)(G)(X)(N)
-open import terms8(W)(C)(K)(G)(X)(N)
+open import terms3(W)(C)(K)(G)(X)(N)(EC)
+open import terms8(W)(C)(K)(G)(X)(N)(EC)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E) using (sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-ASSERT₃-APPLY ; equalInType-QTBOOL!→equalTypes-ASSERT₃ ; isType-#NAT!→BOOL ; isType-#NAT!→QTBOOL! ; isType-#NAT→BOOL ; equalInType-NEG→¬inh ; sub0-NEG-ASSERT₂-APPLY ; →equalInType-SQUASH ; eqTypesQTNAT! ; isTypeBOOL ; eqTypesQTBOOL!)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-ASSERT₃-APPLY ; equalInType-QTBOOL!→equalTypes-ASSERT₃ ; isType-#NAT!→BOOL ; isType-#NAT!→QTBOOL! ; isType-#NAT→BOOL ; equalInType-NEG→¬inh ; sub0-NEG-ASSERT₂-APPLY ; →equalInType-SQUASH ; eqTypesQTNAT! ; isTypeBOOL ; eqTypesQTBOOL!)
+open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 --open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 --open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)

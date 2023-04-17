@@ -44,7 +44,7 @@ open import getChoice
 open import newChoice
 open import choiceExt
 open import mod --bar --mod
-open import encoding
+open import encode
 
 
 -- TODO: Progress is not required here
@@ -53,11 +53,13 @@ module forcing {L : Level} (W : PossibleWorlds {L}) (M : Mod W) --(B : BarsProps
                (X : ChoiceExt W C)
                (N : NewChoice W C K G)
                (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+               (EC : Encode)
        where
 open import worldDef(W)
-open import computation(W)(C)(K)(G)(X)(N)
+open import computation(W)(C)(K)(G)(X)(N)(EC)
 --open import mod(W) --bar(W)
 open import barI(W)(M)--{--(barI)--}(C)(K)(P)
+open import encodeDef(EC)
 
 \end{code}
 
@@ -464,7 +466,7 @@ TERMeq w t1 t2 =
   Σ ℕ (λ n →
     t1 #⇛ #NUM n at w
     × t2 #⇛ #NUM n at w
-    × terminates w (ℕ→Term n))
+    × terminates w (decode· n))
 
 
 NATeq : wper

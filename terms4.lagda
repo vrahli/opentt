@@ -40,22 +40,25 @@ open import compatible
 open import getChoice
 open import choiceExt
 open import newChoice
+open import encode
 
 
 module terms4 {L : Level} (W : PossibleWorlds {L})
               (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M) (E : ChoiceExt {L} W C)
               (N : NewChoice W C M G)
+              (EC : Encode)
        where
+
 open import worldDef(W)
 open import choiceDef{L}(C)
 open import getChoiceDef(W)(C)(M)(G)
 open import choiceExtDef(W)(C)(M)(G)(E)
 open import newChoiceDef(W)(C)(M)(G)(N)
-open import computation(W)(C)(M)(G)(E)(N)
-open import terms2(W)(C)(M)(G)(E)(N)
-open import terms3(W)(C)(M)(G)(E)(N)
+open import computation(W)(C)(M)(G)(E)(N)(EC)
+open import terms2(W)(C)(M)(G)(E)(N)(EC)
+open import terms3(W)(C)(M)(G)(E)(N)(EC)
 
-open import continuity-conds(W)(C)(M)(G)(E)(N)
+open import continuity-conds(W)(C)(M)(G)(E)(N)(EC)
 
 
 

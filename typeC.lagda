@@ -50,15 +50,18 @@ open import freeze
 open import progress
 open import choiceBar
 open import mod
+open import encode
 
 
 module typeC {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
              (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
              (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
-             (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
+             (N : NewChoice {L} W C K G)
+             (EC : Encode)
+             (V : ChoiceVal W C K G X N EC)
              (F : Freeze {L} W C K P G N)
              (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-             (CB : ChoiceBar W M C K P G X N V F E)
+             (CB : ChoiceBar W M C K P G X N EC V F E)
        where
 
 
@@ -68,22 +71,23 @@ open import compatibleDef{L}(W)(C)(K)
 open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
-open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
+open import choiceValDef(W)(C)(K)(G)(X)(N)(EC)(V)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
-open import computation(W)(C)(K)(G)(X)(N)
+
+open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
---open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)(CB)
+open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+--open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(F)(E)(CB)(EC)
 
 
 

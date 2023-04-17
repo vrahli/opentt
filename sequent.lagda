@@ -44,22 +44,25 @@ open import getChoice
 open import newChoice
 open import choiceExt
 open import mod --bar --mod
+open import encode
+
 
 module sequent {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
                (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
                (X : ChoiceExt W C)
                (N : NewChoice W C K G)
                (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+               (EC : Encode)
        where
        --(bar : Bar W) where
 
 open import worldDef(W)
-open import computation(W)(C)(K)(G)(X)(N)
+open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import terms2(W)(C)(K)(G)(X)(N)
-open import terms3(W)(C)(K)(G)(X)(N)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import terms2(W)(C)(K)(G)(X)(N)(EC)
+open import terms3(W)(C)(K)(G)(X)(N)(EC)
 
 
 -- ---------------------------------

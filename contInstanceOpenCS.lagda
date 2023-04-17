@@ -49,10 +49,12 @@ open import choiceVal
 
 -- An instance with open bars and choice sequences
 
-module contInstanceOpenCS (E : Extensionality 0ℓ 3ℓ)
+module contInstanceOpenCS (E0 : Extensionality 0ℓ 0ℓ) (E : Extensionality 0ℓ 3ℓ)
        where
 
-open import worldInstanceCS2
+open import encoding3(E0)
+
+open import worldInstanceCS2(E0)
 
 W : PossibleWorlds
 W = PossibleWorldsCS
@@ -92,22 +94,22 @@ open import choiceExtDef(W)(C)(K)(G)(X)
 open import newChoiceDef(W)(C)(K)(G)(N)
 
 open import barI(W)(M)--(C)(K)(P)
-open import computation(W)(C)(K)(G)(X)(N)
+open import computation(W)(C)(K)(G)(X)(N)(enc)
 
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
 
-open import continuity-conds(W)(C)(K)(G)(X)(N)
+open import continuity-conds(W)(C)(K)(G)(X)(N)(enc)
 
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
 
 
 

@@ -40,19 +40,21 @@ open import getChoice
 open import choiceExt
 open import newChoice
 open import mod
+open import encode
 
 module props0 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
               (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
               (X : ChoiceExt W C)
               (N : NewChoice W C K G)
               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+              (EC : Encode)
        where
        --(bar : Bar W) where
 open import worldDef(W)
-open import computation(W)(C)(K)(G)(X)(N)
+open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 \end{code}
 
 

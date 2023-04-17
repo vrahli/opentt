@@ -38,18 +38,20 @@ open import compatible
 open import getChoice
 open import choiceExt
 open import newChoice
-open import encoding
+open import encode
 
 
 module computation {L : Level} (W : PossibleWorlds {L})
                    (C : Choice) (M : Compatible W C) (G : GetChoice {L} W C M) (E : ChoiceExt {L} W C)
                    (N : NewChoice W C M G)
+                   (EC : Encode)
        where
 open import worldDef(W)
 open import choiceDef{L}(C)
 open import getChoiceDef(W)(C)(M)(G)
 open import choiceExtDef(W)(C)(M)(G)(E)
 open import newChoiceDef(W)(C)(M)(G)(N)
+open import encodeDef(EC)
 \end{code}
 
 
@@ -71,7 +73,7 @@ WRECr r f = LAMBDA (WREC (APPLY (shiftUp 0 f) (VAR 0)) (shiftUp 3 r))
 
 
 ENCr : Term → Term
-ENCr t = NEGD (APPLY t (NUM (Term→ℕ (ENC t))))
+ENCr t = NEGD (APPLY t (NUM (encode· (ENC t))))
 
 
 step : ∀ (T : Term) (w : 𝕎·) → Maybe (Term × 𝕎·)

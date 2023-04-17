@@ -49,6 +49,7 @@ open import freeze
 open import newChoice
 open import mod
 open import choiceBar
+open import encode
 
 
 module continuity6b {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
@@ -56,21 +57,22 @@ module continuity6b {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
                     (X : ChoiceExt W C)
                     (N : NewChoice {L} W C K G)
                     (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+                    (EC : Encode)
        where
 
 
 open import worldDef(W)
-open import computation(W)(C)(K)(G)(X)(N)
-open import terms2(W)(C)(K)(G)(X)(N) using (ssteps ; ssteps→steps ; CHOOSE⇓steps ; SUC⇓steps ; →steps-MAPP ; LET⇓steps ; SPREAD⇓steps ; WREC⇓steps ; DECIDE⇓steps ; IFLT-NUM-1st⇓steps ; IFEQ-NUM-1st⇓steps ; FIX⇓steps ; IFLT-NUM-2nd⇓ ; IFEQ-NUM-2nd⇓)
-open import terms3(W)(C)(K)(G)(X)(N) using (updGt ; suc→∈lowerNames ; upd)
-open import terms4(W)(C)(K)(G)(X)(N) using (steps→⊑ ; ∈names-renn-same ; names-shiftUp)
---open import terms5(W)(C)(K)(G)(X)(N)
---open import terms6(W)(C)(K)(G)(X)(N)
+open import computation(W)(C)(K)(G)(X)(N)(EC)
+open import terms2(W)(C)(K)(G)(X)(N)(EC) using (ssteps ; ssteps→steps ; CHOOSE⇓steps ; SUC⇓steps ; →steps-MAPP ; LET⇓steps ; SPREAD⇓steps ; WREC⇓steps ; DECIDE⇓steps ; IFLT-NUM-1st⇓steps ; IFEQ-NUM-1st⇓steps ; FIX⇓steps ; IFLT-NUM-2nd⇓ ; IFEQ-NUM-2nd⇓)
+open import terms3(W)(C)(K)(G)(X)(N)(EC) using (updGt ; suc→∈lowerNames ; upd)
+open import terms4(W)(C)(K)(G)(X)(N)(EC) using (steps→⊑ ; ∈names-renn-same ; names-shiftUp)
+--open import terms5(W)(C)(K)(G)(X)(N)(EC)
+--open import terms6(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E) using (⇓-from-to→≡𝕎)
---open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (⇓-from-to→≡𝕎)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -78,24 +80,24 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
---open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import continuity-conds(W)(C)(K)(G)(X)(N)
+open import continuity-conds(W)(C)(K)(G)(X)(N)(EC)
 
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E) using (force)
-open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E) using (chooseT0if ; upd-decomp ; isHighestℕ)
---open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E) using (⊑chooseT0if ; isHighestℕ-updBody→< ; isHighestℕ-LET→ ; →APPLY-force⇓APPLY-NUM ; steps-trans+ ; steps-APPLY-val→ ; steps-APPLY-LAMBDA-FIX→)
---open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (force)
+open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (chooseT0if ; upd-decomp ; isHighestℕ)
+--open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC using (⊑chooseT0if ; isHighestℕ-updBody→< ; isHighestℕ-LET→ ; →APPLY-force⇓APPLY-NUM ; steps-trans+ ; steps-APPLY-val→ ; steps-APPLY-LAMBDA-FIX→)
+--open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
---open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import continuity3b(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity4b(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import continuity5b(W)(M)(C)(K)(P)(G)(X)(N)(E)
+--open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import continuity3b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import continuity4b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import continuity5b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 
 

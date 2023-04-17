@@ -8,7 +8,7 @@ open import Agda.Builtin.Equality.Rewrite
 open import Agda.Builtin.Sigma
 open import Relation.Nullary
 open import Relation.Unary using (Pred; Decidable)
-open import Relation.Binary.PropositionalEquality hiding ([_]) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
+open import Relation.Binary.PropositionalEquality hiding ([_] ; Extensionality) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
 open ≡-Reasoning
 open import Data.Product
 open import Data.Sum
@@ -26,6 +26,7 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Data.List.Properties
 open import Function.Inverse using (Inverse)
+open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -34,7 +35,7 @@ open import calculus
 open import terms
 
 
-module worldInstanceRef2 where
+module worldInstanceRef2 (E : Extensionality 0ℓ 0ℓ) where
 \end{code}
 
 
@@ -508,7 +509,10 @@ newChoiceRef =
 open import newChoiceDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(newChoiceRef)
 
 
-open import computation(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)(newChoiceRef)
+open import encoding3(E)
+
+
+open import computation(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)(newChoiceRef)(enc)
 
 
 ¬∼c01 : (w : 𝕎·) → ¬ ∼C! w (ℂ→C· C0) (ℂ→C· C1)
@@ -526,12 +530,12 @@ open import computation(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRe
 ℂ→T→ℂ1 = refl
 
 
-open import choiceVal{1ℓ}(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)(newChoiceRef)
+open import choiceVal{1ℓ}(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)(newChoiceRef)(enc)
 
 choiceValRef : ChoiceVal
 choiceValRef = mkChoiceVal ¬∼c01 tt tt ℂ→T→ℂ0 ℂ→T→ℂ1
 
-open import choiceValDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)(newChoiceRef)(choiceValRef)
+open import choiceValDef(PossibleWorldsRef)(choiceRef)(compatibleREF)(getChoiceRef)(choiceExtRef)(newChoiceRef)(enc)(choiceValRef)
 
 
 

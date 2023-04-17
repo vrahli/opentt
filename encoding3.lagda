@@ -26,6 +26,7 @@ open import Axiom.Extensionality.Propositional
 open import util
 open import name
 open import calculus
+open import encode
 
 
 module encoding3 (E : Extensionality 0ℓ 0ℓ) where
@@ -585,6 +586,11 @@ abstract
   ℕ→Term→ℕ (LIFT t) nseq = ℕ→Term→ℕ-LIFT t (ℕ→Term→ℕ t nseq)
   ℕ→Term→ℕ (LOWER t) nseq = ℕ→Term→ℕ-LOWER t (ℕ→Term→ℕ t nseq)
   ℕ→Term→ℕ (SHRINK t) nseq = ℕ→Term→ℕ-SHRINK t (ℕ→Term→ℕ t nseq)
+
+
+
+enc : Encode
+enc = mkEncode Term→ℕ ℕ→Term ℕ→Term→ℕ
 
 
 -- We can then add Term→ℕ to the computation system and encode termination as a type:

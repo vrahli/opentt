@@ -23,16 +23,20 @@ open import progress
 open import choiceBar
 open import exBar
 open import mod
+open import encode
 
 
 module all {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
            (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
            (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
-           (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
+           (N : NewChoice {L} W C K G)
+           (EC : Encode)
+           (V : ChoiceVal W C K G X N EC)
            (F : Freeze {L} W C K P G N)
-           (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+           (E0 : Extensionality 0ℓ 0ℓ)
+           (EL : Extensionality 0ℓ (lsuc(lsuc(L))))
            (EM : ExcludedMiddle (lsuc(L))) -- for ExBar, used in turn in lem
-           (CB : ChoiceBar W M C K P G X N V F E)
+           (CB : ChoiceBar W M C K P G X N EC V F EL)
            (EB : ExBar W M)
        where
 
@@ -43,21 +47,21 @@ open import consistency using (weak-consistency)
 open import subBar{L}(W)(M)(C)(K)(P)
 
 -- LEM is false for Beth/Kripke-like modalities using choices
-open import not_lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+open import not_lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB)
 -- Using classical, we can however prove that LEM is consistent when using an open-like modality (see ExBar in exBar.lagda)
-open import lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EB)
+open import lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(EM)(EB)(EC)
 -- This version requires choices to be Booleans:
-open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (¬LPO)
+open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB) using (¬LPO)
 -- As opposed to the above version, this one relies on QTBool instead of Bool:
-open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (¬LPOq)
+open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB) using (¬LPOq)
 -- This version requires choices to be Booleans, but also freezable to always be true:
-open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB) using (¬MP ; ¬MP₂ ; ¬MP₃ ; ¬MP₄)
+open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB) using (¬MP ; ¬MP₂ ; ¬MP₃ ; ¬MP₄)
 -- In here, we've tried to prove to prove ¬MP for a read/no-write version of MP, but it is not finished
--- open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+-- open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(EL)(CE)(CB)
 -- MP is however consistent when restricted to pure functions
-open import mpp{L}(W)(M)(C)(K)(P)(G)(X)(N)(E) using (MPp-inh ; MPp₂-inh ; MPp₃-inh ; MPp₄-inh)
+open import mpp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(EM)(EC) using (MPp-inh ; MPp₂-inh ; MPp₃-inh ; MPp₄-inh)
 -- Using classsical logic, MP is also consistent when using an open-like modality (see ExBar in exBar.lagda)
-open import mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)(EB)(EM) using (MPvalid ; MP₂valid)
+open import mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB)(EB)(EM) using (MPvalid ; MP₂valid)
 
 -- This instance of 'choiceBar' uses Beth bars and terms as choices:
 open import modInstanceBethCs
@@ -109,7 +113,7 @@ open import barContP10 using (contDiagVal)
 -- Another attempt at validating continuity without the name-free requirement. It is unfinished: continuity10b has holes
 -- updRel2-renn in continuity5b is now broken because of ENC. Can it be fixed?
 --open import continuity9b
-open import continuity7b
+--open import continuity7b -- UNCOMMENT
 -- This one is unfinished
 --open import continuity10b
 

@@ -48,10 +48,12 @@ open import choiceVal
 
 -- An instance with beth bars (inBethBar-Bar) and choice sequences, where choices are 𝔹s
 
-module modInstanceBethCsBool (E : Extensionality 0ℓ 3ℓ)
+module modInstanceBethCsBool (E0 : Extensionality 0ℓ 0ℓ) (E : Extensionality 0ℓ 3ℓ)
        where
 
-open import worldInstanceCSbool
+open import encoding3(E0)
+
+open import worldInstanceCSbool(E0)
 
 W : PossibleWorlds
 W = PossibleWorldsCS
@@ -82,7 +84,7 @@ F = freezeCS
 X : ChoiceExt W C
 X = choiceExtCS
 
-V : ChoiceVal W C K G X N
+V : ChoiceVal W C K G X N enc
 V = choiceValCS
 
 open import worldDef(W)
@@ -94,18 +96,18 @@ open import compatibleDef(W)(C)(K)
 open import progressDef(W)(C)(K)(P)
 open import getChoiceDef(W)(C)(K)(G)
 open import choiceExtDef(W)(C)(K)(G)(X)
-open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
+open import choiceValDef(W)(C)(K)(G)(X)(N)(enc)(V)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 
 --open import barBeth(W)(C)(K)(P)
 open import barI(W)(M)--(C)(K)(P)
-open import computation(W)(C)(K)(G)(X)(N)
+open import computation(W)(C)(K)(G)(X)(N)(enc)
 
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
 
 
 progressing→ΣgetCs≤ : {w : 𝕎·} {c : chain w} {r : Res} (n : Name) (m : ℕ)
@@ -500,7 +502,7 @@ followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
 
 
 
-open import choiceBar(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)
+open import choiceBar(W)(M)(C)(K)(P)(G)(X)(N)(enc)(V)(F)(E)
 
 bethCs-choiceBar : ChoiceBar
 bethCs-choiceBar =

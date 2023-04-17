@@ -49,6 +49,7 @@ open import freeze
 open import progress
 open import choiceBar
 open import mod
+open import encode
 
 
 module mp_search {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
@@ -59,6 +60,7 @@ module mp_search {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
 --                 (F : Freeze {L} W C K P G N)
                  (E : Extensionality 0ℓ (lsuc(lsuc(L))))
 --                 (CB : ChoiceBar W M C K P G X N V F E)
+                 (EC : Encode)
        where
 
 
@@ -70,24 +72,24 @@ open import choiceDef{L}(C)
 --open import choiceExtDef(W)(C)(K)(G)(X)
 --open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
 --open import freezeDef(W)(C)(K)(P)(G)(N)(F)
-open import computation(W)(C)(K)(G)(X)(N)
+open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
---open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import terms2(W)(C)(K)(G)(X)(N)
-open import terms3(W)(C)(K)(G)(X)(N)
-open import terms4(W)(C)(K)(G)(X)(N)
-open import terms8(W)(C)(K)(G)(X)(N)
+open import terms2(W)(C)(K)(G)(X)(N)(EC)
+open import terms3(W)(C)(K)(G)(X)(N)(EC)
+open import terms4(W)(C)(K)(G)(X)(N)(EC)
+open import terms8(W)(C)(K)(G)(X)(N)(EC)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E) using (#MP-right ; #MP-right2 ; isType-MP-right-body)
+open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#MP-right ; #MP-right2 ; isType-MP-right-body)
 
 
 

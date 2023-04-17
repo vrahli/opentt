@@ -51,15 +51,18 @@ open import progress
 open import choiceBar
 open import exBar
 open import mod
+open import encode
 
 
 module mp {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
           (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
           (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
-          (N : NewChoice {L} W C K G) (V : ChoiceVal W C K G X N)
+          (N : NewChoice {L} W C K G)
+          (EC : Encode)
+          (V : ChoiceVal W C K G X N EC)
           (F : Freeze {L} W C K P G N)
           (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-          (CB : ChoiceBar W M C K P G X N V F E)
+          (CB : ChoiceBar W M C K P G X N EC V F E)
           (EB : ExBar W M)
           (EM : ExcludedMiddle (lsuc(L)))
        where
@@ -68,20 +71,20 @@ module mp {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
 open import worldDef(W)
 open import choiceDef{L}(C)
 open import exBarDef(W)(M)(EB)
-open import computation(W)(C)(K)(G)(X)(N)
+open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
+open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
 
 
 -- This is classically equivalent to equalInType-#MP-left→

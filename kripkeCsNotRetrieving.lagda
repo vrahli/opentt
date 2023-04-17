@@ -50,10 +50,13 @@ open import mod
 
 
 module kripkeCsNotRetrieving {L : Level}
+                             (E0 : Extensionality 0ℓ 0ℓ)
                              (E : Extensionality 0ℓ 3ℓ)
        where
 
-open import worldInstanceCS
+open import encoding3(E0)
+
+open import worldInstanceCS(E0)
 
 W : PossibleWorlds
 W = PossibleWorldsCS
@@ -85,7 +88,7 @@ F = freezeCS
 X : ChoiceExt W C
 X = choiceExtCS
 
-V : ChoiceVal W C K G X N
+V : ChoiceVal W C K G X N enc
 V = choiceValCS
 
 open import worldDef(W)
@@ -97,11 +100,11 @@ open import compatibleDef(W)(C)(K)
 open import progressDef(W)(C)(K)(P)
 open import getChoiceDef(W)(C)(K)(G)
 open import choiceExtDef(W)(C)(K)(G)(X)
-open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
+open import choiceValDef(W)(C)(K)(G)(X)(N)(enc)(V)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
 
 
 

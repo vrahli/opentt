@@ -41,6 +41,7 @@ open import progress
 open import choiceExt
 open import newChoice
 open import mod
+open import encode
 
 
 module list {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
@@ -48,16 +49,17 @@ module list {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
             (X : ChoiceExt W C)
             (N : NewChoice W C K G)
             (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+            (EC : Encode)
        where
 
 
 open import worldDef(W)
-open import computation(W)(C)(K)(G)(X)(N)
+open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 --open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -76,15 +78,15 @@ open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import terms2(W)(C)(K)(G)(X)(N)
-open import terms6(W)(C)(K)(G)(X)(N)
-open import terms8(W)(C)(K)(G)(X)(N)
+open import terms2(W)(C)(K)(G)(X)(N)(EC)
+open import terms6(W)(C)(K)(G)(X)(N)(EC)
+open import terms8(W)(C)(K)(G)(X)(N)(EC)
 
 
 -- 2nd component of APPEND
