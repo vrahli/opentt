@@ -113,7 +113,7 @@ open import barContP10 using (contDiagVal)
 -- Another attempt at validating continuity without the name-free requirement. It is unfinished: continuity10b has holes
 -- updRel2-renn in continuity5b is now broken because of ENC. Can it be fixed?
 --open import continuity9b
---open import continuity7b -- UNCOMMENT
+open import continuity7b -- UNCOMMENT
 -- This one is unfinished
 --open import continuity10b
 

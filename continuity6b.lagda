@@ -90,7 +90,7 @@ open import continuity-conds(W)(C)(K)(G)(X)(N)(EC)
 open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (force)
 open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (chooseT0if ; upd-decomp ; isHighestℕ)
 --open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC using (⊑chooseT0if ; isHighestℕ-updBody→< ; isHighestℕ-LET→ ; →APPLY-force⇓APPLY-NUM ; steps-trans+ ; steps-APPLY-val→ ; steps-APPLY-LAMBDA-FIX→)
+open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (⊑chooseT0if ; isHighestℕ-updBody→< ; isHighestℕ-LET→ ; →APPLY-force⇓APPLY-NUM ; steps-trans+ ; steps-APPLY-val→ ; steps-APPLY-LAMBDA-FIX→)
 --open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 --open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)

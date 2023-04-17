@@ -95,7 +95,7 @@ open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (getT≤ℕ)
 --open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC using (¬0∈names-shiftNameUp)
+open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (¬0∈names-shiftNameUp)
 --open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import continuity3b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import continuity4b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) --using (ren ; updRel2 ; upto𝕎)
