@@ -122,12 +122,12 @@ cℕ = (name : Name) (w : 𝕎·)
       → ∀𝕎 w (λ w' e → Lift {0ℓ} (lsuc(L)) (Σ ℕ (λ k → getT 0 name w' ≡ just (NUM k))))
 
 
-FunBar : Term
-FunBar = BAIRE→NAT
+FunBar : Term → Term
+FunBar T = FUN (FUN NAT T) NAT
 
 
-#FunBar : CTerm
-#FunBar = #BAIRE→NAT
+#FunBar : CTerm → CTerm
+#FunBar T = #FUN (#FUN #NAT T) #NAT
 
 
 IndBarB : Term
@@ -145,28 +145,28 @@ IndBarB = UNION! NAT UNIT
 -- IndBarC uses NAT! because if DIGAMMAs are functions from NAT, then to prove that (loop ∈ coW -- see coSemM)
 -- we need to jump to the 𝕎s at wihch the NATs are actual numbers, and we don't have members of the coW at the
 -- current 𝕎
-IndBarC : Term
-IndBarC = DECIDE (VAR 0) VOID NAT!
+IndBarC : Term → Term
+IndBarC T = DECIDE (VAR 0) VOID (TCONST T)
 
 
-#IndBarC : CTerm0
-#IndBarC = #[0]DECIDE #[0]VAR #[1]VOID #[1]NAT!
+#IndBarC : CTerm → CTerm0
+#IndBarC T = #[0]DECIDE #[0]VAR #[1]VOID (#[1]shiftUp0 (#[0]shiftUp0 (#TCONST T)))
 
 
-IndBar : Term
-IndBar = WT IndBarB IndBarC
+IndBar : Term → Term
+IndBar T = WT IndBarB (IndBarC T)
 
 
-#IndBar : CTerm
-#IndBar = #WT #IndBarB #IndBarC
+#IndBar : CTerm → CTerm
+#IndBar T = #WT #IndBarB (#IndBarC T)
 
 
-CoIndBar : Term
-CoIndBar = MT IndBarB IndBarC
+CoIndBar : Term → Term
+CoIndBar T = MT IndBarB (IndBarC T)
 
 
-#CoIndBar : CTerm
-#CoIndBar = #MT #IndBarB #IndBarC
+#CoIndBar : CTerm → CTerm
+#CoIndBar T = #MT #IndBarB (#IndBarC T)
 
 
 ETA : Term → Term
@@ -177,8 +177,8 @@ DIGAMMA : Term → Term
 DIGAMMA f = SUP (INR AX) f
 
 
-barThesis : Term
-barThesis = FUN FunBar IndBar
+barThesis : Term → Term
+barThesis T = FUN (FunBar T) (IndBar T)
 
 
 -- Recursive call used in DIGAMMA
@@ -1060,45 +1060,51 @@ equalInType i w2 #NAT a1 a2
 --}
 
 
-upd∈BAIRE : (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (f : CTerm)
+type-preserves-#⇛ : (T : CTerm) → Set(lsuc(L))
+type-preserves-#⇛ T =
+  (i : ℕ) (w : 𝕎·) (a₁ a₂ b₁ b₂ : CTerm)
+  → a₁ #⇛ a₂ at w
+  → b₁ #⇛ b₂ at w
+  → equalInType i w T a₂ b₂
+  → equalInType i w T a₁ b₁
+
+
+upd∈BAIRE : (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (T f : CTerm)
              → compatible· r w Res⊤
-             → ∈Type i w #BAIRE f
-             → ∈Type i w #BAIRE (#upd r f)
-upd∈BAIRE cn i w r f compat f∈ =
-  ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-FUN eqTypesNAT eqTypesNAT aw1)
+             → type-preserves-#⇛ T
+             → isType i w T
+             → ∈Type i w (#FUN #NAT T) f
+             → ∈Type i w (#FUN #NAT T) (#upd r f)
+upd∈BAIRE cn i w r T f compat pres tyT f∈ =
+  equalInType-FUN eqTypesNAT tyT aw1
   where
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
-                        → equalInType i w' #NAT (#APPLY (#upd r f) a₁) (#APPLY (#upd r f) a₂))
-    aw1 w1 e1 a₁ a₂ ea = equalInType-local (Mod.∀𝕎-□Func M aw p2) {--equalInType-local (∀𝕎-□Func2 aw2 (Mod.↑□ M p1 e1) p2)--}
+                        → equalInType i w' T (#APPLY (#upd r f) a₁) (#APPLY (#upd r f) a₂))
+    aw1 w1 e1 a₁ a₂ ea = equalInType-local (Mod.∀𝕎-□Func M aw p2)
       where
         p2 : □· w1 (λ w' _ → NATeq w' a₁ a₂)
         p2 = equalInType-NAT→ i w1 a₁ a₂ ea
 
-        aw : ∀𝕎 w1 (λ w' e' → NATeq w' a₁ a₂ → equalInType i w' #NAT (#APPLY (#upd r f) a₁) (#APPLY (#upd r f) a₂))
-        aw w2 e2 (k , c1 , c2) = →equalInType-NAT i w2 (#APPLY (#upd r f) a₁) (#APPLY (#upd r f) a₂) (Mod.∀𝕎-□Func M aw2 p3)
-          where
-            p3 : □· w2 (λ w' _ → NATeq w' (#APPLY f (#NUM k)) (#APPLY f (#NUM k)))
-            p3 = equalInType-NAT→
-                   i w2 (#APPLY f (#NUM k)) (#APPLY f (#NUM k))
-                   (equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ f∈) w2 (⊑-trans· e1 e2) (#NUM k) (#NUM k) (NUM-equalInType-NAT i w2 k))
-
-            aw2 : ∀𝕎 w2 (λ w' e' → NATeq w' (#APPLY f (#NUM k)) (#APPLY f (#NUM k))
-                                  → NATeq w' (#APPLY (#upd r f) a₁) (#APPLY (#upd r f) a₂))
-            aw2 w3 e3 (j , d1 , d2) =
-              j ,
-              ⇛-trans (#APPLY-#upd⇛ cn r a₁ f w3 k (⊑-compatible· (⊑-trans· e1 (⊑-trans· e2 e3)) compat) (∀𝕎-mon e3 c1)) d1 ,
-              ⇛-trans (#APPLY-#upd⇛ cn r a₂ f w3 k (⊑-compatible· (⊑-trans· e1 (⊑-trans· e2 e3)) compat) (∀𝕎-mon e3 c2)) d2
+        aw : ∀𝕎 w1 (λ w' e' → NATeq w' a₁ a₂ → equalInType i w' T (#APPLY (#upd r f) a₁) (#APPLY (#upd r f) a₂))
+        aw w2 e2 (k , c1 , c2) =
+          pres i w2 (#APPLY (#upd r f) a₁) (#APPLY f (#NUM k)) (#APPLY (#upd r f) a₂) (#APPLY f (#NUM k))
+               (#APPLY-#upd⇛ cn r a₁ f w2 k (⊑-compatible· (⊑-trans· e1 e2) compat) c1)
+               (#APPLY-#upd⇛ cn r a₂ f w2 k (⊑-compatible· (⊑-trans· e1 e2) compat) c2)
+               (equalInType-FUN→ f∈ w2 (⊑-trans· e1 e2) (#NUM k) (#NUM k) (NUM-equalInType-NAT i w2 k))
 
 
-APPLY-upd∈NAT : (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (F f : CTerm)
+APPLY-upd∈NAT : (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (T F f : CTerm)
                  → compatible· r w Res⊤
-                 → ∈Type i w #FunBar F
-                 → ∈Type i w #BAIRE f
+                 → type-preserves-#⇛ T
+                 → isType i w T
+                 → ∈Type i w (#FunBar T) F
+                 → ∈Type i w (#NAT→T T) f
                  → ∈Type i w #NAT (#APPLY F (#upd r f))
-APPLY-upd∈NAT cn i w r F f compat F∈ f∈ = F∈' w (⊑-refl· w) (#upd r f) (#upd r f) (upd∈BAIRE cn i w r f compat f∈)
+APPLY-upd∈NAT cn i w r T F f compat pres tyT F∈ f∈ =
+  F∈' w (⊑-refl· w) (#upd r f) (#upd r f) (upd∈BAIRE cn i w r T f compat pres tyT f∈)
   where
-    F∈' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #BAIRE a₁ a₂ → equalInType i w' #NAT (#APPLY F a₁) (#APPLY F a₂))
-    F∈' = equalInType-FUN→ (≡CTerm→equalInType #BAIRE→NAT≡ F∈)
+    F∈' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#FUN #NAT T) a₁ a₂ → equalInType i w' #NAT (#APPLY F a₁) (#APPLY F a₂))
+    F∈' = equalInType-FUN→ F∈
 
 
 INL∈IndBarB : (i : ℕ) (w : 𝕎·) (k : ℕ) → ∈Type i w #IndBarB (#INL (#NUM k))
@@ -1121,11 +1127,15 @@ INR∈IndBarB i w =
                                               →equalInType-TRUE i {w'} {#AX} {#AX})))
 
 
-sub0-IndBarC≡ : (a : CTerm) → sub0 a #IndBarC ≡ #DECIDE a #[0]VOID #[0]NAT!
-sub0-IndBarC≡ a = CTerm≡ (≡DECIDE x refl refl)
+sub0-IndBarC≡ : (T a : CTerm) → sub0 a (#IndBarC T) ≡ #DECIDE a #[0]VOID (#[0]shiftUp0 (#TCONST T))
+sub0-IndBarC≡ T a = CTerm≡ (≡DECIDE x refl (≡TCONST y))
   where
     x : shiftDown 0 (shiftUp 0 ⌜ a ⌝) ≡ ⌜ a ⌝
     x rewrite #shiftUp 0 a | #shiftDown 0 a = refl
+
+    y : shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) (shiftUp 0 (shiftUp 0 ⌜ T ⌝))) ≡ shiftUp 0 ⌜ T ⌝
+    y rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftUp 0 T | #shiftUp 0 T
+            | #subv 1 ⌜ a ⌝ ⌜ T ⌝ (CTerm.closed T) | #shiftDown 1 T = refl
 
 
 #DECIDE-INL-VOID⇓ : (w : 𝕎·) (a : CTerm) (b : CTerm0) → #DECIDE (#INL a) #[0]VOID b #⇓ #VOID from w to w
@@ -1156,32 +1166,38 @@ sub0-IndBarC≡ a = CTerm≡ (≡DECIDE x refl refl)
     (#DECIDE-INL-VOID⇛ w a b)
 
 
-#DECIDE-INR-NAT⇓ : (w : 𝕎·) (a : CTerm) (b : CTerm0) → #DECIDE (#INR a) b #[0]NAT! #⇓ #NAT! from w to w
-#DECIDE-INR-NAT⇓ w a b = 1 , refl
+#DECIDE-INR⇓ : (w : 𝕎·) (T a : CTerm) (b : CTerm0) → #DECIDE (#INR a) b (#[0]shiftUp0 (#TCONST T)) #⇓ #TCONST T from w to w
+#DECIDE-INR⇓ w T a b = 1 , ≡pair c refl
+  where
+    c : sub ⌜ a ⌝ (TCONST (shiftUp 0 ⌜ T ⌝)) ≡ TCONST ⌜ T ⌝
+    c rewrite #shiftUp 0 T
+            | #shiftUp 0 a
+            | #subv 0 ⌜ a ⌝ ⌜ T ⌝ (CTerm.closed T)
+            | #shiftDown 0 T = refl
 
 
-#DECIDE-INR-NAT⇛ : (w : 𝕎·) (a : CTerm) (b : CTerm0) → #DECIDE (#INR a) b #[0]NAT! #⇛! #NAT! at w
-#DECIDE-INR-NAT⇛ w a b w1 e1 = lift (#DECIDE-INR-NAT⇓ w1 a b)
+#DECIDE-INR⇛ : (w : 𝕎·) (T a : CTerm) (b : CTerm0) → #DECIDE (#INR a) b (#[0]shiftUp0 (#TCONST T)) #⇛! #TCONST T at w
+#DECIDE-INR⇛ w T a b w1 e1 = lift (#DECIDE-INR⇓ w1 T a b)
 
 
-#DECIDE⇛INR-NAT⇛ : (w : 𝕎·) (x a : CTerm) (b : CTerm0)
+#DECIDE⇛INR⇛ : (w : 𝕎·) (T x a : CTerm) (b : CTerm0)
                      → x #⇛ #INR a at w
-                     → #DECIDE x b #[0]NAT! #⇛ #NAT! at w
-#DECIDE⇛INR-NAT⇛ w x a b comp =
+                     → #DECIDE x b (#[0]shiftUp0 (#TCONST T)) #⇛ #TCONST T at w
+#DECIDE⇛INR⇛ w T x a b comp =
   #⇛-trans
-    {w} {#DECIDE x b #[0]NAT!} {#DECIDE (#INR a) b #[0]NAT!} {#NAT!}
-    (DECIDE⇛₁ {w} {⌜ x ⌝} {⌜ #INR a ⌝} {⌜ b ⌝} {⌜ #[0]NAT! ⌝} comp)
-    (#⇛!-#⇛ {w} {#DECIDE (#INR a) b #[0]NAT!} {#NAT!} (#DECIDE-INR-NAT⇛ w a b))
+    {w} {#DECIDE x b (#[0]shiftUp0 (#TCONST T))} {#DECIDE (#INR a) b (#[0]shiftUp0 (#TCONST T))} {#TCONST T}
+    (DECIDE⇛₁ {w} {⌜ x ⌝} {⌜ #INR a ⌝} {⌜ b ⌝} {⌜ #[0]shiftUp0 (#TCONST T) ⌝} comp)
+    (#⇛!-#⇛ {w} {#DECIDE (#INR a) b (#[0]shiftUp0 (#TCONST T))} {#TCONST T} (#DECIDE-INR⇛ w T a b))
 
 
-#DECIDE⇛INR-NAT⇛! : (w : 𝕎·) (x a : CTerm) (b : CTerm0)
+#DECIDE⇛INR⇛! : (w : 𝕎·) (T x a : CTerm) (b : CTerm0)
                       → x #⇛! #INR a at w
-                      → #DECIDE x b #[0]NAT! #⇛! #NAT! at w
-#DECIDE⇛INR-NAT⇛! w x a b comp =
+                      → #DECIDE x b (#[0]shiftUp0 (#TCONST T)) #⇛! #TCONST T at w
+#DECIDE⇛INR⇛! w T x a b comp =
   #⇛!-trans
-    {w} {#DECIDE x b #[0]NAT!} {#DECIDE (#INR a) b #[0]NAT!} {#NAT!}
-    (DECIDE⇛!₁ {w} {⌜ x ⌝} {⌜ #INR a ⌝} {⌜ b ⌝} {⌜ #[0]NAT! ⌝} comp)
-    (#DECIDE-INR-NAT⇛ w a b)
+    {w} {#DECIDE x b (#[0]shiftUp0 (#TCONST T))} {#DECIDE (#INR a) b (#[0]shiftUp0 (#TCONST T))} {#TCONST T}
+    (DECIDE⇛!₁ {w} {⌜ x ⌝} {⌜ #INR a ⌝} {⌜ b ⌝} {⌜ #[0]shiftUp0 (#TCONST T) ⌝} comp)
+    (#DECIDE-INR⇛ w T a b)
 
 
 equalInType-#⇛ : {i : ℕ} {w : 𝕎·} {T U a b : CTerm}
@@ -1201,52 +1217,63 @@ equalInType-DECIDE-INL-VOID→ i w a b1 b2 b e =
   ¬equalInType-FALSE {w} {i} {b1} {b2} (equalInType-#⇛ (#DECIDE-INL-VOID⇛ w a b) e)
 
 
-equalInType-DECIDE-INR-NAT→ : (i : ℕ) (w : 𝕎·) (a b1 b2 : CTerm) (b : CTerm0)
-                                → equalInType i w (#DECIDE (#INR a) b #[0]NAT!) b1 b2
-                                → equalInType i w #NAT! b1 b2
-equalInType-DECIDE-INR-NAT→ i w a b1 b2 b e =
-  equalInType-#⇛ (#DECIDE-INR-NAT⇛ w a b) e
+equalInType-DECIDE-INR→ : (i : ℕ) (w : 𝕎·) (T a b1 b2 : CTerm) (b : CTerm0)
+                                → equalInType i w (#DECIDE (#INR a) b (#[0]shiftUp0 (#TCONST T))) b1 b2
+                                → equalInType i w (#TCONST T) b1 b2
+equalInType-DECIDE-INR→ i w T a b1 b2 b e =
+  equalInType-#⇛ (#DECIDE-INR⇛ w T a b) e
 
 
-INL→!∈Type-IndBarC : (i : ℕ) (w : 𝕎·) (x a b : CTerm)
+INL→!∈Type-IndBarC : (i : ℕ) (w : 𝕎·) (T x a b : CTerm)
                      → x #⇛! #INL a at w
-                     → ¬ ∈Type i w (sub0 x #IndBarC) b
-INL→!∈Type-IndBarC i w x a b comp j rewrite sub0-IndBarC≡ x =
+                     → ¬ ∈Type i w (sub0 x (#IndBarC T)) b
+INL→!∈Type-IndBarC i w T x a b comp j rewrite sub0-IndBarC≡ T x =
   ¬equalInType-FALSE j1
   where
     j1 : ∈Type i w #VOID b
-    j1 = equalInType-#⇛ (#DECIDE⇛INL-VOID⇛! w x a #[0]NAT! comp) j
+    j1 = equalInType-#⇛ (#DECIDE⇛INL-VOID⇛! w x a (#[0]shiftUp0 (#TCONST T)) comp) j
 
 
-INR→!∈Type-IndBarC : (i : ℕ) (w : 𝕎·) (x a b : CTerm)
+type-#⇛!-NUM : (P : ℕ → Set) (T : CTerm) → Set(lsuc(L))
+type-#⇛!-NUM P T =
+  {i : ℕ} {w : 𝕎·} {a b : CTerm}
+  → equalInType i w (#TCONST T) a b
+  → □· w (λ w' _ → Σ ℕ (λ n → a #⇛! #NUM n at w' × b #⇛! #NUM n at w' × P n))
+
+
+-- TODO: assume that T computes numbers within a certain range (i.e., using a predicate on numbers)
+INR→!∈Type-IndBarC : (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T x a b : CTerm)
+                     → type-#⇛!-NUM P T
                      → x #⇛! #INR a at w
-                     → ∈Type i w (sub0 x #IndBarC) b
-                     → □· w (λ w' _ → Σ ℕ (λ n → b #⇛! #NUM n at w'))
-INR→!∈Type-IndBarC i w x a b comp j rewrite sub0-IndBarC≡ x =
-  Mod.∀𝕎-□Func M aw (equalInType-NAT!→ i w b b j1)
+                     → ∈Type i w (sub0 x (#IndBarC T)) b
+                     → □· w (λ w' _ → Σ ℕ (λ n → b #⇛! #NUM n at w' × P n))
+INR→!∈Type-IndBarC i w P T x a b tyn comp j rewrite sub0-IndBarC≡ T x =
+  Mod.∀𝕎-□Func M aw (tyn j1)
   where
-    j1 : ∈Type i w #NAT! b
-    j1 = equalInType-#⇛ (#DECIDE⇛INR-NAT⇛! w x a #[0]VOID comp) j
+    j1 : ∈Type i w (#TCONST T) b
+    j1 = equalInType-#⇛ (#DECIDE⇛INR⇛! w T x a #[0]VOID comp) j
 
-    aw : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' b b → Σ ℕ (λ n → b #⇛! #NUM n at w'))
-    aw w1 e1 (n , c1 , c2) = n , c1
+    aw : ∀𝕎 w (λ w' e' → Σ ℕ (λ n → b #⇛! #NUM n at w' × b #⇛! #NUM n at w' × P n)
+                        → Σ ℕ (λ n → b #⇛! #NUM n at w' × P n))
+    aw w1 e1 (n , c1 , c2 , pn) = n , c1 , pn
 
 
-∈Type-IndBarB-IndBarC→ : (i : ℕ) (w : 𝕎·) (b c : CTerm)
+∈Type-IndBarB-IndBarC→ : (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T b c : CTerm)
+                           → type-#⇛!-NUM P T
                            → ∈Type i w #IndBarB b
-                           → ∈Type i w (sub0 b #IndBarC) c
-                           → □· w (λ w' _ → Σ CTerm (λ t → b #⇛! #INR t at w') × Σ ℕ (λ n → c #⇛! #NUM n at w'))
-∈Type-IndBarB-IndBarC→ i w b c b∈ c∈ =
+                           → ∈Type i w (sub0 b (#IndBarC T)) c
+                           → □· w (λ w' _ → Σ CTerm (λ t → b #⇛! #INR t at w') × Σ ℕ (λ n → c #⇛! #NUM n at w' × P n))
+∈Type-IndBarB-IndBarC→ i w P T b c tyn b∈ c∈ =
   Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInType-UNION!→ b∈))
   where
     aw : ∀𝕎 w (λ w' e' → UNION!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' b b
-                        → Mod.□ M w' (↑wPred' (λ w'' _ → Σ CTerm (λ t → b #⇛! #INR t at w'') × Σ ℕ (λ n → c #⇛! #NUM n at w'')) e'))
-    aw w1 e1 (x , y , inj₁ (c1 , c2 , eqi)) = ⊥-elim (INL→!∈Type-IndBarC i w1 b x c c1 (equalInType-mon c∈ w1 e1))
+                        → Mod.□ M w' (↑wPred' (λ w'' _ → Σ CTerm (λ t → b #⇛! #INR t at w'') × Σ ℕ (λ n → c #⇛! #NUM n at w'' × P n)) e'))
+    aw w1 e1 (x , y , inj₁ (c1 , c2 , eqi)) = ⊥-elim (INL→!∈Type-IndBarC i w1 T b x c c1 (equalInType-mon c∈ w1 e1))
     aw w1 e1 (x , y , inj₂ (c1 , c2 , eqi)) =
       Mod.∀𝕎-□Func
         M
-        (λ w2 e2 (n , cn) z → (x , ∀𝕎-mon e2 c1) , (n , cn))
-        (INR→!∈Type-IndBarC i w1 b x c c1 (equalInType-mon c∈ w1 e1))
+        (λ w2 e2 (n , cn , pn) z → (x , ∀𝕎-mon e2 c1) , (n , cn , pn))
+        (INR→!∈Type-IndBarC i w1 P T b x c tyn c1 (equalInType-mon c∈ w1 e1))
 
 
 sub-loopI≡ : (r : Name) (R k f i : Term) (cR : # R) (ck : # k) (cf : # f)

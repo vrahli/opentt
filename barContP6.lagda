@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 {-# OPTIONS --guardedness #-}
---{-# OPTIONS --experimental-lossy-unification #-}
+{-# OPTIONS --experimental-lossy-unification #-}
 --{-# OPTIONS --auto-inline #-}
 
 
@@ -74,12 +74,12 @@ open import terms4(W)(C)(K)(G)(X)(N)(EC)
 --open import terms5(W)(C)(K)(G)(X)(N)(EC)
 --open import terms6(W)(C)(K)(G)(X)(N)(EC)
 --open import terms7(W)(C)(K)(G)(X)(N)(EC)
-open import terms8(W)(C)(K)(G)(X)(N)(EC)
+open import terms8(W)(C)(K)(G)(X)(N)(EC) using (#APPLY2)
 
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (eqTypes-mon)
 --open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import choiceDef{L}(C)
@@ -92,25 +92,25 @@ open import choiceExtDef(W)(C)(K)(G)(X)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (NATmem)
 open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-TPURE→ₗ ; equalInType-TPURE→)
 
 open import list(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)(EC)
 
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#upd)
 open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (isHighestℕ→getT≤ℕ ; ¬Names→updCtxt ; steps-sat-isHighestℕ)
+open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (steps-trans+)
+open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (steps-decomp-isHighestℕ)
+--open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 open import barContP4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
-open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
+open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (updSeq-step)
 
 
 
@@ -322,19 +322,20 @@ infPath-mon i w w' t A B e p cor inf =
 
 -- We want to create a Term ∈ BAIRE from this path.
 noInfPath : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
-            (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
+            (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T F : CTerm)
+            (tyn : type-#⇛!-NUM P T) (prest : type-preserves-#⇛ T) (tyt : isType i w T)
             → #¬Names F -- This is currently required by continuity
             → compatible· r w Res⊤
-            → ∈Type i w #FunBar F
-            → (p : path i w #IndBarB #IndBarC)
-            → correctPath {i} {w} {#IndBarB} {#IndBarC} (#APPLY2 (#loop r F) (#NUM 0) #INIT) p
-            → isInfPath {i} {w} {#IndBarB} {#IndBarC} p
+            → ∈Type i w (#FunBar T) F
+            → (p : path i w #IndBarB (#IndBarC T))
+            → correctPath {i} {w} {#IndBarB} {#IndBarC T} (#APPLY2 (#loop r F) (#NUM 0) #INIT) p
+            → isInfPath {i} {w} {#IndBarB} {#IndBarC T} p
             → ⊥
-noInfPath kb cn can exb gc i w r F nnF compat F∈ p cor inf =
+noInfPath kb cn can exb gc i w r P T F tyn prest tyt nnF compat F∈ p cor inf =
   ltsn (≡getT≤ℕ→< w0 w' r (suc n) j eqw' gt0 gtn)
   where
     s : 𝕊
-    s = path2𝕊 kb p
+    s = path2𝕊 kb P tyn p
 
     f : CTerm
     f = #MSEQ s
@@ -346,7 +347,7 @@ noInfPath kb cn can exb gc i w r F nnF compat F∈ p cor inf =
     f∈ = mseq∈baire i w s
 
     a∈1 : ∈Type i w #NAT (#APPLY F (#upd r f))
-    a∈1 = equalInType-FUN→ (≡CTerm→equalInType #BAIRE→NAT≡ F∈) w (⊑-refl· _) (#upd r f) (#upd r f) (upd∈BAIRE cn i w r f compat f∈)
+    a∈1 = equalInType-FUN→ F∈ w (⊑-refl· _) (#upd r f) (#upd r f) (upd∈BAIRE cn i w r T f compat prest {!tyt!} {!!}) -- f∈
 
     a∈2 : NATmem w (#APPLY F (#upd r f))
     a∈2 = kb (equalInType-NAT→ i w (#APPLY F (#upd r f)) (#APPLY F (#upd r f)) a∈1) w (⊑-refl· w)
@@ -398,7 +399,7 @@ noInfPath kb cn can exb gc i w r F nnF compat F∈ p cor inf =
             tt uc (⊑-compatible· e1 compat) wgt0 gtn
 
     cs : correctSeq r w F s
-    cs = corSeq→correctSeq r w F s (→corSeq kb cn i w r F compat F∈ p cor inf)
+    cs = corSeq→correctSeq r w F s (→corSeq kb cn i w r P T F tyn compat F∈ p cor inf)
 
     csn : correctSeqN r w F 0 #INIT s (suc (suc n))
     csn = cs (suc (suc n))
@@ -439,56 +440,60 @@ noInfPath kb cn can exb gc i w r F nnF compat F∈ p cor inf =
     eqw' = steps→≡𝕎 (chooseT r w N0) w0 w' ⌜ #APPLY F (#upd r (seq2list s (suc n))) ⌝ (NUM m0) (NUM k) (fst comp0) (fst c) tt tt (snd comp0) (snd c)
 
 
-FunBarP : Term
-FunBarP = TPURE FunBar
+FunBarP : Term → Term
+FunBarP T = TPURE (FunBar T)
 
 
-barThesisP : Term
-barThesisP = FUN FunBarP IndBar
+barThesisP : Term → Term
+barThesisP T = FUN (FunBarP T) (IndBar T)
 
 
-#FunBarP : CTerm
-#FunBarP = #TPURE #FunBar
+#FunBarP : CTerm → CTerm
+#FunBarP T = #TPURE (#FunBar T)
 
 
-#barThesisP : CTerm
-#barThesisP = #FUN #FunBarP #IndBar
+#barThesisP : CTerm → CTerm
+#barThesisP T = #FUN (#FunBarP T) (#IndBar T)
 
 
 -- comp→∀ℕ is stronger than cℕ. get rid of cℕ?
 sem : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
-      (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
+      (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T F : CTerm)
 --      → #¬Names F -- This is currently required by continuity (captured by #FunBarP)
+      → type-preserves-#⇛ T
+      → type-#⇛!-NUM P T
+      → #⇛!-NUM-type P T
+      → isType i w T
       → compatible· r w Res⊤
-      → ∈Type i w #FunBarP F
-      → ∈Type i w #IndBar (#APPLY2 (#loop r F) (#NUM 0) #INIT)
-sem kb cn can exb gc i w r F {--nnF--} compat F∈P = concl
+      → ∈Type i w (#FunBarP T) F
+      → ∈Type i w (#IndBar T) (#APPLY2 (#loop r F) (#NUM 0) #INIT)
+sem kb cn can exb gc i w r P T F {--nnF--} prest tyn nty tyt compat F∈P = concl
   where
     nnF  : #¬Names F
     nnF = equalInType-TPURE→ₗ F∈P
 
-    F∈ : ∈Type i w #FunBar F
+    F∈ : ∈Type i w (#FunBar T) F
     F∈ = equalInType-TPURE→ F∈P
 
-    co : ∈Type i w #CoIndBar (#APPLY2 (#loop r F) (#NUM 0) #INIT)
-    co = coSem can gc kb cn i w r F (#NUM 0) #INIT refl refl nnF compat F∈ (NUM-equalInType-NAT! i w 0) (LAM0∈BAIRE i w)
+    co : ∈Type i w (#CoIndBar T) (#APPLY2 (#loop r F) (#NUM 0) #INIT)
+    co = coSem can gc kb cn i w r P T F (#NUM 0) #INIT refl refl nnF prest tyn nty tyt compat F∈ (NUM-equalInType-NAT! i w 0) {!!} --(LAM0∈BAIRE i w)
 
-    concl : ∈Type i w #IndBar (#APPLY2 (#loop r F) (#NUM 0) #INIT)
-    concl with EM {∃𝕎 w (λ w' _ → Σ (path i w' #IndBarB #IndBarC)
-                                   (λ p → correctPath {i} {w'} {#IndBarB} {#IndBarC} (#APPLY2 (#loop r F) (#NUM 0) #INIT) p
-                                         × isInfPath {i} {w'} {#IndBarB} {#IndBarC} p))}
+    concl : ∈Type i w (#IndBar T) (#APPLY2 (#loop r F) (#NUM 0) #INIT)
+    concl with EM {∃𝕎 w (λ w' _ → Σ (path i w' #IndBarB (#IndBarC T))
+                                   (λ p → correctPath {i} {w'} {#IndBarB} {#IndBarC T} (#APPLY2 (#loop r F) (#NUM 0) #INIT) p
+                                         × isInfPath {i} {w'} {#IndBarB} {#IndBarC T} p))}
     ... | yes (w' , e' , p , cor , inf) = c
       where
-        c : ∈Type i w #IndBar (#APPLY2 (#loop r F) (#NUM 0) #INIT)
-        c = ⊥-elim (noInfPath kb cn can exb gc i w' r F nnF (⊑-compatible· e' compat) (equalInType-mon F∈ w' e') p cor inf )
-    ... | no pp = CoIndBar2IndBar i w (#APPLY2 (#loop r F) (#NUM 0) #INIT) cond co
+        c : ∈Type i w (#IndBar T) (#APPLY2 (#loop r F) (#NUM 0) #INIT)
+        c = ⊥-elim (noInfPath kb cn can exb gc i w' r P T F tyn prest {!eqTypes-mon!} nnF (⊑-compatible· e' compat) (equalInType-mon F∈ w' e') p cor inf )
+    ... | no pp = CoIndBar2IndBar i w T (#APPLY2 (#loop r F) (#NUM 0) #INIT) tyt cond co
       where
-        cond : ∀𝕎 w (λ w' _ → (p : path i w' #IndBarB #IndBarC)
-               → correctPath {i} {w'} {#IndBarB} {#IndBarC} (#APPLY2 (#loop r F) (#NUM 0) #INIT) p
-               → isFinPath {i} {w'} {#IndBarB} {#IndBarC} p)
-        cond w1 e1 p cor with EM {Lift {0ℓ} (lsuc(L)) (isFinPath {i} {w1} {#IndBarB} {#IndBarC} p)}
+        cond : ∀𝕎 w (λ w' _ → (p : path i w' #IndBarB (#IndBarC T))
+               → correctPath {i} {w'} {#IndBarB} {#IndBarC T} (#APPLY2 (#loop r F) (#NUM 0) #INIT) p
+               → isFinPath {i} {w'} {#IndBarB} {#IndBarC T} p)
+        cond w1 e1 p cor with EM {Lift {0ℓ} (lsuc(L)) (isFinPath {i} {w1} {#IndBarB} {#IndBarC T} p)}
         ... | yes qq = lower qq
-        ... | no qq = ⊥-elim (pp (w1 , e1 , p , cor , ¬isFinPath→isInfPath {i} {w1} {#IndBarB} {#IndBarC} p (λ z → qq (lift z))))
+        ... | no qq = ⊥-elim (pp (w1 , e1 , p , cor , ¬isFinPath→isInfPath {i} {w1} {#IndBarB} {#IndBarC T} p (λ z → qq (lift z))))
 
 --sem : (w : 𝕎·) → ∈Type i w #barThesis tab
 --sem w  ?

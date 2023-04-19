@@ -391,20 +391,21 @@ corSeq→correctSeq r w F s cor n = corSeqN→correctSeqN r w 0 n F #INIT s s (c
 
 
 -- n is the fuel
-→corSeqN : (kb : K□) (cn : cℕ) (i : ℕ) (r : Name) (t F g : CTerm) (m : ℕ) (n : ℕ) (w : 𝕎·)
+→corSeqN : (kb : K□) (cn : cℕ) (i : ℕ) (r : Name) (P : ℕ → Set) (T t F g : CTerm) (m : ℕ) (n : ℕ) (w : 𝕎·)
+            (tyn : type-#⇛!-NUM P T)
                 → compatible· r w Res⊤
-                → ∈Type i w #FunBar F
+                → ∈Type i w (#FunBar T) F
 --                → ∈Type i w (#LIST #NAT) l
 --                → l #⇛ #PAIR z g at w
 --                → z #⇛! #NUM m at w
 --                → ∈Type i w #BAIRE g
-                → (p : path i w #IndBarB #IndBarC)
-                → isInfPath {i} {w} {#IndBarB} {#IndBarC} p
+                → (p : path i w #IndBarB (#IndBarC T))
+                → isInfPath {i} {w} {#IndBarB} {#IndBarC T} p
                 → t #⇓! #APPLY2 (#loop r F) (#NUM m) g at w
-                → correctPathN {i} {w} {#IndBarB} {#IndBarC} t p n
-                → corSeqN r w F m g (path2𝕊 kb p) n
-→corSeqN kb cn i r t F g m 0 w compat F∈ {--g∈--} p inf compt cor = lift tt
-→corSeqN kb cn i r t F g m (suc n) w compat F∈ {--g∈--} p inf compt cor with inf 0
+                → correctPathN {i} {w} {#IndBarB} {#IndBarC T} t p n
+                → corSeqN r w F m g (path2𝕊 kb P tyn p) n
+→corSeqN kb cn i r P T t F g m 0 w tyn compat F∈ {--g∈--} p inf compt cor = lift tt
+→corSeqN kb cn i r P T t F g m (suc n) w tyn compat F∈ {--g∈--} p inf compt cor with inf 0
 ... | inf0 with p 0
 ... |    inj₁ (a , b , ia , ib) with cor
 ... |       (f , comp , cp) =
@@ -471,10 +472,10 @@ corSeq→correctSeq r w F s cor n = corSeqN→correctSeqN r w 0 n F #INIT s s (c
     eqm = NUMinj (sym (compVal (NUM m) (NUM k2) w' compFL tt))
 
     ia' : Σ CTerm (λ t → a #⇛! #INR t at w)
-    ia' = fst (kb (∈Type-IndBarB-IndBarC→ i w a b ia ib) w (⊑-refl· w))
+    ia' = fst (kb (∈Type-IndBarB-IndBarC→ i w P T a b tyn ia ib) w (⊑-refl· w))
 
-    ib' : Σ ℕ (λ n → b #⇛! #NUM n at w)
-    ib' = snd (kb (∈Type-IndBarB-IndBarC→ i w a b ia ib) w (⊑-refl· w))
+    ib' : Σ ℕ (λ n → b #⇛! #NUM n at w × P n)
+    ib' = snd (kb (∈Type-IndBarB-IndBarC→ i w P T a b tyn ia ib) w (⊑-refl· w))
 
     bn : ℕ
     bn = fst ib'
@@ -490,46 +491,47 @@ corSeq→correctSeq r w F s cor n = corSeqN→correctSeqN r w 0 n F #INIT s s (c
     nlt : ¬ k1 < m
     nlt = ≡→¬< k1 k2 m eqm (fst compF3)
 
-    cp1 : correctPathN {i} {w} {#IndBarB} {#IndBarC} (#APPLY f b) (shiftPath {i} {w} {#IndBarB} {#IndBarC} p) n
+    cp1 : correctPathN {i} {w} {#IndBarB} {#IndBarC T} (#APPLY f b) (shiftPath {i} {w} {#IndBarB} {#IndBarC T} p) n
     cp1 = cp
 
-    cp2 : correctPathN {i} {w} {#IndBarB} {#IndBarC} (#APPLY (#loopR (#loop r F) (#NUM m) g) b) (shiftPath {i} {w} {#IndBarB} {#IndBarC} p) n
+    cp2 : correctPathN {i} {w} {#IndBarB} {#IndBarC T} (#APPLY (#loopR (#loop r F) (#NUM m) g) b) (shiftPath {i} {w} {#IndBarB} {#IndBarC T} p) n
     cp2 = ≡→correctPathN
-            {i} {w} {#IndBarB} {#IndBarC} (shiftPath {i} {w} {#IndBarB} {#IndBarC} p)
+            {i} {w} {#IndBarB} {#IndBarC T} (shiftPath {i} {w} {#IndBarB} {#IndBarC T} p)
             {#APPLY f b} {#APPLY (#loopR (#loop r F) (#NUM m) g) b} n (→≡#APPLY (snd (snd compF3)) refl) cp1
 
-    ind1 : corSeqN r w F (suc m) (#APPENDf (#NUM m) g (#NUM bn)) (path2𝕊 kb (shiftPath {i} {w} {#IndBarB} {#IndBarC} p)) n
+    ind1 : corSeqN r w F (suc m) (#APPENDf (#NUM m) g (#NUM bn)) (path2𝕊 kb P tyn (shiftPath {i} {w} {#IndBarB} {#IndBarC T} p)) n
     ind1 = →corSeqN
-             kb cn i r (#APPLY (#loopR (#loop r F) (#NUM m) g) b) F
+             kb cn i r P T (#APPLY (#loopR (#loop r F) (#NUM m) g) b) F
              (#APPENDf (#NUM m) g (#NUM bn)) (suc m)
-             n w compat F∈
+             n w tyn compat F∈
              {--(APPENDf∈BAIRE
                {i} {w} {#NUM m} {#NUM m} {g} {g} {#NUM bn} {#NUM bn}
                (NUM-equalInType-NAT i w m)
                (NUM-equalInType-NAT i w bn)
                g∈)--}
-             (shiftPath {i} {w} {#IndBarB} {#IndBarC} p)
-             (isInfPath-shiftPath {i} {w} {#IndBarB} {#IndBarC} p inf)
-             (APPLY-loopR-⇓ w w w (#loop r F) (#NUM m) g b bn m (lower (snd ib' w (⊑-refl· w))) (⇓!-refl (NUM m) w))
+             (shiftPath {i} {w} {#IndBarB} {#IndBarC T} p)
+             (isInfPath-shiftPath {i} {w} {#IndBarB} {#IndBarC T} p inf)
+             (APPLY-loopR-⇓ w w w (#loop r F) (#NUM m) g b bn m (lower (fst (snd ib') w (⊑-refl· w))) (⇓!-refl (NUM m) w))
              cp2
 
-    ind : corSeqN r w F (suc m) (#APPENDf (#NUM m) g (#NUM bn)) (shift𝕊 (path2𝕊 kb p)) n
+    ind : corSeqN r w F (suc m) (#APPENDf (#NUM m) g (#NUM bn)) (shift𝕊 (path2𝕊 kb P tyn p)) n
     ind = →≡corSeqN r w F (suc m) (#APPENDf (#NUM m) g (#NUM bn))
-            (path2𝕊 kb (shiftPath {i} {w} {#IndBarB} {#IndBarC} p))
-            (shift𝕊 (path2𝕊 kb p))
-            n (λ z → sym (shift-path2𝕊 kb {i} {w} p z)) ind1
+            (path2𝕊 kb P tyn (shiftPath {i} {w} {#IndBarB} {#IndBarC T} p))
+            (shift𝕊 (path2𝕊 kb P tyn p))
+            n (λ z → sym (shift-path2𝕊 kb {i} {w} P {T} tyn p z)) ind1
 
 
-→corSeq : (kb : K□) (cb : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (F : CTerm)
+→corSeq : (kb : K□) (cb : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T F : CTerm)
+           (tyn : type-#⇛!-NUM P T)
                → compatible· r w Res⊤
-               → ∈Type i w #FunBar F
-               → (p : path i w #IndBarB #IndBarC)
-               → correctPath {i} {w} {#IndBarB} {#IndBarC} (#APPLY2 (#loop r F) (#NUM 0) #INIT) p
-               → isInfPath {i} {w} {#IndBarB} {#IndBarC} p
-               → corSeq r w F (path2𝕊 kb p)
-→corSeq kb cb i w r F compat F∈ p cor inf n =
+               → ∈Type i w (#FunBar T) F
+               → (p : path i w #IndBarB (#IndBarC T))
+               → correctPath {i} {w} {#IndBarB} {#IndBarC T} (#APPLY2 (#loop r F) (#NUM 0) #INIT) p
+               → isInfPath {i} {w} {#IndBarB} {#IndBarC T} p
+               → corSeq r w F (path2𝕊 kb P tyn p)
+→corSeq kb cb i w r P T F tyn compat F∈ p cor inf n =
   →corSeqN
-    kb cb i r (#APPLY2 (#loop r F) (#NUM 0) #INIT) F #INIT 0 n w compat F∈
+    kb cb i r P T (#APPLY2 (#loop r F) (#NUM 0) #INIT) F #INIT 0 n w tyn compat F∈
     {--(LAM0∈BAIRE i w)--}
     p inf (#⇓!-refl (#APPLY2 (#loop r F) (#NUM 0) #INIT) w) (cor n)
 
