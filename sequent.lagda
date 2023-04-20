@@ -350,6 +350,7 @@ hypotheses : Set
 hypotheses = List hypothesis
 
 
+-- hyps |- ext ∈ concl
 record sequent : Set where
   constructor mkSeq
   field

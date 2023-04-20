@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 {-# OPTIONS --guardedness #-}
---{-# OPTIONS --experimental-lossy-unification #-}
+{-# OPTIONS --experimental-lossy-unification #-}
 --{-# OPTIONS --auto-inline #-}
 
 
@@ -80,7 +80,7 @@ open import terms9(W)(C)(K)(G)(X)(N)(EC) using (#BAIRE!)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (eqTypes-mon)
 --open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#⇛-refl)
 
 open import choiceDef{L}(C)
@@ -111,37 +111,43 @@ open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-upd-fo
 --open import continuitySMb(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (isHighestℕ≤)
 
 open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
-open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#INIT ; #APPLY-loop⇓SUP→)
+open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#INIT ; #APPLY-loop⇓SUP→ ; #⇛!-NUM-type)
 open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (seq2list ; mseq∈baire)
 open import barContP4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 --open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 open import barContP6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#FunBarP ; sem ; #updSeq-APPLY-updr ; updSeq-steps-NUM ; seq2list≡)
 open import barContP7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
-open import barContP8(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (follow-NUM-ETA)
+open import barContP8(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (follow-NUM-ETA ; type-#⇛-NUM)
 
 
 abstract
 
   follow-NUM : (kb : K□) (can : comp→∀ℕ) (gc : get-choose-ℕ) (cn : cℕ)
-               (i : ℕ) (w : 𝕎·) (r : Name) (I J F : CTerm) (s : 𝕊) (k n : ℕ)
+               (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T I J F : CTerm) (s : 𝕊) (k n : ℕ)
                → #¬Names F
                → compatible· r w Res⊤
+               → P 0
+               → ((n : ℕ) → P (s n))
+               → #⇛!-NUM-type P T
+               → type-#⇛-NUM P T
+               → type-preserves-#⇛ T
+               → isType i w T
                → I #⇛! #tab r F k (seq2list s k) at w
-               → weq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC)) w I J
-               → ∈Type i w #FunBar F
+               → weq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T))) w I J
+               → ∈Type i w (#FunBar T) F
                → #APPLY F (#MSEQ s) #⇛ #NUM n at w
                → #follow (#MSEQ s) I k #⇛ #NUM n at w
-  follow-NUM kb can gc cn i w r I J F s k n nnF compat cI (weqC a1 f1 a2 f2 e c1 c2 ind) F∈ comp
+  follow-NUM kb can gc cn i w r P T I J F s k n nnF compat p0 ps nty tyn prest tyt cI (weqC a1 f1 a2 f2 e c1 c2 ind) F∈ comp
     with #APPLY-#loop#⇓5
            can gc cn r F (#NUM k) (seq2list s k)
-           (fst (→APPLY-upd-seq2list#⇛NUM kb i w F r s k (cn r w compat) F∈))
+           (fst (→APPLY-upd-seq2list#⇛NUM kb cn i w P T F r s k p0 ps nty compat prest tyt F∈))
            k w (#¬Names-seq2list s k) nnF compat (#⇛!-refl {w} {#NUM k})
-           (snd (→APPLY-upd-seq2list#⇛NUM kb i w F r s k (cn r w compat) F∈))
+           (snd (→APPLY-upd-seq2list#⇛NUM kb cn i w P T F r s k p0 ps nty compat prest tyt F∈))
   ... | inj₁ c3 =
     follow-NUM-ETA
-      kb can gc cn i w r I F s k n
-      (fst (→APPLY-upd-seq2list#⇛NUM kb i w F r s k (cn r w compat) F∈))
-      nnF compat cI F∈ comp c3
+      kb can gc cn i w r P T I F s k n
+      (fst (→APPLY-upd-seq2list#⇛NUM kb cn i w P T F r s k p0 ps nty compat prest tyt F∈))
+      nnF compat ps tyn nty prest tyt cI F∈ comp c3
       --(snd (→APPLY-upd-seq2list#⇛NUM kb i w F r s k (cn r w compat) F∈))
   ... | inj₂ c3 =
     #⇛-trans
@@ -168,7 +174,7 @@ abstract
     where
       abstract
         j : ℕ
-        j = fst (→APPLY-upd-seq2list#⇛NUM kb i w F r s k (cn r w compat) F∈)
+        j = fst (→APPLY-upd-seq2list#⇛NUM kb cn i w P T F r s k p0 ps nty compat prest tyt F∈)
 
         c4 : #APPLY2 (#loop r F) (#NUM k) (seq2list s k) #⇛ #DIGAMMA (#loopR (#loop r F) (#NUM k) (seq2list s k)) at w
         c4 = c3
@@ -186,8 +192,8 @@ abstract
         ef1 : f1 ≡ #loopR (#loop r F) (#NUM k) (seq2list s k)
         ef1 = snd (#⇛SUP→× w I (#tab r F k (seq2list s k)) a1 f1 (#INR #AX) (#loopR (#loop r F) (#NUM k) (seq2list s k)) cI c1 c3)
 
-        eqb : ∈Type i w (sub0 a1 #IndBarC) (#NUM (s k))
-        eqb = NUM∈sub0-IndBarc i w a1 #AX (s k) (≡ₗ→#⇛! w a1 (#INR #AX) ea1)
+        eqb : ∈Type i w (sub0 a1 (#IndBarC T)) (#NUM (s k))
+        eqb = NUM∈sub0-IndBarc i w P T a1 #AX (s k) (ps k) nty (≡ₗ→#⇛! w a1 (#INR #AX) ea1)
 
         c6 : #APPLY f1 (#NUM (s k)) #⇛! #tab r F (suc k) (seq2list s (suc k)) at w
         c6 = #⇛!-trans
@@ -202,63 +208,136 @@ abstract
 
         ind' : #follow (#MSEQ s) (#APPLY f1 (#NUM (s k))) (suc k) #⇛ #NUM n at w
         ind' = follow-NUM
-                 kb can gc cn i w r
+                 kb can gc cn i w r P T
                  (#APPLY f1 (#NUM (s k)))
                  (#APPLY f2 (#NUM (s k)))
                  F s (suc k) n nnF compat
+                 p0 ps nty tyn prest tyt
                  c6
                  (ind (#NUM (s k)) (#NUM (s k)) eqb)
                  F∈ comp
 
 
+type-#⇛-NUM→! : (P : ℕ → Set) (T : CTerm)
+                  → type-#⇛-NUM P T
+                  → type-#⇛!-NUM P T
+type-#⇛-NUM→! P T tyn {i} {w} {a} {b} a∈ =
+  Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInTypeTCONST→ a∈))
+  where
+    aw : ∀𝕎 w (λ w' e' → TCONSTeq (equalInType i w' T) w' a b
+                        → □· w' (↑wPred' (λ w'' _ → Σ ℕ (λ n → a #⇛! #NUM n at w'' × b #⇛! #NUM n at w'' × P n)) e'))
+    aw w1 e1 (h , c₁ , c₂) = Mod.∀𝕎-□Func M aw1 (tyn {i} {w1} {a} {b} h)
+      where
+        aw1 : ∀𝕎 w1 (λ w' e' → Σ ℕ (λ n → a #⇛ #NUM n at w' × b #⇛ #NUM n at w' × P n)
+                              → ↑wPred' (λ w'' _ → Σ ℕ (λ n → a #⇛! #NUM n at w'' × b #⇛! #NUM n at w'' × P n)) e1 w' e')
+        aw1 w2 e2 (n , d₁ , d₂ , pn) z = n , #⇛→#⇛! {w2} {a} {#NUM n} (∀𝕎-mon e2 c₁) tt d₁ , #⇛→#⇛! {w2} {b} {#NUM n} (∀𝕎-mon e2 c₂) tt d₂ , pn
+
+
+NAT→T!2𝕊 : (kb : K□) {i : ℕ} {w : 𝕎·} (P : ℕ → Set) {T f : CTerm}
+             (tyn : type-#⇛!-NUM P T) (f∈ : ∈Type i w (#FUN #NAT (#TCONST T)) f) → 𝕊
+NAT→T!2𝕊 kb {i} {w} P {T} {f} tyn f∈ n = fst j
+  where
+    j : Σ ℕ (λ k → #APPLY f (#NUM n) #⇛! #NUM k at w × #APPLY f (#NUM n) #⇛! #NUM k at w × P k)
+    j = kb (tyn {i} {w} {#APPLY f (#NUM n)} {#APPLY f (#NUM n)} (equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n)) ) w (⊑-refl· w)
+
+
+NAT→T!2𝕊-P : (kb : K□) {i : ℕ} {w : 𝕎·} (P : ℕ → Set) {T f : CTerm}
+             (tyn : type-#⇛!-NUM P T) (f∈ : ∈Type i w (#FUN #NAT (#TCONST T)) f)
+             (n : ℕ) → P (NAT→T!2𝕊 kb P tyn f∈ n)
+NAT→T!2𝕊-P kb {i} {w} P {T} {f} tyn f∈ n
+  with kb (tyn {i} {w} {#APPLY f (#NUM n)} {#APPLY f (#NUM n)} (equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n)) ) w (⊑-refl· w)
+... | k , c₁ , c₂ , pk = pk
+
+
+
+NAT→T2𝕊-equalIn-NAT→T : (kb : K□) {i : ℕ} {w : 𝕎·} (P : ℕ → Set) {T f : CTerm}
+                          (tyn : type-#⇛!-NUM P T) (f∈ : ∈Type i w (#FUN #NAT (#TCONST T)) f)
+                          → isType i w T
+                          → equalInType i w (#FUN #NAT T) f (#MSEQ (NAT→T!2𝕊 kb P tyn f∈))
+NAT→T2𝕊-equalIn-NAT→T kb {i} {w} P {T} {f} tyn f∈ tyt =
+  equalInType-FUN eqTypesNAT tyt aw
+  where
+    s : 𝕊
+    s = NAT→T!2𝕊 kb P tyn f∈
+
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
+                       → equalInType i w' T (#APPLY f a₁) (#APPLY (#MSEQ s) a₂))
+    aw w1 e1 a₁ a₂ ea = {!!}
+{--
+      →equalInType-NAT i w1 _  _ (Mod.∀𝕎-□Func M aw1 (equalInType-NAT→ i w1 _ _ ea))
+      where
+        aw1 : ∀𝕎 w1 (λ w' e' → NATeq w' a₁ a₂ → NATeq w' (#APPLY f a₁) (#APPLY (#MSEQ s) a₂))
+        aw1 w2 e2 (k , c1 , c2) = s k , j3 , APPLY-MSEQ⇛ w2 s ⌜ a₂ ⌝ k c2
+          where
+            j1 : #APPLY f (#NUM k) #⇛ #NUM (s k) at w
+            j1 = fst (snd (kb (equalInType-NAT→ i w _ _ (APPLY-∈BAIRE-NUM→ i w f k f∈)) w (⊑-refl· w)))
+
+            j2 : NATeq w2 (#APPLY f a₁) (#APPLY f (#NUM k))
+            j2 = kb (equalInType-NAT→ i w2 _ _ (equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ f∈) w2 (⊑-trans· e1 e2) a₁ (#NUM k) (#⇛NUM→equalInType-NAT i w2 a₁ k c1))) w2 (⊑-refl· w2)
+
+            j3 : #APPLY f a₁ #⇛ #NUM (s k) at w2
+            j3 = NATeq→#⇛NUMₗ {w2} {#APPLY f a₁} {#APPLY f (#NUM k)} j2 (∀𝕎-mon (⊑-trans· e1 e2) j1)
+--}
+
+
 semCond : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
-          (i : ℕ) (w : 𝕎·) (r : Name) (F f : CTerm)
+          (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T F f : CTerm)
           → compatible· r w Res⊤
-          → ∈Type i w #FunBarP F
-          → ∈Type i w #BAIRE! f
+          → P 0
+          → #⇛!-NUM-type P T
+          → type-#⇛-NUM P T
+          → type-preserves-#⇛ T
+          → isType i w T
+          → ∈Type i w (#FunBarP T) F
+          → ∈Type i w (#FUN #NAT (#TCONST T)) f
           → equalInType i w #NAT (#APPLY F f) (#follow f (#tab r F 0 #INIT) 0)
 -- It's a #QNAT and not a #NAT because of the computation on #tab, which is a "time-dependent" computation
-semCond kb cn can exb gc i w r F f compat F∈P f∈ =
+semCond kb cn can exb gc i w r P T F f compat p0 nty tyn prest tyt F∈P f∈ =
   →equalInType-NAT
     i w (#APPLY F f) (#follow f I 0)
-    (Mod.∀𝕎-□Func M aw (equalInType-W→ i w #IndBarB #IndBarC I I I∈))
+    (Mod.∀𝕎-□Func M aw (equalInType-W→ i w #IndBarB (#IndBarC T) I I I∈))
   where
     nnF  : #¬Names F
     nnF = equalInType-TPURE→ₗ F∈P
 
-    F∈ : ∈Type i w #FunBar F
+    F∈ : ∈Type i w (#FunBar T) F
     F∈ = equalInType-TPURE→ F∈P
 
     s : 𝕊
-    s = BAIRE!2𝕊 kb f∈
+    s = NAT→T!2𝕊 kb P (type-#⇛-NUM→! P T tyn) f∈
+
+    ps : (n : ℕ) → P (s n)
+    ps = NAT→T!2𝕊-P kb P (type-#⇛-NUM→! P T tyn) f∈
 
     I : CTerm
     I = #tab r F 0 #INIT
 
-    I∈ : ∈Type i w #IndBar I
-    I∈ = sem kb cn can exb gc i w r F compat F∈P
+    I∈ : ∈Type i w (#IndBar T) I
+    I∈ = sem kb cn can exb gc i w r P T F p0 prest (type-#⇛-NUM→! P T tyn) nty tyt compat F∈P
 
-    f≡1 : (k : ℕ) → equalInType i w #NAT! (#APPLY f (#NUM k)) (#APPLY (#MSEQ s) (#NUM k))
-    f≡1 k = BAIRE!2𝕊-equalInNAT! kb {i} {w} {f} f∈ k
+    f≡1 : (k : ℕ) → equalInType i w (#TCONST T) (#APPLY f (#NUM k)) (#APPLY (#MSEQ s) (#NUM k))
+    f≡1 k = {!!} --BAIRE!2𝕊-equalInNAT! kb {i} {w} {f} f∈ k
 
-    f≡2 : equalInType i w #BAIRE f (#MSEQ (BAIRE!2𝕊 kb f∈))
-    f≡2 = BAIRE!2𝕊-equalInBAIRE kb {i} {w} {f} f∈
+    f≡2 : equalInType i w (#FUN #NAT T) f (#MSEQ s)
+    f≡2 = {!!} --BAIRE!2𝕊-equalInBAIRE kb {i} {w} {f} f∈
 
-    aw : ∀𝕎 w (λ w' e' → wmem (equalInType i w' #IndBarB) (λ a b eqa → equalInType i w' (sub0 a #IndBarC)) w' I
+    aw : ∀𝕎 w (λ w' e' → wmem (equalInType i w' #IndBarB) (λ a b eqa → equalInType i w' (sub0 a (#IndBarC T))) w' I
                         → NATeq {--#weakMonEq--} w' (#APPLY F f) (#follow f I 0))
     aw w1 e1 h =
       NATeq-trans {w1} {#APPLY F f} {#follow (#MSEQ s) I 0} {#follow f I 0}
         (NATeq-trans {w1} {#APPLY F f} {#APPLY F (#MSEQ s)} {#follow (#MSEQ s) I 0} neq1 neq2)
-        (weq→follow-NATeq kb i w1 I I (#MSEQ s) f 0 h (λ k → equalInType-mon (equalInType-sym (f≡1 k)) w1 e1))
+        (weq→follow-NATeq kb i w1 P T I I (#MSEQ s) f 0 (type-#⇛-NUM→! P T tyn) nty h (λ k → equalInType-mon (equalInType-sym (f≡1 k)) w1 e1))
       where
         neq1 : NATeq w1 (#APPLY F f) (#APPLY F (#MSEQ s))
-        neq1 = kb (equalInType-NAT→ i w1 _ _ (equalInType-FUN→ (≡CTerm→equalInType #BAIRE→NAT≡ F∈) w1 e1 f (#MSEQ s) (equalInType-mon f≡2 w1 e1))) w1 (⊑-refl· w1)
+        neq1 = kb (equalInType-NAT→ i w1 _ _ (equalInType-FUN→ F∈ w1 e1 f (#MSEQ s) (equalInType-mon f≡2 w1 e1))) w1 (⊑-refl· w1)
 
         neq2 : NATeq w1 (#APPLY F (#MSEQ s)) (#follow (#MSEQ s) I 0)
         neq2 = fst neq1 ,
                snd (snd neq1) ,
                follow-NUM
-                 kb can gc cn i w1 r I I F s 0 (proj₁ neq1)
-                 nnF (⊑-compatible· e1 compat) (#⇛!-refl {w1} {I}) h (equalInType-mon F∈ w1 e1) (snd (snd neq1))
+                 kb can gc cn i w1 r P T I I F s 0 (fst neq1)
+                 nnF (⊑-compatible· e1 compat)
+                 p0 ps nty tyn prest (eqTypes-mon (uni i) tyt w1 e1)
+                 (#⇛!-refl {w1} {I}) h (equalInType-mon F∈ w1 e1) (snd (snd neq1))
 
 \end{code}
