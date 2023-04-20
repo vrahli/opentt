@@ -74,7 +74,7 @@ open import terms3(W)(C)(K)(G)(X)(N)(EC) using (≡APPLY ; upd)
 --open import terms5(W)(C)(K)(G)(X)(N)(EC)
 --open import terms6(W)(C)(K)(G)(X)(N)(EC)
 --open import terms7(W)(C)(K)(G)(X)(N)(EC)
-open import terms8(W)(C)(K)(G)(X)(N)(EC) using (#APPLY2 ; #⇛-trans ; #INL¬≡INR)
+open import terms8(W)(C)(K)(G)(X)(N)(EC) using (#APPLY2 ; #⇛-trans ; #INL¬≡INR ; APPLY-MSEQ⇛)
 open import terms9(W)(C)(K)(G)(X)(N)(EC) using (#BAIRE!)
 
 open import bar(W)
@@ -91,7 +91,7 @@ open import choiceExtDef(W)(C)(K)(G)(X)
 
 --open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (TSext-equalTypes-equalInType)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-trans)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-trans ; equalInType-#⇛-LR ; →equalInTypeTCONST)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (→equalInType-NAT! ; equalInType-W→)
 --open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -249,12 +249,13 @@ NAT→T!2𝕊-P kb {i} {w} P {T} {f} tyn f∈ n
 ... | k , c₁ , c₂ , pk = pk
 
 
-
 NAT→T2𝕊-equalIn-NAT→T : (kb : K□) {i : ℕ} {w : 𝕎·} (P : ℕ → Set) {T f : CTerm}
                           (tyn : type-#⇛!-NUM P T) (f∈ : ∈Type i w (#FUN #NAT (#TCONST T)) f)
                           → isType i w T
+                          → #⇛!-NUM-type P T
+                          → type-preserves-#⇛ T
                           → equalInType i w (#FUN #NAT T) f (#MSEQ (NAT→T!2𝕊 kb P tyn f∈))
-NAT→T2𝕊-equalIn-NAT→T kb {i} {w} P {T} {f} tyn f∈ tyt =
+NAT→T2𝕊-equalIn-NAT→T kb {i} {w} P {T} {f} tyn f∈ tyt nty prest =
   equalInType-FUN eqTypesNAT tyt aw
   where
     s : 𝕊
@@ -262,22 +263,76 @@ NAT→T2𝕊-equalIn-NAT→T kb {i} {w} P {T} {f} tyn f∈ tyt =
 
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
                        → equalInType i w' T (#APPLY f a₁) (#APPLY (#MSEQ s) a₂))
-    aw w1 e1 a₁ a₂ ea = {!!}
-{--
-      →equalInType-NAT i w1 _  _ (Mod.∀𝕎-□Func M aw1 (equalInType-NAT→ i w1 _ _ ea))
+    aw w1 e1 a₁ a₂ ea =
+      equalInType-local (Mod.∀𝕎-□Func M aw1 (equalInType-NAT→ i w1 a₁ a₂ ea))
       where
-        aw1 : ∀𝕎 w1 (λ w' e' → NATeq w' a₁ a₂ → NATeq w' (#APPLY f a₁) (#APPLY (#MSEQ s) a₂))
-        aw1 w2 e2 (k , c1 , c2) = s k , j3 , APPLY-MSEQ⇛ w2 s ⌜ a₂ ⌝ k c2
-          where
-            j1 : #APPLY f (#NUM k) #⇛ #NUM (s k) at w
-            j1 = fst (snd (kb (equalInType-NAT→ i w _ _ (APPLY-∈BAIRE-NUM→ i w f k f∈)) w (⊑-refl· w)))
+        aw1 : ∀𝕎 w1 (λ w' e' → NATeq w' a₁ a₂
+                              → equalInType i w' T (#APPLY f a₁) (#APPLY (#MSEQ s) a₂))
+        aw1 w2 e2 (k , c₁ , c₂) =
+          equalInType-local (Mod.∀𝕎-□Func M aw2 (tyn (equalInType-FUN→ f∈ w2 (⊑-trans· e1 e2) a₁ (#NUM k) (#⇛NUM→equalInType-NAT i w2 a₁ k c₁))))
+            where
+              aw2 : ∀𝕎 w2 (λ w' e' → Σ ℕ (λ n → #APPLY f a₁ #⇛! #NUM n at w' × #APPLY f (#NUM k) #⇛! #NUM n at w' × P n)
+                                    → equalInType i w' T (#APPLY f a₁) (#APPLY (#MSEQ s) a₂))
+              aw2 w3 e3 (n , d₁ , d₂ , pn) =
+                prest i w3 (#APPLY f a₁) (#NUM n) (#APPLY (#MSEQ s) a₂) (#NUM n)
+                      (#⇛!→#⇛ {w3} {#APPLY f a₁} {#NUM n} d₁)
+                      comp
+                      (nty {i} {w3} {n} pn)
+                where
+                  eqn : n ≡ s k
+                  eqn with kb (tyn {i} {w} {#APPLY f (#NUM k)} {#APPLY f (#NUM k)} (equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM k) (#NUM k) (NUM-equalInType-NAT i w k))) w (⊑-refl· w)
+                  ... | j , x₁ , x₂ , pj = #NUMinj (#⇛-val-det {w3} {#APPLY f (#NUM k)} {#NUM n} {#NUM j} tt tt (#⇛!→#⇛ {w3} {#APPLY f (#NUM k)} {#NUM n} d₂) (∀𝕎-mon (⊑-trans· e1 (⊑-trans· e2 e3)) (#⇛!→#⇛ {w} {#APPLY f (#NUM k)} {#NUM j} x₁)))
 
-            j2 : NATeq w2 (#APPLY f a₁) (#APPLY f (#NUM k))
-            j2 = kb (equalInType-NAT→ i w2 _ _ (equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ f∈) w2 (⊑-trans· e1 e2) a₁ (#NUM k) (#⇛NUM→equalInType-NAT i w2 a₁ k c1))) w2 (⊑-refl· w2)
+                  comp : #APPLY (#MSEQ s) a₂ #⇛ #NUM n at w3
+                  comp rewrite eqn = APPLY-MSEQ⇛ w3 s ⌜ a₂ ⌝ k (∀𝕎-mon e3 c₂)
 
-            j3 : #APPLY f a₁ #⇛ #NUM (s k) at w2
-            j3 = NATeq→#⇛NUMₗ {w2} {#APPLY f a₁} {#APPLY f (#NUM k)} j2 (∀𝕎-mon (⊑-trans· e1 e2) j1)
+
+type-preserves-#⇛-TCONST : {T : CTerm} {i : ℕ} {w : 𝕎·} {a₁ a₂ b₁ b₂ : CTerm}
+                            → type-preserves-#⇛ T
+                            → a₁ #⇛! a₂ at w
+                            → b₁ #⇛! b₂ at w
+                            → equalInType i w (#TCONST T) a₂ b₂
+                            → equalInType i w (#TCONST T) a₁ b₁
+type-preserves-#⇛-TCONST {T} {i} {w} {a₁} {a₂} {b₁} {b₂} prest c₁ c₂ a∈ =
+  →equalInTypeTCONST (Mod.∀𝕎-□Func M aw (equalInTypeTCONST→ a∈))
+  where
+    aw : ∀𝕎 w (λ w' e' → TCONSTeq (equalInType i w' T) w' a₂ b₂
+                        → TCONSTeq (equalInType i w' T) w' a₁ b₁)
+    aw w1 e1 (x , d₁ , d₂) =
+      prest i w1 a₁ a₂ b₁ b₂ (#⇛!→#⇛ {w1} {a₁} {a₂} (∀𝕎-mon e1 c₁)) (#⇛!→#⇛ {w1} {b₁} {b₂} (∀𝕎-mon e1 c₂)) x ,
+      #⇛!-pres-#⇓→#⇓!-rev {w1} {a₂} {a₁} (∀𝕎-mon e1 c₁) d₁ ,
+      #⇛!-pres-#⇓→#⇓!-rev {w1} {b₂} {b₁} (∀𝕎-mon e1 c₂) d₂
+
+
+{--
+#⇛!-NUM→type : (P : ℕ → Set) (T : CTerm) → Set(lsuc(L))
+#⇛!-NUM→type P T =
+  {i : ℕ} {w : 𝕎·} {a b : CTerm}
+  → □· w (λ w' _ → Σ ℕ (λ n → a #⇛! #NUM n at w' × b #⇛! #NUM n at w' × P n))
+  → equalInType i w (#TCONST T) a b
 --}
+
+
+NAT→T!2𝕊-equalInNAT! : (kb : K□) {i : ℕ} {w : 𝕎·} (P : ℕ → Set) {T f : CTerm}
+                         (prest : type-preserves-#⇛ T) (nty : #⇛!-NUM-type P T)
+                         (tyn : type-#⇛!-NUM P T) (f∈ : ∈Type i w (#FUN #NAT (#TCONST T)) f) (k : ℕ)
+                         → equalInType i w (#TCONST T) (#APPLY f (#NUM k)) (#APPLY (#MSEQ (NAT→T!2𝕊 kb P tyn f∈)) (#NUM k))
+NAT→T!2𝕊-equalInNAT! kb {i} {w} P {T} {f} prest nty tyn f∈ k =
+  type-preserves-#⇛-TCONST {T} {i} {w} {#APPLY f (#NUM k)} {#NUM (NAT→T!2𝕊 kb P tyn f∈ k)}
+                            {#APPLY (#MSEQ (NAT→T!2𝕊 kb P tyn f∈)) (#NUM k)}
+                            {#NUM (NAT→T!2𝕊 kb P tyn f∈ k)}
+                            prest
+                            h2
+                            (#APPLY-MSEQ-NUM#⇛! (NAT→T!2𝕊 kb P tyn f∈) k w)
+                            h1
+  where
+    h1 : equalInType i w (#TCONST T) (#NUM (NAT→T!2𝕊 kb P tyn f∈ k)) (#NUM (NAT→T!2𝕊 kb P tyn f∈ k))
+    h1 with kb (tyn {i} {w} {#APPLY f (#NUM  k)} {#APPLY f (#NUM k)} (equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM k) (#NUM k) (NUM-equalInType-NAT i w k)) ) w (⊑-refl· w)
+    ... | j , c₁ , c₂ , cj = #⇛!-NUM-type-TCONST P T i w j nty cj
+
+    h2 : #APPLY f (#NUM k) #⇛! #NUM (NAT→T!2𝕊 kb P tyn f∈ k) at w
+    h2 with kb (tyn {i} {w} {#APPLY f (#NUM  k)} {#APPLY f (#NUM k)} (equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM k) (#NUM k) (NUM-equalInType-NAT i w k)) ) w (⊑-refl· w)
+    ... | j , c₁ , c₂ , cj = c₁
 
 
 semCond : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
@@ -316,10 +371,10 @@ semCond kb cn can exb gc i w r P T F f compat p0 nty tyn prest tyt F∈P f∈ =
     I∈ = sem kb cn can exb gc i w r P T F p0 prest (type-#⇛-NUM→! P T tyn) nty tyt compat F∈P
 
     f≡1 : (k : ℕ) → equalInType i w (#TCONST T) (#APPLY f (#NUM k)) (#APPLY (#MSEQ s) (#NUM k))
-    f≡1 k = {!!} --BAIRE!2𝕊-equalInNAT! kb {i} {w} {f} f∈ k
+    f≡1 k = NAT→T!2𝕊-equalInNAT! kb P prest nty (type-#⇛-NUM→! P T tyn) f∈ k
 
     f≡2 : equalInType i w (#FUN #NAT T) f (#MSEQ s)
-    f≡2 = {!!} --BAIRE!2𝕊-equalInBAIRE kb {i} {w} {f} f∈
+    f≡2 = NAT→T2𝕊-equalIn-NAT→T kb {i} {w} P {T} {f} (type-#⇛-NUM→! P T tyn) f∈ tyt nty prest
 
     aw : ∀𝕎 w (λ w' e' → wmem (equalInType i w' #IndBarB) (λ a b eqa → equalInType i w' (sub0 a (#IndBarC T))) w' I
                         → NATeq {--#weakMonEq--} w' (#APPLY F f) (#follow f I 0))
