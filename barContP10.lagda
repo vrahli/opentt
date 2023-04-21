@@ -74,13 +74,13 @@ open import terms3(W)(C)(K)(G)(X)(N)(EC) using (≡APPLY ; ≡SUBSING ; ≡EQ ; 
 --open import terms5(W)(C)(K)(G)(X)(N)(EC)
 --open import terms6(W)(C)(K)(G)(X)(N)(EC)
 --open import terms7(W)(C)(K)(G)(X)(N)(EC)
-open import terms8(W)(C)(K)(G)(X)(N)(EC) using (#APPLY2 ; #⇛-trans ; #INL¬≡INR)
+open import terms8(W)(C)(K)(G)(X)(N)(EC) using (#APPLY2 ; #⇛-trans ; #INL¬≡INR ; #[2]shiftUp0 ; #[1]shiftUp0 ; #[0]shiftUp0 ; #[2]APPLY ; #[2]VAR2 ; #[2]VAR0)
 open import terms9(W)(C)(K)(G)(X)(N)(EC) using (#BAIRE! ; BAIRE!)
 
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (eqTypes-mon)
 --open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#⇛-refl)
 
 open import choiceDef{L}(C)
@@ -111,28 +111,161 @@ open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (isType-BAIRE→NAT
 --open import continuitySMb(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (isHighestℕ≤)
 
 open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
-open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (isType-IndBarB ; equalTypes-IndBarC ; #INIT)
+open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (isType-IndBarB ; equalTypes-IndBarC ; #INIT ; #⇛!-NUM-type)
 --open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (seq2list ; mseq∈baire)
 open import barContP4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (INIT)
 --open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 open import barContP6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#FunBarP ; FunBarP ; sem)
 open import barContP7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (follow ; #follow ; weq→follow-NATeq ; #tab ; #BAIRE!≡)
---open import barContP8(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (follow-NUM-ETA)
-open import barContP9(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (semCond)
+open import barContP8(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (follow-NUM-ETA ; type-#⇛-NUM)
+open import barContP9(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (semCond ; type-#⇛-NUM→!)
 
 
-contDiag : Term
-contDiag =
-  PI FunBarP
-     (SUBSING
-       (SUM IndBar (PI BAIRE! (EQ (APPLY (VAR 2) (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT))))
+NAT→T : Term → Term
+NAT→T T = FUN NAT T
 
 
-#contDiag : CTerm
-#contDiag = ct contDiag c
+NAT→!T : Term → Term
+NAT→!T T = FUN NAT (TCONST T)
+
+
+#NAT→!T : CTerm → CTerm
+#NAT→!T T = #FUN #NAT (#TCONST T)
+
+
+#[0]TCONST : CTerm0 → CTerm0
+#[0]TCONST t = ct0 (TCONST ⌜ t ⌝) c
   where
-    c : # contDiag
+    c : #[ [ 0 ] ] TCONST ⌜ t ⌝
+    c = CTerm0.closed t
+
+
+#[1]TCONST : CTerm1 → CTerm1
+#[1]TCONST t = ct1 (TCONST ⌜ t ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] TCONST ⌜ t ⌝
+    c = CTerm1.closed t
+
+
+#[0]NAT→!T : CTerm → CTerm0
+#[0]NAT→!T T = #[0]FUN #[0]NAT (#[0]TCONST ⌞ T ⌟)
+
+
+#[1]FUN : CTerm1 → CTerm1 → CTerm1
+#[1]FUN a b = ct1 (FUN ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] FUN ⌜ a ⌝ ⌜ b ⌝
+    c rewrite fvars-FUN0 ⌜ a ⌝ ⌜ b ⌝ =
+        ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ [ 1 ]}
+              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
+                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
+
+
+#[1]NAT→!T : CTerm → CTerm1
+#[1]NAT→!T T = #[1]FUN #[1]NAT (#[1]TCONST ⌞ T ⌟)
+
+
+contDiag : Term → Term
+contDiag T =
+  PI (FunBarP T)
+     (SUBSING
+       (SUM (IndBar T) (PI (FUN NAT (TCONST T)) (EQ (APPLY (VAR 2) (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT))))
+
+
+#[2]follow010 : CTerm2
+#[2]follow010 = ct2 (follow (VAR 0) (VAR 1) 0) c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] (follow (VAR 0) (VAR 1) 0)
     c = refl
+
+
+#[0]WT : CTerm0 → CTerm1 → CTerm0
+#[0]WT a b = ct0 (WT ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ [ 0 ] ] WT ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {[ 0 ]}
+              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+                   (lowerVars-fvars-[0,1] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm1.closed b))))
+
+
+#[1]PI : CTerm1 → CTerm2 → CTerm1
+#[1]PI a b = ct1 (PI ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] PI ⌜ a ⌝ ⌜ b ⌝
+    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {0 ∷ [ 1 ]}
+              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
+                   (lowerVars-fvars-[0,1,2] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm2.closed b))))
+
+
+#[0]UNION! : CTerm0 → CTerm0 → CTerm0
+#[0]UNION! a b = #[0]TCONST (#[0]UNION a b)
+
+
+#[0]UNIT : CTerm0
+#[0]UNIT = ct0 UNIT refl
+
+
+#[0]IndBarB : CTerm0
+#[0]IndBarB = #[0]UNION! #[0]NAT #[0]UNIT
+
+
+#[1]DECIDE : CTerm1 → CTerm2 → CTerm2 → CTerm1
+#[1]DECIDE a b c = ct1 (DECIDE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝) d
+  where
+    d : #[ 0 ∷ [ 1 ] ] DECIDE ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝
+    d = ⊆→⊆?
+          {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝) ++ lowerVars (fvars ⌜ c ⌝)}
+          {0 ∷ [ 1 ]}
+          (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
+                (⊆++ (lowerVars-fvars-[0,1,2] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm2.closed b)))
+                      (lowerVars-fvars-[0,1,2] {fvars ⌜ c ⌝} (⊆?→⊆ (CTerm2.closed c)))))
+
+
+#[2]VOID : CTerm2
+#[2]VOID = ct2 VOID c
+  where
+    c : #[ 0 ∷ 1 ∷ [ 2 ] ] VOID
+    c = refl
+
+
+#[0]IndBarC : CTerm → CTerm1
+#[0]IndBarC T = #[1]DECIDE #[1]VAR0 #[2]VOID ⌞ #TCONST T ⌟
+
+
+#[0]IndBar : CTerm → CTerm0
+#[0]IndBar T = #[0]WT #[0]IndBarB (#[0]IndBarC T)
+
+
+#[2]EQ : CTerm2 → CTerm2 → CTerm2 → CTerm2
+#[2]EQ a b c = ct2 (EQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝) cl
+  where
+    cl : #[ 0 ∷ 1 ∷ [ 2 ] ] EQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝
+    cl = ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ ++ fvars ⌜ c ⌝} {0 ∷ 1 ∷ [ 2 ]}
+                (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed a))
+                      (⊆++ (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed b))
+                            (⊆?→⊆ {fvars ⌜ c ⌝} {0 ∷ 1 ∷ [ 2 ]} (CTerm2.closed c))))
+
+
+#[2]NAT : CTerm2
+#[2]NAT = ct2 NAT refl
+
+
+#contDiag : CTerm → CTerm
+#contDiag T =
+  #PI (#FunBarP T)
+      (#[0]SUBSING
+         (#[0]SUM (#[0]IndBar T) (#[1]PI (#[1]NAT→!T T) (#[2]EQ (#[2]APPLY #[2]VAR2 #[2]VAR0) (#[2]follow010) #[2]NAT))))
+
+{-- ct (contDiag ⌜ T ⌝) c
+  where
+    c : # contDiag ⌜ T ⌝
+    c rewrite #shiftUp 0 T | CTerm.closed T = refl
+--}
+
+
+-- sanity check
+⌜#contDiag≡⌝ : (T : CTerm) → ⌜ #contDiag T ⌝ ≡ contDiag ⌜ T ⌝
+⌜#contDiag≡⌝ T = refl
 
 
 contDiagExt : Name → Term
@@ -162,8 +295,12 @@ contDiagExt r =
             | #shiftDown 4 F = refl
 
 
-isType-FunBarP : (i : ℕ) (w : 𝕎·) → isType i w #FunBarP
-isType-FunBarP i w = equalTypesTPURE (isType-BAIRE→NAT i w)
+isType-FunBar : (i : ℕ) (w : 𝕎·) (T : CTerm) → isType i w T → isType i w (#FunBar T)
+isType-FunBar i w T tyt = eqTypesFUN← (eqTypesFUN← eqTypesNAT tyt) eqTypesNAT
+
+
+isType-FunBarP : (i : ℕ) (w : 𝕎·) (T : CTerm) → isType i w T → isType i w (#FunBarP T)
+isType-FunBarP i w T tyt = equalTypesTPURE (isType-FunBar i w T tyt)
 
 
 follow1 : CTerm1
@@ -197,26 +334,32 @@ follow0 W = ct0 (follow (VAR 0) ⌜ W ⌝ 0) c
                            (⊆?→⊆ {fvars ⌜ T ⌝} {0 ∷ [ 1 ]} (CTerm1.closed T))))
 
 
-sub0-contDiag-subsing : (F : CTerm)
-                        → sub0 F (ct0 (SUBSING (SUM IndBar (PI BAIRE! (EQ (APPLY (VAR 2) (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT)))) refl)
-                           ≡ #SUBSING (#SUM #IndBar (#[0]PI #[0]BAIRE! (#[1]EQ (#[1]APPLY ⌞ F ⌟ #[1]VAR0) follow1 #[1]NAT)))
-sub0-contDiag-subsing F = CTerm≡ e
+sub0-contDiag-subsing : (T F : CTerm)
+                        → sub0 F (#[0]SUBSING (#[0]SUM (#[0]IndBar T) (#[1]PI (#[1]NAT→!T T) (#[2]EQ (#[2]APPLY #[2]VAR2 #[2]VAR0) (#[2]follow010) #[2]NAT))))
+                           ≡ #SUBSING (#SUM (#IndBar T) (#[0]PI (#[0]NAT→!T T) (#[1]EQ (#[1]APPLY ⌞ F ⌟ #[1]VAR0) follow1 #[1]NAT)))
+sub0-contDiag-subsing T F = CTerm≡ e
   where
-    e : ⌜ sub0 F (ct0 (SUBSING (SUM IndBar (PI BAIRE! (EQ (APPLY (VAR 2) (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT)))) refl) ⌝
-        ≡ ⌜ #SUBSING (#SUM #IndBar (#[0]PI #[0]BAIRE! (#[1]EQ (#[1]APPLY ⌞ F ⌟ #[1]VAR0) follow1 #[1]NAT))) ⌝
-    e rewrite #shiftUp 0 F | #shiftUp 0 F | #shiftUp 0 F | #shiftDown 2 F = refl
+    e : sub ⌜ F ⌝ (SUBSING (SUM (IndBar ⌜ T ⌝) (PI (FUN NAT (TCONST ⌜ T ⌝)) (EQ (APPLY (VAR 2) (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT))))
+        ≡ ⌜ #SUBSING (#SUM (#IndBar T) (#[0]PI (#[0]NAT→!T T) (#[1]EQ (#[1]APPLY ⌞ F ⌟ #[1]VAR0) follow1 #[1]NAT))) ⌝
+    e rewrite #shiftUp 0 F | #shiftUp 0 F | #shiftUp 0 F | #shiftDown 2 F
+            | #shiftUp 0 T | #shiftUp 0 T
+            | #subv 2 ⌜ F ⌝ ⌜ T ⌝ (CTerm.closed T)
+            | #shiftDown 2 T = refl
 
 
-sub0-contDiag-PI : (F W : CTerm) (c : #[ [ 0 ] ] (PI BAIRE! (EQ (APPLY ⌜ F ⌝ (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT)))
-                   → sub0 W (ct0 (PI BAIRE! (EQ (APPLY ⌜ F ⌝ (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT)) c)
-                      ≡ #PI #BAIRE! (#[0]EQ (#[0]APPLY ⌞ F ⌟ #[0]VAR) (follow0 W) #[0]NAT)
-sub0-contDiag-PI F W c = CTerm≡ e
+sub0-contDiag-PI : (T F W : CTerm) (c : #[ [ 0 ] ] (PI (NAT→!T ⌜ T ⌝) (EQ (APPLY ⌜ F ⌝ (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT)))
+                   → sub0 W (ct0 (PI (NAT→!T ⌜ T ⌝) (EQ (APPLY ⌜ F ⌝ (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT)) c)
+                      ≡ #PI (#NAT→!T T) (#[0]EQ (#[0]APPLY ⌞ F ⌟ #[0]VAR) (follow0 W) #[0]NAT)
+sub0-contDiag-PI T F W c = CTerm≡ e
   where
-    e : ⌜ sub0 W (ct0 (PI BAIRE! (EQ (APPLY ⌜ F ⌝ (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT)) c) ⌝
-        ≡ ⌜ #PI #BAIRE! (#[0]EQ (#[0]APPLY ⌞ F ⌟ #[0]VAR) (follow0 W) #[0]NAT) ⌝
+    e : ⌜ sub0 W (ct0 (PI (NAT→!T ⌜ T ⌝) (EQ (APPLY ⌜ F ⌝ (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT)) c) ⌝
+        ≡ ⌜ #PI (#NAT→!T T) (#[0]EQ (#[0]APPLY ⌞ F ⌟ #[0]VAR) (follow0 W) #[0]NAT) ⌝
     e rewrite #shiftUp 0 W | #shiftUp 0 W
             | #subv 1 ⌜ W ⌝ ⌜ F ⌝ (CTerm.closed F)
-            | #shiftDown 1 W | #shiftDown 1 F = refl
+            | #shiftDown 1 W | #shiftDown 1 F
+            | #shiftUp 0 T
+            | #subv 1 ⌜ W ⌝ ⌜ T ⌝ (CTerm.closed T)
+            | #shiftDown 1 T = refl
 
 
 sub0-contDiag-EQ : (F W a : CTerm) (c : #[ [ 0 ] ] (EQ ⌜ #[0]APPLY ⌞ F ⌟ #[0]VAR ⌝ ⌜ follow0 W ⌝ NAT))
@@ -256,12 +399,12 @@ sub0-contDiag-EQ F W a c = CTerm≡ e
 →≡equalInType {i} {w} {T} {U} {a} {b} e h rewrite e = h
 
 
-isType-IndBar : (i : ℕ) (w : 𝕎·) → isType i w #IndBar
-isType-IndBar i w =
+isType-IndBar : (i : ℕ) (w : 𝕎·) (T : CTerm) → isType i w T → isType i w (#IndBar T)
+isType-IndBar i w T tyt =
   eqTypesW←
-    {w} {i} {#IndBarB} {#IndBarC} {#IndBarB} {#IndBarC}
+    {w} {i} {#IndBarB} {#IndBarC T} {#IndBarB} {#IndBarC T}
     (λ w1 e1 → isType-IndBarB i w1)
-    (λ w1 e1 a b eqa → equalTypes-IndBarC  i w1 a b eqa)
+    (λ w1 e1 a b eqa → equalTypes-IndBarC  i w1 T a b (eqTypes-mon (uni i) tyt w1 e1) eqa)
 
 
 isType-BAIRE! : {w : 𝕎·} {i : ℕ} → isType i w #BAIRE!
@@ -286,209 +429,302 @@ NAT!→NAT i w a b h = →equalInType-NAT i w a b (Mod.∀𝕎-□Func M aw (equ
     aw w1 e1 (k , c1 , c2) = k , #⇛!→#⇛ {w1} {a} {#NUM k} c1 , #⇛!→#⇛ {w1} {b} {#NUM k} c2
 
 
-BAIRE!→BAIRE : (i : ℕ) (w : 𝕎·) (a b : CTerm)
-                → equalInType i w #BAIRE! a b
-                → equalInType i w #BAIRE a b
-BAIRE!→BAIRE i w a b h =
-  ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-FUN eqTypesNAT eqTypesNAT aw)
+TCONST→T : (i : ℕ) (w : 𝕎·) (T a b : CTerm)
+            → equalInType i w (#TCONST T) a b
+            → equalInType i w T a b
+TCONST→T i w T a b h =
+  equalInType-local (Mod.∀𝕎-□Func M (λ w1 e1 (x , y , z) → x) (equalInTypeTCONST→ h))
+
+
+BAIRE!→BAIRE : (i : ℕ) (w : 𝕎·) (T a b : CTerm)
+                → isType i w T
+                → equalInType i w (#NAT→!T T) a b
+                → equalInType i w (#NAT→T T) a b
+BAIRE!→BAIRE i w T a b tyt h =
+  equalInType-FUN eqTypesNAT tyt aw
   where
-    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂ → equalInType i w' #NAT (#APPLY a a₁) (#APPLY b a₂))
-    aw w1 e1 a₁ a₂ ea = NAT!→NAT i w1 (#APPLY a a₁) (#APPLY b a₂) (equalInType-FUN→ (≡CTerm→equalInType #BAIRE!≡ h) w1 e1 a₁ a₂ ea)
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂ → equalInType i w' T (#APPLY a a₁) (#APPLY b a₂))
+    aw w1 e1 a₁ a₂ ea = TCONST→T i w1 T (#APPLY a a₁) (#APPLY b a₂) (equalInType-FUN→ h w1 e1 a₁ a₂ ea)
 
 
+isType-NAT→!T : {i : ℕ} {w : 𝕎·} {T : CTerm}
+                → isType i w T
+                → isType i w (#NAT→!T T)
+isType-NAT→!T {i} {w} {T} tyt = eqTypesFUN← eqTypesNAT (eqTypesTCONST← tyt)
 
-APPLY-FunBarP-BAIRE!→ : {i : ℕ} {w : 𝕎·} {F₁ F₂ a₁ a₂ : CTerm}
-                         → equalInType i w #FunBarP F₁ F₂
-                         → equalInType i w #BAIRE! a₁ a₂
+
+APPLY-FunBarP-BAIRE!→ : {i : ℕ} {w : 𝕎·} {T F₁ F₂ a₁ a₂ : CTerm}
+                         → isType i w T
+                         → equalInType i w (#FunBarP T) F₁ F₂
+                         → equalInType i w (#NAT→!T T) a₁ a₂
                          → equalInType i w #NAT (#APPLY F₁ a₁) (#APPLY F₂ a₂)
-APPLY-FunBarP-BAIRE!→ {i} {w} {F₁} {F₂} {a₁} {a₂} F∈P a∈ =
-  equalInType-FUN→ (≡CTerm→equalInType #BAIRE→NAT≡ F∈) w (⊑-refl· w) a₁ a₂ (BAIRE!→BAIRE i w a₁ a₂ a∈)
+APPLY-FunBarP-BAIRE!→ {i} {w} {T} {F₁} {F₂} {a₁} {a₂} tyt F∈P a∈ =
+  equalInType-FUN→ F∈ w (⊑-refl· w) a₁ a₂ (BAIRE!→BAIRE i w T a₁ a₂ tyt a∈)
   where
-    F∈ : equalInType i w #FunBar F₁ F₂
+    F∈ : equalInType i w (#FunBar T) F₁ F₂
     F∈ = equalInType-TPURE→ F∈P
 
 
-→equalInType-follow∈NAT : (kb : K□) {i : ℕ} {w : 𝕎·} {W₁ W₂ a₁ a₂ : CTerm}
-                            → equalInType i w #IndBar W₁ W₂
-                            → equalInType i w #BAIRE! a₁ a₂
+→equalInType-follow∈NAT : (kb : K□) {i : ℕ} {w : 𝕎·} (P : ℕ → Set) {T W₁ W₂ a₁ a₂ : CTerm}
+                            → type-#⇛!-NUM P T
+                            → #⇛!-NUM-type P T
+                            → equalInType i w (#IndBar T) W₁ W₂
+                            → equalInType i w (#NAT→!T T) a₁ a₂
                             → equalInType i w #NAT (#follow a₁ W₁ 0) (#follow a₂ W₂ 0)
-→equalInType-follow∈NAT kb {i} {w} {W₁} {W₂} {a₁} {a₂} W∈ a∈ =
+→equalInType-follow∈NAT kb {i} {w} P {T} {W₁} {W₂} {a₁} {a₂} tyn nty W∈ a∈ =
   →equalInType-NAT
     i w (#follow a₁ W₁ 0) (#follow a₂ W₂ 0)
-    (Mod.∀𝕎-□Func M aw (equalInType-W→ i w #IndBarB #IndBarC W₁ W₂ W∈))
+    (Mod.∀𝕎-□Func M aw (equalInType-W→ i w #IndBarB (#IndBarC T) W₁ W₂ W∈))
   where
-    aw : ∀𝕎 w (λ w' e' → weq (equalInType i w' #IndBarB) (λ a b eqa → equalInType i w' (sub0 a #IndBarC)) w' W₁ W₂
+    aw : ∀𝕎 w (λ w' e' → weq (equalInType i w' #IndBarB) (λ a b eqa → equalInType i w' (sub0 a (#IndBarC T))) w' W₁ W₂
                         → NATeq w' (#follow a₁ W₁ 0) (#follow a₂ W₂ 0))
     aw w1 e1 h =
       weq→follow-NATeq
-        kb i w1 W₁ W₂ a₁ a₂ 0 h
-        (λ k → equalInType-FUN→ (≡CTerm→equalInType #BAIRE!≡ a∈) w1 e1 (#NUM k) (#NUM k) (NUM-equalInType-NAT i w1 k))
+        kb i w1 P T W₁ W₂ a₁ a₂ 0 tyn nty h
+        (λ k → equalInType-FUN→ a∈ w1 e1 (#NUM k) (#NUM k) (NUM-equalInType-NAT i w1 k))
 
 
-contDiagVal-type3 : (kb : K□) (i : ℕ) (w : 𝕎·) (F₁ F₂ W₁ W₂ a₁ a₂ : CTerm)
-                    → equalInType i w #FunBarP F₁ F₂
-                    → equalInType i w #IndBar W₁ W₂
-                    → equalInType i w #BAIRE! a₁ a₂
+contDiagVal-type3 : (kb : K□) (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T F₁ F₂ W₁ W₂ a₁ a₂ : CTerm)
+                    → isType i w T
+                    → type-#⇛!-NUM P T
+                    → #⇛!-NUM-type P T
+                    → equalInType i w (#FunBarP T) F₁ F₂
+                    → equalInType i w (#IndBar T) W₁ W₂
+                    → equalInType i w (#NAT→!T T) a₁ a₂
                     → equalTypes
                          i w
                          (#EQ (#APPLY F₁ a₁) (#follow a₁ W₁ 0) #NAT)
                          (#EQ (#APPLY F₂ a₂) (#follow a₂ W₂ 0) #NAT)
-contDiagVal-type3 kb i w F₁ F₂ W₁ W₂ a₁ a₂ F∈ W∈ a∈ =
+contDiagVal-type3 kb i w P T F₁ F₂ W₁ W₂ a₁ a₂ tyt tyn nty F∈ W∈ a∈ =
   eqTypesEQ←
     {_} {_} {#APPLY F₁ a₁} {#follow a₁ W₁ 0} {#APPLY F₂ a₂} {#follow a₂ W₂ 0} {#NAT} {#NAT}
     eqTypesNAT
-    (APPLY-FunBarP-BAIRE!→ F∈ a∈)
-    (→equalInType-follow∈NAT kb {i} {w} {W₁} {W₂} {a₁} {a₂} W∈ a∈)
+    (APPLY-FunBarP-BAIRE!→ tyt F∈ a∈)
+    (→equalInType-follow∈NAT kb {i} {w} P {T} {W₁} {W₂} {a₁} {a₂} tyn nty W∈ a∈)
 
 
-contDiagVal-type2 : (kb : K□) (i : ℕ) (w : 𝕎·) (F₁ F₂ W₁ W₂ : CTerm)
-                    → equalInType i w #FunBarP F₁ F₂
-                    → equalInType i w #IndBar W₁ W₂
+contDiagVal-type2 : (kb : K□) (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T F₁ F₂ W₁ W₂ : CTerm)
+                    → isType i w T
+                    → type-#⇛!-NUM P T
+                    → #⇛!-NUM-type P T
+                    → equalInType i w (#FunBarP T) F₁ F₂
+                    → equalInType i w (#IndBar T) W₁ W₂
                     → equalTypes
                          i w
-                         (#PI #BAIRE! (#[0]EQ (#[0]APPLY ⌞ F₁ ⌟ #[0]VAR) (follow0 W₁) #[0]NAT))
-                         (#PI #BAIRE! (#[0]EQ (#[0]APPLY ⌞ F₂ ⌟ #[0]VAR) (follow0 W₂) #[0]NAT))
-contDiagVal-type2 kb i w F₁ F₂ W₁ W₂ F∈ W∈ =
+                         (#PI (#NAT→!T T) (#[0]EQ (#[0]APPLY ⌞ F₁ ⌟ #[0]VAR) (follow0 W₁) #[0]NAT))
+                         (#PI (#NAT→!T T) (#[0]EQ (#[0]APPLY ⌞ F₂ ⌟ #[0]VAR) (follow0 W₂) #[0]NAT))
+contDiagVal-type2 kb i w P T F₁ F₂ W₁ W₂ tyt tyn nty F∈ W∈ =
   eqTypesPI←
-    (λ w1 e1 → isType-BAIRE!)
+    (λ w1 e1 → isType-NAT→!T (eqTypes-mon (uni i) tyt w1 e1))
     (λ w1 e1 a₁ a₂ a∈ →
       →≡equalTypes
         (sym (sub0-contDiag-EQ F₁ W₁ a₁ _)) (sym (sub0-contDiag-EQ F₂ W₂ a₂ _))
-        (contDiagVal-type3 kb i w1 F₁ F₂ W₁ W₂ a₁ a₂ (equalInType-mon F∈ w1 e1) (equalInType-mon W∈ w1 e1) a∈))
+        (contDiagVal-type3 kb i w1 P T F₁ F₂ W₁ W₂ a₁ a₂ (eqTypes-mon (uni i) tyt w1 e1) tyn nty (equalInType-mon F∈ w1 e1) (equalInType-mon W∈ w1 e1) a∈))
 
 
-contDiagVal-type1 : (kb : K□) (i : ℕ) (w : 𝕎·) (F₁ F₂ : CTerm)
-                    → equalInType i w #FunBarP F₁ F₂
+contDiagVal-type1 : (kb : K□) (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T F₁ F₂ : CTerm)
+                    → isType i w T
+                    → type-#⇛!-NUM P T
+                    → #⇛!-NUM-type P T
+                    → equalInType i w (#FunBarP T) F₁ F₂
                     → equalTypes
                          i w
-                         (#SUM #IndBar (#[0]PI #[0]BAIRE! (#[1]EQ (#[1]APPLY ⌞ F₁ ⌟ #[1]VAR0) follow1 #[1]NAT)))
-                         (#SUM #IndBar (#[0]PI #[0]BAIRE! (#[1]EQ (#[1]APPLY ⌞ F₂ ⌟ #[1]VAR0) follow1 #[1]NAT)))
-contDiagVal-type1 kb i w F₁ F₂ F∈ =
+                         (#SUM (#IndBar T) (#[0]PI (#[0]NAT→!T T) (#[1]EQ (#[1]APPLY ⌞ F₁ ⌟ #[1]VAR0) follow1 #[1]NAT)))
+                         (#SUM (#IndBar T) (#[0]PI (#[0]NAT→!T T) (#[1]EQ (#[1]APPLY ⌞ F₂ ⌟ #[1]VAR0) follow1 #[1]NAT)))
+contDiagVal-type1 kb i w P T F₁ F₂ tyt tyn nty F∈ =
   eqTypesSUM←
-    (λ w1 e1 → isType-IndBar i w1)
+    (λ w1 e1 → isType-IndBar i w1 T (eqTypes-mon (uni i) tyt w1 e1))
     (λ w1 e1 W₁ W₂ W∈ →
       →≡equalTypes
-        (sym (sub0-contDiag-PI F₁ W₁ _)) (sym (sub0-contDiag-PI F₂ W₂ _))
-        (contDiagVal-type2 kb i w1 F₁ F₂ W₁ W₂ (equalInType-mon F∈ w1 e1) W∈))
+        (sym (sub0-contDiag-PI T F₁ W₁ _)) (sym (sub0-contDiag-PI T F₂ W₂ _))
+        (contDiagVal-type2 kb i w1 P T F₁ F₂ W₁ W₂ (eqTypes-mon (uni i) tyt w1 e1) tyn nty (equalInType-mon F∈ w1 e1) W∈))
 
 
 semCondEQ : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
-            (i : ℕ) (w : 𝕎·) (r : Name) (F f : CTerm) (a b : CTerm)
+            (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T F f : CTerm) (a b : CTerm)
             → compatible· r w Res⊤
-            → ∈Type i w #FunBarP F
-            → ∈Type i w #BAIRE! f
+            → P 0
+            → #⇛!-NUM-type P T
+            → type-#⇛-NUM P T
+            → type-preserves-#⇛ T
+            → isType i w T
+            → ∈Type i w (#FunBarP T) F
+            → ∈Type i w (#NAT→!T T) f
             → equalInType i w (#EQ (#APPLY F f) (#follow f (#tab r F 0 #INIT) 0) #NAT) a b
-semCondEQ kb cn can exb gc i w r F f a b compat F∈P f∈ =
+semCondEQ kb cn can exb gc i w r P T F f a b compat p0 nty tyn prest tyt F∈P f∈ =
   equalInType-EQ
     eqTypesNAT
-    (Mod.∀𝕎-□ M (λ w1 e1 → semCond kb cn can exb gc i w1 r F f (⊑-compatible· e1 compat) (equalInType-mon F∈P w1 e1) (equalInType-mon f∈ w1 e1)))
+    (Mod.∀𝕎-□ M (λ w1 e1 → semCond kb cn can exb gc i w1 r P T F f
+                                     (⊑-compatible· e1 compat) p0 nty tyn prest (eqTypes-mon (uni i) tyt w1 e1)
+                                     (equalInType-mon F∈P w1 e1) (equalInType-mon f∈ w1 e1)))
 
 
 semCond2 : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
-          (i : ℕ) (w : 𝕎·) (r : Name) (F₁ F₂ f : CTerm)
+          (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T F₁ F₂ f : CTerm)
           → compatible· r w Res⊤
-          → equalInType i w #FunBarP F₁ F₂
-          → ∈Type i w #BAIRE! f
+          → P 0
+          → #⇛!-NUM-type P T
+          → type-#⇛-NUM P T
+          → type-preserves-#⇛ T
+          → isType i w T
+          → equalInType i w (#FunBarP T) F₁ F₂
+          → ∈Type i w (#NAT→!T T) f
           → equalInType i w #NAT (#APPLY F₁ f) (#follow f (#tab r F₂ 0 #INIT) 0)
-semCond2 kb cn can exb gc i w r F₁ F₂ f compat F∈P f∈ =
-  equalInType-trans eqn (semCond kb cn can exb gc i w r F₂ f compat (equalInType-refl (equalInType-sym F∈P)) f∈)
+semCond2 kb cn can exb gc i w r P T F₁ F₂ f compat p0 nty tyn prest tyt F∈P f∈ =
+  equalInType-trans eqn (semCond kb cn can exb gc i w r P T F₂ f compat p0 nty tyn prest tyt (equalInType-refl (equalInType-sym F∈P)) f∈)
   where
     eqn : equalInType i w #NAT (#APPLY F₁ f) (#APPLY F₂ f)
-    eqn = APPLY-FunBarP-BAIRE!→ F∈P f∈
+    eqn = APPLY-FunBarP-BAIRE!→ tyt F∈P f∈
 
 
 semCondEQ2 : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
-            (i : ℕ) (w : 𝕎·) (r : Name) (F₁ F₂ f : CTerm) (a b : CTerm)
+            (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T F₁ F₂ f : CTerm) (a b : CTerm)
             → compatible· r w Res⊤
-            → equalInType i w #FunBarP F₁ F₂
-            → ∈Type i w #BAIRE! f
+            → P 0
+            → #⇛!-NUM-type P T
+            → type-#⇛-NUM P T
+            → type-preserves-#⇛ T
+            → isType i w T
+            → equalInType i w (#FunBarP T) F₁ F₂
+            → ∈Type i w (#NAT→!T T) f
             → equalInType i w (#EQ (#APPLY F₁ f) (#follow f (#tab r F₂ 0 #INIT) 0) #NAT) a b
-semCondEQ2 kb cn can exb gc i w r F₁ F₂ f a b compat F∈P f∈ =
+semCondEQ2 kb cn can exb gc i w r P T F₁ F₂ f a b compat p0 nty tyn prest tyt F∈P f∈ =
   equalInType-EQ
     eqTypesNAT
-    (Mod.∀𝕎-□ M (λ w1 e1 → semCond2 kb cn can exb gc i w1 r F₁ F₂ f (⊑-compatible· e1 compat) (equalInType-mon F∈P w1 e1) (equalInType-mon f∈ w1 e1)))
+    (Mod.∀𝕎-□ M (λ w1 e1 → semCond2 kb cn can exb gc i w1 r P T F₁ F₂ f
+                                      (⊑-compatible· e1 compat) p0 nty tyn prest (eqTypes-mon (uni i) tyt w1 e1)
+                                      (equalInType-mon F∈P w1 e1) (equalInType-mon f∈ w1 e1)))
 
 
 contDiagVal1 : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
-               (i : ℕ) (w : 𝕎·) (F₁ F₂ : CTerm) (r : Name)
+               (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T F₁ F₂ : CTerm) (r : Name)
                → compatible· r w Res⊤
-               → equalInType i w #FunBarP F₁ F₂
-               → ∈Type i w (#SUM #IndBar (#[0]PI #[0]BAIRE! (#[1]EQ (#[1]APPLY ⌞ F₁ ⌟ #[1]VAR0) follow1 #[1]NAT))) (#APPLY (#contDiagExt r) F₂)
-contDiagVal1 kb cn can exb gc i w F₁ F₂ r compat F∈ =
+               → P 0
+               → #⇛!-NUM-type P T
+               → type-#⇛-NUM P T
+               → type-preserves-#⇛ T
+               → isType i w T
+               → equalInType i w (#FunBarP T) F₁ F₂
+               → ∈Type i w (#SUM (#IndBar T) (#[0]PI (#[0]NAT→!T T) (#[1]EQ (#[1]APPLY ⌞ F₁ ⌟ #[1]VAR0) follow1 #[1]NAT))) (#APPLY (#contDiagExt r) F₂)
+contDiagVal1 kb cn can exb gc i w P T F₁ F₂ r compat p0 nty tyn prest tyt F∈ =
   equalInType-SUM
-    (λ w1 e1 → isType-IndBar i w1)
+    (λ w1 e1 → isType-IndBar i w1 T (eqTypes-mon (uni i) tyt w1 e1))
     (λ w1 e1 W₁ W₂ W∈ →
       →≡equalTypes
-        (sym (sub0-contDiag-PI F₁ W₁ _)) (sym (sub0-contDiag-PI F₁ W₂ _))
-        (contDiagVal-type2 kb i w1 F₁ F₁ W₁ W₂ (equalInType-refl (equalInType-mon F∈ w1 e1)) W∈))
+        (sym (sub0-contDiag-PI T F₁ W₁ _)) (sym (sub0-contDiag-PI T F₁ W₂ _))
+        (contDiagVal-type2 kb i w1 P T F₁ F₁ W₁ W₂ (eqTypes-mon (uni i) tyt w1 e1) (type-#⇛-NUM→! P T tyn) nty (equalInType-refl (equalInType-mon F∈ w1 e1)) W∈))
     (Mod.∀𝕎-□ M h1)
   where
-    h1 : ∀𝕎 w (λ w' _ → SUMeq (equalInType i w' #IndBar)
-                                (λ a b ea → equalInType i w' (sub0 a (#[0]PI #[0]BAIRE! (#[1]EQ (#[1]APPLY ⌞ F₁ ⌟ #[1]VAR0) follow1 #[1]NAT))))
+    h1 : ∀𝕎 w (λ w' _ → SUMeq (equalInType i w' (#IndBar T))
+                                (λ a b ea → equalInType i w' (sub0 a (#[0]PI (#[0]NAT→!T T) (#[1]EQ (#[1]APPLY ⌞ F₁ ⌟ #[1]VAR0) follow1 #[1]NAT))))
                                 w' (#APPLY (#contDiagExt r) F₂) (#APPLY (#contDiagExt r) F₂))
     h1 w1 e1 =
       #tab r F₂ 0 #INIT , #tab r F₂ 0 #INIT , #lamAX , #lamAX ,
-      sem kb cn can exb gc i w1 r F₂ (⊑-compatible· e1 compat) (equalInType-refl (equalInType-sym (equalInType-mon F∈ w1 e1))) ,
+      sem kb cn can exb gc i w1 r P T F₂ p0 prest (type-#⇛-NUM→! P T tyn) nty (eqTypes-mon (uni i) tyt w1 e1) (⊑-compatible· e1 compat) (equalInType-refl (equalInType-sym (equalInType-mon F∈ w1 e1))) ,
       #contDiagExt⇛ r F₂ w1 ,
       #contDiagExt⇛ r F₂ w1 ,
-      →≡equalInType (sym (sub0-contDiag-PI F₁ (#tab r F₂ 0 #INIT) _)) h2
+      →≡equalInType (sym (sub0-contDiag-PI T F₁ (#tab r F₂ 0 #INIT) _)) h2
       where
-        h2 : equalInType i w1 (#PI #BAIRE! (#[0]EQ (#[0]APPLY ⌞ F₁ ⌟ #[0]VAR) (follow0 (#tab r F₂ 0 #INIT)) #[0]NAT)) #lamAX #lamAX
+        h2 : equalInType i w1 (#PI (#NAT→!T T) (#[0]EQ (#[0]APPLY ⌞ F₁ ⌟ #[0]VAR) (follow0 (#tab r F₂ 0 #INIT)) #[0]NAT)) #lamAX #lamAX
         h2 = equalInType-PI
-               (λ w2 e2 → isType-BAIRE!)
+               (λ w2 e2 → isType-NAT→!T (eqTypes-mon (uni i) tyt w2 (⊑-trans· e1 e2)))
                (λ w2 e2 a₁ a₂ a∈ →
                  →≡equalTypes
                    (sym (sub0-contDiag-EQ F₁ (#tab r F₂ 0 #INIT) a₁ _)) (sym (sub0-contDiag-EQ F₁ (#tab r F₂ 0 #INIT) a₂ _))
                    (contDiagVal-type3
-                     kb i w2 F₁ F₁ (#tab r F₂ 0 #INIT) (#tab r F₂ 0 #INIT) a₁ a₂
+                     kb i w2 P T F₁ F₁ (#tab r F₂ 0 #INIT) (#tab r F₂ 0 #INIT) a₁ a₂
+                     (eqTypes-mon (uni i) tyt w2 (⊑-trans· e1 e2)) (type-#⇛-NUM→! P T tyn) nty
                      (equalInType-refl (equalInType-mon F∈ w2 (⊑-trans· e1 e2)))
-                     (sem kb cn can exb gc i w2 r F₂ (⊑-compatible· (⊑-trans· e1 e2) compat) (equalInType-refl (equalInType-sym (equalInType-mon F∈ w2 (⊑-trans· e1 e2))))) a∈))
+                     (sem kb cn can exb gc i w2 r P T F₂ p0 prest (type-#⇛-NUM→! P T tyn) nty (eqTypes-mon (uni i) tyt w2 (⊑-trans· e1 e2)) (⊑-compatible· (⊑-trans· e1 e2) compat) (equalInType-refl (equalInType-sym (equalInType-mon F∈ w2 (⊑-trans· e1 e2))))) a∈))
                (λ w2 e2 a₁ a₂ a∈ →
                  →≡equalInType
                    (sym (sub0-contDiag-EQ F₁ (#tab r F₂ 0 #INIT) a₁ _))
                    (semCondEQ2
-                     kb cn can exb gc i w2 r F₁ F₂ a₁ (#APPLY #lamAX a₁) (#APPLY #lamAX a₂)
-                     (⊑-compatible· (⊑-trans· e1 e2) compat)
+                     kb cn can exb gc i w2 r P T F₁ F₂ a₁ (#APPLY #lamAX a₁) (#APPLY #lamAX a₂)
+                     (⊑-compatible· (⊑-trans· e1 e2) compat) p0 nty tyn prest (eqTypes-mon (uni i) tyt w2 (⊑-trans· e1 e2))
                      ((equalInType-mon F∈ w2 (⊑-trans· e1 e2)))
                      (equalInType-refl a∈)))
 
 
 -- TODO: get rid of the name by adding a FRESH
 contDiagVal : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
-              (i : ℕ) (w : 𝕎·) (r : Name)
+              (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T : CTerm)
               → compatible· r w Res⊤
-              → ∈Type i w #contDiag (#contDiagExt r)
-contDiagVal kb cn can exb gc i w r compat =
+              → P 0
+              → #⇛!-NUM-type P T
+              → type-#⇛-NUM P T
+              → type-preserves-#⇛ T
+              → isType i w T
+              → ∈Type i w (#contDiag T) (#contDiagExt r)
+contDiagVal kb cn can exb gc i w r P T compat p0 nty tyn prest tyt =
   equalInType-PI
-    {i} {w} {#FunBarP}
-    {ct0 (SUBSING (SUM IndBar (PI BAIRE! (EQ (APPLY (VAR 2) (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT)))) refl}
-    (λ w1 e1 → isType-FunBarP i w1)
+    {i} {w} {#FunBarP T}
+    (λ w1 e1 → isType-FunBarP i w1 T (eqTypes-mon (uni i) tyt w1 e1))
     (λ w1 e1 F₁ F₂ eF →
       →≡equalTypes
-        (sym (sub0-contDiag-subsing F₁)) (sym (sub0-contDiag-subsing F₂))
-        (eqTypesSUBSING← (contDiagVal-type1 kb i w1 F₁ F₂ eF)))
+        (sym (sub0-contDiag-subsing T F₁)) (sym (sub0-contDiag-subsing T F₂))
+        (eqTypesSUBSING← (contDiagVal-type1 kb i w1 P T F₁ F₂ (eqTypes-mon (uni i) tyt w1 e1) (type-#⇛-NUM→! P T tyn) nty eF)))
     h1
   where
-    h1 : ∀𝕎 w (λ w' _ → (F₁ F₂ : CTerm) → equalInType i w' #FunBarP F₁ F₂
+    h1 : ∀𝕎 w (λ w' _ → (F₁ F₂ : CTerm) → equalInType i w' (#FunBarP T) F₁ F₂
                       →  equalInType
-                            i w' (sub0 F₁ (ct0 (SUBSING (SUM IndBar (PI BAIRE! (EQ (APPLY (VAR 2) (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT)))) refl))
+                            i w' (sub0 F₁ (#[0]SUBSING (#[0]SUM (#[0]IndBar T) (#[1]PI (#[1]NAT→!T T) (#[2]EQ (#[2]APPLY #[2]VAR2 #[2]VAR0) (#[2]follow010) #[2]NAT)))))
                             (#APPLY (#contDiagExt r) F₁) (#APPLY (#contDiagExt r) F₂))
     h1 w1 e1 F₁ F₂ F∈ =
       →≡equalInType
-        (sym (sub0-contDiag-subsing F₁))
-        (→equalInTypeSUBSING (contDiagVal-type1 kb i w1 F₁ F₁ (equalInType-refl F∈)) (Mod.∀𝕎-□ M h2))
+        (sym (sub0-contDiag-subsing T F₁))
+        (→equalInTypeSUBSING (contDiagVal-type1 kb i w1 P T F₁ F₁ (eqTypes-mon (uni i) tyt w1 e1) (type-#⇛-NUM→! P T tyn) nty (equalInType-refl F∈)) (Mod.∀𝕎-□ M h2))
       where
         h2 : ∀𝕎 w1 (λ w' _ →
                 SUBSINGeq
-                  (equalInType i w' (#SUM #IndBar (#[0]PI #[0]BAIRE! (#[1]EQ (#[1]APPLY (CTerm→CTerm1 F₁) #[1]VAR0) follow1 #[1]NAT))))
+                  (equalInType i w' (#SUM (#IndBar T) (#[0]PI (#[0]NAT→!T T) (#[1]EQ (#[1]APPLY (CTerm→CTerm1 F₁) #[1]VAR0) follow1 #[1]NAT))))
                   (#APPLY (#contDiagExt r) F₁)
                   (#APPLY (#contDiagExt r) F₂))
         h2 w2 e2 = h3 , h4
           where
-            h3 : ∈Type i w2 (#SUM #IndBar (#[0]PI #[0]BAIRE! (#[1]EQ (#[1]APPLY ⌞ F₁ ⌟ #[1]VAR0) follow1 #[1]NAT))) (#APPLY (#contDiagExt r) F₁)
-            h3 = contDiagVal1 kb cn can exb gc i w2 F₁ F₁ r (⊑-compatible· (⊑-trans· e1 e2) compat) (equalInType-refl (equalInType-mon F∈ w2 e2))
+            h3 : ∈Type i w2 (#SUM (#IndBar T) (#[0]PI (#[0]NAT→!T T) (#[1]EQ (#[1]APPLY ⌞ F₁ ⌟ #[1]VAR0) follow1 #[1]NAT))) (#APPLY (#contDiagExt r) F₁)
+            h3 = contDiagVal1 kb cn can exb gc i w2 P T F₁ F₁ r (⊑-compatible· (⊑-trans· e1 e2) compat) p0 nty tyn prest (eqTypes-mon (uni i) tyt w2 (⊑-trans· e1 e2)) (equalInType-refl (equalInType-mon F∈ w2 e2))
 
-            h4 : ∈Type i w2 (#SUM #IndBar (#[0]PI #[0]BAIRE! (#[1]EQ (#[1]APPLY ⌞ F₁ ⌟ #[1]VAR0) follow1 #[1]NAT))) (#APPLY (#contDiagExt r) F₂)
-            h4 = contDiagVal1 kb cn can exb gc i w2 F₁ F₂ r (⊑-compatible· (⊑-trans· e1 e2) compat) (equalInType-mon F∈ w2 e2)
+            h4 : ∈Type i w2 (#SUM (#IndBar T) (#[0]PI (#[0]NAT→!T T) (#[1]EQ (#[1]APPLY ⌞ F₁ ⌟ #[1]VAR0) follow1 #[1]NAT))) (#APPLY (#contDiagExt r) F₂)
+            h4 = contDiagVal1 kb cn can exb gc i w2 P T F₁ F₂ r (⊑-compatible· (⊑-trans· e1 e2) compat) p0 nty tyn prest (eqTypes-mon (uni i) tyt w2 (⊑-trans· e1 e2)) (equalInType-mon F∈ w2 e2)
+
+
+Pℕ : ℕ → Set
+Pℕ n = ⊤
+
+
+Pℕ0 : Pℕ 0
+Pℕ0 = tt
+
+
+#⇛!-NUM-typeℕ : #⇛!-NUM-type Pℕ #NAT
+#⇛!-NUM-typeℕ {i} {w} {n} pn = NUM-equalInType-NAT i w n
+
+
+type-#⇛-NUMℕ : type-#⇛-NUM Pℕ #NAT
+type-#⇛-NUMℕ {i} {w} {a} {b} a∈ =
+  Mod.∀𝕎-□Func M aw (equalInType-NAT→ i w a b a∈)
+  where
+    aw : ∀𝕎 w (λ w' e' → NATeq w' a b
+                        → Σ ℕ (λ n → a #⇛ #NUM n at w' × b #⇛ #NUM n at w' × Pℕ n))
+    aw w1 e1 (k , c₁ , c₂) = k , c₁ , c₂ , tt
+
+
+type-preserves-#⇛ℕ : type-preserves-#⇛ #NAT
+type-preserves-#⇛ℕ i w a₁ a₂ b₁ b₂ c₁ c₂ a∈ =
+  →equalInType-NAT i w a₁ b₁ (Mod.∀𝕎-□Func M aw (equalInType-NAT→ i w a₂ b₂ a∈))
+  where
+    aw : ∀𝕎 w (λ w' e' → NATeq w' a₂ b₂ → NATeq w' a₁ b₁)
+    aw w1 e1 (k , d₁ , d₂) = k ,
+                             #⇛-trans {w1} {a₁} {a₂} {#NUM k} (∀𝕎-mon e1 c₁) d₁ ,
+                             #⇛-trans {w1} {b₁} {b₂} {#NUM k} (∀𝕎-mon e1 c₂) d₂
+
+
+contDiagVal-NAT : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
+                  (i : ℕ) (w : 𝕎·) (r : Name)
+                  → compatible· r w Res⊤
+                  → ∈Type i w (#contDiag #NAT) (#contDiagExt r)
+contDiagVal-NAT kb cn can exb gc i w r compat =
+  contDiagVal kb cn can exb gc i w r Pℕ #NAT compat Pℕ0 #⇛!-NUM-typeℕ type-#⇛-NUMℕ type-preserves-#⇛ℕ eqTypesNAT
 
 \end{code}
