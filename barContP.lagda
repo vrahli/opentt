@@ -78,7 +78,7 @@ open import terms8(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (eqTypes-mon)
 --open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import choiceDef{L}(C)
@@ -923,6 +923,10 @@ loop𝕎 w F k f = startNewChoiceT Res⊤ w (νloopFB F (loop F) k f)
 #loop𝕎 w F k f = startNewChoiceT Res⊤ w ⌜ #νloopFB F (#loop F) k f ⌝
 
 
+loop𝕎0 : (w : 𝕎·) (F k f : Term) → 𝕎·
+loop𝕎0 w F k f = chooseT (loopName w F k f) (loop𝕎 w F k f) N0
+
+
 #loop𝕎0 : (w : 𝕎·) (F k f : CTerm) → 𝕎·
 #loop𝕎0 w F k f = chooseT (#loopName w F k f) (#loop𝕎 w F k f) N0
 
@@ -1583,20 +1587,20 @@ shiftUp00 l rewrite #shiftUp 0 l | #shiftUp 0 l = refl
     c2 = LET⇓₁ {w} {w'} {appUpd r ⌜ F ⌝ (shiftUp 0 (shiftUp 0 ⌜ f ⌝))} {NUM i} c0
 
 
-#APPLY-#loop#⇓3 : (r : Name) (F k f : CTerm) (i : ℕ) (w : 𝕎·)
-                  → #APPLY F (#upd r f) #⇓ #NUM i at (chooseT r w N0)
-                  → #APPLY2 (#loop F) k f #⇓ #loopI r (#loop F) k f i at w
-#APPLY-#loop#⇓3 r F k f i w c =
-  ⇓-trans₁
-    {w} {chooseT r w N0}
+#APPLY-#loop#⇓3 : (F k f : CTerm) (i : ℕ) (w w' : 𝕎·)
+                  → #APPLY F (#upd (#loopName w F k f) f) #⇓ #NUM i from #loop𝕎0 w F k f to w'
+                  → #APPLY2 (#loop F) k f #⇓ #loopI (#loopName w F k f) (#loop F) k f i from w to w'
+#APPLY-#loop#⇓3 F k f i w w' c =
+  ⇓-trans₂
+    {w} {#loop𝕎0 w F k f} {w'}
     {APPLY2 (loop ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝}
     {loopA r ⌜ F ⌝ (loop ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝}
     {loopI r (loop ⌜ F ⌝) ⌜ k ⌝ ⌜ f ⌝ (NUM i)}
-    (#APPLY-#loop#⇓2 r F k f w)
-    (⇓-from-to→⇓ {chooseT r w N0} {fst c1} (#loopA#⇓#loopI r F k f i (chooseT r w N0) (fst c1) (snd c1)))
+    (#APPLY-#loop#⇓2 F k f w)
+    (#loopA#⇓#loopI r F k f i (#loop𝕎0 w F k f) w' c)
   where
-    c1 : Σ 𝕎· (λ w' → #APPLY F (#upd r f) #⇓ #NUM i from (chooseT r w N0) to w')
-    c1 = ⇓→from-to c
+    r : Name
+    r = #loopName w F k f
 
 
 #loopI⇓#loopII : (w : 𝕎·) (r : Name ) (R k f : CTerm) (i : ℕ)
@@ -1710,154 +1714,262 @@ shiftUp00 l rewrite #shiftUp 0 l | #shiftUp 0 l = refl
 ... | no y = inj₂ y
 
 
+-- MOVE to computation
+--#⇓-trans₁ : {w w' : 𝕎·} {a b c : CTerm} → a #⇓ b from w to w' → b #⇓ c at w' → a #⇓ c at w
+--#⇓-trans₁ {w} {w'} {a} {b} {c} c₁ c₂ = ⇓-trans₁ {w} {w'} {⌜ a ⌝} {⌜ b ⌝} {⌜ c ⌝} c₁ c₂
+
+
+-- MOVE to computation
+#⇓-trans₂ : {w w' w'' : 𝕎·} {a b c : CTerm} → a #⇓ b from w to w' → b #⇓ c from w' to w'' → a #⇓ c from w to w''
+#⇓-trans₂ {w} {w'} {w''} {a} {b} {c} c₁ c₂ = ⇓-trans₂ {w} {w'} {w''} {⌜ a ⌝} {⌜ b ⌝} {⌜ c ⌝} c₁ c₂
+
+
 abstract
 
-  #APPLY-#loop#⇓4 : (cn : cℕ) (r : Name) (F k f : CTerm) (i n : ℕ) (w : 𝕎·)
-                    → compatible· r w Res⊤
-                    → k #⇛ #NUM n at w
-                    → #APPLY F (#upd r f) #⇓ #NUM i at (chooseT r w N0)
-                    → #APPLY2 (#loop F) k f #⇓ #ETA (#NUM i) at w
-                       ⊎ #APPLY2 (#loop F) k f #⇓ #DIGAMMA (#loopR (#loop F) k f) at w
-  #APPLY-#loop#⇓4 cn r F k f i n w compat compk c = d2 (<⊎¬ m n)
+  #APPLY-#loop#⇓4 : (cn : cℕ) (F k f : CTerm) (i n : ℕ) (w w' : 𝕎·)
+--                    → compatible· r w Res⊤
+                    → k #⇛! #NUM n at w
+                    → #APPLY F (#upd (#loopName w F k f) f) #⇓ #NUM i from #loop𝕎0 w F k f to w'
+                    → #APPLY2 (#loop F) k f #⇓ #ETA (#NUM i) from w to w'
+                       ⊎ #APPLY2 (#loop F) k f #⇓ #DIGAMMA (#loopR (#loop F) k f) from w to w'
+  #APPLY-#loop#⇓4 cn F k f i n w w' compk c = d2 (<⊎¬ m n)
     where
-      c1 : Σ 𝕎· (λ w' → #APPLY2 (#loop F) k f #⇓ #loopI r (#loop F) k f i from w to w')
-      c1 = ⇓→from-to (#APPLY-#loop#⇓3 r F k f i w c)
+      r : Name
+      r = #loopName w F k f
 
-      e1 : w ⊑· fst c1
-      e1 = #⇓from-to→⊑ {w} {fst c1} {#APPLY2 (#loop F) k f} {#loopI r (#loop F) k f i} (snd c1)
+      c1 : #APPLY2 (#loop F) k f #⇓ #loopI r (#loop F) k f i from w to w'
+      c1 = #APPLY-#loop#⇓3 F k f i w w' c
 
-      d1 : Σ ℕ (λ j → getT 0 r (fst c1) ≡ just (NUM j))
-      d1 = lower (cn r w compat (fst c1) e1)
+      w0 : 𝕎·
+      w0 = #loop𝕎 w F k f
+
+      e0 : w0 ⊑· w'
+      e0 = ⊑-trans· (choose⊑· r w0 (T→ℂ· N0)) (#⇓from-to→⊑ {#loop𝕎0 w F k f} {w'} {#APPLY F (#upd (#loopName w F k f) f)} {#NUM i} c)
+
+      compat : compatible· r w0 Res⊤
+      compat = startChoiceCompatible· Res⊤ w r (¬newChoiceT∈dom𝕎 w ⌜ #νloopFB F (#loop F) k f ⌝)
+
+      e1 : w ⊑· w'
+      e1 = #⇓from-to→⊑ {w} {w'} {#APPLY2 (#loop F) k f} {#loopI r (#loop F) k f i} c1
+
+      d1 : Σ ℕ (λ j → getT 0 r w' ≡ just (NUM j))
+      d1 = lower (cn r w0 compat w' e0)
 
       m : ℕ
       m = fst d1
 
       d2 : (m < n ⊎ ¬ m < n)
-           → #APPLY2 (#loop F) k f #⇓ #ETA (#NUM i) at w
-              ⊎ #APPLY2 (#loop F) k f #⇓ #DIGAMMA (#loopR (#loop F) k f) at w
+           → #APPLY2 (#loop F) k f #⇓ #ETA (#NUM i) from w to w'
+              ⊎ #APPLY2 (#loop F) k f #⇓ #DIGAMMA (#loopR (#loop F) k f) from w to w'
       d2 (inj₁ x) =
-        inj₁ (#⇓-trans₁
-                {w} {fst c1} {#APPLY2 (#loop F) k f} {#loopI r (#loop F) k f i} {#ETA (#NUM i)}
-                (snd c1)
-                (Σ⇓-from-to→⇓ (#APPLY-#loop#⇓4₁ r F k f i (fst c1) m n (snd d1) (∀𝕎-mon e1 compk) x)))
+        inj₁ (#⇓-trans₂
+                {w} {w'} {w'} {#APPLY2 (#loop F) k f} {#loopI r (#loop F) k f i} {#ETA (#NUM i)}
+                c1
+                (#APPLY-#loop#⇓4₂ r F k f i w' m n (snd d1) (∀𝕎-mon e1 compk) x))
       d2 (inj₂ x) =
-        inj₂ (#⇓-trans₁
-                {w} {fst c1} {#APPLY2 (#loop F) k f} {#loopI r (#loop F) k f i} {#DIGAMMA (#loopR (#loop F) k f)}
-                (snd c1)
-                (Σ⇓-from-to→⇓ (#APPLY-#loop#⇓5₁ r F k f i (fst c1) m n (snd d1) (∀𝕎-mon e1 compk) x)))
+        inj₂ (#⇓-trans₂
+                {w} {w'} {w'} {#APPLY2 (#loop F) k f} {#loopI r (#loop F) k f i} {#DIGAMMA (#loopR (#loop F) k f)}
+                c1
+                (#APPLY-#loop#⇓5₂ r F k f i w' m n (snd d1) (∀𝕎-mon e1 compk) x))
 
 
 differ⇓APPLY-upd : (cn : comp→∀ℕ) (gc0 : get-choose-ℕ) (F f : Term) (cf : # f)
-                   (nnf : ¬Names f) (nnF : ¬Names F) (r : Name)
+                   (nnf : ¬Names f) (nnF : ¬Names F) (r r' : Name)
                    (w1 w2 w1' : 𝕎·) (i : ℕ)
                    → compatible· r w1 Res⊤
-                   → compatible· r w1' Res⊤
+                   → compatible· r' w1' Res⊤
                    → APPLY F (upd r f) ⇓ NUM i from (chooseT r w1 N0) to w2
-                   → Σ 𝕎· (λ w2' → APPLY F (upd r f) ⇓ NUM i from (chooseT r w1' N0) to w2' × getT 0 r w2 ≡ getT 0 r w2')
-differ⇓APPLY-upd cn gc0 F f cf nnf nnF r w1 w2 w1' i compat1 compat2 comp
+                   → Σ 𝕎· (λ w2' → APPLY F (upd r' f) ⇓ NUM i from (chooseT r' w1' N0) to w2' × getT 0 r w2 ≡ getT 0 r' w2')
+differ⇓APPLY-upd cn gc0 F f cf nnf nnF r r' w1 w2 w1' i compat1 compat2 comp
   with differ⇓from-to
-         gc0 f cf nnf r r (chooseT r w1 N0) w2 (chooseT r w1' N0) (APPLY F (upd r f)) (APPLY F (upd r f)) (NUM i) tt
+         gc0 f cf nnf r r' (chooseT r w1 N0) w2 (chooseT r' w1' N0) (APPLY F (upd r f)) (APPLY F (upd r' f)) (NUM i) tt
          (→compatible-chooseT r r w1 N0 Res⊤ compat1)
-         (→compatible-chooseT r r w1' N0 Res⊤ compat2)
+         (→compatible-chooseT r' r' w1' N0 Res⊤ compat2)
          (cn r w1 0 compat1)
-         (differ-APPLY F F (upd r f) (upd r f) (differ-refl r r f F nnF) differ-upd)
-         (trans (gc0 r w1 0 compat1) (sym (gc0 r w1' 0 compat2))) comp
+         (differ-APPLY F F (upd r f) (upd r' f) (differ-refl r r' f F nnF) differ-upd)
+         (trans (gc0 r w1 0 compat1) (sym (gc0 r' w1' 0 compat2))) comp
 ... | w2' , .(NUM i) , comp' , differ-NUM .i , gt' = w2' , comp' , gt'
 
 
 abstract
 
-  #APPLY-#loop#⇓5 : (can : comp→∀ℕ) (gc0 : get-choose-ℕ) (cn : cℕ)
-                    (r : Name) (F k f : CTerm) (i n : ℕ) (w : 𝕎·)
+  #APPLY-#loop#⇓5 : (kb : K□) (can : comp→∀ℕ) (gc0 : get-choose-ℕ) (cn : cℕ) (u : ℕ)
+                    (T F k f : CTerm) (n : ℕ) (w : 𝕎·)
                     → (nnf : #¬Names f) (nnF : #¬Names F)
-                    → compatible· r w Res⊤
+                    → type-preserves-#⇛ T
+                    → isType u w T
                     → k #⇛! #NUM n at w
-                    → #APPLY F (#upd r f) #⇛ #NUM i at w
-                    → #APPLY2 (#loop F) k f #⇛ #ETA (#NUM i) at w
+                    → ∈Type u w (#FunBar T) F
+                    → ∈Type u w (#FUN #NAT T) f
+                    --→ #APPLY F (#upd (#loopName w F k f) f) #⇛ #NUM i at w
+                    → Σ ℕ (λ i → #APPLY2 (#loop F) k f #⇛ #ETA (#NUM i) at w)
                        ⊎ #APPLY2 (#loop F) k f #⇛ #DIGAMMA (#loopR (#loop F) k f) at w
-  #APPLY-#loop#⇓5 can gc0 cn r F k f i n w nnf nnF compat compk c = d2 (<⊎¬ m n)
+  #APPLY-#loop#⇓5 kb can gc0 cn u T F k f n w nnf nnF prest tyt compk F∈ f∈ {--c--} = d2 (<⊎¬ m n)
     where
-      c1 : #APPLY2 (#loop F) k f #⇛! #loopF r F (#loop F) k f at w
-      c1 w1 e1 = lift (#APPLY-#loop#⇓1 r F k f w1)
+      r : Name
+      r = #loopName w F k f
 
-      c2 : #loopF r F (#loop F) k f #⇓ #loopA r F (#loop F) k f from w to (chooseT r w N0)
-      c2 = #loopF#⇓#loopA r F (#loop F) k f w
+      c1 : #APPLY2 (#loop F) k f #⇓ #loopF r F (#loop F) k f from w to #loop𝕎 w F k f
+      c1 = #APPLY-#loop#⇓1 F k f w
 
-      c' : Σ 𝕎· (λ w' → #APPLY F (#upd r f) #⇓ #NUM i from (chooseT r w N0) to w')
-      c' = ⇓→from-to (lower (c (chooseT r w N0) (choose⊑· r w (T→ℂ· N0))))
+      w0 : 𝕎·
+      w0 = #loop𝕎0 w F k f
+
+      e0 : w ⊑· w0
+      e0 = ⊑-trans· (#⇓from-to→⊑ {w} {#loop𝕎 w F k f} {#APPLY2 (#loop F) k f} {#loopF r F (#loop F) k f} c1) (choose⊑· r (#loop𝕎 w F k f) (T→ℂ· N0))
+
+      compat : compatible· r (#loop𝕎 w F k f) Res⊤
+      compat = startChoiceCompatible· Res⊤ w r (¬newChoiceT∈dom𝕎 w ⌜ #νloopFB F (#loop F) k f ⌝)
+
+      compat0 : compatible· r w0 Res⊤
+      compat0 = ⊑-compatible· (choose⊑· r (#loop𝕎 w F k f) (T→ℂ· N0)) compat
+
+      c2 : #loopF r F (#loop F) k f #⇓ #loopA r F (#loop F) k f from (#loop𝕎 w F k f) to w0
+      c2 = #loopF#⇓#loopA r F (#loop F) k f (#loop𝕎 w F k f)
+
+      F∈1 : ∈Type u w0 #NAT (#APPLY F (#upd r f))
+      F∈1 = equalInType-FUN→
+               F∈ w0 e0 (#upd r f) (#upd r f)
+               (upd∈BAIRE cn u w0 r T f compat0 prest (eqTypes-mon (uni u) tyt w0 e0) (equalInType-mon f∈ w0 e0))
+
+      F∈2 : NATmem w0 (#APPLY F (#upd r f))
+      F∈2 = kb (equalInType-NAT→ u w0 (#APPLY F (#upd r f)) (#APPLY F (#upd r f)) F∈1) w0 (⊑-refl· w0)
+
+      i : ℕ
+      i = fst F∈2
+
+      c' : Σ 𝕎· (λ w' → #APPLY F (#upd r f) #⇓ #NUM i from w0 to w')
+      c' = ⇓→from-to (lower (fst (snd F∈2) w0 (⊑-refl· w0))) --⇓→from-to (lower (c (chooseT r w N0) (choose⊑· r w (T→ℂ· N0))))
 
       w' : 𝕎·
       w' = fst c'
 
-      c'' : #APPLY F (#upd r f) #⇓ #NUM i from (chooseT r w N0) to w'
+      c'' : #APPLY F (#upd r f) #⇓ #NUM i from w0 to w'
       c'' = snd c'
 
-      e' : chooseT r w N0 ⊑· w'
-      e' = #⇓from-to→⊑ {chooseT r w N0} {w'} {#APPLY F (#upd r f)} {#NUM i} c''
+      e' : w0 ⊑· w'
+      e' = #⇓from-to→⊑ {w0} {w'} {#APPLY F (#upd r f)} {#NUM i} c''
 
-      c3 : #loopA r F (#loop F) k f #⇓ #loopI r (#loop F) k f i from (chooseT r w N0) to w'
-      c3 = #loopA#⇓#loopI r F k f i (chooseT r w N0) w' c''
+      c3 : #loopA r F (#loop F) k f #⇓ #loopI r (#loop F) k f i from w0 to w'
+      c3 = #loopA#⇓#loopI r F k f i w0 w' c''
 
       d1 : Σ ℕ (λ j → getT 0 r w' ≡ just (NUM j))
-      d1 = lower (cn r w compat w' (⊑-trans· (choose⊑· r w (T→ℂ· N0)) e'))
+      d1 = lower (cn r w0 compat0 w' e')
 
       m : ℕ
       m = fst d1
 
       d2 : (m < n ⊎ ¬ m < n)
-           → #APPLY2 (#loop F) k f #⇛ #ETA (#NUM i) at w
+           → Σ ℕ (λ i → #APPLY2 (#loop F) k f #⇛ #ETA (#NUM i) at w)
               ⊎ #APPLY2 (#loop F) k f #⇛ #DIGAMMA (#loopR (#loop F) k f) at w
-      d2 (inj₁ x) = inj₁ (#⇛-trans {w} {#APPLY2 (#loop F) k f} {#loopF r F (#loop F) k f} {#ETA (#NUM i)} (#⇛!→#⇛ {w} {#APPLY2 (#loop F) k f} {#loopF r F (#loop F) k f} c1) concl)
+      d2 (inj₁ x) = inj₁ (i , concl ) {--#⇛-trans {w} {#APPLY2 (#loop F) k f} {#loopF r F (#loop F) k f} {#ETA (#NUM i)}
+                                    {!!} --(#⇛!→#⇛ {w} {#APPLY2 (#loop F) k f} {#loopF r F (#loop F) k f} c1)
+                                    concl)--}
         where
-          concl : #loopF r F (#loop F) k f #⇛ #ETA (#NUM i) at w
-          concl w1 e1 = lift (#⇓from-to→#⇓ {w1} {w''} {#loopF r F (#loop F) k f} {#ETA (#NUM i)} (⇓-trans₂ c2' (⇓-trans₂ c3' (#APPLY-#loop#⇓4₂ r F k f i w'' m n (trans (sym gt') (snd d1)) (∀𝕎-mon (⊑-trans· e1 (⊑-trans· (choose⊑· r w1 (T→ℂ· N0)) e'')) compk) x))))
+          concl : #APPLY2 (#loop F) k f #⇛ #ETA (#NUM i) at w
+-- #loopF r F (#loop F) k f #⇛ #ETA (#NUM i) at w
+          concl w1 e1 = lift (#⇓-trans₁ {w1} {#loop𝕎 w1 F k f} {#APPLY2 (#loop F) k f}
+                                        {#loopF (#loopName w1 F k f) F (#loop F) k f}
+                                        {#ETA (#NUM i)}
+                                        (#APPLY-#loop#⇓1 F k f w1)
+                                        (#⇓-trans₁ {#loop𝕎 w1 F k f} {#loop𝕎0 w1 F k f}
+                                                   {#loopF r' F (#loop F) k f}
+                                                   {#loopA r' F (#loop F) k f}
+                                                   {#ETA (#NUM i)}
+                                                   c2'
+                                                   (#⇓-trans₁ {w0'} {w''} {#loopA r' F (#loop F) k f}
+                                                              {#loopI r' (#loop F) k f i}
+                                                              {#ETA (#NUM i)}
+                                                              c3'
+                                                              (#⇓from-to→#⇓ {w''} {w''} {#loopI r' (#loop F) k f i}
+                                                                             {#ETA (#NUM i)}
+                                                                             (#APPLY-#loop#⇓4₂ r' F k f i w'' m n (trans (sym gt') (snd d1)) (∀𝕎-mon (⊑-trans· e1 (⊑-trans· e0' e'')) compk) x)))))
             where
-              c2' : #loopF r F (#loop F) k f #⇓ #loopA r F (#loop F) k f from w1 to (chooseT r w1 N0)
-              c2' = #loopF#⇓#loopA r F (#loop F) k f w1
+              r' : Name
+              r' = #loopName w1 F k f
 
-              cx : Σ 𝕎· (λ w2' → #APPLY F (#upd r f) #⇓ #NUM i from (chooseT r w1 N0) to w2' × getT 0 r w' ≡ getT 0 r w2')
-              cx = differ⇓APPLY-upd can gc0 ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed f) nnf nnF r w w' w1 i compat (⊑-compatible· e1 compat) c''
+              w0' : 𝕎·
+              w0' = #loop𝕎0 w1 F k f
+
+              e0' : w1 ⊑· w0'
+              e0' = ⊑-trans· (#⇓from-to→⊑ {w1} {#loop𝕎 w1 F k f} {#APPLY2 (#loop F) k f} {#loopF r' F (#loop F) k f} (#APPLY-#loop#⇓1 F k f w1)) (choose⊑· r' (#loop𝕎 w1 F k f) (T→ℂ· N0))
+
+              compat' : compatible· r' (#loop𝕎 w1 F k f) Res⊤
+              compat' = startChoiceCompatible· Res⊤ w1 r' (¬newChoiceT∈dom𝕎 w1 ⌜ #νloopFB F (#loop F) k f ⌝)
+
+              c2' : #loopF r' F (#loop F) k f #⇓ #loopA r' F (#loop F) k f from (#loop𝕎 w1 F k f) to w0'
+              c2' = #loopF#⇓#loopA r' F (#loop F) k f (#loop𝕎 w1 F k f)
+
+              cx : Σ 𝕎· (λ w2' → #APPLY F (#upd r' f) #⇓ #NUM i from w0' to w2' × getT 0 r w' ≡ getT 0 r' w2')
+              cx = differ⇓APPLY-upd can gc0 ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed f) nnf nnF r r' (#loop𝕎 w F k f) w' (#loop𝕎 w1 F k f) i compat compat' c''
 
               w'' : 𝕎·
               w'' = fst cx
 
-              cx' : #APPLY F (#upd r f) #⇓ #NUM i from (chooseT r w1 N0) to w''
+              cx' : #APPLY F (#upd r' f) #⇓ #NUM i from w0' to w''
               cx' = fst (snd cx)
 
-              gt' : getT 0 r w' ≡ getT 0 r w''
+              gt' : getT 0 r w' ≡ getT 0 r' w''
               gt' = snd (snd cx)
 
-              c3' : #loopA r F (#loop F) k f #⇓ #loopI r (#loop F) k f i from (chooseT r w1 N0) to w''
-              c3' = #loopA#⇓#loopI r F k f i (chooseT r w1 N0) w'' cx'
+              c3' : #loopA r' F (#loop F) k f #⇓ #loopI r' (#loop F) k f i from w0' to w''
+              c3' = #loopA#⇓#loopI r' F k f i w0' w'' cx'
 
-              e'' : chooseT r w1 N0 ⊑· w''
-              e'' = #⇓from-to→⊑ {chooseT r w1 N0} {w''} {#APPLY F (#upd r f)} {#NUM i} cx'
+              e'' : w0' ⊑· w''
+              e'' = #⇓from-to→⊑ {w0'} {w''} {#APPLY F (#upd r' f)} {#NUM i} cx'
 
-      d2 (inj₂ x) = inj₂ (#⇛-trans {w} {#APPLY2 (#loop F) k f} {#loopF r F (#loop F) k f} {#DIGAMMA (#loopR (#loop F) k f)} (#⇛!→#⇛ {w} {#APPLY2 (#loop F) k f} {#loopF r F (#loop F) k f} c1) concl)
+      d2 (inj₂ x) = inj₂ concl
         where
-          concl : #loopF r F (#loop F) k f #⇛ #DIGAMMA (#loopR (#loop F) k f) at w
-          concl w1 e1 = lift (#⇓from-to→#⇓ {w1} {w''} {#loopF r F (#loop F) k f} {#DIGAMMA (#loopR (#loop F) k f)} (⇓-trans₂ c2' (⇓-trans₂ c3' (#APPLY-#loop#⇓5₂ r F k f i w'' m n (trans (sym gt') (snd d1)) (∀𝕎-mon (⊑-trans· e1 (⊑-trans· (choose⊑· r w1 (T→ℂ· N0)) e'')) compk) x))))
+          concl : #APPLY2 (#loop F) k f #⇛ #DIGAMMA (#loopR (#loop F) k f) at w
+          concl w1 e1 = lift (#⇓-trans₁ {w1} {#loop𝕎 w1 F k f} {#APPLY2 (#loop F) k f}
+                                        {#loopF (#loopName w1 F k f) F (#loop F) k f}
+                                        {#DIGAMMA (#loopR (#loop F) k f)}
+                                        (#APPLY-#loop#⇓1 F k f w1)
+                                        (#⇓-trans₁ {#loop𝕎 w1 F k f} {#loop𝕎0 w1 F k f}
+                                                   {#loopF r' F (#loop F) k f}
+                                                   {#loopA r' F (#loop F) k f}
+                                                   {#DIGAMMA (#loopR (#loop F) k f)}
+                                                   c2'
+                                                   (#⇓-trans₁ {w0'} {w''} {#loopA r' F (#loop F) k f}
+                                                              {#loopI r' (#loop F) k f i}
+                                                              {#DIGAMMA (#loopR (#loop F) k f)}
+                                                              c3'
+                                                              (#⇓from-to→#⇓ {w''} {w''} {#loopI r' (#loop F) k f i}
+                                                                             {#DIGAMMA (#loopR (#loop F) k f)}
+                                                                             (#APPLY-#loop#⇓5₂ r' F k f i w'' m n (trans (sym gt') (snd d1)) (∀𝕎-mon (⊑-trans· e1 (⊑-trans· e0' e'')) compk) x)))))
             where
-              c2' : #loopF r F (#loop F) k f #⇓ #loopA r F (#loop F) k f from w1 to (chooseT r w1 N0)
-              c2' = #loopF#⇓#loopA r F (#loop F) k f w1
+              r' : Name
+              r' = #loopName w1 F k f
 
-              cx : Σ 𝕎· (λ w2' → #APPLY F (#upd r f) #⇓ #NUM i from (chooseT r w1 N0) to w2' × getT 0 r w' ≡ getT 0 r w2')
-              cx = differ⇓APPLY-upd can gc0 ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed f) nnf nnF r w w' w1 i compat (⊑-compatible· e1 compat) c''
+              w0' : 𝕎·
+              w0' = #loop𝕎0 w1 F k f
+
+              e0' : w1 ⊑· w0'
+              e0' = ⊑-trans· (#⇓from-to→⊑ {w1} {#loop𝕎 w1 F k f} {#APPLY2 (#loop F) k f} {#loopF r' F (#loop F) k f} (#APPLY-#loop#⇓1 F k f w1)) (choose⊑· r' (#loop𝕎 w1 F k f) (T→ℂ· N0))
+
+              compat' : compatible· r' (#loop𝕎 w1 F k f) Res⊤
+              compat' = startChoiceCompatible· Res⊤ w1 r' (¬newChoiceT∈dom𝕎 w1 ⌜ #νloopFB F (#loop F) k f ⌝)
+
+              c2' : #loopF r' F (#loop F) k f #⇓ #loopA r' F (#loop F) k f from (#loop𝕎 w1 F k f) to w0'
+              c2' = #loopF#⇓#loopA r' F (#loop F) k f (#loop𝕎 w1 F k f)
+
+              cx : Σ 𝕎· (λ w2' → #APPLY F (#upd r' f) #⇓ #NUM i from w0' to w2' × getT 0 r w' ≡ getT 0 r' w2')
+              cx = differ⇓APPLY-upd can gc0 ⌜ F ⌝ ⌜ f ⌝ (CTerm.closed f) nnf nnF r r' (#loop𝕎 w F k f) w' (#loop𝕎 w1 F k f) i compat compat' c''
 
               w'' : 𝕎·
               w'' = fst cx
 
-              cx' : #APPLY F (#upd r f) #⇓ #NUM i from (chooseT r w1 N0) to w''
+              cx' : #APPLY F (#upd r' f) #⇓ #NUM i from w0' to w''
               cx' = fst (snd cx)
 
-              gt' : getT 0 r w' ≡ getT 0 r w''
+              gt' : getT 0 r w' ≡ getT 0 r' w''
               gt' = snd (snd cx)
 
-              c3' : #loopA r F (#loop F) k f #⇓ #loopI r (#loop F) k f i from (chooseT r w1 N0) to w''
-              c3' = #loopA#⇓#loopI r F k f i (chooseT r w1 N0) w'' cx'
+              c3' : #loopA r' F (#loop F) k f #⇓ #loopI r' (#loop F) k f i from w0' to w''
+              c3' = #loopA#⇓#loopI r' F k f i w0' w'' cx'
 
-              e'' : chooseT r w1 N0 ⊑· w''
-              e'' = #⇓from-to→⊑ {chooseT r w1 N0} {w''} {#APPLY F (#upd r f)} {#NUM i} cx'
+              e'' : w0' ⊑· w''
+              e'' = #⇓from-to→⊑ {w0'} {w''} {#APPLY F (#upd r' f)} {#NUM i} cx'
 
 
 APPLY-loopR-⇓ : (w1 w2 w3 : 𝕎·) (R k f b : CTerm) (m n : ℕ)
