@@ -368,22 +368,22 @@ shifts𝕊 (suc n) s = shift𝕊 (shifts𝕊 n s)
 
 -- n is the fuel
 -- k is the length of f
-correctSeqN : (r : Name) (w : 𝕎·) (F : CTerm) (k : ℕ) (f : CTerm) (s : 𝕊) (n : ℕ) → Set(lsuc L)
-correctSeqN r w F k f s 0 = Lift (lsuc L) ⊤
-correctSeqN r w F k f s (suc n) =
+correctSeqN : (w : 𝕎·) (F : CTerm) (k : ℕ) (f : CTerm) (s : 𝕊) (n : ℕ) → Set(lsuc L)
+correctSeqN w F k f s 0 = Lift (lsuc L) ⊤
+correctSeqN w F k f s (suc n) =
   Σ ℕ (λ m → Σ 𝕎· (λ w' → Σ ℕ (λ j →
-    #APPLY F (#upd r f) #⇓ #NUM m from (chooseT r w N0) to w'
-    × getT 0 r w' ≡ just (NUM j)
+    #APPLY F (#upd (#loopName w F (#NUM k) f) f) #⇓ #NUM m from (#loop𝕎0 w F (#NUM k) f) to w'
+    × getT 0 (#loopName w F (#NUM k) f) w' ≡ just (NUM j)
     × ¬ j < k
-    × correctSeqN r w F (suc k) (#APPENDf (#NUM k) f (#NUM (s k))) s n)))
+    × correctSeqN w F (suc k) (#APPENDf (#NUM k) f (#NUM (s k))) s n)))
 
 
 #INIT : CTerm
 #INIT = #LAM0
 
 
-correctSeq : (r : Name) (w : 𝕎·) (F : CTerm) (s : 𝕊) → Set(lsuc L)
-correctSeq r w F s = (n : ℕ) → correctSeqN r w F 0 #INIT s n
+correctSeq : (w : 𝕎·) (F : CTerm) (s : 𝕊) → Set(lsuc L)
+correctSeq w F s = (n : ℕ) → correctSeqN w F 0 #INIT s n
 
 
 path2𝕊 : (kb : K□) {i : ℕ} {w : 𝕎·} (P : ℕ → Set) {T : CTerm} (tyn : type-#⇛!-NUM P T) (p : path i w #IndBarB (#IndBarC T)) → 𝕊
@@ -402,18 +402,18 @@ shift-path2𝕊 kb {i} {w} P {T} tyn p n with p (suc n)
 ... | inj₂ q = refl
 
 
-→≡correctSeqN : (r : Name) (w : 𝕎·) (F : CTerm) (k : ℕ) (f : CTerm) (s1 s2 : 𝕊) (n : ℕ)
+→≡correctSeqN : (w : 𝕎·) (F : CTerm) (k : ℕ) (f : CTerm) (s1 s2 : 𝕊) (n : ℕ)
                  → ((k : ℕ) → s1 k ≡ s2 k)
-                 → correctSeqN r w F k f s1 n
-                 → correctSeqN r w F k f s2 n
-→≡correctSeqN r w F k f s1 s2 0 imp cor = cor
-→≡correctSeqN r w F k f s1 s2 (suc n) imp (m , w' , j , x , y , z , c) =
+                 → correctSeqN w F k f s1 n
+                 → correctSeqN w F k f s2 n
+→≡correctSeqN w F k f s1 s2 0 imp cor = cor
+→≡correctSeqN w F k f s1 s2 (suc n) imp (m , w' , j , x , y , z , c) =
   m , w' , j , x , y , z , ind2
   where
-    ind1 : correctSeqN r w F (suc k) (#APPENDf (#NUM k) f (#NUM (s1 k))) s2 n
-    ind1 = →≡correctSeqN r w F (suc k) (#APPENDf (#NUM k) f (#NUM (s1 k))) s1 s2 n imp c
+    ind1 : correctSeqN w F (suc k) (#APPENDf (#NUM k) f (#NUM (s1 k))) s2 n
+    ind1 = →≡correctSeqN w F (suc k) (#APPENDf (#NUM k) f (#NUM (s1 k))) s1 s2 n imp c
 
-    ind2 : correctSeqN r w F (suc k) (#APPENDf (#NUM k) f (#NUM (s2 k))) s2 n
+    ind2 : correctSeqN w F (suc k) (#APPENDf (#NUM k) f (#NUM (s2 k))) s2 n
     ind2 rewrite sym (imp k) = ind1
 
 
