@@ -271,8 +271,8 @@ BAIRE!2𝕊-equalInNAT! kb {i} {w} {f} f∈ k =
     aw w1 e1 = s k , ∀𝕎-mon e1 j1 , APPLY-NUM-MSEQ⇛! w1 s k
 
 
-#tab : (r : Name) (F : CTerm) (k : ℕ) (f : CTerm) → CTerm
-#tab r F k f = #APPLY2 (#loop r F) (#NUM k) f
+#tab : (F : CTerm) (k : ℕ) (f : CTerm) → CTerm
+#tab F k f = #APPLY2 (#loop F) (#NUM k) f
 
 
 wmem : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (w : 𝕎·) (t : CTerm) → Set(lsuc(L))

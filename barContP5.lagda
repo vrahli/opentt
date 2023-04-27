@@ -70,7 +70,7 @@ open import computation(W)(C)(K)(G)(X)(N)(EC)
 
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
 open import terms3(W)(C)(K)(G)(X)(N)(EC)
---open import terms4(W)(C)(K)(G)(X)(N)(EC)
+open import terms4(W)(C)(K)(G)(X)(N)(EC) using (steps→⊑)
 --open import terms5(W)(C)(K)(G)(X)(N)(EC)
 open import terms6(W)(C)(K)(G)(X)(N)(EC)
 --open import terms7(W)(C)(K)(G)(X)(N)(EC)
@@ -101,7 +101,8 @@ open import continuity-conds(W)(C)(K)(G)(X)(N)(EC)
 open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (steps-trans+ ; isHighestℕ-LET→ ; isHighestℕ-updBody→<)
+open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (steps-decomp-isHighestℕ)
 
 open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
@@ -610,5 +611,108 @@ abstract
     0 , 0 , upd r (MSEQ s) , upd r (s2l s n) , w1 , refl , refl , updSeq-upd
   updSeq-step cn gc w1 w2 r s n .(upd r (s2l s n)) .(upd r (MSEQ s)) u updSeq-updr gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
     0 , 0 , upd r (s2l s n) , upd r (MSEQ s) , w1 , refl , refl , updSeq-updr
+
+
+abstract
+  updSeq-refl : {r : Name} {s : 𝕊} {n : ℕ} {a : Term}
+                → ¬names a ≡ true
+                → updSeq r s n a a
+  updSeq-refl {r} {s} {n} {VAR x} nn = updSeq-VAR _
+  updSeq-refl {r} {s} {n} {NAT} nn = updSeq-NAT
+  updSeq-refl {r} {s} {n} {QNAT} nn = updSeq-QNAT
+  updSeq-refl {r} {s} {n} {TNAT} nn = updSeq-TNAT
+  updSeq-refl {r} {s} {n} {LT a a₁} nn = updSeq-LT _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {QLT a a₁} nn = updSeq-QLT _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {NUM x} nn = updSeq-NUM _
+  updSeq-refl {r} {s} {n} {IFLT a a₁ a₂ a₃} nn = updSeq-IFLT _ _ _ _ _ _ _ _ (updSeq-refl (∧≡true→1-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→2-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→3-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→4-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn))
+  updSeq-refl {r} {s} {n} {IFEQ a a₁ a₂ a₃} nn = updSeq-IFEQ _ _ _ _ _ _ _ _ (updSeq-refl (∧≡true→1-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→2-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→3-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→4-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn))
+  updSeq-refl {r} {s} {n} {SUC a} nn = updSeq-SUC _ _ (updSeq-refl nn)
+  updSeq-refl {r} {s} {n} {PI a a₁} nn = updSeq-PI _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {LAMBDA a} nn = updSeq-LAMBDA _ _ (updSeq-refl nn)
+  updSeq-refl {r} {s} {n} {APPLY a a₁} nn = updSeq-APPLY _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {FIX a} nn = updSeq-FIX _ _ (updSeq-refl nn)
+  updSeq-refl {r} {s} {n} {LET a a₁} nn = updSeq-LET _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {WT a a₁} nn = updSeq-WT _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {SUP a a₁} nn = updSeq-SUP _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  --updSeq-refl {r} {s} {n} {DSUP a a₁} nn = updSeq-DSUP _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {WREC a a₁} nn = updSeq-WREC _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {MT a a₁} nn = updSeq-MT _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  --updSeq-refl {r} {s} {n} {MSUP a a₁} nn = updSeq-MSUP _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  --updSeq-refl {r} {s} {n} {DMSUP a a₁} nn = updSeq-DMSUP _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {SUM a a₁} nn = updSeq-SUM _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {PAIR a a₁} nn = updSeq-PAIR _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {SPREAD a a₁} nn = updSeq-SPREAD _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {SET a a₁} nn = updSeq-SET _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {ISECT a a₁} nn = updSeq-ISECT _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {TUNION a a₁} nn = updSeq-TUNION _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {UNION a a₁} nn = updSeq-UNION _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {QTUNION a a₁} nn = updSeq-QTUNION _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {INL a} nn = updSeq-INL _ _ (updSeq-refl nn)
+  updSeq-refl {r} {s} {n} {INR a} nn = updSeq-INR _ _ (updSeq-refl nn)
+  updSeq-refl {r} {s} {n} {DECIDE a a₁ a₂} nn = updSeq-DECIDE _ _ _ _ _ _ (updSeq-refl (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updSeq-refl (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updSeq-refl (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} nn))
+  updSeq-refl {r} {s} {n} {EQ a a₁ a₂} nn = updSeq-EQ _ _ _ _ _ _ (updSeq-refl (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updSeq-refl (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updSeq-refl (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} nn))
+  updSeq-refl {r} {s} {n} {EQB a a₁ a₂ a₃} nn = updSeq-EQB _ _ _ _ _ _ _ _ (updSeq-refl (∧≡true→1-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→2-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→3-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→4-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn))
+  updSeq-refl {r} {s} {n} {AX} nn = updSeq-AX
+  updSeq-refl {r} {s} {n} {FREE} nn = updSeq-FREE
+  updSeq-refl {r} {s} {n} {MSEQ x} nn = updSeq-MSEQ x
+  updSeq-refl {r} {s} {n} {MAPP x a} nn = updSeq-MAPP _ _ _ (updSeq-refl nn)
+  updSeq-refl {r} {s} {n} {CHOOSE a a₁} nn = updSeq-CHOOSE _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {TSQUASH a} nn = updSeq-TSQUASH _ _ (updSeq-refl nn)
+  updSeq-refl {r} {s} {n} {TTRUNC a} nn = updSeq-TTRUNC _ _ (updSeq-refl nn)
+  updSeq-refl {r} {s} {n} {TCONST a} nn = updSeq-TCONST _ _ (updSeq-refl nn)
+  updSeq-refl {r} {s} {n} {SUBSING a} nn = updSeq-SUBSING _ _ (updSeq-refl nn)
+  updSeq-refl {r} {s} {n} {PURE} nn = updSeq-PURE
+  updSeq-refl {r} {s} {n} {TERM a} nn = updSeq-TERM _ _ (updSeq-refl nn)
+  updSeq-refl {r} {s} {n} {ENC a} nn = updSeq-ENC _ (updSeq-refl nn)
+  updSeq-refl {r} {s} {n} {DUM a} nn = updSeq-DUM _ _ (updSeq-refl nn)
+  updSeq-refl {r} {s} {n} {FFDEFS a a₁} nn = updSeq-FFDEFS _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {UNIV x} nn = updSeq-UNIV x
+  updSeq-refl {r} {s} {n} {LIFT a} nn = updSeq-LIFT _ _ (updSeq-refl nn)
+  updSeq-refl {r} {s} {n} {LOWER a} nn = updSeq-LOWER _ _ (updSeq-refl nn)
+  updSeq-refl {r} {s} {n} {SHRINK a} nn = updSeq-SHRINK _ _ (updSeq-refl nn)
+
+
+
+updSeq-steps-aux : (cn : cℕ) (gc : get-choose-ℕ) (r : Name) (s : 𝕊) (n : ℕ)
+                   (k : ℕ)
+                   (ind : (k' : ℕ) → k' < k → updSeqSteps r s n k')
+                   → updSeqSteps r s n k
+updSeq-steps-aux cn gc r s n 0 ind {t} {u} {x} {w1} {w2} compat us comp ish isv
+  rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp)
+  = 0 , u , refl , us
+updSeq-steps-aux cn gc r s n (suc k) ind {t} {u} {x} {w1} {w2} compat us comp ish isv with step⊎ t w1
+... | inj₁ (t' , w1' , p) rewrite p =
+  concl
+  where
+    ind0 : (k' : ℕ) → k' ≤ k → updSeqSteps r s n k'
+    ind0 k' ltk = ind k' (_≤_.s≤s ltk)
+
+    ind' : updSeqStepInd r s n t' w1'
+    ind' = k , x , w2 , comp , snd ish , isv , ind0
+
+    gtn : getT≤ℕ w1' n r
+    gtn = isHighestℕ→getT≤ℕ {k} {w1'} {w2} {t'} {x} n r comp (snd ish)
+
+    concl : Σ ℕ (λ k' → Σ Term (λ v' → Σ (steps k' (u , w1) ≡ (v' , w2)) (λ x₁ → updSeq r s n x v')))
+    concl with updSeq-step cn gc w1 w1' r s n t u t' us gtn compat p ind'
+    ... | (k1 , k2 , y , z , w3 , comp1 , comp2 , us1)
+      with steps-decomp-isHighestℕ {w1'} {w3} {w2} {t'} {y} {x} {k} {k1} n r isv comp1 comp
+    ... | (k3 , ltk , comp' , ishi) =
+      k2 + fst q , fst (snd q) ,
+      steps-trans+ {k2} {fst q} {u} {z} {fst (snd q)} {w1} {w3} {w2} comp2 (fst (snd (snd q))) ,
+      snd (snd (snd q))
+      where
+        e3 : w1 ⊑· w3
+        e3 = steps→⊑ k2 u z {w1} {w3} comp2
+
+        q : Σ ℕ (λ k' → Σ Term (λ v' → steps k' (z , w3) ≡ (v' , w2) × updSeq r s n x v'))
+        q = ind k3 (<-transʳ ltk ≤-refl) {y} {z} {x} {w3} {w2} (⊑-compatible· e3 compat) us1 comp' (ishi (snd ish)) isv
+... | inj₂ q rewrite q | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) | stepVal t w1 isv = ⊥-elim (¬just≡nothing q)
+
+
+updSeq-steps : (cn : cℕ) (gc : get-choose-ℕ) (r : Name) (s : 𝕊) (n : ℕ)
+               (k : ℕ)
+               → updSeqSteps r s n k
+updSeq-steps cn gc r s n k = <ℕind _ (updSeq-steps-aux cn gc r s n) k
 
 \end{code}

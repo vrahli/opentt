@@ -102,15 +102,15 @@ open import continuity-conds(W)(C)(K)(G)(X)(N)(EC)
 open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#upd)
 open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (isHighestℕ→getT≤ℕ ; ¬Names→updCtxt ; steps-sat-isHighestℕ)
-open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (steps-trans+)
-open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (steps-decomp-isHighestℕ)
+--open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (steps-trans+)
+--open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (steps-decomp-isHighestℕ)
 --open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (seq2list ; mseq∈baire ; corSeq→correctSeq ; →corSeq)
 open import barContP4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
-open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (updSeq-step)
+open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (updSeq-step ; updSeq-refl ; updSeq-steps)
 
 
 
@@ -119,106 +119,9 @@ open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (updSeq-step)
 #¬Names-seq2list s (suc k) rewrite ¬names-shiftUp 0 ⌜ seq2list s k ⌝ | #¬Names-seq2list s k = refl
 
 
-abstract
-  updSeq-refl : {r : Name} {s : 𝕊} {n : ℕ} {a : Term}
-                → ¬names a ≡ true
-                → updSeq r s n a a
-  updSeq-refl {r} {s} {n} {VAR x} nn = updSeq-VAR _
-  updSeq-refl {r} {s} {n} {NAT} nn = updSeq-NAT
-  updSeq-refl {r} {s} {n} {QNAT} nn = updSeq-QNAT
-  updSeq-refl {r} {s} {n} {TNAT} nn = updSeq-TNAT
-  updSeq-refl {r} {s} {n} {LT a a₁} nn = updSeq-LT _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {QLT a a₁} nn = updSeq-QLT _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {NUM x} nn = updSeq-NUM _
-  updSeq-refl {r} {s} {n} {IFLT a a₁ a₂ a₃} nn = updSeq-IFLT _ _ _ _ _ _ _ _ (updSeq-refl (∧≡true→1-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→2-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→3-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→4-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn))
-  updSeq-refl {r} {s} {n} {IFEQ a a₁ a₂ a₃} nn = updSeq-IFEQ _ _ _ _ _ _ _ _ (updSeq-refl (∧≡true→1-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→2-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→3-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→4-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn))
-  updSeq-refl {r} {s} {n} {SUC a} nn = updSeq-SUC _ _ (updSeq-refl nn)
-  updSeq-refl {r} {s} {n} {PI a a₁} nn = updSeq-PI _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {LAMBDA a} nn = updSeq-LAMBDA _ _ (updSeq-refl nn)
-  updSeq-refl {r} {s} {n} {APPLY a a₁} nn = updSeq-APPLY _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {FIX a} nn = updSeq-FIX _ _ (updSeq-refl nn)
-  updSeq-refl {r} {s} {n} {LET a a₁} nn = updSeq-LET _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {WT a a₁} nn = updSeq-WT _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {SUP a a₁} nn = updSeq-SUP _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  --updSeq-refl {r} {s} {n} {DSUP a a₁} nn = updSeq-DSUP _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {WREC a a₁} nn = updSeq-WREC _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {MT a a₁} nn = updSeq-MT _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  --updSeq-refl {r} {s} {n} {MSUP a a₁} nn = updSeq-MSUP _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  --updSeq-refl {r} {s} {n} {DMSUP a a₁} nn = updSeq-DMSUP _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {SUM a a₁} nn = updSeq-SUM _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {PAIR a a₁} nn = updSeq-PAIR _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {SPREAD a a₁} nn = updSeq-SPREAD _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {SET a a₁} nn = updSeq-SET _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {ISECT a a₁} nn = updSeq-ISECT _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {TUNION a a₁} nn = updSeq-TUNION _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {UNION a a₁} nn = updSeq-UNION _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {QTUNION a a₁} nn = updSeq-QTUNION _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {INL a} nn = updSeq-INL _ _ (updSeq-refl nn)
-  updSeq-refl {r} {s} {n} {INR a} nn = updSeq-INR _ _ (updSeq-refl nn)
-  updSeq-refl {r} {s} {n} {DECIDE a a₁ a₂} nn = updSeq-DECIDE _ _ _ _ _ _ (updSeq-refl (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updSeq-refl (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updSeq-refl (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} nn))
-  updSeq-refl {r} {s} {n} {EQ a a₁ a₂} nn = updSeq-EQ _ _ _ _ _ _ (updSeq-refl (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updSeq-refl (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updSeq-refl (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} nn))
-  updSeq-refl {r} {s} {n} {EQB a a₁ a₂ a₃} nn = updSeq-EQB _ _ _ _ _ _ _ _ (updSeq-refl (∧≡true→1-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→2-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→3-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updSeq-refl (∧≡true→4-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn))
-  updSeq-refl {r} {s} {n} {AX} nn = updSeq-AX
-  updSeq-refl {r} {s} {n} {FREE} nn = updSeq-FREE
-  updSeq-refl {r} {s} {n} {MSEQ x} nn = updSeq-MSEQ x
-  updSeq-refl {r} {s} {n} {MAPP x a} nn = updSeq-MAPP _ _ _ (updSeq-refl nn)
-  updSeq-refl {r} {s} {n} {CHOOSE a a₁} nn = updSeq-CHOOSE _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {TSQUASH a} nn = updSeq-TSQUASH _ _ (updSeq-refl nn)
-  updSeq-refl {r} {s} {n} {TTRUNC a} nn = updSeq-TTRUNC _ _ (updSeq-refl nn)
-  updSeq-refl {r} {s} {n} {TCONST a} nn = updSeq-TCONST _ _ (updSeq-refl nn)
-  updSeq-refl {r} {s} {n} {SUBSING a} nn = updSeq-SUBSING _ _ (updSeq-refl nn)
-  updSeq-refl {r} {s} {n} {PURE} nn = updSeq-PURE
-  updSeq-refl {r} {s} {n} {TERM a} nn = updSeq-TERM _ _ (updSeq-refl nn)
-  updSeq-refl {r} {s} {n} {ENC a} nn = updSeq-ENC _ (updSeq-refl nn)
-  updSeq-refl {r} {s} {n} {DUM a} nn = updSeq-DUM _ _ (updSeq-refl nn)
-  updSeq-refl {r} {s} {n} {FFDEFS a a₁} nn = updSeq-FFDEFS _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {UNIV x} nn = updSeq-UNIV x
-  updSeq-refl {r} {s} {n} {LIFT a} nn = updSeq-LIFT _ _ (updSeq-refl nn)
-  updSeq-refl {r} {s} {n} {LOWER a} nn = updSeq-LOWER _ _ (updSeq-refl nn)
-  updSeq-refl {r} {s} {n} {SHRINK a} nn = updSeq-SHRINK _ _ (updSeq-refl nn)
-
-
-updSeq-steps-aux : (cn : cℕ) (gc : get-choose-ℕ) (r : Name) (s : 𝕊) (n : ℕ)
-                   (k : ℕ)
-                   (ind : (k' : ℕ) → k' < k → updSeqSteps r s n k')
-                   → updSeqSteps r s n k
-updSeq-steps-aux cn gc r s n 0 ind {t} {u} {x} {w1} {w2} compat us comp ish isv
-  rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp)
-  = 0 , u , refl , us
-updSeq-steps-aux cn gc r s n (suc k) ind {t} {u} {x} {w1} {w2} compat us comp ish isv with step⊎ t w1
-... | inj₁ (t' , w1' , p) rewrite p =
-  concl
-  where
-    ind0 : (k' : ℕ) → k' ≤ k → updSeqSteps r s n k'
-    ind0 k' ltk = ind k' (_≤_.s≤s ltk)
-
-    ind' : updSeqStepInd r s n t' w1'
-    ind' = k , x , w2 , comp , snd ish , isv , ind0
-
-    gtn : getT≤ℕ w1' n r
-    gtn = isHighestℕ→getT≤ℕ {k} {w1'} {w2} {t'} {x} n r comp (snd ish)
-
-    concl : Σ ℕ (λ k' → Σ Term (λ v' → Σ (steps k' (u , w1) ≡ (v' , w2)) (λ x₁ → updSeq r s n x v')))
-    concl with updSeq-step cn gc w1 w1' r s n t u t' us gtn compat p ind'
-    ... | (k1 , k2 , y , z , w3 , comp1 , comp2 , us1)
-      with steps-decomp-isHighestℕ {w1'} {w3} {w2} {t'} {y} {x} {k} {k1} n r isv comp1 comp
-    ... | (k3 , ltk , comp' , ishi) =
-      k2 + fst q , fst (snd q) ,
-      steps-trans+ {k2} {fst q} {u} {z} {fst (snd q)} {w1} {w3} {w2} comp2 (fst (snd (snd q))) ,
-      snd (snd (snd q))
-      where
-        e3 : w1 ⊑· w3
-        e3 = steps→⊑ k2 u z {w1} {w3} comp2
-
-        q : Σ ℕ (λ k' → Σ Term (λ v' → steps k' (z , w3) ≡ (v' , w2) × updSeq r s n x v'))
-        q = ind k3 (<-transʳ ltk ≤-refl) {y} {z} {x} {w3} {w2} (⊑-compatible· e3 compat) us1 comp' (ishi (snd ish)) isv
-... | inj₂ q rewrite q | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) | stepVal t w1 isv = ⊥-elim (¬just≡nothing q)
-
-
-updSeq-steps : (cn : cℕ) (gc : get-choose-ℕ) (r : Name) (s : 𝕊) (n : ℕ)
-               (k : ℕ)
-               → updSeqSteps r s n k
-updSeq-steps cn gc r s n k = <ℕind _ (updSeq-steps-aux cn gc r s n) k
+seq2list≡ : (s : 𝕊) (n : ℕ) → ⌜ seq2list s n ⌝ ≡ s2l s n
+seq2list≡ s 0 = refl
+seq2list≡ s (suc n) rewrite seq2list≡ s n = refl
 
 
 updSeq-steps-NUM : (cn : cℕ) (gc : get-choose-ℕ) (r : Name) (s : 𝕊) (n : ℕ)
@@ -232,11 +135,6 @@ updSeq-steps-NUM : (cn : cℕ) (gc : get-choose-ℕ) (r : Name) (s : 𝕊) (n : 
 updSeq-steps-NUM cn gc r s n k a b m w1 w2 compat us comp ish
   with updSeq-steps cn gc r s n k {a} {b} {NUM m} {w1} {w2} compat us comp ish tt
 ... | (k' , v' , comp' , us') rewrite updSeq-NUM→ r s n m v' us' = k' , comp'
-
-
-seq2list≡ : (s : 𝕊) (n : ℕ) → ⌜ seq2list s n ⌝ ≡ s2l s n
-seq2list≡ s 0 = refl
-seq2list≡ s (suc n) rewrite seq2list≡ s n = refl
 
 
 #updSeq-upd : (r : Name) (s : 𝕊) (n : ℕ)
@@ -361,170 +259,165 @@ P-path2𝕊 kb {i} {w} P {T} tyn p0 p n with p n
 P-path2𝕊 kb {i} {w} P {T} tyn p0 p n | inj₂ q = p0
 
 
--- We want to create a Term ∈ BAIRE from this path.
-noInfPath : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
-            (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T F : CTerm)
-            → P 0
-            → type-#⇛!-NUM P T
-            → #⇛!-NUM-type P T
-            → type-preserves-#⇛ T
-            → isType i w T
-            → #¬Names F -- This is currently required by continuity
---            → compatible· r w Res⊤
-            → ∈Type i w (#FunBar T) F
-            → (p : path i w #IndBarB (#IndBarC T))
-            → correctPath {i} {w} {#IndBarB} {#IndBarC T} (#APPLY2 (#loop F) (#NUM 0) #INIT) p
-            → isInfPath {i} {w} {#IndBarB} {#IndBarC T} p
-            → ⊥
-noInfPath kb cn can exb gc i w P T F p0 tyn nty prest tyt nnF {--compat--} F∈ p cor inf =
-  ltsn (≡getT≤ℕ→< w2 w' r (suc n) j eqw' (trans (sym gt01) gt0) gtn) --(≡getT≤ℕ→< w0 w' r (suc n) j eqw' gt0 gtn)
-  where
-    s : 𝕊
-    s = path2𝕊 kb P tyn p
+abstract
+  -- We want to create a Term ∈ BAIRE from this path.
+  noInfPath : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
+              (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T F : CTerm)
+              → P 0
+              → type-#⇛!-NUM P T
+              → #⇛!-NUM-type P T
+              → type-preserves-#⇛ T
+              → isType i w T
+              → #¬Names F -- This is currently required by continuity
+  --            → compatible· r w Res⊤
+              → ∈Type i w (#FunBar T) F
+              → (p : path i w #IndBarB (#IndBarC T))
+              → correctPath {i} {w} {#IndBarB} {#IndBarC T} (#APPLY2 (#loop F) (#NUM 0) #INIT) p
+              → isInfPath {i} {w} {#IndBarB} {#IndBarC T} p
+              → ⊥
+  noInfPath kb cn can exb gc i w P T F p0 tyn nty prest tyt nnF {--compat--} F∈ p cor inf =
+    ltsn (≡getT≤ℕ→< w2 w' r (suc n) j eqw' (trans (sym gt01) gt0) gtn) --(≡getT≤ℕ→< w0 w' r (suc n) j eqw' gt0 gtn)
+    where
+      s : 𝕊
+      s = path2𝕊 kb P tyn p
 
-    f : CTerm
-    f = #MSEQ s
+      f : CTerm
+      f = #MSEQ s
 
-    nnf : #¬Names f
-    nnf = refl
+      --nnf : #¬Names f
+      --nnf = refl
 
-    f∈ : ∈Type i w #BAIRE f
-    f∈ = mseq∈baire i w s
+      --f∈ : ∈Type i w #BAIRE f
+      --f∈ = mseq∈baire i w s
 
-    r : Name
-    r = #loopName w F (#NUM 0) f
+      r : Name
+      r = #loopName w F (#NUM 0) f
 
-    w₁ : 𝕎·
-    w₁ = #loop𝕎 w F (#NUM 0) f
+      w₁ : 𝕎·
+      w₁ = #loop𝕎 w F (#NUM 0) f
 
-    e₁ : w ⊑· w₁
-    e₁ = startNewChoiceT⊏ Res⊤ w ⌜ #νloopFB F (#loop F) (#NUM 0) f ⌝
+      e₁ : w ⊑· w₁
+      e₁ = startNewChoiceT⊏ Res⊤ w ⌜ #νloopFB F (#loop F) (#NUM 0) f ⌝
 
-    w1 : 𝕎·
-    w1 = #loop𝕎0 w F (#NUM 0) f
+      w1 : 𝕎·
+      w1 = #loop𝕎0 w F (#NUM 0) f
 
-    e1 : w₁ ⊑· w1
-    e1 = choose⊑· r (#loop𝕎 w F (#NUM 0) f) (T→ℂ· N0)
+      e1 : w₁ ⊑· w1
+      e1 = choose⊑· r (#loop𝕎 w F (#NUM 0) f) (T→ℂ· N0)
 
-    compat : compatible· r w₁ Res⊤
-    compat = startChoiceCompatible· Res⊤ w r (¬newChoiceT∈dom𝕎 w ⌜ #νloopFB F (#loop F) (#NUM 0) f ⌝)
+      compat : compatible· r w₁ Res⊤
+      compat = startChoiceCompatible· Res⊤ w r (¬newChoiceT∈dom𝕎 w ⌜ #νloopFB F (#loop F) (#NUM 0) f ⌝)
 
-    a∈1 : ∈Type i w₁ #NAT (#APPLY F (#upd r f))
-    a∈1 = equalInType-FUN→
-            F∈ w₁ e₁ (#upd r f) (#upd r f)
-            (upd∈BAIRE cn i w₁ r T f compat prest (eqTypes-mon (uni i) tyt w₁ e₁) (mseq∈NAT→T i w₁ s P T (P-path2𝕊 kb P tyn p0 p) nty prest (eqTypes-mon (uni i) tyt w₁ e₁))) -- f∈
+      a∈1 : ∈Type i w₁ #NAT (#APPLY F (#upd r f))
+      a∈1 = equalInType-FUN→
+               F∈ w₁ e₁ (#upd r f) (#upd r f)
+               (upd∈BAIRE cn i w₁ r T f compat prest (eqTypes-mon (uni i) tyt w₁ e₁) (mseq∈NAT→T i w₁ s P T (P-path2𝕊 kb P tyn p0 p) nty prest (eqTypes-mon (uni i) tyt w₁ e₁)))
 
-    a∈2 : NATmem w₁ (#APPLY F (#upd r f))
-    a∈2 = kb (equalInType-NAT→ i w₁ (#APPLY F (#upd r f)) (#APPLY F (#upd r f)) a∈1) w₁ (⊑-refl· w₁)
+      a∈2 : NATmem w₁ (#APPLY F (#upd r f))
+      a∈2 = kb (equalInType-NAT→ i w₁ (#APPLY F (#upd r f)) (#APPLY F (#upd r f)) a∈1) w₁ (⊑-refl· w₁)
 
-    k : ℕ
-    k = fst a∈2
+      k : ℕ
+      k = fst a∈2
 
-    ca1 : Σ 𝕎· (λ w' → #APPLY F (#upd r f) #⇓ #NUM k from w1 to w')
-    ca1 = #⇓→from-to {w1} {#APPLY F (#upd r f)} {#NUM k} (lower (fst (snd a∈2) w1 e1)) --w (⊑-refl· w)))
+      ca1 : Σ 𝕎· (λ w' → #APPLY F (#upd r f) #⇓ #NUM k from w1 to w')
+      ca1 = #⇓→from-to {w1} {#APPLY F (#upd r f)} {#NUM k} (lower (fst (snd a∈2) w1 e1)) --w (⊑-refl· w)))
 
-    w' : 𝕎·
-    w' = fst ca1
+      w' : 𝕎·
+      w' = fst ca1
 
-    ca2 : #APPLY F (#upd r f) #⇓ #NUM k from w1 to w'
-    ca2 = snd ca1
+      ca2 : #APPLY F (#upd r f) #⇓ #NUM k from w1 to w'
+      ca2 = snd ca1
 
-    e' : w₁ ⊑· w'
-    e' = ⊑-trans· e1 (#⇓from-to→⊑ {w1} {w'} {#APPLY F (#upd r f)} {#NUM k} ca2)
+      e' : w₁ ⊑· w'
+      e' = ⊑-trans· e1 (#⇓from-to→⊑ {w1} {w'} {#APPLY F (#upd r f)} {#NUM k} ca2)
 
-    d1 : Σ ℕ (λ n → getT 0 r w' ≡ just (NUM n))
-    d1 = lower (cn r w₁ compat w' e')
+      d1 : Σ ℕ (λ n → getT 0 r w' ≡ just (NUM n))
+      d1 = lower (cn r w₁ compat w' e')
 
-    n : ℕ
-    n = fst d1
+      n : ℕ
+      n = fst d1
 
-    gt : getT 0 r w' ≡ just (NUM n)
-    gt = snd d1
+      gt : getT 0 r w' ≡ just (NUM n)
+      gt = snd d1
 
-    wgt0 : ∀𝕎-get0-NUM w1 r
-    wgt0 = cn r w1 (⊑-compatible· e1 compat)
+      wgt0 : ∀𝕎-get0-NUM w1 r
+      wgt0 = cn r w1 (⊑-compatible· e1 compat)
 
-    gtn : getT≤ℕ w' (suc n) r
-    gtn = n , gt , ≤-refl
+      gtn : getT≤ℕ w' (suc n) r
+      gtn = n , gt , ≤-refl
 
-    uc : updCtxt r ⌜ f ⌝ ⌜ #APPLY F (#upd r f) ⌝
-    uc = updCtxt-APPLY ⌜ F ⌝ ⌜ #upd r f ⌝ (¬Names→updCtxt {r} {⌜ f ⌝} {⌜ F ⌝} nnF) updCtxt-upd
+      uc : updCtxt r ⌜ f ⌝ ⌜ #APPLY F (#upd r f) ⌝
+      uc = updCtxt-APPLY ⌜ F ⌝ ⌜ #upd r f ⌝ (¬Names→updCtxt {r} {⌜ f ⌝} {⌜ F ⌝} nnF) updCtxt-upd
 
-    -- all values of r along (snd ca2) are strictly less than (suc n) - the modulus of continuity
-    ish : isHighestℕ {fst ca2} {w1} {w'} {APPLY ⌜ F ⌝ (upd r ⌜ f ⌝)} {NUM k} (suc n) r (snd ca2)
-    ish = steps-sat-isHighestℕ
-            gc {r} {⌜ f ⌝} {fst ca2} nnf (CTerm.closed f) {w1} {w'}
-            {APPLY ⌜ F ⌝ (upd r ⌜ f ⌝)} {NUM k} {suc n} (snd ca2)
-            tt uc (⊑-compatible· e1 compat) wgt0 gtn
+      -- all values of r along (snd ca2) are strictly less than (suc n) - the modulus of continuity
+      ish : isHighestℕ {fst ca2} {w1} {w'} {APPLY ⌜ F ⌝ (upd r ⌜ f ⌝)} {NUM k} (suc n) r (snd ca2)
+      ish = steps-sat-isHighestℕ
+              gc {r} {⌜ f ⌝} {fst ca2} refl (CTerm.closed f) {w1} {w'}
+              {APPLY ⌜ F ⌝ (upd r ⌜ f ⌝)} {NUM k} {suc n} (snd ca2)
+              tt uc (⊑-compatible· e1 compat) wgt0 gtn
 
-    cs : correctSeq w F s
-    cs = corSeq→correctSeq w F s (→corSeq kb cn i w P T F tyn F∈ p cor inf)
+      r₀ : Name
+      r₀ = #loopName w F (#NUM (suc n)) (seq2list s (suc n))
 
-    csn : correctSeqN w F 0 #INIT s (suc (suc n))
-    csn = cs (suc (suc n))
+      w₀₀ : 𝕎·
+      w₀₀ = #loop𝕎 w F (#NUM (suc n)) (seq2list s (suc n))
 
-    r₀ : Name
-    r₀ = #loopName w F (#NUM (suc n)) (seq2list s (suc n))
+      w₀ : 𝕎·
+      w₀ = #loop𝕎0 w F (#NUM (suc n)) (seq2list s (suc n))
 
-    w₀₀ : 𝕎·
-    w₀₀ = #loop𝕎 w F (#NUM (suc n)) (seq2list s (suc n))
+      compat₀ : compatible· r₀ w₀₀ Res⊤
+      compat₀ = startChoiceCompatible· Res⊤ w r₀ (¬newChoiceT∈dom𝕎 w ⌜ #νloopFB F (#loop F) (#NUM (suc n)) (seq2list s (suc n)) ⌝)
 
-    w₀ : 𝕎·
-    w₀ = #loop𝕎0 w F (#NUM (suc n)) (seq2list s (suc n))
+      inv : Σ ℕ (λ m → Σ 𝕎· (λ w' → Σ ℕ (λ j →
+              #APPLY F (#upd r₀ (seq2list s (suc n))) #⇓ #NUM m from w₀ to w'
+              × getT 0 r₀ w' ≡ just (NUM j)
+              × ¬ j < (suc n))))
+      inv = correctSeqN-inv0 i w F s (suc n) (corSeq→correctSeq w F s (→corSeq kb cn i w P T F tyn F∈ p cor inf) (suc (suc n)))
 
-    compat₀ : compatible· r₀ w₀₀ Res⊤
-    compat₀ = startChoiceCompatible· Res⊤ w r₀ (¬newChoiceT∈dom𝕎 w ⌜ #νloopFB F (#loop F) (#NUM (suc n)) (seq2list s (suc n)) ⌝)
+      m0 : ℕ
+      m0 = fst inv
 
-    inv : Σ ℕ (λ m → Σ 𝕎· (λ w' → Σ ℕ (λ j →
-            #APPLY F (#upd r₀ (seq2list s (suc n))) #⇓ #NUM m from w₀ to w'
-            × getT 0 r₀ w' ≡ just (NUM j)
-            × ¬ j < (suc n))))
-    inv = correctSeqN-inv0 i w F s (suc n) csn
+      w0 : 𝕎·
+      w0 = fst (snd inv)
 
-    m0 : ℕ
-    m0 = fst inv
+      j : ℕ
+      j = fst (snd (snd inv))
 
-    w0 : 𝕎·
-    w0 = fst (snd inv)
+      comp0 : #APPLY F (#upd r₀ (seq2list s (suc n))) #⇓ #NUM m0 from w₀ to w0
+      comp0 = fst (snd (snd (snd inv)))
 
-    j : ℕ
-    j = fst (snd (snd inv))
+      gt0 : getT 0 r₀ w0 ≡ just (NUM j)
+      gt0 = fst (snd (snd (snd (snd inv))))
 
-    comp0 : #APPLY F (#upd r₀ (seq2list s (suc n))) #⇓ #NUM m0 from w₀ to w0
-    comp0 = fst (snd (snd (snd inv)))
+      ltsn : ¬ j < (suc n)
+      ltsn = snd (snd (snd (snd (snd inv))))
 
-    gt0 : getT 0 r₀ w0 ≡ just (NUM j)
-    gt0 = fst (snd (snd (snd (snd inv))))
+      comp00 : Σ 𝕎· (λ w2' → #APPLY F (#upd r (seq2list s (suc n))) #⇓ #NUM m0 from w1 to w2'
+                      × getT 0 r₀ w0 ≡ getT 0 r w2')
+      comp00 = differ⇓APPLY-upd can gc ⌜ F ⌝ ⌜ seq2list s (suc n) ⌝ (CTerm.closed (seq2list s (suc n))) (#¬Names-seq2list s (suc n)) nnF r₀ r
+                                (#loop𝕎 w F (#NUM (suc n)) (seq2list s (suc n))) w0
+                                (#loop𝕎 w F (#NUM 0) f) m0 compat₀ compat comp0
 
-    comp00 : Σ 𝕎· (λ w2' → #APPLY F (#upd r (seq2list s (suc n))) #⇓ #NUM m0 from w1 to w2'
-                    × getT 0 r₀ w0 ≡ getT 0 r w2')
-    comp00 = differ⇓APPLY-upd can gc ⌜ F ⌝ ⌜ seq2list s (suc n) ⌝ (CTerm.closed (seq2list s (suc n))) (#¬Names-seq2list s (suc n)) nnF r₀ r
-               (#loop𝕎 w F (#NUM (suc n)) (seq2list s (suc n))) w0
-               (#loop𝕎 w F (#NUM 0) f) m0 compat₀ compat comp0
+      w2 : 𝕎·
+      w2 = fst comp00
 
-    w2 : 𝕎·
-    w2 = fst comp00
+      comp01 : #APPLY F (#upd r (seq2list s (suc n))) #⇓ #NUM m0 from w1 to w2
+      comp01 = fst (snd comp00)
 
-    comp01 : #APPLY F (#upd r (seq2list s (suc n))) #⇓ #NUM m0 from w1 to w2
-    comp01 = fst (snd comp00)
+      gt01 : getT 0 r₀ w0 ≡ getT 0 r w2
+      gt01 = snd (snd comp00)
 
-    gt01 : getT 0 r₀ w0 ≡ getT 0 r w2
-    gt01 = snd (snd comp00)
+      c : Σ ℕ (λ k' → steps k' (⌜ #APPLY F (#upd r (seq2list s (suc n))) ⌝ , w1) ≡ (NUM k , w'))
+      c = updSeq-steps-NUM
+            cn gc r s (suc n) (fst ca2)
+            ⌜ #APPLY F (#upd r f) ⌝ ⌜ #APPLY F (#upd r (seq2list s (suc n))) ⌝
+            k w1 w' (⊑-compatible· e1 compat)
+            (#updSeq-APPLY-upd r s (suc n) F nnF)
+            (snd ca2) ish
 
-    ltsn : ¬ j < (suc n)
-    ltsn = snd (snd (snd (snd (snd inv))))
-
-    c : Σ ℕ (λ k' → steps k' (⌜ #APPLY F (#upd r (seq2list s (suc n))) ⌝ , w1) ≡ (NUM k , w'))
-    c = updSeq-steps-NUM
-          cn gc r s (suc n) (fst ca2)
-          ⌜ #APPLY F (#upd r f) ⌝ ⌜ #APPLY F (#upd r (seq2list s (suc n))) ⌝
-          k w1 w' (⊑-compatible· e1 compat)
-          (#updSeq-APPLY-upd r s (suc n) F nnF)
-          (snd ca2) ish
-
-    eqw' : w2 ≡ w'
-    eqw' = steps→≡𝕎 w1 w2 w' ⌜ #APPLY F (#upd r (seq2list s (suc n))) ⌝ (NUM m0) (NUM k) (fst comp01) (fst c) tt tt
-                     (snd comp01) {--(snd comp0)--} (snd c)
+      eqw' : w2 ≡ w'
+      eqw' = steps→≡𝕎 w1 w2 w' ⌜ #APPLY F (#upd r (seq2list s (suc n))) ⌝ (NUM m0) (NUM k) (fst comp01) (fst c) tt tt
+                       (snd comp01) {--(snd comp0)--} (snd c)
 
 
 FunBarP : Term → Term
@@ -561,17 +454,16 @@ LAM0∈NAT→T i w P T p0 nty tyt prest = equalInType-FUN eqTypesNAT tyt aw
 
 -- comp→∀ℕ is stronger than cℕ. get rid of cℕ?
 sem : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
-      (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T F : CTerm)
+      (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T F : CTerm)
 --      → #¬Names F -- This is currently required by continuity (captured by #FunBarP)
       → P 0
       → type-preserves-#⇛ T
       → type-#⇛!-NUM P T
       → #⇛!-NUM-type P T
       → isType i w T
-      → compatible· r w Res⊤
       → ∈Type i w (#FunBarP T) F
       → ∈Type i w (#IndBar T) (#APPLY2 (#loop F) (#NUM 0) #INIT)
-sem kb cn can exb gc i w r P T F {--nnF--} p0 prest tyn nty tyt compat F∈P = concl
+sem kb cn can exb gc i w P T F {--nnF--} p0 prest tyn nty tyt F∈P = concl
   where
     nnF  : #¬Names F
     nnF = equalInType-TPURE→ₗ F∈P
