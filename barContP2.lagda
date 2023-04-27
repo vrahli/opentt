@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 {-# OPTIONS --guardedness #-}
---{-# OPTIONS --experimental-lossy-unification #-}
+{-# OPTIONS --experimental-lossy-unification #-}
 --{-# OPTIONS --auto-inline #-}
 
 
@@ -79,8 +79,8 @@ open import terms8(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (∀𝕎-□Func2 ; eqTypes-mon)
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -88,13 +88,13 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-refl ; equalInType-mon ; equalInType-FUN→ ; equalInType-local ; equalInType-NAT→ ; equalInType-FUN ; eqTypesNAT ; →equalInType-NAT ; eqTypesTRUE ; eqTypesFALSE ; eqTypes-local ; equalInType-NAT!→ ; eqTypesTCONST←)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalTypes-#⇛-left-right-rev)
+open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (→equalInType-M)
+open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (NATmem ; eqTypesUNION!← ; UNION!eq ; equalInType-UNION!→)
 
-open import list(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import list(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#APPENDf ; #LIST ; equalInType-LIST-NAT→ ; APPLY-APPENDf⇛ ; #LAM0)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)(EC)
 
@@ -138,22 +138,78 @@ APPLY-loopR-⇛! w R k f b m n compb compk w1 e1 =
     c = kb (equalInType-LIST-NAT→ i w l l l∈) w (⊑-refl· w)
 
 
+
+APPENDf∈NAT→T : {i : ℕ} {w : 𝕎·} {T a1 a2 f1 f2 n1 n2 : CTerm}
+                 → type-preserves-#⇛ T
+                 → equalInType i w #NAT a1 a2
+                 → equalInType i w T n1 n2
+                 → equalInType i w (#FUN #NAT T) f1 f2
+                 → equalInType i w (#FUN #NAT T) (#APPENDf a1 f1 n1) (#APPENDf a2 f2 n2)
+APPENDf∈NAT→T {i} {w} {T} {a1} {a2} {f1} {f2} {n1} {n2} pres a∈ n∈ f∈ =
+  equalInType-FUN eqTypesNAT (fst n∈) aw
+  where
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
+                       → equalInType i w' T (#APPLY (#APPENDf a1 f1 n1) a₁) (#APPLY (#APPENDf a2 f2 n2) a₂))
+    aw w1 e1 m1 m2 m∈ =
+      pres i w1
+           (#APPLY (#APPENDf a1 f1 n1) m1) (#IFEQ m1 a1 n1 (#APPLY f1 m1))
+           (#APPLY (#APPENDf a2 f2 n2) m2) (#IFEQ m2 a2 n2 (#APPLY f2 m2))
+           (APPLY-APPENDf⇛ w1 a1 f1 n1 m1) (APPLY-APPENDf⇛ w1 a2 f2 n2 m2)
+           (equalInType-local (∀𝕎-□Func2 aw1 (equalInType-NAT→ i w1 a1 a2 (equalInType-mon a∈ w1 e1)) (equalInType-NAT→ i w1 m1 m2 m∈)))
+      where
+        aw1 : ∀𝕎 w1 (λ w' e' → NATeq w' a1 a2 → NATeq w' m1 m2
+                              → equalInType i w' T (#IFEQ m1 a1 n1 (#APPLY f1 m1)) (#IFEQ m2 a2 n2 (#APPLY f2 m2)))
+        aw1 w2 e2 (a , c₁ , c₂) (m , d₁ , d₂) =
+          pres i w2
+            (#IFEQ m1 a1 n1 (#APPLY f1 m1)) (#IFEQ (#NUM m) (#NUM a) n1 (#APPLY f1 m1))
+            (#IFEQ m2 a2 n2 (#APPLY f2 m2)) (#IFEQ (#NUM m) (#NUM a) n2 (#APPLY f2 m2))
+            (IFEQ⇛₃ {w2} {m} {a} {⌜ m1 ⌝} {⌜ a1 ⌝} {⌜ n1 ⌝} {⌜ #APPLY f1 m1 ⌝} d₁ c₁)
+            (IFEQ⇛₃ {w2} {m} {a} {⌜ m2 ⌝} {⌜ a2 ⌝} {⌜ n2 ⌝} {⌜ #APPLY f2 m2 ⌝} d₂ c₂)
+            eqt
+          where
+            eqt : equalInType i w2 T (#IFEQ (#NUM m) (#NUM a) n1 (#APPLY f1 m1)) (#IFEQ (#NUM m) (#NUM a) n2 (#APPLY f2 m2))
+            eqt with m ≟ a
+            ... | yes p =
+              pres i w2 (#IFEQ (#NUM m) (#NUM a) n1 (#APPLY f1 m1)) n1
+                        (#IFEQ (#NUM m) (#NUM a) n2 (#APPLY f2 m2)) n2
+                        (IFEQ⇛= {a} {m} {w2} {⌜ n1 ⌝} {⌜ #APPLY f1 m1 ⌝} p)
+                        (IFEQ⇛= {a} {m} {w2} {⌜ n2 ⌝} {⌜ #APPLY f2 m2 ⌝} p)
+                        (equalInType-mon n∈ w2 (⊑-trans· e1 e2))
+            ... | no p =
+              pres i w2 (#IFEQ (#NUM m) (#NUM a) n1 (#APPLY f1 m1)) (#APPLY f1 m1)
+                        (#IFEQ (#NUM m) (#NUM a) n2 (#APPLY f2 m2)) (#APPLY f2 m2)
+                        (IFEQ⇛¬= {a} {m} {w2} {⌜ n1 ⌝} {⌜ #APPLY f1 m1 ⌝} p)
+                        (IFEQ⇛¬= {a} {m} {w2} {⌜ n2 ⌝} {⌜ #APPLY f2 m2 ⌝} p)
+                        (equalInType-FUN→ f∈ w2 (⊑-trans· e1 e2) m1 m2 (equalInType-mon m∈ w2 e2))
+
+
+#⇛!-NUM-type : (P : ℕ → Set) (T : CTerm) → Set(lsuc(L))
+#⇛!-NUM-type P T =
+  {i : ℕ} {w : 𝕎·} {n : ℕ}
+  → P n
+  → ∈Type i w T (#NUM n)
+
+
 -- First prove that loop belongs to CoIndBar
 coSemM : (can : comp→∀ℕ) (gc0 : get-choose-ℕ) (kb : K□) (cn : cℕ)
-         (i : ℕ) (w : 𝕎·) (r : Name) (F j f a b : CTerm) (k n : ℕ)
+         (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T F j f a b : CTerm) (k n : ℕ)
          --→ ∈Type i w #FunBar F
          --→ ∈Type i w (#LIST #NAT) l
          → (nnj : #¬Names j) (nnf : #¬Names f) (nnF : #¬Names F)
+         → type-preserves-#⇛ T
+         → type-#⇛!-NUM P T
+         → #⇛!-NUM-type P T
+         → isType i w T
          → compatible· r w Res⊤
          → j #⇛! #NUM n at w
 --         → ∈Type i w (#LIST #NAT) l
-         → ∈Type i w #BAIRE f
-         → ∈Type i w #FunBar F
+         → ∈Type i w (#FUN #NAT T) f
+         → ∈Type i w (#FunBar T) F
          → #APPLY F (#upd r f) #⇛ #NUM k at w -- follows from APPLY-generic∈NAT
          → a #⇛! #APPLY2 (#loop r F) j f at w
          → b #⇛! #APPLY2 (#loop r F) j f at w
-         → meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC)) w a b
-meq.meqC (coSemM can gc0 kb cn i w r F j f a b k n nnj nnf nnF compat compj f∈ F∈ ck c1 c2)
+         → meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T))) w a b
+meq.meqC (coSemM can gc0 kb cn i w r P T F j f a b k n nnj nnf nnF prest tyn nty tyt compat compj f∈ F∈ ck c1 c2)
   with #APPLY-#loop#⇓5 can gc0 cn r F j f k n w nnf nnF compat compj ck
 -- NOTE: 'with' doesn't work without the 'abstract' on #APPLY-#loop#⇓4
 ... | inj₁ x =
@@ -168,10 +224,10 @@ meq.meqC (coSemM can gc0 kb cn i w r F j f a b k n nnj nnf nnF compat compj f∈
       d2 = #⇛-trans {w} {b} {#APPLY2 (#loop r F) j f} {#ETA (#NUM k)} (#⇛!→#⇛ {w} {b} {#APPLY2 (#loop r F) j f} c2) x
 
       eqb : (b1 b2 : CTerm)
-            → equalInType i w (sub0 (#INL (#NUM k)) #IndBarC) b1 b2
-            → meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC))
+            → equalInType i w (sub0 (#INL (#NUM k)) (#IndBarC T)) b1 b2
+            → meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T)))
                    w (#APPLY #AX b1) (#APPLY #AX b2)
-      eqb b1 b2 eb rewrite sub0-IndBarC≡ (#INL (#NUM k)) = ⊥-elim (equalInType-DECIDE-INL-VOID→ i w (#NUM k) b1 b2 #[0]NAT! eb)
+      eqb b1 b2 eb rewrite sub0-IndBarC≡ T (#INL (#NUM k)) = ⊥-elim (equalInType-DECIDE-INL-VOID→ i w (#NUM k) b1 b2 (#[0]shiftUp0 (#TCONST T)) eb)
 ... | inj₂ x =
   #INR #AX  , #loopR (#loop r F) j f , #INR #AX , #loopR (#loop r F) j f , INR∈IndBarB i w ,
   #⇛-trans {w} {a} {#APPLY2 (#loop r F) j f} {#DIGAMMA (#loopR (#loop r F) j f)} (#⇛!→#⇛ {w} {a} {#APPLY2 (#loop r F) j f} c1) x ,
@@ -179,34 +235,28 @@ meq.meqC (coSemM can gc0 kb cn i w r F j f a b k n nnj nnf nnF compat compj f∈
   eqb
     where
       eqb : (b1 b2 : CTerm)
-            → equalInType i w (sub0 (#INR #AX) #IndBarC) b1 b2
-            → meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC))
+            → equalInType i w (sub0 (#INR #AX) (#IndBarC T)) b1 b2
+            → meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T)))
                    w (#APPLY (#loopR (#loop r F) j f) b1) (#APPLY (#loopR (#loop r F) j f) b2)
-      eqb b1 b2 eb rewrite sub0-IndBarC≡ (#INR #AX) = eb3
+      eqb b1 b2 eb rewrite sub0-IndBarC≡ T (#INR #AX) = eb3
         where
-          eb1 : equalInType i w #NAT! b1 b2
-          eb1 = equalInType-DECIDE-INR-NAT→ i w #AX b1 b2 #[0]VOID eb
+          eb1 : equalInType i w (#TCONST T) b1 b2
+          eb1 = equalInType-DECIDE-INR→ i w T #AX b1 b2 #[0]VOID eb
 
-          eb2 : #⇛!sameℕ w b1 b2
-          eb2 = kb (equalInType-NAT!→ i w b1 b2 eb1) w (⊑-refl· w)
+          eb2 : Σ ℕ (λ n → b1 #⇛! #NUM n at w × b2 #⇛! #NUM n at w × P n)
+          eb2 = kb (tyn eb1) w (⊑-refl· w)
 
           en1 : equalInType i w #NAT j j
           en1 = →equalInType-NAT i w j j (Mod.∀𝕎-□ M (λ w1 e1 → n , ∀𝕎-mon e1 (#⇛!-#⇛ {w} {j} {#NUM n} compj) , ∀𝕎-mon e1 (#⇛!-#⇛ {w} {j} {#NUM n} compj)))
 
-          el1 : ∈Type i w #BAIRE (#APPENDf j f (#NUM (fst eb2)))
-          el1 = APPENDf∈BAIRE {i} {w} {j} {j} {f} {f} {#NUM (fst eb2)} {#NUM (fst eb2)} en1 (NUM-equalInType-NAT i w (fst eb2)) f∈
-
---          el2 : Σ CTerm (λ k → Σ CTerm (λ f → Σ ℕ (λ n →
---                  #APPEND l (#NUM (fst eb2)) #⇛ #PAIR k f at w × k #⇛ #NUM n at w × ∈Type i w #BAIRE f)))
---          el2 = ∈LISTNAT→ kb i w (#APPEND l (#NUM (fst eb2))) el1
+          el1 : ∈Type i w (#FUN #NAT T) (#APPENDf j f (#NUM (fst eb2)))
+          el1 = APPENDf∈NAT→T {i} {w} {T} {j} {j} {f} {f} {#NUM (fst eb2)} {#NUM (fst eb2)} prest en1 (nty {i} {w} {fst eb2} (snd (snd (snd eb2)))) f∈
 
           ef1 : ∈Type i w #NAT (#APPLY F (#upd r (#APPENDf j f (#NUM (fst eb2)))))
-          ef1 = ∈BAIRE→NAT→
-                  {i} {w} {F} {F}
-                  {#upd r (#APPENDf j f (#NUM (fst eb2)))}
-                  {#upd r (#APPENDf j f (#NUM (fst eb2)))}
-                  F∈
-                  (upd∈BAIRE cn i w r (#APPENDf j f (#NUM (proj₁ eb2))) compat el1)
+          ef1 = equalInType-FUN→
+                  F∈ w (⊑-refl· w)
+                  (#upd r (#APPENDf j f (#NUM (fst eb2)))) (#upd r (#APPENDf j f (#NUM (fst eb2))))
+                  (upd∈BAIRE cn i w r T (#APPENDf j f (#NUM (proj₁ eb2))) compat prest tyt el1)
 
           ef2 : NATmem w (#APPLY F (#upd r (#APPENDf j f (#NUM (fst eb2)))))
           ef2 = kb (equalInType-NAT→
@@ -215,77 +265,79 @@ meq.meqC (coSemM can gc0 kb cn i w r F j f a b k n nnj nnf nnF compat compj f∈
                      (#APPLY F (#upd r (#APPENDf j f (#NUM (fst eb2)))))
                      ef1) w (⊑-refl· w)
 
-          eb3 : meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a #IndBarC))
+          eb3 : meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T)))
                     w (#APPLY (#loopR (#loop r F) j f) b1) (#APPLY (#loopR (#loop r F) j f) b2)
           eb3 = coSemM
-                  can gc0 kb cn i w r F (#NUM (suc n)) (#APPENDf j f (#NUM (fst eb2)))
+                  can gc0 kb cn i w r P T F (#NUM (suc n)) (#APPENDf j f (#NUM (fst eb2)))
                   (#APPLY (#loopR (#loop r F) j f) b1)
                   (#APPLY (#loopR (#loop r F) j f) b2)
                   (fst ef2)
                   (suc n)
-                  refl (→#¬Names-#APPENDf j f (fst eb2) nnj nnf) nnF
+                  refl (→#¬Names-#APPENDf j f (fst eb2) nnj nnf) nnF prest tyn nty tyt
                   compat
                   (#⇛!-refl {w} {#NUM (suc n)}) --(SUC⇛₂ {w} {⌜ j ⌝} {n} compj)
                   el1
                   F∈
                   (fst (snd ef2))
                   (APPLY-loopR-⇛! w (#loop r F) j f b1 (fst eb2) n (fst (snd eb2)) compj)
-                  (APPLY-loopR-⇛! w (#loop r F) j f b2 (fst eb2) n (snd (snd eb2)) compj)
+                  (APPLY-loopR-⇛! w (#loop r F) j f b2 (fst eb2) n (fst (snd (snd eb2))) compj)
 
 
 isType-IndBarB : (i : ℕ) (w : 𝕎·) → isType i w #IndBarB
 isType-IndBarB i w = eqTypesUNION!← eqTypesNAT (eqTypesTRUE {w} {i})
 
 
-equalTypes-IndBarC : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+equalTypes-IndBarC : (i : ℕ) (w : 𝕎·) (T a b : CTerm)
+                     → isType i w T
                      → equalInType i w #IndBarB a b
-                     → equalTypes i w (sub0 a #IndBarC) (sub0 b #IndBarC)
-equalTypes-IndBarC i w a b eqa rewrite sub0-IndBarC≡ a | sub0-IndBarC≡ b =
+                     → equalTypes i w (sub0 a (#IndBarC T)) (sub0 b (#IndBarC T))
+equalTypes-IndBarC i w T a b tyt eqa rewrite sub0-IndBarC≡ T a | sub0-IndBarC≡ T b =
   eqTypes-local (Mod.∀𝕎-□Func M aw1 eqa1)
   where
     eqa1 : □· w (λ w' _ → UNION!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' a b)
     eqa1 = equalInType-UNION!→ {i} {w} eqa
 
     aw1 : ∀𝕎 w (λ w' e' → UNION!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' a b
-                         → equalTypes i w' (#DECIDE a #[0]VOID #[0]NAT!) (#DECIDE b #[0]VOID #[0]NAT!))
+                         → equalTypes i w' (#DECIDE a #[0]VOID (#[0]shiftUp0 (#TCONST T))) (#DECIDE b #[0]VOID (#[0]shiftUp0 (#TCONST T))))
     aw1 w1 e1 (x , y , inj₁ (c1 , c2 , eqa2)) =
       equalTypes-#⇛-left-right-rev
-        {i} {w1} {#VOID} {#DECIDE a #[0]VOID #[0]NAT!} {#DECIDE b #[0]VOID #[0]NAT!} {#VOID}
-        (#DECIDE⇛INL-VOID⇛ w1 a x #[0]NAT! (#⇛!-#⇛ {w1} {a} {#INL x} c1))
-        (#DECIDE⇛INL-VOID⇛ w1 b y #[0]NAT! (#⇛!-#⇛ {w1} {b} {#INL y} c2))
+        {i} {w1} {#VOID} {#DECIDE a #[0]VOID (#[0]shiftUp0 (#TCONST T))} {#DECIDE b #[0]VOID (#[0]shiftUp0 (#TCONST T))} {#VOID}
+        (#DECIDE⇛INL-VOID⇛ w1 a x (#[0]shiftUp0 (#TCONST T)) (#⇛!-#⇛ {w1} {a} {#INL x} c1))
+        (#DECIDE⇛INL-VOID⇛ w1 b y (#[0]shiftUp0 (#TCONST T)) (#⇛!-#⇛ {w1} {b} {#INL y} c2))
         (eqTypesFALSE {w1} {i})
     aw1 w1 e1 (x , y , inj₂ (c1 , c2 , eqa2)) =
       equalTypes-#⇛-left-right-rev
-        {i} {w1} {#NAT!} {#DECIDE a #[0]VOID #[0]NAT!} {#DECIDE b #[0]VOID #[0]NAT!} {#NAT!}
-        (#DECIDE⇛INR-NAT⇛ w1 a x #[0]VOID (#⇛!-#⇛ {w1} {a} {#INR x} c1))
-        (#DECIDE⇛INR-NAT⇛ w1 b y #[0]VOID (#⇛!-#⇛ {w1} {b} {#INR y} c2))
-        (isTypeNAT! {w1} {i})
+        {i} {w1} {#TCONST T} {#DECIDE a #[0]VOID (#[0]shiftUp0 (#TCONST T))} {#DECIDE b #[0]VOID (#[0]shiftUp0 (#TCONST T))} {#TCONST T}
+        (#DECIDE⇛INR⇛ w1 T a x #[0]VOID (#⇛!-#⇛ {w1} {a} {#INR x} c1))
+        (#DECIDE⇛INR⇛ w1 T b y #[0]VOID (#⇛!-#⇛ {w1} {b} {#INR y} c2))
+        (eqTypesTCONST← (eqTypes-mon (uni i) tyt w1 e1)) --(isTypeNAT! {w1} {i})
 
 
 -- First prove that loop belongs to CoIndBar
-coSem : (can : comp→∀ℕ) (gc0 : get-choose-ℕ) (kb : K□) (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (F k f : CTerm)
+coSem : (can : comp→∀ℕ) (gc0 : get-choose-ℕ) (kb : K□) (cn : cℕ) (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T F k f : CTerm)
         (nnk : #¬Names k) (nnf : #¬Names f) (nnF : #¬Names F)
+        → type-preserves-#⇛ T
+        → type-#⇛!-NUM P T
+        → #⇛!-NUM-type P T
+        → isType i w T
         → compatible· r w Res⊤
-        → ∈Type i w #FunBar F
+        → ∈Type i w (#FunBar T) F
         → ∈Type i w #NAT! k
-        → ∈Type i w #BAIRE f
-        → ∈Type i w #CoIndBar (#APPLY2 (#loop r F) k f)
-coSem can gc0 kb cn i w r F k f nnk nnf nnF compat F∈ k∈ f∈ =
+        → ∈Type i w (#FUN #NAT T) f
+        → ∈Type i w (#CoIndBar T) (#APPLY2 (#loop r F) k f)
+coSem can gc0 kb cn i w r P T F k f nnk nnf nnF prest tyn nty tyt compat F∈ k∈ f∈ =
   →equalInType-M
-    i w #IndBarB #IndBarC (#APPLY2 (#loop r F) k f) (#APPLY2 (#loop r F) k f)
+    i w #IndBarB (#IndBarC T) (#APPLY2 (#loop r F) k f) (#APPLY2 (#loop r F) k f)
       (λ w1 e1 → isType-IndBarB i w1)
-      (λ w1 e1 → equalTypes-IndBarC i w1)
+      (λ w1 e1 a b eqa → equalTypes-IndBarC i w1 T a b (eqTypes-mon (uni i) tyt w1 e1) eqa)
       (Mod.∀𝕎-□ M aw)
   where
-    aw : ∀𝕎 w (λ w' _ → meq (equalInType i w' #IndBarB) (λ a b eqa → equalInType i w' (sub0 a #IndBarC))
+    aw : ∀𝕎 w (λ w' _ → meq (equalInType i w' #IndBarB) (λ a b eqa → equalInType i w' (sub0 a (#IndBarC T)))
                               w' (#APPLY2 (#loop r F) k f) (#APPLY2 (#loop r F) k f))
     aw w1 e1 = m
       where
         F∈1 : ∈Type i w1 #NAT (#APPLY F (#upd r f))
-        F∈1 = ∈BAIRE→NAT→
-                  {i} {w1} {F} {F} {#upd r f} {#upd r f}
-                  (equalInType-mon F∈ w1 e1)
-                  (upd∈BAIRE cn i w1 r f (⊑-compatible· e1 compat) (equalInType-mon f∈ w1 e1))
+        F∈1 = equalInType-FUN→ F∈ w1 e1 (#upd r f) (#upd r f) (upd∈BAIRE cn i w1 r T f (⊑-compatible· e1 compat) prest (eqTypes-mon (uni i) tyt w1 e1) (equalInType-mon f∈ w1 e1))
 
         F∈2 : NATmem w1 (#APPLY F (#upd r f))
         F∈2 = kb (equalInType-NAT→ i w1 (#APPLY F (#upd r f)) (#APPLY F (#upd r f)) F∈1) w1 (⊑-refl· w1)
@@ -293,12 +345,12 @@ coSem can gc0 kb cn i w r F k f nnk nnf nnF compat F∈ k∈ f∈ =
         k∈2 : #⇛!sameℕ w1 k k
         k∈2 = kb (equalInType-NAT!→ i w k k k∈) w1 e1
 
-        m : meq (equalInType i w1 #IndBarB) (λ a b eqa → equalInType i w1 (sub0 a #IndBarC))
+        m : meq (equalInType i w1 #IndBarB) (λ a b eqa → equalInType i w1 (sub0 a (#IndBarC T)))
                 w1 (#APPLY2 (#loop r F) k f) (#APPLY2 (#loop r F) k f)
         m = coSemM
-              can gc0 kb cn i w1 r F k f (#APPLY2 (#loop r F) k f) (#APPLY2 (#loop r F) k f)
+              can gc0 kb cn i w1 r P T F k f (#APPLY2 (#loop r F) k f) (#APPLY2 (#loop r F) k f)
               (fst F∈2) (fst k∈2)
-              nnk nnf nnF
+              nnk nnf nnF prest tyn nty (eqTypes-mon (uni i) tyt w1 e1)
               (⊑-compatible· e1 compat)
               (fst (snd k∈2))
               (equalInType-mon f∈ w1 e1)
@@ -308,17 +360,17 @@ coSem can gc0 kb cn i w r F k f nnk nnf nnF compat F∈ k∈ f∈ =
               (#⇛!-refl {w1} {#APPLY2 (#loop r F) k f})
 
 
-CoIndBar2IndBar : (i : ℕ) (w : 𝕎·) (t : CTerm)
-                  → ∀𝕎 w (λ w' _ → (p : path i w' #IndBarB #IndBarC) → correctPath {i} {w'} {#IndBarB} {#IndBarC} t p → isFinPath {i} {w'} {#IndBarB} {#IndBarC} p)
-                  → ∈Type i w #CoIndBar t
-                  → ∈Type i w #IndBar t
-CoIndBar2IndBar i w t cond h =
+CoIndBar2IndBar : (i : ℕ) (w : 𝕎·) (T t : CTerm)
+                  → isType i w T
+                  → ∀𝕎 w (λ w' _ → (p : path i w' #IndBarB (#IndBarC T)) → correctPath {i} {w'} {#IndBarB} {#IndBarC T} t p → isFinPath {i} {w'} {#IndBarB} {#IndBarC T} p)
+                  → ∈Type i w (#CoIndBar T) t
+                  → ∈Type i w (#IndBar T) t
+CoIndBar2IndBar i w T t tyt cond h =
   m2w
-    i w #IndBarB #IndBarC t
+    i w #IndBarB (#IndBarC T) t
     (λ w1 e1 → isType-IndBarB i w1)
-    (λ w1 e1 a b eqa → equalTypes-IndBarC  i w1 a b eqa)
+    (λ w1 e1 a b eqa → equalTypes-IndBarC i w1 T a b (eqTypes-mon (uni i) tyt w1 e1) eqa)
     cond h
-
 
 
 shift𝕊 : (s : 𝕊) → 𝕊
@@ -355,22 +407,25 @@ correctSeqN r w F k f s (suc n) =
 #INIT : CTerm
 #INIT = #LAM0
 
+
 correctSeq : (r : Name) (w : 𝕎·) (F : CTerm) (s : 𝕊) → Set(lsuc L)
 correctSeq r w F s = (n : ℕ) → correctSeqN r w F 0 #INIT s n
 
 
-path2𝕊 : (kb : K□) {i : ℕ} {w : 𝕎·} (p : path i w #IndBarB #IndBarC) → 𝕊
-path2𝕊 kb {i} {w} p n with p n
+path2𝕊 : (kb : K□) {i : ℕ} {w : 𝕎·} (P : ℕ → Set) {T : CTerm} (tyn : type-#⇛!-NUM P T) (p : path i w #IndBarB (#IndBarC T)) → 𝕊
+path2𝕊 kb {i} {w} P {T} tyn p n with p n
 ... | inj₁ (a , b , ia , ib) = fst j
   where
-    j : Σ ℕ (λ n → b #⇛! #NUM n at w)
-    j = snd (kb (∈Type-IndBarB-IndBarC→ i w a b ia ib) w (⊑-refl· w))
+    j : Σ ℕ (λ n → b #⇛! #NUM n at w × P n)
+    j = snd (kb (∈Type-IndBarB-IndBarC→ i w P T a b tyn ia ib) w (⊑-refl· w))
 ... | inj₂ q = 0 -- default value
 
 
-shift-path2𝕊 : (kb : K□) {i : ℕ} {w : 𝕎·} (p : path i w #IndBarB #IndBarC)
-                → (n : ℕ) → shift𝕊 (path2𝕊 kb p) n ≡ path2𝕊 kb (shiftPath {i} {w} {#IndBarB} {#IndBarC} p) n
-shift-path2𝕊 kb {i} {w} p n = refl
+shift-path2𝕊 : (kb : K□) {i : ℕ} {w : 𝕎·} (P : ℕ → Set) {T : CTerm} (tyn : type-#⇛!-NUM P T) (p : path i w #IndBarB (#IndBarC T))
+                → (n : ℕ) → shift𝕊 (path2𝕊 kb P tyn p) n ≡ path2𝕊 kb P tyn (shiftPath {i} {w} {#IndBarB} {#IndBarC T} p) n
+shift-path2𝕊 kb {i} {w} P {T} tyn p n with p (suc n)
+... | inj₁ (a , b , ia , ib) = refl
+... | inj₂ q = refl
 
 
 →≡correctSeqN : (r : Name) (w : 𝕎·) (F : CTerm) (k : ℕ) (f : CTerm) (s1 s2 : 𝕊) (n : ℕ)

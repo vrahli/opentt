@@ -80,7 +80,7 @@ open import terms9(W)(C)(K)(G)(X)(N)(EC) using (#BAIRE!)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (∀𝕎-□Func2 ; eqTypes-mon)
 --open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import choiceDef{L}(C)
@@ -89,7 +89,7 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
---open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (TSext-equalTypes-equalInType)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#⇛-mon) -- (TSext-equalTypes-equalInType)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-trans)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (→equalInType-NAT! ; equalInType-W→)
@@ -99,22 +99,22 @@ open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (→equalInType-NAT! ; e
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)(EC)
 
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#upd ; #force ; equalInType-force)
+open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#upd ; #force ; equalInType-force ; ⇛-upd-body ; #APPLY-force)
 --open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#⇓sameℕ)
 open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (steps-sat-isHighestℕ ; ¬Names→updCtxt)
 --open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-upd-force)
+open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-upd-force ; APPLY-force⇛ ; ⇛-upd-body→⇛-APPLY)
 --open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-TPURE→ₗ ; equalInType-TPURE→)
 open import continuitySMb(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (isHighestℕ≤)
 
 open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
-open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#INIT ; #APPLY-loop⇓SUP→)
+open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#INIT ; #APPLY-loop⇓SUP→ ; #⇛!-NUM-type)
 open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (seq2list ; mseq∈baire)
 open import barContP4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 --open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
-open import barContP6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#FunBarP ; sem ; #updSeq-APPLY-updr ; updSeq-steps-NUM ; seq2list≡)
+open import barContP6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#FunBarP ; sem ; #updSeq-APPLY-updr ; updSeq-steps-NUM ; seq2list≡ ; mseq∈NAT→T)
 open import barContP7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 
 
@@ -153,27 +153,104 @@ abstract
     = updCtxt-APPLY ⌜ F ⌝ (upd r (s2l s k)) (¬Names→updCtxt {r} {s2l s k} {⌜ F ⌝} nnF) updCtxt-upd
 
 
-abstract
-
-  equalInType-upd : (i : ℕ) (w : 𝕎·) (name : Name) (f : CTerm)
-                    → ∀𝕎-get0-NUM w name
-                    → ∈Type i w #BAIRE f
-                    → equalInType i w #BAIRE (#upd name f) f
-  equalInType-upd i w name f wgn eqf =
-    equalInType-trans
-      (equalInType-upd-force i w name f wgn eqf)
-      (equalInType-sym (equalInType-force {i} {w} {f} eqf))
+type-#⇛-NUM : (P : ℕ → Set) (T : CTerm) → Set(lsuc(L))
+type-#⇛-NUM P T =
+  {i : ℕ} {w : 𝕎·} {a b : CTerm}
+  → equalInType i w T a b
+  → □· w (λ w' _ → Σ ℕ (λ n → a #⇛ #NUM n at w' × b #⇛ #NUM n at w' × P n))
 
 
-abstract
-
-  equalInType-APPLY-upd : (i : ℕ) (w : 𝕎·) (name : Name) (F f : CTerm)
+equalInType-upd-force-T : (i : ℕ) (w : 𝕎·) (name : Name) (P : ℕ → Set) (T f : CTerm)
                           → ∀𝕎-get0-NUM w name
-                          → ∈Type i w #FunBar F
-                          → ∈Type i w #BAIRE f
+                          → type-#⇛-NUM P T
+                          → #⇛!-NUM-type P T
+                          → type-preserves-#⇛ T
+                          → isType i w T
+                          → ∈Type i w (#FUN #NAT T) f
+                          → equalInType i w (#FUN #NAT T) (#upd name f) (#force f)
+equalInType-upd-force-T i w name P T f wgn tyn nty prest tyt eqf =
+  equalInType-FUN eqTypesNAT tyt aw
+  where
+    eqf1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
+                         → equalInType i w' T (#APPLY f a₁) (#APPLY f a₂))
+    eqf1 = equalInType-FUN→ eqf
+
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
+                       → equalInType i w' T (#APPLY (#upd name f) a₁) (#APPLY (#force f) a₂))
+    aw w1 e1 a₁ a₂ eqa =
+      equalInType-local (Mod.∀𝕎-□Func M aw1 (equalInType-NAT→ i w1 a₁ a₂ eqa))
+      where
+        aw1 : ∀𝕎 w1 (λ w' e' → NATeq w' a₁ a₂
+                              → equalInType i w' T (#APPLY (#upd name f) a₁) (#APPLY (#force f) a₂))
+        aw1 w2 e2 (k , c₁ , c₂) =
+          equalInType-local (Mod.∀𝕎-□Func M aw2 (tyn (equalInType-FUN→ eqf w2 (⊑-trans· e1 e2) (#NUM k) (#NUM k) (NUM-equalInType-NAT i w2 k))))
+            where
+              aw2 : ∀𝕎 w2 (λ w' e' → Σ ℕ (λ n → #APPLY f (#NUM k) #⇛ #NUM n at w' × #APPLY f (#NUM k) #⇛ #NUM n at w' × P n)
+                                    → equalInType i w' T (#APPLY (#upd name f) a₁) (#APPLY (#force f) a₂))
+              aw2 w3 e3 (n , d₁ , d₂ , pn) =
+                prest i w3 (#APPLY (#upd name f) a₁) (#NUM n) (#APPLY (#force f) a₂) (#NUM n)
+                      (⇛-upd-body→⇛-APPLY {name} {⌜ f ⌝} {⌜ a₁ ⌝} {n} {w3} (CTerm.closed f) (⇛-upd-body w3 ⌜ f ⌝ ⌜ a₁ ⌝ k n name (∀𝕎-mon (⊑-trans· e1 (⊑-trans· e2 e3)) wgn) (CTerm.closed f) (∀𝕎-mon e3 c₁) d₁))
+                      (APPLY-force⇛ (CTerm.closed f) (∀𝕎-mon e3 c₂) d₂)
+                      (nty {i} {w3} {n} pn)
+
+
+equalInType-force-T : {i : ℕ} {w : 𝕎·} (P : ℕ → Set) {T f : CTerm}
+                      → type-#⇛-NUM P T
+                      → #⇛!-NUM-type P T
+                      → type-preserves-#⇛ T
+                      → isType i w T
+                      → ∈Type i w (#FUN #NAT T) f
+                      → equalInType i w (#FUN #NAT T) f (#force f)
+equalInType-force-T {i} {w} P {T} {f} tyn nty prest tyt eqi =
+  equalInType-FUN eqTypesNAT tyt aw1
+  where
+    aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂
+                        → equalInType i w' T (#APPLY f a₁) (#APPLY (#force f) a₂))
+    aw1 w1 e1 a₁ a₂ ea = equalInType-local (Mod.∀𝕎-□Func M aw2 (equalInType-NAT→ i w1 a₁ a₂ ea))
+      where
+        aw2 : ∀𝕎 w1 (λ w' e' → NATeq w' a₁ a₂
+                              → equalInType i w' T (#APPLY f a₁) (#APPLY (#force f) a₂))
+        aw2 w2 e2 (k , c₁ , c₂) = equalInType-local (Mod.∀𝕎-□Func M aw3 (tyn (equalInType-FUN→ eqi w2 (⊑-trans· e1 e2) a₁ (#NUM k) (#⇛NUM→equalInType-NAT i w2 a₁ k c₁))))
+          where
+            aw3 : ∀𝕎 w2 (λ w' e' → Σ ℕ (λ n → #APPLY f a₁ #⇛ #NUM n at w' × #APPLY f (#NUM k) #⇛ #NUM n at w' × P n)
+                                  → equalInType i w' T (#APPLY f a₁) (#APPLY (#force f) a₂))
+            aw3 w3 e3 (n , d₁ , d₂ , pn) =
+              prest i w3 (#APPLY f a₁) (#NUM n) (#APPLY (#force f) a₂) (#NUM n)
+                    d₁
+                    (⇛-trans (#APPLY-force {w3} {f} {a₂} (∀𝕎-mon e3 c₂)) d₂)
+                    (nty pn)
+
+
+
+abstract
+
+  equalInType-upd : (i : ℕ) (w : 𝕎·) (name : Name) (P : ℕ → Set) (T f : CTerm)
+                    → ∀𝕎-get0-NUM w name
+                    → type-#⇛-NUM P T
+                    → #⇛!-NUM-type P T
+                    → type-preserves-#⇛ T
+                    → isType i w T
+                    → ∈Type i w (#FUN #NAT T) f
+                    → equalInType i w (#FUN #NAT T) (#upd name f) f
+  equalInType-upd i w name P T f wgn tyn nty prest tyt eqf =
+    equalInType-trans
+      (equalInType-upd-force-T i w name P T f wgn tyn nty prest tyt eqf)
+      (equalInType-sym (equalInType-force-T {i} {w} P {T} {f} tyn nty prest tyt eqf))
+
+
+abstract
+
+  equalInType-APPLY-upd : (i : ℕ) (w : 𝕎·) (name : Name) (P : ℕ → Set) (T F f : CTerm)
+                          → ∀𝕎-get0-NUM w name
+                          → type-#⇛-NUM P T
+                          → #⇛!-NUM-type P T
+                          → type-preserves-#⇛ T
+                          → isType i w T
+                          → ∈Type i w (#FunBar T) F
+                          → ∈Type i w (#FUN #NAT T) f
                           → equalInType i w #NAT (#APPLY F (#upd name f)) (#APPLY F f)
-  equalInType-APPLY-upd i w name F f wgn F∈ f∈ =
-    equalInType-FUN→ (≡CTerm→equalInType #BAIRE→NAT≡ F∈) w (⊑-refl· w) (#upd name f) f (equalInType-upd i w name f wgn f∈)
+  equalInType-APPLY-upd i w name P T F f wgn tyn nty prest tyt F∈ f∈ =
+    equalInType-FUN→ F∈ w (⊑-refl· w) (#upd name f) f (equalInType-upd i w name P T f wgn tyn nty prest tyt f∈)
 
 
 
@@ -190,31 +267,40 @@ abstract
 
 abstract
 
-  →#APPLY-upd⇓ : (kb : K□) (i : ℕ) (w : 𝕎·) (name : Name) (F f : CTerm) (n : ℕ)
+  →#APPLY-upd⇓ : (kb : K□) (i : ℕ) (w : 𝕎·) (name : Name) (P : ℕ → Set) (T F f : CTerm) (n : ℕ)
                   → ∀𝕎-get0-NUM w name
-                  → ∈Type i w #FunBar F
-                  → ∈Type i w #BAIRE f
+                  → type-#⇛-NUM P T
+                  → #⇛!-NUM-type P T
+                  → type-preserves-#⇛ T
+                  → isType i w T
+                  → ∈Type i w (#FunBar T) F
+                  → ∈Type i w (#FUN #NAT T) f
                   → #APPLY F f #⇓ #NUM n at w
                   → #APPLY F (#upd name f) #⇓ #NUM n at w
-  →#APPLY-upd⇓ kb i w name F f n wgn F∈ f∈ comp =
+  →#APPLY-upd⇓ kb i w name P T F f n wgn tyn nty prest tyt F∈ f∈ comp =
     NATeq→#⇓NUMₗ {w} {#APPLY F (#upd name f)} {#APPLY F f} {n} eqn comp
     where
       eqn : NATeq w (#APPLY F (#upd name f)) (#APPLY F f)
-      eqn = kb (equalInType-NAT→ i w _ _ (equalInType-APPLY-upd i w name F f wgn F∈ f∈)) w (⊑-refl· w)
+      eqn = kb (equalInType-NAT→ i w _ _ (equalInType-APPLY-upd i w name P T F f wgn tyn nty prest tyt F∈ f∈)) w (⊑-refl· w)
 
 
 abstract
 
   follow-NUM-ETA : (kb : K□) (can : comp→∀ℕ) (gc : get-choose-ℕ) (cn : cℕ)
-                   (i : ℕ) (w : 𝕎·) (r : Name) (I F : CTerm) (s : 𝕊) (k n j : ℕ)
+                   (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T I F : CTerm) (s : 𝕊) (k n j : ℕ)
                    → #¬Names F
                    → compatible· r w Res⊤
+                   → ((n : ℕ) → P (s n))
+                   → type-#⇛-NUM P T
+                   → #⇛!-NUM-type P T
+                   → type-preserves-#⇛ T
+                   → isType i w T
                    → I #⇛! #tab r F k (seq2list s k) at w
-                   → ∈Type i w #FunBar F
+                   → ∈Type i w (#FunBar T) F
                    → #APPLY F (#MSEQ s) #⇛ #NUM n at w
                    → #tab r F k (seq2list s k) #⇛ #ETA (#NUM j) at w
                    → #follow (#MSEQ s) I k #⇛ #NUM n at w
-  follow-NUM-ETA kb can gc cn i w r I F s k n j nnF compat cI F∈ comp c3 =
+  follow-NUM-ETA kb can gc cn i w r P T I F s k n j nnF compat ps tyn nty prest tyt cI F∈ comp c3 =
     #⇛-trans {w} {#follow (#MSEQ s) I k} {#NUM j} {#NUM n} c5 (≡ₗ→#⇛ w (#NUM j) (#NUM n) (≡#NUM j n eqjn))
     where
       abstract
@@ -252,10 +338,11 @@ abstract
 
         c8 : #APPLY F (#upd r (#MSEQ s)) #⇓ #NUM n at (chooseT r w N0)
         c8 = →#APPLY-upd⇓
-               kb i (chooseT r w N0) r F (#MSEQ s) n
+               kb i (chooseT r w N0) r P T F (#MSEQ s) n
                ((cn r (chooseT r w N0) (⊑-compatible· (choose⊑· r w (T→ℂ· N0)) compat)))
+               tyn nty prest (eqTypes-mon (uni i) tyt (chooseT r w N0) (choose⊑· r w (T→ℂ· N0)))
                (equalInType-mon F∈ (chooseT r w N0) (choose⊑· r w (T→ℂ· N0)))
-               (mseq∈baire i (chooseT r w N0) s)
+               (mseq∈NAT→T i (chooseT r w N0) s P T ps nty prest (eqTypes-mon (uni i) tyt (chooseT r w N0) (choose⊑· r w (T→ℂ· N0)))) --(mseq∈baire i (chooseT r w N0) s)
                c7
 
         upds : updSeq r s k ⌜ #APPLY F (#upd r (seq2list s k)) ⌝ ⌜ #APPLY F (#upd r (#MSEQ s)) ⌝
