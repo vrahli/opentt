@@ -115,7 +115,7 @@ open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#INIT ; #APPLY-l
 open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (seq2list ; mseq∈baire)
 open import barContP4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 --open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
-open import barContP6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#FunBarP ; sem ; #updSeq-APPLY-updr ; updSeq-steps-NUM ; seq2list≡)
+open import barContP6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#FunBarP ; sem ; #updSeq-APPLY-updr ; updSeq-steps-NUM ; seq2list≡ ; #¬Names-seq2list)
 open import barContP7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 open import barContP8(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (follow-NUM-ETA ; type-#⇛-NUM)
 
@@ -125,7 +125,6 @@ abstract
   follow-NUM : (kb : K□) (can : comp→∀ℕ) (gc : get-choose-ℕ) (cn : cℕ)
                (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T I J F : CTerm) (s : 𝕊) (k n : ℕ)
                → #¬Names F
---               → compatible· r w Res⊤
                → P 0
                → ((n : ℕ) → P (s n))
                → #⇛!-NUM-type P T
@@ -137,18 +136,16 @@ abstract
                → ∈Type i w (#FunBar T) F
                → #APPLY F (#MSEQ s) #⇛ #NUM n at w
                → #follow (#MSEQ s) I k #⇛ #NUM n at w
-  follow-NUM kb can gc cn i w P T I J F s k n nnF {--compat--} p0 ps nty tyn prest tyt cI (weqC a1 f1 a2 f2 e c1 c2 ind) F∈ comp
+  follow-NUM kb can gc cn i w P T I J F s k n nnF p0 ps nty tyn prest tyt cI (weqC a1 f1 a2 f2 e c1 c2 ind) F∈ comp
     with #APPLY-#loop#⇓5
-           can gc cn F (#NUM k) (seq2list s k)
-           (fst (→APPLY-upd-seq2list#⇛NUM kb cn i w P T F r s k p0 ps nty compat prest tyt F∈))
-           k w (#¬Names-seq2list s k) nnF ? ? (#⇛!-refl {w} {#NUM k}) ? ?
-           --(snd (→APPLY-upd-seq2list#⇛NUM kb cn i w P T F r s k p0 ps nty compat prest tyt F∈))
+           kb can gc cn i T F (#NUM k) (seq2list s k)
+           k w (#¬Names-seq2list s k) nnF prest tyt (#⇛!-refl {w} {#NUM k}) F∈
+           (∈Type-NAT→T-seq2list i w s k P T p0 ps nty prest tyt)
   ... | inj₁ c3 =
     follow-NUM-ETA
       kb can gc cn i w P T I F s k n
-      (fst (→APPLY-upd-seq2list#⇛NUM kb cn i w P T F r s k p0 ps nty compat prest tyt F∈))
-      nnF ps tyn nty prest tyt cI F∈ comp c3
-      --(snd (→APPLY-upd-seq2list#⇛NUM kb i w F r s k (cn r w compat) F∈))
+      (fst c3)
+      nnF ps tyn nty prest tyt cI F∈ comp (snd c3)
   ... | inj₂ c3 =
     #⇛-trans
       {w}
@@ -173,34 +170,31 @@ abstract
       ind'
     where
       abstract
-        j : ℕ
-        j = fst (→APPLY-upd-seq2list#⇛NUM kb cn i w P T F r s k p0 ps nty compat prest tyt F∈)
-
         c4 : #APPLY2 (#loop F) (#NUM k) (seq2list s k) #⇛ #DIGAMMA (#loopR (#loop F) (#NUM k) (seq2list s k)) at w
         c4 = c3
 
         c5 : #follow (#MSEQ s) I k #⇛ #follow (#MSEQ s) (#APPLY (#loopR (#loop F) (#NUM k) (seq2list s k)) (#NUM (s k))) (suc k) at w
         c5 = #follow-INR⇛
                w I (#INR #AX) (#loopR (#loop F) (#NUM k) (seq2list s k)) (#MSEQ s) #AX k (s k)
-               (#⇛-trans {w} {I} {#tab r F k (seq2list s k)} {#DIGAMMA (#loopR (#loop F) (#NUM k) (seq2list s k))} (#⇛!→#⇛ {w} {I} {#tab r F k (seq2list s k)} cI) c3)
+               (#⇛-trans {w} {I} {#tab F k (seq2list s k)} {#DIGAMMA (#loopR (#loop F) (#NUM k) (seq2list s k))} (#⇛!→#⇛ {w} {I} {#tab F k (seq2list s k)} cI) c3)
                (#⇛!-refl {w} {#INR #AX})
                (#APPLY-MSEQ-NUM#⇛! s k w)
 
         ea1 : a1 ≡ #INR #AX
-        ea1 = fst (#⇛SUP→× w I (#tab r F k (seq2list s k)) a1 f1 (#INR #AX) (#loopR (#loop F) (#NUM k) (seq2list s k)) cI c1 c3)
+        ea1 = fst (#⇛SUP→× w I (#tab F k (seq2list s k)) a1 f1 (#INR #AX) (#loopR (#loop F) (#NUM k) (seq2list s k)) cI c1 c3)
 
         ef1 : f1 ≡ #loopR (#loop F) (#NUM k) (seq2list s k)
-        ef1 = snd (#⇛SUP→× w I (#tab r F k (seq2list s k)) a1 f1 (#INR #AX) (#loopR (#loop F) (#NUM k) (seq2list s k)) cI c1 c3)
+        ef1 = snd (#⇛SUP→× w I (#tab F k (seq2list s k)) a1 f1 (#INR #AX) (#loopR (#loop F) (#NUM k) (seq2list s k)) cI c1 c3)
 
         eqb : ∈Type i w (sub0 a1 (#IndBarC T)) (#NUM (s k))
         eqb = NUM∈sub0-IndBarc i w P T a1 #AX (s k) (ps k) nty (≡ₗ→#⇛! w a1 (#INR #AX) ea1)
 
-        c6 : #APPLY f1 (#NUM (s k)) #⇛! #tab r F (suc k) (seq2list s (suc k)) at w
+        c6 : #APPLY f1 (#NUM (s k)) #⇛! #tab F (suc k) (seq2list s (suc k)) at w
         c6 = #⇛!-trans
                {w}
                {#APPLY f1 (#NUM (s k))}
                {#APPLY (#loopR (#loop F) (#NUM k) (seq2list s k)) (#NUM (s k))}
-               {#tab r F (suc k) (seq2list s (suc k))}
+               {#tab F (suc k) (seq2list s (suc k))}
                (≡ₗ→#⇛! w (#APPLY f1 (#NUM (s k)))
                  (#APPLY (#loopR (#loop F) (#NUM k) (seq2list s k)) (#NUM (s k)))
                  (CTerm≡ (≡APPLY (≡CTerm ef1) refl)))
@@ -208,10 +202,10 @@ abstract
 
         ind' : #follow (#MSEQ s) (#APPLY f1 (#NUM (s k))) (suc k) #⇛ #NUM n at w
         ind' = follow-NUM
-                 kb can gc cn i w r P T
+                 kb can gc cn i w P T
                  (#APPLY f1 (#NUM (s k)))
                  (#APPLY f2 (#NUM (s k)))
-                 F s (suc k) n nnF compat
+                 F s (suc k) n nnF
                  p0 ps nty tyn prest tyt
                  c6
                  (ind (#NUM (s k)) (#NUM (s k)) eqb)
@@ -336,8 +330,7 @@ NAT→T!2𝕊-equalInNAT! kb {i} {w} P {T} {f} prest nty tyn f∈ k =
 
 
 semCond : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
-          (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T F f : CTerm)
-          → compatible· r w Res⊤
+          (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T F f : CTerm)
           → P 0
           → #⇛!-NUM-type P T
           → type-#⇛-NUM P T
@@ -345,9 +338,9 @@ semCond : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get
           → isType i w T
           → ∈Type i w (#FunBarP T) F
           → ∈Type i w (#FUN #NAT (#TCONST T)) f
-          → equalInType i w #NAT (#APPLY F f) (#follow f (#tab r F 0 #INIT) 0)
+          → equalInType i w #NAT (#APPLY F f) (#follow f (#tab F 0 #INIT) 0)
 -- It's a #QNAT and not a #NAT because of the computation on #tab, which is a "time-dependent" computation
-semCond kb cn can exb gc i w r P T F f compat p0 nty tyn prest tyt F∈P f∈ =
+semCond kb cn can exb gc i w P T F f p0 nty tyn prest tyt F∈P f∈ =
   →equalInType-NAT
     i w (#APPLY F f) (#follow f I 0)
     (Mod.∀𝕎-□Func M aw (equalInType-W→ i w #IndBarB (#IndBarC T) I I I∈))
@@ -365,10 +358,10 @@ semCond kb cn can exb gc i w r P T F f compat p0 nty tyn prest tyt F∈P f∈ =
     ps = NAT→T!2𝕊-P kb P (type-#⇛-NUM→! P T tyn) f∈
 
     I : CTerm
-    I = #tab r F 0 #INIT
+    I = #tab F 0 #INIT
 
     I∈ : ∈Type i w (#IndBar T) I
-    I∈ = sem kb cn can exb gc i w r P T F p0 prest (type-#⇛-NUM→! P T tyn) nty tyt compat F∈P
+    I∈ = sem kb cn can exb gc i w P T F p0 prest (type-#⇛-NUM→! P T tyn) nty tyt F∈P
 
     f≡1 : (k : ℕ) → equalInType i w (#TCONST T) (#APPLY f (#NUM k)) (#APPLY (#MSEQ s) (#NUM k))
     f≡1 k = NAT→T!2𝕊-equalInNAT! kb P prest nty (type-#⇛-NUM→! P T tyn) f∈ k
@@ -390,8 +383,7 @@ semCond kb cn can exb gc i w r P T F f compat p0 nty tyn prest tyt F∈P f∈ =
         neq2 = fst neq1 ,
                snd (snd neq1) ,
                follow-NUM
-                 kb can gc cn i w1 r P T I I F s 0 (fst neq1)
-                 nnF (⊑-compatible· e1 compat)
+                 kb can gc cn i w1 P T I I F s 0 (fst neq1) nnF
                  p0 ps nty tyn prest (eqTypes-mon (uni i) tyt w1 e1)
                  (#⇛!-refl {w1} {I}) h (equalInType-mon F∈ w1 e1) (snd (snd neq1))
 
