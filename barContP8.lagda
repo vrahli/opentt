@@ -114,22 +114,21 @@ open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#INIT ; #APPLY-l
 open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (seq2list ; mseq∈baire)
 open import barContP4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 --open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
-open import barContP6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#FunBarP ; sem ; #updSeq-APPLY-updr ; updSeq-steps-NUM ; seq2list≡ ; mseq∈NAT→T)
+open import barContP6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#FunBarP ; sem ; #updSeq-APPLY-updr ; updSeq-steps-NUM ; seq2list≡ ; mseq∈NAT→T ; #¬Names-seq2list)
 open import barContP7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 
 
 
 abstract
 
-  #tab#⇛#ETA→ : (cn : cℕ) (w : 𝕎·) (r : Name) (F f : CTerm) (k j : ℕ)
-                  → compatible· r w Res⊤
-                  → #tab r F k f #⇛ #ETA (#NUM j) at w
+  #tab#⇛#ETA→ : (cn : cℕ) (w : 𝕎·) (F f : CTerm) (k j : ℕ)
+                  → #tab F k f #⇛ #ETA (#NUM j) at w
                   → ∀𝕎 w (λ w1 e1 → Lift (lsuc L) (Σ 𝕎· (λ w' → Σ ℕ (λ n →
-                       #APPLY F (#upd r f) #⇓ #NUM j from (chooseT r w1 N0) to w'
-                       × getT 0 r w' ≡ just (NUM n)
+                       #APPLY F (#upd (#loopName w1 F (#NUM k) f) f) #⇓ #NUM j from (#loop𝕎0 w1 F (#NUM k) f) to w'
+                       × getT 0 (#loopName w1 F (#NUM k) f) w' ≡ just (NUM n)
                        × n < k))))
-  #tab#⇛#ETA→ cn w r F f k j compat comp w1 e1
-    with #APPLY-loop⇓SUP→ cn w1 r F (#NUM k) f (#INL (#NUM j)) #AX (⊑-compatible· e1 compat) (lower (comp w1 e1))
+  #tab#⇛#ETA→ cn w F f k j comp w1 e1
+    with #APPLY-loop⇓SUP→ cn w1 F (#NUM k) f (#INL (#NUM j)) #AX (lower (comp w1 e1))
   ... | (i , w' , n , m , comp' , gt0 ,  ck , inj₁ (x , y , z))
     rewrite #NUMinj (#INLinj y) | #NUMinj (#compVal {#NUM k} {#NUM m} {w'} ck tt)
     = lift (w' , n , comp' , gt0 , x)
@@ -287,36 +286,53 @@ abstract
 abstract
 
   follow-NUM-ETA : (kb : K□) (can : comp→∀ℕ) (gc : get-choose-ℕ) (cn : cℕ)
-                   (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T I F : CTerm) (s : 𝕊) (k n j : ℕ)
+                   (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T I F : CTerm) (s : 𝕊) (k n j : ℕ)
                    → #¬Names F
-                   → compatible· r w Res⊤
                    → ((n : ℕ) → P (s n))
                    → type-#⇛-NUM P T
                    → #⇛!-NUM-type P T
                    → type-preserves-#⇛ T
                    → isType i w T
-                   → I #⇛! #tab r F k (seq2list s k) at w
+                   → I #⇛! #tab F k (seq2list s k) at w
                    → ∈Type i w (#FunBar T) F
                    → #APPLY F (#MSEQ s) #⇛ #NUM n at w
-                   → #tab r F k (seq2list s k) #⇛ #ETA (#NUM j) at w
+                   → #tab F k (seq2list s k) #⇛ #ETA (#NUM j) at w
                    → #follow (#MSEQ s) I k #⇛ #NUM n at w
-  follow-NUM-ETA kb can gc cn i w r P T I F s k n j nnF compat ps tyn nty prest tyt cI F∈ comp c3 =
+  follow-NUM-ETA kb can gc cn i w P T I F s k n j nnF ps tyn nty prest tyt cI F∈ comp c3 =
     #⇛-trans {w} {#follow (#MSEQ s) I k} {#NUM j} {#NUM n} c5 (≡ₗ→#⇛ w (#NUM j) (#NUM n) (≡#NUM j n eqjn))
     where
       abstract
         c5 : #follow (#MSEQ s) I k #⇛ #NUM j at w
         c5 = #follow-INL⇛
                w I (#INL (#NUM j)) #AX (#MSEQ s) (#NUM j) k j
-               (#⇛-trans {w} {I} {#tab r F k (seq2list s k)} {#ETA (#NUM j)} (#⇛!→#⇛ {w} {I} {#tab r F k (seq2list s k)} cI) c3)
+               (#⇛-trans {w} {I} {#tab F k (seq2list s k)} {#ETA (#NUM j)} (#⇛!→#⇛ {w} {I} {#tab F k (seq2list s k)} cI) c3)
                (#⇛!-refl {w} {#INL (#NUM j)})
                (#⇛-refl w (#NUM j))
         -- we now need to prove that (j ≡ n)
 
+        r : Name
+        r = #loopName w F (#NUM k) (seq2list s k)
+
+        w₀ : 𝕎·
+        w₀ = #loop𝕎 w F (#NUM k) (seq2list s k)
+
+        w0 : 𝕎·
+        w0 = #loop𝕎0 w F (#NUM k) (seq2list s k)
+
+        e0 : w ⊑· w0
+        e0 = ⊑-trans· (startNewChoiceT⊏ Res⊤ w ⌜ #νloopFB F (#loop F) (#NUM k) (seq2list s k) ⌝) (choose⊑· r (#loop𝕎 w F (#NUM k) (seq2list s k)) (T→ℂ· N0))
+
+        compat : compatible· r w₀ Res⊤
+        compat = startChoiceCompatible· Res⊤ w r (¬newChoiceT∈dom𝕎 w ⌜ #νloopFB F (#loop F) (#NUM k) (seq2list s k) ⌝)
+
+        compat0 : compatible· r w0 Res⊤
+        compat0 = ⊑-compatible· (choose⊑· r w₀ (T→ℂ· N0)) compat
+
         h1 : Σ 𝕎· (λ w' → Σ ℕ (λ m →
-                #APPLY F (#upd r (seq2list s k)) #⇓ #NUM j from (chooseT r w N0) to w'
+                #APPLY F (#upd r (seq2list s k)) #⇓ #NUM j from w0 to w'
                 × getT 0 r w' ≡ just (NUM m)
                 × m < k))
-        h1 = lower (#tab#⇛#ETA→ cn w r F (seq2list s k) k j compat c3 w (⊑-refl· w))
+        h1 = lower (#tab#⇛#ETA→ cn w F (seq2list s k) k j c3 w (⊑-refl· w))
 
         w' : 𝕎·
         w' = fst h1
@@ -324,7 +340,7 @@ abstract
         m : ℕ
         m = fst (snd h1)
 
-        c6 : #APPLY F (#upd r (seq2list s k)) #⇓ #NUM j from (chooseT r w N0) to w'
+        c6 : #APPLY F (#upd r (seq2list s k)) #⇓ #NUM j from w0 to w'
         c6 = fst (snd (snd h1))
 
         gt0 : getT 0 r w' ≡ just (NUM m)
@@ -333,47 +349,47 @@ abstract
         ltk : m < k
         ltk = snd (snd (snd (snd h1)))
 
-        c7 : #APPLY F (#MSEQ s) #⇓ #NUM n at (chooseT r w N0)
-        c7 = lower (comp (chooseT r w N0) (choose⊑· r w (T→ℂ· N0)))
+        c7 : #APPLY F (#MSEQ s) #⇓ #NUM n at w0
+        c7 = lower (comp w0 e0)
 
-        c8 : #APPLY F (#upd r (#MSEQ s)) #⇓ #NUM n at (chooseT r w N0)
+        c8 : #APPLY F (#upd r (#MSEQ s)) #⇓ #NUM n at (w0)
         c8 = →#APPLY-upd⇓
-               kb i (chooseT r w N0) r P T F (#MSEQ s) n
-               ((cn r (chooseT r w N0) (⊑-compatible· (choose⊑· r w (T→ℂ· N0)) compat)))
-               tyn nty prest (eqTypes-mon (uni i) tyt (chooseT r w N0) (choose⊑· r w (T→ℂ· N0)))
-               (equalInType-mon F∈ (chooseT r w N0) (choose⊑· r w (T→ℂ· N0)))
-               (mseq∈NAT→T i (chooseT r w N0) s P T ps nty prest (eqTypes-mon (uni i) tyt (chooseT r w N0) (choose⊑· r w (T→ℂ· N0)))) --(mseq∈baire i (chooseT r w N0) s)
+               kb i w0 r P T F (#MSEQ s) n
+               (cn r w0 compat0)
+               tyn nty prest (eqTypes-mon (uni i) tyt w0 e0)
+               (equalInType-mon F∈ w0 e0)
+               (mseq∈NAT→T i w0 s P T ps nty prest (eqTypes-mon (uni i) tyt w0 e0)) --(mseq∈baire i (chooseT r w N0) s)
                c7
 
         upds : updSeq r s k ⌜ #APPLY F (#upd r (seq2list s k)) ⌝ ⌜ #APPLY F (#upd r (#MSEQ s)) ⌝
         upds = #updSeq-APPLY-updr r s k F nnF
 
-        ish : isHighestℕ {fst c6} {chooseT r w N0} {w'} {⌜ #APPLY F (#upd r (seq2list s k)) ⌝} {NUM j} (suc m) r (snd c6)
+        ish : isHighestℕ {fst c6} {w0} {w'} {⌜ #APPLY F (#upd r (seq2list s k)) ⌝} {NUM j} (suc m) r (snd c6)
         ish = steps-sat-isHighestℕ
                 gc {r} {⌜ seq2list s k ⌝} {proj₁ c6} (#¬Names-seq2list s k) (CTerm.closed (seq2list s k))
-                {chooseT r w N0} {w'} {⌜ #APPLY F (#upd r (seq2list s k)) ⌝}
+                {w0} {w'} {⌜ #APPLY F (#upd r (seq2list s k)) ⌝}
                 {NUM j} {suc m} (snd c6) tt
                 (updCtxt-APPLY-upd-seq2list r s k F nnF)
-                (⊑-compatible· (choose⊑· r w (T→ℂ· N0)) compat)
-                (cn r (chooseT r w N0) (⊑-compatible· (choose⊑· r w (T→ℂ· N0)) compat))
+                compat0
+                (cn r w0 compat0)
                 (m , gt0 , ≤-refl)
 
-        ish' : isHighestℕ {fst c6} {chooseT r w N0} {w'} {⌜ #APPLY F (#upd r (seq2list s k)) ⌝} {NUM j} k r (snd c6)
-        ish' = isHighestℕ≤ (proj₁ c6) (chooseT r w N0) w' ⌜ #APPLY F (#upd r (seq2list s k)) ⌝ (NUM j) (suc m) k r (snd c6) ltk ish
+        ish' : isHighestℕ {fst c6} {w0} {w'} {⌜ #APPLY F (#upd r (seq2list s k)) ⌝} {NUM j} k r (snd c6)
+        ish' = isHighestℕ≤ (proj₁ c6) w0 w' ⌜ #APPLY F (#upd r (seq2list s k)) ⌝ (NUM j) (suc m) k r (snd c6) ltk ish
 
-        c9 : Σ ℕ (λ k' → steps k' (⌜ #APPLY F (#upd r (#MSEQ s)) ⌝ , chooseT r w N0) ≡ (NUM j , w'))
+        c9 : Σ ℕ (λ k' → steps k' (⌜ #APPLY F (#upd r (#MSEQ s)) ⌝ , w0) ≡ (NUM j , w'))
         c9 = updSeq-steps-NUM
                cn gc r s k (fst c6)
                ⌜ #APPLY F (#upd r (seq2list s k)) ⌝ ⌜ #APPLY F (#upd r (#MSEQ s)) ⌝
-               j (chooseT r w N0) w' (⊑-compatible· (choose⊑· r w (T→ℂ· N0)) compat) upds (snd c6) ish'
+               j w0 w' compat0 upds (snd c6) ish'
 
         -- use updSeq-steps-NUM in barContP6
         -- and steps-sat-isHighestℕ in continuity3
 
         eqjn : j ≡ n
         eqjn = NUMinj (⇓-val-det
-                        {chooseT r w N0} {⌜ #APPLY F (#upd r (#MSEQ s)) ⌝} {NUM j} {NUM n} tt tt
-                        (⇓-from-to→⇓  {chooseT r w N0} {w'} {⌜ #APPLY F (#upd r (#MSEQ s)) ⌝} {NUM j} c9)
+                        {w0} {⌜ #APPLY F (#upd r (#MSEQ s)) ⌝} {NUM j} {NUM n} tt tt
+                        (⇓-from-to→⇓  {w0} {w'} {⌜ #APPLY F (#upd r (#MSEQ s)) ⌝} {NUM j} c9)
                         c8)
         -- (j ≡ n) because in the computation c3 that uses c4, r never goes about k and so comp must compute to the same result
         -- use #tab#⇛#ETA→ on c3  + continuity

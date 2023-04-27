@@ -123,31 +123,31 @@ open import barContP8(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (follow-NUM-ETA ;
 abstract
 
   follow-NUM : (kb : K□) (can : comp→∀ℕ) (gc : get-choose-ℕ) (cn : cℕ)
-               (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T I J F : CTerm) (s : 𝕊) (k n : ℕ)
+               (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T I J F : CTerm) (s : 𝕊) (k n : ℕ)
                → #¬Names F
-               → compatible· r w Res⊤
+--               → compatible· r w Res⊤
                → P 0
                → ((n : ℕ) → P (s n))
                → #⇛!-NUM-type P T
                → type-#⇛-NUM P T
                → type-preserves-#⇛ T
                → isType i w T
-               → I #⇛! #tab r F k (seq2list s k) at w
+               → I #⇛! #tab F k (seq2list s k) at w
                → weq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T))) w I J
                → ∈Type i w (#FunBar T) F
                → #APPLY F (#MSEQ s) #⇛ #NUM n at w
                → #follow (#MSEQ s) I k #⇛ #NUM n at w
-  follow-NUM kb can gc cn i w r P T I J F s k n nnF compat p0 ps nty tyn prest tyt cI (weqC a1 f1 a2 f2 e c1 c2 ind) F∈ comp
+  follow-NUM kb can gc cn i w P T I J F s k n nnF {--compat--} p0 ps nty tyn prest tyt cI (weqC a1 f1 a2 f2 e c1 c2 ind) F∈ comp
     with #APPLY-#loop#⇓5
-           can gc cn r F (#NUM k) (seq2list s k)
+           can gc cn F (#NUM k) (seq2list s k)
            (fst (→APPLY-upd-seq2list#⇛NUM kb cn i w P T F r s k p0 ps nty compat prest tyt F∈))
-           k w (#¬Names-seq2list s k) nnF compat (#⇛!-refl {w} {#NUM k})
-           (snd (→APPLY-upd-seq2list#⇛NUM kb cn i w P T F r s k p0 ps nty compat prest tyt F∈))
+           k w (#¬Names-seq2list s k) nnF ? ? (#⇛!-refl {w} {#NUM k}) ? ?
+           --(snd (→APPLY-upd-seq2list#⇛NUM kb cn i w P T F r s k p0 ps nty compat prest tyt F∈))
   ... | inj₁ c3 =
     follow-NUM-ETA
-      kb can gc cn i w r P T I F s k n
+      kb can gc cn i w P T I F s k n
       (fst (→APPLY-upd-seq2list#⇛NUM kb cn i w P T F r s k p0 ps nty compat prest tyt F∈))
-      nnF compat ps tyn nty prest tyt cI F∈ comp c3
+      nnF ps tyn nty prest tyt cI F∈ comp c3
       --(snd (→APPLY-upd-seq2list#⇛NUM kb i w F r s k (cn r w compat) F∈))
   ... | inj₂ c3 =
     #⇛-trans
@@ -158,16 +158,16 @@ abstract
       (#⇛-trans
         {w}
         {#follow (#MSEQ s) I k}
-        {#follow (#MSEQ s) (#APPLY (#loopR (#loop r F) (#NUM k) (seq2list s k)) (#NUM (s k))) (suc k)}
+        {#follow (#MSEQ s) (#APPLY (#loopR (#loop F) (#NUM k) (seq2list s k)) (#NUM (s k))) (suc k)}
         {#follow (#MSEQ s) (#APPLY f1 (#NUM (s k))) (suc k)}
         c5
         (≡ₗ→#⇛
           w
-          (#follow (#MSEQ s) (#APPLY (#loopR (#loop r F) (#NUM k) (seq2list s k)) (#NUM (s k))) (suc k))
+          (#follow (#MSEQ s) (#APPLY (#loopR (#loop F) (#NUM k) (seq2list s k)) (#NUM (s k))) (suc k))
           (#follow (#MSEQ s) (#APPLY f1 (#NUM (s k))) (suc k))
           (≡#follow
             (#MSEQ s) (#MSEQ s)
-            (#APPLY (#loopR (#loop r F) (#NUM k) (seq2list s k)) (#NUM (s k))) (#APPLY f1 (#NUM (s k)))
+            (#APPLY (#loopR (#loop F) (#NUM k) (seq2list s k)) (#NUM (s k))) (#APPLY f1 (#NUM (s k)))
             (suc k) (suc k)
             refl (CTerm≡ (≡APPLY (≡CTerm (sym ef1)) refl)) refl)))
       ind'
@@ -176,21 +176,21 @@ abstract
         j : ℕ
         j = fst (→APPLY-upd-seq2list#⇛NUM kb cn i w P T F r s k p0 ps nty compat prest tyt F∈)
 
-        c4 : #APPLY2 (#loop r F) (#NUM k) (seq2list s k) #⇛ #DIGAMMA (#loopR (#loop r F) (#NUM k) (seq2list s k)) at w
+        c4 : #APPLY2 (#loop F) (#NUM k) (seq2list s k) #⇛ #DIGAMMA (#loopR (#loop F) (#NUM k) (seq2list s k)) at w
         c4 = c3
 
-        c5 : #follow (#MSEQ s) I k #⇛ #follow (#MSEQ s) (#APPLY (#loopR (#loop r F) (#NUM k) (seq2list s k)) (#NUM (s k))) (suc k) at w
+        c5 : #follow (#MSEQ s) I k #⇛ #follow (#MSEQ s) (#APPLY (#loopR (#loop F) (#NUM k) (seq2list s k)) (#NUM (s k))) (suc k) at w
         c5 = #follow-INR⇛
-               w I (#INR #AX) (#loopR (#loop r F) (#NUM k) (seq2list s k)) (#MSEQ s) #AX k (s k)
-               (#⇛-trans {w} {I} {#tab r F k (seq2list s k)} {#DIGAMMA (#loopR (#loop r F) (#NUM k) (seq2list s k))} (#⇛!→#⇛ {w} {I} {#tab r F k (seq2list s k)} cI) c3)
+               w I (#INR #AX) (#loopR (#loop F) (#NUM k) (seq2list s k)) (#MSEQ s) #AX k (s k)
+               (#⇛-trans {w} {I} {#tab r F k (seq2list s k)} {#DIGAMMA (#loopR (#loop F) (#NUM k) (seq2list s k))} (#⇛!→#⇛ {w} {I} {#tab r F k (seq2list s k)} cI) c3)
                (#⇛!-refl {w} {#INR #AX})
                (#APPLY-MSEQ-NUM#⇛! s k w)
 
         ea1 : a1 ≡ #INR #AX
-        ea1 = fst (#⇛SUP→× w I (#tab r F k (seq2list s k)) a1 f1 (#INR #AX) (#loopR (#loop r F) (#NUM k) (seq2list s k)) cI c1 c3)
+        ea1 = fst (#⇛SUP→× w I (#tab r F k (seq2list s k)) a1 f1 (#INR #AX) (#loopR (#loop F) (#NUM k) (seq2list s k)) cI c1 c3)
 
-        ef1 : f1 ≡ #loopR (#loop r F) (#NUM k) (seq2list s k)
-        ef1 = snd (#⇛SUP→× w I (#tab r F k (seq2list s k)) a1 f1 (#INR #AX) (#loopR (#loop r F) (#NUM k) (seq2list s k)) cI c1 c3)
+        ef1 : f1 ≡ #loopR (#loop F) (#NUM k) (seq2list s k)
+        ef1 = snd (#⇛SUP→× w I (#tab r F k (seq2list s k)) a1 f1 (#INR #AX) (#loopR (#loop F) (#NUM k) (seq2list s k)) cI c1 c3)
 
         eqb : ∈Type i w (sub0 a1 (#IndBarC T)) (#NUM (s k))
         eqb = NUM∈sub0-IndBarc i w P T a1 #AX (s k) (ps k) nty (≡ₗ→#⇛! w a1 (#INR #AX) ea1)
@@ -199,12 +199,12 @@ abstract
         c6 = #⇛!-trans
                {w}
                {#APPLY f1 (#NUM (s k))}
-               {#APPLY (#loopR (#loop r F) (#NUM k) (seq2list s k)) (#NUM (s k))}
+               {#APPLY (#loopR (#loop F) (#NUM k) (seq2list s k)) (#NUM (s k))}
                {#tab r F (suc k) (seq2list s (suc k))}
                (≡ₗ→#⇛! w (#APPLY f1 (#NUM (s k)))
-                 (#APPLY (#loopR (#loop r F) (#NUM k) (seq2list s k)) (#NUM (s k)))
+                 (#APPLY (#loopR (#loop F) (#NUM k) (seq2list s k)) (#NUM (s k)))
                  (CTerm≡ (≡APPLY (≡CTerm ef1) refl)))
-               (APPLY-loopR-NUM⇛! w (#loop r F) (seq2list s k) (s k) k)
+               (APPLY-loopR-NUM⇛! w (#loop F) (seq2list s k) (s k) k)
 
         ind' : #follow (#MSEQ s) (#APPLY f1 (#NUM (s k))) (suc k) #⇛ #NUM n at w
         ind' = follow-NUM
