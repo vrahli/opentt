@@ -114,6 +114,11 @@ open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (updSeq-step)
 
 
 
+#¬Names-seq2list : (s : 𝕊) (k : ℕ) → #¬Names (seq2list s k)
+#¬Names-seq2list s 0 = refl
+#¬Names-seq2list s (suc k) rewrite ¬names-shiftUp 0 ⌜ seq2list s k ⌝ | #¬Names-seq2list s k = refl
+
+
 abstract
   updSeq-refl : {r : Name} {s : 𝕊} {n : ℕ} {a : Term}
                 → ¬names a ≡ true
@@ -358,21 +363,21 @@ P-path2𝕊 kb {i} {w} P {T} tyn p0 p n | inj₂ q = p0
 
 -- We want to create a Term ∈ BAIRE from this path.
 noInfPath : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
-            (i : ℕ) (w : 𝕎·) (r : Name) (P : ℕ → Set) (T F : CTerm)
+            (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T F : CTerm)
             → P 0
             → type-#⇛!-NUM P T
             → #⇛!-NUM-type P T
             → type-preserves-#⇛ T
             → isType i w T
             → #¬Names F -- This is currently required by continuity
-            → compatible· r w Res⊤
+--            → compatible· r w Res⊤
             → ∈Type i w (#FunBar T) F
             → (p : path i w #IndBarB (#IndBarC T))
-            → correctPath {i} {w} {#IndBarB} {#IndBarC T} (#APPLY2 (#loop r F) (#NUM 0) #INIT) p
+            → correctPath {i} {w} {#IndBarB} {#IndBarC T} (#APPLY2 (#loop F) (#NUM 0) #INIT) p
             → isInfPath {i} {w} {#IndBarB} {#IndBarC T} p
             → ⊥
-noInfPath kb cn can exb gc i w r P T F p0 tyn nty prest tyt nnF compat F∈ p cor inf =
-  ltsn (≡getT≤ℕ→< w0 w' r (suc n) j eqw' gt0 gtn)
+noInfPath kb cn can exb gc i w P T F p0 tyn nty prest tyt nnF {--compat--} F∈ p cor inf =
+  ltsn (≡getT≤ℕ→< w2 w' r (suc n) j eqw' (trans (sym gt01) gt0) gtn) --(≡getT≤ℕ→< w0 w' r (suc n) j eqw' gt0 gtn)
   where
     s : 𝕊
     s = path2𝕊 kb P tyn p
@@ -386,22 +391,34 @@ noInfPath kb cn can exb gc i w r P T F p0 tyn nty prest tyt nnF compat F∈ p co
     f∈ : ∈Type i w #BAIRE f
     f∈ = mseq∈baire i w s
 
-    a∈1 : ∈Type i w #NAT (#APPLY F (#upd r f))
-    a∈1 = equalInType-FUN→
-            F∈ w (⊑-refl· _) (#upd r f) (#upd r f)
-            (upd∈BAIRE cn i w r T f compat prest tyt (mseq∈NAT→T i w s P T (P-path2𝕊 kb P tyn p0 p) nty prest tyt)) -- f∈
+    r : Name
+    r = #loopName w F (#NUM 0) f
 
-    a∈2 : NATmem w (#APPLY F (#upd r f))
-    a∈2 = kb (equalInType-NAT→ i w (#APPLY F (#upd r f)) (#APPLY F (#upd r f)) a∈1) w (⊑-refl· w)
+    w₁ : 𝕎·
+    w₁ = #loop𝕎 w F (#NUM 0) f
+
+    e₁ : w ⊑· w₁
+    e₁ = startNewChoiceT⊏ Res⊤ w ⌜ #νloopFB F (#loop F) (#NUM 0) f ⌝
+
+    w1 : 𝕎·
+    w1 = #loop𝕎0 w F (#NUM 0) f
+
+    e1 : w₁ ⊑· w1
+    e1 = choose⊑· r (#loop𝕎 w F (#NUM 0) f) (T→ℂ· N0)
+
+    compat : compatible· r w₁ Res⊤
+    compat = startChoiceCompatible· Res⊤ w r (¬newChoiceT∈dom𝕎 w ⌜ #νloopFB F (#loop F) (#NUM 0) f ⌝)
+
+    a∈1 : ∈Type i w₁ #NAT (#APPLY F (#upd r f))
+    a∈1 = equalInType-FUN→
+            F∈ w₁ e₁ (#upd r f) (#upd r f)
+            (upd∈BAIRE cn i w₁ r T f compat prest (eqTypes-mon (uni i) tyt w₁ e₁) (mseq∈NAT→T i w₁ s P T (P-path2𝕊 kb P tyn p0 p) nty prest (eqTypes-mon (uni i) tyt w₁ e₁))) -- f∈
+
+    a∈2 : NATmem w₁ (#APPLY F (#upd r f))
+    a∈2 = kb (equalInType-NAT→ i w₁ (#APPLY F (#upd r f)) (#APPLY F (#upd r f)) a∈1) w₁ (⊑-refl· w₁)
 
     k : ℕ
     k = fst a∈2
-
-    w1 : 𝕎·
-    w1 = chooseT r w N0
-
-    e1 : w ⊑· w1
-    e1 = choose⊑· r w (T→ℂ· N0)
 
     ca1 : Σ 𝕎· (λ w' → #APPLY F (#upd r f) #⇓ #NUM k from w1 to w')
     ca1 = #⇓→from-to {w1} {#APPLY F (#upd r f)} {#NUM k} (lower (fst (snd a∈2) w1 e1)) --w (⊑-refl· w)))
@@ -412,11 +429,11 @@ noInfPath kb cn can exb gc i w r P T F p0 tyn nty prest tyt nnF compat F∈ p co
     ca2 : #APPLY F (#upd r f) #⇓ #NUM k from w1 to w'
     ca2 = snd ca1
 
-    e' : w ⊑· w'
+    e' : w₁ ⊑· w'
     e' = ⊑-trans· e1 (#⇓from-to→⊑ {w1} {w'} {#APPLY F (#upd r f)} {#NUM k} ca2)
 
     d1 : Σ ℕ (λ n → getT 0 r w' ≡ just (NUM n))
-    d1 = lower (cn r w compat w' e')
+    d1 = lower (cn r w₁ compat w' e')
 
     n : ℕ
     n = fst d1
@@ -440,17 +457,29 @@ noInfPath kb cn can exb gc i w r P T F p0 tyn nty prest tyt nnF compat F∈ p co
             {APPLY ⌜ F ⌝ (upd r ⌜ f ⌝)} {NUM k} {suc n} (snd ca2)
             tt uc (⊑-compatible· e1 compat) wgt0 gtn
 
-    cs : correctSeq r w F s
-    cs = corSeq→correctSeq r w F s (→corSeq kb cn i w r P T F tyn compat F∈ p cor inf)
+    cs : correctSeq w F s
+    cs = corSeq→correctSeq w F s (→corSeq kb cn i w P T F tyn F∈ p cor inf)
 
-    csn : correctSeqN r w F 0 #INIT s (suc (suc n))
+    csn : correctSeqN w F 0 #INIT s (suc (suc n))
     csn = cs (suc (suc n))
 
+    r₀ : Name
+    r₀ = #loopName w F (#NUM (suc n)) (seq2list s (suc n))
+
+    w₀₀ : 𝕎·
+    w₀₀ = #loop𝕎 w F (#NUM (suc n)) (seq2list s (suc n))
+
+    w₀ : 𝕎·
+    w₀ = #loop𝕎0 w F (#NUM (suc n)) (seq2list s (suc n))
+
+    compat₀ : compatible· r₀ w₀₀ Res⊤
+    compat₀ = startChoiceCompatible· Res⊤ w r₀ (¬newChoiceT∈dom𝕎 w ⌜ #νloopFB F (#loop F) (#NUM (suc n)) (seq2list s (suc n)) ⌝)
+
     inv : Σ ℕ (λ m → Σ 𝕎· (λ w' → Σ ℕ (λ j →
-            #APPLY F (#upd r (seq2list s (suc n))) #⇓ #NUM m from (chooseT r w N0) to w'
-            × getT 0 r w' ≡ just (NUM j)
+            #APPLY F (#upd r₀ (seq2list s (suc n))) #⇓ #NUM m from w₀ to w'
+            × getT 0 r₀ w' ≡ just (NUM j)
             × ¬ j < (suc n))))
-    inv = correctSeqN-inv0 i r w F s (suc n) csn
+    inv = correctSeqN-inv0 i w F s (suc n) csn
 
     m0 : ℕ
     m0 = fst inv
@@ -461,16 +490,31 @@ noInfPath kb cn can exb gc i w r P T F p0 tyn nty prest tyt nnF compat F∈ p co
     j : ℕ
     j = fst (snd (snd inv))
 
-    comp0 : #APPLY F (#upd r (seq2list s (suc n))) #⇓ #NUM m0 from (chooseT r w N0) to w0
+    comp0 : #APPLY F (#upd r₀ (seq2list s (suc n))) #⇓ #NUM m0 from w₀ to w0
     comp0 = fst (snd (snd (snd inv)))
 
-    gt0 : getT 0 r w0 ≡ just (NUM j)
+    gt0 : getT 0 r₀ w0 ≡ just (NUM j)
     gt0 = fst (snd (snd (snd (snd inv))))
+
+    comp00 : Σ 𝕎· (λ w2' → #APPLY F (#upd r (seq2list s (suc n))) #⇓ #NUM m0 from w1 to w2'
+                    × getT 0 r₀ w0 ≡ getT 0 r w2')
+    comp00 = differ⇓APPLY-upd can gc ⌜ F ⌝ ⌜ seq2list s (suc n) ⌝ (CTerm.closed (seq2list s (suc n))) (#¬Names-seq2list s (suc n)) nnF r₀ r
+               (#loop𝕎 w F (#NUM (suc n)) (seq2list s (suc n))) w0
+               (#loop𝕎 w F (#NUM 0) f) m0 compat₀ compat comp0
+
+    w2 : 𝕎·
+    w2 = fst comp00
+
+    comp01 : #APPLY F (#upd r (seq2list s (suc n))) #⇓ #NUM m0 from w1 to w2
+    comp01 = fst (snd comp00)
+
+    gt01 : getT 0 r₀ w0 ≡ getT 0 r w2
+    gt01 = snd (snd comp00)
 
     ltsn : ¬ j < (suc n)
     ltsn = snd (snd (snd (snd (snd inv))))
 
-    c : Σ ℕ (λ k' → steps k' (⌜ #APPLY F (#upd r (seq2list s (suc n))) ⌝ , chooseT r w N0) ≡ (NUM k , w'))
+    c : Σ ℕ (λ k' → steps k' (⌜ #APPLY F (#upd r (seq2list s (suc n))) ⌝ , w1) ≡ (NUM k , w'))
     c = updSeq-steps-NUM
           cn gc r s (suc n) (fst ca2)
           ⌜ #APPLY F (#upd r f) ⌝ ⌜ #APPLY F (#upd r (seq2list s (suc n))) ⌝
@@ -478,8 +522,9 @@ noInfPath kb cn can exb gc i w r P T F p0 tyn nty prest tyt nnF compat F∈ p co
           (#updSeq-APPLY-upd r s (suc n) F nnF)
           (snd ca2) ish
 
-    eqw' : w0 ≡ w'
-    eqw' = steps→≡𝕎 (chooseT r w N0) w0 w' ⌜ #APPLY F (#upd r (seq2list s (suc n))) ⌝ (NUM m0) (NUM k) (fst comp0) (fst c) tt tt (snd comp0) (snd c)
+    eqw' : w2 ≡ w'
+    eqw' = steps→≡𝕎 w1 w2 w' ⌜ #APPLY F (#upd r (seq2list s (suc n))) ⌝ (NUM m0) (NUM k) (fst comp01) (fst c) tt tt
+                     (snd comp01) {--(snd comp0)--} (snd c)
 
 
 FunBarP : Term → Term
@@ -525,7 +570,7 @@ sem : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-cho
       → isType i w T
       → compatible· r w Res⊤
       → ∈Type i w (#FunBarP T) F
-      → ∈Type i w (#IndBar T) (#APPLY2 (#loop r F) (#NUM 0) #INIT)
+      → ∈Type i w (#IndBar T) (#APPLY2 (#loop F) (#NUM 0) #INIT)
 sem kb cn can exb gc i w r P T F {--nnF--} p0 prest tyn nty tyt compat F∈P = concl
   where
     nnF  : #¬Names F
@@ -534,22 +579,22 @@ sem kb cn can exb gc i w r P T F {--nnF--} p0 prest tyn nty tyt compat F∈P = c
     F∈ : ∈Type i w (#FunBar T) F
     F∈ = equalInType-TPURE→ F∈P
 
-    co : ∈Type i w (#CoIndBar T) (#APPLY2 (#loop r F) (#NUM 0) #INIT)
-    co = coSem can gc kb cn i w r P T F (#NUM 0) #INIT refl refl nnF prest tyn nty tyt compat F∈
+    co : ∈Type i w (#CoIndBar T) (#APPLY2 (#loop F) (#NUM 0) #INIT)
+    co = coSem can gc kb cn i w P T F (#NUM 0) #INIT refl refl nnF prest tyn nty tyt F∈
                (NUM-equalInType-NAT! i w 0) (LAM0∈NAT→T i w P T p0 nty tyt prest) --(LAM0∈BAIRE i w)
 
-    concl : ∈Type i w (#IndBar T) (#APPLY2 (#loop r F) (#NUM 0) #INIT)
+    concl : ∈Type i w (#IndBar T) (#APPLY2 (#loop F) (#NUM 0) #INIT)
     concl with EM {∃𝕎 w (λ w' _ → Σ (path i w' #IndBarB (#IndBarC T))
-                                   (λ p → correctPath {i} {w'} {#IndBarB} {#IndBarC T} (#APPLY2 (#loop r F) (#NUM 0) #INIT) p
+                                   (λ p → correctPath {i} {w'} {#IndBarB} {#IndBarC T} (#APPLY2 (#loop F) (#NUM 0) #INIT) p
                                          × isInfPath {i} {w'} {#IndBarB} {#IndBarC T} p))}
     ... | yes (w' , e' , p , cor , inf) = c
       where
-        c : ∈Type i w (#IndBar T) (#APPLY2 (#loop r F) (#NUM 0) #INIT)
-        c = ⊥-elim (noInfPath kb cn can exb gc i w' r P T F p0 tyn nty prest (eqTypes-mon (uni i) tyt w' e') nnF (⊑-compatible· e' compat) (equalInType-mon F∈ w' e') p cor inf )
-    ... | no pp = CoIndBar2IndBar i w T (#APPLY2 (#loop r F) (#NUM 0) #INIT) tyt cond co
+        c : ∈Type i w (#IndBar T) (#APPLY2 (#loop F) (#NUM 0) #INIT)
+        c = ⊥-elim (noInfPath kb cn can exb gc i w' P T F p0 tyn nty prest (eqTypes-mon (uni i) tyt w' e') nnF (equalInType-mon F∈ w' e') p cor inf )
+    ... | no pp = CoIndBar2IndBar i w T (#APPLY2 (#loop F) (#NUM 0) #INIT) tyt cond co
       where
         cond : ∀𝕎 w (λ w' _ → (p : path i w' #IndBarB (#IndBarC T))
-               → correctPath {i} {w'} {#IndBarB} {#IndBarC T} (#APPLY2 (#loop r F) (#NUM 0) #INIT) p
+               → correctPath {i} {w'} {#IndBarB} {#IndBarC T} (#APPLY2 (#loop F) (#NUM 0) #INIT) p
                → isFinPath {i} {w'} {#IndBarB} {#IndBarC T} p)
         cond w1 e1 p cor with EM {Lift {0ℓ} (lsuc(L)) (isFinPath {i} {w1} {#IndBarB} {#IndBarC T} p)}
         ... | yes qq = lower qq
@@ -564,7 +609,7 @@ sem kb cn can exb gc i w r P T F {--nnF--} p0 prest tyn nty tyt compat F∈P = c
 
 Plan:
 
-(1) Prove by coinduction that if (F ∈ FunBar) then (loop r F ∈ CoIndBar) which does not require to proving termination
+(1) Prove by coinduction that if (F ∈ FunBar) then (loop F ∈ CoIndBar) which does not require to proving termination
     - see coSem, which uses coSemM [DONE]
 (2) We now have an inhabitant (t ∈ CoIndBar). Using classical logic, either t's paths are all finite,
     or it has an inifite path.

@@ -968,11 +968,6 @@ BAIRE!2𝕊-equalInBAIRE kb {i} {w} {f} f∈ =
     neq = kb (equalInType-NAT→ i w _ _ (equalInType-FUN→ F∈ w (⊑-refl· w) (#upd r (seq2list s k)) (#upd r (seq2list s k)) ∈B)) w (⊑-refl· w)
 
 
-#¬Names-seq2list : (s : 𝕊) (k : ℕ) → #¬Names (seq2list s k)
-#¬Names-seq2list s 0 = refl
-#¬Names-seq2list s (suc k) rewrite ¬names-shiftUp 0 ⌜ seq2list s k ⌝ | #¬Names-seq2list s k = refl
-
-
 #APPLY-MSEQ-NUM#⇛! : (s : 𝕊) (k : ℕ) (w : 𝕎·)
                       → #APPLY (#MSEQ s) (#NUM k) #⇛! #NUM (s k) at w
 #APPLY-MSEQ-NUM#⇛! s k w w1 e1 = lift (2 , refl)
