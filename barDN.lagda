@@ -11,6 +11,7 @@ open import Data.Nat.Induction
 open import Relation.Binary.PropositionalEquality hiding ([_]) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
 open import Relation.Nullary
 open import Data.Empty
+open import Axiom.ExcludedMiddle
 
 
 open import util
@@ -20,6 +21,7 @@ open import world
 
 -- double negation
 module barDN {L : Level} (W : PossibleWorlds {L})
+             (EM : ExcludedMiddle L)
        where
 
 open import worldDef{L}(W)
@@ -41,7 +43,8 @@ DN𝔹bars w bar = ∀𝕎 w (λ w1 e1 → ¬ (¬ (Lift (lsuc(L)) (bar w1))))
 
 
 DN𝔹bars⊑ : Bars⊑ DN𝔹bars
-DN𝔹bars⊑ {w1} {w2} e bar h w3 e3 q = h w3 (⊑-trans· e e3) (λ (lift z) → q (lift (w3 , z , ⊑-refl· w3 , e3)))
+DN𝔹bars⊑ {w1} {w2} e bar h w3 e3 q =
+  h w3 (⊑-trans· e e3) (λ (lift z) → q (lift (w3 , z , ⊑-refl· w3 , e3)))
 
 
 DN𝔹bars∩ : Bars∩ DN𝔹bars
@@ -57,8 +60,11 @@ DN𝔹barsFam2 : BarsFam2 DN𝔹bars
 DN𝔹barsFam2 {w} b G i w1 e1 h = {!!}
 
 
+-- Is EM necessary? But then classically, this is a Kripke modality.
 O𝔹bars∃ : Bars∃ DN𝔹bars
-O𝔹bars∃ {w} {bar} bars ext = {!!}
+O𝔹bars∃ {w} {bar} bars ext with EM {bar w}
+... | yes p = w , ⊑-refl· w , p
+... | no p = ⊥-elim (bars w (⊑-refl· w) (λ (lift z) → p z))
 
 
 DN𝔹BarsProps : BarsProps
