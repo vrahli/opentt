@@ -77,6 +77,7 @@ open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 --open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
 --open import freezeDef(W)(C)(K)(P)(G)(N)(F)
+open import encodeDef(EC)
 
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
@@ -550,7 +551,7 @@ TBac₀₀⇛!¬0→ w n m k nk0 comp =
 
 -- MOVE - this belongs somewhere else
 terminatesℕ : 𝕎· → ℕ → Set(lsuc L)
-terminatesℕ w n = terminates w (ℕ→Term n)
+terminatesℕ w n = terminates w (decode· n)
 
 
 terminates-mon : {w1 w2 : 𝕎·} (n : Term)
@@ -567,7 +568,7 @@ terminates-mon {w1} {w2} n e (v , isv , comp) = v , isv , ∀𝕎-mon e comp
 →¬terminatesℕ i w1 w2 n a b e h tm =
   equalInType-NEG→
     h w2 e #AX #AX
-    (→equalInTypeTERM (Mod.∀𝕎-□ M (λ w' e' → n , #⇛-refl w' (#NUM n) , #⇛-refl w' (#NUM n) , terminates-mon (ℕ→Term n) e' tm)))
+    (→equalInTypeTERM (Mod.∀𝕎-□ M (λ w' e' → n , #⇛-refl w' (#NUM n) , #⇛-refl w' (#NUM n) , terminates-mon (decode· n) e' tm)))
 
 
 -- We turned the NAT into a NAT! here because otherwise we can't reduce TBac₀₀ in the hypothesis using #⇛T-equalInType as it requires #⇛!
@@ -669,25 +670,25 @@ equalInType-TOBac₀₀→ i w n m a b m∈ h =
 
 
 -- MOVE to encoding
-CTerm→ℕ : CTerm → ℕ
-CTerm→ℕ t = Term→ℕ ⌜ t ⌝
+#encode : CTerm → ℕ
+#encode t = encode· ⌜ t ⌝
 
 
 -- TODO and MOVE to encoding
-ℕ→Term→ℕ : (t : Term) → ℕ→Term (Term→ℕ t) ≡ t
-ℕ→Term→ℕ t = {!!}
+ℕ→Term→ℕ : (t : Term) → decode· (encode· t) ≡ t
+ℕ→Term→ℕ t = decode-encode· t {!!}
 
 
 -- MOVE - this belongs somewhere else
 terminatesℕ-Term→ℕ→ : (w : 𝕎·) (t : Term)
-                         → terminatesℕ w (Term→ℕ t)
+                         → terminatesℕ w (encode· t)
                          → terminates w t
 terminatesℕ-Term→ℕ→ w t term rewrite ℕ→Term→ℕ t = term
 
 
 -- MOVE - this belongs somewhere else
 ¬terminatesℕ-Term→ℕ→ : (w : 𝕎·) (t : Term)
-                         → ¬ terminatesℕ w (Term→ℕ t)
+                         → ¬ terminatesℕ w (encode· t)
                          → ¬ terminates w t
 ¬terminatesℕ-Term→ℕ→ w t term rewrite ℕ→Term→ℕ t = term
 
@@ -711,12 +712,12 @@ steps-ENC→ : (n : ℕ) (w1 w2 : 𝕎·) (t v : Term)
               → steps n (ENC t , w1) ≡ (v , w2)
               → isValue v
               → Σ ℕ (λ k →
-                     APPLY t (NUM (Term→ℕ (ENC t))) ⇓ NUM k from w1 to w2
+                     APPLY t (NUM (encode· (ENC t))) ⇓ NUM k from w1 to w2
                      × k > 0
                      × ENC t ⇓ N0 from w1 to w2
                      × v ≡ N0)
 steps-ENC→ 0 w1 w2 t v comp isv rewrite sym (pair-inj₁ comp) = ⊥-elim isv
-steps-ENC→ (suc n) w1 w2 t v comp isv with IFEQ→hasValue-decomp n (APPLY t (NUM (Term→ℕ (ENC t)))) N0 BOT N0 v w1 w2 comp isv
+steps-ENC→ (suc n) w1 w2 t v comp isv with IFEQ→hasValue-decomp n (APPLY t (NUM (encode· (ENC t)))) N0 BOT N0 v w1 w2 comp isv
 ... | (k1 , k2 , k3 , wa , wb , i , j , c1 , c2 , inj₁ (x , y) , c4)
   rewrite stepsVal N0 wa k2 tt | x | sym (NUMinj (pair-inj₁ c2)) | pair-inj₂ c2
   = ⊥-elim (BOT-does-not-converge k3 v wb w2 y isv)
@@ -730,7 +731,7 @@ ENC⇓from-val→ : (w1 w2 : 𝕎·) (t v : Term)
                  → ENC t ⇓ v from w1 to w2
                  → isValue v
                  → Σ ℕ (λ k →
-                     APPLY t (NUM (Term→ℕ (ENC t))) ⇓ NUM k from w1 to w2
+                     APPLY t (NUM (encode· (ENC t))) ⇓ NUM k from w1 to w2
                      × k > 0
                      × ENC t ⇓ N0 from w1 to w2
                      × v ≡ N0)
@@ -741,7 +742,7 @@ ENC⇓val→ : (w : 𝕎·) (t v : Term)
              → ENC t ⇓ v at w
              → isValue v
              → Σ ℕ (λ k →
-                  APPLY t (NUM (Term→ℕ (ENC t))) ⇓ NUM k at w
+                  APPLY t (NUM (encode· (ENC t))) ⇓ NUM k at w
                   × k > 0
                   × ENC t ⇓ N0 at w
                   × v ≡ N0)
@@ -773,30 +774,30 @@ ENC⇛val→ : (w : 𝕎·) (t v : Term)
              → ENC t ⇛ v at w
              → isValue v
              → Σ ℕ (λ k →
-                  APPLY t (NUM (Term→ℕ (ENC t))) ⇛ NUM k at w
+                  APPLY t (NUM (encode· (ENC t))) ⇛ NUM k at w
                   × k > 0
                   × ENC t ⇛ N0 at w
                   × v ≡ N0)
 ENC⇛val→ w t v cf comp isv with ENC⇓val→ w t v (lower (comp w (⊑-refl· w))) isv
 ... | (k , c1 , gt0 , c2 , eqv) = k , c1' , gt0 , c2'  , eqv
   where
-    c1' : APPLY t (NUM (Term→ℕ (ENC t))) ⇛ NUM k at w
-    c1' = ⇓→⇛ w (APPLY t (NUM (Term→ℕ (ENC t)))) (NUM k) (NUM (fst (cf (Term→ℕ (ENC t))))) tt tt (snd (cf (Term→ℕ (ENC t)))) c1
+    c1' : APPLY t (NUM (encode· (ENC t))) ⇛ NUM k at w
+    c1' = ⇓→⇛ w (APPLY t (NUM (encode· (ENC t)))) (NUM k) (NUM (fst (cf (encode· (ENC t))))) tt tt (snd (cf (encode· (ENC t)))) c1
 
     c2' : ENC t ⇛ N0 at w
     c2' rewrite eqv = comp
 
 
 ENC⇓¬val→ : (w : 𝕎·) (t : Term) (k : ℕ)
-             → APPLY t (NUM (Term→ℕ (ENC t))) ⇛ NUM k at w
+             → APPLY t (NUM (encode· (ENC t))) ⇛ NUM k at w
              → ¬ terminates w (ENC t)
-             → APPLY t (NUM (Term→ℕ (ENC t))) ⇛ N0 at w
+             → APPLY t (NUM (encode· (ENC t))) ⇛ N0 at w
 ENC⇓¬val→ w t k ca nterm with k ≟ 0
 ... | yes p rewrite p = ca
 ... | no p = ⊥-elim (nterm (N0 , tt , comp1))
   where
     comp2 : ENCr t ⇛ N0 at w
-    comp2 = ⇛-trans (IFEQ⇛₃ {w} {k} {0} {APPLY t (NUM (Term→ℕ (ENC t)))} {NUM 0} {BOT} {NUM 0} ca (compAllRefl (NUM 0) w)) (IFEQ⇛¬= p)
+    comp2 = ⇛-trans (IFEQ⇛₃ {w} {k} {0} {APPLY t (NUM (encode· (ENC t)))} {NUM 0} {BOT} {NUM 0} ca (compAllRefl (NUM 0) w)) (IFEQ⇛¬= p)
 
     comp1 : ENC t ⇛ N0 at w
     comp1 = ⇛-trans {w} {ENC t} {ENCr t} {N0} (λ w1 e1 → lift (1 , refl)) comp2
@@ -863,7 +864,7 @@ equalInType-BAIRE→∈Type-NAT i j {w1} {w2} {f₁} {f₂} n e f∈ =
             ... | inj₂ (k , gt0 , x , y) = k , x
 
             ε : ℕ
-            ε = CTerm→ℕ (#ENC f₁)
+            ε = #encode (#ENC f₁)
 
             concl : ((#APPLY f₁ (#NUM ε) #⇛ #N0 at w2 × terminatesℕ w2 ε)
                      ⊎ Σ ℕ (λ k → (0 < k) × (#APPLY f₁ (#NUM ε) #⇛ #NUM k at w2) × (¬ terminatesℕ w2 ε)))
