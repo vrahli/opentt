@@ -674,23 +674,23 @@ equalInType-TOBac₀₀→ i w n m a b m∈ h =
 #encode t = encode· ⌜ t ⌝
 
 
--- TODO and MOVE to encoding
-ℕ→Term→ℕ : (t : Term) → decode· (encode· t) ≡ t
-ℕ→Term→ℕ t = decode-encode· t {!!}
+-- MOVE
+Noseq : Term → Set
+Noseq t = noseq t ≡ true
 
 
 -- MOVE - this belongs somewhere else
-terminatesℕ-Term→ℕ→ : (w : 𝕎·) (t : Term)
+terminatesℕ-Term→ℕ→ : (w : 𝕎·) (t : Term) (ns : Noseq t)
                          → terminatesℕ w (encode· t)
                          → terminates w t
-terminatesℕ-Term→ℕ→ w t term rewrite ℕ→Term→ℕ t = term
+terminatesℕ-Term→ℕ→ w t ns term rewrite decode-encode· t ns = term
 
 
 -- MOVE - this belongs somewhere else
-¬terminatesℕ-Term→ℕ→ : (w : 𝕎·) (t : Term)
+¬terminatesℕ-Term→ℕ→ : (w : 𝕎·) (t : Term) (ns : Noseq t)
                          → ¬ terminatesℕ w (encode· t)
                          → ¬ terminates w t
-¬terminatesℕ-Term→ℕ→ w t term rewrite ℕ→Term→ℕ t = term
+¬terminatesℕ-Term→ℕ→ w t ns term rewrite decode-encode· t ns = term
 
 
 -- MOVE to utils
@@ -872,7 +872,7 @@ equalInType-BAIRE→∈Type-NAT i j {w1} {w2} {f₁} {f₂} n e f∈ =
             concl (inj₁ (comp , term)) = <-irrefl (sym ce3) ce2
               where
                 term' : terminates w2 ⌜ #ENC f₁ ⌝
-                term' = terminatesℕ-Term→ℕ→ w2 ⌜ #ENC f₁ ⌝ term
+                term' = terminatesℕ-Term→ℕ→ w2 ⌜ #ENC f₁ ⌝ {!!} term
 
                 v : Term
                 v = fst term'
@@ -897,7 +897,7 @@ equalInType-BAIRE→∈Type-NAT i j {w1} {w2} {f₁} {f₂} n e f∈ =
             concl (inj₂ (k , ltk , comp , nterm)) = <-irrefl (sym eq0) ltk
               where
                 nterm' : ¬ terminates w2 ⌜ #ENC f₁ ⌝
-                nterm' = ¬terminatesℕ-Term→ℕ→ w2 ⌜ #ENC f₁ ⌝ nterm
+                nterm' = ¬terminatesℕ-Term→ℕ→ w2 ⌜ #ENC f₁ ⌝ {!!} nterm
 
                 ca : #APPLY f₁ (#NUM ε) #⇛ #N0 at w2
                 ca = ENC⇓¬val→ w2 ⌜ f₁ ⌝ k comp nterm'
