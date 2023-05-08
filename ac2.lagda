@@ -811,16 +811,58 @@ equalInType-BAIRE→∈Type-NAT i j {w1} {w2} {f₁} {f₂} n e f∈ =
     h = equalInType-FUN→ (→≡equalInType #BAIRE≡ f∈) w2 e (#NUM n) (#NUM n) (NUM-equalInType-NAT i w2 n)
 
 
-¬AC₀₀-right-TO : (kb : K□) (i : ℕ) (w : 𝕎·) → ¬ inhType (suc i) w (#AC₀₀-right TOac₀₀)
+-- MOVE
+equalInType-ISECT→ₗ :  {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
+                        → equalInType n w (#ISECT A B) a b
+                        → equalInType n w A a b
+equalInType-ISECT→ₗ {n} {w} {A} {B} {a} {b} a∈ =
+  equalInType-local (Mod.∀𝕎-□Func M (λ w1 e1 (u , v) → u) (equalInType-ISECT→ {n} {w} {A} {B} {a} {b} a∈))
+
+
+-- MOVE
+equalInType-ISECT→ᵣ :  {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
+                        → equalInType n w (#ISECT A B) a b
+                        → equalInType n w B a b
+equalInType-ISECT→ᵣ {n} {w} {A} {B} {a} {b} a∈ =
+  equalInType-local (Mod.∀𝕎-□Func M (λ w1 e1 (u , v) → v) (equalInType-ISECT→ {n} {w} {A} {B} {a} {b} a∈))
+
+
+-- MOVE
+equalInType-NOSEQ→¬Seqₗ : {n : ℕ} {w : 𝕎·} {a b : CTerm}
+                         → equalInType n w #NOSEQ a b
+                         → #¬Seq a
+equalInType-NOSEQ→¬Seqₗ {n} {w} {a} {b} a∈ =
+  lower (Mod.□-const M (Mod.∀𝕎-□Func M (λ w1 e1 (lift (ns1 , ns2 , nn1 , nn2)) → lift ns1) (equalInType-NOSEQ→ a∈)))
+
+
+#NSBAIRE : CTerm
+#NSBAIRE = #ISECT #BAIRE #NOSEQ
+
+
+∈NSBAIRE→∈BAIRE : {i : ℕ} {w : 𝕎·} {a b : CTerm}
+                     → equalInType i w #NSBAIRE a b
+                     → equalInType i w #BAIRE a b
+∈NSBAIRE→∈BAIRE {i} {w} {a} {b} a∈ = equalInType-ISECT→ₗ a∈
+
+
+#nsAC₀₀-right-SUM : CTerm → CTerm
+#nsAC₀₀-right-SUM R = #SUM #NSBAIRE (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))
+
+
+#nsAC₀₀-right : CTerm → CTerm
+#nsAC₀₀-right R = #SQUASH (#nsAC₀₀-right-SUM R)
+
+
+¬AC₀₀-right-TO : (kb : K□) (i : ℕ) (w : 𝕎·) → ¬ inhType (suc i) w (#nsAC₀₀-right TOac₀₀)
 ¬AC₀₀-right-TO kb i w (s , s∈) =
   lower (Mod.□-const M (Mod.∀𝕎-□Func M aw1 (equalInType-SQUASH→ s∈)))
   where
-    aw1 : ∀𝕎 w (λ w' e' → inhType (suc i) w' (#AC₀₀-right-SUM TOac₀₀)
+    aw1 : ∀𝕎 w (λ w' e' → inhType (suc i) w' (#nsAC₀₀-right-SUM TOac₀₀)
                          → Lift (lsuc L) ⊥)
     aw1 w1 e1 (p , p∈) =
-      Mod.□-const M (Mod.∀𝕎-□Func M aw2 (equalInType-SUM→ {suc i} {w1} {#BAIRE} {#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ TOac₀₀ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))} p∈))
+      Mod.□-const M (Mod.∀𝕎-□Func M aw2 (equalInType-SUM→ {suc i} {w1} {#NSBAIRE} {#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ TOac₀₀ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))} p∈))
       where
-        aw2 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType (suc i) w' #BAIRE)
+        aw2 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType (suc i) w' #NSBAIRE)
                                        (λ a b ea →  equalInType (suc i) w' (sub0 a (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ TOac₀₀ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))))
                                        w' p p
                               → Lift (lsuc L) ⊥)
@@ -841,7 +883,7 @@ equalInType-BAIRE→∈Type-NAT i j {w1} {w2} {f₁} {f₂} n e f∈ =
             q∈3 w3 e3 n =
               equalInType-TOBac₀₀→
                 i w3 n (#APPLY f₁ (#NUM n)) (#APPLY q₁ (#NUM n)) (#APPLY q₂ (#NUM n))
-                (equalInType-BAIRE→∈Type-NAT (suc i) i n e3 f∈)
+                (equalInType-BAIRE→∈Type-NAT (suc i) i n e3 (∈NSBAIRE→∈BAIRE f∈))
                 (q∈2 w3 e3 n)
 
             q∈4 : (n : ℕ) → ((#APPLY f₁ (#NUM n) #⇛ #N0 at w2 × terminatesℕ w2 n)
@@ -853,6 +895,9 @@ equalInType-BAIRE→∈Type-NAT i j {w1} {w2} {f₁} {f₂} n e f∈ =
             ... | inj₁ (x , y) = 0 , x
             ... | inj₂ (k , gt0 , x , y) = k , x
 
+            nsf₁ : #¬Seq f₁
+            nsf₁ = equalInType-NOSEQ→¬Seqₗ (equalInType-ISECT→ᵣ f∈)
+
             ε : ℕ
             ε = #encode (#ENC f₁)
 
@@ -862,7 +907,7 @@ equalInType-BAIRE→∈Type-NAT i j {w1} {w2} {f₁} {f₂} n e f∈ =
             concl (inj₁ (comp , term)) = <-irrefl (sym ce3) ce2
               where
                 term' : terminates w2 ⌜ #ENC f₁ ⌝
-                term' = terminatesℕ-Term→ℕ→ w2 ⌜ #ENC f₁ ⌝ {!!} term
+                term' = terminatesℕ-Term→ℕ→ w2 ⌜ #ENC f₁ ⌝ nsf₁ term
 
                 v : Term
                 v = fst term'
@@ -887,7 +932,7 @@ equalInType-BAIRE→∈Type-NAT i j {w1} {w2} {f₁} {f₂} n e f∈ =
             concl (inj₂ (k , ltk , comp , nterm)) = <-irrefl (sym eq0) ltk
               where
                 nterm' : ¬ terminates w2 ⌜ #ENC f₁ ⌝
-                nterm' = ¬terminatesℕ-Term→ℕ→ w2 ⌜ #ENC f₁ ⌝ {!!} nterm
+                nterm' = ¬terminatesℕ-Term→ℕ→ w2 ⌜ #ENC f₁ ⌝ nsf₁ nterm
 
                 ca : #APPLY f₁ (#NUM ε) #⇛ #N0 at w2
                 ca = ENC⇓¬val→ w2 ⌜ f₁ ⌝ k comp nterm'
