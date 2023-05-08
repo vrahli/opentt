@@ -111,6 +111,7 @@ abstract
   shiftUp-shiftNameUp c d (TCONST t) rewrite shiftUp-shiftNameUp c d t = refl
   shiftUp-shiftNameUp c d (SUBSING t) rewrite shiftUp-shiftNameUp c d t = refl
   shiftUp-shiftNameUp c d PURE = refl
+  shiftUp-shiftNameUp c d NOSEQ = refl
   shiftUp-shiftNameUp c d (TERM t) rewrite shiftUp-shiftNameUp c d t = refl
   shiftUp-shiftNameUp c d (ENC t) rewrite shiftUp-shiftNameUp c d t = refl
   shiftUp-shiftNameUp c d (DUM t) rewrite shiftUp-shiftNameUp c d t = refl
@@ -186,6 +187,7 @@ abstract
   renn-shiftNameUp n1 n2 (TCONST t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 (SUBSING t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 PURE = refl
+  renn-shiftNameUp n1 n2 NOSEQ = refl
   renn-shiftNameUp n1 n2 (TERM t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 (ENC t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 (DUM t) rewrite renn-shiftNameUp n1 n2 t = refl
@@ -263,6 +265,7 @@ abstract
   shiftNameDownUp n (TCONST t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n (SUBSING t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n PURE = refl
+  shiftNameDownUp n NOSEQ = refl
   shiftNameDownUp n (TERM t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n (ENC t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n (DUM t) rewrite shiftNameDownUp n t = refl
@@ -377,6 +380,7 @@ abstract
   ¬names-shiftUp n (TCONST a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n (SUBSING a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n PURE = refl
+  ¬names-shiftUp n NOSEQ = refl
   ¬names-shiftUp n (TERM a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n (ENC a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n (DUM a) rewrite ¬names-shiftUp n a = refl
@@ -438,6 +442,7 @@ abstract
   ¬names-shiftDown n (TCONST a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n (SUBSING a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n PURE = refl
+  ¬names-shiftDown n NOSEQ = refl
   ¬names-shiftDown n (TERM a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n (ENC a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n (DUM a) rewrite ¬names-shiftDown n a = refl
@@ -516,6 +521,7 @@ abstract
   ¬Names-subv v {a} {TCONST b} na nb = ¬Names-subv v {a} {b} na nb
   ¬Names-subv v {a} {SUBSING b} na nb = ¬Names-subv v {a} {b} na nb
   ¬Names-subv v {a} {PURE} na nb = refl
+  ¬Names-subv v {a} {NOSEQ} na nb = refl
   ¬Names-subv v {a} {TERM b} na nb = ¬Names-subv v {a} {b} na nb
   ¬Names-subv v {a} {ENC b} na nb = nb --¬Names-subv v {a} {b} na nb
   ¬Names-subv v {a} {DUM b} na nb = ¬Names-subv v {a} {b} na nb
@@ -534,6 +540,275 @@ abstract
   where
     na' : ¬Names (shiftUp 0 a)
     na' rewrite ¬names-shiftUp 0 a = na
+
+
+abstract
+  noseq-shiftUp : (n : ℕ) (a : Term) → noseq (shiftUp n a) ≡ noseq a
+  noseq-shiftUp n (VAR x) = refl
+  noseq-shiftUp n NAT = refl
+  noseq-shiftUp n QNAT = refl
+  noseq-shiftUp n TNAT = refl
+  noseq-shiftUp n (LT a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
+  noseq-shiftUp n (QLT a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
+  noseq-shiftUp n (NUM x) = refl
+  noseq-shiftUp n (IFLT a a₁ a₂ a₃) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ | noseq-shiftUp n a₂ | noseq-shiftUp n a₃ = refl
+  noseq-shiftUp n (IFEQ a a₁ a₂ a₃) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ | noseq-shiftUp n a₂ | noseq-shiftUp n a₃ = refl
+  noseq-shiftUp n (SUC a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (PI a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc n) a₁ = refl
+  noseq-shiftUp n (LAMBDA a) rewrite noseq-shiftUp (suc n) a = refl
+  noseq-shiftUp n (APPLY a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
+  noseq-shiftUp n (FIX a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (LET a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc n) a₁ = refl
+  noseq-shiftUp n (WT a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc n) a₁ = refl
+  noseq-shiftUp n (SUP a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
+  --noseq-shiftUp n (DSUP a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc (suc n)) a₁ = refl
+  noseq-shiftUp n (WREC a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc (suc (suc n))) a₁ = refl
+  noseq-shiftUp n (MT a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc n) a₁ = refl
+  --noseq-shiftUp n (MSUP a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
+  --noseq-shiftUp n (DMSUP a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc (suc n)) a₁ = refl
+  noseq-shiftUp n (SUM a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc n) a₁ = refl
+  noseq-shiftUp n (PAIR a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
+  noseq-shiftUp n (SPREAD a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc (suc n)) a₁ = refl
+  noseq-shiftUp n (SET a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc n) a₁ = refl
+  noseq-shiftUp n (ISECT a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
+  noseq-shiftUp n (TUNION a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc n) a₁ = refl
+  noseq-shiftUp n (UNION a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
+  noseq-shiftUp n (QTUNION a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
+  noseq-shiftUp n (INL a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (INR a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (DECIDE a a₁ a₂) rewrite noseq-shiftUp n a | noseq-shiftUp (suc n) a₁ | noseq-shiftUp (suc n) a₂ = refl
+  noseq-shiftUp n (EQ a a₁ a₂) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ | noseq-shiftUp n a₂ = refl
+  noseq-shiftUp n (EQB a a₁ a₂ a₃) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ | noseq-shiftUp n a₂ | noseq-shiftUp n a₃ = refl
+  noseq-shiftUp n AX = refl
+  noseq-shiftUp n FREE = refl
+  noseq-shiftUp n (MSEQ x) = refl
+  noseq-shiftUp n (MAPP s a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (CS x) = refl
+  noseq-shiftUp n (NAME x) = refl
+  noseq-shiftUp n (FRESH a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (LOAD a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (CHOOSE a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
+  noseq-shiftUp n (TSQUASH a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (TTRUNC a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (TCONST a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (SUBSING a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n PURE = refl
+  noseq-shiftUp n NOSEQ = refl
+  noseq-shiftUp n (TERM a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (ENC a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (DUM a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (FFDEFS a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
+  noseq-shiftUp n (UNIV x) = refl
+  noseq-shiftUp n (LIFT a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (LOWER a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (SHRINK a) rewrite noseq-shiftUp n a = refl
+
+
+abstract
+  noseq-shiftDown : (n : ℕ) (a : Term) → noseq (shiftDown n a) ≡ noseq a
+  noseq-shiftDown n (VAR x) = refl
+  noseq-shiftDown n NAT = refl
+  noseq-shiftDown n QNAT = refl
+  noseq-shiftDown n TNAT = refl
+  noseq-shiftDown n (LT a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
+  noseq-shiftDown n (QLT a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
+  noseq-shiftDown n (NUM x) = refl
+  noseq-shiftDown n (IFLT a a₁ a₂ a₃) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ | noseq-shiftDown n a₂ | noseq-shiftDown n a₃ = refl
+  noseq-shiftDown n (IFEQ a a₁ a₂ a₃) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ | noseq-shiftDown n a₂ | noseq-shiftDown n a₃ = refl
+  noseq-shiftDown n (SUC a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (PI a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc n) a₁ = refl
+  noseq-shiftDown n (LAMBDA a) rewrite noseq-shiftDown (suc n) a = refl
+  noseq-shiftDown n (APPLY a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
+  noseq-shiftDown n (FIX a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (LET a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc n) a₁ = refl
+  noseq-shiftDown n (WT a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc n) a₁ = refl
+  noseq-shiftDown n (SUP a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
+  --noseq-shiftDown n (DSUP a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc (suc n)) a₁ = refl
+  noseq-shiftDown n (WREC a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc (suc (suc n))) a₁ = refl
+  noseq-shiftDown n (MT a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc n) a₁ = refl
+  --noseq-shiftDown n (MSUP a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
+  --noseq-shiftDown n (DMSUP a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc (suc n)) a₁ = refl
+  noseq-shiftDown n (SUM a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc n) a₁ = refl
+  noseq-shiftDown n (PAIR a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
+  noseq-shiftDown n (SPREAD a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc (suc n)) a₁ = refl
+  noseq-shiftDown n (SET a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc n) a₁ = refl
+  noseq-shiftDown n (ISECT a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
+  noseq-shiftDown n (TUNION a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc n) a₁ = refl
+  noseq-shiftDown n (UNION a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
+  noseq-shiftDown n (QTUNION a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
+  noseq-shiftDown n (INL a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (INR a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (DECIDE a a₁ a₂) rewrite noseq-shiftDown n a | noseq-shiftDown (suc n) a₁ | noseq-shiftDown (suc n) a₂ = refl
+  noseq-shiftDown n (EQ a a₁ a₂) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ | noseq-shiftDown n a₂ = refl
+  noseq-shiftDown n (EQB a a₁ a₂ a₃) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ | noseq-shiftDown n a₂ | noseq-shiftDown n a₃ = refl
+  noseq-shiftDown n AX = refl
+  noseq-shiftDown n FREE = refl
+  noseq-shiftDown n (MSEQ x) = refl
+  noseq-shiftDown n (MAPP s a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (CS x) = refl
+  noseq-shiftDown n (NAME x) = refl
+  noseq-shiftDown n (FRESH a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (LOAD a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (CHOOSE a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
+  noseq-shiftDown n (TSQUASH a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (TTRUNC a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (TCONST a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (SUBSING a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n PURE = refl
+  noseq-shiftDown n NOSEQ = refl
+  noseq-shiftDown n (TERM a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (ENC a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (DUM a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (FFDEFS a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
+  noseq-shiftDown n (UNIV x) = refl
+  noseq-shiftDown n (LIFT a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (LOWER a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (SHRINK a) rewrite noseq-shiftDown n a = refl
+
+
+→¬Seq-shiftUp : (n : ℕ) {a : Term}
+                   → ¬Seq a
+                   → ¬Seq (shiftUp n a)
+→¬Seq-shiftUp n {a} nn rewrite noseq-shiftUp n a = nn
+
+
+abstract
+  noseq-shiftNameUp : (n : ℕ) (a : Term) → noseq (shiftNameUp n a) ≡ noseq a
+  noseq-shiftNameUp n (VAR x) = refl
+  noseq-shiftNameUp n NAT = refl
+  noseq-shiftNameUp n QNAT = refl
+  noseq-shiftNameUp n TNAT = refl
+  noseq-shiftNameUp n (LT a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (QLT a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (NUM x) = refl
+  noseq-shiftNameUp n (IFLT a a₁ a₂ a₃) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ | noseq-shiftNameUp n a₂ | noseq-shiftNameUp n a₃ = refl
+  noseq-shiftNameUp n (IFEQ a a₁ a₂ a₃) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ | noseq-shiftNameUp n a₂ | noseq-shiftNameUp n a₃ = refl
+  noseq-shiftNameUp n (SUC a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (PI a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (LAMBDA a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (APPLY a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (FIX a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (LET a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (WT a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (SUP a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  --noseq-shiftNameUp n (DSUP a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp (suc n) a₁ = refl
+  noseq-shiftNameUp n (WREC a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (MT a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  --noseq-shiftNameUp n (MSUP a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  --noseq-shiftNameUp n (DMSUP a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp (suc n) a₁ = refl
+  noseq-shiftNameUp n (SUM a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (PAIR a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (SPREAD a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (SET a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (ISECT a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (TUNION a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (UNION a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (QTUNION a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (INL a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (INR a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (DECIDE a a₁ a₂) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ | noseq-shiftNameUp n a₂ = refl
+  noseq-shiftNameUp n (EQ a a₁ a₂) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ | noseq-shiftNameUp n a₂ = refl
+  noseq-shiftNameUp n (EQB a a₁ a₂ a₃) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ | noseq-shiftNameUp n a₂ | noseq-shiftNameUp n a₃ = refl
+  noseq-shiftNameUp n AX = refl
+  noseq-shiftNameUp n FREE = refl
+  noseq-shiftNameUp n (MSEQ x) = refl
+  noseq-shiftNameUp n (MAPP s a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (CS x) = refl
+  noseq-shiftNameUp n (NAME x) = refl
+  noseq-shiftNameUp n (FRESH a) rewrite noseq-shiftNameUp (suc n) a = refl
+  noseq-shiftNameUp n (LOAD a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (CHOOSE a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (TSQUASH a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (TTRUNC a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (TCONST a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (SUBSING a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n PURE = refl
+  noseq-shiftNameUp n NOSEQ = refl
+  noseq-shiftNameUp n (TERM a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (ENC a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (DUM a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (FFDEFS a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (UNIV x) = refl
+  noseq-shiftNameUp n (LIFT a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (LOWER a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (SHRINK a) rewrite noseq-shiftNameUp n a = refl
+
+
+abstract
+  ¬Seq-subv : (v : Var) {a b : Term}
+              → noseq a ≡ true
+              → noseq b ≡ true
+              → noseq (subv v a b) ≡ true
+  ¬Seq-subv v {a} {VAR x} na nb with x ≟ v
+  ... | yes _ = na
+  ... | no _ = refl
+  ¬Seq-subv v {a} {NAT} na nb = nb
+  ¬Seq-subv v {a} {QNAT} na nb = nb
+  ¬Seq-subv v {a} {TNAT} na nb = nb
+  ¬Seq-subv v {a} {LT b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {QLT b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {NUM x} na nb = refl
+  ¬Seq-subv v {a} {IFLT b b₁ b₂ b₃} na nb = →∧4≡true (¬Seq-subv v {a} {b} na (∧≡true→1-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→2-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb)) (¬Seq-subv v {a} {b₂} na (∧≡true→3-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb)) (¬Seq-subv v {a} {b₃} na (∧≡true→4-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb))
+  ¬Seq-subv v {a} {IFEQ b b₁ b₂ b₃} na nb = →∧4≡true (¬Seq-subv v {a} {b} na (∧≡true→1-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→2-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb)) (¬Seq-subv v {a} {b₂} na (∧≡true→3-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb)) (¬Seq-subv v {a} {b₃} na (∧≡true→4-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb))
+  ¬Seq-subv v {a} {SUC b} na nb = ¬Seq-subv v {a} {b} na nb
+  ¬Seq-subv v {a} {PI b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc v) {shiftUp 0 a} {b₁} (→¬Seq-shiftUp 0 {a} na) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {LAMBDA b} na nb = ¬Seq-subv (suc v) {shiftUp 0 a} {b} (→¬Seq-shiftUp 0 {a} na) nb
+  ¬Seq-subv v {a} {APPLY b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {FIX b} na nb = ¬Seq-subv v {a} {b} na nb
+  ¬Seq-subv v {a} {LET b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc v) {shiftUp 0 a} {b₁} (→¬Seq-shiftUp 0 {a} na) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {WT b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc v) {shiftUp 0 a} {b₁} (→¬Seq-shiftUp 0 {a} na) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {SUP b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  --¬Seq-subv v {a} {DSUP b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc (suc v)) {shiftUp 0 (shiftUp 0 a)} {b₁} (→¬Seq-shiftUp 0 {shiftUp 0 a} (→¬Seq-shiftUp 0 {a} na)) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {WREC b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc (suc (suc v))) {shiftUp 0 (shiftUp 0 (shiftUp 0 a))} {b₁} (→¬Seq-shiftUp 0 {shiftUp 0 (shiftUp 0 a)} (→¬Seq-shiftUp 0 {shiftUp 0 a} (→¬Seq-shiftUp 0 {a} na))) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {MT b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc v) {shiftUp 0 a} {b₁} (→¬Seq-shiftUp 0 {a} na) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  --¬Seq-subv v {a} {MSUP b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  --¬Seq-subv v {a} {DMSUP b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc (suc v)) {shiftUp 0 (shiftUp 0 a)} {b₁} (→¬Seq-shiftUp 0 {shiftUp 0 a} (→¬Seq-shiftUp 0 {a} na)) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {SUM b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc v) {shiftUp 0 a} {b₁} (→¬Seq-shiftUp 0 {a} na) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {PAIR b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {SPREAD b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc (suc v)) {shiftUp 0 (shiftUp 0 a)} {b₁} (→¬Seq-shiftUp 0 {shiftUp 0 a} (→¬Seq-shiftUp 0 {a} na)) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {SET b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc v) {shiftUp 0 a} {b₁} (→¬Seq-shiftUp 0 {a} na) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {ISECT b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {TUNION b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc v) {shiftUp 0 a} {b₁} (→¬Seq-shiftUp 0 {a} na) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {UNION b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {QTUNION b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {INL b} na nb = ¬Seq-subv v {a} {b} na nb
+  ¬Seq-subv v {a} {INR b} na nb = ¬Seq-subv v {a} {b} na nb
+  ¬Seq-subv v {a} {DECIDE b b₁ b₂} na nb = →∧3≡true (¬Seq-subv v {a} {b} na (∧≡true→1-3 {noseq b} {noseq b₁} {noseq b₂} nb)) (¬Seq-subv (suc v) {shiftUp 0 a} {b₁} (→¬Seq-shiftUp 0 {a} na) (∧≡true→2-3 {noseq b} {noseq b₁} {noseq b₂} nb)) (¬Seq-subv (suc v) {shiftUp 0 a} {b₂} (→¬Seq-shiftUp 0 {a} na) (∧≡true→3-3 {noseq b} {noseq b₁} {noseq b₂} nb))
+  ¬Seq-subv v {a} {EQ b b₁ b₂} na nb = →∧3≡true (¬Seq-subv v {a} {b} na (∧≡true→1-3 {noseq b} {noseq b₁} {noseq b₂} nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→2-3 {noseq b} {noseq b₁} {noseq b₂} nb)) (¬Seq-subv v {a} {b₂} na (∧≡true→3-3 {noseq b} {noseq b₁} {noseq b₂} nb))
+  ¬Seq-subv v {a} {EQB b b₁ b₂ b₃} na nb = →∧4≡true (¬Seq-subv v {a} {b} na (∧≡true→1-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→2-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb)) (¬Seq-subv v {a} {b₂} na (∧≡true→3-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb)) (¬Seq-subv v {a} {b₃} na (∧≡true→4-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb))
+  ¬Seq-subv v {a} {AX} na nb = refl
+  ¬Seq-subv v {a} {FREE} na nb = refl
+  ¬Seq-subv v {a} {CS x} na nb = refl
+  ¬Seq-subv v {a} {NAME x} na nb = refl
+  ¬Seq-subv v {a} {FRESH b} na nb = ¬Seq-subv v {shiftNameUp 0 a} {b} (trans (noseq-shiftNameUp 0 a) na) nb
+  ¬Seq-subv v {a} {LOAD b} na nb = nb
+  ¬Seq-subv v {a} {MSEQ x} na nb = nb
+  ¬Seq-subv v {a} {MAPP s b} na nb = nb --¬Seq-subv v {a} {b} na nb
+  ¬Seq-subv v {a} {CHOOSE b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {TSQUASH b} na nb = ¬Seq-subv v {a} {b} na nb
+  ¬Seq-subv v {a} {TTRUNC b} na nb = ¬Seq-subv v {a} {b} na nb
+  ¬Seq-subv v {a} {TCONST b} na nb = ¬Seq-subv v {a} {b} na nb
+  ¬Seq-subv v {a} {SUBSING b} na nb = ¬Seq-subv v {a} {b} na nb
+  ¬Seq-subv v {a} {PURE} na nb = refl
+  ¬Seq-subv v {a} {NOSEQ} na nb = refl
+  ¬Seq-subv v {a} {TERM b} na nb = ¬Seq-subv v {a} {b} na nb
+  ¬Seq-subv v {a} {ENC b} na nb = nb --¬Seq-subv v {a} {b} na nb
+  ¬Seq-subv v {a} {DUM b} na nb = ¬Seq-subv v {a} {b} na nb
+  ¬Seq-subv v {a} {FFDEFS b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {UNIV x} na nb = refl
+  ¬Seq-subv v {a} {LIFT b} na nb = ¬Seq-subv v {a} {b} na nb
+  ¬Seq-subv v {a} {LOWER b} na nb = ¬Seq-subv v {a} {b} na nb
+  ¬Seq-subv v {a} {SHRINK b} na nb = ¬Seq-subv v {a} {b} na nb
+
+
+¬Seq-sub : {a b : Term}
+             → ¬Seq a
+             → ¬Seq b
+             → ¬Seq (sub a b)
+¬Seq-sub {a} {b} na nb rewrite noseq-shiftDown 0 (subv 0 (shiftUp 0 a) b) = ¬Seq-subv 0 {shiftUp 0 a} {b} na' nb
+  where
+    na' : ¬Seq (shiftUp 0 a)
+    na' rewrite noseq-shiftUp 0 a = na
 
 
 ⇓from-to-refl : (T : Term) (w : 𝕎·) → T ⇓ T from w to w

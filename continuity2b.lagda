@@ -144,6 +144,7 @@ data updCtxt2 (name : Name) (f : Term) : Term → Set where
   updCtxt2-TCONST  : (a : Term) → updCtxt2 name f a → updCtxt2 name f (TCONST a)
   updCtxt2-SUBSING : (a : Term) → updCtxt2 name f a → updCtxt2 name f (SUBSING a)
   updCtxt2-PURE    : updCtxt2 name f PURE
+  updCtxt2-NOSEQ   : updCtxt2 name f NOSEQ
   updCtxt2-TERM    : (a : Term) → updCtxt2 name f a → updCtxt2 name f (TERM a)
   updCtxt2-ENC     : (a : Term) → updCtxt2 name f a → updCtxt2 name f (ENC a)
   updCtxt2-DUM     : (a : Term) → updCtxt2 name f a → updCtxt2 name f (DUM a)
@@ -282,6 +283,7 @@ abstract
   →updCtxt2-shiftUp v {name} {f} cf {.(TCONST a)} (updCtxt2-TCONST a upd₁) = updCtxt2-TCONST _ (→updCtxt2-shiftUp v cf upd₁)
   →updCtxt2-shiftUp v {name} {f} cf {.(SUBSING a)} (updCtxt2-SUBSING a upd₁) = updCtxt2-SUBSING _ (→updCtxt2-shiftUp v cf upd₁)
   →updCtxt2-shiftUp v {name} {f} cf {.PURE} updCtxt2-PURE = updCtxt2-PURE
+  →updCtxt2-shiftUp v {name} {f} cf {.NOSEQ} updCtxt2-NOSEQ = updCtxt2-NOSEQ
   →updCtxt2-shiftUp v {name} {f} cf {.(TERM a)} (updCtxt2-TERM a upd₁) = updCtxt2-TERM _ (→updCtxt2-shiftUp v cf upd₁)
   →updCtxt2-shiftUp v {name} {f} cf {.(ENC a)} (updCtxt2-ENC a upd₁) = updCtxt2-ENC _ upd₁
   →updCtxt2-shiftUp v {name} {f} cf {.(DUM a)} (updCtxt2-DUM a upd₁) = updCtxt2-DUM _ (→updCtxt2-shiftUp v cf upd₁)
@@ -346,6 +348,7 @@ abstract
   →updCtxt2-shiftDown v {name} {f} cf {.(TCONST a)} (updCtxt2-TCONST a upd₁) = updCtxt2-TCONST _ (→updCtxt2-shiftDown v cf upd₁)
   →updCtxt2-shiftDown v {name} {f} cf {.(SUBSING a)} (updCtxt2-SUBSING a upd₁) = updCtxt2-SUBSING _ (→updCtxt2-shiftDown v cf upd₁)
   →updCtxt2-shiftDown v {name} {f} cf {.PURE} updCtxt2-PURE = updCtxt2-PURE
+  →updCtxt2-shiftDown v {name} {f} cf {.NOSEQ} updCtxt2-NOSEQ = updCtxt2-NOSEQ
   →updCtxt2-shiftDown v {name} {f} cf {.(TERM a)} (updCtxt2-TERM a upd₁) = updCtxt2-TERM _ (→updCtxt2-shiftDown v cf upd₁)
   →updCtxt2-shiftDown v {name} {f} cf {.(ENC a)} (updCtxt2-ENC a upd₁) = updCtxt2-ENC _ upd₁
   →updCtxt2-shiftDown v {name} {f} cf {.(DUM a)} (updCtxt2-DUM a upd₁) = updCtxt2-DUM _ (→updCtxt2-shiftDown v cf upd₁)
@@ -426,6 +429,7 @@ abstract
   →updCtxt2-shiftNameUp v {name} {f} cf {.(TCONST a)} (updCtxt2-TCONST a upd₁) = updCtxt2-TCONST _ (→updCtxt2-shiftNameUp v cf upd₁)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(SUBSING a)} (updCtxt2-SUBSING a upd₁) = updCtxt2-SUBSING _ (→updCtxt2-shiftNameUp v cf upd₁)
   →updCtxt2-shiftNameUp v {name} {f} cf {.PURE} updCtxt2-PURE = updCtxt2-PURE
+  →updCtxt2-shiftNameUp v {name} {f} cf {.NOSEQ} updCtxt2-NOSEQ = updCtxt2-NOSEQ
   →updCtxt2-shiftNameUp v {name} {f} cf {.(TERM a)} (updCtxt2-TERM a upd₁) = updCtxt2-TERM _ (→updCtxt2-shiftNameUp v cf upd₁)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(ENC a)} (updCtxt2-ENC a upd₁) = updCtxt2-ENC _ (→updCtxt2-shiftNameUp v cf upd₁)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(DUM a)} (updCtxt2-DUM a upd₁) = updCtxt2-DUM _ (→updCtxt2-shiftNameUp v cf upd₁)
@@ -511,6 +515,7 @@ abstract
   updCtxt2-subv {name} {f} cf v {.(TCONST a)} {b} (updCtxt2-TCONST a upda) updb = updCtxt2-TCONST _ (updCtxt2-subv cf v upda updb)
   updCtxt2-subv {name} {f} cf v {.(SUBSING a)} {b} (updCtxt2-SUBSING a upda) updb = updCtxt2-SUBSING _ (updCtxt2-subv cf v upda updb)
   updCtxt2-subv {name} {f} cf v {.PURE} {b} updCtxt2-PURE updb = updCtxt2-PURE
+  updCtxt2-subv {name} {f} cf v {.NOSEQ} {b} updCtxt2-NOSEQ updb = updCtxt2-NOSEQ
   updCtxt2-subv {name} {f} cf v {.(TERM a)} {b} (updCtxt2-TERM a upda) updb = updCtxt2-TERM _ (updCtxt2-subv cf v upda updb)
   updCtxt2-subv {name} {f} cf v {.(ENC a)} {b} (updCtxt2-ENC a upda) updb = updCtxt2-ENC _ upda
   updCtxt2-subv {name} {f} cf v {.(DUM a)} {b} (updCtxt2-DUM a upda) updb = updCtxt2-DUM _ (updCtxt2-subv cf v upda updb)
@@ -658,6 +663,7 @@ abstract
   updCtxt2-refl name f (DUM t) nn = updCtxt2-DUM _ (updCtxt2-refl name f t nn)
   updCtxt2-refl name f (FFDEFS t t₁) nn = updCtxt2-FFDEFS _ _ (updCtxt2-refl name f t (¬∈++2→¬∈1 nn)) (updCtxt2-refl name f t₁ (¬∈++2→¬∈2 nn))
   updCtxt2-refl name f PURE nn = updCtxt2-PURE
+  updCtxt2-refl name f NOSEQ nn = updCtxt2-NOSEQ
   updCtxt2-refl name f (TERM t) nn = updCtxt2-TERM _ (updCtxt2-refl name f t nn)
   updCtxt2-refl name f (ENC t) nn = updCtxt2-ENC _ (updCtxt2-refl name f t nn)
   updCtxt2-refl name f (UNIV x) nn = updCtxt2-UNIV _
@@ -742,6 +748,7 @@ abstract
   updCtxt2-shiftNameUp→ v {name} {f} cf {DUM a} (updCtxt2-DUM .(shiftNameUp v a) upd₁) = updCtxt2-DUM _ (updCtxt2-shiftNameUp→ v cf upd₁)
   updCtxt2-shiftNameUp→ v {name} {f} cf {FFDEFS a a₁} (updCtxt2-FFDEFS .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-FFDEFS _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
   updCtxt2-shiftNameUp→ v {name} {f} cf {PURE} upd = updCtxt2-PURE
+  updCtxt2-shiftNameUp→ v {name} {f} cf {NOSEQ} upd = updCtxt2-NOSEQ
   updCtxt2-shiftNameUp→ v {name} {f} cf {TERM a} (updCtxt2-TERM .(shiftNameUp v a) upd₁) = updCtxt2-TERM _ (updCtxt2-shiftNameUp→ v cf upd₁)
   updCtxt2-shiftNameUp→ v {name} {f} cf {ENC a} (updCtxt2-ENC .(shiftNameUp v a) upd₁) = updCtxt2-ENC _ (updCtxt2-shiftNameUp→ v cf upd₁)
   updCtxt2-shiftNameUp→ v {name} {f} cf {UNIV x} upd = updCtxt2-UNIV _
@@ -2214,6 +2221,7 @@ abstract
   updCtxt2-renn name n m f .(TCONST a) diff1 diff2 nf cf (updCtxt2-TCONST a upd₁) = updCtxt2-TCONST _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
   updCtxt2-renn name n m f .(SUBSING a) diff1 diff2 nf cf (updCtxt2-SUBSING a upd₁) = updCtxt2-SUBSING _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
   updCtxt2-renn name n m f .PURE diff1 diff2 nf cf updCtxt2-PURE = updCtxt2-PURE
+  updCtxt2-renn name n m f .NOSEQ diff1 diff2 nf cf updCtxt2-NOSEQ = updCtxt2-NOSEQ
   updCtxt2-renn name n m f .(TERM a) diff1 diff2 nf cf (updCtxt2-TERM a upd₁) = updCtxt2-TERM _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
   updCtxt2-renn name n m f .(ENC a) diff1 diff2 nf cf (updCtxt2-ENC a upd₁) = updCtxt2-ENC _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
   updCtxt2-renn name n m f .(DUM a) diff1 diff2 nf cf (updCtxt2-DUM a upd₁) = updCtxt2-DUM _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)

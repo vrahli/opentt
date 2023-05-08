@@ -78,7 +78,7 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (TEQrefl-equalTypes)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)

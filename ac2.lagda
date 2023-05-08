@@ -549,11 +549,6 @@ TBac₀₀⇛!¬0→ w n m k nk0 comp =
     (#APPLY-#APPLY-TBac₀₀⇛!¬0 w n k nk0)
 
 
--- MOVE - this belongs somewhere else
-terminatesℕ : 𝕎· → ℕ → Set(lsuc L)
-terminatesℕ w n = terminates w (decode· n)
-
-
 terminates-mon : {w1 w2 : 𝕎·} (n : Term)
                  → w1 ⊑· w2
                  → terminates w1 n
@@ -674,20 +669,15 @@ equalInType-TOBac₀₀→ i w n m a b m∈ h =
 #encode t = encode· ⌜ t ⌝
 
 
--- MOVE
-Noseq : Term → Set
-Noseq t = noseq t ≡ true
-
-
 -- MOVE - this belongs somewhere else
-terminatesℕ-Term→ℕ→ : (w : 𝕎·) (t : Term) (ns : Noseq t)
+terminatesℕ-Term→ℕ→ : (w : 𝕎·) (t : Term) (ns : ¬Seq t)
                          → terminatesℕ w (encode· t)
                          → terminates w t
 terminatesℕ-Term→ℕ→ w t ns term rewrite decode-encode· t ns = term
 
 
 -- MOVE - this belongs somewhere else
-¬terminatesℕ-Term→ℕ→ : (w : 𝕎·) (t : Term) (ns : Noseq t)
+¬terminatesℕ-Term→ℕ→ : (w : 𝕎·) (t : Term) (ns : ¬Seq t)
                          → ¬ terminatesℕ w (encode· t)
                          → ¬ terminates w t
 ¬terminatesℕ-Term→ℕ→ w t ns term rewrite decode-encode· t ns = term

@@ -396,6 +396,14 @@ data ≤Type where
 
 
 
+<Type-NOSEQ : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} {eqt : ≡Types u w T1 T2}
+            {u' : 𝕌} {w' : 𝕎·} {U1 U2 : CTerm} {x₁ : U1 #⇛ #NOSEQ at w'} {x₂ : U2 #⇛ #NOSEQ at w'}
+            → <Type {u} {w} {T1} {T2} eqt {u'} {w'} {U1} {U2} (EQTNOSEQ x₁ x₂) → ⊥
+<Type-NOSEQ {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<Type1 .eqt .(EQTNOSEQ x₁ x₂) ())
+<Type-NOSEQ {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<TypeS .eqt eqt2 .(EQTNOSEQ x₁ x₂) ltt ())
+
+
+
 
 <Type-TERM : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} {eqt : ≡Types u w T1 T2}
              {u' : 𝕌} {w' : 𝕎·} {U1 U2 : CTerm}
@@ -976,6 +984,8 @@ ind<Type P ind {u} {w0} {X1} {X2} eqt =
         ind' w1 e1 {u'} {w'} {T1'} {T2'} eqt' ltt = indLtt (eqtA w1 e1) eqt' ltt
 
     indLtt {u} {w} {T1} {T2} (EQTPURE c₁ c₂) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-PURE ltt)
+
+    indLtt {u} {w} {T1} {T2} (EQTNOSEQ c₁ c₂) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-NOSEQ ltt)
 
     indLtt {u} {w} {T1} {T2} (EQTTERM t1 t2 c₁ c₂ x) {u'} {w'} {A1} {A2} eqt' ltt = ⊥-elim (<Type-TERM ltt)
 

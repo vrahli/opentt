@@ -330,14 +330,17 @@ abstract
           g4 : getT 0 name1 (chooseT name1 w3 (NUM m)) ≡ getT 0 name2 (chooseT name2 w3' (NUM m))
           g4 rewrite gc0 name1 w3 m (⊑-compatible· e13 compat1) | gc0 name2 w3' m (⊑-compatible· e13' compat2) = refl
 
-          h6 : steps k4 (APPLY f (NUM m) , chooseT name2 w3' (NUM m)) ≡ (v , chooseT name2 w3' (NUM m)) × chooseT name1 w3 (NUM m) ≡ w2 × ¬Names v
+          h6 : steps k4 (APPLY f (NUM m) , chooseT name2 w3' (NUM m)) ≡ (v , chooseT name2 w3' (NUM m))
+               × chooseT name1 w3 (NUM m) ≡ w2
+               × ¬Names v
+               × (¬Seq (APPLY f (NUM m)) → ¬Seq v)
           h6 = ¬Names→steps k4 (chooseT name1 w3 (NUM m)) w2 (chooseT name2 w3' (NUM m)) (APPLY f (NUM m)) v (→∧≡true {¬names f} {¬names (NUM m)} nnf refl) comp5c
 
           comph' : APPLY (upd name2 f) b ⇓ v from w1' to chooseT name2 w3' (NUM m)
           comph' = ⇓-trans₂ compg' (k4 , fst h6)
 
           g5 : getT 0 name1 w2 ≡ getT 0 name2 (chooseT name2 w3' (NUM m))
-          g5 = ≡→getT≡ (chooseT name1 w3 (NUM m)) w2 0 name1 (getT 0 name2 (chooseT name2 w3' (NUM m))) (proj₁ (snd h6)) g4
+          g5 = ≡→getT≡ (chooseT name1 w3 (NUM m)) w2 0 name1 (getT 0 name2 (chooseT name2 w3' (NUM m))) (fst (snd h6)) g4
 
           nnv : ¬Names v
           nnv = steps→¬Names k4 (chooseT name1 w3 (NUM m)) w2 (APPLY f (NUM m)) v comp5c (→∧≡true {¬names f} {¬names (NUM m)} nnf refl)
@@ -357,6 +360,7 @@ abstract
           comp5c = trans (≡𝕎→≡steps k4 (APPLY f (NUM m)) (trans (trans eqw35 eqw56) eqw64)) comp5b
 
           h6 : steps k4 (APPLY f (NUM m) , w3') ≡ (v , w3') × w3 ≡ w2 × ¬Names v
+               × (¬Seq (APPLY f (NUM m)) → ¬Seq v)
           h6 = ¬Names→steps k4 w3 w2 w3' (APPLY f (NUM m)) v (→∧≡true {¬names f} {¬names (NUM m)} nnf refl) comp5c
 
           compg' : APPLY (upd name2 f) b ⇓ v from w1' to w3'

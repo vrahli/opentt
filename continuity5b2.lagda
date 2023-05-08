@@ -298,6 +298,7 @@ abstract
   updRel2-renn {name} {f} {g} {r} {.(TCONST a₁)} {.(TCONST a₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-TCONST a₁ a₂ u) = updRel2-TCONST _ _ (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)
   updRel2-renn {name} {f} {g} {r} {.(SUBSING a₁)} {.(SUBSING a₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-SUBSING a₁ a₂ u) = updRel2-SUBSING _ _ (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)
   updRel2-renn {name} {f} {g} {r} {.PURE} {.PURE} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm updRel2-PURE = updRel2-PURE
+  updRel2-renn {name} {f} {g} {r} {.NOSEQ} {.NOSEQ} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm updRel2-NOSEQ = updRel2-NOSEQ
   updRel2-renn {name} {f} {g} {r} {.(TERM a₁)} {.(TERM a₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-TERM a₁ a₂ u) = updRel2-TERM _ _ (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)
   updRel2-renn {name} {f} {g} {r} {.(ENC a)} {.(ENC a)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-ENC a u) = {!!} --updRel2-ENC _ (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)
   updRel2-renn {name} {f} {g} {r} {.(DUM a₁)} {.(DUM a₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-DUM a₁ a₂ u) = updRel2-DUM _ _ (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)
@@ -562,6 +563,7 @@ step-upto𝕎 cc name (SUBSING a) b w1 w2 w1' r nna nnw idom comp upw rewrite pa
 step-upto𝕎 cc name (DUM a) b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (FFDEFS a a₁) b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name PURE b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom
+step-upto𝕎 cc name NOSEQ b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (TERM a) b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (UNIV x) b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (LIFT a) b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom

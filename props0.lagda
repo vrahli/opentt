@@ -423,6 +423,9 @@ eqTypes-mon u {A} {B} {w1} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) w2 ext =
 eqTypes-mon u {A} {B} {w1} (EQTPURE x x₁) w2 ext =
   EQTPURE (⇛-mon ext x) (⇛-mon ext x₁)
 
+eqTypes-mon u {A} {B} {w1} (EQTNOSEQ x x₁) w2 ext =
+  EQTNOSEQ (⇛-mon ext x) (⇛-mon ext x₁)
+
 eqTypes-mon u {A} {B} {w1} (EQTTERM t1 t2 c₁ c₂ x) w2 ext =
   EQTTERM t1 t2 (⇛-mon ext c₁) (⇛-mon ext c₂) (Mod.↑□ M x ext)
 
@@ -543,6 +546,7 @@ abstract
   --if-equalInType-EQ u w T a b t₁ t₂ (EQTDUM A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqDUM (compAllVal x₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQTPURE x x₁ , eqi) = ⊥-elim (EQneqPURE (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTNOSEQ x x₁ , eqi) = ⊥-elim (EQneqNOSEQ (compAllVal x₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQTTERM t1 t2 c₁ c₂ x , eqi) = ⊥-elim (EQneqTERM (compAllVal c₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQTUNIV i p c₁ c₂ , eqi) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt)) --Bar.∀𝕎-□Func barI z2 x
   {--  where

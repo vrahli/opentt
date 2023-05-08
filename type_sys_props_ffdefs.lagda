@@ -137,6 +137,9 @@ FFDEFSneqSUBSING {a} {b} {c} ()
 FFDEFSneqPURE : {a b : Term} → ¬ FFDEFS a b ≡ PURE
 FFDEFSneqPURE {a} {b} ()
 
+FFDEFSneqNOSEQ : {a b : Term} → ¬ FFDEFS a b ≡ NOSEQ
+FFDEFSneqNOSEQ {a} {b} ()
+
 FFDEFSneqTERM : {a b c : Term} → ¬ FFDEFS a b ≡ TERM c
 FFDEFSneqTERM {a} {b} {c} ()
 
@@ -211,6 +214,7 @@ typeSysConds-FFDEFS-ttrans u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTT
 typeSysConds-FFDEFS-ttrans u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-ttrans u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-ttrans u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTPURE y y₁) = ⊥-elim (FFDEFSneqPURE (⇛-val-det tt tt x₁ y))
+typeSysConds-FFDEFS-ttrans u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTNOSEQ y y₁) = ⊥-elim (FFDEFSneqNOSEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-ttrans u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTERM z₁ z₂ y y₁ y₂) = ⊥-elim (FFDEFSneqTERM (⇛-val-det tt tt x₁ y))
 --typeSysConds-FFDEFS-ttrans u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-ttrans u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)
@@ -329,6 +333,7 @@ typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTR
 typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTPURE y y₁) f g eqi = ⊥-elim (FFDEFSneqPURE (⇛-val-det tt tt x y))
+typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (FFDEFSneqNOSEQ (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (FFDEFSneqTERM (⇛-val-det tt tt x y))
 --typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)f g eqi
@@ -397,6 +402,7 @@ typeSysConds-FFDEFS-extl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTR
 typeSysConds-FFDEFS-extl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTPURE y y₁) f g eqi = ⊥-elim (FFDEFSneqPURE (⇛-val-det tt tt x y₁))
+typeSysConds-FFDEFS-extl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (FFDEFSneqNOSEQ (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (FFDEFSneqTERM (⇛-val-det tt tt x y₁))
 --typeSysConds-FFDEFS-extl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)f g eqi
@@ -472,6 +478,7 @@ typeSysConds-FFDEFS-extr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTR
 typeSysConds-FFDEFS-extr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTPURE y y₁) f g eqi = ⊥-elim (FFDEFSneqPURE (⇛-val-det tt tt x₁ y₁))
+typeSysConds-FFDEFS-extr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (FFDEFSneqNOSEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (FFDEFSneqTERM (⇛-val-det tt tt x₁ y₁))
 --typeSysConds-FFDEFS-extr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)f g eqi
@@ -548,6 +555,7 @@ typeSysConds-FFDEFS-extr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTR
 typeSysConds-FFDEFS-extr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTPURE y y₁) f g eqi = ⊥-elim (FFDEFSneqPURE (⇛-val-det tt tt x₁ y))
+typeSysConds-FFDEFS-extr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (FFDEFSneqNOSEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (FFDEFSneqTERM (⇛-val-det tt tt x₁ y))
 --typeSysConds-FFDEFS-extr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)f g eqi
@@ -621,6 +629,7 @@ typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQ
 typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTPURE y y₁) f g eqi = ⊥-elim (FFDEFSneqPURE (⇛-val-det tt tt x y))
+typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (FFDEFSneqNOSEQ (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (FFDEFSneqTERM (⇛-val-det tt tt x y))
 --typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x y))
 typeSysConds-FFDEFS-extrevl1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)f g eqi
@@ -700,6 +709,7 @@ typeSysConds-FFDEFS-extrevl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQ
 typeSysConds-FFDEFS-extrevl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extrevl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extrevl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTPURE y y₁) f g eqi = ⊥-elim (FFDEFSneqPURE (⇛-val-det tt tt x y₁))
+typeSysConds-FFDEFS-extrevl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (FFDEFSneqNOSEQ (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extrevl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (FFDEFSneqTERM (⇛-val-det tt tt x y₁))
 --typeSysConds-FFDEFS-extrevl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x y₁))
 typeSysConds-FFDEFS-extrevl2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)f g eqi
@@ -789,6 +799,7 @@ typeSysConds-FFDEFS-extrevr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQ
 typeSysConds-FFDEFS-extrevr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extrevr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extrevr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTPURE y y₁) f g eqi = ⊥-elim (FFDEFSneqPURE (⇛-val-det tt tt x₁ y₁))
+typeSysConds-FFDEFS-extrevr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (FFDEFSneqNOSEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extrevr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (FFDEFSneqTERM (⇛-val-det tt tt x₁ y₁))
 --typeSysConds-FFDEFS-extrevr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-FFDEFS-extrevr1 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C(EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)f g eqi
@@ -877,6 +888,7 @@ typeSysConds-FFDEFS-extrevr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQ
 typeSysConds-FFDEFS-extrevr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extrevr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extrevr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTPURE y y₁) f g eqi = ⊥-elim (FFDEFSneqPURE (⇛-val-det tt tt x₁ y))
+typeSysConds-FFDEFS-extrevr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (FFDEFSneqNOSEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extrevr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (FFDEFSneqTERM (⇛-val-det tt tt x₁ y))
 --typeSysConds-FFDEFS-extrevr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-FFDEFS-extrevr2 u w A B A1 B1 x1 x2 x x₁ eqta exta inda eqx C (EQFFDEFS A3 A4 u1 u2 y y₁ eqtA extA eqx₁)f g eqi
@@ -965,6 +977,7 @@ eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTTRUNC A
 eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTPURE x x₁) ei = ⊥-elim (FFDEFSneqPURE (⇛-val-det tt tt c₁ x))
+eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTNOSEQ x x₁) ei = ⊥-elim (FFDEFSneqNOSEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTTERM z₁ z₂ x x₁ x₂) ei = ⊥-elim (FFDEFSneqTERM (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTDUM A3 A4 x x₁ eqta₁) ei = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQFFDEFS A3 A4 z1 z2 x x₁ eqta₁ exta₁ eqx) ei
@@ -1048,6 +1061,7 @@ eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTTRUNC A3 A4
 eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ei ext = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei ext = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTPURE x x₁) ei ext = ⊥-elim (FFDEFSneqPURE (⇛-val-det tt tt c₁ x))
+eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTNOSEQ x x₁) ei ext = ⊥-elim (FFDEFSneqNOSEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTTERM z₁ z₂ x x₁ x₂) ei ext = ⊥-elim (FFDEFSneqTERM (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTDUM A3 A4 x x₁ eqta₁) ei ext = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQFFDEFS A3 A4 z1 z2 x x₁ eqta₁ exta₁ eqx) ei ext
@@ -1134,6 +1148,7 @@ eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTTRU
 eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTPURE x x₁) ei = ⊥-elim (FFDEFSneqPURE (⇛-val-det tt tt c₁ x))
+eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTNOSEQ x x₁) ei = ⊥-elim (FFDEFSneqNOSEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTTERM z₁ z₂ x x₁ x₂) ei = ⊥-elim (FFDEFSneqTERM (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQTDUM A3 A4 x x₁ eqta₁) ei = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS-rev u w A B A1 B1 x1 x2 a b eqta exta inda c₁ c₂ (EQFFDEFS A3 A4 z1 z2 x x₁ eqta₁ exta₁ eqx) ei
@@ -1209,6 +1224,7 @@ eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTTRUNC A
 eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ext ei = ⊥-elim (FFDEFSneqTCONST (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ext ei = ⊥-elim (FFDEFSneqSUBSING (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTPURE x x₁) ext ei = ⊥-elim (FFDEFSneqPURE (⇛-val-det tt tt c₁ x))
+eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTNOSEQ x x₁) ext ei = ⊥-elim (FFDEFSneqNOSEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTTERM z₁ z₂ x x₁ x₂) ext ei = ⊥-elim (FFDEFSneqTERM (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQTDUM A3 A4 x x₁ eqta₁) ext ei = ⊥-elim (FFDEFSneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-FFDEFS-rev2 u w A B A1 B1 x1 x2 a b eqta exta c₁ c₂ (EQFFDEFS A3 A4 z1 z2 x x₁ eqta₁ exta₁ eqx) ext ei

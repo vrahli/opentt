@@ -284,6 +284,10 @@ data eqTypes u w T1 T2 where
     T1 #⇛ #PURE at w
     → T2 #⇛ #PURE at w
     → eqTypes u w T1 T2
+  EQTNOSEQ :
+    T1 #⇛ #NOSEQ at w
+    → T2 #⇛ #NOSEQ at w
+    → eqTypes u w T1 T2
   EQTTERM : (t1 t2 : CTerm)
     → T1 #⇛ #TERM t1 at w
     → T2 #⇛ #TERM t2 at w
@@ -456,9 +460,18 @@ PUREeq : per
 PUREeq t1 t2 = Lift {0ℓ} (lsuc L) (#¬Names t1 × #¬Names t2)
 
 
+-- we add the #¬Names constraints, otherwise the type systems cannot preserve even #⇛!
+NOSEQeq : per
+NOSEQeq t1 t2 = Lift {0ℓ} (lsuc L) (#¬Seq t1 × #¬Seq t2 × #¬Names t1 × #¬Names t2)
+
+
 -- Similar to hasValue in terms2, but here we use ⇛ instead of ⇓
 terminates : 𝕎· → Term → Set(lsuc L)
 terminates w t = Σ Term (λ v → isValue v × t ⇛ v at w)
+
+
+terminatesℕ : 𝕎· → ℕ → Set(lsuc L)
+terminatesℕ w n = terminates w (decode· n)
 
 
 TERMeq : wper
@@ -466,7 +479,7 @@ TERMeq w t1 t2 =
   Σ ℕ (λ n →
     t1 #⇛ #NUM n at w
     × t2 #⇛ #NUM n at w
-    × terminates w (decode· n))
+    × terminatesℕ w n)
 
 
 NATeq : wper
@@ -527,6 +540,8 @@ eqInType u w (EQFFDEFS _ _ x1 _ _ _ eqtA exta _) t1 t2 =
   □· w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTPURE _ _) t1 t2 =
   □· w (λ w' e → PUREeq t1 t2)
+eqInType u w (EQTNOSEQ _ _) t1 t2 =
+  □· w (λ w' e → NOSEQeq t1 t2)
 eqInType u w (EQTTERM x1 x2 _ _ _) t1 t2 =
   □· w (λ w' e → TERMeq w' x1 x2)
 eqInType u w (EQTUNIV i p c₁ c₂) T1 T2 = snd u i p w T1 T2

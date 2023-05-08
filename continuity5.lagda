@@ -437,6 +437,7 @@ abstract
   step-updRel gc {n} {name} {f} {g} {.(TCONST a₁)} {.(TCONST a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-TCONST a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TCONST a₁ , TCONST a₂ , w1 , refl , refl , updRel-TCONST _ _ r
   step-updRel gc {n} {name} {f} {g} {.(SUBSING a₁)} {.(SUBSING a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-SUBSING a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , SUBSING a₁ , SUBSING a₂ , w1 , refl , refl , updRel-SUBSING _ _ r
   step-updRel gc {n} {name} {f} {g} {.(PURE)} {.(PURE)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-PURE) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , PURE , PURE , w1 , refl , refl , updRel-PURE
+  step-updRel gc {n} {name} {f} {g} {.(NOSEQ)} {.(NOSEQ)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-NOSEQ) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , NOSEQ , NOSEQ , w1 , refl , refl , updRel-NOSEQ
   step-updRel gc {n} {name} {f} {g} {.(TERM a₁)} {.(TERM a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-TERM a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TERM a₁ , TERM a₂ , w1 , refl , refl , updRel-TERM _ _ r
   step-updRel gc {n} {name} {f} {g} {.(ENC a)} {.(ENC a)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-ENC a r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 1 , ENCr a , ENCr a , w1 , refl , refl , updRel-ENCr r --0 , 0 , TERM a₁ , TERM a₂ , w1 , refl , refl , updRel-TERM _ _ r
   step-updRel gc {n} {name} {f} {g} {.(DUM a₁)} {.(DUM a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-DUM a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , DUM a₁ , DUM a₂ , w1 , refl , refl , updRel-DUM _ _ r
@@ -628,6 +629,7 @@ abstract
   updRel-refl {name} {f} {g} {TCONST a} nn = updRel-TCONST _ _ (updRel-refl nn)
   updRel-refl {name} {f} {g} {SUBSING a} nn = updRel-SUBSING _ _ (updRel-refl nn)
   updRel-refl {name} {f} {g} {PURE} nn = updRel-PURE
+  updRel-refl {name} {f} {g} {NOSEQ} nn = updRel-NOSEQ
   updRel-refl {name} {f} {g} {TERM a} nn = updRel-TERM _ _ (updRel-refl nn)
   updRel-refl {name} {f} {g} {ENC a} nn = updRel-ENC _ (updRel-refl nn)
   updRel-refl {name} {f} {g} {DUM a} nn = updRel-DUM _ _ (updRel-refl nn)

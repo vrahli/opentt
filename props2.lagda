@@ -85,6 +85,7 @@ open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_isect(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import type_sys_props_noseq(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_term(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -360,6 +361,7 @@ abstract
   eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTCONST A1 A2 x x₁ eqtA exta) = ⊥-elim (PIneqTCONST (compAllVal x₁ tt))
   eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTSUBSING A1 A2 x x₁ eqtA exta) = ⊥-elim (PIneqSUBSING (compAllVal x₁ tt))
   eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTPURE x x₁) = ⊥-elim (PIneqPURE (compAllVal x₁ tt))
+  eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTNOSEQ x x₁) = ⊥-elim (PIneqNOSEQ (compAllVal x₁ tt))
   eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTTERM t1 t2 x x₁ x₂) = ⊥-elim (PIneqTERM (compAllVal x₁ tt))
   eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) = ⊥-elim (PIneqFFDEFS (compAllVal x₁ tt))
   eqTypesFUN→₁ {w} {i} {A} {B} {C} {D} (EQTUNIV m p c₁ c₂) = ⊥-elim (PIneqUNIV (compAllVal c₁ tt))
@@ -452,6 +454,13 @@ eqTypesPURE← : {w : 𝕎·} {i : ℕ}
               → equalTypes i w #PURE #PURE
 eqTypesPURE← {w} {i} =
   EQTPURE (#compAllRefl #PURE w) (#compAllRefl #PURE w)
+
+
+
+eqTypesNOSEQ← : {w : 𝕎·} {i : ℕ}
+              → equalTypes i w #NOSEQ #NOSEQ
+eqTypesNOSEQ← {w} {i} =
+  EQTNOSEQ (#compAllRefl #NOSEQ w) (#compAllRefl #NOSEQ w)
 
 
 equalInType-NAT→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
@@ -629,6 +638,7 @@ abstract
   equalInTypeTSQUASH→ {w} {i} {a} {b} {A} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (TSQUASHneqTCONST (compAllVal x₁ tt))
   equalInTypeTSQUASH→ {w} {i} {a} {b} {A} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (TSQUASHneqSUBSING (compAllVal x₁ tt))
   equalInTypeTSQUASH→ {w} {i} {a} {b} {A} (EQTPURE x x₁ , eqi) = ⊥-elim (TSQUASHneqPURE (compAllVal x₁ tt))
+  equalInTypeTSQUASH→ {w} {i} {a} {b} {A} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (TSQUASHneqNOSEQ (compAllVal x₁ tt))
   equalInTypeTSQUASH→ {w} {i} {a} {b} {A} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (TSQUASHneqTERM (compAllVal x₁ tt))
   equalInTypeTSQUASH→ {w} {i} {a} {b} {A} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (TSQUASHneqFFDEFS (compAllVal x₁ tt))
   equalInTypeTSQUASH→ {w} {i} {a} {b} {A} (EQTUNIV i₁ p x x₁ , eqi) = ⊥-elim (TSQUASHneqUNIV (compAllVal x₁ tt))
@@ -676,6 +686,7 @@ abstract
   equalInTypeTTRUNC→ {w} {i} {a} {b} {A} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (TTRUNCneqTCONST (compAllVal x₁ tt))
   equalInTypeTTRUNC→ {w} {i} {a} {b} {A} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (TTRUNCneqSUBSING (compAllVal x₁ tt))
   equalInTypeTTRUNC→ {w} {i} {a} {b} {A} (EQTPURE x x₁ , eqi) = ⊥-elim (TTRUNCneqPURE (compAllVal x₁ tt))
+  equalInTypeTTRUNC→ {w} {i} {a} {b} {A} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (TTRUNCneqNOSEQ (compAllVal x₁ tt))
   equalInTypeTTRUNC→ {w} {i} {a} {b} {A} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (TTRUNCneqTERM (compAllVal x₁ tt))
   equalInTypeTTRUNC→ {w} {i} {a} {b} {A} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (TTRUNCneqFFDEFS (compAllVal x₁ tt))
   equalInTypeTTRUNC→ {w} {i} {a} {b} {A} (EQTUNIV i₁ p x x₁ , eqi) = ⊥-elim (TTRUNCneqUNIV (compAllVal x₁ tt))
@@ -759,6 +770,7 @@ abstract
       aw w1 e1 p = TCONSTeq-ext-eq (λ a1 a2 ea → eqInType→equalInType {_} {_} {_} {_} {_} {a1} {a2} (#TCONSTinj {A} {A1} (#compAllVal x tt)) (eqtA w1 e1) ea) p
   equalInTypeTCONST→ {w} {i} {a} {b} {A} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (TCONSTneqSUBSING (compAllVal x₁ tt))
   equalInTypeTCONST→ {w} {i} {a} {b} {A} (EQTPURE x x₁ , eqi) = ⊥-elim (TCONSTneqPURE (compAllVal x₁ tt))
+  equalInTypeTCONST→ {w} {i} {a} {b} {A} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (TCONSTneqNOSEQ (compAllVal x₁ tt))
   equalInTypeTCONST→ {w} {i} {a} {b} {A} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (TCONSTneqTERM (compAllVal x₁ tt))
   equalInTypeTCONST→ {w} {i} {a} {b} {A} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (TCONSTneqFFDEFS (compAllVal x₁ tt))
   equalInTypeTCONST→ {w} {i} {a} {b} {A} (EQTUNIV i₁ p x x₁ , eqi) = ⊥-elim (TCONSTneqUNIV (compAllVal x₁ tt))
@@ -798,6 +810,7 @@ abstract
   equalInTypeSUBSING→ {w} {i} {a} {b} {A} (EQTTRUNC A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SUBSINGneqTTRUNC (compAllVal x₁ tt))
   equalInTypeSUBSING→ {w} {i} {a} {b} {A} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SUBSINGneqTCONST (compAllVal x₁ tt))
   equalInTypeSUBSING→ {w} {i} {a} {b} {A} (EQTPURE x x₁ , eqi) = ⊥-elim (SUBSINGneqPURE (compAllVal x₁ tt))
+  equalInTypeSUBSING→ {w} {i} {a} {b} {A} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (SUBSINGneqNOSEQ (compAllVal x₁ tt))
   equalInTypeSUBSING→ {w} {i} {a} {b} {A} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (SUBSINGneqTERM (compAllVal x₁ tt))
   equalInTypeSUBSING→ {w} {i} {a} {b} {A} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) =
     Mod.∀𝕎-□Func M aw eqi
@@ -843,6 +856,7 @@ abstract
   equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (FFDEFSneqTCONST (compAllVal x₁ tt))
   equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (FFDEFSneqSUBSING (compAllVal x₁ tt))
   equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTPURE x x₁ , eqi) = ⊥-elim (FFDEFSneqPURE (compAllVal x₁ tt))
+  equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (FFDEFSneqNOSEQ (compAllVal x₁ tt))
   equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (FFDEFSneqTERM (compAllVal x₁ tt))
   equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {y} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi)
     rewrite sym (#FFDEFSinj1 {A} {y} {A2} {x2} (#⇛→≡ {#FFDEFS A y} {#FFDEFS A2 x2} x₁ tt))
@@ -1287,6 +1301,7 @@ abstract
   equalInType-LIFT→ n w T a b (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LIFTneqTCONST (compAllVal x₁ tt))
   equalInType-LIFT→ n w T a b (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LIFTneqSUBSING (compAllVal x₁ tt))
   equalInType-LIFT→ n w T a b (EQTPURE x x₁ , eqi) = ⊥-elim (LIFTneqPURE (compAllVal x₁ tt))
+  equalInType-LIFT→ n w T a b (EQTNOSEQ x x₁ , eqi) = ⊥-elim (LIFTneqNOSEQ (compAllVal x₁ tt))
   equalInType-LIFT→ n w T a b (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (LIFTneqTERM (compAllVal x₁ tt))
   equalInType-LIFT→ n w T a b (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (LIFTneqFFDEFS (compAllVal x₁ tt))
   equalInType-LIFT→ n w T a b (EQTUNIV i p x x₁ , eqi) = ⊥-elim (LIFTneqUNIV (compAllVal x₁ tt))
@@ -1426,6 +1441,7 @@ abstract
   equalInType-PI→ {u} {w} {A} {B} {f} {g} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (PIneqTCONST (compAllVal x₁ tt))
   equalInType-PI→ {u} {w} {A} {B} {f} {g} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (PIneqSUBSING (compAllVal x₁ tt))
   equalInType-PI→ {u} {w} {A} {B} {f} {g} (EQTPURE x x₁ , eqi) = ⊥-elim (PIneqPURE (compAllVal x₁ tt))
+  equalInType-PI→ {u} {w} {A} {B} {f} {g} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (PIneqNOSEQ (compAllVal x₁ tt))
   equalInType-PI→ {u} {w} {A} {B} {f} {g} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (PIneqTERM (compAllVal x₁ tt))
   equalInType-PI→ {u} {w} {A} {B} {f} {g} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (PIneqFFDEFS (compAllVal x₁ tt))
   equalInType-PI→ {u} {w} {A} {B} {f} {g} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (PIneqUNIV (compAllVal x₁ tt))
@@ -1498,6 +1514,7 @@ abstract
   equalInType-SQUASH-aux→ {n} {w} {A} {a} {b} (EQTCONST A1 A2 x x₁ eqtA exta) eqi = ⊥-elim (SETneqTCONST (compAllVal x₁ tt))
   equalInType-SQUASH-aux→ {n} {w} {A} {a} {b} (EQTSUBSING A1 A2 x x₁ eqtA exta) eqi = ⊥-elim (SETneqSUBSING (compAllVal x₁ tt))
   equalInType-SQUASH-aux→ {n} {w} {A} {a} {b} (EQTPURE x x₁) eqi = ⊥-elim (SETneqPURE (compAllVal x₁ tt))
+  equalInType-SQUASH-aux→ {n} {w} {A} {a} {b} (EQTNOSEQ x x₁) eqi = ⊥-elim (SETneqNOSEQ (compAllVal x₁ tt))
   equalInType-SQUASH-aux→ {n} {w} {A} {a} {b} (EQTTERM t1 t2 x x₁ x₂) eqi = ⊥-elim (SETneqTERM (compAllVal x₁ tt))
   equalInType-SQUASH-aux→ {n} {w} {A} {a} {b} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) eqi = ⊥-elim (SETneqFFDEFS (compAllVal x₁ tt))
   equalInType-SQUASH-aux→ {n} {w} {A} {a} {b} (EQTUNIV i p x x₁) eqi = ⊥-elim (SETneqUNIV (compAllVal x₁ tt))
@@ -1556,6 +1573,7 @@ abstract
   equalInType-ISECT→ {n} {w} {A} {B} {a} {b} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (ISECTneqTCONST (compAllVal x₁ tt))
   equalInType-ISECT→ {n} {w} {A} {B} {a} {b} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (ISECTneqSUBSING (compAllVal x₁ tt))
   equalInType-ISECT→ {n} {w} {A} {B} {a} {b} (EQTPURE x x₁ , eqi) = ⊥-elim (ISECTneqPURE (compAllVal x₁ tt))
+  equalInType-ISECT→ {n} {w} {A} {B} {a} {b} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (ISECTneqNOSEQ (compAllVal x₁ tt))
   equalInType-ISECT→ {n} {w} {A} {B} {a} {b} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (ISECTneqTERM (compAllVal x₁ tt))
   equalInType-ISECT→ {n} {w} {A} {B} {a} {b} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (ISECTneqFFDEFS (compAllVal x₁ tt))
   equalInType-ISECT→ {n} {w} {A} {B} {a} {b} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (ISECTneqUNIV (compAllVal x₁ tt))
@@ -1614,6 +1632,7 @@ abstract
   equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (UNIONneqTCONST (compAllVal x₁ tt))
   equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (UNIONneqSUBSING (compAllVal x₁ tt))
   equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTPURE x x₁ , eqi) = ⊥-elim (UNIONneqPURE (compAllVal x₁ tt))
+  equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (UNIONneqNOSEQ (compAllVal x₁ tt))
   equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (UNIONneqTERM (compAllVal x₁ tt))
   equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (UNIONneqFFDEFS (compAllVal x₁ tt))
   equalInType-UNION→ {n} {w} {A} {B} {a} {b} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (UNIONneqUNIV (compAllVal x₁ tt))
@@ -1678,6 +1697,7 @@ abstract
   equalInType-QTUNION→ {n} {w} {A} {B} {a} {b} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (QTUNIONneqTCONST (compAllVal x₁ tt))
   equalInType-QTUNION→ {n} {w} {A} {B} {a} {b} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (QTUNIONneqSUBSING (compAllVal x₁ tt))
   equalInType-QTUNION→ {n} {w} {A} {B} {a} {b} (EQTPURE x x₁ , eqi) = ⊥-elim (QTUNIONneqPURE (compAllVal x₁ tt))
+  equalInType-QTUNION→ {n} {w} {A} {B} {a} {b} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (QTUNIONneqNOSEQ (compAllVal x₁ tt))
   equalInType-QTUNION→ {n} {w} {A} {B} {a} {b} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (QTUNIONneqTERM (compAllVal x₁ tt))
   equalInType-QTUNION→ {n} {w} {A} {B} {a} {b} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (QTUNIONneqFFDEFS (compAllVal x₁ tt))
   equalInType-QTUNION→ {n} {w} {A} {B} {a} {b} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (QTUNIONneqUNIV (compAllVal x₁ tt))
@@ -1760,6 +1780,7 @@ abstract
   ¬equalInType-FALSE {w} {i} {a} {b} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTCONST (compAllVal x₁ tt))
   ¬equalInType-FALSE {w} {i} {a} {b} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqSUBSING (compAllVal x₁ tt))
   ¬equalInType-FALSE {w} {i} {a} {b} (EQTPURE x x₁ , eqi) = ⊥-elim (EQneqPURE (compAllVal x₁ tt))
+  ¬equalInType-FALSE {w} {i} {a} {b} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (EQneqNOSEQ (compAllVal x₁ tt))
   ¬equalInType-FALSE {w} {i} {a} {b} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (EQneqTERM (compAllVal x₁ tt))
   ¬equalInType-FALSE {w} {i} {a} {b} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
   ¬equalInType-FALSE {w} {i} {a} {b} (EQTUNIV i₁ p x x₁ , eqi) = ⊥-elim (EQneqUNIV (compAllVal x₁ tt))
@@ -1991,6 +2012,7 @@ abstract
   equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SUMneqTCONST (compAllVal x₁ tt))
   equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SUMneqSUBSING (compAllVal x₁ tt))
   equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQTPURE x x₁ , eqi) = ⊥-elim (SUMneqPURE (compAllVal x₁ tt))
+  equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (SUMneqNOSEQ (compAllVal x₁ tt))
   equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (SUMneqTERM (compAllVal x₁ tt))
   equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (SUMneqFFDEFS (compAllVal x₁ tt))
   equalInType-SUM→ {u} {w} {A} {B} {f} {g} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (SUMneqUNIV (compAllVal x₁ tt))
@@ -2035,6 +2057,7 @@ abstract
   equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SUMneqTCONST (compAllVal x₁ tt))
   equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SUMneqSUBSING (compAllVal x₁ tt))
   equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQTPURE x x₁ , eqi) = ⊥-elim (SUMneqPURE (compAllVal x₁ tt))
+  equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (SUMneqNOSEQ (compAllVal x₁ tt))
   equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (SUMneqTERM (compAllVal x₁ tt))
   equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (SUMneqFFDEFS (compAllVal x₁ tt))
   equalInType-SUM→₂ {u} {w} {A} {B} {f} {g} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (SUMneqUNIV (compAllVal x₁ tt))
@@ -2079,6 +2102,7 @@ abstract
   equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SUMneqTCONST (compAllVal x₁ tt))
   equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SUMneqSUBSING (compAllVal x₁ tt))
   equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTPURE x x₁ , eqi) = ⊥-elim (SUMneqPURE (compAllVal x₁ tt))
+  equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (SUMneqNOSEQ (compAllVal x₁ tt))
   equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (SUMneqTERM (compAllVal x₁ tt))
   equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (SUMneqFFDEFS (compAllVal x₁ tt))
   equalInType-SUM→₁ {u} {w} {A} {B} {f} {g} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (SUMneqUNIV (compAllVal x₁ tt))
@@ -2130,6 +2154,7 @@ abstract
   equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTCONST (compAllVal x₁ tt))
   equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqSUBSING (compAllVal x₁ tt))
   equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTPURE x x₁ , eqi) = ⊥-elim (EQneqPURE (compAllVal x₁ tt))
+  equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (EQneqNOSEQ (compAllVal x₁ tt))
   equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (EQneqTERM (compAllVal x₁ tt))
   equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
   equalInType-EQ→ {u} {w} {a} {b} {A} {f} {g} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (EQneqUNIV (compAllVal x₁ tt))
@@ -2256,6 +2281,7 @@ abstract
   equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SETneqTCONST (compAllVal x₁ tt))
   equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (SETneqSUBSING (compAllVal x₁ tt))
   equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTPURE x x₁ , eqi) = ⊥-elim (SETneqPURE (compAllVal x₁ tt))
+  equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (SETneqNOSEQ (compAllVal x₁ tt))
   equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (SETneqTERM (compAllVal x₁ tt))
   equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (SETneqFFDEFS (compAllVal x₁ tt))
   equalInType-SET→ {u} {w} {A} {B} {f} {g} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (SETneqUNIV (compAllVal x₁ tt))
@@ -2296,6 +2322,7 @@ abstract
   equalInType-PURE→ {n} {w} {a} {b} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (PUREneqTCONST (compAllVal x₁ tt))
   equalInType-PURE→ {n} {w} {a} {b} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (PUREneqSUBSING (compAllVal x₁ tt))
   equalInType-PURE→ {n} {w} {a} {b} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (PUREneqTERM (compAllVal x₁ tt))
+  equalInType-PURE→ {n} {w} {a} {b} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (PUREneqNOSEQ (compAllVal x₁ tt))
   equalInType-PURE→ {n} {w} {a} {b} (EQTPURE x x₁ , eqi) =
     Mod.∀𝕎-□Func M aw eqi
     where
@@ -2314,6 +2341,54 @@ abstract
         where
           j : □· w' (λ w' _ → PUREeq a b)
           j = equalInType-PURE→ (z , i)
+
+
+
+abstract
+  equalInType-NOSEQ→ : {n : ℕ} {w : 𝕎·} {a b : CTerm}
+                         → equalInType n w #NOSEQ a b
+                         → □· w (λ w' _ → NOSEQeq a b)
+  {-# TERMINATING #-}
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTNAT x x₁ , eqi) = ⊥-elim (NOSEQneqNAT (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTQNAT x x₁ , eqi) = ⊥-elim (NOSEQneqQNAT (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTTNAT x x₁ , eqi) = ⊥-elim (NOSEQneqTNAT (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (NOSEQneqLT (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (NOSEQneqQLT (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTFREE x x₁ , eqi) = ⊥-elim (NOSEQneqFREE (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (NOSEQneqPI (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (NOSEQneqSUM (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTW A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (NOSEQneqW (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (NOSEQneqM (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (NOSEQneqSET (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (NOSEQneqISECT (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (NOSEQneqTUNION (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2 , eqi) = ⊥-elim (NOSEQneqEQ (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (NOSEQneqUNION (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (NOSEQneqQTUNION (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (NOSEQneqTSQUASH (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTTRUNC A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (NOSEQneqTTRUNC (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (NOSEQneqTCONST (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (NOSEQneqSUBSING (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTTERM t1 t2 x x₁ x₂ , eqi) = ⊥-elim (NOSEQneqTERM (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTPURE x x₁ , eqi) = ⊥-elim (NOSEQneqPURE (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTNOSEQ x x₁ , eqi) =
+    Mod.∀𝕎-□Func M aw eqi
+    where
+      aw : ∀𝕎 w (λ w' e' → NOSEQeq a b → NOSEQeq a b)
+      aw w' e' p = p
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (NOSEQneqFFDEFS (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (NOSEQneqUNIV (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (NOSEQneqLIFT (compAllVal x₁ tt))
+  equalInType-NOSEQ→ {n} {w} {a} {b} (EQTBAR x , eqi) =
+    Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
+    where
+      aw : ∀𝕎 w (λ w' e' → (z : equalTypes n w' #NOSEQ #NOSEQ)
+                         → equalTerms n w' z a b
+                         → □· w' (↑wPred' (λ w'' e → NOSEQeq a b) e'))
+      aw w' e' z {--at--} i = Mod.∀𝕎-□Func M (λ w'' e'' h k → h) j
+        where
+          j : □· w' (λ w' _ → NOSEQeq a b)
+          j = equalInType-NOSEQ→ (z , i)
 
 
 
@@ -2343,6 +2418,7 @@ abstract
   equalInType-TERM→ {n} {w} {u} {a} {b} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (TERMneqTCONST (compAllVal x₁ tt))
   equalInType-TERM→ {n} {w} {u} {a} {b} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (TERMneqSUBSING (compAllVal x₁ tt))
   equalInType-TERM→ {n} {w} {u} {a} {b} (EQTPURE x x₁ , eqi) = ⊥-elim (TERMneqPURE (compAllVal x₁ tt))
+  equalInType-TERM→ {n} {w} {u} {a} {b} (EQTNOSEQ x x₁ , eqi) = ⊥-elim (TERMneqNOSEQ (compAllVal x₁ tt))
   equalInType-TERM→ {n} {w} {u} {a} {b} (EQTTERM t1 t2 x x₁ x₂ , eqi)
     rewrite #TERMinj {t1} {u} (sym (#compAllVal x tt))
           | #TERMinj {t2} {u} (sym (#compAllVal x₁ tt))

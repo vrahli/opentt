@@ -97,7 +97,7 @@ open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (⊑chooseT0if ; is
 open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import continuity3b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import continuity4b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import continuity5b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import continuity5b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 
 
@@ -606,6 +606,7 @@ abstract
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(TCONST a₁)} {.(TCONST a₂)} {l} {k} sub nad nbd (updRel2-TCONST a₁ a₂ upd₁) = updRel2-TCONST _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(SUBSING a₁)} {.(SUBSING a₂)} {l} {k} sub nad nbd (updRel2-SUBSING a₁ a₂ upd₁) = updRel2-SUBSING _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.PURE} {.PURE} {l} {k} sub nad nbd updRel2-PURE = updRel2-PURE
+  updRel2-ren-mon {name} {f} {g} {r} {r'} {.NOSEQ} {.NOSEQ} {l} {k} sub nad nbd updRel2-NOSEQ = updRel2-NOSEQ
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(TERM a₁)} {.(TERM a₂)} {l} {k} sub nad nbd (updRel2-TERM a₁ a₂ upd₁) = updRel2-TERM _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(ENC a)} {.(ENC a)} {l} {k} sub nad nbd (updRel2-ENC a upd₁) = updRel2-ENC _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(DUM a₁)} {.(DUM a₂)} {l} {k} sub nad nbd (updRel2-DUM a₁ a₂ upd₁) = updRel2-DUM _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
@@ -1368,6 +1369,7 @@ abstract
   updRel2-valₗ→ name f g r .(TCONST a₁) .(TCONST a₂) (updRel2-TCONST a₁ a₂ upd₁) isv = isv
   updRel2-valₗ→ name f g r .(SUBSING a₁) .(SUBSING a₂) (updRel2-SUBSING a₁ a₂ upd₁) isv = isv
   updRel2-valₗ→ name f g r .PURE .PURE updRel2-PURE isv = isv
+  updRel2-valₗ→ name f g r .NOSEQ .NOSEQ updRel2-NOSEQ isv = isv
   updRel2-valₗ→ name f g r .(TERM a₁) .(TERM a₂) (updRel2-TERM a₁ a₂ upd₁) isv = isv
   updRel2-valₗ→ name f g r .(DUM a₁) .(DUM a₂) (updRel2-DUM a₁ a₂ upd₁) isv = isv
   updRel2-valₗ→ name f g r .(FFDEFS a₁ b₁) .(FFDEFS a₂ b₂) (updRel2-FFDEFS a₁ a₂ b₁ b₂ upd₁ upd₂) isv = isv

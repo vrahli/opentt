@@ -77,6 +77,9 @@ open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 PUREneqTERM : {c : Term} → ¬ PURE ≡ TERM c
 PUREneqTERM {c} ()
 
+PUREneqNOSEQ : ¬ PURE ≡ NOSEQ
+PUREneqNOSEQ ()
+
 PUREneqNAT : ¬ PURE ≡ NAT
 PUREneqNAT ()
 
@@ -187,6 +190,7 @@ typeSysConds-PURE-ttrans u w A B x x₁ C (EQTQTUNION C1 D1 C2 D2 y y₁ eqta0 e
 typeSysConds-PURE-ttrans u w A B x x₁ C (EQTSQUASH A3 A4 y y₁ eqtA extA) = ⊥-elim (PUREneqTSQUASH (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-ttrans u w A B x x₁ C (EQTTRUNC A3 A4 y y₁ eqtA extA) = ⊥-elim (PUREneqTTRUNC (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-ttrans u w A B x x₁ C (EQTSUBSING A3 A4 y y₁ eqtA extA) = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt x₁ y))
+typeSysConds-PURE-ttrans u w A B x x₁ C (EQTNOSEQ y y₁) = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-ttrans u w A B x x₁ C (EQTPURE y y₁)
   = EQTPURE x y₁
 typeSysConds-PURE-ttrans u w A B x x₁ C (EQTCONST A3 A4 y y₁ eqtA extA) = ⊥-elim (PUREneqTCONST (⇛-val-det tt tt x₁ y))
@@ -264,6 +268,7 @@ typeSysConds-PURE-extl1 u w A B x x₁ C (EQTQTUNION A3 B3 A4 B4 y y₁ eqta0 eq
 typeSysConds-PURE-extl1 u w A B x x₁ C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqTSQUASH (⇛-val-det tt tt x y))
 typeSysConds-PURE-extl1 u w A B x x₁ C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqTTRUNC (⇛-val-det tt tt x y))
 typeSysConds-PURE-extl1 u w A B x x₁ C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt x y))
+typeSysConds-PURE-extl1 u w A B x x₁ C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt x y))
 typeSysConds-PURE-extl1 u w A B x x₁ C (EQTPURE y y₁) f g eqi
   = Mod.∀𝕎-□Func M aw eqi
   where
@@ -320,6 +325,7 @@ typeSysConds-PURE-extl2 u w A B x x₁ C (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ 
 typeSysConds-PURE-extl2 u w A B x x₁ C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqTSQUASH (⇛-val-det tt tt x y₁))
 typeSysConds-PURE-extl2 u w A B x x₁ C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqTTRUNC (⇛-val-det tt tt x y₁))
 typeSysConds-PURE-extl2 u w A B x x₁ C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt x y₁))
+typeSysConds-PURE-extl2 u w A B x x₁ C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt x y₁))
 typeSysConds-PURE-extl2 u w A B x x₁ C (EQTPURE y y₁) f g eqi
   = Mod.∀𝕎-□Func M aw eqi
   where
@@ -378,6 +384,7 @@ typeSysConds-PURE-extr1 u w A B x x₁ C (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ 
 typeSysConds-PURE-extr1 u w A B x x₁ C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqTSQUASH (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PURE-extr1 u w A B x x₁ C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqTTRUNC (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PURE-extr1 u w A B x x₁ C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt x₁ y₁))
+typeSysConds-PURE-extr1 u w A B x x₁ C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PURE-extr1 u w A B x x₁ C (EQTPURE y y₁) f g eqi
   = Mod.∀𝕎-□Func M aw eqi
   where
@@ -435,6 +442,7 @@ typeSysConds-PURE-extr2 u w A B x x₁ C (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ 
 typeSysConds-PURE-extr2 u w A B x x₁ C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqTSQUASH (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-extr2 u w A B x x₁ C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqTTRUNC (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-extr2 u w A B x x₁ C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt x₁ y))
+typeSysConds-PURE-extr2 u w A B x x₁ C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-extr2 u w A B x x₁ C (EQTPURE y y₁) f g eqi
   = Mod.∀𝕎-□Func M aw eqi
   where
@@ -493,6 +501,7 @@ typeSysConds-PURE-extrevl1 u w A B x x₁ C (EQTQTUNION A3 B3 A4 B4 y y₁ eqta�
 typeSysConds-PURE-extrevl1 u w A B x x₁ C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqTSQUASH (⇛-val-det tt tt x y))
 typeSysConds-PURE-extrevl1 u w A B x x₁ C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqTTRUNC (⇛-val-det tt tt x y))
 typeSysConds-PURE-extrevl1 u w A B x x₁ C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt x y))
+typeSysConds-PURE-extrevl1 u w A B x x₁ C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt x y))
 typeSysConds-PURE-extrevl1 u w A B x x₁ C (EQTPURE y y₁) f g eqi
   = Mod.∀𝕎-□Func M aw eqi
   where
@@ -561,6 +570,7 @@ typeSysConds-PURE-extrevl2 u w A B x x₁ C (EQTQTUNION A3 B3 A4 B4 y y₁ eqta�
 typeSysConds-PURE-extrevl2 u w A B x x₁ C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqTSQUASH (⇛-val-det tt tt x y₁))
 typeSysConds-PURE-extrevl2 u w A B x x₁ C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqTTRUNC (⇛-val-det tt tt x y₁))
 typeSysConds-PURE-extrevl2 u w A B x x₁ C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt x y₁))
+typeSysConds-PURE-extrevl2 u w A B x x₁ C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt x y₁))
 typeSysConds-PURE-extrevl2 u w A B x x₁ C (EQTPURE y y₁) f g eqi
   = Mod.∀𝕎-□Func M aw eqi
   where
@@ -628,6 +638,7 @@ typeSysConds-PURE-extrevr1 u w A B x x₁ C (EQTQTUNION A3 B3 A4 B4 y y₁ eqta�
 typeSysConds-PURE-extrevr1 u w A B x x₁ C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqTSQUASH (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PURE-extrevr1 u w A B x x₁ C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqTTRUNC (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PURE-extrevr1 u w A B x x₁ C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt x₁ y₁))
+typeSysConds-PURE-extrevr1 u w A B x x₁ C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt x₁ y₁))
 typeSysConds-PURE-extrevr1 u w A B x x₁ C (EQTPURE y y₁) f g eqi
   = Mod.∀𝕎-□Func M aw eqi
   where
@@ -695,6 +706,7 @@ typeSysConds-PURE-extrevr2 u w A B x x₁ C (EQTQTUNION A3 B3 A4 B4 y y₁ eqta�
 typeSysConds-PURE-extrevr2 u w A B x x₁ C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqTSQUASH (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-extrevr2 u w A B x x₁ C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqTTRUNC (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-extrevr2 u w A B x x₁ C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt x₁ y))
+typeSysConds-PURE-extrevr2 u w A B x x₁ C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt x₁ y))
 typeSysConds-PURE-extrevr2 u w A B x x₁ C (EQTPURE y y₁) f g eqi
   = Mod.∀𝕎-□Func M aw eqi
   where
@@ -766,6 +778,7 @@ eqInType-⇛-PURE u w A B a b c₁ c₂ (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ e
 eqInType-⇛-PURE u w A B a b c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (PUREneqTSQUASH (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE u w A B a b c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (PUREneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE u w A B a b c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt c₁ x))
+eqInType-⇛-PURE u w A B a b c₁ c₂ (EQTNOSEQ x x₁) ei = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE u w A B a b c₁ c₂ (EQTPURE x x₁) ei
   = Mod.∀𝕎-□Func M aw ei
   where
@@ -836,6 +849,7 @@ eqInType-⇛-PURE2 u w A B a b c₁ c₂ (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ 
 eqInType-⇛-PURE2 u w A B a b c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (PUREneqTSQUASH (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE2 u w A B a b c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (PUREneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE2 u w A B a b c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt c₁ x))
+eqInType-⇛-PURE2 u w A B a b c₁ c₂ (EQTNOSEQ x x₁) ei = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE2 u w A B a b c₁ c₂ (EQTPURE x x₁) ei
   = Mod.∀𝕎-□Func M aw ei
   where
@@ -906,6 +920,7 @@ eqInType-⇛-PURE-rev u w A B a b c₁ c₂ (EQTQTUNION A3 B3 A4 B4 x x₁ eqta�
 eqInType-⇛-PURE-rev u w A B a b c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (PUREneqTSQUASH (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE-rev u w A B a b c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (PUREneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE-rev u w A B a b c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt c₁ x))
+eqInType-⇛-PURE-rev u w A B a b c₁ c₂ (EQTNOSEQ x x₁) ei = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE-rev u w A B a b c₁ c₂ (EQTPURE x x₁) ei
   = Mod.∀𝕎-□Func M aw ei
   where
@@ -969,6 +984,7 @@ eqInType-⇛-PURE-rev2 u w A B a b c₁ c₂ (EQTQTUNION A3 B3 A4 B4 x x₁ eqta
 eqInType-⇛-PURE-rev2 u w A B a b c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (PUREneqTSQUASH (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE-rev2 u w A B a b c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (PUREneqTTRUNC (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE-rev2 u w A B a b c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt c₁ x))
+eqInType-⇛-PURE-rev2 u w A B a b c₁ c₂ (EQTNOSEQ x x₁) ei = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PURE-rev2 u w A B a b c₁ c₂ (EQTPURE x x₁) ei
   = Mod.∀𝕎-□Func M aw ei
   where

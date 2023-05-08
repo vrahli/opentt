@@ -599,6 +599,7 @@ abstract
   updSeq-step cn gc w1 w2 r s n .(TCONST a₁) .(TCONST a₂) u (updSeq-TCONST a₁ a₂ upd₁) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TCONST a₁ , TCONST a₂ , w1 , refl , refl , updSeq-TCONST a₁ a₂ upd₁
   updSeq-step cn gc w1 w2 r s n .(SUBSING a₁) .(SUBSING a₂) u (updSeq-SUBSING a₁ a₂ upd₁) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , SUBSING a₁ , SUBSING a₂ , w1 , refl , refl , updSeq-SUBSING a₁ a₂ upd₁
   updSeq-step cn gc w1 w2 r s n .PURE .PURE u updSeq-PURE gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , PURE , PURE , w1 , refl , refl , updSeq-PURE
+  updSeq-step cn gc w1 w2 r s n .NOSEQ .NOSEQ u updSeq-NOSEQ gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , NOSEQ , NOSEQ , w1 , refl , refl , updSeq-NOSEQ
   updSeq-step cn gc w1 w2 r s n .(TERM a₁) .(TERM a₂) u (updSeq-TERM a₁ a₂ upd₁) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TERM a₁ , TERM a₂ , w1 , refl , refl , updSeq-TERM a₁ a₂ upd₁
   updSeq-step cn gc w1 w2 r s n .(ENC a) .(ENC a) u (updSeq-ENC a upd₁) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 1 , ENCr a , ENCr a , w1 , refl , refl , updSeq-ENCr upd₁
   updSeq-step cn gc w1 w2 r s n .(DUM a₁) .(DUM a₂) u (updSeq-DUM a₁ a₂ upd₁) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , DUM a₁ , DUM a₂ , w1 , refl , refl , updSeq-DUM a₁ a₂ upd₁
@@ -662,6 +663,7 @@ abstract
   updSeq-refl {r} {s} {n} {TCONST a} nn = updSeq-TCONST _ _ (updSeq-refl nn)
   updSeq-refl {r} {s} {n} {SUBSING a} nn = updSeq-SUBSING _ _ (updSeq-refl nn)
   updSeq-refl {r} {s} {n} {PURE} nn = updSeq-PURE
+  updSeq-refl {r} {s} {n} {NOSEQ} nn = updSeq-NOSEQ
   updSeq-refl {r} {s} {n} {TERM a} nn = updSeq-TERM _ _ (updSeq-refl nn)
   updSeq-refl {r} {s} {n} {ENC a} nn = updSeq-ENC _ (updSeq-refl nn)
   updSeq-refl {r} {s} {n} {DUM a} nn = updSeq-DUM _ _ (updSeq-refl nn)

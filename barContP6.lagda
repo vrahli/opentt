@@ -109,7 +109,7 @@ open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (isHighestℕ→get
 open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (seq2list ; mseq∈baire ; corSeq→correctSeq ; →corSeq)
-open import barContP4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
+open import barContP4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (s2l ; updSeq ; updSeq-NUM→ ; updSeq-upd ; updSeq-updr ; updSeq-APPLY ; correctSeqN-inv0 ; steps→≡𝕎)
 open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (updSeq-step ; updSeq-refl ; updSeq-steps)
 
 

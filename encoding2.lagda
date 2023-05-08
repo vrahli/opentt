@@ -459,11 +459,11 @@ pairing-non-dec x y
 
 
 #cons : ℕ
-#cons = 52
+#cons = 53
 
 
 #cons-1 : ℕ
-#cons-1 = 51
+#cons-1 = 52
 
 
 -- MSEQ and MAPP are mapped to 0 as they involve meta sequences
@@ -517,12 +517,13 @@ Term→ℕ (SUBSING t) = 42 + (Term→ℕ t * #cons)
 Term→ℕ (DUM t) = 43 + (Term→ℕ t * #cons)
 Term→ℕ (FFDEFS t t₁) = 44 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
 Term→ℕ PURE = 45
-Term→ℕ (TERM t) = 46 + (Term→ℕ t * #cons)
-Term→ℕ (ENC t) = 47 + (Term→ℕ t * #cons)
-Term→ℕ (UNIV x) = 48 + (x * #cons)
-Term→ℕ (LIFT t) = 49 + (Term→ℕ t * #cons)
-Term→ℕ (LOWER t) = 50 + (Term→ℕ t * #cons)
-Term→ℕ (SHRINK t) = 51 + (Term→ℕ t * #cons)
+Term→ℕ NOSEQ = 46
+Term→ℕ (TERM t) = 47 + (Term→ℕ t * #cons)
+Term→ℕ (ENC t) = 48 + (Term→ℕ t * #cons)
+Term→ℕ (UNIV x) = 49 + (x * #cons)
+Term→ℕ (LIFT t) = 50 + (Term→ℕ t * #cons)
+Term→ℕ (LOWER t) = 51 + (Term→ℕ t * #cons)
+Term→ℕ (SHRINK t) = 52 + (Term→ℕ t * #cons)
 
 
 ¬≡0→1≤ : (n : ℕ) → ¬ n ≡ 0 → 1 ≤ n
@@ -763,14 +764,13 @@ suc-/≤ n m d0 = ≤-trans (suc-/m n m) (suc/≤ n d0)
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 43 DUM
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))))) = ℕ→Term-aux₂ n (λ ()) ind 44 FFDEFS
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))))))) = PURE
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 46 TERM
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 47 ENC
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))))))))) = UNIV ((n ∸ 48) / #cons)
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 49 LIFT
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 50 LOWER
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 51 SHRINK
---
--- TO FINISH!
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))))))) = NOSEQ
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 47 TERM
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 48 ENC
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))))))))))) = UNIV ((n ∸ 49) / #cons)
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 50 LIFT
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 51 LOWER
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 52 SHRINK
 --
 -- otherwise
 ... | _ = AX -- not possible - we return a default value
