@@ -90,7 +90,9 @@ record ChoiceBar : Set(lsuc(lsuc(L))) where
     -- Typeℂ₀₁'s members are similar according to ∼ℂ
     ∈Typeℂ₀₁→ : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁ a b → □· w (λ w' _ → #weakℂEq w' a b)
     -- Typeℂ₀₁ contains all terms that weakly compute to ℂ₀ or ℂ₁
-    →∈Typeℂ₀₁ : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name} → □· w (λ w' _ → weakℂ₀₁M w' (getT n c)) → ∈Type i w Typeℂ₀₁ (#APPLY (#CS c) (#NUM n))
+    →∈Typeℂ₀₁ : (i : ℕ) {w : 𝕎·} (n : ℕ) {c : Name}
+                  → compatible· c w Resℂ₀₁ -- □· w (λ w' _ → weakℂ₀₁M w' (getT n c))
+                  → ∈Type i w Typeℂ₀₁ (#APPLY (#CS c) (#NUM n))
 
     -- Typeℂ₀₁ preserves computation
     #⇛Typeℂ₀₁ : equalTerms-pres-#⇛-left Typeℂ₀₁

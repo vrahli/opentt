@@ -46,16 +46,16 @@ open import choiceExt
 open import choiceVal
 
 
--- An instance with beth bars (inBethBar-Bar) and choice sequences, where choices are terms
+-- An instance with beth bars (inBethBar-Bar) and choice sequences, where choices are 𝔹s
+-- It is similar to modInstanceBethCsBool but uses #BOOL! instead of #QTBOOL!
 
-module modInstanceBethCs (E0 : Extensionality 0ℓ 0ℓ)
-                         (E3 : Extensionality 0ℓ 3ℓ)
+
+module modInstanceBethCsBool2 (E0 : Extensionality 0ℓ 0ℓ) (E : Extensionality 0ℓ 3ℓ)
        where
-
 
 open import encoding3(E0)
 
-open import worldInstanceCS(E0)
+open import worldInstanceCSbool(E0)
 
 W : PossibleWorlds
 W = PossibleWorldsCS
@@ -106,10 +106,10 @@ open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import barI(W)(M)--(C)(K)(P)
 open import computation(W)(C)(K)(G)(X)(N)(enc)
 
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E3)(enc)
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E3)(enc)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E3)(enc)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E3)(enc)
+open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
 
 
 progressing→ΣgetCs≤ : {w : 𝕎·} {c : chain w} {r : Res} (n : Name) (m : ℕ)
@@ -287,11 +287,11 @@ getCsChoice-freezeSeq→⊎ {k} {c} {r} {l} {w} {t} {n} i nodp comp gc with getC
 ... | inj₂ p rewrite p = ⊥-elim (¬just≡nothing (sym gc))
 
 
-→isOnlyChoice∈𝕎-𝕎→pchain : {c : Name} {w : 𝕎·} {r : Res{0ℓ}} (n : ℕ)
+→onlyℂ∈𝕎-𝕎→pchain : {c : Name} {w : 𝕎·} {r : Res{0ℓ}} (n : ℕ)
                               → compatible· c w r
-                              → isOnlyChoice∈𝕎 (Res.def r) c w
-                              → isOnlyChoice∈𝕎 (Res.def r) c (𝕎→seq w n)
-→isOnlyChoice∈𝕎-𝕎→pchain {c} {w} {r} n comp iso k t e = concl u
+                              → onlyℂ∈𝕎 (Res.def r) c w
+                              → onlyℂ∈𝕎 (Res.def r) c (𝕎→seq w n)
+→onlyℂ∈𝕎-𝕎→pchain {c} {w} {r} n comp iso k t e = concl u
   where
     i : mkNRes c r ∈ wrdom w
     i = getCs→mkNRes∈wrdom {c} {w} (fst (snd comp))
@@ -323,11 +323,11 @@ getCs→≡Name-getCs {choice name t ∷ w} {n1} {n2} {l} {r} e = getCs→≡Nam
 
 
 
-⊑-isOnlyChoice∈𝕎 : {c : Name} {w1 w2 : 𝕎·} {r : Res{0ℓ}} {u : ℂ·}
+⊑-onlyℂ∈𝕎 : {c : Name} {w1 w2 : 𝕎·} {r : Res{0ℓ}} {u : ℂ·}
                     → w1 ⊑· w2
-                    → isOnlyChoice∈𝕎 u c w2
-                    → isOnlyChoice∈𝕎 u c w1
-⊑-isOnlyChoice∈𝕎 {c} {w1} {w2} {r} {u} e iso k t z with getCs⊎ c w1
+                    → onlyℂ∈𝕎 u c w2
+                    → onlyℂ∈𝕎 u c w1
+⊑-onlyℂ∈𝕎 {c} {w1} {w2} {r} {u} e iso k t z with getCs⊎ c w1
 ... | inj₁ (mkcs m l r' , p) rewrite p | fst (snd (≽-pres-getCs e (getCs→≡Name-getCs {w1} p))) =
   iso k t (select++-just {0ℓ} {ℂ·} {k} {l} {fst (≽-pres-getCs e (getCs→≡Name-getCs {w1} p))} z)
 ... | inj₂ p rewrite p = ⊥-elim (¬just≡nothing (sym z))
@@ -337,19 +337,19 @@ getCs→≡Name-getCs {choice name t ∷ w} {n1} {n2} {l} {r} e = getCs→≡Nam
 
 
 Typeℂ₀₁-beth-cs : CTerm
-Typeℂ₀₁-beth-cs = #QTNAT!
+Typeℂ₀₁-beth-cs = #BOOL!
 
 
 Typeℂ₀₁-isType-beth-bar : (u : ℕ) (w : 𝕎·) → isType u w Typeℂ₀₁-beth-cs
-Typeℂ₀₁-isType-beth-bar u w = eqTypesQTNAT!
+Typeℂ₀₁-isType-beth-bar u w = isTypeBOOL! w u
 
 
 ℂ₀∈Typeℂ₀₁-beth-cs : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁-beth-cs Cℂ₀
-ℂ₀∈Typeℂ₀₁-beth-cs u w = NUM-equalInType-QTNAT! u w 0
+ℂ₀∈Typeℂ₀₁-beth-cs u w = →equalInType-BOOL!-INL u w #AX #AX
 
 
 ℂ₁∈Typeℂ₀₁-beth-cs : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁-beth-cs Cℂ₁
-ℂ₁∈Typeℂ₀₁-beth-cs u w = NUM-equalInType-QTNAT! u w 1
+ℂ₁∈Typeℂ₀₁-beth-cs u w = →equalInType-BOOL!-INR u w #AX #AX
 
 
 --ℂ→C→∼ℂ-beth-cs : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼C w c1 c → ∼ℂ· w c2 c
@@ -370,43 +370,114 @@ isValueℂ₁-beth-cs = tt
 --}
 
 
-∈Typeℂ₀₁→-beth-cs : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-cs a b → □· w (λ w' _ → #weakℂEq w' a b)
-∈Typeℂ₀₁→-beth-cs i w a b eqi = Mod.∀𝕎-□Func M aw (equalInType-QTNAT!→ i w a b eqi)
+
+#⇓!-true : (w : 𝕎·) (a x : CTerm) (c : ℂ·)
+          → a #⇓! ℂ→C· c at w
+          → a #⇓! #INL x at w
+          → c ≡ true
+#⇓!-true w a x true c₁ c₂ = refl
+#⇓!-true w a x false c₁ c₂ = ⊥-elim (z (CTerm≡ (⇓!-val-det tt tt c₂ c₁)))
   where
-    aw : ∀𝕎 w (λ w' e' → #weakMonEq! w' a b → #weakℂEq w' a b)
+    z : ¬ #INL x ≡ #BFALSE
+    z ()
+
+
+
+#⇓!-false : (w : 𝕎·) (a x : CTerm) (c : ℂ·)
+          → a #⇓! ℂ→C· c at w
+          → a #⇓! #INR x at w
+          → c ≡ false
+#⇓!-false w a x false c₁ c₂ = refl
+#⇓!-false w a x true c₁ c₂ = ⊥-elim (z (CTerm≡ (⇓!-val-det tt tt c₂ c₁)))
+  where
+    z : ¬ #INR x ≡ #BTRUE
+    z ()
+
+
+#strongBool!→#weakBool! : {w : 𝕎·} {a b : CTerm}
+                          → #strongBool! w a b
+                          → #weakBool! w a b
+#strongBool!→#weakBool! {w} {a} {b} (x , y , inj₁ (c₁ , c₂)) w1 e1 = lift (x , y , inj₁ (lower (c₁ w1 e1) , lower (c₂ w1 e1)))
+#strongBool!→#weakBool! {w} {a} {b} (x , y , inj₂ (c₁ , c₂)) w1 e1 = lift (x , y , inj₂ (lower (c₁ w1 e1) , lower (c₂ w1 e1)))
+
+
+∈Typeℂ₀₁→-beth-cs : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                      → equalInType i w Typeℂ₀₁-beth-cs a b → □· w (λ w' _ → #weakℂEq w' a b)
+∈Typeℂ₀₁→-beth-cs i w a b eqi = Mod.∀𝕎-□Func M aw0 (equalInType-BOOL!→ i w a b eqi)
+  where
+    aw : ∀𝕎 w (λ w' e' → #weakBool! w' a b → #weakℂEq w' a b)
     aw w1 e1 h w2 e2 = lift j
       where
         j : (c₁ c₂ : ℂ·) → ⌜ a ⌝ ⇓! ℂ→T c₁ at w2 → ⌜ b ⌝ ⇓! ℂ→T c₂ at w2 → ∼C! w2 (ℂ→C· c₁) (ℂ→C· c₂)
-        j c₁ c₂ comp₁ comp₂ = ∼T!-trans (∼T!← comp₁) (∼T!-trans (∼T!-trans (∼T!→ (fst (snd (lower (h w2 e2))))) (∼T!← (snd (snd (lower (h w2 e2)))))) (∼T!→ comp₂))
+        j c₁ c₂ comp₁ comp₂ = c (snd (snd (lower (h w2 e2))))
+          where
+            x : CTerm
+            x = fst (lower (h w2 e2))
+
+            y : CTerm
+            y = fst (snd (lower (h w2 e2)))
+
+            c : ((a #⇓! #INL x at w2 × b #⇓! #INL y at w2) ⊎ (a #⇓! #INR x at w2 × b #⇓! #INR y at w2))
+                → ∼C! w2 (ℂ→C· c₁) (ℂ→C· c₂)
+            c (inj₁ (c1 , c2)) rewrite #⇓!-true w2 a x c₁ comp₁ c1 | #⇓!-true w2 b y c₂ comp₂ c2 = ∼C!-refl {w2} {#BTRUE}
+            c (inj₂ (c1 , c2)) rewrite #⇓!-false w2 a x c₁ comp₁ c1 | #⇓!-false w2 b y c₂ comp₂ c2 = ∼C!-refl {w2} {#BFALSE}
+
+    aw0 : ∀𝕎 w (λ w' e' → #strongBool! w' a b → #weakℂEq w' a b)
+    aw0 w1 e1 h = aw w1 e1 (#strongBool!→#weakBool! {w1} {a} {b} h)
 
 
 -- We so far didn't rely on a specific bar.
 -- Here we do
-□·-choice-beth-cs : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
-                       → compatible· c w r
-                       → □· w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
-□·-choice-beth-cs w c m r comp = IS𝔹-ℕ w r c m comp , j
+□·-choice-beth-cs0 : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
+                      → compatible· c w r
+                      → □· w (λ w' _ → Σ ℂ· (λ t → ·ᵣ r m t × ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (getChoice· m c w'' ≡ just t))))
+□·-choice-beth-cs0 w c m r comp = IS𝔹-ℕ w r c m comp , j
   where
-    j : inIS𝔹 (IS𝔹-ℕ w r c m comp) (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
-    j {w'} e (e0 , l , g , len) w1 e1 z w2 e2 = lift (fst sel , g1 , sat)
+    j : inIS𝔹 (IS𝔹-ℕ w r c m comp) (λ w' _ → Σ ℂ· (λ t → ·ᵣ r m t × ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (getChoice· m c w'' ≡ just t))))
+    j {w'} e (e0 , l , g , len) w1 e1 z = fst sel , sat0 , aw
       where
         sel : Σ ℂ· (λ t → select m l ≡ just t)
         sel = Σselect {0ℓ} {ℂ·} {m} {l} len
 
-        comp1 : compatible· c w2 r
-        comp1 = ⊑-compatible· (⊑-trans· z e2) comp
+        comp0 : compatible· c w1 r
+        comp0 = ⊑-compatible· z comp
 
-        l' : List ℂ·
-        l' = fst (⊑-∈world→Σ++ (⊑-trans· e1 e2) g (fst (snd comp1)))
+        l0 : List ℂ·
+        l0 = fst (⊑-∈world→Σ++ e1 g (fst (snd comp0)))
 
-        comp2 : ∈world (mkcs c (l ++ l') r) w2
-        comp2 rewrite sym (snd (⊑-∈world→Σ++ (⊑-trans· e1 e2) g (fst (snd comp1)))) = fst (snd comp1)
+        comp00 : ∈world (mkcs c (l ++ l0) r) w1
+        comp00 rewrite sym (snd (⊑-∈world→Σ++ e1 g (fst (snd comp0)))) = fst (snd comp0)
 
-        g1 : getChoice· m c w2 ≡ just (fst sel)
-        g1 rewrite comp2 | select++-just {0ℓ} {ℂ·} {m} {l} {l'} (snd sel) = refl
+        g0 : getChoice· m c w1 ≡ just (fst sel)
+        g0 rewrite comp00 | select++-just {0ℓ} {ℂ·} {m} {l} {l0} (snd sel) = refl
 
-        sat : ·ᵣ r m (fst sel)
-        sat = getCsChoiceCompatible c r w2 m (fst sel) comp1 g1
+        sat0 : ·ᵣ r m (fst sel)
+        sat0 = getCsChoiceCompatible c r w1 m (fst sel) comp0 g0
+
+        aw : ∀𝕎 w1 (λ w'' _ → Lift 2ℓ (getChoice· m c w'' ≡ just (fst sel)))
+        aw w2 e2 = lift g1
+          where
+            comp1 : compatible· c w2 r
+            comp1 = ⊑-compatible· (⊑-trans· z e2) comp
+
+            l' : List ℂ·
+            l' = fst (⊑-∈world→Σ++ (⊑-trans· e1 e2) g (fst (snd comp1)))
+
+            comp2 : ∈world (mkcs c (l ++ l') r) w2
+            comp2 rewrite sym (snd (⊑-∈world→Σ++ (⊑-trans· e1 e2) g (fst (snd comp1)))) = fst (snd comp1)
+
+            g1 : getChoice· m c w2 ≡ just (fst sel)
+            g1 rewrite comp2 | select++-just {0ℓ} {ℂ·} {m} {l} {l'} (snd sel) = refl
+
+
+□·-choice-beth-cs : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
+                       → compatible· c w r
+                       → □· w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
+□·-choice-beth-cs w c m r comp = Mod.∀𝕎-□Func M aw (□·-choice-beth-cs0 w c m r comp)
+  where
+    aw : ∀𝕎 w (λ w' e' → Σ ℂ· (λ t → ·ᵣ r m t × ∀𝕎 w' (λ w'' _ → Lift 2ℓ (getChoice· m c w'' ≡ just t)))
+                        → ∀𝕎 w' (λ w'' _ → Lift 2ℓ (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
+    aw w1 e1 (t , r , h) w2 e2 = lift (t , lower (h w2 e2) , r)
 
 
 getChoice→weakℂ₀₁M : (w : 𝕎·) (n : ℕ) (c : Name)
@@ -414,38 +485,41 @@ getChoice→weakℂ₀₁M : (w : 𝕎·) (n : ℕ) (c : Name)
                       → weakℂ₀₁M w (getT n c)
 getChoice→weakℂ₀₁M w n c h w1 e1 with lower (h w1 e1)
 ... | t , gc , r rewrite gc with r
-... |  inj₁ x rewrite x = lift (NUM 0 , refl , inj₁ (⇓!-refl (NUM 0) w1))
-... |  inj₂ x rewrite x = lift (NUM 1 , refl , inj₂ (⇓!-refl (NUM 1) w1))
+... |  inj₁ x rewrite x = lift (BTRUE , refl , inj₁ (⇓!-refl BTRUE w1))
+... |  inj₂ x rewrite x = lift (BFALSE , refl , inj₂ (⇓!-refl BFALSE w1))
 
 
 →∈Typeℂ₀₁-beth-cs : (i : ℕ) {w : 𝕎·} (n : ℕ) {c : Name}
                       → compatible· c w Resℂ₀₁ --□· w (λ w' _ → weakℂ₀₁M w' (getT n c))
                       → ∈Type i w Typeℂ₀₁-beth-cs (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁-beth-cs i {w} n {c} h =
-  →equalInType-QTNAT! i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
-                       (Mod.∀𝕎-□Func M aw (Mod.∀𝕎-□Func M (λ w1 e1 q → getChoice→weakℂ₀₁M w1 n c q) (□·-choice-beth-cs w c n Resℂ₀₁ h)))
+  →equalInType-BOOL! i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
+                       (Mod.∀𝕎-□Func M aw (□·-choice-beth-cs0 w c n Resℂ₀₁ h))
   where
-    aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakMonEq! w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
-    aw w1 e1 z w2 e2 = lift (x (snd (snd (lower (z w2 e2)))))
+    aw : ∀𝕎 w (λ w' e' → Σ ℂ· (λ t → ·ᵣ Resℂ₀₁ n t × ∀𝕎 w' (λ w'' _ → Lift 2ℓ (getChoice· n c w'' ≡ just t)))
+                        → #strongBool! w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
+    aw w1 e1 (t , inj₁ x , q) rewrite x = #AX , #AX , inj₁ (c₁ , c₁)
       where
-        t : Term
-        t = fst (lower (z w2 e2))
-
-        g : getT n c w2 ≡ just t
-        g = fst (snd (lower (z w2 e2)))
-
-        x : (t ⇓! Tℂ₀ at w2 ⊎ t ⇓! Tℂ₁ at w2)
-            → Σ ℕ (λ n₁ → APPLY (CS c) (NUM n) ⇓! NUM n₁ at w2 × APPLY (CS c) (NUM n) ⇓! NUM n₁ at w2)
-        x (inj₁ y) = 0 , ⇓!-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 w2 n c refl g) y , ⇓!-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 w2 n c refl g) y
-        x (inj₂ y) = 1 , ⇓!-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 w2 n c refl g) y , ⇓!-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 w2 n c refl g) y
+        c₁ : #APPLY (#CS c) (#NUM n) #⇛! #BTRUE at w1
+        c₁ w2 e2 = lift (Σ-steps-APPLY-CS 0 (NUM n) BTRUE w2 w2 n c refl gtn)
+          where
+            gtn : getT n c w2 ≡ just BTRUE
+            gtn rewrite lower (q w2 e2) = refl
+    aw w1 e1 (t , inj₂ x , q) rewrite x = #AX , #AX , inj₂ (c₁ , c₁)
+      where
+        c₁ : #APPLY (#CS c) (#NUM n) #⇛! #BFALSE at w1
+        c₁ w2 e2 = lift (Σ-steps-APPLY-CS 0 (NUM n) BFALSE w2 w2 n c refl gtn)
+          where
+            gtn : getT n c w2 ≡ just BFALSE
+            gtn rewrite lower (q w2 e2) = refl
 
 
 followChoice-beth-cs : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                        → inBethBar w f
-                       → isOnlyChoice∈𝕎 (Res.def r) c w
+                       → onlyℂ∈𝕎 (Res.def r) c w
                        → compatible· c w r
                        → freezable· c w
-                       → ∃𝕎 w (λ w1 e1 → isOnlyChoice∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
+                       → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
 followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
   w' , e , iso , comp' , fb' , z
   where
@@ -461,10 +535,10 @@ followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
     e : w ⊑· w'
     e = 𝔹.ext bar (BarredChain.b bp)
 
-    iso : isOnlyChoice∈𝕎 (Res.def r) c w'
-    iso = ⊑-isOnlyChoice∈𝕎 {c} {w'} {chain.seq (pchain.c pc) (BarredChain.n bp)} {r}
-                            (BarredChain.ext bp)
-                            (→isOnlyChoice∈𝕎-𝕎→pchain {c} {w} {r} (BarredChain.n bp) comp oc)
+    iso : onlyℂ∈𝕎 (Res.def r) c w'
+    iso = ⊑-onlyℂ∈𝕎 {c} {w'} {chain.seq (pchain.c pc) (BarredChain.n bp)} {r}
+                      (BarredChain.ext bp)
+                      (→onlyℂ∈𝕎-𝕎→pchain {c} {w} {r} (BarredChain.n bp) comp oc)
 
     comp' : compatible· c w' r
     comp' = ⊑-compatible· e comp
@@ -476,7 +550,46 @@ followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
     z = i e (BarredChain.b bp) w' (⊑-refl· w') e
 
 
-open import choiceBar(W)(M)(C)(K)(P)(G)(X)(N)(enc)(V)(F)(E3)
+-- MOVE
+equalInType-#BOOL!→equalTerms : {i : ℕ} {w : 𝕎·} {a b : CTerm}
+                                 (eqt : equalTypes i w #BOOL! #BOOL!)
+                                 → equalInType i w #BOOL! a b
+                                 → equalTerms i w eqt a b
+equalInType-#BOOL!→equalTerms {i} {w} {a} {b} eqt eqi =
+  equalInType→eqInType {i} {w} {#BOOL!} {#BOOL!} {#BOOL!} {a} {b} refl {eqt} eqi
+
+
+-- MOVE
+equalTerms→equalInType-#BOOL! : {i : ℕ} {w : 𝕎·} {a b : CTerm}
+                                 (eqt : equalTypes i w #BOOL! #BOOL!)
+                                 → equalTerms i w eqt a b
+                                 → equalInType i w #BOOL! a b
+equalTerms→equalInType-#BOOL! {i} {w} {a} {b} eqt a∈ = eqt , a∈
+
+
+equalTerms-pres-#⇛-left-BOOL! : equalTerms-pres-#⇛-left #BOOL!
+equalTerms-pres-#⇛-left-BOOL! {i} {w} {a} {b} {c} comp eqt eqi =
+  equalInType-#BOOL!→equalTerms
+    {i} {w} {b} {c} eqt
+    (→equalInType-BOOL! i w b c (Mod.∀𝕎-□Func M aw (equalInType-BOOL!→ i w a c (eqt , eqi))))
+  where
+    aw : ∀𝕎 w (λ w' e' → #strongBool! w' a c → #strongBool! w' b c)
+    aw w1 e1 (x , y , inj₁ (c₁ , c₂)) = x , y , inj₁ (val-#⇛!→ {w1} {a} {b} {#INL x} tt (∀𝕎-mon e1 comp) c₁ , c₂)
+    aw w1 e1 (x , y , inj₂ (c₁ , c₂)) = x , y , inj₂ (val-#⇛!→ {w1} {a} {b} {#INR x} tt (∀𝕎-mon e1 comp) c₁ , c₂)
+
+
+equalTerms-pres-#⇛-left-rev-BOOL! : equalTerms-pres-#⇛-left-rev #BOOL!
+equalTerms-pres-#⇛-left-rev-BOOL! {i} {w} {a} {b} {c} comp eqt eqi =
+  equalInType-#BOOL!→equalTerms
+    {i} {w} {a} {c} eqt
+    (→equalInType-BOOL! i w a c (Mod.∀𝕎-□Func M aw (equalInType-BOOL!→ i w b c (eqt , eqi))))
+  where
+    aw : ∀𝕎 w (λ w' e' → #strongBool! w' b c → #strongBool! w' a c)
+    aw w1 e1 (x , y , inj₁ (c₁ , c₂)) = x , y , inj₁ (#⇛!-trans {w1} {a} {b} {#INL x} (∀𝕎-mon e1 comp) c₁ , c₂)
+    aw w1 e1 (x , y , inj₂ (c₁ , c₂)) = x , y , inj₂ (#⇛!-trans {w1} {a} {b} {#INR x} (∀𝕎-mon e1 comp) c₁ , c₂)
+
+
+open import choiceBar(W)(M)(C)(K)(P)(G)(X)(N)(enc)(V)(F)(E)
 
 bethCs-choiceBar : ChoiceBar
 bethCs-choiceBar =
@@ -487,8 +600,8 @@ bethCs-choiceBar =
     ℂ₁∈Typeℂ₀₁-beth-cs
     ∈Typeℂ₀₁→-beth-cs
     →∈Typeℂ₀₁-beth-cs
-    equalTerms-pres-#⇛-left-QTNAT!
-    equalTerms-pres-#⇛-left-rev-QTNAT!
+    equalTerms-pres-#⇛-left-BOOL!
+    equalTerms-pres-#⇛-left-rev-BOOL!
     □·-choice-beth-cs
     followChoice-beth-cs
 

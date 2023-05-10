@@ -103,7 +103,7 @@ sat→equalInType-Typeℂ₀₁· i w k (n , inj₁ x) rewrite x = ℂ₀∈Type
 sat→equalInType-Typeℂ₀₁· i w k (n , inj₂ y) rewrite y = ℂ₁∈Typeℂ₀₁· i w
 
 
-
+{--
 comp-Resℂ→□·-weakℂ₀₁ : {c : Name} {w : 𝕎·} (n : ℕ)
                            → compatible· c w Resℂ
                            → □· w (λ w' _ → weakℂ₀₁M w' (getT n c))
@@ -125,7 +125,7 @@ comp-Resℂ→□·-weakℂ₀₁ {c} {w} n comp = Mod.∀𝕎-□Func M aw j1
         z : (t ≡ ℂ₀· ⊎ t ≡ ℂ₁·) → (ℂ→T t ⇓! Tℂ₀ at w3 ⊎ ℂ→T t ⇓! Tℂ₁ at w3)
         z (inj₁ x) rewrite x = inj₁ (0 , refl)
         z (inj₂ x) rewrite x = inj₂ (0 , refl)
-
+--}
 
 
 →equalInType-APPLY-CS-Typeℂ₀₁· : {i : ℕ} {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
@@ -142,10 +142,10 @@ comp-Resℂ→□·-weakℂ₀₁ {c} {w} n comp = Mod.∀𝕎-□Func M aw j1
         (#⇛!-APPLY-CS {w1} {a₁} {#NUM n} c c₁) (#⇛!-APPLY-CS {w1} {a₂} {#NUM n} c c₂) eqj
  -- #⇛Typeℂ₀₁· {!!} {!!} {!!} --equalInType-#⇛-LR-rev (#⇛!-APPLY-CS {w1} {a₁} {#NUM n} c c₁) (#⇛!-APPLY-CS {w1} {a₂} {#NUM n} c c₂) eqj
       where
-        j2 : □· w1 (λ w' _ → weakℂ₀₁M w' (getT n c))
-        j2 = comp-Resℂ→□·-weakℂ₀₁ n (⊑-compatible· e1 comp)
+--        j2 : □· w1 (λ w' _ → weakℂ₀₁M w' (getT n c))
+--        j2 = {!!} --comp-Resℂ→□·-weakℂ₀₁ n (⊑-compatible· e1 comp)
 
         eqj : ∈Type i w1 Typeℂ₀₁· (#APPLY (#CS c) (#NUM n))
-        eqj = →∈Typeℂ₀₁· i j2
+        eqj = →∈Typeℂ₀₁· i n (⊑-compatible· e1 comp) --→∈Typeℂ₀₁· i j2
 
 \end{code}

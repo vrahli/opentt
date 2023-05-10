@@ -65,8 +65,10 @@ open import mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB)(EB)(EM) using (MPval
 
 -- This instance of 'choiceBar' uses Beth bars and terms as choices:
 open import modInstanceBethCs
--- This instance of 'choiceBar' uses Beth bars and bools as choices:
+-- This instance of 'choiceBar' uses Beth bars and bools (#QTBOOL!) as choices:
 open import modInstanceBethCsBool
+-- This instance of 'choiceBar' uses Beth bars and bools (#BOOL!) as choices:
+open import modInstanceBethCsBool2
 -- This instance of 'choiceBar' uses Beth bars and nats as choices:
 -- (this makes use of the 'freezable' field in *restrictions*, while the other isntances don't---but could/should)
 open import modInstanceBethRef
@@ -113,7 +115,7 @@ open import barContP10 using (contDiagVal)
 -- Another attempt at validating continuity without the name-free requirement. It is unfinished: continuity10b has holes
 -- updRel2-renn in continuity5b is now broken because of ENC. Can it be fixed?
 --open import continuity9b
-open import continuity7b -- UNCOMMENT
+open import continuity7b
 -- This one is unfinished
 --open import continuity10b
 

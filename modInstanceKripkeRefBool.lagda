@@ -206,29 +206,6 @@ isvalue-choice false = tt
 
 
 
-→∈Typeℂ₀₁-kripke-ref : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name}
-                      → □· w (λ w' _ → weakℂ₀₁M w' (getT n c))
-                      → ∈Type i w Typeℂ₀₁-kripke-ref (#APPLY (#CS c) (#NUM n))
-→∈Typeℂ₀₁-kripke-ref i {w} {n} {c} h =
-  →equalInType-QTBOOL! i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
-                     (Mod.∀𝕎-□Func M aw h)
-  where
-    aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakBool! w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
-    aw w1 e1 z w2 e2 = lift (x (snd (snd (lower (z w2 e2)))))
-      where
-        t : Term
-        t = fst (lower (z w2 e2))
-
-        g : getT n c w2 ≡ just t
-        g = fst (snd (lower (z w2 e2)))
-
-        x : (t ⇓! Tℂ₀ at w2 ⊎ t ⇓! Tℂ₁ at w2)
-            → #⇓!same-bool w2 (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
-        x (inj₁ y) = #AX , #AX , inj₁ (⇓!-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 w2 n c refl g) y , ⇓!-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 w2 n c refl g) y)
-        x (inj₂ y) = #AX , #AX , inj₂ (⇓!-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 w2 n c refl g) y , ⇓!-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 w2 n c refl g) y)
-
-
-
 □·-choice-kripke-ref : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
                         → compatible· c w r
                         → □· w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
@@ -247,6 +224,38 @@ isvalue-choice false = tt
       where
         gc : getRefChoice m c w3 ≡ just (fst (⊑-pres-getRef (⊑-trans· z e3) i))
         gc rewrite fst (snd (snd (⊑-pres-getRef (⊑-trans· z e3) i))) = refl
+
+
+getChoice→weakℂ₀₁M : (w : 𝕎·) (n : ℕ) (c : Name)
+                      → ∀𝕎 w (λ w' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· n c w' ≡ just t × ·ᵣ Resℂ₀₁ n t)))
+                      → weakℂ₀₁M w (getT n c)
+getChoice→weakℂ₀₁M w n c h w1 e1 with lower (h w1 e1)
+... | t , gc , r rewrite gc with r
+... |  inj₁ x rewrite x = lift (BTRUE , refl , inj₁ (⇓!-refl BTRUE w1))
+... |  inj₂ x rewrite x = lift (BFALSE , refl , inj₂ (⇓!-refl BFALSE w1))
+
+
+→∈Typeℂ₀₁-kripke-ref : (i : ℕ) {w : 𝕎·} (n : ℕ) {c : Name}
+                      → compatible· c w Resℂ₀₁ --□· w (λ w' _ → weakℂ₀₁M w' (getT n c))
+                      → ∈Type i w Typeℂ₀₁-kripke-ref (#APPLY (#CS c) (#NUM n))
+→∈Typeℂ₀₁-kripke-ref i {w} n {c} h =
+  →equalInType-QTBOOL!
+    i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
+    (Mod.∀𝕎-□Func M aw (Mod.∀𝕎-□Func M (λ w1 e1 q → getChoice→weakℂ₀₁M w1 n c q) (□·-choice-kripke-ref w c n Resℂ₀₁ h)))
+  where
+    aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakBool! w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
+    aw w1 e1 z w2 e2 = lift (x (snd (snd (lower (z w2 e2)))))
+      where
+        t : Term
+        t = fst (lower (z w2 e2))
+
+        g : getT n c w2 ≡ just t
+        g = fst (snd (lower (z w2 e2)))
+
+        x : (t ⇓! Tℂ₀ at w2 ⊎ t ⇓! Tℂ₁ at w2)
+            → #⇓!same-bool w2 (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
+        x (inj₁ y) = #AX , #AX , inj₁ (⇓!-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 w2 n c refl g) y , ⇓!-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 w2 n c refl g) y)
+        x (inj₂ y) = #AX , #AX , inj₂ (⇓!-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 w2 n c refl g) y , ⇓!-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 w2 n c refl g) y)
 
 
 

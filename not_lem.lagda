@@ -307,22 +307,22 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
 
     -- 1st jump to bar
     w1 : 𝕎·
-    w1 = fst (ChoiceBar.followChoice CB c h1 oc comp fb)
+    w1 = fst (followChoice· c h1 oc comp fb)
 
     e1 : w ⊑· w1
-    e1 = fst (snd (ChoiceBar.followChoice CB c h1 oc comp fb))
+    e1 = fst (snd (followChoice· c h1 oc comp fb))
 
     oc1 : onlyℂ∈𝕎 (Res.def r) c w1
-    oc1 = fst (snd (snd (ChoiceBar.followChoice CB c h1 oc comp fb)))
+    oc1 = fst (snd (snd (followChoice· c h1 oc comp fb)))
 
     comp1 : compatible· c w1 r
-    comp1 = fst (snd (snd (snd (ChoiceBar.followChoice CB c h1 oc comp fb))))
+    comp1 = fst (snd (snd (snd (followChoice· c h1 oc comp fb))))
 
     fb1 : freezable· c w1
-    fb1 = fst (snd (snd (snd (snd (ChoiceBar.followChoice CB c h1 oc comp fb)))))
+    fb1 = fst (snd (snd (snd (snd (followChoice· c h1 oc comp fb)))))
 
     h2 : SUMeq (equalInType i w1 #NAT!) (λ a b ea → equalInType i w1 (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·)) w1 x x
-    h2 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB c h1 oc comp fb)))))
+    h2 = snd (snd (snd (snd (snd (followChoice· c h1 oc comp fb)))))
 
     a₁ : CTerm
     a₁ = fst h2
@@ -347,22 +347,22 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     ea2 = equalInType-NAT!→ i w1 a₁ a₂ ea1
 
     w2 : 𝕎·
-    w2 = fst (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1)
+    w2 = fst (followChoice· c ea2 oc1 comp1 fb1)
 
     e2 : w1 ⊑· w2
-    e2 = fst (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1))
+    e2 = fst (snd (followChoice· c ea2 oc1 comp1 fb1))
 
     oc2 : onlyℂ∈𝕎 (Res.def r) c w2
-    oc2 = fst (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1)))
+    oc2 = fst (snd (snd (followChoice· c ea2 oc1 comp1 fb1)))
 
     comp2 : compatible· c w2 r
-    comp2 = fst (snd (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1))))
+    comp2 = fst (snd (snd (snd (followChoice· c ea2 oc1 comp1 fb1))))
 
     fb2 : freezable· c w2
-    fb2 = fst (snd (snd (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1)))))
+    fb2 = fst (snd (snd (snd (snd (followChoice· c ea2 oc1 comp1 fb1)))))
 
     ea3 : #⇛!sameℕ {--#strongMonEq--} w2 a₁ a₂
-    ea3 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB c ea2 oc1 comp1 fb1)))))
+    ea3 = snd (snd (snd (snd (snd (followChoice· c ea2 oc1 comp1 fb1)))))
 
     m : ℕ
     m = fst ea3
@@ -385,44 +385,44 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
 
     -- 3rd jump to bar
     w3 : 𝕎·
-    w3 = fst (ChoiceBar.followChoice CB c eb5 oc2 comp2 fb2)
+    w3 = fst (followChoice· c eb5 oc2 comp2 fb2)
 
     e3 : w2 ⊑· w3
-    e3 = fst (snd (ChoiceBar.followChoice CB c eb5 oc2 comp2 fb2))
+    e3 = fst (snd (followChoice· c eb5 oc2 comp2 fb2))
 
     oc3 : onlyℂ∈𝕎 (Res.def r) c w3
-    oc3 = fst (snd (snd (ChoiceBar.followChoice CB c eb5 oc2 comp2 fb2)))
+    oc3 = fst (snd (snd (followChoice· c eb5 oc2 comp2 fb2)))
 
     comp3 : compatible· c w3 r
-    comp3 = fst (snd (snd (snd (ChoiceBar.followChoice CB c eb5 oc2 comp2 fb2))))
+    comp3 = fst (snd (snd (snd (followChoice· c eb5 oc2 comp2 fb2))))
 
     fb3 : freezable· c w3
-    fb3 = fst (snd (snd (snd (snd (ChoiceBar.followChoice CB c eb5 oc2 comp2 fb2)))))
+    fb3 = fst (snd (snd (snd (snd (followChoice· c eb5 oc2 comp2 fb2)))))
 
     eb6 : #weakℂEq w3 (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1)
-    eb6 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB c eb5 oc2 comp2 fb2)))))
+    eb6 = snd (snd (snd (snd (snd (followChoice· c eb5 oc2 comp2 fb2)))))
 
     gc : □· w3 (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
     gc = □·-choice· w3 c m r comp3
 
     -- 4th jump to bar
     w4 : 𝕎·
-    w4 = fst (ChoiceBar.followChoice CB c gc oc3 comp3 fb3)
+    w4 = fst (followChoice· c gc oc3 comp3 fb3)
 
     e4 : w3 ⊑· w4
-    e4 = fst (snd (ChoiceBar.followChoice CB c gc oc3 comp3 fb3))
+    e4 = fst (snd (followChoice· c gc oc3 comp3 fb3))
 
     oc4 : onlyℂ∈𝕎 (Res.def r) c w4
-    oc4 = fst (snd (snd (ChoiceBar.followChoice CB c gc oc3 comp3 fb3)))
+    oc4 = fst (snd (snd (followChoice· c gc oc3 comp3 fb3)))
 
     comp4 : compatible· c w4 r
-    comp4 = fst (snd (snd (snd (ChoiceBar.followChoice CB c gc oc3 comp3 fb3))))
+    comp4 = fst (snd (snd (snd (followChoice· c gc oc3 comp3 fb3))))
 
     fb4 : freezable· c w4
-    fb4 = fst (snd (snd (snd (snd (ChoiceBar.followChoice CB c gc oc3 comp3 fb3)))))
+    fb4 = fst (snd (snd (snd (snd (followChoice· c gc oc3 comp3 fb3)))))
 
     gc1 : ∀𝕎 w4 (λ w' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w' ≡ just t × ·ᵣ r m t)))
-    gc1 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB c gc oc3 comp3 fb3)))))
+    gc1 = snd (snd (snd (snd (snd (followChoice· c gc oc3 comp3 fb3)))))
 
     -- and now we conclude
     gc2 : Σ ℂ· (λ t → getChoice· m c w4 ≡ just t × ·ᵣ r m t)
@@ -584,22 +584,22 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
 
     -- We follow the choice
     w3 : 𝕎·
-    w3 = fst (ChoiceBar.followChoice CB name h2 oc1 comp1 fb1)
+    w3 = fst (followChoice· name h2 oc1 comp1 fb1)
 
     e3 : w2 ⊑· w3
-    e3 = fst (snd (ChoiceBar.followChoice CB name h2 oc1 comp1 fb1))
+    e3 = fst (snd (followChoice· name h2 oc1 comp1 fb1))
 
     oc2 : onlyℂ∈𝕎 (Res.def r) name w3
-    oc2 = fst (snd (snd (ChoiceBar.followChoice CB name h2 oc1 comp1 fb1)))
+    oc2 = fst (snd (snd (followChoice· name h2 oc1 comp1 fb1)))
 
     comp2 : compatible· name w3 r
-    comp2 = fst (snd (snd (snd (ChoiceBar.followChoice CB name h2 oc1 comp1 fb1))))
+    comp2 = fst (snd (snd (snd (followChoice· name h2 oc1 comp1 fb1))))
 
     fb2 : freezable· name w3
-    fb2 = fst (snd (snd (snd (snd (ChoiceBar.followChoice CB name h2 oc1 comp1 fb1)))))
+    fb2 = fst (snd (snd (snd (snd (followChoice· name h2 oc1 comp1 fb1)))))
 
     h3 : inhType i w3 (#Σchoice name k1) ⊎ ∀𝕎 w3 (λ w'' _ → ¬ inhType i w'' (#Σchoice name k1))
-    h3 = snd (snd (snd (snd (snd (ChoiceBar.followChoice CB name h2 oc1 comp1 fb1)))))
+    h3 = snd (snd (snd (snd (snd (followChoice· name h2 oc1 comp1 fb1)))))
 
     -- 1st injection: proved by ¬equalInType-#Σchoice
     -- For this it is enough to be able to make a choice different from k1 forever, for example choosing 0 forever

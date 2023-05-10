@@ -111,7 +111,9 @@ Typeℂ₀₁-isType· = Typeℂ₀₁-isType CB
 ∈Typeℂ₀₁→· = ∈Typeℂ₀₁→ CB
 
 
-→∈Typeℂ₀₁· : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name} → □· w (λ w' _ → weakℂ₀₁M w' (getT n c)) → ∈Type i w Typeℂ₀₁· (#APPLY (#CS c) (#NUM n))
+→∈Typeℂ₀₁· : (i : ℕ) {w : 𝕎·} (n : ℕ) {c : Name}
+               → compatible· c w Resℂ₀₁ -- □· w (λ w' _ → weakℂ₀₁M w' (getT n c))
+               → ∈Type i w Typeℂ₀₁· (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁· = →∈Typeℂ₀₁ CB
 
 
@@ -126,6 +128,13 @@ Typeℂ₀₁-isType· = Typeℂ₀₁-isType CB
                 → □· w (λ w' _ → ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (Σ ℂ· (λ t → getChoice· m c w'' ≡ just t × ·ᵣ r m t))))
 □·-choice· = □·-choice CB
 
+followChoice· : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
+                   → □· w f
+                   → onlyℂ∈𝕎 (Res.def r) c w
+                   → compatible· c w r
+                   → freezable· c w
+                   → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
+followChoice· = followChoice CB
 
 typeℂ₀₁ : Term
 typeℂ₀₁ = ⌜ Typeℂ₀₁· ⌝

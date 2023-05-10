@@ -414,28 +414,6 @@ isValueℂ₁-beth-cs = tt
             c (inj₂ (c1 , c2)) rewrite #⇓!-false w2 a x c₁ comp₁ c1 | #⇓!-false w2 b y c₂ comp₂ c2 = ∼C!-refl {w2} {#BFALSE}
 
 
-→∈Typeℂ₀₁-beth-cs : (i : ℕ) {w : 𝕎·} {n : ℕ} {c : Name}
-                      → □· w (λ w' _ → weakℂ₀₁M w' (getT n c))
-                      → ∈Type i w Typeℂ₀₁-beth-cs (#APPLY (#CS c) (#NUM n))
-→∈Typeℂ₀₁-beth-cs i {w} {n} {c} h =
-  →equalInType-QTBOOL! i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
-                       (Mod.∀𝕎-□Func M aw h)
-  where
-    aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakBool! w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
-    aw w1 e1 z w2 e2 = lift (x (snd (snd (lower (z w2 e2)))))
-      where
-        t : Term
-        t = fst (lower (z w2 e2))
-
-        g : getT n c w2 ≡ just t
-        g = fst (snd (lower (z w2 e2)))
-
-        x : (t ⇓! Tℂ₀ at w2 ⊎ t ⇓! Tℂ₁ at w2)
-            → #⇓!same-bool w2 (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
-        x (inj₁ y) = #AX , #AX , inj₁ (⇓!-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 w2 n c refl g) y , ⇓!-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 w2 n c refl g) y)
-        x (inj₂ y) = #AX , #AX , inj₂ (⇓!-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 w2 n c refl g) y , ⇓!-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 w2 n c refl g) y)
-
-
 -- We so far didn't rely on a specific bar.
 -- Here we do
 □·-choice-beth-cs : (w : 𝕎·) (c : Name) (m : ℕ) (r : Res)
@@ -463,6 +441,37 @@ isValueℂ₁-beth-cs = tt
 
         sat : ·ᵣ r m (fst sel)
         sat = getCsChoiceCompatible c r w2 m (fst sel) comp1 g1
+
+
+getChoice→weakℂ₀₁M : (w : 𝕎·) (n : ℕ) (c : Name)
+                      → ∀𝕎 w (λ w' _ → Lift {0ℓ} (2ℓ) (Σ ℂ· (λ t → getChoice· n c w' ≡ just t × ·ᵣ Resℂ₀₁ n t)))
+                      → weakℂ₀₁M w (getT n c)
+getChoice→weakℂ₀₁M w n c h w1 e1 with lower (h w1 e1)
+... | t , gc , r rewrite gc with r
+... |  inj₁ x rewrite x = lift (BTRUE , refl , inj₁ (⇓!-refl BTRUE w1))
+... |  inj₂ x rewrite x = lift (BFALSE , refl , inj₂ (⇓!-refl BFALSE w1))
+
+
+→∈Typeℂ₀₁-beth-cs : (i : ℕ) {w : 𝕎·} (n : ℕ) {c : Name}
+                      → compatible· c w Resℂ₀₁ --□· w (λ w' _ → weakℂ₀₁M w' (getT n c))
+                      → ∈Type i w Typeℂ₀₁-beth-cs (#APPLY (#CS c) (#NUM n))
+→∈Typeℂ₀₁-beth-cs i {w} n {c} h =
+  →equalInType-QTBOOL! i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
+                       (Mod.∀𝕎-□Func M aw (Mod.∀𝕎-□Func M (λ w1 e1 q → getChoice→weakℂ₀₁M w1 n c q) (□·-choice-beth-cs w c n Resℂ₀₁ h)))
+  where
+    aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakBool! w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
+    aw w1 e1 z w2 e2 = lift (x (snd (snd (lower (z w2 e2)))))
+      where
+        t : Term
+        t = fst (lower (z w2 e2))
+
+        g : getT n c w2 ≡ just t
+        g = fst (snd (lower (z w2 e2)))
+
+        x : (t ⇓! Tℂ₀ at w2 ⊎ t ⇓! Tℂ₁ at w2)
+            → #⇓!same-bool w2 (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
+        x (inj₁ y) = #AX , #AX , inj₁ (⇓!-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 w2 n c refl g) y , ⇓!-trans (Σ-steps-APPLY-CS 0 (NUM n) t w2 w2 n c refl g) y)
+        x (inj₂ y) = #AX , #AX , inj₂ (⇓!-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 w2 n c refl g) y , ⇓!-trans (Σ-steps-APPLY-CS 1 (NUM n) t w2 w2 n c refl g) y)
 
 
 followChoice-beth-cs : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
