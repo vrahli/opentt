@@ -853,6 +853,8 @@ equalInType-NOSEQ→¬Seqₗ {n} {w} {a} {b} a∈ =
 #nsAC₀₀-right R = #SQUASH (#nsAC₀₀-right-SUM R)
 
 
+-- This is using #nsAC₀₀-right instead of #AC₀₀-right, which uses #NSBAIRE instead of #BAIRE
+-- Another to achieve this would be to disallow sequences altogether
 ¬AC₀₀-right-TO : (kb : K□) (i : ℕ) (w : 𝕎·) → ¬ inhType (suc i) w (#nsAC₀₀-right TOac₀₀)
 ¬AC₀₀-right-TO kb i w (s , s∈) =
   lower (Mod.□-const M (Mod.∀𝕎-□Func M aw1 (equalInType-SQUASH→ s∈)))
