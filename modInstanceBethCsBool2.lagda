@@ -109,7 +109,8 @@ open import computation(W)(C)(K)(G)(X)(N)(enc)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc) using (isTypeBOOL! ; →equalInType-BOOL!-INL ; →equalInType-BOOL!-INR ; equalInType-BOOL!→ ; →equalInType-BOOL!)
+open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc) using (equalTerms-pres-#⇛-left-BOOL! ; equalTerms-pres-#⇛-left-rev-BOOL!)
 
 
 progressing→ΣgetCs≤ : {w : 𝕎·} {c : chain w} {r : Res} (n : Name) (m : ℕ)
@@ -548,45 +549,6 @@ followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
 
     z : f w' e
     z = i e (BarredChain.b bp) w' (⊑-refl· w') e
-
-
--- MOVE
-equalInType-#BOOL!→equalTerms : {i : ℕ} {w : 𝕎·} {a b : CTerm}
-                                 (eqt : equalTypes i w #BOOL! #BOOL!)
-                                 → equalInType i w #BOOL! a b
-                                 → equalTerms i w eqt a b
-equalInType-#BOOL!→equalTerms {i} {w} {a} {b} eqt eqi =
-  equalInType→eqInType {i} {w} {#BOOL!} {#BOOL!} {#BOOL!} {a} {b} refl {eqt} eqi
-
-
--- MOVE
-equalTerms→equalInType-#BOOL! : {i : ℕ} {w : 𝕎·} {a b : CTerm}
-                                 (eqt : equalTypes i w #BOOL! #BOOL!)
-                                 → equalTerms i w eqt a b
-                                 → equalInType i w #BOOL! a b
-equalTerms→equalInType-#BOOL! {i} {w} {a} {b} eqt a∈ = eqt , a∈
-
-
-equalTerms-pres-#⇛-left-BOOL! : equalTerms-pres-#⇛-left #BOOL!
-equalTerms-pres-#⇛-left-BOOL! {i} {w} {a} {b} {c} comp eqt eqi =
-  equalInType-#BOOL!→equalTerms
-    {i} {w} {b} {c} eqt
-    (→equalInType-BOOL! i w b c (Mod.∀𝕎-□Func M aw (equalInType-BOOL!→ i w a c (eqt , eqi))))
-  where
-    aw : ∀𝕎 w (λ w' e' → #strongBool! w' a c → #strongBool! w' b c)
-    aw w1 e1 (x , y , inj₁ (c₁ , c₂)) = x , y , inj₁ (val-#⇛!→ {w1} {a} {b} {#INL x} tt (∀𝕎-mon e1 comp) c₁ , c₂)
-    aw w1 e1 (x , y , inj₂ (c₁ , c₂)) = x , y , inj₂ (val-#⇛!→ {w1} {a} {b} {#INR x} tt (∀𝕎-mon e1 comp) c₁ , c₂)
-
-
-equalTerms-pres-#⇛-left-rev-BOOL! : equalTerms-pres-#⇛-left-rev #BOOL!
-equalTerms-pres-#⇛-left-rev-BOOL! {i} {w} {a} {b} {c} comp eqt eqi =
-  equalInType-#BOOL!→equalTerms
-    {i} {w} {a} {c} eqt
-    (→equalInType-BOOL! i w a c (Mod.∀𝕎-□Func M aw (equalInType-BOOL!→ i w b c (eqt , eqi))))
-  where
-    aw : ∀𝕎 w (λ w' e' → #strongBool! w' b c → #strongBool! w' a c)
-    aw w1 e1 (x , y , inj₁ (c₁ , c₂)) = x , y , inj₁ (#⇛!-trans {w1} {a} {b} {#INL x} (∀𝕎-mon e1 comp) c₁ , c₂)
-    aw w1 e1 (x , y , inj₂ (c₁ , c₂)) = x , y , inj₂ (#⇛!-trans {w1} {a} {b} {#INR x} (∀𝕎-mon e1 comp) c₁ , c₂)
 
 
 open import choiceBar(W)(M)(C)(K)(P)(G)(X)(N)(enc)(V)(F)(E)

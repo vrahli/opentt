@@ -301,4 +301,41 @@ NATeq⇛ : {w : 𝕎·} {a1 a2 b1 b2 : CTerm}
           → NATeq w a1 b1
 NATeq⇛ {w} {a1} {a2} {b1} {b2} c1 c2 (n , z1 , z2) = n , ⇛-trans c1 z1 , ⇛-trans c2 z2
 
+
+equalInType-#BOOL!→equalTerms : {i : ℕ} {w : 𝕎·} {a b : CTerm}
+                                 (eqt : equalTypes i w #BOOL! #BOOL!)
+                                 → equalInType i w #BOOL! a b
+                                 → equalTerms i w eqt a b
+equalInType-#BOOL!→equalTerms {i} {w} {a} {b} eqt eqi =
+  equalInType→eqInType {i} {w} {#BOOL!} {#BOOL!} {#BOOL!} {a} {b} refl {eqt} eqi
+
+
+equalTerms→equalInType-#BOOL! : {i : ℕ} {w : 𝕎·} {a b : CTerm}
+                                 (eqt : equalTypes i w #BOOL! #BOOL!)
+                                 → equalTerms i w eqt a b
+                                 → equalInType i w #BOOL! a b
+equalTerms→equalInType-#BOOL! {i} {w} {a} {b} eqt a∈ = eqt , a∈
+
+
+equalTerms-pres-#⇛-left-BOOL! : equalTerms-pres-#⇛-left #BOOL!
+equalTerms-pres-#⇛-left-BOOL! {i} {w} {a} {b} {c} comp eqt eqi =
+  equalInType-#BOOL!→equalTerms
+    {i} {w} {b} {c} eqt
+    (→equalInType-BOOL! i w b c (Mod.∀𝕎-□Func M aw (equalInType-BOOL!→ i w a c (eqt , eqi))))
+  where
+    aw : ∀𝕎 w (λ w' e' → #strongBool! w' a c → #strongBool! w' b c)
+    aw w1 e1 (x , y , inj₁ (c₁ , c₂)) = x , y , inj₁ (val-#⇛!→ {w1} {a} {b} {#INL x} tt (∀𝕎-mon e1 comp) c₁ , c₂)
+    aw w1 e1 (x , y , inj₂ (c₁ , c₂)) = x , y , inj₂ (val-#⇛!→ {w1} {a} {b} {#INR x} tt (∀𝕎-mon e1 comp) c₁ , c₂)
+
+
+equalTerms-pres-#⇛-left-rev-BOOL! : equalTerms-pres-#⇛-left-rev #BOOL!
+equalTerms-pres-#⇛-left-rev-BOOL! {i} {w} {a} {b} {c} comp eqt eqi =
+  equalInType-#BOOL!→equalTerms
+    {i} {w} {a} {c} eqt
+    (→equalInType-BOOL! i w a c (Mod.∀𝕎-□Func M aw (equalInType-BOOL!→ i w b c (eqt , eqi))))
+  where
+    aw : ∀𝕎 w (λ w' e' → #strongBool! w' b c → #strongBool! w' a c)
+    aw w1 e1 (x , y , inj₁ (c₁ , c₂)) = x , y , inj₁ (#⇛!-trans {w1} {a} {b} {#INL x} (∀𝕎-mon e1 comp) c₁ , c₂)
+    aw w1 e1 (x , y , inj₂ (c₁ , c₂)) = x , y , inj₂ (#⇛!-trans {w1} {a} {b} {#INR x} (∀𝕎-mon e1 comp) c₁ , c₂)
+
 \end{code}

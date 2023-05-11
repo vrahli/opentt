@@ -111,6 +111,14 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
     h = ⇓→from-to (lower (comp w1 (⊑-refl· w1)))
 
 
+¬Names→⇛! : (w1 w2 : 𝕎·) (t u : Term)
+            → ¬Names t
+            → t ⇛! u at w1
+            → t ⇛! u at w2
+¬Names→⇛! w1 w2 t u nnt comp w e =
+  lift (¬Names→⇓ w1 w1 w t u nnt (lower (comp w1 (⊑-refl· w1))))
+
+
 #¬Names-APPLY : {a b : CTerm} → #¬Names a → #¬Names b → #¬Names (#APPLY a b)
 #¬Names-APPLY {a} {b} nna nnb rewrite nna | nnb = refl
 
