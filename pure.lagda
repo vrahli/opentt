@@ -272,4 +272,89 @@ sub0-#[0]TPURE a b = CTerm≡ refl
     aw1 w1 e1 a₁ a₂ z = {!!}
 --}
 
+
+-- MOVE
+BOOLₚ : Term
+BOOLₚ = TPURE BOOL
+
+
+-- MOVE
+#BOOLₚ : CTerm
+#BOOLₚ = ct BOOLₚ refl
+
+
+-- MOVE
+#BOOLₚ≡ : #BOOLₚ ≡ #TPURE #BOOL
+#BOOLₚ≡ = CTerm≡ refl
+
+
+-- MOVE
+#[0]BOOLₚ : CTerm0
+#[0]BOOLₚ = ct0 BOOLₚ refl
+
+
+-- MOVE
+NATₚ : Term
+NATₚ = TPURE NAT
+
+
+-- MOVE
+#NATₚ : CTerm
+#NATₚ = ct NATₚ refl
+
+
+-- MOVE
+#NATₚ≡ : #NATₚ ≡ #TPURE #NAT
+#NATₚ≡ = CTerm≡ refl
+
+
+-- MOVE
+#[0]NATₚ : CTerm0
+#[0]NATₚ = ct0 NATₚ refl
+
+
+isTypeNATₚ : {w : 𝕎·} {i : ℕ} → isType i w #NATₚ
+isTypeNATₚ {w} {i} = equalTypesTPURE eqTypesNAT
+
+
+isTypeBOOLₚ : {w : 𝕎·} {i : ℕ} → isType i w #BOOLₚ
+isTypeBOOLₚ {w} {i} = equalTypesTPURE (isTypeBOOL w i)
+
+
+→equalInType-BOOLₚ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                      → #¬Names a
+                      → #¬Names b
+                      → equalInType i w #BOOL a b
+                      → equalInType i w #BOOLₚ a b
+→equalInType-BOOLₚ i w a b nna nnb h =
+  ≡CTerm→equalInType (sym #BOOLₚ≡) (→equalInType-TPURE nna nnb h)
+
+
+equalInType-BOOLₚ→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                      → equalInType i w #BOOLₚ a b
+                      → □· w (λ w' _ → #strongBool w' a b)
+equalInType-BOOLₚ→ i w a b h = equalInType-BOOL→ i w a b (equalInType-TPURE→ h)
+
+
+equalInType-BOOLₚ→ₗ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                      → equalInType i w #BOOLₚ a b
+                      → #¬Names a
+equalInType-BOOLₚ→ₗ i w a b h = equalInType-TPURE→ₗ h
+
+
+equalInType-BOOLₚ→ᵣ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+                      → equalInType i w #BOOLₚ a b
+                      → #¬Names b
+equalInType-BOOLₚ→ᵣ i w a b h = equalInType-TPURE→ᵣ h
+
+
+BTRUE∈BOOLₚ : (i : ℕ) (w : 𝕎·)
+               → ∈Type i w #BOOLₚ #BTRUE
+BTRUE∈BOOLₚ i w = →equalInType-BOOLₚ i w #BTRUE #BTRUE refl refl (BTRUE∈BOOL i w)
+
+
+BFALSE∈BOOLₚ : (i : ℕ) (w : 𝕎·)
+                   → ∈Type i w #BOOLₚ #BFALSE
+BFALSE∈BOOLₚ i w = →equalInType-BOOLₚ i w #BFALSE #BFALSE refl refl (BFALSE∈BOOL i w)
+
 \end{code}

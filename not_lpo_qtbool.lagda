@@ -178,7 +178,7 @@ isTypeNegLPO w n = eqTypesNEG← (isTypeLPO w n)
 
 
 -- Assuming that our choices are QTBools
-¬LPOq : QTBoolℂ CB → (w : 𝕎·) → member w (#NEG #LPO) #lamAX
+¬LPOq : QTBool!ℂ CB → (w : 𝕎·) → member w (#NEG #LPO) #lamAX
 ¬LPOq bcb w = n , equalInType-NEG (isTypeLPO w n) aw1
   where
     n : ℕ
