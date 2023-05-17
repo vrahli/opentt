@@ -83,6 +83,7 @@ open import choiceExtDef(W)(C)(K)(G)(X)
 
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -117,6 +118,78 @@ sub0-fun-mp-qt₄ f a =
     e2 rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftUp 0 a | #shiftUp 1 a | #shiftDown 2 a = refl
 
 
+→∈Type-SUM-ASSERT₅ : {i : ℕ} {w : 𝕎·} {f g t : CTerm}
+                            → equalInType i w #NAT!→BOOL! f g
+                            → ∈Type i w (#SUM-ASSERT₅ f) t
+                            → ∈Type i w (#SUM-ASSERT₅ g) t
+→∈Type-SUM-ASSERT₅ {i} {w} {f} {g} {t} f∈ a∈ =
+  equalTypes→equalInType (→equalTypes-#SUM-ASSERT₅ f∈) a∈
+
+
+→equalInType-mp-right-qt₃ : {i : ℕ} {w : 𝕎·} {f g a₁ a₂ b₁ b₂ : CTerm}
+                                → equalInType i w #NAT!→BOOL! f g
+                                → equalInType i w (#MP-right-qt₃ f) a₁ a₂
+                                → equalInType i w (#MP-right-qt₃ g) b₁ b₂
+→equalInType-mp-right-qt₃ {i} {w} {f} {g} {a₁} {a₂} {b₁} {b₂} f∈ a∈ =
+  →equalInType-SQUASH (Mod.∀𝕎-□Func M aw1 (equalInType-SQUASH→ a∈))
+  where
+    aw1 : ∀𝕎 w (λ w' _ → inhType i w' (#MP-right2-qt₃ f) → inhType i w' (#MP-right2-qt₃ g))
+    aw1 w1 e1 (t , t∈) = t , →∈Type-SUM-ASSERT₅ {i} {w1} {f} {g} {t} (equalInType-mon f∈ w1 e1) t∈
+
+
+→equalInType-neg-mp-right-qt₃ : {i : ℕ} {w : 𝕎·} {f g a₁ a₂ b₁ b₂ : CTerm}
+                                → equalInType i w #NAT!→BOOL! f g
+                                → equalInType i w (#NEG (#MP-right-qt₃ f)) a₁ a₂
+                                → equalInType i w (#NEG (#MP-right-qt₃ g)) b₁ b₂
+→equalInType-neg-mp-right-qt₃ {i} {w} {f} {g} {a₁} {a₂} {b₁} {b₂} f∈ a∈ =
+  equalInType-NEG {i} {w} {#MP-right-qt₃ g} {b₁} {b₂}
+    (→equalTypes-#MP-right-qt₃ (equalInType-refl (equalInType-sym f∈)))
+    aw1
+  where
+    aw1 : ∀𝕎 w (λ w' _ → (a₃ a₄ : CTerm) → ¬ equalInType i w' (#MP-right-qt₃ g) a₃ a₄)
+    aw1 w1 e1 j₁ j₂ j∈ =
+      equalInType-NEG→
+        {i} {w} {#MP-right-qt₃ f} {a₁} {a₂} a∈ w1 e1 j₁ j₂
+        (→equalInType-mp-right-qt₃ {i} {w1} {g} {f} {j₁} {j₂} {j₁} {j₂} (equalInType-sym (equalInType-mon f∈ w1 e1)) j∈)
+
+
+→equalInType-mp-left-qt₃ : {i : ℕ} {w : 𝕎·} {f g a₁ a₂ b₁ b₂ : CTerm}
+                                → equalInType i w #NAT!→BOOL! f g
+                                → equalInType i w (#MP-left-qt₃ f) a₁ a₂
+                                → equalInType i w (#MP-left-qt₃ g) b₁ b₂
+→equalInType-mp-left-qt₃ {i} {w} {f} {g} {a₁} {a₂} {b₁} {b₂} f∈ a∈ =
+  equalInType-NEG {i} {w} {#NEG (#MP-right-qt₃ g)} {b₁} {b₂}
+    (eqTypesNEG← (→equalTypes-#MP-right-qt₃ (equalInType-refl (equalInType-sym f∈))))
+    aw1
+  where
+    aw1 : ∀𝕎 w (λ w' _ → (a₃ a₄ : CTerm) → ¬ equalInType i w' (#NEG (#MP-right-qt₃ g)) a₃ a₄)
+    aw1 w1 e1 j₁ j₂ j∈ =
+      equalInType-NEG→
+        {i} {w} {#NEG (#MP-right-qt₃ f)} {a₁} {a₂} a∈ w1 e1 j₁ j₂
+        (→equalInType-neg-mp-right-qt₃ {i} {w1} {g} {f} {j₁} {j₂} {j₁} {j₂} (equalInType-sym (equalInType-mon f∈ w1 e1)) j∈)
+
+
+→equalInType-fun-mp-qt₃ : {i : ℕ} {w : 𝕎·} {f g a₁ a₂ b₁ b₂ : CTerm}
+                           → equalInType i w #NAT!→BOOL! f g
+                           → equalInType i w (#FUN (#MP-left-qt₃ f) (#MP-right-qt₃ f)) a₁ a₂
+                           → equalInType i w (#FUN (#MP-left-qt₃ g) (#MP-right-qt₃ g)) b₁ b₂
+→equalInType-fun-mp-qt₃ {i} {w} {f} {g} {a₁} {a₂} {b₁} {b₂} f∈ a∈ =
+  equalInType-FUN
+    {i} {w} {#MP-left-qt₃ g} {#MP-right-qt₃ g} {b₁} {b₂}
+    (→equalTypes-#MP-left-qt₃ {i} {w} {g} {g} (equalInType-refl (equalInType-sym f∈)))
+    (→equalTypes-#MP-right-qt₃ {i} {w} {g} {g} (equalInType-refl (equalInType-sym f∈)))
+    aw1
+  where
+    aw1 : ∀𝕎 w (λ w' _ → (a₃ a₄ : CTerm) → equalInType i w' (#MP-left-qt₃ g) a₃ a₄
+                        → equalInType i w' (#MP-right-qt₃ g) (#APPLY b₁ a₃) (#APPLY b₂ a₄))
+    aw1 w1 e1 j₁ j₂ j∈ =
+      →equalInType-mp-right-qt₃
+        {i} {w1} {f} {g} {#APPLY a₁ j₁} {#APPLY a₂ j₂} {#APPLY b₁ j₁} {#APPLY b₂ j₂}
+        (equalInType-mon f∈ w1 e1)
+        (equalInType-FUN→
+          {i} {w} {#MP-left-qt₃ f} {#MP-right-qt₃ f} {a₁} {a₂} a∈ w1 e1 j₁ j₂
+          (→equalInType-mp-left-qt₃ {i} {w1} {g} {f} {j₁} {j₂} {j₁} {j₂} (equalInType-sym (equalInType-mon f∈ w1 e1)) j∈))
+
 --
 -- MP_pure: πₚ (F : (ℕ → 𝔹) ∩ pure). ¬(Π (n : ℕ). ¬(F n ≡ true)) → ||Σ (n : ℕ). F n ≡ true||
 -- MP_PR:   πₚ (m : ℕ. ¬(Π (n : ℕ). ¬(eval m n ≡ true)) → ||Σ (n : ℕ). eval m n ≡ true||
@@ -136,26 +209,50 @@ sub0-fun-mp-qt₄ f a =
           → ∈Type i w (#PI #NAT! (#[0]FUN (#[0]MP-left-qt₄ eval) (#[0]MP-right-qt₄ eval))) a
 Πpure→ i w eval a nnf eval∈ a∈ =
   equalInType-PI
-    {!!} {!!}
+    (λ w' e' → isTypeNAT! {w'} {i})
+    aw0
     aw1
   where
+    aw0 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT! a₁ a₂
+                        → equalTypes i w' (sub0 a₁ (#[0]FUN (#[0]MP-left-qt₄ eval) (#[0]MP-right-qt₄ eval)))
+                                           (sub0 a₂ (#[0]FUN (#[0]MP-left-qt₄ eval) (#[0]MP-right-qt₄ eval))))
+    aw0 w' e a₁ a₂ a∈ = ≡CTerm→eqTypes (sym (sub0-fun-mp-qt₄ eval a₁)) (sym (sub0-fun-mp-qt₄ eval a₂))
+                                         (eqTypesFUN← (→equalTypes-#MP-left-qt₃ (equalInType-FUN→ {i} {w} {#NAT!} {#NAT!→BOOL!} {eval} {eval} eval∈ w' e a₁ a₂ a∈))
+                                                       (→equalTypes-#MP-right-qt₃ (equalInType-FUN→ {i} {w} {#NAT!} {#NAT!→BOOL!} {eval} {eval} eval∈ w' e a₁ a₂ a∈)))
+
     aw1 : ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → equalInType i w' #NAT! n₁ n₂
                        → equalInType i w' (sub0 n₁ (#[0]FUN (#[0]MP-left-qt₄ eval) (#[0]MP-right-qt₄ eval))) (#APPLY a n₁) (#APPLY a n₂))
     aw1 w1 e1 n₁ n₂ n∈ = ≡CTerm→equalInType (sym (sub0-fun-mp-qt₄ eval n₁)) (equalInType-local (Mod.∀𝕎-□Func M aw2 (equalInType-NAT!→ i w1 n₁ n₂ n∈)))
       where
         aw2 : ∀𝕎 w1 (λ w' e' → #⇛!sameℕ w' n₁ n₂
                               → equalInType i w' (#FUN (#MP-left-qt₃ (#APPLY eval n₁)) (#MP-right-qt₃ (#APPLY eval n₁))) (#APPLY a n₁) (#APPLY a n₂))
-        aw2 w2 e2 (n , c₁ , c₂) = {!!} -- the extract doesn't matter, so this is essentially h2, except that we have n₁ and (#NUM n) in h2
+        aw2 w2 e2 (n , c₁ , c₂) =
+          -- the extract doesn't matter, so this is essentially h2, except that we have n₁ and (#NUM n) in h2
+          →equalInType-fun-mp-qt₃
+            {i} {w2} {#APPLY eval (#NUM n)} {#APPLY eval n₁} {#APPLY a (#APPLY eval (#NUM n))} {#APPLY a (#APPLY eval (#NUM n))}
+            (equalInType-FUN→
+              {i} {w} {#NAT!} {#NAT!→BOOL!} {eval} {eval} eval∈ w2 (⊑-trans· e1 e2) (#NUM n) n₁
+              (→equalInType-NAT! i w2 (#NUM n) n₁ (Mod.∀𝕎-□ M aw3)))
+            h2
           where
+            aw3 : ∀𝕎 w2 (λ w' _ → #⇛!sameℕ w' (#NUM n) n₁)
+            aw3 w3 e3 = n , #⇛!-refl {w3} {#NUM n} , ∀𝕎-mon e3 c₁
+
+            h0 : equalInType i w2 (#TPURE #NAT!→BOOL!) (#APPLY eval (#NUM n)) (#APPLY eval (#NUM n))
+            h0 = →equalInType-TPURE
+                   (#¬Names-APPLY {eval} {#NUM n} nnf refl) (#¬Names-APPLY {eval} {#NUM n} nnf refl)
+                   (equalInType-FUN→ {i} {w} {#NAT!} {#NAT!→BOOL!} {eval} {eval} eval∈ w2 (⊑-trans· e1 e2) (#NUM n) (#NUM n) (NUM-equalInType-NAT! i w2 n))
+
             h1 : equalInType i w2 (sub0 (#APPLY eval (#NUM n)) (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)) (#APPLY a (#APPLY eval (#NUM n))) (#APPLY a (#APPLY eval (#NUM n)))
             h1 = snd (snd (equalInType-PI→ {i} {w} {#TPURE #NAT!→BOOL!} {#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃} {a} {a} a∈))
-                     w2 (⊑-trans· e1 e2) (#APPLY eval (#NUM n)) (#APPLY eval (#NUM n)) {!!}
+                     w2 (⊑-trans· e1 e2) (#APPLY eval (#NUM n)) (#APPLY eval (#NUM n)) h0
 
             h2 : equalInType i w2 (#FUN (#MP-left-qt₃ (#APPLY eval (#NUM n))) (#MP-right-qt₃ (#APPLY eval (#NUM n)))) (#APPLY a (#APPLY eval (#NUM n))) (#APPLY a (#APPLY eval (#NUM n)))
             h2 = ≡CTerm→equalInType (sub0-fun-mp₆ (#APPLY eval (#NUM n))) h1
 
 
 -- Not true
+{--
 →Σpure : (i : ℕ) (w : 𝕎·) (a : CTerm)
           → ∈Type i w #NAT! a
           → Σ ℕ (λ n → equalInType i w #NAT! a (#NUM n))
@@ -166,5 +263,6 @@ sub0-fun-mp-qt₄ f a =
 
     aw : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' a a → Σ ℕ (λ n → equalInType i w #NAT! a (#NUM n)))
     aw w1 e1 (n , c₁ , c₂) = n , {!→equalInType-NAT! i w!}
+--}
 
 \end{code}
