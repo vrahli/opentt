@@ -193,7 +193,7 @@ sub0-fun-mp-qt₄ f a =
 --
 -- This lemma was suggested by Yannick Forster.
 --
--- MPₚᵤᵣₑ : πₚ (F : (ℕ → 𝔹) ∩ pure). ¬(Π (n : ℕ). ¬(F n ≡ true)) → ||Σ (n : ℕ). F n ≡ true||
+-- MPₚᵤᵣₑ : π (F : (ℕ → 𝔹) ∩ pure). ¬(Π (n : ℕ). ¬(F n ≡ true)) → ||Σ (n : ℕ). F n ≡ true||
 -- MPₚᵣ   : π (m : ℕ). ¬(Π (n : ℕ). ¬(eval m n ≡ true)) → ||Σ (n : ℕ). eval m n ≡ true||
 --
 -- We show MPₚᵤᵣₑ → MPₚᵣ when eval is a pure function (i.e., it satisfies #¬Names) in ℕ → ℕ → 𝔹
