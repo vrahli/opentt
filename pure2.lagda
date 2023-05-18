@@ -191,16 +191,18 @@ sub0-fun-mp-qt₄ f a =
           (→equalInType-mp-left-qt₃ {i} {w1} {g} {f} {j₁} {j₂} {j₁} {j₂} (equalInType-sym (equalInType-mon f∈ w1 e1)) j∈))
 
 --
--- MP_pure: πₚ (F : (ℕ → 𝔹) ∩ pure). ¬(Π (n : ℕ). ¬(F n ≡ true)) → ||Σ (n : ℕ). F n ≡ true||
--- MP_PR:   πₚ (m : ℕ. ¬(Π (n : ℕ). ¬(eval m n ≡ true)) → ||Σ (n : ℕ). eval m n ≡ true||
+-- MPₚᵤᵣₑ: πₚ (F : (ℕ → 𝔹) ∩ pure). ¬(Π (n : ℕ). ¬(F n ≡ true)) → ||Σ (n : ℕ). F n ≡ true||
+-- MPₚᵣ:   πₚ (m : ℕ. ¬(Π (n : ℕ). ¬(eval m n ≡ true)) → ||Σ (n : ℕ). eval m n ≡ true||
 --
--- Poof sketch:
+-- We show MPₚᵤᵣₑ → MPₚᵣ when eval is a pure function (i.e., it satisfies #¬Names) in ℕ → ℕ → 𝔹
+--
+-- Proof sketch:
 --                 ∀ w' ≻ w. m ∈ □ Nat @ w' → □ P at w' w
 --              -> use K: ∀ w' ≻ w. □ w' (∀ m∈ℕ. P)
 --              -> use K on MP_pure
 --              -> instantiate F with (eval m)
 --
--- All datatypes are "no-reads/no-write" types, so potentially effectful
+-- All datatypes are "no-reads/no-writes" types, so effects are constraints, but still potentially effectful as inhabitants don't have to be pure
 --
 Πpure→ : (i : ℕ) (w : 𝕎·) (eval a : CTerm)
           → #¬Names eval
