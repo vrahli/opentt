@@ -191,6 +191,8 @@ sub0-fun-mp-qt₄ f a =
           (→equalInType-mp-left-qt₃ {i} {w1} {g} {f} {j₁} {j₂} {j₁} {j₂} (equalInType-sym (equalInType-mon f∈ w1 e1)) j∈))
 
 --
+-- This lemma was suggested by Yannick Forster.
+--
 -- MPₚᵤᵣₑ: πₚ (F : (ℕ → 𝔹) ∩ pure). ¬(Π (n : ℕ). ¬(F n ≡ true)) → ||Σ (n : ℕ). F n ≡ true||
 -- MPₚᵣ:   πₚ (m : ℕ. ¬(Π (n : ℕ). ¬(eval m n ≡ true)) → ||Σ (n : ℕ). eval m n ≡ true||
 --
@@ -202,7 +204,8 @@ sub0-fun-mp-qt₄ f a =
 --              -> use K on MP_pure
 --              -> instantiate F with (eval m)
 --
--- All datatypes are "no-reads/no-writes" types, so effects are constraints, but still potentially effectful as inhabitants don't have to be pure
+-- All datatypes are "no-reads/no-writes" types, so effects are constraints, but still potentially effectful
+-- as inhabitants don't have to be pure
 --
 Πpure→ : (i : ℕ) (w : 𝕎·) (eval a : CTerm)
           → #¬Names eval
@@ -229,7 +232,7 @@ sub0-fun-mp-qt₄ f a =
         aw2 : ∀𝕎 w1 (λ w' e' → #⇛!sameℕ w' n₁ n₂
                               → equalInType i w' (#FUN (#MP-left-qt₃ (#APPLY eval n₁)) (#MP-right-qt₃ (#APPLY eval n₁))) (#APPLY a n₁) (#APPLY a n₂))
         aw2 w2 e2 (n , c₁ , c₂) =
-          -- the extract doesn't matter, so this is essentially h2, except that we have n₁ and (#NUM n) in h2
+          -- the extract doesn't matter, so this is essentially h2, except that we have n₁ here and (#NUM n) in h2
           →equalInType-fun-mp-qt₃
             {i} {w2} {#APPLY eval (#NUM n)} {#APPLY eval n₁} {#APPLY a (#APPLY eval (#NUM n))} {#APPLY a (#APPLY eval (#NUM n))}
             (equalInType-FUN→
