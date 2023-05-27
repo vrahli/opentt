@@ -83,6 +83,7 @@ record Mod : Set(lsuc(lsuc(L))) where
                          {g₁ : wPredDep f₁} {g₂ : wPredDep f₂} {g₃ : wPredDep f₃}
                          (i₁ : □ w f₁) (i₂ : □ w f₂) (i₃ : □ w f₃)
                          → ∀𝕎 w (λ w' e' → (x₁ : f₁ w' e') (x₂ : f₂ w' e') (x₃ : f₃ w' e')
+                                          → (at₁ : at□ i₁ w' e' x₁) (at₂ : at□ i₂ w' e' x₂) (at₃ : at□ i₃ w' e' x₃)
                                           → g₁ w' e' x₁ → g₂ w' e' x₂ → g₃ w' e' x₃)
                          → □' w i₁ g₁ → □' w i₂ g₂ → □' w i₃ g₃
 
@@ -136,15 +137,15 @@ record Mod : Set(lsuc(lsuc(L))) where
                                → g w' e' zg → h w' e' zh → k w' e' z)
               → Mod.□' b w i g → Mod.□' b w i h → Mod.□' b w i k
 □'-comb b {w} {f} {g} {h} {k} i aw j₁ j₂ =
-  Mod.□'-comb-change b i i i (λ w1 e1 x₁ x₂ x₃ a b → aw w1 e1 x₃ x₁ x₂ a b) j₁ j₂
+  Mod.□'-comb-change b i i i (λ w1 e1 x₁ x₂ x₃ at₁ at₂ at₃ a b → aw w1 e1 x₃ x₁ x₂ a b) j₁ j₂
 
 
 □'-change : (b : Mod) {w : 𝕎·} {f k : wPred w} {g : wPredDep f} {h : wPredDep k} (i : Mod.□ b w f) (j : Mod.□ b w k)
-                → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e')
+                → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e') (at₁ : Mod.at□ b i w' e' x) (at₂ : Mod.at□ b j w' e' y)
                                   → g w' e' x → h w' e' y)
                 → Mod.□' b w i g → Mod.□' b w j h
 □'-change b {w} {f} {k} {g} {h} i j aw u =
-  Mod.□'-comb-change b i i j (λ w1 e1 x₁ x₂ x₃ a b → aw w1 e1 x₁ x₃ a) u u
+  Mod.□'-comb-change b i i j (λ w1 e1 x₁ x₂ x₃ at₁ at₂ at₂ a b → aw w1 e1 x₁ x₃ at₁ at₂ a) u u
 
 
 -- This is a consequence of [∀𝕎-□'-□]

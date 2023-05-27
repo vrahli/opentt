@@ -378,6 +378,7 @@ bar-𝔹⊑→ {B} mon {w} {w'} e {b} {w0} h = 𝔹.mon b (fst (snd (snd h))) (f
                     {g₁ : wPredDep f₁} {g₂ : wPredDep f₂} {g₃ : wPredDep f₃}
                     (i₁ : Σ∈𝔹 B f₁) (i₂ : Σ∈𝔹 B f₂) (i₃ : Σ∈𝔹 B f₃)
                     → ∀𝕎 w (λ w' e' → (x₁ : f₁ w' e') (x₂ : f₂ w' e') (x₃ : f₃ w' e')
+                                     → (at₁ : ATΣ∈𝔹 i₁ w' e' x₁) (at₂ : ATΣ∈𝔹 i₂ w' e' x₂) (at₃ : ATΣ∈𝔹 i₃ w' e' x₃)
                                      → g₁ w' e' x₁ → g₂ w' e' x₂ → g₃ w' e' x₃)
                     → Σ∈𝔹' B i₁ g₁ → Σ∈𝔹' B i₂ g₂ → Σ∈𝔹' B i₃ g₃
 Σ∈𝔹'-comb-change {B} mon isect fam {w} {f₁} {f₂} {f₃} {g₁} {g₂} {g₃} (b₁ , i₁) (b₂ , i₂) (b₃ , i₃) aw z₁ z₂ {w'} e ib =
@@ -409,6 +410,9 @@ bar-𝔹⊑→ {B} mon {w} {w'} e {b} {w0} h = 𝔹.mon b (fst (snd (snd h))) (f
          (i₁ (⊑-trans· e ex1) (𝔹.mon b₁ ex2 brx) w3 (⊑-trans· (𝔹.ext (fst (z₁' ex1 (wx2 , brx , ex2 , ex3))) bfx) (⊑-trans· ex e3)) x₁)
          (i₂ (⊑-trans· e ey1) (𝔹.mon b₂ ey2 bry) w3 (⊑-trans· (𝔹.ext (fst (z₂' ey1 (wy2 , bry , ey2 , ey3))) bfy) (⊑-trans· ey e3)) x₁)
          (i₃ e ib w3 x x₁)
+         (ATΣ∈𝔹-S wx1 (⊑-trans· e ex1) (𝔹.mon b₁ ex2 brx) w3 (⊑-trans· (𝔹.ext (fst (z₁' ex1 (wx2 , brx , ex2 , ex3))) bfx) (⊑-trans· ex e3)) x₁)
+         (ATΣ∈𝔹-S wy1 (⊑-trans· e ey1) (𝔹.mon b₂ ey2 bry) w3 (⊑-trans· (𝔹.ext (fst (z₂' ey1 (wy2 , bry , ey2 , ey3))) bfy) (⊑-trans· ey e3)) x₁)
+         (ATΣ∈𝔹-S w' e ib w3 x x₁)
          (snd (z₁' ex1 (wx2 , brx , ex2 , ex3)) (𝔹.ext (fst (z₁' ex1 (wx2 , brx , ex2 , ex3))) bfx) bfx w3 (⊑-trans· ex e3) (⊑-trans· (𝔹.ext (fst (z₁' ex1 (wx2 , brx , ex2 , ex3))) bfx) (⊑-trans· ex e3)) x₁)
          (snd (z₂' ey1 (wy2 , bry , ey2 , ey3)) (𝔹.ext (fst (z₂' ey1 (wy2 , bry , ey2 , ey3))) bfy) bfy w3 (⊑-trans· ey e3) (⊑-trans· (𝔹.ext (fst (z₂' ey1 (wy2 , bry , ey2 , ey3))) bfy) (⊑-trans· ey e3)) x₁)
 
@@ -531,7 +535,7 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
              → Σ∈𝔹' B i g → Σ∈𝔹' B i h → Σ∈𝔹' B i k
 Σ∈𝔹'-comb {B} mon isect fam {w} {f} {g} {h} {k} i aw j₁ j₂ =
   Σ∈𝔹'-comb-change {B} mon isect fam {w} {f} {f} {f} {g} {h} {k}
-                    i i i (λ w1 e1 x₁ x₂ x₃ a b → aw w1 e1 x₃ x₁ x₂ a b) j₁ j₂
+                    i i i (λ w1 e1 x₁ x₂ x₃ at₁ at₂ at₃ a b → aw w1 e1 x₃ x₁ x₂ a b) j₁ j₂
 
 {--
 Σ∈𝔹'-comb : {B : Bars} (mon : Bars⊑ B) (isect : Bars∩ B) (fam : BarsFam2 B)
@@ -570,7 +574,9 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
                                 → g w' e' x → h w' e' y)
                → Σ∈𝔹' B i g → Σ∈𝔹' B j h
 Σ∈𝔹'-change {B} mon isect fam {w} {f} {k} {g} {h} i j aw z =
-  Σ∈𝔹'-comb-change mon isect fam {w} {f} {f} {k} {g} {g} {h} i i j (λ w1 e1 x₁ x₂ x₃ a b → aw w1 e1 x₁ x₃ a) z z
+  Σ∈𝔹'-comb-change
+    mon isect fam {w} {f} {f} {k} {g} {g} {h} i i j
+    (λ w1 e1 x₁ x₂ x₃ at₁ at₂ at₃ a b → aw w1 e1 x₁ x₃ a) z z
 
 {--
 Σ∈𝔹'-change : {B : Bars} (mon : Bars⊑ B) (fam : BarsFam2 B)
