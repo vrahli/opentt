@@ -148,6 +148,14 @@ record Mod : Set(lsuc(lsuc(L))) where
   Mod.□'-comb-change b i i j (λ w1 e1 x₁ x₂ x₃ at₁ at₂ at₂ a b → aw w1 e1 x₁ x₃ at₁ at₂ a) u u
 
 
+□'-change₀ : (b : Mod) {w : 𝕎·} {f k : wPred w} {g : wPredDep f} {h : wPredDep k} (i : Mod.□ b w f) (j : Mod.□ b w k)
+                → ∀𝕎 w (λ w' e' → (x : f w' e') (y : k w' e')
+                                  → g w' e' x → h w' e' y)
+                → Mod.□' b w i g → Mod.□' b w j h
+□'-change₀ b {w} {f} {k} {g} {h} i j aw u =
+  Mod.□'-comb-change b i i j (λ w1 e1 x₁ x₂ x₃ at₁ at₂ at₂ a b → aw w1 e1 x₁ x₃ a) u u
+
+
 -- This is a consequence of [∀𝕎-□'-□]
 □'-□ : (b : Mod) {w : 𝕎·} {f : wPred w} {h : wPred w}
                → (i : Mod.□ b w f) → Mod.□' b w i (λ w1 e1 z → h w1 e1) → Mod.□ b w h

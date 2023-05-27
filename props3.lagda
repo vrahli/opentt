@@ -126,7 +126,7 @@ abstract
   equalInType-EQ→₁ {u} {w} {a} {b} {A} {f} {g} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (EQneqUNIV (compAllVal x₁ tt))
   equalInType-EQ→₁ {u} {w} {a} {b} {A} {f} {g} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqLIFT (compAllVal x₁ tt))
   equalInType-EQ→₁ {u} {w} {a} {b} {A} {f} {g} (EQTBAR x , eqi) =
-    equalInType-local (Mod.∀𝕎-□'-□ M x aw eqi)
+    equalInType-local (∀𝕎-□'-□₀ W M x aw eqi)
     where
       aw : ∀𝕎 w (λ w' e' → (z : equalTypes u w' (#EQ a b A) (#EQ a b A)) → equalTerms u w' z f g → equalInType u w' A a b)
       aw w' e' z h = equalInType-EQ→₁ (z , h)
@@ -873,7 +873,7 @@ abstract
   equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTLIFT A1 A2 x x₁ eqtA exta) eqi rewrite ↓U-uni i =
     Mod.∀𝕎-□Func M (λ w' e h → equalTerms-#⇛-left-aux (λ j k → ind j (≤-trans k (↓𝕃≤ i))) (∀𝕎-mon e comp) (eqtA w' e) h) eqi
   equalTerms-#⇛-left-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTBAR x) eqi =
-    □'-change W M x x aw eqi
+    □'-change₀ W M x x aw eqi
     where
       aw : ∀𝕎 w (λ w' e' → (x₁ x₂ : equalTypes i w' A B) → equalTerms i w' x₁ a c → equalTerms i w' x₂ b c)
       aw w' e x₁ x₂ h = equalTerms-#⇛-left-aux ind (∀𝕎-mon e comp) x₂ (eqInType-extl1 B B x₁ x₂ h)
@@ -1231,7 +1231,7 @@ abstract
   equalInType-ISECT→₁ {n} {w} {A} {B} {a} {b} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (ISECTneqUNIV (compAllVal x₁ tt))
   equalInType-ISECT→₁ {n} {w} {A} {B} {a} {b} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (ISECTneqLIFT (compAllVal x₁ tt))
   equalInType-ISECT→₁ {n} {w} {A} {B} {a} {b} (EQTBAR x , eqi) =
-    eqTypes-local (Mod.∀𝕎-□'-□ M x aw eqi)
+    eqTypes-local (∀𝕎-□'-□₀ W M x aw eqi)
     where
       aw : ∀𝕎 w (λ w' e' → (z : isType n w' (#ISECT A B)) → equalTerms n w' z a b → isType n w' A)
       aw w' e z y = equalInType-ISECT→₁ (z , y)
@@ -1274,7 +1274,7 @@ abstract
   equalInType-ISECT→₂ {n} {w} {A} {B} {a} {b} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (ISECTneqUNIV (compAllVal x₁ tt))
   equalInType-ISECT→₂ {n} {w} {A} {B} {a} {b} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (ISECTneqLIFT (compAllVal x₁ tt))
   equalInType-ISECT→₂ {n} {w} {A} {B} {a} {b} (EQTBAR x , eqi) =
-    eqTypes-local (Mod.∀𝕎-□'-□ M x aw eqi)
+    eqTypes-local (∀𝕎-□'-□₀ W M x aw eqi)
     where
       aw : ∀𝕎 w (λ w' e' → (z : isType n w' (#ISECT A B)) → equalTerms n w' z a b → isType n w' B)
       aw w' e z y = equalInType-ISECT→₂ {n} {w'} {A} {B} {a} {b} (z , y)
@@ -1317,7 +1317,7 @@ abstract
   equalInType-UNION→₁ {n} {w} {A} {B} {a} {b} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (UNIONneqUNIV (compAllVal x₁ tt))
   equalInType-UNION→₁ {n} {w} {A} {B} {a} {b} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (UNIONneqLIFT (compAllVal x₁ tt))
   equalInType-UNION→₁ {n} {w} {A} {B} {a} {b} (EQTBAR x , eqi) =
-    eqTypes-local (Mod.∀𝕎-□'-□ M x aw eqi)
+    eqTypes-local (∀𝕎-□'-□₀ W M x aw eqi)
     where
       aw : ∀𝕎 w (λ w' e' → (z : isType n w' (#UNION A B)) → equalTerms n w' z a b → isType n w' A)
       aw w' e z y = equalInType-UNION→₁ (z , y)
@@ -1360,7 +1360,7 @@ abstract
   equalInType-UNION→₂ {n} {w} {A} {B} {a} {b} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (UNIONneqUNIV (compAllVal x₁ tt))
   equalInType-UNION→₂ {n} {w} {A} {B} {a} {b} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (UNIONneqLIFT (compAllVal x₁ tt))
   equalInType-UNION→₂ {n} {w} {A} {B} {a} {b} (EQTBAR x , eqi) =
-    eqTypes-local (Mod.∀𝕎-□'-□ M x aw eqi)
+    eqTypes-local (∀𝕎-□'-□₀ W M x aw eqi)
     where
       aw : ∀𝕎 w (λ w' e' → (z : isType n w' (#UNION A B)) → equalTerms n w' z a b → isType n w' B)
       aw w' e z y = equalInType-UNION→₂ {n} {w'} {A} {B} {a} {b} (z , y)
@@ -1402,7 +1402,7 @@ abstract
   equalInType-QTUNION→₁ {n} {w} {A} {B} {a} {b} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (QTUNIONneqUNIV (compAllVal x₁ tt))
   equalInType-QTUNION→₁ {n} {w} {A} {B} {a} {b} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (QTUNIONneqLIFT (compAllVal x₁ tt))
   equalInType-QTUNION→₁ {n} {w} {A} {B} {a} {b} (EQTBAR x , eqi) =
-    eqTypes-local (Mod.∀𝕎-□'-□ M x aw eqi)
+    eqTypes-local (∀𝕎-□'-□₀ W M x aw eqi)
     where
       aw : ∀𝕎 w (λ w' e' → (z : isType n w' (#QTUNION A B)) → equalTerms n w' z a b → isType n w' A)
       aw w' e z y = equalInType-QTUNION→₁ (z , y)
@@ -1445,7 +1445,7 @@ abstract
   equalInType-QTUNION→₂ {n} {w} {A} {B} {a} {b} (EQTUNIV i p x x₁ , eqi) = ⊥-elim (QTUNIONneqUNIV (compAllVal x₁ tt))
   equalInType-QTUNION→₂ {n} {w} {A} {B} {a} {b} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (QTUNIONneqLIFT (compAllVal x₁ tt))
   equalInType-QTUNION→₂ {n} {w} {A} {B} {a} {b} (EQTBAR x , eqi) =
-    eqTypes-local (Mod.∀𝕎-□'-□ M x aw eqi)
+    eqTypes-local (∀𝕎-□'-□₀ W M x aw eqi)
     where
       aw : ∀𝕎 w (λ w' e' → (z : isType n w' (#QTUNION A B)) → equalTerms n w' z a b → isType n w' B)
       aw w' e z y = equalInType-QTUNION→₂ {n} {w'} {A} {B} {a} {b} (z , y)

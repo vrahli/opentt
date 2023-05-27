@@ -306,7 +306,7 @@ equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA e
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTUNIV i₁ p x x₁ , eqi) = ⊥-elim (FFDEFSneqUNIV (compAllVal x₁ tt))
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (FFDEFSneqLIFT (compAllVal x₁ tt))
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTBAR x , eqi) =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
+  Mod.□-idem M (∀𝕎-□'-□₀ W M x aw eqi)
   where
     aw : ∀𝕎 w (λ w' e' → (z : isType i w' (#FFDEFS A u))
                         → equalTerms i w' z a b
@@ -375,7 +375,7 @@ abstract
   equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTUNIV i₁ p x x₁ , eqi) = ⊥-elim (LTneqUNIV (compAllVal x tt))
   equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTLIFT A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (LTneqLIFT(compAllVal x tt))
   equalInType-LT-⇛NUM→ {i} {w} {a} {b} {u} {v} {n} {m} compa compb (EQTBAR x , eqi) =
-    lower (Mod.□-const M {w} (Mod.∀𝕎-□'-□ M x aw eqi))
+    lower (Mod.□-const M {w} (∀𝕎-□'-□₀ W M x aw eqi))
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni i) w' (#LT a b) (#LT a b))
                          → eqInType (uni i) w' z u v → Lift (lsuc L) (m < n))
@@ -462,7 +462,7 @@ abstract
   equalInType-W→ i w A B t u (EQTUNIV i₁ p x x₁ , h) = ⊥-elim (WneqUNIV (compAllVal x tt))
   equalInType-W→ i w A B t u (EQTLIFT A1 A2 x x₁ eqtA exta , h) = ⊥-elim (WneqLIFT (compAllVal x tt))
   equalInType-W→ i w A B t u (EQTBAR x , h) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw h)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M x aw h)
     where
       aw : ∀𝕎 w (λ w' e' → (x₁ : eqTypes (uni i) w' (#WT A B) (#WT A B))
                          → eqInType (uni i) w' x₁ t u
@@ -512,7 +512,7 @@ abstract
   equalInType-M→ i w A B t u (EQTUNIV i₁ p x x₁ , h) = ⊥-elim (MneqUNIV (compAllVal x tt))
   equalInType-M→ i w A B t u (EQTLIFT A1 A2 x x₁ eqtA exta , h) = ⊥-elim (MneqLIFT (compAllVal x tt))
   equalInType-M→ i w A B t u (EQTBAR x , h) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw h)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M x aw h)
     where
       aw : ∀𝕎 w (λ w' e' → (x₁ : eqTypes (uni i) w' (#MT A B) (#MT A B))
                          → eqInType (uni i) w' x₁ t u
