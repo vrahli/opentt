@@ -291,7 +291,7 @@ typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
 
 typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (EQneqLIFT (⇛-val-det tt tt x y))
 typeSysConds-EQ-extl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTBAR y) f g eqi =
-  Mod.∀𝕎-□-□' M y ib
+  ∀𝕎-□-□'₀ W M y ib
   where
     ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A C) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
     ib w1 e1 z {--at--} =
@@ -373,7 +373,7 @@ typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
 
 typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (EQneqLIFT (⇛-val-det tt tt x y₁))
 typeSysConds-EQ-extl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTBAR y) f g eqi =
-  Mod.∀𝕎-□-□' M y ib
+  ∀𝕎-□-□'₀ W M y ib
   where
     ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' C A) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
     ib w1 e1 z {--at--} =
@@ -458,7 +458,7 @@ typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
 
 typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (EQneqLIFT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-EQ-extr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTBAR y) f g eqi =
-  Mod.∀𝕎-□-□' M y ib
+  ∀𝕎-□-□'₀ W M y ib
   where
     ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' C B) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
     ib w1 e1 z {--at--} =
@@ -533,7 +533,7 @@ typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 
 
 typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (EQneqLIFT (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-extr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTBAR y) f g eqi =
-  Mod.∀𝕎-□-□' M y ib
+  ∀𝕎-□-□'₀ W M y ib
   where
     ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' B C) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
     ib w1 e1 z {--at--} =
@@ -607,7 +607,7 @@ typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
 
 typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (EQneqLIFT (⇛-val-det tt tt x y))
 typeSysConds-EQ-extrevl1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTBAR y) f g eqi =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+  Mod.□-idem M (∀𝕎-□'-□₀ W M y aw eqi)
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
@@ -703,7 +703,7 @@ typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
 
 typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (EQneqLIFT (⇛-val-det tt tt x y₁))
 typeSysConds-EQ-extrevl2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTBAR y) f g eqi =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+  Mod.□-idem M (∀𝕎-□'-□₀ W M y aw eqi)
   where
 {--    irr : wPredExtIrr (λ w' e → EQeq a1 a2 (eqInType u w' (eqta w' e)) w' f g)
     irr w' e1 e2 (c₁ , c₂ , ea) = c₁ , c₂ , TSP.extrevl1 (inda w' e2) B1 (eqta w' e1) a1 a2 ea--}
@@ -809,7 +809,7 @@ typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
 
 typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (EQneqLIFT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-EQ-extrevr1 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTBAR y) f g eqi =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+  Mod.□-idem M (∀𝕎-□'-□₀ W M y aw eqi)
   where
 {--    irr : wPredExtIrr (λ w' e → EQeq a1 a2 (eqInType u w' (eqta w' e)) w' f g)
     irr w' e1 e2 (c₁ , c₂ , ea) = c₁ , c₂ , TSP.extrevl1 (inda w' e2) B1 (eqta w' e1) a1 a2 ea--}
@@ -905,7 +905,7 @@ typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eq
 
 typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (EQneqLIFT (⇛-val-det tt tt x₁ y))
 typeSysConds-EQ-extrevr2 u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 C (EQTBAR y) f g eqi =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+  Mod.□-idem M (∀𝕎-□'-□₀ W M y aw eqi)
   where
 {--    irr : wPredExtIrr (λ w' e → EQeq a1 a2 (eqInType u w' (eqta w' e)) w' f g)
     irr w' e1 e2 (c₁ , c₂ , ea) = c₁ , c₂ , TSP.extrevl1 (inda w' e2) B1 (eqta w' e1) a1 a2 ea--}
@@ -1001,7 +1001,7 @@ eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTUNIV 
 
 eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTLIFT A3 A4 x x₁ eqtA extA) ei = ⊥-elim (EQneqLIFT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTBAR x) ei =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw ei)
+  Mod.□-idem M (∀𝕎-□'-□₀ W M x aw ei)
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
@@ -1089,23 +1089,23 @@ eqInType-⇛-EQ2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTBAR x) ei
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : ≡Types u w' A B) {--(at : atbar x w' e' z)--} →
+         (z : ≡Types u w' A B) (at : at□· x w' e' z) →
          ≡∈Type u w' z a b →
          □· w' (λ w'' e → EQeq a1 a2 (≡∈Type u w'' (eqta w'' (⊑-trans· e' e))) w'' a b))
-    aw0 w1 e1 z {--at--} ez =
+    aw0 w1 e1 z at ez =
       eqInType-⇛-EQ2
         u w1 A B A1 B1 a1 b1 a2 b2 a b
         (∀𝕎-mon e1 eqta)
         (wPredExtIrr-eqInType-mon eqta exta w1 e1)
         (⇛-mon e1 c₁) (⇛-mon e1 c₂) z ez
-        (≤Type-EQTBAR-eqInTypeExt e1 {--at--} ext)
+        (≤Type-EQTBAR-eqInTypeExt e1 at ext)
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : ≡Types u w' A B) {--(at : atbar x w' e' z)--} →
+         (z : ≡Types u w' A B) (at : at□· x w' e' z) →
          ≡∈Type u w' z a b →
          □· w' (λ w'' e → (x : w ⊑· w'') → EQeq a1 a2 (≡∈Type u w'' (eqta w'' x)) w'' a b))
-    aw w1 e1 z {--at--} ez = Mod.∀𝕎-□Func M (irr-eq (u ·ᵤ) w a1 a2 A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z {--at--} ez)
+    aw w1 e1 z at ez = Mod.∀𝕎-□Func M (irr-eq (u ·ᵤ) w a1 a2 A1 B1 eqta exta a b w1 e1) (aw0 w1 e1 z at ez)
 
 
 
@@ -1171,7 +1171,7 @@ eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTU
 
 eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTLIFT A3 A4 x x₁ eqtA extA) ei = ⊥-elim (EQneqLIFT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-EQ-rev u w A B A1 B1 a1 b1 a2 b2 a b eqta exta inda c₁ c₂ (EQTBAR x) ei =
-  Mod.∀𝕎-□-□' M x aw
+  ∀𝕎-□-□'₀ W M x aw
   where
     aw : ∀𝕎 w
       (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} → eqInType u w' z a b)
@@ -1255,13 +1255,13 @@ eqInType-⇛-EQ-rev2 u w A B A1 B1 a1 b1 a2 b2 a b eqta exta c₁ c₂ (EQTBAR x
   Mod.∀𝕎-□-□' M x aw
   where
     aw : ∀𝕎 w
-      (λ w' e' → (z : ≡Types u w' A B) {--(at : atbar x w' e' z)--} → ≡∈Type u w' z a b)
-    aw w1 e1 z {--at--} =
+      (λ w' e' → (z : ≡Types u w' A B) (at : at□· x w' e' z) → ≡∈Type u w' z a b)
+    aw w1 e1 z at =
       eqInType-⇛-EQ-rev2
         u w1 A B A1 B1 a1 b1 a2 b2 a b
         (∀𝕎-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1)
         (⇛-mon e1 c₁) (⇛-mon e1 c₂)
-        z (≤Type-EQTBAR-eqInTypeExt e1 {--at--} ext) j
+        z (≤Type-EQTBAR-eqInTypeExt e1 at ext) j
       where
         j : □· w1 (↑wPred (λ w' e → EQeq a1 a2 (≡∈Type u w' (eqta w' e)) w' a b) e1)
         j = Mod.↑□ M ei e1
@@ -1278,7 +1278,7 @@ typeSysConds-EQ-local : (u : univs) (w : 𝕎·) (A B A1 B1 a1 b1 a2 b2 : CTerm)
                         (eqt2 : ∀𝕎 w (λ w1 e1 → eqInType u w1 (eqta w1 e1) a2 b2))
                         → eqInTypeLocal (EQTEQ a1 b1 a2 b2 A1 B1 x x₁ eqta exta eqt1 eqt2)
 typeSysConds-EQ-local u w A B A1 B1 a1 b1 a2 b2 x x₁ eqta exta inda eqt1 eqt2 a b i j =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+  Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                          → eqInType u w' z a b

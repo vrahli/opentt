@@ -386,7 +386,7 @@ typeSysConds-QTUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 
 typeSysConds-QTUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (QTUNIONneqLIFT (⇛-val-det tt tt x y))
 typeSysConds-QTUNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  Mod.∀𝕎-□-□' M y ib
+  ∀𝕎-□-□'₀ W M y ib
   where
     ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A C) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
     ib w1 e1 z {--at--} =
@@ -456,7 +456,7 @@ typeSysConds-QTUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 
 typeSysConds-QTUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (QTUNIONneqLIFT (⇛-val-det tt tt x y₁))
 typeSysConds-QTUNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  Mod.∀𝕎-□-□' M y ib
+  ∀𝕎-□-□'₀ W M y ib
   where
     ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' C A) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
     ib w1 e1 z {--at--} =
@@ -526,7 +526,7 @@ typeSysConds-QTUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 
 typeSysConds-QTUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (QTUNIONneqLIFT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QTUNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  Mod.∀𝕎-□-□' M y ib
+  ∀𝕎-□-□'₀ W M y ib
   where
     ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' C B) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
     ib w1 e1 z {--at--} =
@@ -596,7 +596,7 @@ typeSysConds-QTUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda i
 
 typeSysConds-QTUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (QTUNIONneqLIFT (⇛-val-det tt tt x₁ y))
 typeSysConds-QTUNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  Mod.∀𝕎-□-□' M y ib
+  ∀𝕎-□-□'₀ W M y ib
   where
     ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' B C) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
     ib w1 e1 z {--at--} =
@@ -667,7 +667,7 @@ typeSysConds-QTUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 
 typeSysConds-QTUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (QTUNIONneqLIFT (⇛-val-det tt tt x y))
 typeSysConds-QTUNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+  Mod.□-idem M (∀𝕎-□'-□₀ W M y aw eqi)
   where
 {--    irr : wPredExtIrr (λ w' e → QTUNIONeq (eqInType u w' (eqta w' e)) (eqInType u w' (eqtb w' e)) w' f g)
     irr w' e1 e2 (a , b , inj₁ (c₁ , c₂ , z)) = a , b , inj₁ (c₁ , c₂ , TSP.extrevl1 (inda w' e2) A2 (eqta w' e1) a b z)
@@ -757,7 +757,7 @@ typeSysConds-QTUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 
 typeSysConds-QTUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (QTUNIONneqLIFT (⇛-val-det tt tt x y₁))
 typeSysConds-QTUNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+  Mod.□-idem M (∀𝕎-□'-□₀ W M y aw eqi)
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
@@ -844,7 +844,7 @@ typeSysConds-QTUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 
 typeSysConds-QTUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (QTUNIONneqLIFT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-QTUNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+  Mod.□-idem M (∀𝕎-□'-□₀ W M y aw eqi)
   where
 {--    irr : wPredExtIrr (λ w' e → QTUNIONeq (eqInType u w' (eqta w' e)) (eqInType u w' (eqtb w' e)) w' f g)
     irr w' e1 e2 (a , b , inj₁ (c₁ , c₂ , z)) = a , b , inj₁ (c₁ , c₂ , TSP.extrevl1 (inda w' e2) A2 (eqta w' e1) a b z)
@@ -934,7 +934,7 @@ typeSysConds-QTUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb ind
 
 typeSysConds-QTUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (QTUNIONneqLIFT (⇛-val-det tt tt x₁ y))
 typeSysConds-QTUNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+  Mod.□-idem M (∀𝕎-□'-□₀ W M y aw eqi)
   where
 {--    irr : wPredExtIrr (λ w' e → QTUNIONeq (eqInType u w' (eqta w' e)) (eqInType u w' (eqtb w' e)) w' f g)
     irr w' e1 e2 (a , b , inj₁ (c₁ , c₂ , z)) = a , b , inj₁ (c₁ , c₂ , TSP.extrevl1 (inda w' e2) A2 (eqta w' e1) a b z)
@@ -1034,7 +1034,7 @@ eqInType-⇛-QTUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ 
 
 eqInType-⇛-QTUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTLIFT A3 A4 x x₁ eqtA extA) ei = ⊥-elim (QTUNIONneqLIFT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTBAR x) ei =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw ei)
+  Mod.□-idem M (∀𝕎-□'-□₀ W M x aw ei)
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
@@ -1135,24 +1135,24 @@ eqInType-⇛-QTUNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQT
   where
     aw0 : ∀𝕎 w
       (λ w' e' →
-         (z : ≡Types u w' A B) {--(at : atbar x w' e' z)--} →
+         (z : ≡Types u w' A B) (at : at□· x w' e' z) →
          ≡∈Type u w' z a b →
          □· w' (λ w'' e → QTUNIONeq (≡∈Type u w'' (eqta w'' (⊑-trans· e' e))) (≡∈Type u w'' (eqtb w'' (⊑-trans· e' e))) w'' a b))
-    aw0 w1 e1 z {--at--} ez =
+    aw0 w1 e1 z at ez =
       eqInType-⇛-QTUNION2
         u w1 A B A1 A2 B1 B2 a b
         (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
         (wPredExtIrr-eqInType-mon eqta exta w1 e1)
         (wPredExtIrr-eqInType-mon eqtb extb w1 e1)
         (⇛-mon e1 c₁) (⇛-mon e1 c₂) z ez
-        (≤Type-EQTBAR-eqInTypeExt e1 {--at--} ext)
+        (≤Type-EQTBAR-eqInTypeExt e1 at ext)
 
     aw : ∀𝕎 w
       (λ w' e' →
-         (z : ≡Types u w' A B) {--(at : atbar x w' e' z)--} →
+         (z : ≡Types u w' A B) (at : at□· x w' e' z) →
          ≡∈Type u w' z a b →
          □· w' (λ w'' e → (x : w ⊑· w'') → QTUNIONeq (≡∈Type u w'' (eqta w'' x)) (≡∈Type u w'' (eqtb w'' x)) w'' a b))
-    aw w1 e1 z {--at--} ez = Mod.∀𝕎-□Func M (irr-qtunion (u ·ᵤ) w A1 A2 B1 B2 eqta exta eqtb extb a b w1 e1) (aw0 w1 e1 z {--at--} ez)
+    aw w1 e1 z at ez = Mod.∀𝕎-□Func M (irr-qtunion (u ·ᵤ) w A1 A2 B1 B2 eqta exta eqtb extb a b w1 e1) (aw0 w1 e1 z at ez)
 
 
 
@@ -1224,7 +1224,7 @@ eqInType-⇛-QTUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c
 
 eqInType-⇛-QTUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTLIFT A3 A4 x x₁ eqtA extA) ei = ⊥-elim (QTUNIONneqLIFT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-QTUNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTBAR x) ei =
-  Mod.∀𝕎-□-□' M x aw
+  ∀𝕎-□-□'₀ W M x aw
   where
     aw : ∀𝕎 w
       (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} → eqInType u w' z a b)
@@ -1319,15 +1319,15 @@ eqInType-⇛-QTUNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ 
   Mod.∀𝕎-□-□' M x aw
   where
     aw : ∀𝕎 w
-      (λ w' e' → (z : ≡Types u w' A B) {--(at : atbar x w' e' z)--} → ≡∈Type u w' z a b)
-    aw w1 e1 z {--at--} =
+      (λ w' e' → (z : ≡Types u w' A B) (at : at□· x w' e' z) → ≡∈Type u w' z a b)
+    aw w1 e1 z at =
       eqInType-⇛-QTUNION-rev2
         u w1 A B A1 A2 B1 B2 a b
         (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
         (wPredExtIrr-eqInType-mon eqta exta w1 e1)
         (wPredExtIrr-eqInType-mon eqtb extb w1 e1)
         (⇛-mon e1 c₁) (⇛-mon e1 c₂)
-        z (≤Type-EQTBAR-eqInTypeExt e1 {--at--} ext) j
+        z (≤Type-EQTBAR-eqInTypeExt e1 at ext) j
       where
         j : □· w1 (↑wPred (λ w' e → QTUNIONeq (≡∈Type u w' (eqta w' e)) (≡∈Type u w' (eqtb w' e)) w' a b) e1)
         j = Mod.↑□ M ei e1
@@ -1345,7 +1345,7 @@ typeSysConds-QTUNION-local : (u : univs) (w : 𝕎·) (A B A1 B1 A2 B2 : CTerm)
                            (indb : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqtb w1 e1)))
                            → eqInTypeLocal (EQTQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
 typeSysConds-QTUNION-local u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb a b i j =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+  Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                          → eqInType u w' z a b

@@ -3,6 +3,7 @@
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
 open import Agda.Builtin.Sigma
+open import Data.Unit using (⊤ ; tt)
 open import Data.Product
 open import Data.Sum
 open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; _∸_ ; pred ; _⊔_)
@@ -32,6 +33,9 @@ record Mod : Set(lsuc(lsuc(L))) where
     □             : (w : 𝕎·) (f : wPred w) → Set(lsuc(L))
     □'            : (w : 𝕎·) {g : wPred w} (h : □ w g) (f : wPredDep g) → Set(lsuc(L))
 
+    at□           : {w : 𝕎·} {f : wPred w} (i : □ w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
+--    at□-refl : {w : 𝕎·} {f : wPred w} (F : ∀𝕎 w f) → at□ {w} {f} (∀𝕎-□ F) w (⊑-refl· w) (F w (⊑-refl· w))
+
     -- ## Axioms
     -- Monotonicity of the operators
     ↑□            : {w : 𝕎·} {f : wPred w} (i : □ w f) {w' : 𝕎·} (e : w ⊑· w') → □ w' (↑wPred f e)
@@ -53,7 +57,7 @@ record Mod : Set(lsuc(lsuc(L))) where
                         → (i : □ w f) → □' w i g
     -- similar to above without □
     ∀𝕎-□-□' : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : □ w f)
-                        → ∀𝕎 w (λ w' e' → (x : f w' e') {--(at : atBar i w' e' x)--} → g w' e' x)
+                        → ∀𝕎 w (λ w' e' → (x : f w' e') (at : at□ i w' e' x) → g w' e' x)
                         → □' w i g
 
     -- name?
@@ -69,8 +73,9 @@ record Mod : Set(lsuc(lsuc(L))) where
                         → □' w i g
 
     -- □' → □
+    -- TODO: this generalizes ∀𝕎-□Func. Get rid of it?
     ∀𝕎-□'-□ : {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w} (i : □ w f)
-                        → ∀𝕎 w (λ w' e' → (x : f w' e') {--→ atBar i w' e' x--} → g w' e' x → h w' e')
+                        → ∀𝕎 w (λ w' e' → (x : f w' e') → at□ i w' e' x → g w' e' x → h w' e')
                         → □' w i g → □ w h
 
     -- (A→B→C) → □'A→□'B→□'C
@@ -89,11 +94,10 @@ record Mod : Set(lsuc(lsuc(L))) where
     →□∀𝕎 : {w : 𝕎·} {f : wPred w} → □ w f → □ w (λ w' e → ∀𝕎 w' (↑wPred f e))
 
 
---    atBar             : {w : 𝕎·} {f : wPred w} (i : □ w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
+--    atbar  : {w : 𝕎·} {f : wPred w} (i : □ w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
 --    atBar-refl        : {w : 𝕎·} {f : wPred w} (i : □ w f) (p : f w (⊑-refl· w)) → atBar {w} {f} i w (⊑-refl· w) p
 
 --    wPredDepExtIrrBar : {w : 𝕎·} {f : wPred w} (h : wPredDep f) (i : □ w f) → Set(lsuc(L))
---    atBar             : {w : 𝕎·} {f : wPred w} (i : □ w f) (w' : 𝕎·) → Set(lsuc(L))
 {--    ↑□'           : {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : □ w f) {w' : 𝕎·} (e : w' ⊇ w) {h : wPredDep (↑wPred f e)}
                         → ∀𝕎 w' (λ w'' e'' → (x y : f w'' (⊑-trans· e e'')) (at : atBar i w'' (⊑-trans· e e'') x) → g w'' (⊑-trans· e e'') x → h w'' e'' y)
                         → □' w i g → □' w' (↑□ i e) h--}
@@ -146,7 +150,7 @@ record Mod : Set(lsuc(lsuc(L))) where
 -- This is a consequence of [∀𝕎-□'-□]
 □'-□ : (b : Mod) {w : 𝕎·} {f : wPred w} {h : wPred w}
                → (i : Mod.□ b w f) → Mod.□' b w i (λ w1 e1 z → h w1 e1) → Mod.□ b w h
-□'-□ b {w} {f} {h} i q = Mod.∀𝕎-□'-□ b i (λ w1 e1 x {--at--} z → z) q
+□'-□ b {w} {f} {h} i q = Mod.∀𝕎-□'-□ b i (λ w1 e1 x at z → z) q
 
 
 -- This is a consequence of [□'-comb] for 3 dependent bars
@@ -163,12 +167,38 @@ record Mod : Set(lsuc(lsuc(L))) where
     c = □'-comb b i (λ w1 e1 zj zh zk (zg' , zh' , ig , ih) ik → imp w1 e1 zj zg' zh' zk ig ih ik) ip ik
 
 
+wPredDep⊤ : {w : 𝕎·} (f : wPred w) → wPredDep f
+wPredDep⊤ {w} f w1 e1 x = Lift (lsuc(L)) ⊤
+
+
+∀𝕎-□at : (m : Mod) {w : 𝕎·} {f : wPred w} {h : wPred w} (i : Mod.□ m w f)
+          → ∀𝕎 w (λ w' e' → (x : f w' e') (at : Mod.at□ m i w' e' x) → h w' e')
+          → Mod.□ m w h
+∀𝕎-□at m {w} {f} {h} i aw =
+  Mod.∀𝕎-□'-□
+    m {w} {f} {wPredDep⊤ f} {h} i (λ w1 e1 x at z → aw w1 e1 x at)
+    (Mod.□-□' m (Mod.∀𝕎-□ m (λ w1 e1 x → lift tt)) i)
+
+
+∀𝕎-□'-□₀ : (m : Mod) {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w} (i : Mod.□ m w f)
+             → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → h w' e')
+             → Mod.□' m w i g → Mod.□ m w h
+∀𝕎-□'-□₀ m {w} {f} {g} {h} i aw k = Mod.∀𝕎-□'-□ m i (λ w1 e1 z at y → aw w1 e1 z y) k
+
+
+∀𝕎-□-□'₀ : (m : Mod) {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : Mod.□ m w f)
+            → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x)
+            → Mod.□' m w i g
+∀𝕎-□-□'₀ m {w} {f} {g} i aw = Mod.∀𝕎-□-□' m i (λ w1 e1 x at → aw w1 e1 x)
+
 
 BarsProps→Mod : BarsProps → Mod
 BarsProps→Mod b =
   mkMod
     (λ w → Σ∈𝔹 (BarsProps.bars b) {w})
     (λ w → Σ∈𝔹' (BarsProps.bars b) {w})
+    ATΣ∈𝔹
+--    (ATΣ∈𝔹→Σ∈𝔹∀𝕎 (BarsProps.all b)) --(λ {w} {f} i p → ATΣ∈𝔹-R p)
     (↑Σ∈𝔹 (BarsProps.mon b))
     (↑'Σ∈𝔹 (BarsProps.mon b))
     (λ {w} {f} {g} → ↑Σ∈𝔹' (BarsProps.mon b) {w} {f} {g})

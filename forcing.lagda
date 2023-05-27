@@ -267,11 +267,11 @@ data eqTypes u w T1 T2 where
     → (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → eqTypes u w T1 T2
-{--  EQTDUM : (A1 A2 : Term)
-    → T1 ⇛ (DUM A1) at w
-    → T2 ⇛ (DUM A2) at w
+{--  EQTDUM : (A1 A2 : CTerm)
+    → T1 #⇛ (#DUM A1) at w
+    → T2 #⇛ (#DUM A2) at w
     → (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
-    → (exta : (a b : Term) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
+    → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → eqTypes u w T1 T2--}
   EQFFDEFS : (A1 A2 x1 x2 : CTerm)
     → T1 #⇛ (#FFDEFS A1 x1) at w
@@ -535,7 +535,7 @@ eqInType u w (EQTCONST _ _ _ _ eqtA exta) t1 t2 =
   □· w (λ w' e → TCONSTeq (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTSUBSING _ _ _ _ eqtA exta) t1 t2 =
   □· w (λ w' e → SUBSINGeq (eqInType u w' (eqtA w' e)) t1 t2)
---eqInType u w (EQTDUM _ _ _ _ eqtA exta) t1 t2 = Lift {0ℓ} 1ℓ ⊤
+--eqInType u w (EQTDUM _ _ _ _ _ _) t1 t2 = Lift {0ℓ} (lsuc L) ⊤
 eqInType u w (EQFFDEFS _ _ x1 _ _ _ eqtA exta _) t1 t2 =
   □· w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTPURE _ _) t1 t2 =

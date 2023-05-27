@@ -89,6 +89,12 @@ open import worldDef(W)
 --↑□·' {w} {f} {g} = ↑inBethBar' {w} {f} {g}
 
 
+at□· : {w : 𝕎·} {f : wPred w} (i : □· w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
+at□· = Mod.at□ M
+
+--at□-refl· : {w : 𝕎·} {f : wPred w} (F : ∀𝕎 w f) → at□· {w} {f} (Mod.∀𝕎-□ M F) w (⊑-refl· w) (F w (⊑-refl· w))
+--at□-refl· = Mod.at□-refl M
+
 
 {--
 atbar : {w : 𝕎·} {f : wPred w} (i : □· w f) (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))

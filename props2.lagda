@@ -1,6 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 {-# OPTIONS --guardedness #-}
+{-# OPTIONS --experimental-lossy-unification #-}
 
 --open import bar
 --module classical (bar : Bar) where

@@ -259,7 +259,7 @@ typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c₂
 
 typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x y))
 typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
-  Mod.∀𝕎-□-□' M y aw
+  ∀𝕎-□-□'₀ W M y aw
   where
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' A C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b)
     aw w1 e1 z {--at--} =
@@ -294,7 +294,7 @@ typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
 
         c : □·' w y (λ w' e' z → eqInType u w' z a b)
         c = loc-∀𝕎-inOpenBar-inOpenBar' y
-        --c = Mod.∀𝕎-□-□' M aw y
+        --c = ∀𝕎-□-□'₀ W M aw y
 --}
 
 
@@ -343,7 +343,7 @@ typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c₂
 
 typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
-  Mod.∀𝕎-□-□' M y aw
+  ∀𝕎-□-□'₀ W M y aw
   where
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C A) {--(at : atbar y w' e' x)--} → eqInType u w' x a b)
     aw w1 e1 z {--at--} =
@@ -399,7 +399,7 @@ typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c₂
 
 typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
-  Mod.∀𝕎-□-□' M y aw
+  ∀𝕎-□-□'₀ W M y aw
   where
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C B) {--(at : atbar y w' e' x)--} → eqInType u w' x a b)
     aw w1 e1 z {--at--} =
@@ -455,7 +455,7 @@ typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c₂
 
 typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
-  Mod.∀𝕎-□-□' M y aw
+  ∀𝕎-□-□'₀ W M y aw
   where
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' B C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b)
     aw w1 e1 z {--at--} =
@@ -512,7 +512,7 @@ typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c
 typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x y))
 typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
   Mod.□-idem M
-    (Mod.∀𝕎-□'-□ M y aw eqi)
+    (∀𝕎-□'-□₀ W M y aw eqi)
   where
     aw0 : ∀𝕎 w (λ w' e' → (x : eqTypes u w' A C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
                           → Mod.□ M w' (↑wPred (λ w'' e → #lift-<NUM-pair w'' a1 b1) e'))
@@ -574,7 +574,7 @@ typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c
 typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
   Mod.□-idem M
-    (Mod.∀𝕎-□'-□ M y aw eqi)
+    (∀𝕎-□'-□₀ W M y aw eqi)
   where
     aw0 : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C A) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
                           → Mod.□ M w' (↑wPred (λ w'' e → #lift-<NUM-pair w'' a1 b1) e'))
@@ -637,7 +637,7 @@ typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c
 typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
   Mod.□-idem M
-    (Mod.∀𝕎-□'-□ M y aw eqi)
+    (∀𝕎-□'-□₀ W M y aw eqi)
   where
     aw0 : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C B) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
                           → Mod.□ M w' (↑wPred (λ w'' e → #lift-<NUM-pair w'' a1 b1) e'))
@@ -699,7 +699,7 @@ typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c
 typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
   Mod.□-idem M
-    (Mod.∀𝕎-□'-□ M y aw eqi)
+    (∀𝕎-□'-□₀ W M y aw eqi)
   where
     aw0 : ∀𝕎 w (λ w' e' → (x : eqTypes u w' B C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
                           → Mod.□ M w' (↑wPred (λ w'' e → #lift-<NUM-pair w'' a1 b1) e'))
@@ -761,7 +761,7 @@ eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTUNIV i p d₁ d₂) ei = �
 
 eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTLIFT A1 A2 x x₁ eqtA extA) ei = ⊥-elim (LTneqLIFT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTBAR x) ei =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw ei)
+  Mod.□-idem M (∀𝕎-□'-□₀ W M x aw ei)
   where
     aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →  eqInType u w' z a b → □· w' (λ w'' _ → #lift-<NUM-pair w'' a1 b1))
     aw0 w1 e1 z {--at--} eqi = eqInType-⇛-LT u w1 A B a1 b1 a2 b2 a b (⇛-mon e1 c₁) (⇛-mon e1 c₂) z eqi
@@ -817,7 +817,7 @@ eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTUNIV i p d₁ d₂) ei
 
 eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTLIFT A1 A2 x x₁ eqtA extA) ei = ⊥-elim (LTneqLIFT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTBAR x) ei =
-  Mod.∀𝕎-□-□' M x aw
+  ∀𝕎-□-□'₀ W M x aw
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} → eqInType u w' z a b)
     aw w' e' z {--at--} = eqInType-⇛-LT-rev u w' A B a1 b1 a2 b2 a b (⇛-mon e' c₁) (⇛-mon e' c₂) z (Mod.↑□ M ei e')
@@ -830,7 +830,7 @@ typeSysConds-LT-local : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
                         (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
                         → eqInTypeLocal {u} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
 typeSysConds-LT-local u w A B a1 b1 a2 b2 x x₁ s s₁ a b i j =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+  Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w'' e → w ⊑· w'' → #lift-<NUM-pair w'' a1 b1))
     aw w1 e1 z {--at--} ei = Mod.∀𝕎-□Func M (λ w' e' s x → s) aw'

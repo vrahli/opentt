@@ -349,6 +349,13 @@ subv-↑T {i} {suc n} p v a with i <? n
     c rewrite CTerm.closed a = refl
 
 
+#DUM : CTerm → CTerm
+#DUM a = ct (DUM ⌜ a ⌝) c
+  where
+    c : # DUM ⌜ a ⌝
+    c rewrite CTerm.closed a = refl
+
+
 #INL : CTerm → CTerm
 #INL a = ct (INL ⌜ a ⌝) c
   where
@@ -2093,6 +2100,13 @@ SUBSINGinj refl =  refl
 #SUBSINGinj c = CTerm≡ (SUBSINGinj (≡CTerm c))
 
 
+DUMinj : {a b : Term} → DUM a ≡ DUM b → a ≡ b
+DUMinj refl =  refl
+
+#DUMinj : {a b : CTerm} → #DUM a ≡ #DUM b → a ≡ b
+#DUMinj c = CTerm≡ (DUMinj (≡CTerm c))
+
+
 LIFTinj : {a b : Term} → LIFT a ≡ LIFT b → a ≡ b
 LIFTinj refl =  refl
 
@@ -2126,11 +2140,6 @@ FFDEFSinj2 refl =  refl
 
 #FFDEFSinj2 : {a b c d : CTerm} → #FFDEFS a b ≡ #FFDEFS c d → b ≡ d
 #FFDEFSinj2 c = CTerm≡ (FFDEFSinj2 (≡CTerm c))
-
-
-
-DUMinj : {a b : Term} → DUM a ≡ DUM b → a ≡ b
-DUMinj refl =  refl
 
 
 SHRINKinj : {a b : Term} → SHRINK a ≡ SHRINK b → a ≡ b
@@ -2269,11 +2278,11 @@ EQneqTCONST {t} {a} {b} {c} ()
 EQneqSUBSING : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ SUBSING c
 EQneqSUBSING {t} {a} {b} {c} ()
 
-EQneqLIFT : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ LIFT c
-EQneqLIFT {t} {a} {b} {c} ()
-
 EQneqDUM : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ DUM c
 EQneqDUM {t} {a} {b} {c} ()
+
+EQneqLIFT : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ LIFT c
+EQneqLIFT {t} {a} {b} {c} ()
 
 EQneqFFDEFS : {t a b : Term} {c d : Term} → ¬ (EQ t a b) ≡ FFDEFS c d
 EQneqFFDEFS {t} {a} {b} {c} {d} ()
@@ -2356,11 +2365,11 @@ EQBneqTCONST {a₁} {a₂} {a₃} {a₄} {c} ()
 EQBneqSUBSING : {a₁ a₂ a₃ a₄ : Term} {c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ SUBSING c
 EQBneqSUBSING {a₁} {a₂} {a₃} {a₄} {c} ()
 
-EQBneqLIFT : {a₁ a₂ a₃ a₄ : Term} {c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ LIFT c
-EQBneqLIFT {a₁} {a₂} {a₃} {a₄} {c} ()
-
 EQBneqDUM : {a₁ a₂ a₃ a₄ : Term} {c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ DUM c
 EQBneqDUM {a₁} {a₂} {a₃} {a₄} {c} ()
+
+EQBneqLIFT : {a₁ a₂ a₃ a₄ : Term} {c : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ LIFT c
+EQBneqLIFT {a₁} {a₂} {a₃} {a₄} {c} ()
 
 EQBneqFFDEFS : {a₁ a₂ a₃ a₄ : Term} {c d : Term} → ¬ (EQB a₁ a₂ a₃ a₄) ≡ FFDEFS c d
 EQBneqFFDEFS {a₁} {a₂} {a₃} {a₄} {c} {d} ()
@@ -2458,11 +2467,11 @@ PIneqTCONST {a} {b} {c} ()
 PIneqSUBSING : {a b : Term} {c : Term} → ¬ (PI a b) ≡ SUBSING c
 PIneqSUBSING {a} {b} {c} ()
 
-PIneqLIFT : {a b : Term} {c : Term} → ¬ (PI a b) ≡ LIFT c
-PIneqLIFT {a} {b} {c} ()
-
 PIneqDUM : {a b : Term} {c : Term} → ¬ (PI a b) ≡ DUM c
 PIneqDUM {a} {b} {c} ()
+
+PIneqLIFT : {a b : Term} {c : Term} → ¬ (PI a b) ≡ LIFT c
+PIneqLIFT {a} {b} {c} ()
 
 PIneqFFDEFS : {a b : Term} {c d : Term} → ¬ (PI a b) ≡ FFDEFS c d
 PIneqFFDEFS {a} {b} {c} {d} ()
@@ -2548,11 +2557,11 @@ NATneqTCONST {c} ()
 NATneqSUBSING : {c : Term} → ¬ NAT ≡ SUBSING c
 NATneqSUBSING {c} ()
 
-NATneqLIFT : {c : Term} → ¬ NAT ≡ LIFT c
-NATneqLIFT {c} ()
-
 NATneqDUM : {c : Term} → ¬ NAT ≡ DUM c
 NATneqDUM {c} ()
+
+NATneqLIFT : {c : Term} → ¬ NAT ≡ LIFT c
+NATneqLIFT {c} ()
 
 NATneqFFDEFS : {c d : Term} → ¬ NAT ≡ FFDEFS c d
 NATneqFFDEFS {c} {d} ()

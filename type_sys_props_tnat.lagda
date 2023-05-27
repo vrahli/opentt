@@ -249,8 +249,8 @@ typeSysConds-TNAT-extl1 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA extA) a b eq
 typeSysConds-TNAT-extl1 u w A B x x₁ C (EQTBAR y) a b eqi =
   Mod.∀𝕎-□-□' M y aw
   where
-    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' A C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b)
-    aw w1 e1 z {--at--} = typeSysConds-TNAT-extl1 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Mod.↑□ M eqi e1)
+    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' A C) (at : at□· y w' e' x) → eqInType u w' x a b)
+    aw w1 e1 z at = typeSysConds-TNAT-extl1 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Mod.↑□ M eqi e1)
 
 {-- c
       where
@@ -324,8 +324,8 @@ typeSysConds-TNAT-extl2 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA extA) a b eq
 typeSysConds-TNAT-extl2 u w A B x x₁ C (EQTBAR y) a b eqi =
   Mod.∀𝕎-□-□' M y aw
   where
-    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C A) {--(at : atbar y w' e' x)--} → eqInType u w' x a b)
-    aw w1 e1 z {--at--} = typeSysConds-TNAT-extl2 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Mod.↑□ M eqi e1)
+    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C A) (at : at□· y w' e' x) → eqInType u w' x a b)
+    aw w1 e1 z at = typeSysConds-TNAT-extl2 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Mod.↑□ M eqi e1)
 
 
 
@@ -371,8 +371,8 @@ typeSysConds-TNAT-extr1 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA extA) a b eq
 typeSysConds-TNAT-extr1 u w A B x x₁ C (EQTBAR y) a b eqi =
   Mod.∀𝕎-□-□' M y aw
   where
-    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C B) {--(at : atbar y w' e' x)--} → eqInType u w' x a b)
-    aw w1 e1 z {--at--} = typeSysConds-TNAT-extr1 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Mod.↑□ M eqi e1)
+    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C B) (at : at□· y w' e' x) → eqInType u w' x a b)
+    aw w1 e1 z at = typeSysConds-TNAT-extr1 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Mod.↑□ M eqi e1)
 
 
 
@@ -418,8 +418,8 @@ typeSysConds-TNAT-extr2 u w A B x x₁ C (EQTLIFT A1 A2 y y₁ eqtA extA) a b eq
 typeSysConds-TNAT-extr2 u w A B x x₁ C (EQTBAR y) a b eqi =
   Mod.∀𝕎-□-□' M y aw
   where
-    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' B C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b)
-    aw w1 e1 z {--at--} = typeSysConds-TNAT-extr2 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Mod.↑□ M eqi e1)
+    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' B C) (at : at□· y w' e' x) → eqInType u w' x a b)
+    aw w1 e1 z at = typeSysConds-TNAT-extr2 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b (Mod.↑□ M eqi e1)
 
 
 
@@ -470,9 +470,9 @@ typeSysConds-TNAT-extrevl1 u w A B x x₁ C (EQTBAR y) a b eqi =
                           → Mod.□ M w' (↑wPred (λ w'' e → TNATeq w'' a b) e'))
     aw0 w1 e1 z {--at--} eqz = typeSysConds-TNAT-extrevl1 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
 
-    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' A C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
+    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' A C) (at : at□· y w' e' x) → eqInType u w' x a b
                          → Mod.□ M w' (↑wPred' (λ w'' e → TNATeq w'' a b) e'))
-    aw w1 e1 z {--at--} eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
+    aw w1 e1 z at eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
 
 
 
@@ -523,9 +523,9 @@ typeSysConds-TNAT-extrevl2 u w A B x x₁ C (EQTBAR y) a b eqi =
                           → Mod.□ M w' (↑wPred (λ w'' e → TNATeq w'' a b) e'))
     aw0 w1 e1 z {--at--} eqz = typeSysConds-TNAT-extrevl2 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
 
-    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C A) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
+    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C A) (at : at□· y w' e' x) → eqInType u w' x a b
                          → Mod.□ M w' (↑wPred' (λ w'' e → TNATeq w'' a b) e'))
-    aw w1 e1 z {--at--} eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
+    aw w1 e1 z at eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
 
 
 
@@ -577,9 +577,9 @@ typeSysConds-TNAT-extrevr1 u w A B x x₁ C (EQTBAR y) a b eqi =
                           → Mod.□ M w' (↑wPred (λ w'' e → TNATeq w'' a b) e'))
     aw0 w1 e1 z {--at--} eqz = typeSysConds-TNAT-extrevr1 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
 
-    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C B) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
+    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C B) (at : at□· y w' e' x) → eqInType u w' x a b
                          → Mod.□ M w' (↑wPred' (λ w'' e → TNATeq w'' a b) e'))
-    aw w1 e1 z {--at--} eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
+    aw w1 e1 z at eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
 
 
 
@@ -630,9 +630,9 @@ typeSysConds-TNAT-extrevr2 u w A B x x₁ C (EQTBAR y) a b eqi =
                           → Mod.□ M w' (↑wPred (λ w'' e → TNATeq w'' a b) e'))
     aw0 w1 e1 z {--at--} eqz = typeSysConds-TNAT-extrevr2 u w1 A B (⇛-mon e1 x) (⇛-mon e1 x₁) C z a b eqz
 
-    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' B C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
+    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' B C) (at : at□· y w' e' x) → eqInType u w' x a b
                          → Mod.□ M w' (↑wPred' (λ w'' e → TNATeq w'' a b) e'))
-    aw w1 e1 z {--at--} eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
+    aw w1 e1 z at eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
 
 
 
@@ -684,8 +684,8 @@ eqInType-⇛-TNAT u w A B a b c₁ c₂ (EQTBAR x) ei =
     aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →  eqInType u w' z a b → □· w' (λ w'' _ → TNATeq w'' a b))
     aw0 w1 e1 z {--at--} eqi = eqInType-⇛-TNAT u w1 A B a b (⇛-mon e1 c₁) (⇛-mon e1 c₂) z eqi
 
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →  eqInType u w' z a b → □· w' (λ w'' _ → w ⊑· w'' → TNATeq w'' a b))
-    aw w1 e1 z {--at--} eqi = Mod.∀𝕎-□Func M (λ w' e' s x → s) (aw0 w1 e1 z {--at--} eqi)
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : at□· x w' e' z) →  eqInType u w' z a b → □· w' (λ w'' _ → w ⊑· w'' → TNATeq w'' a b))
+    aw w1 e1 z at eqi = Mod.∀𝕎-□Func M (λ w' e' s x → s) (aw0 w1 e1 z {--at--} eqi)
 
 
 
@@ -735,8 +735,8 @@ eqInType-⇛-TNAT-rev u w A B a b c₁ c₂ (EQTLIFT A1 A2 x x₁ eqtA extA) ei 
 eqInType-⇛-TNAT-rev u w A B a b c₁ c₂ (EQTBAR x) ei =
   Mod.∀𝕎-□-□' M x aw
   where
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} → eqInType u w' z a b)
-    aw w' e' z {--at--} = eqInType-⇛-TNAT-rev u w' A B a b (⇛-mon e' c₁) (⇛-mon e' c₂) z (Mod.↑□ M ei e')
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : at□· x w' e' z) → eqInType u w' z a b)
+    aw w' e' z at = eqInType-⇛-TNAT-rev u w' A B a b (⇛-mon e' c₁) (⇛-mon e' c₂) z (Mod.↑□ M ei e')
 
 
 
@@ -747,8 +747,8 @@ typeSysConds-TNAT-local : (u : univs) (w : 𝕎·) (A B : CTerm)
 typeSysConds-TNAT-local u w A B x x₁ a b i j =
   Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
   where
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w'' e → w ⊑· w'' → TNATeq w'' a b))
-    aw w1 e1 z {--at--} ei = Mod.∀𝕎-□Func M (λ w' e' s x → s) aw'
+    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : at□· i w' e' z) → eqInType u w' z a b → □· w' (λ w'' e → w ⊑· w'' → TNATeq w'' a b))
+    aw w1 e1 z at ei = Mod.∀𝕎-□Func M (λ w' e' s x → s) aw'
       where
         aw' : □· w1 (λ w' e → TNATeq w' a b)
         aw' = eqInType-⇛-TNAT u w1 A B a b (⇛-mon e1 x) (⇛-mon e1 x₁) z ei

@@ -1,6 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 {-# OPTIONS --guardedness #-}
+{-# OPTIONS --experimental-lossy-unification #-}
 
 --open import bar
 --module props1 (bar : Bar) where
@@ -204,7 +205,7 @@ typeSysConds-BAR-ttrans : (u : univs) (w : 𝕎·) (A B C : CTerm)
                           → □·' w x (λ w1 e1 → TSP)
                           → eqTypes u w B C
                           → eqTypes u w A C
-typeSysConds-BAR-ttrans u w A B C x i eqt = EQTBAR (Mod.∀𝕎-□'-□ M x aw i)
+typeSysConds-BAR-ttrans u w A B C x i eqt = EQTBAR (∀𝕎-□'-□₀ W M x aw i)
   where
     aw : ∀𝕎 w (λ w' e' → (x₁ : eqTypes u w' A B) {--(at : atbar x w' e' x₁)--} → TSP x₁ → eqTypes u w' A C)
     aw w1 e1 eqta {--at--} tsp = TSP.ttrans tsp C (eqTypes-mon u eqt w1 e1)
@@ -460,7 +461,7 @@ abstract
   eqInType-⇛-UNIV->0 (suc n) w A B a b c₁ c₂ (EQTUNIV m p d₁ d₂) eqi = _≤_.s≤s _≤_.z≤n
   eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTLIFT A1 A2 x x₁ eqtA exta) eqi = ⊥-elim (UNIVneqLIFT (⇛-val-det tt tt c₁ x))
   eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTBAR x) eqi =
-    lower {0ℓ} {lsuc(L)} (Mod.□-const M (Mod.∀𝕎-□'-□ M x aw eqi))
+    lower {0ℓ} {lsuc(L)} (Mod.□-const M (∀𝕎-□'-□₀ W M x aw eqi))
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni n) w' A B) {--→ atbar x w' e' z--}
                            → eqInType (uni n) w' z a b
@@ -547,7 +548,7 @@ abstract
       c' rewrite UNIVinj (⇛-val-det tt tt c₁ d₁) = c
   eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTLIFT A1 A2 x x₁ eqtA exta) eqi = ⊥-elim (UNIVneqLIFT (⇛-val-det tt tt c₁ x))
   eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTBAR x) eqi =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M x aw eqi)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni n) w' A B) {--→ atbar x w' e' z--}
                            → eqInType (uni n) w' z a b
@@ -604,7 +605,7 @@ eqInType-ext-bar-u {u} isu {w} {A} {B} i a b j m p d₁ d₂ rewrite isu =
         ib = eqInType-⇛-UNIV m (fst u) p w' A B a b (⇛-mon e' d₁) (⇛-mon e' d₂) z eqt
 
     c : □·EqTypes (uni m) w a b
-    c = Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    c = Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
 
 
 
@@ -616,7 +617,7 @@ abstract
                      → □·' w i (λ w' e' z → eqInType u w' z a b)
                      → (eqt : eqTypes u w A B) → eqInType u w eqt a b
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTNAT x x₁) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → NATeq w'' a b) e'))
       aw w' e' z {--at--} eqt' =
@@ -624,7 +625,7 @@ abstract
           (λ w1 e1 s ext → s)
           (eqInType-⇛-NAT u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTQNAT x x₁) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → #weakMonEq w'' a b) e'))
       aw w' e' z {--at--} eqt' =
@@ -632,7 +633,7 @@ abstract
           (λ w1 e1 s ext → s)
           (eqInType-⇛-QNAT u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTTNAT x x₁) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → TNATeq w'' a b) e'))
       aw w' e' z {--at--} eqt' =
@@ -640,7 +641,7 @@ abstract
           (λ w1 e1 s ext → s)
           (eqInType-⇛-TNAT u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → #lift-<NUM-pair w'' a1 b1) e'))
       aw w' e' z {--at--} eqt' =
@@ -648,7 +649,7 @@ abstract
           (λ w1 e1 s ext → s)
           (eqInType-⇛-LT u w' A B a1 b1 a2 b2 a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → #lift-<NUM-pair w'' a1 b1) e'))
       aw w' e' z {--at--} eqt' =
@@ -656,7 +657,7 @@ abstract
           (λ w1 e1 s ext → s)
           (eqInType-⇛-QLT u w' A B a1 b1 a2 b2 a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTFREE x x₁) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → #⇛to-same-CS w'' a b) e'))
       aw w' e' z {--at--} eqt' =
@@ -666,8 +667,8 @@ abstract
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
     Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
     where
-      aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → PIeq (eqInType u w'' (eqta w'' e)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' e a1 a2 eqa)) a b) e'))
-      aw w' e' z {--at--} eqi =
+      aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) → at□· i w' e' z → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → PIeq (eqInType u w'' (eqta w'' e)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' e a1 a2 eqa)) a b) e'))
+      aw w' e' z at eqi =
         Mod.∀𝕎-□Func M
           aw1
           (eqInType-⇛-PI2
@@ -677,14 +678,14 @@ abstract
             (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
         where
           ind' : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u , isu} z → eqInTypeExt eqt'
-          ind' {u'} {w''} {A'} {B'} eqt' (≤Type0 .eqt') = ind eqt' (<Type1 _ _ (<TypeBAR (mk𝕌 isu) w A B i w' e' z {--at--}))
+          ind' {u'} {w''} {A'} {B'} eqt' (≤Type0 .eqt') = ind eqt' (<Type1 _ _ (<TypeBAR (mk𝕌 isu) w A B i w' e' z ? {--at--}))
           ind' {u'} {w''} {A'} {B'} eqt' (≤TypeS .eqt' .z x) = ind eqt' (<TypeS _ _ _ x (<TypeBAR (mk𝕌 isu) w A B i w' e' z {--at--}))
 
           aw1 : ∀𝕎 w' (λ w'' e'' → PIeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e'')) (λ a₁ a₂ eqa → eqInType u w'' (∀𝕎-mon e' eqtb w'' e'' a₁ a₂ eqa)) a b
                                    → ↑wPred' (λ w''' e → PIeq (eqInType u w''' (eqta w''' e)) (λ a1 a2 eqa → eqInType u w''' (eqtb w''' e a1 a2 eqa)) a b) e' w'' e'')
           aw1 w1 e1 h ext = PIeq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → SUMeq (eqInType u w'' (eqta w'' e)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' e a1 a2 eqa)) w'' a b) e'))
       aw w' e' z {--at--} eqi =
@@ -704,7 +705,7 @@ abstract
                                    → ↑wPred' (λ w''' e → SUMeq (eqInType u w''' (eqta w''' e)) (λ a1 a2 eqa → eqInType u w''' (eqtb w''' e a1 a2 eqa)) w'' a b) e' w'' e'')
           aw1 w1 e1 h ext = SUMeq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTW A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → Weq (eqInType u w'' (eqta w'' e)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' e a1 a2 eqa)) w'' a b) e'))
       aw w' e' z {--at--} eqi =
@@ -724,7 +725,7 @@ abstract
                                    → ↑wPred' (λ w''' e → Weq (eqInType u w''' (eqta w''' e)) (λ a1 a2 eqa → eqInType u w''' (eqtb w''' e a1 a2 eqa)) w'' a b) e' w'' e'')
           aw1 w1 e1 h ext = Weq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → meq (eqInType u w'' (eqta w'' e)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' e a1 a2 eqa)) w'' a b) e'))
       aw w' e' z {--at--} eqi =
@@ -744,7 +745,7 @@ abstract
                                    → ↑wPred' (λ w''' e → meq (eqInType u w''' (eqta w''' e)) (λ a1 a2 eqa → eqInType u w''' (eqtb w''' e a1 a2 eqa)) w'' a b) e' w'' e'')
           aw1 w1 e1 h ext = Meq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → SETeq (eqInType u w'' (eqta w'' e)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' e a1 a2 eqa)) a b) e'))
       aw w' e' z {--at--} eqi =
@@ -764,7 +765,7 @@ abstract
                                    → ↑wPred' (λ w''' e → SETeq (eqInType u w''' (eqta w''' e)) (λ a1 a2 eqa → eqInType u w''' (eqtb w''' e a1 a2 eqa)) a b) e' w'' e'')
           aw1 w1 e1 h ext = SETeq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} exta extb h
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTISECT A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b
                            → □· w' (↑wPred' (λ w'' e → ISECTeq (eqInType u w'' (eqta w'' e)) (eqInType u w'' (eqtb w'' e)) a b) e'))
@@ -787,7 +788,7 @@ abstract
                                    → ↑wPred' (λ w''' e → ISECTeq (eqInType u w''' (eqta w''' e)) (eqInType u w''' (eqtb w''' e)) a b) e' w'' e'')
           aw1 w1 e1 h ext = ISECTeq-ext {mk𝕌 isu} {w} {A1} {B1} {A2} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → TUNIONeq (eqInType u w'' (eqta w'' e)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' e a1 a2 eqa)) a b) e'))
       aw w' e' z {--at--} eqi =
@@ -807,7 +808,7 @@ abstract
                                    → ↑wPred' (λ w''' e → TUNIONeq (eqInType u w''' (eqta w''' e)) (λ a1 a2 eqa → eqInType u w''' (eqtb w''' e a1 a2 eqa)) a b) e' w'' e'')
           aw1 w1 e1 h ext = TUNIONeq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} exta extb h
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqta exta eqt1 eqt2) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b
                            → □· w' (↑wPred' (λ w'' e → EQeq a1 a2 (eqInType u w'' (eqta w'' e)) w'' a b) e'))
@@ -828,7 +829,7 @@ abstract
                                    → ↑wPred' (λ w''' e → EQeq a1 a2 (eqInType u w''' (eqta w''' e)) w''' a b) e' w'' e'')
           aw1 w1 e1 h ext = EQeq-ext {mk𝕌 isu} {w} {A₁} {B₁} {a1} {a2} {eqta} {_} {_} {_} {a} {b} exta h
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b
                            → □· w' (↑wPred' (λ w'' e → UNIONeq (eqInType u w'' (eqta w'' e)) (eqInType u w'' (eqtb w'' e)) w'' a b) e'))
@@ -851,7 +852,7 @@ abstract
                                    → ↑wPred' (λ w''' e → UNIONeq (eqInType u w''' (eqta w''' e)) (eqInType u w''' (eqtb w''' e)) w''' a b) e' w'' e'')
           aw1 w1 e1 h ext = UNIONeq-ext {mk𝕌 isu} {w} {A1} {B1} {A2} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b
                            → □· w' (↑wPred' (λ w'' e → QTUNIONeq (eqInType u w'' (eqta w'' e)) (eqInType u w'' (eqtb w'' e)) w'' a b) e'))
@@ -874,7 +875,7 @@ abstract
                                    → ↑wPred' (λ w''' e → QTUNIONeq (eqInType u w''' (eqta w''' e)) (eqInType u w''' (eqtb w''' e)) w''' a b) e' w'' e'')
           aw1 w1 e1 h ext = QTUNIONeq-ext {mk𝕌 isu} {w} {A1} {B1} {A2} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTCONST A1 A2 x x₁ eqta exta) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b
                            → □· w' (↑wPred' (λ w'' e → TCONSTeq (eqInType u w'' (eqta w'' e)) w'' a b) e'))
@@ -895,7 +896,7 @@ abstract
                                    → ↑wPred' (λ w''' e → TCONSTeq (eqInType u w''' (eqta w''' e)) w''' a b) e' w'' e'')
           aw1 w1 e1 h ext = TCONSTeq-ext {mk𝕌 isu} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTSUBSING A1 A2 x x₁ eqta exta) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b
                            → □· w' (↑wPred' (λ w'' e → SUBSINGeq (eqInType u w'' (eqta w'' e)) a b) e'))
@@ -916,7 +917,7 @@ abstract
                                    → ↑wPred' (λ w''' e → SUBSINGeq (eqInType u w''' (eqta w''' e)) a b) e' w'' e'')
           aw1 w1 e1 h ext = SUBSINGeq-ext {mk𝕌 isu} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTPURE x x₁) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b
                          → □· w' (↑wPred' (λ w'' e → PUREeq a b) e'))
@@ -925,7 +926,7 @@ abstract
           (λ w1 e1 s ext → s)
           (eqInType-⇛-PURE u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTNOSEQ x x₁) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b
                          → □· w' (↑wPred' (λ w'' e → NOSEQeq a b) e'))
@@ -934,7 +935,7 @@ abstract
           (λ w1 e1 s ext → s)
           (eqInType-⇛-NOSEQ u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTTERM u1 u2 x x₁ x₂) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b
                          → □· w' (↑wPred' (λ w'' e → TERMeq w'' u1 u2) e'))
@@ -943,7 +944,7 @@ abstract
           (λ w1 e1 s ext → s)
           (eqInType-⇛-TERM u w' A B u1 u2 a b (Mod.↑□ M x₂ e') (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTSQUASH A1 A2 x x₁ eqta exta) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b
                            → □· w' (↑wPred' (λ w'' e → TSQUASHeq (eqInType u w'' (eqta w'' e)) w'' a b) e'))
@@ -964,7 +965,7 @@ abstract
                                    → ↑wPred' (λ w''' e → TSQUASHeq (eqInType u w''' (eqta w''' e)) w''' a b) e' w'' e'')
           aw1 w1 e1 h ext = TSQUASHeq-ext {mk𝕌 isu} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTTRUNC A1 A2 x x₁ eqta exta) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b
                            → □· w' (↑wPred' (λ w'' e → TTRUNCeq (eqInType u w'' (eqta w'' e)) w'' a b) e'))
@@ -986,7 +987,7 @@ abstract
           aw1 w1 e1 h ext = TTRUNCeq-ext {mk𝕌 isu} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
   --eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTDUM A1 A2 x x₁ eqt) = lift tt
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b
                            → □· w' (↑wPred' (λ w'' e → FFDEFSeq x1 (eqInType u w'' (eqta w'' e)) w'' a b) e'))
@@ -1022,10 +1023,10 @@ abstract
           ib = eqInType-⇛-UNIV m (fst u) p w' A B a b (⇛-mon e' d₁) (⇛-mon e' d₂) z eqt
 
       c : □·EqTypes (uni m) w a b
-      c = Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+      c = Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
   --}
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTLIFT A1 A2 x x₁ eqta exta) =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--→ atbar i w' e' z--} → eqInType u w' z a b
                            → □· w' (↑wPred' (λ w'' e → eqInType (↓U u) w'' (eqta w'' e) a b) e'))
@@ -1362,7 +1363,7 @@ abstract
                                               (uniUpTo→□·EqTypes {i} {n} {p} {w'} {a} {b} (eqInType-u-rev-bar p (B#⇛-mon {A} {#UNIV i} e' c₁) (B#⇛-mon {B} {#UNIV i} e' c₂) z a b eqi'))
 
       c : □·EqTypes (uni i) w a b
-      c = Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
+      c = Mod.□-idem M (∀𝕎-□'-□₀ W M x aw eqi)
 
 
 
@@ -2020,7 +2021,7 @@ abstract
                     → eqInType u w eqt a b
   {-# TERMINATING #-}
   local-eqInType2 u isu w A B a b (EQTNAT x x₁) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → NATeq w1 a b))
       aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M (λ w1 e1 s x → s) h1
@@ -2028,7 +2029,7 @@ abstract
           h1 : eqInType u w' {A} {B} (EQTNAT (⇛-mon e' x) (⇛-mon e' x₁)) a b
           h1 = fst (eqInType-ext isu z (EQTNAT (⇛-mon e' x) (⇛-mon e' x₁)) a b) ei
   local-eqInType2 u isu w A B a b (EQTQNAT x x₁) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → #weakMonEq w1 a b))
       aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M (λ w1 e1 s x → s) h1
@@ -2036,7 +2037,7 @@ abstract
           h1 : eqInType u w' {A} {B} (EQTQNAT (⇛-mon e' x) (⇛-mon e' x₁)) a b
           h1 = fst (eqInType-ext isu z (EQTQNAT (⇛-mon e' x) (⇛-mon e' x₁)) a b) ei
   local-eqInType2 u isu w A B a b (EQTTNAT x x₁) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → TNATeq w1 a b))
       aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M (λ w1 e1 s x → s) h1
@@ -2044,7 +2045,7 @@ abstract
           h1 : eqInType u w' {A} {B} (EQTTNAT (⇛-mon e' x) (⇛-mon e' x₁)) a b
           h1 = fst (eqInType-ext isu z (EQTTNAT (⇛-mon e' x) (⇛-mon e' x₁)) a b) ei
   local-eqInType2 u isu w A B a b (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → #lift-<NUM-pair w1 a1 b1))
       aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M (λ w1 e1 s x → s) h1
@@ -2052,7 +2053,7 @@ abstract
           h1 : eqInType u w' {A} {B} (EQTLT a1 a2 b1 b2 (⇛-mon e' x) (⇛-mon e' x₁) (#strongMonEq-mon {a1} {a2} x₂ w' e') (#strongMonEq-mon {b1} {b2} x₃ w' e')) a b
           h1 = fst (eqInType-ext isu z (EQTLT a1 a2 b1 b2 (⇛-mon e' x) (⇛-mon e' x₁) (#strongMonEq-mon {a1} {a2} x₂ w' e') (#strongMonEq-mon {b1} {b2} x₃ w' e')) a b) ei
   local-eqInType2 u isu w A B a b (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → #lift-<NUM-pair w1 a1 b1))
       aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M (λ w1 e1 s x → s) h1
@@ -2060,7 +2061,7 @@ abstract
           h1 : eqInType u w' {A} {B} (EQTQLT a1 a2 b1 b2 (⇛-mon e' x) (⇛-mon e' x₁) (#weakMonEq-mon {a1} {a2} x₂ w' e') (#weakMonEq-mon {b1} {b2} x₃ w' e')) a b
           h1 = fst (eqInType-ext isu z (EQTQLT a1 a2 b1 b2 (⇛-mon e' x) (⇛-mon e' x₁) (#weakMonEq-mon {a1} {a2} x₂ w' e') (#weakMonEq-mon {b1} {b2} x₃ w' e')) a b) ei
   local-eqInType2 u isu w A B a b (EQTFREE x x₁) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → #⇛to-same-CS w1 a b))
       aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M (λ w1 e1 s x → s) h1
@@ -2068,7 +2069,7 @@ abstract
           h1 : eqInType u w' {A} {B} (EQTFREE (⇛-mon e' x) (⇛-mon e' x₁)) a b
           h1 = fst (eqInType-ext isu z (EQTFREE (⇛-mon e' x) (⇛-mon e' x₁)) a b) ei
   local-eqInType2 u isu w A B a b (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                            → eqInType u w' z a b
@@ -2082,7 +2083,7 @@ abstract
                                    → (x₂ : w ⊑· w'') → PIeq (eqInType u w'' (eqta w'' x₂)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x₂ a1 a2 eqa)) a b)
           aw' w1 e1 h x₂ = PIeq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
   local-eqInType2 u isu w A B a b (EQTW A1 B1 A2 B2 x x₁ eqta eqtb exta extb) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                            → eqInType u w' z a b
@@ -2096,7 +2097,7 @@ abstract
                                    → (x₂ : w ⊑· w'') → Weq (eqInType u w'' (eqta w'' x₂)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x₂ a1 a2 eqa)) w'' a b)
           aw' w1 e1 h x₂ = Weq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
   local-eqInType2 u isu w A B a b (EQTM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                            → eqInType u w' z a b
@@ -2110,7 +2111,7 @@ abstract
                                    → (x₂ : w ⊑· w'') → meq (eqInType u w'' (eqta w'' x₂)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x₂ a1 a2 eqa)) w'' a b)
           aw' w1 e1 h x₂ = Meq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
   local-eqInType2 u isu w A B a b (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                            → eqInType u w' z a b
@@ -2124,7 +2125,7 @@ abstract
                                    → (x₂ : w ⊑· w'') → SUMeq (eqInType u w'' (eqta w'' x₂)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x₂ a1 a2 eqa)) w'' a b)
           aw' w1 e1 h x₂ = SUMeq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
   local-eqInType2 u isu w A B a b (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                            → eqInType u w' z a b
@@ -2138,7 +2139,7 @@ abstract
                                    → (x₂ : w ⊑· w'') → SETeq (eqInType u w'' (eqta w'' x₂)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x₂ a1 a2 eqa)) a b)
           aw' w1 e1 h x₂ = SETeq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
   local-eqInType2 u isu w A B a b (EQTISECT A1 B1 A2 B2 x x₁ eqta eqtb exta extb) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                            → eqInType u w' z a b
@@ -2152,7 +2153,7 @@ abstract
                                    → (x₂ : w ⊑· w'') → ISECTeq (eqInType u w'' (eqta w'' x₂)) (eqInType u w'' (eqtb w'' x₂)) a b)
           aw' w1 e1 h x₂ = ISECTeq-ext {mk𝕌 isu} {w} {A1} {B1} {A2} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
   local-eqInType2 u isu w A B a b (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                            → eqInType u w' z a b
@@ -2166,7 +2167,7 @@ abstract
                                    → (x₂ : w ⊑· w'') → TUNIONeq (eqInType u w'' (eqta w'' x₂)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x₂ a1 a2 eqa)) a b)
           aw' w1 e1 h x₂ = TUNIONeq-ext {mk𝕌 isu} {w} {A1} {A2} {B1} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
   local-eqInType2 u isu w A B a b (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqta exta eqt1 eqt2) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                            → eqInType u w' z a b
@@ -2180,7 +2181,7 @@ abstract
                                    → (x₂ : w ⊑· w'') → EQeq a1 a2 (eqInType u w'' (eqta w'' x₂)) w'' a b)
           aw' w1 e1 h x₂ = EQeq-ext {mk𝕌 isu} {w} {A₁} {B₁} {a1} {a2} {eqta} {_} {_} {_} {a} {b} exta h
   local-eqInType2 u isu w A B a b (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                            → eqInType u w' z a b
@@ -2194,7 +2195,7 @@ abstract
                                    → (x₂ : w ⊑· w'') → UNIONeq (eqInType u w'' (eqta w'' x₂)) (eqInType u w'' (eqtb w'' x₂)) w'' a b)
           aw' w1 e1 h x₂ = UNIONeq-ext {mk𝕌 isu} {w} {A1} {B1} {A2} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
   local-eqInType2 u isu w A B a b (EQTQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                            → eqInType u w' z a b
@@ -2208,7 +2209,7 @@ abstract
                                    → (x₂ : w ⊑· w'') → QTUNIONeq (eqInType u w'' (eqta w'' x₂)) (eqInType u w'' (eqtb w'' x₂)) w'' a b)
           aw' w1 e1 h x₂ = QTUNIONeq-ext {mk𝕌 isu} {w} {A1} {B1} {A2} {B2} {eqta} {eqtb} {_} {_} {_} {a} {b} exta extb h
   local-eqInType2 u isu w A B a b (EQTCONST A1 A2 x x₁ eqta exta) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                            → eqInType u w' z a b
@@ -2222,7 +2223,7 @@ abstract
                                    → (x₂ : w ⊑· w'') → TCONSTeq (eqInType u w'' (eqta w'' x₂)) w'' a b)
           aw' w1 e1 h x₂ = TCONSTeq-ext {mk𝕌 isu} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
   local-eqInType2 u isu w A B a b (EQTSUBSING A1 A2 x x₁ eqta exta) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                            → eqInType u w' z a b
@@ -2236,7 +2237,7 @@ abstract
                                    → (x₂ : w ⊑· w'') → SUBSINGeq (eqInType u w'' (eqta w'' x₂)) a b)
           aw' w1 e1 h x₂ = SUBSINGeq-ext {mk𝕌 isu} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
   local-eqInType2 u isu w A B a b (EQTPURE x x₁) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → PUREeq a b))
       aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M (λ w1 e1 s x → s) h1
@@ -2244,7 +2245,7 @@ abstract
           h1 : eqInType u w' {A} {B} (EQTPURE (⇛-mon e' x) (⇛-mon e' x₁)) a b
           h1 = fst (eqInType-ext isu z (EQTPURE (⇛-mon e' x) (⇛-mon e' x₁)) a b) ei
   local-eqInType2 u isu w A B a b (EQTNOSEQ x x₁) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → NOSEQeq a b))
       aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M (λ w1 e1 s x → s) h1
@@ -2252,7 +2253,7 @@ abstract
           h1 : eqInType u w' {A} {B} (EQTNOSEQ (⇛-mon e' x) (⇛-mon e' x₁)) a b
           h1 = fst (eqInType-ext isu z (EQTNOSEQ (⇛-mon e' x) (⇛-mon e' x₁)) a b) ei
   local-eqInType2 u isu w A B a b (EQTTERM u1 u2 x x₁ x₂) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--} → eqInType u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → TERMeq w1 u1 u2))
       aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M (λ w1 e1 s x → s) h1
@@ -2260,7 +2261,7 @@ abstract
           h1 : eqInType u w' {A} {B} (EQTTERM u1 u2 (⇛-mon e' x) (⇛-mon e' x₁) (Mod.↑□ M x₂ e')) a b
           h1 = fst (eqInType-ext isu z (EQTTERM u1 u2 (⇛-mon e' x) (⇛-mon e' x₁) (Mod.↑□ M x₂ e')) a b) ei
   local-eqInType2 u isu w A B a b (EQTSQUASH A1 A2 x x₁ eqta exta) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                            → eqInType u w' z a b
@@ -2274,7 +2275,7 @@ abstract
                                    → (x₂ : w ⊑· w'') → TSQUASHeq (eqInType u w'' (eqta w'' x₂)) w'' a b)
           aw' w1 e1 h x₂ = TSQUASHeq-ext {mk𝕌 isu} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
   local-eqInType2 u isu w A B a b (EQTTRUNC A1 A2 x x₁ eqta exta) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                            → eqInType u w' z a b
@@ -2289,7 +2290,7 @@ abstract
           aw' w1 e1 h x₂ = TTRUNCeq-ext {mk𝕌 isu} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
   --local-eqInType2 u isu w A B a b (EQTDUM A1 A2 x x₁ eqta) i j = lift tt
   local-eqInType2 u isu w A B a b (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                            → eqInType u w' z a b
@@ -2305,7 +2306,7 @@ abstract
   local-eqInType2 u isu w A B a b (EQTUNIV m p c₁ c₂) i j rewrite isu =
     □·EqTypes→uniUpTo
       {m} {fst u} {p} {w} {a} {b}
-      (Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j))
+      (Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j))
       where
         aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni (fst u)) w' A B) {-→ atbar i w' e' z--}
                            → eqInType (uni (fst u)) w' z a b
@@ -2315,7 +2316,7 @@ abstract
             (λ w1 e1 et z → et)
             (uniUpTo→□·EqTypes {m} {fst u} {p} {w'} {a} {b} (eqInType-u-rev p (⇛-mon e' c₁) (⇛-mon e' c₂) z a b eqi))
   local-eqInType2 u isu w A B a b (EQTLIFT A1 A2 x x₁ eqta exta) i j =
-    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                            → eqInType u w' z a b
@@ -2347,7 +2348,7 @@ local-eqInType3 : (u : univs) (isu : is-universe u) (w : 𝕎·) (A B a b : CTer
                   → (eqt : eqTypes u w A B)
                   → eqInType u w eqt a b × eqInTypeExt eqt
 local-eqInType3 u isu w A B a b i j (EQTNAT x x₁) =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M aw i j) ,
+  Mod.□-idem M (∀𝕎-□'-□₀ W M aw i j) ,
   (λ eqt2 a b → eqInType-⇛-NAT-rev u isu w A B a b x x₁ eqt2 , eqInType-⇛-NAT u isu w A B a b x x₁ eqt2)
   where
     aw : ∀𝕎 w (λ w' e' → (x₂ : eqTypes u w' A B)
@@ -2727,7 +2728,7 @@ typeSysConds-BAR u isu w A B x ind =
   mktsp tsym ttrans isym itrans iextl1 iextl2 iextr1 iextr2 iextrevl1 iextrevl2 iextrevr1 iextrevr2 local
   where
     tsym : eqTypes u w B A
-    tsym = EQTBAR (Mod.∀𝕎-□'-□ M x aw ind)
+    tsym = EQTBAR (∀𝕎-□'-□₀ W M x aw ind)
       where
         aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} → TSP z → eqTypes u w' B A)
         aw w1 e1 eqt {--at--} tsp = TSP.tsym tsp
@@ -3572,6 +3573,176 @@ TSext-equalTypes-equalInType n w A B a b h (teq , eqi) =
     (typeSysConds n w A B h)
     B (TEQrefl-rev-equalTypes n w A B h) a b
     (TSP.extl1 (typeSysConds n w A A teq) B h a b eqi)
+
+
+
+
+
+{--
+  NOTE:
+  This is the same as if-equalInType-EQ below, but where we've unfolded all abstractions to convince Agda
+  that the function terminates (and splitting (eqt,eqi) into 2 separate arguments.
+ --}
+{--
+if-equalInType-EQ-test : (u : ℕ) (w : 𝕎·) (T a b t₁ t₂ : CTerm)
+                         (eqt : isType u w (#EQ a b T))
+                         (eqi : equalTerms u w eqt t₁ t₂)
+                         → □· w (λ w' e' → equalInType u w' T a b)
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTNAT x x₁) eqi = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTQNAT x x₁) eqi = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTTNAT x x₁) eqi = ⊥-elim (EQneqTNAT (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi = ⊥-elim (EQneqLT (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi = ⊥-elim (EQneqQLT (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTFREE x x₁) eqi = ⊥-elim (EQneqFREE (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (EQneqPI (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (EQneqSUM (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (EQneqSET (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) eqi = ⊥-elim (EQneqISECT (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) eqi = ⊥-elim (EQneqTUNION (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2) eqi
+  rewrite #EQinj1 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj2 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj3 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)
+        | #EQinj1 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj2 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj3 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) =
+  Bar.∀𝕎-□Func
+    barI
+    (λ w1 e1 eqi1 → eqtA w1 e1 , eqi1)
+    eqi
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) eqi = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTSQUASH A1 A2 x x₁ eqtA exta) eqi = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTTRUNC A1 A2 x x₁ eqtA exta) eqi = ⊥-elim (EQneqTTRUNC (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTCONST A1 A2 x x₁ eqtA exta) eqi = ⊥-elim (EQneqTCONST (compAllVal x₁ tt))
+--if-equalInType-EQ-test u w T a b t₁ t₂ (EQTDUM A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqDUM (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) eqi = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTUNIV i p c₁ c₂) eqi = ⊥-elim (EQneqUNIV (compAllVal c₁ tt)) --Bar.∀𝕎-□Func barI z2 x
+{--  where
+    z2 : ∀𝕎 w (λ w' e' → (#EQ a b T #⇛ #UNIV u at w' × #EQ a b T #⇛ #UNIV u at w') → t₁ #⇛ #AX at w' × t₂ #⇛ #AX at w' × equalInType u w' T a b)
+    z2 w' e' (c₁ , c₂) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt))--}
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTLIFT A1 A2 c1 c2 eqtA exta) eqi = ⊥-elim (EQneqLIFT (compAllVal c2 tt))
+--if-equalInType-EQ-test u w T a b t₁ t₂ (EQTBAR x , eqi) =
+if-equalInType-EQ-test u w T a b t₁ t₂ (EQTBAR x) eqi =
+  inOpenBar-idem
+    (λ w1 e1 →
+      fst (eqi w1 e1 (fst (x w1 e1)) (⊑-refl· _)) ,
+      ⊑-trans· (fst (snd (x w1 e1))) (fst (snd (eqi w1 e1 (fst (x w1 e1)) (⊑-refl· _)))) ,
+      λ w4 e4 z → aw w4 z (snd (snd (x w1 e1)) w4 (⊑-trans· (⊑-refl· _) (⊑-trans· (fst (snd (eqi w1 e1 (fst (x w1 e1)) (⊑-refl· _)))) e4)) z) (snd (snd (eqi w1 e1 (fst (x w1 e1)) (⊑-refl· _))) w4 e4 (⊑-trans· (⊑-refl· _) (⊑-trans· (fst (snd (eqi w1 e1 (fst (x w1 e1)) (⊑-refl· _)))) e4)) z))
+  where
+    aw : ∀𝕎 w
+              (λ w' e' →
+                (x₁ : eqTypes (uni u) w' (#EQ a b T) (#EQ a b T))
+                → eqInType (uni u) w' x₁ t₁ t₂
+                → □· w' (↑wPred' (λ w'' e → equalInType u w'' T a b) e'))
+    aw w1 e1 eqt1 eqi1 =
+      λ w1 e1 →
+        fst (h w1 e1) ,
+        ⊑-trans· (fst (snd (h w1 e1))) (⊑-refl· (fst (h w1 e1))) ,
+        λ w4 e4 z z₀ → snd (snd (h w1 e1)) w4 (⊑-trans· (⊑-refl· (fst (h w1 e1))) e4) z
+      where
+        h : inOpenBar w1 (λ w' e' → equalInType u w' T a b)
+        h = if-equalInType-EQ-test u w1 T a b t₁ t₂ eqt1 eqi1
+--}
+
+
+{--
+abstract
+  if-equalInType-EQ0 : (u : ℕ) (w : 𝕎·) (T a b t₁ t₂ : CTerm)
+                       (eqt : isType u w (#EQ a b T))
+                       (eqi : equalTerms u w eqt t₁ t₂)
+                         → □· w (λ w' e' → equalInType u w' T a b)
+  if-equalInType-EQ0 u w T a b t₁ t₂ eqt eqi =
+    {!equalTerms-ind eqt eqi!}
+--}
+
+
+{--
+  NOTE:
+  if-equalInType-EQ-test above shows that we don't need 'TERMINATING' when we unfold all abstractions.
+  If we don't Agda can't figure out it's terminating.
+  Also, we need to split the pair (eqt,eqi) into 2 arguments, otherwise again Agda can't figure out that it's terminating.
+ --}
+abstract
+  if-equalInType-EQ : (u : ℕ) (w : 𝕎·) (T a b t₁ t₂ : CTerm)
+                      → equalInType u w (#EQ a b T) t₁ t₂
+                      → □· w (λ w' e' → equalInType u w' T a b)
+  {-# INLINE □· #-}
+  {-# TERMINATING #-}
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTNAT x x₁ , eqi) = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTQNAT x x₁ , eqi) = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTTNAT x x₁ , eqi) = ⊥-elim (EQneqTNAT (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqLT (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqQLT (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTFREE x x₁ , eqi) = ⊥-elim (EQneqFREE (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqPI (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTW A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqW (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqM (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSUM (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqSET (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (EQneqISECT (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb , eqi) = ⊥-elim (EQneqTUNION (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2 , eqi)
+    rewrite #EQinj1 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj2 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)  | #EQinj3 {a} {b} {T} {a1} {a2} {A} (#compAllVal x tt)
+            | #EQinj1 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj2 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) | #EQinj3 {a1} {a2} {A} {b1} {b2} {B} (#compAllVal x₁ tt) =
+    Mod.∀𝕎-□Func M
+      (λ w1 e1 eqi1 → eqtA w1 e1 , eqi1)
+        eqi
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (EQneqUNION (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (EQneqQTUNION (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTTRUNC A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTTRUNC (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTCONST (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqSUBSING (compAllVal x₁ tt))
+  --if-equalInType-EQ u w T a b t₁ t₂ (EQTDUM A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqDUM (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTPURE x x₁ , eqi) = ⊥-elim (EQneqPURE (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTNOSEQ x x₁ , eqi) = ⊥-elim (EQneqNOSEQ (compAllVal x₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTTERM t1 t2 c₁ c₂ x , eqi) = ⊥-elim (EQneqTERM (compAllVal c₁ tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTUNIV i p c₁ c₂ , eqi) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt)) --Bar.∀𝕎-□Func barI z2 x
+  {--  where
+       z2 : ∀𝕎 w (λ w' e' → (#EQ a b T #⇛ #UNIV u at w' × #EQ a b T #⇛ #UNIV u at w') → t₁ #⇛ #AX at w' × t₂ #⇛ #AX at w' × equalInType u w' T a b)
+       z2 w' e' (c₁ , c₂) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt))--}
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTLIFT A1 A2 c1 c2 eqtA exta , eqi) = ⊥-elim (EQneqLIFT (compAllVal c2 tt))
+  if-equalInType-EQ u w T a b t₁ t₂ (EQTBAR x , eqi) =
+    Mod.□-idem M (∀𝕎-□'-□₀ W M x aw eqi)
+    where
+      aw : ∀𝕎 w
+              (λ w' e' →
+                (x₁ : eqTypes (uni u) w' (#EQ a b T) (#EQ a b T))
+                {--(at : atbar x w' e' x₁)--}
+                → eqInType (uni u) w' x₁ t₁ t₂
+                → □· w' (↑wPred' (λ w'' e → equalInType u w'' T a b) e'))
+      aw w1 e1 eqt1 {--at--} eqi1 = Mod.∀𝕎-□Func M (λ w' e' x z → x) ind
+        where
+          ind : □· w1 (λ w' e' → equalInType u w' T a b)
+          ind = if-equalInType-EQ u w1 T a b t₁ t₂ (eqt1 , eqi1)
+
+
+
+{--
+TODO: keep unfolding by hand
+  IS𝔹-fam {w} (IS𝔹-fam2 {w} (fst x) (λ {w'} e ib b' → inIS𝔹Dep b' (snd x e ib) (↑wPredDep'' {!!} e)) eqi)
+               (λ w1 e1 z b' → inIS𝔹 b' (↑wPred' {!!} z)) i' ,
+  {!!}
+  where
+--    g : wPredDep
+    aw : ∀𝕎 w
+              (λ w' e' →
+                (x₁ : eqTypes (uni u) w' (#EQ a b T) (#EQ a b T))
+                {--(at : atbar x w' e' x₁)--}
+                → eqInType (uni u) w' x₁ t₁ t₂
+                → □· w' (↑wPred' (λ w'' e → ⌜ t₁ ⌝ ⇛ AX at w'' × ⌜ t₂ ⌝ ⇛ AX at w'' × equalInType u w'' T a b) e'))
+    aw w1 e1 eqt1 {--at--} eqi1 = ∀𝕎-inBethBarFunc (λ w' e' x z → x) ind
+      where
+        ind : □· w1 (λ w' e' → ⌜ t₁ ⌝ ⇛ AX at w' × ⌜ t₂ ⌝ ⇛ AX at w' × equalInType u w' T a b)
+        ind = if-equalInType-EQ u w1 T a b t₁ t₂ (eqt1 , eqi1)
+
+    i' : inIS𝔹 (IS𝔹-fam2 {w} (fst x) (λ {w'} e ib b' → inIS𝔹Dep b' (snd x e ib) (↑wPredDep'' {!!} e)) eqi) {!!}
+    i' {w'} e (mkIS𝔹In w2 e2 br , F) w1 e1 z =
+      aw w1 z
+         (snd x e2 br w1 (⊑-trans· (IS𝔹.ext (fst (eqi e2 br)) F) e1) z)
+         (snd (eqi e2 br)
+              (IS𝔹.ext (fst (eqi e2 br)) F)
+              F w1 e1
+              (⊑-trans· (IS𝔹.ext (fst (eqi e2 br)) F) e1)
+              z)
+--}
 
 
 

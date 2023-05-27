@@ -337,15 +337,33 @@ Bars∃ B =
     j {w0} e0 (w0' , b0 , e0' , e0'') w1 e1 x x' = i1 (𝔹.ext b1 b0) b0 w1 (⊑-trans· e0' e1) x' (i2 e ib w1 x x')
 
 
+data ATΣ∈𝔹 {B : Bars} {w : 𝕎·} {f : wPred w} (i : Σ∈𝔹 B f) : (w' : 𝕎·) (e' : w ⊑· w') (p : f w' e') → Set(lsuc(L))
+data ATΣ∈𝔹 {B} {w} {f} i where
+{--  ATΣ∈𝔹-R : (q : f w (⊑-refl· w))
+              → ATΣ∈𝔹 {B} {w} {f} i w (⊑-refl· w) q--}
+  ATΣ∈𝔹-S : (w1 : 𝕎·) (e1 : w ⊑· w1) (b : 𝔹.bar (fst i) w1) (w' : 𝕎·) (e' : w1 ⊑· w') (z : w ⊑· w')
+              → ATΣ∈𝔹 {B} {w} {f} i w' z (snd i e1 b w' e' z)
+
+
+ATΣ∈𝔹→Σ∈𝔹∀𝕎 : {B : Bars} (all : Bars∀ B) {w : 𝕎·} {f : wPred w} (F : ∀𝕎 w f)
+                   → ATΣ∈𝔹 {B} (∀𝕎-Σ∈𝔹 all F) w (⊑-refl· w) (F w (⊑-refl· w))
+ATΣ∈𝔹→Σ∈𝔹∀𝕎 {B} all {w} {f} F = ATΣ∈𝔹-S w (⊑-refl· w) (⊑-refl· w) w (⊑-refl· w) (⊑-refl· w)
+
+
+atΣ∈𝔹 : {B : Bars} {w : 𝕎·} {f : wPred w}
+           → Σ∈𝔹 B f
+           → (w' : 𝕎·) → Set (lsuc(L))
+atΣ∈𝔹 {B} {w} {f} (b , i) w' = Σ 𝕎· (λ w1 → Lift {L} (lsuc(L)) (w ⊑· w1 × 𝔹.bar b w1 × w1 ⊑· w'))
+
+
 ∀𝕎-Σ∈𝔹-Σ∈𝔹' : {B : Bars} (all : Bars∀ B) {w : 𝕎·} {f : wPred w} {g : wPredDep f} (i : Σ∈𝔹 B f)
-                → ∀𝕎 w (λ w' e' → (x : f w' e') {--(at : atBethBar i w' e' x)--} → g w' e' x)
+                → ∀𝕎 w (λ w' e' → (x : f w' e') (at : ATΣ∈𝔹 i w' e' x) → g w' e' x)
                 → Σ∈𝔹' B i g
 ∀𝕎-Σ∈𝔹-Σ∈𝔹' {B} all {w} {f} {g} (b , i) aw {w'} e ib =
   𝔹∀ all w' , j
   where
     j : ∈𝔹Dep {B} (𝔹∀ all w') (i e ib) (↑wPredDep'' g e)
-    j {w0} e0 ib' w1 e1 x y = aw w1 y (i e ib w1 x y)
-
+    j {w0} e0 ib' w1 e1 x y = aw w1 y (i e ib w1 x y) (ATΣ∈𝔹-S w' e ib w1 x y)
 
 
 bar-𝔹⊑→ : {B : Bars} (mon : Bars⊑ B) {w w' : 𝕎·} (e : w ⊑· w') {b : 𝔹 B w} {w0 : 𝕎·}
@@ -487,7 +505,7 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
 
 ∀𝕎-Σ∈𝔹'-Σ∈𝔹 : {B : Bars} (fam : BarsFam2 B)
                  {w : 𝕎·} {f : wPred w} {g : wPredDep f} {h : wPred w} (i : Σ∈𝔹 B f)
-                 → ∀𝕎 w (λ w' e' → (x : f w' e') → g w' e' x → h w' e')
+                 → ∀𝕎 w (λ w' e' → (x : f w' e') (at : ATΣ∈𝔹 i w' e' x) → g w' e' x → h w' e')
                  → Σ∈𝔹' B i g → Σ∈𝔹 B h
 ∀𝕎-Σ∈𝔹'-Σ∈𝔹 {B} fam {w} {f} {g} {h} (b , i) aw j =
   𝔹fam2 fam {w} b (λ {w'} e ib b' → ∈𝔹Dep {B} b' (i e ib) (↑wPredDep'' g e)) j , i'
@@ -496,6 +514,7 @@ old-Σ∈𝔹'-idem {B} mon fam {w} {f} {g} (b₁ , i) (b₂ , j) {w'} e ib =
     i' {w'} e (mk𝔹In w2 e2 br , F) w1 e1 z =
       aw w1 z
          (i e2 br w1 (⊑-trans· (𝔹.ext (proj₁ (j e2 br)) F) e1) z)
+         (ATΣ∈𝔹-S w2 e2 br w1 (⊑-trans· (𝔹.ext (proj₁ (j e2 br)) F) e1) z)
          (snd (j e2 br)
               (𝔹.ext (proj₁ (j e2 br)) F)
               F w1 e1
