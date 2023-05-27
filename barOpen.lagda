@@ -883,6 +883,7 @@ inOpenBar'-comb-change : {w : 𝕎·} {f₁ f₂ f₃ : wPred w}
                          {g₁ : wPredDep f₁} {g₂ : wPredDep f₂} {g₃ : wPredDep f₃}
                          (i₁ : inOpenBar w f₁) (i₂ : inOpenBar w f₂) (i₃ : inOpenBar w f₃)
                          → ∀𝕎 w (λ w' e' → (x₁ : f₁ w' e') (x₂ : f₂ w' e') (x₃ : f₃ w' e')
+                                           → (at₁ : atOpenBar i₁ w' e' x₁) (at₂ : atOpenBar i₂ w' e' x₂) (at₃ : atOpenBar i₃ w' e' x₃)
                                           → g₁ w' e' x₁ → g₂ w' e' x₂ → g₃ w' e' x₃)
                          → inOpenBar' w i₁ g₁ → inOpenBar' w i₂ g₂ → inOpenBar' w i₃ g₃
 inOpenBar'-comb-change {w} {f₁} {f₂} {f₃} {g₁} {g₂} {g₃} i₁ i₂ i₃ aw b₁ b₂ w1 e1 w0 e0 =
@@ -932,6 +933,9 @@ inOpenBar'-comb-change {w} {f₁} {f₂} {f₃} {g₁} {g₂} {g₃} i₁ i₂ i
          (snd (snd (i₁ w2 (⊑-trans· e1 e2))) w7 (⊑-trans· (⊑-refl· _) (⊑-trans· e4 (⊑-trans· e5 (⊑-trans· e6 e7)))) z)
          (snd (snd (i₂ w4 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4))))) w7 (⊑-trans· (⊑-refl· _) (⊑-trans· e6 e7)) z)
          (snd (snd (i₃ w1 e1)) w7 y z)
+         (ATOPENBAR-O w2 (⊑-trans· e1 e2) w7 (⊑-trans· (⊑-refl· _) (⊑-trans· e4 (⊑-trans· e5 (⊑-trans· e6 e7)))) z)
+         (ATOPENBAR-O w4 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4))) w7 (⊑-trans· (⊑-refl· _) (⊑-trans· e6 e7)) z)
+         (ATOPENBAR-O w1 e1 w7 y z)
          (h0 w7 (⊑-trans· e5 (⊑-trans· e6 e7)) (⊑-trans· (⊑-refl· _) (⊑-trans· e4 (⊑-trans· e5 (⊑-trans· e6 e7)))) z)
          (h1 w7 e7 (⊑-trans· (⊑-refl· _) (⊑-trans· e6 e7)) z)
 
