@@ -81,6 +81,7 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -254,6 +255,62 @@ sub0-fun-mp-qt₄ f a =
 
             h2 : equalInType i w2 (#FUN (#MP-left-qt₃ (#APPLY eval (#NUM n))) (#MP-right-qt₃ (#APPLY eval (#NUM n)))) (#APPLY a (#APPLY eval (#NUM n))) (#APPLY a (#APPLY eval (#NUM n)))
             h2 = ≡CTerm→equalInType (sub0-fun-mp₆ (#APPLY eval (#NUM n))) h1
+
+
+sub0-APPLY-VAR : (F n : CTerm) → sub0 n (#[0]APPLY ⌞ F ⌟ #[0]VAR) ≡ #APPLY F n
+sub0-APPLY-VAR F n = CTerm≡ (≡APPLY e0 e1)
+  where
+    e0 : shiftDown 0 (subv 0 (shiftUp 0 ⌜ n ⌝) ⌜ CTerm→CTerm0 F ⌝) ≡ ⌜ F ⌝
+    e0 rewrite #shiftUp 0 n | CTerm→CTerm0→Term F | #subv 0 ⌜ n ⌝ ⌜ F ⌝ (CTerm.closed F) | #shiftDown 0 F = refl
+
+    e1 : shiftDown 0 (shiftUp 0 ⌜ n ⌝) ≡ ⌜ n ⌝
+    e1 rewrite #shiftUp 0 n | #shiftDown 0 n = refl
+
+
+∈NAT!-change-level : (i j : ℕ) {w : 𝕎·} {a b : CTerm}
+                      → equalInType i w #NAT! a b
+                      → equalInType j w #NAT! a b
+∈NAT!-change-level i j {w} {a} {b} a∈ = →equalInType-NAT! j w a b (equalInType-NAT!→ i w a b a∈)
+
+
+∈PURE-NAT→ : (i j : ℕ) (w : 𝕎·) (F a : CTerm)
+                → i < j
+                → ∈Type j w (#FUN #NAT! (#UNIV i)) F
+                → ∈Type i w (#PI (#TPURE #NAT!) (#[0]APPLY ⌞ F ⌟ #[0]VAR)) a
+                → ∈Type i w (#PI #NAT! (#[0]APPLY ⌞ F ⌟ #[0]VAR)) a
+∈PURE-NAT→ i j w F a ltj F∈ a∈ =
+  equalInType-PI
+    (λ w' e' → isTypeNAT! {w'} {i})
+    aw0 aw1
+  where
+    aw0 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT! a₁ a₂
+                        → equalTypes i w' (sub0 a₁ (#[0]APPLY ⌞ F ⌟ #[0]VAR)) (sub0 a₂ (#[0]APPLY ⌞ F ⌟ #[0]VAR)))
+    aw0 w1 e1 n₁ n₂ n∈ =
+      →≡equalTypes (sym (sub0-APPLY-VAR F n₁)) (sym (sub0-APPLY-VAR F n₂))
+        (equalInType→equalTypes-aux j i ltj w1 (#APPLY F n₁) (#APPLY F n₂)
+          (equalInType-FUN→ F∈ w1 e1 n₁ n₂ (∈NAT!-change-level i j n∈)))
+
+    aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT! a₁ a₂
+                        → equalInType i w' (sub0 a₁ (#[0]APPLY ⌞ F ⌟ #[0]VAR)) (#APPLY a a₁) (#APPLY a a₂))
+    aw1 w1 e1 n₁ n₂ n∈ =
+      →≡equalInType (sym (sub0-APPLY-VAR F n₁))
+        (equalInType-local (Mod.∀𝕎-□Func M aw2 (equalInType-NAT!→ i w1 n₁ n₂ n∈)))
+      where
+        aw2 : ∀𝕎 w1 (λ w' e' → #⇛!sameℕ w' n₁ n₂ → equalInType i w' (#APPLY F n₁) (#APPLY a n₁) (#APPLY a n₂))
+        aw2 w2 e2 (k , c₁ , c₂) =
+          TSext-equalTypes-equalInType i w2 (#APPLY F (#NUM k)) (#APPLY F n₁) (#APPLY a n₁) (#APPLY a n₂)
+          (equalInType→equalTypes-aux j i ltj w2 (#APPLY F (#NUM k)) (#APPLY F n₁)
+            (equalInType-FUN→ F∈ w2 (⊑-trans· e1 e2) (#NUM k) n₁ (→equalInType-NAT! j w2 (#NUM k) n₁ (Mod.∀𝕎-□ M aw3))))
+          {!!} -- this is essentially h1 except that the realizers are off - this would be true for props
+          where
+            aw3 : ∀𝕎 w2 (λ w' _ → #⇛!sameℕ w' (#NUM k) n₁)
+            aw3 w3 e3 = k , #⇛!-refl {w3} {#NUM k} , ∀𝕎-mon e3 c₁
+
+            h0 : equalInType i w2 (sub0 (#NUM k) (#[0]APPLY ⌞ F ⌟ #[0]VAR)) (#APPLY a (#NUM k)) (#APPLY a (#NUM k))
+            h0 = snd (snd (equalInType-PI→ a∈)) w2 (⊑-trans· e1 e2) (#NUM k) (#NUM k) (→equalInType-TPURE refl refl (NUM-equalInType-NAT! i w2 k))
+
+            h1 : equalInType i w2 (#APPLY F (#NUM k)) (#APPLY a (#NUM k)) (#APPLY a (#NUM k))
+            h1 = →≡equalInType (sub0-APPLY-VAR F (#NUM k)) h0
 
 
 -- Not true
