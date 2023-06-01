@@ -63,6 +63,9 @@ open import mpp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(EM)(EC) using (MPp-inh ; MPp₂-i
 -- Using classsical logic, MP is also consistent when using an open-like modality (see ExBar in exBar.lagda)
 open import mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB)(EB)(EM) using (MPvalid ; MP₂valid)
 
+-- Some results about pure expressions
+open import pure2{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(EC) using (Πpure→ ; ∈PURE-NAT→)
+
 -- This instance of 'choiceBar' uses Beth bars and terms as choices:
 open import modInstanceBethCs
 -- This instance of 'choiceBar' uses Beth bars and bools (#QTBOOL!) as choices:
