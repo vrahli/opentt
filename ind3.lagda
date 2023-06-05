@@ -77,12 +77,14 @@ open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 <Type-≡Types→equalTypes {u'} {w'} {T1'} {T2'} {eqt'} ((n , .(uniUpTo n)) , refl) w T1 T2 z h = h -- uses K
 
 
+{--
 ≡Types-ind : {K : Level} (P : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} → ≡Types u w T1 T2 → Set(K))
            → ({u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} (eqt : ≡Types u w T1 T2)
                → ({u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2') → <Type {u'} eqt' {u} eqt → P {u'} eqt')
                → P {u} eqt)
            → {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} (eqt : ≡Types u w T1 T2) → P eqt
 ≡Types-ind {K} P ind {u} {w} {T1} {T2} eqt = {!!}
+--}
 
 
 equalTypes-ind : {L : Level} (P : {u : ℕ} {w : 𝕎·} {T1 T2 : CTerm} (eqt : equalTypes u w T1 T2) → Set(L))

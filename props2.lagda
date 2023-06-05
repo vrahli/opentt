@@ -255,32 +255,6 @@ eqTypesFUN← {w} {i} {A} {B} {C} {D} eqta eqtb rewrite #FUN≡#PI A B | #FUN≡
       eqb w1 e1 a₁ a₂ eqa rewrite sub0⌞⌟ a₁ B | sub0⌞⌟ a₂ D = eqTypes-mon (uni i) eqtb w1 e1
 
 
-eqInTypeExtL1-true : {i : ℕ} {w : 𝕎·} {A B : CTerm} (eqt : eqTypes (uni i) w A B)
-                     → eqInTypeExtL1 eqt
-eqInTypeExtL1-true {i} {w} {A} {B} eqt = TSP.extl1 (typeSysConds i w A B eqt)
-
-
-
-eqInType→equalInType : {u : ℕ} {w : 𝕎·} {A A1 A2 a₁ a₂ : CTerm}
-                        → A ≡ A1
-                        → (eqt : equalTypes u w A1 A2)
-                        → equalTerms u w eqt a₁ a₂
-                        → equalInType u w A a₁ a₂
-eqInType→equalInType {u} {w} {A} {A1} {A2} {a₁} {a₂} e eqt eqi rewrite e =
-  TEQrefl-equalTypes u w A1 A2 eqt ,
-  eqInTypeExtL1-true eqt A1 (TEQrefl-equalTypes u w A1 A2 eqt) a₁ a₂ eqi
-
-
-
-equalInType→eqInType : {u : ℕ} {w : 𝕎·} {A A1 A2 a₁ a₂ : CTerm}
-                        → A ≡ A1
-                        → {eqt : equalTypes u w A1 A2}
-                        → equalInType u w A a₁ a₂
-                        → equalTerms u w eqt a₁ a₂
-equalInType→eqInType {u} {w} {A} {A1} {A2} {a₁} {a₂} e {eqt} eqi rewrite e =
-  eqInTypeExtL1-true {u} (fst eqi) A2 eqt a₁ a₂ (snd eqi)
-
-
 
 ∀𝕎-equalInType→eqInType : {i : ℕ} {w : 𝕎·} {A B a b : CTerm}
                         (eqta : ∀𝕎 w (λ w' _ → equalTypes i w' A B))

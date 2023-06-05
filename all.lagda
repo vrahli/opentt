@@ -24,6 +24,7 @@ open import choiceBar
 open import exBar
 open import mod
 open import encode
+open import MarkovPrinciple
 
 
 module all {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
@@ -36,6 +37,7 @@ module all {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
            (E0 : Extensionality 0ℓ 0ℓ)
            (EL : Extensionality 0ℓ (lsuc(lsuc(L))))
            (EM : ExcludedMiddle (lsuc(L))) -- for ExBar, used in turn in lem
+           (MP : MarkovPrinciple (lsuc(L)))
            (CB : ChoiceBar W M C K P G X N EC V F EL)
            (EB : ExBar W M)
        where
@@ -60,6 +62,7 @@ open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB) using (¬MP ; ¬
 -- open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(EL)(CE)(CB)
 -- MP is however consistent when restricted to pure functions
 open import mpp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(EM)(EC) using (MPp-inh ; MPp₂-inh ; MPp₃-inh ; MPp₄-inh)
+open import mpp2{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(MP)(EM)(EC) using (MPp₆-inh₂)
 -- Using classsical logic, MP is also consistent when using an open-like modality (see ExBar in exBar.lagda)
 open import mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB)(EB)(EM) using (MPvalid ; MP₂valid)
 
