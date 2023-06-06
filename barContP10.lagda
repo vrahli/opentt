@@ -385,21 +385,6 @@ sub0-contDiag-EQ F W a c = CTerm≡ e
             | #shiftDown 6 a = refl
 
 
-→≡equalTypes : {i : ℕ} {w : 𝕎·} {a1 a2 b1 b2 : CTerm}
-                → a1 ≡ a2
-                → b1 ≡ b2
-                → equalTypes i w a1 b1
-                → equalTypes i w a2 b2
-→≡equalTypes {i} {w} {a1} {a2} {b1} {b2} e1 e2 h rewrite e1 | e2 = h
-
-
-→≡equalInType : {i : ℕ} {w : 𝕎·} {T U a b : CTerm}
-                → T ≡ U
-                → equalInType i w T a b
-                → equalInType i w U a b
-→≡equalInType {i} {w} {T} {U} {a} {b} e h rewrite e = h
-
-
 isType-IndBar : (i : ℕ) (w : 𝕎·) (T : CTerm) → isType i w T → isType i w (#IndBar T)
 isType-IndBar i w T tyt =
   eqTypesW←

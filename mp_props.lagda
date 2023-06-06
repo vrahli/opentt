@@ -415,21 +415,6 @@ sub0-fun-mp₆ a =
     e rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftUp 0 a | #shiftUp 1 a | #shiftDown 2 a = refl
 
 
-→≡equalTypes : {i : ℕ} {w : 𝕎·} {a1 a2 b1 b2 : CTerm}
-                → a1 ≡ a2
-                → b1 ≡ b2
-                → equalTypes i w a1 b1
-                → equalTypes i w a2 b2
-→≡equalTypes {i} {w} {a1} {a2} {b1} {b2} e1 e2 h rewrite e1 | e2 = h
-
-
-→≡equalInType : {i : ℕ} {w : 𝕎·} {T U a b : CTerm}
-                → T ≡ U
-                → equalInType i w T a b
-                → equalInType i w U a b
-→≡equalInType {i} {w} {T} {U} {a} {b} e h rewrite e = h
-
-
 ∀𝕎∃𝕎-func : {w : 𝕎·} {f g : wPred w}
               → ∀𝕎 w (λ w1 e1 → f w1 e1 → g w1 e1)
               → ∀𝕎 w (λ w1 e1 → ∃𝕎 w1 (↑wPred f e1))
