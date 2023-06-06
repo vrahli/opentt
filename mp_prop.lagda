@@ -80,7 +80,7 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import terms3(W)(C)(K)(G)(X)(N)(EC)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
 
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalTypes-LIFT2 ; equalInType→equalTypes-aux ; equalInType-FUN→ ; ≡CTerm→equalInType ; eqTypesSQUASH← ; eqTypesSUM← ; isTypeNAT! ; eqTypesNEG←)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalTypes-LIFT2 ; equalInType→equalTypes-aux ; equalInType-FUN→ ; ≡CTerm→equalInType ; eqTypesSQUASH← ; eqTypesSUM← ; isTypeNAT! ; eqTypesNEG← ; →≡equalTypes)
 
 --open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
