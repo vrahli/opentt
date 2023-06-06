@@ -87,31 +87,6 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 
 
-eqTypes-change-level : (i j : univs) {w : 𝕎·} {T1 T2 : CTerm}
-                       → i ≡ j
-                       → eqTypes i w T1 T2
-                       → eqTypes j w T1 T2
-eqTypes-change-level i j {w} {T1} {T2} eqij eqt rewrite eqij = eqt
-
-
-eqInType-↓U-uni : (i : ℕ) {w : 𝕎·} {T1 T2 : CTerm}
-                  (eqt1 : eqTypes (uni (↓𝕃 i)) w T1 T2) (eqt2 : eqTypes (↓U (uni i)) w T1 T2)
-                  {a b : CTerm}
-                  → eqInType (uni (↓𝕃 i)) w eqt1 a b
-                  → eqInType (↓U (uni i)) w eqt2 a b
-eqInType-↓U-uni i {w} {T1} {T2} eqt1 eqt2 {a} {b} eqi rewrite ↓U-uni i =
-  eqInType-extl1 T2 T2 eqt1 eqt2 eqi
-
-
-eqInType-uni-↓U : (i : ℕ) {w : 𝕎·} {T1 T2 : CTerm}
-                  (eqt1 : eqTypes (↓U (uni i)) w T1 T2) (eqt2 : eqTypes (uni (↓𝕃 i)) w T1 T2)
-                  {a b : CTerm}
-                  → eqInType (↓U (uni i)) w eqt1 a b
-                  → eqInType (uni (↓𝕃 i)) w eqt2 a b
-eqInType-uni-↓U i {w} {T1} {T2} eqt1 eqt2 {a} {b} eqi rewrite ↓U-uni i =
-  eqInType-extl1 T2 T2 eqt1 eqt2 eqi
-
-
 abstract
   equalTypes-LIFT→ : {n : ℕ} {w : 𝕎·} {A B : CTerm}
                      → equalTypes (suc n) w (#LIFT A) (#LIFT B)
