@@ -224,7 +224,7 @@ eqInType-⇛-PI2 : (u : univs) (isu : is-universe u) (w : 𝕎·) (A B A1 A2 B1 
                   → (eqt : eqTypes u w A B)
                   → eqInType u w eqt a b
                   → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b)
-{-# TERMINATING #-}
+--{-# TERMINATING #-}
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb c₁ c₂ ext (EQTNAT x x₁) ei = ⊥-elim (PIneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb c₁ c₂ ext (EQTQNAT x x₁) ei = ⊥-elim (PIneqQNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb c₁ c₂ ext (EQTTNAT x x₁) ei = ⊥-elim (PIneqTNAT (⇛-val-det tt tt c₁ x))
@@ -3512,7 +3512,7 @@ typeSysConds-aux n ind w A B eqt = typeSysConds-aux-u (ℕ→𝕌 n) ind' w A B 
 {--
 typeSysConds-aux : (n : ℕ) (ind : (m : ℕ) → m < n → is-TSP-univs (uni m))
                    (w : 𝕎·) (A B : CTerm) (eqt : eqTypes (uni n) w A B) → TSP eqt
-{-# TERMINATING #-}
+--{-# TERMINATING #-}
 typeSysConds-aux n ind w A B (EQTNAT x x₁) = typeSysConds-NAT (uni n) w A B x x₁
 typeSysConds-aux n ind w A B (EQTQNAT x x₁) = typeSysConds-QNAT (uni n) w A B x x₁
 typeSysConds-aux n ind w A B (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = typeSysConds-LT (uni n) w A B a1 b1 a2 b2 x x₁ x₂ x₃
@@ -3969,7 +3969,7 @@ abstract
 
 {--
   {-# INLINE □· #-}
-  {-# TERMINATING #-}
+--{-# TERMINATING #-}
   if-equalInType-EQ u w T a b t₁ t₂ (EQTNAT x x₁ , eqi) = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQTQNAT x x₁ , eqi) = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQTTNAT x x₁ , eqi) = ⊥-elim (EQneqTNAT (compAllVal x₁ tt))

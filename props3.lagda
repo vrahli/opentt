@@ -569,7 +569,7 @@ equalTerms-#⇛-left-rev-at i =
 equalTerms-#⇛-left-rev-aux : {i : ℕ}
                               → (ind : (j : ℕ) → j < i → equalTerms-#⇛-left-rev-at j)
                               → equalTerms-#⇛-left-rev-at i
-{-# TERMINATING #-}
+--{-# TERMINATING #-}
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTNAT x x₁) eqi =
   Mod.∀𝕎-□Func M (λ w1 e1 h → #strongMonEq-#⇛-left-rev {w1} {a} {b} {c} (#⇛!!-#⇛ {w1} {a} {b} (#⇛!!-mon e1 comp)) h) eqi
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTQNAT x x₁) eqi =
@@ -1045,7 +1045,7 @@ equalTerms-#⇛-L-at i =
 equalTerms-#⇛-L-aux : {i : ℕ}
                           → (ind : (j : ℕ) → j < i → equalTerms-#⇛-L-at j)
                           → equalTerms-#⇛-L-at i
-{-# TERMINATING #-}
+--{-# TERMINATING #-}
 equalTerms-#⇛-L-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTNAT x x₁) eqi =
   Mod.∀𝕎-□Func M {!!} eqi --Mod.∀𝕎-□Func M (λ w1 e1 h → #strongMonEq-#⇛-left {--#⇛!sameℕ-#⇛-left--} {w1} {a} {b} {c} (∀𝕎-mon e1 comp) h) eqi
 equalTerms-#⇛-L-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTQNAT x x₁) eqi =

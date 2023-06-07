@@ -117,7 +117,6 @@ typeSysConds-NAT-extl1 u w A B x x₁ C eqt' =
     concl =
       ind<Type
         (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #NAT at w) (a b : CTerm) → □· w (λ w' _ → NATeq w' a b) → eqInType u w eqt' a b)
-        --(λ {u} {w} {T1} {T2} eqt1 eqt2 h → {!!})
         ind
         eqt'
 

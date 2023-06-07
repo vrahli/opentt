@@ -1717,4 +1717,12 @@ SUBSINGeq-trans : {eqa : per} {t1 t2 t3 : CTerm}
                  → SUBSINGeq eqa t1 t3
 SUBSINGeq-trans {eqa} {t1} {t2} {t3} (h , q) (r , s) = h , s
 
+
+→≡eqTypes : {i : univs} {w : 𝕎·} {a1 a2 b1 b2 : CTerm}
+                → a1 ≡ a2
+                → b1 ≡ b2
+                → eqTypes i w a1 b1
+                → eqTypes i w a2 b2
+→≡eqTypes {i} {w} {a1} {a2} {b1} {b2} e1 e2 h rewrite e1 | e2 = h
+
 \end{code}

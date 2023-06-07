@@ -493,6 +493,10 @@ TNATeq w t1 t2 =
   #∀𝕎-⇓∼ℕ w t1 t2
 
 
+QNATeq : wper
+QNATeq w t1 t2 = #weakMonEq w t1 t2
+
+
 {-# TERMINATING #-}
 --{-# INLINE □·' #-}
 --{-# INLINE inBethBar' #-}
@@ -502,7 +506,7 @@ TNATeq w t1 t2 =
 -- We want #⇛!sameℕ here to get some functions in Nat->QT(Bool)
 -- Only to prove →equalInType-CS-NAT→T in props3?
 eqInType _ w (EQTNAT _ _) t1 t2 = □· w (λ w' _ → NATeq w' t1 t2)
-eqInType _ w (EQTQNAT _ _) t1 t2 = □· w (λ w' _ → #weakMonEq w' t1 t2)
+eqInType _ w (EQTQNAT _ _) t1 t2 = □· w (λ w' _ → QNATeq w' t1 t2)
 eqInType _ w (EQTTNAT _ _) t1 t2 = □· w (λ w' _ → TNATeq w' t1 t2)
 eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 = □· w (λ w' _ → #lift-<NUM-pair w' a1 b1)
 eqInType _ w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 = □· w (λ w' _ → #lift-<NUM-pair w' a1 b1)

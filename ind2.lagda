@@ -1444,4 +1444,41 @@ ind<Type {K} P ind {u} {w0} {X1} {X2} eqt =
 <Type-EQTBAR-eqInTypeExt {u} {w} {A} {B} {i} {w1} e1 {z} a ext {u'} {w'} {A'} {B'} eqt' (≤TypeS .eqt' .z x) =
   ext eqt' (<TypeS _ _ _ x (<TypeBAR _ _ _ _ i w1 e1 z a))
 
+
+<Type-trans : {u1 : 𝕌} {w1 : 𝕎·} {T1 U1 : CTerm} (eqt1 : ≡Types u1 w1 T1 U1)
+               {u2 : 𝕌} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : ≡Types u2 w2 T2 U2)
+               {u3 : 𝕌} {w3 : 𝕎·} {T3 U3 : CTerm} (eqt3 : ≡Types u3 w3 T3 U3)
+               → <Type {u1} eqt1 {u2} eqt2 → <Type {u2} eqt2 {u3} eqt3 → <Type {u1} eqt1 {u3} eqt3
+<Type-trans {u1} {w1} {T1} {U1} eqt1 {u2} {w2} {T2} {U2} eqt2 {u3} {w3} {T3} {U3} eqt3 (<Type1 .eqt1 .eqt2 x) (<Type1 .eqt2 .eqt3 x₁) = <TypeS eqt1 eqt2 eqt3 (<Type1 eqt1 eqt2 x) x₁
+<Type-trans {u1} {w1} {T1} {U1} eqt1 {u2} {w2} {T2} {U2} eqt2 {u3} {w3} {T3} {U3} eqt3 (<Type1 .eqt1 .eqt2 x) (<TypeS .eqt2 eqt4 .eqt3 q x₁) = <TypeS eqt1 eqt4 eqt3 (<Type-trans eqt1 eqt2 eqt4 (<Type1 eqt1 eqt2 x) q) x₁
+<Type-trans {u1} {w1} {T1} {U1} eqt1 {u2} {w2} {T2} {U2} eqt2 {u3} {w3} {T3} {U3} eqt3 (<TypeS .eqt1 eqt4 .eqt2 h x) (<Type1 .eqt2 .eqt3 x₁) = <TypeS eqt1 eqt2 eqt3 (<TypeS eqt1 eqt4 eqt2 h x) x₁
+<Type-trans {u1} {w1} {T1} {U1} eqt1 {u2} {w2} {T2} {U2} eqt2 {u3} {w3} {T3} {U3} eqt3 (<TypeS .eqt1 eqt4 .eqt2 h x) (<TypeS .eqt2 eqt5 .eqt3 q x₁) = <TypeS eqt1 eqt5 eqt3 (<Type-trans eqt1 eqt2 eqt5 (<TypeS eqt1 eqt4 eqt2 h x) q) x₁
+
+
+≤Type-trans : {u1 : 𝕌} {w1 : 𝕎·} {T1 U1 : CTerm} (eqt1 : ≡Types u1 w1 T1 U1)
+               {u2 : 𝕌} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : ≡Types u2 w2 T2 U2)
+               {u3 : 𝕌} {w3 : 𝕎·} {T3 U3 : CTerm} (eqt3 : ≡Types u3 w3 T3 U3)
+               → ≤Type {u1} eqt1 {u2} eqt2 → ≤Type {u2} eqt2 {u3} eqt3 → ≤Type {u1} eqt1 {u3} eqt3
+≤Type-trans {u1} {w1} {T1} {U1} eqt1 {.u1} {.w1} {.T1} {.U1} .eqt1 {u3} {w3} {T3} {U3} eqt3 (≤Type0 .eqt1) q = q
+≤Type-trans {u1} {w1} {T1} {U1} eqt1 {u2} {w2} {T2} {U2} eqt2 {.u2} {.w2} {.T2} {.U2} .eqt2 (≤TypeS .eqt1 .eqt2 x) (≤Type0 .eqt2) = ≤TypeS eqt1 eqt2 x
+≤Type-trans {u1} {w1} {T1} {U1} eqt1 {u2} {w2} {T2} {U2} eqt2 {u3} {w3} {T3} {U3} eqt3 (≤TypeS .eqt1 .eqt2 x) (≤TypeS .eqt2 .eqt3 x₁) = ≤TypeS eqt1 eqt3 (<Type-trans eqt1 eqt2 eqt3 x x₁)
+
+
+≤Type-trans-bar : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm}
+                   {w' : 𝕎·} (e' : w ⊑· w')
+                   (x  : □· w (λ w' _ → ≡Types u w' T1 T2))
+                   (z  : ≡Types u w' T1 T2)
+                   (at : at□· x w' e' z)
+                   {P  : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} → ≡Types u' w' A' B' → Set(lsuc(L))}
+                   → ({u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} (EQTBAR x) → P {u'} {w'} eqt')
+                   → ({u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} z → P {u'} {w'} eqt')
+≤Type-trans-bar {u} {w} {T1} {T2} {w'} e' x z at h {u1} {w1} {A} {B} eqt lety =
+  h {u1} {w1} eqt (≤Type-trans eqt z (EQTBAR x) lety lety2)
+  where
+    lety1 : <Type z (EQTBAR x)
+    lety1 = <Type1 z (EQTBAR x) (<TypeBAR u w T1 T2 x w' e' z at)
+
+    lety2 : ≤Type z (EQTBAR x)
+    lety2 = ≤TypeS z (EQTBAR x) lety1
+
 \end{code}
