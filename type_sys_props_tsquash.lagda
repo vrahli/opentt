@@ -1268,7 +1268,6 @@ eqInType-⇛-TSQUASH-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt ei = con
 
 
 
-
 eqInType-⇛-TSQUASH-rev2 : (u : 𝕌) (w : 𝕎·) (A B A1 B1 a b : CTerm)
                            (eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 B1))
                            (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqta w e) a b))

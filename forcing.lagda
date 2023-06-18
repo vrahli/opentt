@@ -497,6 +497,10 @@ QNATeq : wper
 QNATeq w t1 t2 = #weakMonEq w t1 t2
 
 
+FREEeq : wper
+FREEeq w t1 t2 = #⇛to-same-CS w t1 t2
+
+
 {-# TERMINATING #-}
 --{-# INLINE □·' #-}
 --{-# INLINE inBethBar' #-}
@@ -510,7 +514,7 @@ eqInType _ w (EQTQNAT _ _) t1 t2 = □· w (λ w' _ → QNATeq w' t1 t2)
 eqInType _ w (EQTTNAT _ _) t1 t2 = □· w (λ w' _ → TNATeq w' t1 t2)
 eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 = □· w (λ w' _ → #lift-<NUM-pair w' a1 b1)
 eqInType _ w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 = □· w (λ w' _ → #lift-<NUM-pair w' a1 b1)
-eqInType _ w (EQTFREE _ _) t1 t2 = □· w (λ w' _ → #⇛to-same-CS w' t1 t2)
+eqInType _ w (EQTFREE _ _) t1 t2 = □· w (λ w' _ → FREEeq w' t1 t2)
 eqInType u w (EQTPI _ _ _ _ _ _ eqta eqtb exta extb) f1 f2 =
   □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) f1 f2)
 eqInType u w (EQTW _ _ _ _ _ _ eqta eqtb exta extb) t1 t2 =
