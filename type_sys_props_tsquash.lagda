@@ -648,7 +648,6 @@ typeSysConds-TSQUASH-extr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
 
 
 
-
 typeSysConds-TSQUASH-extrevl1 : (u : univs) (w : 𝕎·) (A B A1 B1 : CTerm)
                                 (x : A #⇛ #TSQUASH A1 at w) (x₁ : B #⇛ #TSQUASH B1 at w)
                                 (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 B1))
@@ -731,7 +730,6 @@ typeSysConds-TSQUASH-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
           → □· w (λ w' e → TSQUASHeq (eqInType u w' (eqta w' e)) w' a b))
         ind
         eqt'
-
 
 
 typeSysConds-TSQUASH-extrevl2 : (u : univs) (w : 𝕎·) (A B A1 B1 : CTerm)
@@ -985,8 +983,6 @@ typeSysConds-TSQUASH-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
         eqt'
 
 
-
-
 eqInType-⇛-TSQUASH : (u : univs) (w : 𝕎·) (A B A1 B1 a b : CTerm)
                       (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 B1))
                       (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
@@ -1076,8 +1072,6 @@ eqInType-⇛-TSQUASH u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt eqi = concl 
           → □· w (λ w' e → TSQUASHeq (eqInType u w' (eqta w' e)) w' a b))
         ind
         eqt
-
-
 
 
 eqInType-⇛-TSQUASH2 : (u : 𝕌) (w : 𝕎·) (A B A1 B1 a b : CTerm)
@@ -1173,8 +1167,6 @@ eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ei ext = concl e
           → □· w (λ w' e → TSQUASHeq (≡∈Type u w' (eqta w' e)) w' a b))
         ind
         eqt
-
-
 
 
 eqInType-⇛-TSQUASH-rev : (u : univs) (w : 𝕎·) (A B A1 B1 a b : CTerm)
@@ -1361,8 +1353,6 @@ eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ext ei = con
           → ≡∈Type u w eqt a b)
         ind
         eqt
-
-
 
 
 typeSysConds-TSQUASH-local : (u : univs) (w : 𝕎·) (A B A1 B1 : CTerm)
