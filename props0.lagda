@@ -1271,6 +1271,15 @@ UNIONeq-ext-eq {eqa1} {eqa2} {eqb1} {eqb2} {w} {t1} {t2} exta extb (a , b , inj�
 UNIONeq-ext-eq {eqa1} {eqa2} {eqb1} {eqb2} {w} {t1} {t2} exta extb (a , b , inj₂ (c₁ , c₂ , z)) = a , b , inj₂ (c₁ , c₂ , extb a b z)
 
 
+QTUNIONeq-ext-eq : {eqa1 eqa2 eqb1 eqb2 : per} {w : 𝕎·} {t1 t2 : CTerm}
+                  → ((a b : CTerm) → eqa1 a b → eqa2 a b)
+                  → ((a b : CTerm) → eqb1 a b → eqb2 a b)
+                  → QTUNIONeq eqa1 eqb1 w t1 t2
+                  → QTUNIONeq eqa2 eqb2 w t1 t2
+QTUNIONeq-ext-eq {eqa1} {eqa2} {eqb1} {eqb2} {w} {t1} {t2} exta extb (a , b , inj₁ (c₁ , c₂ , z)) = a , b , inj₁ (c₁ , c₂ , exta a b z)
+QTUNIONeq-ext-eq {eqa1} {eqa2} {eqb1} {eqb2} {w} {t1} {t2} exta extb (a , b , inj₂ (c₁ , c₂ , z)) = a , b , inj₂ (c₁ , c₂ , extb a b z)
+
+
 irr-union : (u : univs) (w : 𝕎·) (A1 A2 B1 B2 : CTerm)
             (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
             (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))

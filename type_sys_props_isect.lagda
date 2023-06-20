@@ -59,7 +59,8 @@ open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import ind(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using () renaming (<Type to <Type₂ ; ≤Type to ≤Type₂ ; ≤Type0 to ≤Type0₂ ; ≤TypeS to ≤TypeS₂ ; <Type1 to <Type1₂ ; <TypeS to <TypeS₂ ; <TypeStep to <TypeStep₂ ; <TypeISECTl to <TypeISECTl₂ ; <TypeISECTr to <TypeISECTr₂ ; ≤Type-EQTBAR-eqInTypeExt to ≤Type-EQTBAR-eqInTypeExt₂ ; ind<Type to ind<Type₂ ; <TypeBAR to <TypeBAR₂ ; ≤Type-trans-bar to ≤Type-trans-bar₂)
 
 --open import theory (bar)
 --open import props0 (bar)
@@ -1052,7 +1053,7 @@ eqInType-⇛-ISECT2 : (u : 𝕌) (w : 𝕎·) (A B A1 A2 B1 B2 a b : CTerm)
                      → B #⇛ #ISECT A2 B2 at w
                      → (eqt : ≡Types u w A B)
                      → (eqi : ≡∈Type u w eqt a b)
-                     → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} eqt → eqInTypeExt eqt')
+                     → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type₂ {u'} eqt' {u} eqt → eqInTypeExt eqt')
                      → □· w (λ w' e → ISECTeq (≡∈Type u w' (eqta w' e)) (≡∈Type u w' (eqtb w' e)) a b)
 {-# TERMINATING #-}
 eqInType-⇛-ISECT2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNAT x x₁) ei ext = ⊥-elim (ISECTneqNAT (⇛-val-det tt tt c₁ x))
@@ -1077,10 +1078,10 @@ eqInType-⇛-ISECT2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTIS
   Mod.∀𝕎-□Func M aw ei
   where
     awexta₁ : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
-    awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeISECTl u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
+    awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS₂ _ _ (<Type1₂ _ _ (<TypeISECTl₂ u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
 
     awextb₁ : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqtb₁ w1 e1))
-    awextb₁ w1 e1 = ext (eqtb₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeISECTr u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
+    awextb₁ w1 e1 = ext (eqtb₁ w1 e1) (≤TypeS₂ _ _ (<Type1₂ _ _ (<TypeISECTr₂ u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
 
     aw : ∀𝕎 w (λ w' e' → ISECTeq (≡∈Type u w' (eqta₁ w' e')) (≡∈Type u w' (eqtb₁ w' e')) a b
                          → ISECTeq (≡∈Type u w' (eqta w' e')) (≡∈Type u w' (eqtb w' e')) a b)
@@ -1234,7 +1235,7 @@ eqInType-⇛-ISECT-rev2 : (u : 𝕌) (w : 𝕎·) (A B A1 A2 B1 B2 a b : CTerm)
                          → A #⇛ #ISECT A1 B1 at w
                          → B #⇛ #ISECT A2 B2 at w
                          → (eqt : ≡Types u w A B)
-                         → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} eqt → eqInTypeExt eqt')
+                         → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type₂ {u'} eqt' {u} eqt → eqInTypeExt eqt')
                          → □· w (λ w' e → ISECTeq (≡∈Type u w' (eqta w' e)) (≡∈Type u w' (eqtb w' e)) a b)
                          → ≡∈Type u w eqt a b
 {-# TERMINATING #-}
@@ -1260,10 +1261,10 @@ eqInType-⇛-ISECT-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (E
   Mod.∀𝕎-□Func M aw ei
   where
     awexta₁ : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
-    awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeISECTl u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
+    awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS₂ _ _ (<Type1₂ _ _ (<TypeISECTl₂ u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
 
     awextb₁ : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqtb₁ w1 e1))
-    awextb₁ w1 e1 = ext (eqtb₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypeISECTr u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
+    awextb₁ w1 e1 = ext (eqtb₁ w1 e1) (≤TypeS₂ _ _ (<Type1₂ _ _ (<TypeISECTr₂ u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
 
     aw : ∀𝕎 w (λ w' e' → ISECTeq (≡∈Type u w' (eqta w' e')) (≡∈Type u w' (eqtb w' e')) a b
                          → ISECTeq (≡∈Type u w' (eqta₁ w' e')) (≡∈Type u w' (eqtb₁ w' e')) a b)
