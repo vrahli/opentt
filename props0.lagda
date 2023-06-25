@@ -984,6 +984,18 @@ irr-fam-pi u w A1 B1 A2 B2 eqta eqtb exta extb f g w1 e1 w' e' j z a1 a2 eqa =
       eqa' = exta a1 a2 w' z (⊑-trans· e1 e') eqa
 
 
+PIeq-ext-eq : {eqa1 eqa2 : per}
+              {eqb1 : (a b : CTerm) → eqa1 a b → per}
+              {eqb2 : (a b : CTerm) → eqa2 a b → per}
+              {t1 t2 : CTerm}
+              → ((a b : CTerm) → eqa2 a b → eqa1 a b)
+              → ((f g : CTerm) (a b : CTerm) (ea1 : eqa1 a b) (ea2 : eqa2 a b) → eqb1 a b ea1 f g → eqb2 a b ea2 f g)
+              → PIeq eqa1 eqb1 t1 t2
+              → PIeq eqa2 eqb2 t1 t2
+PIeq-ext-eq {eqa1} {eqa2} {eqb1} {eqb2} {t1} {t2} exta extb e a b a∈ =
+  extb (#APPLY t1 a) (#APPLY t2 b) a b (exta a b a∈) a∈ (e a b (exta a b a∈))
+
+
 weq-ext-eq : {eqa1 eqa2 : per}
              {eqb1 : (a b : CTerm) → eqa1 a b → per}
              {eqb2 : (a b : CTerm) → eqa2 a b → per}
@@ -1242,6 +1254,14 @@ irr-eq u w a1 a2 A1 A2 eqta exta f g w1 e1 w' e' eqa z = eqa'
   where
     eqa' : eqInType u w' (eqta w' z) a1 a2
     eqa' = exta a1 a2 w' (⊑-trans· e1 e') z eqa
+
+
+ISECTeq-ext-eq : {eqa1 eqa2 eqb1 eqb2 : per} {t1 t2 : CTerm}
+                  → ((a b : CTerm) → eqa1 a b → eqa2 a b)
+                  → ((a b : CTerm) → eqb1 a b → eqb2 a b)
+                  → ISECTeq eqa1 eqb1 t1 t2
+                  → ISECTeq eqa2 eqb2 t1 t2
+ISECTeq-ext-eq {eqa1} {eqa2} {eqb1} {eqb2} {t1} {t2} exta extb (u , v) = exta t1 t2 u , extb t1 t2 v
 
 
 irr-isect : (u : univs) (w : 𝕎·) (A1 A2 B1 B2 : CTerm)
@@ -1742,5 +1762,26 @@ SUBSINGeq-trans {eqa} {t1} {t2} {t3} (h , q) (r , s) = h , s
                 → eqTypes i w a1 b1
                 → eqTypes i w a2 b2
 →≡eqTypes {i} {w} {a1} {a2} {b1} {b2} e1 e2 h rewrite e1 | e2 = h
+
+
+→≡eqTypesSub0 : {i : univs} {w : 𝕎·} {a1 a2 b1 b2 : CTerm0} {x y : CTerm}
+                → a1 ≡ a2
+                → b1 ≡ b2
+                → eqTypes i w (sub0 x a1) (sub0 y b1)
+                → eqTypes i w (sub0 x a2) (sub0 y b2)
+→≡eqTypesSub0 {i} {w} {a1} {a2} {b1} {b2} {x} {y} e1 e2 h rewrite e1 | e2 = h
+
+
+→≡eqInType : {i : univs} {w : 𝕎·} {A B C D a b : CTerm} (eqt : eqTypes i w A C)
+              (e1 : A ≡ B) (e2 : C ≡ D)
+           → eqInType i w eqt a b
+           → eqInType i w (→≡eqTypes e1 e2 eqt) a b
+→≡eqInType {i} {w} {A} {B} {C} {D} {a} {b} eqt e1 e2 ei rewrite e1 | e2 = ei
+
+→≡eqInType-rev : {i : univs} {w : 𝕎·} {A B C D a b : CTerm} (eqt : eqTypes i w A C)
+                 (e1 : A ≡ B) (e2 : C ≡ D)
+                 → eqInType i w (→≡eqTypes e1 e2 eqt) a b
+                 → eqInType i w eqt a b
+→≡eqInType-rev {i} {w} {A} {B} {C} {D} {a} {b} eqt e1 e2 ei rewrite e1 | e2 = ei
 
 \end{code}

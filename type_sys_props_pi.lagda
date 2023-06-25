@@ -62,7 +62,8 @@ open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import ind(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using () renaming (<Type to <Type₂ ; ≤Type to ≤Type₂ ; ≤Type0 to ≤Type0₂ ; ≤TypeS to ≤TypeS₂ ; <Type1 to <Type1₂ ; <TypeS to <TypeS₂ ; <TypeStep to <TypeStep₂ ; <TypePIa to <TypePIa₂ ; <TypePIb to <TypePIb₂ ; ≤Type-EQTBAR-eqInTypeExt to ≤Type-EQTBAR-eqInTypeExt₂ ; ind<Type to ind<Type₂ ; <TypeBAR to <TypeBAR₂ ; ≤Type-trans-bar to ≤Type-trans-bar₂)
 
 -- open import calculus
 -- open import world
@@ -150,103 +151,146 @@ typeSysConds-PI-ttrans : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1
                                            (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                            → TSP (eqtb w1 e1 a1 a2 ea)))
                        → eqTypesTrans u w A B
-{-# TERMINATING #-}
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) = ⊥-elim (PIneqNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) = ⊥-elim (PIneqLT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) = ⊥-elim (PIneqQLT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) = ⊥-elim (PIneqFREE (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0)
-  rewrite #PIinj1 {C1} {D1} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
-        | #PIinj2 {C1} {D1} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁) =
-  EQTPI A1 B1 C2 D2 x y₁ eqa eqb exta' extb'
+typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C eqt =
+  concl x x₁ eqta eqtb exta extb inda indb
   where
-    eqa : ∀𝕎 w (λ w' _ → eqTypes u w' A1 C2)
-    eqa w1 e1 = TSP.ttrans (inda w1 e1) C2 (eqta0 w1 e1)
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : eqTypes u' w' T1' T2') → <Type {u'} eqt' {u} eqt
+              → A #⇛ #PI A1 B1 at w' → T1' #⇛ #PI A2 B2 at w'
+              → (eqta₁ : ∀𝕎 w' (λ w'' _ → eqTypes u' w'' A1 A2))
+              → (eqtb₁ : ∀𝕎 w' (λ w' e → ∀ a1 a2 → eqInType u' w' (eqta₁ w' e) a1 a2
+                                                    → eqTypes u' w' (sub0 a1 B1) (sub0 a2 B2)))
+              → (exta₁ : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u' w (eqta₁ w e) a b))
+              → (extb₁ : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u' w (eqtb₁ w e a b x) c d))
+              → (inda₁ : ∀𝕎 w' (λ w1 e1 → TSP (eqta₁ w1 e1)))
+              → (indb₁ : ∀𝕎 w' (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u' w1 (eqta₁ w1 e1) a1 a2)
+                                         → TSP (eqtb₁ w1 e1 a1 a2 ea)))
+              → eqTypes u' w' A T2')
+          → A #⇛ #PI A1 B1 at w → T1 #⇛ #PI A2 B2 at w
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                              → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+          → eqTypes u w A T2
+    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqNAT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqLT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqQLT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqFREE (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTPI C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta eqtb exta extb inda indb
+      = EQTPI A1 B1 C2 D2 x y₁ eqa eqb exta' extb'
+        where
+          eqa : ∀𝕎 w (λ w' _ → eqTypes u w' A1 C2)
+          eqa w1 e1 = TSP.ttrans (inda w1 e1) C2 (→≡eqTypes (#PIinj1 {C1} {D1} {A2} {B2} (#⇛-val-det {_} {T1} tt tt y x₁)) refl (eqta0 w1 e1))
 
-    eqb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqa w' e) a1 a2 → eqTypes u w' (sub0 a1 B1) (sub0 a2 D2))
-    eqb w1 e1 a1 a2 ea = TSP.ttrans (indb w1 e1 a1 a2 eqa12) (sub0 a2 D2) eqb2
+          eqb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqa w' e) a1 a2 → eqTypes u w' (sub0 a1 B1) (sub0 a2 D2))
+          eqb w1 e1 a1 a2 ea = TSP.ttrans (indb w1 e1 a1 a2 eqa12) (sub0 a2 D2) eqb2
+            where
+              eqa12 : eqInType u w1 (eqta w1 e1) a1 a2
+              eqa12 = TSP.extrevl1 (inda w1 e1) C2 (eqa w1 e1) a1 a2 ea
+
+              eqa22' : eqInType u w1 (eqta w1 e1) a2 a2
+              eqa22' = TSP.itrans (inda w1 e1) a2 a1 a2 (TSP.isym (inda w1 e1) a1 a2 eqa12) eqa12
+
+              eqa22 : eqInType u w1 (eqta0 w1 e1) a2 a2
+              eqa22 = →≡eqInType-rev (eqta0 w1 e1)
+                        (#PIinj1 {C1} {D1} {A2} {B2} (#⇛-val-det {_} {T1} tt tt y x₁)) refl
+                        (TSP.extr2 (inda w1 e1) C2
+                           (→≡eqTypes (#PIinj1 (#⇛-val-det tt tt y x₁)) refl (eqta0 w1 e1)) a2
+                           a2 eqa22')
+
+              eqb2 : eqTypes u w1 (sub0 a2 B2) (sub0 a2 D2)
+              eqb2 = →≡eqTypesSub0
+                      (#PIinj2 {C1} {D1} {A2} {B2} (#⇛-val-det {_} {T1} tt tt y x₁))
+                      refl
+                      (eqtb0 w1 e1 a2 a2 eqa22)
+
+          exta' : (a b : CTerm) → wPredExtIrr (λ w₁ e → eqInType u w₁ (eqa w₁ e) a b)
+          exta' a b w' e1 e2 ei = TSP.extl1 (inda w' e2) C2 (eqa w' e2) a b ei2
+            where
+              ei1 : eqInType u w' (eqta w' e1) a b
+              ei1 = TSP.extrevl1 (inda w' e1) C2 (eqa w' e1) a b ei
+
+              ei2 : eqInType u w' (eqta w' e2) a b
+              ei2 = exta a b w' e1 e2 ei1
+
+          extb' : (a b c d : CTerm) → wPredDepExtIrr (λ w₁ e x₂ → eqInType u w₁ (eqb w₁ e a b x₂) c d)
+          extb' a b c d w' e1 e2 x₁ x₂ ei = TSP.extl1 (indb w' e2 a b x₂') (sub0 b D2) (eqb w' e2 a b x₂) c d ei2
+            where
+              x₁' : eqInType u w' (eqta w' e1) a b
+              x₁' = TSP.extrevl1 (inda w' e1) C2 (eqa w' e1) a b x₁
+
+              x₂' : eqInType u w' (eqta w' e2) a b
+              x₂' = TSP.extrevl1 (inda w' e2) C2 (eqa w' e2) a b x₂
+
+              ei1 : eqInType u w' (eqtb w' e1 a b x₁') c d
+              ei1 = TSP.extrevl1 (indb w' e1 a b x₁') (sub0 b D2) (eqb w' e1 a b x₁) c d ei
+
+              ei2 : eqInType u w' (eqtb w' e2 a b x₂') c d
+              ei2 = extb a b c d w' e1 e2 x₁' x₂' ei1
+    ind {u} {w} {T1} {T2} (EQTW C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqW (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSUM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqISECT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTUNION C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqUNION (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTQTUNION C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqPURE (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqTERM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (PIneqDUM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x₁ c₁))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind x x₁ eqta eqtb exta extb inda indb =
+      EQTBAR (∀𝕎-□at W M y aw)
       where
-        eqa12 : eqInType u w1 (eqta w1 e1) a1 a2
-        eqa12 = TSP.extrevl1 (inda w1 e1) C2 (eqa w1 e1) a1 a2 ea
+        aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) → eqTypes u w' A T2)
+        aw w' e' z at =
+          ind
+            {u} {w'} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w' e' z at))
+            (⇛-mon e' x) (⇛-mon e' x₁)
+            (∀𝕎-mon e' eqta) (∀𝕎-mon e' eqtb)
+            (wPredExtIrr-eqInType-mon eqta exta w' e')
+            (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w' e')
+            (∀𝕎-mon e' inda) (∀𝕎-mon e' indb)
 
-        eqa22' : eqInType u w1 (eqta w1 e1) a2 a2
-        eqa22' = TSP.itrans (inda w1 e1) a2 a1 a2 (TSP.isym (inda w1 e1) a1 a2 eqa12) eqa12
-
-        eqa22 : eqInType u w1 (eqta0 w1 e1) a2 a2
-        eqa22 = TSP.extr2 (inda w1 e1) C2 (eqta0 w1 e1) a2 a2 eqa22'
-
-        eqb2 : eqTypes u w1 (sub0 a2 B2) (sub0 a2 D2)
-        eqb2 = eqtb0 w1 e1 a2 a2 eqa22
-
-    exta' : (a b : CTerm) → wPredExtIrr (λ w₁ e → eqInType u w₁ (eqa w₁ e) a b)
-    exta' a b w' e1 e2 ei = TSP.extl1 (inda w' e2) C2 (eqa w' e2) a b ei2
-      where
-        ei1 : eqInType u w' (eqta w' e1) a b
-        ei1 = TSP.extrevl1 (inda w' e1) C2 (eqa w' e1) a b ei
-
-        ei2 : eqInType u w' (eqta w' e2) a b
-        ei2 = exta a b w' e1 e2 ei1
-
-    extb' : (a b c d : CTerm) → wPredDepExtIrr (λ w₁ e x₂ → eqInType u w₁ (eqb w₁ e a b x₂) c d)
-    extb' a b c d w' e1 e2 x₁ x₂ ei = TSP.extl1 (indb w' e2 a b x₂') (sub0 b D2) (eqb w' e2 a b x₂) c d ei2
-      where
-        x₁' : eqInType u w' (eqta w' e1) a b
-        x₁' = TSP.extrevl1 (inda w' e1) C2 (eqa w' e1) a b x₁
-
-        x₂' : eqInType u w' (eqta w' e2) a b
-        x₂' = TSP.extrevl1 (inda w' e2) C2 (eqa w' e2) a b x₂
-
-        ei1 : eqInType u w' (eqtb w' e1 a b x₁') c d
-        ei1 = TSP.extrevl1 (indb w' e1 a b x₁') (sub0 b D2) (eqb w' e1 a b x₁) c d ei
-
-        ei2 : eqInType u w' (eqtb w' e2 a b x₂') c d
-        ei2 = extb a b c d w' e1 e2 x₁' x₂' ei1
-
-
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (PIneqW (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (PIneqM (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) = ⊥-elim (PIneqISECT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) = ⊥-elim (PIneqEQ (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) = ⊥-elim (PIneqUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) = ⊥-elim (PIneqPURE (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNOSEQ y y₁) = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTERM z₁ z₂ y y₁ y₂) = ⊥-elim (PIneqTERM (⇛-val-det tt tt x₁ y))
---typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (PIneqDUM (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x₁ d₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
-  where
-    z : □· w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
-    z = isu w B C y
-
-    q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))--}
-
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) =
-  EQTBAR (Mod.∀𝕎-□Func M aw y)
-  where
-    aw : ∀𝕎 w (λ w' e' → eqTypes u w' B C → eqTypes u w' A C)
-    aw w1 e1 eqt =
-      typeSysConds-PI-ttrans
-        u w1 A B A1 B1 A2 B2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
-        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
-        (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
-        C eqt
-
-
+    concl : (c₁ : A #⇛ #PI A1 B1 at w) (c₁ : B #⇛ #PI A2 B2 at w)
+            (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+            (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                  → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+            (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+            (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+            (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+            (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                   → TSP (eqtb w1 e1 a1 a2 ea)))
+            → eqTypes u w A C
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+           → (c₁ : A #⇛ #PI A1 B1 at w) (c₂ : T1 #⇛ #PI A2 B2 at w)
+           → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+           → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                    → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+           → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+           → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+           → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+           → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                     → TSP (eqtb w1 e1 a1 a2 ea)))
+           → eqTypes u w A T2)
+        ind
+        eqt
 
 
 typeSysConds-PI-isym : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
@@ -343,74 +387,113 @@ typeSysConds-PI-extl1 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1 
                                           (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                           → TSP (eqtb w1 e1 a1 a2 ea)))
                         → eqInTypeExtL1 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
-{-# TERMINATING #-}
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqLT (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) f g eqi
-  rewrite #PIinj1 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x) -- C1≡A1
-        | #PIinj2 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x) -- D1≡B1
-  = Mod.∀𝕎-□Func M aw eqi
+typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C eqt' =
+  concl eqta eqtb exta extb inda indb x
   where
-    aw : ∀𝕎 w (λ w' e' →
-              ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-              → (a1 a2 : CTerm) (eqa : eqInType u w' (eqta0 w' e') a1 a2)
-              → eqInType u w' (eqtb0 w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP.extl1 (indb w1 e1 a1 a2 ea1) (sub0 a2 B4) (eqtb0 w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) ef1
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2') → <Type {u'} eqt'' {u} eqt
+              → (eqta₁ : ∀𝕎 w' (λ w'' _ → eqTypes u' w'' A1 A2))
+              → (eqtb₁ : ∀𝕎 w' (λ w' e → ∀ a1 a2 → eqInType u' w' (eqta₁ w' e) a1 a2
+                                                   → eqTypes u' w' (sub0 a1 B1) (sub0 a2 B2)))
+              → (exta₁ : (a b : CTerm) → wPredExtIrr (λ w₂ e → eqInType u' w₂ (eqta₁ w₂ e) a b))
+              → (extb₁ : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u' w (eqtb₁ w e a b x) c d))
+              → (inda₁ : ∀𝕎 w' (λ w1 e1 → TSP (eqta₁ w1 e1)))
+              → (indb₁ : ∀𝕎 w' (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u' w1 (eqta₁ w1 e1) a1 a2)
+                                         → TSP (eqtb₁ w1 e1 a1 a2 ea)))
+              → T1' #⇛ #PI A1 B1 at w'
+              → (a b : CTerm) → □· w' (λ w'' e → PIeq (eqInType u' w'' (eqta₁ w'' e)) (λ a1 a2 eqa → eqInType u' w'' (eqtb₁ w'' e a1 a2 eqa)) a b)
+              → eqInType u' w' eqt'' a b)
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                               → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w₂ e → eqInType u w₂ (eqta w₂ e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+          → T1 #⇛ #PI A1 B1 at w → (a b : CTerm) → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) a b)
+          → eqInType u w eqt a b
+--    ind {u} {w} {T1} {T2} eqt ind eqta eqtb exta extb inda indb x f g eqi = {!!}
+    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqLT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta eqtb exta extb inda indb x f g eqi
+      = Mod.∀𝕎-□Func M aw eqi
       where
-        ea1 : eqInType u w1 (eqta w1 e1) a1 a2
-        ea1 = TSP.extrevl1 (inda w1 e1) A4 (eqta0 w1 e1) a1 a2 eqa
+        aw : ∀𝕎 w (λ w' e' → PIeq (eqInType u w' (eqta w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb w' e' a1 a2 eqa)) f g
+                            → PIeq (eqInType u w' (eqta0 w' e')) (λ a1 a2 eqa → eqInType u w' (eqtb0 w' e' a1 a2 eqa)) f g)
+        aw w1 e1 p
+          rewrite sym (#PIinj1 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {T1} tt tt y x))
+                | sym (#PIinj2 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {T1} tt tt y x)) =
+          PIeq-ext-eq
+            {eqInType u w1 (eqta w1 e1)}
+            {eqInType u w1 (eqta0 w1 e1)}
+            {λ a b eqa → eqInType u w1 (eqtb w1 e1 a b eqa)}
+            {λ a b eqa → eqInType u w1 (eqtb0 w1 e1 a b eqa)} {f} {g}
+            (TSP.extrevl1 (inda w1 e1) A4 (eqta0 w1 e1))
+            (λ f g a b ea1 ea2 → TSP.extl1 (indb w1 e1 a b ea1) (sub0 b B4) (eqtb0 w1 e1 a b ea2) f g) p
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqW (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqM (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqISECT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqPURE (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTERM (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x c₁))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind eqta eqtb exta extb inda indb x f g eqi =
+      Mod.∀𝕎-□-□' M y ib
+      where
+        ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) → eqInType u w' z f g)
+        ib w1 e1 z at =
+          ind
+            {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
+            (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
+            (wPredExtIrr-eqInType-mon eqta exta w1 e1)
+            (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
+            (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
+            (⇛-mon e1 x) f g (Mod.↑□ M eqi e1)
 
-        ea2 : eqInType u w1 (eqta w1 e1) a2 a1
-        ea2 = TSP.isym (inda w1 e1) a1 a2 ea1
-
-        ef1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
-        ef1 = imp a1 a2 ea1
-
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqW (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqM (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqISECT (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) f g eqi = ⊥-elim (PIneqPURE (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (PIneqTERM (⇛-val-det tt tt x y))
---typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (PIneqDUM (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x d₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
-  where
-    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
-    z = isu w A C y
-
-    q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))--}
-
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x y))
-typeSysConds-PI-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  Mod.∀𝕎-□-□' M y ib
-  where
-    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A C) (at : at□· y w' e' z) → eqInType u w' z f g)
-    ib w1 e1 z at =
-      typeSysConds-PI-extl1
-        u w1 A B A1 B1 A2 B2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
-        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
-        (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
-        C z f g (Mod.↑□ M eqi e1)
+    concl : (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+            (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                             → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+            (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+            (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+            (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+            (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                   → TSP (eqtb w1 e1 a1 a2 ea)))
+            (comp : A #⇛ #PI A1 B1 at w) (a b : CTerm)
+            → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) a b)
+            → eqInType u w eqt' a b
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                              → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+          → (comp : T1 #⇛ #PI A1 B1 at w) (a b : CTerm)
+          → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) a b)
+          → eqInType u w eqt' a b)
+        ind
+        eqt'
 
 
 
@@ -426,78 +509,120 @@ typeSysConds-PI-extl2 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1 
                                           (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                           → TSP (eqtb w1 e1 a1 a2 ea)))
                         → eqInTypeExtL2 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
-{-# TERMINATING #-}
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqLT (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite #PIinj1 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
-        | #PIinj2 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
-  = Mod.∀𝕎-□Func M aw eqi
+typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C eqt' =
+  concl eqta eqtb exta extb inda indb x
   where
-    aw : ∀𝕎 w
-              (λ w' e' →
-                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
-                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP.extl2 (indb w1 e1 a2 a1 ea2) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) eb2
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2') → <Type eqt'' eqt
+              → (eqta₁ : ∀𝕎 w' (λ w'' _ → eqTypes u' w'' A1 A2))
+              → (eqtb₁ : ∀𝕎 w' (λ w' e → ∀ a1 a2 → eqInType u' w' (eqta₁ w' e) a1 a2
+                                                   → eqTypes u' w' (sub0 a1 B1) (sub0 a2 B2)))
+              → (exta₁ : (a b : CTerm) → wPredExtIrr (λ w₂ e → eqInType u' w₂ (eqta₁ w₂ e) a b))
+              → (extb₁ : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u' w (eqtb₁ w e a b x) c d))
+              → (inda₁ : ∀𝕎 w' (λ w1 e1 → TSP (eqta₁ w1 e1)))
+              → (indb₁ : ∀𝕎 w' (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u' w1 (eqta₁ w1 e1) a1 a2)
+                                         → TSP (eqtb₁ w1 e1 a1 a2 ea)))
+              → T2' #⇛ #PI A1 B1 at w'
+              → (a b : CTerm) → □· w' (λ w'' e → PIeq (eqInType u' w'' (eqta₁ w'' e)) (λ a b eqa → eqInType u' w'' (eqtb₁ w'' e a b eqa)) a b)
+              → eqInType u' w' eqt'' a b)
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                               → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w₂ e → eqInType u w₂ (eqta w₂ e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+          → T2 #⇛ #PI A1 B1 at w
+          → (a b : CTerm) → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+          → eqInType u w eqt a b
+    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqLT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi
+      = Mod.∀𝕎-□Func M aw eqi
       where
-        ea1 : eqInType u w1 (eqta w1 e1) a1 a2
-        ea1 = TSP.extrevl2 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
+        aw : ∀𝕎 w (λ w' e' → PIeq (eqInType u w' (eqta w' e')) (λ a b eqa → eqInType u w' (eqtb w' e' a b eqa)) f g
+                            → PIeq (eqInType u w' (eqta₁ w' e')) (λ a b eqa → eqInType u w' (eqtb₁ w' e' a b eqa)) f g)
+        aw w1 e1 imp a1 a2 eqa
+          rewrite sym (#PIinj1 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {T2} tt tt y₁ x))
+                | sym (#PIinj2 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {T2} tt tt y₁ x)) =
+          TSP.extl2 (indb w1 e1 a2 a1 ea2) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) eb2
+            where
+              ea1 : eqInType u w1 (eqta w1 e1) a1 a2
+              ea1 = TSP.extrevl2 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
 
-        ea2 : eqInType u w1 (eqta w1 e1) a2 a1
-        ea2 = TSP.isym (inda w1 e1) a1 a2 ea1
+              ea2 : eqInType u w1 (eqta w1 e1) a2 a1
+              ea2 = TSP.isym (inda w1 e1) a1 a2 ea1
 
-        eb1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
-        eb1 = imp a1 a2 ea1
+              eb1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
+              eb1 = imp a1 a2 ea1
 
-        eb2 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (#APPLY f a1) (#APPLY g a2)
-        eb2 = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb eb1
+              eb2 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (#APPLY f a1) (#APPLY g a2)
+              eb2 = TSP-fam-rev-dom {u} {w} {A4} {A2} {B4} {B2} eqta eqtb inda indb eb1
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqW (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqISECT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqPURE (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTERM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqDUM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x c₂))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind eqta eqtb exta extb inda indb x f g eqi =
+      Mod.∀𝕎-□-□' M y ib
+      where
+        ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) → eqInType u w' z f g)
+        ib w1 e1 z at =
+          ind
+            {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
+            (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
+            (wPredExtIrr-eqInType-mon eqta exta w1 e1)
+            (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
+            (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
+            (⇛-mon e1 x) f g (Mod.↑□ M eqi e1)
 
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqW (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqM (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqISECT (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) f g eqi = ⊥-elim (PIneqPURE (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (PIneqTERM (⇛-val-det tt tt x y₁))
---typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (PIneqDUM (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x d₂))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
-  where
-    z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
-    z = isu w C A y
-
-    q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))--}
-
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  ∀𝕎-□-□'₀ W M y ib
-  where
-    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' C A) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
-    ib w1 e1 z {--at--} =
-      typeSysConds-PI-extl2
-        u w1 A B A1 B1 A2 B2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
-        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
-        (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
-        C z f g (Mod.↑□ M eqi e1)
+    concl : (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+            (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                             → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+            (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+            (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+            (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+            (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+            (comp : A #⇛ #PI A1 B1 at w)
+            (a b : CTerm) → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+            → eqInType u w eqt' a b
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                              → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+          → (comp : T2 #⇛ #PI A1 B1 at w)
+          → (a b : CTerm) → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+          → eqInType u w eqt' a b)
+        ind
+        eqt'
 
 
 
@@ -513,72 +638,114 @@ typeSysConds-PI-extr1 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1 
                                           (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                           → TSP (eqtb w1 e1 a1 a2 ea)))
                         → eqInTypeExtR1 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
-{-# TERMINATING #-}
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqLT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite #PIinj1 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
-        | #PIinj2 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
-  = Mod.∀𝕎-□Func M aw eqi
+typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C eqt' =
+  concl eqta eqtb exta extb inda indb x₁
   where
-    aw : ∀𝕎 w
-              (λ w' e' →
-                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
-                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP.extr1 (indb w1 e1 a1 a2 ea1) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) eb1
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2') → <Type eqt'' eqt
+              → (eqta₁ : ∀𝕎 w' (λ w'' _ → eqTypes u' w'' A1 A2))
+              → (eqtb₁ : ∀𝕎 w' (λ w' e → ∀ a1 a2 → eqInType u' w' (eqta₁ w' e) a1 a2
+                                        → eqTypes u' w' (sub0 a1 B1) (sub0 a2 B2)))
+              → (exta₁ : (a b : CTerm) → wPredExtIrr (λ w₂ e → eqInType u' w₂ (eqta₁ w₂ e) a b))
+              → (extb₁ : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u' w (eqtb₁ w e a b x) c d))
+              → (inda₁ : ∀𝕎 w' (λ w1 e1 → TSP (eqta₁ w1 e1)))
+              → (indb₁ : ∀𝕎 w' (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u' w1 (eqta₁ w1 e1) a1 a2)
+                                         → TSP (eqtb₁ w1 e1 a1 a2 ea)))
+              → T2' #⇛ #PI A2 B2 at w'
+              → (a b : CTerm) →  □· w' (λ w'' e → PIeq (eqInType u' w'' (eqta₁ w'' e)) (λ a b eqa → eqInType u' w'' (eqtb₁ w'' e a b eqa)) a b)
+              → eqInType u' w' eqt'' a b)
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                              → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w₂ e → eqInType u w₂ (eqta w₂ e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+          → T2 #⇛ #PI A2 B2 at w
+          → (a b : CTerm) → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+          → eqInType u w eqt a b
+    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqLT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi
+      = Mod.∀𝕎-□Func M aw eqi
       where
-        ea1 : eqInType u w1 (eqta w1 e1) a1 a2
-        ea1 = TSP.extrevr1 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
+        aw : ∀𝕎 w (λ w' e' → PIeq (eqInType u w' (eqta w' e')) (λ a b eqa → eqInType u w' (eqtb w' e' a b eqa)) f g
+                            → PIeq (eqInType u w' (eqta₁ w' e')) (λ a b eqa → eqInType u w' (eqtb₁ w' e' a b eqa)) f g)
+        aw w1 e1 imp a1 a2 eqa
+          rewrite sym (#PIinj1 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {T2} tt tt y₁ x₁))
+                | sym (#PIinj2 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {T2} tt tt y₁ x₁))
+          = TSP.extr1 (indb w1 e1 a1 a2 ea1) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) eb1
+            where
+              ea1 : eqInType u w1 (eqta w1 e1) a1 a2
+              ea1 = TSP.extrevr1 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
 
-        eb1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
-        eb1 = imp a1 a2 ea1
+              eb1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
+              eb1 = imp a1 a2 ea1
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqW (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqISECT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqPURE (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTERM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqDUM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x₁ c₂))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind eqta eqtb exta extb inda indb x₁ f g eqi =
+      Mod.∀𝕎-□-□' M y ib
+      where
+        ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) → eqInType u w' z f g)
+        ib w1 e1 z at =
+          ind
+            {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
+            (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
+            (wPredExtIrr-eqInType-mon eqta exta w1 e1)
+            (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
+            (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
+            (⇛-mon e1 x₁) f g (Mod.↑□ M eqi e1)
 
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqW (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqISECT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) f g eqi = ⊥-elim (PIneqPURE (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (PIneqTERM (⇛-val-det tt tt x₁ y₁))
---typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (PIneqDUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x₁ d₂))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
-  where
-    z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
-    z = isu w C B y
-
-    q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))--}
-
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  ∀𝕎-□-□'₀ W M y ib
-  where
-    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' C B) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
-    ib w1 e1 z {--at--} =
-      typeSysConds-PI-extr1
-        u w1 A B A1 B1 A2 B2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
-        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
-        (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
-        C z f g (Mod.↑□ M eqi e1)
+    concl : (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+            (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                             → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+            (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+            (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+            (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+            (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                   → TSP (eqtb w1 e1 a1 a2 ea)))
+            (comp : B #⇛ #PI A2 B2 at w)
+            (a b : CTerm) → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+            → eqInType u w eqt' a b
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                             → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                   → TSP (eqtb w1 e1 a1 a2 ea)))
+          → (comp : T2 #⇛ #PI A2 B2 at w)
+          → (a b : CTerm) → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+          → eqInType u w eqt' a b)
+        ind
+        eqt'
 
 
 
@@ -594,81 +761,123 @@ typeSysConds-PI-extr2 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (B1 
                                           (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                           → TSP (eqtb w1 e1 a1 a2 ea)))
                         → eqInTypeExtR2 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
-{-# TERMINATING #-}
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqLT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite #PIinj1 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
-        | #PIinj2 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁) =
-  Mod.∀𝕎-□Func M aw eqi
+typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C eqt' =
+  concl eqta eqtb exta extb inda indb x₁
   where
-    aw : ∀𝕎 w
-              (λ w' e' →
-                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
-                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = ef0
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2') → <Type eqt'' eqt
+              → (eqta₁ : ∀𝕎 w' (λ w'' _ → eqTypes u' w'' A1 A2))
+              → (eqtb₁ : ∀𝕎 w' (λ w' e → ∀ a1 a2 → eqInType u' w' (eqta₁ w' e) a1 a2
+                                        → eqTypes u' w' (sub0 a1 B1) (sub0 a2 B2)))
+              → (exta₁ : (a b : CTerm) → wPredExtIrr (λ w₂ e → eqInType u' w₂ (eqta₁ w₂ e) a b))
+              → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u' w (eqtb₁ w e a b x) c d))
+              → (inda₁ : ∀𝕎 w' (λ w1 e1 → TSP (eqta₁ w1 e1)))
+              → (indb₁ : ∀𝕎 w' (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u' w1 (eqta₁ w1 e1) a1 a2)
+                                          → TSP (eqtb₁ w1 e1 a1 a2 ea)))
+              → T1' #⇛ #PI A2 B2 at w'
+              → (a b : CTerm) → □· w' (λ w'' e → PIeq (eqInType u' w'' (eqta₁ w'' e)) (λ a b eqa → eqInType u' w'' (eqtb₁ w'' e a b eqa)) a b)
+              → eqInType u' w' eqt'' a b)
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                              → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w₂ e → eqInType u w₂ (eqta w₂ e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+          → T1 #⇛ #PI A2 B2 at w
+          → (a b : CTerm) → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+          → eqInType u w eqt a b
+    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqLT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi
+      = Mod.∀𝕎-□Func M aw eqi
       where
-        ea1 : eqInType u w1 (eqta w1 e1) a1 a2
-        ea1 = TSP.extrevr2 (inda w1 e1) A4 (eqta₁ w1 e1) a1 a2 eqa
+        aw : ∀𝕎 w (λ w' e' → PIeq (eqInType u w' (eqta w' e')) (λ a b eqa → eqInType u w' (eqtb w' e' a b eqa)) f g
+                            → PIeq (eqInType u w' (eqta₁ w' e')) (λ a b eqa → eqInType u w' (eqtb₁ w' e' a b eqa)) f g)
+        aw w1 e1 imp a1 a2 eqa
+          rewrite sym (#PIinj1 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {T1} tt tt y x₁))
+                | sym (#PIinj2 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {T1} tt tt y x₁))
+          = ef0
+            where
+              ea1 : eqInType u w1 (eqta w1 e1) a1 a2
+              ea1 = TSP.extrevr2 (inda w1 e1) A4 (eqta₁ w1 e1) a1 a2 eqa
 
-        ea2 : eqInType u w1 (eqta w1 e1) a2 a1
-        ea2 = TSP.isym (inda w1 e1) a1 a2 ea1
+              ea2 : eqInType u w1 (eqta w1 e1) a2 a1
+              ea2 = TSP.isym (inda w1 e1) a1 a2 ea1
 
-        ef1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
-        ef1 = imp a1 a2 ea1
+              ef1 : eqInType u w1 (eqtb w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
+              ef1 = imp a1 a2 ea1
 
-        ef2 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (#APPLY f a1) (#APPLY g a2)
-        ef2 = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb ef1
+              ef2 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (#APPLY f a1) (#APPLY g a2)
+              ef2 = TSP-fam-rev-dom {u} {w} {A1} {A3} {B1} {B3} eqta eqtb inda indb ef1
 
-        ef0 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)
-        ef0 = TSP.extr2 (indb w1 e1 a2 a1 ea2) (sub0 a2 B4) (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) ef2
+              ef0 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)
+              ef0 = TSP.extr2 (indb w1 e1 a2 a1 ea2) (sub0 a2 B4) (eqtb₁ w1 e1 a1 a2 eqa) (#APPLY f a1) (#APPLY g a2) ef2
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqW (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqISECT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqPURE (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTERM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqDUM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x₁ c₁))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind eqta eqtb exta extb inda indb x₁ f g eqi =
+      Mod.∀𝕎-□-□' M y ib
+      where
+        ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) → eqInType u w' z f g)
+        ib w1 e1 z at =
+          ind
+            {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
+            (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
+            (wPredExtIrr-eqInType-mon eqta exta w1 e1)
+            (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
+            (∀𝕎-mon e1 inda)(∀𝕎-mon e1 indb)
+            (⇛-mon e1 x₁) f g (Mod.↑□ M eqi e1)
 
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqW (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqM (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqISECT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) f g eqi = ⊥-elim (PIneqPURE (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (PIneqTERM (⇛-val-det tt tt x₁ y))
---typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (PIneqDUM (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x₁ d₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
-  where
-    z : □· w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
-    z = isu w B C y
-
-    q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))--}
-
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  ∀𝕎-□-□'₀ W M y ib
-  where
-    ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' B C) {--(at : atbar y w' e' z)--} → eqInType u w' z f g)
-    ib w1 e1 z {--at--} =
-      typeSysConds-PI-extr2
-        u w1 A B A1 B1 A2 B2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
-        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
-        (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
-        C z f g (Mod.↑□ M eqi e1)
+    concl : (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+            (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                             → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+            (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+            (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+            (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+            (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+            (comp : B #⇛ #PI A2 B2 at w)
+            (a b : CTerm) → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+            → eqInType u w eqt' a b
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                             → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+          → (comp : T1 #⇛ #PI A2 B2 at w)
+          → (a b : CTerm) → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+          → eqInType u w eqt' a b)
+        ind
+        eqt'
 
 
 
@@ -684,91 +893,115 @@ typeSysConds-PI-extrevl1 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (
                                                 (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                                 → TSP (eqtb w1 e1 a1 a2 ea)))
                            → eqInTypeExtRevL1 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
-{-# TERMINATING #-}
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqLT (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite #PIinj1 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x)
-        | #PIinj2 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {A} tt tt y x) =
-  Mod.∀𝕎-□Func M aw eqi
+typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C eqt' =
+  concl eqta eqtb exta extb inda indb x
   where
-    aw : ∀𝕎 w
-              (λ w' e' →
-                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
-                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP.extrevl1 (indb w1 e1 a1 a2 eqa) (sub0 a2 B4) (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2) ef1
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2') → <Type eqt'' eqt
+              → (eqta₁ : ∀𝕎 w' (λ w'' _ → eqTypes u' w'' A1 A2))
+              → (eqtb₁ : ∀𝕎 w' (λ w' e → ∀ a1 a2 → eqInType u' w' (eqta₁ w' e) a1 a2
+                                                    → eqTypes u' w' (sub0 a1 B1) (sub0 a2 B2)))
+              → (exta₁ : (a b : CTerm) → wPredExtIrr (λ w₂ e → eqInType u' w₂ (eqta₁ w₂ e) a b))
+              → (extb₁ : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u' w (eqtb₁ w e a b x) c d))
+              → (inda₁ : ∀𝕎 w' (λ w1 e1 → TSP (eqta₁ w1 e1)))
+              → (indb₁ : ∀𝕎 w' (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u' w1 (eqta₁ w1 e1) a1 a2)
+                                          → TSP (eqtb₁ w1 e1 a1 a2 ea)))
+              → T1' #⇛ #PI A1 B1 at w' → (a b : CTerm) → eqInType u' w' eqt'' a b
+              → □· w' (λ w'' e → PIeq (eqInType u' w'' (eqta₁ w'' e)) (λ a b eqa → eqInType u' w'' (eqtb₁ w'' e a b eqa)) a b))
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                              → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w₂ e → eqInType u w₂ (eqta w₂ e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+          → T1 #⇛ #PI A1 B1 at w → (a b : CTerm) → eqInType u w eqt a b
+          → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqLT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi
+      = Mod.∀𝕎-□Func M aw eqi
       where
-        ea1 : eqInType u w1 (eqta₁ w1 e1) a1 a2
-        ea1 = TSP.extl1 (inda w1 e1) A4 (eqta₁ w1 e1) a1 a2 eqa
+        aw : ∀𝕎 w (λ w' e' → PIeq (eqInType u w' (eqta₁ w' e')) (λ a b eqa → eqInType u w' (eqtb₁ w' e' a b eqa)) f g
+                            → PIeq (eqInType u w' (eqta w' e')) (λ a b eqa → eqInType u w' (eqtb w' e' a b eqa)) f g)
+        aw w1 e1 imp a1 a2 eqa
+          rewrite sym (#PIinj1 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {T1} tt tt y x))
+                | sym (#PIinj2 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {T1} tt tt y x))
+          = TSP.extrevl1 (indb w1 e1 a1 a2 eqa) (sub0 a2 B4) (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2) ef1
+            where
+              ea1 : eqInType u w1 (eqta₁ w1 e1) a1 a2
+              ea1 = TSP.extl1 (inda w1 e1) A4 (eqta₁ w1 e1) a1 a2 eqa
 
-        ef1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
-        ef1 = imp a1 a2 ea1
+              ef1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
+              ef1 = imp a1 a2 ea1
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqW (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqM (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqISECT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqPURE (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTERM (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqDUM (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x c₁))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind eqta eqtb exta extb inda indb x f g eqi =
+      Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+      where
+        aw : ∀𝕎 w
+          (λ w' e' →
+            (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) →
+            eqInType u w' z f g →
+            □· w' (λ w'' e'' → (x : w ⊑· w'') → PIeq (eqInType u w'' (eqta w'' x)) (λ a b eqa → eqInType u w'' (eqtb w'' x a b eqa)) f g))
+        aw w1 e1 z at ez =
+           Mod.∀𝕎-□Func
+             M (irr-fam-pi u w A1 B1 A2 B2 eqta eqtb exta extb f g w1 e1)
+             (ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
+               (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
+               (wPredExtIrr-eqInType-mon eqta exta w1 e1)
+               (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
+               (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
+               (⇛-mon e1 x) f g ez)
 
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqW (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqM (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqISECT (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) f g eqi = ⊥-elim (PIneqPURE (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (PIneqTERM (⇛-val-det tt tt x y))
---typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (PIneqDUM (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x d₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
-  where
-    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
-    z = isu w A C y
-
-    q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))--}
-
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x y))
-typeSysConds-PI-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  Mod.□-idem M (∀𝕎-□'-□₀ W M y aw eqi)
-  where
-    aw0 : ∀𝕎 w
-      (λ w' e' →
-         (z : eqTypes u w' A C) {--(at : atbar y w' e' z)--} →
-         eqInType u w' z f g →
-         □· w' (λ w'' e → (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' (⊑-trans· e' e)) a1 a2)
-                           → eqInType u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
-    aw0 w1 e1 z {--at--} ez =
-      typeSysConds-PI-extrevl1
-        u w1 A B A1 B1 A2 B2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
-        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
-        (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
-        C z f g ez
-
-
-    aw : ∀𝕎 w
-      (λ w' e' →
-         (z : eqTypes u w' A C) {--(at : atbar y w' e' z)--} →
-         eqInType u w' z f g →
-         □· w' (λ w'' e → (x : w ⊑· w'') (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' x) a1 a2)
-                           → eqInType u w'' (eqtb w'' x a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
-    aw w1 e1 z {--at--} ez =
-      Mod.∀𝕎-□Func M
-        (irr-fam-pi
-          u w A1 B1 A2 B2 eqta eqtb exta extb
-          f g w1 e1)
-        (aw0 w1 e1 z {--at--} ez)
+    concl : (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+            (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                              → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+            (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+            (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+            (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+            (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+            (comp : A #⇛ #PI A1 B1 at w) (a b : CTerm) → eqInType u w eqt' a b
+            → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                              → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+          → (comp : T1 #⇛ #PI A1 B1 at w) (a b : CTerm) → eqInType u w eqt' a b
+          → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b))
+        ind
+        eqt'
 
 
 
@@ -784,97 +1017,120 @@ typeSysConds-PI-extrevl2 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (
                                                 (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                                 → TSP (eqtb w1 e1 a1 a2 ea)))
                            → eqInTypeExtRevL2 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
-{-# TERMINATING #-}
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqLT (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite #PIinj1 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x)
-        | #PIinj2 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {A} tt tt y₁ x) =
-  Mod.∀𝕎-□Func M aw eqi
+typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C eqt' =
+  concl eqta eqtb exta extb inda indb x
   where
-    aw : ∀𝕎 w
-              (λ w' e' →
-                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
-                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb eb2
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2') → <Type eqt'' eqt
+              → (eqta₁ : ∀𝕎 w' (λ w'' _ → eqTypes u' w'' A1 A2))
+              → (eqtb₁ : ∀𝕎 w' (λ w' e → ∀ a1 a2 → eqInType u' w' (eqta₁ w' e) a1 a2
+                                                   → eqTypes u' w' (sub0 a1 B1) (sub0 a2 B2)))
+              → (exta₁ : (a b : CTerm) → wPredExtIrr (λ w₂ e → eqInType u' w₂ (eqta₁ w₂ e) a b))
+              → (extb₁ : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u' w (eqtb₁ w e a b x) c d))
+              → (inda₁ : ∀𝕎 w' (λ w1 e1 → TSP (eqta₁ w1 e1)))
+              → (indb₁ : ∀𝕎 w' (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u' w1 (eqta₁ w1 e1) a1 a2)
+                                          → TSP (eqtb₁ w1 e1 a1 a2 ea)))
+              → T2' #⇛ #PI A1 B1 at w' → (a b : CTerm) → eqInType u' w' eqt'' a b
+              → □· w' (λ w'' e → PIeq (eqInType u' w'' (eqta₁ w'' e)) (λ a b eqa → eqInType u' w'' (eqtb₁ w'' e a b eqa)) a b))
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                  → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w₂ e → eqInType u w₂ (eqta w₂ e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+          → T2 #⇛ #PI A1 B1 at w → (a b : CTerm) → eqInType u w eqt a b
+          → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqLT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi
+      = Mod.∀𝕎-□Func M aw eqi
       where
-        eas : eqInType u w1 (eqta w1 e1) a2 a1
-        eas = TSP.isym (inda w1 e1) a1 a2 eqa
+        aw : ∀𝕎 w (λ w' e' → PIeq (eqInType u w' (eqta₁ w' e')) (λ a b eqa → eqInType u w' (eqtb₁ w' e' a b eqa)) f g
+                            → PIeq (eqInType u w' (eqta w' e')) (λ a b eqa → eqInType u w' (eqtb w' e' a b eqa)) f g)
+        aw w1 e1 imp a1 a2 eqa
+          rewrite sym (#PIinj1 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {T2} tt tt y₁ x))
+                | sym (#PIinj2 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {T2} tt tt y₁ x))
+          = TSP-fam-rev-dom {u} {w} {A4} {A2} {B4} {B2} eqta eqtb inda indb eb2
+            where
+              eas : eqInType u w1 (eqta w1 e1) a2 a1
+              eas = TSP.isym (inda w1 e1) a1 a2 eqa
 
-        ea1 : eqInType u w1 (eqta₁ w1 e1) a1 a2
-        ea1 = TSP.extl2 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
+              ea1 : eqInType u w1 (eqta₁ w1 e1) a1 a2
+              ea1 = TSP.extl2 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
 
-        eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
-        eb1 = imp a1 a2 ea1
+              eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
+              eb1 = imp a1 a2 ea1
 
-        eb2 : eqInType u w1 (eqtb w1 e1 a2 a1 eas) (#APPLY f a1) (#APPLY g a2)
-        eb2 = TSP.extrevl2 (indb w1 e1 a2 a1 eas) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2) eb1
+              eb2 : eqInType u w1 (eqtb w1 e1 a2 a1 eas) (#APPLY f a1) (#APPLY g a2)
+              eb2 = TSP.extrevl2 (indb w1 e1 a2 a1 eas) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2) eb1
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqW (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqISECT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqPURE (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTERM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqDUM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x c₂))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind eqta eqtb exta extb inda indb x f g eqi =
+      Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+      where
+        aw : ∀𝕎 w
+          (λ w' e' →
+            (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) →
+            eqInType u w' z f g →
+            □· w' (λ w'' e'' → (x : w ⊑· w'') → PIeq (eqInType u w'' (eqta w'' x)) (λ a b eqa → eqInType u w'' (eqtb w'' x a b eqa)) f g))
+        aw w1 e1 z at ez =
+          Mod.∀𝕎-□Func M (irr-fam-pi u w A1 B1 A2 B2 eqta eqtb exta extb f g w1 e1)
+            (ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
+               (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
+               (wPredExtIrr-eqInType-mon eqta exta w1 e1)
+               (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
+               (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
+               (⇛-mon e1 x) f g ez)
 
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqW (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqM (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqISECT (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) f g eqi = ⊥-elim (PIneqPURE (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (PIneqTERM (⇛-val-det tt tt x y₁))
---typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (PIneqDUM (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x d₂))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
-  where
-    z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
-    z = isu w C A y
-
-    q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))--}
-
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x y₁))
-typeSysConds-PI-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  Mod.□-idem M (∀𝕎-□'-□₀ W M y aw eqi)
-  where
-    aw0 : ∀𝕎 w
-      (λ w' e' →
-         (z : eqTypes u w' C A) {--(at : atbar y w' e' z)--} →
-         eqInType u w' z f g →
-         □· w' (λ w'' e → (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' (⊑-trans· e' e)) a1 a2)
-                           → eqInType u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
-    aw0 w1 e1 z {--at--} ez =
-      typeSysConds-PI-extrevl2
-        u w1 A B A1 B1 A2 B2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
-        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
-        (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
-        C z f g ez
-
-    aw : ∀𝕎 w
-      (λ w' e' →
-         (z : eqTypes u w' C A) {--(at : atbar y w' e' z)--} →
-         eqInType u w' z f g →
-         □· w' (λ w'' e → (x : w ⊑· w'') (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' x) a1 a2)
-                           → eqInType u w'' (eqtb w'' x a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
-    aw w1 e1 z {--at--} ez =
-      Mod.∀𝕎-□Func M
-        (irr-fam-pi
-          u w A1 B1 A2 B2 eqta eqtb
-          exta extb
-          f g w1 e1)
-        (aw0 w1 e1 z {--at--} ez)
+    concl : (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+            (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                  → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+            (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+            (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+            (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+            (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+            (comp : A #⇛ #PI A1 B1 at w) (a b : CTerm) → eqInType u w eqt' a b
+            → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                  → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+          → (comp : T2 #⇛ #PI A1 B1 at w) (a b : CTerm) → eqInType u w eqt' a b
+          → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b))
+        ind
+        eqt'
 
 
 
@@ -890,91 +1146,114 @@ typeSysConds-PI-extrevr1 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (
                                                 (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                                 → TSP (eqtb w1 e1 a1 a2 ea)))
                            → eqInTypeExtRevR1 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
-{-# TERMINATING #-}
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqLT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite #PIinj1 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁)
-        | #PIinj2 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {B} tt tt y₁ x₁) =
-  Mod.∀𝕎-□Func M aw eqi
+typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C eqt' =
+  concl eqta eqtb exta extb inda indb x₁
   where
-    aw : ∀𝕎 w
-              (λ w' e' →
-                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
-                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP.extrevr1 (indb w1 e1 a1 a2 eqa) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2) eb1
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2') → <Type eqt'' eqt
+              → (eqta₁ : ∀𝕎 w' (λ w'' _ → eqTypes u' w'' A1 A2))
+              → (eqtb₁ : ∀𝕎 w' (λ w' e → ∀ a1 a2 → eqInType u' w' (eqta₁ w' e) a1 a2
+                                         → eqTypes u' w' (sub0 a1 B1) (sub0 a2 B2)))
+              → (exta₁ : (a b : CTerm) → wPredExtIrr (λ w₂ e → eqInType u' w₂ (eqta₁ w₂ e) a b))
+              → (extb₁ : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u' w (eqtb₁ w e a b x) c d))
+              → (inda₁ : ∀𝕎 w' (λ w1 e1 → TSP (eqta₁ w1 e1)))
+              → (indb₁ : ∀𝕎 w' (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u' w1 (eqta₁ w1 e1) a1 a2)
+                                         → TSP (eqtb₁ w1 e1 a1 a2 ea)))
+              → T2' #⇛ #PI A2 B2 at w' → (a b : CTerm) → eqInType u' w' eqt'' a b
+              → □· w' (λ w'' e → PIeq (eqInType u' w'' (eqta₁ w'' e)) (λ a b eqa → eqInType u' w'' (eqtb₁ w'' e a b eqa)) a b))
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                   → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w₂ e → eqInType u w₂ (eqta w₂ e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+          → T2 #⇛ #PI A2 B2 at w → (a b : CTerm) → eqInType u w eqt a b
+          → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqLT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi
+      = Mod.∀𝕎-□Func M aw eqi
       where
-        ea1 : eqInType u w1 (eqta₁ w1 e1) a1 a2
-        ea1 = TSP.extr1 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
+        aw : ∀𝕎 w (λ w' e' → PIeq (eqInType u w' (eqta₁ w' e')) (λ a b eqa → eqInType u w' (eqtb₁ w' e' a b eqa)) f g
+                            → PIeq (eqInType u w' (eqta w' e')) (λ a b eqa → eqInType u w' (eqtb w' e' a b eqa)) f g)
+        aw w1 e1 imp a1 a2 eqa
+          rewrite sym (#PIinj1 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {T2} tt tt y₁ x₁))
+                | sym (#PIinj2 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {T2} tt tt y₁ x₁))
+          = TSP.extrevr1 (indb w1 e1 a1 a2 eqa) (sub0 a1 B3) (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2) eb1
+            where
+              ea1 : eqInType u w1 (eqta₁ w1 e1) a1 a2
+              ea1 = TSP.extr1 (inda w1 e1) A3 (eqta₁ w1 e1) a1 a2 eqa
 
-        eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
-        eb1 = imp a1 a2 ea1
+              eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
+              eb1 = imp a1 a2 ea1
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqW (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqISECT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqPURE (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTERM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqDUM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x₁ c₂))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind eqta eqtb exta extb inda indb x₁ f g eqi =
+      Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+      where
+      aw : ∀𝕎 w
+        (λ w' e' →
+          (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) →
+          eqInType u w' z f g →
+          □· w' (λ w'' e'' → (x : w ⊑· w'') → PIeq (eqInType u w'' (eqta w'' x)) (λ a b eqa → eqInType u w'' (eqtb w'' x a b eqa)) f g))
+      aw w1 e1 z at ez =
+        Mod.∀𝕎-□Func M (irr-fam-pi u w A1 B1 A2 B2 eqta eqtb exta extb f g w1 e1)
+          (ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
+               (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
+               (wPredExtIrr-eqInType-mon eqta exta w1 e1)
+               (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
+               (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
+               (⇛-mon e1 x₁) f g ez)
 
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqW (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqISECT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) f g eqi = ⊥-elim (PIneqPURE (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (PIneqTERM (⇛-val-det tt tt x₁ y₁))
---typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (PIneqDUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x₁ d₂))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
-  where
-    z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
-    z = isu w C B y
-
-    q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))--}
-
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-PI-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  Mod.□-idem M (∀𝕎-□'-□₀ W M y aw eqi)
-  where
-    aw0 : ∀𝕎 w
-      (λ w' e' →
-         (z : eqTypes u w' C B) {--(at : atbar y w' e' z)--} →
-         eqInType u w' z f g →
-         □· w' (λ w'' e → (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' (⊑-trans· e' e)) a1 a2)
-                           → eqInType u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
-    aw0 w1 e1 z {--at--} ez =
-      typeSysConds-PI-extrevr1
-        u w1 A B A1 B1 A2 B2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
-        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
-        (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
-        C z f g ez
-
-    aw : ∀𝕎 w
-      (λ w' e' →
-         (z : eqTypes u w' C B) {--(at : atbar y w' e' z)--} →
-         eqInType u w' z f g →
-         □· w' (λ w'' e → (x : w ⊑· w'') (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' x) a1 a2)
-                           → eqInType u w'' (eqtb w'' x a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
-    aw w1 e1 z {--at--} ez =
-      Mod.∀𝕎-□Func M
-        (irr-fam-pi
-          u w A1 B1 A2 B2 eqta eqtb
-          exta extb
-          f g w1 e1)
-        (aw0 w1 e1 z {--at--} ez)
+    concl : (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+            (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                   → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+            (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+            (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+            (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+            (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+            (comp : B #⇛ #PI A2 B2 at w) (a b : CTerm) → eqInType u w eqt' a b
+            → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                   → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+          → (comp : T2 #⇛ #PI A2 B2 at w) (a b : CTerm) → eqInType u w eqt' a b
+          → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b))
+        ind
+        eqt'
 
 
 
@@ -990,97 +1269,120 @@ typeSysConds-PI-extrevr2 : (u : univs) (w : 𝕎·) (A B : CTerm) (A1 : CTerm) (
                                                 (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                                 → TSP (eqtb w1 e1 a1 a2 ea)))
                            → eqInTypeExtRevR2 {_} {_} {A} {B} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb)
-{-# TERMINATING #-}
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNAT y y₁) f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQNAT y y₁) f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTNAT y y₁) f g eqi = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqLT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTFREE y y₁) f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi
-  rewrite #PIinj1 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁)
-        | #PIinj2 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {B} tt tt y x₁) =
-  Mod.∀𝕎-□Func M aw eqi
+typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C eqt' =
+  concl eqta eqtb exta extb inda indb x₁
   where
-    aw : ∀𝕎 w
-              (λ w' e' →
-                ((a1 a2 : CTerm) (eqa : eqInType u w' (eqta₁ w' e') a1 a2) →
-                  eqInType u w' (eqtb₁ w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)) →
-                (a1 a2 : CTerm) (eqa : eqInType u w' (eqta w' e') a1 a2) →
-                  eqInType u w' (eqtb w' e' a1 a2 eqa) (#APPLY f a1) (#APPLY g a2))
-    aw w1 e1 imp a1 a2 eqa = TSP-fam-rev-dom {u} {w} {A1} {A2} {B1} {B2} eqta eqtb inda indb eb2
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2') → <Type eqt'' eqt
+              → (eqta₁ : ∀𝕎 w' (λ w'' _ → eqTypes u' w'' A1 A2))
+              → (eqtb₁ : ∀𝕎 w' (λ w' e → ∀ a1 a2 → eqInType u' w' (eqta₁ w' e) a1 a2
+                                         → eqTypes u' w' (sub0 a1 B1) (sub0 a2 B2)))
+              → (exta₁ : (a b : CTerm) → wPredExtIrr (λ w₂ e → eqInType u' w₂ (eqta₁ w₂ e) a b))
+              → (extb₁ : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u' w (eqtb₁ w e a b x) c d))
+              → (inda₁ : ∀𝕎 w' (λ w1 e1 → TSP (eqta₁ w1 e1)))
+              → (indb₁ : ∀𝕎 w' (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u' w1 (eqta₁ w1 e1) a1 a2)
+                                          → TSP (eqtb₁ w1 e1 a1 a2 ea)))
+              → T1' #⇛ #PI A2 B2 at w' → (a b : CTerm) → eqInType u' w' eqt'' a b
+              → □· w' (λ w'' e → PIeq (eqInType u' w'' (eqta₁ w'' e)) (λ a b eqa → eqInType u' w'' (eqtb₁ w'' e a b eqa)) a b))
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                   → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w₂ e → eqInType u w₂ (eqta w₂ e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+          → T1 #⇛ #PI A2 B2 at w → (a b : CTerm) → eqInType u w eqt a b
+          → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqNAT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqQNAT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTNAT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqLT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqQLT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqFREE (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi
+      = Mod.∀𝕎-□Func M aw eqi
       where
-        ea1 : eqInType u w1 (eqta₁ w1 e1) a1 a2
-        ea1 = TSP.extr2 (inda w1 e1) A4 (eqta₁ w1 e1) a1 a2 eqa
+        aw : ∀𝕎 w (λ w' e' → PIeq (eqInType u w' (eqta₁ w' e')) (λ a b eqa → eqInType u w' (eqtb₁ w' e' a b eqa)) f g
+                            → PIeq (eqInType u w' (eqta w' e')) (λ a b eqa → eqInType u w' (eqtb w' e' a b eqa)) f g)
+        aw w1 e1 imp a1 a2 eqa
+          rewrite sym (#PIinj1 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {T1} tt tt y x₁))
+                | sym (#PIinj2 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {T1} tt tt y x₁))
+          = TSP-fam-rev-dom {u} {w} {A1} {A3} {B1} {B3} eqta eqtb inda indb eb2
+            where
+              ea1 : eqInType u w1 (eqta₁ w1 e1) a1 a2
+              ea1 = TSP.extr2 (inda w1 e1) A4 (eqta₁ w1 e1) a1 a2 eqa
 
-        ea2 : eqInType u w1 (eqta w1 e1) a2 a1
-        ea2 = TSP.isym (inda w1 e1) a1 a2 eqa
+              ea2 : eqInType u w1 (eqta w1 e1) a2 a1
+              ea2 = TSP.isym (inda w1 e1) a1 a2 eqa
 
-        eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
-        eb1 = imp a1 a2 ea1
+              eb1 : eqInType u w1 (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2)
+              eb1 = imp a1 a2 ea1
 
-        eb2 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (#APPLY f a1) (#APPLY g a2)
-        eb2 = TSP.extrevr2 (indb w1 e1 a2 a1 ea2) (sub0 a2 B4) (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2) eb1
+              eb2 : eqInType u w1 (eqtb w1 e1 a2 a1 ea2) (#APPLY f a1) (#APPLY g a2)
+              eb2 = TSP.extrevr2 (indb w1 e1 a2 a1 ea2) (sub0 a2 B4) (eqtb₁ w1 e1 a1 a2 ea1) (#APPLY f a1) (#APPLY g a2) eb1
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqW (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqISECT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqPURE (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTERM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqDUM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x₁ c₁))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind eqta eqtb exta extb inda indb x₁ f g eqi =
+      Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+      where
+        aw : ∀𝕎 w
+          (λ w' e' →
+            (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) →
+            eqInType u w' z f g →
+            □· w' (λ w'' e'' → (x : w ⊑· w'') → PIeq (eqInType u w'' (eqta w'' x)) (λ a b eqa → eqInType u w'' (eqtb w'' x a b eqa)) f g))
+        aw w1 e1 z at ez =
+          Mod.∀𝕎-□Func M (irr-fam-pi u w A1 B1 A2 B2 eqta eqtb exta extb f g w1 e1)
+            (ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
+               (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
+               (wPredExtIrr-eqInType-mon eqta exta w1 e1)
+               (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
+               (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
+               (⇛-mon e1 x₁) f g ez)
 
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqW (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqM (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqSET (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTISECT A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqISECT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) f g eqi = ⊥-elim (PIneqTUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTEQ a1 b1 a2 b2 A₁ B₁ y y₁ eqtA extA eqt1 eqt2) f g eqi = ⊥-elim (PIneqEQ (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTQTUNION A3 B3 A4 B4 y y₁ eqtA eqtB extA extB) f g eqi = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSQUASH A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTRUNC A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTCONST A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqTCONST (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTSUBSING A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTPURE y y₁) f g eqi = ⊥-elim (PIneqPURE (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTNOSEQ y y₁) f g eqi = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTTERM z₁ z₂ y y₁ y₂) f g eqi = ⊥-elim (PIneqTERM (⇛-val-det tt tt x₁ y))
---typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (PIneqDUM (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTUNIV i p d₁ d₂) f g eqi = ⊥-elim (PIneqUNIV (⇛-val-det tt tt x₁ d₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
-  where
-    z : □· w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
-    z = isu w B C y
-
-    q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))--}
-
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (PIneqLIFT (⇛-val-det tt tt x₁ y))
-typeSysConds-PI-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb C (EQTBAR y) f g eqi =
-  Mod.□-idem M (∀𝕎-□'-□₀ W M y aw eqi)
-  where
-    aw0 : ∀𝕎 w
-      (λ w' e' →
-         (z : eqTypes u w' B C) {--(at : atbar y w' e' z)--} →
-         eqInType u w' z f g →
-         □· w' (λ w'' e → (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' (⊑-trans· e' e)) a1 a2)
-                           → eqInType u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
-    aw0 w1 e1 z {--at--} ez =
-      typeSysConds-PI-extrevr2
-        u w1 A B A1 B1 A2 B2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
-        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
-        (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
-        C z f g ez
-
-    aw : ∀𝕎 w
-      (λ w' e' →
-         (z : eqTypes u w' B C) {--(at : atbar y w' e' z)--} →
-         eqInType u w' z f g →
-         □· w' (λ w'' e → (x : w ⊑· w'') (a1 a2 : CTerm) (eqa : eqInType u w'' (eqta w'' x) a1 a2)
-                           → eqInType u w'' (eqtb w'' x a1 a2 eqa) (#APPLY f a1) (#APPLY g a2)))
-    aw w1 e1 z {--at--} ez =
-      Mod.∀𝕎-□Func M
-        (irr-fam-pi
-          u w A1 B1 A2 B2 eqta eqtb
-          exta extb
-          f g w1 e1)
-        (aw0 w1 e1 z {--at--} ez)
+    concl : (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+            (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                   → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+            (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+            (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+            (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+            (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+            (comp : B #⇛ #PI A2 B2 at w) (a b : CTerm) → eqInType u w eqt' a b
+            → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → ∀ a1 a2 → eqInType u w' (eqta w' e) a1 a2
+                                   → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → TSP (eqtb w1 e1 a1 a2 ea)))
+          → (comp : T1 #⇛ #PI A2 B2 at w) (a b : CTerm) → eqInType u w eqt' a b
+          → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b))
+        ind
+        eqt'
 
 
 
@@ -1098,82 +1400,116 @@ eqInType-⇛-PI : (u : univs) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTerm0) 
                  → (eqt : eqTypes u w A B)
                  → eqInType u w eqt a b
                  → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b)
-{-# TERMINATING #-}
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (PIneqNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (PIneqQNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTTNAT x x₁) ei = ⊥-elim (PIneqTNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (PIneqLT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (PIneqQLT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (PIneqFREE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei
-  rewrite #PIinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
-        | #PIinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
-        | #PIinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
-        | #PIinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
-  Mod.∀𝕎-□Func M aw ei
+eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ eqt eqi =
+  concl eqta eqtb exta extb inda indb c₁ c₂ a b eqi
   where
-    aw : ∀𝕎 w (λ w' e' → PIeq (eqInType u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb₁ w' e' a₁ a₂ eqa)) a b
-                         → PIeq (eqInType u w' (eqta w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e' a₁ a₂ eqa)) a b)
-    aw w1 e1 z a₁ a₂ eqa = snd (indb w1 e1 a₁ a₂ eqa (eqtb₁ w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)) eqb'
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : eqTypes u' w' T1' T2') → <Type eqt' eqt
+              → (eqta₁ : ∀𝕎 w' (λ w'' _ → eqTypes u' w'' A1 A2))
+              → (eqtb₁ : ∀𝕎 w' (λ w' e → (a1 a2 : CTerm) → eqInType u' w' (eqta₁ w' e) a1 a2
+                                         → eqTypes u' w' (sub0 a1 B1) (sub0 a2 B2)))
+              → (exta₁ : (a₁ b₁ : CTerm) → wPredExtIrr (λ w₂ e → eqInType u' w₂ (eqta₁ w₂ e) a₁ b₁))
+              → (extb₁ : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u' w (eqtb₁ w e a b x) c d))
+              → (inda₁ : ∀𝕎 w' (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1)))
+              → (indb₁ : ∀𝕎 w' (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u' w1 (eqta₁ w1 e1) a1 a2)
+                                          → eqInTypeExt (eqtb₁ w1 e1 a1 a2 ea)))
+              → T1' #⇛ #PI A1 B1 at w' → T2' #⇛ #PI A2 B2 at w' → (a₁ b₁ : CTerm) → eqInType u' w' eqt' a₁ b₁
+              → □· w' (λ w'' e → PIeq (eqInType u' w'' (eqta₁ w'' e)) (λ a b eqa → eqInType u' w'' (eqtb₁ w'' e a b eqa)) a₁ b₁))
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
+                                   → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a₁ b₁ : CTerm) → wPredExtIrr (λ w₂ e → eqInType u w₂ (eqta w₂ e) a₁ b₁))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → eqInTypeExt (eqtb w1 e1 a1 a2 ea)))
+          → T1 #⇛ #PI A1 B1 at w → T2 #⇛ #PI A2 B2 at w → (a₁ b₁ : CTerm) → eqInType u w eqt a₁ b₁
+          → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a₁ b₁)
+    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqNAT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqQNAT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqTNAT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqLT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqQLT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqFREE (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei
+      = Mod.∀𝕎-□Func M aw ei
       where
-        eqa' : eqInType u w1 (eqta₁ w1 e1) a₁ a₂
-        eqa' = fst (inda w1 e1 (eqta₁ w1 e1) a₁ a₂) eqa
+        aw : ∀𝕎 w (λ w' e' → PIeq (eqInType u w' (eqta₁ w' e')) (λ a b eqa → eqInType u w' (eqtb₁ w' e' a b eqa)) a b
+                            → PIeq (eqInType u w' (eqta w' e')) (λ a b eqa → eqInType u w' (eqtb w' e' a b eqa)) a b)
+        aw w1 e1 z a₁ a₂ eqa
+          rewrite #PIinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {T1} tt tt c₁ x)
+                | #PIinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {T1} tt tt c₁ x)
+                | #PIinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {T2} tt tt c₂ x₁)
+                | #PIinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {T2} tt tt c₂ x₁)
+          = snd (indb w1 e1 a₁ a₂ eqa (eqtb₁ w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)) eqb'
+            where
+              eqa' : eqInType u w1 (eqta₁ w1 e1) a₁ a₂
+              eqa' = fst (inda w1 e1 (eqta₁ w1 e1) a₁ a₂) eqa
 
-        eqb' : eqInType u w1 (eqtb₁ w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)
-        eqb' = z a₁ a₂ eqa'
+              eqb' : eqInType u w1 (eqtb₁ w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)
+              eqb' = z a₁ a₂ eqa'
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqW (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqSUM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqSET (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqISECT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqTUNION (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqEQ (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqUNION (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqPURE (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ x x₁ x₂) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqTERM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqTCONST (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqUNIV (⇛-val-det tt tt c₁ d₁))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqLIFT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTBAR x) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei =
+      Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw ei)
+      where
+        aw : ∀𝕎 w
+          (λ w' e' →
+            (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) →
+            eqInType u w' z a b →
+            □· w' (λ w'' e → (x : w ⊑· w'') → PIeq (eqInType u w'' (eqta w'' x)) (λ a b eqa → eqInType u w'' (eqtb w'' x a b eqa)) a b))
+        aw w1 e1 z at ez =
+          Mod.∀𝕎-□Func M (irr-fam-pi u w A1 B1 A2 B2 eqta eqtb exta extb a b w1 e1)
+            (ind {u} {w1} {T1} {T2} z
+               (<Type1 z (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 z at))
+               (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
+               (wPredExtIrr-eqInType-mon eqta exta w1 e1)
+               (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
+               (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
+               (⇛-mon e1 c₁) (⇛-mon e1 c₂) a b ez)
 
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PIneqW (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PIneqM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PIneqSUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PIneqSET (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (PIneqISECT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PIneqTUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ei = ⊥-elim (PIneqEQ (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (PIneqUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqtA extA) ei = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqtA extA) ei = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTCONST A3 A4 x x₁ eqtA extA) ei = ⊥-elim (PIneqTCONST (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqtA extA) ei = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTPURE x x₁) ei = ⊥-elim (PIneqPURE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTNOSEQ x x₁) ei = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTTERM z₁ z₂ y y₁ y₂) ei = ⊥-elim (PIneqTERM (⇛-val-det tt tt c₁ y))
---eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei = ⊥-elim (PIneqDUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (PIneqUNIV (⇛-val-det tt tt c₁ d₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
-  where
-    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
-    z = isu w A B x
-
-    q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))--}
-
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTLIFT A3 A4 x x₁ eqtA extA) ei = ⊥-elim (PIneqLIFT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTBAR x) ei =
-  Mod.□-idem M (∀𝕎-□'-□₀ W M x aw ei)
-  where
-    aw0 : ∀𝕎 w
-      (λ w' e' →
-         (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →
-         eqInType u w' z a b →
-         □· w' (λ w'' e → PIeq (eqInType u w'' (eqta w'' (⊑-trans· e' e))) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa)) a b))
-    aw0 w1 e1 z {--at--} ez =
-      eqInType-⇛-PI
-        u w1 A B A1 A2 B1 B2 a b
-        (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
-        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
-        (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
-        (⇛-mon e1 c₁) (⇛-mon e1 c₂) z ez
-
-    aw : ∀𝕎 w
-      (λ w' e' →
-         (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →
-         eqInType u w' z a b →
-         □· w' (λ w'' e → (x : w ⊑· w'') → PIeq (eqInType u w'' (eqta w'' x)) (λ a1 a2 eqa → eqInType u w'' (eqtb w'' x a1 a2 eqa)) a b))
-    aw w1 e1 z {--at--} ez = Mod.∀𝕎-□Func M (irr-fam-pi u w A1 B1 A2 B2 eqta eqtb exta extb a b w1 e1) (aw0 w1 e1 z {--at--} ez)
-
-
+    concl : (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+            (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
+                                   → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+            (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+            (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+            (inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
+            (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → eqInTypeExt (eqtb w1 e1 a1 a2 ea)))
+            (c₁ : A #⇛ #PI A1 B1 at w) (c₂ : B #⇛ #PI A2 B2 at w) (a b : CTerm) → eqInType u w eqt a b
+            → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
+                                   → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → eqInTypeExt (eqtb w1 e1 a1 a2 ea)))
+          → (c₁ : T1 #⇛ #PI A1 B1 at w) (c₂ : T2 #⇛ #PI A2 B2 at w) (a b : CTerm) → eqInType u w eqt' a b
+          → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b))
+        ind
+        eqt
 
 
 
@@ -1187,100 +1523,130 @@ eqInType-⇛-PI2 : (u : 𝕌) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTerm0) 
                  → B #⇛ #PI A2 B2 at w
                  → (eqt : ≡Types u w A B)
                  → (eqi : ≡∈Type u w eqt a b)
-                 → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} eqt → eqInTypeExt eqt')
+                 → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type₂ {u'} eqt' {u} eqt → eqInTypeExt eqt')
                  → □· w (λ w' e → PIeq (≡∈Type u w' (eqta w' e)) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e a₁ a₂ eqa)) a b)
-{-# TERMINATING #-}
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNAT x x₁) ei ext = ⊥-elim (PIneqNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQNAT x x₁) ei ext = ⊥-elim (PIneqQNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTTNAT x x₁) ei ext = ⊥-elim (PIneqTNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ei ext = ⊥-elim (PIneqLT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei ext = ⊥-elim (PIneqQLT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTFREE x x₁) ei ext = ⊥-elim (PIneqFREE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext
-  rewrite #PIinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
-        | #PIinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
-        | #PIinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
-        | #PIinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
-  Mod.∀𝕎-□Func M aw ei
+eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ eqt ei ext =
+  concl eqta eqtb exta extb c₁ c₂ a b ei ext
   where
-    awexta₁ : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
-    awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypePIa u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
-
-    awexta : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
-    awexta w1 e1 = eqTypes-eqInTypeExt (eqta₁ w1 e1) (eqta w1 e1) (awexta₁ w1 e1)
-
-    awextb₁ : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : ≡∈Type u w1 (eqta₁ w1 e1) a1 a2)
-                              → eqInTypeExt (eqtb₁ w1 e1 a1 a2 ea))
-    awextb₁ w1 e1 a1 a2 ea = ext (eqtb₁ w1 e1 a1 a2 ea) (≤TypeS _ _ (<Type1 _ _ (<TypePIb u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1 a1 a2 ea)))
-
-    awextb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : ≡∈Type u w1 (eqta w1 e1) a1 a2)
-                             → eqInTypeExt (eqtb w1 e1 a1 a2 ea))
-    awextb w1 e1 a1 a2 ea =
-      eqTypes-eqInTypeExt
-        (eqtb₁ w1 e1 a1 a2 (proj₁ (awexta w1 e1 (eqta₁ w1 e1) a1 a2) ea))
-        (eqtb w1 e1 a1 a2 ea)
-        (awextb₁ w1 e1 a1 a2 (proj₁ (awexta w1 e1 (eqta₁ w1 e1) a1 a2) ea))
-
-    aw : ∀𝕎 w (λ w' e' → PIeq (≡∈Type u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb₁ w' e' a₁ a₂ eqa)) a b
-                         → PIeq (≡∈Type u w' (eqta w' e')) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e' a₁ a₂ eqa)) a b)
-    aw w1 e1 z a₁ a₂ eqa = snd (awextb w1 e1 a₁ a₂ eqa (eqtb₁ w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)) eqb'
+    ind : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} (eqt : ≡Types u w T1 T2)
+          → ({u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2') → <Type₂ {u'} eqt' {u} eqt
+              → (eqta₁ : ∀𝕎 w' (λ w'' _ → ≡Types u' w'' A1 A2))
+              → (eqtb₁ : ∀𝕎 w' (λ w' e → (a1 a2 : CTerm) → ≡∈Type u' w' (eqta₁ w' e) a1 a2
+                                         → ≡Types u' w' (sub0 a1 B1) (sub0 a2 B2)))
+              → (exta₁ : (a₁ b₁ : CTerm) → wPredExtIrr (λ w₂ e → ≡∈Type u' w₂ (eqta₁ w₂ e) a₁ b₁))
+              → (extb₁ : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → ≡∈Type u' w (eqtb₁ w e a b x) c d))
+              → T1' #⇛ #PI A1 B1 at w' → T2' #⇛ #PI A2 B2 at w'
+              → (a₁ b₁ : CTerm) → ≡∈Type u' w' eqt' a₁ b₁
+              → ({u'' : 𝕌} {w'' : 𝕎·} {A' B' : CTerm} (eqt'' : ≡Types u'' w'' A' B') → ≤Type₂ eqt'' eqt' → eqInTypeExt eqt'')
+              → □· w' (λ w'' e → PIeq (≡∈Type u' w'' (eqta₁ w'' e)) (λ a b eqa → ≡∈Type u' w'' (eqtb₁ w'' e a b eqa)) a₁ b₁))
+          → (eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → ≡∈Type u w' (eqta w' e) a1 a2
+                                   → ≡Types u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a₁ b₁ : CTerm) → wPredExtIrr (λ w₂ e → ≡∈Type u w₂ (eqta w₂ e) a₁ b₁))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → ≡∈Type u w (eqtb w e a b x) c d))
+          → T1 #⇛ #PI A1 B1 at w → T2 #⇛ #PI A2 B2 at w
+          → (a₁ b₁ : CTerm) → ≡∈Type u w eqt a₁ b₁
+          → ({u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type₂ eqt' eqt → eqInTypeExt eqt')
+          → □· w (λ w' e → PIeq (≡∈Type u w' (eqta w' e)) (λ a b eqa → ≡∈Type u w' (eqtb w' e a b eqa)) a₁ b₁)
+    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqNAT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqQNAT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqTNAT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqLT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqQLT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqFREE (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext
+      = Mod.∀𝕎-□Func M aw ei
       where
-        eqa' : ≡∈Type u w1 (eqta₁ w1 e1) a₁ a₂
-        eqa' = fst (awexta w1 e1 (eqta₁ w1 e1) a₁ a₂) eqa
+        aw : ∀𝕎 w (λ w' e' → PIeq (≡∈Type u w' (eqta₁ w' e')) (λ a b eqa → ≡∈Type u w' (eqtb₁ w' e' a b eqa)) a b
+                            → PIeq (≡∈Type u w' (eqta w' e')) (λ a b eqa → ≡∈Type u w' (eqtb w' e' a b eqa)) a b)
+        aw w1 e1 z a₁ a₂ eqa
+          rewrite #PIinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {T1} tt tt c₁ x)
+                | #PIinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {T1} tt tt c₁ x)
+                | #PIinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {T2} tt tt c₂ x₁)
+                | #PIinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {T2} tt tt c₂ x₁)
+          = snd (awextb a₁ a₂ eqa (eqtb₁ w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)) eqb'
+            where
+              awexta₁ : eqInTypeExt (eqta₁ w1 e1)
+              awexta₁ = ext (eqta₁ w1 e1) (≤TypeS₂ _ _ (<Type1₂ _ _ (<TypePIa₂ u w T1 T2 A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
 
-        eqb' : ≡∈Type u w1 (eqtb₁ w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)
-        eqb' = z a₁ a₂ eqa'
+              awexta : eqInTypeExt (eqta w1 e1)
+              awexta = eqTypes-eqInTypeExt (eqta₁ w1 e1) (eqta w1 e1) awexta₁
 
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (PIneqW (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (PIneqM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (PIneqSUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (PIneqSET (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei ext = ⊥-elim (PIneqISECT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei ext = ⊥-elim (PIneqTUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ei ext = ⊥-elim (PIneqEQ (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei ext = ⊥-elim (PIneqUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei ext = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqtA extA) ei ext = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqtA extA) ei ext = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTCONST A3 A4 x x₁ eqtA extA) ei ext = ⊥-elim (PIneqTCONST (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqtA extA) ei ext = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTPURE x x₁) ei ext = ⊥-elim (PIneqPURE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNOSEQ x x₁) ei ext = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTTERM z₁ z₂ y y₁ y₂) ei ext = ⊥-elim (PIneqTERM (⇛-val-det tt tt c₁ y))
---eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei ext = ⊥-elim (PIneqDUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ei ext = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNIV i p d₁ d₂) ei ext = ⊥-elim (PIneqUNIV (⇛-val-det tt tt c₁ d₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
-  where
-    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
-    z = isu w A B x
+              awextb₁ : (a1 a2 : CTerm) (ea : ≡∈Type u w1 (eqta₁ w1 e1) a1 a2)
+                        → eqInTypeExt (eqtb₁ w1 e1 a1 a2 ea)
+              awextb₁ a1 a2 ea = ext (eqtb₁ w1 e1 a1 a2 ea) (≤TypeS₂ _ _ (<Type1₂ _ _ (<TypePIb₂ u w T1 T2 A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1 a1 a2 ea)))
 
-    q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))--}
+              awextb : (a1 a2 : CTerm) (ea : ≡∈Type u w1 (eqta w1 e1) a1 a2)
+                       → eqInTypeExt (eqtb w1 e1 a1 a2 ea)
+              awextb a1 a2 ea =
+                eqTypes-eqInTypeExt
+                  (eqtb₁ w1 e1 a1 a2 (proj₁ (awexta (eqta₁ w1 e1) a1 a2) ea))
+                  (eqtb w1 e1 a1 a2 ea)
+                  (awextb₁ a1 a2 (proj₁ (awexta (eqta₁ w1 e1) a1 a2) ea))
 
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTLIFT A3 A4 x x₁ eqtA extA) ei ext = ⊥-elim (PIneqLIFT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTBAR x) ei ext =
-  Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw ei)
-  where
-    aw0 : ∀𝕎 w
-      (λ w' e' → (z : ≡Types u w' A B)
-               → at□· x w' e' z
-               → ≡∈Type u w' z a b
-               → □· w' (λ w'' e → PIeq (≡∈Type u w'' (eqta w'' (⊑-trans· e' e))) (λ a1 a2 eqa → ≡∈Type u w'' (eqtb w'' (⊑-trans· e' e) a1 a2 eqa)) a b))
-    aw0 w1 e1 z at ez =
-      eqInType-⇛-PI2
-        u w1 A B A1 A2 B1 B2 a b
-        (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
-        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u ·ᵤ} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
-        (⇛-mon e1 c₁) (⇛-mon e1 c₂)
-        z ez (≤Type-EQTBAR-eqInTypeExt e1 at ext)
+              eqa' : ≡∈Type u w1 (eqta₁ w1 e1) a₁ a₂
+              eqa' = fst (awexta (eqta₁ w1 e1) a₁ a₂) eqa
 
-    aw : ∀𝕎 w
-      (λ w' e' → (z : ≡Types u w' A B)
-               → at□· x w' e' z
-               → ≡∈Type u w' z a b
-               → □· w' (λ w'' e → (x : w ⊑· w'') → PIeq (≡∈Type u w'' (eqta w'' x)) (λ a1 a2 eqa → ≡∈Type u w'' (eqtb w'' x a1 a2 eqa)) a b))
-    aw w1 e1 z at ez = Mod.∀𝕎-□Func M (irr-fam-pi (u ·ᵤ) w A1 B1 A2 B2 eqta eqtb exta extb a b w1 e1) (aw0 w1 e1 z at ez)
+              eqb' : ≡∈Type u w1 (eqtb₁ w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)
+              eqb' = z a₁ a₂ eqa'
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqW (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqSUM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqSET (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqISECT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqTUNION (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqta₁ exta₁ eqt1 eqt2) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqEQ (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqUNION (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqPURE (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ x x₁ x₂) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqTERM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqTCONST (⇛-val-det tt tt c₁ x))
+-- ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqDUM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqta₁ exta₁ eqx) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqUNIV (⇛-val-det tt tt c₁ d₁))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (PIneqLIFT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTBAR x) ind eqta eqtb exta extb c₁ c₂ a b ei ext =
+      Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw ei)
+      where
+        aw : ∀𝕎 w
+          (λ w' e' →
+            (z : ≡Types u w' T1 T2) (at : at□· x w' e' z) →
+            ≡∈Type u w' z a b →
+            □· w' (λ w'' e → (x : w ⊑· w'') → PIeq (≡∈Type u w'' (eqta w'' x)) (λ a b eqa → ≡∈Type u w'' (eqtb w'' x a b eqa)) a b))
+        aw w1 e1 z at ez =
+          Mod.∀𝕎-□Func M (irr-fam-pi (u ·ᵤ) w A1 B1 A2 B2 eqta eqtb exta extb a b w1 e1)
+            (ind {u} {w1} {T1} {T2} z (<Type1₂ z (EQTBAR x) (<TypeBAR₂ u w T1 T2 x w1 e1 z at))
+              (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
+              (wPredExtIrr-eqInType-mon eqta exta w1 e1)
+              (wPredDepExtIrr-eqInType-mon {u ·ᵤ} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
+              (⇛-mon e1 c₁) (⇛-mon e1 c₂)
+              a b ez (≤Type-trans-bar₂ e1 x z at ext))
+
+    concl : (eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 A2))
+            (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → ≡∈Type u w' (eqta w' e) a1 a2
+                                   → ≡Types u w' (sub0 a1 B1) (sub0 a2 B2)))
+            (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqta w e) a b))
+            (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → ≡∈Type u w (eqtb w e a b x) c d))
+            (c₁ : A #⇛ #PI A1 B1 at w) (c₂ : B #⇛ #PI A2 B2 at w) (a b : CTerm) → ≡∈Type u w eqt a b
+            → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type₂ {u'} eqt' {u} eqt → eqInTypeExt eqt')
+            → □· w (λ w' e → PIeq (≡∈Type u w' (eqta w' e)) (λ a b eqa → ≡∈Type u w' (eqtb w' e a b eqa)) a b)
+    concl =
+      ind<Type₂
+        (λ {u} {w} {T1} {T2} eqt
+          → (eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → ≡∈Type u w' (eqta w' e) a1 a2
+                                   → ≡Types u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqta w e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → ≡∈Type u w (eqtb w e a b x) c d))
+          → (c₁ : T1 #⇛ #PI A1 B1 at w) (c₂ : T2 #⇛ #PI A2 B2 at w) (a b : CTerm) → ≡∈Type u w eqt a b
+          → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type₂ {u'} eqt' {u} eqt → eqInTypeExt eqt')
+          → □· w (λ w' e → PIeq (≡∈Type u w' (eqta w' e)) (λ a b eqa → ≡∈Type u w' (eqtb w' e a b eqa)) a b))
+        ind
+        eqt
 
 
 
@@ -1299,72 +1665,118 @@ eqInType-⇛-PI-rev : (u : univs) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTer
                      → (eqt : eqTypes u w A B)
                      → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b)
                      → eqInType u w eqt a b
-{-# TERMINATING #-}
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (PIneqNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (PIneqQNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTTNAT x x₁) ei = ⊥-elim (PIneqTNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (PIneqLT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (PIneqQLT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (PIneqFREE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei
-  rewrite #PIinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
-        | #PIinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
-        | #PIinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
-        | #PIinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
-  Mod.∀𝕎-□Func M aw ei
+eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ eqt ei =
+  concl eqta eqtb exta extb inda indb c₁ c₂ a b ei
   where
-    aw : ∀𝕎 w (λ w' e' → PIeq (eqInType u w' (eqta w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e' a₁ a₂ eqa)) a b
-                         → PIeq (eqInType u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → eqInType u w' (eqtb₁ w' e' a₁ a₂ eqa)) a b)
-    aw w1 e1 z a₁ a₂ eqa = proj₁ (indb w1 e1 a₁ a₂ eqa' (eqtb₁ w1 e1 a₁ a₂ eqa) (#APPLY a a₁) (#APPLY b a₂)) eqb'
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : eqTypes u' w' T1' T2') → <Type eqt' eqt
+              → (eqta₁ : ∀𝕎 w' (λ w'' _ → eqTypes u' w'' A1 A2))
+              → (eqtb₁ : ∀𝕎 w' (λ w' e → (a1 a2 : CTerm) → eqInType u' w' (eqta₁ w' e) a1 a2
+                                         → eqTypes u' w' (sub0 a1 B1) (sub0 a2 B2)))
+              → (exta₁ : (a₁ b₁ : CTerm) → wPredExtIrr (λ w₂ e → eqInType u' w₂ (eqta₁ w₂ e) a₁ b₁))
+              → (extb₁ : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u' w (eqtb₁ w e a b x) c d))
+              → (inda₁ : ∀𝕎 w' (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1)))
+              → (indb₁ : ∀𝕎 w' (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u' w1 (eqta₁ w1 e1) a1 a2)
+                                          → eqInTypeExt (eqtb₁ w1 e1 a1 a2 ea)))
+              → T1' #⇛ #PI A1 B1 at w' → T2' #⇛ #PI A2 B2 at w'
+              → (a₁ b₁ : CTerm) → □· w' (λ w'' e → PIeq (eqInType u' w'' (eqta₁ w'' e)) (λ a b eqa → eqInType u' w'' (eqtb₁ w'' e a b eqa)) a₁ b₁)
+              → eqInType u' w' eqt' a₁ b₁)
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
+                                   → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a₁ b₁ : CTerm) → wPredExtIrr (λ w₂ e → eqInType u w₂ (eqta w₂ e) a₁ b₁))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → eqInTypeExt (eqtb w1 e1 a1 a2 ea)))
+          → T1 #⇛ #PI A1 B1 at w → T2 #⇛ #PI A2 B2 at w
+          → (a₁ b₁ : CTerm) → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a₁ b₁)
+          → eqInType u w eqt a₁ b₁
+    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqNAT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqQNAT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqTNAT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqLT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqQLT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqFREE (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei
+      = Mod.∀𝕎-□Func M aw ei
       where
-        eqa' : eqInType u w1 (eqta w1 e1) a₁ a₂
-        eqa' = snd (inda w1 e1 (eqta₁ w1 e1) a₁ a₂) eqa
+        aw : ∀𝕎 w (λ w' e' → PIeq (eqInType u w' (eqta w' e')) (λ a b eqa → eqInType u w' (eqtb w' e' a b eqa)) a b
+                            → PIeq (eqInType u w' (eqta₁ w' e')) (λ a b eqa → eqInType u w' (eqtb₁ w' e' a b eqa)) a b)
+        aw w1 e1 z a₁ a₂ eqa
+          rewrite #PIinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {T1} tt tt c₁ x)
+                | #PIinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {T1} tt tt c₁ x)
+                | #PIinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {T2} tt tt c₂ x₁)
+                | #PIinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {T2} tt tt c₂ x₁)
+          = fst (indb w1 e1 a₁ a₂ eqa' (eqtb₁ w1 e1 a₁ a₂ eqa) (#APPLY a a₁) (#APPLY b a₂)) eqb'
+            where
+              eqa' : eqInType u w1 (eqta w1 e1) a₁ a₂
+              eqa' = snd (inda w1 e1 (eqta₁ w1 e1) a₁ a₂) eqa
 
-        eqb' : eqInType u w1 (eqtb w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)
-        eqb' = z a₁ a₂ eqa'
-
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PIneqW (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PIneqM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PIneqSUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PIneqSET (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (PIneqISECT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ei = ⊥-elim (PIneqTUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ei = ⊥-elim (PIneqEQ (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (PIneqUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqtA extA) ei = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqtA extA) ei = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTCONST A3 A4 x x₁ eqtA extA) ei = ⊥-elim (PIneqTCONST (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqtA extA) ei = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTPURE x x₁) ei = ⊥-elim (PIneqPURE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTNOSEQ x x₁) ei = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTTERM z₁ z₂ y y₁ y₂) ei = ⊥-elim (PIneqTERM (⇛-val-det tt tt c₁ y))
---eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei = ⊥-elim (PIneqDUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (PIneqUNIV (⇛-val-det tt tt c₁ d₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
-  where
-    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
-    z = isu w A B x
-
-    q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))--}
-
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTLIFT A3 A4 x x₁ eqtA extA) ei = ⊥-elim (PIneqLIFT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂ (EQTBAR x) ei =
-  ∀𝕎-□-□'₀ W M x aw
-  where
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} → eqInType u w' z a b)
-    aw w1 e1 z {--at--} =
-      eqInType-⇛-PI-rev
-        u w1 A B A1 A2 B1 B2 a b
-        (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
-        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
-        (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
-        (⇛-mon e1 c₁) (⇛-mon e1 c₂) z j
+              eqb' : eqInType u w1 (eqtb w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)
+              eqb' = z a₁ a₂ eqa'
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqW (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqSUM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqSET (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqISECT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqTUNION (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqEQ (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqUNION (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqPURE (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ x x₁ x₂) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqTERM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqTCONST (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqDUM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqUNIV (⇛-val-det tt tt c₁ d₁))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (PIneqLIFT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTBAR x) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei =
+      Mod.∀𝕎-□-□' M x aw
       where
-        j : □· w1 (↑wPred (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b) e1)
-        j = Mod.↑□ M ei e1
+        aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b)
+        aw w1 e1 z at =
+          ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 z at))
+            (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
+            (wPredExtIrr-eqInType-mon eqta exta w1 e1)
+            (wPredDepExtIrr-eqInType-mon {u} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
+            (∀𝕎-mon e1 inda) (∀𝕎-mon e1 indb)
+            (⇛-mon e1 c₁) (⇛-mon e1 c₂) a b (Mod.↑□ M ei e1)
+          where
+            j : □· w1 (↑wPred (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b) e1)
+            j = Mod.↑□ M ei e1
+
+    concl : (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+            (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
+                                   → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+            (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+            (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+            (inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
+            (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → eqInTypeExt (eqtb w1 e1 a1 a2 ea)))
+            (c₁ : A #⇛ #PI A1 B1 at w) (c₂ : B #⇛ #PI A2 B2 at w) (a b : CTerm)
+            → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+            → eqInType u w eqt a b
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt
+          → (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → eqInType u w' (eqta w' e) a1 a2
+                                   → eqTypes u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → eqInType u w (eqtb w e a b x) c d))
+          → (inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
+          → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
+                                    → eqInTypeExt (eqtb w1 e1 a1 a2 ea)))
+          → (c₁ : T1 #⇛ #PI A1 B1 at w) (c₂ : T2 #⇛ #PI A2 B2 at w) (a b : CTerm)
+          → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) a b)
+          → eqInType u w eqt a b)
+        ind
+        eqt
 
 
 
@@ -1378,82 +1790,122 @@ eqInType-⇛-PI-rev2 : (u : 𝕌) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTer
                       → A #⇛ #PI A1 B1 at w
                       → B #⇛ #PI A2 B2 at w
                       → (eqt : ≡Types u w A B)
-                      → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u} eqt → eqInTypeExt eqt')
+                      → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type₂ {u'} eqt' {u} eqt → eqInTypeExt eqt')
                       → □· w (λ w' e → PIeq (≡∈Type u w' (eqta w' e)) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e a₁ a₂ eqa)) a b)
                       → ≡∈Type u w eqt a b
-{-# TERMINATING #-}
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNAT x x₁) ext ei = ⊥-elim (PIneqNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQNAT x x₁) ext ei = ⊥-elim (PIneqQNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTTNAT x x₁) ext ei = ⊥-elim (PIneqTNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ext ei = ⊥-elim (PIneqLT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ext ei = ⊥-elim (PIneqQLT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTFREE x x₁) ext ei = ⊥-elim (PIneqFREE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei
-  rewrite #PIinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
-        | #PIinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {A} tt tt c₁ x)
-        | #PIinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁)
-        | #PIinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {B} tt tt c₂ x₁) =
-  Mod.∀𝕎-□Func M aw ei
+eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ eqt ext ei =
+  concl eqta eqtb exta extb c₁ c₂ a b ext ei
   where
-    awexta₁ : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta₁ w1 e1))
-    awexta₁ w1 e1 = ext (eqta₁ w1 e1) (≤TypeS _ _ (<Type1 _ _ (<TypePIa u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
-
-    awextb₁ : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : ≡∈Type u w1 (eqta₁ w1 e1) a1 a2)
-                              → eqInTypeExt (eqtb₁ w1 e1 a1 a2 ea))
-    awextb₁ w1 e1 a1 a2 ea = ext (eqtb₁ w1 e1 a1 a2 ea) (≤TypeS _ _ (<Type1 _ _ (<TypePIb u w A B A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1 a1 a2 ea)))
-
-    aw : ∀𝕎 w (λ w' e' → PIeq (≡∈Type u w' (eqta w' e')) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e' a₁ a₂ eqa)) a b
-                         → PIeq (≡∈Type u w' (eqta₁ w' e')) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb₁ w' e' a₁ a₂ eqa)) a b)
-    aw w1 e1 z a₁ a₂ eqa = snd (awextb₁ w1 e1 a₁ a₂ eqa (eqtb w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)) eqb'
+    ind : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} (eqt : ≡Types u w T1 T2)
+          → ({u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2') → <Type₂ {u'} eqt' {u} eqt
+              → (eqta₁ : ∀𝕎 w' (λ w'' _ → ≡Types u' w'' A1 A2))
+              → (eqtb₁ : ∀𝕎 w' (λ w' e → (a1 a2 : CTerm) → ≡∈Type u' w' (eqta₁ w' e) a1 a2
+                                         → ≡Types u' w' (sub0 a1 B1) (sub0 a2 B2)))
+              → (exta₁ : (a₁ b₁ : CTerm) → wPredExtIrr (λ w₂ e → ≡∈Type u' w₂ (eqta₁ w₂ e) a₁ b₁))
+              → (extb₁ : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → ≡∈Type u' w (eqtb₁ w e a b x) c d))
+              → T1' #⇛ #PI A1 B1 at w' → T2' #⇛ #PI A2 B2 at w'
+              → (a₁ b₁ : CTerm)
+              → ({u'' : 𝕌} {w'' : 𝕎·} {A' B' : CTerm} (eqt'' : ≡Types u'' w'' A' B') → ≤Type₂ eqt'' eqt' → eqInTypeExt eqt'')
+              → □· w' (λ w'' e → PIeq (≡∈Type u' w'' (eqta₁ w'' e)) (λ a b eqa → ≡∈Type u' w'' (eqtb₁ w'' e a b eqa)) a₁ b₁)
+              → ≡∈Type u' w' eqt' a₁ b₁)
+          → (eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → ≡∈Type u w' (eqta w' e) a1 a2
+                                   → ≡Types u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a₁ b₁ : CTerm) → wPredExtIrr (λ w₂ e → ≡∈Type u w₂ (eqta w₂ e) a₁ b₁))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → ≡∈Type u w (eqtb w e a b x) c d))
+          → T1 #⇛ #PI A1 B1 at w → T2 #⇛ #PI A2 B2 at w
+          → (a₁ b₁ : CTerm)
+          → ({u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type₂ eqt' eqt → eqInTypeExt eqt')
+          → □· w (λ w' e → PIeq (≡∈Type u w' (eqta w' e)) (λ a b eqa → ≡∈Type u w' (eqtb w' e a b eqa)) a₁ b₁)
+          → ≡∈Type u w eqt a₁ b₁
+    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqNAT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqQNAT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqTNAT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqLT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqQLT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqFREE (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei
+      = Mod.∀𝕎-□Func M aw ei
       where
-        eqa' : ≡∈Type u w1 (eqta w1 e1) a₁ a₂
-        eqa' = fst (awexta₁ w1 e1 (eqta w1 e1) a₁ a₂) eqa
+        aw : ∀𝕎 w (λ w' e' → PIeq (≡∈Type u w' (eqta w' e')) (λ a b eqa → ≡∈Type u w' (eqtb w' e' a b eqa)) a b
+                            → PIeq (≡∈Type u w' (eqta₁ w' e')) (λ a b eqa → ≡∈Type u w' (eqtb₁ w' e' a b eqa)) a b)
+        aw w1 e1 z a₁ a₂ eqa
+          rewrite #PIinj1 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {T1} tt tt c₁ x)
+                | #PIinj2 {A1} {B1} {A3} {B3} (#⇛-val-det {_} {T1} tt tt c₁ x)
+                | #PIinj1 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {T2} tt tt c₂ x₁)
+                | #PIinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {T2} tt tt c₂ x₁)
+          = snd (awextb₁ a₁ a₂ eqa (eqtb w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)) eqb'
+            where
+              awexta₁ : eqInTypeExt (eqta₁ w1 e1)
+              awexta₁ = ext (eqta₁ w1 e1) (≤TypeS₂ _ _ (<Type1₂ _ _ (<TypePIa₂ u w T1 T2 A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
 
-        eqb' : ≡∈Type u w1 (eqtb w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)
-        eqb' = z a₁ a₂ eqa'
+              awextb₁ : (a1 a2 : CTerm) (ea : ≡∈Type u w1 (eqta₁ w1 e1) a1 a2)
+                        → eqInTypeExt (eqtb₁ w1 e1 a1 a2 ea)
+              awextb₁ a1 a2 ea = ext (eqtb₁ w1 e1 a1 a2 ea) (≤TypeS₂ _ _ (<Type1₂ _ _ (<TypePIb₂ u w T1 T2 A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1 a1 a2 ea)))
 
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (PIneqW (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (PIneqM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (PIneqSUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (PIneqSET (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTISECT A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ext ei = ⊥-elim (PIneqISECT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext ei = ⊥-elim (PIneqTUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ext ei = ⊥-elim (PIneqEQ (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ext ei = ⊥-elim (PIneqUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTQTUNION A3 B3 A4 B4 x x₁ eqtA eqtB extA extB) ext ei = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSQUASH A3 A4 x x₁ eqtA extA) ext ei = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTTRUNC A3 A4 x x₁ eqtA extA) ext ei = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTCONST A3 A4 x x₁ eqtA extA) ext ei = ⊥-elim (PIneqTCONST (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTSUBSING A3 A4 x x₁ eqtA extA) ext ei = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTPURE x x₁) ext ei = ⊥-elim (PIneqPURE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTNOSEQ x x₁) ext ei = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTTERM z₁ z₂ y y₁ y₂) ext ei = ⊥-elim (PIneqTERM (⇛-val-det tt tt c₁ y))
---eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ext ei = ⊥-elim (PIneqDUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ext ei = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTUNIV i p d₁ d₂) ext ei = ⊥-elim (PIneqUNIV (⇛-val-det tt tt c₁ d₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
-  where
-    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
-    z = isu w A B x
+              eqa' : ≡∈Type u w1 (eqta w1 e1) a₁ a₂
+              eqa' = fst (awexta₁ (eqta w1 e1) a₁ a₂) eqa
 
-    q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (PIneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))--}
-
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTLIFT A3 A4 x x₁ eqtA extA) ext ei = ⊥-elim (PIneqLIFT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ (EQTBAR x) ext ei =
-  Mod.∀𝕎-□-□' M x aw
-  where
-    aw : ∀𝕎 w (λ w' e' → (z : ≡Types u w' A B) (at : at□· x w' e' z) → ≡∈Type u w' z a b)
-    aw w1 e1 z at =
-      eqInType-⇛-PI-rev2
-        u w1 A B A1 A2 B1 B2 a b
-        (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
-        (wPredExtIrr-eqInType-mon eqta exta w1 e1) (wPredDepExtIrr-eqInType-mon {u ·ᵤ} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
-        (⇛-mon e1 c₁) (⇛-mon e1 c₂) z (≤Type-EQTBAR-eqInTypeExt e1 at ext) j
+              eqb' : ≡∈Type u w1 (eqtb w1 e1 a₁ a₂ eqa') (#APPLY a a₁) (#APPLY b a₂)
+              eqb' = z a₁ a₂ eqa'
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqW (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqSUM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqSET (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqISECT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqTUNION (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqEQ (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqUNION (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqQTUNION (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqTSQUASH (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqTTRUNC (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqSUBSING (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqPURE (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqNOSEQ (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ x x₁ x₂) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqTERM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqTCONST (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqDUM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqFFDEFS (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqUNIV (⇛-val-det tt tt c₁ d₁))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (PIneqLIFT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTBAR x) ind eqta eqtb exta extb c₁ c₂ a b ext ei =
+      Mod.∀𝕎-□-□' M x aw
       where
-        j : □· w1 (↑wPred (λ w' e → PIeq (≡∈Type u w' (eqta w' e)) (λ a₁ a₂ eqa → ≡∈Type u w' (eqtb w' e a₁ a₂ eqa)) a b) e1)
-        j = Mod.↑□ M ei e1
+        aw : ∀𝕎 w (λ w' e' → (z : ≡Types u w' T1 T2) (at : at□· x w' e' z) → ≡∈Type u w' z a b)
+        aw w1 e1 z at =
+          ind {u} {w1} {T1} {T2} z (<Type1₂ z (EQTBAR x) (<TypeBAR₂ u w T1 T2 x w1 e1 z at))
+            (∀𝕎-mon e1 eqta) (∀𝕎-mon e1 eqtb)
+            (wPredExtIrr-eqInType-mon eqta exta w1 e1)
+            (wPredDepExtIrr-eqInType-mon {u ·ᵤ} {w} {A1} {A2} {B1} {B2} eqta eqtb extb w1 e1)
+            (⇛-mon e1 c₁) (⇛-mon e1 c₂)
+            a b (≤Type-trans-bar₂ e1 x z at ext) (Mod.↑□ M ei e1)
+          where
+            j : □· w1 (↑wPred (λ w' e → PIeq (≡∈Type u w' (eqta w' e)) (λ a b eqa → ≡∈Type u w' (eqtb w' e a b eqa)) a b) e1)
+            j = Mod.↑□ M ei e1
 
+    concl : (eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 A2))
+            (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → ≡∈Type u w' (eqta w' e) a1 a2
+                                   → ≡Types u w' (sub0 a1 B1) (sub0 a2 B2)))
+            (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqta w e) a b))
+            (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → ≡∈Type u w (eqtb w e a b x) c d))
+            (c₁ : A #⇛ #PI A1 B1 at w) (c₂ : B #⇛ #PI A2 B2 at w) (a b : CTerm)
+            → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type₂ {u'} eqt' {u} eqt → eqInTypeExt eqt')
+            → □· w (λ w' e → PIeq (≡∈Type u w' (eqta w' e)) (λ a b eqa → ≡∈Type u w' (eqtb w' e a b eqa)) a b)
+            → ≡∈Type u w eqt a b
+    concl =
+      ind<Type₂
+        (λ {u} {w} {T1} {T2} eqt
+          → (eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 A2))
+          → (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → ≡∈Type u w' (eqta w' e) a1 a2
+                                   → ≡Types u w' (sub0 a1 B1) (sub0 a2 B2)))
+          → (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqta w e) a b))
+          → (extb : (a b c d : CTerm) → wPredDepExtIrr (λ w e x → ≡∈Type u w (eqtb w e a b x) c d))
+          → (c₁ : T1 #⇛ #PI A1 B1 at w) (c₂ : T2 #⇛ #PI A2 B2 at w) (a b : CTerm)
+          → (ext : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type₂ {u'} eqt' {u} eqt → eqInTypeExt eqt')
+          → □· w (λ w' e → PIeq (≡∈Type u w' (eqta w' e)) (λ a b eqa → ≡∈Type u w' (eqtb w' e a b eqa)) a b)
+          → ≡∈Type u w eqt a b)
+        ind
+        eqt
 
 
 
