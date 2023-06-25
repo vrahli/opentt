@@ -1780,7 +1780,6 @@ eqInType-⇛-PI-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c
 
 
 
-
 eqInType-⇛-PI-rev2 : (u : 𝕌) (w : 𝕎·) (A B A1 A2 : CTerm) (B1 B2 : CTerm0) (a b : CTerm)
                       (eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 A2))
                       (eqtb : ∀𝕎 w (λ w' e → (a1 a2 : CTerm) → ≡∈Type u w' (eqta w' e) a1 a2

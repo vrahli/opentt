@@ -996,6 +996,30 @@ PIeq-ext-eq {eqa1} {eqa2} {eqb1} {eqb2} {t1} {t2} exta extb e a b a∈ =
   extb (#APPLY t1 a) (#APPLY t2 b) a b (exta a b a∈) a∈ (e a b (exta a b a∈))
 
 
+SUMeq-ext-eq : {eqa1 eqa2 : per}
+               {eqb1 : (a b : CTerm) → eqa1 a b → per}
+               {eqb2 : (a b : CTerm) → eqa2 a b → per}
+               {w : 𝕎·} {t1 t2 : CTerm}
+               → ((a b : CTerm) → eqa1 a b → eqa2 a b)
+               → ((f g : CTerm) (a b : CTerm) (ea1 : eqa1 a b) (ea2 : eqa2 a b) → eqb1 a b ea1 f g → eqb2 a b ea2 f g)
+               → SUMeq eqa1 eqb1 w t1 t2
+               → SUMeq eqa2 eqb2 w t1 t2
+SUMeq-ext-eq {eqa1} {eqa2} {eqb1} {eqb2} {w} {t1} {t2} exta extb (a1 , a2 , b1 , b2 , a∈ , c₁ , c₂ , b∈) =
+  a1 , a2 , b1 , b2 , exta a1 a2 a∈ , c₁ , c₂ , extb b1 b2 a1 a2 a∈ (exta a1 a2 a∈) b∈
+
+
+SETeq-ext-eq : {eqa1 eqa2 : per}
+               {eqb1 : (a b : CTerm) → eqa1 a b → per}
+               {eqb2 : (a b : CTerm) → eqa2 a b → per}
+               {t1 t2 : CTerm}
+               → ((a b : CTerm) → eqa1 a b → eqa2 a b)
+               → ((f g : CTerm) (a b : CTerm) (ea1 : eqa1 a b) (ea2 : eqa2 a b) → eqb1 a b ea1 f g → eqb2 a b ea2 f g)
+               → SETeq eqa1 eqb1 t1 t2
+               → SETeq eqa2 eqb2 t1 t2
+SETeq-ext-eq {eqa1} {eqa2} {eqb1} {eqb2} {t1} {t2} exta extb (b , a∈ , b∈) =
+  b , exta t1 t2 a∈ , extb b b t1 t2 a∈ (exta t1 t2 a∈) b∈
+
+
 weq-ext-eq : {eqa1 eqa2 : per}
              {eqb1 : (a b : CTerm) → eqa1 a b → per}
              {eqb2 : (a b : CTerm) → eqa2 a b → per}
