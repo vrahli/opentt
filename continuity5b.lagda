@@ -480,7 +480,7 @@ abstract
     rewrite TUNIONinj1 equ | TUNIONinj2 equ | TUNIONinj1 eqv | TUNIONinj2 eqv
     = updRel2-TUNION u₁ u₂ v₁ v₂ (ind1 u₁ u₂ refl refl) (ind2 v₁ v₂ refl refl)
 
-
+{-
 abstract
   updRel2-shiftNameUp≡→QTUNION : (n : ℕ) {name : Name} {f g : Term} {r : ren} (cf : # f) (cg : # g) {a b x₁ x₂ y₁ y₂ : Term}
                             → ((u₁ u₂ : Term) → x₁ ≡ shiftNameUp n u₁ → x₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂)
@@ -493,7 +493,7 @@ abstract
   updRel2-shiftNameUp≡→QTUNION n {name} {f} {g} {r} cf cg {QTUNION u₁ v₁} {QTUNION u₂ v₂} {x₁} {x₂} {y₁} {y₂} ind1 ind2 equ eqv ur1 ur2
     rewrite QTUNIONinj1 equ | QTUNIONinj2 equ | QTUNIONinj1 eqv | QTUNIONinj2 eqv
     = updRel2-QTUNION u₁ u₂ v₁ v₂ (ind1 u₁ u₂ refl refl) (ind2 v₁ v₂ refl refl)
-
+-}
 
 abstract
   updRel2-shiftNameUp≡→INL : (n : ℕ) {name : Name} {f g : Term} {r : ren} (cf : # f) (cg : # g) {a b x₁ x₂ : Term}
@@ -531,6 +531,7 @@ abstract
     = updRel2-TSQUASH u₁ u₂ (ind1 u₁ u₂ refl refl)
 
 
+{-
 abstract
   updRel2-shiftNameUp≡→TTRUNC : (n : ℕ) {name : Name} {f g : Term} {r : ren} (cf : # f) (cg : # g) {a b x₁ x₂ : Term}
                             → ((u₁ u₂ : Term) → x₁ ≡ shiftNameUp n u₁ → x₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂)
@@ -541,18 +542,31 @@ abstract
   updRel2-shiftNameUp≡→TTRUNC n {name} {f} {g} {r} cf cg {TTRUNC u₁} {TTRUNC u₂} {x₁} {x₂} ind1 equ eqv ur1
     rewrite TTRUNCinj equ | TTRUNCinj eqv
     = updRel2-TTRUNC u₁ u₂ (ind1 u₁ u₂ refl refl)
+-}
 
 
 abstract
-  updRel2-shiftNameUp≡→TCONST : (n : ℕ) {name : Name} {f g : Term} {r : ren} (cf : # f) (cg : # g) {a b x₁ x₂ : Term}
+  updRel2-shiftNameUp≡→NOWRITE : (n : ℕ) {name : Name} {f g : Term} {r : ren} (cf : # f) (cg : # g) {a b x₁ x₂ : Term}
                             → ((u₁ u₂ : Term) → x₁ ≡ shiftNameUp n u₁ → x₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂)
-                            → TCONST x₁ ≡ shiftNameUp n a
-                            → TCONST x₂ ≡ shiftNameUp n b
+                            → NOWRITE x₁ ≡ shiftNameUp n a
+                            → NOWRITE x₂ ≡ shiftNameUp n b
                             → updRel2 (sucIf≤ n name) (shiftNameUp n f) (shiftNameUp n g) (sucIf≤-ren n r) x₁ x₂
                             → updRel2 name f g r a b
-  updRel2-shiftNameUp≡→TCONST n {name} {f} {g} {r} cf cg {TCONST u₁} {TCONST u₂} {x₁} {x₂} ind1 equ eqv ur1
-    rewrite TCONSTinj equ | TCONSTinj eqv
-    = updRel2-TCONST u₁ u₂ (ind1 u₁ u₂ refl refl)
+  updRel2-shiftNameUp≡→NOWRITE n {name} {f} {g} {r} cf cg {NOWRITE u₁} {NOWRITE u₂} {x₁} {x₂} ind1 equ eqv ur1
+    rewrite NOWRITEinj equ | NOWRITEinj eqv
+    = updRel2-NOWRITE u₁ u₂ (ind1 u₁ u₂ refl refl)
+
+
+abstract
+  updRel2-shiftNameUp≡→NOREAD : (n : ℕ) {name : Name} {f g : Term} {r : ren} (cf : # f) (cg : # g) {a b x₁ x₂ : Term}
+                            → ((u₁ u₂ : Term) → x₁ ≡ shiftNameUp n u₁ → x₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂)
+                            → NOREAD x₁ ≡ shiftNameUp n a
+                            → NOREAD x₂ ≡ shiftNameUp n b
+                            → updRel2 (sucIf≤ n name) (shiftNameUp n f) (shiftNameUp n g) (sucIf≤-ren n r) x₁ x₂
+                            → updRel2 name f g r a b
+  updRel2-shiftNameUp≡→NOREAD n {name} {f} {g} {r} cf cg {NOREAD u₁} {NOREAD u₂} {x₁} {x₂} ind1 equ eqv ur1
+    rewrite NOREADinj equ | NOREADinj eqv
+    = updRel2-NOREAD u₁ u₂ (ind1 u₁ u₂ refl refl)
 
 
 abstract
@@ -737,6 +751,7 @@ abstract
     = updRel2-MAPP u₂ v₁ v₂ (ind1 v₁ v₂ refl refl)
 
 
+{-
 abstract
   updRel2-shiftNameUp≡→EQB : (n : ℕ) {name : Name} {f g : Term} {r : ren} (cf : # f) (cg : # g) {a b x₁ x₂ y₁ y₂ z₁ z₂ w₁ w₂ : Term}
                             → ((u₁ u₂ : Term) → x₁ ≡ shiftNameUp n u₁ → x₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂)
@@ -754,6 +769,7 @@ abstract
     rewrite EQBinj1 equ | EQBinj2 equ | EQBinj3 equ | EQBinj4 equ
           | EQBinj1 eqv | EQBinj2 eqv | EQBinj3 eqv | EQBinj4 eqv
     = updRel2-EQB s₁ s₂ t₁ t₂ u₁ u₂ v₁ v₂ (ind1 s₁ s₂ refl refl) (ind2 t₁ t₂ refl refl) (ind3 u₁ u₂ refl refl) (ind4 v₁ v₂ refl refl)
+-}
 
 
 abstract
@@ -1006,14 +1022,14 @@ abstract
 
       ind2 : (u₁ u₂ : Term) → b₁ ≡ shiftNameUp n u₁ → b₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
       ind2 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {b₁} {b₂} e₁ e₂ ur₁
-  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} equ eqv (updRel2-QTUNION a₁ a₂ b₁ b₂ ur ur₁)
+{-  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} equ eqv (updRel2-QTUNION a₁ a₂ b₁ b₂ ur ur₁)
     = updRel2-shiftNameUp≡→QTUNION n cf cg ind1 ind2 equ eqv ur ur₁
     where
       ind1 : (u₁ u₂ : Term) → a₁ ≡ shiftNameUp n u₁ → a₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
       ind1 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {a₁} {a₂} e₁ e₂ ur
 
       ind2 : (u₁ u₂ : Term) → b₁ ≡ shiftNameUp n u₁ → b₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
-      ind2 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {b₁} {b₂} e₁ e₂ ur₁
+      ind2 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {b₁} {b₂} e₁ e₂ ur₁-}
   updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(INL a₁)} {.(INL a₂)} equ eqv (updRel2-INL a₁ a₂ ur)
     = updRel2-shiftNameUp≡→INL n cf cg ind1 equ eqv ur
     where
@@ -1046,7 +1062,7 @@ abstract
 
       ind3 : (u₁ u₂ : Term) → c₁ ≡ shiftNameUp n u₁ → c₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
       ind3 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {c₁} {c₂} e₁ e₂ ur₂
-  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} equ eqv (updRel2-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ ur ur₁ ur₂ ur₃)
+{-  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} equ eqv (updRel2-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ ur ur₁ ur₂ ur₃)
     = updRel2-shiftNameUp≡→EQB n cf cg ind1 ind2 ind3 ind4 equ eqv ur ur₁ ur₂ ur₃
     where
       ind1 : (u₁ u₂ : Term) → a₁ ≡ shiftNameUp n u₁ → a₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
@@ -1059,7 +1075,7 @@ abstract
       ind3 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {c₁} {c₂} e₁ e₂ ur₂
 
       ind4 : (u₁ u₂ : Term) → d₁ ≡ shiftNameUp n u₁ → d₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
-      ind4 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {d₁} {d₂} e₁ e₂ ur₃
+      ind4 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {d₁} {d₂} e₁ e₂ ur₃-}
   updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.AX} {.AX} equ eqv updRel2-AX = updRel2-shiftNameUp≡→AX n cf cg equ eqv
   updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.FREE} {.FREE} equ eqv updRel2-FREE = updRel2-shiftNameUp≡→FREE n cf cg equ eqv
   updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(CS name1)} {.(CS name2)} equ eqv (updRel2-CS name1 name2 x x₁ x₂) = updRel2-shiftNameUp≡→CS n cf cg equ eqv x₂ x x₁
@@ -1097,13 +1113,18 @@ abstract
     where
       ind1 : (u₁ u₂ : Term) → a₁ ≡ shiftNameUp n u₁ → a₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
       ind1 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {a₁} {a₂} e₁ e₂ ur
-  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(TTRUNC a₁)} {.(TTRUNC a₂)} equ eqv (updRel2-TTRUNC a₁ a₂ ur)
+{-  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(TTRUNC a₁)} {.(TTRUNC a₂)} equ eqv (updRel2-TTRUNC a₁ a₂ ur)
     = updRel2-shiftNameUp≡→TTRUNC n cf cg ind1 equ eqv ur
     where
       ind1 : (u₁ u₂ : Term) → a₁ ≡ shiftNameUp n u₁ → a₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
+      ind1 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {a₁} {a₂} e₁ e₂ ur-}
+  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(NOWRITE a₁)} {.(NOWRITE a₂)} equ eqv (updRel2-NOWRITE a₁ a₂ ur)
+    = updRel2-shiftNameUp≡→NOWRITE n cf cg ind1 equ eqv ur
+    where
+      ind1 : (u₁ u₂ : Term) → a₁ ≡ shiftNameUp n u₁ → a₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
       ind1 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {a₁} {a₂} e₁ e₂ ur
-  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(TCONST a₁)} {.(TCONST a₂)} equ eqv (updRel2-TCONST a₁ a₂ ur)
-    = updRel2-shiftNameUp≡→TCONST n cf cg ind1 equ eqv ur
+  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(NOREAD a₁)} {.(NOREAD a₂)} equ eqv (updRel2-NOREAD a₁ a₂ ur)
+    = updRel2-shiftNameUp≡→NOREAD n cf cg ind1 equ eqv ur
     where
       ind1 : (u₁ u₂ : Term) → a₁ ≡ shiftNameUp n u₁ → a₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
       ind1 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {a₁} {a₂} e₁ e₂ ur

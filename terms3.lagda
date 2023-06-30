@@ -167,12 +167,12 @@ data differ (name1 name2 : Name) (f : Term) : Term → Term → Set where
   differ-ISECT   : (a₁ a₂ b₁ b₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f (ISECT a₁ b₁) (ISECT a₂ b₂)
   differ-TUNION  : (a₁ a₂ b₁ b₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f (TUNION a₁ b₁) (TUNION a₂ b₂)
   differ-UNION   : (a₁ a₂ b₁ b₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f (UNION a₁ b₁) (UNION a₂ b₂)
-  differ-QTUNION : (a₁ a₂ b₁ b₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f (QTUNION a₁ b₁) (QTUNION a₂ b₂)
+--  differ-QTUNION : (a₁ a₂ b₁ b₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f (QTUNION a₁ b₁) (QTUNION a₂ b₂)
   differ-INL     : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (INL a) (INL b)
   differ-INR     : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (INR a) (INR b)
   differ-DECIDE  : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f c₁ c₂ → differ name1 name2 f (DECIDE a₁ b₁ c₁) (DECIDE a₂ b₂ c₂)
   differ-EQ      : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f c₁ c₂ → differ name1 name2 f (EQ a₁ b₁ c₁) (EQ a₂ b₂ c₂)
-  differ-EQB     : (a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f c₁ c₂ → differ name1 name2 f d₁ d₂ → differ name1 name2 f (EQB a₁ b₁ c₁ d₁) (EQB a₂ b₂ c₂ d₂)
+--  differ-EQB     : (a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f c₁ c₂ → differ name1 name2 f d₁ d₂ → differ name1 name2 f (EQB a₁ b₁ c₁ d₁) (EQB a₂ b₂ c₂ d₂)
   differ-AX      : differ name1 name2 f AX AX
   differ-FREE    : differ name1 name2 f FREE FREE
   differ-MSEQ    : (s : 𝕊) → differ name1 name2 f (MSEQ s) (MSEQ s)
@@ -183,8 +183,9 @@ data differ (name1 name2 : Name) (f : Term) : Term → Term → Set where
   differ-CHOOSE  : (a₁ a₂ b₁ b₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f (CHOOSE a₁ b₁) (CHOOSE a₂ b₂)
 --  differ-IFC0    : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f c₁ c₂ → differ name1 name2 f (IFC0 a₁ b₁ c₁) (IFC0 a₂ b₂ c₂)
   differ-TSQUASH : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (TSQUASH a) (TSQUASH b)
-  differ-TTRUNC  : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (TTRUNC a) (TTRUNC b)
-  differ-TCONST  : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (TCONST a) (TCONST b)
+--  differ-TTRUNC  : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (TTRUNC a) (TTRUNC b)
+  differ-NOWRITE : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (NOWRITE a) (NOWRITE b)
+  differ-NOREAD  : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (NOREAD a) (NOREAD b)
   differ-SUBSING : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (SUBSING a) (SUBSING b)
   differ-PURE    : differ name1 name2 f PURE PURE
   differ-NOSEQ   : differ name1 name2 f NOSEQ NOSEQ
@@ -305,12 +306,12 @@ abstract
   →differ-shiftUp v {name1} {name2} {f} cf {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (differ-ISECT a₁ a₂ b₁ b₂ diff diff₁) = differ-ISECT _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
   →differ-shiftUp v {name1} {name2} {f} cf {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (differ-TUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-TUNION _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁)
   →differ-shiftUp v {name1} {name2} {f} cf {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (differ-UNION a₁ a₂ b₁ b₂ diff diff₁) = differ-UNION _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
-  →differ-shiftUp v {name1} {name2} {f} cf {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-QTUNION _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
+--  →differ-shiftUp v {name1} {name2} {f} cf {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-QTUNION _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
   →differ-shiftUp v {name1} {name2} {f} cf {.(INL a)} {.(INL b)} (differ-INL a b diff) = differ-INL _ _ (→differ-shiftUp v cf diff)
   →differ-shiftUp v {name1} {name2} {f} cf {.(INR a)} {.(INR b)} (differ-INR a b diff) = differ-INR _ _ (→differ-shiftUp v cf diff)
   →differ-shiftUp v {name1} {name2} {f} cf {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (differ-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-DECIDE _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp (suc v) cf diff₁) (→differ-shiftUp (suc v) cf diff₂)
   →differ-shiftUp v {name1} {name2} {f} cf {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (differ-EQ a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-EQ _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂)
-  →differ-shiftUp v {name1} {name2} {f} cf {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-EQB _ _ _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂) (→differ-shiftUp v cf diff₃)
+--  →differ-shiftUp v {name1} {name2} {f} cf {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-EQB _ _ _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂) (→differ-shiftUp v cf diff₃)
   →differ-shiftUp v {name1} {name2} {f} cf {.AX} {.AX} differ-AX = differ-AX
   →differ-shiftUp v {name1} {name2} {f} cf {.FREE} {.FREE} differ-FREE = differ-FREE
   →differ-shiftUp v {name1} {name2} {f} cf {.MSEQ s} {.MSEQ s} (differ-MSEQ s) = differ-MSEQ s
@@ -321,8 +322,9 @@ abstract
   →differ-shiftUp v {name1} {name2} {f} cf {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (differ-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) = differ-CHOOSE _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁)
   --→differ-shiftUp v {name1} {name2} {f} cf {.(IFC0 a₁ b₁ c₁)} {.(IFC0 a₂ b₂ c₂)} (differ-IFC0 a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-IFC0 _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂)
   →differ-shiftUp v {name1} {name2} {f} cf {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQUASH a b diff) = differ-TSQUASH _ _ (→differ-shiftUp v cf diff)
-  →differ-shiftUp v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftUp v cf diff)
-  →differ-shiftUp v {name1} {name2} {f} cf {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) = differ-TCONST _ _ (→differ-shiftUp v cf diff)
+--  →differ-shiftUp v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftUp v cf diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(NOWRITE a)} {.(NOWRITE b)} (differ-NOWRITE a b diff) = differ-NOWRITE _ _ (→differ-shiftUp v cf diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(NOREAD a)} {.(NOREAD b)} (differ-NOREAD a b diff) = differ-NOREAD _ _ (→differ-shiftUp v cf diff)
   →differ-shiftUp v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftUp v cf diff)
   →differ-shiftUp v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
   →differ-shiftUp v {name1} {name2} {f} cf {.(NOSEQ)} {.(NOSEQ)} (differ-NOSEQ) = differ-NOSEQ
@@ -366,8 +368,8 @@ abstract
 ≡EQ {a} {b} {c} {d} {e} {f} x y z rewrite x | y | z = refl
 
 
-≡EQB : {a₁ b₁ a₂ b₂ a₃ b₃ a₄ b₄ : Term} → a₁ ≡ b₁ → a₂ ≡ b₂ → a₃ ≡ b₃ → a₄ ≡ b₄ → EQB a₁ a₂ a₃ a₄ ≡ EQB b₁ b₂ b₃ b₄
-≡EQB {a₁} {b₁} {a₂} {b₂} {a₃} {b₃} {a₄} {b₄} x y z w rewrite x | y | z | w = refl
+--≡EQB : {a₁ b₁ a₂ b₂ a₃ b₃ a₄ b₄ : Term} → a₁ ≡ b₁ → a₂ ≡ b₂ → a₃ ≡ b₃ → a₄ ≡ b₄ → EQB a₁ a₂ a₃ a₄ ≡ EQB b₁ b₂ b₃ b₄
+--≡EQB {a₁} {b₁} {a₂} {b₂} {a₃} {b₃} {a₄} {b₄} x y z w rewrite x | y | z | w = refl
 
 
 ≡DECIDE : {a b c d e f : Term} → a ≡ b → c ≡ d → e ≡ f → DECIDE a c e ≡ DECIDE b d f
@@ -446,12 +448,16 @@ abstract
 ≡TSQUASH {a} {b} e rewrite e = refl
 
 
-≡TTRUNC : {a b : Term} → a ≡ b → TTRUNC a ≡ TTRUNC b
-≡TTRUNC {a} {b} e rewrite e = refl
+--≡TTRUNC : {a b : Term} → a ≡ b → TTRUNC a ≡ TTRUNC b
+--≡TTRUNC {a} {b} e rewrite e = refl
 
 
-≡TCONST : {a b : Term} → a ≡ b → TCONST a ≡ TCONST b
-≡TCONST {a} {b} e rewrite e = refl
+≡NOWRITE : {a b : Term} → a ≡ b → NOWRITE a ≡ NOWRITE b
+≡NOWRITE {a} {b} e rewrite e = refl
+
+
+≡NOREAD : {a b : Term} → a ≡ b → NOREAD a ≡ NOREAD b
+≡NOREAD {a} {b} e rewrite e = refl
 
 
 ≡SUBSING : {a b : Term} → a ≡ b → SUBSING a ≡ SUBSING b
@@ -571,7 +577,7 @@ shiftNameUp-shiftNameUp {i} {j} {SET t t₁} imp = ≡SET (shiftNameUp-shiftName
 shiftNameUp-shiftNameUp {i} {j} {ISECT t t₁} imp = ≡ISECT (shiftNameUp-shiftNameUp {i} {j} {t} (λ n k → imp n (∈-++⁺ˡ k))) (shiftNameUp-shiftNameUp {i} {j} {t₁} (λ n k → imp n (∈-++⁺ʳ (names t) k)))
 shiftNameUp-shiftNameUp {i} {j} {TUNION t t₁} imp = ≡TUNION (shiftNameUp-shiftNameUp {i} {j} {t} (λ n k → imp n (∈-++⁺ˡ k))) (shiftNameUp-shiftNameUp {i} {j} {t₁} (λ n k → imp n (∈-++⁺ʳ (names t) k)))
 shiftNameUp-shiftNameUp {i} {j} {UNION t t₁} imp = ≡UNION (shiftNameUp-shiftNameUp {i} {j} {t} (λ n k → imp n (∈-++⁺ˡ k))) (shiftNameUp-shiftNameUp {i} {j} {t₁} (λ n k → imp n (∈-++⁺ʳ (names t) k)))
-shiftNameUp-shiftNameUp {i} {j} {QTUNION t t₁} imp = ≡QTUNION (shiftNameUp-shiftNameUp {i} {j} {t} (λ n k → imp n (∈-++⁺ˡ k))) (shiftNameUp-shiftNameUp {i} {j} {t₁} (λ n k → imp n (∈-++⁺ʳ (names t) k)))
+--shiftNameUp-shiftNameUp {i} {j} {QTUNION t t₁} imp = ≡QTUNION (shiftNameUp-shiftNameUp {i} {j} {t} (λ n k → imp n (∈-++⁺ˡ k))) (shiftNameUp-shiftNameUp {i} {j} {t₁} (λ n k → imp n (∈-++⁺ʳ (names t) k)))
 shiftNameUp-shiftNameUp {i} {j} {INL t} imp = ≡INL (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {INR t} imp = ≡INR (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {DECIDE t t₁ t₂} imp = ≡DECIDE (shiftNameUp-shiftNameUp {i} {j} {t} (λ n k → imp n (∈-++⁺ˡ k))) (shiftNameUp-shiftNameUp {i} {j} {t₁} (λ n k → imp n (∈-++⁺ʳ (names t) (∈-++⁺ˡ k)))) (shiftNameUp-shiftNameUp {i} {j} {t₂} (λ n k → imp n (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) k))))
@@ -589,7 +595,7 @@ shiftNameUp-shiftNameUp {i} {j} {LOAD t} imp = ≡LOAD (shiftNameUp-shiftNameUp 
 shiftNameUp-shiftNameUp {i} {j} {CHOOSE t t₁} imp = ≡CHOOSE (shiftNameUp-shiftNameUp {i} {j} {t} (λ n k → imp n (∈-++⁺ˡ k))) (shiftNameUp-shiftNameUp {i} {j} {t₁} (λ n k → imp n (∈-++⁺ʳ (names t) k)))
 shiftNameUp-shiftNameUp {i} {j} {TSQUASH t} imp = ≡TSQUASH (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {TTRUNC t} imp = ≡TTRUNC (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-shiftNameUp-shiftNameUp {i} {j} {TCONST t} imp = ≡TCONST (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+shiftNameUp-shiftNameUp {i} {j} {NOWRITE t} imp = ≡NOWRITE (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {SUBSING t} imp = ≡SUBSING (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {NN t} imp = ≡NN (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 shiftNameUp-shiftNameUp {i} {j} {DUM t} imp = ≡DUM (shiftNameUp-shiftNameUp {i} {j} {t} imp)
@@ -636,12 +642,12 @@ abstract
   shiftNameUp-shiftNameUp {i} {j} {ISECT t t₁} imp = ≡ISECT (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
   shiftNameUp-shiftNameUp {i} {j} {TUNION t t₁} imp = ≡TUNION (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
   shiftNameUp-shiftNameUp {i} {j} {UNION t t₁} imp = ≡UNION (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
-  shiftNameUp-shiftNameUp {i} {j} {QTUNION t t₁} imp = ≡QTUNION (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
+--  shiftNameUp-shiftNameUp {i} {j} {QTUNION t t₁} imp = ≡QTUNION (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
   shiftNameUp-shiftNameUp {i} {j} {INL t} imp = ≡INL (shiftNameUp-shiftNameUp {i} {j} {t} imp)
   shiftNameUp-shiftNameUp {i} {j} {INR t} imp = ≡INR (shiftNameUp-shiftNameUp {i} {j} {t} imp)
   shiftNameUp-shiftNameUp {i} {j} {DECIDE t t₁ t₂} imp = ≡DECIDE (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp)
   shiftNameUp-shiftNameUp {i} {j} {EQ t t₁ t₂} imp = ≡EQ (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp)
-  shiftNameUp-shiftNameUp {i} {j} {EQB t t₁ t₂ t₃} imp = ≡EQB (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp) (shiftNameUp-shiftNameUp {i} {j} {t₃} imp)
+--  shiftNameUp-shiftNameUp {i} {j} {EQB t t₁ t₂ t₃} imp = ≡EQB (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp) (shiftNameUp-shiftNameUp {i} {j} {t₂} imp) (shiftNameUp-shiftNameUp {i} {j} {t₃} imp)
   shiftNameUp-shiftNameUp {i} {j} {AX} imp = refl
   shiftNameUp-shiftNameUp {i} {j} {FREE} imp = refl
   shiftNameUp-shiftNameUp {i} {j} {MSEQ x} imp = ≡MSEQ refl
@@ -652,8 +658,9 @@ abstract
   shiftNameUp-shiftNameUp {i} {j} {LOAD t} imp = refl --≡LOAD (shiftNameUp-shiftNameUp {i} {j} {t} imp)
   shiftNameUp-shiftNameUp {i} {j} {CHOOSE t t₁} imp = ≡CHOOSE (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
   shiftNameUp-shiftNameUp {i} {j} {TSQUASH t} imp = ≡TSQUASH (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-  shiftNameUp-shiftNameUp {i} {j} {TTRUNC t} imp = ≡TTRUNC (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-  shiftNameUp-shiftNameUp {i} {j} {TCONST t} imp = ≡TCONST (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+--  shiftNameUp-shiftNameUp {i} {j} {TTRUNC t} imp = ≡TTRUNC (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {NOWRITE t} imp = ≡NOWRITE (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {NOREAD t} imp = ≡NOREAD (shiftNameUp-shiftNameUp {i} {j} {t} imp)
   shiftNameUp-shiftNameUp {i} {j} {SUBSING t} imp = ≡SUBSING (shiftNameUp-shiftNameUp {i} {j} {t} imp)
   shiftNameUp-shiftNameUp {i} {j} {PURE} imp = refl
   shiftNameUp-shiftNameUp {i} {j} {NOSEQ} imp = refl
@@ -713,12 +720,12 @@ abstract
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (differ-ISECT a₁ a₂ b₁ b₂ diff diff₁) = differ-ISECT _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (differ-TUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-TUNION _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (differ-UNION a₁ a₂ b₁ b₂ diff diff₁) = differ-UNION _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
-  →differ-shiftNameUp v {name1} {name2} {f} cf {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-QTUNION _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
+--  →differ-shiftNameUp v {name1} {name2} {f} cf {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-QTUNION _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(INL a)} {.(INL b)} (differ-INL a b diff) = differ-INL _ _ (→differ-shiftNameUp v cf diff)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(INR a)} {.(INR b)} (differ-INR a b diff) = differ-INR _ _ (→differ-shiftNameUp v cf diff)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (differ-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-DECIDE _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (differ-EQ a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-EQ _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂)
-  →differ-shiftNameUp v {name1} {name2} {f} cf {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-EQB _ _ _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂) (→differ-shiftNameUp v cf diff₃)
+--  →differ-shiftNameUp v {name1} {name2} {f} cf {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-EQB _ _ _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂) (→differ-shiftNameUp v cf diff₃)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.AX} {.AX} differ-AX = differ-AX
   →differ-shiftNameUp v {name1} {name2} {f} cf {.FREE} {.FREE} differ-FREE = differ-FREE
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(MSEQ x)} {.(MSEQ x)} (differ-MSEQ x) = differ-MSEQ _
@@ -750,8 +757,9 @@ abstract
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (differ-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) = differ-CHOOSE _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁)
   --→differ-shiftNameUp v {name1} {name2} {f} cf {.(IFC0 a₁ b₁ c₁)} {.(IFC0 a₂ b₂ c₂)} (differ-IFC0 a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-IFC0 _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQUASH a b diff) = differ-TSQUASH _ _ (→differ-shiftNameUp v cf diff)
-  →differ-shiftNameUp v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftNameUp v cf diff)
-  →differ-shiftNameUp v {name1} {name2} {f} cf {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) = differ-TCONST _ _ (→differ-shiftNameUp v cf diff)
+--  →differ-shiftNameUp v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftNameUp v cf diff)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(NOWRITE a)} {.(NOWRITE b)} (differ-NOWRITE a b diff) = differ-NOWRITE _ _ (→differ-shiftNameUp v cf diff)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(NOREAD a)} {.(NOREAD b)} (differ-NOREAD a b diff) = differ-NOREAD _ _ (→differ-shiftNameUp v cf diff)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftNameUp v cf diff)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(NOSEQ)} {.(NOSEQ)} (differ-NOSEQ) = differ-NOSEQ
@@ -833,12 +841,12 @@ abstract
   differ-subv {name1} {name2} {f} cf v {.(ISECT a₁ b₃)} {.(ISECT a₂ b₄)} {b₁} {b₂} (differ-ISECT a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-ISECT _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
   differ-subv {name1} {name2} {f} cf v {.(TUNION a₁ b₃)} {.(TUNION a₂ b₄)} {b₁} {b₂} (differ-TUNION a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-TUNION _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂))
   differ-subv {name1} {name2} {f} cf v {.(UNION a₁ b₃)} {.(UNION a₂ b₄)} {b₁} {b₂} (differ-UNION a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-UNION _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
-  differ-subv {name1} {name2} {f} cf v {.(QTUNION a₁ b₃)} {.(QTUNION a₂ b₄)} {b₁} {b₂} (differ-QTUNION a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-QTUNION _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
+--  differ-subv {name1} {name2} {f} cf v {.(QTUNION a₁ b₃)} {.(QTUNION a₂ b₄)} {b₁} {b₂} (differ-QTUNION a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-QTUNION _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
   differ-subv {name1} {name2} {f} cf v {.(INL a)} {.(INL b)} {b₁} {b₂} (differ-INL a b d₁) d₂ = differ-INL _ _ (differ-subv cf v d₁ d₂)
   differ-subv {name1} {name2} {f} cf v {.(INR a)} {.(INR b)} {b₁} {b₂} (differ-INR a b d₁) d₂ = differ-INR _ _ (differ-subv cf v d₁ d₂)
   differ-subv {name1} {name2} {f} cf v {.(DECIDE a₁ b₃ c₁)} {.(DECIDE a₂ b₄ c₂)} {b₁} {b₂} (differ-DECIDE a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄) d₂ = differ-DECIDE _ _ _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf (suc v) d₃ (→differ-shiftUp 0 cf d₂)) (differ-subv cf (suc v) d₄ (→differ-shiftUp 0 cf d₂))
   differ-subv {name1} {name2} {f} cf v {.(EQ a₁ b₃ c₁)} {.(EQ a₂ b₄ c₂)} {b₁} {b₂} (differ-EQ a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄) d₂ = differ-EQ _ _ _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂) (differ-subv cf v d₄ d₂)
-  differ-subv {name1} {name2} {f} cf v {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} {z₁} {z₂} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ x₁ x₂ x₃ x₄) y = differ-EQB _ _ _ _ _ _ _ _ (differ-subv cf v x₁ y) (differ-subv cf v x₂ y) (differ-subv cf v x₃ y) (differ-subv cf v x₄ y)
+--  differ-subv {name1} {name2} {f} cf v {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} {z₁} {z₂} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ x₁ x₂ x₃ x₄) y = differ-EQB _ _ _ _ _ _ _ _ (differ-subv cf v x₁ y) (differ-subv cf v x₂ y) (differ-subv cf v x₃ y) (differ-subv cf v x₄ y)
   differ-subv {name1} {name2} {f} cf v {.AX} {.AX} {b₁} {b₂} differ-AX d₂ = differ-AX
   differ-subv {name1} {name2} {f} cf v {.FREE} {.FREE} {b₁} {b₂} differ-FREE d₂ = differ-FREE
   differ-subv {name1} {name2} {f} cf v {.(MSEQ x)} {.(MSEQ x)} {b₁} {b₂} (differ-MSEQ x) d₂ = differ-MSEQ x
@@ -849,8 +857,9 @@ abstract
   differ-subv {name1} {name2} {f} cf v {.(CHOOSE a₁ b₃)} {.(CHOOSE a₂ b₄)} {b₁} {b₂} (differ-CHOOSE a₁ a₂ b₃ b₄ d₁ d₃) d₂ = differ-CHOOSE _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂)
   --differ-subv {name1} {name2} {f} cf v {.(IFC0 a₁ b₃ c₁)} {.(IFC0 a₂ b₄ c₂)} {b₁} {b₂} (differ-IFC0 a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄) d₂ = differ-IFC0 _ _ _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂) (differ-subv cf v d₄ d₂)
   differ-subv {name1} {name2} {f} cf v {.(TSQUASH a)} {.(TSQUASH b)} {b₁} {b₂} (differ-TSQUASH a b d₁) d₂ = differ-TSQUASH _ _ (differ-subv cf v d₁ d₂)
-  differ-subv {name1} {name2} {f} cf v {.(TTRUNC a)} {.(TTRUNC b)} {b₁} {b₂} (differ-TTRUNC a b d₁) d₂ = differ-TTRUNC _ _ (differ-subv cf v d₁ d₂)
-  differ-subv {name1} {name2} {f} cf v {.(TCONST a)} {.(TCONST b)} {b₁} {b₂} (differ-TCONST a b d₁) d₂ = differ-TCONST _ _ (differ-subv cf v d₁ d₂)
+--  differ-subv {name1} {name2} {f} cf v {.(TTRUNC a)} {.(TTRUNC b)} {b₁} {b₂} (differ-TTRUNC a b d₁) d₂ = differ-TTRUNC _ _ (differ-subv cf v d₁ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(NOWRITE a)} {.(NOWRITE b)} {b₁} {b₂} (differ-NOWRITE a b d₁) d₂ = differ-NOWRITE _ _ (differ-subv cf v d₁ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(NOREAD a)} {.(NOREAD b)} {b₁} {b₂} (differ-NOREAD a b d₁) d₂ = differ-NOREAD _ _ (differ-subv cf v d₁ d₂)
   differ-subv {name1} {name2} {f} cf v {.(SUBSING a)} {.(SUBSING b)} {b₁} {b₂} (differ-SUBSING a b d₁) d₂ = differ-SUBSING _ _ (differ-subv cf v d₁ d₂)
   differ-subv {name1} {name2} {f} cf v {.(PURE)} {.(PURE)} {b₁} {b₂} (differ-PURE) d₂ = differ-PURE
   differ-subv {name1} {name2} {f} cf v {.(NOSEQ)} {.(NOSEQ)} {b₁} {b₂} (differ-NOSEQ) d₂ = differ-NOSEQ
@@ -902,12 +911,12 @@ abstract
   →differ-shiftDown v {name1} {name2} {f} cf {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (differ-ISECT a₁ a₂ b₁ b₂ diff diff₁) = differ-ISECT _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
   →differ-shiftDown v {name1} {name2} {f} cf {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (differ-TUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-TUNION _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁)
   →differ-shiftDown v {name1} {name2} {f} cf {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (differ-UNION a₁ a₂ b₁ b₂ diff diff₁) = differ-UNION _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
-  →differ-shiftDown v {name1} {name2} {f} cf {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-QTUNION _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
+--  →differ-shiftDown v {name1} {name2} {f} cf {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) = differ-QTUNION _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
   →differ-shiftDown v {name1} {name2} {f} cf {.(INL a)} {.(INL b)} (differ-INL a b diff) = differ-INL _ _ (→differ-shiftDown v cf diff)
   →differ-shiftDown v {name1} {name2} {f} cf {.(INR a)} {.(INR b)} (differ-INR a b diff) = differ-INR _ _ (→differ-shiftDown v cf diff)
   →differ-shiftDown v {name1} {name2} {f} cf {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (differ-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-DECIDE _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown (suc v) cf diff₁) (→differ-shiftDown (suc v) cf diff₂)
   →differ-shiftDown v {name1} {name2} {f} cf {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (differ-EQ a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-EQ _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂)
-  →differ-shiftDown v {name1} {name2} {f} cf {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-EQB _ _ _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂) (→differ-shiftDown v cf diff₃)
+--  →differ-shiftDown v {name1} {name2} {f} cf {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differ-EQB _ _ _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂) (→differ-shiftDown v cf diff₃)
   →differ-shiftDown v {name1} {name2} {f} cf {.AX} {.AX} differ-AX = differ-AX
   →differ-shiftDown v {name1} {name2} {f} cf {.FREE} {.FREE} differ-FREE = differ-FREE
   →differ-shiftDown v {name1} {name2} {f} cf {.(MSEQ x)} {.(MSEQ x)} (differ-MSEQ x) = (differ-MSEQ x)
@@ -918,8 +927,9 @@ abstract
   →differ-shiftDown v {name1} {name2} {f} cf {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (differ-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) = differ-CHOOSE _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁)
   --→differ-shiftDown v {name1} {name2} {f} cf {.(IFC0 a₁ b₁ c₁)} {.(IFC0 a₂ b₂ c₂)} (differ-IFC0 a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-IFC0 _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂)
   →differ-shiftDown v {name1} {name2} {f} cf {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQUASH a b diff) = differ-TSQUASH _ _ (→differ-shiftDown v cf diff)
-  →differ-shiftDown v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftDown v cf diff)
-  →differ-shiftDown v {name1} {name2} {f} cf {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) = differ-TCONST _ _ (→differ-shiftDown v cf diff)
+--  →differ-shiftDown v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftDown v cf diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(NOWRITE a)} {.(NOWRITE b)} (differ-NOWRITE a b diff) = differ-NOWRITE _ _ (→differ-shiftDown v cf diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(NOREAD a)} {.(NOREAD b)} (differ-NOREAD a b diff) = differ-NOREAD _ _ (→differ-shiftDown v cf diff)
   →differ-shiftDown v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftDown v cf diff)
   →differ-shiftDown v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
   →differ-shiftDown v {name1} {name2} {f} cf {.(NOSEQ)} {.(NOSEQ)} (differ-NOSEQ) = differ-NOSEQ
@@ -967,11 +977,11 @@ abstract
   differ-isValue→ {name1} {name2} {f} {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (differ-ISECT a₁ a₂ b₁ b₂ diff diff₁) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (differ-TUNION a₁ a₂ b₁ b₂ diff diff₁) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (differ-UNION a₁ a₂ b₁ b₂ diff diff₁) isv = tt
-  differ-isValue→ {name1} {name2} {f} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+--  differ-isValue→ {name1} {name2} {f} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(INL a)} {.(INL b)} (differ-INL a b diff) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(INR a)} {.(INR b)} (differ-INR a b diff) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (differ-EQ a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) isv = tt
-  differ-isValue→ {name1} {name2} {f} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) isv = tt
+--  differ-isValue→ {name1} {name2} {f} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (differ-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) isv = tt
   differ-isValue→ {name1} {name2} {f} {.AX} {.AX} differ-AX isv = tt
   differ-isValue→ {name1} {name2} {f} {.FREE} {.FREE} differ-FREE isv = tt
   differ-isValue→ {name1} {name2} {f} {.(MSEQ x)} {.(MSEQ x)} (differ-MSEQ x) isv = tt
@@ -979,8 +989,9 @@ abstract
   --differ-isValue→ {name1} {name2} {f} {.(NAME name)} {.(NAME name)} (differ-NAME name) isv = tt
   --differ-isValue→ {name1} {name2} {f} {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) ()
   differ-isValue→ {name1} {name2} {f} {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQUASH a b diff) isv = tt
-  differ-isValue→ {name1} {name2} {f} {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) isv = tt
-  differ-isValue→ {name1} {name2} {f} {.(TCONST a)} {.(TCONST b)} (differ-TCONST a b diff) isv = tt
+--  differ-isValue→ {name1} {name2} {f} {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(NOWRITE a)} {.(NOWRITE b)} (differ-NOWRITE a b diff) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(NOREAD a)} {.(NOREAD b)} (differ-NOREAD a b diff) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(PURE)} {.(PURE)} (differ-PURE) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(NOSEQ)} {.(NOSEQ)} (differ-NOSEQ) isv = tt

@@ -75,7 +75,7 @@ open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import type_sys_props_set(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import type_sys_props_eq(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_union(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_qtunion(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import type_sys_props_qtunion(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -112,10 +112,10 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind equ eq1 eq2 rewrite equ | eq1 | eq2 = ⊥-elim (LIFTneqTUNION (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) ind equ eq1 eq2 rewrite equ | eq1 | eq2 = ⊥-elim (LIFTneqEQ (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind equ eq1 eq2 rewrite equ | eq1 | eq2 = ⊥-elim (LIFTneqUNION (compAllVal x₁ tt))
-      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind equ eq1 eq2 rewrite equ | eq1 | eq2 = ⊥-elim (LIFTneqQTUNION (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind equ eq1 eq2 rewrite equ | eq1 | eq2 = ⊥-elim (LIFTneqQTUNION (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) ind equ eq1 eq2 rewrite equ | eq1 | eq2 = ⊥-elim (LIFTneqTSQUASH (compAllVal x₁ tt))
-      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) ind equ eq1 eq2 rewrite equ | eq1 | eq2 = ⊥-elim (LIFTneqTTRUNC (compAllVal x₁ tt))
-      ind {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) ind equ eq1 eq2 rewrite equ | eq1 | eq2 = ⊥-elim (LIFTneqTCONST (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) ind equ eq1 eq2 rewrite equ | eq1 | eq2 = ⊥-elim (LIFTneqTTRUNC (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) ind equ eq1 eq2 rewrite equ | eq1 | eq2 = ⊥-elim (LIFTneqNOWRITE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind equ eq1 eq2 rewrite equ | eq1 | eq2 = ⊥-elim (LIFTneqSUBSING (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind equ eq1 eq2 rewrite equ | eq1 | eq2 = ⊥-elim (LIFTneqPURE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind equ eq1 eq2 rewrite equ | eq1 | eq2 = ⊥-elim (LIFTneqNOSEQ (compAllVal x₁ tt))
@@ -173,10 +173,10 @@ abstract
           aw : ∀𝕎 w (λ w' e' → equalTerms u w' (eqtA w' e') a1 a2 → equalInType u w' A1 a1 a2)
           aw w1 e1 eqi1 = eqInType→equalInType {u} {w1} {A1} {A1} {B1} {a1} {a2} refl (eqtA w1 e1) eqi1
       ind {u} {w} {T1} {T2} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {f} {g} eqi ind equa rewrite equa = ⊥-elim (EQneqUNION (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {f} {g} eqi ind equa rewrite equa = ⊥-elim (EQneqQTUNION (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {f} {g} eqi ind equa rewrite equa = ⊥-elim (EQneqQTUNION (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) {f} {g} eqi ind equa rewrite equa = ⊥-elim (EQneqTSQUASH (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {f} {g} eqi ind equa rewrite equa = ⊥-elim (EQneqTTRUNC (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) {f} {g} eqi ind equa rewrite equa = ⊥-elim (EQneqTCONST (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {f} {g} eqi ind equa rewrite equa = ⊥-elim (EQneqTTRUNC (compAllVal x tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {f} {g} eqi ind equa rewrite equa = ⊥-elim (EQneqNOWRITE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) {f} {g} eqi ind equa rewrite equa = ⊥-elim (EQneqSUBSING (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) {f} {g} eqi ind equa rewrite equa = ⊥-elim (EQneqPURE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) {f} {g} eqi ind equa rewrite equa = ⊥-elim (EQneqNOSEQ (compAllVal x tt))
@@ -225,10 +225,10 @@ abstract
       ind {u} {w} {b} {c} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind a comp = EQTTUNION A1 B1 A2 B2 (⇛-trans comp x) x₁ eqta eqtb exta extb
       ind {u} {w} {b} {c} (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2) ind a comp = EQTEQ a1 b1 a2 b2 A B (⇛-trans comp x) x₁ eqtA exta eqt1 eqt2
       ind {u} {w} {b} {c} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind a comp = EQTUNION A1 B1 A2 B2 (⇛-trans comp x) x₁ eqtA eqtB exta extb
-      ind {u} {w} {b} {c} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind a comp = EQTQTUNION A1 B1 A2 B2 (⇛-trans comp x) x₁ eqtA eqtB exta extb
+--      ind {u} {w} {b} {c} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind a comp = EQTQTUNION A1 B1 A2 B2 (⇛-trans comp x) x₁ eqtA eqtB exta extb
       ind {u} {w} {b} {c} (EQTSQUASH A1 A2 x x₁ eqtA exta) ind a comp = EQTSQUASH A1 A2 (⇛-trans comp x) x₁ eqtA exta
-      ind {u} {w} {b} {c} (EQTTRUNC A1 A2 x x₁ eqtA exta) ind a comp = EQTTRUNC A1 A2 (⇛-trans comp x) x₁ eqtA exta
-      ind {u} {w} {b} {c} (EQTCONST A1 A2 x x₁ eqtA exta) ind a comp = EQTCONST A1 A2 (⇛-trans comp x) x₁ eqtA exta
+--      ind {u} {w} {b} {c} (EQTTRUNC A1 A2 x x₁ eqtA exta) ind a comp = EQTTRUNC A1 A2 (⇛-trans comp x) x₁ eqtA exta
+      ind {u} {w} {b} {c} (EQTNOWRITE A1 A2 x x₁ eqtA exta) ind a comp = EQTNOWRITE A1 A2 (⇛-trans comp x) x₁ eqtA exta
       ind {u} {w} {b} {c} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind a comp = EQTSUBSING A1 A2 (⇛-trans comp x) x₁ eqtA exta
       ind {u} {w} {b} {c} (EQTPURE x x₁) ind a comp = EQTPURE (⇛-trans comp x) x₁
       ind {u} {w} {b} {c} (EQTNOSEQ x x₁) ind a comp = EQTNOSEQ (⇛-trans comp x) x₁
@@ -282,14 +282,14 @@ abstract
         EQTEQ a1 b1 a2 b2 A B (val-#⇛→ {w} {a} {b} {#EQ a1 a2 A} tt comp x) x₁ eqtA exta eqt1 eqt2
       ind {u} {w} {a} {c} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind b comp =
         EQTUNION A1 B1 A2 B2 (val-#⇛→ {w} {a} {b} {#UNION A1 B1} tt comp x) x₁ eqtA eqtB exta extb
-      ind {u} {w} {a} {c} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind b comp =
-        EQTQTUNION A1 B1 A2 B2 (val-#⇛→ {w} {a} {b} {#QTUNION A1 B1} tt comp x) x₁ eqtA eqtB exta extb
+--      ind {u} {w} {a} {c} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind b comp =
+--        EQTQTUNION A1 B1 A2 B2 (val-#⇛→ {w} {a} {b} {#QTUNION A1 B1} tt comp x) x₁ eqtA eqtB exta extb
       ind {u} {w} {a} {c} (EQTSQUASH A1 A2 x x₁ eqtA exta) ind b comp =
         EQTSQUASH A1 A2 (val-#⇛→ {w} {a} {b} {#TSQUASH A1} tt comp x) x₁ eqtA exta
-      ind {u} {w} {a} {c} (EQTTRUNC A1 A2 x x₁ eqtA exta) ind b comp =
-        EQTTRUNC A1 A2 (val-#⇛→ {w} {a} {b} {#TTRUNC A1} tt comp x) x₁ eqtA exta
-      ind {u} {w} {a} {c} (EQTCONST A1 A2 x x₁ eqtA exta) ind b comp =
-        EQTCONST A1 A2 (val-#⇛→ {w} {a} {b} {#TCONST A1} tt comp x) x₁ eqtA exta
+--      ind {u} {w} {a} {c} (EQTTRUNC A1 A2 x x₁ eqtA exta) ind b comp =
+--        EQTTRUNC A1 A2 (val-#⇛→ {w} {a} {b} {#TTRUNC A1} tt comp x) x₁ eqtA exta
+      ind {u} {w} {a} {c} (EQTNOWRITE A1 A2 x x₁ eqtA exta) ind b comp =
+        EQTNOWRITE A1 A2 (val-#⇛→ {w} {a} {b} {#NOWRITE A1} tt comp x) x₁ eqtA exta
       ind {u} {w} {a} {c} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind b comp =
         EQTSUBSING A1 A2 (val-#⇛→ {w} {a} {b} {#SUBSING A1} tt comp x) x₁ eqtA exta
       ind {u} {w} {a} {c} (EQTPURE x x₁) ind b comp =
@@ -509,20 +509,20 @@ equalInType-trans {u} {w} {T} {a} {b} {c} eqi eqj = EQTtrans-equalInType u w T a
 
 
 {--
-TCONSTeq-#⇛ : {eqa : per} {w : 𝕎·} {a b c d : CTerm}
+NOWRITEeq-#⇛ : {eqa : per} {w : 𝕎·} {a b c d : CTerm}
                      → a #⇛! b at w
                      → c #⇛! d at w
-                     → TCONSTeq eqa w a c
-                     → TCONSTeq eqa w b d
-TCONSTeq-#⇛ {eqa} {w} {a} {b} {c} {d} c₁ c₂ (h , d₁ , d₂) = {!!} , {!!} , {!!}
+                     → NOWRITEeq eqa w a c
+                     → NOWRITEeq eqa w b d
+NOWRITEeq-#⇛ {eqa} {w} {a} {b} {c} {d} c₁ c₂ (h , d₁ , d₂) = {!!} , {!!} , {!!}
 
 
-TCONSTeq-#⇛-rev : {eqa : per} {w : 𝕎·} {a b c d : CTerm}
+NOWRITEeq-#⇛-rev : {eqa : per} {w : 𝕎·} {a b c d : CTerm}
                      → a #⇛! b at w
                      → c #⇛! d at w
-                     → TCONSTeq eqa w b d
-                     → TCONSTeq eqa w a c
-TCONSTeq-#⇛-rev {eqa} {w} {a} {b} {c} {d} c₁ c₂ h = {!!}
+                     → NOWRITEeq eqa w b d
+                     → NOWRITEeq eqa w a c
+NOWRITEeq-#⇛-rev {eqa} {w} {a} {b} {c} {d} c₁ c₂ h = {!!}
 --}
 
 
@@ -629,30 +629,30 @@ equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTUNION A1 B
                        → UNIONeq (equalTerms i w' (eqtA w' e')) (equalTerms i w' (eqtB w' e')) w' a c)
     aw w' e (a₁ , a₂ , inj₁ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₁ (⇛-trans (#⇛!-#⇛ {w'} {a} {b} (∀𝕎-mon e comp)) c₁ , c₂ , ea)
     aw w' e (a₁ , a₂ , inj₂ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₂ (⇛-trans (#⇛!-#⇛ {w'} {a} {b} (∀𝕎-mon e comp)) c₁ , c₂ , ea)
-equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) eqi =
+{-equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
     aw : ∀𝕎 w (λ w' e' → QTUNIONeq (equalTerms i w' (eqtA w' e')) (equalTerms i w' (eqtB w' e')) w' b c
                        → QTUNIONeq (equalTerms i w' (eqtA w' e')) (equalTerms i w' (eqtB w' e')) w' a c)
     aw w' e (a₁ , a₂ , inj₁ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₁ (⇓-trans₁ (lower (comp w' e)) c₁ , c₂ , ea) --(⇛-trans (#⇛!-#⇛ {w'} {a} {b} (∀𝕎-mon e comp)) c₁ , c₂ , ea)
-    aw w' e (a₁ , a₂ , inj₂ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₂ (⇓-trans₁ (lower (comp w' e)) c₁ , c₂ , ea) --(⇛-trans (#⇛!-#⇛ {w'} {a} {b} (∀𝕎-mon e comp)) c₁ , c₂ , ea)
+    aw w' e (a₁ , a₂ , inj₂ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₂ (⇓-trans₁ (lower (comp w' e)) c₁ , c₂ , ea) --(⇛-trans (#⇛!-#⇛ {w'} {a} {b} (∀𝕎-mon e comp)) c₁ , c₂ , ea)-}
 equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTSQUASH A1 A2 x x₁ eqtA exta) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
     aw : ∀𝕎 w (λ w' e' → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' b c
                        → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' a c)
     aw w' e h = TSQUASHeq-#⇛-rev (∀𝕎-mon e comp) (#⇛!-refl {w'} {c}) h
-equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTTRUNC A1 A2 x x₁ eqtA exta) eqi =
+{-equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTTRUNC A1 A2 x x₁ eqtA exta) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
     aw : ∀𝕎 w (λ w' e' → TTRUNCeq (equalTerms i w' (eqtA w' e')) w' b c
                        → TTRUNCeq (equalTerms i w' (eqtA w' e')) w' a c)
-    aw w' e h = TTRUNCeq-#⇛-rev (∀𝕎-mon e comp) (#⇛!-refl {w'} {c}) h
-equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTCONST A1 A2 x x₁ eqtA exta) eqi =
+    aw w' e h = TTRUNCeq-#⇛-rev (∀𝕎-mon e comp) (#⇛!-refl {w'} {c}) h-}
+equalTerms-#⇛-left-rev-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTNOWRITE A1 A2 x x₁ eqtA exta) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
-    aw : ∀𝕎 w (λ w' e' → TCONSTeq (equalTerms i w' (eqtA w' e')) w' b c
-                        → TCONSTeq (equalTerms i w' (eqtA w' e')) w' a c)
+    aw : ∀𝕎 w (λ w' e' → NOWRITEeq (equalTerms i w' (eqtA w' e')) w' b c
+                        → NOWRITEeq (equalTerms i w' (eqtA w' e')) w' a c)
     aw w' e (h , c₁ , c₂) =
       equalTerms-#⇛-left-rev-aux ind (∀𝕎-mon e comp) (eqtA w' e) h ,
       #⇛!-pres-#⇓→#⇓!-rev {w'} {b} {a} (∀𝕎-mon e comp) c₁ ,
@@ -878,32 +878,32 @@ abstract
                               → UNIONeq (equalTerms i w' (eqtA w' e')) (equalTerms i w' (eqtB w' e')) w' b c)
           aw w' e (a₁ , a₂ , inj₁ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₁ (val-#⇛→ {w'} {a} {b} {#INL a₁} tt (∀𝕎-mon e comp) c₁ , c₂ , ea) --(val-#⇛!→ {w'} {a} {b} {#INL a₁} tt (∀𝕎-mon e comp) ? {--c₁--} , c₂ , ea)
           aw w' e (a₁ , a₂ , inj₂ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₂ (val-#⇛→ {w'} {a} {b} {#INR a₁} tt (∀𝕎-mon e comp) c₁ , c₂ , ea) --(val-#⇛!→ {w'} {a} {b} {#INR a₁} tt (∀𝕎-mon e comp) ? {--c₁--} , c₂ , ea)
-      ind {i} {w} {A} {B} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {a} {c} eqi ind uind b comp =
+{-      ind {i} {w} {A} {B} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M aw eqi
         where
           aw : ∀𝕎 w (λ w' e' → QTUNIONeq (equalTerms i w' (eqtA w' e')) (equalTerms i w' (eqtB w' e')) w' a c
                               → QTUNIONeq (equalTerms i w' (eqtA w' e')) (equalTerms i w' (eqtB w' e')) w' b c)
           aw w' e (a₁ , a₂ , inj₁ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₁ (val-⇓→ tt (lower (comp w' e)) c₁ , c₂ , ea) -- (val-#⇛→ {w'} {a} {b} {#INL a₁} tt (∀𝕎-mon e comp) c₁ , c₂ , ea) --(val-#⇛!→ {w'} {a} {b} {#INL a₁} tt (∀𝕎-mon e comp) ? {--c₁--} , c₂ , ea)
-          aw w' e (a₁ , a₂ , inj₂ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₂ (val-⇓→ tt (lower (comp w' e)) c₁ , c₂ , ea) -- (val-#⇛→ {w'} {a} {b} {#INR a₁} tt (∀𝕎-mon e comp) c₁ , c₂ , ea) --(val-#⇛!→ {w'} {a} {b} {#INR a₁} tt (∀𝕎-mon e comp) ? {--c₁--} , c₂ , ea)
+          aw w' e (a₁ , a₂ , inj₂ (c₁ , c₂ , ea)) = a₁ , a₂ , inj₂ (val-⇓→ tt (lower (comp w' e)) c₁ , c₂ , ea) -- (val-#⇛→ {w'} {a} {b} {#INR a₁} tt (∀𝕎-mon e comp) c₁ , c₂ , ea) --(val-#⇛!→ {w'} {a} {b} {#INR a₁} tt (∀𝕎-mon e comp) ? {--c₁--} , c₂ , ea)-}
       ind {i} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqtA exta) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M aw eqi
         where
           aw : ∀𝕎 w (λ w' e' → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' a c
                               → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' b c)
           aw w' e h = TSQUASHeq-#⇛ (∀𝕎-mon e comp) (#⇛!-refl {w'} {c}) h
-      ind {i} {w} {A} {B} (EQTTRUNC A1 A2 x x₁ eqtA exta) {a} {c} eqi ind uind b comp =
+{-      ind {i} {w} {A} {B} (EQTTRUNC A1 A2 x x₁ eqtA exta) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M aw eqi
         where
           aw : ∀𝕎 w (λ w' e' → TTRUNCeq (equalTerms i w' (eqtA w' e')) w' a c
                               → TTRUNCeq (equalTerms i w' (eqtA w' e')) w' b c)
-          aw w' e h = TTRUNCeq-#⇛ (∀𝕎-mon e comp) (#⇛!-refl {w'} {c}) h
-      ind {i} {w} {A} {B} (EQTCONST A1 A2 x x₁ eqtA exta) {a} {c} eqi ind uind b comp =
+          aw w' e h = TTRUNCeq-#⇛ (∀𝕎-mon e comp) (#⇛!-refl {w'} {c}) h-}
+      ind {i} {w} {A} {B} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M aw eqi
         where
-          aw : ∀𝕎 w (λ w' e' → TCONSTeq (equalTerms i w' (eqtA w' e')) w' a c
-                              → TCONSTeq (equalTerms i w' (eqtA w' e')) w' b c)
+          aw : ∀𝕎 w (λ w' e' → NOWRITEeq (equalTerms i w' (eqtA w' e')) w' a c
+                              → NOWRITEeq (equalTerms i w' (eqtA w' e')) w' b c)
           aw w' e (h , c₁ , c₂) =
-            ind {i} {w'} {A1} {A2} (eqtA w' e) h (<Type1 _ _ (<TypeTCONST (ℕ→𝕌 i) w A B A1 A2 x x₁ eqtA exta w' e)) uind _ (∀𝕎-mon e comp) ,
+            ind {i} {w'} {A1} {A2} (eqtA w' e) h (<Type1 _ _ (<TypeNOWRITE (ℕ→𝕌 i) w A B A1 A2 x x₁ eqtA exta w' e)) uind _ (∀𝕎-mon e comp) ,
             #⇛!-pres-#⇓→#⇓! {w'} {a} {b} (∀𝕎-mon e comp) c₁ ,
             c₂
       ind {i} {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqtA exta) {a} {c} eqi ind uind b comp =
@@ -1111,30 +1111,30 @@ equalTerms-#⇛-L-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTUNION A1 B1 A2 B2
                        → UNIONeq (equalTerms i w' (eqtA w' e')) (equalTerms i w' (eqtB w' e')) w' b c)
     aw w' e (a₁ , a₂ , inj₁ (c₁ , c₂ , ea)) = a₁ , a₂ , {!!} {--inj₁ (val-#⇛→ {w'} {a} {b} {#INL a₁} tt (∀𝕎-mon e comp) c₁ , c₂ , ea)--} --(val-#⇛!→ {w'} {a} {b} {#INL a₁} tt (∀𝕎-mon e comp) ? {--c₁--} , c₂ , ea)
     aw w' e (a₁ , a₂ , inj₂ (c₁ , c₂ , ea)) = a₁ , a₂ , {!!} {--inj₂ (val-#⇛→ {w'} {a} {b} {#INR a₁} tt (∀𝕎-mon e comp) c₁ , c₂ , ea)--} --(val-#⇛!→ {w'} {a} {b} {#INR a₁} tt (∀𝕎-mon e comp) ? {--c₁--} , c₂ , ea)
-equalTerms-#⇛-L-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) eqi =
+{-equalTerms-#⇛-L-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
     aw : ∀𝕎 w (λ w' e' → QTUNIONeq (equalTerms i w' (eqtA w' e')) (equalTerms i w' (eqtB w' e')) w' a c
                        → QTUNIONeq (equalTerms i w' (eqtA w' e')) (equalTerms i w' (eqtB w' e')) w' b c)
     aw w' e (a₁ , a₂ , inj₁ (c₁ , c₂ , ea)) = a₁ , a₂ , {!!} {--inj₁ (val-⇓→ tt (lower (comp w' e)) c₁ , c₂ , ea)--} -- (val-#⇛→ {w'} {a} {b} {#INL a₁} tt (∀𝕎-mon e comp) c₁ , c₂ , ea) --(val-#⇛!→ {w'} {a} {b} {#INL a₁} tt (∀𝕎-mon e comp) ? {--c₁--} , c₂ , ea)
-    aw w' e (a₁ , a₂ , inj₂ (c₁ , c₂ , ea)) = a₁ , a₂ , {!!} {--inj₂ (val-⇓→ tt (lower (comp w' e)) c₁ , c₂ , ea)--} -- (val-#⇛→ {w'} {a} {b} {#INR a₁} tt (∀𝕎-mon e comp) c₁ , c₂ , ea) --(val-#⇛!→ {w'} {a} {b} {#INR a₁} tt (∀𝕎-mon e comp) ? {--c₁--} , c₂ , ea)
+    aw w' e (a₁ , a₂ , inj₂ (c₁ , c₂ , ea)) = a₁ , a₂ , {!!} {--inj₂ (val-⇓→ tt (lower (comp w' e)) c₁ , c₂ , ea)--} -- (val-#⇛→ {w'} {a} {b} {#INR a₁} tt (∀𝕎-mon e comp) c₁ , c₂ , ea) --(val-#⇛!→ {w'} {a} {b} {#INR a₁} tt (∀𝕎-mon e comp) ? {--c₁--} , c₂ , ea)-}
 equalTerms-#⇛-L-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTSQUASH A1 A2 x x₁ eqtA exta) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
     aw : ∀𝕎 w (λ w' e' → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' a c
                        → TSQUASHeq (equalTerms i w' (eqtA w' e')) w' b c)
     aw w' e h = {!!} --TSQUASHeq-#⇛ (∀𝕎-mon e comp) (#⇛!-refl {w'} {c}) h
-equalTerms-#⇛-L-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTTRUNC A1 A2 x x₁ eqtA exta) eqi =
+{-equalTerms-#⇛-L-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTTRUNC A1 A2 x x₁ eqtA exta) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
     aw : ∀𝕎 w (λ w' e' → TTRUNCeq (equalTerms i w' (eqtA w' e')) w' a c
                        → TTRUNCeq (equalTerms i w' (eqtA w' e')) w' b c)
-    aw w' e h = {!!} --TTRUNCeq-#⇛ (∀𝕎-mon e comp) (#⇛!-refl {w'} {c}) h
-equalTerms-#⇛-L-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTCONST A1 A2 x x₁ eqtA exta) eqi =
+    aw w' e h = {!!} --TTRUNCeq-#⇛ (∀𝕎-mon e comp) (#⇛!-refl {w'} {c}) h-}
+equalTerms-#⇛-L-aux {i} ind {w} {A} {B} {a} {b} {c} comp (EQTNOWRITE A1 A2 x x₁ eqtA exta) eqi =
   Mod.∀𝕎-□Func M aw eqi
   where
-    aw : ∀𝕎 w (λ w' e' → TCONSTeq (equalTerms i w' (eqtA w' e')) w' a c
-                       → TCONSTeq (equalTerms i w' (eqtA w' e')) w' b c)
+    aw : ∀𝕎 w (λ w' e' → NOWRITEeq (equalTerms i w' (eqtA w' e')) w' a c
+                       → NOWRITEeq (equalTerms i w' (eqtA w' e')) w' b c)
     aw w' e (h , c₁ , c₂) =
       equalTerms-#⇛-L-aux ind (∀𝕎-mon e comp) (eqtA w' e) h ,
       {!!} {--#⇛!-pres-#⇓→#⇓! {w'} {a} {b} (∀𝕎-mon e comp) c₁--} ,
@@ -1282,7 +1282,7 @@ APPLY-lamAX-⇛ w a w1 e1 = lift (1 , refl)
 
 
 
-
+{-
 →equalInType-QTUNION : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
                        → isType n w A
                        → isType n w B
@@ -1299,7 +1299,7 @@ APPLY-lamAX-⇛ w a w1 e1 = lift (1 , refl)
                        → QTUNIONeq (eqInType (uni n) w' (eqTypes-mon (uni n) isa w' e')) (eqInType (uni n) w' (eqTypes-mon (uni n) isb w' e')) w' a b)
     aw w1 e1 (x , y , inj₁ (c₁ , c₂ , ea)) = x , y , inj₁ (c₁ , c₂ , equalInType→eqInType refl {eqTypes-mon (uni n) isa w1 e1} ea)
     aw w1 e1 (x , y , inj₂ (c₁ , c₂ , ea)) = x , y , inj₂ (c₁ , c₂ , equalInType→eqInType refl {eqTypes-mon (uni n) isb w1 e1} ea)
-
+-}
 
 
 abstract
@@ -1330,10 +1330,10 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqTUNION (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqEQ (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqUNION (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqQTUNION (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqQTUNION (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqTSQUASH (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqTTRUNC (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqTCONST (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqTTRUNC (compAllVal x tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqNOWRITE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqSUBSING (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqPURE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqNOSEQ (compAllVal x tt))
@@ -1384,10 +1384,10 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqTUNION (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqEQ (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqUNION (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqQTUNION (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqQTUNION (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqTSQUASH (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqTTRUNC (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqTCONST (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqTTRUNC (compAllVal x tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqNOWRITE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqSUBSING (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqPURE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (ISECTneqNOSEQ (compAllVal x tt))
@@ -1438,10 +1438,10 @@ abstract
         rewrite #UNIONinj1 {A} {B} {A1} {B1} (trans (sym eq1) (#compAllVal x (≡→#isValue (#UNION A B) T1 (sym eq1) tt)))
               | #UNIONinj2 {A} {B} {A1} {B1} (trans (sym eq1) (#compAllVal x (≡→#isValue (#UNION A B) T1 (sym eq1) tt)))
         = TEQrefl-equalTypes u _ _ _ (eqtA w (⊑-refl· _))
-      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqQTUNION (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqQTUNION (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqTSQUASH (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqTTRUNC (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqTCONST (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqTTRUNC (compAllVal x tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqNOWRITE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqSUBSING (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqPURE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqNOSEQ (compAllVal x tt))
@@ -1492,10 +1492,10 @@ abstract
         rewrite #UNIONinj1 {A} {B} {A1} {B1} (trans (sym eq1) (#compAllVal x (≡→#isValue (#UNION A B) T1 (sym eq1) tt)))
               | #UNIONinj2 {A} {B} {A1} {B1} (trans (sym eq1) (#compAllVal x (≡→#isValue (#UNION A B) T1 (sym eq1) tt)))
         = TEQrefl-equalTypes u _ _ _ (eqtB w (⊑-refl· _))
-      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqQTUNION (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqQTUNION (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqTSQUASH (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqTTRUNC (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqTCONST (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqTTRUNC (compAllVal x tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqNOWRITE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqSUBSING (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqPURE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (UNIONneqNOSEQ (compAllVal x tt))
@@ -1517,7 +1517,7 @@ abstract
           ind eqt a b eqi
 
 
-
+{-
 abstract
   equalInType-QTUNION→₁ : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
                         → equalInType n w (#QTUNION A B) a b
@@ -1549,7 +1549,7 @@ abstract
         = TEQrefl-equalTypes u _ _ _ (eqtA w (⊑-refl· _))
       ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (QTUNIONneqTSQUASH (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (QTUNIONneqTTRUNC (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (QTUNIONneqTCONST (compAllVal x tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (QTUNIONneqNOWRITE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (QTUNIONneqSUBSING (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (QTUNIONneqPURE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (QTUNIONneqNOSEQ (compAllVal x tt))
@@ -1569,9 +1569,10 @@ abstract
         equalTerms-ind
           (λ {u} {w} {T1} {T2} eqt {a} {b} eqi → T1 ≡ #QTUNION A B → isType u w A)
           ind eqt a b eqi
+-}
 
 
-
+{-
 abstract
   equalInType-QTUNION→₂ : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
                         → equalInType n w (#QTUNION A B) a b
@@ -1603,7 +1604,7 @@ abstract
         = TEQrefl-equalTypes u _ _ _ (eqtB w (⊑-refl· _))
       ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (QTUNIONneqTSQUASH (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (QTUNIONneqTTRUNC (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (QTUNIONneqTCONST (compAllVal x tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (QTUNIONneqNOWRITE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (QTUNIONneqSUBSING (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (QTUNIONneqPURE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (QTUNIONneqNOSEQ (compAllVal x tt))
@@ -1623,6 +1624,7 @@ abstract
         equalTerms-ind
           (λ {u} {w} {T1} {T2} eqt {a} {b} eqi → T1 ≡ #QTUNION A B → isType u w B)
           ind eqt a b eqi
+-}
 
 
 equalInType-NEG-inh : {u : ℕ} {w : 𝕎·} {A : CTerm}
@@ -1679,7 +1681,7 @@ isType-#NAT!→BOOL w n rewrite #NAT!→BOOL≡ = eqTypesFUN← isTypeNAT! (isTy
 
 
 isTypeBOOL! : (w : 𝕎·) (n : ℕ) → isType n w #BOOL!
-isTypeBOOL! w n rewrite #BOOL!≡ = eqTypesTCONST← (isTypeBOOL w n)
+isTypeBOOL! w n rewrite #BOOL!≡ = eqTypesNOWRITE← (isTypeBOOL w n)
 
 
 
@@ -2398,17 +2400,17 @@ equalInType-BOOL→ i w a b eqi =
     aw w' e (x , y , inj₂ (c₁ , c₂)) = x , y , inj₂ (c₁ {--c₁--} , c₂ {--c₂--} , →equalInType-TRUE i)
 
 
-→equalInTypeTCONST : {w : 𝕎·} {i : ℕ} {a b A : CTerm}
-                      → □· w (λ w' _ → TCONSTeq (equalInType i w' A) w' a b)
-                      → equalInType i w (#TCONST A) a b
-→equalInTypeTCONST {w} {i} {a} {b} {A} h =
-  eqTypesTCONST← ista , Mod.∀𝕎-□Func M aw h
+→equalInTypeNOWRITE : {w : 𝕎·} {i : ℕ} {a b A : CTerm}
+                      → □· w (λ w' _ → NOWRITEeq (equalInType i w' A) w' a b)
+                      → equalInType i w (#NOWRITE A) a b
+→equalInTypeNOWRITE {w} {i} {a} {b} {A} h =
+  eqTypesNOWRITE← ista , Mod.∀𝕎-□Func M aw h
   where
     ista : isType i w A
     ista = eqTypes-local (Mod.∀𝕎-□Func M (λ w1 e1 (e , c1 , c2) → fst e) h)
 
-    aw : ∀𝕎 w (λ w' e' → TCONSTeq (equalInType i w' A) w' a b
-                        → TCONSTeq (equalTerms i w' (eqTypes-mon (uni i) ista w' e')) w' a b)
+    aw : ∀𝕎 w (λ w' e' → NOWRITEeq (equalInType i w' A) w' a b
+                        → NOWRITEeq (equalTerms i w' (eqTypes-mon (uni i) ista w' e')) w' a b)
     aw w' e' (q , c₁ , c₂) = equalInType→eqInType refl {eqTypes-mon (uni i) ista w' e'} q , c₁ , c₂
 
 
@@ -2481,10 +2483,10 @@ equalInType-BOOL!→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
 equalInType-BOOL!→ i w a b eqi =
   Mod.□-idem M (Mod.∀𝕎-□Func M aw c)
   where
-    c : □· w (λ w' _ → TCONSTeq (equalInType i w' #BOOL) w' a b)
-    c = equalInTypeTCONST→ eqi
+    c : □· w (λ w' _ → NOWRITEeq (equalInType i w' #BOOL) w' a b)
+    c = equalInTypeNOWRITE→ eqi
 
-    aw : ∀𝕎 w (λ w' e' → TCONSTeq (equalInType i w' #BOOL) w' a b → Mod.□ M w' (↑wPred' (λ w'' _ → #strongBool! w'' a b) e'))
+    aw : ∀𝕎 w (λ w' e' → NOWRITEeq (equalInType i w' #BOOL) w' a b → Mod.□ M w' (↑wPred' (λ w'' _ → #strongBool! w'' a b) e'))
     aw w1 e1 (h , c₁ , c₂) = Mod.∀𝕎-□Func M aw' c'
       where
         c' : □· w1 (λ w2 _ → #strongBool w2 a b)
@@ -2498,9 +2500,9 @@ equalInType-BOOL!→ i w a b eqi =
                     → □· w (λ w' _ → #strongBool! w' a b)
                     → equalInType i w #BOOL! a b
 →equalInType-BOOL! i w a b h =
-  →equalInTypeTCONST (Mod.∀𝕎-□Func M aw h)
+  →equalInTypeNOWRITE (Mod.∀𝕎-□Func M aw h)
   where
-    aw : ∀𝕎 w (λ w' e' → #strongBool! w' a b → TCONSTeq (equalInType i w' #BOOL) w' a b)
+    aw : ∀𝕎 w (λ w' e' → #strongBool! w' a b → NOWRITEeq (equalInType i w' #BOOL) w' a b)
     aw w' e' q =
       →equalInType-BOOL i w' a b (Mod.∀𝕎-□ M (λ w'' e'' → #strongBool!→#strongBool {w''} {a} {b} (#strongBool!-mon {w'} {w''} {a} {b} e'' q))) ,
       #strongBool!→#⇓→#⇓!ₗ {w'} {a} {b} q ,

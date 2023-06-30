@@ -89,7 +89,7 @@ open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
 --open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-refl ; equalInType-mon ; equalInType-FUN→ ; equalInType-local ; equalInType-NAT→ ; equalInType-FUN ; eqTypesNAT ; →equalInType-NAT ; eqTypesTRUE ; eqTypesFALSE ; eqTypes-local ; equalInType-NAT!→ ; eqTypesTCONST←)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-refl ; equalInType-mon ; equalInType-FUN→ ; equalInType-local ; equalInType-NAT→ ; equalInType-FUN ; eqTypesNAT ; →equalInType-NAT ; eqTypesTRUE ; eqTypesFALSE ; eqTypes-local ; equalInType-NAT!→ ; eqTypesNOWRITE←)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalTypes-#⇛-left-right-rev)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (→equalInType-M)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (NATmem ; eqTypesUNION!← ; UNION!eq ; equalInType-UNION!→)
@@ -226,7 +226,7 @@ meq.meqC (coSemM can gc0 kb cn i w P T F j f a b n nnj nnf nnF prest tyn nty tyt
             → equalInType i w (sub0 (#INL (#NUM k)) (#IndBarC T)) b1 b2
             → meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T)))
                    w (#APPLY #AX b1) (#APPLY #AX b2)
-      eqb b1 b2 eb rewrite sub0-IndBarC≡ T (#INL (#NUM k)) = ⊥-elim (equalInType-DECIDE-INL-VOID→ i w (#NUM k) b1 b2 (#[0]shiftUp0 (#TCONST T)) eb)
+      eqb b1 b2 eb rewrite sub0-IndBarC≡ T (#INL (#NUM k)) = ⊥-elim (equalInType-DECIDE-INL-VOID→ i w (#NUM k) b1 b2 (#[0]shiftUp0 (#NOWRITE T)) eb)
 ... | inj₂ x =
   #INR #AX  , #loopR (#loop F) j f , #INR #AX , #loopR (#loop F) j f , INR∈IndBarB i w ,
   #⇛-trans {w} {a} {#APPLY2 (#loop F) j f} {#DIGAMMA (#loopR (#loop F) j f)} (#⇛!→#⇛ {w} {a} {#APPLY2 (#loop F) j f} c1) x ,
@@ -239,7 +239,7 @@ meq.meqC (coSemM can gc0 kb cn i w P T F j f a b n nnj nnf nnF prest tyn nty tyt
                    w (#APPLY (#loopR (#loop F) j f) b1) (#APPLY (#loopR (#loop F) j f) b2)
       eqb b1 b2 eb rewrite sub0-IndBarC≡ T (#INR #AX) = eb3
         where
-          eb1 : equalInType i w (#TCONST T) b1 b2
+          eb1 : equalInType i w (#NOWRITE T) b1 b2
           eb1 = equalInType-DECIDE-INR→ i w T #AX b1 b2 #[0]VOID eb
 
           eb2 : Σ ℕ (λ n → b1 #⇛! #NUM n at w × b2 #⇛! #NUM n at w × P n)
@@ -281,19 +281,19 @@ equalTypes-IndBarC i w T a b tyt eqa rewrite sub0-IndBarC≡ T a | sub0-IndBarC�
     eqa1 = equalInType-UNION!→ {i} {w} eqa
 
     aw1 : ∀𝕎 w (λ w' e' → UNION!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' a b
-                         → equalTypes i w' (#DECIDE a #[0]VOID (#[0]shiftUp0 (#TCONST T))) (#DECIDE b #[0]VOID (#[0]shiftUp0 (#TCONST T))))
+                         → equalTypes i w' (#DECIDE a #[0]VOID (#[0]shiftUp0 (#NOWRITE T))) (#DECIDE b #[0]VOID (#[0]shiftUp0 (#NOWRITE T))))
     aw1 w1 e1 (x , y , inj₁ (c1 , c2 , eqa2)) =
       equalTypes-#⇛-left-right-rev
-        {i} {w1} {#VOID} {#DECIDE a #[0]VOID (#[0]shiftUp0 (#TCONST T))} {#DECIDE b #[0]VOID (#[0]shiftUp0 (#TCONST T))} {#VOID}
-        (#DECIDE⇛INL-VOID⇛ w1 a x (#[0]shiftUp0 (#TCONST T)) (#⇛!-#⇛ {w1} {a} {#INL x} c1))
-        (#DECIDE⇛INL-VOID⇛ w1 b y (#[0]shiftUp0 (#TCONST T)) (#⇛!-#⇛ {w1} {b} {#INL y} c2))
+        {i} {w1} {#VOID} {#DECIDE a #[0]VOID (#[0]shiftUp0 (#NOWRITE T))} {#DECIDE b #[0]VOID (#[0]shiftUp0 (#NOWRITE T))} {#VOID}
+        (#DECIDE⇛INL-VOID⇛ w1 a x (#[0]shiftUp0 (#NOWRITE T)) (#⇛!-#⇛ {w1} {a} {#INL x} c1))
+        (#DECIDE⇛INL-VOID⇛ w1 b y (#[0]shiftUp0 (#NOWRITE T)) (#⇛!-#⇛ {w1} {b} {#INL y} c2))
         (eqTypesFALSE {w1} {i})
     aw1 w1 e1 (x , y , inj₂ (c1 , c2 , eqa2)) =
       equalTypes-#⇛-left-right-rev
-        {i} {w1} {#TCONST T} {#DECIDE a #[0]VOID (#[0]shiftUp0 (#TCONST T))} {#DECIDE b #[0]VOID (#[0]shiftUp0 (#TCONST T))} {#TCONST T}
+        {i} {w1} {#NOWRITE T} {#DECIDE a #[0]VOID (#[0]shiftUp0 (#NOWRITE T))} {#DECIDE b #[0]VOID (#[0]shiftUp0 (#NOWRITE T))} {#NOWRITE T}
         (#DECIDE⇛INR⇛ w1 T a x #[0]VOID (#⇛!-#⇛ {w1} {a} {#INR x} c1))
         (#DECIDE⇛INR⇛ w1 T b y #[0]VOID (#⇛!-#⇛ {w1} {b} {#INR y} c2))
-        (eqTypesTCONST← (eqTypes-mon (uni i) tyt w1 e1)) --(isTypeNAT! {w1} {i})
+        (eqTypesNOWRITE← (eqTypes-mon (uni i) tyt w1 e1)) --(isTypeNAT! {w1} {i})
 
 
 -- First prove that loop belongs to CoIndBar

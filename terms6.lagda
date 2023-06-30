@@ -103,20 +103,21 @@ abstract
   differ-refl name1 name2 f (ISECT t t₁) nn = differ-ISECT _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
   differ-refl name1 name2 f (TUNION t t₁) nn = differ-TUNION _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
   differ-refl name1 name2 f (UNION t t₁) nn = differ-UNION _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
-  differ-refl name1 name2 f (QTUNION t t₁) nn = differ-QTUNION _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
+--  differ-refl name1 name2 f (QTUNION t t₁) nn = differ-QTUNION _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
   differ-refl name1 name2 f (INL t) nn = differ-INL _ _ (differ-refl name1 name2 f t nn)
   differ-refl name1 name2 f (INR t) nn = differ-INR _ _ (differ-refl name1 name2 f t nn)
   differ-refl name1 name2 f (DECIDE t t₁ t₂) nn = differ-DECIDE _ _ _ _ _ _ (differ-refl name1 name2 f t (∧≡true→1-3 {¬names t} {¬names t₁} {¬names t₂} nn)) (differ-refl name1 name2 f t₁ (∧≡true→2-3 {¬names t} {¬names t₁} {¬names t₂} nn)) (differ-refl name1 name2 f t₂ (∧≡true→3-3 {¬names t} {¬names t₁} {¬names t₂} nn))
   differ-refl name1 name2 f (EQ t t₁ t₂) nn = differ-EQ _ _ _ _ _ _ (differ-refl name1 name2 f t (∧≡true→1-3 {¬names t} {¬names t₁} {¬names t₂} nn)) (differ-refl name1 name2 f t₁ (∧≡true→2-3 {¬names t} {¬names t₁} {¬names t₂} nn)) (differ-refl name1 name2 f t₂ (∧≡true→3-3 {¬names t} {¬names t₁} {¬names t₂} nn))
-  differ-refl name1 name2 f (EQB t t₁ t₂ t₃) nn = differ-EQB _ _ _ _ _ _ _ _ (differ-refl name1 name2 f t (∧≡true→1-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn)) (differ-refl name1 name2 f t₁ (∧≡true→2-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn)) (differ-refl name1 name2 f t₂ (∧≡true→3-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn)) (differ-refl name1 name2 f t₃ (∧≡true→4-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn))
+--  differ-refl name1 name2 f (EQB t t₁ t₂ t₃) nn = differ-EQB _ _ _ _ _ _ _ _ (differ-refl name1 name2 f t (∧≡true→1-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn)) (differ-refl name1 name2 f t₁ (∧≡true→2-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn)) (differ-refl name1 name2 f t₂ (∧≡true→3-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn)) (differ-refl name1 name2 f t₃ (∧≡true→4-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nn))
   differ-refl name1 name2 f AX nn = differ-AX
   differ-refl name1 name2 f FREE nn = differ-FREE
   differ-refl name1 name2 f (MSEQ x) nn = differ-MSEQ x
   differ-refl name1 name2 f (MAPP s t) nn = differ-MAPP _ _ _ (differ-refl name1 name2 f t nn)
   differ-refl name1 name2 f (CHOOSE t t₁) nn = differ-CHOOSE _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
   differ-refl name1 name2 f (TSQUASH t) nn = differ-TSQUASH _ _ (differ-refl name1 name2 f t nn)
-  differ-refl name1 name2 f (TTRUNC t) nn = differ-TTRUNC _ _ (differ-refl name1 name2 f t nn)
-  differ-refl name1 name2 f (TCONST t) nn = differ-TCONST _ _ (differ-refl name1 name2 f t nn)
+--  differ-refl name1 name2 f (TTRUNC t) nn = differ-TTRUNC _ _ (differ-refl name1 name2 f t nn)
+  differ-refl name1 name2 f (NOWRITE t) nn = differ-NOWRITE _ _ (differ-refl name1 name2 f t nn)
+  differ-refl name1 name2 f (NOREAD t) nn = differ-NOREAD _ _ (differ-refl name1 name2 f t nn)
   differ-refl name1 name2 f (SUBSING t) nn = differ-SUBSING _ _ (differ-refl name1 name2 f t nn)
   differ-refl name1 name2 f (PURE) nn = differ-PURE
   differ-refl name1 name2 f (NOSEQ) nn = differ-NOSEQ
@@ -596,7 +597,7 @@ abstract
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(ISECT a₁ b₁) .(ISECT a₂ b₂) a' v k compat1 compat2 agtn (differ-ISECT a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = ISECT a₁ b₁ , ISECT a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-ISECT _ _ _ _ diff diff₁ , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(TUNION a₁ b₁) .(TUNION a₂ b₂) a' v k compat1 compat2 agtn (differ-TUNION a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TUNION a₁ b₁ , TUNION a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TUNION _ _ _ _ diff diff₁ , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(UNION a₁ b₁) .(UNION a₂ b₂) a' v k compat1 compat2 agtn (differ-UNION a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = UNION a₁ b₁ , UNION a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-UNION _ _ _ _ diff diff₁ , g0
-  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(QTUNION a₁ b₁) .(QTUNION a₂ b₂) a' v k compat1 compat2 agtn (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = QTUNION a₁ b₁ , QTUNION a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-QTUNION _ _ _ _ diff diff₁ , g0
+--  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(QTUNION a₁ b₁) .(QTUNION a₂ b₂) a' v k compat1 compat2 agtn (differ-QTUNION a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = QTUNION a₁ b₁ , QTUNION a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-QTUNION _ _ _ _ diff diff₁ , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(INL a) .(INL b) a' v k compat1 compat2 agtn (differ-INL a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = INL a , INL b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-INL _ _ diff , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(INR a) .(INR b) a' v k compat1 compat2 agtn (differ-INR a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = INR a , INR b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-INR _ _ diff , g0
   -- DECIDE
@@ -652,7 +653,7 @@ abstract
   ... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
   -- EQ
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(EQ a₁ b₁ c₃) .(EQ a₂ b₂ c₄) a' v k compat1 compat2 agtn (differ-EQ a₁ a₂ b₁ b₂ c₃ c₄ diff diff₁ diff₂) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = EQ a₁ b₁ c₃ , EQ a₂ b₂ c₄ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-EQ _ _ _ _ _ _ diff diff₁ diff₂ , g0
-  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(EQB a₁ b₁ c₃ d₁) .(EQB a₂ b₂ c₄ d₂) a' v k compat1 compat2 agtn (differ-EQB a₁ a₂ b₁ b₂ c₃ c₄ d₁ d₂ diff diff₁ diff₂ diff₃) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = EQB a₁ b₁ c₃ d₁ , EQB a₂ b₂ c₄ d₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-EQB _ _ _ _ _ _ _ _ diff diff₁ diff₂ diff₃ , g0
+--  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(EQB a₁ b₁ c₃ d₁) .(EQB a₂ b₂ c₄ d₂) a' v k compat1 compat2 agtn (differ-EQB a₁ a₂ b₁ b₂ c₃ c₄ d₁ d₂ diff diff₁ diff₂ diff₃) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = EQB a₁ b₁ c₃ d₁ , EQB a₂ b₂ c₄ d₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-EQB _ _ _ _ _ _ _ _ diff diff₁ diff₂ diff₃ , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .AX .AX a' v k compat1 compat2 agtn differ-AX g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = AX , AX , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-AX , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .FREE .FREE a' v k compat1 compat2 agtn differ-FREE g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = FREE , FREE , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-FREE , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(MSEQ x) .(MSEQ x) a' v k compat1 compat2 agtn (differ-MSEQ x) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = MSEQ x , MSEQ x , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-MSEQ x , g0
@@ -711,8 +712,9 @@ abstract
   --differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(IFC0 a₁ b₁ c₃) .(IFC0 a₂ b₂ c₄) a' v k compat1 compat2 agtn (differ-IFC0 a₁ a₂ b₁ b₂ c₃ c₄ diff diff₁ diff₂) g0 s hv isvv pd = {!!}
   -- TSQUASH
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(TSQUASH a) .(TSQUASH b) a' v k compat1 compat2 agtn (differ-TSQUASH a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TSQUASH a , TSQUASH b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TSQUASH _ _ diff , g0
-  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(TTRUNC a) .(TTRUNC b) a' v k compat1 compat2 agtn (differ-TTRUNC a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TTRUNC a , TTRUNC b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TTRUNC _ _ diff , g0
-  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(TCONST a) .(TCONST b) a' v k compat1 compat2 agtn (differ-TCONST a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TCONST a , TCONST b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TCONST _ _ diff , g0
+--  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(TTRUNC a) .(TTRUNC b) a' v k compat1 compat2 agtn (differ-TTRUNC a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TTRUNC a , TTRUNC b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TTRUNC _ _ diff , g0
+  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(NOWRITE a) .(NOWRITE b) a' v k compat1 compat2 agtn (differ-NOWRITE a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NOWRITE a , NOWRITE b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NOWRITE _ _ diff , g0
+  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(NOREAD a) .(NOREAD b) a' v k compat1 compat2 agtn (differ-NOREAD a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NOREAD a , NOREAD b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NOREAD _ _ diff , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(SUBSING a) .(SUBSING b) a' v k compat1 compat2 agtn (differ-SUBSING a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = SUBSING a , SUBSING b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-SUBSING _ _ diff , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(PURE) .(PURE) a' v k compat1 compat2 agtn (differ-PURE) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = PURE , PURE , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-PURE , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(NOSEQ) .(NOSEQ) a' v k compat1 compat2 agtn (differ-NOSEQ) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NOSEQ , NOSEQ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NOSEQ , g0
@@ -1511,20 +1513,21 @@ abstract
   ¬Names→shiftNameUp≡ (ISECT t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
   ¬Names→shiftNameUp≡ (TUNION t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
   ¬Names→shiftNameUp≡ (UNION t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
-  ¬Names→shiftNameUp≡ (QTUNION t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
+--  ¬Names→shiftNameUp≡ (QTUNION t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
   ¬Names→shiftNameUp≡ (INL t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
   ¬Names→shiftNameUp≡ (INR t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
   ¬Names→shiftNameUp≡ (DECIDE t t₁ t₂) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→1-3 {¬names t} {¬names t₁} {¬names t₂} nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→2-3 {¬names t} {¬names t₁} {¬names t₂} nnt) | ¬Names→shiftNameUp≡ t₂ n (∧≡true→3-3 {¬names t} {¬names t₁} {¬names t₂} nnt) = refl
   ¬Names→shiftNameUp≡ (EQ t t₁ t₂) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→1-3 {¬names t} {¬names t₁} {¬names t₂} nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→2-3 {¬names t} {¬names t₁} {¬names t₂} nnt) | ¬Names→shiftNameUp≡ t₂ n (∧≡true→3-3 {¬names t} {¬names t₁} {¬names t₂} nnt) = refl
-  ¬Names→shiftNameUp≡ (EQB t t₁ t₂ t₃) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→1-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→2-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nnt) | ¬Names→shiftNameUp≡ t₂ n (∧≡true→3-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nnt) | ¬Names→shiftNameUp≡ t₃ n (∧≡true→4-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nnt) = refl
+--  ¬Names→shiftNameUp≡ (EQB t t₁ t₂ t₃) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→1-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→2-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nnt) | ¬Names→shiftNameUp≡ t₂ n (∧≡true→3-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nnt) | ¬Names→shiftNameUp≡ t₃ n (∧≡true→4-4 {¬names t} {¬names t₁} {¬names t₂} {¬names t₃} nnt) = refl
   ¬Names→shiftNameUp≡ AX n nnt = refl
   ¬Names→shiftNameUp≡ FREE n nnt = refl
   ¬Names→shiftNameUp≡ (MSEQ x) n nnt = refl
   ¬Names→shiftNameUp≡ (MAPP s t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
   ¬Names→shiftNameUp≡ (CHOOSE t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
   ¬Names→shiftNameUp≡ (TSQUASH t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
-  ¬Names→shiftNameUp≡ (TTRUNC t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
-  ¬Names→shiftNameUp≡ (TCONST t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+--  ¬Names→shiftNameUp≡ (TTRUNC t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+  ¬Names→shiftNameUp≡ (NOWRITE t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+  ¬Names→shiftNameUp≡ (NOREAD t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
   ¬Names→shiftNameUp≡ (SUBSING t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
   ¬Names→shiftNameUp≡ (PURE) n nnt = refl
   ¬Names→shiftNameUp≡ (NOSEQ) n nnt = refl

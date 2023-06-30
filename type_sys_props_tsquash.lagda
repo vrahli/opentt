@@ -117,8 +117,8 @@ TSQUASHneqTUNION {a} {c} {d} ()
 TSQUASHneqUNION : {a : Term} {c : Term} {d : Term} → ¬ (TSQUASH a) ≡ UNION c d
 TSQUASHneqUNION {a} {c} {d} ()
 
-TSQUASHneqQTUNION : {a : Term} {c : Term} {d : Term} → ¬ (TSQUASH a) ≡ QTUNION c d
-TSQUASHneqQTUNION {a} {c} {d} ()
+--TSQUASHneqQTUNION : {a : Term} {c : Term} {d : Term} → ¬ (TSQUASH a) ≡ QTUNION c d
+--TSQUASHneqQTUNION {a} {c} {d} ()
 
 TSQUASHneqEQ : {a : Term} {c d e : Term} → ¬ (TSQUASH a) ≡ EQ c d e
 TSQUASHneqEQ {a} {c} {d} {e} ()
@@ -132,8 +132,8 @@ TSQUASHneqFFDEFS {a} {c} {d} ()
 TSQUASHneqLIFT : {a : Term} {c : Term} → ¬ (TSQUASH a) ≡ LIFT c
 TSQUASHneqLIFT {a} {c} ()
 
-TSQUASHneqTCONST : {a : Term} {c : Term} → ¬ (TSQUASH a) ≡ TCONST c
-TSQUASHneqTCONST {a} {c} ()
+TSQUASHneqNOWRITE : {a : Term} {c : Term} → ¬ (TSQUASH a) ≡ NOWRITE c
+TSQUASHneqNOWRITE {a} {c} ()
 
 TSQUASHneqSUBSING : {a : Term} {c : Term} → ¬ (TSQUASH a) ≡ SUBSING c
 TSQUASHneqSUBSING {a} {c} ()
@@ -147,8 +147,8 @@ TSQUASHneqNOSEQ {a} ()
 TSQUASHneqTERM : {a c : Term} → ¬ (TSQUASH a) ≡ TERM c
 TSQUASHneqTERM {a} {c} ()
 
-TSQUASHneqTTRUNC : {a : Term} {c : Term} → ¬ (TSQUASH a) ≡ TTRUNC c
-TSQUASHneqTTRUNC {a} {c} ()
+--TSQUASHneqTTRUNC : {a : Term} {c : Term} → ¬ (TSQUASH a) ≡ TTRUNC c
+--TSQUASHneqTTRUNC {a} {c} ()
 
 TSQUASHneqLOWER : {a : Term} {c : Term} → ¬ (TSQUASH a) ≡ LOWER c
 TSQUASHneqLOWER {a} {c} ()
@@ -217,7 +217,7 @@ typeSysConds-TSQUASH-ttrans u w A B A1 B1 x x₁ eqta exta inda C eqt = concl x 
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind x x₁ eqta exta inda = ⊥-elim (TSQUASHneqTUNION (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind x x₁ eqta exta inda = ⊥-elim (TSQUASHneqEQ (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNION C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta exta inda = ⊥-elim (TSQUASHneqUNION (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTQTUNION C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta exta inda = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta exta inda = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind x x₁ eqta exta inda
       = EQTSQUASH A1 A4 x y₁ eqa exta'
       where
@@ -232,12 +232,12 @@ typeSysConds-TSQUASH-ttrans u w A B A1 B1 x x₁ eqta exta inda C eqt = concl x 
 
             ei2 : eqInType u w' (eqta w' e2) a b
             ei2 = exta a b w' e1 e2 ei1
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind x x₁ eqta exta inda = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind x x₁ eqta exta inda = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x x₁ eqta exta inda = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x x₁ eqta exta inda = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x x₁ eqta exta inda = ⊥-elim (TSQUASHneqNOSEQ (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x x₁ eqta exta inda = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind x x₁ eqta exta inda = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind x x₁ eqta exta inda = ⊥-elim (TSQUASHneqNOWRITE (⇛-val-det tt tt x₁ y))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x x₁ eqta exta inda = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x x₁ eqta exta inda = ⊥-elim (TSQUASHneqUNIV (⇛-val-det tt tt x₁ c₁))
@@ -350,7 +350,7 @@ typeSysConds-TSQUASH-extl1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTUNION (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqEQ (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqUNION (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi
       = Mod.∀𝕎-□Func M aw eqi
       where
@@ -360,12 +360,12 @@ typeSysConds-TSQUASH-extl1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
           TSQUASHeq-ext-eq
             {eqInType u w1 (eqta w1 e1)} {eqInType u w1 (eqtA w1 e1)} {w1} {f} {g}
             (TSP.extl1 (inda w1 e1) A4 (eqtA w1 e1)) p
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqNOSEQ (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqNOWRITE (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqUNIV (⇛-val-det tt tt x c₁))
     ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqLIFT (⇛-val-det tt tt x y))
@@ -435,7 +435,7 @@ typeSysConds-TSQUASH-extl2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTUNION (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqEQ (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqUNION (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi
       = Mod.∀𝕎-□Func M aw eqi
       where
@@ -443,12 +443,12 @@ typeSysConds-TSQUASH-extl2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
                             → TSQUASHeq (eqInType u w' (eqtA w' e')) w' f g)
         aw w1 e1 p rewrite sym (#TSQUASHinj {A4} {A1} (#⇛-val-det {_} {T2} tt tt y₁ x)) =
           TSQUASHeq-ext-eq (TSP.extl2 (inda w1 e1) A3 (eqtA w1 e1)) p
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqNOSEQ (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqNOWRITE (⇛-val-det tt tt x y₁))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqUNIV (⇛-val-det tt tt x c₂))
@@ -518,7 +518,7 @@ typeSysConds-TSQUASH-extr1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTUNION (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqEQ (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqUNION (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi
       = Mod.∀𝕎-□Func M aw eqi
       where
@@ -526,12 +526,12 @@ typeSysConds-TSQUASH-extr1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
                             → TSQUASHeq (eqInType u w' (eqtA w' e')) w' f g)
         aw w1 e1 p rewrite sym (#TSQUASHinj {A4} {B1} (#⇛-val-det {_} {T2} tt tt y₁ x₁)) =
           TSQUASHeq-ext-eq (TSP.extr1 (inda w1 e1) A3 (eqtA w1 e1)) p
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqNOSEQ (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqNOWRITE (⇛-val-det tt tt x₁ y₁))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqUNIV (⇛-val-det tt tt x₁ c₂))
@@ -601,7 +601,7 @@ typeSysConds-TSQUASH-extr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTUNION (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqEQ (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqUNION (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi
       = Mod.∀𝕎-□Func M aw eqi
       where
@@ -609,12 +609,12 @@ typeSysConds-TSQUASH-extr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
                             → TSQUASHeq (eqInType u w' (eqtA w' e')) w' f g)
         aw w1 e1 p rewrite sym (#TSQUASHinj {A3} {B1} (#⇛-val-det {_} {T1} tt tt y x₁)) =
           TSQUASHeq-ext-eq (TSP.extr2 (inda w1 e1) A4 (eqtA w1 e1)) p
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqNOSEQ (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqNOWRITE (⇛-val-det tt tt x₁ y))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqUNIV (⇛-val-det tt tt x₁ c₁))
@@ -683,7 +683,7 @@ typeSysConds-TSQUASH-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTUNION (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqEQ (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqUNION (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi
       = Mod.∀𝕎-□Func M aw eqi
       where
@@ -691,12 +691,12 @@ typeSysConds-TSQUASH-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
                             → TSQUASHeq (eqInType u w' (eqta w' e')) w' f g)
         aw w1 e1 p rewrite sym (#TSQUASHinj {A3} {A1} (#⇛-val-det {_} {T1} tt tt y x)) =
           TSQUASHeq-ext-eq (TSP.extrevl1 (inda w1 e1) A4 (eqtA w1 e1)) p
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqNOSEQ (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqNOWRITE (⇛-val-det tt tt x y))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqUNIV (⇛-val-det tt tt x c₁))
@@ -767,7 +767,7 @@ typeSysConds-TSQUASH-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTUNION (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqEQ (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqUNION (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi
       = Mod.∀𝕎-□Func M aw eqi
       where
@@ -775,12 +775,12 @@ typeSysConds-TSQUASH-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
                             → TSQUASHeq (eqInType u w' (eqta w' e')) w' f g)
         aw w1 e1 p rewrite sym (#TSQUASHinj {A4} {A1} (#⇛-val-det {_} {T2} tt tt y₁ x)) =
           TSQUASHeq-ext-eq (TSP.extrevl2 (inda w1 e1) A3 (eqtA w1 e1)) p
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqNOSEQ (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqNOWRITE (⇛-val-det tt tt x y₁))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x f g eqi = ⊥-elim (TSQUASHneqUNIV (⇛-val-det tt tt x c₂))
@@ -851,7 +851,7 @@ typeSysConds-TSQUASH-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTUNION (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqEQ (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqUNION (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi
       = Mod.∀𝕎-□Func M aw eqi
       where
@@ -859,12 +859,12 @@ typeSysConds-TSQUASH-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
                             → TSQUASHeq (eqInType u w' (eqta w' e')) w' f g)
         aw w1 e1 p rewrite sym (#TSQUASHinj {A4} {B1} (#⇛-val-det {_} {T2} tt tt y₁ x₁)) =
           TSQUASHeq-ext-eq (TSP.extrevr1 (inda w1 e1) A3 (eqtA w1 e1)) p
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqNOSEQ (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqNOWRITE (⇛-val-det tt tt x₁ y₁))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqUNIV (⇛-val-det tt tt x₁ c₂))
@@ -935,7 +935,7 @@ typeSysConds-TSQUASH-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTUNION (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqEQ (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqUNION (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi
       = Mod.∀𝕎-□Func M aw eqi
       where
@@ -943,12 +943,12 @@ typeSysConds-TSQUASH-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
                             → TSQUASHeq (eqInType u w' (eqta w' e')) w' f g)
         aw w1 e1 p rewrite sym (#TSQUASHinj {A3} {B1} (#⇛-val-det {_} {T1} tt tt y x₁)) =
           TSQUASHeq-ext-eq (TSP.extrevr2 (inda w1 e1) A4 (eqtA w1 e1)) p
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqNOSEQ (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqNOWRITE (⇛-val-det tt tt x₁ y))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (TSQUASHneqUNIV (⇛-val-det tt tt x₁ c₁))
@@ -1021,7 +1021,7 @@ eqInType-⇛-TSQUASH u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt eqi = concl 
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqTUNION (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqEQ (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqUNION (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei
       = Mod.∀𝕎-□Func M aw ei
       where
@@ -1033,12 +1033,12 @@ eqInType-⇛-TSQUASH u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt eqi = concl 
             aw0 : (a₂ b₂ : CTerm) → eqInType u w1 (eqta₁ w1 e1) a₂ b₂ → eqInType u w1 (eqta w1 e1) a₂ b₂
             aw0 a₂ b₂ a∈ rewrite #TSQUASHinj {A1} {A3} (#⇛-val-det {_} {T1} tt tt c₁ x)
                                 | #TSQUASHinj {B1} {A4} (#⇛-val-det {_} {T2} tt tt c₂ x₁) = snd (inda w1 e1 (eqta₁ w1 e1) a₂ b₂) a∈
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqNOSEQ (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ x x₁ x₂) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqNOWRITE (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqUNIV (⇛-val-det tt tt c₁ d₁))
     ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqLIFT (⇛-val-det tt tt c₁ x))
@@ -1114,7 +1114,7 @@ eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ei ext = concl e
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (TSQUASHneqTUNION (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (TSQUASHneqEQ (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (TSQUASHneqUNION (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ei ext
       = Mod.∀𝕎-□Func M aw ei
       where
@@ -1128,12 +1128,12 @@ eqInType-⇛-TSQUASH2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ei ext = concl e
         aw w1 e1 p rewrite #TSQUASHinj {A1} {A3} (#⇛-val-det {_} {T1} tt tt c₁ x)
                          | #TSQUASHinj {B1} {A4} (#⇛-val-det {_} {T2} tt tt c₂ x₁) =
           TSQUASHeq-ext-eq (λ a1 a2 ea → fst (awexta₁ w1 e1 (eqta w1 e1) a1 a2) ea) p
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (TSQUASHneqNOSEQ (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ x x₁ x₂) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (TSQUASHneqNOWRITE (⇛-val-det tt tt c₁ x))
 -- ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (TSQUASHneqUNIV (⇛-val-det tt tt c₁ d₁))
@@ -1209,7 +1209,7 @@ eqInType-⇛-TSQUASH-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt ei = con
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqTUNION (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqEQ (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqUNION (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei
       = Mod.∀𝕎-□Func M aw ei
       where
@@ -1218,12 +1218,12 @@ eqInType-⇛-TSQUASH-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt ei = con
         aw w1 e1 p rewrite #TSQUASHinj {A1} {A3} (#⇛-val-det {_} {T1} tt tt c₁ x)
                          | #TSQUASHinj {B1} {A4} (#⇛-val-det {_} {T2} tt tt c₂ x₁) =
           TSQUASHeq-ext-eq (λ a1 a2 ea → fst (inda w1 e1 (eqta₁ w1 e1) a1 a2) ea) p
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqNOSEQ (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ x x₁ x₂) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqNOWRITE (⇛-val-det tt tt c₁ x))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (TSQUASHneqUNIV (⇛-val-det tt tt c₁ d₁))
@@ -1302,7 +1302,7 @@ eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ext ei = con
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (TSQUASHneqTUNION (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (TSQUASHneqEQ (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (TSQUASHneqUNION (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (TSQUASHneqQTUNION (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ext ei
       = Mod.∀𝕎-□Func M aw ei
       where
@@ -1314,12 +1314,12 @@ eqInType-⇛-TSQUASH-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ext ei = con
           where
             aw2 : (a₂ b₂ : CTerm) → ≡∈Type u w1 (eqta w1 e1) a₂ b₂ → ≡∈Type u w1 (eqta₁ w1 e1) a₂ b₂
             aw2 a₂ b₂ a∈ = snd (ext (eqta₁ w1 e1) (≤TypeS₂ _ _ (<Type1₂ _ _ (<TypeSQUASH₂ u w T1 T2 A3 A4 x x₁ eqta₁ exta₁ w1 e1))) (eqta w1 e1) a₂ b₂) a∈
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (TSQUASHneqTTRUNC (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (TSQUASHneqSUBSING (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (TSQUASHneqPURE (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (TSQUASHneqNOSEQ (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ x x₁ x₂) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (TSQUASHneqTERM (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (TSQUASHneqTCONST (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (TSQUASHneqNOWRITE (⇛-val-det tt tt c₁ x))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (TSQUASHneqDUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (TSQUASHneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (TSQUASHneqUNIV (⇛-val-det tt tt c₁ d₁))

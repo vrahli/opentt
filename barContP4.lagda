@@ -154,12 +154,12 @@ data updSeq (r : Name) (s : 𝕊) (n : ℕ) : Term → Term → Set where
   updSeq-ISECT   : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (ISECT a₁ b₁) (ISECT a₂ b₂)
   updSeq-TUNION  : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (TUNION a₁ b₁) (TUNION a₂ b₂)
   updSeq-UNION   : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (UNION a₁ b₁) (UNION a₂ b₂)
-  updSeq-QTUNION : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (QTUNION a₁ b₁) (QTUNION a₂ b₂)
+--  updSeq-QTUNION : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (QTUNION a₁ b₁) (QTUNION a₂ b₂)
   updSeq-INL     : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (INL a₁) (INL a₂)
   updSeq-INR     : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (INR a₁) (INR a₂)
   updSeq-DECIDE  : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n c₁ c₂ → updSeq r s n (DECIDE a₁ b₁ c₁) (DECIDE a₂ b₂ c₂)
   updSeq-EQ      : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n c₁ c₂ → updSeq r s n (EQ a₁ b₁ c₁) (EQ a₂ b₂ c₂)
-  updSeq-EQB     : (a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n c₁ c₂ → updSeq r s n d₁ d₂ → updSeq r s n (EQB a₁ b₁ c₁ d₁) (EQB a₂ b₂ c₂ d₂)
+--  updSeq-EQB     : (a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n c₁ c₂ → updSeq r s n d₁ d₂ → updSeq r s n (EQB a₁ b₁ c₁ d₁) (EQB a₂ b₂ c₂ d₂)
   updSeq-AX      : updSeq r s n AX AX
   updSeq-FREE    : updSeq r s n FREE FREE
   updSeq-MSEQ    : (x : 𝕊) → updSeq r s n (MSEQ x) (MSEQ x)
@@ -171,8 +171,9 @@ data updSeq (r : Name) (s : 𝕊) (n : ℕ) : Term → Term → Set where
   updSeq-CHOOSE  : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (CHOOSE a₁ b₁) (CHOOSE a₂ b₂)
 --  updSeq-IFC0    : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → updSeq name1 name2 f a₁ a₂ → updSeq name1 name2 f b₁ b₂ → updSeq name1 name2 f c₁ c₂ → updSeq name1 name2 f (IFC0 a₁ b₁ c₁) (IFC0 a₂ b₂ c₂)
   updSeq-TSQUASH : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (TSQUASH a₁) (TSQUASH a₂)
-  updSeq-TTRUNC  : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (TTRUNC a₁) (TTRUNC a₂)
-  updSeq-TCONST  : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (TCONST a₁) (TCONST a₂)
+--  updSeq-TTRUNC  : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (TTRUNC a₁) (TTRUNC a₂)
+  updSeq-NOWRITE : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (NOWRITE a₁) (NOWRITE a₂)
+  updSeq-NOREAD  : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (NOREAD a₁) (NOREAD a₂)
   updSeq-SUBSING : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (SUBSING a₁) (SUBSING a₂)
   updSeq-PURE    : updSeq r s n PURE PURE
   updSeq-NOSEQ   : updSeq r s n NOSEQ NOSEQ
@@ -288,20 +289,21 @@ abstract
   updSeq-shiftUp n {r} {s} {k} {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (updSeq-ISECT a₁ a₂ b₁ b₂ u u₁) = updSeq-ISECT _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁)
   updSeq-shiftUp n {r} {s} {k} {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (updSeq-TUNION a₁ a₂ b₁ b₂ u u₁) = updSeq-TUNION _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp (suc n) u₁)
   updSeq-shiftUp n {r} {s} {k} {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (updSeq-UNION a₁ a₂ b₁ b₂ u u₁) = updSeq-UNION _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁)
-  updSeq-shiftUp n {r} {s} {k} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (updSeq-QTUNION a₁ a₂ b₁ b₂ u u₁) = updSeq-QTUNION _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁)
+--  updSeq-shiftUp n {r} {s} {k} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (updSeq-QTUNION a₁ a₂ b₁ b₂ u u₁) = updSeq-QTUNION _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁)
   updSeq-shiftUp n {r} {s} {k} {.(INL a₁)} {.(INL a₂)} (updSeq-INL a₁ a₂ u) = updSeq-INL _ _ (updSeq-shiftUp n u)
   updSeq-shiftUp n {r} {s} {k} {.(INR a₁)} {.(INR a₂)} (updSeq-INR a₁ a₂ u) = updSeq-INR _ _ (updSeq-shiftUp n u)
   updSeq-shiftUp n {r} {s} {k} {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (updSeq-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = updSeq-DECIDE _ _ _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp (suc n) u₁) (updSeq-shiftUp (suc n) u₂)
   updSeq-shiftUp n {r} {s} {k} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (updSeq-EQ a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = updSeq-EQ _ _ _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁) (updSeq-shiftUp n u₂)
-  updSeq-shiftUp n {r} {s} {k} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (updSeq-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updSeq-EQB _ _ _ _ _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁) (updSeq-shiftUp n u₂) (updSeq-shiftUp n u₃)
+--  updSeq-shiftUp n {r} {s} {k} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (updSeq-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updSeq-EQB _ _ _ _ _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁) (updSeq-shiftUp n u₂) (updSeq-shiftUp n u₃)
   updSeq-shiftUp n {r} {s} {k} {.AX} {.AX} updSeq-AX = updSeq-AX
   updSeq-shiftUp n {r} {s} {k} {.FREE} {.FREE} updSeq-FREE = updSeq-FREE
   updSeq-shiftUp n {r} {s} {k} {.(MSEQ x)} {.(MSEQ x)} (updSeq-MSEQ x) = updSeq-MSEQ x
   updSeq-shiftUp n {r} {s} {k} {.(MAPP x a₁)} {.(MAPP x a₂)} (updSeq-MAPP x a₁ a₂ u) = updSeq-MAPP _ _ _ (updSeq-shiftUp n u)
   updSeq-shiftUp n {r} {s} {k} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (updSeq-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updSeq-CHOOSE _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁)
   updSeq-shiftUp n {r} {s} {k} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updSeq-TSQUASH a₁ a₂ u) = updSeq-TSQUASH _ _ (updSeq-shiftUp n u)
-  updSeq-shiftUp n {r} {s} {k} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updSeq-TTRUNC a₁ a₂ u) = updSeq-TTRUNC _ _ (updSeq-shiftUp n u)
-  updSeq-shiftUp n {r} {s} {k} {.(TCONST a₁)} {.(TCONST a₂)} (updSeq-TCONST a₁ a₂ u) = updSeq-TCONST _ _ (updSeq-shiftUp n u)
+--  updSeq-shiftUp n {r} {s} {k} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updSeq-TTRUNC a₁ a₂ u) = updSeq-TTRUNC _ _ (updSeq-shiftUp n u)
+  updSeq-shiftUp n {r} {s} {k} {.(NOWRITE a₁)} {.(NOWRITE a₂)} (updSeq-NOWRITE a₁ a₂ u) = updSeq-NOWRITE _ _ (updSeq-shiftUp n u)
+  updSeq-shiftUp n {r} {s} {k} {.(NOREAD a₁)} {.(NOREAD a₂)} (updSeq-NOREAD a₁ a₂ u) = updSeq-NOREAD _ _ (updSeq-shiftUp n u)
   updSeq-shiftUp n {r} {s} {k} {.(SUBSING a₁)} {.(SUBSING a₂)} (updSeq-SUBSING a₁ a₂ u) = updSeq-SUBSING _ _ (updSeq-shiftUp n u)
   updSeq-shiftUp n {r} {s} {k} {.(PURE)} {.(PURE)} (updSeq-PURE) = updSeq-PURE
   updSeq-shiftUp n {r} {s} {k} {.(NOSEQ)} {.(NOSEQ)} (updSeq-NOSEQ) = updSeq-NOSEQ
@@ -355,20 +357,21 @@ abstract
   updSeq-shiftDown n {r} {s} {k} {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (updSeq-ISECT a₁ a₂ b₁ b₂ u u₁) = updSeq-ISECT _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁)
   updSeq-shiftDown n {r} {s} {k} {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (updSeq-TUNION a₁ a₂ b₁ b₂ u u₁) = updSeq-TUNION _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown (suc n) u₁)
   updSeq-shiftDown n {r} {s} {k} {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (updSeq-UNION a₁ a₂ b₁ b₂ u u₁) = updSeq-UNION _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁)
-  updSeq-shiftDown n {r} {s} {k} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (updSeq-QTUNION a₁ a₂ b₁ b₂ u u₁) = updSeq-QTUNION _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁)
+--  updSeq-shiftDown n {r} {s} {k} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (updSeq-QTUNION a₁ a₂ b₁ b₂ u u₁) = updSeq-QTUNION _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁)
   updSeq-shiftDown n {r} {s} {k} {.(INL a₁)} {.(INL a₂)} (updSeq-INL a₁ a₂ u) = updSeq-INL _ _ (updSeq-shiftDown n u)
   updSeq-shiftDown n {r} {s} {k} {.(INR a₁)} {.(INR a₂)} (updSeq-INR a₁ a₂ u) = updSeq-INR _ _ (updSeq-shiftDown n u)
   updSeq-shiftDown n {r} {s} {k} {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (updSeq-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = updSeq-DECIDE _ _ _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown (suc n) u₁) (updSeq-shiftDown (suc n) u₂)
   updSeq-shiftDown n {r} {s} {k} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (updSeq-EQ a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = updSeq-EQ _ _ _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁) (updSeq-shiftDown n u₂)
-  updSeq-shiftDown n {r} {s} {k} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (updSeq-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updSeq-EQB _ _ _ _ _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁) (updSeq-shiftDown n u₂) (updSeq-shiftDown n u₃)
+--  updSeq-shiftDown n {r} {s} {k} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (updSeq-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updSeq-EQB _ _ _ _ _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁) (updSeq-shiftDown n u₂) (updSeq-shiftDown n u₃)
   updSeq-shiftDown n {r} {s} {k} {.AX} {.AX} updSeq-AX = updSeq-AX
   updSeq-shiftDown n {r} {s} {k} {.FREE} {.FREE} updSeq-FREE = updSeq-FREE
   updSeq-shiftDown n {r} {s} {k} {.(MSEQ x)} {.(MSEQ x)} (updSeq-MSEQ x) = updSeq-MSEQ x
   updSeq-shiftDown n {r} {s} {k} {.(MAPP x a₁)} {.(MAPP x a₂)} (updSeq-MAPP x a₁ a₂ u) = updSeq-MAPP _ _ _ (updSeq-shiftDown n u)
   updSeq-shiftDown n {r} {s} {k} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (updSeq-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updSeq-CHOOSE _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁)
   updSeq-shiftDown n {r} {s} {k} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updSeq-TSQUASH a₁ a₂ u) = updSeq-TSQUASH _ _ (updSeq-shiftDown n u)
-  updSeq-shiftDown n {r} {s} {k} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updSeq-TTRUNC a₁ a₂ u) = updSeq-TTRUNC _ _ (updSeq-shiftDown n u)
-  updSeq-shiftDown n {r} {s} {k} {.(TCONST a₁)} {.(TCONST a₂)} (updSeq-TCONST a₁ a₂ u) = updSeq-TCONST _ _ (updSeq-shiftDown n u)
+--  updSeq-shiftDown n {r} {s} {k} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updSeq-TTRUNC a₁ a₂ u) = updSeq-TTRUNC _ _ (updSeq-shiftDown n u)
+  updSeq-shiftDown n {r} {s} {k} {.(NOWRITE a₁)} {.(NOWRITE a₂)} (updSeq-NOWRITE a₁ a₂ u) = updSeq-NOWRITE _ _ (updSeq-shiftDown n u)
+  updSeq-shiftDown n {r} {s} {k} {.(NOREAD a₁)} {.(NOREAD a₂)} (updSeq-NOREAD a₁ a₂ u) = updSeq-NOREAD _ _ (updSeq-shiftDown n u)
   updSeq-shiftDown n {r} {s} {k} {.(SUBSING a₁)} {.(SUBSING a₂)} (updSeq-SUBSING a₁ a₂ u) = updSeq-SUBSING _ _ (updSeq-shiftDown n u)
   updSeq-shiftDown n {r} {s} {k} {.(PURE)} {.(PURE)} (updSeq-PURE) = updSeq-PURE
   updSeq-shiftDown n {r} {s} {k} {.(NOSEQ)} {.(NOSEQ)} (updSeq-NOSEQ) = updSeq-NOSEQ
@@ -425,20 +428,21 @@ abstract
   updSeq-subv v {r} {s} {k} {.(ISECT a₁ b₃)} {.(ISECT a₂ b₄)} {b₁} {b₂} (updSeq-ISECT a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-ISECT _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub)
   updSeq-subv v {r} {s} {k} {.(TUNION a₁ b₃)} {.(TUNION a₂ b₄)} {b₁} {b₂} (updSeq-TUNION a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-TUNION _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv (suc v) ua₁ (updSeq-shiftUp 0 ub))
   updSeq-subv v {r} {s} {k} {.(UNION a₁ b₃)} {.(UNION a₂ b₄)} {b₁} {b₂} (updSeq-UNION a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-UNION _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub)
-  updSeq-subv v {r} {s} {k} {.(QTUNION a₁ b₃)} {.(QTUNION a₂ b₄)} {b₁} {b₂} (updSeq-QTUNION a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-QTUNION _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub)
+--  updSeq-subv v {r} {s} {k} {.(QTUNION a₁ b₃)} {.(QTUNION a₂ b₄)} {b₁} {b₂} (updSeq-QTUNION a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-QTUNION _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub)
   updSeq-subv v {r} {s} {k} {.(INL a₁)} {.(INL a₂)} {b₁} {b₂} (updSeq-INL a₁ a₂ ua) ub = updSeq-INL _ _ (updSeq-subv v ua ub)
   updSeq-subv v {r} {s} {k} {.(INR a₁)} {.(INR a₂)} {b₁} {b₂} (updSeq-INR a₁ a₂ ua) ub = updSeq-INR _ _ (updSeq-subv v ua ub)
   updSeq-subv v {r} {s} {k} {.(DECIDE a₁ b₃ c₁)} {.(DECIDE a₂ b₄ c₂)} {b₁} {b₂} (updSeq-DECIDE a₁ a₂ b₃ b₄ c₁ c₂ ua ua₁ ua₂) ub = updSeq-DECIDE _ _ _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv (suc v) ua₁ (updSeq-shiftUp 0 ub)) (updSeq-subv (suc v) ua₂ (updSeq-shiftUp 0 ub))
   updSeq-subv v {r} {s} {k} {.(EQ a₁ b₃ c₁)} {.(EQ a₂ b₄ c₂)} {b₁} {b₂} (updSeq-EQ a₁ a₂ b₃ b₄ c₁ c₂ ua ua₁ ua₂) ub = updSeq-EQ _ _ _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub) (updSeq-subv v ua₂ ub)
-  updSeq-subv v {r} {s} {k} {.(EQB a₁ b₃ c₁ d₁)} {.(EQB a₂ b₄ c₂ d₂)} {b₁} {b₂} (updSeq-EQB a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₂ ua ua₁ ua₂ ua₃) ub = updSeq-EQB _ _ _ _ _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub) (updSeq-subv v ua₂ ub) (updSeq-subv v ua₃ ub)
+--  updSeq-subv v {r} {s} {k} {.(EQB a₁ b₃ c₁ d₁)} {.(EQB a₂ b₄ c₂ d₂)} {b₁} {b₂} (updSeq-EQB a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₂ ua ua₁ ua₂ ua₃) ub = updSeq-EQB _ _ _ _ _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub) (updSeq-subv v ua₂ ub) (updSeq-subv v ua₃ ub)
   updSeq-subv v {r} {s} {k} {.AX} {.AX} {b₁} {b₂} updSeq-AX ub = updSeq-AX
   updSeq-subv v {r} {s} {k} {.FREE} {.FREE} {b₁} {b₂} updSeq-FREE ub = updSeq-FREE
   updSeq-subv v {r} {s} {k} {.(MSEQ x)} {.(MSEQ x)} {b₁} {b₂} (updSeq-MSEQ x) ub = updSeq-MSEQ x
   updSeq-subv v {r} {s} {k} {.(MAPP x a₁)} {.(MAPP x a₂)} {b₁} {b₂} (updSeq-MAPP x a₁ a₂ ua) ub = updSeq-MAPP _ _ _ (updSeq-subv v ua ub)
   updSeq-subv v {r} {s} {k} {.(CHOOSE a₁ b₃)} {.(CHOOSE a₂ b₄)} {b₁} {b₂} (updSeq-CHOOSE a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-CHOOSE _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub)
   updSeq-subv v {r} {s} {k} {.(TSQUASH a₁)} {.(TSQUASH a₂)} {b₁} {b₂} (updSeq-TSQUASH a₁ a₂ ua) ub = updSeq-TSQUASH _ _ (updSeq-subv v ua ub)
-  updSeq-subv v {r} {s} {k} {.(TTRUNC a₁)} {.(TTRUNC a₂)} {b₁} {b₂} (updSeq-TTRUNC a₁ a₂ ua) ub = updSeq-TTRUNC _ _ (updSeq-subv v ua ub)
-  updSeq-subv v {r} {s} {k} {.(TCONST a₁)} {.(TCONST a₂)} {b₁} {b₂} (updSeq-TCONST a₁ a₂ ua) ub = updSeq-TCONST _ _ (updSeq-subv v ua ub)
+--  updSeq-subv v {r} {s} {k} {.(TTRUNC a₁)} {.(TTRUNC a₂)} {b₁} {b₂} (updSeq-TTRUNC a₁ a₂ ua) ub = updSeq-TTRUNC _ _ (updSeq-subv v ua ub)
+  updSeq-subv v {r} {s} {k} {.(NOWRITE a₁)} {.(NOWRITE a₂)} {b₁} {b₂} (updSeq-NOWRITE a₁ a₂ ua) ub = updSeq-NOWRITE _ _ (updSeq-subv v ua ub)
+  updSeq-subv v {r} {s} {k} {.(NOREAD a₁)} {.(NOREAD a₂)} {b₁} {b₂} (updSeq-NOREAD a₁ a₂ ua) ub = updSeq-NOREAD _ _ (updSeq-subv v ua ub)
   updSeq-subv v {r} {s} {k} {.(SUBSING a₁)} {.(SUBSING a₂)} {b₁} {b₂} (updSeq-SUBSING a₁ a₂ ua) ub = updSeq-SUBSING _ _ (updSeq-subv v ua ub)
   updSeq-subv v {r} {s} {k} {.(PURE)} {.(PURE)} {b₁} {b₂} (updSeq-PURE) ub = updSeq-PURE
   updSeq-subv v {r} {s} {k} {.(NOSEQ)} {.(NOSEQ)} {b₁} {b₂} (updSeq-NOSEQ) ub = updSeq-NOSEQ
@@ -1096,17 +1100,18 @@ updSeq→isValue {r} {s} {n} {.(SET a₁ b₁)} {.(SET a₂ b₂)} (updSeq-SET a
 updSeq→isValue {r} {s} {n} {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (updSeq-ISECT a₁ a₂ b₁ b₂ u u₁) isv = tt
 updSeq→isValue {r} {s} {n} {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (updSeq-TUNION a₁ a₂ b₁ b₂ u u₁) isv = tt
 updSeq→isValue {r} {s} {n} {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (updSeq-UNION a₁ a₂ b₁ b₂ u u₁) isv = tt
-updSeq→isValue {r} {s} {n} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (updSeq-QTUNION a₁ a₂ b₁ b₂ u u₁) isv = tt
+--updSeq→isValue {r} {s} {n} {.(QTUNION a₁ b₁)} {.(QTUNION a₂ b₂)} (updSeq-QTUNION a₁ a₂ b₁ b₂ u u₁) isv = tt
 updSeq→isValue {r} {s} {n} {.(INL a₁)} {.(INL a₂)} (updSeq-INL a₁ a₂ u) isv = tt
 updSeq→isValue {r} {s} {n} {.(INR a₁)} {.(INR a₂)} (updSeq-INR a₁ a₂ u) isv = tt
 updSeq→isValue {r} {s} {n} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (updSeq-EQ a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) isv = tt
-updSeq→isValue {r} {s} {n} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (updSeq-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) isv = tt
+--updSeq→isValue {r} {s} {n} {.(EQB a₁ b₁ c₁ d₁)} {.(EQB a₂ b₂ c₂ d₂)} (updSeq-EQB a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) isv = tt
 updSeq→isValue {r} {s} {n} {.AX} {.AX} updSeq-AX isv = tt
 updSeq→isValue {r} {s} {n} {.FREE} {.FREE} updSeq-FREE isv = tt
 updSeq→isValue {r} {s} {n} {.(MSEQ x)} {.(MSEQ x)} (updSeq-MSEQ x) isv = tt
 updSeq→isValue {r} {s} {n} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updSeq-TSQUASH a₁ a₂ u) isv = tt
-updSeq→isValue {r} {s} {n} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updSeq-TTRUNC a₁ a₂ u) isv = tt
-updSeq→isValue {r} {s} {n} {.(TCONST a₁)} {.(TCONST a₂)} (updSeq-TCONST a₁ a₂ u) isv = tt
+--updSeq→isValue {r} {s} {n} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updSeq-TTRUNC a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(NOWRITE a₁)} {.(NOWRITE a₂)} (updSeq-NOWRITE a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(NOREAD a₁)} {.(NOREAD a₂)} (updSeq-NOREAD a₁ a₂ u) isv = tt
 updSeq→isValue {r} {s} {n} {.(SUBSING a₁)} {.(SUBSING a₂)} (updSeq-SUBSING a₁ a₂ u) isv = tt
 updSeq→isValue {r} {s} {n} {.(PURE)} {.(PURE)} (updSeq-PURE) isv = tt
 updSeq→isValue {r} {s} {n} {.(NOSEQ)} {.(NOSEQ)} (updSeq-NOSEQ) isv = tt

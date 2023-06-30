@@ -295,7 +295,7 @@ equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTUNION A1 B1 A2 B2 x x₁ eqtA e
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb , eqi) = ⊥-elim (FFDEFSneqQTUNION (compAllVal x₁ tt))
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTSQUASH A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (FFDEFSneqTSQUASH (compAllVal x₁ tt))
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTTRUNC A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (FFDEFSneqTTRUNC (compAllVal x₁ tt))
-equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTCONST A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (FFDEFSneqTCONST (compAllVal x₁ tt))
+equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTNOWRITE A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (FFDEFSneqNOWRITE (compAllVal x₁ tt))
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (FFDEFSneqSUBSING (compAllVal x₁ tt))
 equalInTypeFFDEFS→ {w} {i} {a} {b} {A} {u} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) =
   Mod.∀𝕎-□Func M aw eqi
@@ -376,10 +376,10 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqTUNION (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqEQ (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqUNION (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqQTUNION (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqQTUNION (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqTSQUASH (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqTTRUNC (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqTCONST (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqTTRUNC (compAllVal x tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqNOWRITE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqSUBSING (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqPURE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqNOSEQ (compAllVal x tt))
@@ -414,7 +414,7 @@ abstract
   Mod.∀𝕎-□Func M aw eqi
   where
     aw : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' a b
-                       → TCONSTeq (λ t1 t2 → □· w' (λ w'' _ → #strongMonEq w'' t1 t2)) w' a b)
+                       → NOWRITEeq (λ t1 t2 → □· w' (λ w'' _ → #strongMonEq w'' t1 t2)) w' a b)
     aw w1 e1 (n , c₁ , c₂) =
       Mod.∀𝕎-□ M (λ w2 e2 → n , #⇛!-#⇛ {w2} {a} {#NUM n} (∀𝕎-mon e2 c₁) , #⇛!-#⇛ {w2} {b} {#NUM n} (∀𝕎-mon e2 c₂)) ,
       #⇛!-pres-#⇓→#⇓!-rev {w1} {#NUM n} {a} c₁ (#⇓→#⇓!-NUM w1 n) ,
@@ -479,10 +479,10 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqTUNION (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqEQ (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqUNION (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqQTUNION (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqQTUNION (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqTSQUASH (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqTTRUNC (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqTCONST (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqTTRUNC (compAllVal x tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqNOWRITE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqSUBSING (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqFFDEFS (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqPURE (compAllVal x tt))
@@ -546,10 +546,10 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqTUNION (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqEQ (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqUNION (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqQTUNION (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqQTUNION (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqTSQUASH (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqTTRUNC (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqTCONST (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqTTRUNC (compAllVal x tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqNOWRITE (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqSUBSING (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqFFDEFS (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqPURE (compAllVal x tt))

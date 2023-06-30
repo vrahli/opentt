@@ -125,12 +125,12 @@ data updCtxt2 (name : Name) (f : Term) : Term → Set where
   updCtxt2-ISECT   : (a b : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f (ISECT a b)
   updCtxt2-TUNION  : (a b : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f (TUNION a b)
   updCtxt2-UNION   : (a b : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f (UNION a b)
-  updCtxt2-QTUNION : (a b : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f (QTUNION a b)
+--  updCtxt2-QTUNION : (a b : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f (QTUNION a b)
   updCtxt2-INL     : (a : Term) → updCtxt2 name f a → updCtxt2 name f (INL a)
   updCtxt2-INR     : (a : Term) → updCtxt2 name f a → updCtxt2 name f (INR a)
   updCtxt2-DECIDE  : (a b c : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f c → updCtxt2 name f (DECIDE a b c)
   updCtxt2-EQ      : (a b c : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f c → updCtxt2 name f (EQ a b c)
-  updCtxt2-EQB     : (a b c d : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f c → updCtxt2 name f d → updCtxt2 name f (EQB a b c d)
+--  updCtxt2-EQB     : (a b c d : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f c → updCtxt2 name f d → updCtxt2 name f (EQB a b c d)
   updCtxt2-AX      : updCtxt2 name f AX
   updCtxt2-FREE    : updCtxt2 name f FREE
   updCtxt2-CS      : (name' : Name) → updCtxt2 name f (CS name')
@@ -140,8 +140,9 @@ data updCtxt2 (name : Name) (f : Term) : Term → Set where
   updCtxt2-CHOOSE  : (a b : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f (CHOOSE a b)
 --  updCtxt2-IFC0    : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → updCtxt2 name1 name2 f a₁ a₂ → updCtxt2 name1 name2 f b₁ b₂ → updCtxt2 name1 name2 f c₁ c₂ → updCtxt2 name1 name2 f (IFC0 a₁ b₁ c₁) (IFC0 a₂ b₂ c₂)
   updCtxt2-TSQUASH : (a : Term) → updCtxt2 name f a → updCtxt2 name f (TSQUASH a)
-  updCtxt2-TTRUNC  : (a : Term) → updCtxt2 name f a → updCtxt2 name f (TTRUNC a)
-  updCtxt2-TCONST  : (a : Term) → updCtxt2 name f a → updCtxt2 name f (TCONST a)
+--  updCtxt2-TTRUNC  : (a : Term) → updCtxt2 name f a → updCtxt2 name f (TTRUNC a)
+  updCtxt2-NOWRITE : (a : Term) → updCtxt2 name f a → updCtxt2 name f (NOWRITE a)
+  updCtxt2-NOREAD  : (a : Term) → updCtxt2 name f a → updCtxt2 name f (NOREAD a)
   updCtxt2-SUBSING : (a : Term) → updCtxt2 name f a → updCtxt2 name f (SUBSING a)
   updCtxt2-PURE    : updCtxt2 name f PURE
   updCtxt2-NOSEQ   : updCtxt2 name f NOSEQ
@@ -265,12 +266,12 @@ abstract
   →updCtxt2-shiftUp v {name} {f} cf {.(ISECT a b)} (updCtxt2-ISECT a b upd₁ upd₂) = updCtxt2-ISECT _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp v cf upd₂)
   →updCtxt2-shiftUp v {name} {f} cf {.(TUNION a b)} (updCtxt2-TUNION a b upd₁ upd₂) = updCtxt2-TUNION _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp (suc v) cf upd₂)
   →updCtxt2-shiftUp v {name} {f} cf {.(UNION a b)} (updCtxt2-UNION a b upd₁ upd₂) = updCtxt2-UNION _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp v cf upd₂)
-  →updCtxt2-shiftUp v {name} {f} cf {.(QTUNION a b)} (updCtxt2-QTUNION a b upd₁ upd₂) = updCtxt2-QTUNION _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp v cf upd₂)
+--  →updCtxt2-shiftUp v {name} {f} cf {.(QTUNION a b)} (updCtxt2-QTUNION a b upd₁ upd₂) = updCtxt2-QTUNION _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp v cf upd₂)
   →updCtxt2-shiftUp v {name} {f} cf {.(INL a)} (updCtxt2-INL a upd₁) = updCtxt2-INL _ (→updCtxt2-shiftUp v cf upd₁)
   →updCtxt2-shiftUp v {name} {f} cf {.(INR a)} (updCtxt2-INR a upd₁) = updCtxt2-INR _ (→updCtxt2-shiftUp v cf upd₁)
   →updCtxt2-shiftUp v {name} {f} cf {.(DECIDE a b c)} (updCtxt2-DECIDE a b c upd₁ upd₂ upd₃) = updCtxt2-DECIDE _ _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp (suc v) cf upd₂) (→updCtxt2-shiftUp (suc v) cf upd₃)
   →updCtxt2-shiftUp v {name} {f} cf {.(EQ a b c)} (updCtxt2-EQ a b c upd₁ upd₂ upd₃) = updCtxt2-EQ _ _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp v cf upd₂) (→updCtxt2-shiftUp v cf upd₃)
-  →updCtxt2-shiftUp v {name} {f} cf {.(EQB a b c d)} (updCtxt2-EQB a b c d upd₁ upd₂ upd₃ upd₄) = updCtxt2-EQB _ _ _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp v cf upd₂) (→updCtxt2-shiftUp v cf upd₃) (→updCtxt2-shiftUp v cf upd₄)
+--  →updCtxt2-shiftUp v {name} {f} cf {.(EQB a b c d)} (updCtxt2-EQB a b c d upd₁ upd₂ upd₃ upd₄) = updCtxt2-EQB _ _ _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp v cf upd₂) (→updCtxt2-shiftUp v cf upd₃) (→updCtxt2-shiftUp v cf upd₄)
   →updCtxt2-shiftUp v {name} {f} cf {.AX} updCtxt2-AX = updCtxt2-AX
   →updCtxt2-shiftUp v {name} {f} cf {.FREE} updCtxt2-FREE = updCtxt2-FREE
   →updCtxt2-shiftUp v {name} {f} cf {.(CS name')} (updCtxt2-CS name') = updCtxt2-CS _
@@ -279,8 +280,9 @@ abstract
   →updCtxt2-shiftUp v {name} {f} cf {.(LOAD a)} (updCtxt2-LOAD a) = updCtxt2-LOAD _ --upd₁ --updCtxt2-LOAD _ (→updCtxt2-shiftUp v cf upd₁)
   →updCtxt2-shiftUp v {name} {f} cf {.(CHOOSE a b)} (updCtxt2-CHOOSE a b upd₁ upd₂) = updCtxt2-CHOOSE _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp v cf upd₂)
   →updCtxt2-shiftUp v {name} {f} cf {.(TSQUASH a)} (updCtxt2-TSQUASH a upd₁) = updCtxt2-TSQUASH _ (→updCtxt2-shiftUp v cf upd₁)
-  →updCtxt2-shiftUp v {name} {f} cf {.(TTRUNC a)} (updCtxt2-TTRUNC a upd₁) = updCtxt2-TTRUNC _ (→updCtxt2-shiftUp v cf upd₁)
-  →updCtxt2-shiftUp v {name} {f} cf {.(TCONST a)} (updCtxt2-TCONST a upd₁) = updCtxt2-TCONST _ (→updCtxt2-shiftUp v cf upd₁)
+--  →updCtxt2-shiftUp v {name} {f} cf {.(TTRUNC a)} (updCtxt2-TTRUNC a upd₁) = updCtxt2-TTRUNC _ (→updCtxt2-shiftUp v cf upd₁)
+  →updCtxt2-shiftUp v {name} {f} cf {.(NOWRITE a)} (updCtxt2-NOWRITE a upd₁) = updCtxt2-NOWRITE _ (→updCtxt2-shiftUp v cf upd₁)
+  →updCtxt2-shiftUp v {name} {f} cf {.(NOREAD a)} (updCtxt2-NOREAD a upd₁) = updCtxt2-NOREAD _ (→updCtxt2-shiftUp v cf upd₁)
   →updCtxt2-shiftUp v {name} {f} cf {.(SUBSING a)} (updCtxt2-SUBSING a upd₁) = updCtxt2-SUBSING _ (→updCtxt2-shiftUp v cf upd₁)
   →updCtxt2-shiftUp v {name} {f} cf {.PURE} updCtxt2-PURE = updCtxt2-PURE
   →updCtxt2-shiftUp v {name} {f} cf {.NOSEQ} updCtxt2-NOSEQ = updCtxt2-NOSEQ
@@ -330,12 +332,12 @@ abstract
   →updCtxt2-shiftDown v {name} {f} cf {.(ISECT a b)} (updCtxt2-ISECT a b upd₁ upd₂) = updCtxt2-ISECT _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown v cf upd₂)
   →updCtxt2-shiftDown v {name} {f} cf {.(TUNION a b)} (updCtxt2-TUNION a b upd₁ upd₂) = updCtxt2-TUNION _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown (suc v) cf upd₂)
   →updCtxt2-shiftDown v {name} {f} cf {.(UNION a b)} (updCtxt2-UNION a b upd₁ upd₂) = updCtxt2-UNION _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown v cf upd₂)
-  →updCtxt2-shiftDown v {name} {f} cf {.(QTUNION a b)} (updCtxt2-QTUNION a b upd₁ upd₂) = updCtxt2-QTUNION _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown v cf upd₂)
+--  →updCtxt2-shiftDown v {name} {f} cf {.(QTUNION a b)} (updCtxt2-QTUNION a b upd₁ upd₂) = updCtxt2-QTUNION _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown v cf upd₂)
   →updCtxt2-shiftDown v {name} {f} cf {.(INL a)} (updCtxt2-INL a upd₁) = updCtxt2-INL _ (→updCtxt2-shiftDown v cf upd₁)
   →updCtxt2-shiftDown v {name} {f} cf {.(INR a)} (updCtxt2-INR a upd₁) = updCtxt2-INR _ (→updCtxt2-shiftDown v cf upd₁)
   →updCtxt2-shiftDown v {name} {f} cf {.(DECIDE a b c)} (updCtxt2-DECIDE a b c upd₁ upd₂ upd₃) = updCtxt2-DECIDE _ _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown (suc v) cf upd₂) (→updCtxt2-shiftDown (suc v) cf upd₃)
   →updCtxt2-shiftDown v {name} {f} cf {.(EQ a b c)} (updCtxt2-EQ a b c upd₁ upd₂ upd₃) = updCtxt2-EQ _ _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown v cf upd₂) (→updCtxt2-shiftDown v cf upd₃)
-  →updCtxt2-shiftDown v {name} {f} cf {.(EQB a b c d)} (updCtxt2-EQB a b c d upd₁ upd₂ upd₃ upd₄) = updCtxt2-EQB _ _ _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown v cf upd₂) (→updCtxt2-shiftDown v cf upd₃) (→updCtxt2-shiftDown v cf upd₄)
+--  →updCtxt2-shiftDown v {name} {f} cf {.(EQB a b c d)} (updCtxt2-EQB a b c d upd₁ upd₂ upd₃ upd₄) = updCtxt2-EQB _ _ _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown v cf upd₂) (→updCtxt2-shiftDown v cf upd₃) (→updCtxt2-shiftDown v cf upd₄)
   →updCtxt2-shiftDown v {name} {f} cf {.AX} updCtxt2-AX = updCtxt2-AX
   →updCtxt2-shiftDown v {name} {f} cf {.FREE} updCtxt2-FREE = updCtxt2-FREE
   →updCtxt2-shiftDown v {name} {f} cf {.(CS name')} (updCtxt2-CS name') = updCtxt2-CS _
@@ -344,8 +346,9 @@ abstract
   →updCtxt2-shiftDown v {name} {f} cf {.(LOAD a)} (updCtxt2-LOAD a) = updCtxt2-LOAD _ --upd₁ --updCtxt2-LOAD _ (→updCtxt2-shiftDown v cf upd₁)
   →updCtxt2-shiftDown v {name} {f} cf {.(CHOOSE a b)} (updCtxt2-CHOOSE a b upd₁ upd₂) = updCtxt2-CHOOSE _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown v cf upd₂)
   →updCtxt2-shiftDown v {name} {f} cf {.(TSQUASH a)} (updCtxt2-TSQUASH a upd₁) = updCtxt2-TSQUASH _ (→updCtxt2-shiftDown v cf upd₁)
-  →updCtxt2-shiftDown v {name} {f} cf {.(TTRUNC a)} (updCtxt2-TTRUNC a upd₁) = updCtxt2-TTRUNC _ (→updCtxt2-shiftDown v cf upd₁)
-  →updCtxt2-shiftDown v {name} {f} cf {.(TCONST a)} (updCtxt2-TCONST a upd₁) = updCtxt2-TCONST _ (→updCtxt2-shiftDown v cf upd₁)
+--  →updCtxt2-shiftDown v {name} {f} cf {.(TTRUNC a)} (updCtxt2-TTRUNC a upd₁) = updCtxt2-TTRUNC _ (→updCtxt2-shiftDown v cf upd₁)
+  →updCtxt2-shiftDown v {name} {f} cf {.(NOWRITE a)} (updCtxt2-NOWRITE a upd₁) = updCtxt2-NOWRITE _ (→updCtxt2-shiftDown v cf upd₁)
+  →updCtxt2-shiftDown v {name} {f} cf {.(NOREAD a)} (updCtxt2-NOREAD a upd₁) = updCtxt2-NOREAD _ (→updCtxt2-shiftDown v cf upd₁)
   →updCtxt2-shiftDown v {name} {f} cf {.(SUBSING a)} (updCtxt2-SUBSING a upd₁) = updCtxt2-SUBSING _ (→updCtxt2-shiftDown v cf upd₁)
   →updCtxt2-shiftDown v {name} {f} cf {.PURE} updCtxt2-PURE = updCtxt2-PURE
   →updCtxt2-shiftDown v {name} {f} cf {.NOSEQ} updCtxt2-NOSEQ = updCtxt2-NOSEQ
@@ -395,12 +398,12 @@ abstract
   →updCtxt2-shiftNameUp v {name} {f} cf {.(ISECT a b)} (updCtxt2-ISECT a b upd₁ upd₂) = updCtxt2-ISECT _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(TUNION a b)} (updCtxt2-TUNION a b upd₁ upd₂) = updCtxt2-TUNION _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(UNION a b)} (updCtxt2-UNION a b upd₁ upd₂) = updCtxt2-UNION _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂)
-  →updCtxt2-shiftNameUp v {name} {f} cf {.(QTUNION a b)} (updCtxt2-QTUNION a b upd₁ upd₂) = updCtxt2-QTUNION _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂)
+--  →updCtxt2-shiftNameUp v {name} {f} cf {.(QTUNION a b)} (updCtxt2-QTUNION a b upd₁ upd₂) = updCtxt2-QTUNION _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(INL a)} (updCtxt2-INL a upd₁) = updCtxt2-INL _ (→updCtxt2-shiftNameUp v cf upd₁)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(INR a)} (updCtxt2-INR a upd₁) = updCtxt2-INR _ (→updCtxt2-shiftNameUp v cf upd₁)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(DECIDE a b c)} (updCtxt2-DECIDE a b c upd₁ upd₂ upd₃) = updCtxt2-DECIDE _ _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂) (→updCtxt2-shiftNameUp v cf upd₃)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(EQ a b c)} (updCtxt2-EQ a b c upd₁ upd₂ upd₃) = updCtxt2-EQ _ _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂) (→updCtxt2-shiftNameUp v cf upd₃)
-  →updCtxt2-shiftNameUp v {name} {f} cf {.(EQB a b c d)} (updCtxt2-EQB a b c d upd₁ upd₂ upd₃ upd₄) = updCtxt2-EQB _ _ _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂) (→updCtxt2-shiftNameUp v cf upd₃) (→updCtxt2-shiftNameUp v cf upd₄)
+--  →updCtxt2-shiftNameUp v {name} {f} cf {.(EQB a b c d)} (updCtxt2-EQB a b c d upd₁ upd₂ upd₃ upd₄) = updCtxt2-EQB _ _ _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂) (→updCtxt2-shiftNameUp v cf upd₃) (→updCtxt2-shiftNameUp v cf upd₄)
   →updCtxt2-shiftNameUp v {name} {f} cf {.AX} updCtxt2-AX = updCtxt2-AX
   →updCtxt2-shiftNameUp v {name} {f} cf {.FREE} updCtxt2-FREE = updCtxt2-FREE
   →updCtxt2-shiftNameUp v {name} {f} cf {.(CS name')} (updCtxt2-CS name') = updCtxt2-CS _
@@ -425,8 +428,9 @@ abstract
   →updCtxt2-shiftNameUp v {name} {f} cf {.(LOAD a)} (updCtxt2-LOAD a) = updCtxt2-LOAD _ --(→updCtxt2-shiftNameUp v cf upd₁)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(CHOOSE a b)} (updCtxt2-CHOOSE a b upd₁ upd₂) = updCtxt2-CHOOSE _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(TSQUASH a)} (updCtxt2-TSQUASH a upd₁) = updCtxt2-TSQUASH _ (→updCtxt2-shiftNameUp v cf upd₁)
-  →updCtxt2-shiftNameUp v {name} {f} cf {.(TTRUNC a)} (updCtxt2-TTRUNC a upd₁) = updCtxt2-TTRUNC _ (→updCtxt2-shiftNameUp v cf upd₁)
-  →updCtxt2-shiftNameUp v {name} {f} cf {.(TCONST a)} (updCtxt2-TCONST a upd₁) = updCtxt2-TCONST _ (→updCtxt2-shiftNameUp v cf upd₁)
+--  →updCtxt2-shiftNameUp v {name} {f} cf {.(TTRUNC a)} (updCtxt2-TTRUNC a upd₁) = updCtxt2-TTRUNC _ (→updCtxt2-shiftNameUp v cf upd₁)
+  →updCtxt2-shiftNameUp v {name} {f} cf {.(NOWRITE a)} (updCtxt2-NOWRITE a upd₁) = updCtxt2-NOWRITE _ (→updCtxt2-shiftNameUp v cf upd₁)
+  →updCtxt2-shiftNameUp v {name} {f} cf {.(NOREAD a)} (updCtxt2-NOREAD a upd₁) = updCtxt2-NOREAD _ (→updCtxt2-shiftNameUp v cf upd₁)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(SUBSING a)} (updCtxt2-SUBSING a upd₁) = updCtxt2-SUBSING _ (→updCtxt2-shiftNameUp v cf upd₁)
   →updCtxt2-shiftNameUp v {name} {f} cf {.PURE} updCtxt2-PURE = updCtxt2-PURE
   →updCtxt2-shiftNameUp v {name} {f} cf {.NOSEQ} updCtxt2-NOSEQ = updCtxt2-NOSEQ
@@ -497,12 +501,12 @@ abstract
   updCtxt2-subv {name} {f} cf v {.(ISECT a b₁)} {b} (updCtxt2-ISECT a b₁ upda upda₁) updb = updCtxt2-ISECT _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf v upda₁ updb)
   updCtxt2-subv {name} {f} cf v {.(TUNION a b₁)} {b} (updCtxt2-TUNION a b₁ upda upda₁) updb = updCtxt2-TUNION _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf (suc v) upda₁ (→updCtxt2-shiftUp 0 cf updb))
   updCtxt2-subv {name} {f} cf v {.(UNION a b₁)} {b} (updCtxt2-UNION a b₁ upda upda₁) updb = updCtxt2-UNION _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf v upda₁ updb)
-  updCtxt2-subv {name} {f} cf v {.(QTUNION a b₁)} {b} (updCtxt2-QTUNION a b₁ upda upda₁) updb = updCtxt2-QTUNION _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf v upda₁ updb)
+--  updCtxt2-subv {name} {f} cf v {.(QTUNION a b₁)} {b} (updCtxt2-QTUNION a b₁ upda upda₁) updb = updCtxt2-QTUNION _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf v upda₁ updb)
   updCtxt2-subv {name} {f} cf v {.(INL a)} {b} (updCtxt2-INL a upda) updb = updCtxt2-INL _ (updCtxt2-subv cf v upda updb)
   updCtxt2-subv {name} {f} cf v {.(INR a)} {b} (updCtxt2-INR a upda) updb = updCtxt2-INR _ (updCtxt2-subv cf v upda updb)
   updCtxt2-subv {name} {f} cf v {.(DECIDE a b₁ c)} {b} (updCtxt2-DECIDE a b₁ c upda upda₁ upda₂) updb = updCtxt2-DECIDE _ _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf (suc v) upda₁ (→updCtxt2-shiftUp 0 cf updb)) (updCtxt2-subv cf (suc v) upda₂ (→updCtxt2-shiftUp 0 cf updb))
   updCtxt2-subv {name} {f} cf v {.(EQ a b₁ c)} {b} (updCtxt2-EQ a b₁ c upda upda₁ upda₂) updb = updCtxt2-EQ _ _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf v upda₁ updb) (updCtxt2-subv cf v upda₂ updb)
-  updCtxt2-subv {name} {f} cf v {.(EQB a b₁ c d)} {b} (updCtxt2-EQB a b₁ c d upda upda₁ upda₂ upda₃) updb = updCtxt2-EQB _ _ _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf v upda₁ updb) (updCtxt2-subv cf v upda₂ updb) (updCtxt2-subv cf v upda₃ updb)
+--  updCtxt2-subv {name} {f} cf v {.(EQB a b₁ c d)} {b} (updCtxt2-EQB a b₁ c d upda upda₁ upda₂ upda₃) updb = updCtxt2-EQB _ _ _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf v upda₁ updb) (updCtxt2-subv cf v upda₂ updb) (updCtxt2-subv cf v upda₃ updb)
   updCtxt2-subv {name} {f} cf v {.AX} {b} updCtxt2-AX updb = updCtxt2-AX
   updCtxt2-subv {name} {f} cf v {.FREE} {b} updCtxt2-FREE updb = updCtxt2-FREE
   updCtxt2-subv {name} {f} cf v {.(CS name')} {b} (updCtxt2-CS name') updb = updCtxt2-CS _
@@ -511,8 +515,9 @@ abstract
   updCtxt2-subv {name} {f} cf v {.(LOAD a)} {b} (updCtxt2-LOAD a) updb = updCtxt2-LOAD _ --upda --updCtxt2-LOAD _ (updCtxt2-subv cf v upda updb)
   updCtxt2-subv {name} {f} cf v {.(CHOOSE a b₁)} {b} (updCtxt2-CHOOSE a b₁ upda upda₁) updb = updCtxt2-CHOOSE _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf v upda₁ updb)
   updCtxt2-subv {name} {f} cf v {.(TSQUASH a)} {b} (updCtxt2-TSQUASH a upda) updb = updCtxt2-TSQUASH _ (updCtxt2-subv cf v upda updb)
-  updCtxt2-subv {name} {f} cf v {.(TTRUNC a)} {b} (updCtxt2-TTRUNC a upda) updb = updCtxt2-TTRUNC _ (updCtxt2-subv cf v upda updb)
-  updCtxt2-subv {name} {f} cf v {.(TCONST a)} {b} (updCtxt2-TCONST a upda) updb = updCtxt2-TCONST _ (updCtxt2-subv cf v upda updb)
+--  updCtxt2-subv {name} {f} cf v {.(TTRUNC a)} {b} (updCtxt2-TTRUNC a upda) updb = updCtxt2-TTRUNC _ (updCtxt2-subv cf v upda updb)
+  updCtxt2-subv {name} {f} cf v {.(NOWRITE a)} {b} (updCtxt2-NOWRITE a upda) updb = updCtxt2-NOWRITE _ (updCtxt2-subv cf v upda updb)
+  updCtxt2-subv {name} {f} cf v {.(NOREAD a)} {b} (updCtxt2-NOREAD a upda) updb = updCtxt2-NOREAD _ (updCtxt2-subv cf v upda updb)
   updCtxt2-subv {name} {f} cf v {.(SUBSING a)} {b} (updCtxt2-SUBSING a upda) updb = updCtxt2-SUBSING _ (updCtxt2-subv cf v upda updb)
   updCtxt2-subv {name} {f} cf v {.PURE} {b} updCtxt2-PURE updb = updCtxt2-PURE
   updCtxt2-subv {name} {f} cf v {.NOSEQ} {b} updCtxt2-NOSEQ updb = updCtxt2-NOSEQ
@@ -643,12 +648,12 @@ abstract
   updCtxt2-refl name f (TUNION t t₁) nn = updCtxt2-TUNION _ _ (updCtxt2-refl name f t (¬∈++2→¬∈1 nn)) (updCtxt2-refl name f t₁ (¬∈++2→¬∈2 nn))
   updCtxt2-refl name f (ISECT t t₁) nn = updCtxt2-ISECT _ _ (updCtxt2-refl name f t (¬∈++2→¬∈1 nn)) (updCtxt2-refl name f t₁ (¬∈++2→¬∈2 nn))
   updCtxt2-refl name f (UNION t t₁) nn = updCtxt2-UNION _ _ (updCtxt2-refl name f t (¬∈++2→¬∈1 nn)) (updCtxt2-refl name f t₁ (¬∈++2→¬∈2 nn))
-  updCtxt2-refl name f (QTUNION t t₁) nn = updCtxt2-QTUNION _ _ (updCtxt2-refl name f t (¬∈++2→¬∈1 nn)) (updCtxt2-refl name f t₁ (¬∈++2→¬∈2 nn))
+--  updCtxt2-refl name f (QTUNION t t₁) nn = updCtxt2-QTUNION _ _ (updCtxt2-refl name f t (¬∈++2→¬∈1 nn)) (updCtxt2-refl name f t₁ (¬∈++2→¬∈2 nn))
   updCtxt2-refl name f (INL t) nn = updCtxt2-INL _ (updCtxt2-refl name f t nn)
   updCtxt2-refl name f (INR t) nn = updCtxt2-INR _ (updCtxt2-refl name f t nn)
   updCtxt2-refl name f (DECIDE t t₁ t₂) nn = updCtxt2-DECIDE _ _ _ (updCtxt2-refl name f t (¬∈++3→¬∈1 {_} {_} {names t} {names t₁} {names t₂} nn)) (updCtxt2-refl name f t₁ (¬∈++3→¬∈2 {_} {_} {names t} {names t₁} {names t₂} nn)) (updCtxt2-refl name f t₂ (¬∈++3→¬∈3 {_} {_} {names t} {names t₁} {names t₂} nn))
   updCtxt2-refl name f (EQ t t₁ t₂) nn = updCtxt2-EQ _ _ _ (updCtxt2-refl name f t (¬∈++3→¬∈1 {_} {_} {names t} {names t₁} {names t₂} nn)) (updCtxt2-refl name f t₁ (¬∈++3→¬∈2 {_} {_} {names t} {names t₁} {names t₂} nn)) (updCtxt2-refl name f t₂ (¬∈++3→¬∈3 {_} {_} {names t} {names t₁} {names t₂} nn))
-  updCtxt2-refl name f (EQB t t₁ t₂ t₃) nn = updCtxt2-EQB _ _ _ _ (updCtxt2-refl name f t (¬∈++4→¬∈1 {_} {_} {names t} {names t₁} {names t₂} {names t₃} nn)) (updCtxt2-refl name f t₁ (¬∈++4→¬∈2 {_} {_} {names t} {names t₁} {names t₂} {names t₃} nn)) (updCtxt2-refl name f t₂ (¬∈++4→¬∈3 {_} {_} {names t} {names t₁} {names t₂} {names t₃} nn)) (updCtxt2-refl name f t₃ (¬∈++4→¬∈4 {_} {_} {names t} {names t₁} {names t₂} {names t₃} nn))
+--  updCtxt2-refl name f (EQB t t₁ t₂ t₃) nn = updCtxt2-EQB _ _ _ _ (updCtxt2-refl name f t (¬∈++4→¬∈1 {_} {_} {names t} {names t₁} {names t₂} {names t₃} nn)) (updCtxt2-refl name f t₁ (¬∈++4→¬∈2 {_} {_} {names t} {names t₁} {names t₂} {names t₃} nn)) (updCtxt2-refl name f t₂ (¬∈++4→¬∈3 {_} {_} {names t} {names t₁} {names t₂} {names t₃} nn)) (updCtxt2-refl name f t₃ (¬∈++4→¬∈4 {_} {_} {names t} {names t₁} {names t₂} {names t₃} nn))
   updCtxt2-refl name f AX nn = updCtxt2-AX
   updCtxt2-refl name f FREE nn = updCtxt2-FREE
   updCtxt2-refl name f (CS x) nn = updCtxt2-CS _
@@ -657,8 +662,9 @@ abstract
   updCtxt2-refl name f (LOAD t) nn = updCtxt2-LOAD t --(updCtxt2-refl name f t nn)
   updCtxt2-refl name f (CHOOSE t t₁) nn = updCtxt2-CHOOSE _ _ (updCtxt2-refl name f t (¬∈++2→¬∈1 nn)) (updCtxt2-refl name f t₁ (¬∈++2→¬∈2 nn))
   updCtxt2-refl name f (TSQUASH t) nn = updCtxt2-TSQUASH _ (updCtxt2-refl name f t nn)
-  updCtxt2-refl name f (TTRUNC t) nn = updCtxt2-TTRUNC _ (updCtxt2-refl name f t nn)
-  updCtxt2-refl name f (TCONST t) nn = updCtxt2-TCONST _ (updCtxt2-refl name f t nn)
+--  updCtxt2-refl name f (TTRUNC t) nn = updCtxt2-TTRUNC _ (updCtxt2-refl name f t nn)
+  updCtxt2-refl name f (NOWRITE t) nn = updCtxt2-NOWRITE _ (updCtxt2-refl name f t nn)
+  updCtxt2-refl name f (NOREAD t) nn = updCtxt2-NOREAD _ (updCtxt2-refl name f t nn)
   updCtxt2-refl name f (SUBSING t) nn = updCtxt2-SUBSING _ (updCtxt2-refl name f t nn)
   updCtxt2-refl name f (DUM t) nn = updCtxt2-DUM _ (updCtxt2-refl name f t nn)
   updCtxt2-refl name f (FFDEFS t t₁) nn = updCtxt2-FFDEFS _ _ (updCtxt2-refl name f t (¬∈++2→¬∈1 nn)) (updCtxt2-refl name f t₁ (¬∈++2→¬∈2 nn))
@@ -721,12 +727,12 @@ abstract
   updCtxt2-shiftNameUp→ v {name} {f} cf {TUNION a a₁} (updCtxt2-TUNION .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-TUNION _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
   updCtxt2-shiftNameUp→ v {name} {f} cf {ISECT a a₁} (updCtxt2-ISECT .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-ISECT _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
   updCtxt2-shiftNameUp→ v {name} {f} cf {UNION a a₁} (updCtxt2-UNION .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-UNION _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
-  updCtxt2-shiftNameUp→ v {name} {f} cf {QTUNION a a₁} (updCtxt2-QTUNION .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-QTUNION _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
+--  updCtxt2-shiftNameUp→ v {name} {f} cf {QTUNION a a₁} (updCtxt2-QTUNION .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-QTUNION _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
   updCtxt2-shiftNameUp→ v {name} {f} cf {INL a} (updCtxt2-INL .(shiftNameUp v a) upd₁) = updCtxt2-INL _ (updCtxt2-shiftNameUp→ v cf upd₁)
   updCtxt2-shiftNameUp→ v {name} {f} cf {INR a} (updCtxt2-INR .(shiftNameUp v a) upd₁) = updCtxt2-INR _ (updCtxt2-shiftNameUp→ v cf upd₁)
   updCtxt2-shiftNameUp→ v {name} {f} cf {DECIDE a a₁ a₂} (updCtxt2-DECIDE .(shiftNameUp v a) .(shiftNameUp v a₁) .(shiftNameUp v a₂) upd₁ upd₂ upd₃) = updCtxt2-DECIDE _ _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂) (updCtxt2-shiftNameUp→ v cf upd₃)
   updCtxt2-shiftNameUp→ v {name} {f} cf {EQ a a₁ a₂} (updCtxt2-EQ .(shiftNameUp v a) .(shiftNameUp v a₁) .(shiftNameUp v a₂) upd₁ upd₂ upd₃) = updCtxt2-EQ _ _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂) (updCtxt2-shiftNameUp→ v cf upd₃)
-  updCtxt2-shiftNameUp→ v {name} {f} cf {EQB a a₁ a₂ a₃} (updCtxt2-EQB .(shiftNameUp v a) .(shiftNameUp v a₁) .(shiftNameUp v a₂) .(shiftNameUp v a₃) upd₁ upd₂ upd₃ upd₄) = updCtxt2-EQB _ _ _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂) (updCtxt2-shiftNameUp→ v cf upd₃) (updCtxt2-shiftNameUp→ v cf upd₄)
+--  updCtxt2-shiftNameUp→ v {name} {f} cf {EQB a a₁ a₂ a₃} (updCtxt2-EQB .(shiftNameUp v a) .(shiftNameUp v a₁) .(shiftNameUp v a₂) .(shiftNameUp v a₃) upd₁ upd₂ upd₃ upd₄) = updCtxt2-EQB _ _ _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂) (updCtxt2-shiftNameUp→ v cf upd₃) (updCtxt2-shiftNameUp→ v cf upd₄)
   updCtxt2-shiftNameUp→ v {name} {f} cf {AX} upd = updCtxt2-AX
   updCtxt2-shiftNameUp→ v {name} {f} cf {FREE} upd = updCtxt2-FREE
   updCtxt2-shiftNameUp→ v {name} {f} cf {CS x} upd = updCtxt2-CS _
@@ -742,8 +748,9 @@ abstract
   updCtxt2-shiftNameUp→ v {name} {f} cf {LOAD a} (updCtxt2-LOAD .a) = updCtxt2-LOAD _ --(updCtxt2-shiftNameUp→ v cf upd₁)
   updCtxt2-shiftNameUp→ v {name} {f} cf {CHOOSE a a₁} (updCtxt2-CHOOSE .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-CHOOSE _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
   updCtxt2-shiftNameUp→ v {name} {f} cf {TSQUASH a} (updCtxt2-TSQUASH .(shiftNameUp v a) upd₁) = updCtxt2-TSQUASH _ (updCtxt2-shiftNameUp→ v cf upd₁)
-  updCtxt2-shiftNameUp→ v {name} {f} cf {TTRUNC a} (updCtxt2-TTRUNC .(shiftNameUp v a) upd₁) = updCtxt2-TTRUNC _ (updCtxt2-shiftNameUp→ v cf upd₁)
-  updCtxt2-shiftNameUp→ v {name} {f} cf {TCONST a} (updCtxt2-TCONST .(shiftNameUp v a) upd₁) = updCtxt2-TCONST _ (updCtxt2-shiftNameUp→ v cf upd₁)
+--  updCtxt2-shiftNameUp→ v {name} {f} cf {TTRUNC a} (updCtxt2-TTRUNC .(shiftNameUp v a) upd₁) = updCtxt2-TTRUNC _ (updCtxt2-shiftNameUp→ v cf upd₁)
+  updCtxt2-shiftNameUp→ v {name} {f} cf {NOWRITE a} (updCtxt2-NOWRITE .(shiftNameUp v a) upd₁) = updCtxt2-NOWRITE _ (updCtxt2-shiftNameUp→ v cf upd₁)
+  updCtxt2-shiftNameUp→ v {name} {f} cf {NOREAD a} (updCtxt2-NOREAD .(shiftNameUp v a) upd₁) = updCtxt2-NOREAD _ (updCtxt2-shiftNameUp→ v cf upd₁)
   updCtxt2-shiftNameUp→ v {name} {f} cf {SUBSING a} (updCtxt2-SUBSING .(shiftNameUp v a) upd₁) = updCtxt2-SUBSING _ (updCtxt2-shiftNameUp→ v cf upd₁)
   updCtxt2-shiftNameUp→ v {name} {f} cf {DUM a} (updCtxt2-DUM .(shiftNameUp v a) upd₁) = updCtxt2-DUM _ (updCtxt2-shiftNameUp→ v cf upd₁)
   updCtxt2-shiftNameUp→ v {name} {f} cf {FFDEFS a a₁} (updCtxt2-FFDEFS .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-FFDEFS _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
@@ -2199,12 +2206,12 @@ abstract
   updCtxt2-renn name n m f .(ISECT a b) diff1 diff2 nf cf (updCtxt2-ISECT a b upd₁ upd₂) = updCtxt2-ISECT _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂)
   updCtxt2-renn name n m f .(TUNION a b) diff1 diff2 nf cf (updCtxt2-TUNION a b upd₁ upd₂) = updCtxt2-TUNION _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂)
   updCtxt2-renn name n m f .(UNION a b) diff1 diff2 nf cf (updCtxt2-UNION a b upd₁ upd₂) = updCtxt2-UNION _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂)
-  updCtxt2-renn name n m f .(QTUNION a b) diff1 diff2 nf cf (updCtxt2-QTUNION a b upd₁ upd₂) = updCtxt2-QTUNION _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂)
+--  updCtxt2-renn name n m f .(QTUNION a b) diff1 diff2 nf cf (updCtxt2-QTUNION a b upd₁ upd₂) = updCtxt2-QTUNION _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂)
   updCtxt2-renn name n m f .(INL a) diff1 diff2 nf cf (updCtxt2-INL a upd₁) = updCtxt2-INL _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
   updCtxt2-renn name n m f .(INR a) diff1 diff2 nf cf (updCtxt2-INR a upd₁) = updCtxt2-INR _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
   updCtxt2-renn name n m f .(DECIDE a b c) diff1 diff2 nf cf (updCtxt2-DECIDE a b c upd₁ upd₂ upd₃) = updCtxt2-DECIDE _ _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂) (updCtxt2-renn name n m f c diff1 diff2 nf cf upd₃)
   updCtxt2-renn name n m f .(EQ a b c) diff1 diff2 nf cf (updCtxt2-EQ a b c upd₁ upd₂ upd₃) = updCtxt2-EQ _ _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂) (updCtxt2-renn name n m f c diff1 diff2 nf cf upd₃)
-  updCtxt2-renn name n m f .(EQB a b c d) diff1 diff2 nf cf (updCtxt2-EQB a b c d upd₁ upd₂ upd₃ upd₄) = updCtxt2-EQB _ _ _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂) (updCtxt2-renn name n m f c diff1 diff2 nf cf upd₃) (updCtxt2-renn name n m f d diff1 diff2 nf cf upd₄)
+--  updCtxt2-renn name n m f .(EQB a b c d) diff1 diff2 nf cf (updCtxt2-EQB a b c d upd₁ upd₂ upd₃ upd₄) = updCtxt2-EQB _ _ _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂) (updCtxt2-renn name n m f c diff1 diff2 nf cf upd₃) (updCtxt2-renn name n m f d diff1 diff2 nf cf upd₄)
   updCtxt2-renn name n m f .AX diff1 diff2 nf cf updCtxt2-AX = updCtxt2-AX
   updCtxt2-renn name n m f .FREE diff1 diff2 nf cf updCtxt2-FREE = updCtxt2-FREE
   updCtxt2-renn name n m f .(CS name') diff1 diff2 nf cf (updCtxt2-CS name') with name' ≟ n
@@ -2217,8 +2224,9 @@ abstract
   updCtxt2-renn name n m f .(LOAD a) diff1 diff2 nf cf (updCtxt2-LOAD a) = updCtxt2-LOAD _ --(updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
   updCtxt2-renn name n m f .(CHOOSE a b) diff1 diff2 nf cf (updCtxt2-CHOOSE a b upd₁ upd₂) = updCtxt2-CHOOSE _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂)
   updCtxt2-renn name n m f .(TSQUASH a) diff1 diff2 nf cf (updCtxt2-TSQUASH a upd₁) = updCtxt2-TSQUASH _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
-  updCtxt2-renn name n m f .(TTRUNC a) diff1 diff2 nf cf (updCtxt2-TTRUNC a upd₁) = updCtxt2-TTRUNC _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
-  updCtxt2-renn name n m f .(TCONST a) diff1 diff2 nf cf (updCtxt2-TCONST a upd₁) = updCtxt2-TCONST _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
+--  updCtxt2-renn name n m f .(TTRUNC a) diff1 diff2 nf cf (updCtxt2-TTRUNC a upd₁) = updCtxt2-TTRUNC _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
+  updCtxt2-renn name n m f .(NOWRITE a) diff1 diff2 nf cf (updCtxt2-NOWRITE a upd₁) = updCtxt2-NOWRITE _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
+  updCtxt2-renn name n m f .(NOREAD a) diff1 diff2 nf cf (updCtxt2-NOREAD a upd₁) = updCtxt2-NOREAD _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
   updCtxt2-renn name n m f .(SUBSING a) diff1 diff2 nf cf (updCtxt2-SUBSING a upd₁) = updCtxt2-SUBSING _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
   updCtxt2-renn name n m f .PURE diff1 diff2 nf cf updCtxt2-PURE = updCtxt2-PURE
   updCtxt2-renn name n m f .NOSEQ diff1 diff2 nf cf updCtxt2-NOSEQ = updCtxt2-NOSEQ

@@ -118,8 +118,8 @@ SUBSINGneqTUNION {a} {c} {d} ()
 SUBSINGneqUNION : {a : Term} {c : Term} {d : Term} → ¬ (SUBSING a) ≡ UNION c d
 SUBSINGneqUNION {a} {c} {d} ()
 
-SUBSINGneqQTUNION : {a : Term} {c : Term} {d : Term} → ¬ (SUBSING a) ≡ QTUNION c d
-SUBSINGneqQTUNION {a} {c} {d} ()
+--SUBSINGneqQTUNION : {a : Term} {c : Term} {d : Term} → ¬ (SUBSING a) ≡ QTUNION c d
+--SUBSINGneqQTUNION {a} {c} {d} ()
 
 SUBSINGneqEQ : {a : Term} {c d e : Term} → ¬ (SUBSING a) ≡ EQ c d e
 SUBSINGneqEQ {a} {c} {d} {e} ()
@@ -136,8 +136,8 @@ SUBSINGneqLIFT {a} {c} ()
 SUBSINGneqTSQUASH : {a : Term} {c : Term} → ¬ (SUBSING a) ≡ TSQUASH c
 SUBSINGneqTSQUASH {a} {c} ()
 
-SUBSINGneqTTRUNC : {a : Term} {c : Term} → ¬ (SUBSING a) ≡ TTRUNC c
-SUBSINGneqTTRUNC {a} {c} ()
+--SUBSINGneqTTRUNC : {a : Term} {c : Term} → ¬ (SUBSING a) ≡ TTRUNC c
+--SUBSINGneqTTRUNC {a} {c} ()
 
 SUBSINGneqPURE : {a : Term} → ¬ (SUBSING a) ≡ PURE
 SUBSINGneqPURE {a} ()
@@ -148,8 +148,8 @@ SUBSINGneqNOSEQ {a} ()
 SUBSINGneqTERM : {a c : Term} → ¬ (SUBSING a) ≡ TERM c
 SUBSINGneqTERM {a} {c} ()
 
-SUBSINGneqTCONST : {a : Term} {c : Term} → ¬ (SUBSING a) ≡ TCONST c
-SUBSINGneqTCONST {a} {c} ()
+SUBSINGneqNOWRITE : {a : Term} {c : Term} → ¬ (SUBSING a) ≡ NOWRITE c
+SUBSINGneqNOWRITE {a} {c} ()
 
 SUBSINGneqLOWER : {a : Term} {c : Term} → ¬ (SUBSING a) ≡ LOWER c
 SUBSINGneqLOWER {a} {c} ()
@@ -218,9 +218,9 @@ typeSysConds-SUBSING-ttrans u w A B A1 B1 x x₁ eqta exta inda C eqt = concl x 
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind x x₁ eqta exta inda = ⊥-elim (SUBSINGneqTUNION (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind x x₁ eqta exta inda = ⊥-elim (SUBSINGneqEQ (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNION C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta exta inda = ⊥-elim (SUBSINGneqUNION (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTQTUNION C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta exta inda = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta exta inda = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind x x₁ eqta exta inda = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind x x₁ eqta exta inda = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind x x₁ eqta exta inda = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x x₁ eqta exta inda
       = EQTSUBSING A1 A4 x y₁ eqa exta'
       where
@@ -238,7 +238,7 @@ typeSysConds-SUBSING-ttrans u w A B A1 B1 x x₁ eqta exta inda C eqt = concl x 
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x x₁ eqta exta inda = ⊥-elim (SUBSINGneqPURE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x x₁ eqta exta inda = ⊥-elim (SUBSINGneqNOSEQ (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x x₁ eqta exta inda = ⊥-elim (SUBSINGneqTERM (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind x x₁ eqta exta inda = ⊥-elim (SUBSINGneqTCONST (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind x x₁ eqta exta inda = ⊥-elim (SUBSINGneqNOWRITE (⇛-val-det tt tt x₁ y))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (SUBSINGneqDUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x x₁ eqta exta inda = ⊥-elim (SUBSINGneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x x₁ eqta exta inda = ⊥-elim (SUBSINGneqUNIV (⇛-val-det tt tt x₁ c₁))
@@ -338,9 +338,9 @@ typeSysConds-SUBSING-extl1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTUNION (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqEQ (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqUNION (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi
       = Mod.∀𝕎-□Func M aw eqi
       where
@@ -353,7 +353,7 @@ typeSysConds-SUBSING-extl1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqPURE (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqNOSEQ (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTERM (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTCONST (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqNOWRITE (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqFFDEFS (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqUNIV (⇛-val-det tt tt x c₁))
     ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqLIFT (⇛-val-det tt tt x y))
@@ -422,9 +422,9 @@ typeSysConds-SUBSING-extl2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTUNION (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqEQ (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqUNION (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi
       --
       = Mod.∀𝕎-□Func M aw eqi
@@ -436,7 +436,7 @@ typeSysConds-SUBSING-extl2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqPURE (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqNOSEQ (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTERM (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTCONST (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqNOWRITE (⇛-val-det tt tt x y₁))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqDUM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqFFDEFS (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqUNIV (⇛-val-det tt tt x c₂))
@@ -505,9 +505,9 @@ typeSysConds-SUBSING-extr1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTUNION (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqEQ (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqUNION (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi
       = Mod.∀𝕎-□Func M aw eqi
       where
@@ -518,7 +518,7 @@ typeSysConds-SUBSING-extr1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqPURE (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqNOSEQ (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTERM (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTCONST (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqNOWRITE (⇛-val-det tt tt x₁ y₁))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqDUM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqFFDEFS (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqUNIV (⇛-val-det tt tt x₁ c₂))
@@ -587,9 +587,9 @@ typeSysConds-SUBSING-extr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTUNION (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqEQ (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqUNION (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi
       = Mod.∀𝕎-□Func M aw eqi
       where
@@ -600,7 +600,7 @@ typeSysConds-SUBSING-extr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqPURE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqNOSEQ (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTERM (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTCONST (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqNOWRITE (⇛-val-det tt tt x₁ y))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqDUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqUNIV (⇛-val-det tt tt x₁ c₁))
@@ -669,9 +669,9 @@ typeSysConds-SUBSING-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTUNION (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqEQ (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqUNION (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi
       = Mod.∀𝕎-□Func M aw eqi
       where
@@ -682,7 +682,7 @@ typeSysConds-SUBSING-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqPURE (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqNOSEQ (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTERM (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTCONST (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqNOWRITE (⇛-val-det tt tt x y))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqDUM (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqFFDEFS (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqUNIV (⇛-val-det tt tt x c₁))
@@ -753,9 +753,9 @@ typeSysConds-SUBSING-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTUNION (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqEQ (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqUNION (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi
       = Mod.∀𝕎-□Func M aw eqi
       where
@@ -766,7 +766,7 @@ typeSysConds-SUBSING-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqPURE (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqNOSEQ (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTERM (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqTCONST (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqNOWRITE (⇛-val-det tt tt x y₁))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqDUM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqFFDEFS (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x f g eqi = ⊥-elim (SUBSINGneqUNIV (⇛-val-det tt tt x c₂))
@@ -836,9 +836,9 @@ typeSysConds-SUBSING-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTUNION (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqEQ (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqUNION (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi
       = Mod.∀𝕎-□Func M aw eqi
       where
@@ -849,7 +849,7 @@ typeSysConds-SUBSING-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqPURE (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqNOSEQ (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTERM (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTCONST (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqNOWRITE (⇛-val-det tt tt x₁ y₁))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqDUM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqFFDEFS (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqUNIV (⇛-val-det tt tt x₁ c₂))
@@ -919,9 +919,9 @@ typeSysConds-SUBSING-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTUNION (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqEQ (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqUNION (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi
       = Mod.∀𝕎-□Func M aw eqi
       where
@@ -932,7 +932,7 @@ typeSysConds-SUBSING-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqPURE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqNOSEQ (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTERM (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqTCONST (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqNOWRITE (⇛-val-det tt tt x₁ y))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqDUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (SUBSINGneqUNIV (⇛-val-det tt tt x₁ c₁))
@@ -1006,9 +1006,9 @@ eqInType-⇛-SUBSING u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt eqi = concl 
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqTUNION (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqEQ (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqUNION (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei
       = Mod.∀𝕎-□Func M aw ei
       where
@@ -1023,7 +1023,7 @@ eqInType-⇛-SUBSING u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt eqi = concl 
     ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqPURE (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqNOSEQ (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ x x₁ x₂) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqTERM (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqTCONST (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqNOWRITE (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqUNIV (⇛-val-det tt tt c₁ d₁))
     ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqLIFT (⇛-val-det tt tt c₁ x))
@@ -1101,9 +1101,9 @@ eqInType-⇛-SUBSING2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ei ext = concl e
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (SUBSINGneqTUNION (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (SUBSINGneqEQ (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (SUBSINGneqUNION (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ei ext
       = Mod.∀𝕎-□Func M aw ei
       where
@@ -1120,7 +1120,7 @@ eqInType-⇛-SUBSING2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ei ext = concl e
     ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (SUBSINGneqPURE (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (SUBSINGneqNOSEQ (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ x x₁ x₂) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (SUBSINGneqTERM (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (SUBSINGneqTCONST (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (SUBSINGneqNOWRITE (⇛-val-det tt tt c₁ x))
 -- ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (SUBSINGneqDUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (SUBSINGneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (SUBSINGneqUNIV (⇛-val-det tt tt c₁ d₁))
@@ -1198,9 +1198,9 @@ eqInType-⇛-SUBSING-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt ei = con
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqTUNION (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqEQ (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqUNION (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei
       = Mod.∀𝕎-□Func M aw ei
       where
@@ -1212,7 +1212,7 @@ eqInType-⇛-SUBSING-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt ei = con
     ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqPURE (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqNOSEQ (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ x x₁ x₂) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqTERM (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqTCONST (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqNOWRITE (⇛-val-det tt tt c₁ x))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqDUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (SUBSINGneqUNIV (⇛-val-det tt tt c₁ d₁))
@@ -1291,9 +1291,9 @@ eqInType-⇛-SUBSING-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ext ei = con
     ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (SUBSINGneqTUNION (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (SUBSINGneqEQ (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (SUBSINGneqUNION (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (SUBSINGneqQTUNION (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (SUBSINGneqTSQUASH (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (SUBSINGneqTTRUNC (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ext ei
       = Mod.∀𝕎-□Func M aw ei
       where
@@ -1308,7 +1308,7 @@ eqInType-⇛-SUBSING-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ext ei = con
     ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (SUBSINGneqPURE (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (SUBSINGneqNOSEQ (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ x x₁ x₂) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (SUBSINGneqTERM (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTCONST A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (SUBSINGneqTCONST (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (SUBSINGneqNOWRITE (⇛-val-det tt tt c₁ x))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (SUBSINGneqDUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (SUBSINGneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (SUBSINGneqUNIV (⇛-val-det tt tt c₁ d₁))

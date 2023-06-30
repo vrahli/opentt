@@ -188,7 +188,7 @@ eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTEQ a1 b1 a2 b2 A₁ B�
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB) = ⊥-elim (NATneqUNION (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTSQUASH A1 A2 x x₁ eqtA) = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTTRUNC A1 A2 x x₁ eqtA) = ⊥-elim (NATneqTTRUNC (⇛-val-det tt tt c₁ x))
-eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTCONST A1 A2 x x₁ eqtA) = ⊥-elim (NATneqTCONST (⇛-val-det tt tt c₁ x))
+eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTNORWITE A1 A2 x x₁ eqtA) = ⊥-elim (NATneqNOWRITE (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTSUBSING A1 A2 x x₁ eqtA) = ⊥-elim (NATneqSUBSING (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA eqx) = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqTypes-pres-eqInType-NAT u isu w A B a b c₁ c₂ e (EQTUNIV x) =
@@ -375,14 +375,14 @@ eqTypes-mon u {A} {B} {w1} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) w2 
     extb' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (∀𝕎-mon ext eqtB w e) a b)
     extb' a b w' e1 e2 ei = extb a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
 
-eqTypes-mon u {A} {B} {w1} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) w2 ext =
+{-eqTypes-mon u {A} {B} {w1} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) w2 ext =
   EQTQTUNION A1 B1 A2 B2 (⇛-mon ext x) (⇛-mon ext x₁) (∀𝕎-mon ext eqtA) (∀𝕎-mon ext eqtB) exta' extb'
   where
     exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (∀𝕎-mon ext eqtA w e) a b)
     exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
 
     extb' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (∀𝕎-mon ext eqtB w e) a b)
-    extb' a b w' e1 e2 ei = extb a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
+    extb' a b w' e1 e2 ei = extb a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei-}
 
 eqTypes-mon u {A} {B} {w1} (EQTSQUASH A1 A2 x x₁ eqtA exta) w2 ext =
   EQTSQUASH A1 A2 (⇛-mon ext x) (⇛-mon ext x₁) (∀𝕎-mon ext eqtA) exta'
@@ -390,14 +390,14 @@ eqTypes-mon u {A} {B} {w1} (EQTSQUASH A1 A2 x x₁ eqtA exta) w2 ext =
     exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (∀𝕎-mon ext eqtA w e) a b)
     exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
 
-eqTypes-mon u {A} {B} {w1} (EQTTRUNC A1 A2 x x₁ eqtA exta) w2 ext =
+{-eqTypes-mon u {A} {B} {w1} (EQTTRUNC A1 A2 x x₁ eqtA exta) w2 ext =
   EQTTRUNC A1 A2 (⇛-mon ext x) (⇛-mon ext x₁) (∀𝕎-mon ext eqtA) exta'
   where
     exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (∀𝕎-mon ext eqtA w e) a b)
-    exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
+    exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei-}
 
-eqTypes-mon u {A} {B} {w1} (EQTCONST A1 A2 x x₁ eqtA exta) w2 ext =
-  EQTCONST A1 A2 (⇛-mon ext x) (⇛-mon ext x₁) (∀𝕎-mon ext eqtA) exta'
+eqTypes-mon u {A} {B} {w1} (EQTNOWRITE A1 A2 x x₁ eqtA exta) w2 ext =
+  EQTNOWRITE A1 A2 (⇛-mon ext x) (⇛-mon ext x₁) (∀𝕎-mon ext eqtA) exta'
   where
     exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (∀𝕎-mon ext eqtA w e) a b)
     exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
@@ -732,7 +732,7 @@ eqTypes⇛NAT {u} {w} {A} {B} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1
 eqTypes⇛NAT {u} {w} {A} {B} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) comp = ⊥-elim (NATneqUNION (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqtA exta) comp = ⊥-elim (NATneqTSQUASH (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} (EQTTRUNC A1 A2 x x₁ eqtA exta) comp = ⊥-elim (NATneqTTRUNC (⇛-val-det tt tt comp x))
-eqTypes⇛NAT {u} {w} {A} {B} (EQTCONST A1 A2 x x₁ eqtA exta) comp = ⊥-elim (NATneqTCONST (⇛-val-det tt tt comp x))
+eqTypes⇛NAT {u} {w} {A} {B} (EQTNOWRITE A1 A2 x x₁ eqtA exta) comp = ⊥-elim (NATneqNOWRITE (⇛-val-det tt tt comp x))
 --eqTypes⇛NAT {u} {w} {A} {B} (EQTDUM A1 A2 x x₁ eqtA exta) comp = ⊥-elim (NATneqDUM (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) comp = ⊥-elim (NATneqFFDEFS (⇛-val-det tt tt comp x))
 eqTypes⇛NAT {u} {w} {A} {B} (EQTUNIV i p c₁ c₂) comp = ⊥-elim (NATneqUNIV (⇛-val-det tt tt comp c₁))
@@ -1582,31 +1582,31 @@ irr-ttrunc u w A1 A2 eqta exta f g w1 e1 w' e' h z = irr-TTRUNCeq eqta exta (⊑
 
 
 
-TCONSTeq-ext-eq : {eqa1 eqa2 : per} {w : 𝕎·} {t1 t2 : CTerm}
+NOWRITEeq-ext-eq : {eqa1 eqa2 : per} {w : 𝕎·} {t1 t2 : CTerm}
                   → ((a b : CTerm) → eqa1 a b → eqa2 a b)
-                  → TCONSTeq eqa1 w t1 t2
-                  → TCONSTeq eqa2 w t1 t2
-TCONSTeq-ext-eq {eqa1} {eqa2} {w} {t1} {t2} ext (h , c₁ , c₂) = ext t1 t2 h , c₁ , c₂
+                  → NOWRITEeq eqa1 w t1 t2
+                  → NOWRITEeq eqa2 w t1 t2
+NOWRITEeq-ext-eq {eqa1} {eqa2} {w} {t1} {t2} ext (h , c₁ , c₂) = ext t1 t2 h , c₁ , c₂
 
 
-irr-TCONSTeq : {u : univs} {w w' : 𝕎·} {A1 A2 : CTerm}
+irr-NOWRITEeq : {u : univs} {w w' : 𝕎·} {A1 A2 : CTerm}
                (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
                (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
                {f g : CTerm}
                (e1 e2 : w ⊑· w')
-               → TCONSTeq (eqInType u w' (eqta w' e1)) w' f g
-               → TCONSTeq (eqInType u w' (eqta w' e2)) w' f g
-irr-TCONSTeq {u} {w} {w'} {A1} {A2} eqta exta {f} {g} e1 e2 h =
-  TCONSTeq-ext-eq (λ a b q → exta a b w' e1 e2 q) h
+               → NOWRITEeq (eqInType u w' (eqta w' e1)) w' f g
+               → NOWRITEeq (eqInType u w' (eqta w' e2)) w' f g
+irr-NOWRITEeq {u} {w} {w'} {A1} {A2} eqta exta {f} {g} e1 e2 h =
+  NOWRITEeq-ext-eq (λ a b q → exta a b w' e1 e2 q) h
 
 
 irr-tconst : (u : univs) (w : 𝕎·) (A1 A2 : CTerm)
               (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
               (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
               (f g : CTerm) (w1 : 𝕎·) (e1 : w ⊑· w1)
-              → ∀𝕎 w1 (λ w' e' → TCONSTeq (eqInType u w' (eqta w' (⊑-trans· e1 e'))) w' f g
-                                 → (z : w ⊑· w') → TCONSTeq (eqInType u w' (eqta w' z)) w' f g)
-irr-tconst u w A1 A2 eqta exta f g w1 e1 w' e' h z = irr-TCONSTeq eqta exta (⊑-trans· e1 e') z h
+              → ∀𝕎 w1 (λ w' e' → NOWRITEeq (eqInType u w' (eqta w' (⊑-trans· e1 e'))) w' f g
+                                 → (z : w ⊑· w') → NOWRITEeq (eqInType u w' (eqta w' z)) w' f g)
+irr-tconst u w A1 A2 eqta exta f g w1 e1 w' e' h z = irr-NOWRITEeq eqta exta (⊑-trans· e1 e') z h
 {--  ca , a1 , a2 , isv₁ , isv₂ , c₁ , c₂ , eqa'
   where
     eqa' : eqInType u w' (eqta w' z) a1 a2
@@ -1752,19 +1752,19 @@ is-uni→eqInType {u} isu {w} {A} {B} {a} {b} eqt eqi rewrite isu = eqt , eqi
 
 
 
-TCONSTeq-sym : {eqa : per} {w : 𝕎·} {t1 t2 : CTerm}
+NOWRITEeq-sym : {eqa : per} {w : 𝕎·} {t1 t2 : CTerm}
                  → ((a b : CTerm) → eqa a b → eqa b a)
-                 → TCONSTeq eqa w t1 t2
-                 → TCONSTeq eqa w t2 t1
-TCONSTeq-sym {eqa} {w} {t1} {t2} sym (h , c₁ , c₂) = sym t1 t2 h , c₂ , c₁
+                 → NOWRITEeq eqa w t1 t2
+                 → NOWRITEeq eqa w t2 t1
+NOWRITEeq-sym {eqa} {w} {t1} {t2} sym (h , c₁ , c₂) = sym t1 t2 h , c₂ , c₁
 
 
-TCONSTeq-trans : {eqa : per} {w : 𝕎·} {t1 t2 t3 : CTerm}
+NOWRITEeq-trans : {eqa : per} {w : 𝕎·} {t1 t2 t3 : CTerm}
                  → ((a b c : CTerm) → eqa a b → eqa b c → eqa a c)
-                 → TCONSTeq eqa w t1 t2
-                 → TCONSTeq eqa w t2 t3
-                 → TCONSTeq eqa w t1 t3
-TCONSTeq-trans {eqa} {w} {t1} {t2} {t3} trans (h , c₁ , c₂) (q , c₃ , c₄) = trans t1 t2 t3 h q , c₁ , c₄
+                 → NOWRITEeq eqa w t1 t2
+                 → NOWRITEeq eqa w t2 t3
+                 → NOWRITEeq eqa w t1 t3
+NOWRITEeq-trans {eqa} {w} {t1} {t2} {t3} trans (h , c₁ , c₂) (q , c₃ , c₄) = trans t1 t2 t3 h q , c₁ , c₄
 
 
 SUBSINGeq-sym : {eqa : per} {t1 t2 : CTerm}

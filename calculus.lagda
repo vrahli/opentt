@@ -85,13 +85,13 @@ data Term : Set where
   ISECT : Term → Term → Term
   -- Disjoint unions
   UNION : Term → Term → Term
-  QTUNION : Term → Term → Term
+--  QTUNION : Term → Term → Term
   INL : Term → Term
   INR : Term → Term
   DECIDE : Term → Term → Term → Term
   -- Equality
   EQ : Term → Term → Term → Term
-  EQB : Term → Term → Term → Term → Term
+--  EQB : Term → Term → Term → Term → Term
   AX : Term
   -- Choices
   FREE : Term
@@ -105,9 +105,10 @@ data Term : Set where
   MAPP : 𝕊 → Term → Term
 --  IFC0 : Term → Term → Term → Term
   -- Truncation
-  TSQUASH : Term → Term -- closed under ∼C
-  TTRUNC : Term → Term  -- closed under #⇓
-  TCONST : Term → Term  -- satisfy #⇓→#⇓!
+  TSQUASH : Term → Term -- closed under ∼C -- time-squashing, i.e., to constrain type to readable types
+--  TTRUNC : Term → Term  -- closed under #⇓
+  NOWRITE  : Term → Term -- satisfy #⇓→#⇓! -- essentially a no-write modality
+  NOREAD  : Term → Term -- currently the default
   SUBSING : Term → Term
   -- Dummy
   DUM : Term → Term
@@ -156,12 +157,12 @@ value? (SET _ _) = true
 value? (ISECT _ _) = true
 value? (TUNION _ _) = true
 value? (UNION _ _) = true
-value? (QTUNION _ _) = true
+--value? (QTUNION _ _) = true
 value? (INL _) = true
 value? (INR _) = true
 value? (DECIDE _ _ _) = false -- Not a value
 value? (EQ _ _ _) = true
-value? (EQB _ _ _ _) = true
+---value? (EQB _ _ _ _) = true
 value? AX = true
 value? FREE = true
 value? (MSEQ _) = true
@@ -173,8 +174,9 @@ value? (LOAD _) = false
 value? (CHOOSE _ _) = false -- Not a value
 --value? (IFC0 _ _ _) = false -- Not a value
 value? (TSQUASH _) = true
-value? (TTRUNC _) = true
-value? (TCONST _) = true
+--value? (TTRUNC _) = true
+value? (NOWRITE _) = true
+value? (NOREAD _) = true
 value? (SUBSING _) = true
 value? (DUM _) = true
 value? (FFDEFS _ _) = true
@@ -232,8 +234,9 @@ vars FREE = []
 vars (CS x) = []
 vars (NAME x) = []
 vars (TSQUASH t) = vars t
-vars (TTRUNC t) = vars t
-vars (TCONST t) = vars t
+--vars (TTRUNC t) = vars t
+vars (NOWRITE t) = vars t
+vars (NOREAD t) = vars t
 vars (SUBSING t) = vars t
 vars (FFDEFS t t₁) = vars t ++ vars t₁
 vars (UNIV x) = []
@@ -298,12 +301,12 @@ fvars (SET t t₁)       = fvars t ++ lowerVars (fvars t₁)
 fvars (ISECT t t₁)     = fvars t ++ fvars t₁
 fvars (TUNION t t₁)    = fvars t ++ lowerVars (fvars t₁)
 fvars (UNION t t₁)     = fvars t ++ fvars t₁
-fvars (QTUNION t t₁)   = fvars t ++ fvars t₁
+--fvars (QTUNION t t₁)   = fvars t ++ fvars t₁
 fvars (INL t)          = fvars t
 fvars (INR t)          = fvars t
 fvars (DECIDE t t₁ t₂) = fvars t ++ lowerVars (fvars t₁) ++ lowerVars (fvars t₂)
 fvars (EQ t t₁ t₂)     = fvars t ++ fvars t₁ ++ fvars t₂
-fvars (EQB t t₁ t₂ t₃) = fvars t ++ fvars t₁ ++ fvars t₂ ++ fvars t₃
+--fvars (EQB t t₁ t₂ t₃) = fvars t ++ fvars t₁ ++ fvars t₂ ++ fvars t₃
 fvars AX               = []
 fvars FREE             = []
 fvars (MSEQ s)         = []
@@ -315,8 +318,9 @@ fvars (LOAD t)         = []
 fvars (CHOOSE a b)     = fvars a ++ fvars b
 --fvars (IFC0 a b c)     = fvars a ++ fvars b ++ fvars c
 fvars (TSQUASH t)      = fvars t
-fvars (TTRUNC t)       = fvars t
-fvars (TCONST t)       = fvars t
+--fvars (TTRUNC t)       = fvars t
+fvars (NOWRITE t)       = fvars t
+fvars (NOREAD t)       = fvars t
 fvars (SUBSING t)      = fvars t
 fvars (DUM t)          = fvars t
 fvars (FFDEFS t t₁)    = fvars t ++ fvars t₁
@@ -465,12 +469,12 @@ shiftUp c (SET t t₁) = SET (shiftUp c t) (shiftUp (suc c) t₁)
 shiftUp c (ISECT t t₁) = ISECT (shiftUp c t) (shiftUp c t₁)
 shiftUp c (TUNION t t₁) = TUNION (shiftUp c t) (shiftUp (suc c) t₁)
 shiftUp c (UNION t t₁) = UNION (shiftUp c t) (shiftUp c t₁)
-shiftUp c (QTUNION t t₁) = QTUNION (shiftUp c t) (shiftUp c t₁)
+--shiftUp c (QTUNION t t₁) = QTUNION (shiftUp c t) (shiftUp c t₁)
 shiftUp c (INL t) = INL (shiftUp c t)
 shiftUp c (INR t) = INR (shiftUp c t)
 shiftUp c (DECIDE t t₁ t₂) = DECIDE (shiftUp c t) (shiftUp (suc c) t₁) (shiftUp (suc c) t₂)
 shiftUp c (EQ t t₁ t₂) = EQ (shiftUp c t) (shiftUp c t₁) (shiftUp c t₂)
-shiftUp c (EQB t t₁ t₂ t₃) = EQB (shiftUp c t) (shiftUp c t₁) (shiftUp c t₂) (shiftUp c t₃)
+--shiftUp c (EQB t t₁ t₂ t₃) = EQB (shiftUp c t) (shiftUp c t₁) (shiftUp c t₂) (shiftUp c t₃)
 shiftUp c AX = AX
 shiftUp c FREE = FREE
 shiftUp c (MSEQ x) = MSEQ x
@@ -482,8 +486,9 @@ shiftUp c (LOAD t) = LOAD t
 shiftUp c (CHOOSE a b) = CHOOSE (shiftUp c a) (shiftUp c b)
 --shiftUp c (IFC0 a t₁ t₂) = IFC0 (shiftUp c a) (shiftUp c t₁) (shiftUp c t₂)
 shiftUp c (TSQUASH t) = TSQUASH (shiftUp c t)
-shiftUp c (TTRUNC t) = TTRUNC (shiftUp c t)
-shiftUp c (TCONST t) = TCONST (shiftUp c t)
+--shiftUp c (TTRUNC t) = TTRUNC (shiftUp c t)
+shiftUp c (NOWRITE t) = NOWRITE (shiftUp c t)
+shiftUp c (NOREAD t) = NOREAD (shiftUp c t)
 shiftUp c (SUBSING t) = SUBSING (shiftUp c t)
 shiftUp c (DUM t) = DUM (shiftUp c t)
 shiftUp c (FFDEFS t t₁) = FFDEFS (shiftUp c t) (shiftUp c t₁)
@@ -527,12 +532,12 @@ shiftDown c (SET t t₁) = SET (shiftDown c t) (shiftDown (suc c) t₁)
 shiftDown c (ISECT t t₁) = ISECT (shiftDown c t) (shiftDown c t₁)
 shiftDown c (TUNION t t₁) = TUNION (shiftDown c t) (shiftDown (suc c) t₁)
 shiftDown c (UNION t t₁) = UNION (shiftDown c t) (shiftDown c t₁)
-shiftDown c (QTUNION t t₁) = QTUNION (shiftDown c t) (shiftDown c t₁)
+--shiftDown c (QTUNION t t₁) = QTUNION (shiftDown c t) (shiftDown c t₁)
 shiftDown c (INL t) = INL (shiftDown c t)
 shiftDown c (INR t) = INR (shiftDown c t)
 shiftDown c (DECIDE t t₁ t₂) = DECIDE (shiftDown c t) (shiftDown (suc c) t₁) (shiftDown (suc c) t₂)
 shiftDown c (EQ t t₁ t₂) = EQ (shiftDown c t) (shiftDown c t₁) (shiftDown c t₂)
-shiftDown c (EQB t t₁ t₂ t₃) = EQB (shiftDown c t) (shiftDown c t₁) (shiftDown c t₂) (shiftDown c t₃)
+--shiftDown c (EQB t t₁ t₂ t₃) = EQB (shiftDown c t) (shiftDown c t₁) (shiftDown c t₂) (shiftDown c t₃)
 shiftDown c AX = AX
 shiftDown c FREE = FREE
 shiftDown c (MSEQ x) = MSEQ x
@@ -544,8 +549,9 @@ shiftDown c (LOAD a) = LOAD a
 shiftDown c (CHOOSE a b) = CHOOSE (shiftDown c a) (shiftDown c b)
 --shiftDown c (IFC0 a t₁ t₂) = IFC0 (shiftDown c a) (shiftDown c t₁) (shiftDown c t₂)
 shiftDown c (TSQUASH t) = TSQUASH (shiftDown c t)
-shiftDown c (TTRUNC t) = TTRUNC (shiftDown c t)
-shiftDown c (TCONST t) = TCONST (shiftDown c t)
+--shiftDown c (TTRUNC t) = TTRUNC (shiftDown c t)
+shiftDown c (NOWRITE t) = NOWRITE (shiftDown c t)
+shiftDown c (NOREAD t) = NOREAD (shiftDown c t)
 shiftDown c (SUBSING t) = SUBSING (shiftDown c t)
 shiftDown c (DUM t) = DUM (shiftDown c t)
 shiftDown c (FFDEFS t t₁) = FFDEFS (shiftDown c t) (shiftDown c t₁)
@@ -589,12 +595,12 @@ shiftNameUp c (SET t t₁) = SET (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (ISECT t t₁) = ISECT (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (TUNION t t₁) = TUNION (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (UNION t t₁) = UNION (shiftNameUp c t) (shiftNameUp c t₁)
-shiftNameUp c (QTUNION t t₁) = QTUNION (shiftNameUp c t) (shiftNameUp c t₁)
+--shiftNameUp c (QTUNION t t₁) = QTUNION (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (INL t) = INL (shiftNameUp c t)
 shiftNameUp c (INR t) = INR (shiftNameUp c t)
 shiftNameUp c (DECIDE t t₁ t₂) = DECIDE (shiftNameUp c t) (shiftNameUp c t₁) (shiftNameUp c t₂)
 shiftNameUp c (EQ t t₁ t₂) = EQ (shiftNameUp c t) (shiftNameUp c t₁) (shiftNameUp c t₂)
-shiftNameUp c (EQB t t₁ t₂ t₃) = EQB (shiftNameUp c t) (shiftNameUp c t₁) (shiftNameUp c t₂) (shiftNameUp c t₃)
+--shiftNameUp c (EQB t t₁ t₂ t₃) = EQB (shiftNameUp c t) (shiftNameUp c t₁) (shiftNameUp c t₂) (shiftNameUp c t₃)
 shiftNameUp c AX = AX
 shiftNameUp c FREE = FREE
 shiftNameUp c (MSEQ x) = MSEQ x
@@ -606,8 +612,9 @@ shiftNameUp c (LOAD t) = LOAD t
 shiftNameUp c (CHOOSE a b) = CHOOSE (shiftNameUp c a) (shiftNameUp c b)
 --shiftNameUp c (IFC0 a t₁ t₂) = IFC0 (shiftNameUp c a) (shiftNameUp c t₁) (shiftNameUp c t₂)
 shiftNameUp c (TSQUASH t) = TSQUASH (shiftNameUp c t)
-shiftNameUp c (TTRUNC t) = TTRUNC (shiftNameUp c t)
-shiftNameUp c (TCONST t) = TCONST (shiftNameUp c t)
+--shiftNameUp c (TTRUNC t) = TTRUNC (shiftNameUp c t)
+shiftNameUp c (NOWRITE t) = NOWRITE (shiftNameUp c t)
+shiftNameUp c (NOREAD t) = NOREAD (shiftNameUp c t)
 shiftNameUp c (SUBSING t) = SUBSING (shiftNameUp c t)
 shiftNameUp c (DUM t) = DUM (shiftNameUp c t)
 shiftNameUp c (FFDEFS t t₁) = FFDEFS (shiftNameUp c t) (shiftNameUp c t₁)
@@ -651,12 +658,12 @@ shiftNameDown c (SET t t₁) = SET (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (ISECT t t₁) = ISECT (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (TUNION t t₁) = TUNION (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (UNION t t₁) = UNION (shiftNameDown c t) (shiftNameDown c t₁)
-shiftNameDown c (QTUNION t t₁) = QTUNION (shiftNameDown c t) (shiftNameDown c t₁)
+--shiftNameDown c (QTUNION t t₁) = QTUNION (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (INL t) = INL (shiftNameDown c t)
 shiftNameDown c (INR t) = INR (shiftNameDown c t)
 shiftNameDown c (DECIDE t t₁ t₂) = DECIDE (shiftNameDown c t) (shiftNameDown c t₁) (shiftNameDown c t₂)
 shiftNameDown c (EQ t t₁ t₂) = EQ (shiftNameDown c t) (shiftNameDown c t₁) (shiftNameDown c t₂)
-shiftNameDown c (EQB t t₁ t₂ t₃) = EQB (shiftNameDown c t) (shiftNameDown c t₁) (shiftNameDown c t₂) (shiftNameDown c t₃)
+--shiftNameDown c (EQB t t₁ t₂ t₃) = EQB (shiftNameDown c t) (shiftNameDown c t₁) (shiftNameDown c t₂) (shiftNameDown c t₃)
 shiftNameDown c AX = AX
 shiftNameDown c FREE = FREE
 shiftNameDown c (MSEQ x) = MSEQ x
@@ -668,8 +675,9 @@ shiftNameDown c (LOAD a) = LOAD a
 shiftNameDown c (CHOOSE a b) = CHOOSE (shiftNameDown c a) (shiftNameDown c b)
 --shiftNameDown c (IFC0 a t₁ t₂) = IFC0 (shiftNameDown c a) (shiftNameDown c t₁) (shiftNameDown c t₂)
 shiftNameDown c (TSQUASH t) = TSQUASH (shiftNameDown c t)
-shiftNameDown c (TTRUNC t) = TTRUNC (shiftNameDown c t)
-shiftNameDown c (TCONST t) = TCONST (shiftNameDown c t)
+--shiftNameDown c (TTRUNC t) = TTRUNC (shiftNameDown c t)
+shiftNameDown c (NOWRITE t) = NOWRITE (shiftNameDown c t)
+shiftNameDown c (NOREAD t) = NOREAD (shiftNameDown c t)
 shiftNameDown c (SUBSING t) = SUBSING (shiftNameDown c t)
 shiftNameDown c (DUM t) = DUM (shiftNameDown c t)
 shiftNameDown c (FFDEFS t t₁) = FFDEFS (shiftNameDown c t) (shiftNameDown c t₁)
@@ -720,12 +728,12 @@ names (SET t t₁)       = names t ++ names t₁
 names (ISECT t t₁)     = names t ++ names t₁
 names (TUNION t t₁)    = names t ++ names t₁
 names (UNION t t₁)     = names t ++ names t₁
-names (QTUNION t t₁)   = names t ++ names t₁
+--names (QTUNION t t₁)   = names t ++ names t₁
 names (INL t)          = names t
 names (INR t)          = names t
 names (DECIDE t t₁ t₂) = names t ++ names t₁ ++ names t₂
 names (EQ t t₁ t₂)     = names t ++ names t₁ ++ names t₂
-names (EQB t t₁ t₂ t₃) = names t ++ names t₁ ++ names t₂ ++ names t₃
+--names (EQB t t₁ t₂ t₃) = names t ++ names t₁ ++ names t₂ ++ names t₃
 names AX               = []
 names FREE             = []
 names (MSEQ x)         = []
@@ -737,8 +745,9 @@ names (LOAD t)         = []
 names (CHOOSE a b)     = names a ++ names b
 --names (IFC0 a b c)     = names a ++ names b ++ names c
 names (TSQUASH t)      = names t
-names (TTRUNC t)       = names t
-names (TCONST t)       = names t
+--names (TTRUNC t)       = names t
+names (NOWRITE t)       = names t
+names (NOREAD t)       = names t
 names (SUBSING t)      = names t
 names (DUM t)          = names t
 names (FFDEFS t t₁)    = names t ++ names t₁
@@ -785,12 +794,12 @@ subv v t (SET u u₁) = SET (subv v t u) (subv (suc v) (shiftUp 0 t) u₁)
 subv v t (ISECT u u₁) = ISECT (subv v t u) (subv v t u₁)
 subv v t (TUNION u u₁) = TUNION (subv v t u) (subv (suc v) (shiftUp 0 t) u₁)
 subv v t (UNION u u₁) = UNION (subv v t u) (subv v t u₁)
-subv v t (QTUNION u u₁) = QTUNION (subv v t u) (subv v t u₁)
+--subv v t (QTUNION u u₁) = QTUNION (subv v t u) (subv v t u₁)
 subv v t (INL u) = INL (subv v t u)
 subv v t (INR u) = INR (subv v t u)
 subv v t (DECIDE u u₁ u₂) = DECIDE (subv v t u) (subv (suc v) (shiftUp 0 t) u₁) (subv (suc v) (shiftUp 0 t) u₂)
 subv v t (EQ u u₁ u₂) = EQ (subv v t u) (subv v t u₁) (subv v t u₂)
-subv v t (EQB u u₁ u₂ u₃) = EQB (subv v t u) (subv v t u₁) (subv v t u₂) (subv v t u₃)
+--subv v t (EQB u u₁ u₂ u₃) = EQB (subv v t u) (subv v t u₁) (subv v t u₂) (subv v t u₃)
 subv v t AX = AX
 subv v t FREE = FREE
 subv v t (MSEQ x) = MSEQ x
@@ -802,8 +811,9 @@ subv v t (LOAD a) = LOAD a
 subv v t (CHOOSE a b) = CHOOSE (subv v t a) (subv v t b)
 --subv v t (IFC0 a t₁ t₂) = IFC0 (subv v t a) (subv v t t₁) (subv v t t₂)
 subv v t (TSQUASH u) = TSQUASH (subv v t u)
-subv v t (TTRUNC u) = TTRUNC (subv v t u)
-subv v t (TCONST u) = TCONST (subv v t u)
+--subv v t (TTRUNC u) = TTRUNC (subv v t u)
+subv v t (NOWRITE u) = NOWRITE (subv v t u)
+subv v t (NOREAD u) = NOREAD (subv v t u)
 subv v t (SUBSING u) = SUBSING (subv v t u)
 subv v t (DUM u) = DUM (subv v t u)
 subv v t (FFDEFS u u₁) = FFDEFS (subv v t u) (subv v t u₁)
@@ -853,12 +863,12 @@ renn v t (SET u u₁) = SET (renn v t u) (renn v t u₁)
 renn v t (ISECT u u₁) = ISECT (renn v t u) (renn v t u₁)
 renn v t (TUNION u u₁) = TUNION (renn v t u) (renn v t u₁)
 renn v t (UNION u u₁) = UNION (renn v t u) (renn v t u₁)
-renn v t (QTUNION u u₁) = QTUNION (renn v t u) (renn v t u₁)
+--renn v t (QTUNION u u₁) = QTUNION (renn v t u) (renn v t u₁)
 renn v t (INL u) = INL (renn v t u)
 renn v t (INR u) = INR (renn v t u)
 renn v t (DECIDE u u₁ u₂) = DECIDE (renn v t u) (renn v t u₁) (renn v t u₂)
 renn v t (EQ u u₁ u₂) = EQ (renn v t u) (renn v t u₁) (renn v t u₂)
-renn v t (EQB u u₁ u₂ u₃) = EQB (renn v t u) (renn v t u₁) (renn v t u₂) (renn v t u₃)
+--renn v t (EQB u u₁ u₂ u₃) = EQB (renn v t u) (renn v t u₁) (renn v t u₂) (renn v t u₃)
 renn v t AX = AX
 renn v t (MSEQ x) = MSEQ x
 renn v t (MAPP s u) = MAPP s (renn v t u)
@@ -874,8 +884,9 @@ renn v t (LOAD a) = LOAD a
 renn v t (CHOOSE a b) = CHOOSE (renn v t a) (renn v t b)
 --renn v t (IFC0 a t₁ t₂) = IFC0 (renn v t a) (renn v t t₁) (renn v t t₂)
 renn v t (TSQUASH u) = TSQUASH (renn v t u)
-renn v t (TTRUNC u) = TTRUNC (renn v t u)
-renn v t (TCONST u) = TCONST (renn v t u)
+--renn v t (TTRUNC u) = TTRUNC (renn v t u)
+renn v t (NOWRITE u) = NOWRITE (renn v t u)
+renn v t (NOREAD u) = NOREAD (renn v t u)
 renn v t (SUBSING u) = SUBSING (renn v t u)
 renn v t (DUM u) = DUM (renn v t u)
 renn v t (FFDEFS u u₁) = FFDEFS (renn v t u) (renn v t u₁)
@@ -991,9 +1002,9 @@ abstract
   subvNotIn v t (UNION u u₁) n
     rewrite subvNotIn v t u (notInAppVars1 n)
             | subvNotIn v t u₁ (notInAppVars2 n) = refl
-  subvNotIn v t (QTUNION u u₁) n
+{-  subvNotIn v t (QTUNION u u₁) n
     rewrite subvNotIn v t u (notInAppVars1 n)
-            | subvNotIn v t u₁ (notInAppVars2 n) = refl
+            | subvNotIn v t u₁ (notInAppVars2 n) = refl-}
   subvNotIn v t (INL u) n
     rewrite subvNotIn v t u n = refl
   subvNotIn v t (INR u) n
@@ -1012,11 +1023,11 @@ abstract
     rewrite subvNotIn v t u (notInAppVars1 n)
             | subvNotIn v t u₁ (notInAppVars1 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))
             | subvNotIn v t u₂ (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n)) = refl
-  subvNotIn v t (EQB u u₁ u₂ u₃) n
+{-  subvNotIn v t (EQB u u₁ u₂ u₃) n
     rewrite subvNotIn v t u (notInAppVars1 n)
             | subvNotIn v t u₁ (notInAppVars1 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))
             | subvNotIn v t u₂ (notInAppVars1 {v} {fvars u₂} {_} (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n)))
-            | subvNotIn v t u₃ (notInAppVars2 {v} {fvars u₂} {_} (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))) = refl
+            | subvNotIn v t u₃ (notInAppVars2 {v} {fvars u₂} {_} (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))) = refl-}
   subvNotIn v t AX n = refl
   subvNotIn v t FREE n = refl
   subvNotIn v t (MSEQ x) n = refl
@@ -1037,9 +1048,11 @@ abstract
             | subvNotIn v t u₂ (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n)) = refl--}
   subvNotIn v t (TSQUASH u) n
     rewrite subvNotIn v t u n = refl
-  subvNotIn v t (TTRUNC u) n
+{-  subvNotIn v t (TTRUNC u) n
+    rewrite subvNotIn v t u n = refl-}
+  subvNotIn v t (NOWRITE u) n
     rewrite subvNotIn v t u n = refl
-  subvNotIn v t (TCONST u) n
+  subvNotIn v t (NOREAD u) n
     rewrite subvNotIn v t u n = refl
   subvNotIn v t (SUBSING u) n
     rewrite subvNotIn v t u n = refl
@@ -1157,9 +1170,9 @@ abstract
   shiftDownTrivial v (UNION u u₁) i
     rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
             | shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
-  shiftDownTrivial v (QTUNION u u₁) i
+{-  shiftDownTrivial v (QTUNION u u₁) i
     rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-            | shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+            | shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl-}
   shiftDownTrivial v (INL u) i
     rewrite shiftDownTrivial v u i = refl
   shiftDownTrivial v (INR u) i
@@ -1173,11 +1186,11 @@ abstract
     rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
             | shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
             | shiftDownTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl
-  shiftDownTrivial v (EQB u u₁ u₂ u₃) i
+{-  shiftDownTrivial v (EQB u u₁ u₂ u₃) i
     rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
             | shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
             | shiftDownTrivial v u₂ (impLeNotApp1 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)))
-            | shiftDownTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl
+            | shiftDownTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl-}
   shiftDownTrivial v AX i = refl
   shiftDownTrivial v FREE i = refl
   shiftDownTrivial v (MSEQ x) i = refl
@@ -1198,9 +1211,11 @@ abstract
             | shiftDownTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl--}
   shiftDownTrivial v (TSQUASH u) i
     rewrite shiftDownTrivial v u i = refl
-  shiftDownTrivial v (TTRUNC u) i
+{-  shiftDownTrivial v (TTRUNC u) i
+    rewrite shiftDownTrivial v u i = refl-}
+  shiftDownTrivial v (NOWRITE u) i
     rewrite shiftDownTrivial v u i = refl
-  shiftDownTrivial v (TCONST u) i
+  shiftDownTrivial v (NOREAD u) i
     rewrite shiftDownTrivial v u i = refl
   shiftDownTrivial v (SUBSING u) i
     rewrite shiftDownTrivial v u i = refl
@@ -1301,9 +1316,9 @@ abstract
   shiftUpTrivial v (UNION u u₁) i
     rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
             | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
-  shiftUpTrivial v (QTUNION u u₁) i
+{-  shiftUpTrivial v (QTUNION u u₁) i
     rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-            | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
+            | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl-}
   shiftUpTrivial v (INL u) i
     rewrite shiftUpTrivial v u i = refl
   shiftUpTrivial v (INR u) i
@@ -1317,11 +1332,11 @@ abstract
     rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
             | shiftUpTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
             | shiftUpTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl
-  shiftUpTrivial v (EQB u u₁ u₂ u₃) i
+{-  shiftUpTrivial v (EQB u u₁ u₂ u₃) i
     rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
             | shiftUpTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
             | shiftUpTrivial v u₂ (impLeNotApp1 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)))
-            | shiftUpTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl
+            | shiftUpTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl-}
   shiftUpTrivial v AX i = refl
   shiftUpTrivial v FREE i = refl
   shiftUpTrivial v (MSEQ x) i = refl
@@ -1342,9 +1357,11 @@ abstract
             | shiftUpTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl--}
   shiftUpTrivial v (TSQUASH u) i
     rewrite shiftUpTrivial v u i = refl
-  shiftUpTrivial v (TTRUNC u) i
+{-  shiftUpTrivial v (TTRUNC u) i
+    rewrite shiftUpTrivial v u i = refl-}
+  shiftUpTrivial v (NOWRITE u) i
     rewrite shiftUpTrivial v u i = refl
-  shiftUpTrivial v (TCONST u) i
+  shiftUpTrivial v (NOREAD u) i
     rewrite shiftUpTrivial v u i = refl
   shiftUpTrivial v (SUBSING u) i
     rewrite shiftUpTrivial v u i = refl
@@ -1412,12 +1429,12 @@ abstract
   shiftDownUp (ISECT t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
   shiftDownUp (TUNION t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
   shiftDownUp (UNION t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
-  shiftDownUp (QTUNION t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
+--  shiftDownUp (QTUNION t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
   shiftDownUp (INL t) n rewrite shiftDownUp t n = refl
   shiftDownUp (INR t) n rewrite shiftDownUp t n = refl
   shiftDownUp (DECIDE t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) | shiftDownUp t₂ (suc n) = refl
   shiftDownUp (EQ t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n = refl
-  shiftDownUp (EQB t t₁ t₂ t₃) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n | shiftDownUp t₃ n = refl
+--  shiftDownUp (EQB t t₁ t₂ t₃) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n | shiftDownUp t₃ n = refl
   shiftDownUp AX n = refl
   shiftDownUp FREE n = refl
   shiftDownUp (MSEQ x) n = refl
@@ -1429,8 +1446,9 @@ abstract
   shiftDownUp (CHOOSE t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
   --shiftDownUp (IFC0 t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n = refl
   shiftDownUp (TSQUASH t) n rewrite shiftDownUp t n = refl
-  shiftDownUp (TTRUNC t) n rewrite shiftDownUp t n = refl
-  shiftDownUp (TCONST t) n rewrite shiftDownUp t n = refl
+--  shiftDownUp (TTRUNC t) n rewrite shiftDownUp t n = refl
+  shiftDownUp (NOWRITE t) n rewrite shiftDownUp t n = refl
+  shiftDownUp (NOREAD t) n rewrite shiftDownUp t n = refl
   shiftDownUp (SUBSING t) n rewrite shiftDownUp t n = refl
   shiftDownUp (DUM t) n rewrite shiftDownUp t n = refl
   shiftDownUp (FFDEFS t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
@@ -1474,12 +1492,12 @@ is-NUM (SET t t₁) = inj₂ (λ { n () })
 is-NUM (ISECT t t₁) = inj₂ (λ { n () })
 is-NUM (TUNION t t₁) = inj₂ (λ { n () })
 is-NUM (UNION t t₁) = inj₂ (λ { n () })
-is-NUM (QTUNION t t₁) = inj₂ (λ { n () })
+--is-NUM (QTUNION t t₁) = inj₂ (λ { n () })
 is-NUM (INL t) = inj₂ (λ { n () })
 is-NUM (INR t) = inj₂ (λ { n () })
 is-NUM (DECIDE t t₁ t₂) = inj₂ (λ { n () })
 is-NUM (EQ t t₁ t₂) = inj₂ (λ { n () })
-is-NUM (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
+--is-NUM (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-NUM AX = inj₂ (λ { n () })
 is-NUM FREE = inj₂ (λ { n () })
 is-NUM (MSEQ x) = inj₂ (λ { n () })
@@ -1491,8 +1509,9 @@ is-NUM (LOAD t) = inj₂ (λ { n () })
 is-NUM (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-NUM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-NUM (TSQUASH t) = inj₂ (λ { n () })
-is-NUM (TTRUNC t) = inj₂ (λ { n () })
-is-NUM (TCONST t) = inj₂ (λ { n () })
+--is-NUM (TTRUNC t) = inj₂ (λ { n () })
+is-NUM (NOWRITE t) = inj₂ (λ { n () })
+is-NUM (NOREAD t) = inj₂ (λ { n () })
 is-NUM (SUBSING t) = inj₂ (λ { n () })
 is-NUM (DUM t) = inj₂ (λ { n () })
 is-NUM (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -1536,12 +1555,12 @@ is-LAM (SET t t₁) = inj₂ (λ { n () })
 is-LAM (ISECT t t₁) = inj₂ (λ { n () })
 is-LAM (TUNION t t₁) = inj₂ (λ { n () })
 is-LAM (UNION t t₁) = inj₂ (λ { n () })
-is-LAM (QTUNION t t₁) = inj₂ (λ { n () })
+--is-LAM (QTUNION t t₁) = inj₂ (λ { n () })
 is-LAM (INL t) = inj₂ (λ { n () })
 is-LAM (INR t) = inj₂ (λ { n () })
 is-LAM (DECIDE t t₁ t₂) = inj₂ (λ { n () })
 is-LAM (EQ t t₁ t₂) = inj₂ (λ { n () })
-is-LAM (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
+--is-LAM (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-LAM AX = inj₂ (λ { n () })
 is-LAM FREE = inj₂ (λ { n () })
 is-LAM (MSEQ x) = inj₂ (λ { n () })
@@ -1553,8 +1572,9 @@ is-LAM (LOAD t) = inj₂ (λ { n () })
 is-LAM (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-LAM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-LAM (TSQUASH t) = inj₂ (λ { n () })
-is-LAM (TTRUNC t) = inj₂ (λ { n () })
-is-LAM (TCONST t) = inj₂ (λ { n () })
+--is-LAM (TTRUNC t) = inj₂ (λ { n () })
+is-LAM (NOWRITE t) = inj₂ (λ { n () })
+is-LAM (NOREAD t) = inj₂ (λ { n () })
 is-LAM (SUBSING t) = inj₂ (λ { n () })
 is-LAM (DUM t) = inj₂ (λ { n () })
 is-LAM (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -1598,12 +1618,12 @@ is-CS (SET t t₁) = inj₂ (λ { n () })
 is-CS (ISECT t t₁) = inj₂ (λ { n () })
 is-CS (TUNION t t₁) = inj₂ (λ { n () })
 is-CS (UNION t t₁) = inj₂ (λ { n () })
-is-CS (QTUNION t t₁) = inj₂ (λ { n () })
+--is-CS (QTUNION t t₁) = inj₂ (λ { n () })
 is-CS (INL t) = inj₂ (λ { n () })
 is-CS (INR t) = inj₂ (λ { n () })
 is-CS (DECIDE t t₁ t₂) = inj₂ (λ { n () })
 is-CS (EQ t t₁ t₂) = inj₂ (λ { n () })
-is-CS (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
+--is-CS (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-CS AX = inj₂ (λ { n () })
 is-CS FREE = inj₂ (λ { n () })
 is-CS (MSEQ x) = inj₂ (λ { n () })
@@ -1615,8 +1635,9 @@ is-CS (LOAD t) = inj₂ (λ { n () })
 is-CS (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-CS (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-CS (TSQUASH t) = inj₂ (λ { n () })
-is-CS (TTRUNC t) = inj₂ (λ { n () })
-is-CS (TCONST t) = inj₂ (λ { n () })
+--is-CS (TTRUNC t) = inj₂ (λ { n () })
+is-CS (NOWRITE t) = inj₂ (λ { n () })
+is-CS (NOREAD t) = inj₂ (λ { n () })
 is-CS (SUBSING t) = inj₂ (λ { n () })
 is-CS (DUM t) = inj₂ (λ { n () })
 is-CS (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -1660,12 +1681,12 @@ is-NAME (SET t t₁) = inj₂ (λ { n () })
 is-NAME (ISECT t t₁) = inj₂ (λ { n () })
 is-NAME (TUNION t t₁) = inj₂ (λ { n () })
 is-NAME (UNION t t₁) = inj₂ (λ { n () })
-is-NAME (QTUNION t t₁) = inj₂ (λ { n () })
+--is-NAME (QTUNION t t₁) = inj₂ (λ { n () })
 is-NAME (INL t) = inj₂ (λ { n () })
 is-NAME (INR t) = inj₂ (λ { n () })
 is-NAME (DECIDE t t₁ t₂) = inj₂ (λ { n () })
 is-NAME (EQ t t₁ t₂) = inj₂ (λ { n () })
-is-NAME (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
+--is-NAME (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-NAME AX = inj₂ (λ { n () })
 is-NAME FREE = inj₂ (λ { n () })
 is-NAME (MSEQ x) = inj₂ (λ { n () })
@@ -1677,8 +1698,9 @@ is-NAME (LOAD t) = inj₂ (λ { n () })
 is-NAME (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-NAME (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-NAME (TSQUASH t) = inj₂ (λ { n () })
-is-NAME (TTRUNC t) = inj₂ (λ { n () })
-is-NAME (TCONST t) = inj₂ (λ { n () })
+--is-NAME (TTRUNC t) = inj₂ (λ { n () })
+is-NAME (NOWRITE t) = inj₂ (λ { n () })
+is-NAME (NOREAD t) = inj₂ (λ { n () })
 is-NAME (SUBSING t) = inj₂ (λ { n () })
 is-NAME (DUM t) = inj₂ (λ { n () })
 is-NAME (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -1722,12 +1744,12 @@ is-MSEQ (SET t t₁) = inj₂ (λ { n () })
 is-MSEQ (ISECT t t₁) = inj₂ (λ { n () })
 is-MSEQ (TUNION t t₁) = inj₂ (λ { n () })
 is-MSEQ (UNION t t₁) = inj₂ (λ { n () })
-is-MSEQ (QTUNION t t₁) = inj₂ (λ { n () })
+--is-MSEQ (QTUNION t t₁) = inj₂ (λ { n () })
 is-MSEQ (INL t) = inj₂ (λ { n () })
 is-MSEQ (INR t) = inj₂ (λ { n () })
 is-MSEQ (DECIDE t t₁ t₂) = inj₂ (λ { n () })
 is-MSEQ (EQ t t₁ t₂) = inj₂ (λ { n () })
-is-MSEQ (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
+--is-MSEQ (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-MSEQ AX = inj₂ (λ { n () })
 is-MSEQ FREE = inj₂ (λ { n () })
 is-MSEQ (MSEQ x) = inj₁ (x , refl)
@@ -1739,8 +1761,9 @@ is-MSEQ (LOAD t) = inj₂ (λ { n () })
 is-MSEQ (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-MSEQ (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-MSEQ (TSQUASH t) = inj₂ (λ { n () })
-is-MSEQ (TTRUNC t) = inj₂ (λ { n () })
-is-MSEQ (TCONST t) = inj₂ (λ { n () })
+--is-MSEQ (TTRUNC t) = inj₂ (λ { n () })
+is-MSEQ (NOWRITE t) = inj₂ (λ { n () })
+is-MSEQ (NOREAD t) = inj₂ (λ { n () })
 is-MSEQ (SUBSING t) = inj₂ (λ { n () })
 is-MSEQ (DUM t) = inj₂ (λ { n () })
 is-MSEQ (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -1784,12 +1807,12 @@ is-PAIR (SET t t₁) = inj₂ (λ { n m () })
 is-PAIR (ISECT t t₁) = inj₂ (λ { n m () })
 is-PAIR (TUNION t t₁) = inj₂ (λ { n m () })
 is-PAIR (UNION t t₁) = inj₂ (λ { n m () })
-is-PAIR (QTUNION t t₁) = inj₂ (λ { n m () })
+--is-PAIR (QTUNION t t₁) = inj₂ (λ { n m () })
 is-PAIR (INL t) = inj₂ (λ { n m () })
 is-PAIR (INR t) = inj₂ (λ { n m () })
 is-PAIR (DECIDE t t₁ t₂) = inj₂ (λ { n m () })
 is-PAIR (EQ t t₁ t₂) = inj₂ (λ { n m () })
-is-PAIR (EQB t t₁ t₂ t₃) = inj₂ (λ { n m () })
+--is-PAIR (EQB t t₁ t₂ t₃) = inj₂ (λ { n m () })
 is-PAIR AX = inj₂ (λ { n m () })
 is-PAIR FREE = inj₂ (λ { n m () })
 is-PAIR (MSEQ x) = inj₂ (λ { n m () })
@@ -1801,8 +1824,9 @@ is-PAIR (LOAD t) = inj₂ (λ { n m () })
 is-PAIR (CHOOSE t t₁) = inj₂ (λ { n m () })
 --is-PAIR (IFC0 t t₁ t₂) = inj₂ (λ { n m () })
 is-PAIR (TSQUASH t) = inj₂ (λ { n m () })
-is-PAIR (TTRUNC t) = inj₂ (λ { n m () })
-is-PAIR (TCONST t) = inj₂ (λ { n m () })
+--is-PAIR (TTRUNC t) = inj₂ (λ { n m () })
+is-PAIR (NOWRITE t) = inj₂ (λ { n m () })
+is-PAIR (NOREAD t) = inj₂ (λ { n m () })
 is-PAIR (SUBSING t) = inj₂ (λ { n m () })
 is-PAIR (DUM t) = inj₂ (λ { n m () })
 is-PAIR (FFDEFS t t₁) = inj₂ (λ { n m () })
@@ -1846,12 +1870,12 @@ is-SUP (SET t t₁) = inj₂ (λ { n m () })
 is-SUP (ISECT t t₁) = inj₂ (λ { n m () })
 is-SUP (TUNION t t₁) = inj₂ (λ { n m () })
 is-SUP (UNION t t₁) = inj₂ (λ { n m () })
-is-SUP (QTUNION t t₁) = inj₂ (λ { n m () })
+--is-SUP (QTUNION t t₁) = inj₂ (λ { n m () })
 is-SUP (INL t) = inj₂ (λ { n m () })
 is-SUP (INR t) = inj₂ (λ { n m () })
 is-SUP (DECIDE t t₁ t₂) = inj₂ (λ { n m () })
 is-SUP (EQ t t₁ t₂) = inj₂ (λ { n m () })
-is-SUP (EQB t t₁ t₂ t₃) = inj₂ (λ { n m () })
+--is-SUP (EQB t t₁ t₂ t₃) = inj₂ (λ { n m () })
 is-SUP AX = inj₂ (λ { n m () })
 is-SUP FREE = inj₂ (λ { n m () })
 is-SUP (MSEQ x) = inj₂ (λ { n m () })
@@ -1863,8 +1887,9 @@ is-SUP (LOAD t) = inj₂ (λ { n m () })
 is-SUP (CHOOSE t t₁) = inj₂ (λ { n m () })
 --is-SUP (IFC0 t t₁ t₂) = inj₂ (λ { n m () })
 is-SUP (TSQUASH t) = inj₂ (λ { n m () })
-is-SUP (TTRUNC t) = inj₂ (λ { n m () })
-is-SUP (TCONST t) = inj₂ (λ { n m () })
+--is-SUP (TTRUNC t) = inj₂ (λ { n m () })
+is-SUP (NOWRITE t) = inj₂ (λ { n m () })
+is-SUP (NOREAD t) = inj₂ (λ { n m () })
 is-SUP (SUBSING t) = inj₂ (λ { n m () })
 is-SUP (DUM t) = inj₂ (λ { n m () })
 is-SUP (FFDEFS t t₁) = inj₂ (λ { n m () })
@@ -1909,12 +1934,12 @@ is-MSUP (SET t t₁) = inj₂ (λ { n m () })
 is-MSUP (ISECT t t₁) = inj₂ (λ { n m () })
 is-MSUP (TUNION t t₁) = inj₂ (λ { n m () })
 is-MSUP (UNION t t₁) = inj₂ (λ { n m () })
-is-MSUP (QTUNION t t₁) = inj₂ (λ { n m () })
+--is-MSUP (QTUNION t t₁) = inj₂ (λ { n m () })
 is-MSUP (INL t) = inj₂ (λ { n m () })
 is-MSUP (INR t) = inj₂ (λ { n m () })
 is-MSUP (DECIDE t t₁ t₂) = inj₂ (λ { n m () })
 is-MSUP (EQ t t₁ t₂) = inj₂ (λ { n m () })
-is-MSUP (EQB t t₁ t₂ t₃) = inj₂ (λ { n m () })
+--is-MSUP (EQB t t₁ t₂ t₃) = inj₂ (λ { n m () })
 is-MSUP AX = inj₂ (λ { n m () })
 is-MSUP FREE = inj₂ (λ { n m () })
 is-MSUP (MSEQ x) = inj₂ (λ { n m () })
@@ -1926,8 +1951,9 @@ is-MSUP (LOAD t) = inj₂ (λ { n m () })
 is-MSUP (CHOOSE t t₁) = inj₂ (λ { n m () })
 --is-MSUP (IFC0 t t₁ t₂) = inj₂ (λ { n m () })
 is-MSUP (TSQUASH t) = inj₂ (λ { n m () })
-is-MSUP (TTRUNC t) = inj₂ (λ { n m () })
-is-MSUP (TCONST t) = inj₂ (λ { n m () })
+--is-MSUP (TTRUNC t) = inj₂ (λ { n m () })
+is-MSUP (NOWRITE t) = inj₂ (λ { n m () })
+is-MSUP (NOREAD t) = inj₂ (λ { n m () })
 is-MSUP (SUBSING t) = inj₂ (λ { n m () })
 is-MSUP (DUM t) = inj₂ (λ { n m () })
 is-MSUP (FFDEFS t t₁) = inj₂ (λ { n m () })
@@ -1972,12 +1998,12 @@ is-INL (SET t t₁) = inj₂ (λ { n () })
 is-INL (ISECT t t₁) = inj₂ (λ { n () })
 is-INL (TUNION t t₁) = inj₂ (λ { n () })
 is-INL (UNION t t₁) = inj₂ (λ { n () })
-is-INL (QTUNION t t₁) = inj₂ (λ { n () })
+--is-INL (QTUNION t t₁) = inj₂ (λ { n () })
 is-INL (INL t) = inj₁ (t , refl)
 is-INL (INR t) = inj₂ (λ { n () })
 is-INL (DECIDE t t₁ t₂) = inj₂ (λ { n () })
 is-INL (EQ t t₁ t₂) = inj₂ (λ { n () })
-is-INL (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
+--is-INL (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-INL AX = inj₂ (λ { n () })
 is-INL FREE = inj₂ (λ { n () })
 is-INL (MSEQ x) = inj₂ (λ { n () })
@@ -1989,8 +2015,9 @@ is-INL (LOAD t) = inj₂ (λ { n () })
 is-INL (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-INL (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-INL (TSQUASH t) = inj₂ (λ { n () })
-is-INL (TTRUNC t) = inj₂ (λ { n () })
-is-INL (TCONST t) = inj₂ (λ { n () })
+--is-INL (TTRUNC t) = inj₂ (λ { n () })
+is-INL (NOWRITE t) = inj₂ (λ { n () })
+is-INL (NOREAD t) = inj₂ (λ { n () })
 is-INL (SUBSING t) = inj₂ (λ { n () })
 is-INL (DUM t) = inj₂ (λ { n () })
 is-INL (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -2034,12 +2061,12 @@ is-INR (SET t t₁) = inj₂ (λ { n () })
 is-INR (ISECT t t₁) = inj₂ (λ { n () })
 is-INR (TUNION t t₁) = inj₂ (λ { n () })
 is-INR (UNION t t₁) = inj₂ (λ { n () })
-is-INR (QTUNION t t₁) = inj₂ (λ { n () })
+--is-INR (QTUNION t t₁) = inj₂ (λ { n () })
 is-INR (INL t) = inj₂ (λ { n () })
 is-INR (INR t) = inj₁ (t , refl)
 is-INR (DECIDE t t₁ t₂) = inj₂ (λ { n () })
 is-INR (EQ t t₁ t₂) = inj₂ (λ { n () })
-is-INR (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
+--is-INR (EQB t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-INR AX = inj₂ (λ { n () })
 is-INR FREE = inj₂ (λ { n () })
 is-INR (MSEQ x) = inj₂ (λ { n () })
@@ -2051,8 +2078,9 @@ is-INR (LOAD t) = inj₂ (λ { n () })
 is-INR (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-INR (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-INR (TSQUASH t) = inj₂ (λ { n () })
-is-INR (TTRUNC t) = inj₂ (λ { n () })
-is-INR (TCONST t) = inj₂ (λ { n () })
+--is-INR (TTRUNC t) = inj₂ (λ { n () })
+is-INR (NOWRITE t) = inj₂ (λ { n () })
+is-INR (NOREAD t) = inj₂ (λ { n () })
 is-INR (SUBSING t) = inj₂ (λ { n () })
 is-INR (DUM t) = inj₂ (λ { n () })
 is-INR (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -2083,19 +2111,20 @@ data ∼vals : Term → Term → Set where
   ∼vals-ISECT   : {a b c d : Term} → ∼vals (ISECT a b) (ISECT c d)
   ∼vals-TUNION  : {a b c d : Term} → ∼vals (TUNION a b) (TUNION c d)
   ∼vals-UNION   : {a b c d : Term} → ∼vals (UNION a b) (UNION c d)
-  ∼vals-QTUNION : {a b c d : Term} → ∼vals (QTUNION a b) (QTUNION c d)
+--  ∼vals-QTUNION : {a b c d : Term} → ∼vals (QTUNION a b) (QTUNION c d)
   ∼vals-INL     : {a b : Term} → ∼vals (INL a) (INL b)
   ∼vals-INR     : {a b : Term} → ∼vals (INR a) (INR b)
   ∼vals-EQ      : {a b c d e f : Term} → ∼vals (EQ a b c) (EQ d e f)
-  ∼vals-EQB      : {a b c d e f g h : Term} → ∼vals (EQB a b c d) (EQB e f g h)
+--  ∼vals-EQB      : {a b c d e f g h : Term} → ∼vals (EQB a b c d) (EQB e f g h)
   ∼vals-AX      : ∼vals AX AX
   ∼vals-FREE    : ∼vals FREE FREE
   ∼vals-MSEQ    : {s : 𝕊} → ∼vals (MSEQ s) (MSEQ s)
   ∼vals-CS      : {n : Name} → ∼vals (CS n) (CS n)
   ∼vals-NAME    : {n : Name} → ∼vals (NAME n) (NAME n)
   ∼vals-TSQUASH : {a b : Term} → ∼vals (TSQUASH a) (TSQUASH b)
-  ∼vals-TTRUNC  : {a b : Term} → ∼vals (TTRUNC a) (TTRUNC b)
-  ∼vals-TCONST  : {a b : Term} → ∼vals (TCONST a) (TCONST b)
+--  ∼vals-TTRUNC  : {a b : Term} → ∼vals (TTRUNC a) (TTRUNC b)
+  ∼vals-NOWRITE  : {a b : Term} → ∼vals (NOWRITE a) (NOWRITE b)
+  ∼vals-NOREAD  : {a b : Term} → ∼vals (NOREAD a) (NOREAD b)
   ∼vals-SUBSING : {a b : Term} → ∼vals (SUBSING a) (SUBSING b)
   ∼vals-DUM     : {a b : Term} → ∼vals (DUM a) (DUM b)
   ∼vals-FFDEFS  : {a b c d : Term} → ∼vals (FFDEFS a b) (FFDEFS c d)
@@ -2123,19 +2152,20 @@ data ∼vals : Term → Term → Set where
 ∼vals-sym {.(ISECT _ _)} {.(ISECT _ _)} ∼vals-ISECT = ∼vals-ISECT
 ∼vals-sym {.(TUNION _ _)} {.(TUNION _ _)} ∼vals-TUNION = ∼vals-TUNION
 ∼vals-sym {.(UNION _ _)} {.(UNION _ _)} ∼vals-UNION = ∼vals-UNION
-∼vals-sym {.(QTUNION _ _)} {.(QTUNION _ _)} ∼vals-QTUNION = ∼vals-QTUNION
+--∼vals-sym {.(QTUNION _ _)} {.(QTUNION _ _)} ∼vals-QTUNION = ∼vals-QTUNION
 ∼vals-sym {.(INL _)} {.(INL _)} ∼vals-INL = ∼vals-INL
 ∼vals-sym {.(INR _)} {.(INR _)} ∼vals-INR = ∼vals-INR
 ∼vals-sym {.(EQ _ _ _)} {.(EQ _ _ _)} ∼vals-EQ = ∼vals-EQ
-∼vals-sym {.(EQB _ _ _ _)} {.(EQB _ _ _ _)} ∼vals-EQB = ∼vals-EQB
+--∼vals-sym {.(EQB _ _ _ _)} {.(EQB _ _ _ _)} ∼vals-EQB = ∼vals-EQB
 ∼vals-sym {.AX} {.AX} ∼vals-AX = ∼vals-AX
 ∼vals-sym {.FREE} {.FREE} ∼vals-FREE = ∼vals-FREE
 ∼vals-sym {.(MSEQ _)} {.(MSEQ _)} ∼vals-MSEQ = ∼vals-MSEQ
 ∼vals-sym {.(CS _)} {.(CS _)} ∼vals-CS = ∼vals-CS
 ∼vals-sym {.(NAME _)} {.(NAME _)} ∼vals-NAME = ∼vals-NAME
 ∼vals-sym {.(TSQUASH _)} {.(TSQUASH _)} ∼vals-TSQUASH = ∼vals-TSQUASH
-∼vals-sym {.(TTRUNC _)} {.(TTRUNC _)} ∼vals-TTRUNC = ∼vals-TTRUNC
-∼vals-sym {.(TCONST _)} {.(TCONST _)} ∼vals-TCONST = ∼vals-TCONST
+--∼vals-sym {.(TTRUNC _)} {.(TTRUNC _)} ∼vals-TTRUNC = ∼vals-TTRUNC
+∼vals-sym {.(NOWRITE _)} {.(NOWRITE _)} ∼vals-NOWRITE = ∼vals-NOWRITE
+∼vals-sym {.(NOREAD _)} {.(NOREAD _)} ∼vals-NOREAD = ∼vals-NOREAD
 ∼vals-sym {.(SUBSING _)} {.(SUBSING _)} ∼vals-SUBSING = ∼vals-SUBSING
 ∼vals-sym {.(DUM _)} {.(DUM _)} ∼vals-DUM = ∼vals-DUM
 ∼vals-sym {.(FFDEFS _ _)} {.(FFDEFS _ _)} ∼vals-FFDEFS = ∼vals-FFDEFS
@@ -2163,19 +2193,20 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₁ {ISECT a a₁} {b} isv = tt
 ∼vals→isValue₁ {TUNION a a₁} {b} isv = tt
 ∼vals→isValue₁ {UNION a a₁} {b} isv = tt
-∼vals→isValue₁ {QTUNION a a₁} {b} isv = tt
+--∼vals→isValue₁ {QTUNION a a₁} {b} isv = tt
 ∼vals→isValue₁ {INL a} {b} isv = tt
 ∼vals→isValue₁ {INR a} {b} isv = tt
 ∼vals→isValue₁ {EQ a a₁ a₂} {b} isv = tt
-∼vals→isValue₁ {EQB a a₁ a₂ a₃} {b} isv = tt
+--∼vals→isValue₁ {EQB a a₁ a₂ a₃} {b} isv = tt
 ∼vals→isValue₁ {AX} {b} isv = tt
 ∼vals→isValue₁ {FREE} {b} isv = tt
 ∼vals→isValue₁ {MSEQ x} {b} isv = tt
 ∼vals→isValue₁ {CS x} {b} isv = tt
 ∼vals→isValue₁ {NAME x} {b} isv = tt
 ∼vals→isValue₁ {TSQUASH a} {b} isv = tt
-∼vals→isValue₁ {TTRUNC a} {b} isv = tt
-∼vals→isValue₁ {TCONST a} {b} isv = tt
+--∼vals→isValue₁ {TTRUNC a} {b} isv = tt
+∼vals→isValue₁ {NOWRITE a} {b} isv = tt
+∼vals→isValue₁ {NOREAD a} {b} isv = tt
 ∼vals→isValue₁ {SUBSING a} {b} isv = tt
 ∼vals→isValue₁ {DUM a} {b} isv = tt
 ∼vals→isValue₁ {FFDEFS a a₁} {b} isv = tt
@@ -2218,20 +2249,21 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {ISECT b b₁} isv = tt
 ∼vals→isValue₂ {a} {TUNION b b₁} isv = tt
 ∼vals→isValue₂ {a} {UNION b b₁} isv = tt
-∼vals→isValue₂ {a} {QTUNION b b₁} isv = tt
+--∼vals→isValue₂ {a} {QTUNION b b₁} isv = tt
 ∼vals→isValue₂ {a} {INL b} isv = tt
 ∼vals→isValue₂ {a} {INR b} isv = tt
 ∼vals→isValue₂ {a} {DECIDE b b₁ b₂} ()
 ∼vals→isValue₂ {a} {EQ b b₁ b₂} isv = tt
-∼vals→isValue₂ {a} {EQB b b₁ b₂ b₃} isv = tt
+--∼vals→isValue₂ {a} {EQB b b₁ b₂ b₃} isv = tt
 ∼vals→isValue₂ {a} {AX} isv = tt
 ∼vals→isValue₂ {a} {FREE} isv = tt
 ∼vals→isValue₂ {a} {MSEQ x} isv = tt
 ∼vals→isValue₂ {a} {CS x} isv = tt
 ∼vals→isValue₂ {a} {NAME x} isv = tt
 ∼vals→isValue₂ {a} {TSQUASH b} isv = tt
-∼vals→isValue₂ {a} {TTRUNC b} isv = tt
-∼vals→isValue₂ {a} {TCONST b} isv = tt
+--∼vals→isValue₂ {a} {TTRUNC b} isv = tt
+∼vals→isValue₂ {a} {NOWRITE b} isv = tt
+∼vals→isValue₂ {a} {NOREAD b} isv = tt
 ∼vals→isValue₂ {a} {SUBSING b} isv = tt
 ∼vals→isValue₂ {a} {DUM b} isv = tt
 ∼vals→isValue₂ {a} {FFDEFS b b₁} isv = tt
@@ -2282,12 +2314,12 @@ data ∼vals : Term → Term → Set where
 ¬read (ISECT t t₁) = ¬read t ∧ ¬read t₁
 ¬read (TUNION t t₁) = ¬read t ∧ ¬read t₁
 ¬read (UNION t t₁) = ¬read t ∧ ¬read t₁
-¬read (QTUNION t t₁) = ¬read t ∧ ¬read t₁
+--¬read (QTUNION t t₁) = ¬read t ∧ ¬read t₁
 ¬read (INL t) = ¬read t
 ¬read (INR t) = ¬read t
 ¬read (DECIDE t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
 ¬read (EQ t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
-¬read (EQB t t₁ t₂ t₃) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂ ∧ ¬read t₃
+--¬read (EQB t t₁ t₂ t₃) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂ ∧ ¬read t₃
 ¬read AX = true
 ¬read FREE = true
 ¬read (MSEQ x) = true
@@ -2299,8 +2331,9 @@ data ∼vals : Term → Term → Set where
 ¬read (CHOOSE t t₁) = ¬read t ∧ ¬read t₁
 --¬read (IFC0 t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
 ¬read (TSQUASH t) = ¬read t
-¬read (TTRUNC t) = ¬read t
-¬read (TCONST t) = ¬read t
+--¬read (TTRUNC t) = ¬read t
+¬read (NOWRITE t) = ¬read t
+¬read (NOREAD t) = ¬read t
 ¬read (SUBSING t) = ¬read t
 ¬read (DUM t) = ¬read t
 ¬read (FFDEFS t t₁) = ¬read t ∧ ¬read t₁
@@ -2356,12 +2389,12 @@ data ∼vals : Term → Term → Set where
 ¬names (ISECT t t₁) = ¬names t ∧ ¬names t₁
 ¬names (TUNION t t₁) = ¬names t ∧ ¬names t₁
 ¬names (UNION t t₁) = ¬names t ∧ ¬names t₁
-¬names (QTUNION t t₁) = ¬names t ∧ ¬names t₁
+--¬names (QTUNION t t₁) = ¬names t ∧ ¬names t₁
 ¬names (INL t) = ¬names t
 ¬names (INR t) = ¬names t
 ¬names (DECIDE t t₁ t₂) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂
 ¬names (EQ t t₁ t₂) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂
-¬names (EQB t t₁ t₂ t₃) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂ ∧ ¬names t₃
+--¬names (EQB t t₁ t₂ t₃) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂ ∧ ¬names t₃
 ¬names AX = true
 ¬names FREE = true
 ¬names (MSEQ x) = true
@@ -2373,8 +2406,9 @@ data ∼vals : Term → Term → Set where
 ¬names (CHOOSE t t₁) = ¬names t ∧ ¬names t₁
 --¬names (IFC0 t t₁ t₂) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂
 ¬names (TSQUASH t) = ¬names t
-¬names (TTRUNC t) = ¬names t
-¬names (TCONST t) = ¬names t
+--¬names (TTRUNC t) = ¬names t
+¬names (NOWRITE t) = ¬names t
+¬names (NOREAD t) = ¬names t
 ¬names (SUBSING t) = ¬names t
 ¬names (DUM t) = ¬names t
 ¬names (FFDEFS t t₁) = ¬names t ∧ ¬names t₁
@@ -2431,12 +2465,12 @@ noseq (SET t t₁) = noseq t ∧ noseq t₁
 noseq (TUNION t t₁) = noseq t ∧ noseq t₁
 noseq (ISECT t t₁) = noseq t ∧ noseq t₁
 noseq (UNION t t₁) = noseq t ∧ noseq t₁
-noseq (QTUNION t t₁) = noseq t ∧ noseq t₁
+--noseq (QTUNION t t₁) = noseq t ∧ noseq t₁
 noseq (INL t) = noseq t
 noseq (INR t) = noseq t
 noseq (DECIDE t t₁ t₂) = noseq t ∧ noseq t₁ ∧ noseq t₂
 noseq (EQ t t₁ t₂) = noseq t ∧ noseq t₁ ∧ noseq t₂
-noseq (EQB t t₁ t₂ t₃) = noseq t ∧ noseq t₁ ∧ noseq t₂ ∧ noseq t₃
+--noseq (EQB t t₁ t₂ t₃) = noseq t ∧ noseq t₁ ∧ noseq t₂ ∧ noseq t₃
 noseq AX = true
 noseq FREE = true
 noseq (CS x) = true
@@ -2447,8 +2481,9 @@ noseq (LOAD t) = noseq t
 noseq (MSEQ x) = false
 noseq (MAPP x t) = false
 noseq (TSQUASH t) = noseq t
-noseq (TTRUNC t) = noseq t
-noseq (TCONST t) = noseq t
+--noseq (TTRUNC t) = noseq t
+noseq (NOWRITE t) = noseq t
+noseq (NOREAD t) = noseq t
 noseq (SUBSING t) = noseq t
 noseq (DUM t) = noseq t
 noseq (FFDEFS t t₁) = noseq t ∧ noseq t₁

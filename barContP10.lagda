@@ -126,29 +126,29 @@ NAT→T T = FUN NAT T
 
 
 NAT→!T : Term → Term
-NAT→!T T = FUN NAT (TCONST T)
+NAT→!T T = FUN NAT (NOWRITE T)
 
 
 #NAT→!T : CTerm → CTerm
-#NAT→!T T = #FUN #NAT (#TCONST T)
+#NAT→!T T = #FUN #NAT (#NOWRITE T)
 
 
-#[0]TCONST : CTerm0 → CTerm0
-#[0]TCONST t = ct0 (TCONST ⌜ t ⌝) c
+#[0]NOWRITE : CTerm0 → CTerm0
+#[0]NOWRITE t = ct0 (NOWRITE ⌜ t ⌝) c
   where
-    c : #[ [ 0 ] ] TCONST ⌜ t ⌝
+    c : #[ [ 0 ] ] NOWRITE ⌜ t ⌝
     c = CTerm0.closed t
 
 
-#[1]TCONST : CTerm1 → CTerm1
-#[1]TCONST t = ct1 (TCONST ⌜ t ⌝) c
+#[1]NOWRITE : CTerm1 → CTerm1
+#[1]NOWRITE t = ct1 (NOWRITE ⌜ t ⌝) c
   where
-    c : #[ 0 ∷ [ 1 ] ] TCONST ⌜ t ⌝
+    c : #[ 0 ∷ [ 1 ] ] NOWRITE ⌜ t ⌝
     c = CTerm1.closed t
 
 
 #[0]NAT→!T : CTerm → CTerm0
-#[0]NAT→!T T = #[0]FUN #[0]NAT (#[0]TCONST ⌞ T ⌟)
+#[0]NAT→!T T = #[0]FUN #[0]NAT (#[0]NOWRITE ⌞ T ⌟)
 
 
 #[1]FUN : CTerm1 → CTerm1 → CTerm1
@@ -162,14 +162,14 @@ NAT→!T T = FUN NAT (TCONST T)
 
 
 #[1]NAT→!T : CTerm → CTerm1
-#[1]NAT→!T T = #[1]FUN #[1]NAT (#[1]TCONST ⌞ T ⌟)
+#[1]NAT→!T T = #[1]FUN #[1]NAT (#[1]NOWRITE ⌞ T ⌟)
 
 
 contDiag : Term → Term
 contDiag T =
   PI (FunBarP T)
      (SUBSING
-       (SUM (IndBar T) (PI (FUN NAT (TCONST T)) (EQ (APPLY (VAR 2) (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT))))
+       (SUM (IndBar T) (PI (FUN NAT (NOWRITE T)) (EQ (APPLY (VAR 2) (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT))))
 
 
 #[2]follow010 : CTerm2
@@ -198,7 +198,7 @@ contDiag T =
 
 
 #[0]UNION! : CTerm0 → CTerm0 → CTerm0
-#[0]UNION! a b = #[0]TCONST (#[0]UNION a b)
+#[0]UNION! a b = #[0]NOWRITE (#[0]UNION a b)
 
 
 #[0]UNIT : CTerm0
@@ -229,7 +229,7 @@ contDiag T =
 
 
 #[0]IndBarC : CTerm → CTerm1
-#[0]IndBarC T = #[1]DECIDE #[1]VAR0 #[2]VOID ⌞ #TCONST T ⌟
+#[0]IndBarC T = #[1]DECIDE #[1]VAR0 #[2]VOID ⌞ #NOWRITE T ⌟
 
 
 #[0]IndBar : CTerm → CTerm0
@@ -340,7 +340,7 @@ sub0-contDiag-subsing : (T F : CTerm)
                            ≡ #SUBSING (#SUM (#IndBar T) (#[0]PI (#[0]NAT→!T T) (#[1]EQ (#[1]APPLY ⌞ F ⌟ #[1]VAR0) follow1 #[1]NAT)))
 sub0-contDiag-subsing T F = CTerm≡ e
   where
-    e : sub ⌜ F ⌝ (SUBSING (SUM (IndBar ⌜ T ⌝) (PI (FUN NAT (TCONST ⌜ T ⌝)) (EQ (APPLY (VAR 2) (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT))))
+    e : sub ⌜ F ⌝ (SUBSING (SUM (IndBar ⌜ T ⌝) (PI (FUN NAT (NOWRITE ⌜ T ⌝)) (EQ (APPLY (VAR 2) (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT))))
         ≡ ⌜ #SUBSING (#SUM (#IndBar T) (#[0]PI (#[0]NAT→!T T) (#[1]EQ (#[1]APPLY ⌞ F ⌟ #[1]VAR0) follow1 #[1]NAT))) ⌝
     e rewrite #shiftUp 0 F | #shiftUp 0 F | #shiftUp 0 F | #shiftDown 2 F
             | #shiftUp 0 T | #shiftUp 0 T
@@ -415,11 +415,11 @@ NAT!→NAT i w a b h = →equalInType-NAT i w a b (Mod.∀𝕎-□Func M aw (equ
     aw w1 e1 (k , c1 , c2) = k , #⇛!→#⇛ {w1} {a} {#NUM k} c1 , #⇛!→#⇛ {w1} {b} {#NUM k} c2
 
 
-TCONST→T : (i : ℕ) (w : 𝕎·) (T a b : CTerm)
-            → equalInType i w (#TCONST T) a b
+NOWRITE→T : (i : ℕ) (w : 𝕎·) (T a b : CTerm)
+            → equalInType i w (#NOWRITE T) a b
             → equalInType i w T a b
-TCONST→T i w T a b h =
-  equalInType-local (Mod.∀𝕎-□Func M (λ w1 e1 (x , y , z) → x) (equalInTypeTCONST→ h))
+NOWRITE→T i w T a b h =
+  equalInType-local (Mod.∀𝕎-□Func M (λ w1 e1 (x , y , z) → x) (equalInTypeNOWRITE→ h))
 
 
 BAIRE!→BAIRE : (i : ℕ) (w : 𝕎·) (T a b : CTerm)
@@ -430,13 +430,13 @@ BAIRE!→BAIRE i w T a b tyt h =
   equalInType-FUN eqTypesNAT tyt aw
   where
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT a₁ a₂ → equalInType i w' T (#APPLY a a₁) (#APPLY b a₂))
-    aw w1 e1 a₁ a₂ ea = TCONST→T i w1 T (#APPLY a a₁) (#APPLY b a₂) (equalInType-FUN→ h w1 e1 a₁ a₂ ea)
+    aw w1 e1 a₁ a₂ ea = NOWRITE→T i w1 T (#APPLY a a₁) (#APPLY b a₂) (equalInType-FUN→ h w1 e1 a₁ a₂ ea)
 
 
 isType-NAT→!T : {i : ℕ} {w : 𝕎·} {T : CTerm}
                 → isType i w T
                 → isType i w (#NAT→!T T)
-isType-NAT→!T {i} {w} {T} tyt = eqTypesFUN← eqTypesNAT (eqTypesTCONST← tyt)
+isType-NAT→!T {i} {w} {T} tyt = eqTypesFUN← eqTypesNAT (eqTypesNOWRITE← tyt)
 
 
 APPLY-FunBarP-BAIRE!→ : {i : ℕ} {w : 𝕎·} {T F₁ F₂ a₁ a₂ : CTerm}

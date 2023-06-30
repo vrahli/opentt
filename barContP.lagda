@@ -146,11 +146,11 @@ IndBarB = UNION! NAT UNIT
 -- we need to jump to the 𝕎s at wihch the NATs are actual numbers, and we don't have members of the coW at the
 -- current 𝕎
 IndBarC : Term → Term
-IndBarC T = DECIDE (VAR 0) VOID (TCONST T)
+IndBarC T = DECIDE (VAR 0) VOID (NOWRITE T)
 
 
 #IndBarC : CTerm → CTerm0
-#IndBarC T = #[0]DECIDE #[0]VAR #[1]VOID (#[1]shiftUp0 (#[0]shiftUp0 (#TCONST T)))
+#IndBarC T = #[0]DECIDE #[0]VAR #[1]VOID (#[1]shiftUp0 (#[0]shiftUp0 (#NOWRITE T)))
 
 
 IndBar : Term → Term
@@ -1346,8 +1346,8 @@ INR∈IndBarB i w =
                                               →equalInType-TRUE i {w'} {#AX} {#AX})))
 
 
-sub0-IndBarC≡ : (T a : CTerm) → sub0 a (#IndBarC T) ≡ #DECIDE a #[0]VOID (#[0]shiftUp0 (#TCONST T))
-sub0-IndBarC≡ T a = CTerm≡ (≡DECIDE x refl (≡TCONST y))
+sub0-IndBarC≡ : (T a : CTerm) → sub0 a (#IndBarC T) ≡ #DECIDE a #[0]VOID (#[0]shiftUp0 (#NOWRITE T))
+sub0-IndBarC≡ T a = CTerm≡ (≡DECIDE x refl (≡NOWRITE y))
   where
     x : shiftDown 0 (shiftUp 0 ⌜ a ⌝) ≡ ⌜ a ⌝
     x rewrite #shiftUp 0 a | #shiftDown 0 a = refl
@@ -1385,37 +1385,37 @@ sub0-IndBarC≡ T a = CTerm≡ (≡DECIDE x refl (≡TCONST y))
     (#DECIDE-INL-VOID⇛ w a b)
 
 
-#DECIDE-INR⇓ : (w : 𝕎·) (T a : CTerm) (b : CTerm0) → #DECIDE (#INR a) b (#[0]shiftUp0 (#TCONST T)) #⇓ #TCONST T from w to w
+#DECIDE-INR⇓ : (w : 𝕎·) (T a : CTerm) (b : CTerm0) → #DECIDE (#INR a) b (#[0]shiftUp0 (#NOWRITE T)) #⇓ #NOWRITE T from w to w
 #DECIDE-INR⇓ w T a b = 1 , ≡pair c refl
   where
-    c : sub ⌜ a ⌝ (TCONST (shiftUp 0 ⌜ T ⌝)) ≡ TCONST ⌜ T ⌝
+    c : sub ⌜ a ⌝ (NOWRITE (shiftUp 0 ⌜ T ⌝)) ≡ NOWRITE ⌜ T ⌝
     c rewrite #shiftUp 0 T
             | #shiftUp 0 a
             | #subv 0 ⌜ a ⌝ ⌜ T ⌝ (CTerm.closed T)
             | #shiftDown 0 T = refl
 
 
-#DECIDE-INR⇛ : (w : 𝕎·) (T a : CTerm) (b : CTerm0) → #DECIDE (#INR a) b (#[0]shiftUp0 (#TCONST T)) #⇛! #TCONST T at w
+#DECIDE-INR⇛ : (w : 𝕎·) (T a : CTerm) (b : CTerm0) → #DECIDE (#INR a) b (#[0]shiftUp0 (#NOWRITE T)) #⇛! #NOWRITE T at w
 #DECIDE-INR⇛ w T a b w1 e1 = lift (#DECIDE-INR⇓ w1 T a b)
 
 
 #DECIDE⇛INR⇛ : (w : 𝕎·) (T x a : CTerm) (b : CTerm0)
                      → x #⇛ #INR a at w
-                     → #DECIDE x b (#[0]shiftUp0 (#TCONST T)) #⇛ #TCONST T at w
+                     → #DECIDE x b (#[0]shiftUp0 (#NOWRITE T)) #⇛ #NOWRITE T at w
 #DECIDE⇛INR⇛ w T x a b comp =
   #⇛-trans
-    {w} {#DECIDE x b (#[0]shiftUp0 (#TCONST T))} {#DECIDE (#INR a) b (#[0]shiftUp0 (#TCONST T))} {#TCONST T}
-    (DECIDE⇛₁ {w} {⌜ x ⌝} {⌜ #INR a ⌝} {⌜ b ⌝} {⌜ #[0]shiftUp0 (#TCONST T) ⌝} comp)
-    (#⇛!-#⇛ {w} {#DECIDE (#INR a) b (#[0]shiftUp0 (#TCONST T))} {#TCONST T} (#DECIDE-INR⇛ w T a b))
+    {w} {#DECIDE x b (#[0]shiftUp0 (#NOWRITE T))} {#DECIDE (#INR a) b (#[0]shiftUp0 (#NOWRITE T))} {#NOWRITE T}
+    (DECIDE⇛₁ {w} {⌜ x ⌝} {⌜ #INR a ⌝} {⌜ b ⌝} {⌜ #[0]shiftUp0 (#NOWRITE T) ⌝} comp)
+    (#⇛!-#⇛ {w} {#DECIDE (#INR a) b (#[0]shiftUp0 (#NOWRITE T))} {#NOWRITE T} (#DECIDE-INR⇛ w T a b))
 
 
 #DECIDE⇛INR⇛! : (w : 𝕎·) (T x a : CTerm) (b : CTerm0)
                       → x #⇛! #INR a at w
-                      → #DECIDE x b (#[0]shiftUp0 (#TCONST T)) #⇛! #TCONST T at w
+                      → #DECIDE x b (#[0]shiftUp0 (#NOWRITE T)) #⇛! #NOWRITE T at w
 #DECIDE⇛INR⇛! w T x a b comp =
   #⇛!-trans
-    {w} {#DECIDE x b (#[0]shiftUp0 (#TCONST T))} {#DECIDE (#INR a) b (#[0]shiftUp0 (#TCONST T))} {#TCONST T}
-    (DECIDE⇛!₁ {w} {⌜ x ⌝} {⌜ #INR a ⌝} {⌜ b ⌝} {⌜ #[0]shiftUp0 (#TCONST T) ⌝} comp)
+    {w} {#DECIDE x b (#[0]shiftUp0 (#NOWRITE T))} {#DECIDE (#INR a) b (#[0]shiftUp0 (#NOWRITE T))} {#NOWRITE T}
+    (DECIDE⇛!₁ {w} {⌜ x ⌝} {⌜ #INR a ⌝} {⌜ b ⌝} {⌜ #[0]shiftUp0 (#NOWRITE T) ⌝} comp)
     (#DECIDE-INR⇛ w T a b)
 
 
@@ -1437,8 +1437,8 @@ equalInType-DECIDE-INL-VOID→ i w a b1 b2 b e =
 
 
 equalInType-DECIDE-INR→ : (i : ℕ) (w : 𝕎·) (T a b1 b2 : CTerm) (b : CTerm0)
-                                → equalInType i w (#DECIDE (#INR a) b (#[0]shiftUp0 (#TCONST T))) b1 b2
-                                → equalInType i w (#TCONST T) b1 b2
+                                → equalInType i w (#DECIDE (#INR a) b (#[0]shiftUp0 (#NOWRITE T))) b1 b2
+                                → equalInType i w (#NOWRITE T) b1 b2
 equalInType-DECIDE-INR→ i w T a b1 b2 b e =
   equalInType-#⇛ (#DECIDE-INR⇛ w T a b) e
 
@@ -1450,13 +1450,13 @@ INL→!∈Type-IndBarC i w T x a b comp j rewrite sub0-IndBarC≡ T x =
   ¬equalInType-FALSE j1
   where
     j1 : ∈Type i w #VOID b
-    j1 = equalInType-#⇛ (#DECIDE⇛INL-VOID⇛! w x a (#[0]shiftUp0 (#TCONST T)) comp) j
+    j1 = equalInType-#⇛ (#DECIDE⇛INL-VOID⇛! w x a (#[0]shiftUp0 (#NOWRITE T)) comp) j
 
 
 type-#⇛!-NUM : (P : ℕ → Set) (T : CTerm) → Set(lsuc(L))
 type-#⇛!-NUM P T =
   {i : ℕ} {w : 𝕎·} {a b : CTerm}
-  → equalInType i w (#TCONST T) a b
+  → equalInType i w (#NOWRITE T) a b
   → □· w (λ w' _ → Σ ℕ (λ n → a #⇛! #NUM n at w' × b #⇛! #NUM n at w' × P n))
 
 
@@ -1469,7 +1469,7 @@ INR→!∈Type-IndBarC : (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T x a b : CTe
 INR→!∈Type-IndBarC i w P T x a b tyn comp j rewrite sub0-IndBarC≡ T x =
   Mod.∀𝕎-□Func M aw (tyn j1)
   where
-    j1 : ∈Type i w (#TCONST T) b
+    j1 : ∈Type i w (#NOWRITE T) b
     j1 = equalInType-#⇛ (#DECIDE⇛INR⇛! w T x a #[0]VOID comp) j
 
     aw : ∀𝕎 w (λ w' e' → Σ ℕ (λ n → b #⇛! #NUM n at w' × b #⇛! #NUM n at w' × P n)

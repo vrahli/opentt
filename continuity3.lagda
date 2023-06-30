@@ -272,8 +272,8 @@ getT≤ℕ-chooseT0if→ gc {w} {name} {n} {m} {m'} compat g0 (j , h , q) with m
     ind = ¬Names→isHighestℕ-step {k} {k'} {w1} {w1'} {n} {name} gtn z
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 ¬Names→isHighestℕ-step {TSQUASH t} {u} {w1} {w2} {n} {name} gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , gtn
-¬Names→isHighestℕ-step {TTRUNC t} {u} {w1} {w2} {n} {name} gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , gtn
-¬Names→isHighestℕ-step {TCONST t} {u} {w1} {w2} {n} {name} gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , gtn
+--¬Names→isHighestℕ-step {TTRUNC t} {u} {w1} {w2} {n} {name} gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , gtn
+¬Names→isHighestℕ-step {NOWRITE t} {u} {w1} {w2} {n} {name} gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , gtn
 ¬Names→isHighestℕ-step {SUBSING t} {u} {w1} {w2} {n} {name} gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , gtn
 ¬Names→isHighestℕ-step {PURE} {u} {w1} {w2} {n} {name} gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , gtn
 ¬Names→isHighestℕ-step {NOSEQ} {u} {w1} {w2} {n} {name} gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , gtn
@@ -457,7 +457,7 @@ abstract
   ¬Names→isHighestℕ-step {ISECT t t₁} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
   ¬Names→isHighestℕ-step {TUNION t t₁} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
   ¬Names→isHighestℕ-step {UNION t t₁} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
-  ¬Names→isHighestℕ-step {QTUNION t t₁} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
+--  ¬Names→isHighestℕ-step {QTUNION t t₁} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
   ¬Names→isHighestℕ-step {INL t} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
   ¬Names→isHighestℕ-step {INR t} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
   ¬Names→isHighestℕ-step {DECIDE a b c} {u} {w1} {w2} {n} {name} nn gtn comp with is-INL a
@@ -476,7 +476,7 @@ abstract
       ind = ¬Names→isHighestℕ-step {a} {a'} {w1} {w1'} {n} {name} (∧≡true→1-3 {¬names a} {¬names b} {¬names c} nn) gtn z
   ... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
   ¬Names→isHighestℕ-step {EQ t t₁ t₂} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
-  ¬Names→isHighestℕ-step {EQB t t₁ t₂ t₃} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
+--  ¬Names→isHighestℕ-step {EQB t t₁ t₂ t₃} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
   ¬Names→isHighestℕ-step {AX} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
   ¬Names→isHighestℕ-step {FREE} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
   ¬Names→isHighestℕ-step {MSEQ x} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
@@ -499,8 +499,9 @@ abstract
       ind = ¬Names→isHighestℕ-step {k} {k'} {w1} {w1'} {n} {name} (∧≡true→ₗ (¬names k) (¬names t) nn) gtn z
   ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
   ¬Names→isHighestℕ-step {TSQUASH t} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
-  ¬Names→isHighestℕ-step {TTRUNC t} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
-  ¬Names→isHighestℕ-step {TCONST t} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
+--  ¬Names→isHighestℕ-step {TTRUNC t} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
+  ¬Names→isHighestℕ-step {NOWRITE t} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
+  ¬Names→isHighestℕ-step {NOREAD t} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
   ¬Names→isHighestℕ-step {SUBSING t} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
   ¬Names→isHighestℕ-step {PURE} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
   ¬Names→isHighestℕ-step {NOSEQ} {u} {w1} {w2} {n} {name} nn gtn comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nn , gtn
@@ -1139,7 +1140,7 @@ abstract
   step-sat-isHighestℕ gc {w1} {w2} {.(ISECT a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-ISECT a b₁ ctxt ctxt₁) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , ISECT a b₁ , w1 , refl , (λ x → x , x) , updCtxt-ISECT _ _ ctxt ctxt₁
   step-sat-isHighestℕ gc {w1} {w2} {.(TUNION a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-TUNION a b₁ ctxt ctxt₁) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , TUNION a b₁ , w1 , refl , (λ x → x , x) , updCtxt-TUNION _ _ ctxt ctxt₁
   step-sat-isHighestℕ gc {w1} {w2} {.(UNION a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-UNION a b₁ ctxt ctxt₁) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , UNION a b₁ , w1 , refl , (λ x → x , x) , updCtxt-UNION _ _ ctxt ctxt₁
-  step-sat-isHighestℕ gc {w1} {w2} {.(QTUNION a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-QTUNION a b₁ ctxt ctxt₁) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , QTUNION a b₁ , w1 , refl , (λ x → x , x) , updCtxt-QTUNION _ _ ctxt ctxt₁
+--  step-sat-isHighestℕ gc {w1} {w2} {.(QTUNION a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-QTUNION a b₁ ctxt ctxt₁) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , QTUNION a b₁ , w1 , refl , (λ x → x , x) , updCtxt-QTUNION _ _ ctxt ctxt₁
   step-sat-isHighestℕ gc {w1} {w2} {.(INL a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-INL a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , INL a , w1 , refl , (λ x → x , x) , updCtxt-INL _ ctxt
   step-sat-isHighestℕ gc {w1} {w2} {.(INR a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-INR a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , INR a , w1 , refl , (λ x → x , x) , updCtxt-INR _ ctxt
   step-sat-isHighestℕ gc {w1} {w2} {.(DECIDE a b₁ c)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-DECIDE a b₁ c ctxt ctxt₁ ctxt₂) nnf cf with is-INL a
@@ -1156,7 +1157,7 @@ abstract
       ind = step-sat-isHighestℕ gc compat wgt0 z (stepsPresHighestℕ-DECIDE₁→ indb) ctxt nnf cf
   ... |       inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
   step-sat-isHighestℕ gc {w1} {w2} {.(EQ a b₁ c)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-EQ a b₁ c ctxt ctxt₁ ctxt₂) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , EQ a b₁ c , w1 , refl , (λ x → x , x) , updCtxt-EQ _ _ _ ctxt ctxt₁ ctxt₂
-  step-sat-isHighestℕ gc {w1} {w2} {.(EQB a b₁ c d)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-EQB a b₁ c d ctxt ctxt₁ ctxt₂ ctxt₃) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , EQB a b₁ c d , w1 , refl , (λ x → x , x) , updCtxt-EQB _ _ _ _ ctxt ctxt₁ ctxt₂ ctxt₃
+--  step-sat-isHighestℕ gc {w1} {w2} {.(EQB a b₁ c d)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-EQB a b₁ c d ctxt ctxt₁ ctxt₂ ctxt₃) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , EQB a b₁ c d , w1 , refl , (λ x → x , x) , updCtxt-EQB _ _ _ _ ctxt ctxt₁ ctxt₂ ctxt₃
   step-sat-isHighestℕ gc {w1} {w2} {.AX} {b} {n} {name} {f} compat wgt0 comp indb updCtxt-AX nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , AX , w1 , refl , (λ x → x , x) , updCtxt-AX
   step-sat-isHighestℕ gc {w1} {w2} {.FREE} {b} {n} {name} {f} compat wgt0 comp indb updCtxt-FREE nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , FREE , w1 , refl , (λ x → x , x) , updCtxt-FREE
   step-sat-isHighestℕ gc {w1} {w2} {.(MSEQ x)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-MSEQ x) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , MSEQ x , w1 , refl , (λ x → x , x) , updCtxt-MSEQ x
@@ -1181,8 +1182,9 @@ abstract
       ind = step-sat-isHighestℕ gc compat wgt0 z (stepsPresHighestℕ-CHOOSE₁→ indb) ctxt nnf cf
   ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
   step-sat-isHighestℕ gc {w1} {w2} {.(TSQUASH a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-TSQUASH a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , TSQUASH a , w1 , refl , (λ x → x , x) , updCtxt-TSQUASH _ ctxt
-  step-sat-isHighestℕ gc {w1} {w2} {.(TTRUNC a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-TTRUNC a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , TTRUNC a , w1 , refl , (λ x → x , x) , updCtxt-TTRUNC _ ctxt
-  step-sat-isHighestℕ gc {w1} {w2} {.(TCONST a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-TCONST a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , TCONST a , w1 , refl , (λ x → x , x) , updCtxt-TCONST _ ctxt
+--  step-sat-isHighestℕ gc {w1} {w2} {.(TTRUNC a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-TTRUNC a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , TTRUNC a , w1 , refl , (λ x → x , x) , updCtxt-TTRUNC _ ctxt
+  step-sat-isHighestℕ gc {w1} {w2} {.(NOWRITE a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-NOWRITE a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , NOWRITE a , w1 , refl , (λ x → x , x) , updCtxt-NOWRITE _ ctxt
+  step-sat-isHighestℕ gc {w1} {w2} {.(NOREAD a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-NOREAD a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , NOREAD a , w1 , refl , (λ x → x , x) , updCtxt-NOREAD _ ctxt
   step-sat-isHighestℕ gc {w1} {w2} {.(SUBSING a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-SUBSING a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , SUBSING a , w1 , refl , (λ x → x , x) , updCtxt-SUBSING _ ctxt
   step-sat-isHighestℕ gc {w1} {w2} {.(PURE)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-PURE) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , PURE , w1 , refl , (λ x → x , x) , updCtxt-PURE
   step-sat-isHighestℕ gc {w1} {w2} {.(NOSEQ)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt-NOSEQ) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , NOSEQ , w1 , refl , (λ x → x , x) , updCtxt-NOSEQ
@@ -1290,8 +1292,8 @@ step-sat-isHighestℕ {w1} {w2} {.FREE} {b} {n} {name} {f} comp indb updCtxt-FRE
 step-sat-isHighestℕ {w1} {w2} {.(MSEQ x)} {b} {n} {name} {f} comp indb (updCtxt-MSEQ x) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , 0 , _ , _ , refl , (n , g0 , ≤-refl) , updCtxt-MSEQ x
 step-sat-isHighestℕ {w1} {w2} {.(CHOOSE a b₁)} {b} {n} {name} {f} comp indb (updCtxt-CHOOSE a b₁ ctxt ctxt₁) nnf cf = {!!}
 step-sat-isHighestℕ {w1} {w2} {.(TSQUASH a)} {b} {n} {name} {f} comp indb (updCtxt-TSQUASH a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , 0 , _ , _ , refl , (n , g0 , ≤-refl) , updCtxt-TSQUASH a ctxt
-step-sat-isHighestℕ {w1} {w2} {.(TTRUNC a)} {b} {n} {name} {f} comp indb (updCtxt-TTRUNC a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , 0 , _ , _ , refl , (n , g0 , ≤-refl) , updCtxt-TTRUNC a ctxt
-step-sat-isHighestℕ {w1} {w2} {.(TCONST a)} {b} {n} {name} {f} comp indb (updCtxt-TCONST a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , 0 , _ , _ , refl , (n , g0 , ≤-refl) , updCtxt-TCONST a ctxt
+--step-sat-isHighestℕ {w1} {w2} {.(TTRUNC a)} {b} {n} {name} {f} comp indb (updCtxt-TTRUNC a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , 0 , _ , _ , refl , (n , g0 , ≤-refl) , updCtxt-TTRUNC a ctxt
+step-sat-isHighestℕ {w1} {w2} {.(NOWRITE a)} {b} {n} {name} {f} comp indb (updCtxt-NOWRITE a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , 0 , _ , _ , refl , (n , g0 , ≤-refl) , updCtxt-NOWRITE a ctxt
 step-sat-isHighestℕ {w1} {w2} {.(SUBSING a)} {b} {n} {name} {f} comp indb (updCtxt-SUBSING a ctxt) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , 0 , _ , _ , refl , (n , g0 , ≤-refl) , updCtxt-SUBSING a ctxt
 step-sat-isHighestℕ {w1} {w2} {.(PURE)} {b} {n} {name} {f} comp indb (updCtxt-PURE) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , 0 , _ , _ , refl , (n , g0 , ≤-refl) , updCtxt-PURE
 step-sat-isHighestℕ {w1} {w2} {.(NOSEQ)} {b} {n} {name} {f} comp indb (updCtxt-NOSEQ) nnf cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = (n , g0 , ≤-refl) , 0 , _ , _ , refl , (n , g0 , ≤-refl) , updCtxt-NOSEQ
