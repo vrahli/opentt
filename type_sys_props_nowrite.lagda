@@ -46,12 +46,12 @@ open import mod
 open import encode
 
 
-module type_sys_props_tconst {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-                             (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
-                             (X : ChoiceExt W C)
-                             (N : NewChoice W C K G)
-                             (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-                             (EC : Encode)
+module type_sys_props_nowrite {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
+                              (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
+                              (X : ChoiceExt W C)
+                              (N : NewChoice W C K G)
+                              (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+                              (EC : Encode)
        where
 
 
@@ -134,6 +134,9 @@ NOWRITEneqLIFT {a} {c} ()
 
 NOWRITEneqTSQUASH : {a : Term} {c : Term} → ¬ (NOWRITE a) ≡ TSQUASH c
 NOWRITEneqTSQUASH {a} {c} ()
+
+NOWRITEneqNOREAD : {a : Term} {c : Term} → ¬ (NOWRITE a) ≡ NOREAD c
+NOWRITEneqNOREAD {a} {c} ()
 
 --NOWRITEneqTTRUNC : {a : Term} {c : Term} → ¬ (NOWRITE a) ≡ TTRUNC c
 --NOWRITEneqTTRUNC {a} {c} ()
@@ -239,6 +242,7 @@ typeSysConds-NOWRITE-ttrans u w A B A1 B1 x x₁ eqta exta inda C eqt = concl x 
             ei2 : eqInType u w' (eqta w' e2) a b
             ei2 = exta a b w' e1 e2 ei1
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (NOWRITEneqDUM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOREAD A3 A4 y y₁ eqtA extA) ind x x₁ eqta exta inda = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x x₁ eqta exta inda = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x x₁ eqta exta inda = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x₁ c₁))
     ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x x₁ eqta exta inda = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x₁ y))
@@ -353,6 +357,7 @@ typeSysConds-NOWRITE-extl1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
           NOWRITEeq-ext-eq
             {eqInType u w1 (eqta w1 e1)} {eqInType u w1 (eqtA w1 e1)} {w1} {f} {g}
             (TSP.extl1 (inda w1 e1) A4 (eqtA w1 e1)) p
+    ind {u} {w} {T1} {T2} (EQTNOREAD A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x c₁))
     ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x y))
@@ -436,6 +441,7 @@ typeSysConds-NOWRITE-extl2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
                             → NOWRITEeq (eqInType u w' (eqtA w' e')) w' f g)
         aw w1 e1 p rewrite sym (#NOWRITEinj {A4} {A1} (#⇛-val-det {_} {T2} tt tt y₁ x)) =
           NOWRITEeq-ext-eq (TSP.extl2 (inda w1 e1) A3 (eqtA w1 e1)) p
+    ind {u} {w} {T1} {T2} (EQTNOREAD A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x y₁))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqDUM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x c₂))
@@ -519,6 +525,7 @@ typeSysConds-NOWRITE-extr1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
                             → NOWRITEeq (eqInType u w' (eqtA w' e')) w' f g)
         aw w1 e1 p rewrite sym (#NOWRITEinj {A4} {B1} (#⇛-val-det {_} {T2} tt tt y₁ x₁)) =
           NOWRITEeq-ext-eq (TSP.extr1 (inda w1 e1) A3 (eqtA w1 e1)) p
+    ind {u} {w} {T1} {T2} (EQTNOREAD A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x₁ y₁))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqDUM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x₁ c₂))
@@ -602,6 +609,7 @@ typeSysConds-NOWRITE-extr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
                             → NOWRITEeq (eqInType u w' (eqtA w' e')) w' f g)
         aw w1 e1 p rewrite sym (#NOWRITEinj {A3} {B1} (#⇛-val-det {_} {T1} tt tt y x₁)) =
           NOWRITEeq-ext-eq (TSP.extr2 (inda w1 e1) A4 (eqtA w1 e1)) p
+    ind {u} {w} {T1} {T2} (EQTNOREAD A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x₁ y))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqDUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x₁ c₁))
@@ -684,6 +692,7 @@ typeSysConds-NOWRITE-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
                             → NOWRITEeq (eqInType u w' (eqta w' e')) w' f g)
         aw w1 e1 p rewrite sym (#NOWRITEinj {A3} {A1} (#⇛-val-det {_} {T1} tt tt y x)) =
           NOWRITEeq-ext-eq (TSP.extrevl1 (inda w1 e1) A4 (eqtA w1 e1)) p
+    ind {u} {w} {T1} {T2} (EQTNOREAD A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x y))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqDUM (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x c₁))
@@ -698,7 +707,7 @@ typeSysConds-NOWRITE-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
             □· w' (λ w'' e'' → (x : w ⊑· w'') → NOWRITEeq (eqInType u w'' (eqta w'' x)) w'' f g))
         aw w1 e1 z at ez =
            Mod.∀𝕎-□Func
-             M (irr-tconst u w A1 B1 eqta exta f g w1 e1)
+             M (irr-nowrite u w A1 B1 eqta exta f g w1 e1)
              (ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
                (∀𝕎-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1) (∀𝕎-mon e1 inda) (⇛-mon e1 x) f g ez)
 
@@ -769,6 +778,7 @@ typeSysConds-NOWRITE-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
                             → NOWRITEeq (eqInType u w' (eqta w' e')) w' f g)
         aw w1 e1 p rewrite sym (#NOWRITEinj {A4} {A1} (#⇛-val-det {_} {T2} tt tt y₁ x)) =
           NOWRITEeq-ext-eq (TSP.extrevl2 (inda w1 e1) A3 (eqtA w1 e1)) p
+    ind {u} {w} {T1} {T2} (EQTNOREAD A3 A4 y y₁ eqtA extA) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x y₁))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqDUM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x c₂))
@@ -782,7 +792,7 @@ typeSysConds-NOWRITE-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
             eqInType u w' z f g →
             □· w' (λ w'' e'' → (x : w ⊑· w'') → NOWRITEeq (eqInType u w'' (eqta w'' x)) w'' f g))
         aw w1 e1 z at ez =
-          Mod.∀𝕎-□Func M (irr-tconst u w A1 B1 eqta exta f g w1 e1)
+          Mod.∀𝕎-□Func M (irr-nowrite u w A1 B1 eqta exta f g w1 e1)
             (ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
                (∀𝕎-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1) (∀𝕎-mon e1 inda) (⇛-mon e1 x) f g ez)
 
@@ -853,6 +863,7 @@ typeSysConds-NOWRITE-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
                             → NOWRITEeq (eqInType u w' (eqta w' e')) w' f g)
         aw w1 e1 p rewrite sym (#NOWRITEinj {A4} {B1} (#⇛-val-det {_} {T2} tt tt y₁ x₁)) =
           NOWRITEeq-ext-eq (TSP.extrevr1 (inda w1 e1) A3 (eqtA w1 e1)) p
+    ind {u} {w} {T1} {T2} (EQTNOREAD A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x₁ y₁))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqDUM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x₁ c₂))
@@ -866,7 +877,7 @@ typeSysConds-NOWRITE-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
           eqInType u w' z f g →
           □· w' (λ w'' e'' → (x : w ⊑· w'') → NOWRITEeq (eqInType u w'' (eqta w'' x)) w'' f g))
       aw w1 e1 z at ez =
-        Mod.∀𝕎-□Func M (irr-tconst u w A1 B1 eqta exta f g w1 e1)
+        Mod.∀𝕎-□Func M (irr-nowrite u w A1 B1 eqta exta f g w1 e1)
           (ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
                (∀𝕎-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1) (∀𝕎-mon e1 inda) (⇛-mon e1 x₁) f g ez)
 
@@ -937,6 +948,7 @@ typeSysConds-NOWRITE-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
                             → NOWRITEeq (eqInType u w' (eqta w' e')) w' f g)
         aw w1 e1 p rewrite sym (#NOWRITEinj {A3} {B1} (#⇛-val-det {_} {T1} tt tt y x₁)) =
           NOWRITEeq-ext-eq (TSP.extrevr2 (inda w1 e1) A4 (eqtA w1 e1)) p
+    ind {u} {w} {T1} {T2} (EQTNOREAD A3 A4 y y₁ eqtA extA) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x₁ y))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqDUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x₁ c₁))
@@ -950,7 +962,7 @@ typeSysConds-NOWRITE-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
             eqInType u w' z f g →
             □· w' (λ w'' e'' → (x : w ⊑· w'') → NOWRITEeq (eqInType u w'' (eqta w'' x)) w'' f g))
         aw w1 e1 z at ez =
-          Mod.∀𝕎-□Func M (irr-tconst u w A1 B1 eqta exta f g w1 e1)
+          Mod.∀𝕎-□Func M (irr-nowrite u w A1 B1 eqta exta f g w1 e1)
             (ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
                (∀𝕎-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1) (∀𝕎-mon e1 inda) (⇛-mon e1 x₁) f g ez)
 
@@ -1029,6 +1041,7 @@ eqInType-⇛-NOWRITE u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt eqi = concl 
             aw0 : (a₂ b₂ : CTerm) → eqInType u w1 (eqta₁ w1 e1) a₂ b₂ → eqInType u w1 (eqta w1 e1) a₂ b₂
             aw0 a₂ b₂ a∈ rewrite #NOWRITEinj {A1} {A3} (#⇛-val-det {_} {T1} tt tt c₁ x)
                                 | #NOWRITEinj {B1} {A4} (#⇛-val-det {_} {T2} tt tt c₂ x₁) = snd (inda w1 e1 (eqta₁ w1 e1) a₂ b₂) a∈
+    ind {u} {w} {T1} {T2} (EQTNOREAD A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt c₁ d₁))
     ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt c₁ x))
@@ -1041,7 +1054,7 @@ eqInType-⇛-NOWRITE u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt eqi = concl 
             eqInType u w' z a b →
             □· w' (λ w'' e → (x : w ⊑· w'') → NOWRITEeq (eqInType u w'' (eqta w'' x)) w'' a b))
         aw w1 e1 z at ez =
-          Mod.∀𝕎-□Func M (irr-tconst u w A1 B1 eqta exta a b w1 e1)
+          Mod.∀𝕎-□Func M (irr-nowrite u w A1 B1 eqta exta a b w1 e1)
             (ind {u} {w1} {T1} {T2} z
                (<Type1 z (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 z at))
                (∀𝕎-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1)
@@ -1125,6 +1138,7 @@ eqInType-⇛-NOWRITE2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ei ext = concl e
         aw w1 e1 p rewrite #NOWRITEinj {A1} {A3} (#⇛-val-det {_} {T1} tt tt c₁ x)
                          | #NOWRITEinj {B1} {A4} (#⇛-val-det {_} {T2} tt tt c₂ x₁) =
           NOWRITEeq-ext-eq (λ a1 a2 ea → fst (awexta₁ w1 e1 (eqta w1 e1) a1 a2) ea) p
+    ind {u} {w} {T1} {T2} (EQTNOREAD A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt c₁ x))
 -- ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOWRITEneqDUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt c₁ d₁))
@@ -1138,7 +1152,7 @@ eqInType-⇛-NOWRITE2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ei ext = concl e
             ≡∈Type u w' z a b →
             □· w' (λ w'' e → (x : w ⊑· w'') → NOWRITEeq (≡∈Type u w'' (eqta w'' x)) w'' a b))
         aw w1 e1 z at ez =
-          Mod.∀𝕎-□Func M (irr-tconst (u ·ᵤ) w A1 B1 eqta exta a b w1 e1)
+          Mod.∀𝕎-□Func M (irr-nowrite (u ·ᵤ) w A1 B1 eqta exta a b w1 e1)
             (ind {u} {w1} {T1} {T2} z (<Type1₂ z (EQTBAR x) (<TypeBAR₂ u w T1 T2 x w1 e1 z at))
               (∀𝕎-mon e1 eqta) (wPredExtIrr-eqInType-mon eqta exta w1 e1) (⇛-mon e1 c₁) (⇛-mon e1 c₂)
               a b ez (≤Type-trans-bar₂ e1 x z at ext))
@@ -1215,6 +1229,7 @@ eqInType-⇛-NOWRITE-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt ei = con
         aw w1 e1 p rewrite #NOWRITEinj {A1} {A3} (#⇛-val-det {_} {T1} tt tt c₁ x)
                          | #NOWRITEinj {B1} {A4} (#⇛-val-det {_} {T2} tt tt c₂ x₁) =
           NOWRITEeq-ext-eq (λ a1 a2 ea → fst (inda w1 e1 (eqta₁ w1 e1) a1 a2) ea) p
+    ind {u} {w} {T1} {T2} (EQTNOREAD A3 A4 x x₁ eqta₁ exta₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt c₁ x))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqDUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt c₁ d₁))
@@ -1310,6 +1325,7 @@ eqInType-⇛-NOWRITE-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ext ei = con
           where
             aw2 : (a₂ b₂ : CTerm) → ≡∈Type u w1 (eqta w1 e1) a₂ b₂ → ≡∈Type u w1 (eqta₁ w1 e1) a₂ b₂
             aw2 a₂ b₂ a∈ = snd (ext (eqta₁ w1 e1) (≤TypeS₂ _ _ (<Type1₂ _ _ (<TypeNOWRITE₂ u w T1 T2 A3 A4 x x₁ eqta₁ exta₁ w1 e1))) (eqta w1 e1) a₂ b₂) a∈
+    ind {u} {w} {T1} {T2} (EQTNOREAD A3 A4 x x₁ eqta₁ exta₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt c₁ x))
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOWRITEneqDUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt c₁ d₁))

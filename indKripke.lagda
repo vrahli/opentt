@@ -243,7 +243,7 @@ data <TypeStep where
                 (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtB w e) a b))
                 (w' : 𝕎·) (e' : w ⊑· w')
                 → <TypeStep {u} (eqtB w' e') {u} {w} {T1} {T2} (EQTUNION A1 B1 A2 B2 c₁ c₂ eqtA eqtB exta extb)
-  <TypeQTUNIONl : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) (A1 B1 A2 B2 : CTerm)
+{-  <TypeQTUNIONl : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) (A1 B1 A2 B2 : CTerm)
                 (c₁ : T1 #⇛ (#QTUNION A1 B1) at w)
                 (c₂ : T2 #⇛ (#QTUNION A2 B2) at w)
                 (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
@@ -260,7 +260,7 @@ data <TypeStep where
                 (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
                 (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtB w e) a b))
                 (w' : 𝕎·) (e' : w ⊑· w')
-                → <TypeStep {u} (eqtB w' e') {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 c₁ c₂ eqtA eqtB exta extb)
+                → <TypeStep {u} (eqtB w' e') {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 c₁ c₂ eqtA eqtB exta extb)-}
   <TypeSQUASH : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) (A1 A2 : CTerm)
                 (c₁ : T1 #⇛ (#TSQUASH A1) at w)
                 (c₂ : T2 #⇛ (#TSQUASH A2) at w)
@@ -268,20 +268,27 @@ data <TypeStep where
                 (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
                 (w' : 𝕎·) (e' : w ⊑· w')
                 → <TypeStep {u} (eqtA w' e') {u} {w} {T1} {T2} (EQTSQUASH A1 A2 c₁ c₂ eqtA exta)
-  <TypeTTRUNC : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) (A1 A2 : CTerm)
+{-  <TypeTTRUNC : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) (A1 A2 : CTerm)
                 (c₁ : T1 #⇛ (#TTRUNC A1) at w)
                 (c₂ : T2 #⇛ (#TTRUNC A2) at w)
                 (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
                 (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
                 (w' : 𝕎·) (e' : w ⊑· w')
-                → <TypeStep {u} (eqtA w' e') {u} {w} {T1} {T2} (EQTTRUNC A1 A2 c₁ c₂ eqtA exta)
-  <TypeTCONST : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) (A1 A2 : CTerm)
-                (c₁ : T1 #⇛ (#TCONST A1) at w)
-                (c₂ : T2 #⇛ (#TCONST A2) at w)
+                → <TypeStep {u} (eqtA w' e') {u} {w} {T1} {T2} (EQTTRUNC A1 A2 c₁ c₂ eqtA exta)-}
+  <TypeNOWRITE : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) (A1 A2 : CTerm)
+                (c₁ : T1 #⇛ (#NOWRITE A1) at w)
+                (c₂ : T2 #⇛ (#NOWRITE A2) at w)
                 (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
                 (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
                 (w' : 𝕎·) (e' : w ⊑· w')
-                → <TypeStep {u} (eqtA w' e') {u} {w} {T1} {T2} (EQTCONST A1 A2 c₁ c₂ eqtA exta)
+                → <TypeStep {u} (eqtA w' e') {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 c₁ c₂ eqtA exta)
+  <TypeNOREAD : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) (A1 A2 : CTerm)
+                (c₁ : T1 #⇛ (#NOREAD A1) at w)
+                (c₂ : T2 #⇛ (#NOREAD A2) at w)
+                (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+                (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
+                (w' : 𝕎·) (e' : w ⊑· w')
+                → <TypeStep {u} (eqtA w' e') {u} {w} {T1} {T2} (EQTNOREAD A1 A2 c₁ c₂ eqtA exta)
   <TypeSUBSING : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) (A1 A2 : CTerm)
                 (c₁ : T1 #⇛ (#SUBSING A1) at w)
                 (c₂ : T2 #⇛ (#SUBSING A2) at w)
@@ -610,6 +617,7 @@ TSQUASHeq-ext {u} {w} {A1} {A2} {eqta} {w'} {e1} {e2} {a} {b} exta h =
 
 
 
+{-
 TTRUNCeq-ext : {u : univs} {w : 𝕎·} {A1 A2 : CTerm}
                 {eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2)}
                 {w' : 𝕎·} {e1 e2 : w ⊑· w'} {a b : CTerm}
@@ -618,17 +626,29 @@ TTRUNCeq-ext : {u : univs} {w : 𝕎·} {A1 A2 : CTerm}
                 → TTRUNCeq (eqInType u w' (eqta w' e2)) w' a b
 TTRUNCeq-ext {u} {w} {A1} {A2} {eqta} {w'} {e1} {e2} {a} {b} exta h =
   irr-TTRUNCeq eqta exta e1 e2 h
+-}
 
 
 
-TCONSTeq-ext : {u : univs} {w : 𝕎·} {A1 A2 : CTerm}
+NOWRITEeq-ext : {u : univs} {w : 𝕎·} {A1 A2 : CTerm}
                {eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2)}
                {w' : 𝕎·} {e1 e2 : w ⊑· w'} {a b : CTerm}
                (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-               → TCONSTeq (eqInType u w' (eqta w' e1)) w' a b
-               → TCONSTeq (eqInType u w' (eqta w' e2)) w' a b
-TCONSTeq-ext {u} {w} {A1} {A2} {eqta} {w'} {e1} {e2} {a} {b} exta h =
-  irr-TCONSTeq eqta exta e1 e2 h
+               → NOWRITEeq (eqInType u w' (eqta w' e1)) w' a b
+               → NOWRITEeq (eqInType u w' (eqta w' e2)) w' a b
+NOWRITEeq-ext {u} {w} {A1} {A2} {eqta} {w'} {e1} {e2} {a} {b} exta h =
+  irr-NOWRITEeq eqta exta e1 e2 h
+
+
+
+NOREADeq-ext : {u : univs} {w : 𝕎·} {A1 A2 : CTerm}
+               {eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2)}
+               {w' : 𝕎·} {e1 e2 : w ⊑· w'} {a b : CTerm}
+               (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+               → NOREADeq (eqInType u w' (eqta w' e1)) w' a b
+               → NOREADeq (eqInType u w' (eqta w' e2)) w' a b
+NOREADeq-ext {u} {w} {A1} {A2} {eqta} {w'} {e1} {e2} {a} {b} exta h =
+  irr-NOREADeq eqta exta e1 e2 h
 
 
 SUBSINGeq-ext : {u : univs} {w : 𝕎·} {A1 A2 : CTerm}
@@ -888,6 +908,7 @@ ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb 
   ind<Type-aux P ind (eqta w2 e') eqt' (≤TypeS eqt' (eqta w2 e') x₂)
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) (<TypeS .eqt' .(eqtb w2 e') .(EQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) x₂ (<TypeUNIONr .u .w .T1 .T2 .A1 .B1 .A2 .B2 .x .x₁ .eqta .eqtb .exta .extb w2 e'))) =
   ind<Type-aux P ind (eqtb w2 e') eqt' (≤TypeS eqt' (eqtb w2 e') x₂)
+{-
 -- QTUNION
 --ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) {u'} {w'} {T1'} {T2'} eqt' ltt = {!!}
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) {.u} {.w} {.T1} {.T2} .(EQTQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) (≤Type0 .(EQTQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb)) =
@@ -911,6 +932,7 @@ ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqta eqt
   ind<Type-aux P ind (eqta w2 e') eqt' (≤TypeS eqt' (eqta w2 e') x₂)
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) (<TypeS .eqt' .(eqtb w2 e') .(EQTQTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) x₂ (<TypeQTUNIONr .u .w .T1 .T2 .A1 .B1 .A2 .B2 .x .x₁ .eqta .eqtb .exta .extb w2 e'))) =
   ind<Type-aux P ind (eqtb w2 e') eqt' (≤TypeS eqt' (eqtb w2 e') x₂)
+-}
 -- TSQUASH
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) {.u} {.w} {.T1} {.T2} .(EQTSQUASH A1 A2 x x₁ eqtA exta) (≤Type0 .(EQTSQUASH A1 A2 x x₁ eqtA exta)) =
   ind (EQTSQUASH A1 A2 x x₁ eqtA exta) ind'
@@ -925,6 +947,7 @@ ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) {.u}
   ind<Type-aux P ind (eqtA w' e') (eqtA w' e') (≤Type0 (eqtA w' e'))
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTSQUASH A1 A2 x x₁ eqtA exta) (<TypeS .eqt' .(eqtA w2 e') .(EQTSQUASH A1 A2 x x₁ eqtA exta) x₂ (<TypeSQUASH .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta w2 e'))) =
   ind<Type-aux P ind (eqtA w2 e') eqt' (≤TypeS eqt' (eqtA w2 e') x₂)
+{-
 -- TTRUNC
 --ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' ltt = {!!}
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {.u} {.w} {.T1} {.T2} .(EQTTRUNC A1 A2 x x₁ eqtA exta) (≤Type0 .(EQTTRUNC A1 A2 x x₁ eqtA exta)) =
@@ -940,20 +963,36 @@ ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {.u} 
   ind<Type-aux P ind (eqtA w' e') (eqtA w' e') (≤Type0 (eqtA w' e'))
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTTRUNC A1 A2 x x₁ eqtA exta) (<TypeS .eqt' .(eqtA w2 e') .(EQTTRUNC A1 A2 x x₁ eqtA exta) x₂ (<TypeTTRUNC .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta w2 e'))) =
   ind<Type-aux P ind (eqtA w2 e') eqt' (≤TypeS eqt' (eqtA w2 e') x₂)
--- TCONST
---ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' ltt = {!!}
-ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) {.u} {.w} {.T1} {.T2} .(EQTCONST A1 A2 x x₁ eqtA exta) (≤Type0 .(EQTCONST A1 A2 x x₁ eqtA exta)) =
-  ind (EQTCONST A1 A2 x x₁ eqtA exta) ind'
+-}
+-- NOWRITE
+--ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' ltt = {!!}
+ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {.u} {.w} {.T1} {.T2} .(EQTNOWRITE A1 A2 x x₁ eqtA exta) (≤Type0 .(EQTNOWRITE A1 A2 x x₁ eqtA exta)) =
+  ind (EQTNOWRITE A1 A2 x x₁ eqtA exta) ind'
   where
     ind' : {u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : eqTypes u' w' T1' T2')
-           → <Type {u'} {w'} {T1'} {T2'} eqt' {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) → P eqt'
-    ind' {u'} {w'} {T1'} {T2'} .(eqtA w' e') (<Type1 .(eqtA w' e') .(EQTCONST T1' T2' x x₁ eqtA exta) (<TypeTCONST .u' .w .T1 .T2 .T1' .T2' .x .x₁ .eqtA .exta .w' e')) =
+           → <Type {u'} {w'} {T1'} {T2'} eqt' {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) → P eqt'
+    ind' {u'} {w'} {T1'} {T2'} .(eqtA w' e') (<Type1 .(eqtA w' e') .(EQTNOWRITE T1' T2' x x₁ eqtA exta) (<TypeNOWRITE .u' .w .T1 .T2 .T1' .T2' .x .x₁ .eqtA .exta .w' e')) =
       ind<Type-aux P ind (eqtA w' e') (eqtA w' e') (≤Type0 (eqtA w' e'))
-    ind' {u'} {w'} {T1'} {T2'} eqt' (<TypeS .eqt' .(eqtA w2 e') .(EQTCONST _ _ x x₁ eqtA exta) ltt (<TypeTCONST _ .w .T1 .T2 _ _ .x .x₁ .eqtA .exta w2 e')) =
+    ind' {u'} {w'} {T1'} {T2'} eqt' (<TypeS .eqt' .(eqtA w2 e') .(EQTNOWRITE _ _ x x₁ eqtA exta) ltt (<TypeNOWRITE _ .w .T1 .T2 _ _ .x .x₁ .eqtA .exta w2 e')) =
       ind<Type-aux P ind (eqtA w2 e') eqt' (≤TypeS eqt' (eqtA w2 e') ltt)
-ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) {.u} {w'} {.A1} {.A2} .(eqtA w' e') (≤TypeS .(eqtA w' e') .(EQTCONST A1 A2 x x₁ eqtA exta) (<Type1 .(eqtA w' e') .(EQTCONST A1 A2 x x₁ eqtA exta) (<TypeTCONST .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta .w' e'))) =
+ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {.u} {w'} {.A1} {.A2} .(eqtA w' e') (≤TypeS .(eqtA w' e') .(EQTNOWRITE A1 A2 x x₁ eqtA exta) (<Type1 .(eqtA w' e') .(EQTNOWRITE A1 A2 x x₁ eqtA exta) (<TypeNOWRITE .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta .w' e'))) =
   ind<Type-aux P ind (eqtA w' e') (eqtA w' e') (≤Type0 (eqtA w' e'))
-ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTCONST A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTCONST A1 A2 x x₁ eqtA exta) (<TypeS .eqt' .(eqtA w2 e') .(EQTCONST A1 A2 x x₁ eqtA exta) x₂ (<TypeTCONST .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta w2 e'))) =
+ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTNOWRITE A1 A2 x x₁ eqtA exta) (<TypeS .eqt' .(eqtA w2 e') .(EQTNOWRITE A1 A2 x x₁ eqtA exta) x₂ (<TypeNOWRITE .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta w2 e'))) =
+  ind<Type-aux P ind (eqtA w2 e') eqt' (≤TypeS eqt' (eqtA w2 e') x₂)
+-- NOREAD
+--ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOREAD A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' ltt = {!!}
+ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOREAD A1 A2 x x₁ eqtA exta) {.u} {.w} {.T1} {.T2} .(EQTNOREAD A1 A2 x x₁ eqtA exta) (≤Type0 .(EQTNOREAD A1 A2 x x₁ eqtA exta)) =
+  ind (EQTNOREAD A1 A2 x x₁ eqtA exta) ind'
+  where
+    ind' : {u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : eqTypes u' w' T1' T2')
+           → <Type {u'} {w'} {T1'} {T2'} eqt' {u} {w} {T1} {T2} (EQTNOREAD A1 A2 x x₁ eqtA exta) → P eqt'
+    ind' {u'} {w'} {T1'} {T2'} .(eqtA w' e') (<Type1 .(eqtA w' e') .(EQTNOREAD T1' T2' x x₁ eqtA exta) (<TypeNOREAD .u' .w .T1 .T2 .T1' .T2' .x .x₁ .eqtA .exta .w' e')) =
+      ind<Type-aux P ind (eqtA w' e') (eqtA w' e') (≤Type0 (eqtA w' e'))
+    ind' {u'} {w'} {T1'} {T2'} eqt' (<TypeS .eqt' .(eqtA w2 e') .(EQTNOREAD _ _ x x₁ eqtA exta) ltt (<TypeNOREAD _ .w .T1 .T2 _ _ .x .x₁ .eqtA .exta w2 e')) =
+      ind<Type-aux P ind (eqtA w2 e') eqt' (≤TypeS eqt' (eqtA w2 e') ltt)
+ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOREAD A1 A2 x x₁ eqtA exta) {.u} {w'} {.A1} {.A2} .(eqtA w' e') (≤TypeS .(eqtA w' e') .(EQTNOREAD A1 A2 x x₁ eqtA exta) (<Type1 .(eqtA w' e') .(EQTNOREAD A1 A2 x x₁ eqtA exta) (<TypeNOREAD .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta .w' e'))) =
+  ind<Type-aux P ind (eqtA w' e') (eqtA w' e') (≤Type0 (eqtA w' e'))
+ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOREAD A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTNOREAD A1 A2 x x₁ eqtA exta) (<TypeS .eqt' .(eqtA w2 e') .(EQTNOREAD A1 A2 x x₁ eqtA exta) x₂ (<TypeNOREAD .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta w2 e'))) =
   ind<Type-aux P ind (eqtA w2 e') eqt' (≤TypeS eqt' (eqtA w2 e') x₂)
 -- SUBSING
 --ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' ltt = {!!}

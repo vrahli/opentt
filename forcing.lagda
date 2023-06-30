@@ -261,6 +261,12 @@ data eqTypes u w T1 T2 where
     → (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → eqTypes u w T1 T2
+  EQTNOREAD : (A1 A2 : CTerm)
+    → T1 #⇛ (#NOREAD A1) at w
+    → T2 #⇛ (#NOREAD A2) at w
+    → (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+    → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
+    → eqTypes u w T1 T2
   EQTSUBSING : (A1 A2 : CTerm)
     → T1 #⇛ (#SUBSING A1) at w
     → T2 #⇛ (#SUBSING A2) at w
@@ -445,6 +451,13 @@ NOWRITEeq eqa w t1 t2 =
   × #⇓→#⇓! w t2
 
 
+NOREADeq : (eqa : per) → wper
+NOREADeq eqa w t1 t2 =
+  eqa t1 t2
+  × #⇓→#⇛ w t1
+  × #⇓→#⇛ w t2
+
+
 SUBSINGeq : (eqa : per) → per
 SUBSINGeq eqa t1 t2 = eqa t1 t1 × eqa t2 t2
 
@@ -541,6 +554,8 @@ eqInType u w (EQTSQUASH _ _ _ _ eqtA exta) t1 t2 =
   □· w (λ w' e → TTRUNCeq (eqInType u w' (eqtA w' e)) w' t1 t2)-}
 eqInType u w (EQTNOWRITE _ _ _ _ eqtA exta) t1 t2 =
   □· w (λ w' e → NOWRITEeq (eqInType u w' (eqtA w' e)) w' t1 t2)
+eqInType u w (EQTNOREAD _ _ _ _ eqtA exta) t1 t2 =
+  □· w (λ w' e → NOREADeq (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTSUBSING _ _ _ _ eqtA exta) t1 t2 =
   □· w (λ w' e → SUBSINGeq (eqInType u w' (eqtA w' e)) t1 t2)
 --eqInType u w (EQTDUM _ _ _ _ _ _) t1 t2 = Lift {0ℓ} (lsuc L) ⊤

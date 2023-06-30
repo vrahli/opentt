@@ -84,7 +84,8 @@ open import type_sys_props_union(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import type_sys_props_qtunion(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import type_sys_props_ttrunc(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_tconst(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import type_sys_props_nowrite(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import type_sys_props_noread(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_subsing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -178,6 +179,9 @@ UNIVneqTERM {a} {c} ()
 
 UNIVneqNOWRITE : {a : ℕ} {c : Term} → ¬ UNIV a ≡ NOWRITE c
 UNIVneqNOWRITE {a} {c} ()
+
+UNIVneqNOREAD : {a : ℕ} {c : Term} → ¬ UNIV a ≡ NOREAD c
+UNIVneqNOREAD {a} {c} ()
 
 UNIVneqSUBSING : {a : ℕ} {c : Term} → ¬ UNIV a ≡ SUBSING c
 UNIVneqSUBSING {a} {c} ()
@@ -460,6 +464,7 @@ abstract
       ind {u} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqtA extA) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqTSQUASH (⇛-val-det tt tt c₁ x))
 --      ind {u} {w} {A} {B} (EQTTRUNC A1 A2 x x₁ eqtA extA) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqTTRUNC (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTNOWRITE A1 A2 x x₁ eqtA extA) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqNOWRITE (⇛-val-det tt tt c₁ x))
+      ind {u} {w} {A} {B} (EQTNOREAD A1 A2 x x₁ eqtA extA) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqNOREAD (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqtA extA) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqSUBSING (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTPURE x x₁) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqPURE (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTNOSEQ x x₁) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqNOSEQ (⇛-val-det tt tt c₁ x))
@@ -555,6 +560,7 @@ abstract
       ind {u} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqtA extA) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqTSQUASH (⇛-val-det tt tt c₁ x))
 --      ind {u} {w} {A} {B} (EQTTRUNC A1 A2 x x₁ eqtA extA) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqTTRUNC (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTNOWRITE A1 A2 x x₁ eqtA extA) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqNOWRITE (⇛-val-det tt tt c₁ x))
+      ind {u} {w} {A} {B} (EQTNOREAD A1 A2 x x₁ eqtA extA) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqNOREAD (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqtA extA) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqSUBSING (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTPURE x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqPURE (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTNOSEQ x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqNOSEQ (⇛-val-det tt tt c₁ x))
@@ -927,6 +933,27 @@ abstract
           aw1 : ∀𝕎 w' (λ w'' e'' → NOWRITEeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e'')) w'' a b
                                    → ↑wPred' (λ w''' e → NOWRITEeq (eqInType u w''' (eqta w''' e)) w''' a b) e' w'' e'')
           aw1 w1 e1 h ext = NOWRITEeq-ext {mk𝕌 isu} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
+  eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTNOREAD A1 A2 x x₁ eqta exta) =
+    Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
+    where
+      aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) → at□· i w' e' z → eqInType u w' z a b
+                           → □· w' (↑wPred' (λ w'' e → NOREADeq (eqInType u w'' (eqta w'' e)) w'' a b) e'))
+      aw w' e' z at eqi =
+        Mod.∀𝕎-□Func M
+          aw1
+          (eqInType-⇛-NOREAD2
+            (mk𝕌 isu) w' A B A1 A2 a b
+            (∀𝕎-mon e' eqta)
+            (wPredExtIrr-eqInType-mon eqta exta w' e')
+            (⇛-mon e' x) (⇛-mon e' x₁) z eqi ind')
+        where
+          ind' : {u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type {u'} eqt' {u , isu} z → eqInTypeExt eqt'
+          ind' {u'} {w''} {A'} {B'} eqt' (≤Type0 .eqt') = ind eqt' (<Type1 _ _ (<TypeBAR (mk𝕌 isu) w A B i w' e' z at {--at--}))
+          ind' {u'} {w''} {A'} {B'} eqt' (≤TypeS .eqt' .z x) = ind eqt' (<TypeS _ _ _ x (<TypeBAR (mk𝕌 isu) w A B i w' e' z at {--at--}))
+
+          aw1 : ∀𝕎 w' (λ w'' e'' → NOREADeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e'')) w'' a b
+                                   → ↑wPred' (λ w''' e → NOREADeq (eqInType u w''' (eqta w''' e)) w''' a b) e' w'' e'')
+          aw1 w1 e1 h ext = NOREADeq-ext {mk𝕌 isu} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTSUBSING A1 A2 x x₁ eqta exta) =
     Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
     where
@@ -1337,6 +1364,7 @@ abstract
       ind {u} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqta exta) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqTSQUASH (Bₗ⇛-val-det tt tt c₁ x))
 --      ind {u} {w} {A} {B} (EQTTRUNC A1 A2 x x₁ eqta exta) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqTTRUNC (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTNOWRITE A1 A2 x x₁ eqta exta) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqNOWRITE (Bₗ⇛-val-det tt tt c₁ x))
+      ind {u} {w} {A} {B} (EQTNOREAD A1 A2 x x₁ eqta exta) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqNOREAD (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqta exta) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqSUBSING (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTPURE x x₁) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqPURE (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTNOSEQ x x₁) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqNOSEQ (Bₗ⇛-val-det tt tt c₁ x))
@@ -1421,6 +1449,7 @@ abstract
       ind {u} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqta exta) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqTSQUASH (Bₗ⇛-val-det tt tt c₁ x))
 --      ind {u} {w} {A} {B} (EQTTRUNC A1 A2 x x₁ eqta exta) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqTTRUNC (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTNOWRITE A1 A2 x x₁ eqta exta) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqNOWRITE (Bₗ⇛-val-det tt tt c₁ x))
+      ind {u} {w} {A} {B} (EQTNOREAD A1 A2 x x₁ eqta exta) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqNOREAD (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqta exta) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqSUBSING (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTPURE x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqPURE (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTNOSEQ x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqNOSEQ (Bₗ⇛-val-det tt tt c₁ x))
@@ -1777,6 +1806,24 @@ abstract
 
           ib : □· w' (λ w'' e → NOWRITEeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e)) w'' a b)
           ib = Mod.∀𝕎-□Func M aw' (↑□· eqi e')
+
+  eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTNOREAD A1 A2 x x₁ eqta exta) eqi =
+    Mod.∀𝕎-□-□' M i aw
+    where
+      aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : at□· i w' e' z) → eqInType u w' z a b)
+      aw w' e' z at =
+        eqInType-⇛-NOREAD-rev2
+          (mk𝕌 isu) w' A B A1 A2 a b
+          (∀𝕎-mon e' eqta)
+          (wPredExtIrr-eqInType-mon eqta exta w' e')
+          (⇛-mon e' x) (⇛-mon e' x₁) z (<Type-EQTBAR-eqInTypeExt e' at ind) ib
+        where
+          aw' : ∀𝕎 w' (λ w'' e'' → ↑wPred (λ w''' e → NOREADeq (eqInType u w''' (eqta w''' e)) w''' a b) e' w'' e''
+                                   → NOREADeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e'')) w'' a b)
+          aw' w1 e1 h = NOREADeq-ext {mk𝕌 isu} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
+
+          ib : □· w' (λ w'' e → NOREADeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e)) w'' a b)
+          ib = Mod.∀𝕎-□Func M aw' (↑□· eqi e')
   eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTSUBSING A1 A2 x x₁ eqta exta) eqi =
     Mod.∀𝕎-□-□' M i aw
     where
@@ -2020,6 +2067,12 @@ abstract
     where
       inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
       inda w1 e1 = ind (eqta w1 e1) (<Type1 _ _ (<TypeNOWRITE (mk𝕌 isu) w A B A1 A2 x x₁ eqta exta w1 e1))
+  eqInType-ext0 {u} isu {w} {A} {B} (EQTNOREAD A1 A2 x x₁ eqta exta) ind =
+    λ eqt2 a b → eqInType-⇛-NOREAD-rev u w A B A1 A2 a b eqta exta inda x x₁ eqt2 ,
+                 eqInType-⇛-NOREAD u w A B A1 A2 a b eqta exta inda x x₁ eqt2
+    where
+      inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
+      inda w1 e1 = ind (eqta w1 e1) (<Type1 _ _ (<TypeNOREAD (mk𝕌 isu) w A B A1 A2 x x₁ eqta exta w1 e1))
   eqInType-ext0 {u} isu {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqta exta) ind =
     λ eqt2 a b → eqInType-⇛-SUBSING-rev u w A B A1 A2 a b eqta exta inda x x₁ eqt2 ,
                  eqInType-⇛-SUBSING u w A B A1 A2 a b eqta exta inda x x₁ eqt2
@@ -2337,6 +2390,20 @@ abstract
               aw' : ∀𝕎 w' (λ w'' e'' → NOWRITEeq (≡∈Type u w'' (∀𝕎-mon e' eqta w'' e'')) w'' a b
                                        → (x₂ : w ⊑· w'') → NOWRITEeq (≡∈Type u w'' (eqta w'' x₂)) w'' a b)
               aw' w1 e1 h x₂ = NOWRITEeq-ext {u} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
+      ind {u} {w} {A} {B} (EQTNOREAD A1 A2 x x₁ eqta exta) ind a b i j =
+        Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
+        where
+          aw : ∀𝕎 w (λ w' e' → (z : ≡Types u w' A B) {--(at : at□· i w' e' z)--}
+                               → ≡∈Type u w' z a b
+                               → □· w' (λ w1 e1 → (x : w ⊑· w1) → NOREADeq (≡∈Type u w1 (eqta w1 x)) w1 a b))
+          aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M aw' h1
+            where
+              h1 : ≡∈Type u w' {A} {B} (EQTNOREAD A1 A2 (⇛-mon e' x) (⇛-mon e' x₁) (∀𝕎-mon e' eqta) (wPredExtIrr-eqInType-mon eqta exta w' e')) a b
+              h1 = fst (eqInType-ext (u ·ᵢ) z (EQTNOREAD A1 A2 (⇛-mon e' x) (⇛-mon e' x₁) (∀𝕎-mon e' eqta) (wPredExtIrr-eqInType-mon eqta exta w' e')) a b) ei
+
+              aw' : ∀𝕎 w' (λ w'' e'' → NOREADeq (≡∈Type u w'' (∀𝕎-mon e' eqta w'' e'')) w'' a b
+                                       → (x₂ : w ⊑· w'') → NOREADeq (≡∈Type u w'' (eqta w'' x₂)) w'' a b)
+              aw' w1 e1 h x₂ = NOREADeq-ext {u} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
       ind {u} {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqta exta) ind a b i j =
         Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
         where
@@ -2734,6 +2801,19 @@ abstract
 
           ib : □· w' (λ w'' e → NOWRITEeq (≡∈Type u w'' (∀𝕎-mon e' eqta w'' e)) w'' a b)
           ib = Mod.∀𝕎-□Func M aw (↑□· eqi e')
+      ind {u} {w} {A} {B} (EQTNOREAD A1 A2 x x₁ eqta exta) ind {w'} e' eqt2 a b eqi =
+        eqInType-⇛-NOREAD-rev2
+          u w' A B A1 A2 a b
+          (∀𝕎-mon e' eqta)
+          (wPredExtIrr-eqInType-mon eqta exta w' e')
+          (⇛-mon e' x) (⇛-mon e' x₁) eqt2 (λ {u'} eqt' lety → eqInType-ext {u' ·ᵤ} (u' ·ᵢ) eqt') ib
+        where
+          aw : ∀𝕎 w' (λ w'' e'' → ↑wPred (λ w''' e → NOREADeq (≡∈Type u w''' (eqta w''' e)) w''' a b) e' w'' e''
+                                  → NOREADeq (≡∈Type u w'' (∀𝕎-mon e' eqta w'' e'')) w'' a b)
+          aw w1 e1 h = NOREADeq-ext {u} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
+
+          ib : □· w' (λ w'' e → NOREADeq (≡∈Type u w'' (∀𝕎-mon e' eqta w'' e)) w'' a b)
+          ib = Mod.∀𝕎-□Func M aw (↑□· eqi e')
       ind {u} {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqta exta) ind {w'} e' eqt2 a b eqi =
         eqInType-⇛-SUBSING-rev2
           u w' A B A1 A2 a b
@@ -3073,6 +3153,7 @@ abstract
       ind {u} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqta exta) ind i p C c₁ c₂ = ⊥-elim (UNIVneqTSQUASH (⇛-val-det tt tt c₂ x))
 --      ind {u} {w} {A} {B} (EQTTRUNC A1 A2 x x₁ eqta exta) ind i p C c₁ c₂ = ⊥-elim (UNIVneqTTRUNC (⇛-val-det tt tt c₂ x))
       ind {u} {w} {A} {B} (EQTNOWRITE A1 A2 x x₁ eqta exta) ind i p C c₁ c₂ = ⊥-elim (UNIVneqNOWRITE (⇛-val-det tt tt c₂ x))
+      ind {u} {w} {A} {B} (EQTNOREAD A1 A2 x x₁ eqta exta) ind i p C c₁ c₂ = ⊥-elim (UNIVneqNOREAD (⇛-val-det tt tt c₂ x))
       ind {u} {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqta exta) ind i p C c₁ c₂ = ⊥-elim (UNIVneqSUBSING (⇛-val-det tt tt c₂ x))
       ind {u} {w} {A} {B} (EQTPURE x x₁) ind i p C c₁ c₂ = ⊥-elim (UNIVneqPURE (⇛-val-det tt tt c₂ x))
       ind {u} {w} {A} {B} (EQTNOSEQ x x₁) ind i p C c₁ c₂ = ⊥-elim (UNIVneqNOSEQ (⇛-val-det tt tt c₂ x))
@@ -3166,6 +3247,7 @@ abstract
       ind {u} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqtA exta) ind i p j = ⊥-elim (UNIVneqTSQUASH (Bₗ⇛-val-det tt tt j x))
 --      ind {u} {w} {A} {B} (EQTTRUNC A1 A2 x x₁ eqtA exta) ind i p j = ⊥-elim (UNIVneqTTRUNC (Bₗ⇛-val-det tt tt j x))
       ind {u} {w} {A} {B} (EQTNOWRITE A1 A2 x x₁ eqtA exta) ind i p j = ⊥-elim (UNIVneqNOWRITE (Bₗ⇛-val-det tt tt j x))
+      ind {u} {w} {A} {B} (EQTNOREAD A1 A2 x x₁ eqtA exta) ind i p j = ⊥-elim (UNIVneqNOREAD (Bₗ⇛-val-det tt tt j x))
       ind {u} {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind i p j = ⊥-elim (UNIVneqSUBSING (Bₗ⇛-val-det tt tt j x))
       ind {u} {w} {A} {B} (EQTPURE x x₁) ind i p j = ⊥-elim (UNIVneqPURE (Bₗ⇛-val-det tt tt j x))
       ind {u} {w} {A} {B} (EQTNOSEQ x x₁) ind i p j = ⊥-elim (UNIVneqNOSEQ (Bₗ⇛-val-det tt tt j x))
@@ -3221,6 +3303,7 @@ abstract
       ind {u} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqtA exta) ind i p j = ⊥-elim (UNIVneqTSQUASH (Bₗ⇛-val-det tt tt j x₁))
 --      ind {u} {w} {A} {B} (EQTTRUNC A1 A2 x x₁ eqtA exta) ind i p j = ⊥-elim (UNIVneqTTRUNC (Bₗ⇛-val-det tt tt j x₁))
       ind {u} {w} {A} {B} (EQTNOWRITE A1 A2 x x₁ eqtA exta) ind i p j = ⊥-elim (UNIVneqNOWRITE (Bₗ⇛-val-det tt tt j x₁))
+      ind {u} {w} {A} {B} (EQTNOREAD A1 A2 x x₁ eqtA exta) ind i p j = ⊥-elim (UNIVneqNOREAD (Bₗ⇛-val-det tt tt j x₁))
       ind {u} {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind i p j = ⊥-elim (UNIVneqSUBSING (Bₗ⇛-val-det tt tt j x₁))
       ind {u} {w} {A} {B} (EQTPURE x x₁) ind i p j = ⊥-elim (UNIVneqPURE (Bₗ⇛-val-det tt tt j x₁))
       ind {u} {w} {A} {B} (EQTNOSEQ x x₁) ind i p j = ⊥-elim (UNIVneqNOSEQ (Bₗ⇛-val-det tt tt j x₁))
@@ -3447,6 +3530,11 @@ abstract
         where
           inda : ∀𝕎 w (λ w1 e1 → TSP (eqtA w1 e1))
           inda w1 e1 = ind {u} {w1} {A1} {A2} (eqtA w1 e1) (<Type1 _ _ (<TypeNOWRITE u w A B A1 A2 x x₁ eqtA exta w1 e1)) uind
+      ind {u} {w} {A} {B} (EQTNOREAD A1 A2 x x₁ eqtA exta) ind uind =
+        typeSysConds-NOREAD (u ·ᵤ) w A B A1 A2 x x₁ eqtA exta inda
+        where
+          inda : ∀𝕎 w (λ w1 e1 → TSP (eqtA w1 e1))
+          inda w1 e1 = ind {u} {w1} {A1} {A2} (eqtA w1 e1) (<Type1 _ _ (<TypeNOREAD u w A B A1 A2 x x₁ eqtA exta w1 e1)) uind
       ind {u} {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind uind =
         typeSysConds-SUBSING (u ·ᵤ) w A B A1 A2 x x₁ eqtA exta inda
         where
@@ -3936,6 +4024,7 @@ abstract
       ind {u} {w} {A} {B} (EQTSQUASH A1 A2 x x₁ eqtA exta) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqTSQUASH (compAllVal x tt))
 --      ind {u} {w} {A} {B} (EQTTRUNC A1 A2 x x₁ eqtA exta) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqTTRUNC (compAllVal x tt))
       ind {u} {w} {A} {B} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqNOWRITE (compAllVal x tt))
+      ind {u} {w} {A} {B} (EQTNOREAD A1 A2 x x₁ eqtA exta) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqNOREAD (compAllVal x tt))
       ind {u} {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqtA exta) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqSUBSING (compAllVal x tt))
   --if-equalInType-EQ u w T a b t₁ t₂ (EQTDUM A1 A2 x x₁ eqtA exta) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqDUM (compAllVal x tt))
       ind {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqFFDEFS (compAllVal x tt))

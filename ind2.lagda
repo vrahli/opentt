@@ -278,6 +278,13 @@ data <TypeStep where
                 (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqtA w e) a b))
                 (w' : 𝕎·) (e' : w ⊑· w')
                 → <TypeStep {u} (eqtA w' e') {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 c₁ c₂ eqtA exta)
+  <TypeNOREAD : (u : 𝕌) (w : 𝕎·) (T1 T2 : CTerm) (A1 A2 : CTerm)
+                (c₁ : T1 #⇛ (#NOREAD A1) at w)
+                (c₂ : T2 #⇛ (#NOREAD A2) at w)
+                (eqtA : ∀𝕎 w (λ w' _ → ≡Types u w' A1 A2))
+                (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqtA w e) a b))
+                (w' : 𝕎·) (e' : w ⊑· w')
+                → <TypeStep {u} (eqtA w' e') {u} {w} {T1} {T2} (EQTNOREAD A1 A2 c₁ c₂ eqtA exta)
   <TypeSUBSING : (u : 𝕌) (w : 𝕎·) (T1 T2 : CTerm) (A1 A2 : CTerm)
                 (c₁ : T1 #⇛ (#SUBSING A1) at w)
                 (c₂ : T2 #⇛ (#SUBSING A2) at w)
@@ -619,6 +626,16 @@ NOWRITEeq-ext {u} {w} {A1} {A2} {eqta} {w'} {e1} {e2} {a} {b} exta h =
   irr-NOWRITEeq eqta exta e1 e2 h
 
 
+NOREADeq-ext : {u : 𝕌} {w : 𝕎·} {A1 A2 : CTerm}
+               {eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 A2)}
+               {w' : 𝕎·} {e1 e2 : w ⊑· w'} {a b : CTerm}
+               (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type u w (eqta w e) a b))
+               → NOREADeq (≡∈Type u w' (eqta w' e1)) w' a b
+               → NOREADeq (≡∈Type u w' (eqta w' e2)) w' a b
+NOREADeq-ext {u} {w} {A1} {A2} {eqta} {w'} {e1} {e2} {a} {b} exta h =
+  irr-NOREADeq eqta exta e1 e2 h
+
+
 SUBSINGeq-ext : {u : 𝕌} {w : 𝕎·} {A1 A2 : CTerm}
                {eqta : ∀𝕎 w (λ w' _ → ≡Types u w' A1 A2)}
                {w' : 𝕎·} {e1 e2 : w ⊑· w'} {a b : CTerm}
@@ -943,6 +960,21 @@ ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {.u
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {.u} {w'} {.A1} {.A2} .(eqtA w' e') (≤TypeS .(eqtA w' e') .(EQTNOWRITE A1 A2 x x₁ eqtA exta) (<Type1 .(eqtA w' e') .(EQTNOWRITE A1 A2 x x₁ eqtA exta) (<TypeNOWRITE .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta .w' e'))) =
   ind<Type-aux P ind (eqtA w' e') (eqtA w' e') (≤Type0 (eqtA w' e'))
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOWRITE A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTNOWRITE A1 A2 x x₁ eqtA exta) (<TypeS .eqt' .(eqtA w2 e') .(EQTNOWRITE A1 A2 x x₁ eqtA exta) x₂ (<TypeNOWRITE .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta w2 e'))) =
+  ind<Type-aux P ind (eqtA w2 e') eqt' (≤TypeS eqt' (eqtA w2 e') x₂)
+-- NOREAD
+--ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOREAD A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' ltt = {!!}
+ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOREAD A1 A2 x x₁ eqtA exta) {.u} {.w} {.T1} {.T2} .(EQTNOREAD A1 A2 x x₁ eqtA exta) (≤Type0 .(EQTNOREAD A1 A2 x x₁ eqtA exta)) =
+  ind (EQTNOREAD A1 A2 x x₁ eqtA exta) ind'
+  where
+    ind' : {u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2')
+           → <Type {u'} {w'} {T1'} {T2'} eqt' {u} {w} {T1} {T2} (EQTNOREAD A1 A2 x x₁ eqtA exta) → P eqt'
+    ind' {u'} {w'} {T1'} {T2'} .(eqtA w' e') (<Type1 .(eqtA w' e') .(EQTNOREAD T1' T2' x x₁ eqtA exta) (<TypeNOREAD .u' .w .T1 .T2 .T1' .T2' .x .x₁ .eqtA .exta .w' e')) =
+      ind<Type-aux P ind (eqtA w' e') (eqtA w' e') (≤Type0 (eqtA w' e'))
+    ind' {u'} {w'} {T1'} {T2'} eqt' (<TypeS .eqt' .(eqtA w2 e') .(EQTNOREAD _ _ x x₁ eqtA exta) ltt (<TypeNOREAD _ .w .T1 .T2 _ _ .x .x₁ .eqtA .exta w2 e')) =
+      ind<Type-aux P ind (eqtA w2 e') eqt' (≤TypeS eqt' (eqtA w2 e') ltt)
+ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOREAD A1 A2 x x₁ eqtA exta) {.u} {w'} {.A1} {.A2} .(eqtA w' e') (≤TypeS .(eqtA w' e') .(EQTNOREAD A1 A2 x x₁ eqtA exta) (<Type1 .(eqtA w' e') .(EQTNOREAD A1 A2 x x₁ eqtA exta) (<TypeNOREAD .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta .w' e'))) =
+  ind<Type-aux P ind (eqtA w' e') (eqtA w' e') (≤Type0 (eqtA w' e'))
+ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOREAD A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTNOREAD A1 A2 x x₁ eqtA exta) (<TypeS .eqt' .(eqtA w2 e') .(EQTNOREAD A1 A2 x x₁ eqtA exta) x₂ (<TypeNOREAD .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta w2 e'))) =
   ind<Type-aux P ind (eqtA w2 e') eqt' (≤TypeS eqt' (eqtA w2 e') x₂)
 -- SUBSING
 --ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' ltt = {!!}

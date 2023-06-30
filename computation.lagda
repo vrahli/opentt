@@ -2189,6 +2189,10 @@ weakMonEq! w t1 t2 = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (⇓!sameℕ w' t
 #⇓→#⇓! w t = ∀𝕎 w (λ w1 e1 → Lift {L} (lsuc(L)) ((v : CTerm) (w2 : 𝕎·) → #isValue v → t #⇓ v from w1 to w2 → t #⇓! v at w1))
 
 
+#⇓→#⇛ : 𝕎· → CTerm → Set(lsuc(L))
+#⇓→#⇛ w t = ∀𝕎 w (λ w1 e1 → (v : CTerm) (w2 : 𝕎·) → #isValue v → t #⇓ v from w1 to w2 → t #⇛ v at w1)
+
+
 #⇓→from-to : {w : 𝕎·} {a b : CTerm}
               → a #⇓ b at w
               → Σ 𝕎· (λ w' → a #⇓ b from w to w')
