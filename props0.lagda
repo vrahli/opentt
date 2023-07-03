@@ -281,9 +281,9 @@ mon p = {a b : CTerm} {w : 𝕎·} → p w a b → ∀𝕎 w (λ w' e' → p w' 
 
 
 eqTypes-mon : (u : univs) → mon (eqTypes u)
-eqTypes-mon u {A} {B} {w1} (EQTNAT x x₁) w2 ext = EQTNAT (⇛-mon ext x) (⇛-mon ext x₁)
+--eqTypes-mon u {A} {B} {w1} (EQTNAT x x₁) w2 ext = EQTNAT (⇛-mon ext x) (⇛-mon ext x₁)
 eqTypes-mon u {A} {B} {w1} (EQTQNAT x x₁) w2 ext = EQTQNAT (⇛-mon ext x) (⇛-mon ext x₁)
-eqTypes-mon u {A} {B} {w1} (EQTTNAT x x₁) w2 ext = EQTTNAT (⇛-mon ext x) (⇛-mon ext x₁)
+--eqTypes-mon u {A} {B} {w1} (EQTTNAT x x₁) w2 ext = EQTTNAT (⇛-mon ext x) (⇛-mon ext x₁)
 eqTypes-mon u {A} {B} {w1} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) w2 ext =
   EQTLT a1 a2 b1 b2
     (⇛-mon ext x) (⇛-mon ext x₁)

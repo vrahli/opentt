@@ -76,14 +76,14 @@ open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using () renaming (<Type to <Typ
 
 
 \begin{code}[hide]
-SUMneqNAT : {a b : Term} → ¬ (SUM a b) ≡ NAT
-SUMneqNAT {a} {b} ()
+--SUMneqNAT : {a b : Term} → ¬ (SUM a b) ≡ NAT
+--SUMneqNAT {a} {b} ()
 
 SUMneqQNAT : {a b : Term} → ¬ (SUM a b) ≡ QNAT
 SUMneqQNAT {a} {b} ()
 
-SUMneqTNAT : {a b : Term} → ¬ (SUM a b) ≡ TNAT
-SUMneqTNAT {a} {b} ()
+--SUMneqTNAT : {a b : Term} → ¬ (SUM a b) ≡ TNAT
+--SUMneqTNAT {a} {b} ()
 
 SUMneqLT : {a b : Term} {c d : Term} → ¬ (SUM a b) ≡ LT c d
 SUMneqLT {a} {b} {c} {d} ()
@@ -268,9 +268,9 @@ typeSysConds-SUM-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
           → (indb : ∀𝕎 w (λ w1 e1 → (a1 a2 : CTerm) (ea : eqInType u w1 (eqta w1 e1) a1 a2)
                                     → TSP (eqtb w1 e1 a1 a2 ea)))
           → eqTypes u w A T2
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (SUMneqLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x₁ y))
@@ -504,9 +504,9 @@ typeSysConds-SUM-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb 
           → T1 #⇛ #SUM A1 B1 at w → (a b : CTerm) → □· w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' a b)
           → eqInType u w eqt a b
 --    ind {u} {w} {T1} {T2} eqt ind eqta eqtb exta extb inda indb x f g eqi = {!!}
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqLT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x y))
@@ -627,9 +627,9 @@ typeSysConds-SUM-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb 
           → T2 #⇛ #SUM A1 B1 at w
           → (a b : CTerm) → □· w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) w' a b)
           → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqLT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x y₁))
@@ -757,9 +757,9 @@ typeSysConds-SUM-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb 
           → T2 #⇛ #SUM A2 B2 at w
           → (a b : CTerm) → □· w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) w' a b)
           → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqLT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x₁ y₁))
@@ -881,9 +881,9 @@ typeSysConds-SUM-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb 
           → T1 #⇛ #SUM A2 B2 at w
           → (a b : CTerm) → □· w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) w' a b)
           → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x₁ y))
@@ -1009,9 +1009,9 @@ typeSysConds-SUM-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
                                     → TSP (eqtb w1 e1 a1 a2 ea)))
           → T1 #⇛ #SUM A1 B1 at w → (a b : CTerm) → eqInType u w eqt a b
           → □· w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) w' a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqLT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x y))
@@ -1134,9 +1134,9 @@ typeSysConds-SUM-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
                                     → TSP (eqtb w1 e1 a1 a2 ea)))
           → T2 #⇛ #SUM A1 B1 at w → (a b : CTerm) → eqInType u w eqt a b
           → □· w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) w' a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqLT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x y₁))
@@ -1264,9 +1264,9 @@ typeSysConds-SUM-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
                                     → TSP (eqtb w1 e1 a1 a2 ea)))
           → T2 #⇛ #SUM A2 B2 at w → (a b : CTerm) → eqInType u w eqt a b
           → □· w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) w' a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqLT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x₁ y₁))
@@ -1388,9 +1388,9 @@ typeSysConds-SUM-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
                                     → TSP (eqtb w1 e1 a1 a2 ea)))
           → T1 #⇛ #SUM A2 B2 at w → (a b : CTerm) → eqInType u w eqt a b
           → □· w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) w' a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqQLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (SUMneqFREE (⇛-val-det tt tt x₁ y))
@@ -1520,9 +1520,9 @@ eqInType-⇛-SUM u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c₂
                                     → eqInTypeExt (eqtb w1 e1 a1 a2 ea)))
           → T1 #⇛ #SUM A1 B1 at w → T2 #⇛ #SUM A2 B2 at w → (a₁ b₁ : CTerm) → eqInType u w eqt a₁ b₁
           → □· w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) w' a₁ b₁)
-    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (SUMneqNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (SUMneqNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (SUMneqLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (SUMneqQLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (SUMneqFREE (⇛-val-det tt tt c₁ x))
@@ -1645,9 +1645,9 @@ eqInType-⇛-SUM2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ eqt ei e
           → (a₁ b₁ : CTerm) → ≡∈Type u w eqt a₁ b₁
           → ({u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type₂ eqt' eqt → eqInTypeExt eqt')
           → □· w (λ w' e → SUMeq (≡∈Type u w' (eqta w' e)) (λ a b eqa → ≡∈Type u w' (eqtb w' e a b eqa)) w' a₁ b₁)
-    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (SUMneqNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (SUMneqNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (SUMneqLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (SUMneqQLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (SUMneqFREE (⇛-val-det tt tt c₁ x))
@@ -1778,9 +1778,9 @@ eqInType-⇛-SUM-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ 
           → T1 #⇛ #SUM A1 B1 at w → T2 #⇛ #SUM A2 B2 at w
           → (a₁ b₁ : CTerm) → □· w (λ w' e → SUMeq (eqInType u w' (eqta w' e)) (λ a b eqa → eqInType u w' (eqtb w' e a b eqa)) w' a₁ b₁)
           → eqInType u w eqt a₁ b₁
-    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (SUMneqNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (SUMneqNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (SUMneqLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (SUMneqQLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (SUMneqFREE (⇛-val-det tt tt c₁ x))
@@ -1904,9 +1904,9 @@ eqInType-⇛-SUM-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ eqt 
           → ({u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type₂ eqt' eqt → eqInTypeExt eqt')
           → □· w (λ w' e → SUMeq (≡∈Type u w' (eqta w' e)) (λ a b eqa → ≡∈Type u w' (eqtb w' e a b eqa)) w' a₁ b₁)
           → ≡∈Type u w eqt a₁ b₁
-    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (SUMneqNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (SUMneqNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (SUMneqQNAT (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (SUMneqTNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (SUMneqLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (SUMneqQLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (SUMneqFREE (⇛-val-det tt tt c₁ x))

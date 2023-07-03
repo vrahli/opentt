@@ -75,14 +75,14 @@ open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using () renaming (<Type to <Typ
 
 
 \begin{code}[hide]
-NOWRITEneqNAT : {a : Term} → ¬ (NOWRITE a) ≡ NAT
-NOWRITEneqNAT {a} ()
+--NOWRITEneqNAT : {a : Term} → ¬ (NOWRITE a) ≡ NAT
+--NOWRITEneqNAT {a} ()
 
 NOWRITEneqQNAT : {a : Term} → ¬ (NOWRITE a) ≡ QNAT
 NOWRITEneqQNAT {a} ()
 
-NOWRITEneqTNAT : {a : Term} → ¬ (NOWRITE a) ≡ TNAT
-NOWRITEneqTNAT {a} ()
+--NOWRITEneqTNAT : {a : Term} → ¬ (NOWRITE a) ≡ TNAT
+--NOWRITEneqTNAT {a} ()
 
 NOWRITEneqLT : {a : Term} {c d : Term} → ¬ (NOWRITE a) ≡ LT c d
 NOWRITEneqLT {a} {c} {d} ()
@@ -205,9 +205,9 @@ typeSysConds-NOWRITE-ttrans u w A B A1 B1 x x₁ eqta exta inda C eqt = concl x 
           → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
           → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
           → eqTypes u w A T2
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind x x₁ eqta exta inda = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind x x₁ eqta exta inda = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind x x₁ eqta exta inda = ⊥-elim (NOWRITEneqQNAT (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind x x₁ eqta exta inda = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind x x₁ eqta exta inda = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind x x₁ eqta exta inda = ⊥-elim (NOWRITEneqLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind x x₁ eqta exta inda = ⊥-elim (NOWRITEneqQLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind x x₁ eqta exta inda = ⊥-elim (NOWRITEneqFREE (⇛-val-det tt tt x₁ y))
@@ -326,9 +326,9 @@ typeSysConds-NOWRITE-extl1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
           → T1 #⇛ #NOWRITE A1 at w → (a b : CTerm) → □· w (λ w' e → NOWRITEeq (eqInType u w' (eqta w' e)) w' a b)
           → eqInType u w eqt a b
 --    ind {u} {w} {T1} {T2} eqt ind eqta exta inda x f g eqi = {!!}
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqQNAT (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqLT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqQLT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqFREE (⇛-val-det tt tt x y))
@@ -411,9 +411,9 @@ typeSysConds-NOWRITE-extl2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
           → T2 #⇛ #NOWRITE A1 at w
           → (a b : CTerm) → □· w (λ w' e → NOWRITEeq (eqInType u w' (eqta w' e)) w' a b)
           → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqQNAT (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqLT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqQLT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqFREE (⇛-val-det tt tt x y₁))
@@ -496,9 +496,9 @@ typeSysConds-NOWRITE-extr1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
           → T2 #⇛ #NOWRITE B1 at w
           → (a b : CTerm) → □· w (λ w' e → NOWRITEeq (eqInType u w' (eqta w' e)) w' a b)
           → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqQNAT (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqLT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqQLT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqFREE (⇛-val-det tt tt x₁ y₁))
@@ -580,9 +580,9 @@ typeSysConds-NOWRITE-extr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eq
           → T1 #⇛ #NOWRITE B1 at w
           → (a b : CTerm) → □· w (λ w' e → NOWRITEeq (eqInType u w' (eqta w' e)) w' a b)
           → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqQNAT (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqQLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqFREE (⇛-val-det tt tt x₁ y))
@@ -663,9 +663,9 @@ typeSysConds-NOWRITE-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
           → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
           → T1 #⇛ #NOWRITE A1 at w → (a b : CTerm) → eqInType u w eqt a b
           → □· w (λ w' e → NOWRITEeq (eqInType u w' (eqta w' e)) w' a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqQNAT (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqLT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqQLT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqFREE (⇛-val-det tt tt x y))
@@ -749,9 +749,9 @@ typeSysConds-NOWRITE-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
           → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
           → T2 #⇛ #NOWRITE A1 at w → (a b : CTerm) → eqInType u w eqt a b
           → □· w (λ w' e → NOWRITEeq (eqInType u w' (eqta w' e)) w' a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqQNAT (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqLT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqQLT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOWRITEneqFREE (⇛-val-det tt tt x y₁))
@@ -834,9 +834,9 @@ typeSysConds-NOWRITE-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
           → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
           → T2 #⇛ #NOWRITE B1 at w → (a b : CTerm) → eqInType u w eqt a b
           → □· w (λ w' e → NOWRITEeq (eqInType u w' (eqta w' e)) w' a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqQNAT (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqLT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqQLT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqFREE (⇛-val-det tt tt x₁ y₁))
@@ -919,9 +919,9 @@ typeSysConds-NOWRITE-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl
           → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
           → T1 #⇛ #NOWRITE B1 at w → (a b : CTerm) → eqInType u w eqt a b
           → □· w (λ w' e → NOWRITEeq (eqInType u w' (eqta w' e)) w' a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqQNAT (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqQLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOWRITEneqFREE (⇛-val-det tt tt x₁ y))
@@ -1008,9 +1008,9 @@ eqInType-⇛-NOWRITE u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt eqi = concl 
           → (inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
           → T1 #⇛ #NOWRITE A1 at w → T2 #⇛ #NOWRITE B1 at w → (a₁ b₁ : CTerm) → eqInType u w eqt a₁ b₁
           → □· w (λ w' e → NOWRITEeq (eqInType u w' (eqta w' e)) w' a₁ b₁)
-    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqQNAT (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqQLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqFREE (⇛-val-det tt tt c₁ x))
@@ -1103,9 +1103,9 @@ eqInType-⇛-NOWRITE2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ei ext = concl e
           → (a₁ b₁ : CTerm) → ≡∈Type u w eqt a₁ b₁
           → ({u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type₂ eqt' eqt → eqInTypeExt eqt')
           → □· w (λ w' e → NOWRITEeq (≡∈Type u w' (eqta w' e)) w' a₁ b₁)
-    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOWRITEneqQNAT (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOWRITEneqLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOWRITEneqQLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOWRITEneqFREE (⇛-val-det tt tt c₁ x))
@@ -1199,9 +1199,9 @@ eqInType-⇛-NOWRITE-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt ei = con
           → T1 #⇛ #NOWRITE A1 at w → T2 #⇛ #NOWRITE B1 at w
           → (a₁ b₁ : CTerm) → □· w (λ w' e → NOWRITEeq (eqInType u w' (eqta w' e)) w' a₁ b₁)
           → eqInType u w eqt a₁ b₁
-    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqQNAT (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqQLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOWRITEneqFREE (⇛-val-det tt tt c₁ x))
@@ -1292,9 +1292,9 @@ eqInType-⇛-NOWRITE-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ext ei = con
           → ({u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type₂ eqt' eqt → eqInTypeExt eqt')
           → □· w (λ w' e → NOWRITEeq (≡∈Type u w' (eqta w' e)) w' a₁ b₁)
           → ≡∈Type u w eqt a₁ b₁
-    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOWRITEneqNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOWRITEneqQNAT (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOWRITEneqTNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOWRITEneqLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOWRITEneqQLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOWRITEneqFREE (⇛-val-det tt tt c₁ x))

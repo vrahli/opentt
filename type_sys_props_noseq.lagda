@@ -80,14 +80,14 @@ NOSEQneqPURE ()
 NOSEQneqTERM : {c : Term} → ¬ NOSEQ ≡ TERM c
 NOSEQneqTERM {c} ()
 
-NOSEQneqNAT : ¬ NOSEQ ≡ NAT
-NOSEQneqNAT ()
+--NOSEQneqNAT : ¬ NOSEQ ≡ NAT
+--NOSEQneqNAT ()
 
 NOSEQneqQNAT : ¬ NOSEQ ≡ QNAT
 NOSEQneqQNAT ()
 
-NOSEQneqTNAT : ¬ NOSEQ ≡ TNAT
-NOSEQneqTNAT ()
+--NOSEQneqTNAT : ¬ NOSEQ ≡ TNAT
+--NOSEQneqTNAT ()
 
 NOSEQneqLT : {c d : Term} → ¬ NOSEQ ≡ LT c d
 NOSEQneqLT {c} {d} ()
@@ -178,9 +178,9 @@ typeSysConds-NOSEQ-ttrans u w A B x x₁ C eqt = concl x x₁
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (c₁ : A #⇛ #NOSEQ at w') (c₂ : T1' #⇛ #NOSEQ at w') → eqTypes u' w' A T2')
           → (c₁ : A #⇛ #NOSEQ at w) (c₂ : T1 #⇛ #NOSEQ at w) → eqTypes u w A T2
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih c₁ c₂ = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt c₂ y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih c₁ c₂ = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih c₁ c₂ = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt c₂ y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih c₁ c₂ = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt c₂ y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih c₁ c₂ = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) ih c₁ c₂ = ⊥-elim (NOSEQneqLT (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) ih c₁ c₂ = ⊥-elim (NOSEQneqQLT (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih c₁ c₂ = ⊥-elim (NOSEQneqFREE (⇛-val-det tt tt c₂ y))
@@ -255,9 +255,9 @@ typeSysConds-NOSEQ-extl1 u w A B x x₁ C eqt' =
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (comp : T1' #⇛ #NOSEQ at w') (a b : CTerm) → □· w' (λ w'' _ → NOSEQeq a b) → eqInType u' w' eqt'' a b)
           → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq a b) → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (NOSEQneqLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (NOSEQneqQLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqFREE (⇛-val-det tt tt comp y))
@@ -306,9 +306,9 @@ typeSysConds-NOSEQ-extl2 u w A B x x₁ C eqt' = concl x
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (comp : T2' #⇛ #NOSEQ at w') (a b : CTerm) → □· w' (λ w'' _ → NOSEQeq a b) → eqInType u' w' eqt'' a b)
           → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq a b) → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) ih comp a b eqi = ⊥-elim (NOSEQneqLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) ih comp a b eqi = ⊥-elim (NOSEQneqQLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqFREE (⇛-val-det tt tt comp y₁))
@@ -357,9 +357,9 @@ typeSysConds-NOSEQ-extr1 u w A B x x₁ C eqt' = concl x₁
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (comp : T2' #⇛ #NOSEQ at w') (a b : CTerm) → □· w' (λ w'' _ → NOSEQeq a b) → eqInType u' w' eqt'' a b)
           → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq a b) → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) ih comp a b eqi = ⊥-elim (NOSEQneqLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) ih comp a b eqi = ⊥-elim (NOSEQneqQLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqFREE (⇛-val-det tt tt comp y₁))
@@ -408,9 +408,9 @@ typeSysConds-NOSEQ-extr2 u w A B x x₁ C eqt' = concl x₁
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (comp : T1' #⇛ #NOSEQ at w') (a b : CTerm) → □· w' (λ w'' _ → NOSEQeq a b) → eqInType u' w' eqt'' a b)
           → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq a b) → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (NOSEQneqLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (NOSEQneqQLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqFREE (⇛-val-det tt tt comp y))
@@ -459,9 +459,9 @@ typeSysConds-NOSEQ-extrevl1 u w A B x x₁ C eqt' = concl x
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (comp : T1' #⇛ #NOSEQ at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → NOSEQeq a b))
           → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → NOSEQeq a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (NOSEQneqLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (NOSEQneqQLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqFREE (⇛-val-det tt tt comp y))
@@ -515,9 +515,9 @@ typeSysConds-NOSEQ-extrevl2 u w A B x x₁ C eqt' = concl x
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (comp : T2' #⇛ #NOSEQ at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → NOSEQeq a b))
           → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → NOSEQeq a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (NOSEQneqLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (NOSEQneqQLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqFREE (⇛-val-det tt tt comp y₁))
@@ -571,9 +571,9 @@ typeSysConds-NOSEQ-extrevr1 u w A B x x₁ C eqt' = concl x₁
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (comp : T2' #⇛ #NOSEQ at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → NOSEQeq a b))
           → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → NOSEQeq a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (NOSEQneqLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (NOSEQneqQLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqFREE (⇛-val-det tt tt comp y₁))
@@ -627,9 +627,9 @@ typeSysConds-NOSEQ-extrevr2 u w A B x x₁ C eqt' = concl x₁
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (comp : T1' #⇛ #NOSEQ at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → NOSEQeq a b))
           → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → NOSEQeq a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (NOSEQneqLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (NOSEQneqQLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqFREE (⇛-val-det tt tt comp y))

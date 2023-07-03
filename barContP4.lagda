@@ -126,9 +126,9 @@ s2l# s (suc n) rewrite →#shiftUp 0 {s2l s n} (s2l# s n) = refl
 
 data updSeq (r : Name) (s : 𝕊) (n : ℕ) : Term → Term → Set where
   updSeq-VAR     : (x : Var) → updSeq r s n (VAR x) (VAR x)
-  updSeq-NAT     : updSeq r s n NAT NAT
+--  updSeq-NAT     : updSeq r s n NAT NAT
   updSeq-QNAT    : updSeq r s n QNAT QNAT
-  updSeq-TNAT    : updSeq r s n TNAT TNAT
+--  updSeq-TNAT    : updSeq r s n TNAT TNAT
   updSeq-LT      : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (LT a₁ b₁) (LT a₂ b₂)
   updSeq-QLT     : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (QLT a₁ b₁) (QLT a₂ b₂)
   updSeq-NUM     : (x : ℕ) → updSeq r s n (NUM x) (NUM x)
@@ -261,9 +261,9 @@ abstract
                    → updSeq r s k a b
                    → updSeq r s k (shiftUp n a) (shiftUp n b)
   updSeq-shiftUp n {r} {s} {k} {.(VAR x)} {.(VAR x)} (updSeq-VAR x) = updSeq-VAR _
-  updSeq-shiftUp n {r} {s} {k} {.NAT} {.NAT} updSeq-NAT = updSeq-NAT
+--  updSeq-shiftUp n {r} {s} {k} {.NAT} {.NAT} updSeq-NAT = updSeq-NAT
   updSeq-shiftUp n {r} {s} {k} {.QNAT} {.QNAT} updSeq-QNAT = updSeq-QNAT
-  updSeq-shiftUp n {r} {s} {k} {.TNAT} {.TNAT} updSeq-TNAT = updSeq-TNAT
+--  updSeq-shiftUp n {r} {s} {k} {.TNAT} {.TNAT} updSeq-TNAT = updSeq-TNAT
   updSeq-shiftUp n {r} {s} {k} {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updSeq-LT a₁ a₂ b₁ b₂ u u₁) = updSeq-LT _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁)
   updSeq-shiftUp n {r} {s} {k} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updSeq-QLT a₁ a₂ b₁ b₂ u u₁) = updSeq-QLT _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁)
   updSeq-shiftUp n {r} {s} {k} {.(NUM x)} {.(NUM x)} (updSeq-NUM x) = updSeq-NUM _
@@ -329,9 +329,9 @@ abstract
                      → updSeq r s k a b
                      → updSeq r s k (shiftDown n a) (shiftDown n b)
   updSeq-shiftDown n {r} {s} {k} {.(VAR x)} {.(VAR x)} (updSeq-VAR x) = updSeq-VAR _
-  updSeq-shiftDown n {r} {s} {k} {.NAT} {.NAT} updSeq-NAT = updSeq-NAT
+--  updSeq-shiftDown n {r} {s} {k} {.NAT} {.NAT} updSeq-NAT = updSeq-NAT
   updSeq-shiftDown n {r} {s} {k} {.QNAT} {.QNAT} updSeq-QNAT = updSeq-QNAT
-  updSeq-shiftDown n {r} {s} {k} {.TNAT} {.TNAT} updSeq-TNAT = updSeq-TNAT
+--  updSeq-shiftDown n {r} {s} {k} {.TNAT} {.TNAT} updSeq-TNAT = updSeq-TNAT
   updSeq-shiftDown n {r} {s} {k} {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updSeq-LT a₁ a₂ b₁ b₂ u u₁) = updSeq-LT _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁)
   updSeq-shiftDown n {r} {s} {k} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updSeq-QLT a₁ a₂ b₁ b₂ u u₁) = updSeq-QLT _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁)
   updSeq-shiftDown n {r} {s} {k} {.(NUM x)} {.(NUM x)} (updSeq-NUM x) = updSeq-NUM _
@@ -400,9 +400,9 @@ abstract
   updSeq-subv v {r} {s} {k} {.(VAR x)} {.(VAR x)} {b₁} {b₂} (updSeq-VAR x) ub with x ≟ v
   ... | yes p = ub
   ... | no p = updSeq-VAR x
-  updSeq-subv v {r} {s} {k} {.NAT} {.NAT} {b₁} {b₂} updSeq-NAT ub = updSeq-NAT
+--  updSeq-subv v {r} {s} {k} {.NAT} {.NAT} {b₁} {b₂} updSeq-NAT ub = updSeq-NAT
   updSeq-subv v {r} {s} {k} {.QNAT} {.QNAT} {b₁} {b₂} updSeq-QNAT ub = updSeq-QNAT
-  updSeq-subv v {r} {s} {k} {.TNAT} {.TNAT} {b₁} {b₂} updSeq-TNAT ub = updSeq-TNAT
+--  updSeq-subv v {r} {s} {k} {.TNAT} {.TNAT} {b₁} {b₂} updSeq-TNAT ub = updSeq-TNAT
   updSeq-subv v {r} {s} {k} {.(LT a₁ b₃)} {.(LT a₂ b₄)} {b₁} {b₂} (updSeq-LT a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-LT _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub)
   updSeq-subv v {r} {s} {k} {.(QLT a₁ b₃)} {.(QLT a₂ b₄)} {b₁} {b₂} (updSeq-QLT a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-QLT _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub)
   updSeq-subv v {r} {s} {k} {.(NUM x)} {.(NUM x)} {b₁} {b₂} (updSeq-NUM x) ub = updSeq-NUM x
@@ -1082,9 +1082,9 @@ updSeq→isValue : {r : Name} {s : 𝕊} {n : ℕ} {a b : Term}
                   → updSeq r s n a b
                   → isValue a
                   → isValue b
-updSeq→isValue {r} {s} {n} {.NAT} {.NAT} updSeq-NAT isv = tt
+--updSeq→isValue {r} {s} {n} {.NAT} {.NAT} updSeq-NAT isv = tt
 updSeq→isValue {r} {s} {n} {.QNAT} {.QNAT} updSeq-QNAT isv = tt
-updSeq→isValue {r} {s} {n} {.TNAT} {.TNAT} updSeq-TNAT isv = tt
+--updSeq→isValue {r} {s} {n} {.TNAT} {.TNAT} updSeq-TNAT isv = tt
 updSeq→isValue {r} {s} {n} {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updSeq-LT a₁ a₂ b₁ b₂ u u₁) isv = tt
 updSeq→isValue {r} {s} {n} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updSeq-QLT a₁ a₂ b₁ b₂ u u₁) isv = tt
 updSeq→isValue {r} {s} {n} {.(NUM x)} {.(NUM x)} (updSeq-NUM x) isv = tt

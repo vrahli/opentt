@@ -62,9 +62,9 @@ abstract
   shiftUp-shiftNameUp : (c d : ℕ) (t : Term)
                         → shiftUp c (shiftNameUp d t) ≡ shiftNameUp d (shiftUp c t)
   shiftUp-shiftNameUp c d (VAR x) = refl
-  shiftUp-shiftNameUp c d NAT = refl
+--  shiftUp-shiftNameUp c d NAT = refl
   shiftUp-shiftNameUp c d QNAT = refl
-  shiftUp-shiftNameUp c d TNAT = refl
+--  shiftUp-shiftNameUp c d TNAT = refl
   shiftUp-shiftNameUp c d (LT t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
   shiftUp-shiftNameUp c d (QLT t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
   shiftUp-shiftNameUp c d (NUM x) = refl
@@ -127,9 +127,9 @@ abstract
   renn-shiftNameUp : (n1 n2 : Name) (t : Term)
                      → renn n1 n2 (shiftNameUp n1 t) ≡ shiftNameUp n1 t
   renn-shiftNameUp n1 n2 (VAR x) = refl
-  renn-shiftNameUp n1 n2 NAT = refl
+--  renn-shiftNameUp n1 n2 NAT = refl
   renn-shiftNameUp n1 n2 QNAT = refl
-  renn-shiftNameUp n1 n2 TNAT = refl
+--  renn-shiftNameUp n1 n2 TNAT = refl
   renn-shiftNameUp n1 n2 (LT t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
   renn-shiftNameUp n1 n2 (QLT t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
   renn-shiftNameUp n1 n2 (NUM x) = refl
@@ -218,9 +218,9 @@ predIf≤-sucIf≤ n (suc x) | no p with suc (suc x) ≤? n
 abstract
   shiftNameDownUp : (n : ℕ) (t : Term) → shiftNameDown n (shiftNameUp n t) ≡ t
   shiftNameDownUp n (VAR x) = refl
-  shiftNameDownUp n NAT = refl
+--  shiftNameDownUp n NAT = refl
   shiftNameDownUp n QNAT = refl
-  shiftNameDownUp n TNAT = refl
+--  shiftNameDownUp n TNAT = refl
   shiftNameDownUp n (LT t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
   shiftNameDownUp n (QLT t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
   shiftNameDownUp n (NUM x) = refl
@@ -335,9 +335,9 @@ abstract
 abstract
   ¬names-shiftUp : (n : ℕ) (a : Term) → ¬names (shiftUp n a) ≡ ¬names a
   ¬names-shiftUp n (VAR x) = refl
-  ¬names-shiftUp n NAT = refl
+--  ¬names-shiftUp n NAT = refl
   ¬names-shiftUp n QNAT = refl
-  ¬names-shiftUp n TNAT = refl
+--  ¬names-shiftUp n TNAT = refl
   ¬names-shiftUp n (LT a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp n a₁ = refl
   ¬names-shiftUp n (QLT a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp n a₁ = refl
   ¬names-shiftUp n (NUM x) = refl
@@ -398,9 +398,9 @@ abstract
 abstract
   ¬names-shiftDown : (n : ℕ) (a : Term) → ¬names (shiftDown n a) ≡ ¬names a
   ¬names-shiftDown n (VAR x) = refl
-  ¬names-shiftDown n NAT = refl
+--  ¬names-shiftDown n NAT = refl
   ¬names-shiftDown n QNAT = refl
-  ¬names-shiftDown n TNAT = refl
+--  ¬names-shiftDown n TNAT = refl
   ¬names-shiftDown n (LT a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown n a₁ = refl
   ¬names-shiftDown n (QLT a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown n a₁ = refl
   ¬names-shiftDown n (NUM x) = refl
@@ -482,9 +482,9 @@ abstract
   ¬Names-subv v {a} {VAR x} na nb with x ≟ v
   ... | yes _ = na
   ... | no _ = refl
-  ¬Names-subv v {a} {NAT} na nb = nb
+--  ¬Names-subv v {a} {NAT} na nb = nb
   ¬Names-subv v {a} {QNAT} na nb = nb
-  ¬Names-subv v {a} {TNAT} na nb = nb
+--  ¬Names-subv v {a} {TNAT} na nb = nb
   ¬Names-subv v {a} {LT b b₁} na nb = →∧≡true (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv v {a} {b₁} na (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
   ¬Names-subv v {a} {QLT b b₁} na nb = →∧≡true {¬names (subv v a b)} {¬names (subv v a b₁)} (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv v {a} {b₁} na (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
   ¬Names-subv v {a} {NUM x} na nb = refl
@@ -551,9 +551,9 @@ abstract
 abstract
   noseq-shiftUp : (n : ℕ) (a : Term) → noseq (shiftUp n a) ≡ noseq a
   noseq-shiftUp n (VAR x) = refl
-  noseq-shiftUp n NAT = refl
+--  noseq-shiftUp n NAT = refl
   noseq-shiftUp n QNAT = refl
-  noseq-shiftUp n TNAT = refl
+--  noseq-shiftUp n TNAT = refl
   noseq-shiftUp n (LT a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
   noseq-shiftUp n (QLT a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
   noseq-shiftUp n (NUM x) = refl
@@ -614,9 +614,9 @@ abstract
 abstract
   noseq-shiftDown : (n : ℕ) (a : Term) → noseq (shiftDown n a) ≡ noseq a
   noseq-shiftDown n (VAR x) = refl
-  noseq-shiftDown n NAT = refl
+--  noseq-shiftDown n NAT = refl
   noseq-shiftDown n QNAT = refl
-  noseq-shiftDown n TNAT = refl
+--  noseq-shiftDown n TNAT = refl
   noseq-shiftDown n (LT a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
   noseq-shiftDown n (QLT a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
   noseq-shiftDown n (NUM x) = refl
@@ -683,9 +683,9 @@ abstract
 abstract
   noseq-shiftNameUp : (n : ℕ) (a : Term) → noseq (shiftNameUp n a) ≡ noseq a
   noseq-shiftNameUp n (VAR x) = refl
-  noseq-shiftNameUp n NAT = refl
+--  noseq-shiftNameUp n NAT = refl
   noseq-shiftNameUp n QNAT = refl
-  noseq-shiftNameUp n TNAT = refl
+--  noseq-shiftNameUp n TNAT = refl
   noseq-shiftNameUp n (LT a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
   noseq-shiftNameUp n (QLT a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
   noseq-shiftNameUp n (NUM x) = refl
@@ -751,9 +751,9 @@ abstract
   ¬Seq-subv v {a} {VAR x} na nb with x ≟ v
   ... | yes _ = na
   ... | no _ = refl
-  ¬Seq-subv v {a} {NAT} na nb = nb
+--  ¬Seq-subv v {a} {NAT} na nb = nb
   ¬Seq-subv v {a} {QNAT} na nb = nb
-  ¬Seq-subv v {a} {TNAT} na nb = nb
+--  ¬Seq-subv v {a} {TNAT} na nb = nb
   ¬Seq-subv v {a} {LT b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
   ¬Seq-subv v {a} {QLT b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
   ¬Seq-subv v {a} {NUM x} na nb = refl

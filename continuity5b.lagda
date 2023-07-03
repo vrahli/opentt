@@ -139,12 +139,14 @@ abstract
     rewrite VARinj equ | VARinj eqv = updRel2-VAR _
 
 
+{-
 abstract
   updRel2-shiftNameUp≡→NAT : (n : ℕ) {name : Name} {f g : Term} {r : ren} (cf : # f) (cg : # g) {a b : Term}
                           → NAT ≡ shiftNameUp n a
                           → NAT ≡ shiftNameUp n b
                           → updRel2 name f g r a b
   updRel2-shiftNameUp≡→NAT n {name} {f} {g} {r} cf cg {NAT} {NAT} equ eqv = updRel2-NAT
+-}
 
 
 abstract
@@ -155,12 +157,14 @@ abstract
   updRel2-shiftNameUp≡→QNAT n {name} {f} {g} {r} cf cg {QNAT} {QNAT} equ eqv = updRel2-QNAT
 
 
+{-
 abstract
   updRel2-shiftNameUp≡→TNAT : (n : ℕ) {name : Name} {f g : Term} {r : ren} (cf : # f) (cg : # g) {a b : Term}
                           → TNAT ≡ shiftNameUp n a
                           → TNAT ≡ shiftNameUp n b
                           → updRel2 name f g r a b
   updRel2-shiftNameUp≡→TNAT n {name} {f} {g} {r} cf cg {TNAT} {TNAT} equ eqv = updRel2-TNAT
+-}
 
 
 abstract
@@ -841,9 +845,9 @@ abstract
                           → updRel2 (sucIf≤ n name) (shiftNameUp n f) (shiftNameUp n g) (sucIf≤-ren n r) u v
                           → updRel2 name f g r a b
   updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(VAR x)} {.(VAR x)} equ eqv (updRel2-VAR x) = updRel2-shiftNameUp≡→VAR n cf cg equ eqv
-  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.NAT} {.NAT} equ eqv updRel2-NAT = updRel2-shiftNameUp≡→NAT n cf cg equ eqv
+--  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.NAT} {.NAT} equ eqv updRel2-NAT = updRel2-shiftNameUp≡→NAT n cf cg equ eqv
   updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.QNAT} {.QNAT} equ eqv updRel2-QNAT = updRel2-shiftNameUp≡→QNAT n cf cg equ eqv
-  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.TNAT} {.TNAT} equ eqv updRel2-TNAT = updRel2-shiftNameUp≡→TNAT n cf cg equ eqv
+--  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.TNAT} {.TNAT} equ eqv updRel2-TNAT = updRel2-shiftNameUp≡→TNAT n cf cg equ eqv
   updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(LT a₁ b₁)} {.(LT a₂ b₂)} equ eqv (updRel2-LT a₁ a₂ b₁ b₂ ur ur₁)
     = updRel2-shiftNameUp≡→LT n cf cg ind1 ind2 equ eqv ur ur₁
     where

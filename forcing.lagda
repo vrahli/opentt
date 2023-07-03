@@ -141,9 +141,9 @@ Equality between type is defined as the following inductive definition
 
 \begin{code}
 data eqTypes u w T1 T2 where
-  EQTNAT : T1 #⇛ #NAT at w → T2 #⇛ #NAT at w → eqTypes u w T1 T2
+--  EQTNAT : T1 #⇛ #NAT at w → T2 #⇛ #NAT at w → eqTypes u w T1 T2
   EQTQNAT : T1 #⇛ #QNAT at w → T2 #⇛ #QNAT at w → eqTypes u w T1 T2
-  EQTTNAT : T1 #⇛ #TNAT at w → T2 #⇛ #TNAT at w → eqTypes u w T1 T2
+--  EQTTNAT : T1 #⇛ #TNAT at w → T2 #⇛ #TNAT at w → eqTypes u w T1 T2
   EQTLT : (a1 a2 b1 b2 : CTerm)
     → T1 #⇛ (#LT a1 b1) at w
     → T2 #⇛ (#LT a2 b2) at w
@@ -522,9 +522,9 @@ FREEeq w t1 t2 = #⇛to-same-CS w t1 t2
 -- We could have another nat type that's interpreted by #strongMonEq.
 -- We want #⇛!sameℕ here to get some functions in Nat->QT(Bool)
 -- Only to prove →equalInType-CS-NAT→T in props3?
-eqInType _ w (EQTNAT _ _) t1 t2 = □· w (λ w' _ → NATeq w' t1 t2)
+--eqInType _ w (EQTNAT _ _) t1 t2 = □· w (λ w' _ → NATeq w' t1 t2)
 eqInType _ w (EQTQNAT _ _) t1 t2 = □· w (λ w' _ → QNATeq w' t1 t2)
-eqInType _ w (EQTTNAT _ _) t1 t2 = □· w (λ w' _ → TNATeq w' t1 t2)
+--eqInType _ w (EQTTNAT _ _) t1 t2 = □· w (λ w' _ → TNATeq w' t1 t2)
 eqInType _ w (EQTLT a1 _ b1 _ _ _ _ _) t1 t2 = □· w (λ w' _ → #lift-<NUM-pair w' a1 b1)
 eqInType _ w (EQTQLT a1 _ b1 _ _ _ _ _) t1 t2 = □· w (λ w' _ → #lift-<NUM-pair w' a1 b1)
 eqInType _ w (EQTFREE _ _) t1 t2 = □· w (λ w' _ → FREEeq w' t1 t2)

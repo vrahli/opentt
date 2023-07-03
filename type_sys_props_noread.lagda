@@ -75,14 +75,14 @@ open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using () renaming (<Type to <Typ
 
 
 \begin{code}[hide]
-NOREADneqNAT : {a : Term} → ¬ (NOREAD a) ≡ NAT
-NOREADneqNAT {a} ()
+--NOREADneqNAT : {a : Term} → ¬ (NOREAD a) ≡ NAT
+--NOREADneqNAT {a} ()
 
 NOREADneqQNAT : {a : Term} → ¬ (NOREAD a) ≡ QNAT
 NOREADneqQNAT {a} ()
 
-NOREADneqTNAT : {a : Term} → ¬ (NOREAD a) ≡ TNAT
-NOREADneqTNAT {a} ()
+--NOREADneqTNAT : {a : Term} → ¬ (NOREAD a) ≡ TNAT
+--NOREADneqTNAT {a} ()
 
 NOREADneqLT : {a : Term} {c d : Term} → ¬ (NOREAD a) ≡ LT c d
 NOREADneqLT {a} {c} {d} ()
@@ -205,9 +205,9 @@ typeSysConds-NOREAD-ttrans u w A B A1 B1 x x₁ eqta exta inda C eqt = concl x x
           → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
           → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
           → eqTypes u w A T2
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind x x₁ eqta exta inda = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind x x₁ eqta exta inda = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind x x₁ eqta exta inda = ⊥-elim (NOREADneqQNAT (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind x x₁ eqta exta inda = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind x x₁ eqta exta inda = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind x x₁ eqta exta inda = ⊥-elim (NOREADneqLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind x x₁ eqta exta inda = ⊥-elim (NOREADneqQLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind x x₁ eqta exta inda = ⊥-elim (NOREADneqFREE (⇛-val-det tt tt x₁ y))
@@ -326,9 +326,9 @@ typeSysConds-NOREAD-extl1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eqt
           → T1 #⇛ #NOREAD A1 at w → (a b : CTerm) → □· w (λ w' e → NOREADeq (eqInType u w' (eqta w' e)) w' a b)
           → eqInType u w eqt a b
 --    ind {u} {w} {T1} {T2} eqt ind eqta exta inda x f g eqi = {!!}
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqQNAT (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqLT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqQLT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqFREE (⇛-val-det tt tt x y))
@@ -411,9 +411,9 @@ typeSysConds-NOREAD-extl2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eqt
           → T2 #⇛ #NOREAD A1 at w
           → (a b : CTerm) → □· w (λ w' e → NOREADeq (eqInType u w' (eqta w' e)) w' a b)
           → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqQNAT (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqLT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqQLT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqFREE (⇛-val-det tt tt x y₁))
@@ -496,9 +496,9 @@ typeSysConds-NOREAD-extr1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eqt
           → T2 #⇛ #NOREAD B1 at w
           → (a b : CTerm) → □· w (λ w' e → NOREADeq (eqInType u w' (eqta w' e)) w' a b)
           → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqQNAT (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqLT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqQLT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqFREE (⇛-val-det tt tt x₁ y₁))
@@ -580,9 +580,9 @@ typeSysConds-NOREAD-extr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl eqt
           → T1 #⇛ #NOREAD B1 at w
           → (a b : CTerm) → □· w (λ w' e → NOREADeq (eqInType u w' (eqta w' e)) w' a b)
           → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqQNAT (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqQLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqFREE (⇛-val-det tt tt x₁ y))
@@ -663,9 +663,9 @@ typeSysConds-NOREAD-extrevl1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl 
           → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
           → T1 #⇛ #NOREAD A1 at w → (a b : CTerm) → eqInType u w eqt a b
           → □· w (λ w' e → NOREADeq (eqInType u w' (eqta w' e)) w' a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqQNAT (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqLT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqQLT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqFREE (⇛-val-det tt tt x y))
@@ -749,9 +749,9 @@ typeSysConds-NOREAD-extrevl2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl 
           → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
           → T2 #⇛ #NOREAD A1 at w → (a b : CTerm) → eqInType u w eqt a b
           → □· w (λ w' e → NOREADeq (eqInType u w' (eqta w' e)) w' a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqQNAT (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqLT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqQLT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta exta inda x f g eqi = ⊥-elim (NOREADneqFREE (⇛-val-det tt tt x y₁))
@@ -834,9 +834,9 @@ typeSysConds-NOREAD-extrevr1 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl 
           → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
           → T2 #⇛ #NOREAD B1 at w → (a b : CTerm) → eqInType u w eqt a b
           → □· w (λ w' e → NOREADeq (eqInType u w' (eqta w' e)) w' a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqQNAT (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqLT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqQLT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqFREE (⇛-val-det tt tt x₁ y₁))
@@ -919,9 +919,9 @@ typeSysConds-NOREAD-extrevr2 u w A B A1 B1 x x₁ eqta exta inda C eqt' = concl 
           → (inda : ∀𝕎 w (λ w1 e1 → TSP (eqta w1 e1)))
           → T1 #⇛ #NOREAD B1 at w → (a b : CTerm) → eqInType u w eqt a b
           → □· w (λ w' e → NOREADeq (eqInType u w' (eqta w' e)) w' a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqQNAT (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqQLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta exta inda x₁ f g eqi = ⊥-elim (NOREADneqFREE (⇛-val-det tt tt x₁ y))
@@ -1008,9 +1008,9 @@ eqInType-⇛-NOREAD u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt eqi = concl e
           → (inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1)))
           → T1 #⇛ #NOREAD A1 at w → T2 #⇛ #NOREAD B1 at w → (a₁ b₁ : CTerm) → eqInType u w eqt a₁ b₁
           → □· w (λ w' e → NOREADeq (eqInType u w' (eqta w' e)) w' a₁ b₁)
-    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOREADneqQNAT (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOREADneqLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOREADneqQLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOREADneqFREE (⇛-val-det tt tt c₁ x))
@@ -1103,9 +1103,9 @@ eqInType-⇛-NOREAD2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ei ext = concl eq
           → (a₁ b₁ : CTerm) → ≡∈Type u w eqt a₁ b₁
           → ({u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type₂ eqt' eqt → eqInTypeExt eqt')
           → □· w (λ w' e → NOREADeq (≡∈Type u w' (eqta w' e)) w' a₁ b₁)
-    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOREADneqQNAT (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOREADneqLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOREADneqQLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta exta c₁ c₂ a b ei ext = ⊥-elim (NOREADneqFREE (⇛-val-det tt tt c₁ x))
@@ -1199,9 +1199,9 @@ eqInType-⇛-NOREAD-rev u w A B A1 B1 a b eqta exta inda c₁ c₂ eqt ei = conc
           → T1 #⇛ #NOREAD A1 at w → T2 #⇛ #NOREAD B1 at w
           → (a₁ b₁ : CTerm) → □· w (λ w' e → NOREADeq (eqInType u w' (eqta w' e)) w' a₁ b₁)
           → eqInType u w eqt a₁ b₁
-    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOREADneqQNAT (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOREADneqLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOREADneqQLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta exta inda c₁ c₂ a b ei = ⊥-elim (NOREADneqFREE (⇛-val-det tt tt c₁ x))
@@ -1292,9 +1292,9 @@ eqInType-⇛-NOREAD-rev2 u w A B A1 B1 a b eqta exta c₁ c₂ eqt ext ei = conc
           → ({u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → ≤Type₂ eqt' eqt → eqInTypeExt eqt')
           → □· w (λ w' e → NOREADeq (≡∈Type u w' (eqta w' e)) w' a₁ b₁)
           → ≡∈Type u w eqt a₁ b₁
-    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOREADneqNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOREADneqQNAT (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOREADneqTNAT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOREADneqLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOREADneqQLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta exta c₁ c₂ a b ext ei = ⊥-elim (NOREADneqFREE (⇛-val-det tt tt c₁ x))

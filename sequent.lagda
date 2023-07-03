@@ -73,9 +73,9 @@ subn : Var → Term → Term → Term
 subn v t (VAR x) with x ≟ v
 ... | yes _ = t
 ... | no _ = VAR (predIf≤ v x) -- (pred x) if v < x
-subn v t NAT = NAT
+--subn v t NAT = NAT
 subn v t QNAT = QNAT
-subn v t TNAT = TNAT
+--subn v t TNAT = TNAT
 subn v t (LT u u₁) = LT (subn v t u) (subn v t u₁)
 subn v t (QLT u u₁) = QLT (subn v t u) (subn v t u₁)
 subn v t (NUM x) = NUM x
@@ -136,9 +136,9 @@ subn v t (SHRINK u) = SHRINK (subn v t u)
 
 shiftUpUp : (m n : ℕ) (t : Term) → m ≤ n → shiftUp m (shiftUp n t) ≡ shiftUp (suc n) (shiftUp m t)
 shiftUpUp m n (VAR x) len = ≡VAR (sucIf≤-sucIf≤ len)
-shiftUpUp m n NAT len = refl
+--shiftUpUp m n NAT len = refl
 shiftUpUp m n QNAT len = refl
-shiftUpUp m n TNAT len = refl
+--shiftUpUp m n TNAT len = refl
 shiftUpUp m n (LT t t₁) len = ≡LT (shiftUpUp m n t len) (shiftUpUp m n t₁ len)
 shiftUpUp m n (QLT t t₁) len = ≡QLT (shiftUpUp m n t len) (shiftUpUp m n t₁ len)
 shiftUpUp m n (NUM x) len = refl
@@ -197,9 +197,9 @@ subn≡sub : (n : ℕ) (t u : Term) → shiftDown n (subv n (shiftUp n t) u) ≡
 subn≡sub n t (VAR x) with x ≟ n
 ... | yes p = shiftDownUp t n
 ... | no p = refl
-subn≡sub n t NAT = refl
+--subn≡sub n t NAT = refl
 subn≡sub n t QNAT = refl
-subn≡sub n t TNAT = refl
+--subn≡sub n t TNAT = refl
 subn≡sub n t (LT u u₁) = ≡LT (subn≡sub n t u) (subn≡sub n t u₁)
 subn≡sub n t (QLT u u₁) = ≡QLT (subn≡sub n t u) (subn≡sub n t u₁)
 subn≡sub n t (NUM x) = refl

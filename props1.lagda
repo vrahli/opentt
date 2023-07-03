@@ -67,9 +67,9 @@ open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import ind3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_tnat(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import type_sys_props_tnat(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_lt(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_qlt(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_free(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -109,14 +109,14 @@ UNIVinj : {a b : ℕ} → UNIV a ≡ UNIV b → a ≡ b
 UNIVinj refl =  refl
 
 
-UNIVneqNAT : {a : ℕ} → ¬ UNIV a ≡ NAT
-UNIVneqNAT {a} ()
+--UNIVneqNAT : {a : ℕ} → ¬ UNIV a ≡ NAT
+--UNIVneqNAT {a} ()
 
 UNIVneqQNAT : {a : ℕ} → ¬ UNIV a ≡ QNAT
 UNIVneqQNAT {a} ()
 
-UNIVneqTNAT : {a : ℕ} → ¬ UNIV a ≡ TNAT
-UNIVneqTNAT {a} ()
+--UNIVneqTNAT : {a : ℕ} → ¬ UNIV a ≡ TNAT
+--UNIVneqTNAT {a} ()
 
 UNIVneqLT : {a : ℕ} {c d : Term} → ¬ UNIV a ≡ LT c d
 UNIVneqLT {a} {c} {d} ()
@@ -231,9 +231,9 @@ eqInType-⇛-PI2 : (u : univs) (isu : is-universe u) (w : 𝕎·) (A B A1 A2 B1 
                   → eqInType u w eqt a b
                   → □· w (λ w' e → PIeq (eqInType u w' (eqta w' e)) (λ a₁ a₂ eqa → eqInType u w' (eqtb w' e a₁ a₂ eqa)) a b)
 --{-# TERMINATING #-}
-eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb c₁ c₂ ext (EQTNAT x x₁) ei = ⊥-elim (PIneqNAT (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb c₁ c₂ ext (EQTNAT x x₁) ei = ⊥-elim (PIneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb c₁ c₂ ext (EQTQNAT x x₁) ei = ⊥-elim (PIneqQNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb c₁ c₂ ext (EQTTNAT x x₁) ei = ⊥-elim (PIneqTNAT (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb c₁ c₂ ext (EQTTNAT x x₁) ei = ⊥-elim (PIneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb c₁ c₂ ext (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (PIneqLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb c₁ c₂ ext (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ei = ⊥-elim (PIneqQLT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb c₁ c₂ ext (EQTFREE x x₁) ei = ⊥-elim (PIneqFREE (⇛-val-det tt tt c₁ x))
@@ -301,8 +301,8 @@ eqInType-⇛-PI2 u isu w A B A1 A2 B1 B2 a b eqta eqtb c₁ c₂ ext (EQTBAR x) 
 {--
 eqInType-ext : {u : univs} (isu : is-universe u) {w : 𝕎·} {A B : CTerm}
                (eqt : eqTypes u w A B) → eqInTypeExt eqt
-eqInType-ext {u} isu {w} {A} {B} (EQTNAT x x₁) =
-  λ eqt2 a b → eqInType-⇛-NAT-rev u isu w A B a b x x₁ eqt2 , eqInType-⇛-NAT u isu w A B a b x x₁ eqt2
+--eqInType-ext {u} isu {w} {A} {B} (EQTNAT x x₁) =
+--  λ eqt2 a b → eqInType-⇛-NAT-rev u isu w A B a b x x₁ eqt2 , eqInType-⇛-NAT u isu w A B a b x x₁ eqt2
 eqInType-ext {u} isu {w} {A} {B} (EQTQNAT x x₁) =
   {!!}
 eqInType-ext {u} isu {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = {!!}
@@ -390,9 +390,9 @@ eqInTypExt-∀𝕎-mon-PIa : {u : univs} {w : 𝕎·} {A B A1 A2 B1 B2 : CTerm}
                           (w1 : 𝕎·) (e1 : w1 ≽ w')
                           → eqInTypeExt (∀𝕎-mon e' eqta w1 e1)
 -- By induction on z
-eqInTypExt-∀𝕎-mon-PIa {u} {w} {A} {B} {A1} {A2} {B1} {B2} c₁ c₂ eqta w' e' (EQTNAT x x₁) ext w1 e1 = ⊥-elim (PIneqNAT (⇛-val-det tt tt (⇛-mon e' c₁) x))
+--eqInTypExt-∀𝕎-mon-PIa {u} {w} {A} {B} {A1} {A2} {B1} {B2} c₁ c₂ eqta w' e' (EQTNAT x x₁) ext w1 e1 = ⊥-elim (PIneqNAT (⇛-val-det tt tt (⇛-mon e' c₁) x))
 eqInTypExt-∀𝕎-mon-PIa {u} {w} {A} {B} {A1} {A2} {B1} {B2} c₁ c₂ eqta w' e' (EQTQNAT x x₁) ext w1 e1 = {!!}
-eqInTypExt-∀𝕎-mon-PIa {u} {w} {A} {B} {A1} {A2} {B1} {B2} c₁ c₂ eqta w' e' (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ext w1 e1 = {!!}
+--eqInTypExt-∀𝕎-mon-PIa {u} {w} {A} {B} {A1} {A2} {B1} {B2} c₁ c₂ eqta w' e' (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ext w1 e1 = {!!}
 eqInTypExt-∀𝕎-mon-PIa {u} {w} {A} {B} {A1} {A2} {B1} {B2} c₁ c₂ eqta w' e' (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ext w1 e1 = {!!}
 eqInTypExt-∀𝕎-mon-PIa {u} {w} {A} {B} {A1} {A2} {B1} {B2} c₁ c₂ eqta w' e' (EQTFREE x x₁) ext w1 e1 = {!!}
 eqInTypExt-∀𝕎-mon-PIa {u} {w} {A} {B} {A1} {A2} {B1} {B2} c₁ c₂ eqta w' e' (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ext w1 e1
@@ -445,9 +445,9 @@ abstract
             → ({u' : ℕ} {w' : 𝕎·} {A' B' : CTerm} (eqt' : equalTypes u' w' A' B') {a' b' : CTerm} (eqi' : equalTerms u' w' eqt' a' b')
                 → <Type {ℕ→𝕌 u'} {w'} eqt' {ℕ→𝕌 n} {w} eqt → A' #⇛ #UNIV u' at w' → B' #⇛ #UNIV u' at w' → 0 < u')
             → A #⇛ #UNIV n at w → B #⇛ #UNIV n at w → 0 < n
-      ind {u} {w} {A} {B} (EQTNAT x x₁) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqNAT (⇛-val-det tt tt c₁ x))
+--      ind {u} {w} {A} {B} (EQTNAT x x₁) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqNAT (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTQNAT x x₁) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqQNAT (⇛-val-det tt tt c₁ x))
-      ind {u} {w} {A} {B} (EQTTNAT x x₁) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqTNAT (⇛-val-det tt tt c₁ x))
+--      ind {u} {w} {A} {B} (EQTTNAT x x₁) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqTNAT (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqLT (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqQLT (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTFREE x x₁) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqFREE (⇛-val-det tt tt c₁ x))
@@ -541,9 +541,9 @@ abstract
             → ({u' : ℕ} {w' : 𝕎·} {A' B' : CTerm} (eqt' : equalTypes u' w' A' B') {a' b' : CTerm} (eqi' : equalTerms u' w' eqt' a' b')
                 → <Type {ℕ→𝕌 u'} {w'} eqt' {ℕ→𝕌 u} {w} eqt → (i : ℕ) → i < u' → A' #⇛ #UNIV i at w' → B' #⇛ #UNIV i at w' → □·EqTypes (uni i) w' a' b')
             → (i : ℕ) → i < u → A #⇛ #UNIV i at w → B #⇛ #UNIV i at w → □·EqTypes (uni i) w a b
-      ind {u} {w} {A} {B} (EQTNAT x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqNAT (⇛-val-det tt tt c₁ x))
+--      ind {u} {w} {A} {B} (EQTNAT x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqNAT (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTQNAT x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqQNAT (⇛-val-det tt tt c₁ x))
-      ind {u} {w} {A} {B} (EQTTNAT x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqTNAT (⇛-val-det tt tt c₁ x))
+--      ind {u} {w} {A} {B} (EQTTNAT x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqTNAT (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqLT (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqQLT (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTFREE x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqFREE (⇛-val-det tt tt c₁ x))
@@ -654,14 +654,14 @@ abstract
                      → (a b : CTerm)
                      → □·' w i (λ w' e' z → eqInType u w' z a b)
                      → (eqt : eqTypes u w A B) → eqInType u w eqt a b
-  eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTNAT x x₁) =
+{-  eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTNAT x x₁) =
     Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : at□· i w' e' z)--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → NATeq w'' a b) e'))
       aw w' e' z {--at--} eqt' =
         Mod.∀𝕎-□Func M
           (λ w1 e1 s ext → s)
-          (eqInType-⇛-NAT u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
+          (eqInType-⇛-NAT u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')-}
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTQNAT x x₁) =
     Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
@@ -670,14 +670,14 @@ abstract
         Mod.∀𝕎-□Func M
           (λ w1 e1 s ext → s)
           (eqInType-⇛-QNAT u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
-  eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTTNAT x x₁) =
+{-  eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTTNAT x x₁) =
     Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : at□· i w' e' z)--} → eqInType u w' z a b → □· w' (↑wPred' (λ w'' e → TNATeq w'' a b) e'))
       aw w' e' z {--at--} eqt' =
         Mod.∀𝕎-□Func M
           (λ w1 e1 s ext → s)
-          (eqInType-⇛-TNAT u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')
+          (eqInType-⇛-TNAT u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z eqt')-}
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) =
     Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
@@ -1123,9 +1123,9 @@ abstract
 {--
 data ¬bar (u : univs) {w : 𝕎·} {T1 T2 : CTerm} : eqTypes u w T1 T2 → Set
 data ¬bar u {w} {T1} {T2} where
-  ¬bar-NAT : (c₁ : T1 ⇛ NAT at w) (c₂ : T2 ⇛ NAT at w) → ¬bar u (EQTNAT c₁ c₂)
+--  ¬bar-NAT : (c₁ : T1 ⇛ NAT at w) (c₂ : T2 ⇛ NAT at w) → ¬bar u (EQTNAT c₁ c₂)
   ¬bar-QNAT : (c₁ : T1 ⇛ QNAT at w) (c₂ : T2 ⇛ QNAT at w) → ¬bar u (EQTQNAT c₁ c₂)
-  ¬bar-TNAT : (c₁ : T1 ⇛ TNAT at w) (c₂ : T2 ⇛ TNAT at w) → ¬bar u (EQTTNAT c₁ c₂)
+--  ¬bar-TNAT : (c₁ : T1 ⇛ TNAT at w) (c₂ : T2 ⇛ TNAT at w) → ¬bar u (EQTTNAT c₁ c₂)
   ¬bar-LT : (a1 a2 b1 b2 : CTerm)
             (c₁ : T1 ⇛ (LT a1 b1) at w) (c₂ : T2 ⇛ (LT a2 b2) at w)
             (s₁ : strongMonEq w a1 a2) (s₂ : strongMonEq w b1 b2)
@@ -1194,10 +1194,10 @@ collapseBars-eqInType {u} isu {w} {A} {B} i ext {a} {b} j = {!!}
     aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' A B) → at□· i w' e' x
                          → eqInType u w' x a b
                          → □·' w' (↑'□· i e') (↑wPredDep' (λ w'' e'' z → eqInType u w'' z a b × ¬bar u z) e'))
-    aw w1 e1 (EQTNAT x x₁) at ei =
+{-    aw w1 e1 (EQTNAT x x₁) at ei =
       Mod.∀𝕎-□-□' M {!!} (↑'□· i e1)
       where
-        aw0 : ∀𝕎 w1 (λ w' e' → (x₂ : ↑wPred' (λ w'' e → eqTypes u w'' A B) e1 w' e') →  w')
+        aw0 : ∀𝕎 w1 (λ w' e' → (x₂ : ↑wPred' (λ w'' e → eqTypes u w'' A B) e1 w' e') →  w')-}
     aw w1 e1 (EQTQNAT x x₁) at ei = {!!}
     aw w1 e1 (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) at ei = {!!}
     aw w1 e1 (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) at ei = {!!}
@@ -1345,9 +1345,9 @@ abstract
                 → (a b : CTerm) → uniUpTo u' i p w' a b → eqInType (uni u') w' eqt' a b)
             → (i : ℕ) (p : i < u) → A B#⇛ #UNIV i at w → B B#⇛ #UNIV i at w
             → (a b : CTerm) → uniUpTo u i p w a b → eqInType (uni u) w eqt a b
-      ind {u} {w} {A} {B} (EQTNAT x x₁) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqNAT (Bₗ⇛-val-det tt tt c₁ x))
+--      ind {u} {w} {A} {B} (EQTNAT x x₁) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqNAT (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTQNAT x x₁) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqQNAT (Bₗ⇛-val-det tt tt c₁ x))
-      ind {u} {w} {A} {B} (EQTTNAT x x₁) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqTNAT (Bₗ⇛-val-det tt tt c₁ x))
+--      ind {u} {w} {A} {B} (EQTTNAT x x₁) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqTNAT (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqLT (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqQLT (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTFREE x x₁) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqFREE (Bₗ⇛-val-det tt tt c₁ x))
@@ -1430,9 +1430,9 @@ abstract
             → ({u' : ℕ} {w' : 𝕎·} {A' B' : CTerm} (eqt' : equalTypes u' w' A' B') {a' b' : CTerm} (eqi' : equalTerms u' w' eqt' a' b')
                 → <Type {ℕ→𝕌 u'} {w'} eqt' {ℕ→𝕌 u} {w} eqt → (i : ℕ) (p : i < u') → A' B#⇛ #UNIV i at w' → B' B#⇛ #UNIV i at w' → uniUpTo u' i p w' a' b')
             → (i : ℕ) (p : i < u) → A B#⇛ #UNIV i at w → B B#⇛ #UNIV i at w → uniUpTo u i p w a b
-      ind {u} {w} {A} {B} (EQTNAT x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqNAT (Bₗ⇛-val-det tt tt c₁ x))
+--      ind {u} {w} {A} {B} (EQTNAT x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqNAT (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTQNAT x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqQNAT (Bₗ⇛-val-det tt tt c₁ x))
-      ind {u} {w} {A} {B} (EQTTNAT x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqTNAT (Bₗ⇛-val-det tt tt c₁ x))
+--      ind {u} {w} {A} {B} (EQTTNAT x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqTNAT (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqLT (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqQLT (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTFREE x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqFREE (Bₗ⇛-val-det tt tt c₁ x))
@@ -1567,14 +1567,14 @@ abstract
                          → (eqt : eqTypes u w A B)
                          → eqInType u w eqt a b
                          → □·' w i (λ w' e' z → eqInType u w' z a b)
-  eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTNAT x x₁) eqi =
+{-  eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTNAT x x₁) eqi =
     ∀𝕎-□-□'₀ W M i aw
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : at□· i w' e' z)--} → eqInType u w' z a b)
       aw w' e' z {--at--} = eqInType-⇛-NAT-rev u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
         where
           ei : □· w' (λ w'' e → NATeq w'' a b)
-          ei = ↑□· eqi e'
+          ei = ↑□· eqi e'-}
   eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTQNAT x x₁) eqi =
     ∀𝕎-□-□'₀ W M i aw
     where
@@ -1583,14 +1583,14 @@ abstract
         where
           ei : □· w' (λ w'' e → #weakMonEq w'' a b)
           ei = ↑□· eqi e'
-  eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTTNAT x x₁) eqi =
+{-  eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTTNAT x x₁) eqi =
     ∀𝕎-□-□'₀ W M i aw
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : at□· i w' e' z)--} → eqInType u w' z a b)
       aw w' e' z {--at--} = eqInType-⇛-TNAT-rev u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
         where
           ei : □· w' (λ w'' e → TNATeq w'' a b)
-          ei = ↑□· eqi e'
+          ei = ↑□· eqi e'-}
   eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi =
     ∀𝕎-□-□'₀ W M i aw
     where
@@ -1956,15 +1956,15 @@ abstract
   eqInType-ext0 : {u : univs} (isu : is-uni u) {w : 𝕎·} {A B : CTerm} (eqt : eqTypes u w A B)
                   → ({u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → <Type {u'} eqt' {mk𝕌 isu} eqt → eqInTypeExt eqt')
                   → eqInTypeExt eqt
-  eqInType-ext0 {u} isu {w} {A} {B} (EQTNAT x x₁) ind =
+{-  eqInType-ext0 {u} isu {w} {A} {B} (EQTNAT x x₁) ind =
     λ eqt2 a b → eqInType-⇛-NAT-rev u w A B a b x x₁ eqt2 ,
-                 eqInType-⇛-NAT u w A B a b x x₁ eqt2
+                 eqInType-⇛-NAT u w A B a b x x₁ eqt2-}
   eqInType-ext0 {u} isu {w} {A} {B} (EQTQNAT x x₁) ind =
     λ eqt2 a b → eqInType-⇛-QNAT-rev u w A B a b x x₁ eqt2 ,
                  eqInType-⇛-QNAT u w A B a b x x₁ eqt2
-  eqInType-ext0 {u} isu {w} {A} {B} (EQTTNAT x x₁) ind =
+{-  eqInType-ext0 {u} isu {w} {A} {B} (EQTTNAT x x₁) ind =
     λ eqt2 a b → eqInType-⇛-TNAT-rev u w A B a b x x₁ eqt2 ,
-                 eqInType-⇛-TNAT u w A B a b x x₁ eqt2
+                 eqInType-⇛-TNAT u w A B a b x x₁ eqt2-}
   eqInType-ext0 {u} isu {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind =
     λ eqt2 a b → eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b x x₁ eqt2 ,
                  eqInType-⇛-LT u w A B a1 b1 a2 b2 a b x x₁ eqt2
@@ -2188,14 +2188,14 @@ abstract
                 → ≡∈Type u' w' eqt' a b)
             → (a b : CTerm) (i : □· w (λ w' e → ≡Types u w' A B)) (j : □·' w i (λ w' e z → ≡∈Type u w' z a b))
             → ≡∈Type u w eqt a b
-      ind {u} {w} {A} {B} (EQTNAT x x₁) ind a b i j =
+{-      ind {u} {w} {A} {B} (EQTNAT x x₁) ind a b i j =
         Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
           where
             aw : ∀𝕎 w (λ w' e' → (z : ≡Types u w' A B) {--(at : at□· i w' e' z)--} → ≡∈Type u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → NATeq w1 a b))
             aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M (λ w1 e1 s x → s) h1
               where
                 h1 : ≡∈Type u w' {A} {B} (EQTNAT (⇛-mon e' x) (⇛-mon e' x₁)) a b
-                h1 = fst (eqInType-ext (u ·ᵢ) z (EQTNAT (⇛-mon e' x) (⇛-mon e' x₁)) a b) ei
+                h1 = fst (eqInType-ext (u ·ᵢ) z (EQTNAT (⇛-mon e' x) (⇛-mon e' x₁)) a b) ei-}
       ind {u} {w} {A} {B} (EQTQNAT x x₁) ind a b i j =
         Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
         where
@@ -2204,14 +2204,14 @@ abstract
             where
               h1 : ≡∈Type u w' {A} {B} (EQTQNAT (⇛-mon e' x) (⇛-mon e' x₁)) a b
               h1 = fst (eqInType-ext (u ·ᵢ) z (EQTQNAT (⇛-mon e' x) (⇛-mon e' x₁)) a b) ei
-      ind {u} {w} {A} {B} (EQTTNAT x x₁) ind a b i j =
+{-      ind {u} {w} {A} {B} (EQTTNAT x x₁) ind a b i j =
         Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
         where
           aw : ∀𝕎 w (λ w' e' → (z : ≡Types u w' A B) {--(at : at□· i w' e' z)--} → ≡∈Type u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → TNATeq w1 a b))
           aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M (λ w1 e1 s x → s) h1
             where
               h1 : ≡∈Type u w' {A} {B} (EQTTNAT (⇛-mon e' x) (⇛-mon e' x₁)) a b
-              h1 = fst (eqInType-ext (u ·ᵢ) z (EQTTNAT (⇛-mon e' x) (⇛-mon e' x₁)) a b) ei
+              h1 = fst (eqInType-ext (u ·ᵢ) z (EQTTNAT (⇛-mon e' x) (⇛-mon e' x₁)) a b) ei-}
       ind {u} {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind a b i j =
         Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
         where
@@ -2538,7 +2538,7 @@ local-eqInType3 : (u : univs) (isu : is-universe u) (w : 𝕎·) (A B a b : CTer
 --                  → □·' w i (λ w' e → TSP)
                   → (eqt : eqTypes u w A B)
                   → eqInType u w eqt a b × eqInTypeExt eqt
-local-eqInType3 u isu w A B a b i j (EQTNAT x x₁) =
+{-local-eqInType3 u isu w A B a b i j (EQTNAT x x₁) =
   Mod.□-idem M (∀𝕎-□'-□₀ W M aw i j) ,
   (λ eqt2 a b → eqInType-⇛-NAT-rev u isu w A B a b x x₁ eqt2 , eqInType-⇛-NAT u isu w A B a b x x₁ eqt2)
   where
@@ -2548,7 +2548,7 @@ local-eqInType3 u isu w A B a b i j (EQTNAT x x₁) =
     aw w' e' x₂ eqt' = Mod.∀𝕎-□Func M (λ w1 e1 z k → z) aw'
       where
         aw' : □· w' (λ w'' _ → strongMonEq w'' a b)
-        aw' = eqInType-⇛-NAT u isu w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) x₂ eqt'
+        aw' = eqInType-⇛-NAT u isu w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) x₂ eqt'-}
 local-eqInType3 u isu w A B a b i j (EQTQNAT x x₁) = {!!}
 local-eqInType3 u isu w A B a b i j (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = {!!}
 local-eqInType3 u isu w A B a b i j (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) = {!!}
@@ -2625,21 +2625,21 @@ abstract
                 → ≡∈Type u' w' eqt' a b → ≡∈Type u' w0 eqt2 a b)
             → {w0 : 𝕎·} (e0 : w ⊑· w0) → (eqt2 : ≡Types u w0 A B) (a b : CTerm)
             → ≡∈Type u w eqt a b → ≡∈Type u w0 eqt2 a b
-      ind {u} {w} {A} {B} (EQTNAT x x₁) ind {w'} e' eqt2 a b eqi =
+{-      ind {u} {w} {A} {B} (EQTNAT x x₁) ind {w'} e' eqt2 a b eqi =
         eqInType-⇛-NAT-rev (u ·ᵤ) w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
         where
           ei : □· w' (λ w'' e → NATeq w'' a b)
-          ei = ↑□· eqi e'
+          ei = ↑□· eqi e'-}
       ind {u} {w} {A} {B} (EQTQNAT x x₁) ind {w'} e' eqt2 a b eqi =
         eqInType-⇛-QNAT-rev (u ·ᵤ) w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
         where
           ei : □· w' (λ w'' e → #weakMonEq w'' a b)
           ei = ↑□· eqi e'
-      ind {u} {w} {A} {B} (EQTTNAT x x₁) ind {w'} e' eqt2 a b eqi =
+{-      ind {u} {w} {A} {B} (EQTTNAT x x₁) ind {w'} e' eqt2 a b eqi =
         eqInType-⇛-TNAT-rev (u ·ᵤ) w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
         where
           ei : □· w' (λ w'' e → TNATeq w'' a b)
-          ei = ↑□· eqi e'
+          ei = ↑□· eqi e'-}
       ind {u} {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind {w'} e' eqt2 a b eqi =
         eqInType-⇛-LT-rev (u ·ᵤ) w' A B a1 b1 a2 b2 a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
         where
@@ -3134,9 +3134,9 @@ abstract
             → ({u' : ℕ} {w' : 𝕎·} {A' B' : CTerm} (eqt' : equalTypes u' w' A' B') → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt
                 → (i : ℕ) → i < u' → (C : CTerm) → C #⇛ #UNIV i at w' → A' #⇛ #UNIV i at w' → equalTypes u' w' C B')
             → (i : ℕ) → i < u → (C : CTerm) → C #⇛ #UNIV i at w → A #⇛ #UNIV i at w → equalTypes u w C B
-      ind {u} {w} {A} {B} (EQTNAT x x₁) ind i p C c₁ c₂ = ⊥-elim (UNIVneqNAT (⇛-val-det tt tt c₂ x))
+--      ind {u} {w} {A} {B} (EQTNAT x x₁) ind i p C c₁ c₂ = ⊥-elim (UNIVneqNAT (⇛-val-det tt tt c₂ x))
       ind {u} {w} {A} {B} (EQTQNAT x x₁) ind i p C c₁ c₂ = ⊥-elim (UNIVneqQNAT (⇛-val-det tt tt c₂ x))
-      ind {u} {w} {A} {B} (EQTTNAT x x₁) ind i p C c₁ c₂ = ⊥-elim (UNIVneqTNAT (⇛-val-det tt tt c₂ x))
+--      ind {u} {w} {A} {B} (EQTTNAT x x₁) ind i p C c₁ c₂ = ⊥-elim (UNIVneqTNAT (⇛-val-det tt tt c₂ x))
       ind {u} {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind i p C c₁ c₂ = ⊥-elim (UNIVneqLT (⇛-val-det tt tt c₂ x))
       ind {u} {w} {A} {B} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind i p C c₁ c₂ = ⊥-elim (UNIVneqQLT (⇛-val-det tt tt c₂ x))
       ind {u} {w} {A} {B} (EQTFREE x x₁) ind i p C c₁ c₂ = ⊥-elim (UNIVneqFREE (⇛-val-det tt tt c₂ x))
@@ -3228,9 +3228,9 @@ abstract
             → ({u' : ℕ} {w' : 𝕎·} {A' B' : CTerm} (eqt' : equalTypes u' w' A' B') → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt
                 → (i : ℕ) → i < u' → A' B#⇛ #UNIV i at w' → B' B#⇛ #UNIV i at w')
             → (i : ℕ) → i < u → A B#⇛ #UNIV i at w → B B#⇛ #UNIV i at w
-      ind {u} {w} {A} {B} (EQTNAT x x₁) ind i p j = ⊥-elim (UNIVneqNAT (Bₗ⇛-val-det tt tt j x))
+--      ind {u} {w} {A} {B} (EQTNAT x x₁) ind i p j = ⊥-elim (UNIVneqNAT (Bₗ⇛-val-det tt tt j x))
       ind {u} {w} {A} {B} (EQTQNAT x x₁) ind i p j = ⊥-elim (UNIVneqQNAT (Bₗ⇛-val-det tt tt j x))
-      ind {u} {w} {A} {B} (EQTTNAT x x₁) ind i p j = ⊥-elim (UNIVneqTNAT (Bₗ⇛-val-det tt tt j x))
+--      ind {u} {w} {A} {B} (EQTTNAT x x₁) ind i p j = ⊥-elim (UNIVneqTNAT (Bₗ⇛-val-det tt tt j x))
       ind {u} {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind i p j = ⊥-elim (UNIVneqLT (Bₗ⇛-val-det tt tt j x))
       ind {u} {w} {A} {B} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind i p j = ⊥-elim (UNIVneqQLT (Bₗ⇛-val-det tt tt j x))
       ind {u} {w} {A} {B} (EQTFREE x x₁) ind i p j = ⊥-elim (UNIVneqFREE (Bₗ⇛-val-det tt tt j x))
@@ -3284,9 +3284,9 @@ abstract
             → ({u' : ℕ} {w' : 𝕎·} {A' B' : CTerm} (eqt' : equalTypes u' w' A' B') → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt
                 → (i : ℕ) → i < u' → B' B#⇛ #UNIV i at w' → A' B#⇛ #UNIV i at w')
             → (i : ℕ) → i < u → B B#⇛ #UNIV i at w → A B#⇛ #UNIV i at w
-      ind {u} {w} {A} {B} (EQTNAT x x₁) ind i p j = ⊥-elim (UNIVneqNAT (Bₗ⇛-val-det tt tt j x₁))
+--      ind {u} {w} {A} {B} (EQTNAT x x₁) ind i p j = ⊥-elim (UNIVneqNAT (Bₗ⇛-val-det tt tt j x₁))
       ind {u} {w} {A} {B} (EQTQNAT x x₁) ind i p j = ⊥-elim (UNIVneqQNAT (Bₗ⇛-val-det tt tt j x₁))
-      ind {u} {w} {A} {B} (EQTTNAT x x₁) ind i p j = ⊥-elim (UNIVneqTNAT (Bₗ⇛-val-det tt tt j x₁))
+--      ind {u} {w} {A} {B} (EQTTNAT x x₁) ind i p j = ⊥-elim (UNIVneqTNAT (Bₗ⇛-val-det tt tt j x₁))
       ind {u} {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind i p j = ⊥-elim (UNIVneqLT (Bₗ⇛-val-det tt tt j x₁))
       ind {u} {w} {A} {B} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind i p j = ⊥-elim (UNIVneqQLT (Bₗ⇛-val-det tt tt j x₁))
       ind {u} {w} {A} {B} (EQTFREE x x₁) ind i p j = ⊥-elim (UNIVneqFREE (Bₗ⇛-val-det tt tt j x₁))
@@ -3430,9 +3430,9 @@ abstract
             → ({u' : 𝕌} {w' : 𝕎·} {A' B' : CTerm} (eqt' : ≡Types u' w' A' B') → <Type {u'} eqt' {u} eqt
                 → ((u'' : 𝕌) → (u'' ·ₙ) < (u' ·ₙ) → is-TSP-univs (u'' ·ᵤ)) → TSP eqt')
             → ((u' : 𝕌) → (u' ·ₙ) < (u ·ₙ) → is-TSP-univs (u' ·ᵤ)) → TSP eqt
-      ind {u} {w} {A} {B} (EQTNAT x x₁) ind uind = typeSysConds-NAT (u ·ᵤ) w A B x x₁
+--      ind {u} {w} {A} {B} (EQTNAT x x₁) ind uind = typeSysConds-NAT (u ·ᵤ) w A B x x₁
       ind {u} {w} {A} {B} (EQTQNAT x x₁) ind uind = typeSysConds-QNAT (u ·ᵤ) w A B x x₁
-      ind {u} {w} {A} {B} (EQTTNAT x x₁) ind uind = typeSysConds-TNAT (u ·ᵤ) w A B x x₁
+--      ind {u} {w} {A} {B} (EQTTNAT x x₁) ind uind = typeSysConds-TNAT (u ·ᵤ) w A B x x₁
       ind {u} {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind uind = typeSysConds-LT (u ·ᵤ) w A B a1 b1 a2 b2 x x₁ x₂ x₃
       ind {u} {w} {A} {B} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind uind = typeSysConds-QLT (u ·ᵤ) w A B a1 b1 a2 b2 x x₁ x₂ x₃
       ind {u} {w} {A} {B} (EQTFREE x x₁) ind uind = typeSysConds-FREE (u ·ᵤ) w A B x x₁
@@ -3603,7 +3603,7 @@ typeSysConds-aux n ind w A B eqt = typeSysConds-aux-u (ℕ→𝕌 n) ind' w A B 
 typeSysConds-aux : (n : ℕ) (ind : (m : ℕ) → m < n → is-TSP-univs (uni m))
                    (w : 𝕎·) (A B : CTerm) (eqt : eqTypes (uni n) w A B) → TSP eqt
 --{-# TERMINATING #-}
-typeSysConds-aux n ind w A B (EQTNAT x x₁) = typeSysConds-NAT (uni n) w A B x x₁
+--typeSysConds-aux n ind w A B (EQTNAT x x₁) = typeSysConds-NAT (uni n) w A B x x₁
 typeSysConds-aux n ind w A B (EQTQNAT x x₁) = typeSysConds-QNAT (uni n) w A B x x₁
 typeSysConds-aux n ind w A B (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = typeSysConds-LT (uni n) w A B a1 b1 a2 b2 x x₁ x₂ x₃
 typeSysConds-aux n ind w A B (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) = typeSysConds-QLT (uni n) w A B a1 b1 a2 b2 x x₁ x₂ x₃
@@ -3780,7 +3780,7 @@ TEQsym-eqtypes w A B (n , h) = n , TSP.tsym (typeSysConds n w A B h)
 eqTypes-uni-mon-suc : {n : ℕ} {w : 𝕎·} {A B : CTerm}
                       → eqTypes (uni n) w A B
                       → eqTypes (uni (suc n)) w A B
-eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTNAT x x₁) = EQTNAT x x₁
+--eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTNAT x x₁) = EQTNAT x x₁
 eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTQNAT x x₁) = EQTQNAT x x₁
 eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) = EQTLT a1 a2 b1 b2 x x₁ x₂ x₃
 eqTypes-uni-mon-suc {n} {w} {A} {B} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) = EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃
@@ -3866,9 +3866,9 @@ if-equalInType-EQ-test : (u : ℕ) (w : 𝕎·) (T a b t₁ t₂ : CTerm)
                          (eqt : isType u w (#EQ a b T))
                          (eqi : equalTerms u w eqt t₁ t₂)
                          → □· w (λ w' e' → equalInType u w' T a b)
-if-equalInType-EQ-test u w T a b t₁ t₂ (EQTNAT x x₁) eqi = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
+--if-equalInType-EQ-test u w T a b t₁ t₂ (EQTNAT x x₁) eqi = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTQNAT x x₁) eqi = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
-if-equalInType-EQ-test u w T a b t₁ t₂ (EQTTNAT x x₁) eqi = ⊥-elim (EQneqTNAT (compAllVal x₁ tt))
+--if-equalInType-EQ-test u w T a b t₁ t₂ (EQTTNAT x x₁) eqi = ⊥-elim (EQneqTNAT (compAllVal x₁ tt))
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi = ⊥-elim (EQneqLT (compAllVal x₁ tt))
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) eqi = ⊥-elim (EQneqQLT (compAllVal x₁ tt))
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTFREE x x₁) eqi = ⊥-elim (EQneqFREE (compAllVal x₁ tt))
@@ -3998,9 +3998,9 @@ abstract
             → ({u' : ℕ} {w' : 𝕎·} {A' B' : CTerm} (eqt' : equalTypes u' w' A' B') {a' b' : CTerm} (eqi' : equalTerms u' w' eqt' a' b')
                 → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt → A' ≡ #EQ a b T → □· w' (λ w'' e' → equalInType u' w'' T a b))
             → A ≡ #EQ a b T → □· w (λ w' e' → equalInType u w' T a b)
-      ind {u} {w} {A} {B} (EQTNAT x x₁) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqNAT (compAllVal x tt))
+--      ind {u} {w} {A} {B} (EQTNAT x x₁) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqNAT (compAllVal x tt))
       ind {u} {w} {A} {B} (EQTQNAT x x₁) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqQNAT (compAllVal x tt))
-      ind {u} {w} {A} {B} (EQTTNAT x x₁) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqTNAT (compAllVal x tt))
+--      ind {u} {w} {A} {B} (EQTTNAT x x₁) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqTNAT (compAllVal x tt))
       ind {u} {w} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqLT (compAllVal x tt))
       ind {u} {w} {A} {B} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqQLT (compAllVal x tt))
       ind {u} {w} {A} {B} (EQTFREE x x₁) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqFREE (compAllVal x tt))
@@ -4061,9 +4061,9 @@ abstract
 {--
   {-# INLINE □· #-}
 --{-# TERMINATING #-}
-  if-equalInType-EQ u w T a b t₁ t₂ (EQTNAT x x₁ , eqi) = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
+--  if-equalInType-EQ u w T a b t₁ t₂ (EQTNAT x x₁ , eqi) = ⊥-elim (EQneqNAT (compAllVal x₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQTQNAT x x₁ , eqi) = ⊥-elim (EQneqQNAT (compAllVal x₁ tt))
-  if-equalInType-EQ u w T a b t₁ t₂ (EQTTNAT x x₁ , eqi) = ⊥-elim (EQneqTNAT (compAllVal x₁ tt))
+--  if-equalInType-EQ u w T a b t₁ t₂ (EQTTNAT x x₁ , eqi) = ⊥-elim (EQneqTNAT (compAllVal x₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqLT (compAllVal x₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃ , eqi) = ⊥-elim (EQneqQLT (compAllVal x₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQTFREE x x₁ , eqi) = ⊥-elim (EQneqFREE (compAllVal x₁ tt))

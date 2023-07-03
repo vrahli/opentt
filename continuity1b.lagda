@@ -857,9 +857,9 @@ abstract
 
   shiftNameUp-inj : {n : Name} {a b : Term} → shiftNameUp n a ≡ shiftNameUp n b → a ≡ b
   shiftNameUp-inj {n} {VAR x} {VAR x} refl = refl
-  shiftNameUp-inj {n} {NAT} {NAT} e = refl
+--  shiftNameUp-inj {n} {NAT} {NAT} e = refl
   shiftNameUp-inj {n} {QNAT} {QNAT} e = refl
-  shiftNameUp-inj {n} {TNAT} {TNAT} e = refl
+--  shiftNameUp-inj {n} {TNAT} {TNAT} e = refl
   shiftNameUp-inj {n} {LT a a₁} {LT b b₁} e rewrite shiftNameUp-inj (LTinj1 e) | shiftNameUp-inj (LTinj2 e) = refl
   shiftNameUp-inj {n} {QLT a a₁} {QLT b b₁} e rewrite shiftNameUp-inj (QLTinj1 e) | shiftNameUp-inj (QLTinj2 e) = refl
   shiftNameUp-inj {n} {NUM x} {NUM .x} refl = refl
@@ -954,9 +954,9 @@ abstract
 
   fvars-shiftNameDown : (n : ℕ) (a : Term) → fvars (shiftNameDown n a) ≡ fvars a
   fvars-shiftNameDown n (VAR x) = refl
-  fvars-shiftNameDown n NAT = refl
+--  fvars-shiftNameDown n NAT = refl
   fvars-shiftNameDown n QNAT = refl
-  fvars-shiftNameDown n TNAT = refl
+--  fvars-shiftNameDown n TNAT = refl
   fvars-shiftNameDown n (LT a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
   fvars-shiftNameDown n (QLT a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
   fvars-shiftNameDown n (NUM x) = refl
@@ -1041,9 +1041,9 @@ abstract
                     → (0 ∈ names t → 0 < n)
                     → shiftNameUp n (shiftNameDown n t) ≡ t
   shiftNameUpDown n (VAR x) imp1 imp2 = refl
-  shiftNameUpDown n NAT imp1 imp2 = refl
+--  shiftNameUpDown n NAT imp1 imp2 = refl
   shiftNameUpDown n QNAT imp1 imp2 = refl
-  shiftNameUpDown n TNAT imp1 imp2 = refl
+--  shiftNameUpDown n TNAT imp1 imp2 = refl
   shiftNameUpDown n (LT t t₁) imp1 imp2 = ≡LT (shiftNameUpDown n t (λ x i → imp1 x (∈-++⁺ˡ i)) (λ z → imp2 (∈-++⁺ˡ z))) (shiftNameUpDown n t₁ (λ x i → imp1 x (∈-++⁺ʳ (names t) i)) (λ z → imp2 (∈-++⁺ʳ (names t) z)))
   shiftNameUpDown n (QLT t t₁) imp1 imp2 = ≡QLT (shiftNameUpDown n t (λ x i → imp1 x (∈-++⁺ˡ i)) (λ z → imp2 (∈-++⁺ˡ z))) (shiftNameUpDown n t₁ (λ x i → imp1 x (∈-++⁺ʳ (names t) i)) (λ z → imp2 (∈-++⁺ʳ (names t) z)))
   shiftNameUpDown n (NUM x) imp1 imp2 = refl
@@ -1175,9 +1175,9 @@ abstract
             → ¬ n ∈ names t
            → renn n m t ≡ t
   renn¬∈ n m (VAR x) ni = refl
-  renn¬∈ n m NAT ni = refl
+--  renn¬∈ n m NAT ni = refl
   renn¬∈ n m QNAT ni = refl
-  renn¬∈ n m TNAT ni = refl
+--  renn¬∈ n m TNAT ni = refl
   renn¬∈ n m (LT t t₁) ni = ≡LT (renn¬∈ n m t (¬∈++2→¬∈1 {_} {_} {names t} {names t₁} {n} ni)) (renn¬∈ n m t₁ (¬∈++2→¬∈2 {_} {_} {names t} {names t₁} {n} ni))
   renn¬∈ n m (QLT t t₁) ni = ≡QLT (renn¬∈ n m t (¬∈++2→¬∈1 {_} {_} {names t} {names t₁} {n} ni)) (renn¬∈ n m t₁ (¬∈++2→¬∈2 {_} {_} {names t} {names t₁} {n} ni))
   renn¬∈ n m (NUM x) ni = refl

@@ -98,9 +98,9 @@ open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 data updCtxt2 (name : Name) (f : Term) : Term → Set where
   updCtxt2-VAR     : (x : Var) → updCtxt2 name f (VAR x)
-  updCtxt2-NAT     : updCtxt2 name f NAT
+--  updCtxt2-NAT     : updCtxt2 name f NAT
   updCtxt2-QNAT    : updCtxt2 name f QNAT
-  updCtxt2-TNAT    : updCtxt2 name f TNAT
+--  updCtxt2-TNAT    : updCtxt2 name f TNAT
   updCtxt2-LT      : (a b : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f (LT a b)
   updCtxt2-QLT     : (a b : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f (QLT a b)
   updCtxt2-NUM     : (x : ℕ) → updCtxt2 name f (NUM x)
@@ -239,9 +239,9 @@ abstract
                        → updCtxt2 name f a
                        → updCtxt2 name f (shiftUp v a)
   →updCtxt2-shiftUp v {name} {f} cf {.(VAR x)} (updCtxt2-VAR x) = updCtxt2-VAR _
-  →updCtxt2-shiftUp v {name} {f} cf {.NAT} updCtxt2-NAT = updCtxt2-NAT
+--  →updCtxt2-shiftUp v {name} {f} cf {.NAT} updCtxt2-NAT = updCtxt2-NAT
   →updCtxt2-shiftUp v {name} {f} cf {.QNAT} updCtxt2-QNAT = updCtxt2-QNAT
-  →updCtxt2-shiftUp v {name} {f} cf {.TNAT} updCtxt2-TNAT = updCtxt2-TNAT
+--  →updCtxt2-shiftUp v {name} {f} cf {.TNAT} updCtxt2-TNAT = updCtxt2-TNAT
   →updCtxt2-shiftUp v {name} {f} cf {.(LT a b)} (updCtxt2-LT a b upd₁ upd₂) = updCtxt2-LT _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp v cf upd₂)
   →updCtxt2-shiftUp v {name} {f} cf {.(QLT a b)} (updCtxt2-QLT a b upd₁ upd₂) = updCtxt2-QLT _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp v cf upd₂)
   →updCtxt2-shiftUp v {name} {f} cf {.(NUM x)} (updCtxt2-NUM x) = updCtxt2-NUM _
@@ -305,9 +305,9 @@ abstract
                          → updCtxt2 name f a
                          → updCtxt2 name f (shiftDown v a)
   →updCtxt2-shiftDown v {name} {f} cf {.(VAR x)} (updCtxt2-VAR x) = updCtxt2-VAR _
-  →updCtxt2-shiftDown v {name} {f} cf {.NAT} updCtxt2-NAT = updCtxt2-NAT
+--  →updCtxt2-shiftDown v {name} {f} cf {.NAT} updCtxt2-NAT = updCtxt2-NAT
   →updCtxt2-shiftDown v {name} {f} cf {.QNAT} updCtxt2-QNAT = updCtxt2-QNAT
-  →updCtxt2-shiftDown v {name} {f} cf {.TNAT} updCtxt2-TNAT = updCtxt2-TNAT
+--  →updCtxt2-shiftDown v {name} {f} cf {.TNAT} updCtxt2-TNAT = updCtxt2-TNAT
   →updCtxt2-shiftDown v {name} {f} cf {.(LT a b)} (updCtxt2-LT a b upd₁ upd₂) = updCtxt2-LT _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown v cf upd₂)
   →updCtxt2-shiftDown v {name} {f} cf {.(QLT a b)} (updCtxt2-QLT a b upd₁ upd₂) = updCtxt2-QLT _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown v cf upd₂)
   →updCtxt2-shiftDown v {name} {f} cf {.(NUM x)} (updCtxt2-NUM x) = updCtxt2-NUM _
@@ -371,9 +371,9 @@ abstract
                            → updCtxt2 name f a
                            → updCtxt2 (sucIf≤ v name) (shiftNameUp v f) (shiftNameUp v a)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(VAR x)} (updCtxt2-VAR x) = updCtxt2-VAR _
-  →updCtxt2-shiftNameUp v {name} {f} cf {.NAT} updCtxt2-NAT = updCtxt2-NAT
+--  →updCtxt2-shiftNameUp v {name} {f} cf {.NAT} updCtxt2-NAT = updCtxt2-NAT
   →updCtxt2-shiftNameUp v {name} {f} cf {.QNAT} updCtxt2-QNAT = updCtxt2-QNAT
-  →updCtxt2-shiftNameUp v {name} {f} cf {.TNAT} updCtxt2-TNAT = updCtxt2-TNAT
+--  →updCtxt2-shiftNameUp v {name} {f} cf {.TNAT} updCtxt2-TNAT = updCtxt2-TNAT
   →updCtxt2-shiftNameUp v {name} {f} cf {.(LT a b)} (updCtxt2-LT a b upd₁ upd₂) = updCtxt2-LT _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(QLT a b)} (updCtxt2-QLT a b upd₁ upd₂) = updCtxt2-QLT _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(NUM x)} (updCtxt2-NUM x) = updCtxt2-NUM _
@@ -474,9 +474,9 @@ abstract
   updCtxt2-subv {name} {f} cf v {.(VAR x)} {b} (updCtxt2-VAR x) updb with x ≟ v
   ... | yes p = updb
   ... | no p = updCtxt2-VAR _
-  updCtxt2-subv {name} {f} cf v {.NAT} {b} updCtxt2-NAT updb = updCtxt2-NAT
+--  updCtxt2-subv {name} {f} cf v {.NAT} {b} updCtxt2-NAT updb = updCtxt2-NAT
   updCtxt2-subv {name} {f} cf v {.QNAT} {b} updCtxt2-QNAT updb = updCtxt2-QNAT
-  updCtxt2-subv {name} {f} cf v {.TNAT} {b} updCtxt2-TNAT updb = updCtxt2-TNAT
+--  updCtxt2-subv {name} {f} cf v {.TNAT} {b} updCtxt2-TNAT updb = updCtxt2-TNAT
   updCtxt2-subv {name} {f} cf v {.(LT a b₁)} {b} (updCtxt2-LT a b₁ upda upda₁) updb = updCtxt2-LT _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf v upda₁ updb)
   updCtxt2-subv {name} {f} cf v {.(QLT a b₁)} {b} (updCtxt2-QLT a b₁ upda upda₁) updb = updCtxt2-QLT _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf v upda₁ updb)
   updCtxt2-subv {name} {f} cf v {.(NUM x)} {b} (updCtxt2-NUM x) updb = updCtxt2-NUM _
@@ -621,9 +621,9 @@ abstract
                   → ¬ name ∈ names t
                   → updCtxt2 name f t
   updCtxt2-refl name f (VAR x) nn = updCtxt2-VAR _
-  updCtxt2-refl name f NAT nn = updCtxt2-NAT
+--  updCtxt2-refl name f NAT nn = updCtxt2-NAT
   updCtxt2-refl name f QNAT nn = updCtxt2-QNAT
-  updCtxt2-refl name f TNAT nn = updCtxt2-TNAT
+--  updCtxt2-refl name f TNAT nn = updCtxt2-TNAT
   updCtxt2-refl name f (LT t t₁) nn = updCtxt2-LT _ _ (updCtxt2-refl name f t (¬∈++2→¬∈1 nn)) (updCtxt2-refl name f t₁ (¬∈++2→¬∈2 nn))
   updCtxt2-refl name f (QLT t t₁) nn = updCtxt2-QLT _ _ (updCtxt2-refl name f t (¬∈++2→¬∈1 nn)) (updCtxt2-refl name f t₁ (¬∈++2→¬∈2 nn))
   updCtxt2-refl name f (NUM x) nn = updCtxt2-NUM _
@@ -696,9 +696,9 @@ abstract
                            → updCtxt2 (sucIf≤ v name) (shiftNameUp v f) (shiftNameUp v a)
                            → updCtxt2 name f a
   updCtxt2-shiftNameUp→ v {name} {f} cf {VAR x} (updCtxt2-VAR .x) = updCtxt2-VAR _
-  updCtxt2-shiftNameUp→ v {name} {f} cf {NAT} upd = updCtxt2-NAT
+--  updCtxt2-shiftNameUp→ v {name} {f} cf {NAT} upd = updCtxt2-NAT
   updCtxt2-shiftNameUp→ v {name} {f} cf {QNAT} upd = updCtxt2-QNAT
-  updCtxt2-shiftNameUp→ v {name} {f} cf {TNAT} upd = updCtxt2-TNAT
+--  updCtxt2-shiftNameUp→ v {name} {f} cf {TNAT} upd = updCtxt2-TNAT
   updCtxt2-shiftNameUp→ v {name} {f} cf {LT a a₁} (updCtxt2-LT .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-LT _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
   updCtxt2-shiftNameUp→ v {name} {f} cf {QLT a a₁} (updCtxt2-QLT .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-QLT _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
   updCtxt2-shiftNameUp→ v {name} {f} cf {NUM x} upd = updCtxt2-NUM _
@@ -2179,9 +2179,9 @@ abstract
                   → updCtxt2 name f a
                   → updCtxt2 name f (renn n m a)
   updCtxt2-renn name n m f .(VAR x) diff1 diff2 nf cf (updCtxt2-VAR x) = updCtxt2-VAR _
-  updCtxt2-renn name n m f .NAT diff1 diff2 nf cf updCtxt2-NAT = updCtxt2-NAT
+--  updCtxt2-renn name n m f .NAT diff1 diff2 nf cf updCtxt2-NAT = updCtxt2-NAT
   updCtxt2-renn name n m f .QNAT diff1 diff2 nf cf updCtxt2-QNAT = updCtxt2-QNAT
-  updCtxt2-renn name n m f .TNAT diff1 diff2 nf cf updCtxt2-TNAT = updCtxt2-TNAT
+--  updCtxt2-renn name n m f .TNAT diff1 diff2 nf cf updCtxt2-TNAT = updCtxt2-TNAT
   updCtxt2-renn name n m f .(LT a b) diff1 diff2 nf cf (updCtxt2-LT a b upd₁ upd₂) = updCtxt2-LT _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂)
   updCtxt2-renn name n m f .(QLT a b) diff1 diff2 nf cf (updCtxt2-QLT a b upd₁ upd₂) = updCtxt2-QLT _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂)
   updCtxt2-renn name n m f .(NUM x) diff1 diff2 nf cf (updCtxt2-NUM x) = updCtxt2-NUM _

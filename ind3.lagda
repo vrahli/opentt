@@ -137,9 +137,9 @@ equalTypes-refl u w T1 T2 eqt =
           → ({u' : ℕ} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : equalTypes u' w' T1' T2')
                  → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt → equalTypes u' w' T1' T1')
           → equalTypes u w T1 T1
-    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ih = EQTNAT x x
+--    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ih = EQTNAT x x
     ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ih = EQTQNAT x x
-    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ih = EQTTNAT x x
+--    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ih = EQTTNAT x x
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ih = EQTLT a1 a1 b1 b1 x x (strongMonEq-refl x₂) (strongMonEq-refl x₃)
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ih = EQTQLT a1 a1 b1 b1 x x (weakMonEq-refl x₂) (weakMonEq-refl x₃)
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ih = EQTFREE x x

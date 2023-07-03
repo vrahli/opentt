@@ -561,9 +561,9 @@ abstract
                     → updRel2 name f g r a b
                     → updRel2 name f g r' a b
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(VAR x)} {.(VAR x)} {l} {k} sub nad nbd (updRel2-VAR x) = updRel2-VAR x
-  updRel2-ren-mon {name} {f} {g} {r} {r'} {.NAT} {.NAT} {l} {k} sub nad nbd updRel2-NAT = updRel2-NAT
+--  updRel2-ren-mon {name} {f} {g} {r} {r'} {.NAT} {.NAT} {l} {k} sub nad nbd updRel2-NAT = updRel2-NAT
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.QNAT} {.QNAT} {l} {k} sub nad nbd updRel2-QNAT = updRel2-QNAT
-  updRel2-ren-mon {name} {f} {g} {r} {r'} {.TNAT} {.TNAT} {l} {k} sub nad nbd updRel2-TNAT = updRel2-TNAT
+--  updRel2-ren-mon {name} {f} {g} {r} {r'} {.TNAT} {.TNAT} {l} {k} sub nad nbd updRel2-TNAT = updRel2-TNAT
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(LT a₁ b₁)} {.(LT a₂ b₂)} {l} {k} sub nad nbd (updRel2-LT a₁ a₂ b₁ b₂ upd₁ upd₂) = updRel2-LT _ _ _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→1 {names a₁} {names b₁} nad) (++⊆2→1 {names a₂} {names b₂} nbd) upd₁) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→2 {names a₁} {names b₁} nad) (++⊆2→2 {names a₂} {names b₂} nbd) upd₂)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} {l} {k} sub nad nbd (updRel2-QLT a₁ a₂ b₁ b₂ upd₁ upd₂) = updRel2-QLT _ _ _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→1 {names a₁} {names b₁} nad) (++⊆2→1 {names a₂} {names b₂} nbd) upd₁) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→2 {names a₁} {names b₁} nad) (++⊆2→2 {names a₂} {names b₂} nbd) upd₂)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(NUM x)} {.(NUM x)} {l} {k} sub nad nbd (updRel2-NUM x) = updRel2-NUM x
@@ -1338,9 +1338,9 @@ abstract
                   → updRel2 name f g r a b
                   → isValue a
                   → isValue b
-  updRel2-valₗ→ name f g r .NAT .NAT updRel2-NAT isv = isv
+--  updRel2-valₗ→ name f g r .NAT .NAT updRel2-NAT isv = isv
   updRel2-valₗ→ name f g r .QNAT .QNAT updRel2-QNAT isv = isv
-  updRel2-valₗ→ name f g r .TNAT .TNAT updRel2-TNAT isv = isv
+--  updRel2-valₗ→ name f g r .TNAT .TNAT updRel2-TNAT isv = isv
   updRel2-valₗ→ name f g r .(LT a₁ b₁) .(LT a₂ b₂) (updRel2-LT a₁ a₂ b₁ b₂ upd₁ upd₂) isv = isv
   updRel2-valₗ→ name f g r .(QLT a₁ b₁) .(QLT a₂ b₂) (updRel2-QLT a₁ a₂ b₁ b₂ upd₁ upd₂) isv = isv
   updRel2-valₗ→ name f g r .(NUM x) .(NUM x) (updRel2-NUM x) isv = isv

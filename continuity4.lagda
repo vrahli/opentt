@@ -97,9 +97,9 @@ open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 data updRel (name : Name) (f g : Term) : Term → Term → Set where
   updRel-VAR     : (x : Var) → updRel name f g (VAR x) (VAR x)
-  updRel-NAT     : updRel name f g NAT NAT
+--  updRel-NAT     : updRel name f g NAT NAT
   updRel-QNAT    : updRel name f g QNAT QNAT
-  updRel-TNAT    : updRel name f g TNAT TNAT
+--  updRel-TNAT    : updRel name f g TNAT TNAT
   updRel-LT      : (a₁ a₂ b₁ b₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g (LT a₁ b₁) (LT a₂ b₂)
   updRel-QLT     : (a₁ a₂ b₁ b₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g (QLT a₁ b₁) (QLT a₂ b₂)
   updRel-NUM     : (x : ℕ) → updRel name f g (NUM x) (NUM x)
@@ -1338,9 +1338,9 @@ abstract
                    → updRel name f g a b
                    → updRel name f g (shiftUp n a) (shiftUp n b)
   updRel-shiftUp n {name} {f} {g} cf cg {.(VAR x)} {.(VAR x)} (updRel-VAR x) = updRel-VAR _
-  updRel-shiftUp n {name} {f} {g} cf cg {.NAT} {.NAT} updRel-NAT = updRel-NAT
+--  updRel-shiftUp n {name} {f} {g} cf cg {.NAT} {.NAT} updRel-NAT = updRel-NAT
   updRel-shiftUp n {name} {f} {g} cf cg {.QNAT} {.QNAT} updRel-QNAT = updRel-QNAT
-  updRel-shiftUp n {name} {f} {g} cf cg {.TNAT} {.TNAT} updRel-TNAT = updRel-TNAT
+--  updRel-shiftUp n {name} {f} {g} cf cg {.TNAT} {.TNAT} updRel-TNAT = updRel-TNAT
   updRel-shiftUp n {name} {f} {g} cf cg {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updRel-LT a₁ a₂ b₁ b₂ u u₁) = updRel-LT _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
   updRel-shiftUp n {name} {f} {g} cf cg {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updRel-QLT a₁ a₂ b₁ b₂ u u₁) = updRel-QLT _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
   updRel-shiftUp n {name} {f} {g} cf cg {.(NUM x)} {.(NUM x)} (updRel-NUM x) = updRel-NUM _
@@ -1403,9 +1403,9 @@ abstract
                      → updRel name f g a b
                      → updRel name f g (shiftDown n a) (shiftDown n b)
   updRel-shiftDown n {name} {f} {g} cf cg {.(VAR x)} {.(VAR x)} (updRel-VAR x) = updRel-VAR _
-  updRel-shiftDown n {name} {f} {g} cf cg {.NAT} {.NAT} updRel-NAT = updRel-NAT
+--  updRel-shiftDown n {name} {f} {g} cf cg {.NAT} {.NAT} updRel-NAT = updRel-NAT
   updRel-shiftDown n {name} {f} {g} cf cg {.QNAT} {.QNAT} updRel-QNAT = updRel-QNAT
-  updRel-shiftDown n {name} {f} {g} cf cg {.TNAT} {.TNAT} updRel-TNAT = updRel-TNAT
+--  updRel-shiftDown n {name} {f} {g} cf cg {.TNAT} {.TNAT} updRel-TNAT = updRel-TNAT
   updRel-shiftDown n {name} {f} {g} cf cg {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updRel-LT a₁ a₂ b₁ b₂ u u₁) = updRel-LT _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
   updRel-shiftDown n {name} {f} {g} cf cg {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updRel-QLT a₁ a₂ b₁ b₂ u u₁) = updRel-QLT _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
   updRel-shiftDown n {name} {f} {g} cf cg {.(NUM x)} {.(NUM x)} (updRel-NUM x) = updRel-NUM _
@@ -1474,9 +1474,9 @@ abstract
   updRel-subv v {name} {f} {g} cf cg {.(VAR x)} {.(VAR x)} {b₁} {b₂} (updRel-VAR x) ub with x ≟ v
   ... | yes p = ub
   ... | no p = updRel-VAR x
-  updRel-subv v {name} {f} {g} cf cg {.NAT} {.NAT} {b₁} {b₂} updRel-NAT ub = updRel-NAT
+--  updRel-subv v {name} {f} {g} cf cg {.NAT} {.NAT} {b₁} {b₂} updRel-NAT ub = updRel-NAT
   updRel-subv v {name} {f} {g} cf cg {.QNAT} {.QNAT} {b₁} {b₂} updRel-QNAT ub = updRel-QNAT
-  updRel-subv v {name} {f} {g} cf cg {.TNAT} {.TNAT} {b₁} {b₂} updRel-TNAT ub = updRel-TNAT
+--  updRel-subv v {name} {f} {g} cf cg {.TNAT} {.TNAT} {b₁} {b₂} updRel-TNAT ub = updRel-TNAT
   updRel-subv v {name} {f} {g} cf cg {.(LT a₁ b₃)} {.(LT a₂ b₄)} {b₁} {b₂} (updRel-LT a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-LT _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
   updRel-subv v {name} {f} {g} cf cg {.(QLT a₁ b₃)} {.(QLT a₂ b₄)} {b₁} {b₂} (updRel-QLT a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-QLT _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
   updRel-subv v {name} {f} {g} cf cg {.(NUM x)} {.(NUM x)} {b₁} {b₂} (updRel-NUM x) ub = updRel-NUM x
@@ -1711,9 +1711,9 @@ abstract
                     → updRel name f g a b
                     → ¬names b ≡ true
   updRel→¬Names {name} {f} {g} {.(VAR x)} {.(VAR x)} nng (updRel-VAR x) = refl
-  updRel→¬Names {name} {f} {g} {.NAT} {.NAT} nng updRel-NAT = refl
+--  updRel→¬Names {name} {f} {g} {.NAT} {.NAT} nng updRel-NAT = refl
   updRel→¬Names {name} {f} {g} {.QNAT} {.QNAT} nng updRel-QNAT = refl
-  updRel→¬Names {name} {f} {g} {.TNAT} {.TNAT} nng updRel-TNAT = refl
+--  updRel→¬Names {name} {f} {g} {.TNAT} {.TNAT} nng updRel-TNAT = refl
   updRel→¬Names {name} {f} {g} {.(LT a₁ b₁)} {.(LT a₂ b₂)} nng (updRel-LT a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
   updRel→¬Names {name} {f} {g} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} nng (updRel-QLT a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
   updRel→¬Names {name} {f} {g} {.(NUM x)} {.(NUM x)} nng (updRel-NUM x) = refl
@@ -1953,9 +1953,9 @@ abstract
                     → updRel name f g a b
                     → isValue a
                     → isValue b
-  updRel→isValue {name} {f} {g} {.NAT} {.NAT} updRel-NAT isv = tt
+--  updRel→isValue {name} {f} {g} {.NAT} {.NAT} updRel-NAT isv = tt
   updRel→isValue {name} {f} {g} {.QNAT} {.QNAT} updRel-QNAT isv = tt
-  updRel→isValue {name} {f} {g} {.TNAT} {.TNAT} updRel-TNAT isv = tt
+--  updRel→isValue {name} {f} {g} {.TNAT} {.TNAT} updRel-TNAT isv = tt
   updRel→isValue {name} {f} {g} {.(LT a₁ b₁)} {.(LT a₂ b₂)} (updRel-LT a₁ a₂ b₁ b₂ u u₁) isv = tt
   updRel→isValue {name} {f} {g} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (updRel-QLT a₁ a₂ b₁ b₂ u u₁) isv = tt
   updRel→isValue {name} {f} {g} {.(NUM x)} {.(NUM x)} (updRel-NUM x) isv = tt

@@ -52,6 +52,9 @@ FUN a b = PI a (shiftUp 0 b)
 N0 : Term
 N0 = NUM 0
 
+NAT : Term
+NAT = NOREAD QNAT
+
 TRUE : Term
 TRUE = EQ N0 N0 NAT
 
@@ -216,8 +219,8 @@ subv-↑T {i} {suc n} p v a with i <? n
 #QNAT = ct QNAT refl
 
 
-#TNAT : CTerm
-#TNAT = ct TNAT refl
+--#TNAT : CTerm
+--#TNAT = ct TNAT refl
 
 
 #AX : CTerm
@@ -583,9 +586,9 @@ abstract
   fvars-shiftUp≡ n (VAR x) with x <? n
   ... | yes p = refl
   ... | no p = refl
-  fvars-shiftUp≡ n NAT = refl
+--  fvars-shiftUp≡ n NAT = refl
   fvars-shiftUp≡ n QNAT = refl
-  fvars-shiftUp≡ n TNAT = refl
+--  fvars-shiftUp≡ n TNAT = refl
   fvars-shiftUp≡ n (LT t t₁)
     rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftUp≡ n t
@@ -953,9 +956,9 @@ abstract
   fvars-shiftDown≡ n (VAR (suc x)) with suc x <? n
   ... | yes p = refl
   ... | no p = refl
-  fvars-shiftDown≡ n NAT = refl
+--  fvars-shiftDown≡ n NAT = refl
   fvars-shiftDown≡ n QNAT = refl
-  fvars-shiftDown≡ n TNAT = refl
+--  fvars-shiftDown≡ n TNAT = refl
   fvars-shiftDown≡ n (LT t t₁)
     rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
     | fvars-shiftDown≡ n t
@@ -1176,9 +1179,9 @@ abstract
 abstract
   fvars-shiftNameUp : (n : ℕ) (a : Term) → fvars (shiftNameUp n a) ≡ fvars a
   fvars-shiftNameUp n (VAR x) = refl
-  fvars-shiftNameUp n NAT = refl
+--  fvars-shiftNameUp n NAT = refl
   fvars-shiftNameUp n QNAT = refl
-  fvars-shiftNameUp n TNAT = refl
+--  fvars-shiftNameUp n TNAT = refl
   fvars-shiftNameUp n (LT a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
   fvars-shiftNameUp n (QLT a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
   fvars-shiftNameUp n (NUM x) = refl
@@ -1246,9 +1249,9 @@ abstract
   fvars-subv v a (VAR x) i with x ≟ v
   ... | yes _ = i
   fvars-subv v a (VAR x) (here px) | no _ rewrite px = here refl
-  fvars-subv v a NAT i = ⊥-elim (¬∈[] i)
+--  fvars-subv v a NAT i = ⊥-elim (¬∈[] i)
   fvars-subv v a QNAT i = ⊥-elim (¬∈[] i)
-  fvars-subv v a TNAT i = ⊥-elim (¬∈[] i)
+--  fvars-subv v a TNAT i = ⊥-elim (¬∈[] i)
   fvars-subv v a (LT b b₁) i with ∈-++⁻ (fvars (subv v a b)) i
   ... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b p)
   ... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b₁ p)
@@ -1556,9 +1559,9 @@ abstract
   ... |         inj₁ t = ⊥-elim (q (s≤s-inj t))
   ... |         inj₂ t = ⊥-elim (r t)
   shiftDown1-subv1-shiftUp0 n a (VAR x) ca | no p | no q | no r | no s = refl
-  shiftDown1-subv1-shiftUp0 n a NAT ca = refl
+--  shiftDown1-subv1-shiftUp0 n a NAT ca = refl
   shiftDown1-subv1-shiftUp0 n a QNAT ca = refl
-  shiftDown1-subv1-shiftUp0 n a TNAT ca = refl
+--  shiftDown1-subv1-shiftUp0 n a TNAT ca = refl
   shiftDown1-subv1-shiftUp0 n a (LT b b₁) ca
     rewrite shiftDown1-subv1-shiftUp0 n a b ca
             | shiftDown1-subv1-shiftUp0 n a b₁ ca = refl
@@ -2243,14 +2246,14 @@ MAPPinj2 refl = refl
 
 
 -- EQ
-EQneqNAT : {t a b : Term} → ¬ (EQ t a b) ≡ NAT
-EQneqNAT {t} {a} {b} ()
+--EQneqNAT : {t a b : Term} → ¬ (EQ t a b) ≡ NAT
+--EQneqNAT {t} {a} {b} ()
 
 EQneqQNAT : {t a b : Term} → ¬ (EQ t a b) ≡ QNAT
 EQneqQNAT {t} {a} {b} ()
 
-EQneqTNAT : {t a b : Term} → ¬ (EQ t a b) ≡ TNAT
-EQneqTNAT {t} {a} {b} ()
+--EQneqTNAT : {t a b : Term} → ¬ (EQ t a b) ≡ TNAT
+--EQneqTNAT {t} {a} {b} ()
 
 EQneqLT : {t a b : Term} {c d : Term} → ¬ (EQ t a b) ≡ LT c d
 EQneqLT {t} {a} {b} {c} {d} ()
@@ -2441,14 +2444,14 @@ PIinj2 refl =  refl
 #PIinj2 : {a : CTerm} {b : CTerm0} {c : CTerm} {d : CTerm0} → #PI a b ≡ #PI c d → b ≡ d
 #PIinj2 c =  CTerm0≡ (PIinj2 (≡CTerm c))
 
-PIneqNAT : {a b : Term} → ¬ (PI a b) ≡ NAT
-PIneqNAT {a} {b} ()
+--PIneqNAT : {a b : Term} → ¬ (PI a b) ≡ NAT
+--PIneqNAT {a} {b} ()
 
 PIneqQNAT : {a b : Term} → ¬ (PI a b) ≡ QNAT
 PIneqQNAT {a} {b} ()
 
-PIneqTNAT : {a b : Term} → ¬ (PI a b) ≡ TNAT
-PIneqTNAT {a} {b} ()
+--PIneqTNAT : {a b : Term} → ¬ (PI a b) ≡ TNAT
+--PIneqTNAT {a} {b} ()
 
 PIneqLT : {a b : Term} {c d : Term} → ¬ (PI a b) ≡ LT c d
 PIneqLT {a} {b} {c} {d} ()
@@ -2533,6 +2536,7 @@ PIneqUNIV {a} {b} {n} ()
 
 
 
+{-
 -- NAT
 NATneqQNAT : ¬ NAT ≡ QNAT
 NATneqQNAT ()
@@ -2623,14 +2627,15 @@ NATneqSHRINK {c} ()
 
 NATneqUNIV : {n : ℕ} → ¬ NAT ≡ UNIV n
 NATneqUNIV {n} ()
+-}
 
 
 abstract
   shiftUp-inj : {n : ℕ} {a b : Term} → shiftUp n a ≡ shiftUp n b → a ≡ b
   shiftUp-inj {n} {VAR x} {VAR x₁} e = ≡VAR (sucIf≤-inj (VARinj e))
-  shiftUp-inj {n} {NAT} {NAT} e = refl
+--  shiftUp-inj {n} {NAT} {NAT} e = refl
   shiftUp-inj {n} {QNAT} {QNAT} e = refl
-  shiftUp-inj {n} {TNAT} {TNAT} e = refl
+--  shiftUp-inj {n} {TNAT} {TNAT} e = refl
   shiftUp-inj {n} {LT a a₁} {LT b b₁} e rewrite shiftUp-inj (LTinj1 e) | shiftUp-inj (LTinj2 e) = refl
   shiftUp-inj {n} {QLT a a₁} {QLT b b₁} e rewrite shiftUp-inj (QLTinj1 e) | shiftUp-inj (QLTinj2 e) = refl
   shiftUp-inj {n} {NUM x} {NUM .x} refl = refl
@@ -2794,8 +2799,8 @@ FUNinj2 {a} {b} {c} {d} x = shiftUp-inj (PIinj2 x)
 #[0]QNAT = ct0 QNAT refl
 
 
-#[0]TNAT : CTerm0
-#[0]TNAT = ct0 TNAT refl
+--#[0]TNAT : CTerm0
+--#[0]TNAT = ct0 TNAT refl
 
 
 

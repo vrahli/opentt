@@ -73,14 +73,14 @@ open import ind(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 
 \begin{code}[hide]
-FREEneqNAT : ¬ FREE ≡ NAT
-FREEneqNAT ()
+--FREEneqNAT : ¬ FREE ≡ NAT
+--FREEneqNAT ()
 
 FREEneqQNAT : ¬ FREE ≡ QNAT
 FREEneqQNAT ()
 
-FREEneqTNAT : ¬ FREE ≡ TNAT
-FREEneqTNAT ()
+--FREEneqTNAT : ¬ FREE ≡ TNAT
+--FREEneqTNAT ()
 
 FREEneqLT : {c d : Term} → ¬ FREE ≡ LT c d
 FREEneqLT {c} {d} ()
@@ -171,9 +171,9 @@ typeSysConds-FREE-ttrans u w A B x x₁ C eqt = concl x x₁
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (c₁ : A #⇛ #FREE at w') (c₂ : T1' #⇛ #FREE at w') → eqTypes u' w' A T2')
           → (c₁ : A #⇛ #FREE at w) (c₂ : T1 #⇛ #FREE at w) → eqTypes u w A T2
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih c₁ c₂ = ⊥-elim (FREEneqNAT (⇛-val-det tt tt c₂ y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih c₁ c₂ = ⊥-elim (FREEneqNAT (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih c₁ c₂ = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt c₂ y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih c₁ c₂ = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt c₂ y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih c₁ c₂ = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) ih c₁ c₂ = ⊥-elim (FREEneqLT (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) ih c₁ c₂ = ⊥-elim (FREEneqQLT (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih c₁ c₂ = EQTFREE c₁ y₁
@@ -222,9 +222,9 @@ typeSysConds-FREE-extl1 u w A B x x₁ C eqt' =
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (comp : T1' #⇛ #FREE at w') (a b : CTerm) → □· w' (λ w'' _ → FREEeq w'' a b) → eqInType u' w' eqt'' a b)
           → (comp : T1 #⇛ #FREE at w) (a b : CTerm) → □· w (λ w' _ → FREEeq w' a b) → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = eqi
@@ -273,9 +273,9 @@ typeSysConds-FREE-extl2 u w A B x x₁ C eqt' = concl x
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (comp : T2' #⇛ #FREE at w') (a b : CTerm) → □· w' (λ w'' _ → FREEeq w'' a b) → eqInType u' w' eqt'' a b)
           → (comp : T2 #⇛ #FREE at w) (a b : CTerm) → □· w (λ w' _ → FREEeq w' a b) → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) ih comp a b eqi = ⊥-elim (FREEneqLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) ih comp a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = eqi
@@ -324,9 +324,9 @@ typeSysConds-FREE-extr1 u w A B x x₁ C eqt' = concl x₁
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (comp : T2' #⇛ #FREE at w') (a b : CTerm) → □· w' (λ w'' _ → FREEeq w'' a b) → eqInType u' w' eqt'' a b)
           → (comp : T2 #⇛ #FREE at w) (a b : CTerm) → □· w (λ w' _ → FREEeq w' a b) → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₄ x₅) ih comp a b eqi = ⊥-elim (FREEneqLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) ih comp a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = eqi
@@ -374,9 +374,9 @@ typeSysConds-FREE-extr2 u w A B x x₁ C eqt' = concl x₁
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (comp : T1' #⇛ #FREE at w') (a b : CTerm) → □· w' (λ w'' _ → FREEeq w'' a b) → eqInType u' w' eqt'' a b)
           → (comp : T1 #⇛ #FREE at w) (a b : CTerm) → □· w (λ w' _ → FREEeq w' a b) → eqInType u w eqt a b
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = eqi
@@ -424,9 +424,9 @@ typeSysConds-FREE-extrevl1 u w A B x x₁ C eqt' = concl x
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (comp : T1' #⇛ #FREE at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → FREEeq w'' a b))
           → (comp : T1 #⇛ #FREE at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → FREEeq w' a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = eqi
@@ -479,9 +479,9 @@ typeSysConds-FREE-extrevl2 u w A B x x₁ C eqt' = concl x
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (comp : T2' #⇛ #FREE at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → FREEeq w'' a b))
           → (comp : T2 #⇛ #FREE at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → FREEeq w' a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = eqi
@@ -534,9 +534,9 @@ typeSysConds-FREE-extrevr1 u w A B x x₁ C eqt' = concl x₁
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (comp : T2' #⇛ #FREE at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → FREEeq w'' a b))
           → (comp : T2 #⇛ #FREE at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → FREEeq w' a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = eqi
@@ -589,9 +589,9 @@ typeSysConds-FREE-extrevr2 u w A B x x₁ C eqt' = concl x₁
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
                  → <Type eqt'' eqt → (comp : T1' #⇛ #FREE at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → FREEeq w'' a b))
           → (comp : T1 #⇛ #FREE at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → FREEeq w' a b)
-    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqQNAT (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (FREEneqTNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = eqi

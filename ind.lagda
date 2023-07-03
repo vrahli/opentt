@@ -336,13 +336,13 @@ data ≤Type where
            → <Type {u1} eqt1 {u2} eqt2 → ≤Type {u1} eqt1 {u2} eqt2
 
 
-
+{-
 <Type-NAT : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} {eqt : eqTypes u w T1 T2}
             {u' : univs} {w' : 𝕎·} {U1 U2 : CTerm} {x₁ : U1 #⇛ #NAT at w'} {x₂ : U2 #⇛ #NAT at w'}
             → <Type {u} {w} {T1} {T2} eqt {u'} {w'} {U1} {U2} (EQTNAT x₁ x₂) → ⊥
 <Type-NAT {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<Type1 .eqt .(EQTNAT x₁ x₂) ())
 <Type-NAT {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<TypeS .eqt eqt2 .(EQTNAT x₁ x₂) ltt ())
-
+-}
 
 
 <Type-QNAT : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} {eqt : eqTypes u w T1 T2}
@@ -352,15 +352,13 @@ data ≤Type where
 <Type-QNAT {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<TypeS .eqt eqt2 .(EQTQNAT x₁ x₂) ltt ())
 
 
-
+{-
 <Type-TNAT : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} {eqt : eqTypes u w T1 T2}
              {u' : univs} {w' : 𝕎·} {U1 U2 : CTerm} {x₁ : U1 #⇛ #TNAT at w'} {x₂ : U2 #⇛ #TNAT at w'}
              → <Type {u} {w} {T1} {T2} eqt {u'} {w'} {U1} {U2} (EQTTNAT x₁ x₂) → ⊥
 <Type-TNAT {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<Type1 .eqt .(EQTTNAT x₁ x₂) ())
 <Type-TNAT {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<TypeS .eqt eqt2 .(EQTTNAT x₁ x₂) ltt ())
-
-
-
+-}
 
 
 <Type-LT : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} {eqt : eqTypes u w T1 T2}
@@ -676,14 +674,14 @@ ind<Type-aux : {L : Level} (P : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} → eqT
                   → ≤Type {u'} eqt' {u} eqt → P eqt'
 {-# TERMINATING #-}
 -- NAT
-ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNAT x x₁) {.u} {.w} {.T1} {.T2} .(EQTNAT x x₁) (≤Type0 .(EQTNAT x x₁)) = ind (EQTNAT x x₁) λ eqt' ltt' → ⊥-elim (<Type-NAT ltt')
-ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNAT x x₁) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTNAT x x₁) x₂) = ⊥-elim (<Type-NAT x₂)
+--ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNAT x x₁) {.u} {.w} {.T1} {.T2} .(EQTNAT x x₁) (≤Type0 .(EQTNAT x x₁)) = ind (EQTNAT x x₁) λ eqt' ltt' → ⊥-elim (<Type-NAT ltt')
+--ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNAT x x₁) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTNAT x x₁) x₂) = ⊥-elim (<Type-NAT x₂)
 -- QNAT
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTQNAT x x₁) {.u} {.w} {.T1} {.T2} .(EQTQNAT x x₁) (≤Type0 .(EQTQNAT x x₁)) = ind (EQTQNAT x x₁) λ eqt' ltt' → ⊥-elim (<Type-QNAT ltt')
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTQNAT x x₁) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTQNAT x x₁) x₂) = ⊥-elim (<Type-QNAT x₂)
 -- TNAT
-ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTTNAT x x₁) {.u} {.w} {.T1} {.T2} .(EQTTNAT x x₁) (≤Type0 .(EQTTNAT x x₁)) = ind (EQTTNAT x x₁) λ eqt' ltt' → ⊥-elim (<Type-TNAT ltt')
-ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTTNAT x x₁) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTTNAT x x₁) x₂) = ⊥-elim (<Type-TNAT x₂)
+--ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTTNAT x x₁) {.u} {.w} {.T1} {.T2} .(EQTTNAT x x₁) (≤Type0 .(EQTTNAT x x₁)) = ind (EQTTNAT x x₁) λ eqt' ltt' → ⊥-elim (<Type-TNAT ltt')
+--ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTTNAT x x₁) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTTNAT x x₁) x₂) = ⊥-elim (<Type-TNAT x₂)
 -- LT
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) {.u} {.w} {.T1} {.T2} .(EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) (≤Type0 .(EQTLT a1 a2 b1 b2 x x₁ x₂ x₃)) = ind (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) λ eqt' ltt' → ⊥-elim (<Type-LT ltt')
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) x₄) = ⊥-elim (<Type-LT x₄)
@@ -1095,9 +1093,9 @@ ind<Type {L} P {--irr--} ind {u} {w0} {X1} {X2} eqt =
     indLtt : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
              {u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : eqTypes u' w' T1' T2')
              → <Type {u'} eqt' {u} eqt → P eqt'
-    indLtt {u} {w} {T1} {T2} (EQTNAT x x₁) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-NAT ltt)
+--    indLtt {u} {w} {T1} {T2} (EQTNAT x x₁) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-NAT ltt)
     indLtt {u} {w} {T1} {T2} (EQTQNAT x x₁) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-QNAT ltt)
-    indLtt {u} {w} {T1} {T2} (EQTTNAT x x₁) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-TNAT ltt)
+--    indLtt {u} {w} {T1} {T2} (EQTTNAT x x₁) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-TNAT ltt)
     indLtt {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-LT ltt)
     indLtt {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-QLT ltt)
     indLtt {u} {w} {T1} {T2} (EQTFREE x x₁) {u'} {w'} {T1'} {T2'} eqt' ltt = ⊥-elim (<Type-FREE ltt)

@@ -293,9 +293,9 @@ abstract
                 → step t w1 ≡ just (x , w2)
                 → updSeqStepInd r s n x w2
                 → updSeqStep w1 w2 r s n u x
-  updSeq-step cn gc w1 w2 r s n .NAT .NAT u updSeq-NAT gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , NAT , NAT , w1 , refl , refl , updSeq-NAT
+--  updSeq-step cn gc w1 w2 r s n .NAT .NAT u updSeq-NAT gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , NAT , NAT , w1 , refl , refl , updSeq-NAT
   updSeq-step cn gc w1 w2 r s n .QNAT .QNAT u updSeq-QNAT gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , QNAT , QNAT , w1 , refl , refl , updSeq-QNAT
-  updSeq-step cn gc w1 w2 r s n .TNAT .TNAT u updSeq-TNAT gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TNAT , TNAT , w1 , refl , refl , updSeq-TNAT
+--  updSeq-step cn gc w1 w2 r s n .TNAT .TNAT u updSeq-TNAT gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TNAT , TNAT , w1 , refl , refl , updSeq-TNAT
   updSeq-step cn gc w1 w2 r s n .(LT a₁ b₁) .(LT a₂ b₂) u (updSeq-LT a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , LT a₁ b₁ , LT a₂ b₂ , w1 , refl , refl , updSeq-LT a₁ a₂ b₁ b₂ upd₁ upd₂
   updSeq-step cn gc w1 w2 r s n .(QLT a₁ b₁) .(QLT a₂ b₂) u (updSeq-QLT a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , QLT a₁ b₁ , QLT a₂ b₂ , w1 , refl , refl , updSeq-QLT a₁ a₂ b₁ b₂ upd₁ upd₂
   updSeq-step cn gc w1 w2 r s n .(NUM x) .(NUM x) u (updSeq-NUM x) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , NUM x , NUM x , w1 , refl , refl , updSeq-NUM x
@@ -620,9 +620,9 @@ abstract
                 → ¬names a ≡ true
                 → updSeq r s n a a
   updSeq-refl {r} {s} {n} {VAR x} nn = updSeq-VAR _
-  updSeq-refl {r} {s} {n} {NAT} nn = updSeq-NAT
+--  updSeq-refl {r} {s} {n} {NAT} nn = updSeq-NAT
   updSeq-refl {r} {s} {n} {QNAT} nn = updSeq-QNAT
-  updSeq-refl {r} {s} {n} {TNAT} nn = updSeq-TNAT
+--  updSeq-refl {r} {s} {n} {TNAT} nn = updSeq-TNAT
   updSeq-refl {r} {s} {n} {LT a a₁} nn = updSeq-LT _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   updSeq-refl {r} {s} {n} {QLT a a₁} nn = updSeq-QLT _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   updSeq-refl {r} {s} {n} {NUM x} nn = updSeq-NUM _

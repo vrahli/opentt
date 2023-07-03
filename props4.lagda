@@ -353,9 +353,9 @@ abstract
             → ({u' : ℕ} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : equalTypes u' w' T1' T2') {v₁' v₂' : CTerm} (eqi' : equalTerms u' w' eqt' v₁' v₂')
                 → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt → a #⇛ #NUM m at w' → b #⇛ #NUM n at w' → T1' ≡ #LT a b → T2' ≡ #LT a b → m < n)
             → a #⇛ #NUM m at w → b #⇛ #NUM n at w → T1 ≡ #LT a b → T2 ≡ #LT a b → m < n
-      ind {u} {w} {T1} {T2} (EQTNAT x x₁) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqNAT (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTNAT x x₁) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqNAT (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTQNAT x x₁) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqQNAT (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTTNAT x x₁) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqTNAT (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTTNAT x x₁) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (LTneqTNAT (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) {v₁} {v₂} eqi ind compa compb eq1 eq2 rewrite eq1 | eq2 =
         lower (Mod.□-const M {w} (Mod.∀𝕎-□Func M aw h))
         where
@@ -412,13 +412,13 @@ abstract
                     → □· w (λ w' _ → #⇛!sameℕ w' a b)
                     → equalInType i w #NAT! a b
 →equalInType-NAT! i w a b eqi =
-  isTypeNAT! ,
-  Mod.∀𝕎-□Func M aw eqi
+  →equalInTypeNOWRITE (Mod.∀𝕎-□Func M aw eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' a b
-                       → NOWRITEeq (λ t1 t2 → □· w' (λ w'' _ → #strongMonEq w'' t1 t2)) w' a b)
+                       → NOWRITEeq (equalInType i w' (ct (NOREAD QNAT) refl)) w' a b)
     aw w1 e1 (n , c₁ , c₂) =
-      Mod.∀𝕎-□ M (λ w2 e2 → n , #⇛!-#⇛ {w2} {a} {#NUM n} (∀𝕎-mon e2 c₁) , #⇛!-#⇛ {w2} {b} {#NUM n} (∀𝕎-mon e2 c₂)) ,
+      →equalInType-NAT i w1 a b
+        (Mod.∀𝕎-□ M (λ w2 e2 → n , #⇛!-#⇛ {w2} {a} {#NUM n} (∀𝕎-mon e2 c₁) , #⇛!-#⇛ {w2} {b} {#NUM n} (∀𝕎-mon e2 c₂))) ,
       #⇛!-pres-#⇓→#⇓!-rev {w1} {#NUM n} {a} c₁ (#⇓→#⇓!-NUM w1 n) ,
       #⇛!-pres-#⇓→#⇓!-rev {w1} {#NUM n} {b} c₂ (#⇓→#⇓!-NUM w1 n)
 
@@ -457,9 +457,9 @@ abstract
                 → □· w' (λ w'' _ → weq (equalInType u' w'' A) (λ a₁ b₁ eqa → equalInType u' w'' (sub0 a₁ B)) w'' t₁' t₂'))
             → T1 ≡ #WT A B → T2 ≡ #WT A B
             → □· w (λ w' _ → weq (equalInType u w' A) (λ a₁ b₁ eqa → equalInType u w' (sub0 a₁ B)) w' t₁ t₂)
-      ind {u} {w} {T1} {T2} (EQTNAT x x₁) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqNAT (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTNAT x x₁) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqNAT (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTQNAT x x₁) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqQNAT (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTTNAT x x₁) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqTNAT (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTTNAT x x₁) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqTNAT (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqLT (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqQLT (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTFREE x x₁) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (WneqFREE (compAllVal x tt))
@@ -525,9 +525,9 @@ abstract
                 → □· w' (λ w'' _ → meq (equalInType u' w'' A) (λ a₁ b₁ eqa → equalInType u' w'' (sub0 a₁ B)) w'' t₁' t₂'))
             → T1 ≡ #MT A B → T2 ≡ #MT A B
             → □· w (λ w' _ → meq (equalInType u w' A) (λ a₁ b₁ eqa → equalInType u w' (sub0 a₁ B)) w' t₁ t₂)
-      ind {u} {w} {T1} {T2} (EQTNAT x x₁) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqNAT (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTNAT x x₁) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqNAT (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTQNAT x x₁) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqQNAT (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTTNAT x x₁) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqTNAT (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTTNAT x x₁) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqTNAT (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqLT (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqQLT (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTFREE x x₁) {t₁} {t₂} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (MneqFREE (compAllVal x tt))

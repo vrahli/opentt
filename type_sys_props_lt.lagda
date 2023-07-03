@@ -74,14 +74,14 @@ open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 
 \begin{code}[hide]
-LTneqNAT : {u v : Term} → ¬ LT u v ≡ NAT
-LTneqNAT {u} {v} ()
+--LTneqNAT : {u v : Term} → ¬ LT u v ≡ NAT
+--LTneqNAT {u} {v} ()
 
 LTneqQNAT : {u v : Term} → ¬ LT u v ≡ QNAT
 LTneqQNAT {u} {v} ()
 
-LTneqTNAT : {u v : Term} → ¬ LT u v ≡ TNAT
-LTneqTNAT {u} {v} ()
+--LTneqTNAT : {u v : Term} → ¬ LT u v ≡ TNAT
+--LTneqTNAT {u} {v} ()
 
 LTneqQLT : {u v : Term} {c d : Term} → ¬ LT u v ≡ QLT c d
 LTneqQLT {u} {v} {c} {d} ()
@@ -167,9 +167,9 @@ typeSysConds-LT-ttrans : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
                          (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
                          → eqTypesTrans u w A B
 {-# TERMINATING #-}
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y))
+--typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y))
+--typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅)
   rewrite LTinj1 (⇛-val-det tt tt y x₁)
         | LTinj2 (⇛-val-det tt tt y x₁)
@@ -225,9 +225,9 @@ typeSysConds-LT-extl1 : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
                           (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
                           → eqInTypeExtL1 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
 {-# TERMINATING #-}
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x y))
+--typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x y))
 typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x y))
+--typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x y))
 typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi
   rewrite LTinj1 (⇛-val-det tt tt y x)
         | LTinj2 (⇛-val-det tt tt y x) = eqi
@@ -309,9 +309,9 @@ typeSysConds-LT-extl2 : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
                           (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
                           → eqInTypeExtL2 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
 {-# TERMINATING #-}
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x y₁))
+--typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x y₁))
+--typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi
   rewrite LTinj1 (⇛-val-det tt tt y₁ x)
         | LTinj2 (⇛-val-det tt tt y₁ x)
@@ -366,9 +366,9 @@ typeSysConds-LT-extr1 : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
                            (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
                          → eqInTypeExtR1 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
 {-# TERMINATING #-}
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y₁))
+--typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y₁))
+--typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi
   rewrite LTinj1 (⇛-val-det tt tt y₁ x₁)
         | LTinj2 (⇛-val-det tt tt y₁ x₁)
@@ -423,9 +423,9 @@ typeSysConds-LT-extr2 : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
                            (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
                          → eqInTypeExtR2 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
 {-# TERMINATING #-}
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y))
+--typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y))
+--typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi
   rewrite LTinj1 (⇛-val-det tt tt y x₁)
         | LTinj2 (⇛-val-det tt tt y x₁)
@@ -480,9 +480,9 @@ typeSysConds-LT-extrevl1 : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
                            (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
                            → eqInTypeExtRevL1 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
 {-# TERMINATING #-}
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x y))
+--typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x y))
 typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x y))
+--typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x y))
 typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi
   rewrite LTinj1 (⇛-val-det tt tt y x)
         | LTinj2 (⇛-val-det tt tt y x)
@@ -543,9 +543,9 @@ typeSysConds-LT-extrevl2 : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
                            (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
                            → eqInTypeExtRevL2 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
 {-# TERMINATING #-}
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x y₁))
+--typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x y₁))
+--typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x y₁))
 typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi
   rewrite LTinj1 (⇛-val-det tt tt y₁ x)
         | LTinj2 (⇛-val-det tt tt y₁ x)
@@ -607,9 +607,9 @@ typeSysConds-LT-extrevr1 : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
                            (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
                             → eqInTypeExtRevR1 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
 {-# TERMINATING #-}
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y₁))
+--typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y₁))
+--typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi
   rewrite LTinj1 (⇛-val-det tt tt y₁ x₁)
         | LTinj2 (⇛-val-det tt tt y₁ x₁)
@@ -670,9 +670,9 @@ typeSysConds-LT-extrevr2 : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
                            (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
                            → eqInTypeExtRevR2 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
 {-# TERMINATING #-}
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y))
+--typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y))
+--typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y))
 typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi
   rewrite LTinj1 (⇛-val-det tt tt y x₁)
         | LTinj2 (⇛-val-det tt tt y x₁)
@@ -735,9 +735,9 @@ eqInType-⇛-LT : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 a b : CTerm)
                  → eqInType u w eqt a b
                  → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
 {-# TERMINATING #-}
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (LTneqNAT (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (LTneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (LTneqQNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTTNAT x x₁) ei = ⊥-elim (LTneqTNAT (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTTNAT x x₁) ei = ⊥-elim (LTneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTLT c1 c2 d1 d2 x x₁ x₂ x₃) ei
   rewrite LTinj1 (⇛-val-det tt tt x c₁)
         | LTinj2 (⇛-val-det tt tt x c₁) = ei
@@ -792,9 +792,9 @@ eqInType-⇛-LT-rev : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 a b : CTerm)
                      → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
                      → eqInType u w eqt a b
 {-# TERMINATING #-}
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (LTneqNAT (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (LTneqNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (LTneqQNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTTNAT x x₁) ei = ⊥-elim (LTneqTNAT (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTTNAT x x₁) ei = ⊥-elim (LTneqTNAT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTLT c1 c2 d1 d2 x x₁ x₂ x₃) ei
   rewrite LTinj1 (⇛-val-det tt tt x c₁)
         | LTinj2 (⇛-val-det tt tt x c₁) = ei
