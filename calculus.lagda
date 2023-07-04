@@ -107,8 +107,8 @@ data Term : Set where
   -- Truncation
   TSQUASH : Term → Term -- closed under ∼C -- time-squashing, i.e., to constrain type to readable types
 --  TTRUNC : Term → Term  -- closed under #⇓
-  NOWRITE  : Term → Term -- satisfy #⇓→#⇓! -- essentially a no-write modality
-  NOREAD  : Term → Term -- currently the default
+  NOWRITE  : Term -- satisfy #⇓→#⇓! -- essentially a no-write modality
+  NOREAD  : Term -- currently the default
   SUBSING : Term → Term
   -- Dummy
   DUM : Term → Term
@@ -175,8 +175,8 @@ value? (CHOOSE _ _) = false -- Not a value
 --value? (IFC0 _ _ _) = false -- Not a value
 value? (TSQUASH _) = true
 --value? (TTRUNC _) = true
-value? (NOWRITE _) = true
-value? (NOREAD _) = true
+value? NOWRITE = true
+value? NOREAD = true
 value? (SUBSING _) = true
 value? (DUM _) = true
 value? (FFDEFS _ _) = true
@@ -319,8 +319,8 @@ fvars (CHOOSE a b)     = fvars a ++ fvars b
 --fvars (IFC0 a b c)     = fvars a ++ fvars b ++ fvars c
 fvars (TSQUASH t)      = fvars t
 --fvars (TTRUNC t)       = fvars t
-fvars (NOWRITE t)       = fvars t
-fvars (NOREAD t)       = fvars t
+fvars NOWRITE          = []
+fvars NOREAD           = []
 fvars (SUBSING t)      = fvars t
 fvars (DUM t)          = fvars t
 fvars (FFDEFS t t₁)    = fvars t ++ fvars t₁
@@ -487,8 +487,8 @@ shiftUp c (CHOOSE a b) = CHOOSE (shiftUp c a) (shiftUp c b)
 --shiftUp c (IFC0 a t₁ t₂) = IFC0 (shiftUp c a) (shiftUp c t₁) (shiftUp c t₂)
 shiftUp c (TSQUASH t) = TSQUASH (shiftUp c t)
 --shiftUp c (TTRUNC t) = TTRUNC (shiftUp c t)
-shiftUp c (NOWRITE t) = NOWRITE (shiftUp c t)
-shiftUp c (NOREAD t) = NOREAD (shiftUp c t)
+shiftUp c NOWRITE = NOWRITE
+shiftUp c NOREAD  = NOREAD
 shiftUp c (SUBSING t) = SUBSING (shiftUp c t)
 shiftUp c (DUM t) = DUM (shiftUp c t)
 shiftUp c (FFDEFS t t₁) = FFDEFS (shiftUp c t) (shiftUp c t₁)
@@ -550,8 +550,8 @@ shiftDown c (CHOOSE a b) = CHOOSE (shiftDown c a) (shiftDown c b)
 --shiftDown c (IFC0 a t₁ t₂) = IFC0 (shiftDown c a) (shiftDown c t₁) (shiftDown c t₂)
 shiftDown c (TSQUASH t) = TSQUASH (shiftDown c t)
 --shiftDown c (TTRUNC t) = TTRUNC (shiftDown c t)
-shiftDown c (NOWRITE t) = NOWRITE (shiftDown c t)
-shiftDown c (NOREAD t) = NOREAD (shiftDown c t)
+shiftDown c NOWRITE = NOWRITE
+shiftDown c NOREAD  = NOREAD
 shiftDown c (SUBSING t) = SUBSING (shiftDown c t)
 shiftDown c (DUM t) = DUM (shiftDown c t)
 shiftDown c (FFDEFS t t₁) = FFDEFS (shiftDown c t) (shiftDown c t₁)
@@ -613,8 +613,8 @@ shiftNameUp c (CHOOSE a b) = CHOOSE (shiftNameUp c a) (shiftNameUp c b)
 --shiftNameUp c (IFC0 a t₁ t₂) = IFC0 (shiftNameUp c a) (shiftNameUp c t₁) (shiftNameUp c t₂)
 shiftNameUp c (TSQUASH t) = TSQUASH (shiftNameUp c t)
 --shiftNameUp c (TTRUNC t) = TTRUNC (shiftNameUp c t)
-shiftNameUp c (NOWRITE t) = NOWRITE (shiftNameUp c t)
-shiftNameUp c (NOREAD t) = NOREAD (shiftNameUp c t)
+shiftNameUp c NOWRITE = NOWRITE
+shiftNameUp c NOREAD  = NOREAD
 shiftNameUp c (SUBSING t) = SUBSING (shiftNameUp c t)
 shiftNameUp c (DUM t) = DUM (shiftNameUp c t)
 shiftNameUp c (FFDEFS t t₁) = FFDEFS (shiftNameUp c t) (shiftNameUp c t₁)
@@ -676,8 +676,8 @@ shiftNameDown c (CHOOSE a b) = CHOOSE (shiftNameDown c a) (shiftNameDown c b)
 --shiftNameDown c (IFC0 a t₁ t₂) = IFC0 (shiftNameDown c a) (shiftNameDown c t₁) (shiftNameDown c t₂)
 shiftNameDown c (TSQUASH t) = TSQUASH (shiftNameDown c t)
 --shiftNameDown c (TTRUNC t) = TTRUNC (shiftNameDown c t)
-shiftNameDown c (NOWRITE t) = NOWRITE (shiftNameDown c t)
-shiftNameDown c (NOREAD t) = NOREAD (shiftNameDown c t)
+shiftNameDown c NOWRITE = NOWRITE
+shiftNameDown c NOREAD  = NOREAD
 shiftNameDown c (SUBSING t) = SUBSING (shiftNameDown c t)
 shiftNameDown c (DUM t) = DUM (shiftNameDown c t)
 shiftNameDown c (FFDEFS t t₁) = FFDEFS (shiftNameDown c t) (shiftNameDown c t₁)
@@ -746,8 +746,8 @@ names (CHOOSE a b)     = names a ++ names b
 --names (IFC0 a b c)     = names a ++ names b ++ names c
 names (TSQUASH t)      = names t
 --names (TTRUNC t)       = names t
-names (NOWRITE t)       = names t
-names (NOREAD t)       = names t
+names NOWRITE          = []
+names NOREAD           = []
 names (SUBSING t)      = names t
 names (DUM t)          = names t
 names (FFDEFS t t₁)    = names t ++ names t₁
@@ -812,8 +812,8 @@ subv v t (CHOOSE a b) = CHOOSE (subv v t a) (subv v t b)
 --subv v t (IFC0 a t₁ t₂) = IFC0 (subv v t a) (subv v t t₁) (subv v t t₂)
 subv v t (TSQUASH u) = TSQUASH (subv v t u)
 --subv v t (TTRUNC u) = TTRUNC (subv v t u)
-subv v t (NOWRITE u) = NOWRITE (subv v t u)
-subv v t (NOREAD u) = NOREAD (subv v t u)
+subv v t NOWRITE = NOWRITE
+subv v t NOREAD  = NOREAD
 subv v t (SUBSING u) = SUBSING (subv v t u)
 subv v t (DUM u) = DUM (subv v t u)
 subv v t (FFDEFS u u₁) = FFDEFS (subv v t u) (subv v t u₁)
@@ -885,8 +885,8 @@ renn v t (CHOOSE a b) = CHOOSE (renn v t a) (renn v t b)
 --renn v t (IFC0 a t₁ t₂) = IFC0 (renn v t a) (renn v t t₁) (renn v t t₂)
 renn v t (TSQUASH u) = TSQUASH (renn v t u)
 --renn v t (TTRUNC u) = TTRUNC (renn v t u)
-renn v t (NOWRITE u) = NOWRITE (renn v t u)
-renn v t (NOREAD u) = NOREAD (renn v t u)
+renn v t NOWRITE = NOWRITE
+renn v t NOREAD  = NOREAD
 renn v t (SUBSING u) = SUBSING (renn v t u)
 renn v t (DUM u) = DUM (renn v t u)
 renn v t (FFDEFS u u₁) = FFDEFS (renn v t u) (renn v t u₁)
@@ -1050,10 +1050,8 @@ abstract
     rewrite subvNotIn v t u n = refl
 {-  subvNotIn v t (TTRUNC u) n
     rewrite subvNotIn v t u n = refl-}
-  subvNotIn v t (NOWRITE u) n
-    rewrite subvNotIn v t u n = refl
-  subvNotIn v t (NOREAD u) n
-    rewrite subvNotIn v t u n = refl
+  subvNotIn v t NOWRITE n = refl
+  subvNotIn v t NOREAD  n = refl
   subvNotIn v t (SUBSING u) n
     rewrite subvNotIn v t u n = refl
   subvNotIn v t (DUM u) n
@@ -1213,10 +1211,8 @@ abstract
     rewrite shiftDownTrivial v u i = refl
 {-  shiftDownTrivial v (TTRUNC u) i
     rewrite shiftDownTrivial v u i = refl-}
-  shiftDownTrivial v (NOWRITE u) i
-    rewrite shiftDownTrivial v u i = refl
-  shiftDownTrivial v (NOREAD u) i
-    rewrite shiftDownTrivial v u i = refl
+  shiftDownTrivial v NOWRITE i = refl
+  shiftDownTrivial v NOREAD  i = refl
   shiftDownTrivial v (SUBSING u) i
     rewrite shiftDownTrivial v u i = refl
   shiftDownTrivial v (DUM u) i
@@ -1359,10 +1355,8 @@ abstract
     rewrite shiftUpTrivial v u i = refl
 {-  shiftUpTrivial v (TTRUNC u) i
     rewrite shiftUpTrivial v u i = refl-}
-  shiftUpTrivial v (NOWRITE u) i
-    rewrite shiftUpTrivial v u i = refl
-  shiftUpTrivial v (NOREAD u) i
-    rewrite shiftUpTrivial v u i = refl
+  shiftUpTrivial v NOWRITE i = refl
+  shiftUpTrivial v NOREAD  i = refl
   shiftUpTrivial v (SUBSING u) i
     rewrite shiftUpTrivial v u i = refl
   shiftUpTrivial v (DUM u) i
@@ -1447,8 +1441,8 @@ abstract
   --shiftDownUp (IFC0 t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n = refl
   shiftDownUp (TSQUASH t) n rewrite shiftDownUp t n = refl
 --  shiftDownUp (TTRUNC t) n rewrite shiftDownUp t n = refl
-  shiftDownUp (NOWRITE t) n rewrite shiftDownUp t n = refl
-  shiftDownUp (NOREAD t) n rewrite shiftDownUp t n = refl
+  shiftDownUp NOWRITE n = refl
+  shiftDownUp NOREAD  n = refl
   shiftDownUp (SUBSING t) n rewrite shiftDownUp t n = refl
   shiftDownUp (DUM t) n rewrite shiftDownUp t n = refl
   shiftDownUp (FFDEFS t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
@@ -1510,8 +1504,8 @@ is-NUM (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-NUM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-NUM (TSQUASH t) = inj₂ (λ { n () })
 --is-NUM (TTRUNC t) = inj₂ (λ { n () })
-is-NUM (NOWRITE t) = inj₂ (λ { n () })
-is-NUM (NOREAD t) = inj₂ (λ { n () })
+is-NUM NOWRITE = inj₂ (λ { n () })
+is-NUM NOREAD  = inj₂ (λ { n () })
 is-NUM (SUBSING t) = inj₂ (λ { n () })
 is-NUM (DUM t) = inj₂ (λ { n () })
 is-NUM (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -1573,8 +1567,8 @@ is-LAM (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-LAM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-LAM (TSQUASH t) = inj₂ (λ { n () })
 --is-LAM (TTRUNC t) = inj₂ (λ { n () })
-is-LAM (NOWRITE t) = inj₂ (λ { n () })
-is-LAM (NOREAD t) = inj₂ (λ { n () })
+is-LAM NOWRITE = inj₂ (λ { n () })
+is-LAM NOREAD  = inj₂ (λ { n () })
 is-LAM (SUBSING t) = inj₂ (λ { n () })
 is-LAM (DUM t) = inj₂ (λ { n () })
 is-LAM (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -1636,8 +1630,8 @@ is-CS (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-CS (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-CS (TSQUASH t) = inj₂ (λ { n () })
 --is-CS (TTRUNC t) = inj₂ (λ { n () })
-is-CS (NOWRITE t) = inj₂ (λ { n () })
-is-CS (NOREAD t) = inj₂ (λ { n () })
+is-CS NOWRITE = inj₂ (λ { n () })
+is-CS NOREAD  = inj₂ (λ { n () })
 is-CS (SUBSING t) = inj₂ (λ { n () })
 is-CS (DUM t) = inj₂ (λ { n () })
 is-CS (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -1699,8 +1693,8 @@ is-NAME (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-NAME (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-NAME (TSQUASH t) = inj₂ (λ { n () })
 --is-NAME (TTRUNC t) = inj₂ (λ { n () })
-is-NAME (NOWRITE t) = inj₂ (λ { n () })
-is-NAME (NOREAD t) = inj₂ (λ { n () })
+is-NAME NOWRITE = inj₂ (λ { n () })
+is-NAME NOREAD  = inj₂ (λ { n () })
 is-NAME (SUBSING t) = inj₂ (λ { n () })
 is-NAME (DUM t) = inj₂ (λ { n () })
 is-NAME (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -1762,8 +1756,8 @@ is-MSEQ (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-MSEQ (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-MSEQ (TSQUASH t) = inj₂ (λ { n () })
 --is-MSEQ (TTRUNC t) = inj₂ (λ { n () })
-is-MSEQ (NOWRITE t) = inj₂ (λ { n () })
-is-MSEQ (NOREAD t) = inj₂ (λ { n () })
+is-MSEQ NOWRITE = inj₂ (λ { n () })
+is-MSEQ NOREAD  = inj₂ (λ { n () })
 is-MSEQ (SUBSING t) = inj₂ (λ { n () })
 is-MSEQ (DUM t) = inj₂ (λ { n () })
 is-MSEQ (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -1825,8 +1819,8 @@ is-PAIR (CHOOSE t t₁) = inj₂ (λ { n m () })
 --is-PAIR (IFC0 t t₁ t₂) = inj₂ (λ { n m () })
 is-PAIR (TSQUASH t) = inj₂ (λ { n m () })
 --is-PAIR (TTRUNC t) = inj₂ (λ { n m () })
-is-PAIR (NOWRITE t) = inj₂ (λ { n m () })
-is-PAIR (NOREAD t) = inj₂ (λ { n m () })
+is-PAIR NOWRITE = inj₂ (λ { n m () })
+is-PAIR NOREAD  = inj₂ (λ { n m () })
 is-PAIR (SUBSING t) = inj₂ (λ { n m () })
 is-PAIR (DUM t) = inj₂ (λ { n m () })
 is-PAIR (FFDEFS t t₁) = inj₂ (λ { n m () })
@@ -1888,8 +1882,8 @@ is-SUP (CHOOSE t t₁) = inj₂ (λ { n m () })
 --is-SUP (IFC0 t t₁ t₂) = inj₂ (λ { n m () })
 is-SUP (TSQUASH t) = inj₂ (λ { n m () })
 --is-SUP (TTRUNC t) = inj₂ (λ { n m () })
-is-SUP (NOWRITE t) = inj₂ (λ { n m () })
-is-SUP (NOREAD t) = inj₂ (λ { n m () })
+is-SUP NOWRITE = inj₂ (λ { n m () })
+is-SUP NOREAD  = inj₂ (λ { n m () })
 is-SUP (SUBSING t) = inj₂ (λ { n m () })
 is-SUP (DUM t) = inj₂ (λ { n m () })
 is-SUP (FFDEFS t t₁) = inj₂ (λ { n m () })
@@ -2016,8 +2010,8 @@ is-INL (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-INL (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-INL (TSQUASH t) = inj₂ (λ { n () })
 --is-INL (TTRUNC t) = inj₂ (λ { n () })
-is-INL (NOWRITE t) = inj₂ (λ { n () })
-is-INL (NOREAD t) = inj₂ (λ { n () })
+is-INL NOWRITE = inj₂ (λ { n () })
+is-INL NOREAD  = inj₂ (λ { n () })
 is-INL (SUBSING t) = inj₂ (λ { n () })
 is-INL (DUM t) = inj₂ (λ { n () })
 is-INL (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -2079,8 +2073,8 @@ is-INR (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-INR (IFC0 t t₁ t₂) = inj₂ (λ { n () })
 is-INR (TSQUASH t) = inj₂ (λ { n () })
 --is-INR (TTRUNC t) = inj₂ (λ { n () })
-is-INR (NOWRITE t) = inj₂ (λ { n () })
-is-INR (NOREAD t) = inj₂ (λ { n () })
+is-INR NOWRITE = inj₂ (λ { n () })
+is-INR NOREAD  = inj₂ (λ { n () })
 is-INR (SUBSING t) = inj₂ (λ { n () })
 is-INR (DUM t) = inj₂ (λ { n () })
 is-INR (FFDEFS t t₁) = inj₂ (λ { n () })
@@ -2123,8 +2117,8 @@ data ∼vals : Term → Term → Set where
   ∼vals-NAME    : {n : Name} → ∼vals (NAME n) (NAME n)
   ∼vals-TSQUASH : {a b : Term} → ∼vals (TSQUASH a) (TSQUASH b)
 --  ∼vals-TTRUNC  : {a b : Term} → ∼vals (TTRUNC a) (TTRUNC b)
-  ∼vals-NOWRITE  : {a b : Term} → ∼vals (NOWRITE a) (NOWRITE b)
-  ∼vals-NOREAD  : {a b : Term} → ∼vals (NOREAD a) (NOREAD b)
+  ∼vals-NOWRITE : ∼vals NOWRITE NOWRITE
+  ∼vals-NOREAD  : ∼vals NOREAD  NOREAD
   ∼vals-SUBSING : {a b : Term} → ∼vals (SUBSING a) (SUBSING b)
   ∼vals-DUM     : {a b : Term} → ∼vals (DUM a) (DUM b)
   ∼vals-FFDEFS  : {a b c d : Term} → ∼vals (FFDEFS a b) (FFDEFS c d)
@@ -2164,8 +2158,8 @@ data ∼vals : Term → Term → Set where
 ∼vals-sym {.(NAME _)} {.(NAME _)} ∼vals-NAME = ∼vals-NAME
 ∼vals-sym {.(TSQUASH _)} {.(TSQUASH _)} ∼vals-TSQUASH = ∼vals-TSQUASH
 --∼vals-sym {.(TTRUNC _)} {.(TTRUNC _)} ∼vals-TTRUNC = ∼vals-TTRUNC
-∼vals-sym {.(NOWRITE _)} {.(NOWRITE _)} ∼vals-NOWRITE = ∼vals-NOWRITE
-∼vals-sym {.(NOREAD _)} {.(NOREAD _)} ∼vals-NOREAD = ∼vals-NOREAD
+∼vals-sym {.(NOWRITE)} {.(NOWRITE)} ∼vals-NOWRITE = ∼vals-NOWRITE
+∼vals-sym {.(NOREAD)} {.(NOREAD)} ∼vals-NOREAD = ∼vals-NOREAD
 ∼vals-sym {.(SUBSING _)} {.(SUBSING _)} ∼vals-SUBSING = ∼vals-SUBSING
 ∼vals-sym {.(DUM _)} {.(DUM _)} ∼vals-DUM = ∼vals-DUM
 ∼vals-sym {.(FFDEFS _ _)} {.(FFDEFS _ _)} ∼vals-FFDEFS = ∼vals-FFDEFS
@@ -2205,8 +2199,8 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₁ {NAME x} {b} isv = tt
 ∼vals→isValue₁ {TSQUASH a} {b} isv = tt
 --∼vals→isValue₁ {TTRUNC a} {b} isv = tt
-∼vals→isValue₁ {NOWRITE a} {b} isv = tt
-∼vals→isValue₁ {NOREAD a} {b} isv = tt
+∼vals→isValue₁ {NOWRITE} {b} isv = tt
+∼vals→isValue₁ {NOREAD} {b} isv = tt
 ∼vals→isValue₁ {SUBSING a} {b} isv = tt
 ∼vals→isValue₁ {DUM a} {b} isv = tt
 ∼vals→isValue₁ {FFDEFS a a₁} {b} isv = tt
@@ -2262,8 +2256,8 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {NAME x} isv = tt
 ∼vals→isValue₂ {a} {TSQUASH b} isv = tt
 --∼vals→isValue₂ {a} {TTRUNC b} isv = tt
-∼vals→isValue₂ {a} {NOWRITE b} isv = tt
-∼vals→isValue₂ {a} {NOREAD b} isv = tt
+∼vals→isValue₂ {a} {NOWRITE} isv = tt
+∼vals→isValue₂ {a} {NOREAD} isv = tt
 ∼vals→isValue₂ {a} {SUBSING b} isv = tt
 ∼vals→isValue₂ {a} {DUM b} isv = tt
 ∼vals→isValue₂ {a} {FFDEFS b b₁} isv = tt
@@ -2332,8 +2326,8 @@ data ∼vals : Term → Term → Set where
 --¬read (IFC0 t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
 ¬read (TSQUASH t) = ¬read t
 --¬read (TTRUNC t) = ¬read t
-¬read (NOWRITE t) = ¬read t
-¬read (NOREAD t) = ¬read t
+¬read NOWRITE = true
+¬read NOREAD  = true
 ¬read (SUBSING t) = ¬read t
 ¬read (DUM t) = ¬read t
 ¬read (FFDEFS t t₁) = ¬read t ∧ ¬read t₁
@@ -2407,8 +2401,8 @@ data ∼vals : Term → Term → Set where
 --¬names (IFC0 t t₁ t₂) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂
 ¬names (TSQUASH t) = ¬names t
 --¬names (TTRUNC t) = ¬names t
-¬names (NOWRITE t) = ¬names t
-¬names (NOREAD t) = ¬names t
+¬names NOWRITE = true
+¬names NOREAD  = true
 ¬names (SUBSING t) = ¬names t
 ¬names (DUM t) = ¬names t
 ¬names (FFDEFS t t₁) = ¬names t ∧ ¬names t₁
@@ -2482,8 +2476,8 @@ noseq (MSEQ x) = false
 noseq (MAPP x t) = false
 noseq (TSQUASH t) = noseq t
 --noseq (TTRUNC t) = noseq t
-noseq (NOWRITE t) = noseq t
-noseq (NOREAD t) = noseq t
+noseq NOWRITE = true
+noseq NOREAD  = true
 noseq (SUBSING t) = noseq t
 noseq (DUM t) = noseq t
 noseq (FFDEFS t t₁) = noseq t ∧ noseq t₁

@@ -447,21 +447,23 @@ abstract
 
 
 --abstract
-ℕ→Term→ℕ-NOWRITE : (t : Term)
+{-ℕ→Term→ℕ-NOWRITE : (t : Term)
                     → ℕ→Term (Term→ℕ t) ≡ t
                     → ℕ→Term (36 + (Term→ℕ t * #cons)) ≡ NOWRITE t
 ℕ→Term→ℕ-NOWRITE t ind
     rewrite *#cons%≡k 36 (Term→ℕ t) (m<m+n 36 {#cons ∸ 36} (_≤_.s≤s _≤_.z≤n))
     = ℕ→Term→ℕ₁ t NOWRITE 35 ≡NOWRITE ind
+-}
 
 
 --abstract
-ℕ→Term→ℕ-NOREAD : (t : Term)
+{-ℕ→Term→ℕ-NOREAD : (t : Term)
                     → ℕ→Term (Term→ℕ t) ≡ t
                     → ℕ→Term (37 + (Term→ℕ t * #cons)) ≡ NOREAD t
 ℕ→Term→ℕ-NOREAD t ind
     rewrite *#cons%≡k 37 (Term→ℕ t) (m<m+n 37 {#cons ∸ 37} (_≤_.s≤s _≤_.z≤n))
     = ℕ→Term→ℕ₁ t NOREAD 36 ≡NOREAD ind
+-}
 
 
 --abstract
@@ -589,8 +591,8 @@ abstract
   ℕ→Term→ℕ (LOAD t) nseq = ℕ→Term→ℕ-LOAD t (ℕ→Term→ℕ t nseq)
   ℕ→Term→ℕ (TSQUASH t) nseq = ℕ→Term→ℕ-TSQUASH t (ℕ→Term→ℕ t nseq)
 --  ℕ→Term→ℕ (TTRUNC t) nseq = ℕ→Term→ℕ-TTRUNC t (ℕ→Term→ℕ t nseq)
-  ℕ→Term→ℕ (NOWRITE t) nseq = ℕ→Term→ℕ-NOWRITE t (ℕ→Term→ℕ t nseq)
-  ℕ→Term→ℕ (NOREAD t) nseq = ℕ→Term→ℕ-NOREAD t (ℕ→Term→ℕ t nseq)
+  ℕ→Term→ℕ NOWRITE nseq = refl
+  ℕ→Term→ℕ NOREAD  nseq = refl
   ℕ→Term→ℕ (SUBSING t) nseq = ℕ→Term→ℕ-SUBSING t (ℕ→Term→ℕ t nseq)
   ℕ→Term→ℕ (DUM t) nseq = ℕ→Term→ℕ-DUM t (ℕ→Term→ℕ t nseq)
   ℕ→Term→ℕ (FFDEFS t t₁) nseq = ℕ→Term→ℕ-FFDEFS t t₁ (ℕ→Term→ℕ t (∧≡true→ₗ nseq)) (ℕ→Term→ℕ t₁ (∧≡true→ᵣ nseq))

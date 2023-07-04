@@ -146,11 +146,11 @@ TERMneqTSQUASH {c} {z} ()
 --TERMneqTTRUNC : {c : Term} {z : Term} → ¬ TERM z ≡ TTRUNC c
 --TERMneqTTRUNC {c} {z} ()
 
-TERMneqNOWRITE : {c : Term} {z : Term} → ¬ TERM z ≡ NOWRITE c
-TERMneqNOWRITE {c} {z} ()
+TERMneqNOWRITE : {z : Term} → ¬ TERM z ≡ NOWRITE
+TERMneqNOWRITE {z} ()
 
-TERMneqNOREAD : {c : Term} {z : Term} → ¬ TERM z ≡ NOREAD c
-TERMneqNOREAD {c} {z} ()
+TERMneqNOREAD : {z : Term} → ¬ TERM z ≡ NOREAD
+TERMneqNOREAD {z} ()
 
 TERMneqLOWER : {c : Term} {z : Term} → ¬ TERM z ≡ LOWER c
 TERMneqLOWER {c} {z} ()
@@ -198,8 +198,8 @@ typeSysConds-TERM-ttrans u w A B t1 t2 x x₁ x₂ C (EQTNOSEQ y y₁) = ⊥-eli
 typeSysConds-TERM-ttrans u w A B t1 t2 x x₁ x₂ C (EQTTERM u1 u2 y y₁ y₂)
   rewrite #TERMinj {u1} {t2} (#⇛-val-det {_} {B} tt tt y x₁)
   = EQTTERM t1 u2 x y₁ (□NATeq-trans {w} {t1} {t2} {u2} x₂ y₂)
-typeSysConds-TERM-ttrans u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE A3 A4 y y₁ eqtA extA) = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x₁ y))
-typeSysConds-TERM-ttrans u w A B t1 t2 x x₁ x₂ C (EQTNOREAD A3 A4 y y₁ eqtA extA) = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x₁ y))
+typeSysConds-TERM-ttrans u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE y y₁) = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x₁ y))
+typeSysConds-TERM-ttrans u w A B t1 t2 x x₁ x₂ C (EQTNOREAD y y₁) = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x₁ y))
 --typeSysConds-TERM-ttrans u w A B t1 t2 x x₁ x₂ C (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (TERMneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TERM-ttrans u w A B t1 t2 x x₁ x₂ C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) = ⊥-elim (TERMneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-TERM-ttrans u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) = ⊥-elim (TERMneqUNIV (⇛-val-det tt tt x₁ c₁))
@@ -290,8 +290,8 @@ typeSysConds-TERM-extl1 u w A B t1 t2 x x₁ x₂ C (EQTTERM u1 u2 y y₁ y₂) 
       rewrite #NUMinj {k} {m} (#⇛-val-det {_} {t1} tt tt z₁ d₁)
             | #NUMinj {m} {n} (#⇛-val-det {_} {t1} tt tt d₁ c₁)
       = n , c₁ , z₂ , c₃
-typeSysConds-TERM-extl1 u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x y))
-typeSysConds-TERM-extl1 u w A B t1 t2 x x₁ x₂ C (EQTNOREAD A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x y))
+typeSysConds-TERM-extl1 u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE y y₁) f g eqi = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x y))
+typeSysConds-TERM-extl1 u w A B t1 t2 x x₁ x₂ C (EQTNOREAD y y₁) f g eqi = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x y))
 --typeSysConds-TERM-extl1 u w A B t1 t2 x x₁ x₂ C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TERMneqDUM (⇛-val-det tt tt x y))
 typeSysConds-TERM-extl1 u w A B t1 t2 x x₁ x₂ C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TERMneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-TERM-extl1 u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (TERMneqUNIV (⇛-val-det tt tt x c₁))
@@ -356,8 +356,8 @@ typeSysConds-TERM-extl2 u w A B t1 t2 x x₁ x₂ C (EQTTERM u1 u2 y y₁ y₂) 
             | #NUMinj {m} {n} (#⇛-val-det {_} {t1} tt tt d₁ c₁)
       = n , z₁ , c₁ , c₃
 
-typeSysConds-TERM-extl2 u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x y₁))
-typeSysConds-TERM-extl2 u w A B t1 t2 x x₁ x₂ C (EQTNOREAD A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x y₁))
+typeSysConds-TERM-extl2 u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE y y₁) f g eqi = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x y₁))
+typeSysConds-TERM-extl2 u w A B t1 t2 x x₁ x₂ C (EQTNOREAD y y₁) f g eqi = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x y₁))
 --typeSysConds-TERM-extl2 u w A B t1 t2 x x₁ x₂ C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TERMneqDUM (⇛-val-det tt tt x y₁))
 typeSysConds-TERM-extl2 u w A B t1 t2 x x₁ x₂ C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TERMneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-TERM-extl2 u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (TERMneqUNIV (⇛-val-det tt tt x c₂))
@@ -422,8 +422,8 @@ typeSysConds-TERM-extr1 u w A B t1 t2 x x₁ x₂ C (EQTTERM u1 u2 y y₁ y₂) 
             | #NUMinj {m} {n} (#⇛-val-det {_} {t2} tt tt d₂ c₂)
       = n , z₁ , c₂ , c₃
 
-typeSysConds-TERM-extr1 u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x₁ y₁))
-typeSysConds-TERM-extr1 u w A B t1 t2 x x₁ x₂ C (EQTNOREAD A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TERM-extr1 u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE y y₁) f g eqi = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TERM-extr1 u w A B t1 t2 x x₁ x₂ C (EQTNOREAD y y₁) f g eqi = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x₁ y₁))
 --typeSysConds-TERM-extr1 u w A B t1 t2 x x₁ x₂ C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TERMneqDUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TERM-extr1 u w A B t1 t2 x x₁ x₂ C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TERMneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TERM-extr1 u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (TERMneqUNIV (⇛-val-det tt tt x₁ c₂))
@@ -488,8 +488,8 @@ typeSysConds-TERM-extr2 u w A B t1 t2 x x₁ x₂ C (EQTTERM u1 u2 y y₁ y₂) 
             | #NUMinj {m} {n} (#⇛-val-det {_} {t2} tt tt d₂ c₂)
       = n , c₂ , z₂ , c₃
 
-typeSysConds-TERM-extr2 u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x₁ y))
-typeSysConds-TERM-extr2 u w A B t1 t2 x x₁ x₂ C (EQTNOREAD A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x₁ y))
+typeSysConds-TERM-extr2 u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE y y₁) f g eqi = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x₁ y))
+typeSysConds-TERM-extr2 u w A B t1 t2 x x₁ x₂ C (EQTNOREAD y y₁) f g eqi = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x₁ y))
 --typeSysConds-TERM-extr2 u w A B t1 t2 x x₁ x₂ C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TERMneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TERM-extr2 u w A B t1 t2 x x₁ x₂ C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TERMneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-TERM-extr2 u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (TERMneqUNIV (⇛-val-det tt tt x₁ c₁))
@@ -554,8 +554,8 @@ typeSysConds-TERM-extrevl1 u w A B t1 t2 x x₁ x₂ C (EQTTERM u1 u2 y y₁ y�
             | #NUMinj {m} {n} (#⇛-val-det {_} {t1} tt tt d₁ c₁)
       = n , c₁ , d₂ , c₃
 
-typeSysConds-TERM-extrevl1 u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x y))
-typeSysConds-TERM-extrevl1 u w A B t1 t2 x x₁ x₂ C (EQTNOREAD A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x y))
+typeSysConds-TERM-extrevl1 u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE y y₁) f g eqi = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x y))
+typeSysConds-TERM-extrevl1 u w A B t1 t2 x x₁ x₂ C (EQTNOREAD y y₁) f g eqi = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x y))
 --typeSysConds-TERM-extrevl1 u w A B t1 t2 x x₁ x₂ C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TERMneqDUM (⇛-val-det tt tt x y))
 typeSysConds-TERM-extrevl1 u w A B t1 t2 x x₁ x₂ C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TERMneqFFDEFS (⇛-val-det tt tt x y))
 typeSysConds-TERM-extrevl1 u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (TERMneqUNIV (⇛-val-det tt tt x c₁))
@@ -631,8 +631,8 @@ typeSysConds-TERM-extrevl2 u w A B t1 t2 x x₁ x₂ C (EQTTERM u1 u2 y y₁ y�
             | #NUMinj {m} {n} (#⇛-val-det {_} {t1} tt tt d₁ c₂)
       = n , c₂ , d₂ , c₃
 
-typeSysConds-TERM-extrevl2 u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x y₁))
-typeSysConds-TERM-extrevl2 u w A B t1 t2 x x₁ x₂ C (EQTNOREAD A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x y₁))
+typeSysConds-TERM-extrevl2 u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE y y₁) f g eqi = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x y₁))
+typeSysConds-TERM-extrevl2 u w A B t1 t2 x x₁ x₂ C (EQTNOREAD y y₁) f g eqi = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x y₁))
 --typeSysConds-TERM-extrevl2 u w A B t1 t2 x x₁ x₂ C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TERMneqDUM (⇛-val-det tt tt x y₁))
 typeSysConds-TERM-extrevl2 u w A B t1 t2 x x₁ x₂ C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TERMneqFFDEFS (⇛-val-det tt tt x y₁))
 typeSysConds-TERM-extrevl2 u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (TERMneqUNIV (⇛-val-det tt tt x c₂))
@@ -707,8 +707,8 @@ typeSysConds-TERM-extrevr1 u w A B t1 t2 x x₁ x₂ C (EQTTERM u1 u2 y y₁ y�
             | #NUMinj {m} {n} (#⇛-val-det {_} {t2} tt tt d₂ c₂)
       = n , d₁ , c₂ , c₃
 
-typeSysConds-TERM-extrevr1 u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x₁ y₁))
-typeSysConds-TERM-extrevr1 u w A B t1 t2 x x₁ x₂ C (EQTNOREAD A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TERM-extrevr1 u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE y y₁) f g eqi = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x₁ y₁))
+typeSysConds-TERM-extrevr1 u w A B t1 t2 x x₁ x₂ C (EQTNOREAD y y₁) f g eqi = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x₁ y₁))
 --typeSysConds-TERM-extrevr1 u w A B t1 t2 x x₁ x₂ C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TERMneqDUM (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TERM-extrevr1 u w A B t1 t2 x x₁ x₂ C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TERMneqFFDEFS (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TERM-extrevr1 u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (TERMneqUNIV (⇛-val-det tt tt x₁ c₂))
@@ -783,8 +783,8 @@ typeSysConds-TERM-extrevr2 u w A B t1 t2 x x₁ x₂ C (EQTTERM u1 u2 y y₁ y�
             | #NUMinj {m} {n} (#⇛-val-det {_} {t2} tt tt d₂ c₁)
       = n , d₁ , c₁ , c₃
 
-typeSysConds-TERM-extrevr2 u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x₁ y))
-typeSysConds-TERM-extrevr2 u w A B t1 t2 x x₁ x₂ C (EQTNOREAD A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x₁ y))
+typeSysConds-TERM-extrevr2 u w A B t1 t2 x x₁ x₂ C (EQTNOWRITE y y₁) f g eqi = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt x₁ y))
+typeSysConds-TERM-extrevr2 u w A B t1 t2 x x₁ x₂ C (EQTNOREAD y y₁) f g eqi = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt x₁ y))
 --typeSysConds-TERM-extrevr2 u w A B t1 t2 x x₁ x₂ C (EQTDUM A3 A4 y y₁ eqtA) f g eqi = ⊥-elim (TERMneqDUM (⇛-val-det tt tt x₁ y))
 typeSysConds-TERM-extrevr2 u w A B t1 t2 x x₁ x₂ C (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) f g eqi = ⊥-elim (TERMneqFFDEFS (⇛-val-det tt tt x₁ y))
 typeSysConds-TERM-extrevr2 u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) f g eqi = ⊥-elim (TERMneqUNIV (⇛-val-det tt tt x₁ c₁))
@@ -861,8 +861,8 @@ eqInType-⇛-TERM u w A B t1 t2 a b bx c₁ c₂ (EQTTERM u1 u2 x x₁ x₂) ei
                         → TERMeq w' t1 t2)
     aw w1 e1 p q r = p
 
-eqInType-⇛-TERM u w A B t1 t2 a b bx c₁ c₂ (EQTNOWRITE A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-TERM u w A B t1 t2 a b bx c₁ c₂ (EQTNOREAD A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TERM u w A B t1 t2 a b bx c₁ c₂ (EQTNOWRITE x x₁) ei = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TERM u w A B t1 t2 a b bx c₁ c₂ (EQTNOREAD x x₁) ei = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-TERM u w A B t1 t2 a b bx c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei = ⊥-elim (TERMneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TERM u w A B t1 t2 a b bx c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (TERMneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TERM u w A B t1 t2 a b bx c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (TERMneqUNIV (⇛-val-det tt tt c₁ d₁))
@@ -937,8 +937,8 @@ eqInType-⇛-TERM2 u w A B t1 t2 a b bx c₁ c₂ (EQTTERM u1 u2 x x₁ x₂) ei
                         → TERMeq w' t1 t2)
     aw w1 e1 p q r = p
 
-eqInType-⇛-TERM2 u w A B t1 t2 a b bx c₁ c₂ (EQTNOWRITE A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-TERM2 u w A B t1 t2 a b bx c₁ c₂ (EQTNOREAD A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TERM2 u w A B t1 t2 a b bx c₁ c₂ (EQTNOWRITE x x₁) ei = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TERM2 u w A B t1 t2 a b bx c₁ c₂ (EQTNOREAD x x₁) ei = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-TERM2 u w A B t1 t2 a b bx c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei = ⊥-elim (TERMneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TERM2 u w A B t1 t2 a b bx c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (TERMneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TERM2 u w A B t1 t2 a b bx c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (TERMneqUNIV (⇛-val-det tt tt c₁ d₁))
@@ -1014,8 +1014,8 @@ eqInType-⇛-TERM-rev u w A B t1 t2 a b bx c₁ c₂ (EQTTERM u1 u2 x x₁ x₂)
                         → TERMeq w' t1 t2)
     aw w1 e1 p q r = p
 
-eqInType-⇛-TERM-rev u w A B t1 t2 a b bx c₁ c₂ (EQTNOWRITE A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-TERM-rev u w A B t1 t2 a b bx c₁ c₂ (EQTNOREAD A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TERM-rev u w A B t1 t2 a b bx c₁ c₂ (EQTNOWRITE x x₁) ei = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TERM-rev u w A B t1 t2 a b bx c₁ c₂ (EQTNOREAD x x₁) ei = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-TERM-rev u w A B t1 t2 a b bx c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei = ⊥-elim (TERMneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TERM-rev u w A B t1 t2 a b bx c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (TERMneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TERM-rev u w A B t1 t2 a b bx c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (TERMneqUNIV (⇛-val-det tt tt c₁ d₁))
@@ -1084,8 +1084,8 @@ eqInType-⇛-TERM-rev2 u w A B t1 t2 a b bx c₁ c₂ (EQTTERM u1 u2 x x₁ x₂
                         → TERMeq w' t1 t2)
     aw w1 e1 p q r = p
 
-eqInType-⇛-TERM-rev2 u w A B t1 t2 a b bx c₁ c₂ (EQTNOWRITE A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-TERM-rev2 u w A B t1 t2 a b bx c₁ c₂ (EQTNOREAD A3 A4 x x₁ eqta₁ exta₁) ei = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TERM-rev2 u w A B t1 t2 a b bx c₁ c₂ (EQTNOWRITE x x₁) ei = ⊥-elim (TERMneqNOWRITE (⇛-val-det tt tt c₁ x))
+eqInType-⇛-TERM-rev2 u w A B t1 t2 a b bx c₁ c₂ (EQTNOREAD x x₁) ei = ⊥-elim (TERMneqNOREAD (⇛-val-det tt tt c₁ x))
 --eqInType-⇛-TERM-rev2 u w A B t1 t2 a b bx c₁ c₂ (EQTDUM A3 A4 x x₁ eqtA) ei = ⊥-elim (TERMneqDUM (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TERM-rev2 u w A B t1 t2 a b bx c₁ c₂ (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (TERMneqFFDEFS (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TERM-rev2 u w A B t1 t2 a b bx c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (TERMneqUNIV (⇛-val-det tt tt c₁ d₁))

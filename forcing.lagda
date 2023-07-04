@@ -255,17 +255,13 @@ data eqTypes u w T1 T2 where
     → (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → eqTypes u w T1 T2-}
-  EQTNOWRITE : (A1 A2 : CTerm)
-    → T1 #⇛ (#NOWRITE A1) at w
-    → T2 #⇛ (#NOWRITE A2) at w
-    → (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
-    → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
+  EQTNOWRITE :
+      T1 #⇛ #NOWRITE at w
+    → T2 #⇛ #NOWRITE at w
     → eqTypes u w T1 T2
-  EQTNOREAD : (A1 A2 : CTerm)
-    → T1 #⇛ (#NOREAD A1) at w
-    → T2 #⇛ (#NOREAD A2) at w
-    → (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
-    → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
+  EQTNOREAD :
+      T1 #⇛ #NOREAD at w
+    → T2 #⇛ #NOREAD at w
     → eqTypes u w T1 T2
   EQTSUBSING : (A1 A2 : CTerm)
     → T1 #⇛ (#SUBSING A1) at w
@@ -287,11 +283,11 @@ data eqTypes u w T1 T2 where
     → (eqx : ∀𝕎 w (λ w' e → eqInType u w' (eqtA w' e) x1 x2))
     → eqTypes u w T1 T2
   EQTPURE :
-    T1 #⇛ #PURE at w
+      T1 #⇛ #PURE at w
     → T2 #⇛ #PURE at w
     → eqTypes u w T1 T2
   EQTNOSEQ :
-    T1 #⇛ #NOSEQ at w
+      T1 #⇛ #NOSEQ at w
     → T2 #⇛ #NOSEQ at w
     → eqTypes u w T1 T2
   EQTTERM : (t1 t2 : CTerm)
@@ -444,17 +440,15 @@ TUNIONeq : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → per
 TUNIONeq eqa eqb t1 t2 = Σ ℕ (λ n → TUNIONeqℕ n eqa eqb t1 t2)
 
 
-NOWRITEeq : (eqa : per) → wper
-NOWRITEeq eqa w t1 t2 =
-  eqa t1 t2
-  × #⇓→#⇓! w t1
+NOWRITEeq : wper
+NOWRITEeq w t1 t2 =
+    #⇓→#⇓! w t1
   × #⇓→#⇓! w t2
 
 
-NOREADeq : (eqa : per) → wper
-NOREADeq eqa w t1 t2 =
-  eqa t1 t2
-  × #⇓→#⇛ w t1
+NOREADeq : wper
+NOREADeq w t1 t2 =
+    #⇓→#⇛ w t1
   × #⇓→#⇛ w t2
 
 
@@ -552,10 +546,10 @@ eqInType u w (EQTSQUASH _ _ _ _ eqtA exta) t1 t2 =
   □· w (λ w' e → TSQUASHeq (eqInType u w' (eqtA w' e)) w' t1 t2)
 {-eqInType u w (EQTTRUNC _ _ _ _ eqtA exta) t1 t2 =
   □· w (λ w' e → TTRUNCeq (eqInType u w' (eqtA w' e)) w' t1 t2)-}
-eqInType u w (EQTNOWRITE _ _ _ _ eqtA exta) t1 t2 =
-  □· w (λ w' e → NOWRITEeq (eqInType u w' (eqtA w' e)) w' t1 t2)
-eqInType u w (EQTNOREAD _ _ _ _ eqtA exta) t1 t2 =
-  □· w (λ w' e → NOREADeq (eqInType u w' (eqtA w' e)) w' t1 t2)
+eqInType u w (EQTNOWRITE _ _) t1 t2 =
+  □· w (λ w' e → NOWRITEeq w' t1 t2)
+eqInType u w (EQTNOREAD _ _) t1 t2 =
+  □· w (λ w' e → NOREADeq w' t1 t2)
 eqInType u w (EQTSUBSING _ _ _ _ eqtA exta) t1 t2 =
   □· w (λ w' e → SUBSINGeq (eqInType u w' (eqtA w' e)) t1 t2)
 --eqInType u w (EQTDUM _ _ _ _ _ _) t1 t2 = Lift {0ℓ} (lsuc L) ⊤

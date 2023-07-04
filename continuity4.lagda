@@ -143,8 +143,8 @@ data updRel (name : Name) (f g : Term) : Term → Term → Set where
 --  updRel-IFC0    : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → updRel name1 name2 f a₁ a₂ → updRel name1 name2 f b₁ b₂ → updRel name1 name2 f c₁ c₂ → updRel name1 name2 f (IFC0 a₁ b₁ c₁) (IFC0 a₂ b₂ c₂)
   updRel-TSQUASH : (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (TSQUASH a₁) (TSQUASH a₂)
 --  updRel-TTRUNC  : (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (TTRUNC a₁) (TTRUNC a₂)
-  updRel-NOWRITE : (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (NOWRITE a₁) (NOWRITE a₂)
-  updRel-NOREAD  : (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (NOREAD a₁) (NOREAD a₂)
+  updRel-NOWRITE : updRel name f g NOWRITE NOWRITE
+  updRel-NOREAD  : updRel name f g NOREAD  NOREAD
   updRel-SUBSING : (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (SUBSING a₁) (SUBSING a₂)
   updRel-PURE    : updRel name f g PURE PURE
   updRel-NOSEQ    : updRel name f g NOSEQ NOSEQ
@@ -1379,8 +1379,8 @@ abstract
   updRel-shiftUp n {name} {f} {g} cf cg {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (updRel-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updRel-CHOOSE _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
   updRel-shiftUp n {name} {f} {g} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel-TSQUASH a₁ a₂ u) = updRel-TSQUASH _ _ (updRel-shiftUp n cf cg u)
 --  updRel-shiftUp n {name} {f} {g} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel-TTRUNC a₁ a₂ u) = updRel-TTRUNC _ _ (updRel-shiftUp n cf cg u)
-  updRel-shiftUp n {name} {f} {g} cf cg {.(NOWRITE a₁)} {.(NOWRITE a₂)} (updRel-NOWRITE a₁ a₂ u) = updRel-NOWRITE _ _ (updRel-shiftUp n cf cg u)
-  updRel-shiftUp n {name} {f} {g} cf cg {.(NOREAD a₁)} {.(NOREAD a₂)} (updRel-NOREAD a₁ a₂ u) = updRel-NOREAD _ _ (updRel-shiftUp n cf cg u)
+  updRel-shiftUp n {name} {f} {g} cf cg {.NOWRITE} {.NOWRITE} updRel-NOWRITE = updRel-NOWRITE
+  updRel-shiftUp n {name} {f} {g} cf cg {.NOREAD}  {.NOREAD}  updRel-NOREAD  = updRel-NOREAD
   updRel-shiftUp n {name} {f} {g} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) = updRel-SUBSING _ _ (updRel-shiftUp n cf cg u)
   updRel-shiftUp n {name} {f} {g} cf cg {.(PURE)} {.(PURE)} (updRel-PURE) = updRel-PURE
   updRel-shiftUp n {name} {f} {g} cf cg {.(NOSEQ)} {.(NOSEQ)} (updRel-NOSEQ) = updRel-NOSEQ
@@ -1444,8 +1444,8 @@ abstract
   updRel-shiftDown n {name} {f} {g} cf cg {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (updRel-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updRel-CHOOSE _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
   updRel-shiftDown n {name} {f} {g} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel-TSQUASH a₁ a₂ u) = updRel-TSQUASH _ _ (updRel-shiftDown n cf cg u)
 --  updRel-shiftDown n {name} {f} {g} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel-TTRUNC a₁ a₂ u) = updRel-TTRUNC _ _ (updRel-shiftDown n cf cg u)
-  updRel-shiftDown n {name} {f} {g} cf cg {.(NOWRITE a₁)} {.(NOWRITE a₂)} (updRel-NOWRITE a₁ a₂ u) = updRel-NOWRITE _ _ (updRel-shiftDown n cf cg u)
-  updRel-shiftDown n {name} {f} {g} cf cg {.(NOREAD a₁)} {.(NOREAD a₂)} (updRel-NOREAD a₁ a₂ u) = updRel-NOREAD _ _ (updRel-shiftDown n cf cg u)
+  updRel-shiftDown n {name} {f} {g} cf cg {.NOWRITE} {.NOWRITE} updRel-NOWRITE = updRel-NOWRITE
+  updRel-shiftDown n {name} {f} {g} cf cg {.NOREAD}  {.NOREAD}  updRel-NOREAD  = updRel-NOREAD
   updRel-shiftDown n {name} {f} {g} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) = updRel-SUBSING _ _ (updRel-shiftDown n cf cg u)
   updRel-shiftDown n {name} {f} {g} cf cg {.(PURE)} {.(PURE)} (updRel-PURE) = updRel-PURE
   updRel-shiftDown n {name} {f} {g} cf cg {.(NOSEQ)} {.(NOSEQ)} (updRel-NOSEQ) = updRel-NOSEQ
@@ -1515,8 +1515,8 @@ abstract
   updRel-subv v {name} {f} {g} cf cg {.(CHOOSE a₁ b₃)} {.(CHOOSE a₂ b₄)} {b₁} {b₂} (updRel-CHOOSE a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-CHOOSE _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
   updRel-subv v {name} {f} {g} cf cg {.(TSQUASH a₁)} {.(TSQUASH a₂)} {b₁} {b₂} (updRel-TSQUASH a₁ a₂ ua) ub = updRel-TSQUASH _ _ (updRel-subv v cf cg ua ub)
 --  updRel-subv v {name} {f} {g} cf cg {.(TTRUNC a₁)} {.(TTRUNC a₂)} {b₁} {b₂} (updRel-TTRUNC a₁ a₂ ua) ub = updRel-TTRUNC _ _ (updRel-subv v cf cg ua ub)
-  updRel-subv v {name} {f} {g} cf cg {.(NOWRITE a₁)} {.(NOWRITE a₂)} {b₁} {b₂} (updRel-NOWRITE a₁ a₂ ua) ub = updRel-NOWRITE _ _ (updRel-subv v cf cg ua ub)
-  updRel-subv v {name} {f} {g} cf cg {.(NOREAD a₁)} {.(NOREAD a₂)} {b₁} {b₂} (updRel-NOREAD a₁ a₂ ua) ub = updRel-NOREAD _ _ (updRel-subv v cf cg ua ub)
+  updRel-subv v {name} {f} {g} cf cg {.NOWRITE} {.NOWRITE} {b₁} {b₂} updRel-NOWRITE ub = updRel-NOWRITE
+  updRel-subv v {name} {f} {g} cf cg {.NOREAD}  {.NOREAD}  {b₁} {b₂} updRel-NOREAD  ub = updRel-NOREAD
   updRel-subv v {name} {f} {g} cf cg {.(SUBSING a₁)} {.(SUBSING a₂)} {b₁} {b₂} (updRel-SUBSING a₁ a₂ ua) ub = updRel-SUBSING _ _ (updRel-subv v cf cg ua ub)
   updRel-subv v {name} {f} {g} cf cg {.(PURE)} {.(PURE)} {b₁} {b₂} (updRel-PURE) ub = updRel-PURE
   updRel-subv v {name} {f} {g} cf cg {.(NOSEQ)} {.(NOSEQ)} {b₁} {b₂} (updRel-NOSEQ) ub = updRel-NOSEQ
@@ -1752,8 +1752,8 @@ abstract
   updRel→¬Names {name} {f} {g} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} nng (updRel-CHOOSE a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
   updRel→¬Names {name} {f} {g} {.(TSQUASH a₁)} {.(TSQUASH a₂)} nng (updRel-TSQUASH a₁ a₂ u) = updRel→¬Names nng u
 --  updRel→¬Names {name} {f} {g} {.(TTRUNC a₁)} {.(TTRUNC a₂)} nng (updRel-TTRUNC a₁ a₂ u) = updRel→¬Names nng u
-  updRel→¬Names {name} {f} {g} {.(NOWRITE a₁)} {.(NOWRITE a₂)} nng (updRel-NOWRITE a₁ a₂ u) = updRel→¬Names nng u
-  updRel→¬Names {name} {f} {g} {.(NOREAD a₁)} {.(NOREAD a₂)} nng (updRel-NOREAD a₁ a₂ u) = updRel→¬Names nng u
+  updRel→¬Names {name} {f} {g} {.NOWRITE} {.NOWRITE} nng updRel-NOWRITE = refl
+  updRel→¬Names {name} {f} {g} {.NOREAD}  {.NOREAD}  nng updRel-NOREAD  = refl
   updRel→¬Names {name} {f} {g} {.(SUBSING a₁)} {.(SUBSING a₂)} nng (updRel-SUBSING a₁ a₂ u) = updRel→¬Names nng u
   updRel→¬Names {name} {f} {g} {.(PURE)} {.(PURE)} nng (updRel-PURE) = refl
   updRel→¬Names {name} {f} {g} {.(NOSEQ)} {.(NOSEQ)} nng (updRel-NOSEQ) = refl
@@ -1981,8 +1981,8 @@ abstract
   updRel→isValue {name} {f} {g} {.(MSEQ x)} {.(MSEQ x)} (updRel-MSEQ x) isv = tt
   updRel→isValue {name} {f} {g} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updRel-TSQUASH a₁ a₂ u) isv = tt
 --  updRel→isValue {name} {f} {g} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updRel-TTRUNC a₁ a₂ u) isv = tt
-  updRel→isValue {name} {f} {g} {.(NOWRITE a₁)} {.(NOWRITE a₂)} (updRel-NOWRITE a₁ a₂ u) isv = tt
-  updRel→isValue {name} {f} {g} {.(NOREAD a₁)} {.(NOREAD a₂)} (updRel-NOREAD a₁ a₂ u) isv = tt
+  updRel→isValue {name} {f} {g} {.NOWRITE} {.NOWRITE} updRel-NOWRITE isv = tt
+  updRel→isValue {name} {f} {g} {.NOREAD}  {.NOREAD}  updRel-NOREAD  isv = tt
   updRel→isValue {name} {f} {g} {.(SUBSING a₁)} {.(SUBSING a₂)} (updRel-SUBSING a₁ a₂ u) isv = tt
   updRel→isValue {name} {f} {g} {.(PURE)} {.(PURE)} (updRel-PURE) isv = tt
   updRel→isValue {name} {f} {g} {.(NOSEQ)} {.(NOSEQ)} (updRel-NOSEQ) isv = tt

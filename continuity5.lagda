@@ -434,8 +434,8 @@ abstract
   ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
   step-updRel gc {n} {name} {f} {g} {.(TSQUASH a₁)} {.(TSQUASH a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-TSQUASH a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TSQUASH a₁ , TSQUASH a₂ , w1 , refl , refl , updRel-TSQUASH _ _ r
 --  step-updRel gc {n} {name} {f} {g} {.(TTRUNC a₁)} {.(TTRUNC a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-TTRUNC a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TTRUNC a₁ , TTRUNC a₂ , w1 , refl , refl , updRel-TTRUNC _ _ r
-  step-updRel gc {n} {name} {f} {g} {.(NOWRITE a₁)} {.(NOWRITE a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-NOWRITE a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , NOWRITE a₁ , NOWRITE a₂ , w1 , refl , refl , updRel-NOWRITE _ _ r
-  step-updRel gc {n} {name} {f} {g} {.(NOREAD a₁)} {.(NOREAD a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-NOREAD a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , NOREAD a₁ , NOREAD a₂ , w1 , refl , refl , updRel-NOREAD _ _ r
+  step-updRel gc {n} {name} {f} {g} {.NOWRITE} {.NOWRITE} {x} {w1} {w2} {w} nnf nng cf cg comp ind updRel-NOWRITE gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , NOWRITE , NOWRITE , w1 , refl , refl , updRel-NOWRITE
+  step-updRel gc {n} {name} {f} {g} {.NOREAD}  {.NOREAD}  {x} {w1} {w2} {w} nnf nng cf cg comp ind updRel-NOREAD  gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , NOREAD  , NOREAD  , w1 , refl , refl , updRel-NOREAD
   step-updRel gc {n} {name} {f} {g} {.(SUBSING a₁)} {.(SUBSING a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-SUBSING a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , SUBSING a₁ , SUBSING a₂ , w1 , refl , refl , updRel-SUBSING _ _ r
   step-updRel gc {n} {name} {f} {g} {.(PURE)} {.(PURE)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-PURE) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , PURE , PURE , w1 , refl , refl , updRel-PURE
   step-updRel gc {n} {name} {f} {g} {.(NOSEQ)} {.(NOSEQ)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-NOSEQ) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , NOSEQ , NOSEQ , w1 , refl , refl , updRel-NOSEQ
@@ -627,8 +627,8 @@ abstract
   updRel-refl {name} {f} {g} {CHOOSE a a₁} nn = updRel-CHOOSE _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   updRel-refl {name} {f} {g} {TSQUASH a} nn = updRel-TSQUASH _ _ (updRel-refl nn)
 --  updRel-refl {name} {f} {g} {TTRUNC a} nn = updRel-TTRUNC _ _ (updRel-refl nn)
-  updRel-refl {name} {f} {g} {NOWRITE a} nn = updRel-NOWRITE _ _ (updRel-refl nn)
-  updRel-refl {name} {f} {g} {NOREAD a} nn = updRel-NOREAD _ _ (updRel-refl nn)
+  updRel-refl {name} {f} {g} {NOWRITE} nn = updRel-NOWRITE
+  updRel-refl {name} {f} {g} {NOREAD}  nn = updRel-NOREAD
   updRel-refl {name} {f} {g} {SUBSING a} nn = updRel-SUBSING _ _ (updRel-refl nn)
   updRel-refl {name} {f} {g} {PURE} nn = updRel-PURE
   updRel-refl {name} {f} {g} {NOSEQ} nn = updRel-NOSEQ

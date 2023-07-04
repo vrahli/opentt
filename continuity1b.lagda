@@ -900,8 +900,8 @@ abstract
   --shiftNameUp-inj {n} {IFC0 a a₁ a₂} {IFC0 b b₁ b₂} e rewrite shiftNameUp-inj (IFC0inj1 e) | shiftNameUp-inj (IFC0inj2 e) | shiftNameUp-inj (IFC0inj3 e) = refl
   shiftNameUp-inj {n} {TSQUASH a} {TSQUASH b} e rewrite shiftNameUp-inj (TSQUASHinj e) = refl
 --  shiftNameUp-inj {n} {TTRUNC a} {TTRUNC b} e rewrite shiftNameUp-inj (TTRUNCinj e) = refl
-  shiftNameUp-inj {n} {NOWRITE a} {NOWRITE b} e rewrite shiftNameUp-inj (NOWRITEinj e) = refl
-  shiftNameUp-inj {n} {NOREAD a} {NOREAD b} e rewrite shiftNameUp-inj (NOREADinj e) = refl
+  shiftNameUp-inj {n} {NOWRITE} {NOWRITE} refl = refl
+  shiftNameUp-inj {n} {NOREAD}  {NOREAD}  refl = refl
   shiftNameUp-inj {n} {SUBSING a} {SUBSING b} e rewrite shiftNameUp-inj (SUBSINGinj e) = refl
   shiftNameUp-inj {n} {DUM a} {DUM b} e rewrite shiftNameUp-inj (DUMinj e) = refl
   shiftNameUp-inj {n} {FFDEFS a a₁} {FFDEFS b b₁} e rewrite shiftNameUp-inj (FFDEFSinj1 e) | shiftNameUp-inj (FFDEFSinj2 e) = refl
@@ -997,8 +997,8 @@ abstract
   --fvars-shiftNameDown n (IFC0 a a₁ a₂) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ | fvars-shiftNameDown n a₂ = refl
   fvars-shiftNameDown n (TSQUASH a) rewrite fvars-shiftNameDown n a = refl
 --  fvars-shiftNameDown n (TTRUNC a) rewrite fvars-shiftNameDown n a = refl
-  fvars-shiftNameDown n (NOWRITE a) rewrite fvars-shiftNameDown n a = refl
-  fvars-shiftNameDown n (NOREAD a) rewrite fvars-shiftNameDown n a = refl
+  fvars-shiftNameDown n NOWRITE = refl
+  fvars-shiftNameDown n NOREAD  = refl
   fvars-shiftNameDown n (SUBSING a) rewrite fvars-shiftNameDown n a = refl
   fvars-shiftNameDown n (DUM a) rewrite fvars-shiftNameDown n a = refl
   fvars-shiftNameDown n (FFDEFS a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
@@ -1086,8 +1086,8 @@ abstract
   shiftNameUpDown n (CHOOSE t t₁) imp1 imp2 = ≡CHOOSE (shiftNameUpDown n t (λ x i → imp1 x (∈-++⁺ˡ i)) (λ z → imp2 (∈-++⁺ˡ z))) (shiftNameUpDown n t₁ (λ x i → imp1 x (∈-++⁺ʳ (names t) i)) (λ z → imp2 (∈-++⁺ʳ (names t) z)))
   shiftNameUpDown n (TSQUASH t) imp1 imp2 = ≡TSQUASH (shiftNameUpDown n t imp1 imp2)
 --  shiftNameUpDown n (TTRUNC t) imp1 imp2 = ≡TTRUNC (shiftNameUpDown n t imp1 imp2)
-  shiftNameUpDown n (NOWRITE t) imp1 imp2 = ≡NOWRITE (shiftNameUpDown n t imp1 imp2)
-  shiftNameUpDown n (NOREAD t) imp1 imp2 = ≡NOREAD (shiftNameUpDown n t imp1 imp2)
+  shiftNameUpDown n NOWRITE imp1 imp2 = refl
+  shiftNameUpDown n NOREAD  imp1 imp2 = refl
   shiftNameUpDown n (SUBSING t) imp1 imp2 = ≡SUBSING (shiftNameUpDown n t imp1 imp2)
   shiftNameUpDown n (DUM t) imp1 imp2 = ≡DUM (shiftNameUpDown n t imp1 imp2)
   shiftNameUpDown n (FFDEFS t t₁) imp1 imp2 = ≡FFDEFS (shiftNameUpDown n t (λ x i → imp1 x (∈-++⁺ˡ i)) (λ z → imp2 (∈-++⁺ˡ z))) (shiftNameUpDown n t₁ (λ x i → imp1 x (∈-++⁺ʳ (names t) i)) (λ z → imp2 (∈-++⁺ʳ (names t) z)))
@@ -1221,8 +1221,8 @@ abstract
   renn¬∈ n m (CHOOSE t t₁) ni = ≡CHOOSE (renn¬∈ n m t (¬∈++2→¬∈1 {_} {_} {names t} {names t₁} {n} ni)) (renn¬∈ n m t₁ (¬∈++2→¬∈2 {_} {_} {names t} {names t₁} {n} ni))
   renn¬∈ n m (TSQUASH t) ni = ≡TSQUASH (renn¬∈ n m t ni)
 --  renn¬∈ n m (TTRUNC t) ni = ≡TTRUNC (renn¬∈ n m t ni)
-  renn¬∈ n m (NOWRITE t) ni = ≡NOWRITE (renn¬∈ n m t ni)
-  renn¬∈ n m (NOREAD t) ni = ≡NOREAD (renn¬∈ n m t ni)
+  renn¬∈ n m NOWRITE ni = refl
+  renn¬∈ n m NOREAD  ni = refl
   renn¬∈ n m (SUBSING t) ni = ≡SUBSING (renn¬∈ n m t ni)
   renn¬∈ n m (DUM t) ni = ≡DUM (renn¬∈ n m t ni)
   renn¬∈ n m (FFDEFS t t₁) ni = ≡FFDEFS (renn¬∈ n m t (¬∈++2→¬∈1 {_} {_} {names t} {names t₁} {n} ni)) (renn¬∈ n m t₁ (¬∈++2→¬∈2 {_} {_} {names t} {names t₁} {n} ni))

@@ -396,17 +396,9 @@ eqTypes-mon u {A} {B} {w1} (EQTSQUASH A1 A2 x x₁ eqtA exta) w2 ext =
     exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (∀𝕎-mon ext eqtA w e) a b)
     exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei-}
 
-eqTypes-mon u {A} {B} {w1} (EQTNOWRITE A1 A2 x x₁ eqtA exta) w2 ext =
-  EQTNOWRITE A1 A2 (⇛-mon ext x) (⇛-mon ext x₁) (∀𝕎-mon ext eqtA) exta'
-  where
-    exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (∀𝕎-mon ext eqtA w e) a b)
-    exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
+eqTypes-mon u {A} {B} {w1} (EQTNOWRITE x x₁) w2 ext = EQTNOWRITE (⇛-mon ext x) (⇛-mon ext x₁)
 
-eqTypes-mon u {A} {B} {w1} (EQTNOREAD A1 A2 x x₁ eqtA exta) w2 ext =
-  EQTNOREAD A1 A2 (⇛-mon ext x) (⇛-mon ext x₁) (∀𝕎-mon ext eqtA) exta'
-  where
-    exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (∀𝕎-mon ext eqtA w e) a b)
-    exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
+eqTypes-mon u {A} {B} {w1} (EQTNOREAD x x₁) w2 ext = EQTNOREAD (⇛-mon ext x) (⇛-mon ext x₁)
 
 eqTypes-mon u {A} {B} {w1} (EQTSUBSING A1 A2 x x₁ eqtA exta) w2 ext =
   EQTSUBSING A1 A2 (⇛-mon ext x) (⇛-mon ext x₁) (∀𝕎-mon ext eqtA) exta'
@@ -1588,13 +1580,16 @@ irr-ttrunc u w A1 A2 eqta exta f g w1 e1 w' e' h z = irr-TTRUNCeq eqta exta (⊑
 
 
 
+{-
 NOWRITEeq-ext-eq : {eqa1 eqa2 : per} {w : 𝕎·} {t1 t2 : CTerm}
                   → ((a b : CTerm) → eqa1 a b → eqa2 a b)
                   → NOWRITEeq eqa1 w t1 t2
                   → NOWRITEeq eqa2 w t1 t2
 NOWRITEeq-ext-eq {eqa1} {eqa2} {w} {t1} {t2} ext (h , c₁ , c₂) = ext t1 t2 h , c₁ , c₂
+-}
 
 
+{-
 irr-NOWRITEeq : {u : univs} {w w' : 𝕎·} {A1 A2 : CTerm}
                (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
                (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
@@ -1604,8 +1599,10 @@ irr-NOWRITEeq : {u : univs} {w w' : 𝕎·} {A1 A2 : CTerm}
                → NOWRITEeq (eqInType u w' (eqta w' e2)) w' f g
 irr-NOWRITEeq {u} {w} {w'} {A1} {A2} eqta exta {f} {g} e1 e2 h =
   NOWRITEeq-ext-eq (λ a b q → exta a b w' e1 e2 q) h
+-}
 
 
+{-
 irr-nowrite : (u : univs) (w : 𝕎·) (A1 A2 : CTerm)
               (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
               (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
@@ -1617,16 +1614,19 @@ irr-nowrite u w A1 A2 eqta exta f g w1 e1 w' e' h z = irr-NOWRITEeq eqta exta (�
   where
     eqa' : eqInType u w' (eqta w' z) a1 a2
     eqa' = exta a1 a2 w' (⊑-trans· e1 e') z eqa--}
+-}
 
 
-
+{-
 NOREADeq-ext-eq : {eqa1 eqa2 : per} {w : 𝕎·} {t1 t2 : CTerm}
                   → ((a b : CTerm) → eqa1 a b → eqa2 a b)
                   → NOREADeq eqa1 w t1 t2
                   → NOREADeq eqa2 w t1 t2
 NOREADeq-ext-eq {eqa1} {eqa2} {w} {t1} {t2} ext (h , c₁ , c₂) = ext t1 t2 h , c₁ , c₂
+-}
 
 
+{-
 irr-NOREADeq : {u : univs} {w w' : 𝕎·} {A1 A2 : CTerm}
                (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
                (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
@@ -1636,20 +1636,16 @@ irr-NOREADeq : {u : univs} {w w' : 𝕎·} {A1 A2 : CTerm}
                → NOREADeq (eqInType u w' (eqta w' e2)) w' f g
 irr-NOREADeq {u} {w} {w'} {A1} {A2} eqta exta {f} {g} e1 e2 h =
   NOREADeq-ext-eq (λ a b q → exta a b w' e1 e2 q) h
+-}
 
 
-irr-noread : (u : univs) (w : 𝕎·) (A1 A2 : CTerm)
-              (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
-              (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
-              (f g : CTerm) (w1 : 𝕎·) (e1 : w ⊑· w1)
-              → ∀𝕎 w1 (λ w' e' → NOREADeq (eqInType u w' (eqta w' (⊑-trans· e1 e'))) w' f g
-                                 → (z : w ⊑· w') → NOREADeq (eqInType u w' (eqta w' z)) w' f g)
-irr-noread u w A1 A2 eqta exta f g w1 e1 w' e' h z = irr-NOREADeq eqta exta (⊑-trans· e1 e') z h
-{--  ca , a1 , a2 , isv₁ , isv₂ , c₁ , c₂ , eqa'
-  where
-    eqa' : eqInType u w' (eqta w' z) a1 a2
-    eqa' = exta a1 a2 w' (⊑-trans· e1 e') z eqa--}
-
+{-
+irr-noread : (u : univs) (w : 𝕎·)
+             (f g : CTerm) (w1 : 𝕎·) (e1 : w ⊑· w1)
+           → ∀𝕎 w1 (λ w' e' → NOREADeq w' f g
+                            → (z : w ⊑· w') → NOREADeq w' f g)
+irr-noread u w f g w1 e1 w' e' h z = h
+-}
 
 
 SUBSINGeq-ext-eq : {eqa1 eqa2 : per} {t1 t2 : CTerm}
@@ -1790,35 +1786,31 @@ is-uni→eqInType {u} isu {w} {A} {B} {a} {b} eqt eqi rewrite isu = eqt , eqi
 
 
 
-NOWRITEeq-sym : {eqa : per} {w : 𝕎·} {t1 t2 : CTerm}
-                 → ((a b : CTerm) → eqa a b → eqa b a)
-                 → NOWRITEeq eqa w t1 t2
-                 → NOWRITEeq eqa w t2 t1
-NOWRITEeq-sym {eqa} {w} {t1} {t2} sym (h , c₁ , c₂) = sym t1 t2 h , c₂ , c₁
+NOWRITEeq-sym : {w : 𝕎·} {t1 t2 : CTerm}
+                 → NOWRITEeq w t1 t2
+                 → NOWRITEeq w t2 t1
+NOWRITEeq-sym {w} {t1} {t2} (c₁ , c₂) = c₂ , c₁
 
 
-NOWRITEeq-trans : {eqa : per} {w : 𝕎·} {t1 t2 t3 : CTerm}
-                 → ((a b c : CTerm) → eqa a b → eqa b c → eqa a c)
-                 → NOWRITEeq eqa w t1 t2
-                 → NOWRITEeq eqa w t2 t3
-                 → NOWRITEeq eqa w t1 t3
-NOWRITEeq-trans {eqa} {w} {t1} {t2} {t3} trans (h , c₁ , c₂) (q , c₃ , c₄) = trans t1 t2 t3 h q , c₁ , c₄
+NOWRITEeq-trans : {w : 𝕎·} {t1 t2 t3 : CTerm}
+                 → NOWRITEeq w t1 t2
+                 → NOWRITEeq w t2 t3
+                 → NOWRITEeq w t1 t3
+NOWRITEeq-trans {w} {t1} {t2} {t3} (c₁ , c₂) (c₃ , c₄) = c₁ , c₄
 
 
 
-NOREADeq-sym : {eqa : per} {w : 𝕎·} {t1 t2 : CTerm}
-                 → ((a b : CTerm) → eqa a b → eqa b a)
-                 → NOREADeq eqa w t1 t2
-                 → NOREADeq eqa w t2 t1
-NOREADeq-sym {eqa} {w} {t1} {t2} sym (h , c₁ , c₂) = sym t1 t2 h , c₂ , c₁
+NOREADeq-sym : {w : 𝕎·} {t1 t2 : CTerm}
+                 → NOREADeq w t1 t2
+                 → NOREADeq w t2 t1
+NOREADeq-sym {w} {t1} {t2} (c₁ , c₂) = c₂ , c₁
 
 
-NOREADeq-trans : {eqa : per} {w : 𝕎·} {t1 t2 t3 : CTerm}
-                 → ((a b c : CTerm) → eqa a b → eqa b c → eqa a c)
-                 → NOREADeq eqa w t1 t2
-                 → NOREADeq eqa w t2 t3
-                 → NOREADeq eqa w t1 t3
-NOREADeq-trans {eqa} {w} {t1} {t2} {t3} trans (h , c₁ , c₂) (q , c₃ , c₄) = trans t1 t2 t3 h q , c₁ , c₄
+NOREADeq-trans : {w : 𝕎·} {t1 t2 t3 : CTerm}
+                 → NOREADeq w t1 t2
+                 → NOREADeq w t2 t3
+                 → NOREADeq w t1 t3
+NOREADeq-trans {w} {t1} {t2} {t3} (c₁ , c₂) (c₃ , c₄) = c₁ , c₄
 
 
 SUBSINGeq-sym : {eqa : per} {t1 t2 : CTerm}

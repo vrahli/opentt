@@ -216,9 +216,9 @@ type-#⇛-NUM→! : (P : ℕ → Set) (T : CTerm)
                   → type-#⇛-NUM P T
                   → type-#⇛!-NUM P T
 type-#⇛-NUM→! P T tyn {i} {w} {a} {b} a∈ =
-  Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInTypeNOWRITE→ a∈))
+  Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInTypeNOWRITEMOD→ a∈))
   where
-    aw : ∀𝕎 w (λ w' e' → NOWRITEeq (equalInType i w' T) w' a b
+    aw : ∀𝕎 w (λ w' e' → NOWRITEMODeq (equalInType i w' T) w' a b
                         → □· w' (↑wPred' (λ w'' _ → Σ ℕ (λ n → a #⇛! #NUM n at w'' × b #⇛! #NUM n at w'' × P n)) e'))
     aw w1 e1 (h , c₁ , c₂) = Mod.∀𝕎-□Func M aw1 (tyn {i} {w1} {a} {b} h)
       where
@@ -228,7 +228,7 @@ type-#⇛-NUM→! P T tyn {i} {w} {a} {b} a∈ =
 
 
 NAT→T!2𝕊 : (kb : K□) {i : ℕ} {w : 𝕎·} (P : ℕ → Set) {T f : CTerm}
-             (tyn : type-#⇛!-NUM P T) (f∈ : ∈Type i w (#FUN #NAT (#NOWRITE T)) f) → 𝕊
+             (tyn : type-#⇛!-NUM P T) (f∈ : ∈Type i w (#FUN #NAT (#NOWRITEMOD T)) f) → 𝕊
 NAT→T!2𝕊 kb {i} {w} P {T} {f} tyn f∈ n = fst j
   where
     j : Σ ℕ (λ k → #APPLY f (#NUM n) #⇛! #NUM k at w × #APPLY f (#NUM n) #⇛! #NUM k at w × P k)
@@ -236,7 +236,7 @@ NAT→T!2𝕊 kb {i} {w} P {T} {f} tyn f∈ n = fst j
 
 
 NAT→T!2𝕊-P : (kb : K□) {i : ℕ} {w : 𝕎·} (P : ℕ → Set) {T f : CTerm}
-             (tyn : type-#⇛!-NUM P T) (f∈ : ∈Type i w (#FUN #NAT (#NOWRITE T)) f)
+             (tyn : type-#⇛!-NUM P T) (f∈ : ∈Type i w (#FUN #NAT (#NOWRITEMOD T)) f)
              (n : ℕ) → P (NAT→T!2𝕊 kb P tyn f∈ n)
 NAT→T!2𝕊-P kb {i} {w} P {T} {f} tyn f∈ n
   with kb (tyn {i} {w} {#APPLY f (#NUM n)} {#APPLY f (#NUM n)} (equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM n) (#NUM n) (NUM-equalInType-NAT i w n)) ) w (⊑-refl· w)
@@ -244,7 +244,7 @@ NAT→T!2𝕊-P kb {i} {w} P {T} {f} tyn f∈ n
 
 
 NAT→T2𝕊-equalIn-NAT→T : (kb : K□) {i : ℕ} {w : 𝕎·} (P : ℕ → Set) {T f : CTerm}
-                          (tyn : type-#⇛!-NUM P T) (f∈ : ∈Type i w (#FUN #NAT (#NOWRITE T)) f)
+                          (tyn : type-#⇛!-NUM P T) (f∈ : ∈Type i w (#FUN #NAT (#NOWRITEMOD T)) f)
                           → isType i w T
                           → #⇛!-NUM-type P T
                           → type-preserves-#⇛ T
@@ -281,17 +281,17 @@ NAT→T2𝕊-equalIn-NAT→T kb {i} {w} P {T} {f} tyn f∈ tyt nty prest =
                   comp rewrite eqn = APPLY-MSEQ⇛ w3 s ⌜ a₂ ⌝ k (∀𝕎-mon e3 c₂)
 
 
-type-preserves-#⇛-NOWRITE : {T : CTerm} {i : ℕ} {w : 𝕎·} {a₁ a₂ b₁ b₂ : CTerm}
+type-preserves-#⇛-NOWRITEMOD : {T : CTerm} {i : ℕ} {w : 𝕎·} {a₁ a₂ b₁ b₂ : CTerm}
                             → type-preserves-#⇛ T
                             → a₁ #⇛! a₂ at w
                             → b₁ #⇛! b₂ at w
-                            → equalInType i w (#NOWRITE T) a₂ b₂
-                            → equalInType i w (#NOWRITE T) a₁ b₁
-type-preserves-#⇛-NOWRITE {T} {i} {w} {a₁} {a₂} {b₁} {b₂} prest c₁ c₂ a∈ =
-  →equalInTypeNOWRITE (Mod.∀𝕎-□Func M aw (equalInTypeNOWRITE→ a∈))
+                            → equalInType i w (#NOWRITEMOD T) a₂ b₂
+                            → equalInType i w (#NOWRITEMOD T) a₁ b₁
+type-preserves-#⇛-NOWRITEMOD {T} {i} {w} {a₁} {a₂} {b₁} {b₂} prest c₁ c₂ a∈ =
+  →equalInTypeNOWRITEMOD (Mod.∀𝕎-□Func M aw (equalInTypeNOWRITEMOD→ a∈))
   where
-    aw : ∀𝕎 w (λ w' e' → NOWRITEeq (equalInType i w' T) w' a₂ b₂
-                        → NOWRITEeq (equalInType i w' T) w' a₁ b₁)
+    aw : ∀𝕎 w (λ w' e' → NOWRITEMODeq (equalInType i w' T) w' a₂ b₂
+                        → NOWRITEMODeq (equalInType i w' T) w' a₁ b₁)
     aw w1 e1 (x , d₁ , d₂) =
       prest i w1 a₁ a₂ b₁ b₂ (#⇛!→#⇛ {w1} {a₁} {a₂} (∀𝕎-mon e1 c₁)) (#⇛!→#⇛ {w1} {b₁} {b₂} (∀𝕎-mon e1 c₂)) x ,
       #⇛!-pres-#⇓→#⇓!-rev {w1} {a₂} {a₁} (∀𝕎-mon e1 c₁) d₁ ,
@@ -309,20 +309,21 @@ type-preserves-#⇛-NOWRITE {T} {i} {w} {a₁} {a₂} {b₁} {b₂} prest c₁ c
 
 NAT→T!2𝕊-equalInNAT! : (kb : K□) {i : ℕ} {w : 𝕎·} (P : ℕ → Set) {T f : CTerm}
                          (prest : type-preserves-#⇛ T) (nty : #⇛!-NUM-type P T)
-                         (tyn : type-#⇛!-NUM P T) (f∈ : ∈Type i w (#FUN #NAT (#NOWRITE T)) f) (k : ℕ)
-                         → equalInType i w (#NOWRITE T) (#APPLY f (#NUM k)) (#APPLY (#MSEQ (NAT→T!2𝕊 kb P tyn f∈)) (#NUM k))
+                         (tyn : type-#⇛!-NUM P T) (f∈ : ∈Type i w (#FUN #NAT (#NOWRITEMOD T)) f) (k : ℕ)
+                         → equalInType i w (#NOWRITEMOD T) (#APPLY f (#NUM k)) (#APPLY (#MSEQ (NAT→T!2𝕊 kb P tyn f∈)) (#NUM k))
 NAT→T!2𝕊-equalInNAT! kb {i} {w} P {T} {f} prest nty tyn f∈ k =
-  type-preserves-#⇛-NOWRITE {T} {i} {w} {#APPLY f (#NUM k)} {#NUM (NAT→T!2𝕊 kb P tyn f∈ k)}
-                            {#APPLY (#MSEQ (NAT→T!2𝕊 kb P tyn f∈)) (#NUM k)}
-                            {#NUM (NAT→T!2𝕊 kb P tyn f∈ k)}
-                            prest
-                            h2
-                            (#APPLY-MSEQ-NUM#⇛! (NAT→T!2𝕊 kb P tyn f∈) k w)
-                            h1
+  type-preserves-#⇛-NOWRITEMOD
+    {T} {i} {w} {#APPLY f (#NUM k)} {#NUM (NAT→T!2𝕊 kb P tyn f∈ k)}
+    {#APPLY (#MSEQ (NAT→T!2𝕊 kb P tyn f∈)) (#NUM k)}
+    {#NUM (NAT→T!2𝕊 kb P tyn f∈ k)}
+    prest
+    h2
+    (#APPLY-MSEQ-NUM#⇛! (NAT→T!2𝕊 kb P tyn f∈) k w)
+    h1
   where
-    h1 : equalInType i w (#NOWRITE T) (#NUM (NAT→T!2𝕊 kb P tyn f∈ k)) (#NUM (NAT→T!2𝕊 kb P tyn f∈ k))
+    h1 : equalInType i w (#NOWRITEMOD T) (#NUM (NAT→T!2𝕊 kb P tyn f∈ k)) (#NUM (NAT→T!2𝕊 kb P tyn f∈ k))
     h1 with kb (tyn {i} {w} {#APPLY f (#NUM  k)} {#APPLY f (#NUM k)} (equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM k) (#NUM k) (NUM-equalInType-NAT i w k)) ) w (⊑-refl· w)
-    ... | j , c₁ , c₂ , cj = #⇛!-NUM-type-NOWRITE P T i w j nty cj
+    ... | j , c₁ , c₂ , cj = #⇛!-NUM-type-NOWRITEMOD P T i w j nty cj
 
     h2 : #APPLY f (#NUM k) #⇛! #NUM (NAT→T!2𝕊 kb P tyn f∈ k) at w
     h2 with kb (tyn {i} {w} {#APPLY f (#NUM  k)} {#APPLY f (#NUM k)} (equalInType-FUN→ f∈ w (⊑-refl· w) (#NUM k) (#NUM k) (NUM-equalInType-NAT i w k)) ) w (⊑-refl· w)
@@ -337,7 +338,7 @@ semCond : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get
           → type-preserves-#⇛ T
           → isType i w T
           → ∈Type i w (#FunBarP T) F
-          → ∈Type i w (#FUN #NAT (#NOWRITE T)) f
+          → ∈Type i w (#FUN #NAT (#NOWRITEMOD T)) f
           → equalInType i w #NAT (#APPLY F f) (#follow f (#tab F 0 #INIT) 0)
 -- It's a #QNAT and not a #NAT because of the computation on #tab, which is a "time-dependent" computation
 semCond kb cn can exb gc i w P T F f p0 nty tyn prest tyt F∈P f∈ =
@@ -363,7 +364,7 @@ semCond kb cn can exb gc i w P T F f p0 nty tyn prest tyt F∈P f∈ =
     I∈ : ∈Type i w (#IndBar T) I
     I∈ = sem kb cn can exb gc i w P T F p0 prest (type-#⇛-NUM→! P T tyn) nty tyt F∈P
 
-    f≡1 : (k : ℕ) → equalInType i w (#NOWRITE T) (#APPLY f (#NUM k)) (#APPLY (#MSEQ s) (#NUM k))
+    f≡1 : (k : ℕ) → equalInType i w (#NOWRITEMOD T) (#APPLY f (#NUM k)) (#APPLY (#MSEQ s) (#NUM k))
     f≡1 k = NAT→T!2𝕊-equalInNAT! kb P prest nty (type-#⇛-NUM→! P T tyn) f∈ k
 
     f≡2 : equalInType i w (#FUN #NAT T) f (#MSEQ s)

@@ -512,8 +512,8 @@ Term→ℕ (MSEQ x) = 0
 Term→ℕ (MAPP x t) = 0
 Term→ℕ (TSQUASH t) = 35 + (Term→ℕ t * #cons)
 --Term→ℕ (TTRUNC t) = 40 + (Term→ℕ t * #cons)
-Term→ℕ (NOWRITE t) = 36 + (Term→ℕ t * #cons)
-Term→ℕ (NOREAD t) = 37 + (Term→ℕ t * #cons)
+Term→ℕ NOWRITE = 36
+Term→ℕ NOREAD = 37
 Term→ℕ (SUBSING t) = 38 + (Term→ℕ t * #cons)
 Term→ℕ (DUM t) = 39 + (Term→ℕ t * #cons)
 Term→ℕ (FFDEFS t t₁) = 40 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
@@ -757,8 +757,8 @@ suc-/≤ n m d0 = ≤-trans (suc-/m n m) (suc/≤ n d0)
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))) = ℕ→Term-aux₂ n (λ ()) ind 33 CHOOSE
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 34 LOAD
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 35 TSQUASH
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 36 NOWRITE
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 37 NOREAD
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))) = NOWRITE
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))) = NOREAD
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 38 SUBSING
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 39 DUM
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))) = ℕ→Term-aux₂ n (λ ()) ind 40 FFDEFS
@@ -1236,13 +1236,13 @@ abstract
 
 
 -- From terms3
-≡NOWRITE : {a b : Term} → a ≡ b → NOWRITE a ≡ NOWRITE b
-≡NOWRITE {a} {b} x rewrite x = refl
+--≡NOWRITE : {a b : Term} → a ≡ b → NOWRITE a ≡ NOWRITE b
+--≡NOWRITE {a} {b} x rewrite x = refl
 
 
 -- From terms3
-≡NOREAD : {a b : Term} → a ≡ b → NOREAD a ≡ NOREAD b
-≡NOREAD {a} {b} x rewrite x = refl
+--≡NOREAD : {a b : Term} → a ≡ b → NOREAD a ≡ NOREAD b
+--≡NOREAD {a} {b} x rewrite x = refl
 
 
 -- From terms3

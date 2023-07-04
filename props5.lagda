@@ -159,11 +159,11 @@ equalInType-PROD→ {u} {w} {A} {B} {f} {g} eqi =
 
 
 UNION! : Term → Term → Term
-UNION! a b = NOWRITE (UNION a b)
+UNION! a b = NOWRITEMOD (UNION a b)
 
 
 #UNION! : CTerm → CTerm → CTerm
-#UNION! a b = #NOWRITE (#UNION a b)
+#UNION! a b = #NOWRITEMOD (#UNION a b)
 
 
 UNION!eq : (eqa eqb : per) → wper
@@ -195,9 +195,9 @@ equalInType-UNION!→ : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
                        → equalInType n w (#UNION! A B) a b
                        → □· w (λ w' _ → UNION!eq (equalInType n w' A) (equalInType n w' B) w' a b)
 equalInType-UNION!→ {n} {w} {A} {B} {a} {b} equ =
-  Mod.□-idem M (Mod.∀𝕎-□Func M aw1 (equalInTypeNOWRITE→ equ))
+  Mod.□-idem M (Mod.∀𝕎-□Func M aw1 (equalInTypeNOWRITEMOD→ equ))
   where
-    aw1 : ∀𝕎 w (λ w' e' → NOWRITEeq (equalInType n w' (#UNION A B)) w' a b
+    aw1 : ∀𝕎 w (λ w' e' → NOWRITEMODeq (equalInType n w' (#UNION A B)) w' a b
                         → Mod.□ M w' (↑wPred' (λ w'' _ → UNION!eq (equalInType n w'' A) (equalInType n w'' B) w'' a b) e'))
     aw1 w1 e1 (equ1 , c1 , c2) = Mod.∀𝕎-□Func M aw2 (equalInType-UNION→ {n} {w1} {A} {B} equ1)
       where
@@ -234,10 +234,10 @@ equalInType-UNION!→ {n} {w} {A} {B} {a} {b} equ =
                        → □· w (λ w' _ → UNION!eq (equalInType n w' A) (equalInType n w' B) w' a b)
                        → equalInType n w (#UNION! A B) a b
 →equalInType-UNION! {n} {w} {A} {B} {a} {b} ista istb equ =
-  →equalInTypeNOWRITE (Mod.∀𝕎-□Func M aw equ)
+  →equalInTypeNOWRITEMOD (Mod.∀𝕎-□Func M aw equ)
   where
     aw : ∀𝕎 w (λ w' e' → UNION!eq (equalInType n w' A) (equalInType n w' B) w' a b
-                        → NOWRITEeq (equalInType n w' (#UNION A B)) w' a b)
+                        → NOWRITEMODeq (equalInType n w' (#UNION A B)) w' a b)
     aw w1 e1 (x , y , inj₁ (c1 , c2 , equ1)) =
       →equalInType-UNION
         (eqTypes-mon (uni n) ista w1 e1)
@@ -260,7 +260,7 @@ eqTypesUNION!← : {w : 𝕎·} {i : ℕ} {A B C D : CTerm}
                   → equalTypes i w A B
                   → equalTypes i w C D
                   → equalTypes i w (#UNION! A C) (#UNION! B D)
-eqTypesUNION!← {w} {i} {A} {B} {C} {D} eq1 eq2 = eqTypesNOWRITE← (eqTypesUNION← eq1 eq2)
+eqTypesUNION!← {w} {i} {A} {B} {C} {D} eq1 eq2 = eqTypesNOWRITEMOD← (eqTypesUNION← eq1 eq2)
 
 
 NATeq-mon : {w1 w2 : 𝕎·} (e : w1 ⊑· w2) {a1 a2 : CTerm}

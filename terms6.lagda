@@ -116,8 +116,8 @@ abstract
   differ-refl name1 name2 f (CHOOSE t t₁) nn = differ-CHOOSE _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
   differ-refl name1 name2 f (TSQUASH t) nn = differ-TSQUASH _ _ (differ-refl name1 name2 f t nn)
 --  differ-refl name1 name2 f (TTRUNC t) nn = differ-TTRUNC _ _ (differ-refl name1 name2 f t nn)
-  differ-refl name1 name2 f (NOWRITE t) nn = differ-NOWRITE _ _ (differ-refl name1 name2 f t nn)
-  differ-refl name1 name2 f (NOREAD t) nn = differ-NOREAD _ _ (differ-refl name1 name2 f t nn)
+  differ-refl name1 name2 f NOWRITE nn = differ-NOWRITE
+  differ-refl name1 name2 f NOREAD  nn = differ-NOREAD
   differ-refl name1 name2 f (SUBSING t) nn = differ-SUBSING _ _ (differ-refl name1 name2 f t nn)
   differ-refl name1 name2 f (PURE) nn = differ-PURE
   differ-refl name1 name2 f (NOSEQ) nn = differ-NOSEQ
@@ -713,8 +713,8 @@ abstract
   -- TSQUASH
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(TSQUASH a) .(TSQUASH b) a' v k compat1 compat2 agtn (differ-TSQUASH a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TSQUASH a , TSQUASH b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TSQUASH _ _ diff , g0
 --  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(TTRUNC a) .(TTRUNC b) a' v k compat1 compat2 agtn (differ-TTRUNC a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TTRUNC a , TTRUNC b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TTRUNC _ _ diff , g0
-  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(NOWRITE a) .(NOWRITE b) a' v k compat1 compat2 agtn (differ-NOWRITE a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NOWRITE a , NOWRITE b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NOWRITE _ _ diff , g0
-  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(NOREAD a) .(NOREAD b) a' v k compat1 compat2 agtn (differ-NOREAD a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NOREAD a , NOREAD b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NOREAD _ _ diff , g0
+  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(NOWRITE) .(NOWRITE) a' v k compat1 compat2 agtn differ-NOWRITE g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NOWRITE , NOWRITE , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NOWRITE , g0
+  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(NOREAD) .(NOREAD) a' v k compat1 compat2 agtn differ-NOREAD g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NOREAD , NOREAD , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NOREAD , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(SUBSING a) .(SUBSING b) a' v k compat1 compat2 agtn (differ-SUBSING a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = SUBSING a , SUBSING b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-SUBSING _ _ diff , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(PURE) .(PURE) a' v k compat1 compat2 agtn (differ-PURE) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = PURE , PURE , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-PURE , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(NOSEQ) .(NOSEQ) a' v k compat1 compat2 agtn (differ-NOSEQ) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NOSEQ , NOSEQ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NOSEQ , g0
@@ -1526,8 +1526,8 @@ abstract
   ¬Names→shiftNameUp≡ (CHOOSE t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
   ¬Names→shiftNameUp≡ (TSQUASH t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
 --  ¬Names→shiftNameUp≡ (TTRUNC t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
-  ¬Names→shiftNameUp≡ (NOWRITE t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
-  ¬Names→shiftNameUp≡ (NOREAD t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+  ¬Names→shiftNameUp≡ NOWRITE n nnt = refl
+  ¬Names→shiftNameUp≡ NOREAD  n nnt = refl
   ¬Names→shiftNameUp≡ (SUBSING t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
   ¬Names→shiftNameUp≡ (PURE) n nnt = refl
   ¬Names→shiftNameUp≡ (NOSEQ) n nnt = refl

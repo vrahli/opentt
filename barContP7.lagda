@@ -709,7 +709,7 @@ INR→!≡∈Type-IndBarC : (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T x a b c 
 INR→!≡∈Type-IndBarC i w P T x a b c tyn comp j rewrite sub0-IndBarC≡ T x =
   Mod.∀𝕎-□Func M (λ w1 e1 z → z) (tyn j1)
   where
-    j1 : equalInType i w (#NOWRITE T) b c
+    j1 : equalInType i w (#NOWRITEMOD T) b c
     j1 = equalInType-#⇛ (#DECIDE⇛INR⇛! w T x a #[0]VOID comp) j
 
 
@@ -730,14 +730,14 @@ equalInType-#⇛-rev {i} {w} {T} {U} {a} {b} comp e =
 
 sub0-indBarC⇛INR⇛! : (w : 𝕎·) (T x a : CTerm)
                            → x #⇛! #INR a at w
-                           → sub0 x (#IndBarC T) #⇛! #NOWRITE T at w
+                           → sub0 x (#IndBarC T) #⇛! #NOWRITEMOD T at w
 sub0-indBarC⇛INR⇛! w T x a comp =
   #⇛!-trans
-    {w} {sub0 x (#IndBarC T)} {#DECIDE x #[0]VOID (#[0]shiftUp0 (#NOWRITE T))} {#NOWRITE T}
-    (≡→#⇛! w (sub0 x (#IndBarC T)) (#DECIDE x #[0]VOID (#[0]shiftUp0 (#NOWRITE T))) (CTerm≡ e))
+    {w} {sub0 x (#IndBarC T)} {#DECIDE x #[0]VOID (#[0]shiftUp0 (#NOWRITEMOD T))} {#NOWRITEMOD T}
+    (≡→#⇛! w (sub0 x (#IndBarC T)) (#DECIDE x #[0]VOID (#[0]shiftUp0 (#NOWRITEMOD T))) (CTerm≡ e))
     (#DECIDE⇛INR⇛! w T x a #[0]VOID comp)
   where
-    e : ⌜ sub0 x (#IndBarC T) ⌝ ≡ ⌜ #DECIDE x #[0]VOID (#[0]shiftUp0 (#NOWRITE T)) ⌝
+    e : ⌜ sub0 x (#IndBarC T) ⌝ ≡ ⌜ #DECIDE x #[0]VOID (#[0]shiftUp0 (#NOWRITEMOD T)) ⌝
     e rewrite #shiftUp 0 x | #shiftUp 0 x | #shiftDown 0 x | #shiftUp 0 T | #shiftUp 0 T
             | #subv 1 ⌜ x ⌝ ⌜ T ⌝ (CTerm.closed T) | #shiftDown 1 T = refl
 
@@ -761,14 +761,14 @@ sub0-indBarC⇛INR⇛! w T x a comp =
         | #SUPinj2 {a2} {f2} {a1} {f1} (#⇓-val-det {_} {I} tt tt c2 c1) = h
 
 
-#⇛!-NUM-type-NOWRITE : (P : ℕ → Set) (T : CTerm) (i : ℕ) (w : 𝕎·) (n : ℕ)
-                       → #⇛!-NUM-type P T
-                       → P n
-                       → ∈Type i w (#NOWRITE T) (#NUM n)
-#⇛!-NUM-type-NOWRITE P T i w n nty pn =
-  →equalInTypeNOWRITE (Mod.∀𝕎-□ M aw)
+#⇛!-NUM-type-NOWRITEMOD : (P : ℕ → Set) (T : CTerm) (i : ℕ) (w : 𝕎·) (n : ℕ)
+                        → #⇛!-NUM-type P T
+                        → P n
+                        → ∈Type i w (#NOWRITEMOD T) (#NUM n)
+#⇛!-NUM-type-NOWRITEMOD P T i w n nty pn =
+  →equalInTypeNOWRITEMOD (Mod.∀𝕎-□ M aw)
   where
-    aw : ∀𝕎 w (λ w' _ → NOWRITEeq (equalInType i w' T) w' (#NUM n) (#NUM n))
+    aw : ∀𝕎 w (λ w' _ → NOWRITEMODeq (equalInType i w' T) w' (#NUM n) (#NUM n))
     aw w1 e1 = nty {i} {w1} {n} pn , #⇓→#⇓!-NUM w1 n , #⇓→#⇓!-NUM w1 n
 
 
@@ -776,7 +776,7 @@ weq→follow-NATeq : (kb : K□) (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T I1 
                      → type-#⇛!-NUM P T
                      → #⇛!-NUM-type P T
                      → weq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T))) w I1 I2
-                     → ((k : ℕ) → equalInType i w (#NOWRITE T) (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
+                     → ((k : ℕ) → equalInType i w (#NOWRITEMOD T) (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
                      → NATeq {--#⇓sameℕ--} w (#follow f I1 k) (#follow g I2 k)
 weq→follow-NATeq kb i w P T I1 I2 f g k tyn nty (weqC a1 f1 a2 f2 e c1 c2 ind) eqf
   with kb (equalInType-IndBarB→ i w a1 a2 e) w (⊑-refl· w)
@@ -797,7 +797,7 @@ weq→follow-NATeq kb i w P T I1 I2 f g k tyn nty (weqC a1 f1 a2 f2 e c1 c2 ind)
       comp1 comp2
       ind'
       where
-        eqf0 : equalInType i w (#NOWRITE T) (#APPLY f (#NUM k)) (#APPLY g (#NUM k))
+        eqf0 : equalInType i w (#NOWRITEMOD T) (#APPLY f (#NUM k)) (#APPLY g (#NUM k))
         eqf0 = eqf k
 
         eqf1 : equalInType i w (sub0 a1 (#IndBarC T)) (#APPLY f (#NUM k)) (#APPLY g (#NUM k))
@@ -822,7 +822,7 @@ weq→follow-NATeq kb i w P T I1 I2 f g k tyn nty (weqC a1 f1 a2 f2 e c1 c2 ind)
         pj = snd (snd (snd eqf3))
 
         eqj : equalInType i w (sub0 a1 (#IndBarC T)) (#NUM j) (#NUM j)
-        eqj = equalInType-#⇛-rev (sub0-indBarC⇛INR⇛! w T a1 t d1) (#⇛!-NUM-type-NOWRITE P T i w j nty pj)
+        eqj = equalInType-#⇛-rev (sub0-indBarC⇛INR⇛! w T a1 t d1) (#⇛!-NUM-type-NOWRITEMOD P T i w j nty pj)
 
         ind' : NATeq {--#⇓sameℕ--} w (#follow f (#APPLY f1 (#NUM j)) (suc k)) (#follow g (#APPLY f2 (#NUM j)) (suc k))
         ind' = weq→follow-NATeq kb i w P T (#APPLY f1 (#NUM j)) (#APPLY f2 (#NUM j)) f g (suc k) tyn nty (ind (#NUM j) (#NUM j) eqj) eqf
@@ -996,7 +996,7 @@ NUM∈sub0-IndBarc : (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T a x : CTerm) (k
                     → a #⇛! #INR x at w
                     → ∈Type i w (sub0 a (#IndBarC T)) (#NUM k)
 NUM∈sub0-IndBarc i w P T a x k pk nty comp =
-  equalInType-#⇛-rev (sub0-indBarC⇛INR⇛! w T a x comp) (#⇛!-NUM-type-NOWRITE P T i w k nty pk)
+  equalInType-#⇛-rev (sub0-indBarC⇛INR⇛! w T a x comp) (#⇛!-NUM-type-NOWRITEMOD P T i w k nty pk)
 -- (NUM-equalInType-NAT! i w k)
 
 

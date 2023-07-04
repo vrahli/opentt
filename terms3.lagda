@@ -184,8 +184,8 @@ data differ (name1 name2 : Name) (f : Term) : Term → Term → Set where
 --  differ-IFC0    : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → differ name1 name2 f a₁ a₂ → differ name1 name2 f b₁ b₂ → differ name1 name2 f c₁ c₂ → differ name1 name2 f (IFC0 a₁ b₁ c₁) (IFC0 a₂ b₂ c₂)
   differ-TSQUASH : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (TSQUASH a) (TSQUASH b)
 --  differ-TTRUNC  : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (TTRUNC a) (TTRUNC b)
-  differ-NOWRITE : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (NOWRITE a) (NOWRITE b)
-  differ-NOREAD  : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (NOREAD a) (NOREAD b)
+  differ-NOWRITE : differ name1 name2 f NOWRITE NOWRITE
+  differ-NOREAD  : differ name1 name2 f NOREAD  NOREAD
   differ-SUBSING : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (SUBSING a) (SUBSING b)
   differ-PURE    : differ name1 name2 f PURE PURE
   differ-NOSEQ   : differ name1 name2 f NOSEQ NOSEQ
@@ -323,8 +323,8 @@ abstract
   --→differ-shiftUp v {name1} {name2} {f} cf {.(IFC0 a₁ b₁ c₁)} {.(IFC0 a₂ b₂ c₂)} (differ-IFC0 a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-IFC0 _ _ _ _ _ _ (→differ-shiftUp v cf diff) (→differ-shiftUp v cf diff₁) (→differ-shiftUp v cf diff₂)
   →differ-shiftUp v {name1} {name2} {f} cf {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQUASH a b diff) = differ-TSQUASH _ _ (→differ-shiftUp v cf diff)
 --  →differ-shiftUp v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftUp v cf diff)
-  →differ-shiftUp v {name1} {name2} {f} cf {.(NOWRITE a)} {.(NOWRITE b)} (differ-NOWRITE a b diff) = differ-NOWRITE _ _ (→differ-shiftUp v cf diff)
-  →differ-shiftUp v {name1} {name2} {f} cf {.(NOREAD a)} {.(NOREAD b)} (differ-NOREAD a b diff) = differ-NOREAD _ _ (→differ-shiftUp v cf diff)
+  →differ-shiftUp v {name1} {name2} {f} cf {.(NOWRITE)} {.(NOWRITE)} differ-NOWRITE = differ-NOWRITE
+  →differ-shiftUp v {name1} {name2} {f} cf {.(NOREAD)} {.(NOREAD)} differ-NOREAD = differ-NOREAD
   →differ-shiftUp v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftUp v cf diff)
   →differ-shiftUp v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
   →differ-shiftUp v {name1} {name2} {f} cf {.(NOSEQ)} {.(NOSEQ)} (differ-NOSEQ) = differ-NOSEQ
@@ -452,12 +452,12 @@ abstract
 --≡TTRUNC {a} {b} e rewrite e = refl
 
 
-≡NOWRITE : {a b : Term} → a ≡ b → NOWRITE a ≡ NOWRITE b
-≡NOWRITE {a} {b} e rewrite e = refl
+--≡NOWRITE : {a b : Term} → a ≡ b → NOWRITE a ≡ NOWRITE b
+--≡NOWRITE {a} {b} e rewrite e = refl
 
 
-≡NOREAD : {a b : Term} → a ≡ b → NOREAD a ≡ NOREAD b
-≡NOREAD {a} {b} e rewrite e = refl
+--≡NOREAD : {a b : Term} → a ≡ b → NOREAD a ≡ NOREAD b
+--≡NOREAD {a} {b} e rewrite e = refl
 
 
 ≡SUBSING : {a b : Term} → a ≡ b → SUBSING a ≡ SUBSING b
@@ -659,8 +659,8 @@ abstract
   shiftNameUp-shiftNameUp {i} {j} {CHOOSE t t₁} imp = ≡CHOOSE (shiftNameUp-shiftNameUp {i} {j} {t} imp) (shiftNameUp-shiftNameUp {i} {j} {t₁} imp)
   shiftNameUp-shiftNameUp {i} {j} {TSQUASH t} imp = ≡TSQUASH (shiftNameUp-shiftNameUp {i} {j} {t} imp)
 --  shiftNameUp-shiftNameUp {i} {j} {TTRUNC t} imp = ≡TTRUNC (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-  shiftNameUp-shiftNameUp {i} {j} {NOWRITE t} imp = ≡NOWRITE (shiftNameUp-shiftNameUp {i} {j} {t} imp)
-  shiftNameUp-shiftNameUp {i} {j} {NOREAD t} imp = ≡NOREAD (shiftNameUp-shiftNameUp {i} {j} {t} imp)
+  shiftNameUp-shiftNameUp {i} {j} {NOWRITE} imp = refl
+  shiftNameUp-shiftNameUp {i} {j} {NOREAD} imp = refl
   shiftNameUp-shiftNameUp {i} {j} {SUBSING t} imp = ≡SUBSING (shiftNameUp-shiftNameUp {i} {j} {t} imp)
   shiftNameUp-shiftNameUp {i} {j} {PURE} imp = refl
   shiftNameUp-shiftNameUp {i} {j} {NOSEQ} imp = refl
@@ -758,8 +758,8 @@ abstract
   --→differ-shiftNameUp v {name1} {name2} {f} cf {.(IFC0 a₁ b₁ c₁)} {.(IFC0 a₂ b₂ c₂)} (differ-IFC0 a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-IFC0 _ _ _ _ _ _ (→differ-shiftNameUp v cf diff) (→differ-shiftNameUp v cf diff₁) (→differ-shiftNameUp v cf diff₂)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQUASH a b diff) = differ-TSQUASH _ _ (→differ-shiftNameUp v cf diff)
 --  →differ-shiftNameUp v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftNameUp v cf diff)
-  →differ-shiftNameUp v {name1} {name2} {f} cf {.(NOWRITE a)} {.(NOWRITE b)} (differ-NOWRITE a b diff) = differ-NOWRITE _ _ (→differ-shiftNameUp v cf diff)
-  →differ-shiftNameUp v {name1} {name2} {f} cf {.(NOREAD a)} {.(NOREAD b)} (differ-NOREAD a b diff) = differ-NOREAD _ _ (→differ-shiftNameUp v cf diff)
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(NOWRITE)} {.(NOWRITE)} differ-NOWRITE = differ-NOWRITE
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(NOREAD)} {.(NOREAD)} differ-NOREAD =  differ-NOREAD
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftNameUp v cf diff)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(NOSEQ)} {.(NOSEQ)} (differ-NOSEQ) = differ-NOSEQ
@@ -858,8 +858,8 @@ abstract
   --differ-subv {name1} {name2} {f} cf v {.(IFC0 a₁ b₃ c₁)} {.(IFC0 a₂ b₄ c₂)} {b₁} {b₂} (differ-IFC0 a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₃ d₄) d₂ = differ-IFC0 _ _ _ _ _ _ (differ-subv cf v d₁ d₂) (differ-subv cf v d₃ d₂) (differ-subv cf v d₄ d₂)
   differ-subv {name1} {name2} {f} cf v {.(TSQUASH a)} {.(TSQUASH b)} {b₁} {b₂} (differ-TSQUASH a b d₁) d₂ = differ-TSQUASH _ _ (differ-subv cf v d₁ d₂)
 --  differ-subv {name1} {name2} {f} cf v {.(TTRUNC a)} {.(TTRUNC b)} {b₁} {b₂} (differ-TTRUNC a b d₁) d₂ = differ-TTRUNC _ _ (differ-subv cf v d₁ d₂)
-  differ-subv {name1} {name2} {f} cf v {.(NOWRITE a)} {.(NOWRITE b)} {b₁} {b₂} (differ-NOWRITE a b d₁) d₂ = differ-NOWRITE _ _ (differ-subv cf v d₁ d₂)
-  differ-subv {name1} {name2} {f} cf v {.(NOREAD a)} {.(NOREAD b)} {b₁} {b₂} (differ-NOREAD a b d₁) d₂ = differ-NOREAD _ _ (differ-subv cf v d₁ d₂)
+  differ-subv {name1} {name2} {f} cf v {.(NOWRITE)} {.(NOWRITE)} {b₁} {b₂} differ-NOWRITE d₂ = differ-NOWRITE
+  differ-subv {name1} {name2} {f} cf v {.(NOREAD)} {.(NOREAD)} {b₁} {b₂} differ-NOREAD d₂ = differ-NOREAD
   differ-subv {name1} {name2} {f} cf v {.(SUBSING a)} {.(SUBSING b)} {b₁} {b₂} (differ-SUBSING a b d₁) d₂ = differ-SUBSING _ _ (differ-subv cf v d₁ d₂)
   differ-subv {name1} {name2} {f} cf v {.(PURE)} {.(PURE)} {b₁} {b₂} (differ-PURE) d₂ = differ-PURE
   differ-subv {name1} {name2} {f} cf v {.(NOSEQ)} {.(NOSEQ)} {b₁} {b₂} (differ-NOSEQ) d₂ = differ-NOSEQ
@@ -928,8 +928,8 @@ abstract
   --→differ-shiftDown v {name1} {name2} {f} cf {.(IFC0 a₁ b₁ c₁)} {.(IFC0 a₂ b₂ c₂)} (differ-IFC0 a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differ-IFC0 _ _ _ _ _ _ (→differ-shiftDown v cf diff) (→differ-shiftDown v cf diff₁) (→differ-shiftDown v cf diff₂)
   →differ-shiftDown v {name1} {name2} {f} cf {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQUASH a b diff) = differ-TSQUASH _ _ (→differ-shiftDown v cf diff)
 --  →differ-shiftDown v {name1} {name2} {f} cf {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) = differ-TTRUNC _ _ (→differ-shiftDown v cf diff)
-  →differ-shiftDown v {name1} {name2} {f} cf {.(NOWRITE a)} {.(NOWRITE b)} (differ-NOWRITE a b diff) = differ-NOWRITE _ _ (→differ-shiftDown v cf diff)
-  →differ-shiftDown v {name1} {name2} {f} cf {.(NOREAD a)} {.(NOREAD b)} (differ-NOREAD a b diff) = differ-NOREAD _ _ (→differ-shiftDown v cf diff)
+  →differ-shiftDown v {name1} {name2} {f} cf {.(NOWRITE)} {.(NOWRITE)} differ-NOWRITE = differ-NOWRITE
+  →differ-shiftDown v {name1} {name2} {f} cf {.(NOREAD)} {.(NOREAD)} differ-NOREAD = differ-NOREAD
   →differ-shiftDown v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftDown v cf diff)
   →differ-shiftDown v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
   →differ-shiftDown v {name1} {name2} {f} cf {.(NOSEQ)} {.(NOSEQ)} (differ-NOSEQ) = differ-NOSEQ
@@ -990,8 +990,8 @@ abstract
   --differ-isValue→ {name1} {name2} {f} {.(FRESH a)} {.(FRESH b)} (differ-FRESH a b diff) ()
   differ-isValue→ {name1} {name2} {f} {.(TSQUASH a)} {.(TSQUASH b)} (differ-TSQUASH a b diff) isv = tt
 --  differ-isValue→ {name1} {name2} {f} {.(TTRUNC a)} {.(TTRUNC b)} (differ-TTRUNC a b diff) isv = tt
-  differ-isValue→ {name1} {name2} {f} {.(NOWRITE a)} {.(NOWRITE b)} (differ-NOWRITE a b diff) isv = tt
-  differ-isValue→ {name1} {name2} {f} {.(NOREAD a)} {.(NOREAD b)} (differ-NOREAD a b diff) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(NOWRITE)} {.(NOWRITE)} differ-NOWRITE isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(NOREAD)} {.(NOREAD)} differ-NOREAD isv = tt
   differ-isValue→ {name1} {name2} {f} {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(PURE)} {.(PURE)} (differ-PURE) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(NOSEQ)} {.(NOSEQ)} (differ-NOSEQ) isv = tt

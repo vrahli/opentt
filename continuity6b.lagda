@@ -603,8 +603,8 @@ abstract
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} {l} {k} sub nad nbd (updRel2-CHOOSE a₁ a₂ b₁ b₂ upd₁ upd₂) = updRel2-CHOOSE _ _ _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→1 {names a₁} {names b₁} nad) (++⊆2→1 {names a₂} {names b₂} nbd) upd₁) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→2 {names a₁} {names b₁} nad) (++⊆2→2 {names a₂} {names b₂} nbd) upd₂)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(TSQUASH a₁)} {.(TSQUASH a₂)} {l} {k} sub nad nbd (updRel2-TSQUASH a₁ a₂ upd₁) = updRel2-TSQUASH _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
 --  updRel2-ren-mon {name} {f} {g} {r} {r'} {.(TTRUNC a₁)} {.(TTRUNC a₂)} {l} {k} sub nad nbd (updRel2-TTRUNC a₁ a₂ upd₁) = updRel2-TTRUNC _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
-  updRel2-ren-mon {name} {f} {g} {r} {r'} {.(NOWRITE a₁)} {.(NOWRITE a₂)} {l} {k} sub nad nbd (updRel2-NOWRITE a₁ a₂ upd₁) = updRel2-NOWRITE _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
-  updRel2-ren-mon {name} {f} {g} {r} {r'} {.(NOREAD a₁)} {.(NOREAD a₂)} {l} {k} sub nad nbd (updRel2-NOREAD a₁ a₂ upd₁) = updRel2-NOREAD _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
+  updRel2-ren-mon {name} {f} {g} {r} {r'} {.NOWRITE} {.NOWRITE} {l} {k} sub nad nbd updRel2-NOWRITE = updRel2-NOWRITE
+  updRel2-ren-mon {name} {f} {g} {r} {r'} {.NOREAD}  {.NOREAD}  {l} {k} sub nad nbd updRel2-NOREAD  = updRel2-NOREAD
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(SUBSING a₁)} {.(SUBSING a₂)} {l} {k} sub nad nbd (updRel2-SUBSING a₁ a₂ upd₁) = updRel2-SUBSING _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.PURE} {.PURE} {l} {k} sub nad nbd updRel2-PURE = updRel2-PURE
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.NOSEQ} {.NOSEQ} {l} {k} sub nad nbd updRel2-NOSEQ = updRel2-NOSEQ
@@ -1367,8 +1367,8 @@ abstract
   updRel2-valₗ→ name f g r .(NAME name1) .(NAME name2) (updRel2-NAME name1 name2 x x₁ x₂) isv = isv
   updRel2-valₗ→ name f g r .(TSQUASH a₁) .(TSQUASH a₂) (updRel2-TSQUASH a₁ a₂ upd₁) isv = isv
 --  updRel2-valₗ→ name f g r .(TTRUNC a₁) .(TTRUNC a₂) (updRel2-TTRUNC a₁ a₂ upd₁) isv = isv
-  updRel2-valₗ→ name f g r .(NOWRITE a₁) .(NOWRITE a₂) (updRel2-NOWRITE a₁ a₂ upd₁) isv = isv
-  updRel2-valₗ→ name f g r .(NOREAD a₁) .(NOREAD a₂) (updRel2-NOREAD a₁ a₂ upd₁) isv = isv
+  updRel2-valₗ→ name f g r .NOWRITE .NOWRITE updRel2-NOWRITE isv = isv
+  updRel2-valₗ→ name f g r .NOREAD  .NOREAD  updRel2-NOREAD  isv = isv
   updRel2-valₗ→ name f g r .(SUBSING a₁) .(SUBSING a₂) (updRel2-SUBSING a₁ a₂ upd₁) isv = isv
   updRel2-valₗ→ name f g r .PURE .PURE updRel2-PURE isv = isv
   updRel2-valₗ→ name f g r .NOSEQ .NOSEQ updRel2-NOSEQ isv = isv

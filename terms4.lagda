@@ -615,10 +615,10 @@ abstract
   -- TSQUASH
   ¬Names→step w1 w2 w3 (TSQUASH t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ x → x)
 --  ¬Names→step w1 w2 w3 (TTRUNC t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ x → x)
-  ¬Names→step w1 w2 w3 (NOWRITE t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ x → x)
-  ¬Names→step w1 w2 w3 (NOREAD t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ x → x)
+  ¬Names→step w1 w2 w3 NOWRITE u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ x → x)
+  ¬Names→step w1 w2 w3 NOREAD  u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ x → x)
   ¬Names→step w1 w2 w3 (SUBSING t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ x → x)
-  ¬Names→step w1 w2 w3 (PURE) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ x → x)
+  ¬Names→step w1 w2 w3 PURE u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ x → x)
   ¬Names→step w1 w2 w3 (NOSEQ) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ x → x)
   ¬Names→step w1 w2 w3 (TERM t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ x → x)
   ¬Names→step w1 w2 w3 (ENC t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) | nr = refl , refl , refl , (λ x → →∧≡true {noseq t ∧ true} {true} (→∧≡true {noseq t} {true} x refl) refl)
@@ -987,8 +987,8 @@ abstract
   names-shiftUp n (CHOOSE a a₁) rewrite names-shiftUp n a | names-shiftUp n a₁ = refl
   names-shiftUp n (TSQUASH a) = names-shiftUp n a
 --  names-shiftUp n (TTRUNC a) = names-shiftUp n a
-  names-shiftUp n (NOWRITE a) = names-shiftUp n a
-  names-shiftUp n (NOREAD a) = names-shiftUp n a
+  names-shiftUp n NOWRITE = refl
+  names-shiftUp n NOREAD  = refl
   names-shiftUp n (SUBSING a) = names-shiftUp n a
   names-shiftUp n (PURE) = refl
   names-shiftUp n (NOSEQ) = refl
@@ -1063,8 +1063,8 @@ abstract
   names-shiftDown n (CHOOSE a a₁) rewrite names-shiftDown n a | names-shiftDown n a₁ = refl
   names-shiftDown n (TSQUASH a) = names-shiftDown n a
 --  names-shiftDown n (TTRUNC a) = names-shiftDown n a
-  names-shiftDown n (NOWRITE a) = names-shiftDown n a
-  names-shiftDown n (NOREAD a) = names-shiftDown n a
+  names-shiftDown n NOWRITE = refl
+  names-shiftDown n NOREAD  = refl
   names-shiftDown n (SUBSING a) = names-shiftDown n a
   names-shiftDown n (PURE) = refl
   names-shiftDown n (NOSEQ) = refl
@@ -1323,8 +1323,8 @@ abstract
             | names-shiftNameUp≡ n t₁ = refl
   names-shiftNameUp≡ n (TSQUASH t) = names-shiftNameUp≡ n t
 --  names-shiftNameUp≡ n (TTRUNC t) = names-shiftNameUp≡ n t
-  names-shiftNameUp≡ n (NOWRITE t) = names-shiftNameUp≡ n t
-  names-shiftNameUp≡ n (NOREAD t) = names-shiftNameUp≡ n t
+  names-shiftNameUp≡ n NOWRITE = refl
+  names-shiftNameUp≡ n NOREAD  = refl
   names-shiftNameUp≡ n (SUBSING t) = names-shiftNameUp≡ n t
   names-shiftNameUp≡ n (PURE) = refl
   names-shiftNameUp≡ n (NOSEQ) = refl
@@ -1489,8 +1489,8 @@ abstract
             | names-shiftNameDown≡ n t₁ = refl
   names-shiftNameDown≡ n (TSQUASH t) = names-shiftNameDown≡ n t
 --  names-shiftNameDown≡ n (TTRUNC t) = names-shiftNameDown≡ n t
-  names-shiftNameDown≡ n (NOWRITE t) = names-shiftNameDown≡ n t
-  names-shiftNameDown≡ n (NOREAD t) = names-shiftNameDown≡ n t
+  names-shiftNameDown≡ n NOWRITE = refl
+  names-shiftNameDown≡ n NOREAD  = refl
   names-shiftNameDown≡ n (SUBSING t) = names-shiftNameDown≡ n t
   names-shiftNameDown≡ n (PURE) = refl
   names-shiftNameDown≡ n (NOSEQ) = refl
@@ -1569,8 +1569,8 @@ abstract
   ¬∈names-subv {x} {v} {a} {CHOOSE b b₁} na nb = →¬∈++2 {_} {_} {x} {names b} {names b₁} (¬∈names-subv {x} {v} {a} {b} na) (¬∈names-subv {x} {v} {a} {b₁} na) nb
   ¬∈names-subv {x} {v} {a} {TSQUASH b} na nb = ¬∈names-subv {x} {v} {a} {b} na nb
 --  ¬∈names-subv {x} {v} {a} {TTRUNC b} na nb = ¬∈names-subv {x} {v} {a} {b} na nb
-  ¬∈names-subv {x} {v} {a} {NOWRITE b} na nb = ¬∈names-subv {x} {v} {a} {b} na nb
-  ¬∈names-subv {x} {v} {a} {NOREAD b} na nb = ¬∈names-subv {x} {v} {a} {b} na nb
+  ¬∈names-subv {x} {v} {a} {NOWRITE} na nb = nb
+  ¬∈names-subv {x} {v} {a} {NOREAD}  na nb = nb
   ¬∈names-subv {x} {v} {a} {SUBSING b} na nb = ¬∈names-subv {x} {v} {a} {b} na nb
   ¬∈names-subv {x} {v} {a} {PURE} na nb = nb
   ¬∈names-subv {x} {v} {a} {NOSEQ} na nb = nb
@@ -1848,8 +1848,8 @@ abstract
   ... |    inj₂ k = inj₂ (∈-++⁺ʳ (names t) k)
   ∈names-renn→ {x} {a} {b} {TSQUASH t} i = ∈names-renn→ {x} {a} {b} {t} i
 --  ∈names-renn→ {x} {a} {b} {TTRUNC t} i = ∈names-renn→ {x} {a} {b} {t} i
-  ∈names-renn→ {x} {a} {b} {NOWRITE t} i = ∈names-renn→ {x} {a} {b} {t} i
-  ∈names-renn→ {x} {a} {b} {NOREAD t} i = ∈names-renn→ {x} {a} {b} {t} i
+  ∈names-renn→ {x} {a} {b} {NOWRITE} ()
+  ∈names-renn→ {x} {a} {b} {NOREAD} ()
   ∈names-renn→ {x} {a} {b} {SUBSING t} i = ∈names-renn→ {x} {a} {b} {t} i
   --∈names-renn→ {x} {a} {b} {PURE} i = {!!} --∈names-renn→ {x} {a} {b} {t} i
   --∈names-renn→ {x} {a} {b} {NOSEQ} i = {!!} --∈names-renn→ {x} {a} {b} {t} i
@@ -1988,8 +1988,8 @@ abstract
   ... | inj₂ j = fst (∈names-renn-same {a} {b} {t₁} j) , ∈-++⁺ʳ (names t) (snd (∈names-renn-same {a} {b} {t₁} j))
   ∈names-renn-same {a} {b} {TSQUASH t} i = ∈names-renn-same {a} {b} {t} i
 --  ∈names-renn-same {a} {b} {TTRUNC t} i = ∈names-renn-same {a} {b} {t} i
-  ∈names-renn-same {a} {b} {NOWRITE t} i = ∈names-renn-same {a} {b} {t} i
-  ∈names-renn-same {a} {b} {NOREAD t} i = ∈names-renn-same {a} {b} {t} i
+  ∈names-renn-same {a} {b} {NOWRITE} ()
+  ∈names-renn-same {a} {b} {NOREAD} ()
   ∈names-renn-same {a} {b} {SUBSING t} i = ∈names-renn-same {a} {b} {t} i
   --∈names-renn-same {a} {b} {PURE} i = {!!} --∈names-renn-same {a} {b} {t} i
   --∈names-renn-same {a} {b} {NOSEQ} i = {!!} --∈names-renn-same {a} {b} {t} i
@@ -2287,8 +2287,8 @@ abstract
   ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
   name¬∈→step cc w1 w2 (TSQUASH t) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
 --  name¬∈→step cc w1 w2 (TTRUNC t) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
-  name¬∈→step cc w1 w2 (NOWRITE t) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
-  name¬∈→step cc w1 w2 (NOREAD t) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
+  name¬∈→step cc w1 w2 NOWRITE u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
+  name¬∈→step cc w1 w2 NOREAD  u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
   name¬∈→step cc w1 w2 (SUBSING t) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
   name¬∈→step cc w1 w2 (PURE) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
   name¬∈→step cc w1 w2 (NOSEQ) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
