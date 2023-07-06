@@ -484,10 +484,10 @@ Term→ℕ (LAMBDA t) = 9 + (Term→ℕ t * #cons)
 Term→ℕ (APPLY t t₁) = 10 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
 Term→ℕ (FIX t) = 11 + (Term→ℕ t * #cons)
 Term→ℕ (LET t t₁) = 12 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
-Term→ℕ (WT t t₁) = 13 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (WT t t₁ t₂) = 13 + (pairing3 (Term→ℕ t , Term→ℕ t₁ , Term→ℕ t₂) * #cons)
 Term→ℕ (SUP t t₁) = 14 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
 Term→ℕ (WREC t t₁) = 15 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
-Term→ℕ (MT t t₁) = 16 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ (MT t t₁ t₂) = 16 + (pairing3 (Term→ℕ t , Term→ℕ t₁ , Term→ℕ t₂) * #cons)
 Term→ℕ (SUM t t₁) = 17 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
 Term→ℕ (PAIR t t₁) = 18 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
 Term→ℕ (SPREAD t t₁) = 19 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
@@ -732,10 +732,10 @@ suc-/≤ n m d0 = ≤-trans (suc-/m n m) (suc/≤ n d0)
 ... | 10 = ℕ→Term-aux₂ n (λ ()) ind 10 APPLY
 ... | 11 = ℕ→Term-aux₁ n (λ ()) ind 11 FIX
 ... | 12 = ℕ→Term-aux₂ n (λ ()) ind 12 LET
-... | 13 = ℕ→Term-aux₂ n (λ ()) ind 13 WT
+... | 13 = ℕ→Term-aux₃ n (λ ()) ind 13 WT
 ... | 14 = ℕ→Term-aux₂ n (λ ()) ind 14 SUP
 ... | 15 = ℕ→Term-aux₂ n (λ ()) ind 15 WREC
-... | 16 = ℕ→Term-aux₂ n (λ ()) ind 16 MT
+... | 16 = ℕ→Term-aux₃ n (λ ()) ind 16 MT
 ... | 17 = ℕ→Term-aux₂ n (λ ()) ind 17 SUM
 ... | 18 = ℕ→Term-aux₂ n (λ ()) ind 18 PAIR
 -- stops working at 20...
@@ -1117,13 +1117,13 @@ abstract
 
 
 -- From terms3
-≡WT : {a b c d : Term} → a ≡ b → c ≡ d → WT a c ≡ WT b d
-≡WT {a} {b} {c} {d} x y rewrite x | y = refl
+≡WT : {a b c d e f : Term} → a ≡ b → c ≡ d → e ≡ f → WT a c e ≡ WT b d f
+≡WT {a} {b} {c} {d} {e} {f} refl refl refl = refl
 
 
 -- From terms3
-≡MT : {a b c d : Term} → a ≡ b → c ≡ d → MT a c ≡ MT b d
-≡MT {a} {b} {c} {d} x y rewrite x | y = refl
+≡MT : {a b c d e f : Term} → a ≡ b → c ≡ d → e ≡ f → MT a c e ≡ MT b d f
+≡MT {a} {b} {c} {d} {e} {f} refl refl refl = refl
 
 
 -- From terms3

@@ -273,7 +273,7 @@ abstract
       ind : ΣhighestUpdCtxt2 name f n a' w1 w1'
       ind = step-sat-isHighestℕ2 cc gc {w1} {w1'} {a} {a'} {n} {name} {f} compat wgt0 z (stepsPresHighestℕ2-SPREAD₁→ indb) ctxt nnf nnw idom cf
   ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
-  step-sat-isHighestℕ2 cc gc {w1} {w2} {.(WT a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-WT a b₁ ctxt ctxt₁) nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , WT a b₁ , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-WT _ _ ctxt ctxt₁
+  step-sat-isHighestℕ2 cc gc {w1} {w2} {.(WT a b₁ c)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-WT a b₁ c ctxt ctxt₁ ctxt₂) nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , WT a b₁ c , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-WT _ _ _ ctxt ctxt₁ ctxt₂
   step-sat-isHighestℕ2 cc gc {w1} {w2} {.(SUP a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-SUP a b₁ ctxt ctxt₁) nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , SUP a b₁ , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-SUP _ _ ctxt ctxt₁
   step-sat-isHighestℕ2 cc gc {w1} {w2} {.(WREC a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-WREC a b₁ ctxt ctxt₁) nnf nnw idom cf with is-SUP a
   ... | inj₁ (u , v , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
@@ -286,7 +286,7 @@ abstract
       ind : ΣhighestUpdCtxt2 name f n a' w1 w1'
       ind = step-sat-isHighestℕ2 cc gc {w1} {w1'} {a} {a'} {n} {name} {f} compat wgt0 z (stepsPresHighestℕ2-WREC₁→ indb) ctxt nnf nnw idom cf
   ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
-  step-sat-isHighestℕ2 cc gc {w1} {w2} {.(MT a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-MT a b₁ ctxt ctxt₁) nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , MT a b₁ , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-MT _ _ ctxt ctxt₁
+  step-sat-isHighestℕ2 cc gc {w1} {w2} {.(MT a b₁ c)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-MT a b₁ c ctxt ctxt₁ ctxt₂) nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , MT a b₁ c , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-MT _ _ _ ctxt ctxt₁ ctxt₂
   step-sat-isHighestℕ2 cc gc {w1} {w2} {.(SET a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-SET a b₁ ctxt ctxt₁) nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , SET a b₁ , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-SET _ _ ctxt ctxt₁
   step-sat-isHighestℕ2 cc gc {w1} {w2} {.(ISECT a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-ISECT a b₁ ctxt ctxt₁) nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , ISECT a b₁ , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-ISECT _ _ ctxt ctxt₁
   step-sat-isHighestℕ2 cc gc {w1} {w2} {.(TUNION a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-TUNION a b₁ ctxt ctxt₁) nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , TUNION a b₁ , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-TUNION _ _ ctxt ctxt₁

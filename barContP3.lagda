@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 {-# OPTIONS --guardedness #-}
---{-# OPTIONS --experimental-lossy-unification #-}
+--{-# OPTIONS --lossy-unification #-}
 --{-# OPTIONS --auto-inline #-}
 
 

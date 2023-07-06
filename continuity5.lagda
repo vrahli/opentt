@@ -300,7 +300,7 @@ abstract
       ind' : ΣstepsUpdRel name f g a₁' w1' a₂ w
       ind' = step-updRel gc {n} {name} {f} {g} {a₁} {a₂} {a₁'} {w1} {w1'} {w} nnf nng cf cg z (stepsPresUpdRel-LET₁→ ind) r gtn compat wgt0 eqn
   ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
-  step-updRel gc {n} {name} {f} {g} {.(WT a₁ b₁)} {.(WT a₂ b₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-WT a₁ a₂ b₁ b₂ r r₁) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , WT a₁ b₁ , WT a₂ b₂ , w1 , refl , refl , updRel-WT _ _ _ _ r r₁
+  step-updRel gc {n} {name} {f} {g} {.(WT a₁ b₁ c₁)} {.(WT a₂ b₂ c₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-WT a₁ a₂ b₁ b₂ c₁ c₂ r r₁ r₂) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , WT a₁ b₁ c₁ , WT a₂ b₂ c₂ , w1 , refl , refl , updRel-WT _ _ _ _ _ _ r r₁ r₂
   step-updRel gc {n} {name} {f} {g} {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-SUP a₁ a₂ b₁ b₂ r r₁) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , SUP a₁ b₁ , SUP a₂ b₂ , w1 , refl , refl , updRel-SUP _ _ _ _ r r₁
   {--step-updRel gc {n} {name} {f} {g} {.(DSUP a₁ b₁)} {.(DSUP a₂ b₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-DSUP a₁ a₂ b₁ b₂ r r₁) gtn compat wgt0 eqn with is-SUP a₁
   ... | inj₁ (u₁ , u₂ , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
@@ -336,7 +336,7 @@ abstract
       ind' : ΣstepsUpdRel name f g a₁' w1' a₂ w
       ind' = step-updRel gc {n} {name} {f} {g} {a₁} {a₂} {a₁'} {w1} {w1'} {w} nnf nng cf cg z (stepsPresUpdRel-WREC₁→ ind) r gtn compat wgt0 eqn
   ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
-  step-updRel gc {n} {name} {f} {g} {.(MT a₁ b₁)} {.(MT a₂ b₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-MT a₁ a₂ b₁ b₂ r r₁) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , MT a₁ b₁ , MT a₂ b₂ , w1 , refl , refl , updRel-MT _ _ _ _ r r₁
+  step-updRel gc {n} {name} {f} {g} {.(MT a₁ b₁ c₁)} {.(MT a₂ b₂ c₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-MT a₁ a₂ b₁ b₂ c₁ c₂ r r₁ r₂) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , MT a₁ b₁ c₁ , MT a₂ b₂ c₂ , w1 , refl , refl , updRel-MT _ _ _ _ _ _ r r₁ r₂
   --step-updRel gc {n} {name} {f} {g} {.(MSUP a₁ b₁)} {.(MSUP a₂ b₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-MSUP a₁ a₂ b₁ b₂ r r₁) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , MSUP a₁ b₁ , MSUP a₂ b₂ , w1 , refl , refl , updRel-MSUP _ _ _ _ r r₁
   {--step-updRel gc {n} {name} {f} {g} {.(DMSUP a₁ b₁)} {.(DMSUP a₂ b₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-DMSUP a₁ a₂ b₁ b₂ r r₁) gtn compat wgt0 eqn with is-MSUP a₁
   ... | inj₁ (u₁ , u₂ , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
@@ -600,11 +600,11 @@ abstract
   updRel-refl {name} {f} {g} {APPLY a a₁} nn = updRel-APPLY _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   updRel-refl {name} {f} {g} {FIX a} nn = updRel-FIX _ _ (updRel-refl nn)
   updRel-refl {name} {f} {g} {LET a a₁} nn = updRel-LET _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updRel-refl {name} {f} {g} {WT a a₁} nn = updRel-WT _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updRel-refl {name} {f} {g} {WT a a₁ a₂} nn = updRel-WT _ _ _ _ _ _ (updRel-refl (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updRel-refl (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updRel-refl (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} nn))
   updRel-refl {name} {f} {g} {SUP a a₁} nn = updRel-SUP _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   --updRel-refl {name} {f} {g} {DSUP a a₁} nn = updRel-DSUP _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   updRel-refl {name} {f} {g} {WREC a a₁} nn = updRel-WREC _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updRel-refl {name} {f} {g} {MT a a₁} nn = updRel-MT _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updRel-refl {name} {f} {g} {MT a a₁ a₂} nn = updRel-MT _ _ _ _ _ _ (updRel-refl (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updRel-refl (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updRel-refl (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} nn))
   --updRel-refl {name} {f} {g} {MSUP a a₁} nn = updRel-MSUP _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   --updRel-refl {name} {f} {g} {DMSUP a a₁} nn = updRel-DMSUP _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   updRel-refl {name} {f} {g} {SUM a a₁} nn = updRel-SUM _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))

@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 {-# OPTIONS --guardedness #-}
---{-# OPTIONS --experimental-lossy-unification #-}
+--{-# OPTIONS --lossy-unification #-}
 --{-# OPTIONS --auto-inline #-}
 
 
@@ -94,6 +94,8 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalTypes-#⇛-left-right-rev)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (→equalInType-NAT! ; equalInType-W→)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+
+open import props_w(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import list(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
@@ -276,7 +278,7 @@ BAIRE!2𝕊-equalInNAT! kb {i} {w} {f} f∈ k =
 
 
 wmem : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (w : 𝕎·) (t : CTerm) → Set(lsuc(L))
-wmem eqa eqb w t = weq eqa eqb w t t
+wmem eqa eqb w t = weq₀ eqa eqb w t t
 
 
 BAIRE2list : (kb : K□) {i : ℕ} {w : 𝕎·} {f : CTerm} (f∈ : ∈Type i w #BAIRE f) (k : ℕ) → CTerm
@@ -754,8 +756,8 @@ sub0-indBarC⇛INR⇛! w T x a comp =
 #⇓SUP→weq-refl : {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {w : 𝕎·} {I a1 a2 f1 f2 : CTerm} {j : ℕ}
                   → I #⇓ #SUP a1 f1 at w
                   → I #⇓ #SUP a2 f2 at w
-                  → weq eqa eqb w (#APPLY f1 (#NUM j)) (#APPLY f2 (#NUM j))
-                  → weq eqa eqb w (#APPLY f1 (#NUM j)) (#APPLY f1 (#NUM j))
+                  → weq₀ eqa eqb w (#APPLY f1 (#NUM j)) (#APPLY f2 (#NUM j))
+                  → weq₀ eqa eqb w (#APPLY f1 (#NUM j)) (#APPLY f1 (#NUM j))
 #⇓SUP→weq-refl {eqa} {eqb} {w} {I} {a1} {a2} {f1} {f2} {j} c1 c2 h
   rewrite #SUPinj1 {a2} {f2} {a1} {f1} (#⇓-val-det {_} {I} tt tt c2 c1)
         | #SUPinj2 {a2} {f2} {a1} {f1} (#⇓-val-det {_} {I} tt tt c2 c1) = h
@@ -775,10 +777,10 @@ sub0-indBarC⇛INR⇛! w T x a comp =
 weq→follow-NATeq : (kb : K□) (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T I1 I2 f g : CTerm) (k : ℕ)
                      → type-#⇛!-NUM P T
                      → #⇛!-NUM-type P T
-                     → weq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T))) w I1 I2
+                     → weq₀ (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T))) w I1 I2
                      → ((k : ℕ) → equalInType i w (#NOWRITEMOD T) (#APPLY f (#NUM k)) (#APPLY g (#NUM k)))
                      → NATeq {--#⇓sameℕ--} w (#follow f I1 k) (#follow g I2 k)
-weq→follow-NATeq kb i w P T I1 I2 f g k tyn nty (weqC a1 f1 a2 f2 e c1 c2 ind) eqf
+weq→follow-NATeq kb i w P T I1 I2 f g k tyn nty (weqC₀ a1 f1 a2 f2 e c1 c2 ind) eqf
   with kb (equalInType-IndBarB→ i w a1 a2 e) w (⊑-refl· w)
 ... | inj₁ (t , u , n , d1 , d2 , x1 , x2) = n , comp1 , comp2
       where

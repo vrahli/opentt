@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 {-# OPTIONS --guardedness #-}
---{-# OPTIONS --experimental-lossy-unification #-}
+--{-# OPTIONS --lossy-unification #-}
 --{-# OPTIONS --auto-inline #-}
 
 
@@ -96,6 +96,8 @@ open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (→equalInType-NAT! ; e
 --open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
+open import props_w(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+
 --open import list(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)(EC)
@@ -179,13 +181,14 @@ contDiag T =
     c = refl
 
 
-#[0]WT : CTerm0 → CTerm1 → CTerm0
-#[0]WT a b = ct0 (WT ⌜ a ⌝ ⌜ b ⌝) c
+#[0]WT₀ : CTerm0 → CTerm1 → CTerm0
+#[0]WT₀ a b = ct0 (WT₀ ⌜ a ⌝ ⌜ b ⌝) c
   where
-    c : #[ [ 0 ] ] WT ⌜ a ⌝ ⌜ b ⌝
-    c = ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {[ 0 ]}
-              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
-                   (lowerVars-fvars-[0,1] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm1.closed b))))
+    c : #[ [ 0 ] ] WT₀ ⌜ a ⌝ ⌜ b ⌝
+    c rewrite ++[] (lowerVars (fvars ⌜ b ⌝)) =
+      ⊆→⊆? {fvars ⌜ a ⌝ ++ lowerVars (fvars ⌜ b ⌝)} {[ 0 ]}
+           (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {[ 0 ]} (CTerm0.closed a))
+                (lowerVars-fvars-[0,1] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm1.closed b))))
 
 
 #[1]PI : CTerm1 → CTerm2 → CTerm1
@@ -233,7 +236,7 @@ contDiag T =
 
 
 #[0]IndBar : CTerm → CTerm0
-#[0]IndBar T = #[0]WT #[0]IndBarB (#[0]IndBarC T)
+#[0]IndBar T = #[0]WT₀ #[0]IndBarB (#[0]IndBarC T)
 
 
 #[2]EQ : CTerm2 → CTerm2 → CTerm2 → CTerm2
@@ -387,9 +390,9 @@ sub0-contDiag-EQ F W a c = CTerm≡ e
 
 isType-IndBar : (i : ℕ) (w : 𝕎·) (T : CTerm) → isType i w T → isType i w (#IndBar T)
 isType-IndBar i w T tyt =
-  eqTypesW←
+  eqTypesW₀←
     {w} {i} {#IndBarB} {#IndBarC T} {#IndBarB} {#IndBarC T}
-    (λ w1 e1 → isType-IndBarB i w1)
+    (isType-IndBarB i w)
     (λ w1 e1 a b eqa → equalTypes-IndBarC  i w1 T a b (eqTypes-mon (uni i) tyt w1 e1) eqa)
 
 
@@ -460,9 +463,9 @@ APPLY-FunBarP-BAIRE!→ {i} {w} {T} {F₁} {F₂} {a₁} {a₂} tyt F∈P a∈ =
 →equalInType-follow∈NAT kb {i} {w} P {T} {W₁} {W₂} {a₁} {a₂} tyn nty W∈ a∈ =
   →equalInType-NAT
     i w (#follow a₁ W₁ 0) (#follow a₂ W₂ 0)
-    (Mod.∀𝕎-□Func M aw (equalInType-W→ i w #IndBarB (#IndBarC T) W₁ W₂ W∈))
+    (Mod.∀𝕎-□Func M aw (equalInType-W₀→ kb i w #IndBarB (#IndBarC T) W₁ W₂ W∈))
   where
-    aw : ∀𝕎 w (λ w' e' → weq (equalInType i w' #IndBarB) (λ a b eqa → equalInType i w' (sub0 a (#IndBarC T))) w' W₁ W₂
+    aw : ∀𝕎 w (λ w' e' → weq₀ (equalInType i w' #IndBarB) (λ a b eqa → equalInType i w' (sub0 a (#IndBarC T))) w' W₁ W₂
                         → NATeq w' (#follow a₁ W₁ 0) (#follow a₂ W₂ 0))
     aw w1 e1 h =
       weq→follow-NATeq

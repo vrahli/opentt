@@ -93,11 +93,14 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
+open import props_w(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+
 open import list(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)(EC)
 
 open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+
 
 
 
@@ -154,19 +157,19 @@ IndBarC T = DECIDE (VAR 0) VOID (NOWRITEMOD T)
 
 
 IndBar : Term → Term
-IndBar T = WT IndBarB (IndBarC T)
+IndBar T = WT₀ IndBarB (IndBarC T)
 
 
 #IndBar : CTerm → CTerm
-#IndBar T = #WT #IndBarB (#IndBarC T)
+#IndBar T = #WT₀ #IndBarB (#IndBarC T)
 
 
 CoIndBar : Term → Term
-CoIndBar T = MT IndBarB (IndBarC T)
+CoIndBar T = MT₀ IndBarB (IndBarC T)
 
 
 #CoIndBar : CTerm → CTerm
-#CoIndBar T = #MT #IndBarB (#IndBarC T)
+#CoIndBar T = #MT₀ #IndBarB (#IndBarC T)
 
 
 ETA : Term → Term
@@ -588,24 +591,24 @@ record branch eqa eqb w t1 t2 where
 
 -- ¬ weq tells us which b's to follow
 m2mb : (w : 𝕎·) (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (t u : CTerm)
-         → meq eqa eqb w t u
-         → ¬ weq eqa eqb w t u
+         → meq₀ eqa eqb w t u
+         → ¬ weq₀ eqa eqb w t u
          → branch eqa eqb w t u
-branch.branchC (m2mb w eqa eqb t u m nw) with meq.meqC m
+branch.branchC (m2mb w eqa eqb t u m nw) with meq₀.meqC₀ m
 ... | (a1 , f1 , a2 , f2 , e , c1 , c2 , q) =
   a1 , f1 , fst k , a2 , f2 , fst (snd k) , e , c1 , c2 , fst (snd (snd k)) ,
   m2mb w eqa eqb (#APPLY f1 (fst k)) (#APPLY f2 (fst (snd k))) (q (fst k) (fst (snd k)) (fst (snd (snd k)))) (snd (snd (snd k)))
   where
-    nj : ¬ ((b1 b2 : CTerm) → eqb a1 a2 e b1 b2 → weq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))
-    nj h = nw (weq.weqC a1 f1 a2 f2 e c1 c2 h)
+    nj : ¬ ((b1 b2 : CTerm) → eqb a1 a2 e b1 b2 → weq₀ eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))
+    nj h = nw (weq₀.weqC₀ a1 f1 a2 f2 e c1 c2 h)
 
-    k : Σ CTerm (λ b1 → Σ CTerm (λ b2 → Σ (eqb a1 a2 e b1 b2) (λ eb → ¬ weq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))))
-    k with EM {Σ CTerm (λ b1 → Σ CTerm (λ b2 → Σ (eqb a1 a2 e b1 b2) (λ eb → ¬ weq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))))}
+    k : Σ CTerm (λ b1 → Σ CTerm (λ b2 → Σ (eqb a1 a2 e b1 b2) (λ eb → ¬ weq₀ eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))))
+    k with EM {Σ CTerm (λ b1 → Σ CTerm (λ b2 → Σ (eqb a1 a2 e b1 b2) (λ eb → ¬ weq₀ eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2))))}
     ... | yes p = p
     ... | no p = ⊥-elim (nj j)
       where
-        j : (b1 b2 : CTerm) → eqb a1 a2 e b1 b2 → weq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2)
-        j b1 b2 eb with EM {weq eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2)}
+        j : (b1 b2 : CTerm) → eqb a1 a2 e b1 b2 → weq₀ eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2)
+        j b1 b2 eb with EM {weq₀ eqa eqb w (#APPLY f1 b1) (#APPLY f2 b2)}
         ... | yes pp = pp
         ... | no pp = ⊥-elim (p (b1 , b2 , eb , pp))
 
@@ -665,9 +668,9 @@ data compatMW eqa eqb w t1 t2 where
 -- Classically, we can derive a weq from an meq as follows
 m2wa : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t u : CTerm)
       → ((p : path i w A B) → correctPath {i} {w} {A} {B} t p → isFinPath {i} {w} {A} {B} p)
-      → meq (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u
-      → weq (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u
-m2wa i w A B t u cond h with EM {weq (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u}
+      → meq₀ (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u
+      → weq₀ (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u
+m2wa i w A B t u cond h with EM {weq₀ (equalInType i w A) (λ a b eqa → equalInType i w (sub0 a B)) w t u}
 ... | yes p = p
 ... | no q = ⊥-elim (isFinPath→¬isInfPath {i} {w} {A} {B} p fin inf)
   where
@@ -687,20 +690,20 @@ m2wa i w A B t u cond h with EM {weq (equalInType i w A) (λ a b eqa → equalIn
     fin = cond p c
 
 
-m2w : (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t : CTerm)
-      → ∀𝕎 w (λ w' _ → isType i w' A)
+m2w : (kb : K□) (i : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (t : CTerm)
+      → isType i w A
       → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType i w' A a₁ a₂) → equalTypes i w' (sub0 a₁ B) (sub0 a₂ B))
       → ∀𝕎 w (λ w' _ → (p : path i w' A B) → correctPath {i} {w'} {A} {B} t p → isFinPath {i} {w'} {A} {B} p)
-      → ∈Type i w (#MT A B) t
-      → ∈Type i w (#WT A B) t
-m2w i w A B t eqta eqtb cond h =
-  →equalInType-W i w A B t t eqta eqtb (Mod.∀𝕎-□Func M aw q)
+      → ∈Type i w (#MT₀ A B) t
+      → ∈Type i w (#WT₀ A B) t
+m2w kb i w A B t eqta eqtb cond h =
+  →equalInType-W₀ i w A B t t eqta eqtb (Mod.∀𝕎-□Func M aw q)
   where
-    q : □· w (λ w' _ → meq (equalInType i w' A) (λ a b eqa → equalInType i w' (sub0 a B)) w' t t)
-    q = equalInType-M→ i w A B t t h
+    q : □· w (λ w' _ → meq₀ (equalInType i w' A) (λ a b eqa → equalInType i w' (sub0 a B)) w' t t)
+    q = equalInType-M₀→ kb i w A B t t h
 
-    aw : ∀𝕎 w (λ w' e' → meq (equalInType i w' A) (λ a b eqa → equalInType i w' (sub0 a B)) w' t t
-                       → weq (equalInType i w' A) (λ a b eqa → equalInType i w' (sub0 a B)) w' t t)
+    aw : ∀𝕎 w (λ w' e' → meq₀ (equalInType i w' A) (λ a b eqa → equalInType i w' (sub0 a B)) w' t t
+                       → weq₀ (equalInType i w' A) (λ a b eqa → equalInType i w' (sub0 a B)) w' t t)
     aw w' e' z = m2wa i w' A B t t (cond w' e') z
 
 

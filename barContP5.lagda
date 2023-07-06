@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 {-# OPTIONS --guardedness #-}
---{-# OPTIONS --experimental-lossy-unification #-}
+--{-# OPTIONS --lossy-unification #-}
 --{-# OPTIONS --auto-inline #-}
 
 
@@ -462,7 +462,7 @@ abstract
       ind : updSeqStep w1 w1' r s n a₂ a₁'
       ind = updSeq-step cn gc w1 w1' r s n a₁ a₂ a₁' upd₁ gtn compat q (updSeqStepInd-LET₁→ w1' r s n a₁' b₁ sind)
   ... |    inj₂ q rewrite q = ⊥-elim (¬just≡nothing (sym comp))
-  updSeq-step cn gc w1 w2 r s n .(WT a₁ b₁) .(WT a₂ b₂) u (updSeq-WT a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , WT a₁ b₁ , WT a₂ b₂ , w1 , refl , refl , updSeq-WT a₁ a₂ b₁ b₂ upd₁ upd₂
+  updSeq-step cn gc w1 w2 r s n .(WT a₁ b₁ c₁) .(WT a₂ b₂ c₂) u (updSeq-WT a₁ a₂ b₁ b₂ c₁ c₂ upd₁ upd₂ upd₃) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , WT a₁ b₁ c₁ , WT a₂ b₂ c₂ , w1 , refl , refl , updSeq-WT a₁ a₂ b₁ b₂ c₁ c₂ upd₁ upd₂ upd₃
   updSeq-step cn gc w1 w2 r s n .(SUP a₁ b₁) .(SUP a₂ b₂) u (updSeq-SUP a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , SUP a₁ b₁ , SUP a₂ b₂ , w1 , refl , refl , updSeq-SUP a₁ a₂ b₁ b₂ upd₁ upd₂
 {--  updSeq-step cn gc w1 w2 r s n .(DSUP a₁ b₁) .(DSUP a₂ b₂) u (updSeq-DSUP a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind with is-SUP a₁
   ... | inj₁ (u₁ , u₂ , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
@@ -498,7 +498,7 @@ abstract
       ind : updSeqStep w1 w1' r s n a₂ a₁'
       ind = updSeq-step cn gc w1 w1' r s n a₁ a₂ a₁' upd₁ gtn compat q (updSeqStepInd-WREC₁→ w1' r s n a₁' b₁ sind)
   ... |    inj₂ q rewrite q = ⊥-elim (¬just≡nothing (sym comp))
-  updSeq-step cn gc w1 w2 r s n .(MT a₁ b₁) .(MT a₂ b₂) u (updSeq-MT a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , MT a₁ b₁ , MT a₂ b₂ , w1 , refl , refl , updSeq-MT a₁ a₂ b₁ b₂ upd₁ upd₂
+  updSeq-step cn gc w1 w2 r s n .(MT a₁ b₁ c₁) .(MT a₂ b₂ c₂) u (updSeq-MT a₁ a₂ b₁ b₂ c₁ c₂ upd₁ upd₂ upd₃) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , MT a₁ b₁ c₁ , MT a₂ b₂ c₂ , w1 , refl , refl , updSeq-MT a₁ a₂ b₁ b₂ c₁ c₂ upd₁ upd₂ upd₃
 --  updSeq-step cn gc w1 w2 r s n .(MSUP a₁ b₁) .(MSUP a₂ b₂) u (updSeq-MSUP a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , MSUP a₁ b₁ , MSUP a₂ b₂ , w1 , refl , refl , updSeq-MSUP a₁ a₂ b₁ b₂ upd₁ upd₂
 {--  updSeq-step cn gc w1 w2 r s n .(DMSUP a₁ b₁) .(DMSUP a₂ b₂) u (updSeq-DMSUP a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind with is-MSUP a₁
   ... | inj₁ (u₁ , u₂ , p) rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
@@ -634,11 +634,11 @@ abstract
   updSeq-refl {r} {s} {n} {APPLY a a₁} nn = updSeq-APPLY _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   updSeq-refl {r} {s} {n} {FIX a} nn = updSeq-FIX _ _ (updSeq-refl nn)
   updSeq-refl {r} {s} {n} {LET a a₁} nn = updSeq-LET _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {WT a a₁} nn = updSeq-WT _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {WT a a₁ a₂} nn = updSeq-WT _ _ _ _ _ _ (updSeq-refl (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updSeq-refl (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updSeq-refl (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} nn))
   updSeq-refl {r} {s} {n} {SUP a a₁} nn = updSeq-SUP _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   --updSeq-refl {r} {s} {n} {DSUP a a₁} nn = updSeq-DSUP _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   updSeq-refl {r} {s} {n} {WREC a a₁} nn = updSeq-WREC _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
-  updSeq-refl {r} {s} {n} {MT a a₁} nn = updSeq-MT _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
+  updSeq-refl {r} {s} {n} {MT a a₁ a₂} nn = updSeq-MT _ _ _ _ _ _ (updSeq-refl (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updSeq-refl (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updSeq-refl (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} nn))
   --updSeq-refl {r} {s} {n} {MSUP a a₁} nn = updSeq-MSUP _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   --updSeq-refl {r} {s} {n} {DMSUP a a₁} nn = updSeq-DMSUP _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   updSeq-refl {r} {s} {n} {SUM a a₁} nn = updSeq-SUM _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))

@@ -107,11 +107,11 @@ ISECTneqTUNION {a} {b} {c} {d} ()
 --ISECTneqQTUNION : {a b : Term} {c : Term} {d : Term} → ¬ (ISECT a b) ≡ QTUNION c d
 --ISECTneqQTUNION {a} {b} {c} {d} ()
 
-ISECTneqW : {a b : Term} {c : Term} {d : Term} → ¬ (ISECT a b) ≡ WT c d
-ISECTneqW {a} {b} {c} {d} ()
+ISECTneqW : {a b : Term} {c d e : Term} → ¬ (ISECT a b) ≡ WT c d e
+ISECTneqW {a} {b} {c} {d} {e} ()
 
-ISECTneqM : {a b : Term} {c : Term} {d : Term} → ¬ (ISECT a b) ≡ MT c d
-ISECTneqM {a} {b} {c} {d} ()
+ISECTneqM : {a b : Term} {c d e : Term} → ¬ (ISECT a b) ≡ MT c d e
+ISECTneqM {a} {b} {c} {d} {e} ()
 
 ISECTneqSUM : {a b : Term} {c : Term} {d : Term} → ¬ (ISECT a b) ≡ SUM c d
 ISECTneqSUM {a} {b} {c} {d} ()
@@ -234,8 +234,8 @@ typeSysConds-ISECT-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (ISECTneqQLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (ISECTneqFREE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTPI C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (ISECTneqPI (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTW C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (ISECTneqW (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (ISECTneqM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTW C1 D1 E1 C2 D2 E2 y y₁ eqta0 eqtb0 eqtc0 exta0 extb0 extc0) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (ISECTneqW (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTM C1 D1 E1 C2 D2 E2 y y₁ eqta0 eqtb0 eqtc0 exta0 extb0 extc0) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (ISECTneqM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSUM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (ISECTneqSUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (ISECTneqSET (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTISECT C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta eqtb exta extb inda indb
@@ -394,8 +394,8 @@ typeSysConds-ISECT-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda ind
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqQLT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqFREE (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqPI (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqW (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqM (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 y y₁ eqta0 eqtb0 eqtc0 exta0 extb0 extc0) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqW (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 y y₁ eqta0 eqtb0 eqtc0 exta0 extb0 extc0) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqM (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqSUM (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqSET (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta eqtb exta extb inda indb x f g eqi
@@ -502,8 +502,8 @@ typeSysConds-ISECT-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda ind
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqQLT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqFREE (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqPI (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqW (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqW (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqSUM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqSET (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi
@@ -608,8 +608,8 @@ typeSysConds-ISECT-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda ind
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqQLT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqFREE (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqPI (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqW (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqW (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqSUM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqSET (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi
@@ -714,8 +714,8 @@ typeSysConds-ISECT-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda ind
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqQLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqFREE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqPI (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqW (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqW (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqSUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqSET (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi
@@ -818,8 +818,8 @@ typeSysConds-ISECT-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqQLT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqFREE (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqPI (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqW (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqM (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqW (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqM (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqSUM (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqSET (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi
@@ -925,8 +925,8 @@ typeSysConds-ISECT-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqQLT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqFREE (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqPI (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqW (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqW (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqSUM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (ISECTneqSET (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi
@@ -1031,8 +1031,8 @@ typeSysConds-ISECT-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqQLT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqFREE (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqPI (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqW (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqW (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqSUM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqSET (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi
@@ -1137,8 +1137,8 @@ typeSysConds-ISECT-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
     ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqQLT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqFREE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqPI (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqW (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqW (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqSUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (ISECTneqSET (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi
@@ -1246,8 +1246,8 @@ eqInType-⇛-ISECT u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c�
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqQLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqFREE (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqPI (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqW (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 x x₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqW (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 x x₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqSUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqSET (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei
@@ -1369,8 +1369,8 @@ eqInType-⇛-ISECT2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ eqt ei
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (ISECTneqQLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (ISECTneqFREE (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (ISECTneqPI (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (ISECTneqW (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (ISECTneqM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 x x₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (ISECTneqW (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 x x₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (ISECTneqM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (ISECTneqSUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (ISECTneqSET (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext
@@ -1487,8 +1487,8 @@ eqInType-⇛-ISECT-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c�
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqQLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqFREE (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqPI (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqW (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 x x₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqW (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 x x₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqSUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (ISECTneqSET (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei
@@ -1600,8 +1600,8 @@ eqInType-⇛-ISECT-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ eq
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (ISECTneqQLT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (ISECTneqFREE (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (ISECTneqPI (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTW A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (ISECTneqW (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (ISECTneqM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 x x₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (ISECTneqW (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 x x₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (ISECTneqM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (ISECTneqSUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (ISECTneqSET (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei

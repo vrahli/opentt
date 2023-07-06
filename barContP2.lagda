@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 {-# OPTIONS --guardedness #-}
-{-# OPTIONS --experimental-lossy-unification #-}
+{-# OPTIONS --lossy-unification #-}
 --{-# OPTIONS --auto-inline #-}
 
 
@@ -93,6 +93,8 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-refl ; equa
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalTypes-#⇛-left-right-rev)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (→equalInType-M)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (NATmem ; eqTypesUNION!← ; UNION!eq ; equalInType-UNION!→)
+
+open import props_w(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import list(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#APPENDf ; #LIST ; equalInType-LIST-NAT→ ; APPLY-APPENDf⇛ ; #LAM0)
 
@@ -207,8 +209,8 @@ coSemM : (can : comp→∀ℕ) (gc0 : get-choose-ℕ) (kb : K□) (cn : cℕ)
          --→ #APPLY F (#upd r f) #⇛ #NUM k at w -- follows from APPLY-generic∈NAT
          → a #⇛! #APPLY2 (#loop F) j f at w
          → b #⇛! #APPLY2 (#loop F) j f at w
-         → meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T))) w a b
-meq.meqC (coSemM can gc0 kb cn i w P T F j f a b n nnj nnf nnF prest tyn nty tyt compj f∈ F∈ {--ck--} c1 c2)
+         → meq₀ (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T))) w a b
+meq₀.meqC₀ (coSemM can gc0 kb cn i w P T F j f a b n nnj nnf nnF prest tyn nty tyt compj f∈ F∈ {--ck--} c1 c2)
   with #APPLY-#loop#⇓5 kb can gc0 cn i T F j f n w nnf nnF prest tyt compj F∈ f∈
 -- NOTE: 'with' doesn't work without the 'abstract' on #APPLY-#loop#⇓4
 ... | inj₁ (k , x) =
@@ -224,7 +226,7 @@ meq.meqC (coSemM can gc0 kb cn i w P T F j f a b n nnj nnf nnF prest tyn nty tyt
 
       eqb : (b1 b2 : CTerm)
             → equalInType i w (sub0 (#INL (#NUM k)) (#IndBarC T)) b1 b2
-            → meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T)))
+            → meq₀ (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T)))
                    w (#APPLY #AX b1) (#APPLY #AX b2)
       eqb b1 b2 eb rewrite sub0-IndBarC≡ T (#INL (#NUM k)) = ⊥-elim (equalInType-DECIDE-INL-VOID→ i w (#NUM k) b1 b2 (#[0]shiftUp0 (#NOWRITEMOD T)) eb)
 ... | inj₂ x =
@@ -235,7 +237,7 @@ meq.meqC (coSemM can gc0 kb cn i w P T F j f a b n nnj nnf nnF prest tyn nty tyt
     where
       eqb : (b1 b2 : CTerm)
             → equalInType i w (sub0 (#INR #AX) (#IndBarC T)) b1 b2
-            → meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T)))
+            → meq₀ (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T)))
                    w (#APPLY (#loopR (#loop F) j f) b1) (#APPLY (#loopR (#loop F) j f) b2)
       eqb b1 b2 eb rewrite sub0-IndBarC≡ T (#INR #AX) = eb3
         where
@@ -251,7 +253,7 @@ meq.meqC (coSemM can gc0 kb cn i w P T F j f a b n nnj nnf nnF prest tyn nty tyt
           el1 : ∈Type i w (#FUN #NAT T) (#APPENDf j f (#NUM (fst eb2)))
           el1 = APPENDf∈NAT→T {i} {w} {T} {j} {j} {f} {f} {#NUM (fst eb2)} {#NUM (fst eb2)} prest en1 (nty {i} {w} {fst eb2} (snd (snd (snd eb2)))) f∈
 
-          eb3 : meq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T)))
+          eb3 : meq₀ (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T)))
                     w (#APPLY (#loopR (#loop F) j f) b1) (#APPLY (#loopR (#loop F) j f) b2)
           eb3 = coSemM
                   can gc0 kb cn i w P T F (#NUM (suc n)) (#APPENDf j f (#NUM (fst eb2)))
@@ -308,20 +310,20 @@ coSem : (can : comp→∀ℕ) (gc0 : get-choose-ℕ) (kb : K□) (cn : cℕ) (i 
         → ∈Type i w (#FUN #NAT T) f
         → ∈Type i w (#CoIndBar T) (#APPLY2 (#loop F) k f)
 coSem can gc0 kb cn i w P T F k f nnk nnf nnF prest tyn nty tyt F∈ k∈ f∈ =
-  →equalInType-M
+  →equalInType-M₀
     i w #IndBarB (#IndBarC T) (#APPLY2 (#loop F) k f) (#APPLY2 (#loop F) k f)
-      (λ w1 e1 → isType-IndBarB i w1)
+      (isType-IndBarB i w)
       (λ w1 e1 a b eqa → equalTypes-IndBarC i w1 T a b (eqTypes-mon (uni i) tyt w1 e1) eqa)
       (Mod.∀𝕎-□ M aw)
   where
-    aw : ∀𝕎 w (λ w' _ → meq (equalInType i w' #IndBarB) (λ a b eqa → equalInType i w' (sub0 a (#IndBarC T)))
+    aw : ∀𝕎 w (λ w' _ → meq₀ (equalInType i w' #IndBarB) (λ a b eqa → equalInType i w' (sub0 a (#IndBarC T)))
                               w' (#APPLY2 (#loop F) k f) (#APPLY2 (#loop F) k f))
     aw w1 e1 = m
       where
         k∈2 : #⇛!sameℕ w1 k k
         k∈2 = kb (equalInType-NAT!→ i w k k k∈) w1 e1
 
-        m : meq (equalInType i w1 #IndBarB) (λ a b eqa → equalInType i w1 (sub0 a (#IndBarC T)))
+        m : meq₀ (equalInType i w1 #IndBarB) (λ a b eqa → equalInType i w1 (sub0 a (#IndBarC T)))
                 w1 (#APPLY2 (#loop F) k f) (#APPLY2 (#loop F) k f)
         m = coSemM
               can gc0 kb cn i w1 P T F k f (#APPLY2 (#loop F) k f) (#APPLY2 (#loop F) k f)
@@ -334,15 +336,15 @@ coSem can gc0 kb cn i w P T F k f nnk nnf nnF prest tyn nty tyt F∈ k∈ f∈ =
               (#⇛!-refl {w1} {#APPLY2 (#loop F) k f})
 
 
-CoIndBar2IndBar : (i : ℕ) (w : 𝕎·) (T t : CTerm)
+CoIndBar2IndBar : (kb : K□) (i : ℕ) (w : 𝕎·) (T t : CTerm)
                   → isType i w T
                   → ∀𝕎 w (λ w' _ → (p : path i w' #IndBarB (#IndBarC T)) → correctPath {i} {w'} {#IndBarB} {#IndBarC T} t p → isFinPath {i} {w'} {#IndBarB} {#IndBarC T} p)
                   → ∈Type i w (#CoIndBar T) t
                   → ∈Type i w (#IndBar T) t
-CoIndBar2IndBar i w T t tyt cond h =
+CoIndBar2IndBar kb i w T t tyt cond h =
   m2w
-    i w #IndBarB (#IndBarC T) t
-    (λ w1 e1 → isType-IndBarB i w1)
+    kb i w #IndBarB (#IndBarC T) t
+    (isType-IndBarB i w)
     (λ w1 e1 a b eqa → equalTypes-IndBarC i w1 T a b (eqTypes-mon (uni i) tyt w1 e1) eqa)
     cond h
 

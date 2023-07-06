@@ -1,6 +1,6 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
-{-# OPTIONS --experimental-lossy-unification #-}
+{-# OPTIONS --lossy-unification #-}
 
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
@@ -208,13 +208,14 @@ abstract
 
 
 --abstract
-ℕ→Term→ℕ-WT : (t₁ t₂ : Term)
+ℕ→Term→ℕ-WT : (t₁ t₂ t₃ : Term)
                     → ℕ→Term (Term→ℕ t₁) ≡ t₁
                     → ℕ→Term (Term→ℕ t₂) ≡ t₂
-                    → ℕ→Term (13 + (pairing (Term→ℕ t₁ , Term→ℕ t₂) * #cons)) ≡ WT t₁ t₂
-ℕ→Term→ℕ-WT t₁ t₂ ind₁ ind₂
-    rewrite *#cons%≡k 13 (pairing (Term→ℕ t₁ , Term→ℕ t₂)) (m<m+n 13 {#cons ∸ 13} (_≤_.s≤s _≤_.z≤n))
-    = ℕ→Term→ℕ₂ t₁ t₂ WT 12 ≡WT ind₁ ind₂
+                    → ℕ→Term (Term→ℕ t₃) ≡ t₃
+                    → ℕ→Term (13 + (pairing3 (Term→ℕ t₁ , Term→ℕ t₂ , Term→ℕ t₃) * #cons)) ≡ WT t₁ t₂ t₃
+ℕ→Term→ℕ-WT t₁ t₂ t₃ ind₁ ind₂ ind₃
+    rewrite *#cons%≡k 13 (pairing3 (Term→ℕ t₁ , Term→ℕ t₂ , Term→ℕ t₃)) (m<m+n 13 {#cons ∸ 13} (_≤_.s≤s _≤_.z≤n))
+    = ℕ→Term→ℕ₃ t₁ t₂ t₃ WT 12 ≡WT ind₁ ind₂ ind₃
 
 
 --abstract
@@ -238,13 +239,14 @@ abstract
 
 
 --abstract
-ℕ→Term→ℕ-MT : (t₁ t₂ : Term)
+ℕ→Term→ℕ-MT : (t₁ t₂ t₃ : Term)
                     → ℕ→Term (Term→ℕ t₁) ≡ t₁
                     → ℕ→Term (Term→ℕ t₂) ≡ t₂
-                    → ℕ→Term (16 + (pairing (Term→ℕ t₁ , Term→ℕ t₂) * #cons)) ≡ MT t₁ t₂
-ℕ→Term→ℕ-MT t₁ t₂ ind₁ ind₂
-    rewrite *#cons%≡k 16 (pairing (Term→ℕ t₁ , Term→ℕ t₂)) (m<m+n 16 {#cons ∸ 16} (_≤_.s≤s _≤_.z≤n))
-    = ℕ→Term→ℕ₂ t₁ t₂ MT 15 ≡MT ind₁ ind₂
+                    → ℕ→Term (Term→ℕ t₃) ≡ t₃
+                    → ℕ→Term (16 + (pairing3 (Term→ℕ t₁ , Term→ℕ t₂ , Term→ℕ t₃) * #cons)) ≡ MT t₁ t₂ t₃
+ℕ→Term→ℕ-MT t₁ t₂ t₃ ind₁ ind₂ ind₃
+    rewrite *#cons%≡k 16 (pairing3 (Term→ℕ t₁ , Term→ℕ t₂ , Term→ℕ t₃)) (m<m+n 16 {#cons ∸ 16} (_≤_.s≤s _≤_.z≤n))
+    = ℕ→Term→ℕ₃ t₁ t₂ t₃ MT 15 ≡MT ind₁ ind₂ ind₃
 
 
 --abstract
@@ -565,10 +567,10 @@ abstract
   ℕ→Term→ℕ (APPLY t t₁) nseq = ℕ→Term→ℕ-APPLY t t₁ (ℕ→Term→ℕ t (∧≡true→ₗ nseq)) (ℕ→Term→ℕ t₁ (∧≡true→ᵣ nseq))
   ℕ→Term→ℕ (FIX t) nseq = ℕ→Term→ℕ-FIX t (ℕ→Term→ℕ t nseq)
   ℕ→Term→ℕ (LET t t₁) nseq = ℕ→Term→ℕ-LET t t₁ (ℕ→Term→ℕ t (∧≡true→ₗ nseq)) (ℕ→Term→ℕ t₁ (∧≡true→ᵣ nseq))
-  ℕ→Term→ℕ (WT t t₁) nseq = ℕ→Term→ℕ-WT t t₁ (ℕ→Term→ℕ t (∧≡true→ₗ nseq)) (ℕ→Term→ℕ t₁ (∧≡true→ᵣ nseq))
+  ℕ→Term→ℕ (WT t t₁ t₂) nseq = ℕ→Term→ℕ-WT t t₁ t₂ (ℕ→Term→ℕ t (∧≡true→1-3 nseq)) (ℕ→Term→ℕ t₁ (∧≡true→2-3 nseq)) (ℕ→Term→ℕ t₂ (∧≡true→3-3 nseq))
   ℕ→Term→ℕ (SUP t t₁) nseq = ℕ→Term→ℕ-SUP t t₁ (ℕ→Term→ℕ t (∧≡true→ₗ nseq)) (ℕ→Term→ℕ t₁ (∧≡true→ᵣ nseq))
   ℕ→Term→ℕ (WREC t t₁) nseq = ℕ→Term→ℕ-WREC t t₁ (ℕ→Term→ℕ t (∧≡true→ₗ nseq)) (ℕ→Term→ℕ t₁ (∧≡true→ᵣ nseq))
-  ℕ→Term→ℕ (MT t t₁) nseq = ℕ→Term→ℕ-MT t t₁ (ℕ→Term→ℕ t (∧≡true→ₗ nseq)) (ℕ→Term→ℕ t₁ (∧≡true→ᵣ nseq))
+  ℕ→Term→ℕ (MT t t₁ t₂) nseq = ℕ→Term→ℕ-MT t t₁ t₂ (ℕ→Term→ℕ t (∧≡true→1-3 nseq)) (ℕ→Term→ℕ t₁ (∧≡true→2-3 nseq)) (ℕ→Term→ℕ t₂ (∧≡true→3-3 nseq))
   ℕ→Term→ℕ (SUM t t₁) nseq = ℕ→Term→ℕ-SUM t t₁ (ℕ→Term→ℕ t (∧≡true→ₗ nseq)) (ℕ→Term→ℕ t₁ (∧≡true→ᵣ nseq))
   ℕ→Term→ℕ (PAIR t t₁) nseq = ℕ→Term→ℕ-PAIR t t₁ (ℕ→Term→ℕ t (∧≡true→ₗ nseq)) (ℕ→Term→ℕ t₁ (∧≡true→ᵣ nseq))
   ℕ→Term→ℕ (SPREAD t t₁) nseq = ℕ→Term→ℕ-SPREAD t t₁ (ℕ→Term→ℕ t (∧≡true→ₗ nseq)) (ℕ→Term→ℕ t₁ (∧≡true→ᵣ nseq))

@@ -91,11 +91,11 @@ FREEneqQLT {c} {d} ()
 FREEneqPI : {c : Term} {d : Term} → ¬ FREE ≡ PI c d
 FREEneqPI {c} {d} ()
 
-FREEneqW : {c : Term} {d : Term} → ¬ FREE ≡ WT c d
-FREEneqW {c} {d} ()
+FREEneqW : {c d e : Term} → ¬ FREE ≡ WT c d e
+FREEneqW {c} {d} {e} ()
 
-FREEneqM : {c : Term} {d : Term} → ¬ FREE ≡ MT c d
-FREEneqM {c} {d} ()
+FREEneqM : {c d e : Term} → ¬ FREE ≡ MT c d e
+FREEneqM {c} {d} {e} ()
 
 FREEneqSUM : {c : Term} {d : Term} → ¬ FREE ≡ SUM c d
 FREEneqSUM {c} {d} ()
@@ -178,8 +178,8 @@ typeSysConds-FREE-ttrans u w A B x x₁ C eqt = concl x x₁
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) ih c₁ c₂ = ⊥-elim (FREEneqQLT (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih c₁ c₂ = EQTFREE c₁ y₁
     ind {u} {w} {T1} {T2} (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih c₁ c₂ = ⊥-elim (FREEneqPI (⇛-val-det tt tt c₂ y))
-    ind {u} {w} {T1} {T2} (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih c₁ c₂ = ⊥-elim (FREEneqW (⇛-val-det tt tt c₂ y))
-    ind {u} {w} {T1} {T2} (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih c₁ c₂ = ⊥-elim (FREEneqM (⇛-val-det tt tt c₂ y))
+    ind {u} {w} {T1} {T2} (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih c₁ c₂ = ⊥-elim (FREEneqW (⇛-val-det tt tt c₂ y))
+    ind {u} {w} {T1} {T2} (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih c₁ c₂ = ⊥-elim (FREEneqM (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih c₁ c₂ = ⊥-elim (FREEneqSUM (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih c₁ c₂ = ⊥-elim (FREEneqSET (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) ih c₁ c₂ = ⊥-elim (FREEneqISECT (⇛-val-det tt tt c₂ y))
@@ -229,8 +229,8 @@ typeSysConds-FREE-extl1 u w A B x x₁ C eqt' =
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqPI (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqW (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqM (⇛-val-det tt tt comp y))
+    ind {u} {w} {T1} {T2} (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih comp a b eqi = ⊥-elim (FREEneqW (⇛-val-det tt tt comp y))
+    ind {u} {w} {T1} {T2} (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih comp a b eqi = ⊥-elim (FREEneqM (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqSUM (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqSET (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB exta extb) ih comp a b eqi = ⊥-elim (FREEneqISECT (⇛-val-det tt tt comp y))
@@ -280,8 +280,8 @@ typeSysConds-FREE-extl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) ih comp a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqPI (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqW (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqM (⇛-val-det tt tt comp y₁))
+    ind {u} {w} {T1} {T2} (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih comp a b eqi = ⊥-elim (FREEneqW (⇛-val-det tt tt comp y₁))
+    ind {u} {w} {T1} {T2} (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih comp a b eqi = ⊥-elim (FREEneqM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqSUM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqSET (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) ih comp a b eqi = ⊥-elim (FREEneqISECT (⇛-val-det tt tt comp y₁))
@@ -331,8 +331,8 @@ typeSysConds-FREE-extr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₄ x₅) ih comp a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqPI (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqW (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqM (⇛-val-det tt tt comp y₁))
+    ind {u} {w} {T1} {T2} (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih comp a b eqi = ⊥-elim (FREEneqW (⇛-val-det tt tt comp y₁))
+    ind {u} {w} {T1} {T2} (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih comp a b eqi = ⊥-elim (FREEneqM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqSUM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqSET (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) ih comp a b eqi = ⊥-elim (FREEneqISECT (⇛-val-det tt tt comp y₁))
@@ -381,8 +381,8 @@ typeSysConds-FREE-extr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqPI (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqW (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqM (⇛-val-det tt tt comp y))
+    ind {u} {w} {T1} {T2} (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih comp a b eqi = ⊥-elim (FREEneqW (⇛-val-det tt tt comp y))
+    ind {u} {w} {T1} {T2} (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih comp a b eqi = ⊥-elim (FREEneqM (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqSUM (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqSET (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB exta extb) ih comp a b eqi = ⊥-elim (FREEneqISECT (⇛-val-det tt tt comp y))
@@ -431,8 +431,8 @@ typeSysConds-FREE-extrevl1 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqPI (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqW (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqM (⇛-val-det tt tt comp y))
+    ind {u} {w} {T1} {T2} (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih comp a b eqi = ⊥-elim (FREEneqW (⇛-val-det tt tt comp y))
+    ind {u} {w} {T1} {T2} (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih comp a b eqi = ⊥-elim (FREEneqM (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqSUM (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqSET (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB exta extb) ih comp a b eqi = ⊥-elim (FREEneqISECT (⇛-val-det tt tt comp y))
@@ -486,8 +486,8 @@ typeSysConds-FREE-extrevl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqPI (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqW (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqM (⇛-val-det tt tt comp y₁))
+    ind {u} {w} {T1} {T2} (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih comp a b eqi = ⊥-elim (FREEneqW (⇛-val-det tt tt comp y₁))
+    ind {u} {w} {T1} {T2} (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih comp a b eqi = ⊥-elim (FREEneqM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqSUM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqSET (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB exta extb) ih comp a b eqi = ⊥-elim (FREEneqISECT (⇛-val-det tt tt comp y₁))
@@ -541,8 +541,8 @@ typeSysConds-FREE-extrevr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqPI (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqW (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqM (⇛-val-det tt tt comp y₁))
+    ind {u} {w} {T1} {T2} (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih comp a b eqi = ⊥-elim (FREEneqW (⇛-val-det tt tt comp y₁))
+    ind {u} {w} {T1} {T2} (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih comp a b eqi = ⊥-elim (FREEneqM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqSUM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqSET (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB exta extb) ih comp a b eqi = ⊥-elim (FREEneqISECT (⇛-val-det tt tt comp y₁))
@@ -596,8 +596,8 @@ typeSysConds-FREE-extrevr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 y y₁ x₂ x₃) ih comp a b eqi = ⊥-elim (FREEneqQLT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTFREE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqPI (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTW A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqW (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqM (⇛-val-det tt tt comp y))
+    ind {u} {w} {T1} {T2} (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih comp a b eqi = ⊥-elim (FREEneqW (⇛-val-det tt tt comp y))
+    ind {u} {w} {T1} {T2} (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) ih comp a b eqi = ⊥-elim (FREEneqM (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqSUM (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) ih comp a b eqi = ⊥-elim (FREEneqSET (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB exta extb) ih comp a b eqi = ⊥-elim (FREEneqISECT (⇛-val-det tt tt comp y))

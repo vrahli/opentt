@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 {-# OPTIONS --guardedness #-}
-{-# OPTIONS --experimental-lossy-unification #-}
+{-# OPTIONS --lossy-unification #-}
 --{-# OPTIONS --auto-inline #-}
 
 
@@ -483,7 +483,7 @@ sem kb cn can exb gc i w P T F {--nnF--} p0 prest tyn nty tyt F∈P = concl
       where
         c : ∈Type i w (#IndBar T) (#APPLY2 (#loop F) (#NUM 0) #INIT)
         c = ⊥-elim (noInfPath kb cn can exb gc i w' P T F p0 tyn nty prest (eqTypes-mon (uni i) tyt w' e') nnF (equalInType-mon F∈ w' e') p cor inf )
-    ... | no pp = CoIndBar2IndBar i w T (#APPLY2 (#loop F) (#NUM 0) #INIT) tyt cond co
+    ... | no pp = CoIndBar2IndBar kb i w T (#APPLY2 (#loop F) (#NUM 0) #INIT) tyt cond co
       where
         cond : ∀𝕎 w (λ w' _ → (p : path i w' #IndBarB (#IndBarC T))
                → correctPath {i} {w'} {#IndBarB} {#IndBarC T} (#APPLY2 (#loop F) (#NUM 0) #INIT) p

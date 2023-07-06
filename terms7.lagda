@@ -689,7 +689,7 @@ abstract
               a₁' ⇓ a'' from w1'' to w3 × a₁ ⇓ a'' from w1' to w3' × differ name name f a'' a'')))
       ind = differNF⇓-aux2 gc0 f cf nnf name w1 w1'' w1' (fst (snd hv0)) a₁ a₁' (fst hv0) k compat1 compat2 agtn atgn' diff z (fst (snd (snd hv0))) (snd (snd (snd hv0))) pd -- (hasValue-LET→ a₁' b₁ w1'' {k} hv) pd
   ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
-  differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(WT a₁ b₁) b v k compat1 compat2 agtn atgn' (differ-WT a₁ .a₁ b₁ .b₁ diff diff₁) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = WT _ _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-WT _ _ _ _ diff diff₁
+  differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(WT a₁ b₁ c₁) b v k compat1 compat2 agtn atgn' (differ-WT a₁ .a₁ b₁ .b₁ c₁ .c₁ diff diff₁ diff₂) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = WT _ _ _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-WT _ _ _ _ _ _ diff diff₁ diff₂
   differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(SUP a₁ b₁) b v k compat1 compat2 agtn atgn' (differ-SUP a₁ .a₁ b₁ .b₁ diff diff₁) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = SUP _ _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-SUP _ _ _ _ diff diff₁
   {--differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(DSUP a₁ b₁) b v k compat1 compat2 agtn atgn' (differ-DSUP a₁ .a₁ b₁ .b₁ diff diff₁) s hv isvv pd with is-SUP a₁
   ... | inj₁ (u₁ , u₂ , p) rewrite p | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
@@ -754,7 +754,7 @@ abstract
               a₁' ⇓ a'' from w1'' to w3 × a₁ ⇓ a'' from w1' to w3' × differ name name f a'' a'')))
       ind = differNF⇓-aux2 gc0 f cf nnf name w1 w1'' w1' (fst (snd hv0)) a₁ a₁' (fst hv0) k compat1 compat2 agtn atgn' diff z (fst (snd (snd hv0))) (snd (snd (snd hv0))) pd -- (hasValue-SPREAD→ a₁' b₁ w1'' {k} hv) pd
   ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
-  differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(MT a₁ b₁) b v k compat1 compat2 agtn atgn' (differ-MT a₁ .a₁ b₁ .b₁ diff diff₁) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = MT _ _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-MT _ _ _ _ diff diff₁
+  differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(MT a₁ b₁ c₁) b v k compat1 compat2 agtn atgn' (differ-MT a₁ .a₁ b₁ .b₁ c₁ .c₁ diff diff₁ diff₂) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = MT _ _ _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-MT _ _ _ _ _ _ diff diff₁ diff₂
   --differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(MSUP a₁ b₁) b v k compat1 compat2 agtn atgn' (differ-MSUP a₁ .a₁ b₁ .b₁ diff diff₁) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = MSUP _ _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-MSUP _ _ _ _ diff diff₁
   {--differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(DMSUP a₁ b₁) b v k compat1 compat2 agtn atgn' (differ-DMSUP a₁ .a₁ b₁ .b₁ diff diff₁) s hv isvv pd with is-MSUP a₁
   ... | inj₁ (u₁ , u₂ , p) rewrite p | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =

@@ -76,11 +76,11 @@ abstract
   shiftUp-shiftNameUp c d (APPLY t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
   shiftUp-shiftNameUp c d (FIX t) rewrite shiftUp-shiftNameUp c d t = refl
   shiftUp-shiftNameUp c d (LET t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc c) d t₁ = refl
-  shiftUp-shiftNameUp c d (WT t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc c) d t₁ = refl
+  shiftUp-shiftNameUp c d (WT t t₁ t₂) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc c) d t₁ | shiftUp-shiftNameUp c d t₂ = refl
   shiftUp-shiftNameUp c d (SUP t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
   --shiftUp-shiftNameUp c d (DSUP t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc (suc c)) d t₁ = refl
   shiftUp-shiftNameUp c d (WREC t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc (suc (suc c))) d t₁ = refl
-  shiftUp-shiftNameUp c d (MT t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc c) d t₁ = refl
+  shiftUp-shiftNameUp c d (MT t t₁ t₂) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc c) d t₁ | shiftUp-shiftNameUp c d t₂ = refl
   --shiftUp-shiftNameUp c d (MSUP t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
   --shiftUp-shiftNameUp c d (DMSUP t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc (suc c)) d t₁ = refl
   shiftUp-shiftNameUp c d (SUM t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc c) d t₁ = refl
@@ -141,11 +141,11 @@ abstract
   renn-shiftNameUp n1 n2 (APPLY t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
   renn-shiftNameUp n1 n2 (FIX t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 (LET t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
-  renn-shiftNameUp n1 n2 (WT t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
+  renn-shiftNameUp n1 n2 (WT t t₁ t₂) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ | renn-shiftNameUp n1 n2 t₂ = refl
   renn-shiftNameUp n1 n2 (SUP t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
   --renn-shiftNameUp n1 n2 (DSUP t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
   renn-shiftNameUp n1 n2 (WREC t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
-  renn-shiftNameUp n1 n2 (MT t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
+  renn-shiftNameUp n1 n2 (MT t t₁ t₂) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ | renn-shiftNameUp n1 n2 t₂ = refl
   --renn-shiftNameUp n1 n2 (MSUP t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
   --renn-shiftNameUp n1 n2 (DMSUP t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
   renn-shiftNameUp n1 n2 (SUM t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
@@ -232,11 +232,11 @@ abstract
   shiftNameDownUp n (APPLY t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
   shiftNameDownUp n (FIX t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n (LET t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
-  shiftNameDownUp n (WT t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
+  shiftNameDownUp n (WT t t₁ t₂) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ | shiftNameDownUp n t₂ = refl
   shiftNameDownUp n (SUP t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
   --shiftNameDownUp n (DSUP t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
   shiftNameDownUp n (WREC t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
-  shiftNameDownUp n (MT t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
+  shiftNameDownUp n (MT t t₁ t₂) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ | shiftNameDownUp n t₂ = refl
   --shiftNameDownUp n (MSUP t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
   --shiftNameDownUp n (DMSUP t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
   shiftNameDownUp n (SUM t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
@@ -349,11 +349,11 @@ abstract
   ¬names-shiftUp n (APPLY a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp n a₁ = refl
   ¬names-shiftUp n (FIX a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n (LET a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp (suc n) a₁ = refl
-  ¬names-shiftUp n (WT a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp (suc n) a₁ = refl
+  ¬names-shiftUp n (WT a a₁ a₂) rewrite ¬names-shiftUp n a | ¬names-shiftUp (suc n) a₁ | ¬names-shiftUp n a₂ = refl
   ¬names-shiftUp n (SUP a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp n a₁ = refl
   --¬names-shiftUp n (DSUP a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp (suc (suc n)) a₁ = refl
   ¬names-shiftUp n (WREC a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp (suc (suc (suc n))) a₁ = refl
-  ¬names-shiftUp n (MT a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp (suc n) a₁ = refl
+  ¬names-shiftUp n (MT a a₁ a₂) rewrite ¬names-shiftUp n a | ¬names-shiftUp (suc n) a₁ | ¬names-shiftUp n a₂ = refl
   --¬names-shiftUp n (MSUP a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp n a₁ = refl
   --¬names-shiftUp n (DMSUP a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp (suc (suc n)) a₁ = refl
   ¬names-shiftUp n (SUM a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp (suc n) a₁ = refl
@@ -412,11 +412,11 @@ abstract
   ¬names-shiftDown n (APPLY a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown n a₁ = refl
   ¬names-shiftDown n (FIX a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n (LET a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown (suc n) a₁ = refl
-  ¬names-shiftDown n (WT a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown (suc n) a₁ = refl
+  ¬names-shiftDown n (WT a a₁ a₂) rewrite ¬names-shiftDown n a | ¬names-shiftDown (suc n) a₁ | ¬names-shiftDown n a₂ = refl
   ¬names-shiftDown n (SUP a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown n a₁ = refl
   --¬names-shiftDown n (DSUP a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown (suc (suc n)) a₁ = refl
   ¬names-shiftDown n (WREC a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown (suc (suc (suc n))) a₁ = refl
-  ¬names-shiftDown n (MT a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown (suc n) a₁ = refl
+  ¬names-shiftDown n (MT a a₁ a₂) rewrite ¬names-shiftDown n a | ¬names-shiftDown (suc n) a₁ | ¬names-shiftDown n a₂ = refl
   --¬names-shiftDown n (MSUP a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown n a₁ = refl
   --¬names-shiftDown n (DMSUP a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown (suc (suc n)) a₁ = refl
   ¬names-shiftDown n (SUM a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown (suc n) a₁ = refl
@@ -496,11 +496,15 @@ abstract
   ¬Names-subv v {a} {APPLY b b₁} na nb = →∧≡true {¬names (subv v a b)} {¬names (subv v a b₁)} (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv v {a} {b₁} na (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
   ¬Names-subv v {a} {FIX b} na nb = ¬Names-subv v {a} {b} na nb
   ¬Names-subv v {a} {LET b b₁} na nb = →∧≡true (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv (suc v) {shiftUp 0 a} {b₁} (→¬Names-shiftUp 0 {a} na) (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
-  ¬Names-subv v {a} {WT b b₁} na nb = →∧≡true (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv (suc v) {shiftUp 0 a} {b₁} (→¬Names-shiftUp 0 {a} na) (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
+  ¬Names-subv v {a} {WT b b₁ b₂} na nb = →∧3≡true (¬Names-subv v {a} {b} na (∧≡true→1-3 {¬names b} {¬names b₁} {¬names b₂} nb))
+                                                  (¬Names-subv (suc v) {shiftUp 0 a} {b₁} (→¬Names-shiftUp 0 {a} na) (∧≡true→2-3 {¬names b} {¬names b₁} {¬names b₂} nb))
+                                                  (¬Names-subv v {a} {b₂} na (∧≡true→3-3 {¬names b} {¬names b₁} {¬names b₂} nb))
   ¬Names-subv v {a} {SUP b b₁} na nb = →∧≡true {¬names (subv v a b)} {¬names (subv v a b₁)} (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv v {a} {b₁} na (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
   --¬Names-subv v {a} {DSUP b b₁} na nb = →∧≡true (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv (suc (suc v)) {shiftUp 0 (shiftUp 0 a)} {b₁} (→¬Names-shiftUp 0 {shiftUp 0 a} (→¬Names-shiftUp 0 {a} na)) (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
   ¬Names-subv v {a} {WREC b b₁} na nb = →∧≡true (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv (suc (suc (suc v))) {shiftUp 0 (shiftUp 0 (shiftUp 0 a))} {b₁} (→¬Names-shiftUp 0 {shiftUp 0 (shiftUp 0 a)} (→¬Names-shiftUp 0 {shiftUp 0 a} (→¬Names-shiftUp 0 {a} na))) (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
-  ¬Names-subv v {a} {MT b b₁} na nb = →∧≡true (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv (suc v) {shiftUp 0 a} {b₁} (→¬Names-shiftUp 0 {a} na) (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
+  ¬Names-subv v {a} {MT b b₁ b₂} na nb = →∧3≡true (¬Names-subv v {a} {b} na (∧≡true→1-3 {¬names b} {¬names b₁} {¬names b₂} nb))
+                                                  (¬Names-subv (suc v) {shiftUp 0 a} {b₁} (→¬Names-shiftUp 0 {a} na) (∧≡true→2-3 {¬names b} {¬names b₁} {¬names b₂} nb))
+                                                  (¬Names-subv v {a} {b₂} na (∧≡true→3-3 {¬names b} {¬names b₁} {¬names b₂} nb))
   --¬Names-subv v {a} {MSUP b b₁} na nb = →∧≡true {¬names (subv v a b)} {¬names (subv v a b₁)} (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv v {a} {b₁} na (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
   --¬Names-subv v {a} {DMSUP b b₁} na nb = →∧≡true (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv (suc (suc v)) {shiftUp 0 (shiftUp 0 a)} {b₁} (→¬Names-shiftUp 0 {shiftUp 0 a} (→¬Names-shiftUp 0 {a} na)) (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
   ¬Names-subv v {a} {SUM b b₁} na nb = →∧≡true (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv (suc v) {shiftUp 0 a} {b₁} (→¬Names-shiftUp 0 {a} na) (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
@@ -565,11 +569,11 @@ abstract
   noseq-shiftUp n (APPLY a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
   noseq-shiftUp n (FIX a) rewrite noseq-shiftUp n a = refl
   noseq-shiftUp n (LET a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc n) a₁ = refl
-  noseq-shiftUp n (WT a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc n) a₁ = refl
+  noseq-shiftUp n (WT a a₁ a₂) rewrite noseq-shiftUp n a | noseq-shiftUp (suc n) a₁ | noseq-shiftUp n a₂ = refl
   noseq-shiftUp n (SUP a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
   --noseq-shiftUp n (DSUP a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc (suc n)) a₁ = refl
   noseq-shiftUp n (WREC a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc (suc (suc n))) a₁ = refl
-  noseq-shiftUp n (MT a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc n) a₁ = refl
+  noseq-shiftUp n (MT a a₁ a₂) rewrite noseq-shiftUp n a | noseq-shiftUp (suc n) a₁ | noseq-shiftUp n a₂ = refl
   --noseq-shiftUp n (MSUP a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
   --noseq-shiftUp n (DMSUP a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc (suc n)) a₁ = refl
   noseq-shiftUp n (SUM a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc n) a₁ = refl
@@ -628,11 +632,11 @@ abstract
   noseq-shiftDown n (APPLY a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
   noseq-shiftDown n (FIX a) rewrite noseq-shiftDown n a = refl
   noseq-shiftDown n (LET a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc n) a₁ = refl
-  noseq-shiftDown n (WT a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc n) a₁ = refl
+  noseq-shiftDown n (WT a a₁ a₂) rewrite noseq-shiftDown n a | noseq-shiftDown (suc n) a₁ | noseq-shiftDown n a₂ = refl
   noseq-shiftDown n (SUP a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
   --noseq-shiftDown n (DSUP a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc (suc n)) a₁ = refl
   noseq-shiftDown n (WREC a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc (suc (suc n))) a₁ = refl
-  noseq-shiftDown n (MT a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc n) a₁ = refl
+  noseq-shiftDown n (MT a a₁ a₂) rewrite noseq-shiftDown n a | noseq-shiftDown (suc n) a₁ | noseq-shiftDown n a₂ = refl
   --noseq-shiftDown n (MSUP a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
   --noseq-shiftDown n (DMSUP a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc (suc n)) a₁ = refl
   noseq-shiftDown n (SUM a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc n) a₁ = refl
@@ -697,11 +701,11 @@ abstract
   noseq-shiftNameUp n (APPLY a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
   noseq-shiftNameUp n (FIX a) rewrite noseq-shiftNameUp n a = refl
   noseq-shiftNameUp n (LET a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
-  noseq-shiftNameUp n (WT a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (WT a a₁ a₂) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ | noseq-shiftNameUp n a₂ = refl
   noseq-shiftNameUp n (SUP a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
   --noseq-shiftNameUp n (DSUP a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp (suc n) a₁ = refl
   noseq-shiftNameUp n (WREC a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
-  noseq-shiftNameUp n (MT a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
+  noseq-shiftNameUp n (MT a a₁ a₂) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ | noseq-shiftNameUp n a₂ = refl
   --noseq-shiftNameUp n (MSUP a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
   --noseq-shiftNameUp n (DMSUP a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp (suc n) a₁ = refl
   noseq-shiftNameUp n (SUM a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
@@ -765,11 +769,15 @@ abstract
   ¬Seq-subv v {a} {APPLY b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
   ¬Seq-subv v {a} {FIX b} na nb = ¬Seq-subv v {a} {b} na nb
   ¬Seq-subv v {a} {LET b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc v) {shiftUp 0 a} {b₁} (→¬Seq-shiftUp 0 {a} na) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
-  ¬Seq-subv v {a} {WT b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc v) {shiftUp 0 a} {b₁} (→¬Seq-shiftUp 0 {a} na) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {WT b b₁ b₂} na nb = →∧3≡true (¬Seq-subv v {a} {b} na (∧≡true→1-3 {noseq b} {noseq b₁} {noseq b₂} nb))
+                                                (¬Seq-subv (suc v) {shiftUp 0 a} {b₁} (→¬Seq-shiftUp 0 {a} na) (∧≡true→2-3 {noseq b} {noseq b₁} {noseq b₂} nb))
+                                                (¬Seq-subv v {a} {b₂} na (∧≡true→3-3 {noseq b} {noseq b₁} {noseq b₂} nb))
   ¬Seq-subv v {a} {SUP b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
   --¬Seq-subv v {a} {DSUP b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc (suc v)) {shiftUp 0 (shiftUp 0 a)} {b₁} (→¬Seq-shiftUp 0 {shiftUp 0 a} (→¬Seq-shiftUp 0 {a} na)) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
   ¬Seq-subv v {a} {WREC b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc (suc (suc v))) {shiftUp 0 (shiftUp 0 (shiftUp 0 a))} {b₁} (→¬Seq-shiftUp 0 {shiftUp 0 (shiftUp 0 a)} (→¬Seq-shiftUp 0 {shiftUp 0 a} (→¬Seq-shiftUp 0 {a} na))) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
-  ¬Seq-subv v {a} {MT b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc v) {shiftUp 0 a} {b₁} (→¬Seq-shiftUp 0 {a} na) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
+  ¬Seq-subv v {a} {MT b b₁ b₂} na nb = →∧3≡true (¬Seq-subv v {a} {b} na (∧≡true→1-3 {noseq b} {noseq b₁} {noseq b₂} nb))
+                                                (¬Seq-subv (suc v) {shiftUp 0 a} {b₁} (→¬Seq-shiftUp 0 {a} na) (∧≡true→2-3 {noseq b} {noseq b₁} {noseq b₂} nb))
+                                                (¬Seq-subv v {a} {b₂} na (∧≡true→3-3 {noseq b} {noseq b₁} {noseq b₂} nb))
   --¬Seq-subv v {a} {MSUP b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
   --¬Seq-subv v {a} {DMSUP b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc (suc v)) {shiftUp 0 (shiftUp 0 a)} {b₁} (→¬Seq-shiftUp 0 {shiftUp 0 a} (→¬Seq-shiftUp 0 {a} na)) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
   ¬Seq-subv v {a} {SUM b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc v) {shiftUp 0 a} {b₁} (→¬Seq-shiftUp 0 {a} na) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))

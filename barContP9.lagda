@@ -1,7 +1,7 @@
 \begin{code}
 {-# OPTIONS --rewriting #-}
 {-# OPTIONS --guardedness #-}
-{-# OPTIONS --experimental-lossy-unification #-}
+{-# OPTIONS --lossy-unification #-}
 --{-# OPTIONS --auto-inline #-}
 
 
@@ -96,6 +96,8 @@ open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (→equalInType-NAT! ; e
 --open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
+open import props_w(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+
 --open import list(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)(EC)
@@ -132,11 +134,11 @@ abstract
                → type-preserves-#⇛ T
                → isType i w T
                → I #⇛! #tab F k (seq2list s k) at w
-               → weq (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T))) w I J
+               → weq₀ (equalInType i w #IndBarB) (λ a b eqa → equalInType i w (sub0 a (#IndBarC T))) w I J
                → ∈Type i w (#FunBar T) F
                → #APPLY F (#MSEQ s) #⇛ #NUM n at w
                → #follow (#MSEQ s) I k #⇛ #NUM n at w
-  follow-NUM kb can gc cn i w P T I J F s k n nnF p0 ps nty tyn prest tyt cI (weqC a1 f1 a2 f2 e c1 c2 ind) F∈ comp
+  follow-NUM kb can gc cn i w P T I J F s k n nnF p0 ps nty tyn prest tyt cI (weqC₀ a1 f1 a2 f2 e c1 c2 ind) F∈ comp
     with #APPLY-#loop#⇓5
            kb can gc cn i T F (#NUM k) (seq2list s k)
            k w (#¬Names-seq2list s k) nnF prest tyt (#⇛!-refl {w} {#NUM k}) F∈
@@ -344,7 +346,7 @@ semCond : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get
 semCond kb cn can exb gc i w P T F f p0 nty tyn prest tyt F∈P f∈ =
   →equalInType-NAT
     i w (#APPLY F f) (#follow f I 0)
-    (Mod.∀𝕎-□Func M aw (equalInType-W→ i w #IndBarB (#IndBarC T) I I I∈))
+    (Mod.∀𝕎-□Func M aw (equalInType-W₀→ kb i w #IndBarB (#IndBarC T) I I I∈))
   where
     nnF  : #¬Names F
     nnF = equalInType-TPURE→ₗ F∈P
