@@ -290,9 +290,9 @@ BAIRE2list kb {i} {w} {f} f∈ k = seq2list (BAIRE2𝕊 kb f∈) k
                    → □· w (λ w' _ → Σ CTerm (λ t → Σ ℕ (λ n → b #⇛! #INL t at w' × t #⇛ #NUM n at w'))
                                       ⊎ Σ CTerm (λ t → b #⇛! #INR t at w'))
 ∈Type-IndBarB→ i w b b∈ =
-  Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInType-UNION!→ b∈))
+  Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInType-UNION₀!→ b∈))
   where
-    aw : ∀𝕎 w (λ w' e' → UNION!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' b b
+    aw : ∀𝕎 w (λ w' e' → UNION₀!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' b b
                         → □· w' (↑wPred' (λ w'' _ → Σ CTerm (λ t → Σ ℕ (λ n → b #⇛! #INL t at w'' × t #⇛ #NUM n at w''))
                                                       ⊎ Σ CTerm (λ t → b #⇛! #INR t at w'')) e'))
     aw w1 e1 (x , y , inj₁ (c1 , c2 , eqi)) =
@@ -306,9 +306,9 @@ equalInType-IndBarB→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                        → □· w (λ w' _ → Σ CTerm (λ t → Σ CTerm (λ u → Σ ℕ (λ n → a #⇛! #INL t at w' × b #⇛! #INL u at w' × t #⇛ #NUM n at w' × u #⇛ #NUM n at w')))
                                          ⊎ Σ CTerm (λ t → Σ CTerm (λ u → a #⇛! #INR t at w' × b #⇛! #INR u at w')))
 equalInType-IndBarB→ i w a b b∈ =
-  Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInType-UNION!→ b∈))
+  Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInType-UNION₀!→ b∈))
   where
-    aw : ∀𝕎 w (λ w' e' → UNION!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' a b
+    aw : ∀𝕎 w (λ w' e' → UNION₀!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' a b
                         → □· w' (↑wPred' (λ w' _ → Σ CTerm (λ t → Σ CTerm (λ u → Σ ℕ (λ n → a #⇛! #INL t at w' × b #⇛! #INL u at w' × t #⇛ #NUM n at w' × u #⇛ #NUM n at w')))
                                                      ⊎ Σ CTerm (λ t → Σ CTerm (λ u → a #⇛! #INR t at w' × b #⇛! #INR u at w')))
                                           e'))

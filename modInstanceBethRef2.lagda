@@ -114,19 +114,19 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
 
 
 Typeℂ₀₁-beth-ref : CTerm
-Typeℂ₀₁-beth-ref = #QTBOOL!
+Typeℂ₀₁-beth-ref = #BOOL!
 
 
 Typeℂ₀₁-isType-beth-bar : (u : ℕ) (w : 𝕎·) → isType u w Typeℂ₀₁-beth-ref
-Typeℂ₀₁-isType-beth-bar u w = eqTypesQTBOOL!
+Typeℂ₀₁-isType-beth-bar u w = isTypeBOOL! w u
 
 
 ℂ₀∈Typeℂ₀₁-beth-ref : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁-beth-ref Cℂ₀
-ℂ₀∈Typeℂ₀₁-beth-ref u w = INL-equalInType-QTBOOL! u w #AX #AX
+ℂ₀∈Typeℂ₀₁-beth-ref u w = →equalInType-BOOL!-INL u w #AX #AX
 
 
 ℂ₁∈Typeℂ₀₁-beth-ref : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁-beth-ref Cℂ₁
-ℂ₁∈Typeℂ₀₁-beth-ref u w = INR-equalInType-QTBOOL! u w #AX #AX
+ℂ₁∈Typeℂ₀₁-beth-ref u w = →equalInType-BOOL!-INR u w #AX #AX
 
 
 isvalue-choice : (c : ℂ·) → #isValue (ℂ→C· c)
@@ -209,7 +209,7 @@ isValueℂ₁-beth-ref = tt
 
 
 ∈Typeℂ₀₁→-beth-ref : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-ref a b → □· w (λ w' _ → #weakℂEq w' a b)
-∈Typeℂ₀₁→-beth-ref i w a b eqi = Mod.∀𝕎-□Func M aw (equalInType-QTBOOL!→ i w a b eqi)
+∈Typeℂ₀₁→-beth-ref i w a b eqi = Mod.∀𝕎-□Func M aw (equalInType-BOOL!→ i w a b eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #weakBool! w' a b → #weakℂEq w' a b)
     aw w1 e1 h w2 e2 = lift j
@@ -261,7 +261,7 @@ getChoice→weakℂ₀₁M w n c h w1 e1 with lower (h w1 e1)
                       → compatible· c w Resℂ₀₁ --□· w (λ w' _ → weakℂ₀₁M w' (getT n c))
                       → ∈Type i w Typeℂ₀₁-beth-ref (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁-beth-ref i {w} n {c} h =
-  →equalInType-QTBOOL!
+  →equalInType-BOOL!
     i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
     (Mod.∀𝕎-□Func M aw (Mod.∀𝕎-□Func M (λ w1 e1 q → getChoice→weakℂ₀₁M w1 n c q) (□·-choice-beth-ref w c n Resℂ₀₁ h)))
   where
@@ -316,8 +316,8 @@ bethRef-choiceBar =
     ℂ₁∈Typeℂ₀₁-beth-ref
     ∈Typeℂ₀₁→-beth-ref
     →∈Typeℂ₀₁-beth-ref
-    equalTerms-pres-#⇛-left-QTBOOL!
-    equalTerms-pres-#⇛-left-rev-QTBOOL!
+    equalTerms-pres-#⇛-left-BOOL!
+    equalTerms-pres-#⇛-left-rev-BOOL!
     □·-choice-beth-ref
     followChoice-beth-ref
 

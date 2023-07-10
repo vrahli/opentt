@@ -120,12 +120,28 @@ EMPTY : Term
 EMPTY = PAIR (NUM 0) (LAMBDA (NUM 0))
 
 
+SUM₀ : Term → Term → Term
+SUM₀ a b = NOREADMOD (SUM a b)
+
+
+#SUM₀ : CTerm → CTerm0 → CTerm
+#SUM₀ a b = #NOREADMOD (#SUM a b)
+
+
+PROD₀ : Term → Term → Term
+PROD₀ a b = NOREADMOD (PROD a b)
+
+
+#PROD₀ : CTerm → CTerm → CTerm
+#PROD₀ a b = #NOREADMOD (#PROD a b)
+
+
 LIST : Term → Term
-LIST A = PROD NAT (FUN NAT A)
+LIST A = PROD₀ NAT (FUN NAT A)
 
 
 #LIST : CTerm → CTerm
-#LIST A = #PROD #NAT (#FUN #NAT A)
+#LIST A = #PROD₀ #NAT (#FUN #NAT A)
 
 
 #LAM0 : CTerm
@@ -284,12 +300,59 @@ LISTNATeq i w f g =
     × g #⇛ (#PAIR a2 b2) at w))))
 
 
+PRODeq₀ : (eqa eqb : per) → wper
+PRODeq₀ eqa eqb w f g =
+  Σ CTerm (λ a1 → Σ CTerm (λ a2 → Σ CTerm (λ b1 → Σ CTerm (λ b2 →
+    eqa a1 a2
+    × eqb b1 b2
+    × f #⇛ (#PAIR a1 b1) at w
+    × g #⇛ (#PAIR a2 b2) at w))))
+
+
+equalInType-PROD₀→ : {u : ℕ} {w : 𝕎·} {A B : CTerm} {f g : CTerm}
+                   → equalInType u w (#PROD₀ A B) f g
+                   → □· w (λ w' _ → PRODeq₀ (equalInType u w' A) (equalInType u w' B) w' f g)
+equalInType-PROD₀→ {u} {w} {A} {B} {f} {g} eqi =
+  Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInTypeNOREADMOD→ eqi))
+  where
+    aw : ∀𝕎 w (λ w' e' → NOREADMODeq (equalInType u w' (#PROD A B)) w' f g
+                       → □· w' (↑wPred' (λ w'' _ → PRODeq₀ (equalInType u w'' A) (equalInType u w'' B) w'' f g) e'))
+    aw w1 e1 (h , q) = Mod.∀𝕎-□Func M aw1 (equalInType-PROD→ h)
+      where
+        aw1 : ∀𝕎 w1 (λ w' e' → PRODeq (equalInType u w' A) (equalInType u w' B) w' f g
+                             → ↑wPred' (λ w'' _ → PRODeq₀ (equalInType u w'' A) (equalInType u w'' B) w'' f g) e1 w' e')
+        aw1 w2 e2 (a1 , a2 , b1 , b2 , a∈ , b∈ , c₁ , c₂) z =
+          a1 , a2 , b1 , b2 , a∈ , b∈ ,
+          fst q w2 e2 (#PAIR a1 b1) tt c₁ ,
+          snd q w2 e2 (#PAIR a2 b2) tt c₂
+
+
+equalInType-PROD₀ : {u : ℕ} {w : 𝕎·} {A B : CTerm} {f g : CTerm}
+                  → isType u w A
+                  → isType u w B
+                  → □· w (λ w' _ → PRODeq₀ (equalInType u w' A) (equalInType u w' B) w' f g)
+                  → equalInType u w (#PROD₀ A B) f g
+equalInType-PROD₀ {u} {w} {A} {B} {f} {g} ha hb eqi =
+  →equalInTypeNOREADMOD (Mod.∀𝕎-□Func M aw1 eqi)
+  where
+    aw1 : ∀𝕎 w (λ w' e' → PRODeq₀ (equalInType u w' A) (equalInType u w' B) w' f g
+                        → equalInType u w' (#PROD A B) f g × NOREADeq w' f g)
+    aw1 w1 e1 (a1 , a2 , b1 , b2 , a∈ , b∈ , c₁ , c₂) =
+      equalInType-PROD (eqTypes-mon (uni u) ha w1 e1) (eqTypes-mon (uni u) hb w1 e1)
+        (Mod.∀𝕎-□ M (λ w2 e2 → a1 , a2 , b1 , b2 ,
+                               equalInType-mon a∈ w2 e2 ,
+                               equalInType-mon b∈ w2 e2 ,
+                               lower (c₁ w2 e2) ,
+                               lower (c₂ w2 e2))) ,
+      #⇛val→#⇓→#⇛ {w1} {f} {#PAIR a1 b1} tt c₁ , #⇛val→#⇓→#⇛ {w1} {g} {#PAIR a2 b2} tt c₂
+
+
 equalInType-LIST-NAT→ : (i : ℕ) (w : 𝕎·) (f g : CTerm)
                          → equalInType i w (#LIST #NAT) f g
                          → □· w (λ w' _ → LISTNATeq i w' f g)
-equalInType-LIST-NAT→ i w f g eqi = Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInType-PROD→ eqi))
+equalInType-LIST-NAT→ i w f g eqi = Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInType-PROD₀→ eqi))
   where
-    aw : ∀𝕎 w (λ w' e' → PRODeq (equalInType i w' #NAT) (equalInType i w' (#FUN #NAT #NAT)) w' f g
+    aw : ∀𝕎 w (λ w' e' → PRODeq₀ (equalInType i w' #NAT) (equalInType i w' (#FUN #NAT #NAT)) w' f g
                        → □· w' (↑wPred' (λ w'' _ → LISTNATeq i w'' f g) e'))
     aw w1 e1 (k1 , k2 , f1 , f2 , ek , ef , c1 , c2) = Mod.∀𝕎-□Func M aw1 (equalInType-NAT→ i w1 k1 k2 ek)
       where
@@ -298,17 +361,18 @@ equalInType-LIST-NAT→ i w f g eqi = Mod.□-idem M (Mod.∀𝕎-□Func M aw (
         aw1 w2 e2 ek' e3 =
           k1 , k2 , f1 , f2 , ek' ,
           ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-mon ef w2 e2) ,
-          ∀𝕎-mon e2 c1 , ∀𝕎-mon e2 c2
+          ∀𝕎-mon e2 c1 ,
+          ∀𝕎-mon e2 c2
 
 
 →equalInType-LIST-NAT : (i : ℕ) (w : 𝕎·) (f g : CTerm)
                          → □· w (λ w' _ → LISTNATeq i w' f g)
                          → equalInType i w (#LIST #NAT) f g
 →equalInType-LIST-NAT i w f g eqi =
-  equalInType-PROD eqTypesNAT (≡CTerm→eqTypes #BAIRE≡ #BAIRE≡ eqTypesBAIRE) (Mod.∀𝕎-□Func M aw eqi)
+  equalInType-PROD₀ eqTypesNAT (≡CTerm→eqTypes #BAIRE≡ #BAIRE≡ eqTypesBAIRE) (Mod.∀𝕎-□Func M aw eqi)
   where
     aw : ∀𝕎 w (λ w' e' → LISTNATeq i w' f g
-                        → PRODeq (equalInType i w' #NAT) (equalInType i w' (#FUN #NAT #NAT)) w' f g)
+                        → PRODeq₀ (equalInType i w' #NAT) (equalInType i w' (#FUN #NAT #NAT)) w' f g)
     aw w1 e1 (a1 , a2 , b1 , b2 , x , y , c1 , c2) =
       a1 , a2 , b1 , b2 ,
       →equalInType-NAT i w1 a1 a2 (Mod.∀𝕎-□ M λ w2 e2 → NATeq-mon {w1} {w2} e2 {a1} {a2} x) ,
@@ -513,7 +577,8 @@ EMPTY∈LIST i w = →equalInType-LIST-NAT i w #EMPTY #EMPTY (Mod.∀𝕎-□ M 
       #NUM 0 , #NUM 0 , #LAM0 , #LAM0 ,
       NATeq-NUM w1 0 ,
       LAM0∈BAIRE i w1 ,
-      #⇛-refl w1 #EMPTY , #⇛-refl w1 #EMPTY
+      #⇛-refl w1 #EMPTY ,
+      #⇛-refl w1 #EMPTY
 
 
 #⇛∈LIST : (i : ℕ) (w : 𝕎·) (l k f : CTerm) (n : ℕ)
@@ -531,7 +596,8 @@ EMPTY∈LIST i w = →equalInType-LIST-NAT i w #EMPTY #EMPTY (Mod.∀𝕎-□ M 
       k , k , f , f ,
       (n , ∀𝕎-mon e1 compk , ∀𝕎-mon e1 compk) ,
       equalInType-mon f∈ w1 e1 ,
-      ∀𝕎-mon e1 compl , ∀𝕎-mon e1 compl
+      ∀𝕎-mon e1 compl ,
+      ∀𝕎-mon e1 compl
 
 
 APPLY⇓₁ : {w : 𝕎·} {a b : Term} (c : Term)

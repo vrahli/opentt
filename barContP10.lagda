@@ -149,6 +149,20 @@ NAT→!T T = FUN NAT (NOWRITEMOD T)
     c rewrite ++[] (fvars ⌜ t ⌝) = CTerm1.closed t
 
 
+#[0]NOREADMOD : CTerm0 → CTerm0
+#[0]NOREADMOD t = ct0 (NOREADMOD ⌜ t ⌝) c
+  where
+    c : #[ [ 0 ] ] NOREADMOD ⌜ t ⌝
+    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm0.closed t
+
+
+#[1]NOREADMOD : CTerm1 → CTerm1
+#[1]NOREADMOD t = ct1 (NOREADMOD ⌜ t ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] NOREADMOD ⌜ t ⌝
+    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm1.closed t
+
+
 #[0]NAT→!T : CTerm → CTerm0
 #[0]NAT→!T T = #[0]FUN #[0]NAT (#[0]NOWRITEMOD ⌞ T ⌟)
 
@@ -200,8 +214,12 @@ contDiag T =
                    (lowerVars-fvars-[0,1,2] {fvars ⌜ b ⌝} (⊆?→⊆ (CTerm2.closed b))))
 
 
-#[0]UNION! : CTerm0 → CTerm0 → CTerm0
-#[0]UNION! a b = #[0]NOWRITEMOD (#[0]UNION a b)
+#[0]UNION₀ : CTerm0 → CTerm0 → CTerm0
+#[0]UNION₀ a b = #[0]NOREADMOD (#[0]UNION a b)
+
+
+#[0]UNION₀! : CTerm0 → CTerm0 → CTerm0
+#[0]UNION₀! a b = #[0]NOWRITEMOD (#[0]UNION₀ a b)
 
 
 #[0]UNIT : CTerm0
@@ -209,7 +227,7 @@ contDiag T =
 
 
 #[0]IndBarB : CTerm0
-#[0]IndBarB = #[0]UNION! #[0]NAT #[0]UNIT
+#[0]IndBarB = #[0]UNION₀! #[0]NAT #[0]UNIT
 
 
 #[1]DECIDE : CTerm1 → CTerm2 → CTerm2 → CTerm1
@@ -607,8 +625,8 @@ contDiagVal1 kb cn can exb gc i w P T F₁ F₂ p0 nty tyn prest tyt F∈ =
     h1 w1 e1 =
       #tab F₂ 0 #INIT , #tab F₂ 0 #INIT , #lamAX , #lamAX ,
       sem kb cn can exb gc i w1 P T F₂ p0 prest (type-#⇛-NUM→! P T tyn) nty (eqTypes-mon (uni i) tyt w1 e1) (equalInType-refl (equalInType-sym (equalInType-mon F∈ w1 e1))) ,
-      #contDiagExt⇛ F₂ w1 ,
-      #contDiagExt⇛ F₂ w1 ,
+      lower (#contDiagExt⇛ F₂ w1 w1 (⊑-refl· w1)) , --#contDiagExt⇛ F₂ w1 ,
+      lower (#contDiagExt⇛ F₂ w1 w1 (⊑-refl· w1)) , --#contDiagExt⇛ F₂ w1 ,
       →≡equalInType (sym (sub0-contDiag-PI T F₁ (#tab F₂ 0 #INIT) _)) h2
       where
         h2 : equalInType i w1 (#PI (#NAT→!T T) (#[0]EQ (#[0]APPLY ⌞ F₁ ⌟ #[0]VAR) (follow0 (#tab F₂ 0 #INIT)) #[0]NAT)) #lamAX #lamAX

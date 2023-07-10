@@ -348,18 +348,18 @@ typeSysConds-UNION-itrans : (u : univs) (w : 𝕎·) (A B A1 B1 A2 B2 : CTerm)
 typeSysConds-UNION-itrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb f g h ea1 ea2 =
   Mod.□Func M (Mod.□Func M (Mod.∀𝕎-□ M aw) ea1) ea2
   where
-    aw : ∀𝕎 w
-              (λ w' e →
-                UNIONeq (eqInType u w' (eqta w' e)) (eqInType u w' (eqtb w' e)) w' f g
-                → UNIONeq (eqInType u w' (eqta w' e)) (eqInType u w' (eqtb w' e)) w' g h
-                → UNIONeq (eqInType u w' (eqta w' e)) (eqInType u w' (eqtb w' e)) w' f h)
+    aw : ∀𝕎 w (λ w' e → UNIONeq (eqInType u w' (eqta w' e)) (eqInType u w' (eqtb w' e)) w' f g
+                      → UNIONeq (eqInType u w' (eqta w' e)) (eqInType u w' (eqtb w' e)) w' g h
+                      → UNIONeq (eqInType u w' (eqta w' e)) (eqInType u w' (eqtb w' e)) w' f h)
     aw w1 e1 (a , b , inj₁ (c₁ , c₂ , ea)) (c , d , inj₁ (d₁ , d₂ , eb))
-      rewrite #INLinj {b} {c} (#⇛-val-det {_} {g} tt tt c₂ d₁)
+      rewrite #INLinj {b} {c} ({--#⇛-val-det--} #⇓-val-det {_} {g} tt tt c₂ d₁)
       = a , d , inj₁ (c₁ , d₂ , TSP.itrans (inda w1 e1) a c d ea eb)
-    aw w1 e1 (a , b , inj₁ (c₁ , c₂ , ea)) (c , d , inj₂ (d₁ , d₂ , eb)) = ⊥-elim (INLneqINR (⇛-val-det tt tt c₂ d₁))
-    aw w1 e1 (a , b , inj₂ (c₁ , c₂ , ea)) (c , d , inj₁ (d₁ , d₂ , eb)) = ⊥-elim (INLneqINR (⇛-val-det tt tt d₁ c₂))
+    aw w1 e1 (a , b , inj₁ (c₁ , c₂ , ea)) (c , d , inj₂ (d₁ , d₂ , eb)) =
+      ⊥-elim (INLneqINR ({--⇛-val-det--} ⇓-val-det tt tt c₂ d₁))
+    aw w1 e1 (a , b , inj₂ (c₁ , c₂ , ea)) (c , d , inj₁ (d₁ , d₂ , eb)) =
+      ⊥-elim (INLneqINR ({--⇛-val-det--} ⇓-val-det tt tt d₁ c₂))
     aw w1 e1 (a , b , inj₂ (c₁ , c₂ , ea)) (c , d , inj₂ (d₁ , d₂ , eb))
-      rewrite #INRinj {b} {c} (#⇛-val-det {_} {g} tt tt c₂ d₁)
+      rewrite #INRinj {b} {c} ({--#⇛-val-det--} #⇓-val-det {_} {g} tt tt c₂ d₁)
       = a , d , inj₂ (c₁ , d₂ , TSP.itrans (indb w1 e1) a c d ea eb)
 
 

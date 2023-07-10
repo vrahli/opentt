@@ -422,8 +422,8 @@ continuityBody cn exb gc i w F f nnF nnf ∈F ∈f =
     aw w1 e1 =
       #νtestM F f , #νtestM F f , #lam3AX , #lam3AX ,
       testM-NAT cn exb gc i w1 F f nnF nnf (equalInType-mon ∈F w1 e1) (equalInType-mon ∈f w1 e1) ,
-      #compAllRefl (#PAIR (#νtestM F f) #lam3AX) w1 ,
-      #compAllRefl (#PAIR (#νtestM F f) #lam3AX) w1 ,
+      ⇓-refl ⌜ #PAIR (#νtestM F f) #lam3AX ⌝ w1 , --#compAllRefl (#PAIR (#νtestM F f) #lam3AX) w1 ,
+      ⇓-refl ⌜ #PAIR (#νtestM F f) #lam3AX ⌝ w1 , --#compAllRefl (#PAIR (#νtestM F f) #lam3AX) w1 ,
       eql1
       where
         ea2 : ∀𝕎 w1 (λ w2 e2 → (g₁ g₂ : CTerm) (eg : equalInType i w2 #BAIRE g₁ g₂)

@@ -444,8 +444,8 @@ typeSysConds-SUM-itrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda indb
                 → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' g h
                 → SUMeq (eqInType u w' (eqta w' e)) (λ a1 a2 eqa → eqInType u w' (eqtb w' e a1 a2 eqa)) w' f h)
     aw w1 e1 (a1 , a2 , b1 , b2 , eqa , u1 , u2 , eqb) (c1 , c2 , d1 , d2 , eqc , v1 , v2 , eqd)
-      rewrite #PAIRinj1 {c1} {d1} {a2} {b2} (#⇛-val-det {_} {g} tt tt v1 u2)
-            | #PAIRinj2 {c1} {d1} {a2} {b2} (#⇛-val-det {_} {g} tt tt v1 u2)
+      rewrite #PAIRinj1 {c1} {d1} {a2} {b2} ({--#⇛-val-det--} #⇓-val-det {_} {g} tt tt v1 u2)
+            | #PAIRinj2 {c1} {d1} {a2} {b2} ({--#⇛-val-det--} #⇓-val-det {_} {g} tt tt v1 u2)
       = a1 , c2 , b1 , d2 , eqa2 , u1 , v2 , eqb1
       where
         eqa1 : eqInType u w1 (eqta w1 e1) a1 a1

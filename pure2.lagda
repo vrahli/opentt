@@ -120,7 +120,7 @@ sub0-fun-mp-qt₄ f a =
 
 
 →∈Type-SUM-ASSERT₅ : {i : ℕ} {w : 𝕎·} {f g t : CTerm}
-                            → equalInType i w #NAT!→BOOL! f g
+                            → equalInType i w #NAT!→BOOL₀! f g
                             → ∈Type i w (#SUM-ASSERT₅ f) t
                             → ∈Type i w (#SUM-ASSERT₅ g) t
 →∈Type-SUM-ASSERT₅ {i} {w} {f} {g} {t} f∈ a∈ =
@@ -128,7 +128,7 @@ sub0-fun-mp-qt₄ f a =
 
 
 →equalInType-mp-right-qt₃ : {i : ℕ} {w : 𝕎·} {f g a₁ a₂ b₁ b₂ : CTerm}
-                                → equalInType i w #NAT!→BOOL! f g
+                                → equalInType i w #NAT!→BOOL₀! f g
                                 → equalInType i w (#MP-right-qt₃ f) a₁ a₂
                                 → equalInType i w (#MP-right-qt₃ g) b₁ b₂
 →equalInType-mp-right-qt₃ {i} {w} {f} {g} {a₁} {a₂} {b₁} {b₂} f∈ a∈ =
@@ -139,7 +139,7 @@ sub0-fun-mp-qt₄ f a =
 
 
 →equalInType-neg-mp-right-qt₃ : {i : ℕ} {w : 𝕎·} {f g a₁ a₂ b₁ b₂ : CTerm}
-                                → equalInType i w #NAT!→BOOL! f g
+                                → equalInType i w #NAT!→BOOL₀! f g
                                 → equalInType i w (#NEG (#MP-right-qt₃ f)) a₁ a₂
                                 → equalInType i w (#NEG (#MP-right-qt₃ g)) b₁ b₂
 →equalInType-neg-mp-right-qt₃ {i} {w} {f} {g} {a₁} {a₂} {b₁} {b₂} f∈ a∈ =
@@ -155,7 +155,7 @@ sub0-fun-mp-qt₄ f a =
 
 
 →equalInType-mp-left-qt₃ : {i : ℕ} {w : 𝕎·} {f g a₁ a₂ b₁ b₂ : CTerm}
-                                → equalInType i w #NAT!→BOOL! f g
+                                → equalInType i w #NAT!→BOOL₀! f g
                                 → equalInType i w (#MP-left-qt₃ f) a₁ a₂
                                 → equalInType i w (#MP-left-qt₃ g) b₁ b₂
 →equalInType-mp-left-qt₃ {i} {w} {f} {g} {a₁} {a₂} {b₁} {b₂} f∈ a∈ =
@@ -171,7 +171,7 @@ sub0-fun-mp-qt₄ f a =
 
 
 →equalInType-fun-mp-qt₃ : {i : ℕ} {w : 𝕎·} {f g a₁ a₂ b₁ b₂ : CTerm}
-                           → equalInType i w #NAT!→BOOL! f g
+                           → equalInType i w #NAT!→BOOL₀! f g
                            → equalInType i w (#FUN (#MP-left-qt₃ f) (#MP-right-qt₃ f)) a₁ a₂
                            → equalInType i w (#FUN (#MP-left-qt₃ g) (#MP-right-qt₃ g)) b₁ b₂
 →equalInType-fun-mp-qt₃ {i} {w} {f} {g} {a₁} {a₂} {b₁} {b₂} f∈ a∈ =
@@ -210,8 +210,8 @@ sub0-fun-mp-qt₄ f a =
 --
 Πpure→ : (i : ℕ) (w : 𝕎·) (eval a : CTerm)
           → #¬Names eval
-          → ∈Type i w (#FUN #NAT! #NAT!→BOOL!) eval
-          → ∈Type i w (#PI (#TPURE #NAT!→BOOL!) (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)) a
+          → ∈Type i w (#FUN #NAT! #NAT!→BOOL₀!) eval
+          → ∈Type i w (#PI (#TPURE #NAT!→BOOL₀!) (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)) a
           → ∈Type i w (#PI #NAT! (#[0]FUN (#[0]MP-left-qt₄ eval) (#[0]MP-right-qt₄ eval))) a
 Πpure→ i w eval a nnf eval∈ a∈ =
   equalInType-PI
@@ -223,8 +223,8 @@ sub0-fun-mp-qt₄ f a =
                         → equalTypes i w' (sub0 a₁ (#[0]FUN (#[0]MP-left-qt₄ eval) (#[0]MP-right-qt₄ eval)))
                                            (sub0 a₂ (#[0]FUN (#[0]MP-left-qt₄ eval) (#[0]MP-right-qt₄ eval))))
     aw0 w' e a₁ a₂ a∈ = ≡CTerm→eqTypes (sym (sub0-fun-mp-qt₄ eval a₁)) (sym (sub0-fun-mp-qt₄ eval a₂))
-                                         (eqTypesFUN← (→equalTypes-#MP-left-qt₃ (equalInType-FUN→ {i} {w} {#NAT!} {#NAT!→BOOL!} {eval} {eval} eval∈ w' e a₁ a₂ a∈))
-                                                       (→equalTypes-#MP-right-qt₃ (equalInType-FUN→ {i} {w} {#NAT!} {#NAT!→BOOL!} {eval} {eval} eval∈ w' e a₁ a₂ a∈)))
+                                         (eqTypesFUN← (→equalTypes-#MP-left-qt₃ (equalInType-FUN→ {i} {w} {#NAT!} {#NAT!→BOOL₀!} {eval} {eval} eval∈ w' e a₁ a₂ a∈))
+                                                       (→equalTypes-#MP-right-qt₃ (equalInType-FUN→ {i} {w} {#NAT!} {#NAT!→BOOL₀!} {eval} {eval} eval∈ w' e a₁ a₂ a∈)))
 
     aw1 : ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → equalInType i w' #NAT! n₁ n₂
                        → equalInType i w' (sub0 n₁ (#[0]FUN (#[0]MP-left-qt₄ eval) (#[0]MP-right-qt₄ eval))) (#APPLY a n₁) (#APPLY a n₂))
@@ -237,20 +237,20 @@ sub0-fun-mp-qt₄ f a =
           →equalInType-fun-mp-qt₃
             {i} {w2} {#APPLY eval (#NUM n)} {#APPLY eval n₁} {#APPLY a (#APPLY eval (#NUM n))} {#APPLY a (#APPLY eval (#NUM n))}
             (equalInType-FUN→
-              {i} {w} {#NAT!} {#NAT!→BOOL!} {eval} {eval} eval∈ w2 (⊑-trans· e1 e2) (#NUM n) n₁
+              {i} {w} {#NAT!} {#NAT!→BOOL₀!} {eval} {eval} eval∈ w2 (⊑-trans· e1 e2) (#NUM n) n₁
               (→equalInType-NAT! i w2 (#NUM n) n₁ (Mod.∀𝕎-□ M aw3)))
             h2
           where
             aw3 : ∀𝕎 w2 (λ w' _ → #⇛!sameℕ w' (#NUM n) n₁)
             aw3 w3 e3 = n , #⇛!-refl {w3} {#NUM n} , ∀𝕎-mon e3 c₁
 
-            h0 : equalInType i w2 (#TPURE #NAT!→BOOL!) (#APPLY eval (#NUM n)) (#APPLY eval (#NUM n))
+            h0 : equalInType i w2 (#TPURE #NAT!→BOOL₀!) (#APPLY eval (#NUM n)) (#APPLY eval (#NUM n))
             h0 = →equalInType-TPURE
                    (#¬Names-APPLY {eval} {#NUM n} nnf refl) (#¬Names-APPLY {eval} {#NUM n} nnf refl)
-                   (equalInType-FUN→ {i} {w} {#NAT!} {#NAT!→BOOL!} {eval} {eval} eval∈ w2 (⊑-trans· e1 e2) (#NUM n) (#NUM n) (NUM-equalInType-NAT! i w2 n))
+                   (equalInType-FUN→ {i} {w} {#NAT!} {#NAT!→BOOL₀!} {eval} {eval} eval∈ w2 (⊑-trans· e1 e2) (#NUM n) (#NUM n) (NUM-equalInType-NAT! i w2 n))
 
             h1 : equalInType i w2 (sub0 (#APPLY eval (#NUM n)) (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)) (#APPLY a (#APPLY eval (#NUM n))) (#APPLY a (#APPLY eval (#NUM n)))
-            h1 = snd (snd (equalInType-PI→ {i} {w} {#TPURE #NAT!→BOOL!} {#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃} {a} {a} a∈))
+            h1 = snd (snd (equalInType-PI→ {i} {w} {#TPURE #NAT!→BOOL₀!} {#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃} {a} {a} a∈))
                      w2 (⊑-trans· e1 e2) (#APPLY eval (#NUM n)) (#APPLY eval (#NUM n)) h0
 
             h2 : equalInType i w2 (#FUN (#MP-left-qt₃ (#APPLY eval (#NUM n))) (#MP-right-qt₃ (#APPLY eval (#NUM n)))) (#APPLY a (#APPLY eval (#NUM n))) (#APPLY a (#APPLY eval (#NUM n)))

@@ -237,8 +237,8 @@ getChoice→equalInType-#Σchoice-aux {n} {name} {w} {k} i comp sat g =
                               (#PAIR (#NUM n) #AX))
     j = Mod.∀𝕎-□ M (λ w1 e1 → #NUM n , #NUM n , #AX , #AX ,
                                 NUM-equalInType-NAT! i w1 n ,
-                                #compAllRefl (#PAIR (#NUM n) #AX) w1 ,
-                                #compAllRefl (#PAIR (#NUM n) #AX) w1 ,
+                                ⇓-refl ⌜ #PAIR (#NUM n) #AX ⌝ w1 , --#compAllRefl (#PAIR (#NUM n) #AX) w1 ,
+                                ⇓-refl ⌜ #PAIR (#NUM n) #AX ⌝ w1 , --#compAllRefl (#PAIR (#NUM n) #AX) w1 ,
                                 getChoice→equalInType-#Σchoice-aux1 i sat (∀𝕎-mon e1 g))
 -- This last one is not true with references, but can be made true if we have a way to "freeze" a reference permanently,
 -- and here 0 was "frozen"
@@ -454,18 +454,11 @@ equalInType-SQUASH-UNION-LIFT→ {n} {i} p {w} {a} {b} {u} {v} eqi =
                                                (eqTypesNEG← (equalTypes-#↑T→ p w' b b (eqTypesNEG→ (equalInType-UNION→₂ {n} {w'} {#↑T p a} {#NEG (#↑T p b)} {t} {t} eqj))))
                                                (Mod.∀𝕎-□Func M aw1 equ)
       where
-        equ : □· w' (λ w'' _ → Σ CTerm (λ x → Σ CTerm (λ y
-                                          → (t #⇛ (#INL x) at w'' × t #⇛ (#INL y) at w'' × equalInType n w'' (#↑T p a) x y)
-                                             ⊎
-                                             (t #⇛ (#INR x) at w'' × t #⇛ (#INR y) at w'' × equalInType n w'' (#NEG (#↑T p b)) x y))))
+        equ : □· w' (λ w'' _ → UNIONeq (equalInType n w'' (#↑T p a)) (equalInType n w'' (#NEG (#↑T p b))) w'' t t)
         equ = equalInType-UNION→ eqj
 
-        aw1 : ∀𝕎 w' (λ w'' e' → Σ CTerm (λ x → Σ CTerm (λ y →
-                                   (t #⇛ #INL x at w'' × t #⇛ #INL y at w'' × equalInType n w'' (#↑T p a) x y)
-                                   ⊎ (t #⇛ #INR x at w'' × t #⇛ #INR y at w'' × equalInType n w'' (#NEG (#↑T p b)) x y)))
-                              → Σ CTerm (λ x → Σ CTerm (λ y →
-                                  (t #⇛ #INL x at w'' × t #⇛ #INL y at w'' × equalInType i w'' a x y)
-                                  ⊎ (t #⇛ #INR x at w'' × t #⇛ #INR y at w'' × equalInType i w'' (#NEG b) x y))))
+        aw1 : ∀𝕎 w' (λ w'' e' → UNIONeq (equalInType n w'' (#↑T p a)) (equalInType n w'' (#NEG (#↑T p b))) w'' t t
+                              → UNIONeq (equalInType i w'' a) (equalInType i w'' (#NEG b)) w'' t t)
         aw1 w'' e' (x , y , inj₁ (c₁ , c₂ , eqk)) = x , y , inj₁ (c₁ , c₂ , equalInType-#↑T→ p w'' a x y eqk)
         aw1 w'' e' (x , y , inj₂ (c₁ , c₂ , eqk)) = x , y , inj₂ (c₁ , c₂ , equalInType-NEG (equalTypes-#↑T→ p w'' b b (eqTypesNEG→ (fst eqk))) (equalInType-NEG-↑T→ p eqk))
 
@@ -486,32 +479,25 @@ equalInType-SQUASH-UNION→ {i} {w} {a} {b} {u} {v} eqi =
     h1 : □· w (λ w' _ → Σ CTerm (λ t → equalInType i w' (#UNION a (#NEG b)) t t))
     h1 = equalInType-SQUASH→ eqi
 
-    h2 : □· w (λ w' _ → Σ CTerm (λ t → □· w' (λ w'' _ → Σ CTerm (λ x → Σ CTerm (λ y
-                                         → (t #⇛ (#INL x) at w'' × t #⇛ (#INL y) at w'' × equalInType i w'' a x y)
-                                            ⊎
-                                            (t #⇛ (#INR x) at w'' × t #⇛ (#INR y) at w'' × equalInType i w'' (#NEG b) x y))))))
+    h2 : □· w (λ w' _ → Σ CTerm (λ t → □· w' (λ w'' _ → UNIONeq (equalInType i w'' a) (equalInType i w'' (#NEG b)) w'' t t)))
     h2 = Mod.∀𝕎-□Func M (λ w' e (t , eqj) → t , equalInType-UNION→ eqj) h1
 
-    h3 : □· w (λ w' _ → Σ CTerm (λ t → □· w' (λ w'' _ → Σ CTerm (λ x → Σ CTerm (λ y
-                                         → (t #⇛ (#INL x) at w'' × t #⇛ (#INL y) at w'' × equalInType i w'' a x y)
-                                            ⊎
-                                            (t #⇛ (#INR x) at w'' × t #⇛ (#INR y) at w''
-                                              × ∀𝕎 w'' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂)))))))
+    h3 : □· w (λ w' _ → Σ CTerm (λ t → □· w' (λ w'' _ → UNIONeq (equalInType i w'' a)
+                                                                (λ x y →  ∀𝕎 w'' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂))
+                                                                w'' t t)))
     h3 = Mod.∀𝕎-□Func M (λ w1 e1 (t , eqt) → t , Mod.∀𝕎-□Func M (λ { w3 e3 (x , y , inj₁ (c₁ , c₂ , z)) → x , y , inj₁ (c₁ , c₂ , z) ;
-                                                                                     w3 e3 (x , y , inj₂ (c₁ , c₂ , z)) → x , y , inj₂ (c₁ , c₂ , equalInType-NEG→ z) }) eqt) h2
+                                                                     w3 e3 (x , y , inj₂ (c₁ , c₂ , z)) → x , y , inj₂ (c₁ , c₂ , equalInType-NEG→ z) }) eqt) h2
 
-    aw1 : ∀𝕎 w (λ w' e' → Σ CTerm (λ t → □· w' (λ w'' _ → Σ CTerm (λ x →  Σ CTerm (λ y →
-                            (t #⇛ #INL x at w'' × t #⇛ #INL y at w'' × equalInType i w'' a x y)
-                            ⊎ (t #⇛ #INR x at w'' × t #⇛ #INR y at w'' × ∀𝕎 w'' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂))))))
+    aw1 : ∀𝕎 w (λ w' e' → Σ CTerm (λ t → □· w' (λ w'' _ → UNIONeq (equalInType i w'' a)
+                                                                  (λ x y → ∀𝕎 w'' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂))
+                                                                  w'' t t))
                         → □· w' (↑wPred' (λ w'' e →  inhType i w'' a ⊎ ∀𝕎 w'' (λ w''' _ → ¬ inhType i w''' b)) e'))
     aw1 w1 e1 (t , j) = Mod.□-idem M (Mod.∀𝕎-□Func M aw2 j)
       where
-        aw2 : ∀𝕎 w1 (λ w' e' → Σ CTerm (λ x → Σ CTerm (λ y →
-                                 (t #⇛ #INL x at w' × t #⇛ #INL y at w' × equalInType i w' a x y)
-                                 ⊎ (t #⇛ #INR x at w' × t #⇛ #INR y at w' × ∀𝕎 w' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂))))
+        aw2 : ∀𝕎 w1 (λ w' e' → UNIONeq (equalInType i w' a) (λ x y → ∀𝕎 w' (λ w''' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w''' b a₁ a₂)) w' t t
                              → □· w' (↑wPred' (λ w'' e → ↑wPred' (λ w''' e₁ → inhType i w''' a ⊎ ∀𝕎 w''' (λ w'''' _ → ¬ inhType i w'''' b)) e1 w'' e) e'))
         aw2 w2 e2 (x , y , inj₁ (c₁ , c₂ , z)) = Mod.∀𝕎-□ M (λ w3 e3 x₁ x₂ → inj₁ (x , equalInType-mon (equalInType-refl z) w3 e3))
-        aw2 w2 e2 (x , y , inj₂ (c₁ , c₂ , z)) = Mod.∀𝕎-□ M λ w3 e3 x₁ x₂ → inj₂ (λ w4 e4 (t , h) → z w4 (⊑-trans· e3 e4) t t h)
+        aw2 w2 e2 (x , y , inj₂ (c₁ , c₂ , z)) = Mod.∀𝕎-□ M (λ w3 e3 x₁ x₂ → inj₂ (λ w4 e4 (t , h) → z w4 (⊑-trans· e3 e4) t t h))
 
 
 sq-dec : CTerm → CTerm

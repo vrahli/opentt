@@ -92,7 +92,7 @@ open import choiceExtDef(W)(C)(K)(G)(X)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-refl ; equalInType-mon ; equalInType-FUN→ ; equalInType-local ; equalInType-NAT→ ; equalInType-FUN ; eqTypesNAT ; →equalInType-NAT ; eqTypesTRUE ; eqTypesFALSE ; eqTypes-local ; equalInType-NAT!→ ; eqTypesNOWRITEMOD←)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalTypes-#⇛-left-right-rev)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (→equalInType-M)
-open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (NATmem ; eqTypesUNION!← ; UNION!eq ; equalInType-UNION!→)
+open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (NATmem ; eqTypesUNION₀!← ; UNION₀!eq ; equalInType-UNION₀!→)
 
 open import props_w(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
@@ -269,7 +269,7 @@ meq₀.meqC₀ (coSemM can gc0 kb cn i w P T F j f a b n nnj nnf nnF prest tyn n
 
 
 isType-IndBarB : (i : ℕ) (w : 𝕎·) → isType i w #IndBarB
-isType-IndBarB i w = eqTypesUNION!← eqTypesNAT (eqTypesTRUE {w} {i})
+isType-IndBarB i w = eqTypesUNION₀!← eqTypesNAT (eqTypesTRUE {w} {i})
 
 
 equalTypes-IndBarC : (i : ℕ) (w : 𝕎·) (T a b : CTerm)
@@ -279,10 +279,10 @@ equalTypes-IndBarC : (i : ℕ) (w : 𝕎·) (T a b : CTerm)
 equalTypes-IndBarC i w T a b tyt eqa rewrite sub0-IndBarC≡ T a | sub0-IndBarC≡ T b =
   eqTypes-local (Mod.∀𝕎-□Func M aw1 eqa1)
   where
-    eqa1 : □· w (λ w' _ → UNION!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' a b)
-    eqa1 = equalInType-UNION!→ {i} {w} eqa
+    eqa1 : □· w (λ w' _ → UNION₀!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' a b)
+    eqa1 = equalInType-UNION₀!→ {i} {w} eqa
 
-    aw1 : ∀𝕎 w (λ w' e' → UNION!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' a b
+    aw1 : ∀𝕎 w (λ w' e' → UNION₀!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' a b
                          → equalTypes i w' (#DECIDE a #[0]VOID (#[0]shiftUp0 (#NOWRITEMOD T))) (#DECIDE b #[0]VOID (#[0]shiftUp0 (#NOWRITEMOD T))))
     aw1 w1 e1 (x , y , inj₁ (c1 , c2 , eqa2)) =
       equalTypes-#⇛-left-right-rev

@@ -89,6 +89,8 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
+open import type_sys_props_isect(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#MP-right ; #MP-right2 ; isType-MP-right-body)
 
 
@@ -150,10 +152,10 @@ infSearch f = APPLY (infSearchF f) N0
 ⌜#infSearch⌝ f = refl
 
 
-∈#BOOL→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
-            → equalInType i w #BOOL a b
-            → □· w (λ w' _ → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' a b)
-∈#BOOL→ u w a b b∈ = eqInType-⇛-BOOL u w a b (fst b∈) (snd b∈)
+∈#BOOL₀→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+            → equalInType i w #BOOL₀ a b
+            → □· w (λ w' _ → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' a b)
+∈#BOOL₀→ u w a b b∈ = eqInType-⇛-BOOL₀ u w a b (fst b∈) (snd b∈)
 
 
 #⇛!sameℕ-mon : {w1 w2 : 𝕎·} (e : w1 ⊑· w2) {a b : CTerm}
@@ -162,41 +164,40 @@ infSearch f = APPLY (infSearchF f) N0
 #⇛!sameℕ-mon {w1} {w2} e {a} {b} (n , c₁ , c₂) = n , ∀𝕎-mon e c₁ , ∀𝕎-mon e c₂
 
 
-∈#NAT!→BOOL→ : (i : ℕ) (w : 𝕎·) (f₁ f₂ : CTerm)
-                 → equalInType i w #NAT!→BOOL f₁ f₂
+∈#NAT!→BOOL₀→ : (i : ℕ) (w : 𝕎·) (f₁ f₂ : CTerm)
+                 → equalInType i w #NAT!→BOOL₀ f₁ f₂
                  → ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → #⇛!sameℕ w' n₁ n₂
-                                 → □· w' (λ w' e → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ n₁) (#APPLY f₂ n₂)))
-∈#NAT!→BOOL→ i w f₁ f₂ f∈ w1 e1 n₁ n₂ n∈ =
-  ∈#BOOL→
+                                → □· w' (λ w' e → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ n₁) (#APPLY f₂ n₂)))
+∈#NAT!→BOOL₀→ i w f₁ f₂ f∈ w1 e1 n₁ n₂ n∈ =
+  ∈#BOOL₀→
     i w1 (#APPLY f₁ n₁) (#APPLY f₂ n₂)
     (equalInType-FUN→
-      (≡CTerm→equalInType #NAT!→BOOL≡ f∈)
-      w1 e1 n₁ n₂
-      (→equalInType-NAT! i w1 n₁ n₂ (Mod.∀𝕎-□ M λ w2 e2 → #⇛!sameℕ-mon e2 {n₁} {n₂} n∈)))
+       (≡CTerm→equalInType #NAT!→BOOL₀≡ f∈) w1 e1 n₁ n₂
+       (→equalInType-NAT! i w1 n₁ n₂ (Mod.∀𝕎-□ M λ w2 e2 → #⇛!sameℕ-mon e2 {n₁} {n₂} n∈)))
 
 
-∈#NAT!→BOOL≤→ : (i : ℕ) (w : 𝕎·) (f₁ f₂ : CTerm) (n : ℕ)
-                   → equalInType i w #NAT!→BOOL f₁ f₂
-                   → □· w (λ w' e → (m : ℕ) → m ≤ n → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
-∈#NAT!→BOOL≤→ i w f₁ f₂ 0 f∈ = Mod.∀𝕎-□Func M aw c
+∈#NAT!→BOOL₀≤→ : (i : ℕ) (w : 𝕎·) (f₁ f₂ : CTerm) (n : ℕ)
+                   → equalInType i w #NAT!→BOOL₀ f₁ f₂
+                   → □· w (λ w' e → (m : ℕ) → m ≤ n → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
+∈#NAT!→BOOL₀≤→ i w f₁ f₂ 0 f∈ = Mod.∀𝕎-□Func M aw c
   where
-    c : □· w (λ w' e → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ #N0) (#APPLY f₂ #N0))
-    c = ∈#NAT!→BOOL→ i w f₁ f₂ f∈ w (⊑-refl· w) #N0 #N0 (#⇛!sameℕ-NUM w 0)
+    c : □· w (λ w' e → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ #N0) (#APPLY f₂ #N0))
+    c = ∈#NAT!→BOOL₀→ i w f₁ f₂ f∈ w (⊑-refl· w) #N0 #N0 (#⇛!sameℕ-NUM w 0)
 
-    aw : ∀𝕎 w (λ w' e' → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ #N0) (#APPLY f₂ #N0)
-                        → (m : ℕ) → m ≤ 0 → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
+    aw : ∀𝕎 w (λ w' e' → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ #N0) (#APPLY f₂ #N0)
+                       → (m : ℕ) → m ≤ 0 → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
     aw w1 e1 h .ℕ.zero _≤_.z≤n = h
-∈#NAT!→BOOL≤→ i w f₁ f₂ (suc n) f∈ = ∀𝕎-□Func2 aw c ind
+∈#NAT!→BOOL₀≤→ i w f₁ f₂ (suc n) f∈ = ∀𝕎-□Func2 aw c ind
   where
-    ind : □· w (λ w' e → (m : ℕ) → m ≤ n → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
-    ind = ∈#NAT!→BOOL≤→ i w f₁ f₂ n f∈
+    ind : □· w (λ w' e → (m : ℕ) → m ≤ n → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
+    ind = ∈#NAT!→BOOL₀≤→ i w f₁ f₂ n f∈
 
-    c : □· w (λ w' e → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM (suc n))) (#APPLY f₂ (#NUM (suc n))))
-    c = ∈#NAT!→BOOL→ i w f₁ f₂ f∈ w (⊑-refl· w) (#NUM (suc n)) (#NUM (suc n)) (#⇛!sameℕ-NUM w (suc n))
+    c : □· w (λ w' e → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM (suc n))) (#APPLY f₂ (#NUM (suc n))))
+    c = ∈#NAT!→BOOL₀→ i w f₁ f₂ f∈ w (⊑-refl· w) (#NUM (suc n)) (#NUM (suc n)) (#⇛!sameℕ-NUM w (suc n))
 
-    aw : ∀𝕎 w (λ w' e' → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM (suc n))) (#APPLY f₂ (#NUM (suc n)))
-                        → ((m : ℕ) → m ≤ n → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
-                        → (m : ℕ) → m ≤ suc n → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
+    aw : ∀𝕎 w (λ w' e' → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM (suc n))) (#APPLY f₂ (#NUM (suc n)))
+                       → ((m : ℕ) → m ≤ n → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
+                       → (m : ℕ) → m ≤ suc n → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
     aw w1 e1 h1 h2 m len with ≤suc→⊎ len
     ... | inj₁ p rewrite p = h1
     ... | inj₂ p = h2 m p
@@ -208,39 +209,39 @@ infSearch f = APPLY (infSearchF f) N0
 ∈#ASSERT₂→ i w t a b a∈ =
   Mod.□-idem M (Mod.∀𝕎-□Func M aw1 (equalInType-EQ→ (≡CTerm→equalInType (#ASSERT₂≡ t) a∈)))
   where
-    aw1 : ∀𝕎 w (λ w' e' → EQeq t #BTRUE (equalInType i w' #BOOL) w' a b
+    aw1 : ∀𝕎 w (λ w' e' → EQeq t #BTRUE (equalInType i w' #BOOL₀) w' a b
                          → Mod.□ M w' (↑wPred' (λ w'' _ → Σ CTerm (λ u → t #⇛ #INL u at w'')) e'))
-    aw1 w1 e1 h = Mod.∀𝕎-□Func M aw2 (∈#BOOL→ i w1 t #BTRUE h)
+    aw1 w1 e1 h = Mod.∀𝕎-□Func M aw2 (∈#BOOL₀→ i w1 t #BTRUE h)
       where
-        aw2 : ∀𝕎 w1 (λ w' e' → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' t #BTRUE
-                              → ↑wPred' (λ w'' _ → Σ CTerm (λ u → t #⇛ #INL u at w'')) e1 w' e')
+        aw2 : ∀𝕎 w1 (λ w' e' → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' t #BTRUE
+                             → ↑wPred' (λ w'' _ → Σ CTerm (λ u → t #⇛ #INL u at w'')) e1 w' e')
         aw2 w2 e2 (x , y , inj₁ (c₁ , c₂ , q)) z = x , c₁
         aw2 w2 e2 (x , y , inj₂ (c₁ , c₂ , q)) z = ⊥-elim (INLneqINR (≡CTerm (#compAllVal {#BTRUE} {#INR y} {w2} c₂ tt)))
 
 
 ∈#ASSERT₂→2 : (i : ℕ) (w : 𝕎·) (f k a b : CTerm) (n : ℕ)
-                → ∈Type i w #NAT!→BOOL f
+                → ∈Type i w #NAT!→BOOL₀ f
                 → equalInType i w (#ASSERT₂ (#APPLY f k)) a b
                 → k #⇛! #NUM n at w
                 → □· w (λ w' _ → Σ CTerm (λ u → #APPLY f (#NUM n) #⇛ #INL u at w'))
 ∈#ASSERT₂→2 i w f k a b n f∈ a∈ ck =
   ∀𝕎-□Func2 aw h1 h2
   where
-    h1 : □· w (λ w' e → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f k) (#APPLY f (#NUM n)))
-    h1 = ∈#NAT!→BOOL→ i w f f f∈ w (⊑-refl· w) k (#NUM n) (n , ck , #⇛!-refl {w} {#NUM n})
+    h1 : □· w (λ w' e → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f k) (#APPLY f (#NUM n)))
+    h1 = ∈#NAT!→BOOL₀→ i w f f f∈ w (⊑-refl· w) k (#NUM n) (n , ck , #⇛!-refl {w} {#NUM n})
 
     h2 : □· w (λ w' _ → Σ CTerm (λ u → #APPLY f k #⇛ #INL u at w'))
     h2 = ∈#ASSERT₂→ i w (#APPLY f k) a b a∈
 
-    aw : ∀𝕎 w (λ w' e' → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f k) (#APPLY f (#NUM n))
-                        → (Σ CTerm (λ u → #APPLY f k #⇛ #INL u at w'))
-                        → Σ CTerm (λ u → #APPLY f (#NUM n) #⇛ #INL u at w'))
+    aw : ∀𝕎 w (λ w' e' → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f k) (#APPLY f (#NUM n))
+                       → (Σ CTerm (λ u → #APPLY f k #⇛ #INL u at w'))
+                       → Σ CTerm (λ u → #APPLY f (#NUM n) #⇛ #INL u at w'))
     aw w1 e1 (x , y , inj₁ (c₁ , c₂ , q)) (u , d) = y , c₂
     aw w1 e1 (x , y , inj₂ (c₁ , c₂ , q)) (u , d) = ⊥-elim (INLneqINR (≡CTerm (#⇛-val-det {w1} {#APPLY f k} {#INL u} {#INR x} tt tt d c₁)))
 
 
 ∈#ASSERT₂→3 : (i : ℕ) (w : 𝕎·) (f₁ f₂ k a b : CTerm) (n : ℕ)
-                → equalInType i w #NAT!→BOOL f₁ f₂
+                → equalInType i w #NAT!→BOOL₀ f₁ f₂
                 → equalInType i w (#ASSERT₂ (#APPLY f₁ k)) a b
                 → k #⇛! #NUM n at w
                 → □· w (λ w' _ → Σ CTerm (λ u₁ → Σ CTerm (λ u₂ →
@@ -248,20 +249,20 @@ infSearch f = APPLY (infSearchF f) N0
 ∈#ASSERT₂→3 i w f₁ f₂ k a b n f∈ a∈ ck =
   ∀𝕎-□Func3 aw h1 h2 h3
   where
-    h1 : □· w (λ w' e → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ k) (#APPLY f₂ (#NUM n)))
-    h1 = ∈#NAT!→BOOL→ i w f₁ f₂ f∈ w (⊑-refl· w) k (#NUM n) (n , ck , #⇛!-refl {w} {#NUM n})
+    h1 : □· w (λ w' e → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ k) (#APPLY f₂ (#NUM n)))
+    h1 = ∈#NAT!→BOOL₀→ i w f₁ f₂ f∈ w (⊑-refl· w) k (#NUM n) (n , ck , #⇛!-refl {w} {#NUM n})
 
-    h2 : □· w (λ w' e → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM n)) (#APPLY f₂ (#NUM n)))
-    h2 = ∈#NAT!→BOOL→ i w f₁ f₂ f∈ w (⊑-refl· w) (#NUM n) (#NUM n) (n , #⇛!-refl {w} {#NUM n} , #⇛!-refl {w} {#NUM n})
+    h2 : □· w (λ w' e → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM n)) (#APPLY f₂ (#NUM n)))
+    h2 = ∈#NAT!→BOOL₀→ i w f₁ f₂ f∈ w (⊑-refl· w) (#NUM n) (#NUM n) (n , #⇛!-refl {w} {#NUM n} , #⇛!-refl {w} {#NUM n})
 
     h3 : □· w (λ w' _ → Σ CTerm (λ u → #APPLY f₁ k #⇛ #INL u at w'))
     h3 = ∈#ASSERT₂→ i w (#APPLY f₁ k) a b a∈
 
-    aw : ∀𝕎 w (λ w' e' → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ k) (#APPLY f₂ (#NUM n))
-                        → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM n)) (#APPLY f₂ (#NUM n))
-                        → (Σ CTerm (λ u → #APPLY f₁ k #⇛ #INL u at w'))
-                        → Σ CTerm (λ u₁ → Σ CTerm (λ u₂ →
-                            #APPLY f₁ (#NUM n) #⇛ #INL u₁ at w' × #APPLY f₂ (#NUM n) #⇛ #INL u₂ at w')))
+    aw : ∀𝕎 w (λ w' e' → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ k) (#APPLY f₂ (#NUM n))
+                       → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM n)) (#APPLY f₂ (#NUM n))
+                       → (Σ CTerm (λ u → #APPLY f₁ k #⇛ #INL u at w'))
+                       → Σ CTerm (λ u₁ → Σ CTerm (λ u₂ →
+                           #APPLY f₁ (#NUM n) #⇛ #INL u₁ at w' × #APPLY f₂ (#NUM n) #⇛ #INL u₂ at w')))
     aw w1 e1 (x₁ , x₂ , inj₁ (c₁ , c₂ , q)) (y₁ , y₂ , inj₁ (d₁ , d₂ , h)) (u , d) = y₁ , y₂ , d₁ , d₂
     aw w1 e1 (x₁ , x₂ , inj₁ (c₁ , c₂ , q)) (y₁ , y₂ , inj₂ (d₁ , d₂ , h)) (u , d) = ⊥-elim (INLneqINR (≡CTerm (#⇛-val-det {w1} {#APPLY f₂ (#NUM n)} {#INL x₂} {#INR y₂} tt tt c₂ d₂)))
     aw w1 e1 (x₁ , x₂ , inj₂ (c₁ , c₂ , q)) (y₁ , y₂ , inj₁ (d₁ , d₂ , h)) (u , d) = ⊥-elim (INLneqINR (≡CTerm (#⇛-val-det {w1} {#APPLY f₂ (#NUM n)} {#INL y₂} {#INR x₂} tt tt d₂ c₂)))
@@ -416,7 +417,7 @@ sub-APPLY-shiftUp0-VAR0 n R #R
 -- by induction on j
 mpSearch3 : (i : ℕ) (w : 𝕎·) (f₁ f₂ u₁ u₂ : CTerm) (n k j : ℕ)
             → k + j ≡ n
-            → ((m : ℕ) → m ≤ n → UNIONeq (equalInType i w #TRUE) (equalInType i w #TRUE) w (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
+            → ((m : ℕ) → m ≤ n → UNIONeq₀ (equalInType i w #TRUE) (equalInType i w #TRUE) w (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
             → #APPLY f₁ (#NUM n) #⇛ #INL u₁ at w
             → #APPLY f₂ (#NUM n) #⇛ #INL u₂ at w
             → Σ ℕ (λ m → Σ CTerm (λ u₁ → Σ CTerm (λ u₂ → m ≤ n
@@ -491,7 +492,7 @@ mpSearch3 i w f₁ f₂ u₁ u₂ n k (suc j) eqn hn ha₁ ha₂ with hn k (+≡
 
 
 mpSearch2 : (i : ℕ) (w : 𝕎·) (f₁ f₂ u₁ u₂ : CTerm) (n : ℕ)
-            → ((m : ℕ) → m ≤ n → UNIONeq (equalInType i w #TRUE) (equalInType i w #TRUE) w (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
+            → ((m : ℕ) → m ≤ n → UNIONeq₀ (equalInType i w #TRUE) (equalInType i w #TRUE) w (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
             → #APPLY f₁ (#NUM n) #⇛ #INL u₁ at w
             → #APPLY f₂ (#NUM n) #⇛ #INL u₂ at w
             → Σ ℕ (λ m → Σ CTerm (λ u₁ → Σ CTerm (λ u₂ → m ≤ n
@@ -521,7 +522,7 @@ mpSearch2 i w f₁ f₂ u₁ u₂ n hn ha₁ ha₂ = mpSearch3 i w f₁ f₂ u�
 mpSearch2¬Names : (i : ℕ) (w : 𝕎·) (f₁ f₂ u₁ u₂ : CTerm) (n : ℕ)
                   → #¬Names f₁
                   → #¬Names f₂
-                  → ((m : ℕ) → m ≤ n → UNIONeq (equalInType i w #TRUE) (equalInType i w #TRUE) w (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
+                  → ((m : ℕ) → m ≤ n → UNIONeq₀ (equalInType i w #TRUE) (equalInType i w #TRUE) w (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
                   → #APPLY f₁ (#NUM n) #⇛ #INL u₁ at w
                   → #APPLY f₂ (#NUM n) #⇛ #INL u₂ at w
                   → Σ ℕ (λ m → Σ CTerm (λ u₁ → Σ CTerm (λ u₂ → m ≤ n
@@ -540,7 +541,7 @@ mpSearch2¬Names i w f₁ f₂ u₁ u₂ n nnf₁ nnf₂ hn ha₁ ha₂ with mpS
 
 
 ∈#NAT!→BOOL→equalInType-#ASSERT₂ : (i : ℕ) (w : 𝕎·) (f t u : CTerm) (m : ℕ)
-                                     → ∈Type i w #NAT!→BOOL f
+                                     → ∈Type i w #NAT!→BOOL₀ f
                                      → t #⇛! #NUM m at w
                                      → #APPLY f (#NUM m) #⇛ #INL u at w
                                      → ∈Type i w (#ASSERT₂ (#APPLY f t)) #AX
@@ -548,12 +549,12 @@ mpSearch2¬Names i w f₁ f₂ u₁ u₂ n nnf₁ nnf₂ hn ha₁ ha₂ with mpS
   ≡CTerm→equalInType
     (sym (#ASSERT₂≡ (#APPLY f t)))
     (equalInType-EQ
-      (isTypeBOOL w i)
+      isTypeBOOL₀
       (Mod.∀𝕎-□ M aw))
   where
-    aw : ∀𝕎 w (λ w' _ → equalInType i w' #BOOL (#APPLY f t) #BTRUE)
+    aw : ∀𝕎 w (λ w' _ → equalInType i w' #BOOL₀ (#APPLY f t) #BTRUE)
     aw w1 e1 =
-      equalInType-trans eqb (→equalInType-BOOL i w1 (#APPLY f (#NUM m)) #BTRUE (Mod.∀𝕎-□ M aw1))
+      equalInType-trans eqb (strongBool→equalInType-BOOL₀ i w1 (#APPLY f (#NUM m)) (#BTRUE) (Mod.∀𝕎-□ M aw1))
       where
         aw1 : ∀𝕎 w1 (λ w' _ → #strongBool w' (#APPLY f (#NUM m)) #BTRUE)
         aw1 w2 e2 = u , #AX , inj₁ (∀𝕎-mon (⊑-trans· e1 e2) cl , #⇛-refl w2 #BTRUE)
@@ -563,17 +564,17 @@ mpSearch2¬Names i w f₁ f₂ u₁ u₂ n nnf₁ nnf₂ hn ha₁ ha₂ with mpS
                 i w1 t (#NUM m)
                 (Mod.∀𝕎-□ M (λ w2 e2 → m , ∀𝕎-mon (⊑-trans· e1 e2) cm , #⇛!-refl {w2} {#NUM m}))
 
-        eqb : equalInType i w1 #BOOL (#APPLY f t) (#APPLY f (#NUM m))
-        eqb = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL≡ f∈) w1 e1 t (#NUM m) eqn
+        eqb : equalInType i w1 #BOOL₀ (#APPLY f t) (#APPLY f (#NUM m))
+        eqb = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL₀≡ f∈) w1 e1 t (#NUM m) eqn
 
 
 mpSearch1 : (i : ℕ) (w : 𝕎·) (f₁ f₂ u₁ u₂ t₁ t₂ : CTerm) (n : ℕ)
-            → equalInType i w #NAT!→BOOL f₁ f₂
+            → equalInType i w #NAT!→BOOL₀ f₁ f₂
             → #¬Names f₁
             → #¬Names f₂
             → t₁ #⇛ #infSearchP f₁ at w
             → t₂ #⇛ #infSearchP f₂ at w
-            → ((m : ℕ) → m ≤ n → UNIONeq (equalInType i w #TRUE) (equalInType i w #TRUE) w (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
+            → ((m : ℕ) → m ≤ n → UNIONeq₀ (equalInType i w #TRUE) (equalInType i w #TRUE) w (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
             → #APPLY f₁ (#NUM n) #⇛ #INL u₁ at w
             → #APPLY f₂ (#NUM n) #⇛ #INL u₂ at w
             → SUMeq (equalInType i w #NAT!) (λ a b ea → equalInType i w (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w t₁ t₂
@@ -582,8 +583,8 @@ mpSearch1 i w f₁ f₂ u₁ u₂ t₁ t₂ n f∈ nnf₁ nnf₂ ct₁ ct₂ hn 
   #infSearch f₁ , #infSearch f₂ , #AX , #AX ,
   -- How can we prove that it lives in #NAT! if f is not pure? Could we use #NAT for the impure version of MP? Negation is fine though
   →equalInType-NAT! i w (#infSearch f₁) (#infSearch f₂) (Mod.∀𝕎-□ M p1) ,
-  ct₁ ,
-  ct₂ ,
+  lower (ct₁ w (⊑-refl· w)) , --ct₁ ,
+  lower (ct₂ w (⊑-refl· w)) , --ct₂ ,
   p2
 -- For this we need to prove that (#infSearch f) computes to a number m ≤ n such that (#APPLY f (#NUM m)) computes to #INL
 -- If f is not pure this might only be at a higher world, but if f is pure we can bring back the computation to the current world
@@ -603,7 +604,7 @@ mpSearch : (i : ℕ) (w : 𝕎·) (f₁ f₂ a₁ a₂ t₁ t₂ : CTerm)
            → #¬Names f₂
            → t₁ #⇛ #infSearchP f₁ at w
            → t₂ #⇛ #infSearchP f₂ at w
-           → equalInType i w #NAT!→BOOL f₁ f₂
+           → equalInType i w #NAT!→BOOL₀ f₁ f₂
            → equalInType i w (#MP-right f₁) a₁ a₂
            → equalInType i w (#MP-right2 f₁) t₁ t₂
 mpSearch i w f₁ f₂ a₁ a₂ t₁ t₂ nnf₁ nnf₂ ct₁ ct₂ f∈ a∈ =
@@ -637,10 +638,10 @@ mpSearch i w f₁ f₂ a₁ a₂ t₁ t₂ nnf₁ nnf₂ ct₁ ct₂ f∈ a∈ =
                                              #APPLY f₁ (#NUM n) #⇛ #INL u₁ at w' × #APPLY f₂ (#NUM n) #⇛ #INL u₂ at w')))
                 y∈ = ∈#ASSERT₂→3 i w3 f₁ f₂ n₁ x₁ x₂ n (equalInType-mon f∈ w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (≡CTerm→equalInType (sub0-ASSERT₂-APPLY n₁ f₁) (equalInType-mon x∈ w3 e3)) d₁
 
-                h2 : □· w3 (λ w' e → (m : ℕ) → m ≤ n → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
-                h2 = ∈#NAT!→BOOL≤→ i w3 f₁ f₂ n (equalInType-mon f∈ w3 (⊑-trans· e1 (⊑-trans· e2 e3)))
+                h2 : □· w3 (λ w' e → (m : ℕ) → m ≤ n → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
+                h2 = ∈#NAT!→BOOL₀≤→ i w3 f₁ f₂ n (equalInType-mon f∈ w3 (⊑-trans· e1 (⊑-trans· e2 e3)))
 
-                aw4 : ∀𝕎 w3 (λ w' e' → ((m : ℕ) → m ≤ n → UNIONeq (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
+                aw4 : ∀𝕎 w3 (λ w' e' → ((m : ℕ) → m ≤ n → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
                                       → (Σ CTerm (λ u₁ → Σ CTerm (λ u₂ → #APPLY f₁ (#NUM n) #⇛ #INL u₁ at w' × #APPLY f₂ (#NUM n) #⇛ #INL u₂ at w')))
                                       → SUMeq (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w' t₁ t₂)
                 aw4 w4 e4 hn (u₁ , u₂ , ha₁ , ha₂) =

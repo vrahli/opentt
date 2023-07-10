@@ -2956,6 +2956,27 @@ NAT→BOOL = FUN NAT BOOL
 #NAT→BOOL≡ = CTerm≡ refl
 
 
+-- TODO: find a better name
+BOOL₀ : Term
+BOOL₀ = NOREADMOD BOOL
+
+
+-- TODO: find a better name
+#BOOL₀ : CTerm
+#BOOL₀ = #NOREADMOD #BOOL
+
+
+NAT→BOOL₀ : Term
+NAT→BOOL₀ = FUN NAT BOOL₀
+
+
+#NAT→BOOL₀ : CTerm
+#NAT→BOOL₀ = ct NAT→BOOL₀ refl
+
+
+#NAT→BOOL₀≡ : #NAT→BOOL₀ ≡ #FUN #NAT #BOOL₀
+#NAT→BOOL₀≡ = CTerm≡ refl
+
 
 BTRUE : Term
 BTRUE = INL AX
@@ -2984,7 +3005,7 @@ ASSERT₁ t = DECIDE t TRUE FALSE
 
 
 ASSERT₂ : Term → Term
-ASSERT₂ t = EQ t BTRUE BOOL
+ASSERT₂ t = EQ t BTRUE BOOL₀
 
 
 record CTerm1 : Set where
@@ -3091,7 +3112,7 @@ fvars-ASSERT₂ t rewrite ++[] (fvars t) = refl
     c rewrite fvars-ASSERT₂ ⌜ a ⌝ = CTerm.closed a
 
 
-#ASSERT₂≡ : (t : CTerm) → #ASSERT₂ t ≡ #EQ t #BTRUE #BOOL
+#ASSERT₂≡ : (t : CTerm) → #ASSERT₂ t ≡ #EQ t #BTRUE #BOOL₀
 #ASSERT₂≡ t = CTerm≡ refl
 
 
@@ -3395,6 +3416,17 @@ NAT!→BOOL = FUN NAT! BOOL
 #NAT!→BOOL≡ : #NAT!→BOOL ≡ #FUN #NAT! #BOOL
 #NAT!→BOOL≡ = CTerm≡ refl
 
+
+NAT!→BOOL₀ : Term
+NAT!→BOOL₀ = FUN NAT! BOOL₀
+
+
+#NAT!→BOOL₀ : CTerm
+#NAT!→BOOL₀ = ct NAT!→BOOL₀ refl
+
+
+#NAT!→BOOL₀≡ : #NAT!→BOOL₀ ≡ #FUN #NAT! #BOOL₀
+#NAT!→BOOL₀≡ = CTerm≡ refl
 
 
 ASSERT₃ : Term → Term

@@ -109,8 +109,8 @@ open import computation(W)(C)(K)(G)(X)(N)(enc)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc) using (isTypeBOOL! ; →equalInType-BOOL!-INL ; →equalInType-BOOL!-INR ; equalInType-BOOL!→ ; →equalInType-BOOL!)
-open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc) using (equalTerms-pres-#⇛-left-BOOL! ; equalTerms-pres-#⇛-left-rev-BOOL!)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc) using (#BOOL₀! ; isTypeBOOL₀!→ ; →equalInType-BOOL₀!-INL ; →equalInType-BOOL₀!-INR ; equalInType-BOOL₀!→ ; →equalInType-BOOL₀! ; equalTerms-pres-#⇛-left-BOOL₀! ; equalTerms-pres-#⇛-left-rev-BOOL₀!)
+--open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc) using (equalTerms-pres-#⇛-left-BOOL₀! ; equalTerms-pres-#⇛-left-rev-BOOL₀!)
 
 
 progressing→ΣgetCs≤ : {w : 𝕎·} {c : chain w} {r : Res} (n : Name) (m : ℕ)
@@ -338,19 +338,19 @@ getCs→≡Name-getCs {choice name t ∷ w} {n1} {n2} {l} {r} e = getCs→≡Nam
 
 
 Typeℂ₀₁-beth-cs : CTerm
-Typeℂ₀₁-beth-cs = #BOOL!
+Typeℂ₀₁-beth-cs = #BOOL₀! -- no-read, no-write
 
 
 Typeℂ₀₁-isType-beth-bar : (u : ℕ) (w : 𝕎·) → isType u w Typeℂ₀₁-beth-cs
-Typeℂ₀₁-isType-beth-bar u w = isTypeBOOL! w u
+Typeℂ₀₁-isType-beth-bar u w = isTypeBOOL₀!→ u w
 
 
 ℂ₀∈Typeℂ₀₁-beth-cs : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁-beth-cs Cℂ₀
-ℂ₀∈Typeℂ₀₁-beth-cs u w = →equalInType-BOOL!-INL u w #AX #AX
+ℂ₀∈Typeℂ₀₁-beth-cs u w = →equalInType-BOOL₀!-INL u w #AX #AX
 
 
 ℂ₁∈Typeℂ₀₁-beth-cs : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁-beth-cs Cℂ₁
-ℂ₁∈Typeℂ₀₁-beth-cs u w = →equalInType-BOOL!-INR u w #AX #AX
+ℂ₁∈Typeℂ₀₁-beth-cs u w = →equalInType-BOOL₀!-INR u w #AX #AX
 
 
 --ℂ→C→∼ℂ-beth-cs : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼C w c1 c → ∼ℂ· w c2 c
@@ -404,7 +404,7 @@ isValueℂ₁-beth-cs = tt
 
 ∈Typeℂ₀₁→-beth-cs : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                       → equalInType i w Typeℂ₀₁-beth-cs a b → □· w (λ w' _ → #weakℂEq w' a b)
-∈Typeℂ₀₁→-beth-cs i w a b eqi = Mod.∀𝕎-□Func M aw0 (equalInType-BOOL!→ i w a b eqi)
+∈Typeℂ₀₁→-beth-cs i w a b eqi = Mod.∀𝕎-□Func M aw0 (equalInType-BOOL₀!→ i w a b eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #weakBool! w' a b → #weakℂEq w' a b)
     aw w1 e1 h w2 e2 = lift j
@@ -494,7 +494,7 @@ getChoice→weakℂ₀₁M w n c h w1 e1 with lower (h w1 e1)
                       → compatible· c w Resℂ₀₁ --□· w (λ w' _ → weakℂ₀₁M w' (getT n c))
                       → ∈Type i w Typeℂ₀₁-beth-cs (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁-beth-cs i {w} n {c} h =
-  →equalInType-BOOL! i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
+  →equalInType-BOOL₀! i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
                        (Mod.∀𝕎-□Func M aw (□·-choice-beth-cs0 w c n Resℂ₀₁ h))
   where
     aw : ∀𝕎 w (λ w' e' → Σ ℂ· (λ t → ·ᵣ Resℂ₀₁ n t × ∀𝕎 w' (λ w'' _ → Lift 2ℓ (getChoice· n c w'' ≡ just t)))
@@ -562,8 +562,8 @@ bethCs-choiceBar =
     ℂ₁∈Typeℂ₀₁-beth-cs
     ∈Typeℂ₀₁→-beth-cs
     →∈Typeℂ₀₁-beth-cs
-    equalTerms-pres-#⇛-left-BOOL!
-    equalTerms-pres-#⇛-left-rev-BOOL!
+    equalTerms-pres-#⇛-left-BOOL₀!
+    equalTerms-pres-#⇛-left-rev-BOOL₀!
     □·-choice-beth-cs
     followChoice-beth-cs
 

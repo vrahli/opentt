@@ -131,12 +131,22 @@ classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
           where
             aw : ∀𝕎 w1 (λ w' e' → inhType n w' (#↑T p a₁) ⊎ inhType n w' (#NEG (#↑T p a₁))
                                 →  Σ CTerm (λ t → ∈Type n w' (#UNION (#↑T p a₁) (#NEG (#↑T p a₁))) t))
-            aw w2 e2 (inj₁ (t , h)) = #INL t , →equalInType-UNION (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2)))
-                                                                   (eqTypesNEG← (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2))))
-                                                                   (Mod.∀𝕎-□ M (λ w3 e3 → t , t , inj₁ (#compAllRefl (#INL t) _ , #compAllRefl (#INL t) _ , equalInType-mon h w3 e3)))
-            aw w2 e2 (inj₂ (t , h)) = #INR t , →equalInType-UNION (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2)))
-                                                                   (eqTypesNEG← (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2))))
-                                                                   (Mod.∀𝕎-□ M (λ w3 e3 → t , t , inj₂ (#compAllRefl (#INR t) _ , #compAllRefl (#INR t) _ , equalInType-mon h w3 e3)))
+            aw w2 e2 (inj₁ (t , h)) =
+              #INL t ,
+              →equalInType-UNION
+                (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2)))
+                (eqTypesNEG← (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2))))
+                (Mod.∀𝕎-□ M (λ w3 e3 → t , t , inj₁ (⇓-refl ⌜ #INL t ⌝ w3 {--#compAllRefl (#INL t) _--} ,
+                                                     ⇓-refl ⌜ #INL t ⌝ w3 {--#compAllRefl (#INL t) _--} ,
+                                                     equalInType-mon h w3 e3)))
+            aw w2 e2 (inj₂ (t , h)) =
+              #INR t ,
+              →equalInType-UNION
+                (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2)))
+                (eqTypesNEG← (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2))))
+                (Mod.∀𝕎-□ M (λ w3 e3 → t , t , inj₂ (⇓-refl ⌜ #INR t ⌝ w3 {--#compAllRefl (#INR t) _--} ,
+                                                     ⇓-refl ⌜ #INR t ⌝ w3 {--#compAllRefl (#INR t) _--} ,
+                                                     equalInType-mon h w3 e3)))
 
 
 

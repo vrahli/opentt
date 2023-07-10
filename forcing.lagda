@@ -321,12 +321,21 @@ PIeq : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → per
 PIeq eqa eqb f g = (a b : CTerm) → (e : eqa a b) → eqb a b e (#APPLY f a) (#APPLY g b)
 
 
-SUMeq : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → wper
-SUMeq eqa eqb w f g =
+SUMeq₀ : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → wper
+SUMeq₀ eqa eqb w f g =
   Σ CTerm (λ a1 → Σ CTerm (λ a2 → Σ CTerm (λ b1 → Σ CTerm (λ b2 →
     Σ (eqa a1 a2) (λ ea →
     f #⇛ (#PAIR a1 b1) at w
     × g #⇛ (#PAIR a2 b2) at w
+    × eqb a1 a2 ea b1 b2)))))
+
+
+SUMeq : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → wper
+SUMeq eqa eqb w f g =
+  Σ CTerm (λ a1 → Σ CTerm (λ a2 → Σ CTerm (λ b1 → Σ CTerm (λ b2 →
+    Σ (eqa a1 a2) (λ ea →
+    f #⇓ (#PAIR a1 b1) at w
+    × g #⇓ (#PAIR a2 b2) at w
     × eqb a1 a2 ea b1 b2)))))
 
 
@@ -344,20 +353,29 @@ ISECTeq : (eqa eqb : per) → per
 ISECTeq eqa eqb t1 t2 = eqa t1 t2 × eqb t1 t2
 
 
-UNIONeq : (eqa eqb : per) → wper
-UNIONeq eqa eqb w t1 t2  =
-  Σ CTerm (λ a → Σ CTerm (λ b →
-    (t1 #⇛ (#INL a) at w × t2 #⇛ (#INL b) at w × eqa a b)
-    ⊎
-    (t1 #⇛ (#INR a) at w × t2 #⇛ (#INR b) at w × eqb a b)))
-
-
 QTUNIONeq : (eqa eqb : per) → wper
 QTUNIONeq eqa eqb w t1 t2  =
   Σ CTerm (λ a → Σ CTerm (λ b →
     (t1 #⇓ (#INL a) at w × t2 #⇓ (#INL b) at w × eqa a b)
     ⊎
     (t1 #⇓ (#INR a) at w × t2 #⇓ (#INR b) at w × eqb a b)))
+
+
+-- Same as QTUNIONeq
+UNIONeq : (eqa eqb : per) → wper
+UNIONeq eqa eqb w t1 t2  =
+  Σ CTerm (λ a → Σ CTerm (λ b →
+    (t1 #⇓ (#INL a) at w × t2 #⇓ (#INL b) at w × eqa a b)
+    ⊎
+    (t1 #⇓ (#INR a) at w × t2 #⇓ (#INR b) at w × eqb a b)))
+
+
+UNIONeq₀ : (eqa eqb : per) → wper
+UNIONeq₀ eqa eqb w t1 t2  =
+  Σ CTerm (λ a → Σ CTerm (λ b →
+    (t1 #⇛ (#INL a) at w × t2 #⇛ (#INL b) at w × eqa a b)
+    ⊎
+    (t1 #⇛ (#INR a) at w × t2 #⇛ (#INR b) at w × eqb a b)))
 
 
 data weq (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) (eqc : per) (w : 𝕎·) (t1 t2 : CTerm) : Set(lsuc(L))

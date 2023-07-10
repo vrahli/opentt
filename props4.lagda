@@ -112,10 +112,10 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 →INL-equalInType-UNION {n} {w} {A} {B} {x} {y} tb h =
   →equalInType-UNION (fst h) tb (Mod.∀𝕎-□ M aw)
   where
-    aw : ∀𝕎 w (λ w' _ → Σ CTerm (λ x₁ → Σ CTerm (λ y₁ →
-               #INL x #⇛ #INL x₁ at w' × #INL y #⇛ #INL y₁ at w' × equalInType n w' A x₁ y₁
-               ⊎ #INL x #⇛ #INR x₁ at w' × #INL y #⇛ #INR y₁ at w' × equalInType n w' B x₁ y₁)))
-    aw w' e' = x , y , inj₁ (#compAllRefl (#INL x) w' , #compAllRefl (#INL y) w' , equalInType-mon h w' e')
+    aw : ∀𝕎 w (λ w' _ → UNIONeq (equalInType n w' A) (equalInType n w' B) w' (#INL x) (#INL y))
+    aw w' e' = x , y , inj₁ (⇓-refl ⌜ #INL x ⌝ w' {--#compAllRefl (#INL x) w'--} ,
+                             ⇓-refl ⌜ #INL y ⌝ w' {--#compAllRefl (#INL y) w'--} ,
+                             equalInType-mon h w' e')
 
 
 →INR-equalInType-UNION : {n : ℕ} {w : 𝕎·} {A B x y : CTerm}
@@ -125,10 +125,10 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 →INR-equalInType-UNION {n} {w} {A} {B} {x} {y} ta h =
   →equalInType-UNION ta (fst h) (Mod.∀𝕎-□ M aw)
   where
-    aw : ∀𝕎 w (λ w' _ → Σ CTerm (λ x₁ → Σ CTerm (λ y₁ →
-               #INR x #⇛ #INL x₁ at w' × #INR y #⇛ #INL y₁ at w' × equalInType n w' A x₁ y₁
-               ⊎ #INR x #⇛ #INR x₁ at w' × #INR y #⇛ #INR y₁ at w' × equalInType n w' B x₁ y₁)))
-    aw w' e' = x , y , inj₂ (#compAllRefl (#INR x) w' , #compAllRefl (#INR y) w' , equalInType-mon h w' e')
+    aw : ∀𝕎 w (λ w' _ → UNIONeq (equalInType n w' A) (equalInType n w' B) w' (#INR x) (#INR y))
+    aw w' e' = x , y , inj₂ (⇓-refl ⌜ #INR x ⌝ w' {--#compAllRefl (#INR x) w'--} ,
+                             ⇓-refl ⌜ #INR y ⌝ w' {--#compAllRefl (#INR y) w'--} ,
+                             equalInType-mon h w' e')
 
 
 

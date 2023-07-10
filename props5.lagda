@@ -118,8 +118,8 @@ PRODeq eqa eqb w f g =
   Σ CTerm (λ a1 → Σ CTerm (λ a2 → Σ CTerm (λ b1 → Σ CTerm (λ b2 →
     eqa a1 a2
     × eqb b1 b2
-    × f #⇛ (#PAIR a1 b1) at w
-    × g #⇛ (#PAIR a2 b2) at w))))
+    × f #⇓ (#PAIR a1 b1) at w
+    × g #⇓ (#PAIR a2 b2) at w))))
 
 
 equalInType-PROD : {u : ℕ} {w : 𝕎·} {A B : CTerm} {f g : CTerm}
@@ -158,16 +158,24 @@ equalInType-PROD→ {u} {w} {A} {B} {f} {g} eqi =
     aw w1 e1 (a1 , a2 , b1 , b2 , ea , c1 , c2 , eb) rewrite sub0⌞⌟ a1 B = a1 , a2 , b1 , b2 , ea , eb , c1 , c2
 
 
-UNION! : Term → Term → Term
-UNION! a b = NOWRITEMOD (UNION a b)
+UNION₀ : Term → Term → Term
+UNION₀ a b = NOREADMOD (UNION a b)
 
 
-#UNION! : CTerm → CTerm → CTerm
-#UNION! a b = #NOWRITEMOD (#UNION a b)
+#UNION₀ : CTerm → CTerm → CTerm
+#UNION₀ a b = #NOREADMOD (#UNION a b)
 
 
-UNION!eq : (eqa eqb : per) → wper
-UNION!eq eqa eqb w t1 t2  =
+UNION₀! : Term → Term → Term
+UNION₀! a b = NOWRITEMOD (UNION₀ a b)
+
+
+#UNION₀! : CTerm → CTerm → CTerm
+#UNION₀! a b = #NOWRITEMOD (#UNION₀ a b)
+
+
+UNION₀!eq : (eqa eqb : per) → wper
+UNION₀!eq eqa eqb w t1 t2  =
   Σ CTerm (λ a → Σ CTerm (λ b →
     (t1 #⇛! (#INL a) at w × t2 #⇛! (#INL b) at w × eqa a b)
     ⊎
@@ -191,18 +199,37 @@ UNION!eq eqa eqb w t1 t2  =
   #⇛→#⇛! {w'} {a} {b} (#⇓→#⇓!-mon {w} {w'} {a} e h) isv comp
 
 
-equalInType-UNION!→ : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
-                       → equalInType n w (#UNION! A B) a b
-                       → □· w (λ w' _ → UNION!eq (equalInType n w' A) (equalInType n w' B) w' a b)
-equalInType-UNION!→ {n} {w} {A} {B} {a} {b} equ =
+abstract
+  equalInType-UNION₀→ : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
+                      → equalInType n w (#UNION₀ A B) a b
+                      → □· w (λ w' _ → UNIONeq₀ (equalInType n w' A) (equalInType n w' B) w' a b)
+  equalInType-UNION₀→ {n} {w} {A} {B} {a} {b} eqi =
+    Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInTypeNOREADMOD→ eqi))
+    where
+      aw : ∀𝕎 w (λ w' e' → NOREADMODeq (equalInType n w' (#UNION A B)) w' a b
+                         → □· w' (↑wPred' (λ w'' _ → UNIONeq₀ (equalInType n w'' A) (equalInType n w'' B) w'' a b) e'))
+      aw w1 e1 (h , q) = Mod.∀𝕎-□Func M aw1 (equalInType-UNION→ h)
+        where
+          aw1 : ∀𝕎 w1 (λ w' e' → UNIONeq (equalInType n w' A) (equalInType n w' B) w' a b
+                               → ↑wPred' (λ w'' _ → UNIONeq₀ (equalInType n w'' A) (equalInType n w'' B) w'' a b) e1 w' e')
+          aw1 w2 e2 (x , y , inj₁ (c₁ , c₂ , z)) e =
+            x , y , inj₁ (fst q w2 e2 (#INL x) tt c₁ , snd q w2 e2 (#INL y) tt c₂ , z)
+          aw1 w2 e2 (x , y , inj₂ (c₁ , c₂ , z)) e =
+            x , y , inj₂ (fst q w2 e2 (#INR x) tt c₁ , snd q w2 e2 (#INR y) tt c₂ , z)
+
+
+equalInType-UNION₀!→ : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
+                       → equalInType n w (#UNION₀! A B) a b
+                       → □· w (λ w' _ → UNION₀!eq (equalInType n w' A) (equalInType n w' B) w' a b)
+equalInType-UNION₀!→ {n} {w} {A} {B} {a} {b} equ =
   Mod.□-idem M (Mod.∀𝕎-□Func M aw1 (equalInTypeNOWRITEMOD→ equ))
   where
-    aw1 : ∀𝕎 w (λ w' e' → NOWRITEMODeq (equalInType n w' (#UNION A B)) w' a b
-                        → Mod.□ M w' (↑wPred' (λ w'' _ → UNION!eq (equalInType n w'' A) (equalInType n w'' B) w'' a b) e'))
-    aw1 w1 e1 (equ1 , c1 , c2) = Mod.∀𝕎-□Func M aw2 (equalInType-UNION→ {n} {w1} {A} {B} equ1)
+    aw1 : ∀𝕎 w (λ w' e' → NOWRITEMODeq (equalInType n w' (#UNION₀ A B)) w' a b
+                        → Mod.□ M w' (↑wPred' (λ w'' _ → UNION₀!eq (equalInType n w'' A) (equalInType n w'' B) w'' a b) e'))
+    aw1 w1 e1 (equ1 , c1 , c2) = Mod.∀𝕎-□Func M aw2 (equalInType-UNION₀→ {n} {w1} {A} {B} equ1)
       where
-        aw2 : ∀𝕎 w1 (λ w' e' → UNIONeq (equalInType n w' A) (equalInType n w' B) w' a b
-                              → ↑wPred' (λ w'' _ → UNION!eq (equalInType n w'' A) (equalInType n w'' B) w'' a b) e1 w' e')
+        aw2 : ∀𝕎 w1 (λ w' e' → UNIONeq₀ (equalInType n w' A) (equalInType n w' B) w' a b
+                              → ↑wPred' (λ w'' _ → UNION₀!eq (equalInType n w'' A) (equalInType n w'' B) w'' a b) e1 w' e')
         aw2 w2 e2 (x , y , inj₁ (d1 , d2 , equ2)) z =
           x , y , inj₁ (#⇛→#⇛!⊑ {w1} {w2} {a} {#INL x} e2 c1 tt d1 ,
                         #⇛→#⇛!⊑ {w1} {w2} {b} {#INL y} e2 c2 tt d2 ,
@@ -228,18 +255,42 @@ equalInType-UNION!→ {n} {w} {A} {B} {a} {b} equ =
                              (#⇓from-to→#⇓ {w1} {w1} {a} {v} (lower (comp w1 e1))) = lower (comp w1 e1)
 
 
-→equalInType-UNION! : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
+→equalInType-UNION₀ : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
                        → isType n w A
                        → isType n w B
-                       → □· w (λ w' _ → UNION!eq (equalInType n w' A) (equalInType n w' B) w' a b)
-                       → equalInType n w (#UNION! A B) a b
-→equalInType-UNION! {n} {w} {A} {B} {a} {b} ista istb equ =
+                       → □· w (λ w' _ → UNIONeq₀ (equalInType n w' A) (equalInType n w' B) w' a b)
+                       → equalInType n w (#UNION₀ A B) a b
+→equalInType-UNION₀ {n} {w} {A} {B} {a} {b} isa isb i =
+  →equalInTypeNOREADMOD (Mod.∀𝕎-□Func M aw i)
+  where
+    aw : ∀𝕎 w (λ w' e' → UNIONeq₀ (equalInType n w' A) (equalInType n w' B) w' a b
+                       → equalInType n w' (#UNION A B) a b × NOREADeq w' a b)
+    aw w1 e1 (x , y , inj₁ (c₁ , c₂ , z)) =
+      →equalInType-UNION
+        (eqTypes-mon (uni n) isa w1 e1) (eqTypes-mon (uni n) isb w1 e1)
+        (Mod.∀𝕎-□ M (λ w2 e2 → x , y , inj₁ (lower (c₁ w2 e2) , lower (c₂ w2 e2) , equalInType-mon z w2 e2))) ,
+      #⇛val→#⇓→#⇛ {w1} {a} {#INL x} tt c₁ ,
+      #⇛val→#⇓→#⇛ {w1} {b} {#INL y} tt c₂
+    aw w1 e1 (x , y , inj₂ (c₁ , c₂ , z)) =
+      →equalInType-UNION
+        (eqTypes-mon (uni n) isa w1 e1) (eqTypes-mon (uni n) isb w1 e1)
+        (Mod.∀𝕎-□ M (λ w2 e2 → x , y , inj₂ (lower (c₁ w2 e2) , lower (c₂ w2 e2) , equalInType-mon z w2 e2))) ,
+      #⇛val→#⇓→#⇛ {w1} {a} {#INR x} tt c₁ ,
+      #⇛val→#⇓→#⇛ {w1} {b} {#INR y} tt c₂
+
+
+→equalInType-UNION₀! : {n : ℕ} {w : 𝕎·} {A B a b : CTerm}
+                       → isType n w A
+                       → isType n w B
+                       → □· w (λ w' _ → UNION₀!eq (equalInType n w' A) (equalInType n w' B) w' a b)
+                       → equalInType n w (#UNION₀! A B) a b
+→equalInType-UNION₀! {n} {w} {A} {B} {a} {b} ista istb equ =
   →equalInTypeNOWRITEMOD (Mod.∀𝕎-□Func M aw equ)
   where
-    aw : ∀𝕎 w (λ w' e' → UNION!eq (equalInType n w' A) (equalInType n w' B) w' a b
-                        → NOWRITEMODeq (equalInType n w' (#UNION A B)) w' a b)
+    aw : ∀𝕎 w (λ w' e' → UNION₀!eq (equalInType n w' A) (equalInType n w' B) w' a b
+                        → NOWRITEMODeq (equalInType n w' (#UNION₀ A B)) w' a b)
     aw w1 e1 (x , y , inj₁ (c1 , c2 , equ1)) =
-      →equalInType-UNION
+      →equalInType-UNION₀
         (eqTypes-mon (uni n) ista w1 e1)
         (eqTypes-mon (uni n) istb w1 e1)
         (Mod.∀𝕎-□ M (λ w2 e2 → x , y , inj₁ (#⇛!-#⇛ {w2} {a} {#INL x} (∀𝕎-mon e2 c1) ,
@@ -247,7 +298,7 @@ equalInType-UNION!→ {n} {w} {A} {B} {a} {b} equ =
                                                equalInType-mon equ1 w2 e2))) ,
       #⇛!→#⇓→#⇓! {w1} {a} {#INL x} tt c1 , #⇛!→#⇓→#⇓! {w1} {b} {#INL y} tt c2
     aw w1 e1 (x , y , inj₂ (c1 , c2 , equ1)) =
-      →equalInType-UNION
+      →equalInType-UNION₀
         (eqTypes-mon (uni n) ista w1 e1)
         (eqTypes-mon (uni n) istb w1 e1)
         (Mod.∀𝕎-□ M (λ w2 e2 → x , y , inj₂ (#⇛!-#⇛ {w2} {a} {#INR x} (∀𝕎-mon e2 c1) ,
@@ -256,11 +307,19 @@ equalInType-UNION!→ {n} {w} {A} {B} {a} {b} equ =
       #⇛!→#⇓→#⇓! {w1} {a} {#INR x} tt c1 , #⇛!→#⇓→#⇓! {w1} {b} {#INR y} tt c2
 
 
-eqTypesUNION!← : {w : 𝕎·} {i : ℕ} {A B C D : CTerm}
+eqTypesUNION₀← : {w : 𝕎·} {i : ℕ} {A B C D : CTerm}
                   → equalTypes i w A B
                   → equalTypes i w C D
-                  → equalTypes i w (#UNION! A C) (#UNION! B D)
-eqTypesUNION!← {w} {i} {A} {B} {C} {D} eq1 eq2 = eqTypesNOWRITEMOD← (eqTypesUNION← eq1 eq2)
+                  → equalTypes i w (#UNION₀ A C) (#UNION₀ B D)
+eqTypesUNION₀← {w} {i} {A} {B} {C} {D} eqt1 eqt2 =
+  eqTypesNOREADMOD← (eqTypesUNION← eqt1 eqt2)
+
+
+eqTypesUNION₀!← : {w : 𝕎·} {i : ℕ} {A B C D : CTerm}
+                  → equalTypes i w A B
+                  → equalTypes i w C D
+                  → equalTypes i w (#UNION₀! A C) (#UNION₀! B D)
+eqTypesUNION₀!← {w} {i} {A} {B} {C} {D} eq1 eq2 = eqTypesNOWRITEMOD← (eqTypesUNION₀← eq1 eq2)
 
 
 NATeq-mon : {w1 w2 : 𝕎·} (e : w1 ⊑· w2) {a1 a2 : CTerm}
@@ -317,8 +376,9 @@ equalTerms→equalInType-#BOOL! : {i : ℕ} {w : 𝕎·} {a b : CTerm}
 equalTerms→equalInType-#BOOL! {i} {w} {a} {b} eqt a∈ = eqt , a∈
 
 
-equalTerms-pres-#⇛-left-BOOL! : equalTerms-pres-#⇛-left #BOOL!
-equalTerms-pres-#⇛-left-BOOL! {i} {w} {a} {b} {c} comp eqt eqi =
+{-
+equalTerms-pres-#⇛-left-BOOL!2 : equalTerms-pres-#⇛-left #BOOL!
+equalTerms-pres-#⇛-left-BOOL!2 {i} {w} {a} {b} {c} comp eqt eqi =
   equalInType-#BOOL!→equalTerms
     {i} {w} {b} {c} eqt
     (→equalInType-BOOL! i w b c (Mod.∀𝕎-□Func M aw (equalInType-BOOL!→ i w a c (eqt , eqi))))
@@ -328,8 +388,8 @@ equalTerms-pres-#⇛-left-BOOL! {i} {w} {a} {b} {c} comp eqt eqi =
     aw w1 e1 (x , y , inj₂ (c₁ , c₂)) = x , y , inj₂ (val-#⇛!→ {w1} {a} {b} {#INR x} tt (∀𝕎-mon e1 comp) c₁ , c₂)
 
 
-equalTerms-pres-#⇛-left-rev-BOOL! : equalTerms-pres-#⇛-left-rev #BOOL!
-equalTerms-pres-#⇛-left-rev-BOOL! {i} {w} {a} {b} {c} comp eqt eqi =
+equalTerms-pres-#⇛-left-rev-BOOL!2 : equalTerms-pres-#⇛-left-rev #BOOL!
+equalTerms-pres-#⇛-left-rev-BOOL!2 {i} {w} {a} {b} {c} comp eqt eqi =
   equalInType-#BOOL!→equalTerms
     {i} {w} {a} {c} eqt
     (→equalInType-BOOL! i w a c (Mod.∀𝕎-□Func M aw (equalInType-BOOL!→ i w b c (eqt , eqi))))
@@ -337,5 +397,6 @@ equalTerms-pres-#⇛-left-rev-BOOL! {i} {w} {a} {b} {c} comp eqt eqi =
     aw : ∀𝕎 w (λ w' e' → #strongBool! w' b c → #strongBool! w' a c)
     aw w1 e1 (x , y , inj₁ (c₁ , c₂)) = x , y , inj₁ (#⇛!-trans {w1} {a} {b} {#INL x} (∀𝕎-mon e1 comp) c₁ , c₂)
     aw w1 e1 (x , y , inj₂ (c₁ , c₂)) = x , y , inj₂ (#⇛!-trans {w1} {a} {b} {#INR x} (∀𝕎-mon e1 comp) c₁ , c₂)
+-}
 
 \end{code}

@@ -134,7 +134,7 @@ FunBar T = FUN (FUN NAT T) NAT
 
 
 IndBarB : Term
-IndBarB = UNION! NAT UNIT
+IndBarB = UNION₀! NAT UNIT
 
 
 #UNIT : CTerm
@@ -142,7 +142,7 @@ IndBarB = UNION! NAT UNIT
 
 
 #IndBarB : CTerm
-#IndBarB = #UNION! #NAT #UNIT
+#IndBarB = #UNION₀! #NAT #UNIT
 
 
 -- IndBarC uses NAT! because if DIGAMMAs are functions from NAT, then to prove that (loop ∈ coW -- see coSemM)
@@ -1331,7 +1331,7 @@ APPLY-upd∈NAT cn i w r T F f compat pres tyT F∈ f∈ =
 
 INL∈IndBarB : (i : ℕ) (w : 𝕎·) (k : ℕ) → ∈Type i w #IndBarB (#INL (#NUM k))
 INL∈IndBarB i w k =
-  →equalInType-UNION!
+  →equalInType-UNION₀!
     eqTypesNAT
     (eqTypesTRUE {w} {i})
     (Mod.∀𝕎-□ M (λ w' e → #NUM k , #NUM k , inj₁ (#⇛!-refl {w'} {#INL (#NUM k)} ,
@@ -1350,12 +1350,12 @@ INL∈IndBarB i w k =
 
 INR∈IndBarB : (i : ℕ) (w : 𝕎·) → ∈Type i w #IndBarB (#INR #AX)
 INR∈IndBarB i w =
-  →equalInType-UNION!
+  →equalInType-UNION₀!
     eqTypesNAT
     (eqTypesTRUE {w} {i})
     (Mod.∀𝕎-□ M (λ w' e → #AX , #AX , inj₂ (#⇛!-refl {w'} {#INR #AX} ,
-                                              #⇛!-refl {w'} {#INR #AX} ,
-                                              →equalInType-TRUE i {w'} {#AX} {#AX})))
+                                            #⇛!-refl {w'} {#INR #AX} ,
+                                            →equalInType-TRUE i {w'} {#AX} {#AX})))
 
 
 sub0-IndBarC≡ : (T a : CTerm) → sub0 a (#IndBarC T) ≡ #DECIDE a #[0]VOID (#[0]shiftUp0 (#NOWRITEMOD T))
@@ -1495,9 +1495,9 @@ INR→!∈Type-IndBarC i w P T x a b tyn comp j rewrite sub0-IndBarC≡ T x =
                            → ∈Type i w (sub0 b (#IndBarC T)) c
                            → □· w (λ w' _ → Σ CTerm (λ t → b #⇛! #INR t at w') × Σ ℕ (λ n → c #⇛! #NUM n at w' × P n))
 ∈Type-IndBarB-IndBarC→ i w P T b c tyn b∈ c∈ =
-  Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInType-UNION!→ b∈))
+  Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInType-UNION₀!→ b∈))
   where
-    aw : ∀𝕎 w (λ w' e' → UNION!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' b b
+    aw : ∀𝕎 w (λ w' e' → UNION₀!eq (equalInType i w' #NAT) (equalInType i w' #UNIT) w' b b
                         → Mod.□ M w' (↑wPred' (λ w'' _ → Σ CTerm (λ t → b #⇛! #INR t at w'') × Σ ℕ (λ n → c #⇛! #NUM n at w'' × P n)) e'))
     aw w1 e1 (x , y , inj₁ (c1 , c2 , eqi)) = ⊥-elim (INL→!∈Type-IndBarC i w1 T b x c c1 (equalInType-mon c∈ w1 e1))
     aw w1 e1 (x , y , inj₂ (c1 , c2 , eqi)) =

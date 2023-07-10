@@ -89,7 +89,7 @@ open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
 
 -- This is classically equivalent to equalInType-#MP-left→
 equalInType-#MP-left→2 : (i : ℕ) (w : 𝕎·) (f a₁ a₂ : CTerm)
-                          → ∈Type i w #NAT!→BOOL f
+                          → ∈Type i w #NAT!→BOOL₀ f
                           → equalInType i w (#MP-left f) a₁ a₂
                           → ∀𝕎 w (λ w' _ → ∃𝕎 w' (λ w' _ → Σ CTerm (λ n₁ → Σ CTerm (λ n₂
                                                             → equalInType i w' #NAT! n₁ n₂
@@ -113,7 +113,7 @@ equalInType-#MP-left→2 i w f a₁ a₂ f∈ a∈ w1 e1 =
 
 
 MPvalid-aux : (i : ℕ) (w : 𝕎·) (f₁ f₂ : CTerm) (a₁ a₂ : CTerm)
-              → equalInType i w #NAT!→BOOL f₁ f₂
+              → equalInType i w #NAT!→BOOL₀ f₁ f₂
               → equalInType i w (#MP-left f₁) a₁ a₂
               → equalInType i w (#MP-right f₁) (#APPLY (#APPLY #lamAX f₁) a₁) (#APPLY (#APPLY #lamAX f₂) a₂)
 MPvalid-aux i w f₁ f₂ a₁ a₂ f∈ a∈ =
@@ -137,14 +137,14 @@ MPvalid-aux i w f₁ f₂ a₁ a₂ f∈ a∈ =
               (λ w' e' a₁ a₂ a∈ →
                 →≡equalTypes
                   (sym (sub0-ASSERT₂-APPLY a₁ f₁)) (sym (sub0-ASSERT₂-APPLY a₂ f₁))
-                  (equalInType-BOOL→equalTypes-ASSERT₂ (equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL≡ (equalInType-refl f∈)) w' (⊑-trans· e3 (⊑-trans· e4 e')) a₁ a₂ a∈)))
+                  (equalInType-BOOL→equalTypes-ASSERT₂ (equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL₀≡ (equalInType-refl f∈)) w' (⊑-trans· e3 (⊑-trans· e4 e')) a₁ a₂ a∈)))
               (Mod.∀𝕎-□ M aw2)
             where
               aw2 : ∀𝕎 w4 (λ w' _ → SUMeq (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w' (#PAIR n₁ t) (#PAIR n₁ t))
               aw2 w5 e5 =
                 n₁ , n₁ , t , t , equalInType-refl (equalInType-mon n∈ w5 (⊑-trans· e4 e5)) ,
-                #compAllRefl (#PAIR n₁ t) w5 ,
-                #compAllRefl (#PAIR n₁ t) w5 ,
+                ⇓-refl ⌜ #PAIR n₁ t ⌝ w5 , --#compAllRefl (#PAIR n₁ t) w5 ,
+                ⇓-refl ⌜ #PAIR n₁ t ⌝ w5 , --#compAllRefl (#PAIR n₁ t) w5 ,
                 ≡CTerm→equalInType (sym (sub0-ASSERT₂-APPLY n₁ f₁)) (equalInType-mon inh w5 (⊑-trans· e4 e5))
 
     p6 : ∀𝕎 w (λ w3 e3 → ∃𝕎 w3 (λ w4 e4
@@ -157,15 +157,15 @@ MPvalid-aux i w f₁ f₂ a₁ a₂ f∈ a∈ =
 
 MPvalid : (w : 𝕎·) → member w #MP #lamAX
 MPvalid w rewrite #MP≡#PI =
-  n , equalInType-PI {n} {w} {#NAT!→BOOL} {#[0]FUN #[0]MP-left #[0]MP-right} p1 p2 p3
+  n , equalInType-PI {n} {w} {#NAT!→BOOL₀} {#[0]FUN #[0]MP-left #[0]MP-right} p1 p2 p3
   where
     n : ℕ
     n = 1
 
-    p1 : ∀𝕎 w (λ w' _ → isType n w' #NAT!→BOOL)
-    p1 w1 e1 = isType-#NAT!→BOOL w1 n
+    p1 : ∀𝕎 w (λ w' _ → isType n w' #NAT!→BOOL₀)
+    p1 w1 e1 = isType-#NAT!→BOOL₀ w1 n
 
-    p2 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' #NAT!→BOOL f₁ f₂
+    p2 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' #NAT!→BOOL₀ f₁ f₂
                        → equalTypes n w' (sub0 f₁ (#[0]FUN #[0]MP-left #[0]MP-right)) (sub0 f₂ (#[0]FUN #[0]MP-left #[0]MP-right)))
     p2 w1 e1 f₁ f₂ f∈ =
       →≡equalTypes
@@ -173,7 +173,7 @@ MPvalid w rewrite #MP≡#PI =
         (sym (sub0-fun-mp f₂))
         (eqTypesFUN← (→equalTypes-#MP-left f∈) (→equalTypes-#MP-right f∈))
 
-    p3 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' #NAT!→BOOL f₁ f₂
+    p3 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' #NAT!→BOOL₀ f₁ f₂
                        → equalInType n w' (sub0 f₁ (#[0]FUN #[0]MP-left #[0]MP-right)) (#APPLY #lamAX f₁) (#APPLY #lamAX f₂))
     p3 w1 e1 f₁ f₂ f∈ =
       →≡equalInType
@@ -193,16 +193,16 @@ MP₂valid : (w : 𝕎·) → member w #MP₂ #lamAX
 MP₂valid w =
   n ,
   →∈Type-PI
-    n w #NAT!→BOOL #NAT!→BOOL
+    n w #NAT!→BOOL₀ #NAT!→BOOL₀
     (#[0]FUN #[0]MP-left #[0]MP-right)
     (#[0]FUN #[0]MP-left3 #[0]MP-right)
-    #lamAX #lamAX (isType-#NAT!→BOOL w n) p2 (λ w1 e1 a b h → h)
+    #lamAX #lamAX (isType-#NAT!→BOOL₀ w n) p2 (λ w1 e1 a b h → h)
     p3 (snd (MPvalid w))
   where
     n : ℕ
     n = 1
 
-    p2 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' #NAT!→BOOL f₁ f₂
+    p2 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' #NAT!→BOOL₀ f₁ f₂
                        → equalTypes n w' (sub0 f₁ (#[0]FUN #[0]MP-left3 #[0]MP-right)) (sub0 f₂ (#[0]FUN #[0]MP-left3 #[0]MP-right)))
     p2 w1 e1 f₁ f₂ f∈ =
       →≡equalTypes
@@ -210,7 +210,7 @@ MP₂valid w =
         (sym (sub0-fun-mp₂ f₂))
         (eqTypesFUN← (→equalTypes-#MP-left3 f∈) (→equalTypes-#MP-right f∈))
 
-    p3 : ∀𝕎 w (λ w' _ → (a b₁ b₂ : CTerm) → ∈Type n w' #NAT!→BOOL a
+    p3 : ∀𝕎 w (λ w' _ → (a b₁ b₂ : CTerm) → ∈Type n w' #NAT!→BOOL₀ a
                        → equalInType n w' (sub0 a (#[0]FUN #[0]MP-left #[0]MP-right)) b₁ b₂
                        → equalInType n w' (sub0 a (#[0]FUN #[0]MP-left3 #[0]MP-right)) b₁ b₂)
     p3 w1 e1 a b₁ b₂ a∈ b∈ =

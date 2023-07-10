@@ -83,7 +83,7 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalTerms-pres-#⇛-left-BOOL! ; equalTerms-pres-#⇛-left-rev-BOOL!)
+--open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalTerms-pres-#⇛-left-BOOL! ; equalTerms-pres-#⇛-left-rev-BOOL!)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
@@ -106,11 +106,11 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' #MP a₁ a₂)
     aw1 w1 e1 F G ea = h8 h7
       where
-        aw2 : ∀𝕎 w1 (λ w' _ → (f g : CTerm) → equalInType n w' #NAT!→BOOL f g
+        aw2 : ∀𝕎 w1 (λ w' _ → (f g : CTerm) → equalInType n w' #NAT!→BOOL₀ f g
                              → equalInType n w' (sub0 f (#[0]FUN #[0]MP-left #[0]MP-right)) (#APPLY F f) (#APPLY G g))
-        aw2 = snd (snd (equalInType-PI→ {n} {w1} {#NAT!→BOOL} {#[0]FUN #[0]MP-left #[0]MP-right} ea))
+        aw2 = snd (snd (equalInType-PI→ {n} {w1} {#NAT!→BOOL₀} {#[0]FUN #[0]MP-left #[0]MP-right} ea))
 
-        aw3 : ∀𝕎 w1 (λ w' _ → (f g : CTerm) → equalInType n w' #NAT!→BOOL f g
+        aw3 : ∀𝕎 w1 (λ w' _ → (f g : CTerm) → equalInType n w' #NAT!→BOOL₀ f g
                              → equalInType n w' (#FUN (#MP-left f) (#MP-right f)) (#APPLY F f) (#APPLY G g))
         aw3 w' e f g ex = ≡CTerm→equalInType (sub0-fun-mp f) (aw2 w' e f g ex)
 
@@ -135,11 +135,11 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         f : CTerm
         f = #CS name
 
-        eqf2 : ∀𝕎 w2 (λ w' _ → (m : ℕ) →  equalInType n w' #BOOL (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
+        eqf2 : ∀𝕎 w2 (λ w' _ → (m : ℕ) →  equalInType n w' #BOOL₀ (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
         eqf2 w' e m = ≡CTerm→equalInType (fst bcb) (→equalInType-APPLY-CS-Typeℂ₀₁· (⊑-compatible· e comp1) (NUM-equalInType-NAT! n w' m))
 
-        eqf1 : ∈Type n w2 #NAT!→BOOL f
-        eqf1 = →equalInType-CS-NAT!→BOOL eqf2
+        eqf1 : ∈Type n w2 #NAT!→BOOL₀ f
+        eqf1 = →equalInType-CS-NAT!→BOOL₀ eqf2
 
         h1 : equalInType n w2 (#FUN (#MP-left f) (#MP-right f)) (#APPLY F f) (#APPLY G f)
         h1 = aw3 w2 e2 f f eqf1
@@ -231,7 +231,8 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
                                 w' (#PAIR n₁ t) (#PAIR n₁ t))
     aw w1 e1 =
       n₁ , n₁ , t , t , equalInType-refl (equalInType-mon n∈ w1 e1) ,
-      #⇛-refl w1 (#PAIR n₁ t) , #⇛-refl w1 (#PAIR n₁ t) ,
+      ⇓-refl ⌜ #PAIR n₁ t ⌝ w1 , --#⇛-refl w1 (#PAIR n₁ t) ,
+      ⇓-refl ⌜ #PAIR n₁ t ⌝ w1 , --#⇛-refl w1 (#PAIR n₁ t) ,
       →≡equalInType (sym (sub0-ASSERT₃-APPLY n₁ f)) (equalInType-mon inh w1 e1)
 
 
@@ -353,7 +354,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
 
 
 ΣinhType-ASSERT₄→inhType-SUM-ASSERT₅ : (n : ℕ) (w : 𝕎·) (f : CTerm)
-                                        → ∈Type n w #NAT!→BOOL! f
+                                        → ∈Type n w #NAT!→BOOL₀! f
                                         → Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w #NAT! n₁ n₂
                                             × inhType n w (#ASSERT₄ (#APPLY f n₁))))
                                         → inhType n w (#SUM-ASSERT₅ f)
@@ -369,7 +370,8 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
                                 w' (#PAIR n₁ t) (#PAIR n₁ t))
     aw w1 e1 =
       n₁ , n₁ , t , t , equalInType-refl (equalInType-mon n∈ w1 e1) ,
-      #⇛-refl w1 (#PAIR n₁ t) , #⇛-refl w1 (#PAIR n₁ t) ,
+      ⇓-refl ⌜ #PAIR n₁ t ⌝ w1 , --#⇛-refl w1 (#PAIR n₁ t) ,
+      ⇓-refl ⌜ #PAIR n₁ t ⌝ w1 , --#⇛-refl w1 (#PAIR n₁ t) ,
       →≡equalInType (sym (sub0-ASSERT₄-APPLY n₁ f)) (equalInType-mon inh w1 e1)
 
 
@@ -381,7 +383,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' #MP₆ a₁ a₂)
     aw1 w1 e1 F G ea = h8 h7
       where
-        aw2 : ∀𝕎 w1 (λ w' _ → (f : CTerm) → ∈Type n w' #NAT!→BOOL! f
+        aw2 : ∀𝕎 w1 (λ w' _ → (f : CTerm) → ∈Type n w' #NAT!→BOOL₀! f
                            → ∀𝕎 w' (λ w' _ → ∀𝕎 w' (λ w' _ → (Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #NAT! n₁ n₂
                                                                   × inhType n w' (#ASSERT₄ (#APPLY f n₁)))))
                                                               → ⊥)
@@ -411,11 +413,11 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         f : CTerm
         f = #CS name
 
-        eqf2 : ∀𝕎 w2 (λ w' _ → (m : ℕ) →  equalInType n w' #BOOL! (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
+        eqf2 : ∀𝕎 w2 (λ w' _ → (m : ℕ) →  equalInType n w' #BOOL₀! (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
         eqf2 w' e m = ≡CTerm→equalInType (proj₁ bcb) (→equalInType-APPLY-CS-Typeℂ₀₁· (⊑-compatible· e comp1) (NUM-equalInType-NAT! n w' m))
 
-        eqf1 : ∈Type n w2 #NAT!→BOOL! f
-        eqf1 = →equalInType-CS-NAT!→BOOL! eqf2
+        eqf1 : ∈Type n w2 #NAT!→BOOL₀! f
+        eqf1 = →equalInType-CS-NAT!→BOOL₀! eqf2
 
         h3 : ∀𝕎 w2 (λ w' _ → ∀𝕎 w' (λ w' _ → (Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #NAT! n₁ n₂
                                                    × inhType n w' (#ASSERT₄ (#APPLY f n₁)))))
@@ -579,7 +581,7 @@ equalTypes-#Σchoiceₙ-body-sub0 i w c k comp sat w' e' a₁ a₂ ea rewrite su
 ¬MP₂ bcb afb w n =
   →∈Type-NEG n w #MP #MP₂ #lamAX #lamAX (isTypeMP₂ w n) aw1 (¬MP bcb afb w n)
   where
-    p2 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' #NAT!→BOOL f₁ f₂
+    p2 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' #NAT!→BOOL₀ f₁ f₂
                        → equalTypes n w' (sub0 f₁ (#[0]FUN #[0]MP-left #[0]MP-right)) (sub0 f₂ (#[0]FUN #[0]MP-left #[0]MP-right)))
     p2 w1 e1 f₁ f₂ f∈ =
       →≡equalTypes
@@ -587,7 +589,7 @@ equalTypes-#Σchoiceₙ-body-sub0 i w c k comp sat w' e' a₁ a₂ ea rewrite su
         (sym (sub0-fun-mp f₂))
         (eqTypesFUN← (→equalTypes-#MP-left f∈) (→equalTypes-#MP-right f∈))
 
-    p3 : ∀𝕎 w (λ w' _ → (a b₁ b₂ : CTerm) → ∈Type n w' #NAT!→BOOL a
+    p3 : ∀𝕎 w (λ w' _ → (a b₁ b₂ : CTerm) → ∈Type n w' #NAT!→BOOL₀ a
                        → equalInType n w' (sub0 a (#[0]FUN #[0]MP-left3 #[0]MP-right)) b₁ b₂
                        → equalInType n w' (sub0 a (#[0]FUN #[0]MP-left #[0]MP-right)) b₁ b₂)
     p3 w1 e1 a b₁ b₂ a∈ b∈ =
@@ -602,10 +604,10 @@ equalTypes-#Σchoiceₙ-body-sub0 i w c k comp sat w' e' a₁ a₂ ea rewrite su
     aw1 : ∀𝕎 w (λ w' _ → (u₁ u₂ : CTerm) → equalInType n w' #MP₂ u₁ u₂ → equalInType n w' #MP u₁ u₂)
     aw1 w1 e1 u₁ u₂ u∈ =
       →∈Type-PI
-        n w1 #NAT!→BOOL #NAT!→BOOL
+        n w1 #NAT!→BOOL₀ #NAT!→BOOL₀
         (#[0]FUN #[0]MP-left3 #[0]MP-right)
         (#[0]FUN #[0]MP-left #[0]MP-right)
-        u₁ u₂ (isType-#NAT!→BOOL w1 n) (∀𝕎-mon e1 p2) (λ w1 e1 a b h → h)
+        u₁ u₂ (isType-#NAT!→BOOL₀ w1 n) (∀𝕎-mon e1 p2) (λ w1 e1 a b h → h)
         (∀𝕎-mon e1 p3) u∈
 
 
@@ -614,7 +616,7 @@ equalTypes-#Σchoiceₙ-body-sub0 i w c k comp sat w' e' a₁ a₂ ea rewrite su
 ¬MP₃ bcb afb w n =
   →∈Type-NEG n w #MP₂ #MP₃ #lamAX #lamAX (isTypeMP₃ w n) aw1 (¬MP₂ bcb afb w n)
   where
-    p2 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' #NAT!→BOOL f₁ f₂
+    p2 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' #NAT!→BOOL₀ f₁ f₂
                        → equalTypes n w' (sub0 f₁ (#[0]FUN #[0]MP-left3 #[0]MP-right)) (sub0 f₂ (#[0]FUN #[0]MP-left3 #[0]MP-right)))
     p2 w1 e1 f₁ f₂ f∈ =
       →≡equalTypes
@@ -622,7 +624,7 @@ equalTypes-#Σchoiceₙ-body-sub0 i w c k comp sat w' e' a₁ a₂ ea rewrite su
         (sym (sub0-fun-mp₂ f₂))
         (eqTypesFUN← (→equalTypes-#MP-left3 f∈) (→equalTypes-#MP-right f∈))
 
-    p3 : ∀𝕎 w (λ w' _ → (a b₁ b₂ : CTerm) → ∈Type n w' #NAT!→BOOL a
+    p3 : ∀𝕎 w (λ w' _ → (a b₁ b₂ : CTerm) → ∈Type n w' #NAT!→BOOL₀ a
                        → equalInType n w' (sub0 a (#[0]FUN #[0]MP-left2 #[0]MP-right2)) b₁ b₂
                        → equalInType n w' (sub0 a (#[0]FUN #[0]MP-left3 #[0]MP-right)) b₁ b₂)
     p3 w1 e1 a b₁ b₂ a∈ b∈ =
@@ -637,10 +639,10 @@ equalTypes-#Σchoiceₙ-body-sub0 i w c k comp sat w' e' a₁ a₂ ea rewrite su
 
     aw1 : ∀𝕎 w (λ w' _ → (u₁ u₂ : CTerm) → equalInType n w' #MP₃ u₁ u₂ → equalInType n w' #MP₂ u₁ u₂)
     aw1 w1 e1 u₁ u₂ u∈ = →∈Type-PI
-        n w1 #NAT!→BOOL #NAT!→BOOL
+        n w1 #NAT!→BOOL₀ #NAT!→BOOL₀
         (#[0]FUN #[0]MP-left2 #[0]MP-right2)
         (#[0]FUN #[0]MP-left3 #[0]MP-right)
-        u₁ u₂ (isType-#NAT!→BOOL w1 n) (∀𝕎-mon e1 p2) (λ w1 e1 a b h → h)
+        u₁ u₂ (isType-#NAT!→BOOL₀ w1 n) (∀𝕎-mon e1 p2) (λ w1 e1 a b h → h)
         (∀𝕎-mon e1 p3) u∈
 
 \end{code}[hide]

@@ -83,32 +83,32 @@ open import terms4(W)(C)(K)(G)(X)(N)(EC) using (¬Names→⇓)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
 
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (isTypeBOOL ; eqTypesQTBOOL! ; isTypeBOOL! ; eqTypesQTNAT! ; sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-NEG-ASSERT₂-APPLY ; equalInType-trans ; equalInType-BOOL→ ; →equalInType-BOOL ; equalInType-NEG→¬inh ; →equalInType-SQUASH ; →equalInType-QTBOOL! ; →equalInType-BOOL! ; sub0-ASSERT₃-APPLY ; equalInType-QTBOOL!→equalTypes-ASSERT₃ ; inhType-mon ; equalInType-QTBOOL!→ ; equalInType-BOOL!→)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (isTypeBOOL ; eqTypesQTBOOL! ; isTypeBOOL! ; eqTypesQTNAT! ; sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-NEG-ASSERT₂-APPLY ; equalInType-trans ; equalInType-BOOL→ ; →equalInType-BOOL ; equalInType-NEG→¬inh ; →equalInType-SQUASH ; →equalInType-QTBOOL! ; →equalInType-BOOL! ; sub0-ASSERT₃-APPLY ; equalInType-QTBOOL!→equalTypes-ASSERT₃ ; inhType-mon ; equalInType-BOOL!→ ; equalInType-BOOL₀!→ ; #BOOL₀! ; #NAT!→BOOL₀! ; #NAT!→BOOL₀!≡)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (→equalInType-NAT!)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#[0]MP-left ; #[0]MP-right ; #[0]MP-left3 ; #[0]MP-left2 ; #[0]MP-right2 ; #[0]MP-left-qt ; #[0]MP-right-qt ; #[0]MP-left-qt₂ ; #[0]MP-right-qt₂ ; #[0]MP-left-qt₃ ; #[0]MP-right-qt₃ ; sub0-fun-mp ; →equalTypes-#MP-left ; →equalTypes-#MP-right ; #MP-left ; #MP-right ; sub0-fun-mp₄ ; →equalTypes-#MP-left-qt ; →equalTypes-#MP-right-qt ; #MP-left-qt ; #MP-right-qt ; equalInType-#MP-left-qt→ ; sub0-fun-mp₂ ; →equalTypes-#MP-left3 ; →∈Type-FUN ; #MP-left3 ; #MP-left2→#MP-left ; #MP-left3→#MP-left2 ; →∈Type-PI ; sub0-fun-mp₃ ; →equalTypes-#MP-left2 ; →equalTypes-#MP-right2 ; #MP-left2 ; #MP-right2 ; #MP-left2→#MP-left3 ; sub0-fun-mp₆ ; →equalTypes-#MP-left-qt₃ ; →equalTypes-#MP-right-qt₃ ; #MP-left-qt₃ ; #MP-right-qt₃ ; equalInType-#MP-left-qt₃→)
 -- MOVE all these usings to a separate file so that we don't have to rely on ExcludedMiddle
-open import mpp(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#MPp₆ ; →inhType-ASSERT₄-APPLY ; #¬Names→inhType-ASSERT₄ ; strongBool!-BTRUE→ ; equalInType-ASSERT₄→ ; isType-#TPURE-NAT!→BOOL!)
+open import mpp(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#MPp₆ ; →inhType-ASSERT₄-APPLY ; #¬Names→inhType-ASSERT₄ ; strongBool!-BTRUE→ ; equalInType-ASSERT₄→ ; isType-#TPURE-NAT!→BOOL₀!)
 
 
 -- This version is the same as MPp₆ in mpp.lagda but the proof uses MP instead of LEM
 MPp₆-inh₂ : (exb : ∃□) (n : ℕ) (w : 𝕎·) → ∈Type n w #MPp₆ #lam2AX
 MPp₆-inh₂ exb n w =
   equalInType-PI
-    {n} {w} {#TPURE #NAT!→BOOL!} {#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃}
-    (λ w' e → isType-#TPURE-NAT!→BOOL! w' n)
+    {n} {w} {#TPURE #NAT!→BOOL₀!} {#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃}
+    (λ w' e → isType-#TPURE-NAT!→BOOL₀! w' n)
     aw1
     aw2
   where
-    aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#TPURE #NAT!→BOOL!) a₁ a₂
+    aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#TPURE #NAT!→BOOL₀!) a₁ a₂
                       → equalTypes n w' (sub0 a₁ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃))
                                          (sub0 a₂ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)))
     aw1 w' e a₁ a₂ eqb rewrite sub0-fun-mp₆ a₁ | sub0-fun-mp₆ a₂ =
         eqTypesFUN← (→equalTypes-#MP-left-qt₃ (equalInType-TPURE→ eqb)) (→equalTypes-#MP-right-qt₃ (equalInType-TPURE→ eqb))
 
-    aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#TPURE #NAT!→BOOL!) a₁ a₂
+    aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#TPURE #NAT!→BOOL₀!) a₁ a₂
                         → equalInType n w' (sub0 a₁ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)) (#APPLY #lam2AX a₁) (#APPLY #lam2AX a₂))
     aw2 w1 e1 a₁ a₂ eqa =
       ≡CTerm→equalInType
@@ -129,10 +129,10 @@ MPp₆-inh₂ exb n w =
                 cc4 k = cc5 eqa3
                   where
                     eqa1 : □· w3 (λ w' _ → #strongBool! w' (#APPLY a₁ (#NUM k)) (#APPLY a₂ (#NUM k)))
-                    eqa1 = equalInType-BOOL!→
+                    eqa1 = equalInType-BOOL₀!→
                              n w3 (#APPLY a₁ (#NUM k)) (#APPLY a₂ (#NUM k))
                              (equalInType-FUN→
-                               (≡CTerm→equalInType #NAT!→BOOL!≡ (equalInType-TPURE→ eqa)) w3 (⊑-trans· e2 e3)
+                               (≡CTerm→equalInType #NAT!→BOOL₀!≡ (equalInType-TPURE→ eqa)) w3 (⊑-trans· e2 e3)
                                (#NUM k) (#NUM k) (NUM-equalInType-NAT! n w3 k))
 
                     eqa2 : ∃𝕎 w3 (λ w' _ → #strongBool! w' (#APPLY a₁ (#NUM k)) (#APPLY a₂ (#NUM k)))
@@ -156,7 +156,7 @@ MPp₆-inh₂ exb n w =
                         cc6 (t , t∈) = lower (Mod.□-const M (Mod.∀𝕎-□Func M awt t∈'))
                           where
                             t∈' : □· w3 (λ w' _ → #strongBool! w' (#APPLY a₁ (#NUM k)) #BTRUE)
-                            t∈' = equalInType-BOOL!→ n w3 (#APPLY a₁ (#NUM k)) #BTRUE (equalInType-ASSERT₄→ n w3 (#APPLY a₁ (#NUM k)) t t t∈)
+                            t∈' = equalInType-BOOL₀!→ n w3 (#APPLY a₁ (#NUM k)) #BTRUE (equalInType-ASSERT₄→ n w3 (#APPLY a₁ (#NUM k)) t t t∈)
 
                             awt : ∀𝕎 w3 (λ w' e' → #strongBool! w' (#APPLY a₁ (#NUM k)) #BTRUE → Lift (lsuc L) ⊥)
                             awt w5 e5 h with strongBool!-BTRUE→ w5 (#APPLY a₁ (#NUM k)) h
@@ -176,7 +176,7 @@ MPp₆-inh₂ exb n w =
                        where
                          aw7 : ∀𝕎 w4 (λ w' e' → #⇛!sameℕ w' n₁ n₂ → Lift (lsuc L) ⊥)
                          aw7 w5 e5 (k , k₁ , k₂) =
-                           Mod.□-const M (Mod.∀𝕎-□Func M aw8 (equalInType-BOOL!→ n w5 (#APPLY a₁ (#NUM k)) #BTRUE (equalInType-ASSERT₄→ n w5 (#APPLY a₁ (#NUM k)) (fst inh') (fst inh') (snd inh')))) --lift (p (k , {!!}))
+                           Mod.□-const M (Mod.∀𝕎-□Func M aw8 (equalInType-BOOL₀!→ n w5 (#APPLY a₁ (#NUM k)) #BTRUE (equalInType-ASSERT₄→ n w5 (#APPLY a₁ (#NUM k)) (fst inh') (fst inh') (snd inh')))) --lift (p (k , {!!}))
                            where
                              inh' : inhType n w5 (#ASSERT₄ (#APPLY a₁ (#NUM k)))
                              inh' = →inhType-ASSERT₄-APPLY n w5 a₁ n₁ k (equalInType-mon (equalInType-refl (equalInType-TPURE→ eqa)) w5 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5)))) k₁ (inhType-mon e5 inh)
@@ -200,18 +200,18 @@ MPp₆-inh₂ exb n w =
                     aw6 w4 e4 =
                       #NUM k , #NUM k , t , t ,
                       NUM-equalInType-NAT! n w4 k ,
-                      #compAllRefl (#PAIR (#NUM k) t) w4 ,
-                      #compAllRefl (#PAIR (#NUM k) t) w4 ,
+                      ⇓-refl ⌜ #PAIR (#NUM k) t ⌝ w4 , --#compAllRefl (#PAIR (#NUM k) t) w4 ,
+                      ⇓-refl ⌜ #PAIR (#NUM k) t ⌝ w4 , --#compAllRefl (#PAIR (#NUM k) t) w4 ,
                       ≡CTerm→equalInType (sym (sub0-ASSERT₄-APPLY (#NUM k) a₁)) (equalInType-mon p w4 e4)
 
                     aw5 : ∀𝕎 w3 (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
                                         → equalTypes n w' (sub0 a (#[0]ASSERT₄ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))) (sub0 b (#[0]ASSERT₄ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))))
                     aw5 w4 e4 a b ea rewrite sub0-ASSERT₄-APPLY a a₁ | sub0-ASSERT₄-APPLY b a₁ = aw5'
                       where
-                        eb : equalInType n w4 #BOOL! (#APPLY a₁ a) (#APPLY a₁ b)
-                        eb = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL!≡ (equalInType-refl (equalInType-TPURE→ eqa))) w4 (⊑-trans· (⊑-trans· e2 e3) e4) a b ea
+                        eb : equalInType n w4 #BOOL₀! (#APPLY a₁ a) (#APPLY a₁ b)
+                        eb = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL₀!≡ (equalInType-refl (equalInType-TPURE→ eqa))) w4 (⊑-trans· (⊑-trans· e2 e3) e4) a b ea
 
                         aw5' : equalTypes n w4 (#ASSERT₄ (#APPLY a₁ a)) (#ASSERT₄ (#APPLY a₁ b))
-                        aw5' = equalInType-BOOL!→equalTypes-ASSERT₄ eb
+                        aw5' = equalInType-BOOL₀!→equalTypes-ASSERT₄ eb
 
 \end{code}

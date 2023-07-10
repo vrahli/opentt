@@ -275,7 +275,7 @@ sub0-#[0]TPURE a b = CTerm≡ refl
 
 -- MOVE
 BOOLₚ : Term
-BOOLₚ = TPURE BOOL
+BOOLₚ = TPURE BOOL₀
 
 
 -- MOVE
@@ -284,7 +284,7 @@ BOOLₚ = TPURE BOOL
 
 
 -- MOVE
-#BOOLₚ≡ : #BOOLₚ ≡ #TPURE #BOOL
+#BOOLₚ≡ : #BOOLₚ ≡ #TPURE #BOOL₀
 #BOOLₚ≡ = CTerm≡ refl
 
 
@@ -318,13 +318,13 @@ isTypeNATₚ {w} {i} = equalTypesTPURE eqTypesNAT
 
 
 isTypeBOOLₚ : {w : 𝕎·} {i : ℕ} → isType i w #BOOLₚ
-isTypeBOOLₚ {w} {i} = equalTypesTPURE (isTypeBOOL w i)
+isTypeBOOLₚ {w} {i} = equalTypesTPURE isTypeBOOL₀
 
 
 →equalInType-BOOLₚ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                       → #¬Names a
                       → #¬Names b
-                      → equalInType i w #BOOL a b
+                      → equalInType i w #BOOL₀ a b
                       → equalInType i w #BOOLₚ a b
 →equalInType-BOOLₚ i w a b nna nnb h =
   ≡CTerm→equalInType (sym #BOOLₚ≡) (→equalInType-TPURE nna nnb h)
@@ -333,7 +333,7 @@ isTypeBOOLₚ {w} {i} = equalTypesTPURE (isTypeBOOL w i)
 equalInType-BOOLₚ→ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
                       → equalInType i w #BOOLₚ a b
                       → □· w (λ w' _ → #strongBool w' a b)
-equalInType-BOOLₚ→ i w a b h = equalInType-BOOL→ i w a b (equalInType-TPURE→ h)
+equalInType-BOOLₚ→ i w a b h = equalInType-BOOL₀→strongBool i w a b (equalInType-TPURE→ h)
 
 
 equalInType-BOOLₚ→ₗ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
@@ -350,11 +350,11 @@ equalInType-BOOLₚ→ᵣ i w a b h = equalInType-TPURE→ᵣ h
 
 BTRUE∈BOOLₚ : (i : ℕ) (w : 𝕎·)
                → ∈Type i w #BOOLₚ #BTRUE
-BTRUE∈BOOLₚ i w = →equalInType-BOOLₚ i w #BTRUE #BTRUE refl refl (BTRUE∈BOOL i w)
+BTRUE∈BOOLₚ i w = →equalInType-BOOLₚ i w #BTRUE #BTRUE refl refl (BTRUE∈BOOL₀ i w)
 
 
 BFALSE∈BOOLₚ : (i : ℕ) (w : 𝕎·)
                    → ∈Type i w #BOOLₚ #BFALSE
-BFALSE∈BOOLₚ i w = →equalInType-BOOLₚ i w #BFALSE #BFALSE refl refl (BFALSE∈BOOL i w)
+BFALSE∈BOOLₚ i w = →equalInType-BOOLₚ i w #BFALSE #BFALSE refl refl (BFALSE∈BOOL₀ i w)
 
 \end{code}

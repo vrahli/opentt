@@ -1411,8 +1411,8 @@ AC₀₀-valid kb i w =
                 aw7 w4 e4 =
                   #MSEQ f , #MSEQ f , #AX , #AX ,
                   mseq∈baire (suc i) w4 f ,
-                  #⇛-refl w4 (#PAIR (#MSEQ f) #AX) ,
-                  #⇛-refl w4 (#PAIR (#MSEQ f) #AX) ,
+                  ⇓-refl ⌜ #PAIR (#MSEQ f) #AX ⌝ w4 , --#⇛-refl w4 (#PAIR (#MSEQ f) #AX) ,
+                  ⇓-refl ⌜ #PAIR (#MSEQ f) #AX ⌝ w4 , --#⇛-refl w4 (#PAIR (#MSEQ f) #AX) ,
                   →≡equalInType
                     (sym (sub0-sac00-right-body1 R₁ (#MSEQ f)))
                     (equalInType-PI
