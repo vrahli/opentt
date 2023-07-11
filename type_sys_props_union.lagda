@@ -269,7 +269,7 @@ typeSysConds-UNION-ttrans u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda in
             ei2 : eqInType u w' (eqtb w' e2) a b
             ei2 = extb a b w' e1 e2 ei1
 --    ind {u} {w} {T1} {T2} (EQTQTUNION C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (UNIONneqQTUNION (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x₁ y))
 --    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (UNIONneqTTRUNC (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (UNIONneqSUBSING (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x x₁ eqta eqtb exta extb inda indb = ⊥-elim (UNIONneqPURE (⇛-val-det tt tt x₁ y))
@@ -423,7 +423,7 @@ typeSysConds-UNION-extl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda ind
             {eqInType u w1 (eqtb0 w1 e1)} {w1} {f} {g}
             (TSP.extl1 (inda w1 e1) A4 (eqta0 w1 e1)) (TSP.extl1 (indb w1 e1) B4 (eqtb0 w1 e1)) p
 --    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqQTUNION (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x y))
 --    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqTTRUNC (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqSUBSING (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqPURE (⇛-val-det tt tt x y))
@@ -527,7 +527,7 @@ typeSysConds-UNION-extl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda ind
                 | sym (#UNIONinj2 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {T2} tt tt y₁ x)) =
             UNIONeq-ext-eq {_} {_} {_} {_} {w1} {f} {g} (TSP.extl2 (inda w1 e1) A3 (eqta₁ w1 e1)) (TSP.extl2 (indb w1 e1) B3 (eqtb₁ w1 e1)) p
 --    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqQTUNION (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x y₁))
 --    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqTTRUNC (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqSUBSING (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqPURE (⇛-val-det tt tt x y₁))
@@ -632,7 +632,7 @@ typeSysConds-UNION-extr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda ind
                 | sym (#UNIONinj2 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {T2} tt tt y₁ x₁))
           = UNIONeq-ext-eq {_} {_} {_} {_} {w1} {f} {g} (TSP.extr1 (inda w1 e1) A3 (eqta₁ w1 e1)) (TSP.extr1 (indb w1 e1) B3 (eqtb₁ w1 e1)) p
 --    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqQTUNION (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x₁ y₁))
 --    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqTTRUNC (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqSUBSING (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqPURE (⇛-val-det tt tt x₁ y₁))
@@ -737,7 +737,7 @@ typeSysConds-UNION-extr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda ind
                 | sym (#UNIONinj2 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {T1} tt tt y x₁))
           = UNIONeq-ext-eq {_} {_} {_} {_} {w1} {f} {g} (TSP.extr2 (inda w1 e1) A4 (eqta₁ w1 e1)) (TSP.extr2 (indb w1 e1) B4 (eqtb₁ w1 e1)) p
 --    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqQTUNION (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x₁ y))
 --    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqTTRUNC (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqSUBSING (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqPURE (⇛-val-det tt tt x₁ y))
@@ -840,7 +840,7 @@ typeSysConds-UNION-extrevl1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
                 | sym (#UNIONinj2 {A3} {B3} {A1} {B1} (#⇛-val-det {_} {T1} tt tt y x))
           = UNIONeq-ext-eq {_} {_} {_} {_} {w1} {f} {g} (TSP.extrevl1 (inda w1 e1) A4 (eqta₁ w1 e1)) (TSP.extrevl1 (indb w1 e1) B4 (eqtb₁ w1 e1)) p
 --    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqQTUNION (⇛-val-det tt tt x y))
-    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x y))
 --    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqTTRUNC (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqSUBSING (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqPURE (⇛-val-det tt tt x y))
@@ -946,7 +946,7 @@ typeSysConds-UNION-extrevl2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
                 | sym (#UNIONinj2 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {T2} tt tt y₁ x))
           = UNIONeq-ext-eq {_} {_} {_} {_} {w1} {f} {g} (TSP.extrevl2 (inda w1 e1) A3 (eqta₁ w1 e1)) (TSP.extrevl2 (indb w1 e1) B3 (eqtb₁ w1 e1)) p
 --    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqQTUNION (⇛-val-det tt tt x y₁))
-    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x y₁))
 --    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqTTRUNC (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqSUBSING (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (UNIONneqPURE (⇛-val-det tt tt x y₁))
@@ -1051,7 +1051,7 @@ typeSysConds-UNION-extrevr1 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
                 | sym (#UNIONinj2 {A4} {B4} {A2} {B2} (#⇛-val-det {_} {T2} tt tt y₁ x₁))
           = UNIONeq-ext-eq {_} {_} {_} {_} {w1} {f} {g} (TSP.extrevr1 (inda w1 e1) A3 (eqta₁ w1 e1)) (TSP.extrevr1 (indb w1 e1) B3 (eqtb₁ w1 e1)) p
 --    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqQTUNION (⇛-val-det tt tt x₁ y₁))
-    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x₁ y₁))
 --    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqTTRUNC (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqSUBSING (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqPURE (⇛-val-det tt tt x₁ y₁))
@@ -1156,7 +1156,7 @@ typeSysConds-UNION-extrevr2 u w A B A1 B1 A2 B2 x x₁ eqta eqtb exta extb inda 
                 | sym (#UNIONinj2 {A3} {B3} {A2} {B2} (#⇛-val-det {_} {T1} tt tt y x₁))
           = UNIONeq-ext-eq {_} {_} {_} {_} {w1} {f} {g} (TSP.extrevr2 (inda w1 e1) A4 (eqta₁ w1 e1)) (TSP.extrevr2 (indb w1 e1) B4 (eqtb₁ w1 e1)) p
 --    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqQTUNION (⇛-val-det tt tt x₁ y))
-    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt x₁ y))
 --    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqTTRUNC (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqSUBSING (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (UNIONneqPURE (⇛-val-det tt tt x₁ y))
@@ -1278,7 +1278,7 @@ eqInType-⇛-UNION u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c₁ c�
                     | #UNIONinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {T2} tt tt c₂ x₁)
               = snd (indb w1 e1 (eqtb₁ w1 e1) a₂ b₂) a∈
 --    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (UNIONneqQTUNION (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt c₁ x))
 --    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (UNIONneqTTRUNC (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (UNIONneqSUBSING (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (UNIONneqPURE (⇛-val-det tt tt c₁ x))
@@ -1393,7 +1393,7 @@ eqInType-⇛-UNION2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ eqt ei
               awextb₁ : eqInTypeExt (eqtb₁ w1 e1)
               awextb₁ = ext (eqtb₁ w1 e1) (≤TypeS₂ _ _ (<Type1₂ _ _ (<TypeUNIONr₂ u w T1 T2 A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1)))
 --    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (UNIONneqQTUNION (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt c₁ x))
 --    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (UNIONneqTTRUNC (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (UNIONneqSUBSING (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eqta eqtb exta extb c₁ c₂ a b ei ext = ⊥-elim (UNIONneqPURE (⇛-val-det tt tt c₁ x))
@@ -1503,7 +1503,7 @@ eqInType-⇛-UNION-rev u w A B A1 A2 B1 B2 a b eqta eqtb exta extb inda indb c�
                 | #UNIONinj2 {A2} {B2} {A4} {B4} (#⇛-val-det {_} {T2} tt tt c₂ x₁)
           = UNIONeq-ext-eq {_} {_} {_} {_} {w1} {a} {b} (λ a1 a2 ea → fst (inda w1 e1 (eqta₁ w1 e1) a1 a2) ea) (λ a1 a2 ea → fst (indb w1 e1 (eqtb₁ w1 e1) a1 a2) ea) p
 --    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (UNIONneqQTUNION (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt c₁ x))
 --    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (UNIONneqTTRUNC (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (UNIONneqSUBSING (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (UNIONneqPURE (⇛-val-det tt tt c₁ x))
@@ -1620,7 +1620,7 @@ eqInType-⇛-UNION-rev2 u w A B A1 A2 B1 B2 a b eqta eqtb exta extb c₁ c₂ eq
             aw2 : (a₂ b₂ : CTerm) → ≡∈Type u w1 (eqtb w1 e1) a₂ b₂ → ≡∈Type u w1 (eqtb₁ w1 e1) a₂ b₂
             aw2 a₂ b₂ a∈ = snd (ext (eqtb₁ w1 e1) (≤TypeS₂ _ _ (<Type1₂ _ _ (<TypeUNIONr₂ u w T1 T2 A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁ w1 e1))) (eqtb w1 e1) a₂ b₂) a∈
 --    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (UNIONneqQTUNION (⇛-val-det tt tt c₁ x))
-    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (UNIONneqTSQUASH (⇛-val-det tt tt c₁ x))
 --    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (UNIONneqTTRUNC (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (UNIONneqSUBSING (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eqta eqtb exta extb c₁ c₂ a b ext ei = ⊥-elim (UNIONneqPURE (⇛-val-det tt tt c₁ x))

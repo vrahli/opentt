@@ -178,7 +178,7 @@ isTypeNegLPO w n = eqTypesNEG← (isTypeLPO w n)
 
 
 -- Assuming that our choices are Bools
-¬LPO : Boolℂ CB → (w : 𝕎·) → member w (#NEG #LPO) #lamAX
+¬LPO : Bool₀ℂ CB → (w : 𝕎·) → member w (#NEG #LPO) #lamAX
 ¬LPO bcb w = n , equalInType-NEG (isTypeLPO w n) aw1
   where
     n : ℕ

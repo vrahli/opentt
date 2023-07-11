@@ -109,7 +109,7 @@ open import computation(W)(C)(K)(G)(X)(N)(enc)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc) using (#BOOL₀! ; isTypeBOOL₀!→ ; →equalInType-BOOL₀!-INL ; →equalInType-BOOL₀!-INR ; equalInType-BOOL₀!→ ; →equalInType-BOOL₀! ; equalTerms-pres-#⇛-left-BOOL₀! ; equalTerms-pres-#⇛-left-rev-BOOL₀!)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc) using (isTypeBOOL₀!→ ; →equalInType-BOOL₀!-INL ; →equalInType-BOOL₀!-INR ; equalInType-BOOL₀!→ ; →equalInType-BOOL₀! ; equalTerms-pres-#⇛-left-BOOL₀! ; equalTerms-pres-#⇛-left-rev-BOOL₀!)
 --open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc) using (equalTerms-pres-#⇛-left-BOOL₀! ; equalTerms-pres-#⇛-left-rev-BOOL₀!)
 
 

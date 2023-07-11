@@ -2908,6 +2908,10 @@ BOOL = UNION TRUE TRUE
 #BOOL = ct BOOL refl
 
 
+#[0]BOOL : CTerm0
+#[0]BOOL = ct0 BOOL refl
+
+
 #BOOL≡ : #BOOL ≡ #UNION #TRUE #TRUE
 #BOOL≡ = CTerm≡ refl
 
@@ -2928,6 +2932,7 @@ BOOL! = NOWRITEMOD BOOL
 #[0]BOOL! = ct0 BOOL! refl
 
 
+{--
 QTBOOL! : Term
 QTBOOL! = TSQUASH BOOL!
 
@@ -2942,6 +2947,7 @@ QTBOOL! = TSQUASH BOOL!
 
 #[0]QTBOOL! : CTerm0
 #[0]QTBOOL! = ct0 QTBOOL! refl
+--}
 
 
 NAT→BOOL : Term
@@ -3302,6 +3308,18 @@ NAT! = NOWRITEMOD NAT
 #[0]NAT! = ct0 NAT! refl
 
 
+QNAT! : Term
+QNAT! = NOWRITEMOD QNAT
+
+
+#QNAT! : CTerm
+#QNAT! = ct QNAT! refl
+
+
+#[0]QNAT! : CTerm0
+#[0]QNAT! = ct0 QNAT! refl
+
+
 QTNAT! : Term
 QTNAT! = TSQUASH NAT!
 
@@ -3314,6 +3332,7 @@ QTNAT! = TSQUASH NAT!
 #[0]QTNAT! = ct0 QTNAT! refl
 
 
+{-
 QTBOOL : Term
 QTBOOL = TSQUASH BOOL
 
@@ -3324,6 +3343,7 @@ QTBOOL = TSQUASH BOOL
 
 #[0]QTBOOL : CTerm0
 #[0]QTBOOL = ct0 QTBOOL refl
+--}
 
 
 loweVars-suc : (l : List Var) → lowerVars (Data.List.map (λ x → suc x) l) ≡ l
@@ -3377,10 +3397,13 @@ sub0-#[0]FUN a t u = CTerm≡ (≡PI refl e)
 #NAT!≡ = CTerm≡ refl
 
 
+{--
 #QTBOOL≡ : #QTBOOL ≡ #TSQUASH #BOOL
 #QTBOOL≡ = CTerm≡ refl
+--}
 
 
+{--
 NAT→QTBOOL : Term
 NAT→QTBOOL = FUN NAT QTBOOL
 
@@ -3403,6 +3426,7 @@ NAT!→QTBOOL = FUN NAT! QTBOOL
 
 #NAT!→QTBOOL≡ : #NAT!→QTBOOL ≡ #FUN #NAT! #QTBOOL
 #NAT!→QTBOOL≡ = CTerm≡ refl
+--}
 
 
 NAT!→BOOL : Term
@@ -3429,8 +3453,28 @@ NAT!→BOOL₀ = FUN NAT! BOOL₀
 #NAT!→BOOL₀≡ = CTerm≡ refl
 
 
+BOOL₀! : Term
+BOOL₀! = NOWRITEMOD BOOL₀
+
+
+#BOOL₀! : CTerm
+#BOOL₀! = #NOWRITEMOD #BOOL₀
+
+
+NAT!→BOOL₀! : Term
+NAT!→BOOL₀! = FUN NAT! BOOL₀!
+
+
+#NAT!→BOOL₀! : CTerm
+#NAT!→BOOL₀! = ct NAT!→BOOL₀! refl
+
+
+#NAT!→BOOL₀!≡ : #NAT!→BOOL₀! ≡ #FUN #NAT! #BOOL₀!
+#NAT!→BOOL₀!≡ = CTerm≡ refl
+
+
 ASSERT₃ : Term → Term
-ASSERT₃ t = EQ t BTRUE QTBOOL!
+ASSERT₃ t = EQ t BTRUE BOOL!
 
 
 fvars-ASSERT₃ : (t : Term) → fvars (ASSERT₃ t) ≡ fvars t
@@ -3445,7 +3489,7 @@ fvars-ASSERT₃ t rewrite ++[] (fvars t) = refl
     c rewrite fvars-ASSERT₃ ⌜ a ⌝ = CTerm.closed a
 
 
-#ASSERT₃≡ : (t : CTerm) → #ASSERT₃ t ≡ #EQ t #BTRUE #QTBOOL!
+#ASSERT₃≡ : (t : CTerm) → #ASSERT₃ t ≡ #EQ t #BTRUE #BOOL!
 #ASSERT₃≡ t = CTerm≡ refl
 
 
@@ -3495,20 +3539,24 @@ IF-THEN a b = ITE a b AX
 #QTNAT!≡ = CTerm≡ refl
 
 
+#QNAT!≡ : #QNAT! ≡ #NOWRITEMOD #QNAT
+#QNAT!≡ = CTerm≡ refl
+
+
 IFLE : Term → Term → Term → Term → Term
 IFLE a b c d = IFLT b a d c
 
 
-NAT!→QTBOOL! : Term
-NAT!→QTBOOL! = FUN NAT! QTBOOL!
+NAT!→BOOL! : Term
+NAT!→BOOL! = FUN NAT! BOOL!
 
 
-#NAT!→QTBOOL! : CTerm
-#NAT!→QTBOOL! = ct NAT!→QTBOOL! refl
+#NAT!→BOOL! : CTerm
+#NAT!→BOOL! = ct NAT!→BOOL! refl
 
 
-#NAT!→QTBOOL!≡ : #NAT!→QTBOOL! ≡ #FUN #NAT! #QTBOOL!
-#NAT!→QTBOOL!≡ = CTerm≡ refl
+#NAT!→BOOL!≡ : #NAT!→BOOL! ≡ #FUN #NAT! #BOOL!
+#NAT!→BOOL!≡ = CTerm≡ refl
 
 
 INLneqINR : {a b : Term} → ¬ INL a ≡ INR b

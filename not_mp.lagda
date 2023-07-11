@@ -100,7 +100,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
 -- Assuming that our choices are Bools
 -- and that choices are always freezable (see where it is used below)
 -- Boolℂ CB is for BOOL, which then would be only for FCSs, not references, which change over time
-¬MP : Boolℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP) #lamAX
+¬MP : Bool₀ℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP) #lamAX
 ¬MP bcb afb w n = equalInType-NEG (isTypeMP w n) aw1
   where
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' #MP a₁ a₂)
@@ -187,7 +187,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         h8 = ¬equalInType-#Σchoice n w3 Resℂ name isValueℂ₀· isValueℂ₁· ¬∼ℂ₀₁· oc2 comp2 fb2
 
 
-¬ΣNAT!→¬inhType-Σchoice₃ : QTBool!ℂ CB → (n : ℕ) (w : 𝕎·) (name : Name)
+¬ΣNAT!→¬inhType-Σchoice₃ : Bool!ℂ CB → (n : ℕ) (w : 𝕎·) (name : Name)
                            → ∀𝕎 w (λ w' _ → ¬ Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #NAT! n₁ n₂ × inhType n w' (#ASSERT₃ (#APPLY (#CS name) n₁)))))
                            → ∀𝕎 w (λ w' _ → ¬ inhType n w' (#Σchoice name ℂ₁·))
 ¬ΣNAT!→¬inhType-Σchoice₃ bcb n w name aw w1 e1 (t , inh) =
@@ -215,7 +215,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
 
 
 ΣinhType-ASSERT₃→inhType-SUM-ASSERT₃ : (n : ℕ) (w : 𝕎·) (f : CTerm)
-                                        → ∈Type n w #NAT!→QTBOOL! f
+                                        → ∈Type n w #NAT!→BOOL! f
                                         → Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w #NAT! n₁ n₂
                                             × inhType n w (#ASSERT₃ (#APPLY f n₁))))
                                         → inhType n w (#SUM-ASSERT₃ f)
@@ -237,13 +237,13 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
 
 
 -- QTBool!ℂ CB is for QTBOOL! which works for FCSs and refs
-¬MP₄ : QTBool!ℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₄) #lamAX
+¬MP₄ : Bool!ℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₄) #lamAX
 ¬MP₄ bcb afb w n = equalInType-NEG (isTypeMP₄ w n) aw1
   where
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' #MP₄ a₁ a₂)
     aw1 w1 e1 F G ea = h8 h7
       where
-        aw2 : ∀𝕎 w1 (λ w' _ → (f : CTerm) → ∈Type n w' #NAT!→QTBOOL! f
+        aw2 : ∀𝕎 w1 (λ w' _ → (f : CTerm) → ∈Type n w' #NAT!→BOOL! f
                            → ∀𝕎 w' (λ w' _ → ∀𝕎 w' (λ w' _ → (Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #NAT! n₁ n₂
                                                                   × inhType n w' (#ASSERT₃ (#APPLY f n₁)))))
                                                               → ⊥)
@@ -273,11 +273,11 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         f : CTerm
         f = #CS name
 
-        eqf2 : ∀𝕎 w2 (λ w' _ → (m : ℕ) →  equalInType n w' #QTBOOL! (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
+        eqf2 : ∀𝕎 w2 (λ w' _ → (m : ℕ) →  equalInType n w' #BOOL! (#APPLY f (#NUM m)) (#APPLY f (#NUM m)))
         eqf2 w' e m = ≡CTerm→equalInType (fst bcb) (→equalInType-APPLY-CS-Typeℂ₀₁· (⊑-compatible· e comp1) (NUM-equalInType-NAT! n w' m))
 
-        eqf1 : ∈Type n w2 #NAT!→QTBOOL! f
-        eqf1 = →equalInType-CS-NAT!→QTBOOL! eqf2
+        eqf1 : ∈Type n w2 #NAT!→BOOL! f
+        eqf1 = →equalInType-CS-NAT!→BOOL! eqf2
 
         h3 : ∀𝕎 w2 (λ w' _ → ∀𝕎 w' (λ w' _ → (Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #NAT! n₁ n₂
                                                    × inhType n w' (#ASSERT₃ (#APPLY f n₁)))))
@@ -319,14 +319,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         h8 = ¬equalInType-#Σchoice n w3 Resℂ name isValueℂ₀· isValueℂ₁· ¬∼ℂ₀₁· oc2 comp2 fb2
 
 
-→equalInType-CS-NAT!→BOOL! : {n : ℕ} {w : 𝕎·} {a b : Name}
-                             → ∀𝕎 w (λ w' _ → (m : ℕ) → equalInType n w' #BOOL! (#APPLY (#CS a) (#NUM m)) (#APPLY (#CS b) (#NUM m)))
-                             → equalInType n w #NAT!→BOOL! (#CS a) (#CS b)
-→equalInType-CS-NAT!→BOOL! {n} {w} {a} {b} i rewrite #NAT!→BOOL!≡ =
-  →equalInType-CS-NAT!→T (isTypeBOOL! w n) equalTerms-pres-#⇛-left-rev-BOOL! i
-
-
-¬ΣNAT!→¬inhType-Σchoice₄ : Bool!ℂ CB → (n : ℕ) (w : 𝕎·) (name : Name)
+¬ΣNAT!→¬inhType-Σchoice₄ : Bool₀!ℂ CB → (n : ℕ) (w : 𝕎·) (name : Name)
                            → ∀𝕎 w (λ w' _ → ¬ Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #NAT! n₁ n₂ × inhType n w' (#ASSERT₄ (#APPLY (#CS name) n₁)))))
                            → ∀𝕎 w (λ w' _ → ¬ inhType n w' (#Σchoice name ℂ₁·))
 ¬ΣNAT!→¬inhType-Σchoice₄ bcb n w name aw w1 e1 (t , inh) =
@@ -377,7 +370,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
 
 -- Bool!ℂ CB is for BOOL! which works only FCSs
 -- There is an instantiation in modInstanceBethCsBool2.lagda
-¬MP₆ : Bool!ℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₆) #lamAX
+¬MP₆ : Bool₀!ℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₆) #lamAX
 ¬MP₆ bcb afb w n = equalInType-NEG (isTypeMP₆ w n) aw1
   where
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' #MP₆ a₁ a₂)
@@ -577,7 +570,7 @@ equalTypes-#Σchoiceₙ-body-sub0 i w c k comp sat w' e' a₁ a₂ ea rewrite su
 
 
 -- This is similar to ¬MP but proved here for #MP₂, which is stated using ¬¬∃, instead of #MP, which is stated using ¬∀¬
-¬MP₂ : Boolℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₂) #lamAX
+¬MP₂ : Bool₀ℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₂) #lamAX
 ¬MP₂ bcb afb w n =
   →∈Type-NEG n w #MP #MP₂ #lamAX #lamAX (isTypeMP₂ w n) aw1 (¬MP bcb afb w n)
   where
@@ -612,7 +605,7 @@ equalTypes-#Σchoiceₙ-body-sub0 i w c k comp sat w' e' a₁ a₂ ea rewrite su
 
 
 -- This is similar to ¬MP₂ but proved here for an non-truncated version of #MP₂
-¬MP₃ : Boolℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₃) #lamAX
+¬MP₃ : Bool₀ℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₃) #lamAX
 ¬MP₃ bcb afb w n =
   →∈Type-NEG n w #MP₂ #MP₃ #lamAX #lamAX (isTypeMP₃ w n) aw1 (¬MP₂ bcb afb w n)
   where

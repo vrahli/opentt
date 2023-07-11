@@ -337,19 +337,19 @@ getCs→≡Name-getCs {choice name t ∷ w} {n1} {n2} {l} {r} e = getCs→≡Nam
 
 
 Typeℂ₀₁-beth-cs : CTerm
-Typeℂ₀₁-beth-cs = #QTNAT!
+Typeℂ₀₁-beth-cs = #QNAT!
 
 
 Typeℂ₀₁-isType-beth-bar : (u : ℕ) (w : 𝕎·) → isType u w Typeℂ₀₁-beth-cs
-Typeℂ₀₁-isType-beth-bar u w = eqTypesQTNAT!
+Typeℂ₀₁-isType-beth-bar u w = eqTypesQNAT!
 
 
 ℂ₀∈Typeℂ₀₁-beth-cs : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁-beth-cs Cℂ₀
-ℂ₀∈Typeℂ₀₁-beth-cs u w = NUM-equalInType-QTNAT! u w 0
+ℂ₀∈Typeℂ₀₁-beth-cs u w = NUM-equalInType-QNAT! u w 0
 
 
 ℂ₁∈Typeℂ₀₁-beth-cs : (u : ℕ) (w : 𝕎·) → ∈Type u w Typeℂ₀₁-beth-cs Cℂ₁
-ℂ₁∈Typeℂ₀₁-beth-cs u w = NUM-equalInType-QTNAT! u w 1
+ℂ₁∈Typeℂ₀₁-beth-cs u w = NUM-equalInType-QNAT! u w 1
 
 
 --ℂ→C→∼ℂ-beth-cs : {w : 𝕎·} {c c1 c2 : ℂ·} → ℂ→C· c1 #⇓ ℂ→C· c2 at w → ∼C w c1 c → ∼ℂ· w c2 c
@@ -371,7 +371,7 @@ isValueℂ₁-beth-cs = tt
 
 
 ∈Typeℂ₀₁→-beth-cs : (i : ℕ) (w : 𝕎·) (a b : CTerm) → equalInType i w Typeℂ₀₁-beth-cs a b → □· w (λ w' _ → #weakℂEq w' a b)
-∈Typeℂ₀₁→-beth-cs i w a b eqi = Mod.∀𝕎-□Func M aw (equalInType-QTNAT!→ i w a b eqi)
+∈Typeℂ₀₁→-beth-cs i w a b eqi = Mod.∀𝕎-□Func M aw (equalInType-QNAT!→ i w a b eqi)
   where
     aw : ∀𝕎 w (λ w' e' → #weakMonEq! w' a b → #weakℂEq w' a b)
     aw w1 e1 h w2 e2 = lift j
@@ -422,7 +422,7 @@ getChoice→weakℂ₀₁M w n c h w1 e1 with lower (h w1 e1)
                       → compatible· c w Resℂ₀₁ --□· w (λ w' _ → weakℂ₀₁M w' (getT n c))
                       → ∈Type i w Typeℂ₀₁-beth-cs (#APPLY (#CS c) (#NUM n))
 →∈Typeℂ₀₁-beth-cs i {w} n {c} h =
-  →equalInType-QTNAT! i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
+  →equalInType-QNAT! i w (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n))
                        (Mod.∀𝕎-□Func M aw (Mod.∀𝕎-□Func M (λ w1 e1 q → getChoice→weakℂ₀₁M w1 n c q) (□·-choice-beth-cs w c n Resℂ₀₁ h)))
   where
     aw : ∀𝕎 w (λ w' e' → weakℂ₀₁M w' (getT n c) → #weakMonEq! w' (#APPLY (#CS c) (#NUM n)) (#APPLY (#CS c) (#NUM n)))
@@ -487,8 +487,8 @@ bethCs-choiceBar =
     ℂ₁∈Typeℂ₀₁-beth-cs
     ∈Typeℂ₀₁→-beth-cs
     →∈Typeℂ₀₁-beth-cs
-    equalTerms-pres-#⇛-left-QTNAT!
-    equalTerms-pres-#⇛-left-rev-QTNAT!
+    equalTerms-pres-#⇛-left-QNAT!
+    equalTerms-pres-#⇛-left-rev-QNAT!
     □·-choice-beth-cs
     followChoice-beth-cs
 

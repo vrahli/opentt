@@ -247,12 +247,12 @@ data eqTypes u w T1 T2 where
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → (extb : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtB w e) a b))
     → eqTypes u w T1 T2-}
-  EQTSQUASH : (A1 A2 : CTerm)
+{--  EQTSQUASH : (A1 A2 : CTerm)
     → T1 #⇛ (#TSQUASH A1) at w
     → T2 #⇛ (#TSQUASH A2) at w
     → (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
-    → eqTypes u w T1 T2
+    → eqTypes u w T1 T2--}
 {-  EQTTRUNC : (A1 A2 : CTerm)
     → T1 #⇛ (#TTRUNC A1) at w
     → T2 #⇛ (#TTRUNC A2) at w
@@ -566,8 +566,8 @@ eqInType u w (EQTUNION _ _ _ _ _ _ eqtA eqtB exta extb) t1 t2 =
   □· w (λ w' e → UNIONeq (eqInType u w' (eqtA w' e)) (eqInType u w' (eqtB w' e)) w' t1 t2)
 {-eqInType u w (EQTQTUNION _ _ _ _ _ _ eqtA eqtB exta extb) t1 t2 =
   □· w (λ w' e → QTUNIONeq (eqInType u w' (eqtA w' e)) (eqInType u w' (eqtB w' e)) w' t1 t2)-}
-eqInType u w (EQTSQUASH _ _ _ _ eqtA exta) t1 t2 =
-  □· w (λ w' e → TSQUASHeq (eqInType u w' (eqtA w' e)) w' t1 t2)
+--eqInType u w (EQTSQUASH _ _ _ _ eqtA exta) t1 t2 =
+--  □· w (λ w' e → TSQUASHeq (eqInType u w' (eqtA w' e)) w' t1 t2)
 {-eqInType u w (EQTTRUNC _ _ _ _ eqtA exta) t1 t2 =
   □· w (λ w' e → TTRUNCeq (eqInType u w' (eqtA w' e)) w' t1 t2)-}
 eqInType u w (EQTNOWRITE _ _) t1 t2 =

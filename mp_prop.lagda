@@ -240,10 +240,6 @@ fvars-CTerm2 a = ⊆?→⊆ (CTerm2.closed a)
                              (⊆?→⊆ {fvars ⌜ c ⌝} {0 ∷ 1 ∷ 2 ∷ [ 3 ]} (CTerm3.closed c))))
 
 
-#[0]BOOL : CTerm0
-#[0]BOOL = ct0 BOOL refl
-
-
 #[1]BOOL : CTerm1
 #[1]BOOL = ct1 BOOL refl
 
