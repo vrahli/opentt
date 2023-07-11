@@ -82,7 +82,7 @@ open import terms4(W)(C)(K)(G)(X)(N)(EC) using (¬Names→⇓)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
 
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-EQ→ ; ≡CTerm→equalInType ; equalInType-local ; equalInType-EQ ; equalInType-mon ; ≡CTerm→eqTypes ; eqTypesFUN← ; isTypeNAT! ; NUM-equalInType-NAT! ; equalInType-FUN→ ; equalInType-refl ; equalInType-SUM ; eqTypesNEG← ; equalInType-NAT!→ ; equalInType-sym ; equalInType-NEG ; equalInType-PI ; equalInType-FUN ; equalInType-PI→ ; →≡equalTypes ; →≡equalInType ; →equalInType-QNAT!)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (isTypeBOOL ; isTypeBOOL! ; sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-NEG-ASSERT₂-APPLY ; equalInType-trans ; equalInType-BOOL→ ; →equalInType-BOOL ; equalInType-NEG→¬inh ; →equalInType-SQUASH ; →equalInType-BOOL! ; sub0-ASSERT₃-APPLY ; inhType-mon ; equalInType-BOOL!→ ; isTypeBOOL₀ ; isTypeBOOL₀!→ ; equalInType-BOOL₀→ ; →equalInType-BOOL₀ ; equalInType-BOOL₀→strongBool ; strongBool→equalInType-BOOL₀ ; →equalInType-BOOL₀! ; equalInType-BOOL₀!→ ; eqTypesQNAT!)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (isTypeBOOL ; isTypeBOOL! ; sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-NEG-ASSERT₂-APPLY ; equalInType-trans ; equalInType-BOOL→ ; →equalInType-BOOL ; equalInType-NEG→¬inh ; →equalInType-SQUASH ; →equalInType-BOOL! ; sub0-ASSERT₃-APPLY ; inhType-mon ; equalInType-BOOL!→ ; isTypeBOOL₀ ; isTypeBOOL₀!→ ; equalInType-BOOL₀→ ; →equalInType-BOOL₀ ; equalInType-BOOL₀→strongBool ; strongBool→equalInType-BOOL₀ ; →equalInType-BOOL₀! ; equalInType-BOOL₀!→ ; eqTypesQNAT! ; equalInType-BOOL!→equalTypes-ASSERT₃)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (→equalInType-NAT!)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -464,7 +464,6 @@ MPp-inh n w =
     aw w3 e3 = x , #AX , inj₁ (¬Names→⇛! w1 w3 ⌜ t ⌝ (INL ⌜ x ⌝) nnt cx , #⇛!-refl {w3} {#BTRUE})
 
 
-{--
 -- This version uses BOOL! instead of BOOL
 MPp₄-inh : (n : ℕ) (w : 𝕎·) → ∈Type n w #MPp₄ #lam2AX
 MPp₄-inh n w =
@@ -507,8 +506,8 @@ MPp₄-inh n w =
                     aw6 w4 e4 =
                       #NUM k , #NUM k , t , t ,
                       NUM-equalInType-NAT! n w4 k ,
-                      #compAllRefl (#PAIR (#NUM k) t) w4 ,
-                      (#compAllRefl (#PAIR (#NUM k) t) w4) ,
+                      ⇓-refl ⌜ #PAIR (#NUM k) t ⌝ w4 , -- #compAllRefl (#PAIR (#NUM k) t) w4 ,
+                      ⇓-refl ⌜ #PAIR (#NUM k) t ⌝ w4 , --(#compAllRefl (#PAIR (#NUM k) t) w4) ,
                       (≡CTerm→equalInType (sym (sub0-ASSERT₃-APPLY (#NUM k) a₁)) (equalInType-mon p w4 e4))
 
                     aw5 : ∀𝕎 w3 (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
@@ -539,7 +538,6 @@ MPp₄-inh n w =
 
                              aw8 : ∀𝕎 w5 (λ w' e' → #weakBool! w' (#APPLY a₁ (#NUM k)) #BTRUE → Lift (lsuc L) ⊥)
                              aw8 w6 e6 wbe = lift (p (k , #¬Names→inhType-ASSERT₃ n w6 w3 (#APPLY a₁ (#NUM k)) (#¬Names-APPLY {a₁} {#NUM k} (equalInType-TPURE→ₗ eqa) refl) (lower (weakBool-BTRUE→ w6 (#APPLY a₁ (#NUM k)) wbe w6 (⊑-refl· w6)))))
---}
 
 
 -- This version uses NAT! and BOOL!
