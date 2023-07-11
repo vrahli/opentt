@@ -527,6 +527,7 @@ abstract
     = updRel2-INR u₁ u₂ (ind1 u₁ u₂ refl refl)
 
 
+{--
 abstract
   updRel2-shiftNameUp≡→TSQUASH : (n : ℕ) {name : Name} {f g : Term} {r : ren} (cf : # f) (cg : # g) {a b x₁ x₂ : Term}
                             → ((u₁ u₂ : Term) → x₁ ≡ shiftNameUp n u₁ → x₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂)
@@ -537,6 +538,7 @@ abstract
   updRel2-shiftNameUp≡→TSQUASH n {name} {f} {g} {r} cf cg {TSQUASH u₁} {TSQUASH u₂} {x₁} {x₂} ind1 equ eqv ur1
     rewrite TSQUASHinj equ | TSQUASHinj eqv
     = updRel2-TSQUASH u₁ u₂ (ind1 u₁ u₂ refl refl)
+--}
 
 
 {-
@@ -1114,11 +1116,11 @@ abstract
 
       ind2 : (u₁ u₂ : Term) → b₁ ≡ shiftNameUp n u₁ → b₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
       ind2 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {b₁} {b₂} e₁ e₂ ur₁
-  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(TSQUASH a₁)} {.(TSQUASH a₂)} equ eqv (updRel2-TSQUASH a₁ a₂ ur)
+{--  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(TSQUASH a₁)} {.(TSQUASH a₂)} equ eqv (updRel2-TSQUASH a₁ a₂ ur)
     = updRel2-shiftNameUp≡→TSQUASH n cf cg ind1 equ eqv ur
     where
       ind1 : (u₁ u₂ : Term) → a₁ ≡ shiftNameUp n u₁ → a₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
-      ind1 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {a₁} {a₂} e₁ e₂ ur
+      ind1 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {a₁} {a₂} e₁ e₂ ur--}
 {-  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(TTRUNC a₁)} {.(TTRUNC a₂)} equ eqv (updRel2-TTRUNC a₁ a₂ ur)
     = updRel2-shiftNameUp≡→TTRUNC n cf cg ind1 equ eqv ur
     where

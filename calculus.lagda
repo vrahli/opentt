@@ -105,7 +105,7 @@ data Term : Set where
   MAPP : 𝕊 → Term → Term
 --  IFC0 : Term → Term → Term → Term
   -- Truncation
-  TSQUASH : Term → Term -- closed under ∼C -- time-squashing, i.e., to constrain type to readable types
+--  TSQUASH : Term → Term -- closed under ∼C -- time-squashing, i.e., to constrain type to readable types
 --  TTRUNC : Term → Term  -- closed under #⇓
   NOWRITE  : Term -- satisfy #⇓→#⇓! -- essentially a no-write modality
   NOREAD  : Term -- currently the default
@@ -173,7 +173,7 @@ value? (FRESH _) = false
 value? (LOAD _) = false
 value? (CHOOSE _ _) = false -- Not a value
 --value? (IFC0 _ _ _) = false -- Not a value
-value? (TSQUASH _) = true
+--value? (TSQUASH _) = true
 --value? (TTRUNC _) = true
 value? NOWRITE = true
 value? NOREAD = true
@@ -233,7 +233,7 @@ vars AX = []
 vars FREE = []
 vars (CS x) = []
 vars (NAME x) = []
-vars (TSQUASH t) = vars t
+--vars (TSQUASH t) = vars t
 --vars (TTRUNC t) = vars t
 vars (NOWRITE t) = vars t
 vars (NOREAD t) = vars t
@@ -317,7 +317,7 @@ fvars (FRESH t)        = fvars t
 fvars (LOAD t)         = []
 fvars (CHOOSE a b)     = fvars a ++ fvars b
 --fvars (IFC0 a b c)     = fvars a ++ fvars b ++ fvars c
-fvars (TSQUASH t)      = fvars t
+--fvars (TSQUASH t)      = fvars t
 --fvars (TTRUNC t)       = fvars t
 fvars NOWRITE          = []
 fvars NOREAD           = []
@@ -485,7 +485,7 @@ shiftUp c (FRESH t) = FRESH (shiftUp c t)
 shiftUp c (LOAD t) = LOAD t
 shiftUp c (CHOOSE a b) = CHOOSE (shiftUp c a) (shiftUp c b)
 --shiftUp c (IFC0 a t₁ t₂) = IFC0 (shiftUp c a) (shiftUp c t₁) (shiftUp c t₂)
-shiftUp c (TSQUASH t) = TSQUASH (shiftUp c t)
+--shiftUp c (TSQUASH t) = TSQUASH (shiftUp c t)
 --shiftUp c (TTRUNC t) = TTRUNC (shiftUp c t)
 shiftUp c NOWRITE = NOWRITE
 shiftUp c NOREAD  = NOREAD
@@ -548,7 +548,7 @@ shiftDown c (FRESH a) = FRESH (shiftDown c a)
 shiftDown c (LOAD a) = LOAD a
 shiftDown c (CHOOSE a b) = CHOOSE (shiftDown c a) (shiftDown c b)
 --shiftDown c (IFC0 a t₁ t₂) = IFC0 (shiftDown c a) (shiftDown c t₁) (shiftDown c t₂)
-shiftDown c (TSQUASH t) = TSQUASH (shiftDown c t)
+--shiftDown c (TSQUASH t) = TSQUASH (shiftDown c t)
 --shiftDown c (TTRUNC t) = TTRUNC (shiftDown c t)
 shiftDown c NOWRITE = NOWRITE
 shiftDown c NOREAD  = NOREAD
@@ -611,7 +611,7 @@ shiftNameUp c (FRESH t) = FRESH (shiftNameUp (suc c) t)
 shiftNameUp c (LOAD t) = LOAD t
 shiftNameUp c (CHOOSE a b) = CHOOSE (shiftNameUp c a) (shiftNameUp c b)
 --shiftNameUp c (IFC0 a t₁ t₂) = IFC0 (shiftNameUp c a) (shiftNameUp c t₁) (shiftNameUp c t₂)
-shiftNameUp c (TSQUASH t) = TSQUASH (shiftNameUp c t)
+--shiftNameUp c (TSQUASH t) = TSQUASH (shiftNameUp c t)
 --shiftNameUp c (TTRUNC t) = TTRUNC (shiftNameUp c t)
 shiftNameUp c NOWRITE = NOWRITE
 shiftNameUp c NOREAD  = NOREAD
@@ -674,7 +674,7 @@ shiftNameDown c (FRESH a) = FRESH (shiftNameDown (suc c) a)
 shiftNameDown c (LOAD a) = LOAD a
 shiftNameDown c (CHOOSE a b) = CHOOSE (shiftNameDown c a) (shiftNameDown c b)
 --shiftNameDown c (IFC0 a t₁ t₂) = IFC0 (shiftNameDown c a) (shiftNameDown c t₁) (shiftNameDown c t₂)
-shiftNameDown c (TSQUASH t) = TSQUASH (shiftNameDown c t)
+--shiftNameDown c (TSQUASH t) = TSQUASH (shiftNameDown c t)
 --shiftNameDown c (TTRUNC t) = TTRUNC (shiftNameDown c t)
 shiftNameDown c NOWRITE = NOWRITE
 shiftNameDown c NOREAD  = NOREAD
@@ -744,7 +744,7 @@ names (FRESH t)        = lowerNames (names t)
 names (LOAD t)         = []
 names (CHOOSE a b)     = names a ++ names b
 --names (IFC0 a b c)     = names a ++ names b ++ names c
-names (TSQUASH t)      = names t
+--names (TSQUASH t)      = names t
 --names (TTRUNC t)       = names t
 names NOWRITE          = []
 names NOREAD           = []
@@ -810,7 +810,7 @@ subv v t (FRESH a) = FRESH (subv v (shiftNameUp 0 t) a)
 subv v t (LOAD a) = LOAD a
 subv v t (CHOOSE a b) = CHOOSE (subv v t a) (subv v t b)
 --subv v t (IFC0 a t₁ t₂) = IFC0 (subv v t a) (subv v t t₁) (subv v t t₂)
-subv v t (TSQUASH u) = TSQUASH (subv v t u)
+--subv v t (TSQUASH u) = TSQUASH (subv v t u)
 --subv v t (TTRUNC u) = TTRUNC (subv v t u)
 subv v t NOWRITE = NOWRITE
 subv v t NOREAD  = NOREAD
@@ -883,7 +883,7 @@ renn v t (FRESH a) = FRESH (renn (suc v) (suc t) a)
 renn v t (LOAD a) = LOAD a
 renn v t (CHOOSE a b) = CHOOSE (renn v t a) (renn v t b)
 --renn v t (IFC0 a t₁ t₂) = IFC0 (renn v t a) (renn v t t₁) (renn v t t₂)
-renn v t (TSQUASH u) = TSQUASH (renn v t u)
+--renn v t (TSQUASH u) = TSQUASH (renn v t u)
 --renn v t (TTRUNC u) = TTRUNC (renn v t u)
 renn v t NOWRITE = NOWRITE
 renn v t NOREAD  = NOREAD
@@ -1060,8 +1060,8 @@ abstract
     rewrite subvNotIn v t u (notInAppVars1 n)
             | subvNotIn v t u₁ (notInAppVars1 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))
             | subvNotIn v t u₂ (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n)) = refl--}
-  subvNotIn v t (TSQUASH u) n
-    rewrite subvNotIn v t u n = refl
+--  subvNotIn v t (TSQUASH u) n
+--    rewrite subvNotIn v t u n = refl
 {-  subvNotIn v t (TTRUNC u) n
     rewrite subvNotIn v t u n = refl-}
   subvNotIn v t NOWRITE n = refl
@@ -1235,8 +1235,8 @@ abstract
     rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
             | shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
             | shiftDownTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl--}
-  shiftDownTrivial v (TSQUASH u) i
-    rewrite shiftDownTrivial v u i = refl
+--  shiftDownTrivial v (TSQUASH u) i
+--    rewrite shiftDownTrivial v u i = refl
 {-  shiftDownTrivial v (TTRUNC u) i
     rewrite shiftDownTrivial v u i = refl-}
   shiftDownTrivial v NOWRITE i = refl
@@ -1381,8 +1381,8 @@ abstract
     rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
             | shiftUpTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
             | shiftUpTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl--}
-  shiftUpTrivial v (TSQUASH u) i
-    rewrite shiftUpTrivial v u i = refl
+--  shiftUpTrivial v (TSQUASH u) i
+--    rewrite shiftUpTrivial v u i = refl
 {-  shiftUpTrivial v (TTRUNC u) i
     rewrite shiftUpTrivial v u i = refl-}
   shiftUpTrivial v NOWRITE i = refl
@@ -1469,7 +1469,7 @@ abstract
   shiftDownUp (LOAD t) n rewrite shiftDownUp t n = refl
   shiftDownUp (CHOOSE t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
   --shiftDownUp (IFC0 t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n = refl
-  shiftDownUp (TSQUASH t) n rewrite shiftDownUp t n = refl
+--  shiftDownUp (TSQUASH t) n rewrite shiftDownUp t n = refl
 --  shiftDownUp (TTRUNC t) n rewrite shiftDownUp t n = refl
   shiftDownUp NOWRITE n = refl
   shiftDownUp NOREAD  n = refl
@@ -1532,7 +1532,7 @@ is-NUM (FRESH t) = inj₂ (λ { n () })
 is-NUM (LOAD t) = inj₂ (λ { n () })
 is-NUM (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-NUM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
-is-NUM (TSQUASH t) = inj₂ (λ { n () })
+--is-NUM (TSQUASH t) = inj₂ (λ { n () })
 --is-NUM (TTRUNC t) = inj₂ (λ { n () })
 is-NUM NOWRITE = inj₂ (λ { n () })
 is-NUM NOREAD  = inj₂ (λ { n () })
@@ -1595,7 +1595,7 @@ is-LAM (FRESH t) = inj₂ (λ { n () })
 is-LAM (LOAD t) = inj₂ (λ { n () })
 is-LAM (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-LAM (IFC0 t t₁ t₂) = inj₂ (λ { n () })
-is-LAM (TSQUASH t) = inj₂ (λ { n () })
+--is-LAM (TSQUASH t) = inj₂ (λ { n () })
 --is-LAM (TTRUNC t) = inj₂ (λ { n () })
 is-LAM NOWRITE = inj₂ (λ { n () })
 is-LAM NOREAD  = inj₂ (λ { n () })
@@ -1658,7 +1658,7 @@ is-CS (FRESH t) = inj₂ (λ { n () })
 is-CS (LOAD t) = inj₂ (λ { n () })
 is-CS (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-CS (IFC0 t t₁ t₂) = inj₂ (λ { n () })
-is-CS (TSQUASH t) = inj₂ (λ { n () })
+--is-CS (TSQUASH t) = inj₂ (λ { n () })
 --is-CS (TTRUNC t) = inj₂ (λ { n () })
 is-CS NOWRITE = inj₂ (λ { n () })
 is-CS NOREAD  = inj₂ (λ { n () })
@@ -1721,7 +1721,7 @@ is-NAME (FRESH t) = inj₂ (λ { n () })
 is-NAME (LOAD t) = inj₂ (λ { n () })
 is-NAME (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-NAME (IFC0 t t₁ t₂) = inj₂ (λ { n () })
-is-NAME (TSQUASH t) = inj₂ (λ { n () })
+--is-NAME (TSQUASH t) = inj₂ (λ { n () })
 --is-NAME (TTRUNC t) = inj₂ (λ { n () })
 is-NAME NOWRITE = inj₂ (λ { n () })
 is-NAME NOREAD  = inj₂ (λ { n () })
@@ -1784,7 +1784,7 @@ is-MSEQ (FRESH t) = inj₂ (λ { n () })
 is-MSEQ (LOAD t) = inj₂ (λ { n () })
 is-MSEQ (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-MSEQ (IFC0 t t₁ t₂) = inj₂ (λ { n () })
-is-MSEQ (TSQUASH t) = inj₂ (λ { n () })
+--is-MSEQ (TSQUASH t) = inj₂ (λ { n () })
 --is-MSEQ (TTRUNC t) = inj₂ (λ { n () })
 is-MSEQ NOWRITE = inj₂ (λ { n () })
 is-MSEQ NOREAD  = inj₂ (λ { n () })
@@ -1847,7 +1847,7 @@ is-PAIR (FRESH t) = inj₂ (λ { n m () })
 is-PAIR (LOAD t) = inj₂ (λ { n m () })
 is-PAIR (CHOOSE t t₁) = inj₂ (λ { n m () })
 --is-PAIR (IFC0 t t₁ t₂) = inj₂ (λ { n m () })
-is-PAIR (TSQUASH t) = inj₂ (λ { n m () })
+--is-PAIR (TSQUASH t) = inj₂ (λ { n m () })
 --is-PAIR (TTRUNC t) = inj₂ (λ { n m () })
 is-PAIR NOWRITE = inj₂ (λ { n m () })
 is-PAIR NOREAD  = inj₂ (λ { n m () })
@@ -1910,7 +1910,7 @@ is-SUP (FRESH t) = inj₂ (λ { n m () })
 is-SUP (LOAD t) = inj₂ (λ { n m () })
 is-SUP (CHOOSE t t₁) = inj₂ (λ { n m () })
 --is-SUP (IFC0 t t₁ t₂) = inj₂ (λ { n m () })
-is-SUP (TSQUASH t) = inj₂ (λ { n m () })
+--is-SUP (TSQUASH t) = inj₂ (λ { n m () })
 --is-SUP (TTRUNC t) = inj₂ (λ { n m () })
 is-SUP NOWRITE = inj₂ (λ { n m () })
 is-SUP NOREAD  = inj₂ (λ { n m () })
@@ -1974,7 +1974,7 @@ is-MSUP (FRESH t) = inj₂ (λ { n m () })
 is-MSUP (LOAD t) = inj₂ (λ { n m () })
 is-MSUP (CHOOSE t t₁) = inj₂ (λ { n m () })
 --is-MSUP (IFC0 t t₁ t₂) = inj₂ (λ { n m () })
-is-MSUP (TSQUASH t) = inj₂ (λ { n m () })
+--is-MSUP (TSQUASH t) = inj₂ (λ { n m () })
 --is-MSUP (TTRUNC t) = inj₂ (λ { n m () })
 is-MSUP (NOWRITE t) = inj₂ (λ { n m () })
 is-MSUP (NOREAD t) = inj₂ (λ { n m () })
@@ -2038,7 +2038,7 @@ is-INL (FRESH t) = inj₂ (λ { n () })
 is-INL (LOAD t) = inj₂ (λ { n () })
 is-INL (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-INL (IFC0 t t₁ t₂) = inj₂ (λ { n () })
-is-INL (TSQUASH t) = inj₂ (λ { n () })
+--is-INL (TSQUASH t) = inj₂ (λ { n () })
 --is-INL (TTRUNC t) = inj₂ (λ { n () })
 is-INL NOWRITE = inj₂ (λ { n () })
 is-INL NOREAD  = inj₂ (λ { n () })
@@ -2101,7 +2101,7 @@ is-INR (FRESH t) = inj₂ (λ { n () })
 is-INR (LOAD t) = inj₂ (λ { n () })
 is-INR (CHOOSE t t₁) = inj₂ (λ { n () })
 --is-INR (IFC0 t t₁ t₂) = inj₂ (λ { n () })
-is-INR (TSQUASH t) = inj₂ (λ { n () })
+--is-INR (TSQUASH t) = inj₂ (λ { n () })
 --is-INR (TTRUNC t) = inj₂ (λ { n () })
 is-INR NOWRITE = inj₂ (λ { n () })
 is-INR NOREAD  = inj₂ (λ { n () })
@@ -2145,7 +2145,7 @@ data ∼vals : Term → Term → Set where
   ∼vals-MSEQ    : {s : 𝕊} → ∼vals (MSEQ s) (MSEQ s)
   ∼vals-CS      : {n : Name} → ∼vals (CS n) (CS n)
   ∼vals-NAME    : {n : Name} → ∼vals (NAME n) (NAME n)
-  ∼vals-TSQUASH : {a b : Term} → ∼vals (TSQUASH a) (TSQUASH b)
+--  ∼vals-TSQUASH : {a b : Term} → ∼vals (TSQUASH a) (TSQUASH b)
 --  ∼vals-TTRUNC  : {a b : Term} → ∼vals (TTRUNC a) (TTRUNC b)
   ∼vals-NOWRITE : ∼vals NOWRITE NOWRITE
   ∼vals-NOREAD  : ∼vals NOREAD  NOREAD
@@ -2186,7 +2186,7 @@ data ∼vals : Term → Term → Set where
 ∼vals-sym {.(MSEQ _)} {.(MSEQ _)} ∼vals-MSEQ = ∼vals-MSEQ
 ∼vals-sym {.(CS _)} {.(CS _)} ∼vals-CS = ∼vals-CS
 ∼vals-sym {.(NAME _)} {.(NAME _)} ∼vals-NAME = ∼vals-NAME
-∼vals-sym {.(TSQUASH _)} {.(TSQUASH _)} ∼vals-TSQUASH = ∼vals-TSQUASH
+--∼vals-sym {.(TSQUASH _)} {.(TSQUASH _)} ∼vals-TSQUASH = ∼vals-TSQUASH
 --∼vals-sym {.(TTRUNC _)} {.(TTRUNC _)} ∼vals-TTRUNC = ∼vals-TTRUNC
 ∼vals-sym {.(NOWRITE)} {.(NOWRITE)} ∼vals-NOWRITE = ∼vals-NOWRITE
 ∼vals-sym {.(NOREAD)} {.(NOREAD)} ∼vals-NOREAD = ∼vals-NOREAD
@@ -2227,7 +2227,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₁ {MSEQ x} {b} isv = tt
 ∼vals→isValue₁ {CS x} {b} isv = tt
 ∼vals→isValue₁ {NAME x} {b} isv = tt
-∼vals→isValue₁ {TSQUASH a} {b} isv = tt
+--∼vals→isValue₁ {TSQUASH a} {b} isv = tt
 --∼vals→isValue₁ {TTRUNC a} {b} isv = tt
 ∼vals→isValue₁ {NOWRITE} {b} isv = tt
 ∼vals→isValue₁ {NOREAD} {b} isv = tt
@@ -2284,7 +2284,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {MSEQ x} isv = tt
 ∼vals→isValue₂ {a} {CS x} isv = tt
 ∼vals→isValue₂ {a} {NAME x} isv = tt
-∼vals→isValue₂ {a} {TSQUASH b} isv = tt
+--∼vals→isValue₂ {a} {TSQUASH b} isv = tt
 --∼vals→isValue₂ {a} {TTRUNC b} isv = tt
 ∼vals→isValue₂ {a} {NOWRITE} isv = tt
 ∼vals→isValue₂ {a} {NOREAD} isv = tt
@@ -2354,7 +2354,7 @@ data ∼vals : Term → Term → Set where
 ¬read (LOAD t) = ¬read t
 ¬read (CHOOSE t t₁) = ¬read t ∧ ¬read t₁
 --¬read (IFC0 t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
-¬read (TSQUASH t) = ¬read t
+--¬read (TSQUASH t) = ¬read t
 --¬read (TTRUNC t) = ¬read t
 ¬read NOWRITE = true
 ¬read NOREAD  = true
@@ -2429,7 +2429,7 @@ data ∼vals : Term → Term → Set where
 ¬names (LOAD t) = false -- FALSE
 ¬names (CHOOSE t t₁) = ¬names t ∧ ¬names t₁
 --¬names (IFC0 t t₁ t₂) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂
-¬names (TSQUASH t) = ¬names t
+--¬names (TSQUASH t) = ¬names t
 --¬names (TTRUNC t) = ¬names t
 ¬names NOWRITE = true
 ¬names NOREAD  = true
@@ -2504,7 +2504,7 @@ noseq (CHOOSE t t₁) = noseq t ∧ noseq t₁
 noseq (LOAD t) = noseq t
 noseq (MSEQ x) = false
 noseq (MAPP x t) = false
-noseq (TSQUASH t) = noseq t
+--noseq (TSQUASH t) = noseq t
 --noseq (TTRUNC t) = noseq t
 noseq NOWRITE = true
 noseq NOREAD  = true

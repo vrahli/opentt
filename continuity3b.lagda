@@ -359,7 +359,7 @@ abstract
       ind : ΣhighestUpdCtxt2 name f n a' w1 w1'
       ind = step-sat-isHighestℕ2 cc gc {w1} {w1'} {a} {a'} {n} {name} {f} compat wgt0 z (stepsPresHighestℕ2-CHOOSE₁→ indb) ctxt nnf nnw idom cf
   ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
-  step-sat-isHighestℕ2 cc gc {w1} {w2} {.(TSQUASH a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-TSQUASH a ctxt) nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , TSQUASH a , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-TSQUASH _ ctxt
+--  step-sat-isHighestℕ2 cc gc {w1} {w2} {.(TSQUASH a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-TSQUASH a ctxt) nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , TSQUASH a , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-TSQUASH _ ctxt
 --  step-sat-isHighestℕ2 cc gc {w1} {w2} {.(TTRUNC a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-TTRUNC a ctxt) nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , TTRUNC a , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-TTRUNC _ ctxt
   step-sat-isHighestℕ2 cc gc {w1} {w2} {.NOWRITE} {b} {n} {name} {f} compat wgt0 comp indb updCtxt2-NOWRITE nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , NOWRITE , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-NOWRITE
   step-sat-isHighestℕ2 cc gc {w1} {w2} {.NOREAD}  {b} {n} {name} {f} compat wgt0 comp indb updCtxt2-NOREAD  nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , NOREAD  , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-NOREAD

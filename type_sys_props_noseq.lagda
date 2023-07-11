@@ -140,8 +140,8 @@ NOSEQneqSUBSING {b} ()
 NOSEQneqLIFT : {c : Term} → ¬ NOSEQ ≡ LIFT c
 NOSEQneqLIFT {c} ()
 
-NOSEQneqTSQUASH : {c : Term} → ¬ NOSEQ ≡ TSQUASH c
-NOSEQneqTSQUASH {c} ()
+--NOSEQneqTSQUASH : {c : Term} → ¬ NOSEQ ≡ TSQUASH c
+--NOSEQneqTSQUASH {c} ()
 
 --NOSEQneqTTRUNC : {c : Term} → ¬ NOSEQ ≡ TTRUNC c
 --NOSEQneqTTRUNC {c} ()

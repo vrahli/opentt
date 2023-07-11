@@ -160,8 +160,8 @@ UNIVneqEQ {a} {c} {d} {e} ()
 UNIVneqFFDEFS : {a : ℕ} {c d : Term} → ¬ UNIV a ≡ FFDEFS c d
 UNIVneqFFDEFS {a} {c} {d} ()
 
-UNIVneqTSQUASH : {a : ℕ} {c : Term} → ¬ UNIV a ≡ TSQUASH c
-UNIVneqTSQUASH {a} {c} ()
+--UNIVneqTSQUASH : {a : ℕ} {c : Term} → ¬ UNIV a ≡ TSQUASH c
+--UNIVneqTSQUASH {a} {c} ()
 
 {-
 UNIVneqTTRUNC : {a : ℕ} {c : Term} → ¬ UNIV a ≡ TTRUNC c

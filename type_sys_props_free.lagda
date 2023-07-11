@@ -118,8 +118,8 @@ FREEneqISECT {c} {d} ()
 FREEneqEQ : {c d e : Term} → ¬ FREE ≡ EQ c d e
 FREEneqEQ {c} {d} {e} ()
 
-FREEneqTSQUASH : {c : Term} → ¬ FREE ≡ TSQUASH c
-FREEneqTSQUASH {c} ()
+--FREEneqTSQUASH : {c : Term} → ¬ FREE ≡ TSQUASH c
+--FREEneqTSQUASH {c} ()
 
 --FREEneqTTRUNC : {c : Term} → ¬ FREE ≡ TTRUNC c
 --FREEneqTTRUNC {c} ()

@@ -140,8 +140,8 @@ TERMneqSUBSING {b} {z} ()
 TERMneqLIFT : {c : Term} {z : Term} → ¬ TERM z ≡ LIFT c
 TERMneqLIFT {c} {z} ()
 
-TERMneqTSQUASH : {c : Term} {z : Term} → ¬ TERM z ≡ TSQUASH c
-TERMneqTSQUASH {c} {z} ()
+--TERMneqTSQUASH : {c : Term} {z : Term} → ¬ TERM z ≡ TSQUASH c
+--TERMneqTSQUASH {c} {z} ()
 
 --TERMneqTTRUNC : {c : Term} {z : Term} → ¬ TERM z ≡ TTRUNC c
 --TERMneqTTRUNC {c} {z} ()

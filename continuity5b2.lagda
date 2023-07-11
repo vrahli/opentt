@@ -293,7 +293,7 @@ abstract
       u)
   updRel2-renn {name} {f} {g} {r} {.(LOAD a)} {.(LOAD a)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-LOAD a) = updRel2-LOAD _ --updRel2-LOAD _ ? -- (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)
   updRel2-renn {name} {f} {g} {r} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updRel2-CHOOSE _ _ _ _ (updRel2-renn n n1 n2 (¬∈++2→¬∈1 {_} {_} {names a₁} {names b₁} {n1} na) (¬∈++2→¬∈1 {_} {_} {names a₂} {names b₂} {n2} nb) d1 d2 nr1 nr2 nf ng nnm u) (updRel2-renn n n1 n2 (¬∈++2→¬∈2 {_} {_} {names a₁} {names b₁} {n1} na) (¬∈++2→¬∈2 {_} {_} {names a₂} {names b₂} {n2} nb) d1 d2 nr1 nr2 nf ng nnm u₁)
-  updRel2-renn {name} {f} {g} {r} {.(TSQUASH a₁)} {.(TSQUASH a₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-TSQUASH a₁ a₂ u) = updRel2-TSQUASH _ _ (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)
+--  updRel2-renn {name} {f} {g} {r} {.(TSQUASH a₁)} {.(TSQUASH a₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-TSQUASH a₁ a₂ u) = updRel2-TSQUASH _ _ (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)
 --  updRel2-renn {name} {f} {g} {r} {.(TTRUNC a₁)} {.(TTRUNC a₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-TTRUNC a₁ a₂ u) = updRel2-TTRUNC _ _ (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)
   updRel2-renn {name} {f} {g} {r} {.(NOWRITE a₁)} {.(NOWRITE a₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-NOWRITE a₁ a₂ u) = updRel2-NOWRITE _ _ (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)
   updRel2-renn {name} {f} {g} {r} {.(SUBSING a₁)} {.(SUBSING a₂)} n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm (updRel2-SUBSING a₁ a₂ u) = updRel2-SUBSING _ _ (updRel2-renn n n1 n2 na nb d1 d2 nr1 nr2 nf ng nnm u)
@@ -556,7 +556,7 @@ step-upto𝕎 cc name (CHOOSE n t) b w1 w2 w1' r nna nnw idom comp upw with is-N
                    × name ∈ dom𝕎· w1x))
     ind = step-upto𝕎 cc name n n' w1 w1x w1' r (¬∈++2→¬∈1 {_} {_} {names n} {names t} {name} nna) nnw idom z upw
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
-step-upto𝕎 cc name (TSQUASH a) b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom
+--step-upto𝕎 cc name (TSQUASH a) b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom
 --step-upto𝕎 cc name (TTRUNC a) b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (NOWRITE a) b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom
 step-upto𝕎 cc name (SUBSING a) b w1 w2 w1' r nna nnw idom comp upw rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = w1' , r , refl , upw , nna , nnw , idom

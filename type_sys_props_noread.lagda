@@ -132,8 +132,8 @@ NOREADneqFFDEFS {c} {d} ()
 NOREADneqLIFT : {c : Term} → ¬ NOREAD ≡ LIFT c
 NOREADneqLIFT {c} ()
 
-NOREADneqTSQUASH : {c : Term} → ¬ NOREAD ≡ TSQUASH c
-NOREADneqTSQUASH {c} ()
+--NOREADneqTSQUASH : {c : Term} → ¬ NOREAD ≡ TSQUASH c
+--NOREADneqTSQUASH {c} ()
 
 NOREADneqNOWRITE : ¬ NOREAD ≡ NOWRITE
 NOREADneqNOWRITE ()

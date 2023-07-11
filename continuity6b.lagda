@@ -601,7 +601,7 @@ abstract
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(FRESH a)} {.(FRESH b)} {l} {k} sub nad nbd (updRel2-FRESH a b upd₁) = updRel2-FRESH _ _ (updRel2-ren-mon {suc name} {shiftNameUp 0 f} {shiftNameUp 0 g} {sren r} {sren r'} {a} {b} {0 ∷ sucNames l} {0 ∷ sucNames k} (subRen-sren sub) (→⊆sucNames nad) (→⊆sucNames nbd) upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(LOAD a)} {.(LOAD a)} {l} {k} sub nad nbd (updRel2-LOAD a) = updRel2-LOAD _ --_ (updRel2-ren-mon {name} {f} {g} {r} {r'} {a} {b} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} {l} {k} sub nad nbd (updRel2-CHOOSE a₁ a₂ b₁ b₂ upd₁ upd₂) = updRel2-CHOOSE _ _ _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→1 {names a₁} {names b₁} nad) (++⊆2→1 {names a₂} {names b₂} nbd) upd₁) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→2 {names a₁} {names b₁} nad) (++⊆2→2 {names a₂} {names b₂} nbd) upd₂)
-  updRel2-ren-mon {name} {f} {g} {r} {r'} {.(TSQUASH a₁)} {.(TSQUASH a₂)} {l} {k} sub nad nbd (updRel2-TSQUASH a₁ a₂ upd₁) = updRel2-TSQUASH _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
+--  updRel2-ren-mon {name} {f} {g} {r} {r'} {.(TSQUASH a₁)} {.(TSQUASH a₂)} {l} {k} sub nad nbd (updRel2-TSQUASH a₁ a₂ upd₁) = updRel2-TSQUASH _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
 --  updRel2-ren-mon {name} {f} {g} {r} {r'} {.(TTRUNC a₁)} {.(TTRUNC a₂)} {l} {k} sub nad nbd (updRel2-TTRUNC a₁ a₂ upd₁) = updRel2-TTRUNC _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.NOWRITE} {.NOWRITE} {l} {k} sub nad nbd updRel2-NOWRITE = updRel2-NOWRITE
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.NOREAD}  {.NOREAD}  {l} {k} sub nad nbd updRel2-NOREAD  = updRel2-NOREAD
@@ -1365,7 +1365,7 @@ abstract
   updRel2-valₗ→ name f g r .FREE .FREE updRel2-FREE isv = isv
   updRel2-valₗ→ name f g r .(CS name1) .(CS name2) (updRel2-CS name1 name2 x x₁ x₂) isv = isv
   updRel2-valₗ→ name f g r .(NAME name1) .(NAME name2) (updRel2-NAME name1 name2 x x₁ x₂) isv = isv
-  updRel2-valₗ→ name f g r .(TSQUASH a₁) .(TSQUASH a₂) (updRel2-TSQUASH a₁ a₂ upd₁) isv = isv
+--  updRel2-valₗ→ name f g r .(TSQUASH a₁) .(TSQUASH a₂) (updRel2-TSQUASH a₁ a₂ upd₁) isv = isv
 --  updRel2-valₗ→ name f g r .(TTRUNC a₁) .(TTRUNC a₂) (updRel2-TTRUNC a₁ a₂ upd₁) isv = isv
   updRel2-valₗ→ name f g r .NOWRITE .NOWRITE updRel2-NOWRITE isv = isv
   updRel2-valₗ→ name f g r .NOREAD  .NOREAD  updRel2-NOREAD  isv = isv

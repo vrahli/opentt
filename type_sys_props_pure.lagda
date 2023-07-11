@@ -2,8 +2,6 @@
 {-# OPTIONS --rewriting #-}
 {-# OPTIONS --guardedness #-}
 
---open import bar
---module type_sys_props_tsquash (bar : Bar) where
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
 open import Agda.Builtin.Bool
@@ -140,8 +138,8 @@ PUREneqSUBSING {b} ()
 PUREneqLIFT : {c : Term} → ¬ PURE ≡ LIFT c
 PUREneqLIFT {c} ()
 
-PUREneqTSQUASH : {c : Term} → ¬ PURE ≡ TSQUASH c
-PUREneqTSQUASH {c} ()
+--PUREneqTSQUASH : {c : Term} → ¬ PURE ≡ TSQUASH c
+--PUREneqTSQUASH {c} ()
 
 --PUREneqTTRUNC : {c : Term} → ¬ PURE ≡ TTRUNC c
 --PUREneqTTRUNC {c} ()

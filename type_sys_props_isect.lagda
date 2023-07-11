@@ -116,8 +116,8 @@ ISECTneqM {a} {b} {c} {d} {e} ()
 ISECTneqSUM : {a b : Term} {c : Term} {d : Term} → ¬ (ISECT a b) ≡ SUM c d
 ISECTneqSUM {a} {b} {c} {d} ()
 
-ISECTneqTSQUASH : {a b : Term} {c : Term} → ¬ (ISECT a b) ≡ TSQUASH c
-ISECTneqTSQUASH {a} {b} {c} ()
+--ISECTneqTSQUASH : {a b : Term} {c : Term} → ¬ (ISECT a b) ≡ TSQUASH c
+--ISECTneqTSQUASH {a} {b} {c} ()
 
 --ISECTneqTTRUNC : {a b : Term} {c : Term} → ¬ (ISECT a b) ≡ TTRUNC c
 --ISECTneqTTRUNC {a} {b} {c} ()

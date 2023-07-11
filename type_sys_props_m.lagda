@@ -121,8 +121,8 @@ MneqISECT {a} {b} {x} {c} {d} ()
 --MneqQTUNION : {a b x : Term} {c : Term} {d : Term} → ¬ (MT a b x) ≡ QTUNION c d
 --MneqQTUNION {a} {b} {x} {c} {d} ()
 
-MneqTSQUASH : {a b x : Term} {c : Term} → ¬ (MT a b x) ≡ TSQUASH c
-MneqTSQUASH {a} {b} {x} {c} ()
+--MneqTSQUASH : {a b x : Term} {c : Term} → ¬ (MT a b x) ≡ TSQUASH c
+--MneqTSQUASH {a} {b} {x} {c} ()
 
 --MneqTTRUNC : {a b x : Term} {c : Term} → ¬ (MT a b x) ≡ TTRUNC c
 --MneqTTRUNC {a} {b} {x} {c} ()

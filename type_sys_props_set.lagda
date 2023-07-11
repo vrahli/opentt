@@ -121,8 +121,8 @@ SETneqISECT {a} {b} {c} {d} ()
 --SETneqQTUNION : {a b : Term} {c : Term} {d : Term} → ¬ (SET a b) ≡ QTUNION c d
 --SETneqQTUNION {a} {b} {c} {d} ()
 
-SETneqTSQUASH : {a b : Term} {c : Term} → ¬ (SET a b) ≡ TSQUASH c
-SETneqTSQUASH {a} {b} {c} ()
+--SETneqTSQUASH : {a b : Term} {c : Term} → ¬ (SET a b) ≡ TSQUASH c
+--SETneqTSQUASH {a} {b} {c} ()
 
 --SETneqTTRUNC : {a b : Term} {c : Term} → ¬ (SET a b) ≡ TTRUNC c
 --SETneqTTRUNC {a} {b} {c} ()

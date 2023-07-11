@@ -121,8 +121,8 @@ WneqISECT {a} {b} {x} {c} {d} ()
 --WneqQTUNION : {a b x : Term} {c : Term} {d : Term} → ¬ (WT a b x) ≡ QTUNION c d
 --WneqQTUNION {a} {b} {x} {c} {d} ()
 
-WneqTSQUASH : {a b x : Term} {c : Term} → ¬ (WT a b x) ≡ TSQUASH c
-WneqTSQUASH {a} {b} {x} {c} ()
+--WneqTSQUASH : {a b x : Term} {c : Term} → ¬ (WT a b x) ≡ TSQUASH c
+--WneqTSQUASH {a} {b} {x} {c} ()
 
 --WneqTTRUNC : {a b x : Term} {c : Term} → ¬ (WT a b x) ≡ TTRUNC c
 --WneqTTRUNC {a} {b} {x} {c} ()

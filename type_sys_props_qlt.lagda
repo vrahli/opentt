@@ -119,8 +119,8 @@ QLTneqUNION {u} {v} {c} {d} ()
 QLTneqEQ : {u v : Term} {c d e : Term} → ¬ QLT u v ≡ EQ c d e
 QLTneqEQ {u} {v} {c} {d} {e} ()
 
-QLTneqTSQUASH : {u v : Term} {c : Term} → ¬ QLT u v ≡ TSQUASH c
-QLTneqTSQUASH {u} {v} {c} ()
+--QLTneqTSQUASH : {u v : Term} {c : Term} → ¬ QLT u v ≡ TSQUASH c
+--QLTneqTSQUASH {u} {v} {c} ()
 
 --QLTneqTTRUNC : {u v : Term} {c : Term} → ¬ QLT u v ≡ TTRUNC c
 --QLTneqTTRUNC {u} {v} {c} ()

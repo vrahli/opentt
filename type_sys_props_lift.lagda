@@ -128,8 +128,8 @@ LIFTneqDUM {a} {c} ()
 LIFTneqFFDEFS : {a : Term} {c d : Term} → ¬ (LIFT a) ≡ FFDEFS c d
 LIFTneqFFDEFS {a} {c} {d} ()
 
-LIFTneqTSQUASH : {a : Term} {c : Term} → ¬ (LIFT a) ≡ TSQUASH c
-LIFTneqTSQUASH {a} {c} ()
+--LIFTneqTSQUASH : {a : Term} {c : Term} → ¬ (LIFT a) ≡ TSQUASH c
+--LIFTneqTSQUASH {a} {c} ()
 
 --LIFTneqTTRUNC : {a : Term} {c : Term} → ¬ (LIFT a) ≡ TTRUNC c
 --LIFTneqTTRUNC {a} {c} ()

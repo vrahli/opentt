@@ -121,8 +121,8 @@ SUMneqISECT {a} {b} {c} {d} ()
 --SUMneqQTUNION : {a b : Term} {c : Term} {d : Term} → ¬ (SUM a b) ≡ QTUNION c d
 --SUMneqQTUNION {a} {b} {c} {d} ()
 
-SUMneqTSQUASH : {a b : Term} {c : Term} → ¬ (SUM a b) ≡ TSQUASH c
-SUMneqTSQUASH {a} {b} {c} ()
+--SUMneqTSQUASH : {a b : Term} {c : Term} → ¬ (SUM a b) ≡ TSQUASH c
+--SUMneqTSQUASH {a} {b} {c} ()
 
 --SUMneqTTRUNC : {a b : Term} {c : Term} → ¬ (SUM a b) ≡ TTRUNC c
 --SUMneqTTRUNC {a} {b} {c} ()

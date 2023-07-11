@@ -122,8 +122,8 @@ FFDEFSneqUNION {a} {b} {c} {d} ()
 FFDEFSneqEQ : {a b : Term} {c d e : Term} → ¬ FFDEFS a b ≡ EQ c d e
 FFDEFSneqEQ {a} {b} {c} {d} {e} ()
 
-FFDEFSneqTSQUASH : {a b : Term} {c : Term} → ¬ FFDEFS a b ≡ TSQUASH c
-FFDEFSneqTSQUASH {a} {b} {c} ()
+--FFDEFSneqTSQUASH : {a b : Term} {c : Term} → ¬ FFDEFS a b ≡ TSQUASH c
+--FFDEFSneqTSQUASH {a} {b} {c} ()
 
 --FFDEFSneqTTRUNC : {a b : Term} {c : Term} → ¬ FFDEFS a b ≡ TTRUNC c
 --FFDEFSneqTTRUNC {a} {b} {c} ()

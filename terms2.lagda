@@ -106,7 +106,7 @@ abstract
   shiftUp-shiftNameUp c d (LOAD t) rewrite shiftUp-shiftNameUp c d t = refl
   shiftUp-shiftNameUp c d (CHOOSE t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
   --shiftUp-shiftNameUp c d (IFC0 t t₁ t₂) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ | shiftUp-shiftNameUp c d t₂ = refl
-  shiftUp-shiftNameUp c d (TSQUASH t) rewrite shiftUp-shiftNameUp c d t = refl
+--  shiftUp-shiftNameUp c d (TSQUASH t) rewrite shiftUp-shiftNameUp c d t = refl
 --  shiftUp-shiftNameUp c d (TTRUNC t) rewrite shiftUp-shiftNameUp c d t = refl
   shiftUp-shiftNameUp c d NOWRITE = refl
   shiftUp-shiftNameUp c d NOREAD  = refl
@@ -183,7 +183,7 @@ abstract
   renn-shiftNameUp n1 n2 (LOAD t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 (CHOOSE t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
   --renn-shiftNameUp n1 n2 (IFC0 t t₁ t₂) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ | renn-shiftNameUp n1 n2 t₂ = refl
-  renn-shiftNameUp n1 n2 (TSQUASH t) rewrite renn-shiftNameUp n1 n2 t = refl
+--  renn-shiftNameUp n1 n2 (TSQUASH t) rewrite renn-shiftNameUp n1 n2 t = refl
 --  renn-shiftNameUp n1 n2 (TTRUNC t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 NOWRITE = refl
   renn-shiftNameUp n1 n2 NOREAD  = refl
@@ -262,7 +262,7 @@ abstract
   shiftNameDownUp n (LOAD t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n (CHOOSE t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
   --shiftNameDownUp n (IFC0 t t₁ t₂) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ | shiftNameDownUp n t₂ = refl
-  shiftNameDownUp n (TSQUASH t) rewrite shiftNameDownUp n t = refl
+--  shiftNameDownUp n (TSQUASH t) rewrite shiftNameDownUp n t = refl
 --  shiftNameDownUp n (TTRUNC t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n NOWRITE = refl
   shiftNameDownUp n NOREAD  = refl
@@ -378,7 +378,7 @@ abstract
   ¬names-shiftUp n (FRESH a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n (LOAD a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n (CHOOSE a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp n a₁ = refl
-  ¬names-shiftUp n (TSQUASH a) rewrite ¬names-shiftUp n a = refl
+--  ¬names-shiftUp n (TSQUASH a) rewrite ¬names-shiftUp n a = refl
 --  ¬names-shiftUp n (TTRUNC a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n NOWRITE = refl
   ¬names-shiftUp n NOREAD  = refl
@@ -441,7 +441,7 @@ abstract
   ¬names-shiftDown n (FRESH a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n (LOAD a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n (CHOOSE a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown n a₁ = refl
-  ¬names-shiftDown n (TSQUASH a) rewrite ¬names-shiftDown n a = refl
+--  ¬names-shiftDown n (TSQUASH a) rewrite ¬names-shiftDown n a = refl
 --  ¬names-shiftDown n (TTRUNC a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n NOWRITE = refl
   ¬names-shiftDown n NOREAD  = refl
@@ -525,7 +525,7 @@ abstract
   ¬Names-subv v {a} {MSEQ x} na nb = refl
   ¬Names-subv v {a} {MAPP s b} na nb = ¬Names-subv v {a} {b} na nb
   ¬Names-subv v {a} {CHOOSE b b₁} na nb = →∧≡true {¬names (subv v a b)} {¬names (subv v a b₁)} (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv v {a} {b₁} na (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
-  ¬Names-subv v {a} {TSQUASH b} na nb = ¬Names-subv v {a} {b} na nb
+--  ¬Names-subv v {a} {TSQUASH b} na nb = ¬Names-subv v {a} {b} na nb
 --  ¬Names-subv v {a} {TTRUNC b} na nb = ¬Names-subv v {a} {b} na nb
   ¬Names-subv v {a} {NOWRITE} na nb = refl
   ¬Names-subv v {a} {NOREAD}  na nb = refl
@@ -598,7 +598,7 @@ abstract
   noseq-shiftUp n (FRESH a) rewrite noseq-shiftUp n a = refl
   noseq-shiftUp n (LOAD a) rewrite noseq-shiftUp n a = refl
   noseq-shiftUp n (CHOOSE a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
-  noseq-shiftUp n (TSQUASH a) rewrite noseq-shiftUp n a = refl
+--  noseq-shiftUp n (TSQUASH a) rewrite noseq-shiftUp n a = refl
 --  noseq-shiftUp n (TTRUNC a) rewrite noseq-shiftUp n a = refl
   noseq-shiftUp n NOWRITE = refl
   noseq-shiftUp n NOREAD  = refl
@@ -661,7 +661,7 @@ abstract
   noseq-shiftDown n (FRESH a) rewrite noseq-shiftDown n a = refl
   noseq-shiftDown n (LOAD a) rewrite noseq-shiftDown n a = refl
   noseq-shiftDown n (CHOOSE a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
-  noseq-shiftDown n (TSQUASH a) rewrite noseq-shiftDown n a = refl
+--  noseq-shiftDown n (TSQUASH a) rewrite noseq-shiftDown n a = refl
 --  noseq-shiftDown n (TTRUNC a) rewrite noseq-shiftDown n a = refl
   noseq-shiftDown n NOWRITE = refl
   noseq-shiftDown n NOREAD  = refl
@@ -730,7 +730,7 @@ abstract
   noseq-shiftNameUp n (FRESH a) rewrite noseq-shiftNameUp (suc n) a = refl
   noseq-shiftNameUp n (LOAD a) rewrite noseq-shiftNameUp n a = refl
   noseq-shiftNameUp n (CHOOSE a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
-  noseq-shiftNameUp n (TSQUASH a) rewrite noseq-shiftNameUp n a = refl
+--  noseq-shiftNameUp n (TSQUASH a) rewrite noseq-shiftNameUp n a = refl
 --  noseq-shiftNameUp n (TTRUNC a) rewrite noseq-shiftNameUp n a = refl
   noseq-shiftNameUp n NOWRITE = refl
   noseq-shiftNameUp n NOREAD  = refl
@@ -802,7 +802,7 @@ abstract
   ¬Seq-subv v {a} {MSEQ x} na nb = nb
   ¬Seq-subv v {a} {MAPP s b} na nb = nb --¬Seq-subv v {a} {b} na nb
   ¬Seq-subv v {a} {CHOOSE b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
-  ¬Seq-subv v {a} {TSQUASH b} na nb = ¬Seq-subv v {a} {b} na nb
+--  ¬Seq-subv v {a} {TSQUASH b} na nb = ¬Seq-subv v {a} {b} na nb
 --  ¬Seq-subv v {a} {TTRUNC b} na nb = ¬Seq-subv v {a} {b} na nb
   ¬Seq-subv v {a} {NOWRITE} na nb = refl
   ¬Seq-subv v {a} {NOREAD}  na nb = refl

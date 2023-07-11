@@ -510,21 +510,21 @@ Term→ℕ (CHOOSE t t₁) = 33 + (pairing (Term→ℕ t , Term→ℕ t₁) * #c
 Term→ℕ (LOAD t) = 34 + (Term→ℕ t * #cons)
 Term→ℕ (MSEQ x) = 0
 Term→ℕ (MAPP x t) = 0
-Term→ℕ (TSQUASH t) = 35 + (Term→ℕ t * #cons)
+--Term→ℕ (TSQUASH t) = 35 + (Term→ℕ t * #cons)
 --Term→ℕ (TTRUNC t) = 40 + (Term→ℕ t * #cons)
-Term→ℕ NOWRITE = 36
-Term→ℕ NOREAD = 37
-Term→ℕ (SUBSING t) = 38 + (Term→ℕ t * #cons)
-Term→ℕ (DUM t) = 39 + (Term→ℕ t * #cons)
-Term→ℕ (FFDEFS t t₁) = 40 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
-Term→ℕ PURE = 41
-Term→ℕ NOSEQ = 42
-Term→ℕ (TERM t) = 43 + (Term→ℕ t * #cons)
-Term→ℕ (ENC t) = 44 + (Term→ℕ t * #cons)
-Term→ℕ (UNIV x) = 45 + (x * #cons)
-Term→ℕ (LIFT t) = 46 + (Term→ℕ t * #cons)
-Term→ℕ (LOWER t) = 47 + (Term→ℕ t * #cons)
-Term→ℕ (SHRINK t) = 48 + (Term→ℕ t * #cons)
+Term→ℕ NOWRITE = 35
+Term→ℕ NOREAD = 36
+Term→ℕ (SUBSING t) = 37 + (Term→ℕ t * #cons)
+Term→ℕ (DUM t) = 38 + (Term→ℕ t * #cons)
+Term→ℕ (FFDEFS t t₁) = 39 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
+Term→ℕ PURE = 40
+Term→ℕ NOSEQ = 41
+Term→ℕ (TERM t) = 42 + (Term→ℕ t * #cons)
+Term→ℕ (ENC t) = 43 + (Term→ℕ t * #cons)
+Term→ℕ (UNIV x) = 44 + (x * #cons)
+Term→ℕ (LIFT t) = 45 + (Term→ℕ t * #cons)
+Term→ℕ (LOWER t) = 46 + (Term→ℕ t * #cons)
+Term→ℕ (SHRINK t) = 47 + (Term→ℕ t * #cons)
 
 
 ¬≡0→1≤ : (n : ℕ) → ¬ n ≡ 0 → 1 ≤ n
@@ -756,20 +756,20 @@ suc-/≤ n m d0 = ≤-trans (suc-/m n m) (suc/≤ n d0)
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 32 FRESH
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))) = ℕ→Term-aux₂ n (λ ()) ind 33 CHOOSE
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 34 LOAD
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 35 TSQUASH
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))) = NOWRITE
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))) = NOREAD
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 38 SUBSING
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 39 DUM
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))) = ℕ→Term-aux₂ n (λ ()) ind 40 FFDEFS
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))) = PURE
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))) = NOSEQ
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 43 TERM
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 44 ENC
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))))))) = UNIV ((n ∸ 45) / #cons)
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 46 LIFT
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 47 LOWER
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 48 SHRINK
+--... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 35 TSQUASH
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))) = NOWRITE
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))) = NOREAD
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 37 SUBSING
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 38 DUM
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))) = ℕ→Term-aux₂ n (λ ()) ind 39 FFDEFS
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))) = PURE
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))) = NOSEQ
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 42 TERM
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 43 ENC
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))))) = UNIV ((n ∸ 44) / #cons)
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 45 LIFT
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 46 LOWER
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 47 SHRINK
 --
 -- otherwise
 ... | _ = AX -- not possible - we return a default value
@@ -1223,9 +1223,11 @@ abstract
 ≡LOAD {a} {b} x rewrite x = refl
 
 
+{-
 -- From terms3
 ≡TSQUASH : {a b : Term} → a ≡ b → TSQUASH a ≡ TSQUASH b
 ≡TSQUASH {a} {b} x rewrite x = refl
+-}
 
 
 {-

@@ -120,8 +120,8 @@ TUNIONneqUNION {a} {b} {c} {d} ()
 --TUNIONneqQTUNION : {a b : Term} {c : Term} {d : Term} → ¬ (TUNION a b) ≡ QTUNION c d
 --TUNIONneqQTUNION {a} {b} {c} {d} ()
 
-TUNIONneqTSQUASH : {a b : Term} {c : Term} → ¬ (TUNION a b) ≡ TSQUASH c
-TUNIONneqTSQUASH {a} {b} {c} ()
+--TUNIONneqTSQUASH : {a b : Term} {c : Term} → ¬ (TUNION a b) ≡ TSQUASH c
+--TUNIONneqTSQUASH {a} {b} {c} ()
 
 --TUNIONneqTTRUNC : {a b : Term} {c : Term} → ¬ (TUNION a b) ≡ TTRUNC c
 --TUNIONneqTTRUNC {a} {b} {c} ()

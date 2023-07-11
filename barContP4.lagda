@@ -170,7 +170,7 @@ data updSeq (r : Name) (s : 𝕊) (n : ℕ) : Term → Term → Set where
   --updSeq-FRESH   : (a b : Term) → updSeq name1 name2 f a b → updSeq name1 name2 f (FRESH a) (FRESH b)
   updSeq-CHOOSE  : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (CHOOSE a₁ b₁) (CHOOSE a₂ b₂)
 --  updSeq-IFC0    : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → updSeq name1 name2 f a₁ a₂ → updSeq name1 name2 f b₁ b₂ → updSeq name1 name2 f c₁ c₂ → updSeq name1 name2 f (IFC0 a₁ b₁ c₁) (IFC0 a₂ b₂ c₂)
-  updSeq-TSQUASH : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (TSQUASH a₁) (TSQUASH a₂)
+--  updSeq-TSQUASH : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (TSQUASH a₁) (TSQUASH a₂)
 --  updSeq-TTRUNC  : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (TTRUNC a₁) (TTRUNC a₂)
   updSeq-NOWRITE : updSeq r s n NOWRITE NOWRITE
   updSeq-NOREAD  : updSeq r s n NOREAD  NOREAD
@@ -300,7 +300,7 @@ abstract
   updSeq-shiftUp n {r} {s} {k} {.(MSEQ x)} {.(MSEQ x)} (updSeq-MSEQ x) = updSeq-MSEQ x
   updSeq-shiftUp n {r} {s} {k} {.(MAPP x a₁)} {.(MAPP x a₂)} (updSeq-MAPP x a₁ a₂ u) = updSeq-MAPP _ _ _ (updSeq-shiftUp n u)
   updSeq-shiftUp n {r} {s} {k} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (updSeq-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updSeq-CHOOSE _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁)
-  updSeq-shiftUp n {r} {s} {k} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updSeq-TSQUASH a₁ a₂ u) = updSeq-TSQUASH _ _ (updSeq-shiftUp n u)
+--  updSeq-shiftUp n {r} {s} {k} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updSeq-TSQUASH a₁ a₂ u) = updSeq-TSQUASH _ _ (updSeq-shiftUp n u)
 --  updSeq-shiftUp n {r} {s} {k} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updSeq-TTRUNC a₁ a₂ u) = updSeq-TTRUNC _ _ (updSeq-shiftUp n u)
   updSeq-shiftUp n {r} {s} {k} {.NOWRITE} {.NOWRITE} updSeq-NOWRITE = updSeq-NOWRITE
   updSeq-shiftUp n {r} {s} {k} {.NOREAD}  {.NOREAD}  updSeq-NOREAD  = updSeq-NOREAD
@@ -368,7 +368,7 @@ abstract
   updSeq-shiftDown n {r} {s} {k} {.(MSEQ x)} {.(MSEQ x)} (updSeq-MSEQ x) = updSeq-MSEQ x
   updSeq-shiftDown n {r} {s} {k} {.(MAPP x a₁)} {.(MAPP x a₂)} (updSeq-MAPP x a₁ a₂ u) = updSeq-MAPP _ _ _ (updSeq-shiftDown n u)
   updSeq-shiftDown n {r} {s} {k} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (updSeq-CHOOSE a₁ a₂ b₁ b₂ u u₁) = updSeq-CHOOSE _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁)
-  updSeq-shiftDown n {r} {s} {k} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updSeq-TSQUASH a₁ a₂ u) = updSeq-TSQUASH _ _ (updSeq-shiftDown n u)
+--  updSeq-shiftDown n {r} {s} {k} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updSeq-TSQUASH a₁ a₂ u) = updSeq-TSQUASH _ _ (updSeq-shiftDown n u)
 --  updSeq-shiftDown n {r} {s} {k} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updSeq-TTRUNC a₁ a₂ u) = updSeq-TTRUNC _ _ (updSeq-shiftDown n u)
   updSeq-shiftDown n {r} {s} {k} {.NOWRITE} {.NOWRITE} updSeq-NOWRITE = updSeq-NOWRITE
   updSeq-shiftDown n {r} {s} {k} {.NOREAD}  {.NOREAD}  updSeq-NOREAD  = updSeq-NOREAD
@@ -439,7 +439,7 @@ abstract
   updSeq-subv v {r} {s} {k} {.(MSEQ x)} {.(MSEQ x)} {b₁} {b₂} (updSeq-MSEQ x) ub = updSeq-MSEQ x
   updSeq-subv v {r} {s} {k} {.(MAPP x a₁)} {.(MAPP x a₂)} {b₁} {b₂} (updSeq-MAPP x a₁ a₂ ua) ub = updSeq-MAPP _ _ _ (updSeq-subv v ua ub)
   updSeq-subv v {r} {s} {k} {.(CHOOSE a₁ b₃)} {.(CHOOSE a₂ b₄)} {b₁} {b₂} (updSeq-CHOOSE a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-CHOOSE _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub)
-  updSeq-subv v {r} {s} {k} {.(TSQUASH a₁)} {.(TSQUASH a₂)} {b₁} {b₂} (updSeq-TSQUASH a₁ a₂ ua) ub = updSeq-TSQUASH _ _ (updSeq-subv v ua ub)
+--  updSeq-subv v {r} {s} {k} {.(TSQUASH a₁)} {.(TSQUASH a₂)} {b₁} {b₂} (updSeq-TSQUASH a₁ a₂ ua) ub = updSeq-TSQUASH _ _ (updSeq-subv v ua ub)
 --  updSeq-subv v {r} {s} {k} {.(TTRUNC a₁)} {.(TTRUNC a₂)} {b₁} {b₂} (updSeq-TTRUNC a₁ a₂ ua) ub = updSeq-TTRUNC _ _ (updSeq-subv v ua ub)
   updSeq-subv v {r} {s} {k} {.NOWRITE} {.NOWRITE} {b₁} {b₂} updSeq-NOWRITE ub = updSeq-NOWRITE
   updSeq-subv v {r} {s} {k} {.NOREAD}  {.NOREAD}  {b₁} {b₂} updSeq-NOREAD  ub = updSeq-NOREAD
@@ -1108,7 +1108,7 @@ updSeq→isValue {r} {s} {n} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (updS
 updSeq→isValue {r} {s} {n} {.AX} {.AX} updSeq-AX isv = tt
 updSeq→isValue {r} {s} {n} {.FREE} {.FREE} updSeq-FREE isv = tt
 updSeq→isValue {r} {s} {n} {.(MSEQ x)} {.(MSEQ x)} (updSeq-MSEQ x) isv = tt
-updSeq→isValue {r} {s} {n} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updSeq-TSQUASH a₁ a₂ u) isv = tt
+--updSeq→isValue {r} {s} {n} {.(TSQUASH a₁)} {.(TSQUASH a₂)} (updSeq-TSQUASH a₁ a₂ u) isv = tt
 --updSeq→isValue {r} {s} {n} {.(TTRUNC a₁)} {.(TTRUNC a₂)} (updSeq-TTRUNC a₁ a₂ u) isv = tt
 updSeq→isValue {r} {s} {n} {.NOWRITE} {.NOWRITE} updSeq-NOWRITE isv = tt
 updSeq→isValue {r} {s} {n} {.NOREAD}  {.NOREAD}  updSeq-NOREAD  isv = tt

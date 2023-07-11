@@ -428,6 +428,7 @@ abstract
     = ℕ→Term→ℕ₁ t LOAD 33 ≡LOAD ind
 
 
+{-
 --abstract
 ℕ→Term→ℕ-TSQUASH : (t : Term)
                     → ℕ→Term (Term→ℕ t) ≡ t
@@ -435,6 +436,7 @@ abstract
 ℕ→Term→ℕ-TSQUASH t ind
     rewrite *#cons%≡k 35 (Term→ℕ t) (m<m+n 35 {#cons ∸ 35} (_≤_.s≤s _≤_.z≤n))
     = ℕ→Term→ℕ₁ t TSQUASH 34 ≡TSQUASH ind
+-}
 
 
 {-
@@ -471,83 +473,83 @@ abstract
 --abstract
 ℕ→Term→ℕ-SUBSING : (t : Term)
                     → ℕ→Term (Term→ℕ t) ≡ t
-                    → ℕ→Term (38 + (Term→ℕ t * #cons)) ≡ SUBSING t
+                    → ℕ→Term (37 + (Term→ℕ t * #cons)) ≡ SUBSING t
 ℕ→Term→ℕ-SUBSING t ind
-    rewrite *#cons%≡k 38 (Term→ℕ t) (m<m+n 38 {#cons ∸ 38} (_≤_.s≤s _≤_.z≤n))
-    = ℕ→Term→ℕ₁ t SUBSING 37 ≡SUBSING ind
+    rewrite *#cons%≡k 37 (Term→ℕ t) (m<m+n 37 {#cons ∸ 37} (_≤_.s≤s _≤_.z≤n))
+    = ℕ→Term→ℕ₁ t SUBSING 36 ≡SUBSING ind
 
 
 --abstract
 ℕ→Term→ℕ-DUM : (t : Term)
                     → ℕ→Term (Term→ℕ t) ≡ t
-                    → ℕ→Term (39 + (Term→ℕ t * #cons)) ≡ DUM t
+                    → ℕ→Term (38 + (Term→ℕ t * #cons)) ≡ DUM t
 ℕ→Term→ℕ-DUM t ind
-    rewrite *#cons%≡k 39 (Term→ℕ t) (m<m+n 39 {#cons ∸ 39} (_≤_.s≤s _≤_.z≤n))
-    = ℕ→Term→ℕ₁ t DUM 38 ≡DUM ind
+    rewrite *#cons%≡k 38 (Term→ℕ t) (m<m+n 38 {#cons ∸ 38} (_≤_.s≤s _≤_.z≤n))
+    = ℕ→Term→ℕ₁ t DUM 37 ≡DUM ind
 
 
 --abstract
 ℕ→Term→ℕ-FFDEFS : (t₁ t₂ : Term)
                     → ℕ→Term (Term→ℕ t₁) ≡ t₁
                     → ℕ→Term (Term→ℕ t₂) ≡ t₂
-                    → ℕ→Term (40 + (pairing (Term→ℕ t₁ , Term→ℕ t₂) * #cons)) ≡ FFDEFS t₁ t₂
+                    → ℕ→Term (39 + (pairing (Term→ℕ t₁ , Term→ℕ t₂) * #cons)) ≡ FFDEFS t₁ t₂
 ℕ→Term→ℕ-FFDEFS t₁ t₂ ind₁ ind₂
-    rewrite *#cons%≡k 40 (pairing (Term→ℕ t₁ , Term→ℕ t₂)) (m<m+n 40 {#cons ∸ 40} (_≤_.s≤s _≤_.z≤n))
-    = ℕ→Term→ℕ₂ t₁ t₂ FFDEFS 39 ≡FFDEFS ind₁ ind₂
+    rewrite *#cons%≡k 39 (pairing (Term→ℕ t₁ , Term→ℕ t₂)) (m<m+n 39 {#cons ∸ 39} (_≤_.s≤s _≤_.z≤n))
+    = ℕ→Term→ℕ₂ t₁ t₂ FFDEFS 38 ≡FFDEFS ind₁ ind₂
 
 
 --abstract
 ℕ→Term→ℕ-TERM : (t : Term)
                     → ℕ→Term (Term→ℕ t) ≡ t
-                    → ℕ→Term (43 + (Term→ℕ t * #cons)) ≡ TERM t
+                    → ℕ→Term (42 + (Term→ℕ t * #cons)) ≡ TERM t
 ℕ→Term→ℕ-TERM t ind
-    rewrite *#cons%≡k 43 (Term→ℕ t) (m<m+n 43 {#cons ∸ 43} (_≤_.s≤s _≤_.z≤n))
-    = ℕ→Term→ℕ₁ t TERM 42 ≡TERM ind
+    rewrite *#cons%≡k 42 (Term→ℕ t) (m<m+n 42 {#cons ∸ 42} (_≤_.s≤s _≤_.z≤n))
+    = ℕ→Term→ℕ₁ t TERM 41 ≡TERM ind
 
 
 --abstract
 ℕ→Term→ℕ-ENC : (t : Term)
                     → ℕ→Term (Term→ℕ t) ≡ t
-                    → ℕ→Term (44 + (Term→ℕ t * #cons)) ≡ ENC t
+                    → ℕ→Term (43 + (Term→ℕ t * #cons)) ≡ ENC t
 ℕ→Term→ℕ-ENC t ind
-    rewrite *#cons%≡k 44 (Term→ℕ t) (m<m+n 44 {#cons ∸ 44} (_≤_.s≤s _≤_.z≤n))
-    = ℕ→Term→ℕ₁ t ENC 43 ≡ENC ind
+    rewrite *#cons%≡k 43 (Term→ℕ t) (m<m+n 43 {#cons ∸ 43} (_≤_.s≤s _≤_.z≤n))
+    = ℕ→Term→ℕ₁ t ENC 42 ≡ENC ind
 
 
 abstract
-  ℕ→Term→ℕ-UNIV : (x : ℕ) → ℕ→Term (45 + x * #cons) ≡ UNIV x
+  ℕ→Term→ℕ-UNIV : (x : ℕ) → ℕ→Term (44 + x * #cons) ≡ UNIV x
   ℕ→Term→ℕ-UNIV 0 = refl
   ℕ→Term→ℕ-UNIV x@(suc y)
-    rewrite *#cons%≡k 45 x (m<m+n 45 {#cons ∸ 45} (_≤_.s≤s _≤_.z≤n))
+    rewrite *#cons%≡k 44 x (m<m+n 44 {#cons ∸ 44} (_≤_.s≤s _≤_.z≤n))
           | m*sn/sn≡m x #cons-1 = refl
 
 
 --abstract
 ℕ→Term→ℕ-LIFT : (t : Term)
                     → ℕ→Term (Term→ℕ t) ≡ t
-                    → ℕ→Term (46 + (Term→ℕ t * #cons)) ≡ LIFT t
+                    → ℕ→Term (45 + (Term→ℕ t * #cons)) ≡ LIFT t
 ℕ→Term→ℕ-LIFT t ind
-    rewrite *#cons%≡k 46 (Term→ℕ t) (m<m+n 46 {#cons ∸ 46} (_≤_.s≤s _≤_.z≤n))
-    = ℕ→Term→ℕ₁ t LIFT 45 ≡LIFT ind
+    rewrite *#cons%≡k 45 (Term→ℕ t) (m<m+n 45 {#cons ∸ 45} (_≤_.s≤s _≤_.z≤n))
+    = ℕ→Term→ℕ₁ t LIFT 44 ≡LIFT ind
 
 
 --abstract
 ℕ→Term→ℕ-LOWER : (t : Term)
                     → ℕ→Term (Term→ℕ t) ≡ t
-                    → ℕ→Term (47 + (Term→ℕ t * #cons)) ≡ LOWER t
+                    → ℕ→Term (46 + (Term→ℕ t * #cons)) ≡ LOWER t
 ℕ→Term→ℕ-LOWER t ind
-    rewrite *#cons%≡k 47 (Term→ℕ t) (m<m+n 47 {#cons ∸ 47} (_≤_.s≤s _≤_.z≤n))
-    = ℕ→Term→ℕ₁ t LOWER 46 ≡LOWER ind
+    rewrite *#cons%≡k 46 (Term→ℕ t) (m<m+n 46 {#cons ∸ 46} (_≤_.s≤s _≤_.z≤n))
+    = ℕ→Term→ℕ₁ t LOWER 45 ≡LOWER ind
 
 
 
 --abstract
 ℕ→Term→ℕ-SHRINK : (t : Term)
                     → ℕ→Term (Term→ℕ t) ≡ t
-                    → ℕ→Term (48 + (Term→ℕ t * #cons)) ≡ SHRINK t
+                    → ℕ→Term (47 + (Term→ℕ t * #cons)) ≡ SHRINK t
 ℕ→Term→ℕ-SHRINK t ind
-    rewrite *#cons%≡k 48 (Term→ℕ t) (m<m+n 48 {#cons ∸ 48} (_≤_.s≤s _≤_.z≤n))
-    = ℕ→Term→ℕ₁ t SHRINK 47 ≡SHRINK ind
+    rewrite *#cons%≡k 47 (Term→ℕ t) (m<m+n 47 {#cons ∸ 47} (_≤_.s≤s _≤_.z≤n))
+    = ℕ→Term→ℕ₁ t SHRINK 46 ≡SHRINK ind
 
 
 abstract
@@ -591,7 +593,7 @@ abstract
   ℕ→Term→ℕ (FRESH t) nseq = ℕ→Term→ℕ-FRESH t (ℕ→Term→ℕ t nseq)
   ℕ→Term→ℕ (CHOOSE t t₁) nseq = ℕ→Term→ℕ-CHOOSE t t₁ (ℕ→Term→ℕ t (∧≡true→ₗ nseq)) (ℕ→Term→ℕ t₁ (∧≡true→ᵣ nseq))
   ℕ→Term→ℕ (LOAD t) nseq = ℕ→Term→ℕ-LOAD t (ℕ→Term→ℕ t nseq)
-  ℕ→Term→ℕ (TSQUASH t) nseq = ℕ→Term→ℕ-TSQUASH t (ℕ→Term→ℕ t nseq)
+--  ℕ→Term→ℕ (TSQUASH t) nseq = ℕ→Term→ℕ-TSQUASH t (ℕ→Term→ℕ t nseq)
 --  ℕ→Term→ℕ (TTRUNC t) nseq = ℕ→Term→ℕ-TTRUNC t (ℕ→Term→ℕ t nseq)
   ℕ→Term→ℕ NOWRITE nseq = refl
   ℕ→Term→ℕ NOREAD  nseq = refl

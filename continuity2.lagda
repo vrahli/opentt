@@ -451,7 +451,7 @@ data updCtxt (name : Name) (f : Term) : Term → Set where
   --updCtxt-FRESH   : (a b : Term) → updCtxt name1 name2 f a b → updCtxt name1 name2 f (FRESH a) (FRESH b)
   updCtxt-CHOOSE  : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (CHOOSE a b)
 --  updCtxt-IFC0    : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → updCtxt name1 name2 f a₁ a₂ → updCtxt name1 name2 f b₁ b₂ → updCtxt name1 name2 f c₁ c₂ → updCtxt name1 name2 f (IFC0 a₁ b₁ c₁) (IFC0 a₂ b₂ c₂)
-  updCtxt-TSQUASH : (a : Term) → updCtxt name f a → updCtxt name f (TSQUASH a)
+--  updCtxt-TSQUASH : (a : Term) → updCtxt name f a → updCtxt name f (TSQUASH a)
 --  updCtxt-TTRUNC  : (a : Term) → updCtxt name f a → updCtxt name f (TTRUNC a)
   updCtxt-NOWRITE : updCtxt name f NOWRITE
   updCtxt-NOREAD  : updCtxt name f NOREAD
@@ -515,7 +515,7 @@ abstract
   updCtxt→differ {name} {f} {.(MSEQ x)} (updCtxt-MSEQ x) = differ-MSEQ x
   updCtxt→differ {name} {f} {.(MAPP s a)} (updCtxt-MAPP s a u) = differ-MAPP _ _ _ (updCtxt→differ u)
   updCtxt→differ {name} {f} {.(CHOOSE a b)} (updCtxt-CHOOSE a b u u₁) = differ-CHOOSE _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
-  updCtxt→differ {name} {f} {.(TSQUASH a)} (updCtxt-TSQUASH a u) = differ-TSQUASH _ _ (updCtxt→differ u)
+--  updCtxt→differ {name} {f} {.(TSQUASH a)} (updCtxt-TSQUASH a u) = differ-TSQUASH _ _ (updCtxt→differ u)
 --  updCtxt→differ {name} {f} {.(TTRUNC a)} (updCtxt-TTRUNC a u) = differ-TTRUNC _ _ (updCtxt→differ u)
   updCtxt→differ {name} {f} {.NOWRITE} updCtxt-NOWRITE = differ-NOWRITE
   updCtxt→differ {name} {f} {.NOREAD}  updCtxt-NOREAD  = differ-NOREAD
@@ -579,7 +579,7 @@ abstract
   differ→updCtxt {name} {f} {.(MSEQ x)} (differ-MSEQ x) = updCtxt-MSEQ x
   differ→updCtxt {name} {f} {.(MAPP s a₁)} (differ-MAPP s a₁ .a₁ d) = updCtxt-MAPP _ _ (differ→updCtxt d)
   differ→updCtxt {name} {f} {.(CHOOSE a₁ b₁)} (differ-CHOOSE a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-CHOOSE _ _ (differ→updCtxt d) (differ→updCtxt d₁)
-  differ→updCtxt {name} {f} {.(TSQUASH a)} (differ-TSQUASH a .a d) = updCtxt-TSQUASH _ (differ→updCtxt d)
+--  differ→updCtxt {name} {f} {.(TSQUASH a)} (differ-TSQUASH a .a d) = updCtxt-TSQUASH _ (differ→updCtxt d)
 --  differ→updCtxt {name} {f} {.(TTRUNC a)} (differ-TTRUNC a .a d) = updCtxt-TTRUNC _ (differ→updCtxt d)
   differ→updCtxt {name} {f} {.NOWRITE} differ-NOWRITE = updCtxt-NOWRITE
   differ→updCtxt {name} {f} {.NOREAD}  differ-NOREAD  = updCtxt-NOREAD

@@ -119,8 +119,8 @@ LTneqISECT {u} {v} {c} {d} ()
 LTneqEQ : {u v : Term} {c d e : Term} → ¬ LT u v ≡ EQ c d e
 LTneqEQ {u} {v} {c} {d} {e} ()
 
-LTneqTSQUASH : {u v : Term} {c : Term} → ¬ LT u v ≡ TSQUASH c
-LTneqTSQUASH {u} {v} {c} ()
+--LTneqTSQUASH : {u v : Term} {c : Term} → ¬ LT u v ≡ TSQUASH c
+--LTneqTSQUASH {u} {v} {c} ()
 
 --LTneqTTRUNC : {u v : Term} {c : Term} → ¬ LT u v ≡ TTRUNC c
 --LTneqTTRUNC {u} {v} {c} ()

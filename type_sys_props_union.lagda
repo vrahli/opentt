@@ -117,8 +117,8 @@ UNIONneqM {a} {b} {c} {d} {e} ()
 UNIONneqSUM : {a b : Term} {c : Term} {d : Term} → ¬ (UNION a b) ≡ SUM c d
 UNIONneqSUM {a} {b} {c} {d} ()
 
-UNIONneqTSQUASH : {a b : Term} {c : Term} → ¬ (UNION a b) ≡ TSQUASH c
-UNIONneqTSQUASH {a} {b} {c} ()
+--UNIONneqTSQUASH : {a b : Term} {c : Term} → ¬ (UNION a b) ≡ TSQUASH c
+--UNIONneqTSQUASH {a} {b} {c} ()
 
 --UNIONneqTTRUNC : {a b : Term} {c : Term} → ¬ (UNION a b) ≡ TTRUNC c
 --UNIONneqTTRUNC {a} {b} {c} ()

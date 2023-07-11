@@ -331,11 +331,13 @@ subv-↑T {i} {suc n} p v a with i <? n
     c = refl --CTerm.closed a
 
 
+{-
 #TSQUASH : CTerm → CTerm
 #TSQUASH a = ct (TSQUASH ⌜ a ⌝) c
   where
     c : # TSQUASH ⌜ a ⌝
     c rewrite CTerm.closed a = refl
+-}
 
 
 {- #TTRUNC : CTerm → CTerm
@@ -763,7 +765,7 @@ abstract
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁
             | fvars-shiftUp≡ n t₂ = refl--}
-  fvars-shiftUp≡ n (TSQUASH t) = fvars-shiftUp≡ n t
+--  fvars-shiftUp≡ n (TSQUASH t) = fvars-shiftUp≡ n t
 --  fvars-shiftUp≡ n (TTRUNC t) = fvars-shiftUp≡ n t
   fvars-shiftUp≡ n NOWRITE = refl
   fvars-shiftUp≡ n NOREAD  = refl
@@ -1137,7 +1139,7 @@ abstract
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁
             | fvars-shiftDown≡ n t₂ = refl--}
-  fvars-shiftDown≡ n (TSQUASH t) = fvars-shiftDown≡ n t
+--  fvars-shiftDown≡ n (TSQUASH t) = fvars-shiftDown≡ n t
 --  fvars-shiftDown≡ n (TTRUNC t) = fvars-shiftDown≡ n t
   fvars-shiftDown≡ n NOWRITE = refl
   fvars-shiftDown≡ n NOREAD  = refl
@@ -1239,7 +1241,7 @@ abstract
   fvars-shiftNameUp n (LOAD a) rewrite fvars-shiftNameUp n a = refl
   fvars-shiftNameUp n (CHOOSE a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
   --fvars-shiftNameUp n (IFC0 a a₁ a₂) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ | fvars-shiftNameUp n a₂ = refl
-  fvars-shiftNameUp n (TSQUASH a) rewrite fvars-shiftNameUp n a = refl
+--  fvars-shiftNameUp n (TSQUASH a) rewrite fvars-shiftNameUp n a = refl
 --  fvars-shiftNameUp n (TTRUNC a) rewrite fvars-shiftNameUp n a = refl
   fvars-shiftNameUp n NOWRITE = refl
   fvars-shiftNameUp n NOREAD  = refl
@@ -1473,7 +1475,7 @@ abstract
                              (∈removeV++L {_} {v} {fvars b₁} {fvars b₂} {fvars a} (fvars-subv v a b₁ q))
   ... | inj₂ q = ∈removeV++R {_} {v} {fvars b} {fvars b₁ ++ fvars b₂} {fvars a}
                              (∈removeV++R {_} {v} {fvars b₁} {fvars b₂} {fvars a} (fvars-subv v a b₂ q))--}
-  fvars-subv v a (TSQUASH b) = fvars-subv v a b
+--  fvars-subv v a (TSQUASH b) = fvars-subv v a b
 --  fvars-subv v a (TTRUNC b) = fvars-subv v a b
   fvars-subv v a NOWRITE ()
   fvars-subv v a NOREAD  ()
@@ -1733,8 +1735,8 @@ abstract
             | shiftDown1-subv1-shiftUp0 n a b ca
             | shiftDown1-subv1-shiftUp0 n a b₁ ca
             | shiftDown1-subv1-shiftUp0 n a b₂ ca = refl--}
-  shiftDown1-subv1-shiftUp0 n a (TSQUASH b) ca
-    rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
+--  shiftDown1-subv1-shiftUp0 n a (TSQUASH b) ca
+--    rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
 --  shiftDown1-subv1-shiftUp0 n a (TTRUNC b) ca
 --    rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
   shiftDown1-subv1-shiftUp0 n a NOWRITE ca = refl
@@ -2141,11 +2143,12 @@ DECIDEinj3 : {a b c d e f : Term} → DECIDE a b c ≡ DECIDE d e f → c ≡ f
 DECIDEinj3 refl =  refl
 
 
-TSQUASHinj : {a b : Term} → TSQUASH a ≡ TSQUASH b → a ≡ b
+{--TSQUASHinj : {a b : Term} → TSQUASH a ≡ TSQUASH b → a ≡ b
 TSQUASHinj refl =  refl
 
 #TSQUASHinj : {a b : CTerm} → #TSQUASH a ≡ #TSQUASH b → a ≡ b
 #TSQUASHinj c = CTerm≡ (TSQUASHinj (≡CTerm c))
+--}
 
 
 {-TTRUNCinj : {a b : Term} → TTRUNC a ≡ TTRUNC b → a ≡ b
@@ -2343,8 +2346,8 @@ EQneqISECT {t} {a} {b} {c} {d} ()
 --EQneqQTUNION : {t a b : Term} {c : Term} {d : Term} → ¬ (EQ t a b) ≡ QTUNION c d
 --EQneqQTUNION {t} {a} {b} {c} {d} ()
 
-EQneqTSQUASH : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ TSQUASH c
-EQneqTSQUASH {t} {a} {b} {c} ()
+--EQneqTSQUASH : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ TSQUASH c
+--EQneqTSQUASH {t} {a} {b} {c} ()
 
 --EQneqTTRUNC : {t a b : Term} {c : Term} → ¬ (EQ t a b) ≡ TTRUNC c
 --EQneqTTRUNC {t} {a} {b} {c} ()
@@ -2538,8 +2541,8 @@ PIneqISECT {a} {b} {c} {d} ()
 --PIneqQTUNION : {a b : Term} {c : Term} {d : Term} → ¬ (PI a b) ≡ QTUNION c d
 --PIneqQTUNION {a} {b} {c} {d} ()
 
-PIneqTSQUASH : {a b : Term} {c : Term} → ¬ (PI a b) ≡ TSQUASH c
-PIneqTSQUASH {a} {b} {c} ()
+--PIneqTSQUASH : {a b : Term} {c : Term} → ¬ (PI a b) ≡ TSQUASH c
+--PIneqTSQUASH {a} {b} {c} ()
 
 --PIneqTTRUNC : {a b : Term} {c : Term} → ¬ (PI a b) ≡ TTRUNC c
 --PIneqTTRUNC {a} {b} {c} ()
@@ -2726,7 +2729,7 @@ abstract
   shiftUp-inj {n} {LOAD a} {LOAD b} e = e --rewrite shiftUp-inj (LOADinj e) = refl
   shiftUp-inj {n} {CHOOSE a a₁} {CHOOSE b b₁} e rewrite shiftUp-inj (CHOOSEinj1 e) | shiftUp-inj (CHOOSEinj2 e) = refl
   --shiftUp-inj {n} {IFC0 a a₁ a₂} {IFC0 b b₁ b₂} e rewrite shiftUp-inj (IFC0inj1 e) | shiftUp-inj (IFC0inj2 e) | shiftUp-inj (IFC0inj3 e) = refl
-  shiftUp-inj {n} {TSQUASH a} {TSQUASH b} e rewrite shiftUp-inj (TSQUASHinj e) = refl
+--  shiftUp-inj {n} {TSQUASH a} {TSQUASH b} e rewrite shiftUp-inj (TSQUASHinj e) = refl
 --  shiftUp-inj {n} {TTRUNC a} {TTRUNC b} e rewrite shiftUp-inj (TTRUNCinj e) = refl
   shiftUp-inj {n} {NOWRITE} {NOWRITE} e = refl
   shiftUp-inj {n} {NOREAD}  {NOREAD}  e = refl
@@ -3284,16 +3287,16 @@ sub0-#[0]NEG : (a : CTerm) (t : CTerm0) → sub0 a (#[0]NEG t) ≡ #NEG (sub0 a 
 sub0-#[0]NEG a t = CTerm≡ refl
 
 
-QTNAT : Term
-QTNAT = TSQUASH NAT
+--QTNAT : Term
+--QTNAT = TSQUASH NAT
 
 
-#QTNAT : CTerm
-#QTNAT = ct QTNAT refl
+--#QTNAT : CTerm
+--#QTNAT = ct QTNAT refl
 
 
-#[0]QTNAT : CTerm0
-#[0]QTNAT = ct0 QTNAT refl
+--#[0]QTNAT : CTerm0
+--#[0]QTNAT = ct0 QTNAT refl
 
 
 NAT! : Term
@@ -3320,16 +3323,16 @@ QNAT! = NOWRITEMOD QNAT
 #[0]QNAT! = ct0 QNAT! refl
 
 
-QTNAT! : Term
-QTNAT! = TSQUASH NAT!
+--QTNAT! : Term
+--QTNAT! = TSQUASH NAT!
 
 
-#QTNAT! : CTerm
-#QTNAT! = ct QTNAT! refl
+--#QTNAT! : CTerm
+--#QTNAT! = ct QTNAT! refl
 
 
-#[0]QTNAT! : CTerm0
-#[0]QTNAT! = ct0 QTNAT! refl
+--#[0]QTNAT! : CTerm0
+--#[0]QTNAT! = ct0 QTNAT! refl
 
 
 {-
@@ -3389,8 +3392,8 @@ sub0-#[0]FUN a t u = CTerm≡ (≡PI refl e)
 ≡FUN {a} {b} {c} {d} e f rewrite e | f = refl
 
 
-#QTNAT≡ : #QTNAT ≡ #TSQUASH #NAT
-#QTNAT≡ = CTerm≡ refl
+--#QTNAT≡ : #QTNAT ≡ #TSQUASH #NAT
+--#QTNAT≡ = CTerm≡ refl
 
 
 #NAT!≡ : #NAT! ≡ #NOWRITEMOD #NAT
@@ -3535,8 +3538,8 @@ IF-THEN : Term → Term → Term
 IF-THEN a b = ITE a b AX
 
 
-#QTNAT!≡ : #QTNAT! ≡ #TSQUASH #NAT!
-#QTNAT!≡ = CTerm≡ refl
+--#QTNAT!≡ : #QTNAT! ≡ #TSQUASH #NAT!
+--#QTNAT!≡ = CTerm≡ refl
 
 
 #QNAT!≡ : #QNAT! ≡ #NOWRITEMOD #QNAT

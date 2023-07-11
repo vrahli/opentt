@@ -118,8 +118,8 @@ QNATneqUNION {c} {d} ()
 QNATneqEQ : {c d e : Term} → ¬ QNAT ≡ EQ c d e
 QNATneqEQ {c} {d} {e} ()
 
-QNATneqTSQUASH : {c : Term} → ¬ QNAT ≡ TSQUASH c
-QNATneqTSQUASH {c} ()
+--QNATneqTSQUASH : {c : Term} → ¬ QNAT ≡ TSQUASH c
+--QNATneqTSQUASH {c} ()
 
 --QNATneqTTRUNC : {c : Term} → ¬ QNAT ≡ TTRUNC c
 --QNATneqTTRUNC {c} ()
