@@ -368,7 +368,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
       →≡equalInType (sym (sub0-ASSERT₄-APPLY n₁ f)) (equalInType-mon inh w1 e1)
 
 
--- Bool!ℂ CB is for BOOL! which works only FCSs
+-- Bool!ℂ CB is for BOOL! which works only for FCSs
 -- There is an instantiation in modInstanceBethCsBool2.lagda
 ¬MP₆ : Bool₀!ℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₆) #lamAX
 ¬MP₆ bcb afb w n = equalInType-NEG (isTypeMP₆ w n) aw1

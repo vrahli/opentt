@@ -56,11 +56,11 @@ module mp_prop {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
                (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
                (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
                (N : NewChoice {L} W C K G)
---               (V : ChoiceVal W C K G X N)
---               (F : Freeze {L} W C K P G N)
-               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
---               (CB : ChoiceBar W M C K P G X N V F E)
                (EC : Encode)
+               (V : ChoiceVal W C K G X N EC)
+               (F : Freeze {L} W C K P G N)
+               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+               (CB : ChoiceBar W M C K P G X N EC V F E)
        where
 
 
@@ -69,7 +69,7 @@ open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
 --open import getChoiceDef(W)(C)(K)(G)
 --open import newChoiceDef(W)(C)(K)(G)(N)
---open import choiceExtDef(W)(C)(K)(G)(X)
+open import choiceExtDef(W)(C)(K)(G)(X)
 --open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
 --open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import computation(W)(C)(K)(G)(X)(N)
@@ -77,10 +77,14 @@ open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
+open import terms2(W)(C)(K)(G)(X)(N)(EC) using (#subv)
 open import terms3(W)(C)(K)(G)(X)(N)(EC)
-open import terms8(W)(C)(K)(G)(X)(N)(EC)
+open import terms8(W)(C)(K)(G)(X)(N)(EC) using (lowerVars-fvars-[0,1,2,3])
 
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalTypes-LIFT2 ; equalInType→equalTypes-aux ; equalInType-FUN→ ; ≡CTerm→equalInType ; eqTypesSQUASH← ; eqTypesSUM← ; isTypeNAT! ; eqTypesNEG← ; →≡equalTypes)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (equalTypes-LIFT2 ; equalInType→equalTypes-aux ; equalInType-FUN→ ; ≡CTerm→equalInType ; eqTypesSQUASH← ;
+         eqTypesSUM← ; isTypeNAT! ; eqTypesNEG← ; →≡equalTypes ; eqTypesPI← ; eqTypesFUN← ; eqTypesUniv ;
+         equalInType-NEG ; eqTypesUNION←)
 
 --open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -105,17 +109,6 @@ NAT!→U i = FUN NAT! (UNIV i)
 #NAT!→U≡ i = CTerm≡ refl
 
 
-DECℕ : Term → Term
-DECℕ F = PI NAT! (SQUASH (UNION (APPLY (shiftUp 0 F) (VAR 0)) (NEG (APPLY (shiftUp 0 F) (VAR 0)))))
-
-
--- π (F : ℕ → 𝕌ᵢ). (Π (n : ℕ). F n ∨ ¬ F n) → ¬(Π (n : ℕ). ¬(F n)) → ||Σ (n : ℕ). F n||
-MPℙ : ℕ → Term
-MPℙ i = PI (NAT!→U i) (FUN (DECℕ (VAR 0))
-                            (FUN (NEG (NEG (SQUASH (SUM NAT! (LIFT (APPLY (VAR 1) (VAR 0)))))))
-                                 (SQUASH (SUM NAT! (LIFT (APPLY (VAR 1) (VAR 0)))))))
-
-
 #[0]LIFT : CTerm0 → CTerm0
 #[0]LIFT a = ct0 (LIFT ⌜ a ⌝) (CTerm0.closed a)
 
@@ -126,14 +119,6 @@ MPℙ i = PI (NAT!→U i) (FUN (DECℕ (VAR 0))
 
 #[2]LIFT : CTerm2 → CTerm2
 #[2]LIFT a = ct2 (LIFT ⌜ a ⌝) (CTerm2.closed a)
-
-
-#[0]MPℙ-right : CTerm0
-#[0]MPℙ-right = #[0]SQUASH (#[0]SUM #[0]NAT! (#[1]LIFT (#[1]APPLY #[1]VAR1 #[1]VAR0)))
-
-
-#[0]MPℙ-left : CTerm0
-#[0]MPℙ-left = #[0]NEG (#[0]NEG #[0]MPℙ-right)
 
 
 fvars-CTerm1 : (a : CTerm1) → fvars ⌜ a ⌝ ⊆ 0 ∷ [ 1 ]
@@ -203,6 +188,59 @@ fvars-CTerm2 a = ⊆?→⊆ (CTerm2.closed a)
                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
 
 
+↑APPLY : Term → Term → Term
+↑APPLY f a = LIFT (APPLY f a)
+
+
+#↑APPLY : CTerm → CTerm → CTerm
+#↑APPLY f a = #LIFT (#APPLY f a)
+
+
+#[0]↑APPLY : CTerm0 → CTerm0 → CTerm0
+#[0]↑APPLY f a = #[0]LIFT (#[0]APPLY f a)
+
+
+#[1]↑APPLY : CTerm1 → CTerm1 → CTerm1
+#[1]↑APPLY f a = #[1]LIFT (#[1]APPLY f a)
+
+
+OR : Term → Term → Term
+OR a b = SQUASH (UNION a b)
+
+
+#OR : CTerm → CTerm → CTerm
+#OR a b = #SQUASH (#UNION a b)
+
+
+#[0]OR : CTerm0 → CTerm0 → CTerm0
+#[0]OR a b = #[0]SQUASH (#[0]UNION a b)
+
+
+#[1]OR : CTerm1 → CTerm1 → CTerm1
+#[1]OR a b = #[1]SQUASH (#[1]UNION a b)
+
+
+DECℕ : Term → Term
+DECℕ F = PI NAT! (OR (↑APPLY (shiftUp 0 F) (VAR 0)) (NEG (↑APPLY (shiftUp 0 F) (VAR 0))))
+
+
+-- π (F : ℕ → 𝕌ᵢ). (Π (n : ℕ). F n ∨ ¬ F n) → ¬(Π (n : ℕ). ¬(F n)) → ||Σ (n : ℕ). F n||
+MPℙ : ℕ → Term
+MPℙ i =
+  PI (NAT!→U i)
+     (FUN (DECℕ (VAR 0))
+          (FUN (NEG (NEG (SQUASH (SUM NAT! (↑APPLY (VAR 1) (VAR 0))))))
+               (SQUASH (SUM NAT! (↑APPLY (VAR 1) (VAR 0))))))
+
+
+#[0]MPℙ-right : CTerm0
+#[0]MPℙ-right = #[0]SQUASH (#[0]SUM #[0]NAT! (#[1]LIFT (#[1]APPLY #[1]VAR1 #[1]VAR0)))
+
+
+#[0]MPℙ-left : CTerm0
+#[0]MPℙ-left = #[0]NEG (#[0]NEG #[0]MPℙ-right)
+
+
 #[1]SUM : CTerm1 → CTerm2 → CTerm1
 #[1]SUM a b = ct1 (SUM ⌜ a ⌝ ⌜ b ⌝) c
   where
@@ -263,11 +301,17 @@ fvars-CTerm2 a = ⊆?→⊆ (CTerm2.closed a)
 
 
 #[0]DECℕ : CTerm0
-#[0]DECℕ = #[0]PI #[0]NAT! (#[1]SQUASH (#[1]UNION (#[1]APPLY #[1]VAR1 #[1]VAR0) (#[1]NEG (#[1]APPLY #[1]VAR1 #[1]VAR0))))
+#[0]DECℕ = #[0]PI #[0]NAT! (#[1]OR (#[1]↑APPLY #[1]VAR1 #[1]VAR0)
+                                   (#[1]NEG (#[1]↑APPLY #[1]VAR1 #[1]VAR0)))
+
+
+#DECℕ : CTerm → CTerm
+#DECℕ f = #PI #NAT! (#[0]OR (#[0]↑APPLY ⌞ f ⌟ #[0]VAR)
+                            (#[0]NEG (#[0]↑APPLY ⌞ f ⌟ #[0]VAR)))
 
 
 #MPℙ-right : CTerm → CTerm
-#MPℙ-right f = #SQUASH (#SUM #NAT! (#[0]LIFT (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
+#MPℙ-right f = #SQUASH (#SUM #NAT! (#[0]↑APPLY ⌞ f ⌟ #[0]VAR))
 
 
 #MPℙ-left : CTerm → CTerm
@@ -301,6 +345,20 @@ sub0-fun-mpℙ a =
     e1 rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftUp 0 a | #shiftUp 1 a | #shiftDown 2 a = refl
 
 
+sub0-fun-mpℙ2 : (a : CTerm)
+              → sub0 a (#[0]FUN #[0]DECℕ (#[0]FUN #[0]MPℙ-left #[0]MPℙ-right))
+              ≡ #FUN (#DECℕ a) (#FUN (#MPℙ-left a) (#MPℙ-right a))
+sub0-fun-mpℙ2 a =
+  ≡sub0-#[0]FUN
+    a #[0]DECℕ (#[0]FUN #[0]MPℙ-left #[0]MPℙ-right)
+    (#DECℕ a) (#FUN (#MPℙ-left a) (#MPℙ-right a))
+    (CTerm≡ (≡PI refl (≡SET refl (≡UNION (≡LIFT (≡APPLY e1 refl)) (≡PI (≡LIFT (≡APPLY e1 refl)) refl)))))
+    (sub0-fun-mpℙ a)
+  where
+    e1 : shiftDown 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)))
+       ≡ shiftUp 0 (CTerm0.cTerm (CTerm→CTerm0 a))
+    e1 rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftUp 0 a | #shiftDown 2 a = refl
+
 
 sub0-LIFT-APPLY : (a b : CTerm) → sub0 a (#[0]LIFT (#[0]APPLY ⌞ b ⌟ #[0]VAR)) ≡ #LIFT (#APPLY b a)
 sub0-LIFT-APPLY a b = CTerm≡ (≡LIFT (→≡APPLY x y))
@@ -313,10 +371,10 @@ sub0-LIFT-APPLY a b = CTerm≡ (≡LIFT (→≡APPLY x y))
 
 
 isType-MPℙ-right-body : (i : ℕ) (w : 𝕎·) (f₁ f₂ : CTerm)
-                        → equalInType (suc i) w (#NAT!→U i) f₁ f₂
-                        → ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType (suc i) w' #NAT! a b)
-                                         → equalTypes (suc i) w' (sub0 a (#[0]LIFT (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))
-                                                                  (sub0 b (#[0]LIFT (#[0]APPLY ⌞ f₂ ⌟ #[0]VAR))))
+                      → equalInType (suc i) w (#NAT!→U i) f₁ f₂
+                      → ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType (suc i) w' #NAT! a b)
+                                     → equalTypes (suc i) w' (sub0 a (#[0]LIFT (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))
+                                                             (sub0 b (#[0]LIFT (#[0]APPLY ⌞ f₂ ⌟ #[0]VAR))))
 isType-MPℙ-right-body i w f₁ f₂ f∈ w1 e1 a₁ a₂ a∈ =
   →≡equalTypes
     (sym (sub0-LIFT-APPLY a₁ f₁))
@@ -329,20 +387,20 @@ isType-MPℙ-right-body i w f₁ f₂ f∈ w1 e1 a₁ a₂ a∈ =
 
 
 →equalTypes-#MPℙ-right : {i : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
-                         → equalInType (suc i) w (#NAT!→U i) a₁ a₂
-                         → equalTypes (suc i) w (#MPℙ-right a₁) (#MPℙ-right a₂)
+                       → equalInType (suc i) w (#NAT!→U i) a₁ a₂
+                       → equalTypes (suc i) w (#MPℙ-right a₁) (#MPℙ-right a₂)
 →equalTypes-#MPℙ-right {i} {w} {a₁} {a₂} eqt =
   eqTypesSQUASH← (eqTypesSUM← (λ w' _ → isTypeNAT!) (isType-MPℙ-right-body i w a₁ a₂ eqt))
 
 
 →equalTypes-#MPℙ-left : {i : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
-                         → equalInType (suc i) w (#NAT!→U i) a₁ a₂
-                         → equalTypes (suc i) w (#MPℙ-left a₁) (#MPℙ-left a₂)
+                       → equalInType (suc i) w (#NAT!→U i) a₁ a₂
+                       → equalTypes (suc i) w (#MPℙ-left a₁) (#MPℙ-left a₂)
 →equalTypes-#MPℙ-left {i} {w} {a₁} {a₂} eqt =
   eqTypesNEG← (eqTypesNEG← (→equalTypes-#MPℙ-right eqt))
 
 
-
+{-
 -- This is the axiom of unique choice
 --     Π(R : ℕ→𝔹→ℙ).
 --        (Π(n:ℕ).∃(b:𝔹).R n b)
@@ -364,6 +422,101 @@ isType-MPℙ-right-body i w f₁ f₂ f∈ w1 e1 a₁ a₂ a∈ =
                                                                      (#[3]FUN (#[3]APPLY2 #[3]VAR3 #[3]VAR2 #[3]VAR0)
                                                                               (#[3]EQ #[3]VAR1 #[3]VAR0 #[3]BOOL))))))
           (#[0]SQUASH (#[0]SUM (#[0]FUN #[0]NAT #[0]BOOL) (#[1]PI #[1]NAT (#[2]APPLY2 #[2]VAR2 #[2]VAR0 (#[2]APPLY #[2]VAR1 #[2]VAR0)))))))
+-}
 
+
+Choiceℙ : ChoiceBar W M C K P G X N EC V F E → Set
+Choiceℙ cb =
+  ChoiceBar.Typeℂ₀₁ cb ≡ #UNIV 0
+  × Cℂ₀ ≡ #FALSE
+  × Cℂ₁ ≡ #TRUE
+
+
+-- Same as in not_mp. Move it.
+alwaysFreezable : Freeze W C K P G N → Set(L)
+alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
+
+
+isType-#NAT!→U : (w : 𝕎·) (n : ℕ) → isType (suc n) w (#NAT!→U n)
+isType-#NAT!→U w n
+  rewrite #NAT!→U≡ n
+  = eqTypesFUN← isTypeNAT! (eqTypesUniv w (suc n) n ≤-refl)
+
+
+sub0-DECℕ-body1 : (a n : CTerm)
+                → sub0 n (#[0]OR (#[0]↑APPLY ⌞ a ⌟ #[0]VAR) (#[0]NEG (#[0]↑APPLY ⌞ a ⌟ #[0]VAR)))
+                ≡ #OR (#↑APPLY a n) (#NEG (#↑APPLY a n))
+sub0-DECℕ-body1 a n = CTerm≡ (≡SET refl (≡UNION (≡LIFT (≡APPLY e1 e2)) (≡PI (≡LIFT (≡APPLY e1 e2)) refl)))
+  where
+    e1 : shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ n ⌝)) (shiftUp 0 (CTerm0.cTerm (CTerm→CTerm0 a))))
+       ≡ shiftUp 0 ⌜ a ⌝
+    e1 rewrite #shiftUp 0 a | #shiftUp 0 n | #shiftUp 0 n
+             | #subv 1 ⌜ n ⌝ ⌜ a ⌝ (CTerm.closed a) | #shiftDown 1 a = refl
+
+    e2 : shiftDown 1 (shiftUp 0 (shiftUp 0 ⌜ n ⌝))
+       ≡ shiftUp 0 ⌜ n ⌝
+    e2 rewrite #shiftUp 0 n | #shiftUp 0 n | #shiftDown 1 n = refl
+
+
+eqTypesOR← : {w : 𝕎·} {i : ℕ} {A B C D : CTerm}
+           → equalTypes i w A B
+           → equalTypes i w C D
+           → equalTypes i w (#OR A C) (#OR B D)
+eqTypesOR← {w} {i} {A} {B} {C} {D} eqt1 eqt2 =
+  eqTypesSQUASH← (eqTypesUNION← eqt1 eqt2)
+
+
+→equalTypes-#DECℕ : {i : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
+                  → equalInType (suc i) w (#NAT!→U i) a₁ a₂
+                  → equalTypes (suc i) w (#DECℕ a₁) (#DECℕ a₂)
+→equalTypes-#DECℕ {i} {w} {a₁} {a₂} a∈ =
+  eqTypesPI← (λ w1 e1 → isTypeNAT!) aw
+  where
+    aw : ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) (ea : equalInType (suc i) w' #NAT! n₁ n₂)
+                      → equalTypes (suc i) w'
+                                   (sub0 n₁ (#[0]OR (#[0]↑APPLY ⌞ a₁ ⌟ #[0]VAR) (#[0]NEG (#[0]↑APPLY ⌞ a₁ ⌟ #[0]VAR))))
+                                   (sub0 n₂ (#[0]OR (#[0]↑APPLY ⌞ a₂ ⌟ #[0]VAR) (#[0]NEG (#[0]↑APPLY ⌞ a₂ ⌟ #[0]VAR)))))
+    aw w1 e1 n₁ n₂ n∈ rewrite sub0-DECℕ-body1 a₁ n₁ | sub0-DECℕ-body1 a₂ n₂ = c
+      where
+        c : equalTypes (suc i) w1
+                       (#OR (#↑APPLY a₁ n₁) (#NEG (#↑APPLY a₁ n₁)))
+                       (#OR (#↑APPLY a₂ n₂) (#NEG (#↑APPLY a₂ n₂)))
+        c = eqTypesOR←
+               (equalTypes-LIFT2
+                 i w1 (#APPLY a₁ n₁) (#APPLY a₂ n₂)
+                 (equalInType→equalTypes-aux (suc i) i ≤-refl w1 (#APPLY a₁ n₁) (#APPLY a₂ n₂)
+                   (equalInType-FUN→ (≡CTerm→equalInType (#NAT!→U≡ i) a∈) w1 e1 n₁ n₂ n∈)))
+               (eqTypesNEG←
+                 (equalTypes-LIFT2
+                   i w1 (#APPLY a₁ n₁) (#APPLY a₂ n₂)
+                   (equalInType→equalTypes-aux (suc i) i ≤-refl w1 (#APPLY a₁ n₁) (#APPLY a₂ n₂)
+                     (equalInType-FUN→ (≡CTerm→equalInType (#NAT!→U≡ i) a∈) w1 e1 n₁ n₂ n∈))))
+
+
+isTypeMPℙ : (w : 𝕎·) (n : ℕ) → isType (suc n) w (#MPℙ n)
+isTypeMPℙ w n =
+  eqTypesPI←
+    {w} {suc n}
+    {#NAT!→U n} {#[0]FUN #[0]DECℕ (#[0]FUN #[0]MPℙ-left #[0]MPℙ-right)}
+    {#NAT!→U n} {#[0]FUN #[0]DECℕ (#[0]FUN #[0]MPℙ-left #[0]MPℙ-right)}
+    (λ w1 e1 → isType-#NAT!→U w1 n)
+    aw
+  where
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType (suc n) w' (#NAT!→U n) a₁ a₂
+                      → equalTypes (suc n) w' (sub0 a₁ (#[0]FUN #[0]DECℕ (#[0]FUN #[0]MPℙ-left #[0]MPℙ-right)))
+                                              (sub0 a₂ (#[0]FUN #[0]DECℕ (#[0]FUN #[0]MPℙ-left #[0]MPℙ-right))))
+    aw w1 e1 a₁ a₂ a∈ rewrite sub0-fun-mpℙ2 a₁ | sub0-fun-mpℙ2 a₂ = c
+      where
+        c : equalTypes (suc n) w1 (#FUN (#DECℕ a₁) (#FUN (#MPℙ-left a₁) (#MPℙ-right a₁)))
+                                  (#FUN (#DECℕ a₂) (#FUN (#MPℙ-left a₂) (#MPℙ-right a₂)))
+        c = eqTypesFUN← (→equalTypes-#DECℕ a∈) (eqTypesFUN← (→equalTypes-#MPℙ-left a∈) (→equalTypes-#MPℙ-right a∈))
+
+
+-- follows ¬MP₆ in not_mp
+¬MPℙ : Choiceℙ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type (suc n) w (#NEG (#MPℙ n)) #lamAX
+¬MPℙ cp af w n = equalInType-NEG (isTypeMPℙ w n) aw1
+  where
+    aw1 : ∀𝕎 w (λ w' _ →  (a₁ a₂ : CTerm) → ¬ equalInType (suc n) w' (#MPℙ n) a₁ a₂)
+    aw1 w1 e1 F G F∈ = {!!}
 
 \end{code}
