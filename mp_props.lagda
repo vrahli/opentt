@@ -76,7 +76,8 @@ open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (eqTypes-mon)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (eqTypes-mon)
 --open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import terms3(W)(C)(K)(G)(X)(N)(EC)
@@ -84,7 +85,11 @@ open import terms8(W)(C)(K)(G)(X)(N)(EC)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-ASSERT₃-APPLY ; equalInType-BOOL!→equalTypes-ASSERT₃ ; isType-#NAT!→BOOL ; isType-#NAT!→BOOL! ; isType-#NAT→BOOL ; equalInType-NEG→¬inh ; sub0-NEG-ASSERT₂-APPLY ; →equalInType-SQUASH ; isTypeBOOL ; isTypeBOOL! ; isTypeBOOL₀ ; isType-#NAT!→BOOL₀ ; isTypeBOOL₀!→ ; isType-#NAT!→BOOL₀! ; isType-#NAT→BOOL₀ ; eqTypesQNAT!)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-ASSERT₃-APPLY ; equalInType-BOOL!→equalTypes-ASSERT₃ ;
+         isType-#NAT!→BOOL ; isType-#NAT!→BOOL! ; isType-#NAT→BOOL ; equalInType-NEG→¬inh ; sub0-NEG-ASSERT₂-APPLY ;
+         →equalInType-SQUASH ; isTypeBOOL ; isTypeBOOL! ; isTypeBOOL₀ ; isType-#NAT!→BOOL₀ ; isTypeBOOL₀!→ ; isType-#NAT!→BOOL₀! ;
+         isType-#NAT→BOOL₀ ; eqTypesQNAT!)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 --open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
