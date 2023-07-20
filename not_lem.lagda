@@ -136,12 +136,12 @@ sub0-#Σchoice-body≡ a c k = CTerm≡ (→≡EQ (→≡APPLY refl (shiftDownUp
 
 
 equalTypes-#Σchoice-body : (i : ℕ) (w : 𝕎·) (c : Name) (k : ℂ·)
-                           → compatible· c w Resℂ
-                           → Σ ℕ (λ n → ·ᵣ Resℂ n k)
-                           → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm)
-                                           → equalInType i w' #NAT! a₁ a₂
-                                           → equalTypes i w' (#EQ (#APPLY (#CS c) a₁) (ℂ→C· k) Typeℂ₀₁·)
-                                                              (#EQ (#APPLY (#CS c) a₂) (ℂ→C· k) Typeℂ₀₁·))
+                         → compatible· c w Resℂ
+                         → Σ ℕ (λ n → ·ᵣ Resℂ n k)
+                         → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm)
+                                        → equalInType i w' #NAT! a₁ a₂
+                                        → equalTypes i w' (#EQ (#APPLY (#CS c) a₁) (ℂ→C· k) Typeℂ₀₁·)
+                                                          (#EQ (#APPLY (#CS c) a₂) (ℂ→C· k) Typeℂ₀₁·))
 equalTypes-#Σchoice-body i w c k comp sat w' e' a₁ a₂ ea =
   eqTypesEQ← (Typeℂ₀₁-isType· i w') aw1 aw2
   where
@@ -183,12 +183,12 @@ equalInType-#Σchoice-UNIV {n} {i} p w c k comp sat =
 
 
 getChoice→equalInType-#Σchoice-aux2 : {n : ℕ} {name : Name} {w : 𝕎·} {k : ℂ·} (i : ℕ)
-                                      → ·ᵣ Resℂ n k
-                                       → #APPLY (#CS name) (#NUM n) #⇛! ℂ→C· k at w
-                                       → equalInType
-                                           i w
-                                           (#EQ (#APPLY (#CS name) (#NUM n)) (ℂ→C· k) Typeℂ₀₁·)
-                                           #AX #AX
+                                    → ·ᵣ Resℂ n k
+                                    → #APPLY (#CS name) (#NUM n) #⇛! ℂ→C· k at w
+                                    → equalInType
+                                        i w
+                                        (#EQ (#APPLY (#CS name) (#NUM n)) (ℂ→C· k) Typeℂ₀₁·)
+                                        #AX #AX
 getChoice→equalInType-#Σchoice-aux2 {n} {name} {w} {k} i sat g =
   equalInType-EQ (Typeℂ₀₁-isType· i w) (Mod.∀𝕎-□ M aw)
   where

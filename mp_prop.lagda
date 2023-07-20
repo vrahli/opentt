@@ -97,10 +97,11 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
          eqTypesSUM← ; isTypeNAT! ; eqTypesNEG← ; →≡equalTypes ; eqTypesPI← ; eqTypesFUN← ; eqTypesUniv ;
          equalInType-NEG ; eqTypesUNION← ; equalInType-SQUASH→ ; equalInType-SUM→ ; equalInType-refl ;
          equalInType-LIFT→ ; equalInType-PI→ ; equalInType-PI ; equalInType-NEG→ ; equalInType-SUM ; equalInType-mon ;
-         equalInType-LIFT← ; NUM-equalInType-NAT! ; equalTypes→equalInType-UNIV ; equalInType-local ; equalInType-EQ→)
+         equalInType-LIFT← ; NUM-equalInType-NAT! ; equalTypes→equalInType-UNIV ; equalInType-local ; equalInType-EQ→ ;
+         equalInType-NAT!→ ; ¬equalInType-FALSE)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (→equalInType-SQUASH ; →equalInType-CS-NAT!→T ; equalTerms-pres-#⇛-left-rev ; equalTypes-#⇛-left-right-rev ;
-         →equalInType-TRUE)
+         →equalInType-TRUE ; →equalInType-UNION)
 
 open import pure2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (∈NAT!-change-level)
@@ -110,6 +111,7 @@ open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using ()
 
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+  using (#[0]Typeℂ₀₁ ; Typeℂ₀₁· ; □·-choice·)
 open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
   using (#Σchoice ; #Σchoice≡ ; ¬∀𝕎¬equalInType-#Σchoice ; sub0-#Σchoice-body≡)
 open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
@@ -471,6 +473,7 @@ Choiceℙ i cb =
 
 
 -- Same as in not_mp. Move it.
+-- alwaysFreezable is only going to be true about choice sequences, but not about references, which change over time
 alwaysFreezable : Freeze W C K P G N → Set(L)
 alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
 
@@ -504,6 +507,63 @@ eqTypesOR← {w} {i} {A} {B} {C} {D} eqt1 eqt2 =
   eqTypesSQUASH← (eqTypesUNION← eqt1 eqt2)
 
 
+→equalInTypeORₗ : {w : 𝕎·} {i : ℕ} {A B a b : CTerm} (u : CTerm)
+                → ∈Type i w A u
+                → isType i w B
+                → equalInType i w (#OR A B) a b
+→equalInTypeORₗ {w} {i} {A} {B} {a} {b} u a∈ tyb =
+  →equalInType-SQUASH (Mod.∀𝕎-□ M aw)
+  where
+  aw : ∀𝕎 w (λ w' _ → inhType i w' (#UNION A B))
+  aw w1 e1 =
+    #INL u ,
+    →equalInType-UNION
+      (eqTypes-mon (uni i) (fst a∈) w1 e1)
+      (eqTypes-mon (uni i) tyb w1 e1)
+      (Mod.∀𝕎-□ M aw1)
+    where
+    aw1 : ∀𝕎 w1 (λ w' _ → UNIONeq (equalInType i w' A) (equalInType i w' B) w' (#INL u) (#INL u))
+    aw1 w2 e2 = u , u , inj₁ (⇓-refl ⌜ #INL u ⌝ w2 , ⇓-refl ⌜ #INL u ⌝ w2 , equalInType-mon a∈ w2 (⊑-trans· e1 e2))
+
+
+→equalInTypeORᵣ : {w : 𝕎·} {i : ℕ} {A B a b : CTerm} (u : CTerm)
+                → isType i w A
+                → ∈Type i w B u
+                → equalInType i w (#OR A B) a b
+→equalInTypeORᵣ {w} {i} {A} {B} {a} {b} u tya b∈ =
+  →equalInType-SQUASH (Mod.∀𝕎-□ M aw)
+  where
+  aw : ∀𝕎 w (λ w' _ → inhType i w' (#UNION A B))
+  aw w1 e1 =
+    #INR u ,
+    →equalInType-UNION
+      (eqTypes-mon (uni i) tya w1 e1)
+      (eqTypes-mon (uni i) (fst b∈) w1 e1)
+      (Mod.∀𝕎-□ M aw1)
+    where
+    aw1 : ∀𝕎 w1 (λ w' _ → UNIONeq (equalInType i w' A) (equalInType i w' B) w' (#INR u) (#INR u))
+    aw1 w2 e2 = u , u , inj₂ (⇓-refl ⌜ #INR u ⌝ w2 , ⇓-refl ⌜ #INR u ⌝ w2 , equalInType-mon b∈ w2 (⊑-trans· e1 e2))
+
+
+→equalTypes-#DECℕ-bodyₗ : {i : ℕ} {w : 𝕎·} {a₁ a₂ n₁ n₂ : CTerm}
+                        → equalInType (suc i) w (#NAT!→U i) a₁ a₂
+                        → equalInType (suc i) w #NAT! n₁ n₂
+                        → equalTypes (suc i) w (#↑APPLY a₁ n₁) (#↑APPLY a₂ n₂)
+→equalTypes-#DECℕ-bodyₗ {i} {w} {a₁} {a₂} {n₁} {n₂} a∈ n∈ =
+  equalTypes-LIFT2
+    i w (#APPLY a₁ n₁) (#APPLY a₂ n₂)
+    (equalInType→equalTypes-aux (suc i) i ≤-refl w (#APPLY a₁ n₁) (#APPLY a₂ n₂)
+      (equalInType-FUN→ (≡CTerm→equalInType (#NAT!→U≡ i) a∈) w (⊑-refl· w) n₁ n₂ n∈))
+
+
+→equalTypes-#DECℕ-bodyᵣ : {i : ℕ} {w : 𝕎·} {a₁ a₂ n₁ n₂ : CTerm}
+                        → equalInType (suc i) w (#NAT!→U i) a₁ a₂
+                        → equalInType (suc i) w #NAT! n₁ n₂
+                        → equalTypes (suc i) w (#NEG (#↑APPLY a₁ n₁)) (#NEG (#↑APPLY a₂ n₂))
+→equalTypes-#DECℕ-bodyᵣ {i} {w} {a₁} {a₂} {n₁} {n₂} a∈ n∈ =
+  eqTypesNEG← (→equalTypes-#DECℕ-bodyₗ a∈ n∈)
+
+
 →equalTypes-#DECℕ-body : {i : ℕ} {w : 𝕎·} {a₁ a₂ n₁ n₂ : CTerm}
                        → equalInType (suc i) w (#NAT!→U i) a₁ a₂
                        → equalInType (suc i) w #NAT! n₁ n₂
@@ -511,21 +571,8 @@ eqTypesOR← {w} {i} {A} {B} {C} {D} eqt1 eqt2 =
                                     (sub0 n₁ (#[0]OR (#[0]↑APPLY ⌞ a₁ ⌟ #[0]VAR) (#[0]NEG (#[0]↑APPLY ⌞ a₁ ⌟ #[0]VAR))))
                                     (sub0 n₂ (#[0]OR (#[0]↑APPLY ⌞ a₂ ⌟ #[0]VAR) (#[0]NEG (#[0]↑APPLY ⌞ a₂ ⌟ #[0]VAR))))
 →equalTypes-#DECℕ-body {i} {w} {a₁} {a₂} {n₁} {n₂} a∈ n∈
-  rewrite sub0-DECℕ-body1 a₁ n₁ | sub0-DECℕ-body1 a₂ n₂ = c
-    where
-    c : equalTypes (suc i) w
-                   (#OR (#↑APPLY a₁ n₁) (#NEG (#↑APPLY a₁ n₁)))
-                   (#OR (#↑APPLY a₂ n₂) (#NEG (#↑APPLY a₂ n₂)))
-    c = eqTypesOR←
-           (equalTypes-LIFT2
-             i w (#APPLY a₁ n₁) (#APPLY a₂ n₂)
-             (equalInType→equalTypes-aux (suc i) i ≤-refl w (#APPLY a₁ n₁) (#APPLY a₂ n₂)
-               (equalInType-FUN→ (≡CTerm→equalInType (#NAT!→U≡ i) a∈) w (⊑-refl· w) n₁ n₂ n∈)))
-           (eqTypesNEG←
-             (equalTypes-LIFT2
-               i w (#APPLY a₁ n₁) (#APPLY a₂ n₂)
-               (equalInType→equalTypes-aux (suc i) i ≤-refl w (#APPLY a₁ n₁) (#APPLY a₂ n₂)
-                 (equalInType-FUN→ (≡CTerm→equalInType (#NAT!→U≡ i) a∈) w (⊑-refl· w) n₁ n₂ n∈))))
+  rewrite sub0-DECℕ-body1 a₁ n₁ | sub0-DECℕ-body1 a₂ n₂
+  = eqTypesOR← (→equalTypes-#DECℕ-bodyₗ a∈ n∈) (→equalTypes-#DECℕ-bodyᵣ a∈ n∈)
 
 
 →equalTypes-#DECℕ : {i : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
@@ -784,29 +831,237 @@ abstract
             eqi2 = TSext-equalTypes-equalInType i w2 #TRUE (#APPLY (#CS name) a₁) b₁ b₂ (TEQsym-equalTypes i w2 _ _ eqi5) (→equalInType-TRUE i)
 
 
--- How can we expect to prove this since we've proved ¬∈LEM in not_lem.lagda...
-inhType-DECℕ : (i : ℕ) (w : 𝕎·) (f : CTerm)
-             → ∈Type (suc i) w (#NAT!→U i) f
-             → inhType (suc i) w (#DECℕ f)
-inhType-DECℕ i w f f∈ =
+-- This assumption is only true about choice sequences and not about refences
+-- It says that choices never change
+immutableChoices : Set(lsuc(L))
+immutableChoices =
+    (w : 𝕎·) (name : Name) (n : ℕ) (c : ℂ·)
+  → getChoice· n name w ≡ just c
+  → ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (getChoice· n name w' ≡ just c))
+
+
+immutableChoices→ : immutableChoices
+                  → (w : 𝕎·) (name : Name) (n : ℕ) (r : Res)
+                  → compatible· name w r
+                  → □· w (λ w' _ → Σ ℂ· (λ c → ·ᵣ r n c × ∀𝕎 w' (λ w'' _ → Lift {0ℓ} (lsuc(L)) (getChoice· n name w'' ≡ just c))))
+immutableChoices→ imut w name n r compat =
+  Mod.∀𝕎-□Func M aw (□·-choice· w name n r compat)
+    where
+    aw : ∀𝕎 w (λ w' e' → ∀𝕎 w' (λ w'' _ → Lift (lsuc L) (Σ ℂ· (λ t → getChoice· n name w'' ≡ just t × ·ᵣ r n t)))
+                       → Σ ℂ· (λ c → ·ᵣ r n c × ∀𝕎 w' (λ w'' _ → Lift (lsuc L) (getChoice· n name w'' ≡ just c))))
+    aw w1 e1 h = fst q , snd (snd q) , imut w1 name n (proj₁ q) (fst (snd q))
+      where
+      q : Σ ℂ· (λ t → getChoice· n name w1 ≡ just t × ·ᵣ r n t)
+      q = lower (h w1 (⊑-refl· w1))
+
+
+-- A stronger version than the one in barContP7
+equalInType-#⇛-rev : {i : ℕ} {w : 𝕎·} {T U a b : CTerm}
+                      → U #⇛ T at w
+                      → equalInType i w T a b
+                      → equalInType i w U a b
+equalInType-#⇛-rev {i} {w} {T} {U} {a} {b} comp e =
+  TSext-equalTypes-equalInType
+    i w T U a b
+    (equalTypes-#⇛-left-right-rev {i} {w} {T} {T} {U} {T} (#⇛-refl w T) comp (fst e))
+    e
+
+#⇛-vals-det→ : {w : 𝕎·} {a b c : CTerm}
+             → #isValue b
+             → #isValue c
+             → a #⇛ b at w
+             → a #⇛ c at w
+             → b #⇛ c at w
+#⇛-vals-det→ {w} {a} {b} {c} isvb isvc compb compc
+  rewrite #⇛-val-det {w} {a} {b} {c} isvb isvc compb compc
+  = #⇛-refl w c
+
+
+abstract
+  equalTypes-#⇛-left-val : {i : ℕ} {w : 𝕎·} {a b c : CTerm}
+                         → a #⇛ b at w
+                         → #isValue b
+                         → equalTypes i w a c
+                         → equalTypes i w b c
+  equalTypes-#⇛-left-val {i} {w} {a} {b} {c} comp isv eqt = concl b comp isv
+    where
+      ind : {u : ℕ} {w : 𝕎·} {a c : CTerm} (eqt : equalTypes u w a c)
+            → ({u' : ℕ} {w' : 𝕎·} {a' c' : CTerm} (eqt' : equalTypes u' w' a' c') → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt
+                → (b' : CTerm) → a' #⇛ b' at w' → #isValue b' → equalTypes u' w' b' c')
+            → (b : CTerm) → a #⇛ b at w → #isValue b → equalTypes u w b c
+      ind {u} {w} {a} {c} (EQTQNAT x x₁) ind b comp isv =
+        EQTQNAT (#⇛-vals-det→ {_} {a} {b} {#QNAT} isv tt comp x) x₁
+      ind {u} {w} {a} {c} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind b comp isv =
+        EQTLT a1 a2 b1 b2 (#⇛-vals-det→ {_} {a} {b} {#LT a1 b1} isv tt comp x) x₁ x₂ x₃
+      ind {u} {w} {a} {c} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind b comp isv =
+        EQTQLT a1 a2 b1 b2 (#⇛-vals-det→ {_} {a} {b} {#QLT a1 b1} isv tt comp x) x₁ x₂ x₃
+      ind {u} {w} {a} {c} (EQTFREE x x₁) ind b comp isv =
+        EQTFREE (#⇛-vals-det→ {_} {a} {b} {#FREE} isv tt comp x) x₁
+      ind {u} {w} {a} {c} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind b comp isv =
+        EQTPI A1 B1 A2 B2 (#⇛-vals-det→ {_} {a} {b} {#PI A1 B1} isv tt comp x) x₁ eqta eqtb exta extb
+      ind {u} {w} {a} {c} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind b comp isv =
+        EQTSUM A1 B1 A2 B2 (#⇛-vals-det→ {_} {a} {b} {#SUM A1 B1} isv tt comp x) x₁ eqta eqtb exta extb
+      ind {u} {w} {a} {c} (EQTW A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ind b comp isv =
+        EQTW A1 B1 C1 A2 B2 C2 (#⇛-vals-det→ {_} {a} {b} {#WT A1 B1 C1} isv tt comp x) x₁ eqta eqtb eqtc exta extb extc
+      ind {u} {w} {a} {c} (EQTM A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ind b comp isv =
+        EQTM A1 B1 C1 A2 B2 C2 (#⇛-vals-det→ {_} {a} {b} {#MT A1 B1 C1} isv tt comp x) x₁ eqta eqtb eqtc exta extb extc
+      ind {u} {w} {a} {c} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind b comp isv =
+        EQTSET A1 B1 A2 B2 (#⇛-vals-det→ {_} {a} {b} {#SET A1 B1} isv tt comp x) x₁ eqta eqtb exta extb
+      ind {u} {w} {a} {c} (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind b comp isv =
+        EQTISECT A1 B1 A2 B2 (#⇛-vals-det→ {_} {a} {b} {#ISECT A1 B1} isv tt comp x) x₁ eqtA eqtB exta extb
+      ind {u} {w} {a} {c} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind b comp isv =
+        EQTTUNION A1 B1 A2 B2 (#⇛-vals-det→ {_} {a} {b} {#TUNION A1 B1} isv tt comp x) x₁ eqta eqtb exta extb
+      ind {u} {w} {a} {c} (EQTEQ a1 b1 a2 b2 A B x x₁ eqtA exta eqt1 eqt2) ind b comp isv =
+        EQTEQ a1 b1 a2 b2 A B (#⇛-vals-det→ {_} {a} {b} {#EQ a1 a2 A} isv tt comp x) x₁ eqtA exta eqt1 eqt2
+      ind {u} {w} {a} {c} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind b comp isv =
+        EQTUNION A1 B1 A2 B2 (#⇛-vals-det→ {_} {a} {b} {#UNION A1 B1} isv tt comp x) x₁ eqtA eqtB exta extb
+      ind {u} {w} {a} {c} (EQTNOWRITE x x₁) ind b comp isv =
+        EQTNOWRITE (#⇛-vals-det→ {_} {a} {b} {#NOWRITE} isv tt comp x) x₁
+      ind {u} {w} {a} {c} (EQTNOREAD x x₁) ind b comp isv =
+        EQTNOREAD (#⇛-vals-det→ {_} {a} {b} {#NOREAD} isv tt comp x) x₁
+      ind {u} {w} {a} {c} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind b comp isv =
+        EQTSUBSING A1 A2 (#⇛-vals-det→ {_} {a} {b} {#SUBSING A1} isv tt comp x) x₁ eqtA exta
+      ind {u} {w} {a} {c} (EQTPURE x x₁) ind b comp isv =
+        EQTPURE (#⇛-vals-det→ {_} {a} {b} {#PURE} isv tt comp x) x₁
+      ind {u} {w} {a} {c} (EQTNOSEQ x x₁) ind b comp isv =
+        EQTNOSEQ (#⇛-vals-det→ {_} {a} {b} {#NOSEQ} isv tt comp x) x₁
+      ind {u} {w} {a} {c} (EQTTERM t1 t2 x x₁ x₂) ind b comp isv =
+        EQTTERM t1 t2 (#⇛-vals-det→ {_} {a} {b} {#TERM t1} isv tt comp x) x₁ x₂
+      ind {u} {w} {a} {c} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ind b comp isv =
+        EQFFDEFS A1 A2 x1 x2 (#⇛-vals-det→ {_} {a} {b} {#FFDEFS A1 x1} isv tt comp x) x₁ eqtA exta eqx
+      ind {u} {w} {a} {c} (EQTUNIV i₁ p x x₁) ind b comp isv =
+        EQTUNIV i₁ p (#⇛-vals-det→ {_} {a} {b} {#UNIV i₁} isv tt comp x) x₁
+      ind {u} {w} {a} {c} (EQTLIFT A1 A2 x x₁ eqtA exta) ind b comp isv =
+        EQTLIFT A1 A2 (#⇛-vals-det→ {_} {a} {b} {#LIFT A1} isv tt comp x) x₁ eqtA exta
+      ind {u} {w} {a} {c} (EQTBAR x) ind b comp isv =
+        EQTBAR (∀𝕎-□at W M x (λ w' e' z at → ind {u} {w'} {a} {c} z (<Type1 z (EQTBAR x) (<TypeBAR (ℕ→𝕌 u) w a c x w' e' z at)) b (∀𝕎-mon e' comp) isv))
+
+      concl : (b : CTerm) → a #⇛ b at w → #isValue b → equalTypes i w b c
+      concl b comp isv =
+        equalTypes-ind
+          (λ {i} {w} {a} {c} eqt → (b : CTerm) → a #⇛ b at w → #isValue b → equalTypes i w b c)
+          ind eqt b comp isv
+
+
+equalTypes-#⇛-left-right-val : {i : ℕ} {w : 𝕎·} {a b c d : CTerm}
+                             → a #⇛ b at w
+                             → d #⇛ c at w
+                             → #isValue b
+                             → #isValue c
+                             → equalTypes i w a d
+                             → equalTypes i w b c
+equalTypes-#⇛-left-right-val {i} {w} {a} {b} {c} {d} c₁ c₂ isvb isvc eqt =
+  equalTypes-#⇛-left-val c₁ isvb (TEQsym-equalTypes i w _ _ (equalTypes-#⇛-left-val c₂ isvc (TEQsym-equalTypes i w _ _ eqt)))
+
+
+equalInType-#⇛-val : {i : ℕ} {w : 𝕎·} {T U a b : CTerm}
+                   → T #⇛ U at w
+                   → #isValue U
+                   → equalInType i w T a b
+                   → equalInType i w U a b
+equalInType-#⇛-val {i} {w} {T} {U} {a} {b} comp isv e =
+  TSext-equalTypes-equalInType
+    i w T U a b
+    (TEQsym-equalTypes i w _ _ (equalTypes-#⇛-left-val comp isv (fst e)))
+    e
+
+
+getC-True→∈APPLY : (i : ℕ) (w : 𝕎·) (k : ℕ) (name : Name) (n : CTerm)
+                 → ∀𝕎 w (λ w' e' → Lift (lsuc L) (getC k name w' ≡ just #TRUE))
+                 → n #⇛! #NUM k at w
+                 → equalInType i w (#APPLY (#CS name) n) #AX #AX
+getC-True→∈APPLY i w k name n aw comp =
+  equalInType-#⇛-rev
+    {i} {w} {#TRUE} {#APPLY (#CS name) n} {#AX} {#AX}
+    (⇛-trans (#⇛-APPLY-CS {_} {n} {#NUM k} name (#⇛!→#⇛ {_} {n} {#NUM k} comp)) comp')
+    (→equalInType-TRUE i)
+  where
+  comp' : #APPLY (#CS name) (#NUM k) #⇛ #TRUE at w
+  comp' w1 e1 = lift (1 , c)
+    where
+    c : stepsT 1 (APPLY (CS name) (NUM k)) w1 ≡ TRUE
+    c rewrite lower (aw w1 e1) = refl
+
+
+getC-False→∈APPLY : (i : ℕ) (w : 𝕎·) (k : ℕ) (name : Name) (n a b : CTerm)
+                  → ∀𝕎 w (λ w' e' → Lift (lsuc L) (getC k name w' ≡ just #FALSE))
+                  → n #⇛! #NUM k at w
+                  → equalInType i w (#APPLY (#CS name) n) a b
+                  → ⊥
+getC-False→∈APPLY i w k name n a b aw comp a∈ =
+  ¬equalInType-FALSE a∈'
+  where
+  comp' : #APPLY (#CS name) (#NUM k) #⇛ #FALSE at w
+  comp' w1 e1 = lift (1 , c)
+    where
+    c : stepsT 1 (APPLY (CS name) (NUM k)) w1 ≡ FALSE
+    c rewrite lower (aw w1 e1) = refl
+
+  a∈' : equalInType i w #FALSE a b
+  a∈' = equalInType-#⇛-val
+          {i} {w} {#APPLY (#CS name) n} {#FALSE} {a} {b}
+          (⇛-trans (#⇛-APPLY-CS {_} {n} {#NUM k} name (#⇛!→#⇛ {_} {n} {#NUM k} comp)) comp')
+          tt a∈
+
+
+inhType-DECℕ : (immut : immutableChoices) (i : ℕ) (cp : Choiceℙ i CB) (w : 𝕎·) (name : Name)
+             → compatible· name w Resℂ
+             → ∈Type (suc i) w (#NAT!→U i) (#CS name)
+             → inhType (suc i) w (#DECℕ (#CS name))
+inhType-DECℕ immut i cp w name compat f∈ =
   #lamAX ,
   equalInType-PI
+    {_} {_} {#NAT!} {#[0]OR (#[0]↑APPLY ⌞ f ⌟ #[0]VAR) (#[0]NEG (#[0]↑APPLY ⌞ f ⌟ #[0]VAR))}
     (λ w' _ → isTypeNAT!)
     (λ w1 e1 n₁ n₂ n∈ → →equalTypes-#DECℕ-body (equalInType-mon f∈ w1 e1) n∈)
     aw
     where
+    f : CTerm
+    f = #CS name
+
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType (suc i) w' #NAT! a₁ a₂
                       → equalInType (suc i) w' (sub0 a₁ (#[0]OR (#[0]↑APPLY ⌞ f ⌟ #[0]VAR) (#[0]NEG (#[0]↑APPLY ⌞ f ⌟ #[0]VAR))))
                                     (#APPLY #lamAX a₁) (#APPLY #lamAX a₂))
     aw w1 e1 n₁ n₂ n∈ rewrite sub0-DECℕ-body1 f n₁ = c
       where
       c : equalInType (suc i) w1 (#OR (#↑APPLY f n₁) (#NEG (#↑APPLY f n₁))) (#APPLY #lamAX n₁) (#APPLY #lamAX n₂)
-      c = {!!}
+      c = equalInType-local (Mod.∀𝕎-□Func M aw1 (equalInType-NAT!→ (suc i) w1 n₁ n₂ n∈))
+        where
+        aw1 : ∀𝕎 w1 (λ w' e' → #⇛!sameℕ w' n₁ n₂
+                             → equalInType (suc i) w' (#OR (#↑APPLY f n₁) (#NEG (#↑APPLY f n₁))) (#APPLY #lamAX n₁) (#APPLY #lamAX n₂))
+        aw1 w2 e2 (n , c₁ , c₂) =
+          equalInType-local (Mod.∀𝕎-□Func M aw2 (immutableChoices→ immut w2 name n Resℂ (⊑-compatible· (⊑-trans· e1 e2) compat)))
+          where
+          aw2 : ∀𝕎 w2 (λ w' e' → Σ ℂ· (λ t → ·ᵣ Resℂ n t × ∀𝕎 w' (λ w'' _ → Lift (lsuc L) (getChoice· n name w'' ≡ just t)))
+                               → equalInType (suc i) w' (#OR (#↑APPLY f n₁) (#NEG (#↑APPLY f n₁))) (#APPLY #lamAX n₁) (#APPLY #lamAX n₂))
+          aw2 w3 e3 (c , sat , h) with sat
+          ... | inj₁ z rewrite z = -- False case
+            →equalInTypeORᵣ
+              #AX
+              (→equalTypes-#DECℕ-bodyₗ (equalInType-mon f∈ w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon (equalInType-refl n∈) w3 (⊑-trans· e2 e3)))
+              (equalInType-NEG
+                (→equalTypes-#DECℕ-bodyₗ (equalInType-mon f∈ w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon (equalInType-refl n∈) w3 (⊑-trans· e2 e3)))
+                aw3)
+            where
+            h' : ∀𝕎 w3 (λ w' e' → Lift (lsuc L) (getC n name w' ≡ just #FALSE))
+            h' w4 e4 rewrite lower (h w4 e4) | fst (snd cp) = lift refl
+
+            aw3 : ∀𝕎 w3 (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType (suc i) w' (#↑APPLY f n₁) a₁ a₂)
+            aw3 w4 e4 a₁ a₂ a∈ = getC-False→∈APPLY i w4 n name n₁ a₁ a₂ (∀𝕎-mon e4 h') (∀𝕎-mon (⊑-trans· e3 e4) c₁) (equalInType-LIFT→ i w4 (#APPLY f n₁) a₁ a₂ a∈)
+          ... | inj₂ z rewrite z = -- True case
+            →equalInTypeORₗ
+              #AX
+              (equalInType-LIFT← i w3 (#APPLY f n₁) #AX #AX (getC-True→∈APPLY i w3 n name n₁ h' (∀𝕎-mon e3 c₁)))
+              (→equalTypes-#DECℕ-bodyᵣ (equalInType-mon f∈ w3 (⊑-trans· e1 (⊑-trans· e2 e3))) (equalInType-mon (equalInType-refl n∈) w3 (⊑-trans· e2 e3)))
+            where
+            h' : ∀𝕎 w3 (λ w' e' → Lift (lsuc L) (getC n name w' ≡ just #TRUE))
+            h' w4 e4 rewrite lower (h w4 e4) | snd (snd cp) = lift refl
 
 
 -- follows ¬MP₆ in not_mp
-¬MPℙ : (i : ℕ) → Choiceℙ i CB → alwaysFreezable F → (w : 𝕎·) → ∈Type (suc i) w (#NEG (#MPℙ i)) #lamAX
-¬MPℙ i cp af w = equalInType-NEG (isTypeMPℙ w i) aw1
+¬MPℙ : (i : ℕ) → Choiceℙ i CB → immutableChoices → alwaysFreezable F
+     → (w : 𝕎·) → ∈Type (suc i) w (#NEG (#MPℙ i)) #lamAX
+¬MPℙ i cp immut af w = equalInType-NEG (isTypeMPℙ w i) aw1
   where
   aw1 : ∀𝕎 w (λ w' _ →  (a₁ a₂ : CTerm) → ¬ equalInType (suc i) w' (#MPℙ i) a₁ a₂)
   aw1 w1 e1 F G F∈ = {!!}
@@ -860,6 +1115,6 @@ inhType-DECℕ i w f f∈ =
       z = ¬ΣNAT!→¬inhType-Σchoiceℙ i cp w3 name aw
 
     h4 : □· w2 (λ w' _ → Σ CTerm (λ n → ∈Type i w' #NAT! n × inhType i w' (#APPLY f n)))
-    h4 = aw2 w2 e2 f eqf1 {!!} h3
+    h4 = aw2 w2 e2 f eqf1 (inhType-DECℕ immut i cp w2 name comp1 eqf1) h3
 
 \end{code}
