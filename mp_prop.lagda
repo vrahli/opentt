@@ -16,6 +16,7 @@ open import Data.Sum
 open import Data.Empty
 open import Data.Maybe
 open import Data.Unit using (⊤ ; tt)
+open import Data.Bool using (Bool ; _∧_ ; _∨_)
 open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
 open import Data.Nat.Properties
 open import Agda.Builtin.String
@@ -31,6 +32,7 @@ open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
 open import Axiom.Extensionality.Propositional
+open import Axiom.ExcludedMiddle
 
 
 open import util
@@ -52,15 +54,21 @@ open import mod
 open import encode
 
 
-module mp_prop {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-               (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
-               (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
-               (N : NewChoice {L} W C K G)
+module mp_prop {L  : Level}
+               (W  : PossibleWorlds {L})
+               (M  : Mod W)
+               (C  : Choice)
+               (K  : Compatible W C)
+               (P  : Progress {L} W C K)
+               (G  : GetChoice {L} W C K)
+               (X  : ChoiceExt {L} W C)
+               (N  : NewChoice {L} W C K G)
                (EC : Encode)
-               (V : ChoiceVal W C K G X N EC)
-               (F : Freeze {L} W C K P G N)
-               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+               (V  : ChoiceVal W C K G X N EC)
+               (F  : Freeze {L} W C K P G N)
+               (E  : Extensionality 0ℓ (lsuc(lsuc(L))))
                (CB : ChoiceBar W M C K P G X N EC V F E)
+               (EM : ExcludedMiddle (lsuc(L)))
        where
 
 
@@ -98,17 +106,28 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
          equalInType-NEG ; eqTypesUNION← ; equalInType-SQUASH→ ; equalInType-SUM→ ; equalInType-refl ;
          equalInType-LIFT→ ; equalInType-PI→ ; equalInType-PI ; equalInType-NEG→ ; equalInType-SUM ; equalInType-mon ;
          equalInType-LIFT← ; NUM-equalInType-NAT! ; equalTypes→equalInType-UNIV ; equalInType-local ; equalInType-EQ→ ;
-         equalInType-NAT!→ ; ¬equalInType-FALSE ; ≡CTerm→eqTypes ; eqTypesEQ← ; eqTypesTRUE ; equalInType-EQ)
+         equalInType-NAT!→ ; ¬equalInType-FALSE ; ≡CTerm→eqTypes ; eqTypesEQ← ; eqTypesTRUE ; equalInType-EQ ;
+         equalInType-FUN)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (→equalInType-SQUASH ; →equalInType-CS-NAT!→T ; equalTerms-pres-#⇛-left-rev ; equalTypes-#⇛-left-right-rev ;
-         →equalInType-TRUE ; →equalInType-UNION)
+         →equalInType-TRUE ; →equalInType-UNION ; isType-#NAT!→BOOL₀! ; inhType-mon ; equalInType-BOOL₀!→ ;
+         →equalInType-BOOL₀!)
 
+open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (equalInType-TPURE→)
+-- TODO: move those:
 open import pure2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (∈NAT!-change-level)
 
---open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)
+-- TODO: move those:
+open import mpp(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
+  using (→inhType-ASSERT₄-APPLY ; equalInType-ASSERT₄→ ; →equalInType-ASSERT₄ ; strongBool!-BTRUE→)
+
+open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (#SUM-ASSERT₅ ; #ASSERT₄ ; #[0]ASSERT₄ ; sub0-ASSERT₄-APPLY ; equalInType-BOOL₀!→equalTypes-ASSERT₄)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using ()
+  using (#MP₆ ; #[0]MP-left-qt₃ ; #[0]MP-right-qt₃ ; sub0-fun-mp₆ ; →equalTypes-#MP-left-qt₃ ; →equalTypes-#MP-right-qt₃ ;
+         #MP-left-qt₃ ; #MP-right-qt₃ ; equalInType-#MP-left-qt₃→)
 
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
   using (#[0]Typeℂ₀₁ ; Typeℂ₀₁· ; □·-choice· ; followChoice· ; #-typeℂ₀₁)
@@ -1407,5 +1426,103 @@ getChoice→getC {n} {cs} {w} c h rewrite h = refl
 
     h8 : ¬ inhType i w3 (#Σchoiceℙ name)
     h8 = ¬equalInType-#Σchoiceℙ immut i cp w3 name oc2 comp2 fb2
+
+
+#¬Writes→inhType-ASSERT₄ : (n : ℕ) (w1 w2 : 𝕎·) (t : CTerm)
+                         → ⊤ --#¬Writes t
+                         → (Σ CTerm (λ x → t #⇛! #INL x at w1))
+                         → inhType n w2 (#ASSERT₄ t)
+#¬Writes→inhType-ASSERT₄ n w1 w2 t nwt (x , cx) =
+  #AX ,
+  →equalInType-ASSERT₄ n w2 t #AX #AX (→equalInType-BOOL₀! n w2 t #BTRUE (Mod.∀𝕎-□ M aw))
+  where
+    aw : ∀𝕎 w2 (λ w' _ → #strongBool! w' t #BTRUE)
+    aw w3 e3 = x , #AX , inj₁ ({!!} {--¬Names→⇛! w1 w3 ⌜ t ⌝ (INL ⌜ x ⌝) nnt cx--} , #⇛!-refl {w3} {#BTRUE})
+
+
+-- Copied over from MPp₆-inh in mpp.lagda
+-- We addition we want to exclude all syntactic writes (a new types modality?)
+MP₆-inh : (n : ℕ) (w : 𝕎·) → ∈Type n w #MP₆ #lam2AX
+MP₆-inh n w =
+  equalInType-PI
+    {n} {w} {#NAT!→BOOL₀!} {#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃}
+    (λ w' e → isType-#NAT!→BOOL₀! w' n)
+    aw1
+    aw2
+  where
+    aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT!→BOOL₀! a₁ a₂
+                       → equalTypes n w' (sub0 a₁ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃))
+                                         (sub0 a₂ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)))
+    aw1 w' e a₁ a₂ eqb rewrite sub0-fun-mp₆ a₁ | sub0-fun-mp₆ a₂ =
+      eqTypesFUN← (→equalTypes-#MP-left-qt₃ eqb) (→equalTypes-#MP-right-qt₃ eqb)
+
+    aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT!→BOOL₀! a₁ a₂
+                       → equalInType n w' (sub0 a₁ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)) (#APPLY #lam2AX a₁) (#APPLY #lam2AX a₂))
+    aw2 w1 e1 a₁ a₂ eqa =
+      ≡CTerm→equalInType
+        (sym (sub0-fun-mp₆ a₁))
+        (equalInType-FUN
+          (→equalTypes-#MP-left-qt₃ (equalInType-refl eqa))
+          (→equalTypes-#MP-right-qt₃ (equalInType-refl eqa))
+          aw3)
+      where
+        aw3 : ∀𝕎 w1 (λ w' _ → (a₃ a₄ : CTerm) → equalInType n w' (#MP-left-qt₃ a₁) a₃ a₄
+                            → equalInType n w' (#MP-right-qt₃ a₁) (#APPLY (#APPLY #lam2AX a₁) a₃) (#APPLY (#APPLY #lam2AX a₂) a₄))
+        aw3 w2 e2 b₁ b₂ eqb = →equalInType-SQUASH (Mod.∀𝕎-□ M aw4)
+          where
+            aw4 : ∀𝕎 w2 (λ w' _ → Σ CTerm (λ t → equalInType n w' (#SUM-ASSERT₅ a₁) t t))
+            aw4 w3 e3 = cc (EM {Σ ℕ (λ k → inhType n w3 (#ASSERT₄ (#APPLY a₁ (#NUM k))))})
+              where
+                cc : Dec (Σ ℕ (λ k → inhType n w3 (#ASSERT₄ (#APPLY a₁ (#NUM k)))))
+                     → Σ CTerm (λ t → equalInType n w3 (#SUM-ASSERT₅ a₁) t t)
+                cc (yes (k , t , p)) = #PAIR (#NUM k) t , equalInType-SUM (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
+                  where
+                    aw6 : ∀𝕎 w3 (λ w' _ → SUMeq (equalInType n w' #NAT!)
+                                                (λ a b ea → equalInType n w' (sub0 a (#[0]ASSERT₄ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))))
+                                                w' (#PAIR (#NUM k) t) (#PAIR (#NUM k) t))
+                    aw6 w4 e4 =
+                      #NUM k , #NUM k , t , t ,
+                      NUM-equalInType-NAT! n w4 k ,
+                      ⇓-refl ⌜ #PAIR (#NUM k) t ⌝ w4 , --#compAllRefl (#PAIR (#NUM k) t) w4 ,
+                      ⇓-refl ⌜ #PAIR (#NUM k) t ⌝ w4 , --#compAllRefl (#PAIR (#NUM k) t) w4 ,
+                      (≡CTerm→equalInType (sym (sub0-ASSERT₄-APPLY (#NUM k) a₁)) (equalInType-mon p w4 e4))
+
+                    aw5 : ∀𝕎 w3 (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
+                                        → equalTypes n w' (sub0 a (#[0]ASSERT₄ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))) (sub0 b (#[0]ASSERT₄ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))))
+                    aw5 w4 e4 a b ea rewrite sub0-ASSERT₄-APPLY a a₁ | sub0-ASSERT₄-APPLY b a₁ = aw5'
+                      where
+                        eb : equalInType n w4 #BOOL₀! (#APPLY a₁ a) (#APPLY a₁ b)
+                        eb = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL₀!≡ (equalInType-refl eqa)) w4 (⊑-trans· (⊑-trans· e2 e3) e4) a b ea
+
+                        aw5' : equalTypes n w4 (#ASSERT₄ (#APPLY a₁ a)) (#ASSERT₄ (#APPLY a₁ b))
+                        aw5' = equalInType-BOOL₀!→equalTypes-ASSERT₄ eb
+
+                -- The hard case...
+                cc (no p) = ⊥-elim (equalInType-#MP-left-qt₃→
+                                       n w2 a₁ b₁ b₂
+                                       (equalInType-mon (equalInType-refl eqa) w2 e2)
+                                       eqb w3 e3 aw6)
+                   where
+                     aw6 : ∀𝕎 w3 (λ w' _ → Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #NAT! n₁ n₂ × inhType n w' (#ASSERT₄ (#APPLY a₁ n₁)))) → ⊥)
+                     aw6 w4 e4 (n₁ , n₂ , n∈ , inh) = lower (Mod.□-const M (Mod.∀𝕎-□Func M aw7 (equalInType-NAT!→ n w4 n₁ n₂ n∈)))
+                       where
+                         aw7 : ∀𝕎 w4 (λ w' e' → #⇛!sameℕ w' n₁ n₂ → Lift (lsuc L) ⊥)
+                         aw7 w5 e5 (k , k₁ , k₂) =
+                           Mod.□-const M (Mod.∀𝕎-□Func M aw8 (equalInType-BOOL₀!→
+                                                               n w5 (#APPLY a₁ (#NUM k)) #BTRUE
+                                                               (equalInType-ASSERT₄→
+                                                                 n w5 (#APPLY a₁ (#NUM k)) (fst inh') (fst inh') (snd inh'))))
+                           where
+                             inh' : inhType n w5 (#ASSERT₄ (#APPLY a₁ (#NUM k)))
+                             inh' = →inhType-ASSERT₄-APPLY
+                                      n w5 a₁ n₁ k
+                                      (equalInType-mon (equalInType-refl eqa) w5 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))
+                                      k₁ (inhType-mon e5 inh)
+
+                             aw8 : ∀𝕎 w5 (λ w' e' → #strongBool! w' (#APPLY a₁ (#NUM k)) #BTRUE → Lift (lsuc L) ⊥)
+                             aw8 w6 e6 wbe = lift (p (k , #¬Writes→inhType-ASSERT₄
+                                                            n w6 w3 (#APPLY a₁ (#NUM k))
+                                                            {!!} {--(#¬Names-APPLY {a₁} {#NUM k} (equalInType-TPURE→ₗ eqa) refl)--}
+                                                            (strongBool!-BTRUE→ w6 (#APPLY a₁ (#NUM k)) wbe)))
 
 \end{code}
