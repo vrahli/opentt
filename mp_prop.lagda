@@ -1428,16 +1428,19 @@ getChoice→getC {n} {cs} {w} c h rewrite h = refl
     h8 = ¬equalInType-#Σchoiceℙ immut i cp w3 name oc2 comp2 fb2
 
 
+-- We use this when w2 ⊑· w1
 #¬Writes→inhType-ASSERT₄ : (n : ℕ) (w1 w2 : 𝕎·) (t : CTerm)
                          → ⊤ --#¬Writes t
+                         → ∈Type n w2 #BOOL₀! t
                          → (Σ CTerm (λ x → t #⇛! #INL x at w1))
                          → inhType n w2 (#ASSERT₄ t)
-#¬Writes→inhType-ASSERT₄ n w1 w2 t nwt (x , cx) =
+#¬Writes→inhType-ASSERT₄ n w1 w2 t nwt t∈ (x , cx) =
   #AX ,
-  →equalInType-ASSERT₄ n w2 t #AX #AX (→equalInType-BOOL₀! n w2 t #BTRUE (Mod.∀𝕎-□ M aw))
+  →equalInType-ASSERT₄ n w2 t #AX #AX (→equalInType-BOOL₀! n w2 t #BTRUE (Mod.∀𝕎-□Func M aw (equalInType-BOOL₀!→ n w2 t t t∈)))
   where
-    aw : ∀𝕎 w2 (λ w' _ → #strongBool! w' t #BTRUE)
-    aw w3 e3 = x , #AX , inj₁ ({!!} {--¬Names→⇛! w1 w3 ⌜ t ⌝ (INL ⌜ x ⌝) nnt cx--} , #⇛!-refl {w3} {#BTRUE})
+    aw : ∀𝕎 w2 (λ w' _ → #strongBool! w' t t → #strongBool! w' t #BTRUE)
+    aw w3 e3 (x₁ , x₂ , inj₁ (c₁ , c₂)) = x₁ , #AX , inj₁ (c₁ , #⇛!-refl {w3} {#BTRUE})
+    aw w3 e3 (x₁ , x₂ , inj₂ (c₁ , c₂)) = {!!} , #AX , inj₁ ({!!} {--¬Names→⇛! w1 w3 ⌜ t ⌝ (INL ⌜ x ⌝) nnt cx--} , #⇛!-refl {w3} {#BTRUE})
 
 
 -- Copied over from MPp₆-inh in mpp.lagda
@@ -1523,6 +1526,10 @@ MP₆-inh n w =
                              aw8 w6 e6 wbe = lift (p (k , #¬Writes→inhType-ASSERT₄
                                                             n w6 w3 (#APPLY a₁ (#NUM k))
                                                             {!!} {--(#¬Names-APPLY {a₁} {#NUM k} (equalInType-TPURE→ₗ eqa) refl)--}
+                                                            (equalInType-FUN→
+                                                               (≡CTerm→equalInType #NAT!→BOOL₀!≡ (equalInType-refl eqa))
+                                                               w3 (⊑-trans· e2 e3) (#NUM k) (#NUM k)
+                                                               (NUM-equalInType-NAT! n w3 k))
                                                             (strongBool!-BTRUE→ w6 (#APPLY a₁ (#NUM k)) wbe)))
 
 \end{code}
