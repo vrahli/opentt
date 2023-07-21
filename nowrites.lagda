@@ -55,7 +55,9 @@ open import getChoiceDef(W)(C)(M)(G)
 open import choiceExtDef(W)(C)(M)(G)(E)
 open import newChoiceDef(W)(C)(M)(G)(N)
 open import computation(W)(C)(M)(G)(E)(N)(EC)
-open import terms2(W)(C)(M)(G)(E)(N)(EC) using (∧≡true→ₗ ; ∧≡true→ᵣ)
+open import terms2(W)(C)(M)(G)(E)(N)(EC)
+  using (∧≡true→ₗ ; ∧≡true→ᵣ ; ∧≡true→1-3 ; ∧≡true→2-3 ; ∧≡true→3-3 ; ∧≡true→1-4 ; ∧≡true→2-4 ; ∧≡true→3-4 ; ∧≡true→4-4 ;
+         ∧≡true→1r-4 ; ∧≡true→1r-3)
 open import terms3(W)(C)(M)(G)(E)(N)(EC) using ()
 
 open import continuity-conds(W)(C)(M)(G)(E)(N)(EC) using ()
@@ -197,6 +199,13 @@ differC-NUM→ : {n : ℕ} {a : Term}
 differC-NUM→ {n} {.(NUM n)} (differC-NUM .n) = refl
 
 
+differC-NUM→ᵣ : {n : ℕ} {a : Term}
+              → differC a (NUM n)
+              → a ≡ NUM n
+differC-NUM→ᵣ {n} {.(NUM n)} (differC-NUM .n) = refl
+
+
+-- We need to add something like Choiceℙ from mp_prop to enforce that the choices are either TRUE or FALSE
 abstract
   ¬Writes→step : (w1 w2 : 𝕎·) (a b u : Term)
                → ¬Writes a
@@ -226,11 +235,64 @@ abstract
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = d₂ , refl , ∧≡true→ᵣ (¬writes c₁) (¬writes d₁) nowrites , dc₃
   ¬Writes→step w1 w2 .(IFLT a₁ b₁ c₁ d₁) .(IFLT a₂ b₂ c₂ d₂) u nowrites (differC-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ dc dc₁ dc₂ dc₃) comp | inj₁ (n₁ , p₁) | inj₂ q₂
-    rewrite p₁ | differC-NUM→ dc
-    = {!!} -- by induction
-  ¬Writes→step w1 w2 .(IFLT a₁ b₁ c₁ d₁) .(IFLT a₂ b₂ c₂ d₂) u nowrites (differC-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ dc dc₁ dc₂ dc₃) comp | inj₂ q₁ = {!!}
+    rewrite p₁ | differC-NUM→ dc with step⊎ b₁ w1
+  ... |       inj₂ z₁ rewrite z₁ = ⊥-elim (¬just≡nothing (sym comp))
+  ... |       inj₁ (b₁' , w1' , z₁)
+    rewrite z₁ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    with is-NUM b₂
+  ... |         inj₁ (m , p₄) rewrite p₄ | differC-NUM→ᵣ dc₁ = ⊥-elim (q₂ m refl)
+  ... |         inj₂ q₄
+    with ¬Writes→step w1 w1' b₁ b₂ b₁' (∧≡true→1-3 {¬writes b₁} {¬writes c₁} {¬writes d₁} nowrites) dc₁ z₁
+  ... | v' , comp' , nowrites' , diff' rewrite comp'
+    = IFLT (NUM n₁) v' c₂ d₂ , refl ,
+      ∧≡true→1r-3 {¬writes b₁} {¬writes c₁} {¬writes d₁} {¬writes b₁'} nowrites nowrites' ,
+      differC-IFLT (NUM n₁) (NUM n₁) b₁' v' c₁ c₂ d₁ d₂ (differC-NUM _) diff' dc₂ dc₃
+  ¬Writes→step w1 w2 .(IFLT a₁ b₁ c₁ d₁) .(IFLT a₂ b₂ c₂ d₂) u nowrites (differC-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ dc dc₁ dc₂ dc₃) comp | inj₂ q₁ with is-NUM a₂
+  ... | inj₁ (m₂ , q₂) rewrite q₂ | differC-NUM→ᵣ dc = ⊥-elim (q₁ m₂ refl)
+  ... | inj₂ q₂ with step⊎ a₁ w1
+  ... |   inj₂ z₁ rewrite z₁ = ⊥-elim (¬just≡nothing (sym comp))
+  ... |   inj₁ (a₁' , w1' , z₁)
+    rewrite z₁ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    with ¬Writes→step w1 w1' a₁ a₂ a₁' (∧≡true→1-4 {¬writes a₁} {¬writes b₁} {¬writes c₁} {¬writes d₁} nowrites) dc z₁
+  ... | v' , comp' , nowrites' , diff' rewrite comp'
+    = IFLT v' b₂ c₂ d₂ , refl ,
+      ∧≡true→1r-4 {¬writes a₁} {¬writes b₁} {¬writes c₁} {¬writes d₁} {¬writes a₁'} nowrites nowrites' ,
+      differC-IFLT a₁' v' b₁ b₂ c₁ c₂ d₁ d₂ diff' dc₁ dc₂ dc₃
   -- IFEQ
-  ¬Writes→step w1 w2 .(IFEQ a₁ b₁ c₁ d₁) .(IFEQ a₂ b₂ c₂ d₂) u nowrites (differC-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ dc dc₁ dc₂ dc₃) comp = {!!}
+  ¬Writes→step w1 w2 .(IFEQ a₁ b₁ c₁ d₁) .(IFEQ a₂ b₂ c₂ d₂) u nowrites (differC-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ dc dc₁ dc₂ dc₃) comp with is-NUM a₁
+  ... | inj₁ (n₁ , p₁) rewrite p₁ | differC-NUM→ dc with is-NUM b₁
+  ... |   inj₁ (n₂ , p₂) rewrite p₂ | differC-NUM→ dc₁ with n₁ ≟ n₂
+  ... |     yes p₃
+    rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    = c₂ , refl , ∧≡true→ₗ (¬writes c₁) (¬writes d₁) nowrites , dc₂
+  ... |     no q₃
+    rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    = d₂ , refl , ∧≡true→ᵣ (¬writes c₁) (¬writes d₁) nowrites , dc₃
+  ¬Writes→step w1 w2 .(IFEQ a₁ b₁ c₁ d₁) .(IFEQ a₂ b₂ c₂ d₂) u nowrites (differC-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ dc dc₁ dc₂ dc₃) comp | inj₁ (n₁ , p₁) | inj₂ q₂
+    rewrite p₁ | differC-NUM→ dc with step⊎ b₁ w1
+  ... |       inj₂ z₁ rewrite z₁ = ⊥-elim (¬just≡nothing (sym comp))
+  ... |       inj₁ (b₁' , w1' , z₁)
+    rewrite z₁ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    with is-NUM b₂
+  ... |         inj₁ (m , p₄) rewrite p₄ | differC-NUM→ᵣ dc₁ = ⊥-elim (q₂ m refl)
+  ... |         inj₂ q₄
+    with ¬Writes→step w1 w1' b₁ b₂ b₁' (∧≡true→1-3 {¬writes b₁} {¬writes c₁} {¬writes d₁} nowrites) dc₁ z₁
+  ... | v' , comp' , nowrites' , diff' rewrite comp'
+    = IFEQ (NUM n₁) v' c₂ d₂ , refl ,
+      ∧≡true→1r-3 {¬writes b₁} {¬writes c₁} {¬writes d₁} {¬writes b₁'} nowrites nowrites' ,
+      differC-IFEQ (NUM n₁) (NUM n₁) b₁' v' c₁ c₂ d₁ d₂ (differC-NUM _) diff' dc₂ dc₃
+  ¬Writes→step w1 w2 .(IFEQ a₁ b₁ c₁ d₁) .(IFEQ a₂ b₂ c₂ d₂) u nowrites (differC-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ dc dc₁ dc₂ dc₃) comp | inj₂ q₁ with is-NUM a₂
+  ... | inj₁ (m₂ , q₂) rewrite q₂ | differC-NUM→ᵣ dc = ⊥-elim (q₁ m₂ refl)
+  ... | inj₂ q₂ with step⊎ a₁ w1
+  ... |   inj₂ z₁ rewrite z₁ = ⊥-elim (¬just≡nothing (sym comp))
+  ... |   inj₁ (a₁' , w1' , z₁)
+    rewrite z₁ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    with ¬Writes→step w1 w1' a₁ a₂ a₁' (∧≡true→1-4 {¬writes a₁} {¬writes b₁} {¬writes c₁} {¬writes d₁} nowrites) dc z₁
+  ... | v' , comp' , nowrites' , diff' rewrite comp'
+    = IFEQ v' b₂ c₂ d₂ , refl ,
+      ∧≡true→1r-4 {¬writes a₁} {¬writes b₁} {¬writes c₁} {¬writes d₁} {¬writes a₁'} nowrites nowrites' ,
+      differC-IFEQ a₁' v' b₁ b₂ c₁ c₂ d₁ d₂ diff' dc₁ dc₂ dc₃
+--  ¬Writes→step w1 w2 .(IFEQ a₁ b₁ c₁ d₁) .(IFEQ a₂ b₂ c₂ d₂) u nowrites (differC-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ dc dc₁ dc₂ dc₃) comp = {!!}
   -- SUC
   ¬Writes→step w1 w2 .(SUC a) .(SUC b) u nowrites (differC-SUC a b dc) comp = {!!}
   ¬Writes→step w1 w2 .(PI a₁ b₁) .(PI a₂ b₂) u nowrites (differC-PI a₁ a₂ b₁ b₂ dc dc₁) comp
