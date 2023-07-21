@@ -63,7 +63,7 @@ open import terms2(W)(C)(M)(G)(E)(N)(EC)
   using (∧≡true→ₗ ; ∧≡true→ᵣ ; ∧≡true→1-3 ; ∧≡true→2-3 ; ∧≡true→3-3 ; ∧≡true→1-4 ; ∧≡true→2-4 ; ∧≡true→3-4 ; ∧≡true→4-4 ;
          ∧≡true→1r-4 ; ∧≡true→1r-3 ; IFLT-NUM-1st⇓steps ; IFLT-NUM-2nd⇓steps ; IFEQ-NUM-1st⇓steps ; IFEQ-NUM-2nd⇓steps ;
          SUC⇓steps ; hasValue ; hasValueℕ ; hasValue-IFLT→ ; hasValue-IFEQ→ ; hasValue-SUC→ ;
-         hasValue-IFLT-NUM→ ; hasValue-IFEQ-NUM→)
+         hasValue-IFLT-NUM→ ; hasValue-IFEQ-NUM→ ; hasValue-APPLY→)
 open import terms3(W)(C)(M)(G)(E)(N)(EC) using ()
 open import subst(W)(C)(M)(G)(E)(N)(EC) using (subn ; sub≡subn)
 
@@ -692,6 +692,13 @@ if-hasValue-IFEQ a b c d w (v , w' , (k , comp) , isv) with hasValue-IFEQ→ a b
 ... | v1 , w1 , comp1 , isv1 = v1 , w1 , (k , comp1) , isv1
 
 
+if-hasValue-APPLY : (a b : Term) (w : 𝕎·)
+                  → hasValue (APPLY a b) w
+                  → hasValue a w
+if-hasValue-APPLY a b w (v , w' , (k , comp) , isv) with hasValue-APPLY→ a b w {k} (v , w' , comp , isv)
+... | v1 , w1 , comp1 , isv1 = v1 , w1 , (k , comp1) , isv1
+
+
 if-hasValue-APPLY-CS-NUM : (name : Name) (n : ℕ) (w : 𝕎·)
                          → hasValue (APPLY (CS name) (NUM n)) w
                          → Σ ℂ· (λ c → getChoice· n name w ≡ just c)
@@ -915,7 +922,18 @@ abstract
   ... |   inj₁ (s₆ , p₆)
     rewrite p₆ | differC-MSEQ→ dc | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = MAPP s₆ b₂ , refl , refl , nowrites , differC-MAPP _ _ _ dc₁
-  ... |   inj₂ p₆ = {!!} -- check whether a₂ is an MSEQ -- it can't
+  ... |   inj₂ p₆ with is-MSEQ a₂
+  ... |     inj₁ (s₇ , p₇) rewrite p₇ | differC-MSEQ→ᵣ dc = ⊥-elim (p₆ _ refl)
+  ... |     inj₂ p₇ with step⊎ a₁ w1
+  ... |   inj₂ z₈ rewrite z₈ = ⊥-elim (¬just≡nothing (sym comp))
+  ... |   inj₁ (a₁' , w1' , z₈)
+    rewrite z₈ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    with ¬Writes→step gcp w1 w1' w3 a₁ a₂ a₁' (∧≡true→ₗ (¬writes a₁) (¬writes b₁) nowrites) (if-hasValue-APPLY _ _ _ hv) dc z₈
+  ... | v' , comp' , eqw' , nowrites' , diff'
+    rewrite comp'
+    = APPLY v' b₂ , refl , eqw' ,
+      →∧≡true {¬writes a₁} {¬writes b₁} {¬writes a₁'} {¬writes b₁} (λ x → nowrites') (λ x → x) nowrites ,
+      differC-APPLY _ _ _ _ diff' dc₁
   -- FIX
   ¬Writes→step gcp w1 w2 w3 .(FIX a) .(FIX b) u nowrites hv (differC-FIX a b dc) comp = {!!}
   -- LET
