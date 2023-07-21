@@ -62,8 +62,9 @@ open import computation(W)(C)(M)(G)(E)(N)(EC)
 open import terms2(W)(C)(M)(G)(E)(N)(EC)
   using (∧≡true→ₗ ; ∧≡true→ᵣ ; ∧≡true→1-3 ; ∧≡true→2-3 ; ∧≡true→3-3 ; ∧≡true→1-4 ; ∧≡true→2-4 ; ∧≡true→3-4 ; ∧≡true→4-4 ;
          ∧≡true→1r-4 ; ∧≡true→1r-3 ; IFLT-NUM-1st⇓steps ; IFLT-NUM-2nd⇓steps ; IFEQ-NUM-1st⇓steps ; IFEQ-NUM-2nd⇓steps ;
-         SUC⇓steps ; hasValue ; hasValueℕ ; hasValue-IFLT→ ; hasValue-IFEQ→ ; hasValue-SUC→ ;
-         hasValue-IFLT-NUM→ ; hasValue-IFEQ-NUM→ ; hasValue-APPLY→)
+         SUC⇓steps ; hasValue ; hasValueℕ ; hasValue-IFLT→ ; hasValue-IFEQ→ ; hasValue-SUC→ ; hasValue-LET→ ;
+         hasValue-IFLT-NUM→ ; hasValue-IFEQ-NUM→ ; hasValue-APPLY→ ; hasValue-FIX→ ; hasValue-MAPP→ ; hasValue-WREC→ ;
+         hasValue-CHOOSE→ ; hasValue-DECIDE→ ; hasValue-SPREAD→)
 open import terms3(W)(C)(M)(G)(E)(N)(EC) using ()
 open import subst(W)(C)(M)(G)(E)(N)(EC) using (subn ; sub≡subn)
 
@@ -249,6 +250,18 @@ differC-CS→ᵣ {n} {.(CS n)} (differC-CS .n) = refl --inj₁ refl
 --differC-CS→ᵣ {n} {.FALSE} (differC-writesFC .n) = inj₂ (inj₂ refl)
 
 
+differC-NAME→ : {n : Name} {a : Term}
+              → differC (NAME n) a
+              → ⊥
+differC-NAME→ {b} {a} ()
+
+
+differC-NAME→ᵣ : {n : Name} {a : Term}
+              → differC a (NAME n)
+              → ⊥
+differC-NAME→ᵣ {b} {a} ()
+
+
 differC-LAM→ : {t a : Term}
              → differC (LAMBDA t) a
              → Σ Term (λ u → a ≡ LAMBDA u × differC t u)
@@ -261,11 +274,66 @@ differC-LAM→ᵣ : {t a : Term}
 differC-LAM→ᵣ {t} {.(LAMBDA b)} (differC-LAMBDA b .t d) = b , refl , d
 
 
+differC-INL→ : {t a : Term}
+             → differC (INL t) a
+             → Σ Term (λ u → a ≡ INL u × differC t u)
+differC-INL→ {t} {.(INL b)} (differC-INL .t b d) = b , refl , d
+
+
+differC-INL→ᵣ : {t a : Term}
+             → differC a (INL t)
+             → Σ Term (λ u → a ≡ INL u × differC u t)
+differC-INL→ᵣ {t} {.(INL b)} (differC-INL b .t d) = b , refl , d
+
+
+differC-INR→ : {t a : Term}
+             → differC (INR t) a
+             → Σ Term (λ u → a ≡ INR u × differC t u)
+differC-INR→ {t} {.(INR b)} (differC-INR .t b d) = b , refl , d
+
+
+differC-INR→ᵣ : {t a : Term}
+             → differC a (INR t)
+             → Σ Term (λ u → a ≡ INR u × differC u t)
+differC-INR→ᵣ {t} {.(INR b)} (differC-INR b .t d) = b , refl , d
+
+
+differC-PAIR→ : {t₁ t₂ a : Term}
+              → differC (PAIR t₁ t₂) a
+              → Σ Term (λ u₁ → Σ Term (λ u₂ → a ≡ PAIR u₁ u₂ × differC t₁ u₁ × differC t₂ u₂))
+differC-PAIR→ {t₁} {t₂} {.(PAIR b₁ b₂)} (differC-PAIR .t₁ b₁ .t₂ b₂ d₁ d₂) = b₁ , b₂ , refl , d₁ , d₂
+
+
+differC-PAIR→ᵣ : {t₁ t₂ a : Term}
+               → differC a (PAIR t₁ t₂)
+               → Σ Term (λ u₁ → Σ Term (λ u₂ → a ≡ PAIR u₁ u₂ × differC u₁ t₁ × differC u₂ t₂))
+differC-PAIR→ᵣ {t₁} {t₂} {.(PAIR b₁ b₂)} (differC-PAIR b₁ .t₁ b₂ .t₂ d₁ d₂) = b₁ , b₂ , refl , d₁ , d₂
+
+
+differC-SUP→ : {t₁ t₂ a : Term}
+              → differC (SUP t₁ t₂) a
+              → Σ Term (λ u₁ → Σ Term (λ u₂ → a ≡ SUP u₁ u₂ × differC t₁ u₁ × differC t₂ u₂))
+differC-SUP→ {t₁} {t₂} {.(SUP b₁ b₂)} (differC-SUP .t₁ b₁ .t₂ b₂ d₁ d₂) = b₁ , b₂ , refl , d₁ , d₂
+
+
+differC-SUP→ᵣ : {t₁ t₂ a : Term}
+               → differC a (SUP t₁ t₂)
+               → Σ Term (λ u₁ → Σ Term (λ u₂ → a ≡ SUP u₁ u₂ × differC u₁ t₁ × differC u₂ t₂))
+differC-SUP→ᵣ {t₁} {t₂} {.(SUP b₁ b₂)} (differC-SUP b₁ .t₁ b₂ .t₂ d₁ d₂) = b₁ , b₂ , refl , d₁ , d₂
+
+
 ≡∧ : {a b c d : Bool}
    → a ≡ b
    → c ≡ d
    → a ∧ c ≡ b ∧ d
 ≡∧ {a} {b} {c} {d} refl refl = refl
+
+
+→∧true : {a b : Bool}
+       → a ≡ true
+       → b ≡ true
+       → a ∧ b ≡ true
+→∧true {a} {b} refl refl = refl
 
 
 {--
@@ -529,6 +597,14 @@ differC-LAM→ᵣ {t} {.(LAMBDA b)} (differC-LAMBDA b .t d) = b , refl , d
   = ¬Writes-subn {0} {a} {t} nwa nwt
 
 
+¬Writes-WRECc : {a b : Term}
+              → ¬Writes a
+              → ¬Writes b
+              → ¬Writes (WRECr a b)
+¬Writes-WRECc {a} {b} nwa nwb
+  rewrite ¬writes-shiftUp 3 a | ¬writes-shiftUp 0 b | nwa | nwb = refl
+
+
 differC-shiftUp : {n : ℕ} {a b : Term}
                 → differC a b
                 → differC (shiftUp n a) (shiftUp n b)
@@ -727,6 +803,55 @@ if-hasValue-APPLY-CS n a w (v , w' , (k , comp) , isv) with APPLY-CS→hasValue 
 ... | v1 , w1 , comp1 , isv1 = v1 , w1 , (k , comp1) , isv1
 
 
+if-hasValue-FIX : (a : Term) (w : 𝕎·)
+                → hasValue (FIX a) w
+                → hasValue a w
+if-hasValue-FIX a w (v , w' , (k , comp) , isv) with hasValue-FIX→ a w {k} (v , w' , comp , isv)
+... | v1 , w1 , comp1 , isv1 = v1 , w1 , (k , comp1) , isv1
+
+
+if-hasValue-MAPP : (s : 𝕊) (a : Term) (w : 𝕎·)
+                 → hasValue (MAPP s a) w
+                 → hasValue a w
+if-hasValue-MAPP s a w (v , w' , (k , comp) , isv) with hasValue-MAPP→ s a w {k} (v , w' , comp , isv)
+... | v1 , w1 , comp1 , isv1 = v1 , w1 , (k , comp1) , isv1
+
+
+if-hasValue-LET : (a b : Term) (w : 𝕎·)
+                → hasValue (LET a b) w
+                → hasValue a w
+if-hasValue-LET a b w (v , w' , (k , comp) , isv) with hasValue-LET→ a b w {k} (v , w' , comp , isv)
+... | v1 , w1 , comp1 , isv1 = v1 , w1 , (k , comp1) , isv1
+
+
+if-hasValue-WREC : (a b : Term) (w : 𝕎·)
+                 → hasValue (WREC a b) w
+                 → hasValue a w
+if-hasValue-WREC a b w (v , w' , (k , comp) , isv) with hasValue-WREC→ a b w {k} (v , w' , comp , isv)
+... | v1 , w1 , comp1 , isv1 = v1 , w1 , (k , comp1) , isv1
+
+
+if-hasValue-CHOOSE : (a b : Term) (w : 𝕎·)
+                   → hasValue (CHOOSE a b) w
+                   → hasValue a w
+if-hasValue-CHOOSE a b w (v , w' , (k , comp) , isv) with hasValue-CHOOSE→ a b w {k} (v , w' , comp , isv)
+... | v1 , w1 , comp1 , isv1 = v1 , w1 , (k , comp1) , isv1
+
+
+if-hasValue-DECIDE : (a b c : Term) (w : 𝕎·)
+                   → hasValue (DECIDE a b c) w
+                   → hasValue a w
+if-hasValue-DECIDE a b c w (v , w' , (k , comp) , isv) with hasValue-DECIDE→ a b c w {k} (v , w' , comp , isv)
+... | v1 , w1 , comp1 , isv1 = v1 , w1 , (k , comp1) , isv1
+
+
+if-hasValue-SPREAD : (a b : Term) (w : 𝕎·)
+                   → hasValue (SPREAD a b) w
+                   → hasValue a w
+if-hasValue-SPREAD a b w (v , w' , (k , comp) , isv) with hasValue-SPREAD→ a b w {k} (v , w' , comp , isv)
+... | v1 , w1 , comp1 , isv1 = v1 , w1 , (k , comp1) , isv1
+
+
 getChoiceℙ : Set(L)
 getChoiceℙ =
     (n : ℕ) (name : Name) (w : 𝕎·) (c : ℂ·)
@@ -756,6 +881,31 @@ differC-FALSE =
     differC-NAT
 
 
+differC-BOT : differC BOT BOT
+differC-BOT = differC-FIX _ _ (differC-LAMBDA _ _ (differC-VAR _))
+
+
+differC-NEGD : {a b : Term}
+             → differC a b
+             → differC (NEGD a) (NEGD b)
+differC-NEGD {a} {b} d = differC-IFEQ _ _ _ _ _ _ _ _ d (differC-NUM _) differC-BOT (differC-NUM _)
+
+
+differC-ENCr : {a : Term}
+             → differC a a
+             → differC (ENCr a) (ENCr a)
+differC-ENCr {a} d = differC-NEGD (differC-APPLY _ _ _ _ d (differC-NUM _))
+
+
+differC-WRECr : {a b c d : Term}
+              → differC a b
+              → differC c d
+              → differC (WRECr a c) (WRECr b d)
+differC-WRECr {a} {b} {c} {d} d1 d2 =
+  differC-LAMBDA _ _ (differC-WREC _ _ _ _ (differC-APPLY _ _ _ _ (differC-shiftUp d2) (differC-VAR _))
+                                           (differC-shiftUp d1))
+
+
 getChoiceℙ→differC : (gcp : getChoiceℙ) {n1 n2 : ℕ} {name1 name2 : Name} {w1 w2 : 𝕎·} {c1 c2 : ℂ·}
                    → getChoice· n1 name1 w1 ≡ just c1
                    → getChoice· n2 name2 w2 ≡ just c2
@@ -775,6 +925,102 @@ getChoiceℙ→¬Writesℂ gcp {n} {name} {w} {c} gc
   with gcp n name w c gc
 ... | inj₁ x rewrite x = refl
 ... | inj₂ x rewrite x = refl
+
+
+differC-pres-isValue : {a b : Term}
+                     → differC a b
+                     → isValue a
+                     → isValue b
+differC-pres-isValue {.QNAT} {.QNAT} differC-QNAT isv = tt
+differC-pres-isValue {.(LT a₁ b₁)} {.(LT a₂ b₂)} (differC-LT a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+differC-pres-isValue {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differC-QLT a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+differC-pres-isValue {.(NUM x)} {.(NUM x)} (differC-NUM x) isv = tt
+differC-pres-isValue {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differC-PI a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+differC-pres-isValue {.(LAMBDA a)} {.(LAMBDA b)} (differC-LAMBDA a b diff) isv = tt
+differC-pres-isValue {.(WT a₁ b₁ c₁)} {.(WT a₂ b₂ c₂)} (differC-WT a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) isv = tt
+differC-pres-isValue {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (differC-SUP a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+differC-pres-isValue {.(MT a₁ b₁ c₁)} {.(MT a₂ b₂ c₂)} (differC-MT a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) isv = tt
+differC-pres-isValue {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (differC-SUM a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+differC-pres-isValue {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (differC-PAIR a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+differC-pres-isValue {.(SET a₁ b₁)} {.(SET a₂ b₂)} (differC-SET a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+differC-pres-isValue {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (differC-ISECT a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+differC-pres-isValue {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (differC-TUNION a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+differC-pres-isValue {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (differC-UNION a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+differC-pres-isValue {.(INL a)} {.(INL b)} (differC-INL a b diff) isv = tt
+differC-pres-isValue {.(INR a)} {.(INR b)} (differC-INR a b diff) isv = tt
+differC-pres-isValue {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (differC-EQ a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) isv = tt
+differC-pres-isValue {.AX} {.AX} differC-AX isv = tt
+differC-pres-isValue {.FREE} {.FREE} differC-FREE isv = tt
+differC-pres-isValue {.(MSEQ s)} {.(MSEQ s)} (differC-MSEQ s) isv = tt
+differC-pres-isValue {.(CS name)} {.(CS name)} (differC-CS name) isv = tt
+differC-pres-isValue {.NOWRITE} {.NOWRITE} differC-NOWRITE isv = tt
+differC-pres-isValue {.NOREAD} {.NOREAD} differC-NOREAD isv = tt
+differC-pres-isValue {.(SUBSING a)} {.(SUBSING b)} (differC-SUBSING a b diff) isv = tt
+differC-pres-isValue {.PURE} {.PURE} differC-PURE isv = tt
+differC-pres-isValue {.NOSEQ} {.NOSEQ} differC-NOSEQ isv = tt
+differC-pres-isValue {.(TERM a)} {.(TERM b)} (differC-TERM a b diff) isv = tt
+differC-pres-isValue {.(DUM a)} {.(DUM b)} (differC-DUM a b diff) isv = tt
+differC-pres-isValue {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differC-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) isv = tt
+differC-pres-isValue {.(UNIV x)} {.(UNIV x)} (differC-UNIV x) isv = tt
+differC-pres-isValue {.(LIFT a)} {.(LIFT b)} (differC-LIFT a b diff) isv = tt
+differC-pres-isValue {.(LOWER a)} {.(LOWER b)} (differC-LOWER a b diff) isv = tt
+differC-pres-isValue {.(SHRINK a)} {.(SHRINK b)} (differC-SHRINK a b diff) isv = tt
+differC-pres-isValue {.TRUE} {.FALSE} differC-writesTF isv = tt
+differC-pres-isValue {.FALSE} {.TRUE} differC-writesFT isv = tt
+
+
+differC-sym : {a b : Term}
+            → differC a b
+            → differC b a
+differC-sym {.(VAR x)} {.(VAR x)} (differC-VAR x) = differC-VAR x
+differC-sym {.QNAT} {.QNAT} differC-QNAT = differC-QNAT
+differC-sym {.(LT a₁ b₁)} {.(LT a₂ b₂)} (differC-LT a₁ a₂ b₁ b₂ diff diff₁) = differC-LT a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
+differC-sym {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differC-QLT a₁ a₂ b₁ b₂ diff diff₁) = differC-QLT a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
+differC-sym {.(NUM x)} {.(NUM x)} (differC-NUM x) = differC-NUM x
+differC-sym {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (differC-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differC-IFLT a₂ a₁ b₂ b₁ c₂ c₁ d₂ d₁ (differC-sym diff) (differC-sym diff₁) (differC-sym diff₂) (differC-sym diff₃)
+differC-sym {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (differC-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differC-IFEQ a₂ a₁ b₂ b₁ c₂ c₁ d₂ d₁ (differC-sym diff) (differC-sym diff₁) (differC-sym diff₂) (differC-sym diff₃)
+differC-sym {.(SUC a)} {.(SUC b)} (differC-SUC a b diff) = differC-SUC b a (differC-sym diff)
+differC-sym {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differC-PI a₁ a₂ b₁ b₂ diff diff₁) = differC-PI a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
+differC-sym {.(LAMBDA a)} {.(LAMBDA b)} (differC-LAMBDA a b diff) = differC-LAMBDA b a (differC-sym diff)
+differC-sym {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (differC-APPLY a₁ a₂ b₁ b₂ diff diff₁) = differC-APPLY a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
+differC-sym {.(FIX a)} {.(FIX b)} (differC-FIX a b diff) = differC-FIX b a (differC-sym diff)
+differC-sym {.(LET a₁ b₁)} {.(LET a₂ b₂)} (differC-LET a₁ a₂ b₁ b₂ diff diff₁) = differC-LET a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
+differC-sym {.(WT a₁ b₁ c₁)} {.(WT a₂ b₂ c₂)} (differC-WT a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differC-WT a₂ a₁ b₂ b₁ c₂ c₁ (differC-sym diff) (differC-sym diff₁) (differC-sym diff₂)
+differC-sym {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (differC-SUP a₁ a₂ b₁ b₂ diff diff₁) = differC-SUP a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
+differC-sym {.(WREC a₁ b₁)} {.(WREC a₂ b₂)} (differC-WREC a₁ a₂ b₁ b₂ diff diff₁) = differC-WREC a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
+differC-sym {.(MT a₁ b₁ c₁)} {.(MT a₂ b₂ c₂)} (differC-MT a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differC-MT a₂ a₁ b₂ b₁ c₂ c₁ (differC-sym diff) (differC-sym diff₁) (differC-sym diff₂)
+differC-sym {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (differC-SUM a₁ a₂ b₁ b₂ diff diff₁) = differC-SUM a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
+differC-sym {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (differC-PAIR a₁ a₂ b₁ b₂ diff diff₁) = differC-PAIR a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
+differC-sym {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} (differC-SPREAD a₁ a₂ b₁ b₂ diff diff₁) = differC-SPREAD a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
+differC-sym {.(SET a₁ b₁)} {.(SET a₂ b₂)} (differC-SET a₁ a₂ b₁ b₂ diff diff₁) = differC-SET a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
+differC-sym {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (differC-ISECT a₁ a₂ b₁ b₂ diff diff₁) = differC-ISECT a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
+differC-sym {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (differC-TUNION a₁ a₂ b₁ b₂ diff diff₁) = differC-TUNION a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
+differC-sym {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (differC-UNION a₁ a₂ b₁ b₂ diff diff₁) = differC-UNION a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
+differC-sym {.(INL a)} {.(INL b)} (differC-INL a b diff) = differC-INL b a (differC-sym diff)
+differC-sym {.(INR a)} {.(INR b)} (differC-INR a b diff) = differC-INR b a (differC-sym diff)
+differC-sym {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (differC-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differC-DECIDE a₂ a₁ b₂ b₁ c₂ c₁ (differC-sym diff) (differC-sym diff₁) (differC-sym diff₂)
+differC-sym {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (differC-EQ a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differC-EQ a₂ a₁ b₂ b₁ c₂ c₁ (differC-sym diff) (differC-sym diff₁) (differC-sym diff₂)
+differC-sym {.AX} {.AX} differC-AX = differC-AX
+differC-sym {.FREE} {.FREE} differC-FREE = differC-FREE
+differC-sym {.(MSEQ s)} {.(MSEQ s)} (differC-MSEQ s) = differC-MSEQ s
+differC-sym {.(MAPP s a₁)} {.(MAPP s a₂)} (differC-MAPP s a₁ a₂ diff) = differC-MAPP s a₂ a₁ (differC-sym diff)
+differC-sym {.(CS name)} {.(CS name)} (differC-CS name) = differC-CS name
+differC-sym {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (differC-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) = differC-CHOOSE a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
+differC-sym {.NOWRITE} {.NOWRITE} differC-NOWRITE = differC-NOWRITE
+differC-sym {.NOREAD} {.NOREAD} differC-NOREAD = differC-NOREAD
+differC-sym {.(SUBSING a)} {.(SUBSING b)} (differC-SUBSING a b diff) = differC-SUBSING b a (differC-sym diff)
+differC-sym {.PURE} {.PURE} differC-PURE = differC-PURE
+differC-sym {.NOSEQ} {.NOSEQ} differC-NOSEQ = differC-NOSEQ
+differC-sym {.(TERM a)} {.(TERM b)} (differC-TERM a b diff) = differC-TERM b a (differC-sym diff)
+differC-sym {.(ENC a)} {.(ENC a)} (differC-ENC a diff) = differC-ENC a diff
+differC-sym {.(DUM a)} {.(DUM b)} (differC-DUM a b diff) = differC-DUM b a (differC-sym diff)
+differC-sym {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differC-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = differC-FFDEFS a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
+differC-sym {.(UNIV x)} {.(UNIV x)} (differC-UNIV x) = differC-UNIV x
+differC-sym {.(LIFT a)} {.(LIFT b)} (differC-LIFT a b diff) = differC-LIFT b a (differC-sym diff)
+differC-sym {.(LOWER a)} {.(LOWER b)} (differC-LOWER a b diff) = differC-LOWER b a (differC-sym diff)
+differC-sym {.(SHRINK a)} {.(SHRINK b)} (differC-SHRINK a b diff) = differC-SHRINK b a (differC-sym diff)
+differC-sym {.TRUE} {.FALSE} differC-writesTF = differC-writesFT
+differC-sym {.FALSE} {.TRUE} differC-writesFT = differC-writesTF
 
 
 -- We need to add something like Choiceℙ from mp_prop to enforce that the choices are either TRUE or FALSE
@@ -935,98 +1181,285 @@ abstract
       →∧≡true {¬writes a₁} {¬writes b₁} {¬writes a₁'} {¬writes b₁} (λ x → nowrites') (λ x → x) nowrites ,
       differC-APPLY _ _ _ _ diff' dc₁
   -- FIX
-  ¬Writes→step gcp w1 w2 w3 .(FIX a) .(FIX b) u nowrites hv (differC-FIX a b dc) comp = {!!}
+  ¬Writes→step gcp w1 w2 w3 .(FIX a) .(FIX b) u nowrites hv (differC-FIX a b dc) comp
+    with is-LAM a
+  ... | inj₁ (t₁ , p₁)
+    rewrite p₁ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    with differC-LAM→ dc
+  ... | t₂ , e₂ , d₂
+    rewrite e₂
+    = sub (FIX (LAMBDA t₂)) t₂ , refl , refl ,
+      ¬Writes-sub {FIX (LAMBDA t₁)} {t₁} nowrites nowrites ,
+      differC-sub {FIX (LAMBDA t₁)} {FIX (LAMBDA t₂)} {t₁} {t₂} (differC-FIX _ _ dc) d₂
+  ¬Writes→step gcp w1 w2 w3 .(FIX a) .(FIX b) u nowrites hv (differC-FIX a b dc) comp | inj₂ p₁ with is-LAM b
+  ... | inj₁ (t₂ , p₂) rewrite p₂ | fst (snd (differC-LAM→ᵣ dc)) = ⊥-elim (p₁ _ refl)
+  ... | inj₂ p₂ with step⊎ a w1
+  ... |   inj₂ z₃ rewrite z₃ = ⊥-elim (¬just≡nothing (sym comp))
+  ... |   inj₁ (a' , w1' , z₃)
+    rewrite z₃ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    with ¬Writes→step gcp w1 w1' w3 a b a' nowrites (if-hasValue-FIX _ _ hv) dc z₃
+  ... | v' , comp' , eqw' , nowrites' , diff'
+    rewrite comp'
+    = FIX v' , refl , eqw' , nowrites' , differC-FIX _ _ diff'
   -- LET
-  ¬Writes→step gcp w1 w2 w3 .(LET a₁ b₁) .(LET a₂ b₂) u nowrites hv (differC-LET a₁ a₂ b₁ b₂ dc dc₁) comp = {!!}
+  ¬Writes→step gcp w1 w2 w3 .(LET a₁ b₁) .(LET a₂ b₂) u nowrites hv (differC-LET a₁ a₂ b₁ b₂ dc dc₁) comp
+    with isValue⊎ a₁
+  ... | inj₁ x₁ with isValue⊎ a₂
+  ... |   inj₁ x₂
+    rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    = sub a₂ b₂ , refl , refl ,
+      ¬Writes-sub {a₁} {b₁} (∧≡true→ₗ (¬writes a₁) (¬writes b₁) nowrites) (∧≡true→ᵣ (¬writes a₁) (¬writes b₁) nowrites) ,
+      differC-sub {a₁} {a₂} {b₁} {b₂} dc dc₁
+  ... |   inj₂ x₂ = ⊥-elim (x₂ (differC-pres-isValue dc x₁))
+  ¬Writes→step gcp w1 w2 w3 .(LET a₁ b₁) .(LET a₂ b₂) u nowrites hv (differC-LET a₁ a₂ b₁ b₂ dc dc₁) comp | inj₂ x₁
+    with isValue⊎ a₂
+  ... | inj₁ x₃ = ⊥-elim (x₁ (differC-pres-isValue (differC-sym dc) x₃))
+  ... | inj₂ x₃ with step⊎ a₁ w1
+  ... |   inj₂ z₃ rewrite z₃ = ⊥-elim (¬just≡nothing (sym comp))
+  ... |   inj₁ (a₁' , w1' , z₃)
+    rewrite z₃ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    with ¬Writes→step gcp w1 w1' w3 a₁ a₂ a₁' (∧≡true→ₗ (¬writes a₁) (¬writes b₁) nowrites) (if-hasValue-LET _ _ _ hv) dc z₃
+  ... | v' , comp' , eqw' , nowrites' , diff'
+    rewrite comp'
+    = LET v' b₂ , refl , eqw' ,
+      →∧true {¬writes a₁'} {¬writes b₁} nowrites' (∧≡true→ᵣ (¬writes a₁) (¬writes b₁) nowrites) ,
+      differC-LET _ _ _ _ diff' dc₁
   -- WT
   ¬Writes→step gcp w1 w2 w3 .(WT a₁ b₁ c₁) .(WT a₂ b₂ c₂) u nowrites hv (differC-WT a₁ a₂ b₁ b₂ c₁ c₂ dc dc₁ dc₂) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = WT a₂ b₂ c₂ , refl , refl , nowrites , differC-WT a₁ a₂ b₁ b₂ c₁ c₂ dc dc₁ dc₂
+  -- SUP
   ¬Writes→step gcp w1 w2 w3 .(SUP a₁ b₁) .(SUP a₂ b₂) u nowrites hv (differC-SUP a₁ a₂ b₁ b₂ dc dc₁) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = SUP a₂ b₂ , refl , refl , nowrites , differC-SUP a₁ a₂ b₁ b₂ dc dc₁
-  ¬Writes→step gcp w1 w2 w3 .(WREC a₁ b₁) .(WREC a₂ b₂) u nowrites hv (differC-WREC a₁ a₂ b₁ b₂ dc dc₁) comp = {!!}
+  -- WREC
+  ¬Writes→step gcp w1 w2 w3 .(WREC a₁ b₁) .(WREC a₂ b₂) u nowrites hv (differC-WREC a₁ a₂ b₁ b₂ dc dc₁) comp
+    with is-SUP a₁
+  ... | inj₁ (t₁ , u₁ , p₁) rewrite p₁ with differC-SUP→ dc
+  ... | t' , u' , e' , d1' , d2'
+    rewrite e' | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    = sub (WRECr b₂  u') (sub u' (sub t' b₂)) , refl , refl ,
+      ¬Writes-sub
+        {WRECr b₁ u₁} {sub u₁ (sub t₁ b₁)}
+        (¬Writes-WRECc {b₁} {u₁}
+          (∧≡true→ᵣ (¬writes t₁ ∧ ¬writes u₁) (¬writes b₁) nowrites)
+          (∧≡true→ᵣ (¬writes t₁) (¬writes u₁) (∧≡true→ₗ (¬writes t₁ ∧ ¬writes u₁) (¬writes b₁) nowrites)))
+        (¬Writes-sub {u₁} {sub t₁ b₁}
+          (∧≡true→ᵣ (¬writes t₁) (¬writes u₁) (∧≡true→ₗ (¬writes t₁ ∧ ¬writes u₁) (¬writes b₁) nowrites))
+          (¬Writes-sub {t₁} {b₁}
+            (∧≡true→ₗ (¬writes t₁) (¬writes u₁) (∧≡true→ₗ (¬writes t₁ ∧ ¬writes u₁) (¬writes b₁) nowrites))
+            (∧≡true→ᵣ (¬writes t₁ ∧ ¬writes u₁) (¬writes b₁) nowrites))) ,
+      differC-sub
+        {WRECr b₁ u₁} {WRECr b₂ u'} {sub u₁ (sub t₁ b₁)} {sub u' (sub t' b₂)}
+        (differC-WRECr dc₁ d2')
+        (differC-sub {u₁} {u'} {sub t₁ b₁} {sub t' b₂}
+          d2'
+          (differC-sub {t₁} {t'} {b₁} {b₂} d1' dc₁))
+  ¬Writes→step gcp w1 w2 w3 .(WREC a₁ b₁) .(WREC a₂ b₂) u nowrites hv (differC-WREC a₁ a₂ b₁ b₂ dc dc₁) comp | inj₂ p₁
+    with is-SUP a₂
+  ... | inj₁ (t₂ , u₂ , p₂) rewrite p₂ | fst (snd (snd (differC-SUP→ᵣ dc))) = ⊥-elim (p₁ _ _ refl) -- not possible
+  ... | inj₂ q₂ with step⊎ a₁ w1
+  ... |   inj₂ z₃ rewrite z₃ = ⊥-elim (¬just≡nothing (sym comp))
+  ... |   inj₁ (a₁' , w1' , z₃)
+    rewrite z₃ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    with ¬Writes→step gcp w1 w1' w3 a₁ a₂ a₁' (∧≡true→ₗ (¬writes a₁) (¬writes b₁) nowrites) (if-hasValue-WREC _ _ _ hv) dc z₃
+  ... | v' , comp' , eqw' , nowrites' , diff'
+    rewrite comp'
+    = WREC v' b₂ , refl , eqw' ,
+      →∧true {¬writes a₁'} {¬writes b₁} nowrites' (∧≡true→ᵣ (¬writes a₁) (¬writes b₁) nowrites) ,
+      differC-WREC _ _ _ _ diff' dc₁
+  -- MT
   ¬Writes→step gcp w1 w2 w3 .(MT a₁ b₁ c₁) .(MT a₂ b₂ c₂) u nowrites hv (differC-MT a₁ a₂ b₁ b₂ c₁ c₂ dc dc₁ dc₂) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = MT a₂ b₂ c₂ , refl , refl , nowrites , differC-MT a₁ a₂ b₁ b₂ c₁ c₂ dc dc₁ dc₂
+  -- SUM
   ¬Writes→step gcp w1 w2 w3 .(SUM a₁ b₁) .(SUM a₂ b₂) u nowrites hv (differC-SUM a₁ a₂ b₁ b₂ dc dc₁) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = SUM a₂ b₂ , refl , refl , nowrites , differC-SUM a₁ a₂ b₁ b₂ dc dc₁
+  -- PAIR
   ¬Writes→step gcp w1 w2 w3 .(PAIR a₁ b₁) .(PAIR a₂ b₂) u nowrites hv (differC-PAIR a₁ a₂ b₁ b₂ dc dc₁) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = PAIR a₂ b₂ , refl , refl , nowrites , differC-PAIR a₁ a₂ b₁ b₂ dc dc₁
-  ¬Writes→step gcp w1 w2 w3 .(SPREAD a₁ b₁) .(SPREAD a₂ b₂) u nowrites hv (differC-SPREAD a₁ a₂ b₁ b₂ dc dc₁) comp = {!!}
+  -- SPREAD
+  ¬Writes→step gcp w1 w2 w3 .(SPREAD a₁ b₁) .(SPREAD a₂ b₂) u nowrites hv (differC-SPREAD a₁ a₂ b₁ b₂ dc dc₁) comp
+    with is-PAIR a₁
+  ... | inj₁ (t₁ , u₁ , p₁) rewrite p₁ with differC-PAIR→ dc
+  ... | t' , u' , e' , d1' , d2'
+    rewrite e' | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    = sub u' (sub t' b₂) , refl , refl ,
+      ¬Writes-sub {u₁} {sub t₁ b₁} (∧≡true→ᵣ (¬writes t₁) (¬writes u₁) (∧≡true→ₗ (¬writes t₁ ∧ ¬writes u₁) (¬writes b₁) nowrites))
+                                   (¬Writes-sub {t₁} {b₁} (∧≡true→ₗ (¬writes t₁) (¬writes u₁) (∧≡true→ₗ (¬writes t₁ ∧ ¬writes u₁) (¬writes b₁) nowrites))
+                                                          (∧≡true→ᵣ (¬writes t₁ ∧ ¬writes u₁) (¬writes b₁) nowrites)) ,
+      differC-sub {u₁} {u'} {sub t₁ b₁} {sub t' b₂} d2' (differC-sub {t₁} {t'} {b₁} {b₂} d1' dc₁)
+  ¬Writes→step gcp w1 w2 w3 .(SPREAD a₁ b₁) .(SPREAD a₂ b₂) u nowrites hv (differC-SPREAD a₁ a₂ b₁ b₂ dc dc₁) comp | inj₂ p₁
+    with is-PAIR a₂
+  ... | inj₁ (t₂ , u₂ , p₂) rewrite p₂ | fst (snd (snd (differC-PAIR→ᵣ dc))) = ⊥-elim (p₁ _ _ refl) -- not possible
+  ... | inj₂ q₂ with step⊎ a₁ w1
+  ... |   inj₂ z₃ rewrite z₃ = ⊥-elim (¬just≡nothing (sym comp))
+  ... |   inj₁ (a₁' , w1' , z₃)
+    rewrite z₃ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    with ¬Writes→step gcp w1 w1' w3 a₁ a₂ a₁' (∧≡true→ₗ (¬writes a₁) (¬writes b₁) nowrites) (if-hasValue-SPREAD _ _ _ hv) dc z₃
+  ... | v' , comp' , eqw' , nowrites' , diff'
+    rewrite comp'
+    = SPREAD v' b₂ , refl , eqw' ,
+      →∧true {¬writes a₁'} {¬writes b₁} nowrites' (∧≡true→ᵣ (¬writes a₁) (¬writes b₁) nowrites) ,
+      differC-SPREAD _ _ _ _ diff' dc₁
+  -- SET
   ¬Writes→step gcp w1 w2 w3 .(SET a₁ b₁) .(SET a₂ b₂) u nowrites hv (differC-SET a₁ a₂ b₁ b₂ dc dc₁) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = SET a₂ b₂ , refl , refl , nowrites , differC-SET a₁ a₂ b₁ b₂ dc dc₁
+  -- ISECT
   ¬Writes→step gcp w1 w2 w3 .(ISECT a₁ b₁) .(ISECT a₂ b₂) u nowrites hv (differC-ISECT a₁ a₂ b₁ b₂ dc dc₁) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = ISECT a₂ b₂ , refl , refl , nowrites , differC-ISECT a₁ a₂ b₁ b₂ dc dc₁
+  -- TUNION
   ¬Writes→step gcp w1 w2 w3 .(TUNION a₁ b₁) .(TUNION a₂ b₂) u nowrites hv (differC-TUNION a₁ a₂ b₁ b₂ dc dc₁) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = TUNION a₂ b₂ , refl , refl , nowrites , differC-TUNION a₁ a₂ b₁ b₂ dc dc₁
+  -- UNION
   ¬Writes→step gcp w1 w2 w3 .(UNION a₁ b₁) .(UNION a₂ b₂) u nowrites hv (differC-UNION a₁ a₂ b₁ b₂ dc dc₁) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = UNION a₂ b₂ , refl , refl , nowrites , differC-UNION a₁ a₂ b₁ b₂ dc dc₁
+  -- INL
   ¬Writes→step gcp w1 w2 w3 .(INL a) .(INL b) u nowrites hv (differC-INL a b dc) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = INL b , refl , refl , nowrites , differC-INL a b dc
+  -- INR
   ¬Writes→step gcp w1 w2 w3 .(INR a) .(INR b) u nowrites hv (differC-INR a b dc) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = INR b , refl , refl , nowrites , differC-INR a b dc
+  -- DECIDE
   ¬Writes→step gcp w1 w2 w3 .(DECIDE a₁ b₁ c₁) .(DECIDE a₂ b₂ c₂) u nowrites hv (differC-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ dc dc₁ dc₂) comp
-    = {!!}
+    with is-INL a₁
+  ... | inj₁ (t₁ , p₁) rewrite p₁ with differC-INL→ dc
+  ... | u' , e' , d'
+    rewrite e' | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    = sub u' b₂ , refl , refl ,
+      ¬Writes-sub {t₁} {b₁} (∧≡true→1-3 {¬writes t₁} {¬writes b₁} {¬writes c₁} nowrites) (∧≡true→2-3 {¬writes t₁} {¬writes b₁} {¬writes c₁} nowrites) ,
+      differC-sub {t₁} {u'} {b₁} {b₂} d' dc₁
+  ¬Writes→step gcp w1 w2 w3 .(DECIDE a₁ b₁ c₁) .(DECIDE a₂ b₂ c₂) u nowrites hv (differC-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ dc dc₁ dc₂) comp | inj₂ p₁
+    with is-INL a₂
+  ... | inj₁ (t₂ , p₂) rewrite p₂ | fst (snd (differC-INL→ᵣ dc)) = ⊥-elim (p₁ _ refl) -- not possible
+  ... | inj₂ q₂ with is-INR a₁
+  ... |   inj₁ (t₂ , p₂) rewrite p₂ with differC-INR→ dc
+  ... |   u' , e' , d'
+    rewrite e' | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    = sub u' c₂ , refl , refl ,
+      ¬Writes-sub {t₂} {c₁} (∧≡true→1-3 {¬writes t₂} {¬writes b₁} {¬writes c₁} nowrites) (∧≡true→3-3 {¬writes t₂} {¬writes b₁} {¬writes c₁} nowrites) ,
+      differC-sub {t₂} {u'} {c₁} {c₂} d' dc₂
+  ¬Writes→step gcp w1 w2 w3 .(DECIDE a₁ b₁ c₁) .(DECIDE a₂ b₂ c₂) u nowrites hv (differC-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ dc dc₁ dc₂) comp | inj₂ p₁ | inj₂ q₂ | inj₂ p₂
+    with is-INR a₂
+  ... | inj₁ (t₃ , p₃) rewrite p₃ | fst (snd (differC-INR→ᵣ dc)) = ⊥-elim (p₂ _ refl)
+  ... | inj₂ p₃ with step⊎ a₁ w1
+  ... |   inj₂ z₃ rewrite z₃ = ⊥-elim (¬just≡nothing (sym comp))
+  ... |   inj₁ (a₁' , w1' , z₃)
+    rewrite z₃ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    with ¬Writes→step gcp w1 w1' w3 a₁ a₂ a₁' (∧≡true→1-3 {¬writes a₁} {¬writes b₁} {¬writes c₁} nowrites) (if-hasValue-DECIDE _ _ _ _ hv) dc z₃
+  ... | v' , comp' , eqw' , nowrites' , diff'
+    rewrite comp'
+    = DECIDE v' b₂ c₂ , refl , eqw' ,
+      →∧true {¬writes a₁'} {¬writes b₁ ∧ ¬writes c₁} nowrites' (∧≡true→ᵣ (¬writes a₁) (¬writes b₁ ∧ ¬writes c₁) nowrites) ,
+      differC-DECIDE _ _ _ _ _ _ diff' dc₁ dc₂
+  -- EQ
   ¬Writes→step gcp w1 w2 w3 .(EQ a₁ b₁ c₁) .(EQ a₂ b₂ c₂) u nowrites hv (differC-EQ a₁ a₂ b₁ b₂ c₁ c₂ dc dc₁ dc₂) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = EQ a₂ b₂ c₂ , refl , refl , nowrites , differC-EQ a₁ a₂ b₁ b₂ c₁ c₂ dc dc₁ dc₂
+  -- AX
   ¬Writes→step gcp w1 w2 w3 .AX .AX u nowrites hv differC-AX comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = AX , refl , refl , nowrites , differC-AX
+  -- FREE
   ¬Writes→step gcp w1 w2 w3 .FREE .FREE u nowrites hv differC-FREE comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = FREE , refl , refl , nowrites , differC-FREE
+  -- MSEQ
   ¬Writes→step gcp w1 w2 w3 .(MSEQ s) .(MSEQ s) u nowrites hv (differC-MSEQ s) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = MSEQ s , refl , refl , nowrites , differC-MSEQ s
-  ¬Writes→step gcp w1 w2 w3 .(MAPP s a₁) .(MAPP s a₂) u nowrites hv (differC-MAPP s a₁ a₂ dc) comp = {!!}
+  -- MAPP
+  ¬Writes→step gcp w1 w2 w3 .(MAPP s a₁) .(MAPP s a₂) u nowrites hv (differC-MAPP s a₁ a₂ dc) comp with is-NUM a₁
+  ... | inj₁ (n₁ , p₁)
+    rewrite p₁ | differC-NUM→ dc | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    = NUM (s n₁) , refl , refl , nowrites , differC-NUM _
+  ... | inj₂ p₁ with is-NUM a₂
+  ... |   inj₁ (n₂ , p₂) rewrite p₂ | differC-NUM→ᵣ dc = ⊥-elim (p₁ _ refl)
+  ... |   inj₂ p₂ with step⊎ a₁ w1
+  ... |   inj₂ z₃ rewrite z₃ = ⊥-elim (¬just≡nothing (sym comp))
+  ... |   inj₁ (a₁' , w1' , z₃)
+    rewrite z₃ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    with ¬Writes→step gcp w1 w1' w3 a₁ a₂ a₁' nowrites (if-hasValue-MAPP _ _ _ hv) dc z₃
+  ... | v' , comp' , eqw' , nowrites' , diff'
+    rewrite comp'
+    = MAPP s v' , refl , eqw' , nowrites' , differC-MAPP _ _ _ diff'
+  -- CS
   ¬Writes→step gcp w1 w2 w3 .(CS name) .(CS name) u nowrites hv (differC-CS name) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = CS name , refl , refl , nowrites , differC-CS name
-  ¬Writes→step gcp w1 w2 w3 .(CHOOSE a₁ b₁) .(CHOOSE a₂ b₂) u nowrites hv (differC-CHOOSE a₁ a₂ b₁ b₂ dc dc₁) comp = {!!}
+  -- CHOOSE
+  ¬Writes→step gcp w1 w2 w3 .(CHOOSE a₁ b₁) .(CHOOSE a₂ b₂) u nowrites hv (differC-CHOOSE a₁ a₂ b₁ b₂ dc dc₁) comp
+    with is-NAME a₁
+  ... | inj₁ (n₁ , p₁) rewrite p₁ = ⊥-elim (differC-NAME→ dc)
+  ... | inj₂ p₁ with is-NAME a₂
+  ... |   inj₁ (n₂ , p₂) rewrite p₂ = ⊥-elim (differC-NAME→ᵣ dc)
+  ... |   inj₂ p₂ with step⊎ a₁ w1
+  ... |     inj₂ z₃ rewrite z₃ = ⊥-elim (¬just≡nothing (sym comp))
+  ... |     inj₁ (a₁' , w1' , z₃)
+    rewrite z₃ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    with ¬Writes→step gcp w1 w1' w3 a₁ a₂ a₁' (∧≡true→ₗ (¬writes a₁) (¬writes b₁) nowrites) (if-hasValue-CHOOSE _ _ _ hv) dc z₃
+  ... | v' , comp' , eqw' , nowrites' , diff'
+    rewrite comp'
+    = CHOOSE v' b₂ , refl , eqw' ,
+      →∧true {¬writes a₁'} {¬writes b₁} nowrites' (∧≡true→ᵣ (¬writes a₁) (¬writes b₁) nowrites) ,
+      differC-CHOOSE _ _ _ _ diff' dc₁
+  -- NOWRITE
   ¬Writes→step gcp w1 w2 w3 .NOWRITE .NOWRITE u nowrites hv differC-NOWRITE comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = NOWRITE , refl , refl , nowrites , differC-NOWRITE
+  -- NOREAD
   ¬Writes→step gcp w1 w2 w3 .NOREAD .NOREAD u nowrites hv differC-NOREAD comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = NOREAD , refl , refl , nowrites , differC-NOREAD
+  -- SUBSING
   ¬Writes→step gcp w1 w2 w3 .(SUBSING a) .(SUBSING b) u nowrites hv (differC-SUBSING a b dc) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = SUBSING b , refl , refl , nowrites , differC-SUBSING a b dc
+  -- PURE
   ¬Writes→step gcp w1 w2 w3 .PURE .PURE u nowrites hv differC-PURE comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = PURE , refl , refl , nowrites , differC-PURE
+  -- NOSEQ
   ¬Writes→step gcp w1 w2 w3 .NOSEQ .NOSEQ u nowrites hv differC-NOSEQ comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = NOSEQ , refl , refl , nowrites , differC-NOSEQ
+  -- TERM
   ¬Writes→step gcp w1 w2 w3 .(TERM a) .(TERM b) u nowrites hv (differC-TERM a b dc) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = TERM b , refl , refl , nowrites , differC-TERM a b dc
-  ¬Writes→step gcp w1 w2 w3 .(ENC a) .(ENC a) u nowrites hv (differC-ENC a dc) comp = {!!}
+  -- ENC
+  ¬Writes→step gcp w1 w2 w3 .(ENC a) .(ENC a) u nowrites hv (differC-ENC a dc) comp
+    rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    = ENCr a , refl , refl , →∧true (→∧true nowrites refl) refl , differC-ENCr dc
+  -- DUM
   ¬Writes→step gcp w1 w2 w3 .(DUM a) .(DUM b) u nowrites hv (differC-DUM a b dc) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = DUM b , refl , refl , nowrites , differC-DUM a b dc
+  -- FFDEFS
   ¬Writes→step gcp w1 w2 w3 .(FFDEFS a₁ b₁) .(FFDEFS a₂ b₂) u nowrites hv (differC-FFDEFS a₁ a₂ b₁ b₂ dc dc₁) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = FFDEFS a₂ b₂ , refl , refl , nowrites , differC-FFDEFS a₁ a₂ b₁ b₂ dc dc₁
+  -- UNIV
   ¬Writes→step gcp w1 w2 w3 .(UNIV x) .(UNIV x) u nowrites hv (differC-UNIV x) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = UNIV x , refl , refl , nowrites , differC-UNIV x
+  -- LIFT
   ¬Writes→step gcp w1 w2 w3 .(LIFT a) .(LIFT b) u nowrites hv (differC-LIFT a b dc) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = LIFT b , refl , refl , nowrites , differC-LIFT a b dc
+  -- LOWER
   ¬Writes→step gcp w1 w2 w3 .(LOWER a) .(LOWER b) u nowrites hv (differC-LOWER a b dc) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = LOWER b , refl , refl , nowrites , differC-LOWER a b dc
+  -- SHRINK
   ¬Writes→step gcp w1 w2 w3 .(SHRINK a) .(SHRINK b) u nowrites hv (differC-SHRINK a b dc) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = SHRINK b , refl , refl , nowrites , differC-SHRINK a b dc
