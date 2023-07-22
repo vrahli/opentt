@@ -1483,4 +1483,145 @@ abstract
     = CS name , refl , refl , nowrites , differC-writesFC name
 --}
 
+
+step-hasValue : (a a' : Term) (w w' : 𝕎·)
+              → step a w ≡ just (a' , w')
+              → hasValue a w
+              → hasValue a' w'
+step-hasValue a a' w w' s (v , w'' , comp , isv) =
+  v , w'' ,
+  val-⇓-from-to→ {w} {w'} {w''} {a} {a'} {v} isv (step-⇓-from-to-trans {w} {w'} {w'} {a} {a'} {a'} s (0 , refl)) comp ,
+  isv
+
+
+abstract
+  ¬Writes→steps : (gcp : getChoiceℙ) (k : ℕ) (w1 w2 w3 : 𝕎·) (a b u : Term)
+                → ¬Writes a
+                → hasValue b w3
+                → differC a b
+                → steps k (a , w1) ≡ (u , w2)
+                → Σ ℕ (λ k' → Σ Term (λ v → steps k' (b , w3) ≡ (v , w3) × w1 ≡ w2 × ¬Writes u × differC u v))
+  ¬Writes→steps gcp 0 w1 w2 w3 a b u nwa hv diff comp
+    rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+    = 0 , b , refl , refl , nwa , diff
+  ¬Writes→steps gcp (suc k) w1 w2 w3 a b u nwa hv diff comp
+    with step⊎ a w1
+  ... | inj₁ (a' , w1' , z)
+    rewrite z
+    with ¬Writes→step gcp w1 w1' w3 a b a' nwa hv diff z
+  ... | b' , z' , eqw , nwa' , diff'
+    rewrite z' | eqw
+    with ¬Writes→steps gcp k w1' w2 w3 a' b' u nwa' (step-hasValue b b' w3 w3 z' hv) diff' comp
+  ... | k' , v , z'' , eqw' , nw' , diff'
+    = suc k' , v , step-steps-trans {w3} {w3} {w3} {b} {b'} {v} {k'} z' z'' , eqw' , nw' , diff'
+  ¬Writes→steps gcp (suc k) w1 w2 w3 a b u nwa hv diff comp | inj₂ z
+    rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+    = 0 , b , refl , refl , nwa , diff
+
+
+abstract
+  differC-refl : {a : Term}
+               → ¬Writes a
+               → differC a a
+  differC-refl {VAR x} nwa = differC-VAR x
+  differC-refl {QNAT} nwa = differC-QNAT
+  differC-refl {LT a a₁} nwa = differC-LT _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
+  differC-refl {QLT a a₁} nwa = differC-QLT _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
+  differC-refl {NUM x} nwa = differC-NUM x
+  differC-refl {IFLT a a₁ a₂ a₃} nwa = differC-IFLT _ _ _ _ _ _ _ _ (differC-refl {a} (∧≡true→1-4 {¬writes a} {¬writes a₁} {¬writes a₂} {¬writes a₃} nwa)) (differC-refl {a₁} (∧≡true→2-4 {¬writes a} {¬writes a₁} {¬writes a₂} {¬writes a₃} nwa)) (differC-refl {a₂} (∧≡true→3-4 {¬writes a} {¬writes a₁} {¬writes a₂} {¬writes a₃} nwa)) (differC-refl {a₃} (∧≡true→4-4 {¬writes a} {¬writes a₁} {¬writes a₂} {¬writes a₃} nwa))
+  differC-refl {IFEQ a a₁ a₂ a₃} nwa = differC-IFEQ _ _ _ _ _ _ _ _ (differC-refl {a} (∧≡true→1-4 {¬writes a} {¬writes a₁} {¬writes a₂} {¬writes a₃} nwa)) (differC-refl {a₁} (∧≡true→2-4 {¬writes a} {¬writes a₁} {¬writes a₂} {¬writes a₃} nwa)) (differC-refl {a₂} (∧≡true→3-4 {¬writes a} {¬writes a₁} {¬writes a₂} {¬writes a₃} nwa)) (differC-refl {a₃} (∧≡true→4-4 {¬writes a} {¬writes a₁} {¬writes a₂} {¬writes a₃} nwa))
+  differC-refl {SUC a} nwa = differC-SUC a a (differC-refl nwa)
+  differC-refl {PI a a₁} nwa = differC-PI _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
+  differC-refl {LAMBDA a} nwa = differC-LAMBDA a a (differC-refl nwa)
+  differC-refl {APPLY a a₁} nwa = differC-APPLY _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
+  differC-refl {FIX a} nwa = differC-FIX a a (differC-refl nwa)
+  differC-refl {LET a a₁} nwa = differC-LET _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
+  differC-refl {WT a a₁ a₂} nwa = differC-WT _ _ _ _ _ _ (differC-refl {a} (∧≡true→1-3 {¬writes a} {¬writes a₁} {¬writes a₂} nwa)) (differC-refl {a₁} (∧≡true→2-3 {¬writes a} {¬writes a₁} {¬writes a₂} nwa)) (differC-refl {a₂} (∧≡true→3-3 {¬writes a} {¬writes a₁} {¬writes a₂} nwa))
+  differC-refl {SUP a a₁} nwa = differC-SUP _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
+  differC-refl {WREC a a₁} nwa = differC-WREC _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
+  differC-refl {MT a a₁ a₂} nwa = differC-MT _ _ _ _ _ _ (differC-refl {a} (∧≡true→1-3 {¬writes a} {¬writes a₁} {¬writes a₂} nwa)) (differC-refl {a₁} (∧≡true→2-3 {¬writes a} {¬writes a₁} {¬writes a₂} nwa)) (differC-refl {a₂} (∧≡true→3-3 {¬writes a} {¬writes a₁} {¬writes a₂} nwa))
+  differC-refl {SUM a a₁} nwa = differC-SUM _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
+  differC-refl {PAIR a a₁} nwa = differC-PAIR _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
+  differC-refl {SPREAD a a₁} nwa = differC-SPREAD _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
+  differC-refl {SET a a₁} nwa = differC-SET _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
+  differC-refl {TUNION a a₁} nwa = differC-TUNION _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
+  differC-refl {ISECT a a₁} nwa = differC-ISECT _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
+  differC-refl {UNION a a₁} nwa = differC-UNION _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
+  differC-refl {INL a} nwa = differC-INL a a (differC-refl nwa)
+  differC-refl {INR a} nwa = differC-INR a a (differC-refl nwa)
+  differC-refl {DECIDE a a₁ a₂} nwa = differC-DECIDE _ _ _ _ _ _ (differC-refl {a} (∧≡true→1-3 {¬writes a} {¬writes a₁} {¬writes a₂} nwa)) (differC-refl {a₁} (∧≡true→2-3 {¬writes a} {¬writes a₁} {¬writes a₂} nwa)) (differC-refl {a₂} (∧≡true→3-3 {¬writes a} {¬writes a₁} {¬writes a₂} nwa))
+  differC-refl {EQ a a₁ a₂} nwa = differC-EQ _ _ _ _ _ _ (differC-refl {a} (∧≡true→1-3 {¬writes a} {¬writes a₁} {¬writes a₂} nwa)) (differC-refl {a₁} (∧≡true→2-3 {¬writes a} {¬writes a₁} {¬writes a₂} nwa)) (differC-refl {a₂} (∧≡true→3-3 {¬writes a} {¬writes a₁} {¬writes a₂} nwa))
+  differC-refl {AX} nwa = differC-AX
+  differC-refl {FREE} nwa = differC-FREE
+  differC-refl {CS x} nwa = differC-CS x
+  differC-refl {CHOOSE a a₁} nwa = differC-CHOOSE _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
+  differC-refl {MSEQ x} nwa = differC-MSEQ x
+  differC-refl {MAPP x a} nwa = differC-MAPP x a a (differC-refl nwa)
+  differC-refl {NOWRITE} nwa = differC-NOWRITE
+  differC-refl {NOREAD} nwa = differC-NOREAD
+  differC-refl {SUBSING a} nwa = differC-SUBSING a a (differC-refl nwa)
+  differC-refl {DUM a} nwa = differC-DUM a a (differC-refl nwa)
+  differC-refl {FFDEFS a a₁} nwa = differC-FFDEFS _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
+  differC-refl {PURE} nwa = differC-PURE
+  differC-refl {NOSEQ} nwa = differC-NOSEQ
+  differC-refl {TERM a} nwa = differC-TERM a a (differC-refl nwa)
+  differC-refl {ENC a} nwa = differC-ENC a (differC-refl nwa)
+  differC-refl {UNIV x} nwa = differC-UNIV x
+  differC-refl {LIFT a} nwa = differC-LIFT a a (differC-refl nwa)
+  differC-refl {LOWER a} nwa = differC-LOWER a a (differC-refl nwa)
+  differC-refl {SHRINK a} nwa = differC-SHRINK a a (differC-refl nwa)
+
+
+abstract
+  ¬Writes→⇓ : (gcp : getChoiceℙ) (w1 w2 w3 : 𝕎·) (a b u : Term)
+            → ¬Writes a
+            → hasValue b w3
+            → differC a b
+            → a ⇓ u from w1 to w2
+            → Σ Term (λ v → b ⇓! v at w3 × w1 ≡ w2 × ¬Writes u × differC u v)
+  ¬Writes→⇓ gcp w1 w2 w3 a b u nwa hv diff (k , comp)
+    with ¬Writes→steps gcp k w1 w2 w3 a b u nwa hv diff comp
+  ... | k' , v , comp , eqw , nwu , diff' = v , (k' , comp) , eqw , nwu , diff'
+
+
+≡differC : (a b c d : Term)
+         → a ≡ b
+         → c ≡ d
+         → differC a c
+         → differC b d
+≡differC a b c d refl refl diff = diff
+
+
+abstract
+  ¬Writes→⇛! : (gcp : getChoiceℙ) (w1 w2 : 𝕎·) (a b u v : Term)
+             → ¬Writes a
+             → isValue u
+             → isValue v
+             → a ⇛! u at w1
+             → b ⇛! v at w2
+             → differC a b
+             → differC u v
+  ¬Writes→⇛! gcp w1 w2 a b u v nwa isvu isvv compa compb diff
+    with ¬Writes→⇓ gcp w1 w1 w2 a b u nwa (v , w2 , lower (compb w2 (⊑-refl· w2)) , isvv) diff (lower (compa w1 (⊑-refl· w1)))
+  ... | v' , compb' , eqw , nwu , diff' =
+    ≡differC
+      u u v' v
+      refl
+      (⇓!-val-det {w2} {b} {v'} {v} (differC-pres-isValue diff' isvu) isvv compb' (lower (compb w2 (⊑-refl· w2))))
+      diff'
+
+
+¬differC-INL-INR : (a b : Term) → ¬ differC (INL a) (INR b)
+¬differC-INL-INR a b ()
+
+
+abstract
+  ¬Writes→⇛!INL-INR : (gcp : getChoiceℙ) (w1 w2 : 𝕎·) (a u v : Term)
+                    → ¬Writes a
+                    → a ⇛! INL u at w1
+                    → a ⇛! INR v at w2
+                    → ⊥
+  ¬Writes→⇛!INL-INR gcp w1 w2 a u v nwa comp1 comp2 =
+    ¬differC-INL-INR u v (¬Writes→⇛! gcp w1 w2 a a (INL u) (INR v) nwa tt tt comp1 comp2 (differC-refl nwa))
+
 \end{code}

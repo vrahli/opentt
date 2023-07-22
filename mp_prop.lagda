@@ -96,6 +96,9 @@ open import terms3(W)(C)(K)(G)(X)(N)(EC)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
   using (lowerVars-fvars-[0,1,2,3])
 
+open import nowrites(W)(C)(K)(G)(X)(N)(EC)
+  using (#¬Writes ; getChoiceℙ ; ¬Writes→⇛!INL-INR)
+
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqTypes-mon)
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -1429,18 +1432,18 @@ getChoice→getC {n} {cs} {w} c h rewrite h = refl
 
 
 -- We use this when w2 ⊑· w1
-#¬Writes→inhType-ASSERT₄ : (n : ℕ) (w1 w2 : 𝕎·) (t : CTerm)
-                         → ⊤ --#¬Writes t
+#¬Writes→inhType-ASSERT₄ : (gcp : getChoiceℙ) (n : ℕ) (w1 w2 : 𝕎·) (t : CTerm)
+                         → #¬Writes t
                          → ∈Type n w2 #BOOL₀! t
                          → (Σ CTerm (λ x → t #⇛! #INL x at w1))
                          → inhType n w2 (#ASSERT₄ t)
-#¬Writes→inhType-ASSERT₄ n w1 w2 t nwt t∈ (x , cx) =
+#¬Writes→inhType-ASSERT₄ gcp n w1 w2 t nwt t∈ (x , cx) =
   #AX ,
   →equalInType-ASSERT₄ n w2 t #AX #AX (→equalInType-BOOL₀! n w2 t #BTRUE (Mod.∀𝕎-□Func M aw (equalInType-BOOL₀!→ n w2 t t t∈)))
   where
     aw : ∀𝕎 w2 (λ w' _ → #strongBool! w' t t → #strongBool! w' t #BTRUE)
     aw w3 e3 (x₁ , x₂ , inj₁ (c₁ , c₂)) = x₁ , #AX , inj₁ (c₁ , #⇛!-refl {w3} {#BTRUE})
-    aw w3 e3 (x₁ , x₂ , inj₂ (c₁ , c₂)) = {!!} , #AX , inj₁ ({!!} {--¬Names→⇛! w1 w3 ⌜ t ⌝ (INL ⌜ x ⌝) nnt cx--} , #⇛!-refl {w3} {#BTRUE})
+    aw w3 e3 (x₁ , x₂ , inj₂ (c₁ , c₂)) = ⊥-elim (¬Writes→⇛!INL-INR gcp w1 w3 ⌜ t ⌝ ⌜ x ⌝ ⌜ x₁ ⌝ nwt cx c₁)
 
 
 -- Copied over from MPp₆-inh in mpp.lagda
@@ -1524,7 +1527,7 @@ MP₆-inh n w =
 
                              aw8 : ∀𝕎 w5 (λ w' e' → #strongBool! w' (#APPLY a₁ (#NUM k)) #BTRUE → Lift (lsuc L) ⊥)
                              aw8 w6 e6 wbe = lift (p (k , #¬Writes→inhType-ASSERT₄
-                                                            n w6 w3 (#APPLY a₁ (#NUM k))
+                                                            {!!} n w6 w3 (#APPLY a₁ (#NUM k))
                                                             {!!} {--(#¬Names-APPLY {a₁} {#NUM k} (equalInType-TPURE→ₗ eqa) refl)--}
                                                             (equalInType-FUN→
                                                                (≡CTerm→equalInType #NAT!→BOOL₀!≡ (equalInType-refl eqa))
