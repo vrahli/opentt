@@ -181,8 +181,9 @@ data differC : Term → Term → Set where
   differC-MSEQ     : (s : 𝕊) → differC (MSEQ s) (MSEQ s)
   differC-MAPP     : (s : 𝕊) (a₁ a₂ : Term) → differC a₁ a₂ → differC (MAPP s a₁) (MAPP s a₂)
   differC-CS       : (name : Name) → differC (CS name) (CS name)
---  differC-NAME    : (name : Name) → differC (NAME name) (NAME name)
---  differC-FRESH   : (a b : Term) → differC (suc name1) (suc name2) (shiftNameUp 0 f) a b → differC (FRESH a) (FRESH b)
+  differC-NAME     : (name : Name) → differC (NAME name) (NAME name)
+  differC-FRESH    : (a b : Term) → differC a b → differC (FRESH a) (FRESH b)
+  differC-LOAD     : (a b : Term) → differC a b → differC (LOAD a) (LOAD b)
   differC-CHOOSE   : (a₁ a₂ b₁ b₂ : Term) → differC a₁ a₂ → differC b₁ b₂ → differC (CHOOSE a₁ b₁) (CHOOSE a₂ b₂)
   differC-NOWRITE  : differC NOWRITE NOWRITE
   differC-NOREAD   : differC NOREAD  NOREAD
@@ -252,14 +253,14 @@ differC-CS→ᵣ {n} {.(CS n)} (differC-CS .n) = refl --inj₁ refl
 
 differC-NAME→ : {n : Name} {a : Term}
               → differC (NAME n) a
-              → ⊥
-differC-NAME→ {b} {a} ()
+              → a ≡ NAME n
+differC-NAME→ {n} {.(NAME n)} (differC-NAME .n) = refl
 
 
 differC-NAME→ᵣ : {n : Name} {a : Term}
               → differC a (NAME n)
-              → ⊥
-differC-NAME→ᵣ {b} {a} ()
+              → a ≡ NAME n
+differC-NAME→ᵣ {n} {.(NAME n)} (differC-NAME .n) = refl
 
 
 differC-LAM→ : {t a : Term}
@@ -427,8 +428,8 @@ differC-SUP→ᵣ {t₁} {t₂} {.(SUP b₁ b₂)} (differC-SUP b₁ .t₁ b₂ 
 ¬writes-shiftUp n (CS x) = refl
 ¬writes-shiftUp n (NAME x) = refl
 ¬writes-shiftUp n (FRESH a) = refl
-¬writes-shiftUp n (CHOOSE a a₁) = ≡∧ (¬writes-shiftUp n a) (¬writes-shiftUp n a₁)
 ¬writes-shiftUp n (LOAD a) = refl
+¬writes-shiftUp n (CHOOSE a a₁) = ≡∧ (¬writes-shiftUp n a) (¬writes-shiftUp n a₁)
 ¬writes-shiftUp n (MSEQ x) = refl
 ¬writes-shiftUp n (MAPP x a) = ¬writes-shiftUp n a
 ¬writes-shiftUp n NOWRITE = refl
@@ -641,6 +642,9 @@ differC-shiftUp {n} {.FREE} {.FREE} differC-FREE = differC-FREE
 differC-shiftUp {n} {.(MSEQ s)} {.(MSEQ s)} (differC-MSEQ s) = differC-MSEQ _
 differC-shiftUp {n} {.(MAPP s a₁)} {.(MAPP s a₂)} (differC-MAPP s a₁ a₂ d) = differC-MAPP _ _ _ (differC-shiftUp d)
 differC-shiftUp {n} {.(CS name)} {.(CS name)} (differC-CS name) = differC-CS _
+differC-shiftUp {n} {.(NAME name)} {.(NAME name)} (differC-NAME name) = differC-NAME _
+differC-shiftUp {n} {.(FRESH a)} {.(FRESH b)} (differC-FRESH a b d) = differC-FRESH _ _ (differC-shiftUp d)
+differC-shiftUp {n} {.(LOAD a)} {.(LOAD b)} (differC-LOAD a b d) = differC-LOAD _ _ d
 differC-shiftUp {n} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (differC-CHOOSE a₁ a₂ b₁ b₂ d d₁) = differC-CHOOSE _ _ _ _ (differC-shiftUp d) (differC-shiftUp d₁)
 differC-shiftUp {n} {.NOWRITE} {.NOWRITE} differC-NOWRITE = differC-NOWRITE
 differC-shiftUp {n} {.NOREAD} {.NOREAD} differC-NOREAD = differC-NOREAD
@@ -661,6 +665,67 @@ differC-shiftUp {n} {.FALSE} {.TRUE} differC-writesFT = differC-writesFT
 --differC-shiftUp {n} {.(CS name)} {.FALSE} (differC-writesCF name) = differC-writesCF _
 --differC-shiftUp {n} {.TRUE} {.(CS name)} (differC-writesTC name) = differC-writesTC _
 --differC-shiftUp {n} {.FALSE} {.(CS name)} (differC-writesFC name) = differC-writesFC _
+
+
+differC-shiftNameUp : {n : ℕ} {a b : Term}
+                    → differC a b
+                    → differC (shiftNameUp n a) (shiftNameUp n b)
+differC-shiftNameUp {n} {.(VAR x)} {.(VAR x)} (differC-VAR x) = differC-VAR _
+differC-shiftNameUp {n} {.QNAT} {.QNAT} differC-QNAT = differC-QNAT
+differC-shiftNameUp {n} {.(LT a₁ b₁)} {.(LT a₂ b₂)} (differC-LT a₁ a₂ b₁ b₂ d d₁) = differC-LT _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
+differC-shiftNameUp {n} {.(QLT a₁ b₁)} {.(QLT a₂ b₂)} (differC-QLT a₁ a₂ b₁ b₂ d d₁) = differC-QLT _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
+differC-shiftNameUp {n} {.(NUM x)} {.(NUM x)} (differC-NUM x) = differC-NUM _
+differC-shiftNameUp {n} {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (differC-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ d d₃ d₄ d₅) = differC-IFLT _ _ _ _ _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₃) (differC-shiftNameUp d₄) (differC-shiftNameUp d₅)
+differC-shiftNameUp {n} {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (differC-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ d d₃ d₄ d₅) = differC-IFEQ _ _ _ _ _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₃) (differC-shiftNameUp d₄) (differC-shiftNameUp d₅)
+differC-shiftNameUp {n} {.(SUC a)} {.(SUC b)} (differC-SUC a b d) = differC-SUC _ _ (differC-shiftNameUp d)
+differC-shiftNameUp {n} {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differC-PI a₁ a₂ b₁ b₂ d d₁) = differC-PI _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
+differC-shiftNameUp {n} {.(LAMBDA a)} {.(LAMBDA b)} (differC-LAMBDA a b d) = differC-LAMBDA _ _ (differC-shiftNameUp d)
+differC-shiftNameUp {n} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (differC-APPLY a₁ a₂ b₁ b₂ d d₁) = differC-APPLY _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
+differC-shiftNameUp {n} {.(FIX a)} {.(FIX b)} (differC-FIX a b d) = differC-FIX _ _ (differC-shiftNameUp d)
+differC-shiftNameUp {n} {.(LET a₁ b₁)} {.(LET a₂ b₂)} (differC-LET a₁ a₂ b₁ b₂ d d₁) = differC-LET _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
+differC-shiftNameUp {n} {.(WT a₁ b₁ c₁)} {.(WT a₂ b₂ c₂)} (differC-WT a₁ a₂ b₁ b₂ c₁ c₂ d d₁ d₂) = differC-WT _ _ _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁) (differC-shiftNameUp d₂)
+differC-shiftNameUp {n} {.(SUP a₁ b₁)} {.(SUP a₂ b₂)} (differC-SUP a₁ a₂ b₁ b₂ d d₁) = differC-SUP _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
+differC-shiftNameUp {n} {.(WREC a₁ b₁)} {.(WREC a₂ b₂)} (differC-WREC a₁ a₂ b₁ b₂ d d₁) = differC-WREC _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
+differC-shiftNameUp {n} {.(MT a₁ b₁ c₁)} {.(MT a₂ b₂ c₂)} (differC-MT a₁ a₂ b₁ b₂ c₁ c₂ d d₁ d₂) = differC-MT _ _ _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁) (differC-shiftNameUp d₂)
+differC-shiftNameUp {n} {.(SUM a₁ b₁)} {.(SUM a₂ b₂)} (differC-SUM a₁ a₂ b₁ b₂ d d₁) = differC-SUM _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
+differC-shiftNameUp {n} {.(PAIR a₁ b₁)} {.(PAIR a₂ b₂)} (differC-PAIR a₁ a₂ b₁ b₂ d d₁) = differC-PAIR _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
+differC-shiftNameUp {n} {.(SPREAD a₁ b₁)} {.(SPREAD a₂ b₂)} (differC-SPREAD a₁ a₂ b₁ b₂ d d₁) = differC-SPREAD _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
+differC-shiftNameUp {n} {.(SET a₁ b₁)} {.(SET a₂ b₂)} (differC-SET a₁ a₂ b₁ b₂ d d₁) = differC-SET _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
+differC-shiftNameUp {n} {.(ISECT a₁ b₁)} {.(ISECT a₂ b₂)} (differC-ISECT a₁ a₂ b₁ b₂ d d₁) = differC-ISECT _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
+differC-shiftNameUp {n} {.(TUNION a₁ b₁)} {.(TUNION a₂ b₂)} (differC-TUNION a₁ a₂ b₁ b₂ d d₁) = differC-TUNION _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
+differC-shiftNameUp {n} {.(UNION a₁ b₁)} {.(UNION a₂ b₂)} (differC-UNION a₁ a₂ b₁ b₂ d d₁) = differC-UNION _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
+differC-shiftNameUp {n} {.(INL a)} {.(INL b)} (differC-INL a b d) = differC-INL _ _ (differC-shiftNameUp d)
+differC-shiftNameUp {n} {.(INR a)} {.(INR b)} (differC-INR a b d) = differC-INR _ _ (differC-shiftNameUp d)
+differC-shiftNameUp {n} {.(DECIDE a₁ b₁ c₁)} {.(DECIDE a₂ b₂ c₂)} (differC-DECIDE a₁ a₂ b₁ b₂ c₁ c₂ d d₁ d₂) = differC-DECIDE _ _ _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁) (differC-shiftNameUp d₂)
+differC-shiftNameUp {n} {.(EQ a₁ b₁ c₁)} {.(EQ a₂ b₂ c₂)} (differC-EQ a₁ a₂ b₁ b₂ c₁ c₂ d d₁ d₂) = differC-EQ _ _ _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁) (differC-shiftNameUp d₂)
+differC-shiftNameUp {n} {.AX} {.AX} differC-AX = differC-AX
+differC-shiftNameUp {n} {.FREE} {.FREE} differC-FREE = differC-FREE
+differC-shiftNameUp {n} {.(MSEQ s)} {.(MSEQ s)} (differC-MSEQ s) = differC-MSEQ _
+differC-shiftNameUp {n} {.(MAPP s a₁)} {.(MAPP s a₂)} (differC-MAPP s a₁ a₂ d) = differC-MAPP _ _ _ (differC-shiftNameUp d)
+differC-shiftNameUp {n} {.(CS name)} {.(CS name)} (differC-CS name) = differC-CS _
+differC-shiftNameUp {n} {.(NAME name)} {.(NAME name)} (differC-NAME name) = differC-NAME _
+differC-shiftNameUp {n} {.(FRESH a)} {.(FRESH b)} (differC-FRESH a b d) = differC-FRESH _ _ (differC-shiftNameUp d)
+differC-shiftNameUp {n} {.(LOAD a)} {.(LOAD b)} (differC-LOAD a b d) = differC-LOAD _ _ d
+differC-shiftNameUp {n} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (differC-CHOOSE a₁ a₂ b₁ b₂ d d₁) = differC-CHOOSE _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
+differC-shiftNameUp {n} {.NOWRITE} {.NOWRITE} differC-NOWRITE = differC-NOWRITE
+differC-shiftNameUp {n} {.NOREAD} {.NOREAD} differC-NOREAD = differC-NOREAD
+differC-shiftNameUp {n} {.(SUBSING a)} {.(SUBSING b)} (differC-SUBSING a b d) = differC-SUBSING _ _ (differC-shiftNameUp d)
+differC-shiftNameUp {n} {.PURE} {.PURE} differC-PURE = differC-PURE
+differC-shiftNameUp {n} {.NOSEQ} {.NOSEQ} differC-NOSEQ = differC-NOSEQ
+differC-shiftNameUp {n} {.(TERM a)} {.(TERM b)} (differC-TERM a b d) = differC-TERM _ _ (differC-shiftNameUp d)
+differC-shiftNameUp {n} {.(ENC a)} {.(ENC a)} (differC-ENC a d) = differC-ENC _ (differC-shiftNameUp d)
+differC-shiftNameUp {n} {.(DUM a)} {.(DUM b)} (differC-DUM a b d) = differC-DUM _ _ (differC-shiftNameUp d)
+differC-shiftNameUp {n} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differC-FFDEFS a₁ a₂ b₁ b₂ d d₁) = differC-FFDEFS _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
+differC-shiftNameUp {n} {.(UNIV x)} {.(UNIV x)} (differC-UNIV x) = differC-UNIV _
+differC-shiftNameUp {n} {.(LIFT a)} {.(LIFT b)} (differC-LIFT a b d) = differC-LIFT _ _ (differC-shiftNameUp d)
+differC-shiftNameUp {n} {.(LOWER a)} {.(LOWER b)} (differC-LOWER a b d) = differC-LOWER _ _ (differC-shiftNameUp d)
+differC-shiftNameUp {n} {.(SHRINK a)} {.(SHRINK b)} (differC-SHRINK a b d) = differC-SHRINK _ _ (differC-shiftNameUp d)
+differC-shiftNameUp {n} {.TRUE} {.FALSE} differC-writesTF = differC-writesTF
+differC-shiftNameUp {n} {.FALSE} {.TRUE} differC-writesFT = differC-writesFT
+--differC-shiftNameUp {n} {.(CS name)} {.TRUE} (differC-writesCT name) = differC-writesCT _
+--differC-shiftNameUp {n} {.(CS name)} {.FALSE} (differC-writesCF name) = differC-writesCF _
+--differC-shiftNameUp {n} {.TRUE} {.(CS name)} (differC-writesTC name) = differC-writesTC _
+--differC-shiftNameUp {n} {.FALSE} {.(CS name)} (differC-writesFC name) = differC-writesFC _
 
 
 differC-subn : {n : ℕ} {a b c d : Term}
@@ -702,6 +767,9 @@ differC-subn {n} {a} {b} {.FREE} {.FREE} d1 differC-FREE = differC-FREE
 differC-subn {n} {a} {b} {.(MSEQ s)} {.(MSEQ s)} d1 (differC-MSEQ s) = differC-MSEQ s
 differC-subn {n} {a} {b} {.(MAPP s a₁)} {.(MAPP s a₂)} d1 (differC-MAPP s a₁ a₂ d2) = differC-MAPP _ _ _ (differC-subn d1 d2)
 differC-subn {n} {a} {b} {.(CS name)} {.(CS name)} d1 (differC-CS name) = differC-CS _
+differC-subn {n} {a} {b} {.(NAME name)} {.(NAME name)} d1 (differC-NAME name) = differC-NAME _
+differC-subn {n} {a} {b} {.(FRESH a₁)} {.(FRESH b₁)} d1 (differC-FRESH a₁ b₁ d2) = differC-FRESH _ _ (differC-subn (differC-shiftNameUp d1) d2)
+differC-subn {n} {a} {b} {.(LOAD a₁)} {.(LOAD b₁)} d1 (differC-LOAD a₁ b₁ d2) = differC-LOAD _ _ d2
 differC-subn {n} {a} {b} {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} d1 (differC-CHOOSE a₁ a₂ b₁ b₂ d2 d3) = differC-CHOOSE _ _ _ _ (differC-subn d1 d2) (differC-subn d1 d3)
 differC-subn {n} {a} {b} {.NOWRITE} {.NOWRITE} d1 differC-NOWRITE = differC-NOWRITE
 differC-subn {n} {a} {b} {.NOREAD} {.NOREAD} d1 differC-NOREAD = differC-NOREAD
@@ -953,6 +1021,7 @@ differC-pres-isValue {.AX} {.AX} differC-AX isv = tt
 differC-pres-isValue {.FREE} {.FREE} differC-FREE isv = tt
 differC-pres-isValue {.(MSEQ s)} {.(MSEQ s)} (differC-MSEQ s) isv = tt
 differC-pres-isValue {.(CS name)} {.(CS name)} (differC-CS name) isv = tt
+differC-pres-isValue {.(NAME name)} {.(NAME name)} (differC-NAME name) isv = tt
 differC-pres-isValue {.NOWRITE} {.NOWRITE} differC-NOWRITE isv = tt
 differC-pres-isValue {.NOREAD} {.NOREAD} differC-NOREAD isv = tt
 differC-pres-isValue {.(SUBSING a)} {.(SUBSING b)} (differC-SUBSING a b diff) isv = tt
@@ -1005,6 +1074,9 @@ differC-sym {.FREE} {.FREE} differC-FREE = differC-FREE
 differC-sym {.(MSEQ s)} {.(MSEQ s)} (differC-MSEQ s) = differC-MSEQ s
 differC-sym {.(MAPP s a₁)} {.(MAPP s a₂)} (differC-MAPP s a₁ a₂ diff) = differC-MAPP s a₂ a₁ (differC-sym diff)
 differC-sym {.(CS name)} {.(CS name)} (differC-CS name) = differC-CS name
+differC-sym {.(NAME name)} {.(NAME name)} (differC-NAME name) = differC-NAME name
+differC-sym {.(FRESH a)} {.(FRESH b)} (differC-FRESH a b diff) = differC-FRESH b a (differC-sym diff)
+differC-sym {.(LOAD a)} {.(LOAD b)} (differC-LOAD a b diff) = differC-LOAD b a (differC-sym diff)
 differC-sym {.(CHOOSE a₁ b₁)} {.(CHOOSE a₂ b₂)} (differC-CHOOSE a₁ a₂ b₁ b₂ diff diff₁) = differC-CHOOSE a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
 differC-sym {.NOWRITE} {.NOWRITE} differC-NOWRITE = differC-NOWRITE
 differC-sym {.NOREAD} {.NOREAD} differC-NOREAD = differC-NOREAD
@@ -1397,12 +1469,22 @@ abstract
   ¬Writes→step gcp w1 w2 w3 .(CS name) .(CS name) u nowrites hv (differC-CS name) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = w3 , CS name , refl , nowrites , differC-CS name
+  -- NAME
+  ¬Writes→step gcp w1 w2 w3 .(NAME name) .(NAME name) u nowrites hv (differC-NAME name) comp
+    rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    = w3 , NAME name , refl , nowrites , differC-NAME name
+  -- FRESH
+  ¬Writes→step gcp w1 w2 w3 .(FRESH a) .(FRESH b) u nowrites hv (differC-FRESH a b dc) comp
+    = {!!}
+  -- LOAD
+  ¬Writes→step gcp w1 w2 w3 .(LOAD a) .(LOAD b) u nowrites hv (differC-LOAD a b dc) comp
+    = {!!}
   -- CHOOSE
   ¬Writes→step gcp w1 w2 w3 .(CHOOSE a₁ b₁) .(CHOOSE a₂ b₂) u nowrites hv (differC-CHOOSE a₁ a₂ b₁ b₂ dc dc₁) comp
     with is-NAME a₁
-  ... | inj₁ (n₁ , p₁) rewrite p₁ = ⊥-elim (differC-NAME→ dc)
+  ... | inj₁ (n₁ , p₁) rewrite p₁ = {!!} --⊥-elim (differC-NAME→ dc)
   ... | inj₂ p₁ with is-NAME a₂
-  ... |   inj₁ (n₂ , p₂) rewrite p₂ = ⊥-elim (differC-NAME→ᵣ dc)
+  ... |   inj₁ (n₂ , p₂) rewrite p₂ = {!!} --⊥-elim (differC-NAME→ᵣ dc)
   ... |   inj₂ p₂ with step⊎ a₁ w1
   ... |     inj₂ z₃ rewrite z₃ = ⊥-elim (¬just≡nothing (sym comp))
   ... |     inj₁ (a₁' , w1' , z₃)
@@ -1522,9 +1604,61 @@ abstract
 
 
 abstract
-  differC-refl : {a : Term}
-               → ¬Writes a
+  differC-refl : (a : Term)
+--               → ¬Writes a
                → differC a a
+  differC-refl (VAR x) = differC-VAR x
+  differC-refl QNAT = differC-QNAT
+  differC-refl (LT a a₁) = differC-LT a a a₁ a₁ (differC-refl a) (differC-refl a₁)
+  differC-refl (QLT a a₁) = differC-QLT a a a₁ a₁ (differC-refl a) (differC-refl a₁)
+  differC-refl (NUM x) = differC-NUM x
+  differC-refl (IFLT a a₁ a₂ a₃) = differC-IFLT a a a₁ a₁ a₂ a₂ a₃ a₃ (differC-refl a) (differC-refl a₁) (differC-refl a₂) (differC-refl a₃)
+  differC-refl (IFEQ a a₁ a₂ a₃) = differC-IFEQ a a a₁ a₁ a₂ a₂ a₃ a₃ (differC-refl a) (differC-refl a₁) (differC-refl a₂) (differC-refl a₃)
+  differC-refl (SUC a) = differC-SUC a a (differC-refl a)
+  differC-refl (PI a a₁) = differC-PI a a a₁ a₁ (differC-refl a) (differC-refl a₁)
+  differC-refl (LAMBDA a) = differC-LAMBDA a a (differC-refl a)
+  differC-refl (APPLY a a₁) = differC-APPLY a a a₁ a₁ (differC-refl a) (differC-refl a₁)
+  differC-refl (FIX a) = differC-FIX a a (differC-refl a)
+  differC-refl (LET a a₁) = differC-LET a a a₁ a₁ (differC-refl a) (differC-refl a₁)
+  differC-refl (WT a a₁ a₂) = differC-WT a a a₁ a₁ a₂ a₂ (differC-refl a) (differC-refl a₁) (differC-refl a₂)
+  differC-refl (SUP a a₁) = differC-SUP a a a₁ a₁ (differC-refl a) (differC-refl a₁)
+  differC-refl (WREC a a₁) = differC-WREC a a a₁ a₁ (differC-refl a) (differC-refl a₁)
+  differC-refl (MT a a₁ a₂) = differC-MT a a a₁ a₁ a₂ a₂ (differC-refl a) (differC-refl a₁) (differC-refl a₂)
+  differC-refl (SUM a a₁) = differC-SUM a a a₁ a₁ (differC-refl a) (differC-refl a₁)
+  differC-refl (PAIR a a₁) = differC-PAIR a a a₁ a₁ (differC-refl a) (differC-refl a₁)
+  differC-refl (SPREAD a a₁) = differC-SPREAD a a a₁ a₁ (differC-refl a) (differC-refl a₁)
+  differC-refl (SET a a₁) = differC-SET a a a₁ a₁ (differC-refl a) (differC-refl a₁)
+  differC-refl (TUNION a a₁) = differC-TUNION a a a₁ a₁ (differC-refl a) (differC-refl a₁)
+  differC-refl (ISECT a a₁) = differC-ISECT a a a₁ a₁ (differC-refl a) (differC-refl a₁)
+  differC-refl (UNION a a₁) = differC-UNION a a a₁ a₁ (differC-refl a) (differC-refl a₁)
+  differC-refl (INL a) = differC-INL a a (differC-refl a)
+  differC-refl (INR a) = differC-INR a a (differC-refl a)
+  differC-refl (DECIDE a a₁ a₂) = differC-DECIDE a a a₁ a₁ a₂ a₂ (differC-refl a) (differC-refl a₁) (differC-refl a₂)
+  differC-refl (EQ a a₁ a₂) = differC-EQ a a a₁ a₁ a₂ a₂ (differC-refl a) (differC-refl a₁) (differC-refl a₂)
+  differC-refl AX = differC-AX
+  differC-refl FREE = differC-FREE
+  differC-refl (CS x) = differC-CS x
+  differC-refl (NAME x) = differC-NAME x
+  differC-refl (FRESH a) = differC-FRESH a a (differC-refl a)
+  differC-refl (LOAD a) = differC-LOAD a a (differC-refl a)
+  differC-refl (CHOOSE a a₁) = differC-CHOOSE a a a₁ a₁ (differC-refl a) (differC-refl a₁)
+  differC-refl (MSEQ x) = differC-MSEQ x
+  differC-refl (MAPP x a) = differC-MAPP x a a (differC-refl a)
+  differC-refl NOWRITE = differC-NOWRITE
+  differC-refl NOREAD = differC-NOREAD
+  differC-refl (SUBSING a) = differC-SUBSING a a (differC-refl a)
+  differC-refl (DUM a) = differC-DUM a a (differC-refl a)
+  differC-refl (FFDEFS a a₁) = differC-FFDEFS a a a₁ a₁ (differC-refl a) (differC-refl a₁)
+  differC-refl PURE = differC-PURE
+  differC-refl NOSEQ = differC-NOSEQ
+  differC-refl (TERM a) = differC-TERM a a (differC-refl a)
+  differC-refl (ENC a) = differC-ENC a (differC-refl a)
+  differC-refl (UNIV x) = differC-UNIV x
+  differC-refl (LIFT a) = differC-LIFT a a (differC-refl a)
+  differC-refl (LOWER a) = differC-LOWER a a (differC-refl a)
+  differC-refl (SHRINK a) = differC-SHRINK a a (differC-refl a)
+
+{--
   differC-refl {VAR x} nwa = differC-VAR x
   differC-refl {QNAT} nwa = differC-QNAT
   differC-refl {LT a a₁} nwa = differC-LT _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
@@ -1556,6 +1690,8 @@ abstract
   differC-refl {AX} nwa = differC-AX
   differC-refl {FREE} nwa = differC-FREE
   differC-refl {CS x} nwa = differC-CS x
+  differC-refl {NAME x} nwa = ?
+  differC-refl {FRESH a} nwa = differC-FRESH _ _ (differC-refl nwa)
   differC-refl {CHOOSE a a₁} nwa = differC-CHOOSE _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬writes a) (¬writes a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬writes a) (¬writes a₁) nwa))
   differC-refl {MSEQ x} nwa = differC-MSEQ x
   differC-refl {MAPP x a} nwa = differC-MAPP x a a (differC-refl nwa)
@@ -1572,6 +1708,7 @@ abstract
   differC-refl {LIFT a} nwa = differC-LIFT a a (differC-refl nwa)
   differC-refl {LOWER a} nwa = differC-LOWER a a (differC-refl nwa)
   differC-refl {SHRINK a} nwa = differC-SHRINK a a (differC-refl nwa)
+--}
 
 
 abstract
@@ -1627,6 +1764,6 @@ abstract
                     → a ⇛! INR v at w2
                     → ⊥
   ¬Writes→⇛!INL-INR gcp w1 w2 a u v nwa comp1 comp2 =
-    ¬differC-INL-INR u v (¬Writes→⇛! gcp w1 w2 a a (INL u) (INR v) nwa tt tt comp1 comp2 (differC-refl nwa))
+    ¬differC-INL-INR u v (¬Writes→⇛! gcp w1 w2 a a (INL u) (INR v) nwa tt tt comp1 comp2 (differC-refl a {--nwa--}))
 
 \end{code}
