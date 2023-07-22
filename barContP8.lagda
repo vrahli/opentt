@@ -75,7 +75,7 @@ open import terms3(W)(C)(K)(G)(X)(N)(EC) using (≡APPLY ; upd)
 --open import terms6(W)(C)(K)(G)(X)(N)(EC)
 --open import terms7(W)(C)(K)(G)(X)(N)(EC)
 open import terms8(W)(C)(K)(G)(X)(N)(EC) using (#APPLY2 ; #⇛-trans ; #INL¬≡INR)
-open import terms9(W)(C)(K)(G)(X)(N)(EC) using (#BAIRE!)
+open import terms9 using (#BAIRE!) --(W)(C)(K)(G)(X)(N)(EC)
 
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)

@@ -54,9 +54,14 @@ open import mod
 open import encode
 
 
-module ac {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-          (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
-          (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
+module ac {L : Level}
+          (W : PossibleWorlds {L})
+          (M : Mod W)
+          (C : Choice)
+          (K : Compatible W C)
+          (P : Progress {L} W C K)
+          (G : GetChoice {L} W C K)
+          (X : ChoiceExt {L} W C)
           (N : NewChoice {L} W C K G)
 --          (V : ChoiceVal W C K G X N)
 --          (F : Freeze {L} W C K P G N)
@@ -90,10 +95,13 @@ open import terms2(W)(C)(K)(G)(X)(N)(EC) using (#subv)
 --open import terms4(W)(C)(K)(G)(X)(N)(EC)
 open import terms6(W)(C)(K)(G)(X)(N)(EC) using (IFEQ⇛₁ ; IFEQ⇛= ; IFEQ⇛¬= ; IFEQ⇓₁)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
+open import terms9
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#⇛-mon)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalTypes-#⇛-left-right-rev ; TS ; typeSys ; →equalInType-SQUASH ; inhType-mon ; equalTypes-#⇛-left-right ; →equalInTypeTERM)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (equalTypes-#⇛-left-right-rev ; TS ; typeSys ; →equalInType-SQUASH ; inhType-mon ;
+         equalTypes-#⇛-left-right ; →equalInTypeTERM)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (eqTypesBAIRE ; →equalTypesLT)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (PROD ; #PROD ; #PROD≡#SUM)
 --open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -103,7 +111,7 @@ open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 --open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 --open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
-open import mp_prop(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import mp_prop(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (≡→⇓from-to)
 open import lem(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EB)(EC) using (□·⊎inhType)
 open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (mseq∈baire)
