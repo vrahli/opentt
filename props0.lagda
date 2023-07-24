@@ -437,6 +437,9 @@ eqTypes-mon u {A} {B} {w1} (EQTPURE x x₁) w2 ext =
 eqTypes-mon u {A} {B} {w1} (EQTNOSEQ x x₁) w2 ext =
   EQTNOSEQ (⇛-mon ext x) (⇛-mon ext x₁)
 
+eqTypes-mon u {A} {B} {w1} (EQTNOENC x x₁) w2 ext =
+  EQTNOENC (⇛-mon ext x) (⇛-mon ext x₁)
+
 eqTypes-mon u {A} {B} {w1} (EQTTERM t1 t2 c₁ c₂ x) w2 ext =
   EQTTERM t1 t2 (⇛-mon ext c₁) (⇛-mon ext c₂) (Mod.↑□ M x ext)
 

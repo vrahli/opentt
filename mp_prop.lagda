@@ -101,7 +101,7 @@ open import terms9
 --  using (#¬Writes ; getChoiceℙ ; ¬Writes→⇛!INL-INR)
 
 open import choiceProp(W)(C)(K)(G)(X)(N)(EC)
-  using (#¬Enc ; getChoiceℙ ; ¬enc→⇛!INL-INR)
+  using (getChoiceℙ ; ¬enc→⇛!INL-INR)
 
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqTypes-mon)
@@ -621,6 +621,7 @@ eqTypes-UNIV→< i n w A B comp eqt = concl i comp
   ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ind i comp = ⊥-elim (UNIVneqFFDEFS (⇛-val-det tt tt comp x))
   ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind i comp = ⊥-elim (UNIVneqPURE (⇛-val-det tt tt comp x))
   ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind i comp = ⊥-elim (UNIVneqNOSEQ (⇛-val-det tt tt comp x))
+  ind {u} {w} {T1} {T2} (EQTNOENC x x₁) ind i comp = ⊥-elim (UNIVneqNOENC (⇛-val-det tt tt comp x))
   ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) ind i comp = ⊥-elim (UNIVneqTERM (⇛-val-det tt tt comp x))
   ind {u} {w} {T1} {T2} (EQTUNIV i₁ p x x₁) ind i comp = c
     where
@@ -894,6 +895,8 @@ abstract
         EQTPURE (#⇛-vals-det→ {_} {a} {b} {#PURE} isv tt comp x) x₁
       ind {u} {w} {a} {c} (EQTNOSEQ x x₁) ind b comp isv =
         EQTNOSEQ (#⇛-vals-det→ {_} {a} {b} {#NOSEQ} isv tt comp x) x₁
+      ind {u} {w} {a} {c} (EQTNOENC x x₁) ind b comp isv =
+        EQTNOENC (#⇛-vals-det→ {_} {a} {b} {#NOENC} isv tt comp x) x₁
       ind {u} {w} {a} {c} (EQTTERM t1 t2 x x₁ x₂) ind b comp isv =
         EQTTERM t1 t2 (#⇛-vals-det→ {_} {a} {b} {#TERM t1} isv tt comp x) x₁ x₂
       ind {u} {w} {a} {c} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ind b comp isv =

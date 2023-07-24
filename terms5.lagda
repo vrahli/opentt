@@ -61,6 +61,7 @@ open import computation(W)(C)(M)(G)(E)(N)(EC)
 open import terms2(W)(C)(M)(G)(E)(N)(EC)
 open import terms3(W)(C)(M)(G)(E)(N)(EC)
 open import terms4(W)(C)(M)(G)(E)(N)(EC)
+--  using (¬Names→steps ; steps→⊑)
 
 open import continuity-conds(W)(C)(M)(G)(E)(N)(EC)
 
@@ -333,7 +334,6 @@ abstract
           h6 : steps k4 (APPLY f (NUM m) , chooseT name2 w3' (NUM m)) ≡ (v , chooseT name2 w3' (NUM m))
                × chooseT name1 w3 (NUM m) ≡ w2
                × ¬Names v
-               × (¬Seq (APPLY f (NUM m)) → ¬Seq v)
           h6 = ¬Names→steps k4 (chooseT name1 w3 (NUM m)) w2 (chooseT name2 w3' (NUM m)) (APPLY f (NUM m)) v (→∧≡true {¬names f} {¬names (NUM m)} nnf refl) comp5c
 
           comph' : APPLY (upd name2 f) b ⇓ v from w1' to chooseT name2 w3' (NUM m)
@@ -360,7 +360,6 @@ abstract
           comp5c = trans (≡𝕎→≡steps k4 (APPLY f (NUM m)) (trans (trans eqw35 eqw56) eqw64)) comp5b
 
           h6 : steps k4 (APPLY f (NUM m) , w3') ≡ (v , w3') × w3 ≡ w2 × ¬Names v
-               × (¬Seq (APPLY f (NUM m)) → ¬Seq v)
           h6 = ¬Names→steps k4 w3 w2 w3' (APPLY f (NUM m)) v (→∧≡true {¬names f} {¬names (NUM m)} nnf refl) comp5c
 
           compg' : APPLY (upd name2 f) b ⇓ v from w1' to w3'

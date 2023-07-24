@@ -150,6 +150,9 @@ NOREADneqPURE ()
 NOREADneqNOSEQ : ¬ NOREAD ≡ NOSEQ
 NOREADneqNOSEQ ()
 
+NOREADneqNOENC : ¬ NOREAD ≡ NOENC
+NOREADneqNOENC ()
+
 NOREADneqTERM : {c : Term} → ¬ NOREAD ≡ TERM c
 NOREADneqTERM {c} ()
 
@@ -201,6 +204,7 @@ typeSysConds-NOREAD-ttrans u w A B x x₁ C eqt = concl x x₁
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x x₁ = ⊥-elim (NOREADneqSUBSING (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x x₁ = ⊥-elim (NOREADneqPURE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x x₁ = ⊥-elim (NOREADneqNOSEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x x₁ = ⊥-elim (NOREADneqNOENC (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x x₁ = ⊥-elim (NOREADneqTERM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x x₁ = ⊥-elim (NOREADneqNOWRITE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x x₁
@@ -285,6 +289,7 @@ typeSysConds-NOREAD-extl1 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOREADneqSUBSING (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x f g eqi = ⊥-elim (NOREADneqPURE (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x f g eqi = ⊥-elim (NOREADneqNOSEQ (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x f g eqi = ⊥-elim (NOREADneqNOENC (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x f g eqi = ⊥-elim (NOREADneqTERM (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x f g eqi = ⊥-elim (NOREADneqNOWRITE (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x f g eqi
@@ -352,6 +357,7 @@ typeSysConds-NOREAD-extl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOREADneqSUBSING (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x f g eqi = ⊥-elim (NOREADneqPURE (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x f g eqi = ⊥-elim (NOREADneqNOSEQ (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x f g eqi = ⊥-elim (NOREADneqNOENC (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x f g eqi = ⊥-elim (NOREADneqTERM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x f g eqi = ⊥-elim (NOREADneqNOWRITE (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x f g eqi
@@ -420,6 +426,7 @@ typeSysConds-NOREAD-extr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOREADneqSUBSING (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x₁ f g eqi = ⊥-elim (NOREADneqPURE (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x₁ f g eqi = ⊥-elim (NOREADneqNOSEQ (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x₁ f g eqi = ⊥-elim (NOREADneqNOENC (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x₁ f g eqi = ⊥-elim (NOREADneqTERM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x₁ f g eqi = ⊥-elim (NOREADneqNOWRITE (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x₁ f g eqi
@@ -487,6 +494,7 @@ typeSysConds-NOREAD-extr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOREADneqSUBSING (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x₁ f g eqi = ⊥-elim (NOREADneqPURE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x₁ f g eqi = ⊥-elim (NOREADneqNOSEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x₁ f g eqi = ⊥-elim (NOREADneqNOENC (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x₁ f g eqi = ⊥-elim (NOREADneqTERM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x₁ f g eqi = ⊥-elim (NOREADneqNOWRITE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x₁ f g eqi
@@ -553,6 +561,7 @@ typeSysConds-NOREAD-extrevl1 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOREADneqSUBSING (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x f g eqi = ⊥-elim (NOREADneqPURE (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x f g eqi = ⊥-elim (NOREADneqNOSEQ (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x f g eqi = ⊥-elim (NOREADneqNOENC (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x f g eqi = ⊥-elim (NOREADneqTERM (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x f g eqi = ⊥-elim (NOREADneqNOWRITE (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x f g eqi
@@ -622,6 +631,7 @@ typeSysConds-NOREAD-extrevl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOREADneqSUBSING (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x f g eqi = ⊥-elim (NOREADneqPURE (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x f g eqi = ⊥-elim (NOREADneqNOSEQ (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x f g eqi = ⊥-elim (NOREADneqNOENC (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x f g eqi = ⊥-elim (NOREADneqTERM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x f g eqi = ⊥-elim (NOREADneqNOWRITE (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x f g eqi
@@ -690,6 +700,7 @@ typeSysConds-NOREAD-extrevr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOREADneqSUBSING (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x₁ f g eqi = ⊥-elim (NOREADneqPURE (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x₁ f g eqi = ⊥-elim (NOREADneqNOSEQ (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x₁ f g eqi = ⊥-elim (NOREADneqNOENC (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x₁ f g eqi = ⊥-elim (NOREADneqTERM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x₁ f g eqi = ⊥-elim (NOREADneqNOWRITE (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x₁ f g eqi
@@ -758,6 +769,7 @@ typeSysConds-NOREAD-extrevr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOREADneqSUBSING (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x₁ f g eqi = ⊥-elim (NOREADneqPURE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x₁ f g eqi = ⊥-elim (NOREADneqNOSEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x₁ f g eqi = ⊥-elim (NOREADneqNOENC (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x₁ f g eqi = ⊥-elim (NOREADneqTERM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x₁ f g eqi = ⊥-elim (NOREADneqNOWRITE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x₁ f g eqi

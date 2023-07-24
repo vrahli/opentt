@@ -78,6 +78,9 @@ PUREneqTERM {c} ()
 PUREneqNOSEQ : ¬ PURE ≡ NOSEQ
 PUREneqNOSEQ ()
 
+PUREneqNOENC : ¬ PURE ≡ NOENC
+PUREneqNOENC ()
+
 --PUREneqNAT : ¬ PURE ≡ NAT
 --PUREneqNAT ()
 
@@ -200,6 +203,7 @@ typeSysConds-PURE-ttrans u w A B x x₁ C eqt = concl x x₁
 --    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih c₁ c₂ = ⊥-elim (PUREneqDUM (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih c₁ c₂ = EQTPURE c₁ y₁
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih c₁ c₂ = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt c₂ y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih c₁ c₂ = ⊥-elim (PUREneqNOENC (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ih c₁ c₂ = ⊥-elim (PUREneqTERM (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) ih c₁ c₂ = ⊥-elim (PUREneqFFDEFS (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p y y₁) ih c₁ c₂ = ⊥-elim (PUREneqUNIV (⇛-val-det tt tt c₂ y))
@@ -278,6 +282,7 @@ typeSysConds-PURE-extl1 u w A B x x₁ C eqt' =
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (PUREneqFFDEFS (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt comp y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOENC (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTTERM t1 t2 y y₁ x₂) ih comp a b eqi = ⊥-elim (PUREneqTERM (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p y y₁) ih comp a b eqi = ⊥-elim (PUREneqUNIV (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (PUREneqLIFT (⇛-val-det tt tt comp y))
@@ -327,6 +332,7 @@ typeSysConds-PURE-extl2 u w A B x x₁ C eqt' = concl x
 --    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqDUM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt comp y₁))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOENC (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ih comp a b eqi = ⊥-elim (PUREneqTERM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) ih comp a b eqi = ⊥-elim (PUREneqFFDEFS (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ih comp a b eqi = ⊥-elim (PUREneqUNIV (⇛-val-det tt tt comp c₂))
@@ -377,6 +383,7 @@ typeSysConds-PURE-extr1 u w A B x x₁ C eqt' = concl x₁
 --    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqDUM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt comp y₁))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOENC (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ih comp a b eqi = ⊥-elim (PUREneqTERM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) ih comp a b eqi = ⊥-elim (PUREneqFFDEFS (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ih comp a b eqi = ⊥-elim (PUREneqUNIV (⇛-val-det tt tt comp c₂))
@@ -429,6 +436,7 @@ typeSysConds-PURE-extr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (PUREneqFFDEFS (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt comp y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOENC (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTTERM t1 t2 y y₁ x₂) ih comp a b eqi = ⊥-elim (PUREneqTERM (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p y y₁) ih comp a b eqi = ⊥-elim (PUREneqUNIV (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (PUREneqLIFT (⇛-val-det tt tt comp y))
@@ -479,6 +487,7 @@ typeSysConds-PURE-extrevl1 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (PUREneqFFDEFS (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt comp y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOENC (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTTERM t1 t2 y y₁ x₂) ih comp a b eqi = ⊥-elim (PUREneqTERM (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p y y₁) ih comp a b eqi = ⊥-elim (PUREneqUNIV (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (PUREneqLIFT (⇛-val-det tt tt comp y))
@@ -535,6 +544,7 @@ typeSysConds-PURE-extrevl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (PUREneqFFDEFS (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt comp y₁))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOENC (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTTERM t1 t2 y y₁ x₂) ih comp a b eqi = ⊥-elim (PUREneqTERM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p y y₁) ih comp a b eqi = ⊥-elim (PUREneqUNIV (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (PUREneqLIFT (⇛-val-det tt tt comp y₁))
@@ -591,6 +601,7 @@ typeSysConds-PURE-extrevr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (PUREneqFFDEFS (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt comp y₁))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOENC (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTTERM t1 t2 y y₁ x₂) ih comp a b eqi = ⊥-elim (PUREneqTERM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p y y₁) ih comp a b eqi = ⊥-elim (PUREneqUNIV (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (PUREneqLIFT (⇛-val-det tt tt comp y₁))
@@ -647,6 +658,7 @@ typeSysConds-PURE-extrevr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (PUREneqFFDEFS (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt comp y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOENC (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTTERM t1 t2 y y₁ x₂) ih comp a b eqi = ⊥-elim (PUREneqTERM (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p y y₁) ih comp a b eqi = ⊥-elim (PUREneqUNIV (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (PUREneqLIFT (⇛-val-det tt tt comp y))

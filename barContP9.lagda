@@ -117,7 +117,8 @@ open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#INIT ; #APPLY-l
 open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (seq2list ; mseq∈baire)
 open import barContP4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 --open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
-open import barContP6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#FunBarP ; sem ; #updSeq-APPLY-updr ; updSeq-steps-NUM ; seq2list≡ ; #¬Names-seq2list)
+open import barContP6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
+  using (#FunBarP ; sem ; #updSeq-APPLY-updr ; updSeq-steps-NUM ; seq2list≡ ; #¬Names-seq2list)
 open import barContP7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 open import barContP8(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (follow-NUM-ETA ; type-#⇛-NUM)
 

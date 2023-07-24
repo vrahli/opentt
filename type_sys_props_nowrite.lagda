@@ -150,6 +150,9 @@ NOWRITEneqPURE ()
 NOWRITEneqNOSEQ : ¬ NOWRITE ≡ NOSEQ
 NOWRITEneqNOSEQ ()
 
+NOWRITEneqNOENC : ¬ NOWRITE ≡ NOENC
+NOWRITEneqNOENC ()
+
 NOWRITEneqTERM : {c : Term} → ¬ NOWRITE ≡ TERM c
 NOWRITEneqTERM {c} ()
 
@@ -201,6 +204,7 @@ typeSysConds-NOWRITE-ttrans u w A B x x₁ C eqt = concl x x₁
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x x₁ = ⊥-elim (NOWRITEneqSUBSING (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x x₁ = ⊥-elim (NOWRITEneqPURE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x x₁ = ⊥-elim (NOWRITEneqNOSEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x x₁ = ⊥-elim (NOWRITEneqNOENC (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x x₁ = ⊥-elim (NOWRITEneqTERM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x x₁
       = EQTNOWRITE x y₁
@@ -285,6 +289,7 @@ typeSysConds-NOWRITE-extl1 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOWRITEneqSUBSING (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x f g eqi = ⊥-elim (NOWRITEneqPURE (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x f g eqi = ⊥-elim (NOWRITEneqNOSEQ (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x f g eqi = ⊥-elim (NOWRITEneqNOENC (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x f g eqi = ⊥-elim (NOWRITEneqTERM (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x f g eqi
       = Mod.∀𝕎-□Func M aw eqi
@@ -352,6 +357,7 @@ typeSysConds-NOWRITE-extl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOWRITEneqSUBSING (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x f g eqi = ⊥-elim (NOWRITEneqPURE (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x f g eqi = ⊥-elim (NOWRITEneqNOSEQ (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x f g eqi = ⊥-elim (NOWRITEneqNOENC (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x f g eqi = ⊥-elim (NOWRITEneqTERM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x f g eqi
       --
@@ -420,6 +426,7 @@ typeSysConds-NOWRITE-extr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOWRITEneqSUBSING (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x₁ f g eqi = ⊥-elim (NOWRITEneqPURE (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x₁ f g eqi = ⊥-elim (NOWRITEneqNOSEQ (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x₁ f g eqi = ⊥-elim (NOWRITEneqNOENC (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x₁ f g eqi = ⊥-elim (NOWRITEneqTERM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x₁ f g eqi
       = Mod.∀𝕎-□Func M aw eqi
@@ -487,6 +494,7 @@ typeSysConds-NOWRITE-extr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOWRITEneqSUBSING (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x₁ f g eqi = ⊥-elim (NOWRITEneqPURE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x₁ f g eqi = ⊥-elim (NOWRITEneqNOSEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x₁ f g eqi = ⊥-elim (NOWRITEneqNOENC (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x₁ f g eqi = ⊥-elim (NOWRITEneqTERM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x₁ f g eqi
       = Mod.∀𝕎-□Func M aw eqi
@@ -553,6 +561,7 @@ typeSysConds-NOWRITE-extrevl1 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOWRITEneqSUBSING (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x f g eqi = ⊥-elim (NOWRITEneqPURE (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x f g eqi = ⊥-elim (NOWRITEneqNOSEQ (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x f g eqi = ⊥-elim (NOWRITEneqNOENC (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x f g eqi = ⊥-elim (NOWRITEneqTERM (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x f g eqi
       = Mod.∀𝕎-□Func M aw eqi
@@ -622,6 +631,7 @@ typeSysConds-NOWRITE-extrevl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOWRITEneqSUBSING (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x f g eqi = ⊥-elim (NOWRITEneqPURE (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x f g eqi = ⊥-elim (NOWRITEneqNOSEQ (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x f g eqi = ⊥-elim (NOWRITEneqNOENC (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x f g eqi = ⊥-elim (NOWRITEneqTERM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x f g eqi
       = Mod.∀𝕎-□Func M aw eqi
@@ -690,6 +700,7 @@ typeSysConds-NOWRITE-extrevr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOWRITEneqSUBSING (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x₁ f g eqi = ⊥-elim (NOWRITEneqPURE (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x₁ f g eqi = ⊥-elim (NOWRITEneqNOSEQ (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x₁ f g eqi = ⊥-elim (NOWRITEneqNOENC (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x₁ f g eqi = ⊥-elim (NOWRITEneqTERM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x₁ f g eqi
       = Mod.∀𝕎-□Func M aw eqi
@@ -758,6 +769,7 @@ typeSysConds-NOWRITE-extrevr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOWRITEneqSUBSING (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x₁ f g eqi = ⊥-elim (NOWRITEneqPURE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x₁ f g eqi = ⊥-elim (NOWRITEneqNOSEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x₁ f g eqi = ⊥-elim (NOWRITEneqNOENC (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x₁ f g eqi = ⊥-elim (NOWRITEneqTERM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x₁ f g eqi
       = Mod.∀𝕎-□Func M aw eqi

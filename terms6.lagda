@@ -121,6 +121,7 @@ abstract
   differ-refl name1 name2 f (SUBSING t) nn = differ-SUBSING _ _ (differ-refl name1 name2 f t nn)
   differ-refl name1 name2 f (PURE) nn = differ-PURE
   differ-refl name1 name2 f (NOSEQ) nn = differ-NOSEQ
+  differ-refl name1 name2 f (NOENC) nn = differ-NOENC
   differ-refl name1 name2 f (TERM t) nn = differ-TERM _ _ (differ-refl name1 name2 f t nn)
   differ-refl name1 name2 f (ENC t) nn = differ-ENC _ (differ-refl name1 name2 f t nn)
   differ-refl name1 name2 f (DUM t) nn = differ-DUM _ _ (differ-refl name1 name2 f t nn)
@@ -718,6 +719,7 @@ abstract
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(SUBSING a) .(SUBSING b) a' v k compat1 compat2 agtn (differ-SUBSING a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = SUBSING a , SUBSING b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-SUBSING _ _ diff , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(PURE) .(PURE) a' v k compat1 compat2 agtn (differ-PURE) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = PURE , PURE , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-PURE , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(NOSEQ) .(NOSEQ) a' v k compat1 compat2 agtn (differ-NOSEQ) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NOSEQ , NOSEQ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NOSEQ , g0
+  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(NOENC) .(NOENC) a' v k compat1 compat2 agtn (differ-NOENC) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NOENC , NOENC , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NOENC , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(TERM a) .(TERM b) a' v k compat1 compat2 agtn (differ-TERM a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TERM a , TERM b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TERM _ _ diff , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(ENC a) .(ENC a) a' v k compat1 compat2 agtn (differ-ENC a diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
     ENCr a , ENCr a , w1 , w1' , ⇓from-to-refl _ _ , (1 , refl) , →differ-ENCr diff , g0
@@ -1531,6 +1533,7 @@ abstract
   ¬Names→shiftNameUp≡ (SUBSING t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
   ¬Names→shiftNameUp≡ (PURE) n nnt = refl
   ¬Names→shiftNameUp≡ (NOSEQ) n nnt = refl
+  ¬Names→shiftNameUp≡ (NOENC) n nnt = refl
   ¬Names→shiftNameUp≡ (TERM t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
   ¬Names→shiftNameUp≡ (ENC t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
   ¬Names→shiftNameUp≡ (DUM t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl

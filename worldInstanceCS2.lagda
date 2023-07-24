@@ -51,7 +51,7 @@ open import choice
 
 
 choiceCS : Choice
-choiceCS = mkChoice ℕ ℕ→C
+choiceCS = mkChoice ℕ ℕ→C (λ c → refl) λ c → refl
 
 open import choiceDef{1ℓ}(choiceCS)
 

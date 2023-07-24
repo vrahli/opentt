@@ -458,6 +458,14 @@ data ≤Type where
 
 
 
+<Type-NOENC : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} {eqt : ≡Types u w T1 T2}
+            {u' : 𝕌} {w' : 𝕎·} {U1 U2 : CTerm} {x₁ : U1 #⇛ #NOENC at w'} {x₂ : U2 #⇛ #NOENC at w'}
+            → <Type {u} {w} {T1} {T2} eqt {u'} {w'} {U1} {U2} (EQTNOENC x₁ x₂) → ⊥
+<Type-NOENC {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<Type1 .eqt .(EQTNOENC x₁ x₂) ())
+<Type-NOENC {u} {w} {T1} {T2} {eqt} {u'} {w'} {U1} {U2} {x₁} {x₂} (<TypeS .eqt eqt2 .(EQTNOENC x₁ x₂) ltt ())
+
+
+
 
 <Type-TERM : {u : 𝕌} {w : 𝕎·} {T1 T2 : CTerm} {eqt : ≡Types u w T1 T2}
              {u' : 𝕌} {w' : 𝕎·} {U1 U2 : CTerm}
@@ -1100,6 +1108,9 @@ ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTPURE x x₁) {u'} {w'} {T1'} {T2'} 
 -- NOSEQ
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) {.u} {.w} {.T1} {.T2} .(EQTNOSEQ x x₁) (≤Type0 .(EQTNOSEQ x x₁)) = ind (EQTNOSEQ x x₁) λ eqt' ltt' → ⊥-elim (<Type-NOSEQ ltt')
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTNOSEQ x x₁) x₂) = ⊥-elim (<Type-NOSEQ x₂)
+-- NOENC
+ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOENC x x₁) {.u} {.w} {.T1} {.T2} .(EQTNOENC x x₁) (≤Type0 .(EQTNOENC x x₁)) = ind (EQTNOENC x x₁) λ eqt' ltt' → ⊥-elim (<Type-NOENC ltt')
+ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTNOENC x x₁) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTNOENC x x₁) x₂) = ⊥-elim (<Type-NOENC x₂)
 -- TERM
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) {.u} {.w} {.T1} {.T2} .(EQTTERM t1 t2 x x₁ x₂) (≤Type0 .(EQTTERM t1 t2 x x₁ x₂)) =
   ind (EQTTERM t1 t2 x x₁ x₂) λ eqt' ltt' → ⊥-elim (<Type-TERM ltt')

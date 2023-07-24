@@ -166,6 +166,7 @@ equalTypes-refl u w T1 T2 eqt =
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ih = {!!}
     ind {u} {w} {T1} {T2} (EQTPURE x x₁) ih = EQTPURE x x
     ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ih = EQTNOSEQ x x
+    ind {u} {w} {T1} {T2} (EQTNOENC x x₁) ih = EQTNOENC x x
     ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) ih = {!!}
     ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) ih = {!!}
     ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) ih = {!!}

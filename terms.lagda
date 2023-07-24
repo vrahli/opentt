@@ -317,6 +317,13 @@ subv-↑T {i} {suc n} p v a with i <? n
     c = refl
 
 
+#NOENC : CTerm
+#NOENC = ct NOENC c
+  where
+    c : # NOENC
+    c = refl
+
+
 #TERM : CTerm → CTerm
 #TERM a = ct (TERM ⌜ a ⌝) c
   where
@@ -777,6 +784,7 @@ abstract
             | fvars-shiftUp≡ n t₁ = refl
   fvars-shiftUp≡ n PURE = refl
   fvars-shiftUp≡ n NOSEQ = refl
+  fvars-shiftUp≡ n NOENC = refl
   fvars-shiftUp≡ n (TERM t) = fvars-shiftUp≡ n t
   fvars-shiftUp≡ n (ENC t) = refl --fvars-shiftUp≡ n t
   fvars-shiftUp≡ n (UNIV x) = refl
@@ -1151,6 +1159,7 @@ abstract
             | fvars-shiftDown≡ n t₁ = refl
   fvars-shiftDown≡ n PURE = refl
   fvars-shiftDown≡ n NOSEQ = refl
+  fvars-shiftDown≡ n NOENC = refl
   fvars-shiftDown≡ n (TERM t) = fvars-shiftDown≡ n t
   fvars-shiftDown≡ n (ENC t) = refl --fvars-shiftDown≡ n t
   fvars-shiftDown≡ n (UNIV x) = refl
@@ -1250,6 +1259,7 @@ abstract
   fvars-shiftNameUp n (FFDEFS a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
   fvars-shiftNameUp n PURE = refl
   fvars-shiftNameUp n NOSEQ = refl
+  fvars-shiftNameUp n NOENC = refl
   fvars-shiftNameUp n (TERM a) rewrite fvars-shiftNameUp n a = refl
   fvars-shiftNameUp n (ENC a) rewrite fvars-shiftNameUp n a = refl
   fvars-shiftNameUp n (UNIV x) = refl
@@ -1486,6 +1496,7 @@ abstract
   ... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {fvars b₁} {fvars a} (fvars-subv v a b₁ p)
   fvars-subv v a PURE i = ⊥-elim (¬∈[] i)
   fvars-subv v a NOSEQ i = ⊥-elim (¬∈[] i)
+  fvars-subv v a NOENC i = ⊥-elim (¬∈[] i)
   fvars-subv v a (TERM b) = fvars-subv v a b
   fvars-subv v a (ENC b) i = ⊥-elim (¬∈[] i) --fvars-subv v a b
   fvars-subv v a (UNIV x) i = ⊥-elim (¬∈[] i)
@@ -1750,6 +1761,7 @@ abstract
             | shiftDown1-subv1-shiftUp0 n a b₁ ca = refl
   shiftDown1-subv1-shiftUp0 n a PURE ca = refl
   shiftDown1-subv1-shiftUp0 n a NOSEQ ca = refl
+  shiftDown1-subv1-shiftUp0 n a NOENC ca = refl
   shiftDown1-subv1-shiftUp0 n a (TERM b) ca
     rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
   shiftDown1-subv1-shiftUp0 n a (ENC b) ca
@@ -2376,6 +2388,9 @@ EQneqPURE {t} {a} {b} ()
 EQneqNOSEQ : {t a b : Term} → ¬ (EQ t a b) ≡ NOSEQ
 EQneqNOSEQ {t} {a} {b} ()
 
+EQneqNOENC : {t a b : Term} → ¬ (EQ t a b) ≡ NOENC
+EQneqNOENC {t} {a} {b} ()
+
 EQneqTERM : {t a b c : Term} → ¬ (EQ t a b) ≡ TERM c
 EQneqTERM {t} {a} {b} {c} ()
 
@@ -2571,6 +2586,9 @@ PIneqPURE {a} {b} ()
 PIneqNOSEQ : {a b : Term} → ¬ (PI a b) ≡ NOSEQ
 PIneqNOSEQ {a} {b} ()
 
+PIneqNOENC : {a b : Term} → ¬ (PI a b) ≡ NOENC
+PIneqNOENC {a} {b} ()
+
 PIneqTERM : {a b c : Term} → ¬ (PI a b) ≡ TERM c
 PIneqTERM {a} {b} {c} ()
 
@@ -2738,6 +2756,7 @@ abstract
   shiftUp-inj {n} {FFDEFS a a₁} {FFDEFS b b₁} e rewrite shiftUp-inj (FFDEFSinj1 e) | shiftUp-inj (FFDEFSinj2 e) = refl
   shiftUp-inj {n} {PURE} {PURE} refl = refl
   shiftUp-inj {n} {NOSEQ} {NOSEQ} refl = refl
+  shiftUp-inj {n} {NOENC} {NOENC} refl = refl
   shiftUp-inj {n} {TERM a} {TERM b} e rewrite shiftUp-inj (TERMinj e) = refl
   shiftUp-inj {n} {ENC a} {ENC b} e = e --rewrite shiftUp-inj (ENCinj e) = refl
   shiftUp-inj {n} {UNIV x} {UNIV .x} refl = refl
@@ -3574,6 +3593,10 @@ TNOSEQ : Term → Term
 TNOSEQ T = ISECT T NOSEQ
 
 
+TNOENC : Term → Term
+TNOENC T = ISECT T NOENC
+
+
 #TPURE : CTerm → CTerm
 #TPURE t = ct (TPURE ⌜ t ⌝) c
   where
@@ -3585,6 +3608,13 @@ TNOSEQ T = ISECT T NOSEQ
 #TNOSEQ t = ct (TNOSEQ ⌜ t ⌝) c
   where
     c : # TNOSEQ ⌜ t ⌝
+    c rewrite CTerm.closed t = refl
+
+
+#TNOENC : CTerm → CTerm
+#TNOENC t = ct (TNOENC ⌜ t ⌝) c
+  where
+    c : # TNOENC ⌜ t ⌝
     c rewrite CTerm.closed t = refl
 
 
@@ -3602,6 +3632,13 @@ TNOSEQ T = ISECT T NOSEQ
     c rewrite ++[] (fvars ⌜ t ⌝) = CTerm0.closed t
 
 
+#[0]TNOENC : CTerm0 → CTerm0
+#[0]TNOENC t = ct0 (TNOENC ⌜ t ⌝) c
+  where
+    c : #[ [ 0 ] ] TNOENC ⌜ t ⌝
+    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm0.closed t
+
+
 #[1]TPURE : CTerm1 → CTerm1
 #[1]TPURE t = ct1 (TPURE ⌜ t ⌝) c
   where
@@ -3613,6 +3650,13 @@ TNOSEQ T = ISECT T NOSEQ
 #[1]TNOSEQ t = ct1 (TNOSEQ ⌜ t ⌝) c
   where
     c : #[ 0 ∷ [ 1 ] ] TNOSEQ ⌜ t ⌝
+    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm1.closed t
+
+
+#[1]TNOENC : CTerm1 → CTerm1
+#[1]TNOENC t = ct1 (TNOENC ⌜ t ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] TNOENC ⌜ t ⌝
     c rewrite ++[] (fvars ⌜ t ⌝) = CTerm1.closed t
 
 

@@ -116,6 +116,7 @@ data Term : Set where
   FFDEFS : Term → Term → Term
   PURE : Term
   NOSEQ : Term
+  NOENC : Term
   -- Terminating
   TERM : Term → Term
   ENC  : Term → Term
@@ -182,6 +183,7 @@ value? (DUM _) = true
 value? (FFDEFS _ _) = true
 value? PURE = true
 value? NOSEQ = true
+value? NOENC = true
 value? (TERM _) = true
 value? (ENC _) = false
 value? (UNIV _) = true
@@ -326,6 +328,7 @@ fvars (DUM t)          = fvars t
 fvars (FFDEFS t t₁)    = fvars t ++ fvars t₁
 fvars PURE             = []
 fvars NOSEQ            = []
+fvars NOENC            = []
 fvars (TERM t)         = fvars t
 fvars (ENC t)          = [] --fvars t -- t is a CTerm
 fvars (UNIV x)         = []
@@ -494,6 +497,7 @@ shiftUp c (DUM t) = DUM (shiftUp c t)
 shiftUp c (FFDEFS t t₁) = FFDEFS (shiftUp c t) (shiftUp c t₁)
 shiftUp c PURE = PURE
 shiftUp c NOSEQ = NOSEQ
+shiftUp c NOENC = NOENC
 shiftUp c (TERM t) = TERM (shiftUp c t)
 shiftUp c (ENC t) = ENC t --(shiftUp c t)
 shiftUp c (UNIV x) = UNIV x
@@ -557,6 +561,7 @@ shiftDown c (DUM t) = DUM (shiftDown c t)
 shiftDown c (FFDEFS t t₁) = FFDEFS (shiftDown c t) (shiftDown c t₁)
 shiftDown c PURE = PURE
 shiftDown c NOSEQ = NOSEQ
+shiftDown c NOENC = NOENC
 shiftDown c (TERM t) = TERM (shiftDown c t)
 shiftDown c (ENC t) = ENC t --(shiftDown c t)
 shiftDown c (UNIV x) = UNIV x
@@ -620,6 +625,7 @@ shiftNameUp c (DUM t) = DUM (shiftNameUp c t)
 shiftNameUp c (FFDEFS t t₁) = FFDEFS (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c PURE = PURE
 shiftNameUp c NOSEQ = NOSEQ
+shiftNameUp c NOENC = NOENC
 shiftNameUp c (TERM t) = TERM (shiftNameUp c t)
 shiftNameUp c (ENC t) = ENC (shiftNameUp c t)
 shiftNameUp c (UNIV x) = UNIV x
@@ -683,6 +689,7 @@ shiftNameDown c (DUM t) = DUM (shiftNameDown c t)
 shiftNameDown c (FFDEFS t t₁) = FFDEFS (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c PURE = PURE
 shiftNameDown c NOSEQ = NOSEQ
+shiftNameDown c NOENC = NOENC
 shiftNameDown c (TERM t) = TERM (shiftNameDown c t)
 shiftNameDown c (ENC t) = ENC (shiftNameDown c t)
 shiftNameDown c (UNIV x) = UNIV x
@@ -753,6 +760,7 @@ names (DUM t)          = names t
 names (FFDEFS t t₁)    = names t ++ names t₁
 names PURE             = []
 names NOSEQ            = []
+names NOENC            = []
 names (TERM t)         = names t
 names (ENC t)          = names t
 names (UNIV x)         = []
@@ -819,6 +827,7 @@ subv v t (DUM u) = DUM (subv v t u)
 subv v t (FFDEFS u u₁) = FFDEFS (subv v t u) (subv v t u₁)
 subv v t PURE = PURE
 subv v t NOSEQ = NOSEQ
+subv v t NOENC = NOENC
 subv v t (TERM u) = TERM (subv v t u)
 subv v t (ENC u) = ENC u --(subv v t u) -- u is meant to be a closed term
 subv v t (UNIV x) = UNIV x
@@ -892,6 +901,7 @@ renn v t (DUM u) = DUM (renn v t u)
 renn v t (FFDEFS u u₁) = FFDEFS (renn v t u) (renn v t u₁)
 renn v t PURE = PURE
 renn v t NOSEQ = NOSEQ
+renn v t NOENC = NOENC
 renn v t (TERM u) = TERM (renn v t u)
 renn v t (ENC u) = ENC (renn v t u)
 renn v t (UNIV x) = UNIV x
@@ -1075,6 +1085,7 @@ abstract
     rewrite subvNotIn v t u₁ (notInAppVars2 n) = refl
   subvNotIn v t PURE n = refl
   subvNotIn v t NOSEQ n = refl
+  subvNotIn v t NOENC n = refl
   subvNotIn v t (TERM u) n rewrite subvNotIn v t u n = refl
   subvNotIn v t (ENC u) n = refl --rewrite subvNotIn v t u n = refl
   subvNotIn v t (UNIV x) n = refl
@@ -1250,6 +1261,7 @@ abstract
             | shiftDownTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
   shiftDownTrivial v PURE i = refl
   shiftDownTrivial v NOSEQ i = refl
+  shiftDownTrivial v NOENC i = refl
   shiftDownTrivial v (TERM u) i rewrite shiftDownTrivial v u i = refl
   shiftDownTrivial v (ENC u) i = refl --rewrite shiftDownTrivial v u i = refl
   shiftDownTrivial v (UNIV x) i = refl
@@ -1396,6 +1408,7 @@ abstract
             | shiftUpTrivial v u₁ (impLeNotApp2 _ _ _ i) = refl
   shiftUpTrivial v PURE i = refl
   shiftUpTrivial v NOSEQ i = refl
+  shiftUpTrivial v NOENC i = refl
   shiftUpTrivial v (TERM u) i rewrite shiftUpTrivial v u i = refl
   shiftUpTrivial v (ENC u) i = refl --rewrite shiftUpTrivial v u i = refl
   shiftUpTrivial v (UNIV x) i = refl
@@ -1478,6 +1491,7 @@ abstract
   shiftDownUp (FFDEFS t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
   shiftDownUp PURE n = refl
   shiftDownUp NOSEQ n = refl
+  shiftDownUp NOENC n = refl
   shiftDownUp (TERM t) n rewrite shiftDownUp t n = refl
   shiftDownUp (ENC t) n rewrite shiftDownUp t n = refl
   shiftDownUp (UNIV x) n = refl
@@ -1541,6 +1555,7 @@ is-NUM (DUM t) = inj₂ (λ { n () })
 is-NUM (FFDEFS t t₁) = inj₂ (λ { n () })
 is-NUM PURE = inj₂ (λ { n () })
 is-NUM NOSEQ = inj₂ (λ { n () })
+is-NUM NOENC = inj₂ (λ { n () })
 is-NUM (TERM t) = inj₂ (λ { n () })
 is-NUM (ENC t) = inj₂ (λ { n () })
 is-NUM (UNIV x) = inj₂ (λ { n () })
@@ -1604,6 +1619,7 @@ is-LAM (DUM t) = inj₂ (λ { n () })
 is-LAM (FFDEFS t t₁) = inj₂ (λ { n () })
 is-LAM PURE = inj₂ (λ { n () })
 is-LAM NOSEQ = inj₂ (λ { n () })
+is-LAM NOENC = inj₂ (λ { n () })
 is-LAM (TERM t) = inj₂ (λ { n () })
 is-LAM (ENC t) = inj₂ (λ { n () })
 is-LAM (UNIV x) = inj₂ (λ { n () })
@@ -1667,6 +1683,7 @@ is-CS (DUM t) = inj₂ (λ { n () })
 is-CS (FFDEFS t t₁) = inj₂ (λ { n () })
 is-CS PURE = inj₂ (λ { n () })
 is-CS NOSEQ = inj₂ (λ { n () })
+is-CS NOENC = inj₂ (λ { n () })
 is-CS (TERM t) = inj₂ (λ { n () })
 is-CS (ENC t) = inj₂ (λ { n () })
 is-CS (UNIV x) = inj₂ (λ { n () })
@@ -1730,6 +1747,7 @@ is-NAME (DUM t) = inj₂ (λ { n () })
 is-NAME (FFDEFS t t₁) = inj₂ (λ { n () })
 is-NAME PURE = inj₂ (λ { n () })
 is-NAME NOSEQ = inj₂ (λ { n () })
+is-NAME NOENC = inj₂ (λ { n () })
 is-NAME (TERM t) = inj₂ (λ { n () })
 is-NAME (ENC t) = inj₂ (λ { n () })
 is-NAME (UNIV x) = inj₂ (λ { n () })
@@ -1793,6 +1811,7 @@ is-MSEQ (DUM t) = inj₂ (λ { n () })
 is-MSEQ (FFDEFS t t₁) = inj₂ (λ { n () })
 is-MSEQ PURE = inj₂ (λ { n () })
 is-MSEQ NOSEQ = inj₂ (λ { n () })
+is-MSEQ NOENC = inj₂ (λ { n () })
 is-MSEQ (TERM t) = inj₂ (λ { n () })
 is-MSEQ (ENC t) = inj₂ (λ { n () })
 is-MSEQ (UNIV x) = inj₂ (λ { n () })
@@ -1856,6 +1875,7 @@ is-PAIR (DUM t) = inj₂ (λ { n m () })
 is-PAIR (FFDEFS t t₁) = inj₂ (λ { n m () })
 is-PAIR PURE = inj₂ (λ { n m () })
 is-PAIR NOSEQ = inj₂ (λ { n m () })
+is-PAIR NOENC = inj₂ (λ { n m () })
 is-PAIR (TERM t) = inj₂ (λ { n m () })
 is-PAIR (ENC t) = inj₂ (λ { n m () })
 is-PAIR (UNIV x) = inj₂ (λ { n m () })
@@ -1919,6 +1939,7 @@ is-SUP (DUM t) = inj₂ (λ { n m () })
 is-SUP (FFDEFS t t₁) = inj₂ (λ { n m () })
 is-SUP PURE = inj₂ (λ { n m () })
 is-SUP NOSEQ = inj₂ (λ { n m () })
+is-SUP NOENC = inj₂ (λ { n m () })
 is-SUP (TERM t) = inj₂ (λ { n m () })
 is-SUP (ENC t) = inj₂ (λ { n m () })
 is-SUP (UNIV x) = inj₂ (λ { n m () })
@@ -1983,6 +2004,7 @@ is-MSUP (DUM t) = inj₂ (λ { n m () })
 is-MSUP (FFDEFS t t₁) = inj₂ (λ { n m () })
 is-MSUP PURE = inj₂ (λ { n m () })
 is-MSUP NOSEQ = inj₂ (λ { n m () })
+is-MSUP NOENC = inj₂ (λ { n m () })
 is-MSUP (TERM t) = inj₂ (λ { n m () })
 is-MSUP (ENC t) = inj₂ (λ { n m () })
 is-MSUP (UNIV x) = inj₂ (λ { n m () })
@@ -2047,6 +2069,7 @@ is-INL (DUM t) = inj₂ (λ { n () })
 is-INL (FFDEFS t t₁) = inj₂ (λ { n () })
 is-INL PURE = inj₂ (λ { n () })
 is-INL NOSEQ = inj₂ (λ { n () })
+is-INL NOENC = inj₂ (λ { n () })
 is-INL (TERM t) = inj₂ (λ { n () })
 is-INL (ENC t) = inj₂ (λ { n () })
 is-INL (UNIV x) = inj₂ (λ { n () })
@@ -2110,6 +2133,7 @@ is-INR (DUM t) = inj₂ (λ { n () })
 is-INR (FFDEFS t t₁) = inj₂ (λ { n () })
 is-INR PURE = inj₂ (λ { n () })
 is-INR NOSEQ = inj₂ (λ { n () })
+is-INR NOENC = inj₂ (λ { n () })
 is-INR (TERM t) = inj₂ (λ { n () })
 is-INR (ENC t) = inj₂ (λ { n () })
 is-INR (UNIV x) = inj₂ (λ { n () })
@@ -2154,6 +2178,7 @@ data ∼vals : Term → Term → Set where
   ∼vals-FFDEFS  : {a b c d : Term} → ∼vals (FFDEFS a b) (FFDEFS c d)
   ∼vals-PURE    : ∼vals PURE PURE
   ∼vals-NOSEQ   : ∼vals NOSEQ NOSEQ
+  ∼vals-NOENC   : ∼vals NOENC NOENC
   ∼vals-TERM    : {a b : Term} → ∼vals (TERM a) (TERM b)
   ∼vals-UNIV    : {n : ℕ} → ∼vals (UNIV n) (UNIV n)
   ∼vals-LIFT    : {a b : Term} → ∼vals (LIFT a) (LIFT b)
@@ -2195,6 +2220,7 @@ data ∼vals : Term → Term → Set where
 ∼vals-sym {.(FFDEFS _ _)} {.(FFDEFS _ _)} ∼vals-FFDEFS = ∼vals-FFDEFS
 ∼vals-sym {.(PURE)} {.(PURE)} ∼vals-PURE = ∼vals-PURE
 ∼vals-sym {.(NOSEQ)} {.(NOSEQ)} ∼vals-NOSEQ = ∼vals-NOSEQ
+∼vals-sym {.(NOENC)} {.(NOENC)} ∼vals-NOENC = ∼vals-NOENC
 ∼vals-sym {.(TERM _)} {.(TERM _)} ∼vals-TERM = ∼vals-TERM
 ∼vals-sym {.(UNIV _)} {.(UNIV _)} ∼vals-UNIV = ∼vals-UNIV
 ∼vals-sym {.(LIFT _)} {.(LIFT _)} ∼vals-LIFT = ∼vals-LIFT
@@ -2236,6 +2262,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₁ {FFDEFS a a₁} {b} isv = tt
 ∼vals→isValue₁ {PURE} {b} isv = tt
 ∼vals→isValue₁ {NOSEQ} {b} isv = tt
+∼vals→isValue₁ {NOENC} {b} isv = tt
 ∼vals→isValue₁ {TERM a} {b} isv = tt
 ∼vals→isValue₁ {UNIV x} {b} isv = tt
 ∼vals→isValue₁ {LIFT a} {b} isv = tt
@@ -2293,6 +2320,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {FFDEFS b b₁} isv = tt
 ∼vals→isValue₂ {a} {PURE} isv = tt
 ∼vals→isValue₂ {a} {NOSEQ} isv = tt
+∼vals→isValue₂ {a} {NOENC} isv = tt
 ∼vals→isValue₂ {a} {TERM b} isv = tt
 ∼vals→isValue₂ {a} {UNIV x} isv = tt
 ∼vals→isValue₂ {a} {LIFT b} isv = tt
@@ -2363,6 +2391,7 @@ data ∼vals : Term → Term → Set where
 ¬read (FFDEFS t t₁) = ¬read t ∧ ¬read t₁
 ¬read PURE = true
 ¬read NOSEQ = true
+¬read NOENC = true
 ¬read (TERM t) = ¬read t
 ¬read (ENC t) = ¬read t
 ¬read (UNIV x) = true
@@ -2438,6 +2467,7 @@ data ∼vals : Term → Term → Set where
 ¬names (FFDEFS t t₁) = ¬names t ∧ ¬names t₁
 ¬names PURE = true
 ¬names NOSEQ = true
+¬names NOENC = true
 ¬names (TERM t) = ¬names t
 ¬names (ENC t) = ¬names t
 ¬names (UNIV x) = true
@@ -2513,6 +2543,7 @@ noseq (DUM t) = noseq t
 noseq (FFDEFS t t₁) = noseq t ∧ noseq t₁
 noseq PURE = true
 noseq NOSEQ = true
+noseq NOENC = true
 noseq (TERM t) = noseq t
 noseq (ENC t) = noseq t
 noseq (UNIV x) = true
@@ -2527,5 +2558,71 @@ noseq (SHRINK t) = noseq t
 
 #¬Seq : CTerm → Set
 #¬Seq t = ¬Seq ⌜ t ⌝
+
+
+¬enc : Term → Bool
+¬enc (VAR x) = true
+¬enc QNAT = true
+¬enc (LT t t₁) = ¬enc t ∧ ¬enc t₁
+¬enc (QLT t t₁) = ¬enc t ∧ ¬enc t₁
+¬enc (NUM x) = true
+¬enc (IFLT t t₁ t₂ t₃) = ¬enc t ∧ ¬enc t₁ ∧ ¬enc t₂ ∧ ¬enc t₃
+¬enc (IFEQ t t₁ t₂ t₃) = ¬enc t ∧ ¬enc t₁ ∧ ¬enc t₂ ∧ ¬enc t₃
+¬enc (SUC t) = ¬enc t
+¬enc (PI t t₁) = ¬enc t ∧ ¬enc t₁
+¬enc (LAMBDA t) = ¬enc t
+¬enc (APPLY t t₁) = ¬enc t ∧ ¬enc t₁
+¬enc (FIX t) = ¬enc t
+¬enc (LET t t₁) = ¬enc t ∧ ¬enc t₁
+¬enc (WT t t₁ t₂) = ¬enc t ∧ ¬enc t₁ ∧ ¬enc t₂
+¬enc (SUP t t₁) = ¬enc t ∧ ¬enc t₁
+¬enc (WREC t t₁) = ¬enc t ∧ ¬enc t₁
+¬enc (MT t t₁ t₂) = ¬enc t ∧ ¬enc t₁ ∧ ¬enc t₂
+¬enc (SUM t t₁) = ¬enc t ∧ ¬enc t₁
+¬enc (PAIR t t₁) = ¬enc t ∧ ¬enc t₁
+¬enc (SPREAD t t₁) = ¬enc t ∧ ¬enc t₁
+¬enc (SET t t₁) = ¬enc t ∧ ¬enc t₁
+¬enc (ISECT t t₁) = ¬enc t ∧ ¬enc t₁
+¬enc (TUNION t t₁) = ¬enc t ∧ ¬enc t₁
+¬enc (UNION t t₁) = ¬enc t ∧ ¬enc t₁
+¬enc (INL t) = ¬enc t
+¬enc (INR t) = ¬enc t
+¬enc (DECIDE t t₁ t₂) = ¬enc t ∧ ¬enc t₁ ∧ ¬enc t₂
+¬enc (EQ t t₁ t₂) = ¬enc t ∧ ¬enc t₁ ∧ ¬enc t₂
+¬enc AX = true
+¬enc FREE = true
+¬enc (MSEQ x) = true
+¬enc (MAPP s t) = ¬enc t
+¬enc (CS x) = true
+¬enc (NAME x) = true
+¬enc (FRESH t) = ¬enc t
+¬enc (LOAD t) = ¬enc t
+¬enc (CHOOSE t t₁) = ¬enc t ∧ ¬enc t₁
+¬enc NOWRITE = true
+¬enc NOREAD  = true
+¬enc (SUBSING t) = ¬enc t
+¬enc (DUM t) = ¬enc t
+¬enc (FFDEFS t t₁) = ¬enc t ∧ ¬enc t₁
+¬enc PURE = true
+¬enc NOSEQ = true
+¬enc NOENC = true
+¬enc (TERM t) = ¬enc t
+¬enc (ENC t) = false --¬enc t
+¬enc (UNIV x) = true
+¬enc (LIFT t) = ¬enc t
+¬enc (LOWER t) = ¬enc t
+¬enc (SHRINK t) = ¬enc t
+
+
+#¬enc : CTerm → Bool
+#¬enc t = ¬enc ⌜ t ⌝
+
+
+¬Enc : Term → Set
+¬Enc t = ¬enc t ≡ true
+
+
+#¬Enc : CTerm → Set
+#¬Enc t = #¬enc t ≡ true
 
 \end{code}

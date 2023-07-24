@@ -56,6 +56,14 @@ open Choice
 #-ℂ→T c = CTerm.closed (ℂ→C· c)
 
 
+ℂ-noseq· : (c : ℂ·) → #¬Seq (ℂ→C· c)
+ℂ-noseq· = ℂ-noseq C
+
+
+ℂ-noenc· : (c : ℂ·) → #¬Enc (ℂ→C· c)
+ℂ-noenc· = ℂ-noenc C
+
+
 --ℂ→C-inj· : {a b : ℂ·} → ℂ→C· a ≡ ℂ→C· b → a ≡ b
 --ℂ→C-inj· = ℂ→C-inj C
 

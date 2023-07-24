@@ -69,7 +69,7 @@ open import choice
 
 choiceRef : Choice
 --choiceRef = mkChoice Bool B→C B→C-inj
-choiceRef = mkChoice ℕ ℕ→C --ℕ→C-inj
+choiceRef = mkChoice ℕ ℕ→C (λ c → refl) (λ c → refl) --ℕ→C-inj
 
 open import choiceDef{1ℓ}(choiceRef)
 

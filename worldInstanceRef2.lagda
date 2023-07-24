@@ -53,8 +53,16 @@ B→C false = #BFALSE
 -- Could instead ∈Typeℂ₀₁→ in choiceBar have an assumption about a and b being choices?
 open import choice
 
+¬seq-choice : (c : Bool) → #¬Seq (B→C c)
+¬seq-choice true  = refl
+¬seq-choice false = refl
+
+¬enc-choice : (c : Bool) → #¬Enc (B→C c)
+¬enc-choice true  = refl
+¬enc-choice false = refl
+
 choiceRef : Choice
-choiceRef = mkChoice Bool B→C --B→C-inj
+choiceRef = mkChoice Bool B→C ¬seq-choice ¬enc-choice --B→C-inj
 
 open import choiceDef{1ℓ}(choiceRef)
 

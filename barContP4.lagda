@@ -177,6 +177,7 @@ data updSeq (r : Name) (s : 𝕊) (n : ℕ) : Term → Term → Set where
   updSeq-SUBSING : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (SUBSING a₁) (SUBSING a₂)
   updSeq-PURE    : updSeq r s n PURE PURE
   updSeq-NOSEQ   : updSeq r s n NOSEQ NOSEQ
+  updSeq-NOENC   : updSeq r s n NOENC NOENC
   updSeq-TERM    : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (TERM a₁) (TERM a₂)
   updSeq-ENC     : (a : Term) → updSeq r s n a a → updSeq r s n (ENC a) (ENC a)
   updSeq-DUM     : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (DUM a₁) (DUM a₂)
@@ -307,6 +308,7 @@ abstract
   updSeq-shiftUp n {r} {s} {k} {.(SUBSING a₁)} {.(SUBSING a₂)} (updSeq-SUBSING a₁ a₂ u) = updSeq-SUBSING _ _ (updSeq-shiftUp n u)
   updSeq-shiftUp n {r} {s} {k} {.(PURE)} {.(PURE)} (updSeq-PURE) = updSeq-PURE
   updSeq-shiftUp n {r} {s} {k} {.(NOSEQ)} {.(NOSEQ)} (updSeq-NOSEQ) = updSeq-NOSEQ
+  updSeq-shiftUp n {r} {s} {k} {.(NOENC)} {.(NOENC)} (updSeq-NOENC) = updSeq-NOENC
   updSeq-shiftUp n {r} {s} {k} {.(TERM a₁)} {.(TERM a₂)} (updSeq-TERM a₁ a₂ u) = updSeq-TERM _ _ (updSeq-shiftUp n u)
   updSeq-shiftUp n {r} {s} {k} {.(ENC a)} {.(ENC a)} (updSeq-ENC a u) = updSeq-ENC _ u
   updSeq-shiftUp n {r} {s} {k} {.(DUM a₁)} {.(DUM a₂)} (updSeq-DUM a₁ a₂ u) = updSeq-DUM _ _ (updSeq-shiftUp n u)
@@ -375,6 +377,7 @@ abstract
   updSeq-shiftDown n {r} {s} {k} {.(SUBSING a₁)} {.(SUBSING a₂)} (updSeq-SUBSING a₁ a₂ u) = updSeq-SUBSING _ _ (updSeq-shiftDown n u)
   updSeq-shiftDown n {r} {s} {k} {.(PURE)} {.(PURE)} (updSeq-PURE) = updSeq-PURE
   updSeq-shiftDown n {r} {s} {k} {.(NOSEQ)} {.(NOSEQ)} (updSeq-NOSEQ) = updSeq-NOSEQ
+  updSeq-shiftDown n {r} {s} {k} {.(NOENC)} {.(NOENC)} (updSeq-NOENC) = updSeq-NOENC
   updSeq-shiftDown n {r} {s} {k} {.(TERM a₁)} {.(TERM a₂)} (updSeq-TERM a₁ a₂ u) = updSeq-TERM _ _ (updSeq-shiftDown n u)
   updSeq-shiftDown n {r} {s} {k} {.(ENC a)} {.(ENC a)} (updSeq-ENC a u) = updSeq-ENC _ u
   updSeq-shiftDown n {r} {s} {k} {.(DUM a₁)} {.(DUM a₂)} (updSeq-DUM a₁ a₂ u) = updSeq-DUM _ _ (updSeq-shiftDown n u)
@@ -446,6 +449,7 @@ abstract
   updSeq-subv v {r} {s} {k} {.(SUBSING a₁)} {.(SUBSING a₂)} {b₁} {b₂} (updSeq-SUBSING a₁ a₂ ua) ub = updSeq-SUBSING _ _ (updSeq-subv v ua ub)
   updSeq-subv v {r} {s} {k} {.(PURE)} {.(PURE)} {b₁} {b₂} (updSeq-PURE) ub = updSeq-PURE
   updSeq-subv v {r} {s} {k} {.(NOSEQ)} {.(NOSEQ)} {b₁} {b₂} (updSeq-NOSEQ) ub = updSeq-NOSEQ
+  updSeq-subv v {r} {s} {k} {.(NOENC)} {.(NOENC)} {b₁} {b₂} (updSeq-NOENC) ub = updSeq-NOENC
   updSeq-subv v {r} {s} {k} {.(TERM a₁)} {.(TERM a₂)} {b₁} {b₂} (updSeq-TERM a₁ a₂ ua) ub = updSeq-TERM _ _ (updSeq-subv v ua ub)
   updSeq-subv v {r} {s} {k} {.(ENC a)} {.(ENC a)} {b₁} {b₂} (updSeq-ENC a ua) ub = updSeq-ENC _ ua
   updSeq-subv v {r} {s} {k} {.(DUM a₁)} {.(DUM a₂)} {b₁} {b₂} (updSeq-DUM a₁ a₂ ua) ub = updSeq-DUM _ _ (updSeq-subv v ua ub)
@@ -1115,6 +1119,7 @@ updSeq→isValue {r} {s} {n} {.NOREAD}  {.NOREAD}  updSeq-NOREAD  isv = tt
 updSeq→isValue {r} {s} {n} {.(SUBSING a₁)} {.(SUBSING a₂)} (updSeq-SUBSING a₁ a₂ u) isv = tt
 updSeq→isValue {r} {s} {n} {.(PURE)} {.(PURE)} (updSeq-PURE) isv = tt
 updSeq→isValue {r} {s} {n} {.(NOSEQ)} {.(NOSEQ)} (updSeq-NOSEQ) isv = tt
+updSeq→isValue {r} {s} {n} {.(NOENC)} {.(NOENC)} (updSeq-NOENC) isv = tt
 updSeq→isValue {r} {s} {n} {.(TERM a₁)} {.(TERM a₂)} (updSeq-TERM a₁ a₂ u) isv = tt
 updSeq→isValue {r} {s} {n} {.(DUM a₁)} {.(DUM a₂)} (updSeq-DUM a₁ a₂ u) isv = tt
 updSeq→isValue {r} {s} {n} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updSeq-FFDEFS a₁ a₂ b₁ b₂ u u₁) isv = tt

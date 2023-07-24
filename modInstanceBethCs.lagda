@@ -289,8 +289,8 @@ getCsChoice-freezeSeq→⊎ {k} {c} {r} {l} {w} {t} {n} i nodp comp gc with getC
 
 →isOnlyChoice∈𝕎-𝕎→pchain : {c : Name} {w : 𝕎·} {r : Res{0ℓ}} (n : ℕ)
                               → compatible· c w r
-                              → isOnlyChoice∈𝕎 (Res.def r) c w
-                              → isOnlyChoice∈𝕎 (Res.def r) c (𝕎→seq w n)
+                              → onlyℂ∈𝕎 (Res.def r) c w
+                              → onlyℂ∈𝕎 (Res.def r) c (𝕎→seq w n)
 →isOnlyChoice∈𝕎-𝕎→pchain {c} {w} {r} n comp iso k t e = concl u
   where
     i : mkNRes c r ∈ wrdom w
@@ -323,11 +323,11 @@ getCs→≡Name-getCs {choice name t ∷ w} {n1} {n2} {l} {r} e = getCs→≡Nam
 
 
 
-⊑-isOnlyChoice∈𝕎 : {c : Name} {w1 w2 : 𝕎·} {r : Res{0ℓ}} {u : ℂ·}
+⊑-onlyℂ∈𝕎 : {c : Name} {w1 w2 : 𝕎·} {r : Res{0ℓ}} {u : ℂ·}
                     → w1 ⊑· w2
-                    → isOnlyChoice∈𝕎 u c w2
-                    → isOnlyChoice∈𝕎 u c w1
-⊑-isOnlyChoice∈𝕎 {c} {w1} {w2} {r} {u} e iso k t z with getCs⊎ c w1
+                    → onlyℂ∈𝕎 u c w2
+                    → onlyℂ∈𝕎 u c w1
+⊑-onlyℂ∈𝕎 {c} {w1} {w2} {r} {u} e iso k t z with getCs⊎ c w1
 ... | inj₁ (mkcs m l r' , p) rewrite p | fst (snd (≽-pres-getCs e (getCs→≡Name-getCs {w1} p))) =
   iso k t (select++-just {0ℓ} {ℂ·} {k} {l} {fst (≽-pres-getCs e (getCs→≡Name-getCs {w1} p))} z)
 ... | inj₂ p rewrite p = ⊥-elim (¬just≡nothing (sym z))
@@ -442,10 +442,10 @@ getChoice→weakℂ₀₁M w n c h w1 e1 with lower (h w1 e1)
 
 followChoice-beth-cs : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                        → inBethBar w f
-                       → isOnlyChoice∈𝕎 (Res.def r) c w
+                       → onlyℂ∈𝕎 (Res.def r) c w
                        → compatible· c w r
                        → freezable· c w
-                       → ∃𝕎 w (λ w1 e1 → isOnlyChoice∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
+                       → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
 followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
   w' , e , iso , comp' , fb' , z
   where
@@ -461,10 +461,10 @@ followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
     e : w ⊑· w'
     e = 𝔹.ext bar (BarredChain.b bp)
 
-    iso : isOnlyChoice∈𝕎 (Res.def r) c w'
-    iso = ⊑-isOnlyChoice∈𝕎 {c} {w'} {chain.seq (pchain.c pc) (BarredChain.n bp)} {r}
-                            (BarredChain.ext bp)
-                            (→isOnlyChoice∈𝕎-𝕎→pchain {c} {w} {r} (BarredChain.n bp) comp oc)
+    iso : onlyℂ∈𝕎 (Res.def r) c w'
+    iso = ⊑-onlyℂ∈𝕎 {c} {w'} {chain.seq (pchain.c pc) (BarredChain.n bp)} {r}
+            (BarredChain.ext bp)
+            (→isOnlyChoice∈𝕎-𝕎→pchain {c} {w} {r} (BarredChain.n bp) comp oc)
 
     comp' : compatible· c w' r
     comp' = ⊑-compatible· e comp

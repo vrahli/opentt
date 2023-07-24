@@ -200,6 +200,14 @@ abstract
 
 
 abstract
+  updRel2-shiftNameUp≡→NOENC : (n : ℕ) {name : Name} {f g : Term} {r : ren} (cf : # f) (cg : # g) {a b : Term}
+                          → NOENC ≡ shiftNameUp n a
+                          → NOENC ≡ shiftNameUp n b
+                          → updRel2 name f g r a b
+  updRel2-shiftNameUp≡→NOENC n {name} {f} {g} {r} cf cg {NOENC} {NOENC} equ eqv = updRel2-NOENC
+
+
+abstract
   updRel2-shiftNameUp≡→LT : (n : ℕ) {name : Name} {f g : Term} {r : ren} (cf : # f) (cg : # g) {a b x₁ x₂ y₁ y₂ : Term}
                             → ((u₁ u₂ : Term) → x₁ ≡ shiftNameUp n u₁ → x₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂)
                             → ((u₁ u₂ : Term) → y₁ ≡ shiftNameUp n u₁ → y₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂)
@@ -1135,6 +1143,7 @@ abstract
       ind1 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {a₁} {a₂} e₁ e₂ ur
   updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.PURE} {.PURE} equ eqv updRel2-PURE = updRel2-shiftNameUp≡→PURE n cf cg equ eqv
   updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.NOSEQ} {.NOSEQ} equ eqv updRel2-NOSEQ = updRel2-shiftNameUp≡→NOSEQ n cf cg equ eqv
+  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.NOENC} {.NOENC} equ eqv updRel2-NOENC = updRel2-shiftNameUp≡→NOENC n cf cg equ eqv
   updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(TERM a₁)} {.(TERM a₂)} equ eqv (updRel2-TERM a₁ a₂ ur)
     = updRel2-shiftNameUp≡→TERM n cf cg ind1 equ eqv ur
     where

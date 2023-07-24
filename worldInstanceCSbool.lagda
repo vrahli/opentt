@@ -49,8 +49,16 @@ B→C true = #BTRUE
 B→C false = #BFALSE
 
 
+¬seq-choice : (c : Bool) → #¬Seq (B→C c)
+¬seq-choice true  = refl
+¬seq-choice false = refl
+
+¬enc-choice : (c : Bool) → #¬Enc (B→C c)
+¬enc-choice true  = refl
+¬enc-choice false = refl
+
 choiceCS : Choice
-choiceCS = mkChoice Bool B→C
+choiceCS = mkChoice Bool B→C ¬seq-choice ¬enc-choice
 
 open import choiceDef{1ℓ}(choiceCS)
 

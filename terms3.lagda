@@ -189,6 +189,7 @@ data differ (name1 name2 : Name) (f : Term) : Term → Term → Set where
   differ-SUBSING : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (SUBSING a) (SUBSING b)
   differ-PURE    : differ name1 name2 f PURE PURE
   differ-NOSEQ   : differ name1 name2 f NOSEQ NOSEQ
+  differ-NOENC   : differ name1 name2 f NOENC NOENC
   differ-TERM    : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (TERM a) (TERM b)
   differ-ENC     : (a : Term) → differ name1 name2 f a a → differ name1 name2 f (ENC a) (ENC a)
   differ-DUM     : (a b : Term) → differ name1 name2 f a b → differ name1 name2 f (DUM a) (DUM b)
@@ -328,6 +329,7 @@ abstract
   →differ-shiftUp v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftUp v cf diff)
   →differ-shiftUp v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
   →differ-shiftUp v {name1} {name2} {f} cf {.(NOSEQ)} {.(NOSEQ)} (differ-NOSEQ) = differ-NOSEQ
+  →differ-shiftUp v {name1} {name2} {f} cf {.(NOENC)} {.(NOENC)} (differ-NOENC) = differ-NOENC
   →differ-shiftUp v {name1} {name2} {f} cf {.(TERM a)} {.(TERM b)} (differ-TERM a b diff) = differ-TERM _ _ (→differ-shiftUp v cf diff)
   →differ-shiftUp v {name1} {name2} {f} cf {.(ENC a)} {.(ENC a)} (differ-ENC a d) = differ-ENC _ d
   →differ-shiftUp v {name1} {name2} {f} cf {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) = differ-DUM _ _ (→differ-shiftUp v cf diff)
@@ -664,6 +666,7 @@ abstract
   shiftNameUp-shiftNameUp {i} {j} {SUBSING t} imp = ≡SUBSING (shiftNameUp-shiftNameUp {i} {j} {t} imp)
   shiftNameUp-shiftNameUp {i} {j} {PURE} imp = refl
   shiftNameUp-shiftNameUp {i} {j} {NOSEQ} imp = refl
+  shiftNameUp-shiftNameUp {i} {j} {NOENC} imp = refl
   shiftNameUp-shiftNameUp {i} {j} {TERM t} imp = ≡TERM (shiftNameUp-shiftNameUp {i} {j} {t} imp)
   shiftNameUp-shiftNameUp {i} {j} {ENC t} imp = ≡ENC (shiftNameUp-shiftNameUp {i} {j} {t} imp)
   shiftNameUp-shiftNameUp {i} {j} {DUM t} imp = ≡DUM (shiftNameUp-shiftNameUp {i} {j} {t} imp)
@@ -763,6 +766,7 @@ abstract
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftNameUp v cf diff)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(NOSEQ)} {.(NOSEQ)} (differ-NOSEQ) = differ-NOSEQ
+  →differ-shiftNameUp v {name1} {name2} {f} cf {.(NOENC)} {.(NOENC)} (differ-NOENC) = differ-NOENC
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(TERM a)} {.(TERM b)} (differ-TERM a b diff) = differ-TERM _ _ (→differ-shiftNameUp v cf diff)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(ENC a)} {.(ENC a)} (differ-ENC a d) = differ-ENC _ (→differ-shiftNameUp v cf d)
   →differ-shiftNameUp v {name1} {name2} {f} cf {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) = differ-DUM _ _ (→differ-shiftNameUp v cf diff)
@@ -863,6 +867,7 @@ abstract
   differ-subv {name1} {name2} {f} cf v {.(SUBSING a)} {.(SUBSING b)} {b₁} {b₂} (differ-SUBSING a b d₁) d₂ = differ-SUBSING _ _ (differ-subv cf v d₁ d₂)
   differ-subv {name1} {name2} {f} cf v {.(PURE)} {.(PURE)} {b₁} {b₂} (differ-PURE) d₂ = differ-PURE
   differ-subv {name1} {name2} {f} cf v {.(NOSEQ)} {.(NOSEQ)} {b₁} {b₂} (differ-NOSEQ) d₂ = differ-NOSEQ
+  differ-subv {name1} {name2} {f} cf v {.(NOENC)} {.(NOENC)} {b₁} {b₂} (differ-NOENC) d₂ = differ-NOENC
   differ-subv {name1} {name2} {f} cf v {.(TERM a)} {.(TERM b)} {b₁} {b₂} (differ-TERM a b d₁) d₂ = differ-TERM _ _ (differ-subv cf v d₁ d₂)
   differ-subv {name1} {name2} {f} cf v {.(ENC a)} {.(ENC a)} {b₁} {b₂} (differ-ENC a d) d₂ = differ-ENC _ d
   differ-subv {name1} {name2} {f} cf v {.(DUM a)} {.(DUM b)} {b₁} {b₂} (differ-DUM a b d₁) d₂ = differ-DUM _ _ (differ-subv cf v d₁ d₂)
@@ -933,6 +938,7 @@ abstract
   →differ-shiftDown v {name1} {name2} {f} cf {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) = differ-SUBSING _ _ (→differ-shiftDown v cf diff)
   →differ-shiftDown v {name1} {name2} {f} cf {.(PURE)} {.(PURE)} (differ-PURE) = differ-PURE
   →differ-shiftDown v {name1} {name2} {f} cf {.(NOSEQ)} {.(NOSEQ)} (differ-NOSEQ) = differ-NOSEQ
+  →differ-shiftDown v {name1} {name2} {f} cf {.(NOENC)} {.(NOENC)} (differ-NOENC) = differ-NOENC
   →differ-shiftDown v {name1} {name2} {f} cf {.(TERM a)} {.(TERM b)} (differ-TERM a b diff) = differ-TERM _ _ (→differ-shiftDown v cf diff)
   →differ-shiftDown v {name1} {name2} {f} cf {.(ENC a)} {.(ENC a)} (differ-ENC a d) = differ-ENC _ d
   →differ-shiftDown v {name1} {name2} {f} cf {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) = differ-DUM _ _ (→differ-shiftDown v cf diff)
@@ -995,6 +1001,7 @@ abstract
   differ-isValue→ {name1} {name2} {f} {.(SUBSING a)} {.(SUBSING b)} (differ-SUBSING a b diff) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(PURE)} {.(PURE)} (differ-PURE) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(NOSEQ)} {.(NOSEQ)} (differ-NOSEQ) isv = tt
+  differ-isValue→ {name1} {name2} {f} {.(NOENC)} {.(NOENC)} (differ-NOENC) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(TERM a)} {.(TERM b)} (differ-TERM a b diff) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(DUM a)} {.(DUM b)} (differ-DUM a b diff) isv = tt
   differ-isValue→ {name1} {name2} {f} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) isv = tt

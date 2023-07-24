@@ -46,7 +46,7 @@ This provides an instance of world and choice for choice sequences
 open import choice
 
 choiceCS : Choice
-choiceCS = mkChoice CTerm (λ x → x) --(λ {a} {b} x → x)
+choiceCS = mkChoice ℕ (λ x → #NUM x) (λ c → refl) λ c → refl --(λ {a} {b} x → x)
 
 open import choiceDef{1ℓ}(choiceCS)
 
@@ -97,7 +97,7 @@ wdom (choice _ _ ∷ w) = wdom w
 wnames : world → List Name
 wnames [] = []
 wnames (start _ _ ∷ w) = wnames w
-wnames (choice _ t ∷ w) = names ⌜ t ⌝ ++ wnames w
+wnames (choice _ t ∷ w) = names ⌜ #NUM t ⌝ ++ wnames w
 
 
 remNRes : {L : Level} (n : Name) (l : List (NRes{L})) → List (NRes{L})
@@ -745,8 +745,8 @@ getCsChoiceCompatible c r w n t (l , comp , sat) g rewrite comp = resSatCs-selec
 
 -- We're really only generating numbers as choices here
 T→ℂcs : Term → ℂ·
-T→ℂcs (NUM n) = #NUM n
-T→ℂcs _ = #NUM 0
+T→ℂcs (NUM n) = n
+T→ℂcs _ = 0
 
 
 -- only extend if cs's restriction was decidable
@@ -771,7 +771,7 @@ chooseCS⊑ n w c | inj₂ _ = ⊑-refl· _
 
 
 isℂ₀cs : ℂ· → Bool
-isℂ₀cs (ct (NUM 0) _) = true
+isℂ₀cs 0 = true
 isℂ₀cs _ = false
 
 
@@ -786,32 +786,21 @@ open import getChoiceDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)
 
 
 
-decℂ₀cs : (c : ℂ·) → c ≡ #NUM 0 ⊎ ¬ c ≡ #NUM 0
-decℂ₀cs c with is-NUM ⌜ c ⌝
-... | inj₁ (n , z) with n ≟ 0
-... |   yes x rewrite x = inj₁ (CTerm≡ z)
-... |   no x = inj₂ (λ y → x (NUMinj (trans (sym z) (≡CTerm y))))
-decℂ₀cs c | inj₂ z = inj₂ x
-  where
-    x : ¬ c ≡ #NUM 0
-    x e rewrite e = z 0 (≡CTerm e)
+decℂ₀cs : (c : ℂ·) → c ≡ 0 ⊎ ¬ c ≡ 0
+decℂ₀cs 0 = inj₁ refl
+decℂ₀cs (suc n) = inj₂ λ ()
 
 
-decℂ₁cs : (c : ℂ·) → c ≡ #NUM 1 ⊎ ¬ c ≡ #NUM 1
-decℂ₁cs c with is-NUM ⌜ c ⌝
-... | inj₁ (n , z) with n ≟ 1
-... |   yes x rewrite x = inj₁ (CTerm≡ z)
-... |   no x = inj₂ (λ y → x (NUMinj (trans (sym z) (≡CTerm y))))
-decℂ₁cs c | inj₂ z = inj₂ x
-  where
-    x : ¬ c ≡ #NUM 1
-    x e rewrite e = z 1 (≡CTerm e)
+decℂ₁cs : (c : ℂ·) → c ≡ 1 ⊎ ¬ c ≡ 1
+decℂ₁cs 0 = inj₂ λ ()
+decℂ₁cs 1 = inj₁ refl
+decℂ₁cs (suc (suc n)) = inj₂ λ ()
 
 
 open import choiceExt{1ℓ}(PossibleWorldsCS)(choiceCS)
 
 choiceExtCS : ChoiceExt
-choiceExtCS = mkChoiceExt (#NUM 0) (#NUM 1) decℂ₀cs decℂ₁cs
+choiceExtCS = mkChoiceExt 0 1 decℂ₀cs decℂ₁cs
 
 open import choiceExtDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(getChoiceCS)(choiceExtCS)
 

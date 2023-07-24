@@ -113,6 +113,7 @@ abstract
   shiftUp-shiftNameUp c d (SUBSING t) rewrite shiftUp-shiftNameUp c d t = refl
   shiftUp-shiftNameUp c d PURE = refl
   shiftUp-shiftNameUp c d NOSEQ = refl
+  shiftUp-shiftNameUp c d NOENC = refl
   shiftUp-shiftNameUp c d (TERM t) rewrite shiftUp-shiftNameUp c d t = refl
   shiftUp-shiftNameUp c d (ENC t) rewrite shiftUp-shiftNameUp c d t = refl
   shiftUp-shiftNameUp c d (DUM t) rewrite shiftUp-shiftNameUp c d t = refl
@@ -190,6 +191,7 @@ abstract
   renn-shiftNameUp n1 n2 (SUBSING t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 PURE = refl
   renn-shiftNameUp n1 n2 NOSEQ = refl
+  renn-shiftNameUp n1 n2 NOENC = refl
   renn-shiftNameUp n1 n2 (TERM t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 (ENC t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 (DUM t) rewrite renn-shiftNameUp n1 n2 t = refl
@@ -269,6 +271,7 @@ abstract
   shiftNameDownUp n (SUBSING t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n PURE = refl
   shiftNameDownUp n NOSEQ = refl
+  shiftNameDownUp n NOENC = refl
   shiftNameDownUp n (TERM t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n (ENC t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n (DUM t) rewrite shiftNameDownUp n t = refl
@@ -385,6 +388,7 @@ abstract
   ¬names-shiftUp n (SUBSING a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n PURE = refl
   ¬names-shiftUp n NOSEQ = refl
+  ¬names-shiftUp n NOENC = refl
   ¬names-shiftUp n (TERM a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n (ENC a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n (DUM a) rewrite ¬names-shiftUp n a = refl
@@ -448,6 +452,7 @@ abstract
   ¬names-shiftDown n (SUBSING a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n PURE = refl
   ¬names-shiftDown n NOSEQ = refl
+  ¬names-shiftDown n NOENC = refl
   ¬names-shiftDown n (TERM a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n (ENC a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n (DUM a) rewrite ¬names-shiftDown n a = refl
@@ -532,6 +537,7 @@ abstract
   ¬Names-subv v {a} {SUBSING b} na nb = ¬Names-subv v {a} {b} na nb
   ¬Names-subv v {a} {PURE} na nb = refl
   ¬Names-subv v {a} {NOSEQ} na nb = refl
+  ¬Names-subv v {a} {NOENC} na nb = refl
   ¬Names-subv v {a} {TERM b} na nb = ¬Names-subv v {a} {b} na nb
   ¬Names-subv v {a} {ENC b} na nb = nb --¬Names-subv v {a} {b} na nb
   ¬Names-subv v {a} {DUM b} na nb = ¬Names-subv v {a} {b} na nb
@@ -605,6 +611,7 @@ abstract
   noseq-shiftUp n (SUBSING a) rewrite noseq-shiftUp n a = refl
   noseq-shiftUp n PURE = refl
   noseq-shiftUp n NOSEQ = refl
+  noseq-shiftUp n NOENC = refl
   noseq-shiftUp n (TERM a) rewrite noseq-shiftUp n a = refl
   noseq-shiftUp n (ENC a) rewrite noseq-shiftUp n a = refl
   noseq-shiftUp n (DUM a) rewrite noseq-shiftUp n a = refl
@@ -668,6 +675,7 @@ abstract
   noseq-shiftDown n (SUBSING a) rewrite noseq-shiftDown n a = refl
   noseq-shiftDown n PURE = refl
   noseq-shiftDown n NOSEQ = refl
+  noseq-shiftDown n NOENC = refl
   noseq-shiftDown n (TERM a) rewrite noseq-shiftDown n a = refl
   noseq-shiftDown n (ENC a) rewrite noseq-shiftDown n a = refl
   noseq-shiftDown n (DUM a) rewrite noseq-shiftDown n a = refl
@@ -737,6 +745,7 @@ abstract
   noseq-shiftNameUp n (SUBSING a) rewrite noseq-shiftNameUp n a = refl
   noseq-shiftNameUp n PURE = refl
   noseq-shiftNameUp n NOSEQ = refl
+  noseq-shiftNameUp n NOENC = refl
   noseq-shiftNameUp n (TERM a) rewrite noseq-shiftNameUp n a = refl
   noseq-shiftNameUp n (ENC a) rewrite noseq-shiftNameUp n a = refl
   noseq-shiftNameUp n (DUM a) rewrite noseq-shiftNameUp n a = refl
@@ -809,6 +818,7 @@ abstract
   ¬Seq-subv v {a} {SUBSING b} na nb = ¬Seq-subv v {a} {b} na nb
   ¬Seq-subv v {a} {PURE} na nb = refl
   ¬Seq-subv v {a} {NOSEQ} na nb = refl
+  ¬Seq-subv v {a} {NOENC} na nb = refl
   ¬Seq-subv v {a} {TERM b} na nb = ¬Seq-subv v {a} {b} na nb
   ¬Seq-subv v {a} {ENC b} na nb = nb --¬Seq-subv v {a} {b} na nb
   ¬Seq-subv v {a} {DUM b} na nb = ¬Seq-subv v {a} {b} na nb

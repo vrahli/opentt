@@ -361,7 +361,6 @@ abstract
           h6 : steps k4 (APPLY f (NUM m) , chooseT name w3' (NUM m)) ≡ (v , chooseT name w3' (NUM m))
                × chooseT name w3 (NUM m) ≡ w2
                × ¬Names v
-               × (¬Seq (APPLY f (NUM m)) → ¬Seq v)
           h6 = ¬Names→steps k4 (chooseT name w3 (NUM m)) w2 (chooseT name w3' (NUM m)) (APPLY f (NUM m)) v (→∧≡true {¬names f} {¬names (NUM m)} nnf refl) comp5c
 
           comph' : APPLY (upd name f) a ⇓ v from w1' to chooseT name w3' (NUM m)
@@ -387,7 +386,6 @@ abstract
           h6 : steps k4 (APPLY f (NUM m) , w3') ≡ (v , w3')
                × (chooseT name w3 (NUM m)) ≡ w2
                × ¬Names v
-               × (¬Seq (APPLY f (NUM m)) → ¬Seq v)
           h6 = ¬Names→steps k4 (chooseT name w3 (NUM m)) w2 w3' (APPLY f (NUM m)) v (→∧≡true {¬names f} {¬names (NUM m)} nnf refl) comp5c
 
           compg' : APPLY (upd name f) a ⇓ v from w1' to w3'
@@ -416,7 +414,6 @@ abstract
           h6 : steps k4 (APPLY f (NUM m) , chooseT name w3' (NUM m)) ≡ (v , chooseT name w3' (NUM m))
                × w3 ≡ w2
                × ¬Names v
-               × (¬Seq (APPLY f (NUM m)) → ¬Seq v)
           h6 = ¬Names→steps k4 w3 w2 (chooseT name w3' (NUM m)) (APPLY f (NUM m)) v (→∧≡true {¬names f} {¬names (NUM m)} nnf refl) comp5c
 
           comph' : APPLY (upd name f) a ⇓ v from w1' to chooseT name w3' (NUM m)
@@ -442,7 +439,6 @@ abstract
           h6 : steps k4 (APPLY f (NUM m) , w3') ≡ (v , w3')
                × w3 ≡ w2
                × ¬Names v
-               × (¬Seq (APPLY f (NUM m)) → ¬Seq v)
           h6 = ¬Names→steps k4 w3 w2 w3' (APPLY f (NUM m)) v (→∧≡true {¬names f} {¬names (NUM m)} nnf refl) comp5c
 
           compg' : APPLY (upd name f) a ⇓ v from w1' to w3'
@@ -927,6 +923,7 @@ abstract
   differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(SUBSING a) b v k compat1 compat2 agtn atgn' (differ-SUBSING a .a diff) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = SUBSING _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-SUBSING _ _ diff
   differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .PURE b v k compat1 compat2 agtn atgn' differ-PURE s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = PURE , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-PURE
   differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .NOSEQ b v k compat1 compat2 agtn atgn' differ-NOSEQ s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NOSEQ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NOSEQ
+  differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .NOENC b v k compat1 compat2 agtn atgn' differ-NOENC s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = NOENC , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-NOENC
   differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(TERM a) b v k compat1 compat2 agtn atgn' (differ-TERM a .a diff) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = TERM _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-TERM _ _ diff
   differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(ENC a) b v k compat1 compat2 agtn atgn' (differ-ENC a diff) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = ENCr a , w1 , w1' , ⇓from-to-refl _ _ , (1 , refl) , →differ-ENCr diff
   differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(DUM a) b v k compat1 compat2 agtn atgn' (differ-DUM a .a diff) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = DUM _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-DUM _ _ diff

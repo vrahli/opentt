@@ -294,6 +294,10 @@ data eqTypes u w T1 T2 where
       T1 #⇛ #NOSEQ at w
     → T2 #⇛ #NOSEQ at w
     → eqTypes u w T1 T2
+  EQTNOENC :
+      T1 #⇛ #NOENC at w
+    → T2 #⇛ #NOENC at w
+    → eqTypes u w T1 T2
   EQTTERM : (t1 t2 : CTerm)
     → T1 #⇛ #TERM t1 at w
     → T2 #⇛ #TERM t2 at w
@@ -491,9 +495,12 @@ PUREeq : per
 PUREeq t1 t2 = Lift {0ℓ} (lsuc L) (#¬Names t1 × #¬Names t2)
 
 
--- we add the #¬Names constraints, otherwise the type systems cannot preserve even #⇛!
 NOSEQeq : per
-NOSEQeq t1 t2 = Lift {0ℓ} (lsuc L) (#¬Seq t1 × #¬Seq t2 × #¬Names t1 × #¬Names t2)
+NOSEQeq t1 t2 = Lift {0ℓ} (lsuc L) (#¬Seq t1 × #¬Seq t2)
+
+
+NOENCeq : per
+NOENCeq t1 t2 = Lift {0ℓ} (lsuc L) (#¬Enc t1 × #¬Enc t2)
 
 
 -- Similar to hasValue in terms2, but here we use ⇛ instead of ⇓
@@ -583,6 +590,8 @@ eqInType u w (EQTPURE _ _) t1 t2 =
   □· w (λ w' e → PUREeq t1 t2)
 eqInType u w (EQTNOSEQ _ _) t1 t2 =
   □· w (λ w' e → NOSEQeq t1 t2)
+eqInType u w (EQTNOENC _ _) t1 t2 =
+  □· w (λ w' e → NOENCeq t1 t2)
 eqInType u w (EQTTERM x1 x2 _ _ _) t1 t2 =
   □· w (λ w' e → TERMeq w' x1 x2)
 eqInType u w (EQTUNIV i p c₁ c₂) T1 T2 = snd u i p w T1 T2
