@@ -133,8 +133,9 @@ open import mpp(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (#SUM-ASSERT₅ ; #ASSERT₄ ; #[0]ASSERT₄ ; sub0-ASSERT₄-APPLY ; equalInType-BOOL₀!→equalTypes-ASSERT₄)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (#MP₆ ; #[0]MP-left-qt₃ ; #[0]MP-right-qt₃ ; sub0-fun-mp₆ ; →equalTypes-#MP-left-qt₃ ; →equalTypes-#MP-right-qt₃ ;
-         #MP-left-qt₃ ; #MP-right-qt₃ ; equalInType-#MP-left-qt₃→)
+  using (#[0]MP-left-qt₃ ; #[0]MP-right-qt₃ ; sub0-fun-mp₆ ; →equalTypes-#MP-left-qt₃ ; →equalTypes-#MP-right-qt₃ ;
+         #MP₆ ; #MP₇ ; #MP-left-qt₃ ; #MP-right-qt₃ ; equalInType-#MP-left-qt₃→ ;
+         equalInTypeTNOENC→ ; equalInTypeTNOENC→ₗ ; equalInTypeTNOENC→ᵣ ; eqTypesTNOENC←)
 
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
   using (#[0]Typeℂ₀₁ ; Typeℂ₀₁· ; □·-choice· ; followChoice· ; #-typeℂ₀₁)
@@ -1263,6 +1264,12 @@ getChoice→getC {n} {cs} {w} c h rewrite h = refl
     h8 = ¬equalInType-#Σchoiceℙ immut i cp w3 name oc2 comp2 fb2
 
 
+#¬Enc-APPLY-NUM : (f : CTerm) (n : ℕ)
+                → #¬Enc f
+                → #¬Enc (#APPLY f (#NUM n))
+#¬Enc-APPLY-NUM f n ne rewrite ne = refl
+
+
 -- We use this when w2 ⊑· w1
 #¬enc→inhType-ASSERT₄ : (gcp : getChoiceℙ) (n : ℕ) (w1 w2 : 𝕎·) (t : CTerm)
                          → #¬Enc t
@@ -1280,28 +1287,28 @@ getChoice→getC {n} {cs} {w} c h rewrite h = refl
 
 -- Copied over from MPp₆-inh in mpp.lagda
 -- We addition we want to exclude all syntactic writes (a new types modality?)
-MP₆-inh : (gcp : getChoiceℙ) (n : ℕ) (w : 𝕎·) → ∈Type n w #MP₆ #lam2AX
-MP₆-inh gcp n w =
+MP₇-inh : (gcp : getChoiceℙ) (n : ℕ) (w : 𝕎·) → ∈Type n w #MP₇ #lam2AX
+MP₇-inh gcp n w =
   equalInType-PI
-    {n} {w} {#NAT!→BOOL₀!} {#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃}
-    (λ w' e → isType-#NAT!→BOOL₀! w' n)
+    {n} {w} {#TNOENC #NAT!→BOOL₀!} {#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃}
+    (λ w' e → eqTypesTNOENC← (isType-#NAT!→BOOL₀! w' n))
     aw1
     aw2
   where
-    aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT!→BOOL₀! a₁ a₂
+    aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#TNOENC #NAT!→BOOL₀!) a₁ a₂
                        → equalTypes n w' (sub0 a₁ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃))
                                          (sub0 a₂ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)))
     aw1 w' e a₁ a₂ eqb rewrite sub0-fun-mp₆ a₁ | sub0-fun-mp₆ a₂ =
-      eqTypesFUN← (→equalTypes-#MP-left-qt₃ eqb) (→equalTypes-#MP-right-qt₃ eqb)
+      eqTypesFUN← (→equalTypes-#MP-left-qt₃ (equalInTypeTNOENC→ eqb)) (→equalTypes-#MP-right-qt₃ (equalInTypeTNOENC→ eqb))
 
-    aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT!→BOOL₀! a₁ a₂
+    aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#TNOENC #NAT!→BOOL₀!) a₁ a₂
                        → equalInType n w' (sub0 a₁ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)) (#APPLY #lam2AX a₁) (#APPLY #lam2AX a₂))
     aw2 w1 e1 a₁ a₂ eqa =
       ≡CTerm→equalInType
         (sym (sub0-fun-mp₆ a₁))
         (equalInType-FUN
-          (→equalTypes-#MP-left-qt₃ (equalInType-refl eqa))
-          (→equalTypes-#MP-right-qt₃ (equalInType-refl eqa))
+          (→equalTypes-#MP-left-qt₃ (equalInType-refl (equalInTypeTNOENC→ eqa)))
+          (→equalTypes-#MP-right-qt₃ (equalInType-refl (equalInTypeTNOENC→ eqa)))
           aw3)
       where
         aw3 : ∀𝕎 w1 (λ w' _ → (a₃ a₄ : CTerm) → equalInType n w' (#MP-left-qt₃ a₁) a₃ a₄
@@ -1330,7 +1337,7 @@ MP₆-inh gcp n w =
                     aw5 w4 e4 a b ea rewrite sub0-ASSERT₄-APPLY a a₁ | sub0-ASSERT₄-APPLY b a₁ = aw5'
                       where
                         eb : equalInType n w4 #BOOL₀! (#APPLY a₁ a) (#APPLY a₁ b)
-                        eb = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL₀!≡ (equalInType-refl eqa)) w4 (⊑-trans· (⊑-trans· e2 e3) e4) a b ea
+                        eb = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL₀!≡ (equalInType-refl (equalInTypeTNOENC→ eqa))) w4 (⊑-trans· (⊑-trans· e2 e3) e4) a b ea
 
                         aw5' : equalTypes n w4 (#ASSERT₄ (#APPLY a₁ a)) (#ASSERT₄ (#APPLY a₁ b))
                         aw5' = equalInType-BOOL₀!→equalTypes-ASSERT₄ eb
@@ -1338,7 +1345,7 @@ MP₆-inh gcp n w =
                 -- The hard case...
                 cc (no p) = ⊥-elim (equalInType-#MP-left-qt₃→
                                        n w2 a₁ b₁ b₂
-                                       (equalInType-mon (equalInType-refl eqa) w2 e2)
+                                       (equalInType-mon (equalInType-refl (equalInTypeTNOENC→ eqa)) w2 e2)
                                        eqb w3 e3 aw6)
                    where
                      aw6 : ∀𝕎 w3 (λ w' _ → Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType n w' #NAT! n₁ n₂ × inhType n w' (#ASSERT₄ (#APPLY a₁ n₁)))) → ⊥)
@@ -1354,15 +1361,15 @@ MP₆-inh gcp n w =
                              inh' : inhType n w5 (#ASSERT₄ (#APPLY a₁ (#NUM k)))
                              inh' = →inhType-ASSERT₄-APPLY
                                       n w5 a₁ n₁ k
-                                      (equalInType-mon (equalInType-refl eqa) w5 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))
+                                      (equalInType-mon (equalInType-refl (equalInTypeTNOENC→ eqa)) w5 (⊑-trans· e2 (⊑-trans· e3 (⊑-trans· e4 e5))))
                                       k₁ (inhType-mon e5 inh)
 
                              aw8 : ∀𝕎 w5 (λ w' e' → #strongBool! w' (#APPLY a₁ (#NUM k)) #BTRUE → Lift (lsuc L) ⊥)
                              aw8 w6 e6 wbe = lift (p (k , #¬enc→inhType-ASSERT₄
                                                             gcp n w6 w3 (#APPLY a₁ (#NUM k))
-                                                            {!!} {--(#¬Names-APPLY {a₁} {#NUM k} (equalInType-TPURE→ₗ eqa) refl)--}
+                                                            (#¬Enc-APPLY-NUM a₁ k (equalInTypeTNOENC→ₗ eqa))
                                                             (equalInType-FUN→
-                                                               (≡CTerm→equalInType #NAT!→BOOL₀!≡ (equalInType-refl eqa))
+                                                               (≡CTerm→equalInType #NAT!→BOOL₀!≡ (equalInType-refl (equalInTypeTNOENC→ eqa)))
                                                                w3 (⊑-trans· e2 e3) (#NUM k) (#NUM k)
                                                                (NUM-equalInType-NAT! n w3 k))
                                                             (strongBool!-BTRUE→ w6 (#APPLY a₁ (#NUM k)) wbe)))

@@ -285,6 +285,10 @@ MP = PI NAT!→BOOL₀ (FUN (NEG (PI NAT! (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0)
 #MP₆ = #PI #NAT!→BOOL₀! (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)
 
 
+#MP₇ : CTerm
+#MP₇ = #PI (#TNOENC #NAT!→BOOL₀!) (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)
+
+
 -- Similar to #[0]MP-right (without the squash): Σ(n:ℕ).f(n)=true
 #[0]MP-rightΣₙ : CTerm0
 #[0]MP-rightΣₙ = #[0]SUM #[0]NAT (#[1]ASSERT₂ (#[1]APPLY #[1]VAR1 #[1]VAR0))
@@ -743,6 +747,65 @@ isTypeMP₆ w n =
                                         (sub0 a₂ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)))
     aw w' e a₁ a₂ eqb rewrite sub0-fun-mp₆ a₁ | sub0-fun-mp₆ a₂ =
       eqTypesFUN← (→equalTypes-#MP-left-qt₃ eqb) (→equalTypes-#MP-right-qt₃ eqb)
+
+
+-- MOVE
+#TNOENC≡ : (T : CTerm) → #TNOENC T ≡ #ISECT T #NOENC
+#TNOENC≡ T = CTerm≡ refl
+
+
+-- MOVE to props2
+eqTypesTNOENC← : {w : 𝕎·} {i : ℕ} {A B : CTerm}
+               → equalTypes i w A B
+               → equalTypes i w (#TNOENC A) (#TNOENC B)
+eqTypesTNOENC← {w} {i} {A} {B} eqtA rewrite #TNOENC≡ A | #TNOENC≡ B
+  = eqTypesISECT← eqtA eqTypesNOENC←
+
+
+-- MOVE to props2
+equalInTypeTNOENC→ : {w : 𝕎·} {i : ℕ} {A a b : CTerm}
+                   → equalInType i w (#TNOENC A) a b
+                   → equalInType i w A a b
+equalInTypeTNOENC→ {w} {i} {A} {B} eqtA rewrite #TNOENC≡ A
+  = equalInType-local (Mod.∀𝕎-□Func M (λ w1 e1 (p , q) → p) (equalInType-ISECT→ eqtA))
+
+
+-- MOVE to props2
+equalInTypeTNOENC→ₗ : {w : 𝕎·} {i : ℕ} {A a b : CTerm}
+                    → equalInType i w (#TNOENC A) a b
+                    → #¬Enc a
+equalInTypeTNOENC→ₗ {w} {i} {A} {a} {b} eqtA rewrite #TNOENC≡ A
+  = lower (Mod.□-const M
+            (Mod.∀𝕎-□Func M
+              (λ w1 e1 (p , q) → Mod.□-const M (Mod.∀𝕎-□Func M (λ w2 e2 (lift (u , v)) → lift u) (equalInType-NOENC→ q)))
+              (equalInType-ISECT→ {_} {_} {A} {#NOENC} eqtA)))
+
+
+-- MOVE to props2
+equalInTypeTNOENC→ᵣ : {w : 𝕎·} {i : ℕ} {A a b : CTerm}
+                    → equalInType i w (#TNOENC A) a b
+                    → #¬Enc b
+equalInTypeTNOENC→ᵣ {w} {i} {A} {a} {b} eqtA rewrite #TNOENC≡ A
+  = lower (Mod.□-const M
+            (Mod.∀𝕎-□Func M
+              (λ w1 e1 (p , q) → Mod.□-const M (Mod.∀𝕎-□Func M (λ w2 e2 (lift (u , v)) → lift v) (equalInType-NOENC→ q)))
+              (equalInType-ISECT→ {_} {_} {A} {#NOENC} eqtA)))
+
+
+isTypeMP₇ : (w : 𝕎·) (n : ℕ) → isType n w #MP₇
+isTypeMP₇ w n =
+  eqTypesPI←
+    {w} {n}
+    {#TNOENC #NAT!→BOOL₀!} {#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃}
+    {#TNOENC #NAT!→BOOL₀!} {#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃}
+    (λ w' e → eqTypesTNOENC← (isType-#NAT!→BOOL₀! w' n))
+    aw
+  where
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#TNOENC #NAT!→BOOL₀!) a₁ a₂
+                      → equalTypes n w' (sub0 a₁ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃))
+                                        (sub0 a₂ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)))
+    aw w' e a₁ a₂ eqb rewrite sub0-fun-mp₆ a₁ | sub0-fun-mp₆ a₂ =
+      eqTypesFUN← (→equalTypes-#MP-left-qt₃ (equalInTypeTNOENC→ eqb)) (→equalTypes-#MP-right-qt₃ (equalInTypeTNOENC→ eqb))
 
 
 isTypeMPₙ : (w : 𝕎·) (n : ℕ) → isType n w #MPₙ
@@ -1518,6 +1581,29 @@ equalInType-#MP-right-qt₃→ i w f a₁ a₂ f∈ h =
 
     h3 : equalInType i w1 (#MP-right-qt₃ f) (#APPLY (#APPLY F f) #AX) (#APPLY (#APPLY G f) #AX)
     h3 = h2 w1 (⊑-refl· w1) #AX #AX (→equalInType-#MP-left-qt₃ i w1 f #AX #AX f∈ cond)
+
+
+∈#MP₇→ : (i : ℕ) (w : 𝕎·) (F G : CTerm)
+          → equalInType i w #MP₇ F G
+          → ∀𝕎 w (λ w' _ → (f : CTerm) → ∈Type i w' (#TNOENC #NAT!→BOOL₀!) f
+                         → ∀𝕎 w' (λ w' _ → ∀𝕎 w' (λ w' _ → (Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType i w' #NAT! n₁ n₂
+                                                            × inhType i w' (#ASSERT₄ (#APPLY f n₁)))))
+                                                         → ⊥)
+                                         → ⊥)
+                         → □· w' (λ w' _ → Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType i w' #NAT! n₁ n₂
+                                           × inhType i w' (#ASSERT₄ (#APPLY f n₁))))))
+∈#MP₇→ i w F G F∈ w1 e1 f f∈ cond =
+  equalInType-#MP-right-qt₃→ i w1 f (#APPLY (#APPLY F f) #AX) (#APPLY (#APPLY G f) #AX) (equalInTypeTNOENC→ f∈) h3
+  where
+    h1 : equalInType i w1 (sub0 f (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)) (#APPLY F f) (#APPLY G f)
+    h1 = snd (snd (equalInType-PI→ {i} {w} {#TNOENC #NAT!→BOOL₀!} {#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃} F∈)) w1 e1 f f f∈
+
+    h2 : ∀𝕎 w1 (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#MP-left-qt₃ f) a₁ a₂
+                        → equalInType i w' (#MP-right-qt₃ f) (#APPLY (#APPLY F f) a₁) (#APPLY (#APPLY G f) a₂))
+    h2 = equalInType-FUN→ (≡CTerm→equalInType (sub0-fun-mp₆ f) h1)
+
+    h3 : equalInType i w1 (#MP-right-qt₃ f) (#APPLY (#APPLY F f) #AX) (#APPLY (#APPLY G f) #AX)
+    h3 = h2 w1 (⊑-refl· w1) #AX #AX (→equalInType-#MP-left-qt₃ i w1 f #AX #AX (equalInTypeTNOENC→ f∈) cond)
 
 
 \end{code}[hide]
