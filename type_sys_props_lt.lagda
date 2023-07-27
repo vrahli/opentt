@@ -62,7 +62,8 @@ open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import ind(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using () renaming (<Type to <Type₂ ; ≤Type to ≤Type₂ ; ≤Type0 to ≤Type0₂ ; ≤TypeS to ≤TypeS₂ ; <Type1 to <Type1₂ ; <TypeS to <TypeS₂ ; <TypeStep to <TypeStep₂ ; ≤Type-EQTBAR-eqInTypeExt to ≤Type-EQTBAR-eqInTypeExt₂ ; ind<Type to ind<Type₂ ; <TypeBAR to <TypeBAR₂ ; ≤Type-trans-bar to ≤Type-trans-bar₂)
 
 -- open import calculus
 -- open import world
@@ -165,579 +166,702 @@ LTneqUNIV : {u v : Term} {n : ℕ} → ¬ LT u v ≡ UNIV n
 LTneqUNIV {u} {v} {n} ()
 
 
+→#strongMonEq : (w : 𝕎·) (a1 a2 b1 b2 : CTerm)
+              → a1 ≡ b1
+              → a2 ≡ b2
+              → #strongMonEq w a1 a2
+              → #strongMonEq w b1 b2
+→#strongMonEq w a1 a2 b1 b2 refl refl s = s
+
+
+→#lift-<NUM-pair : (w : 𝕎·) (a1 a2 b1 b2 : CTerm)
+                 → a1 ≡ b1
+                 → a2 ≡ b2
+                 → #lift-<NUM-pair w a1 a2
+                 → #lift-<NUM-pair w b1 b2
+→#lift-<NUM-pair w a1 a2 b1 b2 refl refl s = s
+
+
 typeSysConds-LT-ttrans : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
                          (x : A #⇛ (#LT a1 b1) at w) (x₁ : B #⇛ (#LT a2 b2) at w)
                          (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
                          → eqTypesTrans u w A B
-{-# TERMINATING #-}
---typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x₁ y))
---typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅)
-  rewrite LTinj1 (⇛-val-det tt tt y x₁)
-        | LTinj2 (⇛-val-det tt tt y x₁)
-  = EQTLT a1 c2 b1 d2 x y₁ (strongMonEq-trans s x₄) (strongMonEq-trans s₁ x₅)
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) = ⊥-elim (LTneqQLT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) = ⊥-elim (LTneqFREE (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (LTneqPI (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) = ⊥-elim (LTneqW (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) = ⊥-elim (LTneqM (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (LTneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (LTneqSET (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) = ⊥-elim (LTneqISECT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTUNION A1 B1 A2 B2 y y₁ eqta eqtb exta extb) = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 c2 d1 d2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) = ⊥-elim (LTneqEQ (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) = ⊥-elim (LTneqUNION (⇛-val-det tt tt x₁ y))
---typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x₁ y))
---typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x₁ y))
---typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTRUNC A1 A2 y y₁ eqtA extA) = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOWRITE y y₁) = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOREAD y y₁) = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUBSING A1 A2 y y₁ eqtA extA) = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPURE y y₁) = ⊥-elim (LTneqPURE (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOSEQ y y₁) = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOENC y y₁) = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTERM z₁ z₂ y y₁ y₂) = ⊥-elim (LTneqTERM (⇛-val-det tt tt x₁ y))
---typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) = ⊥-elim (LTneqDUM (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c₂) = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x₁ c₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Bar.∀𝕎-□Func barI q z)))
+typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt = concl x x₁ s s₁
   where
-    z : □· w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
-    z = isu w B C y
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : eqTypes u' w' T1' T2') → <Type {u'} eqt' {u} eqt
+              → A #⇛ #LT a1 b1 at w' → T1' #⇛ #LT a2 b2 at w'
+              → #strongMonEq w' a1 a2
+              → #strongMonEq w' b1 b2
+              → eqTypes u' w' A T2')
+          → A #⇛ #LT a1 b1 at w → T1 #⇛ #LT a2 b2 at w
+          → #strongMonEq w a1 a2
+          → #strongMonEq w b1 b2
+          → eqTypes u w A T2
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind x x₁ s s₁ = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind x x₁ s s₁ =
+      EQTLT a1 c2 b1 d2 x y₁
+        (strongMonEq-trans s  (→#strongMonEq w c1 c2 a2 c2 (CTerm≡ (LTinj1 (⇛-val-det tt tt y x₁))) refl x₄))
+        (strongMonEq-trans s₁ (→#strongMonEq w d1 d2 b2 d2 (CTerm≡ (LTinj2 (⇛-val-det tt tt y x₁))) refl x₅))
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind x x₁ s s₁ = ⊥-elim (LTneqQLT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind x x₁ s s₁ = ⊥-elim (LTneqFREE (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTPI C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ s s₁ = ⊥-elim (LTneqPI (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTW C1 D1 E1 C2 D2 E2 y y₁ eqta0 eqtb0 eqtc0 exta0 extb0 extc0) ind x x₁ s s₁ = ⊥-elim (LTneqW (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTM C1 D1 E1 C2 D2 E2 y y₁ eqta0 eqtb0 eqtc0 exta0 extb0 extc0) ind x x₁ s s₁ = ⊥-elim (LTneqM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSUM C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ s s₁ = ⊥-elim (LTneqSUM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind x x₁ s s₁ = ⊥-elim (LTneqSET (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTISECT C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ s s₁ = ⊥-elim (LTneqISECT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind x x₁ s s₁ = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind x x₁ s s₁ = ⊥-elim (LTneqEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTUNION C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ s s₁ = ⊥-elim (LTneqUNION (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION C1 D1 C2 D2 y y₁ eqta0 eqtb0 exta0 extb0) ind x x₁ s s₁ = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind x x₁ s s₁ = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind x x₁ s s₁ = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x x₁ s s₁ = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x x₁ s s₁ = ⊥-elim (LTneqPURE (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x x₁ s s₁ = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x x₁ s s₁ = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x x₁ s s₁ = ⊥-elim (LTneqTERM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x x₁ s s₁ = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x x₁ s s₁ = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (LTneqDUM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x x₁ s s₁ = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x x₁ s s₁ = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x₁ c₁))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x x₁ s s₁ = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind x x₁ s s₁ =
+      EQTBAR (∀𝕎-□at W M y aw)
+      where
+        aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) → eqTypes u w' A T2)
+        aw w' e' z at =
+          ind
+            {u} {w'} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w' e' z at))
+            (⇛-mon e' x) (⇛-mon e' x₁) (#strongMonEq-mon {a1} {a2} s w' e') (#strongMonEq-mon {b1} {b2} s₁ w' e')
 
-    q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (LTneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))--}
-
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) =
-  EQTBAR (Mod.∀𝕎-□Func M aw y)
-  where
-    aw : ∀𝕎 w (λ w' e' → eqTypes u w' B C → eqTypes u w' A C)
-    aw w1 e1 z =
-      typeSysConds-LT-ttrans
-        u w1 A B a1 b1 a2 b2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1)
-        C z
-
+    concl : (c₁ : A #⇛ #LT a1 b1 at w) (c₁ : B #⇛ #LT a2 b2 at w)
+          → #strongMonEq w a1 a2
+          → #strongMonEq w b1 b2
+          → eqTypes u w A C
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+           → (c₁ : A #⇛ #LT a1 b1 at w) (c₂ : T1 #⇛ #LT a2 b2 at w)
+           → #strongMonEq w a1 a2
+           → #strongMonEq w b1 b2
+           → eqTypes u w A T2)
+        ind
+        eqt
 
 
 
 typeSysConds-LT-extl1 : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
-                          (x : A #⇛ (#LT a1 b1) at w) (x₁ : B #⇛ (#LT a2 b2) at w)
-                          (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
-                          → eqInTypeExtL1 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
-{-# TERMINATING #-}
---typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x y))
---typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi
-  rewrite LTinj1 (⇛-val-det tt tt y x)
-        | LTinj2 (⇛-val-det tt tt y x) = eqi
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi = ⊥-elim (LTneqQLT (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) a b eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) a b eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTUNION A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) a b eqi = ⊥-elim (LTneqEQ (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x y))
---typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x y))
---typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x y))
---typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTRUNC A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOWRITE y y₁) a b eqi = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOREAD y y₁) a b eqi = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUBSING A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPURE y y₁) a b eqi = ⊥-elim (LTneqPURE (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOSEQ y y₁) a b eqi = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOENC y y₁) a b eqi = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTERM z₁ z₂ y y₁ y₂) a b eqi = ⊥-elim (LTneqTERM (⇛-val-det tt tt x y))
---typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x c₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
+                        (x : A #⇛ (#LT a1 b1) at w) (x₁ : B #⇛ (#LT a2 b2) at w)
+                        (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+                      → eqInTypeExtL1 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
+typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt' =
+  concl x s s₁
   where
-    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
-    z = isu w A C y
-
-    q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (LTneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))--}
-
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x y))
-typeSysConds-LT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
-  ∀𝕎-□-□'₀ W M y aw
-  where
-    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' A C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b)
-    aw w1 e1 z {--at--} =
-      typeSysConds-LT-extl1
-        u w1 A B a1 b1 a2 b2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1)
-        C z a b (Mod.↑□ M eqi e1)
-
-{-- c
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2') → <Type {u'} eqt'' {u} eqt
+              → T1' #⇛ #LT a1 b1 at w'
+              → #strongMonEq w' a1 a2
+              → #strongMonEq w' b1 b2
+              → (a b : CTerm) → □· w' (λ w'' e → #lift-<NUM-pair w'' a1 b1)
+              → eqInType u' w' eqt'' a b)
+          → T1 #⇛ #LT a1 b1 at w
+          → #strongMonEq w a1 a2
+          → #strongMonEq w b1 b2
+          → (a b : CTerm) → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+          → eqInType u w eqt a b
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind x s s₁ f g eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind x s s₁ f g eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind x s s₁ f g eqi =
+      Mod.∀𝕎-□Func M
+        (λ w1 e1 q → →#lift-<NUM-pair w1 a1 b1 c1 d1 (CTerm≡ (LTinj1 (⇛-val-det tt tt x y))) (CTerm≡ (LTinj2 (⇛-val-det tt tt x y))) q)
+        eqi
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind x s s₁ f g eqi = ⊥-elim (LTneqQLT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind x s s₁ f g eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind x s s₁ f g eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 y y₁ eqta0 eqtb0 eqtc0 exta0 extb0 extc0) ind x s s₁ f g eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 y y₁ eqta0 eqtb0 eqtc0 exta0 extb0 extc0) ind x s s₁ f g eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind x s s₁ f g eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind x s s₁ f g eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind x s s₁ f g eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind x s s₁ f g eqi = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind x s s₁ f g eqi = ⊥-elim (LTneqEQ (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind x s s₁ f g eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta0 eqtb0 exta0 extb0) ind x s s₁ f g eqi = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind x s s₁ f g eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind x s s₁ f g eqi = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind x s s₁ f g eqi = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind x s s₁ f g eqi = ⊥-elim (LTneqPURE (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind x s s₁ f g eqi = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind x s s₁ f g eqi = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind x s s₁ f g eqi = ⊥-elim (LTneqTERM (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x s s₁ f g eqi = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x s s₁ f g eqi = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x s s₁ f g eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x s s₁ f g eqi = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x c₁))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x s s₁ f g eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind x s s₁ f g eqi =
+      Mod.∀𝕎-□-□' M y ib
       where
-        aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' A C) → eqInType u w' x a b)
-        aw w1 e1 z = iextl1 w1 (⇛-mon e1 x) C z a b (Bar.□-mon barI e1 eqi)
+        ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) → eqInType u w' z f g)
+        ib w1 e1 z at =
+          ind
+            {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
+             (⇛-mon e1 x) (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1) f g
+             (Mod.↑□ M eqi e1)
 
-        f : wPred w
-        f = λ w' _ → eqTypes u w' A C
-
-        g : wPredDep f
-        g = λ w' e' (x : eqTypes u w' A C) → eqInType u w' x a b
-
-        loc-∀𝕎-inOpenBar-inOpenBar' : (i : inOpenBar w f) → inOpenBar' w i g
-        loc-∀𝕎-inOpenBar-inOpenBar' i w1 e1 = w2 , extRefl w2 , λ w3 e3 z → aw w3 z (h0 w3 (extTrans e3 (extRefl w2)) z)
-          where
-            w2 : 𝕎·
-            w2 = fst (i w1 e1)
-
-            e2 : w2 ≽ w1
-            e2 = fst (snd (i w1 e1))
-
-            h0 : ∀𝕎 w2 (λ w3 e3 → (z : w3 ≽ w) → f w3 z)
-            h0 = snd (snd (i w1 e1))
-
-        c : □·' w y (λ w' e' z → eqInType u w' z a b)
-        c = loc-∀𝕎-inOpenBar-inOpenBar' y
-        --c = ∀𝕎-□-□'₀ W M aw y
---}
-
+    concl : (comp : A #⇛ #LT a1 b1 at w)
+            (s₁ : #strongMonEq w a1 a2)
+            (s₂ : #strongMonEq w b1 b2)
+            → (a b : CTerm) → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+            → eqInType u w eqt' a b
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (comp : T1 #⇛ #LT a1 b1 at w)
+          → #strongMonEq w a1 a2
+          → #strongMonEq w b1 b2
+          → (a b : CTerm) → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+          → eqInType u w eqt' a b)
+        ind
+        eqt'
 
 
 typeSysConds-LT-extl2 : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
                           (x : A #⇛ (#LT a1 b1) at w) (x₁ : B #⇛ (#LT a2 b2) at w)
                           (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
                           → eqInTypeExtL2 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
-{-# TERMINATING #-}
---typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x y₁))
---typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi
-  rewrite LTinj1 (⇛-val-det tt tt y₁ x)
-        | LTinj2 (⇛-val-det tt tt y₁ x)
-  = strongMonEq-preserves-□· {_} {a1} {b1} {c1} {d1} x₄ x₅ eqi
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi = ⊥-elim (LTneqQLT (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) a b eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) a b eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTUNION A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) a b eqi = ⊥-elim (LTneqEQ (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x y₁))
---typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x y₁))
---typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x y₁))
---typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTRUNC A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOWRITE y y₁) a b eqi = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOREAD y y₁) a b eqi = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUBSING A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPURE y y₁) a b eqi = ⊥-elim (LTneqPURE (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOSEQ y y₁) a b eqi = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOENC y y₁) a b eqi = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTERM z₁ z₂ y y₁ y₂) a b eqi = ⊥-elim (LTneqTERM (⇛-val-det tt tt x y₁))
---typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x c₂))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
+typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt' =
+  concl s s₁ x
   where
-    z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
-    z = isu w C A y
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2') → <Type eqt'' eqt
+              → (s : #strongMonEq w' a1 a2) (s₁ : #strongMonEq w' b1 b2)
+              → T2' #⇛ #LT a1 b1 at w'
+              → (a b : CTerm) → □· w' (λ w'' e → #lift-<NUM-pair w'' a1 b1)
+              → eqInType u' w' eqt'' a b)
+          → (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+          → T2 #⇛ #LT a1 b1 at w
+          → (a b : CTerm) → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+          → eqInType u w eqt a b
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind s s₁ x f g eqi =
+      strongMonEq-preserves-□· {_} {a1} {b1} {c1} {d1}
+        (→#strongMonEq w c1 c2 c1 a1 refl (CTerm≡ (LTinj1 (⇛-val-det tt tt y₁ x))) x₄)
+        (→#strongMonEq w d1 d2 d1 b1 refl (CTerm≡ (LTinj2 (⇛-val-det tt tt y₁ x))) x₅)
+        eqi --⊥-elim (LTneqLT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind s s₁ x f g eqi = ⊥-elim (LTneqQLT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind s s₁ x f g eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind s s₁ x f g eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x y₁))
+{--      = Mod.∀𝕎-□Func M aw eqi
+      where
+        aw : ∀𝕎 w (λ w' e' → ISECTeq (eqInType u w' (eqta w' e')) (eqInType u w' (eqtb w' e')) f g
+                            → ISECTeq (eqInType u w' (eqta₁ w' e')) (eqInType u w' (eqtb₁ w' e')) f g)
+        aw w1 e1 p
+          rewrite sym (#ISECTinj1 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {T2} tt tt y₁ x))
+                | sym (#ISECTinj2 {A4} {B4} {A1} {B1} (#⇛-val-det {_} {T2} tt tt y₁ x)) =
+            ISECTeq-ext-eq {_} {_} {_} {_} {f} {g} (TSP.extl2 (inda w1 e1) A3 (eqta₁ w1 e1)) (TSP.extl2 (indb w1 e1) B3 (eqtb₁ w1 e1)) p--}
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind s s₁ x f g eqi = ⊥-elim (LTneqEQ (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqPURE (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind s s₁ x f g eqi = ⊥-elim (LTneqTERM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind s s₁ x f g eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind s s₁ x f g eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind s s₁ x f g eqi = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x c₂))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind s s₁ x f g eqi =
+      Mod.∀𝕎-□-□' M y ib
+      where
+        ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) → eqInType u w' z f g)
+        ib w1 e1 z at =
+          ind
+            {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
+            (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1)
+            (⇛-mon e1 x) f g (Mod.↑□ M eqi e1)
 
-    q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (LTneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))--}
-
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
-  ∀𝕎-□-□'₀ W M y aw
-  where
-    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C A) {--(at : atbar y w' e' x)--} → eqInType u w' x a b)
-    aw w1 e1 z {--at--} =
-      typeSysConds-LT-extl2
-        u w1 A B a1 b1 a2 b2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1)
-        C z a b (Mod.↑□ M eqi e1)
-
+    concl : (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+            (comp : A #⇛ #LT a1 b1 at w)
+            (a b : CTerm) → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+            → eqInType u w eqt' a b
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+          → (comp : T2 #⇛ #LT a1 b1 at w)
+          → (a b : CTerm) → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+          → eqInType u w eqt' a b)
+        ind
+        eqt'
 
 
 typeSysConds-LT-extr1 : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
-                         (x : A #⇛ (#LT a1 b1) at w) (x₁ : B #⇛ (#LT a2 b2) at w)
-                           (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
-                         → eqInTypeExtR1 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
-{-# TERMINATING #-}
---typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x₁ y₁))
---typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi
-  rewrite LTinj1 (⇛-val-det tt tt y₁ x₁)
-        | LTinj2 (⇛-val-det tt tt y₁ x₁)
-  = strongMonEq-preserves-□· {_} {a1} {b1} {c1} {d1} (strongMonEq-trans x₄ (strongMonEq-sym s)) ((strongMonEq-trans x₅ (strongMonEq-sym s₁))) eqi
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi = ⊥-elim (LTneqQLT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) a b eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) a b eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTUNION A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) a b eqi = ⊥-elim (LTneqEQ (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x₁ y₁))
---typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x₁ y₁))
---typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x₁ y₁))
---typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTRUNC A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOWRITE y y₁) a b eqi = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOREAD y y₁) a b eqi = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUBSING A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPURE y y₁) a b eqi = ⊥-elim (LTneqPURE (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOSEQ y y₁) a b eqi = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOENC y y₁) a b eqi = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTERM z₁ z₂ y y₁ y₂) a b eqi = ⊥-elim (LTneqTERM (⇛-val-det tt tt x₁ y₁))
---typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x₁ c₂))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
+                        (x : A #⇛ (#LT a1 b1) at w) (x₁ : B #⇛ (#LT a2 b2) at w)
+                        (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+                      → eqInTypeExtR1 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
+typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt' =
+  concl s s₁ x₁
   where
-    z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
-    z = isu w C B y
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2') → <Type eqt'' eqt
+              → (s : #strongMonEq w' a1 a2) (s₁ : #strongMonEq w' b1 b2)
+              → T2' #⇛ #LT a2 b2 at w'
+              → (a b : CTerm) →  □· w' (λ w'' e → #lift-<NUM-pair w'' a1 b1)
+              → eqInType u' w' eqt'' a b)
+          → (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+          → T2 #⇛ #LT a2 b2 at w
+          → (a b : CTerm) → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+          → eqInType u w eqt a b
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind s s₁ x₁ f g eqi =
+      strongMonEq-preserves-□· {_} {a1} {b1} {c1} {d1}
+        (strongMonEq-trans x₄ (strongMonEq-sym (→#strongMonEq w a1 a2 a1 c2 refl (CTerm≡ (LTinj1 (⇛-val-det tt tt x₁ y₁))) s)))
+        (strongMonEq-trans x₅ (strongMonEq-sym (→#strongMonEq w b1 b2 b1 d2 refl (CTerm≡ (LTinj2 (⇛-val-det tt tt x₁ y₁))) s₁)))
+        eqi
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqQLT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqEQ (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqPURE (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTERM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x₁ c₂))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind s s₁ x₁ f g eqi =
+      Mod.∀𝕎-□-□' M y ib
+      where
+        ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) → eqInType u w' z f g)
+        ib w1 e1 z at =
+          ind
+            {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
+            (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1)
+            (⇛-mon e1 x₁) f g (Mod.↑□ M eqi e1)
 
-    q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (LTneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))--}
-
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
-  ∀𝕎-□-□'₀ W M y aw
-  where
-    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C B) {--(at : atbar y w' e' x)--} → eqInType u w' x a b)
-    aw w1 e1 z {--at--} =
-      typeSysConds-LT-extr1
-        u w1 A B a1 b1 a2 b2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1)
-        C z a b (Mod.↑□ M eqi e1)
-
+    concl : (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+            (comp : B #⇛ #LT a2 b2 at w)
+            (a b : CTerm) → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+          → eqInType u w eqt' a b
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+          → (comp : T2 #⇛ #LT a2 b2 at w)
+          → (a b : CTerm) → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+          → eqInType u w eqt' a b)
+        ind
+        eqt'
 
 
 typeSysConds-LT-extr2 : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
-                         (x : A #⇛ (#LT a1 b1) at w) (x₁ : B #⇛ (#LT a2 b2) at w)
-                           (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
-                         → eqInTypeExtR2 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
-{-# TERMINATING #-}
---typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x₁ y))
---typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi
-  rewrite LTinj1 (⇛-val-det tt tt y x₁)
-        | LTinj2 (⇛-val-det tt tt y x₁)
-  = strongMonEq-preserves-□· {_} {a1} {b1} {a2} {b2} (strongMonEq-sym s) (strongMonEq-sym s₁) eqi
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi = ⊥-elim (LTneqQLT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) a b eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) a b eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTUNION A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) a b eqi = ⊥-elim (LTneqEQ (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x₁ y))
---typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x₁ y))
---typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x₁ y))
---typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTRUNC A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOWRITE y y₁) a b eqi = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOREAD y y₁) a b eqi = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUBSING A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPURE y y₁) a b eqi = ⊥-elim (LTneqPURE (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOSEQ y y₁) a b eqi = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOENC y y₁) a b eqi = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTERM z₁ z₂ y y₁ y₂) a b eqi = ⊥-elim (LTneqTERM (⇛-val-det tt tt x₁ y))
---typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x₁ c₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
+                        (x : A #⇛ (#LT a1 b1) at w) (x₁ : B #⇛ (#LT a2 b2) at w)
+                        (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+                      → eqInTypeExtR2 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
+typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt' =
+  concl s s₁ x₁
   where
-    z : □· w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
-    z = isu w B C y
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2') → <Type eqt'' eqt
+              → (s : #strongMonEq w' a1 a2) (s₁ : #strongMonEq w' b1 b2)
+              → T1' #⇛ #LT a2 b2 at w'
+              → (a b : CTerm) → □· w' (λ w'' e → #lift-<NUM-pair w'' a1 b1)
+              → eqInType u' w' eqt'' a b)
+          → (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+          → T1 #⇛ #LT a2 b2 at w
+          → (a b : CTerm) → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+          → eqInType u w eqt a b
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x₁ f g eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind s s₁ x₁ f g eqi =
+      strongMonEq-preserves-□· {_} {a1} {b1} {c1} {d1}
+        (strongMonEq-sym (→#strongMonEq w a1 a2 a1 c1 refl (CTerm≡ (LTinj1 (⇛-val-det tt tt x₁ y))) s))
+        (strongMonEq-sym (→#strongMonEq w b1 b2 b1 d1 refl (CTerm≡ (LTinj2 (⇛-val-det tt tt x₁ y))) s₁))
+        eqi
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqQLT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqPURE (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTERM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x₁ c₁))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind s s₁ x₁ f g eqi =
+      Mod.∀𝕎-□-□' M y ib
+      where
+        ib : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) → eqInType u w' z f g)
+        ib w1 e1 z at =
+          ind
+            {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
+            (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1)
+            (⇛-mon e1 x₁) f g (Mod.↑□ M eqi e1)
 
-    q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (LTneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))--}
-
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
-  ∀𝕎-□-□'₀ W M y aw
-  where
-    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' B C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b)
-    aw w1 e1 z {--at--} =
-      typeSysConds-LT-extr2
-        u w1 A B a1 b1 a2 b2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1)
-        C z a b (Mod.↑□ M eqi e1)
-
+    concl : (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+            (comp : B #⇛ #LT a2 b2 at w)
+            (a b : CTerm) → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+            → eqInType u w eqt' a b
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+          → (comp : T1 #⇛ #LT a2 b2 at w)
+          → (a b : CTerm) → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+          → eqInType u w eqt' a b)
+        ind
+        eqt'
 
 
 typeSysConds-LT-extrevl1 : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
                            (x : A #⇛ (#LT a1 b1) at w) (x₁ : B #⇛ (#LT a2 b2) at w)
                            (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
                            → eqInTypeExtRevL1 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
-{-# TERMINATING #-}
---typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x y))
---typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi
-  rewrite LTinj1 (⇛-val-det tt tt y x)
-        | LTinj2 (⇛-val-det tt tt y x)
-  = strongMonEq-preserves-□· {_} {a1} {b1} {a1} {b1} (strongMonEq-refl x₄) (strongMonEq-refl x₅) eqi
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi = ⊥-elim (LTneqQLT (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) a b eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) a b eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTUNION A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) a b eqi = ⊥-elim (LTneqEQ (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x y))
---typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x y))
---typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x y))
---typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTRUNC A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOWRITE y y₁) a b eqi = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOREAD y y₁) a b eqi = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUBSING A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPURE y y₁) a b eqi = ⊥-elim (LTneqPURE (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOSEQ y y₁) a b eqi = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOENC y y₁) a b eqi = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTERM z₁ z₂ y y₁ y₂) a b eqi = ⊥-elim (LTneqTERM (⇛-val-det tt tt x y))
---typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x c₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
+typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt' =
+  concl s s₁ x
   where
-    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
-    z = isu w A C y
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2') → <Type eqt'' eqt
+              → (s : #strongMonEq w' a1 a2) (s₁ : #strongMonEq w' b1 b2)
+              → T1' #⇛ #LT a1 b1 at w' → (a b : CTerm) → eqInType u' w' eqt'' a b
+              → □· w' (λ w'' e → #lift-<NUM-pair w'' a1 b1))
+          → (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+          → T1 #⇛ #LT a1 b1 at w → (a b : CTerm) → eqInType u w eqt a b
+          → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind eqta eqtb exta extb inda indb x f g eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind s s₁ x f g eqi =
+      strongMonEq-preserves-□· {_} {c1} {d1} {a1} {b1}
+        (→#strongMonEq w c1 c1 a1 c1 (CTerm≡ (LTinj1 (⇛-val-det tt tt y x))) refl (strongMonEq-refl x₄))
+        (→#strongMonEq w d1 d1 b1 d1 (CTerm≡ (LTinj2 (⇛-val-det tt tt y x))) refl (strongMonEq-refl x₅))
+        eqi
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind s s₁ x f g eqi = ⊥-elim (LTneqQLT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind s s₁ x f g eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind s s₁ x f g eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind s s₁ x f g eqi = ⊥-elim (LTneqEQ (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqPURE (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind s s₁ x f g eqi = ⊥-elim (LTneqTERM (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind s s₁ x f g eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind s s₁ x f g eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind s s₁ x f g eqi = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x c₁))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x y))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind s s₁ x f g eqi =
+      Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+      where
+        aw : ∀𝕎 w
+          (λ w' e' →
+            (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) →
+            eqInType u w' z f g →
+            □· w' (λ w'' e'' → (x : w ⊑· w'') → #lift-<NUM-pair w'' a1 b1))
+        aw w1 e1 z at ez =
+           Mod.∀𝕎-□Func
+             M (λ w1 e1 h z → h)
+             (ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
+               (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1)
+               (⇛-mon e1 x) f g ez)
 
-    q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (LTneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))--}
-
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x y))
-typeSysConds-LT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
-  Mod.□-idem M
-    (∀𝕎-□'-□₀ W M y aw eqi)
-  where
-    aw0 : ∀𝕎 w (λ w' e' → (x : eqTypes u w' A C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                          → Mod.□ M w' (↑wPred (λ w'' e → #lift-<NUM-pair w'' a1 b1) e'))
-    aw0 w1 e1 z {--at--} eqz =
-      typeSysConds-LT-extrevl1
-        u w1 A B a1 b1 a2 b2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1)
-        C z a b eqz
-
-    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' A C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                         → Mod.□ M w' (↑wPred' (λ w'' e → #lift-<NUM-pair w'' a1 b1) e'))
-    aw w1 e1 z {--at--} eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
-
+    concl : (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+            (comp : A #⇛ #LT a1 b1 at w) (a b : CTerm) → eqInType u w eqt' a b
+            → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+          → (comp : T1 #⇛ #LT a1 b1 at w) (a b : CTerm) → eqInType u w eqt' a b
+          → □· w (λ w' e → #lift-<NUM-pair w' a1 b1))
+        ind
+        eqt'
 
 
 typeSysConds-LT-extrevl2 : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
                            (x : A #⇛ (#LT a1 b1) at w) (x₁ : B #⇛ (#LT a2 b2) at w)
                            (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
-                           → eqInTypeExtRevL2 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
-{-# TERMINATING #-}
---typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x y₁))
---typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi
-  rewrite LTinj1 (⇛-val-det tt tt y₁ x)
-        | LTinj2 (⇛-val-det tt tt y₁ x)
-  = strongMonEq-preserves-□· {_} {c1} {d1} {a1} {b1} (strongMonEq-sym x₄) (strongMonEq-sym x₅) eqi
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi = ⊥-elim (LTneqQLT (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) a b eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) a b eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTUNION A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) a b eqi = ⊥-elim (LTneqEQ (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x y₁))
---typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x y₁))
---typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x y₁))
---typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTRUNC A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOWRITE y y₁) a b eqi = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOREAD y y₁) a b eqi = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUBSING A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPURE y y₁) a b eqi = ⊥-elim (LTneqPURE (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOSEQ y y₁) a b eqi = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOENC y y₁) a b eqi = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTERM z₁ z₂ y y₁ y₂) a b eqi = ⊥-elim (LTneqTERM (⇛-val-det tt tt x y₁))
---typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x c₂))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
+                         → eqInTypeExtRevL2 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
+typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt' =
+  concl s s₁ x
   where
-    z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × A #⇛ (#UNIV (fst u)) at w')
-    z = isu w C A y
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2') → <Type eqt'' eqt
+              → (s : #strongMonEq w' a1 a2) (s₁ : #strongMonEq w' b1 b2)
+              → T2' #⇛ #LT a1 b1 at w' → (a b : CTerm) → eqInType u' w' eqt'' a b
+              → □· w' (λ w'' e → #lift-<NUM-pair w'' a1 b1))
+          → (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+          → T2 #⇛ #LT a1 b1 at w → (a b : CTerm) → eqInType u w eqt a b
+          → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind s s₁ x f g eqi =
+      strongMonEq-preserves-□· {_} {c1} {d1} {a1} {b1}
+        (strongMonEq-sym (→#strongMonEq w c1 c2 c1 a1 refl (CTerm≡ (LTinj1 (⇛-val-det tt tt y₁ x))) x₄))
+        (strongMonEq-sym (→#strongMonEq w d1 d2 d1 b1 refl (CTerm≡ (LTinj2 (⇛-val-det tt tt y₁ x))) x₅))
+        eqi
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind s s₁ x f g eqi = ⊥-elim (LTneqQLT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind s s₁ x f g eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind s s₁ x f g eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind s s₁ x f g eqi = ⊥-elim (LTneqEQ (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x f g eqi = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqPURE (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind s s₁ x f g eqi = ⊥-elim (LTneqTERM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind s s₁ x f g eqi = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind s s₁ x f g eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind s s₁ x f g eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind s s₁ x f g eqi = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x c₂))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x y₁))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind s s₁ x f g eqi =
+      Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+      where
+        aw : ∀𝕎 w
+          (λ w' e' →
+            (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) →
+            eqInType u w' z f g →
+            □· w' (λ w'' e'' → (x : w ⊑· w'') → #lift-<NUM-pair w'' a1 b1))
+        aw w1 e1 z at ez =
+          Mod.∀𝕎-□Func M (λ w1 e1 h z → h)
+            (ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
+               (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1)
+               (⇛-mon e1 x) f g ez)
 
-    q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (LTneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))--}
-
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x y₁))
-typeSysConds-LT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
-  Mod.□-idem M
-    (∀𝕎-□'-□₀ W M y aw eqi)
-  where
-    aw0 : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C A) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                          → Mod.□ M w' (↑wPred (λ w'' e → #lift-<NUM-pair w'' a1 b1) e'))
-    aw0 w1 e1 z {--at--} eqz =
-      typeSysConds-LT-extrevl2
-        u w1 A B a1 b1 a2 b2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1)
-        C z a b eqz
-
-    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C A) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                         → Mod.□ M w' (↑wPred' (λ w'' e → #lift-<NUM-pair w'' a1 b1) e'))
-    aw w1 e1 z {--at--} eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
-
+    concl : (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+            (comp : A #⇛ #LT a1 b1 at w) (a b : CTerm) → eqInType u w eqt' a b
+            → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+          → (comp : T2 #⇛ #LT a1 b1 at w) (a b : CTerm) → eqInType u w eqt' a b
+          → □· w (λ w' e → #lift-<NUM-pair w' a1 b1))
+        ind
+        eqt'
 
 
 
 typeSysConds-LT-extrevr1 : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
-                            (x : A #⇛ (#LT a1 b1) at w) (x₁ : B #⇛ (#LT a2 b2) at w)
+                           (x : A #⇛ (#LT a1 b1) at w) (x₁ : B #⇛ (#LT a2 b2) at w)
                            (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
-                            → eqInTypeExtRevR1 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
-{-# TERMINATING #-}
---typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x₁ y₁))
---typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi
-  rewrite LTinj1 (⇛-val-det tt tt y₁ x₁)
-        | LTinj2 (⇛-val-det tt tt y₁ x₁)
-  = strongMonEq-preserves-□· {_} {c1} {d1} {a1} {b1} (strongMonEq-trans s (strongMonEq-sym x₄)) (strongMonEq-trans s₁ (strongMonEq-sym x₅)) eqi
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi = ⊥-elim (LTneqQLT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) a b eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) a b eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTUNION A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) a b eqi = ⊥-elim (LTneqEQ (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x₁ y₁))
---typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x₁ y₁))
---typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x₁ y₁))
---typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTRUNC A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOWRITE y y₁) a b eqi = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOREAD y y₁) a b eqi = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUBSING A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPURE y y₁) a b eqi = ⊥-elim (LTneqPURE (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOSEQ y y₁) a b eqi = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOENC y y₁) a b eqi = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTERM z₁ z₂ y y₁ y₂) a b eqi = ⊥-elim (LTneqTERM (⇛-val-det tt tt x₁ y₁))
---typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x₁ c₂))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
+                         → eqInTypeExtRevR1 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
+typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt' =
+  concl s s₁ x₁
   where
-    z : □· w (λ w' _ → C #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
-    z = isu w C B y
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2') → <Type eqt'' eqt
+              → (s : #strongMonEq w' a1 a2) (s₁ : #strongMonEq w' b1 b2)
+              → T2' #⇛ #LT a2 b2 at w' → (a b : CTerm) → eqInType u' w' eqt'' a b
+              → □· w' (λ w'' e → #lift-<NUM-pair w'' a1 b1))
+          → (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+          → T2 #⇛ #LT a2 b2 at w → (a b : CTerm) → eqInType u w eqt a b
+          → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind s s₁ x₁ f g eqi =
+      strongMonEq-preserves-□· {_} {c1} {d1} {a1} {b1}
+        (strongMonEq-trans (→#strongMonEq w a1 a2 a1 c2 refl (CTerm≡ (LTinj1 (⇛-val-det tt tt x₁ y₁))) s) (strongMonEq-sym x₄))
+        (strongMonEq-trans (→#strongMonEq w b1 b2 b1 d2 refl (CTerm≡ (LTinj2 (⇛-val-det tt tt x₁ y₁))) s₁) (strongMonEq-sym x₅))
+        eqi
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqQLT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqEQ (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqPURE (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTERM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x₁ c₂))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x₁ y₁))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind s s₁ x₁ f g eqi =
+      Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+      where
+      aw : ∀𝕎 w
+        (λ w' e' →
+          (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) →
+          eqInType u w' z f g →
+          □· w' (λ w'' e'' → (x : w ⊑· w'') → #lift-<NUM-pair w'' a1 b1))
+      aw w1 e1 z at ez =
+        Mod.∀𝕎-□Func M (λ w1 e1 h z → h)
+          (ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
+               (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1)
+               (⇛-mon e1 x₁) f g ez)
 
-    q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (LTneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))--}
-
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x₁ y₁))
-typeSysConds-LT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
-  Mod.□-idem M
-    (∀𝕎-□'-□₀ W M y aw eqi)
-  where
-    aw0 : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C B) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                          → Mod.□ M w' (↑wPred (λ w'' e → #lift-<NUM-pair w'' a1 b1) e'))
-    aw0 w1 e1 z {--at--} eqz =
-      typeSysConds-LT-extrevr1
-        u w1 A B a1 b1 a2 b2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1)
-        C z a b eqz
-
-    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' C B) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                         → Mod.□ M w' (↑wPred' (λ w'' e → #lift-<NUM-pair w'' a1 b1) e'))
-    aw w1 e1 z {--at--} eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
-
+    concl : (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+            (comp : B #⇛ #LT a2 b2 at w) (a b : CTerm) → eqInType u w eqt' a b
+            → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+          → (comp : T2 #⇛ #LT a2 b2 at w) (a b : CTerm) → eqInType u w eqt' a b
+          → □· w (λ w' e → #lift-<NUM-pair w' a1 b1))
+        ind
+        eqt'
 
 
 typeSysConds-LT-extrevr2 : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 : CTerm)
                            (x : A #⇛ (#LT a1 b1) at w) (x₁ : B #⇛ (#LT a2 b2) at w)
                            (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
-                           → eqInTypeExtRevR2 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
-{-# TERMINATING #-}
---typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNAT y y₁) a b eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQNAT y y₁) a b eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x₁ y))
---typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTNAT y y₁) a b eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi
-  rewrite LTinj1 (⇛-val-det tt tt y x₁)
-        | LTinj2 (⇛-val-det tt tt y x₁)
-  = strongMonEq-preserves-□· {_} {a2} {b2} {a1} {b1} s s₁ eqi
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) a b eqi = ⊥-elim (LTneqQLT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTFREE y y₁) a b eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPI A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTW A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) a b eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTM A1 B1 C1 A2 B2 C2 y y₁ eqta eqtb eqtc exta extb extc) a b eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUM A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSET A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTISECT A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTUNION A1 B1 A2 B2 y y₁ eqta eqtb exta extb) a b eqi = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTEQ c1 d1 c2 d2 A₁ B₁ y y₁ eqtA exta eqt1 eqt2) a b eqi = ⊥-elim (LTneqEQ (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x₁ y))
---typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTQTUNION A1 B1 A2 B2 y y₁ eqtA eqtB extA extB) a b eqi = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x₁ y))
---typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSQUASH A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x₁ y))
---typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTRUNC A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOWRITE y y₁) a b eqi = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOREAD y y₁) a b eqi = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTSUBSING A1 A2 y y₁ eqtA extA) a b eqi = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTPURE y y₁) a b eqi = ⊥-elim (LTneqPURE (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOSEQ y y₁) a b eqi = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTNOENC y y₁) a b eqi = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTTERM z₁ z₂ y y₁ y₂) a b eqi = ⊥-elim (LTneqTERM (⇛-val-det tt tt x₁ y))
---typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTDUM A1 A2 y y₁ eqtA) a b eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) a b eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTUNIV i p c₁ c₂) a b eqi = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x₁ c₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
+                         → eqInTypeExtRevR2 {u} {_} {A} {B} (EQTLT a1 a2 b1 b2 x x₁ s s₁)
+typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt' =
+  concl s s₁ x₁
   where
-    z : □· w (λ w' _ → B #⇛ (#UNIV (fst u)) at w' × C #⇛ (#UNIV (fst u)) at w')
-    z = isu w B C y
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2') → <Type eqt'' eqt
+              → (s : #strongMonEq w' a1 a2) (s₁ : #strongMonEq w' b1 b2)
+              → T1' #⇛ #LT a2 b2 at w' → (a b : CTerm) → eqInType u' w' eqt'' a b
+              → □· w' (λ w'' e → #lift-<NUM-pair w'' a1 b1))
+          → (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+          → T1 #⇛ #LT a2 b2 at w → (a b : CTerm) → eqInType u w eqt a b
+          → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+--    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNAT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqQNAT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTNAT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTLT c1 c2 d1 d2 y y₁ x₄ x₅) ind s s₁ x₁ f g eqi =
+      strongMonEq-preserves-□· {_} {c1} {d1} {a1} {b1}
+        (→#strongMonEq w a1 a2 a1 c1 refl (CTerm≡ (LTinj1 (⇛-val-det tt tt x₁ y))) s)
+        (→#strongMonEq w b1 b2 b1 d1 refl (CTerm≡ (LTinj2 (⇛-val-det tt tt x₁ y))) s₁)
+        eqi
+    ind {u} {w} {T1} {T2} (EQTQLT c1 c2 d1 d2 y y₁ x₄ x₅) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqQLT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTFREE y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqFREE (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqPI (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqW (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 y y₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqSUM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqSET (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqISECT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTUNION (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTEQ a₁ b₁ a₂ b₂ A₁ B₁ y y₁ eqtA extA eqt₁ eqt₂) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqUNION (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 y y₁ eqta₁ eqtb₁ exta₁ extb₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTPURE y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqPURE (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNOENC (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqTERM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqDUM (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqUNIV (⇛-val-det tt tt x₁ c₁))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x₁ y))
+    ind {u} {w} {T1} {T2} (EQTBAR y) ind s s₁ x₁ f g eqi =
+      Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
+      where
+        aw : ∀𝕎 w
+          (λ w' e' →
+            (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) →
+            eqInType u w' z f g →
+            □· w' (λ w'' e'' → (x : w ⊑· w'') → #lift-<NUM-pair w'' a1 b1))
+        aw w1 e1 z at ez =
+          Mod.∀𝕎-□Func M (λ w1 e1 h z → h)
+            (ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at))
+               (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1)
+               (⇛-mon e1 x₁) f g ez)
 
-    q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (LTneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))--}
-
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTLIFT A1 A2 y y₁ eqtA exta) a b eqi = ⊥-elim (LTneqLIFT (⇛-val-det tt tt x₁ y))
-typeSysConds-LT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C (EQTBAR y) a b eqi =
-  Mod.□-idem M
-    (∀𝕎-□'-□₀ W M y aw eqi)
-  where
-    aw0 : ∀𝕎 w (λ w' e' → (x : eqTypes u w' B C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                          → Mod.□ M w' (↑wPred (λ w'' e → #lift-<NUM-pair w'' a1 b1) e'))
-    aw0 w1 e1 z {--at--} eqz =
-      typeSysConds-LT-extrevr2
-        u w1 A B a1 b1 a2 b2
-        (⇛-mon e1 x) (⇛-mon e1 x₁)
-        (#strongMonEq-mon {a1} {a2} s w1 e1) (#strongMonEq-mon {b1} {b2} s₁ w1 e1)
-        C z a b eqz
-
-    aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' B C) {--(at : atbar y w' e' x)--} → eqInType u w' x a b
-                         → Mod.□ M w' (↑wPred' (λ w'' e → #lift-<NUM-pair w'' a1 b1) e'))
-    aw w1 e1 z {--at--} eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z {--at--} eqz)
-
+    concl : (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+            (comp : B #⇛ #LT a2 b2 at w) (a b : CTerm) → eqInType u w eqt' a b
+            → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (s : #strongMonEq w a1 a2) (s₁ : #strongMonEq w b1 b2)
+          → (comp : T1 #⇛ #LT a2 b2 at w) (a b : CTerm) → eqInType u w eqt' a b
+          → □· w (λ w' e → #lift-<NUM-pair w' a1 b1))
+        ind
+        eqt'
 
 
 eqInType-⇛-LT : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 a b : CTerm)
@@ -746,110 +870,149 @@ eqInType-⇛-LT : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 a b : CTerm)
                  → (eqt : eqTypes u w A B)
                  → eqInType u w eqt a b
                  → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
-{-# TERMINATING #-}
---eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (LTneqNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (LTneqQNAT (⇛-val-det tt tt c₁ x))
---eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTTNAT x x₁) ei = ⊥-elim (LTneqTNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTLT c1 c2 d1 d2 x x₁ x₂ x₃) ei
-  rewrite LTinj1 (⇛-val-det tt tt x c₁)
-        | LTinj2 (⇛-val-det tt tt x c₁) = ei
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTQLT c1 c2 d1 d2 x x₁ x₂ x₃) ei = ⊥-elim (LTneqQLT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (LTneqFREE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqPI (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTW A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ei = ⊥-elim (LTneqW (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTM A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ei = ⊥-elim (LTneqM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqSUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqSET (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (LTneqISECT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqTUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTEQ c1 d1 c2 d2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) ei = ⊥-elim (LTneqEQ (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (LTneqUNION (⇛-val-det tt tt c₁ x))
---eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt c₁ x))
---eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA extA) ei = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt c₁ x))
---eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTTRUNC A1 A2 x x₁ eqtA extA) ei = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTNOWRITE x x₁) ei = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTNOREAD x x₁) ei = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSUBSING A1 A2 x x₁ eqtA extA) ei = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTPURE x x₁) ei = ⊥-elim (LTneqPURE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTNOSEQ x x₁) ei = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTNOENC x x₁) ei = ⊥-elim (LTneqNOENC (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTTERM z₁ z₂ y y₁ y₂) ei = ⊥-elim (LTneqTERM (⇛-val-det tt tt c₁ y))
---eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) ei = ⊥-elim (LTneqDUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (LTneqUNIV (⇛-val-det tt tt c₁ d₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z))) -- Lift {0ℓ} 1ℓ ⊥
+eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ eqt eqi =
+  concl c₁ c₂ a b eqi
   where
-    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
-    z = isu w A B x
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : eqTypes u' w' T1' T2') → <Type eqt' eqt
+              → T1' #⇛ #LT a1 b1 at w' → T2' #⇛ #LT a2 b2 at w' → (a₁ b₁ : CTerm) → eqInType u' w' eqt' a₁ b₁
+              → □· w' (λ w'' e → #lift-<NUM-pair w'' a1 b1))
+          → T1 #⇛ #LT a1 b1 at w → T2 #⇛ #LT a2 b2 at w → (a₁ b₁ : CTerm) → eqInType u w eqt a₁ b₁
+          → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+--    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqNAT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqQNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqTNAT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTLT a₁ a₂ b₁ b₂ x x₁ x₂ x₃) ind c₁ c₂ a b ei =
+      Mod.∀𝕎-□Func M
+        (λ w1 e1 h → →#lift-<NUM-pair w1 a₁ b₁ a1 b1
+                       (CTerm≡ (LTinj1 (⇛-val-det tt tt x c₁)))
+                       (CTerm≡ (LTinj2 (⇛-val-det tt tt x c₁)))
+                       h)
+        ei
+    ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind c₁ c₂ a b ei = ⊥-elim (LTneqQLT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqFREE (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqPI (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 x x₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqW (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 x x₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqSUM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqSET (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqISECT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqTUNION (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ind c₁ c₂ a b ei = ⊥-elim (LTneqEQ (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqUNION (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqPURE (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOENC x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqNOENC (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ x x₁ x₂) ind c₁ c₂ a b ei = ⊥-elim (LTneqTERM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOREAD x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind c₁ c₂ a b ei = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind c₁ c₂ a b ei = ⊥-elim (LTneqUNIV (⇛-val-det tt tt c₁ d₁))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind c₁ c₂ a b ei = ⊥-elim (LTneqLIFT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTBAR x) ind c₁ c₂ a b ei =
+      Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw ei)
+      where
+        aw : ∀𝕎 w
+          (λ w' e' →
+            (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) →
+            eqInType u w' z a b →
+            □· w' (λ w'' e → (x : w ⊑· w'') → #lift-<NUM-pair w'' a1 b1))
+        aw w1 e1 z at ez =
+          Mod.∀𝕎-□Func M (λ w1 e1 h z → h)
+            (ind {u} {w1} {T1} {T2} z
+               (<Type1 z (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 z at))
+               (⇛-mon e1 c₁) (⇛-mon e1 c₂) a b ez)
 
-    q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (LTneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))--}
-
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTLIFT A1 A2 x x₁ eqtA extA) ei = ⊥-elim (LTneqLIFT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTBAR x) ei =
-  Mod.□-idem M (∀𝕎-□'-□₀ W M x aw ei)
-  where
-    aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →  eqInType u w' z a b → □· w' (λ w'' _ → #lift-<NUM-pair w'' a1 b1))
-    aw0 w1 e1 z {--at--} eqi = eqInType-⇛-LT u w1 A B a1 b1 a2 b2 a b (⇛-mon e1 c₁) (⇛-mon e1 c₂) z eqi
-
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} →  eqInType u w' z a b → □· w' (λ w'' _ → w ⊑· w'' → #lift-<NUM-pair w'' a1 b1))
-    aw w1 e1 z {--at--} eqi = Mod.∀𝕎-□Func M (λ w' e' s x → s) (aw0 w1 e1 z {--at--} eqi)
-
+    concl : (c₁ : A #⇛ #LT a1 b1 at w) (c₂ : B #⇛ #LT a2 b2 at w) (a b : CTerm) → eqInType u w eqt a b
+            → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt'
+          → (c₁ : T1 #⇛ #LT a1 b1 at w) (c₂ : T2 #⇛ #LT a2 b2 at w) (a b : CTerm) → eqInType u w eqt' a b
+          → □· w (λ w' e → #lift-<NUM-pair w' a1 b1))
+        ind
+        eqt
 
 
 
 eqInType-⇛-LT-rev : (u : univs) (w : 𝕎·) (A B a1 b1 a2 b2 a b : CTerm)
-                     → A #⇛ #LT a1 b1 at w
-                     → B #⇛ #LT a2 b2 at w
-                     → (eqt : eqTypes u w A B)
-                     → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
-                     → eqInType u w eqt a b
-{-# TERMINATING #-}
---eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTNAT x x₁) ei = ⊥-elim (LTneqNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTQNAT x x₁) ei = ⊥-elim (LTneqQNAT (⇛-val-det tt tt c₁ x))
---eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTTNAT x x₁) ei = ⊥-elim (LTneqTNAT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTLT c1 c2 d1 d2 x x₁ x₂ x₃) ei
-  rewrite LTinj1 (⇛-val-det tt tt x c₁)
-        | LTinj2 (⇛-val-det tt tt x c₁) = ei
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTQLT c1 c2 d1 d2 x x₁ x₂ x₃) ei = ⊥-elim (LTneqQLT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTFREE x x₁) ei = ⊥-elim (LTneqFREE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqPI (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTW A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ei = ⊥-elim (LTneqW (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTM A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ei = ⊥-elim (LTneqM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqSUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqSET (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (LTneqISECT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ei = ⊥-elim (LTneqTUNION (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTEQ c1 d1 c2 d2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) ei = ⊥-elim (LTneqEQ (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (LTneqUNION (⇛-val-det tt tt c₁ x))
---eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB extA extB) ei = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt c₁ x))
---eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSQUASH A1 A2 x x₁ eqtA extA) ei = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt c₁ x))
---eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTTRUNC A1 A2 x x₁ eqtA extA) ei = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTNOWRITE x x₁) ei = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTNOREAD x x₁) ei = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTSUBSING A1 A2 x x₁ eqtA extA) ei = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTPURE x x₁) ei = ⊥-elim (LTneqPURE (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTNOSEQ x x₁) ei = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTNOENC x x₁) ei = ⊥-elim (LTneqNOENC (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTTERM z₁ z₂ y y₁ y₂) ei = ⊥-elim (LTneqTERM (⇛-val-det tt tt c₁ y))
---eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) ei = ⊥-elim (LTneqDUM (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) ei = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTUNIV i p d₁ d₂) ei = ⊥-elim (LTneqUNIV (⇛-val-det tt tt c₁ d₁))
-{--  ⊥-elim (lift⊥ (Bar.□-const barI (Mod.∀𝕎-□Func M q z)))
+                  → A #⇛ #LT a1 b1 at w
+                  → B #⇛ #LT a2 b2 at w
+                  → (eqt : eqTypes u w A B)
+                  → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+                  → eqInType u w eqt a b
+eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ eqt ei =
+  concl c₁ c₂ a b ei
   where
-    z : □· w (λ w' _ → A #⇛ (#UNIV (fst u)) at w' × B #⇛ (#UNIV (fst u)) at w')
-    z = isu w A B x
+    ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
+          → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : eqTypes u' w' T1' T2') → <Type eqt' eqt
+              → T1' #⇛ #LT a1 b1 at w' → T2' #⇛ #LT a2 b2 at w'
+              → (a₁ b₁ : CTerm) → □· w' (λ w'' e → #lift-<NUM-pair w'' a1 b1)
+              → eqInType u' w' eqt' a₁ b₁)
+          → T1 #⇛ #LT a1 b1 at w → T2 #⇛ #LT a2 b2 at w
+          → (a₁ b₁ : CTerm) → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+          → eqInType u w eqt a₁ b₁
+--    ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eqta eqtb exta extb inda indb c₁ c₂ a b ei = ⊥-elim (LTneqNAT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqQNAT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqTNAT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTLT a₁ a₂ b₁ b₂ x x₁ x₂ x₃) ind c₁ c₂ a b ei =
+      Mod.∀𝕎-□Func M
+        (λ w1 e1 h → →#lift-<NUM-pair w1 a1 b1 a₁ b₁
+                       (CTerm≡ (LTinj1 (⇛-val-det tt tt c₁ x)))
+                       (CTerm≡ (LTinj2 (⇛-val-det tt tt c₁ x)))
+                       h)
+        ei
+    ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind c₁ c₂ a b ei = ⊥-elim (LTneqQLT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqFREE (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTPI A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqPI (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTW A3 B3 C3 A4 B4 C4 x x₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqW (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTM A3 B3 C3 A4 B4 C4 x x₁ eqta₁ eqtb₁ eqtc₁ exta₁ extb₁ extc₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSUM A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqSUM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSET A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqSET (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTISECT A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqISECT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqTUNION (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA extA eqt1 eqt2) ind c₁ c₂ a b ei = ⊥-elim (LTneqEQ (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqUNION (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTQTUNION A3 B3 A4 B4 x x₁ eqta₁ eqtb₁ exta₁ extb₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqQTUNION (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTSQUASH A3 A4 x x₁ eqta₁ exta₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqTSQUASH (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTTRUNC A3 A4 x x₁ eqta₁ exta₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqTTRUNC (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTSUBSING A3 A4 x x₁ eqta₁ exta₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqSUBSING (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqPURE (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqNOSEQ (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOENC x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqNOENC (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ x x₁ x₂) ind c₁ c₂ a b ei = ⊥-elim (LTneqTERM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOWRITE x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqNOWRITE (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTNOREAD x x₁) ind c₁ c₂ a b ei = ⊥-elim (LTneqNOREAD (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind c₁ c₂ a b ei = ⊥-elim (LTneqDUM (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind c₁ c₂ a b ei = ⊥-elim (LTneqFFDEFS (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind c₁ c₂ a b ei = ⊥-elim (LTneqUNIV (⇛-val-det tt tt c₁ d₁))
+    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind c₁ c₂ a b ei = ⊥-elim (LTneqLIFT (⇛-val-det tt tt c₁ x))
+    ind {u} {w} {T1} {T2} (EQTBAR x) ind c₁ c₂ a b ei =
+      Mod.∀𝕎-□-□' M x aw
+      where
+        aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b)
+        aw w1 e1 z at =
+          ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 z at))
+            (⇛-mon e1 c₁) (⇛-mon e1 c₂) a b (Mod.↑□ M ei e1)
+          where
+            j : □· w1 (↑wPred (λ w' e → #lift-<NUM-pair w' a1 b1) e1)
+            j = Mod.↑□ M ei e1
 
-    q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
-    q w1 e1 (d₁ , d₂) = lift (⊥-elim (LTneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))--}
-
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTLIFT A1 A2 x x₁ eqtA extA) ei = ⊥-elim (LTneqLIFT (⇛-val-det tt tt c₁ x))
-eqInType-⇛-LT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ (EQTBAR x) ei =
-  ∀𝕎-□-□'₀ W M x aw
-  where
-    aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar x w' e' z)--} → eqInType u w' z a b)
-    aw w' e' z {--at--} = eqInType-⇛-LT-rev u w' A B a1 b1 a2 b2 a b (⇛-mon e' c₁) (⇛-mon e' c₂) z (Mod.↑□ M ei e')
-
+    concl : (c₁ : A #⇛ #LT a1 b1 at w) (c₂ : B #⇛ #LT a2 b2 at w) (a b : CTerm)
+            → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+            → eqInType u w eqt a b
+    concl =
+      ind<Type
+        (λ {u} {w} {T1} {T2} eqt
+          → (c₁ : T1 #⇛ #LT a1 b1 at w) (c₂ : T2 #⇛ #LT a2 b2 at w) (a b : CTerm)
+          → □· w (λ w' e → #lift-<NUM-pair w' a1 b1)
+          → eqInType u w eqt a b)
+        ind
+        eqt
 
 
 
