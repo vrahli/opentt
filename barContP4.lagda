@@ -135,6 +135,7 @@ data updSeq (r : Name) (s : 𝕊) (n : ℕ) : Term → Term → Set where
   updSeq-IFLT    : (a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n c₁ c₂ → updSeq r s n d₁ d₂ → updSeq r s n (IFLT a₁ b₁ c₁ d₁) (IFLT a₂ b₂ c₂ d₂)
   updSeq-IFEQ    : (a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n c₁ c₂ → updSeq r s n d₁ d₂ → updSeq r s n (IFEQ a₁ b₁ c₁ d₁) (IFEQ a₂ b₂ c₂ d₂)
   updSeq-SUC     : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (SUC a₁) (SUC a₂)
+  updSeq-NATREC  : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n c₁ c₂ → updSeq r s n (NATREC a₁ b₁ c₁) (NATREC a₂ b₂ c₂)
   updSeq-PI      : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (PI a₁ b₁) (PI a₂ b₂)
   updSeq-LAMBDA  : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (LAMBDA a₁) (LAMBDA a₂)
   updSeq-APPLY   : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (APPLY a₁ b₁) (APPLY a₂ b₂)
@@ -271,6 +272,7 @@ abstract
   updSeq-shiftUp n {r} {s} {k} {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (updSeq-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updSeq-IFLT _ _ _ _ _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁) (updSeq-shiftUp n u₂) (updSeq-shiftUp n u₃)
   updSeq-shiftUp n {r} {s} {k} {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (updSeq-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updSeq-IFEQ _ _ _ _ _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁) (updSeq-shiftUp n u₂) (updSeq-shiftUp n u₃)
   updSeq-shiftUp n {r} {s} {k} {.(SUC a₁)} {.(SUC a₂)} (updSeq-SUC a₁ a₂ u) = updSeq-SUC _ _ (updSeq-shiftUp n u)
+  updSeq-shiftUp n {r} {s} {k} {.(NATREC a₁ b₁ c₁)} {.(NATREC a₂ b₂ c₂)} (updSeq-NATREC a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = updSeq-NATREC _ _ _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁) (updSeq-shiftUp n u₂)
   updSeq-shiftUp n {r} {s} {k} {.(PI a₁ b₁)} {.(PI a₂ b₂)} (updSeq-PI a₁ a₂ b₁ b₂ u u₁) = updSeq-PI _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp (suc n) u₁)
   updSeq-shiftUp n {r} {s} {k} {.(LAMBDA a₁)} {.(LAMBDA a₂)} (updSeq-LAMBDA a₁ a₂ u) = updSeq-LAMBDA _ _ (updSeq-shiftUp (suc n) u)
   updSeq-shiftUp n {r} {s} {k} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (updSeq-APPLY a₁ a₂ b₁ b₂ u u₁) = updSeq-APPLY _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁)
@@ -340,6 +342,7 @@ abstract
   updSeq-shiftDown n {r} {s} {k} {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (updSeq-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updSeq-IFLT _ _ _ _ _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁) (updSeq-shiftDown n u₂) (updSeq-shiftDown n u₃)
   updSeq-shiftDown n {r} {s} {k} {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (updSeq-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updSeq-IFEQ _ _ _ _ _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁) (updSeq-shiftDown n u₂) (updSeq-shiftDown n u₃)
   updSeq-shiftDown n {r} {s} {k} {.(SUC a₁)} {.(SUC a₂)} (updSeq-SUC a₁ a₂ u) = updSeq-SUC _ _ (updSeq-shiftDown n u)
+  updSeq-shiftDown n {r} {s} {k} {.(NATREC a₁ b₁ c₁)} {.(NATREC a₂ b₂ c₂)} (updSeq-NATREC a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = updSeq-NATREC _ _ _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁) (updSeq-shiftDown n u₂)
   updSeq-shiftDown n {r} {s} {k} {.(PI a₁ b₁)} {.(PI a₂ b₂)} (updSeq-PI a₁ a₂ b₁ b₂ u u₁) = updSeq-PI _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown (suc n) u₁)
   updSeq-shiftDown n {r} {s} {k} {.(LAMBDA a₁)} {.(LAMBDA a₂)} (updSeq-LAMBDA a₁ a₂ u) = updSeq-LAMBDA _ _ (updSeq-shiftDown (suc n) u)
   updSeq-shiftDown n {r} {s} {k} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (updSeq-APPLY a₁ a₂ b₁ b₂ u u₁) = updSeq-APPLY _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁)
@@ -412,6 +415,7 @@ abstract
   updSeq-subv v {r} {s} {k} {.(IFLT a₁ b₃ c₁ d₁)} {.(IFLT a₂ b₄ c₂ d₂)} {b₁} {b₂} (updSeq-IFLT a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₂ ua ua₁ ua₂ ua₃) ub = updSeq-IFLT _ _ _ _ _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub) (updSeq-subv v ua₂ ub) (updSeq-subv v ua₃ ub)
   updSeq-subv v {r} {s} {k} {.(IFEQ a₁ b₃ c₁ d₁)} {.(IFEQ a₂ b₄ c₂ d₂)} {b₁} {b₂} (updSeq-IFEQ a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₂ ua ua₁ ua₂ ua₃) ub = updSeq-IFEQ _ _ _ _ _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub) (updSeq-subv v ua₂ ub) (updSeq-subv v ua₃ ub)
   updSeq-subv v {r} {s} {k} {.(SUC a₁)} {.(SUC a₂)} {b₁} {b₂} (updSeq-SUC a₁ a₂ ua) ub = updSeq-SUC _ _ (updSeq-subv v ua ub)
+  updSeq-subv v {r} {s} {k} {.(NATREC a₁ b₃ c₁)} {.(NATREC a₂ b₄ c₂)} {b₁} {b₂} (updSeq-NATREC a₁ a₂ b₃ b₄ c₁ c₂ ua ua₁ ua₂) ub = updSeq-NATREC _ _ _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub) (updSeq-subv v ua₂ ub)
   updSeq-subv v {r} {s} {k} {.(PI a₁ b₃)} {.(PI a₂ b₄)} {b₁} {b₂} (updSeq-PI a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-PI _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv (suc v) ua₁ (updSeq-shiftUp 0 ub))
   updSeq-subv v {r} {s} {k} {.(LAMBDA a₁)} {.(LAMBDA a₂)} {b₁} {b₂} (updSeq-LAMBDA a₁ a₂ ua) ub = updSeq-LAMBDA _ _ (updSeq-subv (suc v) ua (updSeq-shiftUp 0 ub))
   updSeq-subv v {r} {s} {k} {.(APPLY a₁ b₃)} {.(APPLY a₂ b₄)} {b₁} {b₂} (updSeq-APPLY a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-APPLY _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub)
@@ -569,6 +573,23 @@ updSeqStep w1 w2 r s n u x =
     comp2' = SUC-steps₁ {k2} {w1} {w3} {a₂} {z} comp2
 
 
+→updSeqStep-NATREC₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a₁ a₂ b₁ b₂ c₁ c₂ : Term)
+                    → updSeq r s n b₁ b₂
+                    → updSeq r s n c₁ c₂
+                    → updSeqStep w1 w1' r s n a₂ a₁
+                    → updSeqStep w1 w1' r s n (NATREC a₂ b₂ c₂) (NATREC a₁ b₁ c₁)
+→updSeqStep-NATREC₁ w1 w1' r s n a₁ a₂ b₁ b₂ c₁ c₂ ub uc (k1 , k2 , y , z , w3 , comp1 , comp2 , u) =
+  fst comp1' , fst comp2' ,
+  NATREC y b₁ c₁ , NATREC z b₂ c₂ ,
+  w3 , snd comp1' , snd comp2' , updSeq-NATREC _ _ _ _ _ _ u ub uc
+  where
+    comp1' : Σ ℕ (λ k0 → steps k0 (NATREC a₁ b₁ c₁ , w1') ≡ (NATREC y b₁ c₁ , w3))
+    comp1' = NATREC⇓steps k1 {a₁} {y} b₁ c₁ {w1'} {w3} comp1
+
+    comp2' : Σ ℕ (λ k0 → steps k0 (NATREC a₂ b₂ c₂ , w1) ≡ (NATREC z b₂ c₂ , w3))
+    comp2' = NATREC⇓steps k2 {a₂} {z} b₂ c₂ {w1} {w3} comp2
+
+
 →updSeqStep-FIX₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a₁ a₂ : Term)
                     → updSeqStep w1 w1' r s n a₂ a₁
                     → updSeqStep w1 w1' r s n (FIX a₂) (FIX a₁)
@@ -600,9 +621,9 @@ updSeqStep w1 w2 r s n u x =
 
 
 →updSeqStep-APPLY₁ : (w1 w1' : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a₁ a₂ b₁ b₂ : Term)
-                      → updSeq r s n b₁ b₂
-                      → updSeqStep w1 w1' r s n a₂ a₁
-                      → updSeqStep w1 w1' r s n (APPLY a₂ b₂) (APPLY a₁ b₁)
+                   → updSeq r s n b₁ b₂
+                   → updSeqStep w1 w1' r s n a₂ a₁
+                   → updSeqStep w1 w1' r s n (APPLY a₂ b₂) (APPLY a₁ b₁)
 →updSeqStep-APPLY₁ w1 w1' r s n a₁ a₂ b₁ b₂ ub (k1 , k2 , y , z , w3 , comp1 , comp2 , u) =
   fst comp1' , fst comp2' ,
   APPLY y b₁ , APPLY z b₂ ,
@@ -793,6 +814,15 @@ updSeqStepInd-SUC₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a : Term
                         → updSeqStepInd r s n a w
 updSeqStepInd-SUC₁→ w r s n a (k1 , v , w' , comp , ish , isv , ind)
   with isHighestℕ-SUC₁→ {n} {k1} {r} {a} {v} {w} {w'} comp isv ish
+... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
+  k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
+
+
+updSeqStepInd-NATREC₁→ : (w : 𝕎·) (r : Name) (s : 𝕊) (n : ℕ) (a b c : Term)
+                        → updSeqStepInd r s n (NATREC a b c) w
+                        → updSeqStepInd r s n a w
+updSeqStepInd-NATREC₁→ w r s n a b c (k1 , v , w' , comp , ish , isv , ind)
+  with isHighestℕ-NATREC₁→ {n} {k1} {r} {a} {b} {c} {v} {w} {w'} comp isv ish
 ... | (k' , u , w'' , comp' , ish' , isv' , ltk) =
   k' , u , w'' , comp' , ish' , isv' , λ k'' j → ind k'' (≤-trans j (<⇒≤ ltk))
 
@@ -1155,7 +1185,6 @@ updSeq→isValue {r} {s} {n} {.(upd r (s2l s n))} {.(upd r (MSEQ s))} updSeq-upd
   u
 
 
-
 updSeq-WRECr : {r : Name} {s : 𝕊} {n : ℕ} {r1 r2 f1 f2 : Term}
                → updSeq r s n r1 r2
                → updSeq r s n f1 f2
@@ -1184,5 +1213,14 @@ updSeq-ENCr {r} {s} {n} {a} u =
     (updSeq-NUM _)
     (updSeq-BOT r s n)
     (updSeq-NUM _)
+
+
+updSeq-NATRECr : {r : Name} {s : 𝕊} {n : ℕ} {i : ℕ} {b1 b2 c1 c2 : Term}
+               → updSeq r s n b1 b2
+               → updSeq r s n c1 c2
+               → updSeq r s n (NATRECr i b1 c1) (NATRECr i b2 c2)
+updSeq-NATRECr {r} {s} {n} {0} {b1} {b2} {c1} {c2} ub uc = ub
+updSeq-NATRECr {r} {s} {n} {suc i} {b1} {b2} {c1} {c2} ub uc =
+  updSeq-APPLY _ _ _ _ (updSeq-APPLY _ _ _ _ uc (updSeq-NUM _)) (updSeq-NATREC _ _ _ _ _ _ (updSeq-NUM _) ub uc)
 
 \end{code}

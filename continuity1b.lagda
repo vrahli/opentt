@@ -866,6 +866,7 @@ abstract
   shiftNameUp-inj {n} {IFLT a a₁ a₂ a₃} {IFLT b b₁ b₂ b₃} e rewrite shiftNameUp-inj (IFLTinj1 e) | shiftNameUp-inj (IFLTinj2 e) | shiftNameUp-inj (IFLTinj3 e) | shiftNameUp-inj (IFLTinj4 e) = refl
   shiftNameUp-inj {n} {IFEQ a a₁ a₂ a₃} {IFEQ b b₁ b₂ b₃} e rewrite shiftNameUp-inj (IFEQinj1 e) | shiftNameUp-inj (IFEQinj2 e) | shiftNameUp-inj (IFEQinj3 e) | shiftNameUp-inj (IFEQinj4 e) = refl
   shiftNameUp-inj {n} {SUC a} {SUC b} e rewrite shiftNameUp-inj (SUCinj e) = refl
+  shiftNameUp-inj {n} {NATREC a a₁ a₂} {NATREC b b₁ b₂} e rewrite shiftNameUp-inj (NATRECinj1 e) | shiftNameUp-inj (NATRECinj2 e) | shiftNameUp-inj (NATRECinj3 e) = refl
   shiftNameUp-inj {n} {PI a a₁} {PI b b₁} e rewrite shiftNameUp-inj (PIinj1 e) | shiftNameUp-inj (PIinj2 e) = refl
   shiftNameUp-inj {n} {LAMBDA a} {LAMBDA b} e rewrite shiftNameUp-inj (LAMinj e) = refl
   shiftNameUp-inj {n} {APPLY a a₁} {APPLY b b₁} e rewrite shiftNameUp-inj (APPLYinj1 e) | shiftNameUp-inj (APPLYinj2 e) = refl
@@ -964,6 +965,7 @@ abstract
   fvars-shiftNameDown n (IFLT a a₁ a₂ a₃) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ | fvars-shiftNameDown n a₂ | fvars-shiftNameDown n a₃ = refl
   fvars-shiftNameDown n (IFEQ a a₁ a₂ a₃) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ | fvars-shiftNameDown n a₂ | fvars-shiftNameDown n a₃ = refl
   fvars-shiftNameDown n (SUC a) rewrite fvars-shiftNameDown n a = refl
+  fvars-shiftNameDown n (NATREC a a₁ a₂) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ | fvars-shiftNameDown n a₂ = refl
   fvars-shiftNameDown n (PI a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
   fvars-shiftNameDown n (LAMBDA a) rewrite fvars-shiftNameDown n a = refl
   fvars-shiftNameDown n (APPLY a a₁) rewrite fvars-shiftNameDown n a | fvars-shiftNameDown n a₁ = refl
@@ -1052,6 +1054,7 @@ abstract
   shiftNameUpDown n (IFLT t t₁ t₂ t₃) imp1 imp2 = ≡IFLT (shiftNameUpDown n t (λ x i → imp1 x (∈-++⁺ˡ i)) (λ z → imp2 (∈-++⁺ˡ z))) (shiftNameUpDown n t₁ (λ x i → imp1 x (∈-++⁺ʳ (names t) (∈-++⁺ˡ i))) (λ z → imp2 (∈-++⁺ʳ (names t) (∈-++⁺ˡ z)))) (shiftNameUpDown n t₂ (λ x i → imp1 x (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) (∈-++⁺ˡ i)))) (λ z → imp2 (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) (∈-++⁺ˡ z))))) (shiftNameUpDown n t₃ (λ x i → imp1 x (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) (∈-++⁺ʳ (names t₂) i)))) (λ z → imp2 (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) (∈-++⁺ʳ (names t₂) z)))))
   shiftNameUpDown n (IFEQ t t₁ t₂ t₃) imp1 imp2 = ≡IFEQ (shiftNameUpDown n t (λ x i → imp1 x (∈-++⁺ˡ i)) (λ z → imp2 (∈-++⁺ˡ z))) (shiftNameUpDown n t₁ (λ x i → imp1 x (∈-++⁺ʳ (names t) (∈-++⁺ˡ i))) (λ z → imp2 (∈-++⁺ʳ (names t) (∈-++⁺ˡ z)))) (shiftNameUpDown n t₂ (λ x i → imp1 x (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) (∈-++⁺ˡ i)))) (λ z → imp2 (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) (∈-++⁺ˡ z))))) (shiftNameUpDown n t₃ (λ x i → imp1 x (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) (∈-++⁺ʳ (names t₂) i)))) (λ z → imp2 (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) (∈-++⁺ʳ (names t₂) z)))))
   shiftNameUpDown n (SUC t) imp1 imp2 = ≡SUC (shiftNameUpDown n t imp1 imp2)
+  shiftNameUpDown n (NATREC t t₁ t₂) imp1 imp2 = ≡NATREC (shiftNameUpDown n t (λ x i → imp1 x (∈-++⁺ˡ i)) (λ z → imp2 (∈-++⁺ˡ z))) (shiftNameUpDown n t₁ (λ x i → imp1 x (∈-++⁺ʳ (names t) (∈-++⁺ˡ i))) (λ z → imp2 (∈-++⁺ʳ (names t) (∈-++⁺ˡ z)))) (shiftNameUpDown n t₂ (λ x i → imp1 x (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) i))) (λ z → imp2 (∈-++⁺ʳ (names t) (∈-++⁺ʳ (names t₁) z))))
   shiftNameUpDown n (PI t t₁) imp1 imp2 = ≡PI (shiftNameUpDown n t (λ x i → imp1 x (∈-++⁺ˡ i)) (λ z → imp2 (∈-++⁺ˡ z))) (shiftNameUpDown n t₁ (λ x i → imp1 x (∈-++⁺ʳ (names t) i)) (λ z → imp2 (∈-++⁺ʳ (names t) z)))
   shiftNameUpDown n (LAMBDA t) imp1 imp2 = ≡LAMBDA (shiftNameUpDown n t imp1 imp2)
   shiftNameUpDown n (APPLY t t₁) imp1 imp2 = ≡APPLY (shiftNameUpDown n t (λ x i → imp1 x (∈-++⁺ˡ i)) (λ z → imp2 (∈-++⁺ˡ z))) (shiftNameUpDown n t₁ (λ x i → imp1 x (∈-++⁺ʳ (names t) i)) (λ z → imp2 (∈-++⁺ʳ (names t) z)))
@@ -1187,6 +1190,7 @@ abstract
   renn¬∈ n m (IFLT t t₁ t₂ t₃) ni = ≡IFLT (renn¬∈ n m t (¬∈++4→¬∈1 {_} {_} {names t} {names t₁} {names t₂} {names t₃} {n} ni)) (renn¬∈ n m t₁ (¬∈++4→¬∈2 {_} {_} {names t} {names t₁} {names t₂} {names t₃} {n} ni)) (renn¬∈ n m t₂ (¬∈++4→¬∈3 {_} {_} {names t} {names t₁} {names t₂} {names t₃} {n} ni)) (renn¬∈ n m t₃ (¬∈++4→¬∈4 {_} {_} {names t} {names t₁} {names t₂} {names t₃} {n} ni))
   renn¬∈ n m (IFEQ t t₁ t₂ t₃) ni = ≡IFEQ (renn¬∈ n m t (¬∈++4→¬∈1 {_} {_} {names t} {names t₁} {names t₂} {names t₃} {n} ni)) (renn¬∈ n m t₁ (¬∈++4→¬∈2 {_} {_} {names t} {names t₁} {names t₂} {names t₃} {n} ni)) (renn¬∈ n m t₂ (¬∈++4→¬∈3 {_} {_} {names t} {names t₁} {names t₂} {names t₃} {n} ni)) (renn¬∈ n m t₃ (¬∈++4→¬∈4 {_} {_} {names t} {names t₁} {names t₂} {names t₃} {n} ni))
   renn¬∈ n m (SUC t) ni = ≡SUC (renn¬∈ n m t ni)
+  renn¬∈ n m (NATREC t t₁ t₂) ni = ≡NATREC (renn¬∈ n m t (¬∈++3→¬∈1 {_} {_} {names t} {names t₁} {names t₂} {n} ni)) (renn¬∈ n m t₁ (¬∈++3→¬∈2 {_} {_} {names t} {names t₁} {names t₂} {n} ni)) (renn¬∈ n m t₂ (¬∈++3→¬∈3 {_} {_} {names t} {names t₁} {names t₂} {n} ni))
   renn¬∈ n m (PI t t₁) ni = ≡PI (renn¬∈ n m t (¬∈++2→¬∈1 {_} {_} {names t} {names t₁} {n} ni)) (renn¬∈ n m t₁ (¬∈++2→¬∈2 {_} {_} {names t} {names t₁} {n} ni))
   renn¬∈ n m (LAMBDA t) ni = ≡LAMBDA (renn¬∈ n m t ni)
   renn¬∈ n m (APPLY t t₁) ni = ≡APPLY (renn¬∈ n m t (¬∈++2→¬∈1 {_} {_} {names t} {names t₁} {n} ni)) (renn¬∈ n m t₁ (¬∈++2→¬∈2 {_} {_} {names t} {names t₁} {n} ni))

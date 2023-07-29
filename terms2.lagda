@@ -71,6 +71,7 @@ abstract
   shiftUp-shiftNameUp c d (IFLT t t₁ t₂ t₃) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ | shiftUp-shiftNameUp c d t₂ | shiftUp-shiftNameUp c d t₃ = refl
   shiftUp-shiftNameUp c d (IFEQ t t₁ t₂ t₃) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ | shiftUp-shiftNameUp c d t₂ | shiftUp-shiftNameUp c d t₃ = refl
   shiftUp-shiftNameUp c d (SUC t) rewrite shiftUp-shiftNameUp c d t = refl
+  shiftUp-shiftNameUp c d (NATREC t t₁ t₂) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ | shiftUp-shiftNameUp c d t₂ = refl
   shiftUp-shiftNameUp c d (PI t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp (suc c) d t₁ = refl
   shiftUp-shiftNameUp c d (LAMBDA t) rewrite shiftUp-shiftNameUp (suc c) d t = refl
   shiftUp-shiftNameUp c d (APPLY t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
@@ -137,6 +138,7 @@ abstract
   renn-shiftNameUp n1 n2 (IFLT t t₁ t₂ t₃) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ | renn-shiftNameUp n1 n2 t₂ | renn-shiftNameUp n1 n2 t₃ = refl
   renn-shiftNameUp n1 n2 (IFEQ t t₁ t₂ t₃) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ | renn-shiftNameUp n1 n2 t₂ | renn-shiftNameUp n1 n2 t₃ = refl
   renn-shiftNameUp n1 n2 (SUC t) rewrite renn-shiftNameUp n1 n2 t = refl
+  renn-shiftNameUp n1 n2 (NATREC t t₁ t₂) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ | renn-shiftNameUp n1 n2 t₂ = refl
   renn-shiftNameUp n1 n2 (PI t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
   renn-shiftNameUp n1 n2 (LAMBDA t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 (APPLY t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
@@ -229,6 +231,7 @@ abstract
   shiftNameDownUp n (IFLT t t₁ t₂ t₃) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ | shiftNameDownUp n t₂ | shiftNameDownUp n t₃ = refl
   shiftNameDownUp n (IFEQ t t₁ t₂ t₃) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ | shiftNameDownUp n t₂ | shiftNameDownUp n t₃ = refl
   shiftNameDownUp n (SUC t) rewrite shiftNameDownUp n t = refl
+  shiftNameDownUp n (NATREC t t₁ t₂) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ | shiftNameDownUp n t₂ = refl
   shiftNameDownUp n (PI t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
   shiftNameDownUp n (LAMBDA t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n (APPLY t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
@@ -347,6 +350,7 @@ abstract
   ¬names-shiftUp n (IFLT a a₁ a₂ a₃) rewrite ¬names-shiftUp n a | ¬names-shiftUp n a₁ | ¬names-shiftUp n a₂ | ¬names-shiftUp n a₃ = refl
   ¬names-shiftUp n (IFEQ a a₁ a₂ a₃) rewrite ¬names-shiftUp n a | ¬names-shiftUp n a₁ | ¬names-shiftUp n a₂ | ¬names-shiftUp n a₃ = refl
   ¬names-shiftUp n (SUC a) rewrite ¬names-shiftUp n a = refl
+  ¬names-shiftUp n (NATREC a a₁ a₂) rewrite ¬names-shiftUp n a | ¬names-shiftUp n a₁ | ¬names-shiftUp n a₂ = refl
   ¬names-shiftUp n (PI a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp (suc n) a₁ = refl
   ¬names-shiftUp n (LAMBDA a) rewrite ¬names-shiftUp (suc n) a = refl
   ¬names-shiftUp n (APPLY a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp n a₁ = refl
@@ -411,6 +415,7 @@ abstract
   ¬names-shiftDown n (IFLT a a₁ a₂ a₃) rewrite ¬names-shiftDown n a | ¬names-shiftDown n a₁ | ¬names-shiftDown n a₂ | ¬names-shiftDown n a₃ = refl
   ¬names-shiftDown n (IFEQ a a₁ a₂ a₃) rewrite ¬names-shiftDown n a | ¬names-shiftDown n a₁ | ¬names-shiftDown n a₂ | ¬names-shiftDown n a₃ = refl
   ¬names-shiftDown n (SUC a) rewrite ¬names-shiftDown n a = refl
+  ¬names-shiftDown n (NATREC a a₁ a₂) rewrite ¬names-shiftDown n a | ¬names-shiftDown n a₁ | ¬names-shiftDown n a₂ = refl
   ¬names-shiftDown n (PI a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown (suc n) a₁ = refl
   ¬names-shiftDown n (LAMBDA a) rewrite ¬names-shiftDown (suc n) a = refl
   ¬names-shiftDown n (APPLY a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown n a₁ = refl
@@ -496,6 +501,7 @@ abstract
   ¬Names-subv v {a} {IFLT b b₁ b₂ b₃} na nb = →∧4≡true (¬Names-subv v {a} {b} na (∧≡true→1-4 {¬names b} {¬names b₁} {¬names b₂} {¬names b₃} nb)) (¬Names-subv v {a} {b₁} na (∧≡true→2-4 {¬names b} {¬names b₁} {¬names b₂} {¬names b₃} nb)) (¬Names-subv v {a} {b₂} na (∧≡true→3-4 {¬names b} {¬names b₁} {¬names b₂} {¬names b₃} nb)) (¬Names-subv v {a} {b₃} na (∧≡true→4-4 {¬names b} {¬names b₁} {¬names b₂} {¬names b₃} nb))
   ¬Names-subv v {a} {IFEQ b b₁ b₂ b₃} na nb = →∧4≡true (¬Names-subv v {a} {b} na (∧≡true→1-4 {¬names b} {¬names b₁} {¬names b₂} {¬names b₃} nb)) (¬Names-subv v {a} {b₁} na (∧≡true→2-4 {¬names b} {¬names b₁} {¬names b₂} {¬names b₃} nb)) (¬Names-subv v {a} {b₂} na (∧≡true→3-4 {¬names b} {¬names b₁} {¬names b₂} {¬names b₃} nb)) (¬Names-subv v {a} {b₃} na (∧≡true→4-4 {¬names b} {¬names b₁} {¬names b₂} {¬names b₃} nb))
   ¬Names-subv v {a} {SUC b} na nb = ¬Names-subv v {a} {b} na nb
+  ¬Names-subv v {a} {NATREC b b₁ b₂} na nb = →∧3≡true (¬Names-subv v {a} {b} na (∧≡true→1-3 {¬names b} {¬names b₁} {¬names b₂} nb)) (¬Names-subv v {a} {b₁} na (∧≡true→2-3 {¬names b} {¬names b₁} {¬names b₂} nb)) (¬Names-subv v {a} {b₂} na (∧≡true→3-3 {¬names b} {¬names b₁} {¬names b₂} nb))
   ¬Names-subv v {a} {PI b b₁} na nb = →∧≡true (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv (suc v) {shiftUp 0 a} {b₁} (→¬Names-shiftUp 0 {a} na) (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
   ¬Names-subv v {a} {LAMBDA b} na nb = ¬Names-subv (suc v) {shiftUp 0 a} {b} (→¬Names-shiftUp 0 {a} na) nb
   ¬Names-subv v {a} {APPLY b b₁} na nb = →∧≡true {¬names (subv v a b)} {¬names (subv v a b₁)} (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv v {a} {b₁} na (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
@@ -570,6 +576,7 @@ abstract
   noseq-shiftUp n (IFLT a a₁ a₂ a₃) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ | noseq-shiftUp n a₂ | noseq-shiftUp n a₃ = refl
   noseq-shiftUp n (IFEQ a a₁ a₂ a₃) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ | noseq-shiftUp n a₂ | noseq-shiftUp n a₃ = refl
   noseq-shiftUp n (SUC a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (NATREC a a₁ a₂) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ | noseq-shiftUp n a₂ = refl
   noseq-shiftUp n (PI a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp (suc n) a₁ = refl
   noseq-shiftUp n (LAMBDA a) rewrite noseq-shiftUp (suc n) a = refl
   noseq-shiftUp n (APPLY a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
@@ -634,6 +641,7 @@ abstract
   noseq-shiftDown n (IFLT a a₁ a₂ a₃) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ | noseq-shiftDown n a₂ | noseq-shiftDown n a₃ = refl
   noseq-shiftDown n (IFEQ a a₁ a₂ a₃) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ | noseq-shiftDown n a₂ | noseq-shiftDown n a₃ = refl
   noseq-shiftDown n (SUC a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (NATREC a a₁ a₂) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ | noseq-shiftDown n a₂ = refl
   noseq-shiftDown n (PI a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown (suc n) a₁ = refl
   noseq-shiftDown n (LAMBDA a) rewrite noseq-shiftDown (suc n) a = refl
   noseq-shiftDown n (APPLY a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
@@ -704,6 +712,7 @@ abstract
   noseq-shiftNameUp n (IFLT a a₁ a₂ a₃) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ | noseq-shiftNameUp n a₂ | noseq-shiftNameUp n a₃ = refl
   noseq-shiftNameUp n (IFEQ a a₁ a₂ a₃) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ | noseq-shiftNameUp n a₂ | noseq-shiftNameUp n a₃ = refl
   noseq-shiftNameUp n (SUC a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (NATREC a a₁ a₂) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ | noseq-shiftNameUp n a₂ = refl
   noseq-shiftNameUp n (PI a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
   noseq-shiftNameUp n (LAMBDA a) rewrite noseq-shiftNameUp n a = refl
   noseq-shiftNameUp n (APPLY a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
@@ -773,6 +782,7 @@ abstract
   ¬Seq-subv v {a} {IFLT b b₁ b₂ b₃} na nb = →∧4≡true (¬Seq-subv v {a} {b} na (∧≡true→1-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→2-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb)) (¬Seq-subv v {a} {b₂} na (∧≡true→3-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb)) (¬Seq-subv v {a} {b₃} na (∧≡true→4-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb))
   ¬Seq-subv v {a} {IFEQ b b₁ b₂ b₃} na nb = →∧4≡true (¬Seq-subv v {a} {b} na (∧≡true→1-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→2-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb)) (¬Seq-subv v {a} {b₂} na (∧≡true→3-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb)) (¬Seq-subv v {a} {b₃} na (∧≡true→4-4 {noseq b} {noseq b₁} {noseq b₂} {noseq b₃} nb))
   ¬Seq-subv v {a} {SUC b} na nb = ¬Seq-subv v {a} {b} na nb
+  ¬Seq-subv v {a} {NATREC b b₁ b₂} na nb = →∧3≡true (¬Seq-subv v {a} {b} na (∧≡true→1-3 {noseq b} {noseq b₁} {noseq b₂} nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→2-3 {noseq b} {noseq b₁} {noseq b₂} nb)) (¬Seq-subv v {a} {b₂} na (∧≡true→3-3 {noseq b} {noseq b₁} {noseq b₂} nb))
   ¬Seq-subv v {a} {PI b b₁} na nb = →∧≡true (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv (suc v) {shiftUp 0 a} {b₁} (→¬Seq-shiftUp 0 {a} na) (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
   ¬Seq-subv v {a} {LAMBDA b} na nb = ¬Seq-subv (suc v) {shiftUp 0 a} {b} (→¬Seq-shiftUp 0 {a} na) nb
   ¬Seq-subv v {a} {APPLY b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
@@ -993,6 +1003,10 @@ SUC-NUM⇓ : (w : 𝕎·) (n : ℕ) → SUC (NUM n) ⇓ NUM (suc n) from w to w
 SUC-NUM⇓ w f = 1 , refl
 
 
+NATREC-NUM⇓ : (w : 𝕎·) (n : ℕ) (b c : Term) → NATREC (NUM n) b c ⇓ NATRECr n b c from w to w
+NATREC-NUM⇓ w n b c = 1 , refl
+
+
 --DSUP-SUP⇓ : (w : 𝕎·) (a b c : Term) → DSUP (SUP a b) c ⇓ sub b (sub a c) from w to w
 --DSUP-SUP⇓ w a b c = 1 , refl
 
@@ -1098,6 +1112,33 @@ SUC⇓ : {a a' : Term} {w1 w2 : 𝕎·}
        → a ⇓ a' from w1 to w2
        → SUC a ⇓ SUC a' from w1 to w2
 SUC⇓ {a} {a'} {w1} {w2} (n , comp) = SUC⇓steps n comp
+
+
+
+
+NATREC⇓steps : (k : ℕ) {a a' : Term} (b c : Term) {w1 w2 : 𝕎·}
+            → steps k (a , w1) ≡ (a' , w2)
+            → NATREC a b c ⇓ NATREC a' b c from w1 to w2
+NATREC⇓steps 0 {a} {a'} b c {w1} {w2} comp rewrite pair-inj₁ comp | pair-inj₂ comp = ⇓from-to-refl _ _
+NATREC⇓steps (suc k) {a} {a'} b c {w1} {w2} comp with is-NUM a
+... | inj₁ (n , p) rewrite p | stepsVal (NUM n) w1 k tt | pair-inj₁ comp | pair-inj₂ comp = ⇓from-to-refl _ _
+... | inj₂ x with step⊎ a w1
+... |    inj₁ (g , w' , z) rewrite z = step-⇓-from-to-trans s ind
+  where
+    ind : NATREC g b c ⇓ NATREC a' b c from w' to w2
+    ind = NATREC⇓steps k b c comp
+
+    s : step (NATREC a b c) w1 ≡ just (NATREC g b c , w')
+    s with is-NUM a
+    ... | inj₁ (n , p) rewrite p = ⊥-elim (x n refl)
+    ... | inj₂ p rewrite z = refl
+NATREC⇓steps (suc k) {a} {a'} b c {w1} {w2} comp | inj₂ x | inj₂ z rewrite z | pair-inj₁ comp | pair-inj₂ comp = ⇓from-to-refl _ _
+
+
+NATREC⇓ : {a a' : Term} (b c : Term) {w1 w2 : 𝕎·}
+       → a ⇓ a' from w1 to w2
+       → NATREC a b c ⇓ NATREC a' b c from w1 to w2
+NATREC⇓ {a} {a'} b c {w1} {w2} (n , comp) = NATREC⇓steps n b c comp
 
 
 LET-val⇓ : (w : 𝕎·) (a b : Term) → isValue a → LET a b ⇓ sub a b from w to w
@@ -1520,6 +1561,24 @@ hasValue-SUC→ : (a : Term) (w : 𝕎·) {k : ℕ}
                  → hasValueℕ k a w
 hasValue-SUC→ a w {k} (v , w' , comp , isv) = SUC→hasValue k a v w w' comp isv
 
+
+
+NATREC→hasValue : (k : ℕ) (a b c v : Term) (w w' : 𝕎·)
+                 → steps k (NATREC a b c , w) ≡ (v , w')
+                 → isValue v
+                 → hasValueℕ k a w
+NATREC→hasValue 0 a b c v w w' comp isv rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+NATREC→hasValue (suc k) a b c v w w' comp isv with is-NUM a
+... | inj₁ (n , p) rewrite p = isValue→hasValueℕ (suc k) (NUM n) w tt
+... | inj₂ y with step⊎ a w
+... |    inj₁ (a' , w'' , z) rewrite z = NATREC→hasValue k a' b c v w'' w' comp isv
+... |    inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+
+
+hasValue-NATREC→ : (a b c : Term) (w : 𝕎·) {k : ℕ}
+                 → hasValueℕ k (NATREC a b c) w
+                 → hasValueℕ k a w
+hasValue-NATREC→ a b c w {k} (v , w' , comp , isv) = NATREC→hasValue k a b c v w w' comp isv
 
 
 LET→hasValue : (k : ℕ) (a b v : Term) (w w' : 𝕎·)

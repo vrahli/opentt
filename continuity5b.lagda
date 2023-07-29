@@ -652,6 +652,21 @@ abstract
 
 
 abstract
+  updRel2-shiftNameUp≡→NATREC : (n : ℕ) {name : Name} {f g : Term} {r : ren} (cf : # f) (cg : # g) {a b x₁ x₂ y₁ y₂ z₁ z₂ : Term}
+                            → ((u₁ u₂ : Term) → x₁ ≡ shiftNameUp n u₁ → x₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂)
+                            → ((u₁ u₂ : Term) → y₁ ≡ shiftNameUp n u₁ → y₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂)
+                            → ((u₁ u₂ : Term) → z₁ ≡ shiftNameUp n u₁ → z₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂)
+                            → NATREC x₁ y₁ z₁ ≡ shiftNameUp n a
+                            → NATREC x₂ y₂ z₂ ≡ shiftNameUp n b
+                            → updRel2 (sucIf≤ n name) (shiftNameUp n f) (shiftNameUp n g) (sucIf≤-ren n r) x₁ x₂
+                            → updRel2 name f g r a b
+  updRel2-shiftNameUp≡→NATREC n {name} {f} {g} {r} cf cg {NATREC u₁ v₁ w₁} {NATREC u₂ v₂ w₂} {x₁} {x₂} {y₁} {y₂} {z₁} {z₂} ind1 ind2 ind3 equ eqv ur1
+    rewrite NATRECinj1 equ | NATRECinj2 equ | NATRECinj3 equ
+          | NATRECinj1 eqv | NATRECinj2 eqv | NATRECinj3 eqv
+    = updRel2-NATREC u₁ u₂ v₁ v₂ w₁ w₂ (ind1 u₁ u₂ refl refl) (ind2 v₁ v₂ refl refl) (ind3 w₁ w₂ refl refl)
+
+
+abstract
   updRel2-shiftNameUp≡→LAMBDA : (n : ℕ) {name : Name} {f g : Term} {r : ren} (cf : # f) (cg : # g) {a b x₁ x₂ : Term}
                             → ((u₁ u₂ : Term) → x₁ ≡ shiftNameUp n u₁ → x₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂)
                             → LAMBDA x₁ ≡ shiftNameUp n a
@@ -904,6 +919,17 @@ abstract
     where
       ind1 : (u₁ u₂ : Term) → a₁ ≡ shiftNameUp n u₁ → a₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
       ind1 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {a₁} {a₂} e₁ e₂ ur
+  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(NATREC a₁ b₁ c₁)} {.(NATREC a₂ b₂ c₂)} equ eqv (updRel2-NATREC a₁ a₂ b₁ b₂ c₁ c₂ ur ur₁ ur₂)
+    = updRel2-shiftNameUp≡→NATREC n cf cg ind1 ind2 ind3 equ eqv ur
+    where
+      ind1 : (u₁ u₂ : Term) → a₁ ≡ shiftNameUp n u₁ → a₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
+      ind1 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {a₁} {a₂} e₁ e₂ ur
+
+      ind2 : (u₁ u₂ : Term) → b₁ ≡ shiftNameUp n u₁ → b₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
+      ind2 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {b₁} {b₂} e₁ e₂ ur₁
+
+      ind3 : (u₁ u₂ : Term) → c₁ ≡ shiftNameUp n u₁ → c₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
+      ind3 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {c₁} {c₂} e₁ e₂ ur₂
   updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(PI a₁ b₁)} {.(PI a₂ b₂)} equ eqv (updRel2-PI a₁ a₂ b₁ b₂ ur ur₁)
     = updRel2-shiftNameUp≡→PI n cf cg ind1 ind2 equ eqv ur ur₁
     where

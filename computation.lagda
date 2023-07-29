@@ -76,6 +76,11 @@ ENCr : Term → Term
 ENCr t = NEGD (APPLY t (NUM (encode· (ENC t))))
 
 
+NATRECr : ℕ → Term → Term → Term
+NATRECr 0 b c = b
+NATRECr (suc n) b c = APPLY2 c (NUM n) (NATREC (NUM n) b c)
+
+
 step : ∀ (T : Term) (w : 𝕎·) → Maybe (Term × 𝕎·)
 -- VAR
 step (VAR v) w = nothing
@@ -120,6 +125,12 @@ step (SUC a) w with is-NUM a
 ... | inj₁ (n , p) = ret (NUM (suc n)) w
 ... | inj₂ p with step a w
 ... |    just (a' , w') = ret (SUC a') w'
+... |    nothing = nothing
+-- NATREC
+step (NATREC a b c) w with is-NUM a
+... | inj₁ (n , p) = ret (NATRECr n b c) w
+... | inj₂ p with step a w
+... |    just (a' , w') = ret (NATREC a' b c) w'
 ... |    nothing = nothing
 -- PI
 step (PI a b) = ret (PI a b)
@@ -553,6 +564,7 @@ step-APPLY-CS-¬NUM name (NUM x) b w w' c s rewrite sym (pair-inj₁ (just-inj s
 step-APPLY-CS-¬NUM name (IFLT a a₁ a₂ a₃) b w w' c s rewrite s = refl
 step-APPLY-CS-¬NUM name (IFEQ a a₁ a₂ a₃) b w w' c s rewrite s = refl
 step-APPLY-CS-¬NUM name (SUC a) b w w' c s rewrite s = refl
+step-APPLY-CS-¬NUM name (NATREC a a₁ a₂) b w w' c s rewrite s = refl
 step-APPLY-CS-¬NUM name (PI a a₁) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (LAMBDA a) b w w' c s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl
 step-APPLY-CS-¬NUM name (APPLY a a₁) b w w' c s rewrite s = refl
@@ -828,6 +840,12 @@ step⊑ {w} {w'} {IFEQ x y t u} {b} comp | inj₂ p with step⊎ x w
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
 step⊑ {w} {w'} {SUC x} {b} comp with is-NUM x
 ... | inj₁ (n , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+... | inj₂ p with step⊎ x w
+... |    inj₁ (x' , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {x} z
+... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+step⊑ {w} {w'} {NATREC x x₁ x₂} {b} comp with is-NUM x
+... | inj₁ (0 , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
+... | inj₁ (suc n , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = ⊑-refl· _
 ... | inj₂ p with step⊎ x w
 ... |    inj₁ (x' , w'' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = step⊑ {_} {_} {x} z
 ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
@@ -1301,6 +1319,10 @@ data ∼T : 𝕎· → Term → Term → Set where
   where
     z : steps 1 (APPLY (SUC a) c , w) ≡ (APPLY b c , w')
     z rewrite comp = refl
+→-step-APPLY {w} {w'} {NATREC a a₁ a₂} {b} c comp = 1 , z
+  where
+    z : steps 1 (APPLY (NATREC a a₁ a₂) c , w) ≡ (APPLY b c , w')
+    z rewrite comp = refl
 →-step-APPLY {w} {w'} {PI a a₁} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {LAMBDA a} {b} c comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 →-step-APPLY {w} {w'} {APPLY a a₁} {b} c comp = 1 , z
@@ -1435,6 +1457,10 @@ step-⇓-ASSERT₁ {w} {w'} {IFEQ a a₁ a₂ a₃} {b} comp = 1 , z
 step-⇓-ASSERT₁ {w} {w'} {SUC a} {b} comp = 1 , z
   where
     z : steps 1 (ASSERT₁ (SUC a) , w) ≡ (ASSERT₁ b , w')
+    z rewrite comp = refl
+step-⇓-ASSERT₁ {w} {w'} {NATREC a a₁ a₂} {b} comp = 1 , z
+  where
+    z : steps 1 (ASSERT₁ (NATREC a a₁ a₂) , w) ≡ (ASSERT₁ b , w')
     z rewrite comp = refl
 step-⇓-ASSERT₁ {w} {w'} {PI a a₁} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl
 step-⇓-ASSERT₁ {w} {w'} {LAMBDA a} {b} comp rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , refl

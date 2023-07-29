@@ -52,12 +52,13 @@ data Term : Set where
 --  NAT : Term
   QNAT : Term
 --  TNAT : Term
-  LT : Term → Term → Term
-  QLT : Term → Term → Term
-  NUM : ℕ → Term
-  IFLT : Term → Term → Term → Term → Term
-  IFEQ : Term → Term → Term → Term → Term
-  SUC : Term → Term
+  LT     : Term → Term → Term
+  QLT    : Term → Term → Term
+  NUM    : ℕ → Term
+  IFLT   : Term → Term → Term → Term → Term
+  IFEQ   : Term → Term → Term → Term → Term
+  SUC    : Term → Term
+  NATREC : Term → Term → Term → Term
   -- Products
   PI :  Term → Term → Term
   LAMBDA : Term → Term
@@ -139,6 +140,7 @@ value? (NUM _) = true
 value? (IFLT _ _ _ _) = false -- Not a value
 value? (IFEQ _ _ _ _) = false -- Not a value
 value? (SUC _) = false -- Not a value
+value? (NATREC _ _ _) = false -- Not a value
 value? (PI _ _) = true
 value? (LAMBDA _) = true
 value? (APPLY _ _) = false -- Not a value
@@ -284,6 +286,7 @@ fvars (NUM x)          = []
 fvars (IFLT a b c d)   = fvars a ++ fvars b ++ fvars c ++ fvars d
 fvars (IFEQ a b c d)   = fvars a ++ fvars b ++ fvars c ++ fvars d
 fvars (SUC a)          = fvars a
+fvars (NATREC a b c)   = fvars a ++ fvars b ++ fvars c
 fvars (PI t t₁)        = fvars t ++ lowerVars (fvars t₁)
 fvars (LAMBDA t)       = lowerVars (fvars t)
 fvars (APPLY t t₁)     = fvars t ++ fvars t₁
@@ -453,6 +456,7 @@ shiftUp c (NUM x) = NUM x
 shiftUp c (IFLT t t₁ t₂ t₃) = IFLT (shiftUp c t) (shiftUp c t₁) (shiftUp c t₂) (shiftUp c t₃)
 shiftUp c (IFEQ t t₁ t₂ t₃) = IFEQ (shiftUp c t) (shiftUp c t₁) (shiftUp c t₂) (shiftUp c t₃)
 shiftUp c (SUC t) = SUC (shiftUp c t)
+shiftUp c (NATREC t t₁ t₂) = NATREC (shiftUp c t) (shiftUp c t₁) (shiftUp c t₂)
 shiftUp c (PI t t₁) = PI (shiftUp c t) (shiftUp (suc c) t₁)
 shiftUp c (LAMBDA t) = LAMBDA (shiftUp (suc c) t)
 shiftUp c (APPLY t t₁) = APPLY (shiftUp c t) (shiftUp c t₁)
@@ -517,6 +521,7 @@ shiftDown c (NUM x) = NUM x
 shiftDown c (IFLT t t₁ t₂ t₃) = IFLT (shiftDown c t) (shiftDown c t₁) (shiftDown c t₂) (shiftDown c t₃)
 shiftDown c (IFEQ t t₁ t₂ t₃) = IFEQ (shiftDown c t) (shiftDown c t₁) (shiftDown c t₂) (shiftDown c t₃)
 shiftDown c (SUC t) = SUC (shiftDown c t)
+shiftDown c (NATREC t t₁ t₂) = NATREC (shiftDown c t) (shiftDown c t₁) (shiftDown c t₂)
 shiftDown c (PI t t₁) = PI (shiftDown c t) (shiftDown (suc c) t₁)
 shiftDown c (LAMBDA t) = LAMBDA (shiftDown (suc c) t)
 shiftDown c (APPLY t t₁) = APPLY (shiftDown c t) (shiftDown c t₁)
@@ -581,6 +586,7 @@ shiftNameUp c (NUM x) = NUM x
 shiftNameUp c (IFLT t t₁ t₂ t₃) = IFLT (shiftNameUp c t) (shiftNameUp c t₁) (shiftNameUp c t₂) (shiftNameUp c t₃)
 shiftNameUp c (IFEQ t t₁ t₂ t₃) = IFEQ (shiftNameUp c t) (shiftNameUp c t₁) (shiftNameUp c t₂) (shiftNameUp c t₃)
 shiftNameUp c (SUC t) = SUC (shiftNameUp c t)
+shiftNameUp c (NATREC t t₁ t₂) = NATREC (shiftNameUp c t) (shiftNameUp c t₁) (shiftNameUp c t₂)
 shiftNameUp c (PI t t₁) = PI (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c (LAMBDA t) = LAMBDA (shiftNameUp c t)
 shiftNameUp c (APPLY t t₁) = APPLY (shiftNameUp c t) (shiftNameUp c t₁)
@@ -645,6 +651,7 @@ shiftNameDown c (NUM x) = NUM x
 shiftNameDown c (IFLT t t₁ t₂ t₃) = IFLT (shiftNameDown c t) (shiftNameDown c t₁) (shiftNameDown c t₂) (shiftNameDown c t₃)
 shiftNameDown c (IFEQ t t₁ t₂ t₃) = IFEQ (shiftNameDown c t) (shiftNameDown c t₁) (shiftNameDown c t₂) (shiftNameDown c t₃)
 shiftNameDown c (SUC t) = SUC (shiftNameDown c t)
+shiftNameDown c (NATREC t t₁ t₂) = NATREC (shiftNameDown c t) (shiftNameDown c t₁) (shiftNameDown c t₂)
 shiftNameDown c (PI t t₁) = PI (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c (LAMBDA t) = LAMBDA (shiftNameDown c t)
 shiftNameDown c (APPLY t t₁) = APPLY (shiftNameDown c t) (shiftNameDown c t₁)
@@ -716,6 +723,7 @@ names (NUM x)          = []
 names (IFLT a b c d)   = names a ++ names b ++ names c ++ names d
 names (IFEQ a b c d)   = names a ++ names b ++ names c ++ names d
 names (SUC a)          = names a
+names (NATREC a b c)   = names a ++ names b ++ names c
 names (PI t t₁)        = names t ++ names t₁
 names (LAMBDA t)       = names t
 names (APPLY t t₁)     = names t ++ names t₁
@@ -782,7 +790,8 @@ subv v t (QLT u u₁) = QLT (subv v t u) (subv v t u₁)
 subv v t (NUM x) = NUM x
 subv v t (IFLT u u₁ u₂ u₃) = IFLT (subv v t u) (subv v t u₁) (subv v t u₂) (subv v t u₃)
 subv v t (IFEQ u u₁ u₂ u₃) = IFEQ (subv v t u) (subv v t u₁) (subv v t u₂) (subv v t u₃)
-subv v t (SUC u)      = SUC (subv v t u)
+subv v t (SUC u)           = SUC (subv v t u)
+subv v t (NATREC u u₁ u₂)  = NATREC (subv v t u) (subv v t u₁) (subv v t u₂)
 subv v t (PI u u₁)    = PI (subv v t u) (subv (suc v) (shiftUp 0 t) u₁)
 subv v t (LAMBDA u)   = LAMBDA (subv (suc v) (shiftUp 0 t) u)
 subv v t (APPLY u u₁) = APPLY (subv v t u) (subv v t u₁)
@@ -853,6 +862,7 @@ renn v t (NUM x) = NUM x
 renn v t (IFLT u u₁ u₂ u₃) = IFLT (renn v t u) (renn v t u₁) (renn v t u₂) (renn v t u₃)
 renn v t (IFEQ u u₁ u₂ u₃) = IFEQ (renn v t u) (renn v t u₁) (renn v t u₂) (renn v t u₃)
 renn v t (SUC u) = SUC (renn v t u)
+renn v t (NATREC u u₁ u₂) = NATREC (renn v t u) (renn v t u₁) (renn v t u₂)
 renn v t (PI u u₁) =  PI (renn v t u) (renn v t u₁)
 renn v t (LAMBDA u) =  LAMBDA (renn v t u)
 renn v t (APPLY u u₁) = APPLY (renn v t u) (renn v t u₁)
@@ -969,6 +979,10 @@ abstract
             | subvNotIn v t u₃ (notInAppVars2 {v} {fvars u₂} {_} (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))) = refl
   subvNotIn v t (SUC u) n
     rewrite subvNotIn v t u n = refl
+  subvNotIn v t (NATREC u u₁ u₂) n
+    rewrite subvNotIn v t u (notInAppVars1 n)
+            | subvNotIn v t u₁ (notInAppVars1 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n))
+            | subvNotIn v t u₂ (notInAppVars2 {v} {fvars u₁} {_} (notInAppVars2 {v} {fvars u} {_} n)) = refl
   subvNotIn v t (PI u u₁) n
     rewrite subvNotIn v t u (notInAppVars1 n)
             | subvNotIn (suc v) (shiftUp 0 t) u₁ (λ j → ⊥-elim (notInAppVars2 n (inLowerVars _ _ j))) = refl
@@ -1140,16 +1154,20 @@ abstract
   shiftDownTrivial v (NUM x) i = refl
   shiftDownTrivial v (IFLT u u₁ u₂ u₃) i
     rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-            | shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
-            | shiftDownTrivial v u₂ (impLeNotApp1 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)))
-            | shiftDownTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl
+          | shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
+          | shiftDownTrivial v u₂ (impLeNotApp1 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)))
+          | shiftDownTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl
   shiftDownTrivial v (IFEQ u u₁ u₂ u₃) i
     rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
-            | shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
-            | shiftDownTrivial v u₂ (impLeNotApp1 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)))
-            | shiftDownTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl
+          | shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
+          | shiftDownTrivial v u₂ (impLeNotApp1 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)))
+          | shiftDownTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl
   shiftDownTrivial v (SUC u) i
     rewrite shiftDownTrivial v u i = refl
+  shiftDownTrivial v (NATREC u u₁ u₂) i
+    rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
+          | shiftDownTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
+          | shiftDownTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl
   shiftDownTrivial v (PI u u₁) i
     rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
             | shiftDownTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
@@ -1287,16 +1305,20 @@ abstract
   shiftUpTrivial v (NUM x) i = refl
   shiftUpTrivial v (IFLT u u₁ u₂ u₃) i
     rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-            | shiftUpTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
-            | shiftUpTrivial v u₂ (impLeNotApp1 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)))
-            | shiftUpTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl
+          | shiftUpTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
+          | shiftUpTrivial v u₂ (impLeNotApp1 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)))
+          | shiftUpTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl
   shiftUpTrivial v (IFEQ u u₁ u₂ u₃) i
     rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
-            | shiftUpTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
-            | shiftUpTrivial v u₂ (impLeNotApp1 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)))
-            | shiftUpTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl
+          | shiftUpTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
+          | shiftUpTrivial v u₂ (impLeNotApp1 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)))
+          | shiftUpTrivial v u₃ (impLeNotApp2 v (fvars u₂) _ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))) = refl
   shiftUpTrivial v (SUC u) i
     rewrite shiftUpTrivial v u i = refl
+  shiftUpTrivial v (NATREC u u₁ u₂) i
+    rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
+          | shiftUpTrivial v u₁ (impLeNotApp1 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i))
+          | shiftUpTrivial v u₂ (impLeNotApp2 v (fvars u₁) _ (impLeNotApp2 v (fvars u) _ i)) = refl
   shiftUpTrivial v (PI u u₁) i
     rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
             | shiftUpTrivial (suc v) u₁ (impLeNotLower _ _ (impLeNotApp2 _ _ _ i)) = refl
@@ -1447,6 +1469,7 @@ abstract
   shiftDownUp (IFLT t t₁ t₂ t₃) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n | shiftDownUp t₃ n = refl
   shiftDownUp (IFEQ t t₁ t₂ t₃) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n | shiftDownUp t₃ n = refl
   shiftDownUp (SUC t) n rewrite shiftDownUp t n = refl
+  shiftDownUp (NATREC t t₁ t₂) n rewrite shiftDownUp t n | shiftDownUp t₁ n | shiftDownUp t₂ n = refl
   shiftDownUp (PI t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ (suc n) = refl
   shiftDownUp (LAMBDA t) n rewrite shiftDownUp t (suc n) = refl
   shiftDownUp (APPLY t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
@@ -1511,6 +1534,7 @@ is-NUM (NUM x) = inj₁ ( x , refl)
 is-NUM (IFLT t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-NUM (IFEQ t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-NUM (SUC t) = inj₂ (λ { n () })
+is-NUM (NATREC t t₁ t₂) = inj₂ (λ { n () })
 is-NUM (PI t t₁) = inj₂ (λ { n () })
 is-NUM (LAMBDA t) = inj₂ (λ { n () })
 is-NUM (APPLY t t₁) = inj₂ (λ { n () })
@@ -1575,6 +1599,7 @@ is-LAM (NUM x) = inj₂ (λ { n () })
 is-LAM (IFLT t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-LAM (IFEQ t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-LAM (SUC t) = inj₂ (λ { n () })
+is-LAM (NATREC t t₁ t₂) = inj₂ (λ { n () })
 is-LAM (PI t t₁) = inj₂ (λ { n () })
 is-LAM (LAMBDA t) = inj₁ (t , refl)
 is-LAM (APPLY t t₁) = inj₂ (λ { n () })
@@ -1639,6 +1664,7 @@ is-CS (NUM x) = inj₂ (λ { n () })
 is-CS (IFLT t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-CS (IFEQ t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-CS (SUC t) = inj₂ (λ { n () })
+is-CS (NATREC t t₁ t₂) = inj₂ (λ { n () })
 is-CS (PI t t₁) = inj₂ (λ { n () })
 is-CS (LAMBDA t) = inj₂ (λ { n () })
 is-CS (APPLY t t₁) = inj₂ (λ { n () })
@@ -1703,6 +1729,7 @@ is-NAME (NUM x) = inj₂ (λ { n () })
 is-NAME (IFLT t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-NAME (IFEQ t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-NAME (SUC t) = inj₂ (λ { n () })
+is-NAME (NATREC t t₁ t₂) = inj₂ (λ { n () })
 is-NAME (PI t t₁) = inj₂ (λ { n () })
 is-NAME (LAMBDA t) = inj₂ (λ { n () })
 is-NAME (APPLY t t₁) = inj₂ (λ { n () })
@@ -1767,6 +1794,7 @@ is-MSEQ (NUM x) = inj₂ (λ { n () })
 is-MSEQ (IFLT t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-MSEQ (IFEQ t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-MSEQ (SUC t) = inj₂ (λ { n () })
+is-MSEQ (NATREC t t₁ t₂) = inj₂ (λ { n () })
 is-MSEQ (PI t t₁) = inj₂ (λ { n () })
 is-MSEQ (LAMBDA t) = inj₂ (λ { n () })
 is-MSEQ (APPLY t t₁) = inj₂ (λ { n () })
@@ -1831,6 +1859,7 @@ is-PAIR (NUM x) = inj₂ (λ { n m () })
 is-PAIR (IFLT t t₁ t₂ t₃) = inj₂ (λ { n m () })
 is-PAIR (IFEQ t t₁ t₂ t₃) = inj₂ (λ { n m () })
 is-PAIR (SUC t) = inj₂ (λ { n m () })
+is-PAIR (NATREC t t₁ t₂) = inj₂ (λ { n m () })
 is-PAIR (PI t t₁) = inj₂ (λ { n m () })
 is-PAIR (LAMBDA t) = inj₂ (λ { n m () })
 is-PAIR (APPLY t t₁) = inj₂ (λ { n m () })
@@ -1895,6 +1924,7 @@ is-SUP (NUM x) = inj₂ (λ { n m () })
 is-SUP (IFLT t t₁ t₂ t₃) = inj₂ (λ { n m () })
 is-SUP (IFEQ t t₁ t₂ t₃) = inj₂ (λ { n m () })
 is-SUP (SUC t) = inj₂ (λ { n m () })
+is-SUP (NATREC t t₁ t₂) = inj₂ (λ { n m () })
 is-SUP (PI t t₁) = inj₂ (λ { n m () })
 is-SUP (LAMBDA t) = inj₂ (λ { n m () })
 is-SUP (APPLY t t₁) = inj₂ (λ { n m () })
@@ -2025,6 +2055,7 @@ is-INL (NUM x) = inj₂ (λ { n () })
 is-INL (IFLT t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-INL (IFEQ t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-INL (SUC t) = inj₂ (λ { n () })
+is-INL (NATREC t t₁ t₂) = inj₂ (λ { n () })
 is-INL (PI t t₁) = inj₂ (λ { n () })
 is-INL (LAMBDA t) = inj₂ (λ { n () })
 is-INL (APPLY t t₁) = inj₂ (λ { n () })
@@ -2089,6 +2120,7 @@ is-INR (NUM x) = inj₂ (λ { n () })
 is-INR (IFLT t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-INR (IFEQ t t₁ t₂ t₃) = inj₂ (λ { n () })
 is-INR (SUC t) = inj₂ (λ { n () })
+is-INR (NATREC t t₁ t₂) = inj₂ (λ { n () })
 is-INR (PI t t₁) = inj₂ (λ { n () })
 is-INR (LAMBDA t) = inj₂ (λ { n () })
 is-INR (APPLY t t₁) = inj₂ (λ { n () })
@@ -2281,6 +2313,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {IFLT b b₁ b₂ b₃} ()
 ∼vals→isValue₂ {a} {IFEQ b b₁ b₂ b₃} ()
 ∼vals→isValue₂ {a} {SUC b} ()
+∼vals→isValue₂ {a} {NATREC b b₁ b₂} ()
 ∼vals→isValue₂ {a} {PI b b₁} isv = tt
 ∼vals→isValue₂ {a} {LAMBDA b} isv = tt
 ∼vals→isValue₂ {a} {APPLY b b₁} ()
@@ -2347,6 +2380,7 @@ data ∼vals : Term → Term → Set where
 ¬read (IFLT t t₁ t₂ t₃) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂ ∧ ¬read t₃
 ¬read (IFEQ t t₁ t₂ t₃) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂ ∧ ¬read t₃
 ¬read (SUC t) = ¬read t
+¬read (NATREC t t₁ t₂) = ¬read t ∧ ¬read t₁ ∧ ¬read t₂
 ¬read (PI t t₁) = ¬read t ∧ ¬read t₁
 ¬read (LAMBDA t) = ¬read t
 ¬read (APPLY t t₁) = ¬read t ∧ ¬read t₁
@@ -2423,6 +2457,7 @@ data ∼vals : Term → Term → Set where
 ¬names (IFLT t t₁ t₂ t₃) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂ ∧ ¬names t₃
 ¬names (IFEQ t t₁ t₂ t₃) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂ ∧ ¬names t₃
 ¬names (SUC t) = ¬names t
+¬names (NATREC t t₁ t₂) = ¬names t ∧ ¬names t₁ ∧ ¬names t₂
 ¬names (PI t t₁) = ¬names t ∧ ¬names t₁
 ¬names (LAMBDA t) = ¬names t
 ¬names (APPLY t t₁) = ¬names t ∧ ¬names t₁
@@ -2503,6 +2538,7 @@ noseq (NUM x) = true
 noseq (IFLT t t₁ t₂ t₃) = noseq t ∧ noseq t₁ ∧ noseq t₂ ∧ noseq t₃
 noseq (IFEQ t t₁ t₂ t₃) = noseq t ∧ noseq t₁ ∧ noseq t₂ ∧ noseq t₃
 noseq (SUC t) = noseq t
+noseq (NATREC t t₁ t₂) = noseq t ∧ noseq t₁ ∧ noseq t₂
 noseq (PI t t₁) = noseq t ∧ noseq t₁
 noseq (LAMBDA t) = noseq t
 noseq (APPLY t t₁) = noseq t ∧ noseq t₁
@@ -2569,6 +2605,7 @@ noseq (SHRINK t) = noseq t
 ¬enc (IFLT t t₁ t₂ t₃) = ¬enc t ∧ ¬enc t₁ ∧ ¬enc t₂ ∧ ¬enc t₃
 ¬enc (IFEQ t t₁ t₂ t₃) = ¬enc t ∧ ¬enc t₁ ∧ ¬enc t₂ ∧ ¬enc t₃
 ¬enc (SUC t) = ¬enc t
+¬enc (NATREC t t₁ t₂) = ¬enc t ∧ ¬enc t₁ ∧ ¬enc t₂
 ¬enc (PI t t₁) = ¬enc t ∧ ¬enc t₁
 ¬enc (LAMBDA t) = ¬enc t
 ¬enc (APPLY t t₁) = ¬enc t ∧ ¬enc t₁

@@ -108,6 +108,7 @@ abstract
   noseq-shiftNameDown n (IFLT a a₁ a₂ a₃) rewrite noseq-shiftNameDown n a | noseq-shiftNameDown n a₁ | noseq-shiftNameDown n a₂ | noseq-shiftNameDown n a₃ = refl
   noseq-shiftNameDown n (IFEQ a a₁ a₂ a₃) rewrite noseq-shiftNameDown n a | noseq-shiftNameDown n a₁ | noseq-shiftNameDown n a₂ | noseq-shiftNameDown n a₃ = refl
   noseq-shiftNameDown n (SUC a) rewrite noseq-shiftNameDown n a = refl
+  noseq-shiftNameDown n (NATREC a a₁ a₂) rewrite noseq-shiftNameDown n a | noseq-shiftNameDown n a₁ | noseq-shiftNameDown n a₂ = refl
   noseq-shiftNameDown n (PI a a₁) rewrite noseq-shiftNameDown n a | noseq-shiftNameDown n a₁ = refl
   noseq-shiftNameDown n (LAMBDA a) rewrite noseq-shiftNameDown n a = refl
   noseq-shiftNameDown n (APPLY a a₁) rewrite noseq-shiftNameDown n a | noseq-shiftNameDown n a₁ = refl
@@ -170,6 +171,7 @@ abstract
   noseq-renn n m (IFLT a a₁ a₂ a₃) = ≡∧4 (noseq-renn n m a) (noseq-renn n m a₁) (noseq-renn n m a₂) (noseq-renn n m a₃)
   noseq-renn n m (IFEQ a a₁ a₂ a₃) = ≡∧4 (noseq-renn n m a) (noseq-renn n m a₁) (noseq-renn n m a₂) (noseq-renn n m a₃)
   noseq-renn n m (SUC a) = noseq-renn n m a
+  noseq-renn n m (NATREC a a₁ a₂) = ≡∧3 (noseq-renn n m a) (noseq-renn n m a₁) (noseq-renn n m a₂)
   noseq-renn n m (PI a a₁) = ≡∧ (noseq-renn n m a) (noseq-renn n m a₁)
   noseq-renn n m (LAMBDA a) = noseq-renn n m a
   noseq-renn n m (APPLY a a₁) = ≡∧ (noseq-renn n m a) (noseq-renn n m a₁)
@@ -227,6 +229,22 @@ abstract
   ¬Seq-sub {a} {b} nsa nsb =
     trans (noseq-shiftDown 0 (subv 0 (shiftUp 0 a) b))
           (¬Seq-subv 0 {shiftUp 0 a} {b} (trans (noseq-shiftUp 0 a) nsa) nsb)
+
+
+→noseq-NATRECr : {n : ℕ} {b c : Term}
+               → noseq b ≡ true
+               → noseq c ≡ true
+               → noseq (NATRECr n b c) ≡ true
+→noseq-NATRECr {0} {b} {c} nb nc = nb
+→noseq-NATRECr {suc n} {b} {c} nb nc rewrite nb | nc = refl
+
+
+→¬enc-NATRECr : {n : ℕ} {b c : Term}
+               → ¬enc b ≡ true
+               → ¬enc c ≡ true
+               → ¬enc (NATRECr n b c) ≡ true
+→¬enc-NATRECr {0} {b} {c} nb nc = nb
+→¬enc-NATRECr {suc n} {b} {c} nb nc rewrite nb | nc = refl
 
 
 abstract
@@ -313,6 +331,16 @@ abstract
   ... | inj₁ (t' , w1' , z₁)
     rewrite z₁ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = ¬Seq→step w1 w1' t t' z₁ nseq
+  ... | inj₂ z₁ rewrite z₁ = ⊥-elim (¬just≡nothing (sym comp))
+  -- NATREC
+  ¬Seq→step w1 w2 (NATREC t t₁ t₂) u comp nseq with is-NUM t
+  ... | inj₁ (n₁ , p₁)
+    rewrite p₁ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    = →noseq-NATRECr {n₁} {t₁} {t₂} (∧≡true→ₗ (noseq t₁) (noseq t₂) nseq) (∧≡true→ᵣ (noseq t₁) (noseq t₂) nseq)
+  ¬Seq→step w1 w2 (NATREC t t₁ t₂) u comp nseq | inj₂ p₁ with step⊎ t w1
+  ... | inj₁ (t' , w1' , z₁)
+    rewrite z₁ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    = ∧≡true→1r-3 {noseq t} {noseq t₁} {noseq t₂} {noseq t'} nseq (¬Seq→step w1 w1' t t' z₁ (∧≡true→1-3 {noseq t} {noseq t₁} {noseq t₂} nseq))
   ... | inj₂ z₁ rewrite z₁ = ⊥-elim (¬just≡nothing (sym comp))
   -- PI
   ¬Seq→step w1 w2 (PI t t₁) u comp nseq
@@ -634,6 +662,7 @@ abstract
 ¬enc-shiftUp n (IFLT a a₁ a₂ a₃) = ≡∧ (¬enc-shiftUp n a) (≡∧ (¬enc-shiftUp n a₁) (≡∧ (¬enc-shiftUp n a₂) (¬enc-shiftUp n a₃)))
 ¬enc-shiftUp n (IFEQ a a₁ a₂ a₃) = ≡∧ (¬enc-shiftUp n a) (≡∧ (¬enc-shiftUp n a₁) (≡∧ (¬enc-shiftUp n a₂) (¬enc-shiftUp n a₃)))
 ¬enc-shiftUp n (SUC a) = ¬enc-shiftUp n a
+¬enc-shiftUp n (NATREC a a₁ a₂) = ≡∧ (¬enc-shiftUp n a) (≡∧ (¬enc-shiftUp n a₁) (¬enc-shiftUp n a₂))
 ¬enc-shiftUp n (PI a a₁) = ≡∧ (¬enc-shiftUp n a) (¬enc-shiftUp (suc n) a₁)
 ¬enc-shiftUp n (LAMBDA a) = ¬enc-shiftUp (suc n) a
 ¬enc-shiftUp n (APPLY a a₁) = ≡∧ (¬enc-shiftUp n a) (¬enc-shiftUp n a₁)
@@ -778,6 +807,7 @@ abstract
 ¬enc-shiftNameUp n (IFLT a a₁ a₂ a₃) = ≡∧ (¬enc-shiftNameUp n a) (≡∧ (¬enc-shiftNameUp n a₁) (≡∧ (¬enc-shiftNameUp n a₂) (¬enc-shiftNameUp n a₃)))
 ¬enc-shiftNameUp n (IFEQ a a₁ a₂ a₃) = ≡∧ (¬enc-shiftNameUp n a) (≡∧ (¬enc-shiftNameUp n a₁) (≡∧ (¬enc-shiftNameUp n a₂) (¬enc-shiftNameUp n a₃)))
 ¬enc-shiftNameUp n (SUC a) = ¬enc-shiftNameUp n a
+¬enc-shiftNameUp n (NATREC a a₁ a₂) = ≡∧ (¬enc-shiftNameUp n a) (≡∧ (¬enc-shiftNameUp n a₁) (¬enc-shiftNameUp n a₂))
 ¬enc-shiftNameUp n (PI a a₁) = ≡∧ (¬enc-shiftNameUp n a) (¬enc-shiftNameUp n a₁)
 ¬enc-shiftNameUp n (LAMBDA a) = ¬enc-shiftNameUp n a
 ¬enc-shiftNameUp n (APPLY a a₁) = ≡∧ (¬enc-shiftNameUp n a) (¬enc-shiftNameUp n a₁)
@@ -834,6 +864,7 @@ abstract
 ¬enc-shiftNameDown n (IFLT a a₁ a₂ a₃) = ≡∧ (¬enc-shiftNameDown n a) (≡∧ (¬enc-shiftNameDown n a₁) (≡∧ (¬enc-shiftNameDown n a₂) (¬enc-shiftNameDown n a₃)))
 ¬enc-shiftNameDown n (IFEQ a a₁ a₂ a₃) = ≡∧ (¬enc-shiftNameDown n a) (≡∧ (¬enc-shiftNameDown n a₁) (≡∧ (¬enc-shiftNameDown n a₂) (¬enc-shiftNameDown n a₃)))
 ¬enc-shiftNameDown n (SUC a) = ¬enc-shiftNameDown n a
+¬enc-shiftNameDown n (NATREC a a₁ a₂) = ≡∧ (¬enc-shiftNameDown n a) (≡∧ (¬enc-shiftNameDown n a₁) (¬enc-shiftNameDown n a₂))
 ¬enc-shiftNameDown n (PI a a₁) = ≡∧ (¬enc-shiftNameDown n a) (¬enc-shiftNameDown n a₁)
 ¬enc-shiftNameDown n (LAMBDA a) = ¬enc-shiftNameDown n a
 ¬enc-shiftNameDown n (APPLY a a₁) = ≡∧ (¬enc-shiftNameDown n a) (¬enc-shiftNameDown n a₁)
@@ -893,6 +924,7 @@ abstract
 ¬enc-subn {v} {a} {IFLT t t₁ t₂ t₃} nwa nwt = →∧≡true4 {¬enc t} {¬enc t₁} {¬enc t₂} {¬enc t₃} {¬enc (subn v a t)} {¬enc (subn v a t₁)} {¬enc (subn v a t₂)} {¬enc (subn v a t₃)} (¬enc-subn {v} {a} {t} nwa) (¬enc-subn {v} {a} {t₁} nwa) (¬enc-subn {v} {a} {t₂} nwa) (¬enc-subn {v} {a} {t₃} nwa) nwt
 ¬enc-subn {v} {a} {IFEQ t t₁ t₂ t₃} nwa nwt = →∧≡true4 {¬enc t} {¬enc t₁} {¬enc t₂} {¬enc t₃} {¬enc (subn v a t)} {¬enc (subn v a t₁)} {¬enc (subn v a t₂)} {¬enc (subn v a t₃)} (¬enc-subn {v} {a} {t} nwa) (¬enc-subn {v} {a} {t₁} nwa) (¬enc-subn {v} {a} {t₂} nwa) (¬enc-subn {v} {a} {t₃} nwa) nwt
 ¬enc-subn {v} {a} {SUC t} nwa nwt = ¬enc-subn {v} {a} {t} nwa nwt
+¬enc-subn {v} {a} {NATREC t t₁ t₂} nwa nwt = →∧≡true3 {¬enc t} {¬enc t₁} {¬enc t₂} {¬enc (subn v a t)} {¬enc (subn v a t₁)} {¬enc (subn v a t₂)} (¬enc-subn {v} {a} {t} nwa) (¬enc-subn {v} {a} {t₁} nwa) (¬enc-subn {v} {a} {t₂} nwa) nwt
 ¬enc-subn {v} {a} {PI t t₁} nwa nwt = →∧≡true {¬enc t} {¬enc t₁} {¬enc (subn v a t)} {¬enc (subn (suc v) (shiftUp 0 a) t₁)} (¬enc-subn {v} {a} {t} nwa) (¬enc-subn {suc v} {shiftUp 0 a} {t₁} (trans (¬enc-shiftUp 0 a) nwa)) nwt
 ¬enc-subn {v} {a} {LAMBDA t} nwa nwt = ¬enc-subn {suc v} {shiftUp 0 a} {t} (trans (¬enc-shiftUp 0 a) nwa) nwt
 ¬enc-subn {v} {a} {APPLY t t₁} nwa nwt = →∧≡true {¬enc t} {¬enc t₁} {¬enc (subn v a t)} {¬enc (subn v a t₁)} (¬enc-subn {v} {a} {t} nwa) (¬enc-subn {v} {a} {t₁} nwa) nwt
@@ -948,6 +980,7 @@ abstract
 ¬enc-renn n m (IFLT a a₁ a₂ a₃) = ≡∧ {¬enc (renn n m a)} {¬enc a} {¬enc (renn n m a₁) ∧ ¬enc (renn n m a₂) ∧ ¬enc (renn n m a₃)} {¬enc a₁ ∧ ¬enc a₂ ∧ ¬enc a₃} (¬enc-renn n m a) (≡∧ {¬enc (renn n m a₁)} {¬enc a₁} {¬enc (renn n m a₂) ∧ ¬enc (renn n m a₃)} {¬enc a₂ ∧ ¬enc a₃} (¬enc-renn n m a₁) (≡∧ {¬enc (renn n m a₂)} {¬enc a₂} {¬enc (renn n m a₃)} {¬enc a₃} (¬enc-renn n m a₂) (¬enc-renn n m a₃)))
 ¬enc-renn n m (IFEQ a a₁ a₂ a₃) = ≡∧ {¬enc (renn n m a)} {¬enc a} {¬enc (renn n m a₁) ∧ ¬enc (renn n m a₂) ∧ ¬enc (renn n m a₃)} {¬enc a₁ ∧ ¬enc a₂ ∧ ¬enc a₃} (¬enc-renn n m a) (≡∧ {¬enc (renn n m a₁)} {¬enc a₁} {¬enc (renn n m a₂) ∧ ¬enc (renn n m a₃)} {¬enc a₂ ∧ ¬enc a₃} (¬enc-renn n m a₁) (≡∧ {¬enc (renn n m a₂)} {¬enc a₂} {¬enc (renn n m a₃)} {¬enc a₃} (¬enc-renn n m a₂) (¬enc-renn n m a₃)))
 ¬enc-renn n m (SUC a) = ¬enc-renn n m a
+¬enc-renn n m (NATREC a a₁ a₂) = ≡∧ {¬enc (renn n m a)} {¬enc a} {¬enc (renn n m a₁) ∧ ¬enc (renn n m a₂)} {¬enc a₁ ∧ ¬enc a₂} (¬enc-renn n m a) (≡∧ {¬enc (renn n m a₁)} {¬enc a₁} {¬enc (renn n m a₂)} {¬enc a₂} (¬enc-renn n m a₁) (¬enc-renn n m a₂))
 ¬enc-renn n m (PI a a₁) = ≡∧ {¬enc (renn n m a)} {¬enc a} {¬enc (renn n m a₁)} {¬enc a₁} (¬enc-renn n m a) (¬enc-renn n m a₁)
 ¬enc-renn n m (LAMBDA a) = ¬enc-renn n m a
 ¬enc-renn n m (APPLY a a₁) = ≡∧ {¬enc (renn n m a)} {¬enc a} {¬enc (renn n m a₁)} {¬enc a₁} (¬enc-renn n m a) (¬enc-renn n m a₁)
@@ -1098,6 +1131,16 @@ abstract
   ... | inj₁ (t' , w1' , z₁)
     rewrite z₁ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = ¬Enc→step w1 w1' t t' z₁ nenc
+  ... | inj₂ z₁ rewrite z₁ = ⊥-elim (¬just≡nothing (sym comp))
+  -- NATREC
+  ¬Enc→step w1 w2 (NATREC t t₁ t₂) u comp nenc with is-NUM t
+  ... | inj₁ (n₁ , p₁)
+    rewrite p₁ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    = →¬enc-NATRECr {n₁} {t₁} {t₂} (∧≡true→ₗ (¬enc t₁) (¬enc t₂) nenc) (∧≡true→ᵣ (¬enc t₁) (¬enc t₂) nenc)
+  ¬Enc→step w1 w2 (NATREC t t₁ t₂) u comp nenc | inj₂ p₁ with step⊎ t w1
+  ... | inj₁ (t' , w1' , z₁)
+    rewrite z₁ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    = ∧≡true→1r-3 {¬enc t} {¬enc t₁} {¬enc t₂} {¬enc t'} nenc (¬Enc→step w1 w1' t t' z₁ (∧≡true→1-3 {¬enc t} {¬enc t₁} {¬enc t₂} nenc))
   ... | inj₂ z₁ rewrite z₁ = ⊥-elim (¬just≡nothing (sym comp))
   -- PI
   ¬Enc→step w1 w2 (PI t t₁) u comp nenc

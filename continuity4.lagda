@@ -106,6 +106,7 @@ data updRel (name : Name) (f g : Term) : Term → Term → Set where
   updRel-IFLT    : (a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g c₁ c₂ → updRel name f g d₁ d₂ → updRel name f g (IFLT a₁ b₁ c₁ d₁) (IFLT a₂ b₂ c₂ d₂)
   updRel-IFEQ    : (a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g c₁ c₂ → updRel name f g d₁ d₂ → updRel name f g (IFEQ a₁ b₁ c₁ d₁) (IFEQ a₂ b₂ c₂ d₂)
   updRel-SUC     : (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (SUC a₁) (SUC a₂)
+  updRel-NATREC  : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g c₁ c₂ → updRel name f g (NATREC a₁ b₁ c₁) (NATREC a₂ b₂ c₂)
   updRel-PI      : (a₁ a₂ b₁ b₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g (PI a₁ b₁) (PI a₂ b₂)
   updRel-LAMBDA  : (a₁ a₂ : Term) → updRel name f g a₁ a₂ → updRel name f g (LAMBDA a₁) (LAMBDA a₂)
   updRel-APPLY   : (a₁ a₂ b₁ b₂ : Term) → updRel name f g a₁ a₂ → updRel name f g b₁ b₂ → updRel name f g (APPLY a₁ b₁) (APPLY a₂ b₂)
@@ -823,6 +824,73 @@ stepsPresUpdRel-SUC₁→ {n} {name} {f} {g} {a} {w} (k , v , w' , comp , isv , 
     comp2' = SUC⇓steps k2 comp2
 
 
+isHighestℕ-NATREC₁→ : {n : ℕ} {k : ℕ} {name : Name} {a b c v : Term} {w w' : 𝕎·}
+                      → (comp : steps k (NATREC a b c , w) ≡ (v , w'))
+                      → isValue v
+                      → isHighestℕ {k} {w} {w'} {NATREC a b c} {v} n name comp
+                      → Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+isHighestℕ-NATREC₁→ {n} {0} {name} {a} {b} {c} {v} {w} {w'} comp isv h
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+isHighestℕ-NATREC₁→ {n} {suc k} {name} {a} {b} {c} {v} {w} {w'} comp isv h with is-NUM a
+... | inj₁ (i , p) rewrite p = 0 , NUM i , w , refl , fst h , tt , _≤_.s≤s _≤_.z≤n
+... | inj₂ x with step⊎ a w
+... |    inj₁ (a0 , w0 , z) rewrite z =
+  suc (fst ind) , concl
+  where
+    ind : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a0 , w0) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+    ind = isHighestℕ-NATREC₁→ {n} {k} {name} {a0} {b} {c} {v} {w0} {w'} comp isv (snd h)
+
+    concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × suc (fst ind) < suc k)))
+    concl rewrite z =
+      fst (snd ind) , fst (snd (snd ind)) , fst (snd (snd (snd ind))) ,
+      (fst h , fst (snd (snd (snd (snd ind))))) ,
+      fst (snd (snd (snd (snd (snd ind))))) ,
+      _≤_.s≤s (snd (snd (snd (snd (snd (snd ind))))))
+... |    inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+
+
+
+stepsPresUpdRel-NATREC₁→ : {n : ℕ} {name : Name} {f g : Term} {a b c : Term} {w : 𝕎·}
+                           → stepsPresUpdRel n name f g (NATREC a b c) w
+                           → stepsPresUpdRel n name f g a w
+stepsPresUpdRel-NATREC₁→ {n} {name} {f} {g} {a} {b} {c} {w} (k , v , w' , comp , isv , ish , ind) =
+  fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
+  fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
+  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  where
+    hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
+                          isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
+                          × isValue u
+                          × k' < k))))
+    hv = isHighestℕ-NATREC₁→ {n} {k} {name} {a} {b} {c} {v} {w} {w'} comp isv ish
+
+
+
+→ΣstepsUpdRel-NATREC₁ : {name : Name} {f g : Term} {a₁ a₂ b₁ b₂ c₁ c₂ : Term} {w1 w : 𝕎·}
+                        → updRel name f g b₁ b₂
+                        → updRel name f g c₁ c₂
+                        → ΣstepsUpdRel name f g a₁ w1 a₂ w
+                        → ΣstepsUpdRel name f g (NATREC a₁ b₁ c₁) w1 (NATREC a₂ b₂ c₂) w
+→ΣstepsUpdRel-NATREC₁ {name} {f} {g} {a₁} {a₂} {b₁} {b₂} {c₁} {c₂} {w1} {w} ub uc (k1 , k2 , y1 , y2 , w3 , comp1 , comp2 , r) =
+  fst comp1' , fst comp2' , NATREC y1 b₁ c₁ , NATREC y2 b₂ c₂ , w3 , snd comp1' , snd comp2' ,
+  updRel-NATREC _ _ _ _ _ _ r ub uc
+  where
+    comp1' : NATREC a₁ b₁ c₁ ⇓ NATREC y1 b₁ c₁ from w1 to w3
+    comp1' = NATREC⇓steps k1 b₁ c₁ comp1
+
+    comp2' : NATREC a₂ b₂ c₂ ⇓ NATREC y2 b₂ c₂ from w to w
+    comp2' = NATREC⇓steps k2 b₂ c₂ comp2
+
+
 isHighestℕ-FIX₁→ : {n : ℕ} {k : ℕ} {name : Name} {a v : Term} {w w' : 𝕎·}
                       → (comp : steps k (FIX a , w) ≡ (v , w'))
                       → isValue v
@@ -1348,6 +1416,7 @@ abstract
   updRel-shiftUp n {name} {f} {g} cf cg {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (updRel-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updRel-IFLT _ _ _ _ _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁) (updRel-shiftUp n cf cg u₂) (updRel-shiftUp n cf cg u₃)
   updRel-shiftUp n {name} {f} {g} cf cg {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (updRel-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updRel-IFEQ _ _ _ _ _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁) (updRel-shiftUp n cf cg u₂) (updRel-shiftUp n cf cg u₃)
   updRel-shiftUp n {name} {f} {g} cf cg {.(SUC a₁)} {.(SUC a₂)} (updRel-SUC a₁ a₂ u) = updRel-SUC _ _ (updRel-shiftUp n cf cg u)
+  updRel-shiftUp n {name} {f} {g} cf cg {.(NATREC a₁ b₁ c₁)} {.(NATREC a₂ b₂ c₂)} (updRel-NATREC a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = updRel-NATREC _ _ _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁) (updRel-shiftUp n cf cg u₂)
   updRel-shiftUp n {name} {f} {g} cf cg {.(PI a₁ b₁)} {.(PI a₂ b₂)} (updRel-PI a₁ a₂ b₁ b₂ u u₁) = updRel-PI _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp (suc n) cf cg u₁)
   updRel-shiftUp n {name} {f} {g} cf cg {.(LAMBDA a₁)} {.(LAMBDA a₂)} (updRel-LAMBDA a₁ a₂ u) = updRel-LAMBDA _ _ (updRel-shiftUp (suc n) cf cg u)
   updRel-shiftUp n {name} {f} {g} cf cg {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (updRel-APPLY a₁ a₂ b₁ b₂ u u₁) = updRel-APPLY _ _ _ _ (updRel-shiftUp n cf cg u) (updRel-shiftUp n cf cg u₁)
@@ -1414,6 +1483,7 @@ abstract
   updRel-shiftDown n {name} {f} {g} cf cg {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (updRel-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updRel-IFLT _ _ _ _ _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁) (updRel-shiftDown n cf cg u₂) (updRel-shiftDown n cf cg u₃)
   updRel-shiftDown n {name} {f} {g} cf cg {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (updRel-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = updRel-IFEQ _ _ _ _ _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁) (updRel-shiftDown n cf cg u₂) (updRel-shiftDown n cf cg u₃)
   updRel-shiftDown n {name} {f} {g} cf cg {.(SUC a₁)} {.(SUC a₂)} (updRel-SUC a₁ a₂ u) = updRel-SUC _ _ (updRel-shiftDown n cf cg u)
+  updRel-shiftDown n {name} {f} {g} cf cg {.(NATREC a₁ b₁ c₁)} {.(NATREC a₂ b₂ c₂)} (updRel-NATREC a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = updRel-NATREC _ _ _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁) (updRel-shiftDown n cf cg u₂)
   updRel-shiftDown n {name} {f} {g} cf cg {.(PI a₁ b₁)} {.(PI a₂ b₂)} (updRel-PI a₁ a₂ b₁ b₂ u u₁) = updRel-PI _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown (suc n) cf cg u₁)
   updRel-shiftDown n {name} {f} {g} cf cg {.(LAMBDA a₁)} {.(LAMBDA a₂)} (updRel-LAMBDA a₁ a₂ u) = updRel-LAMBDA _ _ (updRel-shiftDown (suc n) cf cg u)
   updRel-shiftDown n {name} {f} {g} cf cg {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (updRel-APPLY a₁ a₂ b₁ b₂ u u₁) = updRel-APPLY _ _ _ _ (updRel-shiftDown n cf cg u) (updRel-shiftDown n cf cg u₁)
@@ -1486,6 +1556,7 @@ abstract
   updRel-subv v {name} {f} {g} cf cg {.(IFLT a₁ b₃ c₁ d₁)} {.(IFLT a₂ b₄ c₂ d₂)} {b₁} {b₂} (updRel-IFLT a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₂ ua ua₁ ua₂ ua₃) ub = updRel-IFLT _ _ _ _ _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub) (updRel-subv v cf cg ua₂ ub) (updRel-subv v cf cg ua₃ ub)
   updRel-subv v {name} {f} {g} cf cg {.(IFEQ a₁ b₃ c₁ d₁)} {.(IFEQ a₂ b₄ c₂ d₂)} {b₁} {b₂} (updRel-IFEQ a₁ a₂ b₃ b₄ c₁ c₂ d₁ d₂ ua ua₁ ua₂ ua₃) ub = updRel-IFEQ _ _ _ _ _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub) (updRel-subv v cf cg ua₂ ub) (updRel-subv v cf cg ua₃ ub)
   updRel-subv v {name} {f} {g} cf cg {.(SUC a₁)} {.(SUC a₂)} {b₁} {b₂} (updRel-SUC a₁ a₂ ua) ub = updRel-SUC _ _ (updRel-subv v cf cg ua ub)
+  updRel-subv v {name} {f} {g} cf cg {.(NATREC a₁ x₁ c₁)} {.(NATREC a₂ x₂ c₂)} {b₁} {b₂} (updRel-NATREC a₁ a₂ x₁ x₂ c₁ c₂ ua ua₁ ua₂) ub = updRel-NATREC _ _ _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub) (updRel-subv v cf cg ua₂ ub)
   updRel-subv v {name} {f} {g} cf cg {.(PI a₁ b₃)} {.(PI a₂ b₄)} {b₁} {b₂} (updRel-PI a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-PI _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv (suc v) cf cg ua₁ (updRel-shiftUp 0 cf cg ub))
   updRel-subv v {name} {f} {g} cf cg {.(LAMBDA a₁)} {.(LAMBDA a₂)} {b₁} {b₂} (updRel-LAMBDA a₁ a₂ ua) ub = updRel-LAMBDA _ _ (updRel-subv (suc v) cf cg ua (updRel-shiftUp 0 cf cg ub))
   updRel-subv v {name} {f} {g} cf cg {.(APPLY a₁ b₃)} {.(APPLY a₂ b₄)} {b₁} {b₂} (updRel-APPLY a₁ a₂ b₃ b₄ ua ua₁) ub = updRel-APPLY _ _ _ _ (updRel-subv v cf cg ua ub) (updRel-subv v cf cg ua₁ ub)
@@ -1724,6 +1795,7 @@ abstract
   updRel→¬Names {name} {f} {g} {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} nng (updRel-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = →∧4≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁) (updRel→¬Names nng u₂) (updRel→¬Names nng u₃)
   updRel→¬Names {name} {f} {g} {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} nng (updRel-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ u u₁ u₂ u₃) = →∧4≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁) (updRel→¬Names nng u₂) (updRel→¬Names nng u₃)
   updRel→¬Names {name} {f} {g} {.(SUC a₁)} {.(SUC a₂)} nng (updRel-SUC a₁ a₂ u) = updRel→¬Names nng u
+  updRel→¬Names {name} {f} {g} {.(NATREC a₁ b₁ c₁)} {.(NATREC a₂ b₂ c₂)} nng (updRel-NATREC a₁ a₂ b₁ b₂ c₁ c₂ u u₁ u₂) = →∧3≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁) (updRel→¬Names nng u₂)
   updRel→¬Names {name} {f} {g} {.(PI a₁ b₁)} {.(PI a₂ b₂)} nng (updRel-PI a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)
   updRel→¬Names {name} {f} {g} {.(LAMBDA a₁)} {.(LAMBDA a₂)} nng (updRel-LAMBDA a₁ a₂ u) = updRel→¬Names nng u
   updRel→¬Names {name} {f} {g} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} nng (updRel-APPLY a₁ a₂ b₁ b₂ u u₁) = →∧≡true (updRel→¬Names nng u) (updRel→¬Names nng u₁)

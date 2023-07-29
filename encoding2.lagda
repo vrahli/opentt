@@ -459,11 +459,11 @@ pairing-non-dec x y
 
 
 #cons : ℕ
-#cons = 49
+#cons = 50
 
 
 #cons-1 : ℕ
-#cons-1 = 48
+#cons-1 = 49
 
 
 -- MSEQ and MAPP are mapped to 0 as they involve meta sequences
@@ -526,6 +526,7 @@ Term→ℕ (UNIV x) = 45 + (x * #cons)
 Term→ℕ (LIFT t) = 46 + (Term→ℕ t * #cons)
 Term→ℕ (LOWER t) = 47 + (Term→ℕ t * #cons)
 Term→ℕ (SHRINK t) = 48 + (Term→ℕ t * #cons)
+Term→ℕ (NATREC t t₁ t₂) = 49 + (pairing3 (Term→ℕ t , Term→ℕ t₁ , Term→ℕ t₂) * #cons)
 
 
 ¬≡0→1≤ : (n : ℕ) → ¬ n ≡ 0 → 1 ≤ n
@@ -772,6 +773,7 @@ suc-/≤ n m d0 = ≤-trans (suc-/m n m) (suc/≤ n d0)
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 46 LIFT
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 47 LOWER
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 48 SHRINK
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))))))))))) = ℕ→Term-aux₃ n (λ ()) ind 49 NATREC
 --
 -- otherwise
 ... | _ = AX -- not possible - we return a default value
@@ -1309,6 +1311,11 @@ abstract
 -- From terms3
 ≡EQ : {a b c d e f : Term} → a ≡ b → c ≡ d → e ≡ f → EQ a c e ≡ EQ b d f
 ≡EQ {a} {b} {c} {d} {e} {f} x y z rewrite x | y | z = refl
+
+
+-- From terms3
+≡NATREC : {a b c d e f : Term} → a ≡ b → c ≡ d → e ≡ f → NATREC a c e ≡ NATREC b d f
+≡NATREC {a} {b} {c} {d} {e} {f} x y z rewrite x | y | z = refl
 
 
 \end{code}

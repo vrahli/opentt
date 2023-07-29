@@ -416,6 +416,7 @@ data updCtxt (name : Name) (f : Term) : Term → Set where
   updCtxt-IFLT    : (a b c d : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f c → updCtxt name f d → updCtxt name f (IFLT a b c d)
   updCtxt-IFEQ    : (a b c d : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f c → updCtxt name f d → updCtxt name f (IFEQ a b c d)
   updCtxt-SUC     : (a : Term) → updCtxt name f a → updCtxt name f (SUC a)
+  updCtxt-NATREC  : (a b c : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f c → updCtxt name f (NATREC a b c)
   updCtxt-PI      : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (PI a b)
   updCtxt-LAMBDA  : (a : Term) → updCtxt name f a → updCtxt name f (LAMBDA a)
   updCtxt-APPLY   : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (APPLY a b)
@@ -486,6 +487,7 @@ abstract
   updCtxt→differ {name} {f} {.(IFLT a b c d)} (updCtxt-IFLT a b c d u u₁ u₂ u₃) = differ-IFLT _ _ _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂) (updCtxt→differ u₃)
   updCtxt→differ {name} {f} {.(IFEQ a b c d)} (updCtxt-IFEQ a b c d u u₁ u₂ u₃) = differ-IFEQ _ _ _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂) (updCtxt→differ u₃)
   updCtxt→differ {name} {f} {.(SUC a)} (updCtxt-SUC a u) = differ-SUC _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(NATREC a b c)} (updCtxt-NATREC a b c u u₁ u₂) = differ-NATREC _ _ _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁) (updCtxt→differ u₂)
   updCtxt→differ {name} {f} {.(PI a b)} (updCtxt-PI a b u u₁) = differ-PI _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
   updCtxt→differ {name} {f} {.(LAMBDA a)} (updCtxt-LAMBDA a u) = differ-LAMBDA _ _ (updCtxt→differ u)
   updCtxt→differ {name} {f} {.(APPLY a b)} (updCtxt-APPLY a b u u₁) = differ-APPLY _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
@@ -551,6 +553,7 @@ abstract
   differ→updCtxt {name} {f} {.(IFLT a₁ b₁ c₁ d₁)} (differ-IFLT a₁ .a₁ b₁ .b₁ c₁ .c₁ d₁ .d₁ d d₂ d₃ d₄) = updCtxt-IFLT _ _ _ _ (differ→updCtxt d) (differ→updCtxt d₂) (differ→updCtxt d₃) (differ→updCtxt d₄)
   differ→updCtxt {name} {f} {.(IFEQ a₁ b₁ c₁ d₁)} (differ-IFEQ a₁ .a₁ b₁ .b₁ c₁ .c₁ d₁ .d₁ d d₂ d₃ d₄) = updCtxt-IFEQ _ _ _ _ (differ→updCtxt d) (differ→updCtxt d₂) (differ→updCtxt d₃) (differ→updCtxt d₄)
   differ→updCtxt {name} {f} {.(SUC a)} (differ-SUC a .a d) = updCtxt-SUC _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(NATREC a b c)} (differ-NATREC a .a b .b c .c d d₁ d₂) = updCtxt-NATREC _ _ _ (differ→updCtxt d) (differ→updCtxt d₁) (differ→updCtxt d₂)
   differ→updCtxt {name} {f} {.(PI a₁ b₁)} (differ-PI a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-PI _ _ (differ→updCtxt d) (differ→updCtxt d₁)
   differ→updCtxt {name} {f} {.(LAMBDA a)} (differ-LAMBDA a .a d) = updCtxt-LAMBDA _ (differ→updCtxt d)
   differ→updCtxt {name} {f} {.(APPLY a₁ b₁)} (differ-APPLY a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-APPLY _ _ (differ→updCtxt d) (differ→updCtxt d₁)
@@ -1342,6 +1345,55 @@ stepsPresHighestℕ-IFEQ₂→ {name} {f} {n} {b} {c} {d} {w} (k , v , w' , comp
   where
     q : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (SUC a) (SUC a') w0 w w')
     q = ΣhighestUpdCtxtAux-SUC₁ {k} (wcomp , i , u)
+
+
+
+ΣhighestUpdCtxtAux-NATREC₁-aux : {j : ℕ} {k : ℕ} {w w0 w1 w' : 𝕎·} {a b c a1 a' : Term} {name : Name} {f : Term} {n : ℕ}
+                               → ¬ isValue a
+                               → step a w ≡ just (a1 , w1)
+                               → (comp : steps k (a1 , w1) ≡ (a' , w'))
+                               → (getT≤ℕ w' n name → (getT≤ℕ w0 n name × getT≤ℕ w n name × isHighestℕ {k} {w1} {w'} {a1} {a'} n name comp))
+                               → ΣhighestUpdCtxtAux j name f n (NATREC a1 b c) (NATREC a' b c) w0 w1 w'
+                               → ΣhighestUpdCtxtAux (suc j) name f n (NATREC a b c) (NATREC a' b c) w0 w w'
+ΣhighestUpdCtxtAux-NATREC₁-aux {j} {k} {w} {w0} {w1} {w'} {a} {b} {c} {a1} {a'} {name} {f} {n} nv comp0 comp i (comp1 , g , u) with is-NUM a
+... | inj₁ (x , p) rewrite p = ⊥-elim (nv tt)
+... | inj₂ p rewrite comp0 = comp1 , (λ s → fst (g s) , fst (snd (i s)) , snd (g s)) , u
+
+
+
+ΣhighestUpdCtxtAux-NATREC₁ : {k : ℕ} {name : Name} {f : Term} {n : ℕ} {a b c a' : Term} {w0 w w' : 𝕎·}
+                        → updCtxt name f b
+                        → updCtxt name f c
+                        → ΣhighestUpdCtxtAux k name f n a a' w0 w w'
+                        → Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (NATREC a b c) (NATREC a' b c) w0 w w')
+ΣhighestUpdCtxtAux-NATREC₁ {0} {name} {f} {n} {a} {b} {c} {a'} {w0} {w} {w'} ub uc (comp , i , u)
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl , i , updCtxt-NATREC _ _ _ u ub uc
+ΣhighestUpdCtxtAux-NATREC₁ {suc k} {name} {f} {n} {a} {b} {c} {a'} {w0} {w} {w'} ub uc (comp , i , u) with step⊎ a w
+... | inj₁ (a1 , w1 , z) rewrite z with isValue⊎ a
+... |    inj₁ y rewrite stepVal a w y | sym (pair-inj₁ (just-inj z)) | sym (pair-inj₂ (just-inj z)) =
+  ΣhighestUpdCtxtAux-NATREC₁ {k} ub uc (comp , (λ s → fst (i s) , snd (snd (i s))) , u)
+... |    inj₂ y =
+  suc (fst ind) , ΣhighestUpdCtxtAux-NATREC₁-aux {fst ind} {k} y z comp i (snd ind)
+  where
+    ind : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (NATREC a1 b c) (NATREC a' b c) w0 w1 w')
+    ind = ΣhighestUpdCtxtAux-NATREC₁ {k} {name} {f} {n} {a1} {b} {c} {a'} {w0} {w1} {w'} ub uc (comp , (λ s → fst (i s) , snd (snd (i s))) , u)
+ΣhighestUpdCtxtAux-NATREC₁ {suc k} {name} {f} {n} {a} {b} {c} {a'} {w0} {w} {w'} ub uc (comp , i , u) | inj₂ z
+  rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl , i , updCtxt-NATREC _ _ _ u ub uc
+
+
+
+ΣhighestUpdCtxt-NATREC₁ : {name : Name} {f : Term} {n : ℕ} {a b c : Term} {w0 w : 𝕎·}
+                        → updCtxt name f b
+                        → updCtxt name f c
+                        → ΣhighestUpdCtxt name f n a w0 w
+                        → ΣhighestUpdCtxt name f n (NATREC a b c) w0 w
+ΣhighestUpdCtxt-NATREC₁ {name} {f} {n} {a} {b} {c} {w0} {w} ub uc (k , a' , w' , wcomp , i , u) =
+  fst q , NATREC a' b c , w' , snd q
+  where
+    q : Σ ℕ (λ j → ΣhighestUpdCtxtAux j name f n (NATREC a b c) (NATREC a' b c) w0 w w')
+    q = ΣhighestUpdCtxtAux-NATREC₁ {k} ub uc (wcomp , i , u)
 
 
 {--

@@ -169,6 +169,16 @@ abstract
       ind : ΣhighestUpdCtxt2 name f n a' w1 w1'
       ind = step-sat-isHighestℕ2 cc gc {w1} {w1'} {a} {a'} {n} {name} {f} compat wgt0 z (stepsPresHighestℕ2-SUC₁→ indb) ctxt nnf nnw idom cf
   ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+  step-sat-isHighestℕ2 cc gc {w1} {w2} {.(NATREC a a₁ a₂)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-NATREC a a₁ a₂ ctxt ctxt₁ ctxt₂) nnf nnw idom cf with is-NUM a
+  ... | inj₁ (k1 , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+    0 , NATRECr k1 a₁ a₂ , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-NATRECr {name} {f} {k1} {a₁} {a₂} cf ctxt₁ ctxt₂
+  ... | inj₂ p with step⊎ a w1
+  ... |    inj₁ (a' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
+    ΣhighestUpdCtxt2-NATREC₁ ctxt₁ ctxt₂ ind
+    where
+      ind : ΣhighestUpdCtxt2 name f n a' w1 w1'
+      ind = step-sat-isHighestℕ2 cc gc {w1} {w1'} {a} {a'} {n} {name} {f} compat wgt0 z (stepsPresHighestℕ2-NATREC₁→ indb) ctxt nnf nnw idom cf
+  ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
   step-sat-isHighestℕ2 cc gc {w1} {w2} {.(PI a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-PI a b₁ ctxt ctxt₁) nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , PI a b₁ , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-PI _ _ ctxt ctxt₁
   step-sat-isHighestℕ2 cc gc {w1} {w2} {.(LAMBDA a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-LAMBDA a ctxt) nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , LAMBDA a , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-LAMBDA _ ctxt
   step-sat-isHighestℕ2 cc gc {w1} {w2} {.(APPLY g a)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-APPLY g a ctxt ctxt₁) nnf nnw idom cf with is-LAM g

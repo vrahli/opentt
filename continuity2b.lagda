@@ -107,6 +107,7 @@ data updCtxt2 (name : Name) (f : Term) : Term → Set where
   updCtxt2-IFLT    : (a b c d : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f c → updCtxt2 name f d → updCtxt2 name f (IFLT a b c d)
   updCtxt2-IFEQ    : (a b c d : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f c → updCtxt2 name f d → updCtxt2 name f (IFEQ a b c d)
   updCtxt2-SUC     : (a : Term) → updCtxt2 name f a → updCtxt2 name f (SUC a)
+  updCtxt2-NATREC  : (a b c : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f c → updCtxt2 name f (NATREC a b c)
   updCtxt2-PI      : (a b : Term) → updCtxt2 name f a → updCtxt2 name f b → updCtxt2 name f (PI a b)
   updCtxt2-LAMBDA  : (a : Term) → updCtxt2 name f a → updCtxt2 name f (LAMBDA a)
   updCtxt2-MSEQ    : (s : 𝕊) → updCtxt2 name f (MSEQ s)
@@ -249,6 +250,7 @@ abstract
   →updCtxt2-shiftUp v {name} {f} cf {.(IFLT a b c d)} (updCtxt2-IFLT a b c d upd₁ upd₂ upd₃ upd₄) = updCtxt2-IFLT _ _ _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp v cf upd₂) (→updCtxt2-shiftUp v cf upd₃) (→updCtxt2-shiftUp v cf upd₄)
   →updCtxt2-shiftUp v {name} {f} cf {.(IFEQ a b c d)} (updCtxt2-IFEQ a b c d upd₁ upd₂ upd₃ upd₄) = updCtxt2-IFEQ _ _ _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp v cf upd₂) (→updCtxt2-shiftUp v cf upd₃) (→updCtxt2-shiftUp v cf upd₄)
   →updCtxt2-shiftUp v {name} {f} cf {.(SUC a)} (updCtxt2-SUC a upd₁) = updCtxt2-SUC _ (→updCtxt2-shiftUp v cf upd₁)
+  →updCtxt2-shiftUp v {name} {f} cf {.(NATREC a b c)} (updCtxt2-NATREC a b c upd₁ upd₂ upd₃) = updCtxt2-NATREC _ _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp v cf upd₂) (→updCtxt2-shiftUp v cf upd₃)
   →updCtxt2-shiftUp v {name} {f} cf {.(PI a b)} (updCtxt2-PI a b upd₁ upd₂) = updCtxt2-PI _ _ (→updCtxt2-shiftUp v cf upd₁) (→updCtxt2-shiftUp (suc v) cf upd₂)
   →updCtxt2-shiftUp v {name} {f} cf {.(LAMBDA a)} (updCtxt2-LAMBDA a upd₁) = updCtxt2-LAMBDA _ (→updCtxt2-shiftUp (suc v) cf upd₁)
   →updCtxt2-shiftUp v {name} {f} cf {.(MSEQ s)} (updCtxt2-MSEQ s) = updCtxt2-MSEQ _
@@ -316,6 +318,7 @@ abstract
   →updCtxt2-shiftDown v {name} {f} cf {.(IFLT a b c d)} (updCtxt2-IFLT a b c d upd₁ upd₂ upd₃ upd₄) = updCtxt2-IFLT _ _ _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown v cf upd₂) (→updCtxt2-shiftDown v cf upd₃) (→updCtxt2-shiftDown v cf upd₄)
   →updCtxt2-shiftDown v {name} {f} cf {.(IFEQ a b c d)} (updCtxt2-IFEQ a b c d upd₁ upd₂ upd₃ upd₄) = updCtxt2-IFEQ _ _ _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown v cf upd₂) (→updCtxt2-shiftDown v cf upd₃) (→updCtxt2-shiftDown v cf upd₄)
   →updCtxt2-shiftDown v {name} {f} cf {.(SUC a)} (updCtxt2-SUC a upd₁) = updCtxt2-SUC _ (→updCtxt2-shiftDown v cf upd₁)
+  →updCtxt2-shiftDown v {name} {f} cf {.(NATREC a b c)} (updCtxt2-NATREC a b c upd₁ upd₂ upd₃) = updCtxt2-NATREC _ _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown v cf upd₂) (→updCtxt2-shiftDown v cf upd₃)
   →updCtxt2-shiftDown v {name} {f} cf {.(PI a b)} (updCtxt2-PI a b upd₁ upd₂) = updCtxt2-PI _ _ (→updCtxt2-shiftDown v cf upd₁) (→updCtxt2-shiftDown (suc v) cf upd₂)
   →updCtxt2-shiftDown v {name} {f} cf {.(LAMBDA a)} (updCtxt2-LAMBDA a upd₁) = updCtxt2-LAMBDA _ (→updCtxt2-shiftDown (suc v) cf upd₁)
   →updCtxt2-shiftDown v {name} {f} cf {.(MSEQ s)} (updCtxt2-MSEQ s) = updCtxt2-MSEQ _
@@ -383,6 +386,7 @@ abstract
   →updCtxt2-shiftNameUp v {name} {f} cf {.(IFLT a b c d)} (updCtxt2-IFLT a b c d upd₁ upd₂ upd₃ upd₄) = updCtxt2-IFLT _ _ _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂) (→updCtxt2-shiftNameUp v cf upd₃) (→updCtxt2-shiftNameUp v cf upd₄)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(IFEQ a b c d)} (updCtxt2-IFEQ a b c d upd₁ upd₂ upd₃ upd₄) = updCtxt2-IFEQ _ _ _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂) (→updCtxt2-shiftNameUp v cf upd₃) (→updCtxt2-shiftNameUp v cf upd₄)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(SUC a)} (updCtxt2-SUC a upd₁) = updCtxt2-SUC _ (→updCtxt2-shiftNameUp v cf upd₁)
+  →updCtxt2-shiftNameUp v {name} {f} cf {.(NATREC a b c)} (updCtxt2-NATREC a b c upd₁ upd₂ upd₃) = updCtxt2-NATREC _ _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂) (→updCtxt2-shiftNameUp v cf upd₃)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(PI a b)} (updCtxt2-PI a b upd₁ upd₂) = updCtxt2-PI _ _ (→updCtxt2-shiftNameUp v cf upd₁) (→updCtxt2-shiftNameUp v cf upd₂)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(LAMBDA a)} (updCtxt2-LAMBDA a upd₁) = updCtxt2-LAMBDA _ (→updCtxt2-shiftNameUp v cf upd₁)
   →updCtxt2-shiftNameUp v {name} {f} cf {.(MSEQ s)} (updCtxt2-MSEQ s) = updCtxt2-MSEQ _
@@ -487,6 +491,7 @@ abstract
   updCtxt2-subv {name} {f} cf v {.(IFLT a b₁ c d)} {b} (updCtxt2-IFLT a b₁ c d upda upda₁ upda₂ upda₃) updb = updCtxt2-IFLT _ _ _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf v upda₁ updb) (updCtxt2-subv cf v upda₂ updb) (updCtxt2-subv cf v upda₃ updb)
   updCtxt2-subv {name} {f} cf v {.(IFEQ a b₁ c d)} {b} (updCtxt2-IFEQ a b₁ c d upda upda₁ upda₂ upda₃) updb = updCtxt2-IFEQ _ _ _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf v upda₁ updb) (updCtxt2-subv cf v upda₂ updb) (updCtxt2-subv cf v upda₃ updb)
   updCtxt2-subv {name} {f} cf v {.(SUC a)} {b} (updCtxt2-SUC a upda) updb = updCtxt2-SUC _ (updCtxt2-subv cf v upda updb)
+  updCtxt2-subv {name} {f} cf v {.(NATREC a a₁ a₂)} {b} (updCtxt2-NATREC a a₁ a₂ upda upda₁ upda₂) updb = updCtxt2-NATREC _ _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf v upda₁ updb) (updCtxt2-subv cf v upda₂ updb)
   updCtxt2-subv {name} {f} cf v {.(PI a b₁)} {b} (updCtxt2-PI a b₁ upda upda₁) updb = updCtxt2-PI _ _ (updCtxt2-subv cf v upda updb) (updCtxt2-subv cf (suc v) upda₁ (→updCtxt2-shiftUp 0 cf updb))
   updCtxt2-subv {name} {f} cf v {.(LAMBDA a)} {b} (updCtxt2-LAMBDA a upda) updb = updCtxt2-LAMBDA _ (updCtxt2-subv cf (suc v) upda (→updCtxt2-shiftUp 0 cf updb))
   updCtxt2-subv {name} {f} cf v {.(MSEQ s)} {b} (updCtxt2-MSEQ s) updb = updCtxt2-MSEQ _
@@ -635,6 +640,7 @@ abstract
   updCtxt2-refl name f (IFLT t t₁ t₂ t₃) nn = updCtxt2-IFLT _ _ _ _ (updCtxt2-refl name f t (¬∈++4→¬∈1 {_} {_} {names t} {names t₁} {names t₂} {names t₃} nn)) (updCtxt2-refl name f t₁ (¬∈++4→¬∈2 {_} {_} {names t} {names t₁} {names t₂} {names t₃} nn)) (updCtxt2-refl name f t₂ (¬∈++4→¬∈3 {_} {_} {names t} {names t₁} {names t₂} {names t₃} nn)) (updCtxt2-refl name f t₃ (¬∈++4→¬∈4 {_} {_} {names t} {names t₁} {names t₂} {names t₃} nn))
   updCtxt2-refl name f (IFEQ t t₁ t₂ t₃) nn = updCtxt2-IFEQ _ _ _ _ (updCtxt2-refl name f t (¬∈++4→¬∈1 {_} {_} {names t} {names t₁} {names t₂} {names t₃} nn)) (updCtxt2-refl name f t₁ (¬∈++4→¬∈2 {_} {_} {names t} {names t₁} {names t₂} {names t₃} nn)) (updCtxt2-refl name f t₂ (¬∈++4→¬∈3 {_} {_} {names t} {names t₁} {names t₂} {names t₃} nn)) (updCtxt2-refl name f t₃ (¬∈++4→¬∈4 {_} {_} {names t} {names t₁} {names t₂} {names t₃} nn))
   updCtxt2-refl name f (SUC t) nn = updCtxt2-SUC _ (updCtxt2-refl name f t nn)
+  updCtxt2-refl name f (NATREC t t₁ t₂) nn = updCtxt2-NATREC _ _ _ (updCtxt2-refl name f t (¬∈++3→¬∈1 {_} {_} {names t} {names t₁} {names t₂} nn)) (updCtxt2-refl name f t₁ (¬∈++3→¬∈2 {_} {_} {names t} {names t₁} {names t₂} nn)) (updCtxt2-refl name f t₂ (¬∈++3→¬∈3 {_} {_} {names t} {names t₁} {names t₂} nn))
   updCtxt2-refl name f (PI t t₁) nn = updCtxt2-PI _ _ (updCtxt2-refl name f t (¬∈++2→¬∈1 nn)) (updCtxt2-refl name f t₁ (¬∈++2→¬∈2 nn))
   updCtxt2-refl name f (LAMBDA t) nn = updCtxt2-LAMBDA _ (updCtxt2-refl name f t nn)
   updCtxt2-refl name f (MSEQ s) nn = updCtxt2-MSEQ _
@@ -711,6 +717,7 @@ abstract
   updCtxt2-shiftNameUp→ v {name} {f} cf {IFLT a a₁ a₂ a₃} (updCtxt2-IFLT .(shiftNameUp v a) .(shiftNameUp v a₁) .(shiftNameUp v a₂) .(shiftNameUp v a₃) upd₁ upd₂ upd₃ upd₄) = updCtxt2-IFLT _ _ _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂) (updCtxt2-shiftNameUp→ v cf upd₃) (updCtxt2-shiftNameUp→ v cf upd₄)
   updCtxt2-shiftNameUp→ v {name} {f} cf {IFEQ a a₁ a₂ a₃} (updCtxt2-IFEQ .(shiftNameUp v a) .(shiftNameUp v a₁) .(shiftNameUp v a₂) .(shiftNameUp v a₃) upd₁ upd₂ upd₃ upd₄) = updCtxt2-IFEQ _ _ _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂) (updCtxt2-shiftNameUp→ v cf upd₃) (updCtxt2-shiftNameUp→ v cf upd₄)
   updCtxt2-shiftNameUp→ v {name} {f} cf {SUC a} (updCtxt2-SUC .(shiftNameUp v a) upd₁) = updCtxt2-SUC _ (updCtxt2-shiftNameUp→ v cf upd₁)
+  updCtxt2-shiftNameUp→ v {name} {f} cf {NATREC a a₁ a₂} (updCtxt2-NATREC .(shiftNameUp v a) .(shiftNameUp v a₁) .(shiftNameUp v a₂) upd₁ upd₂ upd₃) = updCtxt2-NATREC _ _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂) (updCtxt2-shiftNameUp→ v cf upd₃)
   updCtxt2-shiftNameUp→ v {name} {f} cf {PI a a₁} (updCtxt2-PI .(shiftNameUp v a) .(shiftNameUp v a₁) upd₁ upd₂) = updCtxt2-PI _ _ (updCtxt2-shiftNameUp→ v cf upd₁) (updCtxt2-shiftNameUp→ v cf upd₂)
   updCtxt2-shiftNameUp→ v {name} {f} cf {LAMBDA a} upd =
     updCtxt2-shiftNameUp-LAMBDA→ v {name} {f} cf {a} {shiftNameUp v a} refl upd ind
@@ -1786,6 +1793,66 @@ stepsPresHighestℕ2-SUC₁→ {name} {f} {a} {w} (k , v , w' , comp , isv , ind
     hv = SUC→hasValue k a v w w' comp isv
 
 
+ΣhighestUpdCtxtAux2-NATREC₁-aux : {j : ℕ} {k : ℕ} {w w0 w1 w' : 𝕎·} {a a1 a' b c : Term} {name : Name} {f : Term} {n : ℕ}
+                               → ¬ isValue a
+                               → ¬ name ∈ names𝕎· w
+                               → name ∈ dom𝕎· w
+                               → step a w ≡ just (a1 , w1)
+                               → (comp : steps k (a1 , w1) ≡ (a' , w'))
+                               → (getT≤ℕ w' n name → (getT≤ℕ w0 n name × getT≤ℕ w n name × isHighestℕ {k} {w1} {w'} {a1} {a'} n name comp))
+                               → ΣhighestUpdCtxtAux2 j name f n (NATREC a1 b c) (NATREC a' b c) w0 w1 w'
+                               → ΣhighestUpdCtxtAux2 (suc j) name f n (NATREC a b c) (NATREC a' b c) w0 w w'
+ΣhighestUpdCtxtAux2-NATREC₁-aux {j} {k} {w} {w0} {w1} {w'} {a} {a1} {a'} {b} {c} {name} {f} {n} nv nnw idom comp0 comp i (comp1 , g , inw , u) with is-NUM a
+... | inj₁ (x , p) rewrite p = ⊥-elim (nv tt)
+... | inj₂ p rewrite comp0 = comp1 , (λ s → fst (g s) , fst (snd (i s)) , snd (g s)) , (nnw , idom , inw) , u
+
+
+
+ΣhighestUpdCtxtAux2-NATREC₁ : {k : ℕ} {name : Name} {f : Term} {n : ℕ} {a a' b c : Term} {w0 w w' : 𝕎·}
+                            → updCtxt2 name f b
+                            → updCtxt2 name f c
+                            → ΣhighestUpdCtxtAux2 k name f n a a' w0 w w'
+                            → Σ ℕ (λ j → ΣhighestUpdCtxtAux2 j name f n (NATREC a b c) (NATREC a' b c) w0 w w')
+ΣhighestUpdCtxtAux2-NATREC₁ {0} {name} {f} {n} {a} {a'} {b} {c} {w0} {w} {w'} ub uc (comp , i , inw , u)
+  rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl , i , inw , updCtxt2-NATREC _ _ _ u ub uc
+ΣhighestUpdCtxtAux2-NATREC₁ {suc k} {name} {f} {n} {a} {a'} {b} {c} {w0} {w} {w'} ub uc (comp , i , inw , u) with step⊎ a w
+... | inj₁ (a1 , w1 , z) rewrite z with isValue⊎ a
+... |    inj₁ y rewrite stepVal a w y | sym (pair-inj₁ (just-inj z)) | sym (pair-inj₂ (just-inj z)) =
+  ΣhighestUpdCtxtAux2-NATREC₁ {k} ub uc (comp , (λ s → fst (i s) , snd (snd (i s))) , snd (snd inw) , u)
+... |    inj₂ y =
+  suc (fst ind) , ΣhighestUpdCtxtAux2-NATREC₁-aux {fst ind} {k} y (fst inw) (fst (snd inw)) z comp i (snd ind)
+  where
+    ind : Σ ℕ (λ j → ΣhighestUpdCtxtAux2 j name f n (NATREC a1 b c) (NATREC a' b c) w0 w1 w')
+    ind = ΣhighestUpdCtxtAux2-NATREC₁ {k} {name} {f} {n} {a1} {a'} {b} {c} {w0} {w1} {w'} ub uc (comp , (λ s → fst (i s) , snd (snd (i s))) , snd (snd inw) , u)
+ΣhighestUpdCtxtAux2-NATREC₁ {suc k} {name} {f} {n} {a} {a'} {b} {c} {w0} {w} {w'} ub uc (comp , i , inw , u) | inj₂ z
+  rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp)
+  = 0 , refl , i , inw , updCtxt2-NATREC _ _ _ u ub uc
+
+
+
+ΣhighestUpdCtxt2-NATREC₁ : {name : Name} {f : Term} {n : ℕ} {a b c : Term} {w0 w : 𝕎·}
+                        → updCtxt2 name f b
+                        → updCtxt2 name f c
+                        → ΣhighestUpdCtxt2 name f n a w0 w
+                        → ΣhighestUpdCtxt2 name f n (NATREC a b c) w0 w
+ΣhighestUpdCtxt2-NATREC₁ {name} {f} {n} {a} {b} {c} {w0} {w} ub uc (k , a' , w' , wcomp , i , inw , u) =
+  fst q , NATREC a' b c , w' , snd q
+  where
+    q : Σ ℕ (λ j → ΣhighestUpdCtxtAux2 j name f n (NATREC a b c) (NATREC a' b c) w0 w w')
+    q = ΣhighestUpdCtxtAux2-NATREC₁ {k} ub uc (wcomp , i , inw , u)
+
+
+
+stepsPresHighestℕ2-NATREC₁→ : {name : Name} {f : Term} {a b c : Term} {w : 𝕎·}
+                            → stepsPresHighestℕ2 name f (NATREC a b c) w
+                            → stepsPresHighestℕ2 name f a w
+stepsPresHighestℕ2-NATREC₁→ {name} {f} {a} {b}{c} {w} (k , v , w' , comp , isv , ind) =
+  k , fst hv , fst (snd hv) , fst (snd (snd hv)) , snd (snd (snd hv)) , ind
+  where
+    hv : hasValueℕ k a w
+    hv = NATREC→hasValue k a b c v w w' comp isv
+
 
 ΣhighestUpdCtxtAux2-FIX₁-aux : {j : ℕ} {k : ℕ} {w w0 w1 w' : 𝕎·} {a a1 a' : Term} {name : Name} {f : Term} {n : ℕ}
                                → ¬ isValue a
@@ -2195,6 +2262,7 @@ abstract
   updCtxt2-renn name n m f .(IFLT a b c d) diff1 diff2 nf cf (updCtxt2-IFLT a b c d upd₁ upd₂ upd₃ upd₄) = updCtxt2-IFLT _ _ _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂) (updCtxt2-renn name n m f c diff1 diff2 nf cf upd₃) (updCtxt2-renn name n m f d diff1 diff2 nf cf upd₄)
   updCtxt2-renn name n m f .(IFEQ a b c d) diff1 diff2 nf cf (updCtxt2-IFEQ a b c d upd₁ upd₂ upd₃ upd₄) = updCtxt2-IFEQ _ _ _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂) (updCtxt2-renn name n m f c diff1 diff2 nf cf upd₃) (updCtxt2-renn name n m f d diff1 diff2 nf cf upd₄)
   updCtxt2-renn name n m f .(SUC a) diff1 diff2 nf cf (updCtxt2-SUC a upd₁) = updCtxt2-SUC _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
+  updCtxt2-renn name n m f .(NATREC a a₁ a₂) diff1 diff2 nf cf (updCtxt2-NATREC a a₁ a₂ upd₁ upd₂ upd₃) = updCtxt2-NATREC _ _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f a₁ diff1 diff2 nf cf upd₂) (updCtxt2-renn name n m f a₂ diff1 diff2 nf cf upd₃)
   updCtxt2-renn name n m f .(PI a b) diff1 diff2 nf cf (updCtxt2-PI a b upd₁ upd₂) = updCtxt2-PI _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂)
   updCtxt2-renn name n m f .(LAMBDA a) diff1 diff2 nf cf (updCtxt2-LAMBDA a upd₁) = updCtxt2-LAMBDA _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁)
   updCtxt2-renn name n m f .(APPLY a b) diff1 diff2 nf cf (updCtxt2-APPLY a b upd₁ upd₂) = updCtxt2-APPLY _ _ (updCtxt2-renn name n m f a diff1 diff2 nf cf upd₁) (updCtxt2-renn name n m f b diff1 diff2 nf cf upd₂)
@@ -2305,5 +2373,14 @@ updCtxt2-ENCr {name} {f} {a} u =
     (updCtxt2-NUM _)
     (updCtxt2-BOT name f)
     (updCtxt2-NUM _)
+
+
+updCtxt2-NATRECr : {name : Name} {f : Term} {n : ℕ} {b c : Term} (cf : # f)
+                 → updCtxt2 name f b
+                 → updCtxt2 name f c
+                 → updCtxt2 name f (NATRECr n b c)
+updCtxt2-NATRECr {name} {f} {0} {b} {c} cf ub uc = ub
+updCtxt2-NATRECr {name} {f} {suc n} {b} {c} cf ub uc =
+  updCtxt2-APPLY _ _ (updCtxt2-APPLY _ _ uc (updCtxt2-NUM _)) (updCtxt2-NATREC _ _ _ (updCtxt2-NUM _) ub uc)
 
 \end{code}

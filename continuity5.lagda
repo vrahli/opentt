@@ -96,6 +96,16 @@ open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 
+updRel-NATRECr : {name : Name} {f g : Term} {n : ℕ} {b1 b2 c1 c2 : Term} (cf : # f) (cg : # g)
+               → updRel name f g b1 b2
+               → updRel name f g c1 c2
+               → updRel name f g (NATRECr n b1 c1) (NATRECr n b2 c2)
+updRel-NATRECr {name} {f} {g} {0} {b1} {b2} {c1} {c2} cf cg ub uc = ub
+updRel-NATRECr {name} {f} {g} {suc n} {b1} {b2} {c1} {c2} cf cg ub uc =
+  updRel-APPLY _ _ _ _
+    (updRel-APPLY _ _ _ _ uc (updRel-NUM _))
+   (updRel-NATREC _ _ _ _ _ _ (updRel-NUM _) ub uc)
+
 
 updRel-WRECr : {name : Name} {f g : Term} {r1 r2 f1 f2 : Term} (cf : # f) (cg : # g)
                → updRel name f g r1 r2
@@ -218,6 +228,19 @@ abstract
     where
       ind' : ΣstepsUpdRel name f g a₁' w1' a₂ w
       ind' = step-updRel gc {n} {name} {f} {g} {a₁} {a₂} {a₁'} {w1} {w1'} {w} nnf nng cf cg z (stepsPresUpdRel-SUC₁→ ind) r gtn compat wgt0 eqn
+  ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
+  step-updRel gc {n} {name} {f} {g} {.(NATREC a₁ b₁ c₁)} {.(NATREC a₂ b₂ c₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-NATREC a₁ a₂ b₁ b₂ c₁ c₂ r r₁ r₂) gtn compat wgt0 eqn with is-NUM a₁
+  ... | inj₁ (i , p)
+    rewrite p | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) | updRel-NUMₗ→ r
+    = 0 , 1 , NATRECr i b₁ c₁ , NATRECr i b₂ c₂ , w1 , refl , refl ,
+      updRel-NATRECr {name} {f} {g} {i} {b₁} {b₂} {c₁} {c₂} cf cg r₁ r₂
+  ... | inj₂ p with step⊎ a₁ w1
+  ... |    inj₁ (a₁' , w1' , z)
+    rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
+    →ΣstepsUpdRel-NATREC₁ r₁ r₂ ind'
+    where
+      ind' : ΣstepsUpdRel name f g a₁' w1' a₂ w
+      ind' = step-updRel gc {n} {name} {f} {g} {a₁} {a₂} {a₁'} {w1} {w1'} {w} nnf nng cf cg z (stepsPresUpdRel-NATREC₁→ ind) r gtn compat wgt0 eqn
   ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym comp))
   step-updRel gc {n} {name} {f} {g} {.(PI a₁ b₁)} {.(PI a₂ b₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-PI a₁ a₂ b₁ b₂ r r₁) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , PI a₁ b₁ , PI a₂ b₂ , w1 , refl , refl , updRel-PI _ _ _ _ r r₁
   step-updRel gc {n} {name} {f} {g} {.(LAMBDA a₁)} {.(LAMBDA a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-LAMBDA a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , LAMBDA a₁ , LAMBDA a₂ , w1 , refl , refl , updRel-LAMBDA _ _ r
@@ -596,6 +619,7 @@ abstract
   updRel-refl {name} {f} {g} {IFLT a a₁ a₂ a₃} nn = updRel-IFLT _ _ _ _ _ _ _ _ (updRel-refl (∧≡true→1-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel-refl (∧≡true→2-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel-refl (∧≡true→3-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel-refl (∧≡true→4-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn))
   updRel-refl {name} {f} {g} {IFEQ a a₁ a₂ a₃} nn = updRel-IFEQ _ _ _ _ _ _ _ _ (updRel-refl (∧≡true→1-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel-refl (∧≡true→2-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel-refl (∧≡true→3-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn)) (updRel-refl (∧≡true→4-4 {¬names a} {¬names a₁} {¬names a₂} {¬names a₃} nn))
   updRel-refl {name} {f} {g} {SUC a} nn = updRel-SUC _ _ (updRel-refl nn)
+  updRel-refl {name} {f} {g} {NATREC a a₁ a₂} nn = updRel-NATREC _ _ _ _ _ _ (updRel-refl (∧≡true→1-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updRel-refl (∧≡true→2-3 {¬names a} {¬names a₁} {¬names a₂} nn)) (updRel-refl (∧≡true→3-3 {¬names a} {¬names a₁} {¬names a₂} nn))
   updRel-refl {name} {f} {g} {PI a a₁} nn = updRel-PI _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   updRel-refl {name} {f} {g} {LAMBDA a} nn = updRel-LAMBDA _ _ (updRel-refl nn)
   updRel-refl {name} {f} {g} {APPLY a a₁} nn = updRel-APPLY _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))

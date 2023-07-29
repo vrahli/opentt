@@ -553,6 +553,17 @@ abstract
 
 
 abstract
+  ℕ→Term→ℕ-NATREC : (t₁ t₂ t₃ : Term)
+                  → ℕ→Term (Term→ℕ t₁) ≡ t₁
+                  → ℕ→Term (Term→ℕ t₂) ≡ t₂
+                  → ℕ→Term (Term→ℕ t₃) ≡ t₃
+                  → ℕ→Term (49 + (pairing3 (Term→ℕ t₁ , Term→ℕ t₂ , Term→ℕ t₃) * #cons)) ≡ NATREC t₁ t₂ t₃
+  ℕ→Term→ℕ-NATREC t₁ t₂ t₃ ind₁ ind₂ ind₃
+    rewrite *#cons%≡k 49 (pairing3 (Term→ℕ t₁ , Term→ℕ t₂ , Term→ℕ t₃)) (m<m+n 49 {#cons ∸ 49} (_≤_.s≤s _≤_.z≤n))
+    = ℕ→Term→ℕ₃ t₁ t₂ t₃ NATREC 48 ≡NATREC ind₁ ind₂ ind₃
+
+
+abstract
   ℕ→Term→ℕ : (t : Term) → noseq t ≡ true → ℕ→Term (Term→ℕ t) ≡ t
   ℕ→Term→ℕ (VAR x) nseq = ℕ→Term→ℕ-VAR x
 --  ℕ→Term→ℕ NAT nseq = refl
@@ -609,6 +620,7 @@ abstract
   ℕ→Term→ℕ (LIFT t) nseq = ℕ→Term→ℕ-LIFT t (ℕ→Term→ℕ t nseq)
   ℕ→Term→ℕ (LOWER t) nseq = ℕ→Term→ℕ-LOWER t (ℕ→Term→ℕ t nseq)
   ℕ→Term→ℕ (SHRINK t) nseq = ℕ→Term→ℕ-SHRINK t (ℕ→Term→ℕ t nseq)
+  ℕ→Term→ℕ (NATREC t t₁ t₂) nseq = ℕ→Term→ℕ-NATREC t t₁ t₂ (ℕ→Term→ℕ t (∧≡true→1-3 {noseq t} {noseq t₁} {noseq t₂} nseq)) (ℕ→Term→ℕ t₁ (∧≡true→2-3 {noseq t} {noseq t₁} {noseq t₂} nseq)) (ℕ→Term→ℕ t₂ (∧≡true→3-3 {noseq t} {noseq t₁} {noseq t₂} nseq))
 
 
 

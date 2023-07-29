@@ -632,6 +632,12 @@ abstract
               | fvars-shiftUp≡ n t₂
             | fvars-shiftUp≡ n t₃ = refl
   fvars-shiftUp≡ n (SUC t) = fvars-shiftUp≡ n t
+  fvars-shiftUp≡ n (NATREC t t₁ t₂)
+    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
+            | map-++-commute (sucIf≤ n) (fvars t₁) (fvars t₂)
+            | fvars-shiftUp≡ n t
+            | fvars-shiftUp≡ n t₁
+            | fvars-shiftUp≡ n t₂ = refl
   fvars-shiftUp≡ n (PI t t₁)
     rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (fvars t₁))
             | fvars-shiftUp≡ n t
@@ -1007,6 +1013,12 @@ abstract
             | fvars-shiftDown≡ n t₂
             | fvars-shiftDown≡ n t₃ = refl
   fvars-shiftDown≡ n (SUC t) = fvars-shiftDown≡ n t
+  fvars-shiftDown≡ n (NATREC t t₁ t₂)
+    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
+            | map-++-commute (predIf≤ n) (fvars t₁) (fvars t₂)
+            | fvars-shiftDown≡ n t
+            | fvars-shiftDown≡ n t₁
+            | fvars-shiftDown≡ n t₂ = refl
   fvars-shiftDown≡ n (PI t t₁)
     rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
             | fvars-shiftDown≡ n t
@@ -1215,6 +1227,7 @@ abstract
   fvars-shiftNameUp n (IFLT a a₁ a₂ a₃) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ | fvars-shiftNameUp n a₂ | fvars-shiftNameUp n a₃ = refl
   fvars-shiftNameUp n (IFEQ a a₁ a₂ a₃) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ | fvars-shiftNameUp n a₂ | fvars-shiftNameUp n a₃ = refl
   fvars-shiftNameUp n (SUC a) rewrite fvars-shiftNameUp n a = refl
+  fvars-shiftNameUp n (NATREC a a₁ a₂) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ | fvars-shiftNameUp n a₂ = refl
   fvars-shiftNameUp n (PI a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
   fvars-shiftNameUp n (LAMBDA a) rewrite fvars-shiftNameUp n a = refl
   fvars-shiftNameUp n (APPLY a a₁) rewrite fvars-shiftNameUp n a | fvars-shiftNameUp n a₁ = refl
@@ -1312,6 +1325,13 @@ abstract
                                    (∈removeV++R {_} {v} {fvars b₁} {fvars b₂ ++ fvars b₃} {fvars a}
                                                 (∈removeV++R {_} {v} {fvars b₂} {fvars b₃} {fvars a} (fvars-subv v a b₃ r)))
   fvars-subv v a (SUC b) = fvars-subv v a b
+  fvars-subv v a (NATREC b b₁ b₂) i with ∈-++⁻ (fvars (subv v a b)) i
+  ... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {fvars b₁ ++ fvars b₂} {fvars a} (fvars-subv v a b p)
+  ... | inj₂ p with ∈-++⁻ (fvars (subv v a b₁)) p
+  ... | inj₁ q = ∈removeV++R {_} {v} {fvars b} {fvars b₁ ++ fvars b₂} {fvars a}
+                             (∈removeV++L {_} {v} {fvars b₁} {fvars b₂} {fvars a} (fvars-subv v a b₁ q))
+  ... | inj₂ q = ∈removeV++R {_} {v} {fvars b} {fvars b₁ ++ fvars b₂} {fvars a}
+                             (∈removeV++R {_} {v} {fvars b₁} {fvars b₂} {fvars a} (fvars-subv v a b₂ q))
   fvars-subv v a (PI b b₁) {x} i with ∈-++⁻ (fvars (subv v a b)) i
   ... | inj₁ p = ∈removeV++L {_} {v} {fvars b} {lowerVars (fvars b₁)} {fvars a} (fvars-subv v a b p)
   ... | inj₂ p = ∈removeV++R {_} {v} {fvars b} {lowerVars (fvars b₁)} {fvars a} (→∈removeV-lowerVars++ x v (fvars b₁) a j)
@@ -1633,6 +1653,11 @@ abstract
             | shiftDown1-subv1-shiftUp0 n a b₃ ca = refl
   shiftDown1-subv1-shiftUp0 n a (SUC b) ca
     rewrite shiftDown1-subv1-shiftUp0 n a b ca = refl
+  shiftDown1-subv1-shiftUp0 n a (NATREC b b₁ b₂) ca
+    rewrite #shiftUp 0 (ct a ca)
+            | shiftDown1-subv1-shiftUp0 n a b ca
+            | shiftDown1-subv1-shiftUp0 n a b₁ ca
+            | shiftDown1-subv1-shiftUp0 n a b₂ ca = refl
   shiftDown1-subv1-shiftUp0 n a (PI b b₁) ca
     rewrite #shiftUp 0 (ct a ca)
             | shiftDown1-subv1-shiftUp0 (suc n) a b₁ ca
@@ -2115,6 +2140,16 @@ IFEQinj4 refl =  refl
 
 SUCinj : {a b : Term} → SUC a ≡ SUC b → a ≡ b
 SUCinj refl =  refl
+
+
+NATRECinj1 : {a b c d e f : Term} → NATREC a b c ≡ NATREC d e f → a ≡ d
+NATRECinj1 refl =  refl
+
+NATRECinj2 : {a b c d e f : Term} → NATREC a b c ≡ NATREC d e f → b ≡ e
+NATRECinj2 refl =  refl
+
+NATRECinj3 : {a b c d e f : Term} → NATREC a b c ≡ NATREC d e f → c ≡ f
+NATRECinj3 refl =  refl
 
 
 SETinj1 : {a b c d : Term} → SET a b ≡ SET c d → a ≡ c
@@ -2712,6 +2747,7 @@ abstract
   shiftUp-inj {n} {IFLT a a₁ a₂ a₃} {IFLT b b₁ b₂ b₃} e rewrite shiftUp-inj (IFLTinj1 e) | shiftUp-inj (IFLTinj2 e) | shiftUp-inj (IFLTinj3 e) | shiftUp-inj (IFLTinj4 e) = refl
   shiftUp-inj {n} {IFEQ a a₁ a₂ a₃} {IFEQ b b₁ b₂ b₃} e rewrite shiftUp-inj (IFEQinj1 e) | shiftUp-inj (IFEQinj2 e) | shiftUp-inj (IFEQinj3 e) | shiftUp-inj (IFEQinj4 e) = refl
   shiftUp-inj {n} {SUC a} {SUC b} e rewrite shiftUp-inj (SUCinj e) = refl
+  shiftUp-inj {n} {NATREC a a₁ a₂} {NATREC b b₁ b₂} e rewrite shiftUp-inj (NATRECinj1 e) | shiftUp-inj (NATRECinj2 e) | shiftUp-inj (NATRECinj3 e) = refl
   shiftUp-inj {n} {PI a a₁} {PI b b₁} e rewrite shiftUp-inj (PIinj1 e) | shiftUp-inj (PIinj2 e) = refl
   shiftUp-inj {n} {LAMBDA a} {LAMBDA b} e rewrite shiftUp-inj (LAMinj e) = refl
   shiftUp-inj {n} {APPLY a a₁} {APPLY b b₁} e rewrite shiftUp-inj (APPLYinj1 e) | shiftUp-inj (APPLYinj2 e) = refl
@@ -4150,6 +4186,23 @@ CTerm→CTerm1→Term (ct a c) = refl
   where
     c : # SUC ⌜ a ⌝
     c rewrite CTerm.closed a = refl
+
+
+#NATREC : CTerm → CTerm → CTerm → CTerm
+#NATREC a b c = ct (NATREC ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝) e
+  where
+    e : # NATREC ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝
+    e rewrite CTerm.closed a | CTerm.closed b | CTerm.closed c = refl
+
+
+#NATRECinj1 : {a b c d e f : CTerm} → #NATREC a b c ≡ #NATREC d e f → a ≡ d
+#NATRECinj1 c = CTerm≡ (NATRECinj1 (≡CTerm c))
+
+#NATRECinj2 : {a b c d e f : CTerm} → #NATREC a b c ≡ #NATREC d e f → b ≡ e
+#NATRECinj2 c = CTerm≡ (NATRECinj2 (≡CTerm c))
+
+#NATRECinj3 : {a b c d e f : CTerm} → #NATREC a b c ≡ #NATREC d e f → c ≡ f
+#NATRECinj3 c = CTerm≡ (NATRECinj3 (≡CTerm c))
 
 
 #[0]QLT : CTerm0 → CTerm0 → CTerm0

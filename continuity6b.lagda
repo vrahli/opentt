@@ -52,18 +52,26 @@ open import choiceBar
 open import encode
 
 
-module continuity6b {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-                    (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
-                    (X : ChoiceExt W C)
-                    (N : NewChoice {L} W C K G)
-                    (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+module continuity6b {L  : Level}
+                    (W  : PossibleWorlds {L})
+                    (M  : Mod W)
+                    (C  : Choice)
+                    (K  : Compatible {L} W C)
+                    (P  : Progress {L} W C K)
+                    (G  : GetChoice {L} W C K)
+                    (X  : ChoiceExt W C)
+                    (N  : NewChoice {L} W C K G)
+                    (E  : Extensionality 0ℓ (lsuc(lsuc(L))))
                     (EC : Encode)
        where
 
 
 open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
-open import terms2(W)(C)(K)(G)(X)(N)(EC) using (ssteps ; ssteps→steps ; CHOOSE⇓steps ; SUC⇓steps ; →steps-MAPP ; LET⇓steps ; SPREAD⇓steps ; WREC⇓steps ; DECIDE⇓steps ; IFLT-NUM-1st⇓steps ; IFEQ-NUM-1st⇓steps ; FIX⇓steps ; IFLT-NUM-2nd⇓ ; IFEQ-NUM-2nd⇓)
+open import terms2(W)(C)(K)(G)(X)(N)(EC)
+  using (ssteps ; ssteps→steps ; CHOOSE⇓steps ; SUC⇓steps ; →steps-MAPP ; LET⇓steps ; SPREAD⇓steps ; WREC⇓steps ;
+         NATREC⇓steps ; DECIDE⇓steps ; IFLT-NUM-1st⇓steps ; IFEQ-NUM-1st⇓steps ; FIX⇓steps ; IFLT-NUM-2nd⇓ ;
+         IFEQ-NUM-2nd⇓)
 open import terms3(W)(C)(K)(G)(X)(N)(EC) using (updGt ; suc→∈lowerNames ; upd)
 open import terms4(W)(C)(K)(G)(X)(N)(EC) using (steps→⊑ ; ∈names-renn-same ; names-shiftUp)
 --open import terms5(W)(C)(K)(G)(X)(N)(EC)
@@ -90,7 +98,9 @@ open import continuity-conds(W)(C)(K)(G)(X)(N)(EC)
 open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (force)
 open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (chooseT0if ; upd-decomp ; isHighestℕ)
 --open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (⊑chooseT0if ; isHighestℕ-updBody→< ; isHighestℕ-LET→ ; →APPLY-force⇓APPLY-NUM ; steps-trans+ ; steps-APPLY-val→ ; steps-APPLY-LAMBDA-FIX→)
+open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (⊑chooseT0if ; isHighestℕ-updBody→< ; isHighestℕ-LET→ ; →APPLY-force⇓APPLY-NUM ; steps-trans+ ;
+         steps-APPLY-val→ ; steps-APPLY-LAMBDA-FIX→)
 --open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 --open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -570,6 +580,7 @@ abstract
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} {l} {k} sub nad nbd (updRel2-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ upd₁ upd₂ upd₃ upd₄) = updRel2-IFLT _ _ _ _ _ _ _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆4→1 {names a₁} {names b₁} {names c₁} {names d₁} nad) (++⊆4→1 {names a₂} {names b₂} {names c₂} {names d₂} nbd) upd₁) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆4→2 {names a₁} {names b₁} {names c₁} {names d₁} nad) (++⊆4→2 {names a₂} {names b₂} {names c₂} {names d₂} nbd) upd₂) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆4→3 {names a₁} {names b₁} {names c₁} {names d₁} nad) (++⊆4→3 {names a₂} {names b₂} {names c₂} {names d₂} nbd) upd₃) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆4→4 {names a₁} {names b₁} {names c₁} {names d₁} nad) (++⊆4→4 {names a₂} {names b₂} {names c₂} {names d₂} nbd) upd₄)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} {l} {k} sub nad nbd (updRel2-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ upd₁ upd₂ upd₃ upd₄) = updRel2-IFEQ _ _ _ _ _ _ _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆4→1 {names a₁} {names b₁} {names c₁} {names d₁} nad) (++⊆4→1 {names a₂} {names b₂} {names c₂} {names d₂} nbd) upd₁) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆4→2 {names a₁} {names b₁} {names c₁} {names d₁} nad) (++⊆4→2 {names a₂} {names b₂} {names c₂} {names d₂} nbd) upd₂) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆4→3 {names a₁} {names b₁} {names c₁} {names d₁} nad) (++⊆4→3 {names a₂} {names b₂} {names c₂} {names d₂} nbd) upd₃) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆4→4 {names a₁} {names b₁} {names c₁} {names d₁} nad) (++⊆4→4 {names a₂} {names b₂} {names c₂} {names d₂} nbd) upd₄)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(SUC a₁)} {.(SUC a₂)} {l} {k} sub nad nbd (updRel2-SUC a₁ a₂ upd₁) = updRel2-SUC _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
+  updRel2-ren-mon {name} {f} {g} {r} {r'} {.(NATREC a₁ b₁ c₁)} {.(NATREC a₂ b₂ c₂)} {l} {k} sub nad nbd (updRel2-NATREC a₁ a₂ b₁ b₂ c₁ c₂ upd₁ upd₂ upd₃) = updRel2-NATREC _ _ _ _ _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆3→1 {names a₁} {names b₁} {names c₁} nad) (++⊆3→1 {names a₂} {names b₂} {names c₂} nbd) upd₁) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆3→2 {names a₁} {names b₁} {names c₁} nad) (++⊆3→2 {names a₂} {names b₂} {names c₂} nbd) upd₂) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆3→3 {names a₁} {names b₁} {names c₁} nad) (++⊆3→3 {names a₂} {names b₂} {names c₂} nbd) upd₃)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(PI a₁ b₁)} {.(PI a₂ b₂)} {l} {k} sub nad nbd (updRel2-PI a₁ a₂ b₁ b₂ upd₁ upd₂) = updRel2-PI _ _ _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→1 {names a₁} {names b₁} nad) (++⊆2→1 {names a₂} {names b₂} nbd) upd₁) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→2 {names a₁} {names b₁} nad) (++⊆2→2 {names a₂} {names b₂} nbd) upd₂)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(LAMBDA a₁)} {.(LAMBDA a₂)} {l} {k} sub nad nbd (updRel2-LAMBDA a₁ a₂ upd₁) = updRel2-LAMBDA _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} {l} {k} sub nad nbd (updRel2-APPLY a₁ a₂ b₁ b₂ upd₁ upd₂) = updRel2-APPLY _ _ _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→1 {names a₁} {names b₁} nad) (++⊆2→1 {names a₂} {names b₂} nbd) upd₁) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→2 {names a₁} {names b₁} nad) (++⊆2→2 {names a₂} {names b₂} nbd) upd₂)
@@ -1166,6 +1177,92 @@ abstract
       comp2' : SUC a₂ ⇓ SUC y2 from w to w'
       comp2' = SUC⇓steps k2 comp2
 
+
+abstract
+
+  isHighestℕ2-NATREC₁→ : {n : ℕ} {k : ℕ} {name : Name} {f g : Term} {a b c v : Term} {w w' : 𝕎·}
+                         → (comp : steps k (NATREC a b c , w) ≡ (v , w'))
+                         → isValue v
+                         → isHighestℕ {k} {w} {w'} {NATREC a b c} {v} n name comp
+                         → ∈names𝕎 {k} {w} {w'} {NATREC a b c} {v} name comp
+                         → Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
+                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
+                           × ∈names𝕎 {k'} {w} {w''} {a} {u} name comp'
+                           × isValue u
+                           × k' < k))))
+  isHighestℕ2-NATREC₁→ {n} {0} {name} {f} {g} {a} {b} {c} {v} {w} {w'} comp isv h inw
+    rewrite sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+  isHighestℕ2-NATREC₁→ {n} {suc k} {name} {f} {g} {a} {b} {c} {v} {w} {w'} comp isv h inw with is-NUM a
+  ... | inj₁ (m , p) rewrite p = 0 , NUM m , w , refl , fst h , (fst inw , fst (snd inw)) , tt , _≤_.s≤s _≤_.z≤n
+  ... | inj₂ x with step⊎ a w
+  ... |    inj₁ (a0 , w0 , z) rewrite z =
+    suc (fst ind) , concl
+    where
+      ind : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a0 , w0) ≡ (u , w'')) (λ comp' →
+                               isHighestℕ {k'} {w0} {w''} {a0} {u} n name comp'
+                               × ∈names𝕎 {k'} {w0} {w''} {a0} {u} name comp'
+                               × isValue u
+                               × k' < k))))
+      ind = isHighestℕ2-NATREC₁→ {n} {k} {name} {f} {g} {a0} {b} {c} {v} {w0} {w'} comp isv (snd h) (snd (snd inw))
+
+      concl : Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps (suc (fst ind)) (a , w) ≡ (u , w'')) (λ comp' →
+                            isHighestℕ {suc (fst ind)} {w} {w''} {a} {u} n name comp'
+                            × ∈names𝕎 {suc (fst ind)} {w} {w''} {a} {u} name comp'
+                            × isValue u
+                            × suc (fst ind) < suc k)))
+      concl rewrite z =
+        fst (snd ind) , fst (snd (snd ind)) , fst (snd (snd (snd ind))) ,
+        (fst h , fst (snd (snd (snd (snd ind))))) ,
+        (fst inw , fst (snd inw) , fst (snd (snd (snd (snd (snd ind)))))) ,
+        fst (snd (snd (snd (snd (snd (snd ind)))))) ,
+        _≤_.s≤s (snd (snd (snd (snd (snd (snd (snd ind)))))))
+  ... |    inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
+
+
+
+abstract
+
+  stepsPresUpdRel2-NATREC₁→ : {n : ℕ} {name : Name} {f g : Term} {a b c : Term} {w : 𝕎·}
+                              → stepsPresUpdRel2 n name f g (NATREC a b c) w
+                              → stepsPresUpdRel2 n name f g a w
+  stepsPresUpdRel2-NATREC₁→ {n} {name} {f} {g} {a} {b} {c} {w} (k , v , w' , comp , isv , ish , inw , ind) =
+    fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
+    fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
+    fst (snd (snd (snd (snd (snd hv))))) ,
+    λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+    where
+      hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
+                              isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
+                              × ∈names𝕎 {k'} {w} {w''} {a} {u} name comp'
+                              × isValue u
+                              × k' < k))))
+      hv = isHighestℕ2-NATREC₁→ {n} {k} {name} {f} {g} {a} {b} {c} {v} {w} {w'} comp isv ish inw
+
+
+
+abstract
+
+  →ΣstepsUpdRel2-NATREC₁ : {name : Name} {f g : Term} {r : ren} {a₁ a₂ b₁ b₂ c₁ c₂ : Term} {w0 w1 w : 𝕎·}
+                         → names b₁ ⊆ dom𝕎· w0
+                         → names b₂ ⊆ dom𝕎· w
+                         → names c₁ ⊆ dom𝕎· w0
+                         → names c₂ ⊆ dom𝕎· w
+                         → updRel2 name f g r b₁ b₂
+                         → updRel2 name f g r c₁ c₂
+                         → ΣstepsUpdRel2 name f g a₁ w0 w1 a₂ w r
+                         → ΣstepsUpdRel2 name f g (NATREC a₁ b₁ c₁) w0 w1 (NATREC a₂ b₂ c₂) w r
+  →ΣstepsUpdRel2-NATREC₁ {name} {f} {g} {r} {a₁} {a₂} {b₁} {b₂} {c₁} {c₂} {w0} {w1} {w} nbw1 nbw2 ncw1 ncw2 ub uc (k1 , k2 , y1 , y2 , w3 , w' , r' , comp1 , comp2 , ur , upw , sub) =
+    fst comp1' , fst comp2' , NATREC y1 b₁ c₁ , NATREC y2 b₂ c₂ , w3 , w' , r' , snd comp1' , snd comp2' ,
+    updRel2-NATREC _ _ _ _ _ _ ur
+      (updRel2-ren-mon {name} {f} {g} {r} {r'} {b₁} {b₂} {dom𝕎· w0} {dom𝕎· w} sub nbw1 nbw2 ub)
+      (updRel2-ren-mon {name} {f} {g} {r} {r'} {c₁} {c₂} {dom𝕎· w0} {dom𝕎· w} sub ncw1 ncw2 uc) ,
+    upw , sub
+    where
+      comp1' : NATREC a₁ b₁ c₁ ⇓ NATREC y1 b₁ c₁ from w1 to w3
+      comp1' = NATREC⇓steps k1 b₁ c₁ comp1
+
+      comp2' : NATREC a₂ b₂ c₂ ⇓ NATREC y2 b₂ c₂ from w to w'
+      comp2' = NATREC⇓steps k2 b₂ c₂ comp2
 
 
 abstract

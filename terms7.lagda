@@ -564,6 +564,26 @@ abstract
               a₁' ⇓ a'' from w1'' to w3 × a₁ ⇓ a'' from w1' to w3' × differ name name f a'' a'')))
       ind = differNF⇓-aux2 gc0 f cf nnf name w1 w1'' w1' (fst (snd hv0)) a₁ a₁' (fst hv0) k compat1 compat2 agtn atgn' diff z (fst (snd (snd hv0))) (snd (snd (snd hv0))) pd
   ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
+  differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(NATREC a₁ a₂ a₃) b v k compat1 compat2 agtn atgn' (differ-NATREC a₁ .a₁ a₂ .a₂ a₃ .a₃ diff diff₁ diff₂) s hv isvv pd with is-NUM a₁
+  ... | inj₁ (n , p)
+    rewrite p | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s))
+    = NATRECr n a₂ a₃ , w1 , w1' , (0 , refl) , (1 , refl) , differ-NATRECr {name} {name} {f} {n} {a₂} {a₂} {a₃} {a₃} cf diff₁ diff₂
+  ... | inj₂ p with step⊎ a₁ w1
+  ... |    inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
+    NATREC (fst ind) a₂ a₃ ,
+    fst (snd ind) ,
+    fst (snd (snd ind)) ,
+    NATREC⇓ a₂ a₃ (fst (snd (snd (snd ind)))) ,
+    NATREC⇓ a₂ a₃ (fst (snd (snd (snd (snd ind))))) ,
+    differ-NATREC _ _ _ _ _ _ (snd (snd (snd (snd (snd ind))))) diff₁ diff₂
+    where
+      hv0 : hasValueℕ k a₁' w1''
+      hv0 = NATREC→hasValue k a₁' a₂ a₃ v w1'' w0 hv isvv
+
+      ind : Σ Term (λ a'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
+              a₁' ⇓ a'' from w1'' to w3 × a₁ ⇓ a'' from w1' to w3' × differ name name f a'' a'')))
+      ind = differNF⇓-aux2 gc0 f cf nnf name w1 w1'' w1' (fst (snd hv0)) a₁ a₁' (fst hv0) k compat1 compat2 agtn atgn' diff z (fst (snd (snd hv0))) (snd (snd (snd hv0))) pd
+  ... |    inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym s))
   differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(PI a₁ b₁) b v k compat1 compat2 agtn atgn' (differ-PI a₁ .a₁ b₁ .b₁ diff diff₁) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = PI _ _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-PI _ _ _ _ diff diff₁
   differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(LAMBDA a) b v k compat1 compat2 agtn atgn' (differ-LAMBDA a .a diff) s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = LAMBDA _ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-LAMBDA _ _ diff
   differNF⇓-aux2 gc0 f cf nnf name w1 w2 w1' w0 .(APPLY a₁ b₁) b v k compat1 compat2 agtn atgn' (differ-APPLY a₁ .a₁ b₁ .b₁ diff diff₁) s hv isvv pd with is-LAM a₁

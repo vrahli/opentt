@@ -62,12 +62,12 @@ open import computation(W)(C)(M)(G)(E)(N)(EC)
 open import terms2(W)(C)(M)(G)(E)(N)(EC)
   using (∧≡true→ₗ ; ∧≡true→ᵣ ; ∧≡true→1-3 ; ∧≡true→2-3 ; ∧≡true→3-3 ; ∧≡true→1-4 ; ∧≡true→2-4 ; ∧≡true→3-4 ; ∧≡true→4-4 ;
          ∧≡true→1r-4 ; ∧≡true→1r-3 ; IFLT-NUM-1st⇓steps ; IFLT-NUM-2nd⇓steps ; IFEQ-NUM-1st⇓steps ; IFEQ-NUM-2nd⇓steps ;
-         SUC⇓steps ; hasValue ; hasValueℕ ; hasValue-IFLT→ ; hasValue-IFEQ→ ; hasValue-SUC→ ; hasValue-LET→ ;
+         SUC⇓steps ; NATREC⇓steps ; hasValue ; hasValueℕ ; hasValue-IFLT→ ; hasValue-IFEQ→ ; hasValue-SUC→ ; hasValue-LET→ ;
          hasValue-IFLT-NUM→ ; hasValue-IFEQ-NUM→ ; hasValue-APPLY→ ; hasValue-FIX→ ; hasValue-MAPP→ ; hasValue-WREC→ ;
-         hasValue-CHOOSE→ ; hasValue-DECIDE→ ; hasValue-SPREAD→)
+         hasValue-CHOOSE→ ; hasValue-DECIDE→ ; hasValue-SPREAD→ ; hasValue-NATREC→)
 open import terms3(W)(C)(M)(G)(E)(N)(EC) using ()
 open import termsPres(W)(C)(M)(G)(E)(N)(EC)
-  using (→∧true ; →∧≡true ; ¬enc-sub ; ¬enc-WRECc ; ¬enc-shiftNameDown ; ¬enc-renn)
+  using (→∧true ; →∧≡true ; ¬enc-sub ; ¬enc-WRECc ; ¬enc-shiftNameDown ; ¬enc-renn ; →¬enc-NATRECr)
 open import subst(W)(C)(M)(G)(E)(N)(EC)
   using (subn ; sub≡subn)
 
@@ -84,6 +84,7 @@ data differC : Term → Term → Set where
   differC-IFLT     : (a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : Term) → differC a₁ a₂ → differC b₁ b₂ → differC c₁ c₂ → differC d₁ d₂ → differC (IFLT a₁ b₁ c₁ d₁) (IFLT a₂ b₂ c₂ d₂)
   differC-IFEQ     : (a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ : Term) → differC a₁ a₂ → differC b₁ b₂ → differC c₁ c₂ → differC d₁ d₂ → differC (IFEQ a₁ b₁ c₁ d₁) (IFEQ a₂ b₂ c₂ d₂)
   differC-SUC      : (a b : Term) → differC a b → differC (SUC a) (SUC b)
+  differC-NATREC   : (a₁ a₂ b₁ b₂ c₁ c₂ : Term) → differC a₁ a₂ → differC b₁ b₂ → differC c₁ c₂ → differC (NATREC a₁ b₁ c₁) (NATREC a₂ b₂ c₂)
   differC-PI       : (a₁ a₂ b₁ b₂ : Term) → differC a₁ a₂ → differC b₁ b₂ → differC (PI a₁ b₁) (PI a₂ b₂)
   differC-LAMBDA   : (a b : Term) → differC a b → differC (LAMBDA a) (LAMBDA b)
   differC-APPLY    : (a₁ a₂ b₁ b₂ : Term) → differC a₁ a₂ → differC b₁ b₂ → differC (APPLY a₁ b₁) (APPLY a₂ b₂)
@@ -266,6 +267,7 @@ differC-shiftUp {n} {.(NUM x)} {.(NUM x)} (differC-NUM x) = differC-NUM _
 differC-shiftUp {n} {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (differC-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ d d₃ d₄ d₅) = differC-IFLT _ _ _ _ _ _ _ _ (differC-shiftUp d) (differC-shiftUp d₃) (differC-shiftUp d₄) (differC-shiftUp d₅)
 differC-shiftUp {n} {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (differC-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ d d₃ d₄ d₅) = differC-IFEQ _ _ _ _ _ _ _ _ (differC-shiftUp d) (differC-shiftUp d₃) (differC-shiftUp d₄) (differC-shiftUp d₅)
 differC-shiftUp {n} {.(SUC a)} {.(SUC b)} (differC-SUC a b d) = differC-SUC _ _ (differC-shiftUp d)
+differC-shiftUp {n} {.(NATREC a₁ b₁ c₁)} {.(NATREC a₂ b₂ c₂)} (differC-NATREC a₁ a₂ b₁ b₂ c₁ c₂ d d₁ d₂) = differC-NATREC _ _ _ _ _ _ (differC-shiftUp d) (differC-shiftUp d₁) (differC-shiftUp d₂)
 differC-shiftUp {n} {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differC-PI a₁ a₂ b₁ b₂ d d₁) = differC-PI _ _ _ _ (differC-shiftUp d) (differC-shiftUp d₁)
 differC-shiftUp {n} {.(LAMBDA a)} {.(LAMBDA b)} (differC-LAMBDA a b d) = differC-LAMBDA _ _ (differC-shiftUp d)
 differC-shiftUp {n} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (differC-APPLY a₁ a₂ b₁ b₂ d d₁) = differC-APPLY _ _ _ _ (differC-shiftUp d) (differC-shiftUp d₁)
@@ -328,6 +330,7 @@ differC-shiftNameUp {n} {.(NUM x)} {.(NUM x)} (differC-NUM x) = differC-NUM _
 differC-shiftNameUp {n} {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (differC-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ d d₃ d₄ d₅) = differC-IFLT _ _ _ _ _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₃) (differC-shiftNameUp d₄) (differC-shiftNameUp d₅)
 differC-shiftNameUp {n} {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (differC-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ d d₃ d₄ d₅) = differC-IFEQ _ _ _ _ _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₃) (differC-shiftNameUp d₄) (differC-shiftNameUp d₅)
 differC-shiftNameUp {n} {.(SUC a)} {.(SUC b)} (differC-SUC a b d) = differC-SUC _ _ (differC-shiftNameUp d)
+differC-shiftNameUp {n} {.(NATREC a₁ b₁ c₁)} {.(NATREC a₂ b₂ c₂)} (differC-NATREC a₁ a₂ b₁ b₂ c₁ c₂ d d₁ d₂) = differC-NATREC _ _ _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁) (differC-shiftNameUp d₂)
 differC-shiftNameUp {n} {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differC-PI a₁ a₂ b₁ b₂ d d₁) = differC-PI _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
 differC-shiftNameUp {n} {.(LAMBDA a)} {.(LAMBDA b)} (differC-LAMBDA a b d) = differC-LAMBDA _ _ (differC-shiftNameUp d)
 differC-shiftNameUp {n} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (differC-APPLY a₁ a₂ b₁ b₂ d d₁) = differC-APPLY _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
@@ -390,6 +393,7 @@ differC-shiftNameDown {n} {.(NUM x)} {.(NUM x)} (differC-NUM x) = differC-NUM _
 differC-shiftNameDown {n} {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (differC-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ d d₃ d₄ d₅) = differC-IFLT _ _ _ _ _ _ _ _ (differC-shiftNameDown d) (differC-shiftNameDown d₃) (differC-shiftNameDown d₄) (differC-shiftNameDown d₅)
 differC-shiftNameDown {n} {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (differC-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ d d₃ d₄ d₅) = differC-IFEQ _ _ _ _ _ _ _ _ (differC-shiftNameDown d) (differC-shiftNameDown d₃) (differC-shiftNameDown d₄) (differC-shiftNameDown d₅)
 differC-shiftNameDown {n} {.(SUC a)} {.(SUC b)} (differC-SUC a b d) = differC-SUC _ _ (differC-shiftNameDown d)
+differC-shiftNameDown {n} {.(NATREC a₁ b₁ c₁)} {.(NATREC a₂ b₂ c₂)} (differC-NATREC a₁ a₂ b₁ b₂ c₁ c₂ d d₁ d₂) = differC-NATREC _ _ _ _ _ _ (differC-shiftNameDown d) (differC-shiftNameDown d₁) (differC-shiftNameDown d₂)
 differC-shiftNameDown {n} {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differC-PI a₁ a₂ b₁ b₂ d d₁) = differC-PI _ _ _ _ (differC-shiftNameDown d) (differC-shiftNameDown d₁)
 differC-shiftNameDown {n} {.(LAMBDA a)} {.(LAMBDA b)} (differC-LAMBDA a b d) = differC-LAMBDA _ _ (differC-shiftNameDown d)
 differC-shiftNameDown {n} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (differC-APPLY a₁ a₂ b₁ b₂ d d₁) = differC-APPLY _ _ _ _ (differC-shiftNameDown d) (differC-shiftNameDown d₁)
@@ -455,6 +459,7 @@ differC-subn {n} {a} {b} {.(NUM x)} {.(NUM x)} d1 (differC-NUM x) = differC-NUM 
 differC-subn {n} {a} {b} {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} d1 (differC-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ d2 d3 d4 d5) = differC-IFLT _ _ _ _ _ _ _ _ (differC-subn d1 d2) (differC-subn d1 d3) (differC-subn d1 d4) (differC-subn d1 d5)
 differC-subn {n} {a} {b} {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} d1 (differC-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ d2 d3 d4 d5) = differC-IFEQ _ _ _ _ _ _ _ _ (differC-subn d1 d2) (differC-subn d1 d3) (differC-subn d1 d4) (differC-subn d1 d5)
 differC-subn {n} {a} {b} {.(SUC a₁)} {.(SUC b₁)} d1 (differC-SUC a₁ b₁ d2) = differC-SUC _ _ (differC-subn d1 d2)
+differC-subn {n} {a} {b} {.(NATREC a₁ b₁ c₁)} {.(NATREC a₂ b₂ c₂)} d1 (differC-NATREC a₁ a₂ b₁ b₂ c₁ c₂ d2 d3 d4) = differC-NATREC _ _ _ _ _ _ (differC-subn d1 d2) (differC-subn d1 d3) (differC-subn d1 d4)
 differC-subn {n} {a} {b} {.(PI a₁ b₁)} {.(PI a₂ b₂)} d1 (differC-PI a₁ a₂ b₁ b₂ d2 d3) = differC-PI _ _ _ _ (differC-subn d1 d2) (differC-subn (differC-shiftUp d1) d3)
 differC-subn {n} {a} {b} {.(LAMBDA a₁)} {.(LAMBDA b₁)} d1 (differC-LAMBDA a₁ b₁ d2) = differC-LAMBDA _ _ (differC-subn (differC-shiftUp d1) d2)
 differC-subn {n} {a} {b} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} d1 (differC-APPLY a₁ a₂ b₁ b₂ d2 d3) = differC-APPLY _ _ _ _ (differC-subn d1 d2) (differC-subn d1 d3)
@@ -527,6 +532,7 @@ differC-renn {n} {m} {o} {.(NUM x)} {.(NUM x)} (differC-NUM x) = differC-NUM x
 differC-renn {n} {m} {o} {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (differC-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differC-IFLT (renn n m a₁) (renn n o a₂) (renn n m b₁) (renn n o b₂) (renn n m c₁) (renn n o c₂) (renn n m d₁) (renn n o d₂) (differC-renn diff) (differC-renn diff₁) (differC-renn diff₂) (differC-renn diff₃)
 differC-renn {n} {m} {o} {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (differC-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differC-IFEQ (renn n m a₁) (renn n o a₂) (renn n m b₁) (renn n o b₂) (renn n m c₁) (renn n o c₂) (renn n m d₁) (renn n o d₂) (differC-renn diff) (differC-renn diff₁) (differC-renn diff₂) (differC-renn diff₃)
 differC-renn {n} {m} {o} {.(SUC a)} {.(SUC b)} (differC-SUC a b diff) = differC-SUC (renn n m a) (renn n o b) (differC-renn diff)
+differC-renn {n} {m} {o} {.(NATREC a₁ b₁ c₁)} {.(NATREC a₂ b₂ c₂)} (differC-NATREC a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differC-NATREC (renn n m a₁) (renn n o a₂) (renn n m b₁) (renn n o b₂) (renn n m c₁) (renn n o c₂) (differC-renn diff) (differC-renn diff₁) (differC-renn diff₂)
 differC-renn {n} {m} {o} {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differC-PI a₁ a₂ b₁ b₂ diff diff₁) = differC-PI (renn n m a₁) (renn n o a₂) (renn n m b₁) (renn n o b₂) (differC-renn diff) (differC-renn diff₁)
 differC-renn {n} {m} {o} {.(LAMBDA a)} {.(LAMBDA b)} (differC-LAMBDA a b diff) = differC-LAMBDA (renn n m a) (renn n o b) (differC-renn diff)
 differC-renn {n} {m} {o} {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (differC-APPLY a₁ a₂ b₁ b₂ diff diff₁) = differC-APPLY (renn n m a₁) (renn n o a₂) (renn n m b₁) (renn n o b₂) (differC-renn diff) (differC-renn diff₁)
@@ -717,6 +723,13 @@ if-hasValue-SUC a w (v , w' , (k , comp) , isv) with hasValue-SUC→ a w {k} (v 
 ... | v1 , w1 , comp1 , isv1 = v1 , w1 , (k , comp1) , isv1
 
 
+if-hasValue-NATREC : (a b c : Term) (w : 𝕎·)
+                   → hasValue (NATREC a b c) w
+                   → hasValue a w
+if-hasValue-NATREC a b c w (v , w' , (k , comp) , isv) with hasValue-NATREC→ a b c w {k} (v , w' , comp , isv)
+... | v1 , w1 , comp1 , isv1 = v1 , w1 , (k , comp1) , isv1
+
+
 if-hasValue-IFLT-NUM : (n : ℕ) (a b c : Term) (w : 𝕎·)
                      → hasValue (IFLT (NUM n) a b c) w
                      → hasValue a w
@@ -885,6 +898,15 @@ differC-WRECr {a} {b} {c} {d} d1 d2 =
                                            (differC-shiftUp d1))
 
 
+differC-NATRECr : {n : ℕ} {b₁ b₂ c₁ c₂ : Term}
+                → differC b₁ b₂
+                → differC c₁ c₂
+                → differC (NATRECr n b₁ c₁) (NATRECr n b₂ c₂)
+differC-NATRECr {0} {b₁} {b₂} {c₁} {c₂} db dc = db
+differC-NATRECr {suc n} {b₁} {b₂} {c₁} {c₂} db dc =
+  differC-APPLY _ _ _ _ (differC-APPLY _ _ _ _ dc (differC-NUM _)) (differC-NATREC _ _ _ _ _ _ (differC-NUM _) db dc)
+
+
 getChoiceℙ→differC : (gcp : getChoiceℙ) {n1 n2 : ℕ} {name1 name2 : Name} {w1 w2 : 𝕎·} {c1 c2 : ℂ·}
                    → getChoice· n1 name1 w1 ≡ just c1
                    → getChoice· n2 name2 w2 ≡ just c2
@@ -961,6 +983,7 @@ differC-sym {.(NUM x)} {.(NUM x)} (differC-NUM x) = differC-NUM x
 differC-sym {.(IFLT a₁ b₁ c₁ d₁)} {.(IFLT a₂ b₂ c₂ d₂)} (differC-IFLT a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differC-IFLT a₂ a₁ b₂ b₁ c₂ c₁ d₂ d₁ (differC-sym diff) (differC-sym diff₁) (differC-sym diff₂) (differC-sym diff₃)
 differC-sym {.(IFEQ a₁ b₁ c₁ d₁)} {.(IFEQ a₂ b₂ c₂ d₂)} (differC-IFEQ a₁ a₂ b₁ b₂ c₁ c₂ d₁ d₂ diff diff₁ diff₂ diff₃) = differC-IFEQ a₂ a₁ b₂ b₁ c₂ c₁ d₂ d₁ (differC-sym diff) (differC-sym diff₁) (differC-sym diff₂) (differC-sym diff₃)
 differC-sym {.(SUC a)} {.(SUC b)} (differC-SUC a b diff) = differC-SUC b a (differC-sym diff)
+differC-sym {.(NATREC a₁ b₁ c₁)} {.(NATREC a₂ b₂ c₂)} (differC-NATREC a₁ a₂ b₁ b₂ c₁ c₂ diff diff₁ diff₂) = differC-NATREC a₂ a₁ b₂ b₁ c₂ c₁ (differC-sym diff) (differC-sym diff₁) (differC-sym diff₂)
 differC-sym {.(PI a₁ b₁)} {.(PI a₂ b₂)} (differC-PI a₁ a₂ b₁ b₂ diff diff₁) = differC-PI a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
 differC-sym {.(LAMBDA a)} {.(LAMBDA b)} (differC-LAMBDA a b diff) = differC-LAMBDA b a (differC-sym diff)
 differC-sym {.(APPLY a₁ b₁)} {.(APPLY a₂ b₂)} (differC-APPLY a₁ a₂ b₁ b₂ diff diff₁) = differC-APPLY a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
@@ -1111,6 +1134,25 @@ abstract
   ... | w4 , v' , comp' , nowrites' , diff'
     rewrite comp'
     = w4 , SUC v' , refl , nowrites' , differC-SUC _ _ diff'
+  -- NATREC
+  ¬enc→step gcp w1 w2 w3 .(NATREC a₁ b₁ c₁) .(NATREC a₂ b₂ c₂) u nowrites hv (differC-NATREC a₁ a₂ b₁ b₂ c₁ c₂ dc dc₁ dc₂) comp with is-NUM a₁
+  ... | inj₁ (m₁ , p₁)
+    rewrite p₁ | differC-NUM→ dc | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    = w3 , NATRECr m₁ b₂ c₂ , refl ,
+      →¬enc-NATRECr {m₁} {b₁} {c₁} (∧≡true→ₗ (¬enc b₁) (¬enc c₁) nowrites) (∧≡true→ᵣ (¬enc b₁) (¬enc c₁) nowrites) ,
+      differC-NATRECr {m₁} {b₁} {b₂} {c₁} {c₂} dc₁ dc₂
+--nowrites , (differC-NUM _)
+  ... | inj₂ q₁ with step⊎ a₁ w1
+  ... |   inj₂ z₁ rewrite z₁ = ⊥-elim (¬just≡nothing (sym comp))
+  ... |   inj₁ (a' , w1' , z₁) with is-NUM a₂
+  ... |     inj₁ (m₂ , p₂) rewrite p₂ | differC-NUM→ᵣ dc = ⊥-elim (q₁ m₂ refl)
+  ... |     inj₂ q₂
+    rewrite z₁ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
+    with ¬enc→step gcp w1 w1' w3 a₁ a₂ a' (∧≡true→1-3 {¬enc a₁} {¬enc b₁} {¬enc c₁} nowrites) (if-hasValue-NATREC _ _ _ _ hv) dc z₁
+  ... | w4 , v' , comp' , nowrites' , diff'
+    rewrite comp'
+    = w4 , NATREC v' b₂ c₂ , refl , ∧≡true→1r-3 {¬enc a₁} {¬enc b₁} {¬enc c₁} {¬enc a'} nowrites nowrites' ,
+      differC-NATREC _ _ _ _ _ _ diff' dc₁ dc₂
   -- PI
   ¬enc→step gcp w1 w2 w3 .(PI a₁ b₁) .(PI a₂ b₂) u nowrites hv (differC-PI a₁ a₂ b₁ b₂ dc dc₁) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
@@ -1544,6 +1586,7 @@ abstract
   differC-refl {IFLT a a₁ a₂ a₃} nwa = differC-IFLT _ _ _ _ _ _ _ _ (differC-refl {a} (∧≡true→1-4 {¬enc a} {¬enc a₁} {¬enc a₂} {¬enc a₃} nwa)) (differC-refl {a₁} (∧≡true→2-4 {¬enc a} {¬enc a₁} {¬enc a₂} {¬enc a₃} nwa)) (differC-refl {a₂} (∧≡true→3-4 {¬enc a} {¬enc a₁} {¬enc a₂} {¬enc a₃} nwa)) (differC-refl {a₃} (∧≡true→4-4 {¬enc a} {¬enc a₁} {¬enc a₂} {¬enc a₃} nwa))
   differC-refl {IFEQ a a₁ a₂ a₃} nwa = differC-IFEQ _ _ _ _ _ _ _ _ (differC-refl {a} (∧≡true→1-4 {¬enc a} {¬enc a₁} {¬enc a₂} {¬enc a₃} nwa)) (differC-refl {a₁} (∧≡true→2-4 {¬enc a} {¬enc a₁} {¬enc a₂} {¬enc a₃} nwa)) (differC-refl {a₂} (∧≡true→3-4 {¬enc a} {¬enc a₁} {¬enc a₂} {¬enc a₃} nwa)) (differC-refl {a₃} (∧≡true→4-4 {¬enc a} {¬enc a₁} {¬enc a₂} {¬enc a₃} nwa))
   differC-refl {SUC a} nwa = differC-SUC a a (differC-refl nwa)
+  differC-refl {NATREC a a₁ a₂} nwa = differC-NATREC _ _ _ _ _ _ (differC-refl {a} (∧≡true→1-3 {¬enc a} {¬enc a₁} {¬enc a₂} nwa)) (differC-refl {a₁} (∧≡true→2-3 {¬enc a} {¬enc a₁} {¬enc a₂} nwa)) (differC-refl {a₂} (∧≡true→3-3 {¬enc a} {¬enc a₁} {¬enc a₂} nwa))
   differC-refl {PI a a₁} nwa = differC-PI _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬enc a) (¬enc a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬enc a) (¬enc a₁) nwa))
   differC-refl {LAMBDA a} nwa = differC-LAMBDA a a (differC-refl nwa)
   differC-refl {APPLY a a₁} nwa = differC-APPLY _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬enc a) (¬enc a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬enc a) (¬enc a₁) nwa))
