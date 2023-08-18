@@ -3,25 +3,32 @@
 {-# OPTIONS --guardedness #-}
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
---open import Data.Nat using (ℕ ; _≟_ ;  _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _⊔_)
+open import Data.Nat using () renaming (_<_ to _<ℕ_)
 open import Agda.Builtin.Nat
-open import Data.Fin using (Fin)
+open import Data.Fin using (Fin ; toℕ)
 open import Agda.Builtin.Equality renaming (_≡_ to _≣_)
 open import Agda.Builtin.Sigma renaming (fst to π₁ ; snd to π₂)
 open import Relation.Binary.PropositionalEquality
   using (cong ; cong₂) renaming (trans to ≣trans ; sym to ≣sym ; subst to ≣subst)
 open import Data.List using () renaming ([] to nil ; _∷_ to cons)
+open import Data.List.Relation.Unary.Any
 open import Data.Product
+open import Data.Empty
+open import Data.List.Membership.Propositional
 open import Axiom.Extensionality.Propositional
 
 -- MLTT imports
+open import Tools.Nat using (1+)
 open import Definition.Untyped hiding (_∷_)
 open import Definition.Untyped.Properties using (wk-β ; wk1-sgSubst ; subst-wk)
 open import Definition.Typed
+open import Definition.Typed.Properties using (subset*Term ; noNe)
 open import Definition.Typed.Weakening renaming (wk to wk⊢)
 open import Definition.Typed.Consequences.Substitution using (substType ; substTerm)
 open import Definition.Typed.Consequences.Syntactic using (syntacticEq)
-open import Tools.Nat using (1+)
+open import Definition.Typed.Consequences.Canonicity using (sucᵏ)
+open import Definition.Typed.EqRelInstance
+open import Definition.LogicalRelation --using (Natural-prop)
 
 -- BoxTT imports
 open import calculus renaming (Term to BTerm)
@@ -186,6 +193,19 @@ mutual
                        (≣sym (subst-wk G)))
 
 
+-- a variant of canonicity″
+-- not true?
+canonicity2 : {n : Nat} {Γ : Con Term n} {t : Term n}
+            → ⊢ Γ
+            → Natural-prop Γ t --Natural-prop Γ {!t!} --Γ t
+            → ∃ λ k → Γ ⊢ t ≡ sucᵏ k ∷ ℕ
+canonicity2 {n} {Γ} {t} g (sucᵣ (ℕₜ n₁ d n≡n prop)) =
+  let a , b = canonicity2 g prop
+  in  1+ a , suc-cong (trans (subset*Term (redₜ d)) b)
+canonicity2 {n} {Γ} {t} g zeroᵣ = 0 , refl (zeroⱼ g)
+canonicity2 {n} {Γ} {t} g (ne (neNfₜ neK ⊢k k≡k)) = {!⊥-elim (noNe ⊢k neK)!}
+
+
 ∷→⊢ : {n : Nat} {Γ : Con Term n} {t : Term n} {σ : Term n}
    → Γ ⊢ t ∷ σ
    → Γ ⊢ σ
@@ -210,8 +230,10 @@ mutual
     z = ∷→⊢ i
 ∷→⊢ {n} {Γ} {.Definition.Untyped.zero} {.ℕ} (zeroⱼ x) = ℕⱼ x
 ∷→⊢ {n} {Γ} {.(Definition.Untyped.suc _)} {.ℕ} (sucⱼ i) = ∷→⊢ i
-∷→⊢ {n} {Γ} {.(natrec _ _ _ _)} {.(G [ k ])} (natrecⱼ {G} {s} {z} {k} x i i₁ i₂) = {!!}
-  where
+∷→⊢ {n} {Γ} {.(natrec _ _ _ _)} {.(G [ k ])} (natrecⱼ {G} {s} {z} {k} x i i₁ i₂) = {!|!}
+  -- canonicity could be useful, but it's only for empty contexts
+{--  where
+    -- not the way to go
     y1 : Γ ⊢ Π ℕ ▹ (G ▹▹ G [ Definition.Untyped.suc (var Fin.zero) ]↑)
     y1 = ∷→⊢ i₁
 
@@ -222,7 +244,7 @@ mutual
     y3 = ≣subst (λ z → Γ ⊢ z) (▹▹[] G (G [ Definition.Untyped.suc (var Fin.zero) ]↑) k) y2
 
     y4 : Γ ⊢ (G [ Definition.Untyped.suc (var Fin.zero) ]↑) [ k ]
-    y4 = →▹▹[]ᵣ {!!} y3
+    y4 = →▹▹[]ᵣ {!!} y3--}
 ∷→⊢ {n} {Γ} {.(Emptyrec σ _)} {σ} (Emptyrecⱼ x i) = x
 ∷→⊢ {n} {Γ} {.star} {.Unit} (starⱼ x) = Unitⱼ x
 ∷→⊢ {n} {Γ} {t} {σ} (conv {t} {A} {B} i x) =
@@ -232,7 +254,38 @@ mutual
     y = ∷→⊢ i
 
 
--- Converts an MLTT term to its BoxTT type
+-- Conversion of an untyped term
+-- TODO: replace the recursive functions below by a call to this function
+⟦_⟧ᵤ : {n : Nat} (t : Term n)
+     → BTerm
+⟦_⟧ᵤ {n} (var x) = VAR (toℕ x)
+⟦_⟧ᵤ {n} (gen {.nil} Ukind c) = UNIV 1
+⟦_⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Pikind (t GenTs.∷ (t₁ GenTs.∷ []))) = PI ⟦ t ⟧ᵤ ⟦ t₁ ⟧ᵤ
+⟦_⟧ᵤ {n} (gen {.(cons 1 nil)} Lamkind (t GenTs.∷ [])) = LAMBDA ⟦ t ⟧ᵤ
+⟦_⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) = APPLY ⟦ t ⟧ᵤ ⟦ t₁ ⟧ᵤ
+⟦_⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) = SUM ⟦ t ⟧ᵤ ⟦ t₁ ⟧ᵤ
+⟦_⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) = PAIR ⟦ t ⟧ᵤ ⟦ t₁ ⟧ᵤ
+⟦_⟧ᵤ {n} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) = FST ⟦ t ⟧ᵤ
+⟦_⟧ᵤ {n} (gen {.(cons 0 nil)} Sndkind (t GenTs.∷ [])) = SND ⟦ t ⟧ᵤ
+⟦_⟧ᵤ {n} (gen {.nil} Natkind []) = NAT!
+⟦_⟧ᵤ {n} (gen {.nil} Zerokind []) = N0
+⟦_⟧ᵤ {n} (gen {.(cons 0 nil)} Suckind (t GenTs.∷ [])) = SUC ⟦ t ⟧ᵤ
+⟦_⟧ᵤ {n} (gen {.(cons 1 (cons 0 (cons 0 (cons 0 nil))))} Natreckind (t GenTs.∷ (t₁ GenTs.∷ (t₂ GenTs.∷ (t₃ GenTs.∷ []))))) = NATREC ⟦ t₃ ⟧ᵤ ⟦ t₁ ⟧ᵤ ⟦ t₂ ⟧ᵤ
+⟦_⟧ᵤ {n} (gen {.nil} Unitkind []) = UNIT
+⟦_⟧ᵤ {n} (gen {.nil} Starkind []) = AX
+⟦_⟧ᵤ {n} (gen {.nil} Emptykind []) = FALSE
+⟦_⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) = BOT
+
+
+-- intreptation of σ as a BoxTT type
+⟦_⟧∈ₜ : {n : Nat} {Γ : Con Term n} {j : Fin n} {σ : Term n}
+       → ⊢ Γ
+       → j ∷ σ ∈ Γ
+       → BTerm
+⟦_⟧∈ₜ {n} {Γ} {j} {σ} i k = {!!}
+
+
+-- Converts an MLTT type (σ here) to its BoxTT type
 ⟦_⟧ₜ : {n : Nat} {Γ : Con Term n} {t : Term n} {σ : Term n}
      → Γ ⊢ t ∷ σ
      → BTerm
@@ -241,7 +294,7 @@ mutual
 ⟦_⟧ₜ {n} {Γ} {.ℕ} {.U} (ℕⱼ x) = UNIV 1
 ⟦_⟧ₜ {n} {Γ} {.Empty} {.U} (Emptyⱼ x) = UNIV 1
 ⟦_⟧ₜ {n} {Γ} {.Unit} {.U} (Unitⱼ x) = UNIV 1
-⟦_⟧ₜ {n} {Γ} {.(var _)} {σ} (var x x₁) = VAR n -- convert σ
+⟦_⟧ₜ {n} {Γ} {var j} {σ} (var x x₁) = {!!} --VAR (toℕ j)
 ⟦_⟧ₜ {n} {Γ} {.(lam _)} {.(Π _ ▹ _)} (lamⱼ {F} {G} {u} x i) = PI ⟦ i ⟧ₜ ⟦ i ⟧ₜ
 ⟦_⟧ₜ {n} {Γ} {.(_ ∘ _)} {.(G [ a ])} ((_∘ⱼ_) {g} {a} {F} {G} i i₁) = ⟦ i₁ ⟧ₜ
 ⟦_⟧ₜ {n} {Γ} {.(prod _ _)} {.(Σ _ ▹ _)} (prodⱼ x x₁ i i₁) = SUM ⟦ i ⟧ₜ ⟦ i₁ ⟧ₜ
@@ -255,7 +308,41 @@ mutual
 ⟦_⟧ₜ {n} {Γ} {t} {σ} (conv i x) = ⟦ i ⟧ₜ
 
 
--- Converts an MLTT term into a BoxTT term
+fvars⊢∷ : {n : Nat} {Γ : Con Term n} {t : Term n} {σ : Term n}
+          (i : Γ ⊢ t ∷ σ)
+        → (v : Var) → v ∈ fvars (⟦ i ⟧ₜ) → v <ℕ n
+fvars⊢∷ {n} {Γ} {.(Π _ ▹ _)} {.U} (Πⱼ i ▹ i₁) v ()
+fvars⊢∷ {n} {Γ} {.(Σ _ ▹ _)} {.U} (Σⱼ i ▹ i₁) v ()
+fvars⊢∷ {n} {Γ} {.ℕ} {.U} (ℕⱼ x) v ()
+fvars⊢∷ {n} {Γ} {.Empty} {.U} (Emptyⱼ x) v ()
+fvars⊢∷ {n} {Γ} {.Unit} {.U} (Unitⱼ x) v ()
+fvars⊢∷ {n} {Γ} {.(var _)} {σ} (var x x₁) v (here px) rewrite px = {!!}
+fvars⊢∷ {n} {Γ} {.(lam _)} {.(Π _ ▹ _)} (lamⱼ x i) = {!!}
+fvars⊢∷ {n} {Γ} {.(_ ∘ _)} {.(_ [ _ ])} (i ∘ⱼ i₁) = {!!}
+fvars⊢∷ {n} {Γ} {.(prod _ _)} {.(Σ _ ▹ _)} (prodⱼ x x₁ i i₁) = {!!}
+fvars⊢∷ {n} {Γ} {.(fst _)} {σ} (fstⱼ x x₁ i) = {!!}
+fvars⊢∷ {n} {Γ} {.(snd _)} {.(_ [ fst _ ])} (sndⱼ x x₁ i) = {!!}
+fvars⊢∷ {n} {Γ} {.Definition.Untyped.zero} {.ℕ} (zeroⱼ x) = {!!}
+fvars⊢∷ {n} {Γ} {.(Definition.Untyped.suc _)} {.ℕ} (sucⱼ i) = {!!}
+fvars⊢∷ {n} {Γ} {.(natrec _ _ _ _)} {.(_ [ _ ])} (natrecⱼ x i i₁ i₂) = {!!}
+fvars⊢∷ {n} {Γ} {.(Emptyrec σ _)} {σ} (Emptyrecⱼ x i) = {!!}
+fvars⊢∷ {n} {Γ} {.star} {.Unit} (starⱼ x) = {!!}
+fvars⊢∷ {n} {Γ} {t} {σ} (conv i x) = {!!}
+
+
+⟦_⟧ₜ₀ : {t : Term 0} {σ : Term 0}
+      → ε ⊢ t ∷ σ
+      → CTerm
+⟦_⟧ₜ₀ {t} {σ} i = {!!}
+
+
+⟦_⟧≡ₜ₀ : {t u : Term 0} {σ : Term 0}
+      → ε ⊢ t ≡ u ∷ σ
+      → CTerm
+⟦_⟧≡ₜ₀ {t} {u} {σ} i = {!!}
+
+
+-- Converts an MLTT term (t here) into a BoxTT term
 ⟦_⟧ : {n : Nat} {Γ : Con Term n} {t : Term n} {σ : Term n}
     → Γ ⊢ t ∷ σ
     → BTerm
@@ -278,9 +365,27 @@ mutual
 ⟦_⟧ {n} {Γ} {t} {σ} (conv x x₁) = ⟦ x ⟧
 
 
-⟦_⟧≡ : (i : Nat) (w : 𝕎·) {n : Nat} {Γ : Con Term n} {t u : Term n} {σ : Term n}
-     → Γ ⊢ t ≡ u ∷ σ
-     → Set --equalInType i w ⟦ σ ⟧ₜ ⟦ t ⟧ ⟦ u ⟧ -- in the empty context
-⟦_⟧≡ i w {n} {Γ} {t} {u} {σ} j = {!!}
+⟦_⟧₀ : {t : Term 0} {σ : Term 0}
+     → ε ⊢ t ∷ σ
+     → CTerm
+⟦_⟧₀ {t} {σ} i = {!!}
+
+
+⟦_⟧≡ₗ₀ : {t u : Term 0} {σ : Term 0}
+     → ε ⊢ t ≡ u ∷ σ
+     → CTerm
+⟦_⟧≡ₗ₀ {t} {u} {σ} i = {!!}
+
+
+⟦_⟧≡ᵣ₀ : {t u : Term 0} {σ : Term 0}
+     → ε ⊢ t ≡ u ∷ σ
+     → CTerm
+⟦_⟧≡ᵣ₀ {t} {u} {σ} i = {!!}
+
+
+⟦_⟧≡ : (i : Nat) (w : 𝕎·) {t u : Term 0} {σ : Term 0}
+       (j : ε ⊢ t ≡ u ∷ σ)
+     → equalInType i w ⟦ j ⟧≡ₜ₀ ⟦ j ⟧≡ₗ₀ ⟦ j ⟧≡ᵣ₀ -- in the empty context
+⟦_⟧≡ i w {t} {u} {σ} j = {!!}
 
 \end{code}
