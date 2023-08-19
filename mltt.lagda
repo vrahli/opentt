@@ -4,8 +4,10 @@
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
 open import Data.Nat using () renaming (_<_ to _<ℕ_)
+open import Data.Nat.Properties
 open import Agda.Builtin.Nat
 open import Data.Fin using (Fin ; toℕ)
+open import Data.Fin.Properties using (toℕ<n)
 open import Agda.Builtin.Equality renaming (_≡_ to _≣_)
 open import Agda.Builtin.Sigma renaming (fst to π₁ ; snd to π₂)
 open import Relation.Binary.PropositionalEquality
@@ -15,6 +17,9 @@ open import Data.List.Relation.Unary.Any
 open import Data.Product
 open import Data.Empty
 open import Data.List.Membership.Propositional
+open import Data.List.Membership.Propositional.Properties
+open import Data.Sum
+open import Relation.Nullary
 open import Axiom.Extensionality.Propositional
 
 -- MLTT imports
@@ -33,6 +38,7 @@ open import Definition.LogicalRelation --using (Natural-prop)
 -- BoxTT imports
 open import calculus renaming (Term to BTerm)
 open import terms -- renaming (Term to BTerm)
+open import util
 open import world
 open import mod
 open import encode
@@ -193,6 +199,7 @@ mutual
                        (≣sym (subst-wk G)))
 
 
+{--
 -- a variant of canonicity″
 -- not true?
 canonicity2 : {n : Nat} {Γ : Con Term n} {t : Term n}
@@ -204,8 +211,10 @@ canonicity2 {n} {Γ} {t} g (sucᵣ (ℕₜ n₁ d n≡n prop)) =
   in  1+ a , suc-cong (trans (subset*Term (redₜ d)) b)
 canonicity2 {n} {Γ} {t} g zeroᵣ = 0 , refl (zeroⱼ g)
 canonicity2 {n} {Γ} {t} g (ne (neNfₜ neK ⊢k k≡k)) = {!⊥-elim (noNe ⊢k neK)!}
+--}
 
 
+{--
 ∷→⊢ : {n : Nat} {Γ : Con Term n} {t : Term n} {σ : Term n}
    → Γ ⊢ t ∷ σ
    → Γ ⊢ σ
@@ -252,6 +261,7 @@ canonicity2 {n} {Γ} {t} g (ne (neNfₜ neK ⊢k k≡k)) = {!⊥-elim (noNe ⊢k
   where
     y : Γ ⊢ A
     y = ∷→⊢ i
+--}
 
 
 -- Conversion of an untyped term
@@ -277,18 +287,22 @@ canonicity2 {n} {Γ} {t} g (ne (neNfₜ neK ⊢k k≡k)) = {!⊥-elim (noNe ⊢k
 ⟦_⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) = BOT
 
 
+{--
 -- intreptation of σ as a BoxTT type
 ⟦_⟧∈ₜ : {n : Nat} {Γ : Con Term n} {j : Fin n} {σ : Term n}
        → ⊢ Γ
        → j ∷ σ ∈ Γ
        → BTerm
 ⟦_⟧∈ₜ {n} {Γ} {j} {σ} i k = {!!}
+--}
 
 
 -- Converts an MLTT type (σ here) to its BoxTT type
 ⟦_⟧ₜ : {n : Nat} {Γ : Con Term n} {t : Term n} {σ : Term n}
      → Γ ⊢ t ∷ σ
      → BTerm
+⟦_⟧ₜ {n} {Γ} {t} {σ} i = ⟦ σ ⟧ᵤ
+{--
 ⟦_⟧ₜ {n} {Γ} {.(Π _ ▹ _)} {.U} ((Πⱼ_▹_) {F} {G} A B) = UNIV 1
 ⟦_⟧ₜ {n} {Γ} {.(Σ _ ▹ _)} {.U} ((Σⱼ_▹_) {F} {G} A B) = UNIV 1
 ⟦_⟧ₜ {n} {Γ} {.ℕ} {.U} (ℕⱼ x) = UNIV 1
@@ -306,46 +320,109 @@ canonicity2 {n} {Γ} {t} g (ne (neNfₜ neK ⊢k k≡k)) = {!⊥-elim (noNe ⊢k
 ⟦_⟧ₜ {n} {Γ} {.(Emptyrec σ _)} {σ} (Emptyrecⱼ x i) = ⟦ i ⟧ₜ
 ⟦_⟧ₜ {n} {Γ} {.star} {.Unit} (starⱼ x) = VAR n
 ⟦_⟧ₜ {n} {Γ} {t} {σ} (conv i x) = ⟦ i ⟧ₜ
+--}
 
 
-fvars⊢∷ : {n : Nat} {Γ : Con Term n} {t : Term n} {σ : Term n}
-          (i : Γ ⊢ t ∷ σ)
-        → (v : Var) → v ∈ fvars (⟦ i ⟧ₜ) → v <ℕ n
-fvars⊢∷ {n} {Γ} {.(Π _ ▹ _)} {.U} (Πⱼ i ▹ i₁) v ()
-fvars⊢∷ {n} {Γ} {.(Σ _ ▹ _)} {.U} (Σⱼ i ▹ i₁) v ()
-fvars⊢∷ {n} {Γ} {.ℕ} {.U} (ℕⱼ x) v ()
-fvars⊢∷ {n} {Γ} {.Empty} {.U} (Emptyⱼ x) v ()
-fvars⊢∷ {n} {Γ} {.Unit} {.U} (Unitⱼ x) v ()
-fvars⊢∷ {n} {Γ} {.(var _)} {σ} (var x x₁) v (here px) rewrite px = {!!}
-fvars⊢∷ {n} {Γ} {.(lam _)} {.(Π _ ▹ _)} (lamⱼ x i) = {!!}
-fvars⊢∷ {n} {Γ} {.(_ ∘ _)} {.(_ [ _ ])} (i ∘ⱼ i₁) = {!!}
-fvars⊢∷ {n} {Γ} {.(prod _ _)} {.(Σ _ ▹ _)} (prodⱼ x x₁ i i₁) = {!!}
-fvars⊢∷ {n} {Γ} {.(fst _)} {σ} (fstⱼ x x₁ i) = {!!}
-fvars⊢∷ {n} {Γ} {.(snd _)} {.(_ [ fst _ ])} (sndⱼ x x₁ i) = {!!}
-fvars⊢∷ {n} {Γ} {.Definition.Untyped.zero} {.ℕ} (zeroⱼ x) = {!!}
-fvars⊢∷ {n} {Γ} {.(Definition.Untyped.suc _)} {.ℕ} (sucⱼ i) = {!!}
-fvars⊢∷ {n} {Γ} {.(natrec _ _ _ _)} {.(_ [ _ ])} (natrecⱼ x i i₁ i₂) = {!!}
-fvars⊢∷ {n} {Γ} {.(Emptyrec σ _)} {σ} (Emptyrecⱼ x i) = {!!}
-fvars⊢∷ {n} {Γ} {.star} {.Unit} (starⱼ x) = {!!}
-fvars⊢∷ {n} {Γ} {t} {σ} (conv i x) = {!!}
+fvarsᵤ : {n : Nat} (t : Term n)
+        → (v : Var) → v ∈ fvars (⟦ t ⟧ᵤ) → v <ℕ n
+fvarsᵤ {n} (var x) v (here px) rewrite px = toℕ<n x
+fvarsᵤ {n} (gen {.(cons 0 (cons 1 nil))} Pikind (t GenTs.∷ (t₁ GenTs.∷ []))) v i
+  with ∈-++⁻ (fvars ⟦ t ⟧ᵤ) i
+... | inj₁ k = fvarsᵤ t _ k
+... | inj₂ k = s≤s-inj (fvarsᵤ t₁ _ (∈lowerVars→ v (fvars ⟦ t₁ ⟧ᵤ) k))
+fvarsᵤ {n} (gen {.(cons 1 nil)} Lamkind (t GenTs.∷ [])) v i =
+  s≤s-inj (fvarsᵤ t _ (∈lowerVars→ v (fvars ⟦ t ⟧ᵤ) i))
+fvarsᵤ {n} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) v i
+  with ∈-++⁻ (fvars ⟦ t ⟧ᵤ) i
+... | inj₁ k = fvarsᵤ t _ k
+... | inj₂ k = fvarsᵤ t₁ _ k
+fvarsᵤ {n} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) v i
+  with ∈-++⁻ (fvars ⟦ t ⟧ᵤ) i
+... | inj₁ k = fvarsᵤ t _ k
+... | inj₂ k = s≤s-inj (fvarsᵤ t₁ _ (∈lowerVars→ v (fvars ⟦ t₁ ⟧ᵤ) k))
+fvarsᵤ {n} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) v i
+  with ∈-++⁻ (fvars ⟦ t ⟧ᵤ) i
+... | inj₁ k = fvarsᵤ t _ k
+... | inj₂ k = fvarsᵤ t₁ _ k
+fvarsᵤ {n} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) v i
+  with ∈-++⁻ (fvars ⟦ t ⟧ᵤ) i
+... | inj₁ k = fvarsᵤ t _ k
+... | inj₂ ()
+fvarsᵤ {n} (gen {.(cons 0 nil)} Sndkind (t GenTs.∷ [])) v i
+  with ∈-++⁻ (fvars ⟦ t ⟧ᵤ) i
+... | inj₁ k = fvarsᵤ t _ k
+... | inj₂ ()
+fvarsᵤ {n} (gen {.nil} Natkind []) v ()
+fvarsᵤ {n} (gen {.nil} Zerokind []) v ()
+fvarsᵤ {n} (gen {.(cons 0 nil)} Suckind (t GenTs.∷ [])) v i = fvarsᵤ t _ i
+fvarsᵤ {n} (gen {.(cons 1 (cons 0 (cons 0 (cons 0 nil))))} Natreckind (t GenTs.∷ (t₁ GenTs.∷ (t₂ GenTs.∷ (t₃ GenTs.∷ []))))) v i
+  with ∈-++⁻ (fvars ⟦ t₃ ⟧ᵤ) i
+... | inj₁ k = fvarsᵤ t₃ _ k
+... | inj₂ k with ∈-++⁻ (fvars ⟦ t₁ ⟧ᵤ) k
+... |   inj₁ k₁ = fvarsᵤ t₁ _ k₁
+... |   inj₂ k₁ = fvarsᵤ t₂ _ k₁
+fvarsᵤ {n} (gen {.nil} Unitkind []) v ()
+fvarsᵤ {n} (gen {.nil} Starkind []) v ()
+fvarsᵤ {n} (gen {.nil} Emptykind []) v ()
+fvarsᵤ {n} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) v ()
+{--
+fvarsᵤ {n} {Γ} {.(Π _ ▹ _)} {.U} (Πⱼ i ▹ i₁) v ()
+fvarsᵤ {n} {Γ} {.(Σ _ ▹ _)} {.U} (Σⱼ i ▹ i₁) v ()
+fvarsᵤ {n} {Γ} {.ℕ} {.U} (ℕⱼ x) v ()
+fvarsᵤ {n} {Γ} {.Empty} {.U} (Emptyⱼ x) v ()
+fvarsᵤ {n} {Γ} {.Unit} {.U} (Unitⱼ x) v ()
+fvarsᵤ {n} {Γ} {.(var _)} {σ} (var x x₁) v (here px) rewrite px = {!!}
+fvarsᵤ {n} {Γ} {.(lam _)} {.(Π _ ▹ _)} (lamⱼ x i) = {!!}
+fvarsᵤ {n} {Γ} {.(_ ∘ _)} {.(_ [ _ ])} (i ∘ⱼ i₁) = {!!}
+fvarsᵤ {n} {Γ} {.(prod _ _)} {.(Σ _ ▹ _)} (prodⱼ x x₁ i i₁) = {!!}
+fvarsᵤ {n} {Γ} {.(fst _)} {σ} (fstⱼ x x₁ i) = {!!}
+fvarsᵤ {n} {Γ} {.(snd _)} {.(_ [ fst _ ])} (sndⱼ x x₁ i) = {!!}
+fvarsᵤ {n} {Γ} {.Definition.Untyped.zero} {.ℕ} (zeroⱼ x) = {!!}
+fvarsᵤ {n} {Γ} {.(Definition.Untyped.suc _)} {.ℕ} (sucⱼ i) = {!!}
+fvarsᵤ {n} {Γ} {.(natrec _ _ _ _)} {.(_ [ _ ])} (natrecⱼ x i i₁ i₂) = {!!}
+fvarsᵤ {n} {Γ} {.(Emptyrec σ _)} {σ} (Emptyrecⱼ x i) = {!!}
+fvarsᵤ {n} {Γ} {.star} {.Unit} (starⱼ x) = {!!}
+fvarsᵤ {n} {Γ} {t} {σ} (conv i x) = {!!}
+--}
+
+
+¬∈[]→ : {A : Set} (l : Data.List.List A) → ((v : A) → ¬ (v ∈ l)) → l ≣ Data.List.[]
+¬∈[]→ {A} Data.List.[] i = refl
+¬∈[]→ {A} (x Data.List.∷ l) i = ⊥-elim (i x (here refl))
 
 
 ⟦_⟧ₜ₀ : {t : Term 0} {σ : Term 0}
       → ε ⊢ t ∷ σ
       → CTerm
-⟦_⟧ₜ₀ {t} {σ} i = {!!}
+⟦_⟧ₜ₀ {t} {σ} i =
+  ct ⟦ σ ⟧ᵤ (¬∈[]→ (fvars ⟦ σ ⟧ᵤ) j)
+  where
+  j : (v : Var) → ¬ v ∈ fvars ⟦ σ ⟧ᵤ
+  j v k = m<n⇒n≢0 z refl
+    where
+    z : v <ℕ 0
+    z = fvarsᵤ σ v k
 
 
 ⟦_⟧≡ₜ₀ : {t u : Term 0} {σ : Term 0}
       → ε ⊢ t ≡ u ∷ σ
       → CTerm
-⟦_⟧≡ₜ₀ {t} {u} {σ} i = {!!}
+⟦_⟧≡ₜ₀ {t} {u} {σ} i =
+  ct ⟦ σ ⟧ᵤ (¬∈[]→ (fvars ⟦ σ ⟧ᵤ) j)
+  where
+  j : (v : Var) → ¬ v ∈ fvars ⟦ σ ⟧ᵤ
+  j v k = m<n⇒n≢0 z refl
+    where
+    z : v <ℕ 0
+    z = fvarsᵤ σ v k
 
 
 -- Converts an MLTT term (t here) into a BoxTT term
 ⟦_⟧ : {n : Nat} {Γ : Con Term n} {t : Term n} {σ : Term n}
     → Γ ⊢ t ∷ σ
     → BTerm
+⟦_⟧ {n} {Γ} {t} {σ} i = ⟦ t ⟧ᵤ
+{--
 ⟦_⟧ {n} {Γ} {.(Π _  ▹ _)} {U} ((Πⱼ_▹_) {F} {G} A B) = PI ⟦ A ⟧ ⟦ B ⟧
 ⟦_⟧ {n} {Γ} {.(Σ _ ▹ _)}  {U} ((Σⱼ_▹_) {F} {G} A B) = SUM ⟦ A ⟧ ⟦ B ⟧
 ⟦_⟧ {n} {Γ} {ℕ}           {U} (ℕⱼ x)     = NAT!
@@ -363,24 +440,46 @@ fvars⊢∷ {n} {Γ} {t} {σ} (conv i x) = {!!}
 ⟦_⟧ {n} {Γ} {.(Emptyrec σ _)} {σ} (Emptyrecⱼ x x₁) = BOT
 ⟦_⟧ {n} {Γ} {.star} {.Unit} (starⱼ x) = AX
 ⟦_⟧ {n} {Γ} {t} {σ} (conv x x₁) = ⟦ x ⟧
+--}
 
 
 ⟦_⟧₀ : {t : Term 0} {σ : Term 0}
      → ε ⊢ t ∷ σ
      → CTerm
-⟦_⟧₀ {t} {σ} i = {!!}
+⟦_⟧₀ {t} {σ} i =
+  ct ⟦ t ⟧ᵤ (¬∈[]→ (fvars ⟦ t ⟧ᵤ) j)
+  where
+  j : (v : Var) → ¬ v ∈ fvars ⟦ t ⟧ᵤ
+  j v k = m<n⇒n≢0 z refl
+    where
+    z : v <ℕ 0
+    z = fvarsᵤ t v k
 
 
 ⟦_⟧≡ₗ₀ : {t u : Term 0} {σ : Term 0}
      → ε ⊢ t ≡ u ∷ σ
      → CTerm
-⟦_⟧≡ₗ₀ {t} {u} {σ} i = {!!}
+⟦_⟧≡ₗ₀ {t} {u} {σ} i =
+  ct ⟦ t ⟧ᵤ (¬∈[]→ (fvars ⟦ t ⟧ᵤ) j)
+  where
+  j : (v : Var) → ¬ v ∈ fvars ⟦ t ⟧ᵤ
+  j v k = m<n⇒n≢0 z refl
+    where
+    z : v <ℕ 0
+    z = fvarsᵤ t v k
 
 
 ⟦_⟧≡ᵣ₀ : {t u : Term 0} {σ : Term 0}
      → ε ⊢ t ≡ u ∷ σ
      → CTerm
-⟦_⟧≡ᵣ₀ {t} {u} {σ} i = {!!}
+⟦_⟧≡ᵣ₀ {t} {u} {σ} i =
+  ct ⟦ u ⟧ᵤ (¬∈[]→ (fvars ⟦ u ⟧ᵤ) j)
+  where
+  j : (v : Var) → ¬ v ∈ fvars ⟦ u ⟧ᵤ
+  j v k = m<n⇒n≢0 z refl
+    where
+    z : v <ℕ 0
+    z = fvarsᵤ u v k
 
 
 ⟦_⟧≡ : (i : Nat) (w : 𝕎·) {t u : Term 0} {σ : Term 0}
