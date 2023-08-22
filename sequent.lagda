@@ -47,11 +47,16 @@ open import mod --bar --mod
 open import encode
 
 
-module sequent {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-               (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
-               (X : ChoiceExt W C)
-               (N : NewChoice W C K G)
-               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+module sequent {L  : Level}
+               (W  : PossibleWorlds {L})
+               (M  : Mod W)
+               (C  : Choice)
+               (K  : Compatible {L} W C)
+               (P  : Progress {L} W C K)
+               (G  : GetChoice {L} W C K)
+               (X  : ChoiceExt W C)
+               (N  : NewChoice W C K G)
+               (E  : Extensionality 0ℓ (lsuc(lsuc(L))))
                (EC : Encode)
        where
        --(bar : Bar W) where
@@ -172,13 +177,18 @@ hypotheses : Set
 hypotheses = List hypothesis
 
 
--- hyps |- ext ∈ concl
+-- hyps ⊢ ext ∈ concl
 record sequent : Set where
   constructor mkSeq
   field
     hyps  : hypotheses
     concl : Term
     ext   : Term
+
+
+-- H ⊢ a ≡ b ∈ T
+mkEqSeq : (H : hypotheses) (a b T : Term) → sequent
+mkEqSeq H a b T = mkSeq H (EQ a b T) AX
 
 
 #hypothesesUpto : List Var → hypotheses → Bool
@@ -301,5 +311,17 @@ sequent_pairwise_true i w (mkSeq hyps concl ext) =
   → ≡hyps i w s1 s2 hyps hyps
   → equalTypes i w (#subs s1 concl cc1) (#subs s2 concl cc2)
      × equalInType i w (#subs s1 concl cc1) (#subs s1 ext ce1) (#subs s2 ext ce2)
+
+
+valid : (n : ℕ) (w : 𝕎·) (s : sequent) → Set(lsuc(L))
+valid n w s = sequent_pairwise_true n w s
+
+
+validEq : (n : ℕ) (w : 𝕎·) (H : hypotheses) (a b T : Term) → Set(lsuc(L))
+validEq n w H a b T = sequent_pairwise_true n w (mkEqSeq H a b T)
+
+
+validMem : (n : ℕ) (w : 𝕎·) (H : hypotheses) (a T : Term) → Set(lsuc(L))
+validMem n w H a T = sequent_pairwise_true n w (mkSeq H T a)
 
 \end{code}

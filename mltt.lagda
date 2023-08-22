@@ -64,6 +64,9 @@ module mltt {L : Level}
 
 open import worldDef(W)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (isTypeNAT! ; eqTypesUniv ; equalTypes→equalInType-UNIV)
 
 
 ∈→ℕ : {n : Nat} {x : Fin n} {A : Term n} {Γ : Con Term n}
@@ -287,6 +290,10 @@ canonicity2 {n} {Γ} {t} g (ne (neNfₜ neK ⊢k k≡k)) = {!⊥-elim (noNe ⊢k
 ⟦_⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) = BOT
 
 
+⟦_⟧Γ : {n : Nat} (Γ : Con Term n) → hypotheses
+⟦_⟧Γ {.0} ε = Data.List.[]
+⟦_⟧Γ {.(1+ _)} (Γ ∙ x) = mkHyp ⟦ x ⟧ᵤ Data.List.∷ ⟦_⟧Γ Γ
+
 {--
 -- intreptation of σ as a BoxTT type
 ⟦_⟧∈ₜ : {n : Nat} {Γ : Con Term n} {j : Fin n} {σ : Term n}
@@ -482,9 +489,86 @@ fvarsᵤ {n} {Γ} {t} {σ} (conv i x) = {!!}
     z = fvarsᵤ u v k
 
 
-⟦_⟧≡ : (i : Nat) (w : 𝕎·) {t u : Term 0} {σ : Term 0}
-       (j : ε ⊢ t ≡ u ∷ σ)
-     → equalInType i w ⟦ j ⟧≡ₜ₀ ⟦ j ⟧≡ₗ₀ ⟦ j ⟧≡ᵣ₀ -- in the empty context
-⟦_⟧≡ i w {t} {u} {σ} j = {!!}
+subs-NAT! : (s : Sub)
+          → subs s NAT! ≣ NAT!
+subs-NAT! nil = refl
+subs-NAT! (cons x s) rewrite subs-NAT! s = refl
+
+
+#subs-NAT! : (s : Sub) (c : covered s NAT!)
+           → #subs s NAT! c ≣ #NAT!
+#subs-NAT! s c = CTerm≡ (subs-NAT! s)
+
+
+subs-UNIV : (s : Sub) (i : Nat)
+          → subs s (UNIV i) ≣ UNIV i
+subs-UNIV nil i = refl
+subs-UNIV (cons x s) i rewrite subs-UNIV s i = refl
+
+
+#subs-UNIV : (s : Sub) (i : Nat) (c : covered s (UNIV i))
+           → #subs s (UNIV i) c ≣ #UNIV i
+#subs-UNIV s i c = CTerm≡ (subs-UNIV s i)
+
+
+{--
+NAT!∈UNIV : (i : Nat) (w : 𝕎·) (j : Nat)
+          → equalInType i w (#UNIV j) #NAT! #NAT!
+NAT!∈UNIV i w j = {!!}
+--}
+
+
+validMem-NAT! : (i : Nat) (lti : 1 <ℕ i) (w : 𝕎·) (H : hypotheses)
+              → validMem i w H NAT! (UNIV 1)
+validMem-NAT! i lti w H s1 s2 cc1 cc2 ce1 ce2 eqs eqh
+  rewrite #subs-NAT! s1 ce1 | #subs-NAT! s2 ce2 | #subs-UNIV s1 1 cc1 | #subs-UNIV s2 1 cc2
+  = eqTypesUniv w i 1 lti , e
+  where
+    e : equalInType i w (#UNIV 1) #NAT! #NAT!
+    e = equalTypes→equalInType-UNIV {i} {1} lti {w} {#NAT!} {#NAT!} isTypeNAT!
+
+
+-- Should we use a closed version of the sequent constructor in validMem below?
+⟦_⟧Γ∈ : {n : Nat} {Γ : Con Term n} {t : Term n} {σ : Term n}
+        (j : Γ ⊢ t ∷ σ)
+        (i : Nat) (lti : 1 <ℕ i) (w : 𝕎·)
+      → validMem i w ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ ⟦ σ ⟧ᵤ
+⟦_⟧Γ∈ {n} {Γ} {.(Π _ ▹ _)} {.U} ((Πⱼ_▹_) {F} {G} j j₁) i lti w = {!!}
+  where
+  h1 : validMem i w ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
+  h1 = ⟦_⟧Γ∈ j i lti w
+
+  h2 : validMem i w ⟦ Γ ∙ F ⟧Γ ⟦ G ⟧ᵤ (UNIV 1)
+  h2 = ⟦_⟧Γ∈ j₁ i lti w
+⟦_⟧Γ∈ {n} {Γ} {.(Σ _ ▹ _)} {.U} ((Σⱼ_▹_) {F} {G} j j₁) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.ℕ} {.U} (ℕⱼ x) i lti w = validMem-NAT! i lti w ⟦ Γ ⟧Γ
+⟦_⟧Γ∈ {n} {Γ} {.Empty} {.U} (Emptyⱼ x) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.Unit} {.U} (Unitⱼ x) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(var _)} {σ} (var x x₁) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(lam _)} {.(Π _ ▹ _)} (lamⱼ x j) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(_ ∘ _)} {.(G [ a ])} ((_∘ⱼ_) {g} {a} {F} {G} j j₁) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(prod _ _)} {.(Σ _ ▹ _)} (prodⱼ x x₁ j j₁) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(fst _)} {σ} (fstⱼ x x₁ j) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(snd _)} {.(G [ fst u ])} (sndⱼ {F} {G} {u} x x₁ j) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.Definition.Untyped.zero} {.ℕ} (zeroⱼ x) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(Definition.Untyped.suc _)} {.ℕ} (sucⱼ j) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(natrec _ _ _ _)} {.(G [ k ])} (natrecⱼ {G} {s} {z} {k} x j j₁ j₂) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(Emptyrec σ _)} {σ} (Emptyrecⱼ x j) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.star} {.Unit} (starⱼ x) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {t} {σ} (conv j x) i lti w = {!!}
+
+
+⟦_⟧Γ≡∈ : {n : Nat} {Γ : Con Term n} {t u : Term n} {σ : Term n}
+         (j : Γ ⊢ t ≡ u ∷ σ)
+         (i : Nat) (w : 𝕎·)
+       → validEq i w ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ ⟦ u ⟧ᵤ ⟦ σ ⟧ᵤ
+⟦_⟧Γ≡∈ {n} {Γ} {t} {u} {σ} j i w = {!!}
+
+
+⟦_⟧≡∈ : {t u : Term 0} {σ : Term 0}
+        (j : ε ⊢ t ≡ u ∷ σ)
+        (i : Nat) (w : 𝕎·)
+      → equalInType i w ⟦ j ⟧≡ₜ₀ ⟦ j ⟧≡ₗ₀ ⟦ j ⟧≡ᵣ₀ -- in the empty context
+⟦_⟧≡∈ {t} {u} {σ} j i w = {!!}
 
 \end{code}
