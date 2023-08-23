@@ -9,14 +9,14 @@ open import Agda.Builtin.Equality.Rewrite
 open import Agda.Builtin.Sigma
 open import Relation.Nullary
 open import Relation.Unary using (Pred; Decidable)
-open import Relation.Binary.PropositionalEquality using (sym ; subst)
+open import Relation.Binary.PropositionalEquality using (sym ; subst ; cong)
 open import Data.Product
 open import Data.Product.Properties
 open import Data.Sum
 open import Data.Empty
 open import Data.Maybe
 open import Data.Unit using (⊤ ; tt)
-open import Data.Nat using (ℕ ; _≟_ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
+open import Data.Nat using (ℕ ; _≟_ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred ; _∸_)
 open import Data.Nat.Properties
 open import Data.Bool using (Bool ; _∧_ ; _∨_)
 open import Agda.Builtin.String
@@ -263,6 +263,11 @@ covered : (s : Sub) (t : Term) → Set
 covered s t = fvars t ⊆ sdom s
 
 
+subsN : (n : ℕ) (s : Sub) (t : Term) → Term
+subsN n [] t = t
+subsN n (u ∷ s) t = subn n ⌜ u ⌝ (subsN n s t)
+
+
 subs : (s : Sub) (t : Term) → Term
 subs [] t = t
 subs (u ∷ s) t = subn 0 ⌜ u ⌝ (subs s t)
@@ -323,5 +328,161 @@ validEq n w H a b T = sequent_pairwise_true n w (mkEqSeq H a b T)
 
 validMem : (n : ℕ) (w : 𝕎·) (H : hypotheses) (a T : Term) → Set(lsuc(L))
 validMem n w H a T = sequent_pairwise_true n w (mkSeq H T a)
+
+
+-- More properties about subs
+
+subs-NAT! : (s : Sub)
+          → subs s NAT! ≡ NAT!
+subs-NAT! [] = refl
+subs-NAT! (x ∷ s) rewrite subs-NAT! s = refl
+
+
+#subs-NAT! : (s : Sub) (c : covered s NAT!)
+           → #subs s NAT! c ≡ #NAT!
+#subs-NAT! s c = CTerm≡ (subs-NAT! s)
+
+
+subs-UNIV : (s : Sub) (i : ℕ)
+          → subs s (UNIV i) ≡ UNIV i
+subs-UNIV [] i = refl
+subs-UNIV (x ∷ s) i rewrite subs-UNIV s i = refl
+
+
+#subs-UNIV : (s : Sub) (i : ℕ) (c : covered s (UNIV i))
+           → #subs s (UNIV i) c ≡ #UNIV i
+#subs-UNIV s i c = CTerm≡ (subs-UNIV s i)
+
+
+covered0 : (s : Sub) (t : Term) → Set
+--covered0 s t = fvars t ⊆ raiseVars (sdom s)
+covered0 s t = lowerVars (fvars t) ⊆ sdom s
+
+
+lowerVars⊆[]→ : (l : List Var)
+              → lowerVars l ⊆ []
+              → l ⊆ [ 0 ]
+lowerVars⊆[]→ [] h {x} ()
+lowerVars⊆[]→ (0 ∷ l) h {y} (here px) rewrite px = here refl
+lowerVars⊆[]→ (suc x ∷ l) h {y} (here px) rewrite px = ⊥-elim (¬∈[] {_} {x} (h {x} (here refl)))
+lowerVars⊆[]→ (0 ∷ l) h {y} (there i) = lowerVars⊆[]→ l h {y} i
+lowerVars⊆[]→ (suc x ∷ l) h {y} (there i) = lowerVars⊆[]→ l (⊆-trans (xs⊆x∷xs (lowerVars l) x) h) {y} i
+
+
+lowerVarsN⊆[0] : (l : List Var) (s : Sub)
+               → lowerVars l ⊆ sdom s
+               → lowerVarsN (length s) l ⊆ [ 0 ]
+lowerVarsN⊆[0] l [] h = h1
+  where
+  h1 : l ⊆ [ 0 ]
+  h1 = lowerVars⊆[]→ l h
+lowerVarsN⊆[0] l (x ∷ s) h
+  rewrite lowerVars-lowerVarsN (length s) l
+  = h1
+  where
+  h3 : lowerVars (raiseVars (sdom s)) ⊆ sdom s
+  h3 rewrite lowerVars-raiseVars (sdom s) = ⊆-refl
+
+  h2 : lowerVarsN (length s) (0 ∷ raiseVars (sdom s)) ⊆ [ 0 ]
+  h2 = lowerVarsN⊆[0] (0 ∷ (raiseVars (sdom s))) s h3
+
+  h1 : lowerVarsN (length s) (lowerVars l) ⊆ [ 0 ]
+  h1 = ⊆-trans (lowerVarsN⊆lowerVarsN (length s) (lowerVars l) (0 ∷ (raiseVars (sdom s))) h) h2
+
+
+suc-predIf≤-suc : (y : ℕ) → ¬ (suc y ≡ 1) → suc (predIf≤ 1 (suc y)) ≡ suc y
+suc-predIf≤-suc y h with suc y ≤? 1
+... | yes p = ⊥-elim (h (cong suc (≤-s≤s-≡ 0 y _≤_.z≤n p)))
+... | no p = refl
+
+
+fvars-subn1⊆ : (u t : Term) → fvars (subn 1 u t) ⊆ 0 ∷ lowerVars (fvars t) ++ fvars u
+fvars-subn1⊆ u t {x} i
+  rewrite sym (subn≡sub 1 u t)
+        | fvars-shiftDown≡ 1 (subv 1 (shiftUp 1 u) t)
+  with ∈-map⁻ (predIf≤ 1) i
+... | 0 , j , z rewrite z = here refl
+... | suc y , j , z rewrite z = j2
+  where
+  j1 : suc y ∈ removeV 1 (fvars t) ++ fvars (shiftUp 1 u)
+  j1 = fvars-subv 1 (shiftUp 1 u) t {suc y} j
+
+  j2 : predIf≤ 1 (suc y) ∈ 0 ∷ lowerVars (fvars t) ++ fvars u
+  j2 with ∈-++⁻ (removeV 1 (fvars t)) j1
+  ... | inj₁ x1 with ∈removeV→ {suc y} {1} {fvars t} x1
+  ... | x2 , x3 = there (∈-++⁺ˡ {_} {_} {_} {lowerVars (fvars t)} (→∈lowerVars (predIf≤ 1 (suc y)) (fvars t) (subst (λ x → x ∈ fvars t) (sym (suc-predIf≤-suc y x3)) x2)))
+  j2 | inj₂ x2 rewrite fvars-shiftUp≡ 1 u with ∈-map⁻ (sucIf≤ 1) x2
+  ... | k , k1 , k2 = subst (λ x → predIf≤ 1 x ∈ 0 ∷ lowerVars (fvars t) ++ fvars u) (sym k2) k3
+    where
+    k3 : predIf≤ 1 (sucIf≤ 1 k) ∈ 0 ∷ lowerVars (fvars t) ++ fvars u
+    k3 rewrite predIf≤-sucIf≤ 1 k = there (∈-++⁺ʳ (lowerVars (fvars t)) k1)
+
+
+-- generalize
+∷⊆ : {v : Var} {l k : List Var}
+   → v ∈ k
+   → l ⊆ k
+   → v ∷ l ⊆ k
+∷⊆ {v} {l} {k} i j {x} (here px) rewrite px = i
+∷⊆ {v} {l} {k} i j {x} (there z) = j z
+
+
+fvars-subsN1 : (s : Sub) (t : Term) → fvars (subsN 1 s t) ⊆ 0 ∷ lowerVarsN (length s) (fvars t)
+fvars-subsN1 [] t = xs⊆x∷xs (fvars t) 0
+fvars-subsN1 (x ∷ s) t = h1
+  where
+  ind : fvars (subsN 1 s t) ⊆ 0 ∷ lowerVarsN (length s) (fvars t)
+  ind = fvars-subsN1 s t
+
+  h3 : lowerVars (fvars (subsN 1 s t))
+     ⊆ 0 ∷ lowerVars (lowerVarsN (length s) (fvars t))
+  h3 = ⊆-trans (lowerVars⊆lowerVars (fvars (subsN 1 s t)) (0 ∷ lowerVarsN (length s) (fvars t)) ind) there
+
+  h2 : 0 ∷ lowerVars (fvars (subsN 1 s t)) ++ fvars ⌜ x ⌝
+     ⊆ 0 ∷ lowerVars (lowerVarsN (length s) (fvars t))
+  h2 rewrite CTerm.closed x | ++[] (0 ∷ lowerVars (fvars (subsN 1 s t))) = ∷⊆ (here refl) h3
+
+  h1 : fvars (subn 1 ⌜ x ⌝ (subsN 1 s t)) ⊆ 0 ∷ lowerVars (lowerVarsN (length s) (fvars t))
+  h1 = ⊆-trans (fvars-subn1⊆ ⌜ x ⌝ (subsN 1 s t)) h2
+
+
+#[0]subs : (s : Sub) (t : Term) (c : covered0 s t) → CTerm0
+#[0]subs s t c = ct0 (subsN 1 s t) c1
+  where
+  c2 : fvars (subsN 1 s t) ⊆ [ 0 ]
+  c2 = ⊆-trans (fvars-subsN1 s t) (∷⊆ (here refl) (lowerVarsN⊆[0] (fvars t) s c))
+
+  c1 : #[ [ 0 ] ] subsN 1 s t
+  c1 = ⊆→⊆? {fvars (subsN 1 s t)} {[ 0 ]} c2
+
+
+subs-PI : (s : Sub) (a b : Term)
+        → subs s (PI a b) ≡ PI (subs s a) (subsN 1 s b)
+subs-PI [] a b = refl
+subs-PI (x ∷ s) a b
+  rewrite subs-PI s a b
+        | #shiftUp 0 x = refl
+
+
+coveredPI₁ : {s : Sub} {a b : Term}
+           → covered s (PI a b)
+           → covered s a
+coveredPI₁ {s} {a} {b} c {x} i = c {x} (∈-++⁺ˡ i)
+
+
+coveredPI₂ : {s : Sub} {a b : Term}
+           → covered s (PI a b)
+           → covered0 s b
+coveredPI₂ {s} {a} {b} c {x} i = c {x} (∈-++⁺ʳ (fvars a) i)
+
+
+#subs-PI : (s : Sub) (a b : Term) (c : covered s (PI a b)) (ca : covered s a) (cb : covered0 s b)
+         → #subs s (PI a b) c ≡ #PI (#subs s a ca) (#[0]subs s b cb)
+#subs-PI s a b c ca cb = CTerm≡ (subs-PI s a b)
+
+
+#subs-PI2 : (s : Sub) (a b : Term) (c : covered s (PI a b))
+          → #subs s (PI a b) c ≡ #PI (#subs s a (coveredPI₁ {s} {a} {b} c)) (#[0]subs s b (coveredPI₂ {s} {a} {b} c))
+#subs-PI2 s a b c = #subs-PI s a b c (coveredPI₁ {s} {a} {b} c) (coveredPI₂ {s} {a} {b} c)
 
 \end{code}

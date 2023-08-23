@@ -10,6 +10,9 @@ open import Data.Fin using (Fin ; toℕ)
 open import Data.Fin.Properties using (toℕ<n)
 open import Agda.Builtin.Equality renaming (_≡_ to _≣_)
 open import Agda.Builtin.Sigma renaming (fst to π₁ ; snd to π₂)
+open import Data.List.Relation.Binary.Subset.Propositional
+open import Data.List.Relation.Binary.Subset.Propositional.Properties
+  using (⊆-refl ; ⊆-trans ; xs⊆x∷xs)
 open import Relation.Binary.PropositionalEquality
   using (cong ; cong₂) renaming (trans to ≣trans ; sym to ≣sym ; subst to ≣subst)
 open import Data.List using () renaming ([] to nil ; _∷_ to cons)
@@ -489,28 +492,6 @@ fvarsᵤ {n} {Γ} {t} {σ} (conv i x) = {!!}
     z = fvarsᵤ u v k
 
 
-subs-NAT! : (s : Sub)
-          → subs s NAT! ≣ NAT!
-subs-NAT! nil = refl
-subs-NAT! (cons x s) rewrite subs-NAT! s = refl
-
-
-#subs-NAT! : (s : Sub) (c : covered s NAT!)
-           → #subs s NAT! c ≣ #NAT!
-#subs-NAT! s c = CTerm≡ (subs-NAT! s)
-
-
-subs-UNIV : (s : Sub) (i : Nat)
-          → subs s (UNIV i) ≣ UNIV i
-subs-UNIV nil i = refl
-subs-UNIV (cons x s) i rewrite subs-UNIV s i = refl
-
-
-#subs-UNIV : (s : Sub) (i : Nat) (c : covered s (UNIV i))
-           → #subs s (UNIV i) c ≣ #UNIV i
-#subs-UNIV s i c = CTerm≡ (subs-UNIV s i)
-
-
 {--
 NAT!∈UNIV : (i : Nat) (w : 𝕎·) (j : Nat)
           → equalInType i w (#UNIV j) #NAT! #NAT!
@@ -528,17 +509,36 @@ validMem-NAT! i lti w H s1 s2 cc1 cc2 ce1 ce2 eqs eqh
     e = equalTypes→equalInType-UNIV {i} {1} lti {w} {#NAT!} {#NAT!} isTypeNAT!
 
 
+validMem-PI : (i : Nat) (lti : 1 <ℕ i) (w : 𝕎·) (H : hypotheses) (F G : BTerm)
+            → validMem i w H F (UNIV 1)
+            → validMem i w (mkHyp F Data.List.∷ H) G (UNIV 1)
+            → validMem i w H (PI F G) (UNIV 1)
+validMem-PI i lti w H F G vF vG s1 s2 cc1 cc2 ce1 ce2 es eh
+  rewrite #subs-UNIV s1 1 cc1 | #subs-UNIV s2 1 cc2
+        | #subs-PI2 s1 F G ce1 | #subs-PI2 s2 F G ce2
+  = h1 , h2
+  where
+  h1 : equalTypes i w (#UNIV 1) (#UNIV 1)
+  h1 = eqTypesUniv w i 1 lti
+
+  h2 : equalInType i w (#UNIV 1)
+                       (#PI (#subs s1 F (coveredPI₁ {s1} {F} {G} ce1)) (#[0]subs s1 G (coveredPI₂ {s1} {F} {G} ce1)))
+                       (#PI (#subs s2 F (coveredPI₁ {s2} {F} {G} ce2)) (#[0]subs s2 G (coveredPI₂ {s2} {F} {G} ce2)))
+  h2 = {!!}
+
+
 -- Should we use a closed version of the sequent constructor in validMem below?
 ⟦_⟧Γ∈ : {n : Nat} {Γ : Con Term n} {t : Term n} {σ : Term n}
         (j : Γ ⊢ t ∷ σ)
         (i : Nat) (lti : 1 <ℕ i) (w : 𝕎·)
       → validMem i w ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ ⟦ σ ⟧ᵤ
-⟦_⟧Γ∈ {n} {Γ} {.(Π _ ▹ _)} {.U} ((Πⱼ_▹_) {F} {G} j j₁) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(Π _ ▹ _)} {.U} ((Πⱼ_▹_) {F} {G} j j₁) i lti w =
+  validMem-PI i lti w ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ h1 h2
   where
   h1 : validMem i w ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
   h1 = ⟦_⟧Γ∈ j i lti w
 
-  h2 : validMem i w ⟦ Γ ∙ F ⟧Γ ⟦ G ⟧ᵤ (UNIV 1)
+  h2 : validMem i w (mkHyp ⟦ F ⟧ᵤ Data.List.∷ ⟦ Γ ⟧Γ) ⟦ G ⟧ᵤ (UNIV 1)
   h2 = ⟦_⟧Γ∈ j₁ i lti w
 ⟦_⟧Γ∈ {n} {Γ} {.(Σ _ ▹ _)} {.U} ((Σⱼ_▹_) {F} {G} j j₁) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.ℕ} {.U} (ℕⱼ x) i lti w = validMem-NAT! i lti w ⟦ Γ ⟧Γ
