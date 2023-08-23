@@ -9,7 +9,7 @@ open import Agda.Builtin.Equality.Rewrite
 open import Agda.Builtin.Sigma
 open import Relation.Nullary
 open import Relation.Unary using (Pred; Decidable)
-open import Relation.Binary.PropositionalEquality using (sym ; subst ; cong)
+open import Relation.Binary.PropositionalEquality using (trans ; sym ; subst ; cong ; cong₂)
 open import Data.Product
 open import Data.Product.Properties
 open import Data.Sum
@@ -58,7 +58,7 @@ module sequent {L  : Level}
                (N  : NewChoice W C K G)
                (E  : Extensionality 0ℓ (lsuc(lsuc(L))))
                (EC : Encode)
-       where
+      where
        --(bar : Bar W) where
 
 open import worldDef(W)
@@ -67,8 +67,13 @@ open import bar(W)
 open import barI(W)(M)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
-open import terms3(W)(C)(K)(G)(X)(N)(EC)
+  using (predIf≤-sucIf≤ ; subv# ; →#shiftUp ; →#shiftDown)
+--open import terms3(W)(C)(K)(G)(X)(N)(EC) using ()
 open import subst(W)(C)(K)(G)(X)(N)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (eqTypes-mon)
+open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (equalInType-mon ; ≡CTerm→equalInType)
 
 
 -- ---------------------------------
@@ -257,6 +262,24 @@ data ≡hyps : ℕ → 𝕎· → Sub → Sub → hypotheses → hypotheses → 
             → equalTypes i w (ct T1 #T1) (ct T2 #T2)
             → ≡hyps i w s1 s2 (subHyps 0 ⌜ t1 ⌝ hs1) (subHyps 0 ⌜ t2 ⌝ hs2)
             → ≡hyps i w (t1 ∷ s1) (t2 ∷ s2) (mkHyp T1 ∷ hs1) (mkHyp T2 ∷ hs2)
+
+
+≡subs-mon : {i : ℕ} {w1 w2 : 𝕎·} {s1 s2 : Sub} {H : hypotheses}
+          → w1 ⊑· w2
+          → ≡subs i w1 s1 s2 H
+          → ≡subs i w2 s1 s2 H
+≡subs-mon {i} {w1} {w2} {.[]} {.[]} {.[]} e (≡subs[] .i .w1) = ≡subs[] i w2
+≡subs-mon {i} {w1} {w2} {.(t1 ∷ s1)} {.(t2 ∷ s2)} {.(mkHyp T ∷ hs)} e (≡subs∷ .i .w1 t1 t2 s1 s2 T #T hs x h) =
+  ≡subs∷ i w2 t1 t2 s1 s2 T #T hs (equalInType-mon x w2 e) (≡subs-mon e h)
+
+
+≡hyps-mon : {i : ℕ} {w1 w2 : 𝕎·} {s1 s2 : Sub} {H1 H2 : hypotheses}
+          → w1 ⊑· w2
+          → ≡hyps i w1 s1 s2 H1 H2
+          → ≡hyps i w2 s1 s2 H1 H2
+≡hyps-mon {i} {w1} {w2} {.[]} {.[]} {.[]} {.[]} e (≡hyps[] .i .w1) = ≡hyps[] i w2
+≡hyps-mon {i} {w1} {w2} {.(t1 ∷ s1)} {.(t2 ∷ s2)} {.(mkHyp T1 ∷ hs1)} {.(mkHyp T2 ∷ hs2)} e (≡hyps∷ .i .w1 t1 t2 s1 s2 T1 #T1 T2 #T2 hs1 hs2 x h) =
+  ≡hyps∷ i w2 t1 t2 s1 s2 T1 #T1 T2 #T2 hs1 hs2 (eqTypes-mon (uni i) x w2 e) (≡hyps-mon e h)
 
 
 covered : (s : Sub) (t : Term) → Set
@@ -484,5 +507,384 @@ coveredPI₂ {s} {a} {b} c {x} i = c {x} (∈-++⁺ʳ (fvars a) i)
 #subs-PI2 : (s : Sub) (a b : Term) (c : covered s (PI a b))
           → #subs s (PI a b) c ≡ #PI (#subs s a (coveredPI₁ {s} {a} {b} c)) (#[0]subs s b (coveredPI₂ {s} {a} {b} c))
 #subs-PI2 s a b c = #subs-PI s a b c (coveredPI₁ {s} {a} {b} c) (coveredPI₂ {s} {a} {b} c)
+
+
+→covered∷ : (a : CTerm) (s : Sub) (t : Term)
+          → covered0 s t
+          → covered (a ∷ s) t
+→covered∷ a s t c {0} i = here refl
+→covered∷ a s t c {suc x} i = there (∈-map⁺ suc j)
+  where
+  j : x ∈ sdom s
+  j = c {x} (→∈lowerVars x (fvars t) i)
+
+
+sdom∷ʳ : (s : Sub) (a : CTerm)
+       → sdom (s ∷ʳ a) ≡ 0 ∷ raiseVars (sdom s)
+sdom∷ʳ [] a = refl
+sdom∷ʳ (x ∷ s) a = cong (λ x → 0 ∷ raiseVars x) (sdom∷ʳ s a)
+
+
+→covered∷ʳ : (a : CTerm) (s : Sub) (t : Term)
+           → covered0 s t
+           → covered (s ∷ʳ a) t
+→covered∷ʳ a s t c {0} i rewrite sdom∷ʳ s a = here refl
+→covered∷ʳ a s t c {suc x} i rewrite sdom∷ʳ s a = there (∈-map⁺ suc j)
+  where
+  j : x ∈ sdom s
+  j = c {x} (→∈lowerVars x (fvars t) i)
+
+
+≤→predIf≤ : {m n : ℕ} → m ≤ n → predIf≤ n m ≡ m
+≤→predIf≤ {0} {n} x = refl
+≤→predIf≤ {suc m} {n} x with suc m ≤? n
+... | yes p = refl
+... | no p = ⊥-elim (p x)
+
+
+<→predIf≤ : {m n : ℕ} → m ≤ n → predIf≤ m (suc n) ≡ n
+<→predIf≤ {m} {n} x with suc n ≤? m
+... | yes p = ⊥-elim (<-irrefl refl (≤-trans p x))
+... | no p = refl
+
+
+#subn : (n : ℕ) (b a : Term) (ca : # a)
+      → subn n b a ≡ a
+#subn n b a ca
+  rewrite sym (subn≡sub n b a)
+        | subv# n (shiftUp n b) a ca
+        | #shiftDown n (ct a ca)
+  = refl
+
+
+-- MOVE to util
+cong₃ : {ℓ : Level} {A B C D : Set ℓ}
+        (f : A → B → C → D) {x y : A} {u v : B} {m n : C}
+      → x ≡ y → u ≡ v → m ≡ n → f x u m ≡ f y v n
+cong₃ f refl refl refl = refl
+
+
+-- MOVE to util
+cong₄ : {ℓ : Level} {A B C D E : Set ℓ}
+        (f : A → B → C → D → E) {x y : A} {u v : B} {m n : C} {a b : D}
+      → x ≡ y → u ≡ v → m ≡ n → a ≡ b → f x u m a ≡ f y v n b
+cong₄ f refl refl refl refl = refl
+
+
+subn-subn : (n : ℕ) (a b t : Term) (ca : # a) (cb : # b)
+          → subn n a (subn (suc n) b t) ≡ subn n b (subn n a t)
+-- VAR case
+subn-subn n a b (VAR x) ca cb with x ≟ n | x ≟ suc n
+... | yes p | yes q rewrite p = ⊥-elim (<-irrefl refl (≡suc→< q))
+... | yes p | no  q rewrite p | ≤→predIf≤ {n} {suc n} (<⇒≤ ≤-refl) with n ≟ n
+... | yes r rewrite #subn n b a ca = refl
+... | no r = ⊥-elim (r refl)
+subn-subn n a b (VAR x) ca cb | no  p | yes q rewrite q | <→predIf≤ {n} {n} ≤-refl with n ≟ n
+... | yes r rewrite #subn n a b cb = refl
+... | no r = ⊥-elim (r refl)
+subn-subn n a b (VAR 0) ca cb | no  p | no  q with 0 ≟ n
+... | yes r = ⊥-elim (p r)
+... | no r = refl
+subn-subn n a b (VAR (suc x)) ca cb | no  p | no  q with suc x ≤? n | suc x ≤? suc n
+subn-subn n a b (VAR (suc x)) ca cb | no  p | no  q | yes r | yes s with suc x ≟ n
+... | yes z = ⊥-elim (p z)
+... | no z = refl
+subn-subn n a b (VAR (suc x)) ca cb | no  p | no  q | yes r | no  s =
+  ⊥-elim (s (≤-trans r (<⇒≤ ≤-refl)))
+subn-subn n a b (VAR (suc x)) ca cb | no  p | no  q | no  r | yes s =
+  ⊥-elim (q (cong suc (≤-s≤s-≡ n x (≮⇒≥ r) s)))
+subn-subn n a b (VAR (suc x)) ca cb | no  p | no  q | no  r | no  s with x ≟ n
+... | yes z = ⊥-elim (q (cong suc z))
+... | no z = refl
+--
+subn-subn n a b QNAT ca cb = refl
+subn-subn n a b (LT t t₁) ca cb = cong₂ LT (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
+subn-subn n a b (QLT t t₁) ca cb = cong₂ QLT (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
+subn-subn n a b (NUM x) ca cb = refl
+subn-subn n a b (IFLT t t₁ t₂ t₃) ca cb =
+  cong₄ IFLT (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb) (subn-subn n a b t₂ ca cb) (subn-subn n a b t₃ ca cb)
+subn-subn n a b (IFEQ t t₁ t₂ t₃) ca cb =
+  cong₄ IFEQ (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb) (subn-subn n a b t₂ ca cb) (subn-subn n a b t₃ ca cb)
+subn-subn n a b (SUC t) ca cb = cong SUC (subn-subn n a b t ca cb)
+subn-subn n a b (NATREC t t₁ t₂) ca cb =
+  cong₃ NATREC (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb) (subn-subn n a b t₂ ca cb)
+subn-subn n a b (PI t t₁) ca cb =
+  cong₂
+    PI (subn-subn n a b t ca cb)
+    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+subn-subn n a b (LAMBDA t) ca cb =
+  cong LAMBDA (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+subn-subn n a b (APPLY t t₁) ca cb = cong₂ APPLY (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
+subn-subn n a b (FIX t) ca cb = cong FIX (subn-subn n a b t ca cb)
+subn-subn n a b (LET t t₁) ca cb =
+  cong₂
+    LET (subn-subn n a b t ca cb)
+    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+subn-subn n a b (WT t t₁ t₂) ca cb =
+  cong₃
+    WT (subn-subn n a b t ca cb)
+    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+    (subn-subn n a b t₂ ca cb)
+subn-subn n a b (SUP t t₁) ca cb = cong₂ SUP (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
+subn-subn n a b (WREC t t₁) ca cb =
+  cong₂ WREC (subn-subn n a b t ca cb)
+    (subn-subn (suc (suc (suc n))) (shiftUp 0 (shiftUp 0 (shiftUp 0 a))) (shiftUp 0 (shiftUp 0 (shiftUp 0 b))) t₁
+      (→#shiftUp 0 {shiftUp 0 (shiftUp 0 a)} (→#shiftUp 0 {shiftUp 0 a} (→#shiftUp 0 {a} ca)))
+      (→#shiftUp 0 {shiftUp 0 (shiftUp 0 b)} (→#shiftUp 0 {shiftUp 0 b} (→#shiftUp 0 {b} cb))))
+subn-subn n a b (MT t t₁ t₂) ca cb =
+  cong₃
+    MT (subn-subn n a b t ca cb)
+    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+    (subn-subn n a b t₂ ca cb)
+subn-subn n a b (SUM t t₁) ca cb =
+  cong₂
+    SUM (subn-subn n a b t ca cb)
+    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+subn-subn n a b (PAIR t t₁) ca cb = cong₂ PAIR (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
+subn-subn n a b (SPREAD t t₁) ca cb =
+  cong₂
+    SPREAD (subn-subn n a b t ca cb)
+    (subn-subn (suc (suc n)) (shiftUp 0 (shiftUp 0 a)) (shiftUp 0 (shiftUp 0 b)) t₁
+      (→#shiftUp 0 {shiftUp 0 a} (→#shiftUp 0 {a} ca))
+      (→#shiftUp 0 {shiftUp 0 b} (→#shiftUp 0 {b} cb)))
+subn-subn n a b (SET t t₁) ca cb =
+  cong₂
+    SET (subn-subn n a b t ca cb)
+    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+subn-subn n a b (TUNION t t₁) ca cb =
+  cong₂
+    TUNION (subn-subn n a b t ca cb)
+    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+subn-subn n a b (ISECT t t₁) ca cb = cong₂ ISECT (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
+subn-subn n a b (UNION t t₁) ca cb = cong₂ UNION (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
+subn-subn n a b (INL t) ca cb = cong INL (subn-subn n a b t ca cb)
+subn-subn n a b (INR t) ca cb = cong INR (subn-subn n a b t ca cb)
+subn-subn n a b (DECIDE t t₁ t₂) ca cb =
+  cong₃ DECIDE (subn-subn n a b t ca cb)
+    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₂ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+subn-subn n a b (EQ t t₁ t₂) ca cb =
+  cong₃ EQ (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb) (subn-subn n a b t₂ ca cb)
+subn-subn n a b AX ca cb = refl
+subn-subn n a b FREE ca cb = refl
+subn-subn n a b (CS x) ca cb = refl
+subn-subn n a b (NAME x) ca cb = refl
+subn-subn n a b (FRESH t) ca cb =
+  cong FRESH (subn-subn n (shiftNameUp 0 a) (shiftNameUp 0 b) t (→#shiftNameUp 0 {a} ca) (→#shiftNameUp 0 {b} cb))
+subn-subn n a b (CHOOSE t t₁) ca cb = cong₂ CHOOSE (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
+subn-subn n a b (LOAD t) ca cb = cong LOAD refl
+subn-subn n a b (MSEQ x) ca cb = refl
+subn-subn n a b (MAPP x t) ca cb = cong₂ MAPP refl (subn-subn n a b t ca cb)
+subn-subn n a b NOWRITE ca cb = refl
+subn-subn n a b NOREAD ca cb = refl
+subn-subn n a b (SUBSING t) ca cb = cong SUBSING (subn-subn n a b t ca cb)
+subn-subn n a b (DUM t) ca cb = cong DUM (subn-subn n a b t ca cb)
+subn-subn n a b (FFDEFS t t₁) ca cb = cong₂ FFDEFS (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
+subn-subn n a b PURE ca cb = refl
+subn-subn n a b NOSEQ ca cb = refl
+subn-subn n a b NOENC ca cb = refl
+subn-subn n a b (TERM t) ca cb = cong TERM (subn-subn n a b t ca cb)
+subn-subn n a b (ENC t) ca cb = cong ENC refl
+subn-subn n a b (UNIV x) ca cb = refl
+subn-subn n a b (LIFT t) ca cb = cong LIFT (subn-subn n a b t ca cb)
+subn-subn n a b (LOWER t) ca cb = cong LOWER (subn-subn n a b t ca cb)
+subn-subn n a b (SHRINK t) ca cb = cong SHRINK (subn-subn n a b t ca cb)
+
+
+subn-subsN1 : (a : CTerm) (s : Sub) (t : Term)
+            → subn 0 ⌜ a ⌝ (subsN 1 s t) ≡ subs (s ∷ʳ a) t
+subn-subsN1 a [] t = refl
+subn-subsN1 a (x ∷ s) t =
+  trans
+    (subn-subn 0 ⌜ a ⌝ ⌜ x ⌝ (subsN 1 s t) (CTerm.closed a) (CTerm.closed x))
+    (cong (subn 0 ⌜ x ⌝) (subn-subsN1 a s t))
+
+
+sub-subsN1 : (a : CTerm) (s : Sub) (t : Term)
+           → sub ⌜ a ⌝ (subsN 1 s t) ≡ subs (s ∷ʳ a) t
+sub-subsN1 a s t rewrite sub≡subn ⌜ a ⌝ (subsN 1 s t) = subn-subsN1 a s t
+
+
+sub0-#[0]subs : (a : CTerm) (s : Sub) (t : Term) (c : covered0 s t)
+              → sub0 a (#[0]subs s t c) ≡ #subs (s ∷ʳ a) t (→covered∷ʳ a s t c)
+sub0-#[0]subs a s t c = CTerm≡ (sub-subsN1 a s t)
+
+
+covered[]→# : {F : Term}
+            → covered [] F
+            → # F
+covered[]→# {F} c = ⊆[]→≡[] c
+
+
+subHyps∷ʳ : (n : ℕ) (t F : Term) (hs : hypotheses)
+          → subHyps n t (hs ∷ʳ mkHyp F) ≡ subHyps n t hs ∷ʳ mkHyp (subn (n + length hs) t F)
+subHyps∷ʳ n t F [] rewrite +0 n = refl
+subHyps∷ʳ n t F (mkHyp h ∷ hs) rewrite +-suc n (length hs) =
+  cong (λ z → mkHyp (subn n t h) ∷ z)
+       (subHyps∷ʳ (suc n) t F hs)
+
+
+length-subHyps : (n : ℕ) (t : Term) (H : hypotheses)
+               → length (subHyps n t H) ≡ length H
+length-subHyps n t [] = refl
+length-subHyps n t (mkHyp hyp ∷ H) = cong suc (length-subHyps (suc n) t H)
+
+
+≡subs→length : {i : ℕ} {w : 𝕎·} {s1 s2 : Sub} {H : hypotheses}
+             → ≡subs i w s1 s2 H
+             → length s1 ≡ length H × length s2 ≡ length H
+≡subs→length {i} {w} {.[]} {.[]} {.[]} (≡subs[] .i .w) = refl , refl
+≡subs→length {i} {w} {.(t1 ∷ s1)} {.(t2 ∷ s2)} {.(mkHyp T ∷ hs)} (≡subs∷ .i .w t1 t2 s1 s2 T #T hs x h)
+  rewrite fst (≡subs→length h) | snd (≡subs→length h) | length-subHyps 0 ⌜ t1 ⌝ hs
+  = refl , refl
+
+
+≤⇒< : (m n : ℕ) → m ≤ n → ¬ m ≡ n → m < n
+≤⇒< m n a b with m≤n⇒m<n∨m≡n a
+... | inj₁ c = c
+... | inj₂ c = ⊥-elim (b c)
+
+
+-- Lower the variables starting from x+1, removing x
+lowerVarsFrom : Var → List Var → List Var
+lowerVarsFrom x [] = []
+lowerVarsFrom x (0 ∷ l) with x ≟ 0
+... | yes p = lowerVarsFrom x l -- ≡ so remove it
+... | no p = 0 ∷ lowerVarsFrom x l -- smaller so keep it
+lowerVarsFrom x (suc n ∷ l) with suc n <? x
+... | yes p = suc n ∷ lowerVarsFrom x l -- smaller so keep it
+... | no p with x ≟ suc n
+... | yes q = lowerVarsFrom x l -- ≡ so remove it
+... | no q = n ∷ lowerVarsFrom x l -- great so lower it
+
+
+→predIf≤∈lowerVarsFrom : (k n : ℕ) (l : List Var)
+                       → k ∈ removeV n l
+                       → predIf≤ n k ∈ lowerVarsFrom n l
+→predIf≤∈lowerVarsFrom k n (0 ∷ l) i with 0 ≟ n
+... | yes p rewrite sym p = →predIf≤∈lowerVarsFrom k 0 l i
+→predIf≤∈lowerVarsFrom k 0 (0 ∷ l) (here px) | no p rewrite px = ⊥-elim (p refl)
+→predIf≤∈lowerVarsFrom k (suc n) (0 ∷ l) (here px) | no p rewrite px = here refl
+→predIf≤∈lowerVarsFrom k 0 (0 ∷ l) (there i) | no p = ⊥-elim (p refl)
+→predIf≤∈lowerVarsFrom k (suc n) (0 ∷ l) (there i) | no p = there (→predIf≤∈lowerVarsFrom k (suc n) l i)
+→predIf≤∈lowerVarsFrom k n (suc x ∷ l) i with suc x ≟ n
+... | yes p rewrite sym p with suc x <? suc x
+... |   yes q = ⊥-elim (<-irrefl refl q)
+... |   no q with suc x ≟ suc x
+... |     yes r = →predIf≤∈lowerVarsFrom k (suc x) l i
+... |     no r = ⊥-elim (r refl)
+→predIf≤∈lowerVarsFrom k n (suc x ∷ l) (here px) | no p rewrite px with suc x <? n
+... | yes q with x <? n
+... |   yes r = here refl
+... |   no r = ⊥-elim (r (≤-trans (<⇒≤ ≤-refl) q))
+→predIf≤∈lowerVarsFrom k n (suc x ∷ l) (here px) | no p | no q with n ≟ suc x
+... | yes r rewrite r = ⊥-elim (p refl)
+... | no r with x <? n
+... |   yes z = ⊥-elim (q (≤⇒< (suc x) n z p))
+... |   no z = here refl
+→predIf≤∈lowerVarsFrom k n (suc x ∷ l) (there i) | no p with suc x <? n
+... | yes q = there (→predIf≤∈lowerVarsFrom k n l i)
+... | no q with n ≟ suc x
+... |   yes r rewrite r = →predIf≤∈lowerVarsFrom k (suc x) l i
+... |   no r = there (→predIf≤∈lowerVarsFrom k n l i)
+
+
+fvars-subn⊆ : (n : ℕ) (u t : Term) → fvars (subn n u t) ⊆ lowerVarsFrom n (fvars t) ++ fvars u
+fvars-subn⊆ n u t {x} i
+  rewrite sym (subn≡sub n u t)
+        | fvars-shiftDown≡ n (subv n (shiftUp n u) t)
+  with ∈-map⁻ (predIf≤ n) i
+... | k , k1 , k2
+  rewrite k2
+  with ∈-++⁻ (removeV n (fvars t)) (fvars-subv n (shiftUp n u) t {k} k1)
+... | inj₁ p = ∈-++⁺ˡ (→predIf≤∈lowerVarsFrom k n (fvars t) p)
+... | inj₂ p
+  rewrite fvars-shiftUp≡ n u
+  with ∈-map⁻ (sucIf≤ n) p
+... | j , j1 , j2 rewrite j2 with j <? n
+... | yes q rewrite ≤→predIf≤ {j} {n} (≤-trans (<⇒≤ ≤-refl) q) = ∈-++⁺ʳ (lowerVarsFrom n (fvars t)) j1
+... | no q with suc j ≤? n
+... | yes r = ⊥-elim (q r)
+... | no r = ∈-++⁺ʳ (lowerVarsFrom n (fvars t)) j1
+
+
+∈lowerVarsFrom→ : (x n : Var) (l : List Var)
+                → x ∈ lowerVarsFrom n l
+                → (x < n × x ∈ l)
+                ⊎ (n ≤ x × suc x ∈ l)
+∈lowerVarsFrom→ x n (0 ∷ l) i with n ≟ 0
+... | yes p rewrite p with ∈lowerVarsFrom→ x 0 l i
+... |   inj₁ (q1 , q2) = ⊥-elim (<-irrefl refl (≤-trans q1 _≤_.z≤n))
+... |   inj₂ (q1 , q2) = inj₂ (q1 , there q2)
+∈lowerVarsFrom→ x n (0 ∷ l) (here px) | no p rewrite px =
+  inj₁ (≤⇒< 0 n _≤_.z≤n (λ z → p (sym z)) , here refl)
+∈lowerVarsFrom→ x n (0 ∷ l) (there i) | no p with ∈lowerVarsFrom→ x n l i
+... |   inj₁ (q1 , q2) = inj₁ (q1 , there q2)
+... |   inj₂ (q1 , q2) = inj₂ (q1 , there q2)
+∈lowerVarsFrom→ x n (suc y ∷ l) i with suc y <? n
+∈lowerVarsFrom→ x n (suc y ∷ l) (here px) | yes p rewrite px = inj₁ (p , here refl)
+∈lowerVarsFrom→ x n (suc y ∷ l) (there i) | yes p with ∈lowerVarsFrom→ x n l i
+... |   inj₁ (q1 , q2) = inj₁ (q1 , there q2)
+... |   inj₂ (q1 , q2) = inj₂ (q1 , there q2)
+∈lowerVarsFrom→ x n (suc y ∷ l) i | no p with n ≟ suc y
+∈lowerVarsFrom→ x n (suc y ∷ l) i | no p | yes q rewrite q with ∈lowerVarsFrom→ x (suc y) l i
+... |   inj₁ (q1 , q2) = inj₁ (q1 , there q2)
+... |   inj₂ (q1 , q2) = inj₂ (q1 , there q2)
+∈lowerVarsFrom→ x n (suc y ∷ l) (here px) | no p | no q rewrite px =
+  inj₂ (s≤s-inj (≤⇒< n (suc y) (≮⇒≥ p) q) , here refl)
+∈lowerVarsFrom→ x n (suc y ∷ l) (there i) | no p | no q with ∈lowerVarsFrom→ x n l i
+... |   inj₁ (q1 , q2) = inj₁ (q1 , there q2)
+... |   inj₂ (q1 , q2) = inj₂ (q1 , there q2)
+
+
+→∈sdom : (x : Var) (s : Sub)
+       → x < length s
+       → x ∈ sdom s
+→∈sdom 0 (x₁ ∷ s) i = here refl
+→∈sdom (suc x) (x₁ ∷ s) i = there (∈-map⁺ suc (→∈sdom x s (s≤s-inj i)))
+
+
+covered∷→ : (t : CTerm) (s : Sub) (F : Term)
+          → covered (t ∷ s) F
+          → covered s (subn (length s) ⌜ t ⌝ F)
+covered∷→ t s F c {x} i with  ∈-++⁻ (lowerVarsFrom (length s) (fvars F)) (fvars-subn⊆ (length s) ⌜ t ⌝ F {x} i)
+... | inj₁ p with ∈lowerVarsFrom→ x (length s) (fvars F) p
+covered∷→ t s F c {x} i | inj₁ p | inj₁ (q1 , q2) with c {x} q2
+... | here px rewrite px = →∈sdom 0 s q1
+... | there j with ∈-map⁻ suc j
+... |   k , k1 , k2 rewrite k2 = →∈sdom (suc k) s q1
+covered∷→ t s F c {x} i | inj₁ p | inj₂ (q1 , q2) with c {suc x} q2
+... | here px = ⊥-elim (1+n≢0 px)
+... | there j with ∈-map⁻ suc j
+... |   k , k1 , k2 rewrite suc-injective k2 = k1
+covered∷→ t s F c {x} i | inj₂ p rewrite CTerm.closed t = ⊥-elim (¬∈[] p)
+
+
+≡subs∷ʳ : (i : ℕ) (w : 𝕎·) (s1 s2 : Sub) (H : hypotheses) (F : Term) (c : covered s1 F) (a₁ a₂ : CTerm)
+        → equalInType i w (#subs s1 F c) a₁ a₂
+        → ≡subs i w s1 s2 H
+        → ≡subs i w (s1 ∷ʳ a₁) (s2 ∷ʳ a₂) (H ∷ʳ mkHyp F)
+≡subs∷ʳ i w .[] .[] .[] F c a₁ a₂ a∈ (≡subs[] .i .w) =
+  ≡subs∷ i w a₁ a₂ [] [] F (covered[]→# {F} c) [] (≡CTerm→equalInType (CTerm≡ refl) a∈) (≡subs[] i w)
+≡subs∷ʳ i w .(t1 ∷ s1) .(t2 ∷ s2) .(mkHyp T ∷ hs) F c a₁ a₂ a∈ (≡subs∷ .i .w t1 t2 s1 s2 T #T hs x h) =
+  ≡subs∷ i w t1 t2 (s1 ∷ʳ a₁) (s2 ∷ʳ a₂) T #T (hs ∷ʳ mkHyp F) x q1
+  where
+  c0 : covered s1 (subn (length s1) ⌜ t1 ⌝ F)
+  c0 = covered∷→ t1 s1 F c
+
+  c1 : covered s1 (subn (length hs) ⌜ t1 ⌝ F)
+  c1 rewrite sym (trans (fst (≡subs→length h)) (length-subHyps 0 ⌜ t1 ⌝ hs)) = c0
+
+  e0 : subs (t1 ∷ s1) F ≡ subs s1 (subn (length hs) ⌜ t1 ⌝ F)
+  e0 = {!!}
+
+  a∈1 : equalInType i w (#subs s1 (subn (length hs) ⌜ t1 ⌝ F) c1) a₁ a₂
+  a∈1 = ≡CTerm→equalInType (CTerm≡ e0) a∈
+
+  q2 : ≡subs i w (s1 ∷ʳ a₁) (s2 ∷ʳ a₂) (subHyps 0 ⌜ t1 ⌝ hs ∷ʳ mkHyp (subn (length hs) ⌜ t1 ⌝ F))
+  q2 = ≡subs∷ʳ i w s1 s2 (subHyps 0 ⌜ t1 ⌝ hs) (subn (length hs) ⌜ t1 ⌝ F) c1 a₁ a₂ a∈1 h
+
+  q1 : ≡subs i w (s1 ∷ʳ a₁) (s2 ∷ʳ a₂) (subHyps 0 ⌜ t1 ⌝ (hs ∷ʳ mkHyp F))
+  q1 rewrite subHyps∷ʳ 0 ⌜ t1 ⌝ F hs = q2
 
 \end{code}
