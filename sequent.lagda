@@ -548,6 +548,11 @@ sdom∷ʳ (x ∷ s) a = cong (λ x → 0 ∷ raiseVars x) (sdom∷ʳ s a)
 ... | no p = refl
 
 
+<→predIf≤2 : {m n : ℕ} → m < n → predIf≤ m n ≡ pred n
+<→predIf≤2 {m} {0} x = refl
+<→predIf≤2 {m} {suc n} x = <→predIf≤ (s≤s-inj x)
+
+
 #subn : (n : ℕ) (b a : Term) (ca : # a)
       → subn n b a ≡ a
 #subn n b a ca
@@ -571,124 +576,164 @@ cong₄ : {ℓ : Level} {A B C D E : Set ℓ}
 cong₄ f refl refl refl refl = refl
 
 
-subn-subn : (n : ℕ) (a b t : Term) (ca : # a) (cb : # b)
-          → subn n a (subn (suc n) b t) ≡ subn n b (subn n a t)
+≤⇒< : (m n : ℕ) → m ≤ n → ¬ m ≡ n → m < n
+≤⇒< m n a b with m≤n⇒m<n∨m≡n a
+... | inj₁ c = c
+... | inj₂ c = ⊥-elim (b c)
+
+
+subn-subn2 : (n m : ℕ) (ltn : m ≤ n) (a b t : Term) (ca : # a) (cb : # b)
+           → subn m a (subn (suc n) b t) ≡ subn n b (subn m a t)
 -- VAR case
-subn-subn n a b (VAR x) ca cb with x ≟ n | x ≟ suc n
-... | yes p | yes q rewrite p = ⊥-elim (<-irrefl refl (≡suc→< q))
-... | yes p | no  q rewrite p | ≤→predIf≤ {n} {suc n} (<⇒≤ ≤-refl) with n ≟ n
+subn-subn2 n m ltn a b (VAR x) ca cb with x ≟ suc n | x ≟ m
+subn-subn2 n m ltn a b (VAR x) ca cb | yes p | yes q rewrite q | p = ⊥-elim (<-irrefl refl ltn)
+subn-subn2 n m ltn a b (VAR x) ca cb | yes p | no  q rewrite p | <→predIf≤ ltn with n ≟ n
+... | yes r rewrite #subn m a b cb = refl
+... | no  r = ⊥-elim (r refl)
+subn-subn2 n m ltn a b (VAR x) ca cb | no  p | yes q
+  rewrite q | ≤→predIf≤ {m} {suc n} (≤-trans ltn (<⇒≤ ≤-refl))
+  with m ≟ m
 ... | yes r rewrite #subn n b a ca = refl
-... | no r = ⊥-elim (r refl)
-subn-subn n a b (VAR x) ca cb | no  p | yes q rewrite q | <→predIf≤ {n} {n} ≤-refl with n ≟ n
-... | yes r rewrite #subn n a b cb = refl
-... | no r = ⊥-elim (r refl)
-subn-subn n a b (VAR 0) ca cb | no  p | no  q with 0 ≟ n
-... | yes r = ⊥-elim (p r)
-... | no r = refl
-subn-subn n a b (VAR (suc x)) ca cb | no  p | no  q with suc x ≤? n | suc x ≤? suc n
-subn-subn n a b (VAR (suc x)) ca cb | no  p | no  q | yes r | yes s with suc x ≟ n
-... | yes z = ⊥-elim (p z)
-... | no z = refl
-subn-subn n a b (VAR (suc x)) ca cb | no  p | no  q | yes r | no  s =
-  ⊥-elim (s (≤-trans r (<⇒≤ ≤-refl)))
-subn-subn n a b (VAR (suc x)) ca cb | no  p | no  q | no  r | yes s =
-  ⊥-elim (q (cong suc (≤-s≤s-≡ n x (≮⇒≥ r) s)))
-subn-subn n a b (VAR (suc x)) ca cb | no  p | no  q | no  r | no  s with x ≟ n
-... | yes z = ⊥-elim (q (cong suc z))
-... | no z = refl
+... | no  r = ⊥-elim (r refl)
+subn-subn2 n m ltn a b (VAR 0) ca cb | no  p | no  q with 0 ≟ m | 0 ≟ n
+... | yes r | yes s rewrite sym r | sym s = ⊥-elim (q refl)
+... | yes r | no  s rewrite sym r = ⊥-elim (q refl)
+... | no  r | yes s rewrite sym s | n≤0⇒n≡0 {m} ltn  = ⊥-elim (q refl)
+... | no  r | no  s = refl
+subn-subn2 n m ltn a b (VAR (suc x)) ca cb | no  p | no  q with suc x ≤? suc n | suc x ≤? m
+subn-subn2 n m ltn a b (VAR (suc x)) ca cb | no  p | no  q | yes r | yes s with suc x ≟ m | suc x ≟ n
+... | yes z | yes w rewrite sym z | sym w = ⊥-elim (q refl)
+... | yes z | no  w rewrite sym z = ⊥-elim (q refl)
+subn-subn2 n m ltn a b (VAR (suc x)) ca cb | no  p | no  q | yes r | yes s | no  z | yes w
+  rewrite sym w with x <? m
+... | yes y = ⊥-elim (<-irrefl refl (<-transˡ (≤⇒< _ _ y q) ltn))
+... | no  y = ⊥-elim (y s)
+subn-subn2 n m ltn a b (VAR (suc x)) ca cb | no  p | no  q | yes r | yes s | no  z | no  w
+  with suc x ≤? m | suc x ≤? n
+... | yes i | yes j = refl
+... | yes i | no  j = ⊥-elim (j (s≤s-inj (≤⇒< _ _ r p)))
+... | no  i | yes j = ⊥-elim (i s)
+... | no  i | no  j = refl
+subn-subn2 n m ltn a b (VAR (suc x)) ca cb | no  p | no  q | yes r | no  s with suc x ≟ m
+... | yes y = ⊥-elim (q y)
+... | no  y with suc x ≤? m
+... | yes z = ⊥-elim (s z)
+... | no  z with x ≟ n
+... | yes w rewrite w = ⊥-elim (p refl)
+... | no  w rewrite ≤→predIf≤ {x} {n} (s≤s-inj r) = refl
+subn-subn2 n m ltn a b (VAR (suc x)) ca cb | no  p | no  q | no  r | yes s with x ≟ m
+... | yes y rewrite y = ⊥-elim (<-irrefl refl s)
+... | no  y with x ≟ n
+... | yes z rewrite z = ⊥-elim (r ≤-refl)
+... | no  z with suc x ≟ n
+... | yes w rewrite sym w = ⊥-elim (r (<⇒≤ ≤-refl))
+... | no  w with suc x ≤? n
+... | yes i = ⊥-elim (r (_≤_.s≤s (<⇒≤ (≤⇒< _ _ (≤-trans (<⇒≤ ≤-refl) i) z))))
+... | no  i rewrite ≤→predIf≤ {x} {m} (≤-trans (<⇒≤ ≤-refl) s) = refl
+subn-subn2 n m ltn a b (VAR (suc x)) ca cb | no  p | no  q | no  r | no  s with x ≟ m
+... | yes y rewrite y = ⊥-elim (r (_≤_.s≤s ltn))
+... | no  y with x ≟ n
+... | yes z rewrite z = ⊥-elim (r ≤-refl)
+... | no  z rewrite <→predIf≤2 {m} {x} (≤⇒< _ _ (≮⇒≥ s) (λ i → y (sym i)))
+                  | <→predIf≤2 {n} {x} (≤⇒< _ _ (≤-trans (<⇒≤ ≤-refl) (≮⇒≥ r)) (λ i → z (sym i))) = refl
 --
-subn-subn n a b QNAT ca cb = refl
-subn-subn n a b (LT t t₁) ca cb = cong₂ LT (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
-subn-subn n a b (QLT t t₁) ca cb = cong₂ QLT (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
-subn-subn n a b (NUM x) ca cb = refl
-subn-subn n a b (IFLT t t₁ t₂ t₃) ca cb =
-  cong₄ IFLT (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb) (subn-subn n a b t₂ ca cb) (subn-subn n a b t₃ ca cb)
-subn-subn n a b (IFEQ t t₁ t₂ t₃) ca cb =
-  cong₄ IFEQ (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb) (subn-subn n a b t₂ ca cb) (subn-subn n a b t₃ ca cb)
-subn-subn n a b (SUC t) ca cb = cong SUC (subn-subn n a b t ca cb)
-subn-subn n a b (NATREC t t₁ t₂) ca cb =
-  cong₃ NATREC (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb) (subn-subn n a b t₂ ca cb)
-subn-subn n a b (PI t t₁) ca cb =
+subn-subn2 n m ltn a b QNAT ca cb = refl
+subn-subn2 n m ltn a b (LT t t₁) ca cb = cong₂ LT (subn-subn2 n m ltn a b t ca cb) (subn-subn2 n m ltn a b t₁ ca cb)
+subn-subn2 n m ltn a b (QLT t t₁) ca cb = cong₂ QLT (subn-subn2 n m ltn a b t ca cb) (subn-subn2 n m ltn a b t₁ ca cb)
+subn-subn2 n m ltn a b (NUM x) ca cb = refl
+subn-subn2 n m ltn a b (IFLT t t₁ t₂ t₃) ca cb =
+  cong₄ IFLT (subn-subn2 n m ltn a b t ca cb) (subn-subn2 n m ltn a b t₁ ca cb) (subn-subn2 n m ltn a b t₂ ca cb) (subn-subn2 n m ltn a b t₃ ca cb)
+subn-subn2 n m ltn a b (IFEQ t t₁ t₂ t₃) ca cb =
+  cong₄ IFEQ (subn-subn2 n m ltn a b t ca cb) (subn-subn2 n m ltn a b t₁ ca cb) (subn-subn2 n m ltn a b t₂ ca cb) (subn-subn2 n m ltn a b t₃ ca cb)
+subn-subn2 n m ltn a b (SUC t) ca cb = cong SUC (subn-subn2 n m ltn a b t ca cb)
+subn-subn2 n m ltn a b (NATREC t t₁ t₂) ca cb =
+  cong₃ NATREC (subn-subn2 n m ltn a b t ca cb) (subn-subn2 n m ltn a b t₁ ca cb) (subn-subn2 n m ltn a b t₂ ca cb)
+subn-subn2 n m ltn a b (PI t t₁) ca cb =
   cong₂
-    PI (subn-subn n a b t ca cb)
-    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
-subn-subn n a b (LAMBDA t) ca cb =
-  cong LAMBDA (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
-subn-subn n a b (APPLY t t₁) ca cb = cong₂ APPLY (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
-subn-subn n a b (FIX t) ca cb = cong FIX (subn-subn n a b t ca cb)
-subn-subn n a b (LET t t₁) ca cb =
+    PI (subn-subn2 n m ltn a b t ca cb)
+    (subn-subn2 (suc n) (suc m) (_≤_.s≤s ltn) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+subn-subn2 n m ltn a b (LAMBDA t) ca cb =
+  cong LAMBDA (subn-subn2 (suc n) (suc m) (_≤_.s≤s ltn) (shiftUp 0 a) (shiftUp 0 b) t (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+subn-subn2 n m ltn a b (APPLY t t₁) ca cb = cong₂ APPLY (subn-subn2 n m ltn a b t ca cb) (subn-subn2 n m ltn a b t₁ ca cb)
+subn-subn2 n m ltn a b (FIX t) ca cb = cong FIX (subn-subn2 n m ltn a b t ca cb)
+subn-subn2 n m ltn a b (LET t t₁) ca cb =
   cong₂
-    LET (subn-subn n a b t ca cb)
-    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
-subn-subn n a b (WT t t₁ t₂) ca cb =
+    LET (subn-subn2 n m ltn a b t ca cb)
+    (subn-subn2 (suc n) (suc m) (_≤_.s≤s ltn) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+subn-subn2 n m ltn a b (WT t t₁ t₂) ca cb =
   cong₃
-    WT (subn-subn n a b t ca cb)
-    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
-    (subn-subn n a b t₂ ca cb)
-subn-subn n a b (SUP t t₁) ca cb = cong₂ SUP (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
-subn-subn n a b (WREC t t₁) ca cb =
-  cong₂ WREC (subn-subn n a b t ca cb)
-    (subn-subn (suc (suc (suc n))) (shiftUp 0 (shiftUp 0 (shiftUp 0 a))) (shiftUp 0 (shiftUp 0 (shiftUp 0 b))) t₁
+    WT (subn-subn2 n m ltn a b t ca cb)
+    (subn-subn2 (suc n) (suc m) (_≤_.s≤s ltn) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+    (subn-subn2 n m ltn a b t₂ ca cb)
+subn-subn2 n m ltn a b (SUP t t₁) ca cb = cong₂ SUP (subn-subn2 n m ltn a b t ca cb) (subn-subn2 n m ltn a b t₁ ca cb)
+subn-subn2 n m ltn a b (WREC t t₁) ca cb =
+  cong₂ WREC (subn-subn2 n m ltn a b t ca cb)
+    (subn-subn2 (suc (suc (suc n))) (suc (suc (suc m))) (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s ltn))) (shiftUp 0 (shiftUp 0 (shiftUp 0 a))) (shiftUp 0 (shiftUp 0 (shiftUp 0 b))) t₁
       (→#shiftUp 0 {shiftUp 0 (shiftUp 0 a)} (→#shiftUp 0 {shiftUp 0 a} (→#shiftUp 0 {a} ca)))
       (→#shiftUp 0 {shiftUp 0 (shiftUp 0 b)} (→#shiftUp 0 {shiftUp 0 b} (→#shiftUp 0 {b} cb))))
-subn-subn n a b (MT t t₁ t₂) ca cb =
+subn-subn2 n m ltn a b (MT t t₁ t₂) ca cb =
   cong₃
-    MT (subn-subn n a b t ca cb)
-    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
-    (subn-subn n a b t₂ ca cb)
-subn-subn n a b (SUM t t₁) ca cb =
+    MT (subn-subn2 n m ltn a b t ca cb)
+    (subn-subn2 (suc n) (suc m) (_≤_.s≤s ltn) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+    (subn-subn2 n m ltn a b t₂ ca cb)
+subn-subn2 n m ltn a b (SUM t t₁) ca cb =
   cong₂
-    SUM (subn-subn n a b t ca cb)
-    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
-subn-subn n a b (PAIR t t₁) ca cb = cong₂ PAIR (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
-subn-subn n a b (SPREAD t t₁) ca cb =
+    SUM (subn-subn2 n m ltn a b t ca cb)
+    (subn-subn2 (suc n) (suc m) (_≤_.s≤s ltn) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+subn-subn2 n m ltn a b (PAIR t t₁) ca cb = cong₂ PAIR (subn-subn2 n m ltn a b t ca cb) (subn-subn2 n m ltn a b t₁ ca cb)
+subn-subn2 n m ltn a b (SPREAD t t₁) ca cb =
   cong₂
-    SPREAD (subn-subn n a b t ca cb)
-    (subn-subn (suc (suc n)) (shiftUp 0 (shiftUp 0 a)) (shiftUp 0 (shiftUp 0 b)) t₁
+    SPREAD (subn-subn2 n m ltn a b t ca cb)
+    (subn-subn2 (suc (suc n)) (suc (suc m)) (_≤_.s≤s (_≤_.s≤s ltn)) (shiftUp 0 (shiftUp 0 a)) (shiftUp 0 (shiftUp 0 b)) t₁
       (→#shiftUp 0 {shiftUp 0 a} (→#shiftUp 0 {a} ca))
       (→#shiftUp 0 {shiftUp 0 b} (→#shiftUp 0 {b} cb)))
-subn-subn n a b (SET t t₁) ca cb =
+subn-subn2 n m ltn a b (SET t t₁) ca cb =
   cong₂
-    SET (subn-subn n a b t ca cb)
-    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
-subn-subn n a b (TUNION t t₁) ca cb =
+    SET (subn-subn2 n m ltn a b t ca cb)
+    (subn-subn2 (suc n) (suc m) (_≤_.s≤s ltn) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+subn-subn2 n m ltn a b (TUNION t t₁) ca cb =
   cong₂
-    TUNION (subn-subn n a b t ca cb)
-    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
-subn-subn n a b (ISECT t t₁) ca cb = cong₂ ISECT (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
-subn-subn n a b (UNION t t₁) ca cb = cong₂ UNION (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
-subn-subn n a b (INL t) ca cb = cong INL (subn-subn n a b t ca cb)
-subn-subn n a b (INR t) ca cb = cong INR (subn-subn n a b t ca cb)
-subn-subn n a b (DECIDE t t₁ t₂) ca cb =
-  cong₃ DECIDE (subn-subn n a b t ca cb)
-    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
-    (subn-subn (suc n) (shiftUp 0 a) (shiftUp 0 b) t₂ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
-subn-subn n a b (EQ t t₁ t₂) ca cb =
-  cong₃ EQ (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb) (subn-subn n a b t₂ ca cb)
-subn-subn n a b AX ca cb = refl
-subn-subn n a b FREE ca cb = refl
-subn-subn n a b (CS x) ca cb = refl
-subn-subn n a b (NAME x) ca cb = refl
-subn-subn n a b (FRESH t) ca cb =
-  cong FRESH (subn-subn n (shiftNameUp 0 a) (shiftNameUp 0 b) t (→#shiftNameUp 0 {a} ca) (→#shiftNameUp 0 {b} cb))
-subn-subn n a b (CHOOSE t t₁) ca cb = cong₂ CHOOSE (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
-subn-subn n a b (LOAD t) ca cb = cong LOAD refl
-subn-subn n a b (MSEQ x) ca cb = refl
-subn-subn n a b (MAPP x t) ca cb = cong₂ MAPP refl (subn-subn n a b t ca cb)
-subn-subn n a b NOWRITE ca cb = refl
-subn-subn n a b NOREAD ca cb = refl
-subn-subn n a b (SUBSING t) ca cb = cong SUBSING (subn-subn n a b t ca cb)
-subn-subn n a b (DUM t) ca cb = cong DUM (subn-subn n a b t ca cb)
-subn-subn n a b (FFDEFS t t₁) ca cb = cong₂ FFDEFS (subn-subn n a b t ca cb) (subn-subn n a b t₁ ca cb)
-subn-subn n a b PURE ca cb = refl
-subn-subn n a b NOSEQ ca cb = refl
-subn-subn n a b NOENC ca cb = refl
-subn-subn n a b (TERM t) ca cb = cong TERM (subn-subn n a b t ca cb)
-subn-subn n a b (ENC t) ca cb = cong ENC refl
-subn-subn n a b (UNIV x) ca cb = refl
-subn-subn n a b (LIFT t) ca cb = cong LIFT (subn-subn n a b t ca cb)
-subn-subn n a b (LOWER t) ca cb = cong LOWER (subn-subn n a b t ca cb)
-subn-subn n a b (SHRINK t) ca cb = cong SHRINK (subn-subn n a b t ca cb)
+    TUNION (subn-subn2 n m ltn a b t ca cb)
+    (subn-subn2 (suc n) (suc m) (_≤_.s≤s ltn) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+subn-subn2 n m ltn a b (ISECT t t₁) ca cb = cong₂ ISECT (subn-subn2 n m ltn a b t ca cb) (subn-subn2 n m ltn a b t₁ ca cb)
+subn-subn2 n m ltn a b (UNION t t₁) ca cb = cong₂ UNION (subn-subn2 n m ltn a b t ca cb) (subn-subn2 n m ltn a b t₁ ca cb)
+subn-subn2 n m ltn a b (INL t) ca cb = cong INL (subn-subn2 n m ltn a b t ca cb)
+subn-subn2 n m ltn a b (INR t) ca cb = cong INR (subn-subn2 n m ltn a b t ca cb)
+subn-subn2 n m ltn a b (DECIDE t t₁ t₂) ca cb =
+  cong₃ DECIDE (subn-subn2 n m ltn a b t ca cb)
+    (subn-subn2 (suc n) (suc m) (_≤_.s≤s ltn) (shiftUp 0 a) (shiftUp 0 b) t₁ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+    (subn-subn2 (suc n) (suc m) (_≤_.s≤s ltn) (shiftUp 0 a) (shiftUp 0 b) t₂ (→#shiftUp 0 {a} ca) (→#shiftUp 0 {b} cb))
+subn-subn2 n m ltn a b (EQ t t₁ t₂) ca cb =
+  cong₃ EQ (subn-subn2 n m ltn a b t ca cb) (subn-subn2 n m ltn a b t₁ ca cb) (subn-subn2 n m ltn a b t₂ ca cb)
+subn-subn2 n m ltn a b AX ca cb = refl
+subn-subn2 n m ltn a b FREE ca cb = refl
+subn-subn2 n m ltn a b (CS x) ca cb = refl
+subn-subn2 n m ltn a b (NAME x) ca cb = refl
+subn-subn2 n m ltn a b (FRESH t) ca cb =
+  cong FRESH (subn-subn2 n m ltn (shiftNameUp 0 a) (shiftNameUp 0 b) t (→#shiftNameUp 0 {a} ca) (→#shiftNameUp 0 {b} cb))
+subn-subn2 n m ltn a b (CHOOSE t t₁) ca cb = cong₂ CHOOSE (subn-subn2 n m ltn a b t ca cb) (subn-subn2 n m ltn a b t₁ ca cb)
+subn-subn2 n m ltn a b (LOAD t) ca cb = cong LOAD refl
+subn-subn2 n m ltn a b (MSEQ x) ca cb = refl
+subn-subn2 n m ltn a b (MAPP x t) ca cb = cong₂ MAPP refl (subn-subn2 n m ltn a b t ca cb)
+subn-subn2 n m ltn a b NOWRITE ca cb = refl
+subn-subn2 n m ltn a b NOREAD ca cb = refl
+subn-subn2 n m ltn a b (SUBSING t) ca cb = cong SUBSING (subn-subn2 n m ltn a b t ca cb)
+subn-subn2 n m ltn a b (DUM t) ca cb = cong DUM (subn-subn2 n m ltn a b t ca cb)
+subn-subn2 n m ltn a b (FFDEFS t t₁) ca cb = cong₂ FFDEFS (subn-subn2 n m ltn a b t ca cb) (subn-subn2 n m ltn a b t₁ ca cb)
+subn-subn2 n m ltn a b PURE ca cb = refl
+subn-subn2 n m ltn a b NOSEQ ca cb = refl
+subn-subn2 n m ltn a b NOENC ca cb = refl
+subn-subn2 n m ltn a b (TERM t) ca cb = cong TERM (subn-subn2 n m ltn a b t ca cb)
+subn-subn2 n m ltn a b (ENC t) ca cb = cong ENC refl
+subn-subn2 n m ltn a b (UNIV x) ca cb = refl
+subn-subn2 n m ltn a b (LIFT t) ca cb = cong LIFT (subn-subn2 n m ltn a b t ca cb)
+subn-subn2 n m ltn a b (LOWER t) ca cb = cong LOWER (subn-subn2 n m ltn a b t ca cb)
+subn-subn2 n m ltn a b (SHRINK t) ca cb = cong SHRINK (subn-subn2 n m ltn a b t ca cb)
+
+
+subn-subn : (n : ℕ) (a b t : Term) (ca : # a) (cb : # b)
+          → subn n a (subn (suc n) b t) ≡ subn n b (subn n a t)
+subn-subn n a b t ca cb = subn-subn2 n n ≤-refl a b t ca cb
 
 
 subn-subsN1 : (a : CTerm) (s : Sub) (t : Term)
@@ -737,12 +782,6 @@ length-subHyps n t (mkHyp hyp ∷ H) = cong suc (length-subHyps (suc n) t H)
 ≡subs→length {i} {w} {.(t1 ∷ s1)} {.(t2 ∷ s2)} {.(mkHyp T ∷ hs)} (≡subs∷ .i .w t1 t2 s1 s2 T #T hs x h)
   rewrite fst (≡subs→length h) | snd (≡subs→length h) | length-subHyps 0 ⌜ t1 ⌝ hs
   = refl , refl
-
-
-≤⇒< : (m n : ℕ) → m ≤ n → ¬ m ≡ n → m < n
-≤⇒< m n a b with m≤n⇒m<n∨m≡n a
-... | inj₁ c = c
-... | inj₂ c = ⊥-elim (b c)
 
 
 -- Lower the variables starting from x+1, removing x
@@ -860,6 +899,17 @@ covered∷→ t s F c {x} i | inj₁ p | inj₂ (q1 , q2) with c {suc x} q2
 covered∷→ t s F c {x} i | inj₂ p rewrite CTerm.closed t = ⊥-elim (¬∈[] p)
 
 
+subn-subs : (n : ℕ) (t : Term) (#t : # t) (s : Sub) (F : Term)
+          → subn n t (subs s F) ≡ subs s (subn (n + length s) t F)
+subn-subs n t #t [] F rewrite +0 n = refl
+subn-subs n t #t (x ∷ s) F
+  rewrite sym (subn-subn2 n 0 _≤_.z≤n ⌜ x ⌝ t (subs s F) (CTerm.closed x) #t)
+  = cong (subn 0 ⌜ x ⌝) h
+ where
+ h : subn (suc n) t (subs s F) ≡ subs s (subn (n + suc (length s)) t F)
+ h rewrite sym (+-assoc n 1 (length s)) | +-comm n 1 = subn-subs (suc n) t #t s F
+
+
 ≡subs∷ʳ : (i : ℕ) (w : 𝕎·) (s1 s2 : Sub) (H : hypotheses) (F : Term) (c : covered s1 F) (a₁ a₂ : CTerm)
         → equalInType i w (#subs s1 F c) a₁ a₂
         → ≡subs i w s1 s2 H
@@ -876,7 +926,8 @@ covered∷→ t s F c {x} i | inj₂ p rewrite CTerm.closed t = ⊥-elim (¬∈[
   c1 rewrite sym (trans (fst (≡subs→length h)) (length-subHyps 0 ⌜ t1 ⌝ hs)) = c0
 
   e0 : subs (t1 ∷ s1) F ≡ subs s1 (subn (length hs) ⌜ t1 ⌝ F)
-  e0 = {!!}
+  e0 rewrite sym (trans (fst (≡subs→length h)) (length-subHyps 0 ⌜ t1 ⌝ hs)) =
+    subn-subs 0 ⌜ t1 ⌝ (CTerm.closed t1) s1 F
 
   a∈1 : equalInType i w (#subs s1 (subn (length hs) ⌜ t1 ⌝ F) c1) a₁ a₂
   a∈1 = ≡CTerm→equalInType (CTerm≡ e0) a∈

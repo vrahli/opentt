@@ -555,7 +555,8 @@ validMem-PI i lti H F G vF vG w s1 s2 cc1 cc2 ce1 ce2 es eh
             (π₂ (vG w1 (s1 Data.List.∷ʳ a₁) (s2 Data.List.∷ʳ a₂) (λ {x} ()) (λ {x} ())
                     (→covered∷ʳ a₁ s1 G (coveredPI₂ {s1} {F} {G} ce1))
                     (→covered∷ʳ a₂ s2 G (coveredPI₂ {s2} {F} {G} ce2))
-                    {!!} {!!}))
+                    (≡subs∷ʳ i w1 s1 s2 H F (coveredPI₁ {s1} {F} {G} ce1) a₁ a₂ {!a∈!} (≡subs-mon e1 es))
+                    {!!}))
 
     hb1 : equalTypes 1 w1 (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G (coveredPI₂ {s1} {F} {G} ce1)))
                           (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G (coveredPI₂ {s2} {F} {G} ce2)))
