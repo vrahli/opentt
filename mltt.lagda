@@ -71,6 +71,8 @@ open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (isTypeNAT! ; eqTypesUniv ; equalTypes→equalInType-UNIV ; equalInType→equalTypes-aux ; eqTypesPI← ;
          ≡CTerm→eqTypes ; ≡CTerm→equalInType)
+open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (equalTypes-uni-mon ; equalInType-uni-mon)
 
 
 ∈→ℕ : {n : Nat} {x : Fin n} {A : Term n} {Γ : Con Term n}
@@ -505,10 +507,10 @@ valid∈-NAT! : (i : Nat) (lti : 1 <ℕ i) (H : hypotheses)
               → valid∈𝕎 i H NAT! (UNIV 1)
 valid∈-NAT! i lti H w s1 s2 cc1 cc2 ce1 ce2 eqs eqh
   rewrite #subs-NAT! s1 ce1 | #subs-NAT! s2 ce2 | #subs-UNIV s1 1 cc1 | #subs-UNIV s2 1 cc2
-  = eqTypes≤Univ w i 1 lti , e
+  = eqTypesUniv w i 1 lti , e
   where
-    e : equalInType≤ i w (#UNIV 1) #NAT! #NAT!
-    e = equalTypes→equalInType≤-UNIV {i} {1} lti {w} {#NAT!} {#NAT!} isTypeNAT!
+    e : equalInType i w (#UNIV 1) #NAT! #NAT!
+    e = equalTypes→equalInType-UNIV {i} {1} lti {w} {#NAT!} {#NAT!} isTypeNAT!
 
 
 valid∈-PI : (i : Nat) (lti : 1 <ℕ i) (H : hypotheses) (F G : BTerm)
@@ -520,14 +522,14 @@ valid∈-PI i lti H F G vF vG w s1 s2 cc1 cc2 ce1 ce2 es eh
         | #subs-PI2 s1 F G ce1 | #subs-PI2 s2 F G ce2
   = h1 , h2
   where
-  h1 : equalTypes≤ i w (#UNIV 1) (#UNIV 1)
-  h1 = eqTypes≤Univ w i 1 lti
+  h1 : equalTypes i w (#UNIV 1) (#UNIV 1)
+  h1 = eqTypesUniv w i 1 lti
 
   ha : ∀𝕎 w (λ w' _ → equalTypes 1 w' (#subs s1 F (coveredPI₁ {s1} {F} {G} ce1)) (#subs s2 F (coveredPI₁ {s2} {F} {G} ce2)))
   ha w1 e1 = vf2
     where
-    vf1 : equalInType≤ i w1 (#UNIV 1) (#subs s1 F (coveredPI₁ {s1} {F} {G} ce1)) (#subs s2 F (coveredPI₁ {s2} {F} {G} ce2))
-    vf1 = ≡CTerm→equalInType≤
+    vf1 : equalInType i w1 (#UNIV 1) (#subs s1 F (coveredPI₁ {s1} {F} {G} ce1)) (#subs s2 F (coveredPI₁ {s2} {F} {G} ce2))
+    vf1 = ≡CTerm→equalInType
             (#subs-UNIV s1 1 cc1)
             (π₂ (vF w1 s1 s2 cc1 cc2 (coveredPI₁ {s1} {F} {G} ce1) (coveredPI₁ {s2} {F} {G} ce2) (≡subs-mon e1 es) (≡hyps-mon e1 eh)))
 
@@ -535,7 +537,7 @@ valid∈-PI i lti H F G vF vG w s1 s2 cc1 cc2 ce1 ce2 es eh
     vf2 = equalInType→equalTypes-aux i 1 lti w1
             (#subs s1 F (coveredPI₁ {s1} {F} {G} ce1))
             (#subs s2 F (coveredPI₁ {s2} {F} {G} ce2))
-            (vf1 ≤-refl)
+            vf1
 
   hb : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType 1 w' (#subs s1 F (coveredPI₁ {s1} {F} {G} ce1)) a₁ a₂
                     → equalTypes
@@ -548,27 +550,27 @@ valid∈-PI i lti H F G vF vG w s1 s2 cc1 cc2 ce1 ce2 es eh
       (≣sym (sub0-#[0]subs a₂ s2 G (coveredPI₂ {s2} {F} {G} ce2)))
       hb1
     where
-    vg1 : equalInType≤ i w1 (#UNIV 1) (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G (coveredPI₂ {s1} {F} {G} ce1)))
-                                      (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G (coveredPI₂ {s2} {F} {G} ce2)))
-    vg1 = ≡CTerm→equalInType≤
+    vg1 : equalInType i w1 (#UNIV 1) (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G (coveredPI₂ {s1} {F} {G} ce1)))
+                                     (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G (coveredPI₂ {s2} {F} {G} ce2)))
+    vg1 = ≡CTerm→equalInType
             (#subs-UNIV (s1 Data.List.∷ʳ a₁) 1 λ {x} ())
             (π₂ (vG w1 (s1 Data.List.∷ʳ a₁) (s2 Data.List.∷ʳ a₂) (λ {x} ()) (λ {x} ())
                     (→covered∷ʳ a₁ s1 G (coveredPI₂ {s1} {F} {G} ce1))
                     (→covered∷ʳ a₂ s2 G (coveredPI₂ {s2} {F} {G} ce2))
-                    (≡subs∷ʳ i w1 s1 s2 H F (coveredPI₁ {s1} {F} {G} ce1) a₁ a₂ {!a∈!} (≡subs-mon e1 es))
-                    {!!}))
+                    (≡subs∷ʳ i w1 s1 s2 H F (coveredPI₁ {s1} {F} {G} ce1) a₁ a₂ (equalInType-uni-mon (<⇒≤ lti) a∈) (≡subs-mon e1 es))
+                    {!!})) -- need something like ≡subs∷ʳ for ≡hyps
 
     hb1 : equalTypes 1 w1 (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G (coveredPI₂ {s1} {F} {G} ce1)))
                           (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G (coveredPI₂ {s2} {F} {G} ce2)))
     hb1 = equalInType→equalTypes-aux i 1 lti w1
             (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G (coveredPI₂ {s1} {F} {G} ce1)))
             (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G (coveredPI₂ {s2} {F} {G} ce2)))
-            (vg1 ≤-refl)
+            vg1
 
-  h2 : equalInType≤ i w (#UNIV 1)
+  h2 : equalInType i w (#UNIV 1)
                        (#PI (#subs s1 F (coveredPI₁ {s1} {F} {G} ce1)) (#[0]subs s1 G (coveredPI₂ {s1} {F} {G} ce1)))
                        (#PI (#subs s2 F (coveredPI₁ {s2} {F} {G} ce2)) (#[0]subs s2 G (coveredPI₂ {s2} {F} {G} ce2)))
-  h2 = equalTypes→equalInType≤-UNIV
+  h2 = equalTypes→equalInType-UNIV
          lti
          (eqTypesPI←
            {w} {1}
