@@ -17,28 +17,14 @@ The opentt formalisation compiles with Agda version 2.6.3.
 This formalisation depends on the
 [logrel-mltt](https://github.com/mr-ohman/logrel-mltt) Agda formalisation of
 MLTT and the agda standard-library. The standard-library should already be
-available from your Agda installation. There are a few steps to setup
+available from your Agda installation. To setup
 logrel-mltt for use as a library:
 
 1. Clone the repository at <https://github.com/mr-ohman/logrel-mltt>. We have
-   tested it with commit `2f1bae0`, so if you have problems try rolling back to
+   tested it with commit `a9a7fa1`, so if you have problems try rolling back to
    said version.
 
-2. Go into the folder you cloned logrel-mltt into and modify the file
-   `logrel-mltt.agda-lib`. If you have just cloned the repo, it should look
-   like:
-   ```
-   depend: standard-library
-   include: .
-   ```
-   Add a name attribute, so the file will look like:
-   ```
-   name: logrel-mltt
-   depend: standard-library
-   include: .
-   ```
-   
-3. Add the logrel-mltt to your Agda libraries. You can do this by adding the
+2. Add the logrel-mltt to your Agda libraries. You can do this by adding the
    following line to your agda libraries file
    ```
    LOGREL-MLTT-DIR/logrel-mltt.agda-lib
