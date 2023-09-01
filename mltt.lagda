@@ -70,7 +70,9 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (isTypeNAT! ; eqTypesUniv ; equalTypes→equalInType-UNIV ; equalInType→equalTypes-aux ; eqTypesPI← ;
-         ≡CTerm→eqTypes ; ≡CTerm→equalInType)
+         ≡CTerm→eqTypes ; ≡CTerm→equalInType ; eqTypesFALSE ; eqTypesTRUE ; ¬equalInType-FALSE)
+open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (→equalInType-TRUE)
 open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalTypes-uni-mon ; equalInType-uni-mon)
 
@@ -293,7 +295,7 @@ canonicity2 {n} {Γ} {t} g (ne (neNfₜ neK ⊢k k≡k)) = {!⊥-elim (noNe ⊢k
 ⟦_⟧ᵤ {n} (gen {.nil} Unitkind []) = UNIT
 ⟦_⟧ᵤ {n} (gen {.nil} Starkind []) = AX
 ⟦_⟧ᵤ {n} (gen {.nil} Emptykind []) = FALSE
-⟦_⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) = BOT
+⟦_⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) = ⟦ t₁ ⟧ᵤ
 
 
 ⟦_⟧Γ : {n : Nat} (Γ : Con Term n) → hypotheses
@@ -378,7 +380,7 @@ fvarsᵤ {n} (gen {.(cons 1 (cons 0 (cons 0 (cons 0 nil))))} Natreckind (t GenTs
 fvarsᵤ {n} (gen {.nil} Unitkind []) v ()
 fvarsᵤ {n} (gen {.nil} Starkind []) v ()
 fvarsᵤ {n} (gen {.nil} Emptykind []) v ()
-fvarsᵤ {n} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) v ()
+fvarsᵤ {n} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) v i = fvarsᵤ t₁ _ i
 {--
 fvarsᵤ {n} {Γ} {.(Π _ ▹ _)} {.U} (Πⱼ i ▹ i₁) v ()
 fvarsᵤ {n} {Γ} {.(Σ _ ▹ _)} {.U} (Σⱼ i ▹ i₁) v ()
@@ -513,6 +515,50 @@ valid∈-NAT! i lti H w s1 s2 cc1 cc2 ce1 ce2 eqs eqh
     e = equalTypes→equalInType-UNIV {i} {1} lti {w} {#NAT!} {#NAT!} isTypeNAT!
 
 
+valid∈-FALSE : (i : Nat) (lti : 1 <ℕ i) (H : hypotheses)
+             → valid∈𝕎 i H FALSE (UNIV 1)
+valid∈-FALSE i lti H w s1 s2 cc1 cc2 ce1 ce2 eqs eqh
+  rewrite #subs-FALSE s1 ce1 | #subs-FALSE s2 ce2 | #subs-UNIV s1 1 cc1 | #subs-UNIV s2 1 cc2
+  = eqTypesUniv w i 1 lti , e
+  where
+    e : equalInType i w (#UNIV 1) #FALSE #FALSE
+    e = equalTypes→equalInType-UNIV {i} {1} lti {w} {#FALSE} {#FALSE} eqTypesFALSE
+
+
+valid∈-UNIT : (i : Nat) (lti : 1 <ℕ i) (H : hypotheses)
+             → valid∈𝕎 i H UNIT (UNIV 1)
+valid∈-UNIT i lti H w s1 s2 cc1 cc2 ce1 ce2 eqs eqh
+  rewrite #subs-UNIT s1 ce1 | #subs-UNIT s2 ce2 | #subs-UNIV s1 1 cc1 | #subs-UNIV s2 1 cc2
+  = eqTypesUniv w i 1 lti , e
+  where
+    e : equalInType i w (#UNIV 1) #TRUE #TRUE
+    e = equalTypes→equalInType-UNIV {i} {1} lti {w} {#TRUE} {#TRUE} eqTypesTRUE
+
+
+valid∈-AX-UNIT : (i : Nat) (lti : 1 <ℕ i) (H : hypotheses)
+               → valid∈𝕎 i H AX UNIT
+valid∈-AX-UNIT i lti H w s1 s2 cc1 cc2 ce1 ce2 eqs eqh
+  rewrite #subs-UNIT s1 cc1 | #subs-UNIT s2 cc2 | #subs-AX s1 ce1 | #subs-AX s2 ce2
+  = eqTypesTRUE , →equalInType-TRUE i
+
+
+covered-FALSE : (s : Sub) → covered s FALSE
+covered-FALSE s ()
+
+
+valid∈-FALSE→ : (i : Nat) (w : 𝕎·) (H : hypotheses) (a T : BTerm)
+              → valid∈ i w H a FALSE
+              → valid∈ i w H a T
+valid∈-FALSE→ i w H a T h s1 s2 cc1 cc2 ce1 ce2 eqs eqh =
+  ⊥-elim (¬equalInType-FALSE h2)
+  where
+  h1 : equalInType i w (#subs s1 FALSE (covered-FALSE s1)) (#subs s1 a ce1) (#subs s2 a ce2)
+  h1 = π₂ (h s1 s2 (covered-FALSE s1) (covered-FALSE s2) ce1 ce2 eqs eqh)
+
+  h2 : equalInType i w #FALSE (#subs s1 a ce1) (#subs s2 a ce2)
+  h2 = ≡CTerm→equalInType (#subs-FALSE s1 (covered-FALSE s1)) h1
+
+
 valid∈-PI : (i : Nat) (lti : 1 <ℕ i) (H : hypotheses) (F G : BTerm)
             → valid∈𝕎 i H F (UNIV 1)
             → valid∈𝕎 i (H Data.List.∷ʳ mkHyp F) G (UNIV 1)
@@ -597,8 +643,8 @@ valid∈-PI i lti H F G vF vG w s1 s2 cc1 cc2 ce1 ce2 es eh
   h2 = ⟦_⟧Γ∈ j₁ i lti
 ⟦_⟧Γ∈ {n} {Γ} {.(Σ _ ▹ _)} {.U} ((Σⱼ_▹_) {F} {G} j j₁) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.ℕ} {.U} (ℕⱼ x) i lti w = valid∈-NAT! i lti ⟦ Γ ⟧Γ w
-⟦_⟧Γ∈ {n} {Γ} {.Empty} {.U} (Emptyⱼ x) i lti w = {!!}
-⟦_⟧Γ∈ {n} {Γ} {.Unit} {.U} (Unitⱼ x) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.Empty} {.U} (Emptyⱼ x) i lti w = valid∈-FALSE i lti ⟦ Γ ⟧Γ w
+⟦_⟧Γ∈ {n} {Γ} {.Unit} {.U} (Unitⱼ x) i lti w = valid∈-UNIT i lti ⟦ Γ ⟧Γ w
 ⟦_⟧Γ∈ {n} {Γ} {.(var _)} {σ} (var x x₁) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.(lam _)} {.(Π _ ▹ _)} (lamⱼ x j) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.(_ ∘ _)} {.(G [ a ])} ((_∘ⱼ_) {g} {a} {F} {G} j j₁) i lti w = {!!}
@@ -608,9 +654,13 @@ valid∈-PI i lti H F G vF vG w s1 s2 cc1 cc2 ce1 ce2 es eh
 ⟦_⟧Γ∈ {n} {Γ} {.Definition.Untyped.zero} {.ℕ} (zeroⱼ x) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.(Definition.Untyped.suc _)} {.ℕ} (sucⱼ j) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.(natrec _ _ _ _)} {.(G [ k ])} (natrecⱼ {G} {s} {z} {k} x j j₁ j₂) i lti w = {!!}
-⟦_⟧Γ∈ {n} {Γ} {.(Emptyrec σ _)} {σ} (Emptyrecⱼ x j) i lti w = {!!}
-⟦_⟧Γ∈ {n} {Γ} {.star} {.Unit} (starⱼ x) i lti w = {!!}
-⟦_⟧Γ∈ {n} {Γ} {t} {σ} (conv j x) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(Emptyrec σ _)} {σ} (Emptyrecⱼ {A} {e} x j) i lti w =
+  valid∈-FALSE→ i w ⟦ Γ ⟧Γ ⟦ e ⟧ᵤ ⟦ σ ⟧ᵤ (h1 w)
+  where
+  h1 : (w : 𝕎·) → valid∈ i w ⟦ Γ ⟧Γ ⟦ e ⟧ᵤ FALSE
+  h1 = ⟦_⟧Γ∈ j i lti
+⟦_⟧Γ∈ {n} {Γ} {.star} {.Unit} (starⱼ x) i lti w = valid∈-AX-UNIT i lti ⟦ Γ ⟧Γ w
+⟦_⟧Γ∈ {n} {Γ} {t} {σ} (conv {t} {τ} {σ} j x) i lti w = {!!}
 
 
 ⟦_⟧Γ≡∈ : {n : Nat} {Γ : Con Term n} {t u : Term n} {σ : Term n}

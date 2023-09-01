@@ -421,6 +421,39 @@ subs-NAT! (x ∷ s) rewrite subs-NAT! s = refl
 #subs-NAT! s c = CTerm≡ (subs-NAT! s)
 
 
+subs-FALSE : (s : Sub)
+           → subs s FALSE ≡ FALSE
+subs-FALSE [] = refl
+subs-FALSE (x ∷ s) rewrite subs-FALSE s = refl
+
+
+#subs-FALSE : (s : Sub) (c : covered s FALSE)
+            → #subs s FALSE c ≡ #FALSE
+#subs-FALSE s c = CTerm≡ (subs-FALSE s)
+
+
+subs-UNIT : (s : Sub)
+           → subs s UNIT ≡ UNIT
+subs-UNIT [] = refl
+subs-UNIT (x ∷ s) rewrite subs-UNIT s = refl
+
+
+#subs-UNIT : (s : Sub) (c : covered s UNIT)
+            → #subs s UNIT c ≡ #TRUE
+#subs-UNIT s c = CTerm≡ (subs-UNIT s)
+
+
+subs-AX : (s : Sub)
+        → subs s AX ≡ AX
+subs-AX [] = refl
+subs-AX (x ∷ s) rewrite subs-AX s = refl
+
+
+#subs-AX : (s : Sub) (c : covered s AX)
+         → #subs s AX c ≡ #AX
+#subs-AX s c = CTerm≡ (subs-AX s)
+
+
 subs-UNIV : (s : Sub) (i : ℕ)
           → subs s (UNIV i) ≡ UNIV i
 subs-UNIV [] i = refl
