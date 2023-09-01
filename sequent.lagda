@@ -75,7 +75,7 @@ open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqInType-ext ; □·EqTypes→uniUpTo ; uniUpTo→□·EqTypes)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (equalInType-mon ; ≡CTerm→equalInType ; equalTypes→equalInType-UNIV ; eqTypesUniv ;
+  using (equalInType-mon ; ≡CTerm→equalInType ; ≡CTerm→eqTypes ; equalTypes→equalInType-UNIV ; eqTypesUniv ;
          wPredExtIrr-eqInType ; wPredDepExtIrr-eqInType ; wPredDepExtIrr-eqInType2)
 
 
@@ -839,6 +839,17 @@ length-subHyps n t (mkHyp hyp ∷ H) = cong suc (length-subHyps (suc n) t H)
   = refl , refl
 
 
+≡hyps→length : {i : ℕ} {w : 𝕎·} {s1 s2 : Sub} {H1 H2 : hypotheses}
+             → ≡hyps i w s1 s2 H1 H2
+             → length s1 ≡ length H1 × length s2 ≡ length H2 × length H1 ≡ length H2
+≡hyps→length {i} {w} {.[]} {.[]} {.[]} {.[]} (≡hyps[] .i .w) = refl , refl , refl
+≡hyps→length {i} {w} {.(t1 ∷ s1)} {.(t2 ∷ s2)} {.(mkHyp T1 ∷ hs1)} {.(mkHyp T2 ∷ hs2)} (≡hyps∷ .i .w t1 t2 s1 s2 T1 #T1 T2 #T2 hs1 hs2 x h)
+  rewrite fst (≡hyps→length h) | fst (snd (≡hyps→length h))
+  = cong suc (length-subHyps 0 ⌜ t1 ⌝ hs1) ,
+    cong suc (length-subHyps 0 ⌜ t2 ⌝ hs2) ,
+    cong suc (trans (sym (length-subHyps 0 ⌜ t1 ⌝ hs1)) (trans (snd (snd (≡hyps→length h))) (length-subHyps 0 ⌜ t2 ⌝ hs2)))
+
+
 -- Lower the variables starting from x+1, removing x
 lowerVarsFrom : Var → List Var → List Var
 lowerVarsFrom x [] = []
@@ -992,5 +1003,48 @@ subn-subs n t #t (x ∷ s) F
 
   q1 : ≡subs i w (s1 ∷ʳ a₁) (s2 ∷ʳ a₂) (subHyps 0 ⌜ t1 ⌝ (hs ∷ʳ mkHyp F))
   q1 rewrite subHyps∷ʳ 0 ⌜ t1 ⌝ F hs = q2
+
+
+≡hyps∷ʳ : (i : ℕ) (w : 𝕎·) (s1 s2 : Sub) (H1 H2 : hypotheses) (F1 F2 : Term)
+          (c1 : covered s1 F1) (c2 : covered s2 F2) (a₁ a₂ : CTerm)
+--        → equalInType i w (#subs s1 F c) a₁ a₂
+        → equalTypes i w (#subs s1 F1 c1) (#subs s2 F2 c2)
+        → ≡hyps i w s1 s2 H1 H2
+        → ≡hyps i w (s1 ∷ʳ a₁) (s2 ∷ʳ a₂) (H1 ∷ʳ mkHyp F1) (H2 ∷ʳ mkHyp F2)
+≡hyps∷ʳ i w .[] .[] .[] .[] F1 F2 c1 c2 a₁ a₂ a∈ (≡hyps[] .i .w) =
+  ≡hyps∷ i w a₁ a₂ [] [] F1 (covered[]→# {F1} c1) F2 (covered[]→# {F2} c2) [] []
+    (≡CTerm→eqTypes (CTerm≡ refl) (CTerm≡ refl) a∈)
+    (≡hyps[] i w)
+≡hyps∷ʳ i w .(t1 ∷ s1) .(t2 ∷ s2) .(mkHyp T1 ∷ hs1) .(mkHyp T2 ∷ hs2) F1 F2 c1 c2 a₁ a₂ a∈ (≡hyps∷ .i .w t1 t2 s1 s2 T1 #T1 T2 #T2 hs1 hs2 x h) =
+  ≡hyps∷ i w t1 t2 (s1 ∷ʳ a₁) (s2 ∷ʳ a₂) T1 #T1 T2 #T2 (hs1 ∷ʳ mkHyp F1) (hs2 ∷ʳ mkHyp F2) x q1
+  where
+  e1 : covered s1 (subn (length s1) ⌜ t1 ⌝ F1)
+  e1 = covered∷→ t1 s1 F1 c1
+
+  e2 : covered s2 (subn (length s2) ⌜ t2 ⌝ F2)
+  e2 = covered∷→ t2 s2 F2 c2
+
+  d1 : covered s1 (subn (length hs1) ⌜ t1 ⌝ F1)
+  d1 rewrite sym (trans (fst (≡hyps→length h)) (length-subHyps 0 ⌜ t1 ⌝ hs1)) = e1
+
+  d2 : covered s2 (subn (length hs2) ⌜ t2 ⌝ F2)
+  d2 rewrite sym (trans (fst (snd (≡hyps→length h))) (length-subHyps 0 ⌜ t2 ⌝ hs2)) = e2
+
+  x1 : subs (t1 ∷ s1) F1 ≡ subs s1 (subn (length hs1) ⌜ t1 ⌝ F1)
+  x1 rewrite sym (trans (fst (≡hyps→length h)) (length-subHyps 0 ⌜ t1 ⌝ hs1)) =
+    subn-subs 0 ⌜ t1 ⌝ (CTerm.closed t1) s1 F1
+
+  x2 : subs (t2 ∷ s2) F2 ≡ subs s2 (subn (length hs2) ⌜ t2 ⌝ F2)
+  x2 rewrite sym (trans (fst (snd (≡hyps→length h))) (length-subHyps 0 ⌜ t2 ⌝ hs2)) =
+    subn-subs 0 ⌜ t2 ⌝ (CTerm.closed t2) s2 F2
+
+  a∈1 : equalTypes i w (#subs s1 (subn (length hs1) ⌜ t1 ⌝ F1) d1) (#subs s2 (subn (length hs2) ⌜ t2 ⌝ F2) d2)
+  a∈1 = ≡CTerm→eqTypes (CTerm≡ x1) (CTerm≡ x2) a∈
+
+  q2 : ≡hyps i w (s1 ∷ʳ a₁) (s2 ∷ʳ a₂) (subHyps 0 ⌜ t1 ⌝ hs1 ∷ʳ mkHyp (subn (length hs1) ⌜ t1 ⌝ F1)) (subHyps 0 ⌜ t2 ⌝ hs2 ∷ʳ mkHyp (subn (length hs2) ⌜ t2 ⌝ F2))
+  q2 = ≡hyps∷ʳ i w s1 s2 (subHyps 0 ⌜ t1 ⌝ hs1) (subHyps 0 ⌜ t2 ⌝ hs2) (subn (length hs1) ⌜ t1 ⌝ F1) (subn (length hs2) ⌜ t2 ⌝ F2) d1 d2 a₁ a₂ a∈1 h
+
+  q1 : ≡hyps i w (s1 ∷ʳ a₁) (s2 ∷ʳ a₂) (subHyps 0 ⌜ t1 ⌝ (hs1 ++ [ mkHyp F1 ])) (subHyps 0 ⌜ t2 ⌝ (hs2 ++ [ mkHyp F2 ]))
+  q1 rewrite subHyps∷ʳ 0 ⌜ t1 ⌝ F1 hs1 | subHyps∷ʳ 0 ⌜ t2 ⌝ F2 hs2 = q2
 
 \end{code}
