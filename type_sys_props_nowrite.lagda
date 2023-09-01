@@ -129,8 +129,8 @@ NOWRITEneqDUM {c} ()
 NOWRITEneqFFDEFS : {c d : Term} → ¬ NOWRITE ≡ FFDEFS c d
 NOWRITEneqFFDEFS {c} {d} ()
 
-NOWRITEneqLIFT : {c : Term} → ¬ NOWRITE ≡ LIFT c
-NOWRITEneqLIFT {c} ()
+--NOWRITEneqLIFT : {c : Term} → ¬ NOWRITE ≡ LIFT c
+--NOWRITEneqLIFT {c} ()
 
 --NOWRITEneqTSQUASH : {c : Term} → ¬ NOWRITE ≡ TSQUASH c
 --NOWRITEneqTSQUASH {c} ()
@@ -212,7 +212,7 @@ typeSysConds-NOWRITE-ttrans u w A B x x₁ C eqt = concl x x₁
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (NOWRITEneqDUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x x₁ = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x x₁ = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x₁ c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x x₁ = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x x₁ = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x x₁ =
       EQTBAR (∀𝕎-□at W M y aw)
       where
@@ -300,7 +300,7 @@ typeSysConds-NOWRITE-extl1 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x f g eqi = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x f g eqi = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x f g eqi = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x f g eqi =
       Mod.∀𝕎-□-□' M y ib
       where
@@ -369,7 +369,7 @@ typeSysConds-NOWRITE-extl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x f g eqi = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x f g eqi = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x f g eqi = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x f g eqi =
       Mod.∀𝕎-□-□' M y ib
       where
@@ -437,7 +437,7 @@ typeSysConds-NOWRITE-extr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x₁ f g eqi = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x₁ f g eqi = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x₁ f g eqi = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x₁ c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x₁ f g eqi =
       Mod.∀𝕎-□-□' M y ib
       where
@@ -505,7 +505,7 @@ typeSysConds-NOWRITE-extr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x₁ f g eqi = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x₁ f g eqi = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x₁ f g eqi = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x₁ c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x₁ f g eqi =
       Mod.∀𝕎-□-□' M y ib
       where
@@ -572,7 +572,7 @@ typeSysConds-NOWRITE-extrevl1 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x f g eqi = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x f g eqi = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x f g eqi = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x f g eqi =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
       where
@@ -642,7 +642,7 @@ typeSysConds-NOWRITE-extrevl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x f g eqi = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x f g eqi = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x f g eqi = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x f g eqi =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
       where
@@ -711,7 +711,7 @@ typeSysConds-NOWRITE-extrevr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x₁ f g eqi = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x₁ f g eqi = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x₁ f g eqi = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x₁ c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x₁ f g eqi =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
       where
@@ -780,7 +780,7 @@ typeSysConds-NOWRITE-extrevr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x₁ f g eqi = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x₁ f g eqi = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x₁ f g eqi = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x₁ c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x₁ f g eqi =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
       where

@@ -337,13 +337,13 @@ data <TypeStep where
                 (eqx : ∀𝕎 w (λ w' e → ≡∈Type u w' (eqtA w' e) x1 x2))
                 (w' : 𝕎·) (e' : w ⊑· w')
                 → <TypeStep {u} (eqtA w' e') {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 c₁ c₂ eqtA exta eqx)
-  <TypeLIFT : (u : 𝕌) (w : 𝕎·) (T1 T2 : CTerm) (A1 A2 : CTerm)
+{--  <TypeLIFT : (u : 𝕌) (w : 𝕎·) (T1 T2 : CTerm) (A1 A2 : CTerm)
               (c₁ : T1 #⇛ (#LIFT A1) at w)
               (c₂ : T2 #⇛ (#LIFT A2) at w)
               (eqtA : ∀𝕎 w (λ w' _ → ≡Types (↓𝕌 u) w' A1 A2))
               (exta : (a b : CTerm) → wPredExtIrr (λ w e → ≡∈Type (↓𝕌 u) w (eqtA w e) a b))
               (w' : 𝕎·) (e' : w ⊑· w')
-              → <TypeStep {↓𝕌 u} (eqtA w' e') {u} {w} {T1} {T2} (EQTLIFT A1 A2 c₁ c₂ eqtA exta)
+              → <TypeStep {↓𝕌 u} (eqtA w' e') {u} {w} {T1} {T2} (EQTLIFT A1 A2 c₁ c₂ eqtA exta)--}
   <TypeBAR : (u : 𝕌) (w : 𝕎·) (T1 T2 : CTerm) (i : □· w (λ w' _ → ≡Types u w' T1 T2))
              (w' : 𝕎·) (e' : w ⊑· w') (p : ≡Types u w' T1 T2) (a : at□· i w' e' p)
              → <TypeStep {u} p {u} (EQTBAR i)
@@ -1122,7 +1122,7 @@ ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) {.u} {.w} {.T1} {.
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTUNIV i p x x₁) x₂) =
   ⊥-elim (<Type-UNIV x₂)
 -- LIFT
-ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {.u} {.w} {.T1} {.T2} .(EQTLIFT A1 A2 x x₁ eqtA exta) (≤Type0 .(EQTLIFT A1 A2 x x₁ eqtA exta)) =
+{--ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {.u} {.w} {.T1} {.T2} .(EQTLIFT A1 A2 x x₁ eqtA exta) (≤Type0 .(EQTLIFT A1 A2 x x₁ eqtA exta)) =
   ind (EQTLIFT A1 A2 x x₁ eqtA exta) ind'
   where
     ind' : {u' : 𝕌} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : ≡Types u' w' T1' T2')
@@ -1134,7 +1134,7 @@ ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {.u} {
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {.(↓𝕌 u)} {w'} {.A1} {.A2} .(eqtA w' e') (≤TypeS .(eqtA w' e') .(EQTLIFT A1 A2 x x₁ eqtA exta) (<Type1 .(eqtA w' e') .(EQTLIFT A1 A2 x x₁ eqtA exta) (<TypeLIFT .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta .w' e'))) =
   ind<Type-aux P ind (eqtA w' e') (eqtA w' e') (≤Type0 (eqtA w' e'))
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTLIFT A1 A2 x x₁ eqtA exta) (<TypeS .eqt' .(eqtA w2 e') .(EQTLIFT A1 A2 x x₁ eqtA exta) x₂ (<TypeLIFT .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta w2 e'))) =
-  ind<Type-aux P ind (eqtA w2 e') eqt' (≤TypeS eqt' (eqtA w2 e') x₂)
+  ind<Type-aux P ind (eqtA w2 e') eqt' (≤TypeS eqt' (eqtA w2 e') x₂)--}
 -- BAR
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTBAR x) {.u} {.w} {.T1} {.T2} .(EQTBAR x) (≤Type0 .(EQTBAR x)) =
   ind (EQTBAR x) ind'

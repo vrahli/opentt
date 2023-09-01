@@ -307,12 +307,12 @@ data eqTypes u w T1 T2 where
     → T1 #⇛ #UNIV i at w
     → T2 #⇛ #UNIV i at w
     → eqTypes u w T1 T2
-  EQTLIFT : (A1 A2 : CTerm)
+{--  EQTLIFT : (A1 A2 : CTerm)
     → T1 #⇛ #LIFT A1 at w
     → T2 #⇛ #LIFT A2 at w
     → (eqtA : ∀𝕎 w (λ w' _ → eqTypes (↓U u) w' A1 A2))
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType (↓U u) w (eqtA w e) a b))
-    → eqTypes u w T1 T2
+    → eqTypes u w T1 T2--}
   EQTBAR : □· w (λ w' _ → eqTypes u w' T1 T2) → eqTypes u w T1 T2
 \end{code}
 
@@ -595,8 +595,8 @@ eqInType u w (EQTNOENC _ _) t1 t2 =
 eqInType u w (EQTTERM x1 x2 _ _ _) t1 t2 =
   □· w (λ w' e → TERMeq w' x1 x2)
 eqInType u w (EQTUNIV i p c₁ c₂) T1 T2 = snd u i p w T1 T2
-eqInType u w (EQTLIFT A1 A2 c₁ c₂ eqtA exta) t1 t2 =
-  □· w (λ w' e → eqInType (↓U u) w' (eqtA w' e) t1 t2)
+{--eqInType u w (EQTLIFT A1 A2 c₁ c₂ eqtA exta) t1 t2 =
+  □· w (λ w' e → eqInType (↓U u) w' (eqtA w' e) t1 t2)--}
 --  □· w (λ w' e → eqInType (↓U u) w' (eqtA w' e) T1 T2)
 eqInType u w (EQTBAR f) t1 t2 =
   □·' w f (λ w' _ (x : eqTypes u w' _ _) → eqInType u w' x t1 t2)

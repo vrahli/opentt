@@ -140,8 +140,8 @@ TERMneqFFDEFS {c} {d} {z} ()
 TERMneqSUBSING : {b : Term} {z : Term} → ¬ TERM z ≡ SUBSING b
 TERMneqSUBSING {b} {z} ()
 
-TERMneqLIFT : {c : Term} {z : Term} → ¬ TERM z ≡ LIFT c
-TERMneqLIFT {c} {z} ()
+--TERMneqLIFT : {c : Term} {z : Term} → ¬ TERM z ≡ LIFT c
+--TERMneqLIFT {c} {z} ()
 
 --TERMneqTSQUASH : {c : Term} {z : Term} → ¬ TERM z ≡ TSQUASH c
 --TERMneqTSQUASH {c} {z} ()
@@ -215,7 +215,7 @@ typeSysConds-TERM-ttrans u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) = �
     q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (TERMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))--}
 
-typeSysConds-TERM-ttrans u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x₁ y))
+--typeSysConds-TERM-ttrans u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x₁ y))
 typeSysConds-TERM-ttrans u w A B t1 t2 x x₁ x₂ C (EQTBAR y) =
   EQTBAR (Mod.∀𝕎-□Func M aw y)
   where
@@ -308,7 +308,7 @@ typeSysConds-TERM-extl1 u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) f g 
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (TERMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))--}
 
-typeSysConds-TERM-extl1 u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x y))
+--typeSysConds-TERM-extl1 u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x y))
 typeSysConds-TERM-extl1 u w A B t1 t2 x x₁ x₂ C (EQTBAR y) f g eqi =
   ∀𝕎-□-□'₀ W M y ib
   where
@@ -375,7 +375,7 @@ typeSysConds-TERM-extl2 u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) f g 
     q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (TERMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))--}
 
-typeSysConds-TERM-extl2 u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x y₁))
+--typeSysConds-TERM-extl2 u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x y₁))
 typeSysConds-TERM-extl2 u w A B t1 t2 x x₁ x₂ C (EQTBAR y) f g eqi =
   ∀𝕎-□-□'₀ W M y ib
   where
@@ -442,7 +442,7 @@ typeSysConds-TERM-extr1 u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) f g 
     q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (TERMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))--}
 
-typeSysConds-TERM-extr1 u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x₁ y₁))
+--typeSysConds-TERM-extr1 u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TERM-extr1 u w A B t1 t2 x x₁ x₂ C (EQTBAR y) f g eqi =
   ∀𝕎-□-□'₀ W M y ib
   where
@@ -509,7 +509,7 @@ typeSysConds-TERM-extr2 u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) f g 
     q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (TERMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))--}
 
-typeSysConds-TERM-extr2 u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x₁ y))
+--typeSysConds-TERM-extr2 u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x₁ y))
 typeSysConds-TERM-extr2 u w A B t1 t2 x x₁ x₂ C (EQTBAR y) f g eqi =
   ∀𝕎-□-□'₀ W M y ib
   where
@@ -576,7 +576,7 @@ typeSysConds-TERM-extrevl1 u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) f
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (TERMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₁)))--}
 
-typeSysConds-TERM-extrevl1 u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x y))
+--typeSysConds-TERM-extrevl1 u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x y))
 typeSysConds-TERM-extrevl1 u w A B t1 t2 x x₁ x₂ C (EQTBAR y) f g eqi =
   Mod.□-idem M (∀𝕎-□'-□₀ W M y aw eqi)
   where
@@ -654,7 +654,7 @@ typeSysConds-TERM-extrevl2 u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) f
     q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × A #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (TERMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x) d₂)))--}
 
-typeSysConds-TERM-extrevl2 u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x y₁))
+--typeSysConds-TERM-extrevl2 u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x y₁))
 typeSysConds-TERM-extrevl2 u w A B t1 t2 x x₁ x₂ C (EQTBAR y) f g eqi =
   Mod.□-idem M (∀𝕎-□'-□₀ W M y aw eqi)
   where
@@ -731,7 +731,7 @@ typeSysConds-TERM-extrevr1 u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) f
     q : ∀𝕎 w (λ w' e' → C #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (TERMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₂)))--}
 
-typeSysConds-TERM-extrevr1 u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x₁ y₁))
+--typeSysConds-TERM-extrevr1 u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x₁ y₁))
 typeSysConds-TERM-extrevr1 u w A B t1 t2 x x₁ x₂ C (EQTBAR y) f g eqi =
   Mod.□-idem M (∀𝕎-□'-□₀ W M y aw eqi)
   where
@@ -808,7 +808,7 @@ typeSysConds-TERM-extrevr2 u w A B t1 t2 x x₁ x₂ C (EQTUNIV i p c₁ c₂) f
     q : ∀𝕎 w (λ w' e' → B #⇛ #UNIV (proj₁ u) at w' × C #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (TERMneqUNIV (⇛-val-det tt tt (⇛-mon e1 x₁) d₁)))--}
 
-typeSysConds-TERM-extrevr2 u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x₁ y))
+--typeSysConds-TERM-extrevr2 u w A B t1 t2 x x₁ x₂ C (EQTLIFT A3 A4 y y₁ eqtA extA) f g eqi = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt x₁ y))
 typeSysConds-TERM-extrevr2 u w A B t1 t2 x x₁ x₂ C (EQTBAR y) f g eqi =
   Mod.□-idem M (∀𝕎-□'-□₀ W M y aw eqi)
   where
@@ -887,7 +887,7 @@ eqInType-⇛-TERM u w A B t1 t2 a b bx c₁ c₂ (EQTUNIV i p d₁ d₂) ei = �
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (TERMneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))--}
 
-eqInType-⇛-TERM u w A B t1 t2 a b bx c₁ c₂ (EQTLIFT A3 A4 x x₁ eqtA extA) ei = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-TERM u w A B t1 t2 a b bx c₁ c₂ (EQTLIFT A3 A4 x x₁ eqtA extA) ei = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TERM u w A B t1 t2 a b bx c₁ c₂ (EQTBAR x) ei =
   Mod.□-idem M (∀𝕎-□'-□₀ W M x aw ei)
   where
@@ -964,7 +964,7 @@ eqInType-⇛-TERM2 u w A B t1 t2 a b bx c₁ c₂ (EQTUNIV i p d₁ d₂) ei = �
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (TERMneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))--}
 
-eqInType-⇛-TERM2 u w A B t1 t2 a b bx c₁ c₂ (EQTLIFT A3 A4 x x₁ eqtA extA) ei = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-TERM2 u w A B t1 t2 a b bx c₁ c₂ (EQTLIFT A3 A4 x x₁ eqtA extA) ei = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TERM2 u w A B t1 t2 a b bx c₁ c₂ (EQTBAR x) ei =
   Mod.□-idem M (∀𝕎-□'-□₀ W M x aw ei)
   where
@@ -1042,7 +1042,7 @@ eqInType-⇛-TERM-rev u w A B t1 t2 a b bx c₁ c₂ (EQTUNIV i p d₁ d₂) ei 
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (TERMneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))--}
 
-eqInType-⇛-TERM-rev u w A B t1 t2 a b bx c₁ c₂ (EQTLIFT A3 A4 x x₁ eqtA extA) ei = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-TERM-rev u w A B t1 t2 a b bx c₁ c₂ (EQTLIFT A3 A4 x x₁ eqtA extA) ei = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TERM-rev u w A B t1 t2 a b bx c₁ c₂ (EQTBAR x) ei =
   ∀𝕎-□-□'₀ W M x aw
   where
@@ -1113,7 +1113,7 @@ eqInType-⇛-TERM-rev2 u w A B t1 t2 a b bx c₁ c₂ (EQTUNIV i p d₁ d₂) ei
     q : ∀𝕎 w (λ w' e' → A #⇛ #UNIV (proj₁ u) at w' × B #⇛ #UNIV (proj₁ u) at w' → Lift 1ℓ ⊥)
     q w1 e1 (d₁ , d₂) = lift (⊥-elim (TERMneqUNIV (⇛-val-det tt tt (⇛-mon e1 c₁) d₁)))--}
 
-eqInType-⇛-TERM-rev2 u w A B t1 t2 a b bx c₁ c₂ (EQTLIFT A3 A4 x x₁ eqtA extA) ei = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt c₁ x))
+--eqInType-⇛-TERM-rev2 u w A B t1 t2 a b bx c₁ c₂ (EQTLIFT A3 A4 x x₁ eqtA extA) ei = ⊥-elim (TERMneqLIFT (⇛-val-det tt tt c₁ x))
 eqInType-⇛-TERM-rev2 u w A B t1 t2 a b bx c₁ c₂ (EQTBAR x) ei =
   ∀𝕎-□-□'₀ W M x aw
   where

@@ -237,10 +237,10 @@ equalTypes-uni-mon {n} {m} p {w} {A} {B} (EQTNOENC x x₁) = EQTNOENC x x₁
 equalTypes-uni-mon {n} {m} p {w} {A} {B} (EQTTERM t1 t2 x x₁ x₂) = EQTTERM t1 t2 x x₁ x₂
 equalTypes-uni-mon {n} {m} p {w} {A} {B} (EQTUNIV i p₁ x x₁) =
   EQTUNIV i (≤-trans p₁ p) x x₁
-equalTypes-uni-mon {n} {m} p {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) =
+{--equalTypes-uni-mon {n} {m} p {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) =
   EQTLIFT A1 A2 x x₁
     (λ w1 e1 → ≡univs→eqTypes (sym (↓U-uni m)) (equalTypes-uni-mon (≤→↓𝕃≤ p) (≡univs→eqTypes (↓U-uni n) (eqtA w1 e1))))
-    (≡univs→wPredExtIrr-eqInType (↓U-uni m) (λ w1 e1 → ≡univs→eqTypes (sym (↓U-uni m)) (equalTypes-uni-mon (≤→↓𝕃≤ p) (≡univs→eqTypes (↓U-uni n) (eqtA w1 e1)))))
+    (≡univs→wPredExtIrr-eqInType (↓U-uni m) (λ w1 e1 → ≡univs→eqTypes (sym (↓U-uni m)) (equalTypes-uni-mon (≤→↓𝕃≤ p) (≡univs→eqTypes (↓U-uni n) (eqtA w1 e1)))))--}
 equalTypes-uni-mon {n} {m} p {w} {A} {B} (EQTBAR x) =
   EQTBAR (Mod.∀𝕎-□Func M (λ w1 e1 z → equalTypes-uni-mon p z) x)
 
@@ -401,7 +401,7 @@ equalTerms-uni-mon-rev {n} {m} p {w} {A} {B} (EQTNOENC x x₁) {a1} {a2} h = h
 equalTerms-uni-mon-rev {n} {m} p {w} {A} {B} (EQTTERM t1 t2 x x₁ x₂) {a1} {a2} h = h
 equalTerms-uni-mon-rev {n} {m} p {w} {A} {B} (EQTUNIV i p₁ x x₁) {a1} {a2} h =
   □·EqTypes→uniUpTo {i} {n} (uniUpTo→□·EqTypes {i} {m} h)
-equalTerms-uni-mon-rev {n} {m} p {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) {a1} {a2} h =
+{--equalTerms-uni-mon-rev {n} {m} p {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) {a1} {a2} h =
   Mod.∀𝕎-□Func M aw h
   where
   aw : ∀𝕎 w (λ w' e' → eqInType (↓U (uni m)) w' (≡univs→eqTypes (sym (↓U-uni m)) (equalTypes-uni-mon (≤→↓𝕃≤ p) (≡univs→eqTypes (↓U-uni n) (eqtA w' e')))) a1 a2
@@ -415,7 +415,7 @@ equalTerms-uni-mon-rev {n} {m} p {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) {a
           (↓U-uni m) (is-uni-uni (↓𝕃 m)) {_} {_} {_} {_} {_}
           {≡univs→eqTypes (sym (↓U-uni m)) (equalTypes-uni-mon (≤→↓𝕃≤ p) (≡univs→eqTypes (↓U-uni n) (eqtA w1 e1)))}
           {equalTypes-uni-mon (≤→↓𝕃≤ p) (≡univs→eqTypes (↓U-uni n) (eqtA w1 e1))}
-          q))
+          q))--}
 equalTerms-uni-mon-rev {n} {m} p {w} {A} {B} (EQTBAR x) {a1} {a2} h =
  □'-change W M (Mod.∀𝕎-□Func M (λ w1 e1 z → equalTypes-uni-mon p z) x) x aw h
  where
@@ -591,7 +591,7 @@ equalTerms-uni-mon {n} {m} p {w} {A} {B} (EQTNOENC x x₁) {a1} {a2} a∈ = a∈
 equalTerms-uni-mon {n} {m} p {w} {A} {B} (EQTTERM t1 t2 x x₁ x₂) {a1} {a2} a∈ = a∈
 equalTerms-uni-mon {n} {m} p {w} {A} {B} (EQTUNIV i p₁ x x₁) {a1} {a2} a∈ =
   □·EqTypes→uniUpTo {i} {m} (uniUpTo→□·EqTypes {i} {n} a∈)
-equalTerms-uni-mon {n} {m} p {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) {a1} {a2} a∈ =
+{--equalTerms-uni-mon {n} {m} p {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) {a1} {a2} a∈ =
   Mod.∀𝕎-□Func M aw a∈
   where
   aw : ∀𝕎 w (λ w' e' → eqInType (↓U (uni n)) w' (eqtA w' e') a1 a2
@@ -603,7 +603,7 @@ equalTerms-uni-mon {n} {m} p {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) {a1} {
       {≡univs→eqTypes (sym (↓U-uni m)) (equalTypes-uni-mon (≤→↓𝕃≤ p) (≡univs→eqTypes (↓U-uni n) (eqtA w1 e1)))}
       (equalTerms-uni-mon (≤→↓𝕃≤ p) (≡univs→eqTypes (↓U-uni n) (eqtA w1 e1))
         (≡univs→eqInType₂
-          (↓U-uni n) (is-uni-uni (↓𝕃 n)) {_} {_} {_} {_} {_} {eqtA w1 e1} {≡univs→eqTypes (↓U-uni n) (eqtA w1 e1)} q))
+          (↓U-uni n) (is-uni-uni (↓𝕃 n)) {_} {_} {_} {_} {_} {eqtA w1 e1} {≡univs→eqTypes (↓U-uni n) (eqtA w1 e1)} q))--}
 equalTerms-uni-mon {n} {m} p {w} {A} {B} (EQTBAR x) {a1} {a2} a∈ =
   □'-change W M x (Mod.∀𝕎-□Func M (λ w1 e1 z → equalTypes-uni-mon p z) x) aw a∈
   where
@@ -623,5 +623,16 @@ equalInType-uni-mon : {n m : ℕ} (p : n ≤ m) {w : 𝕎·} {T a1 a2 : CTerm}
 equalInType-uni-mon {n} {m} p {w} {T} {a1} {a2} (eqt , eqi) =
   equalTypes-uni-mon p eqt ,
   equalTerms-uni-mon p eqt eqi
+
+
+equalInType-change-level : {i j : ℕ} (p : i ≤ j) {w : 𝕎·} {T a b : CTerm}
+                         → isType i w T
+                         → equalInType j w T a b
+                         → equalInType i w T a b
+equalInType-change-level {i} {j} p {w} {T} {a} {b} eqt (eqt' , eqi) =
+  eqt ,
+  equalTerms-uni-mon-rev
+    p eqt
+    (snd (eqInType-ext (is-uni-uni j) (equalTypes-uni-mon p eqt) eqt' a b) eqi)
 
 \end{code}

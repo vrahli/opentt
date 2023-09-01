@@ -88,7 +88,7 @@ open import type_sys_props_nowrite(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_noread(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_subsing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_noseq(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_noenc(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -190,8 +190,8 @@ UNIVneqNOREAD {a} ()
 UNIVneqSUBSING : {a : ℕ} {c : Term} → ¬ UNIV a ≡ SUBSING c
 UNIVneqSUBSING {a} {c} ()
 
-UNIVneqLIFT : {a : ℕ} {c : Term} → ¬ UNIV a ≡ LIFT c
-UNIVneqLIFT {a} {c} ()
+--UNIVneqLIFT : {a : ℕ} {c : Term} → ¬ UNIV a ≡ LIFT c
+--UNIVneqLIFT {a} {c} ()
 
 UNIVneqDUM : {a : ℕ} {c : Term} → ¬ UNIV a ≡ DUM c
 UNIVneqDUM {a} {c} ()
@@ -477,7 +477,7 @@ abstract
       --eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqDUM (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqFFDEFS (⇛-val-det tt tt c₁ x))
       ind {suc u} {w} {A} {B} (EQTUNIV m p d₁ d₂) {a} {b} eqi ind c₁ c₂ = _≤_.s≤s _≤_.z≤n
-      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqLIFT (⇛-val-det tt tt c₁ x))
+--      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqLIFT (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTBAR x) {a} {b} eqi ind c₁ c₂ =
         lower {0ℓ} {lsuc(L)} (Mod.□-const M (Mod.∀𝕎-□'-□ M x aw eqi))
           where
@@ -580,7 +580,7 @@ abstract
 
           c' : □·EqTypes (uni i) w a b
           c' rewrite UNIVinj (⇛-val-det tt tt c₁ d₁) = c
-      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqLIFT (⇛-val-det tt tt c₁ x))
+--      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqLIFT (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTBAR x) {a} {b} eqi ind i p c₁ c₂ =
         Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
           where
@@ -1079,7 +1079,7 @@ abstract
       c : □·EqTypes (uni m) w a b
       c = Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
   --}
-  eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTLIFT A1 A2 x x₁ eqta exta) =
+{--  eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTLIFT A1 A2 x x₁ eqta exta) =
     Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) → at□· i w' e' z → eqInType u w' z a b
@@ -1099,7 +1099,7 @@ abstract
 
           aw1 : ∀𝕎 w' (λ w'' e'' → eqInType (↓U u) w'' (∀𝕎-mon e' eqta w'' e'') a b
                                    → ↑wPred' (λ w''' e → eqInType (↓U u) w''' (eqta w''' e) a b) e' w'' e'')
-          aw1 w1 e1 h ext = LIFTeq-ext {↓𝕌 (mk𝕌 isu)} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
+          aw1 w1 e1 h ext = LIFTeq-ext {↓𝕌 (mk𝕌 isu)} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h--}
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTBAR x) =
     □'-change W M i x aw j
     where
@@ -1368,7 +1368,7 @@ abstract
   --eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) ind i p c₁ c₂ a b eqi = ⊥-elim (lower (Mod.□-const M (Mod.∀𝕎-□Func M (λ w' e' (c₁ , c₂) → lift (UNIVneqDUM (Bₗ⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
       ind {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqFFDEFS (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTUNIV m q d₁ d₂) ind i p c₁ c₂ a b eqi rewrite UNIVinj (Bₗ⇛-val-det tt tt c₁ d₁) = uniUpTo-<irr {m} {u} {p} {q} eqi
-      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqta exta) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqLIFT (Bₗ⇛-val-det tt tt c₁ x))
+--      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqta exta) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqLIFT (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTBAR x) ind i p c₁ c₂ a b eqi = c
         where
           c : □·' w x (λ w' _ (z : eqTypes (uni u) w' A B) → eqInType (uni u) w' z a b)
@@ -1454,7 +1454,7 @@ abstract
   --eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (lower (Mod.□-const M (Mod.∀𝕎-□Func M (λ w' e' (c₁ , c₂) → lift (UNIVneqDUM (Bₗ⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
       ind {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqFFDEFS (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTUNIV m q d₁ d₂) {a} {b} eqi ind i p c₁ c₂ rewrite UNIVinj (Bₗ⇛-val-det tt tt c₁ d₁) = uniUpTo-<irr {m} {u} {q} {p} eqi
-      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqta exta) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqLIFT (Bₗ⇛-val-det tt tt c₁ x))
+--      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqta exta) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqLIFT (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTBAR x) {a} {b} eqi ind i p c₁ c₂ = □·EqTypes→uniUpTo {i} {u} {p} {w} {a} {b} c
         where
           aw : ∀𝕎 w (λ w' e' → (z : eqTypes (uni u) w' A B) (at : at□· x w' e' z)
@@ -1910,7 +1910,7 @@ abstract
           ib : □· w' (λ w'' e → FFDEFSeq x1 (eqInType u w'' (∀𝕎-mon e' eqta w'' e)) w'' a b)
           ib = Mod.∀𝕎-□Func M aw' (↑□· eqi e')
   eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTUNIV m p c₁ c₂) eqi = eqInType-ext-bar-rev-u isu i a b m p c₁ c₂ eqi
-  eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTLIFT A1 A2 x x₁ eqta exta) eqi =
+{--  eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTLIFT A1 A2 x x₁ eqta exta) eqi =
     Mod.∀𝕎-□-□' M i aw
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) (at : at□· i w' e' z) → eqInType u w' z a b)
@@ -1926,7 +1926,7 @@ abstract
           aw' w1 e1 h = LIFTeq-ext {↓𝕌 (mk𝕌 isu)} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
 
           ib : □· w' (λ w'' e → eqInType (↓U u) w'' (∀𝕎-mon e' eqta w'' e) a b)
-          ib = Mod.∀𝕎-□Func M aw' (↑□· eqi e')
+          ib = Mod.∀𝕎-□Func M aw' (↑□· eqi e')--}
   eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTBAR x) eqi =
     □'-change W M x i aw eqi
     where
@@ -2102,12 +2102,12 @@ abstract
     where
       inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
       inda w1 e1 = ind (eqta w1 e1) (<Type1 _ _ (<TypeFFDEFS (mk𝕌 isu) w A B A1 A2 x1 x2 x x₁ eqta exta eqx w1 e1))
-  eqInType-ext0 {u} isu {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqta exta) ind =
+{--  eqInType-ext0 {u} isu {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqta exta) ind =
     λ eqt2 a b → eqInType-⇛-LIFT-rev u w A B A1 A2 a b eqta exta inda x x₁ eqt2 ,
                  eqInType-⇛-LIFT u w A B A1 A2 a b eqta exta inda x x₁ eqt2
     where
       inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
-      inda w1 e1 = ind (eqta w1 e1) (<Type1 _ _ (<TypeLIFT (mk𝕌 isu) w A B A1 A2 x x₁ eqta exta w1 e1))
+      inda w1 e1 = ind (eqta w1 e1) (<Type1 _ _ (<TypeLIFT (mk𝕌 isu) w A B A1 A2 x x₁ eqta exta w1 e1))--}
   eqInType-ext0 {u} isu {w} {A} {B} (EQTUNIV m p c₁ c₂) ind = eqInType-ext0-u isu m p c₁ c₂
   eqInType-ext0 {u} isu {w} {A} {B} (EQTBAR x) ind =
     λ eqt' a b → (λ ei → eqInType-ext-bar {u} isu x ind a b ei eqt') ,
@@ -2478,7 +2478,7 @@ abstract
               aw' w1 e1 h x₂ = FFDEFSeq-ext {u} {w} {A1} {A2} {x1} {eqta} {_} {_} {_} {a} {b} exta h
       ind {u} {w} {A} {B} (EQTUNIV m p c₁ c₂) ind a b i j {-- rewrite u ·ᵢ--} =
         local-eqInType-uni (fst u) (snd u) w A B a b m p c₁ c₂ i j
-      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqta exta) ind a b i j =
+{--      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqta exta) ind a b i j =
         Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
         where
           aw : ∀𝕎 w (λ w' e' → (z : ≡Types u w' A B) {--(at : at□· i w' e' z)--}
@@ -2491,7 +2491,7 @@ abstract
 
               aw' : ∀𝕎 w' (λ w'' e'' → ≡∈Type (↓𝕌 u) w'' (∀𝕎-mon e' eqta w'' e'') a b
                                        → (x₂ : w ⊑· w'') → ≡∈Type (↓𝕌 u) w'' (eqta w'' x₂) a b)
-              aw' w1 e1 h x₂ = LIFTeq-ext {↓𝕌 u} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
+              aw' w1 e1 h x₂ = LIFTeq-ext {↓𝕌 u} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h--}
       ind {u} {w} {A} {B} (EQTBAR x) ind a b i j =
           □'-change W M i x aw j
           where
@@ -2868,7 +2868,7 @@ abstract
           ib = Mod.∀𝕎-□Func M aw (↑□· eqi e')
       ind {u} {w} {A} {B} (EQTUNIV m p c₁ c₂) ind {w'} e' eqt2 a b eqi {--rewrite isu--} =
         eqInType-u2 (u ·ᵤ) (u ·ᵢ) p (⇛-mon e' c₁) (⇛-mon e' c₂) eqt2 a b (uniUpTo-mon2 (u ·ᵤ) (u ·ᵢ) p c₁ c₂ e' eqi)
-      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqta exta) ind {w'} e' eqt2 a b eqi =
+{--      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqta exta) ind {w'} e' eqt2 a b eqi =
         eqInType-⇛-LIFT-rev2
           u w' A B A1 A2 a b
           (∀𝕎-mon e' eqta)
@@ -2880,7 +2880,7 @@ abstract
           aw w1 e1 h = LIFTeq-ext {↓𝕌 u} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h
 
           ib : □· w' (λ w'' e → ≡∈Type (↓𝕌 u) w'' (∀𝕎-mon e' eqta w'' e) a b)
-          ib = Mod.∀𝕎-□Func M aw (↑□· eqi e')
+          ib = Mod.∀𝕎-□Func M aw (↑□· eqi e')--}
 
       ind {u} {w} {A} {B} (EQTBAR x) ind {w'} e' eqt2 a b eqi =
         local-eqInType0 u w' A B a b eqt2 ib ib'
@@ -3150,7 +3150,7 @@ abstract
         where
           c : B #⇛ #UNIV i at w
           c rewrite sym (UNIVinj (⇛-val-det tt tt d₁ c₂)) = d₂
-      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqta exta) ind i p C c₁ c₂ = ⊥-elim (UNIVneqLIFT (⇛-val-det tt tt c₂ x))
+--      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqta exta) ind i p C c₁ c₂ = ⊥-elim (UNIVneqLIFT (⇛-val-det tt tt c₂ x))
       ind {u} {w} {A} {B} (EQTBAR x) ind i p C c₁ c₂ =
         EQTBAR (∀𝕎-□at W M x aw)
           where
@@ -3241,7 +3241,7 @@ abstract
       ind {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ind i p j = ⊥-elim (UNIVneqFFDEFS (Bₗ⇛-val-det tt tt j x))
       ind {u} {w} {A} {B} (EQTUNIV m q c₁ c₂) ind i p j rewrite UNIVinj (Bₗ⇛-val-det tt tt j c₁) = #⇛→B#⇛ {B} {#UNIV m} c₂
   --  Mod.□Func M (Mod.∀𝕎-□Func M (λ w' e' (a , b) c → b) x) i
-      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) ind i p j = ⊥-elim (UNIVneqLIFT (Bₗ⇛-val-det tt tt j x))
+--      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) ind i p j = ⊥-elim (UNIVneqLIFT (Bₗ⇛-val-det tt tt j x))
       ind {u} {w} {A} {B} (EQTBAR x) ind i p j =
         Mod.□-idem M (∀𝕎-□at W M x aw)
         where
@@ -3298,7 +3298,7 @@ abstract
       ind {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ind i p j = ⊥-elim (UNIVneqFFDEFS (Bₗ⇛-val-det tt tt j x₁))
       ind {u} {w} {A} {B} (EQTUNIV m q c₁ c₂) ind i p j rewrite UNIVinj (Bₗ⇛-val-det tt tt j c₂) = #⇛→B#⇛ {A} {#UNIV m} c₁
   --  Mod.□Func M (Mod.∀𝕎-□Func M (λ w' e' (a , b) c → b) x) i
-      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) ind i p j = ⊥-elim (UNIVneqLIFT (Bₗ⇛-val-det tt tt j x₁))
+--      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) ind i p j = ⊥-elim (UNIVneqLIFT (Bₗ⇛-val-det tt tt j x₁))
       ind {u} {w} {A} {B} (EQTBAR x) ind i p j =
         Mod.□-idem M (∀𝕎-□at W M x aw)
         where
@@ -3545,14 +3545,14 @@ abstract
           inda w1 e1 = ind {u} {w1} {A1} {A2} (eqta w1 e1) (<Type1 _ _ (<TypeFFDEFS u w A B A1 A2 x1 x2 x x₁ eqta exta eqx w1 e1)) uind
       ind {u} {w} {A} {B} (EQTUNIV m p c₁ c₂) ind uind =
         is-TSP-univs-eqUnivi-aux u uind w A B m p c₁ c₂
-      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) ind uind =
+{--      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) ind uind =
         typeSysConds-LIFT (u ·ᵤ) w A B A1 A2 x x₁ eqtA exta inda
         where
           inda : ∀𝕎 w (λ w1 e1 → TSP (eqtA w1 e1))
           inda w1 e1 = ind {↓𝕌 u} {w1} {A1} {A2} (eqtA w1 e1) (<Type1 _ _ (<TypeLIFT u w A B A1 A2 x x₁ eqtA exta w1 e1)) uind'
             where
               uind' : (u' : 𝕌) → (u' ·ₙ) < (↓𝕌 u ·ₙ) → is-TSP-univs (u' ·ᵤ)
-              uind' u' p = uind u' (<-transˡ p (↓𝕃≤ (u ·ₙ)))
+              uind' u' p = uind u' (<-transˡ p (↓𝕃≤ (u ·ₙ)))--}
   --typeSysConds-aux-u (↓𝕃 n) ? {--ind--} w1 A1 A2 eqa'
   -- TODO: Would it help to change this lemma so that it uses 𝕌 instead of ℕ?
   --      where
@@ -4020,7 +4020,7 @@ abstract
   {--  where
        z2 : ∀𝕎 w (λ w' e' → (#EQ a b T #⇛ #UNIV u at w' × #EQ a b T #⇛ #UNIV u at w') → t₁ #⇛ #AX at w' × t₂ #⇛ #AX at w' × equalInType u w' T a b)
        z2 w' e' (c₁ , c₂) = ⊥-elim (EQneqUNIV (compAllVal c₁ tt))--}
-      ind {u} {w} {A} {B} (EQTLIFT A1 A2 c1 c2 eqtA exta) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqLIFT (compAllVal c1 tt))
+--      ind {u} {w} {A} {B} (EQTLIFT A1 A2 c1 c2 eqtA exta) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqLIFT (compAllVal c1 tt))
       ind {u} {w} {A} {B} (EQTBAR x) {a₁} {a₂} eqi ind eqat =
         Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
         where

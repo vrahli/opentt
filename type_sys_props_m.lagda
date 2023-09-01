@@ -136,8 +136,8 @@ MneqNOREAD {a} {b} {x} ()
 MneqSUBSING : {a b x : Term} {c : Term} → ¬ (MT a b x) ≡ SUBSING c
 MneqSUBSING {a} {b} {x} {c} ()
 
-MneqLIFT : {a b x : Term} {c : Term} → ¬ (MT a b x) ≡ LIFT c
-MneqLIFT {a} {b} {x} {c} ()
+--MneqLIFT : {a b x : Term} {c : Term} → ¬ (MT a b x) ≡ LIFT c
+--MneqLIFT {a} {b} {x} {c} ()
 
 MneqDUM : {a b x : Term} {c : Term} → ¬ (MT a b x) ≡ DUM c
 MneqDUM {a} {b} {x} {c} ()
@@ -383,7 +383,7 @@ typeSysConds-M-ttrans u w A B A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb 
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (MneqDUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x x₁ eqta eqtb eqtc exta extb extc inda indb indc = ⊥-elim (MneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x x₁ eqta eqtb eqtc exta extb extc inda indb indc = ⊥-elim (MneqUNIV (⇛-val-det tt tt x₁ c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x x₁ eqta eqtb eqtc exta extb extc inda indb indc = ⊥-elim (MneqLIFT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x x₁ eqta eqtb eqtc exta extb extc inda indb indc = ⊥-elim (MneqLIFT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x x₁ eqta eqtb eqtc exta extb extc inda indb indc =
       EQTBAR (∀𝕎-□at W M y aw)
       where
@@ -680,7 +680,7 @@ typeSysConds-M-extl1 u w A B A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb e
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqNOREAD (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqFFDEFS (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqUNIV (⇛-val-det tt tt x c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqLIFT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqLIFT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi =
       Mod.∀𝕎-□-□' M y ib
       where
@@ -835,7 +835,7 @@ typeSysConds-M-extl2 u w A B A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb e
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqDUM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqFFDEFS (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqUNIV (⇛-val-det tt tt x c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqLIFT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqLIFT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi =
       Mod.∀𝕎-□-□' M y ib
       where
@@ -984,7 +984,7 @@ typeSysConds-M-extr1 u w A B A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb e
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqDUM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqFFDEFS (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqUNIV (⇛-val-det tt tt x₁ c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqLIFT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqLIFT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi =
       Mod.∀𝕎-□-□' M y ib
       where
@@ -1139,7 +1139,7 @@ typeSysConds-M-extr2 u w A B A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb e
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqDUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqUNIV (⇛-val-det tt tt x₁ c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqLIFT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqLIFT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi =
       Mod.∀𝕎-□-□' M y ib
       where
@@ -1286,7 +1286,7 @@ typeSysConds-M-extrevl1 u w A B A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta ext
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqDUM (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqFFDEFS (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqUNIV (⇛-val-det tt tt x c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqLIFT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqLIFT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
       where
@@ -1442,7 +1442,7 @@ typeSysConds-M-extrevl2 u w A B A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta ext
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqDUM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqFFDEFS (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqUNIV (⇛-val-det tt tt x c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqLIFT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi = ⊥-elim (MneqLIFT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind eqta eqtb eqtc exta extb extc inda indb indc x f g eqi =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
       where
@@ -1591,7 +1591,7 @@ typeSysConds-M-extrevr1 u w A B A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta ext
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqDUM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqFFDEFS (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqUNIV (⇛-val-det tt tt x₁ c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqLIFT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqLIFT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
       where
@@ -1746,7 +1746,7 @@ typeSysConds-M-extrevr2 u w A B A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta ext
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqDUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqUNIV (⇛-val-det tt tt x₁ c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqLIFT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi = ⊥-elim (MneqLIFT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind eqta eqtb eqtc exta extb extc inda indb indc x₁ f g eqi =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
       where
@@ -1899,7 +1899,7 @@ eqInType-⇛-M u w A B A1 A2 B1 B2 C1 C2 a b eqta eqtb eqtc exta extb extc inda 
     ind {u} {w} {T1} {T2} (EQTNOREAD x x₁) ind eqta eqtb eqtc exta extb extc inda indb indc c₁ c₂ a b ei = ⊥-elim (MneqNOREAD (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta eqtb eqtc exta extb extc inda indb indc c₁ c₂ a b ei = ⊥-elim (MneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta eqtb eqtc exta extb extc inda indb indc c₁ c₂ a b ei = ⊥-elim (MneqUNIV (⇛-val-det tt tt c₁ d₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc c₁ c₂ a b ei = ⊥-elim (MneqLIFT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc c₁ c₂ a b ei = ⊥-elim (MneqLIFT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTBAR x) ind eqta eqtb eqtc exta extb extc inda indb indc c₁ c₂ a b ei =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw ei)
       where
@@ -2071,7 +2071,7 @@ eqInType-⇛-M2 u w A B A1 A2 B1 B2 C1 C2 a b eqta eqtb eqtc exta extb extc c₁
 -- ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind eqta eqtb eqtc exta extb extc c₁ c₂ a b ei ext = ⊥-elim (MneqDUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqta₁ exta₁ eqx) ind eqta eqtb eqtc exta extb extc c₁ c₂ a b ei ext = ⊥-elim (MneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta eqtb eqtc exta extb extc c₁ c₂ a b ei ext = ⊥-elim (MneqUNIV (⇛-val-det tt tt c₁ d₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind eqta eqtb eqtc exta extb extc c₁ c₂ a b ei ext = ⊥-elim (MneqLIFT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind eqta eqtb eqtc exta extb extc c₁ c₂ a b ei ext = ⊥-elim (MneqLIFT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTBAR x) ind eqta eqtb eqtc exta extb extc c₁ c₂ a b ei ext =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw ei)
       where
@@ -2222,7 +2222,7 @@ eqInType-⇛-M-rev u w A B A1 A2 B1 B2 C1 C2 a b eqta eqtb eqtc exta extb extc i
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind eqta eqtb eqtc exta extb extc inda indb indc c₁ c₂ a b ei = ⊥-elim (MneqDUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta eqtb eqtc exta extb extc inda indb indc c₁ c₂ a b ei = ⊥-elim (MneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta eqtb eqtc exta extb extc inda indb indc c₁ c₂ a b ei = ⊥-elim (MneqUNIV (⇛-val-det tt tt c₁ d₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc c₁ c₂ a b ei = ⊥-elim (MneqLIFT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind eqta eqtb eqtc exta extb extc inda indb indc c₁ c₂ a b ei = ⊥-elim (MneqLIFT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTBAR x) ind eqta eqtb eqtc exta extb extc inda indb indc c₁ c₂ a b ei =
       Mod.∀𝕎-□-□' M x aw
       where
@@ -2382,7 +2382,7 @@ eqInType-⇛-M-rev2 u w A B A1 A2 B1 B2 C1 C2 a b eqta eqtb eqtc exta extb extc 
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind eqta eqtb eqtc exta extb extc c₁ c₂ a b ext ei = ⊥-elim (MneqDUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind eqta eqtb eqtc exta extb extc c₁ c₂ a b ext ei = ⊥-elim (MneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind eqta eqtb eqtc exta extb extc c₁ c₂ a b ext ei = ⊥-elim (MneqUNIV (⇛-val-det tt tt c₁ d₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind eqta eqtb eqtc exta extb extc c₁ c₂ a b ext ei = ⊥-elim (MneqLIFT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind eqta eqtb eqtc exta extb extc c₁ c₂ a b ext ei = ⊥-elim (MneqLIFT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTBAR x) ind eqta eqtb eqtc exta extb extc c₁ c₂ a b ext ei =
       Mod.∀𝕎-□-□' M x aw
       where

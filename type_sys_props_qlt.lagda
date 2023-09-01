@@ -144,8 +144,8 @@ QLTneqNOENC {u} {v} ()
 QLTneqTERM : {u v c : Term} → ¬ QLT u v ≡ TERM c
 QLTneqTERM {u} {v} {c} ()
 
-QLTneqLIFT : {u v : Term} {c : Term} → ¬ QLT u v ≡ LIFT c
-QLTneqLIFT {u} {v} {c} ()
+--QLTneqLIFT : {u v : Term} {c : Term} → ¬ QLT u v ≡ LIFT c
+--QLTneqLIFT {u} {v} {c} ()
 
 QLTneqDUM : {u v : Term} {c : Term} → ¬ QLT u v ≡ DUM c
 QLTneqDUM {u} {v} {c} ()
@@ -224,7 +224,7 @@ typeSysConds-QLT-ttrans u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt = concl x x₁ s
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (QLTneqDUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x x₁ s s₁ = ⊥-elim (QLTneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x x₁ s s₁ = ⊥-elim (QLTneqUNIV (⇛-val-det tt tt x₁ c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x x₁ s s₁ = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x x₁ s s₁ = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x x₁ s s₁ =
       EQTBAR (∀𝕎-□at W M y aw)
       where
@@ -298,7 +298,7 @@ typeSysConds-QLT-extl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt' =
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x s s₁ f g eqi = ⊥-elim (QLTneqNOREAD (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x s s₁ f g eqi = ⊥-elim (QLTneqFFDEFS (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x s s₁ f g eqi = ⊥-elim (QLTneqUNIV (⇛-val-det tt tt x c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x s s₁ f g eqi = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x s s₁ f g eqi = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x s s₁ f g eqi =
       Mod.∀𝕎-□-□' M y ib
       where
@@ -383,7 +383,7 @@ typeSysConds-QLT-extl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt' =
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind s s₁ x f g eqi = ⊥-elim (QLTneqDUM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind s s₁ x f g eqi = ⊥-elim (QLTneqFFDEFS (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind s s₁ x f g eqi = ⊥-elim (QLTneqUNIV (⇛-val-det tt tt x c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind s s₁ x f g eqi =
       Mod.∀𝕎-□-□' M y ib
       where
@@ -458,7 +458,7 @@ typeSysConds-QLT-extr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt' =
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqDUM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqFFDEFS (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqUNIV (⇛-val-det tt tt x₁ c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind s s₁ x₁ f g eqi =
       Mod.∀𝕎-□-□' M y ib
       where
@@ -533,7 +533,7 @@ typeSysConds-QLT-extr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt' =
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqDUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqUNIV (⇛-val-det tt tt x₁ c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind s s₁ x₁ f g eqi =
       Mod.∀𝕎-□-□' M y ib
       where
@@ -606,7 +606,7 @@ typeSysConds-QLT-extrevl1 u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt' =
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind s s₁ x f g eqi = ⊥-elim (QLTneqDUM (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind s s₁ x f g eqi = ⊥-elim (QLTneqFFDEFS (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind s s₁ x f g eqi = ⊥-elim (QLTneqUNIV (⇛-val-det tt tt x c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind s s₁ x f g eqi =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
       where
@@ -682,7 +682,7 @@ typeSysConds-QLT-extrevl2 u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt' =
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind s s₁ x f g eqi = ⊥-elim (QLTneqDUM (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind s s₁ x f g eqi = ⊥-elim (QLTneqFFDEFS (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind s s₁ x f g eqi = ⊥-elim (QLTneqUNIV (⇛-val-det tt tt x c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x f g eqi = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind s s₁ x f g eqi =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
       where
@@ -758,7 +758,7 @@ typeSysConds-QLT-extrevr1 u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt' =
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqDUM (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqFFDEFS (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqUNIV (⇛-val-det tt tt x₁ c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind s s₁ x₁ f g eqi =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
       where
@@ -833,7 +833,7 @@ typeSysConds-QLT-extrevr2 u w A B a1 b1 a2 b2 x x₁ s s₁ C eqt' =
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqDUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqUNIV (⇛-val-det tt tt x₁ c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind s s₁ x₁ f g eqi = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind s s₁ x₁ f g eqi =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
       where
@@ -909,7 +909,7 @@ eqInType-⇛-QLT u w A B a1 b1 a2 b2 a b c₁ c₂ eqt eqi =
     ind {u} {w} {T1} {T2} (EQTNOREAD x x₁) ind c₁ c₂ a b ei = ⊥-elim (QLTneqNOREAD (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind c₁ c₂ a b ei = ⊥-elim (QLTneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind c₁ c₂ a b ei = ⊥-elim (QLTneqUNIV (⇛-val-det tt tt c₁ d₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind c₁ c₂ a b ei = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind c₁ c₂ a b ei = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTBAR x) ind c₁ c₂ a b ei =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw ei)
       where
@@ -987,7 +987,7 @@ eqInType-⇛-QLT-rev u w A B a1 b1 a2 b2 a b c₁ c₂ eqt ei =
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 x x₁ eqtA) ind c₁ c₂ a b ei = ⊥-elim (QLTneqDUM (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 x x₁ eqtA extA eqx) ind c₁ c₂ a b ei = ⊥-elim (QLTneqFFDEFS (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTUNIV i p d₁ d₂) ind c₁ c₂ a b ei = ⊥-elim (QLTneqUNIV (⇛-val-det tt tt c₁ d₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind c₁ c₂ a b ei = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt c₁ x))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 x x₁ eqtA extA) ind c₁ c₂ a b ei = ⊥-elim (QLTneqLIFT (⇛-val-det tt tt c₁ x))
     ind {u} {w} {T1} {T2} (EQTBAR x) ind c₁ c₂ a b ei =
       Mod.∀𝕎-□-□' M x aw
       where

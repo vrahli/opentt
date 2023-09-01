@@ -129,8 +129,8 @@ NOREADneqDUM {c} ()
 NOREADneqFFDEFS : {c d : Term} → ¬ NOREAD ≡ FFDEFS c d
 NOREADneqFFDEFS {c} {d} ()
 
-NOREADneqLIFT : {c : Term} → ¬ NOREAD ≡ LIFT c
-NOREADneqLIFT {c} ()
+--NOREADneqLIFT : {c : Term} → ¬ NOREAD ≡ LIFT c
+--NOREADneqLIFT {c} ()
 
 --NOREADneqTSQUASH : {c : Term} → ¬ NOREAD ≡ TSQUASH c
 --NOREADneqTSQUASH {c} ()
@@ -212,7 +212,7 @@ typeSysConds-NOREAD-ttrans u w A B x x₁ C eqt = concl x x₁
 --    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (NOREADneqDUM (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x x₁ = ⊥-elim (NOREADneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x x₁ = ⊥-elim (NOREADneqUNIV (⇛-val-det tt tt x₁ c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x x₁ = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x x₁ = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x x₁ =
       EQTBAR (∀𝕎-□at W M y aw)
       where
@@ -300,7 +300,7 @@ typeSysConds-NOREAD-extl1 u w A B x x₁ C eqt' = concl x
         aw w1 e1 p = p
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x f g eqi = ⊥-elim (NOREADneqFFDEFS (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x f g eqi = ⊥-elim (NOREADneqUNIV (⇛-val-det tt tt x c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x f g eqi =
       Mod.∀𝕎-□-□' M y ib
       where
@@ -369,7 +369,7 @@ typeSysConds-NOREAD-extl2 u w A B x x₁ C eqt' = concl x
         aw w1 e1 p = p
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x f g eqi = ⊥-elim (NOREADneqFFDEFS (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x f g eqi = ⊥-elim (NOREADneqUNIV (⇛-val-det tt tt x c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x f g eqi =
       Mod.∀𝕎-□-□' M y ib
       where
@@ -437,7 +437,7 @@ typeSysConds-NOREAD-extr1 u w A B x x₁ C eqt' = concl x₁
         aw w1 e1 p = p
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x₁ f g eqi = ⊥-elim (NOREADneqFFDEFS (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x₁ f g eqi = ⊥-elim (NOREADneqUNIV (⇛-val-det tt tt x₁ c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x₁ f g eqi =
       Mod.∀𝕎-□-□' M y ib
       where
@@ -505,7 +505,7 @@ typeSysConds-NOREAD-extr2 u w A B x x₁ C eqt' = concl x₁
         aw w1 e1 p = p
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x₁ f g eqi = ⊥-elim (NOREADneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x₁ f g eqi = ⊥-elim (NOREADneqUNIV (⇛-val-det tt tt x₁ c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x₁ f g eqi =
       Mod.∀𝕎-□-□' M y ib
       where
@@ -572,7 +572,7 @@ typeSysConds-NOREAD-extrevl1 u w A B x x₁ C eqt' = concl x
         aw w1 e1 p = p
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x f g eqi = ⊥-elim (NOREADneqFFDEFS (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x f g eqi = ⊥-elim (NOREADneqUNIV (⇛-val-det tt tt x c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x f g eqi =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
       where
@@ -642,7 +642,7 @@ typeSysConds-NOREAD-extrevl2 u w A B x x₁ C eqt' = concl x
         aw w1 e1 p = p
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x f g eqi = ⊥-elim (NOREADneqFFDEFS (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x f g eqi = ⊥-elim (NOREADneqUNIV (⇛-val-det tt tt x c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x f g eqi = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x f g eqi =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
       where
@@ -711,7 +711,7 @@ typeSysConds-NOREAD-extrevr1 u w A B x x₁ C eqt' = concl x₁
         aw w1 e1 p = p
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x₁ f g eqi = ⊥-elim (NOREADneqFFDEFS (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x₁ f g eqi = ⊥-elim (NOREADneqUNIV (⇛-val-det tt tt x₁ c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x₁ y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x₁ y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x₁ f g eqi =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
       where
@@ -780,7 +780,7 @@ typeSysConds-NOREAD-extrevr2 u w A B x x₁ C eqt' = concl x₁
         aw w1 e1 p = p
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x₁ f g eqi = ⊥-elim (NOREADneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x₁ f g eqi = ⊥-elim (NOREADneqUNIV (⇛-val-det tt tt x₁ c₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x₁ f g eqi = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ind x₁ f g eqi =
       Mod.□-idem M (Mod.∀𝕎-□'-□ M y aw eqi)
       where

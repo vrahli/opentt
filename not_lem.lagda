@@ -441,7 +441,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     sim3 = #weakℂEq→ {w4} {#APPLY (#CS c) (#NUM m)} {ℂ→C· k1} eb7 (Res.def r) k1 cn₀ (⇓!-refl (ℂ→T k1) w4)
 
 
-
+{--
 equalInType-SQUASH-UNION-LIFT→ :  {n i : ℕ} (p : i < n) {w : 𝕎·} {a b u v : CTerm}
                                   → equalInType n w (#SQUASH (#UNION (#↑T p a) (#NEG (#↑T p b)))) u v
                                   → equalInType i w (#SQUASH (#UNION a (#NEG b))) #AX #AX
@@ -467,7 +467,7 @@ equalInType-SQUASH-UNION-LIFT→ {n} {i} p {w} {a} {b} {u} {v} eqi =
 
     j1 : □· w (λ w' _ → Σ CTerm (λ t → equalInType i w' (#UNION a (#NEG b)) t t))
     j1 = Mod.∀𝕎-□Func M aw j0
-
+--}
 
 
 equalInType-SQUASH-UNION→ : {i : ℕ} {w : 𝕎·} {a b u v : CTerm}
@@ -600,15 +600,27 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     concl (inj₂ aw) = ¬∀𝕎¬equalInType-#Σchoice i w3 name k1 sat-ℂ₁ comp2 fb2 aw
 
 
+
+fun-equalInType-SQUASH-UNION-AX : {n : ℕ} {w : 𝕎·} {a b u v : CTerm}
+                                → equalInType n w (#SQUASH (#UNION a b)) u v
+                                → equalInType n w (#SQUASH (#UNION a b)) #AX #AX
+fun-equalInType-SQUASH-UNION-AX {n} {w} {a} {b} {u} {v} h =
+  →equalInType-SQUASH (equalInType-SQUASH→ h)
+
+
 ¬∈LEM : (w : 𝕎·) {n i : ℕ} (p : i < n) → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' (#LEM p) a₁ a₂)
-¬∈LEM w {n} {i} p w1 e1 a₁ a₂ ea = ¬-dec-Σchoice w1 i h1
+¬∈LEM w {n} {i} p w1 e1 a₁ a₂ ea = ¬-dec-Σchoice w1 n h1
   where
-    aw1' : equalInType n w1 (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))) a₁ a₂
+    aw1' : equalInType n w1 (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR)))) a₁ a₂
     aw1' rewrite #LEM≡#PI p = ea
 
     aw2 : ∀𝕎 w1 (λ w' _ → (u₁ u₂ : CTerm) → equalInType n w' (#UNIV i) u₁ u₂
-                         → equalInType n w' (#SQUASH (#UNION (#↑T p u₁) (#NEG (#↑T p u₁)))) (#APPLY a₁ u₁) (#APPLY a₂ u₂))
-    aw2 w' e' u₁ u₂ j = ≡CTerm→equalInType (sub0-#[0]SQUASH-LEM p u₁) (snd (snd (equalInType-PI→ aw1')) w' e' u₁ u₂ j)
+                        → equalInType n w' (#SQUASH (#UNION u₁ (#NEG u₁))) (#APPLY a₁ u₁) (#APPLY a₂ u₂))
+    aw2 w' e' u₁ u₂ j =
+      ≡CTerm→equalInType
+        (sub0-#[0]SQUASH-LEM p u₁)
+        (snd (snd (equalInType-PI→ {n} {w'} {#UNIV i} {#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR))}
+                                   (equalInType-mon aw1' w' e'))) w' (⊑-refl· w') u₁ u₂ j)
 
     -- instantiate using #Σchoice
     name : Name
@@ -626,8 +638,13 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     k1 : ℂ·
     k1 = ℂ₁· -- This has to be different from r's default value
 
-    h1 : equalInType i w2 (#SQUASH (#UNION (#Σchoice name k1) (#NEG (#Σchoice name k1)))) #AX #AX
-    h1 = equalInType-SQUASH-UNION-LIFT→ p (aw2 w2 e2 (#Σchoice name k1) (#Σchoice name k1) (equalInType-#Σchoice-UNIV p w2 name k1 (startNewChoiceCompatible r w1) Σsat-ℂ₁))
+    h0 : equalInType n w2 (#SQUASH (#UNION (#Σchoice name k1) (#NEG (#Σchoice name k1)))) (#APPLY a₁ (#Σchoice name k1)) (#APPLY a₂ (#Σchoice name k1))
+    h0 = aw2 w2 e2 (#Σchoice name k1) (#Σchoice name k1) (equalInType-#Σchoice-UNIV p w2 name k1 (startNewChoiceCompatible r w1) Σsat-ℂ₁)
+
+    h1 : equalInType n w2 (#SQUASH (#UNION (#Σchoice name k1) (#NEG (#Σchoice name k1)))) #AX #AX
+    h1 = fun-equalInType-SQUASH-UNION-AX
+           {n} {w2} {#Σchoice name k1} {#NEG (#Σchoice name k1)}
+           {#APPLY a₁ (#Σchoice name k1)} {#APPLY a₂ (#Σchoice name k1)} h0
 
 
 

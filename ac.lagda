@@ -107,6 +107,9 @@ open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (PROD ; #PROD ; #PROD≡
 --open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
+open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (equalTypes-uni-mon ; equalInType-uni-mon)
+
 --open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 --open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 --open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
@@ -152,51 +155,51 @@ BAIRE!! = FUN NAT! NAT!
 
 
 #[0]AC₀₀-left : CTerm0
-#[0]AC₀₀-left = #[0]PI #[0]NAT (#[1]SQUASH (#[1]SUM #[1]NAT (#[2]LIFT (#[2]APPLY2 #[2]VAR2 #[2]VAR1 #[2]VAR0))))
+#[0]AC₀₀-left = #[0]PI #[0]NAT (#[1]SQUASH (#[1]SUM #[1]NAT (#[2]APPLY2 #[2]VAR2 #[2]VAR1 #[2]VAR0)))
 
 
 #[0]AC!₀₀-left : CTerm0
-#[0]AC!₀₀-left = #[0]PI #[0]NAT! (#[1]SQUASH (#[1]SUM #[1]NAT! (#[2]LIFT (#[2]APPLY2 #[2]VAR2 #[2]VAR1 #[2]VAR0))))
+#[0]AC!₀₀-left = #[0]PI #[0]NAT! (#[1]SQUASH (#[1]SUM #[1]NAT! (#[2]APPLY2 #[2]VAR2 #[2]VAR1 #[2]VAR0)))
 
 
 #[0]AC₀₀-right : CTerm0
-#[0]AC₀₀-right = #[0]SQUASH (#[0]SUM #[0]BAIRE (#[1]PI #[1]NAT (#[2]LIFT (#[2]APPLY2 #[2]VAR2 #[2]VAR0 (#[2]APPLY #[2]VAR1 #[2]VAR0)))))
+#[0]AC₀₀-right = #[0]SQUASH (#[0]SUM #[0]BAIRE (#[1]PI #[1]NAT (#[2]APPLY2 #[2]VAR2 #[2]VAR0 (#[2]APPLY #[2]VAR1 #[2]VAR0))))
 
 
 #[0]AC!₀₀-right : CTerm0
-#[0]AC!₀₀-right = #[0]SQUASH (#[0]SUM #[0]BAIRE!! (#[1]PI #[1]NAT! (#[2]LIFT (#[2]APPLY2 #[2]VAR2 #[2]VAR0 (#[2]APPLY #[2]VAR1 #[2]VAR0)))))
+#[0]AC!₀₀-right = #[0]SQUASH (#[0]SUM #[0]BAIRE!! (#[1]PI #[1]NAT! (#[2]APPLY2 #[2]VAR2 #[2]VAR0 (#[2]APPLY #[2]VAR1 #[2]VAR0))))
 
 
 #[0]sAC₀₀-right : CTerm0
-#[0]sAC₀₀-right = #[0]SQUASH (#[0]SUM #[0]BAIRE (#[1]PI #[1]NAT (#[2]LIFT (#[2]SQUASH (#[2]APPLY2 #[2]VAR2 #[2]VAR0 (#[2]APPLY #[2]VAR1 #[2]VAR0))))))
+#[0]sAC₀₀-right = #[0]SQUASH (#[0]SUM #[0]BAIRE (#[1]PI #[1]NAT (#[2]SQUASH (#[2]APPLY2 #[2]VAR2 #[2]VAR0 (#[2]APPLY #[2]VAR1 #[2]VAR0)))))
 
 
 #[0]sAC!₀₀-right : CTerm0
-#[0]sAC!₀₀-right = #[0]SQUASH (#[0]SUM #[0]BAIRE!! (#[1]PI #[1]NAT! (#[2]LIFT (#[2]SQUASH (#[2]APPLY2 #[2]VAR2 #[2]VAR0 (#[2]APPLY #[2]VAR1 #[2]VAR0))))))
+#[0]sAC!₀₀-right = #[0]SQUASH (#[0]SUM #[0]BAIRE!! (#[1]PI #[1]NAT! (#[2]SQUASH (#[2]APPLY2 #[2]VAR2 #[2]VAR0 (#[2]APPLY #[2]VAR1 #[2]VAR0)))))
 
 
 #AC₀₀-left : CTerm → CTerm
-#AC₀₀-left R = #PI #NAT (#[0]SQUASH (#[0]SUM #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR1 #[1]VAR0))))
+#AC₀₀-left R = #PI #NAT (#[0]SQUASH (#[0]SUM #[0]NAT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR1 #[1]VAR0)))
 
 
 #AC!₀₀-left : CTerm → CTerm
-#AC!₀₀-left R = #PI #NAT! (#[0]SQUASH (#[0]SUM #[0]NAT! (#[1]LIFT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR1 #[1]VAR0))))
+#AC!₀₀-left R = #PI #NAT! (#[0]SQUASH (#[0]SUM #[0]NAT! (#[1]APPLY2 ⌞ R ⌟ #[1]VAR1 #[1]VAR0)))
 
 
 #AC₀₀-right-SUM : CTerm → CTerm
-#AC₀₀-right-SUM R = #SUM #BAIRE (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))
+#AC₀₀-right-SUM R = #SUM #BAIRE (#[0]PI #[0]NAT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))
 
 
 #AC!₀₀-right-SUM : CTerm → CTerm
-#AC!₀₀-right-SUM R = #SUM #BAIRE!! (#[0]PI #[0]NAT! (#[1]LIFT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))
+#AC!₀₀-right-SUM R = #SUM #BAIRE!! (#[0]PI #[0]NAT! (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))
 
 
 #sAC₀₀-right-SUM : CTerm → CTerm
-#sAC₀₀-right-SUM R = #SUM #BAIRE (#[0]PI #[0]NAT (#[1]LIFT (#[1]SQUASH (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))))
+#sAC₀₀-right-SUM R = #SUM #BAIRE (#[0]PI #[0]NAT (#[1]SQUASH (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))
 
 
 #sAC!₀₀-right-SUM : CTerm → CTerm
-#sAC!₀₀-right-SUM R = #SUM #BAIRE!! (#[0]PI #[0]NAT! (#[1]LIFT (#[1]SQUASH (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))))
+#sAC!₀₀-right-SUM R = #SUM #BAIRE!! (#[0]PI #[0]NAT! (#[1]SQUASH (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))
 
 
 #AC₀₀-right : CTerm → CTerm
@@ -257,12 +260,12 @@ sub0-sac00-body R = CTerm≡ c
 
 
 sub0-ac00-left-body1 : (R n : CTerm)
-                       → sub0 n (#[0]SQUASH (#[0]SUM #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR1 #[1]VAR0))))
-                          ≡ #SQUASH (#SUM #NAT (#[0]LIFT (#[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR)))
+                       → sub0 n (#[0]SQUASH (#[0]SUM #[0]NAT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR1 #[1]VAR0)))
+                          ≡ #SQUASH (#SUM #NAT (#[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR))
 sub0-ac00-left-body1 R n = CTerm≡ c
   where
-    c : ⌜ sub0 n (#[0]SQUASH (#[0]SUM #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR1 #[1]VAR0)))) ⌝
-        ≡ ⌜ #SQUASH (#SUM #NAT (#[0]LIFT (#[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR))) ⌝
+    c : ⌜ sub0 n (#[0]SQUASH (#[0]SUM #[0]NAT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR1 #[1]VAR0))) ⌝
+        ≡ ⌜ #SQUASH (#SUM #NAT (#[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR)) ⌝
     c rewrite #shiftUp 0 R
             | #shiftUp 0 R
             | #shiftUp 1 R
@@ -276,12 +279,12 @@ sub0-ac00-left-body1 R n = CTerm≡ c
 
 
 sub0-ac00-left-body2 : (R n m : CTerm)
-                       → sub0 m (#[0]LIFT (#[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR))
-                          ≡ #LIFT (#APPLY2 R n m)
+                     → sub0 m (#[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR)
+                     ≡ #APPLY2 R n m
 sub0-ac00-left-body2 R n m = CTerm≡ c
   where
-    c : ⌜ sub0 m (#[0]LIFT (#[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR)) ⌝
-        ≡ ⌜ #LIFT (#APPLY2 R n m) ⌝
+    c : ⌜ sub0 m (#[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR) ⌝
+        ≡ ⌜ #APPLY2 R n m ⌝
     c rewrite #shiftUp 0 R
             | #shiftUp 0 R
             | #shiftUp 0 m
@@ -313,32 +316,53 @@ isType-NREL : (i : ℕ) (w : 𝕎·) → isType (suc i) w (#NREL i)
 isType-NREL i w = eqTypesFUN← eqTypesNAT (eqTypesFUN← eqTypesNAT (eqTypesUniv w (suc i) i ≤-refl))
 
 
+-- MOVE to props2 or something
+∈NAT-change-level : (i j : ℕ) {w : 𝕎·} {a b : CTerm}
+                  → equalInType i w #NAT a b
+                  → equalInType j w #NAT a b
+∈NAT-change-level i j {w} {a} {b} a∈ = →equalInType-NAT j w a b (equalInType-NAT→ i w a b a∈)
+
+
+-- MOVE to props2
+∈BAIRE-change-level : (i j : ℕ) {w : 𝕎·} {a b : CTerm}
+                    → equalInType i w #BAIRE a b
+                    → equalInType j w #BAIRE a b
+∈BAIRE-change-level i j {w} {a} {b} a∈ =
+  ≡CTerm→equalInType
+    (sym #BAIRE≡)
+    (equalInType-FUN eqTypesNAT eqTypesNAT aw)
+  where
+  aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType j w' #NAT a₁ a₂
+                    → equalInType j w' #NAT (#APPLY a a₁) (#APPLY b a₂))
+  aw w1 e1 n1 n2 n∈ =
+    ∈NAT-change-level i j (equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ a∈)
+                                            w1 e1 n1 n2 (∈NAT-change-level j i n∈))
+
+
 isType-#AC₀₀-left2 : (i : ℕ) (w : 𝕎·) (R₁ R₂ n₁ n₂ : CTerm)
                      → equalInType (suc i) w (#NREL i) R₁ R₂
-                     → equalInType (suc i) w #NAT n₁ n₂
-                     → ∀𝕎 w (λ w' _ → (m₁ m₂ : CTerm) → equalInType (suc i) w' #NAT m₁ m₂
-                                      → equalTypes
-                                           (suc i) w'
-                                           (sub0 m₁ (#[0]LIFT (#[0]APPLY2 ⌞ R₁ ⌟ ⌞ n₁ ⌟ #[0]VAR)))
-                                           (sub0 m₂ (#[0]LIFT (#[0]APPLY2 ⌞ R₂ ⌟ ⌞ n₂ ⌟ #[0]VAR))))
+                     → equalInType i w #NAT n₁ n₂
+                     → ∀𝕎 w (λ w' _ → (m₁ m₂ : CTerm) → equalInType i w' #NAT m₁ m₂
+                                    → equalTypes
+                                        i w'
+                                        (sub0 m₁ (#[0]APPLY2 ⌞ R₁ ⌟ ⌞ n₁ ⌟ #[0]VAR))
+                                        (sub0 m₂ (#[0]APPLY2 ⌞ R₂ ⌟ ⌞ n₂ ⌟ #[0]VAR)))
 isType-#AC₀₀-left2 i w R₁ R₂ n₁ n₂ R∈ n∈ w1 e1 m₁ m₂ m∈ =
   →≡equalTypes
     (sym (sub0-ac00-left-body2 R₁ n₁ m₁))
     (sym (sub0-ac00-left-body2 R₂ n₂ m₂))
-    (equalTypes-LIFT2
-      i w1 (#APPLY2 R₁ n₁ m₁) (#APPLY2 R₂ n₂ m₂)
-      (equalInType→equalTypes-aux
-        (suc i) i ≤-refl w1 (#APPLY2 R₁ n₁ m₁) (#APPLY2 R₂ n₂ m₂)
-        (equalInType-FUN→ (equalInType-FUN→ R∈ w (⊑-refl· w) n₁ n₂ n∈) w1 e1 m₁ m₂ m∈)))
+    (equalInType→equalTypes-aux (suc i) i ≤-refl w1 (#APPLY2 R₁ n₁ m₁) (#APPLY2 R₂ n₂ m₂)
+      (equalInType-FUN→ (equalInType-FUN→ R∈ w (⊑-refl· w) n₁ n₂ (∈NAT-change-level i (suc i) n∈))
+                        w1 e1 m₁ m₂ (∈NAT-change-level i (suc i) m∈)))
 
 
 isType-#AC₀₀-left1 : (i : ℕ) (w : 𝕎·) (R₁ R₂ : CTerm)
                      → equalInType (suc i) w (#NREL i) R₁ R₂
-                     → ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → equalInType (suc i) w' #NAT n₁ n₂
-                                      → equalTypes
-                                           (suc i) w'
-                                           (sub0 n₁ (#[0]SQUASH (#[0]SUM #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R₁ ⌟ #[1]VAR1 #[1]VAR0)))))
-                                           (sub0 n₂ (#[0]SQUASH (#[0]SUM #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R₂ ⌟ #[1]VAR1 #[1]VAR0))))))
+                     → ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → equalInType i w' #NAT n₁ n₂
+                                    → equalTypes
+                                         i w'
+                                         (sub0 n₁ (#[0]SQUASH (#[0]SUM #[0]NAT (#[1]APPLY2 ⌞ R₁ ⌟ #[1]VAR1 #[1]VAR0))))
+                                         (sub0 n₂ (#[0]SQUASH (#[0]SUM #[0]NAT (#[1]APPLY2 ⌞ R₂ ⌟ #[1]VAR1 #[1]VAR0)))))
 isType-#AC₀₀-left1 i w R₁ R₂ R∈ w1 e1 n₁ n₂ n∈ =
   →≡equalTypes
     (sym (sub0-ac00-left-body1 R₁ n₁))
@@ -351,23 +375,23 @@ isType-#AC₀₀-left1 i w R₁ R₂ R∈ w1 e1 n₁ n₂ n∈ =
 
 isType-#AC₀₀-left : (i : ℕ) (w : 𝕎·) (R₁ R₂ : CTerm)
                     → equalInType (suc i) w (#NREL i) R₁ R₂
-                    → equalTypes (suc i) w (#AC₀₀-left R₁) (#AC₀₀-left R₂)
+                    → equalTypes i w (#AC₀₀-left R₁) (#AC₀₀-left R₂)
 isType-#AC₀₀-left i w R₁ R₂ R∈ =
   eqTypesPI←
-    {w} {suc i}
-    {#NAT} {#[0]SQUASH (#[0]SUM #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R₁ ⌟ #[1]VAR1 #[1]VAR0)))}
-    {#NAT} {#[0]SQUASH (#[0]SUM #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R₂ ⌟ #[1]VAR1 #[1]VAR0)))}
+    {w} {i}
+    {#NAT} {#[0]SQUASH (#[0]SUM #[0]NAT (#[1]APPLY2 ⌞ R₁ ⌟ #[1]VAR1 #[1]VAR0))}
+    {#NAT} {#[0]SQUASH (#[0]SUM #[0]NAT (#[1]APPLY2 ⌞ R₂ ⌟ #[1]VAR1 #[1]VAR0))}
     (λ w1 e1 → eqTypesNAT)
     (isType-#AC₀₀-left1 i w R₁ R₂ R∈)
 
 
 sub0-ac00-right-body1 : (R f : CTerm)
-                        → sub0 f (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))
-                           ≡ #PI #NAT (#[0]LIFT (#[0]APPLY2 ⌞ R ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
+                        → sub0 f (#[0]PI #[0]NAT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))
+                           ≡ #PI #NAT (#[0]APPLY2 ⌞ R ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR))
 sub0-ac00-right-body1 R f = CTerm≡ c
   where
-    c : ⌜ sub0 f (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))) ⌝
-        ≡ ⌜ #PI #NAT (#[0]LIFT (#[0]APPLY2 ⌞ R ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR))) ⌝
+    c : ⌜ sub0 f (#[0]PI #[0]NAT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))) ⌝
+        ≡ ⌜ #PI #NAT (#[0]APPLY2 ⌞ R ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR)) ⌝
     c rewrite #shiftUp 0 R
             | #shiftUp 0 R
             | #shiftUp 0 f
@@ -378,12 +402,12 @@ sub0-ac00-right-body1 R f = CTerm≡ c
 
 
 sub0-ac00-right-body2 : (R f n : CTerm)
-                        → sub0 n (#[0]LIFT (#[0]APPLY2 ⌞ R ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
-                           ≡ #LIFT (#APPLY2 R n (#APPLY f n))
+                        → sub0 n (#[0]APPLY2 ⌞ R ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR))
+                           ≡ #APPLY2 R n (#APPLY f n)
 sub0-ac00-right-body2 R f n = CTerm≡ c
   where
-    c : ⌜ sub0 n (#[0]LIFT (#[0]APPLY2 ⌞ R ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR))) ⌝
-        ≡ ⌜ #LIFT (#APPLY2 R n (#APPLY f n)) ⌝
+    c : ⌜ sub0 n (#[0]APPLY2 ⌞ R ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR)) ⌝
+        ≡ ⌜ #APPLY2 R n (#APPLY f n) ⌝
     c rewrite #shiftUp 0 R
             | #shiftUp 0 R
             | #shiftUp 0 n
@@ -396,53 +420,47 @@ sub0-ac00-right-body2 R f n = CTerm≡ c
 
 isType-#AC₀₀-right-body2 : (i : ℕ) (w : 𝕎·) (R₁ R₂ : CTerm) (f₁ f₂ : CTerm)
                            → equalInType (suc i) w (#NREL i) R₁ R₂
-                           → equalInType (suc i) w #BAIRE f₁ f₂
-                           → ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → equalInType (suc i) w' #NAT n₁ n₂
-                                            → equalTypes
-                                                 (suc i) w'
-                                                 (sub0 n₁ (#[0]LIFT (#[0]APPLY2 ⌞ R₁ ⌟ #[0]VAR (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR))))
-                                                 (sub0 n₂ (#[0]LIFT (#[0]APPLY2 ⌞ R₂ ⌟ #[0]VAR (#[0]APPLY ⌞ f₂ ⌟ #[0]VAR)))))
+                           → equalInType i w #BAIRE f₁ f₂
+                           → ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → equalInType i w' #NAT n₁ n₂
+                                          → equalTypes
+                                               i w'
+                                               (sub0 n₁ (#[0]APPLY2 ⌞ R₁ ⌟ #[0]VAR (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))
+                                               (sub0 n₂ (#[0]APPLY2 ⌞ R₂ ⌟ #[0]VAR (#[0]APPLY ⌞ f₂ ⌟ #[0]VAR))))
 isType-#AC₀₀-right-body2 i w R₁ R₂ f₁ f₂ R∈ f∈ w1 e1 n₁ n₂ n∈ =
   →≡equalTypes
     (sym (sub0-ac00-right-body2 R₁ f₁ n₁))
     (sym (sub0-ac00-right-body2 R₂ f₂ n₂))
-    (equalTypes-LIFT2
-       i w1
-       (#APPLY2 R₁ n₁ (#APPLY f₁ n₁))
-       (#APPLY2 R₂ n₂ (#APPLY f₂ n₂))
-       (equalInType→equalTypes-aux
-          (suc i) i ≤-refl w1
-          (#APPLY2 R₁ n₁ (#APPLY f₁ n₁))
-          (#APPLY2 R₂ n₂ (#APPLY f₂ n₂))
-          (equalInType-FUN→
-            {suc i} {w1} {#NAT} {#UNIV i}
-            (equalInType-FUN→ R∈ w1 e1 n₁ n₂ n∈)
-            w1 (⊑-refl· w1) (#APPLY f₁ n₁) (#APPLY f₂ n₂)
-            (equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ f∈) w1 e1 n₁ n₂ n∈))))
+    (equalInType→equalTypes-aux (suc i) i ≤-refl w1
+       (#APPLY2 R₁ n₁ (#APPLY f₁ n₁)) (#APPLY2 R₂ n₂ (#APPLY f₂ n₂))
+       (equalInType-FUN→
+          {suc i} {w1} {#NAT} {#UNIV i}
+          (equalInType-FUN→ R∈ w1 e1 n₁ n₂ (∈NAT-change-level i (suc i) n∈)) w1 (⊑-refl· w1) (#APPLY f₁ n₁)
+          (#APPLY f₂ n₂) (equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ (∈BAIRE-change-level i (suc i) f∈))
+                                           w1 e1 n₁ n₂ (∈NAT-change-level i (suc i) n∈))))
 
 
 isType-#AC₀₀-right-body1 : (i : ℕ) (w : 𝕎·) (R₁ R₂ : CTerm)
                            → equalInType (suc i) w (#NREL i) R₁ R₂
-                           → ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType (suc i) w' #BAIRE f₁ f₂
-                                            → equalTypes
-                                                 (suc i) w'
-                                                 (sub0 f₁ (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R₁ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))))
-                                                 (sub0 f₂ (#[0]PI #[0]NAT (#[1]LIFT (#[1]APPLY2 ⌞ R₂ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))))
+                           → ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType i w' #BAIRE f₁ f₂
+                                          → equalTypes
+                                               i w'
+                                               (sub0 f₁ (#[0]PI #[0]NAT (#[1]APPLY2 ⌞ R₁ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))
+                                               (sub0 f₂ (#[0]PI #[0]NAT (#[1]APPLY2 ⌞ R₂ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))))
 isType-#AC₀₀-right-body1 i w R₁ R₂ R∈ w1 e1 f₁ f₂ f∈ =
   →≡equalTypes
     (sym (sub0-ac00-right-body1 R₁ f₁))
     (sym (sub0-ac00-right-body1 R₂ f₂))
     (eqTypesPI←
-       {w1} {suc i}
-       {#NAT} {#[0]LIFT (#[0]APPLY2 ⌞ R₁ ⌟ #[0]VAR (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR))}
-       {#NAT} {#[0]LIFT (#[0]APPLY2 ⌞ R₂ ⌟ #[0]VAR (#[0]APPLY ⌞ f₂ ⌟ #[0]VAR))}
+       {w1} {i}
+       {#NAT} {#[0]APPLY2 ⌞ R₁ ⌟ #[0]VAR (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)}
+       {#NAT} {#[0]APPLY2 ⌞ R₂ ⌟ #[0]VAR (#[0]APPLY ⌞ f₂ ⌟ #[0]VAR)}
        (λ w2 e2 → eqTypesNAT)
-       (isType-#AC₀₀-right-body2 i w1 R₁ R₂ f₁ f₂ (equalInType-mon R∈ w1 e1) f∈ ))
+       (isType-#AC₀₀-right-body2 i w1 R₁ R₂ f₁ f₂ (equalInType-mon R∈ w1 e1) f∈))
 
 
 isType-#AC₀₀-right : (i : ℕ) (w : 𝕎·) (R₁ R₂ : CTerm)
                      → equalInType (suc i) w (#NREL i) R₁ R₂
-                     → equalTypes (suc i) w (#AC₀₀-right R₁) (#AC₀₀-right R₂)
+                     → equalTypes i w (#AC₀₀-right R₁) (#AC₀₀-right R₂)
 isType-#AC₀₀-right i w R₁ R₂ R∈ =
   eqTypesSQUASH←
     (eqTypesSUM←
@@ -451,12 +469,12 @@ isType-#AC₀₀-right i w R₁ R₂ R∈ =
 
 
 sub0-sac00-right-body1 : (R f : CTerm)
-                         → sub0 f (#[0]PI #[0]NAT (#[1]LIFT (#[1]SQUASH (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))))
-                            ≡ #PI #NAT (#[0]LIFT (#[0]SQUASH (#[0]APPLY2 ⌞ R ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR))))
+                         → sub0 f (#[0]PI #[0]NAT (#[1]SQUASH (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))
+                            ≡ #PI #NAT (#[0]SQUASH (#[0]APPLY2 ⌞ R ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
 sub0-sac00-right-body1 R f = CTerm≡ c
   where
-    c : ⌜ sub0 f (#[0]PI #[0]NAT (#[1]LIFT (#[1]SQUASH (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))) ⌝
-        ≡ ⌜ #PI #NAT (#[0]LIFT (#[0]SQUASH (#[0]APPLY2 ⌞ R ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR)))) ⌝
+    c : ⌜ sub0 f (#[0]PI #[0]NAT (#[1]SQUASH (#[1]APPLY2 ⌞ R ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))) ⌝
+        ≡ ⌜ #PI #NAT (#[0]SQUASH (#[0]APPLY2 ⌞ R ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR))) ⌝
     c rewrite #shiftUp 0 R
             | #shiftUp 0 R
             | #shiftUp 0 f
@@ -468,12 +486,12 @@ sub0-sac00-right-body1 R f = CTerm≡ c
 
 
 sub0-sac00-right-body2 : (R f n : CTerm)
-                         → sub0 n (#[0]LIFT (#[0]SQUASH (#[0]APPLY2 ⌞ R ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR))))
-                            ≡ #LIFT (#SQUASH (#APPLY2 R n (#APPLY f n)))
+                         → sub0 n (#[0]SQUASH (#[0]APPLY2 ⌞ R ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
+                         ≡ #SQUASH (#APPLY2 R n (#APPLY f n))
 sub0-sac00-right-body2 R f n = CTerm≡ c
   where
-    c : ⌜ sub0 n (#[0]LIFT (#[0]SQUASH (#[0]APPLY2 ⌞ R ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR)))) ⌝
-        ≡ ⌜ #LIFT (#SQUASH (#APPLY2 R n (#APPLY f n))) ⌝
+    c : ⌜ sub0 n (#[0]SQUASH (#[0]APPLY2 ⌞ R ⌟ #[0]VAR (#[0]APPLY ⌞ f ⌟ #[0]VAR))) ⌝
+      ≡ ⌜ #SQUASH (#APPLY2 R n (#APPLY f n)) ⌝
     c rewrite #shiftUp 0 R
             | #shiftUp 0 R
             | #shiftUp 0 n
@@ -489,54 +507,50 @@ sub0-sac00-right-body2 R f n = CTerm≡ c
 
 isType-#sAC₀₀-right-body2 : (i : ℕ) (w : 𝕎·) (R₁ R₂ : CTerm) (f₁ f₂ : CTerm)
                             → equalInType (suc i) w (#NREL i) R₁ R₂
-                            → equalInType (suc i) w #BAIRE f₁ f₂
-                            → ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → equalInType (suc i) w' #NAT n₁ n₂
-                                             → equalTypes
-                                                  (suc i) w'
-                                                  (sub0 n₁ (#[0]LIFT (#[0]SQUASH (#[0]APPLY2 ⌞ R₁ ⌟ #[0]VAR (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))))
-                                                  (sub0 n₂ (#[0]LIFT (#[0]SQUASH (#[0]APPLY2 ⌞ R₂ ⌟ #[0]VAR (#[0]APPLY ⌞ f₂ ⌟ #[0]VAR))))))
+                            → equalInType i w #BAIRE f₁ f₂
+                            → ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → equalInType i w' #NAT n₁ n₂
+                                           → equalTypes
+                                                i w'
+                                                (sub0 n₁ (#[0]SQUASH (#[0]APPLY2 ⌞ R₁ ⌟ #[0]VAR (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR))))
+                                                (sub0 n₂ (#[0]SQUASH (#[0]APPLY2 ⌞ R₂ ⌟ #[0]VAR (#[0]APPLY ⌞ f₂ ⌟ #[0]VAR)))))
 isType-#sAC₀₀-right-body2 i w R₁ R₂ f₁ f₂ R∈ f∈ w1 e1 n₁ n₂ n∈ =
   →≡equalTypes
     (sym (sub0-sac00-right-body2 R₁ f₁ n₁))
     (sym (sub0-sac00-right-body2 R₂ f₂ n₂))
-    (equalTypes-LIFT2
-       i w1
-       (#SQUASH (#APPLY2 R₁ n₁ (#APPLY f₁ n₁)))
-       (#SQUASH (#APPLY2 R₂ n₂ (#APPLY f₂ n₂)))
-       (eqTypesSQUASH←
-         (equalInType→equalTypes-aux
-           (suc i) i ≤-refl w1
-           (#APPLY2 R₁ n₁ (#APPLY f₁ n₁))
-           (#APPLY2 R₂ n₂ (#APPLY f₂ n₂))
-           (equalInType-FUN→
+    (eqTypesSQUASH←
+       (equalInType→equalTypes-aux
+         (suc i) i ≤-refl w1
+         (#APPLY2 R₁ n₁ (#APPLY f₁ n₁))
+         (#APPLY2 R₂ n₂ (#APPLY f₂ n₂))
+         (equalInType-FUN→
             {suc i} {w1} {#NAT} {#UNIV i}
-            (equalInType-FUN→ R∈ w1 e1 n₁ n₂ n∈)
+            (equalInType-FUN→ R∈ w1 e1 n₁ n₂ (∈NAT-change-level i (suc i) n∈))
             w1 (⊑-refl· w1) (#APPLY f₁ n₁) (#APPLY f₂ n₂)
-            (equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ f∈) w1 e1 n₁ n₂ n∈)))))
+            (∈NAT-change-level i (suc i) (equalInType-FUN→ (≡CTerm→equalInType #BAIRE≡ f∈) w1 e1 n₁ n₂ n∈)))))
 
 
 isType-#sAC₀₀-right-body1 : (i : ℕ) (w : 𝕎·) (R₁ R₂ : CTerm)
                             → equalInType (suc i) w (#NREL i) R₁ R₂
-                            → ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType (suc i) w' #BAIRE f₁ f₂
-                                              → equalTypes
-                                                  (suc i) w'
-                                                  (sub0 f₁ (#[0]PI #[0]NAT (#[1]LIFT (#[1]SQUASH (#[1]APPLY2 ⌞ R₁ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))))
-                                                  (sub0 f₂ (#[0]PI #[0]NAT (#[1]LIFT (#[1]SQUASH (#[1]APPLY2 ⌞ R₂ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))))))
+                            → ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType i w' #BAIRE f₁ f₂
+                                           → equalTypes
+                                               i w'
+                                               (sub0 f₁ (#[0]PI #[0]NAT (#[1]SQUASH (#[1]APPLY2 ⌞ R₁ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))))
+                                               (sub0 f₂ (#[0]PI #[0]NAT (#[1]SQUASH (#[1]APPLY2 ⌞ R₂ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))))
 isType-#sAC₀₀-right-body1 i w R₁ R₂ R∈ w1 e1 f₁ f₂ f∈ =
   →≡equalTypes
     (sym (sub0-sac00-right-body1 R₁ f₁))
     (sym (sub0-sac00-right-body1 R₂ f₂))
     (eqTypesPI←
-       {w1} {suc i}
-       {#NAT} {#[0]LIFT (#[0]SQUASH (#[0]APPLY2 ⌞ R₁ ⌟ #[0]VAR (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))}
-       {#NAT} {#[0]LIFT (#[0]SQUASH (#[0]APPLY2 ⌞ R₂ ⌟ #[0]VAR (#[0]APPLY ⌞ f₂ ⌟ #[0]VAR)))}
+       {w1} {i}
+       {#NAT} {#[0]SQUASH (#[0]APPLY2 ⌞ R₁ ⌟ #[0]VAR (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR))}
+       {#NAT} {#[0]SQUASH (#[0]APPLY2 ⌞ R₂ ⌟ #[0]VAR (#[0]APPLY ⌞ f₂ ⌟ #[0]VAR))}
        (λ w2 e2 → eqTypesNAT)
-       (isType-#sAC₀₀-right-body2 i w1 R₁ R₂ f₁ f₂ (equalInType-mon R∈ w1 e1) f∈ ))
+       (isType-#sAC₀₀-right-body2 i w1 R₁ R₂ f₁ f₂ (equalInType-mon R∈ w1 e1) f∈))
 
 
 isType-#sAC₀₀-right : (i : ℕ) (w : 𝕎·) (R₁ R₂ : CTerm)
                       → equalInType (suc i) w (#NREL i) R₁ R₂
-                      → equalTypes (suc i) w (#sAC₀₀-right R₁) (#sAC₀₀-right R₂)
+                      → equalTypes i w (#sAC₀₀-right R₁) (#sAC₀₀-right R₂)
 isType-#sAC₀₀-right i w R₁ R₂ R∈ =
   eqTypesSQUASH←
     (eqTypesSUM←
@@ -546,7 +560,7 @@ isType-#sAC₀₀-right i w R₁ R₂ R∈ =
 
 isType-#AC₀₀-body : (i : ℕ) (w : 𝕎·)
                     → ∀𝕎 w (λ w' _ → (R₁ R₂ : CTerm) → equalInType (suc i) w' (#NREL i) R₁ R₂
-                                     → equalTypes (suc i) w' (sub0 R₁ (#[0]FUN #[0]AC₀₀-left #[0]AC₀₀-right)) (sub0 R₂ (#[0]FUN #[0]AC₀₀-left #[0]AC₀₀-right)))
+                                   → equalTypes i w' (sub0 R₁ (#[0]FUN #[0]AC₀₀-left #[0]AC₀₀-right)) (sub0 R₂ (#[0]FUN #[0]AC₀₀-left #[0]AC₀₀-right)))
 isType-#AC₀₀-body i w w1 e1 R₁ R₂ R∈ =
   →≡equalTypes
     (sym (sub0-ac00-body R₁)) (sym (sub0-ac00-body R₂))
@@ -556,8 +570,9 @@ isType-#AC₀₀-body i w w1 e1 R₁ R₂ R∈ =
 
 
 isType-#sAC₀₀-body : (i : ℕ) (w : 𝕎·)
-                     → ∀𝕎 w (λ w' _ → (R₁ R₂ : CTerm) → equalInType (suc i) w' (#NREL i) R₁ R₂
-                                      → equalTypes (suc i) w' (sub0 R₁ (#[0]FUN #[0]AC₀₀-left #[0]sAC₀₀-right)) (sub0 R₂ (#[0]FUN #[0]AC₀₀-left #[0]sAC₀₀-right)))
+                   → ∀𝕎 w (λ w' _ → (R₁ R₂ : CTerm) → equalInType (suc i) w' (#NREL i) R₁ R₂
+                                  → equalTypes i w' (sub0 R₁ (#[0]FUN #[0]AC₀₀-left #[0]sAC₀₀-right))
+                                                    (sub0 R₂ (#[0]FUN #[0]AC₀₀-left #[0]sAC₀₀-right)))
 isType-#sAC₀₀-body i w w1 e1 R₁ R₂ R∈ =
   →≡equalTypes
     (sym (sub0-sac00-body R₁)) (sym (sub0-sac00-body R₂))
@@ -567,28 +582,28 @@ isType-#sAC₀₀-body i w w1 e1 R₁ R₂ R∈ =
 
 
 equalInType-#AC₀₀-left→ : (i : ℕ) (w : 𝕎·) (R a₁ a₂ : CTerm)
-                           → equalInType (suc i) w (#AC₀₀-left R) a₁ a₂
-                           → ∀𝕎 w (λ w1 e1 → (n : CTerm) → ∈Type (suc i) w1 #NAT n
-                                             → □· w1 (λ w2 e2 → Σ CTerm (λ m →
-                                                  ∈Type (suc i) w2 #NAT m
+                           → equalInType i w (#AC₀₀-left R) a₁ a₂
+                           → ∀𝕎 w (λ w1 e1 → (n : CTerm) → ∈Type i w1 #NAT n
+                                           → □· w1 (λ w2 e2 → Σ CTerm (λ m →
+                                                  ∈Type i w2 #NAT m
                                                   × inhType i w2 (#APPLY2 R n m))))
 equalInType-#AC₀₀-left→ i w R a₁ a₂ a∈ w1 e1 n n∈ =
   Mod.□-idem M (Mod.∀𝕎-□Func M aw2 (aw1 w1 e1 n n n∈))
   where
-    aw1 : ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → equalInType (suc i) w' #NAT n₁ n₂
-                        → □· w' (λ w' _ → inhType (suc i) w' (#SUM #NAT (#[0]LIFT (#[0]APPLY2 ⌞ R ⌟ ⌞ n₁ ⌟ #[0]VAR)))))
+    aw1 : ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → equalInType i w' #NAT n₁ n₂
+                        → □· w' (λ w' _ → inhType i w' (#SUM #NAT (#[0]APPLY2 ⌞ R ⌟ ⌞ n₁ ⌟ #[0]VAR))))
     aw1 w1 e1 n₁ n₂ n∈ =
       equalInType-SQUASH→ (→≡equalInType (sub0-ac00-left-body1 R n₁) (snd (snd (equalInType-PI→ a∈)) w1 e1 n₁ n₂ n∈))
 
-    aw2 : ∀𝕎 w1 (λ w' e' → inhType (suc i) w' (#SUM #NAT (#[0]LIFT (#[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR)))
-                          → □· w' (↑wPred' (λ w2 e2 → Σ CTerm (λ m → ∈Type (suc i) w2 #NAT m × inhType i w2 (#APPLY2 R n m))) e'))
+    aw2 : ∀𝕎 w1 (λ w' e' → inhType i w' (#SUM #NAT (#[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR))
+                          → □· w' (↑wPred' (λ w2 e2 → Σ CTerm (λ m → ∈Type i w2 #NAT m × inhType i w2 (#APPLY2 R n m))) e'))
     aw2 w2 e2 (t , t∈) = Mod.∀𝕎-□Func M aw3 (equalInType-SUM→ t∈)
       where
-        aw3 : ∀𝕎 w2 (λ w' e' → SUMeq (equalInType (suc i) w' #NAT) (λ a b ea → equalInType (suc i) w' (sub0 a (#[0]LIFT (#[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR)))) w' t t
-                              → ↑wPred' (λ w3 e3 → Σ CTerm (λ m₁ → ∈Type (suc i) w3 #NAT m₁ × inhType i w3 (#APPLY2 R n m₁))) e2 w' e')
+        aw3 : ∀𝕎 w2 (λ w' e' → SUMeq (equalInType i w' #NAT) (λ a b ea → equalInType i w' (sub0 a (#[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR))) w' t t
+                              → ↑wPred' (λ w3 e3 → Σ CTerm (λ m₁ → ∈Type i w3 #NAT m₁ × inhType i w3 (#APPLY2 R n m₁))) e2 w' e')
         aw3 w3 e3 (m₁ , m₂ , b₁ , b₂ , m∈ , c₁ , c₂ , b∈) z =
           m₁ , equalInType-refl m∈ , b₁ ,
-          equalInType-LIFT→ i w3 (#APPLY2 R n m₁) b₁ b₁ (→≡equalInType (sub0-ac00-left-body2 R n m₁) (equalInType-refl b∈))
+          →≡equalInType (sub0-ac00-left-body2 R n m₁) (equalInType-refl b∈)
 
 
 #[2]LE : CTerm2 → CTerm2 → CTerm2
@@ -1309,19 +1324,19 @@ equalInType-#⇛-rev-type {i} {w} {A} {B} {a} {b} comp h =
 
 CTermFun→ℕFun : (kb : K□) (i : ℕ) (w : 𝕎·) (R : CTerm)
                  → ∈Type (suc i) w (#NREL i) R
-                 → ((n : CTerm) → ∈Type (suc i) w #NAT n → Σ CTerm (λ m → ∈Type (suc i) w #NAT m × inhType i w (#APPLY2 R n m)))
+                 → ((n : CTerm) → ∈Type i w #NAT n → Σ CTerm (λ m → ∈Type i w #NAT m × inhType i w (#APPLY2 R n m)))
                  → (n : ℕ) → Σ ℕ (λ m → inhType i w (#APPLY2 R (#NUM n) (#NUM m)))
 CTermFun→ℕFun kb i w R R∈ f n =
   k , ∈NREL→inh-NUMᵣ i w R m n k R∈ ck inh
   where
-    h1 : Σ CTerm (λ m → ∈Type (suc i) w #NAT m × inhType i w (#APPLY2 R (#NUM n) m))
-    h1 = f (#NUM n) (NUM-equalInType-NAT (suc i) w n)
+    h1 : Σ CTerm (λ m → ∈Type i w #NAT m × inhType i w (#APPLY2 R (#NUM n) m))
+    h1 = f (#NUM n) (NUM-equalInType-NAT i w n)
 
     m : CTerm
     m = fst h1
 
     m∈ : NATeq w m m
-    m∈ = kb (equalInType-NAT→ (suc i) w m m (fst (snd h1))) w (⊑-refl· w)
+    m∈ = kb (equalInType-NAT→ i w m m (fst (snd h1))) w (⊑-refl· w)
 
     k : ℕ
     k = fst m∈
@@ -1368,31 +1383,39 @@ AC₀₀-valid kb i w =
   equalInType-PI
     {suc i} {w} {#NREL i} {#[0]FUN #[0]AC₀₀-left #[0]sAC₀₀-right}
     (λ w1 e1 → isType-NREL i w1)
-    (isType-#sAC₀₀-body i w)
+    aw0
     aw1
   where
+    aw0 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType (suc i) w' (#NREL i) a₁ a₂
+                       → equalTypes (suc i) w'
+                                    (sub0 a₁ (#[0]FUN #[0]AC₀₀-left #[0]sAC₀₀-right))
+                                    (sub0 a₂ (#[0]FUN #[0]AC₀₀-left #[0]sAC₀₀-right)))
+    aw0 w1 e1 a₁ a₂ a∈ =
+      equalTypes-uni-mon (<⇒≤ ≤-refl) (isType-#sAC₀₀-body i w w1 e1 a₁ a₂ a∈)
+
     aw1 : ∀𝕎 w (λ w' _ → (R₁ R₂ : CTerm) → equalInType (suc i) w' (#NREL i) R₁ R₂
-                        → equalInType (suc i) w' (sub0 R₁ (#[0]FUN #[0]AC₀₀-left #[0]sAC₀₀-right))
-                                       (#APPLY #lam2AX R₁) (#APPLY #lam2AX R₂))
+                       → equalInType (suc i) w' (sub0 R₁ (#[0]FUN #[0]AC₀₀-left #[0]sAC₀₀-right))
+                                     (#APPLY #lam2AX R₁) (#APPLY #lam2AX R₂))
     aw1 w1 e1 R₁ R₂ R∈ =
       →≡equalInType
         (sym (sub0-sac00-body R₁))
-        (equalInType-FUN
-          (isType-#AC₀₀-left i w1 R₁ R₁ (equalInType-refl R∈))
-          (isType-#sAC₀₀-right i w1 R₁ R₁ (equalInType-refl R∈))
-          aw2)
+        (equalInType-uni-mon (<⇒≤ ≤-refl)
+          (equalInType-FUN
+            (isType-#AC₀₀-left i w1 R₁ R₁ (equalInType-refl R∈))
+            (isType-#sAC₀₀-right i w1 R₁ R₁ (equalInType-refl R∈))
+            aw2))
       where
-        aw2 : ∀𝕎 w1 (λ w' _ → (a₁ a₂ : CTerm) → equalInType (suc i) w' (#AC₀₀-left R₁) a₁ a₂
-                             → equalInType (suc i) w' (#sAC₀₀-right R₁) (#APPLY (#APPLY #lam2AX R₁) a₁) (#APPLY (#APPLY #lam2AX R₂) a₂))
+        aw2 : ∀𝕎 w1 (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#AC₀₀-left R₁) a₁ a₂
+                             → equalInType i w' (#sAC₀₀-right R₁) (#APPLY (#APPLY #lam2AX R₁) a₁) (#APPLY (#APPLY #lam2AX R₂) a₂))
         aw2 w2 e2 a₁ a₂ a∈ =
           →equalInType-SQUASH (Mod.∀𝕎-□ M aw6)
           where
-            aw3 : (n : CTerm) → ∈Type (suc i) w2 #NAT n
-                              → ∀𝕎 w2 (λ w'' e'' → Σ CTerm (λ m → ∈Type (suc i) w'' #NAT m × inhType i w'' (#APPLY2 R₁ n m)))
+            aw3 : (n : CTerm) → ∈Type i w2 #NAT n
+                              → ∀𝕎 w2 (λ w'' e'' → Σ CTerm (λ m → ∈Type i w'' #NAT m × inhType i w'' (#APPLY2 R₁ n m)))
             aw3 n n∈ = kb (equalInType-#AC₀₀-left→ i w2 R₁ a₁ a₂ a∈ w2 (⊑-refl· w2) n n∈)
 
-            aw4 : (n : CTerm) → ∈Type (suc i) w2 #NAT n
-                              → Σ CTerm (λ m → ∈Type (suc i) w2 #NAT m × inhType i w2 (#APPLY2 R₁ n m))
+            aw4 : (n : CTerm) → ∈Type i w2 #NAT n
+                              → Σ CTerm (λ m → ∈Type i w2 #NAT m × inhType i w2 (#APPLY2 R₁ n m))
             aw4 n n∈ = aw3 n n∈ w2 (⊑-refl· w2)
 
             aw5 : (n : ℕ) → Σ ℕ (λ m → inhType i w2 (#APPLY2 R₁ (#NUM n) (#NUM m)))
@@ -1405,7 +1428,7 @@ AC₀₀-valid kb i w =
             inh : (n : ℕ) → inhType i w2 (#APPLY2 R₁ (#NUM n) (#NUM (f n)))
             inh n = snd (aw5 n)
 
-            aw6 : ∀𝕎 w2 (λ w' _ → inhType (suc i) w' (#sAC₀₀-right-SUM R₁))
+            aw6 : ∀𝕎 w2 (λ w' _ → inhType i w' (#sAC₀₀-right-SUM R₁))
             aw6 w3 e3 =
               #PAIR (#MSEQ f) #AX ,
               equalInType-SUM
@@ -1413,27 +1436,25 @@ AC₀₀-valid kb i w =
                 (isType-#sAC₀₀-right-body1 i w3 R₁ R₁ (equalInType-refl (equalInType-mon R∈ w3 (⊑-trans· e2 e3))))
                 (Mod.∀𝕎-□ M aw7)
               where
-                aw7 : ∀𝕎 w3 (λ w' _ → SUMeq (equalInType (suc i) w' #BAIRE)
-                                              (λ a b ea → equalInType (suc i) w' (sub0 a (#[0]PI #[0]NAT (#[1]LIFT (#[1]SQUASH (#[1]APPLY2 ⌞ R₁ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))))))
+                aw7 : ∀𝕎 w3 (λ w' _ → SUMeq (equalInType i w' #BAIRE)
+                                              (λ a b ea → equalInType i w' (sub0 a (#[0]PI #[0]NAT (#[1]SQUASH (#[1]APPLY2 ⌞ R₁ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))))))
                                               w' (#PAIR (#MSEQ f) #AX) (#PAIR (#MSEQ f) #AX))
                 aw7 w4 e4 =
                   #MSEQ f , #MSEQ f , #AX , #AX ,
-                  mseq∈baire (suc i) w4 f ,
+                  mseq∈baire i w4 f ,
                   ⇓-refl ⌜ #PAIR (#MSEQ f) #AX ⌝ w4 , --#⇛-refl w4 (#PAIR (#MSEQ f) #AX) ,
                   ⇓-refl ⌜ #PAIR (#MSEQ f) #AX ⌝ w4 , --#⇛-refl w4 (#PAIR (#MSEQ f) #AX) ,
                   →≡equalInType
                     (sym (sub0-sac00-right-body1 R₁ (#MSEQ f)))
                     (equalInType-PI
                       (λ w' e' → eqTypesNAT)
-                      (isType-#sAC₀₀-right-body2 i w4 R₁ R₁ (#MSEQ f) (#MSEQ f) (equalInType-refl (equalInType-mon R∈ w4 (⊑-trans· e2 (⊑-trans· e3 e4)))) (mseq∈baire (suc i) w4 f))
+                      (isType-#sAC₀₀-right-body2 i w4 R₁ R₁ (#MSEQ f) (#MSEQ f) (equalInType-refl (equalInType-mon R∈ w4 (⊑-trans· e2 (⊑-trans· e3 e4)))) (mseq∈baire i w4 f))
                       (λ w5 e5 m₁ m₂ m∈ → →≡equalInType (sym (sub0-sac00-right-body2 R₁ (#MSEQ f) m₁)) (aw8 w5 e5 m₁ m₂ m∈)))
                   where
-                    aw8 : ∀𝕎 w4 (λ w' _ → (m₁ m₂ : CTerm) → equalInType (suc i) w' #NAT m₁ m₂
-                                        → equalInType (suc i) w' (#LIFT (#SQUASH (#APPLY2 R₁ m₁ (#APPLY (#MSEQ f) m₁)))) (#APPLY #AX m₁) (#APPLY #AX m₂))
+                    aw8 : ∀𝕎 w4 (λ w' _ → (m₁ m₂ : CTerm) → equalInType i w' #NAT m₁ m₂
+                                        → equalInType i w' (#SQUASH (#APPLY2 R₁ m₁ (#APPLY (#MSEQ f) m₁))) (#APPLY #AX m₁) (#APPLY #AX m₂))
                     aw8 w5 e5 m₁ m₂ m∈ =
-                      equalInType-LIFT←
-                        i w5 (#SQUASH (#APPLY2 R₁ m₁ (#APPLY (#MSEQ f) m₁))) (#APPLY #AX m₁) (#APPLY #AX m₂)
-                        (→equalInType-SQUASH (Mod.∀𝕎-□Func M aw9 (equalInType-NAT→ (suc i) w5 m₁ m₂ m∈)))
+                      →equalInType-SQUASH (Mod.∀𝕎-□Func M aw9 (equalInType-NAT→ i w5 m₁ m₂ m∈))
                       where
                         -- The goal is to use inh above, but the extract is off without the truncation of the APPLY2
                         aw9 : ∀𝕎 w5 (λ w' _ → NATeq w' m₁ m₂ → inhType i w' (#APPLY2 R₁ m₁ (#APPLY (#MSEQ f) m₁)))

@@ -91,46 +91,47 @@ open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 
 classical : (w : 𝕎·) {n i : ℕ} (p : i < n) → member w (#LEM p) #lamAX
-classical w {n} {i} p rewrite #LEM≡#PI p = n , equalInType-PI p1 p2 p3
+classical w {n} {i} p rewrite #LEM≡#PI p =
+  n , equalInType-PI {_} {_} {#UNIV i} {#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR))} p1 p2 p3
   where
     -- p1 and p2 prove that LEM is a type
     p1 : ∀𝕎 w (λ w' _ → isType n w' (#UNIV i))
     p1 w1 _ = eqTypesUniv w1 n i p
 
     p2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' (#UNIV i) a₁ a₂)
-                       → equalTypes n w' (sub0 a₁ (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
-                                          (sub0 a₂ (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))))
+                      → equalTypes n w' (sub0 a₁ (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR))))
+                                        (sub0 a₂ (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR)))))
     p2 w1 e1 a₁ a₂ ea =
       ≡CTerm→eqTypes (sym (sub0-#[0]SQUASH-LEM p a₁))
-                      (sym (sub0-#[0]SQUASH-LEM p a₂))
-                      (eqTypesSQUASH← (eqTypesUNION← (equalInType→equalTypes p w1 a₁ a₂ ea)
-                                                       (eqTypesNEG← (equalInType→equalTypes p w1 a₁ a₂ ea))))
+                     (sym (sub0-#[0]SQUASH-LEM p a₂))
+                     (eqTypesSQUASH← (eqTypesUNION← (equalInType→equalTypes p w1 a₁ a₂ ea)
+                                                    (eqTypesNEG← (equalInType→equalTypes p w1 a₁ a₂ ea))))
 
     -- now we prove that it is inhabited
     p3 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#UNIV i) a₁ a₂
-                       → equalInType n w' (sub0 a₁ (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
-                                           (#APPLY #lamAX a₁) (#APPLY #lamAX a₂))
+                      → equalInType n w' (sub0 a₁ (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR))))
+                                         (#APPLY #lamAX a₁) (#APPLY #lamAX a₂))
     p3 w1 e1 a₁ a₂ ea =
       ≡CTerm→equalInType
         (sym (sub0-#[0]SQUASH-LEM p a₁))
         (→equalInType-SQUASH p4)
       where
-        p6 : □· w1 (λ w' _ → inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁)))
-        p6 = □·⊎inhType n w1 (#↑T p a₁)
+        p6 : □· w1 (λ w' _ → inhType n w' a₁ ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' a₁))
+        p6 = □·⊎inhType n w1 a₁
 
-        p5 : □· w1 (λ w' _ → inhType n w' (#↑T p a₁) ⊎ inhType n w' (#NEG (#↑T p a₁)))
+        p5 : □· w1 (λ w' _ → inhType n w' a₁ ⊎ inhType n w' (#NEG a₁))
         p5 = Mod.∀𝕎-□Func M aw p6
           where
-            aw : ∀𝕎 w1 (λ w' e' → (inhType n w' (#↑T p a₁) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' (#↑T p a₁)))
-                                 → (inhType n w' (#↑T p a₁) ⊎ inhType n w' (#NEG (#↑T p a₁))))
+            aw : ∀𝕎 w1 (λ w' e' → (inhType n w' a₁ ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType n w'' a₁))
+                                → (inhType n w' a₁ ⊎ inhType n w' (#NEG a₁)))
             aw w2 e2 (inj₁ i) = inj₁ i
             aw w2 e2 (inj₂ i) = inj₂ (equalInType-NEG-inh (equalInType→equalTypes p w2 a₁ a₁ (equalInType-refl (equalInType-mon ea w2 e2))) i)
 
-        p4 : □· w1 (λ w' _ → Σ CTerm (λ t → ∈Type n w' (#UNION (#↑T p a₁) (#NEG (#↑T p a₁))) t))
+        p4 : □· w1 (λ w' _ → Σ CTerm (λ t → ∈Type n w' (#UNION a₁ (#NEG a₁)) t))
         p4 = Mod.∀𝕎-□Func M aw p5
           where
-            aw : ∀𝕎 w1 (λ w' e' → inhType n w' (#↑T p a₁) ⊎ inhType n w' (#NEG (#↑T p a₁))
-                                →  Σ CTerm (λ t → ∈Type n w' (#UNION (#↑T p a₁) (#NEG (#↑T p a₁))) t))
+            aw : ∀𝕎 w1 (λ w' e' → inhType n w' a₁ ⊎ inhType n w' (#NEG a₁)
+                                → Σ CTerm (λ t → ∈Type n w' (#UNION a₁ (#NEG a₁)) t))
             aw w2 e2 (inj₁ (t , h)) =
               #INL t ,
               →equalInType-UNION

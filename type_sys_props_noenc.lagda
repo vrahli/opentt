@@ -140,8 +140,8 @@ NOENCneqFFDEFS {c} {d} ()
 NOENCneqSUBSING : {b : Term} → ¬ NOENC ≡ SUBSING b
 NOENCneqSUBSING {b} ()
 
-NOENCneqLIFT : {c : Term} → ¬ NOENC ≡ LIFT c
-NOENCneqLIFT {c} ()
+--NOENCneqLIFT : {c : Term} → ¬ NOENC ≡ LIFT c
+--NOENCneqLIFT {c} ()
 
 --NOENCneqTSQUASH : {c : Term} → ¬ NOENC ≡ TSQUASH c
 --NOENCneqTSQUASH {c} ()
@@ -209,7 +209,7 @@ typeSysConds-NOENC-ttrans u w A B x x₁ C eqt = concl x x₁
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ih c₁ c₂ = ⊥-elim (NOENCneqTERM (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) ih c₁ c₂ = ⊥-elim (NOENCneqFFDEFS (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p y y₁) ih c₁ c₂ = ⊥-elim (NOENCneqUNIV (⇛-val-det tt tt c₂ y))
-    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA extA) ih c₁ c₂ = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt c₂ y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA extA) ih c₁ c₂ = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTBAR y) ih c₁ c₂ = EQTBAR (∀𝕎-□at W M y aw)
       where
         aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· y w' e' z) → eqTypes u w' A T2)
@@ -287,7 +287,7 @@ typeSysConds-NOENC-extl1 u w A B x x₁ C eqt' =
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOSEQ (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTTERM t1 t2 y y₁ x₂) ih comp a b eqi = ⊥-elim (NOENCneqTERM (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p y y₁) ih comp a b eqi = ⊥-elim (NOENCneqUNIV (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTBAR x) ih comp a b eqi = Mod.∀𝕎-□-□' M x aw
       where
         aw : ∀𝕎 w (λ w' e' → (x₃ : eqTypes u w' T1 T2) (at : at□· x w' e' x₃) → eqInType u w' x₃ a b)
@@ -339,7 +339,7 @@ typeSysConds-NOENC-extl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ih comp a b eqi = ⊥-elim (NOENCneqTERM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) ih comp a b eqi = ⊥-elim (NOENCneqFFDEFS (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ih comp a b eqi = ⊥-elim (NOENCneqUNIV (⇛-val-det tt tt comp c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ih comp a b eqi = Mod.∀𝕎-□-□' M y aw
       where
         aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' T1 T2) (at : at□· y w' e' x) → eqInType u w' x a b)
@@ -391,7 +391,7 @@ typeSysConds-NOENC-extr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTTERM z₁ z₂ y y₁ y₂) ih comp a b eqi = ⊥-elim (NOENCneqTERM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA extA eqx) ih comp a b eqi = ⊥-elim (NOENCneqFFDEFS (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ih comp a b eqi = ⊥-elim (NOENCneqUNIV (⇛-val-det tt tt comp c₂))
-    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTBAR y) ih comp a b eqi = Mod.∀𝕎-□-□' M y aw
       where
         aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' T1 T2) (at : at□· y w' e' x) → eqInType u w' x a b)
@@ -443,7 +443,7 @@ typeSysConds-NOENC-extr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOSEQ (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTTERM t1 t2 y y₁ x₂) ih comp a b eqi = ⊥-elim (NOENCneqTERM (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p y y₁) ih comp a b eqi = ⊥-elim (NOENCneqUNIV (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTBAR x) ih comp a b eqi = Mod.∀𝕎-□-□' M x aw
       where
         aw : ∀𝕎 w (λ w' e' → (x₃ : eqTypes u w' T1 T2) (at : at□· x w' e' x₃) → eqInType u w' x₃ a b)
@@ -495,7 +495,7 @@ typeSysConds-NOENC-extrevl1 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOSEQ (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTTERM t1 t2 y y₁ x₂) ih comp a b eqi = ⊥-elim (NOENCneqTERM (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p y y₁) ih comp a b eqi = ⊥-elim (NOENCneqUNIV (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTBAR x) ih comp a b eqi = Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
       where
         aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
@@ -552,7 +552,7 @@ typeSysConds-NOENC-extrevl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOSEQ (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTTERM t1 t2 y y₁ x₂) ih comp a b eqi = ⊥-elim (NOENCneqTERM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p y y₁) ih comp a b eqi = ⊥-elim (NOENCneqUNIV (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTBAR x) ih comp a b eqi = Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
       where
         aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
@@ -609,7 +609,7 @@ typeSysConds-NOENC-extrevr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOSEQ (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTTERM t1 t2 y y₁ x₂) ih comp a b eqi = ⊥-elim (NOENCneqTERM (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTUNIV i p y y₁) ih comp a b eqi = ⊥-elim (NOENCneqUNIV (⇛-val-det tt tt comp y₁))
-    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTBAR x) ih comp a b eqi = Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
       where
         aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
@@ -666,7 +666,7 @@ typeSysConds-NOENC-extrevr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOSEQ (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTTERM t1 t2 y y₁ x₂) ih comp a b eqi = ⊥-elim (NOENCneqTERM (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p y y₁) ih comp a b eqi = ⊥-elim (NOENCneqUNIV (⇛-val-det tt tt comp y))
-    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqLIFT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTBAR x) ih comp a b eqi = Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
       where
         aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b

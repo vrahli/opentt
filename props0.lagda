@@ -445,11 +445,11 @@ eqTypes-mon u {A} {B} {w1} (EQTTERM t1 t2 c₁ c₂ x) w2 ext =
 
 eqTypes-mon u {A} {B} {w1} (EQTUNIV i p c₁ c₂) w2 ext = EQTUNIV i p (⇛-mon ext c₁) (⇛-mon ext c₂) --(m x w2 ext)
 
-eqTypes-mon u {A} {B} {w1} (EQTLIFT A1 A2 c₁ c₂ eqtA exta) w2 ext =
+{--eqTypes-mon u {A} {B} {w1} (EQTLIFT A1 A2 c₁ c₂ eqtA exta) w2 ext =
   EQTLIFT A1 A2 (⇛-mon ext c₁) (⇛-mon ext c₂) (∀𝕎-mon ext eqtA) exta'
   where
     exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType (↓U u) w (∀𝕎-mon ext eqtA w e) a b)
-    exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
+    exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei--}
 
 eqTypes-mon u {A} {B} {w1} (EQTBAR x) w2 ext = EQTBAR (Mod.↑□ M x ext)
 

@@ -84,9 +84,13 @@ open import getChoiceDef(W)(C)(K)(G)
 --open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (equalInType→equalTypes-aux ; eqTypesSQUASH← ; eqTypesUNION← ; eqTypesNEG← ; eqTypesPI← ; eqTypesUniv ;
+         equalInType-FUN→ ; ≡CTerm→equalInType ; eqTypesSUM← ; isTypeNAT! ; ≡CTerm→eqTypes ; eqTypesEQ←)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-ASSERT₃-APPLY ;
+         equalInType-BOOL!→equalTypes-ASSERT₃ ; eqTypesQNAT! ; isTypeBOOL₀!→ ; →equalInType-BOOL₀!-INL ;
+         sub0-NEG-ASSERT₂-APPLY ; sub0-NEG-ASSERT₃-APPLY ; equalInType→equalTypes)
 
 -- open import calculus
 -- open import world
@@ -114,19 +118,14 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 \begin{code}[hide]
 LEM : {i n : ℕ} (p : i < n) → Term
-LEM {i} {n} p = PI (UNIV i) (SQUASH (UNION (↑T p (VAR 0)) (NEG (↑T p (VAR 0)))))
+LEM {i} {n} p = PI (UNIV i) (SQUASH (UNION (VAR 0) (NEG (VAR 0))))
 
 
 #LEM : {i n : ℕ} (p : i < n) → CTerm
-#LEM {i} {n} p = ct (LEM p) c
-  where
-    c : # LEM p
-    c rewrite fvars-↑T p (VAR 0)
-            | shiftUp-↑T p 0 (VAR 0)
-            | fvars-↑T p (VAR 1) = refl
+#LEM {i} {n} p = ct (LEM p) refl
 
 
-#LEM≡#PI : {i n : ℕ} (p : i < n) → #LEM p ≡ #PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))
+#LEM≡#PI : {i n : ℕ} (p : i < n) → #LEM p ≡ #PI (#UNIV i) (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR)))
 #LEM≡#PI {i} {n} p = CTerm≡ refl
 
 
@@ -138,39 +137,40 @@ equalTerms-NegLem w {i} {n} p =
 
 
 sub0-#[0]SQUASH-LEM : {i n : ℕ} (p : i < n) (a : CTerm)
-                      → sub0 a (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))
-                        ≡ #SQUASH (#UNION (#↑T p a) (#NEG (#↑T p a)))
-sub0-#[0]SQUASH-LEM {i} {n} p a rewrite sub0-#[0]SQUASH a (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))) =
+                      → sub0 a (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR)))
+                        ≡ #SQUASH (#UNION a (#NEG a))
+sub0-#[0]SQUASH-LEM {i} {n} p a rewrite sub0-#[0]SQUASH a (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR)) =
   CTerm≡ (≡SET refl e)
   where
-    e : UNION (shiftUp 0 (shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) (↑T p (VAR 0)))))
-              (PI (shiftUp 0 (shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) (↑T p (VAR 0)))))
+    e : UNION (shiftUp 0 (shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) (VAR 0))))
+              (PI (shiftUp 0 (shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) (VAR 0))))
                   (EQ (NUM 0) (NUM 1) NAT))
-        ≡ UNION (shiftUp 0 (↑T p ⌜ a ⌝)) (PI (shiftUp 0 (↑T p ⌜ a ⌝)) (EQ (NUM 0) (NUM 1) NAT))
-    e rewrite #shiftUp 0 a | subv-↑T p 0 ⌜ a ⌝ | shiftDown-↑T p 0 ⌜ a ⌝ | #shiftDown 0 a | shiftUp-↑T p 0 ⌜ a ⌝ = refl
+        ≡ UNION (shiftUp 0 ⌜ a ⌝) (PI (shiftUp 0 ⌜ a ⌝) (EQ (NUM 0) (NUM 1) NAT))
+    e rewrite #shiftUp 0 a | #shiftDown 0 a | #shiftUp 0 a = refl
+
 
 
 -- We need cumulativity or lifting here because (#UNIV i) needs to be in level i,
 -- but a₁ needs to be equal to a₂ at that level and also in (#UNIV i)
 isTypeLemPi : (w : 𝕎·) {n i : ℕ} (p : i < n)
-               → isType n w (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
+               → isType n w (#PI (#UNIV i) (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR))))
 isTypeLemPi w {n} {i} p =
   eqTypesPI←
     {w} {n}
-    {#UNIV i} {#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))}
-    {#UNIV i} {#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))}
+    {#UNIV i} {#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR))}
+    {#UNIV i} {#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR))}
     (λ w1 e1 → eqTypesUniv w1 n i p)
     aw
   where
     aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' (#UNIV i) a₁ a₂)
                        → equalTypes n w'
-                                     (sub0 a₁ (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR)))))
-                                     (sub0 a₂ (#[0]SQUASH (#[0]UNION (#[0]↑T p #[0]VAR) (#[0]NEG (#[0]↑T p #[0]VAR))))))
+                                     (sub0 a₁ (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR))))
+                                     (sub0 a₂ (#[0]SQUASH (#[0]UNION #[0]VAR (#[0]NEG #[0]VAR)))))
     aw w1 e1 a₁ a₂ ea rewrite sub0-#[0]SQUASH-LEM p a₁ | sub0-#[0]SQUASH-LEM p a₂ = aw'
       where
-        aw' : equalTypes n w1 (#SQUASH (#UNION (#↑T p a₁) (#NEG (#↑T p a₁)))) (#SQUASH (#UNION (#↑T p a₂) (#NEG (#↑T p a₂))))
+        aw' : equalTypes n w1 (#SQUASH (#UNION a₁ (#NEG a₁))) (#SQUASH (#UNION a₂ (#NEG a₂)))
         aw' = eqTypesSQUASH← (eqTypesUNION← (equalInType→equalTypes {n} {i} p w1 a₁ a₂ ea)
-                                             (eqTypesNEG← (equalInType→equalTypes {n} {i} p w1 a₁ a₂ ea)))
+                                            (eqTypesNEG← (equalInType→equalTypes {n} {i} p w1 a₁ a₂ ea)))
 
 
 eqTypesLem : (w : 𝕎·) {n i : ℕ} (p : i < n) → isType n w (#LEM p)

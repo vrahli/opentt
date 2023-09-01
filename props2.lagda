@@ -85,7 +85,7 @@ open import type_sys_props_nowrite(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_noread(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_subsing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_isect(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import type_sys_props_noseq(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -394,7 +394,7 @@ abstract
           aw w' e' p = p
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PUREneqFFDEFS (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PUREneqUNIV (compAllVal x₁ tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PUREneqLIFT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PUREneqLIFT (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) {a} {b} eqi ind eq1 eq2 =
         Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
         where
@@ -453,7 +453,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOSEQneqPURE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOSEQneqFFDEFS (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOSEQneqUNIV (compAllVal x₁ tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOSEQneqLIFT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOSEQneqLIFT (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) {a} {b} eqi ind eq1 eq2 =
         Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
         where
@@ -512,7 +512,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOENCneqPURE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOENCneqFFDEFS (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOENCneqUNIV (compAllVal x₁ tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOENCneqLIFT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOENCneqLIFT (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) {a} {b} eqi ind eq1 eq2 =
         Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
         where
@@ -580,7 +580,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (TERMneqPURE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (TERMneqFFDEFS (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (TERMneqUNIV (compAllVal x₁ tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (TERMneqLIFT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (TERMneqLIFT (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) {a} {b} eqi ind eq1 eq2 =
         Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
         where
@@ -648,7 +648,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) {f} {g} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqTERM (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {f} {g} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqFFDEFS (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) {f} {g} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqUNIV (compAllVal x₁ tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {f} {g} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqLIFT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {f} {g} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqLIFT (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) {f} {g} eqi ind eq1 eq2 =
         Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
         where
@@ -723,7 +723,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqTERM (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqFFDEFS (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqUNIV (compAllVal x₁ tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqLIFT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqLIFT (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) ind eq1 eq2 =
         codom-fam-local {u} {w} {A} {B} (∀𝕎-□at W M x aw)
         where
@@ -785,7 +785,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqTERM (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqFFDEFS (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqUNIV (compAllVal x₁ tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqLIFT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqLIFT (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) ind eq1 eq2 =
         eqTypes-local (∀𝕎-□at W M x aw)
         where
@@ -850,7 +850,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqTERM (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqFFDEFS (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTUNIV m p c₁ c₂) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqUNIV (compAllVal c₁ tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqLIFT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqLIFT (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) ind eq1 eq2 =
         EQTBAR (∀𝕎-□at W M x aw)
   -- (a) This does not work
@@ -1252,7 +1252,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (NOWRITEneqTERM (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (NOWRITEneqFFDEFS (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTUNIV i₁ p x x₁) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (NOWRITEneqUNIV (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (NOWRITEneqLIFT (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (NOWRITEneqLIFT (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) {a} {b} eqi ind eq1 =
         Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
         where
@@ -1306,7 +1306,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (NOREADneqTERM (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (NOREADneqFFDEFS (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTUNIV i₁ p x x₁) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (NOREADneqUNIV (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (NOREADneqLIFT (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (NOREADneqLIFT (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) {a} {b} eqi ind eq1 =
         Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
         where
@@ -1368,7 +1368,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqTERM (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqFFDEFS (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqUNIV (compAllVal x₁ tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqLIFT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqLIFT (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) {a} {b} eqi ind eq1 eq2 =
         Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
         where
@@ -1462,7 +1462,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (SUBSINGneqTERM (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (SUBSINGneqFFDEFS (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTUNIV i₁ p x x₁) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (SUBSINGneqUNIV (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (SUBSINGneqLIFT (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (SUBSINGneqLIFT (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) {a} {b} eqi ind eq1 =
         Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
         where
@@ -1531,7 +1531,7 @@ abstract
                   {w1} {_} {_} {x1} {y} {a} {b} (sym (#FFDEFSinj2 {A} {y} {A1} {x1} (#compAllVal x tt)))
                   (λ a1 a2 ea → eqInType→equalInType (#FFDEFSinj1 {A} {y} {A1} {x1} (#compAllVal x tt)) (eqtA w1 e1) ea) p
       ind {u} {w} {T1} {T2} (EQTUNIV i₁ p x x₁) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (FFDEFSneqUNIV (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (FFDEFSneqLIFT (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 rewrite eq1 = ⊥-elim (FFDEFSneqLIFT (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) {a} {b} eqi ind eq1 =
         Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
         where
@@ -2001,7 +2001,7 @@ equalTypes<s i w a b (EQTBAR x) = {!!}
 ≡univ→eqTypes {u} {n} e {w} {A} {B} eqt rewrite e = eqt
 
 
-
+{--
 equalTypes-LIFT : (n : ℕ) (w : 𝕎·) (u v a b : CTerm)
                   → u #⇛ #LIFT a at w
                   → v #⇛ #LIFT b at w
@@ -2021,9 +2021,10 @@ equalTypes-LIFT n w u v a b c₁ c₂ eqt =
 
     exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType (↓U (uni (suc n))) w (eqta w e) a b)
     exta rewrite ↓U-uni (suc n) = wPredExtIrr-eqInType eqta0
+--}
 
 
-
+{--
 equalTypes-LIFT2 : (n : ℕ) (w : 𝕎·) (a b : CTerm)
                    → equalTypes n w a b
                    → equalTypes (suc n) w (#LIFT a) (#LIFT b)
@@ -2031,7 +2032,7 @@ equalTypes-LIFT2 n w a b eqt =
   equalTypes-LIFT n w (#LIFT a) (#LIFT b) a b
                   (#compAllRefl (#LIFT a) w) (#compAllRefl (#LIFT b) w)
                   eqt
-
+--}
 
 
 uniUpTo→suc : {n m : ℕ} (q : m < n) → uniUpTo n m q ≡ uniUpTo (suc n) m (<-trans q (n<1+n n))
@@ -2040,7 +2041,7 @@ uniUpTo→suc {n} {m} q with m <? n
 ... | no z = ⊥-elim (z q)
 
 
-
+{--
 equalTypes< : {n i : ℕ} (p : i < n) (w : 𝕎·) (a b : CTerm)
               → equalTypes i w a b
               → equalTypes n w (#↑T p a) (#↑T p b)
@@ -2050,14 +2051,15 @@ equalTypes< {suc n} {i} p w a b eqt = equalTypes-LIFT n w (#↑T p a) (#↑T p b
     eqt' with i <? n
     ... | yes q = equalTypes< {n} {i} q w a b eqt
     ... | no q rewrite <s→¬<→≡ p q = eqt
+--}
 
 
-
+{--
 equalInType→equalTypes : {n i : ℕ} (p : i < n) (w : 𝕎·) (a b : CTerm)
                           → equalInType n w (#UNIV i) a b
                           → equalTypes n w (#↑T p a) (#↑T p b)
 equalInType→equalTypes {n} {i} p w a b eqi = equalTypes< {n} {i} p w a b (equalInType→equalTypes-aux n i p w a b eqi)
-
+--}
 
 
 equalInType-PI : {u : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} {f g : CTerm}
@@ -2175,6 +2177,7 @@ eqInType-uni-↓U i {w} {T1} {T2} eqt1 eqt2 {a} {b} eqi rewrite ↓U-uni i =
 ≡suc→↓U-uni≡ u n equ rewrite equ | ↓U-uni (suc n) = refl
 
 
+{--
 abstract
   equalInType-LIFT→ : (n : ℕ) (w : 𝕎·) (T a b : CTerm)
                       → equalInType (suc n) w (#LIFT T) a b
@@ -2236,6 +2239,7 @@ abstract
         equalTerms-ind
           (λ {m} {w} {T1} {T2} eqt {a} {b} eqi → m ≡ suc n → T1 ≡ #LIFT T → T2 ≡ #LIFT T → equalInType n w T a b)
           ind eqt a b eqi
+--}
 
 
 ↑T# : {i n : ℕ} (p : i < n) (t : CTerm) → CTerm
@@ -2255,21 +2259,22 @@ abstract
 #↑T≡↑T# {i} {n} p t = CTerm≡ (↑T≡↑T# p t)
 
 
-
+{--
 equalInType-↑T#→ : {n i : ℕ} (p : i < n) (w : 𝕎·) (T a b : CTerm)
                     → equalInType n w (↑T# p T) a b
                     → equalInType i w T a b
 equalInType-↑T#→ {suc n} {i} p w T a b eqi with i <? n
 ... | yes q = equalInType-↑T#→ q w T a b (equalInType-LIFT→ n w (↑T# q T) a b eqi)
 ... | no q rewrite <s→¬<→≡ p q = equalInType-LIFT→ n w T a b eqi
+--}
 
 
-
+{--
 equalInType-#↑T→ : {n i : ℕ} (p : i < n) (w : 𝕎·) (T a b : CTerm)
                     → equalInType n w (#↑T p T) a b
                     → equalInType i w T a b
 equalInType-#↑T→ {suc n} {i} p w T a b eqi rewrite #↑T≡↑T# p T = equalInType-↑T#→ p w T a b eqi
-
+--}
 
 
 isFam : (u : ℕ) (w : 𝕎·) (A : CTerm) (B : CTerm0) (F G : CTerm → CTerm) → Set(lsuc(L))
@@ -2373,7 +2378,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) {f} {g} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqTERM (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {f} {g} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqFFDEFS (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) {f} {g} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqUNIV (compAllVal x tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {f} {g} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqLIFT (compAllVal x tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {f} {g} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqLIFT (compAllVal x tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) {f} {g} eqi ind eq1 eq2 =
         isFam-local {u} {w} {A} {B} {#APPLY f} {#APPLY g} (Mod.∀𝕎-□'-□ M x aw eqi)
         where
@@ -2441,7 +2446,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) {f} {g} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqTERM (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {f} {g} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqFFDEFS (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) {f} {g} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqUNIV (compAllVal x₁ tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {f} {g} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqLIFT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {f} {g} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqLIFT (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) {f} {g} eqi ind eq1 eq2 =
         Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
         where
@@ -2550,7 +2555,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (UNIONneqTERM (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (UNIONneqFFDEFS (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (UNIONneqUNIV (compAllVal x₁ tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (UNIONneqLIFT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (UNIONneqLIFT (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) {a} {b} eqi ind eq1 eq2 =
         Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
         where
@@ -2616,7 +2621,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (QTUNIONneqTERM (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (QTUNIONneqFFDEFS (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (QTUNIONneqUNIV (compAllVal x₁ tt))
-      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (QTUNIONneqLIFT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (QTUNIONneqLIFT (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTBAR x) {a} {b} eqi ind eq1 eq2 =
         Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
         where
@@ -2671,7 +2676,7 @@ equalInType-NEG→ {u} {w} {A} {f} {g} eqi w' e' a₁ a₂ ea rewrite #NEG≡#FU
   eqInType-extl1 B B eqt₁ eqt₂ eqi
 
 
-
+{--
 abstract
   equalInType-LIFT← : (n : ℕ) (w : 𝕎·) (T a b : CTerm)
                      → equalInType n w T a b
@@ -2691,25 +2696,28 @@ abstract
         where
           aw : ∀𝕎 w (λ w' e → eqInType (↓U (uni (suc n))) w' (eqta w' e) a b)
           aw w' e' = ≡univ→eqInType (↓U-uni (suc n)) (eqta0 w' e') (equalInType→eqInType refl {eqta0 w' e'} (equalInType-mon eqi w' e')) (eqta w' e')
+--}
 
 
-
+{--
 equalInType-↑T#← : {n i : ℕ} (p : i < n) (w : 𝕎·) (T a b : CTerm)
                     → equalInType i w T a b
                     → equalInType n w (↑T# p T) a b
 equalInType-↑T#← {suc n} {i} p w T a b eqi with i <? n
 ... | yes q = equalInType-LIFT← n w (↑T# q T) a b (equalInType-↑T#← q w T a b eqi)
 ... | no q rewrite <s→¬<→≡ p q = equalInType-LIFT← n w T a b eqi
+--}
 
 
-
+{--
 equalInType-#↑T← : {n i : ℕ} (p : i < n) (w : 𝕎·) (T a b : CTerm)
                     → equalInType i w T a b
                     → equalInType n w (#↑T p T) a b
 equalInType-#↑T← {suc n} {i} p w T a b eqi rewrite #↑T≡↑T# p T = equalInType-↑T#← p w T a b eqi
+--}
 
 
-
+{--
 equalInType-NEG-↑T→ : {n i : ℕ} (p : i < n) {w : 𝕎·} {A : CTerm} {f g : CTerm}
                        → equalInType n w (#NEG (#↑T p A)) f g
                        → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w' A a₁ a₂)
@@ -2718,7 +2726,7 @@ equalInType-NEG-↑T→ {n} {i} p {w} {A} {f} {g} eqi w' e' a₁ a₂ ea =
   where
     z : ¬ equalInType n w' (#↑T p A) a₁ a₂
     z = equalInType-NEG→ eqi w' e' a₁ a₂
-
+--}
 
 
 equalTypes→equalInType-UNIV : {n i : ℕ} (p : i < n) {w : 𝕎·} {a b : CTerm}
@@ -2726,7 +2734,6 @@ equalTypes→equalInType-UNIV : {n i : ℕ} (p : i < n) {w : 𝕎·} {a b : CTer
                               → equalInType n w (#UNIV i) a b
 equalTypes→equalInType-UNIV {n} {i} p {w} {a} {b} eqt =
   eqTypesUniv w n i p , □·EqTypes→uniUpTo {i} {n} {p} (Mod.∀𝕎-□ M (eqTypes-mon (uni i) eqt))
-
 
 
 abstract
@@ -2920,5 +2927,64 @@ NUM-equalInType-QNAT! i w k = →equalInType-QNAT! i w (#NUM k) (#NUM k) (Mod.�
 {--
   →equalInType-QTNAT! i w (#NUM k) (#NUM k) (Mod.∀𝕎-□ M (λ w' e' → #weakMonEq!-#NUM w' k))
 --}
+
+
+abstract
+  equalInType-SET→₀ : {u : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} {f g : CTerm}
+                    → equalInType u w (#SET A B) f g
+                    → isType u w A
+  equalInType-SET→₀ {u} {w} {A} {B} {f} {g} (eqt , eqi) = concl (#SET A B) (#SET A B) eqt refl refl
+    where
+      ind : {u : ℕ} {w : 𝕎·} {T1 T2 : CTerm} (eqt : equalTypes u w T1 T2)
+            → ({u' : ℕ} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : equalTypes u' w' T1' T2')
+                → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt → T1' ≡ #SET A B → T2' ≡ #SET A B
+                → isType u' w' A)
+            → T1 ≡ #SET A B → T2 ≡ #SET A B
+            → isType u w A
+--      ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqNAT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqQNAT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqTNAT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqLT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqQLT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqFREE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqPI (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqSUM (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTW A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqW (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTM A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqM (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 rewrite eq1 | eq2 =
+        ≡CTerm→eqTypes
+          (sym (#SETinj1 {A} {B} {A1} {B1} (#compAllVal x tt)))
+          (sym (#SETinj1 {A} {B} {A2} {B2} (#compAllVal x₁ tt)))
+          (eqta w (⊑-refl· w))
+      ind {u} {w} {T1} {T2} (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqISECT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqTUNION (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqEQ (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqUNION (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqQTUNION (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqTSQUASH (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqTTRUNC (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqNOWRITE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOREAD x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqNOREAD (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqSUBSING (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqPURE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqNOSEQ (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOENC x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqNOENC (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqTERM (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqFFDEFS (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqUNIV (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SETneqLIFT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTBAR x) ind eq1 eq2 =
+        eqTypes-local (∀𝕎-□at W M x aw)
+        where
+          aw : ∀𝕎 w (λ w' e' → (z : equalTypes u w' T1 T2) → at□· x w' e' z → isType u w' A)
+          aw w' e' z at = ind {u} {w'} {T1} {T2} z (<Type1 z (EQTBAR x) (<TypeBAR (ℕ→𝕌 u) w T1 T2 x w' e' z at)) eq1 eq2
+
+      concl : (T1 T2 : CTerm) (eqt : equalTypes u w T1 T2)
+              → T1 ≡ #SET A B → T2 ≡ #SET A B
+              → isType u w A
+      concl T1 T2 eqt =
+        equalTypes-ind
+          (λ {u} {w} {T1} {T2} eqt → T1 ≡ #SET A B → T2 ≡ #SET A B → isType u w A)
+          ind eqt
 
 \end{code}[hide]
