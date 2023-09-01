@@ -828,6 +828,54 @@ valid∈SUC-NAT {i} {w} {H} {t} h s1 s2 cc1 cc2 ce1 ce2 es eh =
   q1 = ≡→equalInType (≣sym (#subs-NAT! s1 cc1)) (≣sym (#subs-SUC s1 t ce1)) (≣sym (#subs-SUC s2 t ce2)) q2
 
 
+sub-VAR0 : (t : BTerm) → sub t (VAR 0) ≣ t
+sub-VAR0 t = shiftDownUp t 0
+
+
+sub-VAR+ : (t : BTerm) (n : Nat) → sub t (VAR (1+ n)) ≣ VAR n
+sub-VAR+ t n = refl
+
+
+⟦[]⟧ᵤ : {n : Nat} (G : Term (1+ n)) (u : Term n)
+      → ⟦ G [ u ] ⟧ᵤ ≣ sub ⟦ u ⟧ᵤ ⟦ G ⟧ᵤ
+⟦[]⟧ᵤ {n} (var Fin.zero) u = ≣sym (sub-VAR0 ⟦ u ⟧ᵤ)
+⟦[]⟧ᵤ {n} (var (Fin.suc x)) u = refl
+⟦[]⟧ᵤ {n} (gen {.nil} Ukind []) u = refl
+⟦[]⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Pikind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
+  cong₂ PI (⟦[]⟧ᵤ t u) {!!}
+⟦[]⟧ᵤ {n} (gen {.(cons 1 nil)} Lamkind (t GenTs.∷ [])) u =
+  cong LAMBDA {!!}
+⟦[]⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
+  cong₂ APPLY (⟦[]⟧ᵤ t u) (⟦[]⟧ᵤ t₁ u)
+⟦[]⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
+  cong₂ SUM (⟦[]⟧ᵤ t u) {!!}
+⟦[]⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
+  cong₂ PAIR (⟦[]⟧ᵤ t u) (⟦[]⟧ᵤ t₁ u)
+⟦[]⟧ᵤ {n} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) u =
+  cong FST (⟦[]⟧ᵤ t u)
+⟦[]⟧ᵤ {n} (gen {.(cons 0 nil)} Sndkind (t GenTs.∷ [])) u =
+  cong SND (⟦[]⟧ᵤ t u)
+⟦[]⟧ᵤ {n} (gen {.nil} Natkind []) u = refl
+⟦[]⟧ᵤ {n} (gen {.nil} Zerokind []) u = refl
+⟦[]⟧ᵤ {n} (gen {.(cons 0 nil)} Suckind (t GenTs.∷ [])) u = cong SUC (⟦[]⟧ᵤ t u)
+⟦[]⟧ᵤ {n} (gen {.(cons 1 (cons 0 (cons 0 (cons 0 nil))))} Natreckind (t GenTs.∷ (t₁ GenTs.∷ (t₂ GenTs.∷ (t₃ GenTs.∷ []))))) u =
+  cong₃ NATREC (⟦[]⟧ᵤ t₃ u) (⟦[]⟧ᵤ t₁ u) (⟦[]⟧ᵤ t₂ u)
+⟦[]⟧ᵤ {n} (gen {.nil} Unitkind []) u = refl
+⟦[]⟧ᵤ {n} (gen {.nil} Starkind []) u = refl
+⟦[]⟧ᵤ {n} (gen {.nil} Emptykind []) u = refl
+⟦[]⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) u = ⟦[]⟧ᵤ t₁ u
+
+
+-- finish converting G
+valid∈NATREC : {i : Nat} {H : hypotheses} {G k z s : BTerm}
+             → valid∈𝕎 i (H Data.List.∷ʳ mkHyp NAT!) G (UNIV 1)
+             → valid∈𝕎 i H z (sub N0 G)
+             → valid∈𝕎 i H s (PI NAT! {!!}) --⟦ (G ▹▹ G [ Definition.Untyped.suc (var Fin.zero) ]↑) ⟧ᵤ)
+             → valid∈𝕎 i H k NAT!
+             → valid∈𝕎 i H (NATREC k z s) (sub k G)
+valid∈NATREC {i} {H} {G} {k} {z} {s} hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 es eh = {!!}
+
+
 ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
         (j : Γ ⊢ σ ≡ τ)
         (i : Nat) (w : 𝕎·)
@@ -835,26 +883,33 @@ valid∈SUC-NAT {i} {w} {H} {t} h s1 s2 cc1 cc2 ce1 ce2 es eh =
 ⟦_⟧Γ≡ {n} {Γ} {σ} {τ} j i w = {!!}
 
 
+⟦_⟧⊢ : {n : Nat} {Γ : Con Term n} {σ : Term n}
+       (j : Γ ⊢ σ)
+       (i : Nat) (lti : 1 <ℕ i)
+     → valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ (UNIV 1)
+⟦_⟧⊢ {n} {Γ} {σ} j i lti w = {!!}
+
+
 -- Should we use a closed version of the sequent constructor in valid∈ below?
 ⟦_⟧Γ∈ : {n : Nat} {Γ : Con Term n} {t : Term n} {σ : Term n}
         (j : Γ ⊢ t ∷ σ)
-        (i : Nat) (lti : 1 <ℕ i) (w : 𝕎·)
-      → valid∈ i w ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ ⟦ σ ⟧ᵤ
+        (i : Nat) (lti : 1 <ℕ i)
+      → valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ ⟦ σ ⟧ᵤ
 ⟦_⟧Γ∈ {n} {Γ} {.(Π _ ▹ _)} {.U} ((Πⱼ_▹_) {F} {G} j j₁) i lti w =
   valid∈-PI i lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ h1 h2 w
   where
-  h1 : (w : 𝕎·) → valid∈ i w ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
+  h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
   h1 = ⟦_⟧Γ∈ j i lti
 
-  h2 : (w : 𝕎·) → valid∈ i w (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 1)
+  h2 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 1)
   h2 = ⟦_⟧Γ∈ j₁ i lti
 ⟦_⟧Γ∈ {n} {Γ} {.(Σ _ ▹ _)} {.U} ((Σⱼ_▹_) {F} {G} j j₁) i lti w =
   valid∈-SUM i lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ h1 h2 w
   where
-  h1 : (w : 𝕎·) → valid∈ i w ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
+  h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
   h1 = ⟦_⟧Γ∈ j i lti
 
-  h2 : (w : 𝕎·) → valid∈ i w (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 1)
+  h2 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 1)
   h2 = ⟦_⟧Γ∈ j₁ i lti
 ⟦_⟧Γ∈ {n} {Γ} {.ℕ} {.U} (ℕⱼ x) i lti w = valid∈-NAT! i lti ⟦ Γ ⟧Γ w
 ⟦_⟧Γ∈ {n} {Γ} {.Empty} {.U} (Emptyⱼ x) i lti w = valid∈-FALSE i lti ⟦ Γ ⟧Γ w
@@ -872,7 +927,20 @@ valid∈SUC-NAT {i} {w} {H} {t} h s1 s2 cc1 cc2 ce1 ce2 es eh =
   where
   h1 : valid∈ i w ⟦ Γ ⟧Γ ⟦ x ⟧ᵤ NAT!
   h1 = ⟦_⟧Γ∈ j i lti w
-⟦_⟧Γ∈ {n} {Γ} {.(natrec _ _ _ _)} {.(G [ k ])} (natrecⱼ {G} {s} {z} {k} x j j₁ j₂) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(natrec _ _ _ _)} {.(G [ k ])} (natrecⱼ {G} {s} {z} {k} x j j₁ j₂) i lti w =
+  {!!}
+  where
+  h1 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp NAT!) ⟦ G ⟧ᵤ (UNIV 1)
+  h1 = ⟦_⟧⊢ x i lti
+
+  h2 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ z ⟧ᵤ ⟦ G [ Definition.Untyped.zero ] ⟧ᵤ
+  h2 = ⟦_⟧Γ∈ j i lti
+
+  h3 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ ⟦ Π ℕ ▹ (G ▹▹ G [ Definition.Untyped.suc (var Fin.zero) ]↑) ⟧ᵤ
+  h3 = ⟦_⟧Γ∈ j₁ i lti
+
+  h4 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ k ⟧ᵤ NAT!
+  h4 = ⟦_⟧Γ∈ j₂ i lti
 ⟦_⟧Γ∈ {n} {Γ} {.(Emptyrec σ _)} {σ} (Emptyrecⱼ {A} {e} x j) i lti w =
   valid∈-FALSE→ i w ⟦ Γ ⟧Γ ⟦ e ⟧ᵤ ⟦ σ ⟧ᵤ h1
   where
