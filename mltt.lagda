@@ -17,6 +17,7 @@ open import Relation.Binary.PropositionalEquality
   using (cong ; cong₂) renaming (trans to ≣trans ; sym to ≣sym ; subst to ≣subst)
 open import Data.List using () renaming ([] to nil ; _∷_ to cons)
 open import Data.List.Relation.Unary.Any
+open import Data.List.Properties
 open import Data.Product
 open import Data.Empty
 open import Data.List.Membership.Propositional
@@ -68,11 +69,15 @@ module mltt {L : Level}
 open import worldDef(W)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (TSext-equalTypes-equalInType)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (isTypeNAT! ; eqTypesUniv ; equalTypes→equalInType-UNIV ; equalInType→equalTypes-aux ; eqTypesPI← ;
          ≡CTerm→eqTypes ; ≡CTerm→equalInType ; eqTypesFALSE ; eqTypesTRUE ; ¬equalInType-FALSE)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (→equalInType-TRUE)
+  using (→equalInType-TRUE ; equalInType-EQ→₁)
+open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (≡→equalInType ; eqTypesEQ→ᵣ)
 open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalTypes-uni-mon ; equalInType-uni-mon)
 
@@ -542,10 +547,6 @@ valid∈-AX-UNIT i lti H w s1 s2 cc1 cc2 ce1 ce2 eqs eqh
   = eqTypesTRUE , →equalInType-TRUE i
 
 
-covered-FALSE : (s : Sub) → covered s FALSE
-covered-FALSE s ()
-
-
 valid∈-FALSE→ : (i : Nat) (w : 𝕎·) (H : hypotheses) (a T : BTerm)
               → valid∈ i w H a FALSE
               → valid∈ i w H a T
@@ -628,6 +629,89 @@ valid∈-PI i lti H F G vF vG w s1 s2 cc1 cc2 ce1 ce2 es eh
            ha hb)
 
 
+length⟦⟧Γ : {n : Nat} {Γ : Con Term n}
+          → Data.List.length ⟦ Γ ⟧Γ ≣ n
+length⟦⟧Γ {0} {ε} = refl
+length⟦⟧Γ {1+ n} {Γ ∙ x} =
+  ≣trans (length-++ ⟦ Γ ⟧Γ)
+         (≣trans (+-comm (Data.List.length ⟦ Γ ⟧Γ) 1)
+                 (cong Nat.suc (length⟦⟧Γ {n} {Γ})))
+
+
+coveredΓ : {n : Nat} (Γ : Con Term n) (σ : Term n)
+          → coveredH ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ
+coveredΓ {n} Γ σ {x} i = →∈hdom q
+  where
+  h : x <ℕ n
+  h = fvarsᵤ {n} σ x i
+
+  q : x <ℕ Data.List.length ⟦ Γ ⟧Γ
+  q rewrite length⟦⟧Γ {n} {Γ} = h
+
+
+valid∈-change-type : {i : Nat} {w : 𝕎·} {H : hypotheses} {A B t : BTerm}
+                   → 1 <ℕ i
+                   → coveredH H A
+                   → valid≡ i w H A B (UNIV 1)
+                   → valid∈ i w H t A
+                   → valid∈ i w H t B
+valid∈-change-type {i} {w} {H} {A} {B} {t} lti covHA h q s1 s2 cc1 cc2 ce1 ce2 es eh =
+  equalTypes-uni-mon (<⇒≤ lti) h3 , q2
+  where
+  ca1 : covered s1 A
+  ca1 = ≡subs→coveredₗ {i} {w} {s1} {s2} {H} {A} es covHA
+
+  ca2 : covered s2 A
+  ca2 = ≡subs→coveredᵣ {i} {w} {s1} {s2} {H} {A} es covHA
+
+  ceq1 : covered s1 (EQ A B (UNIV 1))
+  ceq1 = →coveredEQ {s1} {A} {B} {UNIV 1} ca1 cc1 (covered-UNIV s1 1)
+
+  ceq2 : covered s2 (EQ A B (UNIV 1))
+  ceq2 = →coveredEQ {s2} {A} {B} {UNIV 1} ca2 cc2 (covered-UNIV s2 1)
+
+  h1 : equalTypes i w (#subs s1 (EQ A B (UNIV 1)) ceq1) (#subs s2 (EQ A B (UNIV 1)) ceq2)
+  h1 = π₁ (h s1 s2 ceq1 ceq2 (covered-AX s1) (covered-AX s2) es eh)
+
+  h2 : equalTypes i w (#EQ (#subs s1 A ca1) (#subs s1 B cc1) (#UNIV 1)) (#EQ (#subs s2 A ca2) (#subs s2 B cc2) (#UNIV 1))
+  h2 = ≡CTerm→eqTypes (CTerm≡ (≣trans (subs-EQ s1 A B (UNIV 1)) (cong₃ EQ refl refl (subs-UNIV s1 1))))
+                      (CTerm≡ (≣trans (subs-EQ s2 A B (UNIV 1)) (cong₃ EQ refl refl (subs-UNIV s2 1))))
+                      h1
+
+  h3 : equalTypes 1 w (#subs s1 B cc1) (#subs s2 B cc2)
+  h3 = equalInType→equalTypes-aux i 1 lti w (#subs s1 B cc1) (#subs s2 B cc2)
+         (eqTypesEQ→ᵣ {w} {i} {#subs s1 A ca1} {#subs s1 B cc1} {#subs s2 A ca2} {#subs s2 B cc2} {#UNIV 1} {#UNIV 1} h2)
+
+  z1 : equalInType i w (#subs s1 (EQ A B (UNIV 1)) ceq1) (#subs s1 AX (covered-AX s1)) (#subs s2 AX (covered-AX s2))
+  z1 = π₂ (h s1 s2 ceq1 ceq2 (covered-AX s1) (covered-AX s2) es eh)
+
+  z2 : equalInType i w (#EQ (#subs s1 A ca1) (#subs s1 B cc1) (#UNIV 1)) #AX #AX
+  z2 = ≡→equalInType (CTerm≡ (≣trans (subs-EQ s1 A B (UNIV 1)) (cong₃ EQ refl refl (subs-UNIV s1 1))))
+                     (#subs-AX s1 (covered-AX s1))
+                     (#subs-AX s2 (covered-AX s2))
+                     z1
+
+  z3 : equalInType i w (#UNIV 1) (#subs s1 A ca1) (#subs s1 B cc1)
+  z3 = equalInType-EQ→₁ z2
+
+  z4 : equalTypes 1 w (#subs s1 A ca1) (#subs s1 B cc1)
+  z4 = equalInType→equalTypes-aux i 1 lti w (#subs s1 A ca1) (#subs s1 B cc1) z3
+
+  q1 : equalInType i w (#subs s1 A ca1) (#subs s1 t ce1) (#subs s2 t ce2)
+  q1 = π₂ (q s1 s2 ca1 ca2 ce1 ce2 es eh)
+
+  q2 : equalInType i w (#subs s1 B cc1) (#subs s1 t ce1) (#subs s2 t ce2)
+  q2 = TSext-equalTypes-equalInType i w (#subs s1 A ca1) (#subs s1 B cc1)
+         (#subs s1 t ce1) (#subs s2 t ce2) (equalTypes-uni-mon (<⇒≤ lti) z4) q1
+
+
+⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
+        (j : Γ ⊢ σ ≡ τ)
+        (i : Nat) (w : 𝕎·)
+      → valid≡ i w ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ ⟦ τ ⟧ᵤ (UNIV 1)
+⟦_⟧Γ≡ {n} {Γ} {σ} {τ} j i w = {!!}
+
+
 -- Should we use a closed version of the sequent constructor in valid∈ below?
 ⟦_⟧Γ∈ : {n : Nat} {Γ : Con Term n} {t : Term n} {σ : Term n}
         (j : Γ ⊢ t ∷ σ)
@@ -655,12 +739,22 @@ valid∈-PI i lti H F G vF vG w s1 s2 cc1 cc2 ce1 ce2 es eh
 ⟦_⟧Γ∈ {n} {Γ} {.(Definition.Untyped.suc _)} {.ℕ} (sucⱼ j) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.(natrec _ _ _ _)} {.(G [ k ])} (natrecⱼ {G} {s} {z} {k} x j j₁ j₂) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.(Emptyrec σ _)} {σ} (Emptyrecⱼ {A} {e} x j) i lti w =
-  valid∈-FALSE→ i w ⟦ Γ ⟧Γ ⟦ e ⟧ᵤ ⟦ σ ⟧ᵤ (h1 w)
+  valid∈-FALSE→ i w ⟦ Γ ⟧Γ ⟦ e ⟧ᵤ ⟦ σ ⟧ᵤ h1
   where
-  h1 : (w : 𝕎·) → valid∈ i w ⟦ Γ ⟧Γ ⟦ e ⟧ᵤ FALSE
-  h1 = ⟦_⟧Γ∈ j i lti
+  h1 : valid∈ i w ⟦ Γ ⟧Γ ⟦ e ⟧ᵤ FALSE
+  h1 = ⟦_⟧Γ∈ j i lti w
 ⟦_⟧Γ∈ {n} {Γ} {.star} {.Unit} (starⱼ x) i lti w = valid∈-AX-UNIT i lti ⟦ Γ ⟧Γ w
-⟦_⟧Γ∈ {n} {Γ} {t} {σ} (conv {t} {τ} {σ} j x) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {t} {σ} (conv {t} {τ} {σ} j x) i lti w =
+  valid∈-change-type {i} {w} {⟦ Γ ⟧Γ} {⟦ τ ⟧ᵤ} {⟦ σ ⟧ᵤ} lti cov h1 h2
+  where
+  h1 : valid≡ i w ⟦ Γ ⟧Γ ⟦ τ ⟧ᵤ ⟦ σ ⟧ᵤ (UNIV 1)
+  h1 = ⟦_⟧Γ≡ x i w
+
+  h2 : valid∈ i w ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ ⟦ τ ⟧ᵤ
+  h2 = ⟦_⟧Γ∈ j i lti w
+
+  cov : coveredH ⟦ Γ ⟧Γ ⟦ τ ⟧ᵤ
+  cov = coveredΓ {n} Γ τ
 
 
 ⟦_⟧Γ≡∈ : {n : Nat} {Γ : Con Term n} {t u : Term n} {σ : Term n}

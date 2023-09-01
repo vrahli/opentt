@@ -337,6 +337,31 @@ covered : (s : Sub) (t : Term) → Set
 covered s t = fvars t ⊆ sdom s
 
 
+coveredH : (H : hypotheses) (t : Term) → Set
+coveredH H t = fvars t ⊆ hdom H
+
+
+→∈hdom : {x : Var} {H : hypotheses}
+       → x < length H
+       → x ∈ hdom H
+→∈hdom {0} {x₁ ∷ H} i = here refl
+→∈hdom {suc x} {x₁ ∷ H} i = there (∈-map⁺ suc (→∈hdom (s≤s-inj i)))
+
+
+∈raiseVars→ : {x : Var} {l : List Var}
+            → suc x ∈ raiseVars l
+            → x ∈ l
+∈raiseVars→ {x} {l} i with ∈-map⁻ suc i
+... | u , v , w rewrite suc-injective w = v
+
+
+∈hdom→ : {x : Var} {H : hypotheses}
+       → x ∈ hdom H
+       → x < length H
+∈hdom→ {0} {y ∷ H} h = _≤_.s≤s _≤_.z≤n
+∈hdom→ {suc x} {y ∷ H} (there h) = _≤_.s≤s (∈hdom→ {x} {H} (∈raiseVars→ h))
+
+
 subsN : (n : ℕ) (s : Sub) (t : Term) → Term
 subsN n [] t = t
 subsN n (u ∷ s) t = subn n ⌜ u ⌝ (subsN n s t)
@@ -466,8 +491,8 @@ subs-UNIV (x ∷ s) i rewrite subs-UNIV s i = refl
 
 
 covered0 : (s : Sub) (t : Term) → Set
---covered0 s t = fvars t ⊆ raiseVars (sdom s)
 covered0 s t = lowerVars (fvars t) ⊆ sdom s
+--covered0 s t = fvars t ⊆ raiseVars (sdom s)
 
 
 lowerVars⊆[]→ : (l : List Var)
@@ -585,6 +610,38 @@ coveredPI₂ : {s : Sub} {a b : Term}
            → covered s (PI a b)
            → covered0 s b
 coveredPI₂ {s} {a} {b} c {x} i = c {x} (∈-++⁺ʳ (fvars a) i)
+
+
+covered-FALSE : (s : Sub) → covered s FALSE
+covered-FALSE s ()
+
+
+covered-UNIV : (s : Sub) (i : ℕ) → covered s (UNIV i)
+covered-UNIV s i ()
+
+
+covered-AX : (s : Sub) → covered s AX
+covered-AX s ()
+
+
+→coveredEQ : {s : Sub} {a b T : Term}
+           → covered s a
+           → covered s b
+           → covered s T
+           → covered s (EQ a b T)
+→coveredEQ {s} {a} {b} {T} ca cb cT {x} i with ∈-++⁻ (fvars a) i
+... | inj₁ j = ca j
+... | inj₂ j with ∈-++⁻ (fvars b) j
+... | inj₁ k = cb k
+... | inj₂ k = cT k
+
+
+subs-EQ : (s : Sub) (a b T : Term)
+        → subs s (EQ a b T) ≡ EQ (subs s a) (subs s b) (subs s T)
+subs-EQ [] a b T = refl
+subs-EQ (x ∷ s) a b T
+  rewrite subs-EQ s a b T
+  = refl
 
 
 #subs-PI : (s : Sub) (a b : Term) (c : covered s (PI a b)) (ca : covered s a) (cb : covered0 s b)
@@ -980,6 +1037,34 @@ fvars-subn⊆ n u t {x} i
        → x ∈ sdom s
 →∈sdom 0 (x₁ ∷ s) i = here refl
 →∈sdom (suc x) (x₁ ∷ s) i = there (∈-map⁺ suc (→∈sdom x s (s≤s-inj i)))
+
+
+≡subs→coveredₗ : {i : ℕ} {w : 𝕎·} {s1 s2 : Sub} {H : hypotheses} {A : Term}
+              → ≡subs i w s1 s2 H
+              → coveredH H A
+              → covered s1 A
+≡subs→coveredₗ {i} {w} {s1} {s2} {H} {A} eqs cov {x} j =
+  →∈sdom x s1 q
+  where
+  h : x < length H
+  h = ∈hdom→ (cov j)
+
+  q : x < length s1
+  q rewrite fst (≡subs→length eqs) = h
+
+
+≡subs→coveredᵣ : {i : ℕ} {w : 𝕎·} {s1 s2 : Sub} {H : hypotheses} {A : Term}
+              → ≡subs i w s1 s2 H
+              → coveredH H A
+              → covered s2 A
+≡subs→coveredᵣ {i} {w} {s1} {s2} {H} {A} eqs cov {x} j =
+  →∈sdom x s2 q
+  where
+  h : x < length H
+  h = ∈hdom→ (cov j)
+
+  q : x < length s2
+  q rewrite snd (≡subs→length eqs) = h
 
 
 covered∷→ : (t : CTerm) (s : Sub) (F : Term)
