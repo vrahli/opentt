@@ -446,6 +446,17 @@ subs-NAT! (x ∷ s) rewrite subs-NAT! s = refl
 #subs-NAT! s c = CTerm≡ (subs-NAT! s)
 
 
+subs-N0 : (s : Sub)
+          → subs s N0 ≡ N0
+subs-N0 [] = refl
+subs-N0 (x ∷ s) rewrite subs-N0 s = refl
+
+
+#subs-N0 : (s : Sub) (c : covered s N0)
+           → #subs s N0 c ≡ #N0
+#subs-N0 s c = CTerm≡ (subs-N0 s)
+
+
 subs-FALSE : (s : Sub)
            → subs s FALSE ≡ FALSE
 subs-FALSE [] = refl
@@ -612,6 +623,26 @@ coveredPI₂ : {s : Sub} {a b : Term}
 coveredPI₂ {s} {a} {b} c {x} i = c {x} (∈-++⁺ʳ (fvars a) i)
 
 
+subs-SUM : (s : Sub) (a b : Term)
+        → subs s (SUM a b) ≡ SUM (subs s a) (subsN 1 s b)
+subs-SUM [] a b = refl
+subs-SUM (x ∷ s) a b
+  rewrite subs-SUM s a b
+        | #shiftUp 0 x = refl
+
+
+coveredSUM₁ : {s : Sub} {a b : Term}
+           → covered s (SUM a b)
+           → covered s a
+coveredSUM₁ {s} {a} {b} c {x} i = c {x} (∈-++⁺ˡ i)
+
+
+coveredSUM₂ : {s : Sub} {a b : Term}
+           → covered s (SUM a b)
+           → covered0 s b
+coveredSUM₂ {s} {a} {b} c {x} i = c {x} (∈-++⁺ʳ (fvars a) i)
+
+
 covered-FALSE : (s : Sub) → covered s FALSE
 covered-FALSE s ()
 
@@ -636,12 +667,31 @@ covered-AX s ()
 ... | inj₂ k = cT k
 
 
+→coveredSUC : {s : Sub} {a : Term}
+            → covered s a
+            → covered s (SUC a)
+→coveredSUC {s} {a} ca = ca
+
+
 subs-EQ : (s : Sub) (a b T : Term)
         → subs s (EQ a b T) ≡ EQ (subs s a) (subs s b) (subs s T)
 subs-EQ [] a b T = refl
 subs-EQ (x ∷ s) a b T
   rewrite subs-EQ s a b T
   = refl
+
+
+subs-SUC : (s : Sub) (a : Term)
+         → subs s (SUC a) ≡ SUC (subs s a)
+subs-SUC [] a = refl
+subs-SUC (x ∷ s) a
+  rewrite subs-SUC s a
+  = refl
+
+
+#subs-SUC : (s : Sub) (a : Term) (c : covered s a)
+         → #subs s (SUC a) c ≡ #SUC (#subs s a c)
+#subs-SUC s a c = CTerm≡ (subs-SUC s a)
 
 
 #subs-PI : (s : Sub) (a b : Term) (c : covered s (PI a b)) (ca : covered s a) (cb : covered0 s b)
@@ -652,6 +702,16 @@ subs-EQ (x ∷ s) a b T
 #subs-PI2 : (s : Sub) (a b : Term) (c : covered s (PI a b))
           → #subs s (PI a b) c ≡ #PI (#subs s a (coveredPI₁ {s} {a} {b} c)) (#[0]subs s b (coveredPI₂ {s} {a} {b} c))
 #subs-PI2 s a b c = #subs-PI s a b c (coveredPI₁ {s} {a} {b} c) (coveredPI₂ {s} {a} {b} c)
+
+
+#subs-SUM : (s : Sub) (a b : Term) (c : covered s (SUM a b)) (ca : covered s a) (cb : covered0 s b)
+         → #subs s (SUM a b) c ≡ #SUM (#subs s a ca) (#[0]subs s b cb)
+#subs-SUM s a b c ca cb = CTerm≡ (subs-SUM s a b)
+
+
+#subs-SUM2 : (s : Sub) (a b : Term) (c : covered s (SUM a b))
+          → #subs s (SUM a b) c ≡ #SUM (#subs s a (coveredSUM₁ {s} {a} {b} c)) (#[0]subs s b (coveredSUM₂ {s} {a} {b} c))
+#subs-SUM2 s a b c = #subs-SUM s a b c (coveredSUM₁ {s} {a} {b} c) (coveredSUM₂ {s} {a} {b} c)
 
 
 →covered∷ : (a : CTerm) (s : Sub) (t : Term)

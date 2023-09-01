@@ -67,15 +67,22 @@ module mltt {L : Level}
        where
 
 open import worldDef(W)
+open import computation(W)(C)(K)(G)(X)(N)(EC)
+  using (#⇛!sameℕ ; _⇛!_at_ ; _⇓!_at_)
+open import terms8(W)(C)(K)(G)(X)(N)(EC)
+  using (⇓NUM→SUC⇓NUM)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (TSext-equalTypes-equalInType)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (isTypeNAT! ; eqTypesUniv ; equalTypes→equalInType-UNIV ; equalInType→equalTypes-aux ; eqTypesPI← ;
-         ≡CTerm→eqTypes ; ≡CTerm→equalInType ; eqTypesFALSE ; eqTypesTRUE ; ¬equalInType-FALSE)
+  using (isTypeNAT! ; eqTypesUniv ; equalTypes→equalInType-UNIV ; equalInType→equalTypes-aux ; eqTypesPI← ; eqTypesSUM← ;
+         ≡CTerm→eqTypes ; ≡CTerm→equalInType ; eqTypesFALSE ; eqTypesTRUE ; ¬equalInType-FALSE ; NUM-equalInType-NAT! ;
+         equalInType-NAT!→)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (→equalInType-TRUE ; equalInType-EQ→₁)
+open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (→equalInType-NAT!)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (≡→equalInType ; eqTypesEQ→ᵣ)
 open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -629,6 +636,75 @@ valid∈-PI i lti H F G vF vG w s1 s2 cc1 cc2 ce1 ce2 es eh
            ha hb)
 
 
+valid∈-SUM : (i : Nat) (lti : 1 <ℕ i) (H : hypotheses) (F G : BTerm)
+            → valid∈𝕎 i H F (UNIV 1)
+            → valid∈𝕎 i (H Data.List.∷ʳ mkHyp F) G (UNIV 1)
+            → valid∈𝕎 i H (SUM F G) (UNIV 1)
+valid∈-SUM i lti H F G vF vG w s1 s2 cc1 cc2 ce1 ce2 es eh
+  rewrite #subs-UNIV s1 1 cc1 | #subs-UNIV s2 1 cc2
+        | #subs-SUM2 s1 F G ce1 | #subs-SUM2 s2 F G ce2
+  = h1 , h2
+  where
+  h1 : equalTypes i w (#UNIV 1) (#UNIV 1)
+  h1 = eqTypesUniv w i 1 lti
+
+  ha : ∀𝕎 w (λ w' _ → equalTypes 1 w' (#subs s1 F (coveredSUM₁ {s1} {F} {G} ce1)) (#subs s2 F (coveredSUM₁ {s2} {F} {G} ce2)))
+  ha w1 e1 = vf2
+    where
+    vf1 : equalInType i w1 (#UNIV 1) (#subs s1 F (coveredSUM₁ {s1} {F} {G} ce1)) (#subs s2 F (coveredSUM₁ {s2} {F} {G} ce2))
+    vf1 = ≡CTerm→equalInType
+            (#subs-UNIV s1 1 cc1)
+            (π₂ (vF w1 s1 s2 cc1 cc2 (coveredSUM₁ {s1} {F} {G} ce1) (coveredSUM₁ {s2} {F} {G} ce2) (≡subs-mon e1 es) (≡hyps-mon e1 eh)))
+
+    vf2 : equalTypes 1 w1 (#subs s1 F (coveredSUM₁ {s1} {F} {G} ce1)) (#subs s2 F (coveredSUM₁ {s2} {F} {G} ce2))
+    vf2 = equalInType→equalTypes-aux i 1 lti w1
+            (#subs s1 F (coveredSUM₁ {s1} {F} {G} ce1))
+            (#subs s2 F (coveredSUM₁ {s2} {F} {G} ce2))
+            vf1
+
+  hb : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType 1 w' (#subs s1 F (coveredSUM₁ {s1} {F} {G} ce1)) a₁ a₂
+                    → equalTypes
+                        1 w'
+                        (sub0 a₁ (#[0]subs s1 G (coveredSUM₂ {s1} {F} {G} ce1)))
+                        (sub0 a₂ (#[0]subs s2 G (coveredSUM₂ {s2} {F} {G} ce2))))
+  hb w1 e1 a₁ a₂ a∈ =
+    ≡CTerm→eqTypes
+      (≣sym (sub0-#[0]subs a₁ s1 G (coveredSUM₂ {s1} {F} {G} ce1)))
+      (≣sym (sub0-#[0]subs a₂ s2 G (coveredSUM₂ {s2} {F} {G} ce2)))
+      hb1
+    where
+    vg1 : equalInType i w1 (#UNIV 1) (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G (coveredSUM₂ {s1} {F} {G} ce1)))
+                                     (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G (coveredSUM₂ {s2} {F} {G} ce2)))
+    vg1 = ≡CTerm→equalInType
+            (#subs-UNIV (s1 Data.List.∷ʳ a₁) 1 λ {x} ())
+            (π₂ (vG w1 (s1 Data.List.∷ʳ a₁) (s2 Data.List.∷ʳ a₂) (λ {x} ()) (λ {x} ())
+                    (→covered∷ʳ a₁ s1 G (coveredSUM₂ {s1} {F} {G} ce1))
+                    (→covered∷ʳ a₂ s2 G (coveredSUM₂ {s2} {F} {G} ce2))
+                    (≡subs∷ʳ i w1 s1 s2 H F (coveredSUM₁ {s1} {F} {G} ce1) a₁ a₂
+                      (equalInType-uni-mon (<⇒≤ lti) a∈) (≡subs-mon e1 es))
+                    (≡hyps∷ʳ i w1 s1 s2 H H F F (coveredSUM₁ {s1} {F} {G} ce1) (coveredSUM₁ {s2} {F} {G} ce2) a₁ a₂
+                      (equalTypes-uni-mon (<⇒≤ lti) (ha w1 e1))
+                      (≡hyps-mon e1 eh))))
+
+    hb1 : equalTypes 1 w1 (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G (coveredSUM₂ {s1} {F} {G} ce1)))
+                          (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G (coveredSUM₂ {s2} {F} {G} ce2)))
+    hb1 = equalInType→equalTypes-aux i 1 lti w1
+            (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G (coveredSUM₂ {s1} {F} {G} ce1)))
+            (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G (coveredSUM₂ {s2} {F} {G} ce2)))
+            vg1
+
+  h2 : equalInType i w (#UNIV 1)
+                       (#SUM (#subs s1 F (coveredSUM₁ {s1} {F} {G} ce1)) (#[0]subs s1 G (coveredSUM₂ {s1} {F} {G} ce1)))
+                       (#SUM (#subs s2 F (coveredSUM₁ {s2} {F} {G} ce2)) (#[0]subs s2 G (coveredSUM₂ {s2} {F} {G} ce2)))
+  h2 = equalTypes→equalInType-UNIV
+         lti
+         (eqTypesSUM←
+           {w} {1}
+           {#subs s1 F (coveredSUM₁ {s1} {F} {G} ce1)} {#[0]subs s1 G (coveredSUM₂ {s1} {F} {G} ce1)}
+           {#subs s2 F (coveredSUM₁ {s2} {F} {G} ce2)} {#[0]subs s2 G (coveredSUM₂ {s2} {F} {G} ce2)}
+           ha hb)
+
+
 length⟦⟧Γ : {n : Nat} {Γ : Con Term n}
           → Data.List.length ⟦ Γ ⟧Γ ≣ n
 length⟦⟧Γ {0} {ε} = refl
@@ -705,6 +781,53 @@ valid∈-change-type {i} {w} {H} {A} {B} {t} lti covHA h q s1 s2 cc1 cc2 ce1 ce2
          (#subs s1 t ce1) (#subs s2 t ce2) (equalTypes-uni-mon (<⇒≤ lti) z4) q1
 
 
+valid∈N0-NAT : (i : Nat) (w : 𝕎·) (H : hypotheses)
+             → valid∈ i w H N0 NAT!
+valid∈N0-NAT i w H s1 s2 cc1 cc2 ce1 ce2 es eh
+  rewrite #subs-NAT! s1 cc1 | #subs-NAT! s2 cc2 | #subs-N0 s1 ce1 | #subs-N0 s2 ce2
+  = isTypeNAT! , NUM-equalInType-NAT! i w 0
+
+
+SUC⇛! : {w : 𝕎·} {a : BTerm} {k : Nat}
+      → a ⇛! NUM k at w
+      → SUC a ⇛! NUM (Nat.suc k) at w
+SUC⇛! {w} {a} {k} comp w1 e1 =
+  lift (⇓NUM→SUC⇓NUM {a} {k} {w1} {w1} (lower (comp w1 e1)))
+
+
+SUC∈NAT! : {i : Nat} {w : 𝕎·} {a b : CTerm}
+        → equalInType i w #NAT! a b
+        → equalInType i w #NAT! (#SUC a) (#SUC b)
+SUC∈NAT! {i} {w} {a} {b} h =
+  →equalInType-NAT! i w (#SUC a) (#SUC b) (Mod.∀𝕎-□Func M aw (equalInType-NAT!→ i w a b h))
+  where
+  aw : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' a b
+                     → #⇛!sameℕ w' (#SUC a) (#SUC b))
+  aw w1 e1 (k , c₁ , c₂) = Nat.suc k , SUC⇛! c₁ , SUC⇛! c₂
+
+
+valid∈SUC-NAT : {i : Nat} {w : 𝕎·} {H : hypotheses} {t : BTerm}
+              → valid∈ i w H t NAT!
+              → valid∈ i w H (SUC t) NAT!
+valid∈SUC-NAT {i} {w} {H} {t} h s1 s2 cc1 cc2 ce1 ce2 es eh =
+  h1 , q1
+  where
+  h1 : equalTypes i w (#subs s1 NAT! cc1) (#subs s2 NAT! cc2)
+  h1 = π₁ (h s1 s2 cc1 cc2 ce1 ce2 es eh)
+
+  h2 : equalInType i w (#subs s1 NAT! cc1) (#subs s1 t ce1) (#subs s2 t ce2)
+  h2 = π₂ (h s1 s2 cc1 cc2 ce1 ce2 es eh)
+
+  h3 : equalInType i w #NAT! (#subs s1 t ce1) (#subs s2 t ce2)
+  h3 = ≡→equalInType (#subs-NAT! s1 cc1) refl refl h2
+
+  q2 : equalInType i w #NAT! (#SUC (#subs s1 t ce1)) (#SUC (#subs s2 t ce2))
+  q2 = SUC∈NAT! h3
+
+  q1 : equalInType i w (#subs s1 NAT! cc1) (#subs s1 (SUC t) ce1) (#subs s2 (SUC t) ce2)
+  q1 = ≡→equalInType (≣sym (#subs-NAT! s1 cc1)) (≣sym (#subs-SUC s1 t ce1)) (≣sym (#subs-SUC s2 t ce2)) q2
+
+
 ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
         (j : Γ ⊢ σ ≡ τ)
         (i : Nat) (w : 𝕎·)
@@ -725,7 +848,14 @@ valid∈-change-type {i} {w} {H} {A} {B} {t} lti covHA h q s1 s2 cc1 cc2 ce1 ce2
 
   h2 : (w : 𝕎·) → valid∈ i w (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 1)
   h2 = ⟦_⟧Γ∈ j₁ i lti
-⟦_⟧Γ∈ {n} {Γ} {.(Σ _ ▹ _)} {.U} ((Σⱼ_▹_) {F} {G} j j₁) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(Σ _ ▹ _)} {.U} ((Σⱼ_▹_) {F} {G} j j₁) i lti w =
+  valid∈-SUM i lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ h1 h2 w
+  where
+  h1 : (w : 𝕎·) → valid∈ i w ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
+  h1 = ⟦_⟧Γ∈ j i lti
+
+  h2 : (w : 𝕎·) → valid∈ i w (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 1)
+  h2 = ⟦_⟧Γ∈ j₁ i lti
 ⟦_⟧Γ∈ {n} {Γ} {.ℕ} {.U} (ℕⱼ x) i lti w = valid∈-NAT! i lti ⟦ Γ ⟧Γ w
 ⟦_⟧Γ∈ {n} {Γ} {.Empty} {.U} (Emptyⱼ x) i lti w = valid∈-FALSE i lti ⟦ Γ ⟧Γ w
 ⟦_⟧Γ∈ {n} {Γ} {.Unit} {.U} (Unitⱼ x) i lti w = valid∈-UNIT i lti ⟦ Γ ⟧Γ w
@@ -735,8 +865,13 @@ valid∈-change-type {i} {w} {H} {A} {B} {t} lti covHA h q s1 s2 cc1 cc2 ce1 ce2
 ⟦_⟧Γ∈ {n} {Γ} {.(prod _ _)} {.(Σ _ ▹ _)} (prodⱼ x x₁ j j₁) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.(fst _)} {σ} (fstⱼ x x₁ j) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.(snd _)} {.(G [ fst u ])} (sndⱼ {F} {G} {u} x x₁ j) i lti w = {!!}
-⟦_⟧Γ∈ {n} {Γ} {.Definition.Untyped.zero} {.ℕ} (zeroⱼ x) i lti w = {!!}
-⟦_⟧Γ∈ {n} {Γ} {.(Definition.Untyped.suc _)} {.ℕ} (sucⱼ j) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.Definition.Untyped.zero} {.ℕ} (zeroⱼ x) i lti w =
+  valid∈N0-NAT i w ⟦ Γ ⟧Γ
+⟦_⟧Γ∈ {n} {Γ} {.(Definition.Untyped.suc _)} {.ℕ} (sucⱼ {x} j) i lti w =
+  valid∈SUC-NAT h1
+  where
+  h1 : valid∈ i w ⟦ Γ ⟧Γ ⟦ x ⟧ᵤ NAT!
+  h1 = ⟦_⟧Γ∈ j i lti w
 ⟦_⟧Γ∈ {n} {Γ} {.(natrec _ _ _ _)} {.(G [ k ])} (natrecⱼ {G} {s} {z} {k} x j j₁ j₂) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.(Emptyrec σ _)} {σ} (Emptyrecⱼ {A} {e} x j) i lti w =
   valid∈-FALSE→ i w ⟦ Γ ⟧Γ ⟦ e ⟧ᵤ ⟦ σ ⟧ᵤ h1
