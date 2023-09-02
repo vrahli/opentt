@@ -3,7 +3,7 @@
 {-# OPTIONS --guardedness #-}
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
-open import Data.Nat using () renaming (_<_ to _<ℕ_)
+open import Data.Nat using (s≤s) renaming (_<_ to _<ℕ_ ; _≤_ to _≤ℕ_)
 open import Data.Nat.Properties
 open import Agda.Builtin.Nat
 open import Data.Fin using (Fin ; toℕ)
@@ -71,6 +71,7 @@ open import computation(W)(C)(K)(G)(X)(N)(EC)
   using (#⇛!sameℕ ; _⇛!_at_ ; _⇓!_at_)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
   using (⇓NUM→SUC⇓NUM)
+open import subst(W)(C)(K)(G)(X)(N)(EC)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -836,34 +837,156 @@ sub-VAR+ : (t : BTerm) (n : Nat) → sub t (VAR (1+ n)) ≣ VAR n
 sub-VAR+ t n = refl
 
 
-⟦[]⟧ᵤ : {n : Nat} (G : Term (1+ n)) (u : Term n)
-      → ⟦ G [ u ] ⟧ᵤ ≣ sub ⟦ u ⟧ᵤ ⟦ G ⟧ᵤ
-⟦[]⟧ᵤ {n} (var Fin.zero) u = ≣sym (sub-VAR0 ⟦ u ⟧ᵤ)
-⟦[]⟧ᵤ {n} (var (Fin.suc x)) u = refl
-⟦[]⟧ᵤ {n} (gen {.nil} Ukind []) u = refl
-⟦[]⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Pikind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
-  cong₂ PI (⟦[]⟧ᵤ t u) {!!}
-⟦[]⟧ᵤ {n} (gen {.(cons 1 nil)} Lamkind (t GenTs.∷ [])) u =
-  cong LAMBDA {!!}
-⟦[]⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
-  cong₂ APPLY (⟦[]⟧ᵤ t u) (⟦[]⟧ᵤ t₁ u)
-⟦[]⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
-  cong₂ SUM (⟦[]⟧ᵤ t u) {!!}
-⟦[]⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
-  cong₂ PAIR (⟦[]⟧ᵤ t u) (⟦[]⟧ᵤ t₁ u)
-⟦[]⟧ᵤ {n} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) u =
-  cong FST (⟦[]⟧ᵤ t u)
-⟦[]⟧ᵤ {n} (gen {.(cons 0 nil)} Sndkind (t GenTs.∷ [])) u =
-  cong SND (⟦[]⟧ᵤ t u)
-⟦[]⟧ᵤ {n} (gen {.nil} Natkind []) u = refl
-⟦[]⟧ᵤ {n} (gen {.nil} Zerokind []) u = refl
-⟦[]⟧ᵤ {n} (gen {.(cons 0 nil)} Suckind (t GenTs.∷ [])) u = cong SUC (⟦[]⟧ᵤ t u)
-⟦[]⟧ᵤ {n} (gen {.(cons 1 (cons 0 (cons 0 (cons 0 nil))))} Natreckind (t GenTs.∷ (t₁ GenTs.∷ (t₂ GenTs.∷ (t₃ GenTs.∷ []))))) u =
-  cong₃ NATREC (⟦[]⟧ᵤ t₃ u) (⟦[]⟧ᵤ t₁ u) (⟦[]⟧ᵤ t₂ u)
-⟦[]⟧ᵤ {n} (gen {.nil} Unitkind []) u = refl
-⟦[]⟧ᵤ {n} (gen {.nil} Starkind []) u = refl
-⟦[]⟧ᵤ {n} (gen {.nil} Emptykind []) u = refl
-⟦[]⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) u = ⟦[]⟧ᵤ t₁ u
+shiftUpN : (m n : Nat) (t : BTerm) → BTerm
+shiftUpN m 0 t = t
+shiftUpN m (Nat.suc n) t = shiftUp m (shiftUpN m n t)
+
+
+shiftUpN-UNIV : (k m : Nat) (i : Nat) → shiftUpN k m (UNIV i) ≣ UNIV i
+shiftUpN-UNIV k 0 i = refl
+shiftUpN-UNIV k (Nat.suc m) i rewrite shiftUpN-UNIV k m i = refl
+
+
+shiftUpN-PI : (k m : Nat) (a b : BTerm) → shiftUpN k m (PI a b) ≣ PI (shiftUpN k m a) (shiftUpN (Nat.suc k) m b)
+shiftUpN-PI k 0 a b = refl
+shiftUpN-PI k (Nat.suc m) a b rewrite shiftUpN-PI k m a b = refl
+
+
+⟦wk⟧ᵤ-var1 : (m n : Nat) (x  : Fin (m + n))
+           → 1+ (toℕ x) ≤ℕ m
+           → toℕ (wkVar (liftn (step id) m) x) ≣ toℕ x
+⟦wk⟧ᵤ-var1 (1+ m) n Fin.zero p = refl
+⟦wk⟧ᵤ-var1 (1+ m) n (Fin.suc x) p = cong 1+ (⟦wk⟧ᵤ-var1 m n x (s≤s-inj p))
+
+
+⟦wk⟧ᵤ-var2 : (m n : Nat) (x  : Fin (m + n))
+           → m <ℕ 1+ (toℕ x)
+           → toℕ (wkVar (liftn (step id) m) x) ≣ 1+ (toℕ x)
+⟦wk⟧ᵤ-var2 Nat.zero n x p = refl
+⟦wk⟧ᵤ-var2 (1+ m) n Fin.zero p = ⊥-elim (m+n≮m 1 m p)
+⟦wk⟧ᵤ-var2 (1+ m) n (Fin.suc x) p = cong 1+ (⟦wk⟧ᵤ-var2 m n x (s≤s-inj p))
+
+
+⟦wk⟧ᵤ : {n m : Nat} (t : Term (m + n)) → ⟦ wk (liftn (step id) m) t ⟧ᵤ ≣ shiftUp m ⟦ t ⟧ᵤ
+⟦wk⟧ᵤ {n} {m} (var x) with toℕ x <? m
+... | yes p = cong VAR (⟦wk⟧ᵤ-var1 m n x p)
+... | no  p = cong VAR (⟦wk⟧ᵤ-var2 m n x (≰⇒> p))
+⟦wk⟧ᵤ {n} {m} (gen {.nil} Ukind []) = refl
+⟦wk⟧ᵤ {n} {m} (gen {.(cons 0 (cons 1 nil))} Pikind (t GenTs.∷ (t₁ GenTs.∷ []))) =
+  cong₂ PI (⟦wk⟧ᵤ {n} {m} t) (⟦wk⟧ᵤ {n} {1+ m} t₁)
+⟦wk⟧ᵤ {n} {m} (gen {.(cons 1 nil)} Lamkind (t GenTs.∷ [])) =
+  cong LAMBDA (⟦wk⟧ᵤ t)
+⟦wk⟧ᵤ {n} {m} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) =
+  cong₂ APPLY (⟦wk⟧ᵤ {n} {m} t) (⟦wk⟧ᵤ {n} {m} t₁)
+⟦wk⟧ᵤ {n} {m} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) =
+  cong₂ SUM (⟦wk⟧ᵤ {n} {m} t) (⟦wk⟧ᵤ {n} {1+ m} t₁)
+⟦wk⟧ᵤ {n} {m} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) =
+  cong₂ PAIR (⟦wk⟧ᵤ {n} {m} t) (⟦wk⟧ᵤ {n} {m} t₁)
+⟦wk⟧ᵤ {n} {m} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) =
+  cong FST (⟦wk⟧ᵤ t)
+⟦wk⟧ᵤ {n} {m} (gen {.(cons 0 nil)} Sndkind (t GenTs.∷ [])) =
+  cong SND (⟦wk⟧ᵤ t)
+⟦wk⟧ᵤ {n} {m} (gen {.nil} Natkind []) = refl
+⟦wk⟧ᵤ {n} {m} (gen {.nil} Zerokind []) = refl
+⟦wk⟧ᵤ {n} {m} (gen {.(cons 0 nil)} Suckind (t GenTs.∷ [])) =
+  cong SUC (⟦wk⟧ᵤ {n} {m} t)
+⟦wk⟧ᵤ {n} {m} (gen {.(cons 1 (cons 0 (cons 0 (cons 0 nil))))} Natreckind (t GenTs.∷ (t₁ GenTs.∷ (t₂ GenTs.∷ (t₃ GenTs.∷ []))))) =
+  cong₃ NATREC (⟦wk⟧ᵤ {n} {m} t₃) (⟦wk⟧ᵤ {n} {m} t₁) (⟦wk⟧ᵤ {n} {m} t₂)
+⟦wk⟧ᵤ {n} {m} (gen {.nil} Unitkind []) = refl
+⟦wk⟧ᵤ {n} {m} (gen {.nil} Starkind []) = refl
+⟦wk⟧ᵤ {n} {m} (gen {.nil} Emptykind []) = refl
+⟦wk⟧ᵤ {n} {m} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) = ⟦wk⟧ᵤ t₁
+
+
+⟦[]⟧ᵤ'-var1 : {n m : Nat} (x : Fin (m + 1+ n)) (u : Term n)
+            → toℕ x ≣ m
+            → ⟦ liftSubstn (consSubst var u) m x ⟧ᵤ ≣ shiftUpN 0 m ⟦ u ⟧ᵤ
+⟦[]⟧ᵤ'-var1 {n} {0} Fin.zero u e = refl
+⟦[]⟧ᵤ'-var1 {n} {1+ m} (Fin.suc x) u e
+  rewrite ≣sym (⟦[]⟧ᵤ'-var1 x u (suc-injective e))
+  = ⟦wk⟧ᵤ (liftSubstn (consSubst var u) m x)
+
+
+sucIf≤-predIf≤-prop1 : (x m : Nat)
+                     → ¬ x ≣ m
+                     → x ≤ℕ m
+                     → sucIf≤ 0 (predIf≤ m x) ≣ 1+ x
+sucIf≤-predIf≤-prop1 0 m p q with 0 <? 0
+... | yes a = refl
+... | no  a = refl
+sucIf≤-predIf≤-prop1 (1+ x) m p q with 1+ x ≤? m
+... | yes a = refl
+... | no  a = ⊥-elim (a q)
+
+
+sucIf≤-predIf≤-prop2 : (x m : Nat)
+                     → ¬ x ≣ m
+                     → m <ℕ x
+                     → sucIf≤ 0 (predIf≤ m x) ≣ x
+sucIf≤-predIf≤-prop2 0 m p q with 0 <? 0
+... | yes a = ⊥-elim (n≮n 0 a)
+... | no  a = ⊥-elim (m+n≮m 0 m q)
+sucIf≤-predIf≤-prop2 (1+ x) m p q with 1+ x ≤? m
+... | yes a = ⊥-elim (n≮n m (≤-trans q a))
+... | no  a = refl
+
+
+⟦[]⟧ᵤ'-var2 : {n m : Nat} (x : Fin (m + 1+ n)) (u : Term n)
+            → ¬ toℕ x ≣ m
+            → ⟦ liftSubstn (consSubst var u) m x ⟧ᵤ ≣ VAR (predIf≤ m (toℕ x))
+⟦[]⟧ᵤ'-var2 {n} {Nat.zero} Fin.zero u p = ⊥-elim (p refl)
+⟦[]⟧ᵤ'-var2 {n} {Nat.zero} (Fin.suc x) u p = refl
+⟦[]⟧ᵤ'-var2 {n} {1+ m} Fin.zero u p = refl
+⟦[]⟧ᵤ'-var2 {n} {1+ m} (Fin.suc x) u p with 1+ (toℕ x) ≤? 1+ m
+... | yes q =
+  ≣trans (⟦wk⟧ᵤ {_} {0} (liftSubstn (consSubst var u) m x))
+         (≣trans (cong (shiftUp 0) (⟦[]⟧ᵤ'-var2 x u λ z → p (cong 1+ z)))
+                 (cong VAR (sucIf≤-predIf≤-prop1 (toℕ x) m (λ z → p (cong 1+ z)) (s≤s-inj q))))
+... | no  q =
+  ≣trans (⟦wk⟧ᵤ {_} {0} (liftSubstn (consSubst var u) m x))
+         (≣trans (cong (shiftUp 0) (⟦[]⟧ᵤ'-var2 x u λ z → p (cong 1+ z)))
+                 (cong VAR (sucIf≤-predIf≤-prop2 (toℕ x) m (λ z → p (cong 1+ z)) (≰⇒> (λ z → q (s≤s z))))))
+
+
+⟦[]⟧ᵤ' : {n m : Nat} (G : Term (m + 1+ n)) (u : Term n)
+      → ⟦ subst (liftSubstn (sgSubst u) m) G ⟧ᵤ ≣ subn m (shiftUpN 0 m ⟦ u ⟧ᵤ) ⟦ G ⟧ᵤ
+⟦[]⟧ᵤ' {n} {m} (var x) u with toℕ x ≟ m
+... | yes p = ⟦[]⟧ᵤ'-var1 x u p
+... | no p = ⟦[]⟧ᵤ'-var2 x u p
+⟦[]⟧ᵤ' {n} {m} (gen {.nil} Ukind []) u = refl
+⟦[]⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 1 nil))} Pikind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
+  cong₂ PI (⟦[]⟧ᵤ' t u) (⟦[]⟧ᵤ' {n} {1+ m} t₁ u)
+⟦[]⟧ᵤ' {n} {m} (gen {.(cons 1 nil)} Lamkind (t GenTs.∷ [])) u =
+  cong LAMBDA (⟦[]⟧ᵤ' {n} {1+ m} t u)
+⟦[]⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
+  cong₂ APPLY (⟦[]⟧ᵤ' t u) (⟦[]⟧ᵤ' t₁ u)
+⟦[]⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
+  cong₂ SUM (⟦[]⟧ᵤ' t u) (⟦[]⟧ᵤ' {n} {1+ m} t₁ u)
+⟦[]⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
+  cong₂ PAIR (⟦[]⟧ᵤ' t u) (⟦[]⟧ᵤ' t₁ u)
+⟦[]⟧ᵤ' {n} {m} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) u =
+  cong FST (⟦[]⟧ᵤ' t u)
+⟦[]⟧ᵤ' {n} {m} (gen {.(cons 0 nil)} Sndkind (t GenTs.∷ [])) u =
+  cong SND (⟦[]⟧ᵤ' t u)
+⟦[]⟧ᵤ' {n} {m} (gen {.nil} Natkind []) u = refl
+⟦[]⟧ᵤ' {n} {m} (gen {.nil} Zerokind []) u = refl
+⟦[]⟧ᵤ' {n} {m} (gen {.(cons 0 nil)} Suckind (t GenTs.∷ [])) u = cong SUC (⟦[]⟧ᵤ' t u)
+⟦[]⟧ᵤ' {n} {m} (gen {.(cons 1 (cons 0 (cons 0 (cons 0 nil))))} Natreckind (t GenTs.∷ (t₁ GenTs.∷ (t₂ GenTs.∷ (t₃ GenTs.∷ []))))) u =
+  cong₃ NATREC (⟦[]⟧ᵤ' t₃ u) (⟦[]⟧ᵤ' t₁ u) (⟦[]⟧ᵤ' t₂ u)
+⟦[]⟧ᵤ' {n} {m} (gen {.nil} Unitkind []) u = refl
+⟦[]⟧ᵤ' {n} {m} (gen {.nil} Starkind []) u = refl
+⟦[]⟧ᵤ' {n} {m} (gen {.nil} Emptykind []) u = refl
+⟦[]⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) u = ⟦[]⟧ᵤ' t₁ u
+
+
+⟦[]⟧ᵤ-as-subn : {n : Nat} (G : Term (1+ n)) (u : Term n)
+              → ⟦ G [ u ] ⟧ᵤ ≣ subn 0 ⟦ u ⟧ᵤ ⟦ G ⟧ᵤ
+⟦[]⟧ᵤ-as-subn {n} G u = ⟦[]⟧ᵤ' {n} {0} G u
+
+
+⟦[]⟧ᵤ-as-sub : {n : Nat} (G : Term (1+ n)) (u : Term n)
+             → ⟦ G [ u ] ⟧ᵤ ≣ sub ⟦ u ⟧ᵤ ⟦ G ⟧ᵤ
+⟦[]⟧ᵤ-as-sub {n} G u = ≣trans (⟦[]⟧ᵤ-as-subn G u) (≣sym (sub≡subn ⟦ u ⟧ᵤ ⟦ G ⟧ᵤ))
 
 
 -- finish converting G
@@ -928,7 +1051,7 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 es eh
   h1 : valid∈ i w ⟦ Γ ⟧Γ ⟦ x ⟧ᵤ NAT!
   h1 = ⟦_⟧Γ∈ j i lti w
 ⟦_⟧Γ∈ {n} {Γ} {.(natrec _ _ _ _)} {.(G [ k ])} (natrecⱼ {G} {s} {z} {k} x j j₁ j₂) i lti w =
-  {!!}
+  {!!}   -- valid∈NATREC and use ⟦[]⟧ᵤ-as-sub
   where
   h1 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp NAT!) ⟦ G ⟧ᵤ (UNIV 1)
   h1 = ⟦_⟧⊢ x i lti
