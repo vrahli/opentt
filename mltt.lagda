@@ -934,8 +934,8 @@ sucIf≤-predIf≤-prop2 (1+ x) m p q with 1+ x ≤? m
 ⟦[]⟧ᵤ'-var2 : {n m : Nat} (x : Fin (m + 1+ n)) (u : Term n)
             → ¬ toℕ x ≣ m
             → ⟦ liftSubstn (consSubst var u) m x ⟧ᵤ ≣ VAR (predIf≤ m (toℕ x))
-⟦[]⟧ᵤ'-var2 {n} {Nat.zero} Fin.zero u p = ⊥-elim (p refl)
-⟦[]⟧ᵤ'-var2 {n} {Nat.zero} (Fin.suc x) u p = refl
+⟦[]⟧ᵤ'-var2 {n} {0} Fin.zero u p = ⊥-elim (p refl)
+⟦[]⟧ᵤ'-var2 {n} {0} (Fin.suc x) u p = refl
 ⟦[]⟧ᵤ'-var2 {n} {1+ m} Fin.zero u p = refl
 ⟦[]⟧ᵤ'-var2 {n} {1+ m} (Fin.suc x) u p with 1+ (toℕ x) ≤? 1+ m
 ... | yes q =
@@ -970,7 +970,8 @@ sucIf≤-predIf≤-prop2 (1+ x) m p q with 1+ x ≤? m
   cong SND (⟦[]⟧ᵤ' t u)
 ⟦[]⟧ᵤ' {n} {m} (gen {.nil} Natkind []) u = refl
 ⟦[]⟧ᵤ' {n} {m} (gen {.nil} Zerokind []) u = refl
-⟦[]⟧ᵤ' {n} {m} (gen {.(cons 0 nil)} Suckind (t GenTs.∷ [])) u = cong SUC (⟦[]⟧ᵤ' t u)
+⟦[]⟧ᵤ' {n} {m} (gen {.(cons 0 nil)} Suckind (t GenTs.∷ [])) u =
+  cong SUC (⟦[]⟧ᵤ' t u)
 ⟦[]⟧ᵤ' {n} {m} (gen {.(cons 1 (cons 0 (cons 0 (cons 0 nil))))} Natreckind (t GenTs.∷ (t₁ GenTs.∷ (t₂ GenTs.∷ (t₃ GenTs.∷ []))))) u =
   cong₃ NATREC (⟦[]⟧ᵤ' t₃ u) (⟦[]⟧ᵤ' t₁ u) (⟦[]⟧ᵤ' t₂ u)
 ⟦[]⟧ᵤ' {n} {m} (gen {.nil} Unitkind []) u = refl
@@ -989,11 +990,73 @@ sucIf≤-predIf≤-prop2 (1+ x) m p q with 1+ x ≤? m
 ⟦[]⟧ᵤ-as-sub {n} G u = ≣trans (⟦[]⟧ᵤ-as-subn G u) (≣sym (sub≡subn ⟦ u ⟧ᵤ ⟦ G ⟧ᵤ))
 
 
+⟦[]↑⟧ᵤ'-var1 : {n m : Nat} (x : Fin (m + 1+ n)) (u : Term (1+ n))
+            → toℕ x ≣ m
+            → ⟦ liftSubstn (consSubst (λ z → var (Fin.suc z)) u) m x ⟧ᵤ ≣ shiftUpN 0 m ⟦ u ⟧ᵤ
+⟦[]↑⟧ᵤ'-var1 {n} {0} Fin.zero u e = refl
+⟦[]↑⟧ᵤ'-var1 {n} {1+ m} (Fin.suc x) u e
+  rewrite ≣sym (⟦[]↑⟧ᵤ'-var1 x u (suc-injective e))
+  = ⟦wk⟧ᵤ {m + 1+ n} {0} (liftSubstn (consSubst (λ z → var (Fin.suc z)) u) m x)
+
+
+-- not quite right
+⟦[]↑⟧ᵤ'-var2 : {n m : Nat} (x : Fin (m + 1+ n)) (u : Term (1+ n))
+            → ¬ toℕ x ≣ m
+            → ⟦ liftSubstn (consSubst (λ z → var (Fin.suc z)) u) m x ⟧ᵤ ≣ VAR (predIf≤ m (toℕ x))
+⟦[]↑⟧ᵤ'-var2 {n} {0} Fin.zero u p = ⊥-elim (p refl)
+⟦[]↑⟧ᵤ'-var2 {n} {0} (Fin.suc x) u p = {!!}
+⟦[]↑⟧ᵤ'-var2 {n} {1+ m} Fin.zero u p = refl
+⟦[]↑⟧ᵤ'-var2 {n} {1+ m} (Fin.suc x) u p = {!!}
+
+
+⟦[]↑⟧ᵤ' : {n m : Nat} (G : Term (m + 1+ n)) (u : Term (1+ n))
+        → ⟦ subst (liftSubstn (consSubst (wk1Subst idSubst) u) m) G ⟧ᵤ ≣ subn m (shiftUpN 0 m ⟦ u ⟧ᵤ) ⟦ G ⟧ᵤ
+⟦[]↑⟧ᵤ' {n} {m} (var x) u with toℕ x ≟ m
+... | yes p = ⟦[]↑⟧ᵤ'-var1 x u p
+... | no p = {!!} --⟦[]⟧ᵤ'-var2 x u p
+⟦[]↑⟧ᵤ' {n} {m} (gen {.nil} Ukind []) u = refl
+⟦[]↑⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 1 nil))} Pikind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
+  cong₂ PI (⟦[]↑⟧ᵤ' t u) (⟦[]↑⟧ᵤ' {n} {1+ m} t₁ u)
+⟦[]↑⟧ᵤ' {n} {m} (gen {.(cons 1 nil)} Lamkind (t GenTs.∷ [])) u =
+  cong LAMBDA (⟦[]↑⟧ᵤ' {n} {1+ m} t u)
+⟦[]↑⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
+  cong₂ APPLY (⟦[]↑⟧ᵤ' t u) (⟦[]↑⟧ᵤ' t₁ u)
+⟦[]↑⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
+  cong₂ SUM (⟦[]↑⟧ᵤ' t u) (⟦[]↑⟧ᵤ' {n} {1+ m} t₁ u)
+⟦[]↑⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
+  cong₂ PAIR (⟦[]↑⟧ᵤ' t u) (⟦[]↑⟧ᵤ' t₁ u)
+⟦[]↑⟧ᵤ' {n} {m} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) u =
+  cong FST (⟦[]↑⟧ᵤ' t u)
+⟦[]↑⟧ᵤ' {n} {m} (gen {.(cons 0 nil)} Sndkind (t GenTs.∷ [])) u =
+  cong SND (⟦[]↑⟧ᵤ' t u)
+⟦[]↑⟧ᵤ' {n} {m} (gen {.nil} Natkind []) u = refl
+⟦[]↑⟧ᵤ' {n} {m} (gen {.nil} Zerokind []) u = refl
+⟦[]↑⟧ᵤ' {n} {m} (gen {.(cons 0 nil)} Suckind (t GenTs.∷ [])) u =
+  cong SUC (⟦[]↑⟧ᵤ' t u)
+⟦[]↑⟧ᵤ' {n} {m} (gen {.(cons 1 (cons 0 (cons 0 (cons 0 nil))))} Natreckind (t GenTs.∷ (t₁ GenTs.∷ (t₂ GenTs.∷ (t₃ GenTs.∷ []))))) u =
+  cong₃ NATREC (⟦[]↑⟧ᵤ' t₃ u) (⟦[]↑⟧ᵤ' t₁ u) (⟦[]↑⟧ᵤ' t₂ u)
+⟦[]↑⟧ᵤ' {n} {m} (gen {.nil} Unitkind []) u = refl
+⟦[]↑⟧ᵤ' {n} {m} (gen {.nil} Starkind []) u = refl
+⟦[]↑⟧ᵤ' {n} {m} (gen {.nil} Emptykind []) u = refl
+⟦[]↑⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
+  ⟦[]↑⟧ᵤ' t₁ u
+
+
+⟦[]↑⟧ᵤ : {n m : Nat} (G : Term (1+ n)) (u : Term (1+ n))
+        → ⟦ subst (consSubst (wk1Subst idSubst) u) G ⟧ᵤ ≣ subn 1 ⟦ u ⟧ᵤ ⟦ G ⟧ᵤ
+⟦[]↑⟧ᵤ {n} {m} G u = {!!}
+
+
+⟦▹▹⟧ᵤ : {n : Nat} (A B : Term n)
+      → ⟦ A ▹▹ B ⟧ᵤ ≣ FUN ⟦ A ⟧ᵤ ⟦ B ⟧ᵤ
+⟦▹▹⟧ᵤ {n} A B = cong₂ PI refl (⟦wk⟧ᵤ {n} {0} B)
+
+
 -- finish converting G
 valid∈NATREC : {i : Nat} {H : hypotheses} {G k z s : BTerm}
              → valid∈𝕎 i (H Data.List.∷ʳ mkHyp NAT!) G (UNIV 1)
              → valid∈𝕎 i H z (sub N0 G)
-             → valid∈𝕎 i H s (PI NAT! {!!}) --⟦ (G ▹▹ G [ Definition.Untyped.suc (var Fin.zero) ]↑) ⟧ᵤ)
+             → valid∈𝕎 i H s (PI NAT! (FUN G {!!})) --⟦ (G ▹▹ G [ Definition.Untyped.suc (var Fin.zero) ]↑) ⟧ᵤ)
              → valid∈𝕎 i H k NAT!
              → valid∈𝕎 i H (NATREC k z s) (sub k G)
 valid∈NATREC {i} {H} {G} {k} {z} {s} hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 es eh = {!!}
@@ -1059,8 +1122,15 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 es eh
   h2 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ z ⟧ᵤ ⟦ G [ Definition.Untyped.zero ] ⟧ᵤ
   h2 = ⟦_⟧Γ∈ j i lti
 
+  h2' : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ z ⟧ᵤ (sub N0 ⟦ G ⟧ᵤ)
+  h2' rewrite ≣sym (⟦[]⟧ᵤ-as-sub {n} G Definition.Untyped.zero) = h2
+
   h3 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ ⟦ Π ℕ ▹ (G ▹▹ G [ Definition.Untyped.suc (var Fin.zero) ]↑) ⟧ᵤ
   h3 = ⟦_⟧Γ∈ j₁ i lti
+
+  -- still need to translate [_]↑ -- see the attempt ⟦[]↑⟧ᵤ' above
+  h3' : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ (PI NAT! (FUN ⟦ G ⟧ᵤ ⟦ G [ Definition.Untyped.suc (var Fin.zero) ]↑ ⟧ᵤ))
+  h3' = ≣subst (λ z → valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ (PI NAT! z)) (⟦▹▹⟧ᵤ G (G [ Definition.Untyped.suc (var Fin.zero) ]↑)) h3
 
   h4 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ k ⟧ᵤ NAT!
   h4 = ⟦_⟧Γ∈ j₂ i lti
