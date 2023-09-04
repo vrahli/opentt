@@ -35,71 +35,80 @@ open import terms3(W)(C)(K)(G)(X)(N)(EC)
 
 
 -- We could have used this instead of sub. We prove below (subn≡sub) that it is equivalent (when v ≡ 0)
-subn : Var → Term → Term → Term
-subn v t (VAR x) with x ≟ v
+gsub : (σ : Var → Var → Var) → Var → Term → Term → Term
+gsub σ v t (VAR x) with x ≟ v
 ... | yes _ = t
-... | no _ = VAR (predIf≤ v x) -- (pred x) if v < x
---subn v t NAT = NAT
-subn v t QNAT = QNAT
---subn v t TNAT = TNAT
-subn v t (LT u u₁) = LT (subn v t u) (subn v t u₁)
-subn v t (QLT u u₁) = QLT (subn v t u) (subn v t u₁)
-subn v t (NUM x) = NUM x
-subn v t (IFLT u u₁ u₂ u₃) = IFLT (subn v t u) (subn v t u₁) (subn v t u₂) (subn v t u₃)
-subn v t (IFEQ u u₁ u₂ u₃) = IFEQ (subn v t u) (subn v t u₁) (subn v t u₂) (subn v t u₃)
-subn v t (SUC u)      = SUC (subn v t u)
-subn v t (NATREC u u₁ u₂) = NATREC (subn v t u) (subn v t u₁) (subn v t u₂)
-subn v t (PI u u₁)    = PI (subn v t u) (subn (suc v) (shiftUp 0 t) u₁)
-subn v t (LAMBDA u)   = LAMBDA (subn (suc v) (shiftUp 0 t) u)
-subn v t (APPLY u u₁) = APPLY (subn v t u) (subn v t u₁)
-subn v t (FIX u)      = FIX (subn v t u)
-subn v t (LET u u₁)   = LET (subn v t u) (subn (suc v) (shiftUp 0 t) u₁)
-subn v t (WT u u₁ u₂) = WT (subn v t u) (subn (suc v) (shiftUp 0 t) u₁) (subn v t u₂)
-subn v t (SUP u u₁)   = SUP (subn v t u) (subn v t u₁)
---subn v t (DSUP u u₁)  = DSUP (subn v t u) (subn (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁)
-subn v t (WREC u u₁)  = WREC (subn v t u) (subn (suc (suc (suc v))) (shiftUp 0 (shiftUp 0 (shiftUp 0 t))) u₁)
-subn v t (MT u u₁ u₂) = MT (subn v t u) (subn (suc v) (shiftUp 0 t) u₁) (subn v t u₂)
---subn v t (MSUP u u₁)  = MSUP (subn v t u) (subn v t u₁)
---subn v t (DMSUP u u₁) = DMSUP (subn v t u) (subn (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁)
-subn v t (SUM u u₁) = SUM (subn v t u) (subn (suc v) (shiftUp 0 t) u₁)
-subn v t (PAIR u u₁) = PAIR (subn v t u) (subn v t u₁)
-subn v t (SPREAD u u₁) = SPREAD (subn v t u) (subn (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁)
-subn v t (SET u u₁) = SET (subn v t u) (subn (suc v) (shiftUp 0 t) u₁)
-subn v t (ISECT u u₁) = ISECT (subn v t u) (subn v t u₁)
-subn v t (TUNION u u₁) = TUNION (subn v t u) (subn (suc v) (shiftUp 0 t) u₁)
-subn v t (UNION u u₁) = UNION (subn v t u) (subn v t u₁)
---subn v t (QTUNION u u₁) = QTUNION (subn v t u) (subn v t u₁)
-subn v t (INL u) = INL (subn v t u)
-subn v t (INR u) = INR (subn v t u)
-subn v t (DECIDE u u₁ u₂) = DECIDE (subn v t u) (subn (suc v) (shiftUp 0 t) u₁) (subn (suc v) (shiftUp 0 t) u₂)
-subn v t (EQ u u₁ u₂) = EQ (subn v t u) (subn v t u₁) (subn v t u₂)
---subn v t (EQB u u₁ u₂ u₃) = EQB (subn v t u) (subn v t u₁) (subn v t u₂) (subn v t u₃)
-subn v t AX = AX
-subn v t FREE = FREE
-subn v t (MSEQ x) = MSEQ x
-subn v t (MAPP s u) = MAPP s (subn v t u)
-subn v t (CS x) = CS x
-subn v t (NAME x) = NAME x
-subn v t (FRESH a) = FRESH (subn v (shiftNameUp 0 t) a)
-subn v t (LOAD a) = LOAD a
-subn v t (CHOOSE a b) = CHOOSE (subn v t a) (subn v t b)
---subn v t (IFC0 a t₁ t₂) = IFC0 (subn v t a) (subn v t t₁) (subn v t t₂)
---subn v t (TSQUASH u) = TSQUASH (subn v t u)
---subn v t (TTRUNC u) = TTRUNC (subn v t u)
-subn v t NOWRITE = NOWRITE
-subn v t NOREAD  = NOREAD
-subn v t (SUBSING u) = SUBSING (subn v t u)
-subn v t (DUM u) = DUM (subn v t u)
-subn v t (FFDEFS u u₁) = FFDEFS (subn v t u) (subn v t u₁)
-subn v t PURE = PURE
-subn v t NOSEQ = NOSEQ
-subn v t NOENC = NOENC
-subn v t (TERM u) = TERM (subn v t u)
-subn v t (ENC u) = ENC u
-subn v t (UNIV x) = UNIV x
-subn v t (LIFT u) = LIFT (subn v t u)
-subn v t (LOWER u) = LOWER (subn v t u)
-subn v t (SHRINK u) = SHRINK (subn v t u)
+... | no _ = VAR (σ v x) -- (pred x) if v < x
+--gsub v t NAT = NAT
+gsub σ v t QNAT = QNAT
+--gsub v t TNAT = TNAT
+gsub σ v t (LT u u₁) = LT (gsub σ v t u) (gsub σ v t u₁)
+gsub σ v t (QLT u u₁) = QLT (gsub σ v t u) (gsub σ v t u₁)
+gsub σ v t (NUM x) = NUM x
+gsub σ v t (IFLT u u₁ u₂ u₃) = IFLT (gsub σ v t u) (gsub σ v t u₁) (gsub σ v t u₂) (gsub σ v t u₃)
+gsub σ v t (IFEQ u u₁ u₂ u₃) = IFEQ (gsub σ v t u) (gsub σ v t u₁) (gsub σ v t u₂) (gsub σ v t u₃)
+gsub σ v t (SUC u)      = SUC (gsub σ v t u)
+gsub σ v t (NATREC u u₁ u₂) = NATREC (gsub σ v t u) (gsub σ v t u₁) (gsub σ v t u₂)
+gsub σ v t (PI u u₁)    = PI (gsub σ v t u) (gsub σ (suc v) (shiftUp 0 t) u₁)
+gsub σ v t (LAMBDA u)   = LAMBDA (gsub σ (suc v) (shiftUp 0 t) u)
+gsub σ v t (APPLY u u₁) = APPLY (gsub σ v t u) (gsub σ v t u₁)
+gsub σ v t (FIX u)      = FIX (gsub σ v t u)
+gsub σ v t (LET u u₁)   = LET (gsub σ v t u) (gsub σ (suc v) (shiftUp 0 t) u₁)
+gsub σ v t (WT u u₁ u₂) = WT (gsub σ v t u) (gsub σ (suc v) (shiftUp 0 t) u₁) (gsub σ v t u₂)
+gsub σ v t (SUP u u₁)   = SUP (gsub σ v t u) (gsub σ v t u₁)
+--gsub v t (DSUP u u₁)  = DSUP (gsub σ v t u) (gsub σ (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁)
+gsub σ v t (WREC u u₁)  = WREC (gsub σ v t u) (gsub σ (suc (suc (suc v))) (shiftUp 0 (shiftUp 0 (shiftUp 0 t))) u₁)
+gsub σ v t (MT u u₁ u₂) = MT (gsub σ v t u) (gsub σ (suc v) (shiftUp 0 t) u₁) (gsub σ v t u₂)
+--gsub v t (MSUP u u₁)  = MSUP (gsub σ v t u) (gsub σ v t u₁)
+--gsub v t (DMSUP u u₁) = DMSUP (gsub σ v t u) (gsub σ (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁)
+gsub σ v t (SUM u u₁) = SUM (gsub σ v t u) (gsub σ (suc v) (shiftUp 0 t) u₁)
+gsub σ v t (PAIR u u₁) = PAIR (gsub σ v t u) (gsub σ v t u₁)
+gsub σ v t (SPREAD u u₁) = SPREAD (gsub σ v t u) (gsub σ (suc (suc v)) (shiftUp 0 (shiftUp 0 t)) u₁)
+gsub σ v t (SET u u₁) = SET (gsub σ v t u) (gsub σ (suc v) (shiftUp 0 t) u₁)
+gsub σ v t (ISECT u u₁) = ISECT (gsub σ v t u) (gsub σ v t u₁)
+gsub σ v t (TUNION u u₁) = TUNION (gsub σ v t u) (gsub σ (suc v) (shiftUp 0 t) u₁)
+gsub σ v t (UNION u u₁) = UNION (gsub σ v t u) (gsub σ v t u₁)
+--gsub v t (QTUNION u u₁) = QTUNION (gsub σ v t u) (gsub σ v t u₁)
+gsub σ v t (INL u) = INL (gsub σ v t u)
+gsub σ v t (INR u) = INR (gsub σ v t u)
+gsub σ v t (DECIDE u u₁ u₂) = DECIDE (gsub σ v t u) (gsub σ (suc v) (shiftUp 0 t) u₁) (gsub σ (suc v) (shiftUp 0 t) u₂)
+gsub σ v t (EQ u u₁ u₂) = EQ (gsub σ v t u) (gsub σ v t u₁) (gsub σ v t u₂)
+--gsub v t (EQB u u₁ u₂ u₃) = EQB (gsub σ v t u) (gsub σ v t u₁) (gsub σ v t u₂) (gsub σ v t u₃)
+gsub σ v t AX = AX
+gsub σ v t FREE = FREE
+gsub σ v t (MSEQ x) = MSEQ x
+gsub σ v t (MAPP s u) = MAPP s (gsub σ v t u)
+gsub σ v t (CS x) = CS x
+gsub σ v t (NAME x) = NAME x
+gsub σ v t (FRESH a) = FRESH (gsub σ v (shiftNameUp 0 t) a)
+gsub σ v t (LOAD a) = LOAD a
+gsub σ v t (CHOOSE a b) = CHOOSE (gsub σ v t a) (gsub σ v t b)
+--gsub v t (IFC0 a t₁ t₂) = IFC0 (gsub σ v t a) (gsub σ v t t₁) (gsub σ v t t₂)
+--gsub v t (TSQUASH u) = TSQUASH (gsub σ v t u)
+--gsub v t (TTRUNC u) = TTRUNC (gsub σ v t u)
+gsub σ v t NOWRITE = NOWRITE
+gsub σ v t NOREAD  = NOREAD
+gsub σ v t (SUBSING u) = SUBSING (gsub σ v t u)
+gsub σ v t (DUM u) = DUM (gsub σ v t u)
+gsub σ v t (FFDEFS u u₁) = FFDEFS (gsub σ v t u) (gsub σ v t u₁)
+gsub σ v t PURE = PURE
+gsub σ v t NOSEQ = NOSEQ
+gsub σ v t NOENC = NOENC
+gsub σ v t (TERM u) = TERM (gsub σ v t u)
+gsub σ v t (ENC u) = ENC u
+gsub σ v t (UNIV x) = UNIV x
+gsub σ v t (LIFT u) = LIFT (gsub σ v t u)
+gsub σ v t (LOWER u) = LOWER (gsub σ v t u)
+gsub σ v t (SHRINK u) = SHRINK (gsub σ v t u)
+
+
+subn : Var → Term → Term → Term
+subn = gsub predIf≤
+
+
+-- does not lower the variable in the VAR case
+subi : Var → Term → Term → Term
+subi = gsub (λ v x → x)
 
 
 shiftUpUp : (m n : ℕ) (t : Term) → m ≤ n → shiftUp m (shiftUp n t) ≡ shiftUp (suc n) (shiftUp m t)

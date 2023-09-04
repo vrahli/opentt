@@ -999,21 +999,28 @@ sucIf≤-predIf≤-prop2 (1+ x) m p q with 1+ x ≤? m
   = ⟦wk⟧ᵤ {m + 1+ n} {0} (liftSubstn (consSubst (λ z → var (Fin.suc z)) u) m x)
 
 
--- not quite right
+sucIf≤0 : (n : Nat) → sucIf≤ 0 n ≣ 1+ n
+sucIf≤0 n with n <? 0
+... | no p = refl
+
+
 ⟦[]↑⟧ᵤ'-var2 : {n m : Nat} (x : Fin (m + 1+ n)) (u : Term (1+ n))
             → ¬ toℕ x ≣ m
-            → ⟦ liftSubstn (consSubst (λ z → var (Fin.suc z)) u) m x ⟧ᵤ ≣ VAR (predIf≤ m (toℕ x))
+            → ⟦ liftSubstn (consSubst (λ z → var (Fin.suc z)) u) m x ⟧ᵤ ≣ VAR (toℕ x)
 ⟦[]↑⟧ᵤ'-var2 {n} {0} Fin.zero u p = ⊥-elim (p refl)
-⟦[]↑⟧ᵤ'-var2 {n} {0} (Fin.suc x) u p = {!!}
+⟦[]↑⟧ᵤ'-var2 {n} {0} (Fin.suc x) u p = refl
 ⟦[]↑⟧ᵤ'-var2 {n} {1+ m} Fin.zero u p = refl
-⟦[]↑⟧ᵤ'-var2 {n} {1+ m} (Fin.suc x) u p = {!!}
+⟦[]↑⟧ᵤ'-var2 {n} {1+ m} (Fin.suc x) u p =
+  ≣trans (⟦wk⟧ᵤ {_} {0} (liftSubstn (consSubst (λ z → var (Fin.suc z)) u) m x))
+         (≣trans (cong (shiftUp 0) (⟦[]↑⟧ᵤ'-var2 x u (λ z → p (cong 1+ z))))
+                 (cong VAR (sucIf≤0 (toℕ x))))
 
 
 ⟦[]↑⟧ᵤ' : {n m : Nat} (G : Term (m + 1+ n)) (u : Term (1+ n))
-        → ⟦ subst (liftSubstn (consSubst (wk1Subst idSubst) u) m) G ⟧ᵤ ≣ subn m (shiftUpN 0 m ⟦ u ⟧ᵤ) ⟦ G ⟧ᵤ
+        → ⟦ subst (liftSubstn (consSubst (wk1Subst idSubst) u) m) G ⟧ᵤ ≣ subi m (shiftUpN 0 m ⟦ u ⟧ᵤ) ⟦ G ⟧ᵤ
 ⟦[]↑⟧ᵤ' {n} {m} (var x) u with toℕ x ≟ m
 ... | yes p = ⟦[]↑⟧ᵤ'-var1 x u p
-... | no p = {!!} --⟦[]⟧ᵤ'-var2 x u p
+... | no  p = ⟦[]↑⟧ᵤ'-var2 x u p
 ⟦[]↑⟧ᵤ' {n} {m} (gen {.nil} Ukind []) u = refl
 ⟦[]↑⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 1 nil))} Pikind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
   cong₂ PI (⟦[]↑⟧ᵤ' t u) (⟦[]↑⟧ᵤ' {n} {1+ m} t₁ u)
@@ -1043,8 +1050,8 @@ sucIf≤-predIf≤-prop2 (1+ x) m p q with 1+ x ≤? m
 
 
 ⟦[]↑⟧ᵤ : {n m : Nat} (G : Term (1+ n)) (u : Term (1+ n))
-        → ⟦ subst (consSubst (wk1Subst idSubst) u) G ⟧ᵤ ≣ subn 1 ⟦ u ⟧ᵤ ⟦ G ⟧ᵤ
-⟦[]↑⟧ᵤ {n} {m} G u = {!!}
+        → ⟦ G [ u ]↑ ⟧ᵤ ≣ subi 0 ⟦ u ⟧ᵤ ⟦ G ⟧ᵤ
+⟦[]↑⟧ᵤ {n} {m} G u = ⟦[]↑⟧ᵤ' {n} {0} G u
 
 
 ⟦▹▹⟧ᵤ : {n : Nat} (A B : Term n)
@@ -1055,10 +1062,10 @@ sucIf≤-predIf≤-prop2 (1+ x) m p q with 1+ x ≤? m
 -- finish converting G
 valid∈NATREC : {i : Nat} {H : hypotheses} {G k z s : BTerm}
              → valid∈𝕎 i (H Data.List.∷ʳ mkHyp NAT!) G (UNIV 1)
-             → valid∈𝕎 i H z (sub N0 G)
-             → valid∈𝕎 i H s (PI NAT! (FUN G {!!})) --⟦ (G ▹▹ G [ Definition.Untyped.suc (var Fin.zero) ]↑) ⟧ᵤ)
+             → valid∈𝕎 i H z (subn 0 N0 G)
+             → valid∈𝕎 i H s (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) --⟦ G ▹▹ G [ Definition.Untyped.suc (var Fin.zero) ]↑ ⟧ᵤ)
              → valid∈𝕎 i H k NAT!
-             → valid∈𝕎 i H (NATREC k z s) (sub k G)
+             → valid∈𝕎 i H (NATREC k z s) (subn 0 k G)
 valid∈NATREC {i} {H} {G} {k} {z} {s} hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 es eh = {!!}
 
 
@@ -1131,6 +1138,9 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 es eh
   -- still need to translate [_]↑ -- see the attempt ⟦[]↑⟧ᵤ' above
   h3' : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ (PI NAT! (FUN ⟦ G ⟧ᵤ ⟦ G [ Definition.Untyped.suc (var Fin.zero) ]↑ ⟧ᵤ))
   h3' = ≣subst (λ z → valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ (PI NAT! z)) (⟦▹▹⟧ᵤ G (G [ Definition.Untyped.suc (var Fin.zero) ]↑)) h3
+
+  h3'' : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ (PI NAT! (FUN ⟦ G ⟧ᵤ (subi 0 (SUC (VAR 0)) ⟦ G ⟧ᵤ)))
+  h3'' = {!!} -- use ⟦[]↑⟧ᵤ
 
   h4 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ k ⟧ᵤ NAT!
   h4 = ⟦_⟧Γ∈ j₂ i lti
