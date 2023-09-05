@@ -1066,7 +1066,51 @@ valid∈NATREC : {i : Nat} {H : hypotheses} {G k z s : BTerm}
              → valid∈𝕎 i H s (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) --⟦ G ▹▹ G [ Definition.Untyped.suc (var Fin.zero) ]↑ ⟧ᵤ)
              → valid∈𝕎 i H k NAT!
              → valid∈𝕎 i H (NATREC k z s) (subn 0 k G)
-valid∈NATREC {i} {H} {G} {k} {z} {s} hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 es eh = {!!}
+valid∈NATREC {i} {H} {G} {k} {z} {s} hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 es eh =
+  c1 , c2
+  where
+  cu1 : covered s1 (UNIV 1)
+  cu1 = covered-UNIV s1 1
+
+  cu2 : covered s2 (UNIV 1)
+  cu2 = covered-UNIV s2 1
+
+  ck1 : covered s1 k
+  ck1 = coveredNATREC₁ {s1} {k} {z} {s} ce1
+
+  ck2 : covered s2 k
+  ck2 = coveredNATREC₁ {s2} {k} {z} {s} ce2
+
+  cs1 : covered (s1 Data.List.∷ʳ #subs s1 k ck1) G
+  cs1 = covered-subn→ (#subs s1 k ck1) k s1 G cc1
+
+  cs2 : covered (s2 Data.List.∷ʳ #subs s2 k ck2) G
+  cs2 = covered-subn→ (#subs s2 k ck2) k s2 G cc2
+
+  cu1' : covered (s1 Data.List.∷ʳ (#subs s1 k ck1)) (UNIV 1)
+  cu1' = covered-UNIV (s1 Data.List.∷ʳ (#subs s1 k ck1)) 1
+
+  cu2' : covered (s2 Data.List.∷ʳ (#subs s2 k ck2)) (UNIV 1)
+  cu2' = covered-UNIV (s2 Data.List.∷ʳ (#subs s2 k ck2)) 1
+
+  es1 : ≡subs i w (s1 Data.List.∷ʳ #subs s1 k ck1) (s2 Data.List.∷ʳ #subs s2 k ck2) (H Data.List.∷ʳ mkHyp NAT!)
+  es1 = {!!}
+
+  eh1 : ≡hyps i w (s1 Data.List.∷ʳ #subs s1 k ck1) (s2 Data.List.∷ʳ #subs s2 k ck2) (H Data.List.∷ʳ mkHyp NAT!) (H Data.List.∷ʳ mkHyp NAT!)
+  eh1 = {!!}
+
+  hg' : equalInType i w (#subs (s1 Data.List.∷ʳ (#subs s1 k ck1)) (UNIV 1) cu1')
+                        (#subs (s1 Data.List.∷ʳ (#subs s1 k ck1)) G cs1)
+                        (#subs (s2 Data.List.∷ʳ (#subs s2 k ck2)) G cs2)
+  hg' = π₂ (hg w (s1 Data.List.∷ʳ (#subs s1 k ck1)) (s2 Data.List.∷ʳ (#subs s2 k ck2)) cu1' cu2' cs1 cs2 es1 eh1)
+
+  -- G[k] is a type
+  c1 : equalTypes i w (#subs s1 (subn 0 k G) cc1) (#subs s2 (subn 0 k G) cc2)
+  c1 = {!!}
+
+  -- natrec ∈ G[k]
+  c2 : equalInType i w (#subs s1 (subn 0 k G) cc1) (#subs s1 (NATREC k z s) ce1) (#subs s2 (NATREC k z s) ce2)
+  c2 = {!!}
 
 
 ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
@@ -1135,12 +1179,11 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 es eh
   h3 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ ⟦ Π ℕ ▹ (G ▹▹ G [ Definition.Untyped.suc (var Fin.zero) ]↑) ⟧ᵤ
   h3 = ⟦_⟧Γ∈ j₁ i lti
 
-  -- still need to translate [_]↑ -- see the attempt ⟦[]↑⟧ᵤ' above
   h3' : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ (PI NAT! (FUN ⟦ G ⟧ᵤ ⟦ G [ Definition.Untyped.suc (var Fin.zero) ]↑ ⟧ᵤ))
   h3' = ≣subst (λ z → valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ (PI NAT! z)) (⟦▹▹⟧ᵤ G (G [ Definition.Untyped.suc (var Fin.zero) ]↑)) h3
 
   h3'' : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ (PI NAT! (FUN ⟦ G ⟧ᵤ (subi 0 (SUC (VAR 0)) ⟦ G ⟧ᵤ)))
-  h3'' = {!!} -- use ⟦[]↑⟧ᵤ
+  h3'' = ≣subst (λ z → valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ (PI NAT! (FUN ⟦ G ⟧ᵤ z))) (⟦[]↑⟧ᵤ {_} {0} G (Definition.Untyped.suc (var Fin.zero))) h3'
 
   h4 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ k ⟧ᵤ NAT!
   h4 = ⟦_⟧Γ∈ j₂ i lti

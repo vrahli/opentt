@@ -623,6 +623,24 @@ coveredPI₂ : {s : Sub} {a b : Term}
 coveredPI₂ {s} {a} {b} c {x} i = c {x} (∈-++⁺ʳ (fvars a) i)
 
 
+coveredNATREC₁ : {s : Sub} {a b c : Term}
+               → covered s (NATREC a b c)
+               → covered s a
+coveredNATREC₁ {s} {a} {b} {c} cov {x} i = cov {x} (∈-++⁺ˡ i)
+
+
+coveredNATREC₂ : {s : Sub} {a b c : Term}
+               → covered s (NATREC a b c)
+               → covered s b
+coveredNATREC₂ {s} {a} {b} {c} cov {x} i = cov {x} (∈-++⁺ʳ (fvars a) (∈-++⁺ˡ i))
+
+
+coveredNATREC₃ : {s : Sub} {a b c : Term}
+               → covered s (NATREC a b c)
+               → covered s c
+coveredNATREC₃ {s} {a} {b} {c} cov {x} i = cov {x} (∈-++⁺ʳ (fvars a) (∈-++⁺ʳ (fvars b) i))
+
+
 subs-SUM : (s : Sub) (a b : Term)
         → subs s (SUM a b) ≡ SUM (subs s a) (subsN 1 s b)
 subs-SUM [] a b = refl
@@ -1005,12 +1023,47 @@ lowerVarsFrom : Var → List Var → List Var
 lowerVarsFrom x [] = []
 lowerVarsFrom x (0 ∷ l) with x ≟ 0
 ... | yes p = lowerVarsFrom x l -- ≡ so remove it
-... | no p = 0 ∷ lowerVarsFrom x l -- smaller so keep it
+... | no  p = 0 ∷ lowerVarsFrom x l -- smaller so keep it
 lowerVarsFrom x (suc n ∷ l) with suc n <? x
 ... | yes p = suc n ∷ lowerVarsFrom x l -- smaller so keep it
-... | no p with x ≟ suc n
+... | no  p with x ≟ suc n
 ... | yes q = lowerVarsFrom x l -- ≡ so remove it
-... | no q = n ∷ lowerVarsFrom x l -- great so lower it
+... | no  q = n ∷ lowerVarsFrom x l -- great so lower it
+
+
+lowerVarsFrom++ : (v : Var) (l k : List Var)
+                → lowerVarsFrom v (l ++ k) ≡ lowerVarsFrom v l ++ lowerVarsFrom v k
+lowerVarsFrom++ v [] k = refl
+lowerVarsFrom++ v (0 ∷ l) k with v ≟ 0
+... | yes p rewrite p = lowerVarsFrom++ 0 l k
+... | no  p = cong (λ z → 0 ∷ z) (lowerVarsFrom++ v l k)
+lowerVarsFrom++ v (suc x ∷ l) k with suc x <? v
+... | yes p = cong (λ z → suc x ∷ z) (lowerVarsFrom++ v l k)
+... | no  p with v ≟ suc x
+... | yes q = lowerVarsFrom++ v l k
+... | no  q = cong (λ z → x ∷ z) (lowerVarsFrom++ v l k)
+
+
+lowerVarsFrom++₃ : (v : Var) (i j k : List Var)
+                → lowerVarsFrom v (i ++ j ++ k)
+                ≡ lowerVarsFrom v i ++ lowerVarsFrom v j ++ lowerVarsFrom v k
+lowerVarsFrom++₃ v i j k
+  rewrite lowerVarsFrom++ v i (j ++ k)
+        | lowerVarsFrom++ v j k = refl
+
+
+lowerVarsFrom++₄ : (v : Var) (i j k l : List Var)
+                → lowerVarsFrom v (i ++ j ++ k ++ l)
+                ≡ lowerVarsFrom v i ++ lowerVarsFrom v j ++ lowerVarsFrom v k ++ lowerVarsFrom v l
+lowerVarsFrom++₄ v i j k l
+  rewrite lowerVarsFrom++ v i (j ++ k ++ l)
+        | lowerVarsFrom++ v j (k ++ l)
+        | lowerVarsFrom++ v k l = refl
+
+
+⊆lowerVarsFrom++ : (v : Var) (l k : List Var)
+                 → lowerVarsFrom v l ++ lowerVarsFrom v k ⊆ lowerVarsFrom v (l ++ k)
+⊆lowerVarsFrom++ v l k {x} i rewrite lowerVarsFrom++ v l k = i
 
 
 →predIf≤∈lowerVarsFrom : (k n : ℕ) (l : List Var)
@@ -1224,5 +1277,205 @@ subn-subs n t #t (x ∷ s) F
 
   q1 : ≡hyps i w (s1 ∷ʳ a₁) (s2 ∷ʳ a₂) (subHyps 0 ⌜ t1 ⌝ (hs1 ++ [ mkHyp F1 ])) (subHyps 0 ⌜ t2 ⌝ (hs2 ++ [ mkHyp F2 ]))
   q1 rewrite subHyps∷ʳ 0 ⌜ t1 ⌝ F1 hs1 | subHyps∷ʳ 0 ⌜ t2 ⌝ F2 hs2 = q2
+
+
+⊆-++ : {L : Level} {A : Set(L)} {a b c d : List A}
+     → a ⊆ c
+     → b ⊆ d
+     → a ++ b ⊆ c ++ d
+⊆-++ {L} {A} {a} {b} {c} {d} i j {x} k with ∈-++⁻ a k
+... | inj₁ p = ∈-++⁺ˡ (i {x} p)
+... | inj₂ p = ∈-++⁺ʳ c (j {x} p)
+
+
+⊆-++₃ : {L : Level} {A : Set(L)} {a b c d e f : List A}
+     → a ⊆ d
+     → b ⊆ e
+     → c ⊆ f
+     → a ++ b ++ c ⊆ d ++ e ++ f
+⊆-++₃ {L} {A} {a} {b} {c} {d} {e} {f} i j k {x} p =
+  ⊆-++ {L} {A} {a} {b ++ c} {d} {e ++ f} i (⊆-++ {L} {A} {b} {c} {e} {f} j k) p
+
+
+⊆-++₄ : {L : Level} {A : Set(L)} {a b c d e f g h : List A}
+     → a ⊆ e
+     → b ⊆ f
+     → c ⊆ g
+     → d ⊆ h
+     → a ++ b ++ c ++ d ⊆ e ++ f ++ g ++ h
+⊆-++₄ {L} {A} {a} {b} {c} {d} {e} {f} {g} {h} i j k l {x} p =
+  ⊆-++₃ {L} {A} {a} {b} {c ++ d} {e} {f} {g ++ h} i j (⊆-++ {L} {A} k l) p
+
+
+1≤n : (n : ℕ) → ¬ n ≡ 0 → 1 ≤ n
+1≤n 0 p = ⊥-elim (p refl)
+1≤n (suc n) p = _≤_.s≤s _≤_.z≤n
+
+
+lowerVars-lowerVarsFrom : (n : ℕ) (l : List Var) → lowerVars (lowerVarsFrom (suc n) l) ≡ lowerVarsFrom n (lowerVars l)
+lowerVars-lowerVarsFrom n [] = refl
+lowerVars-lowerVarsFrom n (0 ∷ l) = lowerVars-lowerVarsFrom n l
+lowerVars-lowerVarsFrom n (suc 0 ∷ l) with n ≟ 0
+lowerVars-lowerVarsFrom n (suc 0 ∷ l) | yes p rewrite p = lowerVars-lowerVarsFrom 0 l
+lowerVars-lowerVarsFrom n (suc 0 ∷ l) | no p with 1 <? suc n
+... | yes q = cong (λ z → 0 ∷ z) (lowerVars-lowerVarsFrom n l)
+... | no q with suc n ≟ 1
+... | yes r = ⊥-elim (p (suc-injective r))
+... | no r = ⊥-elim (q (_≤_.s≤s (1≤n n p)))
+lowerVars-lowerVarsFrom n (suc (suc x) ∷ l) with suc x <? n
+lowerVars-lowerVarsFrom n (suc (suc x) ∷ l) | yes p with suc (suc x) <? suc n
+... | yes q = cong (λ z → suc x ∷ z) (lowerVars-lowerVarsFrom n l)
+... | no q with suc n ≟ suc (suc x)
+... | yes r rewrite suc-injective r = ⊥-elim (<-irrefl refl p)
+... | no r = ⊥-elim (q (≤⇒< (suc (suc x)) (suc n) (≤-trans p (<⇒≤ ≤-refl)) (λ z → r (sym z))))
+lowerVars-lowerVarsFrom n (suc (suc x) ∷ l) | no p with suc (suc x) <? suc n
+lowerVars-lowerVarsFrom n (suc (suc x) ∷ l) | no p | yes q = ⊥-elim (p (s≤s-inj q))
+lowerVars-lowerVarsFrom n (suc (suc x) ∷ l) | no p | no q with suc n ≟ suc (suc x)
+lowerVars-lowerVarsFrom n (suc (suc x) ∷ l) | no p | no q | yes r rewrite suc-injective r with suc x ≟ suc x
+... | yes s = lowerVars-lowerVarsFrom (suc x) l
+... | no s = ⊥-elim (s refl)
+lowerVars-lowerVarsFrom n (suc (suc x) ∷ l) | no p | no q | no r with n ≟ suc x
+... | yes s rewrite s = ⊥-elim (r refl)
+... | no s = cong (λ z → x ∷ z) (lowerVars-lowerVarsFrom n l)
+
+
+⊆fvars-subn : (n : ℕ) (u t : Term) → lowerVarsFrom n (fvars t) ⊆ fvars (subn n u t)
+⊆fvars-subn n u (VAR 0) {x} i with n ≟ 0
+⊆fvars-subn n u (VAR 0) {x} () | yes p
+⊆fvars-subn n u (VAR 0) {x} (here i) | no p rewrite i with 0 ≟ n
+... | yes r = ⊥-elim (p (sym r))
+... | no  r = here refl
+⊆fvars-subn n u (VAR (suc v)) {x} i with suc v <? n
+⊆fvars-subn n u (VAR (suc v)) {x} (here i) | yes p rewrite i with suc v ≟ n
+... | yes r rewrite r = ⊥-elim (<-irrefl refl p)
+... | no  r with suc v <? n
+⊆fvars-subn n u (VAR (suc v)) {x} (here i) | yes p | no r | yes s with v <? n
+... | yes j = here refl
+... | no  j = ⊥-elim (j (≤-trans (<⇒≤ ≤-refl) p))
+⊆fvars-subn n u (VAR (suc v)) {x} (here i) | yes p | no r | no  s = ⊥-elim (s p)
+⊆fvars-subn n u (VAR (suc v)) {x} i | no  p with n ≟ suc v
+⊆fvars-subn n u (VAR (suc v)) {x} () | no  p | yes q
+⊆fvars-subn n u (VAR (suc v)) {x} (here i) | no  p | no q rewrite i with suc v ≟ n
+... | yes r = ⊥-elim (q (sym r))
+... | no r with suc v ≤? n
+... | yes s = ⊥-elim (p (≤⇒< (suc v) n s r))
+... | no s = here refl
+⊆fvars-subn n u (LT t t₁) {x} i
+  rewrite lowerVarsFrom++ n (fvars t) (fvars t₁)
+  = ⊆-++ (⊆fvars-subn n u t) (⊆fvars-subn n u t₁) i
+⊆fvars-subn n u (QLT t t₁) {x} i
+  rewrite lowerVarsFrom++ n (fvars t) (fvars t₁)
+  = ⊆-++ (⊆fvars-subn n u t) (⊆fvars-subn n u t₁) i
+⊆fvars-subn n u (IFLT t t₁ t₂ t₃) {x} i
+  rewrite lowerVarsFrom++₄ n (fvars t) (fvars t₁) (fvars t₂) (fvars t₃)
+  = ⊆-++₄ (⊆fvars-subn n u t) (⊆fvars-subn n u t₁) (⊆fvars-subn n u t₂) (⊆fvars-subn n u t₃) i
+⊆fvars-subn n u (IFEQ t t₁ t₂ t₃) {x} i
+  rewrite lowerVarsFrom++₄ n (fvars t) (fvars t₁) (fvars t₂) (fvars t₃)
+  = ⊆-++₄ (⊆fvars-subn n u t) (⊆fvars-subn n u t₁) (⊆fvars-subn n u t₂) (⊆fvars-subn n u t₃) i
+⊆fvars-subn n u (SUC t) {x} i = ⊆fvars-subn n u t i
+⊆fvars-subn n u (NATREC t t₁ t₂) {x} i
+  rewrite lowerVarsFrom++₃ n (fvars t) (fvars t₁) (fvars t₂)
+  = ⊆-++₃ (⊆fvars-subn n u t) (⊆fvars-subn n u t₁) (⊆fvars-subn n u t₂) i
+⊆fvars-subn n u (PI t t₁) {x} i
+  rewrite lowerVarsFrom++ n (fvars t) (lowerVars (fvars t₁))
+        | sym (lowerVars-lowerVarsFrom n (fvars t₁))
+  = ⊆-++ (⊆fvars-subn n u t) (lowerVars⊆lowerVars _ _ (⊆fvars-subn (suc n) (shiftUp 0 u) t₁)) i
+⊆fvars-subn n u (LAMBDA t) {x} i
+  rewrite sym (lowerVars-lowerVarsFrom n (fvars t))
+  = lowerVars⊆lowerVars _ _ (⊆fvars-subn (suc n) (shiftUp 0 u) t) i
+⊆fvars-subn n u (APPLY t t₁) {x} i
+  rewrite lowerVarsFrom++ n (fvars t) (fvars t₁)
+  = ⊆-++ (⊆fvars-subn n u t) (⊆fvars-subn n u t₁) i
+⊆fvars-subn n u (FIX t) {x} i = ⊆fvars-subn n u t i
+⊆fvars-subn n u (LET t t₁) {x} i
+  rewrite lowerVarsFrom++ n (fvars t) (lowerVars (fvars t₁))
+        | sym (lowerVars-lowerVarsFrom n (fvars t₁))
+  = ⊆-++ (⊆fvars-subn n u t) (lowerVars⊆lowerVars _ _ (⊆fvars-subn (suc n) (shiftUp 0 u) t₁)) i
+⊆fvars-subn n u (WT t t₁ t₂) {x} i
+  rewrite lowerVarsFrom++₃ n (fvars t) (lowerVars (fvars t₁)) (fvars t₂)
+        | sym (lowerVars-lowerVarsFrom n (fvars t₁))
+  = ⊆-++₃ (⊆fvars-subn n u t) (lowerVars⊆lowerVars _ _ (⊆fvars-subn (suc n) (shiftUp 0 u) t₁)) (⊆fvars-subn n u t₂) i
+⊆fvars-subn n u (SUP t t₁) {x} i
+  rewrite lowerVarsFrom++ n (fvars t) (fvars t₁)
+  = ⊆-++ (⊆fvars-subn n u t) (⊆fvars-subn n u t₁) i
+⊆fvars-subn n u (WREC t t₁) {x} i
+  rewrite lowerVarsFrom++ n (fvars t) (lowerVars (lowerVars (lowerVars (fvars t₁))))
+        | sym (lowerVars-lowerVarsFrom n (lowerVars (lowerVars (fvars t₁))))
+        | sym (lowerVars-lowerVarsFrom (suc n) (lowerVars (fvars t₁)))
+        | sym (lowerVars-lowerVarsFrom (suc (suc n)) (fvars t₁))
+  = ⊆-++ (⊆fvars-subn n u t) (lowerVars⊆lowerVars _ _ (lowerVars⊆lowerVars _ _ (lowerVars⊆lowerVars _ _ (⊆fvars-subn (suc (suc (suc n))) (shiftUp 0 (shiftUp 0 (shiftUp 0 u))) t₁)))) i
+⊆fvars-subn n u (MT t t₁ t₂) {x} i
+  rewrite lowerVarsFrom++₃ n (fvars t) (lowerVars (fvars t₁)) (fvars t₂)
+        | sym (lowerVars-lowerVarsFrom n (fvars t₁))
+  = ⊆-++₃ (⊆fvars-subn n u t) (lowerVars⊆lowerVars _ _ (⊆fvars-subn (suc n) (shiftUp 0 u) t₁)) (⊆fvars-subn n u t₂) i
+⊆fvars-subn n u (SUM t t₁) {x} i
+  rewrite lowerVarsFrom++ n (fvars t) (lowerVars (fvars t₁))
+        | sym (lowerVars-lowerVarsFrom n (fvars t₁))
+  = ⊆-++ (⊆fvars-subn n u t) (lowerVars⊆lowerVars _ _ (⊆fvars-subn (suc n) (shiftUp 0 u) t₁)) i
+⊆fvars-subn n u (PAIR t t₁) {x} i
+  rewrite lowerVarsFrom++ n (fvars t) (fvars t₁)
+  = ⊆-++ (⊆fvars-subn n u t) (⊆fvars-subn n u t₁) i
+⊆fvars-subn n u (SPREAD t t₁) {x} i
+  rewrite lowerVarsFrom++ n (fvars t) (lowerVars (lowerVars (fvars t₁)))
+        | sym (lowerVars-lowerVarsFrom n (lowerVars (fvars t₁)))
+        | sym (lowerVars-lowerVarsFrom (suc n) (fvars t₁))
+  = ⊆-++ (⊆fvars-subn n u t) (lowerVars⊆lowerVars _ _ (lowerVars⊆lowerVars _ _ (⊆fvars-subn (suc (suc n)) (shiftUp 0 (shiftUp 0 u)) t₁))) i
+⊆fvars-subn n u (SET t t₁) {x} i
+  rewrite lowerVarsFrom++ n (fvars t) (lowerVars (fvars t₁))
+        | sym (lowerVars-lowerVarsFrom n (fvars t₁))
+  = ⊆-++ (⊆fvars-subn n u t) (lowerVars⊆lowerVars _ _ (⊆fvars-subn (suc n) (shiftUp 0 u) t₁)) i
+⊆fvars-subn n u (TUNION t t₁) {x} i
+  rewrite lowerVarsFrom++ n (fvars t) (lowerVars (fvars t₁))
+        | sym (lowerVars-lowerVarsFrom n (fvars t₁))
+  = ⊆-++ (⊆fvars-subn n u t) (lowerVars⊆lowerVars _ _ (⊆fvars-subn (suc n) (shiftUp 0 u) t₁)) i
+⊆fvars-subn n u (ISECT t t₁) {x} i
+  rewrite lowerVarsFrom++ n (fvars t) (fvars t₁)
+  = ⊆-++ (⊆fvars-subn n u t) (⊆fvars-subn n u t₁) i
+⊆fvars-subn n u (UNION t t₁) {x} i
+  rewrite lowerVarsFrom++ n (fvars t) (fvars t₁)
+  = ⊆-++ (⊆fvars-subn n u t) (⊆fvars-subn n u t₁) i
+⊆fvars-subn n u (INL t) {x} i = ⊆fvars-subn n u t i
+⊆fvars-subn n u (INR t) {x} i = ⊆fvars-subn n u t i
+⊆fvars-subn n u (DECIDE t t₁ t₂) {x} i
+  rewrite lowerVarsFrom++₃ n (fvars t) (lowerVars (fvars t₁)) (lowerVars (fvars t₂))
+        | sym (lowerVars-lowerVarsFrom n (fvars t₁))
+        | sym (lowerVars-lowerVarsFrom n (fvars t₂))
+  = ⊆-++₃ (⊆fvars-subn n u t) (lowerVars⊆lowerVars _ _ (⊆fvars-subn (suc n) (shiftUp 0 u) t₁)) (lowerVars⊆lowerVars _ _ (⊆fvars-subn (suc n) (shiftUp 0 u) t₂)) i
+⊆fvars-subn n u (EQ t t₁ t₂) {x} i
+  rewrite lowerVarsFrom++₃ n (fvars t) (fvars t₁) (fvars t₂)
+  = ⊆-++₃ (⊆fvars-subn n u t) (⊆fvars-subn n u t₁) (⊆fvars-subn n u t₂) i
+⊆fvars-subn n u (FRESH t) {x} i = ⊆fvars-subn n (shiftNameUp ℕ.zero u) t i
+⊆fvars-subn n u (CHOOSE t t₁) {x} i
+  rewrite lowerVarsFrom++ n (fvars t) (fvars t₁)
+  = ⊆-++ (⊆fvars-subn n u t) (⊆fvars-subn n u t₁) i
+⊆fvars-subn n u (MAPP x₁ t) {x} i = ⊆fvars-subn n u t i
+⊆fvars-subn n u (SUBSING t) {x} i = ⊆fvars-subn n u t i
+⊆fvars-subn n u (DUM t) {x} i = ⊆fvars-subn n u t i
+⊆fvars-subn n u (FFDEFS t t₁) {x} i
+  rewrite lowerVarsFrom++ n (fvars t) (fvars t₁)
+  = ⊆-++ (⊆fvars-subn n u t) (⊆fvars-subn n u t₁) i
+⊆fvars-subn n u (TERM t) {x} i = ⊆fvars-subn n u t i
+⊆fvars-subn n u (LIFT t) {x} i = ⊆fvars-subn n u t i
+⊆fvars-subn n u (LOWER t) {x} i = ⊆fvars-subn n u t i
+⊆fvars-subn n u (SHRINK t) {x} i = ⊆fvars-subn n u t i
+
+
+lowerVarsFrom0 : (l : List Var) → lowerVarsFrom 0 l ≡ lowerVars l
+lowerVarsFrom0 [] = refl
+lowerVarsFrom0 (0 ∷ l) = lowerVarsFrom0 l
+lowerVarsFrom0 (suc x ∷ l) = cong (λ z → x ∷ z) (lowerVarsFrom0 l)
+
+
+covered-subn→ : (t : CTerm) (u : Term) (s : Sub) (F : Term)
+              → covered s (subn 0 u F)
+              → covered (s ∷ʳ t) F
+covered-subn→ t u s F cov {x} i =
+  →covered∷ʳ t s F cov' {x} i
+  where
+  c : lowerVars (fvars F) ⊆ lowerVarsFrom 0 (fvars F)
+  c rewrite lowerVarsFrom0 (fvars F) = λ z → z
+
+  cov' : covered0 s F
+  cov' {y} j = cov {y} (⊆fvars-subn 0 u F (c j))
 
 \end{code}
