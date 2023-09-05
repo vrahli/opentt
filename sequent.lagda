@@ -669,6 +669,10 @@ covered-UNIV : (s : Sub) (i : ℕ) → covered s (UNIV i)
 covered-UNIV s i ()
 
 
+covered-NAT! : (s : Sub) → covered s NAT!
+covered-NAT! s ()
+
+
 covered-AX : (s : Sub) → covered s AX
 covered-AX s ()
 

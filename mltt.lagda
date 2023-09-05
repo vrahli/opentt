@@ -1075,6 +1075,12 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 es eh
   cu2 : covered s2 (UNIV 1)
   cu2 = covered-UNIV s2 1
 
+  cn1 : covered s1 NAT!
+  cn1 = covered-NAT! s1
+
+  cn2 : covered s2 NAT!
+  cn2 = covered-NAT! s2
+
   ck1 : covered s1 k
   ck1 = coveredNATREC₁ {s1} {k} {z} {s} ce1
 
@@ -1093,11 +1099,15 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 es eh
   cu2' : covered (s2 Data.List.∷ʳ (#subs s2 k ck2)) (UNIV 1)
   cu2' = covered-UNIV (s2 Data.List.∷ʳ (#subs s2 k ck2)) 1
 
+  k∈ : equalInType i w (#subs s1 NAT! cn1) (#subs s1 k ck1) (#subs s2 k ck2)
+  k∈ = π₂ (hk w s1 s2 cn1 cn2 ck1 ck2 es eh)
+
   es1 : ≡subs i w (s1 Data.List.∷ʳ #subs s1 k ck1) (s2 Data.List.∷ʳ #subs s2 k ck2) (H Data.List.∷ʳ mkHyp NAT!)
-  es1 = {!!}
+  es1 = ≡subs∷ʳ i w s1 s2 H NAT! cn1 (#subs s1 k ck1) (#subs s2 k ck2) k∈ es
 
   eh1 : ≡hyps i w (s1 Data.List.∷ʳ #subs s1 k ck1) (s2 Data.List.∷ʳ #subs s2 k ck2) (H Data.List.∷ʳ mkHyp NAT!) (H Data.List.∷ʳ mkHyp NAT!)
-  eh1 = {!!}
+  eh1 = ≡hyps∷ʳ i w s1 s2 H H NAT! NAT! cn1 cn2 (#subs s1 k ck1) (#subs s2 k ck2)
+                (≡CTerm→eqTypes (≣sym (#subs-NAT! s1 cn1)) (≣sym (#subs-NAT! s2 cn2)) isTypeNAT!) eh
 
   hg' : equalInType i w (#subs (s1 Data.List.∷ʳ (#subs s1 k ck1)) (UNIV 1) cu1')
                         (#subs (s1 Data.List.∷ʳ (#subs s1 k ck1)) G cs1)
@@ -1106,7 +1116,7 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 es eh
 
   -- G[k] is a type
   c1 : equalTypes i w (#subs s1 (subn 0 k G) cc1) (#subs s2 (subn 0 k G) cc2)
-  c1 = {!!}
+  c1 = {!!} -- use hg'
 
   -- natrec ∈ G[k]
   c2 : equalInType i w (#subs s1 (subn 0 k G) cc1) (#subs s1 (NATREC k z s) ce1) (#subs s2 (NATREC k z s) ce2)
