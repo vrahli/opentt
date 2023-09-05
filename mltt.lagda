@@ -1059,6 +1059,17 @@ sucIf≤0 n with n <? 0
 ⟦▹▹⟧ᵤ {n} A B = cong₂ PI refl (⟦wk⟧ᵤ {n} {0} B)
 
 
+subs∷ʳ≡ : (s : Sub) (k G : BTerm) (ck : covered s k)
+        → subs (s Data.List.∷ʳ #subs s k ck) G
+        ≣ subs s (subn 0 k G)
+subs∷ʳ≡ s k G ck =
+  ≣trans (≣sym (subn-subsN1 (#subs s k ck) s G)) e
+  where
+  e : subn 0 (subs s k) (subsN 1 s G)
+    ≣ subs s (subn 0 k G)
+  e = {!!}
+
+
 -- finish converting G
 valid∈NATREC : {i : Nat} {H : hypotheses} {G k z s : BTerm}
              → valid∈𝕎 i (H Data.List.∷ʳ mkHyp NAT!) G (UNIV 1)
@@ -1114,9 +1125,15 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 es eh
                         (#subs (s2 Data.List.∷ʳ (#subs s2 k ck2)) G cs2)
   hg' = π₂ (hg w (s1 Data.List.∷ʳ (#subs s1 k ck1)) (s2 Data.List.∷ʳ (#subs s2 k ck2)) cu1' cu2' cs1 cs2 es1 eh1)
 
+  hg'' : equalInType i w (#UNIV 1) (#subs s1 (subn 0 k G) cc1) (#subs s2 (subn 0 k G) cc2)
+  hg'' = ≡→equalInType (#subs-UNIV (s1 Data.List.∷ʳ #subs s1 k ck1) 1 cu1')
+                       (CTerm≡ {!!})
+                       {!!}
+                       hg'
+
   -- G[k] is a type
   c1 : equalTypes i w (#subs s1 (subn 0 k G) cc1) (#subs s2 (subn 0 k G) cc2)
-  c1 = {!!} -- use hg'
+  c1 = {!!} -- use hg''
 
   -- natrec ∈ G[k]
   c2 : equalInType i w (#subs s1 (subn 0 k G) cc1) (#subs s1 (NATREC k z s) ce1) (#subs s2 (NATREC k z s) ce2)
