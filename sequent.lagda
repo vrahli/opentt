@@ -74,10 +74,10 @@ open import subst(W)(C)(K)(G)(X)(N)(EC)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqTypes-mon ; weq-ext-eq ; meq-ext-eq ; TUNIONeq-ext-eq)
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (eqInType-ext ; □·EqTypes→uniUpTo ; uniUpTo→□·EqTypes)
+  using (eqInType-ext ; □·EqTypes→uniUpTo ; uniUpTo→□·EqTypes ; TEQrefl-equalTypes)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalInType-mon ; ≡CTerm→equalInType ; ≡CTerm→eqTypes ; equalTypes→equalInType-UNIV ; eqTypesUniv ;
-         wPredExtIrr-eqInType ; wPredDepExtIrr-eqInType ; wPredDepExtIrr-eqInType2)
+         wPredExtIrr-eqInType ; wPredDepExtIrr-eqInType ; wPredDepExtIrr-eqInType2 ; equalInType-refl)
 
 
 -- ---------------------------------
@@ -507,6 +507,17 @@ subs-UNIV (x ∷ s) i rewrite subs-UNIV s i = refl
 #subs-UNIV s i c = CTerm≡ (subs-UNIV s i)
 
 
+subs-NUM : (s : Sub) (i : ℕ)
+         → subs s (NUM i) ≡ NUM i
+subs-NUM [] i = refl
+subs-NUM (x ∷ s) i rewrite subs-NUM s i = refl
+
+
+#subs-NUM : (s : Sub) (i : ℕ) (c : covered s (NUM i))
+          → #subs s (NUM i) c ≡ #NUM i
+#subs-NUM s i c = CTerm≡ (subs-NUM s i)
+
+
 covered0 : (s : Sub) (t : Term) → Set
 covered0 s t = lowerVars (fvars t) ⊆ sdom s
 --covered0 s t = fvars t ⊆ raiseVars (sdom s)
@@ -673,6 +684,10 @@ covered-FALSE s ()
 
 covered-UNIV : (s : Sub) (i : ℕ) → covered s (UNIV i)
 covered-UNIV s i ()
+
+
+covered-NUM : (s : Sub) (i : ℕ) → covered s (NUM i)
+covered-NUM s i ()
 
 
 covered-NAT! : (s : Sub) → covered s NAT!
@@ -2034,5 +2049,48 @@ covered-subn→ t u s F cov {x} i =
 
   cov' : covered0 s F
   cov' {y} j = cov {y} (⊆fvars-subn 0 u F (c j))
+
+
+→∈raiseVars : {x : Var} {l : List Var}
+            → x ∈ l
+            → suc x ∈ raiseVars l
+→∈raiseVars {x} {l} i = ∈-map⁺ suc i
+
+
+suc∈sdom∷ʳ : {n : ℕ} {s : Sub} {t : CTerm}
+           → suc n ∈ sdom (s ∷ʳ t)
+           → n ∈ sdom s
+suc∈sdom∷ʳ {n} {[]} {t} (here ())
+suc∈sdom∷ʳ {n} {[]} {t} (there ())
+suc∈sdom∷ʳ {0} {x ∷ s} {t} (there i) = here refl
+suc∈sdom∷ʳ {suc n} {x ∷ s} {t} (there i) =
+  there (→∈raiseVars (suc∈sdom∷ʳ {n} {s} {t} (∈raiseVars→ {suc n} {sdom (s ∷ʳ t)} i)))
+
+
+→covered-subn : (t : CTerm) (u : Term) (s : Sub) (F : Term) (#u : # u)
+              → covered (s ∷ʳ t) F
+              → covered s (subn 0 u F)
+→covered-subn t u s F #u cov {x} i with ∈-++⁻ (lowerVarsFrom 0 (fvars F)) (fvars-subn⊆ 0 u F {x} i)
+→covered-subn t u s F #u cov {x} i | inj₁ p with ∈lowerVarsFrom→ x 0 (fvars F) p
+... | inj₁ (() , p2)
+... | inj₂ (p1 , p2) = suc∈sdom∷ʳ {x} {s} {t} (cov {suc x} p2)
+→covered-subn t u s F #u cov {x} i | inj₂ p rewrite #u = ⊥-elim (¬∈[] p)
+
+
+≡subs-refl : (i : ℕ) (w : 𝕎·) (s1 s2 : Sub) (H : hypotheses)
+           → ≡subs i w s1 s2 H
+           → ≡subs i w s1 s1 H
+≡subs-refl i w .[] .[] .[] (≡subs[] .i .w) = ≡subs[] i w
+≡subs-refl i w .(t1 ∷ s1) .(t2 ∷ s2) .(mkHyp T ∷ hs) (≡subs∷ .i .w t1 t2 s1 s2 T #T hs x h) =
+  ≡subs∷ i w t1 t1 s1 s1 T #T hs (equalInType-refl x) (≡subs-refl i w s1 s2 (subHyps 0 ⌜ t1 ⌝ hs) h)
+
+
+≡hyps-refl : (i : ℕ) (w : 𝕎·) (s1 s2 : Sub) (H1 H2 : hypotheses)
+           → ≡hyps i w s1 s2 H1 H2
+           → ≡hyps i w s1 s1 H1 H1
+≡hyps-refl u w .[] .[] .[] .[] (≡hyps[] .u .w) = ≡hyps[] u w
+≡hyps-refl u w .(t1 ∷ s1) .(t2 ∷ s2) .(mkHyp T1 ∷ hs1) .(mkHyp T2 ∷ hs2) (≡hyps∷ .u .w t1 t2 s1 s2 T1 #T1 T2 #T2 hs1 hs2 x h) =
+  ≡hyps∷ u w t1 t1 s1 s1 T1 #T1 T1 #T1 hs1 hs1 (TEQrefl-equalTypes u w (ct T1 #T1) (ct T2 #T2) x)
+    (≡hyps-refl u w s1 s2 (subHyps 0 ⌜ t1 ⌝ hs1) (subHyps 0 ⌜ t2 ⌝ hs2) h)
 
 \end{code}

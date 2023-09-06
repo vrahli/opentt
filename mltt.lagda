@@ -68,7 +68,7 @@ module mltt {L : Level}
 
 open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
-  using (#⇛!sameℕ ; _⇛!_at_ ; _⇓!_at_ ; #⇛!-trans ; ⇛!-trans)
+  using (#⇛!sameℕ ; _⇛!_at_ ; _⇓!_at_ ; _#⇛!_at_ ; #⇛!-trans ; ⇛!-trans ; #⇛!-refl)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
   using (NATREC⇓)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
@@ -81,7 +81,7 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (isTypeNAT! ; eqTypesUniv ; equalTypes→equalInType-UNIV ; equalInType→equalTypes-aux ; eqTypesPI← ; eqTypesSUM← ;
          ≡CTerm→eqTypes ; ≡CTerm→equalInType ; eqTypesFALSE ; eqTypesTRUE ; ¬equalInType-FALSE ; NUM-equalInType-NAT! ;
-         equalInType-NAT!→ ; equalInType-local)
+         equalInType-NAT!→ ; equalInType-local ; equalInType-mon)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (→equalInType-TRUE ; equalInType-EQ→₁)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -1072,6 +1072,14 @@ subs∷ʳ≡ s k G ck =
   e = ≣trans (≣trans (cong (λ z → subn 0 z (subsN 1 s G)) (≣sym (subsN0 s k))) (subn-subsN 0 k s G)) (subsN0 s (subn 0 k G))
 
 
+-- MOVE
+#⇛!-mon : {a b : CTerm} {w2 w1 : 𝕎·}
+        → w1 ⊑· w2
+        → a #⇛! b at w1
+        → a #⇛! b at w2
+#⇛!-mon {a} {b} {w2} {w1} ext c w' e' = c w' (⊑-trans· ext e')
+
+
 NATREC-0⇛! : {a b c : BTerm} {w : 𝕎·}
            → a ⇛! N0 at w
            → NATREC a b c ⇛! b at w
@@ -1096,6 +1104,12 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
 
   cu2 : covered s2 (UNIV 1)
   cu2 = covered-UNIV s2 1
+
+  cm1 : covered s1 N0
+  cm1 = covered-NUM s1 0
+
+  cm2 : covered s2 N0
+  cm2 = covered-NUM s2 0
 
   cn1 : covered s1 NAT!
   cn1 = covered-NAT! s1
@@ -1127,11 +1141,23 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
   cs2 : covered (s2 Data.List.∷ʳ #subs s2 k ck2) G
   cs2 = covered-subn→ (#subs s2 k ck2) k s2 G cc2
 
-  cu1' : covered (s1 Data.List.∷ʳ (#subs s1 k ck1)) (UNIV 1)
-  cu1' = covered-UNIV (s1 Data.List.∷ʳ (#subs s1 k ck1)) 1
+  cs1b : covered (s1 Data.List.∷ʳ #subs s1 N0 cm1) G
+  cs1b = covered-subn→ (#subs s1 N0 cm1) k s1 G cc1
 
-  cu2' : covered (s2 Data.List.∷ʳ (#subs s2 k ck2)) (UNIV 1)
-  cu2' = covered-UNIV (s2 Data.List.∷ʳ (#subs s2 k ck2)) 1
+  cs1a : covered s1 (subn 0 N0 G)
+  cs1a = →covered-subn (#subs s1 k ck1) N0 s1 G refl cs1
+
+  cs2a : covered s2 (subn 0 N0 G)
+  cs2a = →covered-subn (#subs s2 k ck2) N0 s2 G refl cs2
+
+  cu1a : covered (s1 Data.List.∷ʳ (#subs s1 k ck1)) (UNIV 1)
+  cu1a = covered-UNIV (s1 Data.List.∷ʳ (#subs s1 k ck1)) 1
+
+  cu2a : covered (s2 Data.List.∷ʳ (#subs s2 k ck2)) (UNIV 1)
+  cu2a = covered-UNIV (s2 Data.List.∷ʳ (#subs s2 k ck2)) 1
+
+  cu1b : covered (s1 Data.List.∷ʳ (#subs s1 N0 cm1)) (UNIV 1)
+  cu1b = covered-UNIV (s1 Data.List.∷ʳ (#subs s1 N0 cm1)) 1
 
   k∈ : equalInType i w (#subs s1 NAT! cn1) (#subs s1 k ck1) (#subs s2 k ck2)
   k∈ = π₂ (hk w s1 s2 cn1 cn2 ck1 ck2 es eh)
@@ -1146,13 +1172,13 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
   eh1 = ≡hyps∷ʳ i w s1 s2 H H NAT! NAT! cn1 cn2 (#subs s1 k ck1) (#subs s2 k ck2)
                 (≡CTerm→eqTypes (≣sym (#subs-NAT! s1 cn1)) (≣sym (#subs-NAT! s2 cn2)) isTypeNAT!) eh
 
-  hg1 : equalInType i w (#subs (s1 Data.List.∷ʳ (#subs s1 k ck1)) (UNIV 1) cu1')
+  hg1 : equalInType i w (#subs (s1 Data.List.∷ʳ (#subs s1 k ck1)) (UNIV 1) cu1a)
                         (#subs (s1 Data.List.∷ʳ (#subs s1 k ck1)) G cs1)
                         (#subs (s2 Data.List.∷ʳ (#subs s2 k ck2)) G cs2)
-  hg1 = π₂ (hg w (s1 Data.List.∷ʳ (#subs s1 k ck1)) (s2 Data.List.∷ʳ (#subs s2 k ck2)) cu1' cu2' cs1 cs2 es1 eh1)
+  hg1 = π₂ (hg w (s1 Data.List.∷ʳ (#subs s1 k ck1)) (s2 Data.List.∷ʳ (#subs s2 k ck2)) cu1a cu2a cs1 cs2 es1 eh1)
 
   hg2 : equalInType i w (#UNIV 1) (#subs s1 (subn 0 k G) cc1) (#subs s2 (subn 0 k G) cc2)
-  hg2 = ≡→equalInType (#subs-UNIV (s1 Data.List.∷ʳ #subs s1 k ck1) 1 cu1')
+  hg2 = ≡→equalInType (#subs-UNIV (s1 Data.List.∷ʳ #subs s1 k ck1) 1 cu1a)
                        (CTerm≡ (subs∷ʳ≡ s1 k G ck1))
                        (CTerm≡ (subs∷ʳ≡ s2 k G ck2))
                        hg1
@@ -1164,17 +1190,53 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
   c1 : equalTypes i w (#subs s1 (subn 0 k G) cc1) (#subs s2 (subn 0 k G) cc2)
   c1 = equalTypes-uni-mon (<⇒≤ lti) hg3
 
-  hz1 : equalInType i w (#subs s1 (subn 0 N0 G) {!!}) (#subs s1 z cz1) (#subs s2 z cz2)
-  hz1 = π₂ (hz w s1 s2 {!!} {!!} cz1 cz2 es eh)
-
   aw1 : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' (#subs s1 k ck1) (#subs s2 k ck2)
                       → equalInType i w' (#subs s1 (subn 0 k G) cc1)
                                     (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 s cx1))
                                     (#NATREC (#subs s2 k ck2) (#subs s2 z cz2) (#subs s2 s cx2)))
   -- we now go by induction on n
-  aw1 w1 e1 (0 , c₁ , c₂) = {!!} -- we can maybe use a combination of hz1 and NATREC-0⇛!
-                                 -- but then we need the reverse of equalInType-#⇛-left, which does not hold in general
-                                 -- because of pure types, but should hold about the types we get from MLTT
+  aw1 w1 e1 (0 , c₁ , c₂) = concl
+    where
+    hz1 : equalInType i w1 (#subs s1 (subn 0 N0 G) cs1a) (#subs s1 z cz1) (#subs s2 z cz2)
+    hz1 = equalInType-mon (π₂ (hz w s1 s2 cs1a cs2a cz1 cz2 es eh)) w1 e1
+
+    eqn1 : equalInType i w1 #NAT! #N0 (#subs s1 k ck1)
+    eqn1 = →equalInType-NAT! i w1 #N0 (#subs s1 k ck1)
+             (Mod.∀𝕎-□ M (λ w2 e2 → 0 , #⇛!-refl {w2} {#N0} , #⇛!-mon {#subs s1 k ck1} {#N0} e2 c₁))
+
+    es2 : ≡subs i w1 (s1 Data.List.∷ʳ #subs s1 N0 cm1) (s1 Data.List.∷ʳ #subs s1 k ck1) (H Data.List.∷ʳ mkHyp NAT!)
+    es2 = ≡subs∷ʳ i w1 s1 s1 H NAT! cn1 (#subs s1 N0 cm1) (#subs s1 k ck1)
+            (≡→equalInType (≣sym (#subs-NAT! s1 cn1)) (≣sym (#subs-N0 s1 cm1)) refl eqn1)
+            (≡subs-refl i w1 s1 s2 H (≡subs-mon e1 es))
+
+    eh2 : ≡hyps i w1 (s1 Data.List.∷ʳ #subs s1 N0 cm1) (s1 Data.List.∷ʳ #subs s1 k ck1) (H Data.List.∷ʳ mkHyp NAT!) (H Data.List.∷ʳ mkHyp NAT!)
+    eh2 = ≡hyps∷ʳ i w1 s1 s1 H H NAT! NAT! cn1 cn1 (#subs s1 N0 cm1) (#subs s1 k ck1)
+            (≡CTerm→eqTypes (≣sym (#subs-NAT! s1 cn1)) (≣sym (#subs-NAT! s1 cn1)) isTypeNAT!)
+            (≡hyps-refl i w1 s1 s2 H H (≡hyps-mon e1 eh))
+
+    eqt1 : equalInType i w1 (#subs (s1 Data.List.∷ʳ #subs s1 N0 cm1) (UNIV 1) cu1b)
+                            (#subs (s1 Data.List.∷ʳ #subs s1 N0 cm1) G cs1b)
+                            (#subs (s1 Data.List.∷ʳ #subs s1 k ck1) G cs1)
+    eqt1 = π₂ (hg w1 (s1 Data.List.∷ʳ #subs s1 N0 cm1) (s1 Data.List.∷ʳ #subs s1 k ck1) cu1b cu1a cs1b cs1 es2 eh2)
+
+    eqt2 : equalTypes 1 w1 (#subs s1 (subn 0 N0 G) cs1a) (#subs s1 (subn 0 k G) cc1)
+    eqt2 = equalInType→equalTypes-aux i 1 lti w1 (#subs s1 (subn 0 N0 G) cs1a) (#subs s1 (subn 0 k G) cc1)
+             (≡→equalInType (#subs-UNIV (s1 Data.List.∷ʳ #subs s1 N0 cm1) 1 cu1b)
+                            (CTerm≡ (subs∷ʳ≡ s1 N0 G cm1))
+                            (CTerm≡ (subs∷ʳ≡ s1 k G ck1))
+                            eqt1)
+
+    hz2 : equalInType i w1 (#subs s1 (subn 0 k G) cc1) (#subs s1 z cz1) (#subs s2 z cz2)
+    hz2 = TSext-equalTypes-equalInType i w1 _ _ _ _ (equalTypes-uni-mon (<⇒≤ lti) eqt2) hz1
+
+    -- we can maybe use a combination of hz2 & NATREC-0⇛!
+    -- but then we need the reverse of equalInType-#⇛-left, which does not hold in general
+    -- because of pure types, but should hold about the types we get from MLTT
+    concl : equalInType i w1 (#subs s1 (subn 0 k G) cc1)
+                        (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 s cx1))
+                        (#NATREC (#subs s2 k ck2) (#subs s2 z cz2) (#subs s2 s cx2))
+    concl = {!!}
+
   aw1 w1 e1 (suc n , c₁ , c₂) = {!!}
 
   c2a : equalInType i w (#subs s1 (subn 0 k G) cc1)
