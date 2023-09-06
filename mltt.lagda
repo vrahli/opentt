@@ -1067,17 +1067,17 @@ subs∷ʳ≡ s k G ck =
   where
   e : subn 0 (subs s k) (subsN 1 s G)
     ≣ subs s (subn 0 k G)
-  e = {!!}
+  e = ≣trans (≣trans (cong (λ z → subn 0 z (subsN 1 s G)) (≣sym (subsN0 s k))) (subn-subsN 0 k s G)) (subsN0 s (subn 0 k G))
 
 
 -- finish converting G
-valid∈NATREC : {i : Nat} {H : hypotheses} {G k z s : BTerm}
+valid∈NATREC : {i : Nat} {H : hypotheses} {G k z s : BTerm} (lti : 1 <ℕ i)
              → valid∈𝕎 i (H Data.List.∷ʳ mkHyp NAT!) G (UNIV 1)
              → valid∈𝕎 i H z (subn 0 N0 G)
              → valid∈𝕎 i H s (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) --⟦ G ▹▹ G [ Definition.Untyped.suc (var Fin.zero) ]↑ ⟧ᵤ)
              → valid∈𝕎 i H k NAT!
              → valid∈𝕎 i H (NATREC k z s) (subn 0 k G)
-valid∈NATREC {i} {H} {G} {k} {z} {s} hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 es eh =
+valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 es eh =
   c1 , c2
   where
   cu1 : covered s1 (UNIV 1)
@@ -1120,24 +1120,27 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 es eh
   eh1 = ≡hyps∷ʳ i w s1 s2 H H NAT! NAT! cn1 cn2 (#subs s1 k ck1) (#subs s2 k ck2)
                 (≡CTerm→eqTypes (≣sym (#subs-NAT! s1 cn1)) (≣sym (#subs-NAT! s2 cn2)) isTypeNAT!) eh
 
-  hg' : equalInType i w (#subs (s1 Data.List.∷ʳ (#subs s1 k ck1)) (UNIV 1) cu1')
+  hg1 : equalInType i w (#subs (s1 Data.List.∷ʳ (#subs s1 k ck1)) (UNIV 1) cu1')
                         (#subs (s1 Data.List.∷ʳ (#subs s1 k ck1)) G cs1)
                         (#subs (s2 Data.List.∷ʳ (#subs s2 k ck2)) G cs2)
-  hg' = π₂ (hg w (s1 Data.List.∷ʳ (#subs s1 k ck1)) (s2 Data.List.∷ʳ (#subs s2 k ck2)) cu1' cu2' cs1 cs2 es1 eh1)
+  hg1 = π₂ (hg w (s1 Data.List.∷ʳ (#subs s1 k ck1)) (s2 Data.List.∷ʳ (#subs s2 k ck2)) cu1' cu2' cs1 cs2 es1 eh1)
 
-  hg'' : equalInType i w (#UNIV 1) (#subs s1 (subn 0 k G) cc1) (#subs s2 (subn 0 k G) cc2)
-  hg'' = ≡→equalInType (#subs-UNIV (s1 Data.List.∷ʳ #subs s1 k ck1) 1 cu1')
-                       (CTerm≡ {!!})
-                       {!!}
-                       hg'
+  hg2 : equalInType i w (#UNIV 1) (#subs s1 (subn 0 k G) cc1) (#subs s2 (subn 0 k G) cc2)
+  hg2 = ≡→equalInType (#subs-UNIV (s1 Data.List.∷ʳ #subs s1 k ck1) 1 cu1')
+                       (CTerm≡ (subs∷ʳ≡ s1 k G ck1))
+                       (CTerm≡ (subs∷ʳ≡ s2 k G ck2))
+                       hg1
+
+  hg3 : equalTypes 1 w (#subs s1 (subn 0 k G) cc1) (#subs s2 (subn 0 k G) cc2)
+  hg3 = equalInType→equalTypes-aux i 1 lti w (#subs s1 (subn 0 k G) cc1) (#subs s2 (subn 0 k G) cc2) hg2
 
   -- G[k] is a type
   c1 : equalTypes i w (#subs s1 (subn 0 k G) cc1) (#subs s2 (subn 0 k G) cc2)
-  c1 = {!!} -- use hg''
+  c1 = equalTypes-uni-mon (<⇒≤ lti) hg3
 
   -- natrec ∈ G[k]
   c2 : equalInType i w (#subs s1 (subn 0 k G) cc1) (#subs s1 (NATREC k z s) ce1) (#subs s2 (NATREC k z s) ce2)
-  c2 = {!!}
+  c2 = {!!} -- we first get a nat from k∈
 
 
 ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
