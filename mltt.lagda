@@ -68,7 +68,9 @@ module mltt {L : Level}
 
 open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
-  using (#⇛!sameℕ ; _⇛!_at_ ; _⇓!_at_)
+  using (#⇛!sameℕ ; _⇛!_at_ ; _⇓!_at_ ; #⇛!-trans ; ⇛!-trans)
+open import terms2(W)(C)(K)(G)(X)(N)(EC)
+  using (NATREC⇓)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
   using (⇓NUM→SUC⇓NUM)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
@@ -1070,6 +1072,15 @@ subs∷ʳ≡ s k G ck =
   e = ≣trans (≣trans (cong (λ z → subn 0 z (subsN 1 s G)) (≣sym (subsN0 s k))) (subn-subsN 0 k s G)) (subsN0 s (subn 0 k G))
 
 
+NATREC-0⇛! : {a b c : BTerm} {w : 𝕎·}
+           → a ⇛! N0 at w
+           → NATREC a b c ⇛! b at w
+NATREC-0⇛! {a} {b} {c} {w} comp =
+  ⇛!-trans {w} {NATREC a b c} {NATREC N0 b c} {b}
+    (λ w1 e1 → lift (NATREC⇓ {a} {N0} b c {w1} {w1} (lower (comp w1 e1))))
+    (λ w1 e1 → lift (1 , refl))
+
+
 -- finish converting G
 valid∈NATREC : {i : Nat} {H : hypotheses} {G k z s : BTerm} (lti : 1 <ℕ i)
              → valid∈𝕎 i (H Data.List.∷ʳ mkHyp NAT!) G (UNIV 1)
@@ -1153,11 +1164,18 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
   c1 : equalTypes i w (#subs s1 (subn 0 k G) cc1) (#subs s2 (subn 0 k G) cc2)
   c1 = equalTypes-uni-mon (<⇒≤ lti) hg3
 
+  hz1 : equalInType i w (#subs s1 (subn 0 N0 G) {!!}) (#subs s1 z cz1) (#subs s2 z cz2)
+  hz1 = π₂ (hz w s1 s2 {!!} {!!} cz1 cz2 es eh)
+
   aw1 : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' (#subs s1 k ck1) (#subs s2 k ck2)
                       → equalInType i w' (#subs s1 (subn 0 k G) cc1)
                                     (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 s cx1))
                                     (#NATREC (#subs s2 k ck2) (#subs s2 z cz2) (#subs s2 s cx2)))
-  aw1 w1 e1 (n , c₁ , c₂) = {!!} -- we now go by induction on n
+  -- we now go by induction on n
+  aw1 w1 e1 (0 , c₁ , c₂) = {!!} -- we can maybe use a combination of hz1 and NATREC-0⇛!
+                                 -- but then we need the reverse of equalInType-#⇛-left, which does not hold in general
+                                 -- because of pure types, but should hold about the types we get from MLTT
+  aw1 w1 e1 (suc n , c₁ , c₂) = {!!}
 
   c2a : equalInType i w (#subs s1 (subn 0 k G) cc1)
                     (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 s cx1))
