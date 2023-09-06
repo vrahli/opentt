@@ -79,7 +79,7 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (isTypeNAT! ; eqTypesUniv ; equalTypes→equalInType-UNIV ; equalInType→equalTypes-aux ; eqTypesPI← ; eqTypesSUM← ;
          ≡CTerm→eqTypes ; ≡CTerm→equalInType ; eqTypesFALSE ; eqTypesTRUE ; ¬equalInType-FALSE ; NUM-equalInType-NAT! ;
-         equalInType-NAT!→)
+         equalInType-NAT!→ ; equalInType-local)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (→equalInType-TRUE ; equalInType-EQ→₁)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -1098,6 +1098,18 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
   ck2 : covered s2 k
   ck2 = coveredNATREC₁ {s2} {k} {z} {s} ce2
 
+  cz1 : covered s1 z
+  cz1 = coveredNATREC₂ {s1} {k} {z} {s} ce1
+
+  cz2 : covered s2 z
+  cz2 = coveredNATREC₂ {s2} {k} {z} {s} ce2
+
+  cx1 : covered s1 s
+  cx1 = coveredNATREC₃ {s1} {k} {z} {s} ce1
+
+  cx2 : covered s2 s
+  cx2 = coveredNATREC₃ {s2} {k} {z} {s} ce2
+
   cs1 : covered (s1 Data.List.∷ʳ #subs s1 k ck1) G
   cs1 = covered-subn→ (#subs s1 k ck1) k s1 G cc1
 
@@ -1112,6 +1124,9 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
 
   k∈ : equalInType i w (#subs s1 NAT! cn1) (#subs s1 k ck1) (#subs s2 k ck2)
   k∈ = π₂ (hk w s1 s2 cn1 cn2 ck1 ck2 es eh)
+
+  k∈1 : equalInType i w #NAT! (#subs s1 k ck1) (#subs s2 k ck2)
+  k∈1 = ≡→equalInType (#subs-NAT! s1 cn1) refl refl k∈
 
   es1 : ≡subs i w (s1 Data.List.∷ʳ #subs s1 k ck1) (s2 Data.List.∷ʳ #subs s2 k ck2) (H Data.List.∷ʳ mkHyp NAT!)
   es1 = ≡subs∷ʳ i w s1 s2 H NAT! cn1 (#subs s1 k ck1) (#subs s2 k ck2) k∈ es
@@ -1138,9 +1153,20 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
   c1 : equalTypes i w (#subs s1 (subn 0 k G) cc1) (#subs s2 (subn 0 k G) cc2)
   c1 = equalTypes-uni-mon (<⇒≤ lti) hg3
 
+  aw1 : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' (#subs s1 k ck1) (#subs s2 k ck2)
+                      → equalInType i w' (#subs s1 (subn 0 k G) cc1)
+                                    (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 s cx1))
+                                    (#NATREC (#subs s2 k ck2) (#subs s2 z cz2) (#subs s2 s cx2)))
+  aw1 w1 e1 (n , c₁ , c₂) = {!!} -- we now go by induction on n
+
+  c2a : equalInType i w (#subs s1 (subn 0 k G) cc1)
+                    (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 s cx1))
+                    (#NATREC (#subs s2 k ck2) (#subs s2 z cz2) (#subs s2 s cx2))
+  c2a = equalInType-local (Mod.∀𝕎-□Func M aw1 (equalInType-NAT!→ i w (#subs s1 k ck1) (#subs s2 k ck2) k∈1))
+
   -- natrec ∈ G[k]
   c2 : equalInType i w (#subs s1 (subn 0 k G) cc1) (#subs s1 (NATREC k z s) ce1) (#subs s2 (NATREC k z s) ce2)
-  c2 = {!!} -- we first get a nat from k∈
+  c2 = ≡→equalInType refl (≣sym (#subs-NATREC s1 k z s ce1 ck1 cz1 cx1)) (≣sym (#subs-NATREC s2 k z s ce2 ck2 cz2 cx2)) c2a
 
 
 ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}

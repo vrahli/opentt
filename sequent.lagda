@@ -742,6 +742,20 @@ subs-SUC (x ∷ s) a
 #subs-SUM2 s a b c = #subs-SUM s a b c (coveredSUM₁ {s} {a} {b} c) (coveredSUM₂ {s} {a} {b} c)
 
 
+subs-NATREC : (s : Sub) (k z x : Term)
+            → subs s (NATREC k z x) ≡ NATREC (subs s k) (subs s z) (subs s x)
+subs-NATREC [] k z x = refl
+subs-NATREC (a ∷ s) k z x
+  rewrite subs-NATREC s k z x
+  = refl
+
+
+#subs-NATREC : (s : Sub) (k z x : Term) (c : covered s (NATREC k z x))
+               (ck : covered s k) (cz : covered s z) (cx : covered s x)
+             → #subs s (NATREC k z x) c ≡ #NATREC (#subs s k ck) (#subs s z cz) (#subs s x cx)
+#subs-NATREC s k z x c ck cz cx = CTerm≡ (subs-NATREC s k z x)
+
+
 →covered∷ : (a : CTerm) (s : Sub) (t : Term)
           → covered0 s t
           → covered (a ∷ s) t
