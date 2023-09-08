@@ -3,6 +3,8 @@
 {-# OPTIONS --guardedness #-}
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower) renaming (suc to lsuc)
+open import Agda.Builtin.Bool
+open import Data.Bool using (Bool ; _∧_ ; _∨_)
 open import Data.Nat using (s≤s) renaming (_<_ to _<ℕ_ ; _≤_ to _≤ℕ_)
 open import Data.Nat.Properties
 open import Agda.Builtin.Nat
@@ -70,7 +72,7 @@ open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
   using (#⇛!sameℕ ; _⇛!_at_ ; _⇓!_at_ ; _#⇛!_at_ ; #⇛!-trans ; ⇛!-trans ; #⇛!-refl)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
-  using (NATREC⇓)
+  using (NATREC⇓ ; →∧≡true ; ¬Names-sub ; ¬Seq-sub ; ¬Enc-sub ; ∧≡true→ₗ ; ∧≡true→ᵣ)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
   using (⇓NUM→SUC⇓NUM)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
@@ -88,6 +90,8 @@ open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (→equalInType-NAT!)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (≡→equalInType ; eqTypesEQ→ᵣ)
+open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (_#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ; presPure ; →presPure-NATREC₁ ; →presPure-NATREC₂ ; →presPure-NATREC₃)
 open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalTypes-uni-mon ; equalInType-uni-mon)
 
@@ -311,6 +315,126 @@ canonicity2 {n} {Γ} {t} g (ne (neNfₜ neK ⊢k k≡k)) = {!⊥-elim (noNe ⊢k
 ⟦_⟧ᵤ {n} (gen {.nil} Starkind []) = AX
 ⟦_⟧ᵤ {n} (gen {.nil} Emptykind []) = FALSE
 ⟦_⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) = ⟦ t₁ ⟧ᵤ
+
+
+¬names-FST : (t : BTerm) → ¬names (FST t) ≣ ¬names t
+¬names-FST t with ¬names t
+... | true = refl
+... | false = refl
+
+
+¬names-SND : (t : BTerm) → ¬names (SND t) ≣ ¬names t
+¬names-SND t with ¬names t
+... | true = refl
+... | false = refl
+
+
+noseq-FST : (t : BTerm) → noseq (FST t) ≣ noseq t
+noseq-FST t with noseq t
+... | true = refl
+... | false = refl
+
+
+noseq-SND : (t : BTerm) → noseq (SND t) ≣ noseq t
+noseq-SND t with noseq t
+... | true = refl
+... | false = refl
+
+
+¬enc-FST : (t : BTerm) → ¬enc (FST t) ≣ ¬enc t
+¬enc-FST t with ¬enc t
+... | true = refl
+... | false = refl
+
+
+¬enc-SND : (t : BTerm) → ¬enc (SND t) ≣ ¬enc t
+¬enc-SND t with ¬enc t
+... | true = refl
+... | false = refl
+
+
+¬Names⟦⟧ᵤ : {n : Nat} (t : Term n)
+          → ¬Names ⟦ t ⟧ᵤ
+¬Names⟦⟧ᵤ {n} (var x) = refl
+¬Names⟦⟧ᵤ {n} (gen {.nil} Ukind c) = refl
+¬Names⟦⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Pikind (t GenTs.∷ (t₁ GenTs.∷ []))) =
+  →∧≡true (¬Names⟦⟧ᵤ t) (¬Names⟦⟧ᵤ t₁)
+¬Names⟦⟧ᵤ {n} (gen {.(cons 1 nil)} Lamkind (t GenTs.∷ [])) = ¬Names⟦⟧ᵤ t
+¬Names⟦⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) =
+  →∧≡true (¬Names⟦⟧ᵤ t) (¬Names⟦⟧ᵤ t₁)
+¬Names⟦⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) =
+  →∧≡true (¬Names⟦⟧ᵤ t) (¬Names⟦⟧ᵤ t₁)
+¬Names⟦⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) =
+  →∧≡true (¬Names⟦⟧ᵤ t) (¬Names⟦⟧ᵤ t₁)
+¬Names⟦⟧ᵤ {n} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) =
+  ≣trans (¬names-FST ⟦ t ⟧ᵤ) (¬Names⟦⟧ᵤ t)
+¬Names⟦⟧ᵤ {n} (gen {.(cons 0 nil)} Sndkind (t GenTs.∷ [])) =
+  ≣trans (¬names-SND ⟦ t ⟧ᵤ) (¬Names⟦⟧ᵤ t)
+¬Names⟦⟧ᵤ {n} (gen {.nil} Natkind []) = refl
+¬Names⟦⟧ᵤ {n} (gen {.nil} Zerokind []) = refl
+¬Names⟦⟧ᵤ {n} (gen {.(cons 0 nil)} Suckind (t GenTs.∷ [])) = ¬Names⟦⟧ᵤ t
+¬Names⟦⟧ᵤ {n} (gen {.(cons 1 (cons 0 (cons 0 (cons 0 nil))))} Natreckind (t GenTs.∷ (t₁ GenTs.∷ (t₂ GenTs.∷ (t₃ GenTs.∷ []))))) =
+  →∧≡true (¬Names⟦⟧ᵤ t₃) (→∧≡true (¬Names⟦⟧ᵤ t₁) (¬Names⟦⟧ᵤ t₂))
+¬Names⟦⟧ᵤ {n} (gen {.nil} Unitkind []) = refl
+¬Names⟦⟧ᵤ {n} (gen {.nil} Starkind []) = refl
+¬Names⟦⟧ᵤ {n} (gen {.nil} Emptykind []) = refl
+¬Names⟦⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) = ¬Names⟦⟧ᵤ t₁
+
+
+¬Seq⟦⟧ᵤ : {n : Nat} (t : Term n)
+        → ¬Seq ⟦ t ⟧ᵤ
+¬Seq⟦⟧ᵤ {n} (var x) = refl
+¬Seq⟦⟧ᵤ {n} (gen {.nil} Ukind c) = refl
+¬Seq⟦⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Pikind (t GenTs.∷ (t₁ GenTs.∷ []))) =
+  →∧≡true (¬Seq⟦⟧ᵤ t) (¬Seq⟦⟧ᵤ t₁)
+¬Seq⟦⟧ᵤ {n} (gen {.(cons 1 nil)} Lamkind (t GenTs.∷ [])) = ¬Seq⟦⟧ᵤ t
+¬Seq⟦⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) =
+  →∧≡true (¬Seq⟦⟧ᵤ t) (¬Seq⟦⟧ᵤ t₁)
+¬Seq⟦⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) =
+  →∧≡true (¬Seq⟦⟧ᵤ t) (¬Seq⟦⟧ᵤ t₁)
+¬Seq⟦⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) =
+  →∧≡true (¬Seq⟦⟧ᵤ t) (¬Seq⟦⟧ᵤ t₁)
+¬Seq⟦⟧ᵤ {n} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) =
+  ≣trans (noseq-FST ⟦ t ⟧ᵤ) (¬Seq⟦⟧ᵤ t)
+¬Seq⟦⟧ᵤ {n} (gen {.(cons 0 nil)} Sndkind (t GenTs.∷ [])) =
+  ≣trans (noseq-SND ⟦ t ⟧ᵤ) (¬Seq⟦⟧ᵤ t)
+¬Seq⟦⟧ᵤ {n} (gen {.nil} Natkind []) = refl
+¬Seq⟦⟧ᵤ {n} (gen {.nil} Zerokind []) = refl
+¬Seq⟦⟧ᵤ {n} (gen {.(cons 0 nil)} Suckind (t GenTs.∷ [])) = ¬Seq⟦⟧ᵤ t
+¬Seq⟦⟧ᵤ {n} (gen {.(cons 1 (cons 0 (cons 0 (cons 0 nil))))} Natreckind (t GenTs.∷ (t₁ GenTs.∷ (t₂ GenTs.∷ (t₃ GenTs.∷ []))))) =
+  →∧≡true (¬Seq⟦⟧ᵤ t₃) (→∧≡true (¬Seq⟦⟧ᵤ t₁) (¬Seq⟦⟧ᵤ t₂))
+¬Seq⟦⟧ᵤ {n} (gen {.nil} Unitkind []) = refl
+¬Seq⟦⟧ᵤ {n} (gen {.nil} Starkind []) = refl
+¬Seq⟦⟧ᵤ {n} (gen {.nil} Emptykind []) = refl
+¬Seq⟦⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) = ¬Seq⟦⟧ᵤ t₁
+
+
+¬Enc⟦⟧ᵤ : {n : Nat} (t : Term n)
+        → ¬Enc ⟦ t ⟧ᵤ
+¬Enc⟦⟧ᵤ {n} (var x) = refl
+¬Enc⟦⟧ᵤ {n} (gen {.nil} Ukind c) = refl
+¬Enc⟦⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Pikind (t GenTs.∷ (t₁ GenTs.∷ []))) =
+  →∧≡true (¬Enc⟦⟧ᵤ t) (¬Enc⟦⟧ᵤ t₁)
+¬Enc⟦⟧ᵤ {n} (gen {.(cons 1 nil)} Lamkind (t GenTs.∷ [])) = ¬Enc⟦⟧ᵤ t
+¬Enc⟦⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) =
+  →∧≡true (¬Enc⟦⟧ᵤ t) (¬Enc⟦⟧ᵤ t₁)
+¬Enc⟦⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) =
+  →∧≡true (¬Enc⟦⟧ᵤ t) (¬Enc⟦⟧ᵤ t₁)
+¬Enc⟦⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) =
+  →∧≡true (¬Enc⟦⟧ᵤ t) (¬Enc⟦⟧ᵤ t₁)
+¬Enc⟦⟧ᵤ {n} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) =
+  ≣trans (¬enc-FST ⟦ t ⟧ᵤ) (¬Enc⟦⟧ᵤ t)
+¬Enc⟦⟧ᵤ {n} (gen {.(cons 0 nil)} Sndkind (t GenTs.∷ [])) =
+  ≣trans (¬enc-SND ⟦ t ⟧ᵤ) (¬Enc⟦⟧ᵤ t)
+¬Enc⟦⟧ᵤ {n} (gen {.nil} Natkind []) = refl
+¬Enc⟦⟧ᵤ {n} (gen {.nil} Zerokind []) = refl
+¬Enc⟦⟧ᵤ {n} (gen {.(cons 0 nil)} Suckind (t GenTs.∷ [])) = ¬Enc⟦⟧ᵤ t
+¬Enc⟦⟧ᵤ {n} (gen {.(cons 1 (cons 0 (cons 0 (cons 0 nil))))} Natreckind (t GenTs.∷ (t₁ GenTs.∷ (t₂ GenTs.∷ (t₃ GenTs.∷ []))))) =
+  →∧≡true (¬Enc⟦⟧ᵤ t₃) (→∧≡true (¬Enc⟦⟧ᵤ t₁) (¬Enc⟦⟧ᵤ t₂))
+¬Enc⟦⟧ᵤ {n} (gen {.nil} Unitkind []) = refl
+¬Enc⟦⟧ᵤ {n} (gen {.nil} Starkind []) = refl
+¬Enc⟦⟧ᵤ {n} (gen {.nil} Emptykind []) = refl
+¬Enc⟦⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Emptyreckind (t GenTs.∷ (t₁ GenTs.∷ []))) = ¬Enc⟦⟧ᵤ t₁
 
 
 ⟦_⟧Γ : {n : Nat} (Γ : Con Term n) → hypotheses
@@ -1089,6 +1213,66 @@ NATREC-0⇛! {a} {b} {c} {w} comp =
     (λ w1 e1 → lift (1 , refl))
 
 
+¬namesSub : (s : Sub) → Bool
+¬namesSub nil = true
+¬namesSub (cons x s) = ¬names ⌜ x ⌝ ∧ ¬namesSub s
+
+
+¬seqSub : (s : Sub) → Bool
+¬seqSub nil = true
+¬seqSub (cons x s) = noseq ⌜ x ⌝ ∧ ¬seqSub s
+
+
+¬encSub : (s : Sub) → Bool
+¬encSub nil = true
+¬encSub (cons x s) = ¬enc ⌜ x ⌝ ∧ ¬encSub s
+
+
+¬Names-subn0 : {a b : BTerm}
+             → ¬Names a
+             → ¬Names b
+             → ¬Names (subn 0 a b)
+¬Names-subn0 {a} {b} na nb rewrite ≣sym (sub≡subn a b) = ¬Names-sub {a} {b} na nb
+
+
+¬Seq-subn0 : {a b : BTerm}
+           → ¬Seq a
+           → ¬Seq b
+           → ¬Seq (subn 0 a b)
+¬Seq-subn0 {a} {b} na nb rewrite ≣sym (sub≡subn a b) = ¬Seq-sub {a} {b} na nb
+
+
+¬Enc-subn0 : {a b : BTerm}
+           → ¬Enc a
+           → ¬Enc b
+           → ¬Enc (subn 0 a b)
+¬Enc-subn0 {a} {b} na nb rewrite ≣sym (sub≡subn a b) = ¬Enc-sub {a} {b} na nb
+
+
+→¬Names-subs : (s : Sub) (t : BTerm)
+             → ¬Names t
+             → ¬namesSub s ≣ true
+             → ¬Names (subs s t)
+→¬Names-subs nil t nt ns = nt
+→¬Names-subs (cons x s) t nt ns = ¬Names-subn0 {⌜ x ⌝} {subs s t} (∧≡true→ₗ _ _ ns) (→¬Names-subs s t nt (∧≡true→ᵣ _ _ ns))
+
+
+→¬Seq-subs : (s : Sub) (t : BTerm)
+           → ¬Seq t
+           → ¬seqSub s ≣ true
+           → ¬Seq (subs s t)
+→¬Seq-subs nil t nt ns = nt
+→¬Seq-subs (cons x s) t nt ns = ¬Seq-subn0 {⌜ x ⌝} {subs s t} (∧≡true→ₗ _ _ ns) (→¬Seq-subs s t nt (∧≡true→ᵣ _ _ ns))
+
+
+→¬Enc-subs : (s : Sub) (t : BTerm)
+           → ¬Enc t
+           → ¬encSub s ≣ true
+           → ¬Enc (subs s t)
+→¬Enc-subs nil t nt ns = nt
+→¬Enc-subs (cons x s) t nt ns = ¬Enc-subn0 {⌜ x ⌝} {subs s t} (∧≡true→ₗ _ _ ns) (→¬Enc-subs s t nt (∧≡true→ᵣ _ _ ns))
+
+
 -- finish converting G
 valid∈NATREC : {i : Nat} {H : hypotheses} {G k z s : BTerm} (lti : 1 <ℕ i)
              → valid∈𝕎 i (H Data.List.∷ʳ mkHyp NAT!) G (UNIV 1)
@@ -1235,7 +1419,14 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
     concl : equalInType i w1 (#subs s1 (subn 0 k G) cc1)
                         (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 s cx1))
                         (#NATREC (#subs s2 k ck2) (#subs s2 z cz2) (#subs s2 s cx2))
-    concl = {!!}
+    concl =
+      equalInType-#⇛ₚ-left-right-rev
+        (NATREC-0⇛! c₁ , →presPure-NATREC₂ {subs s1 k} {subs s1 z} {subs s1 s} {!!} {!!} {!!} {!!} {!!} {!!})
+        (NATREC-0⇛! c₂ , →presPure-NATREC₂ {subs s2 k} {subs s2 z} {subs s2 s} {!!} {!!} {!!} {!!} {!!} {!!})
+        hz2
+    -- use equalInType-#⇛ₚ-left-rev, but then we need to prove that (#subs s1 z cz1) and (#subs s1 s cx1)
+    -- are name/enc/sec-free, which we could get partially from lemmas such as ¬Names⟦⟧ᵤ, but
+    -- we'd also need the substitutions to have that property
 
   aw1 w1 e1 (suc n , c₁ , c₂) = {!!}
 

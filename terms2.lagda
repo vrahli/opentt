@@ -849,6 +849,292 @@ abstract
     na' rewrite noseq-shiftUp 0 a = na
 
 
+-- MOVE to terms2
+abstract
+  ¬enc-shiftUp : (n : ℕ) (a : Term) → ¬enc (shiftUp n a) ≡ ¬enc a
+  ¬enc-shiftUp n (VAR x) = refl
+--  ¬enc-shiftUp n NAT = refl
+  ¬enc-shiftUp n QNAT = refl
+--  ¬enc-shiftUp n TNAT = refl
+  ¬enc-shiftUp n (LT a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ = refl
+  ¬enc-shiftUp n (QLT a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ = refl
+  ¬enc-shiftUp n (NUM x) = refl
+  ¬enc-shiftUp n (IFLT a a₁ a₂ a₃) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ | ¬enc-shiftUp n a₂ | ¬enc-shiftUp n a₃ = refl
+  ¬enc-shiftUp n (IFEQ a a₁ a₂ a₃) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ | ¬enc-shiftUp n a₂ | ¬enc-shiftUp n a₃ = refl
+  ¬enc-shiftUp n (SUC a) rewrite ¬enc-shiftUp n a = refl
+  ¬enc-shiftUp n (NATREC a a₁ a₂) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ | ¬enc-shiftUp n a₂ = refl
+  ¬enc-shiftUp n (PI a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp (suc n) a₁ = refl
+  ¬enc-shiftUp n (LAMBDA a) rewrite ¬enc-shiftUp (suc n) a = refl
+  ¬enc-shiftUp n (APPLY a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ = refl
+  ¬enc-shiftUp n (FIX a) rewrite ¬enc-shiftUp n a = refl
+  ¬enc-shiftUp n (LET a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp (suc n) a₁ = refl
+  ¬enc-shiftUp n (WT a a₁ a₂) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp (suc n) a₁ | ¬enc-shiftUp n a₂ = refl
+  ¬enc-shiftUp n (SUP a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ = refl
+  --¬enc-shiftUp n (DSUP a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp (suc (suc n)) a₁ = refl
+  ¬enc-shiftUp n (WREC a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp (suc (suc (suc n))) a₁ = refl
+  ¬enc-shiftUp n (MT a a₁ a₂) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp (suc n) a₁ | ¬enc-shiftUp n a₂ = refl
+  --¬enc-shiftUp n (MSUP a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ = refl
+  --¬enc-shiftUp n (DMSUP a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp (suc (suc n)) a₁ = refl
+  ¬enc-shiftUp n (SUM a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp (suc n) a₁ = refl
+  ¬enc-shiftUp n (PAIR a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ = refl
+  ¬enc-shiftUp n (SPREAD a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp (suc (suc n)) a₁ = refl
+  ¬enc-shiftUp n (SET a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp (suc n) a₁ = refl
+  ¬enc-shiftUp n (ISECT a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ = refl
+  ¬enc-shiftUp n (TUNION a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp (suc n) a₁ = refl
+  ¬enc-shiftUp n (UNION a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ = refl
+--  ¬enc-shiftUp n (QTUNION a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ = refl
+  ¬enc-shiftUp n (INL a) rewrite ¬enc-shiftUp n a = refl
+  ¬enc-shiftUp n (INR a) rewrite ¬enc-shiftUp n a = refl
+  ¬enc-shiftUp n (DECIDE a a₁ a₂) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp (suc n) a₁ | ¬enc-shiftUp (suc n) a₂ = refl
+  ¬enc-shiftUp n (EQ a a₁ a₂) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ | ¬enc-shiftUp n a₂ = refl
+--  ¬enc-shiftUp n (EQB a a₁ a₂ a₃) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ | ¬enc-shiftUp n a₂ | ¬enc-shiftUp n a₃ = refl
+  ¬enc-shiftUp n AX = refl
+  ¬enc-shiftUp n FREE = refl
+  ¬enc-shiftUp n (MSEQ x) = refl
+  ¬enc-shiftUp n (MAPP s a) rewrite ¬enc-shiftUp n a = refl
+  ¬enc-shiftUp n (CS x) = refl
+  ¬enc-shiftUp n (NAME x) = refl
+  ¬enc-shiftUp n (FRESH a) rewrite ¬enc-shiftUp n a = refl
+  ¬enc-shiftUp n (LOAD a) rewrite ¬enc-shiftUp n a = refl
+  ¬enc-shiftUp n (CHOOSE a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ = refl
+--  ¬enc-shiftUp n (TSQUASH a) rewrite ¬enc-shiftUp n a = refl
+--  ¬enc-shiftUp n (TTRUNC a) rewrite ¬enc-shiftUp n a = refl
+  ¬enc-shiftUp n NOWRITE = refl
+  ¬enc-shiftUp n NOREAD  = refl
+  ¬enc-shiftUp n (SUBSING a) rewrite ¬enc-shiftUp n a = refl
+  ¬enc-shiftUp n PURE = refl
+  ¬enc-shiftUp n NOSEQ = refl
+  ¬enc-shiftUp n NOENC = refl
+  ¬enc-shiftUp n (TERM a) rewrite ¬enc-shiftUp n a = refl
+  ¬enc-shiftUp n (ENC a) rewrite ¬enc-shiftUp n a = refl
+  ¬enc-shiftUp n (DUM a) rewrite ¬enc-shiftUp n a = refl
+  ¬enc-shiftUp n (FFDEFS a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ = refl
+  ¬enc-shiftUp n (UNIV x) = refl
+  ¬enc-shiftUp n (LIFT a) rewrite ¬enc-shiftUp n a = refl
+  ¬enc-shiftUp n (LOWER a) rewrite ¬enc-shiftUp n a = refl
+  ¬enc-shiftUp n (SHRINK a) rewrite ¬enc-shiftUp n a = refl
+
+
+abstract
+  ¬enc-shiftDown : (n : ℕ) (a : Term) → ¬enc (shiftDown n a) ≡ ¬enc a
+  ¬enc-shiftDown n (VAR x) = refl
+--  ¬enc-shiftDown n NAT = refl
+  ¬enc-shiftDown n QNAT = refl
+--  ¬enc-shiftDown n TNAT = refl
+  ¬enc-shiftDown n (LT a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ = refl
+  ¬enc-shiftDown n (QLT a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ = refl
+  ¬enc-shiftDown n (NUM x) = refl
+  ¬enc-shiftDown n (IFLT a a₁ a₂ a₃) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ | ¬enc-shiftDown n a₂ | ¬enc-shiftDown n a₃ = refl
+  ¬enc-shiftDown n (IFEQ a a₁ a₂ a₃) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ | ¬enc-shiftDown n a₂ | ¬enc-shiftDown n a₃ = refl
+  ¬enc-shiftDown n (SUC a) rewrite ¬enc-shiftDown n a = refl
+  ¬enc-shiftDown n (NATREC a a₁ a₂) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ | ¬enc-shiftDown n a₂ = refl
+  ¬enc-shiftDown n (PI a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown (suc n) a₁ = refl
+  ¬enc-shiftDown n (LAMBDA a) rewrite ¬enc-shiftDown (suc n) a = refl
+  ¬enc-shiftDown n (APPLY a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ = refl
+  ¬enc-shiftDown n (FIX a) rewrite ¬enc-shiftDown n a = refl
+  ¬enc-shiftDown n (LET a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown (suc n) a₁ = refl
+  ¬enc-shiftDown n (WT a a₁ a₂) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown (suc n) a₁ | ¬enc-shiftDown n a₂ = refl
+  ¬enc-shiftDown n (SUP a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ = refl
+  --¬enc-shiftDown n (DSUP a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown (suc (suc n)) a₁ = refl
+  ¬enc-shiftDown n (WREC a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown (suc (suc (suc n))) a₁ = refl
+  ¬enc-shiftDown n (MT a a₁ a₂) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown (suc n) a₁ | ¬enc-shiftDown n a₂ = refl
+  --¬enc-shiftDown n (MSUP a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ = refl
+  --¬enc-shiftDown n (DMSUP a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown (suc (suc n)) a₁ = refl
+  ¬enc-shiftDown n (SUM a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown (suc n) a₁ = refl
+  ¬enc-shiftDown n (PAIR a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ = refl
+  ¬enc-shiftDown n (SPREAD a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown (suc (suc n)) a₁ = refl
+  ¬enc-shiftDown n (SET a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown (suc n) a₁ = refl
+  ¬enc-shiftDown n (ISECT a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ = refl
+  ¬enc-shiftDown n (TUNION a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown (suc n) a₁ = refl
+  ¬enc-shiftDown n (UNION a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ = refl
+--  ¬enc-shiftDown n (QTUNION a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ = refl
+  ¬enc-shiftDown n (INL a) rewrite ¬enc-shiftDown n a = refl
+  ¬enc-shiftDown n (INR a) rewrite ¬enc-shiftDown n a = refl
+  ¬enc-shiftDown n (DECIDE a a₁ a₂) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown (suc n) a₁ | ¬enc-shiftDown (suc n) a₂ = refl
+  ¬enc-shiftDown n (EQ a a₁ a₂) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ | ¬enc-shiftDown n a₂ = refl
+--  ¬enc-shiftDown n (EQB a a₁ a₂ a₃) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ | ¬enc-shiftDown n a₂ | ¬enc-shiftDown n a₃ = refl
+  ¬enc-shiftDown n AX = refl
+  ¬enc-shiftDown n FREE = refl
+  ¬enc-shiftDown n (MSEQ x) = refl
+  ¬enc-shiftDown n (MAPP s a) rewrite ¬enc-shiftDown n a = refl
+  ¬enc-shiftDown n (CS x) = refl
+  ¬enc-shiftDown n (NAME x) = refl
+  ¬enc-shiftDown n (FRESH a) rewrite ¬enc-shiftDown n a = refl
+  ¬enc-shiftDown n (LOAD a) rewrite ¬enc-shiftDown n a = refl
+  ¬enc-shiftDown n (CHOOSE a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ = refl
+--  ¬enc-shiftDown n (TSQUASH a) rewrite ¬enc-shiftDown n a = refl
+--  ¬enc-shiftDown n (TTRUNC a) rewrite ¬enc-shiftDown n a = refl
+  ¬enc-shiftDown n NOWRITE = refl
+  ¬enc-shiftDown n NOREAD  = refl
+  ¬enc-shiftDown n (SUBSING a) rewrite ¬enc-shiftDown n a = refl
+  ¬enc-shiftDown n PURE = refl
+  ¬enc-shiftDown n NOSEQ = refl
+  ¬enc-shiftDown n NOENC = refl
+  ¬enc-shiftDown n (TERM a) rewrite ¬enc-shiftDown n a = refl
+  ¬enc-shiftDown n (ENC a) rewrite ¬enc-shiftDown n a = refl
+  ¬enc-shiftDown n (DUM a) rewrite ¬enc-shiftDown n a = refl
+  ¬enc-shiftDown n (FFDEFS a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ = refl
+  ¬enc-shiftDown n (UNIV x) = refl
+  ¬enc-shiftDown n (LIFT a) rewrite ¬enc-shiftDown n a = refl
+  ¬enc-shiftDown n (LOWER a) rewrite ¬enc-shiftDown n a = refl
+  ¬enc-shiftDown n (SHRINK a) rewrite ¬enc-shiftDown n a = refl
+
+
+→¬Enc-shiftUp : (n : ℕ) {a : Term}
+                   → ¬Enc a
+                   → ¬Enc (shiftUp n a)
+→¬Enc-shiftUp n {a} nn rewrite ¬enc-shiftUp n a = nn
+
+
+abstract
+  ¬enc-shiftNameUp : (n : ℕ) (a : Term) → ¬enc (shiftNameUp n a) ≡ ¬enc a
+  ¬enc-shiftNameUp n (VAR x) = refl
+--  ¬enc-shiftNameUp n NAT = refl
+  ¬enc-shiftNameUp n QNAT = refl
+--  ¬enc-shiftNameUp n TNAT = refl
+  ¬enc-shiftNameUp n (LT a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+  ¬enc-shiftNameUp n (QLT a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+  ¬enc-shiftNameUp n (NUM x) = refl
+  ¬enc-shiftNameUp n (IFLT a a₁ a₂ a₃) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ | ¬enc-shiftNameUp n a₂ | ¬enc-shiftNameUp n a₃ = refl
+  ¬enc-shiftNameUp n (IFEQ a a₁ a₂ a₃) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ | ¬enc-shiftNameUp n a₂ | ¬enc-shiftNameUp n a₃ = refl
+  ¬enc-shiftNameUp n (SUC a) rewrite ¬enc-shiftNameUp n a = refl
+  ¬enc-shiftNameUp n (NATREC a a₁ a₂) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ | ¬enc-shiftNameUp n a₂ = refl
+  ¬enc-shiftNameUp n (PI a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+  ¬enc-shiftNameUp n (LAMBDA a) rewrite ¬enc-shiftNameUp n a = refl
+  ¬enc-shiftNameUp n (APPLY a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+  ¬enc-shiftNameUp n (FIX a) rewrite ¬enc-shiftNameUp n a = refl
+  ¬enc-shiftNameUp n (LET a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+  ¬enc-shiftNameUp n (WT a a₁ a₂) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ | ¬enc-shiftNameUp n a₂ = refl
+  ¬enc-shiftNameUp n (SUP a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+  --¬enc-shiftNameUp n (DSUP a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp (suc n) a₁ = refl
+  ¬enc-shiftNameUp n (WREC a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+  ¬enc-shiftNameUp n (MT a a₁ a₂) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ | ¬enc-shiftNameUp n a₂ = refl
+  --¬enc-shiftNameUp n (MSUP a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+  --¬enc-shiftNameUp n (DMSUP a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp (suc n) a₁ = refl
+  ¬enc-shiftNameUp n (SUM a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+  ¬enc-shiftNameUp n (PAIR a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+  ¬enc-shiftNameUp n (SPREAD a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+  ¬enc-shiftNameUp n (SET a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+  ¬enc-shiftNameUp n (ISECT a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+  ¬enc-shiftNameUp n (TUNION a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+  ¬enc-shiftNameUp n (UNION a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+--  ¬enc-shiftNameUp n (QTUNION a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+  ¬enc-shiftNameUp n (INL a) rewrite ¬enc-shiftNameUp n a = refl
+  ¬enc-shiftNameUp n (INR a) rewrite ¬enc-shiftNameUp n a = refl
+  ¬enc-shiftNameUp n (DECIDE a a₁ a₂) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ | ¬enc-shiftNameUp n a₂ = refl
+  ¬enc-shiftNameUp n (EQ a a₁ a₂) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ | ¬enc-shiftNameUp n a₂ = refl
+--  ¬enc-shiftNameUp n (EQB a a₁ a₂ a₃) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ | ¬enc-shiftNameUp n a₂ | ¬enc-shiftNameUp n a₃ = refl
+  ¬enc-shiftNameUp n AX = refl
+  ¬enc-shiftNameUp n FREE = refl
+  ¬enc-shiftNameUp n (MSEQ x) = refl
+  ¬enc-shiftNameUp n (MAPP s a) rewrite ¬enc-shiftNameUp n a = refl
+  ¬enc-shiftNameUp n (CS x) = refl
+  ¬enc-shiftNameUp n (NAME x) = refl
+  ¬enc-shiftNameUp n (FRESH a) rewrite ¬enc-shiftNameUp (suc n) a = refl
+  ¬enc-shiftNameUp n (LOAD a) rewrite ¬enc-shiftNameUp n a = refl
+  ¬enc-shiftNameUp n (CHOOSE a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+--  ¬enc-shiftNameUp n (TSQUASH a) rewrite ¬enc-shiftNameUp n a = refl
+--  ¬enc-shiftNameUp n (TTRUNC a) rewrite ¬enc-shiftNameUp n a = refl
+  ¬enc-shiftNameUp n NOWRITE = refl
+  ¬enc-shiftNameUp n NOREAD  = refl
+  ¬enc-shiftNameUp n (SUBSING a) rewrite ¬enc-shiftNameUp n a = refl
+  ¬enc-shiftNameUp n PURE = refl
+  ¬enc-shiftNameUp n NOSEQ = refl
+  ¬enc-shiftNameUp n NOENC = refl
+  ¬enc-shiftNameUp n (TERM a) rewrite ¬enc-shiftNameUp n a = refl
+  ¬enc-shiftNameUp n (ENC a) rewrite ¬enc-shiftNameUp n a = refl
+  ¬enc-shiftNameUp n (DUM a) rewrite ¬enc-shiftNameUp n a = refl
+  ¬enc-shiftNameUp n (FFDEFS a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
+  ¬enc-shiftNameUp n (UNIV x) = refl
+  ¬enc-shiftNameUp n (LIFT a) rewrite ¬enc-shiftNameUp n a = refl
+  ¬enc-shiftNameUp n (LOWER a) rewrite ¬enc-shiftNameUp n a = refl
+  ¬enc-shiftNameUp n (SHRINK a) rewrite ¬enc-shiftNameUp n a = refl
+
+
+abstract
+  ¬Enc-subv : (v : Var) {a b : Term}
+              → ¬enc a ≡ true
+              → ¬enc b ≡ true
+              → ¬enc (subv v a b) ≡ true
+  ¬Enc-subv v {a} {VAR x} na nb with x ≟ v
+  ... | yes _ = na
+  ... | no _ = refl
+--  ¬Enc-subv v {a} {NAT} na nb = nb
+  ¬Enc-subv v {a} {QNAT} na nb = nb
+--  ¬Enc-subv v {a} {TNAT} na nb = nb
+  ¬Enc-subv v {a} {LT b b₁} na nb = →∧≡true (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  ¬Enc-subv v {a} {QLT b b₁} na nb = →∧≡true {¬enc (subv v a b)} {¬enc (subv v a b₁)} (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  ¬Enc-subv v {a} {NUM x} na nb = refl
+  ¬Enc-subv v {a} {IFLT b b₁ b₂ b₃} na nb = →∧4≡true (¬Enc-subv v {a} {b} na (∧≡true→1-4 {¬enc b} {¬enc b₁} {¬enc b₂} {¬enc b₃} nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→2-4 {¬enc b} {¬enc b₁} {¬enc b₂} {¬enc b₃} nb)) (¬Enc-subv v {a} {b₂} na (∧≡true→3-4 {¬enc b} {¬enc b₁} {¬enc b₂} {¬enc b₃} nb)) (¬Enc-subv v {a} {b₃} na (∧≡true→4-4 {¬enc b} {¬enc b₁} {¬enc b₂} {¬enc b₃} nb))
+  ¬Enc-subv v {a} {IFEQ b b₁ b₂ b₃} na nb = →∧4≡true (¬Enc-subv v {a} {b} na (∧≡true→1-4 {¬enc b} {¬enc b₁} {¬enc b₂} {¬enc b₃} nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→2-4 {¬enc b} {¬enc b₁} {¬enc b₂} {¬enc b₃} nb)) (¬Enc-subv v {a} {b₂} na (∧≡true→3-4 {¬enc b} {¬enc b₁} {¬enc b₂} {¬enc b₃} nb)) (¬Enc-subv v {a} {b₃} na (∧≡true→4-4 {¬enc b} {¬enc b₁} {¬enc b₂} {¬enc b₃} nb))
+  ¬Enc-subv v {a} {SUC b} na nb = ¬Enc-subv v {a} {b} na nb
+  ¬Enc-subv v {a} {NATREC b b₁ b₂} na nb = →∧3≡true (¬Enc-subv v {a} {b} na (∧≡true→1-3 {¬enc b} {¬enc b₁} {¬enc b₂} nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→2-3 {¬enc b} {¬enc b₁} {¬enc b₂} nb)) (¬Enc-subv v {a} {b₂} na (∧≡true→3-3 {¬enc b} {¬enc b₁} {¬enc b₂} nb))
+  ¬Enc-subv v {a} {PI b b₁} na nb = →∧≡true (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv (suc v) {shiftUp 0 a} {b₁} (→¬Enc-shiftUp 0 {a} na) (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  ¬Enc-subv v {a} {LAMBDA b} na nb = ¬Enc-subv (suc v) {shiftUp 0 a} {b} (→¬Enc-shiftUp 0 {a} na) nb
+  ¬Enc-subv v {a} {APPLY b b₁} na nb = →∧≡true {¬enc (subv v a b)} {¬enc (subv v a b₁)} (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  ¬Enc-subv v {a} {FIX b} na nb = ¬Enc-subv v {a} {b} na nb
+  ¬Enc-subv v {a} {LET b b₁} na nb = →∧≡true (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv (suc v) {shiftUp 0 a} {b₁} (→¬Enc-shiftUp 0 {a} na) (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  ¬Enc-subv v {a} {WT b b₁ b₂} na nb = →∧3≡true (¬Enc-subv v {a} {b} na (∧≡true→1-3 {¬enc b} {¬enc b₁} {¬enc b₂} nb))
+                                                (¬Enc-subv (suc v) {shiftUp 0 a} {b₁} (→¬Enc-shiftUp 0 {a} na) (∧≡true→2-3 {¬enc b} {¬enc b₁} {¬enc b₂} nb))
+                                                (¬Enc-subv v {a} {b₂} na (∧≡true→3-3 {¬enc b} {¬enc b₁} {¬enc b₂} nb))
+  ¬Enc-subv v {a} {SUP b b₁} na nb = →∧≡true {¬enc (subv v a b)} {¬enc (subv v a b₁)} (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  --¬Enc-subv v {a} {DSUP b b₁} na nb = →∧≡true (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv (suc (suc v)) {shiftUp 0 (shiftUp 0 a)} {b₁} (→¬Enc-shiftUp 0 {shiftUp 0 a} (→¬Enc-shiftUp 0 {a} na)) (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  ¬Enc-subv v {a} {WREC b b₁} na nb = →∧≡true (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv (suc (suc (suc v))) {shiftUp 0 (shiftUp 0 (shiftUp 0 a))} {b₁} (→¬Enc-shiftUp 0 {shiftUp 0 (shiftUp 0 a)} (→¬Enc-shiftUp 0 {shiftUp 0 a} (→¬Enc-shiftUp 0 {a} na))) (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  ¬Enc-subv v {a} {MT b b₁ b₂} na nb = →∧3≡true (¬Enc-subv v {a} {b} na (∧≡true→1-3 {¬enc b} {¬enc b₁} {¬enc b₂} nb))
+                                                (¬Enc-subv (suc v) {shiftUp 0 a} {b₁} (→¬Enc-shiftUp 0 {a} na) (∧≡true→2-3 {¬enc b} {¬enc b₁} {¬enc b₂} nb))
+                                                (¬Enc-subv v {a} {b₂} na (∧≡true→3-3 {¬enc b} {¬enc b₁} {¬enc b₂} nb))
+  --¬Enc-subv v {a} {MSUP b b₁} na nb = →∧≡true {¬enc (subv v a b)} {¬enc (subv v a b₁)} (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  --¬Enc-subv v {a} {DMSUP b b₁} na nb = →∧≡true (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv (suc (suc v)) {shiftUp 0 (shiftUp 0 a)} {b₁} (→¬Enc-shiftUp 0 {shiftUp 0 a} (→¬Enc-shiftUp 0 {a} na)) (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  ¬Enc-subv v {a} {SUM b b₁} na nb = →∧≡true (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv (suc v) {shiftUp 0 a} {b₁} (→¬Enc-shiftUp 0 {a} na) (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  ¬Enc-subv v {a} {PAIR b b₁} na nb = →∧≡true {¬enc (subv v a b)} {¬enc (subv v a b₁)} (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  ¬Enc-subv v {a} {SPREAD b b₁} na nb = →∧≡true (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv (suc (suc v)) {shiftUp 0 (shiftUp 0 a)} {b₁} (→¬Enc-shiftUp 0 {shiftUp 0 a} (→¬Enc-shiftUp 0 {a} na)) (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  ¬Enc-subv v {a} {SET b b₁} na nb = →∧≡true (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv (suc v) {shiftUp 0 a} {b₁} (→¬Enc-shiftUp 0 {a} na) (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  ¬Enc-subv v {a} {ISECT b b₁} na nb = →∧≡true {¬enc (subv v a b)} {¬enc (subv v a b₁)} (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  ¬Enc-subv v {a} {TUNION b b₁} na nb = →∧≡true (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv (suc v) {shiftUp 0 a} {b₁} (→¬Enc-shiftUp 0 {a} na) (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  ¬Enc-subv v {a} {UNION b b₁} na nb = →∧≡true {¬enc (subv v a b)} {¬enc (subv v a b₁)} (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+--  ¬Enc-subv v {a} {QTUNION b b₁} na nb = →∧≡true {¬enc (subv v a b)} {¬enc (subv v a b₁)} (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  ¬Enc-subv v {a} {INL b} na nb = ¬Enc-subv v {a} {b} na nb
+  ¬Enc-subv v {a} {INR b} na nb = ¬Enc-subv v {a} {b} na nb
+  ¬Enc-subv v {a} {DECIDE b b₁ b₂} na nb = →∧3≡true (¬Enc-subv v {a} {b} na (∧≡true→1-3 {¬enc b} {¬enc b₁} {¬enc b₂} nb)) (¬Enc-subv (suc v) {shiftUp 0 a} {b₁} (→¬Enc-shiftUp 0 {a} na) (∧≡true→2-3 {¬enc b} {¬enc b₁} {¬enc b₂} nb)) (¬Enc-subv (suc v) {shiftUp 0 a} {b₂} (→¬Enc-shiftUp 0 {a} na) (∧≡true→3-3 {¬enc b} {¬enc b₁} {¬enc b₂} nb))
+  ¬Enc-subv v {a} {EQ b b₁ b₂} na nb = →∧3≡true (¬Enc-subv v {a} {b} na (∧≡true→1-3 {¬enc b} {¬enc b₁} {¬enc b₂} nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→2-3 {¬enc b} {¬enc b₁} {¬enc b₂} nb)) (¬Enc-subv v {a} {b₂} na (∧≡true→3-3 {¬enc b} {¬enc b₁} {¬enc b₂} nb))
+--  ¬Enc-subv v {a} {EQB b b₁ b₂ b₃} na nb = →∧4≡true (¬Enc-subv v {a} {b} na (∧≡true→1-4 {¬enc b} {¬enc b₁} {¬enc b₂} {¬enc b₃} nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→2-4 {¬enc b} {¬enc b₁} {¬enc b₂} {¬enc b₃} nb)) (¬Enc-subv v {a} {b₂} na (∧≡true→3-4 {¬enc b} {¬enc b₁} {¬enc b₂} {¬enc b₃} nb)) (¬Enc-subv v {a} {b₃} na (∧≡true→4-4 {¬enc b} {¬enc b₁} {¬enc b₂} {¬enc b₃} nb))
+  ¬Enc-subv v {a} {AX} na nb = refl
+  ¬Enc-subv v {a} {FREE} na nb = refl
+  ¬Enc-subv v {a} {CS x} na nb = refl
+  ¬Enc-subv v {a} {NAME x} na nb = refl
+  ¬Enc-subv v {a} {FRESH b} na nb = ¬Enc-subv v {shiftNameUp 0 a} {b} (trans (¬enc-shiftNameUp 0 a) na) nb
+  ¬Enc-subv v {a} {LOAD b} na nb = nb
+  ¬Enc-subv v {a} {MSEQ x} na nb = nb
+  ¬Enc-subv v {a} {MAPP s b} na nb = ¬Enc-subv v {a} {b} na nb
+  ¬Enc-subv v {a} {CHOOSE b b₁} na nb = →∧≡true {¬enc (subv v a b)} {¬enc (subv v a b₁)} (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+--  ¬Enc-subv v {a} {TSQUASH b} na nb = ¬Enc-subv v {a} {b} na nb
+--  ¬Enc-subv v {a} {TTRUNC b} na nb = ¬Enc-subv v {a} {b} na nb
+  ¬Enc-subv v {a} {NOWRITE} na nb = refl
+  ¬Enc-subv v {a} {NOREAD}  na nb = refl
+  ¬Enc-subv v {a} {SUBSING b} na nb = ¬Enc-subv v {a} {b} na nb
+  ¬Enc-subv v {a} {PURE} na nb = refl
+  ¬Enc-subv v {a} {NOSEQ} na nb = refl
+  ¬Enc-subv v {a} {NOENC} na nb = refl
+  ¬Enc-subv v {a} {TERM b} na nb = ¬Enc-subv v {a} {b} na nb
+  ¬Enc-subv v {a} {ENC b} na nb = nb --¬Enc-subv v {a} {b} na nb
+  ¬Enc-subv v {a} {DUM b} na nb = ¬Enc-subv v {a} {b} na nb
+  ¬Enc-subv v {a} {FFDEFS b b₁} na nb = →∧≡true {¬enc (subv v a b)} {¬enc (subv v a b₁)} (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
+  ¬Enc-subv v {a} {UNIV x} na nb = refl
+  ¬Enc-subv v {a} {LIFT b} na nb = ¬Enc-subv v {a} {b} na nb
+  ¬Enc-subv v {a} {LOWER b} na nb = ¬Enc-subv v {a} {b} na nb
+  ¬Enc-subv v {a} {SHRINK b} na nb = ¬Enc-subv v {a} {b} na nb
+
+
+¬Enc-sub : {a b : Term}
+             → ¬Enc a
+             → ¬Enc b
+             → ¬Enc (sub a b)
+¬Enc-sub {a} {b} na nb rewrite ¬enc-shiftDown 0 (subv 0 (shiftUp 0 a) b) = ¬Enc-subv 0 {shiftUp 0 a} {b} na' nb
+  where
+    na' : ¬Enc (shiftUp 0 a)
+    na' rewrite ¬enc-shiftUp 0 a = na
+
+
 ⇓from-to-refl : (T : Term) (w : 𝕎·) → T ⇓ T from w to w
 ⇓from-to-refl T w = (0 , refl)
 
