@@ -491,16 +491,36 @@ FFDEFSeq x1 eqa w t1 t2 =
    eqa x1 x × #¬Names x)
 
 
-PUREeq : per
-PUREeq t1 t2 = Lift {0ℓ} (lsuc L) (#¬Names t1 × #¬Names t2)
+⇛!ₙ : (a : Term) (w : 𝕎·) → Set(lsuc(L))
+--⇛!ₙ a w = ∀𝕎 w (λ w1 e1 → Lift {L} (lsuc L) (Σ Term (λ b → a ⇓! b at w1 × ¬Names b)))
+⇛!ₙ a w = Σ Term (λ b → a ⇛! b at w × ¬Names b × ¬Enc b)
 
 
-NOSEQeq : per
-NOSEQeq t1 t2 = Lift {0ℓ} (lsuc L) (#¬Seq t1 × #¬Seq t2)
+-- ¬Enc because ENC terms can currently generate variables when computing, which
+-- prevent us from generating a CTerm
+#⇛!ₙ : (a : CTerm) (w : 𝕎·) → Set(lsuc(L))
+--#⇛!ₙ a w = ⇛!ₙ ⌜ a ⌝ w
+#⇛!ₙ a w = Σ CTerm (λ b → a #⇛! b at w × #¬Names b × #¬Enc b)
 
 
-NOENCeq : per
-NOENCeq t1 t2 = Lift {0ℓ} (lsuc L) (#¬Enc t1 × #¬Enc t2)
+#⇛!ₛ : (a : CTerm) (w : 𝕎·) → Set(lsuc(L))
+#⇛!ₛ a w = Σ CTerm (λ b → a #⇛! b at w × #¬Seq b × #isValue b)
+
+
+#⇛!ₑ : (a : CTerm) (w : 𝕎·) → Set(lsuc(L))
+#⇛!ₑ a w = Σ CTerm (λ b → a #⇛! b at w × #¬Enc b × #isValue b)
+
+
+PUREeq : wper
+PUREeq w t1 t2 = #⇛!ₙ t1 w × #⇛!ₙ t2 w
+
+
+NOSEQeq : wper
+NOSEQeq w t1 t2 = #⇛!ₛ t1 w × #⇛!ₛ t2 w
+
+
+NOENCeq : wper
+NOENCeq w t1 t2 = #⇛!ₑ t1 w × #⇛!ₑ t2 w
 
 
 -- Similar to hasValue in terms2, but here we use ⇛ instead of ⇓
@@ -587,11 +607,11 @@ eqInType u w (EQTSUBSING _ _ _ _ eqtA exta) t1 t2 =
 eqInType u w (EQFFDEFS _ _ x1 _ _ _ eqtA exta _) t1 t2 =
   □· w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTPURE _ _) t1 t2 =
-  □· w (λ w' e → PUREeq t1 t2)
+  □· w (λ w' e → PUREeq w' t1 t2)
 eqInType u w (EQTNOSEQ _ _) t1 t2 =
-  □· w (λ w' e → NOSEQeq t1 t2)
+  □· w (λ w' e → NOSEQeq w' t1 t2)
 eqInType u w (EQTNOENC _ _) t1 t2 =
-  □· w (λ w' e → NOENCeq t1 t2)
+  □· w (λ w' e → NOENCeq w' t1 t2)
 eqInType u w (EQTTERM x1 x2 _ _ _) t1 t2 =
   □· w (λ w' e → TERMeq w' x1 x2)
 eqInType u w (EQTUNIV i p c₁ c₂) T1 T2 = snd u i p w T1 T2

@@ -455,6 +455,7 @@ LAM0∈NAT→T i w P T p0 nty tyt prest = equalInType-FUN eqTypesNAT tyt aw
 -- comp→∀ℕ is stronger than cℕ. get rid of cℕ?
 sem : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
       (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T F : CTerm)
+      (nnF : #¬Names F)
 --      → #¬Names F -- This is currently required by continuity (captured by #FunBarP)
       → P 0
       → type-preserves-#⇛ T
@@ -463,10 +464,11 @@ sem : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-cho
       → isType i w T
       → ∈Type i w (#FunBarP T) F
       → ∈Type i w (#IndBar T) (#APPLY2 (#loop F) (#NUM 0) #INIT)
-sem kb cn can exb gc i w P T F {--nnF--} p0 prest tyn nty tyt F∈P = concl
+sem kb cn can exb gc i w P T F nnF {--nnF--} p0 prest tyn nty tyt F∈P = concl
   where
-    nnF  : #¬Names F
-    nnF = equalInType-TPURE→ₗ F∈P
+{--    nnF  : #¬Names F
+    nnF = {!!} --equalInType-TPURE→ₗ F∈P
+--}
 
     F∈ : ∈Type i w (#FunBar T) F
     F∈ = equalInType-TPURE→ F∈P

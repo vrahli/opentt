@@ -361,6 +361,7 @@ abstract
           h6 : steps k4 (APPLY f (NUM m) , chooseT name w3' (NUM m)) ≡ (v , chooseT name w3' (NUM m))
                × chooseT name w3 (NUM m) ≡ w2
                × ¬Names v
+               × (¬Enc (APPLY f (NUM m)) → ¬Enc v × fvars v ⊆ fvars (APPLY f (NUM m)))
           h6 = ¬Names→steps k4 (chooseT name w3 (NUM m)) w2 (chooseT name w3' (NUM m)) (APPLY f (NUM m)) v (→∧≡true {¬names f} {¬names (NUM m)} nnf refl) comp5c
 
           comph' : APPLY (upd name f) a ⇓ v from w1' to chooseT name w3' (NUM m)
@@ -386,6 +387,7 @@ abstract
           h6 : steps k4 (APPLY f (NUM m) , w3') ≡ (v , w3')
                × (chooseT name w3 (NUM m)) ≡ w2
                × ¬Names v
+               × (¬Enc (APPLY f (NUM m)) → ¬Enc v × fvars v ⊆ fvars (APPLY f (NUM m)))
           h6 = ¬Names→steps k4 (chooseT name w3 (NUM m)) w2 w3' (APPLY f (NUM m)) v (→∧≡true {¬names f} {¬names (NUM m)} nnf refl) comp5c
 
           compg' : APPLY (upd name f) a ⇓ v from w1' to w3'
@@ -414,6 +416,7 @@ abstract
           h6 : steps k4 (APPLY f (NUM m) , chooseT name w3' (NUM m)) ≡ (v , chooseT name w3' (NUM m))
                × w3 ≡ w2
                × ¬Names v
+               × (¬Enc (APPLY f (NUM m)) → ¬Enc v × fvars v ⊆ fvars (APPLY f (NUM m)))
           h6 = ¬Names→steps k4 w3 w2 (chooseT name w3' (NUM m)) (APPLY f (NUM m)) v (→∧≡true {¬names f} {¬names (NUM m)} nnf refl) comp5c
 
           comph' : APPLY (upd name f) a ⇓ v from w1' to chooseT name w3' (NUM m)
@@ -439,6 +442,7 @@ abstract
           h6 : steps k4 (APPLY f (NUM m) , w3') ≡ (v , w3')
                × w3 ≡ w2
                × ¬Names v
+               × (¬Enc (APPLY f (NUM m)) → ¬Enc v × fvars v ⊆ fvars (APPLY f (NUM m)))
           h6 = ¬Names→steps k4 w3 w2 w3' (APPLY f (NUM m)) v (→∧≡true {¬names f} {¬names (NUM m)} nnf refl) comp5c
 
           compg' : APPLY (upd name f) a ⇓ v from w1' to w3'
@@ -747,13 +751,18 @@ abstract
 
       concl : differ name name f u₁ u₁ × differ name name f u₂ u₂
               → Σ Term (λ a'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
-                       sub (WRECr b₁ u₂) (sub u₂ (sub u₁ b₁)) ⇓ a'' from w1 to w3 × WREC (SUP u₁ u₂) b₁ ⇓ a'' from w1' to w3' × differ name name f a'' a'')))
+                  sub (WRECr b₁ u₂) (sub (shiftUp 0 u₂) (sub (shiftUp 0 (shiftUp 0 u₁)) b₁)) ⇓ a'' from w1 to w3
+                × WREC (SUP u₁ u₂) b₁ ⇓ a'' from w1' to w3'
+                × differ name name f a'' a'')))
       concl (d1 , d2) =
-        sub (WRECr b₁ u₂) (sub u₂ (sub u₁ b₁)) ,
+        sub (WRECr b₁ u₂) (sub (shiftUp 0 u₂) (sub (shiftUp 0 (shiftUp 0 u₁)) b₁)) ,
         w1 , w1' ,
         ⇓from-to-refl _ _ ,
         WREC-SUP⇓ w1' u₁ u₂ b₁ ,
-        differ-sub cf (differ-sub cf (differ-sub cf diff₁ d1) d2) (differ-WRECr cf diff₁ d2)
+        differ-sub cf
+          (differ-sub cf (differ-sub cf diff₁ (→differ-shiftUp 0 cf (→differ-shiftUp 0 cf d1)))
+            (→differ-shiftUp 0 cf d2))
+          (differ-WRECr cf diff₁ d2) --differ-sub cf (differ-sub cf (differ-sub cf diff₁ d1) d2) (differ-WRECr cf diff₁ d2)
   ... | inj₂ x with step⊎ a₁ w1
   ... |    inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
     WREC (fst ind) b₁ ,
@@ -814,12 +823,14 @@ abstract
 
       concl : differ name name f u₁ u₁ × differ name name f u₂ u₂
               → Σ Term (λ a'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
-                       sub u₂ (sub u₁ b₁) ⇓ a'' from w1 to w3 × SPREAD (PAIR u₁ u₂) b₁ ⇓ a'' from w1' to w3' × differ name name f a'' a'')))
+                  sub u₂ (sub (shiftUp 0 u₁) b₁) ⇓ a'' from w1 to w3
+                × SPREAD (PAIR u₁ u₂) b₁ ⇓ a'' from w1' to w3'
+                × differ name name f a'' a'')))
       concl (d1 , d2) =
-        sub u₂ (sub u₁ b₁) , w1 , w1' ,
+        sub u₂ (sub (shiftUp 0 u₁) b₁) , w1 , w1' ,
         ⇓from-to-refl _ _ ,
         SPREAD-PAIR⇓ w1' u₁ u₂ b₁ ,
-        differ-sub cf (differ-sub cf diff₁ d1) d2
+        differ-sub cf (differ-sub cf diff₁ (→differ-shiftUp 0 cf d1)) d2 --differ-sub cf (differ-sub cf diff₁ d1) d2
   ... | inj₂ x with step⊎ a₁ w1
   ... |    inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
     SPREAD (fst ind) b₁ ,

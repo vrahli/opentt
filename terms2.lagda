@@ -1297,7 +1297,7 @@ NATREC-NUM⇓ w n b c = 1 , refl
 --DSUP-SUP⇓ w a b c = 1 , refl
 
 
-WREC-SUP⇓ : (w : 𝕎·) (a f r : Term) → WREC (SUP a f) r ⇓ sub (WRECr r f) (sub f (sub a r)) from w to w
+WREC-SUP⇓ : (w : 𝕎·) (a f r : Term) → WREC (SUP a f) r ⇓ WRECsub a f r from w to w
 WREC-SUP⇓ w a f r = 1 , refl
 
 
@@ -1305,7 +1305,7 @@ WREC-SUP⇓ w a f r = 1 , refl
 --DMSUP-MSUP⇓ w a b c = 1 , refl
 
 
-SPREAD-PAIR⇓ : (w : 𝕎·) (a b c : Term) → SPREAD (PAIR a b) c ⇓ sub b (sub a c) from w to w
+SPREAD-PAIR⇓ : (w : 𝕎·) (a b c : Term) → SPREAD (PAIR a b) c ⇓ SPREADsub a b c from w to w
 SPREAD-PAIR⇓ w a b c = 1 , refl
 
 

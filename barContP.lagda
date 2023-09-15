@@ -385,12 +385,6 @@ loop bar = FIX (loopL bar)
     c = refl
 
 
-lowerVars++ : (a b : List Var) → lowerVars (a ++ b) ≡ lowerVars a ++ lowerVars b
-lowerVars++ [] b = refl
-lowerVars++ (0 ∷ a) b = lowerVars++ a b
-lowerVars++ (suc x ∷ a) b rewrite lowerVars++ a b = refl
-
-
 lowerVars-fvars-shiftUp≡0 : (t : Term) → lowerVars (fvars (shiftUp 0 t)) ≡ fvars t
 lowerVars-fvars-shiftUp≡0 t rewrite fvars-shiftUp≡ 0 t | loweVars-suc (fvars t) = refl
 

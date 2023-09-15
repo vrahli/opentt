@@ -229,9 +229,9 @@ typeSysConds-NOSEQ-isym : (u : univs) (w : 𝕎·) (A B : CTerm)
 typeSysConds-NOSEQ-isym u w A B x x₁ f g eqa =
   Mod.∀𝕎-□Func M h eqa
   where
-    h : ∀𝕎 w (λ w' e' → NOSEQeq f g
-                       → NOSEQeq g f)
-    h w1 e1 (lift (n1 , n2)) = lift (n2 , n1)
+    h : ∀𝕎 w (λ w' e' → NOSEQeq w' f g
+                      → NOSEQeq w' g f)
+    h w1 e1 (n1 , n2) = n2 , n1
 
 
 
@@ -242,10 +242,10 @@ typeSysConds-NOSEQ-itrans u w A B x x₁ f g h ea1 ea2 =
   Mod.□Func M (Mod.□Func M (Mod.∀𝕎-□ M aw) ea1) ea2
   where
     aw : ∀𝕎 w
-              (λ w' e → NOSEQeq f g
-                      → NOSEQeq g h
-                      → NOSEQeq f h)
-    aw w1 e1 (lift (p₁ , p₂)) (lift (q₁ , q₂)) = lift (p₁ , q₂)
+              (λ w' e → NOSEQeq w' f g
+                      → NOSEQeq w' g h
+                      → NOSEQeq w' f h)
+    aw w1 e1 (p₁ , p₂) (q₁ , q₂) = p₁ , q₂
 
 
 
@@ -257,8 +257,8 @@ typeSysConds-NOSEQ-extl1 u w A B x x₁ C eqt' =
   where
     ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
-                 → <Type eqt'' eqt → (comp : T1' #⇛ #NOSEQ at w') (a b : CTerm) → □· w' (λ w'' _ → NOSEQeq a b) → eqInType u' w' eqt'' a b)
-          → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq a b) → eqInType u w eqt a b
+                 → <Type eqt'' eqt → (comp : T1' #⇛ #NOSEQ at w') (a b : CTerm) → □· w' (λ w'' _ → NOSEQeq w'' a b) → eqInType u' w' eqt'' a b)
+          → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq w' a b) → eqInType u w eqt a b
 --    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt comp y))
 --    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y))
@@ -293,10 +293,10 @@ typeSysConds-NOSEQ-extl1 u w A B x x₁ C eqt' =
         aw : ∀𝕎 w (λ w' e' → (x₃ : eqTypes u w' T1 T2) (at : at□· x w' e' x₃) → eqInType u w' x₃ a b)
         aw w1 e1 y at = ih {u} {w1} {T1} {T2} y (<Type1 y (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 y at)) (∀𝕎-mon e1 comp) a b (Mod.↑□ M eqi e1)
 
-    concl : (comp : A #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq a b) → eqInType u w eqt' a b
+    concl : (comp : A #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq w' a b) → eqInType u w eqt' a b
     concl =
       ind<Type
-        (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq a b) → eqInType u w eqt' a b)
+        (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq w' a b) → eqInType u w eqt' a b)
         ind
         eqt'
 
@@ -309,8 +309,8 @@ typeSysConds-NOSEQ-extl2 u w A B x x₁ C eqt' = concl x
   where
     ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
-                 → <Type eqt'' eqt → (comp : T2' #⇛ #NOSEQ at w') (a b : CTerm) → □· w' (λ w'' _ → NOSEQeq a b) → eqInType u' w' eqt'' a b)
-          → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq a b) → eqInType u w eqt a b
+                 → <Type eqt'' eqt → (comp : T2' #⇛ #NOSEQ at w') (a b : CTerm) → □· w' (λ w'' _ → NOSEQeq w'' a b) → eqInType u' w' eqt'' a b)
+          → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq w' a b) → eqInType u w eqt a b
 --    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt comp y₁))
 --    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y₁))
@@ -345,10 +345,10 @@ typeSysConds-NOSEQ-extl2 u w A B x x₁ C eqt' = concl x
         aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' T1 T2) (at : at□· y w' e' x) → eqInType u w' x a b)
         aw w1 e1 z at = ih {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at)) (∀𝕎-mon e1 comp) a b (Mod.↑□ M eqi e1)
 
-    concl : (comp : A #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq a b) → eqInType u w eqt' a b
+    concl : (comp : A #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq w' a b) → eqInType u w eqt' a b
     concl =
       ind<Type
-        (λ {u} {w} {T1} {T2} eqt' → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq a b) → eqInType u w eqt' a b)
+        (λ {u} {w} {T1} {T2} eqt' → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq w' a b) → eqInType u w eqt' a b)
         ind
         eqt'
 
@@ -361,8 +361,8 @@ typeSysConds-NOSEQ-extr1 u w A B x x₁ C eqt' = concl x₁
   where
     ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
-                 → <Type eqt'' eqt → (comp : T2' #⇛ #NOSEQ at w') (a b : CTerm) → □· w' (λ w'' _ → NOSEQeq a b) → eqInType u' w' eqt'' a b)
-          → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq a b) → eqInType u w eqt a b
+                 → <Type eqt'' eqt → (comp : T2' #⇛ #NOSEQ at w') (a b : CTerm) → □· w' (λ w'' _ → NOSEQeq w'' a b) → eqInType u' w' eqt'' a b)
+          → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq w' a b) → eqInType u w eqt a b
 --    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt comp y₁))
 --    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y₁))
@@ -397,10 +397,10 @@ typeSysConds-NOSEQ-extr1 u w A B x x₁ C eqt' = concl x₁
         aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' T1 T2) (at : at□· y w' e' x) → eqInType u w' x a b)
         aw w1 e1 z at = ih {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at)) (∀𝕎-mon e1 comp) a b (Mod.↑□ M eqi e1)
 
-    concl : (comp : B #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq a b) → eqInType u w eqt' a b
+    concl : (comp : B #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq w' a b) → eqInType u w eqt' a b
     concl =
       ind<Type
-        (λ {u} {w} {T1} {T2} eqt' → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq a b) → eqInType u w eqt' a b)
+        (λ {u} {w} {T1} {T2} eqt' → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq w' a b) → eqInType u w eqt' a b)
         ind
         eqt'
 
@@ -413,8 +413,8 @@ typeSysConds-NOSEQ-extr2 u w A B x x₁ C eqt' = concl x₁
   where
     ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
-                 → <Type eqt'' eqt → (comp : T1' #⇛ #NOSEQ at w') (a b : CTerm) → □· w' (λ w'' _ → NOSEQeq a b) → eqInType u' w' eqt'' a b)
-          → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq a b) → eqInType u w eqt a b
+                 → <Type eqt'' eqt → (comp : T1' #⇛ #NOSEQ at w') (a b : CTerm) → □· w' (λ w'' _ → NOSEQeq w'' a b) → eqInType u' w' eqt'' a b)
+          → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq w' a b) → eqInType u w eqt a b
 --    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt comp y))
 --    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y))
@@ -449,10 +449,10 @@ typeSysConds-NOSEQ-extr2 u w A B x x₁ C eqt' = concl x₁
         aw : ∀𝕎 w (λ w' e' → (x₃ : eqTypes u w' T1 T2) (at : at□· x w' e' x₃) → eqInType u w' x₃ a b)
         aw w1 e1 y at = ih {u} {w1} {T1} {T2} y (<Type1 y (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 y at)) (∀𝕎-mon e1 comp) a b (Mod.↑□ M eqi e1)
 
-    concl : (comp : B #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq a b) → eqInType u w eqt' a b
+    concl : (comp : B #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq w' a b) → eqInType u w eqt' a b
     concl =
       ind<Type
-        (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq a b) → eqInType u w eqt' a b)
+        (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → □· w (λ w' _ → NOSEQeq w' a b) → eqInType u w eqt' a b)
         ind
         eqt'
 
@@ -465,8 +465,8 @@ typeSysConds-NOSEQ-extrevl1 u w A B x x₁ C eqt' = concl x
   where
     ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
-                 → <Type eqt'' eqt → (comp : T1' #⇛ #NOSEQ at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → NOSEQeq a b))
-          → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → NOSEQeq a b)
+                 → <Type eqt'' eqt → (comp : T1' #⇛ #NOSEQ at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → NOSEQeq w'' a b))
+          → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → NOSEQeq w' a b)
 --    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt comp y))
 --    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y))
@@ -499,17 +499,17 @@ typeSysConds-NOSEQ-extrevl1 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTBAR x) ih comp a b eqi = Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
       where
         aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
-                             → Mod.□ M w' (↑wPred (λ w'' e → NOSEQeq a b) e'))
+                             → Mod.□ M w' (↑wPred (λ w'' e → NOSEQeq w'' a b) e'))
         aw0 w1 e1 z at eqz = ih {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 z at)) (⇛-mon e1 comp) a b eqz
 
         aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
-                            → Mod.□ M w' (↑wPred' (λ w'' e → NOSEQeq a b) e'))
+                            → Mod.□ M w' (↑wPred' (λ w'' e → NOSEQeq w'' a b) e'))
         aw w1 e1 z at eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z at eqz)
 
-    concl : (comp : A #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → NOSEQeq a b)
+    concl : (comp : A #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → NOSEQeq w' a b)
     concl =
       ind<Type
-        (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → NOSEQeq a b))
+        (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → NOSEQeq w' a b))
         ind
         eqt'
 
@@ -522,8 +522,8 @@ typeSysConds-NOSEQ-extrevl2 u w A B x x₁ C eqt' = concl x
   where
     ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
-                 → <Type eqt'' eqt → (comp : T2' #⇛ #NOSEQ at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → NOSEQeq a b))
-          → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → NOSEQeq a b)
+                 → <Type eqt'' eqt → (comp : T2' #⇛ #NOSEQ at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → NOSEQeq w'' a b))
+          → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → NOSEQeq w' a b)
 --    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt comp y₁))
 --    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y₁))
@@ -556,17 +556,17 @@ typeSysConds-NOSEQ-extrevl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTBAR x) ih comp a b eqi = Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
       where
         aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
-                             → Mod.□ M w' (↑wPred (λ w'' e → NOSEQeq a b) e'))
+                             → Mod.□ M w' (↑wPred (λ w'' e → NOSEQeq w'' a b) e'))
         aw0 w1 e1 z at eqz = ih {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 z at)) (⇛-mon e1 comp) a b eqz
 
         aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
-                            → Mod.□ M w' (↑wPred' (λ w'' e → NOSEQeq a b) e'))
+                            → Mod.□ M w' (↑wPred' (λ w'' e → NOSEQeq w'' a b) e'))
         aw w1 e1 z at eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z at eqz)
 
-    concl : (comp : A #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → NOSEQeq a b)
+    concl : (comp : A #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → NOSEQeq w' a b)
     concl =
       ind<Type
-        (λ {u} {w} {T1} {T2} eqt' → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → NOSEQeq a b))
+        (λ {u} {w} {T1} {T2} eqt' → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → NOSEQeq w' a b))
         ind
         eqt'
 
@@ -579,8 +579,8 @@ typeSysConds-NOSEQ-extrevr1 u w A B x x₁ C eqt' = concl x₁
   where
     ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
-                 → <Type eqt'' eqt → (comp : T2' #⇛ #NOSEQ at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → NOSEQeq a b))
-          → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → NOSEQeq a b)
+                 → <Type eqt'' eqt → (comp : T2' #⇛ #NOSEQ at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → NOSEQeq w'' a b))
+          → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → NOSEQeq w' a b)
 --    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt comp y₁))
 --    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y₁))
@@ -613,17 +613,17 @@ typeSysConds-NOSEQ-extrevr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTBAR x) ih comp a b eqi = Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
       where
         aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
-                             → Mod.□ M w' (↑wPred (λ w'' e → NOSEQeq a b) e'))
+                             → Mod.□ M w' (↑wPred (λ w'' e → NOSEQeq w'' a b) e'))
         aw0 w1 e1 z at eqz = ih {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 z at)) (⇛-mon e1 comp) a b eqz
 
         aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
-                            → Mod.□ M w' (↑wPred' (λ w'' e → NOSEQeq a b) e'))
+                            → Mod.□ M w' (↑wPred' (λ w'' e → NOSEQeq w'' a b) e'))
         aw w1 e1 z at eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z at eqz)
 
-    concl : (comp : B #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → NOSEQeq a b)
+    concl : (comp : B #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → NOSEQeq w' a b)
     concl =
       ind<Type
-        (λ {u} {w} {T1} {T2} eqt' → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → NOSEQeq a b))
+        (λ {u} {w} {T1} {T2} eqt' → (comp : T2 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → NOSEQeq w' a b))
         ind
         eqt'
 
@@ -636,8 +636,8 @@ typeSysConds-NOSEQ-extrevr2 u w A B x x₁ C eqt' = concl x₁
   where
     ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
-                 → <Type eqt'' eqt → (comp : T1' #⇛ #NOSEQ at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → NOSEQeq a b))
-          → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → NOSEQeq a b)
+                 → <Type eqt'' eqt → (comp : T1' #⇛ #NOSEQ at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → NOSEQeq w'' a b))
+          → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → NOSEQeq w' a b)
 --    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqQNAT (⇛-val-det tt tt comp y))
 --    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (NOSEQneqTNAT (⇛-val-det tt tt comp y))
@@ -670,17 +670,17 @@ typeSysConds-NOSEQ-extrevr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTBAR x) ih comp a b eqi = Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
       where
         aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
-                             → Mod.□ M w' (↑wPred (λ w'' e → NOSEQeq a b) e'))
+                             → Mod.□ M w' (↑wPred (λ w'' e → NOSEQeq w'' a b) e'))
         aw0 w1 e1 z at eqz = ih {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 z at)) (⇛-mon e1 comp) a b eqz
 
         aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
-                            → Mod.□ M w' (↑wPred' (λ w'' e → NOSEQeq a b) e'))
+                            → Mod.□ M w' (↑wPred' (λ w'' e → NOSEQeq w'' a b) e'))
         aw w1 e1 z at eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z at eqz)
 
-    concl : (comp : B #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → NOSEQeq a b)
+    concl : (comp : B #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → NOSEQeq w' a b)
     concl =
       ind<Type
-        (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → NOSEQeq a b))
+        (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #NOSEQ at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → NOSEQeq w' a b))
         ind
         eqt'
 
@@ -692,7 +692,7 @@ eqInType-⇛-NOSEQ : (u : univs) (w : 𝕎·) (A B a b : CTerm)
                       → B #⇛ #NOSEQ at w
                       → (eqt : eqTypes u w A B)
                       → eqInType u w eqt a b
-                      → □· w (λ w' e → NOSEQeq a b)
+                      → □· w (λ w' e → NOSEQeq w' a b)
 eqInType-⇛-NOSEQ u w A B a b c₁ c₂ eqt ei = typeSysConds-NOSEQ-extrevl1 u w A B c₁ c₂ B eqt a b ei
 
 
@@ -703,7 +703,7 @@ eqInType-⇛-NOSEQ2 : (u : 𝕌) (w : 𝕎·) (A B a b : CTerm)
                        → B #⇛ #NOSEQ at w
                        → (eqt : ≡Types u w A B)
                        → (eqi : ≡∈Type u w eqt a b)
-                       → □· w (λ w' e → NOSEQeq a b)
+                       → □· w (λ w' e → NOSEQeq w' a b)
 eqInType-⇛-NOSEQ2 u w A B a b c₁ c₂ eqt ei = typeSysConds-NOSEQ-extrevl1 (u ·ᵤ) w A B c₁ c₂ B eqt a b ei
 
 
@@ -713,7 +713,7 @@ eqInType-⇛-NOSEQ-rev : (u : univs) (w : 𝕎·) (A B a b : CTerm)
                           → A #⇛ #NOSEQ at w
                           → B #⇛ #NOSEQ at w
                           → (eqt : eqTypes u w A B)
-                          → □· w (λ w' e → NOSEQeq a b)
+                          → □· w (λ w' e → NOSEQeq w' a b)
                           → eqInType u w eqt a b
 eqInType-⇛-NOSEQ-rev u w A B a b c₁ c₂ eqt ei = typeSysConds-NOSEQ-extl1 u w A B c₁ c₂ B eqt a b ei
 
@@ -723,7 +723,7 @@ eqInType-⇛-NOSEQ-rev2 : (u : 𝕌) (w : 𝕎·) (A B a b : CTerm)
                            → A #⇛ #NOSEQ at w
                            → B #⇛ #NOSEQ at w
                            → (eqt : ≡Types u w A B)
-                           → □· w (λ w' e → NOSEQeq a b)
+                           → □· w (λ w' e → NOSEQeq w' a b)
                            → ≡∈Type u w eqt a b
 eqInType-⇛-NOSEQ-rev2 u w A B a b c₁ c₂ eqt ei = typeSysConds-NOSEQ-extl1 (u ·ᵤ) w A B c₁ c₂ B eqt a b ei
 
@@ -737,14 +737,14 @@ typeSysConds-NOSEQ-local u w A B x x₁ a b i j =
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                          → eqInType u w' z a b
-                         → □· w' (λ w'' e → (x : w ⊑· w'') → NOSEQeq a b))
+                         → □· w' (λ w'' e → (x : w ⊑· w'') → NOSEQeq w'' a b))
     aw w1 e1 z {--at--} ei = Mod.∀𝕎-□Func M aw'' aw'
       where
-        aw' : □· w1 (λ w'' e → NOSEQeq a b)
+        aw' : □· w1 (λ w'' e → NOSEQeq w'' a b)
         aw' = eqInType-⇛-NOSEQ u w1 A B a b (⇛-mon e1 x) (⇛-mon e1 x₁) z ei
 
-        aw'' : ∀𝕎 w1 (λ w' e' → NOSEQeq a b
-                                → (x₂ : w ⊑· w') → NOSEQeq a b)
+        aw'' : ∀𝕎 w1 (λ w' e' → NOSEQeq w' a b
+                                → (x₂ : w ⊑· w') → NOSEQeq w' a b)
         aw'' w' e' p x₂ = p
 
 

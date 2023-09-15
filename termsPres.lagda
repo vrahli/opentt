@@ -406,16 +406,18 @@ abstract
   ¬Seq→step w1 w2 (WREC t t₁) u comp nseq with is-SUP t
   ... | inj₁ (x₁ , x₂ , p₁)
     rewrite p₁ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
-    = ¬Seq-sub {WRECr t₁ x₂} {sub x₂ (sub x₁ t₁)}
+    = ¬Seq-sub {WRECr t₁ x₂} {sub (shiftUp 0 x₂) (sub (shiftUp 0 (shiftUp 0 x₁)) t₁)}
         (→∧true {noseq (shiftUp 0 x₂) ∧ true} {noseq (shiftUp 3 t₁)}
           (→∧true {noseq (shiftUp 0 x₂)} {true}
             (trans (noseq-shiftUp 0 x₂) (∧≡true→ᵣ (noseq x₁) (noseq x₂) (∧≡true→ₗ (noseq x₁ ∧ noseq x₂) (noseq t₁) nseq)))
             refl)
           (trans (noseq-shiftUp 3 t₁) (∧≡true→ᵣ (noseq x₁ ∧ noseq x₂) (noseq t₁) nseq)))
-        (¬Seq-sub {x₂} {sub x₁ t₁}
-          (∧≡true→ᵣ (noseq x₁) (noseq x₂) (∧≡true→ₗ (noseq x₁ ∧ noseq x₂) (noseq t₁) nseq))
-          (¬Seq-sub {x₁} {t₁}
-            (∧≡true→ₗ (noseq x₁) (noseq x₂) (∧≡true→ₗ (noseq x₁ ∧ noseq x₂) (noseq t₁) nseq))
+        (¬Seq-sub {shiftUp 0 x₂} {sub (shiftUp 0 (shiftUp 0 x₁)) t₁}
+          (trans (noseq-shiftUp 0 x₂) (∧≡true→ᵣ (noseq x₁) (noseq x₂) (∧≡true→ₗ (noseq x₁ ∧ noseq x₂) (noseq t₁) nseq)))
+          (¬Seq-sub {shiftUp 0 (shiftUp 0 x₁)} {t₁}
+            (trans (noseq-shiftUp 0 (shiftUp 0 x₁))
+              (trans (noseq-shiftUp 0 x₁)
+                (∧≡true→ₗ (noseq x₁) (noseq x₂) (∧≡true→ₗ (noseq x₁ ∧ noseq x₂) (noseq t₁) nseq))))
             (∧≡true→ᵣ (noseq x₁ ∧ noseq x₂) (noseq t₁) nseq)))
   ... | inj₂ p₁ with step⊎ t w1
   ... | inj₁ (t' , w1' , z₁)
@@ -438,10 +440,10 @@ abstract
   ¬Seq→step w1 w2 (SPREAD t t₁) u comp nseq with is-PAIR t
   ... | inj₁ (x₁ , x₂ , p₁)
     rewrite p₁ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
-    = ¬Seq-sub {x₂} {sub x₁ t₁}
+    = ¬Seq-sub {x₂} {sub (shiftUp 0 x₁) t₁}
         (∧≡true→ᵣ (noseq x₁) (noseq x₂) (∧≡true→ₗ (noseq x₁ ∧ noseq x₂) (noseq t₁) nseq))
-        (¬Seq-sub {x₁} {t₁}
-          (∧≡true→ₗ (noseq x₁) (noseq x₂) (∧≡true→ₗ (noseq x₁ ∧ noseq x₂) (noseq t₁) nseq))
+        (¬Seq-sub {shiftUp 0 x₁} {t₁}
+          (trans (noseq-shiftUp 0 x₁) (∧≡true→ₗ (noseq x₁) (noseq x₂) (∧≡true→ₗ (noseq x₁ ∧ noseq x₂) (noseq t₁) nseq)))
           (∧≡true→ᵣ (noseq x₁ ∧ noseq x₂) (noseq t₁) nseq))
   ... | inj₂ p₁ with step⊎ t w1
   ... | inj₁ (t' , w1' , z₁)
@@ -1206,16 +1208,17 @@ abstract
   ¬Enc→step w1 w2 (WREC t t₁) u comp nenc with is-SUP t
   ... | inj₁ (x₁ , x₂ , p₁)
     rewrite p₁ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
-    = ¬enc-sub {WRECr t₁ x₂} {sub x₂ (sub x₁ t₁)}
+    = ¬enc-sub {WRECr t₁ x₂} {sub (shiftUp 0 x₂) (sub (shiftUp 0 (shiftUp 0 x₁)) t₁)}
         (→∧true {¬enc (shiftUp 0 x₂) ∧ true} {¬enc (shiftUp 3 t₁)}
           (→∧true {¬enc (shiftUp 0 x₂)} {true}
             (trans (¬enc-shiftUp 0 x₂) (∧≡true→ᵣ (¬enc x₁) (¬enc x₂) (∧≡true→ₗ (¬enc x₁ ∧ ¬enc x₂) (¬enc t₁) nenc)))
             refl)
           (trans (¬enc-shiftUp 3 t₁) (∧≡true→ᵣ (¬enc x₁ ∧ ¬enc x₂) (¬enc t₁) nenc)))
-        (¬enc-sub {x₂} {sub x₁ t₁}
-          (∧≡true→ᵣ (¬enc x₁) (¬enc x₂) (∧≡true→ₗ (¬enc x₁ ∧ ¬enc x₂) (¬enc t₁) nenc))
-          (¬enc-sub {x₁} {t₁}
-            (∧≡true→ₗ (¬enc x₁) (¬enc x₂) (∧≡true→ₗ (¬enc x₁ ∧ ¬enc x₂) (¬enc t₁) nenc))
+        (¬enc-sub {shiftUp 0 x₂} {sub (shiftUp 0 (shiftUp 0 x₁)) t₁}
+          (trans (¬enc-shiftUp 0 x₂) (∧≡true→ᵣ (¬enc x₁) (¬enc x₂) (∧≡true→ₗ (¬enc x₁ ∧ ¬enc x₂) (¬enc t₁) nenc)))
+          (¬enc-sub {shiftUp 0 (shiftUp 0 x₁)} {t₁}
+            (trans (¬enc-shiftUp 0 (shiftUp 0 x₁))
+              (trans (¬enc-shiftUp 0 x₁) (∧≡true→ₗ (¬enc x₁) (¬enc x₂) (∧≡true→ₗ (¬enc x₁ ∧ ¬enc x₂) (¬enc t₁) nenc))))
             (∧≡true→ᵣ (¬enc x₁ ∧ ¬enc x₂) (¬enc t₁) nenc)))
   ... | inj₂ p₁ with step⊎ t w1
   ... | inj₁ (t' , w1' , z₁)
@@ -1238,10 +1241,10 @@ abstract
   ¬Enc→step w1 w2 (SPREAD t t₁) u comp nenc with is-PAIR t
   ... | inj₁ (x₁ , x₂ , p₁)
     rewrite p₁ | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
-    = ¬enc-sub {x₂} {sub x₁ t₁}
+    = ¬enc-sub {x₂} {sub (shiftUp 0 x₁) t₁}
         (∧≡true→ᵣ (¬enc x₁) (¬enc x₂) (∧≡true→ₗ (¬enc x₁ ∧ ¬enc x₂) (¬enc t₁) nenc))
-        (¬enc-sub {x₁} {t₁}
-          (∧≡true→ₗ (¬enc x₁) (¬enc x₂) (∧≡true→ₗ (¬enc x₁ ∧ ¬enc x₂) (¬enc t₁) nenc))
+        (¬enc-sub {shiftUp 0 x₁} {t₁}
+          (trans (¬enc-shiftUp 0 x₁) (∧≡true→ₗ (¬enc x₁) (¬enc x₂) (∧≡true→ₗ (¬enc x₁ ∧ ¬enc x₂) (¬enc t₁) nenc)))
           (∧≡true→ᵣ (¬enc x₁ ∧ ¬enc x₂) (¬enc t₁) nenc))
   ... | inj₂ p₁ with step⊎ t w1
   ... | inj₁ (t' , w1' , z₁)

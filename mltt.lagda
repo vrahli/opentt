@@ -1421,8 +1421,8 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
                         (#NATREC (#subs s2 k ck2) (#subs s2 z cz2) (#subs s2 s cx2))
     concl =
       equalInType-#⇛ₚ-left-right-rev
-        (NATREC-0⇛! c₁ , →presPure-NATREC₂ {subs s1 k} {subs s1 z} {subs s1 s} {!!} {!!} {!!} {!!} {!!} {!!})
-        (NATREC-0⇛! c₂ , →presPure-NATREC₂ {subs s2 k} {subs s2 z} {subs s2 s} {!!} {!!} {!!} {!!} {!!} {!!})
+        (NATREC-0⇛! c₁ {--, →presPure-NATREC₂ {subs s1 k} {subs s1 z} {subs s1 s} {!!} {!!} {!!} {!!} {!!} {!!}--})
+        (NATREC-0⇛! c₂ {--, →presPure-NATREC₂ {subs s2 k} {subs s2 z} {subs s2 s} {!!} {!!} {!!} {!!} {!!} {!!}--})
         hz2
     -- use equalInType-#⇛ₚ-left-rev, but then we need to prove that (#subs s1 z cz1) and (#subs s1 s cx1)
     -- are name/enc/sec-free, which we could get partially from lemmas such as ¬Names⟦⟧ᵤ, but

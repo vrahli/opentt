@@ -525,12 +525,20 @@ abstract
 
       concl : Σ Term (λ u' → Σ Term (λ v' → a₂ ≡ SUP u' v' × differ name1 name2 f u₁ u' × differ name1 name2 f u₂ v'))
               → Σ Term (λ a'' → Σ Term (λ b'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
-                       sub (WRECr b₁ u₂) (sub u₂ (sub u₁ b₁)) ⇓ a'' from w1 to w3 × WREC a₂ b₂ ⇓ b'' from w1' to w3' × differ name1 name2 f a'' b'' × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
+                       sub (WRECr b₁ u₂) (sub (shiftUp 0 u₂) (sub (shiftUp 0 (shiftUp 0 u₁)) b₁)) ⇓ a'' from w1 to w3
+                       × WREC a₂ b₂ ⇓ b'' from w1' to w3'
+                       × differ name1 name2 f a'' b''
+                       × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
       concl (u' , v' , e , d1 , d2) rewrite e =
-        sub (WRECr b₁ u₂) (sub u₂ (sub u₁ b₁)) , sub (WRECr b₂ v') (sub v' (sub u' b₂)) , w1 , w1' ,
+        sub (WRECr b₁ u₂) (sub (shiftUp 0 u₂) (sub (shiftUp 0 (shiftUp 0 u₁)) b₁)) ,
+        sub (WRECr b₂ v') (sub (shiftUp 0 v') (sub (shiftUp 0 (shiftUp 0 u')) b₂)) ,
+        w1 , w1' ,
         ⇓from-to-refl _ _ ,
         WREC-SUP⇓ w1' u' v' b₂ ,
-        differ-sub cf (differ-sub cf (differ-sub cf diff₁ d1) d2) (differ-WRECr cf diff₁ d2) ,
+        differ-sub cf
+          (differ-sub cf (differ-sub cf diff₁ (→differ-shiftUp 0 cf (→differ-shiftUp 0 cf d1)))
+            (→differ-shiftUp 0 cf d2))
+          (differ-WRECr cf diff₁ d2) ,
         g0
   ... | inj₂ x with step⊎ a₁ w1
   ... |    inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
@@ -603,12 +611,16 @@ abstract
 
       concl : Σ Term (λ u' → Σ Term (λ v' → a₂ ≡ PAIR u' v' × differ name1 name2 f u₁ u' × differ name1 name2 f u₂ v'))
               → Σ Term (λ a'' → Σ Term (λ b'' → Σ 𝕎· (λ w3 → Σ 𝕎· (λ w3' →
-                       sub u₂ (sub u₁ b₁) ⇓ a'' from w1 to w3 × SPREAD a₂ b₂ ⇓ b'' from w1' to w3' × differ name1 name2 f a'' b'' × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
+                  sub u₂ (sub (shiftUp 0 u₁) b₁) ⇓ a'' from w1 to w3
+                × SPREAD a₂ b₂ ⇓ b'' from w1' to w3'
+                × differ name1 name2 f a'' b''
+                × getT 0 name1 w3 ≡ getT 0 name2 w3'))))
       concl (u' , v' , e , d1 , d2) rewrite e =
-        sub u₂ (sub u₁ b₁) , sub v' (sub u' b₂) , w1 , w1' ,
+        sub u₂ (sub (shiftUp 0 u₁) b₁) , sub v' (sub (shiftUp 0 u') b₂) ,
+        w1 , w1' ,
         ⇓from-to-refl _ _ ,
         SPREAD-PAIR⇓ w1' u' v' b₂ ,
-        differ-sub cf (differ-sub cf diff₁ d1) d2 ,
+        differ-sub cf (differ-sub cf diff₁ (→differ-shiftUp 0 cf d1)) d2 ,
         g0
   ... | inj₂ x with step⊎ a₁ w1
   ... |    inj₁ (a₁' , w1'' , z) rewrite z | sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =

@@ -350,8 +350,15 @@ abstract
       d = updRel-SUPₗ→ r
 
       concl : Σ Term (λ x₁ → Σ Term (λ x₂ → a₂ ≡ SUP x₁ x₂ × updRel name f g u₁ x₁ × updRel name f g u₂ x₂))
-              → ΣstepsUpdRel name f g (sub (WRECr b₁ u₂) (sub u₂ (sub u₁ b₁))) w1 (WREC a₂ b₂) w
-      concl (x₁ , x₂ , eqa , ur1 , ur2) rewrite eqa = 0 , 1 , sub (WRECr b₁ u₂) (sub u₂ (sub u₁ b₁)) , sub (WRECr b₂ x₂) (sub x₂ (sub x₁ b₂)) , w1 , refl , refl , updRel-sub cf cg (updRel-sub cf cg (updRel-sub cf cg r₁ ur1) ur2) (updRel-WRECr cf cg r₁ ur2)
+              → ΣstepsUpdRel name f g (sub (WRECr b₁ u₂) (sub (shiftUp 0 u₂) (sub (shiftUp 0 (shiftUp 0 u₁)) b₁))) w1 (WREC a₂ b₂) w
+      concl (x₁ , x₂ , eqa , ur1 , ur2) rewrite eqa =
+        0 , 1 ,
+        sub (WRECr b₁ u₂) (sub (shiftUp 0 u₂) (sub (shiftUp 0 (shiftUp 0 u₁)) b₁)) ,
+        sub (WRECr b₂ x₂) (sub (shiftUp 0 x₂) (sub (shiftUp 0 (shiftUp 0 x₁)) b₂)) ,
+        w1 , refl , refl ,
+        updRel-sub cf cg
+          (updRel-sub cf cg (updRel-sub cf cg r₁ (updRel-shiftUp 0 cf cg  (updRel-shiftUp 0 cf cg ur1))) (updRel-shiftUp 0 cf cg ur2))
+          (updRel-WRECr cf cg r₁ ur2)
   ... | inj₂ y with step⊎ a₁ w1
   ... |    inj₁ (a₁' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
     →ΣstepsUpdRel-WREC₁ r₁ ind'
@@ -388,8 +395,13 @@ abstract
       d = updRel-PAIRₗ→ r
 
       concl : Σ Term (λ x₁ → Σ Term (λ x₂ → a₂ ≡ PAIR x₁ x₂ × updRel name f g u₁ x₁ × updRel name f g u₂ x₂))
-              → ΣstepsUpdRel name f g (sub u₂ (sub u₁ b₁)) w1 (SPREAD a₂ b₂) w
-      concl (x₁ , x₂ , eqa , ur1 , ur2) rewrite eqa = 0 , 1 , sub u₂ (sub u₁ b₁) , sub x₂ (sub x₁ b₂) , w1 , refl , refl , updRel-sub cf cg (updRel-sub cf cg r₁ ur1) ur2
+              → ΣstepsUpdRel name f g (sub u₂ (sub (shiftUp 0 u₁) b₁)) w1 (SPREAD a₂ b₂) w
+      concl (x₁ , x₂ , eqa , ur1 , ur2) rewrite eqa =
+        0 , 1 ,
+        sub u₂ (sub (shiftUp 0 u₁) b₁) ,
+        sub x₂ (sub (shiftUp 0 x₁) b₂) ,
+        w1 , refl , refl ,
+        updRel-sub cf cg (updRel-sub cf cg r₁ (updRel-shiftUp 0 cf cg ur1)) ur2
   ... | inj₂ y with step⊎ a₁ w1
   ... |    inj₁ (a₁' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
     →ΣstepsUpdRel-SPREAD₁ r₁ ind'

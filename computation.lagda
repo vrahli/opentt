@@ -72,6 +72,10 @@ WRECr : Term → Term → Term
 WRECr r f = LAMBDA (WREC (APPLY (shiftUp 0 f) (VAR 0)) (shiftUp 3 r))
 
 
+WRECsub : Term → Term → Term → Term
+WRECsub a f r = sub (WRECr r f) (sub (shiftUp 0 f) (sub (shiftUp 0 (shiftUp 0 a)) r))
+
+
 ENCr : Term → Term
 ENCr t = NEGD (APPLY t (NUM (encode· (ENC t))))
 
@@ -79,6 +83,10 @@ ENCr t = NEGD (APPLY t (NUM (encode· (ENC t))))
 NATRECr : ℕ → Term → Term → Term
 NATRECr 0 b c = b
 NATRECr (suc n) b c = APPLY2 c (NUM n) (NATREC (NUM n) b c)
+
+
+SPREADsub : Term → Term → Term → Term
+SPREADsub u v b = sub v (sub (shiftUp 0 u) b)
 
 
 step : ∀ (T : Term) (w : 𝕎·) → Maybe (Term × 𝕎·)
@@ -211,7 +219,7 @@ step (DSUP a b) w with is-SUP a
 ... |    nothing = nothing--}
 -- WREC
 step (WREC t r) w with is-SUP t
-... | inj₁ (a , f , p) = ret (sub (WRECr r f) (sub f (sub a r))) w
+... | inj₁ (a , f , p) = ret (WRECsub a f r) w
 ... | inj₂ x with step t w
 ... |    just (t' , w') = ret (WREC t' r) w'
 ... |    nothing = nothing
@@ -231,7 +239,7 @@ step (SUM a b) = ret (SUM a b)
 step (PAIR a b) = ret (PAIR a b)
 -- SPREAD
 step (SPREAD a b) w with is-PAIR a
-... | inj₁ (u , v , p) = ret (sub v (sub u b)) w
+... | inj₁ (u , v , p) = ret (SPREADsub u v b) w
 ... | inj₂ x with step a w
 ... |    just (t , w') = ret (SPREAD t b) w'
 ... |    nothing = nothing

@@ -500,8 +500,16 @@ abstract
       d = updSeq-SUP→ r s n u₁ u₂ a₂ upd₁
 
       concl : Σ Term (λ x₁ → Σ Term (λ x₂ → a₂ ≡ SUP x₁ x₂ × updSeq r s n u₁ x₁ × updSeq r s n u₂ x₂))
-              → updSeqStep w1 w1 r s n (WREC a₂ b₂) (sub (WRECr b₁ u₂) (sub u₂ (sub u₁ b₁)))
-      concl (x₁ , x₂ , eqa , us1 , us2) rewrite eqa = 0 , 1 , sub (WRECr b₁ u₂) (sub u₂ (sub u₁ b₁)) , sub (WRECr b₂ x₂) (sub x₂ (sub x₁ b₂)) , w1 , refl , refl , updSeq-sub (updSeq-sub (updSeq-sub upd₂ us1) us2) (updSeq-WRECr upd₂ us2)
+              → updSeqStep w1 w1 r s n (WREC a₂ b₂) (sub (WRECr b₁ u₂) (sub (shiftUp 0 u₂) (sub (shiftUp 0 (shiftUp 0 u₁)) b₁)))
+      concl (x₁ , x₂ , eqa , us1 , us2)
+        rewrite eqa
+        = 0 , 1 ,
+          sub (WRECr b₁ u₂) (sub (shiftUp 0 u₂) (sub (shiftUp 0 (shiftUp 0 u₁)) b₁)) ,
+          sub (WRECr b₂ x₂) (sub (shiftUp 0 x₂) (sub (shiftUp 0 (shiftUp 0 x₁)) b₂)) ,
+          w1 , refl , refl ,
+          updSeq-sub (updSeq-sub (updSeq-sub upd₂ (updSeq-shiftUp 0 (updSeq-shiftUp 0 us1)))
+                                 (updSeq-shiftUp 0 us2))
+                     (updSeq-WRECr upd₂ us2)
   ... | inj₂ x with step⊎ a₁ w1
   ... |    inj₁ (a₁' , w1' , q) rewrite q | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
     →updSeqStep-WREC₁ w1 w1' r s n a₁' a₂ b₁ b₂ upd₂ ind
@@ -538,8 +546,14 @@ abstract
       d = updSeq-PAIR→ r s n u₁ u₂ a₂ upd₁
 
       concl : Σ Term (λ x₁ → Σ Term (λ x₂ → a₂ ≡ PAIR x₁ x₂ × updSeq r s n u₁ x₁ × updSeq r s n u₂ x₂))
-              → updSeqStep w1 w1 r s n (SPREAD a₂ b₂) (sub u₂ (sub u₁ b₁))
-      concl (x₁ , x₂ , eqa , us1 , us2) rewrite eqa = 0 , 1 , sub u₂ (sub u₁ b₁) , sub x₂ (sub x₁ b₂) , w1 , refl , refl , updSeq-sub (updSeq-sub upd₂ us1) us2
+              → updSeqStep w1 w1 r s n (SPREAD a₂ b₂) (sub u₂ (sub (shiftUp 0 u₁) b₁))
+      concl (x₁ , x₂ , eqa , us1 , us2)
+        rewrite eqa
+        = 0 , 1 ,
+          sub u₂ (sub (shiftUp 0 u₁) b₁) ,
+          sub x₂ (sub (shiftUp 0 x₁) b₂) ,
+          w1 , refl , refl ,
+          updSeq-sub (updSeq-sub upd₂ (updSeq-shiftUp 0 us1)) us2
   ... | inj₂ x with step⊎ a₁ w1
   ... |    inj₁ (a₁' , w1' , q) rewrite q | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
     →updSeqStep-SPREAD₁ w1 w1' r s n a₁' a₂ b₁ b₂ upd₂ ind

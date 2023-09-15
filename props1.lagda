@@ -965,7 +965,7 @@ abstract
     Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : at□· i w' e' z)--} → eqInType u w' z a b
-                         → □· w' (↑wPred' (λ w'' e → PUREeq a b) e'))
+                         → □· w' (↑wPred' (λ w'' e → PUREeq w'' a b) e'))
       aw w' e' z {--at--} eqt' =
         Mod.∀𝕎-□Func M
           (λ w1 e1 s ext → s)
@@ -974,7 +974,7 @@ abstract
     Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : at□· i w' e' z)--} → eqInType u w' z a b
-                         → □· w' (↑wPred' (λ w'' e → NOSEQeq a b) e'))
+                         → □· w' (↑wPred' (λ w'' e → NOSEQeq w'' a b) e'))
       aw w' e' z {--at--} eqt' =
         Mod.∀𝕎-□Func M
           (λ w1 e1 s ext → s)
@@ -983,7 +983,7 @@ abstract
     Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
     where
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : at□· i w' e' z)--} → eqInType u w' z a b
-                         → □· w' (↑wPred' (λ w'' e → NOENCeq a b) e'))
+                         → □· w' (↑wPred' (λ w'' e → NOENCeq w'' a b) e'))
       aw w' e' z {--at--} eqt' =
         Mod.∀𝕎-□Func M
           (λ w1 e1 s ext → s)
@@ -1831,7 +1831,7 @@ abstract
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : at□· i w' e' z)--} → eqInType u w' z a b)
       aw w' e' z {--at--} = eqInType-⇛-PURE-rev u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
         where
-          ei : □· w' (λ w'' e → PUREeq a b)
+          ei : □· w' (λ w'' e → PUREeq w'' a b)
           ei = ↑□· eqi e'
   eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTNOSEQ x x₁) eqi =
     ∀𝕎-□-□'₀ W M i aw
@@ -1839,7 +1839,7 @@ abstract
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : at□· i w' e' z)--} → eqInType u w' z a b)
       aw w' e' z {--at--} = eqInType-⇛-NOSEQ-rev u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
         where
-          ei : □· w' (λ w'' e → NOSEQeq a b)
+          ei : □· w' (λ w'' e → NOSEQeq w'' a b)
           ei = ↑□· eqi e'
   eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTNOENC x x₁) eqi =
     ∀𝕎-□-□'₀ W M i aw
@@ -1847,7 +1847,7 @@ abstract
       aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : at□· i w' e' z)--} → eqInType u w' z a b)
       aw w' e' z {--at--} = eqInType-⇛-NOENC-rev u w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) z ei
         where
-          ei : □· w' (λ w'' e → NOENCeq a b)
+          ei : □· w' (λ w'' e → NOENCeq w'' a b)
           ei = ↑□· eqi e'
   eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTTERM u1 u2 x x₁ x₂) eqi =
     ∀𝕎-□-□'₀ W M i aw
@@ -2404,7 +2404,7 @@ abstract
       ind {u} {w} {A} {B} (EQTPURE x x₁) ind a b i j =
         Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
         where
-          aw : ∀𝕎 w (λ w' e' → (z : ≡Types u w' A B) {--(at : at□· i w' e' z)--} → ≡∈Type u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → PUREeq a b))
+          aw : ∀𝕎 w (λ w' e' → (z : ≡Types u w' A B) {--(at : at□· i w' e' z)--} → ≡∈Type u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → PUREeq w1 a b))
           aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M (λ w1 e1 s x → s) h1
             where
               h1 : ≡∈Type u w' {A} {B} (EQTPURE (⇛-mon e' x) (⇛-mon e' x₁)) a b
@@ -2412,7 +2412,7 @@ abstract
       ind {u} {w} {A} {B} (EQTNOSEQ x x₁) ind a b i j =
         Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
         where
-          aw : ∀𝕎 w (λ w' e' → (z : ≡Types u w' A B) {--(at : at□· i w' e' z)--} → ≡∈Type u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → NOSEQeq a b))
+          aw : ∀𝕎 w (λ w' e' → (z : ≡Types u w' A B) {--(at : at□· i w' e' z)--} → ≡∈Type u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → NOSEQeq w1 a b))
           aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M (λ w1 e1 s x → s) h1
             where
               h1 : ≡∈Type u w' {A} {B} (EQTNOSEQ (⇛-mon e' x) (⇛-mon e' x₁)) a b
@@ -2420,7 +2420,7 @@ abstract
       ind {u} {w} {A} {B} (EQTNOENC x x₁) ind a b i j =
         Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
         where
-          aw : ∀𝕎 w (λ w' e' → (z : ≡Types u w' A B) {--(at : at□· i w' e' z)--} → ≡∈Type u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → NOENCeq a b))
+          aw : ∀𝕎 w (λ w' e' → (z : ≡Types u w' A B) {--(at : at□· i w' e' z)--} → ≡∈Type u w' z a b → □· w' (λ w1 e1 → w ⊑· w1 → NOENCeq w1 a b))
           aw w' e' z {--at--} ei = Mod.∀𝕎-□Func M (λ w1 e1 s x → s) h1
             where
               h1 : ≡∈Type u w' {A} {B} (EQTNOENC (⇛-mon e' x) (⇛-mon e' x₁)) a b
@@ -2809,17 +2809,17 @@ abstract
       ind {u} {w} {A} {B} (EQTPURE x x₁) ind {w'} e' eqt2 a b eqi =
         eqInType-⇛-PURE-rev (u ·ᵤ) w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
         where
-          ei : □· w' (λ w'' e → PUREeq a b)
+          ei : □· w' (λ w'' e → PUREeq w'' a b)
           ei = ↑□· eqi e'
       ind {u} {w} {A} {B} (EQTNOSEQ x x₁) ind {w'} e' eqt2 a b eqi =
         eqInType-⇛-NOSEQ-rev (u ·ᵤ) w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
         where
-          ei : □· w' (λ w'' e → NOSEQeq a b)
+          ei : □· w' (λ w'' e → NOSEQeq w'' a b)
           ei = ↑□· eqi e'
       ind {u} {w} {A} {B} (EQTNOENC x x₁) ind {w'} e' eqt2 a b eqi =
         eqInType-⇛-NOENC-rev (u ·ᵤ) w' A B a b (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei
         where
-          ei : □· w' (λ w'' e → NOENCeq a b)
+          ei : □· w' (λ w'' e → NOENCeq w'' a b)
           ei = ↑□· eqi e'
       ind {u} {w} {A} {B} (EQTTERM u1 u2 x x₁ x₂) ind {w'} e' eqt2 a b eqi =
         eqInType-⇛-TERM-rev (u ·ᵤ) w' A B u1 u2 a b (Mod.↑□ M x₂ e') (⇛-mon e' x) (⇛-mon e' x₁) eqt2 ei

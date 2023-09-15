@@ -227,9 +227,9 @@ typeSysConds-PURE-isym : (u : univs) (w : 𝕎·) (A B : CTerm)
 typeSysConds-PURE-isym u w A B x x₁ f g eqa =
   Mod.∀𝕎-□Func M h eqa
   where
-    h : ∀𝕎 w (λ w' e' → PUREeq f g
-                       → PUREeq g f)
-    h w1 e1 (lift (n1 , n2)) = lift (n2 , n1)
+    h : ∀𝕎 w (λ w' e' → PUREeq w' f g
+                      → PUREeq w' g f)
+    h w1 e1 (n1 , n2) = n2 , n1
 
 
 
@@ -240,10 +240,10 @@ typeSysConds-PURE-itrans u w A B x x₁ f g h ea1 ea2 =
   Mod.□Func M (Mod.□Func M (Mod.∀𝕎-□ M aw) ea1) ea2
   where
     aw : ∀𝕎 w
-              (λ w' e → PUREeq f g
-                      → PUREeq g h
-                      → PUREeq f h)
-    aw w1 e1 (lift (p₁ , p₂)) (lift (q₁ , q₂)) = lift (p₁ , q₂)
+              (λ w' e → PUREeq w' f g
+                      → PUREeq w' g h
+                      → PUREeq w' f h)
+    aw w1 e1 (p₁ , p₂) (q₁ , q₂) = p₁ , q₂
 
 
 
@@ -255,8 +255,8 @@ typeSysConds-PURE-extl1 u w A B x x₁ C eqt' =
   where
     ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
-                 → <Type eqt'' eqt → (comp : T1' #⇛ #PURE at w') (a b : CTerm) → □· w' (λ w'' _ → PUREeq a b) → eqInType u' w' eqt'' a b)
-          → (comp : T1 #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq a b) → eqInType u w eqt a b
+                 → <Type eqt'' eqt → (comp : T1' #⇛ #PURE at w') (a b : CTerm) → □· w' (λ w'' _ → PUREeq w'' a b) → eqInType u' w' eqt'' a b)
+          → (comp : T1 #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq w' a b) → eqInType u w eqt a b
 --    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqQNAT (⇛-val-det tt tt comp y))
 --    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqTNAT (⇛-val-det tt tt comp y))
@@ -291,10 +291,10 @@ typeSysConds-PURE-extl1 u w A B x x₁ C eqt' =
         aw : ∀𝕎 w (λ w' e' → (x₃ : eqTypes u w' T1 T2) (at : at□· x w' e' x₃) → eqInType u w' x₃ a b)
         aw w1 e1 y at = ih {u} {w1} {T1} {T2} y (<Type1 y (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 y at)) (∀𝕎-mon e1 comp) a b (Mod.↑□ M eqi e1)
 
-    concl : (comp : A #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq a b) → eqInType u w eqt' a b
+    concl : (comp : A #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq w' a b) → eqInType u w eqt' a b
     concl =
       ind<Type
-        (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq a b) → eqInType u w eqt' a b)
+        (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq w' a b) → eqInType u w eqt' a b)
         ind
         eqt'
 
@@ -306,8 +306,8 @@ typeSysConds-PURE-extl2 u w A B x x₁ C eqt' = concl x
   where
     ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
-                 → <Type eqt'' eqt → (comp : T2' #⇛ #PURE at w') (a b : CTerm) → □· w' (λ w'' _ → PUREeq a b) → eqInType u' w' eqt'' a b)
-          → (comp : T2 #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq a b) → eqInType u w eqt a b
+                 → <Type eqt'' eqt → (comp : T2' #⇛ #PURE at w') (a b : CTerm) → □· w' (λ w'' _ → PUREeq w'' a b) → eqInType u' w' eqt'' a b)
+          → (comp : T2 #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq w' a b) → eqInType u w eqt a b
 --    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqQNAT (⇛-val-det tt tt comp y₁))
 --    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqTNAT (⇛-val-det tt tt comp y₁))
@@ -342,10 +342,10 @@ typeSysConds-PURE-extl2 u w A B x x₁ C eqt' = concl x
         aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' T1 T2) (at : at□· y w' e' x) → eqInType u w' x a b)
         aw w1 e1 z at = ih {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at)) (∀𝕎-mon e1 comp) a b (Mod.↑□ M eqi e1)
 
-    concl : (comp : A #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq a b) → eqInType u w eqt' a b
+    concl : (comp : A #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq w' a b) → eqInType u w eqt' a b
     concl =
       ind<Type
-        (λ {u} {w} {T1} {T2} eqt' → (comp : T2 #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq a b) → eqInType u w eqt' a b)
+        (λ {u} {w} {T1} {T2} eqt' → (comp : T2 #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq w' a b) → eqInType u w eqt' a b)
         ind
         eqt'
 
@@ -357,8 +357,8 @@ typeSysConds-PURE-extr1 u w A B x x₁ C eqt' = concl x₁
   where
     ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
-                 → <Type eqt'' eqt → (comp : T2' #⇛ #PURE at w') (a b : CTerm) → □· w' (λ w'' _ → PUREeq a b) → eqInType u' w' eqt'' a b)
-          → (comp : T2 #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq a b) → eqInType u w eqt a b
+                 → <Type eqt'' eqt → (comp : T2' #⇛ #PURE at w') (a b : CTerm) → □· w' (λ w'' _ → PUREeq w'' a b) → eqInType u' w' eqt'' a b)
+          → (comp : T2 #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq w' a b) → eqInType u w eqt a b
 --    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqQNAT (⇛-val-det tt tt comp y₁))
 --    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqTNAT (⇛-val-det tt tt comp y₁))
@@ -393,10 +393,10 @@ typeSysConds-PURE-extr1 u w A B x x₁ C eqt' = concl x₁
         aw : ∀𝕎 w (λ w' e' → (x : eqTypes u w' T1 T2) (at : at□· y w' e' x) → eqInType u w' x a b)
         aw w1 e1 z at = ih {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR y) (<TypeBAR u w T1 T2 y w1 e1 z at)) (∀𝕎-mon e1 comp) a b (Mod.↑□ M eqi e1)
 
-    concl : (comp : B #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq a b) → eqInType u w eqt' a b
+    concl : (comp : B #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq w' a b) → eqInType u w eqt' a b
     concl =
       ind<Type
-        (λ {u} {w} {T1} {T2} eqt' → (comp : T2 #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq a b) → eqInType u w eqt' a b)
+        (λ {u} {w} {T1} {T2} eqt' → (comp : T2 #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq w' a b) → eqInType u w eqt' a b)
         ind
         eqt'
 
@@ -409,8 +409,8 @@ typeSysConds-PURE-extr2 u w A B x x₁ C eqt' = concl x₁
   where
     ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
-                 → <Type eqt'' eqt → (comp : T1' #⇛ #PURE at w') (a b : CTerm) → □· w' (λ w'' _ → PUREeq a b) → eqInType u' w' eqt'' a b)
-          → (comp : T1 #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq a b) → eqInType u w eqt a b
+                 → <Type eqt'' eqt → (comp : T1' #⇛ #PURE at w') (a b : CTerm) → □· w' (λ w'' _ → PUREeq w'' a b) → eqInType u' w' eqt'' a b)
+          → (comp : T1 #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq w' a b) → eqInType u w eqt a b
 --    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqQNAT (⇛-val-det tt tt comp y))
 --    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqTNAT (⇛-val-det tt tt comp y))
@@ -445,10 +445,10 @@ typeSysConds-PURE-extr2 u w A B x x₁ C eqt' = concl x₁
         aw : ∀𝕎 w (λ w' e' → (x₃ : eqTypes u w' T1 T2) (at : at□· x w' e' x₃) → eqInType u w' x₃ a b)
         aw w1 e1 y at = ih {u} {w1} {T1} {T2} y (<Type1 y (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 y at)) (∀𝕎-mon e1 comp) a b (Mod.↑□ M eqi e1)
 
-    concl : (comp : B #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq a b) → eqInType u w eqt' a b
+    concl : (comp : B #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq w' a b) → eqInType u w eqt' a b
     concl =
       ind<Type
-        (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq a b) → eqInType u w eqt' a b)
+        (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #PURE at w) (a b : CTerm) → □· w (λ w' _ → PUREeq w' a b) → eqInType u w eqt' a b)
         ind
         eqt'
 
@@ -460,8 +460,8 @@ typeSysConds-PURE-extrevl1 u w A B x x₁ C eqt' = concl x
   where
     ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
-                 → <Type eqt'' eqt → (comp : T1' #⇛ #PURE at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → PUREeq a b))
-          → (comp : T1 #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → PUREeq a b)
+                 → <Type eqt'' eqt → (comp : T1' #⇛ #PURE at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → PUREeq w'' a b))
+          → (comp : T1 #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → PUREeq w' a b)
 --    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqQNAT (⇛-val-det tt tt comp y))
 --    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqTNAT (⇛-val-det tt tt comp y))
@@ -494,17 +494,17 @@ typeSysConds-PURE-extrevl1 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTBAR x) ih comp a b eqi = Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
       where
         aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
-                             → Mod.□ M w' (↑wPred (λ w'' e → PUREeq a b) e'))
+                             → Mod.□ M w' (↑wPred (λ w'' e → PUREeq w'' a b) e'))
         aw0 w1 e1 z at eqz = ih {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 z at)) (⇛-mon e1 comp) a b eqz
 
         aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
-                            → Mod.□ M w' (↑wPred' (λ w'' e → PUREeq a b) e'))
+                            → Mod.□ M w' (↑wPred' (λ w'' e → PUREeq w'' a b) e'))
         aw w1 e1 z at eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z at eqz)
 
-    concl : (comp : A #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → PUREeq a b)
+    concl : (comp : A #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → PUREeq w' a b)
     concl =
       ind<Type
-        (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → PUREeq a b))
+        (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → PUREeq w' a b))
         ind
         eqt'
 
@@ -517,8 +517,8 @@ typeSysConds-PURE-extrevl2 u w A B x x₁ C eqt' = concl x
   where
     ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
-                 → <Type eqt'' eqt → (comp : T2' #⇛ #PURE at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → PUREeq a b))
-          → (comp : T2 #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → PUREeq a b)
+                 → <Type eqt'' eqt → (comp : T2' #⇛ #PURE at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → PUREeq w'' a b))
+          → (comp : T2 #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → PUREeq w' a b)
 --    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqQNAT (⇛-val-det tt tt comp y₁))
 --    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqTNAT (⇛-val-det tt tt comp y₁))
@@ -551,17 +551,17 @@ typeSysConds-PURE-extrevl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTBAR x) ih comp a b eqi = Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
       where
         aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
-                             → Mod.□ M w' (↑wPred (λ w'' e → PUREeq a b) e'))
+                             → Mod.□ M w' (↑wPred (λ w'' e → PUREeq w'' a b) e'))
         aw0 w1 e1 z at eqz = ih {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 z at)) (⇛-mon e1 comp) a b eqz
 
         aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
-                            → Mod.□ M w' (↑wPred' (λ w'' e → PUREeq a b) e'))
+                            → Mod.□ M w' (↑wPred' (λ w'' e → PUREeq w'' a b) e'))
         aw w1 e1 z at eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z at eqz)
 
-    concl : (comp : A #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → PUREeq a b)
+    concl : (comp : A #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → PUREeq w' a b)
     concl =
       ind<Type
-        (λ {u} {w} {T1} {T2} eqt' → (comp : T2 #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → PUREeq a b))
+        (λ {u} {w} {T1} {T2} eqt' → (comp : T2 #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → PUREeq w' a b))
         ind
         eqt'
 
@@ -574,8 +574,8 @@ typeSysConds-PURE-extrevr1 u w A B x x₁ C eqt' = concl x₁
   where
     ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
-                 → <Type eqt'' eqt → (comp : T2' #⇛ #PURE at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → PUREeq a b))
-          → (comp : T2 #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → PUREeq a b)
+                 → <Type eqt'' eqt → (comp : T2' #⇛ #PURE at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → PUREeq w'' a b))
+          → (comp : T2 #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → PUREeq w' a b)
 --    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqNAT (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqQNAT (⇛-val-det tt tt comp y₁))
 --    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqTNAT (⇛-val-det tt tt comp y₁))
@@ -608,17 +608,17 @@ typeSysConds-PURE-extrevr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTBAR x) ih comp a b eqi = Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
       where
         aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
-                             → Mod.□ M w' (↑wPred (λ w'' e → PUREeq a b) e'))
+                             → Mod.□ M w' (↑wPred (λ w'' e → PUREeq w'' a b) e'))
         aw0 w1 e1 z at eqz = ih {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 z at)) (⇛-mon e1 comp) a b eqz
 
         aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
-                            → Mod.□ M w' (↑wPred' (λ w'' e → PUREeq a b) e'))
+                            → Mod.□ M w' (↑wPred' (λ w'' e → PUREeq w'' a b) e'))
         aw w1 e1 z at eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z at eqz)
 
-    concl : (comp : B #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → PUREeq a b)
+    concl : (comp : B #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → PUREeq w' a b)
     concl =
       ind<Type
-        (λ {u} {w} {T1} {T2} eqt' → (comp : T2 #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → PUREeq a b))
+        (λ {u} {w} {T1} {T2} eqt' → (comp : T2 #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → PUREeq w' a b))
         ind
         eqt'
 
@@ -631,8 +631,8 @@ typeSysConds-PURE-extrevr2 u w A B x x₁ C eqt' = concl x₁
   where
     ind : {u : univs} {w : 𝕎·} {T1 T2 : CTerm} (eqt : eqTypes u w T1 T2)
           → ({u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt'' : eqTypes u' w' T1' T2')
-                 → <Type eqt'' eqt → (comp : T1' #⇛ #PURE at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → PUREeq a b))
-          → (comp : T1 #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → PUREeq a b)
+                 → <Type eqt'' eqt → (comp : T1' #⇛ #PURE at w') (a b : CTerm) → eqInType u' w' eqt'' a b → □· w' (λ w'' _ → PUREeq w'' a b))
+          → (comp : T1 #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt a b → □· w (λ w' _ → PUREeq w' a b)
 --    ind {u} {w} {T1} {T2} (EQTNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqNAT (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTQNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqQNAT (⇛-val-det tt tt comp y))
 --    ind {u} {w} {T1} {T2} (EQTTNAT y y₁) ih comp a b eqi = ⊥-elim (PUREneqTNAT (⇛-val-det tt tt comp y))
@@ -665,17 +665,17 @@ typeSysConds-PURE-extrevr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTBAR x) ih comp a b eqi = Mod.□-idem M (Mod.∀𝕎-□'-□ M x aw eqi)
       where
         aw0 : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
-                             → Mod.□ M w' (↑wPred (λ w'' e → PUREeq a b) e'))
+                             → Mod.□ M w' (↑wPred (λ w'' e → PUREeq w'' a b) e'))
         aw0 w1 e1 z at eqz = ih {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR x) (<TypeBAR u w T1 T2 x w1 e1 z at)) (⇛-mon e1 comp) a b eqz
 
         aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' T1 T2) (at : at□· x w' e' z) → eqInType u w' z a b
-                            → Mod.□ M w' (↑wPred' (λ w'' e → PUREeq a b) e'))
+                            → Mod.□ M w' (↑wPred' (λ w'' e → PUREeq w'' a b) e'))
         aw w1 e1 z at eqz = Mod.∀𝕎-□Func M (λ w1 e1 z x → z) (aw0 w1 e1 z at eqz)
 
-    concl : (comp : B #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → PUREeq a b)
+    concl : (comp : B #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → PUREeq w' a b)
     concl =
       ind<Type
-        (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → PUREeq a b))
+        (λ {u} {w} {T1} {T2} eqt' → (comp : T1 #⇛ #PURE at w) (a b : CTerm) → eqInType u w eqt' a b → □· w (λ w' _ → PUREeq w' a b))
         ind
         eqt'
 
@@ -686,7 +686,7 @@ eqInType-⇛-PURE : (u : univs) (w : 𝕎·) (A B a b : CTerm)
                       → B #⇛ #PURE at w
                       → (eqt : eqTypes u w A B)
                       → eqInType u w eqt a b
-                      → □· w (λ w' e → PUREeq a b)
+                      → □· w (λ w' e → PUREeq w' a b)
 eqInType-⇛-PURE u w A B a b c₁ c₂ eqt ei = typeSysConds-PURE-extrevl1 u w A B c₁ c₂ B eqt a b ei
 
 
@@ -696,7 +696,7 @@ eqInType-⇛-PURE2 : (u : 𝕌) (w : 𝕎·) (A B a b : CTerm)
                        → B #⇛ #PURE at w
                        → (eqt : ≡Types u w A B)
                        → (eqi : ≡∈Type u w eqt a b)
-                       → □· w (λ w' e → PUREeq a b)
+                       → □· w (λ w' e → PUREeq w' a b)
 eqInType-⇛-PURE2 u w A B a b c₁ c₂ eqt ei = typeSysConds-PURE-extrevl1 (u ·ᵤ) w A B c₁ c₂ B eqt a b ei
 
 
@@ -705,7 +705,7 @@ eqInType-⇛-PURE-rev : (u : univs) (w : 𝕎·) (A B a b : CTerm)
                           → A #⇛ #PURE at w
                           → B #⇛ #PURE at w
                           → (eqt : eqTypes u w A B)
-                          → □· w (λ w' e → PUREeq a b)
+                          → □· w (λ w' e → PUREeq w' a b)
                           → eqInType u w eqt a b
 eqInType-⇛-PURE-rev u w A B a b c₁ c₂ eqt ei = typeSysConds-PURE-extl1 u w A B c₁ c₂ B eqt a b ei
 
@@ -715,7 +715,7 @@ eqInType-⇛-PURE-rev2 : (u : 𝕌) (w : 𝕎·) (A B a b : CTerm)
                            → A #⇛ #PURE at w
                            → B #⇛ #PURE at w
                            → (eqt : ≡Types u w A B)
-                           → □· w (λ w' e → PUREeq a b)
+                           → □· w (λ w' e → PUREeq w' a b)
                            → ≡∈Type u w eqt a b
 eqInType-⇛-PURE-rev2 u w A B a b c₁ c₂ eqt ei = typeSysConds-PURE-extl1 (u ·ᵤ) w A B c₁ c₂ B eqt a b ei
 
@@ -728,14 +728,14 @@ typeSysConds-PURE-local u w A B x x₁ a b i j =
   where
     aw : ∀𝕎 w (λ w' e' → (z : eqTypes u w' A B) {--(at : atbar i w' e' z)--}
                          → eqInType u w' z a b
-                         → □· w' (λ w'' e → (x : w ⊑· w'') → PUREeq a b))
+                         → □· w' (λ w'' e → (x : w ⊑· w'') → PUREeq w'' a b))
     aw w1 e1 z {--at--} ei = Mod.∀𝕎-□Func M aw'' aw'
       where
-        aw' : □· w1 (λ w'' e → PUREeq a b)
+        aw' : □· w1 (λ w'' e → PUREeq w'' a b)
         aw' = eqInType-⇛-PURE u w1 A B a b (⇛-mon e1 x) (⇛-mon e1 x₁) z ei
 
-        aw'' : ∀𝕎 w1 (λ w' e' → PUREeq a b
-                                → (x₂ : w ⊑· w') → PUREeq a b)
+        aw'' : ∀𝕎 w1 (λ w' e' → PUREeq w' a b
+                              → (x₂ : w ⊑· w') → PUREeq w' a b)
         aw'' w' e' p x₂ = p
 
 

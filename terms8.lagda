@@ -1424,8 +1424,8 @@ lowerVars2-fvars-[0,1,2,3,4,5,6] {suc (suc z) ∷ l} h (there x) = lowerVars2-fv
              → FST (PAIR a b) ⇓ a from w to w
 ⇓-FST-PAIR a b w ca = 1 , ≡pair e refl
   where
-    e : sub b (sub a (VAR 0)) ≡ a
-    e rewrite sub-VAR0 a | #subv 0 (shiftUp 0 b) a ca | #shiftDown 0 (ct a ca) = refl
+    e : sub b (sub (shiftUp 0 a) (VAR 0)) ≡ a
+    e rewrite #shiftUp 0 (ct a ca) | sub-VAR0 a | #subv 0 (shiftUp 0 b) a ca | #shiftDown 0 (ct a ca) = refl
 
 
 ⇛-FST-PAIR : (p a b : Term) (w : 𝕎·) (ca : # a)
@@ -2381,5 +2381,31 @@ APPLY-MSEQ⇛ w s a k comp w1 e1 = lift (APPLY-MSEQ⇓ w1 s a k (lower (comp w1 
 
 #[3]N0 : CTerm3
 #[3]N0 = #[3]NUM 0
+
+
+→-⇛!-LET : {w : 𝕎·} {a b : Term} (c : Term)
+         → a ⇛! b at w
+         → LET a c ⇛! LET b c at w
+→-⇛!-LET {w} {a} {b} c comp w1 e1 =
+  lift (LET⇓ c (lower (comp w1 e1)))
+
+
+LET-#⇛! : (w : 𝕎·) (F G : CTerm) (f : CTerm0)
+        → F #⇛! G at w
+        → #LET F f #⇛! #LET G f at w
+LET-#⇛! w F G f c w1 e1 =
+  lift (LET⇓ {⌜ F ⌝} {⌜ G ⌝} ⌜ f ⌝ {w1} {w1} (lower (c w1 e1)))
+
+
+≡→LET-VAL⇛! : (w : 𝕎·) (f a b : Term)
+            → isValue a
+            → b ≡ sub a f
+            → LET a f ⇛! b at w
+≡→LET-VAL⇛! w f a b isv e w1 e1 rewrite e = lift (1 , s)
+  where
+  s : steps 1 (LET a f , w1) ≡ (sub a f , w1)
+  s with isValue⊎ a
+  ... | inj₁ x = refl
+  ... | inj₂ x = ⊥-elim (x isv)
 
 \end{code}

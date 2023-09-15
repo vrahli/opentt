@@ -356,13 +356,13 @@ eqTypes-local {u} {w} {A} {B} i =
 abstract
   equalInType-PURE→ : {n : ℕ} {w : 𝕎·} {a b : CTerm}
                          → equalInType n w #PURE a b
-                         → □· w (λ w' _ → PUREeq a b)
+                         → □· w (λ w' _ → PUREeq w' a b)
   equalInType-PURE→ {n} {w} {a} {b} (eqt , eqi) = concl #PURE #PURE eqt eqi refl refl
     where
       ind : {u : ℕ} {w : 𝕎·} {T1 T2 : CTerm} (eqt : equalTypes u w T1 T2) {a b : CTerm} (eqi : equalTerms u w eqt a b)
             → ({u' : ℕ} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : equalTypes u' w' T1' T2') {a' b' : CTerm} (eqi' : equalTerms u' w' eqt' a' b')
-                → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt → T1' ≡ #PURE → T2' ≡ #PURE → □· w' (λ w'' _ → PUREeq a' b'))
-            → T1 ≡ #PURE → T2 ≡ #PURE → □· w (λ w' _ → PUREeq a b)
+                → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt → T1' ≡ #PURE → T2' ≡ #PURE → □· w' (λ w'' _ → PUREeq w'' a' b'))
+            → T1 ≡ #PURE → T2 ≡ #PURE → □· w (λ w' _ → PUREeq w' a b)
 --      ind {u} {w} {T1} {T2} (EQTNAT x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PUREneqNAT (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTQNAT x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PUREneqQNAT (compAllVal x₁ tt))
 --      ind {u} {w} {T1} {T2} (EQTTNAT x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PUREneqTNAT (compAllVal x₁ tt))
@@ -390,7 +390,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 =
         Mod.∀𝕎-□Func M aw eqi
         where
-          aw : ∀𝕎 w (λ w' e' → PUREeq a b → PUREeq a b)
+          aw : ∀𝕎 w (λ w' e' → PUREeq w' a b → PUREeq w' a b)
           aw w' e' p = p
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PUREneqFFDEFS (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTUNIV i p x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PUREneqUNIV (compAllVal x₁ tt))
@@ -401,27 +401,27 @@ abstract
           aw : ∀𝕎 w (λ w' e' → (z : equalTypes u w' T1 T2)
                               → (at : at□· x w' e' z)
                               → equalTerms u w' z a b
-                              → □· w' (↑wPred' (λ w'' e → PUREeq a b) e'))
+                              → □· w' (↑wPred' (λ w'' e → PUREeq w'' a b) e'))
           aw w' e' z at i = Mod.∀𝕎-□Func M (λ w'' e'' h k → h) (ind {u} {w'} {T1} {T2} z {a} {b} i (<Type1 z (EQTBAR x) (<TypeBAR (ℕ→𝕌 u) w T1 T2 x w' e' z at)) eq1 eq2)
 
       concl : (T1 T2 : CTerm) (eqt : equalTypes n w T1 T2) (eqi : equalTerms n w eqt a b)
-              → T1 ≡ #PURE → T2 ≡ #PURE → □· w (λ w' _ → PUREeq a b)
+              → T1 ≡ #PURE → T2 ≡ #PURE → □· w (λ w' _ → PUREeq w' a b)
       concl T1 T2 eqt eqi =
         equalTerms-ind
-          (λ {i} {w} {T1} {T2} eqt {a} {b} eqi → T1 ≡ #PURE → T2 ≡ #PURE → □· w (λ w' _ → PUREeq a b))
+          (λ {i} {w} {T1} {T2} eqt {a} {b} eqi → T1 ≡ #PURE → T2 ≡ #PURE → □· w (λ w' _ → PUREeq w' a b))
           ind eqt a b eqi
 
 
 abstract
   equalInType-NOSEQ→ : {n : ℕ} {w : 𝕎·} {a b : CTerm}
                          → equalInType n w #NOSEQ a b
-                         → □· w (λ w' _ → NOSEQeq a b)
+                         → □· w (λ w' _ → NOSEQeq w' a b)
   equalInType-NOSEQ→ {n} {w} {a} {b} (eqt , eqi) = concl #NOSEQ #NOSEQ eqt eqi refl refl
     where
       ind : {u : ℕ} {w : 𝕎·} {T1 T2 : CTerm} (eqt : equalTypes u w T1 T2) {a b : CTerm} (eqi : equalTerms u w eqt a b)
             → ({u' : ℕ} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : equalTypes u' w' T1' T2') {a' b' : CTerm} (eqi' : equalTerms u' w' eqt' a' b')
-                → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt → T1' ≡ #NOSEQ → T2' ≡ #NOSEQ → □· w' (λ w'' _ → NOSEQeq a' b'))
-            → T1 ≡ #NOSEQ → T2 ≡ #NOSEQ → □· w (λ w' _ → NOSEQeq a b)
+                → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt → T1' ≡ #NOSEQ → T2' ≡ #NOSEQ → □· w' (λ w'' _ → NOSEQeq w'' a' b'))
+            → T1 ≡ #NOSEQ → T2 ≡ #NOSEQ → □· w (λ w' _ → NOSEQeq w' a b)
 --      ind {u} {w} {T1} {T2} (EQTNAT x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOSEQneqNAT (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTQNAT x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOSEQneqQNAT (compAllVal x₁ tt))
 --      ind {u} {w} {T1} {T2} (EQTTNAT x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOSEQneqTNAT (compAllVal x₁ tt))
@@ -448,7 +448,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 =
         Mod.∀𝕎-□Func M aw eqi
         where
-          aw : ∀𝕎 w (λ w' e' → NOSEQeq a b → NOSEQeq a b)
+          aw : ∀𝕎 w (λ w' e' → NOSEQeq w' a b → NOSEQeq w' a b)
           aw w' e' p = p
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOSEQneqPURE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOSEQneqFFDEFS (compAllVal x₁ tt))
@@ -460,27 +460,27 @@ abstract
           aw : ∀𝕎 w (λ w' e' → (z : equalTypes u w' T1 T2)
                               → (at : at□· x w' e' z)
                               → equalTerms u w' z a b
-                              → □· w' (↑wPred' (λ w'' e → NOSEQeq a b) e'))
+                              → □· w' (↑wPred' (λ w'' e → NOSEQeq w'' a b) e'))
           aw w' e' z at i = Mod.∀𝕎-□Func M (λ w'' e'' h k → h) (ind {u} {w'} {T1} {T2} z {a} {b} i (<Type1 z (EQTBAR x) (<TypeBAR (ℕ→𝕌 u) w T1 T2 x w' e' z at)) eq1 eq2)
 
       concl : (T1 T2 : CTerm) (eqt : equalTypes n w T1 T2) (eqi : equalTerms n w eqt a b)
-              → T1 ≡ #NOSEQ → T2 ≡ #NOSEQ → □· w (λ w' _ → NOSEQeq a b)
+              → T1 ≡ #NOSEQ → T2 ≡ #NOSEQ → □· w (λ w' _ → NOSEQeq w' a b)
       concl T1 T2 eqt eqi =
         equalTerms-ind
-          (λ {i} {w} {T1} {T2} eqt {a} {b} eqi → T1 ≡ #NOSEQ → T2 ≡ #NOSEQ → □· w (λ w' _ → NOSEQeq a b))
+          (λ {i} {w} {T1} {T2} eqt {a} {b} eqi → T1 ≡ #NOSEQ → T2 ≡ #NOSEQ → □· w (λ w' _ → NOSEQeq w' a b))
           ind eqt a b eqi
 
 
 abstract
   equalInType-NOENC→ : {n : ℕ} {w : 𝕎·} {a b : CTerm}
                          → equalInType n w #NOENC a b
-                         → □· w (λ w' _ → NOENCeq a b)
+                         → □· w (λ w' _ → NOENCeq w' a b)
   equalInType-NOENC→ {n} {w} {a} {b} (eqt , eqi) = concl #NOENC #NOENC eqt eqi refl refl
     where
       ind : {u : ℕ} {w : 𝕎·} {T1 T2 : CTerm} (eqt : equalTypes u w T1 T2) {a b : CTerm} (eqi : equalTerms u w eqt a b)
             → ({u' : ℕ} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : equalTypes u' w' T1' T2') {a' b' : CTerm} (eqi' : equalTerms u' w' eqt' a' b')
-                → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt → T1' ≡ #NOENC → T2' ≡ #NOENC → □· w' (λ w'' _ → NOENCeq a' b'))
-            → T1 ≡ #NOENC → T2 ≡ #NOENC → □· w (λ w' _ → NOENCeq a b)
+                → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt → T1' ≡ #NOENC → T2' ≡ #NOENC → □· w' (λ w'' _ → NOENCeq w'' a' b'))
+            → T1 ≡ #NOENC → T2 ≡ #NOENC → □· w (λ w' _ → NOENCeq w' a b)
 --      ind {u} {w} {T1} {T2} (EQTNAT x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOENCneqNAT (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTQNAT x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOENCneqQNAT (compAllVal x₁ tt))
 --      ind {u} {w} {T1} {T2} (EQTTNAT x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOENCneqTNAT (compAllVal x₁ tt))
@@ -507,7 +507,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTNOENC x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 =
         Mod.∀𝕎-□Func M aw eqi
         where
-          aw : ∀𝕎 w (λ w' e' → NOENCeq a b → NOENCeq a b)
+          aw : ∀𝕎 w (λ w' e' → NOENCeq w' a b → NOENCeq w' a b)
           aw w' e' p = p
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOENCneqPURE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a} {b} eqi ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (NOENCneqFFDEFS (compAllVal x₁ tt))
@@ -519,14 +519,14 @@ abstract
           aw : ∀𝕎 w (λ w' e' → (z : equalTypes u w' T1 T2)
                               → (at : at□· x w' e' z)
                               → equalTerms u w' z a b
-                              → □· w' (↑wPred' (λ w'' e → NOENCeq a b) e'))
+                              → □· w' (↑wPred' (λ w'' e → NOENCeq w'' a b) e'))
           aw w' e' z at i = Mod.∀𝕎-□Func M (λ w'' e'' h k → h) (ind {u} {w'} {T1} {T2} z {a} {b} i (<Type1 z (EQTBAR x) (<TypeBAR (ℕ→𝕌 u) w T1 T2 x w' e' z at)) eq1 eq2)
 
       concl : (T1 T2 : CTerm) (eqt : equalTypes n w T1 T2) (eqi : equalTerms n w eqt a b)
-              → T1 ≡ #NOENC → T2 ≡ #NOENC → □· w (λ w' _ → NOENCeq a b)
+              → T1 ≡ #NOENC → T2 ≡ #NOENC → □· w (λ w' _ → NOENCeq w' a b)
       concl T1 T2 eqt eqi =
         equalTerms-ind
-          (λ {i} {w} {T1} {T2} eqt {a} {b} eqi → T1 ≡ #NOENC → T2 ≡ #NOENC → □· w (λ w' _ → NOENCeq a b))
+          (λ {i} {w} {T1} {T2} eqt {a} {b} eqi → T1 ≡ #NOENC → T2 ≡ #NOENC → □· w (λ w' _ → NOENCeq w' a b))
           ind eqt a b eqi
 
 

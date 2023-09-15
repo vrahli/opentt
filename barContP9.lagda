@@ -335,6 +335,7 @@ NAT→T!2𝕊-equalInNAT! kb {i} {w} P {T} {f} prest nty tyn f∈ k =
 
 semCond : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get-choose-ℕ)
           (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T F f : CTerm)
+          (nnF : #¬Names F)
           → P 0
           → #⇛!-NUM-type P T
           → type-#⇛-NUM P T
@@ -344,13 +345,14 @@ semCond : (kb : K□) (cn : cℕ) (can : comp→∀ℕ) (exb : ∃□) (gc : get
           → ∈Type i w (#FUN #NAT (#NOWRITEMOD T)) f
           → equalInType i w #NAT (#APPLY F f) (#follow f (#tab F 0 #INIT) 0)
 -- It's a #QNAT and not a #NAT because of the computation on #tab, which is a "time-dependent" computation
-semCond kb cn can exb gc i w P T F f p0 nty tyn prest tyt F∈P f∈ =
+semCond kb cn can exb gc i w P T F f nnF p0 nty tyn prest tyt F∈P f∈ =
   →equalInType-NAT
     i w (#APPLY F f) (#follow f I 0)
     (Mod.∀𝕎-□Func M aw (equalInType-W₀→ kb i w #IndBarB (#IndBarC T) I I I∈))
   where
-    nnF  : #¬Names F
+{--    nnF  : #¬Names F
     nnF = equalInType-TPURE→ₗ F∈P
+--}
 
     F∈ : ∈Type i w (#FunBar T) F
     F∈ = equalInType-TPURE→ F∈P
@@ -365,7 +367,7 @@ semCond kb cn can exb gc i w P T F f p0 nty tyn prest tyt F∈P f∈ =
     I = #tab F 0 #INIT
 
     I∈ : ∈Type i w (#IndBar T) I
-    I∈ = sem kb cn can exb gc i w P T F p0 prest (type-#⇛-NUM→! P T tyn) nty tyt F∈P
+    I∈ = sem kb cn can exb gc i w P T F nnF p0 prest (type-#⇛-NUM→! P T tyn) nty tyt F∈P
 
     f≡1 : (k : ℕ) → equalInType i w (#NOWRITEMOD T) (#APPLY f (#NUM k)) (#APPLY (#MSEQ s) (#NUM k))
     f≡1 k = NAT→T!2𝕊-equalInNAT! kb P prest nty (type-#⇛-NUM→! P T tyn) f∈ k

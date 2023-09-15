@@ -382,10 +382,13 @@ follow s w n =
 
 
 sub3-followB≡ : (a g f : CTerm)
-                → sub (WRECr (followB ⌜ f ⌝) ⌜ g ⌝) (sub ⌜ g ⌝ (sub ⌜ a ⌝ (followB ⌜ f ⌝)))
+                → sub (WRECr (followB ⌜ f ⌝) ⌜ g ⌝) (sub (shiftUp 0 ⌜ g ⌝) (sub (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) (followB ⌜ f ⌝)))
                    ≡ followBT ⌜ a ⌝ (WRECr (followB ⌜ f ⌝) ⌜ g ⌝) ⌜ f ⌝
 sub3-followB≡ a g f
    rewrite #shiftUp 0 a
+         | #shiftUp 0 a
+         | #shiftUp 0 g
+         | #shiftUp 0 a
          | #shiftUp 0 a
          | #shiftUp 0 a
          | #shiftUp 0 a
@@ -474,7 +477,9 @@ sub-followD≡ k a g f
       (≡ₗr→⇓from-to
         (≡APPLY (sub3-followB≡ a g f) refl)
         (⇓-trans₂
-          (APPLY-LAMBDA⇓  w' (followD (VAR 0) (shiftUp 0 ⌜ a ⌝) (shiftUp 0 (WRECr (followB ⌜ f ⌝) ⌜ g ⌝)) (shiftUp 0 ⌜ f ⌝)) (NUM k))
+          (APPLY-LAMBDA⇓  w'
+            (followD (VAR 0) (shiftUp 0 ⌜ a ⌝) (shiftUp 0 (WRECr (followB ⌜ f ⌝) ⌜ g ⌝)) (shiftUp 0 ⌜ f ⌝))
+            (NUM k))
           (≡ₗr→⇓from-to
             (sub-followD≡ k a g f)
             (⇓-trans₂

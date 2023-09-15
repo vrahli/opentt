@@ -773,23 +773,43 @@ equalInTypeTNOENC→ {w} {i} {A} {B} eqtA rewrite #TNOENC≡ A
 -- MOVE to props2
 equalInTypeTNOENC→ₗ : {w : 𝕎·} {i : ℕ} {A a b : CTerm}
                     → equalInType i w (#TNOENC A) a b
-                    → #¬Enc a
-equalInTypeTNOENC→ₗ {w} {i} {A} {a} {b} eqtA rewrite #TNOENC≡ A
-  = lower (Mod.□-const M
+                    → □· w (λ w' _ → #⇛!ₑ a w') --#¬Enc a
+equalInTypeTNOENC→ₗ {w} {i} {A} {a} {b} eqi
+-- rewrite #TNOENC≡ A
+  = Mod.□-idem M (Mod.∀𝕎-□Func M aw h)
+  where
+    aw : ∀𝕎 w (λ w' e' → ISECTeq (equalInType i w' A) (equalInType i w' #NOENC) a b
+                       → □· w' (↑wPred' (λ w'' e → #⇛!ₑ a w'') e'))
+    aw w1 e1 (eqa , eqb) = Mod.∀𝕎-□Func M (λ w1 e1 h z → fst h) (equalInType-NOENC→ eqb)
+
+    h : □· w (λ w' _ → ISECTeq (equalInType i w' A) (equalInType i w' #NOENC) a b)
+    h = equalInType-ISECT→ (≡CTerm→equalInType (#TNOENC≡ A) eqi)
+{--lower (Mod.□-const M
             (Mod.∀𝕎-□Func M
               (λ w1 e1 (p , q) → Mod.□-const M (Mod.∀𝕎-□Func M (λ w2 e2 (lift (u , v)) → lift u) (equalInType-NOENC→ q)))
               (equalInType-ISECT→ {_} {_} {A} {#NOENC} eqtA)))
+--}
 
 
 -- MOVE to props2
 equalInTypeTNOENC→ᵣ : {w : 𝕎·} {i : ℕ} {A a b : CTerm}
                     → equalInType i w (#TNOENC A) a b
-                    → #¬Enc b
-equalInTypeTNOENC→ᵣ {w} {i} {A} {a} {b} eqtA rewrite #TNOENC≡ A
-  = lower (Mod.□-const M
+                    → □· w (λ w' _ → #⇛!ₑ b w') --#¬Enc b
+equalInTypeTNOENC→ᵣ {w} {i} {A} {a} {b} eqi
+-- rewrite #TNOENC≡ A
+  = Mod.□-idem M (Mod.∀𝕎-□Func M aw h)
+  where
+    aw : ∀𝕎 w (λ w' e' → ISECTeq (equalInType i w' A) (equalInType i w' #NOENC) a b
+                       → □· w' (↑wPred' (λ w'' e → #⇛!ₑ b w'') e'))
+    aw w1 e1 (eqa , eqb) = Mod.∀𝕎-□Func M (λ w1 e1 h z → snd h) (equalInType-NOENC→ eqb)
+
+    h : □· w (λ w' _ → ISECTeq (equalInType i w' A) (equalInType i w' #NOENC) a b)
+    h = equalInType-ISECT→ (≡CTerm→equalInType (#TNOENC≡ A) eqi)
+ {--lower (Mod.□-const M
             (Mod.∀𝕎-□Func M
               (λ w1 e1 (p , q) → Mod.□-const M (Mod.∀𝕎-□Func M (λ w2 e2 (lift (u , v)) → lift v) (equalInType-NOENC→ q)))
               (equalInType-ISECT→ {_} {_} {A} {#NOENC} eqtA)))
+--}
 
 
 isTypeMP₇ : (w : 𝕎·) (n : ℕ) → isType n w #MP₇

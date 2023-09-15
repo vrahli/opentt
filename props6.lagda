@@ -251,14 +251,14 @@ presPure a b =
 _⇛ₚ_at_ : (T T' : Term) (w : 𝕎·) → Set(lsuc(L))
 T ⇛ₚ T' at w =
   T ⇛! T' at w
-  × presPure T' T
+--  × presPure T' T
 infix 30 _⇛ₚ_at_
 
 
 _#⇛ₚ_at_ : (T T' : CTerm) (w : 𝕎·) → Set(lsuc(L))
 T #⇛ₚ T' at w =
   T #⇛! T' at w
-  × presPure ⌜ T' ⌝ ⌜ T ⌝
+--  × presPure ⌜ T' ⌝ ⌜ T ⌝
 infix 30 _#⇛ₚ_at_
 
 
@@ -266,8 +266,8 @@ infix 30 _#⇛ₚ_at_
        → w1 ⊑· w2
        → a ⇛ₚ b at w1
        → a ⇛ₚ b at w2
-⇛ₚ-mon {a} {b} {w1} {w2} e (comp , conds) =
-  ∀𝕎-mon e comp , conds
+⇛ₚ-mon {a} {b} {w1} {w2} e (comp {-- , conds--}) =
+  ∀𝕎-mon e comp -- , conds
 
 
 equalTerms-#⇛ₚ-left-rev-at : ℕ → Set(lsuc(L))
@@ -279,6 +279,7 @@ equalTerms-#⇛ₚ-left-rev-at i =
   → equalTerms i w eqt a c
 
 
+{--
 #⇛ₚ→#¬Names : {w : 𝕎·} {a b : CTerm}
             → b #⇛ₚ a at w
             → #¬Names a
@@ -298,19 +299,44 @@ equalTerms-#⇛ₚ-left-rev-at i =
             → #¬Enc a
             → #¬Enc b
 #⇛ₚ→#¬Enc {w} {a} {b} (comp , nn , ns , ne) na = ne na
+--}
+
+
+#⇛ₚ-pres-#⇛!ₙ : (w : 𝕎·) (a b : CTerm)
+              → b #⇛ₚ a at w
+              → #⇛!ₙ a w
+              → #⇛!ₙ b w
+#⇛ₚ-pres-#⇛!ₙ w a b (comp {-- , pp--}) (c , h , cond) =
+  c , #⇛!-trans {w} {b} {a} {c} comp h , cond
+
+
+#⇛ₚ-pres-#⇛!ₛ : (w : 𝕎·) (a b : CTerm)
+              → b #⇛ₚ a at w
+              → #⇛!ₛ a w
+              → #⇛!ₛ b w
+#⇛ₚ-pres-#⇛!ₛ w a b (comp {-- , pp--}) (c , h , cond) =
+  c , #⇛!-trans {w} {b} {a} {c} comp h , cond
+
+
+#⇛ₚ-pres-#⇛!ₑ : (w : 𝕎·) (a b : CTerm)
+              → b #⇛ₚ a at w
+              → #⇛!ₑ a w
+              → #⇛!ₑ b w
+#⇛ₚ-pres-#⇛!ₑ w a b (comp {-- , pp--}) (c , h , cond) =
+  c , #⇛!-trans {w} {b} {a} {c} comp h , cond
 
 
 #⇛ₚ→#⇛ : {w : 𝕎·} {a b : CTerm}
        → b #⇛ₚ a at w
        → b #⇛ a at w
-#⇛ₚ→#⇛ {w} {a} {b} (comp , nn) = #⇛!→#⇛ comp
+#⇛ₚ→#⇛ {w} {a} {b} (comp {-- , nn--}) = #⇛!→#⇛ comp
 
 
 #⇛ₚ-pres-⇓sameℕ : {w : 𝕎·} {a b c : Term}
                 → b ⇛ₚ a at w
                 → ⇓sameℕ w a c
                 → ⇓sameℕ w b c
-#⇛ₚ-pres-⇓sameℕ {w} {a} {b} {c} (comp , conds) (k , c₁ , c₂) =
+#⇛ₚ-pres-⇓sameℕ {w} {a} {b} {c} (comp {-- , conds--}) (k , c₁ , c₂) =
   k , ⇓-trans₁ {w} {w} {b} {a} {NUM k} (lower (comp w (⊑-refl· w))) c₁ , c₂
 
 
@@ -327,7 +353,7 @@ equalTerms-#⇛ₚ-left-rev-at i =
                 → FREEeq w a c
                 → FREEeq w b c
 #⇛ₚ-pres-FREEeq {w} {a} {b} {c} comp (n , c₁ , c₂) =
-  n , ⇛-trans {w} {⌜ b ⌝} {⌜ a ⌝} {CS n} (#⇛!→#⇛ (fst comp)) c₁ , c₂
+  n , ⇛-trans {w} {⌜ b ⌝} {⌜ a ⌝} {CS n} (#⇛!→#⇛ ({--fst--} comp)) c₁ , c₂
 
 
 pres-#¬Names-APPLY : {a b c : CTerm}
@@ -354,11 +380,12 @@ pres-#¬Enc-APPLY {a} {b} {c} i na =
 #⇛ₚ-pres-APPLY : {b a c : CTerm} {w : 𝕎·}
                → b #⇛ₚ a at w
                → #APPLY b c #⇛ₚ #APPLY a c at w
-#⇛ₚ-pres-APPLY {b} {a} {c} {w} (comp , nn , ns , ne) =
-  →-#⇛!-#APPLY {w} {b} {a} c comp ,
+#⇛ₚ-pres-APPLY {b} {a} {c} {w} (comp {-- , nn , ns , ne--}) =
+  →-#⇛!-#APPLY {w} {b} {a} c comp {--,
   pres-#¬Names-APPLY {a} {b} {c} nn ,
   pres-#¬Seq-APPLY   {a} {b} {c} ns ,
   pres-#¬Enc-APPLY   {a} {b} {c} ne
+--}
 
 
 #⇛!-pres-#⇓→#⇛-rev : {w : 𝕎·} {a b : CTerm}
@@ -371,7 +398,7 @@ pres-#¬Enc-APPLY {a} {b} {c} i na =
 
 
 #⇛ₚ-refl : {w : 𝕎·} {t : CTerm} → t #⇛ₚ t at w
-#⇛ₚ-refl {w} {t} = #⇛!-refl , (λ z → z) , (λ z → z) , (λ z → z)
+#⇛ₚ-refl {w} {t} = #⇛!-refl {-- , (λ z → z) , (λ z → z) , (λ z → z)--}
 
 
 TUNION-eq-#⇛ₚ-rev : {eqa : per} {eqb : (a b : CTerm) → eqa a b → per} {w : 𝕎·} {a b c d : CTerm}
@@ -408,7 +435,7 @@ TUNIONeq-#⇛ₚ-rev {eqa} {eqb} {w} {a} {b} {c} {d} cb sb c₁ c₂ h =
                   → weq eqa eqb eqc w a c
                   → weq eqa eqb eqc w b c
 #⇛ₚ-pres-weq-L {w} {a} {b} {c} {eqa} {eqb} {eqc} comp indc (weqC a1 f1 a2 f2 e x x₁ z x₂) =
-  weqC a1 f1 a2 f2 e (⇓-trans₁ {w} {w} {⌜ b ⌝} {⌜ a ⌝} {⌜ #SUP a1 f1 ⌝} (lower (fst comp w (⊑-refl· w))) x) x₁ (indc z) x₂
+  weqC a1 f1 a2 f2 e (⇓-trans₁ {w} {w} {⌜ b ⌝} {⌜ a ⌝} {⌜ #SUP a1 f1 ⌝} (lower ({--fst--} comp w (⊑-refl· w))) x) x₁ (indc z) x₂
 
 
 #⇛ₚ-pres-meq-L : {w : 𝕎·} {a b c : CTerm}
@@ -420,7 +447,7 @@ TUNIONeq-#⇛ₚ-rev {eqa} {eqb} {w} {a} {b} {c} {d} cb sb c₁ c₂ h =
 meq.meqC (#⇛ₚ-pres-meq-L {w} {a} {b} {c} {eqa} {eqb} {eqc} comp indc h) with meq.meqC h
 ... | (a1 , f1 , a2 , f2 , e , x , x₁ , z , x₂) =
   a1 , f1 , a2 , f2 , e ,
-  ⇓-trans₁ {w} {w} {⌜ b ⌝} {⌜ a ⌝} {⌜ #SUP a1 f1 ⌝} (lower (fst comp w (⊑-refl· w))) x ,
+  ⇓-trans₁ {w} {w} {⌜ b ⌝} {⌜ a ⌝} {⌜ #SUP a1 f1 ⌝} (lower ({--fst--} comp w (⊑-refl· w))) x ,
   x₁ , indc z , x₂
 
 
@@ -461,7 +488,7 @@ abstract
                              → SUMeq (equalTerms i w' (eqta w' e')) (λ a1 a2 eqa → equalTerms i w' (eqtb w' e' a1 a2 eqa)) w' b c)
           aw w' e (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) =
             a₁ , a₂ , b₁ , b₂ , ea ,
-            ⇓-trans₁ {w'} {w'} {⌜ b ⌝} {⌜ a ⌝} {⌜ #PAIR a₁ b₁ ⌝} (lower (fst comp w' e)) c₁ ,
+            ⇓-trans₁ {w'} {w'} {⌜ b ⌝} {⌜ a ⌝} {⌜ #PAIR a₁ b₁ ⌝} (lower ({--fst--} comp w' e)) c₁ ,
             c₂ , eb
       ind {i} {w} {A} {B} (EQTW A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M aw eqi
@@ -538,23 +565,23 @@ abstract
           aw : ∀𝕎 w (λ w' e' → UNIONeq (equalTerms i w' (eqtA w' e')) (equalTerms i w' (eqtB w' e')) w' a c
                              → UNIONeq (equalTerms i w' (eqtA w' e')) (equalTerms i w' (eqtB w' e')) w' b c)
           aw w' e (a₁ , a₂ , inj₁ (c₁ , c₂ , ea)) =
-            a₁ , a₂ , inj₁ (⇓-trans₁ {w'} {w'} {⌜ b ⌝} {⌜ a ⌝} {⌜ #INL a₁ ⌝} (lower (fst comp w' e)) c₁ ,
+            a₁ , a₂ , inj₁ (⇓-trans₁ {w'} {w'} {⌜ b ⌝} {⌜ a ⌝} {⌜ #INL a₁ ⌝} (lower ({--fst--} comp w' e)) c₁ ,
                             c₂ , ea)
           aw w' e (a₁ , a₂ , inj₂ (c₁ , c₂ , ea)) =
-            a₁ , a₂ , inj₂ (⇓-trans₁ {w'} {w'} {⌜ b ⌝} {⌜ a ⌝} {⌜ #INR a₁ ⌝} (lower (fst comp w' e)) c₁ ,
+            a₁ , a₂ , inj₂ (⇓-trans₁ {w'} {w'} {⌜ b ⌝} {⌜ a ⌝} {⌜ #INR a₁ ⌝} (lower ({--fst--} comp w' e)) c₁ ,
                             c₂ , ea)
       ind {i} {w} {A} {B} (EQTNOWRITE x x₁) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M aw eqi
         where
           aw : ∀𝕎 w (λ w' e' → NOWRITEeq w' a c
                              → NOWRITEeq w' b c)
-          aw w' e (c₁ , c₂) = #⇛!-pres-#⇓→#⇓!-rev {w'} {a} {b} (fst (⇛ₚ-mon e comp)) c₁ , c₂
+          aw w' e (c₁ , c₂) = #⇛!-pres-#⇓→#⇓!-rev {w'} {a} {b} ({--fst--} (⇛ₚ-mon e comp)) c₁ , c₂
       ind {i} {w} {A} {B} (EQTNOREAD x x₁) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M aw eqi
         where
           aw : ∀𝕎 w (λ w' e' → NOREADeq w' a c
                              → NOREADeq w' b c)
-          aw w' e (c₁ , c₂) = #⇛!-pres-#⇓→#⇛-rev {w'} {a} {b} (fst (⇛ₚ-mon e comp)) c₁ , c₂
+          aw w' e (c₁ , c₂) = #⇛!-pres-#⇓→#⇛-rev {w'} {a} {b} ({--fst--} (⇛ₚ-mon e comp)) c₁ , c₂
       ind {i} {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqtA exta) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M aw eqi
         where
@@ -573,28 +600,28 @@ abstract
       ind {i} {w} {A} {B} (EQTPURE x x₁) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M aw eqi
         where
-          aw : ∀𝕎 w (λ w' e' → PUREeq a c
-                             → PUREeq b c)
-          aw w' e (lift (y₁ , y₂)) = lift (#⇛ₚ→#¬Names comp y₁ , y₂)
+          aw : ∀𝕎 w (λ w' e' → PUREeq w' a c
+                             → PUREeq w' b c)
+          aw w' e (y₁ , y₂) = #⇛ₚ-pres-#⇛!ₙ w' a b (⇛ₚ-mon e comp) y₁ , y₂ --lift (#⇛ₚ→#¬Names comp y₁ , y₂)
       ind {i} {w} {A} {B} (EQTNOSEQ x x₁) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M aw eqi
         where
-          aw : ∀𝕎 w (λ w' e' → NOSEQeq a c
-                             → NOSEQeq b c)
-          aw w' e (lift (y₁ , y₂)) = lift (#⇛ₚ→#¬Seq comp y₁ , y₂)
+          aw : ∀𝕎 w (λ w' e' → NOSEQeq w' a c
+                             → NOSEQeq w' b c)
+          aw w' e (y₁ , y₂) = #⇛ₚ-pres-#⇛!ₛ w' a b (⇛ₚ-mon e comp) y₁ , y₂ --lift (#⇛ₚ→#¬Seq comp y₁ , y₂)
       ind {i} {w} {A} {B} (EQTNOENC x x₁) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M aw eqi
         where
-          aw : ∀𝕎 w (λ w' e' → NOENCeq a c
-                             → NOENCeq b c)
-          aw w' e (lift (y₁ , y₂)) = lift (#⇛ₚ→#¬Enc comp y₁ , y₂)
+          aw : ∀𝕎 w (λ w' e' → NOENCeq w' a c
+                             → NOENCeq w' b c)
+          aw w' e (y₁ , y₂) = #⇛ₚ-pres-#⇛!ₑ w' a b (⇛ₚ-mon e comp) y₁ , y₂ --lift (#⇛ₚ→#¬Enc comp y₁ , y₂)
       ind {i} {w} {A} {B} (EQTTERM t1 t2 x x₁ x₂) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M (λ w1 e1 z → z) eqi
       ind {i} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M aw eqi
         where
           aw : ∀𝕎 w (λ w' e' → FFDEFSeq x1 (equalTerms i w' (eqtA w' e')) w' a c
-                              → FFDEFSeq x1 (equalTerms i w' (eqtA w' e')) w' b c)
+                             → FFDEFSeq x1 (equalTerms i w' (eqtA w' e')) w' b c)
           aw w' e y = y
       ind {i} {w} {A} {B} (EQTUNIV i₁ p x x₁) {a} {c} eqi ind uind b comp =
         □·EqTypes→uniUpTo {i₁} {i} {p} (Mod.∀𝕎-□Func M aw (uniUpTo→□·EqTypes {i₁} {i} {p} eqi))

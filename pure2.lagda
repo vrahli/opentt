@@ -191,6 +191,11 @@ sub0-fun-mp-qt₄ f a =
           {i} {w} {#MP-left-qt₃ f} {#MP-right-qt₃ f} {a₁} {a₂} a∈ w1 e1 j₁ j₂
           (→equalInType-mp-left-qt₃ {i} {w1} {g} {f} {j₁} {j₂} {j₁} {j₂} (equalInType-sym (equalInType-mon f∈ w1 e1)) j∈))
 
+
+#¬Enc-APPLY : {a b : CTerm} → #¬Enc a → #¬Enc b → #¬Enc (#APPLY a b)
+#¬Enc-APPLY {a} {b} nna nnb rewrite nna | nnb = refl
+
+
 --
 -- This lemma was suggested by Yannick Forster.
 --
@@ -210,10 +215,11 @@ sub0-fun-mp-qt₄ f a =
 --
 Πpure→ : (i : ℕ) (w : 𝕎·) (eval a : CTerm)
           → #¬Names eval
+          → #¬Enc eval
           → ∈Type i w (#FUN #NAT! #NAT!→BOOL₀!) eval
           → ∈Type i w (#PI (#TPURE #NAT!→BOOL₀!) (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)) a
           → ∈Type i w (#PI #NAT! (#[0]FUN (#[0]MP-left-qt₄ eval) (#[0]MP-right-qt₄ eval))) a
-Πpure→ i w eval a nnf eval∈ a∈ =
+Πpure→ i w eval a nnf nef eval∈ a∈ =
   equalInType-PI
     (λ w' e' → isTypeNAT! {w'} {i})
     aw0
@@ -246,8 +252,12 @@ sub0-fun-mp-qt₄ f a =
 
             h0 : equalInType i w2 (#TPURE #NAT!→BOOL₀!) (#APPLY eval (#NUM n)) (#APPLY eval (#NUM n))
             h0 = →equalInType-TPURE
-                   (#¬Names-APPLY {eval} {#NUM n} nnf refl) (#¬Names-APPLY {eval} {#NUM n} nnf refl)
-                   (equalInType-FUN→ {i} {w} {#NAT!} {#NAT!→BOOL₀!} {eval} {eval} eval∈ w2 (⊑-trans· e1 e2) (#NUM n) (#NUM n) (NUM-equalInType-NAT! i w2 n))
+                   (#¬Names-APPLY {eval} {#NUM n} nnf refl)
+                   (#¬Names-APPLY {eval} {#NUM n} nnf refl)
+                   (#¬Enc-APPLY {eval} {#NUM n} nef refl)
+                   (#¬Enc-APPLY {eval} {#NUM n} nef refl)
+                   (equalInType-FUN→ {i} {w} {#NAT!} {#NAT!→BOOL₀!} {eval} {eval}
+                     eval∈ w2 (⊑-trans· e1 e2) (#NUM n) (#NUM n) (NUM-equalInType-NAT! i w2 n))
 
             h1 : equalInType i w2 (sub0 (#APPLY eval (#NUM n)) (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)) (#APPLY a (#APPLY eval (#NUM n))) (#APPLY a (#APPLY eval (#NUM n)))
             h1 = snd (snd (equalInType-PI→ {i} {w} {#TPURE #NAT!→BOOL₀!} {#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃} {a} {a} a∈))
@@ -334,7 +344,8 @@ sub0-SQUASH-APPLY-VAR F n = CTerm≡ (≡SET refl (≡APPLY e0 e1))
             aw3 w3 e3 = k , #⇛!-refl {w3} {#NUM k} , ∀𝕎-mon e3 c₁
 
             h0 : equalInType i w2 (sub0 (#NUM k) (#[0]SQUASH (#[0]APPLY ⌞ F ⌟ #[0]VAR))) (#APPLY a (#NUM k)) (#APPLY a (#NUM k))
-            h0 = snd (snd (equalInType-PI→ a∈)) w2 (⊑-trans· e1 e2) (#NUM k) (#NUM k) (→equalInType-TPURE refl refl (NUM-equalInType-NAT! i w2 k))
+            h0 = snd (snd (equalInType-PI→ a∈)) w2 (⊑-trans· e1 e2) (#NUM k) (#NUM k)
+                     (→equalInType-TPURE refl refl refl refl (NUM-equalInType-NAT! i w2 k))
 
             h1 : equalInType i w2 (#SQUASH (#APPLY F (#NUM k))) (#APPLY a (#NUM k)) (#APPLY a (#NUM k))
             h1 = →≡equalInType (sub0-SQUASH-APPLY-VAR F (#NUM k)) h0

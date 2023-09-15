@@ -317,10 +317,10 @@ abstract
     concl (updRel2-PAIRₗ→ ua)
     where
       concl : Σ Term (λ x₁ → Σ Term (λ x₂ → a₂ ≡ PAIR x₁ x₂ × updRel2 name f g r u₁ x₁ × updRel2 name f g r u₂ x₂))
-              → ΣstepsUpdRel2 name f g (sub u₂ (sub u₁ b₁)) w1 w1 (SPREAD a₂ b₂) w r
+              → ΣstepsUpdRel2 name f g (sub u₂ (sub (shiftUp 0 u₁) b₁)) w1 w1 (SPREAD a₂ b₂) w r
       concl (x₁ , x₂ , eqa , ur1 , ur2) rewrite eqa =
-        0 , 1 , sub u₂ (sub u₁ b₁) , sub x₂ (sub x₁ b₂) , w1 , w , r , refl , refl ,
-        updRel2-sub cf cg (updRel2-sub cf cg ub ur1) ur2 , upw , subRen-refl r
+        0 , 1 , sub u₂ (sub (shiftUp 0 u₁) b₁) , sub x₂ (sub (shiftUp 0 x₁) b₂) , w1 , w , r , refl , refl ,
+        updRel2-sub cf cg (updRel2-sub cf cg ub (updRel2-shiftUp 0 cf cg ur1)) ur2 , upw , subRen-refl r
   ... | inj₂ np with step⊎ a₁ w1
   ... |    inj₁ (a₁' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
     →ΣstepsUpdRel2-SPREAD₁ (++⊆2→2 {names a₁} {names b₁} {dom𝕎· w1} naid) (++⊆2→2 {names a₂} {names b₂} {dom𝕎· w} nbid) ub ind'
@@ -347,10 +347,16 @@ abstract
     concl (updRel2-SUPₗ→ ua)
     where
       concl : Σ Term (λ x₁ → Σ Term (λ x₂ → a₂ ≡ SUP x₁ x₂ × updRel2 name f g r u₁ x₁ × updRel2 name f g r u₂ x₂))
-              → ΣstepsUpdRel2 name f g (sub (WRECr b₁ u₂) (sub u₂ (sub u₁ b₁))) w1 w1 (WREC a₂ b₂) w r
+              → ΣstepsUpdRel2 name f g (sub (WRECr b₁ u₂) (sub (shiftUp 0 u₂) (sub (shiftUp 0 (shiftUp 0 u₁)) b₁))) w1 w1 (WREC a₂ b₂) w r
       concl (x₁ , x₂ , eqa , ur1 , ur2) rewrite eqa =
-        0 , 1 , sub (WRECr b₁ u₂) (sub u₂ (sub u₁ b₁)) , sub (WRECr b₂ x₂) (sub x₂ (sub x₁ b₂)) , w1 , w , r , refl , refl ,
-        updRel2-sub cf cg (updRel2-sub cf cg (updRel2-sub cf cg ub ur1) ur2) (updRel2-WRECr cf cg ub ur2) , upw , subRen-refl r
+        0 , 1 ,
+        sub (WRECr b₁ u₂) (sub (shiftUp 0 u₂) (sub (shiftUp 0 (shiftUp 0 u₁)) b₁)) ,
+        sub (WRECr b₂ x₂) (sub (shiftUp 0 x₂) (sub (shiftUp 0 (shiftUp 0 x₁)) b₂)) ,
+        w1 , w , r , refl , refl ,
+        updRel2-sub cf cg (updRel2-sub cf cg (updRel2-sub cf cg ub (updRel2-shiftUp 0 cf cg (updRel2-shiftUp 0 cf cg ur1)))
+                                             (updRel2-shiftUp 0 cf cg ur2))
+                          (updRel2-WRECr cf cg ub ur2) ,
+        upw , subRen-refl r
   ... | inj₂ np with step⊎ a₁ w1
   ... |    inj₁ (a₁' , w1' , z) rewrite z | pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) =
     →ΣstepsUpdRel2-WREC₁ (++⊆2→2 {names a₁} {names b₁} {dom𝕎· w1} naid) (++⊆2→2 {names a₂} {names b₂} {dom𝕎· w} nbid) ub ind'

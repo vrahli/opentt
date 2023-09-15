@@ -275,7 +275,8 @@ abstract
   step-sat-isHighestℕ2 cc gc {w1} {w2} {.(PAIR a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-PAIR a b₁ ctxt ctxt₁) nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , PAIR a b₁ , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-PAIR _ _ ctxt ctxt₁
   step-sat-isHighestℕ2 cc gc {w1} {w2} {.(SPREAD a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-SPREAD a b₁ ctxt ctxt₁) nnf nnw idom cf with is-PAIR a
   ... | inj₁ (u , v , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
-    0 , sub v (sub u b₁) , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-sub cf (updCtxt2-sub cf ctxt₁ (updCtxt2-PAIR→₁ ctxt)) (updCtxt2-PAIR→₂ ctxt)
+    0 , sub v (sub (shiftUp 0 u) b₁) , w1 , refl , (λ x → x , x) , (nnw , idom) ,
+    updCtxt2-sub cf (updCtxt2-sub cf ctxt₁ (→updCtxt2-shiftUp 0 cf (updCtxt2-PAIR→₁ ctxt))) (updCtxt2-PAIR→₂ ctxt)
   ... | inj₂ x with step⊎ a w1
   ... |    inj₁ (a' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
     ΣhighestUpdCtxt2-SPREAD₁ ctxt₁ ind
@@ -287,8 +288,11 @@ abstract
   step-sat-isHighestℕ2 cc gc {w1} {w2} {.(SUP a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-SUP a b₁ ctxt ctxt₁) nnf nnw idom cf rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = 0 , SUP a b₁ , w1 , refl , (λ x → x , x) , (nnw , idom) , updCtxt2-SUP _ _ ctxt ctxt₁
   step-sat-isHighestℕ2 cc gc {w1} {w2} {.(WREC a b₁)} {b} {n} {name} {f} compat wgt0 comp indb (updCtxt2-WREC a b₁ ctxt ctxt₁) nnf nnw idom cf with is-SUP a
   ... | inj₁ (u , v , p) rewrite p | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
-      0 , sub (WRECr b₁ v) (sub v (sub u b₁)) , w1 , refl , (λ x → x , x) , (nnw , idom) ,
-      updCtxt2-sub cf (updCtxt2-sub cf (updCtxt2-sub cf ctxt₁ (updCtxt2-SUP→₁ ctxt)) (updCtxt2-SUP→₂ ctxt)) (updCtxt2-WRECr cf ctxt₁ (updCtxt2-SUP→₂ ctxt))
+      0 , sub (WRECr b₁ v) (sub (shiftUp 0 v) (sub (shiftUp 0 (shiftUp 0 u)) b₁)) ,
+      w1 , refl , (λ x → x , x) , (nnw , idom) ,
+      updCtxt2-sub cf (updCtxt2-sub cf (updCtxt2-sub cf ctxt₁ (→updCtxt2-shiftUp 0 cf (→updCtxt2-shiftUp 0 cf (updCtxt2-SUP→₁ ctxt))))
+                                       (→updCtxt2-shiftUp 0 cf (updCtxt2-SUP→₂ ctxt)))
+                      (updCtxt2-WRECr cf ctxt₁ (updCtxt2-SUP→₂ ctxt))
   ... | inj₂ x with step⊎ a w1
   ... |    inj₁ (a' , w1' , z) rewrite z | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) =
     ΣhighestUpdCtxt2-WREC₁ ctxt₁ ind

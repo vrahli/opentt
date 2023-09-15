@@ -67,7 +67,7 @@ open import terms2(W)(C)(M)(G)(E)(N)(EC)
          hasValue-CHOOSE→ ; hasValue-DECIDE→ ; hasValue-SPREAD→ ; hasValue-NATREC→)
 open import terms3(W)(C)(M)(G)(E)(N)(EC) using ()
 open import termsPres(W)(C)(M)(G)(E)(N)(EC)
-  using (→∧true ; →∧≡true ; ¬enc-sub ; ¬enc-WRECc ; ¬enc-shiftNameDown ; ¬enc-renn ; →¬enc-NATRECr)
+  using (→∧true ; →∧≡true ; ¬enc-sub ; ¬enc-shiftUp ; ¬enc-WRECc ; ¬enc-shiftNameDown ; ¬enc-renn ; →¬enc-NATRECr)
 open import subst(W)(C)(M)(G)(E)(N)(EC)
   using (subn ; sub≡subn)
 
@@ -1268,23 +1268,29 @@ abstract
   ... | inj₁ (t₁ , u₁ , p₁) rewrite p₁ with differC-SUP→ dc
   ... | t' , u' , e' , d1' , d2'
     rewrite e' | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
-    = w3 , sub (WRECr b₂  u') (sub u' (sub t' b₂)) , refl ,
+    = w3 , sub (WRECr b₂  u') (sub (shiftUp 0 u') (sub (shiftUp 0 (shiftUp 0 t')) b₂)) , refl ,
       ¬enc-sub
-        {WRECr b₁ u₁} {sub u₁ (sub t₁ b₁)}
+        {WRECr b₁ u₁} {sub (shiftUp 0 u₁) (sub (shiftUp 0 (shiftUp 0 t₁)) b₁)}
         (¬enc-WRECc {b₁} {u₁}
           (∧≡true→ᵣ (¬enc t₁ ∧ ¬enc u₁) (¬enc b₁) nowrites)
           (∧≡true→ᵣ (¬enc t₁) (¬enc u₁) (∧≡true→ₗ (¬enc t₁ ∧ ¬enc u₁) (¬enc b₁) nowrites)))
-        (¬enc-sub {u₁} {sub t₁ b₁}
-          (∧≡true→ᵣ (¬enc t₁) (¬enc u₁) (∧≡true→ₗ (¬enc t₁ ∧ ¬enc u₁) (¬enc b₁) nowrites))
-          (¬enc-sub {t₁} {b₁}
-            (∧≡true→ₗ (¬enc t₁) (¬enc u₁) (∧≡true→ₗ (¬enc t₁ ∧ ¬enc u₁) (¬enc b₁) nowrites))
+        (¬enc-sub {shiftUp 0 u₁} {sub (shiftUp 0 (shiftUp 0 t₁)) b₁}
+          (trans (¬enc-shiftUp 0 u₁) (∧≡true→ᵣ (¬enc t₁) (¬enc u₁) (∧≡true→ₗ (¬enc t₁ ∧ ¬enc u₁) (¬enc b₁) nowrites)))
+          (¬enc-sub {shiftUp 0 (shiftUp 0 t₁)} {b₁}
+            (trans (¬enc-shiftUp 0 (shiftUp 0 t₁))
+                   (trans (¬enc-shiftUp 0 t₁)
+                          (∧≡true→ₗ (¬enc t₁) (¬enc u₁) (∧≡true→ₗ (¬enc t₁ ∧ ¬enc u₁) (¬enc b₁) nowrites))))
             (∧≡true→ᵣ (¬enc t₁ ∧ ¬enc u₁) (¬enc b₁) nowrites))) ,
       differC-sub
-        {WRECr b₁ u₁} {WRECr b₂ u'} {sub u₁ (sub t₁ b₁)} {sub u' (sub t' b₂)}
+        {WRECr b₁ u₁} {WRECr b₂ u'}
+        {sub (shiftUp 0 u₁) (sub (shiftUp 0 (shiftUp 0 t₁)) b₁)}
+        {sub (shiftUp 0 u') (sub (shiftUp 0 (shiftUp 0 t')) b₂)}
         (differC-WRECr dc₁ d2')
-        (differC-sub {u₁} {u'} {sub t₁ b₁} {sub t' b₂}
-          d2'
-          (differC-sub {t₁} {t'} {b₁} {b₂} d1' dc₁))
+        (differC-sub {shiftUp 0 u₁} {shiftUp 0 u'} {sub (shiftUp 0 (shiftUp 0 t₁)) b₁} {sub (shiftUp 0 (shiftUp 0 t')) b₂}
+          (differC-shiftUp {0} d2')
+          (differC-sub {shiftUp 0 (shiftUp 0 t₁)} {shiftUp 0 (shiftUp 0 t')} {b₁} {b₂}
+            (differC-shiftUp {0} (differC-shiftUp {0} d1'))
+            dc₁))
   ¬enc→step gcp w1 w2 w3 .(WREC a₁ b₁) .(WREC a₂ b₂) u nowrites hv (differC-WREC a₁ a₂ b₁ b₂ dc dc₁) comp | inj₂ p₁
     with is-SUP a₂
   ... | inj₁ (t₂ , u₂ , p₂) rewrite p₂ | fst (snd (snd (differC-SUP→ᵣ dc))) = ⊥-elim (p₁ _ _ refl) -- not possible
@@ -1316,11 +1322,17 @@ abstract
   ... | inj₁ (t₁ , u₁ , p₁) rewrite p₁ with differC-PAIR→ dc
   ... | t' , u' , e' , d1' , d2'
     rewrite e' | sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
-    = w3 , sub u' (sub t' b₂) , refl ,
-      ¬enc-sub {u₁} {sub t₁ b₁} (∧≡true→ᵣ (¬enc t₁) (¬enc u₁) (∧≡true→ₗ (¬enc t₁ ∧ ¬enc u₁) (¬enc b₁) nowrites))
-                                   (¬enc-sub {t₁} {b₁} (∧≡true→ₗ (¬enc t₁) (¬enc u₁) (∧≡true→ₗ (¬enc t₁ ∧ ¬enc u₁) (¬enc b₁) nowrites))
-                                                          (∧≡true→ᵣ (¬enc t₁ ∧ ¬enc u₁) (¬enc b₁) nowrites)) ,
-      differC-sub {u₁} {u'} {sub t₁ b₁} {sub t' b₂} d2' (differC-sub {t₁} {t'} {b₁} {b₂} d1' dc₁)
+    = w3 , sub u' (sub (shiftUp 0 t') b₂) , refl ,
+      ¬enc-sub {u₁} {sub (shiftUp 0 t₁) b₁}
+        (∧≡true→ᵣ (¬enc t₁) (¬enc u₁) (∧≡true→ₗ (¬enc t₁ ∧ ¬enc u₁) (¬enc b₁) nowrites))
+        (¬enc-sub {shiftUp 0 t₁} {b₁}
+          (trans (¬enc-shiftUp 0 t₁) (∧≡true→ₗ (¬enc t₁) (¬enc u₁) (∧≡true→ₗ (¬enc t₁ ∧ ¬enc u₁) (¬enc b₁) nowrites)))
+          (∧≡true→ᵣ (¬enc t₁ ∧ ¬enc u₁) (¬enc b₁) nowrites)) ,
+      differC-sub {u₁} {u'} {sub (shiftUp 0 t₁) b₁} {sub (shiftUp 0 t') b₂}
+        d2'
+        (differC-sub {shiftUp 0 t₁} {shiftUp 0 t'} {b₁} {b₂}
+          (differC-shiftUp {0} d1')
+          dc₁)
   ¬enc→step gcp w1 w2 w3 .(SPREAD a₁ b₁) .(SPREAD a₂ b₂) u nowrites hv (differC-SPREAD a₁ a₂ b₁ b₂ dc dc₁) comp | inj₂ p₁
     with is-PAIR a₂
   ... | inj₁ (t₂ , u₂ , p₂) rewrite p₂ | fst (snd (snd (differC-PAIR→ᵣ dc))) = ⊥-elim (p₁ _ _ refl) -- not possible

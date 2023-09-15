@@ -491,8 +491,9 @@ APPENDf∈BAIRE {i} {w} {a1} {a2} {f1} {f2} {n1} {n2} a∈ n∈ f∈ =
 #APPEND-PAIR⇛PAIR : (w : 𝕎·) (a f n : CTerm) → #APPEND (#PAIR a f) n #⇛ #PAIR (#SUC a) (#APPENDf a f n) at w
 #APPEND-PAIR⇛PAIR w a f n w1 e1 = lift (⇓-from-to→⇓ {w1} {w1} (1 , ≡pair e refl))
   where
-    e : sub ⌜ f ⌝ (sub ⌜ a ⌝ ⌜ #APPENDb n ⌝) ≡ ⌜ #PAIR (#SUC a) (#APPENDf a f n) ⌝
-    e rewrite #shiftUp 0 f
+    e : sub ⌜ f ⌝ (sub (shiftUp 0 ⌜ a ⌝) ⌜ #APPENDb n ⌝) ≡ ⌜ #PAIR (#SUC a) (#APPENDf a f n) ⌝
+    e rewrite #shiftUp 0 a
+            | #shiftUp 0 f
             | #shiftUp 0 f
             | #shiftUp 1 f
             | #shiftUp 0 a

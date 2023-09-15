@@ -64,7 +64,7 @@ open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import ind3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import terms4(W)(C)(K)(G)(X)(N)(EC)
-  using (¬Names→steps)
+  using (¬Names→steps ; steps→¬Names ; ¬Names→⇓)
 open import termsPres(W)(C)(K)(G)(X)(N)(EC)
   using (#¬Enc→⇛! ; #¬Seq→⇛!)
 
@@ -746,7 +746,7 @@ equalInType-#⇛-left-rev {i} {w} {T} {a} {b} {c} comp (eqt , eqi) = eqt , equal
                     → #¬Names a
                     → #¬Names b
 #⇛!-pres-#¬Names {w} {a} {b} comp nn =
-  snd (snd (¬Names→steps (fst (lower (comp w (⊑-refl· w)))) w w w ⌜ a ⌝ ⌜ b ⌝ nn (snd (lower (comp w (⊑-refl· w))))))
+  fst (snd (snd (¬Names→steps (fst (lower (comp w (⊑-refl· w)))) w w w ⌜ a ⌝ ⌜ b ⌝ nn (snd (lower (comp w (⊑-refl· w)))))))
 
 
 #⇛!-pres-#¬Seq : {w : 𝕎·} {a b : CTerm}
@@ -757,13 +757,14 @@ equalInType-#⇛-left-rev {i} {w} {T} {a} {b} {c} comp (eqt , eqi) = eqt , equal
   #¬Seq→⇛! w a b comp ns
 
 
+{--
 #⇛!-pres-NOSEQeqₗ : {w : 𝕎·} {a b c : CTerm}
                     → a #⇛! b at w
-                    → NOSEQeq a c
-                    → NOSEQeq b c
-#⇛!-pres-NOSEQeqₗ {w} {a} {b} {c} comp (lift (ns1 , ns2)) =
-  lift (#⇛!-pres-#¬Seq {w} {a} {b} comp ns1 , ns2)
-
+                    → NOSEQeq w a c
+                    → NOSEQeq w b c
+#⇛!-pres-NOSEQeqₗ {w} {a} {b} {c} comp (ns1 , ns2) =
+  {!!} {--#⇛!-pres-#¬Seq {w} {a} {b} comp ns1--} , ns2
+--}
 
 
 #⇛!-pres-#¬Enc : {w : 𝕎·} {a b : CTerm}
@@ -774,13 +775,14 @@ equalInType-#⇛-left-rev {i} {w} {T} {a} {b} {c} comp (eqt , eqi) = eqt , equal
   #¬Enc→⇛! w a b comp nn
 
 
+{--
 #⇛!-pres-NOENCeqₗ : {w : 𝕎·} {a b c : CTerm}
                     → a #⇛! b at w
-                    → NOENCeq a c
-                    → NOENCeq b c
-#⇛!-pres-NOENCeqₗ {w} {a} {b} {c} comp (lift (ns1 , ns2)) =
-  lift (#⇛!-pres-#¬Enc {w} {a} {b} comp ns1 , ns2)
-
+                    → NOENCeq w a c
+                    → NOENCeq w b c
+#⇛!-pres-NOENCeqₗ {w} {a} {b} {c} comp (ns1 , ns2) =
+  {!!} {--#⇛!-pres-#¬Enc {w} {a} {b} comp ns1--} , ns2
+--}
 
 
 #⇛!-pres-TNATeq : {w : 𝕎·} {a b c : CTerm}
@@ -839,6 +841,115 @@ equalTerms-#⇛-left-at i =
   where
     c : a #⇛ v at w1
     c = h w1 e1 v isv (⇓-trans₁ {w1} {w1} {⌜ a ⌝} {⌜ b ⌝} {⌜ v ⌝} (lower (comp w1 e1)) cv)
+
+
+steps-det : (w w₁ w₂ : 𝕎·) (a b c : Term) (n m : ℕ)
+          → steps n (a , w) ≡ (b , w₁)
+          → steps m (a , w) ≡ (c , w₂)
+          → n ≤ m
+          → b ⇓ c from w₁ to w₂
+steps-det w w₁ w₂ a b c 0 m c₁ c₂ p
+  rewrite pair-inj₁ c₁
+        | pair-inj₂ c₁
+  = m , c₂
+steps-det w w₁ w₂ a b c (suc n) (suc m) c₁ c₂ p
+  with step⊎ a w
+... | inj₁ (a' , w' , q)
+  rewrite q
+  = steps-det w' w₁ w₂ a' b c n m c₁ c₂ (s≤s-inj p)
+... | inj₂ q
+  rewrite q
+        | pair-inj₁ c₁
+        | pair-inj₂ c₁
+        | pair-inj₁ c₂
+        | pair-inj₂ c₂
+  = 0 , refl
+
+
+⇓!-det : (w : 𝕎·) (a b c : Term)
+       → a ⇓! b at w
+       → a ⇓! c at w
+       → b ⇓! c at w ⊎ c ⇓! b at w
+⇓!-det w a b c (n , c₁) (m , c₂) with n ≤? m
+... | yes p = inj₁ (steps-det w w w a b c n m c₁ c₂ p)
+... | no p = inj₂ (steps-det w w w a c b m n c₂ c₁ (<⇒≤ (≰⇒> p)))
+
+
+⇛!-det : (w : 𝕎·) (a b c : Term)
+       → ¬Names c
+       → a ⇛! b at w
+       → a ⇛! c at w
+       → b ⇛! c at w ⊎ c ⇛! b at w
+⇛!-det w a b c nnc c₁ c₂ with ⇓!-det w a b c (lower (c₁ w (⊑-refl· w))) (lower (c₂ w (⊑-refl· w)))
+⇛!-det w a b c nnc c₁ c₂ | inj₁ p =
+  inj₁ q
+  where
+  q : b ⇛! c at w
+  q w1 e1 with ⇓!-det w1 a b c (lower (c₁ w1 e1)) (lower (c₂ w1 e1))
+  ... | inj₁ r = lift r
+  ... | inj₂ r = lift s
+    where
+    nnb : ¬Names b
+    nnb = steps→¬Names (fst r) w1 w1 c b (snd r) nnc
+
+    s : b ⇓ c from w1 to w1
+    s = ¬Names→⇓ w w w1 b c nnb p
+⇛!-det w a b c nnc c₁ c₂ | inj₂ p =
+  inj₂ q
+  where
+  q : c ⇛! b at w
+  q w1 e1 with ⇓!-det w1 a b c (lower (c₁ w1 e1)) (lower (c₂ w1 e1))
+  ... | inj₁ r = lift s
+    where
+    s : c ⇓ b from w1 to w1
+    s = ¬Names→⇓ w w w1 c b nnc p
+  ... | inj₂ r = lift r
+
+
+steps→¬Enc : (k : ℕ) (w1 w2 : 𝕎·) (t u : Term)
+              → steps k (t , w1) ≡ (u , w2)
+              → ¬Names t
+              → ¬Enc t
+              → ¬Enc u
+steps→¬Enc k w1 w2 t u s nn ne =
+  fst (snd (snd (snd (¬Names→steps k w1 w2 w2 t u nn s))) ne)
+
+
+#⇛!-pres-#⇛!ₙ : {w : 𝕎·} {a b : CTerm}
+              → a #⇛! b at w
+              → #⇛!ₙ a w
+              → #⇛!ₙ b w
+#⇛!-pres-#⇛!ₙ {w} {a} {b} comp (x , h , nn , ne) with ⇛!-det w ⌜ a ⌝ ⌜ b ⌝ ⌜ x ⌝ nn comp h
+... | inj₁ p = x , p , nn , ne
+... | inj₂ p =
+  b , #⇛!-refl {w} {b} ,
+  steps→¬Names (fst (lower (p w (⊑-refl· w)))) w w ⌜ x ⌝ ⌜ b ⌝ (snd (lower (p w (⊑-refl· w)))) nn ,
+  steps→¬Enc (fst (lower (p w (⊑-refl· w)))) w w ⌜ x ⌝ ⌜ b ⌝ (snd (lower (p w (⊑-refl· w)))) nn ne
+
+
+isValue→⇛! : (w : 𝕎·) (a b x : Term)
+           → isValue x
+           → a ⇛! x at w
+           → a ⇛! b at w
+           → b ⇛! x at w
+isValue→⇛! w a b x isv c₁ c₂ w1 e1 =
+  lift (val-⇓-from-to→ {w1} {w1} {w1} {a} {b} {x} isv (lower (c₂ w1 e1)) (lower (c₁ w1 e1)))
+
+
+#⇛!-pres-#⇛!ₛ : {w : 𝕎·} {a b : CTerm}
+              → a #⇛! b at w
+              → #⇛!ₛ a w
+              → #⇛!ₛ b w
+#⇛!-pres-#⇛!ₛ {w} {a} {b} comp (x , h , ns , isv) =
+  x , isValue→⇛! w ⌜ a ⌝ ⌜ b ⌝ ⌜ x ⌝ isv h comp , ns , isv
+
+
+#⇛!-pres-#⇛!ₑ : {w : 𝕎·} {a b : CTerm}
+              → a #⇛! b at w
+              → #⇛!ₑ a w
+              → #⇛!ₑ b w
+#⇛!-pres-#⇛!ₑ {w} {a} {b} comp (x , h , ne , isv) =
+  x , isValue→⇛! w ⌜ a ⌝ ⌜ b ⌝ ⌜ x ⌝ isv h comp , ne , isv
 
 
 abstract
@@ -993,21 +1104,22 @@ abstract
       ind {i} {w} {A} {B} (EQTPURE x x₁) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M aw eqi
         where
-          aw : ∀𝕎 w (λ w' e' → PUREeq a c
-                              → PUREeq b c)
-          aw w' e y = lift (#⇛!-pres-#¬Names {w} {a} {b} comp (fst (lower y)) , snd (lower y))
+          aw : ∀𝕎 w (λ w' e' → PUREeq w' a c
+                             → PUREeq w' b c)
+          aw w' e (y₁ , y₂) = #⇛!-pres-#⇛!ₙ {w'} {a} {b} (∀𝕎-mon e comp) y₁ , y₂
+ --lift (#⇛!-pres-#¬Names {w} {a} {b} comp (fst (lower y)) , snd (lower y))
       ind {i} {w} {A} {B} (EQTNOSEQ x x₁) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M aw eqi
         where
-          aw : ∀𝕎 w (λ w' e' → NOSEQeq a c
-                              → NOSEQeq b c)
-          aw w' e y = #⇛!-pres-NOSEQeqₗ {w} {a} {b} {c} comp y
+          aw : ∀𝕎 w (λ w' e' → NOSEQeq w' a c
+                             → NOSEQeq w' b c)
+          aw w' e (y₁ , y₂) = #⇛!-pres-#⇛!ₛ {w'} {a} {b} (∀𝕎-mon e comp) y₁ , y₂ --#⇛!-pres-NOSEQeqₗ {w} {a} {b} {c} comp y
       ind {i} {w} {A} {B} (EQTNOENC x x₁) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M aw eqi
         where
-          aw : ∀𝕎 w (λ w' e' → NOENCeq a c
-                              → NOENCeq b c)
-          aw w' e y = #⇛!-pres-NOENCeqₗ {w} {a} {b} {c} comp y
+          aw : ∀𝕎 w (λ w' e' → NOENCeq w' a c
+                             → NOENCeq w' b c)
+          aw w' e (y₁ , y₂) = #⇛!-pres-#⇛!ₑ {w'} {a} {b} (∀𝕎-mon e comp) y₁ , y₂ --#⇛!-pres-NOENCeqₗ {w} {a} {b} {c} comp y
       ind {i} {w} {A} {B} (EQTTERM t1 t2 x x₁ x₂) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M (λ w1 e1 z → z) eqi
 {--    where
@@ -1060,7 +1172,6 @@ abstract
           (λ {i} {w} {A} {B} eqt {a} {c} eqi → ((j : ℕ) → j < i → equalTerms-#⇛-left-at j)
                                              → (b : CTerm) → a #⇛! b at w → equalTerms i w eqt b c)
           ind eqt a c eqi uind b comp
-
 
 
 equalTerms-#⇛-left : (i : ℕ) → equalTerms-#⇛-left-at i
@@ -2609,37 +2720,37 @@ strongBool→equalInType-BOOL₀ i w a b h =
 
 
 →equalInTypePURE : {w : 𝕎·} {i : ℕ} {a b : CTerm}
-                      → □· w (λ w' _ → PUREeq a b)
+                      → □· w (λ w' _ → PUREeq w' a b)
                       → equalInType i w #PURE a b
 →equalInTypePURE {w} {i} {a} {b} h =
   eqTypesPURE← , Mod.∀𝕎-□Func M aw h
   where
-    aw : ∀𝕎 w (λ w' e' → PUREeq a b
-                        → PUREeq a b)
+    aw : ∀𝕎 w (λ w' e' → PUREeq w' a b
+                       → PUREeq w' a b)
     aw w' e' p = p
 
 
 
 →equalInTypeNOSEQ : {w : 𝕎·} {i : ℕ} {a b : CTerm}
-                      → □· w (λ w' _ → NOSEQeq a b)
+                      → □· w (λ w' _ → NOSEQeq w' a b)
                       → equalInType i w #NOSEQ a b
 →equalInTypeNOSEQ {w} {i} {a} {b} h =
   eqTypesNOSEQ← , Mod.∀𝕎-□Func M aw h
   where
-    aw : ∀𝕎 w (λ w' e' → NOSEQeq a b
-                        → NOSEQeq a b)
+    aw : ∀𝕎 w (λ w' e' → NOSEQeq w' a b
+                       → NOSEQeq w' a b)
     aw w' e' p = p
 
 
 
 →equalInTypeNOENC : {w : 𝕎·} {i : ℕ} {a b : CTerm}
-                      → □· w (λ w' _ → NOENCeq a b)
+                      → □· w (λ w' _ → NOENCeq w' a b)
                       → equalInType i w #NOENC a b
 →equalInTypeNOENC {w} {i} {a} {b} h =
   eqTypesNOENC← , Mod.∀𝕎-□Func M aw h
   where
-    aw : ∀𝕎 w (λ w' e' → NOENCeq a b
-                        → NOENCeq a b)
+    aw : ∀𝕎 w (λ w' e' → NOENCeq w' a b
+                       → NOENCeq w' a b)
     aw w' e' p = p
 
 
