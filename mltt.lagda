@@ -74,7 +74,7 @@ open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
   using (NATREC⇓ ; →∧≡true ; ¬Names-sub ; ¬Seq-sub ; ¬Enc-sub ; ∧≡true→ₗ ; ∧≡true→ᵣ)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
-  using (⇓NUM→SUC⇓NUM)
+  using (⇓NUM→SUC⇓NUM ; #APPLY2)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -83,7 +83,7 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (isTypeNAT! ; eqTypesUniv ; equalTypes→equalInType-UNIV ; equalInType→equalTypes-aux ; eqTypesPI← ; eqTypesSUM← ;
          ≡CTerm→eqTypes ; ≡CTerm→equalInType ; eqTypesFALSE ; eqTypesTRUE ; ¬equalInType-FALSE ; NUM-equalInType-NAT! ;
-         equalInType-NAT!→ ; equalInType-local ; equalInType-mon)
+         equalInType-NAT!→ ; equalInType-local ; equalInType-mon ; equalInType-PI→ ; isFam)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (→equalInType-TRUE ; equalInType-EQ→₁)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -1213,6 +1213,21 @@ NATREC-0⇛! {a} {b} {c} {w} comp =
     (λ w1 e1 → lift (1 , refl))
 
 
+NATREC-s⇛! : {n : Nat} {a b c : BTerm} {w : 𝕎·}
+           → a ⇛! NUM (1+ n) at w
+           → NATREC a b c ⇛! APPLY2 c (NUM n) (NATREC (NUM n) b c) at w
+NATREC-s⇛! {n} {a} {b} {c} {w} comp =
+  ⇛!-trans {w} {NATREC a b c} {NATREC (NUM (1+ n)) b c} {APPLY2 c (NUM n) (NATREC (NUM n) b c)}
+    (λ w1 e1 → lift (NATREC⇓ {a} {NUM (1+ n)} b c {w1} {w1} (lower (comp w1 e1))))
+    (λ w1 e1 → lift (1 , refl))
+
+
+#NATREC-s⇛! : {n : Nat} {a b c : CTerm} {w : 𝕎·}
+            → a #⇛! #NUM (1+ n) at w
+            → #NATREC a b c #⇛! #APPLY2 c (#NUM n) (#NATREC (#NUM n) b c) at w
+#NATREC-s⇛! {n} {a} {b} {c} {w} comp = NATREC-s⇛! comp
+
+
 ¬namesSub : (s : Sub) → Bool
 ¬namesSub nil = true
 ¬namesSub (cons x s) = ¬names ⌜ x ⌝ ∧ ¬namesSub s
@@ -1343,6 +1358,18 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
   cu1b : covered (s1 Data.List.∷ʳ (#subs s1 N0 cm1)) (UNIV 1)
   cu1b = covered-UNIV (s1 Data.List.∷ʳ (#subs s1 N0 cm1)) 1
 
+  cp1 : covered s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G)))
+  cp1 = {!!}
+
+  cp2 : covered s2 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G)))
+  cp2 = {!!}
+
+  cp01 : covered0 s1 (FUN G (subi 0 (SUC (VAR 0)) G))
+  cp01 = coveredPI₂ {s1} {NAT!} {FUN G (subi 0 (SUC (VAR 0)) G)} cp1
+
+  cp02 : covered0 s2 (FUN G (subi 0 (SUC (VAR 0)) G))
+  cp02 = coveredPI₂ {s2} {NAT!} {FUN G (subi 0 (SUC (VAR 0)) G)} cp2
+
   k∈ : equalInType i w (#subs s1 NAT! cn1) (#subs s1 k ck1) (#subs s2 k ck2)
   k∈ = π₂ (hk w s1 s2 cn1 cn2 ck1 ck2 es eh)
 
@@ -1379,7 +1406,9 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
                                     (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 s cx1))
                                     (#NATREC (#subs s2 k ck2) (#subs s2 z cz2) (#subs s2 s cx2)))
   -- we now go by induction on n
-  aw1 w1 e1 (0 , c₁ , c₂) = concl
+  -- TODO: we need to generalize k
+  aw1 w1 e1 (0 , c₁ , c₂) =
+    equalInType-#⇛ₚ-left-right-rev (NATREC-0⇛! c₁) (NATREC-0⇛! c₂) hz2
     where
     hz1 : equalInType i w1 (#subs s1 (subn 0 N0 G) cs1a) (#subs s1 z cz1) (#subs s2 z cz2)
     hz1 = equalInType-mon (π₂ (hz w s1 s2 cs1a cs2a cz1 cz2 es eh)) w1 e1
@@ -1413,22 +1442,34 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
     hz2 : equalInType i w1 (#subs s1 (subn 0 k G) cc1) (#subs s1 z cz1) (#subs s2 z cz2)
     hz2 = TSext-equalTypes-equalInType i w1 _ _ _ _ (equalTypes-uni-mon (<⇒≤ lti) eqt2) hz1
 
-    -- we can maybe use a combination of hz2 & NATREC-0⇛!
-    -- but then we need the reverse of equalInType-#⇛-left, which does not hold in general
-    -- because of pure types, but should hold about the types we get from MLTT
-    concl : equalInType i w1 (#subs s1 (subn 0 k G) cc1)
-                        (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 s cx1))
-                        (#NATREC (#subs s2 k ck2) (#subs s2 z cz2) (#subs s2 s cx2))
-    concl =
-      equalInType-#⇛ₚ-left-right-rev
-        (NATREC-0⇛! c₁ {--, →presPure-NATREC₂ {subs s1 k} {subs s1 z} {subs s1 s} {!!} {!!} {!!} {!!} {!!} {!!}--})
-        (NATREC-0⇛! c₂ {--, →presPure-NATREC₂ {subs s2 k} {subs s2 z} {subs s2 s} {!!} {!!} {!!} {!!} {!!} {!!}--})
-        hz2
-    -- use equalInType-#⇛ₚ-left-rev, but then we need to prove that (#subs s1 z cz1) and (#subs s1 s cx1)
-    -- are name/enc/sec-free, which we could get partially from lemmas such as ¬Names⟦⟧ᵤ, but
-    -- we'd also need the substitutions to have that property
+  aw1 w1 e1 (suc n , c₁ , c₂) =
+    equalInType-#⇛ₚ-left-right-rev {i} {w1}
+      (#NATREC-s⇛! {n} {#subs s1 k ck1} {#subs s1 z cz1} {#subs s1 s cx1} c₁)
+      (#NATREC-s⇛! {n} {#subs s2 k ck2} {#subs s2 z cz2} {#subs s2 s cx2} c₂)
+      hz2
+    where
+    hz1 : equalInType i w1 (#subs s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) cp1) (#subs s1 s cx1) (#subs s2 s cx2)
+    hz1 = equalInType-mon (π₂ (hs w s1 s2 cp1 cp2 cx1 cx2 es eh)) w1 e1
 
-  aw1 w1 e1 (suc n , c₁ , c₂) = {!!}
+    hp1 : equalInType i w1 (#PI (#subs s1 NAT! cn1) (#[0]subs s1 (FUN G (subi 0 (SUC (VAR 0)) G)) cp01))
+                           (#subs s1 s cx1)
+                           (#subs s2 s cx2)
+    hp1 = ≡CTerm→equalInType (#subs-PI s1 NAT! (FUN G (subi 0 (SUC (VAR 0)) G)) cp1 cn1 cp01) hz1
+
+    hp2 : equalInType i w1 (sub0 (#NUM n) (#[0]subs s1 (FUN G (subi 0 (SUC (VAR 0)) G)) cp01))
+                           (#APPLY (#subs s1 s cx1) (#NUM n)) (#APPLY (#subs s2 s cx2) (#NUM n))
+    hp2 = π₂ (π₂ (equalInType-PI→ hp1)) w1 (⊑-refl· w1) (#NUM n) (#NUM n)
+             (≡CTerm→equalInType (≣sym (#subs-NAT! s1 cn1)) (NUM-equalInType-NAT! i w1 n))
+
+    esn : sub0 (#NUM n) (#[0]subs s1 (FUN G (subi 0 (SUC (VAR 0)) G)) cp01)
+        ≣ #FUN (#subs s1 (subn 0 (NUM n) G) {!!}) (#subs s1 (subn 0 (SUC (NUM n)) G) {!!})
+    esn = {!!}
+    -- use this to rewrite hp2
+
+    hz2 : equalInType i w1 (#subs s1 (subn 0 k G) cc1)
+                           (#APPLY2 (#subs s1 s cx1) (#NUM n) (#NATREC (#NUM n) (#subs s1 z cz1) (#subs s1 s cx1)))
+                           (#APPLY2 (#subs s2 s cx2) (#NUM n) (#NATREC (#NUM n) (#subs s2 z cz2) (#subs s2 s cx2)))
+    hz2 = {!!}
 
   c2a : equalInType i w (#subs s1 (subn 0 k G) cc1)
                     (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 s cx1))
@@ -1492,7 +1533,10 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
   h1 : valid∈ i w ⟦ Γ ⟧Γ ⟦ x ⟧ᵤ NAT!
   h1 = ⟦_⟧Γ∈ j i lti w
 ⟦_⟧Γ∈ {n} {Γ} {.(natrec _ _ _ _)} {.(G [ k ])} (natrecⱼ {G} {s} {z} {k} x j j₁ j₂) i lti w =
-  {!!}   -- valid∈NATREC and use ⟦[]⟧ᵤ-as-sub
+  ≣subst (valid∈ i w ⟦ Γ ⟧Γ (NATREC ⟦ k ⟧ᵤ ⟦ z ⟧ᵤ ⟦ s ⟧ᵤ))
+         (≣sym (⟦[]⟧ᵤ-as-subn G k))
+         (valid∈NATREC {i} {⟦ Γ ⟧Γ} {⟦ G ⟧ᵤ} {⟦ k ⟧ᵤ} {⟦ z ⟧ᵤ} {⟦ s ⟧ᵤ} lti h1 h2' h3'' h4 w)
+  -- valid∈NATREC and use ⟦[]⟧ᵤ-as-sub
   where
   h1 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp NAT!) ⟦ G ⟧ᵤ (UNIV 1)
   h1 = ⟦_⟧⊢ x i lti
@@ -1500,8 +1544,8 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
   h2 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ z ⟧ᵤ ⟦ G [ Definition.Untyped.zero ] ⟧ᵤ
   h2 = ⟦_⟧Γ∈ j i lti
 
-  h2' : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ z ⟧ᵤ (sub N0 ⟦ G ⟧ᵤ)
-  h2' rewrite ≣sym (⟦[]⟧ᵤ-as-sub {n} G Definition.Untyped.zero) = h2
+  h2' : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ z ⟧ᵤ (subn 0 N0 ⟦ G ⟧ᵤ)
+  h2' rewrite ≣sym (⟦[]⟧ᵤ-as-subn {n} G Definition.Untyped.zero) = h2
 
   h3 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ ⟦ Π ℕ ▹ (G ▹▹ G [ Definition.Untyped.suc (var Fin.zero) ]↑) ⟧ᵤ
   h3 = ⟦_⟧Γ∈ j₁ i lti
