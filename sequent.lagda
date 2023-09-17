@@ -634,6 +634,14 @@ subs-PI (x ∷ s) a b
         | #shiftUp 0 x = refl
 
 
+subsN-PI : (n : ℕ) (s : Sub) (a b : Term)
+         → subsN n s (PI a b) ≡ PI (subsN n s a) (subsN (suc n) s b)
+subsN-PI n [] a b = refl
+subsN-PI n (x ∷ s) a b
+  rewrite subsN-PI n s a b
+        | #shiftUp 0 x = refl
+
+
 coveredPI₁ : {s : Sub} {a b : Term}
            → covered s (PI a b)
            → covered s a
@@ -1003,6 +1011,23 @@ shiftUp-subn n m a (UNIV x) len = refl
 shiftUp-subn n m a (LIFT b) len = cong LIFT (shiftUp-subn n m a b len)
 shiftUp-subn n m a (LOWER b) len = cong LOWER (shiftUp-subn n m a b len)
 shiftUp-subn n m a (SHRINK b) len = cong SHRINK (shiftUp-subn n m a b len)
+
+
+subsN-suc-shiftUp : (n : ℕ) (s : Sub) (b : Term)
+                  → subsN (suc n) s (shiftUp 0 b) ≡ shiftUp 0 (subsN n s b)
+subsN-suc-shiftUp n [] b = refl
+subsN-suc-shiftUp n (x ∷ s) b
+  rewrite shiftUp-subn 0 n ⌜ x ⌝ (subsN n s b) _≤_.z≤n
+        | subsN-suc-shiftUp n s b
+        | #shiftUp 0 x
+  = refl
+
+
+subsN-FUN : (n : ℕ) (s : Sub) (a b : Term)
+         → subsN n s (FUN a b) ≡ FUN (subsN n s a) (subsN n s b)
+subsN-FUN n s a b
+  rewrite subsN-PI n s a (shiftUp 0 b)
+  = ≡PI refl (subsN-suc-shiftUp n s b)
 
 
 subn-shiftNameUp : (n m : ℕ) (a b : Term)
@@ -2456,5 +2481,26 @@ fvars-subi⊆ n u (UNIV x) = λ ()
 fvars-subi⊆ n u (LIFT t) = fvars-subi⊆ n u t
 fvars-subi⊆ n u (LOWER t) = fvars-subi⊆ n u t
 fvars-subi⊆ n u (SHRINK t) = fvars-subi⊆ n u t
+
+
+→covered0-subi0 : (s : Sub) (t u : Term)
+                → covered0 s t
+                → covered0 s u
+                → covered0 s (subi 0 u t)
+→covered0-subi0 s t u covt covu {x} i
+  with ∈-++⁻ (fvars t) (fvars-subi⊆ 0 u t {suc x} (∈lowerVars→ x (fvars (subi 0 u t)) i))
+... | inj₁ p = covt {x} (→∈lowerVars x (fvars t) p)
+... | inj₂ p = covu {x} (→∈lowerVars x (fvars u) p)
+
+
+→covered0-SUC : (s : Sub) (t : Term)
+              → covered0 s t
+              → covered0 s (SUC t)
+→covered0-SUC s t covt = covt
+
+
+→covered0-VAR0 : (s : Sub)
+               → covered0 s (VAR 0)
+→covered0-VAR0 s {x} ()
 
 \end{code}

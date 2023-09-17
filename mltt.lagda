@@ -1185,6 +1185,16 @@ sucIf≤0 n with n <? 0
 ⟦▹▹⟧ᵤ {n} A B = cong₂ PI refl (⟦wk⟧ᵤ {n} {0} B)
 
 
+shiftDown-subv-subsN1# : (s : Sub) (u t : BTerm) (#u : # u)
+                       → shiftDown 0 (subv 0 u (subsN 1 s t))
+                       ≣ subs (s Data.List.∷ʳ ct u #u) t
+shiftDown-subv-subsN1# s u t #u =
+  ≣trans c (sub-subsN1 (ct u #u) s t)
+  where
+  c : shiftDown 0 (subv 0 u (subsN 1 s t)) ≣ shiftDown 0 (subv 0 (shiftUp 0 u) (subsN 1 s t))
+  c rewrite #shiftUp 0 (ct u #u) = refl
+
+
 -- finish converting G
 valid∈NATREC : {i : Nat} {H : hypotheses} {G k z s : BTerm} (lti : 1 <ℕ i)
              → valid∈𝕎 i (H Data.List.∷ʳ mkHyp NAT!) G (UNIV 1)
@@ -1258,16 +1268,24 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
   c0g1 : covered0 s1 G
   c0g1 = covered-subn→covered0 N0 s1 G cs1a
 
+  c0g2 : covered0 s2 G
+  c0g2 = covered-subn→covered0 N0 s2 G cs2a
+
   c0sg1 : covered0 s1 (subi 0 (SUC (VAR 0)) G)
-  c0sg1 = {!!} -- use fvars-subi⊆
+  c0sg1 = →covered0-subi0 s1 G (SUC (VAR 0)) c0g1 (→covered0-SUC s1 (VAR 0) (→covered0-VAR0 s1))
+
+  c0sg2 : covered0 s2 (subi 0 (SUC (VAR 0)) G)
+  c0sg2 = →covered0-subi0 s2 G (SUC (VAR 0)) c0g2 (→covered0-SUC s2 (VAR 0) (→covered0-VAR0 s2))
 
   cp1 : covered s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G)))
   cp1 = →coveredPI {s1} {NAT!} {FUN G (subi 0 (SUC (VAR 0)) G)} (covered-NAT! s1)
                    (→covered0FUN {s1} {G} {subi 0 (SUC (VAR 0)) G}
-                     {!!} {!!})
+                     c0g1 c0sg1)
 
   cp2 : covered s2 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G)))
-  cp2 = {!!}
+  cp2 = →coveredPI {s2} {NAT!} {FUN G (subi 0 (SUC (VAR 0)) G)} (covered-NAT! s2)
+                   (→covered0FUN {s2} {G} {subi 0 (SUC (VAR 0)) G}
+                     c0g2 c0sg2)
 
   cp01 : covered0 s1 (FUN G (subi 0 (SUC (VAR 0)) G))
   cp01 = coveredPI₂ {s1} {NAT!} {FUN G (subi 0 (SUC (VAR 0)) G)} cp1
@@ -1372,9 +1390,18 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
     cs1d : covered s1 (subn 0 (SUC (NUM n)) G)
     cs1d = →covered-subn (#subs s1 k ck1) (SUC (NUM n)) s1 G refl cs1
 
+    esn0 : sub (NUM n) (subsN 1 s1 (FUN G (subi 0 (SUC (VAR 0)) G)))
+         ≣ FUN (subs s1 (subn 0 (NUM n) G)) (subs s1 (subn 0 (SUC (NUM n)) G))
+    esn0 rewrite subsN-FUN 1 s1 G (subi 0 (SUC (VAR 0)) G) =
+      ≡PI (≣trans (shiftDown-subv-subsN1# s1 (NUM n) G refl)
+                  (≣trans (cong (λ z → subs (s1 Data.List.∷ʳ z) G) (≣sym (#subs-NUM s1 n (covered-NUM s1 n))))
+                          (subs∷ʳ≡ s1 (NUM n) G (covered-NUM s1 n))))
+          (≣trans (shiftDown1-subv1-shiftUp0 0 (NUM n) (subsN 1 s1 (gsub (λ v x → x) 0 (SUC (VAR 0)) G)) refl)
+                  {!!})
+
     esn : sub0 (#NUM n) (#[0]subs s1 (FUN G (subi 0 (SUC (VAR 0)) G)) cp01)
         ≣ #FUN (#subs s1 (subn 0 (NUM n) G) cs1c) (#subs s1 (subn 0 (SUC (NUM n)) G) cs1d)
-    esn = {!!}
+    esn = CTerm≡ esn0
     -- use this to rewrite hp2
 
     hz2 : equalInType i w1 (#subs s1 (subn 0 k G) cc1)
