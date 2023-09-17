@@ -67,9 +67,15 @@ open import bar(W)
 open import barI(W)(M)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
-  using (predIf≤-sucIf≤ ; subv# ; →#shiftUp ; →#shiftDown ; shiftUp-shiftNameUp)
+  using (NATREC⇓ ; predIf≤-sucIf≤ ; subv# ; →#shiftUp ; →#shiftDown ; shiftUp-shiftNameUp ; ¬Names-sub ;
+         ¬Seq-sub ; ¬Enc-sub ; ∧≡true→ₗ ; ∧≡true→ᵣ)
 open import terms3(W)(C)(K)(G)(X)(N)(EC)
   using (shiftNameUp-shiftNameUp)
+open import terms4(W)(C)(K)(G)(X)(N)(EC)
+  using (lowerVars++⊆ ; lowerVars-fvars-shiftUp ; lowerVars-fvars-shiftUp⊆ ; lowerVars++ ; lowerVars2++⊆ ;
+         lowerVars2-fvars-shiftUp⊆)
+open import terms8(W)(C)(K)(G)(X)(N)(EC)
+  using (#APPLY2)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqTypes-mon ; weq-ext-eq ; meq-ext-eq ; TUNIONeq-ext-eq)
@@ -2038,17 +2044,24 @@ lowerVarsFrom0 (0 ∷ l) = lowerVarsFrom0 l
 lowerVarsFrom0 (suc x ∷ l) = cong (λ z → x ∷ z) (lowerVarsFrom0 l)
 
 
-covered-subn→ : (t : CTerm) (u : Term) (s : Sub) (F : Term)
-              → covered s (subn 0 u F)
-              → covered (s ∷ʳ t) F
-covered-subn→ t u s F cov {x} i =
-  →covered∷ʳ t s F cov' {x} i
+covered-subn→covered0 : (u : Term) (s : Sub) (F : Term)
+                      → covered s (subn 0 u F)
+                      → covered0 s F
+covered-subn→covered0 u s F cov =
+  cov'
   where
   c : lowerVars (fvars F) ⊆ lowerVarsFrom 0 (fvars F)
   c rewrite lowerVarsFrom0 (fvars F) = λ z → z
 
   cov' : covered0 s F
   cov' {y} j = cov {y} (⊆fvars-subn 0 u F (c j))
+
+
+covered-subn→ : (t : CTerm) (u : Term) (s : Sub) (F : Term)
+              → covered s (subn 0 u F)
+              → covered (s ∷ʳ t) F
+covered-subn→ t u s F cov =
+  →covered∷ʳ t s F (covered-subn→covered0 u s F cov)
 
 
 →∈raiseVars : {x : Var} {l : List Var}
@@ -2092,5 +2105,356 @@ suc∈sdom∷ʳ {suc n} {x ∷ s} {t} (there i) =
 ≡hyps-refl u w .(t1 ∷ s1) .(t2 ∷ s2) .(mkHyp T1 ∷ hs1) .(mkHyp T2 ∷ hs2) (≡hyps∷ .u .w t1 t2 s1 s2 T1 #T1 T2 #T2 hs1 hs2 x h) =
   ≡hyps∷ u w t1 t1 s1 s1 T1 #T1 T1 #T1 hs1 hs1 (TEQrefl-equalTypes u w (ct T1 #T1) (ct T2 #T2) x)
     (≡hyps-refl u w s1 s2 (subHyps 0 ⌜ t1 ⌝ hs1) (subHyps 0 ⌜ t2 ⌝ hs2) h)
+
+
+
+subs∷ʳ≡ : (s : Sub) (k G : Term) (ck : covered s k)
+        → subs (s ∷ʳ #subs s k ck) G
+        ≡ subs s (subn 0 k G)
+subs∷ʳ≡ s k G ck =
+  trans (sym (subn-subsN1 (#subs s k ck) s G)) e
+  where
+  e : subn 0 (subs s k) (subsN 1 s G)
+    ≡ subs s (subn 0 k G)
+  e = trans (trans (cong (λ z → subn 0 z (subsN 1 s G)) (sym (subsN0 s k))) (subn-subsN 0 k s G)) (subsN0 s (subn 0 k G))
+
+
+-- MOVE
+#⇛!-mon : {a b : CTerm} {w2 w1 : 𝕎·}
+        → w1 ⊑· w2
+        → a #⇛! b at w1
+        → a #⇛! b at w2
+#⇛!-mon {a} {b} {w2} {w1} ext c w' e' = c w' (⊑-trans· ext e')
+
+
+NATREC-0⇛! : {a b c : Term} {w : 𝕎·}
+           → a ⇛! N0 at w
+           → NATREC a b c ⇛! b at w
+NATREC-0⇛! {a} {b} {c} {w} comp =
+  ⇛!-trans {w} {NATREC a b c} {NATREC N0 b c} {b}
+    (λ w1 e1 → lift (NATREC⇓ {a} {N0} b c {w1} {w1} (lower (comp w1 e1))))
+    (λ w1 e1 → lift (1 , refl))
+
+
+NATREC-s⇛! : {n : ℕ} {a b c : Term} {w : 𝕎·}
+           → a ⇛! NUM (suc n) at w
+           → NATREC a b c ⇛! APPLY2 c (NUM n) (NATREC (NUM n) b c) at w
+NATREC-s⇛! {n} {a} {b} {c} {w} comp =
+  ⇛!-trans {w} {NATREC a b c} {NATREC (NUM (suc n)) b c} {APPLY2 c (NUM n) (NATREC (NUM n) b c)}
+    (λ w1 e1 → lift (NATREC⇓ {a} {NUM (suc n)} b c {w1} {w1} (lower (comp w1 e1))))
+    (λ w1 e1 → lift (1 , refl))
+
+
+#NATREC-s⇛! : {n : ℕ} {a b c : CTerm} {w : 𝕎·}
+            → a #⇛! #NUM (suc n) at w
+            → #NATREC a b c #⇛! #APPLY2 c (#NUM n) (#NATREC (#NUM n) b c) at w
+#NATREC-s⇛! {n} {a} {b} {c} {w} comp = NATREC-s⇛! comp
+
+
+¬namesSub : (s : Sub) → Bool
+¬namesSub [] = true
+¬namesSub (x ∷ s) = ¬names ⌜ x ⌝ ∧ ¬namesSub s
+
+
+¬seqSub : (s : Sub) → Bool
+¬seqSub [] = true
+¬seqSub (x ∷ s) = noseq ⌜ x ⌝ ∧ ¬seqSub s
+
+
+¬encSub : (s : Sub) → Bool
+¬encSub [] = true
+¬encSub (x ∷ s) = ¬enc ⌜ x ⌝ ∧ ¬encSub s
+
+
+¬Names-subn0 : {a b : Term}
+             → ¬Names a
+             → ¬Names b
+             → ¬Names (subn 0 a b)
+¬Names-subn0 {a} {b} na nb rewrite sym (sub≡subn a b) = ¬Names-sub {a} {b} na nb
+
+
+¬Seq-subn0 : {a b : Term}
+           → ¬Seq a
+           → ¬Seq b
+           → ¬Seq (subn 0 a b)
+¬Seq-subn0 {a} {b} na nb rewrite sym (sub≡subn a b) = ¬Seq-sub {a} {b} na nb
+
+
+¬Enc-subn0 : {a b : Term}
+           → ¬Enc a
+           → ¬Enc b
+           → ¬Enc (subn 0 a b)
+¬Enc-subn0 {a} {b} na nb rewrite sym (sub≡subn a b) = ¬Enc-sub {a} {b} na nb
+
+
+→¬Names-subs : (s : Sub) (t : Term)
+             → ¬Names t
+             → ¬namesSub s ≡ true
+             → ¬Names (subs s t)
+→¬Names-subs [] t nt ns = nt
+→¬Names-subs (x ∷ s) t nt ns = ¬Names-subn0 {⌜ x ⌝} {subs s t} (∧≡true→ₗ _ _ ns) (→¬Names-subs s t nt (∧≡true→ᵣ _ _ ns))
+
+
+→¬Seq-subs : (s : Sub) (t : Term)
+           → ¬Seq t
+           → ¬seqSub s ≡ true
+           → ¬Seq (subs s t)
+→¬Seq-subs [] t nt ns = nt
+→¬Seq-subs (x ∷ s) t nt ns = ¬Seq-subn0 {⌜ x ⌝} {subs s t} (∧≡true→ₗ _ _ ns) (→¬Seq-subs s t nt (∧≡true→ᵣ _ _ ns))
+
+
+→¬Enc-subs : (s : Sub) (t : Term)
+           → ¬Enc t
+           → ¬encSub s ≡ true
+           → ¬Enc (subs s t)
+→¬Enc-subs [] t nt ns = nt
+→¬Enc-subs (x ∷ s) t nt ns = ¬Enc-subn0 {⌜ x ⌝} {subs s t} (∧≡true→ₗ _ _ ns) (→¬Enc-subs s t nt (∧≡true→ᵣ _ _ ns))
+
+
+→coveredPI : {s : Sub} {a b : Term}
+           → covered s a
+           → covered0 s b
+           → covered s (PI a b)
+→coveredPI {s} {a} {b} ca cb {x} i with ∈-++⁻ (fvars a) i
+... | inj₁ j = ca j
+... | inj₂ j = cb j
+
+
+→covered0FUN : {s : Sub} {a b : Term}
+             → covered0 s a
+             → covered0 s b
+             → covered0 s (FUN a b)
+→covered0FUN {s} {a} {b} ca cb {x} i
+  with ∈-++⁻ (fvars a) (∈lowerVars→ x (fvars a ++ lowerVars (fvars (shiftUp 0 b))) i)
+... | inj₁ p = ca (→∈lowerVars x (fvars a) p)
+... | inj₂ p
+  rewrite fvars-shiftUp≡ 0 b
+  with ∈-map⁻ suc (∈lowerVars→ (suc x) (Data.List.map (sucIf≤ 0) (fvars b)) p)
+... | v , q , z rewrite suc-injective (sym z) = cb (→∈lowerVars x (fvars b) q)
+
+
+++⊆₂ : {a b u v w : List Var}
+     → a ⊆ u ++ w
+     → b ⊆ v ++ w
+     → a ++ b ⊆ (u ++ v) ++ w
+++⊆₂ {a} {b} {u} {v} {w} s1 s2 {x} i with ∈-++⁻ a i
+++⊆₂ {a} {b} {u} {v} {w} s1 s2 {x} i | inj₁ p with ∈-++⁻ u (s1 p)
+... | inj₁ q = ∈-++⁺ˡ (∈-++⁺ˡ q)
+... | inj₂ q = ∈-++⁺ʳ (u ++ v) q
+++⊆₂ {a} {b} {u} {v} {w} s1 s2 {x} i | inj₂ p with ∈-++⁻ v (s2 p)
+... | inj₁ q = ∈-++⁺ˡ (∈-++⁺ʳ u q)
+... | inj₂ q = ∈-++⁺ʳ (u ++ v) q
+
+
+++⊆₃ : {a b c u v w x : List Var}
+     → a ⊆ u ++ x
+     → b ⊆ v ++ x
+     → c ⊆ w ++ x
+     → a ++ b ++ c ⊆ (u ++ v ++ w) ++ x
+++⊆₃ {a} {b} {c} {u} {v} {w} {x} s1 s2 s3 =
+  ++⊆₂ {a} {b ++ c} {u} {v ++ w} {x} s1 (++⊆₂ {b} {c} {v} {w} {x} s2 s3)
+
+
+++⊆₄ : {a b c d u v w x z : List Var}
+     → a ⊆ u ++ z
+     → b ⊆ v ++ z
+     → c ⊆ w ++ z
+     → d ⊆ x ++ z
+     → a ++ b ++ c ++ d ⊆ (u ++ v ++ w ++ x) ++ z
+++⊆₄ {a} {b} {c} {d} {u} {v} {w} {x} {z} s1 s2 s3 s4 =
+  ++⊆₂ {a} {b ++ c ++ d} {u} {v ++ w ++ x} {z} s1 (++⊆₃ {b} {c} {d} {v} {w} {x} {z} s2 s3 s4)
+
+
+lowerVars3++⊆ : (a b : List Var)
+              → lowerVars (lowerVars (lowerVars (a ++ b)))
+              ⊆ lowerVars (lowerVars (lowerVars a)) ++ lowerVars (lowerVars (lowerVars b))
+lowerVars3++⊆ a b {x} i
+  rewrite lowerVars++ a b
+        | lowerVars++ (lowerVars a) (lowerVars b)
+        | lowerVars++ (lowerVars (lowerVars a)) (lowerVars (lowerVars b)) = i
+
+
+lowerVars3-fvars-shiftUp⊆ : (x : Term)
+                          → lowerVars (lowerVars (lowerVars (fvars (shiftUp 0 (shiftUp 0 (shiftUp 0 x))))))
+                          ⊆ fvars x
+lowerVars3-fvars-shiftUp⊆ x {z} i
+  rewrite lowerVars-fvars-shiftUp (shiftUp 0 (shiftUp 0 x))
+        | lowerVars-fvars-shiftUp (shiftUp 0 x)
+        | lowerVars-fvars-shiftUp x
+  = i
+
+
+fvars-shiftNameUp⊆ : (n : ℕ) (a : Term) → fvars (shiftNameUp n a) ⊆ fvars a
+fvars-shiftNameUp⊆ n a rewrite fvars-shiftNameUp n a = ⊆-refl
+
+
+fvars-subi⊆ : (n : ℕ) (u t : Term) → fvars (subi n u t) ⊆ fvars t ++ fvars u
+fvars-subi⊆ n u (VAR x) {z} i with x ≟ n
+fvars-subi⊆ n u (VAR x) {z} i | yes p = there i
+fvars-subi⊆ n u (VAR x) {z} (here px) | no p = here px
+fvars-subi⊆ n u QNAT = λ ()
+fvars-subi⊆ n u (LT t t₁) = ++⊆₂ {_} {_} {fvars t} {fvars t₁} {fvars u} (fvars-subi⊆ n u t) (fvars-subi⊆ n u t₁)
+fvars-subi⊆ n u (QLT t t₁) = ++⊆₂ {_} {_} {fvars t} {fvars t₁} {fvars u} (fvars-subi⊆ n u t) (fvars-subi⊆ n u t₁)
+fvars-subi⊆ n u (NUM x) = λ ()
+fvars-subi⊆ n u (IFLT t t₁ t₂ t₃) = ++⊆₄ {_} {_} {_} {_} {fvars t} {fvars t₁} {fvars t₂} {fvars t₃} {fvars u} (fvars-subi⊆ n u t) (fvars-subi⊆ n u t₁) (fvars-subi⊆ n u t₂) (fvars-subi⊆ n u t₃)
+fvars-subi⊆ n u (IFEQ t t₁ t₂ t₃) = ++⊆₄ {_} {_} {_} {_} {fvars t} {fvars t₁} {fvars t₂} {fvars t₃} {fvars u} (fvars-subi⊆ n u t) (fvars-subi⊆ n u t₁) (fvars-subi⊆ n u t₂) (fvars-subi⊆ n u t₃)
+fvars-subi⊆ n u (SUC t) = fvars-subi⊆ n u t
+fvars-subi⊆ n u (NATREC t t₁ t₂) = ++⊆₃ {_} {_} {_} {fvars t} {fvars t₁} {fvars t₂} {fvars u} (fvars-subi⊆ n u t) (fvars-subi⊆ n u t₁) (fvars-subi⊆ n u t₂)
+fvars-subi⊆ n u (PI t t₁) =
+  ++⊆₂ {fvars (subi n u t)} {lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₁))} {fvars t} {lowerVars (fvars t₁)} {fvars u}
+    (fvars-subi⊆ n u t)
+    (⊆-trans (lowerVars⊆lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₁)) (fvars t₁ ++ fvars (shiftUp 0 u)) (fvars-subi⊆ (suc n) (shiftUp 0 u) t₁))
+             (⊆-trans (lowerVars++⊆ (fvars t₁) (fvars (shiftUp 0 u)))
+                      (⊆-++ {_} {_} {lowerVars (fvars t₁)} {lowerVars (fvars (shiftUp 0 u))} {lowerVars (fvars t₁)} {fvars u}
+                            ⊆-refl
+                            (lowerVars-fvars-shiftUp⊆ u))))
+fvars-subi⊆ n u (LAMBDA t) =
+  ⊆-trans (lowerVars⊆lowerVars (fvars (subi (suc n) (shiftUp 0 u) t)) (fvars t ++ fvars (shiftUp 0 u)) (fvars-subi⊆ (suc n) (shiftUp 0 u) t))
+          (⊆-trans (lowerVars++⊆ (fvars t) (fvars (shiftUp 0 u)))
+                      (⊆-++ {_} {_} {lowerVars (fvars t)} {lowerVars (fvars (shiftUp 0 u))} {lowerVars (fvars t)} {fvars u}
+                            ⊆-refl
+                            (lowerVars-fvars-shiftUp⊆ u)))
+fvars-subi⊆ n u (APPLY t t₁) = ++⊆₂ {_} {_} {fvars t} {fvars t₁} {fvars u} (fvars-subi⊆ n u t) (fvars-subi⊆ n u t₁)
+fvars-subi⊆ n u (FIX t) = fvars-subi⊆ n u t
+fvars-subi⊆ n u (LET t t₁) =
+  ++⊆₂ {fvars (subi n u t)} {lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₁))} {fvars t} {lowerVars (fvars t₁)} {fvars u}
+    (fvars-subi⊆ n u t)
+    (⊆-trans (lowerVars⊆lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₁)) (fvars t₁ ++ fvars (shiftUp 0 u)) (fvars-subi⊆ (suc n) (shiftUp 0 u) t₁))
+             (⊆-trans (lowerVars++⊆ (fvars t₁) (fvars (shiftUp 0 u)))
+                      (⊆-++ {_} {_} {lowerVars (fvars t₁)} {lowerVars (fvars (shiftUp 0 u))} {lowerVars (fvars t₁)} {fvars u}
+                            ⊆-refl
+                            (lowerVars-fvars-shiftUp⊆ u))))
+fvars-subi⊆ n u (WT t t₁ t₂) =
+  ++⊆₃
+    {fvars (subi n u t)} {lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₁))}
+    {fvars (subi n u t₂)} {fvars t} {lowerVars (fvars t₁)} {fvars t₂} {fvars u}
+    (fvars-subi⊆ n u t)
+    (⊆-trans (lowerVars⊆lowerVars
+               (fvars (subi (suc n) (shiftUp 0 u) t₁))
+               (fvars t₁ ++ fvars (shiftUp 0 u))
+               (fvars-subi⊆ (suc n) (shiftUp 0 u) t₁))
+             (⊆-trans (lowerVars++⊆ (fvars t₁) (fvars (shiftUp 0 u)))
+                      (⊆-++ {_} {_} {lowerVars (fvars t₁)} {lowerVars (fvars (shiftUp 0 u))} {lowerVars (fvars t₁)} {fvars u}
+                            ⊆-refl (lowerVars-fvars-shiftUp⊆ u))))
+    (fvars-subi⊆ n u t₂)
+fvars-subi⊆ n u (SUP t t₁) = ++⊆₂ {_} {_} {fvars t} {fvars t₁} {fvars u} (fvars-subi⊆ n u t) (fvars-subi⊆ n u t₁)
+fvars-subi⊆ n u (WREC t t₁) =
+  ++⊆₂
+    {fvars (subi n u t)} {lowerVars (lowerVars (lowerVars (fvars (subi (suc (suc (suc n))) (shiftUp 0 (shiftUp 0 (shiftUp 0 u))) t₁))))}
+    {fvars t} {lowerVars (lowerVars (lowerVars (fvars t₁)))} {fvars u}
+    (fvars-subi⊆ n u t)
+    (⊆-trans (lowerVars⊆lowerVars
+               (lowerVars (lowerVars (fvars (subi (suc (suc (suc n))) (shiftUp 0 (shiftUp 0 (shiftUp 0 u))) t₁))))
+               (lowerVars (lowerVars (fvars t₁ ++ fvars (shiftUp 0 (shiftUp 0 (shiftUp 0 u))))))
+               (lowerVars⊆lowerVars
+                  (lowerVars (fvars (subi (suc (suc (suc n))) (shiftUp 0 (shiftUp 0 (shiftUp 0 u))) t₁)))
+                  (lowerVars (fvars t₁ ++ fvars (shiftUp 0 (shiftUp 0 (shiftUp 0 u)))))
+                  (lowerVars⊆lowerVars
+                     (fvars (subi (suc (suc (suc n))) (shiftUp 0 (shiftUp 0 (shiftUp 0 u))) t₁))
+                     (fvars t₁ ++ fvars (shiftUp 0 (shiftUp 0 (shiftUp 0 u))))
+                     (fvars-subi⊆ (suc (suc (suc n))) (shiftUp 0 (shiftUp 0 (shiftUp 0 u))) t₁))))
+             (⊆-trans (lowerVars3++⊆ (fvars t₁) (fvars (shiftUp 0 (shiftUp 0 (shiftUp 0 u)))))
+                      (⊆-++ {_} {_} {lowerVars (lowerVars (lowerVars (fvars t₁)))}
+                         {lowerVars (lowerVars (lowerVars (fvars (shiftUp 0 (shiftUp 0 (shiftUp 0 u))))))}
+                         {lowerVars (lowerVars (lowerVars (fvars t₁)))} {fvars u}
+                         ⊆-refl (lowerVars3-fvars-shiftUp⊆ u))))
+fvars-subi⊆ n u (MT t t₁ t₂) =
+  ++⊆₃
+    {fvars (subi n u t)} {lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₁))}
+    {fvars (subi n u t₂)} {fvars t} {lowerVars (fvars t₁)} {fvars t₂} {fvars u}
+    (fvars-subi⊆ n u t)
+    (⊆-trans (lowerVars⊆lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₁)) (fvars t₁ ++ fvars (shiftUp 0 u)) (fvars-subi⊆ (suc n) (shiftUp 0 u) t₁))
+             (⊆-trans (lowerVars++⊆ (fvars t₁) (fvars (shiftUp 0 u)))
+                      (⊆-++ {_} {_} {lowerVars (fvars t₁)} {lowerVars (fvars (shiftUp 0 u))} {lowerVars (fvars t₁)} {fvars u}
+                            ⊆-refl (lowerVars-fvars-shiftUp⊆ u))))
+    (fvars-subi⊆ n u t₂)
+fvars-subi⊆ n u (SUM t t₁) =
+  ++⊆₂ {fvars (subi n u t)} {lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₁))} {fvars t} {lowerVars (fvars t₁)} {fvars u}
+    (fvars-subi⊆ n u t)
+    (⊆-trans (lowerVars⊆lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₁)) (fvars t₁ ++ fvars (shiftUp 0 u)) (fvars-subi⊆ (suc n) (shiftUp 0 u) t₁))
+             (⊆-trans (lowerVars++⊆ (fvars t₁) (fvars (shiftUp 0 u)))
+                      (⊆-++ {_} {_} {lowerVars (fvars t₁)} {lowerVars (fvars (shiftUp 0 u))} {lowerVars (fvars t₁)} {fvars u}
+                            ⊆-refl
+                            (lowerVars-fvars-shiftUp⊆ u))))
+fvars-subi⊆ n u (PAIR t t₁) = ++⊆₂ {_} {_} {fvars t} {fvars t₁} {fvars u} (fvars-subi⊆ n u t) (fvars-subi⊆ n u t₁)
+fvars-subi⊆ n u (SPREAD t t₁) =
+  ++⊆₂
+    {fvars (subi n u t)} {lowerVars (lowerVars (fvars (subi (suc (suc n)) (shiftUp 0 (shiftUp 0 u)) t₁)))}
+    {fvars t} {lowerVars (lowerVars (fvars t₁))} {fvars u}
+    (fvars-subi⊆ n u t)
+    (⊆-trans (lowerVars⊆lowerVars
+                  (lowerVars (fvars (subi (suc (suc n)) (shiftUp 0 (shiftUp 0 u)) t₁)))
+                  (lowerVars (fvars t₁ ++ fvars (shiftUp 0 (shiftUp 0 u))))
+                  (lowerVars⊆lowerVars
+                     (fvars (subi (suc (suc n)) (shiftUp 0 (shiftUp 0 u)) t₁))
+                     (fvars t₁ ++ fvars (shiftUp 0 (shiftUp 0 u)))
+                     (fvars-subi⊆ (suc (suc n)) (shiftUp 0 (shiftUp 0 u)) t₁)))
+             (⊆-trans (lowerVars2++⊆ (fvars t₁) (fvars (shiftUp 0 (shiftUp 0 u))))
+                      (⊆-++ {_} {_} {lowerVars (lowerVars (fvars t₁))}
+                         {lowerVars (lowerVars (fvars (shiftUp 0 (shiftUp 0 u))))}
+                         {lowerVars (lowerVars (fvars t₁))} {fvars u}
+                         ⊆-refl (lowerVars2-fvars-shiftUp⊆ u))))
+fvars-subi⊆ n u (SET t t₁) =
+  ++⊆₂ {fvars (subi n u t)} {lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₁))} {fvars t} {lowerVars (fvars t₁)} {fvars u}
+    (fvars-subi⊆ n u t)
+    (⊆-trans (lowerVars⊆lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₁)) (fvars t₁ ++ fvars (shiftUp 0 u)) (fvars-subi⊆ (suc n) (shiftUp 0 u) t₁))
+             (⊆-trans (lowerVars++⊆ (fvars t₁) (fvars (shiftUp 0 u)))
+                      (⊆-++ {_} {_} {lowerVars (fvars t₁)} {lowerVars (fvars (shiftUp 0 u))} {lowerVars (fvars t₁)} {fvars u}
+                            ⊆-refl
+                            (lowerVars-fvars-shiftUp⊆ u))))
+fvars-subi⊆ n u (TUNION t t₁) =
+  ++⊆₂ {fvars (subi n u t)} {lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₁))} {fvars t} {lowerVars (fvars t₁)} {fvars u}
+    (fvars-subi⊆ n u t)
+    (⊆-trans (lowerVars⊆lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₁)) (fvars t₁ ++ fvars (shiftUp 0 u)) (fvars-subi⊆ (suc n) (shiftUp 0 u) t₁))
+             (⊆-trans (lowerVars++⊆ (fvars t₁) (fvars (shiftUp 0 u)))
+                      (⊆-++ {_} {_} {lowerVars (fvars t₁)} {lowerVars (fvars (shiftUp 0 u))} {lowerVars (fvars t₁)} {fvars u}
+                            ⊆-refl
+                            (lowerVars-fvars-shiftUp⊆ u))))
+fvars-subi⊆ n u (ISECT t t₁) = ++⊆₂ {_} {_} {fvars t} {fvars t₁} {fvars u} (fvars-subi⊆ n u t) (fvars-subi⊆ n u t₁)
+fvars-subi⊆ n u (UNION t t₁) = ++⊆₂ {_} {_} {fvars t} {fvars t₁} {fvars u} (fvars-subi⊆ n u t) (fvars-subi⊆ n u t₁)
+fvars-subi⊆ n u (INL t) = fvars-subi⊆ n u t
+fvars-subi⊆ n u (INR t) = fvars-subi⊆ n u t
+fvars-subi⊆ n u (DECIDE t t₁ t₂) =
+  ++⊆₃
+    {fvars (subi n u t)} {lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₁))} {lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₂))}
+    {fvars t} {lowerVars (fvars t₁)} {lowerVars (fvars t₂)} {fvars u}
+    (fvars-subi⊆ n u t)
+    (⊆-trans (lowerVars⊆lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₁)) (fvars t₁ ++ fvars (shiftUp 0 u)) (fvars-subi⊆ (suc n) (shiftUp 0 u) t₁))
+             (⊆-trans (lowerVars++⊆ (fvars t₁) (fvars (shiftUp 0 u)))
+                      (⊆-++ {_} {_} {lowerVars (fvars t₁)} {lowerVars (fvars (shiftUp 0 u))} {lowerVars (fvars t₁)} {fvars u}
+                            ⊆-refl
+                            (lowerVars-fvars-shiftUp⊆ u))))
+    (⊆-trans (lowerVars⊆lowerVars (fvars (subi (suc n) (shiftUp 0 u) t₂)) (fvars t₂ ++ fvars (shiftUp 0 u)) (fvars-subi⊆ (suc n) (shiftUp 0 u) t₂))
+             (⊆-trans (lowerVars++⊆ (fvars t₂) (fvars (shiftUp 0 u)))
+                      (⊆-++ {_} {_} {lowerVars (fvars t₂)} {lowerVars (fvars (shiftUp 0 u))} {lowerVars (fvars t₂)} {fvars u}
+                            ⊆-refl
+                            (lowerVars-fvars-shiftUp⊆ u))))
+fvars-subi⊆ n u (EQ t t₁ t₂) = ++⊆₃ {_} {_} {_} {fvars t} {fvars t₁} {fvars t₂} {fvars u} (fvars-subi⊆ n u t) (fvars-subi⊆ n u t₁) (fvars-subi⊆ n u t₂)
+fvars-subi⊆ n u AX = λ ()
+fvars-subi⊆ n u FREE = λ ()
+fvars-subi⊆ n u (CS x) = λ ()
+fvars-subi⊆ n u (NAME x) = λ ()
+fvars-subi⊆ n u (FRESH t) =
+  ⊆-trans (fvars-subi⊆ n (shiftNameUp 0 u) t)
+          (⊆-++ {_} {_} {fvars t} {fvars (shiftNameUp 0 u)} {fvars t} {fvars u}
+            ⊆-refl (fvars-shiftNameUp⊆ 0 u))
+fvars-subi⊆ n u (CHOOSE t t₁) = ++⊆₂ {_} {_} {fvars t} {fvars t₁} {fvars u} (fvars-subi⊆ n u t) (fvars-subi⊆ n u t₁)
+fvars-subi⊆ n u (LOAD t) = λ ()
+fvars-subi⊆ n u (MSEQ x) = λ ()
+fvars-subi⊆ n u (MAPP x t) = fvars-subi⊆ n u t
+fvars-subi⊆ n u NOWRITE = λ ()
+fvars-subi⊆ n u NOREAD = λ ()
+fvars-subi⊆ n u (SUBSING t) = fvars-subi⊆ n u t
+fvars-subi⊆ n u (DUM t) = fvars-subi⊆ n u t
+fvars-subi⊆ n u (FFDEFS t t₁) = ++⊆₂ {_} {_} {fvars t} {fvars t₁} {fvars u} (fvars-subi⊆ n u t) (fvars-subi⊆ n u t₁)
+fvars-subi⊆ n u PURE = λ ()
+fvars-subi⊆ n u NOSEQ = λ ()
+fvars-subi⊆ n u NOENC = λ ()
+fvars-subi⊆ n u (TERM t) = fvars-subi⊆ n u t
+fvars-subi⊆ n u (ENC t) = λ ()
+fvars-subi⊆ n u (UNIV x) = λ ()
+fvars-subi⊆ n u (LIFT t) = fvars-subi⊆ n u t
+fvars-subi⊆ n u (LOWER t) = fvars-subi⊆ n u t
+fvars-subi⊆ n u (SHRINK t) = fvars-subi⊆ n u t
 
 \end{code}

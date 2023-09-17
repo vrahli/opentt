@@ -72,7 +72,7 @@ open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
   using (#⇛!sameℕ ; _⇛!_at_ ; _⇓!_at_ ; _#⇛!_at_ ; #⇛!-trans ; ⇛!-trans ; #⇛!-refl)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
-  using (NATREC⇓ ; →∧≡true ; ¬Names-sub ; ¬Seq-sub ; ¬Enc-sub ; ∧≡true→ₗ ; ∧≡true→ᵣ)
+  using (→∧≡true)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
   using (⇓NUM→SUC⇓NUM ; #APPLY2)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
@@ -1185,109 +1185,6 @@ sucIf≤0 n with n <? 0
 ⟦▹▹⟧ᵤ {n} A B = cong₂ PI refl (⟦wk⟧ᵤ {n} {0} B)
 
 
-subs∷ʳ≡ : (s : Sub) (k G : BTerm) (ck : covered s k)
-        → subs (s Data.List.∷ʳ #subs s k ck) G
-        ≣ subs s (subn 0 k G)
-subs∷ʳ≡ s k G ck =
-  ≣trans (≣sym (subn-subsN1 (#subs s k ck) s G)) e
-  where
-  e : subn 0 (subs s k) (subsN 1 s G)
-    ≣ subs s (subn 0 k G)
-  e = ≣trans (≣trans (cong (λ z → subn 0 z (subsN 1 s G)) (≣sym (subsN0 s k))) (subn-subsN 0 k s G)) (subsN0 s (subn 0 k G))
-
-
--- MOVE
-#⇛!-mon : {a b : CTerm} {w2 w1 : 𝕎·}
-        → w1 ⊑· w2
-        → a #⇛! b at w1
-        → a #⇛! b at w2
-#⇛!-mon {a} {b} {w2} {w1} ext c w' e' = c w' (⊑-trans· ext e')
-
-
-NATREC-0⇛! : {a b c : BTerm} {w : 𝕎·}
-           → a ⇛! N0 at w
-           → NATREC a b c ⇛! b at w
-NATREC-0⇛! {a} {b} {c} {w} comp =
-  ⇛!-trans {w} {NATREC a b c} {NATREC N0 b c} {b}
-    (λ w1 e1 → lift (NATREC⇓ {a} {N0} b c {w1} {w1} (lower (comp w1 e1))))
-    (λ w1 e1 → lift (1 , refl))
-
-
-NATREC-s⇛! : {n : Nat} {a b c : BTerm} {w : 𝕎·}
-           → a ⇛! NUM (1+ n) at w
-           → NATREC a b c ⇛! APPLY2 c (NUM n) (NATREC (NUM n) b c) at w
-NATREC-s⇛! {n} {a} {b} {c} {w} comp =
-  ⇛!-trans {w} {NATREC a b c} {NATREC (NUM (1+ n)) b c} {APPLY2 c (NUM n) (NATREC (NUM n) b c)}
-    (λ w1 e1 → lift (NATREC⇓ {a} {NUM (1+ n)} b c {w1} {w1} (lower (comp w1 e1))))
-    (λ w1 e1 → lift (1 , refl))
-
-
-#NATREC-s⇛! : {n : Nat} {a b c : CTerm} {w : 𝕎·}
-            → a #⇛! #NUM (1+ n) at w
-            → #NATREC a b c #⇛! #APPLY2 c (#NUM n) (#NATREC (#NUM n) b c) at w
-#NATREC-s⇛! {n} {a} {b} {c} {w} comp = NATREC-s⇛! comp
-
-
-¬namesSub : (s : Sub) → Bool
-¬namesSub nil = true
-¬namesSub (cons x s) = ¬names ⌜ x ⌝ ∧ ¬namesSub s
-
-
-¬seqSub : (s : Sub) → Bool
-¬seqSub nil = true
-¬seqSub (cons x s) = noseq ⌜ x ⌝ ∧ ¬seqSub s
-
-
-¬encSub : (s : Sub) → Bool
-¬encSub nil = true
-¬encSub (cons x s) = ¬enc ⌜ x ⌝ ∧ ¬encSub s
-
-
-¬Names-subn0 : {a b : BTerm}
-             → ¬Names a
-             → ¬Names b
-             → ¬Names (subn 0 a b)
-¬Names-subn0 {a} {b} na nb rewrite ≣sym (sub≡subn a b) = ¬Names-sub {a} {b} na nb
-
-
-¬Seq-subn0 : {a b : BTerm}
-           → ¬Seq a
-           → ¬Seq b
-           → ¬Seq (subn 0 a b)
-¬Seq-subn0 {a} {b} na nb rewrite ≣sym (sub≡subn a b) = ¬Seq-sub {a} {b} na nb
-
-
-¬Enc-subn0 : {a b : BTerm}
-           → ¬Enc a
-           → ¬Enc b
-           → ¬Enc (subn 0 a b)
-¬Enc-subn0 {a} {b} na nb rewrite ≣sym (sub≡subn a b) = ¬Enc-sub {a} {b} na nb
-
-
-→¬Names-subs : (s : Sub) (t : BTerm)
-             → ¬Names t
-             → ¬namesSub s ≣ true
-             → ¬Names (subs s t)
-→¬Names-subs nil t nt ns = nt
-→¬Names-subs (cons x s) t nt ns = ¬Names-subn0 {⌜ x ⌝} {subs s t} (∧≡true→ₗ _ _ ns) (→¬Names-subs s t nt (∧≡true→ᵣ _ _ ns))
-
-
-→¬Seq-subs : (s : Sub) (t : BTerm)
-           → ¬Seq t
-           → ¬seqSub s ≣ true
-           → ¬Seq (subs s t)
-→¬Seq-subs nil t nt ns = nt
-→¬Seq-subs (cons x s) t nt ns = ¬Seq-subn0 {⌜ x ⌝} {subs s t} (∧≡true→ₗ _ _ ns) (→¬Seq-subs s t nt (∧≡true→ᵣ _ _ ns))
-
-
-→¬Enc-subs : (s : Sub) (t : BTerm)
-           → ¬Enc t
-           → ¬encSub s ≣ true
-           → ¬Enc (subs s t)
-→¬Enc-subs nil t nt ns = nt
-→¬Enc-subs (cons x s) t nt ns = ¬Enc-subn0 {⌜ x ⌝} {subs s t} (∧≡true→ₗ _ _ ns) (→¬Enc-subs s t nt (∧≡true→ᵣ _ _ ns))
-
-
 -- finish converting G
 valid∈NATREC : {i : Nat} {H : hypotheses} {G k z s : BTerm} (lti : 1 <ℕ i)
              → valid∈𝕎 i (H Data.List.∷ʳ mkHyp NAT!) G (UNIV 1)
@@ -1358,8 +1255,16 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
   cu1b : covered (s1 Data.List.∷ʳ (#subs s1 N0 cm1)) (UNIV 1)
   cu1b = covered-UNIV (s1 Data.List.∷ʳ (#subs s1 N0 cm1)) 1
 
+  c0g1 : covered0 s1 G
+  c0g1 = covered-subn→covered0 N0 s1 G cs1a
+
+  c0sg1 : covered0 s1 (subi 0 (SUC (VAR 0)) G)
+  c0sg1 = {!!} -- use fvars-subi⊆
+
   cp1 : covered s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G)))
-  cp1 = {!!}
+  cp1 = →coveredPI {s1} {NAT!} {FUN G (subi 0 (SUC (VAR 0)) G)} (covered-NAT! s1)
+                   (→covered0FUN {s1} {G} {subi 0 (SUC (VAR 0)) G}
+                     {!!} {!!})
 
   cp2 : covered s2 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G)))
   cp2 = {!!}
@@ -1461,8 +1366,14 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
     hp2 = π₂ (π₂ (equalInType-PI→ hp1)) w1 (⊑-refl· w1) (#NUM n) (#NUM n)
              (≡CTerm→equalInType (≣sym (#subs-NAT! s1 cn1)) (NUM-equalInType-NAT! i w1 n))
 
+    cs1c : covered s1 (subn 0 (NUM n) G)
+    cs1c = →covered-subn (#subs s1 k ck1) (NUM n) s1 G refl cs1
+
+    cs1d : covered s1 (subn 0 (SUC (NUM n)) G)
+    cs1d = →covered-subn (#subs s1 k ck1) (SUC (NUM n)) s1 G refl cs1
+
     esn : sub0 (#NUM n) (#[0]subs s1 (FUN G (subi 0 (SUC (VAR 0)) G)) cp01)
-        ≣ #FUN (#subs s1 (subn 0 (NUM n) G) {!!}) (#subs s1 (subn 0 (SUC (NUM n)) G) {!!})
+        ≣ #FUN (#subs s1 (subn 0 (NUM n) G) cs1c) (#subs s1 (subn 0 (SUC (NUM n)) G) cs1d)
     esn = {!!}
     -- use this to rewrite hp2
 
