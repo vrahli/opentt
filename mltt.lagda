@@ -83,7 +83,7 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (isTypeNAT! ; eqTypesUniv ; equalTypes→equalInType-UNIV ; equalInType→equalTypes-aux ; eqTypesPI← ; eqTypesSUM← ;
          ≡CTerm→eqTypes ; ≡CTerm→equalInType ; eqTypesFALSE ; eqTypesTRUE ; ¬equalInType-FALSE ; NUM-equalInType-NAT! ;
-         equalInType-NAT!→ ; equalInType-local ; equalInType-mon ; equalInType-PI→ ; isFam)
+         equalInType-NAT!→ ; equalInType-local ; equalInType-mon ; equalInType-PI→ ; isFam ; equalInType-FUN→)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (→equalInType-TRUE ; equalInType-EQ→₁)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -1412,12 +1412,24 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
     hp3 : equalInType i w1 (#FUN (#subs s1 (subn 0 (NUM n) G) cs1c) (#subs s1 (subn 0 (SUC (NUM n)) G) cs1d))
                            (#APPLY (#subs s1 s cx1) (#NUM n)) (#APPLY (#subs s2 s cx2) (#NUM n))
     hp3 = ≡CTerm→equalInType esn hp2
-    -- instantiate hp3 to derive hz2
+
+    ind : equalInType i w1 (#subs s1 (subn 0 (NUM n) G) cs1c)
+                           (#NATREC (#NUM n) (#subs s1 z cz1) (#subs s1 s cx1))
+                           (#NATREC (#NUM n) (#subs s2 z cz2) (#subs s2 s cx2))
+    ind = {!!} -- from the IH which we don't have yet
+
+    hp4 : equalInType i w1 (#subs s1 (subn 0 (SUC (NUM n)) G) cs1d)
+                           (#APPLY2 (#subs s1 s cx1) (#NUM n) (#NATREC (#NUM n) (#subs s1 z cz1) (#subs s1 s cx1)))
+                           (#APPLY2 (#subs s2 s cx2) (#NUM n) (#NATREC (#NUM n) (#subs s2 z cz2) (#subs s2 s cx2)))
+    hp4 = equalInType-FUN→ hp3 w1 (⊑-refl· w1)
+            (#NATREC (#NUM n) (#subs s1 z cz1) (#subs s1 s cx1))
+            (#NATREC (#NUM n) (#subs s2 z cz2) (#subs s2 s cx2))
+            ind
 
     hz2 : equalInType i w1 (#subs s1 (subn 0 k G) cc1)
                            (#APPLY2 (#subs s1 s cx1) (#NUM n) (#NATREC (#NUM n) (#subs s1 z cz1) (#subs s1 s cx1)))
                            (#APPLY2 (#subs s2 s cx2) (#NUM n) (#NATREC (#NUM n) (#subs s2 z cz2) (#subs s2 s cx2)))
-    hz2 = {!!}
+    hz2 = {!!} -- fom hp4 though a bit of computation
 
   c2a : equalInType i w (#subs s1 (subn 0 k G) cc1)
                     (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 s cx1))
