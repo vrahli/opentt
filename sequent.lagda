@@ -524,6 +524,12 @@ subs-NUM (x ∷ s) i rewrite subs-NUM s i = refl
 #subs-NUM s i c = CTerm≡ (subs-NUM s i)
 
 
+subsN-NUM : (n : ℕ) (s : Sub) (i : ℕ)
+          → subsN n s (NUM i) ≡ NUM i
+subsN-NUM n [] i = refl
+subsN-NUM n (x ∷ s) i rewrite subsN-NUM n s i = refl
+
+
 covered0 : (s : Sub) (t : Term) → Set
 covered0 s t = lowerVars (fvars t) ⊆ sdom s
 --covered0 s t = fvars t ⊆ raiseVars (sdom s)
@@ -1011,6 +1017,397 @@ shiftUp-subn n m a (UNIV x) len = refl
 shiftUp-subn n m a (LIFT b) len = cong LIFT (shiftUp-subn n m a b len)
 shiftUp-subn n m a (LOWER b) len = cong LOWER (shiftUp-subn n m a b len)
 shiftUp-subn n m a (SHRINK b) len = cong SHRINK (shiftUp-subn n m a b len)
+
+
+shiftUp-subi : (n m : ℕ) (a b : Term)
+             → n ≤ m
+             → shiftUp n (subi m a b) ≡ subi (suc m) (shiftUp n a) (shiftUp n b)
+-- VAR case
+shiftUp-subi n m a (VAR x) len with x ≟ m
+shiftUp-subi n m a (VAR x) len | yes p rewrite p with m <? n
+shiftUp-subi n m a (VAR x) len | yes p | yes q with m ≟ suc m
+... | yes r = refl
+... | no r = ⊥-elim (<-irrefl refl (≤-trans q len))
+shiftUp-subi n m a (VAR x) len | yes p | no q with suc m ≟ suc m
+... | yes r = refl
+... | no r = ⊥-elim (r refl)
+shiftUp-subi n m a (VAR x) len | no p with x <? n
+shiftUp-subi n m a (VAR x) len | no p | yes q with x ≟ suc m
+... | yes r rewrite r = ⊥-elim (<-irrefl refl (≤-trans (_≤_.s≤s (≤-trans len (≤-step ≤-refl))) q))
+... | no r = refl
+shiftUp-subi n m a (VAR x) len | no p | no q with suc x ≟ suc m
+... | yes r rewrite suc-injective r = ⊥-elim (p refl)
+... | no r = refl
+--
+shiftUp-subi n m a QNAT len = refl
+shiftUp-subi n m a (LT b b₁) len =
+  cong₂ LT (shiftUp-subi n m a b len) (shiftUp-subi n m a b₁ len)
+shiftUp-subi n m a (QLT b b₁) len =
+  cong₂ QLT (shiftUp-subi n m a b len) (shiftUp-subi n m a b₁ len)
+shiftUp-subi n m a (NUM x) len = refl
+shiftUp-subi n m a (IFLT b b₁ b₂ b₃) len =
+  cong₄ IFLT (shiftUp-subi n m a b len) (shiftUp-subi n m a b₁ len) (shiftUp-subi n m a b₂ len) (shiftUp-subi n m a b₃ len)
+shiftUp-subi n m a (IFEQ b b₁ b₂ b₃) len =
+  cong₄ IFEQ (shiftUp-subi n m a b len) (shiftUp-subi n m a b₁ len) (shiftUp-subi n m a b₂ len) (shiftUp-subi n m a b₃ len)
+shiftUp-subi n m a (SUC b) len = cong SUC (shiftUp-subi n m a b len)
+shiftUp-subi n m a (NATREC b b₁ b₂) len =
+  cong₃ NATREC (shiftUp-subi n m a b len) (shiftUp-subi n m a b₁ len) (shiftUp-subi n m a b₂ len)
+shiftUp-subi n m a (PI b b₁) len =
+  cong₂ PI (shiftUp-subi n m a b len)
+        (trans (shiftUp-subi (suc n) (suc m) (shiftUp 0 a) b₁ (_≤_.s≤s len))
+               (cong (λ z → subi (suc (suc m)) z (shiftUp (suc n) b₁)) (sym (shiftUpUp 0 n a _≤_.z≤n))))
+shiftUp-subi n m a (LAMBDA b) len =
+  cong LAMBDA
+        (trans (shiftUp-subi (suc n) (suc m) (shiftUp 0 a) b (_≤_.s≤s len))
+               (cong (λ z → subi (suc (suc m)) z (shiftUp (suc n) b)) (sym (shiftUpUp 0 n a _≤_.z≤n))))
+shiftUp-subi n m a (APPLY b b₁) len =
+  cong₂ APPLY (shiftUp-subi n m a b len) (shiftUp-subi n m a b₁ len)
+shiftUp-subi n m a (FIX b) len = cong FIX (shiftUp-subi n m a b len)
+shiftUp-subi n m a (LET b b₁) len =
+  cong₂ LET (shiftUp-subi n m a b len)
+        (trans (shiftUp-subi (suc n) (suc m) (shiftUp 0 a) b₁ (_≤_.s≤s len))
+               (cong (λ z → subi (suc (suc m)) z (shiftUp (suc n) b₁)) (sym (shiftUpUp 0 n a _≤_.z≤n))))
+shiftUp-subi n m a (WT b b₁ b₂) len =
+  cong₃ WT (shiftUp-subi n m a b len)
+        (trans (shiftUp-subi (suc n) (suc m) (shiftUp 0 a) b₁ (_≤_.s≤s len))
+               (cong (λ z → subi (suc (suc m)) z (shiftUp (suc n) b₁)) (sym (shiftUpUp 0 n a _≤_.z≤n))))
+        (shiftUp-subi n m a b₂ len)
+shiftUp-subi n m a (SUP b b₁) len =
+  cong₂ SUP (shiftUp-subi n m a b len) (shiftUp-subi n m a b₁ len)
+shiftUp-subi n m a (WREC b b₁) len =
+  cong₂ WREC (shiftUp-subi n m a b len)
+        (trans (shiftUp-subi (suc (suc (suc n))) (suc (suc (suc m))) (shiftUp 0 (shiftUp 0 (shiftUp 0 a))) b₁ (_≤_.s≤s (_≤_.s≤s (_≤_.s≤s len))))
+               (cong (λ z → subi (suc (suc (suc (suc m)))) z (shiftUp (suc (suc (suc n))) b₁))
+                     (sym (trans (cong (shiftUp 0) (trans (cong (shiftUp 0) (shiftUpUp 0 n a _≤_.z≤n))
+                                                          (shiftUpUp 0 (suc n) (shiftUp 0 a) _≤_.z≤n)))
+                                 (shiftUpUp 0 (suc (suc n)) (shiftUp 0 (shiftUp 0 a)) _≤_.z≤n)))))
+shiftUp-subi n m a (MT b b₁ b₂) len =
+  cong₃ MT (shiftUp-subi n m a b len)
+        (trans (shiftUp-subi (suc n) (suc m) (shiftUp 0 a) b₁ (_≤_.s≤s len))
+               (cong (λ z → subi (suc (suc m)) z (shiftUp (suc n) b₁)) (sym (shiftUpUp 0 n a _≤_.z≤n))))
+        (shiftUp-subi n m a b₂ len)
+shiftUp-subi n m a (SUM b b₁) len =
+  cong₂ SUM (shiftUp-subi n m a b len)
+        (trans (shiftUp-subi (suc n) (suc m) (shiftUp 0 a) b₁ (_≤_.s≤s len))
+               (cong (λ z → subi (suc (suc m)) z (shiftUp (suc n) b₁)) (sym (shiftUpUp 0 n a _≤_.z≤n))))
+shiftUp-subi n m a (PAIR b b₁) len =
+  cong₂ PAIR (shiftUp-subi n m a b len) (shiftUp-subi n m a b₁ len)
+shiftUp-subi n m a (SPREAD b b₁) len =
+  cong₂ SPREAD (shiftUp-subi n m a b len)
+        (trans (shiftUp-subi (suc (suc n)) (suc (suc m)) (shiftUp 0 (shiftUp 0 a)) b₁ (_≤_.s≤s (_≤_.s≤s len)))
+               (cong (λ z → subi (suc (suc (suc m))) z (shiftUp (suc (suc n)) b₁))
+                     (sym (trans (cong (shiftUp 0) (shiftUpUp 0 n a _≤_.z≤n))
+                                 (shiftUpUp 0 (suc n) (shiftUp 0 a) _≤_.z≤n)))))
+shiftUp-subi n m a (SET b b₁) len =
+  cong₂ SET (shiftUp-subi n m a b len)
+        (trans (shiftUp-subi (suc n) (suc m) (shiftUp 0 a) b₁ (_≤_.s≤s len))
+               (cong (λ z → subi (suc (suc m)) z (shiftUp (suc n) b₁)) (sym (shiftUpUp 0 n a _≤_.z≤n))))
+shiftUp-subi n m a (TUNION b b₁) len =
+  cong₂ TUNION (shiftUp-subi n m a b len)
+        (trans (shiftUp-subi (suc n) (suc m) (shiftUp 0 a) b₁ (_≤_.s≤s len))
+               (cong (λ z → subi (suc (suc m)) z (shiftUp (suc n) b₁)) (sym (shiftUpUp 0 n a _≤_.z≤n))))
+shiftUp-subi n m a (ISECT b b₁) len =
+  cong₂ ISECT (shiftUp-subi n m a b len) (shiftUp-subi n m a b₁ len)
+shiftUp-subi n m a (UNION b b₁) len =
+  cong₂ UNION (shiftUp-subi n m a b len) (shiftUp-subi n m a b₁ len)
+shiftUp-subi n m a (INL b) len = cong INL (shiftUp-subi n m a b len)
+shiftUp-subi n m a (INR b) len = cong INR (shiftUp-subi n m a b len)
+shiftUp-subi n m a (DECIDE b b₁ b₂) len =
+  cong₃ DECIDE (shiftUp-subi n m a b len)
+        (trans (shiftUp-subi (suc n) (suc m) (shiftUp 0 a) b₁ (_≤_.s≤s len))
+               (cong (λ z → subi (suc (suc m)) z (shiftUp (suc n) b₁)) (sym (shiftUpUp 0 n a _≤_.z≤n))))
+        (trans (shiftUp-subi (suc n) (suc m) (shiftUp 0 a) b₂ (_≤_.s≤s len))
+               (cong (λ z → subi (suc (suc m)) z (shiftUp (suc n) b₂)) (sym (shiftUpUp 0 n a _≤_.z≤n))))
+shiftUp-subi n m a (EQ b b₁ b₂) len =
+  cong₃ EQ (shiftUp-subi n m a b len) (shiftUp-subi n m a b₁ len) (shiftUp-subi n m a b₂ len)
+shiftUp-subi n m a AX len = refl
+shiftUp-subi n m a FREE len = refl
+shiftUp-subi n m a (CS x) len = refl
+shiftUp-subi n m a (NAME x) len = refl
+shiftUp-subi n m a (FRESH b) len =
+  cong FRESH (trans (shiftUp-subi n m (shiftNameUp 0 a) b len)
+                    (cong (λ z → subi (suc m) z (shiftUp n b)) (shiftUp-shiftNameUp n 0 a)))
+shiftUp-subi n m a (CHOOSE b b₁) len =
+  cong₂ CHOOSE (shiftUp-subi n m a b len) (shiftUp-subi n m a b₁ len)
+shiftUp-subi n m a (LOAD b) len = refl
+shiftUp-subi n m a (MSEQ x) len = refl
+shiftUp-subi n m a (MAPP x b) len = cong (MAPP x) (shiftUp-subi n m a b len)
+shiftUp-subi n m a NOWRITE len = refl
+shiftUp-subi n m a NOREAD len = refl
+shiftUp-subi n m a (SUBSING b) len = cong SUBSING (shiftUp-subi n m a b len)
+shiftUp-subi n m a (DUM b) len = cong DUM (shiftUp-subi n m a b len)
+shiftUp-subi n m a (FFDEFS b b₁) len =
+  cong₂ FFDEFS (shiftUp-subi n m a b len) (shiftUp-subi n m a b₁ len)
+shiftUp-subi n m a PURE len = refl
+shiftUp-subi n m a NOSEQ len = refl
+shiftUp-subi n m a NOENC len = refl
+shiftUp-subi n m a (TERM b) len = cong TERM (shiftUp-subi n m a b len)
+shiftUp-subi n m a (ENC b) len = refl
+shiftUp-subi n m a (UNIV x) len = refl
+shiftUp-subi n m a (LIFT b) len = cong LIFT (shiftUp-subi n m a b len)
+shiftUp-subi n m a (LOWER b) len = cong LOWER (shiftUp-subi n m a b len)
+shiftUp-subi n m a (SHRINK b) len = cong SHRINK (shiftUp-subi n m a b len)
+
+
+shiftNameUp-subn : (m n : ℕ) (a b : Term)
+                 → shiftNameUp m (subn n a b)
+                 ≡ subn n (shiftNameUp m a) (shiftNameUp m b)
+shiftNameUp-subn m n a (VAR x) with x ≟ m
+shiftNameUp-subn m n a (VAR x) | yes p rewrite p with m ≟ n
+... | yes q = refl
+... | no q = refl
+shiftNameUp-subn m n a (VAR x) | no p with x ≟ n
+... | yes q = refl
+... | no q = refl
+shiftNameUp-subn m n a QNAT = refl
+shiftNameUp-subn m n a (LT b b₁) =
+  cong₂ LT (shiftNameUp-subn m n a b) (shiftNameUp-subn m n a b₁)
+shiftNameUp-subn m n a (QLT b b₁) =
+  cong₂ QLT (shiftNameUp-subn m n a b) (shiftNameUp-subn m n a b₁)
+shiftNameUp-subn m n a (NUM x) = refl
+shiftNameUp-subn m n a (IFLT b b₁ b₂ b₃) =
+  cong₄ IFLT (shiftNameUp-subn m n a b) (shiftNameUp-subn m n a b₁) (shiftNameUp-subn m n a b₂) (shiftNameUp-subn m n a b₃)
+shiftNameUp-subn m n a (IFEQ b b₁ b₂ b₃) =
+  cong₄ IFEQ (shiftNameUp-subn m n a b) (shiftNameUp-subn m n a b₁) (shiftNameUp-subn m n a b₂) (shiftNameUp-subn m n a b₃)
+shiftNameUp-subn m n a (SUC b) = cong SUC (shiftNameUp-subn m n a b)
+shiftNameUp-subn m n a (NATREC b b₁ b₂) =
+  cong₃ NATREC (shiftNameUp-subn m n a b) (shiftNameUp-subn m n a b₁) (shiftNameUp-subn m n a b₂)
+shiftNameUp-subn m n a (PI b b₁) =
+  cong₂ PI (shiftNameUp-subn m n a b)
+    (trans (shiftNameUp-subn m (suc n) (shiftUp 0 a) b₁)
+           (cong (λ z → subn (suc n) z (shiftNameUp m b₁))
+                 (sym (shiftUp-shiftNameUp 0 m a))))
+shiftNameUp-subn m n a (LAMBDA b) =
+  cong LAMBDA
+    (trans (shiftNameUp-subn m (suc n) (shiftUp 0 a) b)
+           (cong (λ z → subn (suc n) z (shiftNameUp m b))
+                 (sym (shiftUp-shiftNameUp 0 m a))))
+shiftNameUp-subn m n a (APPLY b b₁) =
+  cong₂ APPLY (shiftNameUp-subn m n a b) (shiftNameUp-subn m n a b₁)
+shiftNameUp-subn m n a (FIX b) = cong FIX (shiftNameUp-subn m n a b)
+shiftNameUp-subn m n a (LET b b₁) =
+  cong₂ LET (shiftNameUp-subn m n a b)
+    (trans (shiftNameUp-subn m (suc n) (shiftUp 0 a) b₁)
+           (cong (λ z → subn (suc n) z (shiftNameUp m b₁))
+                 (sym (shiftUp-shiftNameUp 0 m a))))
+shiftNameUp-subn m n a (WT b b₁ b₂) =
+  cong₃ WT (shiftNameUp-subn m n a b)
+    (trans (shiftNameUp-subn m (suc n) (shiftUp 0 a) b₁)
+           (cong (λ z → subn (suc n) z (shiftNameUp m b₁))
+                 (sym (shiftUp-shiftNameUp 0 m a))))
+    (shiftNameUp-subn m n a b₂)
+shiftNameUp-subn m n a (SUP b b₁) =
+  cong₂ SUP (shiftNameUp-subn m n a b) (shiftNameUp-subn m n a b₁)
+shiftNameUp-subn m n a (WREC b b₁) =
+  cong₂ WREC (shiftNameUp-subn m n a b)
+    (trans (shiftNameUp-subn m (suc (suc (suc n))) (shiftUp 0 (shiftUp 0 (shiftUp 0 a))) b₁)
+           (cong (λ z → subn (suc (suc (suc n))) z (shiftNameUp m b₁))
+                 (sym (trans (cong (shiftUp 0) (trans (cong (shiftUp 0) (shiftUp-shiftNameUp 0 m a))
+                                                      (shiftUp-shiftNameUp 0 m (shiftUp 0 a))))
+                             (shiftUp-shiftNameUp 0 m (shiftUp 0 (shiftUp 0 a)))))))
+shiftNameUp-subn m n a (MT b b₁ b₂) =
+  cong₃ MT (shiftNameUp-subn m n a b)
+    (trans (shiftNameUp-subn m (suc n) (shiftUp 0 a) b₁)
+           (cong (λ z → subn (suc n) z (shiftNameUp m b₁))
+                 (sym (shiftUp-shiftNameUp 0 m a))))
+    (shiftNameUp-subn m n a b₂)
+shiftNameUp-subn m n a (SUM b b₁) =
+  cong₂ SUM (shiftNameUp-subn m n a b)
+    (trans (shiftNameUp-subn m (suc n) (shiftUp 0 a) b₁)
+           (cong (λ z → subn (suc n) z (shiftNameUp m b₁))
+                 (sym (shiftUp-shiftNameUp 0 m a))))
+shiftNameUp-subn m n a (PAIR b b₁) =
+  cong₂ PAIR (shiftNameUp-subn m n a b) (shiftNameUp-subn m n a b₁)
+shiftNameUp-subn m n a (SPREAD b b₁) =
+  cong₂ SPREAD (shiftNameUp-subn m n a b)
+    (trans (shiftNameUp-subn m (suc (suc n)) (shiftUp 0 (shiftUp 0 a)) b₁)
+           (cong (λ z → subn (suc (suc n)) z (shiftNameUp m b₁))
+                 (sym (trans (cong (shiftUp 0) (shiftUp-shiftNameUp 0 m a))
+                             (shiftUp-shiftNameUp 0 m (shiftUp 0 a))))))
+shiftNameUp-subn m n a (SET b b₁) =
+  cong₂ SET (shiftNameUp-subn m n a b)
+    (trans (shiftNameUp-subn m (suc n) (shiftUp 0 a) b₁)
+           (cong (λ z → subn (suc n) z (shiftNameUp m b₁))
+                 (sym (shiftUp-shiftNameUp 0 m a))))
+shiftNameUp-subn m n a (TUNION b b₁) =
+  cong₂ TUNION (shiftNameUp-subn m n a b)
+    (trans (shiftNameUp-subn m (suc n) (shiftUp 0 a) b₁)
+           (cong (λ z → subn (suc n) z (shiftNameUp m b₁))
+                 (sym (shiftUp-shiftNameUp 0 m a))))
+shiftNameUp-subn m n a (ISECT b b₁) =
+  cong₂ ISECT (shiftNameUp-subn m n a b) (shiftNameUp-subn m n a b₁)
+shiftNameUp-subn m n a (UNION b b₁) =
+  cong₂ UNION (shiftNameUp-subn m n a b) (shiftNameUp-subn m n a b₁)
+shiftNameUp-subn m n a (INL b) = cong INL (shiftNameUp-subn m n a b)
+shiftNameUp-subn m n a (INR b) = cong INR (shiftNameUp-subn m n a b)
+shiftNameUp-subn m n a (DECIDE b b₁ b₂) =
+  cong₃ DECIDE (shiftNameUp-subn m n a b)
+    (trans (shiftNameUp-subn m (suc n) (shiftUp 0 a) b₁)
+           (cong (λ z → subn (suc n) z (shiftNameUp m b₁))
+                 (sym (shiftUp-shiftNameUp 0 m a))))
+    (trans (shiftNameUp-subn m (suc n) (shiftUp 0 a) b₂)
+           (cong (λ z → subn (suc n) z (shiftNameUp m b₂))
+                 (sym (shiftUp-shiftNameUp 0 m a))))
+shiftNameUp-subn m n a (EQ b b₁ b₂) =
+  cong₃ EQ (shiftNameUp-subn m n a b) (shiftNameUp-subn m n a b₁) (shiftNameUp-subn m n a b₂)
+shiftNameUp-subn m n a AX = refl
+shiftNameUp-subn m n a FREE = refl
+shiftNameUp-subn m n a (CS x) = refl
+shiftNameUp-subn m n a (NAME x) = refl
+shiftNameUp-subn m n a (FRESH b) =
+  cong FRESH
+    (trans (shiftNameUp-subn (suc m) n (shiftNameUp 0 a) b)
+           (cong (λ z → subn n z (shiftNameUp (suc m) b))
+                 (sym (shiftNameUp-shiftNameUp {0} {m} {a} _≤_.z≤n))))
+shiftNameUp-subn m n a (CHOOSE b b₁) =
+  cong₂ CHOOSE (shiftNameUp-subn m n a b) (shiftNameUp-subn m n a b₁)
+shiftNameUp-subn m n a (LOAD b) = refl
+shiftNameUp-subn m n a (MSEQ x) = refl
+shiftNameUp-subn m n a (MAPP x b) = cong (MAPP x) (shiftNameUp-subn m n a b)
+shiftNameUp-subn m n a NOWRITE = refl
+shiftNameUp-subn m n a NOREAD = refl
+shiftNameUp-subn m n a (SUBSING b) = cong SUBSING (shiftNameUp-subn m n a b)
+shiftNameUp-subn m n a (DUM b) = cong DUM (shiftNameUp-subn m n a b)
+shiftNameUp-subn m n a (FFDEFS b b₁) =
+  cong₂ FFDEFS (shiftNameUp-subn m n a b) (shiftNameUp-subn m n a b₁)
+shiftNameUp-subn m n a PURE = refl
+shiftNameUp-subn m n a NOSEQ = refl
+shiftNameUp-subn m n a NOENC = refl
+shiftNameUp-subn m n a (TERM b) = cong TERM (shiftNameUp-subn m n a b)
+shiftNameUp-subn m n a (ENC b) = refl
+shiftNameUp-subn m n a (UNIV x) = refl
+shiftNameUp-subn m n a (LIFT b) = cong LIFT (shiftNameUp-subn m n a b)
+shiftNameUp-subn m n a (LOWER b) = cong LOWER (shiftNameUp-subn m n a b)
+shiftNameUp-subn m n a (SHRINK b) = cong SHRINK (shiftNameUp-subn m n a b)
+
+
+subn-subi : (n : ℕ) (a b c : Term)
+          → subn n a (subi n b c) ≡ subn n (subn n a b) c
+-- VAR
+subn-subi n a b (VAR x) with x ≟ n
+... | yes p = refl
+... | no p with x ≟ n
+... | yes q = ⊥-elim (p q)
+... | no q = refl
+--
+subn-subi n a b QNAT = refl
+subn-subi n a b (LT c c₁) =
+  cong₂ LT (subn-subi n a b c) (subn-subi n a b c₁)
+subn-subi n a b (QLT c c₁) =
+  cong₂ QLT (subn-subi n a b c) (subn-subi n a b c₁)
+subn-subi n a b (NUM x) = refl
+subn-subi n a b (IFLT c c₁ c₂ c₃) =
+  cong₄ IFLT (subn-subi n a b c) (subn-subi n a b c₁) (subn-subi n a b c₂) (subn-subi n a b c₃)
+subn-subi n a b (IFEQ c c₁ c₂ c₃) =
+  cong₄ IFEQ (subn-subi n a b c) (subn-subi n a b c₁) (subn-subi n a b c₂) (subn-subi n a b c₃)
+subn-subi n a b (SUC c) = cong SUC (subn-subi n a b c)
+subn-subi n a b (NATREC c c₁ c₂) =
+  cong₃ NATREC (subn-subi n a b c) (subn-subi n a b c₁) (subn-subi n a b c₂)
+subn-subi n a b (PI c c₁) =
+  cong₂ PI
+    (subn-subi n a b c)
+    (trans (subn-subi (suc n) (shiftUp 0 a) (shiftUp 0 b) c₁)
+           (cong (λ z → subn (suc n) z c₁) (sym (shiftUp-subn 0 n a b _≤_.z≤n))))
+subn-subi n a b (LAMBDA c) =
+  cong LAMBDA
+    (trans (subn-subi (suc n) (shiftUp 0 a) (shiftUp 0 b) c)
+           (cong (λ z → subn (suc n) z c) (sym (shiftUp-subn 0 n a b _≤_.z≤n))))
+subn-subi n a b (APPLY c c₁) =
+  cong₂ APPLY (subn-subi n a b c) (subn-subi n a b c₁)
+subn-subi n a b (FIX c) = cong FIX (subn-subi n a b c)
+subn-subi n a b (LET c c₁) =
+  cong₂ LET
+    (subn-subi n a b c)
+    (trans (subn-subi (suc n) (shiftUp 0 a) (shiftUp 0 b) c₁)
+           (cong (λ z → subn (suc n) z c₁) (sym (shiftUp-subn 0 n a b _≤_.z≤n))))
+subn-subi n a b (WT c c₁ c₂) =
+  cong₃ WT
+    (subn-subi n a b c)
+    (trans (subn-subi (suc n) (shiftUp 0 a) (shiftUp 0 b) c₁)
+           (cong (λ z → subn (suc n) z c₁) (sym (shiftUp-subn 0 n a b _≤_.z≤n))))
+    (subn-subi n a b c₂)
+subn-subi n a b (SUP c c₁) =
+  cong₂ SUP (subn-subi n a b c) (subn-subi n a b c₁)
+subn-subi n a b (WREC c c₁) =
+  cong₂ WREC
+    (subn-subi n a b c)
+    (trans (subn-subi (suc (suc (suc n))) (shiftUp 0 (shiftUp 0 (shiftUp 0 a))) (shiftUp 0 (shiftUp 0 (shiftUp 0 b))) c₁)
+           (cong (λ z → subn (suc (suc (suc n))) z c₁)
+                 (sym (trans (cong (shiftUp 0) (trans (cong (shiftUp 0) (shiftUp-subn 0 n a b _≤_.z≤n))
+                                                      (shiftUp-subn 0 (suc n) (shiftUp 0 a) (shiftUp 0 b) _≤_.z≤n)))
+                             (shiftUp-subn 0 (suc (suc n)) (shiftUp 0 (shiftUp 0 a)) (shiftUp 0 (shiftUp 0 b)) _≤_.z≤n)))))
+subn-subi n a b (MT c c₁ c₂) =
+  cong₃ MT
+    (subn-subi n a b c)
+    (trans (subn-subi (suc n) (shiftUp 0 a) (shiftUp 0 b) c₁)
+           (cong (λ z → subn (suc n) z c₁) (sym (shiftUp-subn 0 n a b _≤_.z≤n))))
+    (subn-subi n a b c₂)
+subn-subi n a b (SUM c c₁) =
+  cong₂ SUM
+    (subn-subi n a b c)
+    (trans (subn-subi (suc n) (shiftUp 0 a) (shiftUp 0 b) c₁)
+           (cong (λ z → subn (suc n) z c₁) (sym (shiftUp-subn 0 n a b _≤_.z≤n))))
+subn-subi n a b (PAIR c c₁) =
+  cong₂ PAIR (subn-subi n a b c) (subn-subi n a b c₁)
+subn-subi n a b (SPREAD c c₁) =
+  cong₂ SPREAD
+    (subn-subi n a b c)
+    (trans (subn-subi (suc (suc n)) (shiftUp 0 (shiftUp 0 a)) (shiftUp 0 (shiftUp 0 b)) c₁)
+           (cong (λ z → subn (suc (suc n)) z c₁)
+                 (sym (trans (cong (shiftUp 0) (shiftUp-subn 0 n a b _≤_.z≤n))
+                             (shiftUp-subn 0 (suc n) (shiftUp 0 a) (shiftUp 0 b) _≤_.z≤n)))))
+subn-subi n a b (SET c c₁) =
+  cong₂ SET
+    (subn-subi n a b c)
+    (trans (subn-subi (suc n) (shiftUp 0 a) (shiftUp 0 b) c₁)
+           (cong (λ z → subn (suc n) z c₁) (sym (shiftUp-subn 0 n a b _≤_.z≤n))))
+subn-subi n a b (TUNION c c₁) =
+  cong₂ TUNION
+    (subn-subi n a b c)
+    (trans (subn-subi (suc n) (shiftUp 0 a) (shiftUp 0 b) c₁)
+           (cong (λ z → subn (suc n) z c₁) (sym (shiftUp-subn 0 n a b _≤_.z≤n))))
+subn-subi n a b (ISECT c c₁) =
+  cong₂ ISECT (subn-subi n a b c) (subn-subi n a b c₁)
+subn-subi n a b (UNION c c₁) =
+  cong₂ UNION (subn-subi n a b c) (subn-subi n a b c₁)
+subn-subi n a b (INL c) = cong INL (subn-subi n a b c)
+subn-subi n a b (INR c) = cong INR (subn-subi n a b c)
+subn-subi n a b (DECIDE c c₁ c₂) =
+  cong₃ DECIDE
+    (subn-subi n a b c)
+    (trans (subn-subi (suc n) (shiftUp 0 a) (shiftUp 0 b) c₁)
+           (cong (λ z → subn (suc n) z c₁) (sym (shiftUp-subn 0 n a b _≤_.z≤n))))
+    (trans (subn-subi (suc n) (shiftUp 0 a) (shiftUp 0 b) c₂)
+           (cong (λ z → subn (suc n) z c₂) (sym (shiftUp-subn 0 n a b _≤_.z≤n))))
+subn-subi n a b (EQ c c₁ c₂) =
+  cong₃ EQ (subn-subi n a b c) (subn-subi n a b c₁) (subn-subi n a b c₂)
+subn-subi n a b AX = refl
+subn-subi n a b FREE = refl
+subn-subi n a b (CS x) = refl
+subn-subi n a b (NAME x) = refl
+subn-subi n a b (FRESH c) =
+  cong FRESH (trans (subn-subi n (shiftNameUp 0 a) (shiftNameUp 0 b) c)
+                    (cong (λ z → subn n z c) (sym (shiftNameUp-subn 0 n a b))))
+subn-subi n a b (CHOOSE c c₁) =
+  cong₂ CHOOSE (subn-subi n a b c) (subn-subi n a b c₁)
+subn-subi n a b (LOAD c) = refl
+subn-subi n a b (MSEQ x) = refl
+subn-subi n a b (MAPP x c) = cong (MAPP x) (subn-subi n a b c)
+subn-subi n a b NOWRITE = refl
+subn-subi n a b NOREAD = refl
+subn-subi n a b (SUBSING c) = cong SUBSING (subn-subi n a b c)
+subn-subi n a b (DUM c) = cong DUM (subn-subi n a b c)
+subn-subi n a b (FFDEFS c c₁) =
+  cong₂ FFDEFS (subn-subi n a b c) (subn-subi n a b c₁)
+subn-subi n a b PURE = refl
+subn-subi n a b NOSEQ = refl
+subn-subi n a b NOENC = refl
+subn-subi n a b (TERM c) = cong TERM (subn-subi n a b c)
+subn-subi n a b (ENC c) = refl
+subn-subi n a b (UNIV x) = refl
+subn-subi n a b (LIFT c) = cong LIFT (subn-subi n a b c)
+subn-subi n a b (LOWER c) = cong LOWER (subn-subi n a b c)
+subn-subi n a b (SHRINK c) = cong SHRINK (subn-subi n a b c)
 
 
 subsN-suc-shiftUp : (n : ℕ) (s : Sub) (b : Term)

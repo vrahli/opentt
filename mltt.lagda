@@ -1390,19 +1390,29 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
     cs1d : covered s1 (subn 0 (SUC (NUM n)) G)
     cs1d = →covered-subn (#subs s1 k ck1) (SUC (NUM n)) s1 G refl cs1
 
-    esn0 : sub (NUM n) (subsN 1 s1 (FUN G (subi 0 (SUC (VAR 0)) G)))
+    esn0 : subn 0 (NUM n) (subsN 1 s1 (FUN G (subi 0 (SUC (VAR 0)) G)))
          ≣ FUN (subs s1 (subn 0 (NUM n) G)) (subs s1 (subn 0 (SUC (NUM n)) G))
     esn0 rewrite subsN-FUN 1 s1 G (subi 0 (SUC (VAR 0)) G) =
-      ≡PI (≣trans (shiftDown-subv-subsN1# s1 (NUM n) G refl)
+      ≡PI (≣trans (subn-subsN1 (#NUM n) s1 G)
                   (≣trans (cong (λ z → subs (s1 Data.List.∷ʳ z) G) (≣sym (#subs-NUM s1 n (covered-NUM s1 n))))
                           (subs∷ʳ≡ s1 (NUM n) G (covered-NUM s1 n))))
-          (≣trans (shiftDown1-subv1-shiftUp0 0 (NUM n) (subsN 1 s1 (gsub (λ v x → x) 0 (SUC (VAR 0)) G)) refl)
-                  {!!})
+          (≣trans (cong (λ z → subn 1 (NUM n) z) (≣sym (subsN-suc-shiftUp 1 s1 (subi 0 (SUC (VAR 0)) G)))) --(cong (λ z → subn 1 (NUM n) z) {!!})
+                  (≣trans (≣trans (≣trans (cong (λ z → subn 1 z (subsN 2 s1 (shiftUp 0 (subi 0 (SUC (VAR 0)) G)))) (≣sym (subsN-NUM 1 s1 n)))
+                                          (≣trans (subn-subsN 1 (NUM n) s1 (shiftUp 0 (subi 0 (SUC (VAR 0)) G)))
+                                                  (cong (subsN 1 s1)
+                                                        (≣trans (≣sym (shiftUp-subn 0 0 (NUM n) (subi 0 (SUC (VAR 0)) G) ≤-refl))
+                                                                (cong (shiftUp 0) (subn-subi 0 (NUM n) (SUC (VAR 0)) G))))))
+                                  (subsN-suc-shiftUp 0 s1 (subn 0 (SUC (NUM n)) G)))
+                          (cong (shiftUp 0) (subsN0 s1 (subn 0 (SUC (NUM n)) G)))))
 
     esn : sub0 (#NUM n) (#[0]subs s1 (FUN G (subi 0 (SUC (VAR 0)) G)) cp01)
         ≣ #FUN (#subs s1 (subn 0 (NUM n) G) cs1c) (#subs s1 (subn 0 (SUC (NUM n)) G) cs1d)
-    esn = CTerm≡ esn0
-    -- use this to rewrite hp2
+    esn = CTerm≡ (≣trans (sub≡subn (NUM n) (subsN 1 s1 (FUN G (subi 0 (SUC (VAR 0)) G)))) esn0)
+
+    hp3 : equalInType i w1 (#FUN (#subs s1 (subn 0 (NUM n) G) cs1c) (#subs s1 (subn 0 (SUC (NUM n)) G) cs1d))
+                           (#APPLY (#subs s1 s cx1) (#NUM n)) (#APPLY (#subs s2 s cx2) (#NUM n))
+    hp3 = ≡CTerm→equalInType esn hp2
+    -- instantiate hp3 to derive hz2
 
     hz2 : equalInType i w1 (#subs s1 (subn 0 k G) cc1)
                            (#APPLY2 (#subs s1 s cx1) (#NUM n) (#NATREC (#NUM n) (#subs s1 z cz1) (#subs s1 s cx1)))
