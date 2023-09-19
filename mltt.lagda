@@ -1390,6 +1390,12 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
     cs1d : covered s1 (subn 0 (SUC (NUM n)) G)
     cs1d = →covered-subn (#subs s1 k ck1) (SUC (NUM n)) s1 G refl cs1
 
+    cus1b : covered (s1 Data.List.∷ʳ (#subs s1 (SUC (NUM n)) cm1)) (UNIV 1)
+    cus1b = covered-UNIV (s1 Data.List.∷ʳ (#subs s1 (SUC (NUM n)) cm1)) 1
+
+    css1b : covered (s1 Data.List.∷ʳ #subs s1 (SUC (NUM n)) cm1) G
+    css1b = covered-subn→ (#subs s1 (SUC (NUM n)) cm1) k s1 G cc1
+
     esn0 : subn 0 (NUM n) (subsN 1 s1 (FUN G (subi 0 (SUC (VAR 0)) G)))
          ≣ FUN (subs s1 (subn 0 (NUM n) G)) (subs s1 (subn 0 (SUC (NUM n)) G))
     esn0 rewrite subsN-FUN 1 s1 G (subi 0 (SUC (VAR 0)) G) =
@@ -1426,10 +1432,40 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
             (#NATREC (#NUM n) (#subs s2 z cz2) (#subs s2 s cx2))
             ind
 
+    eqn1 : equalInType i w1 #NAT! (#SUC (#NUM n)) (#subs s1 k ck1)
+    eqn1 = →equalInType-NAT! i w1 (#SUC (#NUM n)) (#subs s1 k ck1)
+             (Mod.∀𝕎-□ M (λ w2 e2 → (1+ n) , (λ w1 e1 → lift (1 , refl)) ,
+                                    #⇛!-mon {#subs s1 k ck1} {#NUM (1+ n)} e2 c₁))
+
+    es2 : ≡subs i w1 (s1 Data.List.∷ʳ #subs s1 (SUC (NUM n)) cm1) (s1 Data.List.∷ʳ #subs s1 k ck1) (H Data.List.∷ʳ mkHyp NAT!)
+    es2 = ≡subs∷ʳ i w1 s1 s1 H NAT! cn1 (#subs s1 (SUC (NUM n)) cm1) (#subs s1 k ck1)
+            (≡→equalInType (≣sym (#subs-NAT! s1 cn1)) (≣sym (≣trans (#subs-SUC s1 (NUM n) cm1) (cong #SUC (#subs-NUM s1 n cm1)))) refl eqn1)
+            (≡subs-refl i w1 s1 s2 H (≡subs-mon e1 es))
+
+    eh2 : ≡hyps i w1 (s1 Data.List.∷ʳ #subs s1 (SUC (NUM n)) cm1) (s1 Data.List.∷ʳ #subs s1 k ck1) (H Data.List.∷ʳ mkHyp NAT!) (H Data.List.∷ʳ mkHyp NAT!)
+    eh2 = ≡hyps∷ʳ i w1 s1 s1 H H NAT! NAT! cn1 cn1 (#subs s1 (SUC (NUM n)) cm1) (#subs s1 k ck1)
+            (≡CTerm→eqTypes (≣sym (#subs-NAT! s1 cn1)) (≣sym (#subs-NAT! s1 cn1)) isTypeNAT!)
+            (≡hyps-refl i w1 s1 s2 H H (≡hyps-mon e1 eh))
+
+    eqt1 : equalInType i w1 (#subs (s1 Data.List.∷ʳ #subs s1 (SUC (NUM n)) cm1) (UNIV 1) cus1b)
+                            (#subs (s1 Data.List.∷ʳ #subs s1 (SUC (NUM n)) cm1) G css1b)
+                            (#subs (s1 Data.List.∷ʳ #subs s1 k ck1) G cs1)
+    eqt1 = π₂ (hg w1 (s1 Data.List.∷ʳ #subs s1 (SUC (NUM n)) cm1) (s1 Data.List.∷ʳ #subs s1 k ck1) cus1b cu1a css1b cs1 es2 eh2)
+
+    eqt2 : equalTypes 1 w1 (#subs s1 (subn 0 (SUC (NUM n)) G) cs1d) (#subs s1 (subn 0 k G) cc1)
+    eqt2 = equalInType→equalTypes-aux i 1 lti w1 (#subs s1 (subn 0 (SUC (NUM n)) G) cs1d) (#subs s1 (subn 0 k G) cc1)
+             (≡→equalInType (#subs-UNIV (s1 Data.List.∷ʳ #subs s1 (SUC (NUM n)) cm1) 1 cus1b)
+                            (CTerm≡ (subs∷ʳ≡ s1 (SUC (NUM n)) G cm1))
+                            (CTerm≡ (subs∷ʳ≡ s1 k G ck1))
+                            eqt1)
+
+    eqt : equalTypes i w1 (#subs s1 (subn 0 (SUC (NUM n)) G) cs1d) (#subs s1 (subn 0 k G) cc1)
+    eqt = equalTypes-uni-mon (<⇒≤ lti) eqt2
+
     hz2 : equalInType i w1 (#subs s1 (subn 0 k G) cc1)
                            (#APPLY2 (#subs s1 s cx1) (#NUM n) (#NATREC (#NUM n) (#subs s1 z cz1) (#subs s1 s cx1)))
                            (#APPLY2 (#subs s2 s cx2) (#NUM n) (#NATREC (#NUM n) (#subs s2 z cz2) (#subs s2 s cx2)))
-    hz2 = {!!} -- fom hp4 though a bit of computation
+    hz2 = TSext-equalTypes-equalInType i w1 _ _ _ _ eqt hp4
 
   c2a : equalInType i w (#subs s1 (subn 0 k G) cc1)
                     (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 s cx1))
