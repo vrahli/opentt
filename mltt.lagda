@@ -16,7 +16,7 @@ open import Data.List.Relation.Binary.Subset.Propositional
 open import Data.List.Relation.Binary.Subset.Propositional.Properties
   using (⊆-refl ; ⊆-trans ; xs⊆x∷xs)
 open import Relation.Binary.PropositionalEquality
-  using (cong ; cong₂) renaming (trans to ≣trans ; sym to ≣sym ; subst to ≣subst)
+  using (cong ; cong₂ ; subst₂) renaming (trans to ≣trans ; sym to ≣sym ; subst to ≣subst)
 open import Data.List using () renaming ([] to nil ; _∷_ to cons)
 open import Data.List.Relation.Unary.Any
 open import Data.List.Properties
@@ -1324,13 +1324,19 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
   c1 : equalTypes i w (#subs s1 (subn 0 k G) cc1) (#subs s2 (subn 0 k G) cc2)
   c1 = equalTypes-uni-mon (<⇒≤ lti) hg3
 
-  aw1 : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' (#subs s1 k ck1) (#subs s2 k ck2)
-                      → equalInType i w' (#subs s1 (subn 0 k G) cc1)
+  aw0 : ∀𝕎 w (λ w1 e1 → (k    : BTerm)
+                        (ck1  : covered s1 k)
+                        (ck2  : covered s2 k)
+                        (cc1  : covered s1 (subn 0 k G))
+                        (cs1  : covered (s1 Data.List.∷ʳ #subs s1 k ck1) G)
+                        (cu1a : covered (s1 Data.List.∷ʳ (#subs s1 k ck1)) (UNIV 1))
+                        (n    : Nat)
+                        (c₁   : #subs s1 k ck1 #⇛! #NUM n at w1)
+                        (c₂   : #subs s2 k ck2 #⇛! #NUM n at w1)
+                      → equalInType i w1 (#subs s1 (subn 0 k G) cc1)
                                     (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 s cx1))
                                     (#NATREC (#subs s2 k ck2) (#subs s2 z cz2) (#subs s2 s cx2)))
-  -- we now go by induction on n
-  -- TODO: we need to generalize k
-  aw1 w1 e1 (0 , c₁ , c₂) =
+  aw0 w1 e1 k ck1 ck2 cc1 cs1 cu1a 0 c₁ c₂ =
     equalInType-#⇛ₚ-left-right-rev (NATREC-0⇛! c₁) (NATREC-0⇛! c₂) hz2
     where
     hz1 : equalInType i w1 (#subs s1 (subn 0 N0 G) cs1a) (#subs s1 z cz1) (#subs s2 z cz2)
@@ -1364,8 +1370,7 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
 
     hz2 : equalInType i w1 (#subs s1 (subn 0 k G) cc1) (#subs s1 z cz1) (#subs s2 z cz2)
     hz2 = TSext-equalTypes-equalInType i w1 _ _ _ _ (equalTypes-uni-mon (<⇒≤ lti) eqt2) hz1
-
-  aw1 w1 e1 (suc n , c₁ , c₂) =
+  aw0 w1 e1 k ck1 ck2 cc1 cs1 cu1a (1+ n) c₁ c₂ =
     equalInType-#⇛ₚ-left-right-rev {i} {w1}
       (#NATREC-s⇛! {n} {#subs s1 k ck1} {#subs s1 z cz1} {#subs s1 s cx1} c₁)
       (#NATREC-s⇛! {n} {#subs s2 k ck2} {#subs s2 z cz2} {#subs s2 s cx2} c₂)
@@ -1396,6 +1401,12 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
     css1b : covered (s1 Data.List.∷ʳ #subs s1 (SUC (NUM n)) cm1) G
     css1b = covered-subn→ (#subs s1 (SUC (NUM n)) cm1) k s1 G cc1
 
+    cus1c : covered (s1 Data.List.∷ʳ (#subs s1 (NUM n) cm1)) (UNIV 1)
+    cus1c = covered-UNIV (s1 Data.List.∷ʳ (#subs s1 (NUM n) cm1)) 1
+
+    css1c : covered (s1 Data.List.∷ʳ #subs s1 (NUM n) cm1) G
+    css1c = covered-subn→ (#subs s1 (NUM n) cm1) k s1 G cc1
+
     esn0 : subn 0 (NUM n) (subsN 1 s1 (FUN G (subi 0 (SUC (VAR 0)) G)))
          ≣ FUN (subs s1 (subn 0 (NUM n) G)) (subs s1 (subn 0 (SUC (NUM n)) G))
     esn0 rewrite subsN-FUN 1 s1 G (subi 0 (SUC (VAR 0)) G) =
@@ -1419,10 +1430,24 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
                            (#APPLY (#subs s1 s cx1) (#NUM n)) (#APPLY (#subs s2 s cx2) (#NUM n))
     hp3 = ≡CTerm→equalInType esn hp2
 
+    nc1 : #subs s1 (NUM n) cm1 #⇛! #NUM n at w1
+    nc1 = ≣subst (λ z → z #⇛! #NUM n at w1) (≣sym (#subs-NUM s1 n cm1)) (#⇛!-refl {w1} {#NUM n})
+
+    nc2 : #subs s2 (NUM n) cm2 #⇛! #NUM n at w1
+    nc2 = ≣subst (λ z → z #⇛! #NUM n at w1) (≣sym (#subs-NUM s2 n cm2)) (#⇛!-refl {w1} {#NUM n})
+
+    ind0 : equalInType i w1 (#subs s1 (subn 0 (NUM n) G) cs1c)
+                            (#NATREC (#subs s1 (NUM n) cm1) (#subs s1 z cz1) (#subs s1 s cx1))
+                            (#NATREC (#subs s2 (NUM n) cm2) (#subs s2 z cz2) (#subs s2 s cx2))
+    ind0 = aw0 w1 e1 (NUM n) cm1 cm2 cs1c css1c cus1c n nc1 nc2
+
     ind : equalInType i w1 (#subs s1 (subn 0 (NUM n) G) cs1c)
                            (#NATREC (#NUM n) (#subs s1 z cz1) (#subs s1 s cx1))
                            (#NATREC (#NUM n) (#subs s2 z cz2) (#subs s2 s cx2))
-    ind = {!!} -- from the IH which we don't have yet
+    ind = subst₂ (λ a b → equalInType i w1 (#subs s1 (subn 0 (NUM n) G) cs1c)
+                                      (#NATREC a (#subs s1 z cz1) (#subs s1 s cx1))
+                                      (#NATREC b (#subs s2 z cz2) (#subs s2 s cx2)))
+            (#subs-NUM s1 n cm1) (#subs-NUM s2 n cm2) ind0
 
     hp4 : equalInType i w1 (#subs s1 (subn 0 (SUC (NUM n)) G) cs1d)
                            (#APPLY2 (#subs s1 s cx1) (#NUM n) (#NATREC (#NUM n) (#subs s1 z cz1) (#subs s1 s cx1)))
@@ -1466,6 +1491,12 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
                            (#APPLY2 (#subs s1 s cx1) (#NUM n) (#NATREC (#NUM n) (#subs s1 z cz1) (#subs s1 s cx1)))
                            (#APPLY2 (#subs s2 s cx2) (#NUM n) (#NATREC (#NUM n) (#subs s2 z cz2) (#subs s2 s cx2)))
     hz2 = TSext-equalTypes-equalInType i w1 _ _ _ _ eqt hp4
+
+  aw1 : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' (#subs s1 k ck1) (#subs s2 k ck2)
+                      → equalInType i w' (#subs s1 (subn 0 k G) cc1)
+                                    (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 s cx1))
+                                    (#NATREC (#subs s2 k ck2) (#subs s2 z cz2) (#subs s2 s cx2)))
+  aw1 w1 e1 (n , c₁ , c₂) = aw0 w1 e1 k ck1 ck2 cc1 cs1 cu1a n c₁ c₂
 
   c2a : equalInType i w (#subs s1 (subn 0 k G) cc1)
                     (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 s cx1))
