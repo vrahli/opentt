@@ -1508,6 +1508,22 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
   c2 = ≡→equalInType refl (≣sym (#subs-NATREC s1 k z s ce1 ck1 cz1 cx1)) (≣sym (#subs-NATREC s2 k z s ce2 ck2 cz2 cx2)) c2a
 
 
+valid∈VAR : {n : Nat} {Γ : Con Term n} {σ : Term n} {x : Fin n}
+          → x ∷ σ ∈ Γ
+          → (i : Nat) (w : 𝕎·) → valid∈ i w ⟦ Γ ⟧Γ (VAR (toℕ x)) ⟦ σ ⟧ᵤ
+valid∈VAR {.(1+ _)} {.(_ ∙ _)} {.(wk1 _)} {.Fin.zero} here i w s1 s2 cc1 cc2 ce1 ce2 es eh =
+  {!!}
+valid∈VAR {.(1+ _)} {.(_ ∙ _)} {.(wk1 _)} {.(Fin.suc _)} (there j) i w = {!!}
+
+
+valid∈APPLY : {i : Nat} {H : hypotheses} {F G g a : BTerm} (lti : 1 <ℕ i)
+            → valid∈𝕎 i H a F
+            → valid∈𝕎 i H g (PI F G)
+            → valid∈𝕎 i H (APPLY g a) (subn 0 a G)
+valid∈APPLY {i} {H} {F} {G} {g} {a} lti ha hg w s1 s2 cc1 cc2 ce1 ce2 es eh =
+  {!!}
+
+
 ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
         (j : Γ ⊢ σ ≡ τ)
         (i : Nat) (w : 𝕎·)
@@ -1546,9 +1562,18 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
 ⟦_⟧Γ∈ {n} {Γ} {.ℕ} {.U} (ℕⱼ x) i lti w = valid∈-NAT! i lti ⟦ Γ ⟧Γ w
 ⟦_⟧Γ∈ {n} {Γ} {.Empty} {.U} (Emptyⱼ x) i lti w = valid∈-FALSE i lti ⟦ Γ ⟧Γ w
 ⟦_⟧Γ∈ {n} {Γ} {.Unit} {.U} (Unitⱼ x) i lti w = valid∈-UNIT i lti ⟦ Γ ⟧Γ w
-⟦_⟧Γ∈ {n} {Γ} {.(var _)} {σ} (var x x₁) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(var _)} {σ} (var {σ} {v} x x₁) i lti w = {!!} -- use valid∈VAR
 ⟦_⟧Γ∈ {n} {Γ} {.(lam _)} {.(Π _ ▹ _)} (lamⱼ x j) i lti w = {!!}
-⟦_⟧Γ∈ {n} {Γ} {.(_ ∘ _)} {.(G [ a ])} ((_∘ⱼ_) {g} {a} {F} {G} j j₁) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(_ ∘ _)} {.(G [ a ])} ((_∘ⱼ_) {g} {a} {F} {G} j j₁) i lti w =
+  ≣subst (valid∈ i w ⟦ Γ ⟧Γ (APPLY ⟦ g ⟧ᵤ ⟦ a ⟧ᵤ))
+         (≣sym (⟦[]⟧ᵤ-as-subn G a))
+         (valid∈APPLY lti h1 h2 w)
+  where
+  h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ a ⟧ᵤ ⟦ F ⟧ᵤ
+  h1 = ⟦_⟧Γ∈ j₁ i lti
+
+  h2 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ g ⟧ᵤ (PI ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ)
+  h2 = ⟦_⟧Γ∈ j i lti
 ⟦_⟧Γ∈ {n} {Γ} {.(prod _ _)} {.(Σ _ ▹ _)} (prodⱼ x x₁ j j₁) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.(fst _)} {σ} (fstⱼ x x₁ j) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.(snd _)} {.(G [ fst u ])} (sndⱼ {F} {G} {u} x x₁ j) i lti w = {!!}
