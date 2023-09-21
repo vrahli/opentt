@@ -1516,12 +1516,46 @@ valid∈VAR {.(1+ _)} {.(_ ∙ _)} {.(wk1 _)} {.Fin.zero} here i w s1 s2 cc1 cc2
 valid∈VAR {.(1+ _)} {.(_ ∙ _)} {.(wk1 _)} {.(Fin.suc _)} (there j) i w = {!!}
 
 
+coveredAPPLY₁ : {s : Sub} {a b : BTerm}
+              → covered s (APPLY a b)
+              → covered s a
+coveredAPPLY₁ {s} {a} {b} c {x} i = c {x} (∈-++⁺ˡ i)
+
+
 valid∈APPLY : {i : Nat} {H : hypotheses} {F G g a : BTerm} (lti : 1 <ℕ i)
+            → coveredH H F
             → valid∈𝕎 i H a F
             → valid∈𝕎 i H g (PI F G)
             → valid∈𝕎 i H (APPLY g a) (subn 0 a G)
-valid∈APPLY {i} {H} {F} {G} {g} {a} lti ha hg w s1 s2 cc1 cc2 ce1 ce2 es eh =
-  {!!}
+valid∈APPLY {i} {H} {F} {G} {g} {a} lti covF ha hg w s1 s2 cc1 cc2 ce1 ce2 es eh =
+  c1 , c2
+  where
+  cF1 : covered s1 F
+  cF1 = ≡subs→coveredₗ {i} {w} {s1} {s2} {H} {F} es covF
+
+  cF2 : covered s2 F
+  cF2 = ≡subs→coveredᵣ {i} {w} {s1} {s2} {H} {F} es covF
+
+  cG1 : covered0 s1 G
+  cG1 = {!!} -- from cc1
+
+  cG2 : covered0 s2 G
+  cG2 = {!!} -- from cc2
+
+  cp1 : covered s1 (PI F G)
+  cp1 = →coveredPI {s1} {F} {G} cF1 cG1
+
+  cp2 : covered s2 (PI F G)
+  cp2 = →coveredPI {s2} {F} {G} cF2 cG2
+
+  hg1 : equalTypes i w (#subs s1 (PI F G) cp1) (#subs s2 (PI F G) cp2)
+  hg1 = π₁ (hg w s1 s2 cp1 cp2 (coveredAPPLY₁ {s1} {g} {a} ce1) (coveredAPPLY₁ {s2} {g} {a} ce2) es eh)
+
+  c1 : equalTypes i w (#subs s1 (subn 0 a G) cc1) (#subs s2 (subn 0 a G) cc2)
+  c1 = {!!} -- from hg1
+
+  c2 : equalInType i w (#subs s1 (subn 0 a G) cc1) (#subs s1 (APPLY g a) ce1) (#subs s2 (APPLY g a) ce2)
+  c2 = {!!}
 
 
 ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
@@ -1567,13 +1601,16 @@ valid∈APPLY {i} {H} {F} {G} {g} {a} lti ha hg w s1 s2 cc1 cc2 ce1 ce2 es eh =
 ⟦_⟧Γ∈ {n} {Γ} {.(_ ∘ _)} {.(G [ a ])} ((_∘ⱼ_) {g} {a} {F} {G} j j₁) i lti w =
   ≣subst (valid∈ i w ⟦ Γ ⟧Γ (APPLY ⟦ g ⟧ᵤ ⟦ a ⟧ᵤ))
          (≣sym (⟦[]⟧ᵤ-as-subn G a))
-         (valid∈APPLY lti h1 h2 w)
+         (valid∈APPLY lti covF h1 h2 w)
   where
   h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ a ⟧ᵤ ⟦ F ⟧ᵤ
   h1 = ⟦_⟧Γ∈ j₁ i lti
 
   h2 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ g ⟧ᵤ (PI ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ)
   h2 = ⟦_⟧Γ∈ j i lti
+
+  covF : coveredH ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ
+  covF = coveredΓ {n} Γ F
 ⟦_⟧Γ∈ {n} {Γ} {.(prod _ _)} {.(Σ _ ▹ _)} (prodⱼ x x₁ j j₁) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.(fst _)} {σ} (fstⱼ x x₁ j) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.(snd _)} {.(G [ fst u ])} (sndⱼ {F} {G} {u} x x₁ j) i lti w = {!!}
