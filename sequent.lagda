@@ -660,6 +660,18 @@ coveredPI₂ : {s : Sub} {a b : Term}
 coveredPI₂ {s} {a} {b} c {x} i = c {x} (∈-++⁺ʳ (fvars a) i)
 
 
+coveredAPPLY₁ : {s : Sub} {a b : Term}
+              → covered s (APPLY a b)
+              → covered s a
+coveredAPPLY₁ {s} {a} {b} c {x} i = c {x} (∈-++⁺ˡ i)
+
+
+coveredAPPLY₂ : {s : Sub} {a b : Term}
+              → covered s (APPLY a b)
+              → covered s b
+coveredAPPLY₂ {s} {a} {b} c {x} i = c {x} (∈-++⁺ʳ (fvars a) i)
+
+
 coveredNATREC₁ : {s : Sub} {a b c : Term}
                → covered s (NATREC a b c)
                → covered s a

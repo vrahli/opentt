@@ -91,7 +91,8 @@ open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (≡→equalInType ; eqTypesEQ→ᵣ)
 open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (_#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ; presPure ; →presPure-NATREC₁ ; →presPure-NATREC₂ ; →presPure-NATREC₃)
+  using (_#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ; presPure ; →presPure-NATREC₁ ; →presPure-NATREC₂ ; →presPure-NATREC₃ ;
+         equalTypesPI→ₗ ; equalTypesPI→ᵣ)
 open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalTypes-uni-mon ; equalInType-uni-mon)
 
@@ -1516,11 +1517,6 @@ valid∈VAR {.(1+ _)} {.(_ ∙ _)} {.(wk1 _)} {.Fin.zero} here i w s1 s2 cc1 cc2
 valid∈VAR {.(1+ _)} {.(_ ∙ _)} {.(wk1 _)} {.(Fin.suc _)} (there j) i w = {!!}
 
 
-coveredAPPLY₁ : {s : Sub} {a b : BTerm}
-              → covered s (APPLY a b)
-              → covered s a
-coveredAPPLY₁ {s} {a} {b} c {x} i = c {x} (∈-++⁺ˡ i)
-
 
 valid∈APPLY : {i : Nat} {H : hypotheses} {F G g a : BTerm} (lti : 1 <ℕ i)
             → coveredH H F
@@ -1537,10 +1533,10 @@ valid∈APPLY {i} {H} {F} {G} {g} {a} lti covF ha hg w s1 s2 cc1 cc2 ce1 ce2 es 
   cF2 = ≡subs→coveredᵣ {i} {w} {s1} {s2} {H} {F} es covF
 
   cG1 : covered0 s1 G
-  cG1 = {!!} -- from cc1
+  cG1 = covered-subn→covered0 a s1 G cc1
 
   cG2 : covered0 s2 G
-  cG2 = {!!} -- from cc2
+  cG2 = covered-subn→covered0 a s2 G cc2
 
   cp1 : covered s1 (PI F G)
   cp1 = →coveredPI {s1} {F} {G} cF1 cG1
@@ -1548,11 +1544,33 @@ valid∈APPLY {i} {H} {F} {G} {g} {a} lti covF ha hg w s1 s2 cc1 cc2 ce1 ce2 es 
   cp2 : covered s2 (PI F G)
   cp2 = →coveredPI {s2} {F} {G} cF2 cG2
 
+  ca1 : covered s1 a
+  ca1 = coveredAPPLY₂ {s1} {g} {a} ce1
+
+  ca2 : covered s2 a
+  ca2 = coveredAPPLY₂ {s2} {g} {a} ce2
+
+  cg1 : covered s1 g
+  cg1 = coveredAPPLY₁ {s1} {g} {a} ce1
+
+  cg2 : covered s2 g
+  cg2 = coveredAPPLY₁ {s2} {g} {a} ce2
+
   hg1 : equalTypes i w (#subs s1 (PI F G) cp1) (#subs s2 (PI F G) cp2)
-  hg1 = π₁ (hg w s1 s2 cp1 cp2 (coveredAPPLY₁ {s1} {g} {a} ce1) (coveredAPPLY₁ {s2} {g} {a} ce2) es eh)
+  hg1 = π₁ (hg w s1 s2 cp1 cp2 cg1 cg2 es eh)
+
+  hg2 : equalTypes i w (#PI (#subs s1 F cF1) (#[0]subs s1 G cG1)) (#PI (#subs s2 F cF2) (#[0]subs s2 G cG2))
+  hg2 = ≡CTerm→eqTypes (#subs-PI s1 F G cp1 cF1 cG1) (#subs-PI s2 F G cp2 cF2 cG2) hg1
+
+  ha1 : equalInType i w (#subs s1 F cF1) (#subs s1 a ca1) (#subs s2 a ca2)
+  ha1 = π₂ (ha w s1 s2 cF1 cF2 ca1 ca2 es eh)
+
+  hg3 : equalTypes i w (sub0 (#subs s1 a ca1) (#[0]subs s1 G cG1)) (sub0 (#subs s2 a ca2) (#[0]subs s2 G cG2))
+  hg3 = equalTypesPI→ᵣ {w} {i} {#subs s1 F cF1} {#[0]subs s1 G cG1} {#subs s2 F cF2} {#[0]subs s2 G cG2}
+                       hg2 (#subs s1 a ca1) (#subs s2 a ca2) ha1
 
   c1 : equalTypes i w (#subs s1 (subn 0 a G) cc1) (#subs s2 (subn 0 a G) cc2)
-  c1 = {!!} -- from hg1
+  c1 = {!!} -- from hg3
 
   c2 : equalInType i w (#subs s1 (subn 0 a G) cc1) (#subs s1 (APPLY g a) ce1) (#subs s2 (APPLY g a) ce2)
   c2 = {!!}
@@ -1612,7 +1630,17 @@ valid∈APPLY {i} {H} {F} {G} {g} {a} lti covF ha hg w s1 s2 cc1 cc2 ce1 ce2 es 
   covF : coveredH ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ
   covF = coveredΓ {n} Γ F
 ⟦_⟧Γ∈ {n} {Γ} {.(prod _ _)} {.(Σ _ ▹ _)} (prodⱼ x x₁ j j₁) i lti w = {!!}
-⟦_⟧Γ∈ {n} {Γ} {.(fst _)} {σ} (fstⱼ x x₁ j) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(fst _)} {σ} (fstⱼ {F} {G} {t} x x₁ j) i lti w =
+  {!!}
+  where
+  h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
+  h1 = ⟦_⟧⊢ x i lti
+
+  h2 : valid∈𝕎 i ⟦ Γ ∙ F ⟧Γ ⟦ G ⟧ᵤ (UNIV 1)
+  h2 = ⟦_⟧⊢ x₁ i lti
+
+  h3 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ (SUM ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ)
+  h3 = ⟦_⟧Γ∈ j i lti
 ⟦_⟧Γ∈ {n} {Γ} {.(snd _)} {.(G [ fst u ])} (sndⱼ {F} {G} {u} x x₁ j) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.Definition.Untyped.zero} {.ℕ} (zeroⱼ x) i lti w =
   valid∈N0-NAT i w ⟦ Γ ⟧Γ

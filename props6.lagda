@@ -76,9 +76,10 @@ open import terms4(W)(C)(K)(G)(X)(N)(EC)
 --  using (#¬Enc→⇛! ; #¬Seq→⇛!)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (□·EqTypes→uniUpTo ; uniUpTo→□·EqTypes)
+  using (□·EqTypes→uniUpTo ; uniUpTo→□·EqTypes ; ≡→#isValue ; equalInType→eqInType)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (eqInType-extr1 ; eqInType-sym ; eqInType-extl1 ; equalInType-sym)
+  using (eqInType-extr1 ; eqInType-sym ; eqInType-extl1 ; equalInType-sym ; equalInType-local ; eqTypes-local ;
+         equalInType-mon ; ≡CTerm→eqTypes)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalTypes-#⇛-left-rev ; TUNIONeq-#⇛-rev)
 
@@ -666,5 +667,125 @@ equalInType-#⇛ₚ-left-right-rev : {i : ℕ} {w : 𝕎·} {T a b c d : CTerm}
                                → equalInType i w T a c
 equalInType-#⇛ₚ-left-right-rev {i} {w} {T} {a} {b} {c} {d} c₁ c₂ a∈ =
   equalInType-#⇛ₚ-left-rev c₁ (equalInType-sym (equalInType-#⇛ₚ-left-rev c₂ (equalInType-sym a∈)))
+
+
+abstract
+  equalTypesPI→ₗ : {w : 𝕎·} {i : ℕ} {A : CTerm} {B : CTerm0} {C : CTerm} {D : CTerm0}
+                 → equalTypes i w (#PI A B) (#PI C D)
+                 → equalTypes i w A C
+  equalTypesPI→ₗ {w} {i} {A} {B} {C} {D} eqt = concl (#PI A B) (#PI C D) eqt refl refl
+    where
+      ind : {u : ℕ} {w : 𝕎·} {T1 T2 : CTerm} (eqt : equalTypes u w T1 T2)
+            → ({u' : ℕ} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : equalTypes u' w' T1' T2') → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt
+                → T1' ≡ #PI A B → T2' ≡ #PI C D → equalTypes u' w' A C)
+            → T1 ≡ #PI A B → T2 ≡ #PI C D → equalTypes u w A C
+--      ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqNAT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqQNAT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqTNAT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqLT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqQLT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqFREE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2
+        = ≡CTerm→eqTypes
+            (sym (#PIinj1 {A} {B} {A1} {B1} (trans (sym eq1) (#compAllVal x (≡→#isValue (#PI A B) T1 (sym eq1) tt)))))
+            (sym (#PIinj1 {C} {D} {A2} {B2} (trans (sym eq2) (#compAllVal x₁ (≡→#isValue (#PI C D) T2 (sym eq2) tt)))))
+            (eqta w (⊑-refl· w))
+      ind {u} {w} {T1} {T2} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqSUM (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTW A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqW (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTM A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqM (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqSET (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqISECT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqTUNION (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqEQ (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqUNION (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqQTUNION (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqTSQUASH (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqTTRUNC (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqNOWRITE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOREAD x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqNOREAD (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqSUBSING (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqPURE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqNOSEQ (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOENC x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqNOENC (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqTERM (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqFFDEFS (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTUNIV m p c₁ c₂) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqUNIV (compAllVal c₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqLIFT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTBAR x) ind eq1 eq2 =
+        eqTypes-local (∀𝕎-□at W M x aw)
+        where
+        aw : ∀𝕎 w (λ w' e' → (z : equalTypes u w' T1 T2) → at□· x w' e' z → equalTypes u w' A C)
+        aw w1 e1 z at = ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR x) (<TypeBAR (ℕ→𝕌 u) w T1 T2 x w1 e1 z at)) eq1 eq2
+
+      concl : (T1 T2 : CTerm) (eqt : equalTypes i w T1 T2)
+              → T1 ≡ #PI A B → T2 ≡ #PI C D → equalTypes i w A C
+      concl T1 T2 eqt =
+        equalTypes-ind
+          (λ {i} {w} {T1} {T2} eqt → T1 ≡ #PI A B → T2 ≡ #PI C D → equalTypes i w A C)
+          ind eqt
+
+
+
+abstract
+  equalTypesPI→ᵣ : {w : 𝕎·} {i : ℕ} {A : CTerm} {B : CTerm0} {C : CTerm} {D : CTerm0}
+                 → equalTypes i w (#PI A B) (#PI C D)
+                 → (a b : CTerm)
+                 → equalInType i w A a b
+                 → equalTypes i w (sub0 a B) (sub0 b D)
+  equalTypesPI→ᵣ {w} {i} {A} {B} {C} {D} eqt a b a∈ = concl (#PI A B) (#PI C D) eqt refl refl a∈
+    where
+      ind : {u : ℕ} {w : 𝕎·} {T1 T2 : CTerm} (eqt : equalTypes u w T1 T2)
+            → ({u' : ℕ} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : equalTypes u' w' T1' T2') → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt
+                → T1' ≡ #PI A B → T2' ≡ #PI C D → equalInType u' w' A a b → equalTypes u' w' (sub0 a B) (sub0 b D))
+            → T1 ≡ #PI A B → T2 ≡ #PI C D → equalInType u w A a b → equalTypes u w (sub0 a B) (sub0 b D)
+--      ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqNAT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqQNAT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqTNAT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqLT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqQLT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqFREE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 a∈
+        = ≡CTerm→eqTypes
+            (→≡sub0 {a} (sym (#PIinj2 {A} {B} {A1} {B1} (trans (sym eq1) (#compAllVal x (≡→#isValue (#PI A B) T1 (sym eq1) tt))))))
+            (→≡sub0 {b} (sym (#PIinj2 {C} {D} {A2} {B2} (trans (sym eq2) (#compAllVal x₁ (≡→#isValue (#PI C D) T2 (sym eq2) tt))))))
+            (eqtb w (⊑-refl· w) a b
+              (equalInType→eqInType {u} {w} {A} {A1} {A2}
+                (#PIinj1 {A} {B} {A1} {B1} (trans (sym eq1) (#compAllVal x (≡→#isValue (#PI A B) T1 (sym eq1) tt))))
+                a∈))
+      ind {u} {w} {T1} {T2} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqSUM (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTW A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqW (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTM A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqM (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqSET (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqISECT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqTUNION (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqEQ (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqUNION (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqQTUNION (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqTSQUASH (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqTTRUNC (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqNOWRITE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOREAD x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqNOREAD (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqSUBSING (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqPURE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqNOSEQ (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOENC x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqNOENC (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqTERM (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqFFDEFS (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTUNIV m p c₁ c₂) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqUNIV (compAllVal c₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqLIFT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTBAR x) ind eq1 eq2 a∈ =
+        eqTypes-local (∀𝕎-□at W M x aw)
+        where
+        aw : ∀𝕎 w (λ w' e' → (z : equalTypes u w' T1 T2) → at□· x w' e' z
+                           → equalTypes u w' (sub0 a B) (sub0 b D))
+        aw w1 e1 z at = ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR x) (<TypeBAR (ℕ→𝕌 u) w T1 T2 x w1 e1 z at)) eq1 eq2
+                            (equalInType-mon a∈ w1 e1)
+
+      concl : (T1 T2 : CTerm) (eqt : equalTypes i w T1 T2)
+              → T1 ≡ #PI A B → T2 ≡ #PI C D → equalInType i w A a b → equalTypes i w (sub0 a B) (sub0 b D)
+      concl T1 T2 eqt =
+        equalTypes-ind
+          (λ {i} {w} {T1} {T2} eqt → T1 ≡ #PI A B → T2 ≡ #PI C D → equalInType i w A a b → equalTypes i w (sub0 a B) (sub0 b D))
+          ind eqt
 
 \end{code}
