@@ -68,7 +68,7 @@ open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 -- add the missing cases & make it transitive
 data <TypeStep : {u1 : univs} {w1 : 𝕎·} {T1 U1 : CTerm} (eqt1 : eqTypes u1 w1 T1 U1)
-                 {u2 : univs} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : eqTypes u2 w2 T2 U2) → Set(lsuc(L))
+                 {u2 : univs} {w2 : 𝕎·} {T2 U2 : CTerm} (eqt2 : eqTypes u2 w2 T2 U2) → Set(lsuc(lsuc(L)))
 data <TypeStep where
   <TypePIa : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) (A1 : CTerm) (B1 : CTerm0) (A2 : CTerm) (B2 : CTerm0)
              (c₁ : T1 #⇛ (#PI A1 B1) at w)

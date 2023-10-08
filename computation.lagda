@@ -1202,18 +1202,18 @@ all>++R {n} {l} {k} i v j = i v (∈-++⁺ʳ _ j)
 
 
 -- A simpler definition than Howe's computation equivalence relation for now
-data ∼T : 𝕎· → Term → Term → Set where
+data ∼T : 𝕎· → Term → Term → Set(L) where
   ∼T→ : {w : 𝕎·} {a b : Term} → a ⇓ b at w → ∼T w a b
   ∼T← : {w : 𝕎·} {a b : Term} → b ⇓ a at w → ∼T w a b
   ∼T-trans : {w : 𝕎·} {a b c : Term} → ∼T w a b → ∼T w b c → ∼T w a c
 
 
-∼C : 𝕎· → CTerm → CTerm → Set
+∼C : 𝕎· → CTerm → CTerm → Set(L)
 ∼C w a b = ∼T w ⌜ a ⌝ ⌜ b ⌝
 
 
 ≈C : 𝕎· → CTerm → CTerm → Set(lsuc(L))
-≈C w a b = ∀𝕎 w (λ w' _ → Lift {0ℓ} (lsuc(L)) (∼C w' a b))
+≈C w a b = ∀𝕎 w (λ w' _ → Lift {L} (lsuc(L)) (∼C w' a b))
 
 
 ∼T-sym : {w : 𝕎·} {a b : Term} → ∼T w a b → ∼T w b a

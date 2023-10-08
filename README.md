@@ -12,7 +12,7 @@ theory.
 
 ### Compilation
 
-The opentt formalisation compiles with Agda version 2.6.3.
+The opentt formalisation compiles with Agda version 2.6.4.
 
 This formalisation depends on the
 [logrel-mltt](https://github.com/mr-ohman/logrel-mltt) Agda formalisation of
@@ -33,7 +33,7 @@ logrel-mltt for use as a library:
    finding the location of your agda libraries file check the [Installing
    Libraries](https://my-agda.readthedocs.io/en/latest/tools/package-system.html#installing-libraries)
    subsubsection of the Agda documentation.
-   
+
 Having done this, you should now be able to compile the opentt formalisation.
 Compile `all.lagda` to compile all files, or simply type `make`.
 
@@ -54,6 +54,6 @@ The formalization currently helps Agda using TERMINATION pragmas
 because Agda cannot figure out on its own that functions are
 terminating when they involve the modalities. Therefore, the plan
 (this is still work in progress) is to only make use of the induction
-principles in `ind.lagda` and `ind2.lagda` (only use TERMINATING
-there), and show that these can be proved for the different modalities
+principles in `ind.lagda` and `ind2.lagda`, only use TERMINATING
+there, and show that these can be proved for the different modalities
 we have (see `indKripke.lagda`).

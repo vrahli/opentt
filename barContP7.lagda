@@ -205,30 +205,30 @@ BAIRE!2𝕊 kb {i} {w} {f} f∈ n = fst j
 
 
 #⇛NUM→equalInType-NAT : (i : ℕ) (w : 𝕎·) (a : CTerm) (k : ℕ)
-                          → a #⇛ #NUM k at w
-                          → equalInType i w #NAT a (#NUM k)
+                      → a #⇛ #NUM k at w
+                      → equalInType i w #NAT a (#NUM k)
 #⇛NUM→equalInType-NAT i w a k ea =
   →equalInType-NAT i w _ _ (Mod.∀𝕎-□ M (λ w1 e1 → k , ∀𝕎-mon e1 ea , #⇛-refl w1 (#NUM k)))
 
 
 NATeq→#⇛NUMₗ : {w : 𝕎·} {a b : CTerm} {k : ℕ}
-                → NATeq w a b
-                → b #⇛ #NUM k at w
-                → a #⇛ #NUM k at w
+             → NATeq w a b
+             → b #⇛ #NUM k at w
+             → a #⇛ #NUM k at w
 NATeq→#⇛NUMₗ {w} {a} {b} {k} (j , c1 , c2) c
-  rewrite NUMinj (⇛-val-det {w} {⌜ b ⌝} {NUM j} {NUM k} tt tt c2 c) = c1
+  rewrite #NUMinj (#⇛-val-det {w} {b} {#NUM j} {#NUM k} tt tt c2 c) = c1
 
 
 #⇛!sameℕ→#⇛!NUMₗ : {w : 𝕎·} {a b : CTerm} {k : ℕ}
-                      → #⇛!sameℕ w a b
-                      → b #⇛! #NUM k at w
-                      → a #⇛! #NUM k at w
+                 → #⇛!sameℕ w a b
+                 → b #⇛! #NUM k at w
+                 → a #⇛! #NUM k at w
 #⇛!sameℕ→#⇛!NUMₗ {w} {a} {b} {k} (j , c1 , c2) c
-  rewrite NUMinj (⇛!-val-det {w} {⌜ b ⌝} {NUM j} {NUM k} tt tt c2 c) = c1
+  rewrite #NUMinj (#⇛!-val-det {w} {b} {#NUM j} {#NUM k} tt tt c2 c) = c1
 
 
 BAIRE2𝕊-equalInBAIRE : (kb : K□) {i : ℕ} {w : 𝕎·} {f : CTerm} (f∈ : ∈Type i w #BAIRE f)
-                        → equalInType i w #BAIRE f (#MSEQ (BAIRE2𝕊 kb f∈))
+                     → equalInType i w #BAIRE f (#MSEQ (BAIRE2𝕊 kb f∈))
 BAIRE2𝕊-equalInBAIRE kb {i} {w} {f} f∈ =
   ≡CTerm→equalInType (sym #BAIRE≡) (equalInType-FUN eqTypesNAT eqTypesNAT aw)
   where

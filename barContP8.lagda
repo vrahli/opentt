@@ -267,7 +267,7 @@ abstract
                   → b #⇓ #NUM k at w
                   → a #⇓ #NUM k at w
   NATeq→#⇓NUMₗ {w} {a} {b} {k} (j , c1 , c2) c
-    rewrite NUMinj (⇓-val-det {w} {⌜ b ⌝} {NUM j} {NUM k} tt tt (lower (c2 w (⊑-refl· w))) c)
+    rewrite #NUMinj (#⇓-val-det {w} {b} {#NUM j} {#NUM k} tt tt (lower (c2 w (⊑-refl· w))) c)
     = lower (c1 w (⊑-refl· w))
 
 
