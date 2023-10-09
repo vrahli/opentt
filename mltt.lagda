@@ -1517,7 +1517,6 @@ valid∈VAR {.(1+ _)} {.(_ ∙ _)} {.(wk1 _)} {.Fin.zero} here i w s1 s2 cc1 cc2
 valid∈VAR {.(1+ _)} {.(_ ∙ _)} {.(wk1 _)} {.(Fin.suc _)} (there j) i w = {!!}
 
 
-
 valid∈APPLY : {i : Nat} {H : hypotheses} {F G g a : BTerm} (lti : 1 <ℕ i)
             → coveredH H F
             → valid∈𝕎 i H a F
@@ -1569,11 +1568,29 @@ valid∈APPLY {i} {H} {F} {G} {g} {a} lti covF ha hg w s1 s2 cc1 cc2 ce1 ce2 es 
   hg3 = equalTypesPI→ᵣ {w} {i} {#subs s1 F cF1} {#[0]subs s1 G cG1} {#subs s2 F cF2} {#[0]subs s2 G cG2}
                        hg2 (#subs s1 a ca1) (#subs s2 a ca2) ha1
 
+  ehg3₁ : sub0 (#subs s1 a ca1) (#[0]subs s1 G cG1) ≣ #subs s1 (subn 0 a G) cc1
+  ehg3₁ = ≣trans (sub0-#[0]subs (#subs s1 a ca1) s1 G cG1) (CTerm≡ (subs∷ʳ≡ s1 a G ca1))
+
+  ehg3₂ : sub0 (#subs s2 a ca2) (#[0]subs s2 G cG2) ≣ #subs s2 (subn 0 a G) cc2
+  ehg3₂ = ≣trans (sub0-#[0]subs (#subs s2 a ca2) s2 G cG2) (CTerm≡ (subs∷ʳ≡ s2 a G ca2))
+
   c1 : equalTypes i w (#subs s1 (subn 0 a G) cc1) (#subs s2 (subn 0 a G) cc2)
-  c1 = {!!} -- from hg3
+  c1 = ≡CTerm→eqTypes ehg3₁ ehg3₂ hg3
+
+  hgg1 : equalInType i w (#subs s1 (PI F G) cp1) (#subs s1 g cg1) (#subs s2 g cg2)
+  hgg1 = π₂ (hg w s1 s2 cp1 cp2 cg1 cg2 es eh)
+
+  hgg2 : equalInType i w (#PI (#subs s1 F cF1) (#[0]subs s1 G cG1)) (#subs s1 g cg1) (#subs s2 g cg2)
+  hgg2 = ≡CTerm→equalInType (#subs-PI s1 F G cp1 cF1 cG1) hgg1
+
+  hgg3 : equalInType i w (sub0 (#subs s1 a ca1) (#[0]subs s1 G cG1))
+                         (#APPLY (#subs s1 g cg1) (#subs s1 a ca1))
+                         (#APPLY (#subs s2 g cg2) (#subs s2 a ca2))
+  hgg3 = π₂ (π₂ (equalInType-PI→ {i} {w} {#subs s1 F cF1} {#[0]subs s1 G cG1} {#subs s1 g cg1} {#subs s2 g cg2} hgg2))
+                                 w (⊑-refl· w) (#subs s1 a ca1) (#subs s2 a ca2) ha1
 
   c2 : equalInType i w (#subs s1 (subn 0 a G) cc1) (#subs s1 (APPLY g a) ce1) (#subs s2 (APPLY g a) ce2)
-  c2 = {!!}
+  c2 = ≡→equalInType ehg3₁ (≣sym (#subs-APPLY s1 g a ce1 cg1 ca1)) (≣sym (#subs-APPLY s2 g a ce2 cg2 ca2)) hgg3
 
 
 ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
@@ -1615,7 +1632,14 @@ valid∈APPLY {i} {H} {F} {G} {g} {a} lti covF ha hg w s1 s2 cc1 cc2 ce1 ce2 es 
 ⟦_⟧Γ∈ {n} {Γ} {.Empty} {.U} (Emptyⱼ x) i lti w = valid∈-FALSE i lti ⟦ Γ ⟧Γ w
 ⟦_⟧Γ∈ {n} {Γ} {.Unit} {.U} (Unitⱼ x) i lti w = valid∈-UNIT i lti ⟦ Γ ⟧Γ w
 ⟦_⟧Γ∈ {n} {Γ} {.(var _)} {σ} (var {σ} {v} x x₁) i lti w = {!!} -- use valid∈VAR
-⟦_⟧Γ∈ {n} {Γ} {.(lam _)} {.(Π _ ▹ _)} (lamⱼ x j) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(lam _)} {.(Π _ ▹ _)} (lamⱼ {F} {G} {t} x j) i lti w =
+  {!!}
+  where
+  h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
+  h1 = ⟦_⟧⊢ x i lti
+
+  h2 : valid∈𝕎 i ⟦ Γ ∙ F ⟧Γ ⟦ t ⟧ᵤ ⟦ G ⟧ᵤ
+  h2 = ⟦_⟧Γ∈ j i lti
 ⟦_⟧Γ∈ {n} {Γ} {.(_ ∘ _)} {.(G [ a ])} ((_∘ⱼ_) {g} {a} {F} {G} j j₁) i lti w =
   ≣subst (valid∈ i w ⟦ Γ ⟧Γ (APPLY ⟦ g ⟧ᵤ ⟦ a ⟧ᵤ))
          (≣sym (⟦[]⟧ᵤ-as-subn G a))

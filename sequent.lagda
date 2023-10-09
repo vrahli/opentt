@@ -803,6 +803,19 @@ subs-NATREC (a ∷ s) k z x
 #subs-NATREC s k z x c ck cz cx = CTerm≡ (subs-NATREC s k z x)
 
 
+subs-APPLY : (s : Sub) (a b : Term)
+           → subs s (APPLY a b) ≡ APPLY (subs s a) (subs s b)
+subs-APPLY [] a b = refl
+subs-APPLY (x ∷ s) a b
+  rewrite subs-APPLY s a b
+  = refl
+
+
+#subs-APPLY : (s : Sub) (a b : Term) (c : covered s (APPLY a b)) (ca : covered s a) (cb : covered s b)
+            → #subs s (APPLY a b) c ≡ #APPLY (#subs s a ca) (#subs s b cb)
+#subs-APPLY s a b c ca cb = CTerm≡ (subs-APPLY s a b)
+
+
 →covered∷ : (a : CTerm) (s : Sub) (t : Term)
           → covered0 s t
           → covered (a ∷ s) t
