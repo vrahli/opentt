@@ -1715,6 +1715,20 @@ valid∈LAMBDA {i} {H} {F} {G} {t} lti hf hg w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 
                      c2a
 
 
+valid∈FST : {i : Nat} {H : hypotheses} {F G t : BTerm} (lti : 1 <ℕ i)
+          → valid∈𝕎 i H F (UNIV 1)
+          → valid∈𝕎 i (H Data.List.∷ʳ mkHyp F) G (UNIV 1)
+          → valid∈𝕎 i H t (SUM F G)
+          → valid∈𝕎 i H (FST t) F
+valid∈FST {i} {H} {F} {G} {t} lti hf hg hs w s1 s2 cc1 cc2 ce1 ce2 es eh = {!!}
+  where
+  c1 : equalTypes i w (#subs s1 F cc1) (#subs s2 F cc2)
+  c1 = {!!}
+
+  c2 : equalInType i w (#subs s1 F cc1) (#subs s1 (FST t) ce1) (#subs s2 (FST t) ce2)
+  c2 = {!!}
+
+
 ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
         (j : Γ ⊢ σ ≡ τ)
         (i : Nat) (w : 𝕎·)
@@ -1776,7 +1790,7 @@ valid∈LAMBDA {i} {H} {F} {G} {t} lti hf hg w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 
   covF : coveredH ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ
   covF = coveredΓ {n} Γ F
 ⟦_⟧Γ∈ {n} {Γ} {.(prod _ _)} {.(Σ _ ▹ _)} (prodⱼ {F} {G} {t} {u} x x₁ j j₁) i lti w = {!!}
-⟦_⟧Γ∈ {n} {Γ} {.(fst _)} {σ} (fstⱼ {F} {G} {t} x x₁ j) i lti w =
+⟦_⟧Γ∈ {n} {Γ} {.(fst _)} {F} (fstⱼ {F} {G} {t} x x₁ j) i lti w =
   {!!}
   where
   h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
