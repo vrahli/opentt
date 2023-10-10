@@ -83,7 +83,8 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (isTypeNAT! ; eqTypesUniv ; equalTypes→equalInType-UNIV ; equalInType→equalTypes-aux ; eqTypesPI← ; eqTypesSUM← ;
          ≡CTerm→eqTypes ; ≡CTerm→equalInType ; eqTypesFALSE ; eqTypesTRUE ; ¬equalInType-FALSE ; NUM-equalInType-NAT! ;
-         equalInType-NAT!→ ; equalInType-local ; equalInType-mon ; equalInType-PI→ ; isFam ; equalInType-FUN→)
+         equalInType-NAT!→ ; equalInType-local ; equalInType-mon ; equalInType-PI→ ; equalInType-PI ; isFam ;
+         equalInType-FUN→)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (→equalInType-TRUE ; equalInType-EQ→₁)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -1517,12 +1518,12 @@ valid∈VAR {.(1+ _)} {.(_ ∙ _)} {.(wk1 _)} {.Fin.zero} here i w s1 s2 cc1 cc2
 valid∈VAR {.(1+ _)} {.(_ ∙ _)} {.(wk1 _)} {.(Fin.suc _)} (there j) i w = {!!}
 
 
-valid∈APPLY : {i : Nat} {H : hypotheses} {F G g a : BTerm} (lti : 1 <ℕ i)
+valid∈APPLY : {i : Nat} {H : hypotheses} {F G g a : BTerm}
             → coveredH H F
             → valid∈𝕎 i H a F
             → valid∈𝕎 i H g (PI F G)
             → valid∈𝕎 i H (APPLY g a) (subn 0 a G)
-valid∈APPLY {i} {H} {F} {G} {g} {a} lti covF ha hg w s1 s2 cc1 cc2 ce1 ce2 es eh =
+valid∈APPLY {i} {H} {F} {G} {g} {a} covF ha hg w s1 s2 cc1 cc2 ce1 ce2 es eh =
   c1 , c2
   where
   cF1 : covered s1 F
@@ -1593,6 +1594,48 @@ valid∈APPLY {i} {H} {F} {G} {g} {a} lti covF ha hg w s1 s2 cc1 cc2 ce1 ce2 es 
   c2 = ≡→equalInType ehg3₁ (≣sym (#subs-APPLY s1 g a ce1 cg1 ca1)) (≣sym (#subs-APPLY s2 g a ce2 cg2 ca2)) hgg3
 
 
+valid∈LAMBDA : {i : Nat} {H : hypotheses} {F G t : BTerm} (lti : 1 <ℕ i)
+             → valid∈𝕎 i H F (UNIV 1)
+             → valid∈𝕎 i (H Data.List.∷ʳ mkHyp F) t G
+             → valid∈𝕎 i H (LAMBDA t) (PI F G)
+valid∈LAMBDA {i} {H} {F} {G} {t} lti ha hg w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
+  where
+  cF1 : covered s1 F
+  cF1 = coveredPI₁ {s1} {F} {G} cc1
+
+  cF2 : covered s2 F
+  cF2 = coveredPI₁ {s2} {F} {G} cc2
+
+  cG1 : covered0 s1 G
+  cG1 = coveredPI₂ {s1} {F} {G} cc1
+
+  cG2 : covered0 s2 G
+  cG2 = coveredPI₂ {s2} {F} {G} cc2
+
+  c1F : ∀𝕎 w (λ w' _ → equalTypes i w' (#subs s1 F cF1) (#subs s2 F cF2))
+  c1F w1 e1 = {!!} -- from ha
+
+  c1G : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#subs s1 F cF1) a₁ a₂
+                     → equalTypes i w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s2 G cG2)))
+  c1G w1 e1 a₁ a₂ a∈ = {!!} -- from hg
+
+  c1a : equalTypes i w (#PI (#subs s1 F cF1) (#[0]subs s1 G cG1)) (#PI (#subs s2 F cF2) (#[0]subs s2 G cG2))
+  c1a = eqTypesPI← {w} {i} {#subs s1 F cF1} {#[0]subs s1 G cG1} {#subs s2 F cF2} {#[0]subs s2 G cG2}
+                   c1F c1G
+
+  c1 : equalTypes i w (#subs s1 (PI F G) cc1) (#subs s2 (PI F G) cc2)
+  c1 = ≡CTerm→eqTypes (≣sym (#subs-PI s1 F G cc1 cF1 cG1)) (≣sym (#subs-PI s2 F G cc2 cF2 cG2)) c1a
+
+  c2a : equalInType i w (#PI (#subs s1 F cF1) (#[0]subs s1 G cG1)) (#LAMBDA (#[0]subs s1 t ce1)) (#LAMBDA (#[0]subs s2 t ce2))
+  c2a = {!!} -- from hg
+
+  c2 : equalInType i w (#subs s1 (PI F G) cc1) (#subs s1 (LAMBDA t) ce1) (#subs s2 (LAMBDA t) ce2)
+  c2 = ≡→equalInType (≣sym (#subs-PI s1 F G cc1 cF1 cG1))
+                     (≣sym (#subs-LAMBDA s1 t ce1 ce1))
+                     (≣sym (#subs-LAMBDA s2 t ce2 ce2))
+                     c2a
+
+
 ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
         (j : Γ ⊢ σ ≡ τ)
         (i : Nat) (w : 𝕎·)
@@ -1633,7 +1676,7 @@ valid∈APPLY {i} {H} {F} {G} {g} {a} lti covF ha hg w s1 s2 cc1 cc2 ce1 ce2 es 
 ⟦_⟧Γ∈ {n} {Γ} {.Unit} {.U} (Unitⱼ x) i lti w = valid∈-UNIT i lti ⟦ Γ ⟧Γ w
 ⟦_⟧Γ∈ {n} {Γ} {.(var _)} {σ} (var {σ} {v} x x₁) i lti w = {!!} -- use valid∈VAR
 ⟦_⟧Γ∈ {n} {Γ} {.(lam _)} {.(Π _ ▹ _)} (lamⱼ {F} {G} {t} x j) i lti w =
-  {!!}
+  valid∈LAMBDA lti h1 h2 w
   where
   h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
   h1 = ⟦_⟧⊢ x i lti
@@ -1643,7 +1686,7 @@ valid∈APPLY {i} {H} {F} {G} {g} {a} lti covF ha hg w s1 s2 cc1 cc2 ce1 ce2 es 
 ⟦_⟧Γ∈ {n} {Γ} {.(_ ∘ _)} {.(G [ a ])} ((_∘ⱼ_) {g} {a} {F} {G} j j₁) i lti w =
   ≣subst (valid∈ i w ⟦ Γ ⟧Γ (APPLY ⟦ g ⟧ᵤ ⟦ a ⟧ᵤ))
          (≣sym (⟦[]⟧ᵤ-as-subn G a))
-         (valid∈APPLY lti covF h1 h2 w)
+         (valid∈APPLY covF h1 h2 w)
   where
   h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ a ⟧ᵤ ⟦ F ⟧ᵤ
   h1 = ⟦_⟧Γ∈ j₁ i lti
@@ -1660,7 +1703,7 @@ valid∈APPLY {i} {H} {F} {G} {g} {a} lti covF ha hg w s1 s2 cc1 cc2 ce1 ce2 es 
   h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
   h1 = ⟦_⟧⊢ x i lti
 
-  h2 : valid∈𝕎 i ⟦ Γ ∙ F ⟧Γ ⟦ G ⟧ᵤ (UNIV 1)
+  h2 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 1)
   h2 = ⟦_⟧⊢ x₁ i lti
 
   h3 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ (SUM ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ)

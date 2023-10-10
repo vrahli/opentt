@@ -816,6 +816,30 @@ subs-APPLY (x ∷ s) a b
 #subs-APPLY s a b c ca cb = CTerm≡ (subs-APPLY s a b)
 
 
+coveredLAMBDA : {s : Sub} {a : Term}
+              → covered s (LAMBDA a)
+              → covered0 s a
+coveredLAMBDA {s} {a} c = c
+
+
+subs-LAMBDA : (s : Sub) (a : Term)
+            → subs s (LAMBDA a) ≡ LAMBDA (subsN 1 s a)
+subs-LAMBDA [] a = refl
+subs-LAMBDA (x ∷ s) a
+  rewrite subs-LAMBDA s a
+        | #shiftUp 0 x = refl
+
+
+#subs-LAMBDA : (s : Sub) (a : Term) (c : covered s (LAMBDA a)) (ca : covered0 s a)
+             → #subs s (LAMBDA a) c ≡ #LAMBDA (#[0]subs s a ca)
+#subs-LAMBDA s a c ca = CTerm≡ (subs-LAMBDA s a)
+
+
+#subs-LAMBDA2 : (s : Sub) (a : Term) (c : covered s (LAMBDA a))
+              → #subs s (LAMBDA a) c ≡ #LAMBDA (#[0]subs s a (coveredLAMBDA {s} {a} c))
+#subs-LAMBDA2 s a c = #subs-LAMBDA s a c (coveredLAMBDA {s} {a} c)
+
+
 →covered∷ : (a : CTerm) (s : Sub) (t : Term)
           → covered0 s t
           → covered (a ∷ s) t
