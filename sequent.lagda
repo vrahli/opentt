@@ -75,7 +75,7 @@ open import terms4(W)(C)(K)(G)(X)(N)(EC)
   using (lowerVars++⊆ ; lowerVars-fvars-shiftUp ; lowerVars-fvars-shiftUp⊆ ; lowerVars++ ; lowerVars2++⊆ ;
          lowerVars2-fvars-shiftUp⊆)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
-  using (#APPLY2)
+  using (#APPLY2 ; #FST ; #SND)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqTypes-mon ; weq-ext-eq ; meq-ext-eq ; TUNIONeq-ext-eq)
@@ -83,7 +83,7 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqInType-ext ; □·EqTypes→uniUpTo ; uniUpTo→□·EqTypes ; TEQrefl-equalTypes)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalInType-mon ; ≡CTerm→equalInType ; ≡CTerm→eqTypes ; equalTypes→equalInType-UNIV ; eqTypesUniv ;
-         wPredExtIrr-eqInType ; wPredDepExtIrr-eqInType ; wPredDepExtIrr-eqInType2 ; equalInType-refl)
+         wPredExtIrr-eqInType ; wPredDepExtIrr-eqInType ; wPredDepExtIrr-eqInType2 ; equalInType-refl ; equalInType-sym)
 
 
 -- ---------------------------------
@@ -2948,5 +2948,91 @@ fvars-subi⊆ n u (SHRINK t) = fvars-subi⊆ n u t
 →covered0-VAR0 : (s : Sub)
                → covered0 s (VAR 0)
 →covered0-VAR0 s {x} ()
+
+
+subs-FST : (s : Sub) (a : Term)
+         → subs s (FST a) ≡ FST (subs s a)
+subs-FST [] a = refl
+subs-FST (x ∷ s) a
+  rewrite subs-FST s a
+        | #shiftUp 0 x = refl
+
+
+#subs-FST : (s : Sub) (a : Term) (c : covered s (FST a)) (ca : covered s a)
+          → #subs s (FST a) c ≡ #FST (#subs s a ca)
+#subs-FST s a c ca = CTerm≡ (subs-FST s a)
+
+
+coveredFST : {s : Sub} {a : Term}
+           → covered s (FST a)
+           → covered s a
+coveredFST {s} {a} c {x} i = c {x} (∈-++⁺ˡ i)
+
+
+→coveredSUM : {s : Sub} {a b : Term}
+            → covered s a
+            → covered0 s b
+            → covered s (SUM a b)
+→coveredSUM {s} {a} {b} ca cb {x} i with ∈-++⁻ (fvars a) i
+... | inj₁ j = ca j
+... | inj₂ j = cb j
+
+
+length-∷ʳ : {A : Set} (a : A) (l : List A)
+          → length (l ∷ʳ a) ≡ suc (length l)
+length-∷ʳ {A} a [] = refl
+length-∷ʳ {A} a (b ∷ l) = cong suc (length-∷ʳ a l)
+
+
+{--
+≡subs-sym : (i : ℕ) (w : 𝕎·) (s1 s2 : Sub) (H : hypotheses)
+          → ≡subs i w s1 s2 H
+          → ≡subs i w s2 s1 H
+≡subs-sym i w .[] .[] .[] (≡subs[] .i .w) = ≡subs[] i w
+≡subs-sym i w .(t1 ∷ s1) .(t2 ∷ s2) .(mkHyp T ∷ hs) (≡subs∷ .i .w t1 t2 s1 s2 T #T hs x h) =
+  ≡subs∷ i w t2 t1 s2 s1 T #T hs {!equalInType-sym!} {!!}
+ --(≡subs-sym i w s1 s2 (subHyps 0 ⌜ t1 ⌝ hs) {!h!})
+-- (equalInType-refl x) (≡subs-refl i w s1 s2 (subHyps 0 ⌜ t1 ⌝ hs) h)
+--}
+
+
+≡subs→covered0ₗ : {i : ℕ} {w : 𝕎·} {s1 s2 : Sub} {H : hypotheses} {h : hypothesis} {A : Term}
+                → ≡subs i w s1 s2 H
+                → coveredH (H ∷ʳ h) A
+                → covered0 s1 A
+≡subs→covered0ₗ {i} {w} {s1} {s2} {H} {h} {A} eqs cov {x} j =
+  →∈sdom x s1 q2
+  where
+  j0 : suc x < length (H ∷ʳ h)
+  j0 = ∈hdom→ (cov (∈lowerVars→ x (fvars A) j))
+
+  q0 : length (H ∷ʳ h) ≤ suc (length H)
+  q0 rewrite length-∷ʳ h H = ≤-refl
+
+  q1 : x < length H
+  q1 = s≤s-inj (≤-trans j0 q0)
+
+  q2 : x < length s1
+  q2 rewrite fst (≡subs→length eqs) = q1
+
+
+≡subs→covered0ᵣ : {i : ℕ} {w : 𝕎·} {s1 s2 : Sub} {H : hypotheses} {h : hypothesis} {A : Term}
+                → ≡subs i w s1 s2 H
+                → coveredH (H ∷ʳ h) A
+                → covered0 s2 A
+≡subs→covered0ᵣ {i} {w} {s1} {s2} {H} {h} {A} eqs cov {x} j =
+  →∈sdom x s2 q2
+  where
+  j0 : suc x < length (H ∷ʳ h)
+  j0 = ∈hdom→ (cov (∈lowerVars→ x (fvars A) j))
+
+  q0 : length (H ∷ʳ h) ≤ suc (length H)
+  q0 rewrite length-∷ʳ h H = ≤-refl
+
+  q1 : x < length H
+  q1 = s≤s-inj (≤-trans j0 q0)
+
+  q2 : x < length s2
+  q2 rewrite snd (≡subs→length eqs) = q1
 
 \end{code}

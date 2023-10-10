@@ -74,7 +74,7 @@ open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
   using (→∧≡true)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
-  using (⇓NUM→SUC⇓NUM ; #APPLY2)
+  using (⇓NUM→SUC⇓NUM ; #APPLY2 ; #FST ; #SND)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -86,7 +86,7 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (isTypeNAT! ; eqTypesUniv ; equalTypes→equalInType-UNIV ; equalInType→equalTypes-aux ; eqTypesPI← ; eqTypesSUM← ;
          ≡CTerm→eqTypes ; ≡CTerm→equalInType ; eqTypesFALSE ; eqTypesTRUE ; ¬equalInType-FALSE ; NUM-equalInType-NAT! ;
          equalInType-NAT!→ ; equalInType-local ; equalInType-mon ; equalInType-PI→ ; equalInType-PI ; isFam ;
-         equalInType-FUN→ ; equalInType-refl ; equalInType-sym)
+         equalInType-FUN→ ; equalInType-refl ; equalInType-sym ; equalInType-SUM→)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (→equalInType-TRUE ; equalInType-EQ→₁)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -1715,18 +1715,75 @@ valid∈LAMBDA {i} {H} {F} {G} {t} lti hf hg w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 
                      c2a
 
 
+
 valid∈FST : {i : Nat} {H : hypotheses} {F G t : BTerm} (lti : 1 <ℕ i)
+          → coveredH (H Data.List.∷ʳ mkHyp F) G
           → valid∈𝕎 i H F (UNIV 1)
           → valid∈𝕎 i (H Data.List.∷ʳ mkHyp F) G (UNIV 1)
           → valid∈𝕎 i H t (SUM F G)
           → valid∈𝕎 i H (FST t) F
-valid∈FST {i} {H} {F} {G} {t} lti hf hg hs w s1 s2 cc1 cc2 ce1 ce2 es eh = {!!}
+valid∈FST {i} {H} {F} {G} {t} lti covH hf hg hs w s1 s2 cc1 cc2 ce1 ce2 es eh =
+  c1 , c2
   where
+  cG1 : covered0 s1 G
+  cG1 = ≡subs→covered0ₗ {i} {w} {s1} {s2} {H} {mkHyp F} {G} es covH
+
+  cG2 : covered0 s2 G
+  cG2 = ≡subs→covered0ᵣ {i} {w} {s1} {s2} {H} {mkHyp F} {G} es covH
+
+  clt1 : covered s1 t
+  clt1 = coveredFST {s1} {t} ce1
+
+  clt2 : covered s2 t
+  clt2 = coveredFST {s2} {t} ce2
+
+  cu1a : covered s1 (UNIV 1)
+  cu1a = covered-UNIV s1 1
+
+  cu2a : covered s2 (UNIV 1)
+  cu2a = covered-UNIV s2 1
+
+  cS1 : covered s1 (SUM F G)
+  cS1 = →coveredSUM {s1} {F} {G} cc1 cG1
+
+  cS2 : covered s2 (SUM F G)
+  cS2 = →coveredSUM {s2} {F} {G} cc2 cG2
+
+  hf1 : equalInType i w (#subs s1 (UNIV 1) cu1a) (#subs s1 F cc1) (#subs s2 F cc2)
+  hf1 = π₂ (hf w s1 s2 cu1a cu2a cc1 cc2 es eh)
+
+  hf2 : equalInType i w (#UNIV 1) (#subs s1 F cc1) (#subs s2 F cc2)
+  hf2 = ≡CTerm→equalInType (#subs-UNIV s1 1 cu1a) hf1
+
+  hf3 : equalTypes 1 w (#subs s1 F cc1) (#subs s2 F cc2)
+  hf3 = equalInType→equalTypes-aux i 1 lti w (#subs s1 F cc1) (#subs s2 F cc2) hf2
+
+  c1F : ∀𝕎 w (λ w' _ → equalTypes i w' (#subs s1 F cc1) (#subs s2 F cc2))
+  c1F w1 e1 = equalTypes-uni-mon (<⇒≤ lti) (eqTypes-mon (uni 1) hf3 w1 e1)
+
   c1 : equalTypes i w (#subs s1 F cc1) (#subs s2 F cc2)
-  c1 = {!!}
+  c1 = c1F w (⊑-refl· w)
+
+  hs1 : equalInType i w (#subs s1 (SUM F G) cS1) (#subs s1 t clt1) (#subs s2 t clt2)
+  hs1 = π₂ (hs w s1 s2 cS1 cS2 clt1 clt2 es eh)
+
+  hs2 : equalInType i w (#SUM (#subs s1 F cc1) (#[0]subs s1 G cG1)) (#subs s1 t clt1) (#subs s2 t clt2)
+  hs2 = ≡CTerm→equalInType (#subs-SUM s1 F G cS1 cc1 cG1) hs1
+
+  aw1 : ∀𝕎 w (λ w' e' → SUMeq (equalInType i w' (#subs s1 F cc1))
+                              (λ a b ea → equalInType i w' (sub0 a (#[0]subs s1 G cG1)))
+                              w' (#subs s1 t clt1) (#subs s2 t clt2)
+                      → equalInType i w' (#subs s1 F cc1) (#FST (#subs s1 t clt1)) (#FST (#subs s2 t clt2)))
+  aw1 w1 e1 (a₁ , a₂ , b₁ , b₂ , a∈ , c₁ , c₂ , b∈) = {!!} -- we need no-read/no-write sums
+
+  c2a : equalInType i w (#subs s1 F cc1) (#FST (#subs s1 t clt1)) (#FST (#subs s2 t clt2))
+  c2a = equalInType-local (Mod.∀𝕎-□Func M aw1 (equalInType-SUM→ hs2))
 
   c2 : equalInType i w (#subs s1 F cc1) (#subs s1 (FST t) ce1) (#subs s2 (FST t) ce2)
-  c2 = {!!}
+  c2 = ≡→equalInType refl
+                     (≣sym (#subs-FST s1 t ce1 clt1))
+                     (≣sym (#subs-FST s2 t ce2 clt2))
+                     c2a
 
 
 ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
@@ -1791,8 +1848,11 @@ valid∈FST {i} {H} {F} {G} {t} lti hf hg hs w s1 s2 cc1 cc2 ce1 ce2 es eh = {!!
   covF = coveredΓ {n} Γ F
 ⟦_⟧Γ∈ {n} {Γ} {.(prod _ _)} {.(Σ _ ▹ _)} (prodⱼ {F} {G} {t} {u} x x₁ j j₁) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.(fst _)} {F} (fstⱼ {F} {G} {t} x x₁ j) i lti w =
-  {!!}
+  valid∈FST lti covH h1 h2 h3 w
   where
+  covH : coveredH (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ
+  covH = coveredΓ {1+ n} (Γ ∙ F) G
+
   h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
   h1 = ⟦_⟧⊢ x i lti
 
