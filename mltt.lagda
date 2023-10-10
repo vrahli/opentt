@@ -78,13 +78,15 @@ open import terms8(W)(C)(K)(G)(X)(N)(EC)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (eqTypes-mon)
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (TSext-equalTypes-equalInType)
+  using (TSext-equalTypes-equalInType ; TEQsym-equalTypes ; TEQrefl-equalTypes ; TEQtrans-equalTypes)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (isTypeNAT! ; eqTypesUniv ; equalTypes→equalInType-UNIV ; equalInType→equalTypes-aux ; eqTypesPI← ; eqTypesSUM← ;
          ≡CTerm→eqTypes ; ≡CTerm→equalInType ; eqTypesFALSE ; eqTypesTRUE ; ¬equalInType-FALSE ; NUM-equalInType-NAT! ;
          equalInType-NAT!→ ; equalInType-local ; equalInType-mon ; equalInType-PI→ ; equalInType-PI ; isFam ;
-         equalInType-FUN→)
+         equalInType-FUN→ ; equalInType-refl ; equalInType-sym)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (→equalInType-TRUE ; equalInType-EQ→₁)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -1594,11 +1596,16 @@ valid∈APPLY {i} {H} {F} {G} {g} {a} covF ha hg w s1 s2 cc1 cc2 ce1 ce2 es eh =
   c2 = ≡→equalInType ehg3₁ (≣sym (#subs-APPLY s1 g a ce1 cg1 ca1)) (≣sym (#subs-APPLY s2 g a ce2 cg2 ca2)) hgg3
 
 
+#APPLY-LAMBDA⇛! : (w : 𝕎·) (t : CTerm0) (a : CTerm)
+                → #APPLY (#LAMBDA t) a #⇛! sub0 a t at w
+#APPLY-LAMBDA⇛! w t a w1 e1 = lift (1 , refl)
+
+
 valid∈LAMBDA : {i : Nat} {H : hypotheses} {F G t : BTerm} (lti : 1 <ℕ i)
              → valid∈𝕎 i H F (UNIV 1)
              → valid∈𝕎 i (H Data.List.∷ʳ mkHyp F) t G
              → valid∈𝕎 i H (LAMBDA t) (PI F G)
-valid∈LAMBDA {i} {H} {F} {G} {t} lti ha hg w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
+valid∈LAMBDA {i} {H} {F} {G} {t} lti hf hg w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
   where
   cF1 : covered s1 F
   cF1 = coveredPI₁ {s1} {F} {G} cc1
@@ -1612,12 +1619,45 @@ valid∈LAMBDA {i} {H} {F} {G} {t} lti ha hg w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 
   cG2 : covered0 s2 G
   cG2 = coveredPI₂ {s2} {F} {G} cc2
 
+  clt1 : covered0 s1 t
+  clt1 = coveredLAMBDA {s1} {t} ce1
+
+  clt2 : covered0 s2 t
+  clt2 = coveredLAMBDA {s2} {t} ce2
+
+  cu1a : covered s1 (UNIV 1)
+  cu1a = covered-UNIV s1 1
+
+  cu2a : covered s2 (UNIV 1)
+  cu2a = covered-UNIV s2 1
+
+  hf1 : equalInType i w (#subs s1 (UNIV 1) cu1a) (#subs s1 F cF1) (#subs s2 F cF2)
+  hf1 = π₂ (hf w s1 s2 cu1a cu2a cF1 cF2 es eh)
+
+  hf2 : equalInType i w (#UNIV 1) (#subs s1 F cF1) (#subs s2 F cF2)
+  hf2 = ≡CTerm→equalInType (#subs-UNIV s1 1 cu1a) hf1
+
+  hf3 : equalTypes 1 w (#subs s1 F cF1) (#subs s2 F cF2)
+  hf3 = equalInType→equalTypes-aux i 1 lti w (#subs s1 F cF1) (#subs s2 F cF2) hf2
+
   c1F : ∀𝕎 w (λ w' _ → equalTypes i w' (#subs s1 F cF1) (#subs s2 F cF2))
-  c1F w1 e1 = {!!} -- from ha
+  c1F w1 e1 = equalTypes-uni-mon (<⇒≤ lti) (eqTypes-mon (uni 1) hf3 w1 e1)
 
   c1G : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#subs s1 F cF1) a₁ a₂
                      → equalTypes i w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s2 G cG2)))
-  c1G w1 e1 a₁ a₂ a∈ = {!!} -- from hg
+  c1G w1 e1 a₁ a₂ a∈ =
+    ≡CTerm→eqTypes
+      (≣sym (sub0-#[0]subs a₁ s1 G cG1))
+      (≣sym (sub0-#[0]subs a₂ s2 G cG2))
+      c1Ga
+    where
+    c1Ga : equalTypes i w1 (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G cG1))
+                           (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G cG2))
+    c1Ga = π₁ (hg w1 (s1 Data.List.∷ʳ a₁) (s2 Data.List.∷ʳ a₂)
+                  (→covered∷ʳ a₁ s1 G cG1) (→covered∷ʳ a₂ s2 G cG2)
+                  (→covered∷ʳ a₁ s1 t clt1) (→covered∷ʳ a₂ s2 t clt2)
+                  (≡subs∷ʳ i w1 s1 s2 H F cF1 a₁ a₂ a∈ (≡subs-mon e1 es))
+                  (≡hyps∷ʳ i w1 s1 s2 H H F F cF1 cF2 a₁ a₂ (c1F w1 e1) (≡hyps-mon e1 eh)))
 
   c1a : equalTypes i w (#PI (#subs s1 F cF1) (#[0]subs s1 G cG1)) (#PI (#subs s2 F cF2) (#[0]subs s2 G cG2))
   c1a = eqTypesPI← {w} {i} {#subs s1 F cF1} {#[0]subs s1 G cG1} {#subs s2 F cF2} {#[0]subs s2 G cG2}
@@ -1626,8 +1666,47 @@ valid∈LAMBDA {i} {H} {F} {G} {t} lti ha hg w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 
   c1 : equalTypes i w (#subs s1 (PI F G) cc1) (#subs s2 (PI F G) cc2)
   c1 = ≡CTerm→eqTypes (≣sym (#subs-PI s1 F G cc1 cF1 cG1)) (≣sym (#subs-PI s2 F G cc2 cF2 cG2)) c1a
 
+  c2G : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#subs s1 F cF1) a₁ a₂
+                     → equalInType i w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₁ (#[0]subs s1 t ce1)) (sub0 a₂ (#[0]subs s2 t ce2)))
+  c2G w1 e1 a₁ a₂ a∈ =
+    ≡→equalInType
+      (≣sym (sub0-#[0]subs a₁ s1 G cG1))
+      (≣sym (sub0-#[0]subs a₁ s1 t ce1))
+      (≣sym (sub0-#[0]subs a₂ s2 t ce2))
+      c2Ga
+    where
+    c2Ga : equalInType i w1 (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G cG1))
+                            (#subs (s1 Data.List.∷ʳ a₁) t (→covered∷ʳ a₁ s1 t ce1))
+                            (#subs (s2 Data.List.∷ʳ a₂) t (→covered∷ʳ a₂ s2 t ce2))
+    c2Ga = π₂ (hg w1 (s1 Data.List.∷ʳ a₁) (s2 Data.List.∷ʳ a₂)
+                  (→covered∷ʳ a₁ s1 G cG1) (→covered∷ʳ a₂ s2 G cG2)
+                  (→covered∷ʳ a₁ s1 t clt1) (→covered∷ʳ a₂ s2 t clt2)
+                  (≡subs∷ʳ i w1 s1 s2 H F cF1 a₁ a₂ a∈ (≡subs-mon e1 es))
+                  (≡hyps∷ʳ i w1 s1 s2 H H F F cF1 cF2 a₁ a₂ (c1F w1 e1) (≡hyps-mon e1 eh)))
+
+  c2b : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#subs s1 F cF1) a₁ a₂
+                     → equalInType i w' (sub0 a₁ (#[0]subs s1 G cG1))
+                                        (#APPLY (#LAMBDA (#[0]subs s1 t ce1)) a₁)
+                                        (#APPLY (#LAMBDA (#[0]subs s2 t ce2)) a₂))
+  c2b w1 e1 a₁ a₂ a∈ =
+    equalInType-#⇛ₚ-left-right-rev
+      {i} {w1}
+      {sub0 a₁ (#[0]subs s1 G cG1)}
+      {#APPLY (#LAMBDA (#[0]subs s1 t ce1)) a₁} {sub0 a₁ (#[0]subs s1 t ce1)}
+      {#APPLY (#LAMBDA (#[0]subs s2 t ce2)) a₂} {sub0 a₂ (#[0]subs s2 t ce2)}
+      (#APPLY-LAMBDA⇛! w1 (#[0]subs s1 t ce1) a₁)
+      (#APPLY-LAMBDA⇛! w1 (#[0]subs s2 t ce2) a₂)
+      (c2G w1 e1 a₁ a₂ a∈)
+
   c2a : equalInType i w (#PI (#subs s1 F cF1) (#[0]subs s1 G cG1)) (#LAMBDA (#[0]subs s1 t ce1)) (#LAMBDA (#[0]subs s2 t ce2))
-  c2a = {!!} -- from hg
+  c2a = equalInType-PI {i} {w} {#subs s1 F cF1} {#[0]subs s1 G cG1} {#LAMBDA (#[0]subs s1 t ce1)} {#LAMBDA (#[0]subs s2 t ce2)}
+                       (λ w1 e1 → TEQrefl-equalTypes i w1 (#subs s1 F cF1) (#subs s2 F cF2) (c1F w1 e1))
+                       (λ w1 e1 a₁ a₂ a∈ →
+                         TEQtrans-equalTypes i w1 (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₁ (#[0]subs s2 G cG2)) (sub0 a₂ (#[0]subs s1 G cG1))
+                                             (c1G w1 e1 a₁ a₁ (equalInType-refl a∈))
+                                             (TEQsym-equalTypes i w1 (sub0 a₂ (#[0]subs s1 G cG1)) (sub0 a₁ (#[0]subs s2 G cG2))
+                                                                (c1G w1 e1 a₂ a₁ (equalInType-sym a∈))))
+                       c2b
 
   c2 : equalInType i w (#subs s1 (PI F G) cc1) (#subs s1 (LAMBDA t) ce1) (#subs s2 (LAMBDA t) ce2)
   c2 = ≡→equalInType (≣sym (#subs-PI s1 F G cc1 cF1 cG1))
@@ -1696,7 +1775,7 @@ valid∈LAMBDA {i} {H} {F} {G} {t} lti ha hg w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 
 
   covF : coveredH ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ
   covF = coveredΓ {n} Γ F
-⟦_⟧Γ∈ {n} {Γ} {.(prod _ _)} {.(Σ _ ▹ _)} (prodⱼ x x₁ j j₁) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(prod _ _)} {.(Σ _ ▹ _)} (prodⱼ {F} {G} {t} {u} x x₁ j j₁) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.(fst _)} {σ} (fstⱼ {F} {G} {t} x x₁ j) i lti w =
   {!!}
   where
