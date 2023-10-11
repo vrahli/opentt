@@ -2408,4 +2408,31 @@ LET-#⇛! w F G f c w1 e1 =
   ... | inj₁ x = refl
   ... | inj₂ x = ⊥-elim (x isv)
 
+
+SUM! : Term → Term → Term
+SUM! a b = NOWRITEMOD (NOREADMOD (SUM a b))
+
+
+#SUM! : CTerm → CTerm0 → CTerm
+#SUM! a b = #NOWRITEMOD (#NOREADMOD (#SUM a b))
+
+
+⇛!-FST-PAIR : (p a b : Term) (w : 𝕎·) (ca : # a)
+            → p ⇛! PAIR a b at w
+            → FST p ⇛! a at w
+⇛!-FST-PAIR p a b w ca c w1 e1 =
+  lift (⇓-trans₂ {w1} {w1} {w1} {FST p} {FST (PAIR a b)} {a} c2 (⇓-FST-PAIR a b w1 ca))
+  where
+    c1 : p ⇓ PAIR a b from w1 to w1
+    c1 = lower (c w1 e1)
+
+    c2 : FST p ⇓ FST (PAIR a b) from w1 to w1
+    c2 = SPREAD⇓₁ {w1} {w1} {p} {PAIR a b} {VAR 0} c1
+
+
+#⇛!-FST-PAIR : (p a b : CTerm) (w : 𝕎·)
+             → p #⇛! #PAIR a b at w
+             → #FST p #⇛! a at w
+#⇛!-FST-PAIR p a b w c = ⇛!-FST-PAIR ⌜ p ⌝ ⌜ a ⌝ ⌜ b ⌝ w (CTerm.closed a) c
+
 \end{code}

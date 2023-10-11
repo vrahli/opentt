@@ -72,6 +72,8 @@ open import ind3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
 open import terms4(W)(C)(K)(G)(X)(N)(EC)
   using (steps→¬Names)
+open import terms8(W)(C)(K)(G)(X)(N)(EC)
+  using (SUM! ; #SUM!)
 --open import termsPres(W)(C)(K)(G)(X)(N)(EC)
 --  using (#¬Enc→⇛! ; #¬Seq→⇛!)
 
@@ -79,7 +81,8 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (□·EqTypes→uniUpTo ; uniUpTo→□·EqTypes ; ≡→#isValue ; equalInType→eqInType)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqInType-extr1 ; eqInType-sym ; eqInType-extl1 ; equalInType-sym ; equalInType-local ; eqTypes-local ;
-         equalInType-mon ; ≡CTerm→eqTypes)
+         equalInType-mon ; ≡CTerm→eqTypes ; eqTypesNOREADMOD← ; eqTypesNOWRITEMOD← ; eqTypesSUM← ; equalInType-SUM→;
+         equalInTypeNOREADMOD→ ; equalInTypeNOWRITEMOD→ ; NOWRITEMODeq ; NOREADMODeq)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalTypes-#⇛-left-rev ; TUNIONeq-#⇛-rev)
 
@@ -787,5 +790,70 @@ abstract
         equalTypes-ind
           (λ {i} {w} {T1} {T2} eqt → T1 ≡ #PI A B → T2 ≡ #PI C D → equalInType i w A a b → equalTypes i w (sub0 a B) (sub0 b D))
           ind eqt
+
+
+eqTypesSUM!← : {w : 𝕎·} {i : ℕ} {A : CTerm} {B : CTerm0} {C : CTerm} {D : CTerm0}
+             → ∀𝕎 w (λ w' _ → equalTypes i w' A C)
+             → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType i w' A a₁ a₂) → equalTypes i w' (sub0 a₁ B) (sub0 a₂ D))
+             → equalTypes i w (#SUM! A B) (#SUM! C D)
+eqTypesSUM!← {w} {i} {A} {B} {C} {D} eqta eqtb =
+  eqTypesNOWRITEMOD← (eqTypesNOREADMOD← (eqTypesSUM← eqta eqtb))
+
+
+SUMeq! : (eqa : per) (eqb : (a b : CTerm) → eqa a b → per) → wper
+SUMeq! eqa eqb w f g =
+  Σ CTerm (λ a1 → Σ CTerm (λ a2 → Σ CTerm (λ b1 → Σ CTerm (λ b2 →
+    Σ (eqa a1 a2) (λ ea →
+    f #⇛! (#PAIR a1 b1) at w
+    × g #⇛! (#PAIR a2 b2) at w
+    × eqb a1 a2 ea b1 b2)))))
+
+
+noread→#⇛ : {w : 𝕎·} {t v : CTerm}
+          → #isValue v
+          → #⇓→#⇛ w t
+          → t #⇓ v at w
+          → t #⇛ v at w
+noread→#⇛ {w} {t} {v} isv nor comp = nor w (⊑-refl· w) v isv comp
+
+
+noread-nowrite→#⇛! : {w : 𝕎·} {t v : CTerm}
+                   → #isValue v
+                   → #⇓→#⇛ w t
+                   → #⇓→#⇓! w t
+                   → t #⇓ v at w
+                   → t #⇛! v at w
+noread-nowrite→#⇛! {w} {t} {v} isv nor now comp =
+  #⇛→#⇛! {w} {t} {v} now isv c
+  where
+  c : t #⇛ v at w
+  c = noread→#⇛ isv nor comp
+
+
+abstract
+  equalInType-SUM!→ : {u : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} {f g : CTerm}
+                    → equalInType u w (#SUM! A B) f g
+                    → □· w (λ w' _ → SUMeq! (equalInType u w' A) (λ a b ea → equalInType u w' (sub0 a B)) w' f g)
+  equalInType-SUM!→ {u} {w} {A} {B} {f} {g} f∈ =
+    Mod.□-idem M (Mod.∀𝕎-□Func M aw1 (equalInTypeNOWRITEMOD→ f∈))
+    where
+    aw1 : ∀𝕎 w (λ w' e' → NOWRITEMODeq (equalInType u w' (#NOREADMOD (#SUM A B))) w' f g
+                        → □· w' (↑wPred' (λ w'' _ → SUMeq! (equalInType u w'' A)
+                                                           (λ a b ea → equalInType u w'' (sub0 a B)) w'' f g) e'))
+    aw1 w1 e1 (f∈1 , (c₁ , c₂)) = Mod.□-idem M (Mod.∀𝕎-□Func M aw2 (equalInTypeNOREADMOD→ f∈1))
+      where
+      aw2 : ∀𝕎 w1 (λ w' e' → NOREADMODeq (equalInType u w' (#SUM A B)) w' f g
+                           → □· w' (↑wPred' (↑wPred' (λ w'' _ → SUMeq! (equalInType u w'' A)
+                                                                       (λ a b ea → equalInType u w'' (sub0 a B)) w'' f g) e1) e'))
+      aw2 w2 e2 (f∈2 , (d₁ , d₂)) = Mod.∀𝕎-□Func M aw3 (equalInType-SUM→ f∈2)
+        where
+        aw3 : ∀𝕎 w2 (λ w' e' → SUMeq (equalInType u w' A) (λ a b ea → equalInType u w' (sub0 a B)) w' f g
+                             → ↑wPred' (↑wPred' (λ w'' _ → SUMeq! (equalInType u w'' A)
+                                                                  (λ a b ea → equalInType u w'' (sub0 a B)) w'' f g) e1) e2 w' e')
+        aw3 w3 e3 (a₁ , a₂ , b₁ , b₂ , a∈ , p₁ , p₂ , b∈) z₁ z₂ =
+          a₁ , a₂ , b₁ , b₂ , a∈ ,
+          noread-nowrite→#⇛! tt (∀𝕎-mon e3 d₁) (∀𝕎-mon (⊑-trans· e2 e3) c₁) p₁ ,
+          noread-nowrite→#⇛! tt (∀𝕎-mon e3 d₂) (∀𝕎-mon (⊑-trans· e2 e3) c₂) p₂ ,
+          b∈
 
 \end{code}

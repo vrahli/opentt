@@ -74,7 +74,7 @@ open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
   using (→∧≡true)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
-  using (⇓NUM→SUC⇓NUM ; #APPLY2 ; #FST ; #SND)
+  using (⇓NUM→SUC⇓NUM ; #APPLY2 ; #FST ; #SND ; SUM! ; #SUM! ; #⇛!-FST-PAIR)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -95,7 +95,7 @@ open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (≡→equalInType ; eqTypesEQ→ᵣ)
 open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (_#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ; presPure ; →presPure-NATREC₁ ; →presPure-NATREC₂ ; →presPure-NATREC₃ ;
-         equalTypesPI→ₗ ; equalTypesPI→ᵣ)
+         equalTypesPI→ₗ ; equalTypesPI→ᵣ ; eqTypesSUM!← ; equalInType-SUM!→ ; SUMeq!)
 open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalTypes-uni-mon ; equalInType-uni-mon)
 
@@ -115,7 +115,7 @@ open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 ⟦_⟧T {n} {Γ} {.Empty} (Emptyⱼ x) = FALSE
 ⟦_⟧T {n} {Γ} {.Unit} (Unitⱼ x) = UNIT
 ⟦_⟧T {n} {Γ} {.(Π _ ▹ _)} ((Πⱼ_▹_) {F} {G} i j) = PI ⟦ i ⟧T ⟦ j ⟧T
-⟦_⟧T {n} {Γ} {.(Σ _ ▹ _)} ((Σⱼ_▹_) {F} {G} i j) = SUM ⟦ i ⟧T ⟦ j ⟧T
+⟦_⟧T {n} {Γ} {.(Σ _ ▹ _)} ((Σⱼ_▹_) {F} {G} i j) = SUM! ⟦ i ⟧T ⟦ j ⟧T
 ⟦_⟧T {n} {Γ} {σ} (univ x) = UNIV 1
 
 
@@ -307,7 +307,7 @@ canonicity2 {n} {Γ} {t} g (ne (neNfₜ neK ⊢k k≡k)) = {!⊥-elim (noNe ⊢k
 ⟦_⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Pikind (t GenTs.∷ (t₁ GenTs.∷ []))) = PI ⟦ t ⟧ᵤ ⟦ t₁ ⟧ᵤ
 ⟦_⟧ᵤ {n} (gen {.(cons 1 nil)} Lamkind (t GenTs.∷ [])) = LAMBDA ⟦ t ⟧ᵤ
 ⟦_⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) = APPLY ⟦ t ⟧ᵤ ⟦ t₁ ⟧ᵤ
-⟦_⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) = SUM ⟦ t ⟧ᵤ ⟦ t₁ ⟧ᵤ
+⟦_⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) = SUM! ⟦ t ⟧ᵤ ⟦ t₁ ⟧ᵤ
 ⟦_⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) = PAIR ⟦ t ⟧ᵤ ⟦ t₁ ⟧ᵤ
 ⟦_⟧ᵤ {n} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) = FST ⟦ t ⟧ᵤ
 ⟦_⟧ᵤ {n} (gen {.(cons 0 nil)} Sndkind (t GenTs.∷ [])) = SND ⟦ t ⟧ᵤ
@@ -357,6 +357,30 @@ noseq-SND t with noseq t
 ... | false = refl
 
 
+→¬Names-SUM! : {a b : BTerm}
+             → ¬Names a
+             → ¬Names b
+             → ¬Names (SUM! a b)
+→¬Names-SUM! {a} {b} na nb
+  rewrite na | nb = refl
+
+
+→¬Seq-SUM! : {a b : BTerm}
+           → ¬Seq a
+           → ¬Seq b
+           → ¬Seq (SUM! a b)
+→¬Seq-SUM! {a} {b} na nb
+  rewrite na | nb = refl
+
+
+→¬Enc-SUM! : {a b : BTerm}
+           → ¬Enc a
+           → ¬Enc b
+           → ¬Enc (SUM! a b)
+→¬Enc-SUM! {a} {b} na nb
+  rewrite na | nb = refl
+
+
 ¬Names⟦⟧ᵤ : {n : Nat} (t : Term n)
           → ¬Names ⟦ t ⟧ᵤ
 ¬Names⟦⟧ᵤ {n} (var x) = refl
@@ -367,7 +391,7 @@ noseq-SND t with noseq t
 ¬Names⟦⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) =
   →∧≡true (¬Names⟦⟧ᵤ t) (¬Names⟦⟧ᵤ t₁)
 ¬Names⟦⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) =
-  →∧≡true (¬Names⟦⟧ᵤ t) (¬Names⟦⟧ᵤ t₁)
+  →¬Names-SUM! {⟦ t ⟧ᵤ} {⟦ t₁ ⟧ᵤ} (¬Names⟦⟧ᵤ t) (¬Names⟦⟧ᵤ t₁)
 ¬Names⟦⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) =
   →∧≡true (¬Names⟦⟧ᵤ t) (¬Names⟦⟧ᵤ t₁)
 ¬Names⟦⟧ᵤ {n} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) =
@@ -395,7 +419,7 @@ noseq-SND t with noseq t
 ¬Seq⟦⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) =
   →∧≡true (¬Seq⟦⟧ᵤ t) (¬Seq⟦⟧ᵤ t₁)
 ¬Seq⟦⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) =
-  →∧≡true (¬Seq⟦⟧ᵤ t) (¬Seq⟦⟧ᵤ t₁)
+  →¬Seq-SUM! {⟦ t ⟧ᵤ} {⟦ t₁ ⟧ᵤ} (¬Seq⟦⟧ᵤ t) (¬Seq⟦⟧ᵤ t₁)
 ¬Seq⟦⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) =
   →∧≡true (¬Seq⟦⟧ᵤ t) (¬Seq⟦⟧ᵤ t₁)
 ¬Seq⟦⟧ᵤ {n} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) =
@@ -423,7 +447,7 @@ noseq-SND t with noseq t
 ¬Enc⟦⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) =
   →∧≡true (¬Enc⟦⟧ᵤ t) (¬Enc⟦⟧ᵤ t₁)
 ¬Enc⟦⟧ᵤ {n} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) =
-  →∧≡true (¬Enc⟦⟧ᵤ t) (¬Enc⟦⟧ᵤ t₁)
+  →¬Enc-SUM! {⟦ t ⟧ᵤ} {⟦ t₁ ⟧ᵤ} (¬Enc⟦⟧ᵤ t) (¬Enc⟦⟧ᵤ t₁)
 ¬Enc⟦⟧ᵤ {n} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) =
   →∧≡true (¬Enc⟦⟧ᵤ t) (¬Enc⟦⟧ᵤ t₁)
 ¬Enc⟦⟧ᵤ {n} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) =
@@ -482,6 +506,21 @@ noseq-SND t with noseq t
 --}
 
 
+∈fvars-SUM!→ : {v : Var} {a b : BTerm}
+             → v ∈ fvars (SUM! a b)
+             → v ∈ fvars a ⊎ v ∈ lowerVars (fvars b)
+∈fvars-SUM!→ {v} {a} {b} i
+  with ∈-++⁻ ((fvars a Data.List.++ lowerVars (fvars b)) Data.List.++ nil) i
+∈fvars-SUM!→ {v} {a} {b} i | inj₁ p
+  with ∈-++⁻ (fvars a Data.List.++ lowerVars (fvars b)) p
+∈fvars-SUM!→ {v} {a} {b} i | inj₁ p | inj₁ q
+  with ∈-++⁻ (fvars a) q
+... | inj₁ r = inj₁ r
+... | inj₂ r = inj₂ r
+∈fvars-SUM!→ {v} {a} {b} i | inj₁ p | inj₂ ()
+∈fvars-SUM!→ {v} {a} {b} i | inj₂ ()
+
+
 fvarsᵤ : {n : Nat} (t : Term n)
         → (v : Var) → v ∈ fvars (⟦ t ⟧ᵤ) → v <ℕ n
 fvarsᵤ {n} (var x) v (here px) rewrite px = toℕ<n x
@@ -496,7 +535,7 @@ fvarsᵤ {n} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ 
 ... | inj₁ k = fvarsᵤ t _ k
 ... | inj₂ k = fvarsᵤ t₁ _ k
 fvarsᵤ {n} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) v i
-  with ∈-++⁻ (fvars ⟦ t ⟧ᵤ) i
+  with ∈fvars-SUM!→ {v} {⟦ t ⟧ᵤ} {⟦ t₁ ⟧ᵤ} i
 ... | inj₁ k = fvarsᵤ t _ k
 ... | inj₂ k = s≤s-inj (fvarsᵤ t₁ _ (∈lowerVars→ v (fvars ⟦ t₁ ⟧ᵤ) k))
 fvarsᵤ {n} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) v i
@@ -836,6 +875,75 @@ valid∈-SUM i lti H F G vF vG w s1 s2 cc1 cc2 ce1 ce2 es eh
            ha hb)
 
 
+valid∈-SUM! : (i : Nat) (lti : 1 <ℕ i) (H : hypotheses) (F G : BTerm)
+            → valid∈𝕎 i H F (UNIV 1)
+            → valid∈𝕎 i (H Data.List.∷ʳ mkHyp F) G (UNIV 1)
+            → valid∈𝕎 i H (SUM! F G) (UNIV 1)
+valid∈-SUM! i lti H F G vF vG w s1 s2 cc1 cc2 ce1 ce2 es eh
+  rewrite #subs-UNIV s1 1 cc1 | #subs-UNIV s2 1 cc2
+        | #subs-SUM!2 s1 F G ce1 | #subs-SUM!2 s2 F G ce2
+  = h1 , h2
+  where
+  h1 : equalTypes i w (#UNIV 1) (#UNIV 1)
+  h1 = eqTypesUniv w i 1 lti
+
+  ha : ∀𝕎 w (λ w' _ → equalTypes 1 w' (#subs s1 F (coveredSUM!₁ {s1} {F} {G} ce1)) (#subs s2 F (coveredSUM!₁ {s2} {F} {G} ce2)))
+  ha w1 e1 = vf2
+    where
+    vf1 : equalInType i w1 (#UNIV 1) (#subs s1 F (coveredSUM!₁ {s1} {F} {G} ce1)) (#subs s2 F (coveredSUM!₁ {s2} {F} {G} ce2))
+    vf1 = ≡CTerm→equalInType
+            (#subs-UNIV s1 1 cc1)
+            (π₂ (vF w1 s1 s2 cc1 cc2 (coveredSUM!₁ {s1} {F} {G} ce1) (coveredSUM!₁ {s2} {F} {G} ce2) (≡subs-mon e1 es) (≡hyps-mon e1 eh)))
+
+    vf2 : equalTypes 1 w1 (#subs s1 F (coveredSUM!₁ {s1} {F} {G} ce1)) (#subs s2 F (coveredSUM!₁ {s2} {F} {G} ce2))
+    vf2 = equalInType→equalTypes-aux i 1 lti w1
+            (#subs s1 F (coveredSUM!₁ {s1} {F} {G} ce1))
+            (#subs s2 F (coveredSUM!₁ {s2} {F} {G} ce2))
+            vf1
+
+  hb : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType 1 w' (#subs s1 F (coveredSUM!₁ {s1} {F} {G} ce1)) a₁ a₂
+                    → equalTypes
+                        1 w'
+                        (sub0 a₁ (#[0]subs s1 G (coveredSUM!₂ {s1} {F} {G} ce1)))
+                        (sub0 a₂ (#[0]subs s2 G (coveredSUM!₂ {s2} {F} {G} ce2))))
+  hb w1 e1 a₁ a₂ a∈ =
+    ≡CTerm→eqTypes
+      (≣sym (sub0-#[0]subs a₁ s1 G (coveredSUM!₂ {s1} {F} {G} ce1)))
+      (≣sym (sub0-#[0]subs a₂ s2 G (coveredSUM!₂ {s2} {F} {G} ce2)))
+      hb1
+    where
+    vg1 : equalInType i w1 (#UNIV 1) (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G (coveredSUM!₂ {s1} {F} {G} ce1)))
+                                     (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G (coveredSUM!₂ {s2} {F} {G} ce2)))
+    vg1 = ≡CTerm→equalInType
+            (#subs-UNIV (s1 Data.List.∷ʳ a₁) 1 λ {x} ())
+            (π₂ (vG w1 (s1 Data.List.∷ʳ a₁) (s2 Data.List.∷ʳ a₂) (λ {x} ()) (λ {x} ())
+                    (→covered∷ʳ a₁ s1 G (coveredSUM!₂ {s1} {F} {G} ce1))
+                    (→covered∷ʳ a₂ s2 G (coveredSUM!₂ {s2} {F} {G} ce2))
+                    (≡subs∷ʳ i w1 s1 s2 H F (coveredSUM!₁ {s1} {F} {G} ce1) a₁ a₂
+                      (equalInType-uni-mon (<⇒≤ lti) a∈) (≡subs-mon e1 es))
+                    (≡hyps∷ʳ i w1 s1 s2 H H F F (coveredSUM!₁ {s1} {F} {G} ce1) (coveredSUM!₁ {s2} {F} {G} ce2) a₁ a₂
+                      (equalTypes-uni-mon (<⇒≤ lti) (ha w1 e1))
+                      (≡hyps-mon e1 eh))))
+
+    hb1 : equalTypes 1 w1 (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G (coveredSUM!₂ {s1} {F} {G} ce1)))
+                          (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G (coveredSUM!₂ {s2} {F} {G} ce2)))
+    hb1 = equalInType→equalTypes-aux i 1 lti w1
+            (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G (coveredSUM!₂ {s1} {F} {G} ce1)))
+            (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G (coveredSUM!₂ {s2} {F} {G} ce2)))
+            vg1
+
+  h2 : equalInType i w (#UNIV 1)
+                       (#SUM! (#subs s1 F (coveredSUM!₁ {s1} {F} {G} ce1)) (#[0]subs s1 G (coveredSUM!₂ {s1} {F} {G} ce1)))
+                       (#SUM! (#subs s2 F (coveredSUM!₁ {s2} {F} {G} ce2)) (#[0]subs s2 G (coveredSUM!₂ {s2} {F} {G} ce2)))
+  h2 = equalTypes→equalInType-UNIV
+         lti
+         (eqTypesSUM!←
+           {w} {1}
+           {#subs s1 F (coveredSUM!₁ {s1} {F} {G} ce1)} {#[0]subs s1 G (coveredSUM!₂ {s1} {F} {G} ce1)}
+           {#subs s2 F (coveredSUM!₁ {s2} {F} {G} ce2)} {#[0]subs s2 G (coveredSUM!₂ {s2} {F} {G} ce2)}
+           ha hb)
+
+
 length⟦⟧Γ : {n : Nat} {Γ : Con Term n}
           → Data.List.length ⟦ Γ ⟧Γ ≣ n
 length⟦⟧Γ {0} {ε} = refl
@@ -1009,7 +1117,7 @@ shiftUpN-PI k (Nat.suc m) a b rewrite shiftUpN-PI k m a b = refl
 ⟦wk⟧ᵤ {n} {m} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) =
   cong₂ APPLY (⟦wk⟧ᵤ {n} {m} t) (⟦wk⟧ᵤ {n} {m} t₁)
 ⟦wk⟧ᵤ {n} {m} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) =
-  cong₂ SUM (⟦wk⟧ᵤ {n} {m} t) (⟦wk⟧ᵤ {n} {1+ m} t₁)
+  cong₂ SUM! (⟦wk⟧ᵤ {n} {m} t) (⟦wk⟧ᵤ {n} {1+ m} t₁)
 ⟦wk⟧ᵤ {n} {m} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) =
   cong₂ PAIR (⟦wk⟧ᵤ {n} {m} t) (⟦wk⟧ᵤ {n} {m} t₁)
 ⟦wk⟧ᵤ {n} {m} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) =
@@ -1091,7 +1199,7 @@ sucIf≤-predIf≤-prop2 (1+ x) m p q with 1+ x ≤? m
 ⟦[]⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
   cong₂ APPLY (⟦[]⟧ᵤ' t u) (⟦[]⟧ᵤ' t₁ u)
 ⟦[]⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
-  cong₂ SUM (⟦[]⟧ᵤ' t u) (⟦[]⟧ᵤ' {n} {1+ m} t₁ u)
+  cong₂ SUM! (⟦[]⟧ᵤ' t u) (⟦[]⟧ᵤ' {n} {1+ m} t₁ u)
 ⟦[]⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
   cong₂ PAIR (⟦[]⟧ᵤ' t u) (⟦[]⟧ᵤ' t₁ u)
 ⟦[]⟧ᵤ' {n} {m} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) u =
@@ -1159,7 +1267,7 @@ sucIf≤0 n with n <? 0
 ⟦[]↑⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 0 nil))} Appkind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
   cong₂ APPLY (⟦[]↑⟧ᵤ' t u) (⟦[]↑⟧ᵤ' t₁ u)
 ⟦[]↑⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 1 nil))} Sigmakind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
-  cong₂ SUM (⟦[]↑⟧ᵤ' t u) (⟦[]↑⟧ᵤ' {n} {1+ m} t₁ u)
+  cong₂ SUM! (⟦[]↑⟧ᵤ' t u) (⟦[]↑⟧ᵤ' {n} {1+ m} t₁ u)
 ⟦[]↑⟧ᵤ' {n} {m} (gen {.(cons 0 (cons 0 nil))} Prodkind (t GenTs.∷ (t₁ GenTs.∷ []))) u =
   cong₂ PAIR (⟦[]↑⟧ᵤ' t u) (⟦[]↑⟧ᵤ' t₁ u)
 ⟦[]↑⟧ᵤ' {n} {m} (gen {.(cons 0 nil)} Fstkind (t GenTs.∷ [])) u =
@@ -1715,12 +1823,11 @@ valid∈LAMBDA {i} {H} {F} {G} {t} lti hf hg w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 
                      c2a
 
 
-
 valid∈FST : {i : Nat} {H : hypotheses} {F G t : BTerm} (lti : 1 <ℕ i)
           → coveredH (H Data.List.∷ʳ mkHyp F) G
           → valid∈𝕎 i H F (UNIV 1)
           → valid∈𝕎 i (H Data.List.∷ʳ mkHyp F) G (UNIV 1)
-          → valid∈𝕎 i H t (SUM F G)
+          → valid∈𝕎 i H t (SUM! F G)
           → valid∈𝕎 i H (FST t) F
 valid∈FST {i} {H} {F} {G} {t} lti covH hf hg hs w s1 s2 cc1 cc2 ce1 ce2 es eh =
   c1 , c2
@@ -1743,11 +1850,11 @@ valid∈FST {i} {H} {F} {G} {t} lti covH hf hg hs w s1 s2 cc1 cc2 ce1 ce2 es eh 
   cu2a : covered s2 (UNIV 1)
   cu2a = covered-UNIV s2 1
 
-  cS1 : covered s1 (SUM F G)
-  cS1 = →coveredSUM {s1} {F} {G} cc1 cG1
+  cS1 : covered s1 (SUM! F G)
+  cS1 = →coveredSUM! {s1} {F} {G} cc1 cG1
 
-  cS2 : covered s2 (SUM F G)
-  cS2 = →coveredSUM {s2} {F} {G} cc2 cG2
+  cS2 : covered s2 (SUM! F G)
+  cS2 = →coveredSUM! {s2} {F} {G} cc2 cG2
 
   hf1 : equalInType i w (#subs s1 (UNIV 1) cu1a) (#subs s1 F cc1) (#subs s2 F cc2)
   hf1 = π₂ (hf w s1 s2 cu1a cu2a cc1 cc2 es eh)
@@ -1764,20 +1871,25 @@ valid∈FST {i} {H} {F} {G} {t} lti covH hf hg hs w s1 s2 cc1 cc2 ce1 ce2 es eh 
   c1 : equalTypes i w (#subs s1 F cc1) (#subs s2 F cc2)
   c1 = c1F w (⊑-refl· w)
 
-  hs1 : equalInType i w (#subs s1 (SUM F G) cS1) (#subs s1 t clt1) (#subs s2 t clt2)
+  hs1 : equalInType i w (#subs s1 (SUM! F G) cS1) (#subs s1 t clt1) (#subs s2 t clt2)
   hs1 = π₂ (hs w s1 s2 cS1 cS2 clt1 clt2 es eh)
 
-  hs2 : equalInType i w (#SUM (#subs s1 F cc1) (#[0]subs s1 G cG1)) (#subs s1 t clt1) (#subs s2 t clt2)
-  hs2 = ≡CTerm→equalInType (#subs-SUM s1 F G cS1 cc1 cG1) hs1
+  hs2 : equalInType i w (#SUM! (#subs s1 F cc1) (#[0]subs s1 G cG1)) (#subs s1 t clt1) (#subs s2 t clt2)
+  hs2 = ≡CTerm→equalInType (#subs-SUM! s1 F G cS1 cc1 cG1) hs1
 
-  aw1 : ∀𝕎 w (λ w' e' → SUMeq (equalInType i w' (#subs s1 F cc1))
-                              (λ a b ea → equalInType i w' (sub0 a (#[0]subs s1 G cG1)))
-                              w' (#subs s1 t clt1) (#subs s2 t clt2)
+  aw1 : ∀𝕎 w (λ w' e' → SUMeq! (equalInType i w' (#subs s1 F cc1))
+                               (λ a b ea → equalInType i w' (sub0 a (#[0]subs s1 G cG1)))
+                               w' (#subs s1 t clt1) (#subs s2 t clt2)
                       → equalInType i w' (#subs s1 F cc1) (#FST (#subs s1 t clt1)) (#FST (#subs s2 t clt2)))
-  aw1 w1 e1 (a₁ , a₂ , b₁ , b₂ , a∈ , c₁ , c₂ , b∈) = {!!} -- we need no-read/no-write sums
+  aw1 w1 e1 (a₁ , a₂ , b₁ , b₂ , a∈ , c₁ , c₂ , b∈) =
+    equalInType-#⇛ₚ-left-right-rev
+      {i} {w1} {#subs s1 F cc1} {#FST (#subs s1 t clt1)} {a₁} {#FST (#subs s2 t clt2)} {a₂}
+      (#⇛!-FST-PAIR (#subs s1 t clt1) a₁ b₁ w1 c₁)
+      (#⇛!-FST-PAIR (#subs s2 t clt2) a₂ b₂ w1 c₂)
+      a∈
 
   c2a : equalInType i w (#subs s1 F cc1) (#FST (#subs s1 t clt1)) (#FST (#subs s2 t clt2))
-  c2a = equalInType-local (Mod.∀𝕎-□Func M aw1 (equalInType-SUM→ hs2))
+  c2a = equalInType-local (Mod.∀𝕎-□Func M aw1 (equalInType-SUM!→ hs2))
 
   c2 : equalInType i w (#subs s1 F cc1) (#subs s1 (FST t) ce1) (#subs s2 (FST t) ce2)
   c2 = ≡→equalInType refl
@@ -1814,7 +1926,7 @@ valid∈FST {i} {H} {F} {G} {t} lti covH hf hg hs w s1 s2 cc1 cc2 ce1 ce2 es eh 
   h2 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 1)
   h2 = ⟦_⟧Γ∈ j₁ i lti
 ⟦_⟧Γ∈ {n} {Γ} {.(Σ _ ▹ _)} {.U} ((Σⱼ_▹_) {F} {G} j j₁) i lti w =
-  valid∈-SUM i lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ h1 h2 w
+  valid∈-SUM! i lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ h1 h2 w
   where
   h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
   h1 = ⟦_⟧Γ∈ j i lti
@@ -1846,7 +1958,8 @@ valid∈FST {i} {H} {F} {G} {t} lti covH hf hg hs w s1 s2 cc1 cc2 ce1 ce2 es eh 
 
   covF : coveredH ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ
   covF = coveredΓ {n} Γ F
-⟦_⟧Γ∈ {n} {Γ} {.(prod _ _)} {.(Σ _ ▹ _)} (prodⱼ {F} {G} {t} {u} x x₁ j j₁) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(prod _ _)} {.(Σ _ ▹ _)} (prodⱼ {F} {G} {t} {u} x x₁ j j₁) i lti w =
+  {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.(fst _)} {F} (fstⱼ {F} {G} {t} x x₁ j) i lti w =
   valid∈FST lti covH h1 h2 h3 w
   where
@@ -1859,7 +1972,7 @@ valid∈FST {i} {H} {F} {G} {t} lti covH hf hg hs w s1 s2 cc1 cc2 ce1 ce2 es eh 
   h2 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 1)
   h2 = ⟦_⟧⊢ x₁ i lti
 
-  h3 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ (SUM ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ)
+  h3 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ (SUM! ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ)
   h3 = ⟦_⟧Γ∈ j i lti
 ⟦_⟧Γ∈ {n} {Γ} {.(snd _)} {.(G [ fst u ])} (sndⱼ {F} {G} {u} x x₁ j) i lti w = {!!}
 ⟦_⟧Γ∈ {n} {Γ} {.Definition.Untyped.zero} {.ℕ} (zeroⱼ x) i lti w =

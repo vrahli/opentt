@@ -75,7 +75,7 @@ open import terms4(W)(C)(K)(G)(X)(N)(EC)
   using (lowerVars++⊆ ; lowerVars-fvars-shiftUp ; lowerVars-fvars-shiftUp⊆ ; lowerVars++ ; lowerVars2++⊆ ;
          lowerVars2-fvars-shiftUp⊆)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
-  using (#APPLY2 ; #FST ; #SND)
+  using (#APPLY2 ; #FST ; #SND ; SUM! ; #SUM!)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqTypes-mon ; weq-ext-eq ; meq-ext-eq ; TUNIONeq-ext-eq)
@@ -3034,5 +3034,117 @@ length-∷ʳ {A} a (b ∷ l) = cong suc (length-∷ʳ a l)
 
   q2 : x < length s2
   q2 rewrite snd (≡subs→length eqs) = q1
+
+
+subs-ISECT : (s : Sub) (a b : Term)
+           → subs s (ISECT a b) ≡ ISECT (subs s a) (subs s b)
+subs-ISECT [] a b = refl
+subs-ISECT (x ∷ s) a b
+  rewrite subs-ISECT s a b
+  = refl
+
+
+subs-NOREAD : (s : Sub)
+            → subs s NOREAD ≡ NOREAD
+subs-NOREAD [] = refl
+subs-NOREAD (x ∷ s)
+  rewrite subs-NOREAD s
+  = refl
+
+
+subs-NOWRITE : (s : Sub)
+             → subs s NOWRITE ≡ NOWRITE
+subs-NOWRITE [] = refl
+subs-NOWRITE (x ∷ s)
+  rewrite subs-NOWRITE s
+  = refl
+
+
+subs-NOREADMOD : (s : Sub) (a : Term)
+               → subs s (NOREADMOD a) ≡ NOREADMOD (subs s a)
+subs-NOREADMOD s a =
+  trans (subs-ISECT s a NOREAD)
+        (cong (ISECT (subs s a)) (subs-NOREAD s))
+
+
+subs-NOWRITEMOD : (s : Sub) (a : Term)
+                → subs s (NOWRITEMOD a) ≡ NOWRITEMOD (subs s a)
+subs-NOWRITEMOD s a =
+  trans (subs-ISECT s a NOWRITE)
+        (cong (ISECT (subs s a)) (subs-NOWRITE s))
+
+
+subs-SUM! : (s : Sub) (a b : Term)
+          → subs s (SUM! a b) ≡ SUM! (subs s a) (subsN 1 s b)
+subs-SUM! s a b =
+  trans (subs-NOWRITEMOD s (NOREADMOD (SUM a b)))
+        (cong NOWRITEMOD (trans (subs-NOREADMOD s (SUM a b))
+                                (cong NOREADMOD (subs-SUM s a b))))
+
+
+coveredNOREADMOD : {s : Sub} {a : Term}
+                 → covered s (NOREADMOD a)
+                 → covered s a
+coveredNOREADMOD {s} {a} c {x} i = c {x} (∈-++⁺ˡ i)
+
+
+coveredNOWRITEMOD : {s : Sub} {a : Term}
+                  → covered s (NOWRITEMOD a)
+                  → covered s a
+coveredNOWRITEMOD {s} {a} c {x} i = c {x} (∈-++⁺ˡ i)
+
+
+coveredSUM!₁ : {s : Sub} {a b : Term}
+             → covered s (SUM! a b)
+             → covered s a
+coveredSUM!₁ {s} {a} {b} c =
+  coveredSUM₁ {s} {a} {b} (coveredNOREADMOD {s} {SUM a b} (coveredNOWRITEMOD {s} {NOREADMOD (SUM a b)} c))
+
+
+coveredSUM!₂ : {s : Sub} {a b : Term}
+             → covered s (SUM! a b)
+             → covered0 s b
+coveredSUM!₂ {s} {a} {b} c =
+  coveredSUM₂ {s} {a} {b} (coveredNOREADMOD {s} {SUM a b} (coveredNOWRITEMOD {s} {NOREADMOD (SUM a b)} c))
+
+
+#subs-SUM! : (s : Sub) (a b : Term) (c : covered s (SUM! a b)) (ca : covered s a) (cb : covered0 s b)
+           → #subs s (SUM! a b) c ≡ #SUM! (#subs s a ca) (#[0]subs s b cb)
+#subs-SUM! s a b c ca cb = CTerm≡ (subs-SUM! s a b)
+
+
+#subs-SUM!2 : (s : Sub) (a b : Term) (c : covered s (SUM! a b))
+            → #subs s (SUM! a b) c ≡ #SUM! (#subs s a (coveredSUM!₁ {s} {a} {b} c)) (#[0]subs s b (coveredSUM!₂ {s} {a} {b} c))
+#subs-SUM!2 s a b c = #subs-SUM! s a b c (coveredSUM!₁ {s} {a} {b} c) (coveredSUM!₂ {s} {a} {b} c)
+
+
+→coveredISECT : {s : Sub} {a b : Term}
+              → covered s a
+              → covered s b
+              → covered s (ISECT a b)
+→coveredISECT {s} {a} {b} ca cb {x} i with ∈-++⁻ (fvars a) i
+... | inj₁ j = ca j
+... | inj₂ j = cb j
+
+
+→coveredNOREADMOD : {s : Sub} {a : Term}
+                  → covered s a
+                  → covered s (NOREADMOD a)
+→coveredNOREADMOD {s} {a} c = →coveredISECT {s} {a} {NOREAD} c (λ())
+
+
+→coveredNOWRITEMOD : {s : Sub} {a : Term}
+                   → covered s a
+                   → covered s (NOWRITEMOD a)
+→coveredNOWRITEMOD {s} {a} c = →coveredISECT {s} {a} {NOWRITE} c (λ())
+
+
+→coveredSUM! : {s : Sub} {a b : Term}
+             → covered s a
+             → covered0 s b
+             → covered s (SUM! a b)
+→coveredSUM! {s} {a} {b} ca cb =
+  →coveredNOWRITEMOD {s} {NOREADMOD (SUM a b)}
+                     (→coveredNOREADMOD {s} {SUM a b} (→coveredSUM {s} {a} {b} ca cb))
 
 \end{code}
