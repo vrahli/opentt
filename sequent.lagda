@@ -672,6 +672,18 @@ coveredAPPLY₂ : {s : Sub} {a b : Term}
 coveredAPPLY₂ {s} {a} {b} c {x} i = c {x} (∈-++⁺ʳ (fvars a) i)
 
 
+coveredPAIR₁ : {s : Sub} {a b : Term}
+             → covered s (PAIR a b)
+             → covered s a
+coveredPAIR₁ {s} {a} {b} c {x} i = c {x} (∈-++⁺ˡ i)
+
+
+coveredPAIR₂ : {s : Sub} {a b : Term}
+             → covered s (PAIR a b)
+             → covered s b
+coveredPAIR₂ {s} {a} {b} c {x} i = c {x} (∈-++⁺ʳ (fvars a) i)
+
+
 coveredNATREC₁ : {s : Sub} {a b c : Term}
                → covered s (NATREC a b c)
                → covered s a
@@ -716,6 +728,10 @@ covered-FALSE s ()
 
 covered-UNIV : (s : Sub) (i : ℕ) → covered s (UNIV i)
 covered-UNIV s i ()
+
+
+covered0-UNIV : (s : Sub) (i : ℕ) → covered0 s (UNIV i)
+covered0-UNIV s i ()
 
 
 covered-NUM : (s : Sub) (i : ℕ) → covered s (NUM i)
@@ -814,6 +830,19 @@ subs-APPLY (x ∷ s) a b
 #subs-APPLY : (s : Sub) (a b : Term) (c : covered s (APPLY a b)) (ca : covered s a) (cb : covered s b)
             → #subs s (APPLY a b) c ≡ #APPLY (#subs s a ca) (#subs s b cb)
 #subs-APPLY s a b c ca cb = CTerm≡ (subs-APPLY s a b)
+
+
+subs-PAIR : (s : Sub) (a b : Term)
+          → subs s (PAIR a b) ≡ PAIR (subs s a) (subs s b)
+subs-PAIR [] a b = refl
+subs-PAIR (x ∷ s) a b
+  rewrite subs-PAIR s a b
+  = refl
+
+
+#subs-PAIR : (s : Sub) (a b : Term) (c : covered s (PAIR a b)) (ca : covered s a) (cb : covered s b)
+           → #subs s (PAIR a b) c ≡ #PAIR (#subs s a ca) (#subs s b cb)
+#subs-PAIR s a b c ca cb = CTerm≡ (subs-PAIR s a b)
 
 
 coveredLAMBDA : {s : Sub} {a : Term}

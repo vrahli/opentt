@@ -82,7 +82,8 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqInType-extr1 ; eqInType-sym ; eqInType-extl1 ; equalInType-sym ; equalInType-local ; eqTypes-local ;
          equalInType-mon ; ≡CTerm→eqTypes ; eqTypesNOREADMOD← ; eqTypesNOWRITEMOD← ; eqTypesSUM← ; equalInType-SUM→;
-         equalInTypeNOREADMOD→ ; equalInTypeNOWRITEMOD→ ; NOWRITEMODeq ; NOREADMODeq)
+         equalInTypeNOREADMOD→ ; equalInTypeNOWRITEMOD→ ; NOWRITEMODeq ; NOREADMODeq ;
+         →equalInTypeNOWRITEMOD ; →equalInTypeNOREADMOD ; #⇛val→#⇓→#⇛ ; equalInType-SUM)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalTypes-#⇛-left-rev ; TUNIONeq-#⇛-rev)
 
@@ -855,5 +856,39 @@ abstract
           noread-nowrite→#⇛! tt (∀𝕎-mon e3 d₁) (∀𝕎-mon (⊑-trans· e2 e3) c₁) p₁ ,
           noread-nowrite→#⇛! tt (∀𝕎-mon e3 d₂) (∀𝕎-mon (⊑-trans· e2 e3) c₂) p₂ ,
           b∈
+
+
+abstract
+  equalInType-SUM! : {u : ℕ} {w : 𝕎·} {A : CTerm} {B : CTerm0} {f g : CTerm}
+                   → ∀𝕎 w (λ w' _ → isType u w' A)
+                   → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType u w' A a₁ a₂) → equalTypes u w' (sub0 a₁ B) (sub0 a₂ B))
+                   → □· w (λ w' _ → SUMeq! (equalInType u w' A) (λ a b ea → equalInType u w' (sub0 a B)) w' f g)
+                   → equalInType u w (#SUM! A B) f g
+  equalInType-SUM! {u} {w} {A} {B} {f} {g} ha hb eqi =
+    →equalInTypeNOWRITEMOD (Mod.∀𝕎-□Func M aw1 eqi)
+    where
+    aw1 : ∀𝕎 w (λ w' e' → SUMeq! (equalInType u w' A) (λ a b ea → equalInType u w' (sub0 a B)) w' f g
+                        → equalInType u w' (#NOREADMOD (#SUM A B)) f g × NOWRITEeq w' f g)
+    aw1 w1 e1 (a₁ , a₂ , b₁ , b₂ , a∈ , c₁ , c₂ , b∈) =
+      →equalInTypeNOREADMOD (Mod.∀𝕎-□ M aw2) ,
+      #⇛!-pres-#⇓→#⇓!-rev c₁ (#⇓→#⇓!-val w1 (#PAIR a₁ b₁) tt) ,
+      #⇛!-pres-#⇓→#⇓!-rev c₂ (#⇓→#⇓!-val w1 (#PAIR a₂ b₂) tt)
+        where
+        aw2 : ∀𝕎 w1 (λ w' _ → equalInType u w' (#SUM A B) f g × NOREADeq w' f g)
+        aw2 w2 e2 =
+          equalInType-SUM
+            (∀𝕎-mon (⊑-trans· e1 e2) ha)
+            (∀𝕎-mon (⊑-trans· e1 e2) hb)
+            (Mod.∀𝕎-□ M aw3) ,
+          #⇛val→#⇓→#⇛ {w2} {f} {#PAIR a₁ b₁} tt (#⇛!→#⇛ (∀𝕎-mon e2 c₁)) ,
+          #⇛val→#⇓→#⇛ {w2} {g} {#PAIR a₂ b₂} tt (#⇛!→#⇛ (∀𝕎-mon e2 c₂))
+            where
+            aw3 : ∀𝕎 w2 (λ w' _ → SUMeq (equalInType u w' A) (λ a b ea → equalInType u w' (sub0 a B)) w' f g)
+            aw3 w3 e3 =
+              a₁ , a₂ , b₁ , b₂ ,
+              equalInType-mon a∈ w3 (⊑-trans· e2 e3) ,
+              #⇓!→#⇓ (lower (c₁ w3 (⊑-trans· e2 e3))) ,
+              #⇓!→#⇓ (lower (c₂ w3 (⊑-trans· e2 e3))) ,
+              equalInType-mon b∈ w3 (⊑-trans· e2 e3)
 
 \end{code}
