@@ -2998,6 +2998,37 @@ coveredFST : {s : Sub} {a : Term}
 coveredFST {s} {a} c {x} i = c {x} (∈-++⁺ˡ i)
 
 
+→coveredFST : {s : Sub} {a : Term}
+            → covered s a
+            → covered s (FST a)
+→coveredFST {s} {a} c {x} i rewrite ++[] (fvars a) = c {x} i
+
+
+subs-SND : (s : Sub) (a : Term)
+         → subs s (SND a) ≡ SND (subs s a)
+subs-SND [] a = refl
+subs-SND (x ∷ s) a
+  rewrite subs-SND s a
+        | #shiftUp 0 x = refl
+
+
+#subs-SND : (s : Sub) (a : Term) (c : covered s (SND a)) (ca : covered s a)
+          → #subs s (SND a) c ≡ #SND (#subs s a ca)
+#subs-SND s a c ca = CTerm≡ (subs-SND s a)
+
+
+coveredSND : {s : Sub} {a : Term}
+           → covered s (SND a)
+           → covered s a
+coveredSND {s} {a} c {x} i = c {x} (∈-++⁺ˡ i)
+
+
+→coveredSND : {s : Sub} {a : Term}
+            → covered s a
+            → covered s (SND a)
+→coveredSND {s} {a} c {x} i rewrite ++[] (fvars a) = c {x} i
+
+
 →coveredSUM : {s : Sub} {a b : Term}
             → covered s a
             → covered0 s b

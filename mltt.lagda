@@ -2037,7 +2037,7 @@ valid∈PAIR {i} {H} {F} {G} {t} {u} lti hf hg ht hu w s1 s2 cc1 cc2 ce1 ce2 es 
 
 
 valid∈SND : {i : Nat} {H : hypotheses} {F G t : BTerm} (lti : 1 <ℕ i)
-          → coveredH (H Data.List.∷ʳ mkHyp F) G
+          → coveredH H F
           → valid∈𝕎 i H F (UNIV 1)
           → valid∈𝕎 i (H Data.List.∷ʳ mkHyp F) G (UNIV 1) -- used?
           → valid∈𝕎 i H t (SUM! F G)
@@ -2045,11 +2045,125 @@ valid∈SND : {i : Nat} {H : hypotheses} {F G t : BTerm} (lti : 1 <ℕ i)
 valid∈SND {i} {H} {F} {G} {t} lti covH hf hg hs w s1 s2 cc1 cc2 ce1 ce2 es eh =
   c1 , c2
   where
+  cF1 : covered s1 F
+  cF1 = ≡subs→coveredₗ {i} {w} {s1} {s2} {H} {F} es covH
+
+  cF2 : covered s2 F
+  cF2 = ≡subs→coveredᵣ {i} {w} {s1} {s2} {H} {F} es covH
+
+  cG1 : covered0 s1 G
+  cG1 = covered-subn→covered0 (FST t) s1 G cc1
+
+  cG2 : covered0 s2 G
+  cG2 = covered-subn→covered0 (FST t) s2 G cc2
+
+  clt1 : covered s1 t
+  clt1 = coveredSND {s1} {t} ce1
+
+  clt2 : covered s2 t
+  clt2 = coveredSND {s2} {t} ce2
+
+  cft1 : covered s1 (FST t)
+  cft1 = →coveredFST {s1} {t} clt1
+
+  cft2 : covered s2 (FST t)
+  cft2 = →coveredFST {s2} {t} clt2
+
+  cu1a : covered s1 (UNIV 1)
+  cu1a = covered-UNIV s1 1
+
+  cu2a : covered s2 (UNIV 1)
+  cu2a = covered-UNIV s2 1
+
+  cu1b : covered0 s1 (UNIV 1)
+  cu1b = covered0-UNIV s1 1
+
+  cu2b : covered0 s2 (UNIV 1)
+  cu2b = covered0-UNIV s2 1
+
+  cS1 : covered s1 (SUM! F G)
+  cS1 = →coveredSUM! {s1} {F} {G} cF1 cG1
+
+  cS2 : covered s2 (SUM! F G)
+  cS2 = →coveredSUM! {s2} {F} {G} cF2 cG2
+
+  hf1 : equalInType i w (#subs s1 (UNIV 1) cu1a) (#subs s1 F cF1) (#subs s2 F cF2)
+  hf1 = π₂ (hf w s1 s2 cu1a cu2a cF1 cF2 es eh)
+
+  hf2 : equalInType i w (#UNIV 1) (#subs s1 F cF1) (#subs s2 F cF2)
+  hf2 = ≡CTerm→equalInType (#subs-UNIV s1 1 cu1a) hf1
+
+  hf3 : equalTypes 1 w (#subs s1 F cF1) (#subs s2 F cF2)
+  hf3 = equalInType→equalTypes-aux i 1 lti w (#subs s1 F cF1) (#subs s2 F cF2) hf2
+
+  c1F : ∀𝕎 w (λ w' _ → equalTypes i w' (#subs s1 F cF1) (#subs s2 F cF2))
+  c1F w1 e1 = equalTypes-uni-mon (<⇒≤ lti) (eqTypes-mon (uni 1) hf3 w1 e1)
+
+  c1G : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#subs s1 F cF1) a₁ a₂
+                     → equalTypes i w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s2 G cG2)))
+  c1G w1 e1 a₁ a₂ a∈ =
+    ≡CTerm→eqTypes
+      (≣sym (sub0-#[0]subs a₁ s1 G cG1))
+      (≣sym (sub0-#[0]subs a₂ s2 G cG2))
+      c1Ga
+    where
+    c1Gc : equalInType i w1 (#subs (s1 Data.List.∷ʳ a₁) (UNIV 1) (→covered∷ʳ a₁ s1 (UNIV 1) cu1b))
+                            (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G cG1))
+                            (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G cG2))
+    c1Gc = π₂ (hg w1 (s1 Data.List.∷ʳ a₁) (s2 Data.List.∷ʳ a₂)
+                  (→covered∷ʳ a₁ s1 (UNIV 1) cu1b) (→covered∷ʳ a₂ s2 (UNIV 1) cu2b)
+                  (→covered∷ʳ a₁ s1 G cG1) (→covered∷ʳ a₂ s2 G cG2)
+                  (≡subs∷ʳ i w1 s1 s2 H F cF1 a₁ a₂ a∈ (≡subs-mon e1 es))
+                  (≡hyps∷ʳ i w1 s1 s2 H H F F cF1 cF2 a₁ a₂ (c1F w1 e1) (≡hyps-mon e1 eh)))
+
+    c1Gb : equalInType i w1 (#UNIV 1)
+                            (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G cG1))
+                            (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G cG2))
+    c1Gb = ≡CTerm→equalInType (#subs-UNIV (s1 Data.List.∷ʳ a₁) 1 (→covered∷ʳ a₁ s1 (UNIV 1) cu1b)) c1Gc
+
+    c1Ga : equalTypes i w1 (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G cG1))
+                           (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G cG2))
+    c1Ga = equalTypes-uni-mon (<⇒≤ lti) (equalInType→equalTypes-aux
+                                          i 1 lti w1
+                                          (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G cG1))
+                                          (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G cG2))
+                                          c1Gb)
+
+  hs1 : equalInType i w (#subs s1 (SUM! F G) cS1) (#subs s1 t clt1) (#subs s2 t clt2)
+  hs1 = π₂ (hs w s1 s2 cS1 cS2 clt1 clt2 es eh)
+
+  hs2 : equalInType i w (#SUM! (#subs s1 F cF1) (#[0]subs s1 G cG1)) (#subs s1 t clt1) (#subs s2 t clt2)
+  hs2 = ≡CTerm→equalInType (#subs-SUM! s1 F G cS1 cF1 cG1) hs1
+
+  aw1 : ∀𝕎 w (λ w' e' → SUMeq! (equalInType i w' (#subs s1 F cF1))
+                               (λ a b ea → equalInType i w' (sub0 a (#[0]subs s1 G cG1)))
+                               w' (#subs s1 t clt1) (#subs s2 t clt2)
+                      → equalInType i w' (#subs s1 F cF1) (#FST (#subs s1 t clt1)) (#FST (#subs s2 t clt2)))
+  aw1 w1 e1 (a₁ , a₂ , b₁ , b₂ , a∈ , c₁ , c₂ , b∈) =
+    equalInType-#⇛ₚ-left-right-rev
+      {i} {w1} {#subs s1 F cF1} {#FST (#subs s1 t clt1)} {a₁} {#FST (#subs s2 t clt2)} {a₂}
+      (#⇛!-FST-PAIR (#subs s1 t clt1) a₁ b₁ w1 c₁)
+      (#⇛!-FST-PAIR (#subs s2 t clt2) a₂ b₂ w1 c₂)
+      a∈
+
+  fst∈F1 : equalInType i w (#subs s1 F cF1) (#FST (#subs s1 t clt1)) (#FST (#subs s2 t clt2))
+  fst∈F1 = equalInType-local (Mod.∀𝕎-□Func M aw1 (equalInType-SUM!→ hs2))
+
+  fst∈F : equalInType i w (#subs s1 F cF1) (#subs s1 (FST t) cft1) (#subs s2 (FST t) cft2)
+  fst∈F = ≡→equalInType
+            refl
+            (≣sym (#subs-FST s1 t cft1 clt1))
+            (≣sym (#subs-FST s2 t cft2 clt2))
+            fst∈F1
+
+  c1Ga : equalTypes i w (sub0 (#subs s1 (FST t) cft1) (#[0]subs s1 G cG1)) (sub0 (#subs s2 (FST t) cft2) (#[0]subs s2 G cG2))
+  c1Ga = c1G w (⊑-refl· w) (#subs s1 (FST t) cft1) (#subs s2 (FST t) cft2) fst∈F
+
   c1 : equalTypes i w (#subs s1 (subn 0 (FST t) G) cc1) (#subs s2 (subn 0 (FST t) G) cc2)
-  c1 = ?
+  c1 = {!!} -- use c1Ga by manipulating the subs
 
   c2 : equalInType i w (#subs s1 (subn 0 (FST t) G) cc1) (#subs s1 (SND t) ce1) (#subs s2 (SND t) ce2)
-  c2 = ?
+  c2 = {!!}
 
 
 ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
@@ -2148,8 +2262,8 @@ valid∈SND {i} {H} {F} {G} {t} lti covH hf hg hs w s1 s2 cc1 cc2 ce1 ce2 es eh 
          (≣sym (⟦[]⟧ᵤ-as-subn G (fst u)))
          (valid∈SND lti covH h1 h2 h3 w)
   where
-  covH : coveredH (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ
-  covH = coveredΓ {1+ n} (Γ ∙ F) G
+  covH : coveredH ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ
+  covH = coveredΓ {n} Γ F
 
   h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
   h1 = ⟦_⟧⊢ x i lti
