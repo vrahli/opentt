@@ -1944,10 +1944,10 @@ valid∈PAIR {i} {H} {F} {G} {t} {u} lti hf hg ht hu w s1 s2 cc1 cc2 ce1 ce2 es 
   cu2b = covered0-UNIV s2 1
 
   csg1 : covered s1 (subn 0 t G)
-  csg1 = {!!} -- need a new lemma that generalizes →covered-subn for non-closed terms
+  csg1 = covered-subn s1 t G ctx1 cG1
 
   csg2 : covered s2 (subn 0 t G)
-  csg2 = {!!}
+  csg2 = covered-subn s2 t G ctx2 cG2
 
   hf1 : equalInType i w (#subs s1 (UNIV 1) cu1a) (#subs s1 F cF1) (#subs s2 F cF2)
   hf1 = π₂ (hf w s1 s2 cu1a cu2a cF1 cF2 es eh)
@@ -2001,7 +2001,8 @@ valid∈PAIR {i} {H} {F} {G} {t} {u} lti hf hg ht hu w s1 s2 cc1 cc2 ce1 ce2 es 
   hu1 = π₂ (hu w s1 s2 csg1 csg2 cux1 cux2 es eh)
 
   esn0 : sub0 (#subs s1 t ctx1) (#[0]subs s1 G cG1) ≣ #subs s1 (subn 0 t G) csg1
-  esn0 = {!!}
+  esn0 = ≣trans (sub0-#[0]subs (#subs s1 t ctx1) s1 G cG1)
+                (CTerm≡ (subs∷ʳ≡ s1 t G ctx1))
 
   c2b : ∀𝕎 w (λ w' _ → SUMeq! (equalInType i w' (#subs s1 F cF1)) (λ a b ea → equalInType i w' (sub0 a (#[0]subs s1 G cG1))) w'
                               (#PAIR (#subs s1 t ctx1) (#subs s1 u cux1))
@@ -2033,6 +2034,22 @@ valid∈PAIR {i} {H} {F} {G} {t} {u} lti hf hg ht hu w s1 s2 cc1 cc2 ce1 ce2 es 
                      (≣sym (#subs-PAIR s1 t u ce1 ctx1 cux1))
                      (≣sym (#subs-PAIR s2 t u ce2 ctx2 cux2))
                      c2a
+
+
+valid∈SND : {i : Nat} {H : hypotheses} {F G t : BTerm} (lti : 1 <ℕ i)
+          → coveredH (H Data.List.∷ʳ mkHyp F) G
+          → valid∈𝕎 i H F (UNIV 1)
+          → valid∈𝕎 i (H Data.List.∷ʳ mkHyp F) G (UNIV 1) -- used?
+          → valid∈𝕎 i H t (SUM! F G)
+          → valid∈𝕎 i H (SND t) (subn 0 (FST t) G)
+valid∈SND {i} {H} {F} {G} {t} lti covH hf hg hs w s1 s2 cc1 cc2 ce1 ce2 es eh =
+  c1 , c2
+  where
+  c1 : equalTypes i w (#subs s1 (subn 0 (FST t) G) cc1) (#subs s2 (subn 0 (FST t) G) cc2)
+  c1 = ?
+
+  c2 : equalInType i w (#subs s1 (subn 0 (FST t) G) cc1) (#subs s1 (SND t) ce1) (#subs s2 (SND t) ce2)
+  c2 = ?
 
 
 ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
@@ -2126,7 +2143,22 @@ valid∈PAIR {i} {H} {F} {G} {t} {u} lti hf hg ht hu w s1 s2 cc1 cc2 ce1 ce2 es 
 
   h3 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ (SUM! ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ)
   h3 = ⟦_⟧Γ∈ j i lti
-⟦_⟧Γ∈ {n} {Γ} {.(snd _)} {.(G [ fst u ])} (sndⱼ {F} {G} {u} x x₁ j) i lti w = {!!}
+⟦_⟧Γ∈ {n} {Γ} {.(snd _)} {.(G [ fst u ])} (sndⱼ {F} {G} {u} x x₁ j) i lti w =
+  ≣subst (valid∈ i w ⟦ Γ ⟧Γ (SND ⟦ u ⟧ᵤ))
+         (≣sym (⟦[]⟧ᵤ-as-subn G (fst u)))
+         (valid∈SND lti covH h1 h2 h3 w)
+  where
+  covH : coveredH (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ
+  covH = coveredΓ {1+ n} (Γ ∙ F) G
+
+  h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
+  h1 = ⟦_⟧⊢ x i lti
+
+  h2 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 1)
+  h2 = ⟦_⟧⊢ x₁ i lti
+
+  h3 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ u ⟧ᵤ (SUM! ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ)
+  h3 = ⟦_⟧Γ∈ j i lti
 ⟦_⟧Γ∈ {n} {Γ} {.Definition.Untyped.zero} {.ℕ} (zeroⱼ x) i lti w =
   valid∈N0-NAT i w ⟦ Γ ⟧Γ
 ⟦_⟧Γ∈ {n} {Γ} {.(Definition.Untyped.suc _)} {.ℕ} (sucⱼ {x} j) i lti w =

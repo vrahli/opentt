@@ -3176,4 +3176,15 @@ coveredSUM!₂ {s} {a} {b} c =
   →coveredNOWRITEMOD {s} {NOREADMOD (SUM a b)}
                      (→coveredNOREADMOD {s} {SUM a b} (→coveredSUM {s} {a} {b} ca cb))
 
+
+covered-subn : (s : Sub) (u F : Term)
+             → covered s u
+             → covered0 s F
+             → covered s (subn 0 u F)
+covered-subn s u F covu covF {x} i with ∈-++⁻ (lowerVarsFrom 0 (fvars F)) (fvars-subn⊆ 0 u F {x} i)
+covered-subn s u F covu covF {x} i | inj₁ p with ∈lowerVarsFrom→ x 0 (fvars F) p
+... | inj₁ (() , p2)
+... | inj₂ (p1 , p2) = covF (→∈lowerVars x (fvars F) p2)
+covered-subn s u F covu covF {x} i | inj₂ p = covu p
+
 \end{code}
