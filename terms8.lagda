@@ -2435,4 +2435,23 @@ SUM! a b = NOWRITEMOD (NOREADMOD (SUM a b))
              → #FST p #⇛! a at w
 #⇛!-FST-PAIR p a b w c = ⇛!-FST-PAIR ⌜ p ⌝ ⌜ a ⌝ ⌜ b ⌝ w (CTerm.closed a) c
 
+
+⇛!-SND-PAIR : (p a b : Term) (w : 𝕎·) (ca : # a)
+            → p ⇛! PAIR a b at w
+            → SND p ⇛! b at w
+⇛!-SND-PAIR p a b w ca c w1 e1 =
+  lift (⇓-trans₂ {w1} {w1} {w1} {SND p} {SND (PAIR a b)} {b} c2 (⇓-SND-PAIR a b w1))
+  where
+    c1 : p ⇓ PAIR a b from w1 to w1
+    c1 = lower (c w1 e1)
+
+    c2 : SND p ⇓ SND (PAIR a b) from w1 to w1
+    c2 = SPREAD⇓₁ {w1} {w1} {p} {PAIR a b} {VAR 1} c1
+
+
+#⇛!-SND-PAIR : (p a b : CTerm) (w : 𝕎·)
+             → p #⇛! #PAIR a b at w
+             → #SND p #⇛! b at w
+#⇛!-SND-PAIR p a b w c = ⇛!-SND-PAIR ⌜ p ⌝ ⌜ a ⌝ ⌜ b ⌝ w (CTerm.closed a) c
+
 \end{code}

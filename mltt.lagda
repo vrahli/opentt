@@ -74,7 +74,7 @@ open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
   using (→∧≡true)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
-  using (⇓NUM→SUC⇓NUM ; #APPLY2 ; #FST ; #SND ; SUM! ; #SUM! ; #⇛!-FST-PAIR)
+  using (⇓NUM→SUC⇓NUM ; #APPLY2 ; #FST ; #SND ; SUM! ; #SUM! ; #⇛!-FST-PAIR ; #⇛!-SND-PAIR)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -2159,11 +2159,54 @@ valid∈SND {i} {H} {F} {G} {t} lti covH hf hg hs w s1 s2 cc1 cc2 ce1 ce2 es eh 
   c1Ga : equalTypes i w (sub0 (#subs s1 (FST t) cft1) (#[0]subs s1 G cG1)) (sub0 (#subs s2 (FST t) cft2) (#[0]subs s2 G cG2))
   c1Ga = c1G w (⊑-refl· w) (#subs s1 (FST t) cft1) (#subs s2 (FST t) cft2) fst∈F
 
+  esn1 : sub0 (#subs s1 (FST t) cft1) (#[0]subs s1 G cG1) ≣ #subs s1 (subn 0 (FST t) G) cc1
+  esn1 = ≣trans (sub0-#[0]subs (#subs s1 (FST t) cft1) s1 G cG1)
+                (CTerm≡ (subs∷ʳ≡ s1 (FST t) G cft1))
+
+  esn2 : sub0 (#subs s2 (FST t) cft2) (#[0]subs s2 G cG2) ≣ #subs s2 (subn 0 (FST t) G) cc2
+  esn2 = ≣trans (sub0-#[0]subs (#subs s2 (FST t) cft2) s2 G cG2)
+                (CTerm≡ (subs∷ʳ≡ s2 (FST t) G cft2))
+
   c1 : equalTypes i w (#subs s1 (subn 0 (FST t) G) cc1) (#subs s2 (subn 0 (FST t) G) cc2)
-  c1 = {!!} -- use c1Ga by manipulating the subs
+  c1 = ≡CTerm→eqTypes esn1 esn2 c1Ga
+
+  c1Gb : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#subs s1 F cF1) a₁ a₂
+                      → equalTypes i w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s1 G cG1)))
+  c1Gb w1 e1 a₁ a₂ a∈ =
+    TEQtrans-equalTypes
+      i w1 (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₁ (#[0]subs s2 G cG2)) (sub0 a₂ (#[0]subs s1 G cG1))
+      (c1G w1 e1 a₁ a₁ (equalInType-refl a∈))
+      (TEQsym-equalTypes i w1 (sub0 a₂ (#[0]subs s1 G cG1)) (sub0 a₁ (#[0]subs s2 G cG2))
+        (c1G w1 e1 a₂ a₁ (equalInType-sym a∈)))
+
+  aw2 : ∀𝕎 w (λ w' e' → SUMeq! (equalInType i w' (#subs s1 F cF1))
+                               (λ a b ea → equalInType i w' (sub0 a (#[0]subs s1 G cG1)))
+                               w' (#subs s1 t clt1) (#subs s2 t clt2)
+                      → equalInType i w' (#subs s1 (subn 0 (FST t) G) cc1) (#SND (#subs s1 t clt1)) (#SND (#subs s2 t clt2)))
+  aw2 w1 e1 (a₁ , a₂ , b₁ , b₂ , a∈ , c₁ , c₂ , b∈) =
+    equalInType-#⇛ₚ-left-right-rev
+      {i} {w1} {#subs s1 (subn 0 (FST t) G) cc1} {#SND (#subs s1 t clt1)} {b₁} {#SND (#subs s2 t clt2)} {b₂}
+      (#⇛!-SND-PAIR (#subs s1 t clt1) a₁ b₁ w1 c₁)
+      (#⇛!-SND-PAIR (#subs s2 t clt2) a₂ b₂ w1 c₂)
+      (TSext-equalTypes-equalInType
+        i w1 (sub0 a₁ (#[0]subs s1 G cG1)) (#subs s1 (subn 0 (FST t) G) cc1) b₁ b₂
+        (≡CTerm→eqTypes
+          refl esn1
+          (c1Gb w1 e1 a₁ (#subs s1 (FST t) cft1)
+                (≡→equalInType refl refl (≣sym (#subs-FST s1 t cft1 clt1))
+                  (equalInType-#⇛ₚ-left-right-rev {i} {w1} {#subs s1 F cF1} {a₁} {a₁}
+                     {#FST (#subs s1 t clt1)} {a₁} (#⇛!-refl {w1} {a₁})
+                     (#⇛!-FST-PAIR (#subs s1 t clt1) a₁ b₁ w1 c₁) (equalInType-refl a∈)))))
+        b∈)
+
+  c2a : equalInType i w (#subs s1 (subn 0 (FST t) G) cc1) (#SND (#subs s1 t clt1)) (#SND (#subs s2 t clt2))
+  c2a = equalInType-local (Mod.∀𝕎-□Func M aw2 (equalInType-SUM!→ hs2))
 
   c2 : equalInType i w (#subs s1 (subn 0 (FST t) G) cc1) (#subs s1 (SND t) ce1) (#subs s2 (SND t) ce2)
-  c2 = {!!}
+  c2 = ≡→equalInType refl
+                     (≣sym (#subs-SND s1 t ce1 clt1))
+                     (≣sym (#subs-SND s2 t ce2 clt2))
+                     c2a
 
 
 ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
@@ -2204,7 +2247,8 @@ valid∈SND {i} {H} {F} {G} {t} lti covH hf hg hs w s1 s2 cc1 cc2 ce1 ce2 es eh 
 ⟦_⟧Γ∈ {n} {Γ} {.ℕ} {.U} (ℕⱼ x) i lti w = valid∈-NAT! i lti ⟦ Γ ⟧Γ w
 ⟦_⟧Γ∈ {n} {Γ} {.Empty} {.U} (Emptyⱼ x) i lti w = valid∈-FALSE i lti ⟦ Γ ⟧Γ w
 ⟦_⟧Γ∈ {n} {Γ} {.Unit} {.U} (Unitⱼ x) i lti w = valid∈-UNIT i lti ⟦ Γ ⟧Γ w
-⟦_⟧Γ∈ {n} {Γ} {.(var _)} {σ} (var {σ} {v} x x₁) i lti w = {!!} -- use valid∈VAR
+⟦_⟧Γ∈ {n} {Γ} {.(var _)} {σ} (var {σ} {v} x x₁) i lti w =
+  {!!} -- use valid∈VAR
 ⟦_⟧Γ∈ {n} {Γ} {.(lam _)} {.(Π _ ▹ _)} (lamⱼ {F} {G} {t} x j) i lti w =
   valid∈LAMBDA lti h1 h2 w
   where
