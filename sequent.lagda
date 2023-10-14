@@ -3218,4 +3218,56 @@ covered-subn s u F covu covF {x} i | inj₁ p with ∈lowerVarsFrom→ x 0 (fvar
 ... | inj₂ (p1 , p2) = covF (→∈lowerVars x (fvars F) p2)
 covered-subn s u F covu covF {x} i | inj₂ p = covu p
 
+
+data ≡hypsʳ : ℕ → 𝕎· → Sub → Sub → hypotheses → hypotheses → Set(lsuc L) where
+  ≡hypsʳ[] : (i : ℕ) (w : 𝕎·) → ≡hypsʳ i w [] [] [] []
+  ≡hypsʳ∷ : (i : ℕ) (w : 𝕎·) (t1 t2 : CTerm) (s1 s2 : Sub)
+            (T1 : Term) (c1 : covered s1 T1) (T2 : Term) (c2 : covered s2 T2)
+            (hs1 hs2 : hypotheses)
+          → equalTypes i w (#subs s1 T1 c1) (#subs s2 T2 c2)
+          → ≡hypsʳ i w s1 s2 hs1 hs2
+          → ≡hypsʳ i w (s1 ∷ʳ t1) (s2 ∷ʳ t2) (hs1 ∷ʳ mkHyp T1) (hs2 ∷ʳ mkHyp T2)
+
+
+{--
+→≡hypsʳ∷ : {i : ℕ} {w : 𝕎·} {s1 s2 : Sub} {H J : hypotheses} {t1 t2 T1 T2 : CTerm}
+         → equalTypes i w T1 T2
+         → ≡hypsʳ i w s1 s2 (subHyps 0 ⌜ t1 ⌝ H) (subHyps 0 ⌜ t2 ⌝ J)
+         → ≡hypsʳ i w (t1 ∷ s1) (t2 ∷ s2) (mkHyp ⌜ T1 ⌝ ∷ H) (mkHyp ⌜ T2 ⌝ ∷ J)
+→≡hypsʳ∷ {i} {w} {s1} {s2} {[]} {[]} {t1} {t2} {T1} {T2} eqt eh = {!!}
+→≡hypsʳ∷ {i} {w} {s1} {s2} {[]} {x ∷ J} {t1} {t2} {T1} {T2} eqt eh = {!!}
+→≡hypsʳ∷ {i} {w} {s1} {s2} {x ∷ H} {J} {t1} {t2} {T1} {T2} eqt eh = {!!}
+--}
+
+
+{--
+→≡hypsʳ : {i : ℕ} {w : 𝕎·} {s1 s2 : Sub } {H J : hypotheses}
+         → ≡hyps i w s1 s2 H J
+         → ≡hypsʳ i w s1 s2 H J
+→≡hypsʳ {i} {w} {.[]} {.[]} {.[]} {.[]} (≡hyps[] .i .w) = ≡hypsʳ[] i w
+→≡hypsʳ {i} {w} {.(t1 ∷ s1)} {.(t2 ∷ s2)} {.(mkHyp T1 ∷ hs1)} {.(mkHyp T2 ∷ hs2)} (≡hyps∷ .i .w t1 t2 s1 s2 T1 #T1 T2 #T2 hs1 hs2 x eh) =
+  {!!}
+  where
+  ind : ≡hypsʳ i w s1 s2 (subHyps 0 ⌜ t1 ⌝ hs1) (subHyps 0 ⌜ t2 ⌝ hs2)
+  ind = →≡hypsʳ eh
+--}
+
+
+{--
+≡hyps∷ʳ→ : (i : Nat) (w : 𝕎·) (s1 s2 : Sub) (H J : hypotheses) (A B : BTerm)
+         → ≡hyps i w s1 s2 (H Data.List.∷ʳ (mkHyp A)) (J Data.List.∷ʳ (mkHyp B))
+         → Σ CTerm (λ t1 →
+           Σ CTerm (λ t2 →
+           Σ Sub (λ ss1 →
+           Σ Sub (λ ss2 →
+           Σ (covered ss1 A) (λ cA →
+           Σ (covered ss2 B) (λ cB →
+           s1 ≣ ss1 Data.List.∷ʳ t1
+         × s2 ≣ ss2 Data.List.∷ʳ t2
+         × ≡hyps i w ss1 ss2 H J
+         × equalTypes i w (#subs ss1 A cA) (#subs ss2 B cB)))))))
+≡hyps∷ʳ→ i w s1 s2 H J A B eh = {!!}
+--}
+
+
 \end{code}

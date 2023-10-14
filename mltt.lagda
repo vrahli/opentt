@@ -1620,12 +1620,148 @@ valid∈NATREC {i} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 ce2 e
   c2 = ≡→equalInType refl (≣sym (#subs-NATREC s1 k z s ce1 ck1 cz1 cx1)) (≣sym (#subs-NATREC s2 k z s ce2 ck2 cz2 cx2)) c2a
 
 
+⟦wk1⟧ᵤ : {n : Nat} (t : Term n) → ⟦ wk1 t ⟧ᵤ ≣ shiftUp 0 ⟦ t ⟧ᵤ
+⟦wk1⟧ᵤ {n} t = ⟦wk⟧ᵤ {n} {0} t
+
+
+#→covered : {A : BTerm} → # A → covered nil A
+#→covered {A} ca {x} rewrite ca = λ ()
+
+
+#subs-nil : {A : BTerm} (ca : # A)
+          → #subs nil A (#→covered {A} ca)
+          ≣ ct A ca
+#subs-nil {A} ca = CTerm≡ refl
+
+
+subHyps++ : (n : Nat) (t : BTerm) (H J : hypotheses)
+          → subHyps n t (H Data.List.++ J)
+          ≣ subHyps n t H Data.List.++ subHyps (Data.List.length H + n) t J
+subHyps++ n t nil J = refl
+subHyps++ n t (cons x H) J =
+  cong (cons (mkHyp (subn n t (hypothesis.hyp x))))
+       (≣trans (subHyps++ (1+ n) t H J)
+               (cong (λ z → subHyps (1+ n) t H Data.List.++ subHyps z t J)
+                     (+-suc (Data.List.length H) n)))
+
+
+→∈lowerVarsFrom₁ : (x n : Var) (l : Data.List.List Var)
+                 → n ≤ℕ x
+                 → 1+ x ∈ l
+                 → x ∈ lowerVarsFrom n l
+→∈lowerVarsFrom₁ x n (cons Nat.zero l) nlex (there slel) with n ≟ 0
+... | yes p = →∈lowerVarsFrom₁ x n l nlex slel
+... | no p = there (→∈lowerVarsFrom₁ x n l nlex slel)
+→∈lowerVarsFrom₁ x n (cons (1+ x₁) l) nlex (here px) rewrite ≣sym (suc-injective px) with 1+ x <? n
+... | yes p = ⊥-elim (<-irrefl refl (≤-trans (<⇒≤ p) nlex))
+... | no p with n ≟ 1+ x
+... | yes q rewrite q = ⊥-elim (<-irrefl refl nlex)
+... | no q = here refl
+→∈lowerVarsFrom₁ x n (cons (1+ x₁) l) nlex (there slel) with 1+ x₁ <? n
+... | yes p = there (→∈lowerVarsFrom₁ x n l nlex slel)
+... | no p with n ≟ 1+ x₁
+... | yes q rewrite q = →∈lowerVarsFrom₁ x (1+ x₁) l nlex slel
+... | no q = there (→∈lowerVarsFrom₁ x n l nlex slel)
+
+
+covered-subn→covered-cons : (s : Sub) (t : BTerm) (u : CTerm) (A : BTerm)
+                          → covered s (subn (Data.List.length s) t A)
+                          → covered (cons u s) A
+covered-subn→covered-cons s t u A cov {0} i = here refl
+covered-subn→covered-cons s t u A cov {1+ x} i =
+  there (∈-map⁺ 1+ c)
+  where
+  c : x ∈ sdom s
+  c with x <? Data.List.length s
+  ... | yes p = →∈sdom x s p
+  ... | no p = cov {x} (⊆fvars-subn (Data.List.length s) t A (→∈lowerVarsFrom₁ x (Data.List.length s) (fvars A) (≮⇒≥ p) i))
+
+
+covered-subn→covered-cons₂ : (n : Nat) (s : Sub) (t : BTerm) (u : CTerm) (A : BTerm)
+                            → n ≣ Data.List.length s
+                            → covered s (subn n t A)
+                            → covered (cons u s) A
+covered-subn→covered-cons₂ n s t u A refl cov = covered-subn→covered-cons s t u A cov
+
+
+≡hyps∷ʳ→ : (i : Nat) (w : 𝕎·) (s1 s2 : Sub) (H J : hypotheses) (A B : BTerm)
+         → ≡hyps i w s1 s2 (H Data.List.∷ʳ (mkHyp A)) (J Data.List.∷ʳ (mkHyp B))
+         → Σ CTerm (λ t1 →
+           Σ CTerm (λ t2 →
+           Σ Sub (λ ss1 →
+           Σ Sub (λ ss2 →
+           Σ (covered ss1 A) (λ cA →
+           Σ (covered ss2 B) (λ cB →
+           s1 ≣ ss1 Data.List.∷ʳ t1
+         × s2 ≣ ss2 Data.List.∷ʳ t2
+         × ≡hyps i w ss1 ss2 H J
+         × equalTypes i w (#subs ss1 A cA) (#subs ss2 B cB)))))))
+≡hyps∷ʳ→ i w nil nil nil J A B ()
+≡hyps∷ʳ→ i w nil nil (cons x H) J A B ()
+≡hyps∷ʳ→ i w (cons x .nil) (cons x₁ .nil) nil nil A B (≡hyps∷ .i .w .x .x₁ .nil .nil .A #T1 .B #T2 .nil .nil x₂ (≡hyps[] .i .w)) =
+  x , x₁ , nil , nil , #→covered {A} #T1 , #→covered {B} #T2 , refl , refl , ≡hyps[] i w ,
+  ≡CTerm→eqTypes (≣sym (#subs-nil {A} #T1)) (≣sym (#subs-nil {B} #T2)) x₂
+≡hyps∷ʳ→ i w (cons x s1) (cons x₁ s2) nil (cons .(mkHyp T2) nil) A B (≡hyps∷ .i .w .x .x₁ .s1 .s2 .A #T1 T2 #T2 .nil .(nil Data.List.++ Data.List.[ mkHyp B ]) x₂ ())
+≡hyps∷ʳ→ i w (cons x s1) (cons x₁ s2) nil (cons .(mkHyp T2) (cons x₃ J)) A B (≡hyps∷ .i .w .x .x₁ .s1 .s2 .A #T1 T2 #T2 .nil .(cons x₃ J Data.List.++ Data.List.[ mkHyp B ]) x₂ ())
+≡hyps∷ʳ→ i w (cons x s1) (cons x₁ s2) (cons .(mkHyp T1) nil) nil A B (≡hyps∷ .i .w .x .x₁ .s1 .s2 T1 #T1 .B #T2 .(nil Data.List.++ Data.List.[ mkHyp A ]) .nil x₂ ())
+≡hyps∷ʳ→ i w (cons x s1) (cons x₁ s2) (cons .(mkHyp T1) (cons x₃ H)) nil A B (≡hyps∷ .i .w .x .x₁ .s1 .s2 T1 #T1 .B #T2 .(cons x₃ H Data.List.++ Data.List.[ mkHyp A ]) .nil x₂ ())
+≡hyps∷ʳ→ i w (cons x s1) (cons x₁ s2) (cons .(mkHyp T1) H) (cons .(mkHyp T2) J) A B (≡hyps∷ .i .w .x .x₁ .s1 .s2 T1 #T1 T2 #T2 .(H Data.List.++ Data.List.[ mkHyp A ]) .(J Data.List.++ Data.List.[ mkHyp B ]) x₂ eh)
+  rewrite subHyps++ 0 ⌜ x  ⌝ H (cons (mkHyp A) nil)
+        | subHyps++ 0 ⌜ x₁ ⌝ J (cons (mkHyp B) nil)
+  with ≡hyps∷ʳ→ i w s1 s2 (subHyps 0 ⌜ x ⌝ H) (subHyps 0 ⌜ x₁ ⌝ J)
+                (subn (Data.List.length H + 0) ⌜ x ⌝ A) (subn (Data.List.length J + 0) ⌜ x₁ ⌝ B)
+                eh
+... | t1 , t2 , ss1 , ss2 , cA , cB , e1 , e2 , eH , eT =  -- now by induction
+  t1 , t2 , cons x ss1 , cons x₁ ss2 , cA' , cB' ,
+  cong (cons x) e1 , cong (cons x₁) e2 ,
+  ≡hyps∷ i w x x₁ ss1 ss2 T1 #T1 T2 #T2 H J x₂ eH ,
+  eTx
+    where
+    cA' : covered (cons x ss1) A
+    cA' = covered-subn→covered-cons₂
+            (Data.List.length H + 0) ss1 ⌜ x ⌝ x A
+            (≣trans (+0 (Data.List.length H)) (≣trans (≣sym (length-subHyps 0 ⌜ x ⌝ H)) (≣sym (π₁ (≡hyps→length eH)))))
+            cA
+
+    cB' : covered (cons x₁ ss2) B
+    cB' = covered-subn→covered-cons₂
+            (Data.List.length J + 0) ss2 ⌜ x₁ ⌝ x₁ B
+            (≣trans (+0 (Data.List.length J)) (≣trans (≣sym (length-subHyps 0 ⌜ x₁ ⌝ J)) (≣sym (π₁ (π₂ (≡hyps→length eH))))))
+            cB
+
+    eT' : equalTypes i w (#subs ss1 (subn (Data.List.length H + 0) ⌜ x ⌝ A) cA) (#subs ss2 (subn (Data.List.length J + 0) ⌜ x₁ ⌝ B) cB)
+    eT' = eT
+
+    eq1 : subs ss1 (subn (Data.List.length H + 0) ⌜ x ⌝ A) ≣ subs (cons x ss1) A
+    eq1 rewrite ≣trans (+0 (Data.List.length H)) (≣trans (≣sym (length-subHyps 0 ⌜ x ⌝ H)) (≣sym (π₁ (≡hyps→length eH)))) =
+      ≣sym (subn-subs 0 ⌜ x ⌝ (CTerm.closed x) ss1 A)
+
+    eq2 : subs ss2 (subn (Data.List.length J + 0) ⌜ x₁ ⌝ B) ≣ subs (cons x₁ ss2) B
+    eq2 rewrite ≣trans (+0 (Data.List.length J)) (≣trans (≣sym (length-subHyps 0 ⌜ x₁ ⌝ J)) (≣sym (π₁ (π₂ (≡hyps→length eH))))) =
+      ≣sym (subn-subs 0 ⌜ x₁ ⌝ (CTerm.closed x₁) ss2 B)
+
+    eTx : equalTypes i w (#subs (cons x ss1) A cA') (#subs (cons x₁ ss2) B cB')
+    eTx = ≡CTerm→eqTypes (CTerm≡ eq1) (CTerm≡ eq2) eT'
+
+
 valid∈VAR : {n : Nat} {Γ : Con Term n} {σ : Term n} {x : Fin n}
           → x ∷ σ ∈ Γ
           → (i : Nat) (w : 𝕎·) → valid∈ i w ⟦ Γ ⟧Γ (VAR (toℕ x)) ⟦ σ ⟧ᵤ
-valid∈VAR {.(1+ _)} {.(_ ∙ _)} {.(wk1 _)} {.Fin.zero} here i w s1 s2 cc1 cc2 ce1 ce2 es eh =
+valid∈VAR {1+ n} {Γ ∙ A} {.(wk1 A)} {.Fin.zero} here i w s1 s2 cc1 cc2 ce1 ce2 es eh
+  rewrite ⟦wk1⟧ᵤ {n} A =
+  c1 , c2
+  where
+  c1 : equalTypes i w (#subs s1 (shiftUp 0 ⟦ A ⟧ᵤ) cc1) (#subs s2 (shiftUp 0 ⟦ A ⟧ᵤ) cc2)
+  c1 with ≡hyps∷ʳ→ i w s1 s2 ⟦ Γ ⟧Γ ⟦ Γ ⟧Γ ⟦ A ⟧ᵤ ⟦ A ⟧ᵤ eh
+  ... | t1 , t2 , ss1 , ss2 , cA , cB , e1 , e2 , eH , eT = ≡CTerm→eqTypes (CTerm≡ {!!}) (CTerm≡ {!!}) eT
+
+  c2 : equalInType i w (#subs s1 (shiftUp 0 ⟦ A ⟧ᵤ) cc1) (#subs s1 (VAR 0) ce1) (#subs s2 (VAR 0) ce2)
+  c2 = {!!}
+valid∈VAR {1+ n} {Γ ∙ B} {.(wk1 _)} {Fin.suc x} (there j) i w =
   {!!}
-valid∈VAR {.(1+ _)} {.(_ ∙ _)} {.(wk1 _)} {.(Fin.suc _)} (there j) i w = {!!}
+
+
+\end{code}
 
 
 valid∈APPLY : {i : Nat} {H : hypotheses} {F G g a : BTerm}
