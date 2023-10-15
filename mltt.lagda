@@ -1819,6 +1819,28 @@ subs∷ʳ-VAR0 (cons x s) t
   = ≣trans (≣sym (sub≡subn ⌜ x ⌝ ⌜ t ⌝)) (sub-CTerm x t)
 
 
+covered∷ʳ-shiftUp→ : (s : Sub) (t : CTerm) (A : BTerm)
+                   → covered (s Data.List.∷ʳ t) (shiftUp 0 A)
+                   → covered s A
+covered∷ʳ-shiftUp→ s t A cov {x} i = c5 c4
+  where
+  c1 : 1+ x ∈ Data.List.map (sucIf≤ 0) (fvars A)
+  c1 = ∈-map⁺ 1+ i
+
+  c2 : 1+ x ∈ fvars (shiftUp 0 A)
+  c2 = ≣subst (λ z → 1+ x ∈ z) (≣sym (fvars-shiftUp≡ 0 A)) c1
+
+  c3 : 1+ x ∈ sdom (s Data.List.∷ʳ t)
+  c3 = cov {1+ x} c2
+
+  c4 : 1+ x ∈ 0 Data.List.∷ raiseVars (sdom s)
+  c4 = ≣subst (λ z → 1+ x ∈ z) (sdom∷ʳ s t) c3
+
+  c5 : 1+ x ∈ 0 Data.List.∷ raiseVars (sdom s)
+    → x ∈ sdom s
+  c5 (there h) = ∈raiseVars→ {x} {sdom s} h
+
+
 valid∈VAR : {n : Nat} {Γ : Con Term n} {σ : Term n} {x : Fin n}
           → x ∷ σ ∈ Γ
           → (i : Nat) (w : 𝕎·) → valid∈ i w ⟦ Γ ⟧Γ (VAR (toℕ x)) ⟦ σ ⟧ᵤ
@@ -1853,16 +1875,16 @@ valid∈VAR {1+ n} {Γ ∙ B} {.(wk1 _)} {Fin.suc x} (there {_} {_} {A} j) i w s
   ind = valid∈VAR {n} {Γ} {A} {x} j i w
 
   cA1 : covered ss1 ⟦ A ⟧ᵤ
-  cA1 = {!!} -- from cc1
+  cA1 = covered∷ʳ-shiftUp→ ss1 t1 ⟦ A ⟧ᵤ cc1
 
   cA2 : covered ss2 ⟦ A ⟧ᵤ
-  cA2 = {!!} -- from cc2
+  cA2 = covered∷ʳ-shiftUp→ ss2 t2 ⟦ A ⟧ᵤ cc2
 
   cV1 : covered ss1 (VAR (toℕ x))
-  cV1 = {!!} -- from ce1
+  cV1 = covered∷ʳ-shiftUp→ ss1 t1 (VAR (toℕ x)) ce1
 
   cV2 : covered ss2 (VAR (toℕ x))
-  cV2 = {!!} -- from ce2
+  cV2 = covered∷ʳ-shiftUp→ ss2 t2 (VAR (toℕ x)) ce2
 
   c1 : equalTypes i w (#subs (ss1 Data.List.∷ʳ t1) (shiftUp 0 ⟦ A ⟧ᵤ) cc1)
                       (#subs (ss2 Data.List.∷ʳ t2) (shiftUp 0 ⟦ A ⟧ᵤ) cc2)
@@ -1877,9 +1899,6 @@ valid∈VAR {1+ n} {Γ ∙ B} {.(wk1 _)} {Fin.suc x} (there {_} {_} {A} j) i w s
                      (CTerm≡ (≣sym (subs∷ʳ-shiftUp ss1 t1 (VAR (toℕ x)))))
                      (CTerm≡ (≣sym (subs∷ʳ-shiftUp ss2 t2 (VAR (toℕ x)))))
                      (π₂ (ind ss1 ss2 cA1 cA2 cV1 cV2 eS eH))
-
-
-\end{code}
 
 
 valid∈APPLY : {i : Nat} {H : hypotheses} {F G g a : BTerm}
