@@ -68,12 +68,12 @@ open import barI(W)(M)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
   using (NATREC⇓ ; predIf≤-sucIf≤ ; subv# ; →#shiftUp ; →#shiftDown ; shiftUp-shiftNameUp ; ¬Names-sub ;
-         ¬Seq-sub ; ¬Enc-sub ; ∧≡true→ₗ ; ∧≡true→ᵣ)
+         ¬Seq-sub ; ¬Enc-sub ; ∧≡true→ₗ ; ∧≡true→ᵣ ; #subv)
 open import terms3(W)(C)(K)(G)(X)(N)(EC)
   using (shiftNameUp-shiftNameUp)
 open import terms4(W)(C)(K)(G)(X)(N)(EC)
   using (lowerVars++⊆ ; lowerVars-fvars-shiftUp ; lowerVars-fvars-shiftUp⊆ ; lowerVars++ ; lowerVars2++⊆ ;
-         lowerVars2-fvars-shiftUp⊆)
+         lowerVars2-fvars-shiftUp⊆ ; sub-shiftUp0≡)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
   using (#APPLY2 ; #FST ; #SND ; SUM! ; #SUM!)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
@@ -3269,5 +3269,223 @@ data ≡hypsʳ : ℕ → 𝕎· → Sub → Sub → hypotheses → hypotheses �
 ≡hyps∷ʳ→ i w s1 s2 H J A B eh = {!!}
 --}
 
+
+#→covered : {A : Term} → # A → covered [] A
+#→covered {A} ca {x} rewrite ca = λ ()
+
+
+#subs-[] : {A : Term} (ca : # A)
+          → #subs [] A (#→covered {A} ca)
+          ≡ ct A ca
+#subs-[] {A} ca = CTerm≡ refl
+
+
+subHyps++ : (n : ℕ) (t : Term) (H J : hypotheses)
+          → subHyps n t (H ++ J)
+          ≡ subHyps n t H ++ subHyps (length H + n) t J
+subHyps++ n t [] J = refl
+subHyps++ n t (x ∷ H) J =
+  cong (λ z → (mkHyp (subn n t (hypothesis.hyp x))) ∷ z)
+       (trans (subHyps++ (suc n) t H J)
+               (cong (λ z → subHyps (suc n) t H ++ subHyps z t J)
+                     (+-suc (length H) n)))
+
+
+→∈lowerVarsFrom₁ : (x n : Var) (l : List Var)
+                 → n ≤ x
+                 → suc x ∈ l
+                 → x ∈ lowerVarsFrom n l
+→∈lowerVarsFrom₁ x n (0 ∷ l) nlex (there slel) with n ≟ 0
+... | yes p = →∈lowerVarsFrom₁ x n l nlex slel
+... | no p = there (→∈lowerVarsFrom₁ x n l nlex slel)
+→∈lowerVarsFrom₁ x n (suc x₁ ∷ l) nlex (here px) rewrite sym (suc-injective px) with suc x <? n
+... | yes p = ⊥-elim (<-irrefl refl (≤-trans (<⇒≤ p) nlex))
+... | no p with n ≟ suc x
+... | yes q rewrite q = ⊥-elim (<-irrefl refl nlex)
+... | no q = here refl
+→∈lowerVarsFrom₁ x n (suc x₁ ∷ l) nlex (there slel) with suc x₁ <? n
+... | yes p = there (→∈lowerVarsFrom₁ x n l nlex slel)
+... | no p with n ≟ suc x₁
+... | yes q rewrite q = →∈lowerVarsFrom₁ x (suc x₁) l nlex slel
+... | no q = there (→∈lowerVarsFrom₁ x n l nlex slel)
+
+
+covered-subn→covered-cons : (s : Sub) (t : Term) (u : CTerm) (A : Term)
+                          → covered s (subn (length s) t A)
+                          → covered (u ∷ s) A
+covered-subn→covered-cons s t u A cov {0} i = here refl
+covered-subn→covered-cons s t u A cov {suc x} i =
+  there (∈-map⁺ suc c)
+  where
+  c : x ∈ sdom s
+  c with x <? length s
+  ... | yes p = →∈sdom x s p
+  ... | no p = cov {x} (⊆fvars-subn (length s) t A (→∈lowerVarsFrom₁ x (length s) (fvars A) (≮⇒≥ p) i))
+
+
+covered-subn→covered-cons₂ : (n : ℕ) (s : Sub) (t : Term) (u : CTerm) (A : Term)
+                            → n ≡ length s
+                            → covered s (subn n t A)
+                            → covered (u ∷ s) A
+covered-subn→covered-cons₂ n s t u A refl cov = covered-subn→covered-cons s t u A cov
+
+
+≡hyps∷ʳ→ : (i : ℕ) (w : 𝕎·) (s1 s2 : Sub) (H J : hypotheses) (A B : Term)
+         → ≡hyps i w s1 s2 (H ∷ʳ (mkHyp A)) (J ∷ʳ (mkHyp B))
+         → Σ CTerm (λ t1 →
+           Σ CTerm (λ t2 →
+           Σ Sub (λ ss1 →
+           Σ Sub (λ ss2 →
+           Σ (covered ss1 A) (λ cA →
+           Σ (covered ss2 B) (λ cB →
+           s1 ≡ ss1 ∷ʳ t1
+         × s2 ≡ ss2 ∷ʳ t2
+         × ≡hyps i w ss1 ss2 H J
+         × equalTypes i w (#subs ss1 A cA) (#subs ss2 B cB)))))))
+≡hyps∷ʳ→ i w [] [] [] J A B ()
+≡hyps∷ʳ→ i w [] [] (x ∷ H) J A B ()
+≡hyps∷ʳ→ i w (x ∷ []) (x₁ ∷ []) [] [] A B (≡hyps∷ .i .w .x .x₁ .[] .[] .A #T1 .B #T2 .[] .[] x₂ (≡hyps[] .i .w)) =
+  x , x₁ , [] , [] , #→covered {A} #T1 , #→covered {B} #T2 , refl , refl , ≡hyps[] i w ,
+  ≡CTerm→eqTypes (sym (#subs-[] {A} #T1)) (sym (#subs-[] {B} #T2)) x₂
+≡hyps∷ʳ→ i w (x ∷ []) (x₁ ∷ x₂ ∷ s2) [] [] A B (≡hyps∷ .i .w .x .x₁ .[] .(x₂ ∷ s2) .A #T1 .B #T2 .[] .[] x₃ ())
+≡hyps∷ʳ→ i w (x ∷ x₂ ∷ s1) (x₃ ∷ s2) [] [] A B (≡hyps∷ .i .w .x .x₃ .(x₂ ∷ s1) .s2 .A #T1 .B #T2 .[] .[] x₁ ())
+≡hyps∷ʳ→ i w (x ∷ s1) (x₁ ∷ s2) [] (.(mkHyp T2) ∷ []) A B (≡hyps∷ .i .w .x .x₁ .s1 .s2 .A #T1 T2 #T2 .[] .([] ++ [ mkHyp B ]) x₂ ())
+≡hyps∷ʳ→ i w (x ∷ s1) (x₁ ∷ s2) [] (.(mkHyp T2) ∷ (x₃ ∷ J)) A B (≡hyps∷ .i .w .x .x₁ .s1 .s2 .A #T1 T2 #T2 .[] .(x₃ ∷ J ++ [ mkHyp B ]) x₂ ())
+≡hyps∷ʳ→ i w (x ∷ s1) (x₁ ∷ s2) (.(mkHyp T1) ∷ []) [] A B (≡hyps∷ .i .w .x .x₁ .s1 .s2 T1 #T1 .B #T2 .([] ++ [ mkHyp A ]) .[] x₂ ())
+≡hyps∷ʳ→ i w (x ∷ s1) (x₁ ∷ s2) (.(mkHyp T1) ∷ (x₃ ∷ H)) [] A B (≡hyps∷ .i .w .x .x₁ .s1 .s2 T1 #T1 .B #T2 .(x₃ ∷ H ++ [ mkHyp A ]) .[] x₂ ())
+≡hyps∷ʳ→ i w (x ∷ s1) (x₁ ∷ s2) (.(mkHyp T1) ∷ H) (.(mkHyp T2) ∷ J) A B (≡hyps∷ .i .w .x .x₁ .s1 .s2 T1 #T1 T2 #T2 .(H ++ [ mkHyp A ]) .(J ++ [ mkHyp B ]) x₂ eh)
+  rewrite subHyps++ 0 ⌜ x  ⌝ H ((mkHyp A) ∷ [])
+        | subHyps++ 0 ⌜ x₁ ⌝ J ((mkHyp B) ∷ [])
+  with ≡hyps∷ʳ→ i w s1 s2 (subHyps 0 ⌜ x ⌝ H) (subHyps 0 ⌜ x₁ ⌝ J)
+                (subn (length H + 0) ⌜ x ⌝ A) (subn (length J + 0) ⌜ x₁ ⌝ B)
+                eh
+... | t1 , t2 , ss1 , ss2 , cA , cB , e1 , e2 , eH , eT =  -- now by induction
+  t1 , t2 , x ∷ ss1 , x₁ ∷ ss2 , cA' , cB' ,
+  cong (λ z → x ∷ z) e1 , cong (λ z → x₁ ∷ z) e2 ,
+  ≡hyps∷ i w x x₁ ss1 ss2 T1 #T1 T2 #T2 H J x₂ eH ,
+  eTx
+    where
+    cA' : covered (x ∷ ss1) A
+    cA' = covered-subn→covered-cons₂
+            (length H + 0) ss1 ⌜ x ⌝ x A
+            (trans (+0 (length H)) (trans (sym (length-subHyps 0 ⌜ x ⌝ H)) (sym (fst (≡hyps→length eH)))))
+            cA
+
+    cB' : covered (x₁ ∷ ss2) B
+    cB' = covered-subn→covered-cons₂
+            (length J + 0) ss2 ⌜ x₁ ⌝ x₁ B
+            (trans (+0 (length J)) (trans (sym (length-subHyps 0 ⌜ x₁ ⌝ J)) (sym (fst (snd (≡hyps→length eH))))))
+            cB
+
+    eT' : equalTypes i w (#subs ss1 (subn (length H + 0) ⌜ x ⌝ A) cA) (#subs ss2 (subn (length J + 0) ⌜ x₁ ⌝ B) cB)
+    eT' = eT
+
+    eq1 : subs ss1 (subn (length H + 0) ⌜ x ⌝ A) ≡ subs (x ∷ ss1) A
+    eq1 rewrite trans (+0 (length H)) (trans (sym (length-subHyps 0 ⌜ x ⌝ H)) (sym (fst (≡hyps→length eH)))) =
+      sym (subn-subs 0 ⌜ x ⌝ (CTerm.closed x) ss1 A)
+
+    eq2 : subs ss2 (subn (length J + 0) ⌜ x₁ ⌝ B) ≡ subs (x₁ ∷ ss2) B
+    eq2 rewrite trans (+0 (length J)) (trans (sym (length-subHyps 0 ⌜ x₁ ⌝ J)) (sym (fst (snd (≡hyps→length eH))))) =
+      sym (subn-subs 0 ⌜ x₁ ⌝ (CTerm.closed x₁) ss2 B)
+
+    eTx : equalTypes i w (#subs (x ∷ ss1) A cA') (#subs (x₁ ∷ ss2) B cB')
+    eTx = ≡CTerm→eqTypes (CTerm≡ eq1) (CTerm≡ eq2) eT'
+
+
+≡subs∷ʳ→ : (i : ℕ) (w : 𝕎·) (s1 s2 : Sub) (H : hypotheses) (A : Term)
+         → ≡subs i w s1 s2 (H ∷ʳ (mkHyp A))
+         → Σ CTerm (λ t1 →
+           Σ CTerm (λ t2 →
+           Σ Sub (λ ss1 →
+           Σ Sub (λ ss2 →
+           Σ (covered ss1 A) (λ cA →
+           s1 ≡ ss1 ∷ʳ t1
+         × s2 ≡ ss2 ∷ʳ t2
+         × ≡subs i w ss1 ss2 H
+         × equalInType i w (#subs ss1 A cA) t1 t2)))))
+≡subs∷ʳ→ i w [] [] [] A ()
+≡subs∷ʳ→ i w [] [] (x ∷ H) A ()
+≡subs∷ʳ→ i w (x ∷ []) (x₁ ∷ []) [] A (≡subs∷ .i .w .x .x₁ .[] .[] .A #T .[] x₂ (≡subs[] .i .w)) =
+  x , x₁ , [] , [] , #→covered {A} #T , refl , refl , ≡subs[] i w , ≡CTerm→equalInType (sym (#subs-[] {A} #T)) x₂
+≡subs∷ʳ→ i w (x ∷ []) (x₁ ∷ x₂ ∷ s2) [] A (≡subs∷ .i .w .x .x₁ .[] .(x₂ ∷ s2) .A #T .[] x₃ ())
+≡subs∷ʳ→ i w (x₁ ∷ x₂ ∷ s1) (x₃ ∷ s2) [] A (≡subs∷ .i .w .x₁ .x₃ .(x₂ ∷ s1) .s2 .A #T .[] x ())
+≡subs∷ʳ→ i w (x ∷ s1) (x₁ ∷ s2) (.(mkHyp T) ∷ H) A (≡subs∷ .i .w .x .x₁ .s1 .s2 T #T .(H ++ [ mkHyp A ]) x₂ es)
+  rewrite subHyps++ 0 ⌜ x  ⌝ H ((mkHyp A) ∷ [])
+  with ≡subs∷ʳ→ i w s1 s2 (subHyps 0 ⌜ x ⌝ H) (subn (length H + 0) ⌜ x ⌝ A) es
+... | t1 , t2 , ss1 , ss2 , cA , e1 , e2 , eS , eT =  -- now by induction
+  t1 , t2 , x ∷ ss1 , x₁ ∷ ss2 , cA' ,
+  cong (λ z → x ∷ z) e1 , cong (λ z → x₁ ∷ z) e2 ,
+  ≡subs∷ i w x x₁ ss1 ss2 T #T H x₂ eS ,
+  eTx
+    where
+    cA' : covered (x ∷ ss1) A
+    cA' = covered-subn→covered-cons₂
+            (length H + 0) ss1 ⌜ x ⌝ x A
+            (trans (+0 (length H)) (trans (sym (length-subHyps 0 ⌜ x ⌝ H)) (sym (fst (≡subs→length eS)))))
+            cA
+
+    eq1 : subs ss1 (subn (length H + 0) ⌜ x ⌝ A) ≡ subs (x ∷ ss1) A
+    eq1 rewrite trans (+0 (length H)) (trans (sym (length-subHyps 0 ⌜ x ⌝ H)) (sym (fst (≡subs→length eS)))) =
+      sym (subn-subs 0 ⌜ x ⌝ (CTerm.closed x) ss1 A)
+
+    eTx : equalInType i w (#subs (x ∷ ss1) A cA') t1 t2
+    eTx = ≡CTerm→equalInType (CTerm≡ eq1) eT
+
+
+≡subs∷ʳ→₂ : (i : ℕ) (w : 𝕎·) (s1 s2 : Sub) (t1 t2 : CTerm) (H : hypotheses) (A : Term)
+          → ≡subs i w (s1 ∷ʳ t1) (s2 ∷ʳ t2) (H ∷ʳ (mkHyp A))
+          → Σ (covered s1 A) (λ cA → ≡subs i w s1 s2 H
+            × equalInType i w (#subs s1 A cA) t1 t2)
+≡subs∷ʳ→₂ i w s1 s2 t1 t2 H A es
+  with ≡subs∷ʳ→ i w (s1 ∷ʳ t1) (s2 ∷ʳ t2) H A es
+... | t1 , t2 , ss1 , ss2 , cA , e1 , e2 , eS , eT
+  rewrite fst (∷ʳ-injective s1 ss1 e1)
+        | snd (∷ʳ-injective s1 ss1 e1)
+        | fst (∷ʳ-injective s2 ss2 e2)
+        | snd (∷ʳ-injective s2 ss2 e2)
+  = cA , eS , eT
+
+
+subs∷ʳ-shiftUp : (s : Sub) (t : CTerm) (u : Term)
+               → subs (s ∷ʳ t) (shiftUp 0 u)
+               ≡ subs s u
+subs∷ʳ-shiftUp [] t u = trans (sym (sub≡subn ⌜ t ⌝ (shiftUp 0 u))) (sub-shiftUp0≡ ⌜ t ⌝ u)
+subs∷ʳ-shiftUp (x ∷ s) t u = cong (subn 0 ⌜ x ⌝) (subs∷ʳ-shiftUp s t u)
+
+
+sub-CTerm : (x t : CTerm)
+          → sub ⌜ x ⌝ ⌜ t ⌝ ≡ ⌜ t ⌝
+sub-CTerm x t
+  rewrite #shiftUp 0 t | #subv 0 (shiftUp 0 ⌜ x ⌝) ⌜ t ⌝ (CTerm.closed t) | #shiftDown 0 t = refl
+
+
+subs∷ʳ-VAR0 : (s : Sub) (t : CTerm)
+            → subs (s ∷ʳ t) (VAR 0) ≡ ⌜ t ⌝
+subs∷ʳ-VAR0 [] t = refl
+subs∷ʳ-VAR0 (x ∷ s) t
+  rewrite subs∷ʳ-VAR0 s t
+  = trans (sym (sub≡subn ⌜ x ⌝ ⌜ t ⌝)) (sub-CTerm x t)
+
+
+covered∷ʳ-shiftUp→ : (s : Sub) (t : CTerm) (A : Term)
+                   → covered (s ∷ʳ t) (shiftUp 0 A)
+                   → covered s A
+covered∷ʳ-shiftUp→ s t A cov {x} i = c5 c4
+  where
+  c1 : suc x ∈ Data.List.map (sucIf≤ 0) (fvars A)
+  c1 = ∈-map⁺ suc i
+
+  c2 : suc x ∈ fvars (shiftUp 0 A)
+  c2 = subst (λ z → suc x ∈ z) (sym (fvars-shiftUp≡ 0 A)) c1
+
+  c3 : suc x ∈ sdom (s ∷ʳ t)
+  c3 = cov {suc x} c2
+
+  c4 : suc x ∈ 0 ∷ raiseVars (sdom s)
+  c4 = subst (λ z → suc x ∈ z) (sdom∷ʳ s t) c3
+
+  c5 : suc x ∈ 0 ∷ raiseVars (sdom s)
+    → x ∈ sdom s
+  c5 (there h) = ∈raiseVars→ {x} {sdom s} h
 
 \end{code}
