@@ -72,7 +72,9 @@ open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
   using (#⇛!sameℕ ; _⇛!_at_ ; _⇓!_at_ ; _#⇛!_at_ ; #⇛!-trans ; ⇛!-trans ; #⇛!-refl)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
-  using (→∧≡true)
+  using (→∧≡true ; #subv)
+open import terms4(W)(C)(K)(G)(X)(N)(EC)
+  using (sub-shiftUp0≡)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
   using (⇓NUM→SUC⇓NUM ; #APPLY2 ; #FST ; #SND ; SUM! ; #SUM! ; #⇛!-FST-PAIR ; #⇛!-SND-PAIR)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
@@ -1744,6 +1746,79 @@ covered-subn→covered-cons₂ n s t u A refl cov = covered-subn→covered-cons 
     eTx = ≡CTerm→eqTypes (CTerm≡ eq1) (CTerm≡ eq2) eT'
 
 
+≡subs∷ʳ→ : (i : Nat) (w : 𝕎·) (s1 s2 : Sub) (H : hypotheses) (A : BTerm)
+         → ≡subs i w s1 s2 (H Data.List.∷ʳ (mkHyp A))
+         → Σ CTerm (λ t1 →
+           Σ CTerm (λ t2 →
+           Σ Sub (λ ss1 →
+           Σ Sub (λ ss2 →
+           Σ (covered ss1 A) (λ cA →
+           s1 ≣ ss1 Data.List.∷ʳ t1
+         × s2 ≣ ss2 Data.List.∷ʳ t2
+         × ≡subs i w ss1 ss2 H
+         × equalInType i w (#subs ss1 A cA) t1 t2)))))
+≡subs∷ʳ→ i w nil nil nil A ()
+≡subs∷ʳ→ i w nil nil (cons x H) A ()
+≡subs∷ʳ→ i w (cons x .nil) (cons x₁ .nil) nil A (≡subs∷ .i .w .x .x₁ .nil .nil .A #T .nil x₂ (≡subs[] .i .w)) =
+  x , x₁ , nil , nil , #→covered {A} #T , refl , refl , ≡subs[] i w , ≡CTerm→equalInType (≣sym (#subs-nil {A} #T)) x₂
+≡subs∷ʳ→ i w (cons x s1) (cons x₁ s2) (cons .(mkHyp T) H) A (≡subs∷ .i .w .x .x₁ .s1 .s2 T #T .(H Data.List.++ Data.List.[ mkHyp A ]) x₂ es)
+  rewrite subHyps++ 0 ⌜ x  ⌝ H (cons (mkHyp A) nil)
+  with ≡subs∷ʳ→ i w s1 s2 (subHyps 0 ⌜ x ⌝ H) (subn (Data.List.length H + 0) ⌜ x ⌝ A) es
+... | t1 , t2 , ss1 , ss2 , cA , e1 , e2 , eS , eT =  -- now by induction
+  t1 , t2 , cons x ss1 , cons x₁ ss2 , cA' ,
+  cong (cons x) e1 , cong (cons x₁) e2 ,
+  ≡subs∷ i w x x₁ ss1 ss2 T #T H x₂ eS ,
+  eTx
+    where
+    cA' : covered (cons x ss1) A
+    cA' = covered-subn→covered-cons₂
+            (Data.List.length H + 0) ss1 ⌜ x ⌝ x A
+            (≣trans (+0 (Data.List.length H)) (≣trans (≣sym (length-subHyps 0 ⌜ x ⌝ H)) (≣sym (π₁ (≡subs→length eS)))))
+            cA
+
+    eq1 : subs ss1 (subn (Data.List.length H + 0) ⌜ x ⌝ A) ≣ subs (cons x ss1) A
+    eq1 rewrite ≣trans (+0 (Data.List.length H)) (≣trans (≣sym (length-subHyps 0 ⌜ x ⌝ H)) (≣sym (π₁ (≡subs→length eS)))) =
+      ≣sym (subn-subs 0 ⌜ x ⌝ (CTerm.closed x) ss1 A)
+
+    eTx : equalInType i w (#subs (cons x ss1) A cA') t1 t2
+    eTx = ≡CTerm→equalInType (CTerm≡ eq1) eT
+
+
+≡subs∷ʳ→₂ : (i : Nat) (w : 𝕎·) (s1 s2 : Sub) (t1 t2 : CTerm) (H : hypotheses) (A : BTerm)
+          → ≡subs i w (s1 Data.List.∷ʳ t1) (s2 Data.List.∷ʳ t2) (H Data.List.∷ʳ (mkHyp A))
+          → Σ (covered s1 A) (λ cA → ≡subs i w s1 s2 H
+            × equalInType i w (#subs s1 A cA) t1 t2)
+≡subs∷ʳ→₂ i w s1 s2 t1 t2 H A es
+  with ≡subs∷ʳ→ i w (s1 Data.List.∷ʳ t1) (s2 Data.List.∷ʳ t2) H A es
+... | t1 , t2 , ss1 , ss2 , cA , e1 , e2 , eS , eT
+  rewrite π₁ (∷ʳ-injective s1 ss1 e1)
+        | π₂ (∷ʳ-injective s1 ss1 e1)
+        | π₁ (∷ʳ-injective s2 ss2 e2)
+        | π₂ (∷ʳ-injective s2 ss2 e2)
+  = cA , eS , eT
+
+
+subs∷ʳ-shiftUp : (s : Sub) (t : CTerm) (u : BTerm)
+               → subs (s Data.List.∷ʳ t) (shiftUp 0 u)
+               ≣ subs s u
+subs∷ʳ-shiftUp nil t u = ≣trans (≣sym (sub≡subn ⌜ t ⌝ (shiftUp 0 u))) (sub-shiftUp0≡ ⌜ t ⌝ u)
+subs∷ʳ-shiftUp (cons x s) t u = cong (subn 0 ⌜ x ⌝) (subs∷ʳ-shiftUp s t u)
+
+
+sub-CTerm : (x t : CTerm)
+          → sub ⌜ x ⌝ ⌜ t ⌝ ≣ ⌜ t ⌝
+sub-CTerm x t
+  rewrite #shiftUp 0 t | #subv 0 (shiftUp 0 ⌜ x ⌝) ⌜ t ⌝ (CTerm.closed t) | #shiftDown 0 t = refl
+
+
+subs∷ʳ-VAR0 : (s : Sub) (t : CTerm)
+            → subs (s Data.List.∷ʳ t) (VAR 0) ≣ ⌜ t ⌝
+subs∷ʳ-VAR0 nil t = refl
+subs∷ʳ-VAR0 (cons x s) t
+  rewrite subs∷ʳ-VAR0 s t
+  = ≣trans (≣sym (sub≡subn ⌜ x ⌝ ⌜ t ⌝)) (sub-CTerm x t)
+
+
 valid∈VAR : {n : Nat} {Γ : Con Term n} {σ : Term n} {x : Fin n}
           → x ∷ σ ∈ Γ
           → (i : Nat) (w : 𝕎·) → valid∈ i w ⟦ Γ ⟧Γ (VAR (toℕ x)) ⟦ σ ⟧ᵤ
@@ -1753,12 +1828,55 @@ valid∈VAR {1+ n} {Γ ∙ A} {.(wk1 A)} {.Fin.zero} here i w s1 s2 cc1 cc2 ce1 
   where
   c1 : equalTypes i w (#subs s1 (shiftUp 0 ⟦ A ⟧ᵤ) cc1) (#subs s2 (shiftUp 0 ⟦ A ⟧ᵤ) cc2)
   c1 with ≡hyps∷ʳ→ i w s1 s2 ⟦ Γ ⟧Γ ⟦ Γ ⟧Γ ⟦ A ⟧ᵤ ⟦ A ⟧ᵤ eh
-  ... | t1 , t2 , ss1 , ss2 , cA , cB , e1 , e2 , eH , eT = ≡CTerm→eqTypes (CTerm≡ {!!}) (CTerm≡ {!!}) eT
+  ... | t1 , t2 , ss1 , ss2 , cA , cB , e1 , e2 , eH , eT
+    rewrite e1 | e2
+    = ≡CTerm→eqTypes (CTerm≡ (≣sym (subs∷ʳ-shiftUp ss1 t1 ⟦ A ⟧ᵤ))) (CTerm≡ (≣sym (subs∷ʳ-shiftUp ss2 t2 ⟦ A ⟧ᵤ))) eT
 
   c2 : equalInType i w (#subs s1 (shiftUp 0 ⟦ A ⟧ᵤ) cc1) (#subs s1 (VAR 0) ce1) (#subs s2 (VAR 0) ce2)
-  c2 = {!!}
-valid∈VAR {1+ n} {Γ ∙ B} {.(wk1 _)} {Fin.suc x} (there j) i w =
-  {!!}
+  c2 with ≡subs∷ʳ→ i w s1 s2 ⟦ Γ ⟧Γ ⟦ A ⟧ᵤ es
+  ... | t1 , t2 , ss1 , ss2 , cA , e1 , e2 , eS , eT
+    rewrite e1 | e2
+    = ≡→equalInType (CTerm≡ (≣sym (subs∷ʳ-shiftUp ss1 t1 ⟦ A ⟧ᵤ)))
+                    (≣sym (CTerm≡ (subs∷ʳ-VAR0 ss1 t1)))
+                    (≣sym (CTerm≡ (subs∷ʳ-VAR0 ss2 t2)))
+                    eT
+valid∈VAR {1+ n} {Γ ∙ B} {.(wk1 _)} {Fin.suc x} (there {_} {_} {A} j) i w s1 s2 cc1 cc2 ce1 ce2 es eh
+  rewrite ⟦wk1⟧ᵤ {n} A
+  with ≡hyps∷ʳ→ i w s1 s2 ⟦ Γ ⟧Γ ⟦ Γ ⟧Γ ⟦ B ⟧ᵤ ⟦ B ⟧ᵤ eh
+... | t1 , t2 , ss1 , ss2 , cB1 , cB2 , e1 , e2 , eH , eT
+  rewrite e1 | e2
+  with ≡subs∷ʳ→₂ i w ss1 ss2 t1 t2 ⟦ Γ ⟧Γ ⟦ B ⟧ᵤ es
+... | cB , eS , eT'
+  = c1 , c2
+  where
+  ind : valid∈ i w ⟦ Γ ⟧Γ (VAR (toℕ x)) ⟦ A ⟧ᵤ
+  ind = valid∈VAR {n} {Γ} {A} {x} j i w
+
+  cA1 : covered ss1 ⟦ A ⟧ᵤ
+  cA1 = {!!} -- from cc1
+
+  cA2 : covered ss2 ⟦ A ⟧ᵤ
+  cA2 = {!!} -- from cc2
+
+  cV1 : covered ss1 (VAR (toℕ x))
+  cV1 = {!!} -- from ce1
+
+  cV2 : covered ss2 (VAR (toℕ x))
+  cV2 = {!!} -- from ce2
+
+  c1 : equalTypes i w (#subs (ss1 Data.List.∷ʳ t1) (shiftUp 0 ⟦ A ⟧ᵤ) cc1)
+                      (#subs (ss2 Data.List.∷ʳ t2) (shiftUp 0 ⟦ A ⟧ᵤ) cc2)
+  c1 = ≡CTerm→eqTypes (CTerm≡ (≣sym (subs∷ʳ-shiftUp ss1 t1 ⟦ A ⟧ᵤ)))
+                      (CTerm≡ (≣sym (subs∷ʳ-shiftUp ss2 t2 ⟦ A ⟧ᵤ)))
+                      (π₁ (ind ss1 ss2 cA1 cA2 cV1 cV2 eS eH))
+
+  c2 : equalInType i w (#subs (ss1 Data.List.∷ʳ t1) (shiftUp 0 ⟦ A ⟧ᵤ) cc1)
+                       (#subs (ss1 Data.List.∷ʳ t1) (VAR (1+ (toℕ x))) ce1)
+                       (#subs (ss2 Data.List.∷ʳ t2) (VAR (1+ (toℕ x))) ce2)
+  c2 = ≡→equalInType (CTerm≡ (≣sym (subs∷ʳ-shiftUp ss1 t1 ⟦ A ⟧ᵤ)))
+                     (CTerm≡ (≣sym (subs∷ʳ-shiftUp ss1 t1 (VAR (toℕ x)))))
+                     (CTerm≡ (≣sym (subs∷ʳ-shiftUp ss2 t2 (VAR (toℕ x)))))
+                     (π₂ (ind ss1 ss2 cA1 cA2 cV1 cV2 eS eH))
 
 
 \end{code}
