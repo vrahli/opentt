@@ -354,4 +354,121 @@ valid≡𝕎-trans i lti H a b m A covb ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh =
          (sym (#subs-AX s2 ce2))
          (→equalInType-EQ (equalInType-trans ha2b hb2b))
 
+
+valid≡𝕎-PI : (i : ℕ) (lti : 1 < i) (Γ : hypotheses) (F G H E : Term)
+           → valid≡𝕎 i Γ F H (UNIV 1)
+           → valid≡𝕎 i (Γ Data.List.∷ʳ mkHyp F) G E (UNIV 1)
+           → valid≡𝕎 i Γ (PI F G) (PI H E) (UNIV 1)
+valid≡𝕎-PI i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
+  where
+  cpf1 : covered s1 (PI F G)
+  cpf1 = coveredEQ₁ {s1} {PI F G} {PI H E} {UNIV 1} cc1
+
+  cpf2 : covered s2 (PI F G)
+  cpf2 = coveredEQ₁ {s2} {PI F G} {PI H E} {UNIV 1} cc2
+
+  cph1 : covered s1 (PI H E)
+  cph1 = coveredEQ₂ {s1} {PI F G} {PI H E} {UNIV 1} cc1
+
+  cph2 : covered s2 (PI H E)
+  cph2 = coveredEQ₂ {s2} {PI F G} {PI H E} {UNIV 1} cc2
+
+  cF1 : covered s1 F
+  cF1 = coveredPI₁ {s1} {F} {G} cpf1
+
+  cF2 : covered s2 F
+  cF2 = coveredPI₁ {s2} {F} {G} cpf2
+
+  cG1 : covered0 s1 G
+  cG1 = coveredPI₂ {s1} {F} {G} cpf1
+
+  cG2 : covered0 s2 G
+  cG2 = coveredPI₂ {s2} {F} {G} cpf2
+
+  cH1 : covered s1 H
+  cH1 = coveredPI₁ {s1} {H} {E} cph1
+
+  cH2 : covered s2 H
+  cH2 = coveredPI₁ {s2} {H} {E} cph2
+
+  cE1 : covered0 s1 E
+  cE1 = coveredPI₂ {s1} {H} {E} cph1
+
+  cE2 : covered0 s2 E
+  cE2 = coveredPI₂ {s2} {H} {E} cph2
+
+  cu1a : covered s1 (UNIV 1)
+  cu1a = covered-UNIV s1 1
+
+  cu2a : covered s2 (UNIV 1)
+  cu2a = covered-UNIV s2 1
+
+  ceq1 : covered s1 (EQ F H (UNIV 1))
+  ceq1 = →coveredEQ {s1} {F} {H} {UNIV 1} cF1 cH1 cu1a
+
+  ceq2 : covered s2 (EQ F H (UNIV 1))
+  ceq2 = →coveredEQ {s2} {F} {H} {UNIV 1} cF2 cH2 cu2a
+
+  ha1 : equalTypes i w (#subs s1 (EQ F H (UNIV 1)) ceq1) (#subs s2 (EQ F H (UNIV 1)) ceq2)
+  ha1 = fst (ha w s1 s2 ceq1 ceq2 ce1 ce2 es eh)
+
+  ha2 : equalTypes i w (#EQ (#subs s1 F cF1) (#subs s1 H cH1) (#subs s1 (UNIV 1) cu1a))
+                       (#EQ (#subs s2 F cF2) (#subs s2 H cH2) (#subs s2 (UNIV 1) cu2a))
+  ha2 = ≡CTerm→eqTypes
+          (#subs-EQ s1 F H (UNIV 1) ceq1 cF1 cH1 cu1a)
+          (#subs-EQ s2 F H (UNIV 1) ceq2 cF2 cH2 cu2a)
+          ha1
+
+  ha3 : equalInType i w (#UNIV 1) (#subs s1 F cF1) (#subs s2 F cF2)
+  ha3 = ≡CTerm→equalInType
+          (#subs-UNIV s1 1 cu1a)
+          (eqTypesEQ→ₗ {w} {i} {#subs s1 F cF1} {#subs s1 H cH1} {#subs s2 F cF2} {#subs s2 H cH2} ha2)
+
+  ha4 : equalTypes 1 w (#subs s1 F cF1) (#subs s2 F cF2)
+  ha4 = equalInType→equalTypes-aux i 1 lti w (#subs s1 F cF1) (#subs s2 F cF2) ha3
+
+  ha' : ∀𝕎 w (λ w' _ → equalTypes 1 w' (#subs s1 F cF1) (#subs s2 F cF2))
+  ha' w1 e1 = eqTypes-mon (uni 1) ha4 w1 e1
+
+  hb' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType 1 w' (#subs s1 F cF1) a₁ a₂
+                     → equalTypes 1 w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s2 G cG2)))
+  hb' w1 e1 a₁ a₂ a∈ = {!!} -- use hb
+
+  c1 : equalTypes i w (#subs s1 (EQ (PI F G) (PI H E) (UNIV 1)) cc1)
+                      (#subs s2 (EQ (PI F G) (PI H E) (UNIV 1)) cc2)
+  c1 = ≡CTerm→eqTypes
+         (sym (#subs-EQ s1 (PI F G) (PI H E) (UNIV 1) cc1 cpf1 cph1 cu1a))
+         (sym (#subs-EQ s2 (PI F G) (PI H E) (UNIV 1) cc2 cpf2 cph2 cu2a))
+         (eqTypesEQ←
+           {w} {i} {#subs s1 (PI F G) cpf1} {#subs s1 (PI H E) cph1} {#subs s2 (PI F G) cpf2} {#subs s2 (PI H E) cph2}
+           (≡CTerm→eqTypes (sym (#subs-UNIV s1 1 cu1a)) (sym (#subs-UNIV s2 1 cu2a)) (eqTypesUniv w i 1 lti))
+           (≡→equalInType
+              (sym (#subs-UNIV s1 1 cu1a))
+              (sym (#subs-PI s1 F G cpf1 cF1 cG1))
+              (sym (#subs-PI s2 F G cpf2 cF2 cG2))
+              (equalTypes→equalInType-UNIV
+                 {i} {1} lti {w}
+                 {#PI (#subs s1 F cF1) (#[0]subs s1 G cG1)}
+                 {#PI (#subs s2 F cF2) (#[0]subs s2 G cG2)}
+                 (eqTypesPI←
+                   {w} {1} {#subs s1 F cF1} {#[0]subs s1 G cG1} {#subs s2 F cF2} {#[0]subs s2 G cG2}
+                   ha'
+                   hb')))
+           (≡→equalInType
+              (sym (#subs-UNIV s1 1 cu1a))
+              (sym (#subs-PI s1 H E cph1 cH1 cE1))
+              (sym (#subs-PI s2 H E cph2 cH2 cE2))
+              (equalTypes→equalInType-UNIV
+                 {i} {1} lti {w}
+                 {#PI (#subs s1 H cH1) (#[0]subs s1 E cE1)}
+                 {#PI (#subs s2 H cH2) (#[0]subs s2 E cE2)}
+                 {! -- copy the above proof -- move up to i?!})))
+
+  c2 : equalInType i w (#subs s1 (EQ  (PI F G) (PI H E) (UNIV 1)) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  c2 = ≡→equalInType
+         (sym (#subs-EQ s1 (PI F G) (PI H E) (UNIV 1) cc1 cpf1 cph1 cu1a))
+         (sym (#subs-AX s1 ce1))
+         (sym (#subs-AX s2 ce2))
+         {!!}
+
 \end{code}

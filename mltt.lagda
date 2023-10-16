@@ -1021,49 +1021,6 @@ valid∈VAR {1+ n} {Γ ∙ B} {.(wk1 _)} {Fin.suc x} (there {_} {_} {A} j) i w s
                      (π₂ (ind ss1 ss2 cA1 cA2 cV1 cV2 eS eH))
 
 
--- MOVE to sequent2
-valid≡𝕎-PI : (i : Nat) (lti : 1 <ℕ i) (Γ : hypotheses) (F G H E : BTerm)
-           → valid≡𝕎 i Γ F H (UNIV 1)
-           → valid≡𝕎 i (Γ Data.List.∷ʳ mkHyp F) G E (UNIV 1)
-           → valid≡𝕎 i Γ (PI F G) (PI H E) (UNIV 1)
-valid≡𝕎-PI i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
-  where
-  cpf1 : covered s1 (PI F G)
-  cpf1 = coveredEQ₁ {s1} {PI F G} {PI H E} {UNIV 1} cc1
-
-  cpf2 : covered s2 (PI F G)
-  cpf2 = coveredEQ₁ {s2} {PI F G} {PI H E} {UNIV 1} cc2
-
-  cph1 : covered s1 (PI H E)
-  cph1 = coveredEQ₂ {s1} {PI F G} {PI H E} {UNIV 1} cc1
-
-  cph2 : covered s2 (PI H E)
-  cph2 = coveredEQ₂ {s2} {PI F G} {PI H E} {UNIV 1} cc2
-
-  cu1a : covered s1 (UNIV 1)
-  cu1a = covered-UNIV s1 1
-
-  cu2a : covered s2 (UNIV 1)
-  cu2a = covered-UNIV s2 1
-
-  c1 : equalTypes i w (#subs s1 (EQ (PI F G) (PI H E) (UNIV 1)) cc1)
-                      (#subs s2 (EQ (PI F G) (PI H E) (UNIV 1)) cc2)
-  c1 = ≡CTerm→eqTypes
-         (≣sym (#subs-EQ s1 (PI F G) (PI H E) (UNIV 1) cc1 cpf1 cph1 cu1a))
-         (≣sym (#subs-EQ s2 (PI F G) (PI H E) (UNIV 1) cc2 cpf2 cph2 cu2a))
-         (eqTypesEQ←
-           {w} {i} {#subs s1 (PI F G) cpf1} {#subs s1 (PI H E) cph1} {#subs s2 (PI F G) cpf2} {#subs s2 (PI H E) cph2}
-           (≡CTerm→eqTypes (≣sym (#subs-UNIV s1 1 cu1a)) (≣sym (#subs-UNIV s2 1 cu2a)) (eqTypesUniv w i 1 lti))
-           {!!}
-           {!!})
-
-  c2 : equalInType i w (#subs s1 (EQ  (PI F G) (PI H E) (UNIV 1)) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
-  c2 = ≡→equalInType
-         (≣sym (#subs-EQ s1 (PI F G) (PI H E) (UNIV 1) cc1 cpf1 cph1 cu1a))
-         (≣sym (#subs-AX s1 ce1)) (≣sym (#subs-AX s2 ce2))
-         {!!}
-
-
 mutual
 
   ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
