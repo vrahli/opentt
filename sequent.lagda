@@ -437,6 +437,10 @@ valid≡ : (n : ℕ) (w : 𝕎·) (H : hypotheses) (a b T : Term) → Set(lsuc(L
 valid≡ n w H a b T = sequent_pairwise_true n w (mkEqSeq H a b T)
 
 
+valid≡𝕎 : (n : ℕ) (H : hypotheses) (a b T : Term) → Set(lsuc(L))
+valid≡𝕎 n H a b T = (w : 𝕎·) → valid≡ n w H a b T
+
+
 valid∈ : (n : ℕ) (w : 𝕎·) (H : hypotheses) (a T : Term) → Set(lsuc(L))
 valid∈ n w H a T = sequent_pairwise_true n w (mkSeq H T a)
 
@@ -758,6 +762,24 @@ covered-AX s ()
 ... | inj₂ k = cT k
 
 
+coveredEQ₁ : {s : Sub} {a b c : Term}
+           → covered s (EQ a b c)
+           → covered s a
+coveredEQ₁ {s} {a} {b} {c} cov {x} i = cov {x} (∈-++⁺ˡ i)
+
+
+coveredEQ₂ : {s : Sub} {a b c : Term}
+           → covered s (EQ a b c)
+           → covered s b
+coveredEQ₂ {s} {a} {b} {c} cov {x} i = cov {x} (∈-++⁺ʳ (fvars a) (∈-++⁺ˡ i))
+
+
+coveredEQ₃ : {s : Sub} {a b c : Term}
+           → covered s (EQ a b c)
+           → covered s c
+coveredEQ₃ {s} {a} {b} {c} cov {x} i = cov {x} (∈-++⁺ʳ (fvars a) (∈-++⁺ʳ (fvars b) i))
+
+
 →coveredSUC : {s : Sub} {a : Term}
             → covered s a
             → covered s (SUC a)
@@ -770,6 +792,11 @@ subs-EQ [] a b T = refl
 subs-EQ (x ∷ s) a b T
   rewrite subs-EQ s a b T
   = refl
+
+
+#subs-EQ : (s : Sub) (a b c : Term) (ce : covered s (EQ a b c)) (ca : covered s a) (cb : covered s b) (cc : covered s c)
+         → #subs s (EQ a b c) ce ≡ #EQ (#subs s a ca) (#subs s b cb) (#subs s c cc)
+#subs-EQ s a b c ce ca cb cc = CTerm≡ (subs-EQ s a b c)
 
 
 subs-SUC : (s : Sub) (a : Term)
