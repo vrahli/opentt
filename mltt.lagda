@@ -100,7 +100,7 @@ open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (valid∈𝕎→valid≡𝕎-UNIV ; valid≡𝕎-sym ; valid≡𝕎-trans)
+  using (valid∈𝕎→valid≡𝕎-UNIV ; valid≡𝕎-sym ; valid≡𝕎-trans ; valid≡𝕎-PI ; valid≡𝕎-SUM!)
 open import sequent3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (valid∈-PI ; valid∈-SUM! ; valid∈-NAT! ; valid∈-FALSE ; valid∈-UNIT ; valid∈LAMBDA ; valid∈APPLY ; valid∈PAIR ;
          valid∈FST ; valid∈SND ; valid∈N0-NAT ; valid∈SUC-NAT ; valid∈NATREC ; valid∈-FALSE→ ; valid∈-AX-UNIT ;
@@ -1052,14 +1052,16 @@ mutual
 
     cov : coveredH ⟦ Γ ⟧Γ ⟦ ϕ ⟧ᵤ
     cov = coveredΓ {n} Γ ϕ
-  ⟦_⟧Γ≡ {n} {Γ} {.(Π _ ▹ _)} {.(Π _ ▹ _)} (Π-cong {F} {H} {G} {E} x j j₁) i lti = {!!}
+  ⟦_⟧Γ≡ {n} {Γ} {.(Π _ ▹ _)} {.(Π _ ▹ _)} (Π-cong {F} {H} {G} {E} x j j₁) i lti =
+    valid≡𝕎-PI i lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ ⟦ H ⟧ᵤ ⟦ E ⟧ᵤ h1 h2
     where
     h1 : valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ H ⟧ᵤ (UNIV 1)
     h1 = ⟦_⟧Γ≡ j i lti
 
     h2 : valid≡𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ ⟦ E ⟧ᵤ (UNIV 1)
     h2 = ⟦_⟧Γ≡ j₁ i lti
-  ⟦_⟧Γ≡ {n} {Γ} {.(Σ _ ▹ _)} {.(Σ _ ▹ _)} (Σ-cong {F} {H} {G} {E} x j j₁) i lti = {!!}
+  ⟦_⟧Γ≡ {n} {Γ} {.(Σ _ ▹ _)} {.(Σ _ ▹ _)} (Σ-cong {F} {H} {G} {E} x j j₁) i lti =
+    valid≡𝕎-SUM! i lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ ⟦ H ⟧ᵤ ⟦ E ⟧ᵤ h1 h2
     where
     h1 : valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ H ⟧ᵤ (UNIV 1)
     h1 = ⟦_⟧Γ≡ j i lti
@@ -1068,14 +1070,7 @@ mutual
     h2 = ⟦_⟧Γ≡ j₁ i lti
 
 
-  ⟦_⟧⊢ : {n : Nat} {Γ : Con Term n} {σ : Term n}
-         (j : Γ ⊢ σ)
-         (i : Nat) (lti : 1 <ℕ i)
-       → valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ (UNIV 1)
-  ⟦_⟧⊢ {n} {Γ} {σ} j i lti w = {!!}
-
-
-  -- Should we use a closed version of the sequent constructor in valid∈ below?
+  -- TODO: Should this instead follow from ⟦_⟧Γ≡∈?
   ⟦_⟧Γ∈ : {n : Nat} {Γ : Con Term n} {t : Term n} {σ : Term n}
           (j : Γ ⊢ t ∷ σ)
           (i : Nat) (lti : 1 <ℕ i)
@@ -1219,6 +1214,14 @@ mutual
 
     cov : coveredH ⟦ Γ ⟧Γ ⟦ τ ⟧ᵤ
     cov = coveredΓ {n} Γ τ
+
+
+  -- TODO: Can we prove this one from ⟦_⟧Γ≡?
+  ⟦_⟧⊢ : {n : Nat} {Γ : Con Term n} {σ : Term n}
+         (j : Γ ⊢ σ)
+         (i : Nat) (lti : 1 <ℕ i)
+       → valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ (UNIV 1)
+  ⟦_⟧⊢ {n} {Γ} {σ} j i lti w = {!!}
 
 
   ⟦_⟧Γ≡∈ : {n : Nat} {Γ : Con Term n} {t u : Term n} {σ : Term n}
