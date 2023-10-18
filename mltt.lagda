@@ -1021,6 +1021,39 @@ valid∈VAR {1+ n} {Γ ∙ B} {.(wk1 _)} {Fin.suc x} (there {_} {_} {A} j) i w s
                      (π₂ (ind ss1 ss2 cA1 cA2 cV1 cV2 eS eH))
 
 
+{--
+⊢≡∷ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
+    → Γ ⊢ σ ≡ τ ∷ U
+    → Γ ⊢ σ × Γ ⊢ τ
+⊢≡∷ {n} {Γ} {σ} {τ} i = {!!}
+
+
+-- Isn't that proved somewhere?
+⊢≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
+   → Γ ⊢ σ ≡ τ
+   → Γ ⊢ σ × Γ ⊢ τ
+⊢≡ {n} {Γ} {σ} {τ} (univ x) = {!!}
+⊢≡ {n} {Γ} {σ} {.σ} (refl x) = x , x
+⊢≡ {n} {Γ} {σ} {τ} (sym i) = π₂ (⊢≡ i) , π₁ (⊢≡ i)
+⊢≡ {n} {Γ} {σ} {τ} (trans i i₁) = π₁ (⊢≡ i) , π₂ (⊢≡ i₁)
+⊢≡ {n} {Γ} {.(Π _ ▹ _)} {.(Π _ ▹ _)} (Π-cong x i i₁) =
+  Πⱼ x ▹ (π₁ (⊢≡ i₁)) , Πⱼ π₂ (⊢≡ i) ▹ {!!}
+⊢≡ {n} {Γ} {.(Σ _ ▹ _)} {.(Σ _ ▹ _)} (Σ-cong x i i₁) =
+  Σⱼ x ▹ (π₁ (⊢≡ i₁)) , Σⱼ π₂ (⊢≡ i) ▹ {!!}
+--}
+
+
+-- This is not right, the 2nd number should be higher
+valid∈-UNIV : (i : Nat) (lti : 1 <ℕ i) (H : hypotheses)
+            → valid∈𝕎 i H (UNIV 1) (UNIV 1)
+valid∈-UNIV i lti H w s1 s2 cc1 cc2 ce1 ce2 es eh =
+  ≡CTerm→eqTypes
+    (≣sym (#subs-UNIV s1 1 cc1))
+    (≣sym (#subs-UNIV s2 1 cc2))
+    (eqTypesUniv w i 1 lti) ,
+  {!!}
+
+
 mutual
 
   ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
@@ -1091,7 +1124,7 @@ mutual
 
     h2 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 1)
     h2 = ⟦_⟧Γ∈ j₁ i lti
-  ⟦_⟧Γ∈ {n} {Γ} {.ℕ} {.U} (ℕⱼ x) i lti w = valid∈-NAT! i lti ⟦ Γ ⟧Γ w
+  ⟦_⟧Γ∈ {n} {Γ} {.ℕ} {.U} (ℕⱼ x) i lti w = valid∈-NAT! i 1 lti ⟦ Γ ⟧Γ w
   ⟦_⟧Γ∈ {n} {Γ} {.Empty} {.U} (Emptyⱼ x) i lti w = valid∈-FALSE i lti ⟦ Γ ⟧Γ w
   ⟦_⟧Γ∈ {n} {Γ} {.Unit} {.U} (Unitⱼ x) i lti w = valid∈-UNIT i lti ⟦ Γ ⟧Γ w
   ⟦_⟧Γ∈ {n} {Γ} {.(var _)} {σ} (var {σ} {v} x x₁) i lti w =
@@ -1221,7 +1254,15 @@ mutual
          (j : Γ ⊢ σ)
          (i : Nat) (lti : 1 <ℕ i)
        → valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ (UNIV 1)
-  ⟦_⟧⊢ {n} {Γ} {σ} j i lti w = {!!}
+  ⟦_⟧⊢ {n} {Γ} {.U} (Uⱼ x) i lti w = {!!} -- not quite right: see valid∈-UNIV above
+  ⟦_⟧⊢ {n} {Γ} {.ℕ} (ℕⱼ x) i lti w = valid∈-NAT! i 1 lti ⟦ Γ ⟧Γ w
+  ⟦_⟧⊢ {n} {Γ} {.Empty} (Emptyⱼ x) i lti w = valid∈-FALSE i lti ⟦ Γ ⟧Γ w
+  ⟦_⟧⊢ {n} {Γ} {.Unit} (Unitⱼ x) i lti w = valid∈-UNIT i lti ⟦ Γ ⟧Γ w
+  ⟦_⟧⊢ {n} {Γ} {.(Π _ ▹ _)} (Πⱼ_▹_ {F} {G} j j₁) i lti w =
+    valid∈-PI i lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ (⟦_⟧⊢ j i lti) (⟦_⟧⊢ j₁ i lti) w
+  ⟦_⟧⊢ {n} {Γ} {.(Σ _ ▹ _)} (Σⱼ_▹_ {F} {G} j j₁) i lti w =
+    valid∈-SUM! i lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ (⟦_⟧⊢ j i lti) (⟦_⟧⊢ j₁ i lti) w
+  ⟦_⟧⊢ {n} {Γ} {σ} (univ x) i lti w = ⟦ x ⟧Γ∈ i lti w
 
 
   ⟦_⟧Γ≡∈ : {n : Nat} {Γ : Con Term n} {t u : Term n} {σ : Term n}
@@ -1231,10 +1272,12 @@ mutual
   ⟦_⟧Γ≡∈ {n} {Γ} {t} {u} {σ} j i lti = {!!}
 
 
+{--
   ⟦_⟧≡∈ : {t u : Term 0} {σ : Term 0}
           (j : ε ⊢ t ≡ u ∷ σ)
           (i : Nat) (w : 𝕎·)
         → equalInType i w ⟦ j ⟧≡ₜ₀ ⟦ j ⟧≡ₗ₀ ⟦ j ⟧≡ᵣ₀ -- in the empty context
   ⟦_⟧≡∈ {t} {u} {σ} j i w = {!!}
+--}
 
 \end{code}

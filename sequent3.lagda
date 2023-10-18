@@ -101,14 +101,14 @@ open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 
-valid∈-NAT! : (i : ℕ) (lti : 1 < i) (H : hypotheses)
-              → valid∈𝕎 i H NAT! (UNIV 1)
-valid∈-NAT! i lti H w s1 s2 cc1 cc2 ce1 ce2 eqs eqh
-  rewrite #subs-NAT! s1 ce1 | #subs-NAT! s2 ce2 | #subs-UNIV s1 1 cc1 | #subs-UNIV s2 1 cc2
-  = eqTypesUniv w i 1 lti , e
+valid∈-NAT! : (i : ℕ) (k : ℕ) (lti : k < i) (H : hypotheses)
+              → valid∈𝕎 i H NAT! (UNIV k)
+valid∈-NAT! i k lti H w s1 s2 cc1 cc2 ce1 ce2 eqs eqh
+  rewrite #subs-NAT! s1 ce1 | #subs-NAT! s2 ce2 | #subs-UNIV s1 k cc1 | #subs-UNIV s2 k cc2
+  = eqTypesUniv w i k lti , e
   where
-    e : equalInType i w (#UNIV 1) #NAT! #NAT!
-    e = equalTypes→equalInType-UNIV {i} {1} lti {w} {#NAT!} {#NAT!} isTypeNAT!
+    e : equalInType i w (#UNIV k) #NAT! #NAT!
+    e = equalTypes→equalInType-UNIV {i} {k} lti {w} {#NAT!} {#NAT!} isTypeNAT!
 
 
 valid∈-FALSE : (i : ℕ) (lti : 1 < i) (H : hypotheses)
