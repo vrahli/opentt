@@ -112,52 +112,207 @@ open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
     (Mod.∀𝕎-□ M (λ w1 e1 → equalInType-mon a∈ w1 e1))
 
 
+valid∈-UNIV : (i k j : ℕ) (ltk : j < k) (lti : k < i) (H : hypotheses)
+            → valid∈𝕎 i H (UNIV j) (UNIV k)
+valid∈-UNIV i k j ltk lti H w s1 s2 cc1 cc2 ce1 ce2 es eh =
+  ≡CTerm→eqTypes
+    (sym (#subs-UNIV s1 k cc1))
+    (sym (#subs-UNIV s2 k cc2))
+    (eqTypesUniv w i k lti) ,
+  ≡→equalInType
+    (sym (#subs-UNIV s1 k cc1))
+    (sym (#subs-UNIV s1 j ce1))
+    (sym (#subs-UNIV s2 j ce2))
+    (equalTypes→equalInType-UNIV lti (eqTypesUniv w k j ltk))
+
+
+valid≡𝕎-mon : {i j k : ℕ} (ltk : j < k) (lti : k < i) {Γ : hypotheses} {σ τ : Term}
+            → valid≡𝕎 i Γ σ τ (UNIV j)
+            → valid≡𝕎 i Γ σ τ (UNIV k)
+valid≡𝕎-mon {i} {j} {k} ltk lti {Γ} {σ} {τ} ha w s1 s2 cc1 cc2 ce1 ce2 es eh =
+  c1 , c2
+  where
+  cS1 : covered s1 σ
+  cS1 = coveredEQ₁ {s1} {σ} {τ} {UNIV k} cc1
+
+  cS2 : covered s2 σ
+  cS2 = coveredEQ₁ {s2} {σ} {τ} {UNIV k} cc2
+
+  cT1 : covered s1 τ
+  cT1 = coveredEQ₂ {s1} {σ} {τ} {UNIV k} cc1
+
+  cT2 : covered s2 τ
+  cT2 = coveredEQ₂ {s2} {σ} {τ} {UNIV k} cc2
+
+  cu1a : covered s1 (UNIV k)
+  cu1a = covered-UNIV s1 k
+
+  cu2a : covered s2 (UNIV k)
+  cu2a = covered-UNIV s2 k
+
+  cu1b : covered s1 (UNIV j)
+  cu1b = covered-UNIV s1 j
+
+  cu2b : covered s2 (UNIV j)
+  cu2b = covered-UNIV s2 j
+
+  ceq1 : covered s1 (EQ σ τ (UNIV j))
+  ceq1 = →coveredEQ {s1} {σ} {τ} {UNIV j} cS1 cT1 cu1b
+
+  ceq2 : covered s2 (EQ σ τ (UNIV j))
+  ceq2 = →coveredEQ {s2} {σ} {τ} {UNIV j} cS2 cT2 cu2b
+
+  ha1 : equalTypes i w (#subs s1 (EQ σ τ (UNIV j)) ceq1) (#subs s2 (EQ σ τ (UNIV j)) ceq2)
+  ha1 = fst (ha w s1 s2 ceq1 ceq2 ce1 ce2 es eh)
+
+  ha2 : equalTypes i w (#EQ (#subs s1 σ cS1) (#subs s1 τ cT1) (#subs s1 (UNIV j) cu1b))
+                       (#EQ (#subs s2 σ cS2) (#subs s2 τ cT2) (#subs s2 (UNIV j) cu2b))
+  ha2 = ≡CTerm→eqTypes
+          (#subs-EQ s1 σ τ (UNIV j) ceq1 cS1 cT1 cu1b)
+          (#subs-EQ s2 σ τ (UNIV j) ceq2 cS2 cT2 cu2b)
+          ha1
+
+  ha3 : equalTypes j w (#subs s1 σ cS1) (#subs s2 σ cS2)
+  ha3 = equalInType→equalTypes-aux
+          i j (<-trans ltk lti) w (#subs s1 σ cS1) (#subs s2 σ cS2)
+          (≡CTerm→equalInType
+            (#subs-UNIV s1 j cu1b)
+            (eqTypesEQ→ₗ {w} {i} {#subs s1 σ cS1} {#subs s1 τ cT1} {#subs s2 σ cS2} {#subs s2 τ cT2} ha2))
+
+  ha4 : equalTypes j w (#subs s1 τ cT1) (#subs s2 τ cT2)
+  ha4 = equalInType→equalTypes-aux
+          i j (<-trans ltk lti) w (#subs s1 τ cT1) (#subs s2 τ cT2)
+          (≡CTerm→equalInType
+            (#subs-UNIV s1 j cu1b)
+            (eqTypesEQ→ᵣ {w} {i} {#subs s1 σ cS1} {#subs s1 τ cT1} {#subs s2 σ cS2} {#subs s2 τ cT2} ha2))
+
+  cσ1 : equalInType i w (#UNIV k) (#subs s1 σ cS1) (#subs s2 σ cS2)
+  cσ1 = equalTypes→equalInType-UNIV lti (equalTypes-uni-mon (<⇒≤ ltk) ha3)
+
+  cτ1 : equalInType i w (#UNIV k) (#subs s1 τ cT1) (#subs s2 τ cT2)
+  cτ1 = equalTypes→equalInType-UNIV lti (equalTypes-uni-mon (<⇒≤ ltk) ha4)
+
+  hb1 : equalInType i w (#subs s1 (EQ σ τ (UNIV j)) ceq1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  hb1 = snd (ha w s1 s2 ceq1 ceq2 ce1 ce2 es eh)
+
+  hb2 : equalTypes j w (#subs s1 σ cS1) (#subs s1 τ cT1)
+  hb2 = equalInType→equalTypes-aux
+          i j (<-trans ltk lti) w (#subs s1 σ cS1) (#subs s1 τ cT1)
+          (≡CTerm→equalInType
+            (#subs-UNIV s1 j cu1b)
+            (equalInType-EQ→₁
+              (≡→equalInType
+                (#subs-EQ s1 σ τ (UNIV j) ceq1 cS1 cT1 cu1b)
+                (#subs-AX s1 ce1)
+                (#subs-AX s2 ce2)
+                hb1)))
+
+  cσ2 : equalInType i w (#UNIV k) (#subs s1 σ cS1) (#subs s1 τ cT1)
+  cσ2 = equalTypes→equalInType-UNIV lti (equalTypes-uni-mon (<⇒≤ ltk) hb2)
+
+  c1 : equalTypes i w (#subs s1 (EQ σ τ (UNIV k)) cc1) (#subs s2 (EQ σ τ (UNIV k)) cc2)
+  c1 = ≡CTerm→eqTypes
+         (sym (#subs-EQ s1 σ τ (UNIV k) cc1 cS1 cT1 cu1a))
+         (sym (#subs-EQ s2 σ τ (UNIV k) cc2 cS2 cT2 cu2a))
+         (eqTypesEQ←
+           (≡CTerm→eqTypes (sym (#subs-UNIV s1 k cu1a)) (sym (#subs-UNIV s2 k cu2a)) (eqTypesUniv w i k lti))
+           (≡CTerm→equalInType (sym (#subs-UNIV s1 k cu1a)) cσ1)
+           (≡CTerm→equalInType (sym (#subs-UNIV s1 k cu1a)) cτ1))
+
+  c2 : equalInType i w (#subs s1 (EQ σ τ (UNIV k)) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  c2 = ≡→equalInType
+         (sym (#subs-EQ s1 σ τ (UNIV k) cc1 cS1 cT1 cu1a))
+         (sym (#subs-AX s1 ce1))
+         (sym (#subs-AX s2 ce2))
+         (→equalInType-EQ (≡CTerm→equalInType (sym (#subs-UNIV s1 k cu1a)) cσ2))
+
+
+valid∈𝕎-mon : {i j k : ℕ} (ltk : j < k) (lti : k < i) {Γ : hypotheses} {σ : Term}
+            → valid∈𝕎 i Γ σ (UNIV j)
+            → valid∈𝕎 i Γ σ (UNIV k)
+valid∈𝕎-mon {i} {j} {k} ltk lti {Γ} {σ} ha w s1 s2 cc1 cc2 ce1 ce2 es eh =
+  c1 , c2
+  where
+  cS1 : covered s1 σ
+  cS1 = ce1
+
+  cS2 : covered s2 σ
+  cS2 = ce2
+
+  cu1a : covered s1 (UNIV k)
+  cu1a = cc1
+
+  cu2a : covered s2 (UNIV k)
+  cu2a = cc2
+
+  cu1b : covered s1 (UNIV j)
+  cu1b = covered-UNIV s1 j
+
+  cu2b : covered s2 (UNIV j)
+  cu2b = covered-UNIV s2 j
+
+  ha1 : equalInType i w (#subs s1 (UNIV j) cu1b) (#subs s1 σ cS1) (#subs s2 σ cS2)
+  ha1 = snd (ha w s1 s2 cu1b cu2b cS1 cS2 es eh)
+
+  ha2 : equalInType i w (#UNIV j) (#subs s1 σ cS1) (#subs s2 σ cS2)
+  ha2 = ≡CTerm→equalInType (#subs-UNIV s1 j cu1b) ha1
+
+  ha3 : equalTypes j w (#subs s1 σ cS1) (#subs s2 σ cS2)
+  ha3 = equalInType→equalTypes-aux i j (<-trans ltk lti) w (#subs s1 σ cS1) (#subs s2 σ cS2) ha2
+
+  c1 : equalTypes i w (#subs s1 (UNIV k) cc1) (#subs s2 (UNIV k) cc2)
+  c1 = ≡CTerm→eqTypes (sym (#subs-UNIV s1 k cu1a)) (sym (#subs-UNIV s2 k cu2a)) (eqTypesUniv w i k lti)
+
+  c2 : equalInType i w (#subs s1 (UNIV k) cc1) (#subs s1 σ ce1) (#subs s2 σ ce2)
+  c2 = ≡CTerm→equalInType (sym (#subs-UNIV s1 k cu1a)) (equalTypes→equalInType-UNIV lti (equalTypes-uni-mon (<⇒≤ ltk) ha3))
+
+
 -- TODO: generalize
-valid∈𝕎→valid≡𝕎-UNIV : (i : ℕ) (lti : 1 < i) (H : hypotheses) (A : Term)
-                     → valid∈𝕎 i H A (UNIV 1)
-                     → valid≡𝕎 i H A A (UNIV 1)
-valid∈𝕎→valid≡𝕎-UNIV i lti H A ha w s1 s2 cc1 cc2 ce1 ce2 es eh =
+valid∈𝕎→valid≡𝕎-UNIV : (i k : ℕ) (lti : k < i) (H : hypotheses) (A : Term)
+                     → valid∈𝕎 i H A (UNIV k)
+                     → valid≡𝕎 i H A A (UNIV k)
+valid∈𝕎→valid≡𝕎-UNIV i k lti H A ha w s1 s2 cc1 cc2 ce1 ce2 es eh =
   c1 , c2
   where
   cA1 : covered s1 A
-  cA1 = coveredEQ₁ {s1} {A} {A} {UNIV 1} cc1
+  cA1 = coveredEQ₁ {s1} {A} {A} {UNIV k} cc1
 
   cA2 : covered s2 A
-  cA2 = coveredEQ₁ {s2} {A} {A} {UNIV 1} cc2
+  cA2 = coveredEQ₁ {s2} {A} {A} {UNIV k} cc2
 
-  cu1a : covered s1 (UNIV 1)
-  cu1a = covered-UNIV s1 1
+  cu1a : covered s1 (UNIV k)
+  cu1a = covered-UNIV s1 k
 
-  cu2a : covered s2 (UNIV 1)
-  cu2a = covered-UNIV s2 1
+  cu2a : covered s2 (UNIV k)
+  cu2a = covered-UNIV s2 k
 
-  ha1 : equalInType i w (#subs s1 (UNIV 1) cu1a) (#subs s1 A cA1) (#subs s2 A cA2)
+  ha1 : equalInType i w (#subs s1 (UNIV k) cu1a) (#subs s1 A cA1) (#subs s2 A cA2)
   ha1 = snd (ha w s1 s2 cu1a cu2a cA1 cA2 es eh)
 
-  ha2 : equalInType i w (#UNIV 1) (#subs s1 A cA1) (#subs s2 A cA2)
-  ha2 = ≡CTerm→equalInType (#subs-UNIV s1 1 cu1a) ha1
+  ha2 : equalInType i w (#UNIV k) (#subs s1 A cA1) (#subs s2 A cA2)
+  ha2 = ≡CTerm→equalInType (#subs-UNIV s1 k cu1a) ha1
 
-  c1 : equalTypes i w (#subs s1 (EQ A A (UNIV 1)) cc1) (#subs s2 (EQ A A (UNIV 1)) cc2)
+  c1 : equalTypes i w (#subs s1 (EQ A A (UNIV k)) cc1) (#subs s2 (EQ A A (UNIV k)) cc2)
   c1 = ≡CTerm→eqTypes
-         (sym (#subs-EQ s1 A A (UNIV 1) cc1 cA1 cA1 cu1a))
-         (sym (#subs-EQ s2 A A (UNIV 1) cc2 cA2 cA2 cu2a))
+         (sym (#subs-EQ s1 A A (UNIV k) cc1 cA1 cA1 cu1a))
+         (sym (#subs-EQ s2 A A (UNIV k) cc2 cA2 cA2 cu2a))
          (eqTypesEQ←
-           (≡CTerm→eqTypes (sym (#subs-UNIV s1 1 cu1a)) (sym (#subs-UNIV s2 1 cu2a)) (eqTypesUniv w i 1 lti))
-           (≡CTerm→equalInType (sym (#subs-UNIV s1 1 cu1a)) ha2)
-           (≡CTerm→equalInType (sym (#subs-UNIV s1 1 cu1a)) ha2))
+           (≡CTerm→eqTypes (sym (#subs-UNIV s1 k cu1a)) (sym (#subs-UNIV s2 k cu2a)) (eqTypesUniv w i k lti))
+           (≡CTerm→equalInType (sym (#subs-UNIV s1 k cu1a)) ha2)
+           (≡CTerm→equalInType (sym (#subs-UNIV s1 k cu1a)) ha2))
 
-  c2 : equalInType i w (#subs s1 (EQ A A (UNIV 1)) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  c2 : equalInType i w (#subs s1 (EQ A A (UNIV k)) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
   c2 = ≡→equalInType
-         (sym (#subs-EQ s1 A A (UNIV 1) cc1 cA1 cA1 cu1a))
+         (sym (#subs-EQ s1 A A (UNIV k) cc1 cA1 cA1 cu1a))
          (sym (#subs-AX s1 ce1))
          (sym (#subs-AX s2 ce2))
-         (→equalInType-EQ (≡CTerm→equalInType (sym (#subs-UNIV s1 1 cu1a)) (equalInType-refl ha2)))
+         (→equalInType-EQ (≡CTerm→equalInType (sym (#subs-UNIV s1 k cu1a)) (equalInType-refl ha2)))
 
 
-valid≡𝕎-sym : (i : ℕ) (lti : 1 < i) (H : hypotheses) (a b A : Term)
+valid≡𝕎-sym : (i : ℕ) (H : hypotheses) (a b A : Term)
             → valid≡𝕎 i H a b A
             → valid≡𝕎 i H b a A
-valid≡𝕎-sym i lti H a b A ha w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
+valid≡𝕎-sym i H a b A ha w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
   where
   cb1 : covered s1 b
   cb1 = coveredEQ₁ {s1} {b} {a} {A} cc1
@@ -182,12 +337,6 @@ valid≡𝕎-sym i lti H a b A ha w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
 
   ceq2 : covered s2 (EQ a b A)
   ceq2 = →coveredEQ {s2} {a} {b} {A} ca2 cb2 cA2
-
-  cu1a : covered s1 (UNIV 1)
-  cu1a = covered-UNIV s1 1
-
-  cu2a : covered s2 (UNIV 1)
-  cu2a = covered-UNIV s2 1
 
   ha1 : equalTypes i w (#subs s1 (EQ a b A) ceq1) (#subs s2 (EQ a b A) ceq2)
   ha1 = fst (ha w s1 s2 ceq1 ceq2 ce1 ce2 es eh)
@@ -234,12 +383,12 @@ valid≡𝕎-sym i lti H a b A ha w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
              (equalInType-EQ→₁ {i} {w} {#subs s1 a ca1} {#subs s1 b cb1} {#subs s1 A cA1} {#AX} {#AX} ha4)))
 
 
-valid≡𝕎-trans : (i : ℕ) (lti : 1 < i) (H : hypotheses) (a b c A : Term)
+valid≡𝕎-trans : (i : ℕ) (H : hypotheses) (a b c A : Term)
               → coveredH H b
               → valid≡𝕎 i H a b A
               → valid≡𝕎 i H b c A
               → valid≡𝕎 i H a c A
-valid≡𝕎-trans i lti H a b m A covb ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh =
+valid≡𝕎-trans i H a b m A covb ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh =
   c1 , c2
   where
   ca1 : covered s1 a
@@ -277,12 +426,6 @@ valid≡𝕎-trans i lti H a b m A covb ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh =
 
   ceq4 : covered s2 (EQ b m A)
   ceq4 = →coveredEQ {s2} {b} {m} {A} cb2 cm2 cA2
-
-  cu1a : covered s1 (UNIV 1)
-  cu1a = covered-UNIV s1 1
-
-  cu2a : covered s2 (UNIV 1)
-  cu2a = covered-UNIV s2 1
 
   -- ha hyps
   ha1 : equalTypes i w (#subs s1 (EQ a b A) ceq1) (#subs s2 (EQ a b A) ceq2)
@@ -361,23 +504,23 @@ sub0#[0]subs : (a : CTerm) (s : Sub) (t : Term) (c : covered0 s t) (c' : covered
 sub0#[0]subs a s t c c' = CTerm≡ (sub-subsN1 a s t)
 
 
-valid≡𝕎-PI : (i : ℕ) (lti : 1 < i) (Γ : hypotheses) (F G H E : Term)
-           → valid≡𝕎 i Γ F H (UNIV 1)
-           → valid≡𝕎 i (Γ Data.List.∷ʳ mkHyp F) G E (UNIV 1)
-           → valid≡𝕎 i Γ (PI F G) (PI H E) (UNIV 1)
-valid≡𝕎-PI i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
+valid≡𝕎-PI : (i k : ℕ) (lti : k < i) (Γ : hypotheses) (F G H E : Term)
+           → valid≡𝕎 i Γ F H (UNIV k)
+           → valid≡𝕎 i (Γ Data.List.∷ʳ mkHyp F) G E (UNIV k)
+           → valid≡𝕎 i Γ (PI F G) (PI H E) (UNIV k)
+valid≡𝕎-PI i k lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
   where
   cpf1 : covered s1 (PI F G)
-  cpf1 = coveredEQ₁ {s1} {PI F G} {PI H E} {UNIV 1} cc1
+  cpf1 = coveredEQ₁ {s1} {PI F G} {PI H E} {UNIV k} cc1
 
   cpf2 : covered s2 (PI F G)
-  cpf2 = coveredEQ₁ {s2} {PI F G} {PI H E} {UNIV 1} cc2
+  cpf2 = coveredEQ₁ {s2} {PI F G} {PI H E} {UNIV k} cc2
 
   cph1 : covered s1 (PI H E)
-  cph1 = coveredEQ₂ {s1} {PI F G} {PI H E} {UNIV 1} cc1
+  cph1 = coveredEQ₂ {s1} {PI F G} {PI H E} {UNIV k} cc1
 
   cph2 : covered s2 (PI H E)
-  cph2 = coveredEQ₂ {s2} {PI F G} {PI H E} {UNIV 1} cc2
+  cph2 = coveredEQ₂ {s2} {PI F G} {PI H E} {UNIV k} cc2
 
   cF1 : covered s1 F
   cF1 = coveredPI₁ {s1} {F} {G} cpf1
@@ -403,71 +546,71 @@ valid≡𝕎-PI i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
   cE2 : covered0 s2 E
   cE2 = coveredPI₂ {s2} {H} {E} cph2
 
-  cu1a : covered s1 (UNIV 1)
-  cu1a = covered-UNIV s1 1
+  cu1a : covered s1 (UNIV k)
+  cu1a = covered-UNIV s1 k
 
-  cu2a : covered s2 (UNIV 1)
-  cu2a = covered-UNIV s2 1
+  cu2a : covered s2 (UNIV k)
+  cu2a = covered-UNIV s2 k
 
-  ceq1 : covered s1 (EQ F H (UNIV 1))
-  ceq1 = →coveredEQ {s1} {F} {H} {UNIV 1} cF1 cH1 cu1a
+  ceq1 : covered s1 (EQ F H (UNIV k))
+  ceq1 = →coveredEQ {s1} {F} {H} {UNIV k} cF1 cH1 cu1a
 
-  ceq2 : covered s2 (EQ F H (UNIV 1))
-  ceq2 = →coveredEQ {s2} {F} {H} {UNIV 1} cF2 cH2 cu2a
+  ceq2 : covered s2 (EQ F H (UNIV k))
+  ceq2 = →coveredEQ {s2} {F} {H} {UNIV k} cF2 cH2 cu2a
 
-  ha1 : equalTypes i w (#subs s1 (EQ F H (UNIV 1)) ceq1) (#subs s2 (EQ F H (UNIV 1)) ceq2)
+  ha1 : equalTypes i w (#subs s1 (EQ F H (UNIV k)) ceq1) (#subs s2 (EQ F H (UNIV k)) ceq2)
   ha1 = fst (ha w s1 s2 ceq1 ceq2 ce1 ce2 es eh)
 
-  ha2 : equalTypes i w (#EQ (#subs s1 F cF1) (#subs s1 H cH1) (#subs s1 (UNIV 1) cu1a))
-                       (#EQ (#subs s2 F cF2) (#subs s2 H cH2) (#subs s2 (UNIV 1) cu2a))
+  ha2 : equalTypes i w (#EQ (#subs s1 F cF1) (#subs s1 H cH1) (#subs s1 (UNIV k) cu1a))
+                       (#EQ (#subs s2 F cF2) (#subs s2 H cH2) (#subs s2 (UNIV k) cu2a))
   ha2 = ≡CTerm→eqTypes
-          (#subs-EQ s1 F H (UNIV 1) ceq1 cF1 cH1 cu1a)
-          (#subs-EQ s2 F H (UNIV 1) ceq2 cF2 cH2 cu2a)
+          (#subs-EQ s1 F H (UNIV k) ceq1 cF1 cH1 cu1a)
+          (#subs-EQ s2 F H (UNIV k) ceq2 cF2 cH2 cu2a)
           ha1
 
-  ha3 : equalInType i w (#UNIV 1) (#subs s1 F cF1) (#subs s2 F cF2)
+  ha3 : equalInType i w (#UNIV k) (#subs s1 F cF1) (#subs s2 F cF2)
   ha3 = ≡CTerm→equalInType
-          (#subs-UNIV s1 1 cu1a)
+          (#subs-UNIV s1 k cu1a)
           (eqTypesEQ→ₗ {w} {i} {#subs s1 F cF1} {#subs s1 H cH1} {#subs s2 F cF2} {#subs s2 H cH2} ha2)
 
-  ha4 : equalTypes 1 w (#subs s1 F cF1) (#subs s2 F cF2)
-  ha4 = equalInType→equalTypes-aux i 1 lti w (#subs s1 F cF1) (#subs s2 F cF2) ha3
+  ha4 : equalTypes k w (#subs s1 F cF1) (#subs s2 F cF2)
+  ha4 = equalInType→equalTypes-aux i k lti w (#subs s1 F cF1) (#subs s2 F cF2) ha3
 
-  ha' : ∀𝕎 w (λ w' _ → equalTypes 1 w' (#subs s1 F cF1) (#subs s2 F cF2))
-  ha' w1 e1 = eqTypes-mon (uni 1) ha4 w1 e1
+  ha' : ∀𝕎 w (λ w' _ → equalTypes k w' (#subs s1 F cF1) (#subs s2 F cF2))
+  ha' w1 e1 = eqTypes-mon (uni k) ha4 w1 e1
 
-  ha5 : equalInType i w (#UNIV 1) (#subs s1 H cH1) (#subs s2 H cH2)
+  ha5 : equalInType i w (#UNIV k) (#subs s1 H cH1) (#subs s2 H cH2)
   ha5 = ≡CTerm→equalInType
-          (#subs-UNIV s1 1 cu1a)
+          (#subs-UNIV s1 k cu1a)
           (eqTypesEQ→ᵣ {w} {i} {#subs s1 F cF1} {#subs s1 H cH1} {#subs s2 F cF2} {#subs s2 H cH2} ha2)
 
-  ha6 : equalTypes 1 w (#subs s1 H cH1) (#subs s2 H cH2)
-  ha6 = equalInType→equalTypes-aux i 1 lti w (#subs s1 H cH1) (#subs s2 H cH2) ha5
+  ha6 : equalTypes k w (#subs s1 H cH1) (#subs s2 H cH2)
+  ha6 = equalInType→equalTypes-aux i k lti w (#subs s1 H cH1) (#subs s2 H cH2) ha5
 
-  ha'' : ∀𝕎 w (λ w' _ → equalTypes 1 w' (#subs s1 H cH1) (#subs s2 H cH2))
-  ha'' w1 e1 = eqTypes-mon (uni 1) ha6 w1 e1
+  ha'' : ∀𝕎 w (λ w' _ → equalTypes k w' (#subs s1 H cH1) (#subs s2 H cH2))
+  ha'' w1 e1 = eqTypes-mon (uni k) ha6 w1 e1
 
-  ha7 : equalInType i w (#subs s1 (EQ F H (UNIV 1)) ceq1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  ha7 : equalInType i w (#subs s1 (EQ F H (UNIV k)) ceq1) (#subs s1 AX ce1) (#subs s2 AX ce2)
   ha7 = snd (ha w s1 s2 ceq1 ceq2 ce1 ce2 es eh)
 
-  ha8 : equalTypes 1 w (#subs s1 F cF1) (#subs s1 H cH1)
+  ha8 : equalTypes k w (#subs s1 F cF1) (#subs s1 H cH1)
   ha8 = equalInType→equalTypes-aux
-          i 1 lti w (#subs s1 F cF1) (#subs s1 H cH1)
+          i k lti w (#subs s1 F cF1) (#subs s1 H cH1)
           (≡CTerm→equalInType
-            (#subs-UNIV s1 1 cu1a)
+            (#subs-UNIV s1 k cu1a)
             (equalInType-EQ→₁
-              {i} {w} {#subs s1 F cF1} {#subs s1 H cH1} {#subs s1 (UNIV 1) cu1a}
-              (≡→equalInType (#subs-EQ s1 F H (UNIV 1) ceq1 cF1 cH1 cu1a) (#subs-AX s1 ce1) (#subs-AX s2 ce2) ha7)))
+              {i} {w} {#subs s1 F cF1} {#subs s1 H cH1} {#subs s1 (UNIV k) cu1a}
+              (≡→equalInType (#subs-EQ s1 F H (UNIV k) ceq1 cF1 cH1 cu1a) (#subs-AX s1 ce1) (#subs-AX s2 ce2) ha7)))
 
-  hb' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType 1 w' (#subs s1 F cF1) a₁ a₂
-                     → equalTypes 1 w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s2 G cG2)))
+  hb' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType k w' (#subs s1 F cF1) a₁ a₂
+                     → equalTypes k w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s2 G cG2)))
   hb' w1 e1 a₁ a₂ a∈ = eqgs
     where
-    cu1b : covered (s1 Data.List.∷ʳ a₁) (UNIV 1)
-    cu1b = covered-UNIV (s1 Data.List.∷ʳ a₁) 1
+    cu1b : covered (s1 Data.List.∷ʳ a₁) (UNIV k)
+    cu1b = covered-UNIV (s1 Data.List.∷ʳ a₁) k
 
-    cu2b : covered (s2 Data.List.∷ʳ a₂) (UNIV 1)
-    cu2b = covered-UNIV (s2 Data.List.∷ʳ a₂) 1
+    cu2b : covered (s2 Data.List.∷ʳ a₂) (UNIV k)
+    cu2b = covered-UNIV (s2 Data.List.∷ʳ a₂) k
 
     cgx1 : covered (s1 Data.List.∷ʳ a₁) G
     cgx1 = →covered∷ʳ a₁ s1 G cG1
@@ -481,11 +624,11 @@ valid≡𝕎-PI i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
     cex2 : covered (s2 Data.List.∷ʳ a₂) E
     cex2 = →covered∷ʳ a₂ s2 E cE2
 
-    ceg1 : covered (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV 1))
-    ceg1 = →coveredEQ {s1 ∷ʳ a₁} {G} {E} {UNIV 1} cgx1 cex1 cu1b
+    ceg1 : covered (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV k))
+    ceg1 = →coveredEQ {s1 ∷ʳ a₁} {G} {E} {UNIV k} cgx1 cex1 cu1b
 
-    ceg2 : covered (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV 1))
-    ceg2 = →coveredEQ {s2 ∷ʳ a₂} {G} {E} {UNIV 1} cgx2 cex2 cu2b
+    ceg2 : covered (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV k))
+    ceg2 = →coveredEQ {s2 ∷ʳ a₂} {G} {E} {UNIV k} cgx2 cex2 cu2b
 
     cax1 : covered (s1 Data.List.∷ʳ a₁) AX
     cax1 = covered-AX (s1 Data.List.∷ʳ a₁)
@@ -493,39 +636,39 @@ valid≡𝕎-PI i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
     cax2 : covered (s2 Data.List.∷ʳ a₂) AX
     cax2 = covered-AX (s2 Data.List.∷ʳ a₂)
 
-    hb1 : equalTypes i w1 (#subs (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV 1)) ceg1)
-                          (#subs (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV 1)) ceg2)
+    hb1 : equalTypes i w1 (#subs (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV k)) ceg1)
+                          (#subs (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV k)) ceg2)
     hb1 = fst (hb w1 (s1 Data.List.∷ʳ a₁) (s2 Data.List.∷ʳ a₂) ceg1 ceg2 cax1 cax2
                   (≡subs∷ʳ i w1 s1 s2 Γ F cF1 a₁ a₂ (equalInType-uni-mon (<⇒≤ lti) a∈) (≡subs-mon e1 es))
                   (≡hyps∷ʳ i w1 s1 s2 Γ Γ F F cF1 cF2 a₁ a₂ (equalTypes-uni-mon (<⇒≤ lti) (ha' w1 e1)) (≡hyps-mon e1 eh)))
 
-    hb2 : equalTypes 1 w1 (#subs (s1 Data.List.∷ʳ a₁) G cgx1)
+    hb2 : equalTypes k w1 (#subs (s1 Data.List.∷ʳ a₁) G cgx1)
                           (#subs (s2 Data.List.∷ʳ a₂) G cgx2)
     hb2 = equalInType→equalTypes-aux
-            i 1 lti w1
+            i k lti w1
             (#subs (s1 Data.List.∷ʳ a₁) G cgx1) (#subs (s2 Data.List.∷ʳ a₂) G cgx2)
             (≡CTerm→equalInType
-              (#subs-UNIV (s1 Data.List.∷ʳ a₁) 1 cu1b)
+              (#subs-UNIV (s1 Data.List.∷ʳ a₁) k cu1b)
               (eqTypesEQ→ₗ
                 {w1} {i}
                 {#subs (s1 ∷ʳ a₁) G cgx1} {#subs (s1 ∷ʳ a₁) E cex1}
                 {#subs (s2 ∷ʳ a₂) G cgx2} {#subs (s2 ∷ʳ a₂) E cex2}
-                (≡CTerm→eqTypes (#subs-EQ (s1 Data.List.∷ʳ a₁) G E (UNIV 1) ceg1 cgx1 cex1 cu1b)
-                                (#subs-EQ (s2 Data.List.∷ʳ a₂) G E (UNIV 1) ceg2 cgx2 cex2 cu2b)
+                (≡CTerm→eqTypes (#subs-EQ (s1 Data.List.∷ʳ a₁) G E (UNIV k) ceg1 cgx1 cex1 cu1b)
+                                (#subs-EQ (s2 Data.List.∷ʳ a₂) G E (UNIV k) ceg2 cgx2 cex2 cu2b)
                                 hb1)))
 
-    eqgs : equalTypes 1 w1 (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s2 G cG2))
+    eqgs : equalTypes k w1 (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s2 G cG2))
     eqgs = ≡CTerm→eqTypes (sym (sub0#[0]subs a₁ s1 G cG1 cgx1)) (sym (sub0#[0]subs a₂ s2 G cG2 cgx2)) hb2
 
-  hb'' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType 1 w' (#subs s1 H cH1) a₁ a₂
-                      → equalTypes 1 w' (sub0 a₁ (#[0]subs s1 E cE1)) (sub0 a₂ (#[0]subs s2 E cE2)))
+  hb'' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType k w' (#subs s1 H cH1) a₁ a₂
+                      → equalTypes k w' (sub0 a₁ (#[0]subs s1 E cE1)) (sub0 a₂ (#[0]subs s2 E cE2)))
   hb'' w1 e1 a₁ a₂ a∈ = eqgs
     where
-    cu1b : covered (s1 Data.List.∷ʳ a₁) (UNIV 1)
-    cu1b = covered-UNIV (s1 Data.List.∷ʳ a₁) 1
+    cu1b : covered (s1 Data.List.∷ʳ a₁) (UNIV k)
+    cu1b = covered-UNIV (s1 Data.List.∷ʳ a₁) k
 
-    cu2b : covered (s2 Data.List.∷ʳ a₂) (UNIV 1)
-    cu2b = covered-UNIV (s2 Data.List.∷ʳ a₂) 1
+    cu2b : covered (s2 Data.List.∷ʳ a₂) (UNIV k)
+    cu2b = covered-UNIV (s2 Data.List.∷ʳ a₂) k
 
     cgx1 : covered (s1 Data.List.∷ʳ a₁) G
     cgx1 = →covered∷ʳ a₁ s1 G cG1
@@ -539,11 +682,11 @@ valid≡𝕎-PI i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
     cex2 : covered (s2 Data.List.∷ʳ a₂) E
     cex2 = →covered∷ʳ a₂ s2 E cE2
 
-    ceg1 : covered (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV 1))
-    ceg1 = →coveredEQ {s1 ∷ʳ a₁} {G} {E} {UNIV 1} cgx1 cex1 cu1b
+    ceg1 : covered (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV k))
+    ceg1 = →coveredEQ {s1 ∷ʳ a₁} {G} {E} {UNIV k} cgx1 cex1 cu1b
 
-    ceg2 : covered (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV 1))
-    ceg2 = →coveredEQ {s2 ∷ʳ a₂} {G} {E} {UNIV 1} cgx2 cex2 cu2b
+    ceg2 : covered (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV k))
+    ceg2 = →coveredEQ {s2 ∷ʳ a₂} {G} {E} {UNIV k} cgx2 cex2 cu2b
 
     cax1 : covered (s1 Data.List.∷ʳ a₁) AX
     cax1 = covered-AX (s1 Data.List.∷ʳ a₁)
@@ -551,48 +694,48 @@ valid≡𝕎-PI i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
     cax2 : covered (s2 Data.List.∷ʳ a₂) AX
     cax2 = covered-AX (s2 Data.List.∷ʳ a₂)
 
-    hb1 : equalTypes i w1 (#subs (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV 1)) ceg1)
-                          (#subs (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV 1)) ceg2)
+    hb1 : equalTypes i w1 (#subs (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV k)) ceg1)
+                          (#subs (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV k)) ceg2)
     hb1 = fst (hb w1 (s1 Data.List.∷ʳ a₁) (s2 Data.List.∷ʳ a₂) ceg1 ceg2 cax1 cax2
                   (≡subs∷ʳ i w1 s1 s2 Γ F cF1 a₁ a₂
                            (TSext-equalTypes-equalInType
                               i w1 (#subs s1 H cH1) (#subs s1 F cF1) a₁ a₂
                               (TEQsym-equalTypes
                                  i w1 (#subs s1 F cF1) (#subs s1 H cH1)
-                                 (equalTypes-uni-mon (<⇒≤ lti) (eqTypes-mon (uni 1) ha8 w1 e1)))
+                                 (equalTypes-uni-mon (<⇒≤ lti) (eqTypes-mon (uni k) ha8 w1 e1)))
                               (equalInType-uni-mon (<⇒≤ lti) a∈)) (≡subs-mon e1 es))
                   (≡hyps∷ʳ i w1 s1 s2 Γ Γ F F cF1 cF2 a₁ a₂ (equalTypes-uni-mon (<⇒≤ lti) (ha' w1 e1)) (≡hyps-mon e1 eh)))
 
-    hb2 : equalTypes 1 w1 (#subs (s1 Data.List.∷ʳ a₁) E cex1)
+    hb2 : equalTypes k w1 (#subs (s1 Data.List.∷ʳ a₁) E cex1)
                           (#subs (s2 Data.List.∷ʳ a₂) E cex2)
     hb2 = equalInType→equalTypes-aux
-            i 1 lti w1
+            i k lti w1
             (#subs (s1 Data.List.∷ʳ a₁) E cex1) (#subs (s2 Data.List.∷ʳ a₂) E cex2)
             (≡CTerm→equalInType
-              (#subs-UNIV (s1 Data.List.∷ʳ a₁) 1 cu1b)
+              (#subs-UNIV (s1 Data.List.∷ʳ a₁) k cu1b)
               (eqTypesEQ→ᵣ
                 {w1} {i}
                 {#subs (s1 ∷ʳ a₁) G cgx1} {#subs (s1 ∷ʳ a₁) E cex1}
                 {#subs (s2 ∷ʳ a₂) G cgx2} {#subs (s2 ∷ʳ a₂) E cex2}
-                (≡CTerm→eqTypes (#subs-EQ (s1 Data.List.∷ʳ a₁) G E (UNIV 1) ceg1 cgx1 cex1 cu1b)
-                                (#subs-EQ (s2 Data.List.∷ʳ a₂) G E (UNIV 1) ceg2 cgx2 cex2 cu2b)
+                (≡CTerm→eqTypes (#subs-EQ (s1 Data.List.∷ʳ a₁) G E (UNIV k) ceg1 cgx1 cex1 cu1b)
+                                (#subs-EQ (s2 Data.List.∷ʳ a₂) G E (UNIV k) ceg2 cgx2 cex2 cu2b)
                                 hb1)))
 
-    eqgs : equalTypes 1 w1 (sub0 a₁ (#[0]subs s1 E cE1)) (sub0 a₂ (#[0]subs s2 E cE2))
+    eqgs : equalTypes k w1 (sub0 a₁ (#[0]subs s1 E cE1)) (sub0 a₂ (#[0]subs s2 E cE2))
     eqgs = ≡CTerm→eqTypes (sym (sub0#[0]subs a₁ s1 E cE1 cex1)) (sym (sub0#[0]subs a₂ s2 E cE2 cex2)) hb2
 
-  hb''' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType 1 w' (#subs s1 F cF1) a₁ a₂
-                       → equalTypes 1 w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s1 E cE1)))
+  hb''' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType k w' (#subs s1 F cF1) a₁ a₂
+                       → equalTypes k w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s1 E cE1)))
   hb''' w1 e1 a₁ a₂ a∈ = eqgs
     where
-    cu1b : covered (s1 Data.List.∷ʳ a₁) (UNIV 1)
-    cu1b = covered-UNIV (s1 Data.List.∷ʳ a₁) 1
+    cu1b : covered (s1 Data.List.∷ʳ a₁) (UNIV k)
+    cu1b = covered-UNIV (s1 Data.List.∷ʳ a₁) k
 
-    cu2b : covered (s2 Data.List.∷ʳ a₂) (UNIV 1)
-    cu2b = covered-UNIV (s2 Data.List.∷ʳ a₂) 1
+    cu2b : covered (s2 Data.List.∷ʳ a₂) (UNIV k)
+    cu2b = covered-UNIV (s2 Data.List.∷ʳ a₂) k
 
-    cu3b : covered (s1 Data.List.∷ʳ a₂) (UNIV 1)
-    cu3b = covered-UNIV (s1 Data.List.∷ʳ a₂) 1
+    cu3b : covered (s1 Data.List.∷ʳ a₂) (UNIV k)
+    cu3b = covered-UNIV (s1 Data.List.∷ʳ a₂) k
 
     cgx1 : covered (s1 Data.List.∷ʳ a₁) G
     cgx1 = →covered∷ʳ a₁ s1 G cG1
@@ -612,14 +755,14 @@ valid≡𝕎-PI i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
     cex3 : covered (s1 Data.List.∷ʳ a₂) E
     cex3 = →covered∷ʳ a₂ s1 E cE1
 
-    ceg1 : covered (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV 1))
-    ceg1 = →coveredEQ {s1 ∷ʳ a₁} {G} {E} {UNIV 1} cgx1 cex1 cu1b
+    ceg1 : covered (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV k))
+    ceg1 = →coveredEQ {s1 ∷ʳ a₁} {G} {E} {UNIV k} cgx1 cex1 cu1b
 
-    ceg2 : covered (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV 1))
-    ceg2 = →coveredEQ {s2 ∷ʳ a₂} {G} {E} {UNIV 1} cgx2 cex2 cu2b
+    ceg2 : covered (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV k))
+    ceg2 = →coveredEQ {s2 ∷ʳ a₂} {G} {E} {UNIV k} cgx2 cex2 cu2b
 
-    ceg3 : covered (s1 Data.List.∷ʳ a₂) (EQ G E (UNIV 1))
-    ceg3 = →coveredEQ {s1 ∷ʳ a₂} {G} {E} {UNIV 1} cgx3 cex3 cu3b
+    ceg3 : covered (s1 Data.List.∷ʳ a₂) (EQ G E (UNIV k))
+    ceg3 = →coveredEQ {s1 ∷ʳ a₂} {G} {E} {UNIV k} cgx3 cex3 cu3b
 
     cax1 : covered (s1 Data.List.∷ʳ a₁) AX
     cax1 = covered-AX (s1 Data.List.∷ʳ a₁)
@@ -630,127 +773,127 @@ valid≡𝕎-PI i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
     cax3 : covered (s1 Data.List.∷ʳ a₂) AX
     cax3 = covered-AX (s1 Data.List.∷ʳ a₂)
 
-    hb1 : equalInType i w1 (#subs (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV 1)) ceg1)
+    hb1 : equalInType i w1 (#subs (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV k)) ceg1)
                            (#subs (s1 Data.List.∷ʳ a₁) AX cax1)
                            (#subs (s2 Data.List.∷ʳ a₂) AX cax2)
     hb1 = snd (hb w1 (s1 Data.List.∷ʳ a₁) (s2 Data.List.∷ʳ a₂) ceg1 ceg2 cax1 cax2
                   (≡subs∷ʳ i w1 s1 s2 Γ F cF1 a₁ a₂ (equalInType-uni-mon (<⇒≤ lti) a∈) (≡subs-mon e1 es))
                   (≡hyps∷ʳ i w1 s1 s2 Γ Γ F F cF1 cF2 a₁ a₂ (equalTypes-uni-mon (<⇒≤ lti) (ha' w1 e1)) (≡hyps-mon e1 eh)))
 
-    hb2 : equalTypes 1 w1 (#subs (s1 Data.List.∷ʳ a₁) G cgx1) (#subs (s1 Data.List.∷ʳ a₁) E cex1)
+    hb2 : equalTypes k w1 (#subs (s1 Data.List.∷ʳ a₁) G cgx1) (#subs (s1 Data.List.∷ʳ a₁) E cex1)
     hb2 = equalInType→equalTypes-aux
-            i 1 lti w1
+            i k lti w1
             (#subs (s1 Data.List.∷ʳ a₁) G cgx1) (#subs (s1 Data.List.∷ʳ a₁) E cex1)
             (≡CTerm→equalInType
-               (#subs-UNIV (s1 Data.List.∷ʳ a₁) 1 cu1b)
+               (#subs-UNIV (s1 Data.List.∷ʳ a₁) k cu1b)
                (equalInType-EQ→₁
                  {i} {w1} {#subs (s1 Data.List.∷ʳ a₁) G cgx1} {#subs (s1 Data.List.∷ʳ a₁) E cex1}
                  (≡→equalInType
-                   (#subs-EQ (s1 Data.List.∷ʳ a₁) G E (UNIV 1) ceg1 cgx1 cex1 cu1b)
+                   (#subs-EQ (s1 Data.List.∷ʳ a₁) G E (UNIV k) ceg1 cgx1 cex1 cu1b)
                    (#subs-AX (s1 Data.List.∷ʳ a₁) cax1)
                    (#subs-AX (s2 Data.List.∷ʳ a₂) cax2)
                    hb1)))
 
-    hb3 : equalTypes i w1 (#subs (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV 1)) ceg1)
-                          (#subs (s1 Data.List.∷ʳ a₂) (EQ G E (UNIV 1)) ceg3)
+    hb3 : equalTypes i w1 (#subs (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV k)) ceg1)
+                          (#subs (s1 Data.List.∷ʳ a₂) (EQ G E (UNIV k)) ceg3)
     hb3 = fst (hb w1 (s1 Data.List.∷ʳ a₁) (s1 Data.List.∷ʳ a₂) ceg1 ceg3 cax1 cax3
                   (≡subs∷ʳ i w1 s1 s1 Γ F cF1 a₁ a₂ (equalInType-uni-mon (<⇒≤ lti) a∈)  (≡subs-mon e1 (≡subs-refl i w s1 s2 Γ es)))
                   (≡hyps∷ʳ i w1 s1 s1 Γ Γ F F cF1 cF1 a₁ a₂ (equalTypes-uni-mon (<⇒≤ lti) (fst a∈)) (≡hyps-mon e1 (≡hyps-refl i w s1 s2 Γ Γ eh))))
 
-    hb4 : equalTypes 1 w1 (#subs (s1 Data.List.∷ʳ a₁) E cex1)
+    hb4 : equalTypes k w1 (#subs (s1 Data.List.∷ʳ a₁) E cex1)
                           (#subs (s1 Data.List.∷ʳ a₂) E cex3)
     hb4 = equalInType→equalTypes-aux
-            i 1 lti w1
+            i k lti w1
             (#subs (s1 Data.List.∷ʳ a₁) E cex1) (#subs (s1 Data.List.∷ʳ a₂) E cex3)
             (≡CTerm→equalInType
-              (#subs-UNIV (s1 Data.List.∷ʳ a₁) 1 cu1b)
+              (#subs-UNIV (s1 Data.List.∷ʳ a₁) k cu1b)
               (eqTypesEQ→ᵣ
                 {w1} {i}
                 {#subs (s1 ∷ʳ a₁) G cgx1} {#subs (s1 ∷ʳ a₁) E cex1}
                 {#subs (s1 ∷ʳ a₂) G cgx3} {#subs (s1 ∷ʳ a₂) E cex3}
-                (≡CTerm→eqTypes (#subs-EQ (s1 Data.List.∷ʳ a₁) G E (UNIV 1) ceg1 cgx1 cex1 cu1b)
-                                (#subs-EQ (s1 Data.List.∷ʳ a₂) G E (UNIV 1) ceg3 cgx3 cex3 cu3b)
+                (≡CTerm→eqTypes (#subs-EQ (s1 Data.List.∷ʳ a₁) G E (UNIV k) ceg1 cgx1 cex1 cu1b)
+                                (#subs-EQ (s1 Data.List.∷ʳ a₂) G E (UNIV k) ceg3 cgx3 cex3 cu3b)
                                 hb3)))
 
-    eqgs : equalTypes 1 w1 (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s1 E cE1))
+    eqgs : equalTypes k w1 (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s1 E cE1))
     eqgs = ≡CTerm→eqTypes
              (sym (sub0#[0]subs a₁ s1 G cG1 cgx1)) (sym (sub0#[0]subs a₂ s1 E cE1 cex3))
              (TEQtrans-equalTypes
-               1 w1
+               k w1
                (#subs (s1 Data.List.∷ʳ a₁) G cgx1)
                (#subs (s1 Data.List.∷ʳ a₁) E cex1)
                (#subs (s1 Data.List.∷ʳ a₂) E cex3)
                hb2
                hb4)
 
-  c1 : equalTypes i w (#subs s1 (EQ (PI F G) (PI H E) (UNIV 1)) cc1)
-                      (#subs s2 (EQ (PI F G) (PI H E) (UNIV 1)) cc2)
+  c1 : equalTypes i w (#subs s1 (EQ (PI F G) (PI H E) (UNIV k)) cc1)
+                      (#subs s2 (EQ (PI F G) (PI H E) (UNIV k)) cc2)
   c1 = ≡CTerm→eqTypes
-         (sym (#subs-EQ s1 (PI F G) (PI H E) (UNIV 1) cc1 cpf1 cph1 cu1a))
-         (sym (#subs-EQ s2 (PI F G) (PI H E) (UNIV 1) cc2 cpf2 cph2 cu2a))
+         (sym (#subs-EQ s1 (PI F G) (PI H E) (UNIV k) cc1 cpf1 cph1 cu1a))
+         (sym (#subs-EQ s2 (PI F G) (PI H E) (UNIV k) cc2 cpf2 cph2 cu2a))
          (eqTypesEQ←
            {w} {i} {#subs s1 (PI F G) cpf1} {#subs s1 (PI H E) cph1} {#subs s2 (PI F G) cpf2} {#subs s2 (PI H E) cph2}
-           (≡CTerm→eqTypes (sym (#subs-UNIV s1 1 cu1a)) (sym (#subs-UNIV s2 1 cu2a)) (eqTypesUniv w i 1 lti))
+           (≡CTerm→eqTypes (sym (#subs-UNIV s1 k cu1a)) (sym (#subs-UNIV s2 k cu2a)) (eqTypesUniv w i k lti))
            (≡→equalInType
-              (sym (#subs-UNIV s1 1 cu1a))
+              (sym (#subs-UNIV s1 k cu1a))
               (sym (#subs-PI s1 F G cpf1 cF1 cG1))
               (sym (#subs-PI s2 F G cpf2 cF2 cG2))
               (equalTypes→equalInType-UNIV
-                 {i} {1} lti {w}
+                 {i} {k} lti {w}
                  {#PI (#subs s1 F cF1) (#[0]subs s1 G cG1)}
                  {#PI (#subs s2 F cF2) (#[0]subs s2 G cG2)}
                  (eqTypesPI←
-                   {w} {1} {#subs s1 F cF1} {#[0]subs s1 G cG1} {#subs s2 F cF2} {#[0]subs s2 G cG2}
+                   {w} {k} {#subs s1 F cF1} {#[0]subs s1 G cG1} {#subs s2 F cF2} {#[0]subs s2 G cG2}
                    ha'
                    hb')))
            (≡→equalInType
-              (sym (#subs-UNIV s1 1 cu1a))
+              (sym (#subs-UNIV s1 k cu1a))
               (sym (#subs-PI s1 H E cph1 cH1 cE1))
               (sym (#subs-PI s2 H E cph2 cH2 cE2))
               (equalTypes→equalInType-UNIV
-                 {i} {1} lti {w}
+                 {i} {k} lti {w}
                  {#PI (#subs s1 H cH1) (#[0]subs s1 E cE1)}
                  {#PI (#subs s2 H cH2) (#[0]subs s2 E cE2)}
                  (eqTypesPI←
-                   {w} {1} {#subs s1 H cH1} {#[0]subs s1 E cE1} {#subs s2 H cH2} {#[0]subs s2 E cE2}
+                   {w} {k} {#subs s1 H cH1} {#[0]subs s1 E cE1} {#subs s2 H cH2} {#[0]subs s2 E cE2}
                    ha''
                    hb''))))
 
-  c2 : equalInType i w (#subs s1 (EQ  (PI F G) (PI H E) (UNIV 1)) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  c2 : equalInType i w (#subs s1 (EQ  (PI F G) (PI H E) (UNIV k)) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
   c2 = ≡→equalInType
-         (sym (#subs-EQ s1 (PI F G) (PI H E) (UNIV 1) cc1 cpf1 cph1 cu1a))
+         (sym (#subs-EQ s1 (PI F G) (PI H E) (UNIV k) cc1 cpf1 cph1 cu1a))
          (sym (#subs-AX s1 ce1))
          (sym (#subs-AX s2 ce2))
          (→equalInType-EQ
-           {i} {w} {#subs s1 (PI F G) cpf1} {#subs s1 (PI H E) cph1} {#subs s1 (UNIV 1) cu1a}
-           (≡CTerm→equalInType (sym (#subs-UNIV s1 1 cu1a))
+           {i} {w} {#subs s1 (PI F G) cpf1} {#subs s1 (PI H E) cph1} {#subs s1 (UNIV k) cu1a}
+           (≡CTerm→equalInType (sym (#subs-UNIV s1 k cu1a))
              (equalTypes→equalInType-UNIV
-               {i} {1} lti {w} {#subs s1 (PI F G) cpf1} {#subs s1 (PI H E) cph1}
+               {i} {k} lti {w} {#subs s1 (PI F G) cpf1} {#subs s1 (PI H E) cph1}
                (≡CTerm→eqTypes
                   (sym (#subs-PI s1 F G cpf1 cF1 cG1))
                   (sym (#subs-PI s1 H E cph1 cH1 cE1))
                   (eqTypesPI←
-                    (λ w1 e1 → eqTypes-mon (uni 1) ha8 w1 e1)
+                    (λ w1 e1 → eqTypes-mon (uni k) ha8 w1 e1)
                     hb''')))))
 
 
-valid≡𝕎-SUM! : (i : ℕ) (lti : 1 < i) (Γ : hypotheses) (F G H E : Term)
-           → valid≡𝕎 i Γ F H (UNIV 1)
-           → valid≡𝕎 i (Γ Data.List.∷ʳ mkHyp F) G E (UNIV 1)
-           → valid≡𝕎 i Γ (SUM! F G) (SUM! H E) (UNIV 1)
-valid≡𝕎-SUM! i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
+valid≡𝕎-SUM! : (i k : ℕ) (lti : k < i) (Γ : hypotheses) (F G H E : Term)
+             → valid≡𝕎 i Γ F H (UNIV k)
+             → valid≡𝕎 i (Γ Data.List.∷ʳ mkHyp F) G E (UNIV k)
+             → valid≡𝕎 i Γ (SUM! F G) (SUM! H E) (UNIV k)
+valid≡𝕎-SUM! i k lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
   where
   cpf1 : covered s1 (SUM! F G)
-  cpf1 = coveredEQ₁ {s1} {SUM! F G} {SUM! H E} {UNIV 1} cc1
+  cpf1 = coveredEQ₁ {s1} {SUM! F G} {SUM! H E} {UNIV k} cc1
 
   cpf2 : covered s2 (SUM! F G)
-  cpf2 = coveredEQ₁ {s2} {SUM! F G} {SUM! H E} {UNIV 1} cc2
+  cpf2 = coveredEQ₁ {s2} {SUM! F G} {SUM! H E} {UNIV k} cc2
 
   cph1 : covered s1 (SUM! H E)
-  cph1 = coveredEQ₂ {s1} {SUM! F G} {SUM! H E} {UNIV 1} cc1
+  cph1 = coveredEQ₂ {s1} {SUM! F G} {SUM! H E} {UNIV k} cc1
 
   cph2 : covered s2 (SUM! H E)
-  cph2 = coveredEQ₂ {s2} {SUM! F G} {SUM! H E} {UNIV 1} cc2
+  cph2 = coveredEQ₂ {s2} {SUM! F G} {SUM! H E} {UNIV k} cc2
 
   cF1 : covered s1 F
   cF1 = coveredSUM!₁ {s1} {F} {G} cpf1
@@ -776,71 +919,71 @@ valid≡𝕎-SUM! i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
   cE2 : covered0 s2 E
   cE2 = coveredSUM!₂ {s2} {H} {E} cph2
 
-  cu1a : covered s1 (UNIV 1)
-  cu1a = covered-UNIV s1 1
+  cu1a : covered s1 (UNIV k)
+  cu1a = covered-UNIV s1 k
 
-  cu2a : covered s2 (UNIV 1)
-  cu2a = covered-UNIV s2 1
+  cu2a : covered s2 (UNIV k)
+  cu2a = covered-UNIV s2 k
 
-  ceq1 : covered s1 (EQ F H (UNIV 1))
-  ceq1 = →coveredEQ {s1} {F} {H} {UNIV 1} cF1 cH1 cu1a
+  ceq1 : covered s1 (EQ F H (UNIV k))
+  ceq1 = →coveredEQ {s1} {F} {H} {UNIV k} cF1 cH1 cu1a
 
-  ceq2 : covered s2 (EQ F H (UNIV 1))
-  ceq2 = →coveredEQ {s2} {F} {H} {UNIV 1} cF2 cH2 cu2a
+  ceq2 : covered s2 (EQ F H (UNIV k))
+  ceq2 = →coveredEQ {s2} {F} {H} {UNIV k} cF2 cH2 cu2a
 
-  ha1 : equalTypes i w (#subs s1 (EQ F H (UNIV 1)) ceq1) (#subs s2 (EQ F H (UNIV 1)) ceq2)
+  ha1 : equalTypes i w (#subs s1 (EQ F H (UNIV k)) ceq1) (#subs s2 (EQ F H (UNIV k)) ceq2)
   ha1 = fst (ha w s1 s2 ceq1 ceq2 ce1 ce2 es eh)
 
-  ha2 : equalTypes i w (#EQ (#subs s1 F cF1) (#subs s1 H cH1) (#subs s1 (UNIV 1) cu1a))
-                       (#EQ (#subs s2 F cF2) (#subs s2 H cH2) (#subs s2 (UNIV 1) cu2a))
+  ha2 : equalTypes i w (#EQ (#subs s1 F cF1) (#subs s1 H cH1) (#subs s1 (UNIV k) cu1a))
+                       (#EQ (#subs s2 F cF2) (#subs s2 H cH2) (#subs s2 (UNIV k) cu2a))
   ha2 = ≡CTerm→eqTypes
-          (#subs-EQ s1 F H (UNIV 1) ceq1 cF1 cH1 cu1a)
-          (#subs-EQ s2 F H (UNIV 1) ceq2 cF2 cH2 cu2a)
+          (#subs-EQ s1 F H (UNIV k) ceq1 cF1 cH1 cu1a)
+          (#subs-EQ s2 F H (UNIV k) ceq2 cF2 cH2 cu2a)
           ha1
 
-  ha3 : equalInType i w (#UNIV 1) (#subs s1 F cF1) (#subs s2 F cF2)
+  ha3 : equalInType i w (#UNIV k) (#subs s1 F cF1) (#subs s2 F cF2)
   ha3 = ≡CTerm→equalInType
-          (#subs-UNIV s1 1 cu1a)
+          (#subs-UNIV s1 k cu1a)
           (eqTypesEQ→ₗ {w} {i} {#subs s1 F cF1} {#subs s1 H cH1} {#subs s2 F cF2} {#subs s2 H cH2} ha2)
 
-  ha4 : equalTypes 1 w (#subs s1 F cF1) (#subs s2 F cF2)
-  ha4 = equalInType→equalTypes-aux i 1 lti w (#subs s1 F cF1) (#subs s2 F cF2) ha3
+  ha4 : equalTypes k w (#subs s1 F cF1) (#subs s2 F cF2)
+  ha4 = equalInType→equalTypes-aux i k lti w (#subs s1 F cF1) (#subs s2 F cF2) ha3
 
-  ha' : ∀𝕎 w (λ w' _ → equalTypes 1 w' (#subs s1 F cF1) (#subs s2 F cF2))
-  ha' w1 e1 = eqTypes-mon (uni 1) ha4 w1 e1
+  ha' : ∀𝕎 w (λ w' _ → equalTypes k w' (#subs s1 F cF1) (#subs s2 F cF2))
+  ha' w1 e1 = eqTypes-mon (uni k) ha4 w1 e1
 
-  ha5 : equalInType i w (#UNIV 1) (#subs s1 H cH1) (#subs s2 H cH2)
+  ha5 : equalInType i w (#UNIV k) (#subs s1 H cH1) (#subs s2 H cH2)
   ha5 = ≡CTerm→equalInType
-          (#subs-UNIV s1 1 cu1a)
+          (#subs-UNIV s1 k cu1a)
           (eqTypesEQ→ᵣ {w} {i} {#subs s1 F cF1} {#subs s1 H cH1} {#subs s2 F cF2} {#subs s2 H cH2} ha2)
 
-  ha6 : equalTypes 1 w (#subs s1 H cH1) (#subs s2 H cH2)
-  ha6 = equalInType→equalTypes-aux i 1 lti w (#subs s1 H cH1) (#subs s2 H cH2) ha5
+  ha6 : equalTypes k w (#subs s1 H cH1) (#subs s2 H cH2)
+  ha6 = equalInType→equalTypes-aux i k lti w (#subs s1 H cH1) (#subs s2 H cH2) ha5
 
-  ha'' : ∀𝕎 w (λ w' _ → equalTypes 1 w' (#subs s1 H cH1) (#subs s2 H cH2))
-  ha'' w1 e1 = eqTypes-mon (uni 1) ha6 w1 e1
+  ha'' : ∀𝕎 w (λ w' _ → equalTypes k w' (#subs s1 H cH1) (#subs s2 H cH2))
+  ha'' w1 e1 = eqTypes-mon (uni k) ha6 w1 e1
 
-  ha7 : equalInType i w (#subs s1 (EQ F H (UNIV 1)) ceq1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  ha7 : equalInType i w (#subs s1 (EQ F H (UNIV k)) ceq1) (#subs s1 AX ce1) (#subs s2 AX ce2)
   ha7 = snd (ha w s1 s2 ceq1 ceq2 ce1 ce2 es eh)
 
-  ha8 : equalTypes 1 w (#subs s1 F cF1) (#subs s1 H cH1)
+  ha8 : equalTypes k w (#subs s1 F cF1) (#subs s1 H cH1)
   ha8 = equalInType→equalTypes-aux
-          i 1 lti w (#subs s1 F cF1) (#subs s1 H cH1)
+          i k lti w (#subs s1 F cF1) (#subs s1 H cH1)
           (≡CTerm→equalInType
-            (#subs-UNIV s1 1 cu1a)
+            (#subs-UNIV s1 k cu1a)
             (equalInType-EQ→₁
-              {i} {w} {#subs s1 F cF1} {#subs s1 H cH1} {#subs s1 (UNIV 1) cu1a}
-              (≡→equalInType (#subs-EQ s1 F H (UNIV 1) ceq1 cF1 cH1 cu1a) (#subs-AX s1 ce1) (#subs-AX s2 ce2) ha7)))
+              {i} {w} {#subs s1 F cF1} {#subs s1 H cH1} {#subs s1 (UNIV k) cu1a}
+              (≡→equalInType (#subs-EQ s1 F H (UNIV k) ceq1 cF1 cH1 cu1a) (#subs-AX s1 ce1) (#subs-AX s2 ce2) ha7)))
 
-  hb' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType 1 w' (#subs s1 F cF1) a₁ a₂
-                     → equalTypes 1 w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s2 G cG2)))
+  hb' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType k w' (#subs s1 F cF1) a₁ a₂
+                     → equalTypes k w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s2 G cG2)))
   hb' w1 e1 a₁ a₂ a∈ = eqgs
     where
-    cu1b : covered (s1 Data.List.∷ʳ a₁) (UNIV 1)
-    cu1b = covered-UNIV (s1 Data.List.∷ʳ a₁) 1
+    cu1b : covered (s1 Data.List.∷ʳ a₁) (UNIV k)
+    cu1b = covered-UNIV (s1 Data.List.∷ʳ a₁) k
 
-    cu2b : covered (s2 Data.List.∷ʳ a₂) (UNIV 1)
-    cu2b = covered-UNIV (s2 Data.List.∷ʳ a₂) 1
+    cu2b : covered (s2 Data.List.∷ʳ a₂) (UNIV k)
+    cu2b = covered-UNIV (s2 Data.List.∷ʳ a₂) k
 
     cgx1 : covered (s1 Data.List.∷ʳ a₁) G
     cgx1 = →covered∷ʳ a₁ s1 G cG1
@@ -854,11 +997,11 @@ valid≡𝕎-SUM! i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
     cex2 : covered (s2 Data.List.∷ʳ a₂) E
     cex2 = →covered∷ʳ a₂ s2 E cE2
 
-    ceg1 : covered (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV 1))
-    ceg1 = →coveredEQ {s1 ∷ʳ a₁} {G} {E} {UNIV 1} cgx1 cex1 cu1b
+    ceg1 : covered (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV k))
+    ceg1 = →coveredEQ {s1 ∷ʳ a₁} {G} {E} {UNIV k} cgx1 cex1 cu1b
 
-    ceg2 : covered (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV 1))
-    ceg2 = →coveredEQ {s2 ∷ʳ a₂} {G} {E} {UNIV 1} cgx2 cex2 cu2b
+    ceg2 : covered (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV k))
+    ceg2 = →coveredEQ {s2 ∷ʳ a₂} {G} {E} {UNIV k} cgx2 cex2 cu2b
 
     cax1 : covered (s1 Data.List.∷ʳ a₁) AX
     cax1 = covered-AX (s1 Data.List.∷ʳ a₁)
@@ -866,39 +1009,39 @@ valid≡𝕎-SUM! i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
     cax2 : covered (s2 Data.List.∷ʳ a₂) AX
     cax2 = covered-AX (s2 Data.List.∷ʳ a₂)
 
-    hb1 : equalTypes i w1 (#subs (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV 1)) ceg1)
-                          (#subs (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV 1)) ceg2)
+    hb1 : equalTypes i w1 (#subs (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV k)) ceg1)
+                          (#subs (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV k)) ceg2)
     hb1 = fst (hb w1 (s1 Data.List.∷ʳ a₁) (s2 Data.List.∷ʳ a₂) ceg1 ceg2 cax1 cax2
                   (≡subs∷ʳ i w1 s1 s2 Γ F cF1 a₁ a₂ (equalInType-uni-mon (<⇒≤ lti) a∈) (≡subs-mon e1 es))
                   (≡hyps∷ʳ i w1 s1 s2 Γ Γ F F cF1 cF2 a₁ a₂ (equalTypes-uni-mon (<⇒≤ lti) (ha' w1 e1)) (≡hyps-mon e1 eh)))
 
-    hb2 : equalTypes 1 w1 (#subs (s1 Data.List.∷ʳ a₁) G cgx1)
+    hb2 : equalTypes k w1 (#subs (s1 Data.List.∷ʳ a₁) G cgx1)
                           (#subs (s2 Data.List.∷ʳ a₂) G cgx2)
     hb2 = equalInType→equalTypes-aux
-            i 1 lti w1
+            i k lti w1
             (#subs (s1 Data.List.∷ʳ a₁) G cgx1) (#subs (s2 Data.List.∷ʳ a₂) G cgx2)
             (≡CTerm→equalInType
-              (#subs-UNIV (s1 Data.List.∷ʳ a₁) 1 cu1b)
+              (#subs-UNIV (s1 Data.List.∷ʳ a₁) k cu1b)
               (eqTypesEQ→ₗ
                 {w1} {i}
                 {#subs (s1 ∷ʳ a₁) G cgx1} {#subs (s1 ∷ʳ a₁) E cex1}
                 {#subs (s2 ∷ʳ a₂) G cgx2} {#subs (s2 ∷ʳ a₂) E cex2}
-                (≡CTerm→eqTypes (#subs-EQ (s1 Data.List.∷ʳ a₁) G E (UNIV 1) ceg1 cgx1 cex1 cu1b)
-                                (#subs-EQ (s2 Data.List.∷ʳ a₂) G E (UNIV 1) ceg2 cgx2 cex2 cu2b)
+                (≡CTerm→eqTypes (#subs-EQ (s1 Data.List.∷ʳ a₁) G E (UNIV k) ceg1 cgx1 cex1 cu1b)
+                                (#subs-EQ (s2 Data.List.∷ʳ a₂) G E (UNIV k) ceg2 cgx2 cex2 cu2b)
                                 hb1)))
 
-    eqgs : equalTypes 1 w1 (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s2 G cG2))
+    eqgs : equalTypes k w1 (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s2 G cG2))
     eqgs = ≡CTerm→eqTypes (sym (sub0#[0]subs a₁ s1 G cG1 cgx1)) (sym (sub0#[0]subs a₂ s2 G cG2 cgx2)) hb2
 
-  hb'' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType 1 w' (#subs s1 H cH1) a₁ a₂
-                      → equalTypes 1 w' (sub0 a₁ (#[0]subs s1 E cE1)) (sub0 a₂ (#[0]subs s2 E cE2)))
+  hb'' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType k w' (#subs s1 H cH1) a₁ a₂
+                      → equalTypes k w' (sub0 a₁ (#[0]subs s1 E cE1)) (sub0 a₂ (#[0]subs s2 E cE2)))
   hb'' w1 e1 a₁ a₂ a∈ = eqgs
     where
-    cu1b : covered (s1 Data.List.∷ʳ a₁) (UNIV 1)
-    cu1b = covered-UNIV (s1 Data.List.∷ʳ a₁) 1
+    cu1b : covered (s1 Data.List.∷ʳ a₁) (UNIV k)
+    cu1b = covered-UNIV (s1 Data.List.∷ʳ a₁) k
 
-    cu2b : covered (s2 Data.List.∷ʳ a₂) (UNIV 1)
-    cu2b = covered-UNIV (s2 Data.List.∷ʳ a₂) 1
+    cu2b : covered (s2 Data.List.∷ʳ a₂) (UNIV k)
+    cu2b = covered-UNIV (s2 Data.List.∷ʳ a₂) k
 
     cgx1 : covered (s1 Data.List.∷ʳ a₁) G
     cgx1 = →covered∷ʳ a₁ s1 G cG1
@@ -912,11 +1055,11 @@ valid≡𝕎-SUM! i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
     cex2 : covered (s2 Data.List.∷ʳ a₂) E
     cex2 = →covered∷ʳ a₂ s2 E cE2
 
-    ceg1 : covered (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV 1))
-    ceg1 = →coveredEQ {s1 ∷ʳ a₁} {G} {E} {UNIV 1} cgx1 cex1 cu1b
+    ceg1 : covered (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV k))
+    ceg1 = →coveredEQ {s1 ∷ʳ a₁} {G} {E} {UNIV k} cgx1 cex1 cu1b
 
-    ceg2 : covered (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV 1))
-    ceg2 = →coveredEQ {s2 ∷ʳ a₂} {G} {E} {UNIV 1} cgx2 cex2 cu2b
+    ceg2 : covered (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV k))
+    ceg2 = →coveredEQ {s2 ∷ʳ a₂} {G} {E} {UNIV k} cgx2 cex2 cu2b
 
     cax1 : covered (s1 Data.List.∷ʳ a₁) AX
     cax1 = covered-AX (s1 Data.List.∷ʳ a₁)
@@ -924,48 +1067,48 @@ valid≡𝕎-SUM! i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
     cax2 : covered (s2 Data.List.∷ʳ a₂) AX
     cax2 = covered-AX (s2 Data.List.∷ʳ a₂)
 
-    hb1 : equalTypes i w1 (#subs (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV 1)) ceg1)
-                          (#subs (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV 1)) ceg2)
+    hb1 : equalTypes i w1 (#subs (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV k)) ceg1)
+                          (#subs (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV k)) ceg2)
     hb1 = fst (hb w1 (s1 Data.List.∷ʳ a₁) (s2 Data.List.∷ʳ a₂) ceg1 ceg2 cax1 cax2
                   (≡subs∷ʳ i w1 s1 s2 Γ F cF1 a₁ a₂
                            (TSext-equalTypes-equalInType
                               i w1 (#subs s1 H cH1) (#subs s1 F cF1) a₁ a₂
                               (TEQsym-equalTypes
                                  i w1 (#subs s1 F cF1) (#subs s1 H cH1)
-                                 (equalTypes-uni-mon (<⇒≤ lti) (eqTypes-mon (uni 1) ha8 w1 e1)))
+                                 (equalTypes-uni-mon (<⇒≤ lti) (eqTypes-mon (uni k) ha8 w1 e1)))
                               (equalInType-uni-mon (<⇒≤ lti) a∈)) (≡subs-mon e1 es))
                   (≡hyps∷ʳ i w1 s1 s2 Γ Γ F F cF1 cF2 a₁ a₂ (equalTypes-uni-mon (<⇒≤ lti) (ha' w1 e1)) (≡hyps-mon e1 eh)))
 
-    hb2 : equalTypes 1 w1 (#subs (s1 Data.List.∷ʳ a₁) E cex1)
+    hb2 : equalTypes k w1 (#subs (s1 Data.List.∷ʳ a₁) E cex1)
                           (#subs (s2 Data.List.∷ʳ a₂) E cex2)
     hb2 = equalInType→equalTypes-aux
-            i 1 lti w1
+            i k lti w1
             (#subs (s1 Data.List.∷ʳ a₁) E cex1) (#subs (s2 Data.List.∷ʳ a₂) E cex2)
             (≡CTerm→equalInType
-              (#subs-UNIV (s1 Data.List.∷ʳ a₁) 1 cu1b)
+              (#subs-UNIV (s1 Data.List.∷ʳ a₁) k cu1b)
               (eqTypesEQ→ᵣ
                 {w1} {i}
                 {#subs (s1 ∷ʳ a₁) G cgx1} {#subs (s1 ∷ʳ a₁) E cex1}
                 {#subs (s2 ∷ʳ a₂) G cgx2} {#subs (s2 ∷ʳ a₂) E cex2}
-                (≡CTerm→eqTypes (#subs-EQ (s1 Data.List.∷ʳ a₁) G E (UNIV 1) ceg1 cgx1 cex1 cu1b)
-                                (#subs-EQ (s2 Data.List.∷ʳ a₂) G E (UNIV 1) ceg2 cgx2 cex2 cu2b)
+                (≡CTerm→eqTypes (#subs-EQ (s1 Data.List.∷ʳ a₁) G E (UNIV k) ceg1 cgx1 cex1 cu1b)
+                                (#subs-EQ (s2 Data.List.∷ʳ a₂) G E (UNIV k) ceg2 cgx2 cex2 cu2b)
                                 hb1)))
 
-    eqgs : equalTypes 1 w1 (sub0 a₁ (#[0]subs s1 E cE1)) (sub0 a₂ (#[0]subs s2 E cE2))
+    eqgs : equalTypes k w1 (sub0 a₁ (#[0]subs s1 E cE1)) (sub0 a₂ (#[0]subs s2 E cE2))
     eqgs = ≡CTerm→eqTypes (sym (sub0#[0]subs a₁ s1 E cE1 cex1)) (sym (sub0#[0]subs a₂ s2 E cE2 cex2)) hb2
 
-  hb''' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType 1 w' (#subs s1 F cF1) a₁ a₂
-                       → equalTypes 1 w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s1 E cE1)))
+  hb''' : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType k w' (#subs s1 F cF1) a₁ a₂
+                       → equalTypes k w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s1 E cE1)))
   hb''' w1 e1 a₁ a₂ a∈ = eqgs
     where
-    cu1b : covered (s1 Data.List.∷ʳ a₁) (UNIV 1)
-    cu1b = covered-UNIV (s1 Data.List.∷ʳ a₁) 1
+    cu1b : covered (s1 Data.List.∷ʳ a₁) (UNIV k)
+    cu1b = covered-UNIV (s1 Data.List.∷ʳ a₁) k
 
-    cu2b : covered (s2 Data.List.∷ʳ a₂) (UNIV 1)
-    cu2b = covered-UNIV (s2 Data.List.∷ʳ a₂) 1
+    cu2b : covered (s2 Data.List.∷ʳ a₂) (UNIV k)
+    cu2b = covered-UNIV (s2 Data.List.∷ʳ a₂) k
 
-    cu3b : covered (s1 Data.List.∷ʳ a₂) (UNIV 1)
-    cu3b = covered-UNIV (s1 Data.List.∷ʳ a₂) 1
+    cu3b : covered (s1 Data.List.∷ʳ a₂) (UNIV k)
+    cu3b = covered-UNIV (s1 Data.List.∷ʳ a₂) k
 
     cgx1 : covered (s1 Data.List.∷ʳ a₁) G
     cgx1 = →covered∷ʳ a₁ s1 G cG1
@@ -985,14 +1128,14 @@ valid≡𝕎-SUM! i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
     cex3 : covered (s1 Data.List.∷ʳ a₂) E
     cex3 = →covered∷ʳ a₂ s1 E cE1
 
-    ceg1 : covered (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV 1))
-    ceg1 = →coveredEQ {s1 ∷ʳ a₁} {G} {E} {UNIV 1} cgx1 cex1 cu1b
+    ceg1 : covered (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV k))
+    ceg1 = →coveredEQ {s1 ∷ʳ a₁} {G} {E} {UNIV k} cgx1 cex1 cu1b
 
-    ceg2 : covered (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV 1))
-    ceg2 = →coveredEQ {s2 ∷ʳ a₂} {G} {E} {UNIV 1} cgx2 cex2 cu2b
+    ceg2 : covered (s2 Data.List.∷ʳ a₂) (EQ G E (UNIV k))
+    ceg2 = →coveredEQ {s2 ∷ʳ a₂} {G} {E} {UNIV k} cgx2 cex2 cu2b
 
-    ceg3 : covered (s1 Data.List.∷ʳ a₂) (EQ G E (UNIV 1))
-    ceg3 = →coveredEQ {s1 ∷ʳ a₂} {G} {E} {UNIV 1} cgx3 cex3 cu3b
+    ceg3 : covered (s1 Data.List.∷ʳ a₂) (EQ G E (UNIV k))
+    ceg3 = →coveredEQ {s1 ∷ʳ a₂} {G} {E} {UNIV k} cgx3 cex3 cu3b
 
     cax1 : covered (s1 Data.List.∷ʳ a₁) AX
     cax1 = covered-AX (s1 Data.List.∷ʳ a₁)
@@ -1003,107 +1146,107 @@ valid≡𝕎-SUM! i lti Γ F G H E ha hb w s1 s2 cc1 cc2 ce1 ce2 es eh = c1 , c2
     cax3 : covered (s1 Data.List.∷ʳ a₂) AX
     cax3 = covered-AX (s1 Data.List.∷ʳ a₂)
 
-    hb1 : equalInType i w1 (#subs (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV 1)) ceg1)
+    hb1 : equalInType i w1 (#subs (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV k)) ceg1)
                            (#subs (s1 Data.List.∷ʳ a₁) AX cax1)
                            (#subs (s2 Data.List.∷ʳ a₂) AX cax2)
     hb1 = snd (hb w1 (s1 Data.List.∷ʳ a₁) (s2 Data.List.∷ʳ a₂) ceg1 ceg2 cax1 cax2
                   (≡subs∷ʳ i w1 s1 s2 Γ F cF1 a₁ a₂ (equalInType-uni-mon (<⇒≤ lti) a∈) (≡subs-mon e1 es))
                   (≡hyps∷ʳ i w1 s1 s2 Γ Γ F F cF1 cF2 a₁ a₂ (equalTypes-uni-mon (<⇒≤ lti) (ha' w1 e1)) (≡hyps-mon e1 eh)))
 
-    hb2 : equalTypes 1 w1 (#subs (s1 Data.List.∷ʳ a₁) G cgx1) (#subs (s1 Data.List.∷ʳ a₁) E cex1)
+    hb2 : equalTypes k w1 (#subs (s1 Data.List.∷ʳ a₁) G cgx1) (#subs (s1 Data.List.∷ʳ a₁) E cex1)
     hb2 = equalInType→equalTypes-aux
-            i 1 lti w1
+            i k lti w1
             (#subs (s1 Data.List.∷ʳ a₁) G cgx1) (#subs (s1 Data.List.∷ʳ a₁) E cex1)
             (≡CTerm→equalInType
-               (#subs-UNIV (s1 Data.List.∷ʳ a₁) 1 cu1b)
+               (#subs-UNIV (s1 Data.List.∷ʳ a₁) k cu1b)
                (equalInType-EQ→₁
                  {i} {w1} {#subs (s1 Data.List.∷ʳ a₁) G cgx1} {#subs (s1 Data.List.∷ʳ a₁) E cex1}
                  (≡→equalInType
-                   (#subs-EQ (s1 Data.List.∷ʳ a₁) G E (UNIV 1) ceg1 cgx1 cex1 cu1b)
+                   (#subs-EQ (s1 Data.List.∷ʳ a₁) G E (UNIV k) ceg1 cgx1 cex1 cu1b)
                    (#subs-AX (s1 Data.List.∷ʳ a₁) cax1)
                    (#subs-AX (s2 Data.List.∷ʳ a₂) cax2)
                    hb1)))
 
-    hb3 : equalTypes i w1 (#subs (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV 1)) ceg1)
-                          (#subs (s1 Data.List.∷ʳ a₂) (EQ G E (UNIV 1)) ceg3)
+    hb3 : equalTypes i w1 (#subs (s1 Data.List.∷ʳ a₁) (EQ G E (UNIV k)) ceg1)
+                          (#subs (s1 Data.List.∷ʳ a₂) (EQ G E (UNIV k)) ceg3)
     hb3 = fst (hb w1 (s1 Data.List.∷ʳ a₁) (s1 Data.List.∷ʳ a₂) ceg1 ceg3 cax1 cax3
                   (≡subs∷ʳ i w1 s1 s1 Γ F cF1 a₁ a₂ (equalInType-uni-mon (<⇒≤ lti) a∈)  (≡subs-mon e1 (≡subs-refl i w s1 s2 Γ es)))
                   (≡hyps∷ʳ i w1 s1 s1 Γ Γ F F cF1 cF1 a₁ a₂ (equalTypes-uni-mon (<⇒≤ lti) (fst a∈)) (≡hyps-mon e1 (≡hyps-refl i w s1 s2 Γ Γ eh))))
 
-    hb4 : equalTypes 1 w1 (#subs (s1 Data.List.∷ʳ a₁) E cex1)
+    hb4 : equalTypes k w1 (#subs (s1 Data.List.∷ʳ a₁) E cex1)
                           (#subs (s1 Data.List.∷ʳ a₂) E cex3)
     hb4 = equalInType→equalTypes-aux
-            i 1 lti w1
+            i k lti w1
             (#subs (s1 Data.List.∷ʳ a₁) E cex1) (#subs (s1 Data.List.∷ʳ a₂) E cex3)
             (≡CTerm→equalInType
-              (#subs-UNIV (s1 Data.List.∷ʳ a₁) 1 cu1b)
+              (#subs-UNIV (s1 Data.List.∷ʳ a₁) k cu1b)
               (eqTypesEQ→ᵣ
                 {w1} {i}
                 {#subs (s1 ∷ʳ a₁) G cgx1} {#subs (s1 ∷ʳ a₁) E cex1}
                 {#subs (s1 ∷ʳ a₂) G cgx3} {#subs (s1 ∷ʳ a₂) E cex3}
-                (≡CTerm→eqTypes (#subs-EQ (s1 Data.List.∷ʳ a₁) G E (UNIV 1) ceg1 cgx1 cex1 cu1b)
-                                (#subs-EQ (s1 Data.List.∷ʳ a₂) G E (UNIV 1) ceg3 cgx3 cex3 cu3b)
+                (≡CTerm→eqTypes (#subs-EQ (s1 Data.List.∷ʳ a₁) G E (UNIV k) ceg1 cgx1 cex1 cu1b)
+                                (#subs-EQ (s1 Data.List.∷ʳ a₂) G E (UNIV k) ceg3 cgx3 cex3 cu3b)
                                 hb3)))
 
-    eqgs : equalTypes 1 w1 (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s1 E cE1))
+    eqgs : equalTypes k w1 (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s1 E cE1))
     eqgs = ≡CTerm→eqTypes
              (sym (sub0#[0]subs a₁ s1 G cG1 cgx1)) (sym (sub0#[0]subs a₂ s1 E cE1 cex3))
              (TEQtrans-equalTypes
-               1 w1
+               k w1
                (#subs (s1 Data.List.∷ʳ a₁) G cgx1)
                (#subs (s1 Data.List.∷ʳ a₁) E cex1)
                (#subs (s1 Data.List.∷ʳ a₂) E cex3)
                hb2
                hb4)
 
-  c1 : equalTypes i w (#subs s1 (EQ (SUM! F G) (SUM! H E) (UNIV 1)) cc1)
-                      (#subs s2 (EQ (SUM! F G) (SUM! H E) (UNIV 1)) cc2)
+  c1 : equalTypes i w (#subs s1 (EQ (SUM! F G) (SUM! H E) (UNIV k)) cc1)
+                      (#subs s2 (EQ (SUM! F G) (SUM! H E) (UNIV k)) cc2)
   c1 = ≡CTerm→eqTypes
-         (sym (#subs-EQ s1 (SUM! F G) (SUM! H E) (UNIV 1) cc1 cpf1 cph1 cu1a))
-         (sym (#subs-EQ s2 (SUM! F G) (SUM! H E) (UNIV 1) cc2 cpf2 cph2 cu2a))
+         (sym (#subs-EQ s1 (SUM! F G) (SUM! H E) (UNIV k) cc1 cpf1 cph1 cu1a))
+         (sym (#subs-EQ s2 (SUM! F G) (SUM! H E) (UNIV k) cc2 cpf2 cph2 cu2a))
          (eqTypesEQ←
            {w} {i} {#subs s1 (SUM! F G) cpf1} {#subs s1 (SUM! H E) cph1} {#subs s2 (SUM! F G) cpf2} {#subs s2 (SUM! H E) cph2}
-           (≡CTerm→eqTypes (sym (#subs-UNIV s1 1 cu1a)) (sym (#subs-UNIV s2 1 cu2a)) (eqTypesUniv w i 1 lti))
+           (≡CTerm→eqTypes (sym (#subs-UNIV s1 k cu1a)) (sym (#subs-UNIV s2 k cu2a)) (eqTypesUniv w i k lti))
            (≡→equalInType
-              (sym (#subs-UNIV s1 1 cu1a))
+              (sym (#subs-UNIV s1 k cu1a))
               (sym (#subs-SUM! s1 F G cpf1 cF1 cG1))
               (sym (#subs-SUM! s2 F G cpf2 cF2 cG2))
               (equalTypes→equalInType-UNIV
-                 {i} {1} lti {w}
+                 {i} {k} lti {w}
                  {#SUM! (#subs s1 F cF1) (#[0]subs s1 G cG1)}
                  {#SUM! (#subs s2 F cF2) (#[0]subs s2 G cG2)}
                  (eqTypesSUM!←
-                   {w} {1} {#subs s1 F cF1} {#[0]subs s1 G cG1} {#subs s2 F cF2} {#[0]subs s2 G cG2}
+                   {w} {k} {#subs s1 F cF1} {#[0]subs s1 G cG1} {#subs s2 F cF2} {#[0]subs s2 G cG2}
                    ha'
                    hb')))
            (≡→equalInType
-              (sym (#subs-UNIV s1 1 cu1a))
+              (sym (#subs-UNIV s1 k cu1a))
               (sym (#subs-SUM! s1 H E cph1 cH1 cE1))
               (sym (#subs-SUM! s2 H E cph2 cH2 cE2))
               (equalTypes→equalInType-UNIV
-                 {i} {1} lti {w}
+                 {i} {k} lti {w}
                  {#SUM! (#subs s1 H cH1) (#[0]subs s1 E cE1)}
                  {#SUM! (#subs s2 H cH2) (#[0]subs s2 E cE2)}
                  (eqTypesSUM!←
-                   {w} {1} {#subs s1 H cH1} {#[0]subs s1 E cE1} {#subs s2 H cH2} {#[0]subs s2 E cE2}
+                   {w} {k} {#subs s1 H cH1} {#[0]subs s1 E cE1} {#subs s2 H cH2} {#[0]subs s2 E cE2}
                    ha''
                    hb''))))
 
-  c2 : equalInType i w (#subs s1 (EQ  (SUM! F G) (SUM! H E) (UNIV 1)) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  c2 : equalInType i w (#subs s1 (EQ  (SUM! F G) (SUM! H E) (UNIV k)) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
   c2 = ≡→equalInType
-         (sym (#subs-EQ s1 (SUM! F G) (SUM! H E) (UNIV 1) cc1 cpf1 cph1 cu1a))
+         (sym (#subs-EQ s1 (SUM! F G) (SUM! H E) (UNIV k) cc1 cpf1 cph1 cu1a))
          (sym (#subs-AX s1 ce1))
          (sym (#subs-AX s2 ce2))
          (→equalInType-EQ
-           {i} {w} {#subs s1 (SUM! F G) cpf1} {#subs s1 (SUM! H E) cph1} {#subs s1 (UNIV 1) cu1a}
-           (≡CTerm→equalInType (sym (#subs-UNIV s1 1 cu1a))
+           {i} {w} {#subs s1 (SUM! F G) cpf1} {#subs s1 (SUM! H E) cph1} {#subs s1 (UNIV k) cu1a}
+           (≡CTerm→equalInType (sym (#subs-UNIV s1 k cu1a))
              (equalTypes→equalInType-UNIV
-               {i} {1} lti {w} {#subs s1 (SUM! F G) cpf1} {#subs s1 (SUM! H E) cph1}
+               {i} {k} lti {w} {#subs s1 (SUM! F G) cpf1} {#subs s1 (SUM! H E) cph1}
                (≡CTerm→eqTypes
                   (sym (#subs-SUM! s1 F G cpf1 cF1 cG1))
                   (sym (#subs-SUM! s1 H E cph1 cH1 cE1))
                   (eqTypesSUM!←
-                    (λ w1 e1 → eqTypes-mon (uni 1) ha8 w1 e1)
+                    (λ w1 e1 → eqTypes-mon (uni k) ha8 w1 e1)
                     hb''')))))
 
 \end{code}

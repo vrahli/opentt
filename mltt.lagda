@@ -100,7 +100,8 @@ open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (valid∈𝕎→valid≡𝕎-UNIV ; valid≡𝕎-sym ; valid≡𝕎-trans ; valid≡𝕎-PI ; valid≡𝕎-SUM!)
+  using (valid∈𝕎→valid≡𝕎-UNIV ; valid≡𝕎-sym ; valid≡𝕎-trans ; valid≡𝕎-PI ; valid≡𝕎-SUM! ; valid∈𝕎-mon ; valid≡𝕎-mon ;
+         valid∈-UNIV)
 open import sequent3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (valid∈-PI ; valid∈-SUM! ; valid∈-NAT! ; valid∈-FALSE ; valid∈-UNIT ; valid∈LAMBDA ; valid∈APPLY ; valid∈PAIR ;
          valid∈FST ; valid∈SND ; valid∈N0-NAT ; valid∈SUC-NAT ; valid∈NATREC ; valid∈-FALSE→ ; valid∈-AX-UNIT ;
@@ -1043,73 +1044,67 @@ valid∈VAR {1+ n} {Γ ∙ B} {.(wk1 _)} {Fin.suc x} (there {_} {_} {A} j) i w s
 --}
 
 
--- This is not right, the 2nd number should be higher
-valid∈-UNIV : (i : Nat) (lti : 1 <ℕ i) (H : hypotheses)
-            → valid∈𝕎 i H (UNIV 1) (UNIV 1)
-valid∈-UNIV i lti H w s1 s2 cc1 cc2 ce1 ce2 es eh =
-  ≡CTerm→eqTypes
-    (≣sym (#subs-UNIV s1 1 cc1))
-    (≣sym (#subs-UNIV s2 1 cc2))
-    (eqTypesUniv w i 1 lti) ,
-  {!!}
+1+<→ : {a b : Nat} → 1+ a <ℕ b → a <ℕ b
+1+<→ {a} {b} h = <-trans ≤-refl h
 
 
 mutual
 
   ⟦_⟧Γ≡ : {n : Nat} {Γ : Con Term n} {σ τ : Term n}
           (j : Γ ⊢ σ ≡ τ)
-          (i : Nat) (lti : 1 <ℕ i)
-        → valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ ⟦ τ ⟧ᵤ (UNIV 1)
-  ⟦_⟧Γ≡ {n} {Γ} {σ} {τ} (univ x) i lti = h1
+          (i k : Nat) (ltk : 1 <ℕ k) (lti : k <ℕ i)
+        → valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ ⟦ τ ⟧ᵤ (UNIV k)
+  ⟦_⟧Γ≡ {n} {Γ} {σ} {τ} (univ x) i k ltk lti =
+    valid≡𝕎-mon ltk lti h1
     where
     h1 : valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ ⟦ τ ⟧ᵤ (UNIV 1)
-    h1 = ⟦_⟧Γ≡∈ x i lti
-  ⟦_⟧Γ≡ {n} {Γ} {σ} {.σ} (refl x) i lti =
-    valid∈𝕎→valid≡𝕎-UNIV i lti ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ h1
+    h1 = ⟦_⟧Γ≡∈ x i (<-trans ltk lti)
+  ⟦_⟧Γ≡ {n} {Γ} {σ} {.σ} (refl x) i k ltk lti =
+    valid∈𝕎→valid≡𝕎-UNIV i k lti ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ h1
     where
-    h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ (UNIV 1)
-    h1 = ⟦_⟧⊢ x i lti
-  ⟦_⟧Γ≡ {n} {Γ} {σ} {τ} (sym j) i lti =
-    valid≡𝕎-sym i lti ⟦ Γ ⟧Γ ⟦ τ ⟧ᵤ ⟦ σ ⟧ᵤ (UNIV 1) h1
+    h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ (UNIV k)
+    h1 = ⟦_⟧⊢ x i k ltk lti
+  ⟦_⟧Γ≡ {n} {Γ} {σ} {τ} (sym j) i k ltk lti =
+    valid≡𝕎-sym i ⟦ Γ ⟧Γ ⟦ τ ⟧ᵤ ⟦ σ ⟧ᵤ (UNIV k) h1
     where
-    h1 : valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ τ ⟧ᵤ ⟦ σ ⟧ᵤ (UNIV 1)
-    h1 = ⟦_⟧Γ≡ j i lti
-  ⟦_⟧Γ≡ {n} {Γ} {σ} {τ} (trans {σ} {ϕ} {τ} j j₁) i lti =
-    valid≡𝕎-trans i lti ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ ⟦ ϕ ⟧ᵤ ⟦ τ ⟧ᵤ (UNIV 1) cov h1 h2
+    h1 : valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ τ ⟧ᵤ ⟦ σ ⟧ᵤ (UNIV k)
+    h1 = ⟦_⟧Γ≡ j i k ltk lti
+  ⟦_⟧Γ≡ {n} {Γ} {σ} {τ} (trans {σ} {ϕ} {τ} j j₁) i k ltk lti =
+    valid≡𝕎-trans i ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ ⟦ ϕ ⟧ᵤ ⟦ τ ⟧ᵤ (UNIV k) cov h1 h2
     where
-    h1 : valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ ⟦ ϕ ⟧ᵤ (UNIV 1)
-    h1 = ⟦_⟧Γ≡ j i lti
+    h1 : valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ ⟦ ϕ ⟧ᵤ (UNIV k)
+    h1 = ⟦_⟧Γ≡ j i k ltk lti
 
-    h2 : valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ ϕ ⟧ᵤ ⟦ τ ⟧ᵤ (UNIV 1)
-    h2 = ⟦_⟧Γ≡ j₁ i lti
+    h2 : valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ ϕ ⟧ᵤ ⟦ τ ⟧ᵤ (UNIV k)
+    h2 = ⟦_⟧Γ≡ j₁ i k ltk lti
 
     cov : coveredH ⟦ Γ ⟧Γ ⟦ ϕ ⟧ᵤ
     cov = coveredΓ {n} Γ ϕ
-  ⟦_⟧Γ≡ {n} {Γ} {.(Π _ ▹ _)} {.(Π _ ▹ _)} (Π-cong {F} {H} {G} {E} x j j₁) i lti =
-    valid≡𝕎-PI i lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ ⟦ H ⟧ᵤ ⟦ E ⟧ᵤ h1 h2
+  ⟦_⟧Γ≡ {n} {Γ} {.(Π _ ▹ _)} {.(Π _ ▹ _)} (Π-cong {F} {H} {G} {E} x j j₁) i k ltk lti =
+    valid≡𝕎-PI i k lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ ⟦ H ⟧ᵤ ⟦ E ⟧ᵤ h1 h2
     where
-    h1 : valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ H ⟧ᵤ (UNIV 1)
-    h1 = ⟦_⟧Γ≡ j i lti
+    h1 : valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ H ⟧ᵤ (UNIV k)
+    h1 = ⟦_⟧Γ≡ j i k ltk lti
 
-    h2 : valid≡𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ ⟦ E ⟧ᵤ (UNIV 1)
-    h2 = ⟦_⟧Γ≡ j₁ i lti
-  ⟦_⟧Γ≡ {n} {Γ} {.(Σ _ ▹ _)} {.(Σ _ ▹ _)} (Σ-cong {F} {H} {G} {E} x j j₁) i lti =
-    valid≡𝕎-SUM! i lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ ⟦ H ⟧ᵤ ⟦ E ⟧ᵤ h1 h2
+    h2 : valid≡𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ ⟦ E ⟧ᵤ (UNIV k)
+    h2 = ⟦_⟧Γ≡ j₁ i k ltk lti
+  ⟦_⟧Γ≡ {n} {Γ} {.(Σ _ ▹ _)} {.(Σ _ ▹ _)} (Σ-cong {F} {H} {G} {E} x j j₁) i k ltk lti =
+    valid≡𝕎-SUM! i k lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ ⟦ H ⟧ᵤ ⟦ E ⟧ᵤ h1 h2
     where
-    h1 : valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ H ⟧ᵤ (UNIV 1)
-    h1 = ⟦_⟧Γ≡ j i lti
+    h1 : valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ H ⟧ᵤ (UNIV k)
+    h1 = ⟦_⟧Γ≡ j i k ltk lti
 
-    h2 : valid≡𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ ⟦ E ⟧ᵤ (UNIV 1)
-    h2 = ⟦_⟧Γ≡ j₁ i lti
+    h2 : valid≡𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ ⟦ E ⟧ᵤ (UNIV k)
+    h2 = ⟦_⟧Γ≡ j₁ i k ltk lti
 
 
   -- TODO: Should this instead follow from ⟦_⟧Γ≡∈?
   ⟦_⟧Γ∈ : {n : Nat} {Γ : Con Term n} {t : Term n} {σ : Term n}
           (j : Γ ⊢ t ∷ σ)
-          (i : Nat) (lti : 1 <ℕ i)
+          (i : Nat) (lti : 2 <ℕ i)
         → valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ ⟦ σ ⟧ᵤ
   ⟦_⟧Γ∈ {n} {Γ} {.(Π _ ▹ _)} {.U} ((Πⱼ_▹_) {F} {G} j j₁) i lti w =
-    valid∈-PI i lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ h1 h2 w
+    valid∈-PI i 1 (1+<→ lti) ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ h1 h2 w
     where
     h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
     h1 = ⟦_⟧Γ∈ j i lti
@@ -1117,23 +1112,23 @@ mutual
     h2 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 1)
     h2 = ⟦_⟧Γ∈ j₁ i lti
   ⟦_⟧Γ∈ {n} {Γ} {.(Σ _ ▹ _)} {.U} ((Σⱼ_▹_) {F} {G} j j₁) i lti w =
-    valid∈-SUM! i lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ h1 h2 w
+    valid∈-SUM! i 1 (1+<→ lti) ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ h1 h2 w
     where
     h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
     h1 = ⟦_⟧Γ∈ j i lti
 
     h2 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 1)
     h2 = ⟦_⟧Γ∈ j₁ i lti
-  ⟦_⟧Γ∈ {n} {Γ} {.ℕ} {.U} (ℕⱼ x) i lti w = valid∈-NAT! i 1 lti ⟦ Γ ⟧Γ w
-  ⟦_⟧Γ∈ {n} {Γ} {.Empty} {.U} (Emptyⱼ x) i lti w = valid∈-FALSE i lti ⟦ Γ ⟧Γ w
-  ⟦_⟧Γ∈ {n} {Γ} {.Unit} {.U} (Unitⱼ x) i lti w = valid∈-UNIT i lti ⟦ Γ ⟧Γ w
+  ⟦_⟧Γ∈ {n} {Γ} {.ℕ} {.U} (ℕⱼ x) i lti w = valid∈-NAT! i 1 (1+<→ lti) ⟦ Γ ⟧Γ w
+  ⟦_⟧Γ∈ {n} {Γ} {.Empty} {.U} (Emptyⱼ x) i lti w = valid∈-FALSE i 1 (1+<→ lti) ⟦ Γ ⟧Γ w
+  ⟦_⟧Γ∈ {n} {Γ} {.Unit} {.U} (Unitⱼ x) i lti w = valid∈-UNIT i 1 (1+<→ lti) ⟦ Γ ⟧Γ w
   ⟦_⟧Γ∈ {n} {Γ} {.(var _)} {σ} (var {σ} {v} x x₁) i lti w =
     valid∈VAR x₁ i w
   ⟦_⟧Γ∈ {n} {Γ} {.(lam _)} {.(Π _ ▹ _)} (lamⱼ {F} {G} {t} x j) i lti w =
     valid∈LAMBDA lti h1 h2 w
     where
-    h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
-    h1 = ⟦_⟧⊢ x i lti
+    h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 2)
+    h1 = ⟦_⟧⊢ x i 2 ≤-refl lti
 
     h2 : valid∈𝕎 i ⟦ Γ ∙ F ⟧Γ ⟦ t ⟧ᵤ ⟦ G ⟧ᵤ
     h2 = ⟦_⟧Γ∈ j i lti
@@ -1153,11 +1148,11 @@ mutual
   ⟦_⟧Γ∈ {n} {Γ} {.(prod _ _)} {.(Σ _ ▹ _)} (prodⱼ {F} {G} {t} {u} x x₁ j j₁) i lti w =
     valid∈PAIR lti h1 h2 h3 h4' w
     where
-    h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
-    h1 = ⟦_⟧⊢ x i lti
+    h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 2)
+    h1 = ⟦_⟧⊢ x i 2 ≤-refl lti
 
-    h2 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 1)
-    h2 = ⟦_⟧⊢ x₁ i lti
+    h2 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 2)
+    h2 = ⟦_⟧⊢ x₁ i 2 ≤-refl lti
 
     h3 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ ⟦ F ⟧ᵤ
     h3 = ⟦_⟧Γ∈ j i lti
@@ -1173,11 +1168,11 @@ mutual
     covH : coveredH (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ
     covH = coveredΓ {1+ n} (Γ ∙ F) G
 
-    h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
-    h1 = ⟦_⟧⊢ x i lti
+    h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 2)
+    h1 = ⟦_⟧⊢ x i 2 ≤-refl lti
 
-    h2 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 1)
-    h2 = ⟦_⟧⊢ x₁ i lti
+    h2 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 2)
+    h2 = ⟦_⟧⊢ x₁ i 2 ≤-refl lti
 
     h3 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ (SUM! ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ)
     h3 = ⟦_⟧Γ∈ j i lti
@@ -1189,11 +1184,11 @@ mutual
     covH : coveredH ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ
     covH = coveredΓ {n} Γ F
 
-    h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 1)
-    h1 = ⟦_⟧⊢ x i lti
+    h1 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ (UNIV 2)
+    h1 = ⟦_⟧⊢ x i 2 ≤-refl lti
 
-    h2 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 1)
-    h2 = ⟦_⟧⊢ x₁ i lti
+    h2 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) ⟦ G ⟧ᵤ (UNIV 2)
+    h2 = ⟦_⟧⊢ x₁ i 2 ≤-refl lti
 
     h3 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ u ⟧ᵤ (SUM! ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ)
     h3 = ⟦_⟧Γ∈ j i lti
@@ -1207,11 +1202,11 @@ mutual
   ⟦_⟧Γ∈ {n} {Γ} {.(natrec _ _ _ _)} {.(G [ k ])} (natrecⱼ {G} {s} {z} {k} x j j₁ j₂) i lti w =
     ≣subst (valid∈ i w ⟦ Γ ⟧Γ (NATREC ⟦ k ⟧ᵤ ⟦ z ⟧ᵤ ⟦ s ⟧ᵤ))
            (≣sym (⟦[]⟧ᵤ-as-subn G k))
-           (valid∈NATREC {i} {⟦ Γ ⟧Γ} {⟦ G ⟧ᵤ} {⟦ k ⟧ᵤ} {⟦ z ⟧ᵤ} {⟦ s ⟧ᵤ} lti h1 h2' h3'' h4 w)
+           (valid∈NATREC {i} {2} {⟦ Γ ⟧Γ} {⟦ G ⟧ᵤ} {⟦ k ⟧ᵤ} {⟦ z ⟧ᵤ} {⟦ s ⟧ᵤ} lti h1 h2' h3'' h4 w)
     -- valid∈NATREC and use ⟦[]⟧ᵤ-as-sub
     where
-    h1 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp NAT!) ⟦ G ⟧ᵤ (UNIV 1)
-    h1 = ⟦_⟧⊢ x i lti
+    h1 : valid∈𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp NAT!) ⟦ G ⟧ᵤ (UNIV 2)
+    h1 = ⟦_⟧⊢ x i 2 ≤-refl lti
 
     h2 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ z ⟧ᵤ ⟦ G [ Definition.Untyped.zero ] ⟧ᵤ
     h2 = ⟦_⟧Γ∈ j i lti
@@ -1235,12 +1230,12 @@ mutual
     where
     h1 : valid∈ i w ⟦ Γ ⟧Γ ⟦ e ⟧ᵤ FALSE
     h1 = ⟦_⟧Γ∈ j i lti w
-  ⟦_⟧Γ∈ {n} {Γ} {.star} {.Unit} (starⱼ x) i lti w = valid∈-AX-UNIT i lti ⟦ Γ ⟧Γ w
+  ⟦_⟧Γ∈ {n} {Γ} {.star} {.Unit} (starⱼ x) i lti w = valid∈-AX-UNIT i ⟦ Γ ⟧Γ w
   ⟦_⟧Γ∈ {n} {Γ} {t} {σ} (conv {t} {τ} {σ} j x) i lti w =
-    valid∈-change-type {i} {w} {⟦ Γ ⟧Γ} {⟦ τ ⟧ᵤ} {⟦ σ ⟧ᵤ} lti cov h1 h2
+    valid∈-change-type {i} {2} {w} {⟦ Γ ⟧Γ} {⟦ τ ⟧ᵤ} {⟦ σ ⟧ᵤ} lti cov h1 h2
     where
-    h1 : valid≡ i w ⟦ Γ ⟧Γ ⟦ τ ⟧ᵤ ⟦ σ ⟧ᵤ (UNIV 1)
-    h1 = ⟦_⟧Γ≡ x i lti w
+    h1 : valid≡ i w ⟦ Γ ⟧Γ ⟦ τ ⟧ᵤ ⟦ σ ⟧ᵤ (UNIV 2)
+    h1 = ⟦_⟧Γ≡ x i 2 ≤-refl lti w
 
     h2 : valid∈ i w ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ ⟦ τ ⟧ᵤ
     h2 = ⟦_⟧Γ∈ j i lti w
@@ -1252,17 +1247,17 @@ mutual
   -- TODO: Can we prove this one from ⟦_⟧Γ≡?
   ⟦_⟧⊢ : {n : Nat} {Γ : Con Term n} {σ : Term n}
          (j : Γ ⊢ σ)
-         (i : Nat) (lti : 1 <ℕ i)
-       → valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ (UNIV 1)
-  ⟦_⟧⊢ {n} {Γ} {.U} (Uⱼ x) i lti w = {!!} -- not quite right: see valid∈-UNIV above
-  ⟦_⟧⊢ {n} {Γ} {.ℕ} (ℕⱼ x) i lti w = valid∈-NAT! i 1 lti ⟦ Γ ⟧Γ w
-  ⟦_⟧⊢ {n} {Γ} {.Empty} (Emptyⱼ x) i lti w = valid∈-FALSE i lti ⟦ Γ ⟧Γ w
-  ⟦_⟧⊢ {n} {Γ} {.Unit} (Unitⱼ x) i lti w = valid∈-UNIT i lti ⟦ Γ ⟧Γ w
-  ⟦_⟧⊢ {n} {Γ} {.(Π _ ▹ _)} (Πⱼ_▹_ {F} {G} j j₁) i lti w =
-    valid∈-PI i lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ (⟦_⟧⊢ j i lti) (⟦_⟧⊢ j₁ i lti) w
-  ⟦_⟧⊢ {n} {Γ} {.(Σ _ ▹ _)} (Σⱼ_▹_ {F} {G} j j₁) i lti w =
-    valid∈-SUM! i lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ (⟦_⟧⊢ j i lti) (⟦_⟧⊢ j₁ i lti) w
-  ⟦_⟧⊢ {n} {Γ} {σ} (univ x) i lti w = ⟦ x ⟧Γ∈ i lti w
+         (i k : Nat) (ltk : 1 <ℕ k) (lti : k <ℕ i)
+       → valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ σ ⟧ᵤ (UNIV k)
+  ⟦_⟧⊢ {n} {Γ} {.U} (Uⱼ x) i k ltk lti w = valid∈-UNIV i k 1 ltk lti ⟦ Γ ⟧Γ w
+  ⟦_⟧⊢ {n} {Γ} {.ℕ} (ℕⱼ x) i k ltk lti w = valid∈-NAT! i k lti ⟦ Γ ⟧Γ w
+  ⟦_⟧⊢ {n} {Γ} {.Empty} (Emptyⱼ x) i k ltk lti w = valid∈-FALSE i k lti ⟦ Γ ⟧Γ w
+  ⟦_⟧⊢ {n} {Γ} {.Unit} (Unitⱼ x) i k ltk lti w = valid∈-UNIT i k lti ⟦ Γ ⟧Γ w
+  ⟦_⟧⊢ {n} {Γ} {.(Π _ ▹ _)} (Πⱼ_▹_ {F} {G} j j₁) i k ltk lti w =
+    valid∈-PI i k lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ (⟦_⟧⊢ j i k ltk lti) (⟦_⟧⊢ j₁ i k ltk lti) w
+  ⟦_⟧⊢ {n} {Γ} {.(Σ _ ▹ _)} (Σⱼ_▹_ {F} {G} j j₁) i k ltk lti w =
+    valid∈-SUM! i k lti ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ (⟦_⟧⊢ j i k ltk lti) (⟦_⟧⊢ j₁ i k ltk lti) w
+  ⟦_⟧⊢ {n} {Γ} {σ} (univ x) i k ltk lti w = valid∈𝕎-mon ltk lti (⟦ x ⟧Γ∈ i (≤-trans (s≤s ltk) lti)) w -- lti w
 
 
   ⟦_⟧Γ≡∈ : {n : Nat} {Γ : Con Term n} {t u : Term n} {σ : Term n}
