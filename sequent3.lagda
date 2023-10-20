@@ -91,7 +91,7 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (→equalInType-NAT!)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (≡→equalInType ; eqTypesEQ→ᵣ)
+  using (≡→equalInType ; eqTypesEQ→ᵣ ; eqTypesEQ→ₗ)
 open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (_#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ; presPure ; →presPure-NATREC₁ ; →presPure-NATREC₂ ; →presPure-NATREC₃ ;
          equalTypesPI→ₗ ; equalTypesPI→ᵣ ; eqTypesSUM!← ; SUMeq! ; equalInType-SUM!→ ; equalInType-SUM!)
@@ -99,6 +99,16 @@ open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalTypes-uni-mon ; equalInType-uni-mon)
 
 open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+
+
+-- MOVE
+→equalInType-EQ : {u : ℕ} {w : 𝕎·} {a b A : CTerm} {f g : CTerm}
+                  → equalInType u w A a b
+                  → equalInType u w (#EQ a b A) f g
+→equalInType-EQ {u} {w} {a} {b} {A} {f} {g} a∈ =
+  equalInType-EQ
+    (fst a∈)
+    (Mod.∀𝕎-□ M (λ w1 e1 → equalInType-mon a∈ w1 e1))
 
 
 valid∈-NAT! : (i : ℕ) (k : ℕ) (lti : k < i) (H : hypotheses)
@@ -412,6 +422,125 @@ valid∈-change-type {i} {k} {w} {H} {A} {B} {t} lti covHA h q s1 s2 cc1 cc2 ce1
   q2 : equalInType i w (#subs s1 B cc1) (#subs s1 t ce1) (#subs s2 t ce2)
   q2 = TSext-equalTypes-equalInType i w (#subs s1 A ca1) (#subs s1 B cc1)
          (#subs s1 t ce1) (#subs s2 t ce2) (equalTypes-uni-mon (<⇒≤ lti) z4) q1
+
+
+valid≡-change-type : {i k : ℕ} {w : 𝕎·} {H : hypotheses} {A B t u : Term}
+                   → k < i
+                   → coveredH H A
+                   → valid≡ i w H A B (UNIV k)
+                   → valid≡ i w H t u A
+                   → valid≡ i w H t u B
+valid≡-change-type {i} {k} {w} {H} {A} {B} {t} {u} lti covHA h q s1 s2 cc1 cc2 ce1 ce2 es eh =
+  c1 , c2
+  where
+  ca1 : covered s1 A
+  ca1 = ≡subs→coveredₗ {i} {w} {s1} {s2} {H} {A} es covHA
+
+  ca2 : covered s2 A
+  ca2 = ≡subs→coveredᵣ {i} {w} {s1} {s2} {H} {A} es covHA
+
+  ctx1 : covered s1 t
+  ctx1 = coveredEQ₁ {s1} {t} {u} {B} cc1
+
+  ctx2 : covered s2 t
+  ctx2 = coveredEQ₁ {s2} {t} {u} {B} cc2
+
+  cux1 : covered s1 u
+  cux1 = coveredEQ₂ {s1} {t} {u} {B} cc1
+
+  cux2 : covered s2 u
+  cux2 = coveredEQ₂ {s2} {t} {u} {B} cc2
+
+  cb1 : covered s1 B
+  cb1 = coveredEQ₃ {s1} {t} {u} {B} cc1
+
+  cb2 : covered s2 B
+  cb2 = coveredEQ₃ {s2} {t} {u} {B} cc2
+
+  ceq1 : covered s1 (EQ A B (UNIV k))
+  ceq1 = →coveredEQ {s1} {A} {B} {UNIV k} ca1 cb1 (covered-UNIV s1 k)
+
+  ceq2 : covered s2 (EQ A B (UNIV k))
+  ceq2 = →coveredEQ {s2} {A} {B} {UNIV k} ca2 cb2 (covered-UNIV s2 k)
+
+  eqa1 : covered s1 (EQ t u A)
+  eqa1 = →coveredEQ {s1} {t} {u} {A} ctx1 cux1 ca1
+
+  eqa2 : covered s2 (EQ t u A)
+  eqa2 = →coveredEQ {s2} {t} {u} {A} ctx2 cux2 ca2
+
+  h1 : equalTypes i w (#subs s1 (EQ A B (UNIV k)) ceq1) (#subs s2 (EQ A B (UNIV k)) ceq2)
+  h1 = fst (h s1 s2 ceq1 ceq2 ce1 ce2 es eh)
+
+  h2 : equalTypes i w (#EQ (#subs s1 A ca1) (#subs s1 B cb1) (#UNIV k)) (#EQ (#subs s2 A ca2) (#subs s2 B cb2) (#UNIV k))
+  h2 = ≡CTerm→eqTypes (CTerm≡ (trans (subs-EQ s1 A B (UNIV k)) (cong₃ EQ refl refl (subs-UNIV s1 k))))
+                      (CTerm≡ (trans (subs-EQ s2 A B (UNIV k)) (cong₃ EQ refl refl (subs-UNIV s2 k))))
+                      h1
+
+  h3 : equalTypes k w (#subs s1 B cb1) (#subs s2 B cb2)
+  h3 = equalInType→equalTypes-aux i k lti w (#subs s1 B cb1) (#subs s2 B cb2)
+         (eqTypesEQ→ᵣ {w} {i} {#subs s1 A ca1} {#subs s1 B cb1} {#subs s2 A ca2} {#subs s2 B cb2} {#UNIV k} {#UNIV k} h2)
+
+  z1 : equalInType i w (#subs s1 (EQ A B (UNIV k)) ceq1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  z1 = snd (h s1 s2 ceq1 ceq2 ce1 ce2 es eh)
+
+  z2 : equalInType i w (#EQ (#subs s1 A ca1) (#subs s1 B cb1) (#UNIV k)) #AX #AX
+  z2 = ≡→equalInType (CTerm≡ (trans (subs-EQ s1 A B (UNIV k)) (cong₃ EQ refl refl (subs-UNIV s1 k))))
+                     (#subs-AX s1 ce1)
+                     (#subs-AX s2 ce2)
+                     z1
+
+  z3 : equalInType i w (#UNIV k) (#subs s1 A ca1) (#subs s1 B cb1)
+  z3 = equalInType-EQ→₁ z2
+
+  z4 : equalTypes k w (#subs s1 A ca1) (#subs s1 B cb1)
+  z4 = equalInType→equalTypes-aux i k lti w (#subs s1 A ca1) (#subs s1 B cb1) z3
+
+  q1 : equalTypes i w (#subs s1 (EQ t u A) eqa1) (#subs s2 (EQ t u A) eqa2)
+  q1 = fst (q s1 s2 eqa1 eqa2 ce1 ce2 es eh)
+
+  q2 : equalTypes i w (#EQ (#subs s1 t ctx1) (#subs s1 u cux1) (#subs s1 A ca1))
+                      (#EQ (#subs s2 t ctx2) (#subs s2 u cux2) (#subs s2 A ca2))
+  q2 = ≡CTerm→eqTypes (CTerm≡ (subs-EQ s1 t u A)) (CTerm≡ (subs-EQ s2 t u A)) q1
+
+  r1 : equalInType i w (#subs s1 (EQ t u A) eqa1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  r1 = snd (q s1 s2 eqa1 eqa2 ce1 ce2 es eh)
+
+  r2 : equalInType i w (#subs s1 A ca1) (#subs s1 t ctx1) (#subs s1 u cux1)
+  r2 = equalInType-EQ→₁ (≡→equalInType (CTerm≡ (subs-EQ s1 t u A)) (#subs-AX s1 ce1) (#subs-AX s2 ce2) r1)
+
+  c1 : equalTypes i w (#subs s1 (EQ t u B) cc1) (#subs s2 (EQ t u B) cc2)
+  c1 = ≡CTerm→eqTypes
+         (CTerm≡ (sym (subs-EQ s1 t u B)))
+         (CTerm≡ (sym (subs-EQ s2 t u B)))
+         (eqTypesEQ←
+           (equalTypes-uni-mon (<⇒≤ lti) h3)
+           (TSext-equalTypes-equalInType
+             i w (#subs s1 A ca1) (#subs s1 B cb1)
+             (#subs s1 t ctx1) (#subs s2 t ctx2)
+             (equalTypes-uni-mon
+               (<⇒≤ lti) z4)
+               (eqTypesEQ→ₗ
+                 {w} {i} {#subs s1 t ctx1} {#subs s1 u cux1} {#subs s2 t ctx2} {#subs s2 u cux2} {#subs s1 A ca1} {#subs s2 A ca2}
+                 q2))
+           (TSext-equalTypes-equalInType
+             i w (#subs s1 A ca1) (#subs s1 B cb1)
+             (#subs s1 u cux1) (#subs s2 u cux2)
+             (equalTypes-uni-mon
+               (<⇒≤ lti) z4)
+               (eqTypesEQ→ᵣ
+                 {w} {i} {#subs s1 t ctx1} {#subs s1 u cux1} {#subs s2 t ctx2} {#subs s2 u cux2} {#subs s1 A ca1} {#subs s2 A ca2}
+                 q2)))
+
+  c2 : equalInType i w (#subs s1 (EQ t u B) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  c2 = ≡→equalInType
+         (CTerm≡ (sym (subs-EQ s1 t u B)))
+         (sym (#subs-AX s1 ce1))
+         (sym (#subs-AX s2 ce2))
+         (→equalInType-EQ
+           (TSext-equalTypes-equalInType
+             i w (#subs s1 A ca1) (#subs s1 B cb1) (#subs s1 t ctx1) (#subs s1 u cux1)
+             (equalTypes-uni-mon (<⇒≤ lti) z4) r2))
 
 
 valid∈N0-NAT : (i : ℕ) (w : 𝕎·) (H : hypotheses)

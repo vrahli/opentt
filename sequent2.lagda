@@ -267,46 +267,48 @@ valid∈𝕎-mon {i} {j} {k} ltk lti {Γ} {σ} ha w s1 s2 cc1 cc2 ce1 ce2 es eh 
   c2 = ≡CTerm→equalInType (sym (#subs-UNIV s1 k cu1a)) (equalTypes→equalInType-UNIV lti (equalTypes-uni-mon (<⇒≤ ltk) ha3))
 
 
--- TODO: generalize
-valid∈𝕎→valid≡𝕎-UNIV : (i k : ℕ) (lti : k < i) (H : hypotheses) (A : Term)
-                     → valid∈𝕎 i H A (UNIV k)
-                     → valid≡𝕎 i H A A (UNIV k)
-valid∈𝕎→valid≡𝕎-UNIV i k lti H A ha w s1 s2 cc1 cc2 ce1 ce2 es eh =
+valid∈𝕎→valid≡𝕎 : (i : ℕ) (H : hypotheses) (a A : Term)
+                → valid∈𝕎 i H a A
+                → valid≡𝕎 i H a a A
+valid∈𝕎→valid≡𝕎 i H a A ha w s1 s2 cc1 cc2 ce1 ce2 es eh =
   c1 , c2
   where
+  ca1 : covered s1 a
+  ca1 = coveredEQ₁ {s1} {a} {a} {A} cc1
+
+  ca2 : covered s2 a
+  ca2 = coveredEQ₁ {s2} {a} {a} {A} cc2
+
   cA1 : covered s1 A
-  cA1 = coveredEQ₁ {s1} {A} {A} {UNIV k} cc1
+  cA1 = coveredEQ₃ {s1} {a} {a} {A} cc1
 
   cA2 : covered s2 A
-  cA2 = coveredEQ₁ {s2} {A} {A} {UNIV k} cc2
+  cA2 = coveredEQ₃ {s2} {a} {a} {A} cc2
 
-  cu1a : covered s1 (UNIV k)
-  cu1a = covered-UNIV s1 k
+  ha1 : equalInType i w (#subs s1 A cA1) (#subs s1 a ca1) (#subs s2 a ca2)
+  ha1 = snd (ha w s1 s2 cA1 cA2 ca1 ca2 es eh)
 
-  cu2a : covered s2 (UNIV k)
-  cu2a = covered-UNIV s2 k
+  ha2 : equalTypes i w (#subs s1 A cA1) (#subs s2 A cA2)
+  ha2 = fst (ha w s1 s2 cA1 cA2 ca1 ca2 es eh)
 
-  ha1 : equalInType i w (#subs s1 (UNIV k) cu1a) (#subs s1 A cA1) (#subs s2 A cA2)
-  ha1 = snd (ha w s1 s2 cu1a cu2a cA1 cA2 es eh)
-
-  ha2 : equalInType i w (#UNIV k) (#subs s1 A cA1) (#subs s2 A cA2)
-  ha2 = ≡CTerm→equalInType (#subs-UNIV s1 k cu1a) ha1
-
-  c1 : equalTypes i w (#subs s1 (EQ A A (UNIV k)) cc1) (#subs s2 (EQ A A (UNIV k)) cc2)
+  c1 : equalTypes i w (#subs s1 (EQ a a A) cc1) (#subs s2 (EQ a a A) cc2)
   c1 = ≡CTerm→eqTypes
-         (sym (#subs-EQ s1 A A (UNIV k) cc1 cA1 cA1 cu1a))
-         (sym (#subs-EQ s2 A A (UNIV k) cc2 cA2 cA2 cu2a))
-         (eqTypesEQ←
-           (≡CTerm→eqTypes (sym (#subs-UNIV s1 k cu1a)) (sym (#subs-UNIV s2 k cu2a)) (eqTypesUniv w i k lti))
-           (≡CTerm→equalInType (sym (#subs-UNIV s1 k cu1a)) ha2)
-           (≡CTerm→equalInType (sym (#subs-UNIV s1 k cu1a)) ha2))
+         (sym (#subs-EQ s1 a a A cc1 ca1 ca1 cA1))
+         (sym (#subs-EQ s2 a a A cc2 ca2 ca2 cA2))
+         (eqTypesEQ← ha2 ha1 ha1)
 
-  c2 : equalInType i w (#subs s1 (EQ A A (UNIV k)) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  c2 : equalInType i w (#subs s1 (EQ a a A) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
   c2 = ≡→equalInType
-         (sym (#subs-EQ s1 A A (UNIV k) cc1 cA1 cA1 cu1a))
+         (sym (#subs-EQ s1 a a A cc1 ca1 ca1 cA1))
          (sym (#subs-AX s1 ce1))
          (sym (#subs-AX s2 ce2))
-         (→equalInType-EQ (≡CTerm→equalInType (sym (#subs-UNIV s1 k cu1a)) (equalInType-refl ha2)))
+         (→equalInType-EQ (equalInType-refl ha1))
+
+
+valid∈𝕎→valid≡𝕎-UNIV : (i k : ℕ) (H : hypotheses) (A : Term)
+                     → valid∈𝕎 i H A (UNIV k)
+                     → valid≡𝕎 i H A A (UNIV k)
+valid∈𝕎→valid≡𝕎-UNIV i k H A ha = valid∈𝕎→valid≡𝕎 i H A (UNIV k) ha
 
 
 valid≡𝕎-sym : (i : ℕ) (H : hypotheses) (a b A : Term)
