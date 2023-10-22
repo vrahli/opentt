@@ -590,6 +590,101 @@ valid∈SUC-NAT {i} {w} {H} {t} h s1 s2 cc1 cc2 ce1 ce2 es eh =
   q1 = ≡→equalInType (sym (#subs-NAT! s1 cc1)) (sym (#subs-SUC s1 t ce1)) (sym (#subs-SUC s2 t ce2)) q2
 
 
+valid≡SUC-NAT : {i : ℕ} {H : hypotheses} {a b : Term}
+              → valid≡𝕎 i H a b NAT!
+              → valid≡𝕎 i H (SUC a) (SUC b) NAT!
+valid≡SUC-NAT {i} {H} {a} {b} h w s1 s2 cc1 cc2 ce1 ce2 es eh =
+  c1 , c2
+  where
+  ca1 : covered s1 a
+  ca1 = coveredEQ₁ {s1} {a} {b} {NAT!} cc1
+
+  ca2 : covered s2 a
+  ca2 = coveredEQ₁ {s2} {a} {b} {NAT!} cc2
+
+  cb1 : covered s1 b
+  cb1 = coveredEQ₂ {s1} {a} {b} {NAT!} cc1
+
+  cb2 : covered s2 b
+  cb2 = coveredEQ₂ {s2} {a} {b} {NAT!} cc2
+
+  cn1 : covered s1 NAT!
+  cn1 = coveredEQ₃ {s1} {a} {b} {NAT!} cc1
+
+  cn2 : covered s2 NAT!
+  cn2 = coveredEQ₃ {s2} {a} {b} {NAT!} cc2
+
+  csa1 : covered s1 (SUC a)
+  csa1 = →coveredSUC {s1} {a} ca1
+
+  csa2 : covered s2 (SUC a)
+  csa2 = →coveredSUC {s2} {a} ca2
+
+  csb1 : covered s1 (SUC b)
+  csb1 = →coveredSUC {s1} {b} cb1
+
+  csb2 : covered s2 (SUC b)
+  csb2 = →coveredSUC {s2} {b} cb2
+
+  h1 : equalTypes i w (#EQ (#subs s1 a ca1) (#subs s1 b cb1) (#subs s1 NAT! cn1))
+                      (#EQ (#subs s2 a ca2) (#subs s2 b cb2) (#subs s2 NAT! cn2))
+  h1 = ≡CTerm→eqTypes
+         (#subs-EQ s1 a b NAT! cc1 ca1 cb1 cn1)
+         (#subs-EQ s2 a b NAT! cc2 ca2 cb2 cn2)
+         (fst (h w s1 s2 cc1 cc2 ce1 ce2 es eh))
+
+  h2 : equalInType i w (#subs s1 NAT! cn1) (#subs s1 a ca1) (#subs s1 b cb1)
+  h2 = equalInType-EQ→₁
+         (≡→equalInType
+           (#subs-EQ s1 a b NAT! cc1 ca1 cb1 cn1)
+           (#subs-AX s1 ce1)
+           (#subs-AX s2 ce2)
+           (snd (h w s1 s2 cc1 cc2 ce1 ce2 es eh)))
+
+  c1a : equalTypes i w (#subs s1 NAT! cn1) (#subs s2 NAT! cn2)
+  c1a = ≡CTerm→eqTypes (sym (#subs-NAT! s1 cn1)) (sym (#subs-NAT! s2 cn2)) isTypeNAT!
+
+  c1b : equalInType i w (#subs s1 NAT! cn1) (#subs s1 (SUC a) csa1) (#subs s2 (SUC a) csa2)
+  c1b = ≡→equalInType
+          (sym (#subs-NAT! s1 cn1))
+          (sym (#subs-SUC s1 a ca1))
+          (sym (#subs-SUC s2 a ca2))
+          (SUC∈NAT! (≡CTerm→equalInType
+                       (#subs-NAT! s1 cn1)
+                       (eqTypesEQ→ₗ {w} {i} {#subs s1 a ca1} {#subs s1 b cb1} {#subs s2 a ca2} {#subs s2 b cb2} h1)))
+
+  c1c : equalInType i w (#subs s1 NAT! cn1) (#subs s1 (SUC b) csb1) (#subs s2 (SUC b) csb2)
+  c1c = ≡→equalInType
+          (sym (#subs-NAT! s1 cn1))
+          (sym (#subs-SUC s1 b cb1))
+          (sym (#subs-SUC s2 b cb2))
+          (SUC∈NAT! (≡CTerm→equalInType
+                       (#subs-NAT! s1 cn1)
+                       (eqTypesEQ→ᵣ {w} {i} {#subs s1 a ca1} {#subs s1 b cb1} {#subs s2 a ca2} {#subs s2 b cb2} h1)))
+
+  c1 : equalTypes i w (#subs s1 (EQ (SUC a) (SUC b) NAT!) cc1) (#subs s2 (EQ (SUC a) (SUC b) NAT!) cc2)
+  c1 = ≡CTerm→eqTypes
+         (sym (#subs-EQ s1 (SUC a) (SUC b) NAT! cc1 csa1 csb1 cn1))
+         (sym (#subs-EQ s2 (SUC a) (SUC b) NAT! cc2 csa2 csb2 cn2))
+         (eqTypesEQ← c1a c1b c1c)
+
+  c2a : equalInType i w (#subs s1 NAT! cn1) (#subs s1 (SUC a) csa1) (#subs s1 (SUC b) csb1)
+  c2a = ≡→equalInType
+          (sym (#subs-NAT! s1 cn1))
+          (sym (#subs-SUC s1 a ca1))
+          (sym (#subs-SUC s1 b cb1))
+          (SUC∈NAT! (≡CTerm→equalInType (#subs-NAT! s1 cn1) h2))
+
+  c2 : equalInType i w (#subs s1 (EQ (SUC a) (SUC b) NAT!) cc1)
+                       (#subs s1 AX ce1)
+                       (#subs s2 AX ce2)
+  c2 = ≡→equalInType
+         (sym (#subs-EQ s1 (SUC a) (SUC b) NAT! cc1 csa1 csb1 cn1))
+         (sym (#subs-AX s1 ce1))
+         (sym (#subs-AX s2 ce2))
+         (→equalInType-EQ c2a)
+
+
 valid∈NATREC : {i l : ℕ} {H : hypotheses} {G k z s : Term} (lti : l < i)
              → valid∈𝕎 i (H Data.List.∷ʳ mkHyp NAT!) G (UNIV l)
              → valid∈𝕎 i H z (subn 0 N0 G)
@@ -1300,6 +1395,198 @@ valid∈LAMBDA {i} {k} {H} {F} {G} {t} lti hf hg w s1 s2 cc1 cc2 ce1 ce2 es eh =
                      (sym (#subs-LAMBDA s1 t ce1 ce1))
                      (sym (#subs-LAMBDA s2 t ce2 ce2))
                      c2a
+
+
+#subs-APPLY-LAMBDA : (s : Sub) (t a : Term) (cta : covered s (APPLY (LAMBDA t) a)) (cst : covered0 s t) (ca : covered s a)
+                   → #subs s (APPLY (LAMBDA t) a) cta
+                   ≡ #APPLY (#LAMBDA (#[0]subs s t cst)) (#subs s a ca)
+#subs-APPLY-LAMBDA s t a cta cst ca =
+  CTerm≡ (trans (subs-APPLY s (LAMBDA t) a) (cong (λ z → APPLY z (subs s a)) (subs-LAMBDA s t)))
+
+
+valid≡LAMBDA : {i k : ℕ} {H : hypotheses} {F G t a : Term} (lti : k < i)
+             → coveredH H F
+             → valid∈𝕎 i H F (UNIV k)
+             → valid∈𝕎 i H a F
+             → valid∈𝕎 i (H Data.List.∷ʳ mkHyp F) t G
+             → valid≡𝕎 i H (APPLY (LAMBDA t) a) (subn 0 a t) (subn 0 a G)
+valid≡LAMBDA {i} {k} {H} {F} {G} {t} {a} lti covF hf ha hg w s1 s2 cc1 cc2 ce1 ce2 es eh =
+  c1 , c2
+  where
+  cF1 : covered s1 F
+  cF1 = ≡subs→coveredₗ {i} {w} {s1} {s2} {H} {F} es covF
+
+  cF2 : covered s2 F
+  cF2 = ≡subs→coveredᵣ {i} {w} {s1} {s2} {H} {F} es covF
+
+  csg1 : covered s1 (subn 0 a G)
+  csg1 = coveredEQ₃ {s1} {APPLY (LAMBDA t) a} {subn 0 a t} {subn 0 a G} cc1
+
+  csg2 : covered s2 (subn 0 a G)
+  csg2 = coveredEQ₃ {s2} {APPLY (LAMBDA t) a} {subn 0 a t} {subn 0 a G} cc2
+
+  cst1 : covered s1 (subn 0 a t)
+  cst1 = coveredEQ₂ {s1} {APPLY (LAMBDA t) a} {subn 0 a t} {subn 0 a G} cc1
+
+  cst2 : covered s2 (subn 0 a t)
+  cst2 = coveredEQ₂ {s2} {APPLY (LAMBDA t) a} {subn 0 a t} {subn 0 a G} cc2
+
+  cta1 : covered s1 (APPLY (LAMBDA t) a)
+  cta1 = coveredEQ₁ {s1} {APPLY (LAMBDA t) a} {subn 0 a t} {subn 0 a G} cc1
+
+  cta2 : covered s2 (APPLY (LAMBDA t) a)
+  cta2 = coveredEQ₁ {s2} {APPLY (LAMBDA t) a} {subn 0 a t} {subn 0 a G} cc2
+
+  cG1 : covered0 s1 G
+  cG1 = covered-subn→covered0 a s1 G csg1
+
+  cG2 : covered0 s2 G
+  cG2 = covered-subn→covered0 a s2 G csg2
+
+  clt1 : covered0 s1 t
+  clt1 = coveredLAMBDA {s1} {t} (coveredAPPLY₁ {s1} {LAMBDA t} {a} cta1)
+
+  clt2 : covered0 s2 t
+  clt2 = coveredLAMBDA {s2} {t} (coveredAPPLY₁ {s2} {LAMBDA t} {a} cta2)
+
+  ca1 : covered s1 a
+  ca1 = coveredAPPLY₂ {s1} {LAMBDA t} {a} cta1
+
+  ca2 : covered s2 a
+  ca2 = coveredAPPLY₂ {s2} {LAMBDA t} {a} cta2
+
+  cu1a : covered s1 (UNIV k)
+  cu1a = covered-UNIV s1 k
+
+  cu2a : covered s2 (UNIV k)
+  cu2a = covered-UNIV s2 k
+
+  hf1 : equalInType i w (#subs s1 (UNIV k) cu1a) (#subs s1 F cF1) (#subs s2 F cF2)
+  hf1 = snd (hf w s1 s2 cu1a cu2a cF1 cF2 es eh)
+
+  hf2 : equalInType i w (#UNIV k) (#subs s1 F cF1) (#subs s2 F cF2)
+  hf2 = ≡CTerm→equalInType (#subs-UNIV s1 k cu1a) hf1
+
+  hf3 : equalTypes k w (#subs s1 F cF1) (#subs s2 F cF2)
+  hf3 = equalInType→equalTypes-aux i k lti w (#subs s1 F cF1) (#subs s2 F cF2) hf2
+
+  c1F : ∀𝕎 w (λ w' _ → equalTypes i w' (#subs s1 F cF1) (#subs s2 F cF2))
+  c1F w1 e1 = equalTypes-uni-mon (<⇒≤ lti) (eqTypes-mon (uni k) hf3 w1 e1)
+
+  c1G : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#subs s1 F cF1) a₁ a₂
+                     → equalTypes i w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s2 G cG2)))
+  c1G w1 e1 a₁ a₂ a∈ =
+    ≡CTerm→eqTypes
+      (sym (sub0-#[0]subs a₁ s1 G cG1))
+      (sym (sub0-#[0]subs a₂ s2 G cG2))
+      c1Ga
+    where
+    c1Ga : equalTypes i w1 (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G cG1))
+                           (#subs (s2 Data.List.∷ʳ a₂) G (→covered∷ʳ a₂ s2 G cG2))
+    c1Ga = fst (hg w1 (s1 Data.List.∷ʳ a₁) (s2 Data.List.∷ʳ a₂)
+                  (→covered∷ʳ a₁ s1 G cG1) (→covered∷ʳ a₂ s2 G cG2)
+                  (→covered∷ʳ a₁ s1 t clt1) (→covered∷ʳ a₂ s2 t clt2)
+                  (≡subs∷ʳ i w1 s1 s2 H F cF1 a₁ a₂ a∈ (≡subs-mon e1 es))
+                  (≡hyps∷ʳ i w1 s1 s2 H H F F cF1 cF2 a₁ a₂ (c1F w1 e1) (≡hyps-mon e1 eh)))
+
+  c1a : equalTypes i w (#PI (#subs s1 F cF1) (#[0]subs s1 G cG1)) (#PI (#subs s2 F cF2) (#[0]subs s2 G cG2))
+  c1a = eqTypesPI← {w} {i} {#subs s1 F cF1} {#[0]subs s1 G cG1} {#subs s2 F cF2} {#[0]subs s2 G cG2}
+                   c1F c1G
+
+  esg₁ : sub0 (#subs s1 a ca1) (#[0]subs s1 G cG1) ≡ #subs s1 (subn 0 a G) csg1
+  esg₁ = trans (sub0-#[0]subs (#subs s1 a ca1) s1 G cG1) (CTerm≡ (subs∷ʳ≡ s1 a G ca1))
+
+  esg₂ : sub0 (#subs s2 a ca2) (#[0]subs s2 G cG2) ≡ #subs s2 (subn 0 a G) csg2
+  esg₂ = trans (sub0-#[0]subs (#subs s2 a ca2) s2 G cG2) (CTerm≡ (subs∷ʳ≡ s2 a G ca2))
+
+  est₁ : sub0 (#subs s1 a ca1) (#[0]subs s1 t clt1) ≡ #subs s1 (subn 0 a t) cst1
+  est₁ = trans (sub0-#[0]subs (#subs s1 a ca1) s1 t clt1) (CTerm≡ (subs∷ʳ≡ s1 a t ca1))
+
+  est₂ : sub0 (#subs s2 a ca2) (#[0]subs s2 t clt2) ≡ #subs s2 (subn 0 a t) cst2
+  est₂ = trans (sub0-#[0]subs (#subs s2 a ca2) s2 t clt2) (CTerm≡ (subs∷ʳ≡ s2 a t ca2))
+
+  c2G : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#subs s1 F cF1) a₁ a₂
+                     → equalInType i w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₁ (#[0]subs s1 t clt1)) (sub0 a₂ (#[0]subs s2 t clt2)))
+  c2G w1 e1 a₁ a₂ a∈ =
+    ≡→equalInType
+      (sym (sub0-#[0]subs a₁ s1 G cG1))
+      (sym (sub0-#[0]subs a₁ s1 t clt1))
+      (sym (sub0-#[0]subs a₂ s2 t clt2))
+      c2Ga
+    where
+    c2Ga : equalInType i w1 (#subs (s1 Data.List.∷ʳ a₁) G (→covered∷ʳ a₁ s1 G cG1))
+                            (#subs (s1 Data.List.∷ʳ a₁) t (→covered∷ʳ a₁ s1 t clt1))
+                            (#subs (s2 Data.List.∷ʳ a₂) t (→covered∷ʳ a₂ s2 t clt2))
+    c2Ga = snd (hg w1 (s1 Data.List.∷ʳ a₁) (s2 Data.List.∷ʳ a₂)
+                  (→covered∷ʳ a₁ s1 G cG1) (→covered∷ʳ a₂ s2 G cG2)
+                  (→covered∷ʳ a₁ s1 t clt1) (→covered∷ʳ a₂ s2 t clt2)
+                  (≡subs∷ʳ i w1 s1 s2 H F cF1 a₁ a₂ a∈ (≡subs-mon e1 es))
+                  (≡hyps∷ʳ i w1 s1 s2 H H F F cF1 cF2 a₁ a₂ (c1F w1 e1) (≡hyps-mon e1 eh)))
+
+  c2b : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#subs s1 F cF1) a₁ a₂
+                     → equalInType i w' (sub0 a₁ (#[0]subs s1 G cG1))
+                                        (#APPLY (#LAMBDA (#[0]subs s1 t clt1)) a₁)
+                                        (#APPLY (#LAMBDA (#[0]subs s2 t clt2)) a₂))
+  c2b w1 e1 a₁ a₂ a∈ =
+    equalInType-#⇛ₚ-left-right-rev
+      {i} {w1}
+      {sub0 a₁ (#[0]subs s1 G cG1)}
+      {#APPLY (#LAMBDA (#[0]subs s1 t clt1)) a₁} {sub0 a₁ (#[0]subs s1 t clt1)}
+      {#APPLY (#LAMBDA (#[0]subs s2 t clt2)) a₂} {sub0 a₂ (#[0]subs s2 t clt2)}
+      (#APPLY-LAMBDA⇛! w1 (#[0]subs s1 t clt1) a₁)
+      (#APPLY-LAMBDA⇛! w1 (#[0]subs s2 t clt2) a₂)
+      (c2G w1 e1 a₁ a₂ a∈)
+
+  c2a : equalInType i w (#PI (#subs s1 F cF1) (#[0]subs s1 G cG1)) (#LAMBDA (#[0]subs s1 t clt1)) (#LAMBDA (#[0]subs s2 t clt2))
+  c2a = equalInType-PI {i} {w} {#subs s1 F cF1} {#[0]subs s1 G cG1} {#LAMBDA (#[0]subs s1 t clt1)} {#LAMBDA (#[0]subs s2 t clt2)}
+                       (λ w1 e1 → TEQrefl-equalTypes i w1 (#subs s1 F cF1) (#subs s2 F cF2) (c1F w1 e1))
+                       (λ w1 e1 a₁ a₂ a∈ →
+                         TEQtrans-equalTypes i w1 (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₁ (#[0]subs s2 G cG2)) (sub0 a₂ (#[0]subs s1 G cG1))
+                                             (c1G w1 e1 a₁ a₁ (equalInType-refl a∈))
+                                             (TEQsym-equalTypes i w1 (sub0 a₂ (#[0]subs s1 G cG1)) (sub0 a₁ (#[0]subs s2 G cG2))
+                                                                (c1G w1 e1 a₂ a₁ (equalInType-sym a∈))))
+                       c2b
+
+  ha1 : equalInType i w (#subs s1 F cF1) (#subs s1 a ca1) (#subs s2 a ca2)
+  ha1 = snd (ha w s1 s2 cF1 cF2 ca1 ca2 es eh)
+
+  c1p1 : equalTypes i w (#subs s1 (subn 0 a G) csg1) (#subs s2 (subn 0 a G) csg2)
+  c1p1 = ≡CTerm→eqTypes esg₁ esg₂ (c1G w (⊑-refl· w) (#subs s1 a ca1) (#subs s2 a ca2) ha1)
+
+  c1p2 : equalInType i w (#subs s1 (subn 0 a G) csg1) (#subs s1 (APPLY (LAMBDA t) a) cta1) (#subs s2 (APPLY (LAMBDA t) a) cta2)
+  c1p2 = ≡→equalInType
+           esg₁
+           (sym (#subs-APPLY-LAMBDA s1 t a cta1 clt1 ca1))
+           (sym (#subs-APPLY-LAMBDA s2 t a cta2 clt2 ca2))
+           (c2b w (⊑-refl· w) (#subs s1 a ca1) (#subs s2 a ca2) ha1)
+
+  c1p3 : equalInType i w (#subs s1 (subn 0 a G) csg1) (#subs s1 (subn 0 a t) cst1) (#subs s2 (subn 0 a t) cst2)
+  c1p3 = ≡→equalInType esg₁ est₁ est₂ (c2G w (⊑-refl· w) (#subs s1 a ca1) (#subs s2 a ca2) ha1)
+
+  c1 : equalTypes i w (#subs s1 (EQ (APPLY (LAMBDA t) a) (subn 0 a t) (subn 0 a G)) cc1)
+                      (#subs s2 (EQ (APPLY (LAMBDA t) a) (subn 0 a t) (subn 0 a G)) cc2)
+  c1 = ≡CTerm→eqTypes
+         (sym (#subs-EQ s1 (APPLY (LAMBDA t) a) (subn 0 a t) (subn 0 a G) cc1 cta1 cst1 csg1))
+         (sym (#subs-EQ s2 (APPLY (LAMBDA t) a) (subn 0 a t) (subn 0 a G) cc2 cta2 cst2 csg2))
+         (eqTypesEQ← c1p1 c1p2 c1p3)
+
+  c2p1 : equalInType i w (#subs s1 (subn 0 a G) csg1) (#subs s1 (APPLY (LAMBDA t) a) cta1) (#subs s1 (subn 0 a t) cst1)
+  c2p1 = ≡→equalInType
+           esg₁ (sym (#subs-APPLY-LAMBDA s1 t a cta1 clt1 ca1)) est₁
+           (equalInType-#⇛ₚ-left-right-rev {i} {w}
+              {sub0 (#subs s1 a ca1) (#[0]subs s1 G cG1)}
+              {#APPLY (#LAMBDA (#[0]subs s1 t clt1)) (#subs s1 a ca1)} {sub0 (#subs s1 a ca1) (#[0]subs s1 t clt1)}
+              {sub0 (#subs s1 a ca1) (#[0]subs s1 t clt1)} {sub0 (#subs s1 a ca1) (#[0]subs s1 t clt1)}
+              (#APPLY-LAMBDA⇛! w (#[0]subs s1 t clt1) (#subs s1 a ca1))
+              (#⇛!-refl {w} {sub0 (#subs s1 a ca1) (#[0]subs s1 t clt1)})
+              (equalInType-refl (c2G w (⊑-refl· w) (#subs s1 a ca1) (#subs s2 a ca2) ha1)))
+
+  c2 : equalInType i w (#subs s1 (EQ (APPLY (LAMBDA t) a) (subn 0 a t) (subn 0 a G)) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  c2 = ≡→equalInType
+         (sym (#subs-EQ s1 (APPLY (LAMBDA t) a) (subn 0 a t) (subn 0 a G) cc1 cta1 cst1 csg1))
+         (sym (#subs-AX s1 ce1))
+         (sym (#subs-AX s2 ce2))
+         (→equalInType-EQ c2p1)
 
 
 valid∈FST : {i k : ℕ} {H : hypotheses} {F G t : Term} (lti : k < i)

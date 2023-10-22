@@ -105,7 +105,7 @@ open import sequent2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (valid∈-PI ; valid∈-SUM! ; valid∈-NAT! ; valid∈-FALSE ; valid∈-UNIT ; valid∈LAMBDA ; valid∈APPLY ; valid∈PAIR ;
          valid∈FST ; valid∈SND ; valid∈N0-NAT ; valid∈SUC-NAT ; valid∈NATREC ; valid∈-FALSE→ ; valid∈-AX-UNIT ;
-         valid∈-change-type ; valid≡-change-type ; valid≡APPLY)
+         valid∈-change-type ; valid≡-change-type ; valid≡APPLY ; valid≡LAMBDA ; valid≡SUC-NAT)
 
 
 ∈→ℕ : {n : Nat} {x : Fin n} {A : Term n} {Γ : Con Term n}
@@ -1282,14 +1282,20 @@ mutual
       (valid≡𝕎 i ⟦ Γ ⟧Γ (APPLY ⟦ f ⟧ᵤ ⟦ a ⟧ᵤ) (APPLY ⟦ g ⟧ᵤ ⟦ b ⟧ᵤ))
       (≣sym (⟦[]⟧ᵤ-as-subn G a))
       (valid≡APPLY (coveredΓ {n} Γ F) (⟦ j₁ ⟧Γ≡∈ i lti) (⟦ j ⟧Γ≡∈ i lti))
-  ⟦_⟧Γ≡∈ {n} {Γ} {.(lam _ ∘ _)} {.(t [ a ])} {.(G [ a ])} (β-red {a} {t} {F} {G} x x₁ x₂) i lti = {!!}
+  ⟦_⟧Γ≡∈ {n} {Γ} {.(lam _ ∘ _)} {.(t [ a ])} {.(G [ a ])} (β-red {a} {t} {F} {G} x x₁ x₂) i lti =
+    subst₂
+      (valid≡𝕎 i ⟦ Γ ⟧Γ (APPLY (LAMBDA ⟦ t ⟧ᵤ) ⟦ a ⟧ᵤ))
+      (≣sym (⟦[]⟧ᵤ-as-subn t a))
+      (≣sym (⟦[]⟧ᵤ-as-subn G a))
+      (valid≡LAMBDA {i} {2} lti (coveredΓ {n} Γ F) (⟦ x ⟧⊢ i 2 ≤-refl lti) (⟦ x₂ ⟧Γ∈ i lti) (⟦ x₁ ⟧Γ∈ i lti))
   ⟦_⟧Γ≡∈ {n} {Γ} {t} {u} {.(Π _ ▹ _)} (η-eq x x₁ x₂ j) i lti = {!!}
   ⟦_⟧Γ≡∈ {n} {Γ} {.(fst _)} {.(fst _)} {σ} (fst-cong x x₁ j) i lti = {!!}
   ⟦_⟧Γ≡∈ {n} {Γ} {.(snd _)} {.(snd _)} {.(G [ fst t ])} (snd-cong {t} {t'} {F} {G} x x₁ j) i lti = {!!}
   ⟦_⟧Γ≡∈ {n} {Γ} {.(fst (prod u _))} {u} {σ} (Σ-β₁ x x₁ x₂ x₃) i lti = {!!}
   ⟦_⟧Γ≡∈ {n} {Γ} {.(snd (prod _ u))} {u} {.(G [ fst (prod t u) ])} (Σ-β₂ {F} {G} {t} {u} x x₁ x₂ x₃) i lti = {!!}
   ⟦_⟧Γ≡∈ {n} {Γ} {t} {u} {.(Σ _ ▹ _)} (Σ-η x x₁ x₂ x₃ j j₁) i lti = {!!}
-  ⟦_⟧Γ≡∈ {n} {Γ} {.(Definition.Untyped.suc _)} {.(Definition.Untyped.suc _)} {.ℕ} (suc-cong j) i lti = {!!}
+  ⟦_⟧Γ≡∈ {n} {Γ} {.(Definition.Untyped.suc _)} {.(Definition.Untyped.suc _)} {.ℕ} (suc-cong j) i lti =
+    valid≡SUC-NAT (⟦_⟧Γ≡∈ j i lti)
   ⟦_⟧Γ≡∈ {n} {Γ} {.(natrec _ _ _ _)} {.(natrec _ _ _ _)} {.(F [ m ])} (natrec-cong {z} {z'} {s} {s'} {m} {m'} {F} {F'} x j j₁ j₂) i lti = {!!}
   ⟦_⟧Γ≡∈ {n} {Γ} {.(natrec _ u _ Definition.Untyped.zero)} {u} {.(F [ Definition.Untyped.zero ])} (natrec-zero {z} {s} {F} x x₁ x₂) i lti = {!!}
   ⟦_⟧Γ≡∈ {n} {Γ} {.(natrec _ _ _ (Definition.Untyped.suc _))} {.((_ ∘ _) ∘ natrec _ _ _ _)} {.(F [ Definition.Untyped.suc m ])} (natrec-suc {m} {z} {s} {F} x x₁ x₂ x₃) i lti = {!!}
