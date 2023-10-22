@@ -105,7 +105,7 @@ open import sequent2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (valid∈-PI ; valid∈-SUM! ; valid∈-NAT! ; valid∈-FALSE ; valid∈-UNIT ; valid∈LAMBDA ; valid∈APPLY ; valid∈PAIR ;
          valid∈FST ; valid∈SND ; valid∈N0-NAT ; valid∈SUC-NAT ; valid∈NATREC ; valid∈-FALSE→ ; valid∈-AX-UNIT ;
-         valid∈-change-type ; valid≡-change-type)
+         valid∈-change-type ; valid≡-change-type ; valid≡APPLY)
 
 
 ∈→ℕ : {n : Nat} {x : Fin n} {A : Term n} {Γ : Con Term n}
@@ -1277,7 +1277,11 @@ mutual
     valid≡𝕎-PI i 1 (1+<→ lti) ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ ⟦ H ⟧ᵤ ⟦ E ⟧ᵤ (⟦ j ⟧Γ≡∈ i lti) (⟦ j₁ ⟧Γ≡∈ i lti)
   ⟦_⟧Γ≡∈ {n} {Γ} {.(Σ _ ▹ _)} {.(Σ _ ▹ _)} {.U} (Σ-cong {E} {F} {G} {H} x j j₁) i lti =
     valid≡𝕎-SUM! i 1 (1+<→ lti) ⟦ Γ ⟧Γ ⟦ F ⟧ᵤ ⟦ G ⟧ᵤ ⟦ H ⟧ᵤ ⟦ E ⟧ᵤ (⟦ j ⟧Γ≡∈ i lti) (⟦ j₁ ⟧Γ≡∈ i lti)
-  ⟦_⟧Γ≡∈ {n} {Γ} {.(_ ∘ _)} {.(_ ∘ _)} {.(G [ a ])} (app-cong {a} {b} {f} {g} {F} {G} j j₁) i lti = {!!}
+  ⟦_⟧Γ≡∈ {n} {Γ} {.(_ ∘ _)} {.(_ ∘ _)} {.(G [ a ])} (app-cong {a} {b} {f} {g} {F} {G} j j₁) i lti =
+    ≣subst
+      (valid≡𝕎 i ⟦ Γ ⟧Γ (APPLY ⟦ f ⟧ᵤ ⟦ a ⟧ᵤ) (APPLY ⟦ g ⟧ᵤ ⟦ b ⟧ᵤ))
+      (≣sym (⟦[]⟧ᵤ-as-subn G a))
+      (valid≡APPLY (coveredΓ {n} Γ F) (⟦ j₁ ⟧Γ≡∈ i lti) (⟦ j ⟧Γ≡∈ i lti))
   ⟦_⟧Γ≡∈ {n} {Γ} {.(lam _ ∘ _)} {.(t [ a ])} {.(G [ a ])} (β-red {a} {t} {F} {G} x x₁ x₂) i lti = {!!}
   ⟦_⟧Γ≡∈ {n} {Γ} {t} {u} {.(Π _ ▹ _)} (η-eq x x₁ x₂ j) i lti = {!!}
   ⟦_⟧Γ≡∈ {n} {Γ} {.(fst _)} {.(fst _)} {σ} (fst-cong x x₁ j) i lti = {!!}
