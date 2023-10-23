@@ -101,17 +101,6 @@ open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 
-
--- MOVE
-→equalInType-EQ : {u : ℕ} {w : 𝕎·} {a b A : CTerm} {f g : CTerm}
-                  → equalInType u w A a b
-                  → equalInType u w (#EQ a b A) f g
-→equalInType-EQ {u} {w} {a} {b} {A} {f} {g} a∈ =
-  equalInType-EQ
-    (fst a∈)
-    (Mod.∀𝕎-□ M (λ w1 e1 → equalInType-mon a∈ w1 e1))
-
-
 valid∈-UNIV : (i k j : ℕ) (ltk : j < k) (lti : k < i) (H : hypotheses)
             → valid∈𝕎 i H (UNIV j) (UNIV k)
 valid∈-UNIV i k j ltk lti H w s1 s2 cc1 cc2 ce1 ce2 es eh =

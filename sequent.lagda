@@ -83,7 +83,8 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqInType-ext ; □·EqTypes→uniUpTo ; uniUpTo→□·EqTypes ; TEQrefl-equalTypes)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalInType-mon ; ≡CTerm→equalInType ; ≡CTerm→eqTypes ; equalTypes→equalInType-UNIV ; eqTypesUniv ;
-         wPredExtIrr-eqInType ; wPredDepExtIrr-eqInType ; wPredDepExtIrr-eqInType2 ; equalInType-refl ; equalInType-sym)
+         wPredExtIrr-eqInType ; wPredDepExtIrr-eqInType ; wPredDepExtIrr-eqInType2 ; equalInType-refl ; equalInType-sym ;
+         equalInType-EQ)
 
 
 -- ---------------------------------
@@ -3514,5 +3515,15 @@ covered∷ʳ-shiftUp→ s t A cov {x} i = c5 c4
   c5 : suc x ∈ 0 ∷ raiseVars (sdom s)
     → x ∈ sdom s
   c5 (there h) = ∈raiseVars→ {x} {sdom s} h
+
+
+-- MOVE
+→equalInType-EQ : {u : ℕ} {w : 𝕎·} {a b A : CTerm} {f g : CTerm}
+                  → equalInType u w A a b
+                  → equalInType u w (#EQ a b A) f g
+→equalInType-EQ {u} {w} {a} {b} {A} {f} {g} a∈ =
+  equalInType-EQ
+    (fst a∈)
+    (Mod.∀𝕎-□ M (λ w1 e1 → equalInType-mon a∈ w1 e1))
 
 \end{code}
