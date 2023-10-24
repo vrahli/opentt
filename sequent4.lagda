@@ -75,7 +75,7 @@ open import terms4(W)(C)(K)(G)(X)(N)(EC)
   using (lowerVars++⊆ ; lowerVars-fvars-shiftUp ; lowerVars-fvars-shiftUp⊆ ; lowerVars++ ; lowerVars2++⊆ ;
          lowerVars2-fvars-shiftUp⊆ ; sub-shiftUp0≡)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
-  using (⇓NUM→SUC⇓NUM ; #APPLY2 ; #FST ; #SND ; SUM! ; #SUM! ; #⇛!-FST-PAIR ; #⇛!-SND-PAIR)
+  using (⇓NUM→SUC⇓NUM ; #APPLY2 ; #FST ; #SND ; SUM! ; #SUM! ; #⇛!-FST-PAIR ; #⇛!-SND-PAIR ; ⇛!-FST-PAIR ; ⇛!-SND-PAIR)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqTypes-mon ; weq-ext-eq ; meq-ext-eq ; TUNIONeq-ext-eq)
@@ -947,6 +947,101 @@ valid≡SND {i} {k} {H} {F} {G} {t} {u} lti covH hf hg hs w s1 s2 cc1 cc2 ce1 ce
   c2 : equalInType i w (#subs s1 (EQ (SND t) (SND u) (subn 0 (FST t) G)) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
   c2 = ≡→equalInType
          (sym (#subs-EQ s1 (SND t) (SND u) (subn 0 (FST t) G) cc1 cst1 csu1 cSG1))
+         (sym (#subs-AX s1 ce1))
+         (sym (#subs-AX s2 ce2))
+         (→equalInType-EQ c2p1)
+
+
+#subs-FST-PAIR : (s : Sub) (a b : Term) (c : covered s (FST (PAIR a b))) (ca : covered s a) (cb : covered s b)
+               → #subs s (FST (PAIR a b)) c ≡ #FST (#PAIR (#subs s a ca) (#subs s b cb))
+#subs-FST-PAIR s a b c ca cb =
+  CTerm≡ (trans (subs-FST s (PAIR a b)) (cong FST (subs-PAIR s a b)))
+
+
+valid≡FST-PAIR : {i k : ℕ} {H : hypotheses} {F t u : Term} (lti : k < i)
+               → valid∈𝕎 i H t F
+               → valid≡𝕎 i H (FST (PAIR t u)) t F
+valid≡FST-PAIR {i} {k} {H} {F} {t} {u} lti hf w s1 s2 cc1 cc2 ce1 ce2 es eh =
+  c1 , c2
+  where
+  cfp1 : covered s1 (FST (PAIR t u))
+  cfp1 = coveredEQ₁ {s1} {FST (PAIR t u)} {t} {F} cc1
+
+  cfp2 : covered s2 (FST (PAIR t u))
+  cfp2 = coveredEQ₁ {s2} {FST (PAIR t u)} {t} {F} cc2
+
+  cp1 : covered s1 (PAIR t u)
+  cp1 = coveredFST {s1} {PAIR t u} cfp1
+
+  cp2 : covered s2 (PAIR t u)
+  cp2 = coveredFST {s2} {PAIR t u} cfp2
+
+  cT1 : covered s1 t
+  cT1 = coveredEQ₂ {s1} {FST (PAIR t u)} {t} {F} cc1
+
+  cT2 : covered s2 t
+  cT2 = coveredEQ₂ {s2} {FST (PAIR t u)} {t} {F} cc2
+
+  cU1 : covered s1 u
+  cU1 = coveredPAIR₂ {s1} {t} {u} cp1
+
+  cU2 : covered s2 u
+  cU2 = coveredPAIR₂ {s2} {t} {u} cp2
+
+  cF1 : covered s1 F
+  cF1 = coveredEQ₃ {s1} {FST (PAIR t u)} {t} {F} cc1
+
+  cF2 : covered s2 F
+  cF2 = coveredEQ₃ {s2} {FST (PAIR t u)} {t} {F} cc2
+
+  hf1 : equalInType i w (#subs s1 F cF1) (#subs s1 t cT1) (#subs s2 t cT2)
+  hf1 = snd (hf w s1 s2 cF1 cF2 cT1 cT2 es eh)
+
+  hf2 : equalTypes i w (#subs s1 F cF1) (#subs s2 F cF2)
+  hf2 = fst (hf w s1 s2 cF1 cF2 cT1 cT2 es eh)
+
+  c1p1 : equalTypes i w (#subs s1 F cF1) (#subs s2 F cF2)
+  c1p1 = hf2
+
+  c1p2 : equalInType i w (#subs s1 F cF1) (#subs s1 (FST (PAIR t u)) cfp1) (#subs s2 (FST (PAIR t u)) cfp2)
+  c1p2 = ≡→equalInType
+           refl
+           (sym (#subs-FST-PAIR s1 t u cfp1 cT1 cU1))
+           (sym (#subs-FST-PAIR s2 t u cfp2 cT2 cU2))
+           (equalInType-#⇛ₚ-left-right-rev
+             {i} {w} {#subs s1 F cF1}
+             {#FST (#PAIR (#subs s1 t cT1) (#subs s1 u cU1))} {#subs s1 t cT1}
+             {#FST (#PAIR (#subs s2 t cT2) (#subs s2 u cU2))} {#subs s2 t cT2}
+             (#⇛!-FST-PAIR (#PAIR (#subs s1 t cT1) (#subs s1 u cU1)) (#subs s1 t cT1) (#subs s1 u cU1) w
+               (#⇛!-refl {w} {#PAIR (#subs s1 t cT1) (#subs s1 u cU1)}))
+             (#⇛!-FST-PAIR (#PAIR (#subs s2 t cT2) (#subs s2 u cU2)) (#subs s2 t cT2) (#subs s2 u cU2) w
+               (#⇛!-refl {w} {#PAIR (#subs s2 t cT2) (#subs s2 u cU2)}))
+             hf1)
+
+  c1p3 : equalInType i w (#subs s1 F cF1) (#subs s1 t cT1) (#subs s2 t cT2)
+  c1p3 = hf1
+
+  c2p1 : equalInType i w (#subs s1 F cF1) (#subs s1 (FST (PAIR t u)) cfp1) (#subs s1 t cT1)
+  c2p1 = ≡→equalInType
+           refl (sym (#subs-FST-PAIR s1 t u cfp1 cT1 cU1)) refl
+           (equalInType-#⇛ₚ-left-right-rev
+              {i} {w} {#subs s1 F cF1}
+              {#FST (#PAIR (#subs s1 t cT1) (#subs s1 u cU1))} {#subs s1 t cT1}
+              {#subs s1 t cT1} {#subs s1 t cT1}
+              (#⇛!-FST-PAIR (#PAIR (#subs s1 t cT1) (#subs s1 u cU1)) (#subs s1 t cT1) (#subs s1 u cU1) w
+               (#⇛!-refl {w} {#PAIR (#subs s1 t cT1) (#subs s1 u cU1)}))
+              (#⇛!-refl {w} {#subs s1 t cT1})
+              (equalInType-refl c1p3))
+
+  c1 : equalTypes i w (#subs s1 (EQ (FST (PAIR t u)) t F) cc1) (#subs s2 (EQ (FST (PAIR t u)) t F) cc2)
+  c1 = ≡CTerm→eqTypes
+         (sym (#subs-EQ s1 (FST (PAIR t u)) t F cc1 cfp1 cT1 cF1))
+         (sym (#subs-EQ s2 (FST (PAIR t u)) t F cc2 cfp2 cT2 cF2))
+         (eqTypesEQ← c1p1 c1p2 c1p3)
+
+  c2 : equalInType i w (#subs s1 (EQ (FST (PAIR t u)) t F) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  c2 = ≡→equalInType
+         (sym (#subs-EQ s1 (FST (PAIR t u)) t F cc1 cfp1 cT1 cF1))
          (sym (#subs-AX s1 ce1))
          (sym (#subs-AX s2 ce2))
          (→equalInType-EQ c2p1)

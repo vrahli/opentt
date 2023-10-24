@@ -107,7 +107,7 @@ open import sequent3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
          valid∈SUC-NAT ; valid∈NATREC ; valid∈-FALSE→ ; valid∈-AX-UNIT ; valid∈-change-type ; valid≡-change-type ;
          valid≡APPLY ; valid≡LAMBDA ; valid≡SUC-NAT ; valid≡-FALSE→ ; valid≡-UNIT)
 open import sequent4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (valid∈FST ; valid∈SND ; valid∈PAIR ; valid≡FST ; valid≡SND)
+  using (valid∈FST ; valid∈SND ; valid∈PAIR ; valid≡FST ; valid≡SND ; valid≡FST-PAIR)
 
 ∈→ℕ : {n : Nat} {x : Fin n} {A : Term n} {Γ : Con Term n}
     → x ∷ A ∈ Γ
@@ -1298,7 +1298,7 @@ mutual
            (≣sym (⟦[]⟧ᵤ-as-subn G (fst t)))
            (valid≡SND lti (coveredΓ {n} Γ F) (⟦ x ⟧⊢ i 2 ≤-refl lti) (⟦ x₁ ⟧⊢ i 2 ≤-refl lti) (⟦ j ⟧Γ≡∈ i lti))
   ⟦_⟧Γ≡∈ {n} {Γ} {.(fst (prod u _))} {u} {σ} (Σ-β₁ {F} {G} {t} {t'} x x₁ x₂ x₃) i lti =
-    {!!} --
+    valid≡FST-PAIR lti (⟦ x₂ ⟧Γ∈ i lti)
   ⟦_⟧Γ≡∈ {n} {Γ} {.(snd (prod _ u))} {u} {.(G [ fst (prod t u) ])} (Σ-β₂ {F} {G} {t} {u} x x₁ x₂ x₃) i lti =
     {!!}
   ⟦_⟧Γ≡∈ {n} {Γ} {t} {u} {.(Σ _ ▹ _)} (Σ-η x x₁ x₂ x₃ j j₁) i lti =
