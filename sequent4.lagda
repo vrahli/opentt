@@ -87,7 +87,7 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
          equalInType-NAT!→ ; equalInType-local ; equalInType-mon ; equalInType-PI→ ; equalInType-PI ; isFam ;
          equalInType-FUN→ ; equalInType-refl ; equalInType-sym ; equalInType-SUM→ ; eqTypesEQ← ; equalInType-EQ)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (→equalInType-TRUE ; equalInType-EQ→₁)
+  using (→equalInType-TRUE ; equalInType-EQ→₁ ; equalInType-trans)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (→equalInType-NAT!)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -1063,6 +1063,16 @@ valid≡FST-PAIR {i} {k} {H} {F} {t} {u} lti hf w s1 s2 cc1 cc2 ce1 ce2 es eh =
 ... | inj₂ j = cb j
 
 
+-- MOVE
+→coveredAPPLY : {s : Sub} {a b : Term}
+              → covered s a
+              → covered s b
+              → covered s (APPLY a b)
+→coveredAPPLY {s} {a} {b} ca cb {x} i with ∈-++⁻ (fvars a) i
+... | inj₁ j = ca j
+... | inj₂ j = cb j
+
+
 valid≡SND-PAIR : {i k : ℕ} {H : hypotheses} {F G t u : Term} (lti : k < i)
                → coveredH H F
                → valid∈𝕎 i H t F
@@ -1280,6 +1290,309 @@ valid≡SND-PAIR {i} {k} {H} {F} {G} {t} {u} lti covH hf hu hg w s1 s2 cc1 cc2 c
   c2 : equalInType i w (#subs s1 (EQ (SND (PAIR t u)) u (subn 0 (FST (PAIR t u)) G)) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
   c2 = ≡→equalInType
          (sym (#subs-EQ s1 (SND (PAIR t u)) u (subn 0 (FST (PAIR t u)) G) cc1 csp1 cU1 cSG1))
+         (sym (#subs-AX s1 ce1))
+         (sym (#subs-AX s2 ce2))
+         (→equalInType-EQ c2p1)
+
+
+-- MOVE
+→covered-shiftUp : {s : Sub} {t : Term} (a : CTerm)
+                 → covered s t
+                 → covered (s ∷ʳ a) (shiftUp 0 t)
+→covered-shiftUp {s} {t} a cov {x} i
+  rewrite sdom∷ʳ s a
+        | fvars-shiftUp≡ 0 t
+  with ∈-map⁻ suc i
+... | k , k1 , k2 rewrite k2 =
+  there (∈-map⁺ suc (cov {k} k1))
+
+
+-- MOVE
+∈sdom→< : (x : Var) (s : Sub)
+        → x ∈ sdom s
+        → x < length s
+∈sdom→< x (x₁ ∷ s) (here px) rewrite px = _≤_.s≤s _≤_.z≤n
+∈sdom→< x (x₁ ∷ s) (there i) with ∈-map⁻ suc i
+... | k , k1 , k2 rewrite k2 = _≤_.s≤s (∈sdom→< k s k1)
+
+
+-- MOVE
+covered→covered∷ʳ : {s : Sub} {t : Term} (a : CTerm)
+                  → covered s t
+                  → covered (s Data.List.∷ʳ a) t
+covered→covered∷ʳ {s} {t} a cov {x} i =
+  →∈sdom x (s ∷ʳ a) (subst (λ z → x < z) (sym (length-∷ʳ a s)) (≤-trans (∈sdom→< x s (cov {x} i)) (<⇒≤ ≤-refl)))
+
+
+-- MOVE
+covered∷ʳ→ : (a : CTerm) (s : Sub) (t : Term)
+           → covered (s ∷ʳ a) t
+           → covered0 s t
+covered∷ʳ→ a s t c {x} i with c {suc x} (∈lowerVars→ x (fvars t) i)
+... | z rewrite sdom∷ʳ s a with z
+... | there w with ∈-map⁻ suc w
+... | k , k1 , k2 rewrite suc-injective k2 = k1
+
+
+valid≡PI-ETA : {i k : ℕ} {H : hypotheses} {F G t u : Term} (lti : k < i)
+             → coveredH H F
+             → valid∈𝕎 i H F (UNIV k)
+             → valid∈𝕎 i H t (PI F G)
+             → valid∈𝕎 i H u (PI F G)
+             → valid≡𝕎 i (H Data.List.∷ʳ mkHyp F) (APPLY (shiftUp 0 t) (VAR 0)) (APPLY (shiftUp 0 u) (VAR 0)) G
+             → valid≡𝕎 i H t u (PI F G)
+valid≡PI-ETA {i} {k} {H} {F} {G} {t} {u} lti covH hf ht hu he w s1 s2 cc1 cc2 ce1 ce2 es eh =
+  c1 , c2
+  where
+  cP1 : covered s1 (PI F G)
+  cP1 = coveredEQ₃ {s1} {t} {u} {PI F G} cc1
+
+  cP2 : covered s2 (PI F G)
+  cP2 = coveredEQ₃ {s2} {t} {u} {PI F G} cc2
+
+  cF1 : covered s1 F
+  cF1 = coveredPI₁ {s1} {F} {G} cP1
+
+  cF2 : covered s2 F
+  cF2 = coveredPI₁ {s2} {F} {G} cP2
+
+  cG1 : covered0 s1 G
+  cG1 = coveredPI₂ {s1} {F} {G} cP1
+
+  cG2 : covered0 s2 G
+  cG2 = coveredPI₂ {s2} {F} {G} cP2
+
+  cT1 : covered s1 t
+  cT1 = coveredEQ₁ {s1} {t} {u} {PI F G} cc1
+
+  cT2 : covered s2 t
+  cT2 = coveredEQ₁ {s2} {t} {u} {PI F G} cc2
+
+  cU1 : covered s1 u
+  cU1 = coveredEQ₂ {s1} {t} {u} {PI F G} cc1
+
+  cU2 : covered s2 u
+  cU2 = coveredEQ₂ {s2} {t} {u} {PI F G} cc2
+
+  cu1a : covered s1 (UNIV k)
+  cu1a = covered-UNIV s1 k
+
+  cu2a : covered s2 (UNIV k)
+  cu2a = covered-UNIV s2 k
+
+  c1p1 : equalTypes i w (#subs s1 (PI F G) cP1) (#subs s2 (PI F G) cP2)
+  c1p1 = fst (ht w s1 s2 cP1 cP2 cT1 cT2 es eh)
+
+  c1p1a : equalTypes i w (#PI (#subs s1 F cF1) (#[0]subs s1 G cG1))
+                         (#PI (#subs s2 F cF2) (#[0]subs s2 G cG2))
+  c1p1a = ≡CTerm→eqTypes
+            (#subs-PI s1 F G cP1 cF1 cG1)
+            (#subs-PI s2 F G cP2 cF2 cG2)
+            c1p1
+
+  c1p2 : equalInType i w (#subs s1 (PI F G) cP1) (#subs s1 t cT1) (#subs s2 t cT2)
+  c1p2 = snd (ht w s1 s2 cP1 cP2 cT1 cT2 es eh)
+
+  c1p3 : equalInType i w (#subs s1 (PI F G) cP1) (#subs s1 u cU1) (#subs s2 u cU2)
+  c1p3 = snd (hu w s1 s2 cP1 cP2 cU1 cU2 es eh)
+
+  c1F : ∀𝕎 w (λ w' _ → equalTypes i w' (#subs s1 F cF1) (#subs s2 F cF2))
+  c1F w1 e1 =
+    equalTypes-mon
+      (equalTypesPI→ₗ
+        {w} {i} {#subs s1 F cF1} {#[0]subs s1 G cG1} {#subs s2 F cF2} {#[0]subs s2 G cG2}
+        c1p1a) w1 e1
+
+  c1G : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#subs s1 F cF1) a₁ a₂
+                     → equalTypes i w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s2 G cG2)))
+  c1G w1 e1 a₁ a₂ a∈ =
+    equalTypesPI→ᵣ
+      {w1} {i} {#subs s1 F cF1} {#[0]subs s1 G cG1} {#subs s2 F cF2} {#[0]subs s2 G cG2}
+      (equalTypes-mon c1p1a w1 e1)
+      a₁ a₂ a∈
+
+  c1EG : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#subs s1 F cF1) a₁ a₂
+                      → equalInType i w' (sub0 a₁ (#[0]subs s1 G cG1))
+                                    (#APPLY (#subs s1 t cT1) a₁) (#APPLY (#subs s1 u cU1) a₂))
+  c1EG w1 e1 a₁ a₂ a∈ = eapp
+    where
+    epi : Term
+    epi = EQ (APPLY (shiftUp 0 t) (VAR 0)) (APPLY (shiftUp 0 u) (VAR 0)) G
+
+    ss1 : Sub
+    ss1 = s1 Data.List.∷ʳ a₁
+
+    ss2 : Sub
+    ss2 = s2 Data.List.∷ʳ a₂
+
+    ss3 : Sub
+    ss3 = s1 Data.List.∷ʳ a₂
+
+    cST1 : covered ss1 (shiftUp 0 t)
+    cST1 = →covered-shiftUp {s1} {t} a₁ cT1
+
+    cST2 : covered ss2 (shiftUp 0 t)
+    cST2 = →covered-shiftUp {s2} {t} a₂ cT2
+
+    cST3 : covered ss3 (shiftUp 0 t)
+    cST3 = →covered-shiftUp {s1} {t} a₂ cT1
+
+    cSU1 : covered ss1 (shiftUp 0 u)
+    cSU1 = →covered-shiftUp {s1} {u} a₁ cU1
+
+    cSU2 : covered ss2 (shiftUp 0 u)
+    cSU2 = →covered-shiftUp {s2} {u} a₂ cU2
+
+    cSU3 : covered ss3 (shiftUp 0 u)
+    cSU3 = →covered-shiftUp {s1} {u} a₂ cU1
+
+    cSV1 : covered ss1 (VAR 0)
+    cSV1 = →covered∷ʳ a₁ s1 (VAR 0) (→covered0-VAR0 s1)
+
+    cSV2 : covered ss2 (VAR 0)
+    cSV2 = →covered∷ʳ a₂ s2 (VAR 0) (→covered0-VAR0 s2)
+
+    cSV3 : covered ss3 (VAR 0)
+    cSV3 = →covered∷ʳ a₂ s1 (VAR 0) (→covered0-VAR0 s1)
+
+    cAST1 : covered ss1 (APPLY (shiftUp 0 t) (VAR 0))
+    cAST1 = →coveredAPPLY {ss1} {shiftUp 0 t} {VAR 0} cST1 cSV1
+
+    cAST2 : covered ss2 (APPLY (shiftUp 0 t) (VAR 0))
+    cAST2 = →coveredAPPLY {ss2} {shiftUp 0 t} {VAR 0} cST2 cSV2
+
+    cAST3 : covered ss3 (APPLY (shiftUp 0 t) (VAR 0))
+    cAST3 = →coveredAPPLY {ss3} {shiftUp 0 t} {VAR 0} cST3 cSV3
+
+    cASU1 : covered ss1 (APPLY (shiftUp 0 u) (VAR 0))
+    cASU1 = →coveredAPPLY {ss1} {shiftUp 0 u} {VAR 0} cSU1 cSV1
+
+    cASU2 : covered ss2 (APPLY (shiftUp 0 u) (VAR 0))
+    cASU2 = →coveredAPPLY {ss2} {shiftUp 0 u} {VAR 0} cSU2 cSV2
+
+    cASU3 : covered ss3 (APPLY (shiftUp 0 u) (VAR 0))
+    cASU3 = →coveredAPPLY {ss3} {shiftUp 0 u} {VAR 0} cSU3 cSV3
+
+    cGG1 : covered ss1 G
+    cGG1 = →covered∷ʳ a₁ s1 G cG1
+
+    cGG2 : covered ss2 G
+    cGG2 = →covered∷ʳ a₂ s2 G cG2
+
+    cGG3 : covered ss3 G
+    cGG3 = →covered∷ʳ a₂ s1 G cG1
+
+    cE1 : covered ss1 epi
+    cE1 = →coveredEQ
+            {ss1} {APPLY (shiftUp 0 t) (VAR 0)} {APPLY (shiftUp 0 u) (VAR 0)} {G}
+            cAST1 cASU1 cGG1
+
+    cE2 : covered ss2 epi
+    cE2 = →coveredEQ
+            {ss2} {APPLY (shiftUp 0 t) (VAR 0)} {APPLY (shiftUp 0 u) (VAR 0)} {G}
+            cAST2 cASU2 cGG2
+
+    cE3 : covered ss3 epi
+    cE3 = →coveredEQ
+            {ss3} {APPLY (shiftUp 0 t) (VAR 0)} {APPLY (shiftUp 0 u) (VAR 0)} {G}
+            cAST3 cASU3 cGG3
+
+    cA1 : covered ss1 AX
+    cA1 = covered-AX ss1
+
+    cA2 : covered ss2 AX
+    cA2 = covered-AX ss2
+
+    cA3 : covered ss3 AX
+    cA3 = covered-AX ss3
+
+    hea : equalTypes i w1 (#subs ss1 epi cE1)
+                          (#subs ss3 epi cE3)
+    hea = fst (he w1 ss1 ss3 cE1 cE3 cA1 cA3
+                  (≡subs∷ʳ i w1 s1 s1 H F cF1 a₁ a₂ a∈ (≡subs-refl i w1 s1 s2 H (≡subs-mon e1 es)))
+                  (≡hyps∷ʳ i w1 s1 s1 H H F F cF1 cF1 a₁ a₂
+                           (TEQrefl-equalTypes i w1 (#subs s1 F cF1) (#subs s2 F cF2) (c1F w1 e1))
+                           (≡hyps-refl i w1 s1 s2 H H (≡hyps-mon e1 eh))))
+
+    heb : equalTypes i w1 (#EQ (#subs ss1 (APPLY (shiftUp 0 t) (VAR 0)) cAST1)
+                               (#subs ss1 (APPLY (shiftUp 0 u) (VAR 0)) cASU1)
+                               (#subs ss1 G cGG1))
+                          (#EQ (#subs ss3 (APPLY (shiftUp 0 t) (VAR 0)) cAST3)
+                               (#subs ss3 (APPLY (shiftUp 0 u) (VAR 0)) cASU3)
+                               (#subs ss3 G cGG3))
+    heb = ≡CTerm→eqTypes
+            (#subs-EQ ss1 (APPLY (shiftUp 0 t) (VAR 0)) (APPLY (shiftUp 0 u) (VAR 0)) G cE1 cAST1 cASU1 cGG1)
+            (#subs-EQ ss3 (APPLY (shiftUp 0 t) (VAR 0)) (APPLY (shiftUp 0 u) (VAR 0)) G cE3 cAST3 cASU3 cGG3)
+            hea
+
+    hec : equalInType i w1 (#subs ss1 G cGG1)
+                           (#subs ss1 (APPLY (shiftUp 0 u) (VAR 0)) cASU1)
+                           (#subs ss3 (APPLY (shiftUp 0 u) (VAR 0)) cASU3)
+
+    hec = eqTypesEQ→ᵣ {w1} {i} {#subs ss1 (APPLY (shiftUp 0 t) (VAR 0)) cAST1}
+                               {#subs ss1 (APPLY (shiftUp 0 u) (VAR 0)) cASU1}
+                               {#subs ss3 (APPLY (shiftUp 0 t) (VAR 0)) cAST3}
+                               {#subs ss3 (APPLY (shiftUp 0 u) (VAR 0)) cASU3}
+                               heb
+
+    he1 : equalInType i w1 (#subs ss1 epi cE1) (#subs ss1 AX cA1) (#subs ss2 AX cA2)
+    he1 = snd (he w1 ss1 ss2 cE1 cE2 cA1 cA2
+                  (≡subs∷ʳ i w1 s1 s2 H F cF1 a₁ a₂ a∈ (≡subs-mon e1 es))
+                  (≡hyps∷ʳ i w1 s1 s2 H H F F cF1 cF2 a₁ a₂ (c1F w1 e1) (≡hyps-mon e1 eh)))
+
+    he2 : equalInType i w1 (#subs ss1 G cGG1)
+                           (#subs ss1 (APPLY (shiftUp 0 t) (VAR 0)) cAST1)
+                           (#subs ss1 (APPLY (shiftUp 0 u) (VAR 0)) cASU1)
+    he2 = equalInType-EQ→₁
+              (≡→equalInType
+                (#subs-EQ ss1 (APPLY (shiftUp 0 t) (VAR 0)) (APPLY (shiftUp 0 u) (VAR 0)) G cE1 cAST1 cASU1 cGG1)
+                (#subs-AX ss1 cA1)
+                (#subs-AX ss2 cA2)
+                he1)
+
+    he3 : equalInType i w1 (sub0 a₁ (#[0]subs s1 G cG1))
+                           (#APPLY (#subs ss1 (shiftUp 0 t) cST1) (#subs ss1 (VAR 0) cSV1))
+                           (#APPLY (#subs ss3 (shiftUp 0 u) cSU3) (#subs ss3 (VAR 0) cSV3))
+    he3 = ≡→equalInType
+            (sym (sub0-#[0]subs a₁ s1 G cG1))
+            (#subs-APPLY ss1 (shiftUp 0 t) (VAR 0) cAST1 cST1 cSV1)
+            (#subs-APPLY ss3 (shiftUp 0 u) (VAR 0) cASU3 cSU3 cSV3)
+            (equalInType-trans he2 hec)
+
+    eq1 : #APPLY (#subs ss1 (shiftUp 0 t) cST1) (#subs ss1 (VAR 0) cSV1) ≡ #APPLY (#subs s1 t cT1) a₁
+    eq1 = CTerm≡ (cong₂ APPLY (subs∷ʳ-shiftUp s1 a₁ t) (subs∷ʳ-VAR0 s1 a₁))
+
+    eq2 : #APPLY (#subs ss3 (shiftUp 0 u) cSU3) (#subs ss3 (VAR 0) cSV3) ≡ #APPLY (#subs s1 u cU1) a₂
+    eq2 = CTerm≡ (cong₂ APPLY (subs∷ʳ-shiftUp s1 a₂ u) (subs∷ʳ-VAR0 s1 a₂))
+
+    eapp : equalInType i w1 (sub0 a₁ (#[0]subs s1 G cG1)) (#APPLY (#subs s1 t cT1) a₁) (#APPLY (#subs s1 u cU1) a₂)
+    eapp = ≡→equalInType refl eq1 eq2 he3
+
+  c2p1 : equalInType i w (#subs s1 (PI F G) cP1) (#subs s1 t cT1) (#subs s1 u cU1)
+  c2p1 = ≡CTerm→equalInType
+           (sym (#subs-PI s1 F G cP1 cF1 cG1))
+           (equalInType-PI
+             (λ w1 e1 → TEQrefl-equalTypes i w1 (#subs s1 F cF1) (#subs s2 F cF2) (c1F w1 e1))
+             (λ w1 e1 a₁ a₂ a∈ →
+               equalTypesPI→ᵣ
+               {w1} {i} {#subs s1 F cF1} {#[0]subs s1 G cG1} {#subs s1 F cF1} {#[0]subs s1 G cG1}
+               (equalTypes-mon
+                 (TEQrefl-equalTypes
+                   i w (#PI (#subs s1 F cF1) (#[0]subs s1 G cG1)) (#PI (#subs s2 F cF2) (#[0]subs s2 G cG2))
+                   c1p1a)
+                 w1 e1)
+               a₁ a₂ a∈)
+             c1EG)
+
+  c1 : equalTypes i w (#subs s1 (EQ t u (PI F G)) cc1) (#subs s2 (EQ t u (PI F G)) cc2)
+  c1 = ≡CTerm→eqTypes
+         (sym (#subs-EQ s1 t u (PI F G) cc1 cT1 cU1 cP1))
+         (sym (#subs-EQ s2 t u (PI F G) cc2 cT2 cU2 cP2))
+         (eqTypesEQ← c1p1 c1p2 c1p3)
+
+  c2 : equalInType i w (#subs s1 (EQ t u (PI F G)) cc1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  c2 = ≡→equalInType
+         (sym (#subs-EQ s1 t u (PI F G) cc1 cT1 cU1 cP1))
          (sym (#subs-AX s1 ce1))
          (sym (#subs-AX s2 ce2))
          (→equalInType-EQ c2p1)

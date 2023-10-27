@@ -107,7 +107,7 @@ open import sequent3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
          valid∈SUC-NAT ; valid∈NATREC ; valid∈-FALSE→ ; valid∈-AX-UNIT ; valid∈-change-type ; valid≡-change-type ;
          valid≡APPLY ; valid≡LAMBDA ; valid≡SUC-NAT ; valid≡-FALSE→ ; valid≡-UNIT)
 open import sequent4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (valid∈FST ; valid∈SND ; valid∈PAIR ; valid≡FST ; valid≡SND ; valid≡FST-PAIR ; valid≡SND-PAIR)
+  using (valid∈FST ; valid∈SND ; valid∈PAIR ; valid≡FST ; valid≡SND ; valid≡FST-PAIR ; valid≡SND-PAIR ; valid≡PI-ETA)
 
 
 ∈→ℕ : {n : Nat} {x : Fin n} {A : Term n} {Γ : Con Term n}
@@ -1290,8 +1290,16 @@ mutual
       (≣sym (⟦[]⟧ᵤ-as-subn t a))
       (≣sym (⟦[]⟧ᵤ-as-subn G a))
       (valid≡LAMBDA {i} {2} lti (coveredΓ {n} Γ F) (⟦ x ⟧⊢ i 2 ≤-refl lti) (⟦ x₂ ⟧Γ∈ i lti) (⟦ x₁ ⟧Γ∈ i lti))
-  ⟦_⟧Γ≡∈ {n} {Γ} {t} {u} {.(Π _ ▹ _)} (η-eq x x₁ x₂ j) i lti =
-    {!!}
+  ⟦_⟧Γ≡∈ {n} {Γ} {t} {u} {.(Π _ ▹ _)} (η-eq {f} {g} {F} {G} x x₁ x₂ j) i lti =
+    valid≡PI-ETA lti
+      (coveredΓ {n} Γ F)
+      (⟦ x ⟧⊢ i 2 ≤-refl lti)
+      (⟦ x₁ ⟧Γ∈ i lti)
+      (⟦ x₂ ⟧Γ∈ i lti)
+      (subst₂
+         (λ a b → valid≡𝕎 i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp ⟦ F ⟧ᵤ) (APPLY a (VAR 0)) (APPLY b (VAR 0)) ⟦ G ⟧ᵤ)
+         (⟦wk1⟧ᵤ t) (⟦wk1⟧ᵤ u)
+         (⟦ j ⟧Γ≡∈ i lti))
   ⟦_⟧Γ≡∈ {n} {Γ} {.(fst _)} {.(fst _)} {σ} (fst-cong {t} {t'} {F} {G} x x₁ j) i lti =
     valid≡FST lti (coveredΓ {1+ n} (Γ ∙ σ) G) (⟦ x ⟧⊢ i 2 ≤-refl lti) (⟦ x₁ ⟧⊢ i 2 ≤-refl lti) (⟦ j ⟧Γ≡∈ i lti)
   ⟦_⟧Γ≡∈ {n} {Γ} {.(snd _)} {.(snd _)} {.(G [ fst t ])} (snd-cong {t} {t'} {F} {G} x x₁ j) i lti =
