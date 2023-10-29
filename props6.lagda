@@ -77,6 +77,9 @@ open import terms8(W)(C)(K)(G)(X)(N)(EC)
 --open import termsPres(W)(C)(K)(G)(X)(N)(EC)
 --  using (#¬Enc→⇛! ; #¬Seq→⇛!)
 
+open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import type_sys_props_isect(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (□·EqTypes→uniUpTo ; uniUpTo→□·EqTypes ; ≡→#isValue ; equalInType→eqInType)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -890,5 +893,212 @@ abstract
               #⇓!→#⇓ (lower (c₁ w3 (⊑-trans· e2 e3))) ,
               #⇓!→#⇓ (lower (c₂ w3 (⊑-trans· e2 e3))) ,
               equalInType-mon b∈ w3 (⊑-trans· e2 e3)
+
+
+abstract
+  equalTypesSUM→ₗ : {w : 𝕎·} {i : ℕ} {A : CTerm} {B : CTerm0} {C : CTerm} {D : CTerm0}
+                 → equalTypes i w (#SUM A B) (#SUM C D)
+                 → equalTypes i w A C
+  equalTypesSUM→ₗ {w} {i} {A} {B} {C} {D} eqt = concl (#SUM A B) (#SUM C D) eqt refl refl
+    where
+      ind : {u : ℕ} {w : 𝕎·} {T1 T2 : CTerm} (eqt : equalTypes u w T1 T2)
+            → ({u' : ℕ} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : equalTypes u' w' T1' T2') → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt
+                → T1' ≡ #SUM A B → T2' ≡ #SUM C D → equalTypes u' w' A C)
+            → T1 ≡ #SUM A B → T2 ≡ #SUM C D → equalTypes u w A C
+--      ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqNAT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqQNAT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqTNAT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqLT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqQLT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqFREE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqPI (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2
+        = ≡CTerm→eqTypes
+            (sym (#SUMinj1 {A} {B} {A1} {B1} (trans (sym eq1) (#compAllVal x (≡→#isValue (#SUM A B) T1 (sym eq1) tt)))))
+            (sym (#SUMinj1 {C} {D} {A2} {B2} (trans (sym eq2) (#compAllVal x₁ (≡→#isValue (#SUM C D) T2 (sym eq2) tt)))))
+            (eqta w (⊑-refl· w))
+      ind {u} {w} {T1} {T2} (EQTW A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqW (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTM A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqM (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqSET (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqISECT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqTUNION (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqEQ (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqUNION (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqQTUNION (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqTSQUASH (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqTTRUNC (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqNOWRITE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOREAD x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqNOREAD (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqSUBSING (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqPURE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqNOSEQ (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOENC x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqNOENC (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqTERM (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqFFDEFS (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTUNIV m p c₁ c₂) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqUNIV (compAllVal c₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqLIFT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTBAR x) ind eq1 eq2 =
+        eqTypes-local (∀𝕎-□at W M x aw)
+        where
+        aw : ∀𝕎 w (λ w' e' → (z : equalTypes u w' T1 T2) → at□· x w' e' z → equalTypes u w' A C)
+        aw w1 e1 z at = ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR x) (<TypeBAR (ℕ→𝕌 u) w T1 T2 x w1 e1 z at)) eq1 eq2
+
+      concl : (T1 T2 : CTerm) (eqt : equalTypes i w T1 T2)
+              → T1 ≡ #SUM A B → T2 ≡ #SUM C D → equalTypes i w A C
+      concl T1 T2 eqt =
+        equalTypes-ind
+          (λ {i} {w} {T1} {T2} eqt → T1 ≡ #SUM A B → T2 ≡ #SUM C D → equalTypes i w A C)
+          ind eqt
+
+
+abstract
+  equalTypesSUM→ᵣ : {w : 𝕎·} {i : ℕ} {A : CTerm} {B : CTerm0} {C : CTerm} {D : CTerm0}
+                 → equalTypes i w (#SUM A B) (#SUM C D)
+                 → (a b : CTerm)
+                 → equalInType i w A a b
+                 → equalTypes i w (sub0 a B) (sub0 b D)
+  equalTypesSUM→ᵣ {w} {i} {A} {B} {C} {D} eqt a b a∈ = concl (#SUM A B) (#SUM C D) eqt refl refl a∈
+    where
+      ind : {u : ℕ} {w : 𝕎·} {T1 T2 : CTerm} (eqt : equalTypes u w T1 T2)
+            → ({u' : ℕ} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : equalTypes u' w' T1' T2') → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt
+                → T1' ≡ #SUM A B → T2' ≡ #SUM C D → equalInType u' w' A a b → equalTypes u' w' (sub0 a B) (sub0 b D))
+            → T1 ≡ #SUM A B → T2 ≡ #SUM C D → equalInType u w A a b → equalTypes u w (sub0 a B) (sub0 b D)
+--      ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqNAT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqQNAT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqTNAT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqLT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqQLT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqFREE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqPI (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 a∈
+        = ≡CTerm→eqTypes
+            (→≡sub0 {a} (sym (#SUMinj2 {A} {B} {A1} {B1} (trans (sym eq1) (#compAllVal x (≡→#isValue (#SUM A B) T1 (sym eq1) tt))))))
+            (→≡sub0 {b} (sym (#SUMinj2 {C} {D} {A2} {B2} (trans (sym eq2) (#compAllVal x₁ (≡→#isValue (#SUM C D) T2 (sym eq2) tt))))))
+            (eqtb w (⊑-refl· w) a b
+              (equalInType→eqInType {u} {w} {A} {A1} {A2}
+                (#SUMinj1 {A} {B} {A1} {B1} (trans (sym eq1) (#compAllVal x (≡→#isValue (#SUM A B) T1 (sym eq1) tt))))
+                a∈))
+      ind {u} {w} {T1} {T2} (EQTW A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqW (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTM A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqM (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqSET (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqISECT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqTUNION (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqEQ (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqUNION (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqQTUNION (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqTSQUASH (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqTTRUNC (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqNOWRITE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOREAD x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqNOREAD (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqSUBSING (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqPURE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqNOSEQ (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOENC x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqNOENC (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqTERM (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqFFDEFS (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTUNIV m p c₁ c₂) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqUNIV (compAllVal c₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqLIFT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTBAR x) ind eq1 eq2 a∈ =
+        eqTypes-local (∀𝕎-□at W M x aw)
+        where
+        aw : ∀𝕎 w (λ w' e' → (z : equalTypes u w' T1 T2) → at□· x w' e' z
+                           → equalTypes u w' (sub0 a B) (sub0 b D))
+        aw w1 e1 z at = ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR x) (<TypeBAR (ℕ→𝕌 u) w T1 T2 x w1 e1 z at)) eq1 eq2
+                            (equalInType-mon a∈ w1 e1)
+
+      concl : (T1 T2 : CTerm) (eqt : equalTypes i w T1 T2)
+              → T1 ≡ #SUM A B → T2 ≡ #SUM C D → equalInType i w A a b → equalTypes i w (sub0 a B) (sub0 b D)
+      concl T1 T2 eqt =
+        equalTypes-ind
+          (λ {i} {w} {T1} {T2} eqt → T1 ≡ #SUM A B → T2 ≡ #SUM C D → equalInType i w A a b → equalTypes i w (sub0 a B) (sub0 b D))
+          ind eqt
+
+
+abstract
+  equalTypesISECT→ₗ : {w : 𝕎·} {i : ℕ} {A B C D : CTerm}
+                    → equalTypes i w (#ISECT A B) (#ISECT C D)
+                    → equalTypes i w A C
+  equalTypesISECT→ₗ {w} {i} {A} {B} {C} {D} eqt = concl (#ISECT A B) (#ISECT C D) eqt refl refl
+    where
+      ind : {u : ℕ} {w : 𝕎·} {T1 T2 : CTerm} (eqt : equalTypes u w T1 T2)
+            → ({u' : ℕ} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : equalTypes u' w' T1' T2') → <Type {ℕ→𝕌 u'} eqt' {ℕ→𝕌 u} eqt
+                → T1' ≡ #ISECT A B → T2' ≡ #ISECT C D → equalTypes u' w' A C)
+            → T1 ≡ #ISECT A B → T2 ≡ #ISECT C D → equalTypes u w A C
+--      ind {u} {w} {T1} {T2} (EQTNAT x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqNAT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTQNAT x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqQNAT (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTTNAT x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqTNAT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqLT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTQLT a1 a2 b1 b2 x x₁ x₂ x₃) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqQLT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTFREE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqFREE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPI A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqPI (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTSUM A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqSUM (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTW A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqW (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTM A1 B1 C1 A2 B2 C2 x x₁ eqta eqtb eqtc exta extb extc) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqM (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTSET A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqSET (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTISECT A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2
+        = ≡CTerm→eqTypes
+            (sym (#ISECTinj1 {A} {B} {A1} {B1} (trans (sym eq1) (#compAllVal x  (≡→#isValue (#ISECT A B) T1 (sym eq1) tt)))))
+            (sym (#ISECTinj1 {C} {D} {A2} {B2} (trans (sym eq2) (#compAllVal x₁ (≡→#isValue (#ISECT C D) T2 (sym eq2) tt)))))
+            (eqtA w (⊑-refl· w))
+      ind {u} {w} {T1} {T2} (EQTTUNION A1 B1 A2 B2 x x₁ eqta eqtb exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqTUNION (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTEQ a1 b1 a2 b2 A₁ B₁ x x₁ eqtA exta eqt1 eqt2) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqEQ (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqUNION (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTQTUNION A1 B1 A2 B2 x x₁ eqtA eqtB exta extb) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqQTUNION (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTSQUASH A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqTSQUASH (compAllVal x₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTTRUNC A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqTTRUNC (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOWRITE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqNOWRITE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOREAD x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqNOREAD (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqSUBSING (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqPURE (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqNOSEQ (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTNOENC x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqNOENC (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTTERM t1 t2 x x₁ x₂) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqTERM (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqFFDEFS (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTUNIV m p c₁ c₂) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqUNIV (compAllVal c₁ tt))
+--      ind {u} {w} {T1} {T2} (EQTLIFT A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqLIFT (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTBAR x) ind eq1 eq2 =
+        eqTypes-local (∀𝕎-□at W M x aw)
+        where
+        aw : ∀𝕎 w (λ w' e' → (z : equalTypes u w' T1 T2) → at□· x w' e' z → equalTypes u w' A C)
+        aw w1 e1 z at = ind {u} {w1} {T1} {T2} z (<Type1 z (EQTBAR x) (<TypeBAR (ℕ→𝕌 u) w T1 T2 x w1 e1 z at)) eq1 eq2
+
+      concl : (T1 T2 : CTerm) (eqt : equalTypes i w T1 T2)
+              → T1 ≡ #ISECT A B → T2 ≡ #ISECT C D → equalTypes i w A C
+      concl T1 T2 eqt =
+        equalTypes-ind
+          (λ {i} {w} {T1} {T2} eqt → T1 ≡ #ISECT A B → T2 ≡ #ISECT C D → equalTypes i w A C)
+          ind eqt
+
+
+eqTypesNOWRITEMOD→ : {w : 𝕎·} {i : ℕ} {A B : CTerm}
+                   → equalTypes i w (#NOWRITEMOD A) (#NOWRITEMOD B)
+                   → equalTypes i w A B
+eqTypesNOWRITEMOD→ {w} {i} {A} {B} eqtA =
+  equalTypesISECT→ₗ {w} {i} {A} {#NOWRITE} {B} {#NOWRITE} eqtA
+
+
+eqTypesNOREADMOD→ : {w : 𝕎·} {i : ℕ} {A B : CTerm}
+                  → equalTypes i w (#NOREADMOD A) (#NOREADMOD B)
+                  → equalTypes i w A B
+eqTypesNOREADMOD→ {w} {i} {A} {B} eqtA =
+  equalTypesISECT→ₗ {w} {i} {A} {#NOREAD} {B} {#NOREAD} eqtA
+
+
+abstract
+  equalTypesSUM!→ₗ : {w : 𝕎·} {i : ℕ} {A : CTerm} {B : CTerm0} {C : CTerm} {D : CTerm0}
+                   → equalTypes i w (#SUM! A B) (#SUM! C D)
+                   → equalTypes i w A C
+  equalTypesSUM!→ₗ {w} {i} {A} {B} {C} {D} eqt =
+    equalTypesSUM→ₗ (eqTypesNOREADMOD→ (eqTypesNOWRITEMOD→ eqt))
+
+
+abstract
+  equalTypesSUM!→ᵣ : {w : 𝕎·} {i : ℕ} {A : CTerm} {B : CTerm0} {C : CTerm} {D : CTerm0}
+                   → equalTypes i w (#SUM! A B) (#SUM! C D)
+                   → (a b : CTerm)
+                   → equalInType i w A a b
+                   → equalTypes i w (sub0 a B) (sub0 b D)
+  equalTypesSUM!→ᵣ {w} {i} {A} {B} {C} {D} eqt =
+    equalTypesSUM→ᵣ (eqTypesNOREADMOD→ (eqTypesNOWRITEMOD→ eqt))
 
 \end{code}
