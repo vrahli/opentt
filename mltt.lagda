@@ -108,6 +108,8 @@ open import sequent3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
          valid≡APPLY ; valid≡LAMBDA ; valid≡SUC-NAT ; valid≡-FALSE→ ; valid≡-UNIT)
 open import sequent4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (valid∈FST ; valid∈SND ; valid∈PAIR ; valid≡FST ; valid≡SND ; valid≡FST-PAIR ; valid≡SND-PAIR ; valid≡PI-ETA)
+open import sequent5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (valid≡SUM!-ETA ; valid≡NATREC0)
 
 
 ∈→ℕ : {n : Nat} {x : Fin n} {A : Term n} {Γ : Con Term n}
@@ -1314,14 +1316,15 @@ mutual
            (valid≡SND-PAIR lti (coveredΓ {n} Γ F) (⟦ x₂ ⟧Γ∈ i lti)
              (≣subst (valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ u ⟧ᵤ) (⟦[]⟧ᵤ-as-subn G t) (⟦ x₃ ⟧Γ∈ i lti))
              (⟦ x₁ ⟧⊢ i 2 ≤-refl lti))
-  ⟦_⟧Γ≡∈ {n} {Γ} {t} {u} {.(Σ _ ▹ _)} (Σ-η x x₁ x₂ x₃ j j₁) i lti =
-    {!!}
+  ⟦_⟧Γ≡∈ {n} {Γ} {t} {u} {.(Σ _ ▹ _)} (Σ-η {p} {r} {F} {G} x x₁ x₂ x₃ j j₁) i lti =
+    valid≡SUM!-ETA (⟦ x₂ ⟧Γ∈ i lti) (⟦ x₃ ⟧Γ∈ i lti) (⟦ j ⟧Γ≡∈ i lti)
+      (≣subst (valid≡𝕎 i ⟦ Γ ⟧Γ (SND ⟦ t ⟧ᵤ) (SND ⟦ u ⟧ᵤ)) (⟦[]⟧ᵤ-as-subn G (fst t)) (⟦ j₁ ⟧Γ≡∈ i lti))
   ⟦_⟧Γ≡∈ {n} {Γ} {.(Definition.Untyped.suc _)} {.(Definition.Untyped.suc _)} {.ℕ} (suc-cong j) i lti =
     valid≡SUC-NAT (⟦_⟧Γ≡∈ j i lti)
   ⟦_⟧Γ≡∈ {n} {Γ} {.(natrec _ _ _ _)} {.(natrec _ _ _ _)} {.(F [ m ])} (natrec-cong {z} {z'} {s} {s'} {m} {m'} {F} {F'} x j j₁ j₂) i lti =
     {!!}
   ⟦_⟧Γ≡∈ {n} {Γ} {.(natrec _ u _ Definition.Untyped.zero)} {u} {.(F [ Definition.Untyped.zero ])} (natrec-zero {z} {s} {F} x x₁ x₂) i lti =
-    {!!}
+    valid≡NATREC0 (⟦ x₁ ⟧Γ∈ i lti)
   ⟦_⟧Γ≡∈ {n} {Γ} {.(natrec _ _ _ (Definition.Untyped.suc _))} {.((_ ∘ _) ∘ natrec _ _ _ _)} {.(F [ Definition.Untyped.suc m ])} (natrec-suc {m} {z} {s} {F} x x₁ x₂ x₃) i lti =
     {!!}
   ⟦_⟧Γ≡∈ {n} {Γ} {.(Emptyrec σ _)} {.(Emptyrec _ _)} {σ} (Emptyrec-cong x j) i lti =
