@@ -67,7 +67,7 @@ open import bar(W)
 open import barI(W)(M)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
-  using (NATREC⇓ ; predIf≤-sucIf≤ ; subv# ; →#shiftUp ; →#shiftDown ; shiftUp-shiftNameUp ; ¬Names-sub ;
+  using (predIf≤-sucIf≤ ; subv# ; →#shiftUp ; →#shiftDown ; shiftUp-shiftNameUp ; ¬Names-sub ;
          ¬Seq-sub ; ¬Enc-sub ; ∧≡true→ₗ ; ∧≡true→ᵣ ; #subv)
 open import terms3(W)(C)(K)(G)(X)(N)(EC)
   using (shiftNameUp-shiftNameUp)
@@ -93,7 +93,7 @@ open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (≡→equalInType ; eqTypesEQ→ᵣ ; eqTypesEQ→ₗ ; eqTypesEQ→)
 open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (_#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ; presPure ; →presPure-NATREC₁ ; →presPure-NATREC₂ ; →presPure-NATREC₃ ;
+  using (_#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ; presPure ;
          equalTypesPI→ₗ ; equalTypesPI→ᵣ ; eqTypesSUM!← ; SUMeq! ; equalInType-SUM!→ ; equalInType-SUM!)
 open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalTypes-uni-mon ; equalInType-uni-mon)
@@ -1051,26 +1051,6 @@ valid≡FST-PAIR {i} {k} {H} {F} {t} {u} lti hf w s1 s2 cc1 cc2 ce1 ce2 es eh =
          (sym (#subs-AX s1 ce1))
          (sym (#subs-AX s2 ce2))
          (→equalInType-EQ c2p1)
-
-
--- MOVE
-→coveredPAIR : {s : Sub} {a b : Term}
-             → covered s a
-             → covered s b
-             → covered s (PAIR a b)
-→coveredPAIR {s} {a} {b} ca cb {x} i with ∈-++⁻ (fvars a) i
-... | inj₁ j = ca j
-... | inj₂ j = cb j
-
-
--- MOVE
-→coveredAPPLY : {s : Sub} {a b : Term}
-              → covered s a
-              → covered s b
-              → covered s (APPLY a b)
-→coveredAPPLY {s} {a} {b} ca cb {x} i with ∈-++⁻ (fvars a) i
-... | inj₁ j = ca j
-... | inj₂ j = cb j
 
 
 valid≡SND-PAIR : {i k : ℕ} {H : hypotheses} {F G t u : Term} (lti : k < i)

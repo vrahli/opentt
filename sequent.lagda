@@ -3548,4 +3548,22 @@ SUC∈NAT! {i} {w} {a} {b} h =
                      → #⇛!sameℕ w' (#SUC a) (#SUC b))
   aw w1 e1 (k , c₁ , c₂) = ℕ.suc k , SUC⇛! c₁ , SUC⇛! c₂
 
+
+→coveredPAIR : {s : Sub} {a b : Term}
+             → covered s a
+             → covered s b
+             → covered s (PAIR a b)
+→coveredPAIR {s} {a} {b} ca cb {x} i with ∈-++⁻ (fvars a) i
+... | inj₁ j = ca j
+... | inj₂ j = cb j
+
+
+→coveredAPPLY : {s : Sub} {a b : Term}
+              → covered s a
+              → covered s b
+              → covered s (APPLY a b)
+→coveredAPPLY {s} {a} {b} ca cb {x} i with ∈-++⁻ (fvars a) i
+... | inj₁ j = ca j
+... | inj₂ j = cb j
+
 \end{code}

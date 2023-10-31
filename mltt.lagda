@@ -109,7 +109,7 @@ open import sequent3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (valid∈FST ; valid∈SND ; valid∈PAIR ; valid≡FST ; valid≡SND ; valid≡FST-PAIR ; valid≡SND-PAIR ; valid≡PI-ETA)
 open import sequent5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (valid≡SUM!-ETA ; valid≡NATREC0 ; valid∈NATREC ; valid≡NATREC)
+  using (valid≡SUM!-ETA ; valid≡NATREC0 ; valid∈NATREC ; valid≡NATREC ; valid≡NATREC-SUC)
 
 
 ∈→ℕ : {n : Nat} {x : Fin n} {A : Term n} {Γ : Con Term n}
@@ -1347,7 +1347,23 @@ mutual
   ⟦_⟧Γ≡∈ {n} {Γ} {.(natrec _ u _ Definition.Untyped.zero)} {u} {.(F [ Definition.Untyped.zero ])} (natrec-zero {z} {s} {F} x x₁ x₂) i lti =
     valid≡NATREC0 (⟦ x₁ ⟧Γ∈ i lti)
   ⟦_⟧Γ≡∈ {n} {Γ} {.(natrec _ _ _ (Definition.Untyped.suc _))} {.((_ ∘ _) ∘ natrec _ _ _ _)} {.(F [ Definition.Untyped.suc m ])} (natrec-suc {m} {z} {s} {F} x x₁ x₂ x₃) i lti =
-    {!!}
+    ≣subst
+      (valid≡𝕎 i ⟦ Γ ⟧Γ (NATREC (SUC ⟦ m ⟧ᵤ) ⟦ z ⟧ᵤ ⟦ s ⟧ᵤ) (APPLY (APPLY ⟦ s ⟧ᵤ ⟦ m ⟧ᵤ) (NATREC ⟦ m ⟧ᵤ ⟦ z ⟧ᵤ ⟦ s ⟧ᵤ)))
+      (≣sym (⟦[]⟧ᵤ-as-subn F (Definition.Untyped.suc m)))
+      (valid≡NATREC-SUC lti
+        (⟦ x₁ ⟧⊢ i 2 ≤-refl lti)
+        (≣subst (valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ z ⟧ᵤ) (⟦[]⟧ᵤ-as-subn F Definition.Untyped.zero) (⟦ x₂ ⟧Γ∈ i lti))
+        h3''
+        (⟦ x ⟧Γ∈ i lti))
+    where
+    h3 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ ⟦ Π ℕ ▹ (F ▹▹ F [ Definition.Untyped.suc (var Fin.zero) ]↑) ⟧ᵤ
+    h3 = {!⟦ x₃ ⟧Γ∈ i lti!}
+
+    h3' : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ (PI NAT! (FUN ⟦ F ⟧ᵤ ⟦ F [ Definition.Untyped.suc (var Fin.zero) ]↑ ⟧ᵤ))
+    h3' = ≣subst (λ z → valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ (PI NAT! z)) (⟦▹▹⟧ᵤ F (F [ Definition.Untyped.suc (var Fin.zero) ]↑)) h3
+
+    h3'' : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ (PI NAT! (FUN ⟦ F ⟧ᵤ (subi 0 (SUC (VAR 0)) ⟦ F ⟧ᵤ)))
+    h3'' = ≣subst (λ z → valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ (PI NAT! (FUN ⟦ F ⟧ᵤ z))) (⟦[]↑⟧ᵤ {_} {0} F (Definition.Untyped.suc (var Fin.zero))) h3'
   ⟦_⟧Γ≡∈ {n} {Γ} {.(Emptyrec σ _)} {.(Emptyrec _ _)} {σ} (Emptyrec-cong x j) i lti =
     valid≡-FALSE→ (⟦_⟧Γ≡∈ j i lti)
   ⟦_⟧Γ≡∈ {n} {Γ} {t} {u} {.Unit} (η-unit x x₁) i lti =

@@ -67,7 +67,7 @@ open import bar(W)
 open import barI(W)(M)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
-  using (NATREC⇓ ; predIf≤-sucIf≤ ; subv# ; →#shiftUp ; →#shiftDown ; shiftUp-shiftNameUp ; ¬Names-sub ;
+  using (predIf≤-sucIf≤ ; subv# ; →#shiftUp ; →#shiftDown ; shiftUp-shiftNameUp ; ¬Names-sub ;
          ¬Seq-sub ; ¬Enc-sub ; ∧≡true→ₗ ; ∧≡true→ᵣ ; #subv)
 open import terms3(W)(C)(K)(G)(X)(N)(EC)
   using (shiftNameUp-shiftNameUp)
@@ -93,7 +93,7 @@ open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (≡→equalInType ; eqTypesEQ→ᵣ ; eqTypesEQ→ₗ ; eqTypesEQ→)
 open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (_#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ; presPure ; →presPure-NATREC₁ ; →presPure-NATREC₂ ; →presPure-NATREC₃ ;
+  using (_#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ; presPure ;
          equalTypesPI→ₗ ; equalTypesPI→ᵣ ; eqTypesSUM!← ; SUMeq! ; equalInType-SUM!→ ; equalInType-SUM!)
 open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalTypes-uni-mon ; equalInType-uni-mon)
