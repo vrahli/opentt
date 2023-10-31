@@ -101,15 +101,15 @@ open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import sequent2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (valid∈𝕎→valid≡𝕎-UNIV ; valid≡𝕎-sym ; valid≡𝕎-trans ; valid≡𝕎-PI ; valid≡𝕎-SUM! ; valid∈𝕎-mon ; valid≡𝕎-mon ;
-         valid∈𝕎→valid≡𝕎 ; valid∈-UNIV)
+         valid∈𝕎→valid≡𝕎 ; valid∈-UNIV ; valid≡𝕎→valid∈𝕎ₗ)
 open import sequent3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (valid∈-PI ; valid∈-SUM! ; valid∈-NAT! ; valid∈-FALSE ; valid∈-UNIT ; valid∈LAMBDA ; valid∈APPLY ; valid∈N0-NAT ;
-         valid∈SUC-NAT ; valid∈NATREC ; valid∈-FALSE→ ; valid∈-AX-UNIT ; valid∈-change-type ; valid≡-change-type ;
+         valid∈SUC-NAT ; valid∈-FALSE→ ; valid∈-AX-UNIT ; valid∈-change-type ; valid≡-change-type ;
          valid≡APPLY ; valid≡LAMBDA ; valid≡SUC-NAT ; valid≡-FALSE→ ; valid≡-UNIT)
 open import sequent4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (valid∈FST ; valid∈SND ; valid∈PAIR ; valid≡FST ; valid≡SND ; valid≡FST-PAIR ; valid≡SND-PAIR ; valid≡PI-ETA)
 open import sequent5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (valid≡SUM!-ETA ; valid≡NATREC0)
+  using (valid≡SUM!-ETA ; valid≡NATREC0 ; valid∈NATREC ; valid≡NATREC)
 
 
 ∈→ℕ : {n : Nat} {x : Fin n} {A : Term n} {Γ : Con Term n}
@@ -1322,7 +1322,28 @@ mutual
   ⟦_⟧Γ≡∈ {n} {Γ} {.(Definition.Untyped.suc _)} {.(Definition.Untyped.suc _)} {.ℕ} (suc-cong j) i lti =
     valid≡SUC-NAT (⟦_⟧Γ≡∈ j i lti)
   ⟦_⟧Γ≡∈ {n} {Γ} {.(natrec _ _ _ _)} {.(natrec _ _ _ _)} {.(F [ m ])} (natrec-cong {z} {z'} {s} {s'} {m} {m'} {F} {F'} x j j₁ j₂) i lti =
-    {!!}
+  -- TODO: why is x an ≡ and not a ∈? What's the point of F'?
+    ≣subst
+      (valid≡𝕎 i ⟦ Γ ⟧Γ (NATREC ⟦ m ⟧ᵤ ⟦ z ⟧ᵤ ⟦ s ⟧ᵤ) (NATREC ⟦ m' ⟧ᵤ ⟦ z' ⟧ᵤ ⟦ s' ⟧ᵤ))
+      (≣sym (⟦[]⟧ᵤ-as-subn F m))
+      (valid≡NATREC {i} {2} {⟦ Γ ⟧Γ} {⟦ F ⟧ᵤ} lti
+        (valid≡𝕎→valid∈𝕎ₗ
+          i (⟦ Γ ⟧Γ Data.List.∷ʳ mkHyp NAT!) ⟦ F ⟧ᵤ ⟦ F' ⟧ᵤ (UNIV 2)
+          (coveredΓ {1+ n} (Γ ∙ ℕ) F')
+          (⟦ x ⟧Γ≡ i 2 ≤-refl lti))
+        (≣subst (valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ z ⟧ᵤ ⟦ z' ⟧ᵤ) (⟦[]⟧ᵤ-as-subn F Definition.Untyped.zero) (⟦ j ⟧Γ≡∈ i lti))
+        h3''
+        (⟦ j₂ ⟧Γ≡∈ i lti))
+    where
+    h3 : valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ ⟦ s' ⟧ᵤ ⟦ Π ℕ ▹ (F ▹▹ F [ Definition.Untyped.suc (var Fin.zero) ]↑) ⟧ᵤ
+    h3 = ⟦_⟧Γ≡∈ j₁ i lti
+
+    h3' : valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ ⟦ s' ⟧ᵤ (PI NAT! (FUN ⟦ F ⟧ᵤ ⟦ F [ Definition.Untyped.suc (var Fin.zero) ]↑ ⟧ᵤ))
+    h3' = ≣subst (λ z → valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ ⟦ s' ⟧ᵤ (PI NAT! z)) (⟦▹▹⟧ᵤ F (F [ Definition.Untyped.suc (var Fin.zero) ]↑)) h3
+
+    h3'' : valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ ⟦ s' ⟧ᵤ (PI NAT! (FUN ⟦ F ⟧ᵤ (subi 0 (SUC (VAR 0)) ⟦ F ⟧ᵤ)))
+    h3'' = ≣subst (λ z → valid≡𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ ⟦ s' ⟧ᵤ (PI NAT! (FUN ⟦ F ⟧ᵤ z))) (⟦[]↑⟧ᵤ {_} {0} F (Definition.Untyped.suc (var Fin.zero))) h3'
+
   ⟦_⟧Γ≡∈ {n} {Γ} {.(natrec _ u _ Definition.Untyped.zero)} {u} {.(F [ Definition.Untyped.zero ])} (natrec-zero {z} {s} {F} x x₁ x₂) i lti =
     valid≡NATREC0 (⟦ x₁ ⟧Γ∈ i lti)
   ⟦_⟧Γ≡∈ {n} {Γ} {.(natrec _ _ _ (Definition.Untyped.suc _))} {.((_ ∘ _) ∘ natrec _ _ _ _)} {.(F [ Definition.Untyped.suc m ])} (natrec-suc {m} {z} {s} {F} x x₁ x₂ x₃) i lti =

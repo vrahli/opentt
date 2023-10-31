@@ -256,6 +256,60 @@ valid∈𝕎-mon {i} {j} {k} ltk lti {Γ} {σ} ha w s1 s2 cc1 cc2 ce1 ce2 es eh 
   c2 = ≡CTerm→equalInType (sym (#subs-UNIV s1 k cu1a)) (equalTypes→equalInType-UNIV lti (equalTypes-uni-mon (<⇒≤ ltk) ha3))
 
 
+valid≡𝕎→valid∈𝕎ₗ : (i : ℕ) (H : hypotheses) (a b A : Term)
+                 → coveredH H b
+                 → valid≡𝕎 i H a b A
+                 → valid∈𝕎 i H a A
+valid≡𝕎→valid∈𝕎ₗ i H a b A covb ha w s1 s2 cc1 cc2 ce1 ce2 es eh =
+  c1 , c2
+  where
+  ca1 : covered s1 a
+  ca1 = ce1
+
+  ca2 : covered s2 a
+  ca2 = ce2
+
+  cb1 : covered s1 b
+  cb1 = ≡subs→coveredₗ {i} {w} {s1} {s2} {H} {b} es covb
+
+  cb2 : covered s2 b
+  cb2 = ≡subs→coveredᵣ {i} {w} {s1} {s2} {H} {b} es covb
+
+  cA1 : covered s1 A
+  cA1 = cc1
+
+  cA2 : covered s2 A
+  cA2 = cc2
+
+  ceq1 : covered s1 (EQ a b A)
+  ceq1 = →coveredEQ {s1} {a} {b} {A} ca1 cb1 cA1
+
+  ceq2 : covered s2 (EQ a b A)
+  ceq2 = →coveredEQ {s2} {a} {b} {A} ca2 cb2 cA2
+
+  cax1 : covered s1 AX
+  cax1 = covered-AX s1
+
+  cax2 : covered s2 AX
+  cax2 = covered-AX s2
+
+  ha1 : equalTypes i w (#subs s1 (EQ a b A) ceq1) (#subs s2 (EQ a b A) ceq2)
+  ha1 = fst (ha w s1 s2 ceq1 ceq2 cax1 cax2 es eh)
+
+  ha2 : equalTypes i w (#EQ (#subs s1 a ca1) (#subs s1 b cb1) (#subs s1 A cA1))
+                       (#EQ (#subs s2 a ca2) (#subs s2 b cb2) (#subs s2 A cA2))
+  ha2 = ≡CTerm→eqTypes
+          (#subs-EQ s1 a b A ceq1 ca1 cb1 cA1)
+          (#subs-EQ s2 a b A ceq2 ca2 cb2 cA2)
+          ha1
+
+  c1 : equalTypes i w (#subs s1 A cc1) (#subs s2 A cc2)
+  c1 = eqTypesEQ→ {w} {i} {#subs s1 a ca1} {#subs s1 b cb1} {#subs s2 a ca2} {#subs s2 b cb2} ha2
+
+  c2 : equalInType i w (#subs s1 A cc1) (#subs s1 a ce1) (#subs s2 a ce2)
+  c2 = eqTypesEQ→ₗ {w} {i} {#subs s1 a ca1} {#subs s1 b cb1} {#subs s2 a ca2} {#subs s2 b cb2} ha2
+
+
 valid∈𝕎→valid≡𝕎 : (i : ℕ) (H : hypotheses) (a A : Term)
                 → valid∈𝕎 i H a A
                 → valid≡𝕎 i H a a A

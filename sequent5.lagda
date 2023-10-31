@@ -415,36 +415,36 @@ valid≡NATREC0 {i} {H} {T} {u} {s} hu w s1 s2 cc1 cc2 ce1 ce2 es eh =
          (→equalInType-EQ c2p1)
 
 
-equalInType-NATREC0 : (i l : ℕ) (lti : l < i) (w : 𝕎·) (G k z x : Term) (s1 s2 : Sub) (H : hypotheses)
+equalInType-NATREC0 : (i l : ℕ) (lti : l < i) (w : 𝕎·) (G ka kb za zb xa xb : Term) (s1 s2 : Sub) (H : hypotheses)
                       (es   : ≡subs i w s1 s2 H)
                       (eh   : ≡hyps i w s1 s2 H H)
-                      (ck1  : covered s1 k)
-                      (ck2  : covered s2 k)
-                      (cz1  : covered s1 z)
-                      (cz2  : covered s2 z)
-                      (cx1  : covered s1 x)
-                      (cx2  : covered s2 x)
+                      (ck1  : covered s1 ka)
+                      (ck2  : covered s2 kb)
+                      (cz1  : covered s1 za)
+                      (cz2  : covered s2 zb)
+                      (cx1  : covered s1 xa)
+                      (cx2  : covered s2 xb)
                       (cG1  : covered0 s1 G)
                       (cG2  : covered0 s2 G)
-                      (cc1  : covered s1 (subn 0 k G))
+                      (cc1  : covered s1 (subn 0 ka G))
                       (cs1a : covered s1 (subn 0 N0 G))
                       (cp1  : covered s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))))
-                      (h0   : equalInType i w (#subs s1 (subn 0 N0 G) cs1a) (#subs s1 z cz1) (#subs s2 z cz2))
-                      (hs   : equalInType i w (#subs s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) cp1) (#subs s1 x cx1) (#subs s2 x cx2))
+                      (h0   : equalInType i w (#subs s1 (subn 0 N0 G) cs1a) (#subs s1 za cz1) (#subs s2 zb cz2))
+                      (hs   : equalInType i w (#subs s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) cp1) (#subs s1 xa cx1) (#subs s2 xb cx2))
                       (hg   : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm)
                                            → equalInType i w' #NAT! a₁ a₂
                                            → equalTypes i w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s1 G cG1))))
                       (n    : ℕ)
-                      (c₁   : #subs s1 k ck1 #⇛! #NUM n at w)
-                      (c₂   : #subs s2 k ck2 #⇛! #NUM n at w)
-                    → equalInType i w (#subs s1 (subn 0 k G) cc1)
-                                  (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 x cx1))
-                                  (#NATREC (#subs s2 k ck2) (#subs s2 z cz2) (#subs s2 x cx2))
-equalInType-NATREC0 i l lti w G k z x s1 s2 H es eh ck1 ck2 cz1 cz2 cx1 cx2 cG1 cG2 cc1 cs1a cp1 h0 hs {--cs1 cu1a--} hg 0 c₁ c₂ =
+                      (c₁   : #subs s1 ka ck1 #⇛! #NUM n at w)
+                      (c₂   : #subs s2 kb ck2 #⇛! #NUM n at w)
+                    → equalInType i w (#subs s1 (subn 0 ka G) cc1)
+                                  (#NATREC (#subs s1 ka ck1) (#subs s1 za cz1) (#subs s1 xa cx1))
+                                  (#NATREC (#subs s2 kb ck2) (#subs s2 zb cz2) (#subs s2 xb cx2))
+equalInType-NATREC0 i l lti w G ka kb za zb xa xb s1 s2 H es eh ck1 ck2 cz1 cz2 cx1 cx2 cG1 cG2 cc1 cs1a cp1 h0 hs {--cs1 cu1a--} hg 0 c₁ c₂ =
     equalInType-#⇛ₚ-left-right-rev (NATREC-0⇛! c₁) (NATREC-0⇛! c₂) hz2
     where
-    cs1  : covered (s1 ∷ʳ #subs s1 k ck1) G
-    cs1 = →covered∷ʳ (#subs s1 k ck1) s1 G cG1
+    cs1  : covered (s1 ∷ʳ #subs s1 ka ck1) G
+    cs1 = →covered∷ʳ (#subs s1 ka ck1) s1 G cG1
 
     cm1 : covered s1 N0
     cm1 = covered-NUM s1 0
@@ -458,20 +458,20 @@ equalInType-NATREC0 i l lti w G k z x s1 s2 H es eh ck1 ck2 cz1 cz2 cx1 cx2 cG1 
     cs1b : covered (s1 ∷ʳ #subs s1 N0 cm1) G
     cs1b = →covered∷ʳ (#subs s1 N0 cm1) s1 G cG1
 
-    hz1 : equalInType i w (#subs s1 (subn 0 N0 G) cs1a) (#subs s1 z cz1) (#subs s2 z cz2)
+    hz1 : equalInType i w (#subs s1 (subn 0 N0 G) cs1a) (#subs s1 za cz1) (#subs s2 zb cz2)
     hz1 = h0
 
-    eqn1 : equalInType i w #NAT! #N0 (#subs s1 k ck1)
-    eqn1 = →equalInType-NAT! i w #N0 (#subs s1 k ck1)
-             (Mod.∀𝕎-□ M (λ w2 e2 → 0 , #⇛!-refl {w2} {#N0} , #⇛!-mon {#subs s1 k ck1} {#N0} e2 c₁))
+    eqn1 : equalInType i w #NAT! #N0 (#subs s1 ka ck1)
+    eqn1 = →equalInType-NAT! i w #N0 (#subs s1 ka ck1)
+             (Mod.∀𝕎-□ M (λ w2 e2 → 0 , #⇛!-refl {w2} {#N0} , #⇛!-mon {#subs s1 ka ck1} {#N0} e2 c₁))
 
-    es2 : ≡subs i w (s1 ∷ʳ #subs s1 N0 cm1) (s1 ∷ʳ #subs s1 k ck1) (H ∷ʳ mkHyp NAT!)
-    es2 = ≡subs∷ʳ i w s1 s1 H NAT! cn1 (#subs s1 N0 cm1) (#subs s1 k ck1)
+    es2 : ≡subs i w (s1 ∷ʳ #subs s1 N0 cm1) (s1 ∷ʳ #subs s1 ka ck1) (H ∷ʳ mkHyp NAT!)
+    es2 = ≡subs∷ʳ i w s1 s1 H NAT! cn1 (#subs s1 N0 cm1) (#subs s1 ka ck1)
             (≡→equalInType (sym (#subs-NAT! s1 cn1)) (sym (#subs-N0 s1 cm1)) refl eqn1)
             (≡subs-refl i w s1 s2 H es)
 
-    eh2 : ≡hyps i w (s1 ∷ʳ #subs s1 N0 cm1) (s1 ∷ʳ #subs s1 k ck1) (H ∷ʳ mkHyp NAT!) (H ∷ʳ mkHyp NAT!)
-    eh2 = ≡hyps∷ʳ i w s1 s1 H H NAT! NAT! cn1 cn1 (#subs s1 N0 cm1) (#subs s1 k ck1)
+    eh2 : ≡hyps i w (s1 ∷ʳ #subs s1 N0 cm1) (s1 ∷ʳ #subs s1 ka ck1) (H ∷ʳ mkHyp NAT!) (H ∷ʳ mkHyp NAT!)
+    eh2 = ≡hyps∷ʳ i w s1 s1 H H NAT! NAT! cn1 cn1 (#subs s1 N0 cm1) (#subs s1 ka ck1)
             (≡CTerm→eqTypes (sym (#subs-NAT! s1 cn1)) (sym (#subs-NAT! s1 cn1)) isTypeNAT!)
             (≡hyps-refl i w s1 s2 H H eh)
 
@@ -480,17 +480,17 @@ equalInType-NATREC0 i l lti w G k z x s1 s2 H es eh ck1 ck2 cz1 cz2 cx1 cx2 cG1 
     esn0 s1 t cft1 cG1 cSG1 = trans (sub0-#[0]subs (#subs s1 t cft1) s1 G cG1)
                                     (CTerm≡ (subs∷ʳ≡ s1 t G cft1))
 
-    eqt2 : equalTypes i w (#subs s1 (subn 0 N0 G) cs1a) (#subs s1 (subn 0 k G) cc1)
-    eqt2 = ≡CTerm→eqTypes (esn0 s1 N0 cm1 cG1 cs1a) (esn0 s1 k ck1 cG1 cc1)
-             (hg w (⊑-refl· w) (#subs s1 N0 cm1) (#subs s1 k ck1)
+    eqt2 : equalTypes i w (#subs s1 (subn 0 N0 G) cs1a) (#subs s1 (subn 0 ka G) cc1)
+    eqt2 = ≡CTerm→eqTypes (esn0 s1 N0 cm1 cG1 cs1a) (esn0 s1 ka ck1 cG1 cc1)
+             (hg w (⊑-refl· w) (#subs s1 N0 cm1) (#subs s1 ka ck1)
                (≡→equalInType refl (sym (#subs-N0 s1 cm1)) refl eqn1))
 
-    hz2 : equalInType i w (#subs s1 (subn 0 k G) cc1) (#subs s1 z cz1) (#subs s2 z cz2)
+    hz2 : equalInType i w (#subs s1 (subn 0 ka G) cc1) (#subs s1 za cz1) (#subs s2 zb cz2)
     hz2 = TSext-equalTypes-equalInType i w _ _ _ _ eqt2 hz1
-equalInType-NATREC0 i l lti w G k z x s1 s2 H es eh ck1 ck2 cz1 cz2 cx1 cx2 cG1 cG2 cc1 cs1a cp1 h0 hs {--cs1 cu1a--} hg (suc n) c₁ c₂ =
+equalInType-NATREC0 i l lti w G ka kb za zb xa xb s1 s2 H es eh ck1 ck2 cz1 cz2 cx1 cx2 cG1 cG2 cc1 cs1a cp1 h0 hs {--cs1 cu1a--} hg (suc n) c₁ c₂ =
     equalInType-#⇛ₚ-left-right-rev {i} {w}
-      (#NATREC-s⇛! {n} {#subs s1 k ck1} {#subs s1 z cz1} {#subs s1 x cx1} c₁)
-      (#NATREC-s⇛! {n} {#subs s2 k ck2} {#subs s2 z cz2} {#subs s2 x cx2} c₂)
+      (#NATREC-s⇛! {n} {#subs s1 ka ck1} {#subs s1 za cz1} {#subs s1 xa cx1} c₁)
+      (#NATREC-s⇛! {n} {#subs s2 kb ck2} {#subs s2 zb cz2} {#subs s2 xb cx2} c₂)
       hz2
     where
     cn1 : covered s1 NAT!
@@ -525,42 +525,42 @@ equalInType-NATREC0 i l lti w G k z x s1 s2 H es eh ck1 ck2 cz1 cz2 cx1 cx2 cG1 
     cp02 : covered0 s2 (FUN G (subi 0 (SUC (VAR 0)) G))
     cp02 = coveredPI₂ {s2} {NAT!} {FUN G (subi 0 (SUC (VAR 0)) G)} cp2
 
-    cs1 : covered (s1 ∷ʳ #subs s1 k ck1) G
-    cs1 = →covered∷ʳ (#subs s1 k ck1) s1 G cG1
+    cs1 : covered (s1 ∷ʳ #subs s1 ka ck1) G
+    cs1 = →covered∷ʳ (#subs s1 ka ck1) s1 G cG1
 
-    cs2 : covered (s2 ∷ʳ #subs s2 k ck2) G
-    cs2 = →covered∷ʳ (#subs s2 k ck2) s2 G cG2
+    cs2 : covered (s2 ∷ʳ #subs s2 kb ck2) G
+    cs2 = →covered∷ʳ (#subs s2 kb ck2) s2 G cG2
 
-    hz1 : equalInType i w (#subs s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) cp1) (#subs s1 x cx1) (#subs s2 x cx2)
+    hz1 : equalInType i w (#subs s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) cp1) (#subs s1 xa cx1) (#subs s2 xb cx2)
     hz1 = hs --equalInType-mon (snd (hs w s1 s2 cp1 cp2 cx1 cx2 es eh)) w e1
 
     hp1 : equalInType i w (#PI (#subs s1 NAT! cn1) (#[0]subs s1 (FUN G (subi 0 (SUC (VAR 0)) G)) cp01))
-                           (#subs s1 x cx1)
-                           (#subs s2 x cx2)
+                           (#subs s1 xa cx1)
+                           (#subs s2 xb cx2)
     hp1 = ≡CTerm→equalInType (#subs-PI s1 NAT! (FUN G (subi 0 (SUC (VAR 0)) G)) cp1 cn1 cp01) hz1
 
     hp2 : equalInType i w (sub0 (#NUM n) (#[0]subs s1 (FUN G (subi 0 (SUC (VAR 0)) G)) cp01))
-                           (#APPLY (#subs s1 x cx1) (#NUM n)) (#APPLY (#subs s2 x cx2) (#NUM n))
+                           (#APPLY (#subs s1 xa cx1) (#NUM n)) (#APPLY (#subs s2 xb cx2) (#NUM n))
     hp2 = snd (snd (equalInType-PI→ hp1)) w (⊑-refl· w) (#NUM n) (#NUM n)
              (≡CTerm→equalInType (sym (#subs-NAT! s1 cn1)) (NUM-equalInType-NAT! i w n))
 
     cs1c : covered s1 (subn 0 (NUM n) G)
-    cs1c = →covered-subn (#subs s1 k ck1) (NUM n) s1 G refl cs1
+    cs1c = →covered-subn (#subs s1 ka ck1) (NUM n) s1 G refl cs1
 
     cs1d : covered s1 (subn 0 (SUC (NUM n)) G)
-    cs1d = →covered-subn (#subs s1 k ck1) (SUC (NUM n)) s1 G refl cs1
+    cs1d = →covered-subn (#subs s1 ka ck1) (SUC (NUM n)) s1 G refl cs1
 
     cus1b : covered (s1 ∷ʳ (#subs s1 (SUC (NUM n)) cm1)) (UNIV l)
     cus1b = covered-UNIV (s1 ∷ʳ (#subs s1 (SUC (NUM n)) cm1)) l
 
     css1b : covered (s1 ∷ʳ #subs s1 (SUC (NUM n)) cm1) G
-    css1b = covered-subn→ (#subs s1 (SUC (NUM n)) cm1) k s1 G cc1
+    css1b = covered-subn→ (#subs s1 (SUC (NUM n)) cm1) ka s1 G cc1
 
     cus1c : covered (s1 ∷ʳ (#subs s1 (NUM n) cm1)) (UNIV l)
     cus1c = covered-UNIV (s1 ∷ʳ (#subs s1 (NUM n) cm1)) l
 
     css1c : covered (s1 ∷ʳ #subs s1 (NUM n) cm1) G
-    css1c = covered-subn→ (#subs s1 (NUM n) cm1) k s1 G cc1
+    css1c = covered-subn→ (#subs s1 (NUM n) cm1) ka s1 G cc1
 
     esn1 : subn 0 (NUM n) (subsN 1 s1 (FUN G (subi 0 (SUC (VAR 0)) G)))
          ≡ FUN (subs s1 (subn 0 (NUM n) G)) (subs s1 (subn 0 (SUC (NUM n)) G))
@@ -582,7 +582,7 @@ equalInType-NATREC0 i l lti w G k z x s1 s2 H es eh ck1 ck2 cz1 cz2 cx1 cx2 cG1 
     esn = CTerm≡ (trans (sub≡subn (NUM n) (subsN 1 s1 (FUN G (subi 0 (SUC (VAR 0)) G)))) esn1)
 
     hp3 : equalInType i w (#FUN (#subs s1 (subn 0 (NUM n) G) cs1c) (#subs s1 (subn 0 (SUC (NUM n)) G) cs1d))
-                           (#APPLY (#subs s1 x cx1) (#NUM n)) (#APPLY (#subs s2 x cx2) (#NUM n))
+                           (#APPLY (#subs s1 xa cx1) (#NUM n)) (#APPLY (#subs s2 xb cx2) (#NUM n))
     hp3 = ≡CTerm→equalInType esn hp2
 
     nc1 : #subs s1 (NUM n) cm1 #⇛! #NUM n at w
@@ -592,40 +592,40 @@ equalInType-NATREC0 i l lti w G k z x s1 s2 H es eh ck1 ck2 cz1 cz2 cx1 cx2 cG1 
     nc2 = subst (λ z → z #⇛! #NUM n at w) (sym (#subs-NUM s2 n cm2)) (#⇛!-refl {w} {#NUM n})
 
     ind0 : equalInType i w (#subs s1 (subn 0 (NUM n) G) cs1c)
-                            (#NATREC (#subs s1 (NUM n) cm1) (#subs s1 z cz1) (#subs s1 x cx1))
-                            (#NATREC (#subs s2 (NUM n) cm2) (#subs s2 z cz2) (#subs s2 x cx2))
+                           (#NATREC (#subs s1 (NUM n) cm1) (#subs s1 za cz1) (#subs s1 xa cx1))
+                           (#NATREC (#subs s2 (NUM n) cm2) (#subs s2 zb cz2) (#subs s2 xb cx2))
     ind0 = equalInType-NATREC0
-             i l lti w G (NUM n) z x s1 s2 H es eh cm1 cm2 cz1
+             i l lti w G (NUM n) (NUM n) za zb xa xb s1 s2 H es eh cm1 cm2 cz1
              cz2 cx1 cx2 cG1 cG2 cs1c cs1a cp1 h0 hs hg n nc1 nc2
 
     ind : equalInType i w (#subs s1 (subn 0 (NUM n) G) cs1c)
-                           (#NATREC (#NUM n) (#subs s1 z cz1) (#subs s1 x cx1))
-                           (#NATREC (#NUM n) (#subs s2 z cz2) (#subs s2 x cx2))
+                          (#NATREC (#NUM n) (#subs s1 za cz1) (#subs s1 xa cx1))
+                          (#NATREC (#NUM n) (#subs s2 zb cz2) (#subs s2 xb cx2))
     ind = subst₂ (λ a b → equalInType i w (#subs s1 (subn 0 (NUM n) G) cs1c)
-                                      (#NATREC a (#subs s1 z cz1) (#subs s1 x cx1))
-                                      (#NATREC b (#subs s2 z cz2) (#subs s2 x cx2)))
+                                      (#NATREC a (#subs s1 za cz1) (#subs s1 xa cx1))
+                                      (#NATREC b (#subs s2 zb cz2) (#subs s2 xb cx2)))
             (#subs-NUM s1 n cm1) (#subs-NUM s2 n cm2) ind0
 
     hp4 : equalInType i w (#subs s1 (subn 0 (SUC (NUM n)) G) cs1d)
-                           (#APPLY2 (#subs s1 x cx1) (#NUM n) (#NATREC (#NUM n) (#subs s1 z cz1) (#subs s1 x cx1)))
-                           (#APPLY2 (#subs s2 x cx2) (#NUM n) (#NATREC (#NUM n) (#subs s2 z cz2) (#subs s2 x cx2)))
+                           (#APPLY2 (#subs s1 xa cx1) (#NUM n) (#NATREC (#NUM n) (#subs s1 za cz1) (#subs s1 xa cx1)))
+                           (#APPLY2 (#subs s2 xb cx2) (#NUM n) (#NATREC (#NUM n) (#subs s2 zb cz2) (#subs s2 xb cx2)))
     hp4 = equalInType-FUN→ hp3 w (⊑-refl· w)
-            (#NATREC (#NUM n) (#subs s1 z cz1) (#subs s1 x cx1))
-            (#NATREC (#NUM n) (#subs s2 z cz2) (#subs s2 x cx2))
+            (#NATREC (#NUM n) (#subs s1 za cz1) (#subs s1 xa cx1))
+            (#NATREC (#NUM n) (#subs s2 zb cz2) (#subs s2 xb cx2))
             ind
 
-    eqn1 : equalInType i w #NAT! (#SUC (#NUM n)) (#subs s1 k ck1)
-    eqn1 = →equalInType-NAT! i w (#SUC (#NUM n)) (#subs s1 k ck1)
+    eqn1 : equalInType i w #NAT! (#SUC (#NUM n)) (#subs s1 ka ck1)
+    eqn1 = →equalInType-NAT! i w (#SUC (#NUM n)) (#subs s1 ka ck1)
              (Mod.∀𝕎-□ M (λ w2 e2 → (suc n) , (λ w e1 → lift (1 , refl)) ,
-                                    #⇛!-mon {#subs s1 k ck1} {#NUM (suc n)} e2 c₁))
+                                    #⇛!-mon {#subs s1 ka ck1} {#NUM (suc n)} e2 c₁))
 
-    es2 : ≡subs i w (s1 ∷ʳ #subs s1 (SUC (NUM n)) cm1) (s1 ∷ʳ #subs s1 k ck1) (H ∷ʳ mkHyp NAT!)
-    es2 = ≡subs∷ʳ i w s1 s1 H NAT! cn1 (#subs s1 (SUC (NUM n)) cm1) (#subs s1 k ck1)
+    es2 : ≡subs i w (s1 ∷ʳ #subs s1 (SUC (NUM n)) cm1) (s1 ∷ʳ #subs s1 ka ck1) (H ∷ʳ mkHyp NAT!)
+    es2 = ≡subs∷ʳ i w s1 s1 H NAT! cn1 (#subs s1 (SUC (NUM n)) cm1) (#subs s1 ka ck1)
             (≡→equalInType (sym (#subs-NAT! s1 cn1)) (sym (trans (#subs-SUC s1 (NUM n) cm1) (cong #SUC (#subs-NUM s1 n cm1)))) refl eqn1)
             (≡subs-refl i w s1 s2 H es)
 
-    eh2 : ≡hyps i w (s1 ∷ʳ #subs s1 (SUC (NUM n)) cm1) (s1 ∷ʳ #subs s1 k ck1) (H ∷ʳ mkHyp NAT!) (H ∷ʳ mkHyp NAT!)
-    eh2 = ≡hyps∷ʳ i w s1 s1 H H NAT! NAT! cn1 cn1 (#subs s1 (SUC (NUM n)) cm1) (#subs s1 k ck1)
+    eh2 : ≡hyps i w (s1 ∷ʳ #subs s1 (SUC (NUM n)) cm1) (s1 ∷ʳ #subs s1 ka ck1) (H ∷ʳ mkHyp NAT!) (H ∷ʳ mkHyp NAT!)
+    eh2 = ≡hyps∷ʳ i w s1 s1 H H NAT! NAT! cn1 cn1 (#subs s1 (SUC (NUM n)) cm1) (#subs s1 ka ck1)
             (≡CTerm→eqTypes (sym (#subs-NAT! s1 cn1)) (sym (#subs-NAT! s1 cn1)) isTypeNAT!)
             (≡hyps-refl i w s1 s2 H H eh)
 
@@ -634,55 +634,55 @@ equalInType-NATREC0 i l lti w G k z x s1 s2 H es eh ck1 ck2 cz1 cz2 cx1 cx2 cG1 
     esn0 s1 t cft1 cG1 cSG1 = trans (sub0-#[0]subs (#subs s1 t cft1) s1 G cG1)
                                     (CTerm≡ (subs∷ʳ≡ s1 t G cft1))
 
-    eqt : equalTypes i w (#subs s1 (subn 0 (SUC (NUM n)) G) cs1d) (#subs s1 (subn 0 k G) cc1)
+    eqt : equalTypes i w (#subs s1 (subn 0 (SUC (NUM n)) G) cs1d) (#subs s1 (subn 0 ka G) cc1)
     eqt = ≡CTerm→eqTypes
             (esn0 s1 (SUC (NUM n)) csnn cG1 cs1d)
-            (esn0 s1 k ck1 cG1 cc1)
-            (hg w (⊑-refl· w) (#subs s1 (SUC (NUM n)) csnn) (#subs s1 k ck1)
+            (esn0 s1 ka ck1 cG1 cc1)
+            (hg w (⊑-refl· w) (#subs s1 (SUC (NUM n)) csnn) (#subs s1 ka ck1)
                (≡→equalInType
                  refl
                  (sym (trans (#subs-SUC s1 (NUM n) (covered-NUM s1 n)) (cong #SUC (#subs-NUM s1 n (covered-NUM s1 n)))))
                  refl
                  eqn1))
 
-    hz2 : equalInType i w (#subs s1 (subn 0 k G) cc1)
-                           (#APPLY2 (#subs s1 x cx1) (#NUM n) (#NATREC (#NUM n) (#subs s1 z cz1) (#subs s1 x cx1)))
-                           (#APPLY2 (#subs s2 x cx2) (#NUM n) (#NATREC (#NUM n) (#subs s2 z cz2) (#subs s2 x cx2)))
+    hz2 : equalInType i w (#subs s1 (subn 0 ka G) cc1)
+                           (#APPLY2 (#subs s1 xa cx1) (#NUM n) (#NATREC (#NUM n) (#subs s1 za cz1) (#subs s1 xa cx1)))
+                           (#APPLY2 (#subs s2 xb cx2) (#NUM n) (#NATREC (#NUM n) (#subs s2 zb cz2) (#subs s2 xb cx2)))
     hz2 = TSext-equalTypes-equalInType i w _ _ _ _ eqt hp4
 
 
-equalInType-NATREC : (i l : ℕ) (lti : l < i) (w : 𝕎·) (G k z x : Term) (s1 s2 : Sub) (H : hypotheses)
+equalInType-NATREC : (i l : ℕ) (lti : l < i) (w : 𝕎·) (G ka kb za zb xa xb : Term) (s1 s2 : Sub) (H : hypotheses)
                      (es   : ≡subs i w s1 s2 H)
                      (eh   : ≡hyps i w s1 s2 H H)
-                     (ck1  : covered s1 k)
-                     (ck2  : covered s2 k)
-                     (cz1  : covered s1 z)
-                     (cz2  : covered s2 z)
-                     (cx1  : covered s1 x)
-                     (cx2  : covered s2 x)
+                     (ck1  : covered s1 ka)
+                     (ck2  : covered s2 kb)
+                     (cz1  : covered s1 za)
+                     (cz2  : covered s2 zb)
+                     (cx1  : covered s1 xa)
+                     (cx2  : covered s2 xb)
                      (cG1  : covered0 s1 G)
                      (cG2  : covered0 s2 G)
-                     (cc1  : covered s1 (subn 0 k G))
+                     (cc1  : covered s1 (subn 0 ka G))
                      (cs1a : covered s1 (subn 0 N0 G))
                      (cp1  : covered s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))))
-                     (h0   : equalInType i w (#subs s1 (subn 0 N0 G) cs1a) (#subs s1 z cz1) (#subs s2 z cz2))
-                     (hs   : equalInType i w (#subs s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) cp1) (#subs s1 x cx1) (#subs s2 x cx2))
+                     (h0   : equalInType i w (#subs s1 (subn 0 N0 G) cs1a) (#subs s1 za cz1) (#subs s2 zb cz2))
+                     (hs   : equalInType i w (#subs s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) cp1) (#subs s1 xa cx1) (#subs s2 xb cx2))
                      (hg   : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm)
                                           → equalInType i w' #NAT! a₁ a₂
                                           → equalTypes i w' (sub0 a₁ (#[0]subs s1 G cG1)) (sub0 a₂ (#[0]subs s1 G cG1))))
-                     (hk   : equalInType i w #NAT! (#subs s1 k ck1) (#subs s2 k ck2))
-                   → equalInType i w (#subs s1 (subn 0 k G) cc1)
-                                 (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 x cx1))
-                                 (#NATREC (#subs s2 k ck2) (#subs s2 z cz2) (#subs s2 x cx2))
-equalInType-NATREC i l lti w G k z x s1 s2 H es eh ck1 ck2 cz1 cz2 cx1 cx2 cG1 cG2 cc1 cs1a cp1 h0 hs hg hk =
+                     (hk   : equalInType i w #NAT! (#subs s1 ka ck1) (#subs s2 kb ck2))
+                   → equalInType i w (#subs s1 (subn 0 ka G) cc1)
+                                 (#NATREC (#subs s1 ka ck1) (#subs s1 za cz1) (#subs s1 xa cx1))
+                                 (#NATREC (#subs s2 kb ck2) (#subs s2 zb cz2) (#subs s2 xb cx2))
+equalInType-NATREC i l lti w G ka kb za zb xa xb s1 s2 H es eh ck1 ck2 cz1 cz2 cx1 cx2 cG1 cG2 cc1 cs1a cp1 h0 hs hg hk =
   equalInType-local
     (Mod.∀𝕎-□Func M
       (λ w1 e1 (n , c₁ , c₂) →
         equalInType-NATREC0
-          i l lti w1 G k z x s1 s2 H (≡subs-mon e1 es) (≡hyps-mon e1 eh) ck1 ck2 cz1 cz2
+          i l lti w1 G ka kb za zb xa xb s1 s2 H (≡subs-mon e1 es) (≡hyps-mon e1 eh) ck1 ck2 cz1 cz2
           cx1 cx2 cG1 cG2 cc1 cs1a cp1 (equalInType-mon h0 w1 e1) (equalInType-mon hs w1 e1)
           (∀𝕎-mon e1 hg) n c₁ c₂)
-      (equalInType-NAT!→ i w (#subs s1 k ck1) (#subs s2 k ck2) hk))
+      (equalInType-NAT!→ i w (#subs s1 ka ck1) (#subs s2 kb ck2) hk))
 
 
 valid∈NATREC : {i l : ℕ} {H : hypotheses} {G k z s : Term} (lti : l < i)
@@ -840,7 +840,7 @@ valid∈NATREC {i} {l} {H} {G} {k} {z} {s} lti hg hz hs hk w s1 s2 cc1 cc2 ce1 c
                     (#NATREC (#subs s1 k ck1) (#subs s1 z cz1) (#subs s1 s cx1))
                     (#NATREC (#subs s2 k ck2) (#subs s2 z cz2) (#subs s2 s cx2))
   c2a = equalInType-NATREC
-          i l lti w G k z s s1 s2 H es eh ck1 ck2 cz1 cz2
+          i l lti w G k k z z s s s1 s2 H es eh ck1 ck2 cz1 cz2
           cx1 cx2 c0g1 c0g2 cc1 cs1a cp1 hz1 hs1 hg0 k∈1
 
   -- natrec ∈ G[k]
@@ -1066,6 +1066,18 @@ valid≡NATREC {i} {l} {H} {G} {k1} {k2} {z1} {z2} {u1} {u2} lti hg hz hu hk w s
   hz3 : equalInType i w (#subs s1 (subn 0 N0 G) cS0G1) (#subs s1 z2 cz21) (#subs s2 z2 cz22)
   hz3 = eqTypesEQ→ᵣ {w} {i} {#subs s1 z1 cz11} {#subs s1 z2 cz21} {#subs s2 z1 cz12} {#subs s2 z2 cz22} hz1
 
+  hz0 : equalInType i w (#subs s1 (EQ z1 z2 (subn 0 N0 G)) cEZ1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  hz0 = snd (hz w s1 s2 cEZ1 cEZ2 ce1 ce2 es eh)
+
+  hz00 : equalInType i w (#subs s1 (subn 0 N0 G) cS0G1) (#subs s1 z1 cz11) (#subs s1 z2 cz21)
+  hz00 = equalInType-EQ→₁
+           {i} {w} {#subs s1 z1 cz11} {#subs s1 z2 cz21} {#subs s1 (subn 0 N0 G) cS0G1} {#AX} {#AX}
+           (≡→equalInType
+             (#subs-EQ s1 z1 z2 (subn 0 N0 G) cEZ1 cz11 cz21 cS0G1)
+             (#subs-AX s1 ce1)
+             (#subs-AX s2 ce2)
+             hz0)
+
   hs1 : equalTypes i w (#EQ (#subs s1 u1 cu11) (#subs s1 u2 cu21) (#subs s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) cp1))
                        (#EQ (#subs s2 u1 cu12) (#subs s2 u2 cu22) (#subs s2 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) cp2))
   hs1 = ≡CTerm→eqTypes
@@ -1079,6 +1091,18 @@ valid≡NATREC {i} {l} {H} {G} {k1} {k2} {z1} {z2} {u1} {u2} lti hg hz hu hk w s
   hs3 : equalInType i w (#subs s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) cp1) (#subs s1 u2 cu21) (#subs s2 u2 cu22)
   hs3 = eqTypesEQ→ᵣ {w} {i} {#subs s1 u1 cu11} {#subs s1 u2 cu21} {#subs s2 u1 cu12} {#subs s2 u2 cu22} hs1
 
+  hs0 : equalInType i w (#subs s1 (EQ u1 u2 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G)))) cES1) (#subs s1 AX ce1) (#subs s2 AX ce2)
+  hs0 = snd (hu w s1 s2 cES1 cES2 ce1 ce2 es eh)
+
+  hs00 : equalInType i w (#subs s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) cp1) (#subs s1 u1 cu11) (#subs s1 u2 cu21)
+  hs00 = equalInType-EQ→₁
+           {i} {w} {#subs s1 u1 cu11} {#subs s1 u2 cu21} {#subs s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) cp1} {#AX} {#AX}
+           (≡→equalInType
+             (#subs-EQ s1 u1 u2 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) cES1 cu11 cu21 cp1)
+             (#subs-AX s1 ce1)
+             (#subs-AX s2 ce2)
+             hs0)
+
   c1p0 : equalTypes i w (#subs s1 (subn 0 k2 G) cS2G1) (#subs s1 (subn 0 k1 G) cSG1)
   c1p0 = ≡CTerm→eqTypes (esn0 s1 k2 ck21 cG1 cS2G1) (esn0 s1 k1 ck11 cG1 cSG1)
            (c2G w (⊑-refl· w) (#subs s1 k2 ck21) (#subs s1 k1 ck11) (equalInType-sym hk00))
@@ -1091,7 +1115,7 @@ valid≡NATREC {i} {l} {H} {G} {k1} {k2} {z1} {z2} {u1} {u2} lti hg hz hu hk w s
   c1p2 = ≡→equalInType refl
            (sym (#subs-NATREC s1 k1 z1 u1 cN1 ck11 cz11 cu11))
            (sym (#subs-NATREC s2 k1 z1 u1 cN2 ck12 cz12 cu12))
-           (equalInType-NATREC i l lti w G k1 z1 u1 s1 s2 H es eh ck11 ck12 cz11
+           (equalInType-NATREC i l lti w G k1 k1 z1 z1 u1 u1 s1 s2 H es eh ck11 ck12 cz11
               cz12 cu11 cu12 cG1 cG2 cSG1 cS0G1 cp1 hz2 hs2 c2G hk2)
 
   c1p3 : equalInType i w (#subs s1 (subn 0 k1 G) cSG1) (#subs s1 (NATREC k2 z2 u2) cM1) (#subs s2 (NATREC k2 z2 u2) cM2)
@@ -1103,14 +1127,17 @@ valid≡NATREC {i} {l} {H} {G} {k1} {k2} {z1} {z2} {u1} {u2} lti hg hz hu hk w s
              (#NATREC (#subs s1 k2 ck21) (#subs s1 z2 cz21) (#subs s1 u2 cu21))
              (#NATREC (#subs s2 k2 ck22) (#subs s2 z2 cz22) (#subs s2 u2 cu22))
              c1p0
-             (equalInType-NATREC i l lti w G k2 z2 u2 s1 s2 H es eh ck21 ck22 cz21
+             (equalInType-NATREC i l lti w G k2 k2 z2 z2 u2 u2 s1 s2 H es eh ck21 ck22 cz21
               cz22 cu21 cu22 cG1 cG2 cS2G1 cS0G1 cp1 hz3 hs3 c2G hk3))
 
   c2p1 : equalInType i w (#subs s1 (subn 0 k1 G) cSG1) (#subs s1 (NATREC k1 z1 u1) cN1) (#subs s1 (NATREC k2 z2 u2) cM1)
   c2p1 = ≡→equalInType refl
            (sym (#subs-NATREC s1 k1 z1 u1 cN1 ck11 cz11 cu11))
            (sym (#subs-NATREC s1 k2 z2 u2 cM1 ck21 cz21 cu21))
-           {!!}
+           (equalInType-NATREC i l lti w G k1 k2 z1 z2 u1 u2 s1 s1 H
+              (≡subs-refl i w s1 s2 H es) (≡hyps-refl i w s1 s2 H H eh)
+              ck11 ck21 cz11 cz21 cu11 cu21 cG1 cG1 cSG1 cS0G1 cp1
+              hz00 hs00 c2G hk00)
 
   c1 : equalTypes i w (#subs s1 (EQ (NATREC k1 z1 u1) (NATREC k2 z2 u2) (subn 0 k1 G)) cc1)
                       (#subs s2 (EQ (NATREC k1 z1 u1) (NATREC k2 z2 u2) (subn 0 k1 G)) cc2)
