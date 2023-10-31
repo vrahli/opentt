@@ -1154,4 +1154,199 @@ valid≡NATREC {i} {l} {H} {G} {k1} {k2} {z1} {z2} {u1} {u2} lti hg hz hu hk w s
          (sym (#subs-AX s2 ce2))
          (→equalInType-EQ c2p1)
 
+
+valid≡NATREC-SUC : {i l : ℕ} {H : hypotheses} {G k z u : Term} (lti : l < i)
+                 → valid∈𝕎 i (H ∷ʳ mkHyp NAT!) G (UNIV l)
+                 → valid∈𝕎 i H z (subn 0 N0 G) -- TODO: needed?
+                 → valid∈𝕎 i H u (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) --⟦ G ▹▹ G [ Definition.Untyped.suc (var Fin.zero) ]↑ ⟧ᵤ)
+                 → valid∈𝕎 i H k NAT!
+                 → valid≡𝕎 i H (NATREC (SUC k) z u) (APPLY (APPLY u k) (NATREC k z u)) (subn 0 (SUC k) G)
+valid≡NATREC-SUC {i} {l} {H} {G} {k} {z} {u} lti hg hz hu hk w s1 s2 cc1 cc2 ce1 ce2 es eh =
+  c1 , c2
+  where
+  cN1 : covered s1 (NATREC (SUC k) z u)
+  cN1 = coveredEQ₁ {s1} {NATREC (SUC k) z u} {APPLY (APPLY u k) (NATREC k z u)} {subn 0 (SUC k) G} cc1
+
+  cN2 : covered s2 (NATREC (SUC k) z u)
+  cN2 = coveredEQ₁ {s2} {NATREC (SUC k) z u} {APPLY (APPLY u k) (NATREC k z u)} {subn 0 (SUC k) G} cc2
+
+  cM1 : covered s1 (APPLY (APPLY u k) (NATREC k z u))
+  cM1 = coveredEQ₂ {s1} {NATREC (SUC k) z u} {APPLY (APPLY u k) (NATREC k z u)} {subn 0 (SUC k) G} cc1
+
+  cM2 : covered s2 (APPLY (APPLY u k) (NATREC k z u))
+  cM2 = coveredEQ₂ {s2} {NATREC (SUC k) z u} {APPLY (APPLY u k) (NATREC k z u)} {subn 0 (SUC k) G} cc2
+
+  cSG1 : covered s1 (subn 0 (SUC k) G)
+  cSG1 = coveredEQ₃ {s1} {NATREC (SUC k) z u} {APPLY (APPLY u k) (NATREC k z u)} {subn 0 (SUC k) G} cc1
+
+  cSG2 : covered s2 (subn 0 (SUC k) G)
+  cSG2 = coveredEQ₃ {s2} {NATREC (SUC k) z u} {APPLY (APPLY u k) (NATREC k z u)} {subn 0 (SUC k) G} cc2
+
+  cG1 : covered0 s1 G
+  cG1 = covered-subn→covered0 (SUC k) s1 G cSG1
+
+  cG2 : covered0 s2 G
+  cG2 = covered-subn→covered0 (SUC k) s2 G cSG2
+
+  cn1 : covered s1 NAT!
+  cn1 = covered-NAT! s1
+
+  cn2 : covered s2 NAT!
+  cn2 = covered-NAT! s2
+
+  cSK1 : covered s1 (SUC k)
+  cSK1 = coveredNATREC₁ {s1} {SUC k} {z} {u} cN1
+
+  cSK2 : covered s2 (SUC k)
+  cSK2 = coveredNATREC₁ {s2} {SUC k} {z} {u} cN2
+
+  cZ1 : covered s1 z
+  cZ1 = coveredNATREC₂ {s1} {SUC k} {z} {u} cN1
+
+  cZ2 : covered s2 z
+  cZ2 = coveredNATREC₂ {s2} {SUC k} {z} {u} cN2
+
+  cU1 : covered s1 u
+  cU1 = coveredNATREC₃ {s1} {SUC k} {z} {u} cN1
+
+  cU2 : covered s2 u
+  cU2 = coveredNATREC₃ {s2} {SUC k} {z} {u} cN2
+
+  cK1 : covered s1 k
+  cK1 = cSK1
+
+  cK2 : covered s2 k
+  cK2 = cSK2
+
+  cS0G1 : covered s1 (subn 0 N0 G)
+  cS0G1 = covered-subn s1 N0 G (covered-NUM s1 0) cG1
+
+  cS0G2 : covered s2 (subn 0 N0 G)
+  cS0G2 = covered-subn s2 N0 G (covered-NUM s2 0) cG2
+
+  c0sg1 : covered0 s1 (subi 0 (SUC (VAR 0)) G)
+  c0sg1 = →covered0-subi0 s1 G (SUC (VAR 0)) cG1 (→covered0-SUC s1 (VAR 0) (→covered0-VAR0 s1))
+
+  c0sg2 : covered0 s2 (subi 0 (SUC (VAR 0)) G)
+  c0sg2 = →covered0-subi0 s2 G (SUC (VAR 0)) cG2 (→covered0-SUC s2 (VAR 0) (→covered0-VAR0 s2))
+
+  cp1 : covered s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G)))
+  cp1 = →coveredPI {s1} {NAT!} {FUN G (subi 0 (SUC (VAR 0)) G)} (covered-NAT! s1)
+                   (→covered0FUN {s1} {G} {subi 0 (SUC (VAR 0)) G} cG1 c0sg1)
+
+  cp2 : covered s2 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G)))
+  cp2 = →coveredPI {s2} {NAT!} {FUN G (subi 0 (SUC (VAR 0)) G)} (covered-NAT! s2)
+                   (→covered0FUN {s2} {G} {subi 0 (SUC (VAR 0)) G} cG2 c0sg2)
+
+  c1G : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT! a₁ a₂
+                     → equalTypes
+                         i w'
+                         (sub0 a₁ (#[0]subs s1 G cG1))
+                         (sub0 a₂ (#[0]subs s2 G cG2)))
+  c1G w1 e1 a₁ a₂ a∈ =
+    ≡CTerm→eqTypes
+      (sym (sub0-#[0]subs a₁ s1 G cG1))
+      (sym (sub0-#[0]subs a₂ s2 G cG2))
+      (equalTypes-uni-mon (<⇒≤ lti) hb1)
+    where
+    cu1 : covered (s1 ∷ʳ a₁) (UNIV l)
+    cu1 = covered-UNIV (s1 ∷ʳ a₁) l
+
+    cu2 : covered (s2 ∷ʳ a₂) (UNIV l)
+    cu2 = covered-UNIV (s2 ∷ʳ a₂) l
+
+    hn : equalTypes l w1 (#subs s1 NAT! cn1) (#subs s2 NAT! cn2)
+    hn = ≡CTerm→eqTypes (sym (#subs-NAT! s1 cn1)) (sym (#subs-NAT! s2 cn2)) isTypeNAT!
+
+    vg1 : equalInType i w1 (#UNIV l) (#subs (s1 ∷ʳ a₁) G (→covered∷ʳ a₁ s1 G cG1))
+                                     (#subs (s2 ∷ʳ a₂) G (→covered∷ʳ a₂ s2 G cG2))
+    vg1 = ≡CTerm→equalInType
+            (#subs-UNIV (s1 ∷ʳ a₁) l cu1)
+            (snd (hg w1 (s1 ∷ʳ a₁) (s2 ∷ʳ a₂) cu1 cu2
+                    (→covered∷ʳ a₁ s1 G cG1)
+                    (→covered∷ʳ a₂ s2 G cG2)
+                    (≡subs∷ʳ i w1 s1 s2 H NAT! cn1  a₁ a₂
+                      (≡CTerm→equalInType (sym (#subs-NAT! s1 cn1)) a∈) (≡subs-mon e1 es))
+                    (≡hyps∷ʳ i w1 s1 s2 H H NAT! NAT! cn1 cn2 a₁ a₂
+                      (equalTypes-uni-mon (<⇒≤ lti) hn)
+                      (≡hyps-mon e1 eh))))
+
+    hb1 : equalTypes l w1 (#subs (s1 ∷ʳ a₁) G (→covered∷ʳ a₁ s1 G cG1))
+                          (#subs (s2 ∷ʳ a₂) G (→covered∷ʳ a₂ s2 G cG2))
+    hb1 = equalInType→equalTypes-aux i l lti w1
+            (#subs (s1 ∷ʳ a₁) G (→covered∷ʳ a₁ s1 G cG1))
+            (#subs (s2 ∷ʳ a₂) G (→covered∷ʳ a₂ s2 G cG2))
+            vg1
+
+  c2G : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT! a₁ a₂
+                     → equalTypes
+                         i w'
+                         (sub0 a₁ (#[0]subs s1 G cG1))
+                         (sub0 a₂ (#[0]subs s1 G cG1)))
+  c2G w1 e1 a₁ a₂ a∈ =
+    TEQtrans-equalTypes i w1
+      (sub0 a₁ (#[0]subs s1 G cG1))
+      (sub0 a₁ (#[0]subs s2 G cG2))
+      (sub0 a₂ (#[0]subs s1 G cG1))
+      (c1G w1 e1 a₁ a₁ (equalInType-refl a∈))
+      (TEQsym-equalTypes i w1 (sub0 a₂ (#[0]subs s1 G cG1)) (sub0 a₁ (#[0]subs s2 G cG2))
+        (c1G w1 e1 a₂ a₁ (equalInType-sym a∈)))
+
+  esn0 : (s1 : Sub) (t : Term) (cft1 : covered s1 t) (cG1 : covered0 s1 G) (cSG1 : covered s1 (subn 0 t G))
+       → sub0 (#subs s1 t cft1) (#[0]subs s1 G cG1) ≡ #subs s1 (subn 0 t G) cSG1
+  esn0 s1 t cft1 cG1 cSG1 = trans (sub0-#[0]subs (#subs s1 t cft1) s1 G cG1)
+                                  (CTerm≡ (subs∷ʳ≡ s1 t G cft1))
+
+  hk1 : equalInType i w #NAT! (#subs s1 k cK1) (#subs s2 k cK2)
+  hk1 = ≡CTerm→equalInType (#subs-NAT! s1 cn1) (snd (hk w s1 s2 cn1 cn2 cK1 cK2 es eh))
+
+  hsk1 : equalInType i w #NAT! (#subs s1 (SUC k) cSK1) (#subs s2 (SUC k) cSK2)
+  hsk1 = ≡→equalInType refl (sym (#subs-SUC s1 k cK1)) (sym (#subs-SUC s2 k cK2))
+           (SUC∈NAT! hk1)
+
+  hz1 : equalInType i w (#subs s1 (subn 0 N0 G) cS0G1) (#subs s1 z cZ1) (#subs s2 z cZ2)
+  hz1 = snd (hz w s1 s2 cS0G1 cS0G2 cZ1 cZ2 es eh)
+
+  hs1 : equalInType i w (#subs s1 (PI NAT! (FUN G (subi 0 (SUC (VAR 0)) G))) cp1) (#subs s1 u cU1) (#subs s2 u cU2)
+  hs1 = snd (hu w s1 s2 cp1 cp2 cU1 cU2 es eh)
+
+  c1p1 : equalTypes i w (#subs s1 (subn 0 (SUC k) G) cSG1) (#subs s2 (subn 0 (SUC k) G) cSG2)
+  c1p1 = ≡CTerm→eqTypes (esn0 s1 (SUC k) cSK1 cG1 cSG1) (esn0 s2 (SUC k) cSK2 cG2 cSG2)
+           (c1G w (⊑-refl· w) (#subs s1 (SUC k) cSK1) (#subs s2 (SUC k) cSK2) hsk1)
+
+  c1p2 : equalInType i w (#subs s1 (subn 0 (SUC k) G) cSG1)
+                         (#subs s1 (NATREC (SUC k) z u) cN1)
+                         (#subs s2 (NATREC (SUC k) z u) cN2)
+  c1p2 = ≡→equalInType refl
+           (sym (#subs-NATREC s1 (SUC k) z u cN1 cSK1 cZ1 cU1))
+           (sym (#subs-NATREC s2 (SUC k) z u cN2 cSK2 cZ2 cU2))
+           (equalInType-NATREC i l lti w G (SUC k) (SUC k) z z u u s1 s2 H es eh cSK1 cSK2 cZ1 cZ2
+              cU1 cU2 cG1 cG2 cSG1 cS0G1 cp1 hz1 hs1 c2G hsk1)
+
+  c1p3 : equalInType i w (#subs s1 (subn 0 (SUC k) G) cSG1)
+                         (#subs s1 (APPLY (APPLY u k) (NATREC k z u)) cM1)
+                         (#subs s2 (APPLY (APPLY u k) (NATREC k z u)) cM2)
+  c1p3 = {!!}
+
+  c2p1 : equalInType i w (#subs s1 (subn 0 (SUC k) G) cSG1)
+                         (#subs s1 (NATREC (SUC k) z u) cN1)
+                         (#subs s1 (APPLY (APPLY u k) (NATREC k z u)) cM1)
+  c2p1 = {!!}
+
+  c1 : equalTypes i w (#subs s1 (EQ (NATREC (SUC k) z u) (APPLY (APPLY u k) (NATREC k z u)) (subn 0 (SUC k) G)) cc1)
+                      (#subs s2 (EQ (NATREC (SUC k) z u) (APPLY (APPLY u k) (NATREC k z u)) (subn 0 (SUC k) G)) cc2)
+  c1 = ≡CTerm→eqTypes
+         (sym (#subs-EQ s1 (NATREC (SUC k) z u) (APPLY (APPLY u k) (NATREC k z u)) (subn 0 (SUC k) G) cc1 cN1 cM1 cSG1))
+         (sym (#subs-EQ s2 (NATREC (SUC k) z u) (APPLY (APPLY u k) (NATREC k z u)) (subn 0 (SUC k) G) cc2 cN2 cM2 cSG2))
+         (eqTypesEQ← c1p1 c1p2 c1p3)
+
+  c2 : equalInType i w (#subs s1 (EQ (NATREC (SUC k) z u) (APPLY (APPLY u k) (NATREC k z u)) (subn 0 (SUC k) G)) cc1)
+                       (#subs s1 AX ce1)
+                       (#subs s2 AX ce2)
+  c2 = ≡→equalInType
+         (sym (#subs-EQ s1 (NATREC (SUC k) z u) (APPLY (APPLY u k) (NATREC k z u)) (subn 0 (SUC k) G) cc1 cN1 cM1 cSG1))
+         (sym (#subs-AX s1 ce1))
+         (sym (#subs-AX s2 ce2))
+         (→equalInType-EQ c2p1)
+
 \end{code}

@@ -75,7 +75,7 @@ open import terms4(W)(C)(K)(G)(X)(N)(EC)
   using (lowerVars++⊆ ; lowerVars-fvars-shiftUp ; lowerVars-fvars-shiftUp⊆ ; lowerVars++ ; lowerVars2++⊆ ;
          lowerVars2-fvars-shiftUp⊆ ; sub-shiftUp0≡)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
-  using (#APPLY2 ; #FST ; #SND ; SUM! ; #SUM!)
+  using (⇓NUM→SUC⇓NUM ; #APPLY2 ; #FST ; #SND ; SUM! ; #SUM!)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqTypes-mon ; weq-ext-eq ; meq-ext-eq ; TUNIONeq-ext-eq)
@@ -84,7 +84,9 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalInType-mon ; ≡CTerm→equalInType ; ≡CTerm→eqTypes ; equalTypes→equalInType-UNIV ; eqTypesUniv ;
          wPredExtIrr-eqInType ; wPredDepExtIrr-eqInType ; wPredDepExtIrr-eqInType2 ; equalInType-refl ; equalInType-sym ;
-         equalInType-EQ)
+         equalInType-EQ ; equalInType-NAT!→)
+open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (→equalInType-NAT!)
 
 
 -- ---------------------------------
@@ -3525,5 +3527,25 @@ covered∷ʳ-shiftUp→ s t A cov {x} i = c5 c4
   equalInType-EQ
     (fst a∈)
     (Mod.∀𝕎-□ M (λ w1 e1 → equalInType-mon a∈ w1 e1))
+
+
+-- MOVE
+SUC⇛! : {w : 𝕎·} {a : Term} {k : ℕ}
+      → a ⇛! NUM k at w
+      → SUC a ⇛! NUM (ℕ.suc k) at w
+SUC⇛! {w} {a} {k} comp w1 e1 =
+  lift (⇓NUM→SUC⇓NUM {a} {k} {w1} {w1} (lower (comp w1 e1)))
+
+
+-- MOVE
+SUC∈NAT! : {i : ℕ} {w : 𝕎·} {a b : CTerm}
+         → equalInType i w #NAT! a b
+         → equalInType i w #NAT! (#SUC a) (#SUC b)
+SUC∈NAT! {i} {w} {a} {b} h =
+  →equalInType-NAT! i w (#SUC a) (#SUC b) (Mod.∀𝕎-□Func M aw (equalInType-NAT!→ i w a b h))
+  where
+  aw : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' a b
+                     → #⇛!sameℕ w' (#SUC a) (#SUC b))
+  aw w1 e1 (k , c₁ , c₂) = ℕ.suc k , SUC⇛! c₁ , SUC⇛! c₂
 
 \end{code}

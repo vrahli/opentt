@@ -630,24 +630,6 @@ valid∈N0-NAT i w H s1 s2 cc1 cc2 ce1 ce2 es eh
   = isTypeNAT! , NUM-equalInType-NAT! i w 0
 
 
-SUC⇛! : {w : 𝕎·} {a : Term} {k : ℕ}
-      → a ⇛! NUM k at w
-      → SUC a ⇛! NUM (ℕ.suc k) at w
-SUC⇛! {w} {a} {k} comp w1 e1 =
-  lift (⇓NUM→SUC⇓NUM {a} {k} {w1} {w1} (lower (comp w1 e1)))
-
-
-SUC∈NAT! : {i : ℕ} {w : 𝕎·} {a b : CTerm}
-        → equalInType i w #NAT! a b
-        → equalInType i w #NAT! (#SUC a) (#SUC b)
-SUC∈NAT! {i} {w} {a} {b} h =
-  →equalInType-NAT! i w (#SUC a) (#SUC b) (Mod.∀𝕎-□Func M aw (equalInType-NAT!→ i w a b h))
-  where
-  aw : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' a b
-                     → #⇛!sameℕ w' (#SUC a) (#SUC b))
-  aw w1 e1 (k , c₁ , c₂) = ℕ.suc k , SUC⇛! c₁ , SUC⇛! c₂
-
-
 valid∈SUC-NAT : {i : ℕ} {w : 𝕎·} {H : hypotheses} {t : Term}
               → valid∈ i w H t NAT!
               → valid∈ i w H (SUC t) NAT!
