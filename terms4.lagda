@@ -1077,7 +1077,7 @@ abstract
   ¬Names→step w1 w2 w3 (NOENC) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ ne → (ne , λ i → i))
   ¬Names→step w1 w2 w3 (TERM t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ ne → (ne , λ i → i))
   ¬Names→step w1 w2 w3 (ENC t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) | nr = refl , refl , refl , λ ()
-  ¬Names→step w1 w2 w3 (DUM t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ ne → (ne , λ i → i))
+  ¬Names→step w1 w2 w3 (PARTIAL t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ ne → (ne , λ i → i))
   ¬Names→step w1 w2 w3 (FFDEFS t t₁) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ ne → (ne , λ i → i))
   ¬Names→step w1 w2 w3 (UNIV x) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ ne → (ne , λ i → i))
   ¬Names→step w1 w2 w3 (LIFT t) u nr s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = refl , refl , nr , (λ ne → (ne , λ i → i))
@@ -1293,7 +1293,7 @@ abstract
 ¬Names→step w1 w2 w3 (PURE) u name nr g0 s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0 , nr
 ¬Names→step w1 w2 w3 (NOSEQ) u name nr g0 s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0 , nr
 ¬Names→step w1 w2 w3 (NOENC) u name nr g0 s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0 , nr
-¬Names→step w1 w2 w3 (DUM t) u name nr g0 s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0 , nr
+¬Names→step w1 w2 w3 (PARTIAL t) u name nr g0 s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0 , nr
 ¬Names→step w1 w2 w3 (FFDEFS t t₁) u name nr g0 s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0 , nr
 ¬Names→step w1 w2 w3 (UNIV x) u name nr g0 s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0 , nr
 ¬Names→step w1 w2 w3 (LIFT t) u name nr g0 s rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = w3 , refl , g0 , nr
@@ -1456,7 +1456,7 @@ abstract
   names-shiftUp n (NOENC) = refl
   names-shiftUp n (TERM a) = names-shiftUp n a
   names-shiftUp n (ENC a) = refl --names-shiftUp n a
-  names-shiftUp n (DUM a) = names-shiftUp n a
+  names-shiftUp n (PARTIAL a) = names-shiftUp n a
   names-shiftUp n (FFDEFS a a₁) rewrite names-shiftUp n a | names-shiftUp n a₁ = refl
   names-shiftUp n (UNIV x) = refl
   names-shiftUp n (LIFT a) = names-shiftUp n a
@@ -1555,7 +1555,7 @@ abstract
   names-shiftDown n (NOENC) = refl
   names-shiftDown n (TERM a) = names-shiftDown n a
   names-shiftDown n (ENC a) = refl --names-shiftDown n a
-  names-shiftDown n (DUM a) = names-shiftDown n a
+  names-shiftDown n (PARTIAL a) = names-shiftDown n a
   names-shiftDown n (FFDEFS a a₁) rewrite names-shiftDown n a | names-shiftDown n a₁ = refl
   names-shiftDown n (UNIV x) = refl
   names-shiftDown n (LIFT a) = names-shiftDown n a
@@ -1826,7 +1826,7 @@ abstract
   names-shiftNameUp≡ n (NOENC) = refl
   names-shiftNameUp≡ n (TERM t) = names-shiftNameUp≡ n t
   names-shiftNameUp≡ n (ENC t) = names-shiftNameUp≡ n t
-  names-shiftNameUp≡ n (DUM t) = names-shiftNameUp≡ n t
+  names-shiftNameUp≡ n (PARTIAL t) = names-shiftNameUp≡ n t
   names-shiftNameUp≡ n (FFDEFS t t₁)
     rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
@@ -2003,7 +2003,7 @@ abstract
   names-shiftNameDown≡ n (NOENC) = refl
   names-shiftNameDown≡ n (TERM t) = names-shiftNameDown≡ n t
   names-shiftNameDown≡ n (ENC t) = names-shiftNameDown≡ n t
-  names-shiftNameDown≡ n (DUM t) = names-shiftNameDown≡ n t
+  names-shiftNameDown≡ n (PARTIAL t) = names-shiftNameDown≡ n t
   names-shiftNameDown≡ n (FFDEFS t t₁)
     rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
@@ -2087,7 +2087,7 @@ abstract
   ¬∈names-subv {x} {v} {a} {NOENC} na nb = nb
   ¬∈names-subv {x} {v} {a} {TERM b} na nb = ¬∈names-subv {x} {v} {a} {b} na nb
   ¬∈names-subv {x} {v} {a} {ENC b} na nb = nb --¬∈names-subv {x} {v} {a} {b} na nb
-  ¬∈names-subv {x} {v} {a} {DUM b} na nb = ¬∈names-subv {x} {v} {a} {b} na nb
+  ¬∈names-subv {x} {v} {a} {PARTIAL b} na nb = ¬∈names-subv {x} {v} {a} {b} na nb
   ¬∈names-subv {x} {v} {a} {FFDEFS b b₁} na nb = →¬∈++2 {_} {_} {x} {names b} {names b₁} (¬∈names-subv {x} {v} {a} {b} na) (¬∈names-subv {x} {v} {a} {b₁} na) nb
   ¬∈names-subv {x} {v} {a} {UNIV x₁} na nb = nb
   ¬∈names-subv {x} {v} {a} {LIFT b} na nb = ¬∈names-subv {x} {v} {a} {b} na nb
@@ -2386,7 +2386,7 @@ abstract
   --∈names-renn→ {x} {a} {b} {NOENC} i = {!!} --∈names-renn→ {x} {a} {b} {t} i
   ∈names-renn→ {x} {a} {b} {TERM t} i = ∈names-renn→ {x} {a} {b} {t} i
   ∈names-renn→ {x} {a} {b} {ENC t} i = ∈names-renn→ {x} {a} {b} {t} i
-  ∈names-renn→ {x} {a} {b} {DUM t} i = ∈names-renn→ {x} {a} {b} {t} i
+  ∈names-renn→ {x} {a} {b} {PARTIAL t} i = ∈names-renn→ {x} {a} {b} {t} i
   ∈names-renn→ {x} {a} {b} {FFDEFS t t₁} i with ∈-++⁻ (names (renn a b t)) i
   ... | inj₁ j with ∈names-renn→ {x} {a} {b} {t} j
   ... |    inj₁ k = inj₁ k
@@ -2534,7 +2534,7 @@ abstract
   --∈names-renn-same {a} {b} {PURE} i = {!!} --∈names-renn-same {a} {b} {t} i
   --∈names-renn-same {a} {b} {NOSEQ} i = {!!} --∈names-renn-same {a} {b} {t} i
   --∈names-renn-same {a} {b} {NOENC} i = {!!} --∈names-renn-same {a} {b} {t} i
-  ∈names-renn-same {a} {b} {DUM t} i = ∈names-renn-same {a} {b} {t} i
+  ∈names-renn-same {a} {b} {PARTIAL t} i = ∈names-renn-same {a} {b} {t} i
   ∈names-renn-same {a} {b} {TERM t} i = ∈names-renn-same {a} {b} {t} i
   ∈names-renn-same {a} {b} {ENC t} i = ∈names-renn-same {a} {b} {t} i
   ∈names-renn-same {a} {b} {FFDEFS t t₁} i with ∈-++⁻ (names (renn a b t)) i
@@ -2857,7 +2857,7 @@ abstract
   name¬∈→step cc w1 w2 (NOENC) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
   name¬∈→step cc w1 w2 (TERM t) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
   name¬∈→step cc w1 w2 (ENC t) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) | ++[] (names t) | ++[] (names t) = refl , nit , niw , idom --(λ ()) , niw , idom
-  name¬∈→step cc w1 w2 (DUM t) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
+  name¬∈→step cc w1 w2 (PARTIAL t) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
   name¬∈→step cc w1 w2 (FFDEFS t t₁) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
   name¬∈→step cc w1 w2 (UNIV x) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom
   name¬∈→step cc w1 w2 (LIFT t) u name comp nit niw idom rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp)) = refl , nit , niw , idom

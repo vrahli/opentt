@@ -124,7 +124,7 @@ data differC : Term → Term → Set where
   differC-NOENC    : differC NOENC NOENC
   differC-TERM     : (a b : Term) → differC a b → differC (TERM a) (TERM b)
 --  differC-ENC      : (a b : Term) → differC a b → differC (ENC a) (ENC b)
-  differC-DUM      : (a b : Term) → differC a b → differC (DUM a) (DUM b)
+  differC-PARTIAL  : (a b : Term) → differC a b → differC (PARTIAL a) (PARTIAL b)
   differC-FFDEFS   : (a₁ a₂ b₁ b₂ : Term) → differC a₁ a₂ → differC b₁ b₂ → differC (FFDEFS a₁ b₁) (FFDEFS a₂ b₂)
   differC-UNIV     : (x : ℕ) → differC (UNIV x) (UNIV x)
   differC-LIFT     : (a b : Term) → differC a b → differC (LIFT a) (LIFT b)
@@ -305,7 +305,7 @@ differC-shiftUp {n} {.NOSEQ} {.NOSEQ} differC-NOSEQ = differC-NOSEQ
 differC-shiftUp {n} {.NOENC} {.NOENC} differC-NOENC = differC-NOENC
 differC-shiftUp {n} {.(TERM a)} {.(TERM b)} (differC-TERM a b d) = differC-TERM _ _ (differC-shiftUp d)
 --differC-shiftUp {n} {.(ENC a)} {.(ENC b)} (differC-ENC a b d) = differC-ENC _ _ d
-differC-shiftUp {n} {.(DUM a)} {.(DUM b)} (differC-DUM a b d) = differC-DUM _ _ (differC-shiftUp d)
+differC-shiftUp {n} {.(PARTIAL a)} {.(PARTIAL b)} (differC-PARTIAL a b d) = differC-PARTIAL _ _ (differC-shiftUp d)
 differC-shiftUp {n} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differC-FFDEFS a₁ a₂ b₁ b₂ d d₁) = differC-FFDEFS _ _ _ _ (differC-shiftUp d) (differC-shiftUp d₁)
 differC-shiftUp {n} {.(UNIV x)} {.(UNIV x)} (differC-UNIV x) = differC-UNIV _
 differC-shiftUp {n} {.(LIFT a)} {.(LIFT b)} (differC-LIFT a b d) = differC-LIFT _ _ (differC-shiftUp d)
@@ -368,7 +368,7 @@ differC-shiftNameUp {n} {.NOSEQ} {.NOSEQ} differC-NOSEQ = differC-NOSEQ
 differC-shiftNameUp {n} {.NOENC} {.NOENC} differC-NOENC = differC-NOENC
 differC-shiftNameUp {n} {.(TERM a)} {.(TERM b)} (differC-TERM a b d) = differC-TERM _ _ (differC-shiftNameUp d)
 --differC-shiftNameUp {n} {.(ENC a)} {.(ENC b)} (differC-ENC a b d) = differC-ENC _ _ (differC-shiftNameUp d)
-differC-shiftNameUp {n} {.(DUM a)} {.(DUM b)} (differC-DUM a b d) = differC-DUM _ _ (differC-shiftNameUp d)
+differC-shiftNameUp {n} {.(PARTIAL a)} {.(PARTIAL b)} (differC-PARTIAL a b d) = differC-PARTIAL _ _ (differC-shiftNameUp d)
 differC-shiftNameUp {n} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differC-FFDEFS a₁ a₂ b₁ b₂ d d₁) = differC-FFDEFS _ _ _ _ (differC-shiftNameUp d) (differC-shiftNameUp d₁)
 differC-shiftNameUp {n} {.(UNIV x)} {.(UNIV x)} (differC-UNIV x) = differC-UNIV _
 differC-shiftNameUp {n} {.(LIFT a)} {.(LIFT b)} (differC-LIFT a b d) = differC-LIFT _ _ (differC-shiftNameUp d)
@@ -431,7 +431,7 @@ differC-shiftNameDown {n} {.NOSEQ} {.NOSEQ} differC-NOSEQ = differC-NOSEQ
 differC-shiftNameDown {n} {.NOENC} {.NOENC} differC-NOENC = differC-NOENC
 differC-shiftNameDown {n} {.(TERM a)} {.(TERM b)} (differC-TERM a b d) = differC-TERM _ _ (differC-shiftNameDown d)
 --differC-shiftNameDown {n} {.(ENC a)} {.(ENC b)} (differC-ENC a b d) = differC-ENC _ _ (differC-shiftNameDown d)
-differC-shiftNameDown {n} {.(DUM a)} {.(DUM b)} (differC-DUM a b d) = differC-DUM _ _ (differC-shiftNameDown d)
+differC-shiftNameDown {n} {.(PARTIAL a)} {.(PARTIAL b)} (differC-PARTIAL a b d) = differC-PARTIAL _ _ (differC-shiftNameDown d)
 differC-shiftNameDown {n} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differC-FFDEFS a₁ a₂ b₁ b₂ d d₁) = differC-FFDEFS _ _ _ _ (differC-shiftNameDown d) (differC-shiftNameDown d₁)
 differC-shiftNameDown {n} {.(UNIV x)} {.(UNIV x)} (differC-UNIV x) = differC-UNIV _
 differC-shiftNameDown {n} {.(LIFT a)} {.(LIFT b)} (differC-LIFT a b d) = differC-LIFT _ _ (differC-shiftNameDown d)
@@ -497,7 +497,7 @@ differC-subn {n} {a} {b} {.NOSEQ} {.NOSEQ} d1 differC-NOSEQ = differC-NOSEQ
 differC-subn {n} {a} {b} {.NOENC} {.NOENC} d1 differC-NOENC = differC-NOENC
 differC-subn {n} {a} {b} {.(TERM a₁)} {.(TERM b₁)} d1 (differC-TERM a₁ b₁ d2) = differC-TERM _ _ (differC-subn d1 d2)
 --differC-subn {n} {a} {b} {.(ENC a₁)} {.(ENC b₁)} d1 (differC-ENC a₁ b₁ d2) = differC-ENC _ _ d2
-differC-subn {n} {a} {b} {.(DUM a₁)} {.(DUM b₁)} d1 (differC-DUM a₁ b₁ d2) = differC-DUM _ _ (differC-subn d1 d2)
+differC-subn {n} {a} {b} {.(PARTIAL a₁)} {.(PARTIAL b₁)} d1 (differC-PARTIAL a₁ b₁ d2) = differC-PARTIAL _ _ (differC-subn d1 d2)
 differC-subn {n} {a} {b} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} d1 (differC-FFDEFS a₁ a₂ b₁ b₂ d2 d3) = differC-FFDEFS _ _ _ _ (differC-subn d1 d2) (differC-subn d1 d3)
 differC-subn {n} {a} {b} {.(UNIV x)} {.(UNIV x)} d1 (differC-UNIV x) = differC-UNIV _
 differC-subn {n} {a} {b} {.(LIFT a₁)} {.(LIFT b₁)} d1 (differC-LIFT a₁ b₁ d2) = differC-LIFT _ _ (differC-subn d1 d2)
@@ -578,7 +578,7 @@ differC-renn {n} {m} {o} {.NOSEQ} {.NOSEQ} differC-NOSEQ = differC-NOSEQ
 differC-renn {n} {m} {o} {.NOENC} {.NOENC} differC-NOENC = differC-NOENC
 differC-renn {n} {m} {o} {.(TERM a)} {.(TERM b)} (differC-TERM a b diff) = differC-TERM (renn n m a) (renn n o b) (differC-renn diff)
 --differC-renn {n} {m} {o} {.(ENC a)} {.(ENC b)} (differC-ENC a b diff) = {!!}
-differC-renn {n} {m} {o} {.(DUM a)} {.(DUM b)} (differC-DUM a b diff) = differC-DUM (renn n m a) (renn n o b) (differC-renn diff)
+differC-renn {n} {m} {o} {.(PARTIAL a)} {.(PARTIAL b)} (differC-PARTIAL a b diff) = differC-PARTIAL (renn n m a) (renn n o b) (differC-renn diff)
 differC-renn {n} {m} {o} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differC-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = differC-FFDEFS (renn n m a₁) (renn n o a₂) (renn n m b₁) (renn n o b₂) (differC-renn diff) (differC-renn diff₁)
 differC-renn {n} {m} {o} {.(UNIV x)} {.(UNIV x)} (differC-UNIV x) = differC-UNIV x
 differC-renn {n} {m} {o} {.(LIFT a)} {.(LIFT b)} (differC-LIFT a b diff) = differC-LIFT (renn n m a) (renn n o b) (differC-renn diff)
@@ -645,7 +645,7 @@ differC-renn {n} {m} {.NOSEQ} {.NOSEQ} differC-NOSEQ = differC-NOSEQ
 differC-renn {n} {m} {.NOENC} {.NOENC} differC-NOENC = differC-NOENC
 differC-renn {n} {m} {.(TERM a)} {.(TERM b)} (differC-TERM a b diff) = differC-TERM (renn n m a) (renn n m b) (differC-renn diff)
 --differC-renn {n} {m} {.(ENC a)} {.(ENC b)} (differC-ENC a b diff) = differC-ENC (renn n m a) (renn n m b) (differC-renn diff)
-differC-renn {n} {m} {.(DUM a)} {.(DUM b)} (differC-DUM a b diff) = differC-DUM (renn n m a) (renn n m b) (differC-renn diff)
+differC-renn {n} {m} {.(PARTIAL a)} {.(PARTIAL b)} (differC-PARTIAL a b diff) = differC-PARTIAL (renn n m a) (renn n m b) (differC-renn diff)
 differC-renn {n} {m} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differC-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = differC-FFDEFS (renn n m a₁) (renn n m a₂) (renn n m b₁) (renn n m b₂) (differC-renn diff) (differC-renn diff₁)
 differC-renn {n} {m} {.(UNIV x)} {.(UNIV x)} (differC-UNIV x) = differC-UNIV x
 differC-renn {n} {m} {.(LIFT a)} {.(LIFT b)} (differC-LIFT a b diff) = differC-LIFT (renn n m a) (renn n m b) (differC-renn diff)
@@ -705,7 +705,7 @@ differC-names {.NOSEQ} {.NOSEQ} differC-NOSEQ = refl
 differC-names {.NOENC} {.NOENC} differC-NOENC = refl
 differC-names {.(TERM a)} {.(TERM b)} (differC-TERM a b diff) = differC-names diff
 --differC-names {.(ENC a)} {.(ENC b)} (differC-ENC a b diff) = ? --refl
-differC-names {.(DUM a)} {.(DUM b)} (differC-DUM a b diff) = differC-names diff
+differC-names {.(PARTIAL a)} {.(PARTIAL b)} (differC-PARTIAL a b diff) = differC-names diff
 differC-names {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differC-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = ≡++ (differC-names diff) (differC-names diff₁)
 differC-names {.(UNIV x)} {.(UNIV x)} (differC-UNIV x) = refl
 differC-names {.(LIFT a)} {.(LIFT b)} (differC-LIFT a b diff) = differC-names diff
@@ -962,7 +962,7 @@ differC-pres-isValue {.PURE} {.PURE} differC-PURE isv = tt
 differC-pres-isValue {.NOSEQ} {.NOSEQ} differC-NOSEQ isv = tt
 differC-pres-isValue {.NOENC} {.NOENC} differC-NOENC isv = tt
 differC-pres-isValue {.(TERM a)} {.(TERM b)} (differC-TERM a b diff) isv = tt
-differC-pres-isValue {.(DUM a)} {.(DUM b)} (differC-DUM a b diff) isv = tt
+differC-pres-isValue {.(PARTIAL a)} {.(PARTIAL b)} (differC-PARTIAL a b diff) isv = tt
 differC-pres-isValue {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differC-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) isv = tt
 differC-pres-isValue {.(UNIV x)} {.(UNIV x)} (differC-UNIV x) isv = tt
 differC-pres-isValue {.(LIFT a)} {.(LIFT b)} (differC-LIFT a b diff) isv = tt
@@ -1021,7 +1021,7 @@ differC-sym {.NOSEQ} {.NOSEQ} differC-NOSEQ = differC-NOSEQ
 differC-sym {.NOENC} {.NOENC} differC-NOENC = differC-NOENC
 differC-sym {.(TERM a)} {.(TERM b)} (differC-TERM a b diff) = differC-TERM b a (differC-sym diff)
 --differC-sym {.(ENC a)} {.(ENC b)} (differC-ENC a b diff) = differC-ENC b a (differC-sym diff)
-differC-sym {.(DUM a)} {.(DUM b)} (differC-DUM a b diff) = differC-DUM b a (differC-sym diff)
+differC-sym {.(PARTIAL a)} {.(PARTIAL b)} (differC-PARTIAL a b diff) = differC-PARTIAL b a (differC-sym diff)
 differC-sym {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (differC-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) = differC-FFDEFS a₂ a₁ b₂ b₁ (differC-sym diff) (differC-sym diff₁)
 differC-sym {.(UNIV x)} {.(UNIV x)} (differC-UNIV x) = differC-UNIV x
 differC-sym {.(LIFT a)} {.(LIFT b)} (differC-LIFT a b diff) = differC-LIFT b a (differC-sym diff)
@@ -1506,10 +1506,10 @@ abstract
 {--  ¬enc→step gcp w1 w2 w3 .(ENC a) .(ENC b) u nowrites hv (differC-ENC a b dc) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
     = w3 , ENCr b , refl , →∧true (→∧true nowrites refl) refl , differC-ENCr dc--}
-  -- DUM
-  ¬enc→step gcp w1 w2 w3 .(DUM a) .(DUM b) u nowrites hv (differC-DUM a b dc) comp
+  -- PARTIAL
+  ¬enc→step gcp w1 w2 w3 .(PARTIAL a) .(PARTIAL b) u nowrites hv (differC-PARTIAL a b dc) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
-    = w3 , DUM b , refl , nowrites , differC-DUM a b dc
+    = w3 , PARTIAL b , refl , nowrites , differC-PARTIAL a b dc
   -- FFDEFS
   ¬enc→step gcp w1 w2 w3 .(FFDEFS a₁ b₁) .(FFDEFS a₂ b₂) u nowrites hv (differC-FFDEFS a₁ a₂ b₁ b₂ dc dc₁) comp
     rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
@@ -1631,7 +1631,7 @@ abstract
   differC-refl {NOWRITE} nwa = differC-NOWRITE
   differC-refl {NOREAD} nwa = differC-NOREAD
   differC-refl {SUBSING a} nwa = differC-SUBSING a a (differC-refl nwa)
-  differC-refl {DUM a} nwa = differC-DUM a a (differC-refl nwa)
+  differC-refl {PARTIAL a} nwa = differC-PARTIAL a a (differC-refl nwa)
   differC-refl {FFDEFS a a₁} nwa = differC-FFDEFS _ _ _ _ (differC-refl {a} (∧≡true→ₗ (¬enc a) (¬enc a₁) nwa)) (differC-refl {a₁} (∧≡true→ᵣ (¬enc a) (¬enc a₁) nwa))
   differC-refl {PURE} nwa = differC-PURE
   differC-refl {NOSEQ} nwa = differC-NOSEQ

@@ -300,7 +300,7 @@ data updRel2 (name : Name) (f g : Term) (r : ren) : Term → Term → Set where
   updRel2-NOENC   : updRel2 name f g r NOENC NOENC
   updRel2-TERM    : (a₁ a₂ : Term) → updRel2 name f g r a₁ a₂ → updRel2 name f g r (TERM a₁) (TERM a₂)
   updRel2-ENC     : (a : Term) → updRel2 name f g r a a → updRel2 name f g r (ENC a) (ENC a)
-  updRel2-DUM     : (a₁ a₂ : Term) → updRel2 name f g r a₁ a₂ → updRel2 name f g r (DUM a₁) (DUM a₂)
+  updRel2-PARTIAL : (a₁ a₂ : Term) → updRel2 name f g r a₁ a₂ → updRel2 name f g r (PARTIAL a₁) (PARTIAL a₂)
   updRel2-FFDEFS  : (a₁ a₂ b₁ b₂ : Term) → updRel2 name f g r a₁ a₂ → updRel2 name f g r b₁ b₂ → updRel2 name f g r (FFDEFS a₁ b₁) (FFDEFS a₂ b₂)
   updRel2-UNIV    : (x : ℕ) → updRel2 name f g r (UNIV x) (UNIV x)
   updRel2-LIFT    : (a₁ a₂ : Term) → updRel2 name f g r a₁ a₂ → updRel2 name f g r (LIFT a₁) (LIFT a₂)
@@ -490,7 +490,7 @@ abstract
   updRel2-refl {name} {f} {g} {r} {NOENC} nn = updRel2-NOENC
   updRel2-refl {name} {f} {g} {r} {TERM a} nn = updRel2-TERM _ _ (updRel2-refl nn)
   updRel2-refl {name} {f} {g} {r} {ENC a} nn = updRel2-ENC _ (updRel2-refl nn)
-  updRel2-refl {name} {f} {g} {r} {DUM a} nn = updRel2-DUM _ _ (updRel2-refl nn)
+  updRel2-refl {name} {f} {g} {r} {PARTIAL a} nn = updRel2-PARTIAL _ _ (updRel2-refl nn)
   updRel2-refl {name} {f} {g} {r} {FFDEFS a a₁} nn = updRel2-FFDEFS _ _ _ _ (updRel2-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel2-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   updRel2-refl {name} {f} {g} {r} {UNIV x} nn = updRel2-UNIV x
   updRel2-refl {name} {f} {g} {r} {LIFT a} nn = updRel2-LIFT _ _ (updRel2-refl nn)
@@ -539,7 +539,7 @@ updRel2-refl {name} {f} {g} {r} {CHOOSE a a₁} nn = updRel2-CHOOSE _ _ _ _ (upd
 updRel2-refl {name} {f} {g} {r} {TTRUNC a} nn = updRel2-TTRUNC _ _ (updRel2-refl {name} {f} {g} {r} {a} nn)
 updRel2-refl {name} {f} {g} {r} {NOWRITE a} nn = updRel2-NOWRITE _ _ (updRel2-refl {name} {f} {g} {r} {a} nn)
 updRel2-refl {name} {f} {g} {r} {SUBSING a} nn = updRel2-SUBSING _ _ (updRel2-refl {name} {f} {g} {r} {a} nn)
-updRel2-refl {name} {f} {g} {r} {DUM a} nn = updRel2-DUM _ _ (updRel2-refl {name} {f} {g} {r} {a} nn)
+updRel2-refl {name} {f} {g} {r} {PARTIAL a} nn = updRel2-PARTIAL _ _ (updRel2-refl {name} {f} {g} {r} {a} nn)
 updRel2-refl {name} {f} {g} {r} {FFDEFS a a₁} nn = updRel2-FFDEFS _ _ _ _ (updRel2-refl {name} {f} {g} {r} {a} (¬∈++2→¬∈1 {_} {_} {names a} {names a₁} nn)) (updRel2-refl {name} {f} {g} {r} {a₁} (¬∈++2→¬∈2 {_} {_} {names a} {names a₁} nn))
 updRel2-refl {name} {f} {g} {r} {PURE} nn = updRel2-PURE
 updRel2-refl {name} {f} {g} {r} {TERM a} nn = updRel2-TERM _ _ (updRel2-refl {name} {f} {g} {r} {a} nn)
@@ -685,7 +685,7 @@ abstract
   updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(NOENC)} {.(NOENC)} (updRel2-NOENC) = updRel2-NOENC
   updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(TERM a₁)} {.(TERM a₂)} (updRel2-TERM a₁ a₂ u) = updRel2-TERM _ _ (updRel2-shiftUp n cf cg u)
   updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(ENC a)} {.(ENC a)} (updRel2-ENC a u) = updRel2-ENC _ u
-  updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(DUM a₁)} {.(DUM a₂)} (updRel2-DUM a₁ a₂ u) = updRel2-DUM _ _ (updRel2-shiftUp n cf cg u)
+  updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(PARTIAL a₁)} {.(PARTIAL a₂)} (updRel2-PARTIAL a₁ a₂ u) = updRel2-PARTIAL _ _ (updRel2-shiftUp n cf cg u)
   updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel2-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updRel2-FFDEFS _ _ _ _ (updRel2-shiftUp n cf cg u) (updRel2-shiftUp n cf cg u₁)
   updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(UNIV x)} {.(UNIV x)} (updRel2-UNIV x) = updRel2-UNIV x
   updRel2-shiftUp n {name} {f} {g} {r} cf cg {.(LIFT a₁)} {.(LIFT a₂)} (updRel2-LIFT a₁ a₂ u) = updRel2-LIFT _ _ (updRel2-shiftUp n cf cg u)
@@ -754,7 +754,7 @@ abstract
   updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(NOENC)} {.(NOENC)} (updRel2-NOENC) = updRel2-NOENC
   updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(TERM a₁)} {.(TERM a₂)} (updRel2-TERM a₁ a₂ u) = updRel2-TERM _ _ (updRel2-shiftDown n cf cg u)
   updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(ENC a)} {.(ENC a)} (updRel2-ENC a u) = updRel2-ENC _ u
-  updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(DUM a₁)} {.(DUM a₂)} (updRel2-DUM a₁ a₂ u) = updRel2-DUM _ _ (updRel2-shiftDown n cf cg u)
+  updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(PARTIAL a₁)} {.(PARTIAL a₂)} (updRel2-PARTIAL a₁ a₂ u) = updRel2-PARTIAL _ _ (updRel2-shiftDown n cf cg u)
   updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel2-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updRel2-FFDEFS _ _ _ _ (updRel2-shiftDown n cf cg u) (updRel2-shiftDown n cf cg u₁)
   updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(UNIV x)} {.(UNIV x)} (updRel2-UNIV x) = updRel2-UNIV _
   updRel2-shiftDown n {name} {f} {g} {r} cf cg {.(LIFT a₁)} {.(LIFT a₂)} (updRel2-LIFT a₁ a₂ u) = updRel2-LIFT _ _ (updRel2-shiftDown n cf cg u)
@@ -912,7 +912,7 @@ abstract
   updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(NOENC)} {.(NOENC)} (updRel2-NOENC) = updRel2-NOENC
   updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(TERM a₁)} {.(TERM a₂)} (updRel2-TERM a₁ a₂ u) = updRel2-TERM _ _ (updRel2-shiftNameUp n cf cg u)
   updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(ENC a)} {.(ENC a)} (updRel2-ENC a u) = updRel2-ENC _ (updRel2-shiftNameUp n cf cg u)
-  updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(DUM a₁)} {.(DUM a₂)} (updRel2-DUM a₁ a₂ u) = updRel2-DUM _ _ (updRel2-shiftNameUp n cf cg u)
+  updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(PARTIAL a₁)} {.(PARTIAL a₂)} (updRel2-PARTIAL a₁ a₂ u) = updRel2-PARTIAL _ _ (updRel2-shiftNameUp n cf cg u)
   updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updRel2-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updRel2-FFDEFS _ _ _ _ (updRel2-shiftNameUp n cf cg u) (updRel2-shiftNameUp n cf cg u₁)
   updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(UNIV x)} {.(UNIV x)} (updRel2-UNIV x) = updRel2-UNIV x
   updRel2-shiftNameUp n {name} {f} {g} {r} cf cg {.(LIFT a₁)} {.(LIFT a₂)} (updRel2-LIFT a₁ a₂ u) = updRel2-LIFT _ _ (updRel2-shiftNameUp n cf cg u)
@@ -1009,7 +1009,7 @@ abstract
   updRel2-subv v {name} {f} {g} {r} cf cg {.(NOENC)} {.(NOENC)} {b₁} {b₂} (updRel2-NOENC) ub = updRel2-NOENC
   updRel2-subv v {name} {f} {g} {r} cf cg {.(TERM a₁)} {.(TERM a₂)} {b₁} {b₂} (updRel2-TERM a₁ a₂ ua) ub = updRel2-TERM _ _ (updRel2-subv v cf cg ua ub)
   updRel2-subv v {name} {f} {g} {r} cf cg {.(ENC a)} {.(ENC a)} {b₁} {b₂} (updRel2-ENC a ua) ub = updRel2-ENC _ ua
-  updRel2-subv v {name} {f} {g} {r} cf cg {.(DUM a₁)} {.(DUM a₂)} {b₁} {b₂} (updRel2-DUM a₁ a₂ ua) ub = updRel2-DUM _ _ (updRel2-subv v cf cg ua ub)
+  updRel2-subv v {name} {f} {g} {r} cf cg {.(PARTIAL a₁)} {.(PARTIAL a₂)} {b₁} {b₂} (updRel2-PARTIAL a₁ a₂ ua) ub = updRel2-PARTIAL _ _ (updRel2-subv v cf cg ua ub)
   updRel2-subv v {name} {f} {g} {r} cf cg {.(FFDEFS a₁ b₃)} {.(FFDEFS a₂ b₄)} {b₁} {b₂} (updRel2-FFDEFS a₁ a₂ b₃ b₄ ua ua₁) ub = updRel2-FFDEFS _ _ _ _ (updRel2-subv v cf cg ua ub) (updRel2-subv v cf cg ua₁ ub)
   updRel2-subv v {name} {f} {g} {r} cf cg {.(UNIV x)} {.(UNIV x)} {b₁} {b₂} (updRel2-UNIV x) ub = updRel2-UNIV x
   updRel2-subv v {name} {f} {g} {r} cf cg {.(LIFT a₁)} {.(LIFT a₂)} {b₁} {b₂} (updRel2-LIFT a₁ a₂ ua) ub = updRel2-LIFT _ _ (updRel2-subv v cf cg ua ub)

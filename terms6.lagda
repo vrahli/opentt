@@ -125,7 +125,7 @@ abstract
   differ-refl name1 name2 f (NOENC) nn = differ-NOENC
   differ-refl name1 name2 f (TERM t) nn = differ-TERM _ _ (differ-refl name1 name2 f t nn)
   differ-refl name1 name2 f (ENC t) nn = differ-ENC _ (differ-refl name1 name2 f t nn)
-  differ-refl name1 name2 f (DUM t) nn = differ-DUM _ _ (differ-refl name1 name2 f t nn)
+  differ-refl name1 name2 f (PARTIAL t) nn = differ-PARTIAL _ _ (differ-refl name1 name2 f t nn)
   differ-refl name1 name2 f (FFDEFS t t₁) nn = differ-FFDEFS _ _ _ _ (differ-refl name1 name2 f t (∧≡true→ₗ (¬names t) (¬names t₁) nn)) (differ-refl name1 name2 f t₁ (∧≡true→ᵣ (¬names t) (¬names t₁) nn))
   differ-refl name1 name2 f (UNIV x) nn = differ-UNIV x
   differ-refl name1 name2 f (LIFT t) nn = differ-LIFT _ _ (differ-refl name1 name2 f t nn)
@@ -771,7 +771,7 @@ abstract
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(ENC a) .(ENC a) a' v k compat1 compat2 agtn (differ-ENC a diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) =
     ENCr a , ENCr a , w1 , w1' , ⇓from-to-refl _ _ , (1 , refl) , →differ-ENCr diff , g0
   --NUM (Term→ℕ a) , {!!} --ENC a , ENC b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-ENC _ _ diff , g0
-  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(DUM a) .(DUM b) a' v k compat1 compat2 agtn (differ-DUM a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = DUM a , DUM b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-DUM _ _ diff , g0
+  differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(PARTIAL a) .(PARTIAL b) a' v k compat1 compat2 agtn (differ-PARTIAL a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = PARTIAL a , PARTIAL b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-PARTIAL _ _ diff , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(FFDEFS a₁ b₁) .(FFDEFS a₂ b₂) a' v k compat1 compat2 agtn (differ-FFDEFS a₁ a₂ b₁ b₂ diff diff₁) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = FFDEFS a₁ b₁ , FFDEFS a₂ b₂ , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-FFDEFS _ _ _ _ diff diff₁ , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(UNIV x) .(UNIV x) a' v k compat1 compat2 agtn (differ-UNIV x) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = UNIV x , UNIV x , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-UNIV x , g0
   differ⇓-aux2 gc0 f cf nnf name1 name2 w1 w2 w1' w0 .(LIFT a) .(LIFT b) a' v k compat1 compat2 agtn (differ-LIFT a b diff) g0 s hv isvv pd rewrite sym (pair-inj₁ (just-inj s)) | sym (pair-inj₂ (just-inj s)) = LIFT a , LIFT b , w1 , w1' , ⇓from-to-refl _ _ , ⇓from-to-refl _ _ , differ-LIFT _ _ diff , g0
@@ -1584,7 +1584,7 @@ abstract
   ¬Names→shiftNameUp≡ (NOENC) n nnt = refl
   ¬Names→shiftNameUp≡ (TERM t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
   ¬Names→shiftNameUp≡ (ENC t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
-  ¬Names→shiftNameUp≡ (DUM t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
+  ¬Names→shiftNameUp≡ (PARTIAL t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl
   ¬Names→shiftNameUp≡ (FFDEFS t t₁) n nnt rewrite ¬Names→shiftNameUp≡ t n (∧≡true→ₗ (¬names t) (¬names t₁) nnt) | ¬Names→shiftNameUp≡ t₁ n (∧≡true→ᵣ (¬names t) (¬names t₁) nnt) = refl
   ¬Names→shiftNameUp≡ (UNIV x) n nnt = refl
   ¬Names→shiftNameUp≡ (LIFT t) n nnt rewrite ¬Names→shiftNameUp≡ t n nnt = refl

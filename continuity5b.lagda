@@ -592,15 +592,15 @@ abstract
 
 
 abstract
-  updRel2-shiftNameUp≡→DUM : (n : ℕ) {name : Name} {f g : Term} {r : ren} (cf : # f) (cg : # g) {a b x₁ x₂ : Term}
+  updRel2-shiftNameUp≡→PARTIAL : (n : ℕ) {name : Name} {f g : Term} {r : ren} (cf : # f) (cg : # g) {a b x₁ x₂ : Term}
                             → ((u₁ u₂ : Term) → x₁ ≡ shiftNameUp n u₁ → x₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂)
-                            → DUM x₁ ≡ shiftNameUp n a
-                            → DUM x₂ ≡ shiftNameUp n b
+                            → PARTIAL x₁ ≡ shiftNameUp n a
+                            → PARTIAL x₂ ≡ shiftNameUp n b
                             → updRel2 (sucIf≤ n name) (shiftNameUp n f) (shiftNameUp n g) (sucIf≤-ren n r) x₁ x₂
                             → updRel2 name f g r a b
-  updRel2-shiftNameUp≡→DUM n {name} {f} {g} {r} cf cg {DUM u₁} {DUM u₂} {x₁} {x₂} ind1 equ eqv ur1
-    rewrite DUMinj equ | DUMinj eqv
-    = updRel2-DUM u₁ u₂ (ind1 u₁ u₂ refl refl)
+  updRel2-shiftNameUp≡→PARTIAL n {name} {f} {g} {r} cf cg {PARTIAL u₁} {PARTIAL u₂} {x₁} {x₂} ind1 equ eqv ur1
+    rewrite PARTIALinj equ | PARTIALinj eqv
+    = updRel2-PARTIAL u₁ u₂ (ind1 u₁ u₂ refl refl)
 
 
 abstract
@@ -1180,8 +1180,8 @@ abstract
     where
       ind1 : (u₁ u₂ : Term) → a₁ ≡ shiftNameUp n u₁ → a₁ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
       ind1 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {a₁} {a₁} e₁ e₂ ur
-  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(DUM a₁)} {.(DUM a₂)} equ eqv (updRel2-DUM a₁ a₂ ur)
-    = updRel2-shiftNameUp≡→DUM n cf cg ind1 equ eqv ur
+  updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {a} {b} {.(PARTIAL a₁)} {.(PARTIAL a₂)} equ eqv (updRel2-PARTIAL a₁ a₂ ur)
+    = updRel2-shiftNameUp≡→PARTIAL n cf cg ind1 equ eqv ur
     where
       ind1 : (u₁ u₂ : Term) → a₁ ≡ shiftNameUp n u₁ → a₂ ≡ shiftNameUp n u₂ → updRel2 name f g r u₁ u₂
       ind1 u₁ u₂ e₁ e₂ = updRel2-shiftNameUp≡→ n {name} {f} {g} {r} cf cg {u₁} {u₂} {a₁} {a₂} e₁ e₂ ur

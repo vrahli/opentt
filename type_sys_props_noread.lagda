@@ -123,8 +123,8 @@ NOREADneqUNION {c} {d} ()
 NOREADneqEQ : {c d e : Term} → ¬ NOREAD ≡ EQ c d e
 NOREADneqEQ {c} {d} {e} ()
 
-NOREADneqDUM : {c : Term} → ¬ NOREAD ≡ DUM c
-NOREADneqDUM {c} ()
+NOREADneqPARTIAL : {c : Term} → ¬ NOREAD ≡ PARTIAL c
+NOREADneqPARTIAL {c} ()
 
 NOREADneqFFDEFS : {c d : Term} → ¬ NOREAD ≡ FFDEFS c d
 NOREADneqFFDEFS {c} {d} ()
@@ -209,7 +209,7 @@ typeSysConds-NOREAD-ttrans u w A B x x₁ C eqt = concl x x₁
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x x₁ = ⊥-elim (NOREADneqNOWRITE (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x x₁
       = EQTNOREAD x y₁
---    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (NOREADneqDUM (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A3 A4 y y₁ eqtA) = ⊥-elim (NOREADneqPARTIAL (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x x₁ = ⊥-elim (NOREADneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x x₁ = ⊥-elim (NOREADneqUNIV (⇛-val-det tt tt x₁ c₁))
 --    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x x₁ = ⊥-elim (NOREADneqLIFT (⇛-val-det tt tt x₁ y))

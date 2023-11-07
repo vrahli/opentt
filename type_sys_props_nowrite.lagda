@@ -123,8 +123,8 @@ NOWRITEneqUNION {c} {d} ()
 NOWRITEneqEQ : {c d e : Term} → ¬ NOWRITE ≡ EQ c d e
 NOWRITEneqEQ {c} {d} {e} ()
 
-NOWRITEneqDUM : {c : Term} → ¬ NOWRITE ≡ DUM c
-NOWRITEneqDUM {c} ()
+NOWRITEneqPARTIAL : {c : Term} → ¬ NOWRITE ≡ PARTIAL c
+NOWRITEneqPARTIAL {c} ()
 
 NOWRITEneqFFDEFS : {c d : Term} → ¬ NOWRITE ≡ FFDEFS c d
 NOWRITEneqFFDEFS {c} {d} ()
@@ -209,7 +209,7 @@ typeSysConds-NOWRITE-ttrans u w A B x x₁ C eqt = concl x x₁
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ind x x₁
       = EQTNOWRITE x y₁
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ind x x₁ = ⊥-elim (NOWRITEneqNOREAD (⇛-val-det tt tt x₁ y))
---    ind {u} {w} {T1} {T2} (EQTDUM A3 A4 y y₁ eqtA) = ⊥-elim (NOWRITEneqDUM (⇛-val-det tt tt x₁ y))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A3 A4 y y₁ eqtA) = ⊥-elim (NOWRITEneqPARTIAL (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A3 A4 x1 x2 y y₁ eqtA extA eqx) ind x x₁ = ⊥-elim (NOWRITEneqFFDEFS (⇛-val-det tt tt x₁ y))
     ind {u} {w} {T1} {T2} (EQTUNIV i p c₁ c₂) ind x x₁ = ⊥-elim (NOWRITEneqUNIV (⇛-val-det tt tt x₁ c₁))
 --    ind {u} {w} {T1} {T2} (EQTLIFT A3 A4 y y₁ eqtA extA) ind x x₁ = ⊥-elim (NOWRITEneqLIFT (⇛-val-det tt tt x₁ y))

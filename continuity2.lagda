@@ -462,7 +462,7 @@ data updCtxt (name : Name) (f : Term) : Term → Set where
   updCtxt-NOENC   : updCtxt name f NOENC
   updCtxt-TERM    : (a : Term) → updCtxt name f a → updCtxt name f (TERM a)
   updCtxt-ENC     : (a : Term) → updCtxt name f a → updCtxt name f (ENC a)
-  updCtxt-DUM     : (a : Term) → updCtxt name f a → updCtxt name f (DUM a)
+  updCtxt-PARTIAL : (a : Term) → updCtxt name f a → updCtxt name f (PARTIAL a)
   updCtxt-FFDEFS  : (a b : Term) → updCtxt name f a → updCtxt name f b → updCtxt name f (FFDEFS a b)
   updCtxt-UNIV    : (x : ℕ) → updCtxt name f (UNIV x)
   updCtxt-LIFT    : (a : Term) → updCtxt name f a → updCtxt name f (LIFT a)
@@ -528,7 +528,7 @@ abstract
   updCtxt→differ {name} {f} {.(NOENC)} (updCtxt-NOENC) = differ-NOENC
   updCtxt→differ {name} {f} {.(TERM a)} (updCtxt-TERM a u) = differ-TERM _ _ (updCtxt→differ u)
   updCtxt→differ {name} {f} {.(ENC a)} (updCtxt-ENC a u) = differ-ENC _ (updCtxt→differ u)
-  updCtxt→differ {name} {f} {.(DUM a)} (updCtxt-DUM a u) = differ-DUM _ _ (updCtxt→differ u)
+  updCtxt→differ {name} {f} {.(PARTIAL a)} (updCtxt-PARTIAL a u) = differ-PARTIAL _ _ (updCtxt→differ u)
   updCtxt→differ {name} {f} {.(FFDEFS a b)} (updCtxt-FFDEFS a b u u₁) = differ-FFDEFS _ _ _ _ (updCtxt→differ u) (updCtxt→differ u₁)
   updCtxt→differ {name} {f} {.(UNIV x)} (updCtxt-UNIV x) = differ-UNIV x
   updCtxt→differ {name} {f} {.(LIFT a)} (updCtxt-LIFT a u) = differ-LIFT _ _ (updCtxt→differ u)
@@ -594,7 +594,7 @@ abstract
   differ→updCtxt {name} {f} {.(NOENC)} (differ-NOENC) = updCtxt-NOENC
   differ→updCtxt {name} {f} {.(TERM a)} (differ-TERM a .a d) = updCtxt-TERM _ (differ→updCtxt d)
   differ→updCtxt {name} {f} {.(ENC a)} (differ-ENC a d) = updCtxt-ENC _ (differ→updCtxt d)
-  differ→updCtxt {name} {f} {.(DUM a)} (differ-DUM a .a d) = updCtxt-DUM _ (differ→updCtxt d)
+  differ→updCtxt {name} {f} {.(PARTIAL a)} (differ-PARTIAL a .a d) = updCtxt-PARTIAL _ (differ→updCtxt d)
   differ→updCtxt {name} {f} {.(FFDEFS a₁ b₁)} (differ-FFDEFS a₁ .a₁ b₁ .b₁ d d₁) = updCtxt-FFDEFS _ _ (differ→updCtxt d) (differ→updCtxt d₁)
   differ→updCtxt {name} {f} {.(UNIV x)} (differ-UNIV x) = updCtxt-UNIV _
   differ→updCtxt {name} {f} {.(LIFT a)} (differ-LIFT a .a d) = updCtxt-LIFT _ (differ→updCtxt d)

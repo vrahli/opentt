@@ -129,8 +129,8 @@ PUREneqUNION {c} {d} ()
 PUREneqEQ : {c d e : Term} → ¬ PURE ≡ EQ c d e
 PUREneqEQ {c} {d} {e} ()
 
-PUREneqDUM : {c : Term} → ¬ PURE ≡ DUM c
-PUREneqDUM {c} ()
+PUREneqPARTIAL : {c : Term} → ¬ PURE ≡ PARTIAL c
+PUREneqPARTIAL {c} ()
 
 PUREneqFFDEFS : {c d : Term} → ¬ PURE ≡ FFDEFS c d
 PUREneqFFDEFS {c} {d} ()
@@ -200,7 +200,7 @@ typeSysConds-PURE-ttrans u w A B x x₁ C eqt = concl x x₁
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih c₁ c₂ = ⊥-elim (PUREneqNOWRITE (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih c₁ c₂ = ⊥-elim (PUREneqNOREAD (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA extA) ih c₁ c₂ = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt c₂ y))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih c₁ c₂ = ⊥-elim (PUREneqDUM (⇛-val-det tt tt c₂ y))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih c₁ c₂ = ⊥-elim (PUREneqPARTIAL (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih c₁ c₂ = EQTPURE c₁ y₁
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih c₁ c₂ = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih c₁ c₂ = ⊥-elim (PUREneqNOENC (⇛-val-det tt tt c₂ y))
@@ -278,7 +278,7 @@ typeSysConds-PURE-extl1 u w A B x x₁ C eqt' =
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOWRITE (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOREAD (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt comp y))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqDUM (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqPARTIAL (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (PUREneqFFDEFS (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt comp y))
@@ -329,7 +329,7 @@ typeSysConds-PURE-extl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOWRITE (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOREAD (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA extA) ih comp a b eqi = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt comp y₁))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqDUM (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqPARTIAL (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOENC (⇛-val-det tt tt comp y₁))
@@ -380,7 +380,7 @@ typeSysConds-PURE-extr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOWRITE (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOREAD (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA extA) ih comp a b eqi = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt comp y₁))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqDUM (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqPARTIAL (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOENC (⇛-val-det tt tt comp y₁))
@@ -432,7 +432,7 @@ typeSysConds-PURE-extr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOWRITE (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOREAD (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt comp y))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqDUM (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqPARTIAL (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (PUREneqFFDEFS (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt comp y))
@@ -483,7 +483,7 @@ typeSysConds-PURE-extrevl1 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOWRITE (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOREAD (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt comp y))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqDUM (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqPARTIAL (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (PUREneqFFDEFS (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt comp y))
@@ -540,7 +540,7 @@ typeSysConds-PURE-extrevl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOWRITE (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOREAD (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt comp y₁))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqDUM (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqPARTIAL (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (PUREneqFFDEFS (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt comp y₁))
@@ -597,7 +597,7 @@ typeSysConds-PURE-extrevr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOWRITE (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOREAD (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt comp y₁))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqDUM (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqPARTIAL (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (PUREneqFFDEFS (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt comp y₁))
@@ -654,7 +654,7 @@ typeSysConds-PURE-extrevr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOWRITE (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOREAD (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (PUREneqSUBSING (⇛-val-det tt tt comp y))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqDUM (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (PUREneqPARTIAL (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (PUREneqFFDEFS (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (PUREneqNOSEQ (⇛-val-det tt tt comp y))

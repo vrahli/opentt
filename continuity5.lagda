@@ -477,7 +477,7 @@ abstract
   step-updRel gc {n} {name} {f} {g} {.(NOENC)} {.(NOENC)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-NOENC) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , NOENC , NOENC , w1 , refl , refl , updRel-NOENC
   step-updRel gc {n} {name} {f} {g} {.(TERM a₁)} {.(TERM a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-TERM a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TERM a₁ , TERM a₂ , w1 , refl , refl , updRel-TERM _ _ r
   step-updRel gc {n} {name} {f} {g} {.(ENC a)} {.(ENC a)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-ENC a r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 1 , ENCr a , ENCr a , w1 , refl , refl , updRel-ENCr r --0 , 0 , TERM a₁ , TERM a₂ , w1 , refl , refl , updRel-TERM _ _ r
-  step-updRel gc {n} {name} {f} {g} {.(DUM a₁)} {.(DUM a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-DUM a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , DUM a₁ , DUM a₂ , w1 , refl , refl , updRel-DUM _ _ r
+  step-updRel gc {n} {name} {f} {g} {.(PARTIAL a₁)} {.(PARTIAL a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-PARTIAL a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , PARTIAL a₁ , PARTIAL a₂ , w1 , refl , refl , updRel-PARTIAL _ _ r
   step-updRel gc {n} {name} {f} {g} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-FFDEFS a₁ a₂ b₁ b₂ r r₁) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , FFDEFS a₁ b₁ , FFDEFS a₂ b₂ , w1 , refl , refl , updRel-FFDEFS _ _ _ _ r r₁
   step-updRel gc {n} {name} {f} {g} {.(UNIV x₁)} {.(UNIV x₁)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-UNIV x₁) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , UNIV x₁ , UNIV x₁ , w1 , refl , refl , updRel-UNIV x₁
   step-updRel gc {n} {name} {f} {g} {.(LIFT a₁)} {.(LIFT a₂)} {x} {w1} {w2} {w} nnf nng cf cg comp ind (updRel-LIFT a₁ a₂ r) gtn compat wgt0 eqn rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , LIFT a₁ , LIFT a₂ , w1 , refl , refl , updRel-LIFT _ _ r
@@ -672,7 +672,7 @@ abstract
   updRel-refl {name} {f} {g} {NOENC} nn = updRel-NOENC
   updRel-refl {name} {f} {g} {TERM a} nn = updRel-TERM _ _ (updRel-refl nn)
   updRel-refl {name} {f} {g} {ENC a} nn = updRel-ENC _ (updRel-refl nn)
-  updRel-refl {name} {f} {g} {DUM a} nn = updRel-DUM _ _ (updRel-refl nn)
+  updRel-refl {name} {f} {g} {PARTIAL a} nn = updRel-PARTIAL _ _ (updRel-refl nn)
   updRel-refl {name} {f} {g} {FFDEFS a a₁} nn = updRel-FFDEFS _ _ _ _ (updRel-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updRel-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   updRel-refl {name} {f} {g} {UNIV x} nn = updRel-UNIV x
   updRel-refl {name} {f} {g} {LIFT a} nn = updRel-LIFT _ _ (updRel-refl nn)

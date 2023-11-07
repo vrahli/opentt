@@ -480,12 +480,12 @@ abstract
 
 
 --abstract
-ℕ→Term→ℕ-DUM : (t : Term)
+ℕ→Term→ℕ-PARTIAL : (t : Term)
                     → ℕ→Term (Term→ℕ t) ≡ t
-                    → ℕ→Term (38 + (Term→ℕ t * #cons)) ≡ DUM t
-ℕ→Term→ℕ-DUM t ind
+                    → ℕ→Term (38 + (Term→ℕ t * #cons)) ≡ PARTIAL t
+ℕ→Term→ℕ-PARTIAL t ind
     rewrite *#cons%≡k 38 (Term→ℕ t) (m<m+n 38 {#cons ∸ 38} (_≤_.s≤s _≤_.z≤n))
-    = ℕ→Term→ℕ₁ t DUM 37 ≡DUM ind
+    = ℕ→Term→ℕ₁ t PARTIAL 37 ≡PARTIAL ind
 
 
 --abstract
@@ -609,7 +609,7 @@ abstract
   ℕ→Term→ℕ NOWRITE nseq = refl
   ℕ→Term→ℕ NOREAD  nseq = refl
   ℕ→Term→ℕ (SUBSING t) nseq = ℕ→Term→ℕ-SUBSING t (ℕ→Term→ℕ t nseq)
-  ℕ→Term→ℕ (DUM t) nseq = ℕ→Term→ℕ-DUM t (ℕ→Term→ℕ t nseq)
+  ℕ→Term→ℕ (PARTIAL t) nseq = ℕ→Term→ℕ-PARTIAL t (ℕ→Term→ℕ t nseq)
   ℕ→Term→ℕ (FFDEFS t t₁) nseq = ℕ→Term→ℕ-FFDEFS t t₁ (ℕ→Term→ℕ t (∧≡true→ₗ nseq)) (ℕ→Term→ℕ t₁ (∧≡true→ᵣ nseq))
   ℕ→Term→ℕ PURE nseq = refl
   ℕ→Term→ℕ NOSEQ nseq = refl

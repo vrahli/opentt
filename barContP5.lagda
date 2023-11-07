@@ -629,7 +629,7 @@ abstract
   updSeq-step cn gc w1 w2 r s n .NOENC .NOENC u updSeq-NOENC gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , NOENC , NOENC , w1 , refl , refl , updSeq-NOENC
   updSeq-step cn gc w1 w2 r s n .(TERM a₁) .(TERM a₂) u (updSeq-TERM a₁ a₂ upd₁) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , TERM a₁ , TERM a₂ , w1 , refl , refl , updSeq-TERM a₁ a₂ upd₁
   updSeq-step cn gc w1 w2 r s n .(ENC a) .(ENC a) u (updSeq-ENC a upd₁) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 1 , ENCr a , ENCr a , w1 , refl , refl , updSeq-ENCr upd₁
-  updSeq-step cn gc w1 w2 r s n .(DUM a₁) .(DUM a₂) u (updSeq-DUM a₁ a₂ upd₁) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , DUM a₁ , DUM a₂ , w1 , refl , refl , updSeq-DUM a₁ a₂ upd₁
+  updSeq-step cn gc w1 w2 r s n .(PARTIAL a₁) .(PARTIAL a₂) u (updSeq-PARTIAL a₁ a₂ upd₁) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , PARTIAL a₁ , PARTIAL a₂ , w1 , refl , refl , updSeq-PARTIAL a₁ a₂ upd₁
   updSeq-step cn gc w1 w2 r s n .(FFDEFS a₁ b₁) .(FFDEFS a₂ b₂) u (updSeq-FFDEFS a₁ a₂ b₁ b₂ upd₁ upd₂) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , FFDEFS a₁ b₁ , FFDEFS a₂ b₂ , w1 , refl , refl , updSeq-FFDEFS a₁ a₂ b₁ b₂ upd₁ upd₂
   updSeq-step cn gc w1 w2 r s n .(UNIV x) .(UNIV x) u (updSeq-UNIV x) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , UNIV x , UNIV x , w1 , refl , refl , updSeq-UNIV x
   updSeq-step cn gc w1 w2 r s n .(LIFT a₁) .(LIFT a₂) u (updSeq-LIFT a₁ a₂ upd₁) gtn compat comp sind rewrite pair-inj₁ (just-inj (sym comp)) | pair-inj₂ (just-inj (sym comp)) = 0 , 0 , LIFT a₁ , LIFT a₂ , w1 , refl , refl , updSeq-LIFT a₁ a₂ upd₁
@@ -696,7 +696,7 @@ abstract
   updSeq-refl {r} {s} {n} {NOENC} nn = updSeq-NOENC
   updSeq-refl {r} {s} {n} {TERM a} nn = updSeq-TERM _ _ (updSeq-refl nn)
   updSeq-refl {r} {s} {n} {ENC a} nn = updSeq-ENC _ (updSeq-refl nn)
-  updSeq-refl {r} {s} {n} {DUM a} nn = updSeq-DUM _ _ (updSeq-refl nn)
+  updSeq-refl {r} {s} {n} {PARTIAL a} nn = updSeq-PARTIAL _ _ (updSeq-refl nn)
   updSeq-refl {r} {s} {n} {FFDEFS a a₁} nn = updSeq-FFDEFS _ _ _ _ (updSeq-refl (∧≡true→ₗ (¬names a) (¬names a₁) nn)) (updSeq-refl (∧≡true→ᵣ (¬names a) (¬names a₁) nn))
   updSeq-refl {r} {s} {n} {UNIV x} nn = updSeq-UNIV x
   updSeq-refl {r} {s} {n} {LIFT a} nn = updSeq-LIFT _ _ (updSeq-refl nn)

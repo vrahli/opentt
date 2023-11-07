@@ -111,8 +111,8 @@ data Term : Set where
   NOWRITE  : Term -- satisfy #⇓→#⇓! -- essentially a no-write modality
   NOREAD  : Term -- currently the default
   SUBSING : Term → Term
-  -- Dummy
-  DUM : Term → Term
+  -- PARTIAL
+  PARTIAL : Term → Term
   -- Free from definitions
   FFDEFS : Term → Term → Term
   PURE : Term
@@ -181,7 +181,7 @@ value? (CHOOSE _ _) = false -- Not a value
 value? NOWRITE = true
 value? NOREAD = true
 value? (SUBSING _) = true
-value? (DUM _) = true
+value? (PARTIAL _) = true
 value? (FFDEFS _ _) = true
 value? PURE = true
 value? NOSEQ = true
@@ -327,7 +327,7 @@ fvars (CHOOSE a b)     = fvars a ++ fvars b
 fvars NOWRITE          = []
 fvars NOREAD           = []
 fvars (SUBSING t)      = fvars t
-fvars (DUM t)          = fvars t
+fvars (PARTIAL t)          = fvars t
 fvars (FFDEFS t t₁)    = fvars t ++ fvars t₁
 fvars PURE             = []
 fvars NOSEQ            = []
@@ -497,7 +497,7 @@ shiftUp c (CHOOSE a b) = CHOOSE (shiftUp c a) (shiftUp c b)
 shiftUp c NOWRITE = NOWRITE
 shiftUp c NOREAD  = NOREAD
 shiftUp c (SUBSING t) = SUBSING (shiftUp c t)
-shiftUp c (DUM t) = DUM (shiftUp c t)
+shiftUp c (PARTIAL t) = PARTIAL (shiftUp c t)
 shiftUp c (FFDEFS t t₁) = FFDEFS (shiftUp c t) (shiftUp c t₁)
 shiftUp c PURE = PURE
 shiftUp c NOSEQ = NOSEQ
@@ -562,7 +562,7 @@ shiftDown c (CHOOSE a b) = CHOOSE (shiftDown c a) (shiftDown c b)
 shiftDown c NOWRITE = NOWRITE
 shiftDown c NOREAD  = NOREAD
 shiftDown c (SUBSING t) = SUBSING (shiftDown c t)
-shiftDown c (DUM t) = DUM (shiftDown c t)
+shiftDown c (PARTIAL t) = PARTIAL (shiftDown c t)
 shiftDown c (FFDEFS t t₁) = FFDEFS (shiftDown c t) (shiftDown c t₁)
 shiftDown c PURE = PURE
 shiftDown c NOSEQ = NOSEQ
@@ -627,7 +627,7 @@ shiftNameUp c (CHOOSE a b) = CHOOSE (shiftNameUp c a) (shiftNameUp c b)
 shiftNameUp c NOWRITE = NOWRITE
 shiftNameUp c NOREAD  = NOREAD
 shiftNameUp c (SUBSING t) = SUBSING (shiftNameUp c t)
-shiftNameUp c (DUM t) = DUM (shiftNameUp c t)
+shiftNameUp c (PARTIAL t) = PARTIAL (shiftNameUp c t)
 shiftNameUp c (FFDEFS t t₁) = FFDEFS (shiftNameUp c t) (shiftNameUp c t₁)
 shiftNameUp c PURE = PURE
 shiftNameUp c NOSEQ = NOSEQ
@@ -692,7 +692,7 @@ shiftNameDown c (CHOOSE a b) = CHOOSE (shiftNameDown c a) (shiftNameDown c b)
 shiftNameDown c NOWRITE = NOWRITE
 shiftNameDown c NOREAD  = NOREAD
 shiftNameDown c (SUBSING t) = SUBSING (shiftNameDown c t)
-shiftNameDown c (DUM t) = DUM (shiftNameDown c t)
+shiftNameDown c (PARTIAL t) = PARTIAL (shiftNameDown c t)
 shiftNameDown c (FFDEFS t t₁) = FFDEFS (shiftNameDown c t) (shiftNameDown c t₁)
 shiftNameDown c PURE = PURE
 shiftNameDown c NOSEQ = NOSEQ
@@ -764,7 +764,7 @@ names (CHOOSE a b)     = names a ++ names b
 names NOWRITE          = []
 names NOREAD           = []
 names (SUBSING t)      = names t
-names (DUM t)          = names t
+names (PARTIAL t)          = names t
 names (FFDEFS t t₁)    = names t ++ names t₁
 names PURE             = []
 names NOSEQ            = []
@@ -832,7 +832,7 @@ subv v t (CHOOSE a b) = CHOOSE (subv v t a) (subv v t b)
 subv v t NOWRITE = NOWRITE
 subv v t NOREAD  = NOREAD
 subv v t (SUBSING u) = SUBSING (subv v t u)
-subv v t (DUM u) = DUM (subv v t u)
+subv v t (PARTIAL u) = PARTIAL (subv v t u)
 subv v t (FFDEFS u u₁) = FFDEFS (subv v t u) (subv v t u₁)
 subv v t PURE = PURE
 subv v t NOSEQ = NOSEQ
@@ -907,7 +907,7 @@ renn v t (CHOOSE a b) = CHOOSE (renn v t a) (renn v t b)
 renn v t NOWRITE = NOWRITE
 renn v t NOREAD  = NOREAD
 renn v t (SUBSING u) = SUBSING (renn v t u)
-renn v t (DUM u) = DUM (renn v t u)
+renn v t (PARTIAL u) = PARTIAL (renn v t u)
 renn v t (FFDEFS u u₁) = FFDEFS (renn v t u) (renn v t u₁)
 renn v t PURE = PURE
 renn v t NOSEQ = NOSEQ
@@ -1092,7 +1092,7 @@ abstract
   subvNotIn v t NOREAD  n = refl
   subvNotIn v t (SUBSING u) n
     rewrite subvNotIn v t u n = refl
-  subvNotIn v t (DUM u) n
+  subvNotIn v t (PARTIAL u) n
     rewrite subvNotIn v t u n = refl
   subvNotIn v t (FFDEFS u u₁) n
     rewrite subvNotIn v t u (notInAppVars1 n)
@@ -1272,7 +1272,7 @@ abstract
   shiftDownTrivial v NOREAD  i = refl
   shiftDownTrivial v (SUBSING u) i
     rewrite shiftDownTrivial v u i = refl
-  shiftDownTrivial v (DUM u) i
+  shiftDownTrivial v (PARTIAL u) i
     rewrite shiftDownTrivial v u i = refl
   shiftDownTrivial v (FFDEFS u u₁) i
     rewrite shiftDownTrivial v u (impLeNotApp1 _ _ _ i)
@@ -1423,7 +1423,7 @@ abstract
   shiftUpTrivial v NOREAD  i = refl
   shiftUpTrivial v (SUBSING u) i
     rewrite shiftUpTrivial v u i = refl
-  shiftUpTrivial v (DUM u) i
+  shiftUpTrivial v (PARTIAL u) i
     rewrite shiftUpTrivial v u i = refl
   shiftUpTrivial v (FFDEFS u u₁) i
     rewrite shiftUpTrivial v u (impLeNotApp1 _ _ _ i)
@@ -1510,7 +1510,7 @@ abstract
   shiftDownUp NOWRITE n = refl
   shiftDownUp NOREAD  n = refl
   shiftDownUp (SUBSING t) n rewrite shiftDownUp t n = refl
-  shiftDownUp (DUM t) n rewrite shiftDownUp t n = refl
+  shiftDownUp (PARTIAL t) n rewrite shiftDownUp t n = refl
   shiftDownUp (FFDEFS t t₁) n rewrite shiftDownUp t n | shiftDownUp t₁ n = refl
   shiftDownUp PURE n = refl
   shiftDownUp NOSEQ n = refl
@@ -1575,7 +1575,7 @@ is-NUM (CHOOSE t t₁) = inj₂ (λ { n () })
 is-NUM NOWRITE = inj₂ (λ { n () })
 is-NUM NOREAD  = inj₂ (λ { n () })
 is-NUM (SUBSING t) = inj₂ (λ { n () })
-is-NUM (DUM t) = inj₂ (λ { n () })
+is-NUM (PARTIAL t) = inj₂ (λ { n () })
 is-NUM (FFDEFS t t₁) = inj₂ (λ { n () })
 is-NUM PURE = inj₂ (λ { n () })
 is-NUM NOSEQ = inj₂ (λ { n () })
@@ -1640,7 +1640,7 @@ is-LAM (CHOOSE t t₁) = inj₂ (λ { n () })
 is-LAM NOWRITE = inj₂ (λ { n () })
 is-LAM NOREAD  = inj₂ (λ { n () })
 is-LAM (SUBSING t) = inj₂ (λ { n () })
-is-LAM (DUM t) = inj₂ (λ { n () })
+is-LAM (PARTIAL t) = inj₂ (λ { n () })
 is-LAM (FFDEFS t t₁) = inj₂ (λ { n () })
 is-LAM PURE = inj₂ (λ { n () })
 is-LAM NOSEQ = inj₂ (λ { n () })
@@ -1705,7 +1705,7 @@ is-CS (CHOOSE t t₁) = inj₂ (λ { n () })
 is-CS NOWRITE = inj₂ (λ { n () })
 is-CS NOREAD  = inj₂ (λ { n () })
 is-CS (SUBSING t) = inj₂ (λ { n () })
-is-CS (DUM t) = inj₂ (λ { n () })
+is-CS (PARTIAL t) = inj₂ (λ { n () })
 is-CS (FFDEFS t t₁) = inj₂ (λ { n () })
 is-CS PURE = inj₂ (λ { n () })
 is-CS NOSEQ = inj₂ (λ { n () })
@@ -1770,7 +1770,7 @@ is-NAME (CHOOSE t t₁) = inj₂ (λ { n () })
 is-NAME NOWRITE = inj₂ (λ { n () })
 is-NAME NOREAD  = inj₂ (λ { n () })
 is-NAME (SUBSING t) = inj₂ (λ { n () })
-is-NAME (DUM t) = inj₂ (λ { n () })
+is-NAME (PARTIAL t) = inj₂ (λ { n () })
 is-NAME (FFDEFS t t₁) = inj₂ (λ { n () })
 is-NAME PURE = inj₂ (λ { n () })
 is-NAME NOSEQ = inj₂ (λ { n () })
@@ -1835,7 +1835,7 @@ is-MSEQ (CHOOSE t t₁) = inj₂ (λ { n () })
 is-MSEQ NOWRITE = inj₂ (λ { n () })
 is-MSEQ NOREAD  = inj₂ (λ { n () })
 is-MSEQ (SUBSING t) = inj₂ (λ { n () })
-is-MSEQ (DUM t) = inj₂ (λ { n () })
+is-MSEQ (PARTIAL t) = inj₂ (λ { n () })
 is-MSEQ (FFDEFS t t₁) = inj₂ (λ { n () })
 is-MSEQ PURE = inj₂ (λ { n () })
 is-MSEQ NOSEQ = inj₂ (λ { n () })
@@ -1900,7 +1900,7 @@ is-PAIR (CHOOSE t t₁) = inj₂ (λ { n m () })
 is-PAIR NOWRITE = inj₂ (λ { n m () })
 is-PAIR NOREAD  = inj₂ (λ { n m () })
 is-PAIR (SUBSING t) = inj₂ (λ { n m () })
-is-PAIR (DUM t) = inj₂ (λ { n m () })
+is-PAIR (PARTIAL t) = inj₂ (λ { n m () })
 is-PAIR (FFDEFS t t₁) = inj₂ (λ { n m () })
 is-PAIR PURE = inj₂ (λ { n m () })
 is-PAIR NOSEQ = inj₂ (λ { n m () })
@@ -1965,7 +1965,7 @@ is-SUP (CHOOSE t t₁) = inj₂ (λ { n m () })
 is-SUP NOWRITE = inj₂ (λ { n m () })
 is-SUP NOREAD  = inj₂ (λ { n m () })
 is-SUP (SUBSING t) = inj₂ (λ { n m () })
-is-SUP (DUM t) = inj₂ (λ { n m () })
+is-SUP (PARTIAL t) = inj₂ (λ { n m () })
 is-SUP (FFDEFS t t₁) = inj₂ (λ { n m () })
 is-SUP PURE = inj₂ (λ { n m () })
 is-SUP NOSEQ = inj₂ (λ { n m () })
@@ -2030,7 +2030,7 @@ is-MSUP (CHOOSE t t₁) = inj₂ (λ { n m () })
 is-MSUP (NOWRITE t) = inj₂ (λ { n m () })
 is-MSUP (NOREAD t) = inj₂ (λ { n m () })
 is-MSUP (SUBSING t) = inj₂ (λ { n m () })
-is-MSUP (DUM t) = inj₂ (λ { n m () })
+is-MSUP (PARTIAL t) = inj₂ (λ { n m () })
 is-MSUP (FFDEFS t t₁) = inj₂ (λ { n m () })
 is-MSUP PURE = inj₂ (λ { n m () })
 is-MSUP NOSEQ = inj₂ (λ { n m () })
@@ -2096,7 +2096,7 @@ is-INL (CHOOSE t t₁) = inj₂ (λ { n () })
 is-INL NOWRITE = inj₂ (λ { n () })
 is-INL NOREAD  = inj₂ (λ { n () })
 is-INL (SUBSING t) = inj₂ (λ { n () })
-is-INL (DUM t) = inj₂ (λ { n () })
+is-INL (PARTIAL t) = inj₂ (λ { n () })
 is-INL (FFDEFS t t₁) = inj₂ (λ { n () })
 is-INL PURE = inj₂ (λ { n () })
 is-INL NOSEQ = inj₂ (λ { n () })
@@ -2161,7 +2161,7 @@ is-INR (CHOOSE t t₁) = inj₂ (λ { n () })
 is-INR NOWRITE = inj₂ (λ { n () })
 is-INR NOREAD  = inj₂ (λ { n () })
 is-INR (SUBSING t) = inj₂ (λ { n () })
-is-INR (DUM t) = inj₂ (λ { n () })
+is-INR (PARTIAL t) = inj₂ (λ { n () })
 is-INR (FFDEFS t t₁) = inj₂ (λ { n () })
 is-INR PURE = inj₂ (λ { n () })
 is-INR NOSEQ = inj₂ (λ { n () })
@@ -2206,7 +2206,7 @@ data ∼vals : Term → Term → Set where
   ∼vals-NOWRITE : ∼vals NOWRITE NOWRITE
   ∼vals-NOREAD  : ∼vals NOREAD  NOREAD
   ∼vals-SUBSING : {a b : Term} → ∼vals (SUBSING a) (SUBSING b)
-  ∼vals-DUM     : {a b : Term} → ∼vals (DUM a) (DUM b)
+  ∼vals-PARTIAL     : {a b : Term} → ∼vals (PARTIAL a) (PARTIAL b)
   ∼vals-FFDEFS  : {a b c d : Term} → ∼vals (FFDEFS a b) (FFDEFS c d)
   ∼vals-PURE    : ∼vals PURE PURE
   ∼vals-NOSEQ   : ∼vals NOSEQ NOSEQ
@@ -2248,7 +2248,7 @@ data ∼vals : Term → Term → Set where
 ∼vals-sym {.(NOWRITE)} {.(NOWRITE)} ∼vals-NOWRITE = ∼vals-NOWRITE
 ∼vals-sym {.(NOREAD)} {.(NOREAD)} ∼vals-NOREAD = ∼vals-NOREAD
 ∼vals-sym {.(SUBSING _)} {.(SUBSING _)} ∼vals-SUBSING = ∼vals-SUBSING
-∼vals-sym {.(DUM _)} {.(DUM _)} ∼vals-DUM = ∼vals-DUM
+∼vals-sym {.(PARTIAL _)} {.(PARTIAL _)} ∼vals-PARTIAL = ∼vals-PARTIAL
 ∼vals-sym {.(FFDEFS _ _)} {.(FFDEFS _ _)} ∼vals-FFDEFS = ∼vals-FFDEFS
 ∼vals-sym {.(PURE)} {.(PURE)} ∼vals-PURE = ∼vals-PURE
 ∼vals-sym {.(NOSEQ)} {.(NOSEQ)} ∼vals-NOSEQ = ∼vals-NOSEQ
@@ -2290,7 +2290,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₁ {NOWRITE} {b} isv = tt
 ∼vals→isValue₁ {NOREAD} {b} isv = tt
 ∼vals→isValue₁ {SUBSING a} {b} isv = tt
-∼vals→isValue₁ {DUM a} {b} isv = tt
+∼vals→isValue₁ {PARTIAL a} {b} isv = tt
 ∼vals→isValue₁ {FFDEFS a a₁} {b} isv = tt
 ∼vals→isValue₁ {PURE} {b} isv = tt
 ∼vals→isValue₁ {NOSEQ} {b} isv = tt
@@ -2349,7 +2349,7 @@ data ∼vals : Term → Term → Set where
 ∼vals→isValue₂ {a} {NOWRITE} isv = tt
 ∼vals→isValue₂ {a} {NOREAD} isv = tt
 ∼vals→isValue₂ {a} {SUBSING b} isv = tt
-∼vals→isValue₂ {a} {DUM b} isv = tt
+∼vals→isValue₂ {a} {PARTIAL b} isv = tt
 ∼vals→isValue₂ {a} {FFDEFS b b₁} isv = tt
 ∼vals→isValue₂ {a} {PURE} isv = tt
 ∼vals→isValue₂ {a} {NOSEQ} isv = tt
@@ -2421,7 +2421,7 @@ data ∼vals : Term → Term → Set where
 ¬read NOWRITE = true
 ¬read NOREAD  = true
 ¬read (SUBSING t) = ¬read t
-¬read (DUM t) = ¬read t
+¬read (PARTIAL t) = ¬read t
 ¬read (FFDEFS t t₁) = ¬read t ∧ ¬read t₁
 ¬read PURE = true
 ¬read NOSEQ = true
@@ -2498,7 +2498,7 @@ data ∼vals : Term → Term → Set where
 ¬names NOWRITE = true
 ¬names NOREAD  = true
 ¬names (SUBSING t) = ¬names t
-¬names (DUM t) = ¬names t
+¬names (PARTIAL t) = ¬names t
 ¬names (FFDEFS t t₁) = ¬names t ∧ ¬names t₁
 ¬names PURE = true
 ¬names NOSEQ = true
@@ -2575,7 +2575,7 @@ noseq (MAPP x t) = false
 noseq NOWRITE = true
 noseq NOREAD  = true
 noseq (SUBSING t) = noseq t
-noseq (DUM t) = noseq t
+noseq (PARTIAL t) = noseq t
 noseq (FFDEFS t t₁) = noseq t ∧ noseq t₁
 noseq PURE = true
 noseq NOSEQ = true
@@ -2638,7 +2638,7 @@ noseq (SHRINK t) = noseq t
 ¬enc NOWRITE = true
 ¬enc NOREAD  = true
 ¬enc (SUBSING t) = ¬enc t
-¬enc (DUM t) = ¬enc t
+¬enc (PARTIAL t) = ¬enc t
 ¬enc (FFDEFS t t₁) = ¬enc t ∧ ¬enc t₁
 ¬enc PURE = true
 ¬enc NOSEQ = true

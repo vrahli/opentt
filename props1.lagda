@@ -193,8 +193,8 @@ UNIVneqSUBSING {a} {c} ()
 --UNIVneqLIFT : {a : ℕ} {c : Term} → ¬ UNIV a ≡ LIFT c
 --UNIVneqLIFT {a} {c} ()
 
-UNIVneqDUM : {a : ℕ} {c : Term} → ¬ UNIV a ≡ DUM c
-UNIVneqDUM {a} {c} ()
+UNIVneqPARTIAL : {a : ℕ} {c : Term} → ¬ UNIV a ≡ PARTIAL c
+UNIVneqPARTIAL {a} {c} ()
 
 UNIVneqLOWER : {a : ℕ} {c : Term} → ¬ UNIV a ≡ LOWER c
 UNIVneqLOWER {a} {c} ()
@@ -474,7 +474,7 @@ abstract
       ind {u} {w} {A} {B} (EQTNOSEQ x x₁) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqNOSEQ (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTNOENC x x₁) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqNOENC (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTTERM u1 u2 x x₁ x₂) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqTERM (⇛-val-det tt tt c₁ x))
-      --eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqDUM (⇛-val-det tt tt c₁ x))
+      --eqInType-⇛-UNIV->0 n w A B a b c₁ c₂ (EQTPARTIAL A1 A2 x x₁ eqtA) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqPARTIAL (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqFFDEFS (⇛-val-det tt tt c₁ x))
       ind {suc u} {w} {A} {B} (EQTUNIV m p d₁ d₂) {a} {b} eqi ind c₁ c₂ = _≤_.s≤s _≤_.z≤n
 --      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqtA exta) {a} {b} eqi ind c₁ c₂ = ⊥-elim (UNIVneqLIFT (⇛-val-det tt tt c₁ x))
@@ -571,7 +571,7 @@ abstract
       ind {u} {w} {A} {B} (EQTNOSEQ x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqNOSEQ (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTNOENC x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqNOENC (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTTERM u1 u2 x x₁ x₂) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqTERM (⇛-val-det tt tt c₁ x))
-  --eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqDUM (⇛-val-det tt tt c₁ x))
+  --eqInType-⇛-UNIV i n p w A B a b c₁ c₂ (EQTPARTIAL A1 A2 x x₁ eqtA) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqPARTIAL (⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqFFDEFS (⇛-val-det tt tt c₁ x))
       ind {suc u} {w} {A} {B} (EQTUNIV m q d₁ d₂) {a} {b} eqi ind i p c₁ c₂ = c'
         where
@@ -1039,7 +1039,7 @@ abstract
           aw1 : ∀𝕎 w' (λ w'' e'' → TTRUNCeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e'')) w'' a b
                                    → ↑wPred' (λ w''' e → TTRUNCeq (eqInType u w''' (eqta w''' e)) w''' a b) e' w'' e'')
           aw1 w1 e1 h ext = TTRUNCeq-ext {mk𝕌 isu} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h-}
-  --eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTDUM A1 A2 x x₁ eqt) = lift tt
+  --eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQTPARTIAL A1 A2 x x₁ eqt) = lift tt
   eqInType-ext-bar {u} isu {w} {A} {B} i ind a b j (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) =
     Mod.□-idem M (Mod.∀𝕎-□'-□ M i aw j)
     where
@@ -1365,7 +1365,7 @@ abstract
       ind {u} {w} {A} {B} (EQTNOSEQ x x₁) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqNOSEQ (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTNOENC x x₁) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqNOENC (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTTERM u1 u2 x x₁ x₂) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqTERM (Bₗ⇛-val-det tt tt c₁ x))
-  --eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) ind i p c₁ c₂ a b eqi = ⊥-elim (lower (Mod.□-const M (Mod.∀𝕎-□Func M (λ w' e' (c₁ , c₂) → lift (UNIVneqDUM (Bₗ⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
+  --eqInType-u-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTPARTIAL A1 A2 x x₁ eqtA) ind i p c₁ c₂ a b eqi = ⊥-elim (lower (Mod.□-const M (Mod.∀𝕎-□Func M (λ w' e' (c₁ , c₂) → lift (UNIVneqPARTIAL (Bₗ⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
       ind {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqFFDEFS (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTUNIV m q d₁ d₂) ind i p c₁ c₂ a b eqi rewrite UNIVinj (Bₗ⇛-val-det tt tt c₁ d₁) = uniUpTo-<irr {m} {u} {p} {q} eqi
 --      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqta exta) ind i p c₁ c₂ a b eqi = ⊥-elim (UNIVneqLIFT (Bₗ⇛-val-det tt tt c₁ x))
@@ -1451,7 +1451,7 @@ abstract
       ind {u} {w} {A} {B} (EQTNOSEQ x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqNOSEQ (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTNOENC x x₁) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqNOENC (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTTERM u1 u2 x x₁ x₂) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqTERM (Bₗ⇛-val-det tt tt c₁ x))
-  --eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTDUM A1 A2 x x₁ eqtA) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (lower (Mod.□-const M (Mod.∀𝕎-□Func M (λ w' e' (c₁ , c₂) → lift (UNIVneqDUM (Bₗ⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
+  --eqInType-u-rev-bar {i} {n} p {w} {A} {B} c₁ c₂ (EQTPARTIAL A1 A2 x x₁ eqtA) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (lower (Mod.□-const M (Mod.∀𝕎-□Func M (λ w' e' (c₁ , c₂) → lift (UNIVneqPARTIAL (Bₗ⇛-val-det tt tt c₁ (⇛-mon e' x)))) i)))
       ind {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA extA eqx) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqFFDEFS (Bₗ⇛-val-det tt tt c₁ x))
       ind {u} {w} {A} {B} (EQTUNIV m q d₁ d₂) {a} {b} eqi ind i p c₁ c₂ rewrite UNIVinj (Bₗ⇛-val-det tt tt c₁ d₁) = uniUpTo-<irr {m} {u} {q} {p} eqi
 --      ind {u} {w} {A} {B} (EQTLIFT A1 A2 x x₁ eqta exta) {a} {b} eqi ind i p c₁ c₂ = ⊥-elim (UNIVneqLIFT (Bₗ⇛-val-det tt tt c₁ x))
@@ -1891,7 +1891,7 @@ abstract
 
           ib : □· w' (λ w'' e → TTRUNCeq (eqInType u w'' (∀𝕎-mon e' eqta w'' e)) w'' a b)
           ib = Mod.∀𝕎-□Func M aw' (↑□· eqi e')-}
-  --eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTDUM A1 A2 x x₁ eqtA) eqi = {!!}
+  --eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQTPARTIAL A1 A2 x x₁ eqtA) eqi = {!!}
   eqInType-ext-bar-rev {u} isu {w} {A} {B} i ind a b (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) eqi =
     Mod.∀𝕎-□-□' M i aw
     where
@@ -2095,7 +2095,7 @@ abstract
     where
       inda : ∀𝕎 w (λ w1 e1 → eqInTypeExt (eqta w1 e1))
       inda w1 e1 = ind (eqta w1 e1) (<Type1 _ _ (<TypeTTRUNC (mk𝕌 isu) w A B A1 A2 x x₁ eqta exta w1 e1))-}
-  --eqInType-ext0 {u} isu {w} {A} {B} (EQTDUM A1 A2 x x₁ eqta) ind = {!!}
+  --eqInType-ext0 {u} isu {w} {A} {B} (EQTPARTIAL A1 A2 x x₁ eqta) ind = {!!}
   eqInType-ext0 {u} isu {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) ind =
     λ eqt2 a b → eqInType-⇛-FFDEFS-rev u w A B A1 A2 x1 x2 a b eqta exta inda x x₁ eqt2 ,
                  eqInType-⇛-FFDEFS u w A B A1 A2 x1 x2 a b eqta exta inda x x₁ eqt2
@@ -2461,7 +2461,7 @@ abstract
               aw' : ∀𝕎 w' (λ w'' e'' → TTRUNCeq (≡∈Type u w'' (∀𝕎-mon e' eqta w'' e'')) w'' a b
                                        → (x₂ : w ⊑· w'') → TTRUNCeq (≡∈Type u w'' (eqta w'' x₂)) w'' a b)
               aw' w1 e1 h x₂ = TTRUNCeq-ext {u} {w} {A1} {A2} {eqta} {_} {_} {_} {a} {b} exta h-}
-  --local-eqInType2 u (u ·ᵢ) w A B a b (EQTDUM A1 A2 x x₁ eqta) ind a b i j = lift tt
+  --local-eqInType2 u (u ·ᵢ) w A B a b (EQTPARTIAL A1 A2 x x₁ eqta) ind a b i j = lift tt
       ind {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) ind a b i j =
         Mod.□-idem M (∀𝕎-□'-□₀ W M i aw j)
         where
@@ -2852,7 +2852,7 @@ abstract
 
           ib : □· w' (λ w'' e → TTRUNCeq (≡∈Type u w'' (∀𝕎-mon e' eqta w'' e)) w'' a b)
           ib = Mod.∀𝕎-□Func M aw (↑□· eqi e')-}
-  --eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTDUM A1 A2 x x₁ eqta) ind {w'} e' eqt2 a b eqi = {!!}
+  --eqInType-mon {u} isu {w} {A} {B} {w'} e' (EQTPARTIAL A1 A2 x x₁ eqta) ind {w'} e' eqt2 a b eqi = {!!}
       ind {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) ind {w'} e' eqt2 a b eqi =
         eqInType-⇛-FFDEFS-rev2
           u w' A B A1 A2 x1 x2 a b
@@ -3143,7 +3143,7 @@ abstract
       ind {u} {w} {A} {B} (EQTNOSEQ x x₁) ind i p C c₁ c₂ = ⊥-elim (UNIVneqNOSEQ (⇛-val-det tt tt c₂ x))
       ind {u} {w} {A} {B} (EQTNOENC x x₁) ind i p C c₁ c₂ = ⊥-elim (UNIVneqNOENC (⇛-val-det tt tt c₂ x))
       ind {u} {w} {A} {B} (EQTTERM u1 u2 x x₁ x₂) ind i p C c₁ c₂ = ⊥-elim (UNIVneqTERM (⇛-val-det tt tt c₂ x))
-  --eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTDUM A1 A2 x x₁ eqta) ind i p C c₁ c₂ = ⊥-elim (UNIVneqDUM (⇛-val-det tt tt c₂ x))
+  --eqUnivi-trans {i} {n} p {w} {A} {B} {C} c₁ c₂ (EQTPARTIAL A1 A2 x x₁ eqta) ind i p C c₁ c₂ = ⊥-elim (UNIVneqPARTIAL (⇛-val-det tt tt c₂ x))
       ind {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) ind i p C c₁ c₂ = ⊥-elim (UNIVneqFFDEFS (⇛-val-det tt tt c₂ x))
       ind {u} {w} {A} {B} (EQTUNIV m q d₁ d₂) ind i p C c₁ c₂ =
         EQTUNIV i p c₁ c
@@ -3537,7 +3537,7 @@ abstract
         where
           inda : ∀𝕎 w (λ w1 e1 → TSP (eqtA w1 e1))
           inda w1 e1 = ind {u} {w1} {A1} {A2} (eqtA w1 e1) (<Type1 _ _ (<TypeTTRUNC u w A B A1 A2 x x₁ eqtA exta w1 e1)) uind-}
-  --typeSysConds-aux-u u ind w A B (EQTDUM A1 A2 x x₁ eqta) = {!!}
+  --typeSysConds-aux-u u ind w A B (EQTPARTIAL A1 A2 x x₁ eqta) = {!!}
       ind {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) ind uind =
         typeSysConds-FFDEFS (u ·ᵤ) w A B A1 A2 x1 x2 x x₁ eqta exta inda eqx
         where
@@ -3646,7 +3646,7 @@ typeSysConds-aux n ind w A B (EQTSQUASH A1 A2 x x₁ eqtA exta) =
     inda : ∀𝕎 w (λ w1 e1 → TSP (eqtA w1 e1))
     inda w1 e1 = typeSysConds-aux n ind w1 A1 A2 (eqtA w1 e1)
 
---typeSysConds-aux n ind w A B (EQTDUM A1 A2 x x₁ eqta) = {!!}
+--typeSysConds-aux n ind w A B (EQTPARTIAL A1 A2 x x₁ eqta) = {!!}
 
 typeSysConds-aux n ind w A B (EQFFDEFS A1 A2 x1 x2 x x₁ eqta exta eqx) =
   typeSysConds-FFDEFS (uni n) w A B A1 A2 x1 x2 x x₁ eqta exta inda eqx
@@ -3872,7 +3872,7 @@ if-equalInType-EQ-test u w T a b t₁ t₂ (EQTUNION A1 B1 A2 B2 x x₁ eqtA eqt
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTSQUASH A1 A2 x x₁ eqtA exta) eqi = ⊥-elim (EQneqTSQUASH (compAllVal x₁ tt))
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTTRUNC A1 A2 x x₁ eqtA exta) eqi = ⊥-elim (EQneqTTRUNC (compAllVal x₁ tt))
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTNOWRITE A1 A2 x x₁ eqtA exta) eqi = ⊥-elim (EQneqNOWRITE (compAllVal x₁ tt))
---if-equalInType-EQ-test u w T a b t₁ t₂ (EQTDUM A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqDUM (compAllVal x₁ tt))
+--if-equalInType-EQ-test u w T a b t₁ t₂ (EQTPARTIAL A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqPARTIAL (compAllVal x₁ tt))
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) eqi = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
 if-equalInType-EQ-test u w T a b t₁ t₂ (EQTUNIV i p c₁ c₂) eqi = ⊥-elim (EQneqUNIV (compAllVal c₁ tt)) --Bar.∀𝕎-□Func barI z2 x
 {--  where
@@ -4010,7 +4010,7 @@ abstract
       ind {u} {w} {A} {B} (EQTNOWRITE x x₁) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqNOWRITE (compAllVal x tt))
       ind {u} {w} {A} {B} (EQTNOREAD x x₁) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqNOREAD (compAllVal x tt))
       ind {u} {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqtA exta) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqSUBSING (compAllVal x tt))
-  --if-equalInType-EQ u w T a b t₁ t₂ (EQTDUM A1 A2 x x₁ eqtA exta) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqDUM (compAllVal x tt))
+  --if-equalInType-EQ u w T a b t₁ t₂ (EQTPARTIAL A1 A2 x x₁ eqtA exta) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqPARTIAL (compAllVal x tt))
       ind {u} {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqFFDEFS (compAllVal x tt))
       ind {u} {w} {A} {B} (EQTPURE x x₁) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqPURE (compAllVal x tt))
       ind {u} {w} {A} {B} (EQTNOSEQ x x₁) {a₁} {a₂} eqi ind eqat rewrite eqat = ⊥-elim (EQneqNOSEQ (compAllVal x tt))
@@ -4071,7 +4071,7 @@ abstract
 --  if-equalInType-EQ u w T a b t₁ t₂ (EQTTRUNC A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqTTRUNC (compAllVal x₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQTNOWRITE A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqNOWRITE (compAllVal x₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQTSUBSING A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqSUBSING (compAllVal x₁ tt))
-  --if-equalInType-EQ u w T a b t₁ t₂ (EQTDUM A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqDUM (compAllVal x₁ tt))
+  --if-equalInType-EQ u w T a b t₁ t₂ (EQTPARTIAL A1 A2 x x₁ eqtA exta , eqi) = ⊥-elim (EQneqPARTIAL (compAllVal x₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx , eqi) = ⊥-elim (EQneqFFDEFS (compAllVal x₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQTPURE x x₁ , eqi) = ⊥-elim (EQneqPURE (compAllVal x₁ tt))
   if-equalInType-EQ u w T a b t₁ t₂ (EQTNOSEQ x x₁ , eqi) = ⊥-elim (EQneqNOSEQ (compAllVal x₁ tt))

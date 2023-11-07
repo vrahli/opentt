@@ -153,7 +153,7 @@ abstract
   noseq-shiftNameDown n NOENC = refl
   noseq-shiftNameDown n (TERM a) rewrite noseq-shiftNameDown n a = refl
   noseq-shiftNameDown n (ENC a) rewrite noseq-shiftNameDown n a = refl
-  noseq-shiftNameDown n (DUM a) rewrite noseq-shiftNameDown n a = refl
+  noseq-shiftNameDown n (PARTIAL a) rewrite noseq-shiftNameDown n a = refl
   noseq-shiftNameDown n (FFDEFS a a₁) rewrite noseq-shiftNameDown n a | noseq-shiftNameDown n a₁ = refl
   noseq-shiftNameDown n (UNIV x) = refl
   noseq-shiftNameDown n (LIFT a) rewrite noseq-shiftNameDown n a = refl
@@ -208,7 +208,7 @@ abstract
   noseq-renn n m NOWRITE = refl
   noseq-renn n m NOREAD = refl
   noseq-renn n m (SUBSING a) = noseq-renn n m a
-  noseq-renn n m (DUM a) = noseq-renn n m a
+  noseq-renn n m (PARTIAL a) = noseq-renn n m a
   noseq-renn n m (FFDEFS a a₁) = ≡∧ (noseq-renn n m a) (noseq-renn n m a₁)
   noseq-renn n m PURE = refl
   noseq-renn n m NOSEQ = refl
@@ -534,7 +534,7 @@ abstract
   ¬Seq→step w1 w2 (SUBSING t) u comp nseq
      rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
      = nseq
-  ¬Seq→step w1 w2 (DUM t) u comp nseq
+  ¬Seq→step w1 w2 (PARTIAL t) u comp nseq
      rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
      = nseq
   ¬Seq→step w1 w2 (FFDEFS t t₁) u comp nseq
@@ -641,7 +641,7 @@ abstract
 ¬enc-shiftDown n NOWRITE = refl
 ¬enc-shiftDown n NOREAD = refl
 ¬enc-shiftDown n (SUBSING a) = ¬enc-shiftDown n a
-¬enc-shiftDown n (DUM a) = ¬enc-shiftDown n a
+¬enc-shiftDown n (PARTIAL a) = ¬enc-shiftDown n a
 ¬enc-shiftDown n (FFDEFS a a₁) = ≡∧ (¬enc-shiftDown n a) (¬enc-shiftDown n a₁)
 ¬enc-shiftDown n PURE = refl
 ¬enc-shiftDown n NOSEQ = refl
@@ -697,7 +697,7 @@ abstract
 ¬enc-shiftUp n NOWRITE = refl
 ¬enc-shiftUp n NOREAD = refl
 ¬enc-shiftUp n (SUBSING a) = ¬enc-shiftUp n a
-¬enc-shiftUp n (DUM a) = ¬enc-shiftUp n a
+¬enc-shiftUp n (PARTIAL a) = ¬enc-shiftUp n a
 ¬enc-shiftUp n (FFDEFS a a₁) = ≡∧ (¬enc-shiftUp n a) (¬enc-shiftUp n a₁)
 ¬enc-shiftUp n PURE = refl
 ¬enc-shiftUp n NOSEQ = refl
@@ -784,7 +784,7 @@ abstract
 ¬enc-subv {v} {a} {NOWRITE} nwa nwt = refl
 ¬enc-subv {v} {a} {NOREAD} nwa nwt = refl
 ¬enc-subv {v} {a} {SUBSING t} nwa nwt = ¬enc-subv {v} {a} {t} nwa nwt
-¬enc-subv {v} {a} {DUM t} nwa nwt = ¬enc-subv {v} {a} {t} nwa nwt
+¬enc-subv {v} {a} {PARTIAL t} nwa nwt = ¬enc-subv {v} {a} {t} nwa nwt
 ¬enc-subv {v} {a} {FFDEFS t t₁} nwa nwt = →∧≡true {¬enc t} {¬enc t₁} {¬enc (subv v a t)} {¬enc (subv v a t₁)} (¬enc-subv {v} {a} {t} nwa) (¬enc-subv {v} {a} {t₁} nwa) nwt
 ¬enc-subv {v} {a} {PURE} nwa nwt = refl
 ¬enc-subv {v} {a} {NOSEQ} nwa nwt = refl
@@ -842,7 +842,7 @@ abstract
 ¬enc-shiftNameUp n NOWRITE = refl
 ¬enc-shiftNameUp n NOREAD = refl
 ¬enc-shiftNameUp n (SUBSING a) = ¬enc-shiftNameUp n a
-¬enc-shiftNameUp n (DUM a) = ¬enc-shiftNameUp n a
+¬enc-shiftNameUp n (PARTIAL a) = ¬enc-shiftNameUp n a
 ¬enc-shiftNameUp n (FFDEFS a a₁) = ≡∧ (¬enc-shiftNameUp n a) (¬enc-shiftNameUp n a₁)
 ¬enc-shiftNameUp n PURE = refl
 ¬enc-shiftNameUp n NOSEQ = refl
@@ -899,7 +899,7 @@ abstract
 ¬enc-shiftNameDown n NOWRITE = refl
 ¬enc-shiftNameDown n NOREAD = refl
 ¬enc-shiftNameDown n (SUBSING a) = ¬enc-shiftNameDown n a
-¬enc-shiftNameDown n (DUM a) = ¬enc-shiftNameDown n a
+¬enc-shiftNameDown n (PARTIAL a) = ¬enc-shiftNameDown n a
 ¬enc-shiftNameDown n (FFDEFS a a₁) = ≡∧ (¬enc-shiftNameDown n a) (¬enc-shiftNameDown n a₁)
 ¬enc-shiftNameDown n PURE = refl
 ¬enc-shiftNameDown n NOSEQ = refl
@@ -959,7 +959,7 @@ abstract
 ¬enc-subn {v} {a} {NOWRITE} nwa nwt = refl
 ¬enc-subn {v} {a} {NOREAD} nwa nwt = refl
 ¬enc-subn {v} {a} {SUBSING t} nwa nwt = ¬enc-subn {v} {a} {t} nwa nwt
-¬enc-subn {v} {a} {DUM t} nwa nwt = ¬enc-subn {v} {a} {t} nwa nwt
+¬enc-subn {v} {a} {PARTIAL t} nwa nwt = ¬enc-subn {v} {a} {t} nwa nwt
 ¬enc-subn {v} {a} {FFDEFS t t₁} nwa nwt = →∧≡true {¬enc t} {¬enc t₁} {¬enc (subn v a t)} {¬enc (subn v a t₁)} (¬enc-subn {v} {a} {t} nwa) (¬enc-subn {v} {a} {t₁} nwa) nwt
 ¬enc-subn {v} {a} {PURE} nwa nwt = refl
 ¬enc-subn {v} {a} {NOSEQ} nwa nwt = refl
@@ -1019,7 +1019,7 @@ abstract
 ¬enc-renn n m NOWRITE = refl
 ¬enc-renn n m NOREAD = refl
 ¬enc-renn n m (SUBSING a) = ¬enc-renn n m a
-¬enc-renn n m (DUM a) = ¬enc-renn n m a
+¬enc-renn n m (PARTIAL a) = ¬enc-renn n m a
 ¬enc-renn n m (FFDEFS a a₁) = ≡∧ {¬enc (renn n m a)} {¬enc a} {¬enc (renn n m a₁)} {¬enc a₁} (¬enc-renn n m a) (¬enc-renn n m a₁)
 ¬enc-renn n m PURE = refl
 ¬enc-renn n m NOSEQ = refl
@@ -1350,7 +1350,7 @@ abstract
   ¬Enc→step w1 w2 (SUBSING t) u comp nenc
      rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
      = nenc
-  ¬Enc→step w1 w2 (DUM t) u comp nenc
+  ¬Enc→step w1 w2 (PARTIAL t) u comp nenc
      rewrite sym (pair-inj₁ (just-inj comp)) | sym (pair-inj₂ (just-inj comp))
      = nenc
   ¬Enc→step w1 w2 (FFDEFS t t₁) u comp nenc

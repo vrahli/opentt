@@ -117,7 +117,7 @@ abstract
   shiftUp-shiftNameUp c d NOENC = refl
   shiftUp-shiftNameUp c d (TERM t) rewrite shiftUp-shiftNameUp c d t = refl
   shiftUp-shiftNameUp c d (ENC t) rewrite shiftUp-shiftNameUp c d t = refl
-  shiftUp-shiftNameUp c d (DUM t) rewrite shiftUp-shiftNameUp c d t = refl
+  shiftUp-shiftNameUp c d (PARTIAL t) rewrite shiftUp-shiftNameUp c d t = refl
   shiftUp-shiftNameUp c d (FFDEFS t t₁) rewrite shiftUp-shiftNameUp c d t | shiftUp-shiftNameUp c d t₁ = refl
   shiftUp-shiftNameUp c d (UNIV x) = refl
   shiftUp-shiftNameUp c d (LIFT t) rewrite shiftUp-shiftNameUp c d t = refl
@@ -196,7 +196,7 @@ abstract
   renn-shiftNameUp n1 n2 NOENC = refl
   renn-shiftNameUp n1 n2 (TERM t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 (ENC t) rewrite renn-shiftNameUp n1 n2 t = refl
-  renn-shiftNameUp n1 n2 (DUM t) rewrite renn-shiftNameUp n1 n2 t = refl
+  renn-shiftNameUp n1 n2 (PARTIAL t) rewrite renn-shiftNameUp n1 n2 t = refl
   renn-shiftNameUp n1 n2 (FFDEFS t t₁) rewrite renn-shiftNameUp n1 n2 t | renn-shiftNameUp n1 n2 t₁ = refl
   renn-shiftNameUp n1 n2 (UNIV x) = refl
   renn-shiftNameUp n1 n2 (LIFT t) rewrite renn-shiftNameUp n1 n2 t = refl
@@ -277,7 +277,7 @@ abstract
   shiftNameDownUp n NOENC = refl
   shiftNameDownUp n (TERM t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n (ENC t) rewrite shiftNameDownUp n t = refl
-  shiftNameDownUp n (DUM t) rewrite shiftNameDownUp n t = refl
+  shiftNameDownUp n (PARTIAL t) rewrite shiftNameDownUp n t = refl
   shiftNameDownUp n (FFDEFS t t₁) rewrite shiftNameDownUp n t | shiftNameDownUp n t₁ = refl
   shiftNameDownUp n (UNIV x) = refl
   shiftNameDownUp n (LIFT t) rewrite shiftNameDownUp n t = refl
@@ -395,7 +395,7 @@ abstract
   ¬names-shiftUp n NOENC = refl
   ¬names-shiftUp n (TERM a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n (ENC a) rewrite ¬names-shiftUp n a = refl
-  ¬names-shiftUp n (DUM a) rewrite ¬names-shiftUp n a = refl
+  ¬names-shiftUp n (PARTIAL a) rewrite ¬names-shiftUp n a = refl
   ¬names-shiftUp n (FFDEFS a a₁) rewrite ¬names-shiftUp n a | ¬names-shiftUp n a₁ = refl
   ¬names-shiftUp n (UNIV x) = refl
   ¬names-shiftUp n (LIFT a) rewrite ¬names-shiftUp n a = refl
@@ -460,7 +460,7 @@ abstract
   ¬names-shiftDown n NOENC = refl
   ¬names-shiftDown n (TERM a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n (ENC a) rewrite ¬names-shiftDown n a = refl
-  ¬names-shiftDown n (DUM a) rewrite ¬names-shiftDown n a = refl
+  ¬names-shiftDown n (PARTIAL a) rewrite ¬names-shiftDown n a = refl
   ¬names-shiftDown n (FFDEFS a a₁) rewrite ¬names-shiftDown n a | ¬names-shiftDown n a₁ = refl
   ¬names-shiftDown n (UNIV x) = refl
   ¬names-shiftDown n (LIFT a) rewrite ¬names-shiftDown n a = refl
@@ -546,7 +546,7 @@ abstract
   ¬Names-subv v {a} {NOENC} na nb = refl
   ¬Names-subv v {a} {TERM b} na nb = ¬Names-subv v {a} {b} na nb
   ¬Names-subv v {a} {ENC b} na nb = nb --¬Names-subv v {a} {b} na nb
-  ¬Names-subv v {a} {DUM b} na nb = ¬Names-subv v {a} {b} na nb
+  ¬Names-subv v {a} {PARTIAL b} na nb = ¬Names-subv v {a} {b} na nb
   ¬Names-subv v {a} {FFDEFS b b₁} na nb = →∧≡true {¬names (subv v a b)} {¬names (subv v a b₁)} (¬Names-subv v {a} {b} na (∧≡true→ₗ (¬names b) (¬names b₁) nb)) (¬Names-subv v {a} {b₁} na (∧≡true→ᵣ (¬names b) (¬names b₁) nb))
   ¬Names-subv v {a} {UNIV x} na nb = refl
   ¬Names-subv v {a} {LIFT b} na nb = ¬Names-subv v {a} {b} na nb
@@ -621,7 +621,7 @@ abstract
   noseq-shiftUp n NOENC = refl
   noseq-shiftUp n (TERM a) rewrite noseq-shiftUp n a = refl
   noseq-shiftUp n (ENC a) rewrite noseq-shiftUp n a = refl
-  noseq-shiftUp n (DUM a) rewrite noseq-shiftUp n a = refl
+  noseq-shiftUp n (PARTIAL a) rewrite noseq-shiftUp n a = refl
   noseq-shiftUp n (FFDEFS a a₁) rewrite noseq-shiftUp n a | noseq-shiftUp n a₁ = refl
   noseq-shiftUp n (UNIV x) = refl
   noseq-shiftUp n (LIFT a) rewrite noseq-shiftUp n a = refl
@@ -686,7 +686,7 @@ abstract
   noseq-shiftDown n NOENC = refl
   noseq-shiftDown n (TERM a) rewrite noseq-shiftDown n a = refl
   noseq-shiftDown n (ENC a) rewrite noseq-shiftDown n a = refl
-  noseq-shiftDown n (DUM a) rewrite noseq-shiftDown n a = refl
+  noseq-shiftDown n (PARTIAL a) rewrite noseq-shiftDown n a = refl
   noseq-shiftDown n (FFDEFS a a₁) rewrite noseq-shiftDown n a | noseq-shiftDown n a₁ = refl
   noseq-shiftDown n (UNIV x) = refl
   noseq-shiftDown n (LIFT a) rewrite noseq-shiftDown n a = refl
@@ -757,7 +757,7 @@ abstract
   noseq-shiftNameUp n NOENC = refl
   noseq-shiftNameUp n (TERM a) rewrite noseq-shiftNameUp n a = refl
   noseq-shiftNameUp n (ENC a) rewrite noseq-shiftNameUp n a = refl
-  noseq-shiftNameUp n (DUM a) rewrite noseq-shiftNameUp n a = refl
+  noseq-shiftNameUp n (PARTIAL a) rewrite noseq-shiftNameUp n a = refl
   noseq-shiftNameUp n (FFDEFS a a₁) rewrite noseq-shiftNameUp n a | noseq-shiftNameUp n a₁ = refl
   noseq-shiftNameUp n (UNIV x) = refl
   noseq-shiftNameUp n (LIFT a) rewrite noseq-shiftNameUp n a = refl
@@ -831,7 +831,7 @@ abstract
   ¬Seq-subv v {a} {NOENC} na nb = refl
   ¬Seq-subv v {a} {TERM b} na nb = ¬Seq-subv v {a} {b} na nb
   ¬Seq-subv v {a} {ENC b} na nb = nb --¬Seq-subv v {a} {b} na nb
-  ¬Seq-subv v {a} {DUM b} na nb = ¬Seq-subv v {a} {b} na nb
+  ¬Seq-subv v {a} {PARTIAL b} na nb = ¬Seq-subv v {a} {b} na nb
   ¬Seq-subv v {a} {FFDEFS b b₁} na nb = →∧≡true {noseq (subv v a b)} {noseq (subv v a b₁)} (¬Seq-subv v {a} {b} na (∧≡true→ₗ (noseq b) (noseq b₁) nb)) (¬Seq-subv v {a} {b₁} na (∧≡true→ᵣ (noseq b) (noseq b₁) nb))
   ¬Seq-subv v {a} {UNIV x} na nb = refl
   ¬Seq-subv v {a} {LIFT b} na nb = ¬Seq-subv v {a} {b} na nb
@@ -907,7 +907,7 @@ abstract
   ¬enc-shiftUp n NOENC = refl
   ¬enc-shiftUp n (TERM a) rewrite ¬enc-shiftUp n a = refl
   ¬enc-shiftUp n (ENC a) rewrite ¬enc-shiftUp n a = refl
-  ¬enc-shiftUp n (DUM a) rewrite ¬enc-shiftUp n a = refl
+  ¬enc-shiftUp n (PARTIAL a) rewrite ¬enc-shiftUp n a = refl
   ¬enc-shiftUp n (FFDEFS a a₁) rewrite ¬enc-shiftUp n a | ¬enc-shiftUp n a₁ = refl
   ¬enc-shiftUp n (UNIV x) = refl
   ¬enc-shiftUp n (LIFT a) rewrite ¬enc-shiftUp n a = refl
@@ -972,7 +972,7 @@ abstract
   ¬enc-shiftDown n NOENC = refl
   ¬enc-shiftDown n (TERM a) rewrite ¬enc-shiftDown n a = refl
   ¬enc-shiftDown n (ENC a) rewrite ¬enc-shiftDown n a = refl
-  ¬enc-shiftDown n (DUM a) rewrite ¬enc-shiftDown n a = refl
+  ¬enc-shiftDown n (PARTIAL a) rewrite ¬enc-shiftDown n a = refl
   ¬enc-shiftDown n (FFDEFS a a₁) rewrite ¬enc-shiftDown n a | ¬enc-shiftDown n a₁ = refl
   ¬enc-shiftDown n (UNIV x) = refl
   ¬enc-shiftDown n (LIFT a) rewrite ¬enc-shiftDown n a = refl
@@ -1043,7 +1043,7 @@ abstract
   ¬enc-shiftNameUp n NOENC = refl
   ¬enc-shiftNameUp n (TERM a) rewrite ¬enc-shiftNameUp n a = refl
   ¬enc-shiftNameUp n (ENC a) rewrite ¬enc-shiftNameUp n a = refl
-  ¬enc-shiftNameUp n (DUM a) rewrite ¬enc-shiftNameUp n a = refl
+  ¬enc-shiftNameUp n (PARTIAL a) rewrite ¬enc-shiftNameUp n a = refl
   ¬enc-shiftNameUp n (FFDEFS a a₁) rewrite ¬enc-shiftNameUp n a | ¬enc-shiftNameUp n a₁ = refl
   ¬enc-shiftNameUp n (UNIV x) = refl
   ¬enc-shiftNameUp n (LIFT a) rewrite ¬enc-shiftNameUp n a = refl
@@ -1117,7 +1117,7 @@ abstract
   ¬Enc-subv v {a} {NOENC} na nb = refl
   ¬Enc-subv v {a} {TERM b} na nb = ¬Enc-subv v {a} {b} na nb
   ¬Enc-subv v {a} {ENC b} na nb = nb --¬Enc-subv v {a} {b} na nb
-  ¬Enc-subv v {a} {DUM b} na nb = ¬Enc-subv v {a} {b} na nb
+  ¬Enc-subv v {a} {PARTIAL b} na nb = ¬Enc-subv v {a} {b} na nb
   ¬Enc-subv v {a} {FFDEFS b b₁} na nb = →∧≡true {¬enc (subv v a b)} {¬enc (subv v a b₁)} (¬Enc-subv v {a} {b} na (∧≡true→ₗ (¬enc b) (¬enc b₁) nb)) (¬Enc-subv v {a} {b₁} na (∧≡true→ᵣ (¬enc b) (¬enc b₁) nb))
   ¬Enc-subv v {a} {UNIV x} na nb = refl
   ¬Enc-subv v {a} {LIFT b} na nb = ¬Enc-subv v {a} {b} na nb

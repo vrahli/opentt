@@ -131,8 +131,8 @@ NOENCneqUNION {c} {d} ()
 NOENCneqEQ : {c d e : Term} → ¬ NOENC ≡ EQ c d e
 NOENCneqEQ {c} {d} {e} ()
 
-NOENCneqDUM : {c : Term} → ¬ NOENC ≡ DUM c
-NOENCneqDUM {c} ()
+NOENCneqPARTIAL : {c : Term} → ¬ NOENC ≡ PARTIAL c
+NOENCneqPARTIAL {c} ()
 
 NOENCneqFFDEFS : {c d : Term} → ¬ NOENC ≡ FFDEFS c d
 NOENCneqFFDEFS {c} {d} ()
@@ -202,7 +202,7 @@ typeSysConds-NOENC-ttrans u w A B x x₁ C eqt = concl x x₁
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih c₁ c₂ = ⊥-elim (NOENCneqNOWRITE (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih c₁ c₂ = ⊥-elim (NOENCneqNOREAD (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA extA) ih c₁ c₂ = ⊥-elim (NOENCneqSUBSING (⇛-val-det tt tt c₂ y))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih c₁ c₂ = ⊥-elim (NOENCneqDUM (⇛-val-det tt tt c₂ y))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih c₁ c₂ = ⊥-elim (NOENCneqPARTIAL (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih c₁ c₂ = ⊥-elim (NOENCneqPURE (⇛-val-det tt tt c₂ y))
     ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih c₁ c₂ = EQTNOENC c₁ y₁
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih c₁ c₂ = ⊥-elim (NOENCneqNOSEQ (⇛-val-det tt tt c₂ y))
@@ -280,7 +280,7 @@ typeSysConds-NOENC-extl1 u w A B x x₁ C eqt' =
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOWRITE (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOREAD (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqSUBSING (⇛-val-det tt tt comp y))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (NOENCneqDUM (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (NOENCneqPARTIAL (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (NOENCneqFFDEFS (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = ⊥-elim (NOENCneqPURE (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = eqi
@@ -332,7 +332,7 @@ typeSysConds-NOENC-extl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOWRITE (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOREAD (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA extA) ih comp a b eqi = ⊥-elim (NOENCneqSUBSING (⇛-val-det tt tt comp y₁))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (NOENCneqDUM (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (NOENCneqPARTIAL (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = ⊥-elim (NOENCneqPURE (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOSEQ (⇛-val-det tt tt comp y₁))
@@ -384,7 +384,7 @@ typeSysConds-NOENC-extr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOWRITE (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOREAD (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA extA) ih comp a b eqi = ⊥-elim (NOENCneqSUBSING (⇛-val-det tt tt comp y₁))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (NOENCneqDUM (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (NOENCneqPARTIAL (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = ⊥-elim (NOENCneqPURE (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = eqi
     ind {u} {w} {T1} {T2} (EQTNOSEQ y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOSEQ (⇛-val-det tt tt comp y₁))
@@ -436,7 +436,7 @@ typeSysConds-NOENC-extr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOWRITE (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOREAD (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqSUBSING (⇛-val-det tt tt comp y))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (NOENCneqDUM (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (NOENCneqPARTIAL (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (NOENCneqFFDEFS (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = ⊥-elim (NOENCneqPURE (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = eqi
@@ -488,7 +488,7 @@ typeSysConds-NOENC-extrevl1 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOWRITE (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOREAD (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqSUBSING (⇛-val-det tt tt comp y))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (NOENCneqDUM (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (NOENCneqPARTIAL (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (NOENCneqFFDEFS (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = ⊥-elim (NOENCneqPURE (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = eqi
@@ -545,7 +545,7 @@ typeSysConds-NOENC-extrevl2 u w A B x x₁ C eqt' = concl x
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOWRITE (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOREAD (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqSUBSING (⇛-val-det tt tt comp y₁))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (NOENCneqDUM (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (NOENCneqPARTIAL (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (NOENCneqFFDEFS (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = ⊥-elim (NOENCneqPURE (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = eqi
@@ -602,7 +602,7 @@ typeSysConds-NOENC-extrevr1 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOWRITE (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOREAD (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqSUBSING (⇛-val-det tt tt comp y₁))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (NOENCneqDUM (⇛-val-det tt tt comp y₁))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (NOENCneqPARTIAL (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (NOENCneqFFDEFS (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = ⊥-elim (NOENCneqPURE (⇛-val-det tt tt comp y₁))
     ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = eqi
@@ -659,7 +659,7 @@ typeSysConds-NOENC-extrevr2 u w A B x x₁ C eqt' = concl x₁
     ind {u} {w} {T1} {T2} (EQTNOWRITE y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOWRITE (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTNOREAD y y₁) ih comp a b eqi = ⊥-elim (NOENCneqNOREAD (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 y y₁ eqtA exta) ih comp a b eqi = ⊥-elim (NOENCneqSUBSING (⇛-val-det tt tt comp y))
---    ind {u} {w} {T1} {T2} (EQTDUM A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (NOENCneqDUM (⇛-val-det tt tt comp y))
+--    ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 y y₁ eqtA) ih comp a b eqi = ⊥-elim (NOENCneqPARTIAL (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 y y₁ eqtA exta eqx) ih comp a b eqi = ⊥-elim (NOENCneqFFDEFS (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTPURE y y₁) ih comp a b eqi = ⊥-elim (NOENCneqPURE (⇛-val-det tt tt comp y))
     ind {u} {w} {T1} {T2} (EQTNOENC y y₁) ih comp a b eqi = eqi

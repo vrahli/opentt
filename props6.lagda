@@ -150,7 +150,7 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 ¬Names→names[] {NOWRITE} nn = refl
 ¬Names→names[] {NOREAD} nn = refl
 ¬Names→names[] {SUBSING a} nn = ¬Names→names[] {a} nn
-¬Names→names[] {DUM a} nn = ¬Names→names[] {a} nn
+¬Names→names[] {PARTIAL a} nn = ¬Names→names[] {a} nn
 ¬Names→names[] {FFDEFS a a₁} nn = →++≡[] (¬Names→names[] (∧≡true→ₗ _ _ nn)) (¬Names→names[] (∧≡true→ᵣ _ _ nn))
 ¬Names→names[] {PURE} nn = refl
 ¬Names→names[] {NOSEQ} nn = refl

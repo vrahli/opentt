@@ -1113,7 +1113,7 @@ shiftUp-subn n m a (MAPP x b) len = cong (λ z → MAPP x z) (shiftUp-subn n m a
 shiftUp-subn n m a NOWRITE len = refl
 shiftUp-subn n m a NOREAD len = refl
 shiftUp-subn n m a (SUBSING b) len = cong SUBSING (shiftUp-subn n m a b len)
-shiftUp-subn n m a (DUM b) len = cong DUM (shiftUp-subn n m a b len)
+shiftUp-subn n m a (PARTIAL b) len = cong PARTIAL (shiftUp-subn n m a b len)
 shiftUp-subn n m a (FFDEFS b b₁) len =
   cong₂ FFDEFS (shiftUp-subn n m a b len) (shiftUp-subn n m a b₁ len)
 shiftUp-subn n m a PURE len = refl
@@ -1243,7 +1243,7 @@ shiftUp-subi n m a (MAPP x b) len = cong (MAPP x) (shiftUp-subi n m a b len)
 shiftUp-subi n m a NOWRITE len = refl
 shiftUp-subi n m a NOREAD len = refl
 shiftUp-subi n m a (SUBSING b) len = cong SUBSING (shiftUp-subi n m a b len)
-shiftUp-subi n m a (DUM b) len = cong DUM (shiftUp-subi n m a b len)
+shiftUp-subi n m a (PARTIAL b) len = cong PARTIAL (shiftUp-subi n m a b len)
 shiftUp-subi n m a (FFDEFS b b₁) len =
   cong₂ FFDEFS (shiftUp-subi n m a b len) (shiftUp-subi n m a b₁ len)
 shiftUp-subi n m a PURE len = refl
@@ -1375,7 +1375,7 @@ shiftNameUp-subn m n a (MAPP x b) = cong (MAPP x) (shiftNameUp-subn m n a b)
 shiftNameUp-subn m n a NOWRITE = refl
 shiftNameUp-subn m n a NOREAD = refl
 shiftNameUp-subn m n a (SUBSING b) = cong SUBSING (shiftNameUp-subn m n a b)
-shiftNameUp-subn m n a (DUM b) = cong DUM (shiftNameUp-subn m n a b)
+shiftNameUp-subn m n a (PARTIAL b) = cong PARTIAL (shiftNameUp-subn m n a b)
 shiftNameUp-subn m n a (FFDEFS b b₁) =
   cong₂ FFDEFS (shiftNameUp-subn m n a b) (shiftNameUp-subn m n a b₁)
 shiftNameUp-subn m n a PURE = refl
@@ -1504,7 +1504,7 @@ subn-subi n a b (MAPP x c) = cong (MAPP x) (subn-subi n a b c)
 subn-subi n a b NOWRITE = refl
 subn-subi n a b NOREAD = refl
 subn-subi n a b (SUBSING c) = cong SUBSING (subn-subi n a b c)
-subn-subi n a b (DUM c) = cong DUM (subn-subi n a b c)
+subn-subi n a b (PARTIAL c) = cong PARTIAL (subn-subi n a b c)
 subn-subi n a b (FFDEFS c c₁) =
   cong₂ FFDEFS (subn-subi n a b c) (subn-subi n a b c₁)
 subn-subi n a b PURE = refl
@@ -1639,7 +1639,7 @@ subn-shiftNameUp n m a (MAPP x b) = cong (MAPP x) (subn-shiftNameUp n m a b)
 subn-shiftNameUp n m a NOWRITE = refl
 subn-shiftNameUp n m a NOREAD = refl
 subn-shiftNameUp n m a (SUBSING b) = cong SUBSING (subn-shiftNameUp n m a b)
-subn-shiftNameUp n m a (DUM b) = cong DUM (subn-shiftNameUp n m a b)
+subn-shiftNameUp n m a (PARTIAL b) = cong PARTIAL (subn-shiftNameUp n m a b)
 subn-shiftNameUp n m a (FFDEFS b b₁) =
   cong₂ FFDEFS (subn-shiftNameUp n m a b) (subn-shiftNameUp n m a b₁)
 subn-shiftNameUp n m a PURE = refl
@@ -1822,7 +1822,7 @@ subn-subn2 n m ltn a b (MAPP x t) ca = cong (MAPP x) (subn-subn2 n m ltn a b t c
 subn-subn2 n m ltn a b NOWRITE ca = refl
 subn-subn2 n m ltn a b NOREAD ca = refl
 subn-subn2 n m ltn a b (SUBSING t) ca = cong SUBSING (subn-subn2 n m ltn a b t ca)
-subn-subn2 n m ltn a b (DUM t) ca = cong DUM (subn-subn2 n m ltn a b t ca)
+subn-subn2 n m ltn a b (PARTIAL t) ca = cong PARTIAL (subn-subn2 n m ltn a b t ca)
 subn-subn2 n m ltn a b (FFDEFS t t₁) ca =
   cong₂ FFDEFS (subn-subn2 n m ltn a b t ca) (subn-subn2 n m ltn a b t₁ ca)
 subn-subn2 n m ltn a b PURE ca = refl
@@ -2289,7 +2289,7 @@ subn-subn3 n m ltn a b (MAPP x t) #a = cong (MAPP x) (subn-subn3 n m ltn a b t #
 subn-subn3 n m ltn a b NOWRITE #a = refl
 subn-subn3 n m ltn a b NOREAD #a = refl
 subn-subn3 n m ltn a b (SUBSING t) #a = cong SUBSING (subn-subn3 n m ltn a b t #a)
-subn-subn3 n m ltn a b (DUM t) #a = cong DUM (subn-subn3 n m ltn a b t #a)
+subn-subn3 n m ltn a b (PARTIAL t) #a = cong PARTIAL (subn-subn3 n m ltn a b t #a)
 subn-subn3 n m ltn a b (FFDEFS t t₁) #a =
   cong₂ FFDEFS (subn-subn3 n m ltn a b t #a) (subn-subn3 n m ltn a b t₁ #a)
 subn-subn3 n m ltn a b PURE #a = refl
@@ -2558,7 +2558,7 @@ lowerVars-lowerVarsFrom n (suc (suc x) ∷ l) | no p | no q | no r with n ≟ su
   = ⊆-++ (⊆fvars-subn n u t) (⊆fvars-subn n u t₁) i
 ⊆fvars-subn n u (MAPP x₁ t) {x} i = ⊆fvars-subn n u t i
 ⊆fvars-subn n u (SUBSING t) {x} i = ⊆fvars-subn n u t i
-⊆fvars-subn n u (DUM t) {x} i = ⊆fvars-subn n u t i
+⊆fvars-subn n u (PARTIAL t) {x} i = ⊆fvars-subn n u t i
 ⊆fvars-subn n u (FFDEFS t t₁) {x} i
   rewrite lowerVarsFrom++ n (fvars t) (fvars t₁)
   = ⊆-++ (⊆fvars-subn n u t) (⊆fvars-subn n u t₁) i
@@ -2975,7 +2975,7 @@ fvars-subi⊆ n u (MAPP x t) = fvars-subi⊆ n u t
 fvars-subi⊆ n u NOWRITE = λ ()
 fvars-subi⊆ n u NOREAD = λ ()
 fvars-subi⊆ n u (SUBSING t) = fvars-subi⊆ n u t
-fvars-subi⊆ n u (DUM t) = fvars-subi⊆ n u t
+fvars-subi⊆ n u (PARTIAL t) = fvars-subi⊆ n u t
 fvars-subi⊆ n u (FFDEFS t t₁) = ++⊆₂ {_} {_} {fvars t} {fvars t₁} {fvars u} (fvars-subi⊆ n u t) (fvars-subi⊆ n u t₁)
 fvars-subi⊆ n u PURE = λ ()
 fvars-subi⊆ n u NOSEQ = λ ()

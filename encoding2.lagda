@@ -515,7 +515,7 @@ Term→ℕ (MAPP x t) = 0
 Term→ℕ NOWRITE = 35
 Term→ℕ NOREAD = 36
 Term→ℕ (SUBSING t) = 37 + (Term→ℕ t * #cons)
-Term→ℕ (DUM t) = 38 + (Term→ℕ t * #cons)
+Term→ℕ (PARTIAL t) = 38 + (Term→ℕ t * #cons)
 Term→ℕ (FFDEFS t t₁) = 39 + (pairing (Term→ℕ t , Term→ℕ t₁) * #cons)
 Term→ℕ PURE = 40
 Term→ℕ NOSEQ = 41
@@ -762,7 +762,7 @@ suc-/≤ n m d0 = ≤-trans (suc-/m n m) (suc/≤ n d0)
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))) = NOWRITE
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))) = NOREAD
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 37 SUBSING
-... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 38 DUM
+... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))) = ℕ→Term-aux₁ n (λ ()) ind 38 PARTIAL
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))) = ℕ→Term-aux₂ n (λ ()) ind 39 FFDEFS
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20))))))))))))))))))) = PURE
 ... | suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc (suc 20)))))))))))))))))))) = NOSEQ
@@ -1257,8 +1257,8 @@ abstract
 
 
 -- From terms3
-≡DUM : {a b : Term} → a ≡ b → DUM a ≡ DUM b
-≡DUM {a} {b} x rewrite x = refl
+≡PARTIAL : {a b : Term} → a ≡ b → PARTIAL a ≡ PARTIAL b
+≡PARTIAL {a} {b} x rewrite x = refl
 
 
 -- From terms3

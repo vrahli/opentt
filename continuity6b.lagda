@@ -622,7 +622,7 @@ abstract
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.NOENC} {.NOENC} {l} {k} sub nad nbd updRel2-NOENC = updRel2-NOENC
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(TERM a₁)} {.(TERM a₂)} {l} {k} sub nad nbd (updRel2-TERM a₁ a₂ upd₁) = updRel2-TERM _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(ENC a)} {.(ENC a)} {l} {k} sub nad nbd (updRel2-ENC a upd₁) = updRel2-ENC _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
-  updRel2-ren-mon {name} {f} {g} {r} {r'} {.(DUM a₁)} {.(DUM a₂)} {l} {k} sub nad nbd (updRel2-DUM a₁ a₂ upd₁) = updRel2-DUM _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
+  updRel2-ren-mon {name} {f} {g} {r} {r'} {.(PARTIAL a₁)} {.(PARTIAL a₂)} {l} {k} sub nad nbd (updRel2-PARTIAL a₁ a₂ upd₁) = updRel2-PARTIAL _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} {l} {k} sub nad nbd (updRel2-FFDEFS a₁ a₂ b₁ b₂ upd₁ upd₂) = updRel2-FFDEFS _ _ _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→1 {names a₁} {names b₁} nad) (++⊆2→1 {names a₂} {names b₂} nbd) upd₁) (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub (++⊆2→2 {names a₁} {names b₁} nad) (++⊆2→2 {names a₂} {names b₂} nbd) upd₂)
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(UNIV x)} {.(UNIV x)} {l} {k} sub nad nbd (updRel2-UNIV x) = updRel2-UNIV x
   updRel2-ren-mon {name} {f} {g} {r} {r'} {.(LIFT a₁)} {.(LIFT a₂)} {l} {k} sub nad nbd (updRel2-LIFT a₁ a₂ upd₁) = updRel2-LIFT _ _ (updRel2-ren-mon {name} {f} {g} {r} {r'} {_} {_} {l} {k} sub nad nbd upd₁)
@@ -1472,7 +1472,7 @@ abstract
   updRel2-valₗ→ name f g r .NOSEQ .NOSEQ updRel2-NOSEQ isv = isv
   updRel2-valₗ→ name f g r .NOENC .NOENC updRel2-NOENC isv = isv
   updRel2-valₗ→ name f g r .(TERM a₁) .(TERM a₂) (updRel2-TERM a₁ a₂ upd₁) isv = isv
-  updRel2-valₗ→ name f g r .(DUM a₁) .(DUM a₂) (updRel2-DUM a₁ a₂ upd₁) isv = isv
+  updRel2-valₗ→ name f g r .(PARTIAL a₁) .(PARTIAL a₂) (updRel2-PARTIAL a₁ a₂ upd₁) isv = isv
   updRel2-valₗ→ name f g r .(FFDEFS a₁ b₁) .(FFDEFS a₂ b₂) (updRel2-FFDEFS a₁ a₂ b₁ b₂ upd₁ upd₂) isv = isv
   updRel2-valₗ→ name f g r .(UNIV x) .(UNIV x) (updRel2-UNIV x) isv = isv
   updRel2-valₗ→ name f g r .(LIFT a₁) .(LIFT a₂) (updRel2-LIFT a₁ a₂ upd₁) isv = isv

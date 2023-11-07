@@ -181,7 +181,7 @@ data updSeq (r : Name) (s : 𝕊) (n : ℕ) : Term → Term → Set where
   updSeq-NOENC   : updSeq r s n NOENC NOENC
   updSeq-TERM    : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (TERM a₁) (TERM a₂)
   updSeq-ENC     : (a : Term) → updSeq r s n a a → updSeq r s n (ENC a) (ENC a)
-  updSeq-DUM     : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (DUM a₁) (DUM a₂)
+  updSeq-PARTIAL : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (PARTIAL a₁) (PARTIAL a₂)
   updSeq-FFDEFS  : (a₁ a₂ b₁ b₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n b₁ b₂ → updSeq r s n (FFDEFS a₁ b₁) (FFDEFS a₂ b₂)
   updSeq-UNIV    : (x : ℕ) → updSeq r s n (UNIV x) (UNIV x)
   updSeq-LIFT    : (a₁ a₂ : Term) → updSeq r s n a₁ a₂ → updSeq r s n (LIFT a₁) (LIFT a₂)
@@ -313,7 +313,7 @@ abstract
   updSeq-shiftUp n {r} {s} {k} {.(NOENC)} {.(NOENC)} (updSeq-NOENC) = updSeq-NOENC
   updSeq-shiftUp n {r} {s} {k} {.(TERM a₁)} {.(TERM a₂)} (updSeq-TERM a₁ a₂ u) = updSeq-TERM _ _ (updSeq-shiftUp n u)
   updSeq-shiftUp n {r} {s} {k} {.(ENC a)} {.(ENC a)} (updSeq-ENC a u) = updSeq-ENC _ u
-  updSeq-shiftUp n {r} {s} {k} {.(DUM a₁)} {.(DUM a₂)} (updSeq-DUM a₁ a₂ u) = updSeq-DUM _ _ (updSeq-shiftUp n u)
+  updSeq-shiftUp n {r} {s} {k} {.(PARTIAL a₁)} {.(PARTIAL a₂)} (updSeq-PARTIAL a₁ a₂ u) = updSeq-PARTIAL _ _ (updSeq-shiftUp n u)
   updSeq-shiftUp n {r} {s} {k} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updSeq-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updSeq-FFDEFS _ _ _ _ (updSeq-shiftUp n u) (updSeq-shiftUp n u₁)
   updSeq-shiftUp n {r} {s} {k} {.(UNIV x)} {.(UNIV x)} (updSeq-UNIV x) = updSeq-UNIV x
   updSeq-shiftUp n {r} {s} {k} {.(LIFT a₁)} {.(LIFT a₂)} (updSeq-LIFT a₁ a₂ u) = updSeq-LIFT _ _ (updSeq-shiftUp n u)
@@ -383,7 +383,7 @@ abstract
   updSeq-shiftDown n {r} {s} {k} {.(NOENC)} {.(NOENC)} (updSeq-NOENC) = updSeq-NOENC
   updSeq-shiftDown n {r} {s} {k} {.(TERM a₁)} {.(TERM a₂)} (updSeq-TERM a₁ a₂ u) = updSeq-TERM _ _ (updSeq-shiftDown n u)
   updSeq-shiftDown n {r} {s} {k} {.(ENC a)} {.(ENC a)} (updSeq-ENC a u) = updSeq-ENC _ u
-  updSeq-shiftDown n {r} {s} {k} {.(DUM a₁)} {.(DUM a₂)} (updSeq-DUM a₁ a₂ u) = updSeq-DUM _ _ (updSeq-shiftDown n u)
+  updSeq-shiftDown n {r} {s} {k} {.(PARTIAL a₁)} {.(PARTIAL a₂)} (updSeq-PARTIAL a₁ a₂ u) = updSeq-PARTIAL _ _ (updSeq-shiftDown n u)
   updSeq-shiftDown n {r} {s} {k} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updSeq-FFDEFS a₁ a₂ b₁ b₂ u u₁) = updSeq-FFDEFS _ _ _ _ (updSeq-shiftDown n u) (updSeq-shiftDown n u₁)
   updSeq-shiftDown n {r} {s} {k} {.(UNIV x)} {.(UNIV x)} (updSeq-UNIV x) = updSeq-UNIV _
   updSeq-shiftDown n {r} {s} {k} {.(LIFT a₁)} {.(LIFT a₂)} (updSeq-LIFT a₁ a₂ u) = updSeq-LIFT _ _ (updSeq-shiftDown n u)
@@ -456,7 +456,7 @@ abstract
   updSeq-subv v {r} {s} {k} {.(NOENC)} {.(NOENC)} {b₁} {b₂} (updSeq-NOENC) ub = updSeq-NOENC
   updSeq-subv v {r} {s} {k} {.(TERM a₁)} {.(TERM a₂)} {b₁} {b₂} (updSeq-TERM a₁ a₂ ua) ub = updSeq-TERM _ _ (updSeq-subv v ua ub)
   updSeq-subv v {r} {s} {k} {.(ENC a)} {.(ENC a)} {b₁} {b₂} (updSeq-ENC a ua) ub = updSeq-ENC _ ua
-  updSeq-subv v {r} {s} {k} {.(DUM a₁)} {.(DUM a₂)} {b₁} {b₂} (updSeq-DUM a₁ a₂ ua) ub = updSeq-DUM _ _ (updSeq-subv v ua ub)
+  updSeq-subv v {r} {s} {k} {.(PARTIAL a₁)} {.(PARTIAL a₂)} {b₁} {b₂} (updSeq-PARTIAL a₁ a₂ ua) ub = updSeq-PARTIAL _ _ (updSeq-subv v ua ub)
   updSeq-subv v {r} {s} {k} {.(FFDEFS a₁ b₃)} {.(FFDEFS a₂ b₄)} {b₁} {b₂} (updSeq-FFDEFS a₁ a₂ b₃ b₄ ua ua₁) ub = updSeq-FFDEFS _ _ _ _ (updSeq-subv v ua ub) (updSeq-subv v ua₁ ub)
   updSeq-subv v {r} {s} {k} {.(UNIV x)} {.(UNIV x)} {b₁} {b₂} (updSeq-UNIV x) ub = updSeq-UNIV x
   updSeq-subv v {r} {s} {k} {.(LIFT a₁)} {.(LIFT a₂)} {b₁} {b₂} (updSeq-LIFT a₁ a₂ ua) ub = updSeq-LIFT _ _ (updSeq-subv v ua ub)
@@ -1151,7 +1151,7 @@ updSeq→isValue {r} {s} {n} {.(PURE)} {.(PURE)} (updSeq-PURE) isv = tt
 updSeq→isValue {r} {s} {n} {.(NOSEQ)} {.(NOSEQ)} (updSeq-NOSEQ) isv = tt
 updSeq→isValue {r} {s} {n} {.(NOENC)} {.(NOENC)} (updSeq-NOENC) isv = tt
 updSeq→isValue {r} {s} {n} {.(TERM a₁)} {.(TERM a₂)} (updSeq-TERM a₁ a₂ u) isv = tt
-updSeq→isValue {r} {s} {n} {.(DUM a₁)} {.(DUM a₂)} (updSeq-DUM a₁ a₂ u) isv = tt
+updSeq→isValue {r} {s} {n} {.(PARTIAL a₁)} {.(PARTIAL a₂)} (updSeq-PARTIAL a₁ a₂ u) isv = tt
 updSeq→isValue {r} {s} {n} {.(FFDEFS a₁ b₁)} {.(FFDEFS a₂ b₂)} (updSeq-FFDEFS a₁ a₂ b₁ b₂ u u₁) isv = tt
 updSeq→isValue {r} {s} {n} {.(UNIV x)} {.(UNIV x)} (updSeq-UNIV x) isv = tt
 updSeq→isValue {r} {s} {n} {.(LIFT a₁)} {.(LIFT a₂)} (updSeq-LIFT a₁ a₂ u) isv = tt
