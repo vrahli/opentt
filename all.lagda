@@ -136,4 +136,7 @@ open import ac using (AC₀₀-valid)
 
 -- A definition of sequents and their semantics
 open import sequent
+
+-- A translation from MLTT to BoxTT
+open import mltt
 \end{code}

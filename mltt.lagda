@@ -1357,7 +1357,7 @@ mutual
         (⟦ x ⟧Γ∈ i lti))
     where
     h3 : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ ⟦ Π ℕ ▹ (F ▹▹ F [ Definition.Untyped.suc (var Fin.zero) ]↑) ⟧ᵤ
-    h3 = {!⟦ x₃ ⟧Γ∈ i lti!}
+    h3 = ⟦ x₃ ⟧Γ∈ i lti
 
     h3' : valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ (PI NAT! (FUN ⟦ F ⟧ᵤ ⟦ F [ Definition.Untyped.suc (var Fin.zero) ]↑ ⟧ᵤ))
     h3' = ≣subst (λ z → valid∈𝕎 i ⟦ Γ ⟧Γ ⟦ s ⟧ᵤ (PI NAT! z)) (⟦▹▹⟧ᵤ F (F [ Definition.Untyped.suc (var Fin.zero) ]↑)) h3
@@ -1370,8 +1370,10 @@ mutual
     valid≡-UNIT i ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ ⟦ u ⟧ᵤ
 
 
+{--
 𝟚 : Term 0
 𝟚 = {!!}
+--}
 
 
 {--
