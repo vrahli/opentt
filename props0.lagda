@@ -412,10 +412,11 @@ eqTypes-mon u {A} {B} {w1} (EQTSUBSING A1 A2 x x₁ eqtA exta) w2 ext =
     exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (∀𝕎-mon ext eqtA w e) a b)
     exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
 
-{--
-eqTypes-mon u {A} {B} {w1} (EQTDUM A1 A2 x x₁ {--eqtA--}) w2 ext =
-  EQTDUM A1 A2 (⇛-mon ext x) (⇛-mon ext x₁) {--(eqTypes-mon u {A1} {A2} {w1} eqtA w2 ext)--}
---}
+eqTypes-mon u {A} {B} {w1} (EQTPARTIAL A1 A2 x x₁ eqtA exta) w2 ext =
+  EQTPARTIAL A1 A2 (⇛-mon ext x) (⇛-mon ext x₁) (∀𝕎-mon ext eqtA) exta'
+  where
+    exta' : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (∀𝕎-mon ext eqtA w e) a b)
+    exta' a b w' e1 e2 ei = exta a b w' (⊑-trans· ext e1) (⊑-trans· ext e2) ei
 
 {--
 eqTypes-mon u {A} {B} {w1} (EQTDUM A1 A2 x x₁ eqtA exta) w2 ext =
@@ -1705,6 +1706,34 @@ irr-subsing : (u : univs) (w : 𝕎·) (A1 A2 : CTerm)
 irr-subsing u w A1 A2 eqta exta f g w1 e1 w' e' h z = irr-SUBSINGeq eqta exta (⊑-trans· e1 e') z h
 
 
+PARTIALeq-ext-eq : {eqa1 eqa2 : per} {w : 𝕎·} {t1 t2 : CTerm}
+                  → ((a b : CTerm) → eqa1 a b → eqa2 a b)
+                  → PARTIALeq eqa1 w t1 t2
+                  → PARTIALeq eqa2 w t1 t2
+PARTIALeq-ext-eq {eqa1} {eqa2} {w} {t1} {t2} ext h w1 e1 =
+  fst (h w1 e1) , fst (snd (h w1 e1)) , λ hv → ext t1 t2 (snd (snd (h w1 e1)) hv)
+
+
+irr-PARTIALeq : {u : univs} {w w' : 𝕎·} {A1 A2 : CTerm}
+               (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+               (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+               {f g : CTerm}
+               (e1 e2 : w ⊑· w')
+               → PARTIALeq (eqInType u w' (eqta w' e1)) w' f g
+               → PARTIALeq (eqInType u w' (eqta w' e2)) w' f g
+irr-PARTIALeq {u} {w} {w'} {A1} {A2} eqta exta {f} {g} e1 e2 h =
+  PARTIALeq-ext-eq (λ a b q → exta a b w' e1 e2 q) h
+
+
+irr-partial : (u : univs) (w : 𝕎·) (A1 A2 : CTerm)
+              (eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+              (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+              (f g : CTerm) (w1 : 𝕎·) (e1 : w ⊑· w1)
+              → ∀𝕎 w1 (λ w' e' → PARTIALeq (eqInType u w' (eqta w' (⊑-trans· e1 e'))) w' f g
+                                 → (z : w ⊑· w') → PARTIALeq (eqInType u w' (eqta w' z)) w' f g)
+irr-partial u w A1 A2 eqta exta f g w1 e1 w' e' h z = irr-PARTIALeq eqta exta (⊑-trans· e1 e') z h
+
+
 irr-lift : (u : univs) (w : 𝕎·) (A1 A2 : CTerm)
            (eqta : ∀𝕎 w (λ w' _ → eqTypes (↓U u) w' A1 A2))
            (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType (↓U u) w (eqta w e) a b))
@@ -1854,6 +1883,40 @@ SUBSINGeq-trans : {eqa : per} {t1 t2 t3 : CTerm}
                  → SUBSINGeq eqa t2 t3
                  → SUBSINGeq eqa t1 t3
 SUBSINGeq-trans {eqa} {t1} {t2} {t3} (h , q) (r , s) = h , s
+
+
+partialeq-sym : {eqa : per} {w : 𝕎·} {t1 t2 : CTerm}
+                 → ((a b : CTerm) → eqa a b → eqa b a)
+                 → partialeq eqa w t1 t2
+                 → partialeq eqa w t2 t1
+partialeq-sym {eqa} {w} {t1} {t2} sym (a , b , c) =
+  b , a , λ h → sym t1 t2 (c (b h))
+
+
+partialeq-trans : {eqa : per} {w : 𝕎·} {t1 t2 t3 : CTerm}
+                 → ((a b c : CTerm) → eqa a b → eqa b c → eqa a c)
+                 → partialeq eqa w t1 t2
+                 → partialeq eqa w t2 t3
+                 → partialeq eqa w t1 t3
+partialeq-trans {eqa} {w} {t1} {t2} {t3} trans (h1 , h2 , h3) (q1 , q2 , q3) =
+  (λ h → q1 (h1 h)) ,
+  (λ h → h2 (q2 h)) ,
+  λ h → trans t1 t2 t3 (h3 h) (q3 (h1 h))
+
+
+PARTIALeq-sym : {eqa : per} {w : 𝕎·} {t1 t2 : CTerm}
+                 → ((a b : CTerm) → eqa a b → eqa b a)
+                 → PARTIALeq eqa w t1 t2
+                 → PARTIALeq eqa w t2 t1
+PARTIALeq-sym {eqa} {w} {t1} {t2} sym h w1 e1 = partialeq-sym sym (h w1 e1)
+
+
+PARTIALeq-trans : {eqa : per} {w : 𝕎·} {t1 t2 t3 : CTerm}
+                 → ((a b c : CTerm) → eqa a b → eqa b c → eqa a c)
+                 → PARTIALeq eqa w t1 t2
+                 → PARTIALeq eqa w t2 t3
+                 → PARTIALeq eqa w t1 t3
+PARTIALeq-trans {eqa} {w} {t1} {t2} {t3} trans h q w1 e1 = partialeq-trans trans (h w1 e1) (q w1 e1)
 
 
 →≡eqTypes : {i : univs} {w : 𝕎·} {a1 a2 b1 b2 : CTerm}

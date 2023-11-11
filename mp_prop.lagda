@@ -686,6 +686,7 @@ eqTypes-UNIV→< i n w A B comp eqt = concl i comp
   ind {u} {w} {T1} {T2} (EQTNOWRITE x x₁) ind i comp = ⊥-elim (UNIVneqNOWRITE (⇛-val-det tt tt comp x))
   ind {u} {w} {T1} {T2} (EQTNOREAD x x₁) ind i comp = ⊥-elim (UNIVneqNOREAD (⇛-val-det tt tt comp x))
   ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind i comp = ⊥-elim (UNIVneqSUBSING (⇛-val-det tt tt comp x))
+  ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 x x₁ eqtA exta) ind i comp = ⊥-elim (UNIVneqPARTIAL (⇛-val-det tt tt comp x))
   ind {u} {w} {T1} {T2} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) ind i comp = ⊥-elim (UNIVneqFFDEFS (⇛-val-det tt tt comp x))
   ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind i comp = ⊥-elim (UNIVneqPURE (⇛-val-det tt tt comp x))
   ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind i comp = ⊥-elim (UNIVneqNOSEQ (⇛-val-det tt tt comp x))
@@ -959,6 +960,8 @@ abstract
         EQTNOREAD (#⇛-vals-det→ {_} {a} {b} {#NOREAD} isv tt comp x) x₁
       ind {u} {w} {a} {c} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind b comp isv =
         EQTSUBSING A1 A2 (#⇛-vals-det→ {_} {a} {b} {#SUBSING A1} isv tt comp x) x₁ eqtA exta
+      ind {u} {w} {a} {c} (EQTPARTIAL A1 A2 x x₁ eqtA exta) ind b comp isv =
+        EQTPARTIAL A1 A2 (#⇛-vals-det→ {_} {a} {b} {#PARTIAL A1} isv tt comp x) x₁ eqtA exta
       ind {u} {w} {a} {c} (EQTPURE x x₁) ind b comp isv =
         EQTPURE (#⇛-vals-det→ {_} {a} {b} {#PURE} isv tt comp x) x₁
       ind {u} {w} {a} {c} (EQTNOSEQ x x₁) ind b comp isv =

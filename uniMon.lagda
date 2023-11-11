@@ -225,6 +225,11 @@ equalTypes-uni-mon {n} {m} p {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqtA exta) =
     A1 A2 x x₁
     (λ w1 e1 → equalTypes-uni-mon p (eqtA w1 e1))
     (wPredExtIrr-eqInType (λ w1 e1 → equalTypes-uni-mon p (eqtA w1 e1)))
+equalTypes-uni-mon {n} {m} p {w} {A} {B} (EQTPARTIAL A1 A2 x x₁ eqtA exta) =
+  EQTPARTIAL
+    A1 A2 x x₁
+    (λ w1 e1 → equalTypes-uni-mon p (eqtA w1 e1))
+    (wPredExtIrr-eqInType (λ w1 e1 → equalTypes-uni-mon p (eqtA w1 e1)))
 equalTypes-uni-mon {n} {m} p {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) =
   EQFFDEFS
     A1 A2 x1 x2 x x₁
@@ -389,6 +394,13 @@ equalTerms-uni-mon-rev {n} {m} p {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqtA exta)
   aw : ∀𝕎 w (λ w' e' → SUBSINGeq (eqInType (uni m) w' (equalTypes-uni-mon p (eqtA w' e'))) a1 a2
                      → SUBSINGeq (eqInType (uni n) w' (eqtA w' e')) a1 a2)
   aw w1 e1 (ea , eb) = equalTerms-uni-mon-rev p (eqtA w1 e1) ea , equalTerms-uni-mon-rev p (eqtA w1 e1) eb
+equalTerms-uni-mon-rev {n} {m} p {w} {A} {B} (EQTPARTIAL A1 A2 x x₁ eqtA exta) {a1} {a2} h =
+  Mod.∀𝕎-□Func M aw h
+  where
+  aw : ∀𝕎 w (λ w' e' → PARTIALeq (eqInType (uni m) w' (equalTypes-uni-mon p (eqtA w' e'))) w' a1 a2
+                     → PARTIALeq (eqInType (uni n) w' (eqtA w' e')) w' a1 a2)
+  aw w1 e1 h w2 e2 with h w2 e2
+  ... | h1 , h2 , h3 = h1 , h2 , λ q → equalTerms-uni-mon-rev p (eqtA w1 e1) (h3 q)
 equalTerms-uni-mon-rev {n} {m} p {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a1} {a2} h =
   Mod.∀𝕎-□Func M aw h
   where
@@ -579,6 +591,13 @@ equalTerms-uni-mon {n} {m} p {w} {A} {B} (EQTSUBSING A1 A2 x x₁ eqtA exta) {a1
   aw : ∀𝕎 w (λ w' e' → SUBSINGeq (eqInType (uni n) w' (eqtA w' e')) a1 a2
                      → SUBSINGeq (eqInType (uni m) w' (equalTypes-uni-mon p (eqtA w' e'))) a1 a2)
   aw w1 e1 (ea , eb) = equalTerms-uni-mon p (eqtA w1 e1) ea , equalTerms-uni-mon p (eqtA w1 e1) eb
+equalTerms-uni-mon {n} {m} p {w} {A} {B} (EQTPARTIAL A1 A2 x x₁ eqtA exta) {a1} {a2} a∈ =
+  Mod.∀𝕎-□Func M aw a∈
+  where
+  aw : ∀𝕎 w (λ w' e' → PARTIALeq (eqInType (uni n) w' (eqtA w' e')) w' a1 a2
+                     → PARTIALeq (eqInType (uni m) w' (equalTypes-uni-mon p (eqtA w' e'))) w' a1 a2)
+  aw w1 e1 h w2 e2 with h w2 e2
+  ... | h1 , h2 , h3 = h1 , h2 , λ q → equalTerms-uni-mon p (eqtA w1 e1) (h3 q)
 equalTerms-uni-mon {n} {m} p {w} {A} {B} (EQFFDEFS A1 A2 x1 x2 x x₁ eqtA exta eqx) {a1} {a2} a∈ =
   Mod.∀𝕎-□Func M aw a∈
   where

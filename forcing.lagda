@@ -273,12 +273,12 @@ data eqTypes u w T1 T2 where
     → (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
     → eqTypes u w T1 T2
-{--  EQTDUM : (A1 A2 : CTerm)
-    → T1 #⇛ (#DUM A1) at w
-    → T2 #⇛ (#DUM A2) at w
+  EQTPARTIAL : (A1 A2 : CTerm)
+    → T1 #⇛ #PARTIAL A1 at w
+    → T2 #⇛ #PARTIAL A2 at w
     → (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
     → (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
-    → eqTypes u w T1 T2--}
+    → eqTypes u w T1 T2
   EQFFDEFS : (A1 A2 x1 x2 : CTerm)
     → T1 #⇛ (#FFDEFS A1 x1) at w
     → T2 #⇛ (#FFDEFS A2 x2) at w
@@ -540,6 +540,22 @@ TERMeq w t1 t2 =
     × terminatesℕ w n)
 
 
+#hasValue : CTerm → 𝕎· → Set(L)
+#hasValue t w = Lift L (Σ Term (λ v → isValue v × ⌜ t ⌝ ⇓ v at w))
+
+
+partialeq : per → wper
+partialeq eqa w t1 t2 =
+  (#hasValue t1 w → #hasValue t2 w)
+  × (#hasValue t2 w → #hasValue t1 w)
+  × (#hasValue t1 w → eqa t1 t2)
+
+
+PARTIALeq : per → wper
+PARTIALeq eqa w t1 t2 =
+  ∀𝕎 w (λ w' _ → partialeq eqa w' t1 t2)
+
+
 NATeq : wper
 NATeq w t1 t2 =
   #strongMonEq w t1 t2
@@ -603,7 +619,8 @@ eqInType u w (EQTNOREAD _ _) t1 t2 =
   □· w (λ w' e → NOREADeq w' t1 t2)
 eqInType u w (EQTSUBSING _ _ _ _ eqtA exta) t1 t2 =
   □· w (λ w' e → SUBSINGeq (eqInType u w' (eqtA w' e)) t1 t2)
---eqInType u w (EQTDUM _ _ _ _ _ _) t1 t2 = Lift {0ℓ} (lsuc L) ⊤
+eqInType u w (EQTPARTIAL _ _ _ _ eqtA extA) t1 t2 =
+  □· w (λ w' e → PARTIALeq (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQFFDEFS _ _ x1 _ _ _ eqtA exta _) t1 t2 =
   □· w (λ w' e → FFDEFSeq x1 (eqInType u w' (eqtA w' e)) w' t1 t2)
 eqInType u w (EQTPURE _ _) t1 t2 =

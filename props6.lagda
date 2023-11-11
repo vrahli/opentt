@@ -88,7 +88,7 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
          equalInTypeNOREADMOD→ ; equalInTypeNOWRITEMOD→ ; NOWRITEMODeq ; NOREADMODeq ;
          →equalInTypeNOWRITEMOD ; →equalInTypeNOREADMOD ; #⇛val→#⇓→#⇛ ; equalInType-SUM)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (equalTypes-#⇛-left-rev ; TUNIONeq-#⇛-rev)
+  using (equalTypes-#⇛-left-rev ; TUNIONeq-#⇛-rev ; #⇛!-pres-hasValue ; #⇛!-pres-hasValue-rev)
 
 --open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --  using (equalTypes-uni-mon)
@@ -605,6 +605,19 @@ abstract
                   uind _ (⇛ₚ-mon e comp)))
               (<Type1 _ _ (<TypeSUBSING (ℕ→𝕌 i) w A B A1 A2 x x₁ eqtA exta w' e)) uind _ (⇛ₚ-mon e comp) ,
             q
+      ind {i} {w} {A} {B} (EQTPARTIAL A1 A2 x x₁ eqtA exta) {a} {c} eqi ind uind b comp =
+        Mod.∀𝕎-□Func M aw eqi
+        where
+          aw : ∀𝕎 w (λ w' e' → PARTIALeq (equalTerms i w' (eqtA w' e')) w' a c
+                             → PARTIALeq (equalTerms i w' (eqtA w' e')) w' b c)
+          aw w' e h w1 e1 with h w1 e1
+          ... | h1 , h2 , h3 =
+            (λ q → h1 (#⇛!-pres-hasValue {w1} {b} {a} (∀𝕎-mon (⊑-trans· e e1) comp) q)) ,
+            (λ q → #⇛!-pres-hasValue-rev {w1} {b} {a} (∀𝕎-mon (⊑-trans· e e1) comp) (h2 q)) ,
+            λ q → ind
+              {i} {w'} {A1} {A2} (eqtA w' e) {a} {c}
+              (h3 (#⇛!-pres-hasValue {w1} {b} {a} (∀𝕎-mon (⊑-trans· e e1) comp) q))
+              (<Type1 _ _ (<TypePARTIAL (ℕ→𝕌 i) w A B A1 A2 x x₁ eqtA exta w' e)) uind _ (⇛ₚ-mon e comp)
       ind {i} {w} {A} {B} (EQTPURE x x₁) {a} {c} eqi ind uind b comp =
         Mod.∀𝕎-□Func M aw eqi
         where
@@ -711,6 +724,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTNOWRITE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqNOWRITE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTNOREAD x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqNOREAD (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqSUBSING (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqPARTIAL (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqPURE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqNOSEQ (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTNOENC x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (PIneqNOENC (compAllVal x₁ tt))
@@ -773,6 +787,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTNOWRITE x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqNOWRITE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTNOREAD x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqNOREAD (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqSUBSING (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 x x₁ eqtA exta) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqPARTIAL (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqPURE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqNOSEQ (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTNOENC x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (PIneqNOENC (compAllVal x₁ tt))
@@ -930,6 +945,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTNOWRITE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqNOWRITE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTNOREAD x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqNOREAD (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqSUBSING (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqPARTIAL (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqPURE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqNOSEQ (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTNOENC x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (SUMneqNOENC (compAllVal x₁ tt))
@@ -991,6 +1007,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTNOWRITE x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqNOWRITE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTNOREAD x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqNOREAD (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqSUBSING (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 x x₁ eqtA exta) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqPARTIAL (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqPURE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqNOSEQ (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTNOENC x x₁) ind eq1 eq2 a∈ rewrite eq1 | eq2 = ⊥-elim (SUMneqNOENC (compAllVal x₁ tt))
@@ -1049,6 +1066,7 @@ abstract
       ind {u} {w} {T1} {T2} (EQTNOWRITE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqNOWRITE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTNOREAD x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqNOREAD (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqSUBSING (compAllVal x₁ tt))
+      ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 x x₁ eqtA exta) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqPARTIAL (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTPURE x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqPURE (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTNOSEQ x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqNOSEQ (compAllVal x₁ tt))
       ind {u} {w} {T1} {T2} (EQTNOENC x x₁) ind eq1 eq2 rewrite eq1 | eq2 = ⊥-elim (ISECTneqNOENC (compAllVal x₁ tt))

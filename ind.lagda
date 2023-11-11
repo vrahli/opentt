@@ -320,6 +320,13 @@ data <TypeStep where
                 (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
                 (w' : 𝕎·) (e' : w ⊑· w')
                 → <TypeStep {u} (eqtA w' e') {u} {w} {T1} {T2} (EQTSUBSING A1 A2 c₁ c₂ eqtA exta)
+  <TypePARTIAL : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) (A1 A2 : CTerm)
+                 (c₁ : T1 #⇛ (#PARTIAL A1) at w)
+                 (c₂ : T2 #⇛ (#PARTIAL A2) at w)
+                 (eqtA : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2))
+                 (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqtA w e) a b))
+                 (w' : 𝕎·) (e' : w ⊑· w')
+                 → <TypeStep {u} (eqtA w' e') {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 c₁ c₂ eqtA exta)
 {--  <TypeDUM : (u : univs) (w : 𝕎·) (T1 T2 : CTerm) (A1 A2 : CTerm)
              (c₁ : T1 #⇛ (#DUM A1) at w)
              (c₂ : T2 #⇛ (#DUM A2) at w)
@@ -707,6 +714,16 @@ SUBSINGeq-ext {u} {w} {A1} {A2} {eqta} {w'} {e1} {e2} {a} {b} exta h =
   irr-SUBSINGeq eqta exta e1 e2 h
 
 
+PARTIALeq-ext : {u : univs} {w : 𝕎·} {A1 A2 : CTerm}
+               {eqta : ∀𝕎 w (λ w' _ → eqTypes u w' A1 A2)}
+               {w' : 𝕎·} {e1 e2 : w ⊑· w'} {a b : CTerm}
+               (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType u w (eqta w e) a b))
+               → PARTIALeq (eqInType u w' (eqta w' e1)) w' a b
+               → PARTIALeq (eqInType u w' (eqta w' e2)) w' a b
+PARTIALeq-ext {u} {w} {A1} {A2} {eqta} {w'} {e1} {e2} {a} {b} exta h =
+  irr-PARTIALeq eqta exta e1 e2 h
+
+
 
 -- where u will be (↓univs u)
 LIFTeq-ext : {u : univs} {w : 𝕎·} {A1 A2 : CTerm}
@@ -1075,6 +1092,21 @@ ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) {.u
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) {.u} {w'} {.A1} {.A2} .(eqtA w' e') (≤TypeS .(eqtA w' e') .(EQTSUBSING A1 A2 x x₁ eqtA exta) (<Type1 .(eqtA w' e') .(EQTSUBSING A1 A2 x x₁ eqtA exta) (<TypeSUBSING .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta .w' e'))) =
   ind<Type-aux P ind (eqtA w' e') (eqtA w' e') (≤Type0 (eqtA w' e'))
 ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTSUBSING A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTSUBSING A1 A2 x x₁ eqtA exta) (<TypeS .eqt' .(eqtA w2 e') .(EQTSUBSING A1 A2 x x₁ eqtA exta) x₂ (<TypeSUBSING .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta w2 e'))) =
+  ind<Type-aux P ind (eqtA w2 e') eqt' (≤TypeS eqt' (eqtA w2 e') x₂)
+-- PARTIAL
+--ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' ltt = {!!}
+ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 x x₁ eqtA exta) {.u} {.w} {.T1} {.T2} .(EQTPARTIAL A1 A2 x x₁ eqtA exta) (≤Type0 .(EQTPARTIAL A1 A2 x x₁ eqtA exta)) =
+  ind (EQTPARTIAL A1 A2 x x₁ eqtA exta) ind'
+  where
+    ind' : {u' : univs} {w' : 𝕎·} {T1' T2' : CTerm} (eqt' : eqTypes u' w' T1' T2')
+           → <Type {u'} {w'} {T1'} {T2'} eqt' {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 x x₁ eqtA exta) → P eqt'
+    ind' {u'} {w'} {T1'} {T2'} .(eqtA w' e') (<Type1 .(eqtA w' e') .(EQTPARTIAL T1' T2' x x₁ eqtA exta) (<TypePARTIAL .u' .w .T1 .T2 .T1' .T2' .x .x₁ .eqtA .exta .w' e')) =
+      ind<Type-aux P ind (eqtA w' e') (eqtA w' e') (≤Type0 (eqtA w' e'))
+    ind' {u'} {w'} {T1'} {T2'} eqt' (<TypeS .eqt' .(eqtA w2 e') .(EQTPARTIAL _ _ x x₁ eqtA exta) ltt (<TypePARTIAL _ .w .T1 .T2 _ _ .x .x₁ .eqtA .exta w2 e')) =
+      ind<Type-aux P ind (eqtA w2 e') eqt' (≤TypeS eqt' (eqtA w2 e') ltt)
+ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 x x₁ eqtA exta) {.u} {w'} {.A1} {.A2} .(eqtA w' e') (≤TypeS .(eqtA w' e') .(EQTPARTIAL A1 A2 x x₁ eqtA exta) (<Type1 .(eqtA w' e') .(EQTPARTIAL A1 A2 x x₁ eqtA exta) (<TypePARTIAL .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta .w' e'))) =
+  ind<Type-aux P ind (eqtA w' e') (eqtA w' e') (≤Type0 (eqtA w' e'))
+ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTPARTIAL A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' (≤TypeS .eqt' .(EQTPARTIAL A1 A2 x x₁ eqtA exta) (<TypeS .eqt' .(eqtA w2 e') .(EQTPARTIAL A1 A2 x x₁ eqtA exta) x₂ (<TypePARTIAL .u .w .T1 .T2 .A1 .A2 .x .x₁ .eqtA .exta w2 e'))) =
   ind<Type-aux P ind (eqtA w2 e') eqt' (≤TypeS eqt' (eqtA w2 e') x₂)
 --ind<Type-aux {L} P ind {u} {w} {T1} {T2} (EQTDUM A1 A2 x x₁ eqtA exta) {u'} {w'} {T1'} {T2'} eqt' ltt = {!!}
 -- FFDEFS
