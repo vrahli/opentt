@@ -21,11 +21,11 @@ open import Relation.Binary.PropositionalEquality
 --open import Data.List.Relation.Unary.Any
 --open import Data.List.Properties
 --open import Data.Product
---open import Data.Empty
+open import Data.Empty
 open import Data.Unit using (⊤ ; tt)
 --open import Data.List.Membership.Propositional
 --open import Data.List.Membership.Propositional.Properties
---open import Data.Sum
+open import Data.Sum
 --open import Relation.Nullary
 open import Axiom.Extensionality.Propositional
 
@@ -59,16 +59,19 @@ module partial {L : Level}
 open import worldDef(W)
 open import barI(W)(M)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
-  using (#⇛!sameℕ ; _⇛!_at_ ; _⇓!_at_ ; _#⇛!_at_ ; #⇛!-trans ; ⇛!-trans ; #⇛!-refl ; ⇓-trans₂ ; ⇓!-refl)
+  using (#⇛!sameℕ ; _⇛!_at_ ; _⇛_at_ ; _⇓!_at_ ; _⇓_at_ ; _#⇛!_at_ ; #⇛!-trans ; ⇛!-trans ; #⇛!-refl ; ⇓-trans₂ ;
+         ⇓!-refl ; ⇛-trans ; stepsT)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
   using (APPLY-LAMBDA⇓)
 --  using (→∧≡true)
+open import terms6(W)(C)(K)(G)(X)(N)(EC)
+  using (SEQ⇛₁)
 --open import terms8(W)(C)(K)(G)(X)(N)(EC)
 --  using (⇓NUM→SUC⇓NUM ; #APPLY2 ; #FST ; #SND ; SUM! ; #SUM! ; #⇛!-FST-PAIR ; #⇛!-SND-PAIR)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---  using (eqTypes-mon)
+open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (∀𝕎-□Func2)
 --open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --  using (TSext-equalTypes-equalInType ; TEQsym-equalTypes ; TEQrefl-equalTypes ; TEQtrans-equalTypes)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -171,8 +174,8 @@ isNat→∈Nat : (i : ℕ) (w : 𝕎·) (t : CTerm)
            → ∈Type i w #NAT t
 isNat→∈Nat i w t h = →equalInType-NAT i w t t (Mod.∀𝕎-□ M (λ w1 e1 → NATeq-mon e1 {t} {t} h))
 
-↓→ : (i : ℕ) (w : 𝕎·) (t a : CTerm) → ∈Type i w (t ↓) a → □isNat w t
-↓→ i w t a j = Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInTypePARTIAL→ (equalInType-EQ→₁ j)))
+↓→ : (i : ℕ) (w : 𝕎·) (t : CTerm) → inhType i w (t ↓) → □isNat w t
+↓→ i w t (a , j) = Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInTypePARTIAL→ (equalInType-EQ→₁ j)))
   where
   aw : ∀𝕎 w (λ w' e' → PARTIALeq (equalInType i w' #N) w' t #N0
                      → □· w' (↑wPred' (λ w'' _ → isNat w'' t) e'))
@@ -186,8 +189,8 @@ isNat→∈Nat i w t h = →equalInType-NAT i w t t (Mod.∀𝕎-□ M (λ w1 e1
                           → ↑wPred' (λ w'' _ → isNat w'' t) e1 w' e')
     aw1 w2 e2 (n , c₁ , c₂) z = n , c₁ , c₁
 
-→↓ : (i : ℕ) (w : 𝕎·) (t a : CTerm) → □isNat w t → ∈Type i w (t ↓) a
-→↓ i w t a j = →equalInType-EQ (→equalInTypePARTIAL eqTypesN (Mod.∀𝕎-□Func M aw j))
+→↓ : (i : ℕ) (w : 𝕎·) (t : CTerm) → □isNat w t → inhType i w (t ↓)
+→↓ i w t j = #AX , →equalInType-EQ (→equalInTypePARTIAL eqTypesN (Mod.∀𝕎-□Func M aw j))
   where
   aw : ∀𝕎 w (λ w' e' → isNat w' t → PARTIALeq (equalInType i w' #N) w' t #N0)
   aw w1 e1 h w2 e2 =
@@ -231,5 +234,54 @@ NUM∈𝐒 i w k = →equalInTypePARTIAL eqTypesN (Mod.∀𝕎-□ M aw)
       (#APPLY-ι-#⇛! w1 a₁)
       (#APPLY-ι-#⇛! w1 a₂)
       (↓∈U i j ltj w1 a₁ a₂ a∈)
+
+_⊔_ : CTerm → CTerm → CTerm
+a ⊔ b = #SEQ a b
+
+SEQ-val⇓₁ : {w : 𝕎·} {t v : Term} → isValue v → # t → SEQ v t ⇓ t at w
+SEQ-val⇓₁ {w} {t} {v} isv #t = 1 , c0
+  where
+  c0 : stepsT 1 (SEQ v t) w ≡ t
+  c0 with isValue⊎ v
+  ... | inj₁ x rewrite #shiftUp 0 (ct t #t) | subNotIn v t #t = refl
+  ... | inj₂ x = ⊥-elim (x isv)
+
+SEQ-val⇛₁ : {w : 𝕎·} {t v : Term} → isValue v → # t → SEQ v t ⇛ t at w
+SEQ-val⇛₁ {w} {t} {v} isv #t w1 e1 = lift (SEQ-val⇓₁ isv #t)
+
+SEQ-val⇛ : {w : 𝕎·} {a b v : Term}
+         → isValue v
+         → # b
+         → a ⇛ v at w
+         → SEQ a b ⇛ b at w
+SEQ-val⇛ {w} {a} {b} {v} isv #b comp = ⇛-trans (SEQ⇛₁ comp) (SEQ-val⇛₁ isv #b)
+
+→↓⊔ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+    → inhType i w (a ↓)
+    → inhType i w (b ↓)
+    → inhType i w ((a ⊔ b) ↓)
+→↓⊔ i w a b ca cb =
+  →↓ i w (a ⊔ b) (∀𝕎-□Func2 aw (↓→ i w a ca) (↓→ i w b cb))
+  where
+  aw : ∀𝕎 w (λ w' e' → isNat w' a → isNat w' b → isNat w' (#SEQ a b))
+  aw w1 e1 (n , c₁ , c₂) (m , d₁ , d₂) =
+    m ,
+    ⇛-trans (SEQ-val⇛ {w1} {⌜ a ⌝} {⌜ b ⌝} {NUM n} tt (CTerm.closed b) c₁) d₁ ,
+    ⇛-trans (SEQ-val⇛ {w1} {⌜ a ⌝} {⌜ b ⌝} {NUM n} tt (CTerm.closed b) c₁) d₁
+
+-- Not quite what we want. We need ⊔ to force a to compute to always the same number.
+↓⊔→ₗ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+     → inhType i w ((a ⊔ b) ↓)
+     → inhType i w (a ↓)
+↓⊔→ₗ i w a b j =
+  →↓ i w a (Mod.∀𝕎-□Func M aw (↓→ i w (a ⊔ b) j))
+  where
+  aw : ∀𝕎 w (λ w' e' → isNat w' (#SEQ a b) → isNat w' a)
+  aw w1 e1 (n , c₁ , c₂) = {!!}
+
+↓⊔→ᵣ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+     → inhType i w ((a ⊔ b) ↓)
+     → inhType i w (b ↓)
+↓⊔→ᵣ i w a b j = {!!}
 
 \end{code}
