@@ -259,7 +259,7 @@ is𝐕 : CTerm → CTerm
 is𝐕 a = #SUC a
 
 _⊓_ : CTerm → CTerm → CTerm
-a ⊓ b = #SEQ (#SUC a) b
+a ⊓ b = #SEQ (is𝐕 a) b
 
 SEQ-val⇓from-to₁ : {w : 𝕎·} {t v : Term} → isValue v → # t → SEQ v t ⇓ t from w to w
 SEQ-val⇓from-to₁ {w} {t} {v} isv #t = 1 , c0
@@ -383,15 +383,24 @@ LET→ a b v w w' isv (k , comp) with LET→hasValue k a b v w w' comp isv
      → inhType i w (a ↓)
 ↓⊓→ₗ i w a b a∈ j = →↓ i w a (equalInType-QNAT!→ i w a a (↓⊓→ₗ𝐕 i w a b a∈ j))
 
-↓⊓→ᵣ𝟙 : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+↓⊓→ᵣ𝐕 : (i : ℕ) (w : 𝕎·) (a b : CTerm)
       → ∈Type i w 𝐒 a
       → inhType i w ((a ⊓ b) ↓)
-      → ∈Type i w 𝟙 b
-↓⊓→ᵣ𝟙 u w a b a∈ j = {!!}
+      → ∈Type i w 𝐕 b
+↓⊓→ᵣ𝐕 i w a b a∈ j =
+  →equalInType-QNAT! i w b b (∀𝕎-□Func2 aw (↓→ i w (a ⊓ b) j) (equalInType-QNAT!→ i w a a (↓⊓→ₗ𝐕 i w a b a∈ j)))
+  where
+  aw : ∀𝕎 w (λ w' e' → ∈𝐕 w' (a ⊓ b) → ∈𝐕 w' a → ∈𝐕 w' b)
+  aw w1 e1 h q w2 e2 with h w2 e2 | q w2 e2
+  ... | lift (n , c₁ , c₂) | lift (m , d₁ , d₂) =
+    lift (n ,
+          {!!} ,
+          {!!})
 
 ↓⊓→ᵣ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+     → ∈Type i w 𝐒 a
      → inhType i w ((a ⊓ b) ↓)
      → inhType i w (b ↓)
-↓⊓→ᵣ i w a b j = {!!}
+↓⊓→ᵣ i w a b a∈ j = →↓ i w b (equalInType-QNAT!→ i w b b (↓⊓→ᵣ𝐕 i w a b a∈ j))
 
 \end{code}
