@@ -65,6 +65,8 @@ open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
   using (APPLY-LAMBDA⇓ ; hasValue ; LET→hasValue)
 --  using (→∧≡true)
+open import terms4(W)(C)(K)(G)(X)(N)(EC)
+  using (sub-shiftUp0≡)
 open import terms6(W)(C)(K)(G)(X)(N)(EC)
   using (SEQ⇛₁ ; SEQ⇓₁)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
@@ -241,6 +243,7 @@ NUM∈𝐒 i w k = →equalInTypePARTIAL eqTypesN (Mod.∀𝕎-□ M aw)
       (equalInType-change-level {i} {j} (≤-trans (≤suc i) ltj) {w} {𝐒} {a₁} {a₂} (isType-𝐒 i w) a∈)
       (NUM∈𝐒 i w 0))
 
+-- ι is a function from 𝐒 to Uᵢ
 ι∈𝕊→U : (i j : ℕ) (ltj : i < j) (w : 𝕎·) → ∈Type j w (#FUN 𝐒 (#UNIV i)) ι
 ι∈𝕊→U i j ltj w =
   equalInType-FUN (isType-𝐒 j w) (eqTypesUniv w j i ltj) aw
@@ -258,6 +261,7 @@ NUM∈𝐒 i w k = →equalInTypePARTIAL eqTypesN (Mod.∀𝕎-□ M aw)
 is𝐕 : CTerm → CTerm
 is𝐕 a = #SUC a
 
+-- meet operation on elements of 𝐒
 _⊓_ : CTerm → CTerm → CTerm
 a ⊓ b = #SEQ (is𝐕 a) b
 
@@ -310,16 +314,6 @@ SEQ∈𝐕 w a b a∈ b∈ w1 e1 with a∈ w1 e1 | b∈ w1 e1
           (⇓-trans₂ {w1} {w1} {w1} {⌜ #SEQ (#NUM n) b ⌝} {⌜ b ⌝} {NUM m}
             (SEQ-val⇓from-to₁ {w1} {⌜ b ⌝} {NUM n} tt (CTerm.closed b))
             d₁))
-
-→↓⊓ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
-    → inhType i w (a ↓)
-    → inhType i w (b ↓)
-    → inhType i w ((a ⊓ b) ↓)
-→↓⊓ i w a b ca cb =
-  →↓ i w (a ⊓ b) (∀𝕎-□Func2 aw (Mod.∀𝕎-□Func M (λ w1 e1 z → SUC∈𝕍 w1 a z) (↓→ i w a ca)) (↓→ i w b cb))
-  where
-  aw : ∀𝕎 w (λ w' e' → ∈𝐕 w' (#SUC a) → ∈𝐕 w' b → ∈𝐕 w' (a ⊓ b))
-  aw w1 e1 h q = SEQ∈𝐕 w1 (#SUC a) b h q
 
 SUC-steps→ : (k : ℕ) (a v : Term) (w w' : 𝕎·)
            → isValue v
@@ -377,11 +371,40 @@ LET→ a b v w w' isv (k , comp) with LET→hasValue k a b v w w' comp isv
       → ∈Type i w 𝐕 a
 ↓⊓→ₗ𝐕 i w a b a∈ j = ∈𝟙→∈𝐕 i w a (↓⊓→ₗ𝟙 i w a b a∈ j)
 
-↓⊓→ₗ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
-     → ∈Type i w 𝐒 a
-     → inhType i w ((a ⊓ b) ↓)
-     → inhType i w (a ↓)
-↓⊓→ₗ i w a b a∈ j = →↓ i w a (equalInType-QNAT!→ i w a a (↓⊓→ₗ𝐕 i w a b a∈ j))
+SEQ-steps→ᵣ : (k l : ℕ) (a b v u : Term) (w w1 w2 : 𝕎·)
+            → isValue v
+            → isValue u
+            → steps l (a , w) ≡ (u , w1)
+            → steps k (SEQ a b , w) ≡ (v , w2)
+            → b ⇓ v from w1 to w2
+SEQ-steps→ᵣ 0 l a b v u w w1 w2 isv isu ca cs
+  rewrite sym (pair-inj₁ cs)
+        | sym (pair-inj₂ cs) = ⊥-elim isv
+SEQ-steps→ᵣ (suc k) l a b v u w w1 w2 isv isu ca cs with isValue⊎ a
+... | inj₁ x
+  rewrite sub-shiftUp0≡ a b
+        | stepsVal a w l x
+        | sym (pair-inj₁ ca)
+        | sym (pair-inj₂ ca) = k , cs
+... | inj₂ x with step⊎ a w
+SEQ-steps→ᵣ (suc k) 0 a b v u w w1 w2 isv isu ca cs | inj₂ x | inj₁ (a' , w'' , z)
+  rewrite z
+        | sym (pair-inj₁ ca)
+        | sym (pair-inj₂ ca) = ⊥-elim (x isu)
+SEQ-steps→ᵣ (suc k) (suc l) a b v u w w1 w2 isv isu ca cs | inj₂ x | inj₁ (a' , w'' , z)
+  rewrite z = SEQ-steps→ᵣ k l a' b v u w'' w1 w2 isv isu ca cs
+SEQ-steps→ᵣ (suc k) l a b v u w w1 w2 isv isu ca cs | inj₂ x | inj₂ z
+  rewrite z
+        | sym (pair-inj₁ cs)
+        | sym (pair-inj₂ cs) = ⊥-elim isv
+
+SEQ→ᵣ : (a b v u : Term) (w w1 w2 : 𝕎·)
+      → isValue v
+      → isValue u
+      → a ⇓ u from w to w1
+      → SEQ a b ⇓ v from w to w2
+      → b ⇓ v from w1 to w2
+SEQ→ᵣ a b v u w w1 w2 isv isu (l , ca) (k , cs) = SEQ-steps→ᵣ k l a b v u w w1 w2 isv isu ca cs
 
 ↓⊓→ᵣ𝐕 : (i : ℕ) (w : 𝕎·) (a b : CTerm)
       → ∈Type i w 𝐒 a
@@ -394,9 +417,28 @@ LET→ a b v w w' isv (k , comp) with LET→hasValue k a b v w w' comp isv
   aw w1 e1 h q w2 e2 with h w2 e2 | q w2 e2
   ... | lift (n , c₁ , c₂) | lift (m , d₁ , d₂) =
     lift (n ,
-          {!!} ,
-          {!!})
+          SEQ→ᵣ ⌜ #SUC a ⌝ ⌜ b ⌝ (NUM n) (NUM (suc m)) w2 w2 w2 tt tt (⇓NUM→SUC⇓NUM d₁) c₁ ,
+          SEQ→ᵣ ⌜ #SUC a ⌝ ⌜ b ⌝ (NUM n) (NUM (suc m)) w2 w2 w2 tt tt (⇓NUM→SUC⇓NUM d₁) c₁)
 
+-- If a and b converge then (a ⊓ b) converges
+→↓⊓ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+    → inhType i w (a ↓)
+    → inhType i w (b ↓)
+    → inhType i w ((a ⊓ b) ↓)
+→↓⊓ i w a b ca cb =
+  →↓ i w (a ⊓ b) (∀𝕎-□Func2 aw (Mod.∀𝕎-□Func M (λ w1 e1 z → SUC∈𝕍 w1 a z) (↓→ i w a ca)) (↓→ i w b cb))
+  where
+  aw : ∀𝕎 w (λ w' e' → ∈𝐕 w' (#SUC a) → ∈𝐕 w' b → ∈𝐕 w' (a ⊓ b))
+  aw w1 e1 h q = SEQ∈𝐕 w1 (#SUC a) b h q
+
+-- If (a ⊓ b) converges then a converges
+↓⊓→ₗ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
+     → ∈Type i w 𝐒 a
+     → inhType i w ((a ⊓ b) ↓)
+     → inhType i w (a ↓)
+↓⊓→ₗ i w a b a∈ j = →↓ i w a (equalInType-QNAT!→ i w a a (↓⊓→ₗ𝐕 i w a b a∈ j))
+
+-- If (a ⊓ b) converges then b converges
 ↓⊓→ᵣ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
      → ∈Type i w 𝐒 a
      → inhType i w ((a ⊓ b) ↓)
