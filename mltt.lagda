@@ -699,8 +699,6 @@ NAT!∈UNIV i w j = {!!}
 --}
 
 
-
-
 length⟦⟧Γ : {n : Nat} {Γ : Con Term n}
           → Data.List.length ⟦ Γ ⟧Γ ≣ n
 length⟦⟧Γ {0} {ε} = refl
@@ -1383,5 +1381,32 @@ mutual
         → equalInType i w ⟦ j ⟧≡ₜ₀ ⟦ j ⟧≡ₗ₀ ⟦ j ⟧≡ᵣ₀ -- in the empty context
   ⟦_⟧≡∈ {t} {u} {σ} j i w = {!!}
 --}
+
+
+-- MLTT negation
+¬ₘ : {n : Nat} → Term n → Term n
+¬ₘ {n} F = F ▹▹ Empty
+
+-- MLTT is-zero check
+≡0ₘ : {n : Nat} → Term n → Term n
+≡0ₘ {n} k = natrec U Unit (lam (lam Empty)) k
+
+ν0ₘ : {n : Nat} → Term (1+ n)
+ν0ₘ = var Fin.zero
+
+ν1ₘ : {n : Nat} → Term (1+ (1+ n))
+ν1ₘ = var (Fin.suc Fin.zero)
+
+-- MLTT MP, i.e., Π (f : ℕ → ℕ). ¬ ¬ (Σ (n : ℕ). f n ≡ 0) → Σ (n : ℕ). f n ≡ 0
+MPℕₘ : Term 0
+MPℕₘ = Π (ℕ ▹▹ ℕ) ▹ (¬ₘ (¬ₘ (Σ ℕ ▹ ≡0ₘ (ν1ₘ ∘ ν0ₘ))) ▹▹ Σ ℕ ▹ ≡0ₘ (ν1ₘ ∘ ν0ₘ))
+
+-- BoxTT is-zero check (not using ≡ but using natrec)
+≡0ₒ : BTerm → BTerm
+≡0ₒ k = NATREC k TRUE (LAMBDA (LAMBDA FALSE))
+
+-- BoxTT translation of MPℕₘ
+MPℕₒ : BTerm
+MPℕₒ = PI (FUN NAT! NAT!) (FUN (NEG (NEG (SUM NAT! (≡0ₒ (APPLY (VAR 1) (VAR 0)))))) (SUM NAT! (≡0ₒ (APPLY (VAR 1) (VAR 0)))))
 
 \end{code}
