@@ -26,7 +26,7 @@ open import Data.Unit using (⊤ ; tt)
 --open import Data.List.Membership.Propositional
 --open import Data.List.Membership.Propositional.Properties
 open import Data.Sum
---open import Relation.Nullary
+open import Relation.Nullary
 open import Axiom.Extensionality.Propositional
 
 -- BoxTT imports
@@ -42,18 +42,20 @@ open import progress
 open import getChoice
 open import choiceExt
 open import newChoice
+open import Axiom.ExcludedMiddle
 
-module partial {L : Level}
-               (W : PossibleWorlds {L})
-               (M : Mod W)
-               (C : Choice)
-               (K : Compatible {L} W C)
-               (P : Progress {L} W C K)
-               (G : GetChoice {L} W C K)
-               (X : ChoiceExt W C)
-               (N : NewChoice W C K G)
-               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+module partial {L  : Level}
+               (W  : PossibleWorlds {L})
+               (M  : Mod W)
+               (C  : Choice)
+               (K  : Compatible {L} W C)
+               (P  : Progress {L} W C K)
+               (G  : GetChoice {L} W C K)
+               (X  : ChoiceExt W C)
+               (N  : NewChoice W C K G)
+               (E  : Extensionality 0ℓ (lsuc(lsuc(L))))
                (EC : Encode)
+               (EM : ExcludedMiddle (L))
        where
 
 open import worldDef(W)
@@ -87,7 +89,7 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --  using (→equalInType-NAT!)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (≡→equalInType ; eqTypesEQ→ᵣ ; NATeq-mon)
+  using (≡→equalInType ; eqTypesEQ→ᵣ ; NATeq-mon ; #PROD)
 open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (_#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ; presPure ; →presPure-NATREC₁ ; →presPure-NATREC₂ ; →presPure-NATREC₃ ;
          equalTypesPI→ₗ ; equalTypesPI→ᵣ ; eqTypesSUM!← ; SUMeq! ; equalInType-SUM!→ ; equalInType-SUM!)
@@ -120,6 +122,9 @@ isType-𝐒 i w = eqTypesPARTIAL← eqTypesN
 -- t converges
 _↓ : CTerm → CTerm
 t ↓ = #EQ t 𝕦 𝐒
+
+_↓₀ : CTerm0 → CTerm0
+t ↓₀ = #[0]EQ t ⌞ 𝕦 ⌟ ⌞ 𝐒 ⌟
 
 -- λ x → x ≡ 𝕦 ∈ 𝐒
 ι : CTerm
@@ -444,5 +449,30 @@ SEQ→ᵣ a b v u w w1 w2 isv isu (l , ca) (k , cs) = SEQ-steps→ᵣ k l a b v 
      → inhType i w ((a ⊓ b) ↓)
      → inhType i w (b ↓)
 ↓⊓→ᵣ i w a b a∈ j = →↓ i w b (equalInType-QNAT!→ i w b b (↓⊓→ᵣ𝐕 i w a b a∈ j))
+
+□inhType : (i : ℕ) → INHT
+□inhType i w T = □· w (λ w' _ → inhType i w' T)
+
+∈𝐒 : ℕ → CTerm → CTerm
+∈𝐒 i t = #SUM 𝐒 (#[0]EQ (#[0]VAR ↓₀) ⌞ t ⌟ ⌞ #UNIV i ⌟)
+
+∈Type𝐒 : (i : ℕ) (w : 𝕎·) (t : CTerm) → Set(lsuc L)
+∈Type𝐒 i w t = □inhType (suc i) w (∈𝐒 i t)
+
+-- (u ∈ 𝐒) (q : Set) → (ι(u) → p ∈ₛ 𝕊) → ι(u) ∧ p ∈ₛ 𝐒
+-- where p ∈ₛ 𝐒 :≡ Σ (s : 𝐒). ι(s) = p ∈ Set
+dom : (i : ℕ) (w : 𝕎·) (u p : CTerm)
+    → ∈Type i w 𝐒 u
+    → isType i w p
+    → ∀𝕎 w (λ w' _ → □inhType i w' (u ↓) → ∈Type𝐒 i w p)
+    → ∈Type𝐒 i w (#PROD (u ↓) p)
+dom i w u p u∈ p∈ f =
+  Mod.□-idem M (Mod.∀𝕎-□Func M aw (equalInTypePARTIAL→ u∈))
+  where
+  aw : ∀𝕎 w (λ w' e' → PARTIALeq (equalInType i w' 𝟙) w' u u
+                     → □· w' (↑wPred' (λ w'' _ → inhType (suc i) w'' (∈𝐒 i (#PROD (u ↓) p))) e'))
+  aw w1 e1 h with EM {#hasValue u w1}
+  ... | yes q = {!!} -- use classical logic to check whether (#hasValue u w1)
+  ... | no q = {!!} -- use classical logic to check whether (#hasValue u w1)
 
 \end{code}

@@ -1407,6 +1407,8 @@ MPℕₘ = Π (ℕ ▹▹ ℕ) ▹ (¬ₘ (¬ₘ (Σ ℕ ▹ ≡0ₘ (ν1ₘ ∘
 
 -- BoxTT translation of MPℕₘ
 MPℕₒ : BTerm
-MPℕₒ = PI (FUN NAT! NAT!) (FUN (NEG (NEG (SUM NAT! (≡0ₒ (APPLY (VAR 1) (VAR 0)))))) (SUM NAT! (≡0ₒ (APPLY (VAR 1) (VAR 0)))))
+MPℕₒ = PI (FUN NAT! NAT!) (FUN (NEG (NEG (SUM! NAT! (≡0ₒ (APPLY (VAR 1) (VAR 0)))))) (SUM! NAT! (≡0ₒ (APPLY (VAR 1) (VAR 0)))))
 
+⟦MPℕₘ⟧ᵤ : ⟦ MPℕₘ ⟧ᵤ ≣ MPℕₒ
+⟦MPℕₘ⟧ᵤ = refl
 \end{code}
