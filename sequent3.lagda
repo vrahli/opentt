@@ -93,7 +93,7 @@ open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (≡→equalInType ; eqTypesEQ→ᵣ ; eqTypesEQ→ₗ ; eqTypesEQ→)
 open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (_#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ; presPure ;
+  using (_#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ; presPure ; →equalInType-EQ ;
          equalTypesPI→ₗ ; equalTypesPI→ᵣ ; eqTypesSUM!← ; SUMeq! ; equalInType-SUM!→ ; equalInType-SUM!)
 open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalTypes-uni-mon ; equalInType-uni-mon)

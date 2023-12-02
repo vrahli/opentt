@@ -85,7 +85,7 @@ open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqInType-extr1 ; eqInType-sym ; eqInType-extl1 ; equalInType-sym ; equalInType-local ; eqTypes-local ;
          equalInType-mon ; ≡CTerm→eqTypes ; eqTypesNOREADMOD← ; eqTypesNOWRITEMOD← ; eqTypesSUM← ; equalInType-SUM→;
-         equalInTypeNOREADMOD→ ; equalInTypeNOWRITEMOD→ ; NOWRITEMODeq ; NOREADMODeq ;
+         equalInTypeNOREADMOD→ ; equalInTypeNOWRITEMOD→ ; NOWRITEMODeq ; NOREADMODeq ; equalInType-EQ ;
          →equalInTypeNOWRITEMOD ; →equalInTypeNOREADMOD ; #⇛val→#⇓→#⇛ ; equalInType-SUM)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (equalTypes-#⇛-left-rev ; TUNIONeq-#⇛-rev ; #⇛!-pres-hasValue ; #⇛!-pres-hasValue-rev)
@@ -1118,5 +1118,14 @@ abstract
                    → equalTypes i w (sub0 a B) (sub0 b D)
   equalTypesSUM!→ᵣ {w} {i} {A} {B} {C} {D} eqt =
     equalTypesSUM→ᵣ (eqTypesNOREADMOD→ (eqTypesNOWRITEMOD→ eqt))
+
+
+→equalInType-EQ : {u : ℕ} {w : 𝕎·} {a b A : CTerm} {f g : CTerm}
+                  → equalInType u w A a b
+                  → equalInType u w (#EQ a b A) f g
+→equalInType-EQ {u} {w} {a} {b} {A} {f} {g} a∈ =
+  equalInType-EQ
+    (fst a∈)
+    (Mod.∀𝕎-□ M (λ w1 e1 → equalInType-mon a∈ w1 e1))
 
 \end{code}

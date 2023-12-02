@@ -80,17 +80,33 @@ open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqTypes-mon)
 --open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
+open import terms2(W)(C)(K)(G)(X)(N)(EC)
+  using (NATREC⇓)
 open import terms3(W)(C)(K)(G)(X)(N)(EC)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using ()
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (eqTypesNEG← ; eqTypesSQUASH← ; →equalInType-NAT ; equalInType-NAT!→ ; equalInType-FUN→ ; ≡CTerm→equalInType ;
+         equalInType-FUN ; isTypeNAT! ; →≡equalTypes ; eqTypesSUM← ; eqTypesNAT ; eqTypesFUN← ; eqTypesPI← ; ≡CTerm→eqTypes ;
+         eqTypesISECT← ; eqTypesNOENC← ; equalInType-local ; equalInType-ISECT→ ; equalInType-NOENC→ ; equalInType-PI ;
+         equalInType-refl ; equalInType-mon ; equalInType-NEG ; equalInType-NEG→ ; equalInType-PI→ ; equalInType-SUM→ ;
+         equalInType-SUM ; equalInType-SQUASH→ ; →≡equalInType ; eqTypes-local ; eqTypesTRUE ; eqTypesFALSE)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-ASSERT₃-APPLY ; equalInType-BOOL!→equalTypes-ASSERT₃ ;
-         isType-#NAT!→BOOL ; isType-#NAT!→BOOL! ; isType-#NAT→BOOL ; equalInType-NEG→¬inh ; sub0-NEG-ASSERT₂-APPLY ;
-         →equalInType-SQUASH ; isTypeBOOL ; isTypeBOOL! ; isTypeBOOL₀ ; isType-#NAT!→BOOL₀ ; isTypeBOOL₀!→ ; isType-#NAT!→BOOL₀! ;
-         isType-#NAT→BOOL₀ ; eqTypesQNAT!)
+  using (sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-ASSERT₃-APPLY ; equalInType-NEG→¬inh ;
+         equalInType-BOOL!→equalTypes-ASSERT₃ ; isType-#NAT!→BOOL ; isType-#NAT!→BOOL! ; isType-#NAT→BOOL ;
+         sub0-NEG-ASSERT₂-APPLY ; →equalInType-SQUASH ; isTypeBOOL ; isTypeBOOL! ; isTypeBOOL₀ ; isType-#NAT!→BOOL₀ ;
+         isTypeBOOL₀!→ ; isType-#NAT!→BOOL₀! ; isType-#NAT→BOOL₀ ; eqTypesQNAT! ; equalInType-BOOL₀!→ ;
+         equalTypes-#⇛-left-right-rev)
+open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (_#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ; presPure ; →presPure-NATREC₁ ; →presPure-NATREC₂ ; →presPure-NATREC₃ ;
+         equalTypesPI→ₗ ; equalTypesPI→ᵣ ; eqTypesSUM!← ; SUMeq! ; equalInType-SUM!→ ; equalInType-SUM!)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (#[1]ASSERT₄ ; #SUM-ASSERT₂ ; #SUM-ASSERT₃ ; #SUM-ASSERT₄ ; #SUM-ASSERT₅ ; #PI-NEG-ASSERT₂ ; #QNAT!→BOOL! ;
+         ≡ASSERT₄ ; →equalTypes-#PI-NEG-ASSERT₂ ; →equalTypes-#SUM-ASSERT₂ ; →equalTypes-#SUM-ASSERT₃ ;
+         →equalTypes-#SUM-ASSERT₄ ; →equalTypes-#SUM-ASSERT₅ ; #QNAT!→BOOL!≡ ; #[0]ASSERT₄ ; sub0-ASSERT₄-APPLY ;
+         equalInType-BOOL!→equalTypes-ASSERT₄ ; →equalTypes-#PI-NEG-ASSERT₂-body ; #ASSERT₄)
 
 --open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 --open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
@@ -275,14 +291,88 @@ MP = PI NAT!→BOOL₀ (FUN (NEG (PI NAT! (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0)
 #MP₄ = #PI #NAT!→BOOL! (#[0]FUN #[0]MP-left-qt #[0]MP-right-qt)
 
 
--- Another version of MP that uses #QNAT!→BOOL! instead
+-- Another version of MP that uses #QNAT!→BOOL! instead, i.e., nowrite ℕ and 𝔹, and truncated Σs
 #MP₅ : CTerm
 #MP₅ = #PI #QNAT!→BOOL! (#[0]FUN #[0]MP-left-qt₂ #[0]MP-right-qt₂)
 
 
--- Another version of MP that uses #NAT!→BOOL! instead
+-- Another version of MP that uses #NAT!→BOOL₀! instead, i.e., noread/nowrite ℕ and 𝔹, and truncated Σs
 #MP₆ : CTerm
 #MP₆ = #PI #NAT!→BOOL₀! (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)
+
+
+-- a version of ASSERT that uses NATREC instead of · ≡ true
+ASSERTₘ : Term → Term
+ASSERTₘ t = NATREC t TRUE (LAMBDA (LAMBDA FALSE))
+
+
+fvars-ASSERTₘ : (t : Term) → fvars (ASSERTₘ t) ≡ fvars t
+fvars-ASSERTₘ t rewrite ++[] (fvars t) = refl
+
+
+#ASSERTₘ : CTerm → CTerm
+#ASSERTₘ a = ct (ASSERTₘ ⌜ a ⌝) c
+  where
+    c : # ASSERTₘ ⌜ a ⌝
+    c rewrite fvars-ASSERTₘ ⌜ a ⌝ = CTerm.closed a
+
+
+#[0]ASSERTₘ : CTerm0 → CTerm0
+#[0]ASSERTₘ a = ct0 (ASSERTₘ ⌜ a ⌝) c
+  where
+    c : #[ [ 0 ] ] ASSERTₘ ⌜ a ⌝
+    c rewrite fvars-ASSERTₘ ⌜ a ⌝ = CTerm0.closed a
+
+
+#[1]ASSERTₘ : CTerm1 → CTerm1
+#[1]ASSERTₘ a = ct1 (ASSERTₘ ⌜ a ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] ASSERTₘ ⌜ a ⌝
+    c rewrite fvars-ASSERTₘ ⌜ a ⌝ = CTerm1.closed a
+
+
+#[0]SUM! : CTerm0 → CTerm1 → CTerm0
+#[0]SUM! a b = #[0]NOWRITEMOD (#[0]NOREADMOD (#[0]SUM a b))
+
+
+-- Σ(n:ℕ).assert(f(n))
+#[0]MP-rightₘ : CTerm0
+#[0]MP-rightₘ = #[0]SUM! #[0]NAT! (#[1]ASSERTₘ (#[1]APPLY #[1]VAR1 #[1]VAR0))
+
+
+-- ¬¬Σ(n:ℕ).assert(f(n))
+#[0]MP-leftₘ : CTerm0
+#[0]MP-leftₘ = #[0]NEG (#[0]NEG #[0]MP-rightₘ)
+
+
+-- Σ(n:ℕ).assert(f(n))
+#MP-rightₘ : CTerm → CTerm
+#MP-rightₘ f = #SUM! #NAT! (#[0]ASSERTₘ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
+
+
+-- ¬¬Σ(n:ℕ).assert(f(n))
+#MP-leftₘ : CTerm → CTerm
+#MP-leftₘ f = #NEG (#NEG (#MP-rightₘ f))
+
+
+NAT!→NAT! : Term
+NAT!→NAT! = FUN NAT! NAT!
+
+
+#NAT!→NAT! : CTerm
+#NAT!→NAT! = ct NAT!→NAT! refl
+
+
+#NAT!→NAT!≡ : #NAT!→NAT! ≡ #FUN #NAT! #NAT!
+#NAT!→NAT!≡ = CTerm≡ refl
+
+
+-- Another version of MP that
+-- (1) uses #NAT!→NAT!, i.e., noread/nowrite ℕ
+-- (2) non-truncated Σs
+-- (3) and an assert that relies on NATREC
+#MPₘ : CTerm
+#MPₘ = #PI #NAT!→NAT! (#[0]FUN #[0]MP-leftₘ #[0]MP-rightₘ )
 
 
 #MP₇ : CTerm
@@ -422,6 +512,19 @@ sub0-fun-mp₆ a =
   where
     e : shiftDown 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ a ⌝))) ≡ shiftUp 1 ⌜ a ⌝
     e rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftUp 0 a | #shiftUp 1 a | #shiftDown 2 a = refl
+
+
+sub0-fun-mpₘ : (a : CTerm)
+             → sub0 a (#[0]FUN #[0]MP-leftₘ #[0]MP-rightₘ)
+             ≡ #FUN (#MP-leftₘ a) (#MP-rightₘ a)
+sub0-fun-mpₘ a =
+  ≡sub0-#[0]FUN
+    a #[0]MP-leftₘ #[0]MP-rightₘ (#MP-leftₘ a) (#MP-rightₘ a)
+    (CTerm≡ (≡NEG (≡NEG (≡ISECT (≡ISECT (≡SUM refl (≡NATREC (≡APPLY e refl) refl refl)) refl) refl))))
+    (CTerm≡ (≡ISECT (≡ISECT (≡SUM refl (≡NATREC (≡APPLY e refl) refl refl)) refl) refl))
+  where
+    e : shiftDown 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) ≡ ⌜ CTerm→CTerm0 a ⌝
+    e rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftDown 1 a | CTerm→CTerm0→Term a = refl
 
 
 ∀𝕎∃𝕎-func : {w : 𝕎·} {f g : wPred w}
@@ -747,6 +850,170 @@ isTypeMP₆ w n =
                                         (sub0 a₂ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)))
     aw w' e a₁ a₂ eqb rewrite sub0-fun-mp₆ a₁ | sub0-fun-mp₆ a₂ =
       eqTypesFUN← (→equalTypes-#MP-left-qt₃ eqb) (→equalTypes-#MP-right-qt₃ eqb)
+
+
+≡ASSERTₘ : {a b : Term} → a ≡ b → ASSERTₘ a ≡ ASSERTₘ b
+≡ASSERTₘ {a} {.a} refl = refl
+
+
+sub0-ASSERTₘ-APPLY : (a b : CTerm) → sub0 a (#[0]ASSERTₘ (#[0]APPLY ⌞ b ⌟ #[0]VAR)) ≡ #ASSERTₘ (#APPLY b a)
+sub0-ASSERTₘ-APPLY a b = CTerm≡ (≡ASSERTₘ (→≡APPLY x y))
+  where
+    x : shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) ⌜ b ⌝) ≡ ⌜ b ⌝
+    x rewrite subNotIn ⌜ a ⌝ ⌜ b ⌝ (CTerm.closed b) = refl
+
+    y : shiftDown 0 (shiftUp 0 ⌜ a ⌝) ≡ ⌜ a ⌝
+    y rewrite #shiftUp 0 a | #shiftDown 0 a = refl
+
+
+#[1]FALSE : CTerm1
+#[1]FALSE = ct1 FALSE refl
+
+
+#ASSERTₘ≡ : (t : CTerm) → #ASSERTₘ t ≡ #NATREC t #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))
+#ASSERTₘ≡ t = CTerm≡ refl
+
+
+NATREC⇓at : {a a' : Term} (b c : Term) {w : 𝕎·}
+          → a ⇓ a' at w
+          → NATREC a b c ⇓ NATREC a' b c at w
+NATREC⇓at {a} {a'} b c {w} comp with ⇓→from-to {w} {a} {a'} comp
+... | w' , comp' = ⇓-from-to→⇓ {w} {w'} (NATREC⇓ b c comp')
+
+
+NATREC⇛ : {a a' : Term} (b c : Term) {w : 𝕎·}
+        → a ⇛ a' at w
+        → NATREC a b c ⇛ NATREC a' b c at w
+NATREC⇛ {a} {a'} b c {w} comp w1 e1 = lift (NATREC⇓at {a} {a'} b c {w1} (lower (comp w1 e1)))
+
+
+NATREC⇛! : {a a' : Term} (b c : Term) {w : 𝕎·}
+         → a ⇛! a' at w
+         → NATREC a b c ⇛! NATREC a' b c at w
+NATREC⇛! {a} {a'} b c {w} comp w1 e1 = lift (NATREC⇓ {a} {a'} b c {w1} {w1} (lower (comp w1 e1)))
+
+
+NATREC-NUM⇛ : (w : 𝕎·) (n : ℕ) (b c : Term) → NATREC (NUM n) b c ⇛ NATRECr n b c at w
+NATREC-NUM⇛ w n b c w1 e1 = lift (1 , refl)
+
+
+NATREC-NUM⇛! : (w : 𝕎·) (n : ℕ) (b c : Term) → NATREC (NUM n) b c ⇛! NATRECr n b c at w
+NATREC-NUM⇛! w n b c w1 e1 = lift (1 , refl)
+
+
+NUM→NATREC⇛ : {a : Term} {k : ℕ} (b c : Term) {w : 𝕎·}
+            → a ⇛ NUM k at w
+            → NATREC a b c ⇛ NATRECr k b c at w
+NUM→NATREC⇛ {a} {k} b c {w} comp = ⇛-trans (NATREC⇛ b c comp) (NATREC-NUM⇛ w k b c)
+
+
+NUM→NATREC⇛! : {a : Term} {k : ℕ} (b c : Term) {w : 𝕎·}
+             → a ⇛! NUM k at w
+             → NATREC a b c ⇛! NATRECr k b c at w
+NUM→NATREC⇛! {a} {k} b c {w} comp = ⇛!-trans (NATREC⇛! b c comp) (NATREC-NUM⇛! w k b c)
+
+
+#NATRECr : ℕ → CTerm → CTerm → CTerm
+#NATRECr 0 b c = b
+#NATRECr (suc n) b c = #APPLY2 c (#NUM n) (#NATREC (#NUM n) b c)
+
+
+⌜#NATRECr⌝ : (k : ℕ) (b c : CTerm) → ⌜ #NATRECr k b c ⌝ ≡ NATRECr k ⌜ b ⌝ ⌜ c ⌝
+⌜#NATRECr⌝ 0 b c = refl
+⌜#NATRECr⌝ (suc k) b c = refl
+
+
+#NUM→NATREC⇛ : {a : CTerm} {k : ℕ} (b c : CTerm) {w : 𝕎·}
+             → a #⇛ #NUM k at w
+             → #NATREC a b c #⇛ #NATRECr k b c at w
+#NUM→NATREC⇛ {a} {k} b c {w} comp rewrite ⌜#NATRECr⌝ k b c = NUM→NATREC⇛ ⌜ b ⌝ ⌜ c ⌝ comp
+
+
+#NUM→NATREC⇛! : {a : CTerm} {k : ℕ} (b c : CTerm) {w : 𝕎·}
+              → a #⇛! #NUM k at w
+              → #NATREC a b c #⇛! #NATRECr k b c at w
+#NUM→NATREC⇛! {a} {k} b c {w} comp rewrite ⌜#NATRECr⌝ k b c = NUM→NATREC⇛! ⌜ b ⌝ ⌜ c ⌝ comp
+
+
+#APPLY2-LAMBDA-LAMBDA-FALSE⇛ : (w : 𝕎·) (a b : CTerm)
+                             → #APPLY2 (#LAMBDA (#[0]LAMBDA #[1]FALSE)) a b #⇛ #FALSE at w
+#APPLY2-LAMBDA-LAMBDA-FALSE⇛ w a b w1 e1 = lift (2 , refl)
+
+
+equalInType-NAT!→equalTypes-ASSERTₘ : {n : ℕ} {w : 𝕎·} {a b : CTerm}
+                                      → equalInType n w #NAT! a b
+                                      → equalTypes n w (#ASSERTₘ a) (#ASSERTₘ b)
+equalInType-NAT!→equalTypes-ASSERTₘ {n} {w} {a} {b} eqb =
+  ≡CTerm→eqTypes
+    (sym (#ASSERTₘ≡ a))
+    (sym (#ASSERTₘ≡ b))
+    (eqTypes-local (Mod.∀𝕎-□Func M aw (equalInType-NAT!→ n w a b eqb)))
+  where
+  aw1 : (k : ℕ)
+      → equalTypes n w (#NATRECr k #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE)))
+                       (#NATRECr k #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE)))
+  aw1 0 = eqTypesTRUE
+  aw1 (suc k) =
+    equalTypes-#⇛-left-right-rev
+      (#APPLY2-LAMBDA-LAMBDA-FALSE⇛ w (#NUM k) (#NATREC (#NUM k) #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))))
+      (#APPLY2-LAMBDA-LAMBDA-FALSE⇛ w (#NUM k) (#NATREC (#NUM k) #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))))
+      eqTypesFALSE
+
+  aw : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' a b
+                     → equalTypes n w' (#NATREC a #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE)))
+                                       (#NATREC b #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))))
+  aw w1 e1 (k , c₁ , c₂) =
+    equalTypes-#⇛-left-right-rev
+      (#NUM→NATREC⇛ {a} #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE)) (#⇛!→#⇛ {w1} {a} {#NUM k} c₁))
+      (#NUM→NATREC⇛ {b} #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE)) (#⇛!→#⇛ {w1} {b} {#NUM k} c₂))
+      (eqTypes-mon (uni n) (aw1 k) w1 e1)
+
+
+→equalTypes-#MP-rightₘ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
+                       → equalInType n w #NAT!→NAT! a₁ a₂
+                       → equalTypes n w (#MP-rightₘ a₁) (#MP-rightₘ a₂)
+→equalTypes-#MP-rightₘ {n} {w} {a₁} {a₂} eqt =
+  eqTypesSUM!← (λ w' _ → isTypeNAT!) aw1
+  where
+    aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT! a b → equalInType n w' #NAT! (#APPLY a₁ a) (#APPLY a₂ b))
+    aw0 = equalInType-FUN→ (≡CTerm→equalInType #NAT!→NAT!≡ eqt)
+
+    aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
+                       → equalTypes n w' (sub0 a (#[0]ASSERTₘ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))) (sub0 b (#[0]ASSERTₘ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR))))
+    aw1 w' e a b ea rewrite sub0-ASSERTₘ-APPLY a a₁ | sub0-ASSERTₘ-APPLY b a₂ = aw2
+      where
+        eqb : equalInType n w' #NAT! (#APPLY a₁ a) (#APPLY a₂ b)
+        eqb = aw0 w' e a b ea
+
+        aw2 : equalTypes n w' (#ASSERTₘ (#APPLY a₁ a)) (#ASSERTₘ (#APPLY a₂ b))
+        aw2 = equalInType-NAT!→equalTypes-ASSERTₘ eqb
+
+
+→equalTypes-#MP-leftₘ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
+                      → equalInType n w #NAT!→NAT! a₁ a₂
+                      → equalTypes n w (#MP-leftₘ a₁) (#MP-leftₘ a₂)
+→equalTypes-#MP-leftₘ {n} {w} {a₁} {a₂} eqt =
+  eqTypesNEG← (eqTypesNEG← (→equalTypes-#MP-rightₘ eqt))
+
+
+isType-#NAT!→NAT! : (w : 𝕎·) (n : ℕ) → isType n w #NAT!→NAT!
+isType-#NAT!→NAT! w n rewrite #NAT!→NAT!≡ = eqTypesFUN← isTypeNAT! isTypeNAT!
+
+
+isTypeMPₘ : (w : 𝕎·) (n : ℕ) → isType n w #MPₘ
+isTypeMPₘ w n =
+  eqTypesPI←
+    {w} {n}
+    {#NAT!→NAT!} {#[0]FUN #[0]MP-leftₘ #[0]MP-rightₘ}
+    {#NAT!→NAT!} {#[0]FUN #[0]MP-leftₘ #[0]MP-rightₘ}
+    (λ w' e → isType-#NAT!→NAT! w' n)
+    aw
+  where
+    aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT!→NAT! a₁ a₂
+                      → equalTypes n w' (sub0 a₁ (#[0]FUN #[0]MP-leftₘ #[0]MP-rightₘ))
+                                        (sub0 a₂ (#[0]FUN #[0]MP-leftₘ #[0]MP-rightₘ)))
+    aw w' e a₁ a₂ eqb rewrite sub0-fun-mpₘ a₁ | sub0-fun-mpₘ a₂ =
+      eqTypesFUN← (→equalTypes-#MP-leftₘ eqb) (→equalTypes-#MP-rightₘ eqb)
 
 
 -- MOVE
@@ -1601,6 +1868,31 @@ equalInType-#MP-right-qt₃→ i w f a₁ a₂ f∈ h =
 
     h3 : equalInType i w1 (#MP-right-qt₃ f) (#APPLY (#APPLY F f) #AX) (#APPLY (#APPLY G f) #AX)
     h3 = h2 w1 (⊑-refl· w1) #AX #AX (→equalInType-#MP-left-qt₃ i w1 f #AX #AX f∈ cond)
+
+
+{--
+∈#MPₘ→ : (i : ℕ) (w : 𝕎·) (F G : CTerm)
+          → equalInType i w #MPₘ F G
+          → ∀𝕎 w (λ w' _ → (f : CTerm) → ∈Type i w' #NAT!→NAT! f
+                           → ∀𝕎 w' (λ w' _ → ∀𝕎 w' (λ w' _ → (Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType i w' #NAT! n₁ n₂
+                                                                  × inhType i w' (#ASSERTₘ (#APPLY f n₁)))))
+                                                              → ⊥)
+                                            → ⊥)
+                           → □· w' (λ w' _ → Σ CTerm (λ n₁ → Σ CTerm (λ n₂ → equalInType i w' #NAT! n₁ n₂
+                                              × inhType i w' (#ASSERTₘ (#APPLY f n₁))))))
+∈#MPₘ→ i w F G F∈ w1 e1 f f∈ cond =
+  equalInType-#MP-right-qt₃→ i w1 f (#APPLY (#APPLY F f) #AX) (#APPLY (#APPLY G f) #AX) f∈ h3
+  where
+    h1 : equalInType i w1 (sub0 f (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)) (#APPLY F f) (#APPLY G f)
+    h1 = snd (snd (equalInType-PI→ {i} {w} {#NAT!→BOOL₀!} {#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃} F∈)) w1 e1 f f f∈
+
+    h2 : ∀𝕎 w1 (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#MP-left-qt₃ f) a₁ a₂
+                        → equalInType i w' (#MP-right-qt₃ f) (#APPLY (#APPLY F f) a₁) (#APPLY (#APPLY G f) a₂))
+    h2 = equalInType-FUN→ (≡CTerm→equalInType (sub0-fun-mp₆ f) h1)
+
+    h3 : equalInType i w1 (#MP-right-qt₃ f) (#APPLY (#APPLY F f) #AX) (#APPLY (#APPLY G f) #AX)
+    h3 = h2 w1 (⊑-refl· w1) #AX #AX (→equalInType-#MP-left-qt₃ i w1 f #AX #AX f∈ cond)
+--}
 
 
 ∈#MP₇→ : (i : ℕ) (w : 𝕎·) (F G : CTerm)

@@ -2454,4 +2454,63 @@ SUM! a b = NOWRITEMOD (NOREADMOD (SUM a b))
              → #SND p #⇛! b at w
 #⇛!-SND-PAIR p a b w c = ⇛!-SND-PAIR ⌜ p ⌝ ⌜ a ⌝ ⌜ b ⌝ w (CTerm.closed a) c
 
+
+
+NAT→T : Term → Term
+NAT→T T = FUN NAT T
+
+
+NAT→!T : Term → Term
+NAT→!T T = FUN NAT (NOWRITEMOD T)
+
+
+#NAT→!T : CTerm → CTerm
+#NAT→!T T = #FUN #NAT (#NOWRITEMOD T)
+
+
+#[0]NOWRITEMOD : CTerm0 → CTerm0
+#[0]NOWRITEMOD t = ct0 (NOWRITEMOD ⌜ t ⌝) c
+  where
+    c : #[ [ 0 ] ] NOWRITEMOD ⌜ t ⌝
+    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm0.closed t
+
+
+#[1]NOWRITEMOD : CTerm1 → CTerm1
+#[1]NOWRITEMOD t = ct1 (NOWRITEMOD ⌜ t ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] NOWRITEMOD ⌜ t ⌝
+    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm1.closed t
+
+
+#[0]NOREADMOD : CTerm0 → CTerm0
+#[0]NOREADMOD t = ct0 (NOREADMOD ⌜ t ⌝) c
+  where
+    c : #[ [ 0 ] ] NOREADMOD ⌜ t ⌝
+    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm0.closed t
+
+
+#[1]NOREADMOD : CTerm1 → CTerm1
+#[1]NOREADMOD t = ct1 (NOREADMOD ⌜ t ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] NOREADMOD ⌜ t ⌝
+    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm1.closed t
+
+
+#[0]NAT→!T : CTerm → CTerm0
+#[0]NAT→!T T = #[0]FUN #[0]NAT (#[0]NOWRITEMOD ⌞ T ⌟)
+
+
+#[1]FUN : CTerm1 → CTerm1 → CTerm1
+#[1]FUN a b = ct1 (FUN ⌜ a ⌝ ⌜ b ⌝) c
+  where
+    c : #[ 0 ∷ [ 1 ] ] FUN ⌜ a ⌝ ⌜ b ⌝
+    c rewrite fvars-FUN0 ⌜ a ⌝ ⌜ b ⌝ =
+        ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ [ 1 ]}
+              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
+                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
+
+
+#[1]NAT→!T : CTerm → CTerm1
+#[1]NAT→!T T = #[1]FUN #[1]NAT (#[1]NOWRITEMOD ⌞ T ⌟)
+
 \end{code}

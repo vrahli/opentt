@@ -78,7 +78,7 @@ open import terms6(W)(C)(K)(G)(X)(N)(EC)
 --open import terms7(W)(C)(K)(G)(X)(N)(EC)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
   using (#APPLY2 ; #⇛-trans ; #INL¬≡INR ; #[2]shiftUp0 ; #[1]shiftUp0 ; #[0]shiftUp0 ; #[2]APPLY ; #[2]VAR2 ; #[2]VAR0 ;
-         →-⇛!-LET ; ≡→LET-VAL⇛!)
+         →-⇛!-LET ; ≡→LET-VAL⇛! ; #[0]NOREADMOD ; #[0]NOWRITEMOD ; #[1]NAT→!T ; #[0]NAT→!T ; NAT→!T ; #NAT→!T)
 open import terms9 using (#BAIRE! ; BAIRE!) --(W)(C)(K)(G)(X)(N)(EC)
 
 open import bar(W)
@@ -138,64 +138,6 @@ open import barContP8(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
   using (follow-NUM-ETA ; type-#⇛-NUM)
 open import barContP9(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
   using (semCond ; type-#⇛-NUM→!)
-
-
-NAT→T : Term → Term
-NAT→T T = FUN NAT T
-
-
-NAT→!T : Term → Term
-NAT→!T T = FUN NAT (NOWRITEMOD T)
-
-
-#NAT→!T : CTerm → CTerm
-#NAT→!T T = #FUN #NAT (#NOWRITEMOD T)
-
-
-#[0]NOWRITEMOD : CTerm0 → CTerm0
-#[0]NOWRITEMOD t = ct0 (NOWRITEMOD ⌜ t ⌝) c
-  where
-    c : #[ [ 0 ] ] NOWRITEMOD ⌜ t ⌝
-    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm0.closed t
-
-
-#[1]NOWRITEMOD : CTerm1 → CTerm1
-#[1]NOWRITEMOD t = ct1 (NOWRITEMOD ⌜ t ⌝) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] NOWRITEMOD ⌜ t ⌝
-    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm1.closed t
-
-
-#[0]NOREADMOD : CTerm0 → CTerm0
-#[0]NOREADMOD t = ct0 (NOREADMOD ⌜ t ⌝) c
-  where
-    c : #[ [ 0 ] ] NOREADMOD ⌜ t ⌝
-    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm0.closed t
-
-
-#[1]NOREADMOD : CTerm1 → CTerm1
-#[1]NOREADMOD t = ct1 (NOREADMOD ⌜ t ⌝) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] NOREADMOD ⌜ t ⌝
-    c rewrite ++[] (fvars ⌜ t ⌝) = CTerm1.closed t
-
-
-#[0]NAT→!T : CTerm → CTerm0
-#[0]NAT→!T T = #[0]FUN #[0]NAT (#[0]NOWRITEMOD ⌞ T ⌟)
-
-
-#[1]FUN : CTerm1 → CTerm1 → CTerm1
-#[1]FUN a b = ct1 (FUN ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] FUN ⌜ a ⌝ ⌜ b ⌝
-    c rewrite fvars-FUN0 ⌜ a ⌝ ⌜ b ⌝ =
-        ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ [ 1 ]}
-              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
-                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
-
-
-#[1]NAT→!T : CTerm → CTerm1
-#[1]NAT→!T T = #[1]FUN #[1]NAT (#[1]NOWRITEMOD ⌞ T ⌟)
 
 
 contDiag : Term → Term

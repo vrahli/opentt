@@ -3520,16 +3520,6 @@ covered∷ʳ-shiftUp→ s t A cov {x} i = c5 c4
 
 
 -- MOVE
-→equalInType-EQ : {u : ℕ} {w : 𝕎·} {a b A : CTerm} {f g : CTerm}
-                  → equalInType u w A a b
-                  → equalInType u w (#EQ a b A) f g
-→equalInType-EQ {u} {w} {a} {b} {A} {f} {g} a∈ =
-  equalInType-EQ
-    (fst a∈)
-    (Mod.∀𝕎-□ M (λ w1 e1 → equalInType-mon a∈ w1 e1))
-
-
--- MOVE
 SUC⇛! : {w : 𝕎·} {a : Term} {k : ℕ}
       → a ⇛! NUM k at w
       → SUC a ⇛! NUM (ℕ.suc k) at w

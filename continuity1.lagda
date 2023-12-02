@@ -1253,17 +1253,6 @@ testM-NAT cn exb gc i w F f nnF nnf ∈F ∈f =
     c = refl
 
 
-
-#[1]FUN : CTerm1 → CTerm1 → CTerm1
-#[1]FUN a b = ct1 (FUN ⌜ a ⌝ ⌜ b ⌝) c
-  where
-    c : #[ 0 ∷ [ 1 ] ] FUN ⌜ a ⌝ ⌜ b ⌝
-    c rewrite fvars-FUN0 ⌜ a ⌝ ⌜ b ⌝ =
-        ⊆→⊆? {fvars ⌜ a ⌝ ++ fvars ⌜ b ⌝ } {0 ∷ [ 1 ]}
-              (⊆++ (⊆?→⊆ {fvars ⌜ a ⌝} {0 ∷ [ 1 ]} (CTerm1.closed a))
-                   (⊆?→⊆ {fvars ⌜ b ⌝} {0 ∷ [ 1 ]} (CTerm1.closed b)))
-
-
 #[1]EQ : CTerm1 → CTerm1 → CTerm1 → CTerm1
 #[1]EQ a b c = ct1 (EQ ⌜ a ⌝ ⌜ b ⌝ ⌜ c ⌝) cl
   where

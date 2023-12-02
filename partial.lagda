@@ -126,7 +126,7 @@ t ↓ = #EQ t 𝕦 𝐒
 _↓₀ : CTerm0 → CTerm0
 t ↓₀ = #[0]EQ t ⌞ 𝕦 ⌟ ⌞ 𝐒 ⌟
 
--- λ x → x ≡ 𝕦 ∈ 𝐒
+-- λ x → x ↓
 ι : CTerm
 ι = #LAMBDA (#[0]EQ #[0]VAR ⌞ 𝕦 ⌟ ⌞ 𝐒 ⌟)
 
@@ -453,13 +453,14 @@ SEQ→ᵣ a b v u w w1 w2 isv isu (l , ca) (k , cs) = SEQ-steps→ᵣ k l a b v 
 □inhType : (i : ℕ) → INHT
 □inhType i w T = □· w (λ w' _ → inhType i w' T)
 
+-- λ t : 𝕌ᵢ → Σ (s : 𝐒). s ↓ ≡ t ∈ 𝕌ᵢ
 ∈𝐒 : ℕ → CTerm → CTerm
 ∈𝐒 i t = #SUM 𝐒 (#[0]EQ (#[0]VAR ↓₀) ⌞ t ⌟ ⌞ #UNIV i ⌟)
 
 ∈Type𝐒 : (i : ℕ) (w : 𝕎·) (t : CTerm) → Set(lsuc L)
 ∈Type𝐒 i w t = □inhType (suc i) w (∈𝐒 i t)
 
--- (u ∈ 𝐒) (q : Set) → (ι(u) → p ∈ₛ 𝕊) → ι(u) ∧ p ∈ₛ 𝐒
+-- (u ∈ 𝐒) (q : Ω) → (ι(u) → p ∈ₛ 𝕊) → ι(u) ∧ p ∈ₛ 𝐒
 -- where p ∈ₛ 𝐒 :≡ Σ (s : 𝐒). ι(s) = p ∈ Set
 dom : (i : ℕ) (w : 𝕎·) (u p : CTerm)
     → ∈Type i w 𝐒 u

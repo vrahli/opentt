@@ -113,6 +113,13 @@ Bool!ℂ cb =
   × Cℂ₁ ≡ #BTRUE
 
 
+Nat!ℂ : ChoiceBar W M C K P G X N EC V F E → Set
+Nat!ℂ cb =
+  ChoiceBar.Typeℂ₀₁ cb ≡ #NAT!
+  × Cℂ₀ ≡ #N1 -- 1 is false
+  × Cℂ₁ ≡ #N0 -- 0 is true
+
+
 equalTypes-BOOL-Typeℂ₀₁ : Bool₀ℂ CB → (n : ℕ) (w : 𝕎·)
                           → equalTypes n w #BOOL₀ Typeℂ₀₁·
 equalTypes-BOOL-Typeℂ₀₁ bcb n w rewrite fst bcb = isTypeBOOL₀
@@ -127,6 +134,10 @@ equalTypes-BOOL!-Typeℂ₀₁ : Bool!ℂ CB → (n : ℕ) (w : 𝕎·)
                           → equalTypes n w #BOOL! Typeℂ₀₁·
 equalTypes-BOOL!-Typeℂ₀₁ bcb n w rewrite fst bcb = isTypeBOOL! w n
 
+
+equalTypes-NAT!-Typeℂ₀₁ : Nat!ℂ CB → (n : ℕ) (w : 𝕎·)
+                        → equalTypes n w #NAT! Typeℂ₀₁·
+equalTypes-NAT!-Typeℂ₀₁ bcb n w rewrite fst bcb = isTypeNAT!
 
 
 →equalInType-APPLY-CS-BOOL : Bool₀ℂ CB → {i : ℕ} {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
@@ -155,6 +166,14 @@ equalTypes-BOOL!-Typeℂ₀₁ bcb n w rewrite fst bcb = isTypeBOOL! w n
   ≡CTerm→equalInType (fst bcb) (→equalInType-APPLY-CS-Typeℂ₀₁· comp eqi)
 
 
+→equalInType-APPLY-CS-NAT! : Nat!ℂ CB → {i : ℕ} {w : 𝕎·} {c : Name} {a₁ a₂ : CTerm}
+                           → compatible· c w Resℂ
+                           → equalInType i w #NAT! a₁ a₂
+                           → equalInType i w #NAT! (#APPLY (#CS c) a₁) (#APPLY (#CS c) a₂)
+→equalInType-APPLY-CS-NAT! bcb {i} {w} {c} {a₁} {a₂} comp eqi =
+  ≡CTerm→equalInType (fst bcb) (→equalInType-APPLY-CS-Typeℂ₀₁· comp eqi)
+
+
 equalInType-BTRUE₀-ℂ₁ : Bool₀ℂ CB → (n : ℕ) (w : 𝕎·) → equalInType n w #BOOL₀ #BTRUE Cℂ₁
 equalInType-BTRUE₀-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈BOOL₀ n w
 
@@ -165,6 +184,10 @@ equalInType-BTRUE₀!-ℂ₁ bcb n w rewrite snd (snd bcb) = →equalInType-BOOL
 
 equalInType-BTRUE!-ℂ₁ : Bool!ℂ CB → (n : ℕ) (w : 𝕎·) → equalInType n w #BOOL! #BTRUE Cℂ₁
 equalInType-BTRUE!-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈BOOL! n w
+
+
+equalInType-N1!-ℂ₁ : Nat!ℂ CB → (n : ℕ) (w : 𝕎·) → equalInType n w #NAT! #N0 Cℂ₁
+equalInType-N1!-ℂ₁ bcb n w rewrite snd (snd bcb) = NUM-equalInType-NAT! n w 0
 
 
 #SUM-ASSERT₂→#Σchoice : Bool₀ℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}
@@ -268,7 +291,6 @@ equalInType-BTRUE!-ℂ₁ bcb n w rewrite snd (snd bcb) = BTRUE∈BOOL! n w
                        → equalTypes n w' (sub0 a₁ (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁))
                                          (sub0 a₂ (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁)))
     aw2 = equalTypes-#Σchoice-body-sub0 n w name ℂ₁· comp sat
-
 
 
 #PI-NEG-ASSERT₂→#Σchoice : Bool₀ℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}
