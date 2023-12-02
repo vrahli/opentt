@@ -601,6 +601,20 @@ fvarsᵤ {n} {Γ} {t} {σ} (conv i x) = {!!}
 ¬∈[]→ {A} (x Data.List.∷ l) i = ⊥-elim (i x (here refl))
 
 
+#⟦⟧ᵤ0 : (t : Term 0) → # ⟦ t ⟧ᵤ
+#⟦⟧ᵤ0 t = ¬∈[]→ (fvars ⟦ t ⟧ᵤ) j
+  where
+  j : (v : Var) → ¬ v ∈ fvars ⟦ t ⟧ᵤ
+  j v k = m<n⇒n≢0 z refl
+    where
+    z : v <ℕ 0
+    z = fvarsᵤ t v k
+
+
+⟦_⟧ᵤ₀ : (t : Term 0) → CTerm
+⟦_⟧ᵤ₀ t = ct ⟦ t ⟧ᵤ (#⟦⟧ᵤ0 t)
+
+
 ⟦_⟧ₜ₀ : {t : Term 0} {σ : Term 0}
       → ε ⊢ t ∷ σ
       → CTerm
@@ -1368,47 +1382,22 @@ mutual
     valid≡-UNIT i ⟦ Γ ⟧Γ ⟦ t ⟧ᵤ ⟦ u ⟧ᵤ
 
 
-{--
-𝟚 : Term 0
-𝟚 = {!!}
---}
+-- Closed version of ⟦_⟧Γ∈
+⟦_⟧Γ∈₀ : {t : Term 0} {σ : Term 0}
+         (j : ε ⊢ t ∷ σ)
+         (i : Nat) (lti : 2 <ℕ i) (w : 𝕎·)
+       → ∈Type i w ⟦ σ ⟧ᵤ₀ ⟦ t ⟧ᵤ₀
+⟦_⟧Γ∈₀ {t} {σ} j i lti w =
+  subst₂
+    (∈Type i w)
+    (CTerm≡ refl)
+    (CTerm≡ refl)
+    (π₂ (⟦ j ⟧Γ∈ i lti w nil nil
+           (#→covered {⟦ σ ⟧ᵤ} (#⟦⟧ᵤ0 σ))
+           (#→covered {⟦ σ ⟧ᵤ} (#⟦⟧ᵤ0 σ))
+           (#→covered {⟦ t ⟧ᵤ} (#⟦⟧ᵤ0 t))
+           (#→covered {⟦ t ⟧ᵤ} (#⟦⟧ᵤ0 t))
+           (≡subs[] i w)
+           (≡hyps[] i w)))
 
-
-{--
-  ⟦_⟧≡∈ : {t u : Term 0} {σ : Term 0}
-          (j : ε ⊢ t ≡ u ∷ σ)
-          (i : Nat) (w : 𝕎·)
-        → equalInType i w ⟦ j ⟧≡ₜ₀ ⟦ j ⟧≡ₗ₀ ⟦ j ⟧≡ᵣ₀ -- in the empty context
-  ⟦_⟧≡∈ {t} {u} {σ} j i w = {!!}
---}
-
-
--- MLTT negation
-¬ₘ : {n : Nat} → Term n → Term n
-¬ₘ {n} F = F ▹▹ Empty
-
--- MLTT is-zero check
-≡0ₘ : {n : Nat} → Term n → Term n
-≡0ₘ {n} k = natrec U Unit (lam (lam Empty)) k
-
-ν0ₘ : {n : Nat} → Term (1+ n)
-ν0ₘ = var Fin.zero
-
-ν1ₘ : {n : Nat} → Term (1+ (1+ n))
-ν1ₘ = var (Fin.suc Fin.zero)
-
--- MLTT MP, i.e., Π (f : ℕ → ℕ). ¬ ¬ (Σ (n : ℕ). f n ≡ 0) → Σ (n : ℕ). f n ≡ 0
-MPℕₘ : Term 0
-MPℕₘ = Π (ℕ ▹▹ ℕ) ▹ (¬ₘ (¬ₘ (Σ ℕ ▹ ≡0ₘ (ν1ₘ ∘ ν0ₘ))) ▹▹ Σ ℕ ▹ ≡0ₘ (ν1ₘ ∘ ν0ₘ))
-
--- BoxTT is-zero check (not using ≡ but using natrec)
-≡0ₒ : BTerm → BTerm
-≡0ₒ k = NATREC k TRUE (LAMBDA (LAMBDA FALSE))
-
--- BoxTT translation of MPℕₘ
-MPℕₒ : BTerm
-MPℕₒ = PI (FUN NAT! NAT!) (FUN (NEG (NEG (SUM! NAT! (≡0ₒ (APPLY (VAR 1) (VAR 0)))))) (SUM! NAT! (≡0ₒ (APPLY (VAR 1) (VAR 0)))))
-
-⟦MPℕₘ⟧ᵤ : ⟦ MPℕₘ ⟧ᵤ ≣ MPℕₒ
-⟦MPℕₘ⟧ᵤ = refl
 \end{code}
