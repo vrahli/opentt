@@ -1918,4 +1918,38 @@ equalInType-#MP-right-qt₃→ i w f a₁ a₂ f∈ h =
     h3 = h2 w1 (⊑-refl· w1) #AX #AX (→equalInType-#MP-left-qt₃ i w1 f #AX #AX (equalInTypeTNOENC→ f∈) cond)
 
 
+#[0]MP-left2-qt₃ : CTerm0
+#[0]MP-left2-qt₃ = #[0]NEG (#[0]NEG #[0]MP-right2-qt₃)
+
+
+-- ¬¬Σ(n:ℕ).f(n)=true
+#MP-left2-qt₃ : CTerm → CTerm
+#MP-left2-qt₃ f = #NEG (#NEG (#MP-right2-qt₃ f))
+
+
+sub0-fun-mp-qt₃ : (a : CTerm) → sub0 a (#[0]FUN #[0]MP-left2-qt₃ #[0]MP-right2-qt₃)
+                              ≡ #FUN (#MP-left2-qt₃ a) (#MP-right2-qt₃ a)
+sub0-fun-mp-qt₃ a =
+  ≡sub0-#[0]FUN
+    a #[0]MP-left2-qt₃ #[0]MP-right2-qt₃ (#MP-left2-qt₃ a) (#MP-right2-qt₃ a)
+    (CTerm≡ (≡NEG (≡NEG (≡SUM refl (≡EQ (≡APPLY e refl) refl refl)))))
+    (CTerm≡ (≡SUM refl (≡ASSERT₄ (→≡APPLY e refl))))
+  where
+    e : shiftDown 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) ≡ ⌜ a ⌝
+    e rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftDown 1 a = refl
+
+
+→equalTypes-#MP-right2-qt₃ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
+                           → equalInType n w #NAT!→BOOL₀! a₁ a₂
+                           → equalTypes n w (#MP-right2-qt₃ a₁) (#MP-right2-qt₃ a₂)
+→equalTypes-#MP-right2-qt₃ {n} {w} {a₁} {a₂} eqt =
+  →equalTypes-#SUM-ASSERT₅ eqt
+
+
+→equalTypes-#MP-left2-qt₃ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
+                          → equalInType n w #NAT!→BOOL₀! a₁ a₂
+                          → equalTypes n w (#MP-left2-qt₃ a₁) (#MP-left2-qt₃ a₂)
+→equalTypes-#MP-left2-qt₃ {n} {w} {a₁} {a₂} eqt =
+  eqTypesNEG← (eqTypesNEG← (→equalTypes-#MP-right2-qt₃ eqt))
+
 \end{code}[hide]

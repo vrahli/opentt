@@ -118,7 +118,8 @@ open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
          #MP-left3 ; #MP-left2→#MP-left ; #MP-left3→#MP-left2 ; →∈Type-PI ; sub0-fun-mp₃ ; →equalTypes-#MP-left2 ;
          →equalTypes-#MP-right2 ; #MP-left2 ; #MP-right2 ; #MP-left2→#MP-left3 ; sub0-fun-mp₆ ; →equalTypes-#MP-left-qt₃ ;
          →equalTypes-#MP-right-qt₃ ; #MP-left-qt₃ ; #MP-right-qt₃ ; equalInType-#MP-left-qt₃→ ; #[0]MP-right2-qt₃ ;
-         #MP-right2-qt₃ ; →equalInType-#MP-left-qt₃ ; isType-MP-right-qt₃-body)
+         #MP-right2-qt₃ ; →equalInType-#MP-left-qt₃ ; isType-MP-right-qt₃-body ; #MP-left2-qt₃ ; →equalTypes-#MP-left2-qt₃ ;
+         →equalTypes-#MP-right2-qt₃ ; #[0]MP-left2-qt₃ ; sub0-fun-mp-qt₃)
 -- MOVE all these usings to a separate file so that we don't have to rely on ExcludedMiddle
 open import mpp(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
   using (#MPp₆ ; →inhType-ASSERT₄-APPLY ; #¬Names→inhType-ASSERT₄ ; strongBool!-BTRUE→ ; equalInType-ASSERT₄→ ;
@@ -308,40 +309,6 @@ MPp₆-inh₂ exb n w =
                         aw5' = equalInType-BOOL₀!→equalTypes-ASSERT₄ eb
 
 
-
-#[0]MP-left2-qt₃ : CTerm0
-#[0]MP-left2-qt₃ = #[0]NEG (#[0]NEG #[0]MP-right2-qt₃)
-
-
--- ¬¬Σ(n:ℕ).f(n)=true
-#MP-left2-qt₃ : CTerm → CTerm
-#MP-left2-qt₃ f = #NEG (#NEG (#MP-right2-qt₃ f))
-
-
-sub0-fun-mp-qt₃ : (a : CTerm) → sub0 a (#[0]FUN #[0]MP-left2-qt₃ #[0]MP-right2-qt₃)
-                              ≡ #FUN (#MP-left2-qt₃ a) (#MP-right2-qt₃ a)
-sub0-fun-mp-qt₃ a =
-  ≡sub0-#[0]FUN
-    a #[0]MP-left2-qt₃ #[0]MP-right2-qt₃ (#MP-left2-qt₃ a) (#MP-right2-qt₃ a)
-    (CTerm≡ (≡NEG (≡NEG (≡SUM refl (≡EQ (≡APPLY e refl) refl refl)))))
-    (CTerm≡ (≡SUM refl (≡ASSERT₄ (→≡APPLY e refl))))
-  where
-    e : shiftDown 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) ≡ ⌜ a ⌝
-    e rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftDown 1 a = refl
-
-
-→equalTypes-#MP-right2-qt₃ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
-                           → equalInType n w #NAT!→BOOL₀! a₁ a₂
-                           → equalTypes n w (#MP-right2-qt₃ a₁) (#MP-right2-qt₃ a₂)
-→equalTypes-#MP-right2-qt₃ {n} {w} {a₁} {a₂} eqt =
-  →equalTypes-#SUM-ASSERT₅ eqt
-
-
-→equalTypes-#MP-left2-qt₃ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
-                          → equalInType n w #NAT!→BOOL₀! a₁ a₂
-                          → equalTypes n w (#MP-left2-qt₃ a₁) (#MP-left2-qt₃ a₂)
-→equalTypes-#MP-left2-qt₃ {n} {w} {a₁} {a₂} eqt =
-  eqTypesNEG← (eqTypesNEG← (→equalTypes-#MP-right2-qt₃ eqt))
 
 
 equalInType-BOOL₀!→#⇛vₗ : (i : ℕ) (w : 𝕎·) (a b : CTerm)

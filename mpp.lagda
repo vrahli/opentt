@@ -835,6 +835,7 @@ MPp₂-inh n w =
             (⊆++ {Var} {fvars ⌜ b ⌝} {fvars ⌜ c ⌝} (⊆?→⊆ (CTerm4.closed b)) (⊆?→⊆ (CTerm4.closed c))))
 
 
+-- let G = x in λ_.⟨ fix(λR.λn.if G(n) then n else let z = suc(n) in R(z)) 0, ⋆ ⟩
 #lamInfSearchPbody : CTerm0
 #lamInfSearchPbody =
   #[0]LET #[0]VAR
@@ -851,6 +852,9 @@ MPp₂-inh n w =
         #[2]AX))
 
 
+-- λF.let G = F in λ_.⟨ fix(λR.λn.if G(n) then n else let z = suc(n) in R(z)) 0, ⋆ ⟩
+-- i.e., essentially λF.λ_.⟨ fix(λR.λn.if F(n) then n else R(suc(n))) 0, ⋆ ⟩
+-- with call-by-values
 #lamInfSearchP : CTerm
 #lamInfSearchP =
   #LAMBDA -- F
