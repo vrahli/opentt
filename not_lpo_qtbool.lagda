@@ -80,15 +80,21 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+--open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
 open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
 open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
 open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+
+open import terms8(W)(C)(K)(G)(X)(N)(EC)
+  using (SUM! ; #SUM!)
+
+open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (≡SUM! ; #[0]SUM!)
 
 
 {-- This version is similar to the one presented in not_lpo, but relies on QTBOOL instead of BOOL,
@@ -96,8 +102,8 @@ open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
  --}
 
 LPO : Term
-LPO = PI NAT!→BOOL! (SQUASH (UNION (SUM NAT! (ASSERT₃ (APPLY (VAR 1) (VAR 0))))
-                                     (PI NAT! (NEG (ASSERT₃ (APPLY (VAR 1) (VAR 0)))))))
+LPO = PI NAT!→BOOL! (SQUASH (UNION (SUM! NAT! (ASSERT₃ (APPLY (VAR 1) (VAR 0))))
+                                   (PI NAT! (NEG (ASSERT₃ (APPLY (VAR 1) (VAR 0)))))))
 
 
 #LPO : CTerm
@@ -109,7 +115,7 @@ LPO = PI NAT!→BOOL! (SQUASH (UNION (SUM NAT! (ASSERT₃ (APPLY (VAR 1) (VAR 0)
 
 
 #[0]LPO-left : CTerm0
-#[0]LPO-left = #[0]SUM #[0]NAT! (#[1]ASSERT₃ (#[1]APPLY #[1]VAR1 #[1]VAR0))
+#[0]LPO-left = #[0]SUM! #[0]NAT! (#[1]ASSERT₃ (#[1]APPLY #[1]VAR1 #[1]VAR0))
 
 
 #[0]LPO-right : CTerm0
@@ -137,7 +143,7 @@ sub0-squash-union-LPO : (a : CTerm) → sub0 a (#[0]SQUASH (#[0]UNION #[0]LPO-le
                                        ≡ #SQUASH (#UNION (#LPO-left a) (#LPO-right a))
 sub0-squash-union-LPO a =
   ≡sub0-#[0]SQUASH a (#[0]UNION #[0]LPO-left #[0]LPO-right) (#UNION (#LPO-left a) (#LPO-right a))
-                   (CTerm≡ (≡UNION (≡SUM refl (≡ASSERT₃ (→≡APPLY e refl))) (≡PI refl (≡NEG (≡ASSERT₃ (→≡APPLY e refl))))))
+                   (CTerm≡ (≡UNION (≡SUM! refl (≡ASSERT₃ (→≡APPLY e refl))) (≡PI refl (≡NEG (≡ASSERT₃ (→≡APPLY e refl))))))
   where
     e : shiftDown 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) ≡ ⌜ a ⌝
     e rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftDown 1 a = refl

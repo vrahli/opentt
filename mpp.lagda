@@ -98,7 +98,7 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (→equalInType-NAT!)
 open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (equalInType-#⇛ₚ-left-right-rev)
+  using (equalInType-#⇛ₚ-left-right-rev ; SUMeq! ; equalInType-SUM! ; equalInType-SUM!→)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
@@ -106,10 +106,13 @@ open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (#[0]MP-left ; #[0]MP-right ; #[0]MP-left3 ; #[0]MP-left2 ; #[0]MP-right2 ; #[0]MP-left-qt ; #[0]MP-right-qt ;
          #[0]MP-left-qt₂ ; #[0]MP-right-qt₂ ; #[0]MP-left-qt₃ ; #[0]MP-right-qt₃ ; sub0-fun-mp ; →equalTypes-#MP-left ;
          →equalTypes-#MP-right ; #MP-left ; #MP-right ; sub0-fun-mp₄ ; →equalTypes-#MP-left-qt ; →equalTypes-#MP-right-qt ;
-         #MP-left-qt ; #MP-right-qt ; equalInType-#MP-left-qt→ ; sub0-fun-mp₂ ; →equalTypes-#MP-left3 ; →∈Type-FUN ;
-         #MP-left3 ; #MP-left2→#MP-left ; #MP-left3→#MP-left2 ; →∈Type-PI ; sub0-fun-mp₃ ; →equalTypes-#MP-left2 ;
-         →equalTypes-#MP-right2 ; #MP-left2 ; #MP-right2 ; #MP-left2→#MP-left3 ; sub0-fun-mp₆ ; →equalTypes-#MP-left-qt₃ ;
-         →equalTypes-#MP-right-qt₃ ; #MP-left-qt₃ ; #MP-right-qt₃ ; equalInType-#MP-left-qt₃→)
+         #MP-left-qt ; #MP-right-qt ; sub0-fun-mp₂ ; →equalTypes-#MP-left3 ; →∈Type-FUN ;
+         #MP-left3 ; →∈Type-PI ; sub0-fun-mp₃ ; →equalTypes-#MP-left2 ;
+         #MP-left2 ; #MP-right2 ; sub0-fun-mp₆ ; →equalTypes-#MP-left-qt₃ ;
+         →equalTypes-#MP-right2 ; →equalTypes-#MP-right-qt₃ ; #MP-left-qt₃ ; #MP-right-qt₃)
+open import mp_props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (equalInType-#MP-left-qt→ ; equalInType-#MP-left-qt₃→ ; #MP-left2→#MP-left ; #MP-left3→#MP-left2 ;
+         #MP-left2→#MP-left3)
 open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (#infSearchP ; mpSearch)
 
@@ -204,7 +207,7 @@ weakBool-BTRUE→ w t h w1 e1 with lower (h w1 e1)
 -- πₚ (F : ℕ → 𝔹). ¬(Π (n : ℕ). ¬(F n ≡ true)) → ||Σ (n : ℕ). F n ≡ true||
 MPp : Term
 MPp = PI (TPURE NAT!→BOOL₀) (FUN (NEG (PI NAT! (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))
-                                 (SQUASH (SUM NAT! (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))
+                                 (SQUASH (SUM! NAT! (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))
 
 
 #MPp : CTerm
@@ -358,16 +361,16 @@ MPp-inh n w =
               where
                 cc : Dec (Σ ℕ (λ k → inhType n w3 (#ASSERT₂ (#APPLY x₁ (#NUM k)))))
                      → Σ CTerm (λ t → equalInType n w3 (#SUM-ASSERT₂ x₁) t t)
-                cc (yes (k , t , p)) = #PAIR (#NUM k) t , equalInType-SUM (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
+                cc (yes (k , t , p)) = #PAIR (#NUM k) t , equalInType-SUM! (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
                   where
-                    aw6 : ∀𝕎 w3 (λ w' _ → SUMeq (equalInType n w' #NAT!)
+                    aw6 : ∀𝕎 w3 (λ w' _ → SUMeq! (equalInType n w' #NAT!)
                                                   (λ a b ea → equalInType n w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ x₁ ⌟ #[0]VAR))))
                                                   w' (#PAIR (#NUM k) t) (#PAIR (#NUM k) t))
                     aw6 w4 e4 =
                       #NUM k , #NUM k , t , t ,
                       NUM-equalInType-NAT! n w4 k ,
-                      ⇓-refl ⌜ #PAIR (#NUM k) t ⌝ w4 , --#compAllRefl (#PAIR (#NUM k) t) w4 ,
-                      ⇓-refl ⌜ #PAIR (#NUM k) t ⌝ w4 , --#compAllRefl (#PAIR (#NUM k) t) w4 ,
+                      #⇛!-refl {w4} {#PAIR (#NUM k) t} , --#compAllRefl (#PAIR (#NUM k) t) w4 ,
+                      #⇛!-refl {w4} {#PAIR (#NUM k) t} , --#compAllRefl (#PAIR (#NUM k) t) w4 ,
                       (≡CTerm→equalInType (sym (sub0-ASSERT₂-APPLY (#NUM k) x₁)) (equalInType-mon p w4 e4))
 
                     aw5 : ∀𝕎 w3 (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
@@ -625,16 +628,16 @@ MPp₄-inh n w =
               where
                 cc : Dec (Σ ℕ (λ k → inhType n w3 (#ASSERT₃ (#APPLY x₁ (#NUM k)))))
                      → Σ CTerm (λ t → equalInType n w3 (#SUM-ASSERT₃ x₁) t t)
-                cc (yes (k , t , p)) = #PAIR (#NUM k) t , equalInType-SUM (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
+                cc (yes (k , t , p)) = #PAIR (#NUM k) t , equalInType-SUM! (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
                   where
-                    aw6 : ∀𝕎 w3 (λ w' _ → SUMeq (equalInType n w' #NAT!)
-                                                  (λ a b ea → equalInType n w' (sub0 a (#[0]ASSERT₃ (#[0]APPLY ⌞ x₁ ⌟ #[0]VAR))))
-                                                  w' (#PAIR (#NUM k) t) (#PAIR (#NUM k) t))
+                    aw6 : ∀𝕎 w3 (λ w' _ → SUMeq! (equalInType n w' #NAT!)
+                                                 (λ a b ea → equalInType n w' (sub0 a (#[0]ASSERT₃ (#[0]APPLY ⌞ x₁ ⌟ #[0]VAR))))
+                                                 w' (#PAIR (#NUM k) t) (#PAIR (#NUM k) t))
                     aw6 w4 e4 =
                       #NUM k , #NUM k , t , t ,
                       NUM-equalInType-NAT! n w4 k ,
-                      ⇓-refl ⌜ #PAIR (#NUM k) t ⌝ w4 , -- #compAllRefl (#PAIR (#NUM k) t) w4 ,
-                      ⇓-refl ⌜ #PAIR (#NUM k) t ⌝ w4 , --(#compAllRefl (#PAIR (#NUM k) t) w4) ,
+                      #⇛!-refl {w4} {#PAIR (#NUM k) t} , -- #compAllRefl (#PAIR (#NUM k) t) w4 ,
+                      #⇛!-refl {w4} {#PAIR (#NUM k) t} , --(#compAllRefl (#PAIR (#NUM k) t) w4) ,
                       (≡CTerm→equalInType (sym (sub0-ASSERT₃-APPLY (#NUM k) x₁)) (equalInType-mon p w4 e4))
 
                     aw5 : ∀𝕎 w3 (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
@@ -748,16 +751,16 @@ MPp₆-inh n w =
               where
                 cc : Dec (Σ ℕ (λ k → inhType n w3 (#ASSERT₄ (#APPLY x₁ (#NUM k)))))
                      → Σ CTerm (λ t → equalInType n w3 (#SUM-ASSERT₅ x₁) t t)
-                cc (yes (k , t , p)) = #PAIR (#NUM k) t , equalInType-SUM (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
+                cc (yes (k , t , p)) = #PAIR (#NUM k) t , equalInType-SUM! (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
                   where
-                    aw6 : ∀𝕎 w3 (λ w' _ → SUMeq (equalInType n w' #NAT!)
+                    aw6 : ∀𝕎 w3 (λ w' _ → SUMeq! (equalInType n w' #NAT!)
                                                   (λ a b ea → equalInType n w' (sub0 a (#[0]ASSERT₄ (#[0]APPLY ⌞ x₁ ⌟ #[0]VAR))))
                                                   w' (#PAIR (#NUM k) t) (#PAIR (#NUM k) t))
                     aw6 w4 e4 =
                       #NUM k , #NUM k , t , t ,
                       NUM-equalInType-NAT! n w4 k ,
-                      ⇓-refl ⌜ #PAIR (#NUM k) t ⌝ w4 , --#compAllRefl (#PAIR (#NUM k) t) w4 ,
-                      ⇓-refl ⌜ #PAIR (#NUM k) t ⌝ w4 , --#compAllRefl (#PAIR (#NUM k) t) w4 ,
+                      #⇛!-refl {w4} {#PAIR (#NUM k) t} , --#compAllRefl (#PAIR (#NUM k) t) w4 ,
+                      #⇛!-refl {w4} {#PAIR (#NUM k) t} , --#compAllRefl (#PAIR (#NUM k) t) w4 ,
                       (≡CTerm→equalInType (sym (sub0-ASSERT₄-APPLY (#NUM k) x₁)) (equalInType-mon p w4 e4))
 
                     aw5 : ∀𝕎 w3 (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
@@ -1043,10 +1046,10 @@ equalInType-TPURE-NAT!→BOOL₀ᵣ i w F G F∈ =
   equalInType-TPURE-NAT!→BOOL₀ₗ i w G F (equalInType-sym F∈)
 
 
-#APPLY-#lamInfSearchPP#⇛ : (w : 𝕎·) (g a : CTerm)
-                         → #APPLY (#lamInfSearchPP g) a #⇛ #infSearchP g at w
-#APPLY-#lamInfSearchPP#⇛ w g a w1 e1 =
-  lift (⇓-from-to→⇓ {w1} {w1} {⌜ #APPLY (#lamInfSearchPP g) a ⌝} {⌜ #infSearchP g ⌝} (1 , ≡pair e refl))
+#APPLY-#lamInfSearchPP#⇛! : (w : 𝕎·) (g a : CTerm)
+                          → #APPLY (#lamInfSearchPP g) a #⇛! #infSearchP g at w
+#APPLY-#lamInfSearchPP#⇛! w g a w1 e1 =
+  lift (1 , ≡pair e refl)
   where
   e : sub ⌜ a ⌝ ⌜ #[0]PAIR (#[0]APPLY (#[0]FIX (#[0]LAMBDA (#[1]LAMBDA (#[2]ITE (#[2]APPLY ⌞ g ⌟ #[2]VAR0)
                                                                                 #[2]VAR0
@@ -1122,8 +1125,8 @@ MPp₃-inh n w =
             (#APPLY (#lamInfSearchPP g₁) a₁) (#APPLY (#lamInfSearchPP g₂) a₂)
             nng₁ --(equalInType-TPURE→ₗ f∈)
             nng₂ --(equalInType-TPURE→ᵣ f∈)
-            (#APPLY-#lamInfSearchPP#⇛ w2 g₁ a₁)
-            (#APPLY-#lamInfSearchPP#⇛ w2 g₂ a₂)
+            (#APPLY-#lamInfSearchPP#⇛! w2 g₁ a₁)
+            (#APPLY-#lamInfSearchPP#⇛! w2 g₂ a₂)
             --(#APPLY-#APPLY-#lamInfSearchP f₁ a₁ w2) (#APPLY-#APPLY-#lamInfSearchP f₂ a₂ w2)
             (#⇛!→equalInType (equalInType-mon (equalInType-TPURE→ f∈) w2 (⊑-trans· e1' e2))
                              (∀𝕎-mon e2 comp₁)

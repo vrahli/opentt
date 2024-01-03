@@ -62,7 +62,7 @@ module mp {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
           (V : ChoiceVal W C K G X N EC)
           (F : Freeze {L} W C K P G N)
           (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-          (CB : ChoiceBar W M C K P G X N EC V F E)
+--          (CB : ChoiceBar W M C K P G X N EC V F E)
           (EB : ExBar W M)
           (EM : ExcludedMiddle (lsuc(L)))
        where
@@ -71,20 +71,36 @@ module mp {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
 open import worldDef(W)
 open import choiceDef{L}(C)
 open import exBarDef(W)(M)(EB)
+  using (∀∃𝔹·)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--  using ()
+--open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--  using ()
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (TEQrefl-equalTypes)
+open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (TEQrefl-equalTypes)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (equalInType-refl ; equalInType-mon ; ≡CTerm→equalInType ; isTypeNAT! ; →≡equalTypes ; equalInType-FUN→ ;
+         eqTypesFUN← ; →≡equalInType ; equalInType-FUN ; equalInType-PI)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; →equalInType-SQUASH ; isType-#NAT!→BOOL₀)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (#SUM-ASSERT₂)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (#MP-left ; #MP-right ; ∀𝕎∃𝕎-func ; #MP ; #MP≡#PI ; #[0]MP-left ; #[0]MP-right ; sub0-fun-mp ; →equalTypes-#MP-left ;
+         →equalTypes-#MP-right ; #MP₂ ; #[0]MP-left3 ; sub0-fun-mp₂ ; →equalTypes-#MP-left3 ; →∈Type-FUN ; #MP-left3 ;
+         →∈Type-PI)
+open import mp_props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (equalInType-#MP-left→ ; #MP-left2→#MP-left ; #MP-left3→#MP-left2)
+open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (SUMeq! ; equalInType-SUM! ; equalInType-SUM!→)
 
-open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+--open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+--  using ()
 
 
 -- This is classically equivalent to equalInType-#MP-left→
@@ -132,7 +148,7 @@ MPvalid-aux i w f₁ f₂ a₁ a₂ f∈ a∈ =
           aw1 : ∀𝕎 w3 (↑wPred (λ w' _ → Σ CTerm (λ t → ∈Type i w' (#SUM-ASSERT₂ f₁) t)) e3)
           aw1 w4 e4 =
             #PAIR n₁ t ,
-            equalInType-SUM
+            equalInType-SUM!
               (λ w' _ → isTypeNAT!)
               (λ w' e' a₁ a₂ a∈ →
                 →≡equalTypes
@@ -140,11 +156,11 @@ MPvalid-aux i w f₁ f₂ a₁ a₂ f∈ a∈ =
                   (equalInType-BOOL→equalTypes-ASSERT₂ (equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL₀≡ (equalInType-refl f∈)) w' (⊑-trans· e3 (⊑-trans· e4 e')) a₁ a₂ a∈)))
               (Mod.∀𝕎-□ M aw2)
             where
-              aw2 : ∀𝕎 w4 (λ w' _ → SUMeq (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w' (#PAIR n₁ t) (#PAIR n₁ t))
+              aw2 : ∀𝕎 w4 (λ w' _ → SUMeq! (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w' (#PAIR n₁ t) (#PAIR n₁ t))
               aw2 w5 e5 =
                 n₁ , n₁ , t , t , equalInType-refl (equalInType-mon n∈ w5 (⊑-trans· e4 e5)) ,
-                ⇓-refl ⌜ #PAIR n₁ t ⌝ w5 , --#compAllRefl (#PAIR n₁ t) w5 ,
-                ⇓-refl ⌜ #PAIR n₁ t ⌝ w5 , --#compAllRefl (#PAIR n₁ t) w5 ,
+                #⇛!-refl {w5} {#PAIR n₁ t} , --#compAllRefl (#PAIR n₁ t) w5 ,
+                #⇛!-refl {w5} {#PAIR n₁ t} , --#compAllRefl (#PAIR n₁ t) w5 ,
                 ≡CTerm→equalInType (sym (sub0-ASSERT₂-APPLY n₁ f₁)) (equalInType-mon inh w5 (⊑-trans· e4 e5))
 
     p6 : ∀𝕎 w (λ w3 e3 → ∃𝕎 w3 (λ w4 e4

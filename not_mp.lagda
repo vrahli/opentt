@@ -78,7 +78,7 @@ open import terms2(W)(C)(K)(G)(X)(N)(EC)
 open import terms3(W)(C)(K)(G)(X)(N)(EC)
   using (≡EQ ; ≡APPLY)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
-  using (#APPLY2)
+  using (#APPLY2 ; #SUM!)
 
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
@@ -107,6 +107,15 @@ open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalTerms-pres-#⇛-left-BOOL! ; equalTerms-pres-#⇛-left-rev-BOOL!)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (#MP ; #[0]MP-left ; #[0]MP-right ; #MP-left ; #MP-right ; sub0-fun-mp ; isTypeMP ; isType-MP-right-qt-body ;
+         #MP₄ ; isTypeMP₄ ; isType-MP-right-qt₃-body ; #MP₆ ; isTypeMP₆ ; #MP-rightₘ ; #ASSERTₘ ; #[0]ASSERTₘ ;
+         sub0-ASSERTₘ-APPLY ; #NAT!→NAT! ; equalInType-NAT!→equalTypes-ASSERTₘ ; #NAT!→NAT!≡ ; #MP-leftₘ ;
+         →equalTypes-#MP-rightₘ ; #MPₘ ; #[0]MP-leftₘ ; #[0]MP-rightₘ ; sub0-fun-mpₘ ; #NUM→NATREC⇛! ; #ASSERTₘ≡ ;
+         #[1]FALSE ; #NATRECr ; isTypeMPₘ ; #MP₂ ; →equalTypes-#MP-left ; →equalTypes-#MP-right ; #[0]MP-left3 ;
+         →∈Type-FUN ; #MP-left3 ; sub0-fun-mp₂ ; →∈Type-PI ; →∈Type-NEG ; isTypeMP₂ ; #MP₃ ; →equalTypes-#MP-left3 ;
+         #[0]MP-left2 ; #[0]MP-right2 ; #MP-left2 ; #MP-right2 ; ∈#MP-right2→∈MP-right ; sub0-fun-mp₃ ; isTypeMP₃)
+open import mp_props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (∈#MP₄→ ; ∈#MP₆→ ; #MP-left2→#MP-left3 ; #MP-left→#MP-left2 ; #MP-left3→#MP-left2)
 
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
 open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
@@ -217,13 +226,13 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
 ¬ΣNAT!→¬inhType-Σchoice₃ bcb n w name aw w1 e1 (t , inh) =
   lower (Mod.□-const M (Mod.∀𝕎-□Func M aw3 h1))
   where
-    h0 : ∈Type n w1 (#SUM #NAT! (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) t
+    h0 : ∈Type n w1 (#SUM! #NAT! (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) t
     h0 = ≡CTerm→equalInType (#Σchoice≡ name ℂ₁·) inh
 
-    h1 : □· w1 (λ w' _ → SUMeq (equalInType n w' #NAT!) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' t t)
-    h1 = equalInType-SUM→ h0
+    h1 : □· w1 (λ w' _ → SUMeq! (equalInType n w' #NAT!) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' t t)
+    h1 = equalInType-SUM!→ h0
 
-    aw3 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType n w' #NAT!)
+    aw3 : ∀𝕎 w1 (λ w' e' → SUMeq! (equalInType n w' #NAT!)
                                    (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)))
                                    w' t t
                           → Lift (lsuc L) ⊥)
@@ -245,18 +254,18 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
                                         → inhType n w (#SUM-ASSERT₃ f)
 ΣinhType-ASSERT₃→inhType-SUM-ASSERT₃ n w f f∈ (n₁ , n₂ , n∈ , (t , inh)) =
   #PAIR n₁ t ,
-  equalInType-SUM
+  equalInType-SUM!
     (λ w' _ → isTypeNAT!)
     (isType-MP-right-qt-body n w f f f∈)
     (Mod.∀𝕎-□ M aw)
   where
-    aw : ∀𝕎 w (λ w' _ → SUMeq (equalInType n w' #NAT!)
+    aw : ∀𝕎 w (λ w' _ → SUMeq! (equalInType n w' #NAT!)
                                 (λ a b ea → equalInType n w' (sub0 a (#[0]ASSERT₃ (#[0]APPLY ⌞ f ⌟ #[0]VAR))))
                                 w' (#PAIR n₁ t) (#PAIR n₁ t))
     aw w1 e1 =
       n₁ , n₁ , t , t , equalInType-refl (equalInType-mon n∈ w1 e1) ,
-      ⇓-refl ⌜ #PAIR n₁ t ⌝ w1 , --#⇛-refl w1 (#PAIR n₁ t) ,
-      ⇓-refl ⌜ #PAIR n₁ t ⌝ w1 , --#⇛-refl w1 (#PAIR n₁ t) ,
+      #⇛!-refl {w1} {#PAIR n₁ t} , --#⇛-refl w1 (#PAIR n₁ t) ,
+      #⇛!-refl {w1} {#PAIR n₁ t} , --#⇛-refl w1 (#PAIR n₁ t) ,
       →≡equalInType (sym (sub0-ASSERT₃-APPLY n₁ f)) (equalInType-mon inh w1 e1)
 
 
@@ -349,13 +358,13 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
 ¬ΣNAT!→¬inhType-Σchoice₄ bcb n w name aw w1 e1 (t , inh) =
   lower (Mod.□-const M (Mod.∀𝕎-□Func M aw3 h1))
   where
-    h0 : ∈Type n w1 (#SUM #NAT! (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) t
+    h0 : ∈Type n w1 (#SUM! #NAT! (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) t
     h0 = ≡CTerm→equalInType (#Σchoice≡ name ℂ₁·) inh
 
-    h1 : □· w1 (λ w' _ → SUMeq (equalInType n w' #NAT!) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' t t)
-    h1 = equalInType-SUM→ h0
+    h1 : □· w1 (λ w' _ → SUMeq! (equalInType n w' #NAT!) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' t t)
+    h1 = equalInType-SUM!→ h0
 
-    aw3 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType n w' #NAT!)
+    aw3 : ∀𝕎 w1 (λ w' e' → SUMeq! (equalInType n w' #NAT!)
                                    (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)))
                                    w' t t
                           → Lift (lsuc L) ⊥)
@@ -377,18 +386,18 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
                                         → inhType n w (#SUM-ASSERT₅ f)
 ΣinhType-ASSERT₄→inhType-SUM-ASSERT₅ n w f f∈ (n₁ , n₂ , n∈ , (t , inh)) =
   #PAIR n₁ t ,
-  equalInType-SUM
+  equalInType-SUM!
     (λ w' _ → isTypeNAT!)
     (isType-MP-right-qt₃-body n w f f f∈)
     (Mod.∀𝕎-□ M aw)
   where
-    aw : ∀𝕎 w (λ w' _ → SUMeq (equalInType n w' #NAT!)
+    aw : ∀𝕎 w (λ w' _ → SUMeq! (equalInType n w' #NAT!)
                                 (λ a b ea → equalInType n w' (sub0 a (#[0]ASSERT₄ (#[0]APPLY ⌞ f ⌟ #[0]VAR))))
                                 w' (#PAIR n₁ t) (#PAIR n₁ t))
     aw w1 e1 =
       n₁ , n₁ , t , t , equalInType-refl (equalInType-mon n∈ w1 e1) ,
-      ⇓-refl ⌜ #PAIR n₁ t ⌝ w1 , --#⇛-refl w1 (#PAIR n₁ t) ,
-      ⇓-refl ⌜ #PAIR n₁ t ⌝ w1 , --#⇛-refl w1 (#PAIR n₁ t) ,
+      #⇛!-refl {w1} {#PAIR n₁ t} , --#⇛-refl w1 (#PAIR n₁ t) ,
+      #⇛!-refl {w1} {#PAIR n₁ t} , --#⇛-refl w1 (#PAIR n₁ t) ,
       →≡equalInType (sym (sub0-ASSERT₄-APPLY n₁ f)) (equalInType-mon inh w1 e1)
 
 
@@ -723,13 +732,13 @@ EQ-N0→NATREC-TRUE n w t u a₁ a₂ b₁ b₂ h =
 ¬ΣNAT!→¬inhType-Σchoiceₘ bcb n w name aw w1 e1 (t , inh) =
   lower (Mod.□-const M (Mod.∀𝕎-□Func M aw3 h1))
   where
-    h0 : ∈Type n w1 (#SUM #NAT! (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) t
+    h0 : ∈Type n w1 (#SUM! #NAT! (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) t
     h0 = ≡CTerm→equalInType (#Σchoice≡ name ℂ₁·) inh
 
-    h1 : □· w1 (λ w' _ → SUMeq (equalInType n w' #NAT!) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' t t)
-    h1 = equalInType-SUM→ h0
+    h1 : □· w1 (λ w' _ → SUMeq! (equalInType n w' #NAT!) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' t t)
+    h1 = equalInType-SUM!→ h0
 
-    aw3 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType n w' #NAT!)
+    aw3 : ∀𝕎 w1 (λ w' e' → SUMeq! (equalInType n w' #NAT!)
                                  (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)))
                                  w' t t
                           → Lift (lsuc L) ⊥)
@@ -795,7 +804,7 @@ inhType-ASSERTₘ→∈NAT! i w t t∈ (q , q∈) =
 #SUM-ASSERTₘ→#Σchoice bcb {n} {w} {name} comp sat (n₁ , n₂ , n∈ , inh) =
   #PAIR n₁ #AX ,
   ≡CTerm→equalInType (sym (#Σchoice≡ name ℂ₁·))
-    (equalInType-SUM {n} {w} {#NAT!} {#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) (CTerm→CTerm0 Typeℂ₀₁·)}
+    (equalInType-SUM! {n} {w} {#NAT!} {#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) (CTerm→CTerm0 Typeℂ₀₁·)}
        (λ w1 e1 → isTypeNAT!)
        aw1
        (Mod.∀𝕎-□ M aw2))
@@ -812,12 +821,12 @@ inhType-ASSERTₘ→∈NAT! i w t t∈ (q , q∈) =
         (≡CTerm→equalInType (proj₁ bcb) (→equalInType-APPLY-CS-Typeℂ₀₁· (⊑-compatible· e1 comp) a∈))
         (NUM-equalInType-NAT! n w1 0))
 
-  aw2 : ∀𝕎 w (λ w' _ → SUMeq (equalInType n w' #NAT!)
+  aw2 : ∀𝕎 w (λ w' _ → SUMeq! (equalInType n w' #NAT!)
                              (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) (CTerm→CTerm0 Typeℂ₀₁·))))
                              w' (#PAIR n₁ #AX) (#PAIR n₁ #AX))
   aw2 w1 e1 =
     n₁ , n₁ , #AX , #AX , equalInType-refl (equalInType-mon n∈ w1 e1) ,
-    ⇓-refl ⌜ #PAIR n₁ #AX ⌝ w1 , ⇓-refl ⌜ #PAIR n₁ #AX ⌝ w1  ,
+    #⇛!-refl {w1} {#PAIR n₁ #AX} , #⇛!-refl {w1} {#PAIR n₁ #AX} ,
     ≡CTerm→equalInType (sym (¬ΣNAT!→¬inhType-Σchoiceₘ-eq bcb n₁ name))
       (→equalInType-EQ {n} {w1} {#APPLY (#CS name) n₁} {#N0} {#NAT!} {#AX} {#AX}
         (inhType-ASSERTₘ→∈NAT! n w1 (#APPLY (#CS name) n₁) h1 (inhType-mon e1 inh)))

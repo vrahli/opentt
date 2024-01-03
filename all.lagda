@@ -64,11 +64,11 @@ open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB) using (¬MP ; ¬
 open import mpp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(EM)(EC) using (MPp-inh ; MPp₂-inh ; MPp₃-inh ; MPp₆-inh)
 open import mpp2{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(MP)(EM)(EC) using (MPp₆-inh₂)
 -- Using classsical logic, MP is also consistent when using an open-like modality (see ExBar in exBar.lagda)
-open import mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB)(EB)(EM) using (MPvalid ; MP₂valid)
+open import mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(EB)(EM) using (MPvalid ; MP₂valid)
 -- If we assume that choices are TRUE and FALSE only, using choice sequences we can prove
 -- (1) the invalidity of MP_ℙ (¬MPℙ) using the same pattern than the one for ¬MP, which uses Booleans as choices
 -- (2) the validity of MP_𝔹 (MP₇-inh) using classical logic and the fact that functions to Bools essentially act as pure functions
-open import mp_prop{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB)(EM) using (¬MPℙ ; MP₇-inh)
+open import mp_prop2{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB)(EM) using (¬MPℙ ; MP₇-inh)
 
 -- Some results about pure expressions
 open import pure2{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(EC) using (Πpure→ ; ∈PURE-NAT→)

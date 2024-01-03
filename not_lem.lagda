@@ -87,6 +87,12 @@ open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
 open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
 
+open import terms8(W)(C)(K)(G)(X)(N)(EC)
+  using (SUM! ; #SUM!)
+
+open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (SUMeq! ; equalInType-SUM! ; equalInType-SUM!→ ; eqTypesSUM!←)
+
 -- open import calculus
 -- open import world
 -- open import theory (bar)
@@ -113,7 +119,7 @@ open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
 
 \begin{code}[hide]
 Σchoice : (n : Name) (k : ℂ·) → Term
-Σchoice n k = SUM NAT! (EQ (APPLY (CS n) (VAR 0)) (ℂ→T k) typeℂ₀₁)
+Σchoice n k = SUM! NAT! (EQ (APPLY (CS n) (VAR 0)) (ℂ→T k) typeℂ₀₁)
 
 
 #Σchoice : (n : Name) (k : ℂ·) → CTerm
@@ -123,7 +129,7 @@ open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
     c rewrite #-typeℂ₀₁ | #-ℂ→T k = refl
 
 
-#Σchoice≡ : (n : Name) (k : ℂ·) → #Σchoice n k ≡ #SUM #NAT! (#[0]EQ (#[0]APPLY (#[0]CS n) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁)
+#Σchoice≡ : (n : Name) (k : ℂ·) → #Σchoice n k ≡ #SUM! #NAT! (#[0]EQ (#[0]APPLY (#[0]CS n) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁)
 #Σchoice≡ n k = CTerm≡ refl
 
 
@@ -170,7 +176,7 @@ equalInType-#Σchoice : {i : ℕ} (w : 𝕎·) (c : Name) (k : ℂ·)
                        → Σ ℕ (λ n → ·ᵣ Resℂ n k)
                        → isType i w (#Σchoice c k)
 equalInType-#Σchoice {i} w c k comp sat rewrite #Σchoice≡ c k =
-  eqTypesSUM← (λ w' e' → isTypeNAT!) (equalTypes-#Σchoice-body-sub0 i w c k comp sat)
+  eqTypesSUM!← (λ w' e' → isTypeNAT!) (equalTypes-#Σchoice-body-sub0 i w c k comp sat)
 
 
 equalInType-#Σchoice-UNIV : {n i : ℕ} (p : i < n) (w : 𝕎·) (c : Name) (k : ℂ·)
@@ -221,24 +227,24 @@ getChoice→equalInType-#Σchoice-aux : {n : ℕ} {name : Name} {w : 𝕎·} {k 
                                       → #APPLY (#CS name) (#NUM n) #⇛! ℂ→C· k at w
                                       → equalInType
                                            i w
-                                           (#SUM #NAT! (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁))
+                                           (#SUM! #NAT! (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁))
                                            (#PAIR (#NUM n) #AX) (#PAIR (#NUM n) #AX)
 getChoice→equalInType-#Σchoice-aux {n} {name} {w} {k} i comp sat g =
-  equalInType-SUM
+  equalInType-SUM!
     {i} {w} {#NAT!} {#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁}
     (eqTypes-mon (uni i) isTypeNAT!)
     (equalTypes-#Σchoice-body-sub0 i w name k comp (0 , sat))
     j
   where
-    j : □· w (λ w' _ → SUMeq (equalInType i w' #NAT!)
+    j : □· w (λ w' _ → SUMeq! (equalInType i w' #NAT!)
                               (λ a b ea → equalInType i w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁)))
                               w'
                               (#PAIR (#NUM n) #AX)
                               (#PAIR (#NUM n) #AX))
     j = Mod.∀𝕎-□ M (λ w1 e1 → #NUM n , #NUM n , #AX , #AX ,
                                 NUM-equalInType-NAT! i w1 n ,
-                                ⇓-refl ⌜ #PAIR (#NUM n) #AX ⌝ w1 , --#compAllRefl (#PAIR (#NUM n) #AX) w1 ,
-                                ⇓-refl ⌜ #PAIR (#NUM n) #AX ⌝ w1 , --#compAllRefl (#PAIR (#NUM n) #AX) w1 ,
+                                #⇛!-refl {w1} {#PAIR (#NUM n) #AX} , --#compAllRefl (#PAIR (#NUM n) #AX) w1 ,
+                                #⇛!-refl {w1} {#PAIR (#NUM n) #AX} , --#compAllRefl (#PAIR (#NUM n) #AX) w1 ,
                                 getChoice→equalInType-#Σchoice-aux1 i sat (∀𝕎-mon e1 g))
 -- This last one is not true with references, but can be made true if we have a way to "freeze" a reference permanently,
 -- and here 0 was "frozen"
@@ -291,16 +297,16 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
                         → ¬ inhType i w (#Σchoice c k1)
 ¬equalInType-#Σchoice i w r c {k1} isv₁ isv₂ diff oc comp fb (x , eqi) = diff w4 sim3
   where
-    h0 : equalInType i w (#SUM #NAT! (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁)) x x
+    h0 : equalInType i w (#SUM! #NAT! (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁)) x x
     h0 rewrite #Σchoice≡ c k1 = eqi
 
-    h1 : □· w (λ w' _ → SUMeq (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·)) w' x x)
-    h1 = Mod.∀𝕎-□Func M aw (equalInType-SUM→ {i} {w} {#NAT!} {#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁} h0)
+    h1 : □· w (λ w' _ → SUMeq! (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·)) w' x x)
+    h1 = Mod.∀𝕎-□Func M aw (equalInType-SUM!→ {i} {w} {#NAT!} {#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁} h0)
       where
-        aw : ∀𝕎 w (λ w' e' → SUMeq (equalInType i w' #NAT!)
+        aw : ∀𝕎 w (λ w' e' → SUMeq! (equalInType i w' #NAT!)
                                      (λ a b ea → equalInType i w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k1) #[0]Typeℂ₀₁)))
                                      w' x x
-                           → SUMeq (equalInType i w' #NAT!)
+                           → SUMeq! (equalInType i w' #NAT!)
                                     (λ a b ea → equalInType i w' (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·))
                                     w' x x)
         aw w' e' (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) rewrite sub0-#Σchoice-body≡ a₁ c k1 = a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb
@@ -321,7 +327,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     fb1 : freezable· c w1
     fb1 = fst (snd (snd (snd (snd (followChoice· c h1 oc comp fb)))))
 
-    h2 : SUMeq (equalInType i w1 #NAT!) (λ a b ea → equalInType i w1 (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·)) w1 x x
+    h2 : SUMeq! (equalInType i w1 #NAT!) (λ a b ea → equalInType i w1 (#EQ (#APPLY (#CS c) a) (ℂ→C· k1) Typeℂ₀₁·)) w1 x x
     h2 = snd (snd (snd (snd (snd (followChoice· c h1 oc comp fb)))))
 
     a₁ : CTerm

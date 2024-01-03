@@ -80,9 +80,14 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
+open import terms8(W)(C)(K)(G)(X)(N)(EC)
+  using (#SUM!)
+
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (SUMeq! ; equalInType-SUM! ; equalInType-SUM!→)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
@@ -190,6 +195,25 @@ equalInType-N1!-ℂ₁ : Nat!ℂ CB → (n : ℕ) (w : 𝕎·) → equalInType n
 equalInType-N1!-ℂ₁ bcb n w rewrite snd (snd bcb) = NUM-equalInType-NAT! n w 0
 
 
+fun-equalInType-SUM!-NAT! : {n : ℕ} {w : 𝕎·} {a b : CTerm0} {u v : CTerm}
+                          → ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #NAT! m
+                                         → equalInType n w' (sub0 m a) t₁ t₂
+                                         → equalInType n w' (sub0 m b) t₁ t₂)
+                          → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) (ea : equalInType n w' #NAT! a₁ a₂) → equalTypes n w' (sub0 a₁ b) (sub0 a₂ b))
+                          → equalInType n w (#SUM! #NAT! a) u v
+                          → equalInType n w (#SUM! #NAT! b) u v
+fun-equalInType-SUM!-NAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
+  equalInType-SUM!
+    (λ w' _ → isTypeNAT!)
+    eqb
+    (Mod.∀𝕎-□Func M aw (equalInType-SUM!→ eqi))
+  where
+    aw : ∀𝕎 w (λ w' e' → SUMeq! (equalInType n w' #NAT!) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ a)) w' u v
+                       → SUMeq! (equalInType n w' #NAT!) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ b)) w' u v)
+    aw w1 e1 (a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , eb) =
+      a₁ , a₂ , b₁ , b₂ , ea , c₁ , c₂ , imp w1 e1 a₁ b₁ b₂ (equalInType-refl ea) eb
+
+
 #SUM-ASSERT₂→#Σchoice : Bool₀ℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}
                        → compatible· name w Resℂ
                        → Σ ℕ (λ n → ·ᵣ Resℂ n ℂ₁·)
@@ -198,7 +222,7 @@ equalInType-N1!-ℂ₁ bcb n w rewrite snd (snd bcb) = NUM-equalInType-NAT! n w 
 #SUM-ASSERT₂→#Σchoice bcb {n} {w} {name} comp sat (t , inh) =
   t , ≡CTerm→equalInType
         (sym (#Σchoice≡ name ℂ₁·))
-        (fun-equalInType-SUM-NAT! {n} {w} {#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
+        (fun-equalInType-SUM!-NAT! {n} {w} {#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
   where
     aw1 : ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #NAT! m
                         → equalInType n w' (sub0 m (#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR))) t₁ t₂
@@ -233,7 +257,7 @@ equalInType-N1!-ℂ₁ bcb n w rewrite snd (snd bcb) = NUM-equalInType-NAT! n w 
 #SUM-ASSERT₃→#Σchoice bcb {n} {w} {name} comp sat (t , inh) =
   t , ≡CTerm→equalInType
         (sym (#Σchoice≡ name ℂ₁·))
-        (fun-equalInType-SUM-NAT! {n} {w} {#[0]ASSERT₃ (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
+        (fun-equalInType-SUM!-NAT! {n} {w} {#[0]ASSERT₃ (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
   where
     aw1 : ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #NAT! m
                         → equalInType n w' (sub0 m (#[0]ASSERT₃ (#[0]APPLY (#[0]CS name) #[0]VAR))) t₁ t₂
@@ -267,7 +291,7 @@ equalInType-N1!-ℂ₁ bcb n w rewrite snd (snd bcb) = NUM-equalInType-NAT! n w 
 #SUM-ASSERT₅→#Σchoice bcb {n} {w} {name} comp sat (t , inh) =
   t , ≡CTerm→equalInType
         (sym (#Σchoice≡ name ℂ₁·))
-        (fun-equalInType-SUM-NAT! {n} {w} {#[0]ASSERT₄ (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
+        (fun-equalInType-SUM!-NAT! {n} {w} {#[0]ASSERT₄ (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
   where
     aw1 : ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #NAT! m
                        → equalInType n w' (sub0 m (#[0]ASSERT₄ (#[0]APPLY (#[0]CS name) #[0]VAR))) t₁ t₂
@@ -311,7 +335,7 @@ equalInType-N1!-ℂ₁ bcb n w rewrite snd (snd bcb) = NUM-equalInType-NAT! n w 
     aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' (#Σchoice name ℂ₁·) a₁ a₂)
     aw2 w1 e1 p₁ p₂ eqi = lower (Mod.□-const M (Mod.∀𝕎-□Func M aw3 h1))
       where
-        aw3 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType n w' #NAT!)
+        aw3 : ∀𝕎 w1 (λ w' e' → SUMeq! (equalInType n w' #NAT!)
                                       (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)))
                                       w' p₁ p₂
                              → Lift (lsuc L) ⊥)
@@ -331,11 +355,11 @@ equalInType-N1!-ℂ₁ bcb n w rewrite snd (snd bcb) = NUM-equalInType-NAT! n w 
                                               (sym (#ASSERT₂≡ (#APPLY (#CS name) a₁))))
                                        eqi1
 
-        h0 : equalInType n w1 (#SUM #NAT! (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) p₁ p₂
+        h0 : equalInType n w1 (#SUM! #NAT! (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) p₁ p₂
         h0 = ≡CTerm→equalInType (#Σchoice≡ name ℂ₁·) eqi
 
-        h1 : □· w1 (λ w' _ → SUMeq (equalInType n w' #NAT!) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' p₁ p₂)
-        h1 = equalInType-SUM→ h0
+        h1 : □· w1 (λ w' _ → SUMeq! (equalInType n w' #NAT!) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' p₁ p₂)
+        h1 = equalInType-SUM!→ h0
 
 
 
@@ -357,7 +381,7 @@ equalInType-N1!-ℂ₁ bcb n w rewrite snd (snd bcb) = NUM-equalInType-NAT! n w 
     aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' (#Σchoice name ℂ₁·) a₁ a₂)
     aw2 w1 e1 p₁ p₂ eqi = lower (Mod.□-const M (Mod.∀𝕎-□Func M aw3 h1))
       where
-        aw3 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType n w' #NAT!)
+        aw3 : ∀𝕎 w1 (λ w' e' → SUMeq! (equalInType n w' #NAT!)
                                       (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)))
                                       w' p₁ p₂
                              → Lift (lsuc L) ⊥)
@@ -377,10 +401,10 @@ equalInType-N1!-ℂ₁ bcb n w rewrite snd (snd bcb) = NUM-equalInType-NAT! n w 
                                               (sym (#ASSERT₃≡ (#APPLY (#CS name) a₁))))
                                        eqi1
 
-        h0 : equalInType n w1 (#SUM #NAT! (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) p₁ p₂
+        h0 : equalInType n w1 (#SUM! #NAT! (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁)) p₁ p₂
         h0 = ≡CTerm→equalInType (#Σchoice≡ name ℂ₁·) eqi
 
-        h1 : □· w1 (λ w' _ → SUMeq (equalInType n w' #NAT!) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' p₁ p₂)
-        h1 = equalInType-SUM→ h0
+        h1 : □· w1 (λ w' _ → SUMeq! (equalInType n w' #NAT!) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' p₁ p₂)
+        h1 = equalInType-SUM!→ h0
 
 \end{code}

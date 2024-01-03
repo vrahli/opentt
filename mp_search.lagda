@@ -89,10 +89,21 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
+open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (SUMeq! ; equalInType-SUM! ; equalInType-SUM!→)
+
 open import type_sys_props_isect(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#MP-right ; #MP-right2 ; isType-MP-right-body)
+open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (#MP-right ; #MP-right2 ; isType-MP-right-body)
 
+
+-- MOVE
+#⇛!-mon : {a b : CTerm} {w2 w1 : 𝕎·}
+        → w1 ⊑· w2
+        → a #⇛! b at w1
+        → a #⇛! b at w2
+#⇛!-mon {a} {b} {w2} {w1} ext c w' e' = c w' (⊑-trans· ext e')
 
 
 infSearchI : Term → Term → Term → Term
@@ -572,19 +583,19 @@ mpSearch1 : (i : ℕ) (w : 𝕎·) (f₁ f₂ u₁ u₂ t₁ t₂ : CTerm) (n : 
             → equalInType i w #NAT!→BOOL₀ f₁ f₂
             → #¬Names f₁
             → #¬Names f₂
-            → t₁ #⇛ #infSearchP f₁ at w
-            → t₂ #⇛ #infSearchP f₂ at w
+            → t₁ #⇛! #infSearchP f₁ at w
+            → t₂ #⇛! #infSearchP f₂ at w
             → ((m : ℕ) → m ≤ n → UNIONeq₀ (equalInType i w #TRUE) (equalInType i w #TRUE) w (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
             → #APPLY f₁ (#NUM n) #⇛ #INL u₁ at w
             → #APPLY f₂ (#NUM n) #⇛ #INL u₂ at w
-            → SUMeq (equalInType i w #NAT!) (λ a b ea → equalInType i w (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w t₁ t₂
+            → SUMeq! (equalInType i w #NAT!) (λ a b ea → equalInType i w (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w t₁ t₂
 mpSearch1 i w f₁ f₂ u₁ u₂ t₁ t₂ n f∈ nnf₁ nnf₂ ct₁ ct₂ hn ha₁ ha₂ with mpSearch2¬Names i w f₁ f₂ u₁ u₂ n nnf₁ nnf₂ hn ha₁ ha₂
 ... | m , v₁ , v₂ , len , c₁ , c₂ , d₁ , d₂ =
   #infSearch f₁ , #infSearch f₂ , #AX , #AX ,
   -- How can we prove that it lives in #NAT! if f is not pure? Could we use #NAT for the impure version of MP? Negation is fine though
   →equalInType-NAT! i w (#infSearch f₁) (#infSearch f₂) (Mod.∀𝕎-□ M p1) ,
-  lower (ct₁ w (⊑-refl· w)) , --ct₁ ,
-  lower (ct₂ w (⊑-refl· w)) , --ct₂ ,
+  ct₁ , --lower (ct₁ w (⊑-refl· w)) , --ct₁ ,
+  ct₂ , --lower (ct₂ w (⊑-refl· w)) , --ct₂ ,
   p2
 -- For this we need to prove that (#infSearch f) computes to a number m ≤ n such that (#APPLY f (#NUM m)) computes to #INL
 -- If f is not pure this might only be at a higher world, but if f is pure we can bring back the computation to the current world
@@ -602,8 +613,8 @@ mpSearch1 i w f₁ f₂ u₁ u₂ t₁ t₂ n f∈ nnf₁ nnf₂ ct₁ ct₂ hn 
 mpSearch : (i : ℕ) (w : 𝕎·) (f₁ f₂ a₁ a₂ t₁ t₂ : CTerm)
            → #¬Names f₁
            → #¬Names f₂
-           → t₁ #⇛ #infSearchP f₁ at w
-           → t₂ #⇛ #infSearchP f₂ at w
+           → t₁ #⇛! #infSearchP f₁ at w
+           → t₂ #⇛! #infSearchP f₂ at w
            → equalInType i w #NAT!→BOOL₀ f₁ f₂
            → equalInType i w (#MP-right f₁) a₁ a₂
            → equalInType i w (#MP-right2 f₁) t₁ t₂
@@ -618,18 +629,18 @@ mpSearch i w f₁ f₂ a₁ a₂ t₁ t₂ nnf₁ nnf₂ ct₁ ct₂ f∈ a∈ =
     aw1 w1 e1 (t , t∈) =
       equalInType-local (Mod.∀𝕎-□Func M aw2 p∈)
       where
-        p∈ : □· w1 (λ w' _ → SUMeq (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w' t t)
-        p∈ = equalInType-SUM→ t∈
+        p∈ : □· w1 (λ w' _ → SUMeq! (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w' t t)
+        p∈ = equalInType-SUM!→ t∈
 
-        aw2 : ∀𝕎 w1 (λ w' e' → SUMeq (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w' t t
-                              → equalInType i w' (#MP-right2 f₁) t₁ t₂)
+        aw2 : ∀𝕎 w1 (λ w' e' → SUMeq! (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w' t t
+                             → equalInType i w' (#MP-right2 f₁) t₁ t₂)
         aw2 w2 e2 (n₁ , n₂ , x₁ , x₂ , n∈ , c₁ , c₂ , x∈) =
           equalInType-local (Mod.∀𝕎-□Func M aw3 (equalInType-NAT!→ i w2 n₁ n₂ n∈))
           where
             aw3 : ∀𝕎 w2 (λ w' e' → #⇛!sameℕ w' n₁ n₂
                                   → equalInType i w' (#MP-right2 f₁) t₁ t₂)
             aw3 w3 e3 (n , d₁ , d₂) =
-              equalInType-SUM
+              equalInType-SUM!
                 (λ w' _ → isTypeNAT!)
                 (isType-MP-right-body i w3 f₁ f₁ (equalInType-refl (equalInType-mon f∈ w3 (⊑-trans· e1 (⊑-trans· e2 e3)))))
                 (∀𝕎-□Func2 aw4 h2 y∈)
@@ -643,14 +654,14 @@ mpSearch i w f₁ f₂ a₁ a₂ t₁ t₂ nnf₁ nnf₂ ct₁ ct₂ f∈ a∈ =
 
                 aw4 : ∀𝕎 w3 (λ w' e' → ((m : ℕ) → m ≤ n → UNIONeq₀ (equalInType i w' #TRUE) (equalInType i w' #TRUE) w' (#APPLY f₁ (#NUM m)) (#APPLY f₂ (#NUM m)))
                                       → (Σ CTerm (λ u₁ → Σ CTerm (λ u₂ → #APPLY f₁ (#NUM n) #⇛ #INL u₁ at w' × #APPLY f₂ (#NUM n) #⇛ #INL u₂ at w')))
-                                      → SUMeq (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w' t₁ t₂)
+                                      → SUMeq! (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w' t₁ t₂)
                 aw4 w4 e4 hn (u₁ , u₂ , ha₁ , ha₂) =
                   mpSearch1
                     i w4 f₁ f₂ u₁ u₂ t₁ t₂ n
                     (equalInType-mon f∈ w4 (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4))))
                     nnf₁ nnf₂
-                    (#⇛-mon {t₁} {#infSearchP f₁} (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4))) ct₁)
-                    (#⇛-mon {t₂} {#infSearchP f₂} (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4))) ct₂)
+                    (#⇛!-mon {t₁} {#infSearchP f₁} (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4))) ct₁)
+                    (#⇛!-mon {t₂} {#infSearchP f₂} (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4))) ct₂)
                     hn ha₁ ha₂
 
 \end{code}

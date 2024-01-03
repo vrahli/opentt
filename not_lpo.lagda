@@ -70,8 +70,8 @@ open import compatibleDef{L}(W)(C)(K)
 open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
-open import choiceValDef(W)(C)(K)(G)(X)(N)(EC)(V)
-open import freezeDef(W)(C)(K)(P)(G)(N)(F)
+--open import choiceValDef(W)(C)(K)(G)(X)(N)(EC)(V)
+--open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
@@ -80,15 +80,30 @@ open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 --open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--  using ()
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (eqTypesSQUASH← ; eqTypesUNION← ; eqTypesPI← ; eqTypesNEG← ; equalInType-PI→ ; ≡CTerm→equalInType ;
+         NUM-equalInType-NAT! ; equalInType-NEG)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (isType-#NAT!→BOOL₀ ; →equalInType-CS-NAT!→BOOL₀ ; fun-equalInType-SQUASH-UNION)
 open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (#SUM-ASSERT₂ ; #PI-NEG-ASSERT₂ ; →equalTypes-#SUM-ASSERT₂ ; →equalTypes-#PI-NEG-ASSERT₂)
 
-open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+--open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+--  using ()
 open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+  using (sq-dec ; #Σchoice ; ¬-dec-Σchoice ; equalInType-#Σchoice)
 open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+  using (Resℂ ; →equalInType-APPLY-CS-Typeℂ₀₁·)
 open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+  using (Bool₀ℂ ; #SUM-ASSERT₂→#Σchoice ; #PI-NEG-ASSERT₂→#Σchoice)
+
+open import terms8(W)(C)(K)(G)(X)(N)(EC)
+  using (SUM! ; #SUM!)
+
+open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (≡SUM! ; #[0]SUM!)
 
 
 {-- This version relies on ASSERT₂, which is defined in terms of BOOL,
@@ -96,7 +111,7 @@ open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
  --}
 
 LPO : Term
-LPO = PI NAT!→BOOL₀ (SQUASH (UNION (SUM NAT! (ASSERT₂ (APPLY (VAR 1) (VAR 0))))
+LPO = PI NAT!→BOOL₀ (SQUASH (UNION (SUM! NAT! (ASSERT₂ (APPLY (VAR 1) (VAR 0))))
                                    (PI NAT! (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0)))))))
 
 
@@ -109,7 +124,7 @@ LPO = PI NAT!→BOOL₀ (SQUASH (UNION (SUM NAT! (ASSERT₂ (APPLY (VAR 1) (VAR 
 
 
 #[0]LPO-left : CTerm0
-#[0]LPO-left = #[0]SUM #[0]NAT! (#[1]ASSERT₂ (#[1]APPLY #[1]VAR1 #[1]VAR0))
+#[0]LPO-left = #[0]SUM! #[0]NAT! (#[1]ASSERT₂ (#[1]APPLY #[1]VAR1 #[1]VAR0))
 
 
 #[0]LPO-right : CTerm0
@@ -134,10 +149,10 @@ LPO = PI NAT!→BOOL₀ (SQUASH (UNION (SUM NAT! (ASSERT₂ (APPLY (VAR 1) (VAR 
 
 
 sub0-squash-union-LPO : (a : CTerm) → sub0 a (#[0]SQUASH (#[0]UNION #[0]LPO-left #[0]LPO-right))
-                                       ≡ #SQUASH (#UNION (#LPO-left a) (#LPO-right a))
+                                    ≡ #SQUASH (#UNION (#LPO-left a) (#LPO-right a))
 sub0-squash-union-LPO a =
   ≡sub0-#[0]SQUASH a (#[0]UNION #[0]LPO-left #[0]LPO-right) (#UNION (#LPO-left a) (#LPO-right a))
-                   (CTerm≡ (≡UNION (≡SUM refl (≡ASSERT₂ (→≡APPLY e refl))) (≡PI refl (≡NEG (≡ASSERT₂ (→≡APPLY e refl))))))
+                   (CTerm≡ (≡UNION (≡SUM! refl (≡ASSERT₂ (→≡APPLY e refl))) (≡PI refl (≡NEG (≡ASSERT₂ (→≡APPLY e refl))))))
   where
     e : shiftDown 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) ≡ ⌜ a ⌝
     e rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftDown 1 a = refl

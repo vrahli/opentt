@@ -107,11 +107,13 @@ open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
 open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (#MP-left-qt₃ ; #MP-right-qt₃ ; #MP-right2-qt₃ ; →equalTypes-#MP-right-qt₃ ; →equalTypes-#MP-left-qt₃ ;
          #[0]MP-left-qt₃ ; #[0]MP-right-qt₃ ; sub0-fun-mp₆ ; #[0]MP-left2-qt₃ ; #[0]MP-right2-qt₃ ;
-         →equalTypes-#MP-left2-qt₃ ; →equalTypes-#MP-right2-qt₃ ; #MP-left2-qt₃ ; sub0-fun-mp-qt₃)
+         #MP-left2-qt₃ ; sub0-fun-mp-qt₃ ; ≡SUM! ; #[0]SUM!)
+open import mp_props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (→equalTypes-#MP-left2-qt₃ ; →equalTypes-#MP-right2-qt₃)
 
 
 #[0]MP-right2-qt₄ : CTerm → CTerm0
-#[0]MP-right2-qt₄ f = #[0]SUM #[0]NAT! (#[1]ASSERT₄ (#[1]APPLY (#[1]APPLY ⌞ f ⌟ #[1]VAR1) #[1]VAR0))
+#[0]MP-right2-qt₄ f = #[0]SUM! #[0]NAT! (#[1]ASSERT₄ (#[1]APPLY (#[1]APPLY ⌞ f ⌟ #[1]VAR1) #[1]VAR0))
 
 
 #[0]MP-right-qt₄ : CTerm → CTerm0
@@ -131,8 +133,8 @@ sub0-fun-mp-qt₄ : (f a : CTerm) → sub0 a (#[0]FUN (#[0]MP-left-qt₄ f) (#[0
 sub0-fun-mp-qt₄ f a =
   ≡sub0-#[0]FUN
     a (#[0]MP-left-qt₄ f) (#[0]MP-right-qt₄ f) (#MP-left-qt₃ (#APPLY f a)) (#MP-right-qt₃ (#APPLY f a))
-    (CTerm≡ (≡NEG (≡NEG (≡SET refl (≡SUM refl (≡EQ (≡APPLY (≡APPLY e1 e2) refl) refl refl))))))
-    (CTerm≡ (≡SET refl (≡SUM refl (≡ASSERT₄ (→≡APPLY (≡APPLY e1 e2) refl)))))
+    (CTerm≡ (≡NEG (≡NEG (≡SET refl (≡SUM! refl (≡EQ (≡APPLY (≡APPLY e1 e2) refl) refl refl))))))
+    (CTerm≡ (≡SET refl (≡SUM! refl (≡ASSERT₄ (→≡APPLY (≡APPLY e1 e2) refl)))))
   where
     e1 : shiftDown 2 (subv 2 (shiftUp 0 (shiftUp 0 (shiftUp 0 ⌜ a ⌝))) (shiftUp 1 ⌜ CTerm→CTerm1 f ⌝))
          ≡ shiftUp 1 ⌜ f ⌝
@@ -148,8 +150,8 @@ sub0-fun-mp2-qt₄ : (f a : CTerm) → sub0 a (#[0]FUN (#[0]MP-left2-qt₄ f) (#
 sub0-fun-mp2-qt₄ f a =
   ≡sub0-#[0]FUN
     a (#[0]MP-left2-qt₄ f) (#[0]MP-right2-qt₄ f) (#MP-left2-qt₃ (#APPLY f a)) (#MP-right2-qt₃ (#APPLY f a))
-    (CTerm≡ (≡NEG (≡NEG (≡SUM refl (≡EQ (≡APPLY (≡APPLY e1 e2) refl) refl refl)))))
-    (CTerm≡ (≡SUM refl (≡ASSERT₄ (→≡APPLY (≡APPLY e1 e2) refl))))
+    (CTerm≡ (≡NEG (≡NEG (≡SUM! refl (≡EQ (≡APPLY (≡APPLY e1 e2) refl) refl refl)))))
+    (CTerm≡ (≡SUM! refl (≡ASSERT₄ (→≡APPLY (≡APPLY e1 e2) refl))))
   where
     e1 : shiftDown 1 (subv 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) ⌜ CTerm→CTerm1 f ⌝)
          ≡ ⌜ f ⌝

@@ -70,6 +70,9 @@ open import getChoiceDef(W)(C)(K)(G)
 --open import choiceExtDef(W)(C)(K)(G)(X)
 --open import choiceValDef(W)(C)(K)(G)(X)(N)(V)
 
+open import terms8(W)(C)(K)(G)(X)(N)(EC)
+  using (#SUM!)
+
 --open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import type_sys_props_lt(W)(M)(C)(K)(P)(G)(X)(N)(E)
@@ -91,6 +94,8 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-ASSERT₃-APPLY ;
          equalInType-BOOL!→equalTypes-ASSERT₃ ; eqTypesQNAT! ; isTypeBOOL₀!→ ; →equalInType-BOOL₀!-INL ;
          sub0-NEG-ASSERT₂-APPLY ; sub0-NEG-ASSERT₃-APPLY ; equalInType→equalTypes)
+open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+  using (eqTypesSUM!←)
 
 -- open import calculus
 -- open import world
@@ -355,7 +360,7 @@ QNAT!→BOOL! = FUN QNAT! BOOL!
 
 
 #SUM-ASSERT₂ : CTerm → CTerm
-#SUM-ASSERT₂ f = #SUM #NAT! (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
+#SUM-ASSERT₂ f = #SUM! #NAT! (#[0]ASSERT₂ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
 
 
 #PI-NEG-ASSERT₂ : CTerm → CTerm
@@ -363,7 +368,7 @@ QNAT!→BOOL! = FUN QNAT! BOOL!
 
 
 #SUM-ASSERT₃ : CTerm → CTerm
-#SUM-ASSERT₃ f = #SUM #NAT! (#[0]ASSERT₃ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
+#SUM-ASSERT₃ f = #SUM! #NAT! (#[0]ASSERT₃ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
 
 
 #PI-NEG-ASSERT₃ : CTerm → CTerm
@@ -371,7 +376,7 @@ QNAT!→BOOL! = FUN QNAT! BOOL!
 
 
 #SUM-ASSERT₄ : CTerm → CTerm
-#SUM-ASSERT₄ f = #SUM #QNAT! (#[0]ASSERT₃ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
+#SUM-ASSERT₄ f = #SUM! #QNAT! (#[0]ASSERT₃ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
 
 
 ASSERT₄ : Term → Term
@@ -412,13 +417,13 @@ fvars-ASSERT₄ t rewrite ++[] (fvars t) = refl
 
 
 #SUM-ASSERT₅ : CTerm → CTerm
-#SUM-ASSERT₅ f = #SUM #NAT! (#[0]ASSERT₄ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
+#SUM-ASSERT₅ f = #SUM! #NAT! (#[0]ASSERT₄ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
 
 
 →equalTypes-#SUM-ASSERT₂ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
                            → equalInType n w #NAT!→BOOL₀ a₁ a₂
                            → equalTypes n w (#SUM-ASSERT₂ a₁) (#SUM-ASSERT₂ a₂)
-→equalTypes-#SUM-ASSERT₂ {n} {w} {a₁} {a₂} eqt = eqTypesSUM← (λ w' _ → isTypeNAT!) aw1
+→equalTypes-#SUM-ASSERT₂ {n} {w} {a₁} {a₂} eqt = eqTypesSUM!← (λ w' _ → isTypeNAT!) aw1
   where
     aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT! a b → equalInType n w' #BOOL₀ (#APPLY a₁ a) (#APPLY a₂ b))
     aw0 = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL₀≡ eqt)
@@ -438,7 +443,7 @@ fvars-ASSERT₄ t rewrite ++[] (fvars t) = refl
 →equalTypes-#SUM-ASSERT₃ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
                            → equalInType n w #NAT!→BOOL! a₁ a₂
                            → equalTypes n w (#SUM-ASSERT₃ a₁) (#SUM-ASSERT₃ a₂)
-→equalTypes-#SUM-ASSERT₃ {n} {w} {a₁} {a₂} eqt = eqTypesSUM← (λ w' _ → isTypeNAT!) aw1
+→equalTypes-#SUM-ASSERT₃ {n} {w} {a₁} {a₂} eqt = eqTypesSUM!← (λ w' _ → isTypeNAT!) aw1
   where
     aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT! a b → equalInType n w' #BOOL! (#APPLY a₁ a) (#APPLY a₂ b))
     aw0 = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL!≡ eqt)
@@ -455,9 +460,9 @@ fvars-ASSERT₄ t rewrite ++[] (fvars t) = refl
 
 
 →equalTypes-#SUM-ASSERT₄ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
-                           → equalInType n w #QNAT!→BOOL! a₁ a₂
-                           → equalTypes n w (#SUM-ASSERT₄ a₁) (#SUM-ASSERT₄ a₂)
-→equalTypes-#SUM-ASSERT₄ {n} {w} {a₁} {a₂} eqt = eqTypesSUM← (λ w' _ → eqTypesQNAT!) aw1
+                         → equalInType n w #QNAT!→BOOL! a₁ a₂
+                         → equalTypes n w (#SUM-ASSERT₄ a₁) (#SUM-ASSERT₄ a₂)
+→equalTypes-#SUM-ASSERT₄ {n} {w} {a₁} {a₂} eqt = eqTypesSUM!← (λ w' _ → eqTypesQNAT!) aw1
   where
     aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #QNAT! a b → equalInType n w' #BOOL! (#APPLY a₁ a) (#APPLY a₂ b))
     aw0 = equalInType-FUN→ (≡CTerm→equalInType #QNAT!→BOOL!≡ eqt)
@@ -506,7 +511,7 @@ equalInType-BOOL₀!→equalTypes-ASSERT₄ {n} {w} {a} {b} eqb =
 →equalTypes-#SUM-ASSERT₅ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
                            → equalInType n w #NAT!→BOOL₀! a₁ a₂
                            → equalTypes n w (#SUM-ASSERT₅ a₁) (#SUM-ASSERT₅ a₂)
-→equalTypes-#SUM-ASSERT₅ {n} {w} {a₁} {a₂} eqt = eqTypesSUM← (λ w' _ → isTypeNAT!) aw1
+→equalTypes-#SUM-ASSERT₅ {n} {w} {a₁} {a₂} eqt = eqTypesSUM!← (λ w' _ → isTypeNAT!) aw1
   where
     aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT! a b → equalInType n w' #BOOL₀! (#APPLY a₁ a) (#APPLY a₂ b))
     aw0 = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL₀!≡ eqt)
