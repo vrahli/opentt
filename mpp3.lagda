@@ -120,10 +120,10 @@ open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
          #[0]MP-left-qt₂ ; #[0]MP-right-qt₂ ; #[0]MP-left-qt₃ ; #[0]MP-right-qt₃ ; sub0-fun-mp ; →equalTypes-#MP-left ;
          →equalTypes-#MP-right ; #MP-left ; #MP-right ; sub0-fun-mp₄ ; →equalTypes-#MP-left-qt ; →equalTypes-#MP-right-qt ;
          #MP-left-qt ; #MP-right-qt ; sub0-fun-mp₂ ; →equalTypes-#MP-left3 ; →∈Type-FUN ;
-         #MP-left3 ; →∈Type-PI ; sub0-fun-mp₃ ; →equalTypes-#MP-left2 ;
+         #MP-left3 ; →∈Type-PI ; sub0-fun-mp₃ ; →equalTypes-#MP-left2 ; sub0-ASSERTₘ-APPLY ;
          →equalTypes-#MP-right2 ; #MP-left2 ; #MP-right2 ; sub0-fun-mp₆ ; →equalTypes-#MP-left-qt₃ ;
          →equalTypes-#MP-right-qt₃ ; #MP-left-qt₃ ; #MP-right-qt₃ ; #[0]MP-right2-qt₃ ;
-         #MP-right2-qt₃ ; isType-MP-right-qt₃-body ; #MP-left2-qt₃ ;
+         #MP-right2-qt₃ ; isType-MP-right-qt₃-body ; #MP-left2-qt₃ ; #ASSERTₘ ;
          #[0]MP-left2-qt₃ ; sub0-fun-mp-qt₃ ; #[0]SUM! ; #[1]ASSERTₘ ; #[0]ASSERTₘ ; ≡ASSERTₘ ;
          #MP-leftₘ ; #MP-rightₘ ; →equalTypes-#MP-rightₘ ; →equalTypes-#MP-leftₘ ; #NAT!→NAT!≡ ; ≡SUM!)
 open import mp_props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -288,11 +288,17 @@ equalInType→ℕ→𝔹 {i} {w} {f} f∈ =
     aw1 w2 e2 (suc k , c₁ , c₂) = #AX , #AX , inj₂ (#APPLY→ℕ→𝔹s w2 f n₁ k c₁ , #APPLY→ℕ→𝔹s w2 f n₂ k c₂)
 
 
-#MP-rightₘ→ : {i : ℕ} {w : 𝕎·} {f a b : CTerm}
-            → ∈Type i w (#FUN #NAT! #NAT!) f
-            → equalInType i w (#MP-rightₘ f) a b
-            → equalInType i w (#MP-right2-qt₃ (→ℕ→𝔹 f)) a b
-#MP-rightₘ→ {i} {w} {f} {a} {b} f∈ a∈ =
+#ASSERTₘ→#ASSERT₄ : {i : ℕ} {w : 𝕎·} {f a b₁ b₂ : CTerm}
+                  → equalInType i w (#ASSERTₘ (#APPLY f a)) b₁ b₂
+                  → equalInType i w (#ASSERT₄ (#APPLY (→ℕ→𝔹 f) a)) b₁ b₂
+#ASSERTₘ→#ASSERT₄ {i} {w} {f} {a} {b₁} {b₂} b∈ = {!!}
+
+
+#MP-rightₘ→#MP-right2-qt₃ : {i : ℕ} {w : 𝕎·} {f a b : CTerm}
+                          → ∈Type i w (#FUN #NAT! #NAT!) f
+                          → equalInType i w (#MP-rightₘ f) a b
+                          → equalInType i w (#MP-right2-qt₃ (→ℕ→𝔹 f)) a b
+#MP-rightₘ→#MP-right2-qt₃ {i} {w} {f} {a} {b} f∈ a∈ =
   equalInType-SUM!
     (λ _ _ → isTypeNAT!)
     aw1 aw2
@@ -321,7 +327,17 @@ equalInType→ℕ→𝔹 {i} {w} {f} f∈ =
                         → SUMeq! (equalInType i w' #NAT!)
                                  (λ a₁ b₁ ea → equalInType i w' (sub0 a₁ (#[0]ASSERT₄ (#[0]APPLY (CTerm→CTerm0 (→ℕ→𝔹 f)) #[0]VAR))))
                                  w' a b)
-    aw3 w1 e1 (a₁ , a₂ , b₁ , b₂ , a∈ , c₁ , c₂ , b∈) = {!!}
+    aw3 w1 e1 (a₁ , a₂ , b₁ , b₂ , a∈ , c₁ , c₂ , b∈) =
+      a₁ , a₂ , b₁ , b₂ , a∈ , c₁ , c₂ ,
+      ≡CTerm→equalInType (sym (sub0-ASSERT₄-APPLY a₁ (→ℕ→𝔹 f)))
+        (#ASSERTₘ→#ASSERT₄ (≡CTerm→equalInType (sub0-ASSERTₘ-APPLY a₁ f) b∈))
+
+
+#MP-left2-qt₃→#MP-leftₘ : {i : ℕ} {w : 𝕎·} {f a b : CTerm}
+                        → ∈Type i w (#FUN #NAT! #NAT!) f
+                        → equalInType i w (#MP-left2-qt₃ (→ℕ→𝔹 f)) a b
+                        → equalInType i w (#MP-leftₘ f) a b
+#MP-left2-qt₃→#MP-leftₘ {i} {w} {f} {a} {b} f∈ a∈ = {!!}
 
 
 -- This is a variant of MPp₇-inh₂ that uses SUM! instead of SUM and NAT! instead of BOOL₀! (for the MLTT translation)
