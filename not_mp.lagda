@@ -113,7 +113,8 @@ open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
          →equalTypes-#MP-rightₘ ; #MPₘ ; #[0]MP-leftₘ ; #[0]MP-rightₘ ; sub0-fun-mpₘ ; #NUM→NATREC⇛! ; #ASSERTₘ≡ ;
          #[1]FALSE ; #NATRECr ; isTypeMPₘ ; #MP₂ ; →equalTypes-#MP-left ; →equalTypes-#MP-right ; #[0]MP-left3 ;
          →∈Type-FUN ; #MP-left3 ; sub0-fun-mp₂ ; →∈Type-PI ; →∈Type-NEG ; isTypeMP₂ ; #MP₃ ; →equalTypes-#MP-left3 ;
-         #[0]MP-left2 ; #[0]MP-right2 ; #MP-left2 ; #MP-right2 ; ∈#MP-right2→∈MP-right ; sub0-fun-mp₃ ; isTypeMP₃)
+         #[0]MP-left2 ; #[0]MP-right2 ; #MP-left2 ; #MP-right2 ; ∈#MP-right2→∈MP-right ; sub0-fun-mp₃ ; isTypeMP₃ ;
+         inhType-ASSERTₘ→∈NAT! ; equalInType-#⇛!-type-rev)
 open import mp_props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (∈#MP₄→ ; ∈#MP₆→ ; #MP-left2→#MP-left3 ; #MP-left→#MP-left2 ; #MP-left3→#MP-left2)
 
@@ -683,26 +684,6 @@ equalTerms-pres-#⇛-left-rev-NAT! {i} {w} {a} {b} {c} comp eqt eqi =
   →equalInType-CS-NAT!→T isTypeNAT! equalTerms-pres-#⇛-left-rev-NAT! i
 
 
-equalInType-#⇛!-type-rev : {i : ℕ} {w : 𝕎·} {T U a b : CTerm}
-                         → T #⇛! U at w
-                         → equalInType i w U a b
-                         → equalInType i w T a b
-equalInType-#⇛!-type-rev {i} {w} {T} {U} {a} {b} comp a∈ =
-  TSext-equalTypes-equalInType i w U T a b
-    (equalTypes-#⇛-left-right-rev {i} {w} {U} {U} {T} {U} (#⇛-refl w U) (#⇛!→#⇛ {w} {T} {U} comp) (fst a∈))
-    a∈
-
-
-equalInType-#⇛!-type : {i : ℕ} {w : 𝕎·} {T U a b : CTerm}
-                     → T #⇛! U at w
-                     → equalInType i w T a b
-                     → equalInType i w U a b
-equalInType-#⇛!-type {i} {w} {T} {U} {a} {b} comp a∈ =
-  TSext-equalTypes-equalInType i w T U a b
-    (equalTypes-#⇛-left-right {i} {w} {T} {T} {U} {T} (#⇛!-refl {w} {T}) comp (fst a∈))
-    a∈
-
-
 EQ-N0→NATREC-TRUE : (n : ℕ) (w : 𝕎·) (t u a₁ a₂ b₁ b₂ : CTerm)
                   → equalInType n w (#EQ t #N0 #NAT!) a₁ a₂
                   → equalInType n w (#NATREC t #TRUE u) b₁ b₂
@@ -752,47 +733,6 @@ EQ-N0→NATREC-TRUE n w t u a₁ a₂ b₁ b₂ h =
       eqi2 = ≡CTerm→equalInType (sym (#ASSERTₘ≡ (#APPLY (#CS name) a₁)))
                (EQ-N0→NATREC-TRUE n w2 (#APPLY (#CS name) a₁) (#LAMBDA (#[0]LAMBDA #[1]FALSE)) b₁ b₂ b₁ b₂
                  (≡CTerm→equalInType (¬ΣNAT!→¬inhType-Σchoiceₘ-eq bcb a₁ name) eb))
-
-
-#APPLY2-LAMBDA-LAMBDA-FALSE⇛! : (w : 𝕎·) (a b : CTerm)
-                              → #APPLY2 (#LAMBDA (#[0]LAMBDA #[1]FALSE)) a b #⇛! #FALSE at w
-#APPLY2-LAMBDA-LAMBDA-FALSE⇛! w a b w1 e1 = lift (2 , refl)
-
-
-inhType-ASSERTₘ→∈NAT! : (i : ℕ) (w : 𝕎·) (t : CTerm)
-                      → ∈Type i w #NAT! t
-                      → inhType i w (#ASSERTₘ t)
-                      → equalInType i w #NAT! t #N0
-inhType-ASSERTₘ→∈NAT! i w t t∈ (q , q∈) =
-  equalInType-local (Mod.∀𝕎-□Func M aw1 (equalInType-NAT!→ i w t t t∈))
-  where
-  aw1 : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' t t → equalInType i w' #NAT! t #N0)
-  aw1 w1 e1 (n , c₁ , c₂) =
-    equalInType-#⇛ₚ-left-right-rev {i} {w1} {#NAT!} {t} {#NUM n} {#N0} {#N0}
-      c₁ (#⇛!-refl {w1} {#N0}) (concl n q∈2)
-    where
-    q∈1 : ∈Type i w1 (#NATREC t #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))) q
-    q∈1 = ≡CTerm→equalInType (#ASSERTₘ≡ t) (equalInType-mon q∈ w1 e1)
-
-    q∈2 : ∈Type i w1 (#NATRECr n #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))) q
-    q∈2 = equalInType-#⇛!-type {i} {w1}
-            {#NATREC t #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))}
-            {#NATRECr n #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))}
-            {q} {q}
-            (#NUM→NATREC⇛! {t} {n} #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE)) c₁)
-            q∈1
-
-    concl : (n : ℕ)
-          → ∈Type i w1 (#NATRECr n #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))) q
-          → equalInType i w1 #NAT! (#NUM n) #N0
-    concl 0 h = NUM-equalInType-NAT! i w1 0
-    concl (suc n) h =
-      ⊥-elim (¬equalInType-FALSE {w1} {i} {q} {q}
-               (equalInType-#⇛!-type {i} {w1}
-                  {#NATRECr (suc n) #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))} {#FALSE}
-                  {q} {q}
-                  (#APPLY2-LAMBDA-LAMBDA-FALSE⇛! w1 (#NUM n) (#NATREC (#NUM n) #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))))
-                  h))
 
 
 #SUM-ASSERTₘ→#Σchoice : Nat!ℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}

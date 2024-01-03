@@ -86,19 +86,20 @@ open import terms3(W)(C)(K)(G)(X)(N)(EC)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
 
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using ()
+  using (TSext-equalTypes-equalInType)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqTypesNEG← ; eqTypesSQUASH← ; →equalInType-NAT ; equalInType-NAT!→ ; equalInType-FUN→ ; ≡CTerm→equalInType ;
          equalInType-FUN ; isTypeNAT! ; →≡equalTypes ; eqTypesSUM← ; eqTypesNAT ; eqTypesFUN← ; eqTypesPI← ; ≡CTerm→eqTypes ;
          eqTypesISECT← ; eqTypesNOENC← ; equalInType-local ; equalInType-ISECT→ ; equalInType-NOENC→ ; equalInType-PI ;
          equalInType-refl ; equalInType-mon ; equalInType-NEG ; equalInType-NEG→ ; equalInType-PI→ ; equalInType-SUM→ ;
-         equalInType-SUM ; equalInType-SQUASH→ ; →≡equalInType ; eqTypes-local ; eqTypesTRUE ; eqTypesFALSE)
+         equalInType-SUM ; equalInType-SQUASH→ ; →≡equalInType ; eqTypes-local ; eqTypesTRUE ; eqTypesFALSE ;
+         NUM-equalInType-NAT! ; ¬equalInType-FALSE)
 open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-ASSERT₃-APPLY ; equalInType-NEG→¬inh ;
          equalInType-BOOL!→equalTypes-ASSERT₃ ; isType-#NAT!→BOOL ; isType-#NAT!→BOOL! ; isType-#NAT→BOOL ;
          sub0-NEG-ASSERT₂-APPLY ; →equalInType-SQUASH ; isTypeBOOL ; isTypeBOOL! ; isTypeBOOL₀ ; isType-#NAT!→BOOL₀ ;
          isTypeBOOL₀!→ ; isType-#NAT!→BOOL₀! ; isType-#NAT→BOOL₀ ; eqTypesQNAT! ; equalInType-BOOL₀!→ ;
-         equalTypes-#⇛-left-right-rev)
+         equalTypes-#⇛-left-right-rev ; equalTypes-#⇛-left-right)
 open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (_#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ; presPure ; →presPure-NATREC₁ ; →presPure-NATREC₂ ; →presPure-NATREC₃ ;
          equalTypesPI→ₗ ; equalTypesPI→ᵣ ; eqTypesSUM!← ; SUMeq! ; equalInType-SUM!→ ; equalInType-SUM!)
@@ -1198,5 +1199,66 @@ sub0-fun-mp-qt₃ a =
   where
     e : shiftDown 1 (shiftUp 0 (shiftUp 0 ⌜ a ⌝)) ≡ ⌜ a ⌝
     e rewrite #shiftUp 0 a | #shiftUp 0 a | #shiftDown 1 a = refl
+
+
+equalInType-#⇛!-type-rev : {i : ℕ} {w : 𝕎·} {T U a b : CTerm}
+                         → T #⇛! U at w
+                         → equalInType i w U a b
+                         → equalInType i w T a b
+equalInType-#⇛!-type-rev {i} {w} {T} {U} {a} {b} comp a∈ =
+  TSext-equalTypes-equalInType i w U T a b
+    (equalTypes-#⇛-left-right-rev {i} {w} {U} {U} {T} {U} (#⇛-refl w U) (#⇛!→#⇛ {w} {T} {U} comp) (fst a∈))
+    a∈
+
+
+equalInType-#⇛!-type : {i : ℕ} {w : 𝕎·} {T U a b : CTerm}
+                     → T #⇛! U at w
+                     → equalInType i w T a b
+                     → equalInType i w U a b
+equalInType-#⇛!-type {i} {w} {T} {U} {a} {b} comp a∈ =
+  TSext-equalTypes-equalInType i w T U a b
+    (equalTypes-#⇛-left-right {i} {w} {T} {T} {U} {T} (#⇛!-refl {w} {T}) comp (fst a∈))
+    a∈
+
+
+#APPLY2-LAMBDA-LAMBDA-FALSE⇛! : (w : 𝕎·) (a b : CTerm)
+                              → #APPLY2 (#LAMBDA (#[0]LAMBDA #[1]FALSE)) a b #⇛! #FALSE at w
+#APPLY2-LAMBDA-LAMBDA-FALSE⇛! w a b w1 e1 = lift (2 , refl)
+
+
+inhType-ASSERTₘ→∈NAT! : (i : ℕ) (w : 𝕎·) (t : CTerm)
+                      → ∈Type i w #NAT! t
+                      → inhType i w (#ASSERTₘ t)
+                      → equalInType i w #NAT! t #N0
+inhType-ASSERTₘ→∈NAT! i w t t∈ (q , q∈) =
+  equalInType-local (Mod.∀𝕎-□Func M aw1 (equalInType-NAT!→ i w t t t∈))
+  where
+  aw1 : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' t t → equalInType i w' #NAT! t #N0)
+  aw1 w1 e1 (n , c₁ , c₂) =
+    equalInType-#⇛ₚ-left-right-rev {i} {w1} {#NAT!} {t} {#NUM n} {#N0} {#N0}
+      c₁ (#⇛!-refl {w1} {#N0}) (concl n q∈2)
+    where
+    q∈1 : ∈Type i w1 (#NATREC t #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))) q
+    q∈1 = ≡CTerm→equalInType (#ASSERTₘ≡ t) (equalInType-mon q∈ w1 e1)
+
+    q∈2 : ∈Type i w1 (#NATRECr n #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))) q
+    q∈2 = equalInType-#⇛!-type {i} {w1}
+            {#NATREC t #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))}
+            {#NATRECr n #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))}
+            {q} {q}
+            (#NUM→NATREC⇛! {t} {n} #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE)) c₁)
+            q∈1
+
+    concl : (n : ℕ)
+          → ∈Type i w1 (#NATRECr n #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))) q
+          → equalInType i w1 #NAT! (#NUM n) #N0
+    concl 0 h = NUM-equalInType-NAT! i w1 0
+    concl (suc n) h =
+      ⊥-elim (¬equalInType-FALSE {w1} {i} {q} {q}
+               (equalInType-#⇛!-type {i} {w1}
+                  {#NATRECr (suc n) #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))} {#FALSE}
+                  {q} {q}
+                  (#APPLY2-LAMBDA-LAMBDA-FALSE⇛! w1 (#NUM n) (#NATREC (#NUM n) #TRUE (#LAMBDA (#[0]LAMBDA #[1]FALSE))))
+                  h))
 
 \end{code}[hide]

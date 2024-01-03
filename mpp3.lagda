@@ -91,7 +91,7 @@ open import terms8(W)(C)(K)(G)(X)(N)(EC)
 open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (∀𝕎-□Func2 ; ∀𝕎-□Func3)
 open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-  using (#⇛-mon)
+  using (TSext-equalTypes-equalInType ; #⇛-mon)
 open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (eqTypesFUN← ; equalInType-refl ; equalInType-mon ; equalInType-FUN→ ; ≡CTerm→equalInType ; NUM-equalInType-NAT! ;
          equalInType-NAT!→ ; equalInType-SUM ; isTypeNAT! ; equalInType-FUN ; equalInType-local ; equalInType-PI ;
@@ -101,7 +101,7 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (isTypeBOOL ; isTypeBOOL! ; sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-NEG-ASSERT₂-APPLY ;
          equalInType-trans ; equalInType-BOOL→ ; →equalInType-BOOL ; equalInType-NEG→¬inh ; →equalInType-SQUASH ;
          →equalInType-BOOL! ; sub0-ASSERT₃-APPLY ; inhType-mon ; equalInType-BOOL!→ ; equalInType-BOOL₀!→ ;
-         equalInType-#⇛-LR ; equalTypes→equalInType ; →equalInType-BOOL₀! ; isTypeBOOL₀!→)
+         equalInType-#⇛-LR ; equalTypes→equalInType ; →equalInType-BOOL₀! ; isTypeBOOL₀!→ ; →equalInType-BOOL₀!-INL)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (→equalInType-NAT!)
 open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -123,7 +123,7 @@ open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
          #MP-left3 ; →∈Type-PI ; sub0-fun-mp₃ ; →equalTypes-#MP-left2 ; sub0-ASSERTₘ-APPLY ;
          →equalTypes-#MP-right2 ; #MP-left2 ; #MP-right2 ; sub0-fun-mp₆ ; →equalTypes-#MP-left-qt₃ ;
          →equalTypes-#MP-right-qt₃ ; #MP-left-qt₃ ; #MP-right-qt₃ ; #[0]MP-right2-qt₃ ;
-         #MP-right2-qt₃ ; isType-MP-right-qt₃-body ; #MP-left2-qt₃ ; #ASSERTₘ ;
+         #MP-right2-qt₃ ; isType-MP-right-qt₃-body ; #MP-left2-qt₃ ; #ASSERTₘ ; inhType-ASSERTₘ→∈NAT! ;
          #[0]MP-left2-qt₃ ; sub0-fun-mp-qt₃ ; #[0]SUM! ; #[1]ASSERTₘ ; #[0]ASSERTₘ ; ≡ASSERTₘ ;
          #MP-leftₘ ; #MP-rightₘ ; →equalTypes-#MP-rightₘ ; →equalTypes-#MP-leftₘ ; #NAT!→NAT!≡ ; ≡SUM!)
 open import mp_props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -288,10 +288,61 @@ equalInType→ℕ→𝔹 {i} {w} {f} f∈ =
     aw1 w2 e2 (suc k , c₁ , c₂) = #AX , #AX , inj₂ (#APPLY→ℕ→𝔹s w2 f n₁ k c₁ , #APPLY→ℕ→𝔹s w2 f n₂ k c₂)
 
 
+{--
+equalTypes-#ASSERTₘ0 : {i : ℕ} {w : 𝕎·} {t : CTerm}
+                     → t #⇛! #N0 at w
+                     → equalTypes i w (#ASSERTₘ t) #TRUE
+equalTypes-#ASSERTₘ0 {i} {w} {t} c = {!!}
+
+
+equalTypes-#ASSERTₘs : {i : ℕ} {w : 𝕎·} {t : CTerm} {k : ℕ}
+                     → t #⇛! #NUM k at w
+                     → equalTypes i w (#ASSERTₘ t) #FALSE
+equalTypes-#ASSERTₘs {i} {w} {t} {k} c = {!!}
+--}
+
+
+→inhType-ASSERT₄ : (i : ℕ) (w : 𝕎·) (t a b : CTerm)
+                 → equalInType i w #BOOL₀! t #BTRUE
+                 → equalInType i w (#ASSERT₄ t) a b
+→inhType-ASSERT₄ i w t a b t∈ =
+  TSext-equalTypes-equalInType i w (#ASSERT₄ #BTRUE) (#ASSERT₄ t) a b
+    (equalInType-BOOL₀!→equalTypes-ASSERT₄ (equalInType-sym t∈))
+    (equalInType-EQ (isTypeBOOL₀!→ i w) (Mod.∀𝕎-□ M aw))
+  where
+  aw : ∀𝕎 w (λ w' _ → EQeq #BTRUE #BTRUE (equalInType i w' #BOOL₀!) w' a b)
+  aw w1 e1 = →equalInType-BOOL₀!-INL i w1 #AX #AX
+
+
+#⇛!sameℕ-N0→ : {w : 𝕎·} {t : CTerm}
+             → #⇛!sameℕ w t #N0
+             → t #⇛! #N0 at w
+#⇛!sameℕ-N0→ {w} {t} (k , c₁ , c₂)
+  rewrite #NUMinj {k} {0} (sym (#⇛!→≡ {#N0} {#NUM k} {w} c₂ tt))
+  = c₁
+
+
+#APPLY→ℕ→𝔹∈BOOL₀! : {i : ℕ} {w : 𝕎·} {f a : CTerm}
+                  → equalInType i w #NAT! (#APPLY f a) #N0
+                  → equalInType i w #BOOL₀! (#APPLY (→ℕ→𝔹 f) a) #BTRUE
+#APPLY→ℕ→𝔹∈BOOL₀! {i} {w} {f} {a} f∈ =
+  →equalInType-BOOL₀! i w (#APPLY (→ℕ→𝔹 f) a) #BTRUE
+    (Mod.∀𝕎-□Func M aw (equalInType-NAT!→ i w (#APPLY f a) #N0 f∈))
+  where
+  aw : ∀𝕎 w (λ w' e' → #⇛!sameℕ w' (#APPLY f a) #N0 → #strongBool! w' (#APPLY (→ℕ→𝔹 f) a) #BTRUE)
+  aw w1 e1 c = #AX , #AX , inj₁ (#APPLY→ℕ→𝔹0 w1 f a (#⇛!sameℕ-N0→ {w1} {#APPLY f a} c) , #⇛!-refl {w1} {#BTRUE})
+
+
 #ASSERTₘ→#ASSERT₄ : {i : ℕ} {w : 𝕎·} {f a b₁ b₂ : CTerm}
+                  → ∈Type i w (#FUN #NAT! #NAT!) f
+                  → ∈Type i w #NAT! a
                   → equalInType i w (#ASSERTₘ (#APPLY f a)) b₁ b₂
                   → equalInType i w (#ASSERT₄ (#APPLY (→ℕ→𝔹 f) a)) b₁ b₂
-#ASSERTₘ→#ASSERT₄ {i} {w} {f} {a} {b₁} {b₂} b∈ = {!!}
+#ASSERTₘ→#ASSERT₄ {i} {w} {f} {a} {b₁} {b₂} f∈ a∈ b∈ =
+  →inhType-ASSERT₄ i w (#APPLY (→ℕ→𝔹 f) a) b₁ b₂ (#APPLY→ℕ→𝔹∈BOOL₀! h)
+  where
+  h : equalInType i w #NAT! (#APPLY f a) #N0
+  h = inhType-ASSERTₘ→∈NAT! i w (#APPLY f a) (equalInType-FUN→ f∈ w (⊑-refl· w) a a a∈) (b₁ , equalInType-refl b∈)
 
 
 #MP-rightₘ→#MP-right2-qt₃ : {i : ℕ} {w : 𝕎·} {f a b : CTerm}
@@ -330,14 +381,15 @@ equalInType→ℕ→𝔹 {i} {w} {f} f∈ =
     aw3 w1 e1 (a₁ , a₂ , b₁ , b₂ , a∈ , c₁ , c₂ , b∈) =
       a₁ , a₂ , b₁ , b₂ , a∈ , c₁ , c₂ ,
       ≡CTerm→equalInType (sym (sub0-ASSERT₄-APPLY a₁ (→ℕ→𝔹 f)))
-        (#ASSERTₘ→#ASSERT₄ (≡CTerm→equalInType (sub0-ASSERTₘ-APPLY a₁ f) b∈))
+        (#ASSERTₘ→#ASSERT₄ (equalInType-mon f∈ w1 e1) (equalInType-refl a∈) (≡CTerm→equalInType (sub0-ASSERTₘ-APPLY a₁ f) b∈))
 
 
 #MP-left2-qt₃→#MP-leftₘ : {i : ℕ} {w : 𝕎·} {f a b : CTerm}
                         → ∈Type i w (#FUN #NAT! #NAT!) f
                         → equalInType i w (#MP-left2-qt₃ (→ℕ→𝔹 f)) a b
                         → equalInType i w (#MP-leftₘ f) a b
-#MP-left2-qt₃→#MP-leftₘ {i} {w} {f} {a} {b} f∈ a∈ = {!!}
+#MP-left2-qt₃→#MP-leftₘ {i} {w} {f} {a} {b} f∈ a∈ =
+  {!!}
 
 
 -- This is a variant of MPp₇-inh₂ that uses SUM! instead of SUM and NAT! instead of BOOL₀! (for the MLTT translation)
