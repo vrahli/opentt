@@ -102,7 +102,7 @@ open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
          equalInType-trans ; equalInType-BOOL→ ; →equalInType-BOOL ; equalInType-NEG→¬inh ; →equalInType-SQUASH ;
          →equalInType-BOOL! ; sub0-ASSERT₃-APPLY ; inhType-mon ; equalInType-BOOL!→ ; equalInType-BOOL₀!→ ;
          equalInType-#⇛-LR ; equalTypes→equalInType ; →equalInType-BOOL₀! ; isTypeBOOL₀!→ ; →equalInType-BOOL₀!-INL ;
-         →equalInType-TRUE ; equalInType-EQ→₁ ; isType-#NAT!→BOOL₀!)
+         →equalInType-TRUE ; equalInType-EQ→₁ ; isType-#NAT!→BOOL₀! ; equalTypes-#⇛-left-rev)
 open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
   using (→equalInType-NAT!)
 open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
@@ -333,6 +333,21 @@ equalInType→ℕ→ℕ→𝔹 {i} {w} {f} f∈ =
          (equalInType→ℕ→𝔹 {i} {w1} {#APPLY f a₁} {#APPLY f a₂} (equalInType-FUN→ f∈ w1 e1 a₁ a₂ a∈)))
 
 
+equalTypes→ℕ→ℕ→𝔹 : {i : ℕ} {w : 𝕎·} {f a : CTerm}
+                 → ∈Type i w (#FUN #NAT! (#FUN #NAT! #NAT!)) f
+                 → ∈Type i w #NAT! a
+                 → equalInType i w #NAT!→BOOL₀! (#APPLY (→ℕ→ℕ→𝔹 f) a) (→ℕ→𝔹 (#APPLY f a))
+equalTypes→ℕ→ℕ→𝔹 {i} {w} {f} {a} f∈ a∈ =
+  equalInType-#⇛ₚ-left-right-rev {i} {w} {#NAT!→BOOL₀!}
+    {#APPLY (→ℕ→ℕ→𝔹 f) a}
+    {→ℕ→𝔹 (#APPLY f a)}
+    {→ℕ→𝔹 (#APPLY f a)}
+    {→ℕ→𝔹 (#APPLY f a)}
+    (#APPLY→ℕ→ℕ-#⇛! {w} {f} {a})
+    (#⇛!-refl {w} {→ℕ→𝔹 (#APPLY f a)})
+    (≡CTerm→equalInType (sym #NAT!→BOOL₀!≡) (equalInType→ℕ→𝔹 (equalInType-FUN→ f∈ w (⊑-refl· w) a a a∈)))
+
+
 →inhType-ASSERT₄ : (i : ℕ) (w : 𝕎·) (t a b : CTerm)
                  → equalInType i w #BOOL₀! t #BTRUE
                  → equalInType i w (#ASSERT₄ t) a b
@@ -561,6 +576,27 @@ IFEQ⇓from-to-decomp₁ m a c d v w w' comp isv isvc isvd
       equalInType-NEG→ x∈ w2 e2 y₁ y₂ (#MP-right2-qt₃→#MP-rightₘ (equalInType-mon f∈ w2 (⊑-trans· e1 e2)) y∈)
 
 
+#MP-leftₘ→#MP-left2-qt₃ : {i : ℕ} {w : 𝕎·} {f a b : CTerm}
+                        → ∈Type i w (#FUN #NAT! #NAT!) f
+                        → equalInType i w (#MP-leftₘ f) a b
+                        → equalInType i w (#MP-left2-qt₃ (→ℕ→𝔹 f)) a b
+#MP-leftₘ→#MP-left2-qt₃ {i} {w} {f} {a} {b} f∈ a∈ =
+  equalInType-NEG
+    (eqTypesNEG← (→equalTypes-#MP-right2-qt₃ (≡CTerm→equalInType (sym #NAT!→BOOL₀!≡) (equalInType→ℕ→𝔹 f∈))))
+    aw
+  where
+  aw : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w' (#NEG (#MP-right2-qt₃ (→ℕ→𝔹 f))) a₁ a₂)
+  aw w1 e1 x₁ x₂ x∈ =
+    equalInType-NEG→ a∈ w1 e1 x₁ x₂
+      (equalInType-NEG
+        (→equalTypes-#MP-rightₘ (≡CTerm→equalInType (sym #NAT!→NAT!≡) (equalInType-mon f∈ w1 e1)))
+        aw1)
+     where
+     aw1 : ∀𝕎 w1 (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType i w' (#MP-rightₘ f) a₁ a₂)
+     aw1 w2 e2 y₁ y₂ y∈ =
+       equalInType-NEG→ x∈ w2 e2 y₁ y₂ (#MP-rightₘ→#MP-right2-qt₃ (equalInType-mon f∈ w2 (⊑-trans· e1 e2)) y∈)
+
+
 #¬Names→ℕ→ℕ→𝔹 : {t : CTerm}
               → #¬Names t
               → #¬Names (→ℕ→ℕ→𝔹 t)
@@ -573,12 +609,20 @@ IFEQ⇓from-to-decomp₁ m a c d v w w' comp isv isvc isvd
 #¬Enc→ℕ→ℕ→𝔹 {t} h rewrite h = refl
 
 
+#MPeval : CTerm → CTerm
+#MPeval eval = #PI #NAT! (#[0]FUN (#[0]MP-left2-qt₅ eval) (#[0]MP-right2-qt₅ eval))
+
+
+#MPevalExt : CTerm → CTerm
+#MPevalExt eval = (mpEvalEx (→ℕ→ℕ→𝔹 eval) #lamInfSearchP)
+
+
 -- This is a variant of MPp₇-inh₂ that uses SUM! instead of SUM and NAT! instead of BOOL₀! (for the MLTT translation)
 MPp₇-inh₃ : (exb : ∃□) (i : ℕ) (w : 𝕎·) (eval : CTerm)
           → #¬Names eval
           → #¬Enc eval
           → ∈Type i w (#FUN #NAT! (#FUN #NAT! #NAT!)) eval
-          → ∈Type i w (#PI #NAT! (#[0]FUN (#[0]MP-left2-qt₅ eval) (#[0]MP-right2-qt₅ eval))) (mpEvalEx (→ℕ→ℕ→𝔹 eval) #lamInfSearchP)
+          → ∈Type i w (#MPeval eval) (#MPevalExt eval)
 MPp₇-inh₃ exb i w eval nnf nef eval∈ =
   equalInType-PI
     (λ w' e' → isTypeNAT! {w'} {i})
@@ -617,6 +661,33 @@ MPp₇-inh₃ exb i w eval nnf nef eval∈ =
                         → equalInType i w' (#MP-rightₘ (#APPLY eval n₁))
                                       (#APPLY (#APPLY (mpEvalEx (→ℕ→ℕ→𝔹 eval) #lamInfSearchP) n₁) a₁)
                                       (#APPLY (#APPLY (mpEvalEx (→ℕ→ℕ→𝔹 eval) #lamInfSearchP) n₂) a₂))
-    aw3 w2 e2 a₁ a₂ a∈ = #MP-right2-qt₃→#MP-rightₘ {!!} {!!}
+    aw3 w2 e2 a₁ a₂ a∈ =
+      #MP-right2-qt₃→#MP-rightₘ
+        (equalInType-FUN→ eval∈ w2 (⊑-trans· e1 e2) n₁ n₁ (equalInType-mon (equalInType-refl n∈) w2 e2))
+        (TSext-equalTypes-equalInType i w2
+           (#MP-right2-qt₃ (#APPLY (→ℕ→ℕ→𝔹 eval) n₁))
+           (#MP-right2-qt₃ (→ℕ→𝔹 (#APPLY eval n₁)))
+           _ _
+           (→equalTypes-#MP-right2-qt₃ (equalTypes→ℕ→ℕ→𝔹 (equalInType-mon eval∈ w2 (⊑-trans· e1 e2))
+                                                         (equalInType-mon (equalInType-refl n∈) w2 e2)))
+           aw4)
+      where
+      aw6 : equalInType i w2 (#MP-left2-qt₃ (→ℕ→𝔹 (#APPLY eval n₁))) a₁ a₂
+      aw6 = #MP-leftₘ→#MP-left2-qt₃ (equalInType-FUN→ eval∈ w2 (⊑-trans· e1 e2) n₁ n₁ (equalInType-mon (equalInType-refl n∈) w2 e2)) a∈
+
+      aw5 : equalInType i w2 (#MP-left2-qt₃ (#APPLY (→ℕ→ℕ→𝔹 eval) n₁)) a₁ a₂
+      aw5 = TSext-equalTypes-equalInType i w2
+              (#MP-left2-qt₃ (→ℕ→𝔹 (#APPLY eval n₁)))
+              (#MP-left2-qt₃ (#APPLY (→ℕ→ℕ→𝔹 eval) n₁))
+              a₁ a₂
+              (→equalTypes-#MP-left2-qt₃
+                (equalInType-sym (equalTypes→ℕ→ℕ→𝔹 (equalInType-mon eval∈ w2 (⊑-trans· e1 e2))
+                                                   (equalInType-mon (equalInType-refl n∈) w2 e2))))
+              aw6
+
+      aw4 : equalInType i w2 (#MP-right2-qt₃ (#APPLY (→ℕ→ℕ→𝔹 eval) n₁))
+                             (#APPLY (#APPLY (mpEvalEx (→ℕ→ℕ→𝔹 eval) #lamInfSearchP) n₁) a₁)
+                             (#APPLY (#APPLY (mpEvalEx (→ℕ→ℕ→𝔹 eval) #lamInfSearchP) n₂) a₂)
+      aw4 = equalInType-FUN→ aw3' w2 e2 a₁ a₂ aw5
 
 \end{code}

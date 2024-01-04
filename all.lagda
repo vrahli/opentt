@@ -62,7 +62,8 @@ open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB) using (¬MP ; ¬
 -- open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(EL)(CE)(CB)
 -- MP is however consistent when restricted to pure functions
 open import mpp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(EM)(EC) using (MPp-inh ; MPp₂-inh ; MPp₃-inh ; MPp₆-inh)
-open import mpp2{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(MP)(EM)(EC) using (MPp₆-inh₂)
+open import mpp2{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(MP)(EM)(EC) using (MPp₆-inh₂ ; MPp₇-inh₂)
+open import mpp3{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(MP)(EM)(EC) using (MPp₇-inh₃)
 -- Using classsical logic, MP is also consistent when using an open-like modality (see ExBar in exBar.lagda)
 open import mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(EB)(EM) using (MPvalid ; MP₂valid)
 -- If we assume that choices are TRUE and FALSE only, using choice sequences we can prove
