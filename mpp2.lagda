@@ -31,7 +31,6 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 open import Axiom.ExcludedMiddle
 
 
@@ -56,10 +55,10 @@ open import MarkovPrinciple
 
 
 module mpp2 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-            (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
+            (C : Choice)
+            (K : Compatible W C)
             (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
             (N : NewChoice {L} W C K G)
-            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
             (MP : MarkovPrinciple (lsuc(L)))
             (EM : ExcludedMiddle (lsuc(L))) -- only to use mpp.lagda, but shouldn't be needed
             (EC : Encode)
@@ -76,7 +75,7 @@ open import choiceExtDef(W)(C)(K)(G)(X)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
 
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
 open import terms3(W)(C)(K)(G)(X)(N)(EC)
@@ -85,34 +84,34 @@ open import terms4(W)(C)(K)(G)(X)(N)(EC)
   using (¬Names→⇓)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
 
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
   using (∀𝕎-□Func2 ; ∀𝕎-□Func3)
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#⇛-mon)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (eqTypesFUN← ; equalInType-refl ; equalInType-mon ; equalInType-FUN→ ; ≡CTerm→equalInType ; NUM-equalInType-NAT! ;
          equalInType-NAT!→ ; equalInType-SUM ; isTypeNAT! ; equalInType-FUN ; equalInType-local ; equalInType-PI ;
          eqTypesNEG← ; →≡equalTypes ; →≡equalInType ; equalInType-sym ; equalInType-PI→ ; equalInType-SUM→ ; equalInType-NEG ;
          equalInType-SQUASH→ ; equalInType-EQ→ ; equalInType-EQ ; ≡CTerm→eqTypes)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (isTypeBOOL ; isTypeBOOL! ; sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-NEG-ASSERT₂-APPLY ;
          equalInType-trans ; equalInType-BOOL→ ; →equalInType-BOOL ; equalInType-NEG→¬inh ; →equalInType-SQUASH ;
          →equalInType-BOOL! ; sub0-ASSERT₃-APPLY ; inhType-mon ; equalInType-BOOL!→ ; equalInType-BOOL₀!→ ;
          equalInType-#⇛-LR ; equalTypes→equalInType ; →equalInType-BOOL₀! ; isTypeBOOL₀!→)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props4(W)(M)(C)(K)(G)(X)(N)(EC)
   using (→equalInType-NAT!)
-open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props6(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalInType-#⇛ₚ-left-right-rev ; SUMeq! ; equalInType-SUM! ; equalInType-SUM!→)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import lem_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (→equalTypes-#SUM-ASSERT₅ ; #SUM-ASSERT₅ ; #ASSERT₄ ; #[0]ASSERT₄ ; sub0-ASSERT₄-APPLY ; ≡ASSERT₄ ;
          equalInType-BOOL₀!→equalTypes-ASSERT₄ ; #ASSERT₄≡)
-open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import pure(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalInType-TPURE→ ; #¬Names-APPLY ; ¬Names→⇛! ; equalInType-TPURE→ₗ ; equalInType-TPURE→ᵣ ; #⇛!nv ; #⇛v ;
          →#⇛!-APPLY ; APPLY#⇛→#⇛!nv ; #⇛!-pres-#⇛!nv ; #⇛!→∈Type ; #⇛!→equalInType)
-open import pure2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import pure2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (Πpure→₂ ; #[0]MP-left2-qt₄ ; #[0]MP-right2-qt₄ ; mpEvalEx)
 
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mp_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#[0]MP-left ; #[0]MP-right ; #[0]MP-left3 ; #[0]MP-left2 ; #[0]MP-right2 ; #[0]MP-left-qt ; #[0]MP-right-qt ;
          #[0]MP-left-qt₂ ; #[0]MP-right-qt₂ ; #[0]MP-left-qt₃ ; #[0]MP-right-qt₃ ; sub0-fun-mp ; →equalTypes-#MP-left ;
          →equalTypes-#MP-right ; #MP-left ; #MP-right ; sub0-fun-mp₄ ; →equalTypes-#MP-left-qt ; →equalTypes-#MP-right-qt ;
@@ -122,16 +121,16 @@ open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
          →equalTypes-#MP-right-qt₃ ; #MP-left-qt₃ ; #MP-right-qt₃ ; #[0]MP-right2-qt₃ ;
          #MP-right2-qt₃ ; isType-MP-right-qt₃-body ; #MP-left2-qt₃ ;
          #[0]MP-left2-qt₃ ; sub0-fun-mp-qt₃)
-open import mp_props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mp_props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (→equalTypes-#MP-right2-qt₃ ; equalInType-#MP-left-qt₃→ ; →equalTypes-#MP-left2-qt₃ ; →equalInType-#MP-left-qt₃)
 -- ;
 --         #MP-left2→#MP-left ; #MP-left3→#MP-left2 ; equalInType-#MP-left-qt→ ; #MP-left2→#MP-left3)
 -- MOVE all these usings to a separate file so that we don't have to rely on ExcludedMiddle
-open import mpp(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
+open import mpp(W)(M)(C)(K)(G)(X)(N)(EM)(EC)
   using (#MPp₆ ; →inhType-ASSERT₄-APPLY ; #¬Names→inhType-ASSERT₄ ; strongBool!-BTRUE→ ; equalInType-ASSERT₄→ ;
          isType-#TPURE-NAT!→BOOL₀! ; #lamInfSearchP ; #lamInfSearchPP ; #APPLY-#lamInfSearchP-#⇛! ;
          #APPLY-#lamInfSearchPP#⇛!)
-open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mp_search(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#infSearchP ; #⇛!sameℕ-mon ; #infSearch ; #infSearchF ; #infSearchI ; #infSearch⇛₁ ; #infSearch⇛₂ ; #infSearch⇛₃ ;
          #¬Names→⇛! ; #¬Names-#infSearch ; #⇛!-mon)
 

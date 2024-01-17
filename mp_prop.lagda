@@ -31,7 +31,6 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 open import Axiom.ExcludedMiddle
 
 
@@ -66,8 +65,7 @@ module mp_prop {L  : Level}
                (EC : Encode)
                (V  : ChoiceVal W C K G X N EC)
                (F  : Freeze {L} W C K P G N)
-               (E  : Extensionality 0ℓ (lsuc(lsuc(L))))
-               (CB : ChoiceBar W M C K P G X N EC V F E)
+               (CB : ChoiceBar W M C K P G X N EC V F)
                (EM : ExcludedMiddle (lsuc(L)))
        where
 
@@ -83,11 +81,11 @@ open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
 
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import ind2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (<Type ; <Type1 ; <TypeBAR)
-open import ind3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import ind3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalTypes-ind)
 
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
@@ -103,13 +101,13 @@ open import terms9
 open import choiceProp(W)(C)(K)(G)(X)(N)(EC)
   using (getChoiceℙ ; ¬enc→⇛!INL-INR)
 
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
   using (eqTypes-mon)
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
 --  using (equalInType→eqInType ; eqInType→equalInType)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
   using (∀𝕎-□Func2)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalInType→equalTypes-aux ; equalInType-FUN→ ; ≡CTerm→equalInType ; eqTypesSQUASH← ;
          eqTypesSUM← ; isTypeNAT! ; eqTypesNEG← ; →≡equalTypes ; eqTypesPI← ; eqTypesFUN← ; eqTypesUniv ;
          equalInType-NEG ; eqTypesUNION← ; equalInType-SQUASH→ ; equalInType-SUM→ ; equalInType-refl ;
@@ -117,41 +115,41 @@ open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
          NUM-equalInType-NAT! ; equalTypes→equalInType-UNIV ; equalInType-local ; equalInType-EQ→ ;
          equalInType-NAT!→ ; ¬equalInType-FALSE ; ≡CTerm→eqTypes ; eqTypesEQ← ; eqTypesTRUE ; equalInType-EQ ;
          equalInType-FUN)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (→equalInType-SQUASH ; →equalInType-CS-NAT!→T ; equalTerms-pres-#⇛-left-rev ; equalTypes-#⇛-left-right-rev ;
          →equalInType-TRUE ; →equalInType-UNION ; isType-#NAT!→BOOL₀! ; inhType-mon ; equalInType-BOOL₀!→ ;
          →equalInType-BOOL₀! ; equalInType-#⇛-LR)
-open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props6(W)(M)(C)(K)(G)(X)(N)(EC)
   using (SUMeq! ; equalInType-SUM!→ ; equalInType-SUM! ; eqTypesSUM!←)
 
-open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import uniMon(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalTypes-uni-mon ; equalInType-uni-mon ; equalInType-change-level)
 
-open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import pure(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalInType-TPURE→)
 -- TODO: move those:
-open import pure2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import pure2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (∈NAT!-change-level)
 
 -- TODO: move those:
-open import mpp(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
+open import mpp(W)(M)(C)(K)(G)(X)(N)(EM)(EC)
   using (→inhType-ASSERT₄-APPLY ; equalInType-ASSERT₄→ ; →equalInType-ASSERT₄ ; strongBool!-BTRUE→ ;
          #⇛!-pres-equalTypes-mp-qt₃-fun ; #⇛!-pres-equalInType-mp-qt₃-fun)
 
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import lem_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#SUM-ASSERT₅ ; #ASSERT₄ ; #[0]ASSERT₄ ; sub0-ASSERT₄-APPLY ; equalInType-BOOL₀!→equalTypes-ASSERT₄)
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mp_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#[0]MP-left-qt₃ ; #[0]MP-right-qt₃ ; sub0-fun-mp₆ ; →equalTypes-#MP-left-qt₃ ; →equalTypes-#MP-right-qt₃ ;
          #MP₆ ; #MP₇ ; #MP-left-qt₃ ; #MP-right-qt₃ ; ≡SUM! ; #[0]SUM! ;
          equalInTypeTNOENC→ ; equalInTypeTNOENC→ₗ ; equalInTypeTNOENC→ᵣ ; eqTypesTNOENC←)
-open import mp_props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mp_props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalInType-#MP-left-qt₃→)
 
-open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (#[0]Typeℂ₀₁ ; Typeℂ₀₁· ; □·-choice· ; followChoice· ; #-typeℂ₀₁)
-open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (#Σchoice ; #Σchoice≡ ; ¬∀𝕎¬equalInType-#Σchoice ; sub0-#Σchoice-body≡)
-open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (Resℂ ; →equalInType-APPLY-CS-Typeℂ₀₁·)
 --open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
 
@@ -341,7 +339,7 @@ isType-MPℙ-right-body i w f₁ f₂ f∈ w1 e1 a₁ a₂ a∈ =
 -}
 
 
-Choiceℙ : ℕ → ChoiceBar W M C K P G X N EC V F E → Set
+Choiceℙ : ℕ → ChoiceBar W M C K P G X N EC V F → Set
 Choiceℙ i cb =
   ChoiceBar.Typeℂ₀₁ cb ≡ #UNIV i
   × Cℂ₀ ≡ #FALSE

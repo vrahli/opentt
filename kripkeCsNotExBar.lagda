@@ -50,7 +50,6 @@ open import encode
 
 
 module kripkeCsNotExBar {L : Level}
-                        (E3 : Extensionality 0ℓ 3ℓ)
                         (E0 : Extensionality 0ℓ 0ℓ)
        where
 
@@ -106,7 +105,7 @@ open import choiceValDef(W)(C)(K)(G)(X)(N)(EC)(V)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E3)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
 
 
 

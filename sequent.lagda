@@ -30,7 +30,6 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
-open import Axiom.Extensionality.Propositional
 
 open import util
 open import name
@@ -52,11 +51,9 @@ module sequent {L  : Level}
                (M  : Mod W)
                (C  : Choice)
                (K  : Compatible {L} W C)
-               (P  : Progress {L} W C K)
                (G  : GetChoice {L} W C K)
                (X  : ChoiceExt W C)
                (N  : NewChoice W C K G)
-               (E  : Extensionality 0ℓ (lsuc(lsuc(L))))
                (EC : Encode)
       where
        --(bar : Bar W) where
@@ -65,7 +62,7 @@ open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
   using (NATREC⇓ ; predIf≤-sucIf≤ ; subv# ; →#shiftUp ; →#shiftDown ; shiftUp-shiftNameUp ; ¬Names-sub ;
          ¬Seq-sub ; ¬Enc-sub ; ∧≡true→ₗ ; ∧≡true→ᵣ ; #subv)
@@ -77,15 +74,15 @@ open import terms4(W)(C)(K)(G)(X)(N)(EC)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
   using (⇓NUM→SUC⇓NUM ; #APPLY2 ; #FST ; #SND ; SUM! ; #SUM!)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
   using (eqTypes-mon ; weq-ext-eq ; meq-ext-eq ; TUNIONeq-ext-eq)
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
   using (eqInType-ext ; □·EqTypes→uniUpTo ; uniUpTo→□·EqTypes ; TEQrefl-equalTypes)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalInType-mon ; ≡CTerm→equalInType ; ≡CTerm→eqTypes ; equalTypes→equalInType-UNIV ; eqTypesUniv ;
          wPredExtIrr-eqInType ; wPredDepExtIrr-eqInType ; wPredDepExtIrr-eqInType2 ; equalInType-refl ; equalInType-sym ;
          equalInType-EQ ; equalInType-NAT!→)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props4(W)(M)(C)(K)(G)(X)(N)(EC)
   using (→equalInType-NAT!)
 
 

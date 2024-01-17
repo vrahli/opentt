@@ -33,7 +33,6 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 open import Axiom.ExcludedMiddle
 
 
@@ -56,10 +55,11 @@ open import encode
 
 
 module barContP9 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-                 (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
+                 (C : Choice)
+                 (K : Compatible {L} W C)
+                 (G : GetChoice {L} W C K)
                  (X : ChoiceExt W C)
                  (N : NewChoice {L} W C K G)
-                 (E : Extensionality 0ℓ (lsuc(lsuc(L))))
                  (EM : ExcludedMiddle (lsuc(L)))
                  (EC : Encode)
        where
@@ -79,9 +79,9 @@ open import terms9 using (#BAIRE!) --(W)(C)(K)(G)(X)(N)(EC)
 
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (eqTypes-mon)
---open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#⇛-refl)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC) using (eqTypes-mon)
+--open import ind2(W)(M)(C)(K)(G)(X)(N)(EC) using (#⇛-refl)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -89,38 +89,38 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
---open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (TSext-equalTypes-equalInType)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-trans ; equalInType-#⇛-LR)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (→equalInType-NAT! ; equalInType-W→)
---open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import props1(W)(M)(C)(K)(G)(X)(N)(EC) using (TSext-equalTypes-equalInType)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props3(W)(M)(C)(K)(G)(X)(N)(EC) using (equalInType-trans ; equalInType-#⇛-LR)
+open import props4(W)(M)(C)(K)(G)(X)(N)(EC) using (→equalInType-NAT! ; equalInType-W→)
+--open import props5(W)(M)(C)(K)(G)(X)(N)(EC)
+open import pure(W)(M)(C)(K)(G)(X)(N)(EC)
 
-open import props_w(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props_w(W)(M)(C)(K)(G)(X)(N)(EC)
 
---open import list(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import list(W)(M)(C)(K)(G)(X)(N)(EC)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)(EC)
 
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#upd ; #force ; equalInType-force)
---open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (#⇓sameℕ)
-open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (steps-sat-isHighestℕ ; ¬Names→updCtxt)
---open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-upd-force)
---open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-TPURE→ₗ ; equalInType-TPURE→)
---open import continuitySMb(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (isHighestℕ≤)
+open import continuity1(W)(M)(C)(K)(G)(X)(N)(EC) using (#upd ; #force ; equalInType-force)
+--open import continuity1b(W)(M)(C)(K)(G)(X)(N)(EC) using (#⇓sameℕ)
+open import continuity2(W)(M)(C)(K)(G)(X)(N)(EC)
+open import continuity3(W)(M)(C)(K)(G)(X)(N)(EC) using (steps-sat-isHighestℕ ; ¬Names→updCtxt)
+--open import continuity4(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import continuity5(W)(M)(C)(K)(G)(X)(N)(EC)
+open import continuity6(W)(M)(C)(K)(G)(X)(N)(EC) using (equalInType-upd-force)
+--open import continuity7(W)(M)(C)(K)(G)(X)(N)(EC) using (equalInType-TPURE→ₗ ; equalInType-TPURE→)
+--open import continuitySMb(W)(M)(C)(K)(G)(X)(N)(EM)(EC) using (isHighestℕ≤)
 
-open import barContP(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
-open import barContP2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (#INIT ; #APPLY-loop⇓SUP→ ; #⇛!-NUM-type)
-open import barContP3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (seq2list ; mseq∈baire)
-open import barContP4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
---open import barContP5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
-open import barContP6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
+open import barContP(W)(M)(C)(K)(G)(X)(N)(EM)(EC)
+open import barContP2(W)(M)(C)(K)(G)(X)(N)(EM)(EC) using (#INIT ; #APPLY-loop⇓SUP→ ; #⇛!-NUM-type)
+open import barContP3(W)(M)(C)(K)(G)(X)(N)(EM)(EC) using (seq2list ; mseq∈baire)
+open import barContP4(W)(M)(C)(K)(G)(X)(N)(EM)(EC)
+--open import barContP5(W)(M)(C)(K)(G)(X)(N)(EM)(EC)
+open import barContP6(W)(M)(C)(K)(G)(X)(N)(EM)(EC)
   using (#FunBarP ; sem ; #updSeq-APPLY-updr ; updSeq-steps-NUM ; seq2list≡ ; #¬Names-seq2list)
-open import barContP7(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC)
-open import barContP8(W)(M)(C)(K)(P)(G)(X)(N)(E)(EM)(EC) using (follow-NUM-ETA ; type-#⇛-NUM)
+open import barContP7(W)(M)(C)(K)(G)(X)(N)(EM)(EC)
+open import barContP8(W)(M)(C)(K)(G)(X)(N)(EM)(EC) using (follow-NUM-ETA ; type-#⇛-NUM)
 
 
 abstract

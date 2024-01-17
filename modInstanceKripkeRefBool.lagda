@@ -49,7 +49,7 @@ open import choiceVal
 
 -- An instance with Kripke bars (inKripkeBar-Bar) and references
 
-module modInstanceKripkeRefBool (E0 : Extensionality 0ℓ 0ℓ) (E : Extensionality 0ℓ 3ℓ)
+module modInstanceKripkeRefBool (E0 : Extensionality 0ℓ 0ℓ)
        where
 
 
@@ -106,10 +106,10 @@ open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import barI(W)(M)--(C)(K)(P)
 open import computation(W)(C)(K)(G)(X)(N)(enc)
 
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(enc)
+open import props1(W)(M)(C)(K)(G)(X)(N)(enc)
+open import props2(W)(M)(C)(K)(G)(X)(N)(enc)
+open import props3(W)(M)(C)(K)(G)(X)(N)(enc)
 
 
 Typeℂ₀₁-kripke-ref : CTerm
@@ -270,7 +270,7 @@ followChoice-kripke-ref c {w} {f} {r} (bar , i) ioc comp fb =
 
 
 
-open import choiceBar(W)(M)(C)(K)(P)(G)(X)(N)(enc)(V)(F)(E)
+open import choiceBar(W)(M)(C)(K)(P)(G)(X)(N)(enc)(V)(F)
 
 kripkeRef-choiceBar : ChoiceBar
 kripkeRef-choiceBar =

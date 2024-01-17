@@ -35,10 +35,9 @@ module all {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
            (V : ChoiceVal W C K G X N EC)
            (F : Freeze {L} W C K P G N)
            (E0 : Extensionality 0ℓ 0ℓ)
-           (EL : Extensionality 0ℓ (lsuc(lsuc(L))))
            (EM : ExcludedMiddle (lsuc(L))) -- for ExBar, used in turn in lem
            (MP : MarkovPrinciple (lsuc(L)))
-           (CB : ChoiceBar W M C K P G X N EC V F EL)
+           (CB : ChoiceBar W M C K P G X N EC V F)
            (EB : ExBar W M)
        where
 
@@ -49,30 +48,30 @@ open import consistency using (weak-consistency)
 open import subBar{L}(W)(M)(C)(K)(P)
 
 -- LEM is false for Beth/Kripke-like modalities using choices
-open import not_lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB)
+open import not_lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
 -- Using classical, we can however prove that LEM is consistent when using an open-like modality (see ExBar in exBar.lagda)
-open import lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(EM)(EB)(EC)
+open import lem{L}(W)(M)(C)(K)(G)(X)(N)(EM)(EB)(EC)
 -- This version requires choices to be Booleans:
-open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB) using (¬LPO)
+open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB) using (¬LPO)
 -- As opposed to the above version, this one relies on QTBool instead of Bool:
-open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB) using (¬LPOq)
+open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB) using (¬LPOq)
 -- This version requires choices to be Booleans, but also freezable to always be true:
-open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB) using (¬MP ; ¬MP₂ ; ¬MP₃ ; ¬MP₄)
+open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB) using (¬MP ; ¬MP₂ ; ¬MP₃ ; ¬MP₄)
 -- In here, we've tried to prove to prove ¬MP for a read/no-write version of MP, but it is not finished
--- open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(EL)(CE)(CB)
+-- open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(CE)(CB)
 -- MP is however consistent when restricted to pure functions
-open import mpp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(EM)(EC) using (MPp-inh ; MPp₂-inh ; MPp₃-inh ; MPp₆-inh)
-open import mpp2{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(MP)(EM)(EC) using (MPp₆-inh₂ ; MPp₇-inh₂)
-open import mpp3{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(MP)(EM)(EC) using (MPp₇-inh₃)
+open import mpp{L}(W)(M)(C)(K)(G)(X)(N)(EM)(EC) using (MPp-inh ; MPp₂-inh ; MPp₃-inh ; MPp₆-inh)
+open import mpp2{L}(W)(M)(C)(K)(G)(X)(N)(MP)(EM)(EC) using (MPp₆-inh₂ ; MPp₇-inh₂)
+open import mpp3{L}(W)(M)(C)(K)(G)(X)(N)(MP)(EM)(EC) using (MPp₇-inh₃)
 -- Using classsical logic, MP is also consistent when using an open-like modality (see ExBar in exBar.lagda)
-open import mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(EB)(EM) using (MPvalid ; MP₂valid)
+open import mp{L}(W)(M)(C)(K)(G)(X)(N)(EC)(EB)(EM) using (MPvalid ; MP₂valid)
 -- If we assume that choices are TRUE and FALSE only, using choice sequences we can prove
 -- (1) the invalidity of MP_ℙ (¬MPℙ) using the same pattern than the one for ¬MP, which uses Booleans as choices
 -- (2) the validity of MP_𝔹 (MP₇-inh) using classical logic and the fact that functions to Bools essentially act as pure functions
-open import mp_prop2{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EL)(CB)(EM) using (¬MPℙ ; MP₇-inh)
+open import mp_prop2{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)(EM) using (¬MPℙ ; MP₇-inh)
 
 -- Some results about pure expressions
-open import pure2{L}(W)(M)(C)(K)(P)(G)(X)(N)(EL)(EC) using (Πpure→ ; ∈PURE-NAT→)
+open import pure2{L}(W)(M)(C)(K)(G)(X)(N)(EC) using (Πpure→ ; ∈PURE-NAT→)
 
 -- This instance of 'choiceBar' uses Beth bars and terms as choices:
 open import modInstanceBethCs

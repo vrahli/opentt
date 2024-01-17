@@ -30,7 +30,6 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -53,14 +52,16 @@ open import encode
 
 
 module not_lpo {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-               (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
-               (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
+               (C : Choice)
+               (K : Compatible W C)
+               (P : Progress {L} W C K)
+               (G : GetChoice {L} W C K)
+               (X : ChoiceExt {L} W C)
                (N : NewChoice {L} W C K G)
                (EC : Encode)
                (V : ChoiceVal W C K G X N EC)
                (F : Freeze {L} W C K P G N)
-               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-               (CB : ChoiceBar W M C K P G X N EC V F E)
+               (CB : ChoiceBar W M C K P G X N EC V F)
        where
 
 
@@ -76,33 +77,33 @@ open import choiceExtDef(W)(C)(K)(G)(X)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import ind2(W)(M)(C)(K)(G)(X)(N)(EC)
 
---open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
 --  using ()
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (eqTypesSQUASH← ; eqTypesUNION← ; eqTypesPI← ; eqTypesNEG← ; equalInType-PI→ ; ≡CTerm→equalInType ;
          NUM-equalInType-NAT! ; equalInType-NEG)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (isType-#NAT!→BOOL₀ ; →equalInType-CS-NAT!→BOOL₀ ; fun-equalInType-SQUASH-UNION)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import lem_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#SUM-ASSERT₂ ; #PI-NEG-ASSERT₂ ; →equalTypes-#SUM-ASSERT₂ ; →equalTypes-#PI-NEG-ASSERT₂)
 
 --open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
 --  using ()
-open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (sq-dec ; #Σchoice ; ¬-dec-Σchoice ; equalInType-#Σchoice)
-open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (Resℂ ; →equalInType-APPLY-CS-Typeℂ₀₁·)
-open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (Bool₀ℂ ; #SUM-ASSERT₂→#Σchoice ; #PI-NEG-ASSERT₂→#Σchoice)
 
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
   using (SUM! ; #SUM!)
 
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mp_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (≡SUM! ; #[0]SUM!)
 
 

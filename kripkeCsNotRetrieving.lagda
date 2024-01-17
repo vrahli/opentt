@@ -51,7 +51,6 @@ open import mod
 
 module kripkeCsNotRetrieving {L : Level}
                              (E0 : Extensionality 0ℓ 0ℓ)
-                             (E : Extensionality 0ℓ 3ℓ)
        where
 
 open import encoding3(E0)
@@ -104,7 +103,7 @@ open import choiceValDef(W)(C)(K)(G)(X)(N)(enc)(V)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(enc)
 
 
 

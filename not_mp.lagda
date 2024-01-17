@@ -30,7 +30,6 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -53,14 +52,16 @@ open import encode
 
 
 module not_mp {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-              (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
-              (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
+              (C : Choice)
+              (K : Compatible W C)
+              (P : Progress {L} W C K)
+              (G : GetChoice {L} W C K)
+              (X : ChoiceExt {L} W C)
               (N : NewChoice {L} W C K G)
               (EC : Encode)
               (V : ChoiceVal W C K G X N EC)
               (F : Freeze {L} W C K P G N)
-              (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-              (CB : ChoiceBar W M C K P G X N EC V F E)
+              (CB : ChoiceBar W M C K P G X N EC V F)
        where
 
 
@@ -83,30 +84,30 @@ open import terms8(W)(C)(K)(G)(X)(N)(EC)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#strongMonEq-mon)
---open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import ind2(W)(M)(C)(K)(G)(X)(N)(EC)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
   using (eqInType-ext ; TSext-equalTypes-equalInType)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalInType-PI→ ; ≡CTerm→equalInType ; NUM-equalInType-NAT! ; equalInType-FUN→ ; equalInType-SQUASH→ ;
          equalInType-NEG ; equalInType-SUM→ ; equalInType-refl ; equalInType-mon ; →≡equalInType ; equalInType-SUM ;
          isTypeNAT! ; →≡equalTypes ; eqTypesFUN← ; equalInType-NEG→ ; eqTypesNEG← ; eqTypesSQUASH← ; eqTypesNAT ;
          eqTypesNOWRITE ; eqTypesQNAT ; wPredExtIrr-eqInType ; equalInType-NAT!→ ; eqTypesNOREAD ; #⇛val→#⇓→#⇛ ;
          #strongMonEq→#weakMonEq ; equalInType-local ; ≡CTerm→eqTypes ; eqTypesEQ← ; ¬equalInType-FALSE)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (→equalInType-CS-NAT!→BOOL₀ ; equalInType-NEG→¬inh ; equalInType-NEG-inh ; sub0-ASSERT₃-APPLY ;
          →equalInType-CS-NAT!→BOOL! ; →equalInType-CS-NAT!→BOOL₀! ; isType-#NAT!→BOOL₀ ; →equalInType-SQUASH ;
          →equalInType-CS-NAT!→T ; equalTerms-pres-#⇛-left-rev ; equalInType-EQ→₁ ; equalTypes-#⇛-left-right-rev ;
          →equalInType-TRUE ; equalTypes-#⇛-left-right ; equalInType-#⇛-LR ; inhType-mon)
-open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props6(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalInType-SUM!→ ; SUMeq! ; equalInType-SUM! ; _#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ;
          →equalInType-EQ)
---open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalTerms-pres-#⇛-left-BOOL! ; equalTerms-pres-#⇛-left-rev-BOOL!)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import props5(W)(M)(C)(K)(G)(X)(N)(EC) using (equalTerms-pres-#⇛-left-BOOL! ; equalTerms-pres-#⇛-left-rev-BOOL!)
+open import lem_props(W)(M)(C)(K)(G)(X)(N)(EC)
+open import mp_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#MP ; #[0]MP-left ; #[0]MP-right ; #MP-left ; #MP-right ; sub0-fun-mp ; isTypeMP ; isType-MP-right-qt-body ;
          #MP₄ ; isTypeMP₄ ; isType-MP-right-qt₃-body ; #MP₆ ; isTypeMP₆ ; #MP-rightₘ ; #ASSERTₘ ; #[0]ASSERTₘ ;
          sub0-ASSERTₘ-APPLY ; #NAT!→NAT! ; equalInType-NAT!→equalTypes-ASSERTₘ ; #NAT!→NAT!≡ ; #MP-leftₘ ;
@@ -115,15 +116,15 @@ open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
          →∈Type-FUN ; #MP-left3 ; sub0-fun-mp₂ ; →∈Type-PI ; →∈Type-NEG ; isTypeMP₂ ; #MP₃ ; →equalTypes-#MP-left3 ;
          #[0]MP-left2 ; #[0]MP-right2 ; #MP-left2 ; #MP-right2 ; ∈#MP-right2→∈MP-right ; sub0-fun-mp₃ ; isTypeMP₃ ;
          inhType-ASSERTₘ→∈NAT! ; equalInType-#⇛!-type-rev)
-open import mp_props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mp_props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (∈#MP₄→ ; ∈#MP₆→ ; #MP-left2→#MP-left3 ; #MP-left→#MP-left2 ; #MP-left3→#MP-left2)
 
-open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
-open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
-open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
-open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
+open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
+open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
+open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
 
-open import type_sys_props_isect(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import type_sys_props_isect(W)(M)(C)(K)(G)(X)(N)(EC)
   using (eqInType-⇛-ISECT-rev)
 
 

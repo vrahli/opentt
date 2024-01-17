@@ -30,7 +30,6 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -53,12 +52,15 @@ open import encode
 
 
 module mp_props2 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-                (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
-                (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
+                (C : Choice)
+                (K : Compatible W C)
+--                (P : Progress {L} W C K)
+                (G : GetChoice {L} W C K)
+                (X : ChoiceExt {L} W C)
                 (N : NewChoice {L} W C K G)
 --                (V : ChoiceVal W C K G X N)
 --                (F : Freeze {L} W C K P G N)
-                (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+--                (E : Extensionality 0ℓ (lsuc(lsuc(L))))
 --                (CB : ChoiceBar W M C K P G X N V F E)
                 (EC : Encode)
        where
@@ -75,39 +77,39 @@ open import compatibleDef{L}(W)(C)(K)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
   using (eqTypes-mon)
---open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import ind2(W)(M)(C)(K)(G)(X)(N)(EC)
 
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
   using (NATREC⇓)
 open import terms3(W)(C)(K)(G)(X)(N)(EC)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
   using ()
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (eqTypesNEG← ; eqTypesSQUASH← ; →equalInType-NAT ; equalInType-NAT!→ ; equalInType-FUN→ ; ≡CTerm→equalInType ;
          equalInType-FUN ; isTypeNAT! ; →≡equalTypes ; eqTypesSUM← ; eqTypesNAT ; eqTypesFUN← ; eqTypesPI← ; ≡CTerm→eqTypes ;
          eqTypesISECT← ; eqTypesNOENC← ; equalInType-local ; equalInType-ISECT→ ; equalInType-NOENC→ ; equalInType-PI ;
          equalInType-refl ; equalInType-mon ; equalInType-NEG ; equalInType-NEG→ ; equalInType-PI→ ; equalInType-SUM→ ;
          equalInType-SUM ; equalInType-SQUASH→ ; →≡equalInType ; eqTypes-local ; eqTypesTRUE ; eqTypesFALSE)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-ASSERT₃-APPLY ; equalInType-NEG→¬inh ;
          equalInType-BOOL!→equalTypes-ASSERT₃ ; isType-#NAT!→BOOL ; isType-#NAT!→BOOL! ; isType-#NAT→BOOL ;
          sub0-NEG-ASSERT₂-APPLY ; →equalInType-SQUASH ; isTypeBOOL ; isTypeBOOL! ; isTypeBOOL₀ ; isType-#NAT!→BOOL₀ ;
          isTypeBOOL₀!→ ; isType-#NAT!→BOOL₀! ; isType-#NAT→BOOL₀ ; eqTypesQNAT! ; equalInType-BOOL₀!→ ;
          equalTypes-#⇛-left-right-rev)
-open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props6(W)(M)(C)(K)(G)(X)(N)(EC)
   using (_#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ; presPure ; →presPure-NATREC₁ ; →presPure-NATREC₂ ; →presPure-NATREC₃ ;
          equalTypesPI→ₗ ; equalTypesPI→ᵣ ; eqTypesSUM!← ; SUMeq! ; equalInType-SUM!→ ; equalInType-SUM!)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import lem_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#[1]ASSERT₄ ; #SUM-ASSERT₂ ; #SUM-ASSERT₃ ; #SUM-ASSERT₄ ; #SUM-ASSERT₅ ; #PI-NEG-ASSERT₂ ; #QNAT!→BOOL! ;
          ≡ASSERT₄ ; →equalTypes-#PI-NEG-ASSERT₂ ; →equalTypes-#SUM-ASSERT₂ ; →equalTypes-#SUM-ASSERT₃ ;
          →equalTypes-#SUM-ASSERT₄ ; →equalTypes-#SUM-ASSERT₅ ; #QNAT!→BOOL!≡ ; #[0]ASSERT₄ ; sub0-ASSERT₄-APPLY ;
          equalInType-BOOL!→equalTypes-ASSERT₄ ; →equalTypes-#PI-NEG-ASSERT₂-body ; #ASSERT₄)
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mp_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#MP-left ; #MP-left2 ; isType-MP-right-body ; #MP-left3 ; #SUM-ASSERTₙ ; #MP-leftₙ ; isType-MP-rightₙ-body ;
          #MP-rightₙ ; #MP-rightΣₙ ; #MP-left-qt ; isType-MP-right-qt-body ; #MP-right-qt ; #MP-right2-qt ; #MP-left-qt₂ ;
          isType-MP-right-qt₂-body ; #MP-right-qt₂ ; #MP-right2-qt₂ ; #MP-left-qt₃ ; isType-MP-right-qt₃-body ; #MP-right-qt₃ ;

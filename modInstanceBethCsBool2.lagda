@@ -50,7 +50,7 @@ open import choiceVal
 -- It is similar to modInstanceBethCsBool but uses #BOOL! instead of #QTBOOL!
 
 
-module modInstanceBethCsBool2 (E0 : Extensionality 0ℓ 0ℓ) (E : Extensionality 0ℓ 3ℓ)
+module modInstanceBethCsBool2 (E0 : Extensionality 0ℓ 0ℓ)
        where
 
 open import encoding3(E0)
@@ -106,11 +106,13 @@ open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import barI(W)(M)--(C)(K)(P)
 open import computation(W)(C)(K)(G)(X)(N)(enc)
 
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc) using (isTypeBOOL₀!→ ; →equalInType-BOOL₀!-INL ; →equalInType-BOOL₀!-INR ; equalInType-BOOL₀!→ ; →equalInType-BOOL₀! ; equalTerms-pres-#⇛-left-BOOL₀! ; equalTerms-pres-#⇛-left-rev-BOOL₀!)
---open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc) using (equalTerms-pres-#⇛-left-BOOL₀! ; equalTerms-pres-#⇛-left-rev-BOOL₀!)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(enc)
+open import props1(W)(M)(C)(K)(G)(X)(N)(enc)
+open import props2(W)(M)(C)(K)(G)(X)(N)(enc)
+open import props3(W)(M)(C)(K)(G)(X)(N)(enc)
+  using (isTypeBOOL₀!→ ; →equalInType-BOOL₀!-INL ; →equalInType-BOOL₀!-INR ; equalInType-BOOL₀!→ ; →equalInType-BOOL₀! ;
+         equalTerms-pres-#⇛-left-BOOL₀! ; equalTerms-pres-#⇛-left-rev-BOOL₀!)
+--open import props5(W)(M)(C)(K)(G)(X)(N)(enc) using (equalTerms-pres-#⇛-left-BOOL₀! ; equalTerms-pres-#⇛-left-rev-BOOL₀!)
 
 
 progressing→ΣgetCs≤ : {w : 𝕎·} {c : chain w} {r : Res} (n : Name) (m : ℕ)
@@ -551,7 +553,7 @@ followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
     z = i e (BarredChain.b bp) w' (⊑-refl· w') e
 
 
-open import choiceBar(W)(M)(C)(K)(P)(G)(X)(N)(enc)(V)(F)(E)
+open import choiceBar(W)(M)(C)(K)(P)(G)(X)(N)(enc)(V)(F)
 
 bethCs-choiceBar : ChoiceBar
 bethCs-choiceBar =

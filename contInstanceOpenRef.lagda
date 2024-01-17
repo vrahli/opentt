@@ -49,7 +49,7 @@ open import choiceVal
 
 -- An instance with Open bars and references
 
-module contInstanceOpenRef (E0 : Extensionality 0ℓ 0ℓ) (E : Extensionality 0ℓ 3ℓ)
+module contInstanceOpenRef (E0 : Extensionality 0ℓ 0ℓ)
        where
 
 open import encoding3(E0)
@@ -96,20 +96,20 @@ open import newChoiceDef(W)(C)(K)(G)(N)
 open import barI(W)(M)--(C)(K)(P)
 open import computation(W)(C)(K)(G)(X)(N)(enc)
 
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(enc)
+open import props1(W)(M)(C)(K)(G)(X)(N)(enc)
+open import props2(W)(M)(C)(K)(G)(X)(N)(enc)
+open import props3(W)(M)(C)(K)(G)(X)(N)(enc)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)(enc)
 
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import continuity7(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import continuity1(W)(M)(C)(K)(G)(X)(N)(enc)
+open import continuity2(W)(M)(C)(K)(G)(X)(N)(enc)
+open import continuity3(W)(M)(C)(K)(G)(X)(N)(enc)
+open import continuity4(W)(M)(C)(K)(G)(X)(N)(enc)
+open import continuity5(W)(M)(C)(K)(G)(X)(N)(enc)
+open import continuity6(W)(M)(C)(K)(G)(X)(N)(enc)
+open import continuity7(W)(M)(C)(K)(G)(X)(N)(enc)
 
 
 compatible→ΣNUM : (name : Name) (w : 𝕎·)

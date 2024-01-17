@@ -47,10 +47,13 @@ open import encode
 
 
 module indKripke {L : Level} (W : PossibleWorlds {L}) --(M : Mod(W))
-                 (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
+                 (C : Choice)
+                 (K : Compatible {L} W C)
+--                 (P : Progress {L} W C K)
+                 (G : GetChoice {L} W C K)
                  (X : ChoiceExt W C)
                  (N : NewChoice W C K G)
-                 (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+--                 (E : Extensionality 0ℓ (lsuc(lsuc(L))))
                  (EC : Encode)
        where
 
@@ -64,8 +67,8 @@ M : Mod(W)
 M = inKripkeBar-Mod
 
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
 \end{code}
 
 

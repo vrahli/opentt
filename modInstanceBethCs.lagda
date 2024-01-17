@@ -49,7 +49,6 @@ open import choiceVal
 -- An instance with beth bars (inBethBar-Bar) and choice sequences, where choices are terms
 
 module modInstanceBethCs (E0 : Extensionality 0ℓ 0ℓ)
-                         (E3 : Extensionality 0ℓ 3ℓ)
        where
 
 
@@ -106,10 +105,10 @@ open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import barI(W)(M)--(C)(K)(P)
 open import computation(W)(C)(K)(G)(X)(N)(enc)
 
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E3)(enc)
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E3)(enc)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E3)(enc)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E3)(enc)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(enc)
+open import props1(W)(M)(C)(K)(G)(X)(N)(enc)
+open import props2(W)(M)(C)(K)(G)(X)(N)(enc)
+open import props3(W)(M)(C)(K)(G)(X)(N)(enc)
 
 
 progressing→ΣgetCs≤ : {w : 𝕎·} {c : chain w} {r : Res} (n : Name) (m : ℕ)
@@ -476,7 +475,7 @@ followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
     z = i e (BarredChain.b bp) w' (⊑-refl· w') e
 
 
-open import choiceBar(W)(M)(C)(K)(P)(G)(X)(N)(enc)(V)(F)(E3)
+open import choiceBar(W)(M)(C)(K)(P)(G)(X)(N)(enc)(V)(F)
 
 bethCs-choiceBar : ChoiceBar
 bethCs-choiceBar =

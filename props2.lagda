@@ -31,7 +31,6 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -50,10 +49,11 @@ open import encode
 
 --module props2 (bar : Bar) where
 module props2 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-              (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
+              (C : Choice)
+              (K : Compatible {L} W C)
+              (G : GetChoice {L} W C K)
               (X : ChoiceExt W C)
               (N : NewChoice W C K G)
-              (E : Extensionality 0ℓ (lsuc(lsuc(L))))
               (EC : Encode)
        where
 
@@ -62,38 +62,38 @@ open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import ind3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
+open import ind2(W)(M)(C)(K)(G)(X)(N)(EC)
+open import ind3(W)(M)(C)(K)(G)(X)(N)(EC)
 
---open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_tnat(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_lt(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_qlt(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_free(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_pi(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_set(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_eq(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_union(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_qtunion(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_ttrunc(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_nowrite(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_noread(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_subsing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_partial(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_isect(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_noseq(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_noenc(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_term(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import type_sys_props_nat(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_qnat(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_tnat(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_lt(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_qlt(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_free(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_pi(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_sum(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_set(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_eq(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_union(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_qtunion(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_tsquash(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_ttrunc(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_nowrite(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_noread(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_subsing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_partial(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_ffdefs(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_lift(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_isect(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_pure(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_noseq(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_noenc(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_term(W)(M)(C)(K)(G)(X)(N)(EC)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
 
 -- open import calculus
 -- open import world
@@ -2240,6 +2240,7 @@ eqTypes-change-level : (i j : univs) {w : 𝕎·} {T1 T2 : CTerm}
 eqTypes-change-level i j {w} {T1} {T2} eqij eqt rewrite eqij = eqt
 
 
+{--
 eqInType-↓U-uni : (i : ℕ) {w : 𝕎·} {T1 T2 : CTerm}
                   (eqt1 : eqTypes (uni (↓𝕃 i)) w T1 T2) (eqt2 : eqTypes (↓U (uni i)) w T1 T2)
                   {a b : CTerm}
@@ -2260,6 +2261,7 @@ eqInType-uni-↓U i {w} {T1} {T2} eqt1 eqt2 {a} {b} eqi rewrite ↓U-uni i =
 
 ≡suc→↓U-uni≡ : (u n : ℕ) → u ≡ suc n → ↓U (uni u) ≡ uni n
 ≡suc→↓U-uni≡ u n equ rewrite equ | ↓U-uni (suc n) = refl
+--}
 
 
 {--

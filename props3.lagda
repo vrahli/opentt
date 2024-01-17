@@ -28,7 +28,6 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -47,10 +46,11 @@ open import encode
 
 
 module props3 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-              (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
+              (C : Choice)
+              (K : Compatible {L} W C)
+              (G : GetChoice {L} W C K)
               (X : ChoiceExt W C)
               (N : NewChoice W C K G)
-              (E : Extensionality 0ℓ (lsuc(lsuc(L))))
               (EC : Encode)
        where
 
@@ -59,36 +59,36 @@ open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import ind3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
+open import ind2(W)(M)(C)(K)(G)(X)(N)(EC)
+open import ind3(W)(M)(C)(K)(G)(X)(N)(EC)
 open import terms4(W)(C)(K)(G)(X)(N)(EC)
   using (¬Names→steps ; steps→¬Names ; ¬Names→⇓)
 open import termsPres(W)(C)(K)(G)(X)(N)(EC)
   using (#¬Enc→⇛! ; #¬Seq→⇛!)
 
---open import type_sys_props_nat(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_qnat(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_lt(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_qlt(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_free(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_pi(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_set(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_eq(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_union(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_qtunion(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_tsquash(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_ffdefs(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_lift(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_isect(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import type_sys_props_pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import type_sys_props_nat(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_qnat(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_lt(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_qlt(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_free(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_pi(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_sum(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_set(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_eq(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_union(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_qtunion(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_tsquash(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_ffdefs(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_lift(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_isect(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import type_sys_props_pure(W)(M)(C)(K)(G)(X)(N)(EC)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
 
-open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import uniMon(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalTypes-uni-mon)
 
 

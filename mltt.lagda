@@ -26,7 +26,6 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Data.Sum
 open import Relation.Nullary
-open import Axiom.Extensionality.Propositional
 
 -- MLTT imports
 open import Tools.Nat using (1+)
@@ -60,11 +59,9 @@ module mltt {L : Level}
             (M : Mod W)
             (C : Choice)
             (K : Compatible {L} W C)
-            (P : Progress {L} W C K)
             (G : GetChoice {L} W C K)
             (X : ChoiceExt W C)
             (N : NewChoice W C K G)
-            (E : Extensionality 0ℓ (lsuc(lsuc(L))))
             (EC : Encode)
        where
 
@@ -76,39 +73,39 @@ open import terms2(W)(C)(K)(G)(X)(N)(EC)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
   using (⇓NUM→SUC⇓NUM ; #APPLY2 ; #FST ; #SND ; SUM! ; #SUM! ; #⇛!-FST-PAIR ; #⇛!-SND-PAIR)
 open import subst(W)(C)(K)(G)(X)(N)(EC)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
   using (eqTypes-mon)
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
   using (TSext-equalTypes-equalInType ; TEQsym-equalTypes ; TEQrefl-equalTypes ; TEQtrans-equalTypes)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (isTypeNAT! ; eqTypesUniv ; equalTypes→equalInType-UNIV ; equalInType→equalTypes-aux ; eqTypesPI← ; eqTypesSUM← ;
          ≡CTerm→eqTypes ; ≡CTerm→equalInType ; eqTypesFALSE ; eqTypesTRUE ; ¬equalInType-FALSE ; NUM-equalInType-NAT! ;
          equalInType-NAT!→ ; equalInType-local ; equalInType-mon ; equalInType-PI→ ; equalInType-PI ; isFam ;
          equalInType-FUN→ ; equalInType-refl ; equalInType-sym ; equalInType-SUM→ ; eqTypesEQ← ; equalInType-EQ)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (→equalInType-TRUE ; equalInType-EQ→₁)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props4(W)(M)(C)(K)(G)(X)(N)(EC)
   using (→equalInType-NAT!)
-open import props5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props5(W)(M)(C)(K)(G)(X)(N)(EC)
   using (≡→equalInType ; eqTypesEQ→ᵣ)
-open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props6(W)(M)(C)(K)(G)(X)(N)(EC)
   using (_#⇛ₚ_at_ ; equalInType-#⇛ₚ-left-right-rev ; presPure ; →presPure-NATREC₁ ; →presPure-NATREC₂ ; →presPure-NATREC₃ ;
          equalTypesPI→ₗ ; equalTypesPI→ᵣ ; eqTypesSUM!← ; SUMeq! ; equalInType-SUM!→ ; equalInType-SUM!)
-open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import uniMon(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalTypes-uni-mon ; equalInType-uni-mon)
 
-open import sequent(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import sequent2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import sequent(W)(M)(C)(K)(G)(X)(N)(EC)
+open import sequent2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (valid∈𝕎→valid≡𝕎-UNIV ; valid≡𝕎-sym ; valid≡𝕎-trans ; valid≡𝕎-PI ; valid≡𝕎-SUM! ; valid∈𝕎-mon ; valid≡𝕎-mon ;
          valid∈𝕎→valid≡𝕎 ; valid∈-UNIV ; valid≡𝕎→valid∈𝕎ₗ)
-open import sequent3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import sequent3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (valid∈-PI ; valid∈-SUM! ; valid∈-NAT! ; valid∈-FALSE ; valid∈-UNIT ; valid∈LAMBDA ; valid∈APPLY ; valid∈N0-NAT ;
          valid∈SUC-NAT ; valid∈-FALSE→ ; valid∈-AX-UNIT ; valid∈-change-type ; valid≡-change-type ;
          valid≡APPLY ; valid≡LAMBDA ; valid≡SUC-NAT ; valid≡-FALSE→ ; valid≡-UNIT)
-open import sequent4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import sequent4(W)(M)(C)(K)(G)(X)(N)(EC)
   using (valid∈FST ; valid∈SND ; valid∈PAIR ; valid≡FST ; valid≡SND ; valid≡FST-PAIR ; valid≡SND-PAIR ; valid≡PI-ETA)
-open import sequent5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import sequent5(W)(M)(C)(K)(G)(X)(N)(EC)
   using (valid≡SUM!-ETA ; valid≡NATREC0 ; valid∈NATREC ; valid≡NATREC ; valid≡NATREC-SUC)
 
 

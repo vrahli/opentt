@@ -28,7 +28,6 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -51,11 +50,9 @@ module props6 {L : Level}
               (M : Mod W)
               (C : Choice)
               (K : Compatible {L} W C)
-              (P : Progress {L} W C K)
               (G : GetChoice {L} W C K)
               (X : ChoiceExt W C)
               (N : NewChoice W C K G)
-              (E : Extensionality 0ℓ (lsuc(lsuc(L))))
               (EC : Encode)
        where
 
@@ -64,11 +61,11 @@ open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
   using (TUNION-eq ; TUNION-eq-base ; TUNION-eq-trans ; TUNION-eq→ ; →TUNION-eq)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import ind3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import ind2(W)(M)(C)(K)(G)(X)(N)(EC)
+open import ind3(W)(M)(C)(K)(G)(X)(N)(EC)
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
 open import terms4(W)(C)(K)(G)(X)(N)(EC)
   using (steps→¬Names)
@@ -77,20 +74,20 @@ open import terms8(W)(C)(K)(G)(X)(N)(EC)
 --open import termsPres(W)(C)(K)(G)(X)(N)(EC)
 --  using (#¬Enc→⇛! ; #¬Seq→⇛!)
 
-open import type_sys_props_sum(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import type_sys_props_isect(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import type_sys_props_sum(W)(M)(C)(K)(G)(X)(N)(EC)
+open import type_sys_props_isect(W)(M)(C)(K)(G)(X)(N)(EC)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
   using (□·EqTypes→uniUpTo ; uniUpTo→□·EqTypes ; ≡→#isValue ; equalInType→eqInType)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (eqInType-extr1 ; eqInType-sym ; eqInType-extl1 ; equalInType-sym ; equalInType-local ; eqTypes-local ;
          equalInType-mon ; ≡CTerm→eqTypes ; eqTypesNOREADMOD← ; eqTypesNOWRITEMOD← ; eqTypesSUM← ; equalInType-SUM→;
          equalInTypeNOREADMOD→ ; equalInTypeNOWRITEMOD→ ; NOWRITEMODeq ; NOREADMODeq ; equalInType-EQ ;
          →equalInTypeNOWRITEMOD ; →equalInTypeNOREADMOD ; #⇛val→#⇓→#⇛ ; equalInType-SUM)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalTypes-#⇛-left-rev ; TUNIONeq-#⇛-rev ; #⇛!-pres-hasValue ; #⇛!-pres-hasValue-rev)
 
---open import uniMon(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import uniMon(W)(M)(C)(K)(G)(X)(N)(EC)
 --  using (equalTypes-uni-mon)
 
 

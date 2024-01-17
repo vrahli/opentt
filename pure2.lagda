@@ -33,7 +33,6 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -59,11 +58,9 @@ module pure2 {L : Level}
              (M : Mod W)
              (C : Choice)
              (K : Compatible {L} W C)
-             (P : Progress {L} W C K)
              (G : GetChoice {L} W C K)
              (X : ChoiceExt W C)
              (N : NewChoice {L} W C K G)
-             (E : Axiom.Extensionality.Propositional.Extensionality 0ℓ (lsuc(lsuc(L))))
              (EC : Encode)
        where
 
@@ -77,9 +74,9 @@ open import terms8(W)(C)(K)(G)(X)(N)(EC)
   using (LET-#⇛! ; ≡→LET-VAL⇛!)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
+open import ind2(W)(M)(C)(K)(G)(X)(N)(EC)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -87,28 +84,28 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
   using (TSext-equalTypes-equalInType)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalInType-mon ; equalInType-SQUASH→ ; equalInType-NEG→ ; equalInType-sym ; equalInType-NEG ; equalInType-refl ;
          eqTypesNEG← ; equalInType-FUN→ ; equalInType-FUN ; ≡CTerm→eqTypes ; eqTypesFUN← ; NUM-equalInType-NAT! ;
          equalInType-PI→ ; ≡CTerm→equalInType ; equalInType-local ; equalInType-NAT!→ ; equalInType-PI ; isTypeNAT! ;
          →≡equalTypes ; eqTypesSQUASH← ; equalInType→equalTypes-aux ; →≡equalInType)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalTypes→equalInType ; →equalInType-SQUASH)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props4(W)(M)(C)(K)(G)(X)(N)(EC)
   using (→equalInType-NAT!)
-open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props6(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalInType-#⇛ₚ-left-right-rev)
-open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import pure(W)(M)(C)(K)(G)(X)(N)(EC)
   using (→equalInType-TPURE ; #¬Names-APPLY ; →#⇛!-APPLY)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import lem_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#[1]ASSERT₄ ; ≡ASSERT₄ ; #SUM-ASSERT₅ ; →equalTypes-#SUM-ASSERT₅)
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mp_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#MP-left-qt₃ ; #MP-right-qt₃ ; #MP-right2-qt₃ ; →equalTypes-#MP-right-qt₃ ; →equalTypes-#MP-left-qt₃ ;
          #[0]MP-left-qt₃ ; #[0]MP-right-qt₃ ; sub0-fun-mp₆ ; #[0]MP-left2-qt₃ ; #[0]MP-right2-qt₃ ;
          #MP-left2-qt₃ ; sub0-fun-mp-qt₃ ; ≡SUM! ; #[0]SUM!)
-open import mp_props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mp_props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (→equalTypes-#MP-left2-qt₃ ; →equalTypes-#MP-right2-qt₃)
 
 

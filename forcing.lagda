@@ -30,7 +30,7 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Axiom.UniquenessOfIdentityProofs
-open import Axiom.Extensionality.Propositional
+--open import Axiom.Extensionality.Propositional
 
 open import util
 open import name
@@ -48,11 +48,16 @@ open import encode
 
 
 -- TODO: Progress is not required here
-module forcing {L : Level} (W : PossibleWorlds {L}) (M : Mod W) --(B : BarsProps W) --
-               (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
+module forcing {L : Level}
+               (W : PossibleWorlds {L})
+               (M : Mod W) --(B : BarsProps W) --
+               (C : Choice)
+               (K : Compatible {L} W C)
+--               (P : Progress {L} W C K)
+               (G : GetChoice {L} W C K)
                (X : ChoiceExt W C)
                (N : NewChoice W C K G)
-               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+--               (E : Extensionality 0ℓ (lsuc(lsuc(L))))
                (EC : Encode)
        where
 open import worldDef(W)
@@ -117,6 +122,7 @@ univs = Σ ℕ univsUpTo
 ↓𝕃≤ (suc n) = n≤1+n n
 
 
+{--
 ↓univsUpTo : {n : 𝕃} → univsUpTo n → univsUpTo (↓𝕃 n)
 ↓univsUpTo {0} f m p = f m p
 ↓univsUpTo {suc n} f m p = f m (<-trans p (n<1+n n))
@@ -124,6 +130,7 @@ univs = Σ ℕ univsUpTo
 
 ↓U : univs → univs
 ↓U (n , f) = (↓𝕃 n , ↓univsUpTo f)
+--}
 
 
 -- equality between types (an inductive definition)
@@ -726,6 +733,7 @@ is-uni-uni n = refl
 ... | no w = refl
 
 
+{--
 ↓U-uni : (n : 𝕃) → ↓U (uni n) ≡ uni (↓𝕃 n)
 ↓U-uni 0 = refl
 ↓U-uni (suc n) = ≡univs (E e)
@@ -740,6 +748,7 @@ is-uni-uni n = refl
       where
         f : (x₁ : suc x ≤ n) → □·EqTypes (n , uniUpTo n) ≡ uniUpTo n x x₁
         f q = ⊥-elim (p q)
+--}
 
 
 𝕌 : Set(lsuc(lsuc(L)))
@@ -753,12 +762,14 @@ mk𝕌 {u} isu = (u , isu)
 ℕ→𝕌 n = mk𝕌 {uni n} (is-uni-uni n)
 
 
+{--
 is-uni-↓U : {u : univs} → is-uni u → is-uni (↓U u)
 is-uni-↓U {u} isu rewrite isu = ↓U-uni (fst u)
 
 
 ↓𝕌 : 𝕌 → 𝕌
 ↓𝕌 (u , isu) = ↓U u , is-uni-↓U isu
+--}
 
 
 _·ᵤ : 𝕌 → univs

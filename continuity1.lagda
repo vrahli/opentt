@@ -32,7 +32,6 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -54,10 +53,11 @@ open import encode
 
 
 module continuity1 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-                   (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
+                   (C : Choice)
+                   (K : Compatible {L} W C)
+                   (G : GetChoice {L} W C K)
                    (X : ChoiceExt W C)
                    (N : NewChoice {L} W C K G)
-                   (E : Extensionality 0ℓ (lsuc(lsuc(L))))
                    (EC : Encode)
        where
 
@@ -75,9 +75,9 @@ open import terms8(W)(C)(K)(G)(X)(N)(EC)
 
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (∀𝕎-□Func3 ; ≡CTerm→equalInTypeₗ ; ≡CTerm→equalInTypeᵣ ; ≡CTerm→∈Type)
---open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC) using (∀𝕎-□Func3 ; ≡CTerm→equalInTypeₗ ; ≡CTerm→equalInTypeᵣ ; ≡CTerm→∈Type)
+--open import ind2(W)(M)(C)(K)(G)(X)(N)(EC)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -85,11 +85,11 @@ open import getChoiceDef(W)(C)(K)(G)
 open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
---open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalInType-NAT→ ; equalInType-mon ; equalInType-FUN→ ; ≡CTerm→equalInType ; →equalInType-NAT ; equalInType-FUN ; eqTypesNAT ; NUM-equalInType-NAT ; ≡CTerm→eqTypes ; eqTypesSET← ; eqTypesFUN← ; equalInType-SET→ ; eqTypesEQ← ; equalInType-refl ; eqTypesPI← ; eqTypesSUM← ; equalInType-local)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (equalTerms-pres-#⇛-left-rev→equalInType-pres-#⇛-LR-rev ; equalTerms-pres-#⇛-left-rev-NAT ; equalInType-trans ; equalInType-SET)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (→equalTypesLT ; eqTypesFFDEFS← ; eqTypesBAIRE ; ∈BAIRE→NAT→ ; equalInType-LT-⇛NUM→ ; ⇛NUM→equalInType-NAT)
-open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+--open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC) using (equalInType-NAT→ ; equalInType-mon ; equalInType-FUN→ ; ≡CTerm→equalInType ; →equalInType-NAT ; equalInType-FUN ; eqTypesNAT ; NUM-equalInType-NAT ; ≡CTerm→eqTypes ; eqTypesSET← ; eqTypesFUN← ; equalInType-SET→ ; eqTypesEQ← ; equalInType-refl ; eqTypesPI← ; eqTypesSUM← ; equalInType-local)
+open import props3(W)(M)(C)(K)(G)(X)(N)(EC) using (equalTerms-pres-#⇛-left-rev→equalInType-pres-#⇛-LR-rev ; equalTerms-pres-#⇛-left-rev-NAT ; equalInType-trans ; equalInType-SET)
+open import props4(W)(M)(C)(K)(G)(X)(N)(EC) using (→equalTypesLT ; eqTypesFFDEFS← ; eqTypesBAIRE ; ∈BAIRE→NAT→ ; equalInType-LT-⇛NUM→ ; ⇛NUM→equalInType-NAT)
+open import pure(W)(M)(C)(K)(G)(X)(N)(EC)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)(EC)
 

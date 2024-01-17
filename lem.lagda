@@ -27,7 +27,6 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 open import Axiom.ExcludedMiddle
 
 
@@ -49,11 +48,14 @@ open import encode
 
 
 module lem {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-           (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
+           (C : Choice)
+           (K : Compatible {L} W C)
+--           (P : Progress {L} W C K)
+           (G : GetChoice {L} W C K)
            (X : ChoiceExt W C)
            (N : NewChoice W C K G)
 --           (V : ChoiceVal W C K G X N)
-           (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+--           (E : Extensionality 0ℓ (lsuc(lsuc(L))))
            (EM : ExcludedMiddle (lsuc(L)))
            (EB : ExBar W M)
            (EC : Encode)
@@ -66,14 +68,14 @@ open import exBarDef(W)(M)(EB)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import ind2(W)(M)(C)(K)(G)(X)(N)(EC)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props3(W)(M)(C)(K)(G)(X)(N)(EC)
+open import lem_props(W)(M)(C)(K)(G)(X)(N)(EC)
 
 
 □·⊎inhType : (i : ℕ) (w : 𝕎·) (T : CTerm)

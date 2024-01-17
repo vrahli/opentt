@@ -31,7 +31,6 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 open import Axiom.ExcludedMiddle
 
 
@@ -56,10 +55,11 @@ open import MarkovPrinciple
 
 
 module mpp {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-           (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
-           (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
+           (C : Choice)
+           (K : Compatible W C)
+           (G : GetChoice {L} W C K)
+           (X : ChoiceExt {L} W C)
            (N : NewChoice {L} W C K G)
-           (E : Extensionality 0ℓ (lsuc(lsuc(L))))
            (EM : ExcludedMiddle (lsuc(L)))
            (EC : Encode)
        where
@@ -75,34 +75,34 @@ open import getChoiceDef(W)(C)(K)(G)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
 
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
 open import terms4(W)(C)(K)(G)(X)(N)(EC) using (¬Names→⇓)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
 
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
   using (∀𝕎-□Func2)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalInType-EQ→ ; ≡CTerm→equalInType ; equalInType-local ; equalInType-EQ ; equalInType-mon ;
          ≡CTerm→eqTypes ; eqTypesFUN← ; isTypeNAT! ; NUM-equalInType-NAT! ; equalInType-FUN→ ; equalInType-refl ;
          equalInType-SUM ; eqTypesNEG← ; equalInType-NAT!→ ; equalInType-sym ; equalInType-NEG ; equalInType-PI ;
          equalInType-FUN ; equalInType-PI→ ; →≡equalTypes ; →≡equalInType ; →equalInType-QNAT!)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (isTypeBOOL ; isTypeBOOL! ; sub0-ASSERT₂-APPLY ; equalInType-BOOL→equalTypes-ASSERT₂ ; sub0-NEG-ASSERT₂-APPLY ;
          equalInType-trans ; equalInType-BOOL→ ; →equalInType-BOOL ; equalInType-NEG→¬inh ; →equalInType-SQUASH ;
          →equalInType-BOOL! ; sub0-ASSERT₃-APPLY ; inhType-mon ; equalInType-BOOL!→ ; isTypeBOOL₀ ; isTypeBOOL₀!→ ;
          equalInType-BOOL₀→ ; →equalInType-BOOL₀ ; equalInType-BOOL₀→strongBool ; strongBool→equalInType-BOOL₀ ;
          →equalInType-BOOL₀! ; equalInType-BOOL₀!→ ; eqTypesQNAT! ; equalInType-BOOL!→equalTypes-ASSERT₃ ;
          equalTypes→equalInType ; equalInType-#⇛-LR)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props4(W)(M)(C)(K)(G)(X)(N)(EC)
   using (→equalInType-NAT!)
-open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props6(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalInType-#⇛ₚ-left-right-rev ; SUMeq! ; equalInType-SUM! ; equalInType-SUM!→)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import pure(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import lem_props(W)(M)(C)(K)(G)(X)(N)(EC)
+open import pure(W)(M)(C)(K)(G)(X)(N)(EC)
 
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mp_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#[0]MP-left ; #[0]MP-right ; #[0]MP-left3 ; #[0]MP-left2 ; #[0]MP-right2 ; #[0]MP-left-qt ; #[0]MP-right-qt ;
          #[0]MP-left-qt₂ ; #[0]MP-right-qt₂ ; #[0]MP-left-qt₃ ; #[0]MP-right-qt₃ ; sub0-fun-mp ; →equalTypes-#MP-left ;
          →equalTypes-#MP-right ; #MP-left ; #MP-right ; sub0-fun-mp₄ ; →equalTypes-#MP-left-qt ; →equalTypes-#MP-right-qt ;
@@ -110,10 +110,10 @@ open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
          #MP-left3 ; →∈Type-PI ; sub0-fun-mp₃ ; →equalTypes-#MP-left2 ;
          #MP-left2 ; #MP-right2 ; sub0-fun-mp₆ ; →equalTypes-#MP-left-qt₃ ;
          →equalTypes-#MP-right2 ; →equalTypes-#MP-right-qt₃ ; #MP-left-qt₃ ; #MP-right-qt₃)
-open import mp_props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mp_props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalInType-#MP-left-qt→ ; equalInType-#MP-left-qt₃→ ; #MP-left2→#MP-left ; #MP-left3→#MP-left2 ;
          #MP-left2→#MP-left3)
-open import mp_search(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mp_search(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#infSearchP ; mpSearch)
 
 

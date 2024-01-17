@@ -29,7 +29,6 @@ open import Data.List.Properties
 open import Data.List.Relation.Unary.Any
 open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
-open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -46,10 +45,13 @@ open import mod
 open import encode
 
 module type_sys_props_qnat {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-                           (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
+                           (C : Choice)
+                           (K : Compatible {L} W C)
+--                           (P : Progress {L} W C K)
+                           (G : GetChoice {L} W C K)
                            (X : ChoiceExt W C)
                            (N : NewChoice W C K G)
-                           (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+--                           (E : Extensionality 0ℓ (lsuc(lsuc(L))))
                            (EC : Encode)
        where
 
@@ -58,9 +60,9 @@ open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import ind(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
+open import ind(W)(M)(C)(K)(G)(X)(N)(EC)
 
 -- open import Function.Bundles
 -- open import calculus

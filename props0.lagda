@@ -42,11 +42,16 @@ open import newChoice
 open import mod
 open import encode
 
-module props0 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-              (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
+module props0 {L : Level}
+              (W : PossibleWorlds {L})
+              (M : Mod W)
+              (C : Choice)
+              (K : Compatible {L} W C)
+--              (P : Progress {L} W C K)
+              (G : GetChoice {L} W C K)
               (X : ChoiceExt W C)
               (N : NewChoice W C K G)
-              (E : Extensionality 0ℓ (lsuc(lsuc(L))))
+--              (E : Extensionality 0ℓ (lsuc(lsuc(L))))
               (EC : Encode)
        where
        --(bar : Bar W) where
@@ -54,7 +59,7 @@ open import worldDef(W)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
 \end{code}
 
 
@@ -1734,6 +1739,7 @@ irr-partial : (u : univs) (w : 𝕎·) (A1 A2 : CTerm)
 irr-partial u w A1 A2 eqta exta f g w1 e1 w' e' h z = irr-PARTIALeq eqta exta (⊑-trans· e1 e') z h
 
 
+{--
 irr-lift : (u : univs) (w : 𝕎·) (A1 A2 : CTerm)
            (eqta : ∀𝕎 w (λ w' _ → eqTypes (↓U u) w' A1 A2))
            (exta : (a b : CTerm) → wPredExtIrr (λ w e → eqInType (↓U u) w (eqta w e) a b))
@@ -1741,8 +1747,7 @@ irr-lift : (u : univs) (w : 𝕎·) (A1 A2 : CTerm)
            → ∀𝕎 w1 (λ w' e' → eqInType (↓U u) w' (eqta w' (⊑-trans· e1 e')) f g
                               → (z : w ⊑· w') → eqInType (↓U u) w' (eqta w' z) f g)
 irr-lift u w A1 A2 eqta exta f g w1 e1 w' e' eqi z = exta f g w' (⊑-trans· e1 e') z eqi
-
-
+--}
 
 
 FFDEFSeq-ext-eq : {w : 𝕎·} {eqa1 eqa2 : per} {x t1 t2 : CTerm}

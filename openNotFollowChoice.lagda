@@ -47,7 +47,7 @@ open import choiceExt
 open import choiceVal
 
 
-module openNotFollowChoice (E0 : Extensionality 0ℓ 0ℓ) (E : Extensionality 0ℓ 3ℓ)
+module openNotFollowChoice (E0 : Extensionality 0ℓ 0ℓ)
        where
 
 open import encoding3(E0)
@@ -103,10 +103,10 @@ open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import barI(W)(M)--(C)(K)(P)
 --open import computation(W)(C)(K)(G)(X)
 
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(enc)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(enc)
+open import props1(W)(M)(C)(K)(G)(X)(N)(enc)
+open import props2(W)(M)(C)(K)(G)(X)(N)(enc)
+open import props3(W)(M)(C)(K)(G)(X)(N)(enc)
 
 
 -- TODO: if we didn't want to rely on the choice instance at all,

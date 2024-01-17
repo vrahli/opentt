@@ -31,7 +31,6 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 open import Axiom.ExcludedMiddle
 
 
@@ -54,10 +53,11 @@ open import encode
 
 
 module continuitySMb {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-                     (C : Choice) (K : Compatible {L} W C) (P : Progress {L} W C K) (G : GetChoice {L} W C K)
+                     (C : Choice)
+                     (K : Compatible {L} W C)
+                     (G : GetChoice {L} W C K)
                      (X : ChoiceExt W C)
                      (N : NewChoice {L} W C K G)
-                     (E : Extensionality 0ℓ (lsuc(lsuc(L))))
                      (EM : ExcludedMiddle (lsuc(L)))
                      (EC : Encode)
        where
@@ -72,9 +72,9 @@ open import terms5(W)(C)(K)(G)(X)(N)(EC)
 open import terms6(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
+open import ind2(W)(M)(C)(K)(G)(X)(N)(EC)
 
 open import choiceDef{L}(C)
 open import compatibleDef{L}(W)(C)(K)
@@ -83,22 +83,22 @@ open import newChoiceDef(W)(C)(K)(G)(N)
 open import choiceExtDef(W)(C)(K)(G)(X)
 
 --open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
 --open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)
 
 open import continuity-conds(W)(C)(K)(G)(X)(N)(EC)
 
-open import continuity1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import continuity2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import continuity3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (isHighestℕ→getT≤ℕ)
---open import continuity4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import continuity5(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import continuity6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import continuity1(W)(M)(C)(K)(G)(X)(N)(EC)
+open import continuity2(W)(M)(C)(K)(G)(X)(N)(EC)
+open import continuity3(W)(M)(C)(K)(G)(X)(N)(EC) using (isHighestℕ→getT≤ℕ)
+--open import continuity4(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import continuity5(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import continuity6(W)(M)(C)(K)(G)(X)(N)(EC)
 
-open import continuity1b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (testM⇓→ ; testML ; testML⇓→ ; νtestMup ; testMup ; #νtestMup ; νtestMup⇓ℕ)
-open import continuity2b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (updCtxt2-LET ; updCtxt2-APPLY ; updCtxt2-refl ; updCtxt2-upd ; updCtxt2-SUC ; updCtxt2-CS ; updCtxt2-NUM)
-open import continuity3b(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC) using (steps-sat-isHighestℕ2)
+open import continuity1b(W)(M)(C)(K)(G)(X)(N)(EC) using (testM⇓→ ; testML ; testML⇓→ ; νtestMup ; testMup ; #νtestMup ; νtestMup⇓ℕ)
+open import continuity2b(W)(M)(C)(K)(G)(X)(N)(EC) using (updCtxt2-LET ; updCtxt2-APPLY ; updCtxt2-refl ; updCtxt2-upd ; updCtxt2-SUC ; updCtxt2-CS ; updCtxt2-NUM)
+open import continuity3b(W)(M)(C)(K)(G)(X)(N)(EC) using (steps-sat-isHighestℕ2)
 --open import continuity4b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import continuity5b(W)(M)(C)(K)(P)(G)(X)(N)(E)
 --open import continuity6b(W)(M)(C)(K)(P)(G)(X)(N)(E)

@@ -30,7 +30,6 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -53,13 +52,11 @@ open import encode
 
 
 module mp_search {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-                 (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
-                 (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
+                 (C : Choice)
+                 (K : Compatible W C)
+                 (G : GetChoice {L} W C K)
+                 (X : ChoiceExt {L} W C)
                  (N : NewChoice {L} W C K G)
---                 (V : ChoiceVal W C K G X N)
---                 (F : Freeze {L} W C K P G N)
-                 (E : Extensionality 0ℓ (lsuc(lsuc(L))))
---                 (CB : ChoiceBar W M C K P G X N V F E)
                  (EC : Encode)
        where
 
@@ -75,26 +72,26 @@ open import choiceDef{L}(C)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import ind2(W)(M)(C)(K)(G)(X)(N)(EC)
 
 open import terms2(W)(C)(K)(G)(X)(N)(EC)
 open import terms3(W)(C)(K)(G)(X)(N)(EC)
 open import terms4(W)(C)(K)(G)(X)(N)(EC)
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props4(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props3(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props4(W)(M)(C)(K)(G)(X)(N)(EC)
 
-open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props6(W)(M)(C)(K)(G)(X)(N)(EC)
   using (SUMeq! ; equalInType-SUM! ; equalInType-SUM!→)
 
-open import type_sys_props_isect(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import type_sys_props_isect(W)(M)(C)(K)(G)(X)(N)(EC)
 
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mp_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#MP-right ; #MP-right2 ; isType-MP-right-body)
 
 

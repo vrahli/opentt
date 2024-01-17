@@ -30,7 +30,6 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Data.Maybe
-open import Axiom.Extensionality.Propositional
 
 
 open import name
@@ -50,13 +49,15 @@ open import encode
 
 
 module choiceBar {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-                 (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
-                 (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
+                 (C : Choice)
+                 (K : Compatible W C)
+                 (P : Progress {L} W C K)
+                 (G : GetChoice {L} W C K)
+                 (X : ChoiceExt {L} W C)
                  (N : NewChoice {L} W C K G)
                  (EC : Encode)
                  (V : ChoiceVal W C K G X N EC)
                  (F : Freeze {L} W C K P G N)
-                 (E : Extensionality 0ℓ (lsuc(lsuc(L))))
        where
 
 open import worldDef(W)
@@ -70,8 +71,8 @@ open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props3(W)(M)(C)(K)(G)(X)(N)(EC)
 
 
 -- TODO: call this choiceType instead

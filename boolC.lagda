@@ -30,7 +30,6 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.Extensionality.Propositional
 
 
 open import util
@@ -53,14 +52,16 @@ open import encode
 
 
 module boolC {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-             (C : Choice) (K : Compatible W C) (P : Progress {L} W C K)
-             (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
+             (C : Choice)
+             (K : Compatible W C)
+             (P : Progress {L} W C K)
+             (G : GetChoice {L} W C K)
+             (X : ChoiceExt {L} W C)
              (N : NewChoice {L} W C K G)
              (EC : Encode)
              (V : ChoiceVal W C K G X N EC)
              (F : Freeze {L} W C K P G N)
-             (E : Extensionality 0ℓ (lsuc(lsuc(L))))
-             (CB : ChoiceBar W M C K P G X N EC V F E)
+             (CB : ChoiceBar W M C K P G X N EC V F)
        where
 
 
@@ -76,49 +77,49 @@ open import freezeDef(W)(C)(K)(P)(G)(N)(F)
 open import computation(W)(C)(K)(G)(X)(N)(EC)
 open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props0(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
---open import ind2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
+--open import ind2(W)(M)(C)(K)(G)(X)(N)(EC)
 
 open import terms8(W)(C)(K)(G)(X)(N)(EC)
   using (#SUM!)
 
-open import props1(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props3(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
-open import props6(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props3(W)(M)(C)(K)(G)(X)(N)(EC)
+open import props6(W)(M)(C)(K)(G)(X)(N)(EC)
   using (SUMeq! ; equalInType-SUM! ; equalInType-SUM!→)
-open import lem_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import lem_props(W)(M)(C)(K)(G)(X)(N)(EC)
 
-open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
-open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
-open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
+open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
+open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
 
 
 
 -- If we only want to consider Boolean choices, where ℂ₀ stands for false, and ℂ₁ stands for true
-Bool₀ℂ : ChoiceBar W M C K P G X N EC V F E → Set
+Bool₀ℂ : ChoiceBar W M C K P G X N EC V F → Set
 Bool₀ℂ cb =
   ChoiceBar.Typeℂ₀₁ cb ≡ #BOOL₀
   × Cℂ₀ ≡ #BFALSE
   × Cℂ₁ ≡ #BTRUE
 
 
-Bool₀!ℂ : ChoiceBar W M C K P G X N EC V F E → Set
+Bool₀!ℂ : ChoiceBar W M C K P G X N EC V F → Set
 Bool₀!ℂ cb =
   ChoiceBar.Typeℂ₀₁ cb ≡ #BOOL₀!
   × Cℂ₀ ≡ #BFALSE
   × Cℂ₁ ≡ #BTRUE
 
 
-Bool!ℂ : ChoiceBar W M C K P G X N EC V F E → Set
+Bool!ℂ : ChoiceBar W M C K P G X N EC V F → Set
 Bool!ℂ cb =
   ChoiceBar.Typeℂ₀₁ cb ≡ #BOOL!
   × Cℂ₀ ≡ #BFALSE
   × Cℂ₁ ≡ #BTRUE
 
 
-Nat!ℂ : ChoiceBar W M C K P G X N EC V F E → Set
+Nat!ℂ : ChoiceBar W M C K P G X N EC V F → Set
 Nat!ℂ cb =
   ChoiceBar.Typeℂ₀₁ cb ≡ #NAT!
   × Cℂ₀ ≡ #N1 -- 1 is false
