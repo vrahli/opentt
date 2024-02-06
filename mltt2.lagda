@@ -26,7 +26,6 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Data.Sum
 open import Relation.Nullary
-open import Axiom.Extensionality.Propositional
 open import Axiom.ExcludedMiddle
 
 -- MLTT imports
@@ -34,11 +33,8 @@ open import Tools.Nat using (1+)
 open import Definition.Untyped hiding (_∷_)
 open import Definition.Untyped.Properties using (wk-β ; wk1-sgSubst ; subst-wk)
 open import Definition.Typed
---open import Definition.Typed.Properties using (subset*Term ; noNe)
 open import Definition.Typed.Weakening renaming (wk to wk⊢)
 open import Definition.Typed.Consequences.Substitution using (substType ; substTerm)
---open import Definition.Typed.Consequences.Syntactic using (syntacticEq)
---open import Definition.Typed.Consequences.Canonicity using (sucᵏ)
 open import Definition.Typed.EqRelInstance
 open import Definition.LogicalRelation --using (Natural-prop)
 
@@ -69,11 +65,10 @@ module mltt2 {L  : Level}
              (G  : GetChoice {L} W C K)
              (X  : ChoiceExt W C)
              (N  : NewChoice W C K G)
-             (E  : Extensionality 0ℓ (lsuc(lsuc(L))))
              (EC : Encode)
              (V  : ChoiceVal W C K G X N EC)
              (F  : Freeze {L} W C K P G N)
-             (CB : ChoiceBar W M C K P G X N EC V F E)
+             (CB : ChoiceBar W M C K P G X N EC V F)
              (MP : MarkovPrinciple (lsuc(L)))
              (EM : ExcludedMiddle (lsuc(L))) -- only to use mpp.lagda, but shouldn't be needed
        where
@@ -83,24 +78,24 @@ open import Relation.Binary.PropositionalEquality
   renaming (trans to ≣trans ; sym to ≣sym ; subst to ≣subst)
 
 open import worldDef(W)
-open import forcing(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
 open import terms3(W)(C)(K)(G)(X)(N)(EC)
   using (≡NATREC ; ≡APPLY)
-open import props2(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalInType-NEG→)
-open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (Nat!ℂ)
 
-open import mltt(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mltt(W)(M)(C)(K)(G)(X)(N)(EC)
   using (⟦_⟧Γ∈₀ ; ⟦_⟧ᵤ ; ⟦_⟧ᵤ₀ ; ⟦wk1⟧ᵤ ; ⟦wk⟧ᵤ ; #⟦⟧ᵤ0 ; ¬Names⟦⟧ᵤ ; ¬Enc⟦⟧ᵤ)
 
 open import barI(W)(M)
   using (∃□)
-open import mp_props(W)(M)(C)(K)(P)(G)(X)(N)(E)(EC)
+open import mp_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#MPₘ ; ≡SUM!)
-open import not_mp(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(E)(CB)
+open import not_mp(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (¬MPₘ ; alwaysFreezable)
-open import mpp3(W)(M)(C)(K)(P)(G)(X)(N)(E)(MP)(EM)(EC)
+open import mpp3(W)(M)(C)(K)(G)(X)(N)(MP)(EM)(EC)
   using (MPp₇-inh₃ ; #MPeval ; #MPevalExt)
 
 

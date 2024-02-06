@@ -139,4 +139,5 @@ open import sequent
 
 -- A translation from MLTT to BoxTT
 open import mltt
+open import mltt2
 \end{code}
