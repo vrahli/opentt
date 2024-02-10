@@ -267,7 +267,7 @@ abstract
       comp1b rewrite sym eqm = comp1
 
       h4 : Σ 𝕎· (λ w3' → a ⇓ NUM m from w1' to w3' × differ name name f (NUM m) (NUM m))
-      h4 = pd k1 (<-transʳ (≤-stepsʳ k2 ≤-refl) ltk12) w1 w3 w1' a (NUM m) tt compat1 compat2 gtn gtn' diff comp1b
+      h4 = pd k1 (≤-<-trans (m≤n⇒m≤n+o k2 ≤-refl) ltk12) w1 w3 w1' a (NUM m) tt compat1 compat2 gtn gtn' diff comp1b
 
       h4→ : Σ 𝕎· (λ w3' → a ⇓ NUM m from w1' to w3' × differ name name f (NUM m) (NUM m))
             → Σ 𝕎· (λ w3' → a ⇓ NUM m from w1' to w3')

@@ -422,7 +422,10 @@ fvars-ASSERT₄ t rewrite ++[] (fvars t) = refl
 →equalTypes-#SUM-ASSERT₂ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
                            → equalInType n w #NAT!→BOOL₀ a₁ a₂
                            → equalTypes n w (#SUM-ASSERT₂ a₁) (#SUM-ASSERT₂ a₂)
-→equalTypes-#SUM-ASSERT₂ {n} {w} {a₁} {a₂} eqt = eqTypesSUM!← (λ w' _ → isTypeNAT!) aw1
+→equalTypes-#SUM-ASSERT₂ {n} {w} {a₁} {a₂} eqt =
+  eqTypesSUM!← {B = #[0]ASSERT₂ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR)}
+               {D = #[0]ASSERT₂ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR)}
+               (λ w' _ → isTypeNAT!) aw1
   where
     aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT! a b → equalInType n w' #BOOL₀ (#APPLY a₁ a) (#APPLY a₂ b))
     aw0 = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL₀≡ eqt)
@@ -442,7 +445,10 @@ fvars-ASSERT₄ t rewrite ++[] (fvars t) = refl
 →equalTypes-#SUM-ASSERT₃ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
                            → equalInType n w #NAT!→BOOL! a₁ a₂
                            → equalTypes n w (#SUM-ASSERT₃ a₁) (#SUM-ASSERT₃ a₂)
-→equalTypes-#SUM-ASSERT₃ {n} {w} {a₁} {a₂} eqt = eqTypesSUM!← (λ w' _ → isTypeNAT!) aw1
+→equalTypes-#SUM-ASSERT₃ {n} {w} {a₁} {a₂} eqt =
+  eqTypesSUM!← {B = #[0]ASSERT₃ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR)}
+               {D = #[0]ASSERT₃ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR)}
+               (λ w' _ → isTypeNAT!) aw1
   where
     aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT! a b → equalInType n w' #BOOL! (#APPLY a₁ a) (#APPLY a₂ b))
     aw0 = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL!≡ eqt)
@@ -461,7 +467,10 @@ fvars-ASSERT₄ t rewrite ++[] (fvars t) = refl
 →equalTypes-#SUM-ASSERT₄ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
                          → equalInType n w #QNAT!→BOOL! a₁ a₂
                          → equalTypes n w (#SUM-ASSERT₄ a₁) (#SUM-ASSERT₄ a₂)
-→equalTypes-#SUM-ASSERT₄ {n} {w} {a₁} {a₂} eqt = eqTypesSUM!← (λ w' _ → eqTypesQNAT!) aw1
+→equalTypes-#SUM-ASSERT₄ {n} {w} {a₁} {a₂} eqt =
+  eqTypesSUM!← {B = #[0]ASSERT₃ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR)}
+               {D = #[0]ASSERT₃ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR)}
+               (λ w' _ → eqTypesQNAT!) aw1
   where
     aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #QNAT! a b → equalInType n w' #BOOL! (#APPLY a₁ a) (#APPLY a₂ b))
     aw0 = equalInType-FUN→ (≡CTerm→equalInType #QNAT!→BOOL!≡ eqt)
@@ -510,7 +519,10 @@ equalInType-BOOL₀!→equalTypes-ASSERT₄ {n} {w} {a} {b} eqb =
 →equalTypes-#SUM-ASSERT₅ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
                            → equalInType n w #NAT!→BOOL₀! a₁ a₂
                            → equalTypes n w (#SUM-ASSERT₅ a₁) (#SUM-ASSERT₅ a₂)
-→equalTypes-#SUM-ASSERT₅ {n} {w} {a₁} {a₂} eqt = eqTypesSUM!← (λ w' _ → isTypeNAT!) aw1
+→equalTypes-#SUM-ASSERT₅ {n} {w} {a₁} {a₂} eqt =
+  eqTypesSUM!← {B = #[0]ASSERT₄ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR)}
+               {D = #[0]ASSERT₄ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR)}
+               (λ w' _ → isTypeNAT!) aw1
   where
     aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT! a b → equalInType n w' #BOOL₀! (#APPLY a₁ a) (#APPLY a₂ b))
     aw0 = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL₀!≡ eqt)
@@ -557,7 +569,9 @@ equalInType-BOOL₀!→equalTypes-ASSERT₄ {n} {w} {a} {b} eqb =
                               → equalInType n w #NAT!→BOOL₀ a₁ a₂
                               → equalTypes n w (#PI-NEG-ASSERT₂ a₁) (#PI-NEG-ASSERT₂ a₂)
 →equalTypes-#PI-NEG-ASSERT₂ {n} {w} {a₁} {a₂} eqt =
-  eqTypesPI← (λ w' _ → isTypeNAT!) (→equalTypes-#PI-NEG-ASSERT₂-body {n} {w} {a₁} {a₂} eqt)
+  eqTypesPI← {B = #[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))}
+             {D = #[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR))}
+             (λ w' _ → isTypeNAT!) (→equalTypes-#PI-NEG-ASSERT₂-body {n} {w} {a₁} {a₂} eqt)
 
 
 
@@ -565,7 +579,9 @@ equalInType-BOOL₀!→equalTypes-ASSERT₄ {n} {w} {a} {b} eqb =
                               → equalInType n w #NAT!→BOOL! a₁ a₂
                               → equalTypes n w (#PI-NEG-ASSERT₃ a₁) (#PI-NEG-ASSERT₃ a₂)
 →equalTypes-#PI-NEG-ASSERT₃ {n} {w} {a₁} {a₂} eqt =
-  eqTypesPI← (λ w' _ → isTypeNAT!) aw1
+  eqTypesPI← {B = #[0]NEG (#[0]ASSERT₃ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))}
+             {D = #[0]NEG (#[0]ASSERT₃ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR))}
+             (λ w' _ → isTypeNAT!) aw1
   where
     aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT! a b → equalInType n w' #BOOL! (#APPLY a₁ a) (#APPLY a₂ b))
     aw0 = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL!≡ eqt)

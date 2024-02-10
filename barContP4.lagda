@@ -1054,7 +1054,7 @@ isHighestℕ→<≡upd : (gc : get-choose-ℕ)
                     → m < n
 isHighestℕ→<≡upd gc {k} {w1} {w2} {w} {a} {b} {m} {m'} n name comp h gt0 compat e rewrite e with m' <? m
 ... | yes p = isHighestℕ→<last {k} {w1} {chooseT name w (NUM m)} {a} {b} {m} n name comp h (gc name w m compat)
-... | no p = <-transʳ (≮⇒≥ p) (isHighestℕ→<last {k} {w1} {w} {a} {b} {m'} n name comp h gt0)
+... | no p = ≤-<-trans (≮⇒≥ p) (isHighestℕ→<last {k} {w1} {w} {a} {b} {m'} n name comp h gt0)
 
 
 steps→≡𝕎 : (w w₁ w₂ : 𝕎·) (a v₁ v₂ : Term) (n m : ℕ)

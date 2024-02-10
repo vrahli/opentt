@@ -111,11 +111,11 @@ truncatePChain {w} {mkPChain c p} {n} {w'} e = mkPChain c' p'
     p' : progressing (truncateChain {w} {c} {n} {w'} e)
     p' name k {r} comp =
       fst (p name (k + n) comp) ∸ n ,
-      <-transʳ (≤+∸ k n) (<→∸ (≤-stepsˡ k ≤-refl) (fst (snd (p name (k + n) comp)))) ,
+      ≤-<-trans (≤+∸ k n) (<→∸ (m≤n⇒m≤o+n k ≤-refl) (fst (snd (p name (k + n) comp)))) ,
       q'
       where
          z : n ≤ fst (p name (k + n) comp)
-         z = ≤-trans (≤-stepsˡ k ≤-refl) (<⇒≤ (fst (snd (p name (k + n) comp))))
+         z = ≤-trans (m≤n⇒m≤o+n k ≤-refl) (<⇒≤ (fst (snd (p name (k + n) comp))))
 
          q' : progress· name ((chain.seq c') k) (chain.seq c' (fst (p name (k + n) comp) ∸ n))
          q' rewrite m∸n+n≡m {fst (p name (k + n) comp)} {n} z = snd (snd (p name (k + n) comp))

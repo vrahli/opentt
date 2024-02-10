@@ -339,6 +339,7 @@ sub0-fun-mp2-qt₄ f a =
           → ∈Type i w (#PI #NAT! (#[0]FUN (#[0]MP-left-qt₄ eval) (#[0]MP-right-qt₄ eval))) a
 Πpure→ i w eval a nnf nef eval∈ a∈ =
   equalInType-PI
+    {B = #[0]FUN (#[0]MP-left-qt₄ eval) (#[0]MP-right-qt₄ eval)}
     (λ w' e' → isTypeNAT! {w'} {i})
     aw0
     aw1
@@ -443,7 +444,10 @@ mpEvalEx#⇛! {w} {eval} {a} {n} {k} c =
           → ∈Type i w (#PI (#TPURE #NAT!→BOOL₀!) (#[0]FUN #[0]MP-left2-qt₃ #[0]MP-right2-qt₃)) a
           → ∈Type i w (#PI #NAT! (#[0]FUN (#[0]MP-left2-qt₄ eval) (#[0]MP-right2-qt₄ eval))) (mpEvalEx eval a)
 Πpure→₂ i w eval a nnf nef eval∈ a∈ =
-  equalInType-PI (λ w' e' → isTypeNAT! {w'} {i}) aw0 aw1
+  equalInType-PI
+    {B = #[0]FUN (#[0]MP-left2-qt₄ eval) (#[0]MP-right2-qt₄ eval)}
+    (λ w' e' → isTypeNAT! {w'} {i})
+    aw0 aw1
   where
     aw0 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' #NAT! a₁ a₂
                        → equalTypes i w' (sub0 a₁ (#[0]FUN (#[0]MP-left2-qt₄ eval) (#[0]MP-right2-qt₄ eval)))
@@ -543,6 +547,7 @@ sub0-SQUASH-APPLY-VAR F n = CTerm≡ (≡SET refl (≡APPLY e0 e1))
                 → ∈Type i w (#PI #NAT! (#[0]SQUASH (#[0]APPLY ⌞ F ⌟ #[0]VAR))) a
 ∈PURE-NAT→ i j w F a ltj F∈ a∈ =
   equalInType-PI
+    {B = #[0]SQUASH (#[0]APPLY ⌞ F ⌟ #[0]VAR)}
     (λ w' e' → isTypeNAT! {w'} {i})
     aw0 aw1
   where
@@ -573,7 +578,8 @@ sub0-SQUASH-APPLY-VAR F n = CTerm≡ (≡SET refl (≡APPLY e0 e1))
             aw3 w3 e3 = k , #⇛!-refl {w3} {#NUM k} , ∀𝕎-mon e3 c₁
 
             h0 : equalInType i w2 (sub0 (#NUM k) (#[0]SQUASH (#[0]APPLY ⌞ F ⌟ #[0]VAR))) (#APPLY a (#NUM k)) (#APPLY a (#NUM k))
-            h0 = snd (snd (equalInType-PI→ a∈)) w2 (⊑-trans· e1 e2) (#NUM k) (#NUM k)
+            h0 = snd (snd (equalInType-PI→ {B = #[0]SQUASH (#[0]APPLY ⌞ F ⌟ #[0]VAR)} a∈))
+                     w2 (⊑-trans· e1 e2) (#NUM k) (#NUM k)
                      (→equalInType-TPURE refl refl refl refl (NUM-equalInType-NAT! i w2 k))
 
             h1 : equalInType i w2 (#SQUASH (#APPLY F (#NUM k))) (#APPLY a (#NUM k)) (#APPLY a (#NUM k))

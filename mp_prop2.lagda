@@ -315,7 +315,7 @@ MP₇-inh gcp n w =
               where
                 cc : Dec (Σ ℕ (λ k → inhType n w3 (#ASSERT₄ (#APPLY x₁ (#NUM k)))))
                      → Σ CTerm (λ t → equalInType n w3 (#SUM-ASSERT₅ x₁) t t)
-                cc (yes (k , t , p)) = #PAIR (#NUM k) t , equalInType-SUM! (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
+                cc (yes (k , t , p)) = #PAIR (#NUM k) t , equalInType-SUM! {B = #[0]ASSERT₄ (#[0]APPLY ⌞ x₁ ⌟ #[0]VAR)} (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
                   where
                     aw6 : ∀𝕎 w3 (λ w' _ → SUMeq! (equalInType n w' #NAT!)
                                                  (λ a b ea → equalInType n w' (sub0 a (#[0]ASSERT₄ (#[0]APPLY ⌞ x₁ ⌟ #[0]VAR))))

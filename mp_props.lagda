@@ -734,7 +734,10 @@ isType-MP-rightₙ-body i w f₁ f₂ f∈ w1 e1 a₁ a₂ a∈ =
                        → equalInType n w #NAT→BOOL₀ a₁ a₂
                        → equalTypes n w (#MP-rightₙ a₁) (#MP-rightₙ a₂)
 →equalTypes-#MPₙ-right {n} {w} {a₁} {a₂} eqt =
-  eqTypesSQUASH← (eqTypesSUM← (λ w' _ → eqTypesNAT) (isType-MP-rightₙ-body n w a₁ a₂ eqt))
+  eqTypesSQUASH← (eqTypesSUM← {B = #[0]ASSERT₂ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR)}
+                              {D = #[0]ASSERT₂ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR)}
+                              (λ w' _ → eqTypesNAT)
+                              (isType-MP-rightₙ-body n w a₁ a₂ eqt))
 
 
 →equalTypes-#MPₙ-left : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
@@ -979,7 +982,9 @@ equalInType-NAT!→equalTypes-ASSERTₘ {n} {w} {a} {b} eqb =
                        → equalInType n w #NAT!→NAT! a₁ a₂
                        → equalTypes n w (#MP-rightₘ a₁) (#MP-rightₘ a₂)
 →equalTypes-#MP-rightₘ {n} {w} {a₁} {a₂} eqt =
-  eqTypesSUM!← (λ w' _ → isTypeNAT!) aw1
+  eqTypesSUM!← {B = #[0]ASSERTₘ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR)}
+               {D = #[0]ASSERTₘ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR)}
+               (λ w' _ → isTypeNAT!) aw1
   where
     aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT! a b → equalInType n w' #NAT! (#APPLY a₁ a) (#APPLY a₂ b))
     aw0 = equalInType-FUN→ (≡CTerm→equalInType #NAT!→NAT!≡ eqt)

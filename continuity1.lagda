@@ -1366,7 +1366,7 @@ sub0-NATn-body a n rewrite CTerm→CTerm0→Term n = CTerm≡ e
   ≡CTerm→eqTypes
     (sym (≡NATn a₁))
     (sym (≡NATn a₂))
-    (eqTypesSET← (λ w' e' → eqTypesNAT) aw1)
+    (eqTypesSET← {B = #[0]LT #[0]VAR ⌞ a₁ ⌟} {D = #[0]LT #[0]VAR ⌞ a₂ ⌟} (λ w' e' → eqTypesNAT) aw1)
   where
     aw2 : ∀𝕎 w (λ w' _ → (b₁ b₂ : CTerm) → equalInType i w' #NAT b₁ b₂
                        → equalTypes i w' (#LT b₁ a₁) (#LT b₂ a₂))
@@ -1401,9 +1401,9 @@ sub0-NATn-body a n rewrite CTerm→CTerm0→Term n = CTerm≡ e
     eb1 = ≡CTerm→equalInType (≡NATn n) ea
 
     eb2 : □· w (λ w' _ → SETeq (equalInType i w' #NAT) (λ x y ea → equalInType i w' (sub0 x (#[0]LT #[0]VAR ⌞ n ⌟))) a b)
-    eb2 = equalInType-SET→ eb1
+    eb2 = equalInType-SET→ {B = #[0]LT #[0]VAR ⌞ n ⌟} eb1
 
-    aw1 : ∀𝕎 w (λ w' e' → SETeq (equalInType i w' #NAT) (λ x y ea₁ → equalInType i w' (sub0 x (#[0]LT #[0]VAR (CTerm→CTerm0 n)))) a b
+    aw1 : ∀𝕎 w (λ w' e' → SETeq (equalInType i w' #NAT) (λ x y ea₁ → equalInType i w' (sub0 x (#[0]LT #[0]VAR ⌞ n ⌟))) a b
                         → □· w' (↑wPred' (λ w'' _ → NATeq w'' a b) e'))
     aw1 w1 e1 (x , ex , ey) = Mod.∀𝕎-□Func M (λ w2 e2 s z → s) (equalInType-NAT→ i w1 a b ex)
 
@@ -1473,8 +1473,14 @@ equalTypes-contBodyPI i w F₁ F₂ f₁ f₂ ∈F ∈f w1 e1 a₁ a₂ ea =
                  (#[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
                           (#[0]FUN (#[0]EQ ⌞ f₂ ⌟ #[0]VAR (#[0]BAIREn ⌞ a₂ ⌟))
                                    (#[0]EQ (#[0]APPLY ⌞ F₂ ⌟ ⌞ f₂ ⌟) (#[0]APPLY ⌞ F₂ ⌟ #[0]VAR) #[0]NAT))))
-    ea1 = eqTypesPI← (λ w' _ → eqTypesBAIRE)
-                      (λ w2 e2 g₁ g₂ eg → ≡CTerm→eqTypes (sym (sub0-contBodyPI-PI F₁ f₁ a₁ g₁)) (sym (sub0-contBodyPI-PI F₂ f₂ a₂ g₂)) (ea2 w2 e2 g₁ g₂ eg))
+    ea1 = eqTypesPI← {B = #[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
+                                  (#[0]FUN (#[0]EQ ⌞ f₁ ⌟ #[0]VAR (#[0]BAIREn ⌞ a₁ ⌟))
+                                           (#[0]EQ (#[0]APPLY ⌞ F₁ ⌟ ⌞ f₁ ⌟) (#[0]APPLY ⌞ F₁ ⌟ #[0]VAR) #[0]NAT))}
+                     {D = #[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
+                                  (#[0]FUN (#[0]EQ ⌞ f₂ ⌟ #[0]VAR (#[0]BAIREn ⌞ a₂ ⌟))
+                                           (#[0]EQ (#[0]APPLY ⌞ F₂ ⌟ ⌞ f₂ ⌟) (#[0]APPLY ⌞ F₂ ⌟ #[0]VAR) #[0]NAT))}
+                     (λ w' _ → eqTypesBAIRE)
+                     (λ w2 e2 g₁ g₂ eg → ≡CTerm→eqTypes (sym (sub0-contBodyPI-PI F₁ f₁ a₁ g₁)) (sym (sub0-contBodyPI-PI F₂ f₂ a₂ g₂)) (ea2 w2 e2 g₁ g₂ eg))
 
 
 
@@ -1488,6 +1494,14 @@ equalTypes-contBody i w F₁ F₂ f₁ f₂ ∈F ∈f =
     (sym (#contBody≡ F₁ f₁))
     (sym (#contBody≡ F₂ f₂))
     (eqTypesSUM←
+      {B = #[0]PI #[0]BAIRE
+                  (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
+                           (#[1]FUN (#[1]EQ ⌞ f₁ ⌟ #[1]VAR0 (#[1]BAIREn #[1]VAR1))
+                                    (#[1]EQ (#[1]APPLY ⌞ F₁ ⌟ ⌞ f₁ ⌟) (#[1]APPLY ⌞ F₁ ⌟ #[1]VAR0) #[1]NAT)))}
+      {D = #[0]PI #[0]BAIRE
+                  (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
+                           (#[1]FUN (#[1]EQ ⌞ f₂ ⌟ #[1]VAR0 (#[1]BAIREn #[1]VAR1))
+                                    (#[1]EQ (#[1]APPLY ⌞ F₂ ⌟ ⌞ f₂ ⌟) (#[1]APPLY ⌞ F₂ ⌟ #[1]VAR0) #[1]NAT)))}
       (λ w' e' → eqTypesNAT)
       (equalTypes-contBodyPI i w F₁ F₂ f₁ f₂ ∈F ∈f))
 
@@ -1572,6 +1586,7 @@ equalInType-NATn→ {i} {w} {n} {t} {a} {b} compt eqi =
   ≡CTerm→equalInType
     (sym (≡NATn t))
     (equalInType-SET
+      {B = #[0]LT #[0]VAR ⌞ t ⌟}
       (λ w' _ → eqTypesNAT)
       (λ w' e' a₁ a₂ eqa → ≡CTerm→eqTypes (sym (sub0-NATn-body a₁ t)) (sym (sub0-NATn-body a₂ t)) (→equalTypesLT eqa (#⇛NUM∈NAT (∀𝕎-mon e' compt))))
       (λ w' e' → →equalInType-NAT i w' a b (Mod.∀𝕎-□Func M (λ w'' e'' (k , c1 , c2 , ltn) → k , c1 , c2) (Mod.↑□ M eqi e')))

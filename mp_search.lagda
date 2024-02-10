@@ -627,7 +627,7 @@ mpSearch i w f₁ f₂ a₁ a₂ t₁ t₂ nnf₁ nnf₂ ct₁ ct₂ f∈ a∈ =
       equalInType-local (Mod.∀𝕎-□Func M aw2 p∈)
       where
         p∈ : □· w1 (λ w' _ → SUMeq! (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w' t t)
-        p∈ = equalInType-SUM!→ t∈
+        p∈ = equalInType-SUM!→ {B = #[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)} t∈
 
         aw2 : ∀𝕎 w1 (λ w' e' → SUMeq! (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w' t t
                              → equalInType i w' (#MP-right2 f₁) t₁ t₂)
@@ -638,6 +638,7 @@ mpSearch i w f₁ f₂ a₁ a₂ t₁ t₂ nnf₁ nnf₂ ct₁ ct₂ f∈ a∈ =
                                   → equalInType i w' (#MP-right2 f₁) t₁ t₂)
             aw3 w3 e3 (n , d₁ , d₂) =
               equalInType-SUM!
+                {B = #[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)}
                 (λ w' _ → isTypeNAT!)
                 (isType-MP-right-body i w3 f₁ f₁ (equalInType-refl (equalInType-mon f∈ w3 (⊑-trans· e1 (⊑-trans· e2 e3)))))
                 (∀𝕎-□Func2 aw4 h2 y∈)

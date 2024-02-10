@@ -607,39 +607,39 @@ abstract
   fvars-shiftUp≡ n QNAT = refl
 --  fvars-shiftUp≡ n TNAT = refl
   fvars-shiftUp≡ n (LT t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁ = refl
   fvars-shiftUp≡ n (QLT t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁ = refl
   fvars-shiftUp≡ n (NUM x) = refl
   fvars-shiftUp≡ n (IFLT t t₁ t₂ t₃)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂ ++ fvars t₃)
-            | map-++-commute (sucIf≤ n) (fvars t₁) (fvars t₂ ++ fvars t₃)
-            | map-++-commute (sucIf≤ n) (fvars t₂) (fvars t₃)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂ ++ fvars t₃)
+            | map-++ (sucIf≤ n) (fvars t₁) (fvars t₂ ++ fvars t₃)
+            | map-++ (sucIf≤ n) (fvars t₂) (fvars t₃)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁
             | fvars-shiftUp≡ n t₂
             | fvars-shiftUp≡ n t₃ = refl
   fvars-shiftUp≡ n (IFEQ t t₁ t₂ t₃)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂ ++ fvars t₃)
-            | map-++-commute (sucIf≤ n) (fvars t₁) (fvars t₂ ++ fvars t₃)
-            | map-++-commute (sucIf≤ n) (fvars t₂) (fvars t₃)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂ ++ fvars t₃)
+            | map-++ (sucIf≤ n) (fvars t₁) (fvars t₂ ++ fvars t₃)
+            | map-++ (sucIf≤ n) (fvars t₂) (fvars t₃)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁
               | fvars-shiftUp≡ n t₂
             | fvars-shiftUp≡ n t₃ = refl
   fvars-shiftUp≡ n (SUC t) = fvars-shiftUp≡ n t
   fvars-shiftUp≡ n (NATREC t t₁ t₂)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
-            | map-++-commute (sucIf≤ n) (fvars t₁) (fvars t₂)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
+            | map-++ (sucIf≤ n) (fvars t₁) (fvars t₂)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁
             | fvars-shiftUp≡ n t₂ = refl
   fvars-shiftUp≡ n (PI t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (fvars t₁))
+    rewrite map-++ (sucIf≤ n) (fvars t) (lowerVars (fvars t₁))
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ (suc n) t₁
             | lowerVars-map-sucIf≤-suc n (fvars t₁) = refl
@@ -647,113 +647,113 @@ abstract
     rewrite fvars-shiftUp≡ (suc n) t
             | lowerVars-map-sucIf≤-suc n (fvars t) = refl
   fvars-shiftUp≡ n (APPLY t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁ = refl
   fvars-shiftUp≡ n (FIX t) = fvars-shiftUp≡ n t
   fvars-shiftUp≡ n (LET t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (fvars t₁))
+    rewrite map-++ (sucIf≤ n) (fvars t) (lowerVars (fvars t₁))
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ (suc n) t₁
             | lowerVars-map-sucIf≤-suc n (fvars t₁) = refl
   fvars-shiftUp≡ n (WT t t₁ t₂)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (fvars t₁) ++ fvars t₂)
-            | map-++-commute (sucIf≤ n) (lowerVars (fvars t₁)) (fvars t₂)
+    rewrite map-++ (sucIf≤ n) (fvars t) (lowerVars (fvars t₁) ++ fvars t₂)
+            | map-++ (sucIf≤ n) (lowerVars (fvars t₁)) (fvars t₂)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ (suc n) t₁
             | fvars-shiftUp≡ n t₂
             | lowerVars-map-sucIf≤-suc n (fvars t₁) = refl
   fvars-shiftUp≡ n (SUP t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁ = refl
   {--fvars-shiftUp≡ n (DSUP t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (lowerVars (fvars t₁)))
+    rewrite map-++ (sucIf≤ n) (fvars t) (lowerVars (lowerVars (fvars t₁)))
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ (suc (suc n)) t₁
             | lowerVars-map-sucIf≤-suc (suc n) (fvars t₁)
             | lowerVars-map-sucIf≤-suc n (lowerVars (fvars t₁)) = refl--}
   fvars-shiftUp≡ n (WREC t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (lowerVars (lowerVars (fvars t₁))))
+    rewrite map-++ (sucIf≤ n) (fvars t) (lowerVars (lowerVars (lowerVars (fvars t₁))))
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ (suc (suc (suc n))) t₁
             | lowerVars-map-sucIf≤-suc (suc (suc n)) (fvars t₁)
             | lowerVars-map-sucIf≤-suc (suc n) (lowerVars (fvars t₁))
             | lowerVars-map-sucIf≤-suc n (lowerVars (lowerVars (fvars t₁))) = refl
   fvars-shiftUp≡ n (MT t t₁ t₂)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (fvars t₁) ++ fvars t₂)
-            | map-++-commute (sucIf≤ n) (lowerVars (fvars t₁)) (fvars t₂)
+    rewrite map-++ (sucIf≤ n) (fvars t) (lowerVars (fvars t₁) ++ fvars t₂)
+            | map-++ (sucIf≤ n) (lowerVars (fvars t₁)) (fvars t₂)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ (suc n) t₁
             | fvars-shiftUp≡ n t₂
             | lowerVars-map-sucIf≤-suc n (fvars t₁) = refl
   {--fvars-shiftUp≡ n (MSUP t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁ = refl
   fvars-shiftUp≡ n (DMSUP t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (lowerVars (fvars t₁)))
+    rewrite map-++ (sucIf≤ n) (fvars t) (lowerVars (lowerVars (fvars t₁)))
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ (suc (suc n)) t₁
             | lowerVars-map-sucIf≤-suc (suc n) (fvars t₁)
             | lowerVars-map-sucIf≤-suc n (lowerVars (fvars t₁)) = refl--}
   fvars-shiftUp≡ n (SUM t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (fvars t₁))
+    rewrite map-++ (sucIf≤ n) (fvars t) (lowerVars (fvars t₁))
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ (suc n) t₁
             | lowerVars-map-sucIf≤-suc n (fvars t₁) = refl
   fvars-shiftUp≡ n (PAIR t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁ = refl
   fvars-shiftUp≡ n (SPREAD t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (lowerVars (fvars t₁)))
+    rewrite map-++ (sucIf≤ n) (fvars t) (lowerVars (lowerVars (fvars t₁)))
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ (suc (suc n)) t₁
             | lowerVars-map-sucIf≤-suc (suc n) (fvars t₁)
             | lowerVars-map-sucIf≤-suc n (lowerVars (fvars t₁)) = refl
   fvars-shiftUp≡ n (SET t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (fvars t₁))
+    rewrite map-++ (sucIf≤ n) (fvars t) (lowerVars (fvars t₁))
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ (suc n) t₁
             | lowerVars-map-sucIf≤-suc n (fvars t₁) = refl
   fvars-shiftUp≡ n (ISECT t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁ = refl
   fvars-shiftUp≡ n (TUNION t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (fvars t₁))
+    rewrite map-++ (sucIf≤ n) (fvars t) (lowerVars (fvars t₁))
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ (suc n) t₁
             | lowerVars-map-sucIf≤-suc n (fvars t₁) = refl
   fvars-shiftUp≡ n (UNION t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁ = refl
 {-  fvars-shiftUp≡ n (QTUNION t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁ = refl-}
   fvars-shiftUp≡ n (INL t) = fvars-shiftUp≡ n t
   fvars-shiftUp≡ n (INR t) = fvars-shiftUp≡ n t
   fvars-shiftUp≡ n (DECIDE t t₁ t₂)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (lowerVars (fvars t₁) ++ lowerVars (fvars t₂))
-            | map-++-commute (sucIf≤ n) (lowerVars (fvars t₁)) (lowerVars (fvars t₂))
+    rewrite map-++ (sucIf≤ n) (fvars t) (lowerVars (fvars t₁) ++ lowerVars (fvars t₂))
+            | map-++ (sucIf≤ n) (lowerVars (fvars t₁)) (lowerVars (fvars t₂))
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ (suc n) t₁
             | fvars-shiftUp≡ (suc n) t₂
             | lowerVars-map-sucIf≤-suc n (fvars t₁)
             | lowerVars-map-sucIf≤-suc n (fvars t₂) = refl
   fvars-shiftUp≡ n (EQ t t₁ t₂)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
-            | map-++-commute (sucIf≤ n) (fvars t₁) (fvars t₂)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
+            | map-++ (sucIf≤ n) (fvars t₁) (fvars t₂)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁
             | fvars-shiftUp≡ n t₂ = refl
 {-  fvars-shiftUp≡ n (EQB t t₁ t₂ t₃)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂ ++ fvars t₃)
-            | map-++-commute (sucIf≤ n) (fvars t₁) (fvars t₂ ++ fvars t₃)
-            | map-++-commute (sucIf≤ n) (fvars t₂) (fvars t₃)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂ ++ fvars t₃)
+            | map-++ (sucIf≤ n) (fvars t₁) (fvars t₂ ++ fvars t₃)
+            | map-++ (sucIf≤ n) (fvars t₂) (fvars t₃)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁
             | fvars-shiftUp≡ n t₂
@@ -769,12 +769,12 @@ abstract
   fvars-shiftUp≡ n (LOAD t)
     rewrite fvars-shiftUp≡ n t = refl
   fvars-shiftUp≡ n (CHOOSE t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁ = refl
   {--fvars-shiftUp≡ n (IFC0 t t₁ t₂)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
-            | map-++-commute (sucIf≤ n) (fvars t₁) (fvars t₂)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
+            | map-++ (sucIf≤ n) (fvars t₁) (fvars t₂)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁
             | fvars-shiftUp≡ n t₂ = refl--}
@@ -785,7 +785,7 @@ abstract
   fvars-shiftUp≡ n (SUBSING t) = fvars-shiftUp≡ n t
   fvars-shiftUp≡ n (PARTIAL t) = fvars-shiftUp≡ n t
   fvars-shiftUp≡ n (FFDEFS t t₁)
-    rewrite map-++-commute (sucIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (sucIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftUp≡ n t
             | fvars-shiftUp≡ n t₁ = refl
   fvars-shiftUp≡ n PURE = refl
@@ -988,39 +988,39 @@ abstract
   fvars-shiftDown≡ n QNAT = refl
 --  fvars-shiftDown≡ n TNAT = refl
   fvars-shiftDown≡ n (LT t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁)
     | fvars-shiftDown≡ n t
     | fvars-shiftDown≡ n t₁ = refl
   fvars-shiftDown≡ n (QLT t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁)
     | fvars-shiftDown≡ n t
     | fvars-shiftDown≡ n t₁ = refl
   fvars-shiftDown≡ n (NUM x) = refl
   fvars-shiftDown≡ n (IFLT t t₁ t₂ t₃)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂ ++ fvars t₃)
-            | map-++-commute (predIf≤ n) (fvars t₁) (fvars t₂ ++ fvars t₃)
-            | map-++-commute (predIf≤ n) (fvars t₂) (fvars t₃)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂ ++ fvars t₃)
+            | map-++ (predIf≤ n) (fvars t₁) (fvars t₂ ++ fvars t₃)
+            | map-++ (predIf≤ n) (fvars t₂) (fvars t₃)
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁
             | fvars-shiftDown≡ n t₂
             | fvars-shiftDown≡ n t₃ = refl
   fvars-shiftDown≡ n (IFEQ t t₁ t₂ t₃)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂ ++ fvars t₃)
-            | map-++-commute (predIf≤ n) (fvars t₁) (fvars t₂ ++ fvars t₃)
-            | map-++-commute (predIf≤ n) (fvars t₂) (fvars t₃)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂ ++ fvars t₃)
+            | map-++ (predIf≤ n) (fvars t₁) (fvars t₂ ++ fvars t₃)
+            | map-++ (predIf≤ n) (fvars t₂) (fvars t₃)
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁
             | fvars-shiftDown≡ n t₂
             | fvars-shiftDown≡ n t₃ = refl
   fvars-shiftDown≡ n (SUC t) = fvars-shiftDown≡ n t
   fvars-shiftDown≡ n (NATREC t t₁ t₂)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
-            | map-++-commute (predIf≤ n) (fvars t₁) (fvars t₂)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
+            | map-++ (predIf≤ n) (fvars t₁) (fvars t₂)
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁
             | fvars-shiftDown≡ n t₂ = refl
   fvars-shiftDown≡ n (PI t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
+    rewrite map-++ (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ (suc n) t₁
             | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
@@ -1028,113 +1028,113 @@ abstract
     rewrite fvars-shiftDown≡ (suc n) t
             | lowerVars-map-predIf≤-suc n (fvars t) = refl
   fvars-shiftDown≡ n (APPLY t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁ = refl
   fvars-shiftDown≡ n (FIX t) = fvars-shiftDown≡ n t
   fvars-shiftDown≡ n (LET t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
+    rewrite map-++ (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ (suc n) t₁
             | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
   fvars-shiftDown≡ n (WT t t₁ t₂)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁) ++ fvars t₂)
-          | map-++-commute (predIf≤ n) (lowerVars (fvars t₁)) (fvars t₂)
+    rewrite map-++ (predIf≤ n) (fvars t) (lowerVars (fvars t₁) ++ fvars t₂)
+          | map-++ (predIf≤ n) (lowerVars (fvars t₁)) (fvars t₂)
           | fvars-shiftDown≡ n t
           | fvars-shiftDown≡ (suc n) t₁
           | lowerVars-map-predIf≤-suc n (fvars t₁)
           | fvars-shiftDown≡ n t₂ = refl
   fvars-shiftDown≡ n (SUP t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁ = refl
   {--fvars-shiftDown≡ n (DSUP t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (lowerVars (fvars t₁)))
+    rewrite map-++ (predIf≤ n) (fvars t) (lowerVars (lowerVars (fvars t₁)))
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ (suc (suc n)) t₁
             | lowerVars-map-predIf≤-suc (suc n) (fvars t₁)
             | lowerVars-map-predIf≤-suc n (lowerVars (fvars t₁)) = refl--}
   fvars-shiftDown≡ n (WREC t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (lowerVars (lowerVars (fvars t₁))))
+    rewrite map-++ (predIf≤ n) (fvars t) (lowerVars (lowerVars (lowerVars (fvars t₁))))
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ (suc (suc (suc n))) t₁
             | lowerVars-map-predIf≤-suc (suc (suc n)) (fvars t₁)
             | lowerVars-map-predIf≤-suc (suc n) (lowerVars (fvars t₁))
             | lowerVars-map-predIf≤-suc n (lowerVars (lowerVars (fvars t₁))) = refl
   fvars-shiftDown≡ n (MT t t₁ t₂)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁) ++ fvars t₂)
-          | map-++-commute (predIf≤ n) (lowerVars (fvars t₁)) (fvars t₂)
+    rewrite map-++ (predIf≤ n) (fvars t) (lowerVars (fvars t₁) ++ fvars t₂)
+          | map-++ (predIf≤ n) (lowerVars (fvars t₁)) (fvars t₂)
           | fvars-shiftDown≡ n t
           | fvars-shiftDown≡ (suc n) t₁
           | lowerVars-map-predIf≤-suc n (fvars t₁)
           | fvars-shiftDown≡ n t₂ = refl
   {--fvars-shiftDown≡ n (MSUP t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁ = refl
   fvars-shiftDown≡ n (DMSUP t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (lowerVars (fvars t₁)))
+    rewrite map-++ (predIf≤ n) (fvars t) (lowerVars (lowerVars (fvars t₁)))
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ (suc (suc n)) t₁
             | lowerVars-map-predIf≤-suc (suc n) (fvars t₁)
             | lowerVars-map-predIf≤-suc n (lowerVars (fvars t₁)) = refl--}
   fvars-shiftDown≡ n (SUM t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
+    rewrite map-++ (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ (suc n) t₁
             | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
   fvars-shiftDown≡ n (PAIR t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁ = refl
   fvars-shiftDown≡ n (SPREAD t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (lowerVars (fvars t₁)))
+    rewrite map-++ (predIf≤ n) (fvars t) (lowerVars (lowerVars (fvars t₁)))
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ (suc (suc n)) t₁
             | lowerVars-map-predIf≤-suc (suc n) (fvars t₁)
             | lowerVars-map-predIf≤-suc n (lowerVars (fvars t₁)) = refl
   fvars-shiftDown≡ n (SET t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
+    rewrite map-++ (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ (suc n) t₁
             | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
   fvars-shiftDown≡ n (ISECT t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁ = refl
   fvars-shiftDown≡ n (TUNION t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
+    rewrite map-++ (predIf≤ n) (fvars t) (lowerVars (fvars t₁))
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ (suc n) t₁
             | lowerVars-map-predIf≤-suc n (fvars t₁) = refl
   fvars-shiftDown≡ n (UNION t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁ = refl
 {-  fvars-shiftDown≡ n (QTUNION t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁ = refl-}
   fvars-shiftDown≡ n (INL t) = fvars-shiftDown≡ n t
   fvars-shiftDown≡ n (INR t) = fvars-shiftDown≡ n t
   fvars-shiftDown≡ n (DECIDE t t₁ t₂)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (lowerVars (fvars t₁) ++ lowerVars (fvars t₂))
-            | map-++-commute (predIf≤ n) (lowerVars (fvars t₁)) (lowerVars (fvars t₂))
+    rewrite map-++ (predIf≤ n) (fvars t) (lowerVars (fvars t₁) ++ lowerVars (fvars t₂))
+            | map-++ (predIf≤ n) (lowerVars (fvars t₁)) (lowerVars (fvars t₂))
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ (suc n) t₁
             | fvars-shiftDown≡ (suc n) t₂
             | lowerVars-map-predIf≤-suc n (fvars t₁)
             | lowerVars-map-predIf≤-suc n (fvars t₂) = refl
   fvars-shiftDown≡ n (EQ t t₁ t₂)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
-            | map-++-commute (predIf≤ n) (fvars t₁) (fvars t₂)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
+            | map-++ (predIf≤ n) (fvars t₁) (fvars t₂)
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁
             | fvars-shiftDown≡ n t₂ = refl
 {-  fvars-shiftDown≡ n (EQB t t₁ t₂ t₃)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂ ++ fvars t₃)
-            | map-++-commute (predIf≤ n) (fvars t₁) (fvars t₂ ++ fvars t₃)
-            | map-++-commute (predIf≤ n) (fvars t₂) (fvars t₃)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂ ++ fvars t₃)
+            | map-++ (predIf≤ n) (fvars t₁) (fvars t₂ ++ fvars t₃)
+            | map-++ (predIf≤ n) (fvars t₂) (fvars t₃)
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁
             | fvars-shiftDown≡ n t₂
@@ -1150,12 +1150,12 @@ abstract
   fvars-shiftDown≡ n (LOAD t)
     rewrite fvars-shiftDown≡ n t = refl
   fvars-shiftDown≡ n (CHOOSE t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁ = refl
   {--fvars-shiftDown≡ n (IFC0 t t₁ t₂)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
-            | map-++-commute (predIf≤ n) (fvars t₁) (fvars t₂)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁ ++ fvars t₂)
+            | map-++ (predIf≤ n) (fvars t₁) (fvars t₂)
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁
             | fvars-shiftDown≡ n t₂ = refl--}
@@ -1166,7 +1166,7 @@ abstract
   fvars-shiftDown≡ n (SUBSING t) = fvars-shiftDown≡ n t
   fvars-shiftDown≡ n (PARTIAL t) = fvars-shiftDown≡ n t
   fvars-shiftDown≡ n (FFDEFS t t₁)
-    rewrite map-++-commute (predIf≤ n) (fvars t) (fvars t₁)
+    rewrite map-++ (predIf≤ n) (fvars t) (fvars t₁)
             | fvars-shiftDown≡ n t
             | fvars-shiftDown≡ n t₁ = refl
   fvars-shiftDown≡ n PURE = refl
@@ -1621,7 +1621,7 @@ abstract
   shiftDown1-subv1-shiftUp0 n a (VAR 0) ca | no p | yes q | no r = refl
   shiftDown1-subv1-shiftUp0 n a (VAR (suc x)) ca | no p | yes q | no r with suc x ≤? suc n
   ... |       yes s = refl
-  ... |       no s = ⊥-elim (s (≤-trans (≤-step (≤-step ≤-refl)) (_≤_.s≤s q)))
+  ... |       no s = ⊥-elim (s (≤-trans (m≤n⇒m≤1+n (m≤n⇒m≤1+n ≤-refl)) (_≤_.s≤s q)))
   shiftDown1-subv1-shiftUp0 n a (VAR x) ca | no p | no q with suc x ≟ suc n
   shiftDown1-subv1-shiftUp0 n a (VAR x) ca | no p | no q | yes r = ⊥-elim (p (suc-injective r))
   shiftDown1-subv1-shiftUp0 n a (VAR x) ca | no p | no q | no r with suc x ≤? suc n

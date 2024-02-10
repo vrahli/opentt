@@ -205,9 +205,10 @@ fun-equalInType-SUM!-NAT! : {n : ℕ} {w : 𝕎·} {a b : CTerm0} {u v : CTerm}
                           → equalInType n w (#SUM! #NAT! b) u v
 fun-equalInType-SUM!-NAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
   equalInType-SUM!
+    {B = b}
     (λ w' _ → isTypeNAT!)
     eqb
-    (Mod.∀𝕎-□Func M aw (equalInType-SUM!→ eqi))
+    (Mod.∀𝕎-□Func M aw (equalInType-SUM!→ {B = a} eqi))
   where
     aw : ∀𝕎 w (λ w' e' → SUMeq! (equalInType n w' #NAT!) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ a)) w' u v
                        → SUMeq! (equalInType n w' #NAT!) (λ a₁ b₁ ea → equalInType n w' (sub0 a₁ b)) w' u v)
@@ -223,7 +224,8 @@ fun-equalInType-SUM!-NAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
 #SUM-ASSERT₂→#Σchoice bcb {n} {w} {name} comp sat (t , inh) =
   t , ≡CTerm→equalInType
         (sym (#Σchoice≡ name ℂ₁·))
-        (fun-equalInType-SUM!-NAT! {n} {w} {#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
+        (fun-equalInType-SUM!-NAT! {n} {w} {#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR)}
+                                   {b = #[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁} aw1 aw2 inh)
   where
     aw1 : ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #NAT! m
                         → equalInType n w' (sub0 m (#[0]ASSERT₂ (#[0]APPLY (#[0]CS name) #[0]VAR))) t₁ t₂
@@ -258,7 +260,10 @@ fun-equalInType-SUM!-NAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
 #SUM-ASSERT₃→#Σchoice bcb {n} {w} {name} comp sat (t , inh) =
   t , ≡CTerm→equalInType
         (sym (#Σchoice≡ name ℂ₁·))
-        (fun-equalInType-SUM!-NAT! {n} {w} {#[0]ASSERT₃ (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
+        (fun-equalInType-SUM!-NAT! {n} {w}
+                                   {#[0]ASSERT₃ (#[0]APPLY (#[0]CS name) #[0]VAR)}
+                                   {b = #[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁}
+                                   aw1 aw2 inh)
   where
     aw1 : ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #NAT! m
                         → equalInType n w' (sub0 m (#[0]ASSERT₃ (#[0]APPLY (#[0]CS name) #[0]VAR))) t₁ t₂
@@ -292,7 +297,10 @@ fun-equalInType-SUM!-NAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
 #SUM-ASSERT₅→#Σchoice bcb {n} {w} {name} comp sat (t , inh) =
   t , ≡CTerm→equalInType
         (sym (#Σchoice≡ name ℂ₁·))
-        (fun-equalInType-SUM!-NAT! {n} {w} {#[0]ASSERT₄ (#[0]APPLY (#[0]CS name) #[0]VAR)} aw1 aw2 inh)
+        (fun-equalInType-SUM!-NAT! {n} {w}
+                                   {#[0]ASSERT₄ (#[0]APPLY (#[0]CS name) #[0]VAR)}
+                                   {b = #[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁}
+                                   aw1 aw2 inh)
   where
     aw1 : ∀𝕎 w (λ w' _ → (m : CTerm) (t₁ t₂ : CTerm) → ∈Type n w' #NAT! m
                        → equalInType n w' (sub0 m (#[0]ASSERT₄ (#[0]APPLY (#[0]CS name) #[0]VAR))) t₁ t₂
@@ -360,7 +368,7 @@ fun-equalInType-SUM!-NAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
         h0 = ≡CTerm→equalInType (#Σchoice≡ name ℂ₁·) eqi
 
         h1 : □· w1 (λ w' _ → SUMeq! (equalInType n w' #NAT!) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' p₁ p₂)
-        h1 = equalInType-SUM!→ h0
+        h1 = equalInType-SUM!→ {B = #[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁} h0
 
 
 
@@ -406,6 +414,6 @@ fun-equalInType-SUM!-NAT! {n} {w} {a} {b} {u} {v} imp eqb eqi =
         h0 = ≡CTerm→equalInType (#Σchoice≡ name ℂ₁·) eqi
 
         h1 : □· w1 (λ w' _ → SUMeq! (equalInType n w' #NAT!) (λ a b ea → equalInType n w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁))) w' p₁ p₂)
-        h1 = equalInType-SUM!→ h0
+        h1 = equalInType-SUM!→ {B = #[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) ⌞ Cℂ₁ ⌟ #[0]Typeℂ₀₁} h0
 
 \end{code}

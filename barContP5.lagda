@@ -738,7 +738,7 @@ updSeq-steps-aux cn gc r s n (suc k) ind {t} {u} {x} {w1} {w2} compat us comp is
         e3 = steps→⊑ k2 u z {w1} {w3} comp2
 
         q : Σ ℕ (λ k' → Σ Term (λ v' → steps k' (z , w3) ≡ (v' , w2) × updSeq r s n x v'))
-        q = ind k3 (<-transʳ ltk ≤-refl) {y} {z} {x} {w3} {w2} (⊑-compatible· e3 compat) us1 comp' (ishi (snd ish)) isv
+        q = ind k3 (≤-<-trans ltk ≤-refl) {y} {z} {x} {w3} {w2} (⊑-compatible· e3 compat) us1 comp' (ishi (snd ish)) isv
 ... | inj₂ q rewrite q | pair-inj₁ (sym comp) | pair-inj₂ (sym comp) | stepVal t w1 isv = ⊥-elim (¬just≡nothing q)
 
 

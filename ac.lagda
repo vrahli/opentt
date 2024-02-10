@@ -255,7 +255,7 @@ sub0-sac00-body R = CTerm≡ c
 
 sub0-ac00-left-body1 : (R n : CTerm)
                        → sub0 n (#[0]SQUASH (#[0]SUM #[0]NAT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR1 #[1]VAR0)))
-                          ≡ #SQUASH (#SUM #NAT (#[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR))
+                       ≡ #SQUASH (#SUM #NAT (#[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR))
 sub0-ac00-left-body1 R n = CTerm≡ c
   where
     c : ⌜ sub0 n (#[0]SQUASH (#[0]SUM #[0]NAT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR1 #[1]VAR0))) ⌝
@@ -363,6 +363,8 @@ isType-#AC₀₀-left1 i w R₁ R₂ R∈ w1 e1 n₁ n₂ n∈ =
     (sym (sub0-ac00-left-body1 R₂ n₂))
     (eqTypesSQUASH←
       (eqTypesSUM←
+        {B = #[0]APPLY2 ⌞ R₁ ⌟ ⌞ n₁ ⌟ #[0]VAR}
+        {D = #[0]APPLY2 ⌞ R₂ ⌟ ⌞ n₂ ⌟ #[0]VAR}
         (λ w2 e2 → eqTypesNAT)
         (isType-#AC₀₀-left2 i w1 R₁ R₂ n₁ n₂ (equalInType-mon R∈ w1 e1) n∈)))
 
@@ -458,6 +460,8 @@ isType-#AC₀₀-right : (i : ℕ) (w : 𝕎·) (R₁ R₂ : CTerm)
 isType-#AC₀₀-right i w R₁ R₂ R∈ =
   eqTypesSQUASH←
     (eqTypesSUM←
+      {B = #[0]PI #[0]NAT (#[1]APPLY2 ⌞ R₁ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))}
+      {D = #[0]PI #[0]NAT (#[1]APPLY2 ⌞ R₂ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0))}
       (λ w2 e2 → eqTypesBAIRE)
       (isType-#AC₀₀-right-body1 i w R₁ R₂ R∈))
 
@@ -548,6 +552,8 @@ isType-#sAC₀₀-right : (i : ℕ) (w : 𝕎·) (R₁ R₂ : CTerm)
 isType-#sAC₀₀-right i w R₁ R₂ R∈ =
   eqTypesSQUASH←
     (eqTypesSUM←
+      {B = #[0]PI #[0]NAT (#[1]SQUASH (#[1]APPLY2 ⌞ R₁ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))}
+      {D = #[0]PI #[0]NAT (#[1]SQUASH (#[1]APPLY2 ⌞ R₂ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))}
       (λ w2 e2 → eqTypesBAIRE)
       (isType-#sAC₀₀-right-body1 i w R₁ R₂ R∈))
 
@@ -587,11 +593,13 @@ equalInType-#AC₀₀-left→ i w R a₁ a₂ a∈ w1 e1 n n∈ =
     aw1 : ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) → equalInType i w' #NAT n₁ n₂
                         → □· w' (λ w' _ → inhType i w' (#SUM #NAT (#[0]APPLY2 ⌞ R ⌟ ⌞ n₁ ⌟ #[0]VAR))))
     aw1 w1 e1 n₁ n₂ n∈ =
-      equalInType-SQUASH→ (→≡equalInType (sub0-ac00-left-body1 R n₁) (snd (snd (equalInType-PI→ a∈)) w1 e1 n₁ n₂ n∈))
+      equalInType-SQUASH→ (→≡equalInType (sub0-ac00-left-body1 R n₁)
+                                         (snd (snd (equalInType-PI→ {B = #[0]SQUASH (#[0]SUM #[0]NAT (#[1]APPLY2 ⌞ R ⌟ #[1]VAR1 #[1]VAR0))} a∈))
+                                              w1 e1 n₁ n₂ n∈))
 
     aw2 : ∀𝕎 w1 (λ w' e' → inhType i w' (#SUM #NAT (#[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR))
                           → □· w' (↑wPred' (λ w2 e2 → Σ CTerm (λ m → ∈Type i w2 #NAT m × inhType i w2 (#APPLY2 R n m))) e'))
-    aw2 w2 e2 (t , t∈) = Mod.∀𝕎-□Func M aw3 (equalInType-SUM→ t∈)
+    aw2 w2 e2 (t , t∈) = Mod.∀𝕎-□Func M aw3 (equalInType-SUM→ {B = #[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR} t∈)
       where
         aw3 : ∀𝕎 w2 (λ w' e' → SUMeq (equalInType i w' #NAT) (λ a b ea → equalInType i w' (sub0 a (#[0]APPLY2 ⌞ R ⌟ ⌞ n ⌟ #[0]VAR))) w' t t
                               → ↑wPred' (λ w3 e3 → Σ CTerm (λ m₁ → ∈Type i w3 #NAT m₁ × inhType i w3 (#APPLY2 R n m₁))) e2 w' e')
@@ -1043,12 +1051,14 @@ equalTypes-Aac₀₀ : (cn : CS∈NAT) (i : ℕ) (w : 𝕎·) (δ : Name) (n₁ 
                     → equalTypes i w (#Aac₀₀ δ n₁) (#Aac₀₀ δ n₂)
 equalTypes-Aac₀₀ cn i w δ n₁ n₂ n cn₁ cn₂ =
   eqTypesPI←
+    {B = #[0]FUN (#[0]LE ⌞ n₁ ⌟ #[0]VAR) (#[0]EQ (#[0]APPLY (#[0]CS δ) #[0]VAR) (#[0]NUM 0) #[0]NAT)}
+    {D = #[0]FUN (#[0]LE ⌞ n₂ ⌟ #[0]VAR) (#[0]EQ (#[0]APPLY (#[0]CS δ) #[0]VAR) (#[0]NUM 0) #[0]NAT)}
     (λ w1 e1 → eqTypesNAT)
     aw1
   where
     aw1 : ∀𝕎 w (λ w' _ → (k₁ k₂ : CTerm) (k∈ : equalInType i w' #NAT k₁ k₂)
-                        → equalTypes i w' (sub0 k₁ (#[0]FUN (#[0]LE ⌞ n₁ ⌟ #[0]VAR) (#[0]EQ (#[0]APPLY (#[0]CS δ) #[0]VAR) (#[0]NUM 0) #[0]NAT)))
-                                           (sub0 k₂ (#[0]FUN (#[0]LE ⌞ n₂ ⌟ #[0]VAR) (#[0]EQ (#[0]APPLY (#[0]CS δ) #[0]VAR) (#[0]NUM 0) #[0]NAT))))
+                       → equalTypes i w' (sub0 k₁ (#[0]FUN (#[0]LE ⌞ n₁ ⌟ #[0]VAR) (#[0]EQ (#[0]APPLY (#[0]CS δ) #[0]VAR) (#[0]NUM 0) #[0]NAT)))
+                                         (sub0 k₂ (#[0]FUN (#[0]LE ⌞ n₂ ⌟ #[0]VAR) (#[0]EQ (#[0]APPLY (#[0]CS δ) #[0]VAR) (#[0]NUM 0) #[0]NAT))))
     aw1 w1 e1 k₁ k₂ k∈ =
       →≡equalTypes
         (sym (sub-#ABac₀₀ δ k₁ n₁))
@@ -1426,6 +1436,7 @@ AC₀₀-valid kb i w =
             aw6 w3 e3 =
               #PAIR (#MSEQ f) #AX ,
               equalInType-SUM
+                {B = #[0]PI #[0]NAT (#[1]SQUASH (#[1]APPLY2 ⌞ R₁ ⌟ #[1]VAR0 (#[1]APPLY #[1]VAR1 #[1]VAR0)))}
                 (λ w2 e2 → eqTypesBAIRE)
                 (isType-#sAC₀₀-right-body1 i w3 R₁ R₁ (equalInType-refl (equalInType-mon R∈ w3 (⊑-trans· e2 e3))))
                 (Mod.∀𝕎-□ M aw7)
@@ -1441,6 +1452,7 @@ AC₀₀-valid kb i w =
                   →≡equalInType
                     (sym (sub0-sac00-right-body1 R₁ (#MSEQ f)))
                     (equalInType-PI
+                      {B = #[0]SQUASH (#[0]APPLY2 ⌞ R₁ ⌟ #[0]VAR (#[0]APPLY ⌞ #MSEQ f ⌟ #[0]VAR))}
                       (λ w' e' → eqTypesNAT)
                       (isType-#sAC₀₀-right-body2 i w4 R₁ R₁ (#MSEQ f) (#MSEQ f) (equalInType-refl (equalInType-mon R∈ w4 (⊑-trans· e2 (⊑-trans· e3 e4)))) (mseq∈baire i w4 f))
                       (λ w5 e5 m₁ m₂ m∈ → →≡equalInType (sym (sub0-sac00-right-body2 R₁ (#MSEQ f) m₁)) (aw8 w5 e5 m₁ m₂ m∈)))

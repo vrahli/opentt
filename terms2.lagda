@@ -2311,7 +2311,7 @@ IFLT→hasValue-decomp (suc k) a b c d v w w' comp isv | inj₁ (n , p) | inj₂
       fst (snd (snd (snd (snd (snd (snd ind)))))) ,
       c₁' ,
       c₂' ,
-      <-transʳ (≤+-stepsˡ (fst ind) ≤-refl) (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd ind)))))))))) --fst (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd ind))))))))))) ,
+      ≤-<-trans (≤+-stepsˡ (fst ind) ≤-refl) (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd ind)))))))))) --fst (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd ind))))))))))) ,
 --      snd (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd ind)))))))))))
 ... |       inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
 IFLT→hasValue-decomp (suc k) a b c d v w w' comp isv | inj₂ p with step⊎ a w
@@ -2395,7 +2395,7 @@ IFEQ→hasValue-decomp (suc k) a b c d v w w' comp isv | inj₁ (n , p) | inj₂
       fst (snd (snd (snd (snd (snd (snd ind)))))) ,
       c₁' ,
       c₂' ,
-      <-transʳ (≤+-stepsˡ (fst ind) ≤-refl) (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd ind)))))))))) --fst (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd ind))))))))))) ,
+      ≤-<-trans (≤+-stepsˡ (fst ind) ≤-refl) (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd ind)))))))))) --fst (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd ind))))))))))) ,
 --      snd (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd (snd ind)))))))))))
 ... |       inj₂ z rewrite z | sym (pair-inj₁ comp) | sym (pair-inj₂ comp) = ⊥-elim isv
 IFEQ→hasValue-decomp (suc k) a b c d v w w' comp isv | inj₂ p with step⊎ a w

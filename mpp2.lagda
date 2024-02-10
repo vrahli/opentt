@@ -287,7 +287,7 @@ MPp₆-inh₂ exb n w =
 
                 cc1 : Σ ℕ (λ k → inhType n w3 (#ASSERT₄ (#APPLY x₁ (#NUM k))))
                       → Σ CTerm (λ t → equalInType n w3 (#SUM-ASSERT₅ x₁) t t)
-                cc1 (k , t , p) = #PAIR (#NUM k) t , equalInType-SUM! (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
+                cc1 (k , t , p) = #PAIR (#NUM k) t , equalInType-SUM! {B = #[0]ASSERT₄ (#[0]APPLY ⌞ x₁ ⌟ #[0]VAR)} (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
                   where
                     aw6 : ∀𝕎 w3 (λ w' _ → SUMeq! (equalInType n w' #NAT!)
                                                   (λ a b ea → equalInType n w' (sub0 a (#[0]ASSERT₄ (#[0]APPLY ⌞ x₁ ⌟ #[0]VAR))))
@@ -413,7 +413,7 @@ equalInType-#MP-left2-qt₃→ i w f a₁ a₂ f∈ a∈ w1 e1 h =
           lift (h w3 (⊑-trans· e2 e3) (n₁ , n₂ , n∈ , q₁ , ≡CTerm→equalInType (sub0-ASSERT₄-APPLY n₁ f) (equalInType-refl q∈)))
 
         h3 : □· w2 (λ w' _ → SUMeq! (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₄ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))) w' p₁ p₂)
-        h3 = equalInType-SUM!→ p∈
+        h3 = equalInType-SUM!→ {B = #[0]ASSERT₄ (#[0]APPLY ⌞ f ⌟ #[0]VAR)} p∈
 
     h1 : ∈Type i w1 (#NEG (#SUM-ASSERT₅ f)) t
     h1 = equalInType-NEG
@@ -717,7 +717,7 @@ mpSearch₂ i w f₁ f₂ a₁ a₂ t₁ t₂ nnf₁ nnf₂ ct₁ ct₂ f∈ a�
       equalInType-local (Mod.∀𝕎-□Func M aw2 p∈)
       where
         p∈ : □· w1 (λ w' _ → SUMeq! (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₄ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w' t t)
-        p∈ = equalInType-SUM!→ t∈
+        p∈ = equalInType-SUM!→ {B = #[0]ASSERT₄ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)} t∈
 
         aw2 : ∀𝕎 w1 (λ w' e' → SUMeq! (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₄ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)))) w' t t
                              → equalInType i w' (#MP-right2-qt₃ f₁) t₁ t₂)
@@ -728,6 +728,7 @@ mpSearch₂ i w f₁ f₂ a₁ a₂ t₁ t₂ nnf₁ nnf₂ ct₁ ct₂ f∈ a�
                                  → equalInType i w' (#MP-right2-qt₃ f₁) t₁ t₂)
             aw3 w3 e3 (n , d₁ , d₂) =
               equalInType-SUM!
+                {B = #[0]ASSERT₄ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)}
                 (λ w' _ → isTypeNAT!)
                 (isType-MP-right-qt₃-body i w3 f₁ f₁ (equalInType-refl (equalInType-mon f∈ w3 (⊑-trans· e1 (⊑-trans· e2 e3)))))
                 (∀𝕎-□Func2 aw4 h2 y∈)

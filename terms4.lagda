@@ -1670,134 +1670,134 @@ abstract
   names-shiftNameUp≡ n QNAT = refl
 --  names-shiftNameUp≡ n TNAT = refl
   names-shiftNameUp≡ n (LT t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
   names-shiftNameUp≡ n (QLT t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
   names-shiftNameUp≡ n (NUM x) = refl
   names-shiftNameUp≡ n (IFLT t t₁ t₂ t₃)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁ ++ names t₂ ++ names t₃)
-            | map-++-commute (sucIf≤ n) (names t₁) (names t₂ ++ names t₃)
-            | map-++-commute (sucIf≤ n) (names t₂) (names t₃)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁ ++ names t₂ ++ names t₃)
+            | map-++ (sucIf≤ n) (names t₁) (names t₂ ++ names t₃)
+            | map-++ (sucIf≤ n) (names t₂) (names t₃)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁
             | names-shiftNameUp≡ n t₂
             | names-shiftNameUp≡ n t₃ = refl
   names-shiftNameUp≡ n (IFEQ t t₁ t₂ t₃)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁ ++ names t₂ ++ names t₃)
-            | map-++-commute (sucIf≤ n) (names t₁) (names t₂ ++ names t₃)
-            | map-++-commute (sucIf≤ n) (names t₂) (names t₃)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁ ++ names t₂ ++ names t₃)
+            | map-++ (sucIf≤ n) (names t₁) (names t₂ ++ names t₃)
+            | map-++ (sucIf≤ n) (names t₂) (names t₃)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁
             | names-shiftNameUp≡ n t₂
             | names-shiftNameUp≡ n t₃ = refl
   names-shiftNameUp≡ n (SUC t) = names-shiftNameUp≡ n t
   names-shiftNameUp≡ n (NATREC t t₁ t₂)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁ ++ names t₂)
-            | map-++-commute (sucIf≤ n) (names t₁) (names t₂)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁ ++ names t₂)
+            | map-++ (sucIf≤ n) (names t₁) (names t₂)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁
             | names-shiftNameUp≡ n t₂ = refl
   names-shiftNameUp≡ n (PI t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
   names-shiftNameUp≡ n (LAMBDA t)
     rewrite names-shiftNameUp≡ n t = refl
   names-shiftNameUp≡ n (APPLY t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
   names-shiftNameUp≡ n (FIX t) = names-shiftNameUp≡ n t
   names-shiftNameUp≡ n (LET t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
   names-shiftNameUp≡ n (WT t t₁ t₂)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁ ++ names t₂)
-            | map-++-commute (sucIf≤ n) (names t₁) (names t₂)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁ ++ names t₂)
+            | map-++ (sucIf≤ n) (names t₁) (names t₂)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁
             | names-shiftNameUp≡ n t₂ = refl
   names-shiftNameUp≡ n (SUP t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
   {--names-shiftNameUp≡ n (DSUP t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl--}
   names-shiftNameUp≡ n (WREC t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
   names-shiftNameUp≡ n (MT t t₁ t₂)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁ ++ names t₂)
-            | map-++-commute (sucIf≤ n) (names t₁) (names t₂)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁ ++ names t₂)
+            | map-++ (sucIf≤ n) (names t₁) (names t₂)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁
             | names-shiftNameUp≡ n t₂ = refl
   {--names-shiftNameUp≡ n (MSUP t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
   names-shiftNameUp≡ n (DMSUP t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl--}
   names-shiftNameUp≡ n (SUM t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
   names-shiftNameUp≡ n (PAIR t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
   names-shiftNameUp≡ n (SPREAD t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
   names-shiftNameUp≡ n (SET t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
   names-shiftNameUp≡ n (ISECT t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
   names-shiftNameUp≡ n (TUNION t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
   names-shiftNameUp≡ n (UNION t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
 {-  names-shiftNameUp≡ n (QTUNION t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl-}
   names-shiftNameUp≡ n (INL t) = names-shiftNameUp≡ n t
   names-shiftNameUp≡ n (INR t) = names-shiftNameUp≡ n t
   names-shiftNameUp≡ n (DECIDE t t₁ t₂)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁ ++ names t₂)
-            | map-++-commute (sucIf≤ n) (names t₁) (names t₂)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁ ++ names t₂)
+            | map-++ (sucIf≤ n) (names t₁) (names t₂)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁
             | names-shiftNameUp≡ n t₂ = refl
   names-shiftNameUp≡ n (EQ t t₁ t₂)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁ ++ names t₂)
-            | map-++-commute (sucIf≤ n) (names t₁) (names t₂)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁ ++ names t₂)
+            | map-++ (sucIf≤ n) (names t₁) (names t₂)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁
             | names-shiftNameUp≡ n t₂ = refl
 {-  names-shiftNameUp≡ n (EQB t t₁ t₂ t₃)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁ ++ names t₂ ++ names t₃)
-            | map-++-commute (sucIf≤ n) (names t₁) (names t₂ ++ names t₃)
-            | map-++-commute (sucIf≤ n) (names t₂) (names t₃)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁ ++ names t₂ ++ names t₃)
+            | map-++ (sucIf≤ n) (names t₁) (names t₂ ++ names t₃)
+            | map-++ (sucIf≤ n) (names t₂) (names t₃)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁
             | names-shiftNameUp≡ n t₂
@@ -1813,7 +1813,7 @@ abstract
             | lowerNames-map-sucIf≤-suc n (names t) = refl
   names-shiftNameUp≡ n (LOAD t) = refl --names-shiftNameUp≡ n t
   names-shiftNameUp≡ n (CHOOSE t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
 --  names-shiftNameUp≡ n (TSQUASH t) = names-shiftNameUp≡ n t
@@ -1828,7 +1828,7 @@ abstract
   names-shiftNameUp≡ n (ENC t) = names-shiftNameUp≡ n t
   names-shiftNameUp≡ n (PARTIAL t) = names-shiftNameUp≡ n t
   names-shiftNameUp≡ n (FFDEFS t t₁)
-    rewrite map-++-commute (sucIf≤ n) (names t) (names t₁)
+    rewrite map-++ (sucIf≤ n) (names t) (names t₁)
             | names-shiftNameUp≡ n t
             | names-shiftNameUp≡ n t₁ = refl
   names-shiftNameUp≡ n (UNIV x) = refl
@@ -1847,134 +1847,134 @@ abstract
   names-shiftNameDown≡ n QNAT = refl
 --  names-shiftNameDown≡ n TNAT = refl
   names-shiftNameDown≡ n (LT t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
   names-shiftNameDown≡ n (QLT t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
   names-shiftNameDown≡ n (NUM x) = refl
   names-shiftNameDown≡ n (IFLT t t₁ t₂ t₃)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁ ++ names t₂ ++ names t₃)
-            | map-++-commute (predIf≤ n) (names t₁) (names t₂ ++ names t₃)
-            | map-++-commute (predIf≤ n) (names t₂) (names t₃)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁ ++ names t₂ ++ names t₃)
+            | map-++ (predIf≤ n) (names t₁) (names t₂ ++ names t₃)
+            | map-++ (predIf≤ n) (names t₂) (names t₃)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁
             | names-shiftNameDown≡ n t₂
             | names-shiftNameDown≡ n t₃ = refl
   names-shiftNameDown≡ n (IFEQ t t₁ t₂ t₃)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁ ++ names t₂ ++ names t₃)
-            | map-++-commute (predIf≤ n) (names t₁) (names t₂ ++ names t₃)
-            | map-++-commute (predIf≤ n) (names t₂) (names t₃)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁ ++ names t₂ ++ names t₃)
+            | map-++ (predIf≤ n) (names t₁) (names t₂ ++ names t₃)
+            | map-++ (predIf≤ n) (names t₂) (names t₃)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁
             | names-shiftNameDown≡ n t₂
             | names-shiftNameDown≡ n t₃ = refl
   names-shiftNameDown≡ n (SUC t) = names-shiftNameDown≡ n t
   names-shiftNameDown≡ n (NATREC t t₁ t₂)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁ ++ names t₂)
-            | map-++-commute (predIf≤ n) (names t₁) (names t₂)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁ ++ names t₂)
+            | map-++ (predIf≤ n) (names t₁) (names t₂)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁
             | names-shiftNameDown≡ n t₂ = refl
   names-shiftNameDown≡ n (PI t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
   names-shiftNameDown≡ n (LAMBDA t)
     rewrite names-shiftNameDown≡ n t = refl
   names-shiftNameDown≡ n (APPLY t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
   names-shiftNameDown≡ n (FIX t) = names-shiftNameDown≡ n t
   names-shiftNameDown≡ n (LET t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
   names-shiftNameDown≡ n (WT t t₁ t₂)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁ ++ names t₂)
-            | map-++-commute (predIf≤ n) (names t₁) (names t₂)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁ ++ names t₂)
+            | map-++ (predIf≤ n) (names t₁) (names t₂)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁
             | names-shiftNameDown≡ n t₂ = refl
   names-shiftNameDown≡ n (SUP t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
   {--names-shiftNameDown≡ n (DSUP t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl--}
   names-shiftNameDown≡ n (WREC t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
   names-shiftNameDown≡ n (MT t t₁ t₂)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁ ++ names t₂)
-            | map-++-commute (predIf≤ n) (names t₁) (names t₂)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁ ++ names t₂)
+            | map-++ (predIf≤ n) (names t₁) (names t₂)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁
             | names-shiftNameDown≡ n t₂ = refl
   {--names-shiftNameDown≡ n (MSUP t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
   names-shiftNameDown≡ n (DMSUP t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl--}
   names-shiftNameDown≡ n (SUM t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
   names-shiftNameDown≡ n (PAIR t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
   names-shiftNameDown≡ n (SPREAD t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
   names-shiftNameDown≡ n (SET t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
   names-shiftNameDown≡ n (ISECT t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
   names-shiftNameDown≡ n (TUNION t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
   names-shiftNameDown≡ n (UNION t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
 {-  names-shiftNameDown≡ n (QTUNION t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl-}
   names-shiftNameDown≡ n (INL t) = names-shiftNameDown≡ n t
   names-shiftNameDown≡ n (INR t) = names-shiftNameDown≡ n t
   names-shiftNameDown≡ n (DECIDE t t₁ t₂)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁ ++ names t₂)
-            | map-++-commute (predIf≤ n) (names t₁) (names t₂)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁ ++ names t₂)
+            | map-++ (predIf≤ n) (names t₁) (names t₂)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁
             | names-shiftNameDown≡ n t₂ = refl
   names-shiftNameDown≡ n (EQ t t₁ t₂)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁ ++ names t₂)
-            | map-++-commute (predIf≤ n) (names t₁) (names t₂)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁ ++ names t₂)
+            | map-++ (predIf≤ n) (names t₁) (names t₂)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁
             | names-shiftNameDown≡ n t₂ = refl
 {-  names-shiftNameDown≡ n (EQB t t₁ t₂ t₃)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁ ++ names t₂ ++ names t₃)
-            | map-++-commute (predIf≤ n) (names t₁) (names t₂ ++ names t₃)
-            | map-++-commute (predIf≤ n) (names t₂) (names t₃)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁ ++ names t₂ ++ names t₃)
+            | map-++ (predIf≤ n) (names t₁) (names t₂ ++ names t₃)
+            | map-++ (predIf≤ n) (names t₂) (names t₃)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁
             | names-shiftNameDown≡ n t₂
@@ -1990,7 +1990,7 @@ abstract
             | lowerNames-map-predIf≤-suc n (names t) = refl
   names-shiftNameDown≡ n (LOAD t) = refl --names-shiftNameDown≡ n t
   names-shiftNameDown≡ n (CHOOSE t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
 --  names-shiftNameDown≡ n (TSQUASH t) = names-shiftNameDown≡ n t
@@ -2005,7 +2005,7 @@ abstract
   names-shiftNameDown≡ n (ENC t) = names-shiftNameDown≡ n t
   names-shiftNameDown≡ n (PARTIAL t) = names-shiftNameDown≡ n t
   names-shiftNameDown≡ n (FFDEFS t t₁)
-    rewrite map-++-commute (predIf≤ n) (names t) (names t₁)
+    rewrite map-++ (predIf≤ n) (names t) (names t₁)
             | names-shiftNameDown≡ n t
             | names-shiftNameDown≡ n t₁ = refl
   names-shiftNameDown≡ n (UNIV x) = refl

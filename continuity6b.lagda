@@ -870,7 +870,7 @@ abstract
     fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
     fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
     fst (snd (snd (snd (snd (snd hv))))) ,
-    λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+    λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
     where
       hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                               isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -960,7 +960,7 @@ abstract
     fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
     fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
     fst (snd (snd (snd (snd (snd hv))))) ,
-    λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+    λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
     where
       hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                               isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1147,7 +1147,7 @@ abstract
     fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
     fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
     fst (snd (snd (snd (snd (snd hv))))) ,
-    λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+    λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
     where
       hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                               isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1226,7 +1226,7 @@ abstract
     fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
     fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
     fst (snd (snd (snd (snd (snd hv))))) ,
-    λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+    λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
     where
       hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                               isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1313,7 +1313,7 @@ abstract
     fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
     fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
     fst (snd (snd (snd (snd (snd hv))))) ,
-    λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+    λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
     where
       hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                               isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1393,7 +1393,7 @@ abstract
     fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
     fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
     fst (snd (snd (snd (snd (snd hv))))) ,
-    λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+    λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
     where
       hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                               isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1527,7 +1527,7 @@ stepsPresUpdRel2-SPREAD₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp 
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
   fst (snd (snd (snd (snd (snd hv))))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1606,7 +1606,7 @@ stepsPresUpdRel2-WREC₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , 
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
   fst (snd (snd (snd (snd (snd hv))))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1686,7 +1686,7 @@ stepsPresUpdRel2-DECIDE₁→ {n} {name} {f} {g} {a} {b} {c} {w} (k , v , w' , c
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
   fst (snd (snd (snd (snd (snd hv))))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1774,7 +1774,7 @@ stepsPresUpdRel2-IFLT₁→ {n} {name} {f} {g} {a} {b} {c} {d} {w} (k , v , w' ,
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
   fst (snd (snd (snd (snd (snd hv))))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1867,7 +1867,7 @@ stepsPresUpdRel2-IFEQ₁→ {n} {name} {f} {g} {a} {b} {c} {d} {w} (k , v , w' ,
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
   fst (snd (snd (snd (snd (snd hv))))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1953,7 +1953,7 @@ stepsPresUpdRel2-FIX₁→ {n} {name} {f} {g} {a} {w} (k , v , w' , comp , isv ,
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
   fst (snd (snd (snd (snd (snd hv))))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -2028,7 +2028,7 @@ stepsPresUpdRel2-IFLT₂→ {n} {name} {f} {g} {m} {a} {b} {c} {w} (k , v , w' ,
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
   fst (snd (snd (snd (snd (snd hv))))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -2114,7 +2114,7 @@ stepsPresUpdRel2-IFEQ₂→ {n} {name} {f} {g} {m} {a} {b} {c} {w} (k , v , w' ,
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
   fst (snd (snd (snd (snd (snd hv))))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'

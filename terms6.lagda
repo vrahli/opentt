@@ -1070,7 +1070,7 @@ IFLT⇛¬< {k} {j} {w} {a} {b} lekj w1 e1 = lift (1 , c)
   where
     c : stepsT 1 (IFLT (NUM j) (NUM k) a b) w1 ≡ b
     c with j <? k
-    ... | yes p = ⊥-elim (⊥-elim (n≮n j (<-transˡ p (sucLeInj (≰⇒> lekj)))))
+    ... | yes p = ⊥-elim (⊥-elim (n≮n j (<-≤-trans p (sucLeInj (≰⇒> lekj)))))
     ... | no p = refl
 
 
@@ -1265,7 +1265,7 @@ IFLE⇛¬≤ {k} {j} {w} {a} {b} lekj w1 e1 = lift (1 , c)
         z3 = <s→¬<→≡ z1 (≤⇒≯ (<⇒≤ z2))
 
         z4 : j < j
-        z4 = <-transˡ z2 (≤-reflexive z3)
+        z4 = <-≤-trans z2 (≤-reflexive z3)
 
 
 CHOOSE-NAME⇛AX : {w : 𝕎·} {name : Name} {t : Term} → CHOOSE (NAME name) t ⇛ AX at w

@@ -146,6 +146,7 @@ MPvalid-aux i w f₁ f₂ a₁ a₂ f∈ a∈ =
           aw1 w4 e4 =
             #PAIR n₁ t ,
             equalInType-SUM!
+              {B = #[0]ASSERT₂ (#[0]APPLY ⌞ f₁ ⌟ #[0]VAR)}
               (λ w' _ → isTypeNAT!)
               (λ w' e' a₁ a₂ a∈ →
                 →≡equalTypes

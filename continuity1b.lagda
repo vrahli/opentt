@@ -476,7 +476,7 @@ sub0-QNATn-body a n rewrite CTerm→CTerm0→Term n = CTerm≡ e
   ≡CTerm→eqTypes
     (sym (≡QNATn a₁))
     (sym (≡QNATn a₂))
-    (eqTypesSET← (λ w' e' → eqTypesNAT) aw1)
+    (eqTypesSET← {B = #[0]QLT #[0]VAR ⌞ a₁ ⌟} {D = #[0]QLT #[0]VAR ⌞ a₂ ⌟} (λ w' e' → eqTypesNAT) aw1)
   where
     aw2 : ∀𝕎 w (λ w' _ → (b₁ b₂ : CTerm) → equalInType i w' #NAT b₁ b₂
                        → equalTypes i w' (#QLT b₁ a₁) (#QLT b₂ a₂))
@@ -518,7 +518,7 @@ sub0-QNATn-body a n rewrite CTerm→CTerm0→Term n = CTerm≡ e
     eb1 = ≡CTerm→equalInType (≡QNATn n) ea
 
     eb2 : □· w (λ w' _ → SETeq (equalInType i w' #NAT) (λ x y ea → equalInType i w' (sub0 x (#[0]QLT #[0]VAR ⌞ n ⌟))) a b)
-    eb2 = equalInType-SET→ eb1
+    eb2 = equalInType-SET→ {B = #[0]QLT #[0]VAR ⌞ n ⌟} eb1
 
     aw1 : ∀𝕎 w (λ w' e' → SETeq (equalInType i w' #NAT) (λ x y ea₁ → equalInType i w' (sub0 x (#[0]QLT #[0]VAR (CTerm→CTerm0 n)))) a b
                         → □· w' (↑wPred' (λ w'' _ → NATeq w'' a b) e'))
@@ -654,6 +654,7 @@ equalInType-QBAIREn-BAIRE-trans {i} {w} {a} {b} {c} {n} h1 h2 h3 =
   ≡CTerm→equalInType
     (sym (≡QNATn t))
     (equalInType-SET
+      {B = #[0]QLT #[0]VAR ⌞ t ⌟}
       (λ w' _ → eqTypesNAT)
       (λ w' e' a₁ a₂ eqa → ≡CTerm→eqTypes (sym (sub0-QNATn-body a₁ t)) (sym (sub0-QNATn-body a₂ t)) (→equalTypesQLT (∈NAT→∈QNAT eqa) (equalInType-mon eqt w' e')))
       (λ w' e' → →equalInType-NAT i w' a b (Mod.∀𝕎-□Func M (λ w'' e'' (n , k , c , c1 , c2 , ltn) → k , c1 , c2) (Mod.↑□ M eqi e')))

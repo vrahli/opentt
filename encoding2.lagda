@@ -421,12 +421,12 @@ pairing-spec2 x y = trans (sym (m*n/n≡m (pairing (x , y)) 2)) (trans h1 h2)
 
     h2 : (y * 2 + (y + x) * suc (y + x)) / 2 ≡ y + (y + x) * suc (y + x) / 2
     h2 rewrite *-suc (y + x) (y + x)
-             | +-distrib-/-∣ʳ {y * 2} ((y + x) + (y + x) * (y + x)) {2} (2∣+* (y + x)) = h3
+             | +-distrib-/-∣ʳ (y * 2) {(y + x) + (y + x) * (y + x)} {2} (2∣+* (y + x)) = h3
 
 
 m≤m*m : (m : ℕ) → m ≤ m * m
 m≤m*m 0 = ≤-refl
-m≤m*m (suc m) = m≤m*n (suc m) (_≤_.s≤s _≤_.z≤n)
+m≤m*m (suc m) = m≤m*n (suc m) _ {--(_≤_.s≤s _≤_.z≤n)--}
 
 
 ≤/2 : (y : ℕ) → y ≤ y * suc y / 2
@@ -442,7 +442,7 @@ m≤m*m (suc m) = m≤m*n (suc m) (_≤_.s≤s _≤_.z≤n)
     h3 rewrite *-suc y 1 | *-suc y 0 | *-zeroʳ y | +0 y = +-mono-≤ {y} {y} {y} {y * y} ≤-refl (m≤m*m y)
 
     h2 : y * 2 / 2 ≤ (y + (y * y)) / 2
-    h2 = /-mono-≤ {y * 2} {y + (y * y)} {2} h3 ≤-refl
+    h2 = /-mono-≤ {--{y * 2} {y + (y * y)} {2}--} h3 ≤-refl
 
 
 →≤/2 : (x y : ℕ) → x ≤ y → x ≤ y * suc y / 2
@@ -602,7 +602,7 @@ suc≤*m : (n m : ℕ) → ¬ n ≡ 0 → suc n ≤ n * (suc (suc m))
 suc≤*m 0 m d0 = ⊥-elim (d0 refl)
 suc≤*m (suc n) m d0 with n ≟ 0
 ... | yes p rewrite p = _≤_.s≤s (_≤_.s≤s _≤_.z≤n)
-... | no p = _≤_.s≤s ((≤-trans (suc≤*m n m p) (≤-trans (≤suc (n * suc (suc m))) (_≤_.s≤s (≤-stepsˡ m ≤-refl)))))
+... | no p = _≤_.s≤s ((≤-trans (suc≤*m n m p) (≤-trans (≤suc (n * suc (suc m))) (_≤_.s≤s (m≤n⇒m≤o+n m ≤-refl)))))
 
 
 suc/≤ : (n : ℕ) → ¬ n ≡ 0 → suc (n / #cons) ≤ n
@@ -615,11 +615,11 @@ suc/≤ (suc n) d0 = _≤_.s≤s h1
     ... | no p = ≤-trans (m/n*n≤m (suc n) #cons) (suc≤*m n (#cons ∸ 2) p)
 
     h1 : suc n / #cons ≤ n
-    h1 = *-cancelʳ-≤ (suc n / #cons) n (#cons ∸ 1) h2
+    h1 = *-cancelʳ-≤ (suc n / #cons) n (suc (#cons ∸ 1)) h2
 
 
 suc-/m : (n m : ℕ) → suc ((n ∸ m) / #cons) ≤ suc (n / #cons)
-suc-/m n m = _≤_.s≤s (/-mono-≤ {n ∸ m} {n} {#cons} {#cons} (m∸n≤m n m) ≤-refl)
+suc-/m n m = _≤_.s≤s (/-mono-≤ {--{n ∸ m} {n} {#cons} {#cons}--} (m∸n≤m n m) ≤-refl)
 
 
 suc-/≤ : (n m : ℕ) → ¬ n ≡ 0 → suc ((n ∸ m) / #cons) ≤ n
@@ -648,13 +648,13 @@ suc-/≤ n m d0 = ≤-trans (suc-/m n m) (suc/≤ n d0)
     x₁ = pairing→₁ m
 
     cx₁ : x₁ < n
-    cx₁ = <-transʳ (pairing→₁≤ m) (suc-/≤ n k n0)
+    cx₁ = ≤-<-trans (pairing→₁≤ m) (suc-/≤ n k n0)
 
     x₂ : ℕ
     x₂ = pairing→₂ m
 
     cx₂ : x₂ < n
-    cx₂ = <-transʳ (pairing→₂≤ m) (suc-/≤ n k n0)
+    cx₂ = ≤-<-trans (pairing→₂≤ m) (suc-/≤ n k n0)
 
 
 -- For a ternary operator
@@ -668,19 +668,19 @@ suc-/≤ n m d0 = ≤-trans (suc-/m n m) (suc/≤ n d0)
     x₁ = pairing3→₁ m
 
     cx₁ : x₁ < n
-    cx₁ = <-transʳ (pairing3→₁≤ m) (suc-/≤ n k n0)
+    cx₁ = ≤-<-trans (pairing3→₁≤ m) (suc-/≤ n k n0)
 
     x₂ : ℕ
     x₂ = pairing3→₂ m
 
     cx₂ : x₂ < n
-    cx₂ = <-transʳ (pairing3→₂≤ m) (suc-/≤ n k n0)
+    cx₂ = ≤-<-trans (pairing3→₂≤ m) (suc-/≤ n k n0)
 
     x₃ : ℕ
     x₃ = pairing3→₃ m
 
     cx₃ : x₃ < n
-    cx₃ = <-transʳ (pairing3→₃≤ m) (suc-/≤ n k n0)
+    cx₃ = ≤-<-trans (pairing3→₃≤ m) (suc-/≤ n k n0)
 
 
 -- For a 4-ary operator
@@ -694,25 +694,25 @@ suc-/≤ n m d0 = ≤-trans (suc-/m n m) (suc/≤ n d0)
     x₁ = pairing4→₁ m
 
     cx₁ : x₁ < n
-    cx₁ = <-transʳ (pairing4→₁≤ m) (suc-/≤ n k n0)
+    cx₁ = ≤-<-trans (pairing4→₁≤ m) (suc-/≤ n k n0)
 
     x₂ : ℕ
     x₂ = pairing4→₂ m
 
     cx₂ : x₂ < n
-    cx₂ = <-transʳ (pairing4→₂≤ m) (suc-/≤ n k n0)
+    cx₂ = ≤-<-trans (pairing4→₂≤ m) (suc-/≤ n k n0)
 
     x₃ : ℕ
     x₃ = pairing4→₃ m
 
     cx₃ : x₃ < n
-    cx₃ = <-transʳ (pairing4→₃≤ m) (suc-/≤ n k n0)
+    cx₃ = ≤-<-trans (pairing4→₃≤ m) (suc-/≤ n k n0)
 
     x₄ : ℕ
     x₄ = pairing4→₄ m
 
     cx₄ : x₄ < n
-    cx₄ = <-transʳ (pairing4→₄≤ m) (suc-/≤ n k n0)
+    cx₄ = ≤-<-trans (pairing4→₄≤ m) (suc-/≤ n k n0)
 
 
 -- TODO: add all the terms in calculus
@@ -825,7 +825,7 @@ abstract
 
 abstract
   *#cons%≡k : (k x : ℕ) → k < #cons → (k + (x * #cons)) % #cons ≡ k
-  *#cons%≡k k x cond = trans ([m+kn]%n≡m%n k x #cons-1) (m≤n⇒m%n≡m (s≤s-inj cond))
+  *#cons%≡k k x cond = trans ([m+kn]%n≡m%n k x (suc #cons-1)) (m≤n⇒m%n≡m (s≤s-inj cond))
 
 
 abstract

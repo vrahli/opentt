@@ -240,7 +240,7 @@ abstract
 
       h4 : Σ 𝕎· (λ w3' → Σ Term (λ v' →
                    b ⇓ v' from w1' to w3' × differ name1 name2 f (NUM m) v' × getT 0 name1 w3 ≡ getT 0 name2 w3'))
-      h4 = pd k1 (<-transʳ (≤-stepsʳ k2 ≤-refl) ltk12) w1 w3 w1' a b (NUM m) tt compat1 compat2 gtn diff g0 comp1b
+      h4 = pd k1 (≤-<-trans (m≤n⇒m≤n+o k2 ≤-refl) ltk12) w1 w3 w1' a b (NUM m) tt compat1 compat2 gtn diff g0 comp1b
 
       h4→ : Σ 𝕎· (λ w3' → Σ Term (λ v' →
                  b ⇓ v' from w1' to w3' × differ name1 name2 f (NUM m) v' × getT 0 name1 w3 ≡ getT 0 name2 w3'))

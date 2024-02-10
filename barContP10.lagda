@@ -516,6 +516,19 @@ contDiagVal-type3 kb i w P T F₁ F₂ W₁ W₂ a₁ a₂ tyt tyn nty F∈ W∈
     (APPLY-FunBarP-BAIRE!→ tyt F∈ a∈)
     (→equalInType-follow∈NAT kb {i} {w} P {T} {W₁} {W₂} {a₁} {a₂} tyn nty W∈ a∈)
 
+#0aux1 : (t u : CTerm)
+      → #[ [ 0 ] ] EQ ⌜ #[0]APPLY (CTerm→CTerm0 t) #[0]VAR ⌝ ⌜ follow0 u ⌝ NAT
+#0aux1 t u
+  rewrite fvars-cterm t | fvars-cterm u
+  = refl
+
+#0aux2 : (t u : CTerm)
+       → #[ [ 0 ] ] PI (NAT→!T ⌜ t ⌝)
+                       (EQ (APPLY ⌜ u ⌝ (VAR 0)) (follow (VAR 0) (VAR 1) 0) NAT)
+#0aux2 t u
+  rewrite fvars-cterm t | fvars-cterm u
+        | #shiftUp 0 t | fvars-cterm t
+  = refl
 
 contDiagVal-type2 : (kb : K□) (i : ℕ) (w : 𝕎·) (P : ℕ → Set) (T F₁ F₂ W₁ W₂ : CTerm)
                     → isType i w T
@@ -532,7 +545,7 @@ contDiagVal-type2 kb i w P T F₁ F₂ W₁ W₂ tyt tyn nty F∈ W∈ =
     (λ w1 e1 → isType-NAT→!T (eqTypes-mon (uni i) tyt w1 e1))
     (λ w1 e1 a₁ a₂ a∈ →
       →≡equalTypes
-        (sym (sub0-contDiag-EQ F₁ W₁ a₁ _)) (sym (sub0-contDiag-EQ F₂ W₂ a₂ _))
+        (sym (sub0-contDiag-EQ F₁ W₁ a₁ (#0aux1 F₁ W₁))) (sym (sub0-contDiag-EQ F₂ W₂ a₂ (#0aux1 F₂ W₂)))
         (contDiagVal-type3 kb i w1 P T F₁ F₂ W₁ W₂ a₁ a₂ (eqTypes-mon (uni i) tyt w1 e1) tyn nty (equalInType-mon F∈ w1 e1) (equalInType-mon W∈ w1 e1) a∈))
 
 
@@ -550,7 +563,7 @@ contDiagVal-type1 kb i w P T F₁ F₂ tyt tyn nty F∈ =
     (λ w1 e1 → isType-IndBar i w1 T (eqTypes-mon (uni i) tyt w1 e1))
     (λ w1 e1 W₁ W₂ W∈ →
       →≡equalTypes
-        (sym (sub0-contDiag-PI T F₁ W₁ _)) (sym (sub0-contDiag-PI T F₂ W₂ _))
+        (sym (sub0-contDiag-PI T F₁ W₁ (#0aux2 T F₁))) (sym (sub0-contDiag-PI T F₂ W₂ (#0aux2 T F₂)))
         (contDiagVal-type2 kb i w1 P T F₁ F₂ W₁ W₂ (eqTypes-mon (uni i) tyt w1 e1) tyn nty (equalInType-mon F∈ w1 e1) W∈))
 
 
@@ -643,7 +656,7 @@ contDiagVal1 kb cn can exb gc i w P T F₁ F₂ nnF₁ nnF₂ p0 nty tyn prest t
     (λ w1 e1 → isType-IndBar i w1 T (eqTypes-mon (uni i) tyt w1 e1))
     (λ w1 e1 W₁ W₂ W∈ →
       →≡equalTypes
-        (sym (sub0-contDiag-PI T F₁ W₁ _)) (sym (sub0-contDiag-PI T F₁ W₂ _))
+        (sym (sub0-contDiag-PI T F₁ W₁ (#0aux2 T F₁))) (sym (sub0-contDiag-PI T F₁ W₂ (#0aux2 T F₁)))
         (contDiagVal-type2 kb i w1 P T F₁ F₁ W₁ W₂ (eqTypes-mon (uni i) tyt w1 e1) (type-#⇛-NUM→! P T tyn) nty (equalInType-refl (equalInType-mon F∈ w1 e1)) W∈))
     (Mod.∀𝕎-□ M h1)
   where
@@ -655,14 +668,15 @@ contDiagVal1 kb cn can exb gc i w P T F₁ F₂ nnF₁ nnF₂ p0 nty tyn prest t
       sem kb cn can exb gc i w1 P T F₂ nnF₂ p0 prest (type-#⇛-NUM→! P T tyn) nty (eqTypes-mon (uni i) tyt w1 e1) (equalInType-refl (equalInType-sym (equalInType-mon F∈ w1 e1))) ,
       ⇓-refl ⌜ #PAIR (#tab F₂ 0 #INIT) #lamAX ⌝ w1 , --lower (#contDiagExt⇛ F₂ w1 w1 (⊑-refl· w1)) , --#contDiagExt⇛ F₂ w1 ,
       ⇓-refl ⌜ #PAIR (#tab F₂ 0 #INIT) #lamAX ⌝ w1 , --lower (#contDiagExt⇛ F₂ w1 w1 (⊑-refl· w1)) , --#contDiagExt⇛ F₂ w1 ,
-      →≡equalInType (sym (sub0-contDiag-PI T F₁ (#tab F₂ 0 #INIT) _)) h2
+      →≡equalInType (sym (sub0-contDiag-PI T F₁ (#tab F₂ 0 #INIT) (#0aux2 T F₁))) h2
       where
         h2 : equalInType i w1 (#PI (#NAT→!T T) (#[0]EQ (#[0]APPLY ⌞ F₁ ⌟ #[0]VAR) (follow0 (#tab F₂ 0 #INIT)) #[0]NAT)) #lamAX #lamAX
         h2 = equalInType-PI
                (λ w2 e2 → isType-NAT→!T (eqTypes-mon (uni i) tyt w2 (⊑-trans· e1 e2)))
                (λ w2 e2 a₁ a₂ a∈ →
                  →≡equalTypes
-                   (sym (sub0-contDiag-EQ F₁ (#tab F₂ 0 #INIT) a₁ _)) (sym (sub0-contDiag-EQ F₁ (#tab F₂ 0 #INIT) a₂ _))
+                   (sym (sub0-contDiag-EQ F₁ (#tab F₂ 0 #INIT) a₁ (#0aux1 F₁ (#tab F₂ 0 #INIT))))
+                   (sym (sub0-contDiag-EQ F₁ (#tab F₂ 0 #INIT) a₂ (#0aux1 F₁ (#tab F₂ 0 #INIT))))
                    (contDiagVal-type3
                      kb i w2 P T F₁ F₁ (#tab F₂ 0 #INIT) (#tab F₂ 0 #INIT) a₁ a₂
                      (eqTypes-mon (uni i) tyt w2 (⊑-trans· e1 e2)) (type-#⇛-NUM→! P T tyn) nty
@@ -670,7 +684,7 @@ contDiagVal1 kb cn can exb gc i w P T F₁ F₂ nnF₁ nnF₂ p0 nty tyn prest t
                      (sem kb cn can exb gc i w2 P T F₂ nnF₂ p0 prest (type-#⇛-NUM→! P T tyn) nty (eqTypes-mon (uni i) tyt w2 (⊑-trans· e1 e2)) (equalInType-refl (equalInType-sym (equalInType-mon F∈ w2 (⊑-trans· e1 e2))))) a∈))
                (λ w2 e2 a₁ a₂ a∈ →
                  →≡equalInType
-                   (sym (sub0-contDiag-EQ F₁ (#tab F₂ 0 #INIT) a₁ _))
+                   (sym (sub0-contDiag-EQ F₁ (#tab F₂ 0 #INIT) a₁ (#0aux1 F₁ (#tab F₂ 0 #INIT))))
                    (semCondEQ2
                      kb cn can exb gc i w2 P T F₁ F₂ a₁ (#APPLY #lamAX a₁) (#APPLY #lamAX a₂) nnF₁ nnF₂
                      p0 nty tyn prest (eqTypes-mon (uni i) tyt w2 (⊑-trans· e1 e2))

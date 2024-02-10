@@ -1348,7 +1348,7 @@ equalInType-NATREC-SUC i w G k z u s1 s2 cG1 cG2 cK1 cK2 cU1 cU2 cZ1 cZ2 cp1 cSG
     hu2 : equalInType i w1 (sub0 (#NUM n) (#[0]subs s1 (FUN G (subi 0 (SUC (VAR 0)) G)) cFP1))
                            (#APPLY (#subs s1 u cU1) (#NUM n))
                            (#APPLY (#subs s2 u cU2) (#subs s2 k cK2))
-    hu2 = snd (snd (equalInType-PI→ hu1)) w1 e1 (#NUM n) (#subs s2 k cK2) hkn0
+    hu2 = snd (snd (equalInType-PI→ {B = #[0]subs s1 (FUN G (subi 0 (SUC (VAR 0)) G)) cFP1} hu1)) w1 e1 (#NUM n) (#subs s2 k cK2) hkn0
 
     hu3 : equalInType i w1 (#subs s1 (subn 0 (NUM n) (FUN G (subi 0 (SUC (VAR 0)) G))) cSP1)
                            (#APPLY (#subs s1 u cU1) (#NUM n))

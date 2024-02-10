@@ -10,9 +10,9 @@ open import Agda.Builtin.Equality.Rewrite
 open import Agda.Builtin.Sigma
 open import Relation.Nullary
 open import Relation.Unary using (Pred; Decidable)
---open import Relation.Binary.PropositionalEquality using (sym ; trans ; subst)
-open import Relation.Binary.PropositionalEquality hiding ([_] ; Extensionality)
-open ≡-Reasoning
+open import Relation.Binary.PropositionalEquality using (sym ; trans ; subst)
+--open import Relation.Binary.PropositionalEquality hiding ([_] ; Extensionality)
+--open ≡-Reasoning
 open import Data.Product
 open import Data.Product.Properties
 open import Data.Sum
@@ -500,7 +500,7 @@ steps-decomp-isHighestℕ {w} {w1} {w2} {a} {b} {v} {0} {suc m} i name isv comp1
         | stepVal a w isv
         | stepsVal a w m isv
         | pair-inj₁ (sym comp1) | pair-inj₂ (sym comp1)
-  = 0 , ≤-refl , refl , λ (j , e , q) → j , e , <-transˡ ≤-refl q
+  = 0 , ≤-refl , refl , λ (j , e , q) → j , e , <-≤-trans ≤-refl q
 steps-decomp-isHighestℕ {w} {w1} {w2} {a} {b} {v} {suc n} {suc m} i name isv comp1 comp2 with step⊎ a w
 ... | inj₁ (a' , w' , z) rewrite z =
   fst q , ≤-trans (fst (snd q)) (<⇒≤ (n<1+n n)) , fst (snd (snd q)) , λ (x1 , x2) → snd (snd (snd q)) x2

@@ -10,9 +10,9 @@ open import Agda.Builtin.Equality.Rewrite
 open import Agda.Builtin.Sigma
 open import Relation.Nullary
 open import Relation.Unary using (Pred; Decidable)
---open import Relation.Binary.PropositionalEquality using (sym ; trans ; subst)
-open import Relation.Binary.PropositionalEquality hiding ([_] ; Extensionality)
-open ≡-Reasoning
+open import Relation.Binary.PropositionalEquality using (sym ; trans ; subst)
+--open import Relation.Binary.PropositionalEquality hiding ([_] ; Extensionality)
+--open ≡-Reasoning
 open import Data.Product
 open import Data.Product.Properties
 open import Data.Sum
@@ -450,6 +450,9 @@ continuityBody cn exb gc i w F f nnF nnf ∈F ∈f =
                                   #lam3AX
                                   #lam3AX
         eql2 = equalInType-PI
+                 {B = #[0]FUN (#[0]FFDEFS #[0]BAIRE #[0]VAR)
+                              (#[0]FUN (#[0]EQ ⌞ f ⌟ #[0]VAR (#[0]BAIREn ⌞ #νtestM F f ⌟))
+                                       (#[0]EQ (#[0]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[0]APPLY ⌞ F ⌟ #[0]VAR) #[0]NAT))}
                  (λ w2 e2 → eqTypesBAIRE)
                  (λ w2 e2 g₁ g₂ eg → ≡CTerm→eqTypes (sym (sub0-contBodyPI-PI F f (#νtestM F f) g₁)) (sym (sub0-contBodyPI-PI F f (#νtestM F f) g₂)) (ea2 w2 e2 g₁ g₂ eg))
                  aw2
@@ -553,6 +556,10 @@ continuityBody cn exb gc i w F f nnF nnf ∈F ∈f =
                                           (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]BAIREn #[1]VAR1))
                                                    (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT)))))
                    (#PAIR (#νtestM F f) #lam3AX)
-    h0 = equalInType-SUM (λ w' e' → eqTypesNAT) (equalTypes-contBodyPI i w F F f f ∈F ∈f) seq
+    h0 = equalInType-SUM {B = #[0]PI #[0]BAIRE
+                                     (#[1]FUN (#[1]FFDEFS #[1]BAIRE #[1]VAR0)
+                                              (#[1]FUN (#[1]EQ ⌞ f ⌟ #[1]VAR0 (#[1]BAIREn #[1]VAR1))
+                                                       (#[1]EQ (#[1]APPLY ⌞ F ⌟ ⌞ f ⌟) (#[1]APPLY ⌞ F ⌟ #[1]VAR0) #[1]NAT)))}
+                         (λ w' e' → eqTypesNAT) (equalTypes-contBodyPI i w F F f f ∈F ∈f) seq
 
 \end{code}

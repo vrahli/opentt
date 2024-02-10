@@ -15,8 +15,9 @@ theory.
 The opentt formalisation compiles with Agda version 2.6.4.
 
 This formalisation depends on the
+Agda [standard-library](https://github.com/agda/agda-stdlib) (v.2.0) and on the
 [logrel-mltt](https://github.com/mr-ohman/logrel-mltt) Agda formalisation of
-MLTT and the agda standard-library. The standard-library should already be
+MLTT. The standard-library should already be
 available from your Agda installation. To setup
 logrel-mltt for use as a library:
 
@@ -25,7 +26,7 @@ logrel-mltt for use as a library:
    said version.
 
 2. Add the logrel-mltt to your Agda libraries. You can do this by adding the
-   following line to your agda libraries file
+   following line to your Agda libraries file
    ```
    LOGREL-MLTT-DIR/logrel-mltt.agda-lib
    ```

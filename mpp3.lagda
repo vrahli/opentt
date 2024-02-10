@@ -464,7 +464,7 @@ IFEQ⇓from-to-decomp₁ m a c d v w w' comp isv isvc isvd
                   → equalInType i w (#ASSERTₘ (#APPLY f a)) b₁ b₂
                   → equalInType i w (#ASSERT₄ (#APPLY (→ℕ→𝔹 f) a)) b₁ b₂
 #ASSERTₘ→#ASSERT₄ {i} {w} {f} {a} {b₁} {b₂} f∈ a∈ b∈ =
-  →inhType-ASSERT₄ i w (#APPLY (→ℕ→𝔹 f) a) b₁ b₂ (#APPLY→ℕ→𝔹∈BOOL₀! h)
+  →inhType-ASSERT₄ i w (#APPLY (→ℕ→𝔹 f) a) b₁ b₂ (#APPLY→ℕ→𝔹∈BOOL₀! {f = f} h)
   where
   h : equalInType i w #NAT! (#APPLY f a) #N0
   h = inhType-ASSERTₘ→∈NAT! i w (#APPLY f a) (equalInType-FUN→ f∈ w (⊑-refl· w) a a a∈) (b₁ , equalInType-refl b∈)
@@ -476,7 +476,7 @@ IFEQ⇓from-to-decomp₁ m a c d v w w' comp isv isvc isvd
                   → equalInType i w (#ASSERT₄ (#APPLY (→ℕ→𝔹 f) a)) b₁ b₂
                   → equalInType i w (#ASSERTₘ (#APPLY f a)) b₁ b₂
 #ASSERT₄→#ASSERTₘ {i} {w} {f} {a} {b₁} {b₂} f∈ a∈ b∈ =
-  →inhType-ASSERTₘ i w (#APPLY f a) b₁ b₂ (#APPLY→ℕ→𝔹∈BOOL₀!→ h)
+  →inhType-ASSERTₘ i w (#APPLY f a) b₁ b₂ (#APPLY→ℕ→𝔹∈BOOL₀!→ {f = f} h)
   where
   h : equalInType i w #BOOL₀! (#APPLY (→ℕ→𝔹 f) a) #BTRUE
   h = equalInType-EQ→₁ (≡CTerm→equalInType (#ASSERT₄≡ (#APPLY (→ℕ→𝔹 f) a)) b∈)
@@ -488,6 +488,7 @@ IFEQ⇓from-to-decomp₁ m a c d v w w' comp isv isvc isvd
                           → equalInType i w (#MP-right2-qt₃ (→ℕ→𝔹 f)) a b
 #MP-rightₘ→#MP-right2-qt₃ {i} {w} {f} {a} {b} f∈ a∈ =
   equalInType-SUM!
+    {B = #[0]ASSERT₄ (#[0]APPLY ⌞ →ℕ→𝔹 f ⌟ #[0]VAR)}
     (λ _ _ → isTypeNAT!)
     aw1 aw2
   where
@@ -507,7 +508,7 @@ IFEQ⇓from-to-decomp₁ m a c d v w w' comp isv isvc isvd
   aw2 : □· w (λ w' _ → SUMeq! (equalInType i w' #NAT!)
                               (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERT₄ (#[0]APPLY ⌞ →ℕ→𝔹 f ⌟ #[0]VAR))))
                               w' a b)
-  aw2 = Mod.∀𝕎-□Func M aw3 (equalInType-SUM!→ a∈)
+  aw2 = Mod.∀𝕎-□Func M aw3 (equalInType-SUM!→ {B = #[0]ASSERTₘ (#[0]APPLY ⌞ f ⌟ #[0]VAR)} a∈)
     where
     aw3 : ∀𝕎 w (λ w' e' → SUMeq! (equalInType i w' #NAT!)
                                  (λ a₁ b₁ ea → equalInType i w' (sub0 a₁ (#[0]ASSERTₘ (#[0]APPLY ⌞ f ⌟ #[0]VAR))))
@@ -526,7 +527,7 @@ IFEQ⇓from-to-decomp₁ m a c d v w w' comp isv isvc isvd
                           → equalInType i w (#MP-right2-qt₃ (→ℕ→𝔹 f)) a b
                           → equalInType i w (#MP-rightₘ f) a b
 #MP-right2-qt₃→#MP-rightₘ {i} {w} {f} {a} {b} f∈ a∈ =
-  equalInType-SUM! (λ _ _ → isTypeNAT!)
+  equalInType-SUM! {B = #[0]ASSERTₘ (#[0]APPLY ⌞ f ⌟ #[0]VAR)} (λ _ _ → isTypeNAT!)
     aw1 aw2
   where
   aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType i w' #NAT! a b → equalInType i w' #BOOL₀! (#APPLY (→ℕ→𝔹 f) a) (#APPLY (→ℕ→𝔹 f) b))
@@ -540,7 +541,7 @@ IFEQ⇓from-to-decomp₁ m a c d v w w' comp isv isvc isvd
   aw2 : □· w (λ w' _ → SUMeq! (equalInType i w' #NAT!)
                               (λ a b ea → equalInType i w' (sub0 a (#[0]ASSERTₘ (#[0]APPLY ⌞ f ⌟ #[0]VAR))))
                               w' a b)
-  aw2 = Mod.∀𝕎-□Func M aw3 (equalInType-SUM!→ a∈)
+  aw2 = Mod.∀𝕎-□Func M aw3 (equalInType-SUM!→ {B = #[0]ASSERT₄ (#[0]APPLY ⌞ →ℕ→𝔹 f ⌟ #[0]VAR)} a∈)
     where
     aw3 : ∀𝕎 w (λ w' e' → SUMeq! (equalInType i w' #NAT!)
                                  (λ a₁ b₁ ea → equalInType i w' (sub0 a₁ (#[0]ASSERT₄ (#[0]APPLY ⌞ →ℕ→𝔹 f ⌟ #[0]VAR))))
@@ -625,6 +626,7 @@ MPp₇-inh₃ : (exb : ∃□) (i : ℕ) (w : 𝕎·) (eval : CTerm)
           → ∈Type i w (#MPeval eval) (#MPevalExt eval)
 MPp₇-inh₃ exb i w eval nnf nef eval∈ =
   equalInType-PI
+    {B = #[0]FUN (#[0]MP-left2-qt₅ eval) (#[0]MP-right2-qt₅ eval)}
     (λ w' e' → isTypeNAT! {w'} {i})
     aw1 aw2
   where
@@ -651,10 +653,12 @@ MPp₇-inh₃ exb i w eval nnf nef eval∈ =
                             (#APPLY (mpEvalEx (→ℕ→ℕ→𝔹 eval) #lamInfSearchP) n₁)
                             (#APPLY (mpEvalEx (→ℕ→ℕ→𝔹 eval) #lamInfSearchP) n₂)
     aw3' = ≡CTerm→equalInType (sub0-fun-mp2-qt₄ (→ℕ→ℕ→𝔹 eval) n₁)
-                              (snd (snd (equalInType-PI→ (MPp₇-inh₂ exb i w (→ℕ→ℕ→𝔹 eval)
-                                                                    (#¬Names→ℕ→ℕ→𝔹 {eval} nnf)
-                                                                    (#¬Enc→ℕ→ℕ→𝔹 {eval} nef)
-                                                                    (equalInType→ℕ→ℕ→𝔹 eval∈))))
+                              (snd (snd (equalInType-PI→
+                                           {B = #[0]FUN (#[0]MP-left2-qt₄ (→ℕ→ℕ→𝔹 eval)) (#[0]MP-right2-qt₄ (→ℕ→ℕ→𝔹 eval))}
+                                           (MPp₇-inh₂ exb i w (→ℕ→ℕ→𝔹 eval)
+                                                              (#¬Names→ℕ→ℕ→𝔹 {eval} nnf)
+                                                              (#¬Enc→ℕ→ℕ→𝔹 {eval} nef)
+                                                              (equalInType→ℕ→ℕ→𝔹 eval∈))))
                                    w1 e1 n₁ n₂ n∈)
 
     aw3 : ∀𝕎 w1 (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#MP-leftₘ (#APPLY eval n₁)) a₁ a₂

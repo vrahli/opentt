@@ -135,7 +135,7 @@ progressing→ΣgetCs≤ {w} {c} {r} n 0 comp prog = k , (fst i2 ++ fst i3) , fs
     i3 = snd (snd z) (fst i2) r (fst (snd i2))
 
     len : 0 < length (proj₁ i2 ++ proj₁ i3)
-    len rewrite length-++ (fst i2) {fst i3} = <-transˡ (snd (snd i3)) (m≤n+m _ _)
+    len rewrite length-++ (fst i2) {fst i3} = <-≤-trans (snd (snd i3)) (m≤n+m _ _)
 progressing→ΣgetCs≤ {w} {c} {r} n (suc m) comp prog = k' , l ++ fst i1 , (fst (snd i1)) , len'
   where
     ind : Σ ℕ (λ k → Σ (List ℂ·) (λ l → getCs n (chain.seq c k) ≡ just (mkcs n l r) × m < length l))
@@ -166,7 +166,7 @@ progressing→ΣgetCs≤ {w} {c} {r} n (suc m) comp prog = k' , l ++ fst i1 , (f
     i1 = snd (snd p) l r g
 
     len' : suc m < length (l ++ proj₁ i1)
-    len' rewrite length-++ l {fst i1} | suc-+1 m = <-transˡ (+-monoˡ-< 1 len) (+-monoʳ-≤ (length l) (snd (snd i1)))
+    len' rewrite length-++ l {fst i1} | suc-+1 m = <-≤-trans (+-monoˡ-< 1 len) (+-monoʳ-≤ (length l) (snd (snd i1)))
 
 
 
@@ -193,7 +193,7 @@ IS𝔹-ℕ w r n m comp =
     mon {w1} {w2} e (e' , l , g , len) = ⊑-trans· e' e , l ++ fst (≽-pres-∈world e g) , fst (snd (≽-pres-∈world e g)) , ln
       where
         ln : m < length (l ++ fst (≽-pres-∈world e g))
-        ln rewrite length-++ l {fst (≽-pres-∈world e g)} = ≤-stepsʳ (length (fst (≽-pres-∈world e g))) len
+        ln rewrite length-++ l {fst (≽-pres-∈world e g)} = m≤n⇒m≤n+o (length (fst (≽-pres-∈world e g))) len
 
 
 

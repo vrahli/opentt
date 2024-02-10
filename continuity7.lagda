@@ -618,7 +618,10 @@ equalTypes-cont-PI0 : (i : ℕ) (w : 𝕎·) (F₁ F₂ : CTerm)
                                      (#PI (#TPURE #BAIRE)
                                           (#[0]LET ⌞ F₂ ⌟ (#[1]LET #[1]VAR1 (#[2]SUBSING (#[2]contBody #[4]VAR3 #[4]VAR2)))))
 equalTypes-cont-PI0 i w F₁ F₂ eF =
-  eqTypesPI← (λ w' e' → equalTypesTPURE eqTypesBAIRE)
+  eqTypesPI←
+    {B = #[0]LET ⌞ F₁ ⌟ (#[1]LET #[1]VAR1 (#[2]SUBSING (#[2]contBody #[4]VAR3 #[4]VAR2)))}
+    {D = #[0]LET ⌞ F₂ ⌟ (#[1]LET #[1]VAR1 (#[2]SUBSING (#[2]contBody #[4]VAR3 #[4]VAR2)))}
+    (λ w' e' → equalTypesTPURE eqTypesBAIRE)
     h2
   where
   h2 : ∀𝕎 w (λ w1 e2 → (a₁ a₂ : CTerm)
@@ -677,7 +680,10 @@ equalTypes-cont-PI : (i : ℕ) (w : 𝕎·) (F₁ F₂ : CTerm)
                      → equalTypes i w (#PI (#TPURE #BAIRE) (#[0]SUBSING (#[0]contBody F₁ #[2]VAR2)))
                                       (#PI (#TPURE #BAIRE) (#[0]SUBSING (#[0]contBody F₂ #[2]VAR2)))
 equalTypes-cont-PI i w F₁ F₂ eF =
-  eqTypesPI← (λ w' e' → equalTypesTPURE eqTypesBAIRE) h2
+  eqTypesPI←
+    {B = #[0]SUBSING (#[0]contBody F₁ #[2]VAR2)}
+    {D = #[0]SUBSING (#[0]contBody F₂ #[2]VAR2)}
+    (λ w' e' → equalTypesTPURE eqTypesBAIRE) h2
   where
     h2 : ∀𝕎 w (λ w1 e2 → (a₁ a₂ : CTerm)
                          → equalInType i w1 (#TPURE #BAIRE) a₁ a₂
@@ -871,6 +877,7 @@ continuity cn exb gc i w =
       ≡CTerm→equalInType
         (sym (sub0-cont-b1 F₁))
         (equalInType-PI
+          {B = #[0]SUBSING (#[0]contBody F₁ #[2]VAR2)}
           (λ w' e' → equalTypesTPURE eqTypesBAIRE)
           (λ w2 e2 f₁ f₂ ef →
               ≡CTerm→eqTypes

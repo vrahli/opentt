@@ -304,7 +304,9 @@ isType-MPℙ-right-body i w f₁ f₂ f∈ w1 e1 a₁ a₂ a∈ =
                        → equalInType (suc i) w (#NAT!→U i) a₁ a₂
                        → equalTypes i w (#MPℙ-right a₁) (#MPℙ-right a₂)
 →equalTypes-#MPℙ-right {i} {w} {a₁} {a₂} eqt =
-  eqTypesSQUASH← (eqTypesSUM!← (λ w' _ → isTypeNAT!) (isType-MPℙ-right-body i w a₁ a₂ eqt))
+  eqTypesSQUASH← (eqTypesSUM!← {B = #[0]APPLY ⌞ a₁ ⌟ #[0]VAR}
+                               {D = #[0]APPLY ⌞ a₂ ⌟ #[0]VAR}
+                               (λ w' _ → isTypeNAT!) (isType-MPℙ-right-body i w a₁ a₂ eqt))
 
 
 →equalTypes-#MPℙ-left : {i : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
@@ -451,7 +453,9 @@ eqTypesOR← {w} {i} {A} {B} {C} {D} eqt1 eqt2 =
                   → equalInType (suc i) w (#NAT!→U i) a₁ a₂
                   → equalTypes i w (#DECℕ a₁) (#DECℕ a₂)
 →equalTypes-#DECℕ {i} {w} {a₁} {a₂} a∈ =
-  eqTypesPI← (λ w1 e1 → isTypeNAT!) aw
+  eqTypesPI← {B = #[0]OR (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR) (#[0]NEG (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))}
+             {D = #[0]OR (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR) (#[0]NEG (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR))}
+             (λ w1 e1 → isTypeNAT!) aw
   where
     aw : ∀𝕎 w (λ w' _ → (n₁ n₂ : CTerm) (ea : equalInType i w' #NAT! n₁ n₂)
                       → equalTypes i w'
@@ -489,7 +493,7 @@ equalInType-#MPℙ-right→ i w f a₁ a₂ f∈ h =
     where
     aw : ∀𝕎 w (λ w' e' → inhType i w' (#SUM! #NAT! (#[0]APPLY ⌞ f ⌟ #[0]VAR))
                        → □· w' (↑wPred' (λ w'' _ → Σ CTerm (λ n → ∈Type i w'' #NAT! n × inhType i w'' (#APPLY f n))) e'))
-    aw w1 e1 (t , t∈) = Mod.∀𝕎-□Func M aw1 (equalInType-SUM!→ t∈)
+    aw w1 e1 (t , t∈) = Mod.∀𝕎-□Func M aw1 (equalInType-SUM!→ {B = #[0]APPLY ⌞ f ⌟ #[0]VAR} t∈)
       where
       aw1 : ∀𝕎 w1 (λ w' e' → SUMeq! (equalInType i w' #NAT!) (λ a b ea → equalInType i w' (sub0 a (#[0]APPLY ⌞ f ⌟ #[0]VAR))) w' t t
                            → ↑wPred' (λ w'' _ → Σ CTerm (λ n → ∈Type i w'' #NAT! n × inhType i w'' (#APPLY f n))) e1 w' e')
@@ -512,6 +516,7 @@ equalInType-#MPℙ-right→ i w f a₁ a₂ f∈ h =
   aw w1 e1 (n , n∈ , (t , t∈)) =
     #PAIR n t ,
     equalInType-SUM!
+      {B = #[0]APPLY ⌞ f ⌟ #[0]VAR}
       (λ w1 e1 → isTypeNAT!) (isType-MPℙ-right-body i w1 f f (equalInType-mon f∈ w1 e1))
       (Mod.∀𝕎-□ M aw1)
     where
@@ -541,15 +546,17 @@ equalInType-#MPℙ-right→ i w f a₁ a₂ f∈ h =
          → equalInType i w (#DECℕ f) #AX #AX
 #AX∈DECℕ {i} {w} {f} (t , t∈) =
   equalInType-PI
-    (λ w1 e1 → eqTypes-mon (uni i) (fst (equalInType-PI→ t∈)) w1 e1)
-    (fst (snd (equalInType-PI→ t∈)))
+    {B = #[0]OR (#[0]APPLY ⌞ f ⌟ #[0]VAR) (#[0]NEG (#[0]APPLY ⌞ f ⌟ #[0]VAR))}
+    (λ w1 e1 → eqTypes-mon (uni i) (fst (equalInType-PI→ {B = #[0]OR (#[0]APPLY ⌞ f ⌟ #[0]VAR) (#[0]NEG (#[0]APPLY ⌞ f ⌟ #[0]VAR))} t∈)) w1 e1)
+    (fst (snd (equalInType-PI→ {B = #[0]OR (#[0]APPLY ⌞ f ⌟ #[0]VAR) (#[0]NEG (#[0]APPLY ⌞ f ⌟ #[0]VAR))} t∈)))
     λ w1 e1 a₁ a₂ a∈ →
       ≡CTerm→equalInType
         (sym (sub0-DECℕ-body1 f a₁))
         (→equalInType-SQUASH
           (equalInType-SQUASH→
             {i} {w1} {_} {#APPLY t a₁} {#APPLY t a₂}
-            (≡CTerm→equalInType (sub0-DECℕ-body1 f a₁) (snd (snd (equalInType-PI→ t∈)) w1 e1 a₁ a₂ a∈))))
+            (≡CTerm→equalInType (sub0-DECℕ-body1 f a₁)
+                                (snd (snd (equalInType-PI→ {B = #[0]OR (#[0]APPLY ⌞ f ⌟ #[0]VAR) (#[0]NEG (#[0]APPLY ⌞ f ⌟ #[0]VAR))} t∈)) w1 e1 a₁ a₂ a∈))))
 
 
 →equalInType-#MPℙ-left : (i : ℕ) (w : 𝕎·) (f a₁ a₂ : CTerm)
@@ -573,6 +580,7 @@ equalInType-#MPℙ-right→ i w f a₁ a₂ f∈ h =
             i∈ w3 e3 =
               #PAIR n t ,
               equalInType-SUM!
+                {B = #[0]APPLY ⌞ f ⌟ #[0]VAR}
                 (λ w' _ → isTypeNAT!)
                 (isType-MPℙ-right-body i w3 f f (equalInType-mon f∈ w3 (⊑-trans· e1 (⊑-trans· e2 e3))))
                 (Mod.∀𝕎-□ M aw3)
@@ -605,8 +613,9 @@ equalInType-#MPℙ-right→ i w f a₁ a₂ f∈ h =
   aw w1 e1 (p , p∈) =
     p ,
     equalInType-SUM!
+      {B = #[0]APPLY ⌞ f ⌟ #[0]VAR}
       (λ w1 e1 → isTypeNAT!) (isType-MPℙ-right-body i w1 f f (equalInType-mon f∈ w1 e1))
-      (Mod.∀𝕎-□Func M aw1 (equalInType-SUM!→ p∈))
+      (Mod.∀𝕎-□Func M aw1 (equalInType-SUM!→ {B = #[0]APPLY ⌞ f ⌟ #[0]VAR} p∈))
     where
     aw1 : ∀𝕎 w1 (λ w' e' → SUMeq! (equalInType j w' #NAT!)
                                   (λ a₁ b₁ ea → equalInType j w' (sub0 a₁ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
@@ -657,7 +666,7 @@ equalInType-#MPℙ-right→ i w f a₁ a₂ f∈ h =
 
     h4 : equalInType (suc i) w1 (#MPℙ-right f) (#APPLY3 F f #AX #AX) (#APPLY3 G f #AX #AX)
     h4 = h3 w1 (⊑-refl· w1)
-            #AX #AX (equalInType-uni-mon (<⇒≤ ≤-refl) (#AX∈DECℕ decn))
+            #AX #AX (equalInType-uni-mon (<⇒≤ ≤-refl) (#AX∈DECℕ {f = f} decn))
             #AX #AX (equalInType-uni-mon (<⇒≤ ≤-refl) (→equalInType-#MPℙ-left i w1 f #AX #AX f∈ cond))
 
 
@@ -778,7 +787,8 @@ equalTypes-#Σℙ-body {i} {w} {f} {n₁} {n₂} f∈ n∈ =
     {_} {_} {#NAT!} {#[0]APPLY (#[0]CS name) #[0]VAR}
     (λ w' _ → isTypeNAT!)
     (λ w1 e1 n₁ n₂ n∈ → equalTypes-#Σℙ-body (equalInType-mon f∈ w1 e1) n∈)
-    (Mod.∀𝕎-□Func M aw2 (equalInType-SUM!→ (≡CTerm→equalInType (#Σchoice≡ name ℂ₁·) t∈)))
+    (Mod.∀𝕎-□Func M aw2 (equalInType-SUM!→ {B = #[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁}
+                                           (≡CTerm→equalInType (#Σchoice≡ name ℂ₁·) t∈)))
   where
   aw2 : ∀𝕎 w (λ w' e' → SUMeq! (equalInType (suc i) w' #NAT!)
                                (λ a b ea → equalInType (suc i) w' (sub0 a (#[0]EQ (#[0]APPLY (#[0]CS name) #[0]VAR) (ℂ→C0 ℂ₁·) #[0]Typeℂ₀₁)))
@@ -1114,6 +1124,7 @@ inhType-DECℕ immut i cp w name compat f∈ =
 ΣinhType→inhType-choice i w f f∈ (n , n∈ , (t , inh)) =
   #PAIR n t ,
   equalInType-SUM!
+    {B = #[0]APPLY ⌞ f ⌟ #[0]VAR}
     (λ w' _ → isTypeNAT!)
     (λ w1 e1 n₁ n₂ n∈ → equalTypes-#Σℙ-body (equalInType-mon f∈ w1 e1) n∈)
     (Mod.∀𝕎-□ M aw)

@@ -361,7 +361,7 @@ MPp-inh n w =
               where
                 cc : Dec (Σ ℕ (λ k → inhType n w3 (#ASSERT₂ (#APPLY x₁ (#NUM k)))))
                      → Σ CTerm (λ t → equalInType n w3 (#SUM-ASSERT₂ x₁) t t)
-                cc (yes (k , t , p)) = #PAIR (#NUM k) t , equalInType-SUM! (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
+                cc (yes (k , t , p)) = #PAIR (#NUM k) t , equalInType-SUM! {B = #[0]ASSERT₂ (#[0]APPLY ⌞ x₁ ⌟ #[0]VAR)} (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
                   where
                     aw6 : ∀𝕎 w3 (λ w' _ → SUMeq! (equalInType n w' #NAT!)
                                                   (λ a b ea → equalInType n w' (sub0 a (#[0]ASSERT₂ (#[0]APPLY ⌞ x₁ ⌟ #[0]VAR))))
@@ -459,7 +459,7 @@ MPp-inh n w =
                                             #⇛-refl w3' #BTRUE)
 
                     aw5 : inhType n w3 (#PI-NEG-ASSERT₂ x₁)
-                    aw5 = #lam2AX , equalInType-PI (λ w' e → isTypeNAT!) aw6 aw7
+                    aw5 = #lam2AX , equalInType-PI {B = #[0]NEG (#[0]ASSERT₂ (#[0]APPLY ⌞ x₁ ⌟ #[0]VAR))} (λ w' e → isTypeNAT!) aw6 aw7
 
 
 →inhType-ASSERT₃-APPLY : (i : ℕ) (w : 𝕎·) (f n : CTerm) (k : ℕ)
@@ -628,7 +628,7 @@ MPp₄-inh n w =
               where
                 cc : Dec (Σ ℕ (λ k → inhType n w3 (#ASSERT₃ (#APPLY x₁ (#NUM k)))))
                      → Σ CTerm (λ t → equalInType n w3 (#SUM-ASSERT₃ x₁) t t)
-                cc (yes (k , t , p)) = #PAIR (#NUM k) t , equalInType-SUM! (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
+                cc (yes (k , t , p)) = #PAIR (#NUM k) t , equalInType-SUM! {B = #[0]ASSERT₃ (#[0]APPLY ⌞ x₁ ⌟ #[0]VAR)} (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
                   where
                     aw6 : ∀𝕎 w3 (λ w' _ → SUMeq! (equalInType n w' #NAT!)
                                                  (λ a b ea → equalInType n w' (sub0 a (#[0]ASSERT₃ (#[0]APPLY ⌞ x₁ ⌟ #[0]VAR))))
@@ -751,7 +751,7 @@ MPp₆-inh n w =
               where
                 cc : Dec (Σ ℕ (λ k → inhType n w3 (#ASSERT₄ (#APPLY x₁ (#NUM k)))))
                      → Σ CTerm (λ t → equalInType n w3 (#SUM-ASSERT₅ x₁) t t)
-                cc (yes (k , t , p)) = #PAIR (#NUM k) t , equalInType-SUM! (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
+                cc (yes (k , t , p)) = #PAIR (#NUM k) t , equalInType-SUM! {B = #[0]ASSERT₄ (#[0]APPLY ⌞ x₁ ⌟ #[0]VAR)} (λ w4 e4 → isTypeNAT!) aw5 (Mod.∀𝕎-□ M aw6)
                   where
                     aw6 : ∀𝕎 w3 (λ w' _ → SUMeq! (equalInType n w' #NAT!)
                                                   (λ a b ea → equalInType n w' (sub0 a (#[0]ASSERT₄ (#[0]APPLY ⌞ x₁ ⌟ #[0]VAR))))

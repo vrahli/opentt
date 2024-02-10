@@ -417,7 +417,7 @@ steps-decomp-isHighestℕ2 {w} {w1} {w2} {a} {b} {v} {0} {suc m} i name isv comp
         | stepVal a w isv
         | stepsVal a w m isv
         | pair-inj₁ (sym comp1) | pair-inj₂ (sym comp1)
-  = 0 , ≤-refl , refl , (λ (j , e , q) → j , e , <-transˡ ≤-refl q) , (λ (nnw , idom) → nnw , idom)
+  = 0 , ≤-refl , refl , (λ (j , e , q) → j , e , <-≤-trans ≤-refl q) , (λ (nnw , idom) → nnw , idom)
 steps-decomp-isHighestℕ2 {w} {w1} {w2} {a} {b} {v} {suc n} {suc m} i name isv comp1 comp2 with step⊎ a w
 ... | inj₁ (a' , w' , z) rewrite z =
   fst q , ≤-trans (fst (snd q)) (<⇒≤ (n<1+n n)) , fst (snd (snd q)) ,
@@ -1310,7 +1310,7 @@ stepsPresUpdRel2-APPLY₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp ,
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
   fst (snd (snd (snd (snd (snd hv))))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1482,7 +1482,7 @@ abstract
     fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
     fst (snd (snd (snd (snd (snd (snd hv)))))) , fst (snd (snd (snd (snd hv)))) ,
     fst (snd (snd (snd (snd (snd hv))))) ,
-    λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
+    λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd (snd hv)))))))))
     where
       hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (b , w) ≡ (u , w'')) (λ comp' →
                               isHighestℕ {k'} {w} {w''} {b} {u} n name comp'

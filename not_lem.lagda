@@ -166,7 +166,7 @@ equalTypes-#Σchoice-body-sub0 : (i : ℕ) (w : 𝕎·) (c : Name) (k : ℂ·)
                                 → ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm)
                                                 → equalInType i w' #NAT! a₁ a₂
                                                 → equalTypes i w' (sub0 a₁ (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁))
-                                                                   (sub0 a₂ (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁)))
+                                                                  (sub0 a₂ (#[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁)))
 equalTypes-#Σchoice-body-sub0 i w c k comp sat w' e' a₁ a₂ ea rewrite sub0-#Σchoice-body≡ a₁ c k | sub0-#Σchoice-body≡ a₂ c k =
   equalTypes-#Σchoice-body i w c k comp sat w' e' a₁ a₂ ea
 
@@ -177,7 +177,9 @@ equalInType-#Σchoice : {i : ℕ} (w : 𝕎·) (c : Name) (k : ℂ·)
                        → Σ ℕ (λ n → ·ᵣ Resℂ n k)
                        → isType i w (#Σchoice c k)
 equalInType-#Σchoice {i} w c k comp sat rewrite #Σchoice≡ c k =
-  eqTypesSUM!← (λ w' e' → isTypeNAT!) (equalTypes-#Σchoice-body-sub0 i w c k comp sat)
+  eqTypesSUM!← {B = #[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁}
+               {D = #[0]EQ (#[0]APPLY (#[0]CS c) #[0]VAR) (ℂ→C0 k) #[0]Typeℂ₀₁}
+               (λ w' e' → isTypeNAT!) (equalTypes-#Σchoice-body-sub0 i w c k comp sat)
 
 
 equalInType-#Σchoice-UNIV : {n i : ℕ} (p : i < n) (w : 𝕎·) (c : Name) (k : ℂ·)

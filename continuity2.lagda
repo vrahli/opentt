@@ -1799,7 +1799,7 @@ abstract
   --)))))
   upd-decomp {k} {name} {f} {a} {v} {w1} {w2} cf gtn comp isv =
     k1 , k8 , w3 , m , n ,
-    <-transʳ (m≤m+n k1 k2) ltk12 ,
+    ≤-<-trans (m≤m+n k1 k2) ltk12 ,
     k8<k ,
     g2a ,
     comp1b ,
@@ -1976,7 +1976,7 @@ abstract
       ltk8 = fst (snd cc1)
 
       k8<k : k8 < k
-      k8<k = <-transʳ ltk8 (<-transʳ (steps-counter-aux1 ltk04 ltk34) ltk12)
+      k8<k = ≤-<-trans ltk8 (≤-<-trans (steps-counter-aux1 ltk04 ltk34) ltk12)
 
       comp9 : steps k8 (LET a (SEQ (updGt name (VAR 0)) (APPLY f (VAR 0))), w1) ≡ (APPLY f (NUM m) , w4)
       comp9 = snd (snd cc1)

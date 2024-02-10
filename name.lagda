@@ -53,7 +53,7 @@ freshNameAux (n ∷ l) =
 
     q : (x : Name) → x ∈ n ∷ l → x < suc n ⊔ fst (freshNameAux l)
     q x (here p) rewrite p = ≤⊔l (suc n) (fst ind)
-    q x (there p) = <-transˡ (snd ind x p) (≤⊔r (suc n) (fst ind))
+    q x (there p) = <-≤-trans (snd ind x p) (≤⊔r (suc n) (fst ind))
 
 
 freshName : (l : List Name) → Σ Name (λ n → ¬ (n ∈ l))
@@ -174,7 +174,7 @@ length-ind {L} {K} {A} {P} ind a = length-ind-aux P ind (suc (length a)) a ≤-r
 length-N : (x : Name) (a : List Name) → length (a -N x) ≤ length a
 length-N x [] = ≤-refl
 length-N x (x₁ ∷ a) with x₁ ≟ x
-... | yes p rewrite p = <⇒≤ (<-transʳ (length-N x a) ≤-refl)
+... | yes p rewrite p = <⇒≤ (≤-<-trans (length-N x a) ≤-refl)
 ... | no p = _≤_.s≤s (length-N x a)
 
 
@@ -249,7 +249,7 @@ Name∈⊎ x (x₁ ∷ a) with x ≟ x₁
     e2 = ≡N-trans (≡N-sym (≡→≡N (∷-N-same x a))) e1
 
     e3 : ⊔L (a -N x) ≡ ⊔L (b -N x)
-    e3 = ind (a -N x) (<-transʳ (length-N x a) ≤-refl) e2
+    e3 = ind (a -N x) (≤-<-trans (length-N x a) ≤-refl) e2
 
     xb : x ∈ b
     xb = proj₁ (e x) (here refl)

@@ -10,9 +10,9 @@ open import Agda.Builtin.Equality.Rewrite
 open import Agda.Builtin.Sigma
 open import Relation.Nullary
 open import Relation.Unary using (Pred; Decidable)
---open import Relation.Binary.PropositionalEquality using (sym ; trans ; subst)
-open import Relation.Binary.PropositionalEquality hiding ([_] ; Extensionality)
-open ≡-Reasoning
+open import Relation.Binary.PropositionalEquality using (sym ; trans ; subst)
+--open import Relation.Binary.PropositionalEquality hiding ([_] ; Extensionality)
+--open ≡-Reasoning
 open import Data.Product
 open import Data.Product.Properties
 open import Data.Sum
@@ -22,8 +22,8 @@ open import Data.Unit using (⊤ ; tt)
 open import Data.Nat using (ℕ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
 open import Data.Nat.Properties
 open import Data.Bool using (Bool ; _∧_ ; _∨_)
-open import Agda.Builtin.String
-open import Agda.Builtin.String.Properties
+--open import Agda.Builtin.String
+--open import Agda.Builtin.String.Properties
 open import Data.List
 open import Data.List.Properties
 open import Data.List.Relation.Unary.Any

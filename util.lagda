@@ -130,7 +130,7 @@ suc≤len∷ʳ {L} {A} l a k h rewrite length-++ l {[ a ]} rewrite +-comm (lengt
 suc≤len++∷ʳ : {L : Level} {A : Set(L)} (k : ℕ) (l1 l2 : List A) (a : A)
               → k ≤ length l1
               → suc k ≤ length ((l1 ++ l2) ∷ʳ a)
-suc≤len++∷ʳ {L} {A} k l1 l2 a h = suc≤len∷ʳ (l1 ++ l2) a k (subst (λ x → k ≤ x) (sym (length-++ l1 {l2})) (≤-stepsʳ (length l2) h))
+suc≤len++∷ʳ {L} {A} k l1 l2 a h = suc≤len∷ʳ (l1 ++ l2) a k (subst (λ x → k ≤ x) (sym (length-++ l1 {l2})) (m≤n⇒m≤n+o (length l2) h))
 
 
 suc-≢-0 : {n : ℕ} → ¬ suc n ≡ 0
@@ -337,7 +337,7 @@ select++→⊎∈ {L} {A} {suc k} {x ∷ l} {l'} {t} sel = select++→⊎∈ {L}
 
 
 ≤+-stepsˡ : {m n k : ℕ} (o : ℕ) → m ≤ n + k → m ≤ o + n + k
-≤+-stepsˡ {m} {n} {k} o h rewrite +-assoc o n k = ≤-stepsˡ o h
+≤+-stepsˡ {m} {n} {k} o h rewrite +-assoc o n k = m≤n⇒m≤o+n o h
 
 
 ≡suc→< : {a b : ℕ} → a ≡ suc b → b < a
@@ -358,6 +358,6 @@ select++→⊎∈ {L} {A} {suc k} {x ∷ l} {l'} {t} sel = select++→⊎∈ {L}
 
 
 +≡→≤ : (k j n : ℕ) → k + j ≡ n → k ≤ n
-+≡→≤ k j n e rewrite sym e = ≤-stepsʳ j ≤-refl
++≡→≤ k j n e rewrite sym e = m≤n⇒m≤n+o j ≤-refl
 
 \end{code}

@@ -981,7 +981,7 @@ shiftUp-subn n m a (VAR x) len | yes p | no q | yes r = refl
 shiftUp-subn n m a (VAR x) len | yes p | no q | no r = ⊥-elim (r refl)
 shiftUp-subn n m a (VAR x) len | no p with x <? n
 shiftUp-subn n m a (VAR x) len | no p | yes q with x ≟ suc m
-shiftUp-subn n m a (VAR x) len | no p | yes q | yes r rewrite r = ⊥-elim (<-irrefl refl (≤-trans (_≤_.s≤s (≤-trans len (≤-step ≤-refl))) q))
+shiftUp-subn n m a (VAR x) len | no p | yes q | yes r rewrite r = ⊥-elim (<-irrefl refl (≤-trans (_≤_.s≤s (≤-trans len (m≤n⇒m≤1+n ≤-refl))) q))
 shiftUp-subn n m a (VAR 0) len | no p | yes q | no r with 0 <? n
 ... | yes s = refl
 ... | no s = ⊥-elim (s q)
@@ -990,10 +990,10 @@ shiftUp-subn n m a (VAR (suc x)) len | no p | yes q | no r | yes s with x <? m
 shiftUp-subn n m a (VAR (suc x)) len | no p | yes q | no r | yes s | yes i with suc x <? n
 ... | yes j = refl
 ... | no j = ⊥-elim (j q)
-shiftUp-subn n m a (VAR (suc x)) len | no p | yes q | no r | yes s | no i = ⊥-elim (i (≤-trans (≤-trans (≤-step ≤-refl) q) len))
+shiftUp-subn n m a (VAR (suc x)) len | no p | yes q | no r | yes s | no i = ⊥-elim (i (≤-trans (≤-trans (m≤n⇒m≤1+n ≤-refl) q) len))
 shiftUp-subn n m a (VAR (suc x)) len | no p | yes q | no r | no s with x <? m
-shiftUp-subn n m a (VAR (suc x)) len | no p | yes q | no r | no s | yes i = ⊥-elim (s (≤-trans i (≤-step ≤-refl)))
-shiftUp-subn n m a (VAR (suc x)) len | no p | yes q | no r | no s | no i = ⊥-elim (i (≤-trans (≤-trans (≤-step ≤-refl) q) len))
+shiftUp-subn n m a (VAR (suc x)) len | no p | yes q | no r | no s | yes i = ⊥-elim (s (≤-trans i (m≤n⇒m≤1+n ≤-refl)))
+shiftUp-subn n m a (VAR (suc x)) len | no p | yes q | no r | no s | no i = ⊥-elim (i (≤-trans (≤-trans (m≤n⇒m≤1+n ≤-refl) q) len))
 shiftUp-subn n m a (VAR x) len | no p | no q with suc x ≟ suc m
 shiftUp-subn n m a (VAR x) len | no p | no q | yes r rewrite sym (suc-injective r) = ⊥-elim (p refl)
 shiftUp-subn n m a (VAR x) len | no p | no q | no r with x <? suc m
@@ -1138,7 +1138,7 @@ shiftUp-subi n m a (VAR x) len | yes p | no q with suc m ≟ suc m
 ... | no r = ⊥-elim (r refl)
 shiftUp-subi n m a (VAR x) len | no p with x <? n
 shiftUp-subi n m a (VAR x) len | no p | yes q with x ≟ suc m
-... | yes r rewrite r = ⊥-elim (<-irrefl refl (≤-trans (_≤_.s≤s (≤-trans len (≤-step ≤-refl))) q))
+... | yes r rewrite r = ⊥-elim (<-irrefl refl (≤-trans (_≤_.s≤s (≤-trans len (m≤n⇒m≤1+n ≤-refl))) q))
 ... | no r = refl
 shiftUp-subi n m a (VAR x) len | no p | no q with suc x ≟ suc m
 ... | yes r rewrite suc-injective r = ⊥-elim (p refl)
@@ -1674,7 +1674,7 @@ subn-subn2 n m ltn a b (VAR (suc x)) ca | no  p | no  q | yes r | yes s with suc
 ... | yes z | no  w rewrite sym z = ⊥-elim (q refl)
 subn-subn2 n m ltn a b (VAR (suc x)) ca | no  p | no  q | yes r | yes s | no  z | yes w
   rewrite sym w with x <? m
-... | yes y = ⊥-elim (<-irrefl refl (<-transˡ (≤⇒< _ _ y q) ltn))
+... | yes y = ⊥-elim (<-irrefl refl (<-≤-trans (≤⇒< _ _ y q) ltn))
 ... | no  y = ⊥-elim (y s)
 subn-subn2 n m ltn a b (VAR (suc x)) ca | no  p | no  q | yes r | yes s | no  z | no  w
   with suc x ≤? m | suc x ≤? n
@@ -2124,7 +2124,7 @@ subn-subn3 (suc n) m ltn a b (VAR x) #a | yes p | no q with n <? suc m
 subn-subn3 (suc n) m ltn a b (VAR x) #a | yes p | no q | yes r with suc n ≟ suc n
 ... | yes s = refl
 ... | no s = ⊥-elim (s refl)
-subn-subn3 (suc n) m ltn a b (VAR x) #a | yes p | no q | no r = ⊥-elim (r (≤-trans ltn (≤-step ≤-refl)))
+subn-subn3 (suc n) m ltn a b (VAR x) #a | yes p | no q | no r = ⊥-elim (r (≤-trans ltn (m≤n⇒m≤1+n ≤-refl)))
 subn-subn3 n m ltn a b (VAR x) #a | no p with x ≟ suc m
 subn-subn3 n m ltn a b (VAR 0) #a | no p | yes q with 0 ≟ m
 subn-subn3 n m ltn a b (VAR 0) #a | no p | yes q | yes r rewrite sym r = ⊥-elim (¬0≡s 0 q)
@@ -2160,7 +2160,7 @@ subn-subn3 n m ltn a b (VAR (suc x)) #a | no p | no q | yes r | no s | yes i | n
 subn-subn3 n m ltn a b (VAR (suc x)) #a | no p | no q | yes r | no s | yes i | no j | yes l
   rewrite l = ⊥-elim (¬n≡sn m (sym i))
 subn-subn3 n m ltn a b (VAR (suc x)) #a | no p | no q | yes r | no s | yes i | no j | no l
-  rewrite sym i | ≤→predIf≤ {x} {suc x} (≤-step ≤-refl) | <→predIf≤2 {n} {suc x} (≰⇒> s) = refl
+  rewrite sym i | ≤→predIf≤ {x} {suc x} (m≤n⇒m≤1+n ≤-refl) | <→predIf≤2 {n} {suc x} (≰⇒> s) = refl
 subn-subn3 n m ltn a b (VAR (suc x)) #a | no p | no q | yes r | no s | no i with suc x ≟ n
 subn-subn3 n m ltn a b (VAR (suc x)) #a | no p | no q | yes r | no s | no i | yes j rewrite j = ⊥-elim (p refl)
 subn-subn3 n m ltn a b (VAR (suc x)) #a | no p | no q | yes r | no s | no i | no j with x <? n
@@ -2169,7 +2169,7 @@ subn-subn3 n m ltn a b (VAR (suc x)) #a | no p | no q | yes r | no s | no i | no
 ... | yes l rewrite l = ⊥-elim (q refl)
 ... | no l rewrite ≤→predIf≤ {x} {m} (s≤s-inj r) = refl
 subn-subn3 n m ltn a b (VAR (suc x)) #a | no p | no q | no r with x <? n
-subn-subn3 n m ltn a b (VAR (suc x)) #a | no p | no q | no r | yes s = ⊥-elim (r (≤-trans s (≤-trans ltn (≤-step ≤-refl))))
+subn-subn3 n m ltn a b (VAR (suc x)) #a | no p | no q | no r | yes s = ⊥-elim (r (≤-trans s (≤-trans ltn (m≤n⇒m≤1+n ≤-refl))))
 subn-subn3 n m ltn a b (VAR (suc x)) #a | no p | no q | no r | no s with x ≟ n
 subn-subn3 n m ltn a b (VAR (suc x)) #a | no p | no q | no r | no s | yes i rewrite i = ⊥-elim (r (_≤_.s≤s ltn))
 subn-subn3 n m ltn a b (VAR (suc x)) #a | no p | no q | no r | no s | no i with x ≟ m

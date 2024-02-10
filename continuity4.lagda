@@ -10,9 +10,9 @@ open import Agda.Builtin.Equality.Rewrite
 open import Agda.Builtin.Sigma
 open import Relation.Nullary
 open import Relation.Unary using (Pred; Decidable)
---open import Relation.Binary.PropositionalEquality using (sym ; trans ; subst)
-open import Relation.Binary.PropositionalEquality hiding ([_] ; Extensionality)
-open ≡-Reasoning
+open import Relation.Binary.PropositionalEquality using (sym ; trans ; subst)
+--open import Relation.Binary.PropositionalEquality hiding ([_] ; Extensionality)
+--open ≡-Reasoning
 open import Data.Product
 open import Data.Product.Properties
 open import Data.Sum
@@ -252,7 +252,7 @@ stepsPresUpdRel-IFLT₁→ : {n : ℕ} {name : Name} {f g : Term} {a b c d : Ter
 stepsPresUpdRel-IFLT₁→ {n} {name} {f} {g} {a} {b} {c} {d} {w} (k , v , w' , comp , isv , ish , ind) =
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd hv))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -305,7 +305,7 @@ stepsPresUpdRel-IFLT₂→ : {n : ℕ} {name : Name} {f g : Term} {m : ℕ} {b c
 stepsPresUpdRel-IFLT₂→ {n} {name} {f} {g} {m} {b} {c} {d} {w} (k , v , w' , comp , isv , ish , ind) =
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd hv))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (b , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {b} {u} n name comp'
@@ -396,7 +396,7 @@ stepsPresUpdRel-IFEQ₁→ : {n : ℕ} {name : Name} {f g : Term} {a b c d : Ter
 stepsPresUpdRel-IFEQ₁→ {n} {name} {f} {g} {a} {b} {c} {d} {w} (k , v , w' , comp , isv , ish , ind) =
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd hv))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -449,7 +449,7 @@ stepsPresUpdRel-IFEQ₂→ : {n : ℕ} {name : Name} {f g : Term} {m : ℕ} {b c
 stepsPresUpdRel-IFEQ₂→ {n} {name} {f} {g} {m} {b} {c} {d} {w} (k , v , w' , comp , isv , ish , ind) =
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd hv))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (b , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {b} {u} n name comp'
@@ -602,7 +602,7 @@ stepsPresUpdRel-APPLY₁→ : {n : ℕ} {name : Name} {f g : Term} {a b : Term} 
 stepsPresUpdRel-APPLY₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , isv , ish , ind) =
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd hv))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -667,7 +667,7 @@ stepsPresUpdRel-MAPP₁→ : {n : ℕ} {name : Name} {f g : Term} {s : 𝕊} {a 
 stepsPresUpdRel-MAPP₁→ {n} {name} {f} {g} {s} {a} {w} (k , v , w' , comp , isv , ish , ind) =
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd hv))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -732,7 +732,7 @@ stepsPresUpdRel-LET₁→ : {n : ℕ} {name : Name} {f g : Term} {a b : Term} {w
 stepsPresUpdRel-LET₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , isv , ish , ind) =
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd hv))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -800,7 +800,7 @@ stepsPresUpdRel-SUC₁→ : {n : ℕ} {name : Name} {f g : Term} {a : Term} {w :
 stepsPresUpdRel-SUC₁→ {n} {name} {f} {g} {a} {w} (k , v , w' , comp , isv , ish , ind) =
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd hv))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -865,7 +865,7 @@ stepsPresUpdRel-NATREC₁→ : {n : ℕ} {name : Name} {f g : Term} {a b c : Ter
 stepsPresUpdRel-NATREC₁→ {n} {name} {f} {g} {a} {b} {c} {w} (k , v , w' , comp , isv , ish , ind) =
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd hv))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -932,7 +932,7 @@ stepsPresUpdRel-FIX₁→ : {n : ℕ} {name : Name} {f g : Term} {a : Term} {w :
 stepsPresUpdRel-FIX₁→ {n} {name} {f} {g} {a} {w} (k , v , w' , comp , isv , ish , ind) =
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd hv))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -999,7 +999,7 @@ stepsPresUpdRel-DSUP₁→ : {n : ℕ} {name : Name} {f g : Term} {a b : Term} {
 stepsPresUpdRel-DSUP₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , isv , ish , ind) =
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd hv))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1066,7 +1066,7 @@ stepsPresUpdRel-WREC₁→ : {n : ℕ} {name : Name} {f g : Term} {a b : Term} {
 stepsPresUpdRel-WREC₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , isv , ish , ind) =
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd hv))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1133,7 +1133,7 @@ stepsPresUpdRel-DMSUP₁→ : {n : ℕ} {name : Name} {f g : Term} {a b : Term} 
 stepsPresUpdRel-DMSUP₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , isv , ish , ind) =
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd hv))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1200,7 +1200,7 @@ stepsPresUpdRel-SPREAD₁→ : {n : ℕ} {name : Name} {f g : Term} {a b : Term}
 stepsPresUpdRel-SPREAD₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , isv , ish , ind) =
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd hv))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1267,7 +1267,7 @@ stepsPresUpdRel-CHOOSE₁→ : {n : ℕ} {name : Name} {f g : Term} {a b : Term}
 stepsPresUpdRel-CHOOSE₁→ {n} {name} {f} {g} {a} {b} {w} (k , v , w' , comp , isv , ish , ind) =
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd hv))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1336,7 +1336,7 @@ stepsPresUpdRel-DECIDE₁→ : {n : ℕ} {name : Name} {f g : Term} {a b c : Ter
 stepsPresUpdRel-DECIDE₁→ {n} {name} {f} {g} {a} {b} {c} {w} (k , v , w' , comp , isv , ish , ind) =
   fst hv , fst (snd hv) , fst (snd (snd hv)) , fst (snd (snd (snd hv))) ,
   fst (snd (snd (snd (snd (snd hv))))) , fst (snd (snd (snd (snd hv)))) ,
-  λ k' j → ind k' (<⇒≤ (<-transʳ j (snd (snd (snd (snd (snd (snd hv))))))))
+  λ k' j → ind k' (<⇒≤ (≤-<-trans j (snd (snd (snd (snd (snd (snd hv))))))))
   where
     hv : Σ ℕ (λ k' → Σ Term (λ u → Σ 𝕎· (λ w'' → Σ (steps k' (a , w) ≡ (u , w'')) (λ comp' →
                           isHighestℕ {k'} {w} {w''} {a} {u} n name comp'
@@ -1651,7 +1651,7 @@ isHighestℕ-updBody-NUM2→< gc {n} {name} {f} {0} {j} {m} {v} {w1} {w2} compat
   rewrite pair-inj₁ (sym comp) | pair-inj₂ (sym comp) = ⊥-elim isv
 isHighestℕ-updBody-NUM2→< gc {n} {name} {f} {suc k} {j} {m} {v} {w1} {w2} compat ltjn comp isv ish with j <? m
 ... | yes x = isHighestℕ-updBody-NUM3→< gc {n} {name} {f} {k} {m} {v} {w1} {w2} compat comp isv (snd ish)
-... | no x = <-transʳ (≮⇒≥ x) ltjn
+... | no x = ≤-<-trans (≮⇒≥ x) ltjn
 
 
 isHighestℕ-updBody-NUM2b→< : (gc : get-choose-ℕ) {n : ℕ} {name : Name} {f : Term} {k : ℕ} {j m : ℕ} {u v : Term} {w1 w2 : 𝕎·}

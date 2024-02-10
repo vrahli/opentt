@@ -8,8 +8,9 @@ open import Agda.Builtin.Equality.Rewrite
 open import Agda.Builtin.Sigma
 open import Relation.Nullary
 open import Relation.Unary using (Pred; Decidable)
-open import Relation.Binary.PropositionalEquality hiding ([_] ; Extensionality) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
-open ≡-Reasoning
+open import Relation.Binary.PropositionalEquality using (sym ; subst)
+--open import Relation.Binary.PropositionalEquality hiding ([_] ; Extensionality) -- using (sym ; subst ; _∎ ; _≡⟨_⟩_)
+--open ≡-Reasoning
 open import Data.Product
 open import Data.Sum
 open import Data.Empty
@@ -18,14 +19,14 @@ open import Data.Bool using (Bool ; true ; false ; if_then_else_)
 open import Data.Unit using (⊤ ; tt)
 open import Data.Nat using (ℕ ; _≟_ ; _<_ ; _≤_ ; _≥_ ; _≤?_ ; suc ; _+_ ; pred)
 open import Data.Nat.Properties
-open import Agda.Builtin.String
-open import Agda.Builtin.String.Properties
+--open import Agda.Builtin.String
+--open import Agda.Builtin.String.Properties
 open import Data.List
 open import Data.List.Relation.Unary.Any
 open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Data.List.Properties
-open import Function.Inverse using (Inverse)
+--open import Function.Inverse using (Inverse)
 open import Axiom.Extensionality.Propositional
 
 
