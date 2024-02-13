@@ -5,6 +5,7 @@
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Prelude
   using (subst ; sym ; cong ; cong₂)
+open import Cubical.Categories.Category.Base
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 --open import Agda.Builtin.Equality
@@ -82,20 +83,56 @@ _∘_//_ {{p}} a b h with a · b
     field
       K : |U|
       S : |U|
-      -- axiom
-      K-eqn : (a b : |U|)
+      -- axioms
+      -- K · a · b ≡ a
+      K-eqn : (a : |U|)
             → Σ |U| (λ ka →
                 K · a ≈ ka
-              × ka · b ≈ a)
-      S-eqn : (a b c : |U|)
+              × ((b : |U|) → ka · b ≈ a))
+      -- S · a · b · c ≡ (a · c) · (b · c)
+      S-eqn : (a b : |U|)
             → Σ |U| (λ sa → Σ |U| (λ sab →
               S · a ≈ sa
             × sa · b ≈ sab
-            × ((ac bc acbc : |U|)
+            × ((c ac bc acbc : |U|)
               → a · c ≈ ac
               → b · c ≈ bc
               → ac · bc ≈ acbc
               → sab · c ≈ acbc)))
+
+  open Comb {{...}}
+
+  -- K · x is defined
+  K· : {l k : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} → |U| → |U|
+  K· {l} {k} {{p}} {{c}} x with K-eqn x
+  ... | Kx , Kx≡ , q = Kx
+
+  -- S · a · b is defined
+  S·· : {l k : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} → |U| → |U| → |U|
+  S·· {l} {k} {{p}} {{c}} a b with S-eqn a b
+  ... | Sa , Sab , Sa≡ , Sab≡ , q = Sab
+
+  -- I combinator: I · x ≡ x
+  -- Defined as S · K · K
+  Ic : {l k : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} → |U|
+  Ic {l} {k} {{p}} {{c}} = S·· K K
+
+  Ic-eqn : {l k : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
+         → (x : |U|) → Ic {{p}} {{c}} · x ≈ x
+  Ic-eqn {l} {k} {{p}} {{c}} x
+    with S-eqn K K
+  ... | SK , SKK , SK≡ , SKK≡ , q with K-eqn x
+  ... | Kx , Kx≡ , h = q x Kx Kx x Kx≡ Kx≡ (h Kx)
+
+  -- Composes a and b: S · (K · a) · b
+  Cc : {l k : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} (a b : |U|) → |U|
+  Cc {l} {k} {{p}} {{c}} a b = S·· (K· a) b
+
+{--  Cc-eqn : {l k : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} (a b : |U|)
+         → (x : |U|) → Cc {{p}} {{c}} a b · x ≈ a · (b · x)
+  Cc-eqn {l} {k} {{p}} {{c}} a b x = ?
+--}
+
 \end{code}
 
 Total PCAs
@@ -235,11 +272,11 @@ mutual
 
 open Partial
 
-PCA-example1 : PCA(0ℓ)(0ℓ)
-PCA-example1 = pca Λ (λ a b → just (app a b)) Λ≡ Λ≡refl {!!} {!!}
+PCA-Λ : PCA(0ℓ)(0ℓ)
+PCA-Λ = pca Λ (λ a b → just (app a b)) Λ≡ Λ≡refl {!!} {!!}
 
-Comb-example1 : Comb{{PCA-example1}}
-Comb-example1 = {!!}
+Comb-Λ : Comb{{PCA-Λ}}
+Comb-Λ = {!!}
 
 \end{code}
 
@@ -248,34 +285,64 @@ Assemblies
 \begin{code}
 open PCA {{...}}
 
-record ·subset {l k : Level} {{p : PCA l k}} : Set(l ⊔ lsuc k) where
-  constructor SS
-  field
-    ss  : |U| → Set(k)
-    pt  : |U|
-    ss· : ss pt
-
-isSingleton : {l k : Level} {{p : PCA l k}} (i : ·subset {l} {k} {{p}}) → Set(l ⊔ k)
-isSingleton (SS ss pt ss·) = (t : |U|) → ss t → t ≣ pt
-
-record Assembly {l k l′ k′ : Level} (A : PCA l k) : Set(lsuc l ⊔ lsuc k ⊔ lsuc l′ ⊔ lsuc k′) where
+record Assembly {l k l′ k′ : Level} {{A : PCA l k}} : Set(lsuc l ⊔ lsuc k ⊔ lsuc l′ ⊔ lsuc k′) where
   constructor asm
   field
-    |X| : Set(l) -- a setoid?
-    [_] : |X| → ·subset {l} {k} {{A}}
+    |X| : Set(l′) -- a setoid?
+    _⊩_ : |U| → |X| → Set(k′)
+    inh : (x : |X|) → Σ |U| (λ r → r ⊩ x)
 
-isPartitioned : {l k l′ k′ : Level} {p : PCA l k} (a : Assembly {l} {k} {l′} {k′} p) → Set(l ⊔ k)
-isPartitioned {l} {k} {l′} {k′} {p} (asm |X| [_]) =
-  (x : |X|) → isSingleton {l} {k} {{p}} [ x ]
+--syntax r ⊩ [ A ] x = Assembly._⊩_ A r x
 
-record morphism {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} {l′} {k′} p) : Set(l ⊔ lsuc k) where
+isPartitioned : {l k l′ k′ : Level} {{p : PCA l k}} (a : Assembly {l} {k} {l′} {k′} {{p}}) → Set(l ⊔ k ⊔ l′ ⊔ k′)
+isPartitioned {l} {k} {l′} {k′} {{p}} (asm |X| _⊩_ inh) =
+  (x : |X|) (t : |U|) → t ⊩ x → t ≣ fst (inh x)
+
+record morphism {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} {l′} {k′} {{p}}) : Set(l ⊔ k ⊔ l′ ⊔ k′) where
   constructor morph
   field
     f    : Assembly.|X| X → Assembly.|X| Y
     a    : |U|
     cond : (x : Assembly.|X| X) (b : |U|)
-         → ·subset.ss (Assembly.[_] X x) b
-         → Σ |U| (λ c → a · b ≈ c × ·subset.ss (Assembly.[_] Y (f x)) c)
+         → Assembly._⊩_ X b x
+         → Σ |U| (λ c → a · b ≈ c × Assembly._⊩_ Y c (f x))
+
+morphism-comp : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
+                {x y z : Assembly {l} {k} {l′} {k′} {{p}}}
+              → morphism x y → morphism y z → morphism x z
+morphism-comp {l} {k} {l′} {k′} {{p}} {{c}} {x} {y} {z} (morph f₁ a₁ cond₁) (morph f₂ a₂ cond₂) =
+  morph (λ u → f₂ (f₁ u))
+        (Cc a₂ a₁)
+        {!!}
+  where
+  cond : (u : Assembly.|X| x) (b : PCA.|U| p)
+       → Assembly._⊩_ x b u
+       → Σ (PCA.|U| p) (λ c₁ → PCA._·_ p (Cc a₁ a₂) b ≈ c₁ × Assembly._⊩_ z c₁ (f₂ (f₁ u)))
+  cond u b b⊩u = {!!}
+
+Asm-id : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} {x : Assembly {l} {k} {l′} {k′} {{p}}}
+       → morphism x x
+Asm-id {{p}} {{c}} {X} =
+  morph (λ x → x) Ic cond
+  where
+  cond : (x : Assembly.|X| X) (b : PCA.|U| p)
+       → Assembly._⊩_ X b x
+       → Σ (PCA.|U| p) (λ c₁ → (p PCA.· Ic) b ≈ c₁ × Assembly._⊩_ X c₁ x)
+  cond x b b⊩x = b , Ic-eqn b , b⊩x
+
+Asm : (l k l′ k′ : Level) {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
+    → Category (lsuc l ⊔ lsuc k ⊔ lsuc l′ ⊔ lsuc k′) (l ⊔ k ⊔ l′ ⊔ k′)
+Asm l k l′ k′ {{p}} {{c}} =
+  record
+  { ob       = Assembly {l} {k} {l′} {k′} {{p}}
+  ; Hom[_,_] = morphism {l} {k} {l′} {k′} {{p}}
+  ; id       = Asm-id
+  ; _⋆_      = {!!}
+  ; ⋆IdL     = {!!}
+  ; ⋆IdR     = {!!}
+  ; ⋆Assoc   = {!!}
+  ; isSetHom = {!!}
+  }
 
 \end{code}
 
