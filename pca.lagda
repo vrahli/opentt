@@ -4,8 +4,9 @@
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Prelude
-  using (subst ; sym ; cong ; cong₂)
+  using (refl ; sym ; subst ; cong ; cong₂ ; funExt)
 open import Cubical.Categories.Category.Base
+  using (Category)
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 --open import Agda.Builtin.Equality
@@ -18,6 +19,26 @@ open import Data.Unit using (⊤ ; tt)
 open import Relation.Nullary
 
 module pca where
+
+trans : {l : Level} {A : Set(l)} {a b c : A}
+      → a ≡ b
+      → b ≡ c
+      → a ≡ c
+trans {l} {A} {a} {b} {c} e f = subst (λ a → a ≡ c) (sym e) f
+
+cong₃ : {l k i j : Level}
+        {A : Type l}
+        {B : A → Type k}
+        {C : (a : A) (b : B a) → Type i}
+        {D : (a : A) (b : B a) (c : C a b) → Type j}
+        (f : (a : A) (b : B a) (c : C a b) → D a b c)
+        {x : A} {y : A} (p : x ≡ y)
+        {u : B x} {v : B y} (q : PathP (λ i → B (p i)) u v) →
+        {m : C x u} {n : C y v} (r : PathP (λ i → C (p i) (q i)) m n) →
+        PathP (λ i → D (p i) (q i) (r i)) (f x u m) (f y v n)
+cong₃ f p q r i = f (p i) (q i) (r i)
+{-# INLINE cong₃ #-}
+
 \end{code}
 
 Partial PCAs
@@ -182,7 +203,7 @@ module Total where
     pca |U|₁ (Partial.total· p tot) _≣_ ≣-refl ≣-sym ≣-trans
 \end{code}
 
-Some examples of PCAs
+Examples of a PCA
 
 \begin{code}
 
@@ -204,12 +225,6 @@ if≡ zero (suc _) c d = d
 if≡ (suc _) zero c d = d
 if≡ (suc a) (suc b) c d = if≡ a b c d
 
-trans : {l : Level} {A : Set(l)} {a b c : A}
-      → a ≡ b
-      → b ≡ c
-      → a ≡ c
-trans {l} {A} {a} {b} {c} e f = subst (λ a → a ≡ c) (sym e) f
-
 mutual
   data Λ : Set where
     var : ℕ → Λ
@@ -229,7 +244,6 @@ mutual
   gsub σ v t (app f a) = app (gsub σ v t f) (gsub σ v t a)
   gsub σ v t (eq {a} {b} e f) = eq {gsub σ v t a} {gsub σ v t b} (Λ≡-gsub σ v t a b e) f
 
-  -- finish
   data Λ≡ : Λ → Λ → Set where
     Λ≡refl  : (a : Λ) → Λ≡ a a
     Λ≡sym   : {a b : Λ}
@@ -252,7 +266,17 @@ mutual
   Λ≡-gsub : (σ : ℕ → ℕ → ℕ) (v : ℕ) (t a b : Λ)
           → Λ≡ a b
           → Λ≡ (gsub σ v t a) (gsub σ v t b)
-  Λ≡-gsub σ v t a b h = {!!}
+  Λ≡-gsub σ v t a .a (Λ≡refl .a) = Λ≡refl (gsub σ v t a)
+  Λ≡-gsub σ v t a b (Λ≡sym h) = Λ≡sym (Λ≡-gsub σ v t b a h)
+  Λ≡-gsub σ v t a b (Λ≡trans {a} {b₁} {b} h h₁) =
+    Λ≡trans (Λ≡-gsub σ v t a b₁ h) (Λ≡-gsub σ v t b₁ b h₁)
+  Λ≡-gsub σ v t .(app (lam f) a) .(gsub predIf≤ 0 a f) (Λ≡beta f a) =
+    Λ≡trans (Λ≡beta (gsub σ (suc v) (shiftUp 0 t) f) (gsub σ v t a))
+            {!!}
+  Λ≡-gsub σ v t .(lam _) .(lam _) (Λ≡lam {f} {g} h) =
+    Λ≡lam (Λ≡-gsub σ (suc v) (shiftUp 0 t) f g h)
+  Λ≡-gsub σ v t .(app _ _) .(app _ _) (Λ≡app {f} {g} {a} {b} h h₁) =
+    Λ≡app (Λ≡-gsub σ v t f g h) (Λ≡-gsub σ v t a b h₁)
 
   shiftUp-gsub : (σ : ℕ → ℕ → ℕ) (n m : ℕ) (a b : Λ)
                → n ≤ m
@@ -307,14 +331,34 @@ isPartitioned : {l k l′ k′ : Level} {{p : PCA l k}} (a : Assembly {l} {k} {l
 isPartitioned {l} {k} {l′} {k′} {{p}} (asm |X| _⊩_ inh) =
   (x : |X|) (t : |U|) → t ⊩ x → t ≣ fst (inh x)
 
+morphismCond : {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} {l′} {k′} {{p}})
+               (f : Assembly.|X| X → Assembly.|X| Y)
+               (a : |U|)
+             → Set(l ⊔ k ⊔ l′ ⊔ k′)
+morphismCond {l} {k} {l′} {k′} {{p}} X Y f a =
+    (x : Assembly.|X| X) (b : |U|)
+  → Assembly._⊩_ X b x
+  → Σ |U| (λ c → a · b ≈ c × Assembly._⊩_ Y c (f x))
+
 record morphism {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} {l′} {k′} {{p}}) : Set(l ⊔ k ⊔ l′ ⊔ k′) where
   constructor morph
   field
     f    : Assembly.|X| X → Assembly.|X| Y
     a    : |U|
-    cond : (x : Assembly.|X| X) (b : |U|)
-         → Assembly._⊩_ X b x
-         → Σ |U| (λ c → a · b ≈ c × Assembly._⊩_ Y c (f x))
+    cond : morphismCond X Y f a
+
+{--
+≡morph : {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} {l′} {k′} {{p}})
+         (f₁ f₂ : Assembly.|X| X → Assembly.|X| Y)
+         (a₁ a₂ : |U|)
+         (c₁    : morphismCond {l} {k} {l′} {k′} {{p}} X Y f₁ a₁)
+         (c₂    : morphismCond {l} {k} {l′} {k′} {{p}} X Y f₂ a₂)
+       → f₁ ≡ f₂
+       → a₁ ≡ a₂
+       → morph {l} {k} {l′} {k′} {{p}} f₁ a₁ c₁ ≡ morph {l} {k} {l′} {k′} {{p}} f₂ a₂ c₂
+≡morph {l} {k} {l′} {k′} {{p}} X Y f₁ f₂ a₁ a₂ c₁ c₂ f≡ a≡ =
+  {!!}
+--}
 
 morphism-comp : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
                 {x y z : Assembly {l} {k} {l′} {k′} {{p}}}
@@ -331,7 +375,8 @@ morphism-comp {l} {k} {l′} {k′} {{p}} {{c}} {x} {y} {z} (morph f₁ a₁ con
   ... | c₁ , c₁≡ , ⊩c₁ with cond₂ (f₁ u) c₁ ⊩c₁
   ... | c₂ , c₂≡ , ⊩c₂ = c₂ , Cc-eqn a₂ a₁ b c₁ c₂ c₁≡ c₂≡ , ⊩c₂
 
-Asm-id : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} {x : Assembly {l} {k} {l′} {k′} {{p}}}
+Asm-id : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
+         {x : Assembly {l} {k} {l′} {k′} {{p}}}
        → morphism x x
 Asm-id {{p}} {{c}} {X} =
   morph (λ x → x) Ic cond
@@ -341,6 +386,15 @@ Asm-id {{p}} {{c}} {X} =
        → Σ (PCA.|U| p) (λ c₁ → (p PCA.· Ic) b ≈ c₁ × Assembly._⊩_ X c₁ x)
   cond x b b⊩x = b , Ic-eqn b , b⊩x
 
+Asm-*IdL : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
+           {x y : Assembly {l} {k} {l′} {k′}} (f : morphism x y)
+         → morphism-comp Asm-id f ≡ f
+Asm-*IdL {l} {k} {l′} {k′} ⦃ p ⦄ ⦃ c ⦄ {x} {y} (morph f a cond) =
+  cong₃ morph -- {x = λ x → f x}
+        (funExt (λ x → refl))
+        {!!} -- They behave the same but currently not equal
+        {!!}
+
 Asm : (l k l′ k′ : Level) {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
     → Category (lsuc l ⊔ lsuc k ⊔ lsuc l′ ⊔ lsuc k′) (l ⊔ k ⊔ l′ ⊔ k′)
 Asm l k l′ k′ {{p}} {{c}} =
@@ -349,7 +403,7 @@ Asm l k l′ k′ {{p}} {{c}} =
   ; Hom[_,_] = morphism {l} {k} {l′} {k′} {{p}}
   ; id       = Asm-id
   ; _⋆_      = morphism-comp
-  ; ⋆IdL     = {!!}
+  ; ⋆IdL     = Asm-*IdL
   ; ⋆IdR     = {!!}
   ; ⋆Assoc   = {!!}
   ; isSetHom = {!!}
