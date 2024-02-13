@@ -128,6 +128,15 @@ _∘_//_ {{p}} a b h with a · b
   Cc : {l k : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} (a b : |U|) → |U|
   Cc {l} {k} {{p}} {{c}} a b = S·· (K· a) b
 
+  Cc-eqn : {l k : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} (a b : |U|)
+         → (x y₁ y₂ : |U|)
+         → PCA._·_ p b x ≈ y₁
+         → PCA._·_ p a y₁ ≈ y₂
+         → PCA._·_ p (Cc a b) x ≈ y₂
+  Cc-eqn {l} {k} {{p}} {{c}} a b x y₁ y₂ y₁≡ y₂≡ with K-eqn a
+  ... | Ka , Ka≡ , q with S-eqn Ka b
+  ... | SKa , SKab , SKa≡ , SKab≡ , h = h x a y₁ y₂ (q x) y₁≡ y₂≡
+
 {--  Cc-eqn : {l k : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} (a b : |U|)
          → (x : |U|) → Cc {{p}} {{c}} a b · x ≈ a · (b · x)
   Cc-eqn {l} {k} {{p}} {{c}} a b x = ?
@@ -313,12 +322,14 @@ morphism-comp : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}
 morphism-comp {l} {k} {l′} {k′} {{p}} {{c}} {x} {y} {z} (morph f₁ a₁ cond₁) (morph f₂ a₂ cond₂) =
   morph (λ u → f₂ (f₁ u))
         (Cc a₂ a₁)
-        {!!}
+        cond
   where
   cond : (u : Assembly.|X| x) (b : PCA.|U| p)
        → Assembly._⊩_ x b u
-       → Σ (PCA.|U| p) (λ c₁ → PCA._·_ p (Cc a₁ a₂) b ≈ c₁ × Assembly._⊩_ z c₁ (f₂ (f₁ u)))
-  cond u b b⊩u = {!!}
+       → Σ (PCA.|U| p) (λ c₁ → PCA._·_ p (Cc a₂ a₁) b ≈ c₁ × Assembly._⊩_ z c₁ (f₂ (f₁ u)))
+  cond u b b⊩u with cond₁ u b b⊩u
+  ... | c₁ , c₁≡ , ⊩c₁ with cond₂ (f₁ u) c₁ ⊩c₁
+  ... | c₂ , c₂≡ , ⊩c₂ = c₂ , Cc-eqn a₂ a₁ b c₁ c₂ c₁≡ c₂≡ , ⊩c₂
 
 Asm-id : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} {x : Assembly {l} {k} {l′} {k′} {{p}}}
        → morphism x x
@@ -337,7 +348,7 @@ Asm l k l′ k′ {{p}} {{c}} =
   { ob       = Assembly {l} {k} {l′} {k′} {{p}}
   ; Hom[_,_] = morphism {l} {k} {l′} {k′} {{p}}
   ; id       = Asm-id
-  ; _⋆_      = {!!}
+  ; _⋆_      = morphism-comp
   ; ⋆IdL     = {!!}
   ; ⋆IdR     = {!!}
   ; ⋆Assoc   = {!!}
