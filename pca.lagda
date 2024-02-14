@@ -324,11 +324,13 @@ app/ : Λ/ → Λ/ → Λ/
 app/ [ f ] [ a ] = [ app f a ]
 app/ [ f ] (eq/ a b r i) = eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r) i
 app/ (eq/ f g r i) [ a ] = eq/ (app f a) (app g a) (Λ≡app r (Λ≡refl a)) i
-app/ (eq/ f g r i) (eq/ a b r₁ i₁) =
+app/ (eq/ f g r i) (eq/ a b r₁ i₁) = ?
+{--
   hcomp {!h!} {!!} --(eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r₁) i₁)
   where
   h : ∀ j → Partial (j ∧ ~ i) Λ/
   h = {!!}
+--}
 -- eq/ (app a a₁) (app b b₁) (Λ≡app r r₁) ?
 --i₁ = i0 ⊢ eq/ (app a a₁) (app b a₁) (Λ≡app r (Λ≡refl a₁)) i
 --i₁ = i1 ⊢ eq/ (app a b₁) (app b b₁) (Λ≡app r (Λ≡refl b₁)) i
@@ -408,11 +410,15 @@ record morphism {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} 
   {!!}
 --}
 
-morphism-comp : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
-                {x y z : Assembly {l} {k} {l′} {k′} {{p}}}
-              → morphism x y → morphism y z → morphism x z
-morphism-comp {l} {k} {l′} {k′} {{p}} {{c}} {x} {y} {z} (morph f₁ cond₁) (morph f₂ cond₂) =
-  morph (λ u → f₂ (f₁ u)) cond
+∥morphismCond∥-comp : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
+                      {x y z : Assembly {l} {k} {l′} {k′} {{p}}}
+                      (f₁ : Assembly.|X| x → Assembly.|X| y)
+                      (f₂ : Assembly.|X| y → Assembly.|X| z)
+                      (cond₁ : ∥morphismCond∥ x y f₁)
+                      (cond₂ : ∥morphismCond∥ y z f₂)
+                    → ∥morphismCond∥ x z (λ u → f₂ (f₁ u))
+∥morphismCond∥-comp {l} {k} {l′} {k′} {{p}} {{c}} {x} {y} {z} f₁ f₂ cond₁ cond₂ =
+  map2 cond′ cond₁ cond₂
   where
   cond′ : morphismCond x y f₁ → morphismCond y z f₂ → morphismCond x z (λ u → f₂ (f₁ u))
   cond′ (a₁ , cd₁) (a₂ , cd₂) = Cc a₂ a₁ , cond″
@@ -424,22 +430,27 @@ morphism-comp {l} {k} {l′} {k′} {{p}} {{c}} {x} {y} {z} (morph f₁ cond₁)
     ... | c₁ , c₁≡ , ⊩c₁ with cd₂ (f₁ u) c₁ ⊩c₁
     ... | c₂ , c₂≡ , ⊩c₂ = c₂ , Cc-eqn a₂ a₁ b c₁ c₂ c₁≡ c₂≡ , ⊩c₂
 
-  cond : ∥morphismCond∥ x z (λ u → f₂ (f₁ u))
-  cond = map2 cond′ cond₁ cond₂
+morphism-comp : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
+                {x y z : Assembly {l} {k} {l′} {k′} {{p}}}
+              → morphism x y → morphism y z → morphism x z
+morphism-comp {l} {k} {l′} {k′} {{p}} {{c}} {x} {y} {z} (morph f₁ cond₁) (morph f₂ cond₂) =
+  morph (λ u → f₂ (f₁ u)) (∥morphismCond∥-comp {{p}} {{c}} {x} {y} {z} f₁ f₂ cond₁ cond₂)
 
-Asm-id : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
-         {x : Assembly {l} {k} {l′} {k′} {{p}}}
-       → morphism x x
-Asm-id {{p}} {{c}} {X} =
-  morph (λ x → x) cond
+∥morphismCond∥-id : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
+                    {X : Assembly {l} {k} {l′} {k′} {{p}}}
+                  → ∥morphismCond∥ X X (λ x → x)
+∥morphismCond∥-id {{p}} {{c}} {X} = ∣ Ic , cond′ ∣₁
   where
   cond′ : (x : Assembly.|X| X) (b : PCA.|U| p)
         → Assembly._⊩_ X b x
         → Σ (PCA.|U| p) (λ c₁ → (p PCA.· Ic) b ≈ c₁ × Assembly._⊩_ X c₁ x)
   cond′ x b b⊩x = b , Ic-eqn b , b⊩x
 
-  cond : ∥morphismCond∥ X X (λ x → x)
-  cond = ∣ Ic , cond′ ∣₁
+Asm-id : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
+         {X : Assembly {l} {k} {l′} {k′} {{p}}}
+       → morphism X X
+Asm-id {{p}} {{c}} {X} =
+  morph (λ x → x) (∥morphismCond∥-id {{p}} {{c}} {X})
 
 Asm-*IdL : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
            {x y : Assembly {l} {k} {l′} {k′}} (f : morphism x y)
@@ -447,7 +458,8 @@ Asm-*IdL : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
 Asm-*IdL {l} {k} {l′} {k′} ⦃ p ⦄ ⦃ c ⦄ {x} {y} (morph f {--a--} cond) =
   cong₂ morph
         (funExt (λ x → refl))
-        (squash₁ {!!} cond)
+        (squash₁ (∥morphismCond∥-comp {{p}} {{c}} {x} {x} {y} (λ x → x) f (∥morphismCond∥-id {{p}} {{c}} {x}) cond)
+                 cond)
 
 Asm : (l k l′ k′ : Level) {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
     → Category (lsuc l ⊔ lsuc k ⊔ lsuc l′ ⊔ lsuc k′) (l ⊔ k ⊔ l′ ⊔ k′)
