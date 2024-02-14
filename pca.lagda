@@ -4,9 +4,12 @@
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Prelude
-  using (refl ; sym ; subst ; cong ; cong₂ ; funExt)
+  using (refl ; sym ; subst ; cong ; cong₂ ; funExt ; isProp)
 open import Cubical.Categories.Category.Base
   using (Category)
+open import Cubical.HITs.TypeQuotients
+open import Cubical.HITs.PropositionalTruncation
+  using (map ; map2 ; ∥_∥₁ ; ∣_∣₁ ; squash₁)
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 --open import Agda.Builtin.Equality
@@ -84,8 +87,8 @@ module Partial where
   infix 30 _∼_
   infix 30 _≈_
 
-  ∣_∣ : {l k : Level} (p : PCA(l)(k)) → Set(l)
-  ∣ p ∣ = PCA.|U| p
+--  ∣_∣ : {l k : Level} (p : PCA(l)(k)) → Set(l)
+--  ∣ p ∣ = PCA.|U| p
 
   _·_↓ : {l k : Level} {{p : PCA(l)(k)}} (a b : |U|) → Set
   _·_↓ a b with a · b
@@ -225,88 +228,127 @@ if≡ zero (suc _) c d = d
 if≡ (suc _) zero c d = d
 if≡ (suc a) (suc b) c d = if≡ a b c d
 
-mutual
-  data Λ : Set where
-    var : ℕ → Λ
-    lam : Λ → Λ
-    app : Λ → Λ → Λ
-    eq  : {a b : Λ} → Λ≡ a b → a ≡ b
+data Λ : Set where
+  var : ℕ → Λ
+  lam : Λ → Λ
+  app : Λ → Λ → Λ
+--  eq  : {a b : Λ} → Λ≡ a b → a ≡ b
 
-  shiftUp : ℕ → Λ → Λ
-  shiftUp c (var x) = var (sucIf≤ c x)
-  shiftUp c (lam t) = lam (shiftUp (suc c) t)
-  shiftUp c (app t u) = app (shiftUp c t) (shiftUp c u)
-  shiftUp c (eq {a} {b} e f) = eq {shiftUp c a} {shiftUp c b} (Λ≡-shiftUp c a b e) f
+shiftUp : ℕ → Λ → Λ
+shiftUp c (var x) = var (sucIf≤ c x)
+shiftUp c (lam t) = lam (shiftUp (suc c) t)
+shiftUp c (app t u) = app (shiftUp c t) (shiftUp c u)
+--  shiftUp c (eq {a} {b} e f) = eq {shiftUp c a} {shiftUp c b} (Λ≡-shiftUp c a b e) f
 
-  gsub : (σ : ℕ → ℕ → ℕ) → ℕ → Λ → Λ → Λ
-  gsub σ v t (var x)   = if≡ x v t (var (σ v x))
-  gsub σ v t (lam u)   = lam (gsub σ (suc v) (shiftUp 0 t) u)
-  gsub σ v t (app f a) = app (gsub σ v t f) (gsub σ v t a)
-  gsub σ v t (eq {a} {b} e f) = eq {gsub σ v t a} {gsub σ v t b} (Λ≡-gsub σ v t a b e) f
+gsub : (σ : ℕ → ℕ → ℕ) → ℕ → Λ → Λ → Λ
+gsub σ v t (var x)   = if≡ x v t (var (σ v x))
+gsub σ v t (lam u)   = lam (gsub σ (suc v) (shiftUp 0 t) u)
+gsub σ v t (app f a) = app (gsub σ v t f) (gsub σ v t a)
+--gsub σ v t (eq {a} {b} e f) = eq {gsub σ v t a} {gsub σ v t b} (Λ≡-gsub σ v t a b e) f
 
-  data Λ≡ : Λ → Λ → Set where
-    Λ≡refl  : (a : Λ) → Λ≡ a a
-    Λ≡sym   : {a b : Λ}
-            → Λ≡ a b
-            → Λ≡ b a
-    Λ≡trans : {a b c : Λ}
-            → Λ≡ a b
-            → Λ≡ b c
-            → Λ≡ a c
-    Λ≡beta  : (f a : Λ)
-            → Λ≡ (app (lam f) a) (gsub predIf≤ 0 a f)
-    Λ≡lam   : {f g : Λ}
-            → Λ≡ f g
-            → Λ≡ (lam f) (lam g)
-    Λ≡app   : {f g a b : Λ}
-            → Λ≡ f g
-            → Λ≡ a b
-            → Λ≡ (app f a) (app g b)
-
-  Λ≡-gsub : (σ : ℕ → ℕ → ℕ) (v : ℕ) (t a b : Λ)
+data Λ≡ : Λ → Λ → Set where
+  Λ≡refl  : (a : Λ) → Λ≡ a a
+  Λ≡sym   : {a b : Λ}
           → Λ≡ a b
-          → Λ≡ (gsub σ v t a) (gsub σ v t b)
-  Λ≡-gsub σ v t a .a (Λ≡refl .a) = Λ≡refl (gsub σ v t a)
-  Λ≡-gsub σ v t a b (Λ≡sym h) = Λ≡sym (Λ≡-gsub σ v t b a h)
-  Λ≡-gsub σ v t a b (Λ≡trans {a} {b₁} {b} h h₁) =
-    Λ≡trans (Λ≡-gsub σ v t a b₁ h) (Λ≡-gsub σ v t b₁ b h₁)
-  Λ≡-gsub σ v t .(app (lam f) a) .(gsub predIf≤ 0 a f) (Λ≡beta f a) =
-    Λ≡trans (Λ≡beta (gsub σ (suc v) (shiftUp 0 t) f) (gsub σ v t a))
-            {!!}
-  Λ≡-gsub σ v t .(lam _) .(lam _) (Λ≡lam {f} {g} h) =
-    Λ≡lam (Λ≡-gsub σ (suc v) (shiftUp 0 t) f g h)
-  Λ≡-gsub σ v t .(app _ _) .(app _ _) (Λ≡app {f} {g} {a} {b} h h₁) =
-    Λ≡app (Λ≡-gsub σ v t f g h) (Λ≡-gsub σ v t a b h₁)
+          → Λ≡ b a
+  Λ≡trans : {a b c : Λ}
+          → Λ≡ a b
+          → Λ≡ b c
+          → Λ≡ a c
+  Λ≡beta  : (f a : Λ)
+          → Λ≡ (app (lam f) a) (gsub predIf≤ 0 a f)
+  Λ≡lam   : {f g : Λ}
+          → Λ≡ f g
+          → Λ≡ (lam f) (lam g)
+  Λ≡app   : {f g a b : Λ}
+          → Λ≡ f g
+          → Λ≡ a b
+          → Λ≡ (app f a) (app g b)
 
-  shiftUp-gsub : (σ : ℕ → ℕ → ℕ) (n m : ℕ) (a b : Λ)
-               → n ≤ m
-               → shiftUp n (gsub σ m a b) ≡ gsub σ (suc m) (shiftUp n a) (shiftUp n b)
-  shiftUp-gsub σ n m a (var x) n≤m = {!!}
-  shiftUp-gsub σ n m a (lam b) n≤m =
-    cong lam (trans (shiftUp-gsub σ (suc n) (suc m) (shiftUp 0 a) b (s≤s n≤m))
-                    (cong (λ x → gsub σ (2+ m) x (shiftUp (suc n) b))
-                          {!!}))
-  shiftUp-gsub σ n m a (app b b₁) n≤m = cong₂ app (shiftUp-gsub σ n m a b n≤m) (shiftUp-gsub σ n m a b₁ n≤m)
-  shiftUp-gsub σ n m a (eq x i) n≤m = {!!}
+{--
+Λ≡-gsub : (σ : ℕ → ℕ → ℕ) (v : ℕ) (t a b : Λ)
+        → Λ≡ a b
+        → Λ≡ (gsub σ v t a) (gsub σ v t b)
+Λ≡-gsub σ v t a .a (Λ≡refl .a) = Λ≡refl (gsub σ v t a)
+Λ≡-gsub σ v t a b (Λ≡sym h) = Λ≡sym (Λ≡-gsub σ v t b a h)
+Λ≡-gsub σ v t a b (Λ≡trans {a} {b₁} {b} h h₁) =
+  Λ≡trans (Λ≡-gsub σ v t a b₁ h) (Λ≡-gsub σ v t b₁ b h₁)
+Λ≡-gsub σ v t .(app (lam f) a) .(gsub predIf≤ 0 a f) (Λ≡beta f a) =
+  Λ≡trans (Λ≡beta (gsub σ (suc v) (shiftUp 0 t) f) (gsub σ v t a))
+          {!!}
+Λ≡-gsub σ v t .(lam _) .(lam _) (Λ≡lam {f} {g} h) =
+  Λ≡lam (Λ≡-gsub σ (suc v) (shiftUp 0 t) f g h)
+Λ≡-gsub σ v t .(app _ _) .(app _ _) (Λ≡app {f} {g} {a} {b} h h₁) =
+  Λ≡app (Λ≡-gsub σ v t f g h) (Λ≡-gsub σ v t a b h₁)
+--}
 
-  Λ≡-shiftUp : (n : ℕ) (a b : Λ) → Λ≡ a b → Λ≡ (shiftUp n a) (shiftUp n b)
-  Λ≡-shiftUp n a .a (Λ≡refl .a) = Λ≡refl _
-  Λ≡-shiftUp n a b (Λ≡sym h) = Λ≡sym (Λ≡-shiftUp n b a h)
-  Λ≡-shiftUp n a b (Λ≡trans {a} {x} {b} h h₁) = Λ≡trans (Λ≡-shiftUp n a x h) (Λ≡-shiftUp n x b h₁)
-  Λ≡-shiftUp n .(app (lam f) a) .(gsub predIf≤ 0 a f) (Λ≡beta f a) =
-    {!!}
-    -- Not terminating
-    {--Λ≡trans {!!} {!!}--}
-    {--subst (λ x → Λ≡ (app (lam (shiftUp (suc n) f)) (shiftUp n a)) x)
-          {!shiftUp-gsub predIf≤ n 0!}
-          {!!}--}
-  Λ≡-shiftUp n .(lam f) .(lam g) (Λ≡lam {f} {g} h) = Λ≡lam (Λ≡-shiftUp (suc n) f g h)
-  Λ≡-shiftUp n .(app f a) .(app g b) (Λ≡app {f} {g} {a} {b} h h₁) = Λ≡app (Λ≡-shiftUp n f g h) (Λ≡-shiftUp n a b h₁)
+{--
+shiftUp-gsub : (σ : ℕ → ℕ → ℕ) (n m : ℕ) (a b : Λ)
+             → n ≤ m
+             → shiftUp n (gsub σ m a b) ≡ gsub σ (suc m) (shiftUp n a) (shiftUp n b)
+shiftUp-gsub σ n m a (var x) n≤m = {!!}
+shiftUp-gsub σ n m a (lam b) n≤m =
+  cong lam (trans (shiftUp-gsub σ (suc n) (suc m) (shiftUp 0 a) b (s≤s n≤m))
+                  (cong (λ x → gsub σ (2+ m) x (shiftUp (suc n) b))
+                        {!!}))
+shiftUp-gsub σ n m a (app b b₁) n≤m = cong₂ app (shiftUp-gsub σ n m a b n≤m) (shiftUp-gsub σ n m a b₁ n≤m)
+--shiftUp-gsub σ n m a (eq x i) n≤m = {!!}
+--}
+
+{--
+Λ≡-shiftUp : (n : ℕ) (a b : Λ) → Λ≡ a b → Λ≡ (shiftUp n a) (shiftUp n b)
+Λ≡-shiftUp n a .a (Λ≡refl .a) = Λ≡refl _
+Λ≡-shiftUp n a b (Λ≡sym h) = Λ≡sym (Λ≡-shiftUp n b a h)
+Λ≡-shiftUp n a b (Λ≡trans {a} {x} {b} h h₁) = Λ≡trans (Λ≡-shiftUp n a x h) (Λ≡-shiftUp n x b h₁)
+Λ≡-shiftUp n .(app (lam f) a) .(gsub predIf≤ 0 a f) (Λ≡beta f a) =
+  {!!}
+  -- Not terminating
+  {--Λ≡trans {!!} {!!}--}
+  {--subst (λ x → Λ≡ (app (lam (shiftUp (suc n) f)) (shiftUp n a)) x)
+        {!shiftUp-gsub predIf≤ n 0!}
+        {!!}--}
+Λ≡-shiftUp n .(lam f) .(lam g) (Λ≡lam {f} {g} h) = Λ≡lam (Λ≡-shiftUp (suc n) f g h)
+Λ≡-shiftUp n .(app f a) .(app g b) (Λ≡app {f} {g} {a} {b} h h₁) = Λ≡app (Λ≡-shiftUp n f g h) (Λ≡-shiftUp n a b h₁)
+--}
+
+Λ/ : Set
+Λ/ = Λ /ₜ Λ≡
+
+Λt₁ : Λ/
+Λt₁ = [ app (lam (var zero)) (var zero) ]
+
+Λ/-example : Λt₁ ≡ [ var zero ]
+Λ/-example = eq/ _ _ (Λ≡beta (var zero) (var zero))
+
+app/ : Λ/ → Λ/ → Λ/
+app/ [ f ] [ a ] = [ app f a ]
+app/ [ f ] (eq/ a b r i) = eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r) i
+app/ (eq/ f g r i) [ a ] = eq/ (app f a) (app g a) (Λ≡app r (Λ≡refl a)) i
+app/ (eq/ f g r i) (eq/ a b r₁ i₁) =
+  hcomp {!h!} {!!} --(eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r₁) i₁)
+  where
+  h : ∀ j → Partial (j ∧ ~ i) Λ/
+  h = {!!}
+-- eq/ (app a a₁) (app b b₁) (Λ≡app r r₁) ?
+--i₁ = i0 ⊢ eq/ (app a a₁) (app b a₁) (Λ≡app r (Λ≡refl a₁)) i
+--i₁ = i1 ⊢ eq/ (app a b₁) (app b b₁) (Λ≡app r (Λ≡refl b₁)) i
+--i = i0 ⊢ eq/ (app a a₁) (app a b₁) (Λ≡app (Λ≡refl a) r₁) i₁
+--i = i1 ⊢ eq/ (app b a₁) (app b b₁) (Λ≡app (Λ≡refl b) r₁) i₁
+
+{--app/ a =
+  rec {X = Λ/ → Λ/}
+      (λ x b → rec {X = Λ/}
+                   (λ y → [ app x y ])
+                   (λ u v r → eq/ (app x u) (app x v) (Λ≡app (Λ≡refl x) r))
+                   b)
+      (λ x y r → {!!})
+      a--}
 
 open Partial
 
 PCA-Λ : PCA(0ℓ)(0ℓ)
-PCA-Λ = pca Λ (λ a b → just (app a b)) Λ≡ Λ≡refl {!!} {!!}
+PCA-Λ = pca Λ/ (λ a b → just {!!}) {!!} {!!} {!!} {!!}
+--(λ a b → just (app a b)) Λ≡ Λ≡refl {!!} {!!}
 
 Comb-Λ : Comb{{PCA-Λ}}
 Comb-Λ = {!!}
@@ -333,19 +375,25 @@ isPartitioned {l} {k} {l′} {k′} {{p}} (asm |X| _⊩_ inh) =
 
 morphismCond : {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} {l′} {k′} {{p}})
                (f : Assembly.|X| X → Assembly.|X| Y)
-               (a : |U|)
              → Set(l ⊔ k ⊔ l′ ⊔ k′)
-morphismCond {l} {k} {l′} {k′} {{p}} X Y f a =
-    (x : Assembly.|X| X) (b : |U|)
+morphismCond {l} {k} {l′} {k′} {{p}} X Y f =
+  Σ |U| (λ a
+  → (x : Assembly.|X| X) (b : |U|)
   → Assembly._⊩_ X b x
-  → Σ |U| (λ c → a · b ≈ c × Assembly._⊩_ Y c (f x))
+  → Σ |U| (λ c → a · b ≈ c × Assembly._⊩_ Y c (f x)))
+
+∥morphismCond∥ : {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} {l′} {k′} {{p}})
+                 (f : Assembly.|X| X → Assembly.|X| Y)
+               → Set(l ⊔ k ⊔ l′ ⊔ k′)
+∥morphismCond∥ {l} {k} {l′} {k′} {{p}} X Y f =
+  ∥ morphismCond X Y f ∥₁
 
 record morphism {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} {l′} {k′} {{p}}) : Set(l ⊔ k ⊔ l′ ⊔ k′) where
   constructor morph
   field
     f    : Assembly.|X| X → Assembly.|X| Y
-    a    : |U|
-    cond : morphismCond X Y f a
+--    a    : |U| -- truncate a & combine with cond as an ∃
+    cond : ∥morphismCond∥ X Y f
 
 {--
 ≡morph : {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} {l′} {k′} {{p}})
@@ -363,37 +411,43 @@ record morphism {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} 
 morphism-comp : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
                 {x y z : Assembly {l} {k} {l′} {k′} {{p}}}
               → morphism x y → morphism y z → morphism x z
-morphism-comp {l} {k} {l′} {k′} {{p}} {{c}} {x} {y} {z} (morph f₁ a₁ cond₁) (morph f₂ a₂ cond₂) =
-  morph (λ u → f₂ (f₁ u))
-        (Cc a₂ a₁)
-        cond
+morphism-comp {l} {k} {l′} {k′} {{p}} {{c}} {x} {y} {z} (morph f₁ cond₁) (morph f₂ cond₂) =
+  morph (λ u → f₂ (f₁ u)) cond
   where
-  cond : (u : Assembly.|X| x) (b : PCA.|U| p)
-       → Assembly._⊩_ x b u
-       → Σ (PCA.|U| p) (λ c₁ → PCA._·_ p (Cc a₂ a₁) b ≈ c₁ × Assembly._⊩_ z c₁ (f₂ (f₁ u)))
-  cond u b b⊩u with cond₁ u b b⊩u
-  ... | c₁ , c₁≡ , ⊩c₁ with cond₂ (f₁ u) c₁ ⊩c₁
-  ... | c₂ , c₂≡ , ⊩c₂ = c₂ , Cc-eqn a₂ a₁ b c₁ c₂ c₁≡ c₂≡ , ⊩c₂
+  cond′ : morphismCond x y f₁ → morphismCond y z f₂ → morphismCond x z (λ u → f₂ (f₁ u))
+  cond′ (a₁ , cd₁) (a₂ , cd₂) = Cc a₂ a₁ , cond″
+    where
+    cond″ : (u : Assembly.|X| x) (b : PCA.|U| p)
+          → Assembly._⊩_ x b u
+          → Σ (PCA.|U| p) (λ c₁ → PCA._·_ p (Cc a₂ a₁) b ≈ c₁ × Assembly._⊩_ z c₁ (f₂ (f₁ u)))
+    cond″ u b b⊩u with cd₁ u b b⊩u
+    ... | c₁ , c₁≡ , ⊩c₁ with cd₂ (f₁ u) c₁ ⊩c₁
+    ... | c₂ , c₂≡ , ⊩c₂ = c₂ , Cc-eqn a₂ a₁ b c₁ c₂ c₁≡ c₂≡ , ⊩c₂
+
+  cond : ∥morphismCond∥ x z (λ u → f₂ (f₁ u))
+  cond = map2 cond′ cond₁ cond₂
 
 Asm-id : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
          {x : Assembly {l} {k} {l′} {k′} {{p}}}
        → morphism x x
 Asm-id {{p}} {{c}} {X} =
-  morph (λ x → x) Ic cond
+  morph (λ x → x) cond
   where
-  cond : (x : Assembly.|X| X) (b : PCA.|U| p)
-       → Assembly._⊩_ X b x
-       → Σ (PCA.|U| p) (λ c₁ → (p PCA.· Ic) b ≈ c₁ × Assembly._⊩_ X c₁ x)
-  cond x b b⊩x = b , Ic-eqn b , b⊩x
+  cond′ : (x : Assembly.|X| X) (b : PCA.|U| p)
+        → Assembly._⊩_ X b x
+        → Σ (PCA.|U| p) (λ c₁ → (p PCA.· Ic) b ≈ c₁ × Assembly._⊩_ X c₁ x)
+  cond′ x b b⊩x = b , Ic-eqn b , b⊩x
+
+  cond : ∥morphismCond∥ X X (λ x → x)
+  cond = ∣ Ic , cond′ ∣₁
 
 Asm-*IdL : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
            {x y : Assembly {l} {k} {l′} {k′}} (f : morphism x y)
          → morphism-comp Asm-id f ≡ f
-Asm-*IdL {l} {k} {l′} {k′} ⦃ p ⦄ ⦃ c ⦄ {x} {y} (morph f a cond) =
-  cong₃ morph -- {x = λ x → f x}
+Asm-*IdL {l} {k} {l′} {k′} ⦃ p ⦄ ⦃ c ⦄ {x} {y} (morph f {--a--} cond) =
+  cong₂ morph
         (funExt (λ x → refl))
-        {!!} -- They behave the same but currently not equal
-        {!!}
+        (squash₁ {!!} cond)
 
 Asm : (l k l′ k′ : Level) {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
     → Category (lsuc l ⊔ lsuc k ⊔ lsuc l′ ⊔ lsuc k′) (l ⊔ k ⊔ l′ ⊔ k′)
