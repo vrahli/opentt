@@ -323,6 +323,26 @@ data Λ≡ : Λ → Λ → Set where
           → Λ≡ a b
           → Λ≡ (app f a) (app g b)
 
+data |Λ≡| : Λ → Λ → Set where
+  |Λ≡|refl  : (a : Λ) → |Λ≡| a a
+  |Λ≡|sym   : {a b : Λ}
+          → |Λ≡| a b
+          → |Λ≡| b a
+  |Λ≡|trans : {a b c : Λ}
+          → |Λ≡| a b
+          → |Λ≡| b c
+          → |Λ≡| a c
+  |Λ≡|beta  : (f a : Λ)
+          → |Λ≡| (app (lam f) a) (gsub predIf≤ 0 a f)
+  |Λ≡|lam   : {f g : Λ}
+          → |Λ≡| f g
+          → |Λ≡| (lam f) (lam g)
+  |Λ≡|app   : {f g a b : Λ}
+          → |Λ≡| f g
+          → |Λ≡| a b
+          → |Λ≡| (app f a) (app g b)
+  |Λ≡|-prop : {a b : Λ} (p q : |Λ≡| a b) → p ≡ q
+
 {--
 Λ≡-gsub : (σ : ℕ → ℕ → ℕ) (v : ℕ) (t a b : Λ)
         → Λ≡ a b
@@ -388,8 +408,11 @@ quotients-not-always-sets {A} p = transport (cong pick-again bad-path) tt
   bad-path : true ≡ false
   bad-path = cong (λ p → transport (λ i → pick (p i)) true) p
 
--- Considering the above, it seems unclear if we should be able to prove the
--- following :
+-- My plan of action was to show that Λ is a set (which it will be as an
+-- inductive type) and from that show that Λ/ is also a set, hopefully
+-- simplifying the definition of application. Considering the above
+-- I do not think this will be possible.
+
 Λ-Discrete : Discrete Λ
 Λ-Discrete (var x)   (var y)   = {!!}
 Λ-Discrete (var x)   (lam b)   = Dec.no ¬var≡lam
@@ -466,6 +489,18 @@ app/ (eq/ f g r i) (eq/ a b s j) = {!!}
                    b)
       (λ x y r → {!!})
       a--}
+
+
+-- I am now unsure if using having the truncated conversion actually helps
+-- in this specific instance. It will probably be later at some point?
+Λ/' : Set
+Λ/' = Λ /ₜ |Λ≡|
+
+app/' : Λ/' → Λ/' → Λ/'
+app/' [ f ] [ a ] = [ app f a ]
+app/' [ f ] (eq/ a b r i) = eq/ (app f a) (app f b) (|Λ≡|app (|Λ≡|refl f) r) i
+app/' (eq/ f g r i) [ a ] = eq/ (app f a) (app g a) (|Λ≡|app r (|Λ≡|refl a)) i
+app/' (eq/ f g r i) (eq/ a b s j) = {!!}
 
 open Partial
 
