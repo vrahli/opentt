@@ -4,7 +4,7 @@
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Prelude
-  using (refl ; sym ; subst ; cong ; cong₂ ; funExt ; isProp)
+  using (refl ; sym ; subst ; cong ; cong₂ ; funExt ; isProp ; isSet)
 open import Cubical.Categories.Category.Base
   using (Category)
 open import Cubical.HITs.TypeQuotients
@@ -324,32 +324,20 @@ app/ : Λ/ → Λ/ → Λ/
 app/ [ f ] [ a ] = [ app f a ]
 app/ [ f ] (eq/ a b r i) = eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r) i
 app/ (eq/ f g r i) [ a ] = eq/ (app f a) (app g a) (Λ≡app r (Λ≡refl a)) i
-app/ (eq/ f g r i) (eq/ a b r₁ i₁) = ?
-{--
-  hcomp {!h!} {!!} --(eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r₁) i₁)
-  where
-  h : ∀ j → Partial (j ∧ ~ i) Λ/
-  h = {!!}
---}
--- eq/ (app a a₁) (app b b₁) (Λ≡app r r₁) ?
+app/ (eq/ f g r i) (eq/ a b r₁ i₁) =
+  {!!} {--hcomp (λ { j (i = i0) → eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r₁) i₁
+           ; j (i = i1) → eq/ (app g a) (app g b) (Λ≡app (Λ≡refl g) r₁) i₁ })
+        (eq/ (app f a) (app g a) (Λ≡app r (Λ≡refl a)) i)--}
+
 --i₁ = i0 ⊢ eq/ (app a a₁) (app b a₁) (Λ≡app r (Λ≡refl a₁)) i
 --i₁ = i1 ⊢ eq/ (app a b₁) (app b b₁) (Λ≡app r (Λ≡refl b₁)) i
 --i = i0 ⊢ eq/ (app a a₁) (app a b₁) (Λ≡app (Λ≡refl a) r₁) i₁
 --i = i1 ⊢ eq/ (app b a₁) (app b b₁) (Λ≡app (Λ≡refl b) r₁) i₁
 
-{--app/ a =
-  rec {X = Λ/ → Λ/}
-      (λ x b → rec {X = Λ/}
-                   (λ y → [ app x y ])
-                   (λ u v r → eq/ (app x u) (app x v) (Λ≡app (Λ≡refl x) r))
-                   b)
-      (λ x y r → {!!})
-      a--}
-
 open Partial
 
 PCA-Λ : PCA(0ℓ)(0ℓ)
-PCA-Λ = pca Λ/ (λ a b → just {!!}) {!!} {!!} {!!} {!!}
+PCA-Λ = pca Λ/ (λ a b → just (app/ a b)) {!!} {!!} {!!} {!!}
 --(λ a b → just (app a b)) Λ≡ Λ≡refl {!!} {!!}
 
 Comb-Λ : Comb{{PCA-Λ}}
@@ -458,8 +446,34 @@ Asm-*IdL : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
 Asm-*IdL {l} {k} {l′} {k′} ⦃ p ⦄ ⦃ c ⦄ {x} {y} (morph f {--a--} cond) =
   cong₂ morph
         (funExt (λ x → refl))
-        (squash₁ (∥morphismCond∥-comp {{p}} {{c}} {x} {x} {y} (λ x → x) f (∥morphismCond∥-id {{p}} {{c}} {x}) cond)
-                 cond)
+        (squash₁ _ _)
+-- (∥morphismCond∥-comp {{p}} {{c}} {x} {x} {y} (λ x → x) f (∥morphismCond∥-id {{p}} {{c}} {x}) cond)
+--                 cond)
+
+Asm-*IdR : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
+           {x y : Assembly {l} {k} {l′} {k′}} (f : morphism x y)
+         → morphism-comp f Asm-id ≡ f
+Asm-*IdR {l} {k} {l′} {k′} ⦃ p ⦄ ⦃ c ⦄ {x} {y} (morph f cond) =
+  cong₂ morph
+        (funExt (λ x → refl))
+        (squash₁ _ _)
+-- (∥morphismCond∥-comp {{p}} {{c}} {x} {y} {y} f (λ x → x) cond (∥morphismCond∥-id {{p}} {{c}} {y}))
+--                 cond)
+
+Asm-*Assoc : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
+             {x y z w : Assembly {l} {k} {l′} {k′}}
+             (f : morphism x y) (g : morphism y z) (h : morphism z w)
+           → morphism-comp (morphism-comp f g) h
+           ≡ morphism-comp f (morphism-comp g h)
+Asm-*Assoc {l} {k} {l′} {k′} {{p}} {{c}} {x} {y} {z} {w} f g h =
+  cong₂ morph
+        (funExt (λ u → refl))
+        (squash₁ _ _)
+
+Asm-isSetHom : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
+               {x y : Assembly {l} {k} {l′} {k′}}
+             → isSet (morphism x y)
+Asm-isSetHom {l} {k} {l′} {k′} {{p}} {{c}} {x} {y} u v = {!!}
 
 Asm : (l k l′ k′ : Level) {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
     → Category (lsuc l ⊔ lsuc k ⊔ lsuc l′ ⊔ lsuc k′) (l ⊔ k ⊔ l′ ⊔ k′)
@@ -470,9 +484,9 @@ Asm l k l′ k′ {{p}} {{c}} =
   ; id       = Asm-id
   ; _⋆_      = morphism-comp
   ; ⋆IdL     = Asm-*IdL
-  ; ⋆IdR     = {!!}
-  ; ⋆Assoc   = {!!}
-  ; isSetHom = {!!}
+  ; ⋆IdR     = Asm-*IdR
+  ; ⋆Assoc   = Asm-*Assoc
+  ; isSetHom = Asm-isSetHom
   }
 
 \end{code}
