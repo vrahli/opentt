@@ -4,12 +4,17 @@
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Prelude
-  using (refl ; sym ; subst ; cong ; cong₂ ; funExt ; isProp ; isSet)
+  using (refl ; sym ; subst ; cong ; cong₂ ; funExt ; isProp ; isSet ; transport)
 open import Cubical.Categories.Category.Base
   using (Category)
-open import Cubical.HITs.TypeQuotients
+open import Cubical.HITs.TypeQuotients renaming (rec to quot-rec ; elim to quot-elim)
 open import Cubical.HITs.PropositionalTruncation
   using (map ; map2 ; ∥_∥₁ ; ∣_∣₁ ; squash₁)
+open import Cubical.Relation.Nullary
+open import Cubical.Foundations.Univalence
+open import Cubical.Data.Bool.Properties using (notEquiv)
+open import Cubical.Foundations.Equiv.Base using (idEquiv)
+
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 --open import Agda.Builtin.Equality
@@ -17,9 +22,9 @@ open import Agda.Builtin.Sigma
 open import Data.Nat hiding (_⊔_)
 open import Data.Maybe
 open import Data.Product
-open import Data.Empty
+open import Data.Bool hiding (_≟_)
+open import Cubical.Data.Empty
 open import Data.Unit using (⊤ ; tt)
-open import Relation.Nullary
 
 module pca where
 
@@ -228,17 +233,70 @@ if≡ zero (suc _) c d = d
 if≡ (suc _) zero c d = d
 if≡ (suc a) (suc b) c d = if≡ a b c d
 
+contra : {A B : Type} → (A → B) → ¬ B → ¬ A
+contra f g x = g (f x)
+
 data Λ : Set where
   var : ℕ → Λ
   lam : Λ → Λ
   app : Λ → Λ → Λ
 --  eq  : {a b : Λ} → Λ≡ a b → a ≡ b
 
+¬var≡lam : {n : ℕ} {a : Λ} → ¬ var n ≡ lam a
+¬var≡lam p = transport (cong f p) tt
+  where
+    f : Λ → Type
+    f (var _)   = ⊤
+    f (lam _)   = ⊥
+    f (app _ _) = ⊥
+
+¬var≡app : {n : ℕ} {a b : Λ} → ¬ var n ≡ app a b
+¬var≡app p = transport (cong f p) tt
+  where
+    f : Λ → Type
+    f (var _)   = ⊤
+    f (lam _)   = ⊥
+    f (app _ _) = ⊥
+
+lama≡lamb-implies-a≡b : {a b : Λ} → lam a ≡ lam b → a ≡ b
+lama≡lamb-implies-a≡b = cong unpack
+ where
+  unpack : Λ → Λ
+  unpack (var _)   = var 0
+  unpack (lam a)   = a
+  unpack (app _ _) = var 0
+
+varn≡varm-impliesn≡m : {n m : ℕ} → var n ≡ var m → n ≡ m
+varn≡varm-impliesn≡m = cong unpack
+ where
+  unpack : Λ → ℕ
+  unpack (var n)   = n
+  unpack (lam _)   = 0
+  unpack (app _ _) = 0
+
+appfa≡appgb-implies-f≡g : {f g a b : Λ} → app f a ≡ app g b → f ≡ g
+appfa≡appgb-implies-f≡g = cong unpack
+ where
+  unpack : Λ → Λ
+  unpack (var _)   = var 0
+  unpack (lam _)   = var 0
+  unpack (app f _) = f
+
+appfa≡appgb-implies-a≡b : {f g a b : Λ} → app f a ≡ app g b → a ≡ b
+appfa≡appgb-implies-a≡b = cong unpack
+  where
+  unpack : Λ → Λ
+  unpack (var _)   = var 0
+  unpack (lam _)   = var 0
+  unpack (app _ a) = a
+
 shiftUp : ℕ → Λ → Λ
 shiftUp c (var x) = var (sucIf≤ c x)
 shiftUp c (lam t) = lam (shiftUp (suc c) t)
 shiftUp c (app t u) = app (shiftUp c t) (shiftUp c u)
 --  shiftUp c (eq {a} {b} e f) = eq {shiftUp c a} {shiftUp c b} (Λ≡-shiftUp c a b e) f
+
+
 
 gsub : (σ : ℕ → ℕ → ℕ) → ℕ → Λ → Λ → Λ
 gsub σ v t (var x)   = if≡ x v t (var (σ v x))
@@ -264,6 +322,26 @@ data Λ≡ : Λ → Λ → Set where
           → Λ≡ f g
           → Λ≡ a b
           → Λ≡ (app f a) (app g b)
+
+data |Λ≡| : Λ → Λ → Set where
+  |Λ≡|refl  : (a : Λ) → |Λ≡| a a
+  |Λ≡|sym   : {a b : Λ}
+          → |Λ≡| a b
+          → |Λ≡| b a
+  |Λ≡|trans : {a b c : Λ}
+          → |Λ≡| a b
+          → |Λ≡| b c
+          → |Λ≡| a c
+  |Λ≡|beta  : (f a : Λ)
+          → |Λ≡| (app (lam f) a) (gsub predIf≤ 0 a f)
+  |Λ≡|lam   : {f g : Λ}
+          → |Λ≡| f g
+          → |Λ≡| (lam f) (lam g)
+  |Λ≡|app   : {f g a b : Λ}
+          → |Λ≡| f g
+          → |Λ≡| a b
+          → |Λ≡| (app f a) (app g b)
+  |Λ≡|-prop : {a b : Λ} (p q : |Λ≡| a b) → p ≡ q
 
 {--
 Λ≡-gsub : (σ : ℕ → ℕ → ℕ) (v : ℕ) (t a b : Λ)
@@ -311,6 +389,54 @@ shiftUp-gsub σ n m a (app b b₁) n≤m = cong₂ app (shiftUp-gsub σ n m a b 
 Λ≡-shiftUp n .(app f a) .(app g b) (Λ≡app {f} {g} {a} {b} h h₁) = Λ≡app (Λ≡-shiftUp n f g h) (Λ≡-shiftUp n a b h₁)
 --}
 
+
+Test : (A : Set) → Set
+Test A = A /ₜ (λ x y → Bool)
+
+quotients-not-always-sets : {A : Type} {n m : A} → ¬ eq/ n m true ≡ eq/ n m false
+quotients-not-always-sets {A} p = transport (cong pick-again bad-path) tt
+ where
+  pick : Test A → Type
+  pick [ a ] = Bool
+  pick (eq/ a b true  i) = ua (idEquiv Bool) i
+  pick (eq/ a b false i) = ua notEquiv       i
+
+  pick-again : Bool → Type
+  pick-again true  = ⊤
+  pick-again false = ⊥
+
+  bad-path : true ≡ false
+  bad-path = cong (λ p → transport (λ i → pick (p i)) true) p
+
+-- My plan of action was to show that Λ is a set (which it will be as an
+-- inductive type) and from that show that Λ/ is also a set, hopefully
+-- simplifying the definition of application. Considering the above
+-- I do not think this will be possible.
+
+Λ-Discrete : Discrete Λ
+Λ-Discrete (var x)   (var y)   = {!!}
+Λ-Discrete (var x)   (lam b)   = Dec.no ¬var≡lam
+Λ-Discrete (var x)   (app g b) = Dec.no ¬var≡app
+Λ-Discrete (lam a)   (var y)   = no {!!}
+Λ-Discrete (lam a)   (lam b)   = decRec
+ (λ p → yes (cong lam p))
+ (λ ne → no (contra lama≡lamb-implies-a≡b ne))
+ (Λ-Discrete a b)
+Λ-Discrete (lam a)   (app g b) = no {!!}
+Λ-Discrete (app f a) (var y)   = no {!!}
+Λ-Discrete (app f a) (lam b)   = no {!!}
+Λ-Discrete (app f a) (app g b) = decRec
+ (λ p → decRec
+   (λ q → yes (cong₂ app p q))
+   (λ ne → no (contra appfa≡appgb-implies-a≡b ne))
+   (Λ-Discrete a b))
+ (λ ne → no (contra appfa≡appgb-implies-f≡g ne))
+ (Λ-Discrete f g)
+
+Λ-isSet : isSet Λ
+Λ-isSet = Discrete→isSet Λ-Discrete
+
+
 Λ/ : Set
 Λ/ = Λ /ₜ Λ≡
 
@@ -320,19 +446,64 @@ shiftUp-gsub σ n m a (app b b₁) n≤m = cong₂ app (shiftUp-gsub σ n m a b 
 Λ/-example : Λt₁ ≡ [ var zero ]
 Λ/-example = eq/ _ _ (Λ≡beta (var zero) (var zero))
 
+
+-- Attempt at using the quotient type recursor but we run into the same issue.
+app/-with-rec : Λ/ → Λ/ → Λ/
+app/-with-rec = quot-rec (λ f → quot-rec (λ a → [ app f a ]) (foo f)) bar
+ where
+  foo : (f a b : Λ) → Λ≡ a b → [ app f a ] ≡ [ app f b ]
+  foo f a b r = eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r)
+
+  bar : (f g : Λ) → Λ≡ f g → quot-rec (λ a → [ app f a ]) (foo f) ≡ quot-rec (λ a → [ app g a ]) (foo g)
+  bar f g r = funExt (
+   quot-elim
+    (λ a → eq/ (app f a) (app g a) (Λ≡app r (Λ≡refl a)))
+    (λ a b r i j → {!!} ))
+    -- i0,j0 it should be [ app f a ]
+    -- i0,j1 it should be [ app g a ]
+    -- i1,j0 it should be [ app f b ]
+    -- i1,j1 it should be [ app g b ]
+
 app/ : Λ/ → Λ/ → Λ/
 app/ [ f ] [ a ] = [ app f a ]
 app/ [ f ] (eq/ a b r i) = eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r) i
 app/ (eq/ f g r i) [ a ] = eq/ (app f a) (app g a) (Λ≡app r (Λ≡refl a)) i
-app/ (eq/ f g r i) (eq/ a b r₁ i₁) =
+app/ (eq/ f g r i) (eq/ a b s j) = {!!}
   {!!} {--hcomp (λ { j (i = i0) → eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r₁) i₁
            ; j (i = i1) → eq/ (app g a) (app g b) (Λ≡app (Λ≡refl g) r₁) i₁ })
         (eq/ (app f a) (app g a) (Λ≡app r (Λ≡refl a)) i)--}
-
+{--
+  hcomp {!h!} {!!} --(eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r₁) i₁)
+  where
+  h : ∀ j → Partial (j ∧ ~ i) Λ/
+  h = {!!}
+--}
+-- eq/ (app a a₁) (app b b₁) (Λ≡app r r₁) ?
 --i₁ = i0 ⊢ eq/ (app a a₁) (app b a₁) (Λ≡app r (Λ≡refl a₁)) i
 --i₁ = i1 ⊢ eq/ (app a b₁) (app b b₁) (Λ≡app r (Λ≡refl b₁)) i
 --i = i0 ⊢ eq/ (app a a₁) (app a b₁) (Λ≡app (Λ≡refl a) r₁) i₁
 --i = i1 ⊢ eq/ (app b a₁) (app b b₁) (Λ≡app (Λ≡refl b) r₁) i₁
+
+{--app/ a =
+  rec {X = Λ/ → Λ/}
+      (λ x b → rec {X = Λ/}
+                   (λ y → [ app x y ])
+                   (λ u v r → eq/ (app x u) (app x v) (Λ≡app (Λ≡refl x) r))
+                   b)
+      (λ x y r → {!!})
+      a--}
+
+
+-- I am now unsure if using having the truncated conversion actually helps
+-- in this specific instance. It will probably be later at some point?
+Λ/' : Set
+Λ/' = Λ /ₜ |Λ≡|
+
+app/' : Λ/' → Λ/' → Λ/'
+app/' [ f ] [ a ] = [ app f a ]
+app/' [ f ] (eq/ a b r i) = eq/ (app f a) (app f b) (|Λ≡|app (|Λ≡|refl f) r) i
+app/' (eq/ f g r i) [ a ] = eq/ (app f a) (app g a) (|Λ≡|app r (|Λ≡|refl a)) i
+app/' (eq/ f g r i) (eq/ a b s j) = {!!}
 
 open Partial
 
