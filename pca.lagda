@@ -4,7 +4,7 @@
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Prelude
-  using (refl ; sym ; subst ; cong ; cong₂ ; funExt ; isProp ; isSet ; transport)
+  using (refl ; sym ; subst ; cong ; cong₂ ; funExt ; isProp ; isSet ; transport ; Square ; _∙_)
 open import Cubical.Categories.Category.Base
   using (Category)
 open import Cubical.HITs.TypeQuotients renaming (rec to quot-rec ; elim to quot-elim)
@@ -22,7 +22,7 @@ open import Agda.Builtin.Sigma
 open import Data.Nat hiding (_⊔_)
 open import Data.Maybe
 open import Data.Product
-open import Data.Bool hiding (_≟_)
+open import Data.Bool hiding (_≟_ ; _∧_ ; _∨_)
 open import Cubical.Data.Empty
 open import Data.Unit using (⊤ ; tt)
 
@@ -401,12 +401,29 @@ quotients-not-always-sets {A} p = transport (cong pick-again bad-path) tt
   pick (eq/ a b true  i) = ua (idEquiv Bool) i
   pick (eq/ a b false i) = ua notEquiv       i
 
+  bad-path : true ≡ false
+  bad-path = cong (λ p → transport (λ i → pick (p i)) true) p
+
   pick-again : Bool → Type
   pick-again true  = ⊤
   pick-again false = ⊥
 
+Test2 : (A : Set) → Set
+Test2 A = A /ₜ (λ x y → ⊤)
+
+new-paths-not-refl : {A : Type} {n : A} → ¬ refl ≡ eq/ n n tt
+new-paths-not-refl {A} {n} p = transport (cong pick-again bad-path) tt
+ where
+  pick : Test2 A → Type
+  pick [ a ] = Bool
+  pick (eq/ a b ⋆ i) = ua notEquiv i
+
   bad-path : true ≡ false
   bad-path = cong (λ p → transport (λ i → pick (p i)) true) p
+
+  pick-again : Bool → Type
+  pick-again true  = ⊤
+  pick-again false = ⊥
 
 -- My plan of action was to show that Λ is a set (which it will be as an
 -- inductive type) and from that show that Λ/ is also a set, hopefully
@@ -499,11 +516,43 @@ app/ (eq/ f g r i) (eq/ a b s j) = {!!}
 Λ/' : Set
 Λ/' = Λ /ₜ |Λ≡|
 
+Λ/'-isSet : isSet Λ/'
+Λ/'-isSet [ a ] [ b ] p q = {!!}
+Λ/'-isSet [ a ] (eq/ a₁ b r i) p q = {!!}
+Λ/'-isSet (eq/ a b r i) [ a₁ ] p q = {!!}
+Λ/'-isSet (eq/ a b r i) (eq/ a₁ b₁ r₁ i₁) p q = {!!}
+
 app/' : Λ/' → Λ/' → Λ/'
 app/' [ f ] [ a ] = [ app f a ]
 app/' [ f ] (eq/ a b r i) = eq/ (app f a) (app f b) (|Λ≡|app (|Λ≡|refl f) r) i
 app/' (eq/ f g r i) [ a ] = eq/ (app f a) (app g a) (|Λ≡|app r (|Λ≡|refl a)) i
-app/' (eq/ f g r i) (eq/ a b s j) = {!!}
+app/' (eq/ f g r i) (eq/ a b s j) = goal i j
+ where
+  goal : Square
+          (eq/ (app f a) (app f b) (|Λ≡|app (|Λ≡|refl f) s))
+          (eq/ (app g a) (app g b) (|Λ≡|app (|Λ≡|refl g) s))
+          (eq/ (app f a) (app g a) (|Λ≡|app r (|Λ≡|refl a)))
+          (eq/ (app f b) (app g b) (|Λ≡|app r (|Λ≡|refl b)))
+  goal i j = hcomp (λ k → λ { (i = i0) → {!!}
+                            ; (i = i1) → {!!}
+                            ; (j = i0) → eq/ (app f a) (app g a) (|Λ≡|app r (|Λ≡|refl a)) {!k!}
+                            ; (j = i1) → {!!}
+                            })
+                     {!!}
+    -- i0,j0 it should be [ app f a ]
+    -- i0,j1 it should be [ app g a ]
+    -- i1,j0 it should be [ app f b ]
+    -- i1,j1 it should be [ app g b ]
+
+  triangle1 : Square {_} {Λ/'}
+               (eq/ (app f a) (app f b) (|Λ≡|app (|Λ≡|refl f) s))
+               (eq/ (app f a) (app g b) (|Λ≡|app r s))
+               refl
+               (eq/ (app f b) (app g b) (|Λ≡|app r (|Λ≡|refl b)))
+  triangle1 = {!!}
+
+  path1 : eq/ (app f a) (app f b) (|Λ≡|app (|Λ≡|refl f) s) ∙ eq/ (app f b) (app g b) (|Λ≡|app r (|Λ≡|refl b)) ≡ eq/ (app f a) (app g b) (|Λ≡|app r s)
+  path1 i j = triangle1 j j
 
 open Partial
 
