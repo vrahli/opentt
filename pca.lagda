@@ -101,7 +101,7 @@ _∘_//_ {{p}} a b h with a · b
 --}
 
   record Comb {l : Level} {{p : PCA(l)}} : Set(lsuc l) where
-    constructor pca+
+    constructor comb
     field
       K : |U|
       S : |U|
@@ -559,7 +559,24 @@ PCA-Λ : PCA(0ℓ)
 PCA-Λ = pca Λ/ (λ a b → just (app/ a b))
 
 Comb-Λ : Comb{{PCA-Λ}}
-Comb-Λ = {!!}
+Comb-Λ = comb [ K ] [ S ] Kcond {!!}
+  where
+  K : Λ
+  K = lam (lam (var 1))
+
+  S : Λ
+  S = lam (lam (lam (app (app (var 2) (var 0)) (app (var 1) (var 0)))))
+
+  Kcond : (a : PCA.|U| PCA-Λ) →
+          Σ (PCA.|U| PCA-Λ)
+            (λ ka → (PCA-Λ PCA.· [ K ]) a ≡ just ka × ((b : PCA.|U| PCA-Λ) → (PCA-Λ PCA.· ka) b ≡ just a))
+  Kcond a =
+    set-quot-elim
+      {P = λ a → Σ (PCA.|U| PCA-Λ)
+            (λ ka → (PCA-Λ PCA.· [ K ]) a ≡ just ka × ((b : PCA.|U| PCA-Λ) → (PCA-Λ PCA.· ka) b ≡ just a))}
+      {!!}
+      (λ b → [ lam (shiftUp 0 b) ] , cong just {!!} , λ c → cong just {!!})
+      {!!} a
 
 \end{code}
 
@@ -604,19 +621,6 @@ record morphism {l l′ k′ : Level} {{p : PCA l}} (X Y : Assembly {l} {l′} {
     f    : Assembly.|X| X → Assembly.|X| Y
 --    a    : |U| -- truncate a & combine with cond as an ∃
     cond : ∥morphismCond∥ X Y f
-
-{--
-≡morph : {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} {l′} {k′} {{p}})
-         (f₁ f₂ : Assembly.|X| X → Assembly.|X| Y)
-         (a₁ a₂ : |U|)
-         (c₁    : morphismCond {l} {k} {l′} {k′} {{p}} X Y f₁ a₁)
-         (c₂    : morphismCond {l} {k} {l′} {k′} {{p}} X Y f₂ a₂)
-       → f₁ ≡ f₂
-       → a₁ ≡ a₂
-       → morph {l} {k} {l′} {k′} {{p}} f₁ a₁ c₁ ≡ morph {l} {k} {l′} {k′} {{p}} f₂ a₂ c₂
-≡morph {l} {k} {l′} {k′} {{p}} X Y f₁ f₂ a₁ a₂ c₁ c₂ f≡ a≡ =
-  {!!}
---}
 
 ∥morphismCond∥-comp : {l l′ k′ : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
                       {x y z : Assembly {l} {l′} {k′} {{p}}}
