@@ -4,7 +4,10 @@
 
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Prelude
-  using (refl ; sym ; subst ; cong ; cong₂ ; funExt ; isProp ; isSet ; transport ; Square ; _∙_)
+  using (refl ; sym ; subst ; cong ; cong₂ ; funExt ; isProp ; isSet ; transport ; Square ; _∙_ ;
+         isProp→isSet)
+open import Cubical.Foundations.HLevels
+  using (isSetRetract ; isSetΣ ; isSet→)
 open import Cubical.Categories.Category.Base
   using (Category)
 open import Cubical.HITs.TypeQuotients renaming (rec to quot-rec ; elim to quot-elim)
@@ -690,7 +693,14 @@ Asm-*Assoc {l} {l′} {k′} {{p}} {{c}} {x} {y} {z} {w} f g h =
 Asm-isSetHom : {l l′ k′ : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
                {x y : Assembly {l} {l′} {k′}}
              → isSet (morphism x y)
-Asm-isSetHom {l} {l′} {k′} {{p}} {{c}} {x} {y} u v = {!!}
+Asm-isSetHom {l} {l′} {k′} ⦃ p ⦄ ⦃ c ⦄ {x} {y} =
+  isSetRetract
+   {B = Σ (Assembly.|X| x → Assembly.|X| y) (λ f → ∥morphismCond∥ x y f)}
+   (λ (morph f c) → f , c)
+   (λ (f , c) → morph f c)
+   (λ (morph f c) → refl)
+   (isSetΣ (isSet→ (Assembly.set| y))
+           (λ f → isProp→isSet  squash₁))
 
 Asm : (l l′ k′ : Level) {{p : PCA l}} {{c : Comb {l} {{p}}}}
     → Category (lsuc l ⊔ lsuc l′ ⊔ lsuc k′) (l ⊔ l′ ⊔ k′)
