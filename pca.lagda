@@ -55,23 +55,18 @@ Partial PCAs
 \begin{code}
 
 module Partial where
-  record PCA (l k : Level) : Set(lsuc (l ⊔ k)) where
+  record PCA (l : Level) : Set(lsuc l) where
     constructor pca
     infixl 40 _·_
     infix 30 _≣_
     field
       |U|     : Set(l)
       _·_     : |U| → |U| → Maybe |U|
-      _≣_     : |U| → |U| → Set(k)
-      ≣-refl  : (a : |U|) → a ≣ a
-      ≣-sym   : (a b : |U|) → a ≣ b → b ≣ a
-      ≣-trans : (a b c : |U|) → a ≣ b → b ≣ c → a ≣ c
---(P : |U| → Set(k)) {a b : |U|} (e : a ≣ b) (p : P a) → P b -- why k?
 
-  isTotal : {l k : Level} (p : PCA(l)(k)) → Set(l)
+  isTotal : {l : Level} (p : PCA(l)) → Set(l)
   isTotal p = (a b : PCA.|U| p) → Is-just (PCA._·_ p a b)
 
-  total· : {l k : Level} (p : PCA(l)(k))
+  total· : {l : Level} (p : PCA(l))
          → isTotal p
          → PCA.|U| p → PCA.|U| p → PCA.|U| p
   total· p tot a b with tot a b
@@ -81,34 +76,28 @@ module Partial where
 
   open PCA {{...}}
 
-  _∼_ : {l k : Level} {{p : PCA(l)(k)}} (a b : Maybe |U|) → Set(k)
-  just a ∼ just b = a ≣ b
-  just x ∼ nothing = Lift _ ⊥
-  nothing ∼ just x = Lift _ ⊥
-  nothing ∼ nothing = Lift _ ⊤
-
-  _≈_ : {l k : Level} {{p : PCA(l)(k)}} (a : Maybe |U|) (b : |U|) → Set(k)
-  a ≈ b = a ∼ just b
+  _≈_ : {l : Level} {{p : PCA(l)}} (a : Maybe |U|) (b : |U|) → Set(l)
+  a ≈ b = a ≡ just b
 
   infix 30 _∼_
   infix 30 _≈_
 
---  ∣_∣ : {l k : Level} (p : PCA(l)(k)) → Set(l)
+--  ∣_∣ : {l : Level} (p : PCA(l)) → Set(l)
 --  ∣ p ∣ = PCA.|U| p
 
-  _·_↓ : {l k : Level} {{p : PCA(l)(k)}} (a b : |U|) → Set
+  _·_↓ : {l : Level} {{p : PCA(l)}} (a b : |U|) → Set
   _·_↓ a b with a · b
   ... | just _ = ⊤
   ... | nothing = ⊥
 
 {--
-_∘_//_ : {l k : Level} {{p : PCA(l)(k)}} (a b : |U|) (h : a · b ↓) → |U|
+_∘_//_ : {l : Level} {{p : PCA(l)}} (a b : |U|) (h : a · b ↓) → |U|
 _∘_//_ {{p}} a b h with a · b
 ... | just c = {!!}
 ... | nothing = ⊥-elim {!h!}
 --}
 
-  record Comb {l k : Level} {{p : PCA(l)(k)}} : Set(lsuc (l ⊔ k)) where
+  record Comb {l : Level} {{p : PCA(l)}} : Set(lsuc l) where
     constructor pca+
     field
       K : |U|
@@ -133,43 +122,43 @@ _∘_//_ {{p}} a b h with a · b
   open Comb {{...}}
 
   -- K · x is defined
-  K· : {l k : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} → |U| → |U|
-  K· {l} {k} {{p}} {{c}} x with K-eqn x
+  K· : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U| → |U|
+  K· {l} {{p}} {{c}} x with K-eqn x
   ... | Kx , Kx≡ , q = Kx
 
   -- S · a · b is defined
-  S·· : {l k : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} → |U| → |U| → |U|
-  S·· {l} {k} {{p}} {{c}} a b with S-eqn a b
+  S·· : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U| → |U| → |U|
+  S·· {l} {{p}} {{c}} a b with S-eqn a b
   ... | Sa , Sab , Sa≡ , Sab≡ , q = Sab
 
   -- I combinator: I · x ≡ x
   -- Defined as S · K · K
-  Ic : {l k : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} → |U|
-  Ic {l} {k} {{p}} {{c}} = S·· K K
+  Ic : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} → |U|
+  Ic {l} {{p}} {{c}} = S·· K K
 
-  Ic-eqn : {l k : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
+  Ic-eqn : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
          → (x : |U|) → Ic {{p}} {{c}} · x ≈ x
-  Ic-eqn {l} {k} {{p}} {{c}} x
+  Ic-eqn {l} {{p}} {{c}} x
     with S-eqn K K
   ... | SK , SKK , SK≡ , SKK≡ , q with K-eqn x
   ... | Kx , Kx≡ , h = q x Kx Kx x Kx≡ Kx≡ (h Kx)
 
   -- Composes a and b: S · (K · a) · b
-  Cc : {l k : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} (a b : |U|) → |U|
-  Cc {l} {k} {{p}} {{c}} a b = S·· (K· a) b
+  Cc : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} (a b : |U|) → |U|
+  Cc {l} {{p}} {{c}} a b = S·· (K· a) b
 
-  Cc-eqn : {l k : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} (a b : |U|)
+  Cc-eqn : {l : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}} (a b : |U|)
          → (x y₁ y₂ : |U|)
          → PCA._·_ p b x ≈ y₁
          → PCA._·_ p a y₁ ≈ y₂
          → PCA._·_ p (Cc a b) x ≈ y₂
-  Cc-eqn {l} {k} {{p}} {{c}} a b x y₁ y₂ y₁≡ y₂≡ with K-eqn a
+  Cc-eqn {l} {{p}} {{c}} a b x y₁ y₂ y₁≡ y₂≡ with K-eqn a
   ... | Ka , Ka≡ , q with S-eqn Ka b
   ... | SKa , SKab , SKa≡ , SKab≡ , h = h x a y₁ y₂ (q x) y₁≡ y₂≡
 
-{--  Cc-eqn : {l k : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}} (a b : |U|)
+{--  Cc-eqn : {l : Level} {{p : PCA l}} {{c : Comb {l} {k} {{p}}}} (a b : |U|)
          → (x : |U|) → Cc {{p}} {{c}} a b · x ≈ a · (b · x)
-  Cc-eqn {l} {k} {{p}} {{c}} a b x = ?
+  Cc-eqn {l} {{p}} {{c}} a b x = ?
 --}
 
 \end{code}
@@ -178,23 +167,16 @@ Total PCAs
 
 \begin{code}
 module Total where
-  record PCA (l k : Level) : Set(lsuc (l ⊔ k)) where
+  record PCA (l : Level) : Set(lsuc l) where
     constructor pca
     infixl 40 _·_
-    infix 30 _≣_
     field
-      |U|     : Set(l)
-      _·_     : |U| → |U| → |U|
-      _≣_     : |U| → |U| → Set(k)
-      ≣-refl  : (a : |U|) → a ≣ a
-      ≣-sym   : (a b : |U|) → a ≣ b → b ≣ a
-      ≣-trans : (a b c : |U|) → a ≣ b → b ≣ c → a ≣ c
---      ≣-intro : (a : |U|) → a ≣ a
---      ≣-elim  : (P : |U| → Set(k)) {a b : |U|} (e : a ≣ b) (p : P a) → P b -- why k?
+      |U| : Set(l)
+      _·_ : |U| → |U| → |U|
 
   open PCA {{...}}
 
-  record Comb {l k : Level} {{p : PCA(l)(k)}} : Set(lsuc (l ⊔ k)) where
+  record Comb {l : Level} {{p : PCA(l)}} : Set(lsuc l) where
     constructor pca+
     field
       K : |U|
@@ -205,11 +187,11 @@ module Total where
       S-eqn : (a b c : |U|)
             → S · a · b · c ≡ (a · c) · (b · c)
 
-  Partial-Total : {l k : Level} (p : Partial.PCA l k)
+  Partial-Total : {l : Level} (p : Partial.PCA l)
                 → Partial.isTotal p
-                → PCA l k
-  Partial-Total p@(Partial.pca |U|₁ _·_ _≣_ ≣-refl ≣-sym ≣-trans) tot =
-    pca |U|₁ (Partial.total· p tot) _≣_ ≣-refl ≣-sym ≣-trans
+                → PCA l
+  Partial-Total p@(Partial.pca |U|₁ _·_) tot =
+    pca |U|₁ (Partial.total· p tot)
 \end{code}
 
 Examples of a PCA
@@ -570,9 +552,8 @@ app/' (eq/ f g r i) (eq/ a b s j) = goal i j
 
 open Partial
 
-PCA-Λ : PCA(0ℓ)(0ℓ)
-PCA-Λ = pca Λ/ (λ a b → just (app/ a b)) {!!} {!!} {!!} {!!}
---(λ a b → just (app a b)) Λ≡ Λ≡refl {!!} {!!}
+PCA-Λ : PCA(0ℓ)
+PCA-Λ = pca Λ/ (λ a b → just (app/ a b))
 
 Comb-Λ : Comb{{PCA-Λ}}
 Comb-Λ = {!!}
@@ -584,7 +565,7 @@ Assemblies
 \begin{code}
 open PCA {{...}}
 
-record Assembly {l k l′ k′ : Level} {{A : PCA l k}} : Set(lsuc l ⊔ lsuc k ⊔ lsuc l′ ⊔ lsuc k′) where
+record Assembly {l l′ k′ : Level} {{A : PCA l}} : Set(lsuc l ⊔ lsuc l′ ⊔ lsuc k′) where
   constructor asm
   field
     |X|   : Set(l′) -- a setoid?
@@ -595,26 +576,26 @@ record Assembly {l k l′ k′ : Level} {{A : PCA l k}} : Set(lsuc l ⊔ lsuc k 
 
 --syntax r ⊩ [ A ] x = Assembly._⊩_ A r x
 
-isPartitioned : {l k l′ k′ : Level} {{p : PCA l k}} (a : Assembly {l} {k} {l′} {k′} {{p}}) → Set(l ⊔ k ⊔ l′ ⊔ k′)
-isPartitioned {l} {k} {l′} {k′} {{p}} (asm |X| _⊩_ inh set| prop⊩) =
-  (x : |X|) (t : |U|) → t ⊩ x → t ≣ fst (inh x)
+isPartitioned : {l l′ k′ : Level} {{p : PCA l}} (a : Assembly {l} {l′} {k′} {{p}}) → Set(l ⊔ l′ ⊔ k′)
+isPartitioned {l} {l′} {k′} {{p}} (asm |X| _⊩_ inh set| prop⊩) =
+  (x : |X|) (t : |U|) → t ⊩ x → t ≡ fst (inh x)
 
-morphismCond : {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} {l′} {k′} {{p}})
+morphismCond : {l l′ k′ : Level} {{p : PCA l}} (X Y : Assembly {l} {l′} {k′} {{p}})
                (f : Assembly.|X| X → Assembly.|X| Y)
-             → Set(l ⊔ k ⊔ l′ ⊔ k′)
-morphismCond {l} {k} {l′} {k′} {{p}} X Y f =
+             → Set(l ⊔ l′ ⊔ k′)
+morphismCond {l} {l′} {k′} {{p}} X Y f =
   Σ |U| (λ a
   → (x : Assembly.|X| X) (b : |U|)
   → Assembly._⊩_ X b x
   → Σ |U| (λ c → a · b ≈ c × Assembly._⊩_ Y c (f x)))
 
-∥morphismCond∥ : {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} {l′} {k′} {{p}})
+∥morphismCond∥ : {l l′ k′ : Level} {{p : PCA l}} (X Y : Assembly {l} {l′} {k′} {{p}})
                  (f : Assembly.|X| X → Assembly.|X| Y)
-               → Set(l ⊔ k ⊔ l′ ⊔ k′)
-∥morphismCond∥ {l} {k} {l′} {k′} {{p}} X Y f =
+               → Set(l ⊔ l′ ⊔ k′)
+∥morphismCond∥ {l} {l′} {k′} {{p}} X Y f =
   ∥ morphismCond X Y f ∥₁
 
-record morphism {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} {l′} {k′} {{p}}) : Set(l ⊔ k ⊔ l′ ⊔ k′) where
+record morphism {l l′ k′ : Level} {{p : PCA l}} (X Y : Assembly {l} {l′} {k′} {{p}}) : Set(l ⊔ l′ ⊔ k′) where
   constructor morph
   field
     f    : Assembly.|X| X → Assembly.|X| Y
@@ -634,14 +615,14 @@ record morphism {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} 
   {!!}
 --}
 
-∥morphismCond∥-comp : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
-                      {x y z : Assembly {l} {k} {l′} {k′} {{p}}}
+∥morphismCond∥-comp : {l l′ k′ : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
+                      {x y z : Assembly {l} {l′} {k′} {{p}}}
                       (f₁ : Assembly.|X| x → Assembly.|X| y)
                       (f₂ : Assembly.|X| y → Assembly.|X| z)
                       (cond₁ : ∥morphismCond∥ x y f₁)
                       (cond₂ : ∥morphismCond∥ y z f₂)
                     → ∥morphismCond∥ x z (λ u → f₂ (f₁ u))
-∥morphismCond∥-comp {l} {k} {l′} {k′} {{p}} {{c}} {x} {y} {z} f₁ f₂ cond₁ cond₂ =
+∥morphismCond∥-comp {l} {l′} {k′} {{p}} {{c}} {x} {y} {z} f₁ f₂ cond₁ cond₂ =
   map2 cond′ cond₁ cond₂
   where
   cond′ : morphismCond x y f₁ → morphismCond y z f₂ → morphismCond x z (λ u → f₂ (f₁ u))
@@ -654,14 +635,14 @@ record morphism {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} 
     ... | c₁ , c₁≡ , ⊩c₁ with cd₂ (f₁ u) c₁ ⊩c₁
     ... | c₂ , c₂≡ , ⊩c₂ = c₂ , Cc-eqn a₂ a₁ b c₁ c₂ c₁≡ c₂≡ , ⊩c₂
 
-morphism-comp : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
-                {x y z : Assembly {l} {k} {l′} {k′} {{p}}}
+morphism-comp : {l l′ k′ : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
+                {x y z : Assembly {l} {l′} {k′} {{p}}}
               → morphism x y → morphism y z → morphism x z
-morphism-comp {l} {k} {l′} {k′} {{p}} {{c}} {x} {y} {z} (morph f₁ cond₁) (morph f₂ cond₂) =
+morphism-comp {l} {l′} {k′} {{p}} {{c}} {x} {y} {z} (morph f₁ cond₁) (morph f₂ cond₂) =
   morph (λ u → f₂ (f₁ u)) (∥morphismCond∥-comp {{p}} {{c}} {x} {y} {z} f₁ f₂ cond₁ cond₂)
 
-∥morphismCond∥-id : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
-                    {X : Assembly {l} {k} {l′} {k′} {{p}}}
+∥morphismCond∥-id : {l l′ k′ : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
+                    {X : Assembly {l} {l′} {k′} {{p}}}
                   → ∥morphismCond∥ X X (λ x → x)
 ∥morphismCond∥-id {{p}} {{c}} {X} = ∣ Ic , cond′ ∣₁
   where
@@ -670,53 +651,53 @@ morphism-comp {l} {k} {l′} {k′} {{p}} {{c}} {x} {y} {z} (morph f₁ cond₁)
         → Σ (PCA.|U| p) (λ c₁ → (p PCA.· Ic) b ≈ c₁ × Assembly._⊩_ X c₁ x)
   cond′ x b b⊩x = b , Ic-eqn b , b⊩x
 
-Asm-id : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
-         {X : Assembly {l} {k} {l′} {k′} {{p}}}
+Asm-id : {l l′ k′ : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
+         {X : Assembly {l} {l′} {k′} {{p}}}
        → morphism X X
 Asm-id {{p}} {{c}} {X} =
   morph (λ x → x) (∥morphismCond∥-id {{p}} {{c}} {X})
 
-Asm-*IdL : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
-           {x y : Assembly {l} {k} {l′} {k′}} (f : morphism x y)
+Asm-*IdL : {l l′ k′ : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
+           {x y : Assembly {l} {l′} {k′}} (f : morphism x y)
          → morphism-comp Asm-id f ≡ f
-Asm-*IdL {l} {k} {l′} {k′} ⦃ p ⦄ ⦃ c ⦄ {x} {y} (morph f {--a--} cond) =
+Asm-*IdL {l} {l′} {k′} ⦃ p ⦄ ⦃ c ⦄ {x} {y} (morph f {--a--} cond) =
   cong₂ morph
         (funExt (λ x → refl))
         (squash₁ _ _)
 -- (∥morphismCond∥-comp {{p}} {{c}} {x} {x} {y} (λ x → x) f (∥morphismCond∥-id {{p}} {{c}} {x}) cond)
 --                 cond)
 
-Asm-*IdR : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
-           {x y : Assembly {l} {k} {l′} {k′}} (f : morphism x y)
+Asm-*IdR : {l l′ k′ : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
+           {x y : Assembly {l} {l′} {k′}} (f : morphism x y)
          → morphism-comp f Asm-id ≡ f
-Asm-*IdR {l} {k} {l′} {k′} ⦃ p ⦄ ⦃ c ⦄ {x} {y} (morph f cond) =
+Asm-*IdR {l} {l′} {k′} ⦃ p ⦄ ⦃ c ⦄ {x} {y} (morph f cond) =
   cong₂ morph
         (funExt (λ x → refl))
         (squash₁ _ _)
 -- (∥morphismCond∥-comp {{p}} {{c}} {x} {y} {y} f (λ x → x) cond (∥morphismCond∥-id {{p}} {{c}} {y}))
 --                 cond)
 
-Asm-*Assoc : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
-             {x y z w : Assembly {l} {k} {l′} {k′}}
+Asm-*Assoc : {l l′ k′ : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
+             {x y z w : Assembly {l} {l′} {k′}}
              (f : morphism x y) (g : morphism y z) (h : morphism z w)
            → morphism-comp (morphism-comp f g) h
            ≡ morphism-comp f (morphism-comp g h)
-Asm-*Assoc {l} {k} {l′} {k′} {{p}} {{c}} {x} {y} {z} {w} f g h =
+Asm-*Assoc {l} {l′} {k′} {{p}} {{c}} {x} {y} {z} {w} f g h =
   cong₂ morph
         (funExt (λ u → refl))
         (squash₁ _ _)
 
-Asm-isSetHom : {l k l′ k′ : Level} {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
-               {x y : Assembly {l} {k} {l′} {k′}}
+Asm-isSetHom : {l l′ k′ : Level} {{p : PCA l}} {{c : Comb {l} {{p}}}}
+               {x y : Assembly {l} {l′} {k′}}
              → isSet (morphism x y)
-Asm-isSetHom {l} {k} {l′} {k′} {{p}} {{c}} {x} {y} u v = {!!}
+Asm-isSetHom {l} {l′} {k′} {{p}} {{c}} {x} {y} u v = {!!}
 
-Asm : (l k l′ k′ : Level) {{p : PCA l k}} {{c : Comb {l} {k} {{p}}}}
-    → Category (lsuc l ⊔ lsuc k ⊔ lsuc l′ ⊔ lsuc k′) (l ⊔ k ⊔ l′ ⊔ k′)
-Asm l k l′ k′ {{p}} {{c}} =
+Asm : (l l′ k′ : Level) {{p : PCA l}} {{c : Comb {l} {{p}}}}
+    → Category (lsuc l ⊔ lsuc l′ ⊔ lsuc k′) (l ⊔ l′ ⊔ k′)
+Asm l l′ k′ {{p}} {{c}} =
   record
-  { ob       = Assembly {l} {k} {l′} {k′} {{p}}
-  ; Hom[_,_] = morphism {l} {k} {l′} {k′} {{p}}
+  { ob       = Assembly {l} {l′} {k′} {{p}}
+  ; Hom[_,_] = morphism {l} {l′} {k′} {{p}}
   ; id       = Asm-id
   ; _⋆_      = morphism-comp
   ; ⋆IdL     = Asm-*IdL
