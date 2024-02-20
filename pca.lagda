@@ -8,6 +8,7 @@ open import Cubical.Foundations.Prelude
 open import Cubical.Categories.Category.Base
   using (Category)
 open import Cubical.HITs.TypeQuotients renaming (rec to quot-rec ; elim to quot-elim)
+open import Cubical.HITs.SetQuotients renaming (rec to set-quot-rec ; elim to set-quot-elim)
 open import Cubical.HITs.PropositionalTruncation
   using (map ; map2 ; ∥_∥₁ ; ∣_∣₁ ; squash₁)
 open import Cubical.Relation.Nullary
@@ -19,7 +20,7 @@ open import Cubical.Foundations.Equiv.Base using (idEquiv)
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 --open import Agda.Builtin.Equality
 open import Agda.Builtin.Sigma
-open import Data.Nat hiding (_⊔_)
+open import Data.Nat hiding (_⊔_ ; _/_)
 open import Data.Maybe
 open import Data.Product
 open import Data.Bool hiding (_≟_ ; _∧_ ; _∨_)
@@ -455,7 +456,7 @@ new-paths-not-refl {A} {n} p = transport (cong pick-again bad-path) tt
 
 
 Λ/ : Set
-Λ/ = Λ /ₜ Λ≡
+Λ/ = Λ / Λ≡
 
 Λt₁ : Λ/
 Λt₁ = [ app (lam (var zero)) (var zero) ]
@@ -464,14 +465,15 @@ new-paths-not-refl {A} {n} p = transport (cong pick-again bad-path) tt
 Λ/-example = eq/ _ _ (Λ≡beta (var zero) (var zero))
 
 
+{--
 -- Attempt at using the quotient type recursor but we run into the same issue.
 app/-with-rec : Λ/ → Λ/ → Λ/
-app/-with-rec = quot-rec (λ f → quot-rec (λ a → [ app f a ]) (foo f)) bar
+app/-with-rec = set-quot-rec (λ f → set-quot-rec (λ a → [ app f a ]) (foo f)) bar
  where
   foo : (f a b : Λ) → Λ≡ a b → [ app f a ] ≡ [ app f b ]
   foo f a b r = eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r)
 
-  bar : (f g : Λ) → Λ≡ f g → quot-rec (λ a → [ app f a ]) (foo f) ≡ quot-rec (λ a → [ app g a ]) (foo g)
+  bar : (f g : Λ) → Λ≡ f g → set-quot-rec (λ a → [ app f a ]) (foo f) ≡ set-quot-rec (λ a → [ app g a ]) (foo g)
   bar f g r = funExt (
    quot-elim
     (λ a → eq/ (app f a) (app g a) (Λ≡app r (Λ≡refl a)))
@@ -480,13 +482,25 @@ app/-with-rec = quot-rec (λ f → quot-rec (λ a → [ app f a ]) (foo f)) bar
     -- i0,j1 it should be [ app g a ]
     -- i1,j0 it should be [ app f b ]
     -- i1,j1 it should be [ app g b ]
+--}
+
+isSet-Λ/ : isSet Λ/
+isSet-Λ/ x y = {!!}
 
 app/ : Λ/ → Λ/ → Λ/
-app/ [ f ] [ a ] = [ app f a ]
+app/ f a =
+  rec2 squash/
+       (λ f a → [ app f a ])
+       (λ f g a r → eq/ (app f a) (app g a) (Λ≡app r (Λ≡refl a)))
+       (λ f a b r → eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r))
+       f a
+
+{--[ f ] [ a ] = [ app f a ]
 app/ [ f ] (eq/ a b r i) = eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r) i
 app/ (eq/ f g r i) [ a ] = eq/ (app f a) (app g a) (Λ≡app r (Λ≡refl a)) i
-app/ (eq/ f g r i) (eq/ a b s j) = {!!}
-  {!!} {--hcomp (λ { j (i = i0) → eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r₁) i₁
+app/ (eq/ f g r i) (eq/ a b s j) =
+  {!!} --}
+ {--hcomp (λ { j (i = i0) → eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r₁) i₁
            ; j (i = i1) → eq/ (app g a) (app g b) (Λ≡app (Λ≡refl g) r₁) i₁ })
         (eq/ (app f a) (app g a) (Λ≡app r (Λ≡refl a)) i)--}
 {--
@@ -573,14 +587,16 @@ open PCA {{...}}
 record Assembly {l k l′ k′ : Level} {{A : PCA l k}} : Set(lsuc l ⊔ lsuc k ⊔ lsuc l′ ⊔ lsuc k′) where
   constructor asm
   field
-    |X| : Set(l′) -- a setoid?
-    _⊩_ : |U| → |X| → Set(k′)
-    inh : (x : |X|) → Σ |U| (λ r → r ⊩ x)
+    |X|   : Set(l′) -- a setoid?
+    _⊩_   : |U| → |X| → Set(k′)
+    inh   : (x : |X|) → Σ |U| (λ r → r ⊩ x)
+    set|  : isSet |X|
+    prop⊩ : (u : |U|) (x : |X|) → isProp (u ⊩ x)
 
 --syntax r ⊩ [ A ] x = Assembly._⊩_ A r x
 
 isPartitioned : {l k l′ k′ : Level} {{p : PCA l k}} (a : Assembly {l} {k} {l′} {k′} {{p}}) → Set(l ⊔ k ⊔ l′ ⊔ k′)
-isPartitioned {l} {k} {l′} {k′} {{p}} (asm |X| _⊩_ inh) =
+isPartitioned {l} {k} {l′} {k′} {{p}} (asm |X| _⊩_ inh set| prop⊩) =
   (x : |X|) (t : |U|) → t ⊩ x → t ≣ fst (inh x)
 
 morphismCond : {l k l′ k′ : Level} {{p : PCA l k}} (X Y : Assembly {l} {k} {l′} {k′} {{p}})
