@@ -7,7 +7,7 @@ open import Cubical.Foundations.Prelude
   using (refl ; sym ; subst ; cong ; cong₂ ; funExt ; isProp ; isSet ; transport ; Square ; _∙_ ;
          isProp→isSet)
 open import Cubical.Foundations.HLevels
-  using (isSetRetract ; isSetΣ ; isSet× ; isSet→ ; isSetΠ)
+  using (isSetRetract ; isSetΣ ; isSet× ; isSet→ ; isSetΠ ; isSet→isGroupoid)
 open import Cubical.Categories.Category.Base
   using (Category)
 open import Cubical.HITs.TypeQuotients renaming (rec to quot-rec ; elim to quot-elim)
@@ -16,18 +16,14 @@ open import Cubical.HITs.PropositionalTruncation
   using (map ; map2 ; ∥_∥₁ ; ∣_∣₁ ; squash₁)
 open import Cubical.Relation.Nullary
 open import Cubical.Foundations.Univalence
-open import Cubical.Data.Bool.Properties using (notEquiv)
-open import Cubical.Foundations.Equiv.Base using (idEquiv)
-
+open import Cubical.Data.Maybe
+open import Cubical.Data.Nat hiding (_·_)
+open import Cubical.Data.Empty
+open import Cubical.Data.Prod
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
---open import Agda.Builtin.Equality
-open import Agda.Builtin.Sigma
-open import Data.Nat hiding (_⊔_ ; _/_)
-open import Data.Maybe
-open import Data.Product
+import Data.Maybe
 open import Data.Bool hiding (_≟_ ; _∧_ ; _∨_)
-open import Cubical.Data.Empty
 open import Data.Unit using (⊤ ; tt)
 
 module pca where
@@ -61,28 +57,24 @@ module Partial where
   record PCA (l : Level) : Set(lsuc l) where
     constructor pca
     infixl 40 _·_
-    infix 30 _≣_
     field
       |U|     : Set(l)
+      set|U|  : isSet |U|
       _·_     : |U| → |U| → Maybe |U|
 
   isTotal : {l : Level} (p : PCA(l)) → Set(l)
-  isTotal p = (a b : PCA.|U| p) → Is-just (PCA._·_ p a b)
+  isTotal (pca A _ _·_) = (a b : A) → Σ[ c ∈ A ] a · b ≡ just c
 
   total· : {l : Level} (p : PCA(l))
          → isTotal p
          → PCA.|U| p → PCA.|U| p → PCA.|U| p
-  total· p tot a b with tot a b
-  ... | z with  (PCA._·_ p a b)
-  ... | just x = x
-  total· p tot a b | () | nothing
+  total· p tot a b = fst (tot a b)
 
   open PCA {{...}}
 
   _≈_ : {l : Level} {{p : PCA(l)}} (a : Maybe |U|) (b : |U|) → Set(l)
   a ≈ b = a ≡ just b
 
-  infix 30 _∼_
   infix 30 _≈_
 
 --  ∣_∣ : {l : Level} (p : PCA(l)) → Set(l)
@@ -193,7 +185,7 @@ module Total where
   Partial-Total : {l : Level} (p : Partial.PCA l)
                 → Partial.isTotal p
                 → PCA l
-  Partial-Total p@(Partial.pca |U|₁ _·_) tot =
+  Partial-Total p@(Partial.pca |U|₁ _ _·_) tot =
     pca |U|₁ (Partial.total· p tot)
 \end{code}
 
@@ -242,6 +234,14 @@ data Λ : Set where
     f : Λ → Type
     f (var _)   = ⊤
     f (lam _)   = ⊥
+    f (app _ _) = ⊥
+
+¬lam≡app : {a b c : Λ} → ¬ lam a ≡ app b c
+¬lam≡app p = transport (cong f p) tt
+  where
+    f : Λ → Type
+    f (var _)   = ⊥
+    f (lam _)   = ⊤
     f (app _ _) = ⊥
 
 lama≡lamb-implies-a≡b : {a b : Λ} → lam a ≡ lam b → a ≡ b
@@ -309,26 +309,6 @@ data Λ≡ : Λ → Λ → Set where
           → Λ≡ a b
           → Λ≡ (app f a) (app g b)
 
-data |Λ≡| : Λ → Λ → Set where
-  |Λ≡|refl  : (a : Λ) → |Λ≡| a a
-  |Λ≡|sym   : {a b : Λ}
-          → |Λ≡| a b
-          → |Λ≡| b a
-  |Λ≡|trans : {a b c : Λ}
-          → |Λ≡| a b
-          → |Λ≡| b c
-          → |Λ≡| a c
-  |Λ≡|beta  : (f a : Λ)
-          → |Λ≡| (app (lam f) a) (gsub predIf≤ 0 a f)
-  |Λ≡|lam   : {f g : Λ}
-          → |Λ≡| f g
-          → |Λ≡| (lam f) (lam g)
-  |Λ≡|app   : {f g a b : Λ}
-          → |Λ≡| f g
-          → |Λ≡| a b
-          → |Λ≡| (app f a) (app g b)
-  |Λ≡|-prop : {a b : Λ} (p q : |Λ≡| a b) → p ≡ q
-
 {--
 Λ≡-gsub : (σ : ℕ → ℕ → ℕ) (v : ℕ) (t a b : Λ)
         → Λ≡ a b
@@ -375,59 +355,21 @@ shiftUp-gsub σ n m a (app b b₁) n≤m = cong₂ app (shiftUp-gsub σ n m a b 
 Λ≡-shiftUp n .(app f a) .(app g b) (Λ≡app {f} {g} {a} {b} h h₁) = Λ≡app (Λ≡-shiftUp n f g h) (Λ≡-shiftUp n a b h₁)
 --}
 
-
-Test : (A : Set) → Set
-Test A = A /ₜ (λ x y → Bool)
-
-quotients-not-always-sets : {A : Type} {n m : A} → ¬ eq/ n m true ≡ eq/ n m false
-quotients-not-always-sets {A} p = transport (cong pick-again bad-path) tt
- where
-  pick : Test A → Type
-  pick [ a ] = Bool
-  pick (eq/ a b true  i) = ua (idEquiv Bool) i
-  pick (eq/ a b false i) = ua notEquiv       i
-
-  bad-path : true ≡ false
-  bad-path = cong (λ p → transport (λ i → pick (p i)) true) p
-
-  pick-again : Bool → Type
-  pick-again true  = ⊤
-  pick-again false = ⊥
-
-Test2 : (A : Set) → Set
-Test2 A = A /ₜ (λ x y → ⊤)
-
-new-paths-not-refl : {A : Type} {n : A} → ¬ refl ≡ eq/ n n tt
-new-paths-not-refl {A} {n} p = transport (cong pick-again bad-path) tt
- where
-  pick : Test2 A → Type
-  pick [ a ] = Bool
-  pick (eq/ a b ⋆ i) = ua notEquiv i
-
-  bad-path : true ≡ false
-  bad-path = cong (λ p → transport (λ i → pick (p i)) true) p
-
-  pick-again : Bool → Type
-  pick-again true  = ⊤
-  pick-again false = ⊥
-
--- My plan of action was to show that Λ is a set (which it will be as an
--- inductive type) and from that show that Λ/ is also a set, hopefully
--- simplifying the definition of application. Considering the above
--- I do not think this will be possible.
-
 Λ-Discrete : Discrete Λ
-Λ-Discrete (var x)   (var y)   = {!!}
-Λ-Discrete (var x)   (lam b)   = Dec.no ¬var≡lam
-Λ-Discrete (var x)   (app g b) = Dec.no ¬var≡app
-Λ-Discrete (lam a)   (var y)   = no {!!}
+Λ-Discrete (var x)   (var y)   = decRec
+ (λ p  → yes (cong var p))
+ (λ ne → no (λ p → ne (varn≡varm-impliesn≡m p)))
+ (discreteℕ x y)
+Λ-Discrete (var x)   (lam b)   = no ¬var≡lam
+Λ-Discrete (var x)   (app g b) = no ¬var≡app
+Λ-Discrete (lam a)   (var y)   = no λ p → ¬var≡lam (sym p)
 Λ-Discrete (lam a)   (lam b)   = decRec
  (λ p → yes (cong lam p))
  (λ ne → no (contra lama≡lamb-implies-a≡b ne))
  (Λ-Discrete a b)
-Λ-Discrete (lam a)   (app g b) = no {!!}
-Λ-Discrete (app f a) (var y)   = no {!!}
-Λ-Discrete (app f a) (lam b)   = no {!!}
+Λ-Discrete (lam a)   (app g b) = no ¬lam≡app
+Λ-Discrete (app f a) (var y)   = no λ p → ¬var≡app (sym p)
+Λ-Discrete (app f a) (lam b)   = no λ p → ¬lam≡app (sym p)
 Λ-Discrete (app f a) (app g b) = decRec
  (λ p → decRec
    (λ q → yes (cong₂ app p q))
@@ -436,8 +378,8 @@ new-paths-not-refl {A} {n} p = transport (cong pick-again bad-path) tt
  (λ ne → no (contra appfa≡appgb-implies-f≡g ne))
  (Λ-Discrete f g)
 
-Λ-isSet : isSet Λ
-Λ-isSet = Discrete→isSet Λ-Discrete
+isSet-Λ : isSet Λ
+isSet-Λ = Discrete→isSet Λ-Discrete
 
 
 Λ/ : Set
@@ -480,83 +422,10 @@ app/ f a =
        (λ f a b r → eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r))
        f a
 
-{--[ f ] [ a ] = [ app f a ]
-app/ [ f ] (eq/ a b r i) = eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r) i
-app/ (eq/ f g r i) [ a ] = eq/ (app f a) (app g a) (Λ≡app r (Λ≡refl a)) i
-app/ (eq/ f g r i) (eq/ a b s j) =
-  {!!} --}
- {--hcomp (λ { j (i = i0) → eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r₁) i₁
-           ; j (i = i1) → eq/ (app g a) (app g b) (Λ≡app (Λ≡refl g) r₁) i₁ })
-        (eq/ (app f a) (app g a) (Λ≡app r (Λ≡refl a)) i)--}
-{--
-  hcomp {!h!} {!!} --(eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r₁) i₁)
-  where
-  h : ∀ j → Partial (j ∧ ~ i) Λ/
-  h = {!!}
---}
--- eq/ (app a a₁) (app b b₁) (Λ≡app r r₁) ?
---i₁ = i0 ⊢ eq/ (app a a₁) (app b a₁) (Λ≡app r (Λ≡refl a₁)) i
---i₁ = i1 ⊢ eq/ (app a b₁) (app b b₁) (Λ≡app r (Λ≡refl b₁)) i
---i = i0 ⊢ eq/ (app a a₁) (app a b₁) (Λ≡app (Λ≡refl a) r₁) i₁
---i = i1 ⊢ eq/ (app b a₁) (app b b₁) (Λ≡app (Λ≡refl b) r₁) i₁
-
-{--app/ a =
-  rec {X = Λ/ → Λ/}
-      (λ x b → rec {X = Λ/}
-                   (λ y → [ app x y ])
-                   (λ u v r → eq/ (app x u) (app x v) (Λ≡app (Λ≡refl x) r))
-                   b)
-      (λ x y r → {!!})
-      a--}
-
-
--- I am now unsure if using having the truncated conversion actually helps
--- in this specific instance. It will probably be later at some point?
-Λ/' : Set
-Λ/' = Λ /ₜ |Λ≡|
-
-Λ/'-isSet : isSet Λ/'
-Λ/'-isSet [ a ] [ b ] p q = {!!}
-Λ/'-isSet [ a ] (eq/ a₁ b r i) p q = {!!}
-Λ/'-isSet (eq/ a b r i) [ a₁ ] p q = {!!}
-Λ/'-isSet (eq/ a b r i) (eq/ a₁ b₁ r₁ i₁) p q = {!!}
-
-app/' : Λ/' → Λ/' → Λ/'
-app/' [ f ] [ a ] = [ app f a ]
-app/' [ f ] (eq/ a b r i) = eq/ (app f a) (app f b) (|Λ≡|app (|Λ≡|refl f) r) i
-app/' (eq/ f g r i) [ a ] = eq/ (app f a) (app g a) (|Λ≡|app r (|Λ≡|refl a)) i
-app/' (eq/ f g r i) (eq/ a b s j) = goal i j
- where
-  goal : Square
-          (eq/ (app f a) (app f b) (|Λ≡|app (|Λ≡|refl f) s))
-          (eq/ (app g a) (app g b) (|Λ≡|app (|Λ≡|refl g) s))
-          (eq/ (app f a) (app g a) (|Λ≡|app r (|Λ≡|refl a)))
-          (eq/ (app f b) (app g b) (|Λ≡|app r (|Λ≡|refl b)))
-  goal i j = hcomp (λ k → λ { (i = i0) → {!!}
-                            ; (i = i1) → {!!}
-                            ; (j = i0) → eq/ (app f a) (app g a) (|Λ≡|app r (|Λ≡|refl a)) {!k!}
-                            ; (j = i1) → {!!}
-                            })
-                     {!!}
-    -- i0,j0 it should be [ app f a ]
-    -- i0,j1 it should be [ app g a ]
-    -- i1,j0 it should be [ app f b ]
-    -- i1,j1 it should be [ app g b ]
-
-  triangle1 : Square {_} {Λ/'}
-               (eq/ (app f a) (app f b) (|Λ≡|app (|Λ≡|refl f) s))
-               (eq/ (app f a) (app g b) (|Λ≡|app r s))
-               refl
-               (eq/ (app f b) (app g b) (|Λ≡|app r (|Λ≡|refl b)))
-  triangle1 = {!!}
-
-  path1 : eq/ (app f a) (app f b) (|Λ≡|app (|Λ≡|refl f) s) ∙ eq/ (app f b) (app g b) (|Λ≡|app r (|Λ≡|refl b)) ≡ eq/ (app f a) (app g b) (|Λ≡|app r s)
-  path1 i j = triangle1 j j
-
 open Partial
 
 PCA-Λ : PCA(0ℓ)
-PCA-Λ = pca Λ/ (λ a b → just (app/ a b))
+PCA-Λ = pca Λ/ isSet-Λ/ (λ a b → just (app/ a b))
 
 Comb-Λ : Comb{{PCA-Λ}}
 Comb-Λ = comb [ K ] [ S ] Kcond Scond
@@ -569,12 +438,15 @@ Comb-Λ = comb [ K ] [ S ] Kcond Scond
 
   Kcond : (a : PCA.|U| PCA-Λ) →
           Σ (PCA.|U| PCA-Λ)
-            (λ ka → (PCA-Λ PCA.· [ K ]) a ≡ just ka × ((b : PCA.|U| PCA-Λ) → (PCA-Λ PCA.· ka) b ≡ just a))
+            (λ ka → ((PCA-Λ PCA.· [ K ]) a ≡ just ka) × ((b : PCA.|U| PCA-Λ) → (PCA-Λ PCA.· ka) b ≡ just a))
   Kcond a =
     set-quot-elim
       {P = λ a → Σ (PCA.|U| PCA-Λ)
-            (λ ka → (PCA-Λ PCA.· [ K ]) a ≡ just ka × ((b : PCA.|U| PCA-Λ) → (PCA-Λ PCA.· ka) b ≡ just a))}
-      (λ b → isSetΣ squash/ λ x → isSet× {!isSetMaybe!} (isSetΠ (λ z → {!!})))
+            (λ ka → ((PCA-Λ PCA.· [ K ]) a ≡ just ka) × ((b : PCA.|U| PCA-Λ) → (PCA-Λ PCA.· ka) b ≡ just a))}
+      (λ b → isSetΣ squash/
+       (λ c → isOfHLevelProd 2
+        (isOfHLevelMaybe 1 (isSet→isGroupoid isSet-Λ/) _ _)
+         (isSetΠ λ d → isOfHLevelMaybe 1 (isSet→isGroupoid isSet-Λ/) (just _) (just _))))
       (λ b → [ lam (shiftUp 0 b) ] ,
              cong just (eq/ _ _ (Λ≡beta (lam (var 1)) b)) ,
              λ c → cong just {!!})
@@ -585,12 +457,12 @@ Comb-Λ = comb [ K ] [ S ] Kcond Scond
             (λ sa →
               Σ (PCA.|U| PCA-Λ)
                 (λ sab →
-                   (PCA-Λ PCA.· [ S ]) a ≡ just sa ×
-                   (PCA-Λ PCA.· sa) b ≡ just sab ×
+                   ((PCA-Λ PCA.· [ S ]) a ≡ just sa) ×
+                   ((PCA-Λ PCA.· sa) b ≡ just sab) ×
                    ((c ac bc acbc : PCA.|U| PCA-Λ) →
-                     (PCA-Λ PCA.· a) c ≡ just ac →
-                     (PCA-Λ PCA.· b) c ≡ just bc →
-                     (PCA-Λ PCA.· ac) bc ≡ just acbc → (PCA-Λ PCA.· sab) c ≡ just acbc)))
+                     ((PCA-Λ PCA.· a) c ≡ just ac) →
+                     ((PCA-Λ PCA.· b) c ≡ just bc) →
+                     ((PCA-Λ PCA.· ac) bc ≡ just acbc) → ((PCA-Λ PCA.· sab) c ≡ just acbc))))
   Scond a b = {!!}
 
 \end{code}
