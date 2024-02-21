@@ -7,7 +7,7 @@ open import Cubical.Foundations.Prelude
   using (refl ; sym ; subst ; cong ; cong₂ ; funExt ; isProp ; isSet ; transport ; Square ; _∙_ ;
          isProp→isSet)
 open import Cubical.Foundations.HLevels
-  using (isSetRetract ; isSetΣ ; isSet→)
+  using (isSetRetract ; isSetΣ ; isSet× ; isSet→ ; isSetΠ)
 open import Cubical.Categories.Category.Base
   using (Category)
 open import Cubical.HITs.TypeQuotients renaming (rec to quot-rec ; elim to quot-elim)
@@ -470,7 +470,7 @@ app/-with-rec = set-quot-rec (λ f → set-quot-rec (λ a → [ app f a ]) (foo 
 --}
 
 isSet-Λ/ : isSet Λ/
-isSet-Λ/ x y = {!!}
+isSet-Λ/ = squash/
 
 app/ : Λ/ → Λ/ → Λ/
 app/ f a =
@@ -559,7 +559,7 @@ PCA-Λ : PCA(0ℓ)
 PCA-Λ = pca Λ/ (λ a b → just (app/ a b))
 
 Comb-Λ : Comb{{PCA-Λ}}
-Comb-Λ = comb [ K ] [ S ] Kcond {!!}
+Comb-Λ = comb [ K ] [ S ] Kcond Scond
   where
   K : Λ
   K = lam (lam (var 1))
@@ -574,9 +574,24 @@ Comb-Λ = comb [ K ] [ S ] Kcond {!!}
     set-quot-elim
       {P = λ a → Σ (PCA.|U| PCA-Λ)
             (λ ka → (PCA-Λ PCA.· [ K ]) a ≡ just ka × ((b : PCA.|U| PCA-Λ) → (PCA-Λ PCA.· ka) b ≡ just a))}
-      {!!}
-      (λ b → [ lam (shiftUp 0 b) ] , cong just {!!} , λ c → cong just {!!})
-      {!!} a
+      (λ b → isSetΣ squash/ λ x → isSet× {!isSetMaybe!} (isSetΠ (λ z → {!!})))
+      (λ b → [ lam (shiftUp 0 b) ] ,
+             cong just (eq/ _ _ (Λ≡beta (lam (var 1)) b)) ,
+             λ c → cong just {!!})
+      (λ x y r → {!!}) a
+
+  Scond : (a b : PCA.|U| PCA-Λ) →
+          Σ (PCA.|U| PCA-Λ)
+            (λ sa →
+              Σ (PCA.|U| PCA-Λ)
+                (λ sab →
+                   (PCA-Λ PCA.· [ S ]) a ≡ just sa ×
+                   (PCA-Λ PCA.· sa) b ≡ just sab ×
+                   ((c ac bc acbc : PCA.|U| PCA-Λ) →
+                     (PCA-Λ PCA.· a) c ≡ just ac →
+                     (PCA-Λ PCA.· b) c ≡ just bc →
+                     (PCA-Λ PCA.· ac) bc ≡ just acbc → (PCA-Λ PCA.· sab) c ≡ just acbc)))
+  Scond a b = {!!}
 
 \end{code}
 
@@ -588,7 +603,7 @@ open PCA {{...}}
 record Assembly {l l′ k′ : Level} {{A : PCA l}} : Set(lsuc l ⊔ lsuc l′ ⊔ lsuc k′) where
   constructor asm
   field
-    |X|   : Set(l′) -- a setoid?
+    |X|   : Set(l′)
     _⊩_   : |U| → |X| → Set(k′)
     inh   : (x : |X|) → Σ |U| (λ r → r ⊩ x)
     set|  : isSet |X|
