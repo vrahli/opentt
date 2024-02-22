@@ -18,6 +18,7 @@ open import Cubical.Relation.Nullary
 open import Cubical.Foundations.Univalence
 open import Cubical.Data.Maybe
 open import Cubical.Data.Nat hiding (_·_)
+open import Cubical.Data.Nat.Order
 open import Cubical.Data.Empty
 open import Cubical.Data.Prod
 
@@ -29,9 +30,6 @@ open import Data.Unit using (⊤ ; tt)
 module pca where
 
 -- Not in the Cubical.Data.Nat?
-data _≤_ : ℕ → ℕ → Set where
-  z≤n : (n : ℕ) → 0 ≤ n
-  s≤s : (n m : ℕ) → n ≤ m → suc n ≤ suc m
 
 trans : {l : Level} {A : Set(l)} {a b c : A}
       → a ≡ b
