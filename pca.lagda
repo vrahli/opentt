@@ -29,7 +29,6 @@ open import Data.Unit using (⊤ ; tt)
 
 module pca where
 
--- Not in the Cubical.Data.Nat?
 
 trans : {l : Level} {A : Set(l)} {a b c : A}
       → a ≡ b
@@ -221,7 +220,6 @@ data Λ : Set where
   var : ℕ → Λ
   lam : Λ → Λ
   app : Λ → Λ → Λ
---  eq  : {a b : Λ} → Λ≡ a b → a ≡ b
 
 ¬var≡lam : {n : ℕ} {a : Λ} → ¬ var n ≡ lam a
 ¬var≡lam p = transport (cong f p) tt
@@ -465,8 +463,7 @@ Comb-Λ = comb [ K ] [ S ] Kcond Scond
              cong just (eq/ _ _ (Λ≡beta (lam (var 1)) b)) ,
              λ c → cong just (set-quot-elim {A = Λ} {R = Λ≡} {P = λ c → app/ [ lam (shiftUp 0 b) ] c ≡ [ b ]}
                                             (λ x → isProp→isSet (squash/ (app/ [ lam (shiftUp 0 b) ] x) [ b ]))
-                                            (λ x → trans (eq/ _ _ (Λ≡beta (shiftUp 0 b) x))
-                                                         {!subst (λ z → [ z ] ≡ [ b ]) (gsub-shiftUp 0 x b) (Λ≡refl b)!})
+                                            (λ x → trans (eq/ _ _ (Λ≡beta (shiftUp 0 b) x)) (cong [_] (gsub-shiftUp 0 x b)))
                                             {!!}
                                             {!!}))
       (λ x y r → {!!}) a
