@@ -419,6 +419,10 @@ fvars-ASSERT₄ t rewrite ++[] (fvars t) = refl
 #SUM-ASSERT₅ f = #SUM! #NAT! (#[0]ASSERT₄ (#[0]APPLY ⌞ f ⌟ #[0]VAR))
 
 
+#PI-NEG-ASSERT₄ : CTerm → CTerm
+#PI-NEG-ASSERT₄ f = #PI #NAT! (#[0]NEG (#[0]ASSERT₄ (#[0]APPLY ⌞ f ⌟ #[0]VAR)))
+
+
 →equalTypes-#SUM-ASSERT₂ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
                            → equalInType n w #NAT!→BOOL₀ a₁ a₂
                            → equalTypes n w (#SUM-ASSERT₂ a₁) (#SUM-ASSERT₂ a₂)
@@ -596,5 +600,42 @@ equalInType-BOOL₀!→equalTypes-ASSERT₄ {n} {w} {a} {b} eqb =
 
         aw2 : equalTypes n w' (#NEG (#ASSERT₃ (#APPLY a₁ a))) (#NEG (#ASSERT₃ (#APPLY a₂ b)))
         aw2 = eqTypesNEG← (equalInType-BOOL!→equalTypes-ASSERT₃ eqb)
+
+
+sub0-NEG-ASSERT₄-APPLY : (a b : CTerm)
+                       → sub0 a (#[0]NEG (#[0]ASSERT₄ (#[0]APPLY ⌞ b ⌟ #[0]VAR)))
+                       ≡ #NEG (#ASSERT₄ (#APPLY b a))
+sub0-NEG-ASSERT₄-APPLY a b
+  rewrite sub0-#[0]NEG a (#[0]ASSERT₄ (#[0]APPLY ⌞ b ⌟ #[0]VAR)) | sub0-ASSERT₄-APPLY a b
+  = CTerm≡ (≡NEG (≡ASSERT₄ (→≡APPLY x y)))
+  where
+    x : shiftDown 0 (subv 0 (shiftUp 0 ⌜ a ⌝) ⌜ b ⌝) ≡ ⌜ b ⌝
+    x rewrite subNotIn ⌜ a ⌝ ⌜ b ⌝ (CTerm.closed b) = refl
+
+    y : shiftDown 0 (shiftUp 0 ⌜ a ⌝) ≡ ⌜ a ⌝
+    y rewrite #shiftUp 0 a | #shiftDown 0 a = refl
+
+
+→equalTypes-#PI-NEG-ASSERT₄ : {n : ℕ} {w : 𝕎·} {a₁ a₂ : CTerm}
+                            → equalInType n w #NAT!→BOOL₀! a₁ a₂
+                            → equalTypes n w (#PI-NEG-ASSERT₄ a₁) (#PI-NEG-ASSERT₄ a₂)
+→equalTypes-#PI-NEG-ASSERT₄ {n} {w} {a₁} {a₂} eqt =
+  eqTypesPI← {B = #[0]NEG (#[0]ASSERT₄ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))}
+             {D = #[0]NEG (#[0]ASSERT₄ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR))}
+             (λ w' _ → isTypeNAT!) aw1
+  where
+    aw0 : ∀𝕎 w (λ w' _ → (a b : CTerm) → equalInType n w' #NAT! a b → equalInType n w' #BOOL₀! (#APPLY a₁ a) (#APPLY a₂ b))
+    aw0 = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL₀!≡ eqt)
+
+    aw1 : ∀𝕎 w (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
+                       → equalTypes n w' (sub0 a (#[0]NEG (#[0]ASSERT₄ (#[0]APPLY ⌞ a₁ ⌟ #[0]VAR))))
+                                         (sub0 b (#[0]NEG (#[0]ASSERT₄ (#[0]APPLY ⌞ a₂ ⌟ #[0]VAR)))))
+    aw1 w' e a b ea rewrite sub0-NEG-ASSERT₄-APPLY a a₁ | sub0-NEG-ASSERT₄-APPLY b a₂ = aw2
+      where
+        eqb : equalInType n w' #BOOL₀! (#APPLY a₁ a) (#APPLY a₂ b)
+        eqb = aw0 w' e a b ea
+
+        aw2 : equalTypes n w' (#NEG (#ASSERT₄ (#APPLY a₁ a))) (#NEG (#ASSERT₄ (#APPLY a₂ b)))
+        aw2 = eqTypesNEG← (equalInType-BOOL₀!→equalTypes-ASSERT₄ eqb)
 
 \end{code}

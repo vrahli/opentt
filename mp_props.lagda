@@ -125,6 +125,14 @@ open import lem_props(W)(M)(C)(K)(G)(X)(N)(EC)
 ≡SUM! {a} {b} {c} {d} e f rewrite e | f = refl
 
 
+#[0]UNION! : CTerm0 → CTerm0 → CTerm0
+#[0]UNION! a b = #[0]NOWRITEMOD (#[0]NOREADMOD (#[0]UNION a b))
+
+
+≡UNION! : {a b c d : Term} → a ≡ b → c ≡ d → UNION! a c ≡ UNION! b d
+≡UNION! {a} {b} {c} {d} e f rewrite e | f = refl
+
+
 -- π (F : ℕ → 𝔹). ¬(Π (n : ℕ). ¬(F n ≡ true)) → ||Σ (n : ℕ). F n ≡ true||
 MP : Term
 MP = PI NAT!→BOOL₀ (FUN (NEG (PI NAT! (NEG (ASSERT₂ (APPLY (VAR 1) (VAR 0))))))

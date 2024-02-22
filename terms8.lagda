@@ -2417,6 +2417,14 @@ SUM! a b = NOWRITEMOD (NOREADMOD (SUM a b))
 #SUM! a b = #NOWRITEMOD (#NOREADMOD (#SUM a b))
 
 
+UNION! : Term → Term → Term
+UNION! a b = NOWRITEMOD (NOREADMOD (UNION a b))
+
+
+#UNION! : CTerm → CTerm → CTerm
+#UNION! a b = #NOWRITEMOD (#NOREADMOD (#UNION a b))
+
+
 ⇛!-FST-PAIR : (p a b : Term) (w : 𝕎·) (ca : # a)
             → p ⇛! PAIR a b at w
             → FST p ⇛! a at w
