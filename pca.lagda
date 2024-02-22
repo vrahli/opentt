@@ -23,10 +23,15 @@ open import Cubical.Data.Prod
 
 open import Level using (Level ; 0ℓ ; Lift ; lift ; lower ; _⊔_) renaming (suc to lsuc)
 import Data.Maybe
-open import Data.Bool hiding (_≟_ ; _∧_ ; _∨_)
+open import Data.Bool hiding (_≟_ ; _∧_ ; _∨_ ; _≤_)
 open import Data.Unit using (⊤ ; tt)
 
 module pca where
+
+-- Not in the Cubical.Data.Nat?
+data _≤_ : ℕ → ℕ → Set where
+  z≤n : (n : ℕ) → 0 ≤ n
+  s≤s : (n m : ℕ) → n ≤ m → suc n ≤ suc m
 
 trans : {l : Level} {A : Set(l)} {a b c : A}
       → a ≡ b
@@ -197,13 +202,13 @@ Examples of a PCA
 sucIf≤ : (c x : ℕ) → ℕ
 sucIf≤ zero x = suc x
 sucIf≤ (suc c) zero = zero
-sucIf≤ (suc c) (suc x) = sucIf≤ c x
+sucIf≤ (suc c) (suc x) = suc (sucIf≤ c x)
 
 -- decrements x if c < x
 predIf≤ : (c x : ℕ) → ℕ
 predIf≤ c zero = zero
 predIf≤ zero (suc x) = x
-predIf≤ (suc c) (suc x) = predIf≤ c x
+predIf≤ (suc c) (suc x) = suc (predIf≤ c x)
 
 if≡ : {T : Set} (a b : ℕ) (c d : T) → T
 if≡ zero zero c d = c
@@ -282,8 +287,6 @@ shiftUp c (lam t) = lam (shiftUp (suc c) t)
 shiftUp c (app t u) = app (shiftUp c t) (shiftUp c u)
 --  shiftUp c (eq {a} {b} e f) = eq {shiftUp c a} {shiftUp c b} (Λ≡-shiftUp c a b e) f
 
-
-
 gsub : (σ : ℕ → ℕ → ℕ) → ℕ → Λ → Λ → Λ
 gsub σ v t (var x)   = if≡ x v t (var (σ v x))
 gsub σ v t (lam u)   = lam (gsub σ (suc v) (shiftUp 0 t) u)
@@ -308,6 +311,19 @@ data Λ≡ : Λ → Λ → Set where
           → Λ≡ f g
           → Λ≡ a b
           → Λ≡ (app f a) (app g b)
+
+gsub-shiftUp-var : (n : ℕ) (x : ℕ) (a : Λ) (f : ℕ → Λ)
+                 → if≡ (sucIf≤ n x) n a (f (predIf≤ n (sucIf≤ n x))) ≡ f x
+gsub-shiftUp-var zero x a f = refl
+gsub-shiftUp-var (suc n) zero a f = refl
+gsub-shiftUp-var (suc n) (suc x) a f = gsub-shiftUp-var n x a (λ z → f (suc z))
+
+gsub-shiftUp : (n : ℕ) (a b : Λ)
+             → gsub predIf≤ n a (shiftUp n b)
+             ≡ b
+gsub-shiftUp n a (var x) = gsub-shiftUp-var n x a var
+gsub-shiftUp n a (lam b) = cong lam (gsub-shiftUp (suc n) (shiftUp 0 a) b)
+gsub-shiftUp n a (app b b₁) = cong₂ app (gsub-shiftUp n a b) (gsub-shiftUp n a b₁)
 
 {--
 Λ≡-gsub : (σ : ℕ → ℕ → ℕ) (v : ℕ) (t a b : Λ)
@@ -449,7 +465,12 @@ Comb-Λ = comb [ K ] [ S ] Kcond Scond
          (isSetΠ λ d → isOfHLevelMaybe 1 (isSet→isGroupoid isSet-Λ/) (just _) (just _))))
       (λ b → [ lam (shiftUp 0 b) ] ,
              cong just (eq/ _ _ (Λ≡beta (lam (var 1)) b)) ,
-             λ c → cong just {!!})
+             λ c → cong just (set-quot-elim {A = Λ} {R = Λ≡} {P = λ c → app/ [ lam (shiftUp 0 b) ] c ≡ [ b ]}
+                                            (λ x → isProp→isSet (squash/ (app/ [ lam (shiftUp 0 b) ] x) [ b ]))
+                                            (λ x → trans (eq/ _ _ (Λ≡beta (shiftUp 0 b) x))
+                                                         {!subst (λ z → [ z ] ≡ [ b ]) (gsub-shiftUp 0 x b) (Λ≡refl b)!})
+                                            {!!}
+                                            {!!}))
       (λ x y r → {!!}) a
 
   Scond : (a b : PCA.|U| PCA-Λ) →
