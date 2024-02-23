@@ -168,13 +168,14 @@ module Total where
     constructor pca
     infixl 40 _·_
     field
-      |U| : Set(l)
-      _·_ : |U| → |U| → |U|
+      |U|    : Set(l)
+      set|U| : isSet |U|
+      _·_    : |U| → |U| → |U|
 
   open PCA {{...}}
 
   record Comb {l : Level} {{p : PCA(l)}} : Set(lsuc l) where
-    constructor pca+
+    constructor comb
     field
       K : |U|
       S : |U|
@@ -187,139 +188,145 @@ module Total where
   Partial-Total : {l : Level} (p : Partial.PCA l)
                 → Partial.isTotal p
                 → PCA l
-  Partial-Total p@(Partial.pca |U|₁ _ _·_) tot =
-    pca |U|₁ (Partial.total· p tot)
+  Partial-Total p@(Partial.pca |U|₁ iss _·_) tot =
+    pca |U|₁ iss (Partial.total· p tot)
+
+  Total-Partial : {l : Level} (p : PCA l)
+                → Partial.PCA l
+  Total-Partial p@(pca |U|₁ iss _·_) =
+    Partial.pca |U|₁ iss (λ a b → just (a · b))
 \end{code}
 
 Examples of a PCA
 
 \begin{code}
+module Lambda where
 
--- increments x if c ≤ x
-sucIf≤ : (c x : ℕ) → ℕ
-sucIf≤ zero x = suc x
-sucIf≤ (suc c) zero = zero
-sucIf≤ (suc c) (suc x) = suc (sucIf≤ c x)
+  -- increments x if c ≤ x
+  sucIf≤ : (c x : ℕ) → ℕ
+  sucIf≤ zero x = suc x
+  sucIf≤ (suc c) zero = zero
+  sucIf≤ (suc c) (suc x) = suc (sucIf≤ c x)
 
--- decrements x if c < x
-predIf≤ : (c x : ℕ) → ℕ
-predIf≤ c zero = zero
-predIf≤ zero (suc x) = x
-predIf≤ (suc c) (suc x) = suc (predIf≤ c x)
+  -- decrements x if c < x
+  predIf≤ : (c x : ℕ) → ℕ
+  predIf≤ c zero = zero
+  predIf≤ zero (suc x) = x
+  predIf≤ (suc c) (suc x) = suc (predIf≤ c x)
 
-if≡ : {T : Set} (a b : ℕ) (c d : T) → T
-if≡ zero zero c d = c
-if≡ zero (suc _) c d = d
-if≡ (suc _) zero c d = d
-if≡ (suc a) (suc b) c d = if≡ a b c d
+  if≡ : {T : Set} (a b : ℕ) (c d : T) → T
+  if≡ zero zero c d = c
+  if≡ zero (suc _) c d = d
+  if≡ (suc _) zero c d = d
+  if≡ (suc a) (suc b) c d = if≡ a b c d
 
-contra : {A B : Type} → (A → B) → ¬ B → ¬ A
-contra f g x = g (f x)
+  contra : {A B : Type} → (A → B) → ¬ B → ¬ A
+  contra f g x = g (f x)
 
-data Λ : Set where
-  var : ℕ → Λ
-  lam : Λ → Λ
-  app : Λ → Λ → Λ
+  data Λ : Set where
+    var : ℕ → Λ
+    lam : Λ → Λ
+    app : Λ → Λ → Λ
 
-¬var≡lam : {n : ℕ} {a : Λ} → ¬ var n ≡ lam a
-¬var≡lam p = transport (cong f p) tt
-  where
-    f : Λ → Type
-    f (var _)   = ⊤
-    f (lam _)   = ⊥
-    f (app _ _) = ⊥
+  ¬var≡lam : {n : ℕ} {a : Λ} → ¬ var n ≡ lam a
+  ¬var≡lam p = transport (cong f p) tt
+    where
+      f : Λ → Type
+      f (var _)   = ⊤
+      f (lam _)   = ⊥
+      f (app _ _) = ⊥
 
-¬var≡app : {n : ℕ} {a b : Λ} → ¬ var n ≡ app a b
-¬var≡app p = transport (cong f p) tt
-  where
-    f : Λ → Type
-    f (var _)   = ⊤
-    f (lam _)   = ⊥
-    f (app _ _) = ⊥
+  ¬var≡app : {n : ℕ} {a b : Λ} → ¬ var n ≡ app a b
+  ¬var≡app p = transport (cong f p) tt
+    where
+      f : Λ → Type
+      f (var _)   = ⊤
+      f (lam _)   = ⊥
+      f (app _ _) = ⊥
 
-¬lam≡app : {a b c : Λ} → ¬ lam a ≡ app b c
-¬lam≡app p = transport (cong f p) tt
-  where
-    f : Λ → Type
-    f (var _)   = ⊥
-    f (lam _)   = ⊤
-    f (app _ _) = ⊥
+  ¬lam≡app : {a b c : Λ} → ¬ lam a ≡ app b c
+  ¬lam≡app p = transport (cong f p) tt
+    where
+      f : Λ → Type
+      f (var _)   = ⊥
+      f (lam _)   = ⊤
+      f (app _ _) = ⊥
 
-lama≡lamb-implies-a≡b : {a b : Λ} → lam a ≡ lam b → a ≡ b
-lama≡lamb-implies-a≡b = cong unpack
- where
-  unpack : Λ → Λ
-  unpack (var _)   = var 0
-  unpack (lam a)   = a
-  unpack (app _ _) = var 0
+  lama≡lamb-implies-a≡b : {a b : Λ} → lam a ≡ lam b → a ≡ b
+  lama≡lamb-implies-a≡b = cong unpack
+    where
+    unpack : Λ → Λ
+    unpack (var _)   = var 0
+    unpack (lam a)   = a
+    unpack (app _ _) = var 0
 
-varn≡varm-impliesn≡m : {n m : ℕ} → var n ≡ var m → n ≡ m
-varn≡varm-impliesn≡m = cong unpack
- where
-  unpack : Λ → ℕ
-  unpack (var n)   = n
-  unpack (lam _)   = 0
-  unpack (app _ _) = 0
+  varn≡varm-impliesn≡m : {n m : ℕ} → var n ≡ var m → n ≡ m
+  varn≡varm-impliesn≡m = cong unpack
+    where
+    unpack : Λ → ℕ
+    unpack (var n)   = n
+    unpack (lam _)   = 0
+    unpack (app _ _) = 0
 
-appfa≡appgb-implies-f≡g : {f g a b : Λ} → app f a ≡ app g b → f ≡ g
-appfa≡appgb-implies-f≡g = cong unpack
- where
-  unpack : Λ → Λ
-  unpack (var _)   = var 0
-  unpack (lam _)   = var 0
-  unpack (app f _) = f
+  appfa≡appgb-implies-f≡g : {f g a b : Λ} → app f a ≡ app g b → f ≡ g
+  appfa≡appgb-implies-f≡g = cong unpack
+    where
+    unpack : Λ → Λ
+    unpack (var _)   = var 0
+    unpack (lam _)   = var 0
+    unpack (app f _) = f
 
-appfa≡appgb-implies-a≡b : {f g a b : Λ} → app f a ≡ app g b → a ≡ b
-appfa≡appgb-implies-a≡b = cong unpack
-  where
-  unpack : Λ → Λ
-  unpack (var _)   = var 0
-  unpack (lam _)   = var 0
-  unpack (app _ a) = a
+  appfa≡appgb-implies-a≡b : {f g a b : Λ} → app f a ≡ app g b → a ≡ b
+  appfa≡appgb-implies-a≡b = cong unpack
+    where
+    unpack : Λ → Λ
+    unpack (var _)   = var 0
+    unpack (lam _)   = var 0
+    unpack (app _ a) = a
 
-shiftUp : ℕ → Λ → Λ
-shiftUp c (var x) = var (sucIf≤ c x)
-shiftUp c (lam t) = lam (shiftUp (suc c) t)
-shiftUp c (app t u) = app (shiftUp c t) (shiftUp c u)
---  shiftUp c (eq {a} {b} e f) = eq {shiftUp c a} {shiftUp c b} (Λ≡-shiftUp c a b e) f
+  shiftUp : ℕ → Λ → Λ
+  shiftUp c (var x) = var (sucIf≤ c x)
+  shiftUp c (lam t) = lam (shiftUp (suc c) t)
+  shiftUp c (app t u) = app (shiftUp c t) (shiftUp c u)
+  --  shiftUp c (eq {a} {b} e f) = eq {shiftUp c a} {shiftUp c b} (Λ≡-shiftUp c a b e) f
 
-gsub : (σ : ℕ → ℕ → ℕ) → ℕ → Λ → Λ → Λ
-gsub σ v t (var x)   = if≡ x v t (var (σ v x))
-gsub σ v t (lam u)   = lam (gsub σ (suc v) (shiftUp 0 t) u)
-gsub σ v t (app f a) = app (gsub σ v t f) (gsub σ v t a)
---gsub σ v t (eq {a} {b} e f) = eq {gsub σ v t a} {gsub σ v t b} (Λ≡-gsub σ v t a b e) f
+  gsub : (σ : ℕ → ℕ → ℕ) → ℕ → Λ → Λ → Λ
+  gsub σ v t (var x)   = if≡ x v t (var (σ v x))
+  gsub σ v t (lam u)   = lam (gsub σ (suc v) (shiftUp 0 t) u)
+  gsub σ v t (app f a) = app (gsub σ v t f) (gsub σ v t a)
+  --gsub σ v t (eq {a} {b} e f) = eq {gsub σ v t a} {gsub σ v t b} (Λ≡-gsub σ v t a b e) f
 
-data Λ≡ : Λ → Λ → Set where
-  Λ≡refl  : (a : Λ) → Λ≡ a a
-  Λ≡sym   : {a b : Λ}
-          → Λ≡ a b
-          → Λ≡ b a
-  Λ≡trans : {a b c : Λ}
-          → Λ≡ a b
-          → Λ≡ b c
-          → Λ≡ a c
-  Λ≡beta  : (f a : Λ)
-          → Λ≡ (app (lam f) a) (gsub predIf≤ 0 a f)
-  Λ≡lam   : {f g : Λ}
-          → Λ≡ f g
-          → Λ≡ (lam f) (lam g)
-  Λ≡app   : {f g a b : Λ}
-          → Λ≡ f g
-          → Λ≡ a b
-          → Λ≡ (app f a) (app g b)
+  data Λ≡ : Λ → Λ → Set where
+    Λ≡refl  : (a : Λ) → Λ≡ a a
+    Λ≡sym   : {a b : Λ}
+            → Λ≡ a b
+            → Λ≡ b a
+    Λ≡trans : {a b c : Λ}
+            → Λ≡ a b
+            → Λ≡ b c
+            → Λ≡ a c
+    Λ≡beta  : (f a : Λ)
+            → Λ≡ (app (lam f) a) (gsub predIf≤ 0 a f)
+    Λ≡lam   : {f g : Λ}
+            → Λ≡ f g
+            → Λ≡ (lam f) (lam g)
+    Λ≡app   : {f g a b : Λ}
+            → Λ≡ f g
+            → Λ≡ a b
+            → Λ≡ (app f a) (app g b)
 
-gsub-shiftUp-var : (n : ℕ) (x : ℕ) (a : Λ) (f : ℕ → Λ)
-                 → if≡ (sucIf≤ n x) n a (f (predIf≤ n (sucIf≤ n x))) ≡ f x
-gsub-shiftUp-var zero x a f = refl
-gsub-shiftUp-var (suc n) zero a f = refl
-gsub-shiftUp-var (suc n) (suc x) a f = gsub-shiftUp-var n x a (λ z → f (suc z))
+  gsub-shiftUp-var : (n : ℕ) (x : ℕ) (a : Λ) (f : ℕ → Λ)
+                   → if≡ (sucIf≤ n x) n a (f (predIf≤ n (sucIf≤ n x))) ≡ f x
+  gsub-shiftUp-var zero x a f = refl
+  gsub-shiftUp-var (suc n) zero a f = refl
+  gsub-shiftUp-var (suc n) (suc x) a f = gsub-shiftUp-var n x a (λ z → f (suc z))
 
-gsub-shiftUp : (n : ℕ) (a b : Λ)
-             → gsub predIf≤ n a (shiftUp n b)
-             ≡ b
-gsub-shiftUp n a (var x) = gsub-shiftUp-var n x a var
-gsub-shiftUp n a (lam b) = cong lam (gsub-shiftUp (suc n) (shiftUp 0 a) b)
-gsub-shiftUp n a (app b b₁) = cong₂ app (gsub-shiftUp n a b) (gsub-shiftUp n a b₁)
+  gsub-shiftUp : (n : ℕ) (a b : Λ)
+               → gsub predIf≤ n a (shiftUp n b)
+               ≡ b
+  gsub-shiftUp n a (var x) = gsub-shiftUp-var n x a var
+  gsub-shiftUp n a (lam b) = cong lam (gsub-shiftUp (suc n) (shiftUp 0 a) b)
+  gsub-shiftUp n a (app b b₁) = cong₂ app (gsub-shiftUp n a b) (gsub-shiftUp n a b₁)
 
 {--
 Λ≡-gsub : (σ : ℕ → ℕ → ℕ) (v : ℕ) (t a b : Λ)
@@ -367,41 +374,40 @@ shiftUp-gsub σ n m a (app b b₁) n≤m = cong₂ app (shiftUp-gsub σ n m a b 
 Λ≡-shiftUp n .(app f a) .(app g b) (Λ≡app {f} {g} {a} {b} h h₁) = Λ≡app (Λ≡-shiftUp n f g h) (Λ≡-shiftUp n a b h₁)
 --}
 
-Λ-Discrete : Discrete Λ
-Λ-Discrete (var x)   (var y)   = decRec
- (λ p  → yes (cong var p))
- (λ ne → no (λ p → ne (varn≡varm-impliesn≡m p)))
- (discreteℕ x y)
-Λ-Discrete (var x)   (lam b)   = no ¬var≡lam
-Λ-Discrete (var x)   (app g b) = no ¬var≡app
-Λ-Discrete (lam a)   (var y)   = no λ p → ¬var≡lam (sym p)
-Λ-Discrete (lam a)   (lam b)   = decRec
- (λ p → yes (cong lam p))
- (λ ne → no (contra lama≡lamb-implies-a≡b ne))
- (Λ-Discrete a b)
-Λ-Discrete (lam a)   (app g b) = no ¬lam≡app
-Λ-Discrete (app f a) (var y)   = no λ p → ¬var≡app (sym p)
-Λ-Discrete (app f a) (lam b)   = no λ p → ¬lam≡app (sym p)
-Λ-Discrete (app f a) (app g b) = decRec
- (λ p → decRec
-   (λ q → yes (cong₂ app p q))
-   (λ ne → no (contra appfa≡appgb-implies-a≡b ne))
-   (Λ-Discrete a b))
- (λ ne → no (contra appfa≡appgb-implies-f≡g ne))
- (Λ-Discrete f g)
+  Λ-Discrete : Discrete Λ
+  Λ-Discrete (var x)   (var y)   = decRec
+    (λ p  → yes (cong var p))
+    (λ ne → no (λ p → ne (varn≡varm-impliesn≡m p)))
+    (discreteℕ x y)
+  Λ-Discrete (var x)   (lam b)   = no ¬var≡lam
+  Λ-Discrete (var x)   (app g b) = no ¬var≡app
+  Λ-Discrete (lam a)   (var y)   = no λ p → ¬var≡lam (sym p)
+  Λ-Discrete (lam a)   (lam b)   = decRec
+    (λ p → yes (cong lam p))
+    (λ ne → no (contra lama≡lamb-implies-a≡b ne))
+    (Λ-Discrete a b)
+  Λ-Discrete (lam a)   (app g b) = no ¬lam≡app
+  Λ-Discrete (app f a) (var y)   = no λ p → ¬var≡app (sym p)
+  Λ-Discrete (app f a) (lam b)   = no λ p → ¬lam≡app (sym p)
+  Λ-Discrete (app f a) (app g b) = decRec
+    (λ p → decRec
+      (λ q → yes (cong₂ app p q))
+      (λ ne → no (contra appfa≡appgb-implies-a≡b ne))
+      (Λ-Discrete a b))
+    (λ ne → no (contra appfa≡appgb-implies-f≡g ne))
+      (Λ-Discrete f g)
 
-isSet-Λ : isSet Λ
-isSet-Λ = Discrete→isSet Λ-Discrete
+  isSet-Λ : isSet Λ
+  isSet-Λ = Discrete→isSet Λ-Discrete
 
+  Λ/ : Set
+  Λ/ = Λ / Λ≡
 
-Λ/ : Set
-Λ/ = Λ / Λ≡
+  Λt₁ : Λ/
+  Λt₁ = [ app (lam (var zero)) (var zero) ]
 
-Λt₁ : Λ/
-Λt₁ = [ app (lam (var zero)) (var zero) ]
-
-Λ/-example : Λt₁ ≡ [ var zero ]
-Λ/-example = eq/ _ _ (Λ≡beta (var zero) (var zero))
+  Λ/-example : Λt₁ ≡ [ var zero ]
+  Λ/-example = eq/ _ _ (Λ≡beta (var zero) (var zero))
 
 
 {--
@@ -423,36 +429,39 @@ app/-with-rec = set-quot-rec (λ f → set-quot-rec (λ a → [ app f a ]) (foo 
     -- i1,j1 it should be [ app g b ]
 --}
 
-isSet-Λ/ : isSet Λ/
-isSet-Λ/ = squash/
+  isSet-Λ/ : isSet Λ/
+  isSet-Λ/ = squash/
 
-app/ : Λ/ → Λ/ → Λ/
-app/ f a =
-  rec2 squash/
-       (λ f a → [ app f a ])
-       (λ f g a r → eq/ (app f a) (app g a) (Λ≡app r (Λ≡refl a)))
-       (λ f a b r → eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r))
-       f a
+  app/ : Λ/ → Λ/ → Λ/
+  app/ f a =
+    rec2 squash/
+         (λ f a → [ app f a ])
+         (λ f g a r → eq/ (app f a) (app g a) (Λ≡app r (Λ≡refl a)))
+         (λ f a b r → eq/ (app f a) (app f b) (Λ≡app (Λ≡refl f) r))
+         f a
 
-open Partial
+  open Total
 
-PCA-Λ : PCA(0ℓ)
-PCA-Λ = pca Λ/ isSet-Λ/ (λ a b → just (app/ a b))
+  PCA-Λ : PCA(0ℓ)
+  PCA-Λ = pca Λ/ isSet-Λ/ app/
 
-Comb-Λ : Comb{{PCA-Λ}}
-Comb-Λ = comb [ K ] [ S ] Kcond Scond
-  where
-  K : Λ
-  K = lam (lam (var 1))
+  Comb-Λ : Comb{{PCA-Λ}}
+  Comb-Λ = comb [ K ] [ S ] Kcond Scond
+    where
+    K : Λ
+    K = lam (lam (var 1))
 
-  S : Λ
-  S = lam (lam (lam (app (app (var 2) (var 0)) (app (var 1) (var 0)))))
+    S : Λ
+    S = lam (lam (lam (app (app (var 2) (var 0)) (app (var 1) (var 0)))))
 
-  Kcond : (a : PCA.|U| PCA-Λ) →
-          Σ (PCA.|U| PCA-Λ)
-            (λ ka → ((PCA-Λ PCA.· [ K ]) a ≡ just ka) × ((b : PCA.|U| PCA-Λ) → (PCA-Λ PCA.· ka) b ≡ just a))
-  Kcond a =
-    set-quot-elim
+    Kcond : (a b : Λ/) → app/ (app/ [ K ] a) b ≡ a
+    Kcond a b =
+      {!!}
+ {--app/ [ K ] a ,
+      refl ,
+      λ b → cong just {!!}--}
+
+ {--set-quot-elim
       {P = λ a → Σ (PCA.|U| PCA-Λ)
             (λ ka → ((PCA-Λ PCA.· [ K ]) a ≡ just ka) × ((b : PCA.|U| PCA-Λ) → (PCA-Λ PCA.· ka) b ≡ just a))}
       (λ b → isSetΣ squash/
@@ -464,28 +473,30 @@ Comb-Λ = comb [ K ] [ S ] Kcond Scond
              λ c → cong just (set-quot-elim {A = Λ} {R = Λ≡} {P = λ c → app/ [ lam (shiftUp 0 b) ] c ≡ [ b ]}
                                             (λ x → isProp→isSet (squash/ (app/ [ lam (shiftUp 0 b) ] x) [ b ]))
                                             (λ x → trans (eq/ _ _ (Λ≡beta (shiftUp 0 b) x)) (cong [_] (gsub-shiftUp 0 x b)))
-                                            {!!}
-                                            {!!}))
-      (λ x y r → {!!}) a
+                                            (λ x y z → {!!})
+                                            c))
+      (λ x y r → {!!})
+      a
+--}
 
-  Scond : (a b : PCA.|U| PCA-Λ) →
-          Σ (PCA.|U| PCA-Λ)
-            (λ sa →
-              Σ (PCA.|U| PCA-Λ)
-                (λ sab →
-                   ((PCA-Λ PCA.· [ S ]) a ≡ just sa) ×
-                   ((PCA-Λ PCA.· sa) b ≡ just sab) ×
-                   ((c ac bc acbc : PCA.|U| PCA-Λ) →
-                     ((PCA-Λ PCA.· a) c ≡ just ac) →
-                     ((PCA-Λ PCA.· b) c ≡ just bc) →
-                     ((PCA-Λ PCA.· ac) bc ≡ just acbc) → ((PCA-Λ PCA.· sab) c ≡ just acbc))))
-  Scond a b = {!!}
+    Scond : (a b c : Λ/)
+          → app/ (app/ (app/ [ S ] a) b) c
+          ≡ app/ (app/ a c) (app/ b c)
+    Scond a b c = {!!}
+{--
+        app/ [ S ] a ,
+        app/ (app/ [ S ] a) b ,
+        cong just refl ,
+        cong just refl ,
+        λ c ac bc acbc ac≡ bc≡ acbc≡ → trans {!!} acbc≡
+--}
 
 \end{code}
 
 Assemblies
 
 \begin{code}
+open Partial
 open PCA {{...}}
 
 record Assembly {l l′ k′ : Level} {{A : PCA l}} : Set(lsuc l ⊔ lsuc l′ ⊔ lsuc k′) where
