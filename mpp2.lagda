@@ -31,7 +31,6 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.ExcludedMiddle
 
 
 open import util
@@ -60,7 +59,6 @@ module mpp2 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
             (G : GetChoice {L} W C K) (X : ChoiceExt {L} W C)
             (N : NewChoice {L} W C K G)
             (MP : MarkovPrinciple (lsuc(L)))
-            (EM : ExcludedMiddle (lsuc(L))) -- only to use mpp.lagda, but shouldn't be needed
             (EC : Encode)
        where
 
@@ -123,13 +121,10 @@ open import mp_props(W)(M)(C)(K)(G)(X)(N)(EC)
          #[0]MP-left2-qt₃ ; sub0-fun-mp-qt₃)
 open import mp_props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (→equalTypes-#MP-right2-qt₃ ; equalInType-#MP-left-qt₃→ ; →equalTypes-#MP-left2-qt₃ ; →equalInType-#MP-left-qt₃)
--- ;
---         #MP-left2→#MP-left ; #MP-left3→#MP-left2 ; equalInType-#MP-left-qt→ ; #MP-left2→#MP-left3)
--- MOVE all these usings to a separate file so that we don't have to rely on ExcludedMiddle
-open import mpp(W)(M)(C)(K)(G)(X)(N)(EM)(EC)
+open import mp_props3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#MPp₆ ; →inhType-ASSERT₄-APPLY ; #¬Names→inhType-ASSERT₄ ; strongBool!-BTRUE→ ; equalInType-ASSERT₄→ ;
          isType-#TPURE-NAT!→BOOL₀! ; #lamInfSearchP ; #lamInfSearchPP ; #APPLY-#lamInfSearchP-#⇛! ;
-         #APPLY-#lamInfSearchPP#⇛!)
+         #APPLY-#lamInfSearchPP#⇛! ; equalInType-TPURE-NAT!→BOOL₀!ₗ ; equalInType-TPURE-NAT!→BOOL₀!ᵣ)
 open import mp_search(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#infSearchP ; #⇛!sameℕ-mon ; #infSearch ; #infSearchF ; #infSearchI ; #infSearch⇛₁ ; #infSearch⇛₂ ; #infSearch⇛₃ ;
          #¬Names→⇛! ; #¬Names-#infSearch ; #⇛!-mon)
@@ -177,13 +172,16 @@ MPp₆-inh₂ exb n w =
     aw2
   where
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#TPURE #NAT!→BOOL₀!) a₁ a₂
-                      → equalTypes n w' (sub0 a₁ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃))
+                       → equalTypes n w' (sub0 a₁ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃))
                                          (sub0 a₂ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)))
     aw1 w' e a₁ a₂ eqb rewrite sub0-fun-mp₆ a₁ | sub0-fun-mp₆ a₂ =
-        eqTypesFUN← (→equalTypes-#MP-left-qt₃ (equalInType-TPURE→ eqb)) (→equalTypes-#MP-right-qt₃ (equalInType-TPURE→ eqb))
+        eqTypesFUN← (→equalTypes-#MP-left-qt₃ (equalInType-TPURE→ eqb))
+                    (→equalTypes-#MP-right-qt₃ (equalInType-TPURE→ eqb))
 
     aw2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#TPURE #NAT!→BOOL₀!) a₁ a₂
-                        → equalInType n w' (sub0 a₁ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃)) (#APPLY #lam2AX a₁) (#APPLY #lam2AX a₂))
+                       → equalInType n w' (sub0 a₁ (#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃))
+                                          (#APPLY #lam2AX a₁)
+                                          (#APPLY #lam2AX a₂))
     aw2 w1 e1 a₁ a₂ eqa =
       ≡CTerm→equalInType
         (sym (sub0-fun-mp₆ a₁))
@@ -312,55 +310,6 @@ MPp₆-inh₂ exb n w =
 
                         aw5' : equalTypes n w4 (#ASSERT₄ (#APPLY x₁ a)) (#ASSERT₄ (#APPLY x₁ b))
                         aw5' = equalInType-BOOL₀!→equalTypes-ASSERT₄ eb
-
-
-
-
-equalInType-BOOL₀!→#⇛vₗ : (i : ℕ) (w : 𝕎·) (a b : CTerm)
-                        → equalInType i w #BOOL₀! a b
-                        → □· w (λ w' e → #⇛v a w')
-equalInType-BOOL₀!→#⇛vₗ i w a b a∈ =
-  Mod.∀𝕎-□Func M aw (equalInType-BOOL₀!→ i w a b a∈)
-  where
-  aw : ∀𝕎 w (λ w' e' → #strongBool! w' a b
-                     → #⇛v a w')
-  aw w1 e1 (x , y , inj₁ (c₁ , c₂)) = #INL x , #⇛!→#⇛ {w1} {a} {#INL x} c₁ , tt
-  aw w1 e1 (x , y , inj₂ (c₁ , c₂)) = #INR x , #⇛!→#⇛ {w1} {a} {#INR x} c₁ , tt
-
-
-equalInType-TPURE-NAT!→BOOL₀!ₗ : (i : ℕ) (w : 𝕎·) (F G : CTerm)
-                               → equalInType i w (#TPURE #NAT!→BOOL₀!) F G
-                               → □· w (λ w' e → #⇛!nv F w')
-equalInType-TPURE-NAT!→BOOL₀!ₗ i w F G F∈ =
-  ∀𝕎-□Func2 aw h2 h3
-  where
-  h1 : equalInType i w #NAT!→BOOL₀! F G
-  h1 = equalInType-TPURE→ F∈
-
-  h2 : □· w (λ w' e → #⇛v (#APPLY F #N0) w')
-  h2 = equalInType-BOOL₀!→#⇛vₗ i w (#APPLY F #N0) (#APPLY G #N0)
-         (equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL₀!≡ h1) w (⊑-refl· w) #N0 #N0
-           (NUM-equalInType-NAT! i w 0))
-
-  h3 : □· w (λ w' e → #⇛!ₙ F w')
-  h3 = equalInType-TPURE→ₗ F∈
-
-  aw  : ∀𝕎 w (λ w' e' → #⇛v (#APPLY F #N0) w' → #⇛!ₙ F w' → #⇛!nv F w')
-  aw w1 e1 (v , c , isv) (K , d , nn , ne) =
-    #⇛!-pres-#⇛!nv {w1} {F} {K} d c2
-    where
-    c1 : #APPLY K #N0 #⇛ v at w1
-    c1 = val-#⇛→ {w1} {#APPLY F #N0} {#APPLY K #N0} {v} isv (→#⇛!-APPLY {w1} {F} {K} {#N0} d) c
-
-    c2 : #⇛!nv K w1
-    c2 = APPLY#⇛→#⇛!nv {w1} {K} {#N0} {v} isv nn ne c1
-
-
-equalInType-TPURE-NAT!→BOOL₀!ᵣ : (i : ℕ) (w : 𝕎·) (F G : CTerm)
-                              → equalInType i w (#TPURE #NAT!→BOOL₀!) F G
-                              → □· w (λ w' e → #⇛!nv G w')
-equalInType-TPURE-NAT!→BOOL₀!ᵣ i w F G F∈ =
-  equalInType-TPURE-NAT!→BOOL₀!ₗ i w G F (equalInType-sym F∈)
 
 
 #⇛!-pres-equalTypes-mp2-qt₃-fun : (i : ℕ) (w : 𝕎·) (a₁ a₂ b₁ b₂ : CTerm)

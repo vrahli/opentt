@@ -30,6 +30,7 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
+open import Axiom.ExcludedMiddle
 
 
 open import util
@@ -51,16 +52,19 @@ open import mod
 open import encode
 
 
-module not_lpo {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
-               (C : Choice)
-               (K : Compatible W C)
-               (P : Progress {L} W C K)
-               (G : GetChoice {L} W C K)
-               (X : ChoiceExt {L} W C)
-               (N : NewChoice {L} W C K G)
+module not_lpo {L  : Level}
+               (W  : PossibleWorlds {L})
+               (M  : Mod W)
+               (C  : Choice)
+               (K  : Compatible W C)
+               (P  : Progress {L} W C K)
+               (G  : GetChoice {L} W C K)
+               (X  : ChoiceExt {L} W C)
+               (N  : NewChoice {L} W C K G)
                (EC : Encode)
-               (V : ChoiceVal W C K G X N EC)
-               (F : Freeze {L} W C K P G N)
+               (V  : ChoiceVal W C K G X N EC)
+               (F  : Freeze {L} W C K P G N)
+               (EM : ExcludedMiddle (lsuc(L)))
                (CB : ChoiceBar W M C K P G X N EC V F)
        where
 
@@ -81,7 +85,7 @@ open import bar(W)
 open import barI(W)(M)--(C)(K)(P)
 open import forcing(W)(M)(C)(K)(G)(X)(N)(EC)
 open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
-  using (eqTypes-mon)
+  using (eqTypes-mon ; ∀𝕎-□Func2)
 --open import ind2(W)(M)(C)(K)(G)(X)(N)(EC)
 
 --open import props1(W)(M)(C)(K)(G)(X)(N)(EC)
@@ -89,17 +93,23 @@ open import props0(W)(M)(C)(K)(G)(X)(N)(EC)
 open import props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (eqTypesSQUASH← ; eqTypesUNION← ; eqTypesPI← ; eqTypesNEG← ; equalInType-PI→ ; ≡CTerm→equalInType ;
          NUM-equalInType-NAT! ; equalInType-NEG ; equalInType-refl ; equalInType-mon ; equalInType-SQUASH→ ;
-         equalInType-NEG→)
+         equalInType-NEG→ ; equalInType-PI ; →≡equalTypes ; →≡equalInType ; equalInType-local ; equalInType-sym ;
+         isTypeNAT! ; equalInType-FUN→ ; equalInType-NAT!→)
 open import props3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (isType-#NAT!→BOOL₀ ; →equalInType-CS-NAT!→BOOL₀ ; fun-equalInType-SQUASH-UNION ; isType-#NAT!→BOOL₀! ;
-         →equalInType-SQUASH ; →equalInType-CS-NAT!→BOOL₀!)
+         →equalInType-SQUASH ; →equalInType-CS-NAT!→BOOL₀! ; equalTypes→equalInType ; equalInType-#⇛-LR ;
+         equalInType-BOOL₀!→ ; →equalInType-BOOL₀! ; equalInType-EQ→₁)
+open import props4(W)(M)(C)(K)(G)(X)(N)(EC)
+  using (→equalInType-NAT!)
 open import lem_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#SUM-ASSERT₂ ; #PI-NEG-ASSERT₂ ; →equalTypes-#SUM-ASSERT₂ ; →equalTypes-#PI-NEG-ASSERT₂ ; ASSERT₄ ;
          #[1]ASSERT₄ ; #SUM-ASSERT₄ ; #SUM-ASSERT₅ ; #PI-NEG-ASSERT₄ ; ≡ASSERT₄ ; →equalTypes-#SUM-ASSERT₅ ;
-         →equalTypes-#PI-NEG-ASSERT₄ ; #[0]ASSERT₄ ; #ASSERT₄ ; sub0-NEG-ASSERT₄-APPLY ; #ASSERT₄≡)
+         →equalTypes-#PI-NEG-ASSERT₄ ; #[0]ASSERT₄ ; #ASSERT₄ ; sub0-NEG-ASSERT₄-APPLY ; #ASSERT₄≡ ;
+         equalInType-BOOL₀!→equalTypes-ASSERT₄ ; sub0-ASSERT₄-APPLY)
 
 open import props6(W)(M)(C)(K)(G)(X)(N)(EC)
-  using (eqTypesUNION!← ; UNIONeq! ; equalInType-UNION! ; equalInType-UNION!→ ; SUMeq! ; equalInType-SUM!→)
+  using (eqTypesUNION!← ; UNIONeq! ; equalInType-UNION! ; equalInType-UNION!→ ; SUMeq! ; equalInType-SUM!→ ;
+         equalInType-#⇛ₚ-left-right-rev ; equalInType-SUM! ; →equalInType-EQ)
 
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (followChoice· ; #[0]Typeℂ₀₁ ; Typeℂ₀₁·)
@@ -116,6 +126,13 @@ open import terms8(W)(C)(K)(G)(X)(N)(EC)
 
 open import mp_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (≡SUM! ; #[0]SUM! ; ≡UNION! ; #[0]UNION!)
+
+open import mp_props3(W)(M)(C)(K)(G)(X)(N)(EC)
+  using (isType-#TPURE-NAT!→BOOL₀! ; equalInType-TPURE-NAT!→BOOL₀!ₗ ; equalInType-TPURE-NAT!→BOOL₀!ᵣ ;
+         →equalInType-ASSERT₄ ; equalInType-ASSERT₄→ ; strongBool!-BTRUE→)
+
+open import pure(W)(M)(C)(K)(G)(X)(N)(EC)
+  using (equalInType-TPURE→ ; #⇛!nv ; #¬Names-APPLY ; ¬Names→⇛!)
 
 
 {-- This version relies on ASSERT₂, which is defined in terms of BOOL,
@@ -449,5 +466,228 @@ sq-dec! t = #SQUASH (#UNION! t (#NEG t))
 
         imp2 : ∀𝕎 w2 (λ w' _ → inhType n w' (#LPO-right f) → inhType n w' (#NEG (#Σchoice name ℂ₁·)))
         imp2 w3 e3 inh = #PI-NEG-ASSERT₄→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh
+
+
+-- LPO's body
+#LPOb : CTerm → CTerm → CTerm
+#LPOb f g = #SQUASH (#UNION! (#LPO-left f) (#LPO-right g))
+
+
+-- pure version of LPO
+#LPOp : CTerm
+#LPOp = #PI (#TPURE #NAT!→BOOL₀!) (#[0]SQUASH (#[0]UNION! #[0]LPO-left #[0]LPO-right))
+
+
+#⇛!-pres-equalTypes-LPOb : (i : ℕ) (w : 𝕎·) (a₁ a₂ b₁ b₂ : CTerm)
+                         → equalInType i w #NAT!→BOOL₀! a₁ a₂
+                         → a₁ #⇛! b₁ at w
+                         → a₂ #⇛! b₂ at w
+                         → equalTypes i w (#LPOb b₁ b₂) (#LPOb a₁ a₂)
+#⇛!-pres-equalTypes-LPOb i w a₁ a₂ b₁ b₂ a∈ c₁ c₂ =
+  eqTypesSQUASH← (eqTypesUNION!← (→equalTypes-#SUM-ASSERT₅
+                                   {i} {w} {b₁} {a₁}
+                                   (equalInType-#⇛-LR {i} {w} {#NAT!→BOOL₀!} {a₁} {b₁} {a₁} {a₁}
+                                     c₁ (#⇛!-refl {w} {a₁})
+                                     (equalInType-refl a∈)))
+                                 (→equalTypes-#PI-NEG-ASSERT₄
+                                   {i} {w} {b₂} {a₂}
+                                   (equalInType-#⇛-LR {i} {w} {#NAT!→BOOL₀!} {a₂} {b₂} {a₂} {a₂}
+                                     c₂ (#⇛!-refl {w} {a₂})
+                                     (equalInType-refl (equalInType-sym a∈)))))
+
+
+#⇛!-pres-equalInType-LPOb : (i : ℕ) (w : 𝕎·) (a₁ a₂ b₁ b₂ u₁ u₂ : CTerm)
+                          → equalInType i w #NAT!→BOOL₀! a₁ a₂
+                          → a₁ #⇛! b₁ at w
+                          → a₂ #⇛! b₂ at w
+                          → #isValue b₁
+                          → #isValue b₂
+                          → equalInType i w (#LPOb b₁ b₂) #AX #AX
+                          → equalInType i w (#LPOb a₁ a₂) (#APPLY #lamAX u₁) (#APPLY #lamAX u₂)
+#⇛!-pres-equalInType-LPOb i w a₁ a₂ b₁ b₂ u₁ u₂ a∈ c₁ c₂ isv₁ isv₂ b∈ =
+  equalInType-#⇛ₚ-left-right-rev
+    {i} {_} {_} {#APPLY #lamAX u₁} {#AX} {#APPLY #lamAX u₂} {#AX}
+    (λ w1 e1 → lift (1 , refl))
+    (λ w1 e1 → lift (1 , refl))
+    (equalTypes→equalInType (#⇛!-pres-equalTypes-LPOb i w a₁ a₂ b₁ b₂ a∈ c₁ c₂) b∈)
+
+
+#¬Names→∈#ASSERT₄-change-world : (n : ℕ) (w1 w2 : 𝕎·) (t a₁ a₂ : CTerm)
+                               → #¬Names t
+                               → equalInType n w1 (#ASSERT₄ t) a₁ a₂
+                               → equalInType n w2 (#ASSERT₄ t) a₁ a₂
+#¬Names→∈#ASSERT₄-change-world n w1 w2 t a₁ a₂ nnt a∈ =
+  →equalInType-ASSERT₄
+    n w2 t a₁ a₂
+    (→equalInType-BOOL₀!
+      n w2 t #BTRUE
+      (Mod.□-const M (Mod.∀𝕎-□Func M aw1 (equalInType-BOOL₀!→ n w1 t #BTRUE (equalInType-ASSERT₄→ n w1 t a₁ a₂ a∈)))))
+  where
+  aw1 : ∀𝕎 w1 (λ w' e' → #strongBool! w' t #BTRUE
+                       → □· w2 (λ w'' _ → #strongBool! w'' t #BTRUE))
+  aw1 w1a e1a h =
+    Mod.∀𝕎-□ M aw2
+    where
+    aw2 : ∀𝕎 w2 (λ w'' _ → #strongBool! w'' t #BTRUE)
+    aw2 w2a e2a with strongBool!-BTRUE→ w1a t h
+    ... | u , c = u , #AX , inj₁ (¬Names→⇛! w1a w2a ⌜ t ⌝ ⌜ #INL u ⌝ nnt c ,
+                                  #⇛!-refl {w2a} {#BTRUE})
+
+
+LPO-pure : (n : ℕ) (w : 𝕎·) → ∈Type n w #LPOp #lamAX
+LPO-pure n w =
+  equalInType-PI
+    {n} {w} {#TPURE #NAT!→BOOL₀!}
+    {#[0]SQUASH (#[0]UNION! #[0]LPO-left #[0]LPO-right)}
+    (λ w1 e1 → isType-#TPURE-NAT!→BOOL₀! w1 n)
+    p1 p2
+  where
+  p1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#TPURE #NAT!→BOOL₀!) a₁ a₂
+                    → equalTypes n w'
+                                 (sub0 a₁ (#[0]SQUASH (#[0]UNION! #[0]LPO-left #[0]LPO-right)))
+                                 (sub0 a₂ (#[0]SQUASH (#[0]UNION! #[0]LPO-left #[0]LPO-right))))
+  p1 w1 e1 f₁ f₂ f∈ =
+    →≡equalTypes
+      (sym (sub0-squash-union-LPO f₁))
+      (sym (sub0-squash-union-LPO f₂))
+        (eqTypesSQUASH← (eqTypesUNION!← (→equalTypes-#SUM-ASSERT₅ (equalInType-TPURE→ f∈))
+                                        (→equalTypes-#PI-NEG-ASSERT₄ (equalInType-TPURE→ f∈))))
+
+  p2 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#TPURE #NAT!→BOOL₀!) a₁ a₂
+                    → equalInType n w'
+                                  (sub0 a₁ (#[0]SQUASH (#[0]UNION! #[0]LPO-left #[0]LPO-right)))
+                                  (#APPLY #lamAX a₁) (#APPLY #lamAX a₂))
+  p2 w1 e1 f₁ f₂ f∈ =
+    →≡equalInType
+      (sym (sub0-squash-union-LPO f₁))
+      (equalInType-local
+          (∀𝕎-□Func2 aw1
+            (equalInType-TPURE-NAT!→BOOL₀!ₗ n w1 f₁ f₂ f∈)
+            (equalInType-TPURE-NAT!→BOOL₀!ᵣ n w1 f₁ f₂ f∈)))
+    where
+    aw1 : ∀𝕎 w1 (λ w' e' → #⇛!nv f₁ w'
+                         → #⇛!nv f₂ w'
+                         → equalInType n w' (#LPOb f₁ f₁) (#APPLY #lamAX f₁) (#APPLY #lamAX f₂))
+    aw1 w2 e2 (g₁ , comp₁ , nng₁ , neg₁ , isvg₁) (g₂ , comp₂ , nng₂ , neg₂ , isvg₂) =
+      #⇛!-pres-equalInType-LPOb n w2 f₁ f₁ g₁ g₁ f₁ f₂
+        (equalInType-mon (equalInType-refl (equalInType-TPURE→ f∈)) w2 e2)
+        comp₁ comp₁ isvg₁ isvg₁
+        (→equalInType-SQUASH (Mod.∀𝕎-□ M aw2))
+      where
+      aw2 : ∀𝕎 w2 (λ w' _ → Σ CTerm (λ t → equalInType n w' (#UNION! (#LPO-left g₁) (#LPO-right g₁)) t t))
+      aw2 w3 e3 = cc (EM {inhType n w3 (#SUM-ASSERT₅ g₁)})
+        where
+        g∈ : equalInType n w3 (#TPURE #NAT!→BOOL₀!) g₁ g₂
+        g∈ = equalInType-#⇛-LR
+               {n} {w3} {#TPURE #NAT!→BOOL₀!} {f₁} {g₁} {f₂} {g₂}
+               (∀𝕎-mon e3 comp₁) (∀𝕎-mon e3 comp₂) (equalInType-mon f∈ w3 (⊑-trans· e2 e3))
+
+        cc : Dec (inhType n w3 (#SUM-ASSERT₅ g₁))
+           → Σ CTerm (λ t → equalInType n w3 (#UNION! (#LPO-left g₁) (#LPO-right g₁)) t t)
+        cc (yes (t , p)) =
+          #INL t ,
+          equalInType-UNION! (→equalTypes-#SUM-ASSERT₅ (equalInType-TPURE→ (equalInType-refl g∈)))
+                             (→equalTypes-#PI-NEG-ASSERT₄ (equalInType-TPURE→ (equalInType-refl g∈)))
+                             (Mod.∀𝕎-□ M aw3)
+            where
+            aw3 : ∀𝕎 w3 (λ w' _ → UNIONeq! (equalInType n w' (#SUM-ASSERT₅ g₁))
+                                           (equalInType n w' (#PI-NEG-ASSERT₄ g₁))
+                                           w' (#INL t) (#INL t))
+            aw3 w4 e4 =
+              t , t ,
+              inj₁ (#⇛!-refl {w4} {#INL t} ,
+                    #⇛!-refl {w4} {#INL t} ,
+                    equalInType-mon p w4 e4)
+        cc (no p) =
+          #INR #AX ,
+          equalInType-UNION! (→equalTypes-#SUM-ASSERT₅ (equalInType-TPURE→ (equalInType-refl g∈)))
+                             (→equalTypes-#PI-NEG-ASSERT₄ (equalInType-TPURE→ (equalInType-refl g∈)))
+                             (Mod.∀𝕎-□ M aw3)
+            where
+            aw3 : ∀𝕎 w3 (λ w' _ → UNIONeq! (equalInType n w' (#SUM-ASSERT₅ g₁))
+                                           (equalInType n w' (#PI-NEG-ASSERT₄ g₁))
+                                           w' (#INR #AX) (#INR #AX))
+            aw3 w4 e4 =
+              #AX , #AX ,
+              inj₂ (#⇛!-refl {w4} {#INR #AX} ,
+                    #⇛!-refl {w4} {#INR #AX} ,
+                    equalInType-PI
+                      {B = #[0]NEG (#[0]ASSERT₄ (#[0]APPLY ⌞ g₁ ⌟ #[0]VAR))}
+                      (λ w' e → isTypeNAT!)
+                      aw4 aw5)
+              where
+              aw4 : ∀𝕎 w4 (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
+                       → equalTypes n w' (sub0 a (#[0]NEG (#[0]ASSERT₄ (#[0]APPLY ⌞ g₁ ⌟ #[0]VAR))))
+                                         (sub0 b (#[0]NEG (#[0]ASSERT₄ (#[0]APPLY ⌞ g₁ ⌟ #[0]VAR)))))
+              aw4 w' e a b ea rewrite sub0-NEG-ASSERT₄-APPLY a g₁ | sub0-NEG-ASSERT₄-APPLY b g₁ = aw5
+                where
+                eqb : equalInType n w' #BOOL₀! (#APPLY g₁ a) (#APPLY g₁ b)
+                eqb = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL₀!≡ (equalInType-TPURE→ (equalInType-refl g∈)))
+                                       w' (⊑-trans· e4 e) a b ea
+
+                aw5 : equalTypes n w' (#NEG (#ASSERT₄ (#APPLY g₁ a))) (#NEG (#ASSERT₄ (#APPLY g₁ b)))
+                aw5 = eqTypesNEG← (equalInType-BOOL₀!→equalTypes-ASSERT₄ eqb)
+
+              aw5 : ∀𝕎 w4 (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' #NAT! a₁ a₂
+                                  → equalInType n w' (sub0 a₁ (#[0]NEG (#[0]ASSERT₄ (#[0]APPLY ⌞ g₁ ⌟ #[0]VAR))))
+                                                (#APPLY #AX a₁) (#APPLY #AX a₂))
+              aw5 w5 e5 n₁ n₂ n∈ =
+                →≡equalInType
+                  (sym (sub0-NEG-ASSERT₄-APPLY n₁ g₁))
+                  (equalInType-NEG
+                    (equalInType-BOOL₀!→equalTypes-ASSERT₄ eqb)
+                    aw6)
+                where
+                eqb : equalInType n w5 #BOOL₀! (#APPLY g₁ n₁) (#APPLY g₁ n₁)
+                eqb = equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL₀!≡ (equalInType-TPURE→ (equalInType-refl g∈)))
+                                       w5 (⊑-trans· e4 e5) n₁ n₁ (equalInType-refl n∈)
+
+                aw6 : ∀𝕎 w5 (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' (#ASSERT₄ (#APPLY g₁ n₁)) a₁ a₂)
+                aw6 w6 e6 a₁ a₂ a∈ =
+                  -- extract first some nums from n₁ and n₂
+                  lower {0ℓ} {lsuc(L)}
+                        (Mod.□-const M (Mod.∀𝕎-□Func M aw7 ((equalInType-NAT!→ n w6 n₁ n₂ (equalInType-mon n∈ w6 e6)))))
+                  where
+                  aw7 : ∀𝕎 w6 (λ w' e' → #⇛!sameℕ w' n₁ n₂ → Lift (lsuc L) ⊥)
+                  aw7 w7 e7 (k , ck₁ , ck₂) =
+                    lift (p (#PAIR (#NUM k) a₁ ,
+                             equalInType-SUM!
+                               {B = #[0]ASSERT₄ (#[0]APPLY ⌞ g₁ ⌟ #[0]VAR)}
+                               (λ w' e → isTypeNAT!)
+                               aw8
+                               (Mod.∀𝕎-□ M aw9)))
+                    where
+                    aw8 : ∀𝕎 w3 (λ w' _ → (a b : CTerm) (ea : equalInType n w' #NAT! a b)
+                                        → equalTypes n w' (sub0 a (#[0]ASSERT₄ (#[0]APPLY ⌞ g₁ ⌟ #[0]VAR)))
+                                                          (sub0 b (#[0]ASSERT₄ (#[0]APPLY ⌞ g₁ ⌟ #[0]VAR))))
+                    aw8 w' e a b ea rewrite sub0-ASSERT₄-APPLY a g₁ | sub0-ASSERT₄-APPLY b g₁ =
+                      equalInType-BOOL₀!→equalTypes-ASSERT₄
+                        (equalInType-FUN→ (≡CTerm→equalInType #NAT!→BOOL₀!≡ (equalInType-TPURE→ (equalInType-refl g∈)))
+                                          w' e a b ea)
+
+                    aw9 : ∀𝕎 w3 (λ w' _ → SUMeq! (equalInType n w' #NAT!)
+                                                 (λ a b ea → equalInType n w' (sub0 a (#[0]ASSERT₄ (#[0]APPLY ⌞ g₁ ⌟ #[0]VAR))))
+                                                 w' (#PAIR (#NUM k) a₁) (#PAIR (#NUM k) a₁))
+                    aw9 w3a e3a =
+                      #NUM k , #NUM k , a₁ , a₁ ,
+                      NUM-equalInType-NAT! n w3a k ,
+                      #⇛!-refl {w3a} {#PAIR (#NUM k) a₁} ,
+                      #⇛!-refl {w3a} {#PAIR (#NUM k) a₁} ,
+                      ≡CTerm→equalInType
+                        (sym (sub0-ASSERT₄-APPLY (#NUM k) g₁))
+                        (#¬Names→∈#ASSERT₄-change-world
+                          n w7 w3a (#APPLY g₁ (#NUM k)) a₁ a₁
+                          (#¬Names-APPLY {g₁} {#NUM k} nng₁ refl)
+                          (equalTypes→equalInType
+                            (equalInType-BOOL₀!→equalTypes-ASSERT₄
+                            {n} {w7} {#APPLY g₁ n₁} {#APPLY g₁ (#NUM k)}
+                            (equalInType-FUN→
+                              (≡CTerm→equalInType #NAT!→BOOL₀!≡ (equalInType-TPURE→ (equalInType-refl g∈)))
+                              w7 (⊑-trans· e4 (⊑-trans· e5 (⊑-trans· e6 e7))) n₁ (#NUM k)
+                              (→equalInType-NAT! n w7 n₁ (#NUM k) (Mod.∀𝕎-□ M a10))))
+                            (equalInType-refl (equalInType-mon a∈ w7 e7))))
+                      where
+                      a10 : ∀𝕎 w7 (λ w' _ → #⇛!sameℕ w' n₁ (#NUM k))
+                      a10 w8 e8 = k , ∀𝕎-mon e8 ck₁ , #⇛!-refl {w8} {#NUM k}
 
 \end{code}[hide]
