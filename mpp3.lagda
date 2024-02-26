@@ -31,7 +31,6 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.ExcludedMiddle
 
 
 open import util
@@ -61,7 +60,6 @@ module mpp3 {L : Level} (W : PossibleWorlds {L}) (M : Mod W)
             (X : ChoiceExt {L} W C)
             (N : NewChoice {L} W C K G)
             (MP : MarkovPrinciple (lsuc(L)))
-            (EM : ExcludedMiddle (lsuc(L))) -- only to use mpp.lagda, but shouldn't be needed
             (EC : Encode)
        where
 
@@ -132,11 +130,11 @@ open import mp_props2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalInType-#MP-left-qt→ ; #MP-left2→#MP-left ; #MP-left3→#MP-left2 ; #MP-left2→#MP-left3 ;
          equalInType-#MP-left-qt₃→ ; →equalInType-#MP-left-qt₃ ; →equalTypes-#MP-left2-qt₃ ; →equalTypes-#MP-right2-qt₃)
 -- MOVE all these usings to a separate file so that we don't have to rely on ExcludedMiddle
-open import mpp(W)(M)(C)(K)(G)(X)(N)(EM)(EC)
+open import mp_props3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#MPp₆ ; →inhType-ASSERT₄-APPLY ; #¬Names→inhType-ASSERT₄ ; strongBool!-BTRUE→ ; equalInType-ASSERT₄→ ;
          isType-#TPURE-NAT!→BOOL₀! ; #lamInfSearchP ; #lamInfSearchPP ; #APPLY-#lamInfSearchP-#⇛! ;
          #APPLY-#lamInfSearchPP#⇛!)
-open import mpp2(W)(M)(C)(K)(G)(X)(N)(MP)(EM)(EC)
+open import mpp2(W)(M)(C)(K)(G)(X)(N)(MP)(EC)
   using (MPp₇-inh₂)
 open import mp_search(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#infSearchP ; #⇛!sameℕ-mon ; #infSearch ; #infSearchF ; #infSearchI ; #infSearch⇛₁ ; #infSearch⇛₂ ; #infSearch⇛₃ ;
@@ -619,12 +617,12 @@ IFEQ⇓from-to-decomp₁ m a c d v w w' comp isv isvc isvd
 
 
 -- This is a variant of MPp₇-inh₂ that uses SUM! instead of SUM and NAT! instead of BOOL₀! (for the MLTT translation)
-MPp₇-inh₃ : (exb : ∃□) (i : ℕ) (w : 𝕎·) (eval : CTerm)
+MPp₇-inh₃ : (i : ℕ) (w : 𝕎·) (eval : CTerm)
           → #¬Names eval
           → #¬Enc eval
           → ∈Type i w (#FUN #NAT! (#FUN #NAT! #NAT!)) eval
           → ∈Type i w (#MPeval eval) (#MPevalExt eval)
-MPp₇-inh₃ exb i w eval nnf nef eval∈ =
+MPp₇-inh₃ i w eval nnf nef eval∈ =
   equalInType-PI
     {B = #[0]FUN (#[0]MP-left2-qt₅ eval) (#[0]MP-right2-qt₅ eval)}
     (λ w' e' → isTypeNAT! {w'} {i})
@@ -655,10 +653,10 @@ MPp₇-inh₃ exb i w eval nnf nef eval∈ =
     aw3' = ≡CTerm→equalInType (sub0-fun-mp2-qt₄ (→ℕ→ℕ→𝔹 eval) n₁)
                               (snd (snd (equalInType-PI→
                                            {B = #[0]FUN (#[0]MP-left2-qt₄ (→ℕ→ℕ→𝔹 eval)) (#[0]MP-right2-qt₄ (→ℕ→ℕ→𝔹 eval))}
-                                           (MPp₇-inh₂ exb i w (→ℕ→ℕ→𝔹 eval)
-                                                              (#¬Names→ℕ→ℕ→𝔹 {eval} nnf)
-                                                              (#¬Enc→ℕ→ℕ→𝔹 {eval} nef)
-                                                              (equalInType→ℕ→ℕ→𝔹 eval∈))))
+                                           (MPp₇-inh₂ i w (→ℕ→ℕ→𝔹 eval)
+                                                      (#¬Names→ℕ→ℕ→𝔹 {eval} nnf)
+                                                      (#¬Enc→ℕ→ℕ→𝔹 {eval} nef)
+                                                      (equalInType→ℕ→ℕ→𝔹 eval∈))))
                                    w1 e1 n₁ n₂ n∈)
 
     aw3 : ∀𝕎 w1 (λ w' _ → (a₁ a₂ : CTerm) → equalInType i w' (#MP-leftₘ (#APPLY eval n₁)) a₁ a₂

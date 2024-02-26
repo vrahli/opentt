@@ -129,7 +129,7 @@ open import mp_props(W)(M)(C)(K)(G)(X)(N)(EC)
 
 open import mp_props3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (isType-#TPURE-NAT!→BOOL₀! ; equalInType-TPURE-NAT!→BOOL₀!ₗ ; equalInType-TPURE-NAT!→BOOL₀!ᵣ ;
-         →equalInType-ASSERT₄ ; equalInType-ASSERT₄→ ; strongBool!-BTRUE→)
+         →equalInType-ASSERT₄ ; equalInType-ASSERT₄→ ; strongBool!-BTRUE→ ; #¬Names→∈#ASSERT₄-change-world)
 
 open import pure(W)(M)(C)(K)(G)(X)(N)(EC)
   using (equalInType-TPURE→ ; #⇛!nv ; #¬Names-APPLY ; ¬Names→⇛!)
@@ -510,28 +510,6 @@ sq-dec! t = #SQUASH (#UNION! t (#NEG t))
     (λ w1 e1 → lift (1 , refl))
     (λ w1 e1 → lift (1 , refl))
     (equalTypes→equalInType (#⇛!-pres-equalTypes-LPOb i w a₁ a₂ b₁ b₂ a∈ c₁ c₂) b∈)
-
-
-#¬Names→∈#ASSERT₄-change-world : (n : ℕ) (w1 w2 : 𝕎·) (t a₁ a₂ : CTerm)
-                               → #¬Names t
-                               → equalInType n w1 (#ASSERT₄ t) a₁ a₂
-                               → equalInType n w2 (#ASSERT₄ t) a₁ a₂
-#¬Names→∈#ASSERT₄-change-world n w1 w2 t a₁ a₂ nnt a∈ =
-  →equalInType-ASSERT₄
-    n w2 t a₁ a₂
-    (→equalInType-BOOL₀!
-      n w2 t #BTRUE
-      (Mod.□-const M (Mod.∀𝕎-□Func M aw1 (equalInType-BOOL₀!→ n w1 t #BTRUE (equalInType-ASSERT₄→ n w1 t a₁ a₂ a∈)))))
-  where
-  aw1 : ∀𝕎 w1 (λ w' e' → #strongBool! w' t #BTRUE
-                       → □· w2 (λ w'' _ → #strongBool! w'' t #BTRUE))
-  aw1 w1a e1a h =
-    Mod.∀𝕎-□ M aw2
-    where
-    aw2 : ∀𝕎 w2 (λ w'' _ → #strongBool! w'' t #BTRUE)
-    aw2 w2a e2a with strongBool!-BTRUE→ w1a t h
-    ... | u , c = u , #AX , inj₁ (¬Names→⇛! w1a w2a ⌜ t ⌝ ⌜ #INL u ⌝ nnt c ,
-                                  #⇛!-refl {w2a} {#BTRUE})
 
 
 LPO-pure : (n : ℕ) (w : 𝕎·) → ∈Type n w #LPOp #lamAX

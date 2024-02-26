@@ -31,7 +31,6 @@ open import Data.List.Membership.DecSetoid(≡-decSetoid) using (_∈?_)
 open import Data.List.Membership.Propositional.Properties
 open import Function.Bundles
 open import Induction.WellFounded
-open import Axiom.ExcludedMiddle
 
 
 open import util
@@ -66,7 +65,6 @@ module mp_prop {L  : Level}
                (V  : ChoiceVal W C K G X N EC)
                (F  : Freeze {L} W C K P G N)
                (CB : ChoiceBar W M C K P G X N EC V F)
-               (EM : ExcludedMiddle (lsuc(L)))
        where
 
 
@@ -132,7 +130,7 @@ open import pure2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (∈NAT!-change-level)
 
 -- TODO: move those:
-open import mpp(W)(M)(C)(K)(G)(X)(N)(EM)(EC)
+open import mp_props3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (→inhType-ASSERT₄-APPLY ; equalInType-ASSERT₄→ ; →equalInType-ASSERT₄ ; strongBool!-BTRUE→ ;
          #⇛!-pres-equalTypes-mp-qt₃-fun ; #⇛!-pres-equalInType-mp-qt₃-fun)
 

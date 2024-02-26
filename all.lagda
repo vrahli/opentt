@@ -52,7 +52,8 @@ open import not_lem{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
 -- Using classical, we can however prove that LEM is consistent when using an open-like modality (see ExBar in exBar.lagda)
 open import lem{L}(W)(M)(C)(K)(G)(X)(N)(EM)(EB)(EC)
 -- This version requires choices to be Booleans:
-open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB) using (¬LPO)
+-- EM is used to prove the validity of a "pure" version of LPO
+open import not_lpo{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(EM)(CB) using (¬LPO)
 -- As opposed to the above version, this one relies on QTBool instead of Bool:
 open import not_lpo_qtbool{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB) using (¬LPOq)
 -- This version requires choices to be Booleans, but also freezable to always be true:
@@ -61,8 +62,8 @@ open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB) using (¬MP ; ¬MP�
 -- open import not_mp{L}(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(CE)(CB)
 -- MP is however consistent when restricted to pure functions
 open import mpp{L}(W)(M)(C)(K)(G)(X)(N)(EM)(EC) using (MPp-inh ; MPp₂-inh ; MPp₃-inh ; MPp₆-inh)
-open import mpp2{L}(W)(M)(C)(K)(G)(X)(N)(MP)(EM)(EC) using (MPp₆-inh₂ ; MPp₇-inh₂)
-open import mpp3{L}(W)(M)(C)(K)(G)(X)(N)(MP)(EM)(EC) using (MPp₇-inh₃)
+open import mpp2{L}(W)(M)(C)(K)(G)(X)(N)(MP)(EC) using (MPp₆-inh₂ ; MPp₇-inh₂)
+open import mpp3{L}(W)(M)(C)(K)(G)(X)(N)(MP)(EC) using (MPp₇-inh₃)
 -- Using classsical logic, MP is also consistent when using an open-like modality (see ExBar in exBar.lagda)
 open import mp{L}(W)(M)(C)(K)(G)(X)(N)(EC)(EB)(EM) using (MPvalid ; MP₂valid)
 -- If we assume that choices are TRUE and FALSE only, using choice sequences we can prove

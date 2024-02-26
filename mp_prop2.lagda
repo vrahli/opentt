@@ -132,7 +132,7 @@ open import pure2(W)(M)(C)(K)(G)(X)(N)(EC)
   using (∈NAT!-change-level)
 
 -- TODO: move those:
-open import mpp(W)(M)(C)(K)(G)(X)(N)(EM)(EC)
+open import mp_props3(W)(M)(C)(K)(G)(X)(N)(EC)
   using (→inhType-ASSERT₄-APPLY ; equalInType-ASSERT₄→ ; →equalInType-ASSERT₄ ; strongBool!-BTRUE→ ;
          #⇛!-pres-equalTypes-mp-qt₃-fun ; #⇛!-pres-equalInType-mp-qt₃-fun)
 
@@ -153,7 +153,7 @@ open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (Resℂ ; →equalInType-APPLY-CS-Typeℂ₀₁·)
 --open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(CB)
 
-open import mp_prop(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)(EM)
+open import mp_prop(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (Choiceℙ ; immutableChoices ; alwaysFreezable ; #MPℙ ; #DECℕ ; ∈#MPℙ→ ; equalTerms-pres-#⇛-left-rev-UNIV ;
          ¬ΣNAT!→¬inhType-Σchoiceℙ ; inhType-DECℕ ; #Σchoiceℙ ; ΣinhType→inhType-choice ; ¬equalInType-#Σchoiceℙ ;
          isTypeMPℙ)

@@ -26,7 +26,6 @@ open import Data.List.Membership.Propositional
 open import Data.List.Membership.Propositional.Properties
 open import Data.Sum
 open import Relation.Nullary
-open import Axiom.ExcludedMiddle
 
 -- MLTT imports
 open import Tools.Nat using (1+)
@@ -70,7 +69,6 @@ module mltt2 {L  : Level}
              (F  : Freeze {L} W C K P G N)
              (CB : ChoiceBar W M C K P G X N EC V F)
              (MP : MarkovPrinciple (lsuc(L)))
-             (EM : ExcludedMiddle (lsuc(L))) -- only to use mpp.lagda, but shouldn't be needed
        where
 
 open import Relation.Binary.PropositionalEquality
@@ -95,7 +93,7 @@ open import mp_props(W)(M)(C)(K)(G)(X)(N)(EC)
   using (#MPₘ ; ≡SUM!)
 open import not_mp(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (¬MPₘ ; alwaysFreezable)
-open import mpp3(W)(M)(C)(K)(G)(X)(N)(MP)(EM)(EC)
+open import mpp3(W)(M)(C)(K)(G)(X)(N)(MP)(EC)
   using (MPp₇-inh₃ ; #MPeval ; #MPevalExt)
 
 
@@ -195,15 +193,13 @@ MPEₒ eval = ⌜ #MPeval eval ⌝
   ∈Type-and-neg {i} {w} {#MPₘ} {t} {#lamAX} (≣subst (λ z → ∈Type i w z t) ⟦MPℕₘ⟧ᵤ₀ h) (¬MPₘ bcb fr w i)
 
 -- MPE (i.e., MP_pr) is satisfied by the above model
-⊨MPE : (exb : ∃□)
-       (i : Nat) (lti : 2 <ℕ i) (w : 𝕎·)
-       (eval : Term 0)
+⊨MPE : (i : Nat) (lti : 2 <ℕ i) (w : 𝕎·) (eval : Term 0)
      → ⊨ₑ i lti w eval (ℕ ▹▹ (ℕ ▹▹ ℕ))
      → ⊨ i lti w (MPE eval)
-⊨MPE exb i lti w eval eval∈ rewrite ⟦MPE⟧ᵤ₀ eval | ⟦ℕ→ℕ→ℕ⟧ᵤ₀ = c
+⊨MPE i lti w eval eval∈ rewrite ⟦MPE⟧ᵤ₀ eval | ⟦ℕ→ℕ→ℕ⟧ᵤ₀ = c
   where
   c : inhType i w (#MPeval ⟦ eval ⟧ᵤ₀)
-  c = #MPevalExt ⟦ eval ⟧ᵤ₀ , MPp₇-inh₃ exb i w ⟦ eval ⟧ᵤ₀ (¬Names⟦⟧ᵤ eval) (¬Enc⟦⟧ᵤ eval) eval∈
+  c = #MPevalExt ⟦ eval ⟧ᵤ₀ , MPp₇-inh₃ i w ⟦ eval ⟧ᵤ₀ (¬Names⟦⟧ᵤ eval) (¬Enc⟦⟧ᵤ eval) eval∈
 
 -- We show here the negtion of MP in MLTT by going through □TT
 ¬⊢MPℕₘ : (bcb : Nat!ℂ CB) (fr : alwaysFreezable F)

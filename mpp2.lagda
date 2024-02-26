@@ -163,8 +163,8 @@ open import mp_search(W)(M)(C)(K)(G)(X)(N)(EC)
 
 
 -- This version is the same as MPp₆ in mpp.lagda but the proof uses MP instead of LEM
-MPp₆-inh₂ : (exb : ∃□) (n : ℕ) (w : 𝕎·) → ∈Type n w #MPp₆ #lam2AX
-MPp₆-inh₂ exb n w =
+MPp₆-inh₂ : (n : ℕ) (w : 𝕎·) → ∈Type n w #MPp₆ #lam2AX
+MPp₆-inh₂ n w =
   equalInType-PI
     {n} {w} {#TPURE #NAT!→BOOL₀!} {#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃}
     (λ w' e → isType-#TPURE-NAT!→BOOL₀! w' n)
@@ -210,7 +210,7 @@ MPp₆-inh₂ exb n w =
             aw4 w3 e3 = cc1 cc2
               where
                 cc4 : (k : ℕ) → Dec (inhType n w3 (#ASSERT₄ (#APPLY x₁ (#NUM k))))
-                cc4 k = cc5 eqa3
+                cc4 k = Mod.□-const M (Mod.∀𝕎-□Func M cc5 eqa1)
                   where
                     eqa1 : □· w3 (λ w' _ → #strongBool! w' (#APPLY x₁ (#NUM k)) (#APPLY x₂ (#NUM k)))
                     eqa1 = equalInType-BOOL₀!→
@@ -219,26 +219,14 @@ MPp₆-inh₂ exb n w =
                                (≡CTerm→equalInType #NAT!→BOOL₀!≡ (equalInType-TPURE→ eqx)) w3 (⊑-trans· e2 e3)
                                (#NUM k) (#NUM k) (NUM-equalInType-NAT! n w3 k))
 
-                    eqa2 : ∃𝕎 w3 (λ w' _ → #strongBool! w' (#APPLY x₁ (#NUM k)) (#APPLY x₂ (#NUM k)))
-                    eqa2 = exb eqa1
-
-                    w4 : 𝕎·
-                    w4 = fst eqa2
-
-                    e4 : w3 ⊑· w4
-                    e4 = fst (snd eqa2)
-
-                    eqa3 : #strongBool! w4 (#APPLY x₁ (#NUM k)) (#APPLY x₂ (#NUM k))
-                    eqa3 = snd (snd eqa2)
-
-                    cc5 : #strongBool! w4 (#APPLY x₁ (#NUM k)) (#APPLY x₂ (#NUM k))
-                          → Dec (inhType n w3 (#ASSERT₄ (#APPLY x₁ (#NUM k))))
-                    cc5 (x , y , inj₁ (c₁ , c₂)) =
+                    cc5 : ∀𝕎 w3 (λ w4 e' → #strongBool! w4 (#APPLY x₁ (#NUM k)) (#APPLY x₂ (#NUM k))
+                                         → Dec (inhType n w3 (#ASSERT₄ (#APPLY x₁ (#NUM k)))))
+                    cc5 w4 e4 (x , y , inj₁ (c₁ , c₂)) =
                       yes (#¬Names→inhType-ASSERT₄ n w4 w3
                              (#APPLY x₁ (#NUM k))
                              (#¬Names-APPLY {x₁} {#NUM k} nnx₁ refl)
                              (x , c₁))
-                    cc5 (x , y , inj₂ (c₁ , c₂)) =
+                    cc5 w4 e4 (x , y , inj₂ (c₁ , c₂)) =
                       no cc6
                       where
                         cc6 : ¬ inhType n w3 (#ASSERT₄ (#APPLY x₁ (#NUM k)))
@@ -707,8 +695,8 @@ mpSearch₂ i w f₁ f₂ a₁ a₂ t₁ t₂ nnf₁ nnf₂ ct₁ ct₂ f∈ a�
 
 
 -- This is similar to MPp₆-inh₂ but proved here for non-truncated sums
-MPp₇-inh : (exb : ∃□) (n : ℕ) (w : 𝕎·) → ∈Type n w #MPp₇ #lamInfSearchP
-MPp₇-inh exb n w =
+MPp₇-inh : (n : ℕ) (w : 𝕎·) → ∈Type n w #MPp₇ #lamInfSearchP
+MPp₇-inh n w =
   equalInType-PI
     {n} {w} {#TPURE #NAT!→BOOL₀!} {#[0]FUN #[0]MP-left2-qt₃ #[0]MP-right2-qt₃}
     (λ w1 e1 → isType-#TPURE-NAT!→BOOL₀! w1 n)
@@ -757,7 +745,7 @@ MPp₇-inh exb n w =
         p5 = →≡equalInType
                (sub0-fun-mp₆ g₁)
                (snd (snd (equalInType-PI→ {n} {w} {#TPURE #NAT!→BOOL₀!} {#[0]FUN #[0]MP-left-qt₃ #[0]MP-right-qt₃}
-                                          (MPp₆-inh₂ exb n w))) w1' (⊑-trans· e1 e1') g₁ g₂
+                                          (MPp₆-inh₂ n w))) w1' (⊑-trans· e1 e1') g₁ g₂
                                           (#⇛!→equalInType (equalInType-mon f∈ w1' e1') comp₁ comp₂))
 
         p4 : ∀𝕎 w1' (λ w' _ → (a₁ a₂ : CTerm) → equalInType n w' (#MP-left2-qt₃ g₁) a₁ a₂
@@ -787,12 +775,12 @@ MPp₇-inh exb n w =
 
 
 -- This combines MPp₇-inh and Πpure→₂
-MPp₇-inh₂ : (exb : ∃□) (i : ℕ) (w : 𝕎·) (eval : CTerm)
+MPp₇-inh₂ : (i : ℕ) (w : 𝕎·) (eval : CTerm)
           → #¬Names eval
           → #¬Enc eval
           → ∈Type i w (#FUN #NAT! #NAT!→BOOL₀!) eval
           → ∈Type i w (#PI #NAT! (#[0]FUN (#[0]MP-left2-qt₄ eval) (#[0]MP-right2-qt₄ eval))) (mpEvalEx eval #lamInfSearchP)
-MPp₇-inh₂ exb i w eval nnf nef eval∈ =
-  Πpure→₂ i w eval #lamInfSearchP nnf nef eval∈ (MPp₇-inh exb i w)
+MPp₇-inh₂ i w eval nnf nef eval∈ =
+  Πpure→₂ i w eval #lamInfSearchP nnf nef eval∈ (MPp₇-inh i w)
 
 \end{code}
