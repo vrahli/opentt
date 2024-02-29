@@ -160,9 +160,9 @@ open import mp_prop(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
 
 
 -- follows ¬MP₆ in not_mp
-¬MPℙ : (i : ℕ) → Choiceℙ i CB → immutableChoices → alwaysFreezable F
+¬MPℙ : (i : ℕ) → Choiceℙ i CB → immutableChoices {--→ alwaysFreezable F--}
      → (w : 𝕎·) → ∈Type (suc i) w (#NEG (#MPℙ i)) #lamAX
-¬MPℙ i cp immut af w = equalInType-NEG (isTypeMPℙ w i) aw1
+¬MPℙ i cp immut {--af--} w = equalInType-NEG (isTypeMPℙ w i) aw1
   where
   aw1 : ∀𝕎 w (λ w' _ →  (a₁ a₂ : CTerm) → ¬ equalInType (suc i) w' (#MPℙ i) a₁ a₂)
   aw1 w1 e1 F G F∈ = h8 h7
@@ -210,7 +210,7 @@ open import mp_prop(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
                                           × inhType i w' (#APPLY f n)))
                                        → ⊥)
                        → ⊥)
-    h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice (suc i) w3 name (⊑-compatible· e3 comp1) (af name w3) z
+    h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice (suc i) w3 name (⊑-compatible· e3 comp1) {--(af name w3)--} z
       where
       z : ∀𝕎 w3 (λ w4 e4 → ¬ inhType (suc i) w4 (#Σchoice name ℂ₁·))
       z = ¬ΣNAT!→¬inhType-Σchoiceℙ i cp w3 name (equalInType-mon eqf1 w3 e3) aw

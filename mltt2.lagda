@@ -186,11 +186,11 @@ MPEₒ eval = ⌜ #MPeval eval ⌝
 
 -- MPℕₘ (i.e., MP_bool) is not satisfied by the above model
 -- the 1st two hypotheses are inherited from the proof of the negation of MP in □TT
-¬⊨MPℕₘ : (bcb : Nat!ℂ CB) (fr : alwaysFreezable F)
+¬⊨MPℕₘ : (bcb : Nat!ℂ CB) {--(fr : alwaysFreezable F)--}
          (i : Nat) (lti : 2 <ℕ i) (w : 𝕎·)
        → ¬ ⊨ i lti w MPℕₘ
-¬⊨MPℕₘ bcb fr i lti w (t , h) =
-  ∈Type-and-neg {i} {w} {#MPₘ} {t} {#lamAX} (≣subst (λ z → ∈Type i w z t) ⟦MPℕₘ⟧ᵤ₀ h) (¬MPₘ bcb fr w i)
+¬⊨MPℕₘ bcb {--fr--} i lti w (t , h) =
+  ∈Type-and-neg {i} {w} {#MPₘ} {t} {#lamAX} (≣subst (λ z → ∈Type i w z t) ⟦MPℕₘ⟧ᵤ₀ h) (¬MPₘ bcb {--fr--} w i)
 
 -- MPE (i.e., MP_pr) is satisfied by the above model
 ⊨MPE : (i : Nat) (lti : 2 <ℕ i) (w : 𝕎·) (eval : Term 0)
@@ -202,11 +202,11 @@ MPEₒ eval = ⌜ #MPeval eval ⌝
   c = #MPevalExt ⟦ eval ⟧ᵤ₀ , MPp₇-inh₃ i w ⟦ eval ⟧ᵤ₀ (¬Names⟦⟧ᵤ eval) (¬Enc⟦⟧ᵤ eval) eval∈
 
 -- We show here the negtion of MP in MLTT by going through □TT
-¬⊢MPℕₘ : (bcb : Nat!ℂ CB) (fr : alwaysFreezable F)
+¬⊢MPℕₘ : (bcb : Nat!ℂ CB) {--(fr : alwaysFreezable F)--}
          (i : Nat) (lti : 2 <ℕ i) (w : 𝕎·)
          {t : Term 0} → ¬ ε ⊢ t ∷ MPℕₘ
-¬⊢MPℕₘ bcb fr i lti w {t} h =
-  ∈Type-and-neg {i} {w} {#MPₘ} {⟦ t ⟧ᵤ₀} {#lamAX} h2 (¬MPₘ bcb fr w i)
+¬⊢MPℕₘ bcb {--fr--} i lti w {t} h =
+  ∈Type-and-neg {i} {w} {#MPₘ} {⟦ t ⟧ᵤ₀} {#lamAX} h2 (¬MPₘ bcb {--fr--} w i)
   where
   h1 : ∈Type i w ⟦ MPℕₘ ⟧ᵤ₀ ⟦ t ⟧ᵤ₀
   h1 = ⟦ h ⟧Γ∈₀ i lti w

@@ -513,11 +513,11 @@ sq-dec : CTerm → CTerm
 sq-dec t = #SQUASH (#UNION t (#NEG t))
 
 
-¬∀𝕎¬equalInType-#Σchoice : (i : ℕ) (w : 𝕎·) (name : Name)
-                         → compatible· name w Resℂ
-                         → freezable· name w
-                         → ¬ ∀𝕎 w (λ w' _ → ¬ inhType i w' (#Σchoice name ℂ₁·))
-¬∀𝕎¬equalInType-#Σchoice i w name comp fb aw = aw w1 e1 (#PAIR (#NUM n1) #AX , h1)
+¬∀𝕎¬equalInType-#Σchoice-freezable : (i : ℕ) (w : 𝕎·) (name : Name)
+                                   → compatible· name w Resℂ
+                                   → freezable· name w
+                                   → ¬ ∀𝕎 w (λ w' _ → ¬ inhType i w' (#Σchoice name ℂ₁·))
+¬∀𝕎¬equalInType-#Σchoice-freezable i w name comp fb aw = aw w1 e1 (#PAIR (#NUM n1) #AX , h1)
   where
     w1 : 𝕎·
     w1 = freeze· name w ℂ₁·
@@ -537,6 +537,23 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     h1 : equalInType i w1 (#Σchoice name ℂ₁·) (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX)
     h1 = getChoice→equalInType-#Σchoice i (⊑-compatible· e1 comp) (sat-ℂ₁ 0) g1
 
+
+¬∀𝕎¬equalInType-#Σchoice : (i : ℕ) (w : 𝕎·) (name : Name)
+                         → compatible· name w Resℂ
+                         → ¬ ∀𝕎 w (λ w' _ → ¬ inhType i w' (#Σchoice name ℂ₁·))
+¬∀𝕎¬equalInType-#Σchoice i w name comp aw
+  with freezableDec· name w
+¬∀𝕎¬equalInType-#Σchoice i w name comp aw | inj₁ fb =
+  ¬∀𝕎¬equalInType-#Σchoice-freezable i w name comp fb aw
+¬∀𝕎¬equalInType-#Σchoice i w name comp aw | inj₂ nfb
+  with ¬freezable· name w {Resℂ} comp tt nfb
+... | n , aw0 = aw w (⊑-refl· w) (#PAIR (#NUM n) #AX , h1)
+  where
+    g1 : #APPLY (#CS name) (#NUM n) #⇛! ℂ→C· ℂ₁· at w
+    g1 = →#APPLY-#CS#⇛ℂ→C· aw0
+
+    h1 : equalInType i w (#Σchoice name ℂ₁·) (#PAIR (#NUM n) #AX) (#PAIR (#NUM n) #AX)
+    h1 = getChoice→equalInType-#Σchoice i comp (sat-ℂ₁ 0) g1
 
 
 ¬-dec-Σchoice : (w : 𝕎·) (i : ℕ)
@@ -605,8 +622,7 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     concl : (inhType i w3 (#Σchoice name k1) ⊎ ∀𝕎 w3 (λ w'' _ → ¬ inhType i w'' (#Σchoice name k1)))
             → ⊥
     concl (inj₁ eqi) = ¬equalInType-#Σchoice i w3 Resℂ name isValueℂ₀· isValueℂ₁· dks oc2 comp2 fb2 eqi
-    concl (inj₂ aw) = ¬∀𝕎¬equalInType-#Σchoice i w3 name comp2 fb2 aw
-
+    concl (inj₂ aw) = ¬∀𝕎¬equalInType-#Σchoice i w3 name comp2 {--fb2--} aw
 
 
 fun-equalInType-SQUASH-UNION-AX : {n : ℕ} {w : 𝕎·} {a b u v : CTerm}

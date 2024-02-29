@@ -135,8 +135,8 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
 -- Assuming that our choices are Bools
 -- and that choices are always freezable (see where it is used below)
 -- Boolℂ CB is for BOOL, which then would be only for FCSs, not references, which change over time
-¬MP : Bool₀ℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP) #lamAX
-¬MP bcb afb w n = equalInType-NEG (isTypeMP w n) aw1
+¬MP : Bool₀ℂ CB {--→ alwaysFreezable F--} → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP) #lamAX
+¬MP bcb {--afb--} w n = equalInType-NEG (isTypeMP w n) aw1
   where
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' #MP a₁ a₂)
     aw1 w1 e1 F G ea = h8 h7
@@ -185,7 +185,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
 
         h4 : ∀𝕎 w2 (λ w3 e3 → ¬ inhType n w3 (#PI-NEG-ASSERT₂ f))
         -- freezable might not be true here, but this is something that FCS will satisfy because freezable is always true...
-        h4 w3 e3 inh = ¬∀𝕎¬equalInType-#Σchoice n w3 name (⊑-compatible· e3 comp1) (afb name w3) z
+        h4 w3 e3 inh = ¬∀𝕎¬equalInType-#Σchoice n w3 name (⊑-compatible· e3 comp1) {--(afb name w3)--} z
           where
             z : ∀𝕎 w3 (λ w4 e4 → ¬ inhType n w4 (#Σchoice name ℂ₁·))
             z = equalInType-NEG→¬inh (snd (#PI-NEG-ASSERT₂→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh))
@@ -273,8 +273,8 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
 
 
 -- QTBool!ℂ CB is for QTBOOL! which works for FCSs and refs
-¬MP₄ : Bool!ℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₄) #lamAX
-¬MP₄ bcb afb w n = equalInType-NEG (isTypeMP₄ w n) aw1
+¬MP₄ : Bool!ℂ CB {--→ alwaysFreezable F--} → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₄) #lamAX
+¬MP₄ bcb {--afb--} w n = equalInType-NEG (isTypeMP₄ w n) aw1
   where
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' #MP₄ a₁ a₂)
     aw1 w1 e1 F G ea = h8 h7
@@ -319,7 +319,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
                                                    × inhType n w' (#ASSERT₃ (#APPLY f n₁)))))
                                                → ⊥)
                              → ⊥)
-        h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice n w3 name (⊑-compatible· e3 comp1) (afb name w3) z
+        h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice n w3 name (⊑-compatible· e3 comp1) {--(afb name w3)--} z
           where
             z : ∀𝕎 w3 (λ w4 e4 → ¬ inhType n w4 (#Σchoice name ℂ₁·))
             z = ¬ΣNAT!→¬inhType-Σchoice₃ bcb n w3 name aw
@@ -409,8 +409,8 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
 -- There is an instantiation in modInstanceBethCsBool2.lagda
 -- alwaysFreezable is also for FCSs
 -- This version uses truncated Σs, and noread/nowrite ℕ and 𝔹
-¬MP₆ : Bool₀!ℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₆) #lamAX
-¬MP₆ bcb afb w n = equalInType-NEG (isTypeMP₆ w n) aw1
+¬MP₆ : Bool₀!ℂ CB {--→ alwaysFreezable F--} → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₆) #lamAX
+¬MP₆ bcb {--afb--} w n = equalInType-NEG (isTypeMP₆ w n) aw1
   where
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' #MP₆ a₁ a₂)
     aw1 w1 e1 F G ea = h8 h7
@@ -455,7 +455,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
                                                    × inhType n w' (#ASSERT₄ (#APPLY f n₁)))))
                                                → ⊥)
                              → ⊥)
-        h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice n w3 name (⊑-compatible· e3 comp1) (afb name w3) z
+        h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice n w3 name (⊑-compatible· e3 comp1) {--(afb name w3)--} z
           where
             z : ∀𝕎 w3 (λ w4 e4 → ¬ inhType n w4 (#Σchoice name ℂ₁·))
             z = ¬ΣNAT!→¬inhType-Σchoice₄ bcb n w3 name aw
@@ -783,8 +783,8 @@ EQ-N0→NATREC-TRUE n w t u a₁ a₂ b₁ b₂ h =
 -- Nat!ℂ CB is for NAT! which works only for FCSs
 -- alwaysFreezable is also for FCSs
 -- This version uses non-truncated Σs, and noread/nowrite ℕ and 𝔹
-¬MPₘ : Nat!ℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MPₘ) #lamAX
-¬MPₘ bcb afb w n = equalInType-NEG (isTypeMPₘ w n) aw1
+¬MPₘ : Nat!ℂ CB {--→ alwaysFreezable F--} → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MPₘ) #lamAX
+¬MPₘ bcb {--afb--} w n = equalInType-NEG (isTypeMPₘ w n) aw1
   where
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' #MPₘ a₁ a₂)
     aw1 w1 e1 F G ea = h8 h7
@@ -829,7 +829,7 @@ EQ-N0→NATREC-TRUE n w t u a₁ a₂ b₁ b₂ h =
                                               × inhType n w' (#ASSERTₘ (#APPLY f n₁)))))
                                            → ⊥)
                            → ⊥)
-        h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice n w3 name (⊑-compatible· e3 comp1) (afb name w3) z
+        h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice n w3 name (⊑-compatible· e3 comp1) {--(afb name w3)--} z
           where
             z : ∀𝕎 w3 (λ w4 e4 → ¬ inhType n w4 (#Σchoice name ℂ₁·))
             z = ¬ΣNAT!→¬inhType-Σchoiceₘ bcb n w3 name aw
@@ -965,8 +965,8 @@ equalTypes-#Σchoiceₙ-body-sub0 i w c k comp sat w' e' a₁ a₂ ea rewrite su
 
 
 
-¬MPₙ : Boolℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MPₙ) #lamAX
-¬MPₙ bcb afb w n = equalInType-NEG (isTypeMPₙ w n) aw1
+¬MPₙ : Boolℂ CB {--→ alwaysFreezable F--} → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MPₙ) #lamAX
+¬MPₙ bcb {--afb--} w n = equalInType-NEG (isTypeMPₙ w n) aw1
   where
     aw1 : ∀𝕎 w (λ w' _ → (a₁ a₂ : CTerm) → ¬ equalInType n w' #MPₙ a₁ a₂)
     aw1 w1 e1 F G ea = {!!}
@@ -983,9 +983,9 @@ equalTypes-#Σchoiceₙ-body-sub0 i w c k comp sat w' e' a₁ a₂ ea rewrite su
 
 
 -- This is similar to ¬MP but proved here for #MP₂, which is stated using ¬¬∃, instead of #MP, which is stated using ¬∀¬
-¬MP₂ : Bool₀ℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₂) #lamAX
-¬MP₂ bcb afb w n =
-  →∈Type-NEG n w #MP #MP₂ #lamAX #lamAX (isTypeMP₂ w n) aw1 (¬MP bcb afb w n)
+¬MP₂ : Bool₀ℂ CB {--→ alwaysFreezable F--} → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₂) #lamAX
+¬MP₂ bcb {--afb--} w n =
+  →∈Type-NEG n w #MP #MP₂ #lamAX #lamAX (isTypeMP₂ w n) aw1 (¬MP bcb {--afb--} w n)
   where
     p2 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' #NAT!→BOOL₀ f₁ f₂
                        → equalTypes n w' (sub0 f₁ (#[0]FUN #[0]MP-left #[0]MP-right)) (sub0 f₂ (#[0]FUN #[0]MP-left #[0]MP-right)))
@@ -1018,9 +1018,9 @@ equalTypes-#Σchoiceₙ-body-sub0 i w c k comp sat w' e' a₁ a₂ ea rewrite su
 
 
 -- This is similar to ¬MP₂ but proved here for an non-truncated version of #MP₂
-¬MP₃ : Bool₀ℂ CB → alwaysFreezable F → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₃) #lamAX
-¬MP₃ bcb afb w n =
-  →∈Type-NEG n w #MP₂ #MP₃ #lamAX #lamAX (isTypeMP₃ w n) aw1 (¬MP₂ bcb afb w n)
+¬MP₃ : Bool₀ℂ CB {--→ alwaysFreezable F--} → (w : 𝕎·) (n : ℕ) → ∈Type n w (#NEG #MP₃) #lamAX
+¬MP₃ bcb {--afb--} w n =
+  →∈Type-NEG n w #MP₂ #MP₃ #lamAX #lamAX (isTypeMP₃ w n) aw1 (¬MP₂ bcb {--afb--} w n)
   where
     p2 : ∀𝕎 w (λ w' _ → (f₁ f₂ : CTerm) → equalInType n w' #NAT!→BOOL₀ f₁ f₂
                        → equalTypes n w' (sub0 f₁ (#[0]FUN #[0]MP-left3 #[0]MP-right)) (sub0 f₂ (#[0]FUN #[0]MP-left3 #[0]MP-right)))
