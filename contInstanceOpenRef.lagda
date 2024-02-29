@@ -136,7 +136,7 @@ OR-get-choose-ℕ name w n (c , true , i , s) with getRef⊎ name w
 ... | inj₁ (x , z) rewrite z | just-inj i | getRef-update-true-¬frz-≡ {w} n true (λ x → x) z = refl
 ... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym i))
 OR-get-choose-ℕ name w n (c , false , i , s) with getRef⊎ name w
-... | inj₁ (x , z) rewrite z | just-inj i | getRef-update-false-≡ {w}  n false z = refl
+... | inj₁ (x , z) rewrite z | just-inj i | getRef-update-false-≡ {w}  n false refl z = refl
 ... | inj₂ z rewrite z = ⊥-elim (¬just≡nothing (sym i))
 
 \end{code}

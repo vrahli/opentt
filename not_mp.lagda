@@ -158,7 +158,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         e2 : w1 ⊑· w2
         e2 = startNewChoice⊏ Resℂ w1
 
-        oc1 : onlyℂ∈𝕎 (Res.def Resℂ) name w2
+        oc1 : onlyℂ∈𝕎 (Res.c₀ Resℂ) name w2
         oc1 n = getChoice-startNewChoice n Resℂ w1
 
         comp1 : compatible· name w2 Resℂ
@@ -185,7 +185,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
 
         h4 : ∀𝕎 w2 (λ w3 e3 → ¬ inhType n w3 (#PI-NEG-ASSERT₂ f))
         -- freezable might not be true here, but this is something that FCS will satisfy because freezable is always true...
-        h4 w3 e3 inh = ¬∀𝕎¬equalInType-#Σchoice n w3 name ℂ₁· sat-ℂ₁ (⊑-compatible· e3 comp1) (afb name w3) z
+        h4 w3 e3 inh = ¬∀𝕎¬equalInType-#Σchoice n w3 name (⊑-compatible· e3 comp1) (afb name w3) z
           where
             z : ∀𝕎 w3 (λ w4 e4 → ¬ inhType n w4 (#Σchoice name ℂ₁·))
             z = equalInType-NEG→¬inh (snd (#PI-NEG-ASSERT₂→#Σchoice bcb (⊑-compatible· e3 comp1) (0 , sat-ℂ₁ 0) inh))
@@ -203,7 +203,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         e3 : w2 ⊑· w3
         e3 = fst (snd (followChoice· name h5 oc1 comp1 fb1))
 
-        oc2 : onlyℂ∈𝕎 (Res.def Resℂ) name w3
+        oc2 : onlyℂ∈𝕎 (Res.c₀ Resℂ) name w3
         oc2 = fst (snd (snd (followChoice· name h5 oc1 comp1 fb1)))
 
         comp2 : compatible· name w3 Resℂ
@@ -297,7 +297,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         e2 : w1 ⊑· w2
         e2 = startNewChoice⊏ Resℂ w1
 
-        oc1 : onlyℂ∈𝕎 (Res.def Resℂ) name w2
+        oc1 : onlyℂ∈𝕎 (Res.c₀ Resℂ) name w2
         oc1 n = getChoice-startNewChoice n Resℂ w1
 
         comp1 : compatible· name w2 Resℂ
@@ -319,7 +319,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
                                                    × inhType n w' (#ASSERT₃ (#APPLY f n₁)))))
                                                → ⊥)
                              → ⊥)
-        h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice n w3 name ℂ₁· sat-ℂ₁ (⊑-compatible· e3 comp1) (afb name w3) z
+        h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice n w3 name (⊑-compatible· e3 comp1) (afb name w3) z
           where
             z : ∀𝕎 w3 (λ w4 e4 → ¬ inhType n w4 (#Σchoice name ℂ₁·))
             z = ¬ΣNAT!→¬inhType-Σchoice₃ bcb n w3 name aw
@@ -335,7 +335,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         e3 : w2 ⊑· w3
         e3 = fst (snd (followChoice· name h4 oc1 comp1 fb1))
 
-        oc2 : onlyℂ∈𝕎 (Res.def Resℂ) name w3
+        oc2 : onlyℂ∈𝕎 (Res.c₀ Resℂ) name w3
         oc2 = fst (snd (snd (followChoice· name h4 oc1 comp1 fb1)))
 
         comp2 : compatible· name w3 Resℂ
@@ -433,7 +433,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         e2 : w1 ⊑· w2
         e2 = startNewChoice⊏ Resℂ w1
 
-        oc1 : onlyℂ∈𝕎 (Res.def Resℂ) name w2
+        oc1 : onlyℂ∈𝕎 (Res.c₀ Resℂ) name w2
         oc1 n = getChoice-startNewChoice n Resℂ w1
 
         comp1 : compatible· name w2 Resℂ
@@ -455,7 +455,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
                                                    × inhType n w' (#ASSERT₄ (#APPLY f n₁)))))
                                                → ⊥)
                              → ⊥)
-        h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice n w3 name ℂ₁· sat-ℂ₁ (⊑-compatible· e3 comp1) (afb name w3) z
+        h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice n w3 name (⊑-compatible· e3 comp1) (afb name w3) z
           where
             z : ∀𝕎 w3 (λ w4 e4 → ¬ inhType n w4 (#Σchoice name ℂ₁·))
             z = ¬ΣNAT!→¬inhType-Σchoice₄ bcb n w3 name aw
@@ -471,7 +471,7 @@ alwaysFreezable f = (c : Name) (w : 𝕎·) → Freeze.freezable f c w
         e3 : w2 ⊑· w3
         e3 = fst (snd (followChoice· name h4 oc1 comp1 fb1))
 
-        oc2 : onlyℂ∈𝕎 (Res.def Resℂ) name w3
+        oc2 : onlyℂ∈𝕎 (Res.c₀ Resℂ) name w3
         oc2 = fst (snd (snd (followChoice· name h4 oc1 comp1 fb1)))
 
         comp2 : compatible· name w3 Resℂ
@@ -807,7 +807,7 @@ EQ-N0→NATREC-TRUE n w t u a₁ a₂ b₁ b₂ h =
         e2 : w1 ⊑· w2
         e2 = startNewChoice⊏ Resℂ w1
 
-        oc1 : onlyℂ∈𝕎 (Res.def Resℂ) name w2
+        oc1 : onlyℂ∈𝕎 (Res.c₀ Resℂ) name w2
         oc1 n = getChoice-startNewChoice n Resℂ w1
 
         comp1 : compatible· name w2 Resℂ
@@ -829,7 +829,7 @@ EQ-N0→NATREC-TRUE n w t u a₁ a₂ b₁ b₂ h =
                                               × inhType n w' (#ASSERTₘ (#APPLY f n₁)))))
                                            → ⊥)
                            → ⊥)
-        h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice n w3 name ℂ₁· sat-ℂ₁ (⊑-compatible· e3 comp1) (afb name w3) z
+        h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice n w3 name (⊑-compatible· e3 comp1) (afb name w3) z
           where
             z : ∀𝕎 w3 (λ w4 e4 → ¬ inhType n w4 (#Σchoice name ℂ₁·))
             z = ¬ΣNAT!→¬inhType-Σchoiceₘ bcb n w3 name aw
@@ -845,7 +845,7 @@ EQ-N0→NATREC-TRUE n w t u a₁ a₂ b₁ b₂ h =
         e3 : w2 ⊑· w3
         e3 = fst (snd (followChoice· name h4 oc1 comp1 fb1))
 
-        oc2 : onlyℂ∈𝕎 (Res.def Resℂ) name w3
+        oc2 : onlyℂ∈𝕎 (Res.c₀ Resℂ) name w3
         oc2 = fst (snd (snd (followChoice· name h4 oc1 comp1 fb1)))
 
         comp2 : compatible· name w3 Resℂ

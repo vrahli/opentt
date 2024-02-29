@@ -111,10 +111,10 @@ record ChoiceBar : Set(lsuc(lsuc(L))) where
     -- This allows selecting a branch of a bar that follows a given choice 'u'
     followChoice : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                    → □· w f
-                   → onlyℂ∈𝕎 (Res.def r) c w
+                   → onlyℂ∈𝕎 (Res.c₀ r) c w
                    → compatible· c w r
                    → freezable· c w
-                   → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
+                   → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.c₀ r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
 
 {--
     -- TODO: Move to choice

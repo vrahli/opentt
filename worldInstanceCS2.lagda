@@ -415,7 +415,7 @@ freezeCsProgress c {w1} {w2} t e l r i =
 
 
 freezeDef : NRes{0ℓ} → 𝕎· → 𝕎·
-freezeDef r w = freezeCs (NRes.name r) w (Res.def (NRes.res r))
+freezeDef r w = freezeCs (NRes.name r) w (Res.c₀ (NRes.res r))
 
 
 freezeList : List (NRes{0ℓ}) → 𝕎· → 𝕎·
@@ -430,7 +430,7 @@ freezeSeq l w (suc n) = freezeList l (freezeSeq l w n)
 
 
 extDef : NRes{0ℓ} → 𝕎· → 𝕎·
-extDef r w = extcs w (NRes.name r) (Res.def (NRes.res r))
+extDef r w = extcs w (NRes.name r) (Res.c₀ (NRes.res r))
 
 
 extList : List (NRes{0ℓ}) → 𝕎· → 𝕎·
@@ -493,7 +493,7 @@ preFreezeCs⊑ c w t {r} (l , comp) rt with getCs⊎ c w
 
 
 ⊑freezeDef : (r : NRes) (w : 𝕎·) → compatibleNRes r w → w ⊑· freezeDef r w
-⊑freezeDef r w comp = preFreezeCs⊑ (NRes.name r) w (Res.def (NRes.res r)) comp (Res.sat (NRes.res r))
+⊑freezeDef r w comp = preFreezeCs⊑ (NRes.name r) w (Res.c₀ (NRes.res r)) comp (Res.sat (NRes.res r))
 
 
 ⊑freezeList : (w : 𝕎·) (l : List NRes) → compatibleListNRes l w → w ⊑· freezeList l w
@@ -526,7 +526,7 @@ preExtCs⊑ c w t {r} (l , comp) rt with getCs⊎ c w
 
 
 ⊑extDef : (r : NRes) (w : 𝕎·) → compatibleNRes r w → w ⊑· extDef r w
-⊑extDef r w comp = preExtCs⊑ (NRes.name r) w (Res.def (NRes.res r)) comp (Res.sat (NRes.res r))
+⊑extDef r w comp = preExtCs⊑ (NRes.name r) w (Res.c₀ (NRes.res r)) comp (Res.sat₀ (NRes.res r))
 
 
 ⊑extList : (w : 𝕎·) (l : List NRes) → compatibleListNRes l w → w ⊑· extList l w
@@ -678,7 +678,7 @@ NRes-nodup-wdom (choice name t ∷ w) = NRes-nodup-wdom w
                        → getCs c (freezeList k w) ≡ just e
 ¬∈→getCs-freezeList {c} {[]} {w} {e} ni z = z
 ¬∈→getCs-freezeList {c} {x ∷ k} {w} {e} ni z
-  rewrite ¬≡→≡getCs-extcs c (NRes.name x) (freezeList k w) (Res.def (NRes.res x)) (λ x → ni (here x)) =
+  rewrite ¬≡→≡getCs-extcs c (NRes.name x) (freezeList k w) (Res.c₀ (NRes.res x)) (λ x → ni (here x)) =
   ¬∈→getCs-freezeList (λ x → ni (there x)) z
 
 
@@ -694,19 +694,19 @@ getCs-freezeList≡ : {c : Name} {r : Res} {k : List NRes} {w : 𝕎·} {l : Lis
                     → NRes-nodup k
                     → mkNRes c r ∈ k
                     → getCs c w ≡ just (mkcs c l r)
-                    → getCs c (freezeList k w) ≡ just (mkcs c (l ∷ʳ Res.def r) r)
+                    → getCs c (freezeList k w) ≡ just (mkcs c (l ∷ʳ Res.c₀ r) r)
 getCs-freezeList≡ {c} {r} {x ∷ k} {w} {l} (d , nd) (here px) e rewrite sym px = z2
   where
     z1 : getCs c (freezeList k w) ≡ just (mkcs c l r)
     z1 = ¬∈→getCs-freezeList d e
 
-    z2 : getCs c (freezeList k w ++ choice c (Res.def r) ∷ []) ≡ just (mkcs c (l ++ Res.def r ∷ []) r)
-    z2 rewrite getCs++ c (freezeList k w) [ choice c (Res.def r) ] l r z1 with c ≟ c
+    z2 : getCs c (freezeList k w ++ choice c (Res.c₀ r) ∷ []) ≡ just (mkcs c (l ++ Res.c₀ r ∷ []) r)
+    z2 rewrite getCs++ c (freezeList k w) [ choice c (Res.c₀ r) ] l r z1 with c ≟ c
     ... | yes p = refl
     ... | no p = ⊥-elim (p refl)
 
 getCs-freezeList≡ {c} {r} {x ∷ k} {w} {l} (d , nd) (there i) e
-  rewrite ¬≡→≡getCs-extcs c (NRes.name x) (freezeList k w) (Res.def (NRes.res x)) (λ x → d (getCs-freezeList≡-aux x i)) =
+  rewrite ¬≡→≡getCs-extcs c (NRes.name x) (freezeList k w) (Res.c₀ (NRes.res x)) (λ x → d (getCs-freezeList≡-aux x i)) =
   getCs-freezeList≡ nd i e
 --}
 
@@ -717,7 +717,7 @@ getCs-freezeList≡ {c} {r} {x ∷ k} {w} {l} (d , nd) (there i) e
                        → getCs c (extList k w) ≡ just e
 ¬∈→getCs-extList {c} {[]} {w} {e} ni z = z
 ¬∈→getCs-extList {c} {x ∷ k} {w} {e} ni z
-  rewrite ¬≡→≡getCs-extcs c (NRes.name x) (extList k w) (Res.def (NRes.res x)) (λ x → ni (here x)) =
+  rewrite ¬≡→≡getCs-extcs c (NRes.name x) (extList k w) (Res.c₀ (NRes.res x)) (λ x → ni (here x)) =
   ¬∈→getCs-extList (λ x → ni (there x)) z
 
 
@@ -733,19 +733,19 @@ getCs-extList≡ : {c : Name} {r : Res} {k : List NRes} {w : 𝕎·} {l : List �
                     → NRes-nodup k
                     → mkNRes c r ∈ k
                     → getCs c w ≡ just (mkcs c l r)
-                    → getCs c (extList k w) ≡ just (mkcs c (Res.def r ∷ l) r)
+                    → getCs c (extList k w) ≡ just (mkcs c (Res.c₀ r ∷ l) r)
 getCs-extList≡ {c} {r} {x ∷ k} {w} {l} (d , nd) (here px) e rewrite sym px = z2
   where
     z1 : getCs c (extList k w) ≡ just (mkcs c l r)
     z1 = ¬∈→getCs-extList d e
 
-    z2 : getCs c (extList k w ++ choice c (Res.def r) ∷ []) ≡ just (mkcs c (Res.def r ∷ l) r)
-    z2 rewrite getCs++ c (extList k w) [ choice c (Res.def r) ] l r z1 with c ≟ c
+    z2 : getCs c (extList k w ++ choice c (Res.c₀ r) ∷ []) ≡ just (mkcs c (Res.c₀ r ∷ l) r)
+    z2 rewrite getCs++ c (extList k w) [ choice c (Res.c₀ r) ] l r z1 with c ≟ c
     ... | yes p = refl
     ... | no p = ⊥-elim (p refl)
 
 getCs-extList≡ {c} {r} {x ∷ k} {w} {l} (d , nd) (there i) e
-  rewrite ¬≡→≡getCs-extcs c (NRes.name x) (extList k w) (Res.def (NRes.res x)) (λ x → d (getCs-extList≡-aux x i)) =
+  rewrite ¬≡→≡getCs-extcs c (NRes.name x) (extList k w) (Res.c₀ (NRes.res x)) (λ x → d (getCs-extList≡-aux x i)) =
   getCs-extList≡ nd i e
 
 
@@ -823,7 +823,7 @@ csChainProgress : (w : 𝕎·) (x : Name) (n : ℕ) {r : Res{0ℓ}}
 csChainProgress w x n {r} (l , comp , sat) = suc n , n<1+n n , p
   where
     p : progressCs x (chain.seq (𝕎→csChain w) n) (chain.seq (𝕎→csChain w) (suc n))
-    p l' r' i rewrite comp rewrite sym (mkcs-inj2 (just-inj i)) | sym (mkcs-inj3 (just-inj i)) = [ Res.def r ] , e , ≤-refl
+    p l' r' i rewrite comp rewrite sym (mkcs-inj2 (just-inj i)) | sym (mkcs-inj3 (just-inj i)) = [ Res.c₀ r ] , e , ≤-refl
       where
         i1 : mkNRes x r ∈ wrdom (extSeq (wrdom w) w n)
         i1 = getCs→mkNRes∈wrdom {x} {extSeq (wrdom w) w n} comp
@@ -831,7 +831,7 @@ csChainProgress w x n {r} (l , comp , sat) = suc n , n<1+n n , p
         i2 : mkNRes x r ∈ wrdom w
         i2 = ∈wrdom-extSeq→ (mkNRes x r) (wrdom w) w n i1
 
-        e : getCs x (extList (wrdom w) (extSeq (wrdom w) w n)) ≡ just (mkcs x (Res.def r ∷ l) r)
+        e : getCs x (extList (wrdom w) (extSeq (wrdom w) w n)) ≡ just (mkcs x (Res.c₀ r ∷ l) r)
         e = getCs-extList≡ {x} {r} {wrdom w} {extSeq (wrdom w) w n} {l} (NRes-nodup-wdom w) i2 comp
 
 
@@ -974,7 +974,7 @@ getCsChoice-startCsChoice-nothing n r w name ni rewrite getCs-newcs w name r ni 
 
 getCsChoice-startCsChoice : (n : ℕ) (r : Res) (w : 𝕎·) (t : ℂ·) (name : Name)
                             → ¬ name ∈ wdom w
-                            → getCsChoice n name (startCsChoice name r w) ≡ just t → t ≡ Res.def r
+                            → getCsChoice n name (startCsChoice name r w) ≡ just t → t ≡ Res.c₀ r
 getCsChoice-startCsChoice n r w t name ni e rewrite getCsChoice-startCsChoice-nothing n r w name ni
   = ⊥-elim (¬just≡nothing (sym e))
 

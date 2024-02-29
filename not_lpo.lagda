@@ -314,7 +314,7 @@ sq-dec! t = #SQUASH (#UNION! t (#NEG t))
     k1 : ℂ·
     k1 = ℂ₁· -- This has to be different from r's default value
 
-    dks : (w : 𝕎·) → ¬ ∼C! w (ℂ→C· (Res.def r)) (ℂ→C· k1)
+    dks : (w : 𝕎·) → ¬ ∼C! w (ℂ→C· (Res.c₀ r)) (ℂ→C· k1)
     dks = ¬∼ℂ₀₁·
 
     h1 : equalInType i w2 (#SQUASH (#UNION! (#Σchoice name k1) (#NEG (#Σchoice name k1)))) #AX #AX
@@ -323,7 +323,7 @@ sq-dec! t = #SQUASH (#UNION! t (#NEG t))
     h2 : □· w2 (λ w' _ → inhType i w' (#Σchoice name k1) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' (#Σchoice name k1)))
     h2 = equalInType-SQUASH-UNION!→ h1
 
-    oc1 : onlyℂ∈𝕎 (Res.def r) name w2
+    oc1 : onlyℂ∈𝕎 (Res.c₀ r) name w2
     oc1 n = getChoice-startNewChoice n r w1
 
     comp1 : compatible· name w2 r
@@ -339,7 +339,7 @@ sq-dec! t = #SQUASH (#UNION! t (#NEG t))
     e3 : w2 ⊑· w3
     e3 = fst (snd (followChoice· name h2 oc1 comp1 fb1))
 
-    oc2 : onlyℂ∈𝕎 (Res.def r) name w3
+    oc2 : onlyℂ∈𝕎 (Res.c₀ r) name w3
     oc2 = fst (snd (snd (followChoice· name h2 oc1 comp1 fb1)))
 
     comp2 : compatible· name w3 r
@@ -361,7 +361,7 @@ sq-dec! t = #SQUASH (#UNION! t (#NEG t))
     concl : (inhType i w3 (#Σchoice name k1) ⊎ ∀𝕎 w3 (λ w'' _ → ¬ inhType i w'' (#Σchoice name k1)))
             → ⊥
     concl (inj₁ eqi) = ¬equalInType-#Σchoice i w3 Resℂ name isValueℂ₀· isValueℂ₁· dks oc2 comp2 fb2 eqi
-    concl (inj₂ aw) = ¬∀𝕎¬equalInType-#Σchoice i w3 name k1 sat-ℂ₁ comp2 fb2 aw
+    concl (inj₂ aw) = ¬∀𝕎¬equalInType-#Σchoice i w3 name comp2 fb2 aw
 
 
 #PI-NEG-ASSERT₄→#Σchoice : Bool₀!ℂ CB → {n : ℕ} {w : 𝕎·} {name : Name}

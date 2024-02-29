@@ -146,7 +146,7 @@ open import mp_props2(W)(M)(C)(K)(G)(X)(N)(EC)
 open import choiceBarDef(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (#[0]Typeℂ₀₁ ; Typeℂ₀₁· ; □·-choice· ; followChoice· ; #-typeℂ₀₁)
 open import not_lem(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
-  using (#Σchoice ; #Σchoice≡ ; ¬∀𝕎¬equalInType-#Σchoice ; sub0-#Σchoice-body≡)
+  using (#Σchoice ; #Σchoice≡ ; sub0-#Σchoice-body≡)
 open import typeC(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
   using (Resℂ ; →equalInType-APPLY-CS-Typeℂ₀₁·)
 --open import boolC(W)(M)(C)(K)(P)(G)(X)(N)(V)(F)(E)(CB)
@@ -1144,7 +1144,7 @@ getChoice→getC {n} {cs} {w} c h rewrite h = refl
 
 
 ¬equalInType-#Σchoiceℙ : (immut : immutableChoices) (i : ℕ) (cp : Choiceℙ i CB) (w : 𝕎·) (c : Name)
-                       → onlyℂ∈𝕎 (Res.def Resℂ) c w
+                       → onlyℂ∈𝕎 (Res.c₀ Resℂ) c w
                        → compatible· c w Resℂ
                        → freezable· c w
                        → ¬ inhType i w (#Σchoiceℙ c)
@@ -1171,7 +1171,7 @@ getChoice→getC {n} {cs} {w} c h rewrite h = refl
     e1 : w ⊑· w1
     e1 = fst (snd (followChoice· c h1 oc comp fb))
 
-    oc1 : onlyℂ∈𝕎 (Res.def Resℂ) c w1
+    oc1 : onlyℂ∈𝕎 (Res.c₀ Resℂ) c w1
     oc1 = fst (snd (snd (followChoice· c h1 oc comp fb)))
 
     comp1 : compatible· c w1 Resℂ
@@ -1211,7 +1211,7 @@ getChoice→getC {n} {cs} {w} c h rewrite h = refl
     e2 : w1 ⊑· w2
     e2 = fst (snd (followChoice· c ea2 oc1 comp1 fb1))
 
-    oc2 : onlyℂ∈𝕎 (Res.def Resℂ) c w2
+    oc2 : onlyℂ∈𝕎 (Res.c₀ Resℂ) c w2
     oc2 = fst (snd (snd (followChoice· c ea2 oc1 comp1 fb1)))
 
     comp2 : compatible· c w2 Resℂ
@@ -1242,7 +1242,7 @@ getChoice→getC {n} {cs} {w} c h rewrite h = refl
     e3 : w2 ⊑· w3
     e3 = fst (snd (followChoice· c gc oc2 comp2 fb2))
 
-    oc3 : onlyℂ∈𝕎 (Res.def Resℂ) c w3
+    oc3 : onlyℂ∈𝕎 (Res.c₀ Resℂ) c w3
     oc3 = fst (snd (snd (followChoice· c gc oc2 comp2 fb2)))
 
     comp3 : compatible· c w3 Resℂ

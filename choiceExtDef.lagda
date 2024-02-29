@@ -106,11 +106,11 @@ invℂ₀₁ n m c i = i
 
 
 Resℂ₀₁ : Res
-Resℂ₀₁ = mkRes (λ n t → t ≡ ℂ₀· ⊎ t ≡ ℂ₁·) ℂ₀· (λ n → inj₁ refl) (true , decℂ₀₁) (true , invℂ₀₁) true
+Resℂ₀₁ = mkRes (λ n t → t ≡ ℂ₀· ⊎ t ≡ ℂ₁·) ℂ₀· ℂ₁· (λ n → inj₁ refl) (λ n → inj₂ refl) (true , decℂ₀₁) (true , invℂ₀₁) true
 
 
 Res⊤ : Res
-Res⊤ = mkRes (λ n t → ⊤) ℂ₀· (λ n → tt) (true , λ n c → inj₁ tt) (true , λ n m c i → i) false
+Res⊤ = mkRes (λ n t → ⊤) ℂ₀· ℂ₁· (λ n → tt) (λ n → tt) (true , λ n c → inj₁ tt) (true , λ n m c i → i) false
 
 
 Σsat-ℂ₁ : Σ ℕ (λ n → ·ᵣ Resℂ₀₁ n ℂ₁·)

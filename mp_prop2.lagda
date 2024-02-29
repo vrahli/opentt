@@ -186,7 +186,7 @@ open import mp_prop(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
     e2 : w1 ⊑· w2
     e2 = startNewChoice⊏ Resℂ w1
 
-    oc1 : onlyℂ∈𝕎 (Res.def Resℂ) name w2
+    oc1 : onlyℂ∈𝕎 (Res.c₀ Resℂ) name w2
     oc1 n = getChoice-startNewChoice n Resℂ w1
 
     comp1 : compatible· name w2 Resℂ
@@ -210,7 +210,7 @@ open import mp_prop(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
                                           × inhType i w' (#APPLY f n)))
                                        → ⊥)
                        → ⊥)
-    h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice (suc i) w3 name ℂ₁· sat-ℂ₁ (⊑-compatible· e3 comp1) (af name w3) z
+    h3 w3 e3 aw = ¬∀𝕎¬equalInType-#Σchoice (suc i) w3 name (⊑-compatible· e3 comp1) (af name w3) z
       where
       z : ∀𝕎 w3 (λ w4 e4 → ¬ inhType (suc i) w4 (#Σchoice name ℂ₁·))
       z = ¬ΣNAT!→¬inhType-Σchoiceℙ i cp w3 name (equalInType-mon eqf1 w3 e3) aw
@@ -225,7 +225,7 @@ open import mp_prop(W)(M)(C)(K)(P)(G)(X)(N)(EC)(V)(F)(CB)
     e3 : w2 ⊑· w3
     e3 = fst (snd (followChoice· name h4 oc1 comp1 fb1))
 
-    oc2 : onlyℂ∈𝕎 (Res.def Resℂ) name w3
+    oc2 : onlyℂ∈𝕎 (Res.c₀ Resℂ) name w3
     oc2 = fst (snd (snd (followChoice· name h4 oc1 comp1 fb1)))
 
     comp2 : compatible· name w3 Resℂ

@@ -161,25 +161,25 @@ getChoiceΣ≤ k name w t gc k' lek | inj₂ p rewrite p = ⊥-elim (¬just≡no
     fcond w1 e1 = w2 , e2 , Mod.∀𝕎-□ M q
       where
         w2 : 𝕎·
-        w2 = freeze· c w1 ℂ₀·
+        w2 = freeze· c w1 ℂ₁·
 
         e2 : w1 ⊑· w2
-        e2 = freeze⊑· c w1 ℂ₀· (⊑-compatible· e1 compat) (λ n → inj₁ refl)
+        e2 = freeze⊑· c w1 (⊑-compatible· e1 compat)
 
         q : ∀𝕎 w2 (↑wPred f (⊑-trans· e1 e2))
         q w3 e3 w4 e4 = lift (fst ec , snd ec , getCsChoiceCompatible c r w4 0 (fst ec) (⊑-compatible· (⊑-trans· e1 (⊑-trans· e2 (⊑-trans· e3 e4))) compat) (snd ec))
           where
-            e : Σ ℕ (λ n → ∀𝕎 (freezeCs c w1 ℂ₀·) (λ w' _ → Lift 2ℓ (getCsChoice n c w' ≡ just ℂ₀·)))
-            e = getFreezeCsAux c w1 ℂ₀· (⊑-compatible· e1 compat)
+            e : Σ ℕ (λ n → ∀𝕎 (freezeCs c w1 ℂ₁·) (λ w' _ → Lift 2ℓ (getCsChoice n c w' ≡ just ℂ₁·)))
+            e = getFreezeCsAux c w1 ℂ₁· (⊑-compatible· e1 compat)
 
             n : ℕ
             n = fst e
 
-            gc : getCsChoice n c w4 ≡ just ℂ₀·
+            gc : getCsChoice n c w4 ≡ just ℂ₁·
             gc = lower (snd e w4 (⊑-trans· e3 e4))
 
             ec : Σ ℂ· (λ u → getCsChoice 0 c w4 ≡ just u)
-            ec = getChoiceΣ≤ n c w4 ℂ₀· gc 0 _≤_.z≤n
+            ec = getChoiceΣ≤ n c w4 ℂ₁· gc 0 _≤_.z≤n
 
     q : Σ ℂ· (λ t → getChoice· m c w ≡ just t × ·ᵣ r m t)
     q = lower (snd (h {w} {f} firr fcond) (⊑-refl· _) (K𝔹all (fst (h {w} {f} firr fcond))) w (⊑-refl· _) (⊑-refl· _) w (⊑-refl· _))

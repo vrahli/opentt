@@ -47,7 +47,7 @@ open import getChoiceDef(W)(C)(M)(G)
 record NewChoice : Set(lsuc(L)) where
   constructor mkNewChoice
   field
-    dom𝕎 : 𝕎· → List Name
+    dom𝕎   : 𝕎· → List Name
     names𝕎 : 𝕎· → List Name
     -- returns a Name which does not occur in w
     --newChoice : (w : 𝕎·) → Name
@@ -55,9 +55,9 @@ record NewChoice : Set(lsuc(L)) where
     startChoice : (c : Name) (r : Res{0ℓ}) (w : 𝕎·) → 𝕎·
     -- if we start a new choice then it is 'empty' according to getChoice
     getChoice-startChoice : (n : ℕ) (r : Res{0ℓ}) (w : 𝕎·) (t : ℂ·) (name : Name)
-                            → ¬ name ∈ dom𝕎 w
-                            → getChoice· n name (startChoice name r w) ≡ just t
-                            → t ≡ Res.def r
+                          → ¬ name ∈ dom𝕎 w
+                          → getChoice· n name (startChoice name r w) ≡ just t
+                          → t ≡ Res.c₀ r
     -- The above is essentially onlyℂ∈𝕎
     -- starting a new choice gives us a non-trivial extension
     startChoice⊏ : (r : Res{0ℓ}) (w : 𝕎·) (name : Name) → ¬ name ∈ dom𝕎 w → w ⊑· startChoice name r w

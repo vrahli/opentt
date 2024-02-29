@@ -291,10 +291,10 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
 
 
 ¬equalInType-#Σchoice : (i : ℕ) (w : 𝕎·) (r : Res) (c : Name) {k1 : ℂ·}
-                        → isValue (ℂ→T (Res.def r))
+                        → isValue (ℂ→T (Res.c₀ r))
                         → isValue (ℂ→T k1)
-                        → ((w : 𝕎·) → ¬ ∼C! w (ℂ→C· (Res.def r)) (ℂ→C· k1))
-                        → onlyℂ∈𝕎 (Res.def r) c w
+                        → ((w : 𝕎·) → ¬ ∼C! w (ℂ→C· (Res.c₀ r)) (ℂ→C· k1))
+                        → onlyℂ∈𝕎 (Res.c₀ r) c w
                         → compatible· c w r
                         → freezable· c w
                         → ¬ inhType i w (#Σchoice c k1)
@@ -321,7 +321,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     e1 : w ⊑· w1
     e1 = fst (snd (followChoice· c h1 oc comp fb))
 
-    oc1 : onlyℂ∈𝕎 (Res.def r) c w1
+    oc1 : onlyℂ∈𝕎 (Res.c₀ r) c w1
     oc1 = fst (snd (snd (followChoice· c h1 oc comp fb)))
 
     comp1 : compatible· c w1 r
@@ -361,7 +361,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     e2 : w1 ⊑· w2
     e2 = fst (snd (followChoice· c ea2 oc1 comp1 fb1))
 
-    oc2 : onlyℂ∈𝕎 (Res.def r) c w2
+    oc2 : onlyℂ∈𝕎 (Res.c₀ r) c w2
     oc2 = fst (snd (snd (followChoice· c ea2 oc1 comp1 fb1)))
 
     comp2 : compatible· c w2 r
@@ -399,7 +399,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     e3 : w2 ⊑· w3
     e3 = fst (snd (followChoice· c eb5 oc2 comp2 fb2))
 
-    oc3 : onlyℂ∈𝕎 (Res.def r) c w3
+    oc3 : onlyℂ∈𝕎 (Res.c₀ r) c w3
     oc3 = fst (snd (snd (followChoice· c eb5 oc2 comp2 fb2)))
 
     comp3 : compatible· c w3 r
@@ -421,7 +421,7 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     e4 : w3 ⊑· w4
     e4 = fst (snd (followChoice· c gc oc3 comp3 fb3))
 
-    oc4 : onlyℂ∈𝕎 (Res.def r) c w4
+    oc4 : onlyℂ∈𝕎 (Res.c₀ r) c w4
     oc4 = fst (snd (snd (followChoice· c gc oc3 comp3 fb3)))
 
     comp4 : compatible· c w4 r
@@ -440,14 +440,14 @@ steps-APPLY-cs-forward w (suc n) (suc m) a b v c isv c₁ c₂ | inj₂ p rewrit
     gc3 : Σ ℂ· (λ t → getChoice· m c w4 ≡ just t)
     gc3 = fst gc2 , fst (snd gc2)
 
-    cn₀ : #APPLY (#CS c) (#NUM m) #⇓! ℂ→C· (Res.def r) at w4
+    cn₀ : #APPLY (#CS c) (#NUM m) #⇓! ℂ→C· (Res.c₀ r) at w4
     cn₀ = onlyℂ∈𝕎→⇓ oc4 gc3
 
     eb7 : #weakℂEq w4 (#APPLY (#CS c) (#NUM m)) (ℂ→C· k1)
     eb7 = ∀𝕎-mon e4 eb6
 
-    sim3 : ∼C! w4 (ℂ→C· (Res.def r)) (ℂ→C· k1)
-    sim3 = #weakℂEq→ {w4} {#APPLY (#CS c) (#NUM m)} {ℂ→C· k1} eb7 (Res.def r) k1 cn₀ (⇓!-refl (ℂ→T k1) w4)
+    sim3 : ∼C! w4 (ℂ→C· (Res.c₀ r)) (ℂ→C· k1)
+    sim3 = #weakℂEq→ {w4} {#APPLY (#CS c) (#NUM m)} {ℂ→C· k1} eb7 (Res.c₀ r) k1 cn₀ (⇓!-refl (ℂ→T k1) w4)
 
 
 {--
@@ -513,35 +513,34 @@ sq-dec : CTerm → CTerm
 sq-dec t = #SQUASH (#UNION t (#NEG t))
 
 
-¬∀𝕎¬equalInType-#Σchoice : (i : ℕ) (w : 𝕎·) (name : Name) (k : ℂ·)
-                            → ⋆ᵣ Resℂ k
-                            → compatible· name w Resℂ
-                            → freezable· name w
-                            → ¬ ∀𝕎 w (λ w' _ → ¬ inhType i w' (#Σchoice name k))
-¬∀𝕎¬equalInType-#Σchoice i w name k rk comp fb aw = aw w1 e1 (#PAIR (#NUM n1) #AX , h1)
+¬∀𝕎¬equalInType-#Σchoice : (i : ℕ) (w : 𝕎·) (name : Name)
+                         → compatible· name w Resℂ
+                         → freezable· name w
+                         → ¬ ∀𝕎 w (λ w' _ → ¬ inhType i w' (#Σchoice name ℂ₁·))
+¬∀𝕎¬equalInType-#Σchoice i w name comp fb aw = aw w1 e1 (#PAIR (#NUM n1) #AX , h1)
   where
     w1 : 𝕎·
-    w1 = freeze· name w k
+    w1 = freeze· name w ℂ₁·
 
     e1 : w ⊑· w1
-    e1 = freeze⊑· name w k comp rk
+    e1 = freeze⊑· name w comp
 
     n1 : ℕ
-    n1 = fst (getFreeze· name w k comp tt fb)
+    n1 = fst (getFreeze· name w comp tt fb)
 
-    g0 : ∀𝕎 w1 (λ w' _ → Lift (lsuc(L)) (getChoice· n1 name w' ≡ just k))
-    g0 = snd (getFreeze· name w k comp tt fb)
+    g0 : ∀𝕎 w1 (λ w' _ → Lift (lsuc(L)) (getChoice· n1 name w' ≡ just ℂ₁·))
+    g0 = snd (getFreeze· name w comp tt fb)
 
-    g1 : #APPLY (#CS name) (#NUM n1) #⇛! ℂ→C· k at w1
+    g1 : #APPLY (#CS name) (#NUM n1) #⇛! ℂ→C· ℂ₁· at w1
     g1 = →#APPLY-#CS#⇛ℂ→C· g0
 
-    h1 : equalInType i w1 (#Σchoice name k) (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX)
-    h1 = getChoice→equalInType-#Σchoice i (⊑-compatible· e1 comp) (rk 0) g1
+    h1 : equalInType i w1 (#Σchoice name ℂ₁·) (#PAIR (#NUM n1) #AX) (#PAIR (#NUM n1) #AX)
+    h1 = getChoice→equalInType-#Σchoice i (⊑-compatible· e1 comp) (sat-ℂ₁ 0) g1
 
 
 
 ¬-dec-Σchoice : (w : 𝕎·) (i : ℕ)
-                → ¬ equalInType i (startNewChoice Resℂ w) (sq-dec (#Σchoice (newChoice· w) ℂ₁·)) #AX #AX
+              → ¬ equalInType i (startNewChoice Resℂ w) (sq-dec (#Σchoice (newChoice· w) ℂ₁·)) #AX #AX
 ¬-dec-Σchoice w1 i eqi = concl h3
   where
     name : Name
@@ -559,7 +558,7 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     k1 : ℂ·
     k1 = ℂ₁· -- This has to be different from r's default value
 
-    dks : (w : 𝕎·) → ¬ ∼C! w (ℂ→C· (Res.def r)) (ℂ→C· k1)
+    dks : (w : 𝕎·) → ¬ ∼C! w (ℂ→C· (Res.c₀ r)) (ℂ→C· k1)
     dks = ¬∼ℂ₀₁·
 
     h1 : equalInType i w2 (#SQUASH (#UNION (#Σchoice name k1) (#NEG (#Σchoice name k1)))) #AX #AX
@@ -568,7 +567,7 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     h2 : □· w2 (λ w' _ → inhType i w' (#Σchoice name k1) ⊎ ∀𝕎 w' (λ w'' _ → ¬ inhType i w'' (#Σchoice name k1)))
     h2 = equalInType-SQUASH-UNION→ h1
 
-    oc1 : onlyℂ∈𝕎 (Res.def r) name w2
+    oc1 : onlyℂ∈𝕎 (Res.c₀ r) name w2
     oc1 n = getChoice-startNewChoice n r w1
 
     comp1 : compatible· name w2 r
@@ -584,7 +583,7 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     e3 : w2 ⊑· w3
     e3 = fst (snd (followChoice· name h2 oc1 comp1 fb1))
 
-    oc2 : onlyℂ∈𝕎 (Res.def r) name w3
+    oc2 : onlyℂ∈𝕎 (Res.c₀ r) name w3
     oc2 = fst (snd (snd (followChoice· name h2 oc1 comp1 fb1)))
 
     comp2 : compatible· name w3 r
@@ -606,7 +605,7 @@ sq-dec t = #SQUASH (#UNION t (#NEG t))
     concl : (inhType i w3 (#Σchoice name k1) ⊎ ∀𝕎 w3 (λ w'' _ → ¬ inhType i w'' (#Σchoice name k1)))
             → ⊥
     concl (inj₁ eqi) = ¬equalInType-#Σchoice i w3 Resℂ name isValueℂ₀· isValueℂ₁· dks oc2 comp2 fb2 eqi
-    concl (inj₂ aw) = ¬∀𝕎¬equalInType-#Σchoice i w3 name k1 sat-ℂ₁ comp2 fb2 aw
+    concl (inj₂ aw) = ¬∀𝕎¬equalInType-#Σchoice i w3 name comp2 fb2 aw
 
 
 

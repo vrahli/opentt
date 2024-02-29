@@ -239,21 +239,21 @@ resSatCs-select→ {n} {suc m} {x ∷ l} {r} {t} (c , s) e rewrite sym (+-suc m 
                              → mkNRes c r ∈ rs
                              → NRes-nodup rs
                              → getCs c w ≡ just (mkcs c l r)
-                             → Σ ℕ (λ k → getCs c (freezeSeq rs w n) ≡ just (mkcs c (l ++ replicate k (Res.def r)) r))
+                             → Σ ℕ (λ k → getCs c (freezeSeq rs w n) ≡ just (mkcs c (l ++ replicate k (Res.c₀ r)) r))
 →getCsFreezeSeq-replicate {c} {w} {l} {r} {rs} 0 i nodp h = 0 , h'
   where
     h' : getCs c w ≡ just (mkcs c (l ++ []) r)
     h' rewrite ++[] l = h
 →getCsFreezeSeq-replicate {c} {w} {l} {r} {rs} (suc n) i nodp h = suc (fst ind) , cc
   where
-    ind : Σ ℕ (λ k → getCs c (freezeSeq rs w n) ≡ just (mkcs c (l ++ replicate k (Res.def r)) r))
+    ind : Σ ℕ (λ k → getCs c (freezeSeq rs w n) ≡ just (mkcs c (l ++ replicate k (Res.c₀ r)) r))
     ind = →getCsFreezeSeq-replicate n i nodp h
 
-    j : mkNRes c (mkRes (Res.res r) (Res.def r) (Res.sat r) (Res.dec r) (Res.inv r) (Res.frz r)) ∈ rs
+    j : mkNRes c (mkRes (Res.res r) (Res.c₀ r) (Res.c₁ r) (Res.sat₀ r) (Res.sat₁ r) (Res.dec r) (Res.inv r) (Res.frz r)) ∈ rs
     j rewrite Resη r = i
 
-    cc : getCs c (freezeList rs (freezeSeq rs w n)) ≡ just (mkcs c (l ++ Res.def r ∷ replicate (fst ind) (Res.def r)) r)
-    cc rewrite ∷replicate≡replicate∷ʳ (fst ind) (Res.def r) | sym (++-assoc l (replicate (fst ind) (Res.def r)) [ Res.def r ]) =
+    cc : getCs c (freezeList rs (freezeSeq rs w n)) ≡ just (mkcs c (l ++ Res.c₀ r ∷ replicate (fst ind) (Res.c₀ r)) r)
+    cc rewrite ∷replicate≡replicate∷ʳ (fst ind) (Res.c₀ r) | sym (++-assoc l (replicate (fst ind) (Res.c₀ r)) [ Res.c₀ r ]) =
       getCs-freezeList≡ nodp j (snd ind)
 
 
@@ -263,23 +263,23 @@ getCsChoice-freezeSeq→⊎ : {k : ℕ} {c : Name} {r : Res} {l : List NRes} {w 
                            → NRes-nodup l
                            → compatible· c w r
                            → getCsChoice k c (freezeSeq l w n) ≡ just t
-                           → t ≡ Res.def r ⊎ getCsChoice k c w ≡ just t
+                           → t ≡ Res.c₀ r ⊎ getCsChoice k c w ≡ just t
 getCsChoice-freezeSeq→⊎ {k} {c} {r} {l} {w} {t} {n} i nodp comp gc with getCs⊎ c (freezeSeq l w n)
 ... | inj₁ (mkcs n1 l1 r1 , p) rewrite p | fst (snd comp) = z4 z3
   where
     ts : List ℂ·
     ts = fst comp
 
-    z1 : Σ ℕ (λ k → getCs c (freezeSeq l w n) ≡ just (mkcs c (ts ++ replicate k (Res.def r)) r))
+    z1 : Σ ℕ (λ k → getCs c (freezeSeq l w n) ≡ just (mkcs c (ts ++ replicate k (Res.c₀ r)) r))
     z1 = →getCsFreezeSeq-replicate n i nodp (fst (snd comp))
 
-    z2 : select k (ts ++ replicate (fst z1) (Res.def r)) ≡ just t
+    z2 : select k (ts ++ replicate (fst z1) (Res.c₀ r)) ≡ just t
     z2 rewrite snd z1 | sym (mkcs-inj2 (just-inj p)) = gc
 
-    z3 : select k ts ≡ just t ⊎ t ∈ (replicate (fst z1) (Res.def r))
+    z3 : select k ts ≡ just t ⊎ t ∈ (replicate (fst z1) (Res.c₀ r))
     z3 = select++→⊎∈ {0ℓ} {ℂ·} {k} {ts} z2
 
-    z4 : (select k ts ≡ just t ⊎ t ∈ (replicate (fst z1) (Res.def r))) → (t ≡ Res.def r ⊎ select k (proj₁ comp) ≡ just t)
+    z4 : (select k ts ≡ just t ⊎ t ∈ (replicate (fst z1) (Res.c₀ r))) → (t ≡ Res.c₀ r ⊎ select k (proj₁ comp) ≡ just t)
     z4 (inj₁ x) = inj₂ x
     z4 (inj₂ y) = inj₁ (∈replicate→ y)
 
@@ -288,17 +288,17 @@ getCsChoice-freezeSeq→⊎ {k} {c} {r} {l} {w} {t} {n} i nodp comp gc with getC
 
 →isOnlyChoice∈𝕎-𝕎→pchain : {c : Name} {w : 𝕎·} {r : Res{0ℓ}} (n : ℕ)
                               → compatible· c w r
-                              → onlyℂ∈𝕎 (Res.def r) c w
-                              → onlyℂ∈𝕎 (Res.def r) c (𝕎→seq w n)
+                              → onlyℂ∈𝕎 (Res.c₀ r) c w
+                              → onlyℂ∈𝕎 (Res.c₀ r) c (𝕎→seq w n)
 →isOnlyChoice∈𝕎-𝕎→pchain {c} {w} {r} n comp iso k t e = concl u
   where
     i : mkNRes c r ∈ wrdom w
     i = getCs→mkNRes∈wrdom {c} {w} (fst (snd comp))
 
-    u : t ≡ Res.def r ⊎ getCsChoice k c w ≡ just t
+    u : t ≡ Res.c₀ r ⊎ getCsChoice k c w ≡ just t
     u = getCsChoice-freezeSeq→⊎ {k} {c} {r} {wrdom w} {w} {t} {n} i (NRes-nodup-wdom w) comp e
 
-    concl : (t ≡ Res.def r ⊎ getCsChoice k c w ≡ just t) → t ≡ Res.def r
+    concl : (t ≡ Res.c₀ r ⊎ getCsChoice k c w ≡ just t) → t ≡ Res.c₀ r
     concl (inj₁ x) = x
     concl (inj₂ y) = iso k t y
 
@@ -441,10 +441,10 @@ getChoice→weakℂ₀₁M w n c h w1 e1 with lower (h w1 e1)
 
 followChoice-beth-cs : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                        → inBethBar w f
-                       → onlyℂ∈𝕎 (Res.def r) c w
+                       → onlyℂ∈𝕎 (Res.c₀ r) c w
                        → compatible· c w r
                        → freezable· c w
-                       → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
+                       → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.c₀ r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
 followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
   w' , e , iso , comp' , fb' , z
   where
@@ -460,7 +460,7 @@ followChoice-beth-cs c {w} {f} {r} (bar , i) oc comp fb =
     e : w ⊑· w'
     e = 𝔹.ext bar (BarredChain.b bp)
 
-    iso : onlyℂ∈𝕎 (Res.def r) c w'
+    iso : onlyℂ∈𝕎 (Res.c₀ r) c w'
     iso = ⊑-onlyℂ∈𝕎 {c} {w'} {chain.seq (pchain.c pc) (BarredChain.n bp)} {r}
             (BarredChain.ext bp)
             (→isOnlyChoice∈𝕎-𝕎→pchain {c} {w} {r} (BarredChain.n bp) comp oc)

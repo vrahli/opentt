@@ -402,7 +402,7 @@ freezeCsProgress c {w1} {w2} t e l r i =
 
 
 freezeDef : NRes{0ℓ} → 𝕎· → 𝕎·
-freezeDef r w = freezeCs (NRes.name r) w (Res.def (NRes.res r))
+freezeDef r w = freezeCs (NRes.name r) w (Res.c₀ (NRes.res r))
 
 
 freezeList : List (NRes{0ℓ}) → 𝕎· → 𝕎·
@@ -463,7 +463,7 @@ preFreezeCs⊑ c w t {r} (l , comp) rt with getCs⊎ c w
 
 
 ⊑freezeDef : (r : NRes) (w : 𝕎·) → compatibleNRes r w → w ⊑· freezeDef r w
-⊑freezeDef r w comp = preFreezeCs⊑ (NRes.name r) w (Res.def (NRes.res r)) comp (Res.sat (NRes.res r))
+⊑freezeDef r w comp = preFreezeCs⊑ (NRes.name r) w (Res.c₀ (NRes.res r)) comp (Res.sat₀ (NRes.res r))
 
 
 ⊑freezeList : (w : 𝕎·) (l : List NRes) → compatibleListNRes l w → w ⊑· freezeList l w
@@ -612,7 +612,7 @@ NRes-nodup-wdom (choice name t ∷ w) = NRes-nodup-wdom w
                        → getCs c (freezeList k w) ≡ just e
 ¬∈→getCs-freezeList {c} {[]} {w} {e} ni z = z
 ¬∈→getCs-freezeList {c} {x ∷ k} {w} {e} ni z
-  rewrite ¬≡→≡getCs-extcs c (NRes.name x) (freezeList k w) (Res.def (NRes.res x)) (λ x → ni (here x)) =
+  rewrite ¬≡→≡getCs-extcs c (NRes.name x) (freezeList k w) (Res.c₀ (NRes.res x)) (λ x → ni (here x)) =
   ¬∈→getCs-freezeList (λ x → ni (there x)) z
 
 
@@ -628,19 +628,19 @@ getCs-freezeList≡ : {c : Name} {r : Res} {k : List NRes} {w : 𝕎·} {l : Lis
                     → NRes-nodup k
                     → mkNRes c r ∈ k
                     → getCs c w ≡ just (mkcs c l r)
-                    → getCs c (freezeList k w) ≡ just (mkcs c (l ∷ʳ Res.def r) r)
+                    → getCs c (freezeList k w) ≡ just (mkcs c (l ∷ʳ Res.c₀ r) r)
 getCs-freezeList≡ {c} {r} {x ∷ k} {w} {l} (d , nd) (here px) e rewrite sym px = z2
   where
     z1 : getCs c (freezeList k w) ≡ just (mkcs c l r)
     z1 = ¬∈→getCs-freezeList d e
 
-    z2 : getCs c (freezeList k w ++ choice c (Res.def r) ∷ []) ≡ just (mkcs c (l ++ Res.def r ∷ []) r)
-    z2 rewrite getCs++ c (freezeList k w) [ choice c (Res.def r) ] l r z1 with c ≟ c
+    z2 : getCs c (freezeList k w ++ choice c (Res.c₀ r) ∷ []) ≡ just (mkcs c (l ++ Res.c₀ r ∷ []) r)
+    z2 rewrite getCs++ c (freezeList k w) [ choice c (Res.c₀ r) ] l r z1 with c ≟ c
     ... | yes p = refl
     ... | no p = ⊥-elim (p refl)
 
 getCs-freezeList≡ {c} {r} {x ∷ k} {w} {l} (d , nd) (there i) e
-  rewrite ¬≡→≡getCs-extcs c (NRes.name x) (freezeList k w) (Res.def (NRes.res x)) (λ x → d (getCs-freezeList≡-aux x i)) =
+  rewrite ¬≡→≡getCs-extcs c (NRes.name x) (freezeList k w) (Res.c₀ (NRes.res x)) (λ x → d (getCs-freezeList≡-aux x i)) =
   getCs-freezeList≡ nd i e
 
 
@@ -693,7 +693,7 @@ csChainProgress : (w : 𝕎·) (x : Name) (n : ℕ) {r : Res{0ℓ}}
 csChainProgress w x n {r} (l , comp , sat) = suc n , n<1+n n , p
   where
     p : progressCs x (chain.seq (𝕎→csChain w) n) (chain.seq (𝕎→csChain w) (suc n))
-    p l' r' i rewrite comp rewrite sym (mkcs-inj2 (just-inj i)) | sym (mkcs-inj3 (just-inj i)) = [ Res.def r ] , e , ≤-refl
+    p l' r' i rewrite comp rewrite sym (mkcs-inj2 (just-inj i)) | sym (mkcs-inj3 (just-inj i)) = [ Res.c₀ r ] , e , ≤-refl
       where
         i1 : mkNRes x r ∈ wrdom (freezeSeq (wrdom w) w n)
         i1 = getCs→mkNRes∈wrdom {x} {freezeSeq (wrdom w) w n} comp
@@ -701,7 +701,7 @@ csChainProgress w x n {r} (l , comp , sat) = suc n , n<1+n n , p
         i2 : mkNRes x r ∈ wrdom w
         i2 = ∈wrdom-freezeSeq→ (mkNRes x r) (wrdom w) w n i1
 
-        e : getCs x (freezeList (wrdom w) (freezeSeq (wrdom w) w n)) ≡ just (mkcs x (l ∷ʳ Res.def r) r)
+        e : getCs x (freezeList (wrdom w) (freezeSeq (wrdom w) w n)) ≡ just (mkcs x (l ∷ʳ Res.c₀ r) r)
         e = getCs-freezeList≡ {x} {r} {wrdom w} {freezeSeq (wrdom w) w n} {l} (NRes-nodup-wdom w) i2 comp
 
 
@@ -840,7 +840,7 @@ getCsChoice-startCsChoice-nothing n r w name ni rewrite getCs-newcs w name r ni 
 
 getCsChoice-startCsChoice : (n : ℕ) (r : Res) (w : 𝕎·) (t : ℂ·) (name : Name)
                             → ¬ name ∈ wdom w
-                            → getCsChoice n name (startCsChoice name r w) ≡ just t → t ≡ Res.def r
+                            → getCsChoice n name (startCsChoice name r w) ≡ just t → t ≡ Res.c₀ r
 getCsChoice-startCsChoice n r w t name ni e rewrite getCsChoice-startCsChoice-nothing n r w name ni
   = ⊥-elim (¬just≡nothing (sym e))
 
@@ -956,8 +956,8 @@ freezableStartCs : (r : Res{0ℓ}) (w : 𝕎·) → freezableCs (newCsChoice w) 
 freezableStartCs r w = tt
 
 
-freezeCs⊑ : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res} → compatibleCs c w r → ⋆ᵣ r t → w ⊑· freezeCs c w t
-freezeCs⊑ c w t {r} (l , comp , sat) rt = preFreezeCs⊑ c w t (l , comp) rt
+freezeCs⊑ : (c : Name) (w : 𝕎·) {r : Res} → compatibleCs c w r → w ⊑· freezeCs c w (Res.c₁ r)
+freezeCs⊑ c w {r} (l , comp , sat) = preFreezeCs⊑ c w (Res.c₁ r) (l , comp) (Res.sat₁ r)
 
 
 
@@ -1020,12 +1020,24 @@ getFreezeCsAux c w t {r} (l , comp , sat) =
 
 
 -- We could make use of Rfrz? as we did in worldInstanceRef
-getFreezeCs : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res{0ℓ}}
+getFreezeCs : (c : Name) (w : 𝕎·) {r : Res{0ℓ}}
               → compatibleCs c w r
               → Rfrz? r
               → freezableCs c w
-              → Σ ℕ (λ n → ∀𝕎 (freezeCs c w t) (λ w' _ → Lift 2ℓ (getCsChoice n c w' ≡ just t)))
-getFreezeCs c w t {r} compat frz fb = getFreezeCsAux c w t {r} compat
+              → Σ ℕ (λ n → ∀𝕎 (freezeCs c w (Res.c₁ r)) (λ w' _ → Lift 2ℓ (getCsChoice n c w' ≡ just (Res.c₁ r))))
+getFreezeCs c w {r} compat frz fb = getFreezeCsAux c w (Res.c₁ r) {r} compat
+
+
+freezableRefDec :  (c : Name) (w : 𝕎·) → freezableCs c w ⊎ ¬ freezableCs c w
+freezableRefDec c w = inj₁ tt
+
+
+¬freezableRef : (c : Name) (w : 𝕎·) {r : Res}
+              → compatible· c w r
+              → Rfrz? r
+              → ¬ freezableCs c w
+              → Σ ℕ (λ n → ∀𝕎 w (λ w' _ → Lift 2ℓ (getChoice· n c w' ≡ just (Res.c₁ r))))
+¬freezableRef c w {r} comp fr nfr = ⊥-elim (nfr tt)
 
 
 open import freeze(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(newChoiceCS)
@@ -1039,9 +1051,11 @@ freezeCS =
 --    getCsChoiceCompatible
     freezeCs
     freezableCs
+    freezableRefDec
     freezeCs⊑
     getFreezeCs
     freezableStartCs
+    ¬freezableRef
     --freezeCsProgress
 
 open import freezeDef(PossibleWorldsCS)(choiceCS)(compatibleCS)(progressCS)(getChoiceCS)(newChoiceCS)(freezeCS)

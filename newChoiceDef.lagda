@@ -101,14 +101,14 @@ startChoice⊏· = startChoice⊏ N
 
 
 getChoice-startChoice· : (n : ℕ) (r : Res) (w : 𝕎·) (t : ℂ·) (name : Name)
-                         → ¬ name ∈ dom𝕎· w
-                         → getChoice· n name (startChoice· name r w) ≡ just t
-                         → t ≡ Res.def r
+                       → ¬ name ∈ dom𝕎· w
+                       → getChoice· n name (startChoice· name r w) ≡ just t
+                       → t ≡ Res.c₀ r
 getChoice-startChoice· = getChoice-startChoice N
 
 
 getChoice-startNewChoice : (n : ℕ) (r : Res) (w : 𝕎·) (t : ℂ·)
-                           → getChoice· n (newChoice· w) (startNewChoice r w) ≡ just t → t ≡ Res.def r
+                         → getChoice· n (newChoice· w) (startNewChoice r w) ≡ just t → t ≡ Res.c₀ r
 getChoice-startNewChoice n r w t h =
   getChoice-startChoice· n r w t (newChoice· w) (λ x → snd (freshName (dom𝕎· w ++ names𝕎· w)) (∈-++⁺ˡ x)) h
 

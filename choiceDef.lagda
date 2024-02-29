@@ -73,14 +73,16 @@ open Choice
 record Res {L : Level} : Set(lsuc(L)) where
   constructor mkRes
   field
-    res : (n : ℕ) → ℂ· → Set(L)
-    def : ℂ·                        -- default element that satisfies the restriction
-    sat : (n : ℕ) → res n def     -- proof that the default element is satisfied at all stages
-    dec : Σ Bool (λ { true → (n : ℕ) (c : ℂ·) → res n c ⊎ ¬ res n c ; -- a restriction is decidable or not
+    res  : (n : ℕ) → ℂ· → Set(L)
+    c₀   : ℂ·                        -- default element that satisfies the restriction
+    c₁   : ℂ·                        -- element that can be frozen
+    sat₀ : (n : ℕ) → res n c₀        -- proof that the default element is satisfied at all stages
+    sat₁ : (n : ℕ) → res n c₁        -- proof that the freezable element is satisfied at all stages
+    dec  : Σ Bool (λ { true → (n : ℕ) (c : ℂ·) → res n c ⊎ ¬ res n c ; -- a restriction is decidable or not
                       false → Lift {0ℓ} L ⊤ })
-    inv : Σ Bool (λ { true → (n m : ℕ) (c : ℂ·) → res n c → res m c ;
+    inv  : Σ Bool (λ { true → (n m : ℕ) (c : ℂ·) → res n c → res m c ;
                       false → Lift {0ℓ} L ⊤ })
-    frz : Bool -- freezable
+    frz  : Bool -- freezable
 
 
 -- checks whether the restiction allows freezing values
@@ -119,8 +121,9 @@ compatibleRes {L} r1 r2 =
   (n : ℕ) (t : ℂ·) → (·ᵣ r1 n t → ·ᵣ r2 n t) × (·ᵣ r2 n t → ·ᵣ r1 n t)
 
 
-Resη : {L : Level} (r : Res{L}) → mkRes (Res.res r) (Res.def r) (Res.sat r) (Res.dec r) (Res.inv r) (Res.frz r) ≡ r
-Resη {L} (mkRes r d s k i f) = refl
+Resη : {L : Level} (r : Res{L})
+     → mkRes (Res.res r) (Res.c₀ r) (Res.c₁ r) (Res.sat₀ r) (Res.sat₁ r) (Res.dec r) (Res.inv r) (Res.frz r) ≡ r
+Resη {L} (mkRes r c₀ c₁ s₀ s₁ k i f) = refl
 
 
 

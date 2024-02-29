@@ -114,10 +114,10 @@ open import props3(W)(M)(C)(K)(G)(X)(N)(enc)
 ¬followChoice-open-ref-aux : (w : 𝕎·)
                              → ¬((c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                                     → □· w f --inOpenBar w f
-                                    → onlyℂ∈𝕎 (Res.def r) c w
+                                    → onlyℂ∈𝕎 (Res.c₀ r) c w
                                     → compatible· c w r
                                     → freezable· c w
-                                    → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
+                                    → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.c₀ r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
 ¬followChoice-open-ref-aux w0 h =
   lower (snd (snd (snd (snd (snd q))))) (fst (snd (snd (snd (snd q)))))
   where
@@ -146,19 +146,19 @@ open import props3(W)(M)(C)(K)(G)(X)(N)(enc)
         w2 = freeze· c w1 k
 
         e2 : w1 ⊑· w2
-        e2 = freeze⊑· c w1 k (⊑-compatible· e1 comp) λ n → inj₂ refl
+        e2 = freeze⊑· c w1 (⊑-compatible· e1 comp)
 
         -- This we where we could modify getFreeze or add an axiom like freeze→¬freezable
         aw : ∀𝕎 w2 (λ w3 e3 → (z : w ⊑· w3) → f w3 z)
-        aw w3 e3 z = freeze→¬freezable {c} {w1} k (⊑-compatible· e1 comp) tt w3 e3
+        aw w3 e3 z = freeze→¬freezable {c} {w1} (⊑-compatible· e1 comp) tt w3 e3
 
-    oc : onlyℂ∈𝕎 (Res.def r) c w
+    oc : onlyℂ∈𝕎 (Res.c₀ r) c w
     oc n = getChoice-startNewChoice n r w0
 
     fb : freezable· c w
     fb = freezableStart· r w0
 
-    q :  ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
+    q :  ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.c₀ r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
     q = h c {w} {f} {r} i oc comp fb
 
 
@@ -166,10 +166,10 @@ open import props3(W)(M)(C)(K)(G)(X)(N)(enc)
 -- We need 𝕎 to be non-empty
 ¬followChoice-open-ref : ¬((c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                            → inOpenBar w f
-                           → isOnlyChoice∈𝕎 (Res.def r) c w
+                           → isOnlyChoice∈𝕎 (Res.c₀ r) c w
                            → compatible· c w r
                            → freezable· c w
-                           → ∃𝕎 w (λ w1 e1 → isOnlyChoice∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
+                           → ∃𝕎 w (λ w1 e1 → isOnlyChoice∈𝕎 (Res.c₀ r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1))
 ¬followChoice-open-ref h = {!!}
 --}
 \end{code}

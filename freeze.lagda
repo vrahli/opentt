@@ -54,15 +54,21 @@ record Freeze : Set(lsuc(L)) where
   constructor mkFreeze
   field
     -- This adds a new choice, which is frozen forever (can for example be recorded with a 𝔹 in worlds)
-    freeze : (c : Name) (w : 𝕎·) (t : ℂ·) → 𝕎·
-    freezable : (c : Name) (w : 𝕎·) → Set
-    freeze⊑ : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res{0ℓ}} → compatible· c w r → ⋆ᵣ r t → w ⊑· freeze c w t
-    getFreeze : (c : Name) (w : 𝕎·) (t : ℂ·) {r : Res{0ℓ}}
-                → compatible· c w r
-                → Rfrz? r
-                → freezable c w
-                → Σ ℕ (λ n → ∀𝕎 (freeze c w t) (λ w' _ → Lift (lsuc(L)) (getChoice· n c w' ≡ just t)))
+    freeze         : (c : Name) (w : 𝕎·) (t : ℂ·) → 𝕎·
+    freezable      : (c : Name) (w : 𝕎·) → Set
+    freezableDec   : (c : Name) (w : 𝕎·) → freezable c w ⊎ ¬ freezable c w
+    freeze⊑        : (c : Name) (w : 𝕎·) {r : Res{0ℓ}} → compatible· c w r → w ⊑· freeze c w (Res.c₁ r)
+    getFreeze      : (c : Name) (w : 𝕎·) {r : Res{0ℓ}}
+                   → compatible· c w r
+                   → Rfrz? r
+                   → freezable c w
+                   → Σ ℕ (λ n → ∀𝕎 (freeze c w (Res.c₁ r)) (λ w' _ → Lift (lsuc(L)) (getChoice· n c w' ≡ just (Res.c₁ r))))
     freezableStart : (r : Res{0ℓ}) (w : 𝕎·) → freezable (newChoice· w) (startNewChoice r w)
+    ¬freezable     : (c : Name) (w : 𝕎·) {r : Res{0ℓ}}
+                   → compatible· c w r
+                   → Rfrz? r
+                   → ¬ freezable c w
+                   → Σ ℕ (λ n → ∀𝕎 w (λ w' _ → Lift (lsuc(L)) (getChoice· n c w' ≡ just (Res.c₁ r))))
     -- freezing a choice progresses
     --freezeProgress : (c : Name) {w1 w2 : 𝕎·} (t : ℂ·) → w1 ⊑· w2 → progress· c w1 (freeze c w2 t)
 

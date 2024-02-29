@@ -219,10 +219,10 @@ getChoice→weakℂ₀₁M w n c h w1 e1 with lower (h w1 e1)
 
 followChoice-beth-ref : (c : Name) {w : 𝕎·} {f : wPred w} {r : Res{0ℓ}}
                         → □· w f
-                        → onlyℂ∈𝕎 (Res.def r) c w
+                        → onlyℂ∈𝕎 (Res.c₀ r) c w
                         → compatible· c w r
                         → freezable· c w
-                        → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.def r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
+                        → ∃𝕎 w (λ w1 e1 → onlyℂ∈𝕎 (Res.c₀ r) c w1 × compatible· c w1 r × freezable· c w1 × f w1 e1)
 followChoice-beth-ref c {w} {f} {r} (bar , i) ioc comp fb =
   w , ⊑-refl· _ , ioc , comp , fb ,
   i e (BarredChain.b bp) (chain.seq (pchain.c pc) (BarredChain.n bp)) (BarredChain.ext bp) (⊑-refl· _)
